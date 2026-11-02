@@ -256,6 +256,7 @@ battute:
     quando: "dove Baldrin non sente, un PG promette di non consegnare il forestiero al paese"
     temi: [prometto, giuro, promessa, consegno, consegnarti, parola]
     richiede:
+      privata: true          # cede_se: «quando Baldrin non può sentire»
       battute_non_usate: [seb_mestiere_malato, seb_guerra_roccalba]
     testo:
       - "[narratore] Il forestiero tira fuori le mani dalle maniche e se le guarda."
@@ -270,7 +271,10 @@ battute:
     tipo: confessione
     quando: "davanti al forestiero c'è un malato, o il cane, che ha bisogno di cure"
     temi: [malato, curalo, cura, cane, aiutalo, soffre]
+    # cede_se: «un malato ha bisogno di lui davanti ai suoi occhi». In scena l'unico malato è Moro: la
+    # confessione esce solo dopo che il cane che trema è stato visto (i_cane_croste), non al primo «curalo».
     richiede:
+      indizi_rivelati: [i_cane_croste]
       battute_non_usate: [seb_mestiere_promessa, seb_guerra_roccalba]
     testo:
       - "[narratore] Il forestiero si stringe alla grata. Adesso la voce è svelta, sicura."

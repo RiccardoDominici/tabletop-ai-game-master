@@ -252,8 +252,10 @@ battute:
     tipo: confessione
     quando: "dove Baldrin non sente, un PG dà a Ottavia un chicco nero dei sacchi"
     temi: [chicco, chicchi, palmo, mostro, sacco]
+    # cede_se: il chicco dei suoi sacchi, e Baldrin che non sente. Il Motore controlla le due cose.
     richiede:
       indizi_rivelati: [i_speroni_neri]
+      privata: true
       battute_non_usate: [ott_segale_passato]
     testo:
       - "[narratore] Ottavia guarda il chicco nel palmo. Le labbra le tremano, senza un suono."
@@ -270,7 +272,12 @@ battute:
     tipo: confessione
     quando: "in privato, il PG cresciuto all'osteria chiede a Ottavia di essere sincera"
     temi: [sottovoce, sincera, verità, nascondi, nascosto, passato, piccolo]
+    # cede_se: la chiede Assenzio, e la prima confessione è sempre in privato. Nel giudizio A/B n. 2
+    # è uscita quando Assenzio ha chiesto in pubblico «è sincera?»: ora la ferma privata, e da_pg
+    # impedisce che la stessa domanda di un altro PG la apra.
     richiede:
+      privata: true
+      da_pg: [pg_assenzio]
       battute_non_usate: [ott_segale_chicco]
     testo:
       - "[narratore] Ottavia smette di lavorare. Le mani le restano ferme sul tavolo, aperte."
