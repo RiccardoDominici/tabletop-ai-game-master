@@ -121,7 +121,7 @@ battute:
     chi: png_baldrin
     tipo: verita
     quando: "un PG chiede a Baldrin chi c'è dietro la porta, o perché"
-    temi: [chiuso, chiuderlo, rinchiuso, prigioniero, uomo, forestiero, deciso]
+    temi: [chiuso, chiuderlo, rinchiuso, prigioniero, forestiero, deciso]
     testo:
       - "[png_baldrin] Lì dentro c'è quello. Il forestiero."
       - "[png_baldrin] Polvere nel pozzo, ha messo. Al rintocco decide il paese."
@@ -170,7 +170,7 @@ battute:
     chi: png_baldrin
     tipo: reazione
     quando: "un PG chiede a Baldrin di guardare nella borsa del forestiero"
-    temi: [borsa, guardare, frugare, roba]
+    temi: [borsa, frugare, roba]
     testo:
       - "[png_baldrin] Guarda pure. Ma le mani dove le vedo."
       - "[narratore] Spinge la borsa col piede, verso la luce del forno."
@@ -253,7 +253,7 @@ battute:
     chi: png_baldrin
     tipo: confessione
     quando: "un PG chiede a Baldrin i nomi dei tre che hanno visto"
-    temi: [nomi, nome, tre, testimoni]
+    temi: [nomi, tre, testimoni]
     richiede:
       battute_usate: [bal_testimoni_versione]
       battute_non_usate: [bal_testimoni_sano]
@@ -347,7 +347,7 @@ battute:
     chi: png_baldrin
     tipo: momento
     quando: "al terzo rintocco, Baldrin dalla parte dei PG tiene il paese sulla soglia"
-    temi: [fermi, fermatevi, fermare, ascoltate, folla, gente]
+    temi: [fermi, fermatevi, fermare, ascoltate, folla]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
     testo:

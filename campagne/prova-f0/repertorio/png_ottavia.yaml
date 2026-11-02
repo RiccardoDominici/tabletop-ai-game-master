@@ -201,7 +201,7 @@ battute:
     chi: png_ottavia
     tipo: reazione
     quando: "un PG chiede a Ottavia del forestiero chiuso nel ripostiglio"
-    temi: [chiuso, chiuderlo, rinchiuso, prigioniero, forestiero, straniero, quello, uomo, ripostiglio]
+    temi: [chiuso, chiuderlo, rinchiuso, prigioniero, forestiero, straniero, quello, ripostiglio]
     testo:
       - "[narratore] Ottavia guarda la porta del ripostiglio, poi il paiolo."
       - "[png_ottavia] È arrivato tre giorni fa, a piedi. Da allora, solo guai."
@@ -211,7 +211,7 @@ battute:
     chi: png_ottavia
     tipo: reazione
     quando: "un PG chiede se il forestiero ha parlato con Ottavia"
-    temi: [parlato, detto, avvertito, avvisato, parlava]
+    temi: [parlato, avvertito, avvisato, parlava]
     testo:
       - "[png_ottavia] Parla tanto, quello. Parole da forestiero."
       - "[narratore] Il mestolo batte sul paiolo, più forte di prima."
@@ -269,7 +269,7 @@ battute:
     chi: png_ottavia
     tipo: confessione
     quando: "in privato, il PG cresciuto all'osteria chiede a Ottavia di essere sincera"
-    temi: [sottovoce, sincera, verità, detto, nascondi, nascosto, passato, piccolo]
+    temi: [sottovoce, sincera, verità, nascondi, nascosto, passato, piccolo]
     richiede:
       battute_non_usate: [ott_segale_chicco]
     testo:
@@ -331,7 +331,7 @@ battute:
     chi: png_ottavia
     tipo: momento
     quando: "un PG chiede a Ottavia di parlare al paese e promette di starle accanto"
-    temi: [paese, accanto, vicino, promessa, prometto, insieme, parlare]
+    temi: [paese, accanto, vicino, promessa, prometto, insieme]
     richiede:
       indizi_rivelati: [i_ottavia_confessione]
     testo:
@@ -354,7 +354,7 @@ battute:
     chi: png_ottavia
     tipo: momento
     quando: "al terzo rintocco Ottavia parla al paese, con un PG accanto"
-    temi: [paese, portico, gente, folla, parla, confessa]
+    temi: [paese, portico, folla, parla, confessa]
     richiede:
       battute_usate: [ott_accetta_paese]
       orologio: {id: o_colpevole, min: 6, max: 6}

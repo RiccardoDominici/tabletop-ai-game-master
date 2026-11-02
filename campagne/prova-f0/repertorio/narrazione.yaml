@@ -412,7 +412,7 @@ battute:
     chi: narratore
     tipo: momento
     quando: "un PG guarda fuori dalla finestra, sulla piazza"
-    temi: [finestra, piazza, affaccio, fuori]
+    temi: [finestra, piazza, affaccio, affacci]
     richiede:
       orologio: {id: o_colpevole, min: 0, max: 3}
     testo:
@@ -424,7 +424,7 @@ battute:
     chi: narratore
     tipo: momento
     quando: "un PG guarda fuori dalla finestra, sulla piazza"
-    temi: [finestra, piazza, affaccio, fuori]
+    temi: [finestra, piazza, affaccio, affacci]
     richiede:
       orologio: {id: o_colpevole, min: 4, max: 6}
     testo:
@@ -516,7 +516,7 @@ battute:
     chi: narratore
     tipo: transizione
     quando: "i PG passano dietro la tenda, nel retro"
-    temi: [retro, tenda, dietro, sgattaiolo]
+    temi: [retro, tenda, sgattaiolo]
     testo:
       - "[narratore] Dietro la tenda fa più freddo. Sacchi, una madia, una scala che scende."
       - "[narratore] La voce di Baldrin arriva smorzata, lontana."

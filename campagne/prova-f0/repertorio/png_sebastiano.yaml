@@ -120,7 +120,7 @@ battute:
     chi: png_sebastiano
     tipo: reazione
     quando: "un PG chiede al forestiero se il pane nelle ceste fa male"
-    temi: [male, buono, mangiare]
+    temi: [fa male, fanno male, buono, mangiare, mangiarlo]
     testo:
       - "[png_sebastiano] Se è fatto con quella farina, sì. E scommetto che lo è."
     max_usi: 1
