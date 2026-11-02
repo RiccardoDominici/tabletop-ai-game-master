@@ -74,8 +74,18 @@ if [[ -z "$info" ]]; then
   exit 1
 fi
 telefono="$(printf '%s' "$info" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).url_telefono))')"
+# Link del pannello del master: il server lo scrive nel log all'avvio, col token (mai nel QR).
+# Solo le righe scritte dopo l'ultimo «=== avvio» (non il token di un avvio precedente).
+master=""
+for _ in $(seq 1 10); do
+  master="$(awk '/^=== avvio/{b=""} {b=b $0 "\n"} END{printf "%s", b}' "$DIR_LOG/server.out" | grep '"PANNELLO MASTER"' | tail -n 1 \
+    | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log(JSON.parse(s).master)}catch{}})' || true)"
+  [[ -n "$master" ]] && break
+  sleep 0.3
+done
 echo
 echo "Cantastorie pronto (pid $PID) — $salute"
 echo "  Telefoni:   $telefono"
 echo "  Proiettore: http://localhost:$PORTA/schermo   (premi «Inizia sessione»)"
+echo "  Master:     ${master:-vedi la riga PANNELLO MASTER in logs/server.out}   (solo su questo Mac)"
 echo "  Arresto:    scripts/arresto.sh"

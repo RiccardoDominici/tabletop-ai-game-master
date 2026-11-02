@@ -16,6 +16,11 @@ export type FaseScena =
   | 'finestra'
   /** Finestra chiusa: Haiku narra, la voce parla, lo schermo suona. */
   | 'narrazione'
+  /**
+   * Tavolo in pausa dal pannello del master: nessuna nuova finestra e nessuna narrazione finché
+   * il master non riprende. I telefoni possono scrivere (l'azione entra alla ripresa).
+   */
+  | 'pausa'
   /** Scena fermata a mano (interrompe LLM e voce). */
   | 'fermata';
 

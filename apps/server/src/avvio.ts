@@ -30,6 +30,9 @@ import { riassuntoPubblico } from './azioni/contesto';
 import type { Arbitro } from './azioni/tipi';
 import { creaClientAnthropic } from './llm/haiku';
 import { collegaSocket, creaUscite } from './trasporto/socket';
+import { collegaMaster } from './trasporto/master';
+import { ControlliMaster } from './master/comandi';
+import { nuovoToken } from './master/token';
 import { orologioDiSistema, type Orologio } from './turni/orologio';
 import { MotoreVoceHttp } from './voce/http';
 import { MotoreVoceMock } from './voce/mock';
@@ -41,6 +44,8 @@ export interface ServerCantastorie {
   campagna: Campagna;
   voce: SelettoreVoce;
   info: InfoServer;
+  /** Token del pannello del master (stampato nel log all'avvio). */
+  tokenMaster: string;
   avvia(): Promise<string>;
   chiudi(): Promise<void>;
 }
@@ -142,6 +147,16 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
 
   let info = await creaInfoServer(config.porta, config.ipLan);
   collegaSocket(app.io, regia, () => info, log.child({ modulo: 'socket' }));
+  // Pannello del master: stanza "master" col token (da configurazione, o nuovo a ogni avvio).
+  const tokenMaster = config.tokenMaster ?? nuovoToken();
+  const controlliMaster = new ControlliMaster({
+    regia,
+    campagna,
+    immagini,
+    registro: new RegistroJsonl(path.join(config.cartellaLog, 'master.jsonl')),
+    log: log.child({ modulo: 'master' }),
+  });
+  collegaMaster(app.io, regia, controlliMaster, tokenMaster, log.child({ modulo: 'master' }));
   registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, ...regia.infoSessione }), immagini);
 
   return {
@@ -149,6 +164,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     regia,
     campagna,
     voce,
+    tokenMaster,
     get info() {
       return info;
     },

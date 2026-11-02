@@ -4,13 +4,15 @@
  * Stanze lato server:
  * - "tavolo": tutti i telefoni e lo schermo (stato, trascrizione, metriche);
  * - "schermo": solo lo schermo dopo «Inizia sessione» (audio);
- * - "player:<id_pg>": i telefoni che hanno scelto quel PG (azione privata).
+ * - "player:<id_pg>": i telefoni che hanno scelto quel PG (azione privata);
+ * - "master": il pannello del master, entrato col token del log del server (mai i telefoni).
  *
  * L'audio viaggia come PCM s16le mono in binario (Buffer lato server, ArrayBuffer lato browser).
  * Ogni frase è annunciata da `audio:frase`, seguita da N `audio:pezzo` e chiusa da `audio:fine_frase`.
  * `audio:fine_turno` dice che il turno non avrà altre frasi.
  */
 import type { AzionePrivata, MisureTurno, SchedaPg, StatoTavolo } from './dominio';
+import type { ComandoMaster, EsitoEntrataMaster, StatoMaster } from './master';
 
 /** Risposta standard agli eventi con conferma (ack). */
 export type Esito = { ok: true } | { ok: false; errore: string };
@@ -106,6 +108,8 @@ export interface EventiServerVersoClient {
   'audio:fine_turno': (fine: AudioFineTurno) => void;
   /** Interrompi subito tutto l'audio in coda (scena fermata). */
   'audio:interrompi': () => void;
+  /** Solo alla stanza "master": istantanea completa per il pannello. */
+  'master:stato': (stato: StatoMaster) => void;
 }
 
 export interface EventiClientVersoServer {
@@ -145,6 +149,11 @@ export interface EventiClientVersoServer {
   'scena:ferma': (ack: (esito: Esito) => void) => void;
   /** Ricomincia la scena dall'apertura (azzera trascrizione e turni). */
   'scena:ricomincia': (ack: (esito: Esito) => void) => void;
+
+  /** Pannello del master: entra nella stanza "master" col token stampato nel log all'avvio. */
+  'master:entra': (dati: { token: string }, ack: (esito: EsitoEntrataMaster) => void) => void;
+  /** Pannello del master: un comando (solo dopo `master:entra` riuscito). */
+  'master:comando': (comando: ComandoMaster, ack: (esito: Esito) => void) => void;
 }
 
 /** Porte fissate dal contratto F0. */

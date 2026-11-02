@@ -33,6 +33,17 @@ export interface DatiMessaggioTurno {
   repertorio?: { fattiScoperti: string[]; battuteDisponibili: string; stallo?: boolean };
   /** Massimo di voci di trascrizione da includere (le più recenti). */
   maxTrascrizione?: number;
+  /** Note di regia del master (al massimo 3), da seguire in questa risposta. */
+  noteRegia?: string[];
+}
+
+/** Titolo della sezione delle note di regia nel messaggio (lo cercano anche i log e i test). */
+export const TITOLO_NOTE_REGIA = '## Note di regia del master';
+
+/** Sezione delle note di regia: imperative, valgono più delle abitudini del narratore. */
+export function sezioneNoteRegia(note: readonly string[]): string | null {
+  if (!note.length) return null;
+  return `${TITOLO_NOTE_REGIA} (seguile in questa risposta, prima delle tue abitudini; non citarle mai ad alta voce)\n${note.map((n) => `- ${n}`).join('\n')}`;
 }
 
 /** Una voce di trascrizione nel formato che il narratore stesso usa. */
@@ -110,6 +121,10 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
     parti.push('## Catalogo: battute pertinenti a questo turno (id · chi · tipo · quando)', d.repertorio.battuteDisponibili || '(nessuna)');
     if (d.repertorio.stallo) parti.push('Stallo: nessuno ha agito in questo turno.');
   }
+
+  // Note di regia: in fondo, vicino all'ordine di rispondere, perché pesino di più.
+  const note = sezioneNoteRegia(d.noteRegia ?? []);
+  if (note) parti.push(note);
 
   // pg_presenti: solo questi si possono invitare (gli altri PG della scheda non sono al tavolo).
   const nomi = d.pgAlTavolo.map((p) => `${p.id} = ${p.nome}`).join('; ');

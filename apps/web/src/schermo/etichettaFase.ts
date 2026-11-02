@@ -12,6 +12,7 @@ const ETICHETTA_FASE: Record<FaseScena, string> = {
   apertura: 'Il narratore apre la scena',
   finestra: 'Il narratore ascolta',
   narrazione: 'Il narratore sta parlando',
+  pausa: 'Tavolo in pausa',
   fermata: 'Scena fermata',
 };
 
@@ -28,9 +29,12 @@ export function primoNome(nome: string): string {
 /**
  * Etichetta per la fase, corretta con chi è in onda: un PNG che parla durante la narrazione (o
  * l'apertura) prende il posto del narratore; in silenzio o col narratore resta l'etichetta di fase.
+ * In pausa l'ultima frase può ancora suonare (il server passa in pausa a fine stimata dell'audio):
+ * finché suona, la riga dice chi parla; poi «Tavolo in pausa».
  */
 export function etichettaFase(fase: FaseScena, inOnda: Pick<FraseInOnda, 'parlante' | 'nome'> | null): string {
-  const parla = fase === 'narrazione' || fase === 'apertura';
+  const parla = fase === 'narrazione' || fase === 'apertura' || fase === 'pausa';
   if (parla && inOnda && inOnda.parlante !== 'narratore' && inOnda.nome.trim()) return `${primoNome(inOnda.nome)} sta parlando`;
+  if (fase === 'pausa' && inOnda) return 'Il narratore sta parlando';
   return ETICHETTA_FASE[fase];
 }

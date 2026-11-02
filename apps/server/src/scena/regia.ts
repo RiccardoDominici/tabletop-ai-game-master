@@ -2,9 +2,14 @@
  * Regia della scena (F0): l'unico «scrittore» dello stato del tavolo e del ciclo dei turni.
  *
  *   attesa ──(schermo: Inizia sessione)──▶ apertura ──(audio finito)──▶ finestra
- *   finestra ──(tutti pronti | 10 s dopo la prima azione)──▶ narrazione
+ *   finestra ──(tutti pronti | 10 s dopo la prima azione | master)──▶ narrazione
  *   narrazione ──(LLM finito + voce finita + audio suonato)──▶ finestra (turno+1)
  *   qualsiasi ──(ferma)──▶ fermata ──(ricomincia)──▶ apertura
+ *
+ * Pannello del master (master/comandi.ts):
+ *   finestra ──(pausa)──▶ pausa (finestra sospesa) ──(riprendi)──▶ finestra
+ *   apertura | narrazione ──(pausa)──▶ …la narrazione finisce… ──▶ pausa ──(riprendi)──▶ finestra
+ *   apertura | narrazione ──(ferma la narrazione: LLM + voce interrotti)──▶ pausa
  *
  * Le misure di latenza di ogni turno partono da t0 = chiusura della finestra e finiscono in
  * logs/turni.jsonl; il costo di ogni chiamata in logs/costi.jsonl.
@@ -35,7 +40,7 @@ import type { Orologio } from '../turni/orologio';
 import { azioniPerNarratore } from '../azioni/narratore';
 import type { CatalogoImmagini } from '../campagna/immagini';
 import { TavoloAzioni, type RiepilogoChiusura } from '../azioni/tavolo';
-import type { Arbitro } from '../azioni/tipi';
+import type { Arbitro, Azione } from '../azioni/tipi';
 import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
 import { messaggioRiparazione } from '../narrazione/messaggio';
 import { normalizza } from '../azioni/regole';
@@ -49,7 +54,9 @@ import { voceDi } from '../turni/narrazione';
 import { PipelineVoce, type UscitaAudio } from '../voce/pipeline';
 import { creaPronunciatore, type Pronunciatore } from '../voce/pronuncia';
 import type { SelettoreVoce } from '../voce/selettore';
-import { StatoOrologi } from './orologi';
+import { StatoOrologi, type EsitoAvanzamento, type Orologio as OrologioMinaccia } from './orologi';
+import { NoteRegia } from '../master/note';
+import { sezioneNoteRegia } from '../narrazione/messaggio';
 
 export interface OpzioniRegia {
   campagna: Campagna;
@@ -85,6 +92,10 @@ export interface OpzioniRegia {
   /** Silenzio che fa scattare la mossa contro lo stallo (default 45 s; 0 = mai). */
   stalloMs?: number;
 }
+
+/** Motivi mostrati al giocatore quando il master tocca la sua azione. */
+export const MOTIVO_SALTATA = 'Il master ha saltato questa azione: puoi riscriverla.';
+export const MOTIVO_NARRAZIONE_INTERROTTA = 'Il master ha interrotto la narrazione: la tua azione non è stata risolta, puoi rimandarla.';
 
 /** Ascoltatori del trasporto (Socket.IO). */
 export interface UscitaRegia {
@@ -153,6 +164,15 @@ export class Regia {
   private telefoni = new Map<string, string>();
   /** socket.id degli schermi che hanno sbloccato l'audio. */
   private schermi = new Set<string>();
+
+  /** Il master ha chiesto la pausa: a fine narrazione non si apre la finestra. */
+  private pausaRichiesta = false;
+  /** In pausa dopo una narrazione: l'invito da usare quando il master riprende. */
+  private invitoSospeso: string[] | 'tutti' | null = null;
+  /** Note di regia del master: entrano nel messaggio dei prossimi turni. */
+  readonly note = new NoteRegia();
+  /** Chi vuole sapere di ogni cambiamento (il pannello del master). */
+  private readonly ascoltatori = new Set<() => void>();
 
   constructor(opzioni: OpzioniRegia) {
     this.o = opzioni;
@@ -328,6 +348,18 @@ export class Regia {
   private notifica(): void {
     this.versioneStato += 1;
     this.uscita?.stato(this.stato());
+    for (const f of this.ascoltatori) f();
+  }
+
+  /** Un modulo esterno (note di regia) ha cambiato qualcosa che il pannello deve vedere. */
+  notificaEsterna(): void {
+    this.notifica();
+  }
+
+  /** Registra un ascoltatore di ogni cambiamento dello stato; restituisce la funzione che lo toglie. */
+  alCambio(f: () => void): () => void {
+    this.ascoltatori.add(f);
+    return () => this.ascoltatori.delete(f);
   }
 
 
@@ -439,6 +471,8 @@ export class Regia {
     this.orologi = new StatoOrologi(this.o.campagna);
     this.statoRepertorio = this.nuovoStatoRepertorio();
     this.tavolo.azzera();
+    // Le note di regia contano i turni di questa scena: si riparte senza.
+    this.note.azzera();
     this.o.log.info({ schermi: this.schermi.size }, 'scena: ricomincia');
     if (this.schermi.size > 0) this.avviaScena();
     else {
@@ -446,6 +480,136 @@ export class Regia {
       this.notifica();
     }
     return { ok: true };
+  }
+
+  // ------------------------------------------------------------------ comandi del master
+  // Validazione e registro degli eventi stanno in master/comandi.ts: qui solo l'effetto sullo stato.
+
+  /** La narrazione (apertura compresa) è in corso: LLM o voce stanno lavorando. */
+  get narrazioneInCorso(): boolean {
+    return this.fase === 'apertura' || this.fase === 'narrazione';
+  }
+
+  get statoPausa(): { richiesta: boolean; attiva: boolean } {
+    return { richiesta: this.pausaRichiesta, attiva: this.fase === 'pausa' };
+  }
+
+  /**
+   * Pausa: nessuna nuova finestra. A finestra aperta la finestra resta aperta ma non si chiude da
+   * sola (e niente stallo); durante una narrazione la si lascia finire e poi il tavolo si ferma.
+   */
+  pausa(): Esito {
+    if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: 'La scena non è in corso.' };
+    if (this.fase === 'pausa') return { ok: false, errore: 'Il tavolo è già in pausa.' };
+    if (this.pausaRichiesta) return { ok: false, errore: 'La pausa è già chiesta: scatta alla fine della narrazione.' };
+    // A finestra chiusa ma col lucchetto preso la narrazione sta per partire: si comporta come una narrazione.
+    if (this.fase === 'finestra' && !this.tavolo.chiudendo) {
+      this.tavolo.sospendi();
+      this.fase = 'pausa';
+      this.invitoSospeso = null;
+      this.o.log.info({ turno: this.turno }, 'scena: in pausa (finestra sospesa)');
+    } else {
+      this.pausaRichiesta = true;
+      this.o.log.info({ turno: this.turno, fase: this.fase }, 'scena: pausa chiesta, scatta a fine narrazione');
+    }
+    this.notifica();
+    return { ok: true };
+  }
+
+  /** Riprende dalla pausa (o annulla una pausa chiesta e non ancora scattata). */
+  riprendi(): Esito {
+    if (this.pausaRichiesta && this.fase !== 'pausa') {
+      this.pausaRichiesta = false;
+      this.o.log.info({ turno: this.turno }, 'scena: pausa chiesta annullata');
+      this.notifica();
+      return { ok: true };
+    }
+    if (this.fase !== 'pausa') return { ok: false, errore: 'Il tavolo non è in pausa.' };
+    if (this.tavolo.aperta) {
+      this.fase = 'finestra';
+      this.tavolo.riprendi();
+      this.o.log.info({ turno: this.turno }, 'scena: ripresa (finestra di nuovo attiva)');
+    } else {
+      const invito = this.invitoSospeso ?? 'tutti';
+      this.invitoSospeso = null;
+      this.o.log.info({ turno: this.turno, invito }, 'scena: ripresa (nuova finestra)');
+      this.apriFinestra(invito);
+    }
+    this.notifica();
+    return { ok: true };
+  }
+
+  /**
+   * Freno d'emergenza: interrompe subito LLM e voce (lo schermo tace) e mette il tavolo in pausa.
+   * Le azioni del turno interrotto non sono state risolte: tornano ai giocatori da rimandare.
+   */
+  fermaNarrazione(): Esito {
+    if (!this.narrazioneInCorso) return { ok: false, errore: 'Nessuna narrazione in corso.' };
+    const turno = this.turno;
+    const faseInterrotta = this.fase;
+    this.interrompiFlussi('master');
+    this.primoAudioInviato.delete(turno);
+    const annullate = this.tavolo.annullaChiuse(turno, MOTIVO_NARRAZIONE_INTERROTTA);
+    this.aggiungiTrascrizione({ turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: 'Il master ha interrotto la narrazione.' });
+    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'interrotta', fase: faseInterrotta, azioni_annullate: annullate });
+    // La parte già detta è pubblica: le azioni scritte nel frattempo si ricontrollano contro di essa.
+    this.versioneScena += 1;
+    void this.tavolo.dopoNarrazione(turno, this.versioneScena);
+    this.pausaRichiesta = false;
+    this.invitoSospeso = 'tutti';
+    this.fase = 'pausa';
+    this.o.log.warn({ turno, fase: faseInterrotta, azioni_annullate: annullate }, 'scena: narrazione interrotta dal master, tavolo in pausa');
+    this.notifica();
+    return { ok: true };
+  }
+
+  /** Il master chiude la finestra adesso (il narratore risponde alle azioni inviate). */
+  chiudiFinestraOra(): Esito {
+    if (this.fase === 'pausa') return { ok: false, errore: 'Il tavolo è in pausa: riprendi prima di chiudere la finestra.' };
+    if (this.fase !== 'finestra') return { ok: false, errore: 'La finestra delle azioni non è aperta.' };
+    return this.tavolo.chiudiOra();
+  }
+
+  /** Il master salta l'azione di un giocatore (non entra nel turno). */
+  saltaAzione(idAzione: string): Esito {
+    const a = this.tavolo.salta(idAzione, MOTIVO_SALTATA);
+    if (!a) return { ok: false, errore: 'Azione inesistente o già fuori dal turno.' };
+    return { ok: true };
+  }
+
+  /** Il master avanza (+1) o riporta indietro (−1) un orologio di un segno. */
+  spostaOrologio(id: string, passo: 1 | -1): EsitoAvanzamento {
+    const esito = passo === 1 ? this.orologi.avanza(id, this.turno, false) : this.orologi.indietro(id);
+    if (esito.ok) {
+      this.o.log.info({ orologio: id, passo, pieni: esito.orologio.pieni, segmenti: esito.orologio.segmenti }, 'orologio: spostato dal master');
+      this.notifica();
+    }
+    return esito;
+  }
+
+  /** Orologi attivi con lo stato tenuto dal Motore (per il pannello). */
+  get orologiAttivi(): ReadonlyArray<Readonly<OrologioMinaccia> & { dovuto: boolean }> {
+    const turnoProssimo = this.fase === 'finestra' || this.fase === 'pausa' ? this.turno : this.turno + 1;
+    return this.orologi.elenco.map((o) => ({ ...o, dovuto: this.orologi.dovuto(o, turnoProssimo) }));
+  }
+
+  /** Tutte le azioni (per il pannello, private comprese). */
+  get azioniTutte(): ReadonlyArray<Readonly<Azione>> {
+    return this.tavolo.tutte();
+  }
+
+  /** Stato del repertorio (modalità B), null in modalità improvvisa. */
+  get repertorioAttivo(): StatoRepertorio | null {
+    return this.statoRepertorio;
+  }
+
+  get turnoCorrente(): number {
+    return this.turno;
+  }
+
+  /** Luogo corrente sul proiettore. */
+  get luogoCorrente(): string {
+    return this.luogo;
   }
 
   /**
@@ -476,18 +640,25 @@ export class Regia {
   // ------------------------------------------------------------------ flusso della scena
 
   private interrompiTutto(motivo: string): void {
+    this.interrompiFlussi(motivo);
+    this.tavolo.chiudiForzata();
+    this.pausaRichiesta = false;
+    this.invitoSospeso = null;
+  }
+
+  /** Ferma LLM, voce, attese dell'audio e misure in corso (i flussi vecchi escono per `epoca`). */
+  private interrompiFlussi(motivo: string): void {
     this.epoca += 1;
     this.controlloLlm?.abort(new Error(motivo));
     this.controlloLlm = null;
     this.pipeline.interrompi(motivo);
-    this.tavolo.chiudiForzata();
     if (this.attesaAudio) {
       this.attesaAudio.timer?.();
       this.attesaAudio.risolvi(null);
       this.attesaAudio = null;
     }
     if (this.misuratore) {
-      const record = { ...this.misuratore.record(), interrotto: true };
+      const record = { ...this.misuratore.record(), interrotto: true, motivo_interruzione: motivo };
       this.o.registroTurni.scrivi(record);
       this.misuratore = null;
     }
@@ -524,7 +695,7 @@ export class Regia {
       await this.attendiFineAudio(0, esito.secondi);
       if (epoca !== this.epoca) return;
       this.versioneScena += 1;
-      this.apriFinestra('tutti');
+      this.fineNarrazione('tutti');
     })();
   }
 
@@ -540,6 +711,24 @@ export class Regia {
     }
   }
 
+  /**
+   * Fine di una narrazione (o dell'apertura): le azioni del turno si risolvono e quelle scritte nel
+   * frattempo si ricontrollano contro la narrazione appena finita (in sottofondo). Poi si apre la
+   * finestra, oppure, se il master ha chiesto la pausa, il tavolo si ferma con l'invito in serbo.
+   */
+  private fineNarrazione(invito: string[] | 'tutti'): void {
+    void this.tavolo.dopoNarrazione(this.turno, this.versioneScena);
+    if (this.pausaRichiesta) {
+      this.pausaRichiesta = false;
+      this.fase = 'pausa';
+      this.invitoSospeso = invito;
+      this.o.log.info({ turno: this.turno, invito }, 'scena: in pausa (dopo la narrazione)');
+      this.notifica();
+      return;
+    }
+    this.apriFinestra(invito);
+  }
+
   private apriFinestra(invito: string[] | 'tutti'): void {
     const presenti = this.pgAlTavolo();
     let invitati = invito === 'tutti' ? presenti : invito.filter((id) => presenti.includes(id));
@@ -549,9 +738,6 @@ export class Regia {
       if (invito !== 'tutti') this.o.log.warn({ invito, presenti }, 'regia: nessun invitato è al tavolo, si invitano tutti');
       invitati = presenti;
     }
-    // Le azioni del turno appena narrato si risolvono; quelle scritte nel frattempo si
-    // ricontrollano contro la narrazione appena finita (in sottofondo: la finestra si apre subito).
-    void this.tavolo.dopoNarrazione(this.turno, this.versioneScena);
     this.turno += 1;
     this.segmentiAperti.clear();
     this.fase = 'finestra';
@@ -591,7 +777,19 @@ export class Regia {
       pgAlTavolo: this.pgAlTavolo().map((id) => ({ id, nome: nomePg(id) })),
       orologi: this.statoRepertorio ? this.orologi.descriviRepertorio(r.turno) : this.orologi.descrivi(r.turno),
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
+      noteRegia: this.note.testi,
     });
+    // Note di regia: entrano in questa chiamata (e nella sua eventuale riparazione) e consumano un turno.
+    const noteNelMessaggio = this.note.elenco;
+    if (noteNelMessaggio.length) {
+      const sezione = sezioneNoteRegia(noteNelMessaggio.map((n) => n.testo));
+      this.o.log.info(
+        { turno: r.turno, note: noteNelMessaggio.map((n) => ({ id: n.id, testo: n.testo, turni_rimasti: n.turni_rimasti })), nel_messaggio: !!sezione && messaggio.includes(sezione) },
+        'narratore: note di regia nel messaggio',
+      );
+      const scadute = this.note.consumaTurno();
+      if (scadute.length) this.o.log.info({ turno: r.turno, scadute: scadute.map((n) => n.id) }, 'note di regia: scadute');
+    }
     // Rete di sicurezza: nel messaggio del selettore non deve esserci nessuna parola ancora segreta.
     if (this.statoRepertorio && this.o.paroleSegrete?.length) {
       const trovate = segretiNelTesto(messaggio, this.o.paroleSegrete, this.statoPubblico());
@@ -603,7 +801,7 @@ export class Regia {
       ...r.sospese.map((a) => ({ id_pg: a.autore, testo: a.testo as string | null, sospesa: true })),
       ...r.senzaAzione.map((id) => ({ id_pg: id, testo: null as string | null })),
     ];
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo);
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo));
   }
 
   private async eseguiNarrazione(
@@ -612,6 +810,7 @@ export class Regia {
     epoca: number,
     azioni: Array<{ id_pg: string; testo: string | null; [k: string]: unknown }>,
     chiusura: RiepilogoChiusura['motivo'],
+    noteRegia: string[] = [],
   ): Promise<void> {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
@@ -753,6 +952,7 @@ export class Regia {
       voce: record.voce_motore,
       azioni,
       pg_presenti: this.pgAlTavolo(),
+      ...(noteRegia.length ? { note_regia: noteRegia } : {}),
       testo: esito.esito?.testo ?? null,
       errore: esito.errore,
       invito: esito.invito,
@@ -766,7 +966,7 @@ export class Regia {
     this.misuratore = null;
     this.primoAudioInviato.delete(turno);
     this.versioneScena += 1;
-    this.apriFinestra(esito.invito ?? 'tutti');
+    this.fineNarrazione(esito.invito ?? 'tutti');
   }
 
   /**

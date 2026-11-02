@@ -7,6 +7,7 @@
 import path from 'node:path';
 import { PORTA_SERVER, PORTA_VOCE } from '@cantastorie/shared';
 import { CARTELLA_LOG, RADICE_REPO } from './percorsi';
+import { tokenDaConfig } from './master/token';
 
 /** Quale motore vocale usare: il servizio locale, il finto, o scegliere da solo. */
 export type ModoVoce = 'qwen' | 'mock' | 'auto';
@@ -36,6 +37,9 @@ export interface ConfigServer {
   cacheAudio: string;
   /** Immagini della campagna (manifest.json + file); default campagne/<id>/immagini. */
   cartellaImmagini: string;
+
+  /** Token fisso del pannello del master (CANTASTORIE_MASTER_TOKEN); se manca se ne crea uno a ogni avvio. */
+  tokenMaster?: string;
 
   /** Arbitro delle azioni simultanee: regole + Haiku, oppure solo regole. */
   arbitro: 'haiku' | 'regole';
@@ -96,6 +100,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
   const campagna = testo(env['CANTASTORIE_CAMPAGNA']) ?? 'prova-f0';
   const cartellaCampagna = testo(env['CANTASTORIE_CARTELLA_CAMPAGNA']) ?? path.join(RADICE_REPO, 'campagne', campagna);
   const ipLan = testo(env['CANTASTORIE_IP']);
+  const tokenMaster = tokenDaConfig(env['CANTASTORIE_MASTER_TOKEN']);
   return {
     porta: numero(env['PORT'], PORTA_SERVER),
     host: testo(env['HOST']) ?? '0.0.0.0',
@@ -105,6 +110,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     filePromptNarratore:
       testo(env['CANTASTORIE_PROMPT_NARRATORE']) ?? path.join(RADICE_REPO, 'prompts', 'narratore.md'),
     ...(ipLan ? { ipLan } : {}),
+    ...(tokenMaster ? { tokenMaster } : {}),
     modo: scelta(env['CANTASTORIE_MODO'], ['improvvisa', 'repertorio'] as const, 'improvvisa'),
     // Con il narratore a copione (test, prove senza spesa) l'arbitro usa solo le regole.
     arbitro: scelta(env['CANTASTORIE_ARBITRO'], ['haiku', 'regole'] as const, env['CANTASTORIE_LLM'] === 'finto' ? 'regole' : 'haiku'),

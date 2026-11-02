@@ -16,6 +16,9 @@ async function main(): Promise<void> {
   const server = await costruisciServer(config, log);
   await server.avvia();
   log.info({ telefono: server.info.url_telefono, schermo: server.info.url_schermo }, 'Cantastorie: in ascolto');
+  // Il link del pannello del master porta il token: sta solo qui, nel log del server sul Mac.
+  // Si apre da localhost (non è nel QR dei telefoni).
+  log.info({ master: `http://localhost:${config.porta}/master?token=${server.tokenMaster}` }, 'PANNELLO MASTER');
 
   let inArresto = false;
   const arresta = async (segnale: string): Promise<void> => {

@@ -16,6 +16,7 @@ const STILE: Record<TipoBanner, string> = {
   non_chiamato: 'border-bordo bg-notte-2 text-pergamena-2',
   attesa: 'border-bordo bg-notte-2 text-pergamena-2',
   fermata: 'border-sangue/50 bg-sangue/10 text-sangue',
+  pausa: 'border-candela-scura bg-notte-2 text-candela-2',
 };
 
 export function BannerStato({ stato, idPg }: { stato: StatoTavolo; idPg: string | null }) {

@@ -78,6 +78,18 @@ export class StatoOrologi {
     return { ok: true, orologio: o };
   }
 
+  /**
+   * Il master riporta indietro un orologio di un segno (correzione dal pannello): il segno
+   * tornerà «prossimo». Il turno dell'ultimo segno non cambia (il ritmo minimo resta quello).
+   */
+  indietro(id: string): EsitoAvanzamento {
+    const o = this.orologi.get(id);
+    if (!o) return { ok: false, motivo: `orologio inesistente o non attivo in scena: ${id}` };
+    if (o.pieni <= 0) return { ok: false, motivo: `orologio già a zero: ${id}` };
+    o.pieni -= 1;
+    return { ok: true, orologio: o };
+  }
+
   /** Il ritmo minimo impone di mostrare il segno nella risposta del turno `turnoCorrente`? */
   dovuto(o: Orologio, turnoCorrente: number): boolean {
     if (o.almenoOgni === null || o.pieni >= o.segmenti) return false;

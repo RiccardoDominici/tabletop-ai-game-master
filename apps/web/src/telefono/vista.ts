@@ -126,7 +126,7 @@ export function conChi(dipendeDa: readonly string[]): string | null {
 
 // ------------------------------------------------------------------ banner
 
-export type TipoBanner = 'attesa' | 'narratore' | 'tocca_a_te' | 'non_chiamato' | 'fermata';
+export type TipoBanner = 'attesa' | 'narratore' | 'tocca_a_te' | 'non_chiamato' | 'fermata' | 'pausa';
 
 export interface Banner {
   tipo: TipoBanner;
@@ -157,7 +157,15 @@ export function bannerTelefono(stato: StatoTavolo, idPg: string | null): Banner 
       return {
         tipo: 'fermata',
         titolo: 'Scena fermata',
-        dettaglio: 'Il master ha messo in pausa la scena.',
+        dettaglio: 'Il master ha fermato la scena.',
+        scadenzaMs: null,
+      };
+    case 'pausa':
+      // Pausa dal pannello del master: si può scrivere, l'azione entra quando il tavolo riparte.
+      return {
+        tipo: 'pausa',
+        titolo: 'Tavolo in pausa',
+        dettaglio: 'Il master ha fermato il gioco per un momento. Puoi scrivere: la tua azione entra alla ripresa.',
         scadenzaMs: null,
       };
     case 'finestra':

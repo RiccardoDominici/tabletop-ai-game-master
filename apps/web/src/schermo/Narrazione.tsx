@@ -110,6 +110,8 @@ function SuggerimentoFase({ stato }: { stato: StatoTavolo }) {
     testo = nomi.length > 0 ? `${elencoNomi(nomi)}, cosa fate?` : 'Cosa fate?';
   } else if (stato.fase === 'fermata') {
     testo = 'Scena fermata';
+  } else if (stato.fase === 'pausa') {
+    testo = 'Tavolo in pausa';
   } else if (stato.fase === 'attesa') {
     testo = 'La scena sta per cominciare';
   } else {

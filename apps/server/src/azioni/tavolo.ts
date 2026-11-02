@@ -59,8 +59,11 @@ export interface RiepilogoChiusura {
   sospese: Azione[];
   /** Invitati senza azione (hanno passato o non hanno scritto). */
   senzaAzione: string[];
-  /** «stallo»: nessun input per 45 s, il narratore fa una mossa contro lo stallo. */
-  motivo: 'tutti_pronti' | 'scadenza' | 'forzata' | 'stallo';
+  /**
+   * «stallo»: nessun input per 45 s, il narratore fa una mossa contro lo stallo.
+   * «master»: il master l'ha chiusa dal pannello.
+   */
+  motivo: 'tutti_pronti' | 'scadenza' | 'forzata' | 'stallo' | 'master';
   durata_ms: number;
   /** Istante monotono della chiusura (t0 delle misure). */
   chiusa_a: number;
@@ -97,6 +100,11 @@ export class TavoloAzioni {
   private spareggio: Spareggio;
   /** Giocatori con cui è stato creato lo spareggio (la rotazione vale finché il tavolo non cambia). */
   private giocatoriSpareggio: string;
+  /**
+   * Pausa del master: la finestra resta aperta (si scrive, si modifica, si ritira) ma non si chiude
+   * da sola e lo stallo non scatta finché il master non riprende.
+   */
+  private inPausa = false;
 
   constructor(opzioni: OpzioniTavolo) {
     this.o = {
@@ -123,6 +131,16 @@ export class TavoloAzioni {
 
   get aperta(): boolean {
     return !!this.finestra?.aperta;
+  }
+
+  /** La finestra si sta chiudendo (lucchetto preso, si aspettano i giudizi dell'arbitro). */
+  get chiudendo(): boolean {
+    return !!this.finestra?.aperta && this.finestra.chiudendo;
+  }
+
+  /** La finestra aperta è sospesa dalla pausa del master. */
+  get sospesa(): boolean {
+    return this.inPausa;
   }
 
   get turnoFinestra(): number | null {
@@ -193,7 +211,8 @@ export class TavoloAzioni {
     const f = this.finestra;
     if (!f || !f.aperta) return { aperta: false, turno: this.ultimoTurno, invitati: [], azioni: [], chiusura_prevista_ms: null };
     const azioni: AzionePubblica[] = f.invitati.map((id) => ({ id_pg: id, scritta: !!this.azioneViva(id, f.turno), pronto: f.pronti.has(id) }));
-    return { aperta: true, turno: f.turno, invitati: [...f.invitati], azioni, chiusura_prevista_ms: this.scadenzaEpoch() };
+    // In pausa nessun conto alla rovescia: la finestra non si chiude da sola.
+    return { aperta: true, turno: f.turno, invitati: [...f.invitati], azioni, chiusura_prevista_ms: this.inPausa ? null : this.scadenzaEpoch() };
   }
 
   /** Epoch ms della prossima chiusura prevista (base 10 s, o fine dell'allungamento). */
@@ -247,7 +266,7 @@ export class TavoloAzioni {
     this.annullaStallo?.();
     this.annullaStallo = null;
     const f = this.finestra;
-    if (!f?.aperta || f.chiudendo || this.o.stalloMs <= 0) return;
+    if (!f?.aperta || f.chiudendo || this.o.stalloMs <= 0 || this.inPausa) return;
     this.annullaStallo = this.o.orologio.dopo(this.o.stalloMs, () => {
       this.annullaStallo = null;
       const g = this.finestra;
@@ -537,7 +556,7 @@ export class TavoloAzioni {
   /** Ricontrolla le condizioni di chiusura e programma il prossimo controllo. */
   private controlla(): void {
     const f = this.finestra;
-    if (!f?.aperta || f.chiudendo) return;
+    if (!f?.aperta || f.chiudendo || this.inPausa) return;
     this.annullaControllo?.();
     this.annullaControllo = null;
     const ora = this.o.orologio.ora();
@@ -573,7 +592,89 @@ export class TavoloAzioni {
 
   /** Chiusura forzata (ferma/ricomincia): niente narrazione. */
   chiudiForzata(): void {
+    this.inPausa = false;
     if (this.finestra?.aperta) void this.chiudi('forzata');
+  }
+
+  // ------------------------------------------------------------------ comandi del master
+
+  /**
+   * Pausa del master a finestra aperta: niente chiusura automatica e niente stallo. Le azioni
+   * restano vive e modificabili; i timer si fermano.
+   */
+  sospendi(): void {
+    if (this.inPausa) return;
+    this.inPausa = true;
+    this.annullaControllo?.();
+    this.annullaControllo = null;
+    this.annullaStallo?.();
+    this.annullaStallo = null;
+    this.o.log.info({ turno: this.finestra?.turno ?? null }, 'finestra: sospesa dal master');
+    this.o.onCambio();
+  }
+
+  /**
+   * Ripresa dopo la pausa: il conto alla rovescia riparte da capo (10 s se c'è già un'azione) e
+   * l'allungamento si azzera; chi era pronto resta pronto.
+   */
+  riprendi(): void {
+    if (!this.inPausa) return;
+    this.inPausa = false;
+    const f = this.finestra;
+    if (f?.aperta && !f.chiudendo) {
+      const ora = this.o.orologio.ora();
+      f.primaAzioneA = this.vive(f.turno).length ? ora : null;
+      f.dovutaA = null;
+    }
+    this.o.log.info({ turno: f?.turno ?? null }, 'finestra: ripresa dal master');
+    this.riarmaStallo();
+    this.o.onCambio();
+    this.controlla();
+  }
+
+  /** Il master chiude la finestra adesso: il narratore risponde alle azioni inviate. */
+  chiudiOra(): Esito {
+    const f = this.finestra;
+    if (!f?.aperta) return { ok: false, errore: 'La finestra delle azioni non è aperta.' };
+    if (f.chiudendo) return { ok: false, errore: 'La finestra si sta già chiudendo.' };
+    if (this.inPausa) return { ok: false, errore: 'Il tavolo è in pausa: riprendi prima di chiudere la finestra.' };
+    void this.chiudi('master');
+    return { ok: true };
+  }
+
+  /**
+   * Il master salta un'azione viva: diventa «superata» con il motivo (il testo torna nella casella
+   * del giocatore), e chi ne dipendeva deve decidere come per un ritiro.
+   */
+  salta(id: string, motivo: string): Azione | null {
+    const a = this.azioni.get(id);
+    if (!a || !STATI_VIVI.has(a.stato)) return null;
+    a.stato = 'superata';
+    a.richiesta = null;
+    a.motivo = motivo;
+    if (this.finestra?.turno === a.turno) this.finestra.pronti.delete(a.autore);
+    this.o.log.info({ azione: a.id, autore: a.autore, turno: a.turno }, 'azione: saltata dal master');
+    this.segnalaDipendenti(a, 'superata', null);
+    this.notificaAzione(a);
+    this.o.onCambio();
+    this.controlla();
+    return a;
+  }
+
+  /**
+   * Narrazione interrotta dal master: le azioni «chiuse» di quel turno non sono state risolte.
+   * Diventano «superate» con il motivo, così tornano nella casella pronte da rimandare.
+   */
+  annullaChiuse(turno: number, motivo: string): string[] {
+    const chiuse = this.tutte().filter((a) => a.turno === turno && a.stato === 'chiusa');
+    for (const a of chiuse) {
+      a.stato = 'superata';
+      a.motivo = motivo;
+      this.notificaAzione(a);
+    }
+    if (chiuse.length) this.o.log.info({ turno, azioni: chiuse.map((a) => a.id) }, 'azioni: narrazione interrotta, da riscrivere');
+    this.o.onCambio();
+    return chiuse.map((a) => a.id);
   }
 
   private async chiudi(motivo: RiepilogoChiusura['motivo']): Promise<void> {
@@ -691,6 +792,7 @@ export class TavoloAzioni {
 
   /** Ricomincia: dimentica tutto. */
   azzera(): void {
+    this.inPausa = false;
     this.annullaControllo?.();
     this.annullaControllo = null;
     this.annullaStallo?.();

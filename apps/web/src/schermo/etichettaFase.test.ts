@@ -18,6 +18,12 @@ describe('riga di stato del proiettore', () => {
     expect(etichettaFase('attesa', null)).toBe('In attesa di cominciare');
   });
 
+  it('pausa: chi parla finché l’ultima frase suona, poi «Tavolo in pausa»', () => {
+    expect(etichettaFase('pausa', { parlante: 'png_ottavia', nome: 'Ottavia Ferlini' })).toBe('Ottavia sta parlando');
+    expect(etichettaFase('pausa', { parlante: 'narratore', nome: 'Narratore' })).toBe('Il narratore sta parlando');
+    expect(etichettaFase('pausa', null)).toBe('Tavolo in pausa');
+  });
+
   it('nome vuoto: si resta sull’etichetta di fase', () => {
     expect(etichettaFase('narrazione', { parlante: 'png_x', nome: '  ' })).toBe('Il narratore sta parlando');
   });
