@@ -2,7 +2,10 @@
  * Esperimento A/B (docs/repertorio.md): esegue un copione fisso di azioni dei giocatori contro il
  * server VERO, in modalità A (improvvisa) o B (repertorio), con Haiku e la voce veri.
  *
- *   npx tsx apps/server/src/esperimenti/esegui.ts <copione> <A|B>
+ *   npx tsx apps/server/src/esperimenti/esegui.ts <copione> <A|B> [--voce-vera]
+ *
+ * La voce è FINTA per default (la sintesi è rimandata alla fase finale): il servizio voce non si
+ * tocca. Con --voce-vera si usa il servizio Qwen se è già pronto (--tieni-voce).
  *
  * 1. Riavvia il server da zero (scripts/avvio.sh --tieni-voce) con CANTASTORIE_MODO e
  *    CANTASTORIE_FINESTRA_TUTTI=1: ogni sessione parte senza stato, e la finestra si apre per
@@ -19,7 +22,12 @@ import path from 'node:path';
 import YAML from 'yaml';
 import { io as connetti, type Socket } from 'socket.io-client';
 import type { Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@cantastorie/shared';
+import { caricaCampagna } from '../campagna/caricatore';
 import { RADICE_REPO } from '../percorsi';
+import { caricaRepertorio } from '../repertorio/caricatore';
+import { caricaParoleSegrete } from '../repertorio/segreti';
+import type { Repertorio } from '../repertorio/tipi';
+import { misuraFughe } from './fughe';
 import { ProiettoreVirtuale } from './proiettore';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
@@ -67,6 +75,7 @@ function mediana(xs: number[]): number | null {
 
 async function main(): Promise<void> {
   const [nomeCopione, modoArg] = process.argv.slice(2);
+  const voceVera = process.argv.includes('--voce-vera');
   const modo = modoArg === 'B' ? 'repertorio' : modoArg === 'A' ? 'improvvisa' : null;
   if (!nomeCopione || !modo) {
     console.error('uso: esegui.ts <copione> <A|B>');
@@ -80,7 +89,7 @@ async function main(): Promise<void> {
   console.log(`[${etichetta}] riavvio del server in modalità ${modo}…`);
 
   // 1. Server da zero.
-  const avvio = spawnSync(path.join(RADICE_REPO, 'scripts', 'avvio.sh'), ['--tieni-voce'], {
+  const avvio = spawnSync(path.join(RADICE_REPO, 'scripts', 'avvio.sh'), [voceVera ? '--tieni-voce' : '--mock'], {
     env: { ...process.env, CANTASTORIE_MODO: modo, CANTASTORIE_FINESTRA_TUTTI: '1' },
     encoding: 'utf8',
   });
@@ -147,6 +156,10 @@ async function main(): Promise<void> {
   const ultimo = narrati.at(-1);
   const usi = ((ultimo?.['stato_repertorio'] as Record<string, unknown> | undefined)?.['usi'] ?? {}) as Record<string, number>;
   const repertorioIds = modo === 'repertorio' ? elencoBattute() : [];
+  // Fughe di parole segrete (definizione di parole_segrete.yaml), riga per riga.
+  const campagna = caricaCampagna(path.join(RADICE_REPO, 'campagne', 'prova-f0'));
+  const repertorio: Repertorio | null = modo === 'repertorio' ? caricaRepertorio(campagna) : null;
+  const fughe = misuraFughe(narrazioni, caricaParoleSegrete(path.join(campagna.cartella, 'repertorio')), repertorio);
   const latenze = Object.fromEntries(
     CAMPI_LATENZA.map((c) => {
       const v = turni.map((r) => r[c]).filter((x): x is number => typeof x === 'number');
@@ -166,6 +179,15 @@ async function main(): Promise<void> {
     righe_improvvisate: somma('righe_improvvisate'),
     quota_prescritte: somma('righe_prescritte') / Math.max(1, somma('righe_prescritte') + somma('righe_improvvisate')),
     usa_rifiutati: somma('usa_rifiutati'),
+    fughe: {
+      nota:
+        modo === 'repertorio'
+          ? 'Fuga = riga del narratore o di un PNG con una parola segreta prima che sia uscito un id di pubblica_dopo (battuta o indizio rivelato da una battuta) e prima che un giocatore l’abbia scritta.'
+          : 'Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.',
+      improvvisate: fughe.filter((f) => f.origine === 'improvvisata').length,
+      prescritte: fughe.filter((f) => f.origine === 'prescritta').length,
+      elenco: fughe,
+    },
     battute_usate: Object.keys(usi).length,
     battute_mai_usate: repertorioIds.filter((id) => !usi[id]),
     costo_totale_usd: costo.totale_usd,
