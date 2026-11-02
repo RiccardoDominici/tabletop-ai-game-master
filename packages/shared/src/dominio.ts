@@ -80,6 +80,11 @@ export interface RichiestaScelta {
   testo: string;
   /** Etichetta del pulsante per tenere l'azione: «Confermo», oppure «Tengo» nei conflitti. */
   conferma: 'Confermo' | 'Tengo';
+  /**
+   * Scelta da mettere in evidenza: «cambio» quando l'azione ha perso il suo appoggio (dipendenza
+   * rotta, conflitto perso), «conferma» quando probabilmente vale ancora (azione vecchia dubbia).
+   */
+  consigliato: 'conferma' | 'cambio';
   /** Epoch ms (orologio del server) oltre cui l'azione diventa «sospesa»; null = non ancora fissato. */
   scadenza_ms: number | null;
 }

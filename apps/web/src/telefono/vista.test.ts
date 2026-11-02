@@ -145,7 +145,7 @@ describe('vista del telefono: la mia azione', () => {
   });
 
   it('chiave della richiesta: cambia con una richiesta nuova', () => {
-    const richiesta = { tipo: 'dipendenza' as const, testo: 'Ginestra ha ritirato…', conferma: 'Confermo' as const, scadenza_ms: null };
+    const richiesta = { tipo: 'dipendenza' as const, testo: 'Ginestra ha ritirato…', conferma: 'Confermo' as const, consigliato: 'cambio' as const, scadenza_ms: null };
     const a = azione({ stato: 'da_confermare', richiesta });
     expect(chiaveRichiesta(a)).toBe('a1|dipendenza|Ginestra ha ritirato…');
     expect(chiaveRichiesta({ ...a, richiesta: { ...richiesta, scadenza_ms: 123 } })).toBe(chiaveRichiesta(a));

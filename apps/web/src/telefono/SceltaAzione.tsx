@@ -10,6 +10,8 @@
  * rovescia da `richiesta.scadenza_ms` (orologio del server, corretto dallo scarto); allo scadere il
  * server la rende «sospesa». Vibrazione all'apparire, se il telefono la permette.
  */
+import { ordinePulsanti, type Scelta } from './scelta';
+import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 import type { AzionePrivata } from '@cantastorie/shared';
 import { secondiRimasti } from '../lib/formato';
@@ -63,6 +65,36 @@ function Avviso({ azione }: { azione: AzionePrivata }) {
   const ora = useOra(scadenza !== null);
   const secondi = scadenza !== null ? secondiRimasti(scadenza, ora) : null;
 
+  const ordine = ordinePulsanti(richiesta);
+  /** Un pulsante della scelta: il primario è pieno, gli altri contornati. */
+  const Pulsante = ({ scelta, primario = false, rif }: { scelta: Scelta; primario?: boolean; rif?: typeof primo }) => {
+    const dati = {
+      conferma: { testid: 'scelta-conferma', etichetta: richiesta.conferma, azione: () => void confermaAzione() },
+      cambio: { testid: 'scelta-cambio', etichetta: 'Cambio', azione: cambiaAzione },
+      ritiro: { testid: 'scelta-ritiro', etichetta: 'Ritiro', azione: () => void ritiraAzione() },
+    }[scelta];
+    return (
+      <button
+        ref={rif}
+        type="button"
+        data-testid={dati.testid}
+        data-primario={primario ? 'si' : 'no'}
+        disabled={occupato}
+        onClick={dati.azione}
+        className={clsx(
+          'min-h-16 rounded-2xl text-xl font-bold active:scale-[0.98] disabled:opacity-50',
+          primario
+            ? 'bg-candela text-notte'
+            : scelta === 'ritiro'
+              ? 'border-2 border-bordo-chiaro text-pergamena-2'
+              : 'border-2 border-pergamena-2/70 text-pergamena',
+        )}
+      >
+        {dati.etichetta}
+      </button>
+    );
+  };
+
   return (
     <div
       role="alertdialog"
@@ -105,35 +137,11 @@ function Avviso({ azione }: { azione: AzionePrivata }) {
       </div>
 
       <div className="mx-auto flex w-full max-w-lg flex-col gap-3 pt-4">
-        <button
-          ref={primo}
-          type="button"
-          data-testid="scelta-conferma"
-          disabled={occupato}
-          onClick={() => void confermaAzione()}
-          className="min-h-16 rounded-2xl bg-candela text-xl font-bold text-notte active:scale-[0.98] disabled:opacity-50"
-        >
-          {richiesta.conferma}
-        </button>
+        {/* In evidenza la scelta consigliata dal server (vedi scelta.ts); le altre due sotto. */}
+        <Pulsante scelta={ordine.primario} primario rif={primo} />
         <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            data-testid="scelta-cambio"
-            disabled={occupato}
-            onClick={cambiaAzione}
-            className="min-h-16 rounded-2xl border-2 border-pergamena-2/70 text-xl font-bold text-pergamena active:scale-[0.98] disabled:opacity-50"
-          >
-            Cambio
-          </button>
-          <button
-            type="button"
-            data-testid="scelta-ritiro"
-            disabled={occupato}
-            onClick={() => void ritiraAzione()}
-            className="min-h-16 rounded-2xl border-2 border-bordo-chiaro text-xl font-bold text-pergamena-2 active:scale-[0.98] disabled:opacity-50"
-          >
-            Ritiro
-          </button>
+          <Pulsante scelta={ordine.secondari[0]} />
+          <Pulsante scelta={ordine.secondari[1]} />
         </div>
       </div>
     </div>

@@ -97,7 +97,7 @@ describe('azioni simultanee — scenari', () => {
     tavolo.ritira('pg_g');
     const c = mie.get('pg_c')!;
     expect(c.stato).toBe('da_confermare');
-    expect(c.richiesta).toMatchObject({ tipo: 'dipendenza', conferma: 'Confermo' });
+    expect(c.richiesta).toMatchObject({ tipo: 'dipendenza', conferma: 'Confermo', consigliato: 'cambio' });
     expect(c.richiesta!.testo).toBe("Ginestra ha ritirato «vado avanti verso la grata». La tua «anch'io» dipendeva da quella. Confermi, cambi o ritiri?");
     expect(tavolo.conferma('pg_c')).toEqual({ ok: true });
     expect(mie.get('pg_c')!.stato).toBe('in_coda');
@@ -148,7 +148,7 @@ describe('azioni simultanee — scenari', () => {
     await attendi();
     const g = mie.get('pg_g')!;
     expect(g.stato).toBe('da_confermare');
-    expect(g.richiesta).toMatchObject({ tipo: 'conflitto', conferma: 'Tengo' });
+    expect(g.richiesta).toMatchObject({ tipo: 'conflitto', conferma: 'Tengo', consigliato: 'cambio' });
     expect(g.richiesta!.testo).toBe('Corrado ha già scritto «prendo la chiave a Baldrin». Vuoi cambiare azione?');
     expect(g.richiesta!.testo).not.toMatch(/conflitto/i);
     expect(mie.get('pg_c')!.stato).toBe('in_coda');
@@ -217,7 +217,7 @@ describe('azioni simultanee — scenari', () => {
     await tavolo.dopoNarrazione(1, 2);
     tavolo.apri(2, ['pg_g', 'pg_c', 'pg_a'], 2, true);
     expect(mie.get('pg_g')!.stato).toBe('in_coda');
-    expect(mie.get('pg_c')).toMatchObject({ stato: 'da_confermare', richiesta: { tipo: 'vecchia' } });
+    expect(mie.get('pg_c')).toMatchObject({ stato: 'da_confermare', richiesta: { tipo: 'vecchia', consigliato: 'conferma' } });
     expect(mie.get('pg_c')!.richiesta!.testo).toBe('Nel frattempo: la porta si è chiusa. Confermi «entro nella stanza»?');
     expect(mie.get('pg_a')).toMatchObject({ stato: 'superata', testo: 'parlo con Ottavia', motivo: 'Ottavia è uscita in piazza. Puoi riscrivere la tua azione.' });
   });

@@ -487,10 +487,13 @@ export class TavoloAzioni {
     if (ids.length) this.o.log.info({ radice: radice.id, evento, avvisati: ids }, 'azioni: dipendenti da confermare');
   }
 
-  private chiediScelta(a: Azione, r: Omit<RichiestaScelta, 'scadenza_ms'>, causa: string | null = null): void {
+  private chiediScelta(a: Azione, r: Omit<RichiestaScelta, 'scadenza_ms' | 'consigliato'>, causa: string | null = null): void {
     a.stato = 'da_confermare';
     a.causa = causa;
-    a.richiesta = { ...r, scadenza_ms: this.finestra?.dovutaA != null && this.finestra.turno === a.turno ? this.scadenzaEpoch() : null };
+    // La spinta giusta: chi ha perso l'appoggio (dipendenza, conflitto) probabilmente cambia;
+    // un'azione vecchia ma dubbia probabilmente vale ancora.
+    const consigliato = r.tipo === 'vecchia' ? 'conferma' : 'cambio';
+    a.richiesta = { ...r, consigliato, scadenza_ms: this.finestra?.dovutaA != null && this.finestra.turno === a.turno ? this.scadenzaEpoch() : null };
     a.motivo = r.testo;
     this.notificaAzione(a);
   }

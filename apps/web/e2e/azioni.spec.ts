@@ -81,6 +81,9 @@ test('azioni simultanee: dipendenze, conflitti, scrittura durante la narrazione,
   await expect(corrado.getByTestId('scelta-azione')).toBeVisible({ timeout: 5000 });
   await expect(corrado.getByTestId('scelta-testo')).toContainText('Ginestra ha ritirato');
   await expect(corrado.getByTestId('scelta-conferma')).toHaveText(/Confermo/);
+  // Dipendenza rotta: la spinta giusta è «Cambio» (in evidenza), non «Confermo».
+  await expect(corrado.getByTestId('scelta-cambio')).toHaveAttribute('data-primario', 'si');
+  await expect(corrado.getByTestId('scelta-conferma')).toHaveAttribute('data-primario', 'no');
   await expect(corrado.getByTestId('scelta-testo')).not.toContainText(/conflitto/i);
   await corrado.screenshot({ path: path.join(SCREENSHOT, 'azioni-avviso-dipendenza.png') });
   await corrado.getByTestId('scelta-conferma').click();
@@ -93,6 +96,7 @@ test('azioni simultanee: dipendenze, conflitti, scrittura durante la narrazione,
   await scrivi(ginestra, 'la chiave la prendo io, gliela strappo dal collo');
   await expect(ginestra.getByTestId('scelta-azione')).toBeVisible({ timeout: 15_000 });
   await expect(ginestra.getByTestId('scelta-conferma')).toHaveText(/Tengo/);
+  await expect(ginestra.getByTestId('scelta-cambio')).toHaveAttribute('data-primario', 'si');
   await expect(ginestra.getByTestId('scelta-testo')).toContainText('Assenzio ha già scritto');
   await ginestra.screenshot({ path: path.join(SCREENSHOT, 'azioni-avviso-conflitto.png') });
   await ginestra.getByTestId('scelta-cambio').click();
