@@ -213,9 +213,9 @@ nodi:
     nome: "La piazza di Fontescura"
     abbozzo: "Piazza di pietra in salita. Al centro il pozzo con la carrucola. Accanto, la casa bassa della vecchia Tecla. In fondo la cappella, con le porte aperte e la veglia dentro. Fino al primo rintocco la piazza è vuota; dopo, qualcuno esce con la lanterna e si ferma a parlare vicino al pozzo. A ogni finestra brucia una candela."
     indizi:
-      - {id: i_pozzo_acqua, conclusione: r_pane, tipo: luogo, essenziale: false, tiro: "nessuno",
+      - {id: i_pozzo_acqua, conclusione: r_pane, tipo: luogo, essenziale: false, tiro: "nessuno", modi: 1,
          come_si_trova: "Chi tira su il secchio e guarda o assaggia l'acqua: è limpida e gelata, sa solo di pietra."}
-      - {id: i_tecla_racconta, conclusione: r_innocente, tipo: png, essenziale: false, tiro: "nessuno",
+      - {id: i_tecla_racconta, conclusione: r_innocente, tipo: png, essenziale: false, tiro: "nessuno", modi: 1,
          come_si_trova: "Chi entra da Tecla la trova a letto, con le mani in un catino d'acqua fredda. Dice che il corvo le ha dato acqua nera, e che da allora brucia meno."}
     collegamenti: [n_osteria, e_terzo_rintocco]
   - id: n_mulino_valsecca

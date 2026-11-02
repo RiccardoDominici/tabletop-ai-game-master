@@ -51,6 +51,7 @@ indizi:
     nodo: n_osteria
     essenziale: true
     tiro: "nessuno"
+    modi: 2   # aprire un sacco; spezzare una pagnotta
     come_si_trova: "Chi apre un sacco nel retro, o spezza una pagnotta delle ceste, trova chicchi neri e curvi come piccole unghie, nella farina e nella mollica."
   - id: i_cane_croste
     conclusione: r_pane
@@ -58,6 +59,7 @@ indizi:
     nodo: n_osteria
     essenziale: false
     tiro: "nessuno"
+    modi: 3   # guardare Moro; parlargli con la magia; la mossa morbida
     come_si_trova: "Chi guarda Moro lo vede tremare e leccarsi le zampe. Nella sua ciotola ci sono croste di pane nero. Chi gli parla con la magia sente cose da cane: le croste erano buone, poi bruciava la bocca, ora bruciano le zampe. È anche la mossa morbida della scena."
   - id: i_preghiera_pane
     conclusione: r_pane
@@ -65,6 +67,7 @@ indizi:
     nodo: n_osteria
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Se Teodora prega sul pane o sulla farina per sentire se è impuro: sente un freddo in bocca e un odore di marcio che sente solo lei."
   - id: i_baldrin_sano
     conclusione: r_pane
@@ -72,6 +75,7 @@ indizi:
     nodo: png_baldrin
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Chi chiede a Baldrin se beve al pozzo, o perché lui sta bene: beve al pozzo da sempre, ma il pane di segale non lo tocca."
   - id: i_carbonai_sani
     conclusione: r_pane
@@ -79,6 +83,7 @@ indizi:
     nodo: png_baldrin
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Chi chiede a Baldrin chi si è ammalato e chi no: i carbonai bevono al pozzo come tutti, il pane lo fanno da sé, e stanno bene."
   - id: i_sebastiano_avverte
     conclusione: r_pane
@@ -86,6 +91,7 @@ indizi:
     nodo: png_sebastiano
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Chi parla con Sebastiano della febbre: dice che non è l'acqua, è il pane. E che lo ha detto all'ostessa due giorni fa."
   - id: i_polvere_nera
     conclusione: r_innocente
@@ -93,6 +99,7 @@ indizi:
     nodo: n_osteria
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Baldrin mostra il sacchetto di polvere nera come prova del veleno. Chi la tocca o la annusa: sa di bruciato e tinge le dita, come la polvere di un braciere spento. Il narratore descrive, non spiega: la conclusione la tirano i giocatori."
   - id: i_libretto
     conclusione: r_innocente
@@ -100,6 +107,7 @@ indizi:
     nodo: n_osteria
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Chi sfoglia il libretto della borsa: dosi di erbe, di carbone e di vino, per ferite e febbri, in una calligrafia ordinata. Nessun nome."
   - id: i_tecla_corvo
     conclusione: r_innocente
@@ -107,6 +115,7 @@ indizi:
     nodo: png_baldrin
     essenziale: false
     tiro: "nessuno"
+    modi: 2   # chiedere dei malati; chiedere della notte al pozzo
     come_si_trova: "Chi chiede a Baldrin dei malati o della notte al pozzo: la vecchia Tecla, dice lui, delira. Racconta che un corvo le ha dato da bere."
   - id: i_sebastiano_tecla
     conclusione: r_innocente
@@ -114,6 +123,7 @@ indizi:
     nodo: png_sebastiano
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Chi chiede a Sebastiano cosa faceva al pozzo: prendeva acqua per la vecchia che vive lì accanto, sola e malata."
   - id: i_nodo_bende
     conclusione: r_cerusico
@@ -121,6 +131,7 @@ indizi:
     nodo: n_osteria
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Nella borsa, bende arrotolate e chiuse con un nodo doppio e piatto. Il narratore descrive il nodo e basta: chi lo riconosce è il giocatore."
   - id: i_parole_da_medico
     conclusione: r_cerusico
@@ -128,6 +139,7 @@ indizi:
     nodo: png_sebastiano
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Quando Sebastiano parla di malati usa parole da medico, e si corregge subito con parole semplici."
   - id: i_cicatrice
     conclusione: r_cerusico
@@ -135,6 +147,7 @@ indizi:
     nodo: png_sebastiano
     essenziale: false
     tiro: "nessuno"
+    modi: 2   # il cappuccio abbassato; la candela alla grata
     come_si_trova: "Se Sebastiano abbassa il cappuccio, o qualcuno lo guarda da vicino con una candela alla grata: una cicatrice bianca gli taglia il sopracciglio sinistro."
   - id: i_registro_conti
     conclusione: r_gualtiero
@@ -142,6 +155,7 @@ indizi:
     nodo: n_osteria
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Nel quaderno dei conti, quattro giorni fa: sei sacchi di segale da Gualtiero, a metà prezzo, metà da pagare a primavera."
   - id: i_sacchi_marchio
     conclusione: r_gualtiero
@@ -149,6 +163,7 @@ indizi:
     nodo: n_osteria
     essenziale: false
     tiro: "nessuno"
+    modi: 1
     come_si_trova: "Sui sacchi nel retro c'è una ruota di mulino dipinta di nero, e sotto la parola Valsecca."
   - id: i_baldrin_testimoni
     conclusione: r_gualtiero
@@ -156,6 +171,7 @@ indizi:
     nodo: png_baldrin
     essenziale: false
     tiro: "nessuno"
+    modi: 2   # le due condizioni di cede_se: i nomi dei tre; lui che beve al pozzo
     come_si_trova: "Solo quando Baldrin cede sulla sua menzogna: al pozzo il forestiero l'ha visto solo lui, da lontano. La polvere l'ha vista Gualtiero, il mugnaio."
   - id: i_ottavia_confessione
     conclusione: r_gualtiero
@@ -163,6 +179,7 @@ indizi:
     nodo: png_ottavia
     essenziale: false
     tiro: "nessuno"
+    modi: 2   # le due condizioni di cede_se: il chicco in privato; Assenzio
     come_si_trova: "Solo quando Ottavia cede: la segale è di Gualtiero, presa a metà prezzo. «Prendila tutta», le ha detto lui."
 
 # Almeno 2 uscite verso altri nodi, ognuna con l'indizio che la segnala.
