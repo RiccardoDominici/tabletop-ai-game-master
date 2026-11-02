@@ -18,6 +18,7 @@ function orologio(parziale: Partial<OrologioMaster> = {}): OrologioMaster {
     segmenti: 4,
     segni: ['impronte nel fango', 'una porta socchiusa', 'il cavallo manca', 'la stalla vuota'],
     prossimo: 'il cavallo manca',
+    partito: true,
     dovuto: false,
     ultimo_turno: 3,
     al_completo: 'Il colpevole è lontano',

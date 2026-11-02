@@ -79,6 +79,11 @@ function Orologio({ orologio, indice }: { orologio: OrologioMaster; indice: numb
           </Chip>
         )}
         {completo && <Chip tono="sangue">completo</Chip>}
+        {!orologio.partito && (
+          <Chip titolo="Aspetta una battuta o un indizio (parte_dopo): +1 lo fa partire a mano" testid={`master-orologio-${orologio.id}-fermo`}>
+            non ancora partito
+          </Chip>
+        )}
         <button
           type="button"
           data-testid={`master-orologio-${orologio.id}-indietro`}

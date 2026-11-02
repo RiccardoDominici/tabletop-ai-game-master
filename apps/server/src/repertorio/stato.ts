@@ -58,7 +58,16 @@ export function haCancelloAzione(b: Battuta): boolean {
 }
 
 export type EsitoUso =
-  | { ok: true; battuta: Battuta; righe: RigaBattuta[]; /** 0 = testo principale, n = variante n */ versione: number; uso: number }
+  | {
+      ok: true;
+      battuta: Battuta;
+      righe: RigaBattuta[];
+      /** 0 = testo principale, n = variante n */
+      versione: number;
+      uso: number;
+      /** Orologi partiti perché è uscita questa battuta o un indizio che rivela (parte_dopo). */
+      orologiPartiti: string[];
+    }
   | { ok: false; motivo: string };
 
 export class StatoRepertorio {
@@ -125,6 +134,9 @@ export class StatoRepertorio {
       if (assente) return `${assente} non è in questa scena`;
     }
     if (this.stradaGiàPercorsa(b)) return `indizio già trovato in un altro modo (${b.effetti.rivela_indizi.join(', ')})`;
+    // I segni di un orologio che non è ancora partito (parte_dopo) restano fuori dal catalogo.
+    const segno = b.effetti.avanza_orologio ? this.orologi.trova(b.effetti.avanza_orologio) : undefined;
+    if (segno && !segno.partito) return `orologio ${segno.id} non ancora partito`;
     const ultimo = this.ultimoUso.get(b.id);
     if (turno !== undefined && ultimo !== undefined && turno - ultimo <= StatoRepertorio.PAUSA_RIPETIZIONE) {
       return `uscita al turno ${ultimo}: non torna prima del turno ${ultimo + StatoRepertorio.PAUSA_RIPETIZIONE + 1}`;
@@ -301,7 +313,8 @@ export class StatoRepertorio {
         this.fattiScoperti.push(f);
       }
     }
-    return { ok: true, battuta: b, righe, versione, uso };
+    const orologiPartiti = this.orologi.segnala([b.id, ...b.effetti.rivela_indizi], turno).map((o) => o.id);
+    return { ok: true, battuta: b, righe, versione, uso, orologiPartiti };
   }
 
   /** Battute mai uscite (per il riepilogo dell'esperimento; le `solo_esempio` non contano). */

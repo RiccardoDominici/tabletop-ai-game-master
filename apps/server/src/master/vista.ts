@@ -94,6 +94,7 @@ function orologiMaster(regia: Regia): OrologioMaster[] {
     dovuto: o.dovuto,
     ultimo_turno: o.ultimoTurno,
     al_completo: o.alCompleto,
+    partito: o.partito,
   }));
 }
 

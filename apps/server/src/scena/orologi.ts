@@ -28,6 +28,13 @@ export interface Orologio {
   ultimoTurno: number | null;
   /** Ritmo minimo: almeno un segno ogni N risposte (null = nessun obbligo). */
   almenoOgni: number | null;
+  /**
+   * `parte_dopo`: id di battute o indizi; l'orologio comincia a correre quando ne esce uno (un
+   * orologio che parte da una scelta dei PG). Vuoto = corre da subito.
+   */
+  parteDopo: string[];
+  /** Sta correndo: avanza, conta per il ritmo minimo, i suoi segni vanno in catalogo. */
+  partito: boolean;
 }
 
 export type EsitoAvanzamento = { ok: true; orologio: Orologio } | { ok: false; motivo: string };
@@ -62,6 +69,8 @@ export class StatoOrologi {
         avanzaQuando: Array.isArray(d['avanza_quando']) ? (d['avanza_quando'] as unknown[]).map(String) : [],
         ultimoTurno: null,
         almenoOgni: typeof d['segno_almeno_ogni'] === 'number' && d['segno_almeno_ogni'] > 0 ? (d['segno_almeno_ogni'] as number) : null,
+        parteDopo: Array.isArray(d['parte_dopo']) ? (d['parte_dopo'] as unknown[]).filter((x): x is string => typeof x === 'string') : [],
+        partito: !(Array.isArray(d['parte_dopo']) && (d['parte_dopo'] as unknown[]).length > 0),
       });
     }
     this.impostaScena(campagna.scena);
@@ -83,11 +92,36 @@ export class StatoOrologi {
     return this.orologi.get(id);
   }
 
+  /**
+   * Sono usciti questi id (una battuta e gli indizi che rivela): parte ogni orologio che li aspettava.
+   * Il ritmo minimo conta dal turno della partenza. Restituisce gli orologi partiti adesso.
+   */
+  segnala(ids: readonly string[], turno: number): Orologio[] {
+    const partiti: Orologio[] = [];
+    for (const o of this.orologi.values()) {
+      if (o.partito || !o.parteDopo.some((x) => ids.includes(x))) continue;
+      o.partito = true;
+      o.ultimoTurno = turno;
+      partiti.push(o);
+    }
+    return partiti;
+  }
+
+  /** Il master fa partire a mano un orologio che aspettava (anche in modalità A, dove le battute non hanno id). */
+  avvia(id: string, turno: number): boolean {
+    const o = this.orologi.get(id);
+    if (!o || o.partito) return false;
+    o.partito = true;
+    o.ultimoTurno = turno;
+    return true;
+  }
+
   /** Il narratore propone l'avanzamento: lo si accetta solo se è lecito. */
   avanza(id: string, turno: number, giàAvanzatoInQuestoTurno: boolean): EsitoAvanzamento {
     if (giàAvanzatoInQuestoTurno) return { ok: false, motivo: 'più di un segno nella stessa risposta' };
     const o = this.attivi.has(id) ? this.orologi.get(id) : undefined;
     if (!o) return { ok: false, motivo: `orologio inesistente o non attivo in scena: ${id}` };
+    if (!o.partito) return { ok: false, motivo: `orologio non ancora partito (parte dopo ${o.parteDopo.join(', ')}): ${id}` };
     if (o.pieni >= o.segmenti) return { ok: false, motivo: `orologio già completo: ${id}` };
     o.pieni += 1;
     o.ultimoTurno = turno;
@@ -108,7 +142,7 @@ export class StatoOrologi {
 
   /** Il ritmo minimo impone di mostrare il segno nella risposta del turno `turnoCorrente`? */
   dovuto(o: Orologio, turnoCorrente: number): boolean {
-    if (o.almenoOgni === null || o.pieni >= o.segmenti) return false;
+    if (!o.partito || o.almenoOgni === null || o.pieni >= o.segmenti) return false;
     return turnoCorrente - (o.ultimoTurno ?? 0) >= o.almenoOgni;
   }
 
@@ -118,6 +152,7 @@ export class StatoOrologi {
     return this.elenco
       .map((o) => {
         const testa = `- [${o.id}] «${o.nome}»: segni mostrati ${o.pieni} di ${o.segmenti}`;
+        if (!o.partito) return `${testa}; non ancora partito: nessun segno da mostrare.`;
         const ultimo =
           o.ultimoTurno === null
             ? 'nessun segno mostrato finora in questa scena'
@@ -142,6 +177,7 @@ export class StatoOrologi {
     return this.elenco
       .map((o) => {
         const testa = `- [${o.id}] «${o.nome}»: segni mostrati ${o.pieni} di ${o.segmenti}`;
+        if (!o.partito) return `${testa}; non ancora partito: nessun segno da mostrare.`;
         if (o.pieni >= o.segmenti) return `${testa}; COMPLETO: usa una battuta di tipo finale quando la scena lo chiede.`;
         const ultimo =
           o.ultimoTurno === null ? 'nessun segno finora' : o.ultimoTurno === turnoCorrente - 1 ? 'la tua risposta precedente ha mostrato un segno' : `ultimo segno al turno ${o.ultimoTurno}`;

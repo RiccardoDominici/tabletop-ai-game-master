@@ -392,6 +392,7 @@ export class Regia {
     if (!esito.ok) return esito;
     if (esito.battuta.effetti.avanza_orologio) segno.mostrato = true;
     this.rivelateNelTurno.push(esito.battuta.id, ...esito.battuta.effetti.rivela_indizi);
+    if (esito.orologiPartiti.length) this.o.log.info({ turno, battuta: id, orologi: esito.orologiPartiti }, 'orologio: partito (parte_dopo)');
     return {
       ok: true,
       versione: esito.versione,
@@ -708,6 +709,10 @@ export class Regia {
 
   /** Il master avanza (+1) o riporta indietro (−1) un orologio di un segno. */
   spostaOrologio(id: string, passo: 1 | -1): EsitoAvanzamento {
+    // Un orologio che aspetta (parte_dopo) parte quando il master lo fa avanzare: è una decisione umana.
+    if (passo === 1 && this.orologi.elenco.some((o) => o.id === id) && this.orologi.avvia(id, this.turno)) {
+      this.o.log.info({ orologio: id, turno: this.turno }, 'orologio: partito per mano del master');
+    }
     const esito = passo === 1 ? this.orologi.avanza(id, this.turno, false) : this.orologi.indietro(id);
     if (esito.ok) {
       this.o.log.info({ orologio: id, passo, pieni: esito.orologio.pieni, segmenti: esito.orologio.segmenti }, 'orologio: spostato dal master');

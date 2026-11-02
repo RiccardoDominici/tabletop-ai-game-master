@@ -28,6 +28,8 @@ export interface OrologioMaster {
   ultimo_turno: number | null;
   /** Cosa succede a orologio completo. */
   al_completo: string | null;
+  /** Sta correndo. False: aspetta una battuta o un indizio (`parte_dopo`); il +1 del master lo fa partire. */
+  partito: boolean;
 }
 
 /** Collegamento di un'azione verso un'altra (dipendenza o conflitto). */
