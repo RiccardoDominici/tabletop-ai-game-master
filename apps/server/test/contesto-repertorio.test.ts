@@ -48,6 +48,8 @@ describe.skipIf(!fs.existsSync(path.join(VERA, 'repertorio', 'parole_segrete.yam
   it('una battuta che tocca un segreto entra nell’elenco solo quando i giocatori ne nominano i temi', () => {
     const rep = caricaRepertorio(c);
     const s = new StatoRepertorio(rep, c, new StatoOrologi(c));
+    // Dal 346b4b7 la confessione di guerra richiede che Sebastiano l'abbia prima negata una volta.
+    expect(s.usa('seb_guerra_versione', 1, false)).toMatchObject({ ok: true });
     const senza = s.disponibiliPerTurno('Chiedo al forestiero da dove viene.', parole);
     expect(senza.trattenute).toContain('seb_guerra_roccalba');
     expect(senza.battute.map((b) => b.id)).not.toContain('seb_guerra_roccalba');
