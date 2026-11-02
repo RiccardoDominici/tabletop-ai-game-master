@@ -30,7 +30,7 @@ import { conScena, type Campagna } from '../apps/server/src/campagna/tipi';
 import { caricaRepertorio } from '../apps/server/src/repertorio/caricatore';
 import { sezioniContestoRepertorio } from '../apps/server/src/repertorio/contesto';
 import { caricaParoleSegrete, type ParolaSegreta } from '../apps/server/src/repertorio/segreti';
-import { StatoRepertorio } from '../apps/server/src/repertorio/stato';
+import { StatoRepertorio, parlantiDi } from '../apps/server/src/repertorio/stato';
 import type { Repertorio } from '../apps/server/src/repertorio/tipi';
 
 interface Opzioni {
@@ -68,10 +68,12 @@ function leggiOpzioni(argv: string[]): Opzioni | null {
  * riga del server (StatoRepertorio.riga, col tipo neutro). Il Motore poi ne mostra solo una parte per
  * turno (temi, cancelli, segreti): qui c'è il caso peggiore, da leggere come lo leggerebbe il selettore.
  */
-function catalogoDi(rep: Repertorio | undefined, idScena: string): string[] {
+function catalogoDi(rep: Repertorio | undefined, scena: { id: string; png_presenti: readonly string[] }): string[] {
   if (!rep) return [];
+  // Come il Motore: battute della scena (o di tutte) e solo dei PNG presenti (il narratore sempre).
   return rep.battute
-    .filter((b) => !b.solo_esempio && (b.scena === null || b.scena === idScena))
+    .filter((b) => !b.solo_esempio && (b.scene.length === 0 || b.scene.includes(scena.id)))
+    .filter((b) => parlantiDi(b).every((p) => scena.png_presenti.includes(p)))
     .map((b) => StatoRepertorio.riga(b));
 }
 
@@ -93,7 +95,7 @@ function compila(o: Opzioni): { campagna: string; scene: ScenaCompilata[]; avvis
   const scene = scelte.map((s) => ({
     id: s.id,
     sezioni: sezioniContestoRepertorio(conScena(campagna, s.id), parole, repertorio),
-    catalogo: o.catalogo ? catalogoDi(repertorio, s.id) : [],
+    catalogo: o.catalogo ? catalogoDi(repertorio, s) : [],
   }));
   return { campagna: campagna.id, scene, avvisi };
 }

@@ -11,7 +11,8 @@ import { indiziCampagna, type IndizioCampagna } from '../campagna/indizi';
 import type { StatoOrologi } from '../scena/orologi';
 import { pngNominati, temaPresente } from './pertinenza';
 import { segretiNelTesto, type ParolaSegreta } from './segreti';
-import type { Battuta, Repertorio, RigaBattuta, TipoBattuta } from './tipi';
+import type { Battuta, CondizioniStato, Repertorio, RigaBattuta, TipoBattuta } from './tipi';
+import { accetta, blocchi, bloccoConCancello, type Blocco } from './condizioni';
 
 /**
  * Tipi che, scritti nel catalogo, svelerebbero un segreto al selettore: che quella battuta è una
@@ -34,17 +35,26 @@ export interface AzioneCatalogo {
 }
 
 /**
- * La battuta può rispondere a quest'azione? `richiede.privata` vuole un'azione privata (le altre
- * battute rispondono solo alle pubbliche); `richiede.da_pg` vuole un'azione di quei PG.
+ * La battuta può rispondere a quest'azione, in almeno uno dei suoi blocchi (base, o base più
+ * un'alternativa di `oppure`), senza guardare lo stato? `privata` vuole un'azione privata (le altre
+ * battute rispondono solo alle pubbliche); `da_pg` vuole un'azione di quei PG. Per lo stato vero
+ * c'è StatoRepertorio.rispondeA, che guarda solo i blocchi aperti.
  */
 export function rispondeA(b: Battuta, a: { autore: string; privata: boolean }): boolean {
-  if (b.richiede.privata !== a.privata) return false;
-  return b.richiede.da_pg.length === 0 || b.richiede.da_pg.includes(a.autore);
+  return blocchi(b).some((bl) => accetta(bl, a));
 }
 
-/** La battuta ha un cancello sull'azione (privata o da_pg): esce solo con `> pg` verso un'azione adatta. */
+/** PNG che parlano in una battuta: `chi` e le etichette delle righe (testo e varianti), senza il narratore. */
+export function parlantiDi(b: Battuta): string[] {
+  const out = new Set<string>();
+  if (b.chi !== 'narratore') out.add(b.chi);
+  for (const r of [...b.testo, ...b.varianti.flat()]) if (r.etichetta !== 'narratore') out.add(r.etichetta);
+  return [...out];
+}
+
+/** In ogni blocco la battuta ha un cancello sull'azione: esce solo con `> pg` verso un'azione adatta. */
 export function haCancelloAzione(b: Battuta): boolean {
-  return b.richiede.privata || b.richiede.da_pg.length > 0;
+  return blocchi(b).every(bloccoConCancello);
 }
 
 export type EsitoUso =
@@ -65,6 +75,8 @@ export class StatoRepertorio {
   static readonly PAUSA_RIPETIZIONE = 3;
   /** Scena in corso (campagne con più scene): le battute con `scena` valgono solo lì. null = tutte. */
   scena: string | null = null;
+  /** PNG presenti nella scena in corso: solo loro (e il narratore) hanno battute in catalogo. null = tutti. */
+  presenti: ReadonlySet<string> | null = null;
   /** Indizi della campagna con i loro `modi`. */
   private readonly indizi: Map<string, IndizioCampagna>;
 
@@ -77,7 +89,13 @@ export class StatoRepertorio {
       if (f?.['noto_ai_pg'] === true && typeof f['id'] === 'string') this.fattiNoti.add(f['id']);
     }
     this.indizi = indiziCampagna(campagna);
-    this.scena = campagna.scena.id;
+    this.impostaScena(campagna.scena);
+  }
+
+  /** La scena in corso cambia: battute legate alle scene e PNG presenti. */
+  impostaScena(scena: { id: string; png_presenti: readonly string[] }): void {
+    this.scena = scena.id;
+    this.presenti = new Set(scena.png_presenti);
   }
 
   /**
@@ -100,13 +118,50 @@ export class StatoRepertorio {
   motivoIndisponibile(b: Battuta, turno?: number): string | null {
     const usi = this.usi.get(b.id) ?? 0;
     if (usi >= b.max_usi) return `già usata ${usi} volte (max_usi ${b.max_usi})`;
-    if (b.scena && this.scena && b.scena !== this.scena) return `battuta della scena ${b.scena}`;
+    if (b.scene.length && this.scena && !b.scene.includes(this.scena)) return `battuta della scena ${b.scene.join(', ')}`;
+    if (this.presenti) {
+      // Chi parla nella battuta (chi, e ogni [png] delle righe e delle varianti) dev'essere in scena.
+      const assente = parlantiDi(b).find((p) => !this.presenti!.has(p));
+      if (assente) return `${assente} non è in questa scena`;
+    }
     if (this.stradaGiàPercorsa(b)) return `indizio già trovato in un altro modo (${b.effetti.rivela_indizi.join(', ')})`;
     const ultimo = this.ultimoUso.get(b.id);
     if (turno !== undefined && ultimo !== undefined && turno - ultimo <= StatoRepertorio.PAUSA_RIPETIZIONE) {
       return `uscita al turno ${ultimo}: non torna prima del turno ${ultimo + StatoRepertorio.PAUSA_RIPETIZIONE + 1}`;
     }
-    const r = b.richiede;
+    // Condizioni di stato: basta un blocco aperto (la base, o la base con un'alternativa di `oppure`).
+    const tutti = blocchi(b);
+    const motivi = tutti.map((bl) => this.motivoBlocco(bl));
+    if (motivi.some((m) => m === null)) return null;
+    return tutti.length > 1 ? `nessuna alternativa vale (${motivi.join('; ')})` : motivi[0]!;
+  }
+
+  /** Il primo motivo per cui un blocco non vale adesso (null = vale). */
+  private motivoBlocco(bl: Blocco): string | null {
+    for (const c of bl.stato) {
+      const m = this.motivoCondizioni(c);
+      if (m) return m;
+    }
+    return null;
+  }
+
+  /** I blocchi della battuta con le condizioni di stato vere adesso. */
+  blocchiAperti(b: Battuta): Blocco[] {
+    return blocchi(b).filter((bl) => this.motivoBlocco(bl) === null);
+  }
+
+  /** La battuta può rispondere a quest'azione ADESSO (un blocco aperto ne accetta i cancelli)? */
+  rispondeA(b: Battuta, a: { autore: string; privata: boolean }): boolean {
+    return this.blocchiAperti(b).some((bl) => accetta(bl, a));
+  }
+
+  /** Adesso la battuta esce solo con `> pg` (ogni blocco aperto ha un cancello sull'azione). */
+  serveAzione(b: Battuta): boolean {
+    const aperti = this.blocchiAperti(b);
+    return aperti.length > 0 && aperti.every(bloccoConCancello);
+  }
+
+  private motivoCondizioni(r: CondizioniStato): string | null {
     for (const i of r.indizi_rivelati) if (!this.indiziRivelati.has(i)) return `richiede l'indizio rivelato ${i}`;
     for (const i of r.indizi_non_rivelati) if (this.indiziRivelati.has(i)) return `richiede l'indizio NON rivelato ${i}`;
     for (const id of r.battute_usate) if (!this.usata(id)) return `richiede la battuta già usata ${id}`;
@@ -146,15 +201,14 @@ export class StatoRepertorio {
     parole: ParolaSegreta[];
   }): { battute: Battuta[]; trattenute: string[]; perche: Record<string, string> } {
     const azioni = o.azioni ?? (o.testoAzioni ? [{ autore: '', testo: o.testoAzioni, privata: false }] : []);
-    // Testo delle azioni a cui ogni battuta può rispondere (cache per combinazione di cancelli).
+    // Testo delle azioni a cui ogni battuta può rispondere adesso (blocchi aperti), una volta per battuta.
     const testi = new Map<string, string | null>();
     const testoPer = (b: Battuta): string | null => {
-      const chiave = `${b.richiede.privata}|${b.richiede.da_pg.join(',')}`;
-      if (!testi.has(chiave)) {
-        const adatte = azioni.filter((a) => rispondeA(b, a));
-        testi.set(chiave, adatte.length ? adatte.map((a) => a.testo).join('\n') : null);
+      if (!testi.has(b.id)) {
+        const adatte = azioni.filter((a) => this.rispondeA(b, a));
+        testi.set(b.id, adatte.length ? adatte.map((a) => a.testo).join('\n') : null);
       }
-      return testi.get(chiave)!;
+      return testi.get(b.id)!;
     };
     const completi = new Map(this.orologi.elenco.map((x) => [x.id, x.pieni >= x.segmenti ? x.segmenti : null]));
     const perche: Record<string, string> = {};
@@ -162,7 +216,7 @@ export class StatoRepertorio {
       if (b.solo_esempio) return false;
       const testo = testoPer(b);
       // Cancello sull'azione: senza un'azione adatta (privata, del PG giusto) la battuta non entra.
-      if (haCancelloAzione(b) && testo === null) return false;
+      if (this.serveAzione(b) && testo === null) return false;
       const t = testo ?? '';
       const oro = b.richiede.orologio;
       const segmentiCompleti = oro ? completi.get(oro.id) : null;

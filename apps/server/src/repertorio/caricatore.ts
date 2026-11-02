@@ -13,7 +13,10 @@ import type { Campagna, DatiYaml } from '../campagna/tipi';
 import { ID_NARRATORE } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import { indiziCampagna } from '../campagna/indizi';
-import { TIPI_BATTUTA, type Battuta, type Effetti, type Repertorio, type Richiede, type RigaBattuta, type TipoBattuta } from './tipi';
+import { TIPI_BATTUTA, type AlternativaRichiede, type Battuta, type CondizioniStato, type Effetti, type Repertorio, type Richiede, type RigaBattuta, type TipoBattuta } from './tipi';
+
+/** Chiavi ammesse in `richiede` (e, tranne `oppure`, in ogni alternativa). Una chiave sconosciuta è un errore: ignorata, aprirebbe il cancello. */
+const CHIAVI_RICHIEDE = new Set(['indizi_rivelati', 'indizi_non_rivelati', 'battute_usate', 'battute_non_usate', 'orologio', 'privata', 'da_pg', 'oppure']);
 
 export class ErroreRepertorio extends Error {
   override name = 'ErroreRepertorio';
@@ -77,16 +80,17 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = path.join
   const fatti = idFatti(c);
   const orologi = idOrologi(c);
   for (const b of battute) {
-    const r = b.richiede;
-    for (const id of [...r.indizi_rivelati, ...r.indizi_non_rivelati, ...b.effetti.rivela_indizi]) {
-      if (!indizi.has(id)) errori.push(`${b.id}: indizio inesistente «${id}»`);
+    // Base e alternative: stessi riferimenti da controllare.
+    for (const r of [b.richiede, ...b.richiede.oppure]) {
+      for (const id of [...r.indizi_rivelati, ...r.indizi_non_rivelati]) if (!indizi.has(id)) errori.push(`${b.id}: indizio inesistente «${id}»`);
+      for (const id of [...r.battute_usate, ...r.battute_non_usate]) if (!perId.has(id)) errori.push(`${b.id}: battuta inesistente «${id}»`);
+      if (r.orologio && !orologi.has(r.orologio.id)) errori.push(`${b.id}: orologio inesistente «${r.orologio.id}»`);
+      for (const pg of r.da_pg) if (!c.pg.some((p) => p.id === pg)) errori.push(`${b.id}: richiede.da_pg cita un PG inesistente «${pg}»`);
     }
-    for (const id of [...r.battute_usate, ...r.battute_non_usate]) if (!perId.has(id)) errori.push(`${b.id}: battuta inesistente «${id}»`);
+    for (const id of b.effetti.rivela_indizi) if (!indizi.has(id)) errori.push(`${b.id}: indizio inesistente «${id}»`);
     for (const id of b.effetti.fatti_noti) if (!fatti.has(id)) errori.push(`${b.id}: fatto del canone inesistente «${id}»`);
-    if (r.orologio && !orologi.has(r.orologio.id)) errori.push(`${b.id}: orologio inesistente «${r.orologio.id}»`);
     if (b.effetti.avanza_orologio && !orologi.has(b.effetti.avanza_orologio)) errori.push(`${b.id}: orologio inesistente «${b.effetti.avanza_orologio}»`);
-    for (const pg of r.da_pg) if (!c.pg.some((p) => p.id === pg)) errori.push(`${b.id}: richiede.da_pg cita un PG inesistente «${pg}»`);
-    if (b.scena && !c.scene.some((s) => s.id === b.scena)) errori.push(`${b.id}: scena inesistente «${b.scena}»`);
+    for (const sc of b.scene) if (!c.scene.some((s) => s.id === sc)) errori.push(`${b.id}: scena inesistente «${sc}»`);
   }
   avvisi.push(...controllaModi(c, battute), ...controllaMenzogne(c, battute));
 
@@ -98,6 +102,39 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = path.join
   const righe = battute.reduce((s, b) => s + b.testo.length + b.varianti.reduce((t, v) => t + v.length, 0), 0);
   log?.info({ battute: battute.length, righe, avvisi: avvisi.length }, 'repertorio caricato');
   return { battute, perId, avvisi };
+}
+
+/**
+ * Condizioni di stato di `richiede` o di un'alternativa, controllando le chiavi: una chiave sconosciuta
+ * (o un `oppure` dentro un'alternativa) è un errore, perché ignorarla aprirebbe il cancello.
+ */
+function leggiCondizioni(r: DatiYaml, dove: string, errori: string[], base: boolean): CondizioniStato {
+  for (const k of Object.keys(r)) {
+    if (!CHIAVI_RICHIEDE.has(k) || (!base && k === 'oppure')) errori.push(`${dove}: chiave non prevista «${k}»${k === 'oppure' ? ' (niente oppure annidati)' : ''}`);
+  }
+  if (r['privata'] !== undefined && typeof r['privata'] !== 'boolean') errori.push(`${dove}: privata è true o false`);
+  const o = r['orologio'] as DatiYaml | undefined;
+  return {
+    indizi_rivelati: lista(r['indizi_rivelati']),
+    indizi_non_rivelati: lista(r['indizi_non_rivelati']),
+    battute_usate: lista(r['battute_usate']),
+    battute_non_usate: lista(r['battute_non_usate']),
+    orologio:
+      o && typeof o['id'] === 'string'
+        ? { id: o['id'], min: typeof o['min'] === 'number' ? o['min'] : 0, max: typeof o['max'] === 'number' ? o['max'] : Number.POSITIVE_INFINITY }
+        : null,
+  };
+}
+
+/** `scena: id` oppure `scena: [id, id]` → elenco (vuoto = in tutte le scene). */
+function leggiScene(v: unknown, dove: string, errori: string[]): string[] {
+  if (v === undefined || v === null) return [];
+  const elenco = typeof v === 'string' ? [v] : Array.isArray(v) ? v : null;
+  if (!elenco || !elenco.every((x) => typeof x === 'string' && x.trim())) {
+    errori.push(`${dove}: scena è un id o una lista di id`);
+    return [];
+  }
+  return [...new Set(elenco.map((x) => (x as string).trim()))];
 }
 
 /**
@@ -182,20 +219,24 @@ function leggiBattuta(
   if (chi !== ID_NARRATORE && chi && !testo.some((r) => r.etichetta === chi)) avvisi.push(`${qui}: battuta di ${chi} senza righe di ${chi}`);
 
   const r = (d['richiede'] ?? {}) as DatiYaml;
-  const o = r['orologio'] as DatiYaml | undefined;
+  const alternative = r['oppure'];
+  if (alternative !== undefined && !(Array.isArray(alternative) && alternative.length >= 2)) {
+    errori.push(`${qui}: richiede.oppure è una lista di almeno due blocchi di condizioni`);
+  }
   const richiede: Richiede = {
-    indizi_rivelati: lista(r['indizi_rivelati']),
-    indizi_non_rivelati: lista(r['indizi_non_rivelati']),
-    battute_usate: lista(r['battute_usate']),
-    battute_non_usate: lista(r['battute_non_usate']),
-    orologio:
-      o && typeof o['id'] === 'string'
-        ? { id: o['id'], min: typeof o['min'] === 'number' ? o['min'] : 0, max: typeof o['max'] === 'number' ? o['max'] : Number.POSITIVE_INFINITY }
-        : null,
+    ...leggiCondizioni(r, `${qui} richiede`, errori, true),
     privata: r['privata'] === true,
     da_pg: lista(r['da_pg']),
+    oppure: (Array.isArray(alternative) ? alternative : []).map((a, i): AlternativaRichiede => {
+      const dove = `${qui} richiede.oppure[${i + 1}]`;
+      if (!a || typeof a !== 'object' || Array.isArray(a) || Object.keys(a).length === 0) {
+        errori.push(`${dove}: un'alternativa è un blocco di condizioni non vuoto`);
+        return { ...leggiCondizioni({}, dove, errori, false), privata: null, da_pg: [] };
+      }
+      const alt = a as DatiYaml;
+      return { ...leggiCondizioni(alt, dove, errori, false), privata: typeof alt['privata'] === 'boolean' ? alt['privata'] : null, da_pg: lista(alt['da_pg']) };
+    }),
   };
-  if (r['privata'] !== undefined && typeof r['privata'] !== 'boolean') errori.push(`${qui}: richiede.privata è true o false`);
   const e = (d['effetti'] ?? {}) as DatiYaml;
   const effetti: Effetti = {
     rivela_indizi: lista(e['rivela_indizi']),
@@ -218,7 +259,7 @@ function leggiBattuta(
     max_usi: maxUsi,
     solo_esempio: d['solo_esempio'] === true,
     riempitivo: d['riempitivo'] === true,
-    scena: typeof d['scena'] === 'string' && d['scena'].trim() ? d['scena'].trim() : null,
+    scene: leggiScene(d['scena'], qui, errori),
     file,
   };
 }

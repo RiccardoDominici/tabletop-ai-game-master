@@ -132,7 +132,7 @@ export function azioniMaster(regia: Regia, c: Campagna): AzioneMaster[] {
 }
 
 function battutaMaster(s: StatoRepertorio, b: Battuta): BattutaMaster {
-  return { id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, usi: s.usi.get(b.id) ?? 0, max_usi: b.max_usi, scena: b.scena };
+  return { id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, usi: s.usi.get(b.id) ?? 0, max_usi: b.max_usi, scena: b.scene.length ? b.scene.join(', ') : null };
 }
 
 /** Repertorio (modalità B): usate, disponibili adesso (condizioni vere, usi rimasti), quante no. */

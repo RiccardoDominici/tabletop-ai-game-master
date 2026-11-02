@@ -27,13 +27,24 @@ export interface RigaBattuta {
   testo: string;
 }
 
-export interface Richiede {
+/** Condizioni sullo stato della scena (indizi, battute, orologio), tutte vere. */
+export interface CondizioniStato {
   indizi_rivelati: string[];
   indizi_non_rivelati: string[];
   battute_usate: string[];
   battute_non_usate: string[];
   /** Segni già mostrati dell'orologio, estremi inclusi. */
   orologio: { id: string; min: number; max: number } | null;
+}
+
+/** Un'alternativa di `richiede.oppure`: le stesse chiavi di `richiede`, senza `oppure` annidati. */
+export interface AlternativaRichiede extends CondizioniStato {
+  /** null = non detto: vale quello della base. */
+  privata: boolean | null;
+  da_pg: string[];
+}
+
+export interface Richiede extends CondizioniStato {
   /**
    * true: la battuta risponde solo a un'azione segnata PRIVATA dal telefono (es. una confessione
    * «dove Baldrin non sente»). Assente o false: solo ad azioni pubbliche (come tutte le altre).
@@ -41,6 +52,12 @@ export interface Richiede {
   privata: boolean;
   /** Se non vuota: la battuta risponde solo alle azioni di questi PG («quando Assenzio le chiede…»). */
   da_pg: string[];
+  /**
+   * Alternative (docs/repertorio.md, «Proposte per il Motore»): la battuta è disponibile se valgono
+   * le condizioni di base E almeno un'alternativa. I cancelli sull'azione valgono per l'alternativa
+   * scelta. Vuota = solo la base.
+   */
+  oppure: AlternativaRichiede[];
 }
 
 export interface Effetti {
@@ -69,8 +86,8 @@ export interface Battuta {
   solo_esempio: boolean;
   /** B2: mossa senza azione (il cane, il tempo che passa…): in catalogo solo allo stallo. */
   riempitivo: boolean;
-  /** Campagne con più scene: la battuta vale solo in questa scena (null = in tutte). */
-  scena: string | null;
+  /** Campagne con più scene: la battuta vale solo in queste scene (`scena: id` o una lista; vuota = in tutte). */
+  scene: string[];
   /** File di provenienza (per gli errori). */
   file: string;
 }

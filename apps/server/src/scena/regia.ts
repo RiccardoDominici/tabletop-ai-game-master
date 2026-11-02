@@ -49,7 +49,7 @@ import { normalizza } from '../azioni/regole';
 import { nomiDeiPng } from '../repertorio/pertinenza';
 import { sommaCosti } from '../llm/costi';
 import type { Repertorio } from '../repertorio/tipi';
-import { StatoRepertorio, haCancelloAzione, rispondeA } from '../repertorio/stato';
+import { StatoRepertorio } from '../repertorio/stato';
 import { righeMenzogneDette } from '../repertorio/menzogne';
 import { segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
 import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
@@ -380,13 +380,11 @@ export class Regia {
     if (per) {
       const azione = t?.azioni.get(per);
       if (!azione) return { ok: false, motivo: `${per} non ha un'azione in questo turno` };
-      if (!rispondeA(b, { autore: per, privata: azione.privata })) {
-        const serve = b.richiede.privata ? 'un’azione privata' : 'un’azione pubblica';
-        const chi = b.richiede.da_pg.length ? ` di ${b.richiede.da_pg.join(', ')}` : '';
-        return { ok: false, motivo: `${id} risponde solo a ${serve}${chi}: ${per} non va bene` };
+      if (!s.rispondeA(b, { autore: per, privata: azione.privata })) {
+        return { ok: false, motivo: `${id} non risponde all'azione ${azione.privata ? 'privata' : 'pubblica'} di ${per} (cancelli privata/da_pg delle condizioni aperte)` };
       }
     } else {
-      if (haCancelloAzione(b)) return { ok: false, motivo: `${id} ha un cancello sull'azione (privata o da_pg): serve «> pg»` };
+      if (s.serveAzione(b)) return { ok: false, motivo: `${id} ha un cancello sull'azione (privata o da_pg): serve «> pg»` };
       const libera = (b.tipo === 'segno_orologio' && !!t?.segnoDovuto) || (b.riempitivo && !!t?.stallo);
       if (!libera) return { ok: false, motivo: 'battuta senza «> pg»: ammessa solo per il segno dovuto o allo stallo' };
     }
@@ -848,7 +846,7 @@ export class Regia {
     this.sistema = this.o.sistemaPer?.(this.campagna) ?? this.sistema;
     this.scenaPubblica = this.o.scenaPubblicaPer?.(this.campagna) ?? this.scenaPubblica;
     this.orologi.impostaScena(this.campagna.scena);
-    if (this.statoRepertorio) this.statoRepertorio.scena = id;
+    this.statoRepertorio?.impostaScena(this.campagna.scena);
     this.luogo = id;
     this.togliSituazione('cambio di scena');
   }
