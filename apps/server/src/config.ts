@@ -1,0 +1,108 @@
+/**
+ * Configurazione del server, tutta da variabili d'ambiente con valori predefiniti di F0.
+ *
+ * Sicurezza: la chiave Anthropic NON sta qui. Qui c'è solo il percorso del file da cui
+ * `llm/chiave.ts` legge la singola riga ANTHROPIC_API_KEY=… al momento dell'uso.
+ */
+import path from 'node:path';
+import { PORTA_SERVER, PORTA_VOCE } from '@cantastorie/shared';
+import { CARTELLA_LOG, RADICE_REPO } from './percorsi';
+
+/** Quale motore vocale usare: il servizio locale, il finto, o scegliere da solo. */
+export type ModoVoce = 'qwen' | 'mock' | 'auto';
+
+/** Quale narratore usare: Haiku vero oppure un copione finto (test e prove senza spesa). */
+export type ModoLlm = 'haiku' | 'finto';
+
+export interface ConfigServer {
+  porta: number;
+  host: string;
+  livelloLog: string;
+  cartellaLog: string;
+  /** Cartella della campagna (campagne/<id>). */
+  cartellaCampagna: string;
+  /** Prompt di sistema del narratore (prompts/narratore.md). */
+  filePromptNarratore: string;
+  /** Override dell'IP LAN mostrato nel QR. */
+  ipLan?: string;
+
+  llm: {
+    modo: ModoLlm;
+    modello: string;
+    /** File da cui leggere SOLO la riga ANTHROPIC_API_KEY=… */
+    fileChiave: string;
+    /** Fissato: mai il proxy locale di ANTHROPIC_BASE_URL. */
+    baseURL: 'https://api.anthropic.com';
+    maxTokens: number;
+    /** Riscalda la cache del prompt all'avvio della scena (richiesta max_tokens: 0). */
+    preriscalda: boolean;
+  };
+
+  voce: {
+    modo: ModoVoce;
+    url: string;
+    /** Ogni quanto controllare /salute in modo auto. */
+    intervalloSaluteMs: number;
+    /** Fattore di tempo del finto TTS (1 = tempi realistici, 0.05 = test veloci). */
+    scalaTempoMock: number;
+  };
+
+  turni: {
+    /** Chiusura automatica dopo la prima azione (contratto: 10 s). */
+    chiusuraDopoPrimaAzioneMs: number;
+    /** Margine oltre la durata stimata dell'audio, se lo schermo non avvisa la fine. */
+    margineFineAudioMs: number;
+    /** Voci della trascrizione tenute nello stato mandato ai client. */
+    trascrizioneMax: number;
+  };
+}
+
+function numero(valore: string | undefined, predefinito: number): number {
+  const n = valore === undefined || valore.trim() === '' ? NaN : Number(valore);
+  return Number.isFinite(n) ? n : predefinito;
+}
+
+function testo(valore: string | undefined): string | undefined {
+  const t = valore?.trim();
+  return t ? t : undefined;
+}
+
+function scelta<T extends string>(valore: string | undefined, ammessi: readonly T[], predefinito: T): T {
+  const t = testo(valore) as T | undefined;
+  return t && ammessi.includes(t) ? t : predefinito;
+}
+
+export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer {
+  const campagna = testo(env['CANTASTORIE_CAMPAGNA']) ?? 'prova-f0';
+  const cartellaCampagna = testo(env['CANTASTORIE_CARTELLA_CAMPAGNA']) ?? path.join(RADICE_REPO, 'campagne', campagna);
+  const ipLan = testo(env['CANTASTORIE_IP']);
+  return {
+    porta: numero(env['PORT'], PORTA_SERVER),
+    host: testo(env['HOST']) ?? '0.0.0.0',
+    livelloLog: testo(env['LOG_LEVEL']) ?? 'info',
+    cartellaLog: testo(env['CANTASTORIE_LOG']) ?? CARTELLA_LOG,
+    cartellaCampagna,
+    filePromptNarratore:
+      testo(env['CANTASTORIE_PROMPT_NARRATORE']) ?? path.join(RADICE_REPO, 'prompts', 'narratore.md'),
+    ...(ipLan ? { ipLan } : {}),
+    llm: {
+      modo: scelta(env['CANTASTORIE_LLM'], ['haiku', 'finto'] as const, 'haiku'),
+      modello: testo(env['CANTASTORIE_MODELLO']) ?? 'claude-haiku-5-5',
+      fileChiave: testo(env['ANTHROPIC_KEY_FILE']) ?? '/Users/riccardo/Developer/godExperiment/backend/.env',
+      baseURL: 'https://api.anthropic.com',
+      maxTokens: numero(env['CANTASTORIE_MAX_TOKENS'], 1024),
+      preriscalda: testo(env['CANTASTORIE_PRERISCALDA']) !== '0',
+    },
+    voce: {
+      modo: scelta(env['CANTASTORIE_TTS'], ['qwen', 'mock', 'auto'] as const, 'auto'),
+      url: testo(env['CANTASTORIE_VOCE_URL']) ?? `http://127.0.0.1:${PORTA_VOCE}`,
+      intervalloSaluteMs: numero(env['CANTASTORIE_VOCE_SALUTE_MS'], 5000),
+      scalaTempoMock: numero(env['CANTASTORIE_MOCK_SCALA'], 1),
+    },
+    turni: {
+      chiusuraDopoPrimaAzioneMs: numero(env['CANTASTORIE_FINESTRA_MS'], 10_000),
+      margineFineAudioMs: numero(env['CANTASTORIE_MARGINE_AUDIO_MS'], 2500),
+      trascrizioneMax: numero(env['CANTASTORIE_TRASCRIZIONE_MAX'], 80),
+    },
+  };
+}

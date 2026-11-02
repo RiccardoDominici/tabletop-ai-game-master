@@ -1,0 +1,8 @@
+id: scena_locanda
+nome: "La locanda della prova"
+apertura: "La locanda è piena di fumo. Il locandiere vi guarda: che fate?"
+png_presenti: [png_oste, png_guardia]
+musica: {tag: taverna_calda}
+intensita: 2
+mossa_morbida_pronta: "Un ceppo crolla nel camino."
+immagine: {prompt_luogo: "smoky tavern, english prompt"}

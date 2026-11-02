@@ -1,0 +1,5 @@
+# Campagna minima per i test del server (segnaposto, non è contenuto di gioco vero).
+id: mini
+titolo: "La locanda della prova"
+tono: "Asciutto."
+stile_immagini: "prompt in inglese che non deve arrivare al narratore"

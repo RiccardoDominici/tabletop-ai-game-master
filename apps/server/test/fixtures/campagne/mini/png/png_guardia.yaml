@@ -1,0 +1,4 @@
+id: png_guardia
+nome: "Guardia Lia"
+voce:
+  tts: {voce_id: nadine}

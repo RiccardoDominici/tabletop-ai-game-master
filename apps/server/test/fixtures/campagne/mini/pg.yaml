@@ -1,0 +1,13 @@
+situazione_comune: "Siete in viaggio."
+personaggi:
+  - id: pg_anna
+    nome: "Anna Rossi"
+    specie: umana
+    classe: guerriera
+    aspetto: "Capelli corti."
+    conoscenze_private:
+      - {testo: "SEGRETO_DI_ANNA"}
+  - id: pg_bruno
+    nome: "Brunello"
+    specie: nano
+    classe: chierico

@@ -1,0 +1,7 @@
+id: mini
+canone:
+  - {id: f_pioggia, noto_ai_pg: true, testo: "Piove da tre giorni."}
+sessione:
+  riassunto_iniziale: "Piove da tre giorni sulla valle."
+preparazione:
+  segreto_del_cattivo: "IL_CATTIVO_E_IL_LOCANDIERE"

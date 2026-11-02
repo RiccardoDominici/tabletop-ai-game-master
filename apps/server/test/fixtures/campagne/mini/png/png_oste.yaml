@@ -1,0 +1,8 @@
+id: png_oste
+nome: "Oste Bruno"
+voce:
+  tts: {voce_id: vincent}
+  registro: "voi"
+aspetto:
+  lettura: "Un uomo grosso col grembiule."
+  prompt_immagine: "fat innkeeper, english"
