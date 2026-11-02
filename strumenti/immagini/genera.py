@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -57,27 +58,29 @@ def stampa_piano(cartella: Path, da_fare: list[Richiesta], gia: list[Richiesta])
 
 
 def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool) -> None:
-    """Genera davvero. Import pigri: il motore porta con sé MLX e ~4,6 GB di pesi."""
+    """Genera davvero: un processo mflux per immagine (vedi motore.py), poi JPEG + voce nel manifest."""
     from motore import Motore, salva_jpeg, verifica_alimentazione
 
     verifica_alimentazione()
     dest = cartella / "immagini"
     motore = Motore(fp16=fp16)
-    for i, r in enumerate(da_fare, 1):
-        rif = [dest / f"{x}.jpg" for x in r.riferimenti]
-        mancanti = [p.name for p in rif if not p.exists()]
-        if mancanti:
-            log.error("salto %s: mancano i riferimenti %s", r.id, mancanti)
-            continue
-        log.info("(%d/%d) %s", i, len(da_fare), r.id)
-        e = motore.genera(r.prompt, r.seme, r.larghezza, r.altezza, riferimenti=rif)
-        salva_jpeg(e.immagine, dest / r.file, lato_max=max(r.larghezza, r.altezza), qualita=QUALITA_JPEG)
-        man.registra({
-            "id": r.id, "file": r.file, "tipo": r.tipo, "prompt": r.prompt, "seme": r.seme,
-            "larghezza": r.larghezza, "altezza": r.altezza, "riferimenti": r.riferimenti,
-            "modello": motore.descrizione, "secondi": round(e.secondi, 1),
-            "quando": time.strftime("%Y-%m-%d %H:%M:%S"),
-        })
+    with tempfile.TemporaryDirectory(prefix="cantastorie-img-") as tmp:
+        for i, r in enumerate(da_fare, 1):
+            rif = [dest / f"{x}.jpg" for x in r.riferimenti]
+            mancanti = [p.name for p in rif if not p.exists()]
+            if mancanti:
+                log.error("salto %s: mancano i riferimenti %s", r.id, mancanti)
+                continue
+            log.info("(%d/%d) %s", i, len(da_fare), r.id)
+            # Il PNG di mflux resta in una cartella temporanea: nella campagna va solo il JPEG.
+            e = motore.genera(r.prompt, r.seme, r.larghezza, r.altezza, Path(tmp) / f"{r.id}.png", riferimenti=rif)
+            salva_jpeg(e.percorso, dest / r.file, lato_max=max(r.larghezza, r.altezza), qualita=QUALITA_JPEG)
+            man.registra({
+                "id": r.id, "file": r.file, "tipo": r.tipo, "prompt": r.prompt, "seme": r.seme,
+                "larghezza": r.larghezza, "altezza": r.altezza, "riferimenti": r.riferimenti,
+                "modello": motore.descrizione, "secondi": round(e.secondi, 1),
+                "quando": time.strftime("%Y-%m-%d %H:%M:%S"),
+            })
 
 
 def main() -> None:
@@ -86,7 +89,7 @@ def main() -> None:
     p.add_argument("campagna", type=Path, help="cartella della campagna, es. campagne/prova-f0")
     p.add_argument("--dry-run", action="store_true", help="stampa il piano senza caricare il modello né scrivere")
     p.add_argument("--solo", choices=["luogo", "ritratto", "situazione"], help="genera solo un tipo")
-    p.add_argument("--fp16", action="store_true", help="calcolo interno in float16 (vedi risultati.md)")
+    p.add_argument("--no-fp16", action="store_true", help="calcolo in bfloat16 (float16 è il default: ~20%% più veloce su M1)")
     args = p.parse_args()
 
     cartella = args.campagna.resolve()
@@ -97,7 +100,7 @@ def main() -> None:
     if not da_fare:
         log.info("niente da fare: tutte le immagini ci sono già")
         return
-    esegui(cartella, da_fare, man, args.fp16)
+    esegui(cartella, da_fare, man, fp16=not args.no_fp16)
 
 
 if __name__ == "__main__":

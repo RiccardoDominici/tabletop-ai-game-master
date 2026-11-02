@@ -1,25 +1,23 @@
-"""Motore immagini locale per Cantastorie: FLUX.2 klein 4B a 4 bit, via mflux (MLX), su Apple Silicon.
+"""Motore immagini locale per Cantastorie: FLUX.2 klein 4B a 4 bit, via la CLI di mflux (MLX), su Apple Silicon.
 
-Perché questo modulo esiste
----------------------------
+Perché un processo per immagine
+-------------------------------
 Le immagini (luoghi e ritratti dei PNG) si generano PRIMA della sessione, in locale, perché le API a
-pagamento sono in pausa. Il Mac di riferimento è un M1 con 16 GB: il modello va caricato UNA volta sola
-(costa decine di secondi) e poi riusato per tutte le immagini della campagna.
+pagamento sono in pausa. Sul Mac di riferimento (M1, 16 GB, con altre app pesanti accese) tenere il
+modello in un unico processo Python fa crescere la memoria (codificatore di testo + cache MLX: 11 GB
+di picco) e manda il sistema in swap: la seconda immagine diventa più lenta della prima.
+La CLI di mflux con `--low-ram`, lanciata una volta per immagine, scarica il codificatore di testo
+dopo l'uso e limita la cache: 4,35 GB di picco, niente swap, stessa velocità. I pesi si leggono da
+disco in pochi secondi a ogni avvio, quindi il costo del processo nuovo è piccolo.
+Misure complete: esperimenti/immagini/risultati.md.
 
-mflux ha due varianti di FLUX.2 klein con gli stessi pesi: `Flux2Klein` (solo testo) e
-`Flux2KleinEdit` (testo + immagini di riferimento: stesso volto in situazioni diverse). La variante
-edit NON accetta zero riferimenti (in mflux 0.24.0 va in errore su mx.concatenate), quindi il motore
-tiene in memoria UNA variante per volta e la cambia quando serve: i pesi si caricano pigramente da
-disco in pochi secondi, mentre due copie (2 × 4,6 GB) su 16 GB porterebbero allo swap.
-Conviene quindi ordinare il lavoro: prima tutte le immagini da solo testo, poi quelle con riferimenti.
+Due comandi, stessi pesi:
+  mflux-generate-flux2       solo testo (luoghi, ritratti)
+  mflux-generate-flux2-edit  testo + immagini di riferimento (lo stesso PNG in altre situazioni)
 
 Uso minimo:
     from motore import Motore
-    m = Motore()
-    esito = m.genera("prompt...", seme=7, larghezza=1024, altezza=576)
-    esito.immagine.save("x.png")
-
-Dipendenze: il venv `strumenti/immagini/.venv` (mflux 0.24.0, vedi requirements.txt).
+    esito = Motore().genera("prompt...", seme=7, larghezza=1024, altezza=576, uscita=Path("x.png"))
 """
 
 from __future__ import annotations
@@ -34,23 +32,26 @@ from pathlib import Path
 log = logging.getLogger("immagini.motore")
 
 # Ripack a 4 bit della comunità mflux (Apache-2.0 come l'originale BFL): solo safetensors, 4,62 GB.
-# La quantizzazione è già nei pesi: niente `quantize=` al caricamento.
+# La quantizzazione è già nei pesi: niente `-q`.
 MODELLO_REPO = "mflux-community/flux2-klein-4b-mflux-q4"
 MODELLO_BASE = "flux2-klein-4b"
-# Il modello è distillato: 4 passi e guidance 1.0 sono i valori previsti da mflux.
+# Il modello è distillato: 4 passi e guidance 1.0 (il default della CLI) sono i valori previsti.
 PASSI_DEFAULT = 4
 
 # Sotto questa carica, a batteria, ci si rifiuta di partire: una generazione lunga può spegnere il Mac.
 BATTERIA_MINIMA = 20
 
+# I comandi stanno nel venv accanto a questo file (vedi requirements.txt).
+BIN = Path(__file__).resolve().parent / ".venv" / "bin"
+
 
 @dataclass
 class Esito:
-    """Risultato di una generazione: l'immagine PIL, il tempo e il picco di memoria MLX."""
+    """Risultato di una generazione: dove sta il PNG, quanto ci ha messo, picco di memoria del processo."""
 
-    immagine: "object"  # PIL.Image.Image (import pigro, vedi sotto)
+    percorso: Path
     secondi: float
-    picco_gb: float
+    picco_gb: float | None
 
 
 def stato_alimentazione() -> tuple[bool, int | None]:
@@ -71,107 +72,82 @@ def verifica_alimentazione(minima: int = BATTERIA_MINIMA) -> None:
         return
     if perc is not None and perc < minima:
         raise RuntimeError(f"Mac a batteria al {perc}%: collega l'alimentatore prima di generare immagini.")
-    log.warning("Mac a batteria (%s%%): la generazione sarà più lenta e consuma molto.", perc)
+    log.warning("Mac a batteria (%s%%): ogni immagine consuma molto, meglio collegare l'alimentatore.", perc)
 
 
 class Motore:
-    """Tiene in memoria FLUX.2 klein 4B (4 bit) e genera immagini con o senza riferimenti."""
+    """Genera un'immagine per processo con la CLI di mflux. Nessuno stato pesante resta in memoria."""
 
-    def __init__(self, repo: str = MODELLO_REPO, fp16: bool = False, limite_cache_gb: float | None = None):
-        """Carica il modello (scarica i pesi da Hugging Face al primo uso, nella cache standard).
-
-        fp16: calcolo interno di attenzione/MLP in float16; mflux dice che aiuta sugli M1/M2, dove il
-              bfloat16 è lento. Cambia leggermente l'immagine a parità di seme.
-        limite_cache_gb: tetto alla cache MLX (memoria riusabile), utile se il sistema va in swap.
-        """
-        # Import pigri: così `--dry-run` dello strumento non paga il caricamento di MLX/mflux.
-        import mlx.core as mx
-
-        self._mx = mx
+    def __init__(self, repo: str = MODELLO_REPO, fp16: bool = True, low_ram: bool = True):
+        """fp16: calcolo interno in float16; su M1 è circa il 20% più veloce e l'immagine non cambia a vista.
+        low_ram: la modalità di mflux che libera il codificatore di testo e limita la cache MLX."""
         self.repo = repo
         self.fp16 = fp16
-        if limite_cache_gb is not None:
-            mx.set_cache_limit(int(limite_cache_gb * 1000**3))
-        self._modello = None
-        self._edit: bool | None = None  # quale variante è caricata (None = nessuna)
-        self.secondi_caricamento = 0.0  # somma dei caricamenti (di solito 1 o 2)
-
-    def _variante(self, edit: bool):
-        """Ritorna la variante richiesta, scaricando l'altra se era in memoria."""
-        if self._edit is edit:
-            return self._modello
-        import gc
-
-        from mflux.models.common.compute_precision.compute_precision import ComputePrecision
-        from mflux.models.common.config import ModelConfig
-        from mflux.models.flux2.variants import Flux2Klein, Flux2KleinEdit
-
-        if self._modello is not None:
-            log.info("scarico la variante %s", "edit" if self._edit else "testo")
-            self._modello = None
-            gc.collect()
-            self._mx.clear_cache()
-        classe = Flux2KleinEdit if edit else Flux2Klein
-        t0 = time.perf_counter()
-        log.info("carico %s, variante %s (fp16=%s)…", self.repo, classe.__name__, self.fp16)
-        self._modello = classe(
-            model_config=ModelConfig.flux2_klein_4b(),
-            model_path=self.repo,
-            compute_precision=ComputePrecision.dtype_for("float16" if self.fp16 else None),
-        )
-        self._edit = edit
-        dt = time.perf_counter() - t0
-        self.secondi_caricamento += dt
-        log.info("variante pronta in %.1f s (i pesi MLX si leggono pigramente al primo uso)", dt)
-        return self._modello
+        self.low_ram = low_ram
 
     @property
     def descrizione(self) -> str:
         """Etichetta del modello da scrivere nei manifest."""
-        return f"{self.repo} (base {MODELLO_BASE}, mflux{', fp16' if self.fp16 else ''})"
+        extra = [x for x, on in (("fp16", self.fp16), ("low-ram", self.low_ram)) if on]
+        return f"{self.repo} (base {MODELLO_BASE}, mflux{', ' + ', '.join(extra) if extra else ''})"
 
-    def genera(
-        self,
-        prompt: str,
-        seme: int,
-        larghezza: int,
-        altezza: int,
-        riferimenti: list[str | Path] | None = None,
-        passi: int = PASSI_DEFAULT,
-    ) -> Esito:
-        """Genera un'immagine. Larghezza e altezza devono essere multipli di 16.
+    def comando(self, prompt: str, seme: int, larghezza: int, altezza: int, uscita: Path,
+                riferimenti: list[Path] | None = None, passi: int = PASSI_DEFAULT) -> list[str]:
+        """La riga di comando di mflux (lista, niente shell: il prompt non va mai interpretato)."""
+        exe = "mflux-generate-flux2-edit" if riferimenti else "mflux-generate-flux2"
+        cmd = [str(BIN / exe), "--model", self.repo, "--base-model", MODELLO_BASE,
+               "--prompt", prompt, "--seed", str(seme), "--width", str(larghezza), "--height", str(altezza),
+               "--steps", str(passi), "--output", str(uscita),
+               "--battery-percentage-stop-limit", str(BATTERIA_MINIMA)]
+        if riferimenti:
+            cmd += ["--image-paths", *[str(r) for r in riferimenti]]
+        if self.low_ram:
+            cmd.append("--low-ram")
+        if self.fp16:
+            cmd += ["--compute-precision", "float16"]
+        return cmd
 
-        riferimenti: immagini di riferimento (es. il ritratto del PNG). mflux le ridimensiona da sé a
-        max 1 Mpx; ogni riferimento aggiunge token, quindi rallenta la generazione.
+    def genera(self, prompt: str, seme: int, larghezza: int, altezza: int, uscita: Path,
+               riferimenti: list[str | Path] | None = None, passi: int = PASSI_DEFAULT) -> Esito:
+        """Genera un PNG in `uscita`. Larghezza e altezza: multipli di 16.
+
+        riferimenti: immagini di riferimento (es. il ritratto del PNG). mflux le riduce da sé a max 1 Mpx;
+        ogni riferimento aggiunge token, quindi rallenta la generazione.
         """
         if larghezza % 16 or altezza % 16:
             raise ValueError(f"dimensioni {larghezza}x{altezza}: servono multipli di 16")
-        mx = self._mx
-        modello = self._variante(edit=bool(riferimenti))
-        mx.reset_peak_memory()
+        verifica_alimentazione()
+        uscita = Path(uscita)
+        uscita.parent.mkdir(parents=True, exist_ok=True)
+        # mflux non sovrascrive: se il file c'è già salva con un suffisso, e il controllo sotto
+        # troverebbe il vecchio file. Lo togliamo prima (chi chiama ha già deciso di rigenerare).
+        uscita.unlink(missing_ok=True)
+        rif = [Path(r) for r in riferimenti] if riferimenti else None
+        # /usr/bin/time -l (macOS) aggiunge il "peak memory footprint" del processo su stderr.
+        cmd = ["/usr/bin/time", "-l", *self.comando(prompt, seme, larghezza, altezza, uscita, rif, passi)]
         t0 = time.perf_counter()
-        comuni = dict(seed=seme, prompt=prompt, num_inference_steps=passi, width=larghezza, height=altezza,
-                      guidance=1.0)
-        if riferimenti:
-            img = modello.generate_image(**comuni, image_paths=[Path(r) for r in riferimenti])
-        else:
-            img = modello.generate_image(**comuni)
+        proc = subprocess.run(cmd, capture_output=True, text=True)
         secondi = time.perf_counter() - t0
-        picco = mx.get_peak_memory() / 1000**3
-        log.info("generata %dx%d seme=%d rif=%d in %.1f s (picco MLX %.2f GB)",
-                 larghezza, altezza, seme, len(riferimenti or []), secondi, picco)
-        return Esito(immagine=img.image, secondi=secondi, picco_gb=picco)
+        if proc.returncode != 0 or not uscita.exists():
+            coda = "\n".join((proc.stdout + proc.stderr).strip().splitlines()[-15:])
+            raise RuntimeError(f"mflux è uscito con codice {proc.returncode} per {uscita.name}:\n{coda}")
+        m = re.search(r"(\d+)\s+peak memory footprint", proc.stderr)
+        picco = int(m.group(1)) / 1000**3 if m else None
+        log.info("generata %s %dx%d seme=%d rif=%d in %.1f s (picco processo %s GB)", uscita.name, larghezza,
+                 altezza, seme, len(rif or []), secondi, f"{picco:.2f}" if picco else "?")
+        return Esito(percorso=uscita, secondi=secondi, picco_gb=picco)
 
 
-def salva_jpeg(immagine, percorso: str | Path, lato_max: int = 1280, qualita: int = 85) -> Path:
-    """Salva una copia JPEG leggera (per git e per il proiettore): lato lungo <= lato_max."""
+def salva_jpeg(sorgente: str | Path, percorso: str | Path, lato_max: int = 1280, qualita: int = 85) -> Path:
+    """Salva una copia JPEG (per git e per il proiettore) di un'immagine su disco: lato lungo <= lato_max."""
     from PIL import Image
 
     percorso = Path(percorso)
     percorso.parent.mkdir(parents=True, exist_ok=True)
-    img = immagine.convert("RGB")
-    scala = lato_max / max(img.size)
-    if scala < 1:
-        img = img.resize((round(img.width * scala), round(img.height * scala)), Image.LANCZOS)
-    img.save(percorso, "JPEG", quality=qualita, optimize=True, progressive=True)
+    with Image.open(sorgente) as img:
+        img = img.convert("RGB")
+        scala = lato_max / max(img.size)
+        if scala < 1:
+            img = img.resize((round(img.width * scala), round(img.height * scala)), Image.LANCZOS)
+        img.save(percorso, "JPEG", quality=qualita, optimize=True, progressive=True)
     return percorso
