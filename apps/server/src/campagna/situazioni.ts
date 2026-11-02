@@ -3,7 +3,7 @@
  * tratto nascosto (la cicatrice sotto il cappuccio) sta in una situazione del PNG, «da mostrare
  * dopo la rivelazione». Qui si decide QUALE rivelazione la fa comparire:
  *   1. esplicito: `aspetto.situazioni[].dopo` nella scheda del PNG (id di un indizio o di una
- *      battuta, o una lista);
+ *      battuta, o una lista), o lo stesso campo copiato nel manifest da strumenti/immagini;
  *   2. altrimenti, per somiglianza: un indizio il cui nodo è quel PNG e il cui `come_si_trova`
  *      contiene una parola significativa dell'id della situazione («senza_cappuccio» →
  *      «Se Sebastiano abbassa il cappuccio…» → i_cicatrice).
@@ -66,7 +66,9 @@ export function collegaSituazioni(c: Campagna, voci: readonly VoceSituazione[]):
     const inLuogo = v.situazione.startsWith('in_');
     const nome = inLuogo ? `${chi} in ${v.situazione.slice(3).replace(/_/g, ' ')}` : `${chi}: ${v.situazione.replace(/_/g, ' ')}`;
     if (inLuogo) return { ...v, nome, dopo: [] };
+    // Prima la scheda, poi il manifest (stessa fonte, copiata dallo strumento immagini), infine la somiglianza.
     const esplicito = doppoEsplicito(c, v.png, v.situazione);
-    return { ...v, nome, dopo: esplicito.length ? esplicito : doppoPerSomiglianza(c, v.png, v.situazione) };
+    const dalManifest = v.dopo ?? [];
+    return { ...v, nome, dopo: esplicito.length ? esplicito : dalManifest.length ? dalManifest : doppoPerSomiglianza(c, v.png, v.situazione) };
   });
 }

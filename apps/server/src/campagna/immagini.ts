@@ -21,6 +21,9 @@ export interface VoceImmagine {
   id: string;
   file: string;
   tipo?: string;
+  /** Situazioni: il PNG e gli id dopo cui mostrarla (li scrive strumenti/immagini dalla scheda). */
+  png?: string;
+  dopo?: string[];
 }
 
 /** Un'immagine di situazione del manifest, col PNG ricavato dall'id. */
@@ -32,6 +35,8 @@ export interface VoceSituazione {
   /** Parte dopo il PNG (senza_cappuccio, in_n_piazza). */
   situazione: string;
   url: string;
+  /** `dopo` scritto nel manifest (dalla scheda del PNG), se c'è. */
+  dopo?: string[];
 }
 
 const PREFISSO_SITUAZIONE = 'situazione_';
@@ -99,8 +104,10 @@ export class CatalogoImmagini {
     for (const v of this.perId.values()) {
       if (!èSituazione(v)) continue;
       const resto = v.id.startsWith(PREFISSO_SITUAZIONE) ? v.id.slice(PREFISSO_SITUAZIONE.length) : v.id;
-      const chi = png.find((p) => resto.startsWith(`${p}_`)) ?? null;
-      out.push({ id: v.id, png: chi, situazione: chi ? resto.slice(chi.length + 1) : resto, url: this.url(v)! });
+      // Il PNG dal manifest se c'è (strumenti/immagini lo scrive), altrimenti dall'id.
+      const chi = (typeof v.png === 'string' && png.includes(v.png) ? v.png : png.find((p) => resto.startsWith(`${p}_`))) ?? null;
+      const dopo = Array.isArray(v.dopo) ? v.dopo.filter((x): x is string => typeof x === 'string') : undefined;
+      out.push({ id: v.id, png: chi, situazione: chi && resto.startsWith(`${chi}_`) ? resto.slice(chi.length + 1) : resto, url: this.url(v)!, ...(dopo ? { dopo } : {}) });
     }
     return out.sort((a, b) => a.id.localeCompare(b.id));
   }

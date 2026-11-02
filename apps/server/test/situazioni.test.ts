@@ -61,6 +61,20 @@ describe('catalogo e collegamenti', () => {
     }
   });
 
+  it('il manifest può portare png e dopo (strumenti/immagini li copia dalla scheda)', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-sit-man-'));
+    try {
+      fs.writeFileSync(path.join(dir, 'a.jpg'), fs.readFileSync(path.join(FIXTURE_IMG, 'luogo_n_piazza.jpg')));
+      fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify({ immagini: [{ id: 'situazione_png_oste_x', file: 'a.jpg', tipo: 'situazione', png: 'png_oste', dopo: ['i_brocca'] }] }));
+      const voci = new CatalogoImmagini(dir).situazioni(['png_oste']);
+      expect(voci).toEqual([{ id: 'situazione_png_oste_x', png: 'png_oste', situazione: 'x', url: '/api/immagini/a.jpg', dopo: ['i_brocca'] }]);
+      const c = caricaCampagna(MINI);
+      expect(collegaSituazioni(c, voci)[0]!.dopo).toEqual(['i_brocca']);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it.skipIf(!fs.existsSync(path.join(RADICE_REPO, 'campagne', 'prova-f0')))('prova-f0: Sebastiano senza cappuccio compare dopo i_cicatrice', () => {
     const c = caricaCampagna(path.join(RADICE_REPO, 'campagne', 'prova-f0'));
     const [s] = collegaSituazioni(c, [{ id: 'situazione_png_sebastiano_senza_cappuccio', png: 'png_sebastiano', situazione: 'senza_cappuccio', url: 'u' }]);
