@@ -1,0 +1,34 @@
+# Tavolo distratto e casinaro: si parlano sopra, scherzano, si dividono tra barca e casa del sale.
+# Scrivono di fretta dal telefono, con qualche typo e qualche "anch'io" e "la seguo".
+pg: [pg_nives, pg_ghita, pg_arrigo, pg_dalia]
+turni:
+  - - {pg: pg_nives, azione: "ok la barka la prendo io, remo meglio di chiunque. ma andiamo ché piove"}
+    - {pg: pg_ghita, azione: "anch'io sulla barca, sono zavorra utile ahah"}
+    - {pg: pg_arrigo, azione: "tullio il conto del passo? me lo segni a credito cm sempre vero"}
+  - - {pg: pg_ghita, azione: "la seguo nives, la pertica la spingo io"}
+    - {pg: pg_nives, azione: "tullio ma la catena chiude alla terza campana? quanto manca dai"}
+    - {pg: pg_dalia, azione: "aspettate, ernesto è di là coi polmoni deboli, non tiriamo a sorte"}
+  - - {pg: pg_nives, azione: "tullio le case lunghe, è quella ferma la lanterna della mia famiglia? dimmelo"}
+    - {pg: pg_ghita, azione: "tiro su la catena a mano per vedere se si blocca"}
+    - {pg: pg_arrigo, azione: "anch'io alla barca, il leone ha paura dell'acqua lo diceva il padre di tullio ahah"}
+  - - {pg: pg_nives, azione: "ok ok barca. salgo io, ghita spinge, nessuno rovescia le capre"}
+    - {pg: pg_ghita, azione: "ci penso io, la barca la carico anche se piove"}
+    - {pg: pg_dalia, azione: "ci siamo tutti? nives sai remare sotto la pioggia davvero?"}
+  - - {pg: pg_nives, azione: "remo verso le case lunghe, mamma dovrebbe essere lì coi fratelli"}
+    - {pg: pg_dalia, azione: "la seguo nives, passiamo dal ricovero prima"}
+    - {pg: pg_ghita, azione: "io non vengo in barca, vado alla casa del sale. vischi mi ha pagata per la notte, sto alla porta dello studio"}
+  - - {pg: pg_nives, azione: "ghita la casa del sale ha una porta di dietro dietro i sacchi, senza chiavistello. ci passo io in barca"}
+    - {pg: pg_arrigo, azione: "anch'io a casa del sale ahah porto la cetra per il consiglio. master dimmi chi mente: vischi o il console?"}
+    - {pg: pg_dalia, azione: "rosa! siete alla finestra? quanti siete di là?"}
+  - - {pg: pg_ghita, azione: "scrivano hai una corda a nodi? ti ho visto stamattina fradicio"}
+    - {pg: pg_arrigo, azione: "la seguo ghita, scrivi pure la mia canzone sul libro ahah"}
+    - {pg: pg_nives, azione: "sono al retro in barca, ghita apri la porta di dietro, cmq presto"}
+  - - {pg: pg_ghita, azione: "eccoci al ponte. la manovella chi ce l'ha? la catena la tiro io se serve"}
+    - {pg: pg_nives, azione: "sono tornata, la barca la lascio al ponte, cerco mamma con la lanterna"}
+    - {pg: pg_dalia, azione: "ragazzi è quasi il terzo tocco, io ho paura per ernesto"}
+  - - {pg: pg_arrigo, azione: "tullio, vischi ha detto alla terza campana la catena giù? era un bluff ahah"}
+    - {pg: pg_ghita, azione: "la seguo arrigo, la catena la tengo io"}
+    - {pg: pg_nives, azione: "anch'io vado sulla rampa a vedere la lanterna"}
+  - - {pg: pg_dalia, azione: "dondolo la lanterna così sanno che stiamo bene, dai ragazzi"}
+    - {pg: pg_nives, azione: "anch'io dondolo, ahah ho fame"}
+    - {pg: pg_ghita, azione: "tullio aspetta, la catena è ancora giù?"}

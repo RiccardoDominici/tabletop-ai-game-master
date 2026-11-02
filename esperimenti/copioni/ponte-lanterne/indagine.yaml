@@ -1,0 +1,32 @@
+# Tavolo curioso e investigativo: studiano il ponte, tastano le pietre, fanno domande al custode.
+# Scrivono con calma, una domanda alla volta, e cercano di capire chi dice la verità.
+pg: [pg_quirino, pg_dalia, pg_arrigo]
+turni:
+  - - {pg: pg_quirino, azione: "tullio, questo è uno dei ponti dei pontieri dell'onda? me lo confermi?"}
+    - {pg: pg_dalia, azione: "tullio, ernesto il barcaiolo è di là? ha i polmoni deboli dall'inverno, non dovrebbe stare al freddo"}
+    - {pg: pg_arrigo, azione: "tullio ho ancora la pagina sul libro dei passi o te la sei strappata?"}
+  - - {pg: pg_quirino, azione: "accendo la punta del bastone e guardo il leone di pietra. c'è un'onda incisa sul pilone sotto?"}
+    - {pg: pg_dalia, azione: "tullio, conosco il ricovero stanza per stanza: se la barca va di là, la guido io"}
+    - {pg: pg_arrigo, azione: "tullio, il leone ha paura dell'acqua, il ponte no. lo diceva tuo padre, sbaglio?"}
+  - - {pg: pg_quirino, azione: "scendo sul pilone e tocco la malta: è chiara e liscia sopra quella scura? quando è stata rimessa?"}
+    - {pg: pg_dalia, azione: "master dimmi chi mente: tullio o la lanterna che dondola? qualcuno sta dicendo una bugia"}
+    - {pg: pg_arrigo, azione: "canto una canzone da passo per calmare la gente in fila, tanto il pedaggio lo pago in versi"}
+  - - {pg: pg_quirino, azione: "quante case lunghe sono ancora in piedi? quanti ballatoi vedete da qui?"}
+    - {pg: pg_dalia, azione: "la lanterna che dondola è del ricovero? e quella ferma sono le case lunghe?"}
+    - {pg: pg_arrigo, azione: "tullio pago il soldo in canzone: segnamelo a credito e intanto ti canto il ritornello"}
+  - - {pg: pg_dalia, azione: "rema verso il ricovero, la finestra a monte è quella della stanza di rosa"}
+    - {pg: pg_quirino, azione: "sui muri del borgo cerco l'onda scolpita. la vedete da qui?"}
+    - {pg: pg_arrigo, azione: "canto verso le case lunghe così sanno che siamo noi, non i soliti"}
+  - - {pg: pg_quirino, azione: "dalla barca tocco il muro vicino al ricovero: malta chiara sopra quella scura anche qui?"}
+    - {pg: pg_dalia, azione: "urlo: rosa! sei alla finestra? quanti siete di là?"}
+    - {pg: pg_arrigo, azione: "prendo una cesta vuota e la spingo come barca di riserva, vediamo se galleggia"}
+  - - {pg: pg_quirino, azione: "il bastone tocca qualcosa sotto l'acqua: un gradino? un pilone sommerso? lo tasto"}
+    - {pg: pg_dalia, azione: "ernesto, ci sei? se sei sveglio alza la mano sulla finestra"}
+  - - {pg: pg_quirino, azione: "tullio, quel pilone l'hai rimesso tu? quando?"}
+    - {pg: pg_dalia, azione: "tullio, quando l'acqua tocca la criniera chiudi davvero o aspetti? guardami negli occhi"}
+    - {pg: pg_arrigo, azione: "tullio ti canto il terzo verso e mi cancelli il debito? ok?"}
+  - - {pg: pg_quirino, azione: "leggo i segni del bastone sul bordo: se ci sono onde incise le troviamo ora"}
+    - {pg: pg_dalia, azione: "chi salviamo prima, ernesto o le case lunghe? io dico ernesto, ha i polmoni deboli"}
+    - {pg: pg_arrigo, azione: "tullio, vischi ha detto alla terza campana la catena giù? mi sa che era un bluff"}
+  - - {pg: pg_quirino, azione: "quanto manca al terzo tocco? contiamo i rintocchi"}
+    - {pg: pg_dalia, azione: "faccio dondolare la lanterna due volte, così sanno che stiamo bene"}
