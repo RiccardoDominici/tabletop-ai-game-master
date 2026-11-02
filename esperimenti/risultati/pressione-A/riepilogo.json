@@ -1,0 +1,199 @@
+{
+  "copione": "pressione",
+  "modo": "improvvisa",
+  "sessione": "2026-11-02T10:18:03.989Z",
+  "nota_ambiente": "Durante la prova girava in parallelo la generazione locale di immagini sulla GPU (agente immagini). Voce finta (CANTASTORIE_MOCK_SCALA=0.25): le misure audio non contano, solo quelle dell'LLM.",
+  "turni": 8,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 7,
+      "peggiore": 9,
+      "n": 8
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 749,
+      "peggiore": 1757,
+      "n": 8
+    },
+    "llm_prima_frase": {
+      "mediana": 1072.5,
+      "peggiore": 2120,
+      "n": 8
+    },
+    "voce_richiesta": {
+      "mediana": 1073,
+      "peggiore": 2120,
+      "n": 8
+    },
+    "voce_primo_audio": {
+      "mediana": 1237,
+      "peggiore": 2282,
+      "n": 8
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1389,
+      "peggiore": 2434,
+      "n": 8
+    },
+    "llm_fine": {
+      "mediana": 2183,
+      "peggiore": 3324,
+      "n": 8
+    },
+    "audio_fine": {
+      "mediana": 33715,
+      "peggiore": 39568,
+      "n": 8
+    }
+  },
+  "buchi": {
+    "totale": 0,
+    "in_frase": 0,
+    "tra_frasi": 0,
+    "silenzio_ms": 0,
+    "per_turno": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 41,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 3,
+    "prescritte": 0,
+    "elenco": [
+      {
+        "turno": 5,
+        "origine": "improvvisata",
+        "etichetta": "png_ottavia",
+        "riga": "Lasciate stare il pane. È il pane dei lumi, non si tocca.",
+        "parola": "è il pane / pane avvelenato"
+      },
+      {
+        "turno": 7,
+        "origine": "improvvisata",
+        "etichetta": "narratore",
+        "riga": "Teodora, la lanterna del tuo pensiero si accende: sopra il pane delle ceste compaiono chicchi neri e curvi, come piccole unghie.",
+        "parola": "chicchi neri e curvi"
+      },
+      {
+        "turno": 7,
+        "origine": "improvvisata",
+        "etichetta": "narratore",
+        "riga": "Ottavia ti afferra il braccio, Assenzio, e sussurra: «Il setaccio basta, figliolo. Il setaccio basta.»",
+        "parola": "setaccio"
+      }
+    ]
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0.00948838,
+  "costo_mediana_turno_usd": 0.00066712,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 148,
+      "secondi": 29.266666666666598,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 1,
+      "frasi": 9,
+      "pezzi": 160,
+      "secondi": 31.666666666666586,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 2,
+      "frasi": 12,
+      "pezzi": 187,
+      "secondi": 36.59999999999998,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 3,
+      "frasi": 9,
+      "pezzi": 148,
+      "secondi": 28.99999999999993,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 4,
+      "frasi": 7,
+      "pezzi": 154,
+      "secondi": 30.46666666666659,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 5,
+      "frasi": 9,
+      "pezzi": 172,
+      "secondi": 33.733333333333285,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 6,
+      "frasi": 4,
+      "pezzi": 139,
+      "secondi": 27.533333333333267,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 7,
+      "frasi": 6,
+      "pezzi": 187,
+      "secondi": 37.133333333333326,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 6,
+      "pezzi": 168,
+      "secondi": 33.13333333333327,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}

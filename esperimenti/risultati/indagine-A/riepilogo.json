@@ -1,0 +1,199 @@
+{
+  "copione": "indagine",
+  "modo": "improvvisa",
+  "sessione": "2026-11-02T10:08:07.772Z",
+  "nota_ambiente": "Durante la prova girava in parallelo la generazione locale di immagini sulla GPU (agente immagini). Voce finta (CANTASTORIE_MOCK_SCALA=0.25): le misure audio non contano, solo quelle dell'LLM.",
+  "turni": 8,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 10,
+      "peggiore": 35,
+      "n": 8
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 912.5,
+      "peggiore": 1123,
+      "n": 8
+    },
+    "llm_prima_frase": {
+      "mediana": 1089,
+      "peggiore": 1353,
+      "n": 8
+    },
+    "voce_richiesta": {
+      "mediana": 1089,
+      "peggiore": 1353,
+      "n": 8
+    },
+    "voce_primo_audio": {
+      "mediana": 1252,
+      "peggiore": 1519,
+      "n": 8
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1403.5,
+      "peggiore": 1671,
+      "n": 8
+    },
+    "llm_fine": {
+      "mediana": 2476,
+      "peggiore": 2810,
+      "n": 8
+    },
+    "audio_fine": {
+      "mediana": 34629,
+      "peggiore": 46682,
+      "n": 8
+    }
+  },
+  "buchi": {
+    "totale": 0,
+    "in_frase": 0,
+    "tra_frasi": 0,
+    "silenzio_ms": 0,
+    "per_turno": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 39,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 3,
+    "prescritte": 0,
+    "elenco": [
+      {
+        "turno": 4,
+        "origine": "improvvisata",
+        "etichetta": "png_ottavia",
+        "riga": "Mettete giù quel pane, figliola. È solo segale. Il setaccio l'ha pulita.",
+        "parola": "setaccio"
+      },
+      {
+        "turno": 6,
+        "origine": "improvvisata",
+        "etichetta": "narratore",
+        "riga": "Teodora, il libro del rito è vecchio, con le pagine macchiate di cera. In fondo, dopo le preghiere dei morti, c'è una riga scritta a mano: se il pane è impuro, i morti accettano le castagne.",
+        "parola": "pane impuro / castagne per i morti"
+      },
+      {
+        "turno": 6,
+        "origine": "improvvisata",
+        "etichetta": "png_ottavia",
+        "riga": "Valsecca, sì. Gualtiero la portava a metà prezzo. Non fate quella faccia, figliola.",
+        "parola": "metà prezzo"
+      }
+    ]
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0.00965248,
+  "costo_mediana_turno_usd": 0.00068837,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 148,
+      "secondi": 29.266666666666598,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 1,
+      "frasi": 3,
+      "pezzi": 90,
+      "secondi": 17.933333333333305,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 2,
+      "frasi": 10,
+      "pezzi": 229,
+      "secondi": 45.20000000000011,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 3,
+      "frasi": 9,
+      "pezzi": 167,
+      "secondi": 32.79999999999993,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 4,
+      "frasi": 9,
+      "pezzi": 174,
+      "secondi": 33.93333333333328,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 5,
+      "frasi": 6,
+      "pezzi": 169,
+      "secondi": 33.399999999999935,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 6,
+      "frasi": 8,
+      "pezzi": 213,
+      "secondi": 42.00000000000006,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 7,
+      "frasi": 7,
+      "pezzi": 160,
+      "secondi": 31.59999999999992,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 10,
+      "pezzi": 157,
+      "secondi": 30.799999999999926,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}

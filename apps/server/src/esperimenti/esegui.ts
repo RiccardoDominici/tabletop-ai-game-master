@@ -199,6 +199,8 @@ async function main(): Promise<void> {
   fs.writeFileSync(path.join(cartellaRisultati, 'riepilogo.json'), JSON.stringify(riepilogo, null, 2) + '\n');
   fs.writeFileSync(path.join(cartellaRisultati, 'trascrizione.md'), trascrizione(etichetta, modo, sessione, narrazioni, copione));
   console.log(`[${etichetta}] fatto → ${path.relative(RADICE_REPO, cartellaRisultati)} (costo $${costo.totale_usd.toFixed(5)})`);
+  // Il server della prova non resta acceso (salvo --lascia-server, per ispezionarlo).
+  if (!process.argv.includes('--lascia-server')) spawnSync(path.join(RADICE_REPO, 'scripts', 'arresto.sh'), ['--lascia-voce'], { encoding: 'utf8' });
   process.exit(0);
 }
 
