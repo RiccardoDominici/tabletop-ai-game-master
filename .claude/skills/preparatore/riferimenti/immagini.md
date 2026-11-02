@@ -27,7 +27,14 @@ Per ogni scena in cui un PNG è presente, si genera in automatico anche la sua i
    - mettili in una `situazione` (per esempio `{id: senza_cappuccio, dopo: [i_cicatrice], prompt: "hood
      lowered, a thin white scar splits his left eyebrow"}`), da mostrare dopo la rivelazione;
    - `dopo` dice quale indizio o battuta la fa comparire sul proiettore [R]: senza, il Motore la cerca per
-     somiglianza tra l'id della situazione e gli indizi del PNG, e può non trovarla;
+     somiglianza tra l'id della situazione e gli indizi del PNG, e può non trovarla (in ponte-lanterne non
+     trovava `studio_cassa` di Vischi);
+   - la situazione compare al **primo** id di `dopo` che esce, quindi ognuno deve rivelare il tratto. Il
+     validatore ricava il tratto dal lessico dei segreti: sono i fatti nascosti che quell'id rende pubblici
+     (le parole segrete che lo elencano in `pubblica_dopo`, i `fatti_noti` della battuta). Errore se un id
+     di `dopo` è un esempio di voce o un riempitivo, o non rivela il tratto che gli altri rivelano, o se
+     un'altra situazione del PNG, visibile prima, mostra lo stesso tratto [V]. Una situazione che non
+     mostra niente di nascosto (Tullio alla catena) segue un momento: un segno, un momento chiave, un finale;
    - il validatore cerca le parole segrete in prompt e invarianti [R], ma le regex sono in italiano e i
      prompt in inglese: la lettura con `--dry-run` resta tua.
 5. **Il luogo** descrive ciò che si vede entrando, con gli elementi interattivi principali, senza persone

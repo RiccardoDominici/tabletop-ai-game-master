@@ -699,6 +699,40 @@ def test_immagini_tratto_segreto_solo_in_rigoroso(camp):
     assert "IMMAGINI.segreto" in errori(camp, rigoroso=True)
 
 
+def _situazione(camp: Path, *situazioni: dict) -> None:
+    modifica(camp, "png/png_irma.yaml", lambda d: d["aspetto"].update(situazioni=list(situazioni)))
+
+
+def test_immagini_situazione_dopo_la_rivelazione_del_tratto(camp):
+    # Il tratto si ricava dal lessico: i_cera e nar_cera rendono pubblico f_impronte_cera («gocce di cera»).
+    _situazione(camp, {"id": "sui_gradini", "dopo": ["i_cera", "nar_cera"], "prompt": "the innkeeper on the cellar steps"})
+    assert "IMMAGINI.situazione" not in errori(camp, rigoroso=True)
+    assert "IMMAGINI.situazione" not in avvisi(camp, rigoroso=True)
+
+
+def test_immagini_situazione_che_comparirebbe_prima_del_tratto(camp):
+    # tr_sala esce prima della cera: la situazione comparirebbe prima della rivelazione.
+    _situazione(camp, {"id": "sui_gradini", "dopo": ["i_cera", "tr_sala"], "prompt": "the innkeeper on the cellar steps"})
+    assert "IMMAGINI.situazione" in errori(camp)
+
+
+def test_immagini_situazione_dopo_un_esempio_di_voce(camp):
+    _situazione(camp, {"id": "sui_gradini", "dopo": ["irma_saluto"], "prompt": "the innkeeper on the cellar steps"})
+    assert "IMMAGINI.situazione" in errori(camp)
+
+
+def test_immagini_situazione_dopo_una_battuta_che_non_rivela(camp):
+    _situazione(camp, {"id": "sui_gradini", "dopo": ["tr_sala"], "prompt": "the innkeeper on the cellar steps"})
+    assert "IMMAGINI.situazione" not in errori(camp)
+    assert "IMMAGINI.situazione" in avvisi(camp)
+
+
+def test_immagini_tratto_in_un_altra_situazione_che_si_vede_prima(camp):
+    _situazione(camp, {"id": "sui_gradini", "dopo": ["i_cera"], "prompt": "the innkeeper on the cellar steps"},
+                {"id": "al_bancone", "dopo": ["tr_sala"], "prompt": "the innkeeper at the counter, gocce di cera on her sleeve"})
+    assert "IMMAGINI.situazione" in errori(camp)
+
+
 def test_copioni_misura_il_catalogo(camp, tmp_path):
     from valida import copioni
     from valida.esito import Esito

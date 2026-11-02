@@ -171,6 +171,7 @@ aspetto:
   prompt_immagine: "… in inglese …, [STILE]"        # [V]; [STILE] una volta sola
   prompt_ritratto: "…, [STILE]" # facoltativo: se c'è, il ritratto usa questo; stesse regole [V]
   situazioni: [{id, prompt, dopo: [i_… | id battuta]}]   # i tratti che si vedono solo più tardi; dopo [R]
+                               #   dopo: la compare il primo id che esce; ognuno rende pubblico il tratto [V]
 personalita: {superficie: [≥2], sotto_pressione: [≥1, diversi], contraddizione: "…"}   # [V]
 desiderio: "verbo + oggetto, in tensione con un altro PNG o un fronte"
 paura: "…"

@@ -57,6 +57,78 @@ def _prompt(e: Esito, dove: str, campo: str, testo: str, con_stile: bool) -> Non
         e.avviso("IMMAGINI.lingua", dove, f"{campo} in inglese: il generatore lo capisce meglio")
 
 
+# Battute che contano come momento della storia anche senza rivelare un fatto: una situazione può
+# comparire dopo di loro (Tullio alla catena dopo il terzo tocco).
+TIPI_MOMENTO = {"momento", "segno_orologio", "finale", "confessione"}
+
+
+def tratto_pubblicato(c: Campagna, x: str) -> set[str]:
+    """Fatti nascosti che l'id x (indizio o battuta) rende pubblici quando esce.
+
+    Per una battuta: i suoi fatti_noti, i fatti delle parole segrete che la elencano in pubblica_dopo, e
+    quelli degli indizi che rivela. Per un indizio: i fatti delle parole segrete che lo elencano.
+    """
+    ids = {x}
+    b = c.per_id.get(x)
+    out = set()
+    if b:
+        eff = b.get("effetti") or {}
+        ids |= set(eff.get("rivela_indizi") or [])
+        out |= set(eff.get("fatti_noti") or [])
+    for v in (c.parole_segrete or {}).get("parole") or []:
+        if isinstance(v, dict) and ids & set(v.get("pubblica_dopo") or []):
+            out |= set(v.get("fatti") or [])
+    return out & c.fatti_nascosti()
+
+
+def _situazione_dopo(c: Campagna, e: Esito, nome: str, pid: str, asp: dict, sit: dict, dopo: list[str]) -> None:
+    """`dopo` fa comparire la situazione al primo id che esce: ognuno deve rendere pubblico il tratto.
+
+    Il tratto nascosto si ricava dal lessico dei segreti: sono i fatti che la rivelazione rende pubblici.
+    Si controlla che (1) ogni id di `dopo` possa uscire davvero, (2) nessun id la faccia comparire prima
+    che il tratto sia pubblico, (3) nessun'altra immagine del PNG, visibile prima, mostri quel tratto.
+    """
+    sid = sit["id"]
+    tratti = {x: tratto_pubblicato(c, x) for x in dopo if x in c.indizi or x in c.per_id}
+    for x in tratti:
+        b = c.per_id.get(x)
+        if b and (b.get("solo_esempio") or b.get("riempitivo")):
+            e.errore("IMMAGINI.situazione", nome, f"situazione {sid}: dopo cita {x}, un "
+                     f"{'esempio di voce, che non esce mai' if b.get('solo_esempio') else 'riempitivo, che esce a caso allo stallo'}")
+    tratto = set().union(*tratti.values()) if tratti else set()
+    if not tratto:
+        momenti = [x for x in tratti if (c.per_id.get(x) or {}).get("tipo") in TIPI_MOMENTO]
+        if tratti and not momenti:
+            e.avviso("IMMAGINI.situazione", nome, f"situazione {sid}: {', '.join(tratti)} non rende pubblico nessun fatto "
+                                                  "nascosto e non è un momento: se mostra un tratto nascosto, collegala "
+                                                  "all'indizio o alla battuta che lo rivela")
+        return
+    for x, t in tratti.items():
+        if not t & tratto:
+            e.errore("IMMAGINI.situazione", nome, f"situazione {sid}: {x} la farebbe comparire prima che {sorted(tratto)} "
+                                                  "sia pubblico: in dopo vanno solo le rivelazioni del tratto")
+    # Lo stesso tratto in un'altra immagine del PNG che si vede prima (le regex sono in italiano: prendono i
+    # nomi propri e le invarianti; il resto lo dice la lettura con --dry-run).
+    regex = []
+    for v in (c.parole_segrete or {}).get("parole") or []:
+        if isinstance(v, dict) and set(v.get("fatti") or []) & tratto:
+            try:
+                regex.append((re.compile(str(v.get("regex", ""))), v.get("parola", "?")))
+            except re.error:
+                pass
+    for altra in asp.get("situazioni") or []:
+        if not isinstance(altra, dict) or altra.get("id") == sid:
+            continue
+        dopo_altra = altra.get("dopo")
+        dopo_altra = [dopo_altra] if isinstance(dopo_altra, str) else list(dopo_altra or [])
+        if all(tratto_pubblicato(c, y) & tratto for y in dopo_altra) and dopo_altra:
+            continue  # anche l'altra compare solo dopo la rivelazione del tratto
+        for rx, parola in regex:
+            if rx.search(str(altra.get("prompt") or "").lower()):
+                e.errore("IMMAGINI.situazione", nome, f"situazione {altra.get('id')} mostra «{parola}», il tratto di {sid}, "
+                                                      "prima della sua rivelazione")
+
+
 def controlla(c: Campagna, e: Esito) -> None:
     stile = c.stile.get("stile_immagini")
     if not stile:
@@ -108,5 +180,7 @@ def controlla(c: Campagna, e: Esito) -> None:
             if not dopo:
                 e.avviso("IMMAGINI.situazione", nome, f"situazione {sit['id']} senza `dopo`: il Motore la collega a una "
                                                       "rivelazione solo per somiglianza, e può non trovarla", rigoroso=True)
+            else:
+                _situazione_dopo(c, e, nome, pid, asp, sit, dopo)
             if not _sembra_inglese(sit["prompt"]):
                 e.avviso("IMMAGINI.lingua", nome, f"situazione {sit['id']}: prompt in inglese")
