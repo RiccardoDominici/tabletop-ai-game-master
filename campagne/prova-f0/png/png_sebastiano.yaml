@@ -87,7 +87,7 @@ mente_su:
     versione: "Soldato io? Vengo dal mare. Ho sempre venduto spezie."
     perche: "Paura della forca."
     segnale: "nasconde le mani nelle maniche e tossisce"
-    cede_se: "Solo quando un PG nomina Roccalba o la Compagnia del Grifo e gli promette di non venderlo."
+    cede_se: "Solo dopo averlo negato una volta: quando un PG nomina Roccalba o la Compagnia del Grifo e gli promette di non venderlo."
 
 atteggiamento_pg:
   pg_ginestra: {stato: amichevole, perche: "chi conosce le erbe può capire", vuole: "che guardi la farina con i suoi occhi"}

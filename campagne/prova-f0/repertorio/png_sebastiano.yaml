@@ -289,6 +289,9 @@ battute:
     tipo: confessione
     quando: "un PG nomina Roccalba o la Compagnia del Grifo e promette di non venderlo"
     temi: [roccalba, compagnia, grifo, prometto, giuro]
+    # Prima nega (seb_guerra_versione, che ha gli stessi temi grifo e compagnia), poi cede alla promessa.
+    richiede:
+      battute_usate: [seb_guerra_versione]
     testo:
       - "[narratore] Il forestiero resta immobile a lungo, poi abbassa il cappuccio."
       - "[narratore] Una cicatrice bianca gli taglia il sopracciglio sinistro."
