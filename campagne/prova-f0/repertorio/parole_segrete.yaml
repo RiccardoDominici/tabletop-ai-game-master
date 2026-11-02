@@ -172,7 +172,7 @@ parole:
   - parola: "pane impuro / castagne per i morti"
     regex: "accettano le castagne|castagne[^.]{0,40}morti|morti[^.]{0,40}castagne|impuro[^.]{0,40}castagne"
     fatti: [f_rito_castagne]
-    pubblica_dopo: [ott_altra_offerta, fin_nessuno_offerta]
+    pubblica_dopo: [nar_libro_rito, ott_altra_offerta, fin_nessuno_offerta]
     nota: "f_rito_castagne: conoscenza privata di Teodora. Le castagne da sole (la zuppa) e «senti se un cibo è impuro» (abilità di Teodora) sono pubblici"
 
 # Parti dei file congelati che, in modo B, il compilatore del contesto deve togliere o riscrivere:

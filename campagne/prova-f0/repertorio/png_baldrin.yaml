@@ -10,6 +10,7 @@ battute:
   - id: bal_saluto
     chi: png_baldrin
     tipo: saluto
+    solo_esempio: true
     quando: "i PG si avvicinano a Baldrin o lo salutano"
     temi: [saluto, nano, fabbro, guardia]
     testo:
@@ -23,6 +24,7 @@ battute:
   - id: bal_domanda_gentile
     chi: png_baldrin
     tipo: reazione
+    solo_esempio: true
     quando: "un PG fa a Baldrin una domanda gentile su di lui o sulla guardia"
     temi: [domanda, fabbro, massaro, guardia]
     testo:
@@ -35,6 +37,7 @@ battute:
   - id: bal_accusa
     chi: png_baldrin
     tipo: reazione
+    solo_esempio: true
     quando: "un PG accusa Baldrin di sbagliare o di essere ingiusto"
     temi: [accusa, ingiusto, sbagli, colpa]
     testo:
@@ -47,6 +50,7 @@ battute:
   - id: bal_minaccia
     chi: png_baldrin
     tipo: reazione
+    solo_esempio: true
     quando: "un PG minaccia Baldrin a parole"
     temi: [minaccia, forza, martello]
     testo:
@@ -60,7 +64,7 @@ battute:
     chi: png_baldrin
     tipo: reazione
     quando: "un PG prova a prendere la chiave a Baldrin con la forza"
-    temi: [chiave, forza, rubare, collo]
+    temi: [chiave, strappo, rubo, collo, afferro]
     testo:
       - "[narratore] Baldrin va alla finestra in due passi e spalanca l'imposta."
       - "[png_baldrin] Gente, all'osteria! Mi vogliono prendere la chiave!"
@@ -70,6 +74,7 @@ battute:
   - id: bal_offerta
     chi: png_baldrin
     tipo: reazione
+    solo_esempio: true
     quando: "un PG offre a Baldrin denaro o un patto"
     temi: [offerta, soldi, patto, monete]
     testo:
@@ -80,6 +85,7 @@ battute:
   - id: bal_aiuto
     chi: png_baldrin
     tipo: reazione
+    solo_esempio: true
     quando: "un PG aiuta Baldrin o fa la guardia con lui"
     temi: [aiuto, guardia, porta]
     testo:
@@ -90,6 +96,7 @@ battute:
   - id: bal_rifiuto
     chi: png_baldrin
     tipo: rifiuto
+    solo_esempio: true
     quando: "un PG chiede a Baldrin di cose che lui non sa"
     temi: [domanda, sapere, altro]
     testo:
@@ -103,7 +110,7 @@ battute:
     chi: png_baldrin
     tipo: reazione
     quando: "il PG tiefling chiede di toccare la borsa o di avvicinarsi alla porta"
-    temi: [borsa, porta, tiefling, ragazzo]
+    temi: [borsa, toccare, frugare, frugo]
     testo:
       - "[png_baldrin] Tu no, ragazzo. Tu le mani in tasca."
       - "[narratore] Baldrin tira la borsa sotto la panca, col tallone."
@@ -114,7 +121,7 @@ battute:
     chi: png_baldrin
     tipo: verita
     quando: "un PG chiede a Baldrin chi c'è dietro la porta, o perché"
-    temi: [porta, ripostiglio, forestiero, chiuso]
+    temi: [chiuso, chiuderlo, rinchiuso, prigioniero, uomo, forestiero, deciso]
     testo:
       - "[png_baldrin] Lì dentro c'è quello. Il forestiero."
       - "[png_baldrin] Polvere nel pozzo, ha messo. Al rintocco decide il paese."
@@ -126,7 +133,7 @@ battute:
     chi: png_baldrin
     tipo: reazione
     quando: "un PG chiede a Baldrin cosa succederà, o quando"
-    temi: [rintocco, quando, porta, paese]
+    temi: [rintocco, rintocchi, apri, aprire, entrare, entri, farmi, fammi, spostati, sposta, passare, vedere, manca, aspettare]
     testo:
       - "[png_baldrin] Al terzo rintocco apro questa porta. Non prima."
     varianti:
@@ -137,7 +144,7 @@ battute:
     chi: png_baldrin
     tipo: verita
     quando: "un PG chiede a Baldrin della figlia"
-    temi: [figlia, ilde, malata, casa]
+    temi: [figlia, ilde, bambina]
     testo:
       - "[narratore] Baldrin smette di girare il martello."
       - "[png_baldrin] Nove anni. Ha le mani rosse come brace."
@@ -151,7 +158,7 @@ battute:
     chi: png_baldrin
     tipo: reazione
     quando: "un PG dubita della colpa del forestiero davanti a Baldrin"
-    temi: [prova, polvere, borsa, veleno, colpa]
+    temi: [innocente, prove, prova, dimostra, sicuro, polvere, veleno]
     testo:
       - "[narratore] Baldrin pesca la borsa ai suoi piedi e ne tira fuori un sacchetto."
       - "[png_baldrin] Polvere nera, nella sua borsa. Questo è il veleno."
@@ -163,7 +170,7 @@ battute:
     chi: png_baldrin
     tipo: reazione
     quando: "un PG chiede a Baldrin di guardare nella borsa del forestiero"
-    temi: [borsa, guardare, frugare]
+    temi: [borsa, guardare, frugare, roba]
     testo:
       - "[png_baldrin] Guarda pure. Ma le mani dove le vedo."
       - "[narratore] Spinge la borsa col piede, verso la luce del forno."
@@ -174,7 +181,7 @@ battute:
     chi: png_baldrin
     tipo: indizio
     quando: "un PG chiede a Baldrin se beve al pozzo, o perché lui sta bene"
-    temi: [pozzo, acqua, bere, sano, bene]
+    temi: [bevi, bevete, beve, bere, pozzo, acqua, sano]
     testo:
       - "[png_baldrin] Bevo al pozzo da trent'anni. Tutti i giorni."
       - "[png_baldrin] Il pane di segale non lo tocco. Roba da umani."
@@ -187,7 +194,7 @@ battute:
     chi: png_baldrin
     tipo: indizio
     quando: "un PG chiede a Baldrin chi si è ammalato e chi no"
-    temi: [malati, sani, chi, febbre]
+    temi: [malati, malato, ammalati, sani, stanno, febbre]
     testo:
       - "[png_baldrin] Mia figlia, i due del bottaio, Tecla. E altri cinque."
       - "[narratore] Si ferma, e il martello smette di girargli nel palmo."
@@ -201,7 +208,7 @@ battute:
     chi: png_baldrin
     tipo: indizio
     quando: "un PG chiede a Baldrin di Tecla, o cosa si dice in paese"
-    temi: [tecla, malati, vecchia, paese]
+    temi: [tecla, vecchia, dicono, voci]
     richiede:
       battute_non_usate: [bal_tecla_notte]
     testo:
@@ -216,7 +223,7 @@ battute:
     chi: png_baldrin
     tipo: indizio
     quando: "un PG chiede a Baldrin cosa è successo quella notte al pozzo"
-    temi: [notte, pozzo, successo, tecla]
+    temi: [pozzo, successo, visto]
     richiede:
       battute_non_usate: [bal_tecla]
     testo:
@@ -232,7 +239,7 @@ battute:
     chi: png_baldrin
     tipo: menzogna
     quando: "un PG chiede a Baldrin chi ha visto il forestiero al pozzo"
-    temi: [pozzo, visto, testimoni, notte, polvere]
+    temi: [visto, vista, testimoni, pozzo, versare, versava, polvere]
     testo:
       - "[narratore] Baldrin abbassa gli occhi sulle mani e alza la voce."
       - "[png_baldrin] L'hanno visto in tre, al pozzo. Versava una polvere."
@@ -246,7 +253,7 @@ battute:
     chi: png_baldrin
     tipo: confessione
     quando: "un PG chiede a Baldrin i nomi dei tre che hanno visto"
-    temi: [nomi, tre, testimoni, chi]
+    temi: [nomi, nome, tre, testimoni]
     richiede:
       battute_usate: [bal_testimoni_versione]
       battute_non_usate: [bal_testimoni_sano]
@@ -263,7 +270,7 @@ battute:
     chi: png_baldrin
     tipo: confessione
     quando: "un PG fa notare a Baldrin che lui beve al pozzo e sta bene"
-    temi: [pozzo, bene, sano, bere]
+    temi: [bevi, bevete, pozzo, sano, stai]
     richiede:
       indizi_rivelati: [i_baldrin_sano]
       battute_non_usate: [bal_testimoni_nomi]
@@ -280,6 +287,7 @@ battute:
   - id: bal_chiede_sorella
     chi: png_baldrin
     tipo: richiesta
+    solo_esempio: true
     quando: "Baldrin parla con la chierica"
     temi: [chierica, sorella, rito, paese]
     testo:
@@ -289,6 +297,7 @@ battute:
   - id: bal_chiede_soldato
     chi: png_baldrin
     tipo: richiesta
+    solo_esempio: true
     quando: "Baldrin parla con l'uomo d'armi del gruppo"
     temi: [soldato, guardia, porta, armi]
     testo:
@@ -299,7 +308,7 @@ battute:
     chi: png_baldrin
     tipo: momento
     quando: "qualcuno spezza il pane dei lumi davanti a Baldrin"
-    temi: [pane, spezzare, mollica, figlia]
+    temi: [spezzo, spezza, spezzare, mollica, pezzo, pagnotta]
     testo:
       - "[narratore] Baldrin tende la mano e prende un pezzo di mollica."
       - "[narratore] Lo avvolge nel fazzoletto, con cura, come un ferro caldo."
@@ -312,7 +321,7 @@ battute:
     chi: png_baldrin
     tipo: momento
     quando: "i PG mostrano a Baldrin i chicchi neri nel pane"
-    temi: [chicchi, pane, mostrare, prova]
+    temi: [chicchi, mostro, guarda, neri, mollica, prova]
     richiede:
       indizi_rivelati: [i_speroni_neri]
     testo:
@@ -327,7 +336,7 @@ battute:
     chi: png_baldrin
     tipo: momento
     quando: "Baldrin si convince che il forestiero non c'entra, e apre la porta"
-    temi: [aprire, porta, chiave, libero]
+    temi: [apri, aprire, libera, liberare, lascia, innocente]
     testo:
       - "[narratore] Baldrin si sfila la chiave dal collo e la gira nella serratura."
       - "[png_baldrin] Esci, tu. Ma resta dove ti vedo."
@@ -338,7 +347,7 @@ battute:
     chi: png_baldrin
     tipo: momento
     quando: "al terzo rintocco, Baldrin dalla parte dei PG tiene il paese sulla soglia"
-    temi: [soglia, paese, rintocco, ascoltare]
+    temi: [fermi, fermatevi, fermare, ascoltate, folla, gente]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
     testo:

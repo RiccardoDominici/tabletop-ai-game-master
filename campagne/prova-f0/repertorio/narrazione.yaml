@@ -10,7 +10,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG apre un sacco di segale nel retro"
-    temi: [sacco, aprire, farina, segale, retro]
+    temi: [sacco, sacchi, farina]
     testo:
       - "[narratore] Il sacco si apre con un soffio di polvere grigia, che sa di cantina."
       - "[narratore] Nella farina ci sono chicchi neri e curvi, come piccole unghie."
@@ -22,7 +22,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG spezza una pagnotta delle ceste"
-    temi: [pagnotta, spezzare, pane, mollica, ceste]
+    temi: [spezzo, spezza, spezzare, pagnotta, mollica, chicchi, pezzo]
     testo:
       - "[narratore] La crosta cede con uno scrocchio. Dentro, la mollica è ancora tiepida."
       - "[narratore] È grigia, e punteggiata di chicchi neri e curvi, come piccole unghie."
@@ -34,7 +34,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG guarda i sacchi dietro la tenda"
-    temi: [sacchi, retro, tenda, marchio, guardare]
+    temi: [sacchi, sacco, marchio, scritta]
     testo:
       - "[narratore] Dietro la tenda, i sacchi di segale sono legati con lo spago."
       - "[narratore] Su ognuno c'è una ruota di mulino dipinta di nero, e sotto la parola Valsecca."
@@ -46,7 +46,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG sfoglia il quaderno dei conti sotto il bancone"
-    temi: [quaderno, conti, bancone, registro, leggere]
+    temi: [quaderno, conti, registro, bancone, sfoglio, cassetto]
     testo:
       - "[narratore] Il quaderno è unto di farina. L'ultima pagina è di quattro giorni fa."
       - "[narratore] C'è scritto: sei sacchi di segale da Gualtiero, a metà prezzo, metà da pagare a primavera."
@@ -59,7 +59,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG guarda il cane o si avvicina al forno"
-    temi: [cane, moro, forno, guardare]
+    temi: [cane, moro, accarezzo, ciotola]
     testo:
       - "[narratore] Il cane trema accanto al forno. Si lecca le zampe, piano, senza smettere."
       - "[narratore] Nella sua ciotola ci sono croste di pane nero."
@@ -71,7 +71,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG parla con il cane usando la magia"
-    temi: [cane, magia, parlare, animali]
+    temi: [cane, moro, animali, animale, incantesimo, magia]
     testo:
       - "[narratore] Il cane ti annusa le dita, poi ti risponde a modo suo."
       - "[narratore] Le croste erano buone, poi bruciava la bocca, e adesso bruciano le zampe."
@@ -83,6 +83,7 @@ battute:
   - id: nar_cane_mossa
     chi: narratore
     tipo: indizio
+    riempitivo: true
     quando: "i PG indugiano, e nessuno ha ancora badato al cane"
     temi: [indugio, cane, stallo]
     richiede:
@@ -98,7 +99,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "la chierica prega sul pane o sulla farina, per sentire se è puro"
-    temi: [preghiera, pregare, chierica, puro, pane]
+    temi: [preghiera, prego, pregare, impuro, puro, dea]
     testo:
       - "[narratore] Il pane è tiepido sotto le tue mani."
       - "[narratore] Poi, in bocca, un freddo improvviso. E un odore di marcio che nessun altro sente."
@@ -110,7 +111,7 @@ battute:
     chi: narratore
     tipo: momento
     quando: "un PG fruga nella borsa del forestiero"
-    temi: [borsa, frugare, aprire, dentro]
+    temi: [borsa, frugo, frugare, contenuto]
     testo:
       - "[narratore] La borsa è di cuoio liso. Sa di fumo e di erbe secche."
       - "[narratore] Dentro: un sacchetto di polvere nera, bende arrotolate, una tazza di stagno, un libretto."
@@ -122,7 +123,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG tocca o annusa la polvere nera del sacchetto"
-    temi: [polvere, toccare, annusare, sacchetto]
+    temi: [polvere, tocco, annuso, odoro, sacchetto]
     testo:
       - "[narratore] La polvere è fine e leggera: sa di bruciato."
       - "[narratore] Ti resta sulle dita, nera, come quella di un braciere spento."
@@ -134,7 +135,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG sfoglia il libretto nella borsa del forestiero"
-    temi: [libretto, sfogliare, leggere, scritto]
+    temi: [libretto, sfoglio, appunti]
     testo:
       - "[narratore] Il libretto è scritto fitto, in una calligrafia ordinata."
       - "[narratore] Dosi di erbe, di carbone e di vino, per ferite e per febbri. Non c'è un solo nome."
@@ -147,7 +148,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG guarda le bende nella borsa del forestiero"
-    temi: [bende, nodo, borsa, guardare]
+    temi: [bende, benda, nodo, nodi]
     testo:
       - "[narratore] Le bende sono arrotolate strette, ognuna chiusa da un nodo doppio e piatto."
     effetti:
@@ -158,7 +159,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG tira su il secchio del pozzo e guarda o assaggia l'acqua"
-    temi: [pozzo, secchio, acqua, assaggiare]
+    temi: [pozzo, secchio, carrucola, bevo]
     testo:
       - "[narratore] La carrucola cigola nel freddo, e il secchio sale pesante, gocciolando."
       - "[narratore] L'acqua è limpida e gelata. Ha soltanto il sapore della pietra."
@@ -170,7 +171,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG entra nella casa della vecchia Tecla, accanto al pozzo"
-    temi: [tecla, casa, vecchia, entrare]
+    temi: [tecla, vecchia, visito]
     testo:
       - "[narratore] Tecla è a letto, con le mani in un catino d'acqua fredda."
       - "[narratore] Sorride senza denti, e dice che un corvo le ha dato acqua nera."
@@ -184,7 +185,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG accosta una candela alla grata per vedere il forestiero in faccia"
-    temi: [candela, faccia, grata, luce]
+    temi: [candela, luce, lanterna, faccia, volto, viso, sopracciglio]
     testo:
       - "[narratore] La luce passa tra le sbarre. Il forestiero si tira indietro, troppo tardi."
       - "[narratore] Sotto il cappuccio, una cicatrice bianca gli taglia il sopracciglio sinistro."
@@ -197,7 +198,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "il forestiero esce dal ripostiglio, alla luce del forno"
-    temi: [esce, luce, cappuccio, faccia]
+    temi: [esce, uscire, faccia, volto]
     testo:
       - "[narratore] Il forestiero esce piano, curvo sotto l'architrave, e il cappuccio gli scivola indietro."
       - "[narratore] Alla luce del forno, una cicatrice bianca gli taglia il sopracciglio sinistro."
@@ -211,7 +212,7 @@ battute:
     chi: narratore
     tipo: segno_orologio
     quando: "è il momento del primo segno del paese"
-    temi: [paese, canto, veglia]
+    temi: [orologio]
     richiede:
       orologio: {id: o_colpevole, min: 0, max: 0}
     testo:
@@ -224,7 +225,7 @@ battute:
     chi: narratore
     tipo: segno_orologio
     quando: "è il momento del secondo segno del paese"
-    temi: [paese, sasso, finestra]
+    temi: [orologio]
     richiede:
       orologio: {id: o_colpevole, min: 1, max: 1}
     testo:
@@ -238,7 +239,7 @@ battute:
     chi: narratore
     tipo: segno_orologio
     quando: "è il momento del terzo segno del paese"
-    temi: [campana, rintocco, chiave]
+    temi: [orologio]
     richiede:
       orologio: {id: o_colpevole, min: 2, max: 2}
     testo:
@@ -251,7 +252,7 @@ battute:
     chi: narratore
     tipo: segno_orologio
     quando: "è il momento del quarto segno del paese"
-    temi: [lanterne, finestra, pozzo]
+    temi: [orologio]
     richiede:
       orologio: {id: o_colpevole, min: 3, max: 3}
     testo:
@@ -265,7 +266,7 @@ battute:
     chi: narratore
     tipo: segno_orologio
     quando: "è il momento del quinto segno del paese"
-    temi: [portico, passi, maniglia]
+    temi: [orologio]
     richiede:
       orologio: {id: o_colpevole, min: 4, max: 4}
     testo:
@@ -278,32 +279,22 @@ battute:
     chi: narratore
     tipo: segno_orologio
     quando: "è il momento dell'ultimo segno del paese"
-    temi: [rintocchi, veglia, porta, bussano]
+    temi: [orologio]
     richiede:
       orologio: {id: o_colpevole, min: 5, max: 5}
     testo:
       - "[narratore] Tre rintocchi: la veglia è finita, e bussano alla porta."
+      - "[narratore] Le lanterne riempiono il portico, e il fiato della gente fuma nel freddo."
+      - "[narratore] Una voce chiede il pane, un'altra chiede il forestiero. Poi tutti aspettano voi."
     effetti:
       avanza_orologio: o_colpevole
     max_usi: 1
 
   # --- momenti chiave ----------------------------------------------------------------------
-  - id: nar_paese_alla_porta
-    chi: narratore
-    tipo: momento
-    quando: "dopo i tre rintocchi, il paese è alla porta e aspetta"
-    temi: [paese, porta, lanterne, folla]
-    richiede:
-      orologio: {id: o_colpevole, min: 6, max: 6}
-    testo:
-      - "[narratore] Le lanterne riempiono il portico, e il fiato della gente fuma nel freddo."
-      - "[narratore] Una voce chiede il pane, un'altra chiede il forestiero."
-      - "[narratore] Poi cala il silenzio. Tutto il paese aspetta voi."
-    max_usi: 1
-
   - id: nar_paese_entra
     chi: narratore
     tipo: momento
+    riempitivo: true
     quando: "dopo i tre rintocchi i PG esitano ancora, e Baldrin apre"
     temi: [esitare, aprire, paese, entra]
     richiede:
@@ -317,7 +308,7 @@ battute:
     chi: narratore
     tipo: momento
     quando: "i PG mostrano al paese i chicchi neri nel pane"
-    temi: [prove, mostrare, paese, chicchi, mollica]
+    temi: [mostro, mostrate, prova, prove, chicchi, guardate]
     richiede:
       indizi_rivelati: [i_speroni_neri]
       orologio: {id: o_colpevole, min: 6, max: 6}
@@ -330,6 +321,7 @@ battute:
   - id: nar_paese_vuole_lui
     chi: narratore
     tipo: momento
+    riempitivo: true
     quando: "dopo i tre rintocchi nessuno porta prove davanti al paese"
     temi: [paese, forestiero, folla, ripostiglio]
     richiede:
@@ -342,6 +334,7 @@ battute:
   - id: nar_ripostiglio_vuoto
     chi: narratore
     tipo: momento
+    riempitivo: true
     quando: "il paese apre il ripostiglio e lo trova vuoto"
     temi: [ripostiglio, vuoto, sparito, paese]
     testo:
@@ -349,11 +342,33 @@ battute:
       - "[narratore] Il paese guarda dentro, poi si volta verso le ceste e verso di voi."
     max_usi: 1
 
+  - id: nar_spallata
+    chi: narratore
+    tipo: momento
+    quando: "un PG prova a sfondare la porta del ripostiglio"
+    temi: [sfondo, sfondare, spallata, spallate, spalla, calcio, sfondarla]
+    testo:
+      - "[narratore] La porta trema sotto la spalla. Il legno scricchiola, ma la serratura tiene."
+      - "[narratore] Il colpo rimbomba fino in piazza. Baldrin è già in piedi, col martello alzato."
+    max_usi: 1
+
+  - id: nar_libro_rito
+    chi: narratore
+    tipo: momento
+    quando: "la chierica rilegge il libro del rito"
+    temi: [libro, rito, rileggo, rileggere, leggo, pagina, pagine]
+    testo:
+      - "[narratore] Le pagine del libro sono gonfie di umido. In fondo, l'inchiostro è sbiadito."
+      - "[narratore] L'ultima riga dice: se il pane è impuro, i morti accettano le castagne."
+    effetti:
+      fatti_noti: [f_rito_castagne]
+    max_usi: 1
+
   - id: nar_serratura
     chi: narratore
     tipo: momento
     quando: "un PG forza la serratura del ripostiglio"
-    temi: [serratura, forzare, grimaldello, porta]
+    temi: [serratura, scasso, scassino, scassinare, grimaldello, forzo, forzare]
     testo:
       - "[narratore] Il ferro gratta, poi la serratura scatta con un colpo che rimbomba nella sala."
       - "[narratore] Baldrin si volta di scatto, con il martello già in mano."
@@ -363,7 +378,7 @@ battute:
     chi: narratore
     tipo: momento
     quando: "un PG scende dal retro in cantina"
-    temi: [cantina, scendere, scala, retro]
+    temi: [cantina, scendo, scendere, scala]
     testo:
       - "[narratore] La scala scende in un buio che sa di terra, di mele e di vino acido."
       - "[narratore] In fondo, una grata dà sotto il portico. Sopra la testa, una botola di legno."
@@ -375,7 +390,7 @@ battute:
     chi: narratore
     tipo: momento
     quando: "dalla cantina, un PG apre la botola e sale nel ripostiglio"
-    temi: [botola, salire, ripostiglio, aprire]
+    temi: [botola, salgo, salire, ripostiglio]
     richiede:
       battute_usate: [nar_cantina]
     testo:
@@ -387,7 +402,7 @@ battute:
     chi: narratore
     tipo: momento
     quando: "un PG butta il pane dei lumi nel forno"
-    temi: [forno, bruciare, pane, ceste]
+    temi: [forno, brucio, bruciare, butto, buttare, fuoco]
     testo:
       - "[narratore] Nella brace le pagnotte anneriscono, con la crosta che scoppietta."
       - "[narratore] Dalla canna esce un fumo acre, e in piazza qualcuno lo annusa."
@@ -397,7 +412,7 @@ battute:
     chi: narratore
     tipo: momento
     quando: "un PG guarda fuori dalla finestra, sulla piazza"
-    temi: [finestra, piazza, guardare, fuori]
+    temi: [finestra, piazza, affaccio, fuori]
     richiede:
       orologio: {id: o_colpevole, min: 0, max: 3}
     testo:
@@ -409,7 +424,7 @@ battute:
     chi: narratore
     tipo: momento
     quando: "un PG guarda fuori dalla finestra, sulla piazza"
-    temi: [finestra, piazza, guardare, lanterne]
+    temi: [finestra, piazza, affaccio, fuori]
     richiede:
       orologio: {id: o_colpevole, min: 4, max: 6}
     testo:
@@ -422,7 +437,7 @@ battute:
     chi: narratore
     tipo: finale
     quando: "il paese porta via il forestiero e spezza il pane dei lumi"
-    temi: [finale, consegnato, pane, mangiato]
+    temi: [consegniamo, consegnato, prendetelo, portatelo]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
     testo:
@@ -435,7 +450,7 @@ battute:
     chi: narratore
     tipo: finale
     quando: "il paese porta via il forestiero, ma il pane resta nelle ceste"
-    temi: [finale, consegnato, ceste, pane]
+    temi: [consegniamo, consegnato, prendetelo, portatelo]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
     testo:
@@ -448,7 +463,7 @@ battute:
     chi: narratore
     tipo: finale
     quando: "dopo le prove sul pane, il paese se la prende con Ottavia"
-    temi: [finale, ottavia, paese, colpa]
+    temi: [prendetela, portatela]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
     testo:
@@ -461,7 +476,7 @@ battute:
     chi: narratore
     tipo: finale
     quando: "il paese ha visto le prove, nessuno viene preso, e tutti tornano a casa"
-    temi: [finale, prove, salvo, nessuno]
+    temi: [tornate, andate, andatevene]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
     testo:
@@ -474,7 +489,7 @@ battute:
     chi: narratore
     tipo: finale
     quando: "il paese accetta un'altra offerta al posto del pane, e torna a casa"
-    temi: [finale, offerta, rito, castagne]
+    temi: [castagne, offerta]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
     testo:
@@ -487,7 +502,7 @@ battute:
     chi: narratore
     tipo: finale
     quando: "il forestiero è sparito e il paese spezza il pane dei lumi"
-    temi: [finale, fuga, sparito, pane]
+    temi: [sparito, fuggito, scappato]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
     testo:
@@ -501,7 +516,7 @@ battute:
     chi: narratore
     tipo: transizione
     quando: "i PG passano dietro la tenda, nel retro"
-    temi: [retro, tenda, dietro]
+    temi: [retro, tenda, dietro, sgattaiolo]
     testo:
       - "[narratore] Dietro la tenda fa più freddo. Sacchi, una madia, una scala che scende."
       - "[narratore] La voce di Baldrin arriva smorzata, lontana."
@@ -511,7 +526,7 @@ battute:
     chi: narratore
     tipo: transizione
     quando: "i PG escono sotto il portico o in piazza"
-    temi: [uscire, piazza, portico, fuori]
+    temi: [esco, uscire, piazza, portico, grata]
     testo:
       - "[narratore] Fuori, il freddo morde le orecchie. Le pietre della piazza sono bagnate e lucide."
       - "[narratore] Dalla cappella arriva il canto, a ondate, sopra le candele accese."
@@ -521,7 +536,7 @@ battute:
     chi: narratore
     tipo: transizione
     quando: "i PG rientrano nell'osteria dalla piazza"
-    temi: [rientrare, osteria, dentro]
+    temi: [rientro, torno, rientrare]
     testo:
       - "[narratore] Dentro, il caldo del forno vi prende in faccia. Baldrin alza gli occhi dal martello."
     max_usi: 1
@@ -529,6 +544,7 @@ battute:
   - id: tr_tempo
     chi: narratore
     tipo: transizione
+    riempitivo: true
     quando: "passa un po' di tempo senza decisioni nuove"
     temi: [tempo, attesa, aspettare]
     testo:
@@ -540,6 +556,7 @@ battute:
   - id: tr_neutra
     chi: narratore
     tipo: transizione
+    solo_esempio: true
     quando: "bisogna cambiare argomento senza nominarlo"
     temi: [cambio, pausa, neutra]
     testo:
@@ -553,7 +570,7 @@ battute:
     chi: narratore
     tipo: transizione
     quando: "la scena è chiusa e resta la notte davanti"
-    temi: [chiusura, notte, domani, dopo]
+    temi: [domani, alba]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
     testo:

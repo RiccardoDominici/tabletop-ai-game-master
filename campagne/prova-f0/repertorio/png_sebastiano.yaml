@@ -10,6 +10,7 @@ battute:
   - id: seb_saluto
     chi: png_sebastiano
     tipo: saluto
+    solo_esempio: true
     quando: "un PG si avvicina alla grata o saluta il forestiero"
     temi: [saluto, grata, forestiero]
     testo:
@@ -23,6 +24,7 @@ battute:
   - id: seb_acqua
     chi: png_sebastiano
     tipo: richiesta
+    solo_esempio: true
     quando: "il forestiero chiede da bere a chi passa vicino alla grata"
     temi: [acqua, bere, sete]
     testo:
@@ -34,6 +36,7 @@ battute:
   - id: seb_aiuto
     chi: png_sebastiano
     tipo: reazione
+    solo_esempio: true
     quando: "un PG dà da bere al forestiero o lo aiuta"
     temi: [aiuto, acqua, tazza, bere]
     testo:
@@ -46,6 +49,7 @@ battute:
   - id: seb_domanda_gentile
     chi: png_sebastiano
     tipo: reazione
+    solo_esempio: true
     quando: "un PG chiede gentilmente al forestiero come sta"
     temi: [domanda, sta, bene, gentile]
     testo:
@@ -59,7 +63,7 @@ battute:
     chi: png_sebastiano
     tipo: reazione
     quando: "un PG accusa il forestiero di aver avvelenato il pozzo"
-    temi: [accusa, pozzo, veleno, avvelenato]
+    temi: [avvelenato, avvelenare, veleno, pozzo, colpa]
     testo:
       - "[png_sebastiano] Il pozzo è pulito. Ci ho bevuto anch'io, tre giorni di fila."
       - "[narratore] La voce resta calma. Solo la tosse, ogni tanto, la spezza."
@@ -70,6 +74,7 @@ battute:
   - id: seb_minaccia
     chi: png_sebastiano
     tipo: reazione
+    solo_esempio: true
     quando: "un PG minaccia il forestiero"
     temi: [minaccia, forza, paura]
     testo:
@@ -83,7 +88,7 @@ battute:
     chi: png_sebastiano
     tipo: reazione
     quando: "un PG offre al forestiero un patto o di aiutarlo a uscire"
-    temi: [offerta, patto, uscire, fuggire, aiutare]
+    temi: [aiuto, aiutare, fuggire, scappare, uscire, liberare, patto, salvare]
     testo:
       - "[png_sebastiano] Uscire mi piacerebbe. Ma prima nessuno deve mangiare quel pane."
       - "[png_sebastiano] Mi aiuti a fermarlo, e le dico ciò che so."
@@ -92,6 +97,7 @@ battute:
   - id: seb_rifiuto
     chi: png_sebastiano
     tipo: rifiuto
+    solo_esempio: true
     quando: "un PG chiede al forestiero di cose che lui non sa"
     temi: [domanda, sapere, paese, altro]
     testo:
@@ -105,7 +111,7 @@ battute:
     chi: png_sebastiano
     tipo: rifiuto
     quando: "un PG chiede al forestiero da dove viene la segale"
-    temi: [segale, dove, mulino, farina]
+    temi: [segale, farina, mulino, viene]
     testo:
       - "[png_sebastiano] Da dove, non lo so. So solo cosa c'è dentro."
     max_usi: 1
@@ -114,7 +120,7 @@ battute:
     chi: png_sebastiano
     tipo: reazione
     quando: "un PG chiede al forestiero se il pane nelle ceste fa male"
-    temi: [ceste, pane, lumi, male]
+    temi: [male, buono, mangiare]
     testo:
       - "[png_sebastiano] Se è fatto con quella farina, sì. E scommetto che lo è."
     max_usi: 1
@@ -123,7 +129,7 @@ battute:
     chi: png_sebastiano
     tipo: reazione
     quando: "un PG chiede al forestiero del libretto nella sua borsa"
-    temi: [libretto, borsa, scritto, appunti]
+    temi: [libretto, appunti, scritto]
     testo:
       - "[png_sebastiano] Appunti miei. Li legga pure, se capisce la mia scrittura."
     max_usi: 1
@@ -133,7 +139,7 @@ battute:
     chi: png_sebastiano
     tipo: indizio
     quando: "un PG parla con il forestiero della febbre o dei malati"
-    temi: [febbre, malati, mani, pozzo, causa]
+    temi: [febbre, malati, mani, bruciano, brucia, malattia, causa]
     testo:
       - "[png_sebastiano] Le direi di più con la porta aperta. Ma questo glielo regalo: non è l'acqua, è il pane."
       - "[png_sebastiano] L'ho detto all'ostessa, due giorni fa. Mi ha cacciato dalla cucina."
@@ -146,7 +152,7 @@ battute:
     chi: png_sebastiano
     tipo: reazione
     quando: "un PG chiede al forestiero dell'ostessa"
-    temi: [ostessa, ottavia, cucina]
+    temi: [ostessa]
     richiede:
       battute_usate: [seb_pane]
     testo:
@@ -157,7 +163,7 @@ battute:
     chi: png_sebastiano
     tipo: indizio
     quando: "un PG descrive al forestiero i sintomi dei malati"
-    temi: [sintomi, mani, piedi, bruciano, visioni]
+    temi: [sintomi, mani, piedi, bruciano, visioni, tosse, gola]
     testo:
       - "[png_sebastiano] Mi permetta: le estremità ardono, cioè le mani e i piedi? E vedono cose?"
       - "[png_sebastiano] Allora è quello che penso. Il pozzo non c'entra."
@@ -169,7 +175,7 @@ battute:
     chi: png_sebastiano
     tipo: indizio
     quando: "un PG chiede al forestiero cosa faceva di notte al pozzo"
-    temi: [pozzo, notte, acqua, visto]
+    temi: [pozzo, facevi, faceva, visto]
     testo:
       - "[png_sebastiano] Prendevo acqua per la vecchia che abita lì accanto. È sola, e brucia di febbre."
       - "[narratore] Dopo una pausa, dietro la grata si sente un respiro lungo."
@@ -182,7 +188,7 @@ battute:
     chi: png_sebastiano
     tipo: verita
     quando: "un PG chiede al forestiero della polvere nera nella sua borsa"
-    temi: [polvere, nera, borsa, veleno]
+    temi: [polvere, sacchetto, nera, veleno]
     testo:
       - "[png_sebastiano] Carbone di legna, pestato fino. Si dà a chi ha mangiato qualcosa di guasto."
     effetti:
@@ -193,7 +199,7 @@ battute:
     chi: png_sebastiano
     tipo: verita
     quando: "dopo aver parlato del pane, il forestiero dice cosa fare per i malati"
-    temi: [cura, rimedio, malati, guarire]
+    temi: [cura, curare, curarli, guarire, rimedio, medicina, salvare]
     richiede:
       battute_usate: [seb_pane]
     testo:
@@ -207,7 +213,7 @@ battute:
     chi: png_sebastiano
     tipo: verita
     quando: "un PG cura un malato con la magia davanti al forestiero"
-    temi: [magia, cura, preghiera, malato]
+    temi: [magia, incantesimo, curo, curare, guarisco]
     testo:
       - "[png_sebastiano] Bella magia. Tra un'ora, però, il bruciore torna, finché mangia quel pane."
     effetti:
@@ -219,7 +225,7 @@ battute:
     chi: png_sebastiano
     tipo: menzogna
     quando: "un PG chiede al forestiero che mestiere fa, o chi è"
-    temi: [mestiere, lavoro, chi, spezie]
+    temi: [mestiere, lavoro, fai, sei, cerusico, medico, spezie, mercante]
     testo:
       - "[narratore] Il forestiero nasconde le mani nelle maniche e tossisce."
       - "[png_sebastiano] Vendo spezie. Pepe, cannella, chiodi di garofano."
@@ -233,7 +239,7 @@ battute:
     chi: png_sebastiano
     tipo: menzogna
     quando: "un PG chiede al forestiero se è stato soldato, o da dove viene"
-    temi: [soldato, guerra, dove, viene]
+    temi: [soldato, guerra, grifo, compagnia, esercito, sopracciglio, vieni, viene]
     testo:
       - "[narratore] Le mani tornano nelle maniche, e arriva un colpo di tosse."
       - "[png_sebastiano] Soldato, io? Vengo dal mare, e ho sempre venduto spezie."
@@ -248,7 +254,7 @@ battute:
     chi: png_sebastiano
     tipo: confessione
     quando: "dove Baldrin non sente, un PG promette di non consegnare il forestiero al paese"
-    temi: [promessa, consegnare, privato, giuro]
+    temi: [prometto, giuro, promessa, consegno, consegnarti, parola]
     richiede:
       battute_non_usate: [seb_mestiere_malato, seb_guerra_roccalba]
     testo:
@@ -263,7 +269,7 @@ battute:
     chi: png_sebastiano
     tipo: confessione
     quando: "davanti al forestiero c'è un malato, o il cane, che ha bisogno di cure"
-    temi: [malato, cane, cure, curare]
+    temi: [malato, curalo, cura, cane, aiutalo, soffre]
     richiede:
       battute_non_usate: [seb_mestiere_promessa, seb_guerra_roccalba]
     testo:
@@ -278,7 +284,7 @@ battute:
     chi: png_sebastiano
     tipo: confessione
     quando: "un PG nomina Roccalba o la Compagnia del Grifo e promette di non venderlo"
-    temi: [roccalba, compagnia, grifo, promessa]
+    temi: [roccalba, compagnia, grifo, prometto, giuro]
     testo:
       - "[narratore] Il forestiero resta immobile a lungo, poi abbassa il cappuccio."
       - "[narratore] Una cicatrice bianca gli taglia il sopracciglio sinistro."
@@ -294,7 +300,7 @@ battute:
     chi: png_sebastiano
     tipo: momento
     quando: "dopo che ha parlato della guerra, un PG minaccia di consegnarlo"
-    temi: [consegnare, minaccia, taglia, guerra]
+    temi: [consegno, consegnare, taglia, riporto, corone]
     richiede:
       battute_usate: [seb_guerra_roccalba]
     testo:
@@ -306,7 +312,7 @@ battute:
     chi: png_sebastiano
     tipo: richiesta
     quando: "il forestiero sente che la chierica benedirà il pane"
-    temi: [chierica, benedire, sorella, rito]
+    temi: [benedire, benedico, benedizione, chierica, sorella]
     testo:
       - "[png_sebastiano] Sorella, una parola, qui alla grata. Mi permetta."
       - "[png_sebastiano] Non benedica quel pane. Benedica piuttosto chi non lo mangia."
@@ -316,7 +322,7 @@ battute:
     chi: png_sebastiano
     tipo: momento
     quando: "qualcuno porta il pane dei lumi alla bocca davanti al forestiero"
-    temi: [mangiare, pane, bocca, assaggiare]
+    temi: [mangio, mangiare, assaggio, assaggiare, morso, boccone, bocca]
     testo:
       - "[png_sebastiano] Non lo mangi! Lo sputi, subito!"
       - "[narratore] La grata trema sotto i suoi pugni, e Baldrin si volta di scatto."
@@ -328,7 +334,7 @@ battute:
     chi: png_sebastiano
     tipo: momento
     quando: "il forestiero trova una via d'uscita mentre il pane è ancora nelle ceste"
-    temi: [uscita, fuggire, ceste, pane]
+    temi: [botola, cantina, uscire, fuggire, scappare, via]
     testo:
       - "[png_sebastiano] Potrei andarmene, adesso. Ma il pane è ancora lì, sul tavolo."
       - "[png_sebastiano] Prima mi giuri che nessuno lo mangerà. Poi sparisco."
@@ -338,7 +344,7 @@ battute:
     chi: png_sebastiano
     tipo: momento
     quando: "il forestiero viene consegnato al paese"
-    temi: [consegnato, paese, folla, portico]
+    temi: [consegniamo, consegnare, prendetelo, portatelo, eccolo]
     testo:
       - "[narratore] Il forestiero non si difende, e si toglie il cappuccio davanti alle lanterne."
       - "[png_sebastiano] Non mangiate quel pane! Per i vostri figli, non mangiatelo!"
