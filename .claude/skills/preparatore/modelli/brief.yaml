@@ -1,0 +1,22 @@
+# Brief di una campagna. Copialo in campagne/<id>/brief.yaml e riempilo.
+# Ciò che Riccardo non dice lo decidi tu, e lo scrivi in `decisioni` con il motivo.
+
+id: ""                 # ascii minuscolo con trattini, es. il-ponte-dei-sospiri
+titolo: ""
+richiesta: ""          # le parole di Riccardo, così come le ha scritte
+
+tono: ""               # es. «fiaba di paese, cupa ma calda»
+durata: ""             # es. «una scena, 25 minuti» oppure «una sessione, 3 ore»
+giocatori: 3           # quanti giocano; i PG pregenerati sono uno di più
+temi: []               # es. [paura del forestiero, la verità che costa]
+linee: []              # mai in gioco
+veli: []               # solo fuori scena, con dissolvenza
+ambientazione: ""      # facoltativo: luogo, epoca, sapore (fantasy compatibile SRD)
+vincoli: []            # es. «niente combattimento», «senza dadi» (F0)
+
+decisioni:
+  scene: []            # [id_scena, …]: la prima è scena.yaml
+  pg: []               # [pg_id, …]
+  png: []              # [png_id → voce_id, …]
+  situazione: ""       # tre righe: chi vuole cosa; cosa succede se i PG non fanno niente; la verità; la scelta che costa
+  altre: []            # ogni altra scelta, con il motivo
