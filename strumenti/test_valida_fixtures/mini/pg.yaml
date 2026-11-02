@@ -1,0 +1,24 @@
+situazione_comune: "Siete al passo della Volpe per la notte. Domani all'alba c'è la processione."
+personaggi:
+  - id: pg_lia
+    nome: "Lia Ventura"
+    pronomi: "lei"
+    specie: "umana"
+    classe: "ladra"
+    livello: 1
+    concetto: "Cercatrice di cose perdute. Non sopporta le bugie dette per vergogna."
+    aggancio: "Irma ti ha ospitata gratis l'inverno scorso."
+    cosa_sai_fare: ["trovi le tracce", "apri le serrature"]
+    conoscenze_private:
+      - {testo: "La botola del cortile porta in cantina.", fatti: []}
+  - id: pg_tobia
+    nome: "Tobia Ferro"
+    pronomi: "lui"
+    specie: "nano"
+    classe: "guerriero"
+    livello: 1
+    concetto: "Guardia della valle in licenza. Crede nella legge più che nelle persone."
+    aggancio: "Il capitano ti ha chiesto di riportare la lanterna."
+    cosa_sai_fare: ["fai la guardia", "intimidisci"]
+    conoscenze_private:
+      - {testo: "Il mercante della valle compra debiti.", fatti: [f_mercante_alba]}

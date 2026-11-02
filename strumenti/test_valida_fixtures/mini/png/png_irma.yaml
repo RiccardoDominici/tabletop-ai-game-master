@@ -1,0 +1,50 @@
+id: png_irma
+nome: "Irma"
+pronuncia: "Ìrma"
+alias: [ostessa, locandiera]
+livello: principale
+ruolo: "ostessa; testimone reticente"
+fronte: fronte_lanterna
+aspetto:
+  lettura: "Una donna magra, sulla cinquantina, con le maniche rimboccate. Ha un orecchino d'argento solo."
+  invarianti: ["cinquanta anni", "magra", "maniche rimboccate", "un orecchino d'argento"]
+  prompt_immagine: "thin innkeeper woman in her fifties, rolled-up sleeves, single silver earring, firelight, [STILE]"
+personalita:
+  superficie: ["svelta e ospitale", "orgogliosa della locanda"]
+  sotto_pressione: ["diventa gentile in modo esagerato"]
+  contraddizione: "Ospita tutti, e stanotte ha derubato la cappella."
+desiderio: "Pagare il tetto prima della neve."
+paura: "Perdere la locanda."
+segreto:
+  testo: "Ha preso lei la lanterna, per darla in pegno."
+  chi_altro_sa: [png_bruno]
+  se_rivelato: "Il paese la giudica; Bruno la difende."
+voce:
+  tts: {voce_id: nadine, eta_apparente: "50", altezza: media, velocita: 1.0, timbro: "chiaro"}
+  registro: "Dà del tu a tutti."
+  stile: "Frasi brevi, da bancone."
+  tic: ["«Bevi, che scalda.»"]
+  gesto: "asciuga i boccali con lo straccio"
+  mai_dice: ["la parola «furto»"]
+  battuta_campione: "Bevi, che scalda. Il resto domani."
+sa: [f_lanterna_sparita, f_festa_domani, f_locanda, f_lanterna_cantina, f_irma_prestito, f_mercante_alba]
+non_sa: [f_bruno_visto, f_impronte_cera, f_bruno_sospetta]
+crede_a_torto:
+  - {testo: "Bruno dorme come un sasso: non ha visto niente.", contraddice: f_bruno_visto}
+mente_su:
+  - id: irma_lanterna
+    argomento: "dove è la lanterna"
+    verita: f_lanterna_cantina
+    versione: "La lanterna? Non ne so niente. Io dormivo."
+    perche: "Vergogna e paura del paese."
+    segnale: "si tocca l'orecchino e sorride troppo"
+    cede_se: "Dice la verità quando un PG le mostra la cera dei gradini, in privato."
+atteggiamento_pg:
+  pg_lia: {stato: amichevole, perche: "l'ha ospitata", vuole: "che non la tradisca"}
+  pg_tobia: {stato: indifferente, perche: "una guardia", vuole: "che se ne vada presto"}
+info_chiave: []
+iniziative: ["Offre vino a chi guarda la porta della cantina."]
+evoluzione:
+  - {se: "confessa", allora: "chiede aiuto per il debito"}
+statistiche: "popolana"
+registro_attivita: []

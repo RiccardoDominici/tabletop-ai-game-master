@@ -1,0 +1,37 @@
+id: scena_volpe
+nodo: n_locanda
+nome: "La locanda della Volpe, prima dell'alba"
+descrizione: "Una sala con il camino, il bancone e una porta che scende in cantina."
+scopo: {tipo: rivelare_indizio, rif: i_cera}
+domanda_drammatica: "All'alba la lanterna tornerà in cappella?"
+posta:
+  si_guadagna: {cosa: "La processione con la lanterna.", per_chi: [png_bruno]}
+  si_perde: {cosa: "La locanda di Irma.", per_chi: [png_irma, pg_lia]}
+intensita: 3
+sensi:
+  - "Odore di vino versato e di legna umida."
+  - "Il vento fischia sotto la porta."
+  - "Il calore del camino sulle mani."
+elementi_interattivi:
+  - {cosa: "la porta della cantina", dove: "dietro il bancone", azioni: "si apre con la chiave di Irma"}
+  - {cosa: "il camino", dove: "in fondo", azioni: "ci si scalda"}
+  - {cosa: "il bancone", dove: "a destra", azioni: "ci sono boccali e un registro"}
+png_presenti: [png_irma, png_bruno]
+orologi_attivi: [o_processione]
+indizi:
+  - {id: i_cera, conclusione: r_lanterna, tipo: oggetto, nodo: n_locanda, essenziale: true, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi guarda i gradini della cantina trova gocce di cera bianca."}
+  - {id: i_botte, conclusione: r_lanterna, tipo: evento, nodo: n_locanda, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi scende in cantina sente un tintinnio dentro una botte vuota."}
+  - {id: i_bruno_racconta, conclusione: r_lanterna, tipo: png, nodo: png_bruno, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Quando Bruno cede: ha visto Irma scendere in cantina con un fagotto."}
+uscite:
+  - {verso: n_passo, segnalata_da: [i_cera, i_botte, i_bruno_racconta]}
+  - {verso: n_cappella, segnalata_da: [i_cera, i_botte, i_bruno_racconta]}
+mossa_morbida_pronta: "Il vento spalanca la porta. Una folata spegne metà delle candele."
+apertura: "Alla locanda della Volpe il camino scoppietta e fuori fischia il vento. Irma asciuga i boccali, e Bruno fuma la pipa vicino al fuoco. Dalla cappella arriva la notizia: la lanterna è sparita, che fate?"
+musica: {tag: taverna_calda, transizione: "verso esplorazione_tesa quando si scende in cantina"}
+immagine:
+  invarianti: ["sala bassa con camino", "bancone di legno", "porta della cantina"]
+  prompt_luogo: "low mountain inn at night, stone fireplace, wooden counter, small door leading down to a cellar"
+taglio: "La scena si chiude quando la lanterna torna in cappella o la processione parte senza."

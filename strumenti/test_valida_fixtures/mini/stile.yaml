@@ -1,0 +1,15 @@
+# Campagna minima per i test del validatore: valida anche in modo rigoroso.
+id: mini
+titolo: "La lanterna rubata"
+premessa: "In una locanda di passo è sparita la lanterna della cappella, e all'alba serve alla processione."
+tono: "Giallo di paese, leggero, con un fondo di vergogna."
+tema: "Il debito che spinge a sbagliare; il perdono."
+registro_narratore: "Voce calma e precisa, da racconto davanti al fuoco."
+regole_prosa:
+  - "Lessico di montagna: botte, gradini, cera, brace."
+stile_immagini: "ink and watercolor illustration, warm firelight, muted earth palette, no text"
+tavolozza_musicale:
+  tag: [taverna_calda, esplorazione_tesa]
+  strumenti: "organetto, flauto di legno"
+linee: ["violenza sui bambini"]
+veli: ["morte di un animale"]

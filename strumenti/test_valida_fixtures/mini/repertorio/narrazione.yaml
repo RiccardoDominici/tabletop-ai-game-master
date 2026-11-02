@@ -1,0 +1,107 @@
+battute:
+  - id: nar_cera
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda i gradini della cantina"
+    temi: [gradini, scale, cera, gocce]
+    testo:
+      - "[narratore] I gradini della cantina sono di pietra, lisci e freddi."
+      - "[narratore] Sul terzo gradino ci sono gocce di cera bianca, ancora morbide."
+    effetti: {rivela_indizi: [i_cera], fatti_noti: [f_impronte_cera]}
+    max_usi: 1
+
+  - id: nar_botte
+    chi: narratore
+    tipo: indizio
+    quando: "un PG scende in cantina e si guarda intorno"
+    temi: [cantina, botte, botti, scendo]
+    testo:
+      - "[narratore] La cantina odora di muffa e di vino vecchio."
+      - "[narratore] Da una botte vuota arriva un tintinnio di metallo."
+    effetti: {rivela_indizi: [i_botte]}
+    max_usi: 1
+
+  - id: nar_segno_1
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del primo segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_processione, min: 0, max: 0}}
+    testo: ["[narratore] Fuori, il sacrestano prova la campana, poi si ferma."]
+    effetti: {avanza_orologio: o_processione}
+    max_usi: 1
+
+  - id: nar_segno_2
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del secondo segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_processione, min: 1, max: 1}}
+    testo: ["[narratore] Qualcuno bussa e chiede se la lanterna è tornata."]
+    effetti: {avanza_orologio: o_processione}
+    max_usi: 1
+
+  - id: nar_segno_3
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del terzo segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_processione, min: 2, max: 2}}
+    testo: ["[narratore] Il cielo schiarisce dietro il passo, e i lumini si spengono."]
+    effetti: {avanza_orologio: o_processione}
+    max_usi: 1
+
+  - id: nar_segno_4
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento dell'ultimo segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_processione, min: 3, max: 3}}
+    testo: ["[narratore] La processione si raduna davanti alla cappella, senza lanterna."]
+    effetti: {avanza_orologio: o_processione}
+    max_usi: 1
+
+  - id: nar_stallo
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    quando: "i PG indugiano"
+    temi: [attesa]
+    testo: ["[narratore] Il fuoco si abbassa, e una trave del tetto scricchiola sotto il vento."]
+    max_usi: 1
+
+  - id: fin_ritrovata
+    chi: narratore
+    tipo: finale
+    quando: "la lanterna torna in cappella prima dell'alba"
+    temi: [ritrovata, riportata]
+    testo:
+      - "[narratore] La lanterna torna sull'altare, e la processione parte con la sua luce."
+      - "[narratore] Irma la guarda passare dalla soglia della locanda, senza dire niente."
+    max_usi: 1
+
+  - id: fin_persa
+    chi: narratore
+    tipo: finale
+    quando: "la processione parte senza la lanterna"
+    temi: [persa, partita]
+    testo:
+      - "[narratore] La processione parte al buio, con le candele che tremano nel vento."
+      - "[narratore] Dietro le finestre, il paese comincia a cercare un colpevole."
+    max_usi: 1
+
+  - id: tr_cantina
+    chi: narratore
+    tipo: transizione
+    quando: "i PG scendono le scale verso la cantina"
+    temi: [scendo, scale, giù]
+    testo: ["[narratore] Le scale scendono strette, e il calore del camino resta di sopra."]
+    max_usi: 1
+
+  - id: tr_sala
+    chi: narratore
+    tipo: transizione
+    quando: "i PG tornano nella sala"
+    temi: [torno, risalgo, sala]
+    testo: ["[narratore] Nella sala il camino scoppietta, e Bruno alza gli occhi dalla pipa."]
+    max_usi: 1

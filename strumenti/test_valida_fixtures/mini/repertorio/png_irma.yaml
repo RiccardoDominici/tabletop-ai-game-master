@@ -1,0 +1,39 @@
+battute:
+  - {id: irma_saluto, chi: png_irma, tipo: saluto, solo_esempio: true, quando: "i PG salutano Irma", temi: [saluto], max_usi: 1,
+     testo: ["[narratore] Irma posa lo straccio sul bancone e vi sorride.", "[png_irma] Entrate, che fuori gela. Bevi, che scalda."]}
+  - {id: irma_rifiuto, chi: png_irma, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Irma di cose che non sa", temi: [domanda], max_usi: 1,
+     testo: ["[png_irma] Di queste cose non so niente. Io so di vino e di letti."]}
+  - {id: irma_domanda_gentile, chi: png_irma, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Irma come sta", temi: [gentile], max_usi: 1,
+     testo: ["[png_irma] Trent'anni di locanda, e mai una notte così. Siediti, ti porto da mangiare."]}
+  - {id: irma_accusa, chi: png_irma, tipo: reazione, solo_esempio: true, quando: "un PG accusa Irma", temi: [accuso], max_usi: 1,
+     testo: ["[png_irma] Io? Ho le mani piene di boccali, non di lanterne."]}
+  - {id: irma_minaccia, chi: png_irma, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Irma", temi: [minaccia], max_usi: 1,
+     testo: ["[png_irma] Fuori dalla mia locanda. Adesso."]}
+  - {id: irma_offerta, chi: png_irma, tipo: reazione, solo_esempio: true, quando: "un PG offre denaro a Irma", temi: [soldi], max_usi: 1,
+     testo: ["[png_irma] Soldi? Qui si paga il letto, non le chiacchiere."]}
+  - {id: irma_aiuto, chi: png_irma, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Irma al bancone", temi: [aiuto], max_usi: 1,
+     testo: ["[png_irma] Grazie. Prendi pure un altro boccale, offre la casa."]}
+
+  - id: irma_lanterna_versione
+    chi: png_irma
+    tipo: menzogna
+    quando: "un PG chiede a Irma dove è la lanterna"
+    temi: [lanterna, sparita, rubata]
+    testo:
+      - "[narratore] Irma si tocca l'orecchino e sorride troppo."
+      - "[png_irma] La lanterna? Io dormivo, non ne so niente."
+    effetti: {menzogna_detta: irma_lanterna}
+    max_usi: 1
+
+  - id: irma_lanterna_cera
+    chi: png_irma
+    tipo: confessione
+    quando: "in privato, un PG mostra a Irma la cera trovata sui gradini"
+    temi: [cera, gocce, gradini]
+    richiede: {indizi_rivelati: [i_cera], privata: true}
+    testo:
+      - "[narratore] Irma guarda la cera e smette di sorridere."
+      - "[png_irma] La lanterna è in cantina, nella botte vuota."
+      - "[png_irma] Volevo darla in pegno al mercante. Per il tetto, prima della neve."
+    effetti: {fatti_noti: [f_lanterna_cantina, f_irma_prestito]}
+    max_usi: 1

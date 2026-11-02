@@ -1,0 +1,26 @@
+parole:
+  - parola: "la lanterna in cantina"
+    regex: "lanterna[^.]{0,40}(cantina|botte)|(cantina|botte)[^.]{0,40}lanterna"
+    fatti: [f_lanterna_cantina]
+    pubblica_dopo: [irma_lanterna_cera]
+    nota: "dove è nascosta la lanterna"
+  - parola: "pegno / mercante"
+    regex: "pegno|mercante"
+    fatti: [f_irma_prestito, f_mercante_alba]
+    pubblica_dopo: [irma_lanterna_cera]
+    nota: "il motivo del furto"
+  - parola: "fagotto"
+    regex: "fagotto"
+    fatti: [f_bruno_visto]
+    pubblica_dopo: [bruno_notte_promessa, i_bruno_racconta]
+    nota: "ciò che ha visto Bruno"
+  - parola: "gocce di cera"
+    regex: "gocce di cera|cera bianca"
+    fatti: [f_impronte_cera]
+    pubblica_dopo: [i_cera, nar_cera]
+    nota: "la traccia sui gradini"
+  - parola: "sospetta"
+    regex: "sospett"
+    fatti: [f_bruno_sospetta]
+    pubblica_dopo: []
+    nota: "il sospetto di Bruno"

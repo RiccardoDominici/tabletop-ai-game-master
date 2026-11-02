@@ -1,0 +1,38 @@
+battute:
+  - {id: bruno_saluto, chi: png_bruno, tipo: saluto, solo_esempio: true, quando: "i PG salutano Bruno", temi: [saluto], max_usi: 1,
+     testo: ["[narratore] Bruno batte la pipa sul tavolo, piano, e vi fa posto.", "[png_bruno] Sera, forestieri. Sedete vicino al fuoco."]}
+  - {id: bruno_rifiuto, chi: png_bruno, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Bruno di cose che non sa", temi: [domanda], max_usi: 1,
+     testo: ["[png_bruno] Non lo so. Chiedete a chi sa."]}
+  - {id: bruno_domanda_gentile, chi: png_bruno, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Bruno come sta", temi: [gentile], max_usi: 1,
+     testo: ["[png_bruno] Pecore, vento, e poca gente. Mi basta."]}
+  - {id: bruno_accusa, chi: png_bruno, tipo: reazione, solo_esempio: true, quando: "un PG accusa Bruno", temi: [accuso], max_usi: 1,
+     testo: ["[png_bruno] Io? Ho settant'anni e una pipa."]}
+  - {id: bruno_minaccia, chi: png_bruno, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Bruno", temi: [minaccia], max_usi: 1,
+     testo: ["[png_bruno] Abbassate la voce. Qui dorme gente."]}
+  - {id: bruno_offerta, chi: png_bruno, tipo: reazione, solo_esempio: true, quando: "un PG offre denaro a Bruno", temi: [soldi], max_usi: 1,
+     testo: ["[png_bruno] Tenete i soldi. Non mi servono."]}
+  - {id: bruno_aiuto, chi: png_bruno, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Bruno", temi: [aiuto], max_usi: 1,
+     testo: ["[png_bruno] Grazie. Siete gente a posto."]}
+
+  - id: bruno_notte_versione
+    chi: png_bruno
+    tipo: menzogna
+    quando: "un PG chiede a Bruno cosa ha visto stanotte"
+    temi: [stanotte, visto, vista, mezzanotte]
+    testo:
+      - "[narratore] Bruno si gratta la barba e guarda il fuoco."
+      - "[png_bruno] Stanotte ho dormito. Non ho visto niente."
+    effetti: {menzogna_detta: bruno_notte}
+    max_usi: 1
+
+  - id: bruno_notte_promessa
+    chi: png_bruno
+    tipo: confessione
+    quando: "in privato, un PG promette a Bruno di non dire niente al paese"
+    temi: [prometto, giuro, promessa]
+    richiede: {battute_usate: [bruno_notte_versione], privata: true}
+    testo:
+      - "[narratore] Bruno posa la pipa e abbassa la voce."
+      - "[png_bruno] Ho visto Irma, a mezzanotte. Scendeva in cantina con un fagotto."
+    effetti: {rivela_indizi: [i_bruno_racconta], fatti_noti: [f_bruno_visto]}
+    max_usi: 1

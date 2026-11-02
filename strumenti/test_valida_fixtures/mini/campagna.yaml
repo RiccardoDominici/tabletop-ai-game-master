@@ -1,0 +1,131 @@
+id: mini
+
+canone:
+  - {id: f_lanterna_sparita, noto_ai_pg: true, stato: confermato, testo: "Stanotte è sparita la lanterna d'argento della cappella."}
+  - {id: f_festa_domani, noto_ai_pg: true, stato: confermato, testo: "All'alba la lanterna deve guidare la processione."}
+  - {id: f_locanda, noto_ai_pg: true, stato: confermato, testo: "La locanda della Volpe è l'unico riparo del passo."}
+  - {id: f_lanterna_cantina, noto_ai_pg: false, stato: confermato, testo: "La lanterna è nascosta in cantina, dentro una botte vuota."}
+  - {id: f_irma_prestito, noto_ai_pg: false, stato: confermato, testo: "Irma vuole dare la lanterna in pegno a un mercante, per pagare il tetto."}
+  - {id: f_mercante_alba, noto_ai_pg: false, stato: confermato, testo: "Il mercante che aspetta il pegno riparte all'alba."}
+  - {id: f_bruno_visto, noto_ai_pg: false, stato: confermato, testo: "Bruno ha visto Irma scendere in cantina con un fagotto, a mezzanotte."}
+  - {id: f_impronte_cera, noto_ai_pg: false, stato: confermato, testo: "Sui gradini della cantina ci sono gocce di cera bianca della cappella."}
+  - {id: f_bruno_sospetta, noto_ai_pg: false, stato: confermato, testo: "Bruno sospetta Irma, ma non vuole accusarla."}
+
+orologi:
+  - id: o_processione
+    nome: "La processione aspetta la lanterna"
+    pericolo: p_processione
+    segmenti: 4
+    pieni_all_inizio: 0
+    segno_almeno_ogni: 2
+    segni:
+      - "Fuori, il sacrestano prova la campana, poi si ferma."
+      - "Qualcuno bussa e chiede se la lanterna è tornata."
+      - "Il cielo schiarisce dietro il passo, e i lumini si spengono."
+      - "La processione si raduna davanti alla cappella, senza lanterna."
+    avanza_quando: ["una risposta sì e una no", "subito se i PG fanno rumore"]
+    al_completo: "La processione aspetta una risposta."
+
+rivelazioni:
+  - id: r_lanterna
+    chiave: true
+    conclusione: "La lanterna è nella cantina della locanda."
+    indizi: [i_cera, i_botte, i_bruno_racconta]
+
+colli_di_bottiglia:
+  - id: cb_cantina
+    ostacolo: "Scendere in cantina."
+    soluzioni: ["Chiedere a Irma la chiave.", "Passare dalla botola del cortile.", "Forzare la porta, facendo rumore."]
+
+nodi:
+  - {id: n_locanda, tipo: luogo, nome: "La locanda della Volpe", scheda: scena.yaml, collegamenti: [n_passo, n_cappella, png_irma, png_bruno]}
+  - {id: n_cappella, tipo: luogo, nome: "La cappella", abbozzo: "Una cappella di pietra sul passo.", collegamenti: [n_locanda]}
+  - {id: n_passo, tipo: luogo, nome: "Il passo", abbozzo: "La strada verso valle.", prossima_sessione: true, collegamenti: []}
+  - {id: png_irma, tipo: png, scheda: png/png_irma.yaml, collegamenti: [n_locanda]}
+  - {id: png_bruno, tipo: png, scheda: png/png_bruno.yaml, collegamenti: [n_locanda]}
+
+sessione:
+  riassunto_iniziale: "Al passo della Volpe soffia un vento freddo. Stanotte è sparita la lanterna della cappella. All'alba la processione partirà, con o senza la lanterna."
+  cinque_stanze:
+    ingresso_o_guardiano: "Irma alla porta della cantina."
+    enigma_o_sfida_sociale: "Chi mente sulla notte?"
+    trucco_o_battuta_d_arresto: "La porta della cantina è chiusa."
+    climax: "La processione alla porta."
+    ricompensa_o_colpo_di_scena: "Il debito di Irma."
+  scene_potenziali: [scena_volpe]
+  chiusura: "Restituire la lanterna, o aiutare Irma con il debito."
+
+preparazione:
+  fronti:
+    - id: fronte_debiti
+      livello: campagna
+      nome: "I debiti del passo"
+      pericoli:
+        - id: p_mercante
+          tipo: "organizzazione ambiziosa"
+          impulso: "comprare"
+          destino_incombente: "Il mercante si prende la locanda."
+          presagi:
+            - {testo: "Il mercante arriva.", segno_visibile: "Un carro nel cortile."}
+            - {testo: "Il mercante chiede il pegno.", segno_visibile: "Una lettera sul bancone."}
+          mosse: ["offre denaro"]
+          cast: []
+          orologio: o_mercante
+        - id: p_usura
+          tipo: "piaga"
+          impulso: "crescere"
+          destino_incombente: "Il debito raddoppia."
+          presagi:
+            - {testo: "Gli interessi salgono.", segno_visibile: "Un conto nuovo."}
+          mosse: ["chiede di più"]
+          cast: []
+          orologio: o_usura
+      domande_di_posta: ["Irma terrà la locanda?"]
+      orologi_extra:
+        - {id: o_mercante, nome: "Il mercante stringe", segmenti: 4}
+        - {id: o_usura, nome: "Il debito cresce", segmenti: 6}
+    - id: fronte_lanterna
+      livello: avventura
+      nome: "La lanterna sparita"
+      pericoli:
+        - id: p_processione
+          tipo: "orda"
+          impulso: "pretendere"
+          destino_incombente: "La processione parte senza lanterna e il paese cerca un colpevole."
+          presagi:
+            - {testo: "Il paese si sveglia.", segno_visibile: "La campana prova a suonare."}
+          mosse: ["bussa alla porta"]
+          cast: [png_bruno]
+          orologio: o_processione
+        - id: p_sospetto
+          tipo: "voce"
+          impulso: "accusare"
+          destino_incombente: "Il paese accusa i forestieri."
+          presagi:
+            - {testo: "Il sospetto si allarga.", segno_visibile: "Sguardi dalle finestre."}
+          mosse: ["sparge una voce"]
+          cast: []
+          orologio: o_sospetto
+      domande_di_posta: ["La lanterna tornerà in cappella?"]
+      orologi_extra:
+        - {id: o_sospetto, nome: "Il paese sospetta", segmenti: 4}
+  cattivo:
+    nome: "Il mercante"
+    obiettivo: "Avere la locanda per niente."
+    cronologia_se_i_pg_non_intervengono: ["All'alba prende il pegno e riparte."]
+    risorse: [{cosa: "denaro", a_cosa_serve: "comprare i debiti"}]
+    reazioni: [{intrusione: "i PG lo cercano", reazione: "parte prima dell'alba"}]
+    stato_di_quiete: "Il passo viveva di viandanti."
+    chiamata_all_azione: "La lanterna è sparita e all'alba serve."
+  segreti_astratti:
+    - "Il mercante ha già comprato altri debiti nella valle."
+    - "Irma ha venduto l'anello della madre il mese scorso."
+    - "Bruno è il padrino del figlio di Irma."
+    - "Il sacrestano ha una seconda chiave della cappella."
+    - "La botola del cortile è rotta da anni."
+    - "Il tetto della locanda cede alla prima neve."
+  archi:
+    campagna_tre_atti: ["La lanterna.", "Il mercante.", "La valle."]
+    pg:
+      pg_lia: {tu: "cercatrice", bisogno: "fidarsi", vai: "la lanterna", cerca: "la cera", trova: "la cantina", paga: "la vergogna di Irma", ritorna: "la processione", cambia: "perdona"}
+      pg_tobia: {tu: "guardia", bisogno: "giustizia", vai: "il furto", cerca: "il colpevole", trova: "il debito", paga: "la legge", ritorna: "la cappella", cambia: "capisce"}
