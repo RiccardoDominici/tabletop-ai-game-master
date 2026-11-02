@@ -54,6 +54,16 @@ def _voci(c: Campagna, e: Esito) -> list[dict]:
         for x in v.get("ammessa_nel_catalogo") or []:
             if x not in c.per_id:
                 e.errore("SEGRETI.riferimento", dove, f"ammessa_nel_catalogo: battuta inesistente {x}")
+        # Una regex che non trova né il fatto che protegge né le battute che lo rivelano non protegge
+        # niente: è il modo più semplice per «zittire» il validatore restringendo le regex.
+        bersagli = [str(c.canone[f].get("testo", "")) for f in v.get("fatti") or [] if f in c.canone]
+        for x in v.get("pubblica_dopo") or []:
+            b_ = c.per_id.get(x)
+            if b_:
+                bersagli += [str(r) for vv in [b_.get("testo") or []] + list(b_.get("varianti") or []) for r in vv]
+        if bersagli and not any(rx.search(s.lower()) for s in bersagli):
+            e.avviso("SEGRETI.regex_inerte", dove,
+                     "la regex non trova né il testo dei fatti che protegge né le battute che li rivelano")
         out.append({**v, "_rx": rx, "_dove": dove})
     coperti = {f for v in out for f in v.get("fatti") or []}
     for f in sorted(c.fatti_nascosti() - coperti):

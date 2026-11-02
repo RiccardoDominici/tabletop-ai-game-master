@@ -384,6 +384,13 @@ def test_segreti_regex_non_valida(camp):
     assert "SEGRETI.regex" in errori(camp)
 
 
+def test_segreti_regex_che_non_protegge_niente(camp):
+    from valida import valida as _v
+    modifica(camp, "repertorio/parole_segrete.yaml", lambda d: d["parole"][2].update(regex="zzzz_nessuna_parola"))
+    esito, _ = _v(camp)
+    assert "SEGRETI.regex_inerte" in {v.codice for v in esito.avvisi}
+
+
 # --- IMMAGINI -------------------------------------------------------------------------------------
 
 def test_immagini_ritratto_senza_stile(camp):
