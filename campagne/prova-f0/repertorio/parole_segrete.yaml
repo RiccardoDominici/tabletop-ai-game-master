@@ -51,9 +51,9 @@ parole:
     nota: "f_chicchi_neri, f_setaccio_inutile: Ottavia ha setacciato la farina. «setacciare tra le dita» (azione dei PG sui sacchi) è pubblico"
   - parola: "segale di Gualtiero"
     regex: "gualtiero[^.]{0,50}segale|segale[^.]{0,50}gualtiero"
-    fatti: [f_segale_gualtiero]
+    fatti: [f_segale_gualtiero, f_pane_lumi_segale]
     pubblica_dopo: [i_registro_conti, i_ottavia_confessione, nar_registro, ott_segale_chicco, ott_segale_passato, ott_parla_al_paese]
-    nota: "f_segale_gualtiero: Ottavia mente sulla provenienza della segale"
+    nota: "f_segale_gualtiero: Ottavia mente sulla provenienza della segale. f_pane_lumi_segale («il pane dei lumi è fatto con la segale di Gualtiero») passa per lo stesso legame"
   - parola: "metà prezzo"
     regex: "metà prezzo"
     fatti: [f_segale_gualtiero]
@@ -175,6 +175,21 @@ parole:
     fatti: [f_rito_castagne]
     pubblica_dopo: [nar_libro_rito, ott_altra_offerta, fin_nessuno_offerta]
     nota: "f_rito_castagne: conoscenza privata di Teodora. Le castagne da sole (la zuppa) e «senti se un cibo è impuro» (abilità di Teodora) sono pubblici"
+  - parola: "beve al pozzo, ma la segale non la mangia"
+    regex: "(pane di segale|segale) non (lo|la) (tocc|mangi)|non (tocca|tocco|mangia|mangio) (mai )?(il pane di )?segale"
+    fatti: [f_baldrin_sano]
+    pubblica_dopo: [bal_sano, i_baldrin_sano]
+    nota: "f_baldrin_sano: Baldrin beve al pozzo e sta bene perché non mangia segale. Che beva al pozzo da solo è pubblico: conta il legame con la segale"
+  - parola: "il nodo dei cerusici"
+    regex: "nod\\w*[^.]{0,40}(cerusic|compagnia|grifo)|(cerusic|compagnia|grifo)[^.]{0,60}\\bnod"
+    fatti: [f_nodo_cerusici]
+    pubblica_dopo: []
+    nota: "f_nodo_cerusici: conoscenza privata di Corrado. Il nodo doppio e piatto da solo è pubblico (nar_bende lo descrive): conta il legame con i cerusici della Compagnia"
+  - parola: "mai altrove, fino a quattro giorni fa"
+    regex: "mai altrove|fino a quattro giorni fa"
+    fatti: [f_segale_di_sempre]
+    pubblica_dopo: [i_registro_conti, nar_registro, i_ottavia_confessione, ott_segale_chicco, ott_segale_passato]
+    nota: "f_segale_di_sempre: trent'anni al mulino del paese è la versione di Ottavia ed è pubblico; il segreto è che abbia cambiato. «quattro giorni fa» da solo è pubblico (il carro di Gualtiero)"
 
 # Parti dei file congelati che, in modo B, il compilatore del contesto deve togliere o riscrivere:
 # contengono segreti in chiaro. Le battute del repertorio portano già quel contenuto, al momento giusto.
