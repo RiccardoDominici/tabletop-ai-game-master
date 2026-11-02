@@ -92,6 +92,21 @@ Stati:
 - Avviso a tutto schermo per `da_confermare`, con tre pulsanti e un conto alla rovescia; vibrazione dove esiste.
 - Esiti per chi è stato superato: privati, brevi, con il pulsante «Riscrivi».
 
+## Scelte dopo la ricerca (`docs/ricerca-azioni.md`)
+
+- **Le intenzioni restano visibili**, a differenza dei giochi WEGO dove gli ordini sono ciechi: al tavolo vero ci si
+  parla, e «anch'io» presuppone di sapere cosa ha scritto l'altro. Le azioni private restano nascoste.
+- **Un'azione per giocatore per finestra**: un nuovo invio la sostituisce (modifica), non se ne accumulano.
+- **Ricontrollo al momento della risoluzione**: il narratore risolve in ordine di invio; un'azione che a quel punto
+  non è più possibile «si spegne» (`superata`, con il motivo), non si annullano entrambe.
+- **Pareggi veri** (invii entro 1 s): l'ordine ruota tra i giocatori, così nessun posto vince sempre.
+- **Chi non scrive, aspetta**: il narratore non inventa mai l'azione di un PG.
+- **Chiusura atomica**: chiusura della finestra e passaggio a `chiusa` in un solo passo sotto lucchetto (ci sono bug
+  noti quando gli ultimi due inviano nello stesso istante).
+- **Mai perdere il testo scritto**: un'azione `superata` o `sospesa` torna nella casella, pronta da modificare.
+- **Parole degli avvisi**: niente «Conflitto!»; si dice cosa è successo e cosa si può fare. «In attesa» e «da decidere»
+  restano distinti: solo il secondo chiede una scelta.
+
 ## Verifica
 
 - Test deterministici sugli scenari (classificatore finto): dipendenza e ritiro, catena A→B→C, conflitto esclusivo
