@@ -1,0 +1,204 @@
+# Parole segrete della campagna «prova-f0» (modo B, repertorio).
+#
+# Ogni voce è una parola o un'espressione che porta un segreto: un fatto con noto_ai_pg: false,
+# il segreto di una scheda, o una conoscenza privata di un PG.
+#   parola         forma leggibile
+#   regex          come cercarla: Python re.search sul testo in minuscolo
+#   pubblica_dopo  id di indizi (i_*) o battute (ott_*, bal_*, seb_*, nar_*, fin_*, tr_*) che la rendono
+#                  pubblica; prima di quel momento è un segreto. Lista vuota = pubblica solo se la dice un giocatore.
+#   fatti          i fatti del canone che la parola rivela: un PNG che li ha nel suo `sa` può dirla
+#   nota           commento per chi legge
+#
+# Due usi:
+#  a) server: il contesto del selettore in modo B non deve contenere nessuna di queste regex,
+#     salvo quelle rese pubbliche da indizi già rivelati o battute già uscite.
+#  b) metrica dell'esperimento A/B: in una trascrizione, una riga del narratore o di un PNG che contiene
+#     una regex è una FUGA se, prima di quella riga, non è uscito nessuno degli id di `pubblica_dopo`
+#     e nessun giocatore ha scritto quella parola in un'azione. Le righe dei giocatori non contano mai.
+#     In modo A gli indizi non hanno id di battuta: vale la parte i_* di `pubblica_dopo`, cioè il primo
+#     momento in cui l'esito descritto in `come_si_trova` compare nella trascrizione (giudizio dell'agente).
+
+parole:
+  - parola: "segale guasta / pane guasto"
+    regex: "\\bguast"
+    fatti: [f_causa_segale, f_setaccio_inutile]
+    pubblica_dopo: [seb_polvere, i_sebastiano_avverte]
+    nota: "f_causa_segale, f_setaccio_inutile: il pane è fatto con segale guasta"
+  - parola: "è il pane / pane avvelenato"
+    regex: "\\bè il pane\\b|pane (è )?avvelenat"
+    fatti: [f_causa_segale]
+    pubblica_dopo: [seb_pane, i_sebastiano_avverte]
+    nota: "f_causa_segale: la febbre viene dal pane, non dal pozzo"
+  - parola: "fuoco nero"
+    regex: "fuoco nero"
+    fatti: [f_fuoco_nero]
+    pubblica_dopo: []
+    nota: "f_fuoco_nero: conoscenza privata di Ginestra"
+  - parola: "speroni"
+    regex: "speron"
+    fatti: [f_fuoco_nero]
+    pubblica_dopo: []
+    nota: "f_fuoco_nero: conoscenza privata di Ginestra"
+  - parola: "chicchi neri e curvi"
+    regex: "chicc\\w* ner|ner\\w* e curv"
+    fatti: [f_chicchi_neri]
+    pubblica_dopo: [i_speroni_neri, nar_sacco_apre, nar_pagnotta_spezza, ott_parla_al_paese]
+    nota: "f_chicchi_neri: la segale ha gli speroni"
+  - parola: "setaccio"
+    regex: "setacciat|setaccio"
+    fatti: [f_chicchi_neri, f_setaccio_inutile]
+    pubblica_dopo: [ott_segale_chicco]
+    nota: "f_chicchi_neri, f_setaccio_inutile: Ottavia ha setacciato la farina. «setacciare tra le dita» (azione dei PG sui sacchi) è pubblico"
+  - parola: "segale di Gualtiero"
+    regex: "gualtiero[^.]{0,50}segale|segale[^.]{0,50}gualtiero"
+    fatti: [f_segale_gualtiero]
+    pubblica_dopo: [i_registro_conti, i_ottavia_confessione, nar_registro, ott_segale_chicco, ott_segale_passato, ott_parla_al_paese]
+    nota: "f_segale_gualtiero: Ottavia mente sulla provenienza della segale"
+  - parola: "metà prezzo"
+    regex: "metà prezzo"
+    fatti: [f_segale_gualtiero]
+    pubblica_dopo: [i_registro_conti, i_ottavia_confessione, nar_registro, ott_segale_chicco, ott_segale_passato]
+    nota: "f_segale_gualtiero"
+  - parola: "credito / da pagare a primavera"
+    regex: "credito|pagare a primavera"
+    fatti: [f_segale_gualtiero]
+    pubblica_dopo: [i_registro_conti, nar_registro]
+    nota: "f_segale_gualtiero: Ottavia deve ancora metà della segale"
+  - parola: "prendila tutta"
+    regex: "prendila tutta"
+    fatti: [f_segale_gualtiero]
+    pubblica_dopo: [i_ottavia_confessione, ott_segale_chicco, ott_segale_passato]
+    nota: "le parole di Gualtiero a Ottavia, nella sua confessione"
+  - parola: "croste (del cane)"
+    regex: "\\bcroste\\b"
+    fatti: [f_cane_croste]
+    pubblica_dopo: [i_cane_croste, nar_cane_guarda, nar_cane_magia, nar_cane_mossa, ott_cane_dopo]
+    nota: "f_cane_croste: Ottavia mente su cosa ha mangiato il cane. «crosta» al singolare è una parola comune"
+  - parola: "sospetta il pane"
+    regex: "sospett"
+    fatti: [f_ottavia_sospetta]
+    pubblica_dopo: []
+    nota: "f_ottavia_sospetta: nessuna battuta lo dice con questa parola"
+  - parola: "l'ha avvertita / cacciato"
+    regex: "avvert|mi ha cacciat|l'ho cacciat|cacciato dalla cucina"
+    fatti: [f_avvertimento]
+    pubblica_dopo: [seb_pane, i_sebastiano_avverte, ott_parla_al_paese]
+    nota: "f_avvertimento: segreto di Ottavia, lo conosce Sebastiano"
+  - parola: "carbone (la polvere, il rimedio)"
+    regex: "\\bcarbone\\b"
+    fatti: [f_polvere_carbone, f_rimedio, f_tecla_curata, f_libretto]
+    pubblica_dopo: [seb_polvere, seb_rimedio, seb_mestiere_malato, nar_libretto, i_libretto]
+    nota: "f_polvere_carbone, f_rimedio: la polvere nera non è veleno. Prima la si può solo descrivere (sa di bruciato, tinge le dita)"
+  - parola: "carbonai sani"
+    regex: "\\bcarbonai"
+    fatti: [f_carbonai_sani]
+    pubblica_dopo: [bal_chi_malato, i_carbonai_sani]
+    nota: "f_carbonai_sani: bevono al pozzo e stanno bene"
+  - parola: "il pozzo è pulito"
+    regex: "pozzo (è )?pulito|acqua (è )?pulita"
+    fatti: [f_pozzo_pulito]
+    pubblica_dopo: [seb_accusa, i_pozzo_acqua]
+    nota: "f_pozzo_pulito"
+  - parola: "solo lui, da lontano"
+    regex: "c'ero (solo )?io|da lontano|solo lui"
+    fatti: [f_testimoni_pozzo]
+    pubblica_dopo: [i_baldrin_testimoni, bal_testimoni_nomi, bal_testimoni_sano]
+    nota: "f_testimoni_pozzo: Baldrin mente sui tre testimoni"
+  - parola: "un'ombra / gli serviva un colpevole"
+    regex: "un'ombra|serviva un colpevole"
+    fatti: [f_testimoni_pozzo]
+    pubblica_dopo: []
+    nota: "segreto di Baldrin: nessuna battuta lo dice così"
+  - parola: "pane promesso a Ilde"
+    regex: "promess\\w*[^.]{0,40}pane|pane[^.]{0,30}\\bilde\\b|\\bilde\\b[^.]{0,30}pane"
+    fatti: [f_ilde_pane]
+    pubblica_dopo: [bal_ilde, bal_mollica, bal_capisce]
+    nota: "f_ilde_pane"
+  - parola: "corvo"
+    regex: "\\bcorvo"
+    fatti: [f_tecla_dice_corvo]
+    pubblica_dopo: [nar_segno_2, i_tecla_corvo, i_tecla_racconta, bal_tecla, bal_tecla_notte, nar_tecla]
+    nota: "f_tecla_dice_corvo. Nel segno due è solo l'insulto di un ragazzo: richiama il racconto di Tecla senza svelarlo"
+  - parola: "curata / mani nella neve"
+    regex: "l'ha curat|le ha curat|ha curato tecla|mani nella neve"
+    fatti: [f_tecla_curata, f_sebastiano_tecla]
+    pubblica_dopo: []
+    nota: "f_tecla_curata: Sebastiano ha curato Tecla. «il curato» (il prete) e la neve sul passo sono pubblici"
+  - parola: "dosi (il libretto)"
+    regex: "dosi di (erbe|carbone|vino)"
+    fatti: [f_libretto]
+    pubblica_dopo: [i_libretto, nar_libretto]
+    nota: "f_libretto: appunti da cerusico. «dosi e cotture» nello stile di Ottavia è pubblico"
+  - parola: "sollievo (la magia non guarisce)"
+    regex: "sollievo"
+    fatti: [f_magia_sollievo]
+    pubblica_dopo: [seb_magia]
+    nota: "f_magia_sollievo"
+  - parola: "cerusico"
+    regex: "(sono|è|era|fa il) (un |il )?cerusic|(forestiero|sebastiano)[^.]{0,40}cerusic|cerusic[^.]{0,40}(forestiero|sebastiano)"
+    fatti: [f_sebastiano_cerusico]
+    pubblica_dopo: [seb_mestiere_promessa, seb_mestiere_malato, seb_guerra_roccalba]
+    nota: "f_sebastiano_cerusico: Sebastiano mente sul suo mestiere. «il suo cerusico disertore» nell'aggancio di Corrado è pubblico: conta solo il legame con il forestiero"
+  - parola: "disertore"
+    regex: "(sono|è|era) (un )?disertor|(forestiero|sebastiano)[^.]{0,40}disert|disert[^.]{0,40}(forestiero|sebastiano)"
+    fatti: [f_sebastiano_disertore]
+    pubblica_dopo: [seb_guerra_roccalba]
+    nota: "f_sebastiano_disertore: la battuta lo dice senza la parola"
+  - parola: "il forestiero e la Compagnia"
+    regex: "(sebastiano|forestiero)[^.]{0,60}(compagnia|roccalba|grifo)|(compagnia|roccalba|grifo)[^.]{0,60}(sebastiano|forestiero)"
+    fatti: [f_sebastiano_disertore]
+    pubblica_dopo: [seb_guerra_roccalba]
+    nota: "f_sebastiano_disertore: Compagnia e Roccalba sono pubbliche (concetto di Corrado), il legame con il forestiero no"
+  - parola: "taglia / venti corone"
+    regex: "taglia (di|sulla|sul)[^.]{0,40}(forestiero|sebastiano|testa)|(forestiero|sebastiano)[^.]{0,60}(taglia|venti corone)"
+    fatti: [f_taglia_cerusico, f_sebastiano_disertore]
+    pubblica_dopo: []
+    nota: "f_taglia_cerusico: che la taglia riguardi il forestiero lo sa solo Corrado, e solo se lo riconosce. Le corone come moneta e la taglia sul cerusico sono pubbliche"
+  - parola: "feriti nemici / il capitano"
+    regex: "feriti nemici|capitano"
+    fatti: [f_diserzione_motivo]
+    pubblica_dopo: [seb_guerra_roccalba]
+    nota: "f_diserzione_motivo"
+  - parola: "cicatrice"
+    regex: "cicatr"
+    fatti: [f_cicatrice]
+    pubblica_dopo: [i_cicatrice, nar_volto_candela, nar_volto_uscita, seb_guerra_roccalba, seb_consegnato]
+    nota: "f_cicatrice: si vede solo senza cappuccio"
+  - parola: "botola"
+    regex: "botol"
+    fatti: [f_botola]
+    pubblica_dopo: [nar_cantina, ott_offre_via]
+    nota: "f_botola: la conoscono Ottavia e Assenzio"
+  - parola: "pane impuro / castagne per i morti"
+    regex: "accettano le castagne|castagne[^.]{0,40}morti|morti[^.]{0,40}castagne|impuro[^.]{0,40}castagne"
+    fatti: [f_rito_castagne]
+    pubblica_dopo: [ott_altra_offerta, fin_nessuno_offerta]
+    nota: "f_rito_castagne: conoscenza privata di Teodora. Le castagne da sole (la zuppa) e «senti se un cibo è impuro» (abilità di Teodora) sono pubblici"
+
+# Parti dei file congelati che, in modo B, il compilatore del contesto deve togliere o riscrivere:
+# contengono segreti in chiaro. Le battute del repertorio portano già quel contenuto, al momento giusto.
+da_togliere_dal_contesto:
+  - percorso: "scena.yaml → indizi[].come_si_trova (e campagna.yaml → nodi[].indizi[].come_si_trova)"
+    motivo: "descrivono l'esito degli indizi (chicchi neri, segale di Gualtiero a metà prezzo, carbone, cicatrice, solo lui al pozzo) e la conclusione che sostengono: va tolto tutto il blocco indizi"
+  - percorso: "scena.yaml → elementi_interattivi, la voce «la botola del ripostiglio» (segnata NASCOSTA)"
+    motivo: "nomina la botola e la cantina come via d'uscita (f_botola)"
+  - percorso: "png/png_sebastiano.yaml → voce.stile: «una parola da medico, corretta subito»"
+    motivo: "svela il suo mestiere (f_sebastiano_cerusico). In modo B: «Frasi ordinate e brevi. Fa domande precise: da quando, quanto, cosa avete mangiato.»"
+  - percorso: "scena.yaml → taglio"
+    motivo: "nomina la botola («se Sebastiano è già fuggito dalla botola»): riscrivere «se Sebastiano è già sparito»"
+  - percorso: "campagna.yaml → rivelazioni, colli_di_bottiglia, colli_di_bottiglia_nota"
+    motivo: "le conclusioni e le soluzioni contengono le verità (pane, Gualtiero, cerusico, botola, castagne)"
+  - percorso: "campagna.yaml → canone, i fatti con noto_ai_pg: false"
+    motivo: "previsto dal documento del repertorio; vanno aggiunti al contesto solo quando un indizio o una battuta li rende noti (effetti.fatti_noti)"
+  - percorso: "png/*.yaml → segreto, mente_su, crede_a_torto, non_sa, sa con fatti nascosti, desiderio, paura, contraddizione, relazioni, info_chiave, iniziative, evoluzione"
+    motivo: "nominano verità e debiti (es. il desiderio di Ottavia «pagare Gualtiero», la contraddizione «avvelenarlo»). Restano: nome, pronuncia, aspetto, personalita.superficie e sotto_pressione, voce senza mai_dice, sa limitato ai fatti pubblici"
+  - percorso: "png/png_ottavia.yaml → voce.mai_dice, la voce «il nome di Gualtiero, finché non ha confessato»"
+    motivo: "dice che c'è qualcosa da confessare su Gualtiero"
+  - percorso: "scena.yaml → posta, scopo, mossa_morbida_pronta"
+    motivo: "posta dice «il pane guasto»; scopo.rif è l'id i_speroni_neri; la mossa morbida mostra le croste (la porta già la battuta nar_cane_mossa)"
+  - percorso: "campagna.yaml → orologi (tutto il blocco) e sessione, salvo riassunto_iniziale"
+    motivo: "al_completo dice che la verità sposta la rabbia su Ottavia; avanza_quando e i segni di o_febbre legano la febbre al pane; cinque_stanze e chiusura nominano carbone, taglia e Gualtiero. In modo B l'orologio arriva come stato dal Motore e i segni come battute"
+  - percorso: "png/*.yaml → aspetto.invarianti, aspetto.prompt_immagine"
+    motivo: "servono solo alle immagini; quelli di Sebastiano descrivono la cicatrice, nascosta dal cappuccio"
+  - percorso: "pg.yaml → personaggi[].conoscenze_private"
+    motivo: "botola, regola delle castagne, taglia sul cerusico, segnale di Ottavia: vanno solo ai telefoni"
