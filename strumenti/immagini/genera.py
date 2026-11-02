@@ -105,7 +105,10 @@ def registra_alias(alias: list[Richiesta], man: Manifest) -> None:
 
 def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, seme: int | None) -> None:
     """Genera davvero: un processo mflux per immagine (vedi motore.py), poi JPEG + voce nel manifest."""
+    from PIL import Image
+
     from motore import Motore, salva_jpeg, verifica_alimentazione, verifica_disco
+    from rifila import rifila
 
     dest = cartella / "immagini"
     motore = Motore(fp16=fp16)
@@ -126,13 +129,20 @@ def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, 
             log.info("(%d/%d) %s %dx%d seme=%d", i, len(da_fare), r.id, gl, ga, s)
             # Il PNG di mflux resta in una cartella temporanea: nella campagna va solo il JPEG.
             e = motore.genera(r.prompt, s, gl, ga, Path(tmp) / f"{r.id}.png", riferimenti=rif)
-            salva_jpeg(e.percorso, dest / r.file, qualita=QUALITA_JPEG, dimensioni=(r.larghezza, r.altezza))
+            with Image.open(e.percorso) as png:
+                img, rifilato = png.convert("RGB"), 0.0
+            # Solo le immagini a tutto schermo: l'orlo bianco sul nero del proiettore abbaglia.
+            # I ritratti hanno il fondo scuro pieno e stanno in un riquadro: non si toccano.
+            if r.tipo in ("luogo", "situazione"):
+                img, rifilato = rifila(img)
+            salva_jpeg(img, dest / r.file, qualita=QUALITA_JPEG, dimensioni=(r.larghezza, r.altezza))
             kb = (dest / r.file).stat().st_size / 1000
             man.registra({
                 "id": r.id, "file": r.file, "tipo": r.tipo, "prompt": r.prompt, "seme": s,
                 "larghezza": r.larghezza, "altezza": r.altezza, "generata": [gl, ga],
                 "riferimenti": r.riferimenti, "modello": motore.descrizione, "secondi": round(e.secondi, 1),
                 "picco_gb": round(e.picco_gb, 2) if e.picco_gb else None, "kb": round(kb),
+                "rifilato_pct": round(rifilato * 100, 1),
                 "quando": time.strftime("%Y-%m-%d %H:%M:%S"),
             })
             log.info("salvata %s (%.0f KB, qualità %d)", r.file, kb, QUALITA_JPEG)

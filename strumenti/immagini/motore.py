@@ -156,7 +156,20 @@ def verifica_disco(cartella: str | Path, minimo_gb: float = DISCO_MINIMO_GB) -> 
         raise RuntimeError(f"solo {libero:.1f} GB liberi su disco (minimo {minimo_gb} GB): libera spazio prima di generare.")
 
 
-def salva_jpeg(sorgente: str | Path, percorso: str | Path, lato_max: int = 1280, qualita: int = 85,
+class _Gia:
+    """Context manager che restituisce un'immagine già aperta senza chiuderla all'uscita."""
+
+    def __init__(self, img):
+        self.img = img
+
+    def __enter__(self):
+        return self.img
+
+    def __exit__(self, *exc):
+        return False
+
+
+def salva_jpeg(sorgente, percorso: str | Path, lato_max: int = 1280, qualita: int = 85,
                dimensioni: tuple[int, int] | None = None) -> Path:
     """Salva una copia JPEG (per git e per il proiettore) di un'immagine su disco.
 
@@ -168,7 +181,9 @@ def salva_jpeg(sorgente: str | Path, percorso: str | Path, lato_max: int = 1280,
 
     percorso = Path(percorso)
     percorso.parent.mkdir(parents=True, exist_ok=True)
-    with Image.open(sorgente) as img:
+    # `sorgente` può essere già un'immagine aperta (per esempio dopo rifila.rifila).
+    apri = (lambda: _Gia(sorgente)) if isinstance(sorgente, Image.Image) else (lambda: Image.open(sorgente))
+    with apri() as img:
         img = img.convert("RGB")
         if dimensioni:
             lw, la = dimensioni
