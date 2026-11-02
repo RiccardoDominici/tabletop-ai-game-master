@@ -25,6 +25,12 @@ from .testo import TEMI_GENERICI, frasi, limite_da_stile, n_parole, problemi_di_
 GATE = ("indizi_rivelati", "battute_usate", "orologio", "privata", "da_pg")
 
 
+def _scene_battuta(b: dict) -> set[str]:
+    """`scena` di una battuta come insieme (un id o una lista)."""
+    s = b.get("scena")
+    return {s} if isinstance(s, str) else {x for x in s if isinstance(x, str)} if isinstance(s, list) else set()
+
+
 def blocchi_richiede(r: dict) -> list[dict]:
     """Le condizioni di una battuta come blocchi: la base (senza `oppure`) e ogni alternativa di `oppure`."""
     base = {k: v for k, v in (r or {}).items() if k != "oppure"}
@@ -121,8 +127,12 @@ def _schema(c: Campagna, e: Esito) -> None:
             e.errore("REPERTORIO.flag", dove, "un esempio di voce non può rivelare, mentire o far avanzare l'orologio")
         if b.get("riempitivo") and b.get("tipo") not in K.TIPI_RIEMPITIVO:
             e.errore("REPERTORIO.flag", dove, f"riempitivo ammesso solo per {sorted(K.TIPI_RIEMPITIVO)}")
-        if b.get("scena") is not None and b["scena"] not in scene:
-            e.errore("REPERTORIO.scena", dove, f"scena inesistente {b['scena']}")
+        if b.get("scena") is not None:
+            # `scena` è un id o una lista di id (il Motore accetta entrambi).
+            elenco = b["scena"] if isinstance(b["scena"], list) else [b["scena"]]
+            for sc in elenco:
+                if sc not in scene:
+                    e.errore("REPERTORIO.scena", dove, f"scena inesistente {sc}")
         for k in b.get("richiede") or {}:
             if k not in K.CAMPI_RICHIEDE:
                 e.errore("REPERTORIO.richiede", dove, f"richiede.{k} non previsto")
@@ -228,11 +238,12 @@ def _copertura(c: Campagna, e: Esito) -> None:
             if len(chi) != 1:
                 e.errore("COPERTURA.segno", f"{oid} segno {k}",
                          f"{len(chi)} battute (serve 1, con richiede.orologio min = max = {k - 1})")
-            elif chi[0].get("scena") and scene_di[oid] - {chi[0]["scena"]}:
+            elif chi[0].get("scena") and scene_di[oid] - _scene_battuta(chi[0]):
                 # Un orologio di sessione avanza in ogni scena dove è attivo: il segno deve poter uscire ovunque.
                 e.errore("COPERTURA.segno", chi[0]["id"],
-                         f"vale solo in {chi[0]['scena']}, ma {oid} è attivo anche in {sorted(scene_di[oid] - {chi[0]['scena']})}: "
-                         "togli `scena` e scrivi un segno che si sente da tutte")
+                         f"vale solo in {sorted(_scene_battuta(chi[0]))}, ma {oid} è attivo anche in "
+                         f"{sorted(scene_di[oid] - _scene_battuta(chi[0]))}: togli `scena` (o elenca tutte) e scrivi un "
+                         "segno che si sente da tutte")
             elif k - 1 < len(o.get("segni") or []) and radici(o["segni"][k - 1]) - radici(" ".join(_split(r)[1] for r in chi[0]["testo"])):
                 e.avviso("COPERTURA.segno", chi[0]["id"], "il testo si allontana dal segno scritto in campagna.yaml")
     # Finali.

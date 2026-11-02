@@ -59,27 +59,26 @@ def controlla(c: Campagna, e: Esito) -> None:
 def _voci_fuori_scena(c: Campagna, e: Esito) -> None:
     """Ciò che porta un PNG in una scena dove non è presente, accanto a una voce che si confonde con la sua."""
     presenti = {s.get("id"): set(s.get("png_presenti") or []) for _, s in c.scene}
-    # 1. Battute legate a una scena (campo `scena`) in cui parla un PNG che lì non è presente.
+    # 1. Battute legate a una scena (campo `scena`, un id o una lista) in cui parla un PNG che lì non è
+    #    presente: il Motore non le metterà mai in catalogo in quella scena.
     for b in c.battute:
-        sid = b.get("scena")
-        if sid not in presenti:
-            continue
-        for p in sorted(_parlanti(b) - presenti[sid]):
-            if p in c.png:
-                e.avviso("SCENA.png_assente", f"{b['_file']} {b.get('id')}",
-                         f"{p} parla in una battuta di {sid}, ma non è tra i png_presenti di quella scena", rigoroso=True)
+        elenco = b.get("scena") if isinstance(b.get("scena"), list) else [b.get("scena")]
+        for sid in elenco:
+            if sid not in presenti:
+                continue
+            for p in sorted(_parlanti(b) - presenti[sid]):
+                if p in c.png:
+                    e.avviso("SCENA.png_assente", f"{b['_file']} {b.get('id')}",
+                             f"{p} parla in una battuta di {sid}, ma non è tra i png_presenti di quella scena: "
+                             "il Motore non la elencherà lì", rigoroso=True)
     for nome, s in c.scene:
         sid, qui = s.get("id"), presenti.get(s.get("id"), set())
         for a in sorted(set(c.png) - qui):
             simili = sorted(b for b in qui if c.voci_confuse(a, b))
             if not simili:
                 continue
-            # 2. Battute di A senza `scena`: possono uscire anche qui (il Motore non guarda chi è presente).
-            libere = [b.get("id") for b in c.battute if b.get("scena") is None and a in _parlanti(b)]
-            if libere:
-                e.avviso("SCENA.voci_simili_altrove", nome,
-                         f"{len(libere)} battute di {a} senza `scena` possono uscire qui, accanto a {', '.join(simili)} "
-                         f"(voce simile): {', '.join(libere[:4])}{'…' if len(libere) > 4 else ''}")
+            # 2. Battute di A senza `scena`: il Motore non le elenca qui, perché A non è tra i png_presenti
+            #    (repertorio/stato.ts, parlantiDi). Niente da segnalare.
             # 3. Testi della scena che portano A qui.
             for campo in ("descrizione", "taglio", "mossa_morbida_pronta", "apertura"):
                 if nomina(str(s.get(campo) or ""), c.png[a][1]):

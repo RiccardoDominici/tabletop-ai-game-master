@@ -242,12 +242,41 @@ def _seconda_scena(camp: Path, presenti_prima: list[str], presenti_seconda: list
     modifica(camp, "scena.yaml", lambda d: d.update(png_presenti=presenti_prima))
 
 
-def test_scena_battute_libere_di_una_voce_simile_altrove(camp):
-    # Nota 21: un PNG assente può parlare con le sue battute senza `scena`, accanto a una voce simile.
+def test_scena_battute_libere_di_un_png_assente(camp, tmp_path):
+    # Nota 21: un PNG assente parlava con le sue battute senza `scena`, accanto a una voce simile. Ora il
+    # Motore elenca solo le battute dei PNG presenti: niente avviso, e la misura dei copioni lo segue.
+    from valida import copioni
+    from valida.esito import Esito
     modifica(camp, "png/png_bruno.yaml", lambda d: d["voce"]["tts"].update(voce_id="tabitha"))
     _seconda_scena(camp, ["png_bruno"], ["png_irma"])
     assert "SCENA.voci_simili" not in errori(camp)
-    assert "SCENA.voci_simili_altrove" in avvisi(camp)
+    assert "SCENA.voci_simili_altrove" not in avvisi(camp)
+    cartella = tmp_path / "copioni"
+    cartella.mkdir()
+    azione = [[{"pg": "pg_tobia", "azione": "chiedo a Bruno se ha visto qualcosa stanotte"}]]
+    scrivi(cartella, "prima.yaml", {"turni": azione})
+    scrivi(cartella, "seconda.yaml", {"scena": "scena_due", "turni": azione})
+    _, c = valida(camp, contesto_b=False)
+    righe = copioni.controlla(c, Esito(), cartella)
+    assert "bruno_notte_versione" in righe[0] and "bruno_notte_versione" not in righe[1]
+
+
+def test_scena_come_lista(camp, tmp_path):
+    from valida import copioni
+    from valida.esito import Esito
+    _seconda_scena(camp, ["png_irma", "png_bruno"], ["png_irma"])
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").update(scena=["scena_volpe", "scena_due"]))
+    assert "REPERTORIO.scena" not in errori(camp)
+    cartella = tmp_path / "copioni"
+    cartella.mkdir()
+    azione = [[{"pg": "pg_lia", "azione": "scendo in cantina e guardo le botti"}]]
+    scrivi(cartella, "volpe.yaml", {"turni": azione})
+    scrivi(cartella, "zdue.yaml", {"scena": "scena_due", "turni": azione})
+    _, c = valida(camp, contesto_b=False)
+    righe = copioni.controlla(c, Esito(), cartella)
+    assert "nar_botte" in righe[0] and "nar_botte" in righe[1]
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").update(scena=["scena_volpe", "scena_inventata"]))
+    assert "REPERTORIO.scena" in errori(camp)
 
 
 def test_scena_testo_che_porta_una_voce_simile(camp):
@@ -483,8 +512,11 @@ def test_repertorio_da_pg_inesistente(camp):
     assert "REPERTORIO.riferimento" in errori(camp)
 
 
-def test_repertorio_oppure_finche_il_server_non_lo_applica(camp):
-    # Nota 25: il cancello «oppure». Il server oggi ignora le chiavi che non conosce: sarebbe un cancello aperto.
+def test_repertorio_oppure_finche_il_server_non_lo_applica(camp, monkeypatch):
+    # Nota 25: il cancello «oppure». Un server che ignora le chiavi che non conosce lo lascerebbe aperto:
+    # finché OPPURE_NEL_SERVER è False il validatore lo rifiuta (oggi è True: il Motore lo applica).
+    from valida import costanti
+    monkeypatch.setattr(costanti, "OPPURE_NEL_SERVER", False)
     modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_promessa").update(
         richiede={"battute_usate": ["bruno_notte_versione"], "oppure": [{"privata": True}, {"indizi_rivelati": ["i_cera"]}]}))
     assert "REPERTORIO.oppure" in errori(camp)

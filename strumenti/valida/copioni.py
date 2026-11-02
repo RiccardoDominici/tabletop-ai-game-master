@@ -15,7 +15,9 @@ Come il Motore, e a differenza della prima versione (nota 16 della prova cieca):
     come usata dal turno dopo, e i suoi `rivela_indizi` come rivelati. Così `battute_usate` e
     `indizi_rivelati` si aprono quando potrebbero aprirsi davvero. `richiede.orologio`,
     `battute_non_usate` e `indizi_non_rivelati` si considerano soddisfatti: il conto resta un tetto;
-  - `richiede.oppure`: basta una alternativa.
+  - `richiede.oppure`: basta una alternativa, sempre insieme alla base (le liste si sommano);
+  - PNG presenti: le battute di un PNG che non è tra i `png_presenti` della scena non entrano
+    (il narratore sì); `scena` può essere una lista di scene.
 Non conta, perché non dipende dai temi: le battute che entrano perché l'azione nomina il PNG che parla
 (nome o alias). Quelle si riportano a parte, per sapere quanto pesano.
 """
@@ -64,14 +66,54 @@ class Stato:
 
 
 def _blocchi(r: dict) -> list[dict]:
+    """Base E alternativa, come il Motore (repertorio/condizioni.ts): le liste di condizioni si sommano,
+    `privata` è quella dell'alternativa se la dice, `da_pg` l'intersezione se entrambe lo dicono."""
     base = {k: v for k, v in (r or {}).items() if k != "oppure"}
     alternative = [a for a in (r or {}).get("oppure") or [] if isinstance(a, dict)]
-    return [{**base, **a} for a in alternative] if alternative else [base]
+    if not alternative:
+        return [base]
+    out = []
+    for a in alternative:
+        blocco = dict(base)
+        for k, v in a.items():
+            if isinstance(v, list) and isinstance(base.get(k), list):
+                blocco[k] = [x for x in base[k] if x in v] if k == "da_pg" else [*base[k], *v]
+            else:
+                blocco[k] = v
+        out.append(blocco)
+    return out
 
 
-def _risponde(b: dict, azione: dict, stato: Stato) -> bool:
+def scene_di(b: dict) -> list[str]:
+    """`scena` di una battuta come lista (vuota = tutte le scene)."""
+    s = b.get("scena")
+    return [s] if isinstance(s, str) else [x for x in s if isinstance(x, str)] if isinstance(s, list) else []
+
+
+def _parlanti(b: dict) -> set[str]:
+    """PNG che parlano nella battuta: chi e le etichette delle righe (come parlantiDi del Motore)."""
+    out = {b["chi"]} if b.get("chi") and b.get("chi") != "narratore" else set()
+    for v in [b.get("testo") or [], *(b.get("varianti") or [])]:
+        for r in v if isinstance(v, list) else []:
+            m = re.match(r"^\s*\[([A-Za-z0-9_]+)\]", str(r))
+            if m and m.group(1).lower() != "narratore":
+                out.add(m.group(1).lower())
+    return out
+
+
+def _presenti(c: Campagna, scena: str | None) -> set[str] | None:
+    for _, s in c.scene:
+        if s.get("id") == scena:
+            return set(s.get("png_presenti") or c.png.keys())
+    return None
+
+
+def _risponde(b: dict, azione: dict, stato: Stato, presenti: set[str] | None = None) -> bool:
     """Cancelli della battuta per quest'azione, con lo stato ottimista."""
-    if b.get("scena") and stato.scena and b["scena"] != stato.scena:
+    scene = scene_di(b)
+    if scene and stato.scena and stato.scena not in scene:
+        return False
+    if presenti is not None and not _parlanti(b) <= presenti:
         return False
     for r in _blocchi(b.get("richiede") or {}):
         if bool(r.get("privata")) != bool(azione.get("privata")):
@@ -94,8 +136,9 @@ def catalogo(c: Campagna, azione: str | dict, stato: Stato | None = None) -> lis
     """Battute che entrano nel catalogo di un'azione per i loro temi."""
     a = azione if isinstance(azione, dict) else {"azione": azione}
     st = stato or Stato(scena=(c.scena_iniziale() or {}).get("id"))
+    presenti = _presenti(c, st.scena)
     return [b["id"] for b in c.battute
-            if _candidata(b) and _risponde(b, a, st) and tema_presente(a.get("azione", ""), b.get("temi") or [])]
+            if _candidata(b) and _risponde(b, a, st, presenti) and tema_presente(a.get("azione", ""), b.get("temi") or [])]
 
 
 def per_nome(c: Campagna, azione: dict, stato: Stato, gia: list[str]) -> list[str]:
@@ -107,8 +150,9 @@ def per_nome(c: Campagna, azione: dict, stato: Stato, gia: list[str]) -> list[st
         parole = {nome, nome.split()[0] if nome else "", *(d.get("alias") or [])}
         if any(len(_norm(p)) > 2 and re.search(rf"(?<![\w]){re.escape(_norm(p))}(?![\w])", t) for p in parole if p):
             nominati.add(pid)
+    presenti = _presenti(c, stato.scena)
     return [b["id"] for b in c.battute if _candidata(b) and b["id"] not in gia and b.get("chi") in nominati
-            and _risponde(b, azione, stato)]
+            and _risponde(b, azione, stato, presenti)]
 
 
 def controlla(c: Campagna, e: Esito, cartella_copioni: Path) -> list[str]:

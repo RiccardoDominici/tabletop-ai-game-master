@@ -38,7 +38,7 @@ CAMPI_RICHIEDE = {"indizi_rivelati", "indizi_non_rivelati", "battute_usate", "ba
 # delle alternative (docs/repertorio.md, «Cancelli con oppure»). Il server oggi ignora le chiavi che non
 # conosce: una battuta con `oppure` uscirebbe con le sole condizioni di base, cioè con il cancello
 # aperto. Finché il server non lo applica, usarlo è un errore; quando lo applica, mettere True.
-OPPURE_NEL_SERVER = False
+OPPURE_NEL_SERVER = True  # il Motore applica richiede.oppure (apps/server/src/repertorio/condizioni.ts)
 CAMPI_EFFETTI = {"rivela_indizi", "menzogna_detta", "fatti_noti", "avanza_orologio"}
 # Tipi che devono restare selezionabili: non possono essere esempi di voce.
 TIPI_ESSENZIALI = {"menzogna", "confessione", "indizio", "segno_orologio", "finale"}
