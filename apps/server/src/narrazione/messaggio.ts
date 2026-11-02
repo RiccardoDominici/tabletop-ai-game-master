@@ -98,7 +98,7 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
         .join('\n'),
     );
     if (d.azioni.some((a) => a.numero !== undefined)) parti.push('Le azioni sono in ordine di invio: risolvile in quest’ordine.');
-    if (d.collegamenti?.length) parti.push('Collegamenti tra le azioni:', d.collegamenti.map((c) => `- ${c}`).join('\n'));
+    if (d.collegamenti?.length) parti.push(`Collegamenti tra le azioni:\n${d.collegamenti.map((c) => `- ${c}`).join('\n')}`);
   }
 
   if (d.orologi) parti.push('## Orologi della scena (stato tenuto dal Motore)', d.orologi);
