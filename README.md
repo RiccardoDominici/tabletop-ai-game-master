@@ -9,7 +9,7 @@
    - **Ferma la narrazione** zittisce subito il narratore e mette in pausa;
    - **Pausa / Riprendi** ferma il tavolo senza interrompere la frase in corso;
    - una **nota di regia** («frasi più corte», «Ottavia è più sospettosa») vale per i turni successivi.
-6. Voce vera (lenta da caricare, fino a 7 GB di RAM): aggiungi `--voce qwen`. Per finire: `scripts/arresto.sh`.
+6. Voce vera (pronta in circa 20 s, circa 3 GB di RAM): aggiungi `--voce qwen`. Per finire: `scripts/arresto.sh`.
 
 Master IA per giocare a D&D in presenza: telefoni dei giocatori, proiettore con la scena,
 cassa con narratore e voci dei personaggi, musica sempre in sottofondo.
@@ -19,4 +19,4 @@ cassa con narratore e voci dei personaggi, musica sempre in sottofondo.
 - `docs/ricerca-tecnica.md` — sintesi della ricerca tecnica
 - `research/` — risultati misurati delle prove del 1° novembre 2026 (LLM, TTS, STT, musica)
 
-Fase attuale: **F0**, prova completa end-to-end (telefono testo → Haiku → voce locale → schermo).
+Stato (2 novembre 2026): F0 completata; azioni simultanee, repertorio pre-scritto, immagini, pannello del master, più scene e skill del Preparatore funzionanti. Cose aperte in `docs/da-fare.md`.
