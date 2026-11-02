@@ -2,3 +2,6 @@ def_1024x576	1024x576		exit=0	reale_s=73.71	passi=01:04	picco_gb=7,16	swap_mb=62
 lowram_1024x576	1024x576	--low-ram	exit=0	reale_s=72.91	passi=01:04	picco_gb=4,35	swap_mb=8125.50->7685.38	swapouts_mb=0
 def_768x432	768x432		exit=0	reale_s=48.67	passi=00:42	picco_gb=6,22	swap_mb=7685.38->7533.38	swapouts_mb=0
 fp16_768x432	768x432	--compute-precision float16	exit=0	reale_s=40.01	passi=00:33	picco_gb=6,23	swap_mb=7533.38->7319.25	swapouts_mb=12
+v2_1024x576	1024x576	--low-ram --compute-precision float16	exit=0	reale_s=54.76	passi=00:47	picco_gb=4,28	swap_mb=5054.69->5300.44	swapouts_mb=257
+v2_1280x720	1280x720	--low-ram --compute-precision float16	exit=0	reale_s=81.21	passi=01:11	picco_gb=4,50	swap_mb=5300.44->5522.25	swapouts_mb=240
+v2_1920x1080	1920x1080	--low-ram --compute-precision float16	exit=0	reale_s=200.34	passi=03:01	picco_gb=5,36	swap_mb=5522.25->5753.81	swapouts_mb=502

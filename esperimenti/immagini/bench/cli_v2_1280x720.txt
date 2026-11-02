@@ -1,0 +1,22 @@
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:19<00:59, 19.80s/it] 50%|█████     | 2/4 [00:36<00:36, 18.25s/it] 75%|███████▌  | 3/4 [00:54<00:17, 17.76s/it]100%|██████████| 4/4 [01:11<00:00, 17.58s/it]100%|██████████| 4/4 [01:11<00:00, 17.86s/it]
+INFO: Image saved successfully at: /Users/riccardo/Developer/cantastorie/esperimenti/immagini/png/bench_cli_v2_1280x720.png
+INFO: Metadata embedded successfully at: /Users/riccardo/Developer/cantastorie/esperimenti/immagini/png/bench_cli_v2_1280x720.png
+Peak MLX memory: 3.43 GB
+       81,21 real         2,18 user         8,79 sys
+          1202782208  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              240173  page reclaims
+                1887  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                6604  voluntary context switches
+               39728  involuntary context switches
+         37309153785  instructions retired
+         25391556478  cycles elapsed
+          4498186240  peak memory footprint

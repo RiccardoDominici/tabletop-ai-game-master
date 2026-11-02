@@ -1,0 +1,15 @@
+2026-11-02 15:48:45,851 INFO immagini.motore: generata v2_b_ottavia_forno.png 768x432 seme=1101 rif=1 in 67.6 s (picco processo 4.38 GB)
+2026-11-02 15:49:48,533 INFO immagini.motore: generata v2_b_ottavia_ceste.png 768x432 seme=1101 rif=1 in 62.6 s (picco processo 4.37 GB)
+2026-11-02 15:50:29,845 INFO immagini.motore: generata v2_a_ottavia_forno.png 768x432 seme=1101 rif=0 in 41.3 s (picco processo 4.17 GB)
+2026-11-02 15:51:15,915 INFO immagini.motore: generata v2_a_ottavia_ceste.png 768x432 seme=1101 rif=0 in 46.0 s (picco processo 4.19 GB)
+2026-11-02 15:52:15,616 INFO immagini.motore: generata v2_a_baldrin_porta.png 768x432 seme=1202 rif=0 in 59.6 s (picco processo 4.19 GB)
+2026-11-02 15:53:08,179 INFO immagini.motore: generata v2_a_baldrin_finestra.png 768x432 seme=1202 rif=0 in 52.5 s (picco processo 4.20 GB)
+2026-11-02 15:54:03,329 INFO immagini.motore: generata v2_a_sebastiano_grata.png 768x432 seme=1303 rif=0 in 55.1 s (picco processo 4.20 GB)
+2026-11-02 15:54:58,352 INFO immagini.motore: generata v2_a_sebastiano_ripostiglio.png 768x432 seme=1303 rif=0 in 55.0 s (picco processo 4.20 GB)
+2026-11-02 15:54:58,373 INFO immagini.prova: già fatta: v2_b_ottavia_forno
+2026-11-02 15:54:58,373 INFO immagini.prova: già fatta: v2_b_ottavia_ceste
+2026-11-02 15:56:24,503 INFO immagini.motore: generata v2_b_baldrin_porta.png 768x432 seme=1202 rif=1 in 86.1 s (picco processo 4.32 GB)
+2026-11-02 15:57:44,292 INFO immagini.motore: generata v2_b_baldrin_finestra.png 768x432 seme=1202 rif=1 in 79.7 s (picco processo 4.35 GB)
+2026-11-02 15:59:08,816 INFO immagini.motore: generata v2_b_sebastiano_grata.png 768x432 seme=1303 rif=1 in 84.5 s (picco processo 4.37 GB)
+2026-11-02 16:00:35,086 INFO immagini.motore: generata v2_b_sebastiano_ripostiglio.png 768x432 seme=1303 rif=1 in 86.2 s (picco processo 4.32 GB)
+exit=0

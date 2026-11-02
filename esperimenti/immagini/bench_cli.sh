@@ -11,8 +11,8 @@ BIN="$RADICE/strumenti/immagini/.venv/bin"
 ETICHETTA="$1"; L="$2"; A="$3"; shift 3
 
 mkdir -p "$QUI/bench" "$QUI/png"
-# Prompt del luogo + [STILE] v0, lo stesso del bench Python.
-PROMPT="$("$BIN/python" -c "import sys; sys.path.insert(0, '$QUI'); import prompt_prova as p; print(p.prompt_luogo() + ', ' + p.STILI['v0'])")"
+# Prompt: $PROMPT_BENCH se c'è, altrimenti il luogo della scena + [STILE] v0 (quello delle prime misure).
+PROMPT="${PROMPT_BENCH:-$("$BIN/python" -c "import sys; sys.path.insert(0, '$QUI'); import prompt_prova as p; print(p.prompt_luogo() + ', ' + p.STILI['v0'])")}"
 
 swap() { sysctl -n vm.swapusage | sed -E 's/.*used = ([0-9.,]+)M.*/\1/' | tr ',' '.'; }
 swapouts() { vm_stat | awk '/Swapouts/ {gsub("\\.","",$2); print $2}'; }
