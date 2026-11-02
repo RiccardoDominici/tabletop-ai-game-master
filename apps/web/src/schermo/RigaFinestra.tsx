@@ -1,29 +1,26 @@
 /**
  * Riga compatta dello stato della finestra, in basso a sinistra: chi è invitato, chi ha scritto,
- * chi è pronto, e il conto alla rovescia della chiusura automatica.
+ * chi è pronto, e il conto alla rovescia della chiusura automatica. A finestra chiusa dice cosa
+ * succede, con il nome di chi parla davvero (etichettaFase).
  */
 import clsx from 'clsx';
 import type { StatoTavolo } from '@cantastorie/shared';
 import { secondiRimasti } from '../lib/formato';
 import { useOra } from '../lib/useOra';
-
-const ETICHETTA_FASE: Record<StatoTavolo['fase'], string> = {
-  attesa: 'In attesa di cominciare',
-  apertura: 'Il narratore apre la scena',
-  finestra: 'Il narratore ascolta',
-  narrazione: 'Il narratore sta parlando',
-  fermata: 'Scena fermata',
-};
+import { useSchermo } from '../store/schermo';
+import { etichettaFase } from './etichettaFase';
 
 export function RigaFinestra({ stato }: { stato: StatoTavolo }) {
   const { finestra } = stato;
   const aperta = stato.fase === 'finestra' && finestra.aperta;
   const ora = useOra(aperta && finestra.chiusura_prevista_ms !== null);
+  // Chi suona ADESSO sulla linea del tempo audio (non chi è arrivato dal server).
+  const inOnda = useSchermo((s) => s.inOnda);
 
   if (!aperta) {
     return (
       <p data-testid="riga-finestra" className="text-[1.5vw] text-pergamena-2 drop-shadow-[0_2px_6px_rgb(0_0_0/0.9)]">
-        {ETICHETTA_FASE[stato.fase]}
+        {etichettaFase(stato.fase, inOnda)}
       </p>
     );
   }

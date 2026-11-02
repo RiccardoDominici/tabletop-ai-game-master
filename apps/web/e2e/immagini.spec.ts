@@ -45,6 +45,8 @@ test('proiettore: immagine del luogo, ritratto di chi parla, dissolvenza, ripieg
   await tel.getByTestId('pronto').click();
   await expect(schermo.getByTestId('ritratto')).toBeVisible({ timeout: 30_000 });
   await expect(schermo.getByTestId('ritratto')).toHaveAttribute('src', /ritratto_png_ottavia\.jpg/);
+  // La riga di stato in basso dice chi parla davvero, non «Il narratore sta parlando».
+  await expect(schermo.getByTestId('riga-finestra')).toHaveText('Ottavia sta parlando');
   await schermo.screenshot({ path: path.join(SCREENSHOT, 'immagini-ritratto-png.png') });
 
   // Cambio di luogo → dissolvenza.
