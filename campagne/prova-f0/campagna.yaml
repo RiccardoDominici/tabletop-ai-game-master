@@ -373,3 +373,85 @@ preparazione:
       pg_corrado: {tu: "soldato pieno di debiti", bisogno: "una paga pulita", vai: "riconosce il cerusico", cerca: "il prezzo giusto", trova: "perché è fuggito", paga: "rinuncia alla taglia, o alla coscienza", ritorna: "sceglie da che parte stare", cambia: "da mercenario a protettore"}
       pg_assenzio: {tu: "trovatello guardato storto", bisogno: "essere accettato a casa", vai: "vede Ottavia mentire", cerca: "un modo di salvarla", trova: "la sua vergogna", paga: "la affronta", ritorna: "la difende davanti al paese", cambia: "smette di scappare"}
       pg_teodora: {tu: "chierica al primo incarico", bisogno: "fidarsi del proprio giudizio", vai: "deve benedire il pane", cerca: "cosa vuole davvero il rito", trova: "la regola delle castagne", paga: "sfida l'usanza davanti a tutti", ritorna: "guida la veglia a modo suo", cambia: "da esecutrice a guida"}
+
+  # Cronologia e logistica: i conti che il validatore rifà (strumenti/valida/regole_mondo.py, classe MONDO).
+  # Le ore scelte: la Notte dei Lumi è ai primi di novembre, in montagna il sole cala verso le cinque.
+  # I PG arrivano al tramonto, la veglia comincia alle 18 e finisce alle 22: il rintocco di metà veglia
+  # alle 20 (terzo segno di o_colpevole), i tre rintocchi alle 22 (sesto segno). La scena comincia alle 19,
+  # dopo la zuppa. «giorno: 1» è il giorno dopo. Qui ci sono segreti: preparazione non va al narratore.
+  cronologia:
+    eventi:
+      # --- il passato che fonda i segreti ---------------------------------------------------------
+      - {id: t_segale_di_sempre, quando: {anni_fa: 30}, fatti: [f_segale_di_sempre, f_pane_lumi_paga],
+         cosa: "Ottavia comincia a fare il pane del Forno Vecchio con la segale del mulino del paese, e da allora il pane dei lumi a un soldo a famiglia."}
+      - {id: t_cerusico, quando: {anni_fa: 12}, fatti: [f_sebastiano_cerusico, f_libretto, f_nodo_cerusici],
+         cosa: "Sebastiano diventa il cerusico della Compagnia del Grifo: chiude le bende con il nodo doppio e piatto, e comincia il libretto delle dosi."}
+      - {id: t_campi_valsecca, quando: {giorni_fa: 120}, fatti: [f_fuoco_nero],
+         cosa: "D'estate i campi bassi di Valsecca restano sott'acqua per due settimane, e la segale fa gli speroni neri."}
+      - {id: t_rifiuto_conte, quando: {giorni_fa: 30},
+         cosa: "Il granaio del conte rifiuta la segale di Gualtiero: da allora lui sa che è guasta."}
+      - {id: t_roccalba, quando: {giorni_fa: 30}, fatti: [f_sebastiano_disertore, f_diserzione_motivo],
+         cosa: "Dopo l'assedio di Roccalba il capitano ordina di lasciar morire i feriti nemici; quella notte Sebastiano diserta, con la sola borsa."}
+      - {id: t_taglia, quando: {giorni_fa: 25}, fatti: [f_taglia_cerusico, f_cicatrice],
+         cosa: "La Compagnia del Grifo mette sul suo cerusico una taglia di venti corone: sui quarant'anni, magro, la cicatrice sul sopracciglio."}
+      - {id: t_segale_comprata, quando: {giorni_fa: 4, ora: "10:00"}, fatti: [f_gualtiero_passato, f_segale_gualtiero, f_chicchi_neri],
+         cosa: "Gualtiero arriva col carro e vende a Ottavia sei sacchi di segale a metà prezzo, metà da pagare a primavera. Lei lo segna nel quaderno dei conti."}
+      - {id: t_pane_nuovo, quando: {giorni_fa: 3, ora: "06:00"}, fatti: [f_setaccio_inutile, f_causa_segale],
+         cosa: "Ottavia setaccia la segale nuova e sforna il primo pane: il paese lo compra come sempre."}
+      - {id: t_sebastiano_arriva, quando: {giorni_fa: 3, ora: "15:00"}, fatti: [f_forestiero_arrivo],
+         cosa: "Sebastiano arriva a piedi, con una borsa sola, e dice di vendere spezie. Da allora beve al pozzo."}
+      - {id: t_febbre, quando: {giorni_fa: 2, ora: "08:00"}, fatti: [f_febbre_sintomi, f_malati_nomi, f_carbonai_sani, f_baldrin_sano],
+         cosa: "Le prime febbri: nove persone, tra cui Ilde, i due figli del bottaio e la vecchia Tecla. Nessun carbonaio, e non Baldrin: bevono al pozzo, ma il pane di Ottavia non lo mangiano."}
+      - {id: t_avvertimento, quando: {giorni_fa: 2, ora: "16:00"}, fatti: [f_avvertimento, f_ottavia_sospetta],
+         cosa: "In cucina Sebastiano dice a Ottavia di non usare quella segale. Lei lo caccia, e comincia a sospettare."}
+      - {id: t_pozzo, quando: {giorni_fa: 2, ora: "23:00"}, fatti: [f_sebastiano_tecla, f_tecla_curata, f_tecla_dice_corvo, f_polvere_carbone, f_testimoni_pozzo, f_pozzo_pulito],
+         cosa: "Di notte Sebastiano prende acqua al pozzo per Tecla, già malata, e la cura con acqua, carbone pestato e neve. Gualtiero vede un incappucciato al pozzo; Baldrin lo vede solo da lontano."}
+      - {id: t_voce, quando: {giorni_fa: 1, ora: "06:30"}, fatti: [f_accusa],
+         cosa: "Prima di partire Gualtiero dice a Baldrin di aver visto il forestiero versare una polvere nel pozzo, e la voce fa il giro del paese."}
+      - {id: t_gualtiero_parte, quando: {giorni_fa: 1, ora: "07:00"}, fatti: [f_gualtiero_passato],
+         cosa: "All'alba Gualtiero riparte col carro verso Pievebassa, con altri dieci sacchi."}
+      - {id: t_cane, quando: {giorni_fa: 1, ora: "13:00"}, fatti: [f_cane_croste],
+         cosa: "Ottavia dà a Moro le croste del pane nuovo."}
+      # --- il giorno della sessione ---------------------------------------------------------------
+      - {id: t_cane_trema, quando: {ora: "07:00"}, fatti: [f_cane_croste],
+         cosa: "Da stamattina Moro trema e si lecca le zampe."}
+      - {id: t_pane_lumi, quando: {ora: "14:00"}, fatti: [f_pane_lumi_segale],
+         cosa: "Ottavia sforna il pane dei lumi, tutto con la segale di Gualtiero, e lo copre di lino nelle ceste."}
+      - {id: t_ilde, quando: {ora: "15:00"}, fatti: [f_ilde_pane],
+         cosa: "Ilde chiede al padre un pezzo di pane dei lumi, e Baldrin glielo promette per stanotte."}
+      - {id: t_chiuso, quando: {ora: "16:30"}, fatti: [f_chiuso_ripostiglio, f_chiave_baldrin, f_borsa_contenuto],
+         cosa: "Baldrin chiude Sebastiano nel ripostiglio fino alla fine della veglia: la chiave al collo, la borsa ai piedi. Da ieri sera il forestiero non beve."}
+      - {id: t_tramonto, quando: {ora: "17:00"}, fatti: [f_notte_lumi],
+         cosa: "Al tramonto i PG arrivano a Fontescura e si fermano all'osteria; a ogni finestra si accende una candela."}
+      - {id: t_veglia, quando: {ora: "18:00"},
+         cosa: "Le donne cominciano a cantare la veglia in cappella. La piazza è vuota."}
+      - {id: t_inizio, quando: {ora: "19:00"},
+         cosa: "Comincia la scena: i PG sono nella sala dell'osteria, dopo la zuppa di castagne."}
+      - {id: t_primo_rintocco, quando: {ora: "20:00"}, fatti: [f_campana], segno: {orologio: o_colpevole, n: 3},
+         cosa: "A metà veglia la campana suona un rintocco. Dopo, qualcuno esce in piazza con la lanterna e si ferma al pozzo."}
+      - {id: t_terzo_rintocco, quando: {ora: "22:00"}, fatti: [f_campana, f_rito_pane], segno: {orologio: o_colpevole, n: 6},
+         cosa: "Tre rintocchi: la veglia è finita, e il paese viene all'osteria a spezzare il pane dei lumi e a prendersi il forestiero."}
+      - {id: t_alba, quando: {giorno: 1, ora: "07:00"},
+         cosa: "All'alba: Sebastiano vuole essere già fuori dal paese, e i malati aspettano."}
+      - {id: t_pievebassa, quando: {giorno: 7},
+         cosa: "Se nessuno lo ferma, Gualtiero vende i suoi sacchi a Pievebassa."}
+      - {id: t_primavera, quando: {giorno: 150}, fatti: [f_segale_gualtiero],
+         cosa: "A primavera Gualtiero chiede il forno di Ottavia per il debito della segale."}
+    # Ogni indizio di tipo documento ha la sua voce.
+    documenti:
+      - {id: doc_quaderno, indizio: i_registro_conti, fatti: [f_segale_gualtiero], datato: {giorni_fa: 4, ora: "10:00"}, prova: [t_segale_comprata],
+         cosa: "L'ultima pagina del quaderno dei conti: sei sacchi di segale da Gualtiero, a metà prezzo, metà da pagare a primavera."}
+      - {id: doc_libretto, indizio: i_libretto, fatti: [f_libretto], datato: {giorni_fa: 30}, prova: [t_cerusico],
+         cosa: "Il libretto di Sebastiano: dosi di erbe, di carbone e di vino per ferite e febbri, scritte in dodici anni di campo, senza nomi. L'ultima pagina è di prima della diserzione."}
+  # La scena non fa affermazioni di posti; di tempo, solo che Valsecca stanotte non si raggiunge.
+  logistica:
+    durate:
+      - {id: d_valsecca, minuti: 600,
+         cosa: "A piedi fino al mulino di Valsecca, più a valle: un giorno di cammino, con la luce."}
+      - {id: d_buio_neve, minuti: 300,
+         cosa: "Quanto rallentano il buio e la neve sul sentiero: almeno cinque ore in più."}
+    verifiche:
+      - {tra: [t_inizio, t_alba], non_ci_sta: [d_valsecca, d_buio_neve],
+         perche: "«Con il buio e la neve sul sentiero, stanotte non ci si arriva» (abbozzo di n_mulino_valsecca): nemmeno partendo all'inizio della scena."}
+      - {tra: [t_terzo_rintocco, t_alba], non_ci_sta: [d_valsecca],
+         perche: "Dopo il terzo rintocco «Valsecca è a un giorno di cammino»: neanche a passo di giorno si arriva prima dell'alba. È la pista per la sessione dopo."}
