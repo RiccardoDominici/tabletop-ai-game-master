@@ -120,6 +120,9 @@ orologi:
     pericolo: p_folla
     segmenti: 6
     pieni_all_inizio: 0
+    # Ritmo minimo, letto dal Motore: se dall'ultimo segno sono passate almeno N risposte del
+    # narratore, il Motore scrive nel contesto «mostralo in questa risposta».
+    segno_almeno_ogni: 2
     segni:
       - "Dalla cappella, il canto della veglia si interrompe, poi riprende più in fretta."
       - "Un sasso batte su un'imposta: Baldrin si alza e va alla finestra."
@@ -128,7 +131,7 @@ orologi:
       - "Sotto il portico, passi e voci basse: qualcuno prova la maniglia."
       - "Tre rintocchi: la veglia è finita, e bussano alla porta."
     avanza_quando:
-      - "una risposta sì e una no: se la risposta precedente del narratore non conteneva un segno, questa ne mostra uno"
+      - "almeno un segno ogni due risposte del narratore: quando tocca, il Motore scrive nel contesto «mostralo in questa risposta»"
       - "subito, anche se la risposta precedente ne aveva uno, quando i PG fanno rumore, minacciano Baldrin, gridano dalla finestra o escono in piazza"
       - "mai due segni nella stessa risposta"
     al_completo: "Il paese è sotto il portico con le lanterne. Vuole il pane dei lumi, e vuole qualcuno che risponda della febbre stanotte. Se Baldrin è dalla parte dei PG, tiene il paese sulla soglia per il tempo di una risposta, non di più: la prova o la scelta la devono dare i PG. Se i PG mostrano la verità a tutti, la rabbia passa su Ottavia: il paese vuole lei. Se tacciono la verità, il paese vuole il forestiero. Vedi `taglio` nella scheda della scena."
