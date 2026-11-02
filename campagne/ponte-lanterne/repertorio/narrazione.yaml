@@ -690,9 +690,9 @@ battute:
     chi: narratore
     tipo: finale
     scena: scena_terzo_tocco
-    quando: "la catena è chiusa, e le famiglie delle Case Lunghe sono ancora di là"
+    quando: "catena chiusa senza patti, e le famiglie delle Case Lunghe ancora di là"
     temi: [orologio]
-    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [vis_patto_ponte, tul_ponte_aperto]}
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [tul_ponte_aperto]}
     testo:
       - "[narratore] La catena si alza e si tende tra i paletti, con uno schiocco di ferro."
       - "[narratore] Sul tetto delle Case Lunghe la lanterna resta ferma fino all'alba."
@@ -703,9 +703,9 @@ battute:
     chi: narratore
     tipo: finale
     scena: scena_terzo_tocco
-    quando: "la catena è chiusa, e i vecchi del Ricovero sono ancora di là"
+    quando: "la catena è chiusa senza patti, e i vecchi del Ricovero sono ancora di là"
     temi: [orologio]
-    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [vis_patto_ponte, tul_ponte_aperto]}
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [tul_ponte_aperto]}
     testo:
       - "[narratore] La catena si alza e si tende tra i paletti, con uno schiocco di ferro."
       - "[narratore] Al Ricovero la lanterna dondola piano, sempre più piano, fino all'alba."
@@ -718,7 +718,7 @@ battute:
     scena: scena_terzo_tocco
     quando: "dopo la proposta di Vischi, la catena si chiude al terzo tocco"
     temi: [orologio]
-    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_usate: [vis_patto_ponte, tul_catena_tesa]}
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_usate: [vis_patto_ponte, tul_catena_tesa], battute_non_usate: [vis_smascherato, vis_smascherato_registro]}
     testo:
       - "[narratore] La catena si tende al terzo tocco, e il paese torna a casa sotto la pioggia."
       - "[narratore] Di là, chi è rimasto passa la notte sui tetti, sotto le coperte bagnate."
