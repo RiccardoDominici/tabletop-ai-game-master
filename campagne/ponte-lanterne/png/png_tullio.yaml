@@ -1,0 +1,101 @@
+# Scheda PNG (manuale §3). Tullio tiene la catena: decide sulla parola dei PG, non da solo (D8).
+# Mente sul perché chiuderà al terzo tocco: Vischi lo tiene con il debito del tetto.
+id: png_tullio
+nome: "Tullio Bellora"
+pronuncia: "Tùllio Bellòra"
+alias: [tullio, custode, casellante, pedaggiere, nonno]
+livello: principale
+ruolo: "custode del ponte e del pedaggio; tiene la catena; può diventare alleato"
+fronte: fronte_debiti
+
+aspetto:
+  lettura: "Un uomo largo sulla sessantina, con il berretto di lana calato sulle orecchie. Ha la barba grigia bagnata e una grossa chiave appesa alla cintura."
+  invarianti: ["sessantadue anni", "largo di spalle", "berretto di lana marrone", "barba grigia", "grossa chiave di ferro alla cintura", "mantello cerato giallo"]
+  prompt_immagine: "broad-shouldered 62-year-old bridge toll keeper, wet grey beard, brown wool cap pulled down over his ears, yellow oilskin cloak, heavy iron key hanging from his belt, rainy stone bridge with lanterns behind him, [STILE]"
+  situazioni:
+    - {id: alla_catena, prompt: "the toll keeper gripping the crank of an iron chain across the bridge at midnight, water over the low ramp, crowd with lanterns in the background"}
+
+personalita:
+  superficie: ["brontolone: si lamenta di tutto e intanto aiuta", "conta tutto: soldi, passi, gradini", "fiero del ponte come di un figlio"]
+  sotto_pressione: ["diventa muto e lento, e si mette a lucidare la catena", "se toccano Bice alza la voce, poi si vergogna e chiede scusa al ponte"]
+  contraddizione: "Ha fatto passare a credito mezzo paese per trent'anni, e stanotte chiude la catena in faccia al Borgo."
+
+desiderio: "Tenere il casello per Bice, senza chiudere la catena in faccia al Borgo."   # in tensione con Vischi e con p_casello
+paura: "Che Bice resti senza casa per colpa sua."
+
+segreto:
+  testo: "Ha dato il casello in pegno a Vischi per il tetto nuovo, e Vischi gli ha detto che se tiene su la catena dopo il terzo tocco il debito scade all'alba."
+  chi_altro_sa: [png_vischi]
+  se_rivelato: "Il paese capisce perché obbedisce. Bice si arrabbia con lui, poi lo abbraccia. Tullio è libero di decidere sulla parola dei PG, e lo dice."
+
+voce:
+  tts: {voce_id: vincent, eta_apparente: "55-65", altezza: bassa, velocita: 0.95, timbro: "grave e ruvido"}
+  registro: "Dà del tu a tutti, come si fa sul ponte. A Vischi e al console dà del lei, a denti stretti."
+  stile: "Frasi di tre-otto parole. Lessico di pedaggio e di pietra: soldo, passo, catena, pilone. Conta ad alta voce quando è nervoso."
+  tic: ["«Un soldo, e passi.»"]
+  gesto: "batte la chiave della manovella sul palmo"
+  mai_dice: ["il nome di Vischi insieme alla parola «debito», finché non ha ceduto", "parolacce davanti a Bice", "«non lo so» sul suo ponte: dice «chiedilo al fiume»"]
+  battuta_campione: "Un soldo, e passi. Stanotte il soldo lo segno sul libro."
+
+sa:
+  - f_pedaggio
+  - f_tullio_custode
+  - f_regola_leone
+  - f_ordine_consiglio
+  - f_detto_bellora
+  - f_bellora_guardava     # il padre guardava un punto più in alto del leone
+  - f_barca_lanterna
+  - f_un_viaggio
+  - f_un_gruppo
+  - f_lanterne_ponte
+  - f_segnali
+  - f_piena_grande
+  - f_borgo_passato
+  - f_debito_tullio        # il casello in pegno a Vischi
+  - f_minaccia_tullio      # se tiene su la catena, il debito scade all'alba
+non_sa:
+  - f_leone_calato         # domanda probabile: «il leone è sempre stato lì?»
+  - f_onda_pontieri
+  - f_libro_piena          # non ha mai riletto le pagine del padre
+  - f_padre_vischi
+  - f_bice_anguille
+  - f_barche_firma
+crede_a_torto:
+  - {testo: "Il leone è lì da quando c'è il ponte: l'hanno messo i costruttori, e i costruttori non sbagliano.", contraddice: f_leone_calato}
+mente_su:
+  - id: tul_catena
+    argomento: "perché chiude la catena al terzo tocco"
+    verita: f_minaccia_tullio
+    versione: "La regola è la regola. Al leone si chiude, e basta."
+    perche: "Vergogna del debito, e paura di lasciare Bice senza casa."
+    segnale: "si gratta la nuca sotto il berretto e guarda la catena"
+    cede_se: "Dice la verità quando un PG glielo chiede dentro il casello, a porta chiusa. Oppure quando Arrigo gli chiede di pagare almeno questo debito con la verità. Oppure quando un PG gli mostra il registro del padre di Vischi."
+
+atteggiamento_pg:
+  pg_dalia:   {stato: amichevole, perche: "la conosce da bambina, quando passava il ponte con il cesto del bucato del Ricovero", vuole: "che gli dica come stanno i vecchi"}
+  pg_quirino: {stato: indifferente, perche: "uno studioso che guarda il suo ponte come se fosse suo", vuole: "che non tocchi il leone"}
+  pg_nives:   {stato: amichevole, perche: "figlia di barcaioli, l'ha vista crescere sul fiume", vuole: "le sue braccia alla pertica"}
+  pg_arrigo:  {stato: amichevole, perche: "gli fa credito da vent'anni e ride delle sue storie", vuole: "che per una volta paghi in aiuto"}
+  pg_ghita:   {stato: indifferente, perche: "porta il nastro della guardia di Vischi", vuole: "che stia lontana dalla catena"}
+
+relazioni:
+  png_bice: "nipote; l'ha cresciuta lui, sul ponte"
+  png_vischi: "creditore; lo detesta e lo teme"
+  png_rosa: "amica di una vita; le porta il pane la domenica"
+  ugolino_pradella: "il console: «un ombrello che gira col vento»"
+
+info_chiave: [i_detto_bellora, i_tullio_minaccia]   # r_leone e r_vischi
+
+iniziative:
+  - "Se un PG chiede la barca per il Borgo, gliela dà e indica i remi nel casello, ma non lascia la catena."
+  - "Al quarto segno dell'orologio conta i soldi del pedaggio e li mette in un sacchetto a parte."
+  - "Al settimo segno va alla manovella e non se ne stacca più."
+
+evoluzione:
+  - {se: "cede e racconta del debito", allora: "chiede ai PG di dirgli loro quando abbassare: «Io tengo la catena, voi tenete la testa.»"}
+  - {se: "vede l'onda sopra il leone, o sente il libro del padre", allora: "ricorda il detto, guarda il pilone a lungo, e chiede al console di aspettare il tempo di una prova"}
+  - {se: "la catena resta su e il secondo viaggio passa", allora: "all'alba consegna la chiave a Vischi senza una parola, se il paese non lo ferma"}
+  - {se: "un PG lo minaccia o tocca la catena con la forza", allora: "abbassa la catena subito e non parla più con quel PG"}
+
+statistiche: "popolano (SRD 5.2), forte come un barcaiolo"
+registro_attivita: []

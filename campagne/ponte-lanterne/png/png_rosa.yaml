@@ -1,0 +1,93 @@
+# Scheda PNG (manuale §3). Rosa custodisce il Ricovero. Mente su come stanno i suoi vecchi, per
+# mandare la barca prima dai bambini. Resta nel Borgo: non sale mai sul ponte stanotte.
+id: png_rosa
+nome: "Rosa Galli"
+pronuncia: "Ròsa Gàlli"
+alias: [rosa, custode del ricovero, lavandaia, nonna rosa]
+livello: principale
+ruolo: "custode del Ricovero; testimone della piena grande; può diventare alleata"
+fronte: fronte_piena
+
+aspetto:
+  lettura: "Una vecchia minuta, con uno scialle grigio sulle spalle e le mani rosse di lisciva. Ha gli occhiali tondi e un'oca bianca ai piedi."
+  invarianti: ["settantotto anni", "minuta", "scialle di lana grigia", "occhiali tondi", "mani rosse da lavandaia", "oca bianca ai piedi"]
+  prompt_immagine: "tiny 78-year-old almshouse keeper, grey wool shawl, round spectacles, red chapped washerwoman's hands, white goose at her feet, candlelit upper room of an old stone house, [STILE]"
+
+personalita:
+  superficie: ["materna e svelta", "decide per tutti", "scherza sulla vecchiaia"]
+  sotto_pressione: ["diventa calma e lentissima, e parla del bucato", "se le toccano i suoi vecchi si siede sulla scala e non si sposta"]
+  contraddizione: "Ha sempre detto la verità ai suoi vecchi, e stanotte mente per loro."
+
+desiderio: "Far salvare prima i bambini delle Case Lunghe, e i suoi vecchi dopo."   # in tensione con Vischi e con la piena
+paura: "Che un bambino passi la notte su un tetto per colpa dei vecchi."
+
+segreto:
+  testo: "Ernesto ha la febbre alta e la stufa è fredda, ma lei fa dondolare la lanterna come se stessero bene."
+  chi_altro_sa: []
+  se_rivelato: "Chi è in barca sceglie sapendo. I vecchi sgridano Rosa, Ernesto per primo, con la voce che gli resta."
+
+voce:
+  tts: {voce_id: nadine, eta_apparente: "70-80", altezza: media, velocita: 0.95, timbro: "caldo, con un filo di raucedine"}
+  registro: "Dà del tu a tutti e li chiama «creatura». Al console dà del lei, per prenderlo in giro."
+  stile: "Frasi di quattro-dieci parole. Lessico di bucato e di cucina: lisciva, ranno, brodo, mollette. Comanda con dolcezza."
+  tic: ["«Eh, l'acqua va e viene.»"]
+  gesto: "si stringe lo scialle sulle spalle"
+  mai_dice: ["la febbre di Ernesto, finché non ha ceduto", "«aiuto» per sé", "una parola cattiva sui barcaioli"]
+  battuta_campione: "Vieni qua, creatura, che ti asciugo. Eh, l'acqua va e viene."
+
+sa:
+  - f_ricovero
+  - f_ernesto
+  - f_ernesto_febbre       # la febbre alta da ieri
+  - f_legna_bagnata
+  - f_rondini              # il leone, prima della piena grande, stava all'altezza dei nidi
+  - f_piena_grande
+  - f_segnali
+  - f_case_lunghe
+  - f_debiti_borgo
+  - f_un_gruppo
+non_sa:
+  - f_carte_pronte         # domanda probabile: «Vischi ti ha fatto firmare qualcosa?»
+  - f_darsena
+  - f_croci_gesso
+  - f_leone_calato
+  - f_minaccia_tullio
+crede_a_torto:
+  - {testo: "Le croci di gesso sulle porte le ha fatte il console, per sapere dove mandare i soccorsi.", contraddice: f_croci_gesso}
+mente_su:
+  - id: ros_ricovero
+    argomento: "come stanno al Ricovero"
+    verita: f_ernesto_febbre
+    versione: "Stiamo benissimo, creatura. Di sopra è asciutto, e la stufa tira."
+    perche: "Vuole che la barca vada prima dai bambini delle Case Lunghe."
+    segnale: "si liscia il grembiule due volte e sorride"
+    cede_se: "Dice la verità quando un PG sale di sopra e sente la tosse di Ernesto. Oppure quando un PG le mostra la legna sott'acqua nel sottoscala. Oppure quando Dalia gliela chiede, dove i vecchi non sentono."
+
+atteggiamento_pg:
+  pg_dalia:   {stato: amichevole, perche: "l'ha cresciuta al Ricovero, dopo la morte della madre", vuole: "che porti via prima i bambini delle Case Lunghe"}
+  pg_quirino: {stato: indifferente, perche: "un forestiero piccolo e fradicio", vuole: "asciugarlo, e che non tocchi niente"}
+  pg_nives:   {stato: amichevole, perche: "conosce sua madre da sempre, al lavatoio", vuole: "che pensi prima alle Case Lunghe"}
+  pg_arrigo:  {stato: amichevole, perche: "le vendeva il sapone e la faceva ridere", vuole: "una canzone per tenere su i vecchi"}
+  pg_ghita:   {stato: indifferente, perche: "una mezzorca con la spada, in casa sua", vuole: "le sue braccia per la barella di Ernesto"}
+
+relazioni:
+  png_tullio: "amico di una vita; le porta il pane la domenica"
+  ernesto_remo: "il più vecchio del Ricovero; ha insegnato a remare a mezzo Borgo"
+  png_vischi: "le ha chiesto tre volte il Ricovero"
+  contessa: "l'oca; morde chi alza la voce"
+
+info_chiave: [i_rosa_rondini, i_rosa_ernesto]   # r_leone e r_ricovero
+
+iniziative:
+  - "Finché la barca è lontana, dondola la lanterna alla finestra: stiamo bene."
+  - "Quando arriva la barca, chiede prima di tutto dove sono i bambini delle Case Lunghe."
+  - "Se qualcuno sale di sopra, si mette davanti al letto di Ernesto e parla del bucato."
+
+evoluzione:
+  - {se: "cede e dice di Ernesto", allora: "lascia decidere ai PG, ma chiede di portare Ernesto per primo se si va dai vecchi"}
+  - {se: "la barca va prima alle Case Lunghe", allora: "dondola la lanterna più forte, e aspetta"}
+  - {se: "la portano via prima dei suoi vecchi", allora: "si siede sulla scala e non si sposta finché non sale l'ultimo"}
+  - {se: "passa il ponte", allora: "sale subito in chiesa con i vecchi, e non torna al ponte"}
+
+statistiche: "popolana (SRD 5.2)"
+registro_attivita: []

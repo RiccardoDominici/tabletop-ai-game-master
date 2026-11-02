@@ -1,0 +1,93 @@
+# Scheda PNG (manuale §3). Bice accende le lanterne del ponte. Mente su dov'era ieri notte:
+# pescava anguille sotto il ponte, ed è lì che ha visto lo scrivano misurare il pilone.
+# Non va mai nel Borgo Basso stanotte, e non incontra mai Rosa (voci troppo simili).
+id: png_bice
+nome: "Bice Bellora"
+pronuncia: "Bìce Bellòra"
+alias: [bice, lampionaia, nipote]
+livello: supporto
+ruolo: "nipote del custode e lampionaia del ponte; testimone reticente; aiuto per la barca"
+fronte: fronte_piena
+
+aspetto:
+  lettura: "Una ragazza magra con una treccia rossa e il cappuccio buttato indietro. Ha un acciarino in mano e una striscia di fuliggine sul naso."
+  invarianti: ["diciannove anni", "magra", "treccia rossa", "cappuccio verde buttato indietro", "acciarino in mano", "fuliggine sul naso"]
+  prompt_immagine: "thin 19-year-old lamplighter, red braid, green hood thrown back, soot smudge on her nose, flint striker in her hand, lit lantern on a stone bridge parapet in the rain, [STILE]"
+  situazioni:
+    - {id: sotto_arcata, prompt: "the young lamplighter in a tiny rowing boat under a stone bridge arch at night, holding a dripping eel trap and a shuttered lantern"}
+
+personalita:
+  superficie: ["sfacciata e allegra", "scommette su tutto", "non sta mai ferma"]
+  sotto_pressione: ["diventa seria e pratica, e dà ordini come il nonno", "se la scoprono, ride troppo forte e cambia discorso"]
+  contraddizione: "Accende le lanterne per chi passa sopra il ponte, e di notte ci passa sotto di nascosto."
+
+desiderio: "Portare la Lanterna nel Borgo con la pertica, per dimostrare al nonno che sa remare."   # contro Tullio, che glielo vieta
+paura: "Che il nonno la mandi via dal ponte."
+
+segreto:
+  testo: "Pesca anguille di notte sotto il ponte, e ieri notte ha visto lo scrivano di Vischi misurare il pilone con una corda a nodi."
+  chi_altro_sa: []
+  se_rivelato: "Tullio la sgrida, poi la ascolta. Chi la sente sa che Vischi misurava il pilone dal leone in su."
+
+voce:
+  tts: {voce_id: tabitha, eta_apparente: "18-22", altezza: alta, velocita: 1.1, timbro: "squillante, svelto"}
+  registro: "Dà del tu a tutti, anche al console. Al gruppo dà del voi."
+  stile: "Frasi di due-sette parole, a raffica. Fa domande e scommesse. Lessico di fiume: pertica, anguilla, a pelo d'acqua."
+  tic: ["«Scommettiamo?»"]
+  gesto: "fa girare l'acciarino tra le dita"
+  mai_dice: ["le anguille, finché non ha ceduto", "una cosa gentile su Vischi", "«ho paura»"]
+  battuta_campione: "Scommettiamo? Accendo la sesta prima che il nonno finisca di brontolare."
+
+sa:
+  - f_bice_anguille
+  - f_scrivano_misura      # dalla barchetta, sotto l'arcata
+  - f_lanterne_ponte
+  - f_barca_lanterna
+  - f_segnali
+  - f_regola_leone
+  - f_detto_bellora
+  - f_un_viaggio
+  - f_pedaggio
+non_sa:
+  - f_debito_tullio        # domanda probabile: «tuo nonno ha debiti?»
+  - f_minaccia_tullio
+  - f_leone_calato
+  - f_onda_pontieri
+  - f_vischi_sa
+crede_a_torto:
+  - {testo: "Il nonno il tetto nuovo l'ha pagato con i soldi del pedaggio, un soldo alla volta.", contraddice: f_debito_tullio}
+mente_su:
+  - id: bic_notte
+    argomento: "dov'era ieri notte"
+    verita: f_bice_anguille
+    versione: "Ieri notte? Dormivo. Il nonno russa per tutti e due."
+    perche: "Pescare sotto il ponte è vietato, e il nonno la farebbe dormire nella stalla."
+    segnale: "si tira la treccia e fischietta"
+    cede_se: "Dice dov'era quando un PG le promette, dove Tullio non sente, di non dirlo al nonno. Oppure quando un PG le mostra la nassa per anguille legata dietro il casello."
+
+atteggiamento_pg:
+  pg_dalia:   {stato: amichevole, perche: "da piccola le portava le mele del Ricovero", vuole: "che le racconti com'era il nonno da giovane"}
+  pg_quirino: {stato: amichevole, perche: "uno gnomo che sa il nome di ogni pietra", vuole: "che le insegni a leggere il ponte"}
+  pg_nives:   {stato: amichevole, perche: "la barcaiola più svelta del Borgo, il suo modello", vuole: "remare con lei nella Lanterna"}
+  pg_arrigo:  {stato: amichevole, perche: "le ha insegnato a barare a carte", vuole: "una canzone sulle anguille, da cantare al nonno"}
+  pg_ghita:   {stato: indifferente, perche: "una guardia grossa che non ride mai", vuole: "farla ridere almeno una volta"}
+
+relazioni:
+  png_tullio: "nonno; l'ha cresciuta sul ponte"
+  png_vischi: "lo chiama «il guanto»"
+  ottone_scrivano: "lo ha visto misurare il pilone, ieri notte"
+
+info_chiave: [i_bice_scrivano]   # r_leone
+
+iniziative:
+  - "A ogni segno dell'orologio controlla una lanterna del parapetto e la riaccende se serve."
+  - "Se un PG va verso la barca, chiede di venire con la pertica. Il nonno dice di no."
+  - "Al terzo tocco si offre per tenere le lanterne sulla rampa bassa."
+
+evoluzione:
+  - {se: "cede e racconta della notte", allora: "accompagna i PG al parapetto e mostra dove lo scrivano ha grattato il muschio"}
+  - {se: "un PG la porta in barca contro il volere del nonno", allora: "rema benissimo, e Tullio non parla più con quel PG fino a mezzanotte"}
+  - {se: "la catena resta su dopo il terzo tocco", allora: "scende sulla rampa con due lanterne, se nessun PG lo fa prima"}
+
+statistiche: "popolana (SRD 5.2), nuota come un'anguilla"
+registro_attivita: []

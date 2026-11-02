@@ -58,3 +58,20 @@ le incontro; in fondo, la classifica dei problemi più gravi.
    Casa del Sale e la chiesa sono noti a tutti dall'inizio (canone pubblico): nessuno deve scoprirli
    con un indizio. La skill non dice se l'avviso vale anche per i nodi pubblici. *Scelta*: alzo il
    conteggio dove ha senso, e giustifico il resto in `autovalutazione.md`.
+
+## Passi 6–9
+
+9. **Il passo 9 chiede zero errori, ma `esiti[].finale` dipende dal passo 10.** Dopo PNG e PG restano
+   solo i quattro `SCENA.esiti` (finali non ancora scritti). La skill dice «non andare avanti con errori
+   aperti», ma l'unico modo di chiuderli è scrivere il repertorio. *Scelta*: vado avanti al passo 10 con
+   quei quattro errori, dichiarati nel commit. In alternativa la skill potrebbe dire di aggiungere gli
+   `esiti` solo al passo 10, o di scrivere i finali subito dopo le schede scena.
+
+10. **Il tetto delle frasi dei PNG si ricava dallo `stile` solo con certi numeri.** `strumenti/valida/testo.py`
+    capisce «Frasi di tre-otto parole» o le cifre, ma tra le parole conosce solo due…dieci e dodici:
+    «Frasi di otto-quattordici parole» non viene letta e vale il tetto predefinito. La skill non lo dice.
+    *Scelta*: ho usato solo numeri della lista (Vischi «sei-dodici»).
+
+11. **Gli `alias` dei PNG non hanno una regola contro le parole generiche**, mentre i `temi` sì. Un
+    alias come «vecchio» o «ragazza» farebbe entrare il PNG nella pertinenza di ogni azione sui vecchi
+    del Ricovero. *Scelta*: ho tolto gli alias generici (vecchio, ragazza, vecchia).

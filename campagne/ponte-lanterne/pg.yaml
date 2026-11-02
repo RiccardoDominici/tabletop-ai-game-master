@@ -1,0 +1,102 @@
+# Personaggi giocanti pregenerati. Ogni giocatore ne sceglie uno dal telefono.
+# La sessione regge con qualunque gruppo di 3 o 4 di loro (cinque PG per 3–4 giocatori).
+#
+# Visibilità (T9):
+#   - situazione_comune: sul telefono di tutti;
+#   - concetto, aggancio, cosa_sai_fare, aspetto: sul telefono del giocatore (e noti al Narratore);
+#   - conoscenze_private: SOLO sul telefono di quel giocatore. Il Narratore non le dice mai a voce:
+#     diventano pubbliche solo se il giocatore le usa o le racconta.
+
+situazione_comune: "Viaggiate insieme lungo la Lenta, e la pioggia vi ha fermati a Vadolungo, dove il fiume cresce da tre giorni. Stasera il Borgo Basso passa il ponte verso la Riva Alta, con le ceste e le capre. Il ponte si paga un soldo al casello di Tullio, il custode. Nelle notti di piena chiude al terzo tocco della campana, quando l'acqua tocca la criniera del leone di pietra. Nel Borgo si parla con le lanterne alle finestre: dondolata vuol dire «stiamo bene», ferma vuol dire «venite»."
+
+personaggi:
+  - id: pg_dalia
+    nome: "Dalia Fontana"
+    pronuncia: "Dàlia Fontàna"
+    pronomi: "lei"
+    specie: "umana"
+    classe: "chierica"
+    livello: 1
+    aspetto: "Umana di ventisei anni, capelli neri corti, veste grigia di lana e un simbolo d'argento a forma di goccia."
+    concetto: "Chierica della Signora delle Acque Quiete, cresciuta al Ricovero di Vadolungo dopo la morte della madre. Torna a casa per la prima volta da quando ha preso i voti."
+    aggancio: "Rosa, la custode del Ricovero, ti ha cresciuta. Stanotte è di là dall'acqua, con i suoi sette vecchi."
+    cosa_sai_fare:
+      - "curi le ferite e le febbri con la magia della tua dea"
+      - "parli con dolcezza a chi ha paura"
+      - "conosci ogni stanza e ogni scricchiolio del Ricovero"
+    conoscenze_private:
+      - {testo: "Quando Rosa dice una bugia ai bambini, dondola le cose troppo in fretta e si liscia il grembiule. Lo fa da sempre.", fatti: []}
+      - {testo: "Ernesto, il vecchio barcaiolo del Ricovero, ha i polmoni deboli dall'inverno scorso. Una notte al freddo per lui è pericolosa.", fatti: [f_ernesto]}
+
+  - id: pg_quirino
+    nome: "Quirino Malta"
+    pronuncia: "Quirìno Màlta"
+    pronomi: "lui"
+    specie: "gnomo delle rocce"
+    classe: "mago"
+    livello: 1
+    aspetto: "Gnomo dalla barba bianca a punta, occhialini su una catenella, mantello pieno di tasche e un metro di legno pieghevole."
+    concetto: "Studioso di ponti, ha scritto un trattato di trecento pagine sugli archi che nessuno ha mai letto. Gira la valle per vedere i ponti dei Pontieri dell'Onda prima che il fiume se li porti via."
+    aggancio: "Il Ponte delle Lanterne è l'ultimo ponte dei Pontieri dell'Onda ancora in piedi in questa valle. Sei venuto apposta per lui."
+    cosa_sai_fare:
+      - "leggi le pietre, le malte e i segni dei costruttori"
+      - "con un trucchetto di magia fai luce sulla punta del bastone"
+      - "misuri tutto, a occhio e con il tuo metro"
+    conoscenze_private:
+      - {testo: "I Pontieri dell'Onda segnavano l'acqua pericolosa con un'onda scolpita sul pilone, mai con una statua. Le statue, per loro, erano ornamenti.", fatti: []}
+      - {testo: "Una malta chiara e liscia su un pilone di malta scura vuol dire che quella pietra è stata smurata e rimessa, molto dopo il resto.", fatti: []}
+
+  - id: pg_nives
+    nome: "Nives Scotti"
+    pronuncia: "Nìves Scòtti"
+    pronomi: "lei"
+    specie: "mezzelfa"
+    classe: "ladra"
+    livello: 1
+    aspetto: "Mezzelfa di trent'anni, spalle da rematrice, capelli castani legati stretti, un coltello da barcaiolo alla cintura."
+    concetto: "Barcaiola delle Case Lunghe, l'anno scorso ha perso la barca per un debito con Vischi. Da allora fa lavori di notte lungo il fiume, e a casa non torna da mesi."
+    aggancio: "Tua madre e i tuoi fratelli sono alle Case Lunghe, con i bambini. La loro lanterna è ferma."
+    cosa_sai_fare:
+      - "remi e spingi la pertica meglio di chiunque"
+      - "apri serrature e lucchetti"
+      - "ti muovi senza farti sentire"
+    conoscenze_private:
+      - {testo: "La Casa del Sale di Vischi ha una porta sul retro, nel magazzino dietro i sacchi, senza chiavistello. Da ragazza ci portavi il sale.", fatti: []}
+      - {testo: "Un mese fa Vischi ha comprato dal prestatore di Pieve tutti i debiti delle Case Lunghe. Tua madre te l'ha scritto, preoccupata.", fatti: [f_debiti_borgo]}
+      - {testo: "Vischi tiene le carte vecchie di suo padre in una cassa di ferro, nello studio. Lo dicevano i garzoni del sale.", fatti: []}
+
+  - id: pg_arrigo
+    nome: "Arrigo Tasca"
+    pronuncia: "Arrìgo Tàsca"
+    pronomi: "lui"
+    specie: "halfling"
+    classe: "bardo"
+    livello: 1
+    aspetto: "Halfling sulla quarantina, panciotto a righe, un liuto avvolto nella tela cerata e una gerla piena di bottoni, nastri e saponette."
+    concetto: "Venditore ambulante e cantastorie, in debito con mezza valle e amico dell'altra metà. Paga in canzoni quando può, e quando non può canta lo stesso."
+    aggancio: "Da vent'anni Tullio ti fa passare il ponte a credito: sul libro dei passi c'è una pagina intera con il tuo nome. Non hai mai pagato un soldo."
+    cosa_sai_fare:
+      - "canti, racconti e fai ridere una sala intera"
+      - "vendi qualunque cosa a chiunque"
+      - "ti ricordi le facce e le chiacchiere"
+    conoscenze_private:
+      - {testo: "La settimana scorsa, sotto la tettoia del ponte, hai sentito Vischi dire piano a Tullio: alla terza campana la catena giù, o all'alba il casello è mio.", fatti: [f_minaccia_tullio]}
+      - {testo: "Il padre di Tullio te lo diceva sempre davanti a un bicchiere: il leone ha paura dell'acqua, il ponte no. Poi rideva, e non spiegava.", fatti: [f_detto_bellora]}
+
+  - id: pg_ghita
+    nome: "Ghita Orsi"
+    pronuncia: "Ghìta Òrsi"
+    pronomi: "lei"
+    specie: "mezzorca"
+    classe: "guerriera"
+    livello: 1
+    aspetto: "Mezzorca di ventotto anni, alta e larga, zanne piccole, cotta di cuoio e un nastro nero da guardia legato al braccio."
+    concetto: "Guardia di carovane rimasta senza carovana per la pioggia. Stamattina Vischi l'ha pagata per una notte di guardia: è il primo soldo da una settimana."
+    aggancio: "Vischi ti ha pagata in anticipo per sorvegliare stanotte il suo studio, alla Casa del Sale, durante il consiglio. Dice che dentro ci sono carte di carità."
+    cosa_sai_fare:
+      - "porti pesi che due uomini non sollevano"
+      - "tieni la posizione con l'acqua alle ginocchia"
+      - "spaventi chi va spaventato, e sai quando non serve"
+    conoscenze_private:
+      - {testo: "Vischi ti ha detto: nessuno entra nello studio, e soprattutto nessuno apre la cassa di ferro sotto lo scrittoio.", fatti: []}
+      - {testo: "Stamattina all'alba hai visto lo scrivano di Vischi tornare fradicio dal ponte, con una corda a nodi sulla spalla. Al padrone ha detto: due spanne giuste.", fatti: [f_scrivano_misura]}

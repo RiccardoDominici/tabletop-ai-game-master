@@ -1,0 +1,113 @@
+# Scheda PNG (manuale §3). Il cattivo con agenda (C3). Sa che il leone è stato calato e lo nasconde.
+# Non confessa mai in pubblico: messo alle strette in privato, contratta.
+id: png_vischi
+nome: "Leandro Vischi"
+pronuncia: "Leàndro Vìschi"
+alias: [vischi, leandro, mercante, prestatore, usuraio, consigliere]
+livello: principale
+ruolo: "mercante di sale e prestatore; consigliere; ostacolo e cattivo della sessione"
+fronte: fronte_debiti
+
+aspetto:
+  lettura: "Un uomo alto e asciutto, sulla cinquantina, in un mantello nero ben cucito. Porta guanti di pelle e un anello d'oro con il sigillo."
+  invarianti: ["cinquantadue anni", "alto e magro", "capelli grigi pettinati all'indietro", "mantello nero ben cucito", "guanti di pelle nera", "anello d'oro con sigillo"]
+  prompt_immagine: "tall lean 52-year-old merchant and moneylender, grey hair combed back, finely tailored black cloak, black leather gloves, gold signet ring, warm firelit salt warehouse behind him, [STILE]"
+  situazioni:
+    - {id: studio_cassa, prompt: "the merchant alone in a small study at night, kneeling by an open iron chest full of old ledgers, candle in hand"}
+
+personalita:
+  superficie: ["cortese e preciso: ringrazia di tutto", "parla di carità e di prudenza", "offre sempre da sedere e da bere"]
+  sotto_pressione: ["diventa più gentile e più lento, come chi detta un contratto", "se lo umiliano davanti al consiglio smette di sorridere, e chiama i debiti a voce alta"]
+  contraddizione: "Parla di vite da salvare, e intanto conta le case che restano di là."
+
+desiderio: "Chiudere il ponte al terzo tocco, per far firmare il Borgo all'alba."   # contro Tullio, Rosa e il fronte della piena
+paura: "Che qualcuno legga il registro del padre davanti al paese."
+
+segreto:
+  testo: "Sa dal registro del padre che il leone è stato calato di due spanne, e che il ponte regge un'ora in più. Ha fatto misurare il pilone per sapere quanto manca all'onda."
+  chi_altro_sa: [ottone_scrivano]
+  se_rivelato: "Il console ritira l'ordine. Il paese lo guarda come un ladro. Lui chiama tutti i debiti all'alba, a cominciare dal casello di Tullio."
+
+voce:
+  tts: {voce_id: lucian, eta_apparente: "45-55", altezza: bassa, velocita: 0.9, timbro: "liscio, quasi un sussurro"}
+  registro: "Dà del lei a tutti, anche a Tullio e ai barcaioli. Al gruppo dà del voi. Non alza mai la voce."
+  stile: "Frasi di sei-dodici parole, ordinate e complete. Lessico di contratti e di carità: garanzia, condizioni, prudenza, per il vostro bene."
+  tic: ["«Con tutto il rispetto.»"]
+  gesto: "si sfila un guanto di pelle, dito per dito, e lo rinfila"
+  mai_dice: ["la parola «debito»: dice «impegno» o «garanzia»", "il nome di suo padre, finché non lo hanno messo alle strette", "una parolaccia"]
+  battuta_campione: "Con tutto il rispetto, il fiume non fa credito. Io sì, e a buone condizioni."
+
+sa:
+  - f_vischi_sa            # sa che il leone è stato calato
+  - f_padre_vischi
+  - f_leone_calato
+  - f_onda_pontieri
+  - f_ora_in_piu
+  - f_registro_padre
+  - f_scrivano_misura
+  - f_carte_pronte
+  - f_barche_firma
+  - f_darsena
+  - f_croci_gesso
+  - f_debito_tullio
+  - f_minaccia_tullio
+  - f_barche_vischi
+  - f_consiglio_sale
+  - f_debiti_borgo
+  - f_ordine_consiglio
+  - f_regola_leone
+  - f_piena_grande
+non_sa:
+  - f_ernesto_febbre       # domanda probabile: «i vecchi del Ricovero stanno bene?»
+  - f_legna_bagnata
+  - f_libro_piena
+  - f_bice_anguille
+  - f_rondini
+crede_a_torto:
+  - {testo: "I Bellora non hanno mai scritto niente della piena grande: sanno contare i soldi, non scrivere.", contraddice: f_libro_piena}
+mente_su:
+  - id: vis_leone
+    argomento: "il leone e la regola"
+    verita: f_vischi_sa
+    versione: "Il leone l'hanno messo i costruttori, e la regola salva vite. Lo chieda ai ceri accesi a San Clemente."
+    perche: "Il ponte chiuso vale le sue barche e le firme del Borgo."
+    segnale: "lucida l'anello con il sigillo sul fazzoletto"
+    cede_se: "Non confessa mai in pubblico. Quando un PG gli mostra il registro del padre dove il console non sente, nello studio o tra i sacchi, smette di negare e propone un accordo: barche gratis all'alba, in cambio del registro."
+  - id: vis_barche
+    argomento: "chi salirà sulle barche dell'alba"
+    verita: f_barche_firma
+    versione: "Le mie barche verranno all'alba per tutti. È carità, non commercio."
+    perche: "Chi lo sa prima, non aspetta l'alba: cerca un'altra strada."
+    segnale: "lucida l'anello con il sigillo sul fazzoletto"
+    cede_se: "Quando un PG gli legge davanti la lista dell'alba, con le parole «solo chi ha firmato»: allora dice che una firma è una garanzia, non un prezzo."
+
+atteggiamento_pg:
+  pg_dalia:   {stato: amichevole, perche: "una chierica accanto a lui fa bene alla sua carità", vuole: "che benedica le barche dell'alba davanti al paese"}
+  pg_quirino: {stato: indifferente, perche: "uno studioso: o utile o fastidioso", vuole: "che misuri qualcos'altro, non il pilone"}
+  pg_nives:   {stato: ostile, perche: "è sua debitrice, e lo guarda come si guarda un ladro", vuole: "la firma di sua madre, stanotte"}
+  pg_arrigo:  {stato: indifferente, perche: "un chiacchierone in debito con mezza valle", vuole: "che canti per il consiglio e non faccia domande"}
+  pg_ghita:   {stato: amichevole, perche: "l'ha pagata stamattina, e bene", vuole: "che nessuno entri nello studio"}
+
+relazioni:
+  corrado_vischi: "il padre, morto; ha lasciato le barche, i registri e la regola"
+  ugolino_pradella: "il console; gli deve la dote della figlia"
+  ottone_scrivano: "lo scrivano: obbedisce, misura, ricopia"
+  png_tullio: "debitore; lo tiene con il casello"
+  png_rosa: "le ha chiesto tre volte il Ricovero"
+
+info_chiave: [i_vischi_darsena]   # r_vischi
+
+iniziative:
+  - "All'inizio della sera propone al console di mandare la barca prima al Ricovero, «per carità verso i vecchi»."
+  - "Al primo segno dell'orologio manda lo scrivano a misurare il leone con la corda a nodi."
+  - "Se un PG va verso lo studio, si alza e lo accompagna con un sorriso, parlando d'altro."
+  - "Al terzo tocco ricorda a Tullio, a voce bassa, che l'alba arriva per tutti."
+
+evoluzione:
+  - {se: "un PG gli mostra il registro in privato", allora: "offre l'accordo: barche gratis per tutti all'alba, e il registro nel camino"}
+  - {se: "il registro o l'onda vengono mostrati davanti al console", allora: "dice che è un falso, poi chiama il debito di Tullio davanti a tutti: all'alba il casello è suo"}
+  - {se: "la catena resta su e nessuno lo smaschera", allora: "sorride, e all'alba si prende il casello per il debito"}
+  - {se: "la catena va giù", allora: "manda lo scrivano al Passo Vecchio con la lista sigillata"}
+
+statistiche: "nobile (SRD 5.2), con due guardie del console che gli obbediscono"
+registro_attivita: []

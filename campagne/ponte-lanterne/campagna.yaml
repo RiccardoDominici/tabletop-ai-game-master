@@ -84,6 +84,8 @@ canone:
      testo: "Nel registro di Corrado Vischi, quarant'anni fa: dieci fiorini a mastro Pece, per il leone del ponte, lavoro di notte, due spanne."}
   - {id: f_scrivano_misura, noto_ai_pg: false, stato: confermato, entita: [png_vischi],
      testo: "Ieri notte lo scrivano di Vischi, da una barca, ha misurato il pilone con una corda a nodi, dal leone in su."}
+  - {id: f_rondini, noto_ai_pg: false, stato: confermato, entita: [png_rosa, n_ponte],
+     testo: "Prima della piena grande il leone stava all'altezza dei nidi delle rondini, sotto l'arcata."}
   - {id: f_bice_anguille, noto_ai_pg: false, stato: confermato, entita: [png_bice],
      testo: "Bice pesca anguille di notte sotto il ponte, dove è vietato, e Tullio non lo sa."}
 
