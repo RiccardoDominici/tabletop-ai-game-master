@@ -155,6 +155,14 @@ export interface ScenaPubblica {
   umore: string;
   /** Intensità 1–5 (per lo sfondo), se indicata. */
   intensita: number | null;
+  /** Luogo corrente: id della scena o del nodo (cambia quando il gruppo si sposta). */
+  luogo: string;
+  /** URL dell'immagine del luogo corrente; null se manca (lo schermo usa lo sfondo d'atmosfera). */
+  immagine: string | null;
+  /** Ritratti dei PNG che ne hanno uno: id_png → URL. Il narratore non ha ritratto. */
+  ritratti: Record<string, string>;
+  /** URL da precaricare (luoghi vicini, ritratti dei PNG presenti), nell'ordine di probabilità. */
+  prossime: string[];
 }
 
 /** Istantanea completa del tavolo, mandata a ogni cambiamento. */

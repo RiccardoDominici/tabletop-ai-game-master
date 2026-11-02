@@ -18,6 +18,7 @@ import type { InfoServer } from '@cantastorie/shared';
 import type { Logger } from './logger';
 import type { Regia } from './scena/regia';
 import type { ServerIo } from './trasporto/socket';
+import type { CatalogoImmagini } from './campagna/immagini';
 
 export interface OpzioniApp {
   log: Logger;
@@ -55,8 +56,27 @@ export async function creaApp(o: OpzioniApp): Promise<App> {
   return { http, io };
 }
 
-export function registraRotte(app: App, regia: Regia, info: () => InfoServer, extra: () => Record<string, unknown>): void {
+export function registraRotte(
+  app: App,
+  regia: Regia,
+  info: () => InfoServer,
+  extra: () => Record<string, unknown>,
+  immagini?: CatalogoImmagini,
+): void {
   const { http } = app;
+  // Immagini della campagna: solo i file del manifest, con cache (non cambiano durante la sessione).
+  http.get<{ Params: { file: string } }>('/api/immagini/:file', async (req, reply) => {
+    const p = immagini?.percorso(req.params.file);
+    if (!p) return reply.status(404).send({ errore: 'Immagine non trovata.' });
+    const tipo = p.endsWith('.png') ? 'image/png' : p.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
+    return reply.type(tipo).header('cache-control', 'public, max-age=3600').send(fs.createReadStream(p));
+  });
+  // Cambio di luogo (pannello del master, prove): lo schermo fa la dissolvenza sull'immagine nuova.
+  http.post<{ Body: { luogo?: unknown } }>('/api/scena/luogo', async (req, reply) => {
+    const luogo = typeof req.body?.luogo === 'string' ? req.body.luogo : '';
+    if (!/^[a-z0-9_]{1,64}$/.test(luogo)) return reply.status(400).send({ ok: false, errore: 'Luogo non valido.' });
+    return regia.cambiaLuogo(luogo);
+  });
   http.get('/api/salute', async () => {
     const s = regia.stato();
     return { ok: true, fase: s.fase, turno: s.turno, versione_scena: s.versione_scena, voce: s.voce_motore, schermo: s.schermo_connesso, ...extra() };

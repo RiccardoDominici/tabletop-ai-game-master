@@ -33,6 +33,7 @@ import type { RegistroJsonl } from '../metriche/jsonl';
 import { compilaMessaggioTurno } from '../narrazione/messaggio';
 import type { Orologio } from '../turni/orologio';
 import { azioniPerNarratore } from '../azioni/narratore';
+import type { CatalogoImmagini } from '../campagna/immagini';
 import { TavoloAzioni, type RiepilogoChiusura } from '../azioni/tavolo';
 import type { Arbitro } from '../azioni/tipi';
 import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
@@ -79,6 +80,8 @@ export interface OpzioniRegia {
   arbitro?: Arbitro | null;
   /** Riassunto pubblico della scena per l'arbitro. */
   scenaPubblica?: string;
+  /** Immagini dei luoghi e ritratti dei PNG per il proiettore. */
+  immagini?: CatalogoImmagini;
 }
 
 /** Ascoltatori del trasporto (Socket.IO). */
@@ -118,6 +121,8 @@ export class Regia {
   private turnoB: { azioniPubbliche: Map<string, string>; stallo: boolean; segnoDovuto: boolean } | null = null;
   /** Nomi dei PNG e soprannomi, per la pertinenza del catalogo. */
   private readonly nomiPng: Map<string, string[]>;
+  /** Luogo corrente (id della scena o del nodo): sceglie l'immagine del proiettore. */
+  private luogo: string;
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
@@ -150,6 +155,7 @@ export class Regia {
     this.pronuncia = creaPronunciatore(opzioni.campagna);
     this.orologi = new StatoOrologi(opzioni.campagna);
     this.nomiPng = nomiDeiPng(opzioni.campagna);
+    this.luogo = opzioni.campagna.scena.id;
     this.statoRepertorio = this.nuovoStatoRepertorio();
     this.pipeline = new PipelineVoce({
       motore: () => this.o.voce.attivo,
@@ -184,6 +190,35 @@ export class Regia {
       onAzione: (id_pg, a) => this.uscita?.azioneMia(id_pg, a),
       onChiusura: (r) => this.finestraChiusa(r),
     });
+  }
+
+  /** Immagine del luogo, ritratti e immagini da precaricare (luoghi collegati, ritratti dei presenti). */
+  private immaginiPubbliche(): { luogo: string; immagine: string | null; ritratti: Record<string, string>; prossime: string[] } {
+    const img = this.o.immagini;
+    const ritratti: Record<string, string> = {};
+    for (const p of this.o.campagna.png) {
+      const u = img?.ritratto(p.id);
+      if (u) ritratti[p.id] = u;
+    }
+    const immagine = img?.luogo(this.luogo) ?? null;
+    // Prossime: i ritratti dei PNG presenti, poi i luoghi collegati al nodo della scena.
+    const nodo = typeof this.o.campagna.scena.dati['nodo'] === 'string' ? (this.o.campagna.scena.dati['nodo'] as string) : null;
+    const nodi = (this.o.campagna.campagnaNarratore['nodi'] as Array<Record<string, unknown>> | undefined) ?? [];
+    const collegati = (nodi.find((n) => n['id'] === nodo)?.['collegamenti'] as string[] | undefined) ?? [];
+    const prossime = [
+      ...this.o.campagna.scena.png_presenti.map((id) => ritratti[id]),
+      ...[this.o.campagna.scena.id, ...collegati].filter((l) => l !== this.luogo).map((l) => img?.luogo(l)),
+    ].filter((u): u is string => !!u);
+    return { luogo: this.luogo, immagine, ritratti, prossime: [...new Set(prossime)] };
+  }
+
+  /** Il gruppo si sposta: cambia l'immagine del proiettore (con dissolvenza sullo schermo). */
+  cambiaLuogo(luogo: string): Esito {
+    if (luogo === this.luogo) return { ok: true };
+    this.o.log.info({ da: this.luogo, a: luogo, immagine: this.o.immagini?.luogo(luogo) ?? null }, 'scena: cambio di luogo');
+    this.luogo = luogo;
+    this.notifica();
+    return { ok: true };
   }
 
   private nomePg(id: string): string {
@@ -265,7 +300,7 @@ export class Regia {
       versione_scena: this.versioneScena,
       fase: this.fase,
       turno: this.turno,
-      scena: { id_campagna: c.id, titolo: c.scena.titolo, umore: c.scena.umore, intensita: c.scena.intensita },
+      scena: { id_campagna: c.id, titolo: c.scena.titolo, umore: c.scena.umore, intensita: c.scena.intensita, ...this.immaginiPubbliche() },
       pg: c.pg.map((p) => ({ id: p.id, nome: p.nome, descrizione: p.descrizione, telefoni: conteggio.get(p.id) ?? 0 })),
       finestra: this.tavolo.finestraPubblica(),
       al_tavolo: this.tavolo.alTavolo(),

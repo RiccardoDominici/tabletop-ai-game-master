@@ -24,6 +24,7 @@ import { compilaContestoRepertorio } from './repertorio/contesto';
 import { caricaParoleSegrete, segretiNelTesto } from './repertorio/segreti';
 import type { Repertorio } from './repertorio/tipi';
 import { CacheAudio } from './voce/cache-audio';
+import { CatalogoImmagini } from './campagna/immagini';
 import { ArbitroHaiku } from './azioni/arbitro-haiku';
 import { riassuntoPubblico } from './azioni/contesto';
 import type { Arbitro } from './azioni/tipi';
@@ -109,6 +110,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     config.voce.intervalloSaluteMs,
   );
 
+  const immagini = new CatalogoImmagini(config.cartellaImmagini, log.child({ modulo: 'immagini' }));
   const app = await creaApp({ log, cartellaWeb: sost.cartellaWeb ?? CARTELLA_WEB_DIST });
   const uscite = creaUscite(app.io);
   const regia = new Regia({
@@ -133,12 +135,13 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     finestraATutti: config.turni.finestraATutti,
     arbitro,
     scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),
+    immagini,
   });
   regia.collega(uscite.regia);
 
   let info = await creaInfoServer(config.porta, config.ipLan);
   collegaSocket(app.io, regia, () => info, log.child({ modulo: 'socket' }));
-  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, ...regia.infoSessione }));
+  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, ...regia.infoSessione }), immagini);
 
   return {
     app,

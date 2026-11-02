@@ -34,6 +34,8 @@ export interface ConfigServer {
   filePromptSelettore: string;
   /** Cartella dell'audio pre-generato del repertorio. */
   cacheAudio: string;
+  /** Immagini della campagna (manifest.json + file); default campagne/<id>/immagini. */
+  cartellaImmagini: string;
 
   /** Arbitro delle azioni simultanee: regole + Haiku, oppure solo regole. */
   arbitro: 'haiku' | 'regole';
@@ -106,6 +108,8 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     arbitro: scelta(env['CANTASTORIE_ARBITRO'], ['haiku', 'regole'] as const, env['CANTASTORIE_LLM'] === 'finto' ? 'regole' : 'haiku'),
     filePromptSelettore: testo(env['CANTASTORIE_PROMPT_SELETTORE']) ?? path.join(RADICE_REPO, 'prompts', 'selettore.md'),
     cacheAudio: testo(env['CANTASTORIE_CACHE_AUDIO']) ?? path.join(RADICE_REPO, 'cache', 'audio'),
+    // I percorsi relativi valgono dalla radice del repo (il server gira in apps/server).
+    cartellaImmagini: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_IMMAGINI']) ?? path.join(cartellaCampagna, 'immagini')),
     llm: {
       modo: scelta(env['CANTASTORIE_LLM'], ['haiku', 'finto'] as const, 'haiku'),
       modello: testo(env['CANTASTORIE_MODELLO']) ?? 'claude-haiku-5-5',

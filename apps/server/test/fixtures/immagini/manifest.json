@@ -1,0 +1,10 @@
+{
+  "immagini": [
+    {"id": "luogo_n_piazza", "file": "luogo_n_piazza.jpg", "tipo": "luogo", "prompt": "fixture (esperimenti/immagini/jpg/v1_luogo.jpg)", "seme": 0, "larghezza": 768, "altezza": 432},
+    {"id": "luogo_scena_forno_vecchio", "file": "luogo_scena_forno_vecchio.jpg", "tipo": "luogo", "prompt": "fixture (esperimenti/immagini/jpg/v2_luogo.jpg)", "seme": 0, "larghezza": 768, "altezza": 432},
+    {"id": "ritratto_png_baldrin", "file": "ritratto_png_baldrin.jpg", "tipo": "ritratto", "prompt": "fixture (v2_ritratto_baldrin.jpg)", "seme": 0, "larghezza": 480, "altezza": 640},
+    {"id": "ritratto_png_ottavia", "file": "ritratto_png_ottavia.jpg", "tipo": "ritratto", "prompt": "fixture (v2_ritratto_ottavia.jpg)", "seme": 0, "larghezza": 480, "altezza": 640},
+    {"id": "ritratto_png_sebastiano", "file": "ritratto_png_sebastiano.jpg", "tipo": "ritratto", "prompt": "fixture (v2_ritratto_sebastiano.jpg)", "seme": 0, "larghezza": 480, "altezza": 640},
+    {"id": "ritratto_png_mancante", "file": "ritratto_png_mancante.jpg", "tipo": "ritratto", "prompt": "voce senza file: deve essere ignorata", "seme": 0, "larghezza": 480, "altezza": 640}
+  ]
+}

@@ -23,7 +23,7 @@ function stato(parziale: Partial<StatoTavolo> = {}): StatoTavolo {
     versione_scena: 1,
     fase: 'finestra',
     turno: 1,
-    scena: { id_campagna: 'prova', titolo: 'Prova', umore: 'mistero', intensita: 2 },
+    scena: { id_campagna: 'prova', titolo: 'Prova', umore: 'mistero', intensita: 2, luogo: 'scena_prova', immagine: null, ritratti: {}, prossime: [] },
     pg: [],
     finestra: {
       aperta: true,
