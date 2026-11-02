@@ -1,0 +1,98 @@
+# Scheda scena/luogo (manuale §4): il Borgo Basso sott'acqua, tra il primo e il terzo tocco.
+# Durata prevista 30–40 minuti. Si arriva con la Lanterna, la barca del ponte.
+
+id: scena_borgo_basso
+nodo: n_borgo_basso
+nome: "Il Borgo Basso sott'acqua"
+
+descrizione: "Vicoli stretti tra case di pietra e di legno, con l'acqua alla vita di un uomo: la Lanterna passa a spinta di pertica. Dalla rampa bassa del ponte si va a monte o a valle, mai tutti e due nello stesso viaggio. A monte, in fondo, il Ricovero: casa di pietra a due piani, con il pianterreno allagato fino al terzo gradino della scala. Al piano di sopra stanno i sette vecchi, Rosa e l'oca Contessa, intorno a una stufa spenta. A valle, all'altro capo, le Case Lunghe: quattro case di legno sull'argine, con le famiglie sui ballatoi e i bambini sul tetto della più alta, sotto una tela cerata, e una lanterna ferma. Da tutti e due i capi si vedono le lanterne del ponte. Chi sente cosa: nei vicoli la pioggia copre le voci a più di tre passi. Al Ricovero, ciò che si dice al pianterreno, con l'acqua alle gambe, non si sente di sopra; ciò che si dice di sopra lo sentono tutti i vecchi. Rosa resta al Ricovero: sale in barca solo dopo l'ultimo dei suoi vecchi, e se passa il ponte va subito in chiesa con loro. Stanotte non va mai sul ponte."
+
+scopo: {tipo: rivelare_indizio, rif: i_tosse_ernesto}
+domanda_drammatica: "La Lanterna tornerà al ponte con un gruppo a bordo prima del terzo tocco?"
+
+posta:
+  si_guadagna:
+    cosa: "Un gruppo all'asciutto in chiesa prima di mezzanotte, e la verità su chi sta peggio."
+    per_chi: [png_rosa, pg_dalia, pg_nives]
+  si_perde:
+    cosa: "L'altro gruppo resta di là, e il tempo per un secondo viaggio si accorcia a ogni esitazione."
+    per_chi: [png_rosa, pg_dalia, pg_nives]
+
+intensita: 4
+
+sensi:
+  - "L'acqua gelata che entra negli stivali e pesa sulle gambe."            # tatto
+  - "Una grondaia staccata che sbatte contro un muro, a ogni folata."       # udito
+  - "Odore di cenere bagnata e di stalla allagata."                         # olfatto
+
+elementi_interattivi:
+  - {cosa: "la Lanterna e la pertica", dove: "nei vicoli", azioni: "si spinge con la pertica o si rema piano; porta otto persone sedute, o sei se qualcuno sta disteso"}
+  - {cosa: "la scala del Ricovero", dove: "dal pianterreno allagato al piano di sopra", azioni: "scricchiola ma regge; i vecchi che non camminano si portano giù in due, su una barella di tela"}
+  - {cosa: "la stufa del piano di sopra", dove: "al Ricovero, in mezzo alla stanza", azioni: "si tocca, si apre; la catasta della legna sta nel sottoscala, al pianterreno"}
+  - {cosa: "la finestra con la lanterna", dove: "al Ricovero, di sopra, sul vicolo", azioni: "Rosa la dondola verso il ponte; si può prendere e usare per un segnale"}
+  - {cosa: "l'oca Contessa", dove: "sulla scala del Ricovero", azioni: "morde chi alza la voce; se sale in barca per prima, i vecchi salgono più contenti"}
+  - {cosa: "i ballatoi delle Case Lunghe", dove: "a valle, sull'argine", azioni: "ci si attracca con una corda alla ringhiera; dal ballatoio si passano in barca i bambini, uno alla volta"}
+  - {cosa: "le porte delle Case Lunghe", dove: "sotto i ballatoi, a pelo d'acqua", azioni: "si guardano dalla barca, alla luce della lanterna"}
+
+png_presenti: [png_rosa]
+orologi_attivi: [o_piena]
+
+indizi:
+  - id: i_rosa_rondini
+    conclusione: r_leone
+    tipo: png
+    nodo: png_rosa
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi chiede a Rosa del ponte, della piena grande o del leone: da giovane, il leone guardava i nidi delle rondini sotto l'arcata. Dopo la piena grande guardava l'acqua, e lei non ci ha più pensato."
+  - id: i_tosse_ernesto
+    conclusione: r_ricovero
+    tipo: evento
+    nodo: n_borgo_basso
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi entra al Ricovero sente dal piano di sopra una tosse lunga e roca, e la voce di un vecchio che chiede da bere."
+  - id: i_legna_bagnata
+    conclusione: r_ricovero
+    tipo: oggetto
+    nodo: n_borgo_basso
+    essenziale: false
+    tiro: "nessuno"
+    modi: 2
+    come_si_trova: "Chi guarda nel sottoscala con la lanterna, oppure chi sale e tocca la stufa: la catasta della legna è sott'acqua, e la stufa di sopra è fredda."
+  - id: i_rosa_ernesto
+    conclusione: r_ricovero
+    tipo: png
+    nodo: png_rosa
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Solo quando Rosa cede: Ernesto ha la febbre alta da ieri, e senza fuoco la notte per lui è lunga."
+  - id: i_croci_gesso
+    conclusione: r_vischi
+    tipo: oggetto
+    nodo: n_borgo_basso
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi passa con la barca davanti alle porte delle Case Lunghe, o del Ricovero, e alza la luce: su ogni porta c'è una croce di gesso fresca, che la pioggia non ha ancora lavato."
+
+uscite:
+  - {verso: n_ponte, segnalata_da: [i_rosa_rondini, i_tosse_ernesto, i_legna_bagnata], nota: "Si torna con la barca alla rampa bassa del ponte."}
+  - {verso: n_casa_del_sale, segnalata_da: [i_croci_gesso], nota: "Le croci sono il segno dello scrivano di Vischi: chi lo ha visto al ponte lo riconosce."}
+
+mossa_morbida_pronta: "Una porta sfondata scende il vicolo, girando piano su se stessa. Sopra c'è un gatto fradicio che soffia alla barca."
+
+apertura: "La Lanterna scivola tra i muri del Borgo, dove l'acqua arriva alla vita di un uomo. A monte brilla la finestra del Ricovero, a valle i ballatoi delle Case Lunghe. Da che parte spingete la pertica?"
+
+musica:
+  tag: inseguimento
+  transizione: "Verso esplorazione_tesa al Ricovero o ai ballatoi. Verso lutto se la barca riparte e lascia indietro qualcuno."
+
+immagine:
+  invarianti: ["vicolo allagato tra case di pietra", "barca piatta con una pertica", "casa di pietra a due piani con una lanterna alla finestra di sopra", "case di legno sull'argine con ballatoi", "pioggia fitta", "lanterne del ponte in lontananza"]
+  prompt_luogo: "flooded narrow alley of a poor riverside quarter at night, waist-deep brown water between old stone walls, flat wooden boat with a long pole, two-storey stone almshouse with a lantern in an upper window, row of old wooden houses on the riverbank with wooden balconies, heavy rain, distant lanterns of a stone bridge"
+
+taglio: "La scena si chiude quando la Lanterna riparte verso il ponte con un gruppo a bordo, oppure quando i PG decidono di restare di là con chi non entra in barca. Se al sesto segno i PG esitano ancora, Rosa mette in barca chi è più vicino alla scala e spinge via la Lanterna con il piede: la barca torna al ponte con quelli, e la scena si chiude."

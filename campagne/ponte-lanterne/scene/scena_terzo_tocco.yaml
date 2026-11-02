@@ -1,0 +1,74 @@
+# Scheda scena/luogo (manuale §4): il terzo tocco, sul ponte, a mezzanotte. Climax della sessione.
+# Durata prevista 20–30 minuti. Stessa pianta della prima scena.
+
+id: scena_terzo_tocco
+nodo: e_terzo_tocco
+nome: "Il terzo tocco, sul ponte"
+
+descrizione: "Il ponte a mezzanotte, con la stessa pianta della prima scena. La rampa bassa è sott'acqua fino alla caviglia, e sale. All'imbocco della Riva Alta, sotto la tettoia, il console e il consiglio; dietro, il paese con lanterne e ceri. Vischi sta accanto al console. Tullio è alla catena, con la mano sulla manovella; Bice è alle lanterne del parapetto. Chi è già passato è su in chiesa: Rosa, se è passata, è in chiesa con i suoi vecchi e non scende al ponte. La Lanterna è al pontile sotto il casello, oppure è nel Borgo per il secondo viaggio. Chi sente cosa: ciò che si dice alla catena lo sentono Tullio e chi gli sta accanto; ciò che si grida lo sente tutto il ponte, console compreso. Dentro il casello, a porta chiusa, non sente nessuno. Sulla rampa bassa il fiume copre tutto."
+
+scopo: {tipo: far_avanzare_fronte, rif: fronte_debiti}
+domanda_drammatica: "Al terzo tocco, la catena resterà su?"
+
+posta:
+  si_guadagna:
+    cosa: "Un'ora di ponte per il secondo gruppo, se la catena resta su."
+    per_chi: [png_rosa, pg_nives, pg_dalia]
+  si_perde:
+    cosa: "Il casello di Tullio, se la catena resta su. Una notte al freddo e una firma per chi è ancora di là, se va giù."
+    per_chi: [png_tullio, png_bice, png_rosa]
+
+intensita: 5
+
+sensi:
+  - "Il ponte fermo sotto i piedi, mentre il fiume urla tra le arcate."    # tatto e udito
+  - "L'acqua gelata alle caviglie, sulla rampa bassa."                    # tatto
+  - "Odore di cera dei ceri del paese, mescolato al fango."               # olfatto
+
+elementi_interattivi:
+  - {cosa: "la catena e la manovella", dove: "davanti al casello", azioni: "Tullio la tiene; si abbassa in un momento, si rialza in un minuto"}
+  - {cosa: "le lanterne del parapetto", dove: "una sopra ogni pilone", azioni: "si staccano e si portano sulla rampa bassa: piantate sui paletti segnano il bordo sotto l'acqua"}
+  - {cosa: "la rampa bassa", dove: "dalla parte del Borgo", azioni: "ci si scende con l'acqua che sale; ci si sta in piedi tenendosi ai paletti"}
+  - {cosa: "il leone e il pilone di mezzo", dove: "sotto il casello, verso monte", azioni: "ci si sporge con una lanterna; si mostra a tutti quello che c'è sopra il leone"}
+  - {cosa: "la Lanterna", dove: "al pontile sotto il casello, o nel Borgo", azioni: "parte per il secondo viaggio, o torna carica verso la rampa"}
+  - {cosa: "il console e il paese", dove: "all'imbocco della Riva Alta", azioni: "si parla davanti a tutti; si mostra una prova; si chiede un voto"}
+
+png_presenti: [png_tullio, png_bice, png_vischi]
+orologi_attivi: [o_piena]
+
+indizi:
+  - id: i_ponte_fermo
+    conclusione: r_leone
+    tipo: evento
+    nodo: e_terzo_tocco
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Indizio proattivo, al terzo tocco: l'acqua tocca la criniera, e chi ha i piedi sul ponte non sente niente, né tremito né scricchiolio. Le pietre del pilone sopra il leone sono ancora asciutte."
+
+uscite:
+  - {verso: n_chiesa, segnalata_da: [i_ponte_fermo], nota: "Chi passa il ponte sale in chiesa."}
+  - {verso: n_passo_vecchio, segnalata_da: [i_lista_alba, i_carte_pronte], nota: "All'alba, le barche di Vischi: prossima sessione."}
+
+climax: true
+
+mossa_morbida_pronta: "All'imbocco della Riva Alta il paese batte i piedi sulle pietre, a tempo. Qualcuno grida a Tullio di tirare giù la catena."
+
+apertura: "Mezzanotte sul ponte: l'acqua lecca la rampa bassa, e il paese aspetta all'imbocco con le lanterne. Tullio ha la mano sulla manovella, e Vischi parla piano al console. Dal Borgo, una lanterna chiama ancora: che fate?"
+
+musica:
+  tag: esplorazione_tesa
+  transizione: "Verso inseguimento se la Lanterna parte o torna con l'acqua sulla rampa. A scena chiusa: taverna_calda se tutti sono passati, lutto se qualcuno resta di là."
+
+immagine:
+  invarianti: ["ponte di pietra a sei arcate", "sei lanterne accese sul parapetto", "casello di legno e pietra in mezzo al ponte", "catena tesa tra due paletti", "rampa bassa sotto l'acqua", "folla con lanterne e ceri in fondo al ponte"]
+  prompt_luogo: "old six-arched stone toll bridge at midnight in a raging flood, muddy water lapping over the low ramp, six lanterns along the parapet, wood-and-stone toll house at mid-span, iron chain between two posts, a crowd with lanterns and candles gathered under a shelter at the high end, rain slanting in the lantern light"
+
+taglio: "La scena si chiude quando la catena va giù, oppure quando la Lanterna è tornata dal secondo viaggio e la rampa è vuota. Se la catena va giù con un gruppo ancora di là, quel gruppo passa la notte sopra l'acqua e all'alba firma per Vischi. Se resta su, c'è un'ora: il secondo gruppo passa con l'acqua sulla rampa, e all'alba Vischi chiama il debito di Tullio. Se una prova del leone viene mostrata a tutti, il console ritira l'ordine e Vischi diventa un nemico aperto. Se al terzo tocco i PG esitano, Tullio aspetta il tempo di una risposta, poi abbassa la catena."
+
+# Esiti del taglio, ognuno con il suo finale nel repertorio.
+esiti:
+  - {id: e_famiglie_di_la, descrizione: "Catena giù, le famiglie delle Case Lunghe restano di là fino all'alba.", finale: fin_notte_case_lunghe}
+  - {id: e_vecchi_di_la, descrizione: "Catena giù, i vecchi del Ricovero restano di là fino all'alba.", finale: fin_notte_ricovero}
+  - {id: e_ora_in_piu, descrizione: "Catena su dopo il terzo tocco: il secondo viaggio passa con l'acqua sulla rampa.", finale: fin_ora_in_piu}
+  - {id: e_nessun_viaggio, descrizione: "La barca non è mai partita: Ricovero e Case Lunghe restano di là.", finale: fin_nessun_viaggio}

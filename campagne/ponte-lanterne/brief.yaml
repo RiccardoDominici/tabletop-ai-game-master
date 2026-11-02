@@ -1,0 +1,61 @@
+# Brief della campagna «Il ponte delle lanterne». Lo legge solo chi prepara.
+# Copiato da .claude/skills/preparatore/modelli/brief.yaml e riempito.
+
+id: "ponte-lanterne"
+titolo: "Il ponte delle lanterne"
+richiesta: >-
+  Title: «Il ponte delle lanterne». A river town at the end of autumn, during a flood that keeps
+  rising; the old toll bridge is the only way across. Tone: mystery with warm, human moments and a
+  few light touches of humour; no horror, no gore. 3–4 players, level 1, one evening session of about
+  2–2.5 hours. 3–4 locations; 4 NPCs with voices at most (the registered TTS voices are only vincent,
+  nadine, lucian, tabitha; see assets/voci/voci.yaml), plus any number of unvoiced extras. Themes:
+  debts and loyalty, a community that must decide whom to save first, and a secret about the bridge.
+  Lines: no harm to children shown on scene, no sexual content. Veils: drowning described only
+  off-scene. It must NOT reuse the shape of the existing test scene (campagne/prova-f0: an inn, a
+  locked stranger, a poisoned food): a different setup, different kind of secret, different kind of choice.
+
+tono: "Mistero di paese sotto la pioggia, caldo e umano, con qualche sorriso. Niente orrore, niente sangue."
+durata: "una sessione serale, da due ore a due ore e mezza, in quattro scene"
+giocatori: 4            # da 3 a 4: i PG pregenerati sono cinque, uno più del massimo
+temi: [debiti e lealtà, una comunità che deve decidere chi salvare per primo, un segreto sul ponte]
+linee:
+  - "violenza sui bambini, mostrata o descritta in scena"
+  - "contenuti sessuali"
+veli:
+  - "annegamento: solo fuori scena, si sa a cose fatte"
+ambientazione: >-
+  Vadolungo, paese di fiume sulla Lenta, l'ultima notte di novembre. Due rive: la Riva Alta di pietra,
+  con la chiesa di San Clemente, e il Borgo Basso di barcaioli e lavandaie. Le unisce solo il Ponte
+  delle Lanterne, a pedaggio. Fantasy compatibile SRD, senza magia vistosa.
+vincoli:
+  - "niente combattimento necessario: la forza è una strada, mai l'unica"
+  - "senza dadi in F0: cede_se e indizi solo con condizioni di finzione"
+  - "al massimo quattro PNG con voce; nadine e tabitha mai nella stessa scena"
+  - "non riusare la forma di prova-f0: niente osteria, niente prigioniero chiuso a chiave, niente cibo avvelenato"
+
+decisioni:
+  scene: [scena_ponte_imbrunire, scena_borgo_basso, scena_casa_del_sale, scena_terzo_tocco]
+  pg: [pg_dalia, pg_quirino, pg_nives, pg_arrigo, pg_ghita]
+  png:
+    - "png_tullio → vincent (casellante nano, burbero e caldo)"
+    - "png_vischi → lucian (Leandro Vischi, mercante e prestatore: voce bassa e liscia)"
+    - "png_rosa → nadine (custode del Ricovero, anziana)"
+    - "png_bice → tabitha (nipote del casellante, lampionaia sfacciata)"
+  situazione: >-
+    Leandro Vischi, il prestatore, vuole il ponte chiuso al terzo tocco della campana di piena:
+    chi resta nel Borgo Basso dovrà salire sulle sue barche all'alba, firmando la casa in pegno.
+    Se i PG non fanno niente, la vecchia barca del casello salva un solo gruppo, il Ricovero dei vecchi
+    oppure le Case Lunghe delle famiglie, e l'altro passa la notte al freddo e all'alba firma.
+    La verità: quarant'anni fa il padre di Vischi ha fatto calare il leone di pietra che segna la
+    chiusura, e il ponte regge un'ora in più. La scelta: chi salvare per primo, e se tenere su la
+    catena dopo il tocco, a rischio, contro il consiglio e a spese del casellante.
+  altre:
+    - "Quattro scene in tre luoghi (il ponte due volte, all'imbrunire e a mezzanotte): il brief chiede tre o quattro luoghi, C11 da tre a cinque scene per due o tre ore."
+    - "Cinque PG pregenerati per tre o quattro giocatori: il brief dà un intervallo, e la skill dice uno più dei giocatori; prendo il massimo."
+    - "Forma diversa da prova-f0. Luogo: un ponte all'aperto in una piena, non un'osteria. Segreto: una misura falsificata che toglie tempo, non la causa nascosta di un male né un'identità. Scelta: un triage (chi per primo) più un rischio, non dire o tacere una colpa."
+    - "Il segreto non costa a chi lo ha nascosto: lo ha nascosto il cattivo. Il prezzo della terza via cade sul casellante (il debito), sui PG (l'acqua sulla rampa) e sul paese (Vischi si prende il pedaggio)."
+    - "Rosa (nadine) e Bice (tabitha) non si incontrano mai: Rosa resta nel Borgo, e se viene portata di qua sale subito in chiesa con i suoi vecchi. Non è sul ponte nella scena finale."
+    - "Nessun pericolo di morte in scena. Chi non viene salvato passa la notte al freddo e all'alba firma per Vischi; il rischio grave (Ernesto, la febbre) resta fuori scena, come vuole il velo."
+    - "Il rischio della terza via è reale ma non mortale in scena: acqua alle ginocchia sulla rampa bassa, lanterne da tenere accese, un'ora contata."
+    - "Umorismo: l'oca del Ricovero, il libro dei pedaggi con i debiti di Arrigo, Bice e le anguille, lo gnomo pedante sugli archi."
+    - "Monete: fiorini d'oro e soldi di rame. Il pedaggio è un soldo a passaggio."

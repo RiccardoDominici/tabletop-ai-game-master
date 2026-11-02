@@ -1,0 +1,378 @@
+# Campagna «ponte-lanterne» — Il ponte delle lanterne. Artefatti del Preparatore (manuale §2).
+#
+# Divisione per pubblico (E2, need-to-know):
+#   - `preparazione` NON va al Narratore: destini, cronologia del cattivo, segreti astratti, archi;
+#   - canone, orologi, rivelazioni, colli di bottiglia, nodi e sessione servono al Narratore in modo A.
+#     In modo B (repertorio) il compilatore toglie le parti elencate in
+#     repertorio/parole_segrete.yaml → da_togliere_dal_contesto.
+#
+# Gli id dei fatti (f_*) sono quelli citati nelle schede PNG e dei PG. Gli indizi (i_*) sono definiti
+# nelle schede delle scene: scena.yaml (il ponte all'imbrunire) e scene/*.yaml.
+
+id: ponte-lanterne
+
+# ---------------------------------------------------------------------------
+# CANONE (E10). Un fatto per riga.
+# noto_ai_pg: true  = lo sanno i PG o tutto il paese: si può dire a voce;
+# noto_ai_pg: false = nascosto: lo dice solo un PNG che lo sa, o un indizio.
+# ---------------------------------------------------------------------------
+canone:
+  # Pubblici: il paese, il ponte, la piena
+  - {id: f_piena, noto_ai_pg: true, stato: confermato, entita: [n_ponte],
+     testo: "Da tre giorni piove su Vadolungo, e stanotte la Lenta è in piena."}
+  - {id: f_ponte_unico, noto_ai_pg: true, stato: confermato, entita: [n_ponte],
+     testo: "Il Ponte delle Lanterne è l'unico passaggio tra il Borgo Basso e la Riva Alta."}
+  - {id: f_pedaggio, noto_ai_pg: true, stato: confermato, entita: [n_ponte, png_tullio],
+     testo: "Al ponte si paga un soldo a passaggio, al casello in mezzo al ponte, dove vive Tullio Bellora, il custode."}
+  - {id: f_tullio_custode, noto_ai_pg: true, stato: confermato, entita: [png_tullio],
+     testo: "Tullio tiene il casello da trent'anni, come suo padre prima di lui."}
+  - {id: f_lanterne_ponte, noto_ai_pg: true, stato: confermato, entita: [n_ponte, png_bice],
+     testo: "Sul parapetto ci sono sei lanterne, una per pilone. Le accende Bice, la nipote di Tullio."}
+  - {id: f_tocchi, noto_ai_pg: true, stato: confermato, entita: [],
+     testo: "Nelle notti di piena la campana di San Clemente batte tre tocchi: al tramonto, a metà sera e a mezzanotte."}
+  - {id: f_regola_leone, noto_ai_pg: true, stato: confermato, entita: [n_ponte, png_tullio],
+     testo: "Per regola, quando l'acqua tocca la criniera del leone di pietra sul pilone di mezzo, il custode chiude la catena e il ponte resta chiuso finché l'acqua non cala."}
+  - {id: f_ordine_consiglio, noto_ai_pg: true, stato: confermato, entita: [png_vischi],
+     testo: "Il consiglio ha ordinato di chiudere la catena al terzo tocco: a quell'ora l'acqua sarà al leone."}
+  - {id: f_piena_grande, noto_ai_pg: true, stato: confermato, entita: [n_ponte],
+     testo: "Quarant'anni fa, nella piena grande, quattro persone rimaste sulla rampa bassa di notte non sono più tornate a casa. La regola del leone è nata allora."}
+  - {id: f_detto_bellora, noto_ai_pg: true, stato: confermato, entita: [png_tullio],
+     testo: "In paese tutti ricordano il detto del vecchio Bellora, il padre di Tullio: il leone ha paura dell'acqua, il ponte no. Nessuno l'ha mai capito."}
+  - {id: f_borgo_passato, noto_ai_pg: true, stato: confermato, entita: [n_borgo_basso],
+     testo: "Al primo tocco quasi tutto il Borgo Basso ha passato il ponte, e dorme nella chiesa di San Clemente. Il Ricovero e le Case Lunghe sono rimasti tagliati fuori dall'acqua."}
+  - {id: f_ricovero, noto_ai_pg: true, stato: confermato, entita: [n_borgo_basso, png_rosa],
+     testo: "Al Ricovero, in fondo al Borgo verso monte, vivono sette vecchi con la custode, Rosa Galli. È una casa di pietra a due piani."}
+  - {id: f_case_lunghe, noto_ai_pg: true, stato: confermato, entita: [n_borgo_basso],
+     testo: "Le Case Lunghe sono case di legno sull'argine, in fondo al Borgo verso valle. Ci vivono quattro famiglie di barcaioli, con nove bambini."}
+  - {id: f_barca_lanterna, noto_ai_pg: true, stato: confermato, entita: [n_ponte, png_tullio],
+     testo: "Sotto il casello è legata la Lanterna, la vecchia barca piatta del ponte: è l'unica che entra nei vicoli allagati."}
+  - {id: f_un_viaggio, noto_ai_pg: true, stato: confermato, entita: [n_borgo_basso],
+     testo: "Un viaggio della Lanterna nel Borgo, andata e ritorno, dura quasi quanto lo spazio tra due tocchi."}
+  - {id: f_un_gruppo, noto_ai_pg: true, stato: confermato, entita: [n_borgo_basso],
+     testo: "La Lanterna porta un gruppo per volta: il Ricovero e le Case Lunghe stanno ai due capi opposti del Borgo."}
+  - {id: f_segnali, noto_ai_pg: true, stato: confermato, entita: [n_borgo_basso],
+     testo: "Nel Borgo si parla con le lanterne alle finestre: dondolata vuol dire «stiamo bene», ferma vuol dire «venite»."}
+  - {id: f_barche_vischi, noto_ai_pg: true, stato: confermato, entita: [png_vischi, n_passo_vecchio],
+     testo: "Leandro Vischi, mercante di sale e prestatore, ha le barche grandi del Passo Vecchio, un'ora a valle, e ha promesso di mandarle all'alba."}
+  - {id: f_consiglio_sale, noto_ai_pg: true, stato: confermato, entita: [png_vischi, n_casa_del_sale],
+     testo: "Vischi siede nel consiglio. Stanotte il consiglio si riunisce nella sua Casa del Sale, sulla Riva Alta, perché è asciutta e calda."}
+  - {id: f_debiti_borgo, noto_ai_pg: true, stato: confermato, entita: [png_vischi, n_borgo_basso],
+     testo: "Mezzo Borgo Basso ha debiti con Vischi: barche, reti, tetti."}
+  - {id: f_console, noto_ai_pg: true, stato: confermato, entita: [],
+     testo: "Il consiglio lo guida il console Ugolino Pradella, che non ha mai detto di no a Vischi."}
+  - {id: f_ernesto, noto_ai_pg: true, stato: confermato, entita: [png_rosa],
+     testo: "Tra i vecchi del Ricovero c'è Ernesto, barcaiolo per sessant'anni, che ha insegnato a remare a mezzo Borgo."}
+
+  # Nascosti: il leone
+  - {id: f_leone_calato, noto_ai_pg: false, stato: confermato, entita: [n_ponte],
+     testo: "Dopo la piena grande il leone è stato smurato e rimesso due spanne più in basso."}
+  - {id: f_padre_vischi, noto_ai_pg: false, stato: confermato, entita: [png_vischi],
+     testo: "A pagare il muratore che calò il leone fu Corrado Vischi, il padre di Leandro."}
+  - {id: f_onda_pontieri, noto_ai_pg: false, stato: confermato, entita: [n_ponte],
+     testo: "Sul pilone di mezzo, due spanne sopra il leone, sotto il muschio, c'è un'onda scolpita dai costruttori: è il vero segno del pericolo."}
+  - {id: f_ora_in_piu, noto_ai_pg: false, stato: confermato, entita: [n_ponte],
+     testo: "Dal leone all'onda l'acqua impiega circa un'ora a salire: il ponte regge un'ora dopo il terzo tocco."}
+  - {id: f_malta_chiara, noto_ai_pg: false, stato: confermato, entita: [n_ponte],
+     testo: "Il blocco del leone è murato con una malta chiara e liscia, diversa da quella scura e mangiata del pilone."}
+  - {id: f_libro_piena, noto_ai_pg: false, stato: confermato, entita: [n_ponte, png_tullio],
+     testo: "Nel libro dei passi del casello, la notte della piena grande, il vecchio Bellora scrisse: «Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va.»"}
+  - {id: f_bellora_guardava, noto_ai_pg: false, stato: confermato, entita: [png_tullio],
+     testo: "Dopo la piena grande, nelle notti d'acqua il vecchio Bellora guardava un punto del pilone più in alto del leone."}
+  - {id: f_vischi_sa, noto_ai_pg: false, stato: confermato, entita: [png_vischi],
+     testo: "Leandro Vischi sa che il leone è stato calato: lo ha letto nel registro del padre."}
+  - {id: f_registro_padre, noto_ai_pg: false, stato: confermato, entita: [n_casa_del_sale],
+     testo: "Nel registro di Corrado Vischi, quarant'anni fa: dieci fiorini a mastro Pece, per il leone del ponte, lavoro di notte, due spanne."}
+  - {id: f_scrivano_misura, noto_ai_pg: false, stato: confermato, entita: [png_vischi],
+     testo: "Ieri notte lo scrivano di Vischi, da una barca, ha misurato il pilone con una corda a nodi, dal leone in su."}
+  - {id: f_bice_anguille, noto_ai_pg: false, stato: confermato, entita: [png_bice],
+     testo: "Bice pesca anguille di notte sotto il ponte, dove è vietato, e Tullio non lo sa."}
+
+  # Nascosti: i debiti
+  - {id: f_carte_pronte, noto_ai_pg: false, stato: confermato, entita: [png_vischi, n_casa_del_sale],
+     testo: "Nella Casa del Sale ci sono già i contratti di prestito con i nomi delle Case Lunghe e del Ricovero, con la casa in pegno."}
+  - {id: f_barche_firma, noto_ai_pg: false, stato: confermato, entita: [png_vischi, n_passo_vecchio],
+     testo: "All'alba le barche di Vischi prenderanno solo chi firma il prestito."}
+  - {id: f_darsena, noto_ai_pg: false, stato: confermato, entita: [png_vischi, n_borgo_basso],
+     testo: "Vischi vuole buttare giù le Case Lunghe e farci una darsena per le barche del sale."}
+  - {id: f_croci_gesso, noto_ai_pg: false, stato: confermato, entita: [n_borgo_basso],
+     testo: "La settimana scorsa lo scrivano di Vischi ha segnato con una croce di gesso le porte delle Case Lunghe e del Ricovero."}
+  - {id: f_debito_tullio, noto_ai_pg: false, stato: confermato, entita: [png_tullio, png_vischi],
+     testo: "Due anni fa Tullio ha preso da Vischi quaranta fiorini per rifare il tetto del casello, e gli ha dato il casello in pegno."}
+  - {id: f_minaccia_tullio, noto_ai_pg: false, stato: confermato, entita: [png_tullio, png_vischi],
+     testo: "Vischi ha detto a Tullio che, se tiene su la catena dopo il terzo tocco, il debito scade all'alba e il casello è suo."}
+
+  # Nascosti: il Ricovero
+  - {id: f_ernesto_febbre, noto_ai_pg: false, stato: confermato, entita: [png_rosa],
+     testo: "Ernesto ha la febbre alta da ieri."}
+  - {id: f_legna_bagnata, noto_ai_pg: false, stato: confermato, entita: [n_borgo_basso],
+     testo: "Al Ricovero la legna è finita sott'acqua, e la stufa del piano di sopra è fredda."}
+
+# ---------------------------------------------------------------------------
+# OROLOGI (C2) che il Narratore vede. Il nome è quello dell'ostacolo.
+# `segni`: uno per segmento, in ordine; il Narratore mostra il segno del segmento appena riempito.
+# ---------------------------------------------------------------------------
+orologi:
+  - id: o_piena
+    nome: "La Lenta sale al leone"
+    pericolo: p_piena
+    segmenti: 8
+    pieni_all_inizio: 0
+    # Orologio di tutta la sessione: un segno ogni sei risposte al massimo, perché duri tre scene.
+    segno_almeno_ogni: 6
+    segni:
+      - "Il fiume cambia voce: un brontolio basso e continuo, sotto la pioggia."
+      - "Una botte vuota scende veloce sulla corrente e sbatte contro un pilone."
+      - "Nel Borgo Basso una lanterna alla finestra si spegne, poi si riaccende."
+      - "La campana di San Clemente batte il secondo tocco, lento e pesante."
+      - "Un tronco intero sbatte contro il ponte, e il colpo arriva fino in piazza."
+      - "La pioggia raddoppia, e dal Borgo arriva uno scroscio di tegole cadute."
+      - "Dal ponte gridano che l'acqua è alla zampa del leone."
+      - "La campana batte il terzo tocco, e l'acqua tocca la criniera del leone."
+    avanza_quando:
+      - "almeno un segno ogni sei risposte del narratore, nelle scene in cui l'orologio è attivo: quando tocca, il Motore scrive nel contesto «mostralo in questa risposta»"
+      - "più uno a ogni cambio di scena: il viaggio della barca e le discussioni consumano la sera"
+      - "all'inizio della scena del terzo tocco, se è sotto sei, sale a sei"
+      - "mai due segni nella stessa risposta"
+    al_completo: "La Lenta è al leone e la campana ha battuto il terzo tocco. Il console, il paese e Vischi vogliono la catena giù subito. Tullio tiene la catena e guarda i PG: la abbassa o la tiene su sulla loro parola, non da solo. Se va giù, chi è ancora nel Borgo passa la notte sopra l'acqua e all'alba firma per salire sulle barche di Vischi. Se resta su, c'è un'ora fino all'onda: la Lanterna fa un altro viaggio, qualcuno tiene le lanterne sulla rampa bassa con l'acqua alle ginocchia, e all'alba Vischi chiama il debito di Tullio. Vedi il taglio della scena del terzo tocco."
+
+  - id: o_firme
+    nome: "I debiti stringono il Borgo"
+    pericolo: p_vischi
+    segmenti: 6
+    pieni_all_inizio: 0
+    segno_almeno_ogni: 2
+    segni:
+      - "Lo scrivano stende i fogli sul tavolo lungo, e intinge la penna."
+      - "Un barcaiolo bagnato entra, si toglie il berretto e firma con una croce."
+      - "Il console alza il bicchiere verso Vischi, e i consiglieri lo imitano."
+      - "Lo scrivano ricopia una lista di nomi e la soffia per asciugarla."
+      - "Il consiglio vota a mani alzate: catena giù al terzo tocco."
+      - "Vischi chiude la lista con il suo sigillo, e manda lo scrivano al Passo Vecchio."
+    avanza_quando:
+      - "almeno un segno ogni due risposte del narratore, mentre i PG sono alla Casa del Sale"
+      - "subito, anche se la risposta precedente ne aveva uno, quando un PG accusa Vischi davanti al consiglio senza mostrare una prova"
+      - "mai due segni nella stessa risposta"
+    al_completo: "La lista è sigillata e il consiglio ha votato. All'alba le barche di Vischi prendono solo chi ha firmato. Il voto si può ancora rovesciare solo al ponte, al terzo tocco, con una prova davanti al console e al paese."
+
+# ---------------------------------------------------------------------------
+# RIVELAZIONI (C4): ≥3 indizi, in ≥2 nodi, di ≥2 tipi. Si spuntano quando i giocatori le accettano.
+# ---------------------------------------------------------------------------
+rivelazioni:
+  - id: r_leone
+    chiave: true
+    conclusione: "Il leone è stato calato: il ponte regge un'ora in più di quanto dice la regola, fino all'onda scolpita."
+    indizi: [i_onda_pilone, i_malta_leone, i_libro_piena, i_detto_bellora, i_bice_scrivano, i_rosa_rondini, i_registro_padre, i_corda_nodi, i_ponte_fermo]
+  - id: r_vischi
+    chiave: true
+    conclusione: "Vischi vuole il ponte chiuso al terzo tocco per legare il Borgo ai suoi debiti: le sue barche all'alba prendono solo chi firma."
+    indizi: [i_scrivano_corda, i_tullio_minaccia, i_croci_gesso, i_carte_pronte, i_lista_alba, i_vischi_darsena]
+  - id: r_ricovero
+    chiave: true
+    conclusione: "Al Ricovero non stanno bene: Ernesto ha la febbre e non c'è fuoco."
+    indizi: [i_lanterna_ricovero, i_tosse_ernesto, i_legna_bagnata, i_rosa_ernesto]
+
+# Colli di bottiglia (C4): ognuno ha almeno 3 soluzioni.
+colli_di_bottiglia_nota: "Tutte le soluzioni funzionano se i PG le tentano. Il narratore non suggerisce quelle segnate «solo se la propone chi la conosce»."
+colli_di_bottiglia:
+  - id: cb_barca
+    ostacolo: "Mettere in acqua la Lanterna, piena d'acqua piovana, e portarla nei vicoli del Borgo."
+    soluzioni:
+      - "Chiederla a Tullio: la dà a chi va a prendere qualcuno, e indica dove sono i remi."
+      - "Svuotarla con i secchi del casello e remare: fatica, e un po' di tempo."
+      - "Farsi guidare da Bice, che conosce i vicoli e spinge la barca con la pertica."
+      - "Convincere due barcaioli del Borgo, fermi sul ponte, a remare per i PG."
+  - id: cb_studio
+    ostacolo: "Entrare nello studio di Vischi, alla Casa del Sale, mentre il consiglio è riunito."
+    soluzioni:
+      - "Ghita è la guardia dello studio stanotte. Solo se la propone chi la conosce (Ghita)."
+      - "La porta del magazzino del sale, sul retro, non ha il chiavistello. Solo se la propone chi la conosce (Nives)."
+      - "Tenere occupati Vischi e il console nella sala: un brindisi, un discorso, una canzone."
+      - "Fingere di voler firmare: lo scrivano porta il PG nello studio, dove stanno le carte."
+  - id: cb_prova
+    ostacolo: "Mostrare a Tullio e al console che il leone non è il segno vero."
+    soluzioni:
+      - "Grattare il muschio sopra il leone con una pertica e illuminare l'onda, dal parapetto o dalla barca."
+      - "Portare al ponte il registro di Corrado Vischi, preso dalla cassa di ferro."
+      - "Leggere a tutti il libro dei passi della piena grande, nel casello."
+      - "Riferire il ricordo di Rosa sulle rondini: Tullio sa dove stavano i nidi."
+      - "Quirino riconosce l'onda dei costruttori e lo spiega. Solo se la propone chi la conosce (Quirino)."
+  - id: cb_catena
+    ostacolo: "Tenere su la catena dopo il terzo tocco, contro l'ordine del consiglio."
+    soluzioni:
+      - "Convincere Tullio con una prova: decide sulla parola dei PG."
+      - "Togliere a Tullio la paura del debito: una promessa davanti a tutti, o il paese che si impegna a pagarlo."
+      - "Mostrare la prova al console davanti al paese: Ugolino ritira l'ordine pur di non sembrare complice."
+      - "Tenere la catena con la forza: le due guardie del console non si battono, ma Tullio perde il casello e il paese la fiducia."
+
+# ---------------------------------------------------------------------------
+# NODI (C5). Quattro scene con scheda; due abbozzi.
+# ---------------------------------------------------------------------------
+nodi:
+  - id: n_ponte
+    tipo: luogo
+    nome: "Il Ponte delle Lanterne"
+    scheda: scena.yaml
+    collegamenti: [n_borgo_basso, n_casa_del_sale, n_chiesa, e_terzo_tocco, png_tullio, png_bice, png_vischi]
+  - id: n_borgo_basso
+    tipo: luogo
+    nome: "Il Borgo Basso sott'acqua"
+    scheda: scene/scena_borgo_basso.yaml
+    collegamenti: [n_ponte, png_rosa]
+  - id: n_casa_del_sale
+    tipo: luogo
+    nome: "La Casa del Sale"
+    scheda: scene/scena_casa_del_sale.yaml
+    collegamenti: [n_ponte, n_passo_vecchio, png_vischi]
+  - id: e_terzo_tocco
+    tipo: evento
+    nome: "Il terzo tocco"
+    scheda: scene/scena_terzo_tocco.yaml
+    collegamenti: [n_ponte, n_chiesa, n_passo_vecchio]
+  - id: n_chiesa
+    tipo: luogo
+    nome: "La chiesa di San Clemente"
+    abbozzo: "In cima alla Riva Alta. Il Borgo Basso dorme sulla paglia tra le panche, con due stufe accese e le ceste in mezzo. Ci salgono i vecchi del Ricovero e le famiglie, se passano il ponte. Il curato distribuisce coperte e brodo."
+    collegamenti: [n_ponte]
+  - id: n_passo_vecchio
+    tipo: luogo
+    nome: "Il Passo Vecchio"
+    abbozzo: "Il traghetto dei Vischi, un'ora a valle: barconi neri, rematori pagati, un tavolo per le firme. Stanotte non ci si arriva: la strada dell'argine è sott'acqua."
+    prossima_sessione: true
+    collegamenti: []
+  - {id: png_tullio, tipo: png, scheda: png/png_tullio.yaml, collegamenti: [n_ponte, e_terzo_tocco]}
+  - {id: png_bice, tipo: png, scheda: png/png_bice.yaml, collegamenti: [n_ponte, e_terzo_tocco]}
+  - {id: png_vischi, tipo: png, scheda: png/png_vischi.yaml, collegamenti: [n_ponte, n_casa_del_sale, e_terzo_tocco]}
+  - {id: png_rosa, tipo: png, scheda: png/png_rosa.yaml, collegamenti: [n_borgo_basso]}
+
+# ---------------------------------------------------------------------------
+# SESSIONE (C9–C13). Quattro scene: un menù, non un binario.
+# ---------------------------------------------------------------------------
+sessione:
+  # C9: letto a inizio sessione, prima di scena.apertura. Tre frasi più le tre dell'apertura.
+  riassunto_iniziale: "Da tre giorni piove su Vadolungo, e stanotte la Lenta è in piena. Il Borgo Basso passa il ponte con le ceste in spalla. Al terzo tocco della campana, per regola, la catena si chiude."
+  cinque_stanze:
+    ingresso_o_guardiano: "Tullio alla catena del ponte, con la sola barca del casello e la regola del leone."
+    enigma_o_sfida_sociale: "Chi salvare per primo: il consiglio, Vischi, i barcaioli e due lanterne che dicono cose diverse."
+    trucco_o_battuta_d_arresto: "Al Ricovero Rosa dice che stanno bene, e non è vero. Alla Casa del Sale il consiglio vota la chiusura e Vischi sigilla la lista."
+    climax: "Il terzo tocco: l'acqua al leone, un gruppo ancora di là, la catena in mano a Tullio. Giù, e chi resta firma all'alba; su, e c'è un'ora, con l'acqua sulla rampa e il casello perso."
+    ricompensa_o_colpo_di_scena: "Il leone calato dal padre di Vischi, e un paese che deve un casello al suo custode."
+  scene_potenziali: [scena_ponte_imbrunire, scena_borgo_basso, scena_casa_del_sale, scena_terzo_tocco]
+  chiusura: "Una scelta aperta: all'alba andare al Passo Vecchio contro le barche di Vischi, raccogliere con il Borgo il debito di Tullio, o portare il registro del leone davanti a tutto il paese. Si chiede ai giocatori cosa pensano di fare."
+
+# ===========================================================================
+# PREPARAZIONE: solo per Preparatore, Critico e Motore. NON va nel contesto del Narratore.
+# ===========================================================================
+preparazione:
+
+  # C2. Fronti.
+  fronti:
+    - id: fronte_debiti
+      livello: campagna
+      nome: "I debiti della Lenta"
+      pericoli:
+        - id: p_vischi
+          tipo: "organizzazione ambiziosa: un prestatore che compra il paese"
+          impulso: "possedere"
+          destino_incombente: "A primavera Vischi possiede l'argine del Borgo Basso, il Ricovero e il pedaggio del ponte, e il Borgo paga a lui ogni passo."
+          presagi:
+            - {testo: "Vischi compra i debiti delle Case Lunghe.", segno_visibile: "Croci di gesso sulle porte delle Case Lunghe e del Ricovero."}
+            - {testo: "Vischi prepara le firme della notte.", segno_visibile: "Un tavolo con calamaio e fogli nella sala della Casa del Sale."}
+          mosse: ["offre un prestito", "chiama un debito", "parla al console", "manda lo scrivano", "offre un accordo a chi sa troppo"]
+          cast: [png_vischi]
+          orologio: o_firme
+        - id: p_casello
+          tipo: "debito: un pegno che scade"
+          impulso: "scadere"
+          destino_incombente: "Il casello e il pedaggio passano a Vischi, e Tullio e Bice restano senza casa."
+          presagi:
+            - {testo: "Il debito di Tullio pesa sul ponte.", segno_visibile: "Tullio conta e riconta i soldi del pedaggio, al lume, e li mette in un sacchetto a parte."}
+          mosse: ["ricorda la scadenza", "toglie la casa", "fa obbedire per paura"]
+          cast: [png_tullio]
+          orologio: o_casello
+      domande_di_posta:
+        - "A primavera il Borgo Basso sarà di Vischi?"
+        - "Tullio e Bice terranno il casello?"
+      orologi_extra:
+        - {id: o_casello, nome: "Il casello passa di mano", segmenti: 4, pieni_all_inizio: 2}
+
+    - id: fronte_piena
+      livello: avventura
+      nome: "La notte della piena"
+      pericoli:
+        - id: p_piena
+          tipo: "forza della natura: la Lenta in piena"
+          impulso: "salire"
+          destino_incombente: "La Lenta copre il Borgo Basso fino alle grondaie, e chi è rimasto passa la notte sui tetti e sotto le tegole."
+          presagi:
+            - {testo: "Il Borgo si svuota al primo tocco.", segno_visibile: "File di gente con le ceste e le capre sul ponte, sotto la pioggia."}
+          mosse: ["porta via una barca", "sbatte un tronco contro il pilone", "allaga un vicolo", "spegne una lanterna", "copre un gradino della rampa"]
+          cast: []
+          orologio: o_piena
+        - id: p_paura
+          tipo: "orda: un paese che ha paura del ponte"
+          impulso: "chiudere"
+          destino_incombente: "Il ponte chiude al terzo tocco e nessuno osa più guardare il leone, né stanotte né mai."
+          presagi:
+            - {testo: "Il paese ricorda la piena grande.", segno_visibile: "Ceri accesi a San Clemente per i quattro della rampa bassa."}
+          mosse: ["grida di chiudere", "tira la catena", "chiama il console", "isola chi vuole aspettare"]
+          cast: []
+          orologio: o_paura
+      domande_di_posta:
+        - "Il Ricovero e le Case Lunghe saranno all'asciutto prima dell'alba?"
+        - "Il ponte resterà aperto dopo il terzo tocco?"
+      orologi_extra:
+        - {id: o_paura, nome: "Il paese vuole la catena giù", segmenti: 4, pieni_all_inizio: 1}
+
+  # C3. Cattivo con agenda.
+  cattivo:
+    id: png_vischi
+    nome: "Leandro Vischi"
+    pronuncia: "Leàndro Vìschi"
+    ruolo: "mercante di sale e prestatore; consigliere"
+    obiettivo: "Possedere l'argine del Borgo Basso e il pedaggio del ponte, con i debiti firmati nella notte della piena."
+    cronologia_se_i_pg_non_intervengono:
+      - "Due anni fa presta a Tullio quaranta fiorini, con il casello in pegno."
+      - "Un mese fa compra dal prestatore di Pieve i debiti delle Case Lunghe; la settimana scorsa fa segnare le porte con il gesso."
+      - "Ieri notte manda lo scrivano a misurare il pilone: vuole sapere quanto manca dal leone all'onda."
+      - "Stasera chiede al console di mandare la barca prima al Ricovero, «per carità»: le famiglie delle Case Lunghe restano di là."
+      - "Al terzo tocco la catena va giù. All'alba le sue barche prendono solo chi firma, con la casa in pegno."
+      - "A primavera butta giù le Case Lunghe per la darsena e chiede il Ricovero per il debito di Rosa."
+    risorse:
+      - {cosa: "le barche grandi del Passo Vecchio", a_cosa_serve: "essere l'unico passaggio quando il ponte è chiuso"}
+      - {cosa: "i debiti del Borgo e di Tullio", a_cosa_serve: "far firmare, e tenere Tullio alla regola"}
+      - {cosa: "il console e il consiglio", a_cosa_serve: "dare alla chiusura la voce della prudenza"}
+      - {cosa: "lo scrivano Ottone", a_cosa_serve: "misurare, scrivere, portare gli ordini al Passo Vecchio"}
+      - {cosa: "il registro del padre", a_cosa_serve: "sapere la verità sul leone, e tenerla chiusa nella cassa di ferro"}
+    reazioni:
+      - {intrusione: "i PG vogliono la barca per le Case Lunghe", reazione: "parla di carità per i vecchi e chiede al console di mandarla al Ricovero"}
+      - {intrusione: "i PG fanno domande sul leone", reazione: "ricorda i quattro della piena grande, e chiede se vogliono altri morti sulla rampa"}
+      - {intrusione: "i PG entrano nello studio", reazione: "chiama la guardia, poi offre un accordo: le barche gratis all'alba, in cambio del silenzio"}
+      - {intrusione: "i PG mostrano il registro davanti a tutti", reazione: "dice che è un falso, poi chiama il debito di Tullio: all'alba il casello è suo"}
+    stato_di_quiete: "Vadolungo viveva del fiume e del ponte: il Borgo pescava e lavava, la Riva comprava, e Tullio faceva passare tutti per un soldo."
+    chiamata_all_azione: "La Lenta è in piena, il Ricovero e le Case Lunghe sono tagliati fuori, e la barca del ponte fa in tempo per un gruppo solo."
+
+  # C6. Segreti astratti: una o due frasi, senza luogo fisso.
+  segreti_astratti:
+    - "Corrado Vischi fece calare il leone di notte, dopo la piena grande, e poi propose lui la regola al consiglio."
+    - "Il vecchio Bellora sospettava del leone, ma contro i Vischi non aveva prove."
+    - "Rosa ha rifiutato tre volte di vendere il Ricovero a Vischi."
+    - "Il console Ugolino deve a Vischi la dote di sua figlia."
+    - "Lo scrivano Ottone ha paura dell'acqua e non sa nuotare."
+    - "L'oca del Ricovero si chiama Contessa e morde chi alza la voce."
+    - "Nerio, il capo dei barcaioli, ha già firmato da Vischi e non l'ha detto a sua moglie."
+    - "Mastro Pece, il muratore del leone, è morto senza dire niente. Suo figlio fa il fornaio sulla Riva Alta."
+    - "I rematori di Vischi al Passo Vecchio sono pagati fino a mezzogiorno, non un'ora di più."
+    - "Bice mette da parte i soldi delle anguille per comprarsi una barca sua."
+
+  # C8. Archi: annotati, non imposti.
+  archi:
+    campagna_tre_atti:
+      - "Atto primo: la notte della piena."
+      - "Atto secondo: i debiti del Borgo."
+      - "Atto terzo: di chi è il ponte."
+    pg:
+      pg_dalia: {tu: "chierica cresciuta al Ricovero", bisogno: "smettere di essere la bambina di Rosa", vai: "la lanterna del Ricovero dondola troppo in fretta", cerca: "la verità su Ernesto", trova: "che Rosa le mente per proteggerla", paga: "contraddice Rosa davanti a tutti", ritorna: "porta i vecchi al caldo, o li lascia per altri", cambia: "decide da adulta, e lo dice"}
+      pg_quirino: {tu: "studioso di ponti che nessuno legge", bisogno: "che il suo sapere serva a qualcosa", vai: "vede il leone e qualcosa non torna", cerca: "il segno dei costruttori", trova: "l'onda sotto il muschio", paga: "mette la sua parola contro la regola di un paese", ritorna: "spiega a Tullio cosa ha visto", cambia: "da topo di biblioteca a uomo che risponde delle sue misure"}
+      pg_nives: {tu: "barcaiola senza barca", bisogno: "smettere di vergognarsi del debito", vai: "le Case Lunghe con la lanterna ferma", cerca: "un modo di salvare i suoi senza firmare", trova: "le carte già pronte di Vischi", paga: "mostra il suo debito davanti a tutti", ritorna: "riporta a casa la sua gente", cambia: "da debitrice a chi parla per il Borgo"}
+      pg_arrigo: {tu: "venditore ambulante, simpatico e in debito con tutti", bisogno: "pagare almeno un debito, una volta", vai: "Tullio gli ha fatto credito per vent'anni", cerca: "perché Tullio obbedisce a Vischi", trova: "la minaccia sul casello", paga: "rischia per Tullio quello che non ha mai rischiato", ritorna: "tiene la parola data", cambia: "da chi deve a chi restituisce"}
+      pg_ghita: {tu: "guardia a pagamento", bisogno: "un lavoro che non le faccia vergogna", vai: "Vischi la paga per sorvegliare lo studio", cerca: "che cosa sta sorvegliando", trova: "le firme e il registro", paga: "rompe il patto e perde la paga", ritorna: "tiene la rampa con le lanterne", cambia: "da spada in affitto a guardia del ponte"}

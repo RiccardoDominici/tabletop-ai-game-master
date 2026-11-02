@@ -1,0 +1,134 @@
+# Scheda scena/luogo (manuale §4): il Ponte delle Lanterne, al primo tocco.
+# Prima scena della sessione: è quella che il server di F0 gioca. Durata prevista 25–35 minuti.
+# Niente combattimento, niente dadi.
+
+id: scena_ponte_imbrunire
+nodo: n_ponte
+nome: "Il Ponte delle Lanterne, al primo tocco"
+
+# Pianta, per non inventare (il Narratore la usa, non la legge a voce così com'è).
+descrizione: "Un ponte di pietra a sei arcate, largo quanto un carro, con sei lanterne sul parapetto, una per pilone. In mezzo, sul pilone grande, il casello di legno e pietra: dentro, la stufa, il banco del pedaggio e il libro dei passi. Davanti al casello la catena è tesa tra due paletti, con la manovella. Sotto il casello una scaletta scende al pontile di tavole dove è legata la Lanterna. Sul fianco del pilone di mezzo, verso monte, c'è il leone di pietra: si vede solo sporgendosi dal parapetto con una lanterna. Verso la Riva Alta il ponte sale fino a una tettoia, dove stanno Vischi e lo scrivano con un tavolino. Verso il Borgo il ponte scende nella rampa bassa, già bagnata. Dal ponte si vedono due lanterne alle finestre del Borgo: a monte quella del Ricovero, a valle quella delle Case Lunghe. Chi sente cosa: sul ponte la pioggia e il fiume coprono le voci a più di tre passi. Ciò che si dice dentro il casello a porta chiusa non lo sente nessuno fuori. Sul pontile sotto il casello sente solo chi ci sta. Vischi, sotto la tettoia, sente solo ciò che si dice lì."
+
+# C12: scopo dall'elenco chiuso, e domanda drammatica da sì o no.
+scopo: {tipo: far_avanzare_fronte, rif: fronte_piena}
+domanda_drammatica: "La Lanterna partirà per il Borgo prima del secondo tocco?"
+
+posta:
+  si_guadagna:
+    cosa: "Un viaggio della barca per il gruppo scelto, e il tempo per tentarne un secondo."
+    per_chi: [png_tullio, png_bice, pg_dalia, pg_nives]
+  si_perde:
+    cosa: "Il tempo della barca, se il paese litiga. E chi resta di là all'alba firma per Vischi."
+    per_chi: [png_rosa, png_tullio, pg_nives, pg_arrigo]
+
+intensita: 3
+
+# Esattamente 3 dettagli sensoriali, almeno 2 non visivi.
+sensi:
+  - "Il brontolio del fiume sotto le arcate, che si sente nelle piante dei piedi."   # udito e tatto
+  - "Odore di fango, di lana bagnata e di olio delle lanterne."                      # olfatto
+  - "La pioggia fredda nel colletto, e il ferro gelato della catena sotto le dita."   # tatto
+
+elementi_interattivi:
+  - {cosa: "la catena", dove: "davanti al casello, tesa tra due paletti", azioni: "si alza e si abbassa con la manovella; la chiave della manovella è alla cintura di Tullio"}
+  - {cosa: "la Lanterna, la barca del ponte", dove: "sotto il casello, legata al pontile di tavole", azioni: "è mezza piena di pioggia: si svuota con i secchi del casello; i remi stanno nel casello; c'è una pertica lunga"}
+  - {cosa: "il libro dei passi", dove: "nel casello, sul banco del pedaggio", azioni: "si sfoglia con il permesso di Tullio o di Bice, o di nascosto: trent'anni di passaggi a credito, e in fondo le pagine vecchie del padre"}
+  - {cosa: "le lanterne del parapetto", dove: "una sopra ogni pilone", azioni: "si staccano dal gancio; si portano sulla rampa o si calano dal parapetto con una corda"}
+  - {cosa: "il leone di pietra", dove: "sul fianco del pilone di mezzo, verso monte", azioni: "si vede sporgendosi con una lanterna o passando sotto l'arcata in barca; con la pertica si gratta il muschio intorno"}
+  - {cosa: "il tavolino dello scrivano", dove: "sotto la tettoia, all'imbocco della Riva Alta", azioni: "lo scrivano ci tiene carta, penna e calamaio; Vischi offre da lì il suo aiuto"}
+  - {cosa: "la nassa per anguille", dove: "dietro il casello, legata a una gàlloccia sul lato dell'acqua", azioni: "NASCOSTA: si trova solo guardando dietro il casello, verso il fiume; è di Bice"}
+
+png_presenti: [png_tullio, png_bice, png_vischi]
+orologi_attivi: [o_piena]
+
+# Indizi trovabili in questa scena. Un indizio essenziale non richiede tiri (F3).
+# In F0 non ci sono dadi: `tiro` è sempre «nessuno».
+indizi:
+  - id: i_onda_pilone
+    conclusione: r_leone
+    tipo: luogo
+    nodo: n_ponte
+    essenziale: true
+    tiro: "nessuno"
+    modi: 2
+    come_si_trova: "Chi si sporge dal parapetto con una lanterna e gratta il muschio del pilone di mezzo con la pertica, oppure chi passa sotto l'arcata con la barca e alza la luce: due spanne sopra il leone c'è un'onda scolpita nella pietra, asciutta. Il narratore la descrive e basta."
+  - id: i_malta_leone
+    conclusione: r_leone
+    tipo: oggetto
+    nodo: n_ponte
+    essenziale: false
+    tiro: "nessuno"
+    modi: 2
+    come_si_trova: "Chi guarda da vicino il leone, dal parapetto con una lanterna oppure toccandolo dalla barca: il blocco è murato con una malta chiara e liscia, mentre il resto del pilone ha una malta scura e mangiata dall'acqua."
+  - id: i_libro_piena
+    conclusione: r_leone
+    tipo: documento
+    nodo: n_ponte
+    essenziale: false
+    tiro: "nessuno"
+    modi: 2
+    come_si_trova: "Chi sfoglia il libro dei passi fino alla notte della piena grande, con il permesso di Tullio o di nascosto, oppure chi chiede a Bice di cercarla: il vecchio Bellora ha scritto «Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va.»"
+  - id: i_detto_bellora
+    conclusione: r_leone
+    tipo: png
+    nodo: png_tullio
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi chiede a Tullio della regola, del leone o di suo padre: ripete il detto, il leone ha paura dell'acqua, il ponte no. E ricorda che suo padre, nelle notti d'acqua, guardava un punto del pilone più in alto del leone."
+  - id: i_lanterna_ricovero
+    conclusione: r_ricovero
+    tipo: evento
+    nodo: n_ponte
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi guarda a lungo le lanterne del Borgo: quella del Ricovero dondola, troppo in fretta, poi resta ferma per un po', e riprende a dondolare. Quella delle Case Lunghe resta sempre ferma."
+  - id: i_scrivano_corda
+    conclusione: r_vischi
+    tipo: evento
+    nodo: n_ponte
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Indizio proattivo: lo scrivano di Vischi scende dalla tettoia con una corda a nodi, si sporge sul leone e conta i nodi a mezza voce, poi torna a scrivere. A chi gli chiede, dice che il signor Vischi vuole sapere quanto manca, con precisione."
+  - id: i_tullio_minaccia
+    conclusione: r_vischi
+    tipo: png
+    nodo: png_tullio
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Solo quando Tullio cede: Vischi gli ha detto che, se tiene su la catena dopo il terzo tocco, il debito del tetto scade all'alba e il casello è suo."
+  - id: i_bice_scrivano
+    conclusione: r_leone
+    tipo: png
+    nodo: png_bice
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Solo quando Bice cede: ieri notte, dalla sua barchetta sotto l'arcata, ha visto lo scrivano di Vischi misurare il pilone con una corda a nodi, dal leone in su, e grattare il muschio due spanne più in alto."
+
+# Almeno 2 uscite verso altri nodi, ognuna con gli indizi che la segnalano.
+uscite:
+  - {verso: n_borgo_basso, segnalata_da: [i_lanterna_ricovero], nota: "Ci si va con la Lanterna. Un viaggio, andata e ritorno, dura quasi quanto lo spazio tra due tocchi."}
+  - {verso: n_casa_del_sale, segnalata_da: [i_scrivano_corda, i_tullio_minaccia, i_bice_scrivano], nota: "A cinquanta passi dalla testa del ponte, sulla Riva Alta. Il consiglio è riunito lì."}
+  - {verso: e_terzo_tocco, segnalata_da: [i_onda_pilone, i_malta_leone, i_libro_piena], nota: "La mezzanotte arriva comunque: è la stessa pianta, al terzo tocco."}
+
+# Se i PG indugiano (S1).
+mossa_morbida_pronta: "Dalla rampa bassa sale di corsa un barcaiolo fradicio. Grida che alle Case Lunghe i bambini sono sul tetto, e chiede chi rema."
+
+# Al massimo 3 frasi per la voce, conformi al §5. Viene letta dopo sessione.riassunto_iniziale.
+apertura: "Sul Ponte delle Lanterne piove forte, e il fiume brontola sotto i piedi. Tullio, il custode, grida che il Ricovero e le Case Lunghe sono rimasti di là. Nel Borgo una lanterna dondola, l'altra resta ferma, e la barca è una sola: che fate?"
+
+musica:
+  tag: esplorazione_tesa
+  transizione: "Verso inseguimento quando la Lanterna parte nei vicoli. Verso taverna_calda se i PG entrano nella Casa del Sale."
+
+# La compone il Motore (E14): invarianti del luogo, poi PNG presenti, poi [STILE].
+immagine:
+  invarianti: ["ponte di pietra a sei arcate", "sei lanterne accese sul parapetto", "casello di legno e pietra in mezzo al ponte", "catena tesa tra due paletti", "leone di pietra sul pilone di mezzo, sopra l'acqua", "fiume in piena color fango", "finestre illuminate del borgo sull'altra riva"]
+  prompt_luogo: "old six-arched stone toll bridge over a swollen muddy river at dusk in heavy rain, six lit lanterns along the parapet, small wood-and-stone toll house at mid-span, iron chain stretched between two posts across the roadway, weathered stone lion carved on the central pier just above the water, flat old boat moored under the toll house, lit windows of a low riverside quarter on the far bank"
+
+# Condizione che chiude la scena (T5).
+taglio: "La scena si chiude quando la Lanterna parte per il Borgo con i PG a bordo, e si passa al Borgo Basso; oppure quando i PG vanno alla Casa del Sale. Se il gruppo si divide, si segue prima la barca e poi chi è andato alla Casa del Sale. Se al quarto segno i PG esitano ancora, Bice salta nella barca con la pertica e chiede: Ricovero o Case Lunghe? Parte con chi risponde, e la scena si chiude."

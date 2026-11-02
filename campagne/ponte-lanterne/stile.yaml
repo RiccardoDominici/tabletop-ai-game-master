@@ -1,0 +1,43 @@
+# Carta di stile della campagna «ponte-lanterne» (Il ponte delle lanterne).
+# Contiene C1 del manuale (premessa, tono, tema, linee e veli) e le scelte di stile che il Motore
+# usa per voce, immagini e musica. Il Narratore la riceve per intero.
+
+id: ponte-lanterne
+titolo: "Il ponte delle lanterne"
+
+# C1. Premessa in una frase.
+premessa: "Nella notte della piena, a Vadolungo, il vecchio ponte a pedaggio chiude al terzo tocco della campana, e la barca del casello fa in tempo a salvare un gruppo solo."
+
+tono: "Mistero di paese sotto la pioggia, caldo e umano. La paura viene dall'acqua che sale e dai debiti, non dai mostri. C'è spazio per un sorriso: un'oca, un libro dei pedaggi, una ragazza che non sta zitta."
+tema: "I debiti e la lealtà; una comunità che deve decidere chi salvare per primo; il segreto del ponte."
+
+# Registro del narratore per questa campagna (si aggiunge alle regole N del manuale).
+registro_narratore: "Voce di riva: concreta, svelta, con l'orecchio al fiume. Mai solenne. Il sorriso sta nelle cose e nelle persone, mai nella voce sui pericoli."
+
+# Regole di prosa della campagna (valgono insieme a N1–N14).
+regole_prosa:
+  - "Lessico di fiume e di pietra: pilone, arcata, parapetto, rampa, catena, casello, pertica, gàlloccia, fango, malta, criniera, rondini. Niente arcaismi finti."
+  - "Le immagini ricorrenti sono l'acqua e le lanterne: usale, ma mai la stessa immagine due volte di seguito."
+  - "Il narratore non dice mai che il leone è stato calato, spostato o abbassato, e non dice mai che il ponte regge oltre il leone. Descrive pietre, malta e segni: il resto lo dicono i PG, o i PNG che lo sanno."
+  - "La piena si sente da fuori: la voce del fiume, i colpi contro i piloni, la campana, le lanterne alle finestre del Borgo. Mai detta come emozione."
+  - "Annegamento: mai in scena. Chi è in pericolo nell'acqua si salva o sparisce dalla vista; il resto si sa dopo."
+  - "I bambini delle Case Lunghe ci sono, bagnati e infreddoliti, ma non si fanno mai male in scena."
+  - "Il campanile batte tre tocchi di piena: al tramonto, a metà sera, a mezzanotte. Si chiamano primo, secondo e terzo tocco."
+  - "Le monete si chiamano fiorini (oro) e soldi (rame). Il pedaggio è un soldo."
+
+# Frammento [STILE] che il Motore appende a ogni prompt immagine (E14). In inglese.
+stile_immagini: "watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering"
+
+# Tavolozza musicale: solo tag del vocabolario chiuso del manuale (§4, E14).
+tavolozza_musicale:
+  tag: [esplorazione_tesa, taverna_calda, inseguimento, lutto]
+  strumenti: "fisarmonica, contrabbasso pizzicato, clarinetto, una campana grave. Pioggia e fiume come tappeto. Niente percussioni da battaglia."
+
+# Linee (mai in gioco) e veli (solo fuori scena, con dissolvenza). T10, E13.
+linee:
+  - "violenza sui bambini, mostrata o descritta in scena"
+  - "contenuti sessuali"
+  - "descrizioni di corpi annegati"
+veli:
+  - "annegamento: avviene solo fuori scena, si sa a cose fatte"
+  - "la malattia grave di un anziano: si dice solo come sta al mattino"
