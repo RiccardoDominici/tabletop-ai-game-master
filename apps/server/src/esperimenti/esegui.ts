@@ -171,6 +171,8 @@ async function main(): Promise<void> {
     copione: nomeCopione,
     modo,
     sessione,
+    // Condizioni della macchina durante la prova (es. altri carichi sulla GPU), da ESPERIMENTO_NOTA.
+    nota_ambiente: process.env['ESPERIMENTO_NOTA'] ?? null,
     turni: turni.length,
     voce: salute0['voce'],
     latenze,
