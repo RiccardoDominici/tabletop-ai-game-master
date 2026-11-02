@@ -11,7 +11,20 @@ import { indiziCampagna, type IndizioCampagna } from '../campagna/indizi';
 import type { StatoOrologi } from '../scena/orologi';
 import { pngNominati, temaPresente } from './pertinenza';
 import { segretiNelTesto, type ParolaSegreta } from './segreti';
-import type { Battuta, Repertorio, RigaBattuta } from './tipi';
+import type { Battuta, Repertorio, RigaBattuta, TipoBattuta } from './tipi';
+
+/**
+ * Tipi che, scritti nel catalogo, svelerebbero un segreto al selettore: che quella battuta è una
+ * bugia, una verità o una confessione (il revisore di ponte-lanterne l'ha trovato). Nel catalogo
+ * diventano tutti «risposta»; gli altri tipi (indizio, segno_orologio, momento, finale, reazione…)
+ * dicono solo a cosa serve la battuta e restano com'erano.
+ */
+const TIPI_NEUTRI: Partial<Record<TipoBattuta, string>> = { menzogna: 'risposta', verita: 'risposta', confessione: 'risposta' };
+
+/** Il tipo come lo vede il selettore nel catalogo (mai «menzogna», «verita», «confessione»). */
+export function tipoNelCatalogo(tipo: TipoBattuta): string {
+  return TIPI_NEUTRI[tipo] ?? tipo;
+}
 
 /** Un'azione del turno come la vede il catalogo: chi, cosa, se è privata. */
 export interface AzioneCatalogo {
@@ -168,9 +181,12 @@ export class StatoRepertorio {
     return { ...filtrate, perche };
   }
 
-  /** Riga dell'elenco: `id · chi · tipo · quando`. */
+  /**
+   * Riga dell'elenco per il selettore: `id · chi · tipo · quando`, col tipo NEUTRO (tipoNelCatalogo):
+   * «menzogna» direbbe al modello chi mente. Il tipo vero resta nella battuta, nei log e nel pannello.
+   */
   static riga(b: Battuta): string {
-    return `- ${b.id} · ${b.chi} · ${b.tipo} · ${b.quando}`;
+    return `- ${b.id} · ${b.chi} · ${tipoNelCatalogo(b.tipo)} · ${b.quando}`;
   }
 
   /**

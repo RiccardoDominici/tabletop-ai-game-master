@@ -76,7 +76,9 @@ Righe come oggi, più una nuova:
 ```
 
 - Il Motore mette nel contesto di ogni turno l'**elenco delle battute disponibili** (condizioni vere, usi rimasti):
-  `id · chi · tipo · quando`. Mai il testo delle battute non ancora uscite.
+  `id · chi · tipo · quando`. Mai il testo delle battute non ancora uscite. Il tipo è **neutro**: `menzogna`,
+  `verita` e `confessione` diventano `risposta` (direbbero al selettore chi mente); il tipo vero resta nei log e nel
+  pannello del master.
 - `[usa]` con un id non disponibile: scartato e registrato.
 - **Più scene**: una battuta con `scena: <id>` entra in catalogo solo in quella scena; senza `scena` vale ovunque.
 - **Modi degli indizi**: le battute di rivelazione di un indizio con `modi` ≥ 2 sono strade alternative. Trovato per una
