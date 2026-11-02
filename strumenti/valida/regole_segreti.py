@@ -13,15 +13,23 @@ Controlli:
   - gli esempi di voce (solo_esempio), che entrano nel contesto del selettore, non le contengono;
   - nel testo delle battute una parola segreta è lecita solo se quella battuta la rende pubblica
     (è in `pubblica_dopo`), se viene dopo un id che la rende pubblica (`richiede`), o se a dirla è un
-    PNG che ha il fatto nel suo `sa`; e ogni battuta che la rende pubblica è elencata in `pubblica_dopo`.
+    PNG che ha il fatto nel suo `sa`; e ogni battuta che la rende pubblica è elencata in `pubblica_dopo`;
+  - `controlla_contesto_b`: il contesto VERO del selettore in modo B (compilato dal server, vedi
+    contesto_b.py) non contiene nessuna regex, in nessuna scena. Lì non c'è stato di gioco: il
+    contesto è fisso per tutta la scena, quindi ogni parola conta come ancora segreta.
 """
 
 from __future__ import annotations
 
 import re
 
+from . import contesto_b
 from .carica import Campagna
 from .esito import Esito
+
+# Il server scrive questi tipi nel catalogo come «risposta» (stato.ts, tipoNelCatalogo): il tipo vero
+# direbbe al selettore chi mente.
+TIPI_NEUTRI = {"menzogna": "risposta", "verita": "risposta", "confessione": "risposta"}
 
 
 def _voci(c: Campagna, e: Esito) -> list[dict]:
@@ -72,6 +80,7 @@ def _voci(c: Campagna, e: Esito) -> list[dict]:
 
 
 def _campi_pubblici(c: Campagna) -> list[tuple[str, str]]:
+    """Campi letti ad alta voce o mostrati ai giocatori: pubblici in ogni modo, con o senza node."""
     out = []
     for nome, s in c.scene:
         out += [(f"{nome} apertura", s.get("apertura") or ""), (f"{nome} nome", s.get("nome") or "")]
@@ -81,6 +90,11 @@ def _campi_pubblici(c: Campagna) -> list[tuple[str, str]]:
     out.append(("sessione.riassunto_iniziale", (c.campagna.get("sessione") or {}).get("riassunto_iniziale") or ""))
     if isinstance(c.pg, dict):
         out.append(("pg.situazione_comune", c.pg.get("situazione_comune") or ""))
+    # La scheda di un PG senza le conoscenze private va sul telefono del suo giocatore (T9).
+    for p in c.personaggi:
+        for campo in ("nome", "aspetto", "concetto", "aggancio"):
+            if isinstance(p.get(campo), str):
+                out.append((f"pg.yaml {p.get('id', '?')}.{campo}", p[campo]))
     for pid, (nome, d) in c.png.items():
         out.append((f"{nome} aspetto.lettura", (d.get("aspetto") or {}).get("lettura") or ""))
         out.append((f"{nome} battuta_campione", (d.get("voce") or {}).get("battuta_campione") or ""))
@@ -111,7 +125,8 @@ def controlla(c: Campagna, e: Esito) -> None:
                                  f"esempio di voce con «{v['parola']}»: entra nel contesto del selettore")
             continue
         chi = str(b.get("chi", "")).removeprefix("png_")
-        elenco = f"{bid.replace('_', ' ')} · {chi} · {b.get('tipo')} · {b.get('quando', '')}".lower()
+        tipo = TIPI_NEUTRI.get(b.get("tipo"), b.get("tipo"))
+        elenco = f"{bid.replace('_', ' ')} · {chi} · {tipo} · {b.get('quando', '')}".lower()
         for v in voci:
             if v["_rx"].search(elenco) and not prima & set(v.get("pubblica_dopo") or []):
                 if bid in (v.get("ammessa_nel_catalogo") or []):
@@ -134,3 +149,46 @@ def controlla(c: Campagna, e: Esito) -> None:
                 if not prima & pubblica and bid not in pubblica:
                     e.errore("SEGRETI.pubblica_dopo", dove,
                              f"rende pubblica «{v['parola']}» ma non è elencata in pubblica_dopo")
+
+
+def controlla_contesto_b(c: Campagna, e: Esito, attivo: bool = True) -> None:
+    """Le regex segrete contro il contesto che il selettore riceve davvero, scena per scena.
+
+    Il server toglie in silenzio le frasi con una parola segreta (rete di sicurezza): qui si guarda il
+    contesto prima della rete, perché una frase tolta è un pezzo di pianta o di taglio che il narratore
+    non saprà mai di aver perso, e ciò che una regex non prende passa intero. Se node manca, avviso.
+    """
+    voci = _voci(c, Esito())  # gli errori di forma delle voci li riporta già controlla()
+    if not voci:
+        return  # niente parole segrete: la campagna non si gioca in modo B
+    if not attivo:
+        e.avviso("SEGRETI.contesto_b_non_controllato", "contesto del modo B", "controllo saltato (--senza-node)")
+        return
+    ctx, motivo = contesto_b.compila(c.cartella)
+    if ctx is None:
+        e.avviso("SEGRETI.contesto_b_non_controllato", "contesto del modo B",
+                 f"{motivo}. Controllati solo i campi pubblici e il catalogo: rilancia con node prima di finire")
+        return
+    # (sezione, campo, parola) -> [scene in cui compare], più un estratto per il messaggio.
+    scene_di: dict[tuple[str, str, str], set[str]] = {}
+    estratto: dict[tuple[str, str, str], str] = {}
+    for scena in ctx.scene:
+        for nome, testo in scena.sezioni:
+            righe = testo.splitlines()
+            for i, riga in enumerate(righe):
+                for v in voci:
+                    m = v["_rx"].search(riga.lower())
+                    if not m:
+                        continue
+                    chiave = (nome, contesto_b.campo_della_riga(righe, i) or "?", v["parola"])
+                    scene_di.setdefault(chiave, set()).add(scena.id)
+                    da = max(0, m.start() - 40)
+                    estratto.setdefault(chiave, riga[da:da + 110].strip())
+    tutte = {s.id for s in ctx.scene}
+    for chiave in sorted(scene_di):
+        nome, campo, parola = chiave
+        scene = scene_di[chiave]
+        quali = "tutte le scene" if scene == tutte and len(tutte) > 1 else ", ".join(sorted(scene))
+        e.errore("SEGRETI.contesto_b", f"contesto B ({quali}) {nome} → {campo}",
+                 f"il selettore riceverebbe «{parola}»: «{estratto[chiave]}». Riscrivi il campo senza il "
+                 f"segreto (la rete del server toglierebbe la frase in silenzio)")

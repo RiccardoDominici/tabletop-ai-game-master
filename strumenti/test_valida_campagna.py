@@ -53,9 +53,23 @@ def battuta(dati: dict, bid: str) -> dict:
     return next(b for b in dati["battute"] if b["id"] == bid)
 
 
-def errori(cartella: Path, rigoroso: bool = False) -> set[str]:
-    esito, _ = valida(cartella, rigoroso=rigoroso, voci=VOCI if VOCI.exists() else None)
+def errori(cartella: Path, rigoroso: bool = False, contesto_b: bool = False) -> set[str]:
+    """Codici d'errore. Il contesto vero del modo B (node, circa un secondo) solo dove serve."""
+    esito, _ = valida(cartella, rigoroso=rigoroso, voci=VOCI if VOCI.exists() else None, contesto_b=contesto_b)
     return esito.codici()
+
+
+def avvisi(cartella: Path, rigoroso: bool = False, contesto_b: bool = False) -> set[str]:
+    esito, _ = valida(cartella, rigoroso=rigoroso, voci=VOCI if VOCI.exists() else None, contesto_b=contesto_b)
+    return {v.codice for v in esito.avvisi}
+
+
+def _node_disponibile() -> bool:
+    from valida import contesto_b
+    return contesto_b._comando() is not None
+
+
+serve_node = pytest.mark.skipif(not _node_disponibile(), reason="node/tsx assenti: il contesto del modo B non si compila")
 
 
 def classi(cartella: Path, rigoroso: bool = False) -> set[str]:
@@ -67,6 +81,12 @@ def classi(cartella: Path, rigoroso: bool = False) -> set[str]:
 def test_mini_valida_anche_in_modo_rigoroso(camp):
     assert errori(camp) == set()
     assert errori(camp, rigoroso=True) == set()
+
+
+@serve_node
+def test_mini_valida_col_contesto_vero_del_modo_b(camp):
+    assert errori(camp, rigoroso=True, contesto_b=True) == set()
+    assert "SEGRETI.contesto_b_non_controllato" not in avvisi(camp, contesto_b=True)
 
 
 def test_prova_f0_valida():
@@ -365,6 +385,42 @@ def test_segreti_in_un_esempio_di_voce(camp):
 
 def test_segreti_in_un_campo_pubblico(camp):
     modifica(camp, "scena.yaml", lambda d: d.update(apertura=d["apertura"].replace("la lanterna è sparita", "la lanterna è nella botte")))
+    assert "SEGRETI.campo_pubblico" in errori(camp)
+
+
+@serve_node
+def test_segreti_nella_pianta_della_scena_del_modo_b(camp):
+    # La descrizione entra nel contesto del selettore: il vecchio controllo non la guardava.
+    modifica(camp, "scena.yaml", lambda d: d.update(descrizione=d["descrizione"] + " Irma ha nascosto un fagotto."))
+    assert "SEGRETI.contesto_b" not in errori(camp)
+    assert "SEGRETI.contesto_b" in errori(camp, contesto_b=True)
+
+
+@serve_node
+def test_segreti_nella_regola_di_prosa_del_modo_b(camp):
+    # Nota 12 della prova cieca: la regola «parola che il narratore non dice mai» conteneva la soluzione.
+    modifica(camp, "stile.yaml", lambda d: d.setdefault("regole_prosa", []).append(
+        "Il narratore non dice mai che la lanterna è nella botte."))
+    assert "SEGRETI.contesto_b" in errori(camp, contesto_b=True)
+
+
+@serve_node
+def test_segreti_nell_abbozzo_di_un_nodo_del_modo_b(camp):
+    modifica(camp, "campagna.yaml", lambda d: d["nodi"][1].update(abbozzo="Una cappella di pietra. Il mercante aspetta il pegno."))
+    assert "SEGRETI.contesto_b" in errori(camp, contesto_b=True)
+
+
+def test_segreti_contesto_b_senza_node_e_un_avviso(camp, monkeypatch):
+    from valida import contesto_b
+    monkeypatch.setattr(contesto_b, "_comando", lambda: None)
+    modifica(camp, "scena.yaml", lambda d: d.update(descrizione=d["descrizione"] + " Irma ha nascosto un fagotto."))
+    assert "SEGRETI.contesto_b" not in errori(camp, contesto_b=True)
+    assert "SEGRETI.contesto_b_non_controllato" in avvisi(camp, contesto_b=True)
+
+
+def test_segreti_nell_aggancio_di_un_pg(camp):
+    # Nota 13: la scheda pubblica del PG va al telefono del giocatore (e al selettore), anche senza node.
+    modifica(camp, "pg.yaml", lambda d: d["personaggi"][0].update(aggancio="Devi dei soldi al mercante dell'alba."))
     assert "SEGRETI.campo_pubblico" in errori(camp)
 
 

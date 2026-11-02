@@ -12,13 +12,17 @@ from .esito import CLASSI, Esito
 MODULI = [regole_campagna, regole_scena, regole_png, regole_pg, regole_immagini, regole_repertorio, regole_segreti]
 
 
-def valida(cartella: Path, rigoroso: bool = False, voci: Path | None = None) -> tuple[Esito, Campagna]:
+def valida(cartella: Path, rigoroso: bool = False, voci: Path | None = None,
+           contesto_b: bool = True) -> tuple[Esito, Campagna]:
+    """Valida una campagna. `contesto_b=False` salta la compilazione del contesto del modo B con node
+    (lenta, circa un secondo): resta un avviso, e i campi pubblici si controllano lo stesso."""
     esito = Esito(rigoroso=rigoroso)
     campagna = carica(Path(cartella), esito, voci=voci)
     if not campagna.cartella.is_dir():
         return esito, campagna
     for m in MODULI:
         m.controlla(campagna, esito)
+    regole_segreti.controlla_contesto_b(campagna, esito, attivo=contesto_b)
     return esito, campagna
 
 

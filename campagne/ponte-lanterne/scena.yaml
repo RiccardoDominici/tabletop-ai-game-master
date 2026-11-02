@@ -51,7 +51,7 @@ indizi:
     essenziale: true
     tiro: "nessuno"
     modi: 2
-    come_si_trova: "Chi si sporge dal parapetto con una lanterna e gratta il muschio del pilone di mezzo con la pertica, oppure chi passa sotto l'arcata con la barca e alza la luce: due spanne sopra il leone c'è un'onda scolpita nella pietra, asciutta. Il narratore la descrive e basta."
+    come_si_trova: "Chi si sporge dal parapetto con una lanterna e gratta il muschio del pilone di mezzo con la pertica, oppure chi passa sotto l'arcata con la barca e alza la luce: due spanne sopra il leone c'è un'onda scolpita nella pietra, asciutta. Il narratore la descrive e basta: non dice mai che il leone è stato calato, spostato o abbassato, né che il ponte regge oltre il leone."
   - id: i_malta_leone
     conclusione: r_leone
     tipo: oggetto

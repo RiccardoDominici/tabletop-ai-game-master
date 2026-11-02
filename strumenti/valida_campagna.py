@@ -36,6 +36,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--voci", type=Path, help="registro delle voci (predefinito: assets/voci/voci.yaml risalendo)")
     ap.add_argument("--copioni", type=Path, help="cartella di copioni di azioni: misura il catalogo per azione")
     ap.add_argument("--avvisi", action="store_true", help="mostra anche gli avvisi (predefinito: solo il conteggio)")
+    ap.add_argument("--senza-node", action="store_true",
+                    help="non compilare il contesto vero del modo B (strumenti/contesto_modo_b.ts): resta un avviso")
     ap.add_argument("--classi", action="store_true", help="elenca le classi di errore ed esce")
     a = ap.parse_args(argv)
     if a.classi:
@@ -45,7 +47,7 @@ def main(argv: list[str] | None = None) -> int:
     if not a.cartella:
         ap.print_usage(sys.stderr)
         return 2
-    esito, campagna = valida(Path(a.cartella), rigoroso=a.rigoroso, voci=a.voci)
+    esito, campagna = valida(Path(a.cartella), rigoroso=a.rigoroso, voci=a.voci, contesto_b=not a.senza_node)
     for v in esito.errori:
         print(v)
     if a.avvisi:

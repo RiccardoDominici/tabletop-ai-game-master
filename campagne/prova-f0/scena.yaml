@@ -52,7 +52,7 @@ indizi:
     essenziale: true
     tiro: "nessuno"
     modi: 2   # aprire un sacco; spezzare una pagnotta
-    come_si_trova: "Chi apre un sacco nel retro, o spezza una pagnotta delle ceste, trova chicchi neri e curvi come piccole unghie, nella farina e nella mollica."
+    come_si_trova: "Chi apre un sacco nel retro, o spezza una pagnotta delle ceste, trova chicchi neri e curvi come piccole unghie, nella farina e nella mollica. Il narratore non chiama mai veleno il pane e non dice da dove viene la febbre: lo dicono i PG, o i PNG che lo sanno."
   - id: i_cane_croste
     conclusione: r_pane
     tipo: evento
@@ -203,4 +203,4 @@ immagine:
   prompt_luogo: "low-beamed mountain village tavern at night, soot-black rafters, glowing wood-fired bread oven at the back, long table with baskets covered in white linen, heavy wooden storeroom door with a small iron grate, window onto a stone square where a candle burns in every window, black dog lying asleep on the stone floor beside the oven"
 
 # Condizione che chiude la scena (T5).
-taglio: "La scena si chiude dopo il terzo rintocco, quando il paese alla porta ha avuto la sua risposta: se ne va con Sebastiano, con Ottavia, oppure senza nessuno. Se Sebastiano è già fuggito dalla botola, il paese arriva lo stesso, per il pane e per un colpevole. Se al sesto segno i PG esitano ancora, Baldrin apre la porta e il paese entra: i PG hanno una sola risposta, poi la scena si chiude."
+taglio: "La scena si chiude dopo il terzo rintocco, quando il paese alla porta ha avuto la sua risposta: se ne va con Sebastiano, con Ottavia, oppure senza nessuno. Se Sebastiano è già sparito, il paese arriva lo stesso, per il pane e per un colpevole. Se al sesto segno i PG esitano ancora, Baldrin apre la porta e il paese entra: i PG hanno una sola risposta, poi la scena si chiude."

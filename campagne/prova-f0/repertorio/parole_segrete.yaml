@@ -200,8 +200,6 @@ da_togliere_dal_contesto:
     motivo: "nomina la botola e la cantina come via d'uscita (f_botola)"
   - percorso: "png/png_sebastiano.yaml → voce.stile: «una parola da medico, corretta subito»"
     motivo: "svela il suo mestiere (f_sebastiano_cerusico). In modo B: «Frasi ordinate e brevi. Fa domande precise: da quando, quanto, cosa avete mangiato.»"
-  - percorso: "scena.yaml → taglio"
-    motivo: "nomina la botola («se Sebastiano è già fuggito dalla botola»): riscrivere «se Sebastiano è già sparito»"
   - percorso: "campagna.yaml → rivelazioni, colli_di_bottiglia, colli_di_bottiglia_nota"
     motivo: "le conclusioni e le soluzioni contengono le verità (pane, Gualtiero, cerusico, botola, castagne)"
   - percorso: "campagna.yaml → canone, i fatti con noto_ai_pg: false"

@@ -127,8 +127,6 @@ da_togliere_dal_contesto:
     motivo: "è la conoscenza privata di Nives"
   - percorso: "scena.yaml e scene/*.yaml → scopo, posta, taglio, esiti"
     motivo: "scopo.rif nomina indizi; la posta dice che chi resta di là firma (f_barche_firma) e che serve la verità su chi sta peggio; il taglio del terzo tocco dice «c'è un'ora» (f_ora_in_piu) e parla della prova del leone"
-  - percorso: "stile.yaml → regole_prosa, la regola «Il narratore non dice mai che il leone è stato calato…»"
-    motivo: "la regola stessa svela la soluzione. In modo B: «Il narratore non commenta il leone: descrive pietre, malta e segni, il resto lo dicono i PG»"
   - percorso: "campagna.yaml → orologi[].al_completo e avanza_quando"
     motivo: "al_completo di o_piena dice che c'è un'ora fino all'onda; in modo B l'orologio arriva come stato dal Motore e i segni come battute"
   - percorso: "campagna.yaml → rivelazioni, colli_di_bottiglia, colli_di_bottiglia_nota, sessione.cinque_stanze, sessione.chiusura"

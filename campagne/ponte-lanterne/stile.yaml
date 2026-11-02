@@ -16,9 +16,9 @@ registro_narratore: "Voce di riva: concreta, svelta, con l'orecchio al fiume. Ma
 
 # Regole di prosa della campagna (valgono insieme a N1–N14).
 regole_prosa:
-  - "Lessico di fiume e di pietra: pilone, arcata, parapetto, rampa, catena, casello, pertica, gàlloccia, fango, malta, criniera, rondini. Niente arcaismi finti."
+  - "Lessico di fiume e di pietra: pilone, arcata, parapetto, rampa, catena, casello, pertica, gàlloccia, fango, malta, criniera. Niente arcaismi finti."
   - "Le immagini ricorrenti sono l'acqua e le lanterne: usale, ma mai la stessa immagine due volte di seguito."
-  - "Il narratore non dice mai che il leone è stato calato, spostato o abbassato, e non dice mai che il ponte regge oltre il leone. Descrive pietre, malta e segni: il resto lo dicono i PG, o i PNG che lo sanno."
+  - "Il narratore descrive pietre, malta e segni, e non dice mai che cosa vogliono dire: le conclusioni le tirano i PG, o i PNG che le sanno."
   - "La piena si sente da fuori: la voce del fiume, i colpi contro i piloni, la campana, le lanterne alle finestre del Borgo. Mai detta come emozione."
   - "Annegamento: mai in scena. Chi è in pericolo nell'acqua si salva o sparisce dalla vista; il resto si sa dopo."
   - "I bambini delle Case Lunghe ci sono, bagnati e infreddoliti, ma non si fanno mai male in scena."
