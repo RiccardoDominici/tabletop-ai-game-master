@@ -712,6 +712,40 @@ def test_copioni_misura_il_catalogo(camp, tmp_path):
     assert copioni.catalogo(c, "una frase senza parole utili") == []
 
 
+def test_copioni_seguono_cancelli_e_stato(camp, tmp_path):
+    # Nota 16: la misura contava anche le battute chiuse da un cancello.
+    from valida import copioni
+    from valida.esito import Esito
+    cartella = tmp_path / "copioni"
+    cartella.mkdir()
+    scrivi(cartella, "cancelli.yaml", {"turni": [
+        [{"pg": "pg_lia", "azione": "prometto a Bruno che non dirò niente", "privata": True}],
+        [{"pg": "pg_tobia", "azione": "chiedo a Bruno se ha visto qualcosa stanotte"}],
+        [{"pg": "pg_lia", "azione": "prometto a Bruno che non dirò niente"}],
+        [{"pg": "pg_lia", "azione": "prometto a Bruno che non dirò niente", "privata": True}]]})
+    _, c = valida(camp, contesto_b=False)
+    righe = copioni.controlla(c, Esito(), cartella)
+    assert "bruno_notte_promessa" not in righe[0]          # serve prima la sua versione
+    assert "bruno_notte_versione" in righe[1]
+    assert "bruno_notte_promessa" not in righe[2]          # pubblica: il cancello privata la ferma
+    assert "bruno_notte_promessa" in righe[3]              # privata, dopo la versione
+
+
+def test_copioni_seguono_la_scena(camp, tmp_path):
+    from valida import copioni
+    from valida.esito import Esito
+    _seconda_scena(camp, ["png_irma", "png_bruno"], ["png_irma"])
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").update(scena="scena_due"))
+    cartella = tmp_path / "copioni"
+    cartella.mkdir()
+    azione = [[{"pg": "pg_lia", "azione": "scendo in cantina e guardo le botti"}]]
+    scrivi(cartella, "volpe.yaml", {"turni": azione})
+    scrivi(cartella, "zdue.yaml", {"scena": "scena_due", "turni": azione})
+    _, c = valida(camp, contesto_b=False)
+    righe = copioni.controlla(c, Esito(), cartella)
+    assert "nar_botte" not in righe[0] and "nar_botte" in righe[1]
+
+
 def test_ogni_classe_ha_almeno_un_test():
     """Promemoria: una classe di errore nuova vuole il suo test qui sopra."""
     from valida.esito import CLASSI
