@@ -148,7 +148,8 @@ parole:
     regex: "(sebastiano|forestiero)[^.]{0,60}(compagnia|roccalba|grifo)|(compagnia|roccalba|grifo)[^.]{0,60}(sebastiano|forestiero)"
     fatti: [f_sebastiano_disertore]
     pubblica_dopo: [seb_guerra_roccalba]
-    nota: "f_sebastiano_disertore: Compagnia e Roccalba sono pubbliche (concetto di Corrado), il legame con il forestiero no"
+    ammessa_nel_catalogo: [seb_guerra_roccalba]
+    nota: "f_sebastiano_disertore: Compagnia e Roccalba sono pubbliche (concetto di Corrado), il legame con il forestiero no. seb_guerra_roccalba la porta nell'elenco perché il suo trigger è una parola del giocatore: il Motore la elenca solo nei turni in cui le azioni nominano uno dei suoi temi"
   - parola: "taglia / venti corone"
     regex: "taglia (di|sulla|sul)[^.]{0,40}(forestiero|sebastiano|testa)|(forestiero|sebastiano)[^.]{0,60}(taglia|venti corone)"
     fatti: [f_taglia_cerusico, f_sebastiano_disertore]
