@@ -17,7 +17,12 @@ import yaml
 
 TIPI = {"menzogna", "verita", "confessione", "reazione", "rifiuto", "richiesta", "saluto",
         "indizio", "segno_orologio", "momento", "transizione", "finale"}
-CAMPI = {"id", "chi", "tipo", "quando", "temi", "richiede", "testo", "varianti", "effetti", "max_usi"}
+CAMPI = {"id", "chi", "tipo", "quando", "temi", "richiede", "testo", "varianti", "effetti", "max_usi",
+         "solo_esempio", "riempitivo"}  # versione 2: esempi di voce e battute di riempimento
+# Tipi che devono restare selezionabili (non esempi, non riempitivi).
+TIPI_ESSENZIALI = {"menzogna", "confessione", "indizio", "segno_orologio", "finale"}
+# Tipi ammessi come riempitivo (escono solo allo stallo).
+TIPI_RIEMPITIVO = {"momento", "indizio", "transizione", "richiesta"}
 CAMPI_RICHIEDE = {"indizi_rivelati", "indizi_non_rivelati", "battute_usate", "battute_non_usate", "orologio"}
 CAMPI_EFFETTI = {"rivela_indizi", "menzogna_detta", "fatti_noti", "avanza_orologio"}
 VIETATE = [
@@ -83,6 +88,8 @@ REAZIONI = ["domanda_gentile", "accusa", "minaccia", "offerta", "aiuto"]
 NOMI_PG_EXTRA = []  # i nomi dei PG si leggono da pg.yaml
 # Parole del lessico segreto ammesse in un punto preciso, con il motivo.
 AMMESSE = {
+    ("seb_guerra_roccalba", "(sebastiano|forestiero)[^.]{0,60}(compagnia|roccalba|grifo)|(compagnia|roccalba|grifo)[^.]{0,60}(sebastiano|forestiero)"):
+        "il trigger è una parola del giocatore, che `richiede` non sa esprimere: il server la elenca solo nei turni in cui le azioni nominano uno dei suoi temi",
     ("nar_segno_2", r"\bcorvo"): "è l'insulto che un ragazzo grida al forestiero; richiama, senza svelarlo, il racconto di Tecla",
 }
 LIMITE_NARR = 16     # parole per frase del narratore (prompt §2)
@@ -228,6 +235,19 @@ def main(cartella):
         for k in (b.get("effetti") or {}):
             if k not in CAMPI_EFFETTI:
                 errore(f"{bid}: effetti.{k} non previsto")
+        for flag in ("solo_esempio", "riempitivo"):
+            if flag in b and b[flag] is not True:
+                errore(f"{bid}: {flag} deve essere true, oppure assente")
+        if b.get("solo_esempio") and b.get("riempitivo"):
+            errore(f"{bid}: non può essere insieme solo_esempio e riempitivo")
+        e_ = b.get("effetti") or {}
+        if b.get("solo_esempio") and (b.get("tipo") in TIPI_ESSENZIALI or e_.get("rivela_indizi")
+                                       or e_.get("menzogna_detta") or e_.get("avanza_orologio")):
+            errore(f"{bid}: è solo_esempio ma porta un indizio, una menzogna o un segno: deve restare selezionabile")
+        if b.get("riempitivo") and b.get("tipo") not in TIPI_RIEMPITIVO:
+            errore(f"{bid}: riempitivo ammesso solo per {sorted(TIPI_RIEMPITIVO)}")
+        if b.get("solo_esempio") and b.get("richiede"):
+            avviso(f"{bid}: solo_esempio con condizioni richiede: come esempio di voce non servono")
         nvar = len(b.get("varianti") or [])
         if nvar > 2:
             errore(f"{bid}: {nvar} varianti (max 2)")
@@ -378,7 +398,10 @@ def main(cartella):
     for b in battute:
         r = b.get("richiede") or {}
         prima = set(r.get("indizi_rivelati", [])) | set(r.get("battute_usate", []))
-        vis = (b["quando"] + " " + " ".join(b["temi"]) + " " + b["id"].replace("_", " ")).lower()
+        # la riga dell'elenco come la vede il selettore: id · chi · tipo · quando (più i temi, per prudenza)
+        if b.get("solo_esempio"):
+            continue  # non entra nell'elenco: il suo testo è controllato sotto, come contesto
+        vis = f'{b["id"].replace("_", " ")} · {b["chi"].replace("png_", "")} · {b["tipo"]} · {b["quando"]}'.lower()
         for v in VOCI:
             if re.search(v["regex"], vis) and not (prima & set(v["pubblica_dopo"])) and (b["id"], v["regex"]) not in AMMESSE:
                 errore(f"{b['id']}: il selettore vedrebbe «{v['parola']}»: «{vis[:70]}»")
@@ -407,6 +430,14 @@ def main(cartella):
                         errore(f"{b['id']}: {chi} dice «{v['parola']}» senza che sia pubblico né nel suo sa: «{testo[:60]}»")
                     if not (prima & set(v["pubblica_dopo"])) and b["id"] not in v["pubblica_dopo"]:
                         errore(f"{b['id']}: rende pubblico «{v['parola']}» ma non è in pubblica_dopo")
+    for b in battute:
+        if not b.get("solo_esempio"):
+            continue
+        for vv in [b["testo"]] + (b.get("varianti") or []):
+            for riga in vv:
+                for v in VOCI:
+                    if re.search(v["regex"], riga.lower()):
+                        errore(f"{b['id']}: esempio di voce con un segreto («{v['parola']}»): entra nel contesto del selettore")
     for v in VOCI:
         for f in v["fatti"]:
             if f not in canone:
@@ -465,6 +496,9 @@ def main(cartella):
 
     # --- statistiche per il rapporto ---------------------------------------------------
     print("\n== Statistiche ==")
+    classe = Counter("solo_esempio" if b.get("solo_esempio") else "riempitivo" if b.get("riempitivo") else "selezionabile"
+                     for b in battute)
+    print(f"  classi: selezionabili {classe['selezionabile']}, solo_esempio {classe['solo_esempio']}, riempitivo {classe['riempitivo']}")
     conta = Counter((b["chi"], b["tipo"]) for b in battute)
     for chi in sorted({b["chi"] for b in battute}):
         tipi = {t: n for (c, t), n in conta.items() if c == chi}
