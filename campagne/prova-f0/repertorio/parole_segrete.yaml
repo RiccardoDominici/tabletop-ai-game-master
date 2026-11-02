@@ -104,11 +104,11 @@ parole:
     fatti: [f_testimoni_pozzo]
     pubblica_dopo: [i_baldrin_testimoni, bal_testimoni_nomi, bal_testimoni_sano]
     nota: "f_testimoni_pozzo: Baldrin mente sui tre testimoni"
-  - parola: "un'ombra / gli serviva un colpevole"
-    regex: "un'ombra|serviva un colpevole"
+  - parola: "un'ombra / la polvere l'ha detta Gualtiero"
+    regex: "un'ombra|serviva un colpevole|polvere[^.]{0,40}gualtiero|gualtiero[^.]{0,40}polvere"
     fatti: [f_testimoni_pozzo]
-    pubblica_dopo: []
-    nota: "segreto di Baldrin: nessuna battuta lo dice così"
+    pubblica_dopo: [i_baldrin_testimoni, bal_testimoni_nomi, bal_testimoni_sano]
+    nota: "f_testimoni_pozzo, la seconda metà: la polvere nel pozzo non l'ha vista Baldrin, l'ha raccontata Gualtiero. Le confessioni di Baldrin lo dicono così. «un'ombra» e «gli serviva un colpevole» vengono dal segreto della scheda: nessuna battuta li dice, servono a vedere le fughe improvvisate"
   - parola: "pane promesso a Ilde"
     regex: "promess\\w*[^.]{0,40}pane|pane[^.]{0,30}\\bilde\\b|\\bilde\\b[^.]{0,30}pane"
     fatti: [f_ilde_pane]
@@ -129,21 +129,21 @@ parole:
     fatti: [f_libretto]
     pubblica_dopo: [i_libretto, nar_libretto]
     nota: "f_libretto: appunti da cerusico. «dosi e cotture» nello stile di Ottavia è pubblico"
-  - parola: "sollievo (la magia non guarisce)"
-    regex: "sollievo"
+  - parola: "il bruciore torna (la magia non guarisce)"
+    regex: "sollievo|(bruciore|febbre) (torna|ritorna)|(torna|ritorna)[^.]{0,30}(bruciore|febbre)"
     fatti: [f_magia_sollievo]
     pubblica_dopo: [seb_magia]
-    nota: "f_magia_sollievo"
+    nota: "f_magia_sollievo: la magia calma il bruciore per un'ora, poi torna. «sollievo» resta per le fughe improvvisate; il legame che conta è che il male torni"
   - parola: "cerusico"
     regex: "(sono|è|era|fa il) (un |il )?cerusic|(forestiero|sebastiano)[^.]{0,40}cerusic|cerusic[^.]{0,40}(forestiero|sebastiano)"
     fatti: [f_sebastiano_cerusico]
     pubblica_dopo: [seb_mestiere_promessa, seb_mestiere_malato, seb_guerra_roccalba]
     nota: "f_sebastiano_cerusico: Sebastiano mente sul suo mestiere. «il suo cerusico disertore» nell'aggancio di Corrado è pubblico: conta solo il legame con il forestiero"
   - parola: "disertore"
-    regex: "(sono|è|era) (un )?disertor|(forestiero|sebastiano)[^.]{0,40}disert|disert[^.]{0,40}(forestiero|sebastiano)"
+    regex: "(sono|è|era) (un )?disertor|(forestiero|sebastiano)[^.]{0,40}disert|disert[^.]{0,40}(forestiero|sebastiano)|\\bho disertato|me ne sono andat[oa] una notte"
     fatti: [f_sebastiano_disertore]
     pubblica_dopo: [seb_guerra_roccalba]
-    nota: "f_sebastiano_disertore: la battuta lo dice senza la parola"
+    nota: "f_sebastiano_disertore. «il cerusico disertore» dell'aggancio di Corrado è pubblico; il segreto è che il disertore sia il forestiero, e la sua confessione lo dice in prima persona senza la parola («me ne sono andato una notte»). La prima persona la può dire solo lui"
   - parola: "il forestiero e la Compagnia"
     regex: "(sebastiano|forestiero)[^.]{0,60}(compagnia|roccalba|grifo)|(compagnia|roccalba|grifo)[^.]{0,60}(sebastiano|forestiero)"
     fatti: [f_sebastiano_disertore]
@@ -151,7 +151,7 @@ parole:
     ammessa_nel_catalogo: [seb_guerra_roccalba]
     nota: "f_sebastiano_disertore: Compagnia e Roccalba sono pubbliche (concetto di Corrado), il legame con il forestiero no. seb_guerra_roccalba la porta nell'elenco perché il suo trigger è una parola del giocatore: il Motore la elenca solo nei turni in cui le azioni nominano uno dei suoi temi"
   - parola: "taglia / venti corone"
-    regex: "taglia (di|sulla|sul)[^.]{0,40}(forestiero|sebastiano|testa)|(forestiero|sebastiano)[^.]{0,60}(taglia|venti corone)"
+    regex: "taglia (di|sulla|sul)[^.]{0,40}(forestiero|sebastiano|testa)|(forestiero|sebastiano)[^.]{0,60}(taglia|venti corone)|(taglia|venti corone)[^.]{0,30}(riaverlo|riportarlo|consegnarlo|sua testa)|(sua|tua) testa[^.]{0,30}taglia"
     fatti: [f_taglia_cerusico, f_sebastiano_disertore]
     pubblica_dopo: []
     nota: "f_taglia_cerusico: che la taglia riguardi il forestiero lo sa solo Corrado, e solo se lo riconosce. Le corone come moneta e la taglia sul cerusico sono pubbliche"
