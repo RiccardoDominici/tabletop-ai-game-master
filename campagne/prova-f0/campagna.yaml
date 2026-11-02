@@ -218,12 +218,19 @@ nodi:
       - {id: i_tecla_racconta, conclusione: r_innocente, tipo: png, essenziale: false, tiro: "nessuno", modi: 1,
          come_si_trova: "Chi entra da Tecla la trova a letto, con le mani in un catino d'acqua fredda. Dice che il corvo le ha dato acqua nera, e che da allora brucia meno."}
     collegamenti: [n_osteria, e_terzo_rintocco]
+    # Solo per strumenti/immagini (luogo_n_piazza): la piazza come la si vede prima del primo rintocco.
+    immagine:
+      prompt_luogo: "steep cobbled square of a mountain village at night, light snow, a stone well with a wooden pulley in the centre, a low cottage beside it, a small chapel at the far end with its doors open and warm light inside, a candle burning in every window, no people"
   - id: n_mulino_valsecca
     tipo: luogo
     nome: "Il mulino di Valsecca"
     abbozzo: "Il mulino di Gualtiero, a un giorno di cammino più a valle. Con il buio e la neve sul sentiero, stanotte non ci si arriva."
     prossima_sessione: true
     collegamenti: [n_osteria]
+    # Solo per strumenti/immagini (luogo_n_mulino_valsecca). La ruota è di legno: niente ruota nera,
+    # che è il marchio dei sacchi (i_sacchi_marchio).
+    immagine:
+      prompt_luogo: "old stone watermill beside a frozen mountain stream in a narrow valley at night, deep snow on the path and on the roof, the wooden water wheel still and iced, no people"
   - {id: png_ottavia, tipo: png, scheda: png/png_ottavia.yaml, collegamenti: [n_osteria, n_mulino_valsecca]}
   - {id: png_baldrin, tipo: png, scheda: png/png_baldrin.yaml, collegamenti: [n_osteria, n_piazza, n_mulino_valsecca]}
   - {id: png_sebastiano, tipo: png, scheda: png/png_sebastiano.yaml, collegamenti: [n_osteria, n_piazza]}

@@ -12,6 +12,9 @@ fronte: fronte_fuoco_nero
 aspetto:
   lettura: "Una donna robusta, sulla sessantina, con le braccia infarinate fino ai gomiti. Ha il grembiule pulito e gli occhi rossi di chi non dorme."
   invarianti: ["61 anni", "bassa e larga", "capelli bianchi raccolti in un fazzoletto rosso", "braccia infarinate fino ai gomiti", "grembiule di lino pulito", "occhi arrossati"]
+  # Ritratto a busto per il proiettore (ha la precedenza su prompt_immagine): solo tratti pubblici,
+  # nessuna situazione, fondo d'inchiostro blu ardesia.
+  prompt_ritratto: "head-and-shoulders bust portrait of a short stout 61-year-old village baker woman, white hair tied in a red headscarf, flour-dusted forearms up to the elbows, clean linen apron, reddened sleepless eyes, facing the viewer, against a plain dark slate-blue ink wash background that fills the frame, [STILE]"
   prompt_immagine: "short stout 61-year-old village baker woman, white hair tied in a red headscarf, flour-dusted forearms up to the elbows, clean linen apron, reddened sleepless eyes, glowing bread oven behind her, [STILE]"
 
 personalita:

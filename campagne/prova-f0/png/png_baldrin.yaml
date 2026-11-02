@@ -12,6 +12,9 @@ fronte: fronte_fuoco_nero
 aspetto:
   lettura: "Un nano con la barba grigia stretta da anelli di ferro. Ha le mani nere di fuliggine, e al collo una chiave."
   invarianti: ["nano, sembra un uomo sulla cinquantina", "barba grigia con anelli di ferro", "grembiule di cuoio bruciacchiato", "martello da forgia", "chiave di ferro al collo, su un laccio di cuoio", "mani nere di fuliggine"]
+  # Ritratto a busto per il proiettore (ha la precedenza su prompt_immagine): solo tratti pubblici,
+  # nessuna situazione, fondo d'inchiostro blu ardesia.
+  prompt_ritratto: "head-and-shoulders bust portrait of a stocky grey-bearded dwarf blacksmith who looks about fifty, beard bound with iron rings, scorched leather apron, iron key on a leather cord around his neck, soot-blackened hands, facing the viewer, against a plain dark slate-blue ink wash background that fills the frame, [STILE]"
   prompt_immagine: "stocky grey-bearded dwarf blacksmith, beard bound with iron rings, scorched leather apron, forge hammer resting on his knees, iron key on a leather cord around his neck, soot-blackened hands, seated before a locked wooden door with an iron grate, [STILE]"
 
 personalita:

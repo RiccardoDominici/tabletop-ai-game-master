@@ -25,7 +25,9 @@ regole_prosa:
   - "Le monete si chiamano corone (oro) e soldi (rame)."
 
 # Frammento [STILE] che il Motore appende a ogni prompt immagine (E14). In inglese.
-stile_immagini: "painterly gouache illustration in the manner of an old Italian folk-tale book, warm candlelight against cold blue night, muted earth palette of umber, ochre, soot black and linen white, soft visible brush strokes, low-key lighting, no text, no lettering"
+# v2, approvato nelle prove di esperimenti/immagini/prompt_prova.py (STILI["v2"]): a tutta pagina,
+# senza margini né firma, perché sul proiettore i bordi bianchi abbagliano.
+stile_immagini: "full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering"
 
 # Tavolozza musicale: solo tag del vocabolario chiuso del manuale (§4, E14).
 tavolozza_musicale:

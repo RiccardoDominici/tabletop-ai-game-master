@@ -15,8 +15,13 @@ aspetto:
   # cerusico ricercato (f_cicatrice, i_cicatrice), quindi qui c'è solo il cappuccio calato, e il
   # sopracciglio resta in ombra. La cicatrice compare nella situazione «senza_cappuccio», da
   # mostrare dopo la rivelazione (nar_volto_candela, nar_volto_uscita).
-  invarianti: ["circa 40 anni", "alto e magro", "mantello nero col cappuccio calato sugli occhi, logoro", "mani pulite, unghie corte", "barba di tre giorni"]
-  prompt_immagine: "gaunt man about forty, worn black hooded cloak pulled low, his brow and eyes lost in the shadow of the hood, clean steady hands with short nails, three-day stubble, face seen through the small iron grate of a storeroom door, candlelight, [STILE]"
+  # Le mani pulite e ferme, da cerusico, restano solo nella lettura a voce: nell'immagine le tiene
+  # nelle maniche, che è anche il suo segnale quando mente.
+  invarianti: ["circa 40 anni", "alto e magro", "mantello nero col cappuccio calato sugli occhi, logoro", "barba di tre giorni"]
+  # Ritratto a busto per il proiettore (ha la precedenza su prompt_immagine): solo tratti pubblici,
+  # nessuna situazione, fondo d'inchiostro blu ardesia.
+  prompt_ritratto: "head-and-shoulders bust portrait of a gaunt tall man about forty, worn black wool travelling cloak with a deep medieval hood pulled low, his brow and eyes in the shadow of the hood, three-day stubble, arms folded with his hands tucked into his sleeves, facing the viewer, against a plain dark slate-blue ink wash background that fills the frame, [STILE]"
+  prompt_immagine: "gaunt man about forty, worn black hooded cloak pulled low, his brow and eyes lost in the shadow of the hood, hands tucked into his sleeves, three-day stubble, face seen through the small iron grate of a storeroom door, candlelight, [STILE]"
   situazioni:
     - id: senza_cappuccio
       prompt: "his hood pushed back onto his shoulders, brow and eyes uncovered, face fully lit by a candle, a thin white scar splits his left eyebrow"
