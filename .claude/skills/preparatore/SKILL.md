@@ -300,7 +300,9 @@ Ognuna nasce da un errore vero, trovato in una prova, da un giudice cieco o da u
    a niente sono `riempitivo: true`.
 4. **I `temi` sono pochi e distintivi**, nelle forme che i giocatori scrivono davvero (repertorio.md §3).
 5. **I segni d'orologio** sono battute, una per segmento, con `richiede.orologio` min = max = il segno di prima.
-6. **Nessun nome di PG nelle battute.** Il nome lo aggiunge il raccordo improvvisato.
+6. **Nessun nome di PG nelle battute, e nessuna battuta ripete l'azione.** Prima di una battuta il narratore
+   improvvisa l'annuncio dell'azione, col nome del PG in terza persona («Brann solleva il coperchio.», manuale
+   N15); la battuta parte dall'esito.
 7. **Un PNG dice solo ciò che sta nel suo `sa`.** I `fatti_noti` di una sua battuta devono essere nel suo `sa`.
 8. **Scrivi per l'orecchio**: le misure sono in repertorio.md §9 e mestiere.md §7; niente cifre,
    parentesi, puntini di sospensione o cliché del §5.

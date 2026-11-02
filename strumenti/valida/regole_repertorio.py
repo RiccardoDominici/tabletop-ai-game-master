@@ -375,7 +375,8 @@ def _prosa(c: Campagna, e: Esito) -> None:
                     e.errore(f"PROSA.{regola}", f"{dove} [{tag}]", det)
                 for nome in nomi_pg:
                     if re.search(rf"\b{re.escape(nome)}\b", testo):
-                        e.errore("PROSA.nome_pg", dove, f"nome di PG «{nome}» nel testo: lo aggiunge il raccordo")
+                        e.errore("PROSA.nome_pg", dove, f"nome di PG «{nome}» nel testo: il nome lo dice il narratore "
+                                                       "nell'annuncio improvvisato dell'azione (manuale N15)")
                 if tag == "narratore":
                     for v in vocativi(testo, nomi_png):
                         e.avviso("PROSA.vocativo", dove, f"«{v},» a inizio frase suona come il narratore che parla a {v}: "

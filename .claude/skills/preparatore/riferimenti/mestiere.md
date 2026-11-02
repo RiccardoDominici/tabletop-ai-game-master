@@ -82,6 +82,10 @@ cieco (esperimenti/giudizio-ab-1 e -2), e la prova cieca della skill con «Il po
   - un verbo che si legge in due modi («si alza dal forno» suona come «esce dal forno»);
   - due frasi di fila con lo stesso attacco.
 - Le frasi brevissime una dopo l'altra rendono il ritmo piatto: alterna, e unisci i gesti in una frase.
+- Dal vivo ogni azione pubblica arriva annunciata («Brann solleva il coperchio.», manuale N15): l'annuncio
+  lo improvvisa il narratore, con il nome del PG e solo ciò che il giocatore ha scritto. Le battute scritte
+  prima quindi non nominano i PG e partono dall'esito; il budget di parole del turno include gli annunci,
+  e anche per questo le battute restano brevi.
 
 ## 8. Lezioni delle prove, in breve
 | Errore trovato | Regola |

@@ -154,5 +154,5 @@ battute *disponibili* invece di rispondere alle azioni. Cambia così:
   pre-scritte e improvvisate.
 - **Giudizio cieco**: un agente Opus riceve le trascrizioni etichettate X/Y a caso e le valuta con la rubrica
   R1–R12 del manuale, contando anche fughe di segreti, decisioni prese al posto dei PG, fatti inventati, PG in
-  terza persona, battute nella voce sbagliata.
+  terza persona fuori dall'annuncio della loro azione (N15), battute nella voce sbagliata.
 - Campioni audio delle due versioni da ascoltare.

@@ -37,7 +37,7 @@
 - **A7** Dai un nome a ogni persona e rendila umana. Ogni PNG vuole qualcosa.
 - **A8** Di' sì oppure tira i dadi. Si tira solo se c'è incertezza **e** c'è qualcosa in gioco. «Sì, ma…» è meglio di «no».
 - **A9** Sii generoso con gli indizi. Un'indagine intelligente ottiene informazioni utili anche fuori lista.
-- **A10** Non decidere mai cosa un PG fa, dice, pensa o prova.
+- **A10** Non decidere mai cosa un PG fa, dice, pensa o prova. Annunciare l'azione che il giocatore ha scritto (N15) non è decidere: si ripete, non si aggiunge.
 - **A11** Fai domande ai giocatori sul passato e sulle conoscenze del loro PG, e usa le risposte. Non chiedere mai a un giocatore cosa fa il PG di un altro.
 - **A12** Il canone è vero, salvo che sia la menzogna o l'errore di un PNG.
 - **A13** Ogni intervento si chiude restituendo la parola ai giocatori.
@@ -278,8 +278,8 @@ registro_attivita: []
 ## 5. Regole di scrittura per la narrazione ad alta voce
 
 - **N1** Ogni frase ha al massimo 20 parole, con una media tra 8 e 14, e contiene una sola idea: il TTS deve respirare.
-- **N2** Ogni blocco ha al massimo 4 frasi (circa 60 parole), poi la parola torna ai giocatori. L'apertura della sessione può arrivare a 6 frasi.
-- **N3** Si usa il presente indicativo. Al gruppo ci si rivolge con la seconda persona plurale («vedete»); al singolo PG con il tu e il suo nome.
+- **N2** Ogni blocco ha al massimo 4 frasi (circa 60 parole), poi la parola torna ai giocatori; gli annunci delle azioni (N15) si aggiungono, una frase breve ciascuno. L'apertura della sessione può arrivare a 6 frasi.
+- **N3** Si usa il presente indicativo. Al gruppo ci si rivolge con la seconda persona plurale («vedete»); al singolo PG con il tu e il suo nome. Un PG si nomina in terza persona solo nell'annuncio della sua azione (N15).
 - **N4** Il dettaglio è concreto: sostantivi precisi e verbi forti. Ogni luogo coinvolge almeno un senso oltre la vista.
 - **N5** Niente prosa viola: al massimo un aggettivo per sostantivo. Sono vietati:
   - i cliché: «brivido lungo la schiena», «sangue gelato nelle vene», «l'aria è densa/carica di», «silenzio assordante», «come se il tempo si fosse fermato», «non potete fare a meno di», «sentite che qualcosa non va», «aura di mistero», «danza di ombre»;
@@ -287,7 +287,7 @@ registro_attivita: []
 
   «All'improvviso» si usa al massimo una volta per scena.
 - **N6** Mostra, non dire. Non nominare l'emozione che vuoi suscitare: descrivi ciò che la provoca.
-- **N7** Mai decidere azioni, parole, pensieri, sentimenti o percezioni non tirate di un PG. Fanno eccezione gli effetti magici meccanici, come la paura o lo charme: si dichiara l'effetto, il modo lo sceglie il giocatore.
+- **N7** Mai decidere azioni, parole, pensieri, sentimenti o percezioni non tirate di un PG. Fanno eccezione gli effetti magici meccanici, come la paura o lo charme: si dichiara l'effetto, il modo lo sceglie il giocatore. L'annuncio (N15) riferisce solo ciò che il giocatore ha già deciso: un gesto, un'emozione, un'intenzione o una parola in più è una violazione di N7.
 - **N8** Fermati al punto di reazione. Il mondo non va oltre l'istante in cui un PG vorrebbe agire.
 - **N9** Chiudi con un invito ad agire rivolto a qualcuno, scelto dallo scheduler (T1). Varia la formula.
 - **N10** A voce non si rivelano mai:
@@ -305,6 +305,7 @@ registro_attivita: []
 - **N12** L'italiano è pulito: niente calchi («realizzare» per «rendersi conto»), e i nomi si pronunciano come indica la scheda.
 - **N13** Ogni fatto nuovo è canone e va dichiarato in `fatti_nuovi` (E10).
 - **N14** Non si ripetono aperture di frase né immagini sensoriali usate nelle ultime 5 narrazioni.
+- **N15** Annuncio. Al tavolo nessuno legge il telefono degli altri: prima dell'esito di ogni azione pubblica, una frase breve dice cosa fa quel PG, con il suo nome, in terza persona, fedele a ciò che il giocatore ha scritto («Brann solleva il coperchio.»). L'annuncio riassume e non aggiunge: niente gesti, emozioni, intenzioni o parole in più; le parole tra virgolette si riassumono («Brann chiede a Ilaria chi abita qui.»), non si rileggono. Poi l'esito, rivolto a quel PG con il tu. Le azioni private non si annunciano (T9).
 
 **Esempi**
 
@@ -325,6 +326,12 @@ Sbagliato (viola F1):
 
 Giusto:
 > Il grimaldello gira a metà, poi si spezza con uno schiocco. Al piano di sopra, una tavola scricchiola. Passi. Kael, la punta è rimasta nella serratura. Cosa fai?
+
+Sbagliato (viola N15 perché manca l'annuncio, e N7 perché poi aggiunge un'emozione):
+> Il coperchio è pesante: dentro c'è sabbia. Brann, deluso, lo richiude.
+
+Giusto (N15: l'annuncio ripete ciò che il giocatore ha scritto, poi l'esito al tu):
+> Brann solleva il coperchio. Brann, è pesante: dentro c'è sabbia, fredda e asciutta. Cosa fai?
 
 Sbagliato (viola N10, perché è il narratore a svelare il segreto):
 > Ilaria, che in realtà lavora per il culto, dice di non sapere niente.
@@ -387,7 +394,7 @@ Giusto:
 
   Chi nasce sul momento riceve subito una scheda da comparsa. Ogni fatto nuovo finisce nel canone.
 - **T8 Conseguenze.** A fine scena il Motore aggiorna gli orologi, per le azioni e per l'inerzia. Le conseguenze non sono una ferrovia.
-- **T9 Informazioni private.** Ciò che sa un solo PG va sul suo telefono, mai nella voce. Il giocatore decide se condividerlo.
+- **T9 Informazioni private.** Ciò che sa un solo PG va sul suo telefono, mai nella voce. Il giocatore decide se condividerlo. Lo stesso per le azioni segnate private dal telefono: non si annunciano (N15), e il loro esito resta discreto.
 - **T10 Sicurezza.**
   - Alla sessione zero, dal telefono, si fissano le **linee** (mai in gioco) e i **veli** (solo fuori scena, con una dissolvenza).
   - Durante il gioco c'è una X-card anonima sul telefono, con X, N e O: stop, dissolvenza, ok. Ciò che viene segnalato si elimina senza chiedere perché.
@@ -437,7 +444,7 @@ Un segmento malformato viene scartato e sostituito dalla `mossa_morbida_pronta`.
 - blocca il meta-linguaggio, salvo le richieste di tiro consentite («Kael, tira Destrezza»);
 - controlla le ripetizioni rispetto alle ultime 5 narrazioni.
 
-**E5 Guardia dell'agency.** Cerca il nome di un PG, o «voi/vi», seguito da verbi di azione, emozione, pensiero o decisione («estrae», «decidi», «hai paura», «capite»). Il risultato viene confrontato con l'azione dichiarata dal giocatore sul telefono. Se non coincide, la frase viene trattenuta, poi riscritta da una chiamata rapida o scartata. Il Narratore genera con una frase di anticipo, e la musica copre la pausa.
+**E5 Guardia dell'agency.** Cerca il nome di un PG, o «voi/vi», seguito da verbi di azione, emozione, pensiero o decisione («estrae», «decidi», «hai paura», «capite»). Il risultato viene confrontato con l'azione dichiarata dal giocatore sul telefono. L'annuncio (N15) passa se ripete l'azione dichiarata; se aggiunge gesti, emozioni, intenzioni o parole non coincide. Se non coincide, la frase viene trattenuta, poi riscritta da una chiamata rapida o scartata. Il Narratore genera con una frase di anticipo, e la musica copre la pausa.
 
 **E6 Guardia anti-fuga.** Il controllore custodisce una *cassaforte* con:
 - i segreti non rivelati;
@@ -493,7 +500,7 @@ Si misurano le fughe, le violazioni dell'agency e le chiusure mancanti. Con anch
 | Regole | Meccanismo | Quando |
 |---|---|---|
 | C1–C13, schede PNG e scena | E1 | preparazione |
-| A10, N7 | E5, R1 | dal vivo + critico |
+| A10, N7, N15 | E5, R1 | dal vivo + critico |
 | N10, D4, D6, T9 | E2, E6, E9 | dal vivo (strutturale) |
 | F1–F4 | E7 | dal vivo |
 | N1, N2, N5, N11, N14 | E4, E8 | dal vivo |
@@ -506,18 +513,18 @@ Si misurano le fughe, le violazioni dell'agency e le chiusure mancanti. Con anch
 
 ## 9. Rubrica di valutazione (giudice LLM)
 
-**Protocollo.** Per ogni criterio il giudice restituisce `{criterio, punteggio 0-3, turni citati, correzione in una frase}`. Il 3 richiede una prova positiva citata. Uno 0 su R1 o su R4 è una **violazione critica**: scattano subito una nota di regia e un avviso. Se la media è sotto 2, si interviene.
+**Protocollo.** Per ogni criterio il giudice restituisce `{criterio, punteggio 0-3, turni citati, correzione in una frase}`. Il 3 richiede una prova positiva citata. L'annuncio di un'azione pubblica (N15), col nome del PG in terza persona, è richiesto e non si penalizza: si confronta con l'azione scritta dal giocatore. Uno 0 su R1 o su R4 è una **violazione critica**: scattano subito una nota di regia e un avviso. Se la media è sotto 2, si interviene.
 
 | Criterio | 0 | 1 | 2 | 3 |
 |---|---|---|---|---|
-| **R1 Agency dei PG** | Decide azioni o emozioni dei PG più volte | Una violazione | Nessuna violazione, ma scelte suggerite con insistenza | Nessuna violazione; le reazioni restano ai giocatori |
+| **R1 Agency dei PG** | Decide azioni o emozioni dei PG più volte (anche aggiungendole a un annuncio) | Una violazione | Nessuna violazione, ma scelte suggerite con insistenza | Nessuna violazione; gli annunci ripetono solo ciò che i giocatori hanno scritto, le reazioni restano a loro |
 | **R2 Conseguenze** | I fallimenti non cambiano nulla | Conseguenze vaghe | Concrete ma prevedibili | Ogni esito cambia la situazione in modo concreto e interessante |
 | **R3 Coerenza col canone** | Contraddizione grave | Contraddizione minore | Coerente, ma con fatti nuovi non dichiarati | Coerente, e ogni fatto nuovo è dichiarato |
 | **R4 Confini di conoscenza** | Rivela un segreto o un `non_sa` | Allusione rivelatrice | Confini rispettati, ma menzogne goffe o incoerenti | Confini e menzogne perfetti; segnali mostrati, mai spiegati |
 | **R5 Voce dei PNG** | PNG intercambiabili | Voce incostante | Voce riconoscibile, desiderio invisibile | Voce, registro e desiderio chiari in ogni battuta |
 | **R6 Prosa per l'ascolto** | Frasi lunghe, contorte, con errori | Molte frasi oltre 20 parole | Per lo più conforme, ma ritmo piatto | Frasi brevi e varie, parole forti in fondo, italiano pulito |
 | **R7 Concretezza** | Cliché ed emozioni nominate | Dettagli generici | Concreto ma solo visivo | Preciso e multisensoriale, nessun cliché |
-| **R8 Restituzione** | Monologhi o scene congelate | Chiusure generiche o assenti | Buone chiusure, a volte oltre il punto di reazione | Sempre al punto di reazione, con un invito mirato |
+| **R8 Restituzione** | Monologhi o scene congelate | Chiusure generiche o assenti, o azioni pubbliche non annunciate | Buone chiusure, a volte oltre il punto di reazione | Ogni azione pubblica annunciata, poi sempre al punto di reazione, con un invito mirato (gli annunci non contano come monologo) |
 | **R9 Spotlight** | Un giocatore ignorato | Squilibrio marcato | Equilibrato ma senza agganci personali | Equilibrato, e ogni PG ha avuto un suo momento |
 | **R10 Ritmo e tensione** | Tempo vuoto, scene trascinate | Posta poco chiara | Ritmo buono, curva piatta | Posta chiara, tagli netti, tensione che sale e scende |
 | **R11 Mondo proattivo** | Il mondo aspetta i PG | Minacce solo dichiarate | I fronti avanzano, ma non si vede | Segni visibili, orologi che avanzano, il cattivo reagisce |

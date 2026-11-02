@@ -10,7 +10,8 @@ Haiku in modalità repertorio (modo B) **non conosce i segreti**. Riceve:
   (menzogne, verità e confessioni vi compaiono come «risposta»);
 - gli esempi di voce dei PNG.
 
-Lega ogni battuta all'azione a cui risponde (`[usa] id > pg_x`) e improvvisa solo i raccordi. Le battute
+Lega ogni battuta all'azione a cui risponde (`[usa] id > pg_x`) e improvvisa solo i raccordi: l'annuncio di
+ogni azione pubblica (il nome del PG e ciò che ha scritto, manuale N15) e i passaggi tra una battuta e l'altra. Le battute
 servono a quattro cose:
 - **qualità**: le scrivi tu, con calma;
 - **latenza**: l'audio si genera prima;
@@ -148,7 +149,10 @@ parole:
 - **Narratore**:
   - frasi di 16 parole al massimo, con una media tra 8 e 14 su tutto il repertorio;
   - al massimo 4 frasi per versione e 70 parole in tutto;
-  - nessuna frase in terza persona su un PG: «ti», «vi», o niente.
+  - nessuna frase in terza persona su un PG: «ti», «vi», o niente. Il PG in terza persona c'è solo
+    nell'annuncio della sua azione (manuale N15), che il narratore improvvisa prima della battuta;
+  - la battuta parte dall'esito e non ripete l'azione: «Dentro la mollica ci sono chicchi neri», non
+    «Spezzi la pagnotta: dentro…», che dopo l'annuncio «Ginestra spezza una pagnotta» suonerebbe due volte.
 - **PNG**:
   - al massimo 2 frasi per riga, 4 nelle confessioni, nei momenti e nei finali;
   - frasi entro il tetto dello `stile` («Frasi di due-sei parole» → 9 al massimo).
