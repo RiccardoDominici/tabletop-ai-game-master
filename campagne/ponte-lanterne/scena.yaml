@@ -119,7 +119,7 @@ uscite:
 mossa_morbida_pronta: "Dalla rampa bassa sale di corsa un barcaiolo fradicio. Grida che alle Case Lunghe i bambini sono sul tetto, e chiede chi rema."
 
 # Al massimo 3 frasi per la voce, conformi al §5. Viene letta dopo sessione.riassunto_iniziale.
-apertura: "Sul Ponte delle Lanterne piove forte, e il fiume brontola sotto i piedi. Tullio, il custode, grida che il Ricovero e le Case Lunghe sono rimasti di là. Nel Borgo una lanterna dondola, l'altra resta ferma, e la barca è una sola: che fate?"
+apertura: "Sul Ponte delle Lanterne piove forte, e il fiume brontola sotto i piedi. Dal casello il custode, Tullio, grida che il Ricovero e le Case Lunghe sono rimasti di là. Nel Borgo una lanterna dondola, l'altra resta ferma, e la barca è una sola: che fate?"
 
 musica:
   tag: esplorazione_tesa

@@ -172,7 +172,7 @@ battute:
     testo:
       - "[narratore] La pertica raschia la pietra, e il muschio viene via a strisce nere."
       - "[narratore] Due spanne sopra il leone, nella pietra, c'è un'onda scolpita."
-      - "[narratore] È asciutta, e il fiume le passa ancora lontano."
+      - "[narratore] È asciutta: il fiume non ci arriva ancora."
     effetti: {rivela_indizi: [i_onda_pilone]}
     max_usi: 1
   - id: nar_pilone_barca
@@ -228,7 +228,7 @@ battute:
     quando: "un PG chiede allo scrivano che cosa sta misurando"
     temi: [scrivano, misuri, misura, misurare, misurando, nodi]
     testo:
-      - "[narratore] Lo scrivano si stringe la corda al petto, come se fosse sua."
+      - "[narratore] Lo scrivano si stringe al petto la corda bagnata, come una coperta."
       - "[narratore] Dice che il signor Vischi vuole sapere quanto manca al leone, con precisione."
       - "[narratore] Poi aggiunge, piano, che il signor Vischi non sbaglia mai i conti."
     effetti: {rivela_indizi: [i_scrivano_corda]}
@@ -386,7 +386,7 @@ battute:
     testo:
       - "[narratore] Il console si sporge, guarda, e si toglie il cappello bagnato."
       - "[narratore] Lo rigira tra le mani, poi dice troppo forte che il consiglio può aspettare."
-      - "[narratore] Dietro di lui il paese tace, e Vischi si sfila un guanto."
+      - "[narratore] Dietro di lui il paese tace, e Vischi guarda altrove."
     max_usi: 1
   - id: nar_console_registro
     chi: narratore
@@ -396,7 +396,7 @@ battute:
     temi: [console, ugolino, registro, leggo, prova]
     richiede: {indizi_rivelati: [i_registro_padre], battute_non_usate: [nar_console_onda]}
     testo:
-      - "[narratore] Il console prende il registro con due dita, come un pesce morto."
+      - "[narratore] Il console prende il registro con due dita, come un pesce che scivola."
       - "[narratore] Legge, guarda Vischi, e dice troppo forte che il consiglio può aspettare."
       - "[narratore] Dal paese sale un mormorio lungo, che non si ferma più."
     max_usi: 1
@@ -496,7 +496,7 @@ battute:
     temi: [canto, cantare, canzone, suono, suonare, liuto, ritornello]
     testo:
       - "[narratore] La fila sotto la pioggia rallenta, e qualcuno batte il tempo sulla cesta."
-      - "[narratore] Una vecchia attacca il ritornello a mezza voce. Il mulo, no."
+      - "[narratore] Una vecchia attacca il ritornello a mezza voce, stonata e contenta."
     max_usi: 1
   - id: nar_segnale_risposta
     chi: narratore
@@ -646,7 +646,7 @@ battute:
       - "[narratore] La catena scende, e il ferro suona sulle pietre."
       - "[narratore] Al Ricovero la lanterna dondola piano, sempre più piano, fino all'alba."
       - "[narratore] All'alba Rosa firma il foglio di Vischi, e i vecchi salgono sulle barche nere."
-      - "[narratore] Il vecchio barcaiolo lo portano su in chiesa avvolto in tre coperte, e non parla."
+      - "[narratore] Ernesto lo portano su in chiesa avvolto in tre coperte, e non parla."
     max_usi: 1
   - id: fin_ora_in_piu
     chi: narratore
@@ -657,7 +657,7 @@ battute:
     richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_usate: [tul_catena_su]}
     testo:
       - "[narratore] L'ultima persona sale dalla rampa con l'acqua alla vita, aggrappata a una lanterna."
-      - "[narratore] Dietro di lei il fiume copre il pilone, e il custode abbassa la catena."
+      - "[narratore] Dietro di lei il fiume sale ancora, e il custode abbassa la catena."
       - "[narratore] All'alba Vischi bussa al casello con il foglio del debito e il suo sigillo."
       - "[narratore] Su in chiesa, intanto, il Borgo intero dorme sotto lo stesso tetto."
     max_usi: 1

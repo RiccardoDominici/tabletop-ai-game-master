@@ -13,7 +13,7 @@ battute:
     quando: "i PG salutano Bice o si avvicinano alle lanterne"
     temi: [saluto]
     testo:
-      - "[narratore] Bice fa girare l'acciarino tra le dita e vi squadra dal basso."
+      - "[narratore] Bice fa girare l'acciarino tra le dita e vi squadra uno per uno."
       - "[png_bice] Forestieri bagnati. Scommettiamo che non sapete remare?"
     max_usi: 1
   - id: bic_rifiuto

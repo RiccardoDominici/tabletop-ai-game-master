@@ -116,3 +116,16 @@ le incontro; in fondo, la classifica dei problemi più gravi.
 18. **Copioni ciechi scritti prima di un cambio di nomi.** Ho fatto scrivere i copioni prima di rinominare
     la gilda dei costruttori: i copioni dicono ancora «pontieri dell'onda». Non cambia la misura, ma la
     skill potrebbe dire di scriverli (o rigenerarli) a campagna ferma, prima del passo 13.
+
+## Passo 14
+
+19. **Il vocativo involontario.** L'apertura diceva «Tullio, il custode, grida che…»: a voce, un nome
+    seguito da una virgola a inizio frase è il modo in cui il narratore si rivolge a un PG (A1, «Brann,
+    …»). Il tavolo avrebbe sentito il narratore parlare a un personaggio di nome Tullio. La lista del
+    passo 14 (pronomi ambigui, voi singolare, calchi, immagini ripetute, accordi di genere) non lo
+    prevede. *Scelta*: «Dal casello il custode, Tullio, grida…». Varrebbe una riga nella lista.
+
+20. **Battute che presuppongono un'altra battuta.** Un riempitivo diceva «Il mulo, no.», ma il mulo
+    compare solo in un altro riempitivo, che può non essere uscito. La skill non avverte che una
+    battuta non deve citare ciò che solo un'altra battuta facoltativa ha introdotto (se serve, va
+    legata con `richiede.battute_usate`). *Scelta*: tolto il riferimento.

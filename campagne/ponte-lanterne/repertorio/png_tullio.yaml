@@ -156,7 +156,7 @@ battute:
       battute_non_usate: [tul_catena_casello, tul_catena_registro]
     testo:
       - "[narratore] Tullio ride una volta sola, e batte la chiave sul palmo."
-      - "[png_tullio] Vent'anni di passaggi gratis, e mi paghi così. Va bene."
+      - "[png_tullio] Vent'anni di passaggi gratis, e adesso vuoi pure la verità. Va bene."
       - "[png_tullio] Il tetto me l'ha pagato Vischi, con il casello in pegno."
       - "[png_tullio] Catena su dopo il tocco, e all'alba il casello è suo."
     effetti: {rivela_indizi: [i_tullio_minaccia], fatti_noti: [f_minaccia_tullio, f_debito_tullio]}
