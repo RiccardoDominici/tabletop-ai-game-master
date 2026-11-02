@@ -39,6 +39,10 @@ logs               log JSONL (fuori da git)
   - Le richieste si mettono in coda e si generano **una alla volta** (MLX su un solo thread), in ordine di arrivo.
   - Se il client chiude la connessione, la generazione si ferma subito (serve per interrompere la narrazione).
 - `POST /annulla`, corpo `{"id": str}` → ferma la generazione o la toglie dalla coda. Risponde `{"annullata": bool}`.
+- `POST /sveglia` (aggiunto dopo le misure): non blocca; se il worker è libero fa ~0,8 s di generazione a vuoto,
+  interrotta al primo pezzo appena arriva una richiesta vera. Dopo una pausa di 20 s il primo audio sale da ~0,37 s
+  a 0,5–0,9 s; con la sveglia torna a ~0,39 s. **Il server la chiama nel momento in cui chiude la finestra delle
+  azioni**: la prima frase dell'LLM arriva dopo ~0,9 s, la sveglia ci sta dentro.
 - Log JSONL `logs/voce.jsonl`: id, voce, caratteri, attesa in coda, primo audio, totale, secondi di audio, RTF, annullata.
 
 Voci di F0 (registro `assets/voci/voci.yaml`, id → clip + testo della clip):
