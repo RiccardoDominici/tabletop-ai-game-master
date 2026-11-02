@@ -126,8 +126,14 @@ export class ControlliMaster {
         if (!esito.ok) return rifiuto(esito.errore, `scena «${scena.slice(0, 64)}»: ${esito.errore}`);
         return { esito, dettagli: `scena ${da} → ${scena}`, dati: { da, a: scena } };
       }
-      case 'situazione':
-        return rifiuto('Nessuna immagine di situazione disponibile.');
+      case 'situazione': {
+        const id = c.id === null ? null : typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : undefined;
+        if (id === undefined) return rifiuto('Situazione non valida.');
+        const prima = regia.situazioneInOnda;
+        const esito = regia.mostraSituazione(id);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: id ? `situazione ${id} sul proiettore` : `situazione ${prima ?? '?'} tolta`, dati: { situazione: id } };
+      }
       case 'orologio': {
         const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : null;
         const passo = c.passo === 1 || c.passo === -1 ? c.passo : null;

@@ -2,7 +2,10 @@
  * Immagini della campagna per il proiettore: campagne/<id>/immagini/ + manifest.json, prodotti
  * dallo strumento strumenti/immagini/genera.py ({immagini: [{id, file, tipo, prompt, seme, …}]}).
  *
- * Id usati qui: `luogo_<id scena o nodo>` per i luoghi, `ritratto_<id_png>` per i ritratti.
+ * Id usati qui: `luogo_<id scena o nodo>` per i luoghi, `ritratto_<id_png>` per i ritratti,
+ * `situazione_<id_png>_<id situazione>` (tipo `situazione`) per lo stesso PNG in un'altra
+ * situazione: quelle portano i tratti nascosti (la cicatrice sotto il cappuccio) e NON sono mai un
+ * ritratto né un luogo: escono solo a comando del master o dopo la rivelazione giusta.
  * Una voce del manifest conta solo se il suo file esiste: se manca, lo schermo usa lo sfondo
  * d'atmosfera (nessun errore). I file si servono da /api/immagini/<file>.
  */
@@ -17,7 +20,25 @@ const NOME_VALIDO = /^[a-z0-9][a-z0-9_.-]*\.(jpe?g|png|webp)$/i;
 export interface VoceImmagine {
   id: string;
   file: string;
-  tipo: string;
+  tipo?: string;
+}
+
+/** Un'immagine di situazione del manifest, col PNG ricavato dall'id. */
+export interface VoceSituazione {
+  /** Id del manifest (situazione_png_sebastiano_senza_cappuccio). */
+  id: string;
+  /** PNG ritratto (null se l'id non comincia con un PNG noto). */
+  png: string | null;
+  /** Parte dopo il PNG (senza_cappuccio, in_n_piazza). */
+  situazione: string;
+  url: string;
+}
+
+const PREFISSO_SITUAZIONE = 'situazione_';
+
+/** È un'immagine di situazione (per tipo o per prefisso dell'id)? */
+function èSituazione(v: VoceImmagine): boolean {
+  return v.tipo === 'situazione' || v.id.startsWith(PREFISSO_SITUAZIONE);
 }
 
 export class CatalogoImmagini {
@@ -52,17 +73,36 @@ export class CatalogoImmagini {
     return this.perId.size;
   }
 
-  private url(id: string): string | null {
-    const v = this.perId.get(id);
+  private url(v: VoceImmagine | undefined): string | null {
     return v ? `${PREFISSO_URL}${encodeURIComponent(v.file)}` : null;
   }
 
+  /** Immagine del luogo; mai una situazione, anche se l'id le somigliasse. */
   luogo(idLuogo: string): string | null {
-    return this.url(`luogo_${idLuogo}`);
+    const v = this.perId.get(`luogo_${idLuogo}`);
+    return v && !èSituazione(v) && (v.tipo === undefined || v.tipo === 'luogo') ? this.url(v) : null;
   }
 
+  /** Ritratto del PNG; una situazione (che porta i tratti nascosti) non fa mai da ritratto. */
   ritratto(idPng: string): string | null {
-    return this.url(`ritratto_${idPng}`);
+    const v = this.perId.get(`ritratto_${idPng}`);
+    return v && !èSituazione(v) && (v.tipo === undefined || v.tipo === 'ritratto') ? this.url(v) : null;
+  }
+
+  /**
+   * Immagini di situazione, col PNG ricavato dall'id (`situazione_<png>_<situazione>`, il PNG più
+   * lungo che combacia). `idPng`: gli id dei PNG della campagna.
+   */
+  situazioni(idPng: readonly string[]): VoceSituazione[] {
+    const png = [...idPng].sort((a, b) => b.length - a.length);
+    const out: VoceSituazione[] = [];
+    for (const v of this.perId.values()) {
+      if (!èSituazione(v)) continue;
+      const resto = v.id.startsWith(PREFISSO_SITUAZIONE) ? v.id.slice(PREFISSO_SITUAZIONE.length) : v.id;
+      const chi = png.find((p) => resto.startsWith(`${p}_`)) ?? null;
+      out.push({ id: v.id, png: chi, situazione: chi ? resto.slice(chi.length + 1) : resto, url: this.url(v)! });
+    }
+    return out.sort((a, b) => a.id.localeCompare(b.id));
   }
 
   /** Percorso su disco di un file servibile (solo quelli del manifest), o null. */

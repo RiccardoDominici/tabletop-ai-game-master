@@ -2,7 +2,7 @@
  * Pagina /schermo (proiettore, 1920×1080, letta da 3 m).
  *
  * Sotto tutto, l'immagine del luogo con un lento Ken Burns (o, senza immagine, lo sfondo
- * d'atmosfera). Prima di «Inizia sessione»: titolo, QR e pulsante (SchermataInizio). Dopo:
+ * d'atmosfera); un'immagine di situazione, quando c'è, prende il suo posto con la stessa dissolvenza. Prima di «Inizia sessione»: titolo, QR e pulsante (SchermataInizio). Dopo:
  * titolo della scena, ritratto + parlante + sottotitolo al centro, stato della finestra in basso
  * a sinistra, QR in basso a destra. Niente `backdrop-filter` qui: sopra un'immagine che si muove
  * andrebbe ricalcolato a ogni fotogramma. Tasto «L» (o il pulsantino in alto) per l'HUD di latenza.
@@ -42,8 +42,9 @@ export function PaginaSchermo() {
 
   return (
     <div className="relative h-dvh overflow-hidden bg-notte">
+      {/* Un'immagine di situazione (dopo una rivelazione, o dal master) prende il posto del luogo. */}
       <SfondoLuogo
-        immagine={stato?.scena.immagine ?? null}
+        immagine={stato?.scena.situazione ?? stato?.scena.immagine ?? null}
         umore={stato?.scena.umore ?? null}
         intensita={stato?.scena.intensita ?? null}
       />

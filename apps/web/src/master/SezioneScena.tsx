@@ -16,18 +16,21 @@ export function SezioneScena({ stato }: { stato: StatoMaster }) {
   const scenaCorrente = scene.find((s) => s.corrente) ?? null;
   const idLuogo = tavolo.scena.luogo;
   const luogoCorrente = luoghi.find((l) => l.id === idLuogo) ?? null;
+  // Un'immagine di situazione copre il luogo sul proiettore: la miniatura mostra ciò che si vede davvero.
+  const situazione = stato.situazioni.find((x) => x.in_onda) ?? null;
 
   return (
     <Riquadro titolo="Scena e luogo" zona="scena" data-testid="master-scena">
       <div data-testid="master-luogo-corrente" data-luogo={idLuogo} className="flex items-center gap-3">
-        <Miniatura url={tavolo.scena.immagine} alt={luogoCorrente?.nome ?? idLuogo} className="h-20 w-36" />
+        <Miniatura url={tavolo.scena.situazione ?? tavolo.scena.immagine} alt={situazione?.nome ?? luogoCorrente?.nome ?? idLuogo} className="h-20 w-36" />
         <div className="min-w-0">
           <p className="text-xs tracking-[0.16em] text-cenere uppercase">Sul proiettore</p>
           <p className="truncate font-semibold text-pergamena">{luogoCorrente?.nome ?? idLuogo}</p>
           <p className="truncate text-sm text-pergamena-2">
             Scena: {scenaCorrente?.titolo ?? tavolo.scena.titolo}
           </p>
-          {!tavolo.scena.immagine && <p className="text-xs text-cenere italic">nessuna immagine: sfondo d’atmosfera</p>}
+          {situazione && <p className="truncate text-xs text-candela-2">ora: {situazione.nome} (al posto del luogo)</p>}
+          {!tavolo.scena.immagine && !situazione && <p className="text-xs text-cenere italic">nessuna immagine: sfondo d’atmosfera</p>}
         </div>
       </div>
 

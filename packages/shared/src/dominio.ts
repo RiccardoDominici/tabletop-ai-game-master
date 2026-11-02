@@ -166,6 +166,11 @@ export interface ScenaPubblica {
   immagine: string | null;
   /** Ritratti dei PNG che ne hanno uno: id_png → URL. Il narratore non ha ritratto. */
   ritratti: Record<string, string>;
+  /**
+   * Immagine di situazione a tutto schermo al posto del luogo (es. il PNG senza cappuccio, dopo la
+   * rivelazione della cicatrice), o null. La mette il Motore dopo la rivelazione giusta o il master.
+   */
+  situazione: string | null;
   /** URL da precaricare (luoghi vicini, ritratti dei PNG presenti), nell'ordine di probabilità. */
   prossime: string[];
 }

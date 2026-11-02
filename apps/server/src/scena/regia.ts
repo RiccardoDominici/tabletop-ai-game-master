@@ -31,6 +31,8 @@ import type {
 import { schedaPg } from '../campagna/scheda';
 import type { Campagna } from '../campagna/tipi';
 import { ID_NARRATORE, NOME_NARRATORE, conScena } from '../campagna/tipi';
+import { nomeBreve } from '../campagna/nomi';
+import { collegaSituazioni, type SituazioneCollegata } from '../campagna/situazioni';
 import type { Logger } from '../logger';
 import type { Narratore } from '../llm/tipi';
 import { MisuratoreTurno } from '../metriche/misure';
@@ -119,15 +121,7 @@ interface AttesaAudio {
   timer: (() => void) | null;
 }
 
-/** Titoli da saltare nel nome breve («Sorella Teodora» → «Teodora»). */
-const TITOLI = new Set(['sorella', 'fratello', 'padre', 'madre', 'ser', 'messer', 'donna', 'dama', 'mastro', 'frate', 'suor']);
-
-/** Nome breve per gli avvisi: il primo nome proprio. */
-export function nomeBreve(nome: string): string {
-  const parole = nome.split(/\s+/).filter(Boolean);
-  const i = parole.length > 1 && TITOLI.has(parole[0]!.toLowerCase()) ? 1 : 0;
-  return parole[i] ?? nome;
-}
+export { nomeBreve };
 
 export class Regia {
   private readonly o: OpzioniRegia;
@@ -150,6 +144,18 @@ export class Regia {
   private sistema: string[];
   /** Riassunto pubblico della scena in corso, per l'arbitro. */
   private scenaPubblica: string;
+  /** Immagini di situazione della campagna, con la rivelazione che le fa comparire. */
+  private readonly situazioni: SituazioneCollegata[];
+  /**
+   * Situazione sul proiettore al posto del luogo. `auto`: messa dal Motore dopo una rivelazione,
+   * resta finché i giocatori reagiscono (si toglie quando parte la narrazione successiva); quelle
+   * del master restano finché lui non le toglie o cambia luogo.
+   */
+  private situazione: { id: string; url: string; auto: boolean; turno: number } | null = null;
+  /** Situazioni già mostrate in automatico (una volta sola ciascuna). */
+  private readonly situazioniMostrate = new Set<string>();
+  /** Indizi e battute usciti nella narrazione in corso (per le situazioni). */
+  private rivelateNelTurno: string[] = [];
   /** Stalli di fila (S1, S2, S3…): si azzera appena qualcuno agisce. */
   private stalliDiFila = 0;
   private uscita: UscitaRegia | null = null;
@@ -193,6 +199,8 @@ export class Regia {
     this.campagna = opzioni.campagna;
     this.sistema = opzioni.sistema;
     this.scenaPubblica = opzioni.scenaPubblica ?? '';
+    this.situazioni = opzioni.immagini ? collegaSituazioni(opzioni.campagna, opzioni.immagini.situazioni(opzioni.campagna.png.map((p) => p.id))) : [];
+    if (this.situazioni.length) opzioni.log.info({ situazioni: this.situazioni.map((x) => ({ id: x.id, dopo: x.dopo })) }, 'immagini: situazioni e rivelazioni');
     this.pronuncia = creaPronunciatore(opzioni.campagna);
     this.orologi = new StatoOrologi(opzioni.campagna);
     this.nomiPng = nomiDeiPng(opzioni.campagna);
@@ -235,7 +243,7 @@ export class Regia {
   }
 
   /** Immagine del luogo, ritratti e immagini da precaricare (luoghi collegati, ritratti dei presenti). */
-  private immaginiPubbliche(): { luogo: string; immagine: string | null; ritratti: Record<string, string>; prossime: string[] } {
+  private immaginiPubbliche(): { luogo: string; immagine: string | null; ritratti: Record<string, string>; situazione: string | null; prossime: string[] } {
     const img = this.o.immagini;
     const ritratti: Record<string, string> = {};
     for (const p of this.campagna.png) {
@@ -254,7 +262,9 @@ export class Regia {
       ...this.campagna.scena.png_presenti.map((id) => ritratti[id]),
       ...[this.campagna.scena.id, ...vicine, ...collegati].filter((l) => l !== this.luogo).map((l) => img?.luogo(l)),
     ].filter((u): u is string => !!u);
-    return { luogo: this.luogo, immagine, ritratti, prossime: [...new Set(prossime)] };
+    // In coda, le situazioni che una rivelazione può far comparire (dissolvenza senza attese).
+    const situazioni = this.situazioni.filter((x) => x.dopo.length && !this.situazioniMostrate.has(x.id)).map((x) => x.url);
+    return { luogo: this.luogo, immagine, ritratti, situazione: this.situazione?.url ?? null, prossime: [...new Set([...prossime, ...situazioni])] };
   }
 
   /** Il gruppo si sposta: cambia l'immagine del proiettore (con dissolvenza sullo schermo). */
@@ -262,8 +272,58 @@ export class Regia {
     if (luogo === this.luogo) return { ok: true };
     this.o.log.info({ da: this.luogo, a: luogo, immagine: this.o.immagini?.luogo(luogo) ?? null }, 'scena: cambio di luogo');
     this.luogo = luogo;
+    this.togliSituazione('cambio di luogo');
     this.notifica();
     return { ok: true };
+  }
+
+  // ------------------------------------------------------------------ immagini di situazione
+
+  /** Situazioni della campagna con la loro rivelazione (pannello). */
+  get situazioniCollegate(): readonly SituazioneCollegata[] {
+    return this.situazioni;
+  }
+
+  /** Id della situazione sul proiettore, o null. */
+  get situazioneInOnda(): string | null {
+    return this.situazione?.id ?? null;
+  }
+
+  /** Il master mette (o toglie, con null) un'immagine di situazione sul proiettore. */
+  mostraSituazione(id: string | null): Esito {
+    if (id === null) {
+      if (!this.situazione) return { ok: false, errore: 'Nessuna situazione sul proiettore.' };
+      this.togliSituazione('master');
+      this.notifica();
+      return { ok: true };
+    }
+    const s = this.situazioni.find((x) => x.id === id);
+    if (!s) return { ok: false, errore: 'Immagine di situazione sconosciuta.' };
+    this.situazione = { id: s.id, url: s.url, auto: false, turno: this.turno };
+    this.o.log.info({ situazione: s.id, da: 'master' }, 'immagini: situazione sul proiettore');
+    this.notifica();
+    return { ok: true };
+  }
+
+  private togliSituazione(motivo: string): void {
+    if (!this.situazione) return;
+    this.o.log.info({ situazione: this.situazione.id, motivo }, 'immagini: situazione tolta');
+    this.situazione = null;
+  }
+
+  /**
+   * Fine della narrazione: se è uscita la rivelazione di una situazione (indizio o battuta nel suo
+   * `dopo`), la situazione va sul proiettore ora che la rivelazione è stata ascoltata.
+   */
+  private situazioniDopoLeRivelazioni(): void {
+    const rivelate = new Set(this.rivelateNelTurno);
+    this.rivelateNelTurno = [];
+    if (rivelate.size === 0) return;
+    const s = this.situazioni.find((x) => !this.situazioniMostrate.has(x.id) && x.dopo.some((d) => rivelate.has(d)));
+    if (!s) return;
+    this.situazioniMostrate.add(s.id);
+    this.situazione = { id: s.id, url: s.url, auto: true, turno: this.turno };
+    this.o.log.info({ situazione: s.id, dopo: s.dopo.filter((d) => rivelate.has(d)), turno: this.turno }, 'immagini: situazione dopo la rivelazione');
   }
 
   private nomePg(id: string): string {
@@ -333,6 +393,7 @@ export class Regia {
     const esito = s.usa(id, turno, segno.mostrato);
     if (!esito.ok) return esito;
     if (esito.battuta.effetti.avanza_orologio) segno.mostrato = true;
+    this.rivelateNelTurno.push(esito.battuta.id, ...esito.battuta.effetti.rivela_indizi);
     return {
       ok: true,
       versione: esito.versione,
@@ -504,6 +565,8 @@ export class Regia {
     this.tavolo.azzera();
     // Le note di regia contano i turni di questa scena: si riparte senza.
     this.note.azzera();
+    this.situazioniMostrate.clear();
+    this.rivelateNelTurno = [];
     this.o.log.info({ schermi: this.schermi.size }, 'scena: ricomincia');
     if (this.schermi.size > 0) this.avviaScena();
     else {
@@ -787,6 +850,7 @@ export class Regia {
     this.orologi.impostaScena(this.campagna.scena);
     if (this.statoRepertorio) this.statoRepertorio.scena = id;
     this.luogo = id;
+    this.togliSituazione('cambio di scena');
   }
 
   private async preriscalda(): Promise<void> {
@@ -808,6 +872,7 @@ export class Regia {
    */
   private fineNarrazione(invito: string[] | 'tutti'): void {
     void this.tavolo.dopoNarrazione(this.turno, this.versioneScena);
+    this.situazioniDopoLeRivelazioni();
     if (this.pausaRichiesta) {
       this.pausaRichiesta = false;
       this.fase = 'pausa';
@@ -836,6 +901,9 @@ export class Regia {
 
   private finestraChiusa(r: RiepilogoChiusura): void {
     if (r.motivo === 'forzata') return; // ferma/ricomincia: niente narrazione
+    // La situazione messa dopo una rivelazione ha accompagnato la reazione dei giocatori: si torna al luogo.
+    if (this.situazione?.auto && this.situazione.turno < r.turno) this.togliSituazione('narrazione successiva');
+    this.rivelateNelTurno = [];
     this.misuratore = new MisuratoreTurno(r.turno, r.chiusa_a, r.durata_ms, this.o.voce.nome, this.o.orologio.adesso());
     // Contratto voce: /sveglia alla chiusura della finestra, in parallelo alla chiamata dell'LLM
     // (fire-and-forget: la prima frase arriva dopo ~0,9 s, la sveglia ci sta dentro).

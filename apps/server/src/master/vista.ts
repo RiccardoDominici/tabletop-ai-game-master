@@ -45,7 +45,7 @@ export function statoMaster(f: FonteVistaMaster): StatoMaster {
     narrazione_in_corso: regia.narrazioneInCorso,
     scene: sceneMaster(campagna, regia.scenaCorrente),
     luoghi: luoghiMaster(campagna, f.immagini),
-    situazioni: [] as SituazioneMaster[],
+    situazioni: situazioniMaster(regia),
     orologi: orologiMaster(regia),
     azioni: azioniMaster(regia, campagna),
     note: regia.note.elenco,
@@ -75,6 +75,12 @@ export function luoghiMaster(c: Campagna, immagini?: CatalogoImmagini): LuogoMas
     luoghi.push({ id, nome: typeof n['nome'] === 'string' ? n['nome'] : id, tipo: 'nodo', immagine: immagini?.luogo(id) ?? null });
   }
   return luoghi;
+}
+
+/** Immagini di situazione: quale è in onda e quale rivelazione le fa comparire. */
+function situazioniMaster(regia: Regia): SituazioneMaster[] {
+  const inOnda = regia.situazioneInOnda;
+  return regia.situazioniCollegate.map((x) => ({ id: x.id, png: x.png, nome: x.nome, url: x.url, in_onda: x.id === inOnda, dopo: x.dopo.length ? x.dopo.join(', ') : null }));
 }
 
 function orologiMaster(regia: Regia): OrologioMaster[] {

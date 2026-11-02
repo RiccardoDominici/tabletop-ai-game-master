@@ -16,12 +16,14 @@ export interface IndizioCampagna {
   nodo: string | null;
   /** Scena che lo definisce (null = un nodo di campagna.yaml). */
   scena: string | null;
+  /** Come si trova (testo della scheda: SEGRETO, mai al selettore). */
+  come_si_trova: string;
 }
 
 function leggi(i: DatiYaml, scena: string | null): IndizioCampagna | null {
   if (typeof i?.['id'] !== 'string') return null;
   const modi = typeof i['modi'] === 'number' && Number.isInteger(i['modi']) && i['modi'] >= 1 ? i['modi'] : 1;
-  return { id: i['id'], modi, nodo: typeof i['nodo'] === 'string' ? i['nodo'] : null, scena };
+  return { id: i['id'], modi, nodo: typeof i['nodo'] === 'string' ? i['nodo'] : null, scena, come_si_trova: typeof i['come_si_trova'] === 'string' ? i['come_si_trova'] : '' };
 }
 
 /** Tutti gli indizi con una definizione (scene, poi nodi). Il primo che compare vince. */
