@@ -11,6 +11,10 @@
    - una **nota di regia** («frasi più corte», «Ottavia è più sospettosa») vale per i turni successivi.
 6. Voce vera (pronta in circa 20 s, circa 3 GB di RAM): aggiungi `--voce qwen`. Per finire: `scripts/arresto.sh`.
 
+**Principio guida (Riccardo, 2 novembre 2026):** Cantastorie è un *framework che genera infinite campagne*, non una
+campagna fatta bene. Sceneggiatura e repertorio (skill Preparatore), immagini, musica e ambienti escono da pipeline
+automatiche guidate dai dati della campagna; `prova-f0` e `ponte-lanterne` sono solo casi di prova.
+
 Master IA per giocare a D&D in presenza: telefoni dei giocatori, proiettore con la scena,
 cassa con narratore e voci dei personaggi, musica sempre in sottofondo.
 
