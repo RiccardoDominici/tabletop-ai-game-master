@@ -2,6 +2,9 @@
 id: png_baldrin
 nome: "Baldrin Pietrafitta"
 pronuncia: "Bàldrin Pietrafìtta"
+# Soprannomi con cui i giocatori lo nomineranno nelle azioni: il Motore li usa per la pertinenza
+# (repertorio/pertinenza.ts) e, se ci sono, sostituiscono gli alias predefiniti del server.
+alias: [nano, fabbro, massaro, carceriere]
 livello: principale
 ruolo: "fabbro e massaro di Fontescura; guardiano del ripostiglio; ostacolo che può diventare alleato"
 fronte: fronte_fuoco_nero

@@ -2,6 +2,9 @@
 id: png_ottavia
 nome: "Ottavia Ferlini"
 pronuncia: "Ottàvia Ferlìni"
+# Soprannomi con cui i giocatori lo nomineranno nelle azioni: il Motore li usa per la pertinenza
+# (repertorio/pertinenza.ts) e, se ci sono, sostituiscono gli alias predefiniti del server.
+alias: [ostessa, oste, fornaia, locandiera, cuoca]
 livello: principale
 ruolo: "ostessa e fornaia del Forno Vecchio; testimone reticente; può diventare alleata"
 fronte: fronte_fuoco_nero
