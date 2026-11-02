@@ -75,3 +75,28 @@ le incontro; in fondo, la classifica dei problemi più gravi.
 11. **Gli `alias` dei PNG non hanno una regola contro le parole generiche**, mentre i `temi` sì. Un
     alias come «vecchio» o «ragazza» farebbe entrare il PNG nella pertinenza di ogni azione sui vecchi
     del Ricovero. *Scelta*: ho tolto gli alias generici (vecchio, ragazza, vecchia).
+
+## Passi 10–11
+
+12. **La regola di prosa della «parola che il narratore non dice mai» svela la soluzione in modo B.**
+    Il passo 2 chiede di scrivere in `stile.yaml → regole_prosa` la parola vietata, quella che
+    svelerebbe la soluzione («il narratore non dice mai che il leone è stato calato»). Ma `stile.yaml`
+    va per intero al narratore, anche al selettore del modo B che non deve conoscere i segreti: la
+    regola stessa è il segreto. Lo stesso succede in prova-f0 («non chiama mai veleno il pane»).
+    Il validatore non controlla `regole_prosa`. *Scelta*: tengo la regola (la skill la esige) e la
+    metto in `da_togliere_dal_contesto`, con la versione neutra per il modo B.
+
+13. **Parole segrete dentro nomi pubblici.** La gilda dei costruttori si chiamava «Pontieri dell'Onda»
+    (nell'aggancio di un PG): conteneva la parola segreta. Il validatore non guarda `pg.yaml` fuori
+    dalla situazione comune, quindi non lo avrebbe trovato. *Scelta*: rinominata «Pontieri della Valle».
+    La skill potrebbe dire di cercare le regex segrete anche nei nomi propri, negli agganci e nelle
+    descrizioni delle scene (anche la descrizione del Borgo diceva «stufa spenta»).
+
+14. **Falsi positivi delle regex dentro parole più lunghe.** «tetto» trovava «tettoia», «sa del leone»
+    trovava «Rosa del leone». La skill dice «una regex cerca il legame, non la parola comune», ma non
+    ricorda i confini di parola (`\b`). *Scelta*: `\b` dove serve.
+
+15. **I controlli del passo 10 non dicono nulla sui `max_usi` degli esempi di voce.** Il validatore
+    dà errore se `max_usi` supera 1 + numero di varianti (anche per gli esempi `solo_esempio`, che il
+    selettore non sceglie mai), ma né la skill né `riferimenti/repertorio.md` lo dicono; l'esempio di
+    prova-f0 usa `max_usi: 3` con due varianti. *Scelta*: `max_usi: 1` sugli esempi senza varianti.
