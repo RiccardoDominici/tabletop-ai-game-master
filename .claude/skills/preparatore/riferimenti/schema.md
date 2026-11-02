@@ -85,6 +85,35 @@ richiede una conoscenza privata lo dice: «Solo se la propone chi la conosce».
   `reazioni: [{intrusione, reazione}]`, `stato_di_quiete`, `chiamata_all_azione` [V].
 - `segreti_astratti` (C6): circa 10, di una o due frasi ciascuno [V], senza luogo fisso.
 - `archi` (C8): `campagna_tre_atti: [3]` e `pg: {pg_<nome>: {tu, bisogno, vai, cerca, trova, paga, ritorna, cambia}}` per ogni PG [V].
+- `cronologia` e `logistica`: i conti del mondo, vedi sotto [R].
+
+### Cronologia e logistica (preparazione)
+I conti che il validatore rifà (classe `MONDO`). Stanno in `preparazione`, quindi il narratore non li
+vede in nessun modo: possono contenere segreti.
+```yaml
+cronologia:
+  eventi:                                  # in ordine di tempo [V MONDO.ordine]; almeno 3 [R]
+    - id: t_<nome>
+      quando: {anni_fa: 40}                # oppure {giorni_fa: 3, ora: "21:00"}, {ora: "18:00"}, {giorno: 1, ora: "01:30"}
+      cosa: "una frase"
+      fatti: [f_…]                         # i fatti che l'evento fonda [V esistono]
+      segno: {orologio: o_…, n: 3}         # facoltativo: a che segno è l'orologio in quel momento [V crescono col tempo]
+  documenti:                               # ogni indizio di tipo documento ha la sua voce [R]
+    - {id: doc_<nome>, cosa: "la riga del registro", indizio: i_…, datato: {…come quando…}, prova: [t_…]}
+logistica:
+  durate:   [{id: d_<nome>, cosa: "…", minuti: 75, fatti: [f_…]}]
+  capienze: [{id: c_<nome>, cosa: "la barca", posti: 20}]
+  gruppi:   [{id: g_<nome>, cosa: "i vecchi del Ricovero", persone: 8}]
+  verifiche:                               # ogni affermazione di tempo o di posti della storia [V]
+    - {tra: [t_a, t_b], ci_sta: [d_x], perche: "…"}             # somma delle durate ≤ intervallo
+    - {tra: [t_a, t_b], non_ci_sta: [d_x, d_x], perche: "…"}    # somma > intervallo
+    - {capienza: c_x, porta: [g_a], perche: "…"}                 # somma delle persone ≤ posti
+    - {capienza: c_x, non_porta: [g_a, g_b], perche: "…"}        # somma > posti
+```
+- `quando` si legge dal giorno della sessione: `giorno: 0` è oggi (predefinito), `giorno: 1` è
+  domani, `giorni_fa` e `anni_fa` vanno indietro; `ora` va da `"00:00"` a `"24:00"`. Senza ora, due
+  eventi dello stesso giorno non si confrontano; una verifica di tempo vuole due eventi con l'ora.
+- La data di un documento non precede gli eventi che prova [V MONDO.documento].
 
 ## Scheda scena (§4): scena.yaml, scene/*.yaml
 ```yaml

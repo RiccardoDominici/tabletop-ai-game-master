@@ -129,3 +129,22 @@ preparazione:
     pg:
       pg_lia: {tu: "cercatrice", bisogno: "fidarsi", vai: "la lanterna", cerca: "la cera", trova: "la cantina", paga: "la vergogna di Irma", ritorna: "la processione", cambia: "perdona"}
       pg_tobia: {tu: "guardia", bisogno: "giustizia", vai: "il furto", cerca: "il colpevole", trova: "il debito", paga: "la legge", ritorna: "la cappella", cambia: "capisce"}
+  # Cronologia e logistica: i conti che il validatore rifà (strumenti/valida/regole_mondo.py).
+  cronologia:
+    eventi:
+      - {id: t_debito, quando: {giorni_fa: 30}, cosa: "Irma chiede al mercante un prestito per il tetto.", fatti: [f_irma_prestito]}
+      - {id: t_furto, quando: {ora: "00:00"}, cosa: "Irma scende in cantina con la lanterna nel fagotto; Bruno la vede.", fatti: [f_bruno_visto, f_lanterna_cantina]}
+      - {id: t_inizio, quando: {ora: "04:00"}, cosa: "I PG sono nella sala della locanda.", segno: {orologio: o_processione, n: 1}}
+      - {id: t_alba, quando: {ora: "06:00"}, cosa: "La processione parte; il mercante riparte.", fatti: [f_festa_domani, f_mercante_alba], segno: {orologio: o_processione, n: 4}}
+    documenti:
+      - {id: doc_lettera, cosa: "La lettera del mercante sul bancone.", datato: {giorni_fa: 2}, prova: [t_debito]}
+  logistica:
+    durate:
+      - {id: d_cantina, cosa: "Scendere in cantina, aprire le botti e risalire.", minuti: 20}
+    capienze:
+      - {id: c_botte, cosa: "La botte vuota della cantina.", posti: 1}
+    gruppi:
+      - {id: g_lanterna, cosa: "La lanterna d'argento.", persone: 1}
+    verifiche:
+      - {tra: [t_inizio, t_alba], ci_sta: [d_cantina], perche: "C'è tempo di trovare la lanterna prima dell'alba."}
+      - {capienza: c_botte, porta: [g_lanterna], perche: "La lanterna sta in una botte."}

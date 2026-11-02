@@ -262,6 +262,70 @@ def test_sessione_inizio_oltre_sei_frasi(camp):
     assert "SESSIONE.inizio_lungo" in errori(camp)
 
 
+# --- MONDO (cronologia e logistica) ----------------------------------------------------------------
+
+def _crono(d: dict) -> dict:
+    return d["preparazione"]["cronologia"]
+
+
+def _logi(d: dict) -> dict:
+    return d["preparazione"]["logistica"]
+
+
+def test_mondo_eventi_fuori_ordine(camp):
+    modifica(camp, "campagna.yaml", lambda d: _crono(d)["eventi"][2]["quando"].update(ora="03:00") or
+             _crono(d)["eventi"][1]["quando"].update(ora="05:00"))
+    assert "MONDO.ordine" in errori(camp)
+
+
+def test_mondo_segni_dell_orologio_al_contrario(camp):
+    modifica(camp, "campagna.yaml", lambda d: _crono(d)["eventi"][3]["segno"].update(n=1) or
+             _crono(d)["eventi"][2]["segno"].update(n=3))
+    assert "MONDO.ordine" in errori(camp)
+
+
+def test_mondo_documento_datato_prima_del_fatto(camp):
+    # Il quarto difetto del revisore di ponte-lanterne: una riga datata prima di ciò che prova.
+    modifica(camp, "campagna.yaml", lambda d: _crono(d)["documenti"][0].update(datato={"giorni_fa": 40}))
+    assert "MONDO.documento" in errori(camp)
+
+
+def test_mondo_viaggio_che_non_ci_sta(camp):
+    modifica(camp, "campagna.yaml", lambda d: _logi(d)["durate"][0].update(minuti=300))
+    assert "MONDO.tempo" in errori(camp)
+
+
+def test_mondo_due_viaggi_che_invece_ci_stanno(camp):
+    # Il primo difetto del revisore: «ne entra uno solo», ma due viaggi ci stavano.
+    modifica(camp, "campagna.yaml", lambda d: _logi(d)["verifiche"].append(
+        {"tra": ["t_inizio", "t_alba"], "non_ci_sta": ["d_cantina", "d_cantina"], "perche": "Si scende una volta sola."}))
+    assert "MONDO.tempo" in errori(camp)
+
+
+def test_mondo_capienza_superata(camp):
+    # Il secondo difetto: una barca da otto per gruppi di venti.
+    modifica(camp, "campagna.yaml", lambda d: _logi(d)["gruppi"][0].update(persone=3))
+    assert "MONDO.capienza" in errori(camp)
+
+
+def test_mondo_ora_non_valida_e_fatto_inesistente(camp):
+    modifica(camp, "campagna.yaml", lambda d: _crono(d)["eventi"][2]["quando"].update(ora="25:00") or
+             _crono(d)["eventi"][0].update(fatti=["f_nessuno"]))
+    assert {"MONDO.forma", "MONDO.riferimento"} <= errori(camp)
+
+
+def test_mondo_assente_solo_in_rigoroso(camp):
+    modifica(camp, "campagna.yaml", lambda d: d["preparazione"].pop("cronologia"))
+    assert "MONDO.assente" not in errori(camp)
+    assert "MONDO.assente" in errori(camp, rigoroso=True)
+
+
+def test_mondo_indizio_documento_senza_data_in_rigoroso(camp):
+    modifica(camp, "scena.yaml", lambda d: d["indizi"][1].update(tipo="documento"))
+    assert "MONDO.documento_mancante" not in errori(camp)
+    assert "MONDO.documento_mancante" in errori(camp, rigoroso=True)
+
+
 # --- PG -------------------------------------------------------------------------------------------
 
 def test_pg_id_non_valido(camp):
