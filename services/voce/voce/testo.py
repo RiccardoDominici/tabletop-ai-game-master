@@ -11,7 +11,9 @@ Regole, nell'ordine in cui sono applicate:
   2. via tag HTML/XML, link markdown -> solo il testo, via **, __, *, _, `, # e > di inizio riga;
   3. via le indicazioni di scena tra parentesi quadre: "[ride]", "[narratore]";
   4. via emoji e simboli grafici; "&" -> "e", "%" -> "per cento";
-  5. apostrofi tipografici -> "'"; virgolette di ogni tipo (« » “ ” „ " ‹ ›) tolte;
+  5. apostrofi tipografici -> "'"; virgolette di ogni tipo (« » “ ” „ " ‹ ›) tolte, ma una
+     virgoletta di CHIUSURA seguita da minuscola diventa virgola: «Vattene» disse -> Vattene, disse
+     (la virgoletta segnava una pausa; senza, il modello legava le parole: "straniero disse alla");
   6. trattino lungo/medio e trattino staccato -> virgola (pausa); trattino iniziale di dialogo tolto;
   7. "…" e 4+ punti -> "..."; raffiche "!!!" / "?!?" -> un solo segno;
   8. spazi: a capo e tab -> spazio, niente spazi doppi né prima della punteggiatura;
@@ -31,6 +33,8 @@ _SOTTOLINEATO = re.compile(r"(?<!\w)_+|_+(?!\w)")
 _INIZIO_RIGA_MD = re.compile(r"(?m)^\s*(?:#{1,6}\s+|>\s*|[-*+]\s+(?=\S))")
 _APOSTROFI = str.maketrans({"’": "'", "‘": "'", "ʼ": "'", "´": "'", "`": "'"})
 _VIRGOLETTE = re.compile(r"[«»“”„‟\"‹›]")
+# chiusura dopo una parola (non dopo ? ! . , che fanno già pausa) e prima di una minuscola
+_CHIUSA_PRIMA_DI_MINUSCOLA = re.compile(r"(?<=[\w])\s*[»”\"›]\s+(?=[a-zàèéìòù])")
 _TRATTINO_INIZIALE = re.compile(r"^\s*[—–-]\s*")
 _TRATTINO_LUNGO = re.compile(r"\s*[—–]\s*")
 _TRATTINO_STACCATO = re.compile(r"\s+-\s+")
@@ -78,6 +82,7 @@ def normalizza(testo: str) -> str:
     t = t.replace("&", " e ").replace("%", " per cento")
     t = _togli_simboli(t)
     # 5b. virgolette
+    t = _CHIUSA_PRIMA_DI_MINUSCOLA.sub(", ", t)
     t = _VIRGOLETTE.sub("", t)
     # 6. trattini
     t = _SPAZI.sub(" ", t).strip()

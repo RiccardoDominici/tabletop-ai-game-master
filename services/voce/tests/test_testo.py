@@ -11,6 +11,11 @@ from voce.testo import normalizza
     [
         # virgolette di ogni tipo tolte, contenuto intatto
         ("Disse: «Vattene, straniero.»", "Disse: Vattene, straniero."),
+        # chiusura seguita da minuscola -> virgola (pausa); dopo ? ! nessuna virgola in più
+        ("«Vattene, straniero» disse la guardia.", "Vattene, straniero, disse la guardia."),
+        ("«Chi va là?» chiese l'oste.", "Chi va là? chiese l'oste."),
+        ("«Fermi» urlò, «la strada è chiusa».", "Fermi, urlò, la strada è chiusa."),
+        ("Lo chiamano \"il Corvo\" in città.", "Lo chiamano il Corvo, in città."),
         ("“Chi va là?” chiese la guardia.", "Chi va là? chiese la guardia."),
         ('Il cartello dice "Chiuso".', "Il cartello dice Chiuso."),
         # apostrofi tipografici -> apostrofo semplice (elisioni)
