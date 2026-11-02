@@ -1,0 +1,114 @@
+/**
+ * Scena e luogo: la scena corrente, il luogo sul proiettore (con miniatura), i pulsanti per
+ * cambiare luogo (dissolvenza sullo schermo) e, se la campagna ne ha più d'una, le scene.
+ * Un clic = un comando; il luogo/la scena corrente sono evidenziati e non si ri-mandano.
+ */
+import clsx from 'clsx';
+import type { LuogoMaster, ScenaMaster, StatoMaster } from '@cantastorie/shared';
+import { useInCorso } from '../store/master';
+import { inviaComando } from './sessione';
+import { Riquadro, Sottotitolo, Vuoto } from './Riquadro';
+import { Chip } from './Chip';
+import { Miniatura } from './Miniatura';
+
+export function SezioneScena({ stato }: { stato: StatoMaster }) {
+  const { tavolo, luoghi, scene } = stato;
+  const scenaCorrente = scene.find((s) => s.corrente) ?? null;
+  const idLuogo = tavolo.scena.luogo;
+  const luogoCorrente = luoghi.find((l) => l.id === idLuogo) ?? null;
+
+  return (
+    <Riquadro titolo="Scena e luogo" zona="scena" data-testid="master-scena">
+      <div data-testid="master-luogo-corrente" data-luogo={idLuogo} className="flex items-center gap-3">
+        <Miniatura url={tavolo.scena.immagine} alt={luogoCorrente?.nome ?? idLuogo} className="h-20 w-36" />
+        <div className="min-w-0">
+          <p className="text-xs tracking-[0.16em] text-cenere uppercase">Sul proiettore</p>
+          <p className="truncate font-semibold text-pergamena">{luogoCorrente?.nome ?? idLuogo}</p>
+          <p className="truncate text-sm text-pergamena-2">
+            Scena: {scenaCorrente?.titolo ?? tavolo.scena.titolo}
+          </p>
+          {!tavolo.scena.immagine && <p className="text-xs text-cenere italic">nessuna immagine: sfondo d’atmosfera</p>}
+        </div>
+      </div>
+
+      <Sottotitolo>Luoghi</Sottotitolo>
+      {luoghi.length === 0 ? (
+        <Vuoto>Nessun luogo disponibile.</Vuoto>
+      ) : (
+        <ul className="grid grid-cols-2 gap-1.5">
+          {luoghi.map((l) => (
+            <li key={l.id}>
+              <PulsanteLuogo luogo={l} corrente={l.id === idLuogo} />
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {scene.length > 1 && (
+        <>
+          <Sottotitolo>Scene della campagna</Sottotitolo>
+          <ul className="flex flex-col gap-1">
+            {scene.map((s) => (
+              <li key={s.id}>
+                <PulsanteScena scena={s} nomeLuogo={luoghi.find((l) => l.id === s.luogo)?.nome ?? s.luogo} />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </Riquadro>
+  );
+}
+
+function PulsanteLuogo({ luogo, corrente }: { luogo: LuogoMaster; corrente: boolean }) {
+  const inCorso = useInCorso(`luogo:${luogo.id}`);
+  return (
+    <button
+      type="button"
+      data-testid={`master-luogo-${luogo.id}`}
+      aria-pressed={corrente}
+      disabled={corrente || inCorso}
+      onClick={() => void inviaComando({ tipo: 'luogo', luogo: luogo.id }, `Luogo «${luogo.nome}»`)}
+      title={corrente ? 'È già sul proiettore' : `Metti «${luogo.nome}» sul proiettore`}
+      className={clsx(
+        'flex w-full items-center gap-2 rounded-lg border p-1.5 text-left text-sm transition-colors',
+        corrente
+          ? 'cursor-default border-candela bg-candela/10 shadow-candela'
+          : 'border-bordo bg-notte-3 enabled:hover:border-candela/60 enabled:hover:bg-notte-4 disabled:opacity-50',
+      )}
+    >
+      <Miniatura url={luogo.immagine} alt="" className="h-9 w-16" />
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-semibold">{luogo.nome}</span>
+        <span className="block truncate text-xs text-cenere">
+          {luogo.tipo === 'scena' ? 'luogo della scena' : 'nodo'}
+          {corrente && <strong className="font-semibold text-candela"> · in onda</strong>}
+        </span>
+      </span>
+    </button>
+  );
+}
+
+function PulsanteScena({ scena, nomeLuogo }: { scena: ScenaMaster; nomeLuogo: string }) {
+  const inCorso = useInCorso(`scena:${scena.id}`);
+  return (
+    <button
+      type="button"
+      data-testid={`master-scena-${scena.id}`}
+      aria-pressed={scena.corrente}
+      disabled={scena.corrente || inCorso}
+      onClick={() => void inviaComando({ tipo: 'scena', scena: scena.id }, `Scena «${scena.titolo}»`)}
+      title={scena.corrente ? 'È la scena in corso' : `Passa alla scena «${scena.titolo}» (cambia anche il luogo)`}
+      className={clsx(
+        'flex w-full items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left text-sm',
+        scena.corrente
+          ? 'cursor-default border-candela bg-candela/10'
+          : 'border-bordo bg-notte-3 enabled:hover:border-candela/60 enabled:hover:bg-notte-4 disabled:opacity-50',
+      )}
+    >
+      <span className="min-w-0 flex-1 truncate font-semibold">{scena.titolo}</span>
+      <span className="shrink-0 truncate text-xs text-cenere">{nomeLuogo}</span>
+      {scena.corrente && <Chip tono="candela">corrente</Chip>}
+    </button>
+  );
+}

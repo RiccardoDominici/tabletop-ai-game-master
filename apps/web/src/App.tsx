@@ -1,22 +1,41 @@
 /**
- * Instradamento: /telefono (giocatori) e /schermo (proiettore). La radice porta al telefono:
- * è il link che si condivide più spesso (il QR punta comunque a /telefono).
- * Ogni pagina avvia da sé il suo ruolo sul socket condiviso.
+ * Instradamento: /telefono (giocatori), /schermo (proiettore) e /master (pannello del master sul
+ * Mac). La radice porta al telefono: è il link che si condivide più spesso (il QR punta comunque a
+ * /telefono). Ogni pagina avvia da sé il suo ruolo sul socket condiviso.
+ *
+ * /master non è collegata da nessuna parte e si carica a parte (lazy): i telefoni non scaricano il
+ * codice del pannello.
  */
+import { lazy, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'wouter';
 import { PaginaTelefono } from './telefono/PaginaTelefono';
 import { PaginaSchermo } from './schermo/PaginaSchermo';
+
+const PaginaMaster = lazy(() => import('./master/PaginaMaster').then((m) => ({ default: m.PaginaMaster })));
 
 export function App() {
   return (
     <Switch>
       <Route path="/telefono" component={PaginaTelefono} />
       <Route path="/schermo" component={PaginaSchermo} />
+      <Route path="/master">
+        <Suspense fallback={<CaricoMaster />}>
+          <PaginaMaster />
+        </Suspense>
+      </Route>
       <Route path="/">
         <Redirect to="/telefono" replace />
       </Route>
       <Route component={NonTrovata} />
     </Switch>
+  );
+}
+
+function CaricoMaster() {
+  return (
+    <main className="flex min-h-dvh items-center justify-center">
+      <p className="text-pergamena-2">Carico il pannello del master…</p>
+    </main>
   );
 }
 
