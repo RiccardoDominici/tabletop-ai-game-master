@@ -1,0 +1,21 @@
+# Dipendenze dirette del servizio voce (Python 3.12, macOS Apple Silicon).
+# Versioni fissate: mlx e mlx-audio sono quelle misurate il 1-2 novembre 2026;
+# il motore usa dettagli interni di mlx-audio 0.6.3 (vedi voce/motore.py), quindi
+# NON aggiornarle senza rifare le misure di banco/.
+# Elenco completo e bloccato (dipendenze transitive comprese): requirements.lock
+#
+# Installazione:
+#   uv venv --python 3.12 services/voce/.venv
+#   uv pip install --python services/voce/.venv/bin/python -r services/voce/requirements.lock
+mlx==0.32.4
+mlx-metal==0.32.4
+mlx-audio==0.6.3
+numpy==2.5.4
+soundfile==0.14.0
+pyyaml==6.0.3
+starlette==1.10.0
+uvicorn==0.54.0
+h11==0.16.0
+# solo per i test
+pytest==9.2.0
+httpx==0.28.1

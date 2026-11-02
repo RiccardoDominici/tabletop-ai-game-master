@@ -1,0 +1,40 @@
+# Registro delle voci di F0 (letto dal servizio voce, services/voce).
+#
+# Ogni voce è un clone ICL di Qwen3-TTS 0.6B Base: serve la clip di riferimento
+# (circa 8 s, mono) e la sua trascrizione ESATTA in `testo_rif`. Se il testo non
+# corrisponde all'audio, il clone si degrada (parole inventate, timbro instabile).
+#
+# - id: quello che il server manda in POST /tts {"voce": ...}
+# - file: percorso relativo a questa cartella
+# - testo_rif: trascrizione esatta della clip
+# - descrizione: a cosa serve la voce (per il preparatore e per chi ascolta)
+#
+# Le clip sono voci sintetiche HeyGen (non persone reali), prese dalle prove
+# del 1° novembre 2026 (research/). Nadine e Tabitha sono vicine di tono
+# (0,66 semitoni sui cloni): vanno sostituite prima del gioco vero.
+
+voci:
+  - id: narratore
+    file: narratore.wav
+    testo_rif: "Benvenuti, avventurieri, nella taverna del Cervo Azzurro, dove il fuoco non si spegne mai e ogni storia ha un prezzo."
+    descrizione: "Voce fissa del narratore (clip «bram» delle prove HeyGen), sempre la stessa per tutta la campagna."
+
+  - id: vincent
+    file: vincent.wav
+    testo_rif: "Siete arrivati tardi, stranieri. La strada per Vallestorta è chiusa da settimane, e chi la percorre di notte non fa più ritorno."
+    descrizione: "Nano burbero, maschile, voce grave e ruvida."
+
+  - id: nadine
+    file: nadine.wav
+    testo_rif: "Siete arrivati tardi, stranieri. La strada per Vallestorta è chiusa da settimane, e chi la percorre di notte non fa più ritorno."
+    descrizione: "Locandiera anziana, femminile, voce matura."
+
+  - id: lucian
+    file: lucian.wav
+    testo_rif: "Siete arrivati tardi, stranieri. La strada per Vallestorta è chiusa da settimane, e chi la percorre di notte non fa più ritorno."
+    descrizione: "Straniero incappucciato, maschile, voce bassa e misteriosa."
+
+  - id: tabitha
+    file: tabitha.wav
+    testo_rif: "Siete arrivati tardi, stranieri. La strada per Vallestorta è chiusa da settimane, e chi la percorre di notte non fa più ritorno."
+    descrizione: "Giovane ladra, femminile, voce giovane e sfacciata."
