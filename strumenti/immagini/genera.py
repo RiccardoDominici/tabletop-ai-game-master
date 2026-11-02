@@ -148,6 +148,35 @@ def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, 
             log.info("salvata %s (%.0f KB, qualità %d)", r.file, kb, QUALITA_JPEG)
 
 
+def rifila_esistenti(cartella: Path, scelte: list[Richiesta], man: Manifest) -> None:
+    """Rifila l'orlo di carta dei JPEG già fatti prima che esistesse rifila.py (solo CPU, niente modello).
+
+    Si tocca solo un luogo o una situazione la cui voce nel manifest non ha ancora `rifilato_pct`.
+    Si lavora sul JPEG perché il PNG originale non c'è più: una ricompressione in più a qualità 88,
+    che a vista non si nota. Nel manifest resta scritto (`rifilato_dal_jpeg`).
+    """
+    from PIL import Image
+
+    from motore import salva_jpeg
+    from rifila import rifila
+
+    for r in scelte:
+        voce = man.voci.get(r.id)
+        if r.alias_di or r.tipo not in ("luogo", "situazione") or not voce or "rifilato_pct" in voce:
+            continue
+        percorso = man.cartella / voce["file"]
+        if not percorso.exists():
+            continue
+        with Image.open(percorso) as jpg:
+            img, tolto = rifila(jpg.convert("RGB"))
+        if tolto:
+            salva_jpeg(img, percorso, qualita=QUALITA_JPEG, dimensioni=(voce["larghezza"], voce["altezza"]))
+        voce = {**voce, "rifilato_pct": round(tolto * 100, 1), "rifilato_dal_jpeg": bool(tolto),
+                "kb": round(percorso.stat().st_size / 1000)}
+        man.registra(voce)
+        log.info("%s: rifilato %.1f%% per lato dal JPEG", r.id, tolto * 100)
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -159,11 +188,16 @@ def main() -> None:
     p.add_argument("--rifai", action="store_true", help="rigenera anche se il file c'è già (lo sovrascrive)")
     p.add_argument("--seme", type=int, help="seme al posto di quello ricavato dall'id (solo con un --id)")
     p.add_argument("--no-fp16", action="store_true", help="calcolo in bfloat16 (float16 è il default: ~20%% più veloce su M1)")
+    p.add_argument("--rifila-esistenti", action="store_true",
+                   help="non genera: rifila l'orlo di carta dei luoghi già fatti che non sono stati rifilati (solo CPU)")
     args = p.parse_args()
     if args.seme is not None and len(args.ids or []) != 1:
         p.error("--seme vale per una sola immagine: indica esattamente un --id")
 
     cartella = args.campagna.resolve()
+    if args.rifila_esistenti:
+        rifila_esistenti(cartella, filtra(richieste(cartella), args.solo, args.ids), Manifest(cartella / "immagini"))
+        return
     da_fare, gia, alias, man = pianifica(cartella, args.solo, args.ids, args.rifai)
     if args.dry_run:
         stampa_piano(cartella, da_fare, gia, alias)
