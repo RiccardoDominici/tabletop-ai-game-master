@@ -81,7 +81,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 ## 9. Esempio
 
 Nomi inventati. Catalogo:
-- `ila_notte · png_ilaria · menzogna · un PG chiede a Ilaria dove va di notte con la barca`
+- `ila_notte · png_ilaria · risposta · un PG chiede a Ilaria dove va di notte con la barca`
 - `nar_scafo · narratore · indizio · un PG guarda le barche legate al pontile`
 - `nar_cane · narratore · momento · i PG indugiano` (riempitivo)
 - `nar_segno_2 · narratore · segno_orologio · è il momento del secondo segno`
