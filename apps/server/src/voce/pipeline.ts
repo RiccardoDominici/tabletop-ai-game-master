@@ -10,7 +10,11 @@
  */
 import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@cantastorie/shared';
 import type { Logger } from '../logger';
+import type { CacheAudio } from './cache-audio';
 import { ErroreVoce, type MotoreVoce, type NomeMotoreVoce } from './tipi';
+
+/** Pezzi da 0,24 s per l'audio pre-generato (come il servizio voce): lo schermo li programma uguali. */
+const CAMPIONI_PER_PEZZO_CACHE = 5760;
 
 export interface FraseDaDire {
   id_frase: string;
@@ -23,6 +27,11 @@ export interface FraseDaDire {
   testo: string;
   /** Testo mandato alla voce, se diverso (nomi con gli accenti di `pronuncia`). */
   testo_voce?: string;
+  /**
+   * Riga di una battuta del repertorio: chiave dell'audio pre-generato (cache/audio). Se il file
+   * c'è, parte subito senza sintesi; se manca, si sintetizza dal vivo (e lo si registra).
+   */
+  chiave_cache?: string;
 }
 
 /** Dove va l'audio (in produzione: la stanza "schermo" di Socket.IO). */
@@ -38,12 +47,13 @@ export interface EsitoFrase {
   secondi: number;
   interrotta: boolean;
   errore?: string;
-  motore: NomeMotoreVoce;
+  /** 'cache' = audio pre-generato del repertorio. */
+  motore: NomeMotoreVoce | 'cache';
 }
 
 /** Ganci per le misure di latenza (tutti facoltativi). */
 export interface OsservatorePipeline {
-  richiesta?(frase: FraseDaDire, motore: NomeMotoreVoce): void;
+  richiesta?(frase: FraseDaDire, motore: NomeMotoreVoce | 'cache'): void;
   primoAudio?(frase: FraseDaDire): void;
   fineFrase?(frase: FraseDaDire, esito: EsitoFrase): void;
 }
@@ -79,6 +89,8 @@ export class PipelineVoce {
       uscita: UscitaAudio;
       log: Logger;
       osservatore?: OsservatorePipeline;
+      /** Audio pre-generato del repertorio (facoltativo). */
+      cache?: CacheAudio;
     },
   ) {}
 
@@ -169,6 +181,48 @@ export class PipelineVoce {
 
   /** Genera una frase e ne inoltra i pezzi. Non lancia mai: gli errori diventano esiti. */
   private async dici(frase: FraseDaDire, epoca: number): Promise<EsitoFrase> {
+    if (frase.chiave_cache) {
+      const pronto = this.opzioni.cache?.leggi(frase.chiave_cache);
+      if (pronto) return this.diciDaCache(frase, pronto.pcm, pronto.sampleRate);
+      this.opzioni.log.warn(
+        { id_frase: frase.id_frase, chiave: frase.chiave_cache.slice(0, 16), testo: frase.testo },
+        'voce: audio pre-generato mancante, sintesi dal vivo',
+      );
+    }
+    return this.diciDalVivo(frase, epoca);
+  }
+
+  /**
+   * Audio pre-generato: annuncio e pezzi partono subito, tutti insieme (lo schermo li mette in
+   * fila sulla linea del tempo). Nessuna attesa del servizio voce.
+   */
+  private diciDaCache(frase: FraseDaDire, pcm: Buffer, sampleRate: number): EsitoFrase {
+    const { uscita } = this.opzioni;
+    this.opzioni.osservatore?.richiesta?.(frase, 'cache');
+    uscita.frase({
+      id_frase: frase.id_frase,
+      turno: frase.turno,
+      indice: frase.indice,
+      parlante: frase.parlante,
+      nome: frase.nome,
+      testo: frase.testo,
+      sample_rate: sampleRate,
+    });
+    const passo = CAMPIONI_PER_PEZZO_CACHE * 2;
+    let seq = 0;
+    for (let i = 0; i + 1 < pcm.length; i += passo) {
+      const fine = Math.min(pcm.length - (pcm.length % 2), i + passo);
+      if (seq === 0) this.opzioni.osservatore?.primoAudio?.(frase);
+      uscita.pezzo({ id_frase: frase.id_frase, seq, pcm: pcm.subarray(i, fine) });
+      seq += 1;
+    }
+    const secondi = Math.floor(pcm.length / 2) / sampleRate;
+    uscita.fineFrase({ id_frase: frase.id_frase, turno: frase.turno, secondi, interrotta: false });
+    this.opzioni.log.debug({ id_frase: frase.id_frase, secondi: arrotonda(secondi), pezzi: seq, motore: 'cache' }, 'voce: frase dalla cache');
+    return { secondi, interrotta: false, motore: 'cache' };
+  }
+
+  private async diciDalVivo(frase: FraseDaDire, epoca: number): Promise<EsitoFrase> {
     const motore = this.opzioni.motore();
     const controllo = new AbortController();
     this.inCorso = { frase, controllo };

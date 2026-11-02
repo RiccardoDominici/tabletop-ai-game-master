@@ -32,7 +32,12 @@ import { MisuratoreTurno } from '../metriche/misure';
 import type { RegistroJsonl } from '../metriche/jsonl';
 import { compilaMessaggioTurno } from '../narrazione/messaggio';
 import { FinestraAzioni, type Orologio, type RiepilogoFinestra } from '../turni/finestra';
-import { narraTurno } from '../turni/narrazione';
+import { narraTurno, type EsitoUsaTurno } from '../turni/narrazione';
+import type { Repertorio } from '../repertorio/tipi';
+import { StatoRepertorio } from '../repertorio/stato';
+import { segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
+import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
+import { voceDi } from '../turni/narrazione';
 import { PipelineVoce, type UscitaAudio } from '../voce/pipeline';
 import { creaPronunciatore, type Pronunciatore } from '../voce/pronuncia';
 import type { SelettoreVoce } from '../voce/selettore';
@@ -55,6 +60,14 @@ export interface OpzioniRegia {
   margineFineAudioMs: number;
   trascrizioneMax: number;
   preriscalda: boolean;
+  /** A = 'improvvisa' (F0), B = 'repertorio' (battute pre-scritte scelte da Haiku). */
+  modo: 'improvvisa' | 'repertorio';
+  /** Modalità repertorio: battute, parole segrete (controllo dei contesti), audio pre-generato. */
+  repertorio?: Repertorio;
+  paroleSegrete?: ParolaSegreta[];
+  cacheAudio?: CacheAudio;
+  /** Esperimenti: la finestra si apre sempre per tutti i PG al tavolo (l'invito resta nel log). */
+  finestraATutti?: boolean;
 }
 
 /** Ascoltatori del trasporto (Socket.IO). */
@@ -76,6 +89,10 @@ export class Regia {
   private readonly pipeline: PipelineVoce;
   private readonly pronuncia: Pronunciatore;
   private orologi: StatoOrologi;
+  /** Stato del repertorio (solo in modalità repertorio). */
+  private statoRepertorio: StatoRepertorio | null = null;
+  /** Battute mostrate al selettore in questo turno: un [usa] fuori elenco si rifiuta. */
+  private elencoTurno = new Set<string>();
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
@@ -107,10 +124,12 @@ export class Regia {
     this.o = opzioni;
     this.pronuncia = creaPronunciatore(opzioni.campagna);
     this.orologi = new StatoOrologi(opzioni.campagna);
+    this.statoRepertorio = this.nuovoStatoRepertorio();
     this.pipeline = new PipelineVoce({
       motore: () => this.o.voce.attivo,
       uscita: opzioni.uscitaAudio,
       log: opzioni.log.child({ modulo: 'voce' }),
+      ...(opzioni.cacheAudio ? { cache: opzioni.cacheAudio } : {}),
       osservatore: {
         richiesta: (f) => {
           if (f.turno === this.misuratore?.turno) this.misuratore.segna('voce_richiesta', this.o.orologio.ora());
@@ -127,6 +146,47 @@ export class Regia {
 
   collega(uscita: UscitaRegia): void {
     this.uscita = uscita;
+  }
+
+  /** Id della scena in corso (ISO dell'avvio, '' prima dell'avvio) e modalità del narratore. */
+  get infoSessione(): { sessione: string; modo: 'improvvisa' | 'repertorio' } {
+    return { sessione: this.sessione, modo: this.o.modo };
+  }
+
+  private nuovoStatoRepertorio(): StatoRepertorio | null {
+    if (this.o.modo !== 'repertorio') return null;
+    if (!this.o.repertorio) throw new Error('modalità repertorio senza repertorio caricato');
+    return new StatoRepertorio(this.o.repertorio, this.o.campagna, this.orologi);
+  }
+
+  /** Stato pubblico per le parole segrete: indizi rivelati e battute uscite. */
+  private statoPubblico(): StatoPubblico | null {
+    const s = this.statoRepertorio;
+    return s ? { indiziRivelati: s.indiziRivelati, battuteUsate: (id) => s.usata(id) } : null;
+  }
+
+  /**
+   * `[usa] <id>` dal selettore: la battuta esce se è disponibile; le sue righe vanno alla voce con
+   * l'audio pre-generato (stessa normalizzazione dello script di pre-generazione).
+   */
+  private usaBattuta(id: string, turno: number, segno: { mostrato: boolean }): EsitoUsaTurno {
+    const s = this.statoRepertorio;
+    if (!s) return { ok: false, motivo: 'modalità improvvisa: nessun repertorio' };
+    if (!this.elencoTurno.has(id)) {
+      const b = s.repertorio.perId.get(id);
+      return { ok: false, motivo: b ? `non era nell'elenco del turno (${s.motivoIndisponibile(b) ?? 'trattenuta: tocca un segreto non ancora nominato'})` : `battuta inesistente: ${id}` };
+    }
+    const esito = s.usa(id, turno, segno.mostrato);
+    if (!esito.ok) return esito;
+    if (esito.battuta.effetti.avanza_orologio) segno.mostrato = true;
+    return {
+      ok: true,
+      versione: esito.versione,
+      righe: esito.righe.map((r) => {
+        const { mostrato, voce } = testoPerVoce(r.etichetta, r.testo, this.pronuncia);
+        return { etichetta: r.etichetta, testo: mostrato, testo_voce: voce, chiave_cache: chiaveAudio(voceDi(this.o.campagna, r.etichetta).voce_id, voce) };
+      }),
+    };
   }
 
   // ------------------------------------------------------------------ stato
@@ -278,6 +338,7 @@ export class Regia {
     this.turno = 0;
     this.versioneScena = 0;
     this.orologi = new StatoOrologi(this.o.campagna);
+    this.statoRepertorio = this.nuovoStatoRepertorio();
     this.azioniPrivate.clear();
     for (const id of this.o.campagna.pg.map((p) => p.id)) this.uscita?.azioneMia(id, null);
     this.o.log.info({ schermi: this.schermi.size }, 'scena: ricomincia');
@@ -402,6 +463,8 @@ export class Regia {
   private apriFinestra(invito: string[] | 'tutti'): void {
     const presenti = this.pgAlTavolo();
     let invitati = invito === 'tutti' ? presenti : invito.filter((id) => presenti.includes(id));
+    // Esperimenti: copione fisso di azioni, quindi tutti possono agire (l'invito resta nel registro).
+    if (this.o.finestraATutti) invitati = presenti;
     if (invitati.length === 0) {
       if (invito !== 'tutti') this.o.log.warn({ invito, presenti }, 'regia: nessun invitato è al tavolo, si invitano tutti');
       invitati = presenti;
@@ -466,8 +529,14 @@ export class Regia {
         ...r.senzaAzione.map((id) => ({ id_pg: id, nome: nomePg(id), testo: null })),
       ],
       pgAlTavolo: this.pgAlTavolo().map((id) => ({ id, nome: nomePg(id) })),
-      orologi: this.orologi.descrivi(r.turno),
+      orologi: this.statoRepertorio ? this.orologi.descriviRepertorio(r.turno) : this.orologi.descrivi(r.turno),
+      ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
     });
+    // Rete di sicurezza: nel messaggio del selettore non deve esserci nessuna parola ancora segreta.
+    if (this.statoRepertorio && this.o.paroleSegrete?.length) {
+      const trovate = segretiNelTesto(messaggio, this.o.paroleSegrete, this.statoPubblico());
+      if (trovate.length) this.o.log.error({ turno: r.turno, parole: trovate.map((p) => p.parola) }, 'repertorio: parola segreta nel messaggio del selettore');
+    }
     this.notifica();
     const azioni = [
       ...r.azioni.map((a) => ({ id_pg: a.id_pg, testo: a.testo as string | null })),
@@ -485,6 +554,8 @@ export class Regia {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
     this.controlloLlm = controllo;
+    /** Un segno di orologio è già uscito in questa risposta (mai due). */
+    const segnoInRisposta = { mostrato: false };
     const log = this.o.log.child({ turno });
     log.debug({ caratteri: messaggio.length }, 'narratore: messaggio del turno');
 
@@ -498,6 +569,7 @@ export class Regia {
         misuratore,
         ora: () => this.o.orologio.ora(),
         pronuncia: this.pronuncia,
+        usa: this.statoRepertorio ? (id) => this.usaBattuta(id, turno, segnoInRisposta) : null,
         onFrase: (f) => {
           if (epoca !== this.epoca) return;
           this.trascriviFrase(turno, f.etichetta, f.nome, f.testo, f.segmento);
@@ -508,9 +580,10 @@ export class Regia {
     this.controlloLlm = null;
 
     // Orologi: il narratore propone, il Motore controlla (al massimo un segno per risposta).
-    let avanzato = false;
+    // In modalità repertorio i segni sono battute: la riga [orologio] non vale.
+    let avanzato = segnoInRisposta.mostrato;
     const esitiOrologi: Array<{ id: string; ok: boolean; motivo?: string; stato?: string }> = [];
-    for (const id of esito.orologi) {
+    for (const id of this.statoRepertorio ? [] : esito.orologi) {
       const a = this.orologi.avanza(id, turno, avanzato);
       esitiOrologi.push(a.ok ? { id, ok: true, stato: `${a.orologio.pieni}/${a.orologio.segmenti}` } : { id, ok: false, motivo: a.motivo });
       if (a.ok) {
@@ -539,12 +612,17 @@ export class Regia {
     if (epoca !== this.epoca) return;
     if (fine !== null) misuratore.imposta('audio_fine', fine);
 
+    if (this.statoRepertorio && esito.orologi.length) log.warn({ orologi: esito.orologi }, 'repertorio: riga [orologio] ignorata (i segni sono battute)');
     const record = misuratore.record();
-    this.o.registroTurni.scrivi({ ...record });
+    const conteggi = { modo: this.o.modo, righe_prescritte: esito.righe_prescritte, righe_improvvisate: esito.righe_improvvisate, usa_rifiutati: esito.usa_rifiutati };
+    this.o.registroTurni.scrivi({ ...record, ...conteggi, sessione: this.sessione });
     this.o.registroNarrazioni.scrivi({
       sessione: this.sessione,
       turno,
       tipo: 'turno',
+      ...conteggi,
+      uscita: esito.uscita,
+      ...(this.statoRepertorio ? { stato_repertorio: this.statoRepertorio.riepilogo() } : {}),
       voce: record.voce_motore,
       azioni,
       pg_presenti: this.pgAlTavolo(),
@@ -562,6 +640,26 @@ export class Regia {
     this.primoAudioInviato.delete(turno);
     this.versioneScena += 1;
     this.apriFinestra(esito.invito ?? 'tutti');
+  }
+
+  /** Fatti scoperti ed elenco delle battute del turno (modalità repertorio). */
+  private elencoRepertorio(r: RiepilogoFinestra): { fattiScoperti: string[]; battuteDisponibili: string } {
+    const s = this.statoRepertorio!;
+    const testoAzioni = r.azioni.map((a) => a.testo).join('\n');
+    const { battute, trattenute } = s.disponibiliPerTurno(testoAzioni, this.o.paroleSegrete ?? []);
+    this.elencoTurno = new Set(battute.map((b) => b.id));
+    this.o.log.info({ turno: r.turno, disponibili: battute.length, trattenute }, 'repertorio: battute del turno');
+    return {
+      fattiScoperti: s.fattiScoperti.map((id) => `${id} — ${this.testoFatto(id)}`),
+      battuteDisponibili: s.elencoDisponibili(battute),
+    };
+  }
+
+  /** Testo di un fatto del canone (per i fatti scoperti). */
+  private testoFatto(id: string): string {
+    const canone = (this.o.campagna.campagnaNarratore['canone'] as Array<Record<string, unknown>> | undefined) ?? [];
+    const f = canone.find((x) => x?.['id'] === id);
+    return typeof f?.['testo'] === 'string' ? f['testo'] : id;
   }
 
   /** Unisce le frasi dello stesso segmento in una voce di trascrizione. */

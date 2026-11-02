@@ -104,6 +104,25 @@ export class StatoOrologi {
       .join('\n');
   }
 
+  /**
+   * Righe per la modalità repertorio: lo stato dell'orologio senza il testo del segno (i segni
+   * sono battute `segno_orologio`, il narratore non deve parafrasarli). Se il ritmo minimo lo
+   * impone, l'ordine di far uscire la battuta del segno.
+   */
+  descriviRepertorio(turnoCorrente: number): string {
+    if (this.orologi.size === 0) return '';
+    return this.elenco
+      .map((o) => {
+        const testa = `- [${o.id}] «${o.nome}»: segni mostrati ${o.pieni} di ${o.segmenti}`;
+        if (o.pieni >= o.segmenti) return `${testa}; COMPLETO: usa una battuta di tipo finale quando la scena lo chiede.`;
+        const ultimo =
+          o.ultimoTurno === null ? 'nessun segno finora' : o.ultimoTurno === turnoCorrente - 1 ? 'la tua risposta precedente ha mostrato un segno' : `ultimo segno al turno ${o.ultimoTurno}`;
+        const ordine = this.dovuto(o, turnoCorrente) ? ` ${ORDINE_SEGNO} Usa la battuta di tipo segno_orologio disponibile.` : '';
+        return `${testa}; ${ultimo}.${ordine}`;
+      })
+      .join('\n');
+  }
+
   /** Istantanea per il log. */
   riepilogo(): Record<string, string> {
     return Object.fromEntries(this.elenco.map((o) => [o.id, `${o.pieni}/${o.segmenti}`]));

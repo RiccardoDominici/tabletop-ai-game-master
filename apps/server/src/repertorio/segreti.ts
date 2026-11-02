@@ -1,0 +1,87 @@
+/**
+ * Parole segrete (campagne/<id>/repertorio/parole_segrete.yaml): espressioni che portano un
+ * segreto. Finché nessuno degli id di `pubblica_dopo` (indizio rivelato o battuta uscita) è
+ * accaduto, non devono comparire nel contesto del selettore in modalità repertorio.
+ *
+ * Le regex sono scritte per Python (`re.search` sul testo minuscolo), dove \w e \b riconoscono
+ * anche le lettere accentate. In JavaScript \w e \b sono solo ASCII: `regexDaPython` le traduce in
+ * classi Unicode, così «\bè il pane\b» si comporta come in Python.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import YAML from 'yaml';
+import type { DatiYaml } from '../campagna/tipi';
+
+export interface ParolaSegreta {
+  parola: string;
+  /** Sorgente Python originale (per i messaggi). */
+  sorgente: string;
+  regex: RegExp;
+  pubblica_dopo: string[];
+  fatti: string[];
+}
+
+const PAROLA = '[\\p{L}\\p{N}_]';
+const CONFINE = `(?:(?<=${PAROLA})(?!${PAROLA})|(?<!${PAROLA})(?=${PAROLA}))`;
+
+/** Traduce \w e \b da Python (Unicode) a JavaScript (flag u). */
+export function regexDaPython(sorgente: string): RegExp {
+  let out = '';
+  for (let i = 0; i < sorgente.length; i++) {
+    const c = sorgente[i]!;
+    if (c === '\\' && i + 1 < sorgente.length) {
+      const d = sorgente[i + 1]!;
+      if (d === 'w') out += PAROLA;
+      else if (d === 'b') out += CONFINE;
+      else out += c + d;
+      i++;
+      continue;
+    }
+    out += c;
+  }
+  return new RegExp(out, 'u');
+}
+
+export function caricaParoleSegrete(cartellaRepertorio: string): ParolaSegreta[] {
+  const file = path.join(cartellaRepertorio, 'parole_segrete.yaml');
+  if (!fs.existsSync(file)) return [];
+  const dati = (YAML.parse(fs.readFileSync(file, 'utf8')) ?? {}) as DatiYaml;
+  const parole = Array.isArray(dati['parole']) ? (dati['parole'] as DatiYaml[]) : [];
+  return parole
+    .filter((p) => typeof p['regex'] === 'string' || typeof p['parola'] === 'string')
+    .map((p) => {
+      const sorgente = typeof p['regex'] === 'string' ? p['regex'] : String(p['parola']).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const lista = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+      return {
+        parola: typeof p['parola'] === 'string' ? p['parola'] : sorgente,
+        sorgente,
+        regex: regexDaPython(sorgente),
+        pubblica_dopo: lista(p['pubblica_dopo']),
+        fatti: lista(p['fatti']),
+      };
+    });
+}
+
+/** Stato minimo per decidere se una parola è diventata pubblica. */
+export interface StatoPubblico {
+  indiziRivelati: ReadonlySet<string>;
+  battuteUsate: (id: string) => boolean;
+}
+
+export function èPubblica(p: ParolaSegreta, s: StatoPubblico | null): boolean {
+  if (!s) return false;
+  return p.pubblica_dopo.some((id) => s.indiziRivelati.has(id) || s.battuteUsate(id));
+}
+
+/** Parole ancora segrete che compaiono nel testo. */
+export function segretiNelTesto(testo: string, parole: ParolaSegreta[], s: StatoPubblico | null = null): ParolaSegreta[] {
+  const minuscolo = testo.toLowerCase();
+  return parole.filter((p) => !èPubblica(p, s) && p.regex.test(minuscolo));
+}
+
+/** Toglie da un testo le frasi che contengono una parola ancora segreta (o un'altra espressione vietata). */
+export function togliFrasiSegrete(testo: string, parole: ParolaSegreta[], vietate: RegExp[] = [], s: StatoPubblico | null = null): string {
+  const frasi = testo.split(/(?<=[.!?…])\s+/);
+  const tenute = frasi.filter((f) => segretiNelTesto(f, parole, s).length === 0 && !vietate.some((v) => v.test(f)));
+  return tenute.join(' ').trim();
+}

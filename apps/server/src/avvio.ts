@@ -19,6 +19,11 @@ import { RegistroJsonl } from './metriche/jsonl';
 import { CARTELLA_WEB_DIST } from './percorsi';
 import { creaInfoServer } from './rete';
 import { Regia } from './scena/regia';
+import { caricaRepertorio } from './repertorio/caricatore';
+import { compilaContestoRepertorio } from './repertorio/contesto';
+import { caricaParoleSegrete, segretiNelTesto } from './repertorio/segreti';
+import type { Repertorio } from './repertorio/tipi';
+import { CacheAudio } from './voce/cache-audio';
 import { collegaSocket, creaUscite } from './trasporto/socket';
 import { orologioDiSistema, type Orologio } from './turni/finestra';
 import { MotoreVoceHttp } from './voce/http';
@@ -43,13 +48,29 @@ export interface Sostituzioni {
 
 export async function costruisciServer(config: ConfigServer, log: Logger, sost: Sostituzioni = {}): Promise<ServerCantastorie> {
   const campagna = caricaCampagna(config.cartellaCampagna, log.child({ modulo: 'campagna' }));
-  const prompt = fs.readFileSync(config.filePromptNarratore, 'utf8');
-  const contesto = compilaContestoCampagna(campagna);
+  // Modalità A (improvvisa): prompt del narratore + contesto completo della campagna.
+  // Modalità B (repertorio): prompt del selettore + contesto per allowlist (niente segreti) e
+  // repertorio di battute pre-scritte con il loro audio pre-generato.
+  let repertorio: Repertorio | undefined;
+  const cartellaRepertorio = path.join(campagna.cartella, 'repertorio');
+  const paroleSegrete = caricaParoleSegrete(cartellaRepertorio);
+  let filePrompt = config.filePromptNarratore;
+  let contesto: string;
+  if (config.modo === 'repertorio') {
+    repertorio = caricaRepertorio(campagna, log.child({ modulo: 'repertorio' }));
+    filePrompt = config.filePromptSelettore;
+    contesto = compilaContestoRepertorio(campagna, paroleSegrete);
+    const fughe = segretiNelTesto(contesto, paroleSegrete);
+    if (fughe.length) throw new Error(`contesto del selettore con parole segrete: ${fughe.map((p) => p.parola).join(', ')}`);
+  } else {
+    contesto = compilaContestoCampagna(campagna);
+  }
+  const prompt = fs.readFileSync(filePrompt, 'utf8');
   // Blocchi STABILI, in quest'ordine: si mettono in cache (vedi llm/haiku.ts).
   const sistema = [prompt, contesto];
   log.info(
-    { prompt: path.relative(process.cwd(), config.filePromptNarratore), caratteriPrompt: prompt.length, caratteriContesto: contesto.length },
-    'narratore: contesto compilato',
+    { modo: config.modo, prompt: path.relative(process.cwd(), filePrompt), caratteriPrompt: prompt.length, caratteriContesto: contesto.length, paroleSegrete: paroleSegrete.length },
+    `NARRATORE IN MODALITÀ: ${config.modo}`,
   );
 
   const narratore: Narratore =
@@ -84,12 +105,17 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     margineFineAudioMs: config.turni.margineFineAudioMs,
     trascrizioneMax: config.turni.trascrizioneMax,
     preriscalda: config.llm.preriscalda,
+    modo: config.modo,
+    ...(repertorio ? { repertorio } : {}),
+    paroleSegrete,
+    cacheAudio: new CacheAudio(config.cacheAudio),
+    finestraATutti: config.turni.finestraATutti,
   });
   regia.collega(uscite.regia);
 
   let info = await creaInfoServer(config.porta, config.ipLan);
   collegaSocket(app.io, regia, () => info, log.child({ modulo: 'socket' }));
-  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id }));
+  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, ...regia.infoSessione }));
 
   return {
     app,

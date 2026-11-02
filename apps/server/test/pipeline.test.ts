@@ -129,3 +129,29 @@ describe('MotoreVoceMock', () => {
     expect(byte / 2 / 24000).toBeCloseTo(m.durataPer('Mangiate, figlioli.'), 1);
   });
 });
+
+describe('PipelineVoce — audio pre-generato', () => {
+  it('una riga in cache parte subito senza sintesi; una mancante si sintetizza dal vivo', async () => {
+    const fs = await import('node:fs');
+    const os = await import('node:os');
+    const path = await import('node:path');
+    const { CacheAudio, chiaveAudio } = await import('../src/voce/cache-audio');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cache-audio-'));
+    const cache = new CacheAudio(dir);
+    const chiave = chiaveAudio('nadine', 'Mangiate, figlioli.');
+    cache.scrivi(chiave, Buffer.alloc(24000 * 2 * 0.5), { voce: 'nadine', testo: 'Mangiate, figlioli.', sample_rate: 24000 });
+    const { uscita, eventi } = registratore();
+    const sintetizzate: string[] = [];
+    const motore = new MotoreVoceMock({ scalaTempo: 0.01 });
+    const spia: MotoreVoce = { nome: 'mock', salute: () => motore.salute(), sintetizza: (r, s) => (sintetizzate.push(r.testo), motore.sintetizza(r, s)) };
+    const p = new PipelineVoce({ motore: () => spia, uscita, log: loggerMuto(), cache });
+    p.accoda({ ...frase(1, 0, 'Mangiate, figlioli.', 'nadine'), chiave_cache: chiave });
+    p.accoda({ ...frase(1, 1, 'Riga senza cache.', 'nadine'), chiave_cache: chiaveAudio('nadine', 'Riga senza cache.') });
+    await p.chiudiTurno(1);
+    expect(sintetizzate).toEqual(['Riga senza cache.']);
+    const pezzi0 = eventi.filter((e): e is ['pezzo', AudioPezzo] => e[0] === 'pezzo' && e[1].id_frase === 't1-f0');
+    expect(pezzi0.reduce((s, e) => s + (e[1].pcm as Uint8Array).length, 0)).toBe(24000);
+    expect(pezzi0).toHaveLength(3); // 0,5 s in pezzi da 0,24 s
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});

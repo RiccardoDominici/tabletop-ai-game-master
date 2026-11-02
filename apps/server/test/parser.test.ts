@@ -171,3 +171,18 @@ describe('ParserNarratore — [orologio]', () => {
     expect(anomalie(ev)).toEqual(['orologio_vuoto']);
   });
 });
+
+describe('ParserNarratore — [usa]', () => {
+  it('[usa] <id> tra righe improvvisate, nell’ordine, a ogni suddivisione', () => {
+    const testo = '[usa] ott_saluto\n[narratore] Ginestra, Ottavia ti guarda.\n[usa] `nar_cane_guarda`.\n[invito] pg_ginestra\n';
+    for (const ev of tutteLeSuddivisioni(testo)) {
+      const ordine = ev.filter((e) => e.tipo === 'usa' || e.tipo === 'frase').map((e) => (e.tipo === 'usa' ? `usa:${e.id}` : `frase:${e.testo}`));
+      expect(ordine).toEqual(['usa:ott_saluto', 'frase:Ginestra, Ottavia ti guarda.', 'usa:nar_cane_guarda']);
+      expect(anomalie(ev)).toEqual([]);
+    }
+  });
+
+  it('[usa] vuoto → anomalia', () => {
+    expect(anomalie(esegui('[usa]\n[invito] tutti', []))).toEqual(['usa_vuoto']);
+  });
+});

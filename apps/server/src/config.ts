@@ -14,6 +14,9 @@ export type ModoVoce = 'qwen' | 'mock' | 'auto';
 /** Quale narratore usare: Haiku vero oppure un copione finto (test e prove senza spesa). */
 export type ModoLlm = 'haiku' | 'finto';
 
+/** Modalità del narratore: A = improvvisa tutto (F0), B = sceglie battute pre-scritte dal repertorio. */
+export type ModoNarratore = 'improvvisa' | 'repertorio';
+
 export interface ConfigServer {
   porta: number;
   host: string;
@@ -25,6 +28,12 @@ export interface ConfigServer {
   filePromptNarratore: string;
   /** Override dell'IP LAN mostrato nel QR. */
   ipLan?: string;
+  /** Modalità del narratore per la sessione (CANTASTORIE_MODO). */
+  modo: ModoNarratore;
+  /** Prompt di sistema del selettore (modalità repertorio). */
+  filePromptSelettore: string;
+  /** Cartella dell'audio pre-generato del repertorio. */
+  cacheAudio: string;
 
   llm: {
     modo: ModoLlm;
@@ -54,6 +63,11 @@ export interface ConfigServer {
     margineFineAudioMs: number;
     /** Voci della trascrizione tenute nello stato mandato ai client. */
     trascrizioneMax: number;
+    /**
+     * Esperimenti: la finestra si apre sempre per tutti i PG al tavolo (l'invito resta nel log),
+     * così un copione fisso di azioni si può dare identico a due narratori.
+     */
+    finestraATutti: boolean;
   };
 }
 
@@ -85,6 +99,9 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     filePromptNarratore:
       testo(env['CANTASTORIE_PROMPT_NARRATORE']) ?? path.join(RADICE_REPO, 'prompts', 'narratore.md'),
     ...(ipLan ? { ipLan } : {}),
+    modo: scelta(env['CANTASTORIE_MODO'], ['improvvisa', 'repertorio'] as const, 'improvvisa'),
+    filePromptSelettore: testo(env['CANTASTORIE_PROMPT_SELETTORE']) ?? path.join(RADICE_REPO, 'prompts', 'selettore.md'),
+    cacheAudio: testo(env['CANTASTORIE_CACHE_AUDIO']) ?? path.join(RADICE_REPO, 'cache', 'audio'),
     llm: {
       modo: scelta(env['CANTASTORIE_LLM'], ['haiku', 'finto'] as const, 'haiku'),
       modello: testo(env['CANTASTORIE_MODELLO']) ?? 'claude-haiku-5-5',
@@ -103,6 +120,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
       chiusuraDopoPrimaAzioneMs: numero(env['CANTASTORIE_FINESTRA_MS'], 10_000),
       margineFineAudioMs: numero(env['CANTASTORIE_MARGINE_AUDIO_MS'], 2500),
       trascrizioneMax: numero(env['CANTASTORIE_TRASCRIZIONE_MAX'], 80),
+      finestraATutti: testo(env['CANTASTORIE_FINESTRA_TUTTI']) === '1',
     },
   };
 }

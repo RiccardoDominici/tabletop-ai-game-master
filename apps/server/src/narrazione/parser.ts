@@ -29,7 +29,8 @@ export type CodiceAnomalia =
   | 'invito_id_sconosciuto'
   | 'invito_ripetuto'
   | 'testo_dopo_invito'
-  | 'orologio_vuoto';
+  | 'orologio_vuoto'
+  | 'usa_vuoto';
 
 export type EventoNarratore =
   | {
@@ -43,6 +44,8 @@ export type EventoNarratore =
   | { tipo: 'invito'; invitati: string[] | 'tutti'; grezzo: string }
   /** Riga [orologio] <id>: il narratore ha mostrato il prossimo segno di quell'orologio. */
   | { tipo: 'orologio'; id: string; grezzo: string }
+  /** Riga [usa] <id_battuta> (modalità repertorio): la battuta pre-scritta esce qui. */
+  | { tipo: 'usa'; id: string; grezzo: string }
   | { tipo: 'anomalia'; codice: CodiceAnomalia; dettaglio: string };
 
 export interface OpzioniParser {
@@ -58,10 +61,11 @@ export interface OpzioniParser {
 const NARRATORE = 'narratore';
 const INVITO = 'invito';
 const OROLOGIO = 'orologio';
+const USA = 'usa';
 /** Oltre questa lunghezza un «[» a inizio riga senza «]» non è un'etichetta. */
 const MAX_ETICHETTA = 48;
 
-type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio';
+type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'usa';
 
 export class ParserNarratore {
   private readonly png: Set<string>;
@@ -134,6 +138,7 @@ export class ParserNarratore {
         return;
       case 'invito':
       case 'orologio':
+      case 'usa':
         this.bufferInvito += c;
         return;
       case 'testo':
@@ -215,8 +220,8 @@ export class ParserNarratore {
       this.bufferInvito = resto;
       return;
     }
-    if (risolta.tipo === 'orologio') {
-      this.modo = 'orologio';
+    if (risolta.tipo === 'orologio' || risolta.tipo === 'usa') {
+      this.modo = risolta.tipo;
       this.bufferInvito = resto;
       return;
     }
@@ -237,10 +242,11 @@ export class ParserNarratore {
 
   private risolvi(
     grezza: string,
-  ): { tipo: 'invito' } | { tipo: 'orologio' } | { tipo: 'parlante'; id: string; alias: boolean } | { tipo: 'sconosciuta' } {
+  ): { tipo: 'invito' } | { tipo: 'orologio' } | { tipo: 'usa' } | { tipo: 'parlante'; id: string; alias: boolean } | { tipo: 'sconosciuta' } {
     const t = grezza.trim().toLowerCase();
     if (t === INVITO) return { tipo: 'invito' };
     if (t === OROLOGIO) return { tipo: 'orologio' };
+    if (t === USA) return { tipo: 'usa' };
     if (t === NARRATORE) return { tipo: 'parlante', id: NARRATORE, alias: false };
     if (this.png.has(t)) return { tipo: 'parlante', id: t, alias: false };
     const daAlias = this.alias.get(t) ?? this.alias.get(t.replace(/^png_/, ''));
@@ -285,6 +291,9 @@ export class ParserNarratore {
       case 'orologio':
         this.chiudiOrologio();
         break;
+      case 'usa':
+        this.chiudiUsa();
+        break;
       case 'inizio_riga': {
         const p = this.prefisso.trim();
         this.prefisso = '';
@@ -297,6 +306,19 @@ export class ParserNarratore {
       }
     }
     this.modo = 'inizio_riga';
+  }
+
+  private chiudiUsa(): void {
+    const grezzo = this.bufferInvito.trim();
+    this.bufferInvito = '';
+    // L'id è la prima parola; tollera `backtick`, virgolette e punteggiatura finale.
+    const id = grezzo.replace(/[`"'«»]/g, '').split(/[\s,;]+/)[0]?.toLowerCase().replace(/[.!?:]+$/, '') ?? '';
+    if (!id) {
+      this.anomalia('usa_vuoto', 'riga [usa] senza id');
+      return;
+    }
+    if (this.invitoVisto) this.anomalia('testo_dopo_invito', `[usa] ${id} dopo [invito]`);
+    this.eventi.push({ tipo: 'usa', id, grezzo });
   }
 
   private chiudiOrologio(): void {

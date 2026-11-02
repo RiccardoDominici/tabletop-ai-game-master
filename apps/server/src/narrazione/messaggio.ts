@@ -21,6 +21,8 @@ export interface DatiMessaggioTurno {
   pgAlTavolo: Array<{ id: string; nome: string }>;
   /** Stato degli orologi attivi, tenuto dal Motore (righe già pronte); vuoto = nessuno. */
   orologi?: string;
+  /** Modalità repertorio: fatti scoperti in scena (testo), battute disponibili (righe pronte). */
+  repertorio?: { fattiScoperti: string[]; battuteDisponibili: string };
   /** Massimo di voci di trascrizione da includere (le più recenti). */
   maxTrascrizione?: number;
 }
@@ -87,13 +89,20 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
   }
 
   if (d.orologi) parti.push('## Orologi della scena (stato tenuto dal Motore)', d.orologi);
+  if (d.repertorio) {
+    if (d.repertorio.fattiScoperti.length) parti.push('## Fatti scoperti in scena (ora li conoscono i PG)', d.repertorio.fattiScoperti.map((f) => `- ${f}`).join('\n'));
+    parti.push('## Battute disponibili (id · chi · tipo · quando)', d.repertorio.battuteDisponibili || '(nessuna)');
+  }
 
   // pg_presenti: solo questi si possono invitare (gli altri PG della scheda non sono al tavolo).
   const nomi = d.pgAlTavolo.map((p) => `${p.id} = ${p.nome}`).join('; ');
   parti.push(`pg_presenti: [${d.pgAlTavolo.map((p) => p.id).join(', ')}]${nomi ? ` (${nomi})` : ''}`);
   parti.push(
-    'Narra ciò che succede ora. Rispondi solo con righe etichettate; ' +
-      'l’ultima riga è [invito] con gli id dei PG al tavolo che devono rispondere, oppure tutti.',
+    d.repertorio
+      ? 'Rispondi ora: solo righe etichettate ([usa] con l’id di una battuta disponibile, [narratore], [png_…]); ' +
+          'l’ultima riga è [invito] con gli id dei PG al tavolo che devono rispondere, oppure tutti.'
+      : 'Narra ciò che succede ora. Rispondi solo con righe etichettate; ' +
+          'l’ultima riga è [invito] con gli id dei PG al tavolo che devono rispondere, oppure tutti.',
   );
   return parti.join('\n\n');
 }
