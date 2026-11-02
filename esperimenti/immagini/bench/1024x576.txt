@@ -1,0 +1,26 @@
+2026-11-02 11:09:30,770 INFO immagini.motore: carico mflux-community/flux2-klein-4b-mflux-q4, variante Flux2Klein (fp16=False)…
+2026-11-02 11:09:31,686 INFO immagini.motore: variante pronta in 0.9 s (i pesi MLX si leggono pigramente al primo uso)
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:33<01:41, 33.92s/it] 50%|█████     | 2/4 [00:49<00:45, 22.89s/it] 75%|███████▌  | 3/4 [01:04<00:19, 19.32s/it]100%|██████████| 4/4 [01:19<00:00, 17.67s/it]100%|██████████| 4/4 [01:19<00:00, 19.82s/it]
+2026-11-02 11:10:58,390 INFO immagini.motore: generata 1024x576 seme=1000 rif=0 in 86.7 s (picco MLX 5.01 GB)
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:54<02:44, 54.82s/it] 50%|█████     | 2/4 [01:09<01:02, 31.41s/it] 75%|███████▌  | 3/4 [01:24<00:23, 23.95s/it]100%|██████████| 4/4 [01:39<00:00, 20.44s/it]100%|██████████| 4/4 [01:39<00:00, 25.00s/it]
+2026-11-02 11:13:08,307 INFO immagini.motore: generata 1024x576 seme=1001 rif=0 in 129.7 s (picco MLX 5.03 GB)
+{"bench": "1024x576", "fp16": false, "caricamento_s": 0.9, "tempi_s": [86.7, 129.7], "picco_mlx_gb": [5.01, 5.03], "maxrss_gb": 1.55, "swap_prima": {"swap_mb": 5491.69, "pageouts": 841641, "swapouts": 4598187}, "swap_dopo": {"swap_mb": 12058.0, "pageouts": 843329, "swapouts": 6026045}}
+      219,66 real         2,44 user        22,58 sys
+          1547059200  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              325954  page reclaims
+                1439  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+              382109  voluntary context switches
+              121410  involuntary context switches
+         99603336849  instructions retired
+         64093089112  cycles elapsed
+         11143591232  peak memory footprint
+exit=0

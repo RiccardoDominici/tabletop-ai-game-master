@@ -6,9 +6,12 @@ Le immagini (luoghi e ritratti dei PNG) si generano PRIMA della sessione, in loc
 pagamento sono in pausa. Il Mac di riferimento è un M1 con 16 GB: il modello va caricato UNA volta sola
 (costa decine di secondi) e poi riusato per tutte le immagini della campagna.
 
-Si usa sempre la variante "edit" di FLUX.2 klein (`Flux2KleinEdit`): senza immagini di riferimento
-genera da solo testo, con una o più immagini di riferimento le usa come condizionamento (stesso volto
-in situazioni diverse). Così un solo modello in memoria serve entrambe le cose.
+mflux ha due varianti di FLUX.2 klein con gli stessi pesi: `Flux2Klein` (solo testo) e
+`Flux2KleinEdit` (testo + immagini di riferimento: stesso volto in situazioni diverse). La variante
+edit NON accetta zero riferimenti (in mflux 0.24.0 va in errore su mx.concatenate), quindi il motore
+tiene in memoria UNA variante per volta e la cambia quando serve: i pesi si caricano pigramente da
+disco in pochi secondi, mentre due copie (2 × 4,6 GB) su 16 GB porterebbero allo swap.
+Conviene quindi ordinare il lavoro: prima tutte le immagini da solo testo, poi quelle con riferimenti.
 
 Uso minimo:
     from motore import Motore
@@ -83,25 +86,44 @@ class Motore:
         """
         # Import pigri: così `--dry-run` dello strumento non paga il caricamento di MLX/mflux.
         import mlx.core as mx
-        from mflux.models.common.compute_precision.compute_precision import ComputePrecision
-        from mflux.models.common.config import ModelConfig
-        from mflux.models.flux2.variants import Flux2KleinEdit
 
         self._mx = mx
         self.repo = repo
         self.fp16 = fp16
         if limite_cache_gb is not None:
             mx.set_cache_limit(int(limite_cache_gb * 1000**3))
+        self._modello = None
+        self._edit: bool | None = None  # quale variante è caricata (None = nessuna)
+        self.secondi_caricamento = 0.0  # somma dei caricamenti (di solito 1 o 2)
 
+    def _variante(self, edit: bool):
+        """Ritorna la variante richiesta, scaricando l'altra se era in memoria."""
+        if self._edit is edit:
+            return self._modello
+        import gc
+
+        from mflux.models.common.compute_precision.compute_precision import ComputePrecision
+        from mflux.models.common.config import ModelConfig
+        from mflux.models.flux2.variants import Flux2Klein, Flux2KleinEdit
+
+        if self._modello is not None:
+            log.info("scarico la variante %s", "edit" if self._edit else "testo")
+            self._modello = None
+            gc.collect()
+            self._mx.clear_cache()
+        classe = Flux2KleinEdit if edit else Flux2Klein
         t0 = time.perf_counter()
-        log.info("carico %s (fp16=%s)…", repo, fp16)
-        self._modello = Flux2KleinEdit(
+        log.info("carico %s, variante %s (fp16=%s)…", self.repo, classe.__name__, self.fp16)
+        self._modello = classe(
             model_config=ModelConfig.flux2_klein_4b(),
-            model_path=repo,
-            compute_precision=ComputePrecision.dtype_for("float16" if fp16 else None),
+            model_path=self.repo,
+            compute_precision=ComputePrecision.dtype_for("float16" if self.fp16 else None),
         )
-        self.secondi_caricamento = time.perf_counter() - t0
-        log.info("modello pronto in %.1f s", self.secondi_caricamento)
+        self._edit = edit
+        dt = time.perf_counter() - t0
+        self.secondi_caricamento += dt
+        log.info("variante pronta in %.1f s (i pesi MLX si leggono pigramente al primo uso)", dt)
+        return self._modello
 
     @property
     def descrizione(self) -> str:
@@ -125,17 +147,15 @@ class Motore:
         if larghezza % 16 or altezza % 16:
             raise ValueError(f"dimensioni {larghezza}x{altezza}: servono multipli di 16")
         mx = self._mx
+        modello = self._variante(edit=bool(riferimenti))
         mx.reset_peak_memory()
         t0 = time.perf_counter()
-        img = self._modello.generate_image(
-            seed=seme,
-            prompt=prompt,
-            num_inference_steps=passi,
-            width=larghezza,
-            height=altezza,
-            guidance=1.0,
-            image_paths=[Path(r) for r in riferimenti] if riferimenti else None,
-        )
+        comuni = dict(seed=seme, prompt=prompt, num_inference_steps=passi, width=larghezza, height=altezza,
+                      guidance=1.0)
+        if riferimenti:
+            img = modello.generate_image(**comuni, image_paths=[Path(r) for r in riferimenti])
+        else:
+            img = modello.generate_image(**comuni)
         secondi = time.perf_counter() - t0
         picco = mx.get_peak_memory() / 1000**3
         log.info("generata %dx%d seme=%d rif=%d in %.1f s (picco MLX %.2f GB)",
