@@ -62,7 +62,11 @@ beforeAll(async () => {
   const copione = (turno: number) =>
     turno === 1
       ? '[usa] oste_saluto > pg_anna\n[narratore] Anna, l’oste ti guarda.\n[usa] oste_confessa > pg_anna\n[usa] nar_tuono\n[invito] pg_anna'
-      : '[usa] nar_tuono\n[invito] pg_anna';
+      : turno === 2
+        ? // Il segno è dovuto ma il selettore lo dimentica: lo aggiunge il Motore prima dell'invito.
+          '[narratore] Il vento soffia sulle imposte.\n[narratore] Anna, cosa guardi?\n[invito] pg_anna'
+        : // Nessuna risposta all'azione di Anna: riparazione.
+          '[narratore] Il fuoco crepita.\n[invito] pg_anna';
   const narratore = new NarratoreFinto({ idPng: ['png_oste'], idPg: ['pg_anna', 'pg_bruno'], primoTokenMs: 20, msPerPezzo: 1, copione });
   const riparatore = new NarratoreFinto({
     idPng: ['png_oste'],
@@ -118,19 +122,31 @@ describe('modalità repertorio', () => {
       ['narratore', 'Anna, l’oste ti guarda.'],
     ]);
 
-    // --- Turno 2: «Guardo dietro il banco.» Il segno è dovuto; il selettore usa solo il segno
-    // e lascia l'azione senza risposta → riparazione con la battuta della brocca.
+    // --- Turno 2: segno dovuto e dimenticato → il Motore mette nar_tuono prima della domanda finale.
     const f3 = attendiStato(tel, (s) => s.fase === 'finestra' && s.turno === 3);
-    await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Guardo dietro il banco.', versione_vista: 2 }, cb));
+    await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Guardo fuori dalla finestra.', versione_vista: 2 }, cb));
     await emetti<Esito>((cb) => tel.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb));
     const s3 = await f3;
     expect(messaggi[1]).toContain('Mostralo in questa risposta.');
     expect(messaggi[1]).toContain('- nar_tuono · narratore · segno_orologio');
-    expect(messaggi[1]).toContain('- nar_brocca · narratore · indizio');
-    expect(messaggi[2]).toContain('## Azioni rimaste senza risposta\n- Anna Rossi (pg_anna): Guardo dietro il banco.');
     expect(s3.trascrizione.filter((v) => v.turno === 2).map((v) => v.testo)).toEqual([
-      'Guardo dietro il banco.',
+      'Guardo fuori dalla finestra.',
+      'Il vento soffia sulle imposte.',
       'Un tuono lontano fa tremare i vetri.',
+      'Anna, cosa guardi?',
+    ]);
+
+    // --- Turno 3: l'azione di Anna resta senza risposta → riparazione con la battuta della brocca.
+    const f4 = attendiStato(tel, (s) => s.fase === 'finestra' && s.turno === 4);
+    await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Guardo dietro il banco.', versione_vista: 3 }, cb));
+    await emetti<Esito>((cb) => tel.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb));
+    const s4 = await f4;
+    expect(messaggi[2]).not.toContain('Mostralo in questa risposta.'); // segno appena mostrato
+    expect(messaggi[2]).toContain('- nar_brocca · narratore · indizio');
+    expect(messaggi[3]).toContain('## Azioni rimaste senza risposta\n- Anna Rossi (pg_anna): Guardo dietro il banco.');
+    expect(s4.trascrizione.filter((v) => v.turno === 3).map((v) => v.testo)).toEqual([
+      'Guardo dietro il banco.',
+      'Il fuoco crepita.',
       "Dietro il banco c'è una brocca d'acqua, accanto alla botte.",
       'Anna, la brocca è lì.',
     ]);
@@ -145,10 +161,17 @@ describe('modalità repertorio', () => {
       'usa_rifiutato:nar_tuono>',
     ]);
     const n2 = narr.find((x) => x.turno === 2);
-    expect(n2).toMatchObject({ righe_prescritte: 2, righe_improvvisate: 1, usa_rifiutati: 0, azioni_pubbliche: 1, azioni_senza_risposta: 0, riparazioni: 1 });
+    expect(n2).toMatchObject({ segno_aggiunto: 'nar_tuono', righe_prescritte: 1, righe_improvvisate: 2, riparazioni: 0, azioni_senza_risposta: 0 });
+    expect(n2.uscita.map((u: { tipo: string; id?: string; motore?: boolean }) => `${u.tipo}:${u.id ?? ''}${u.motore ? '(motore)' : ''}`)).toEqual([
+      'improvvisata:',
+      'usa:nar_tuono(motore)',
+      'improvvisata:',
+    ]);
     expect(n2.stato_repertorio.orologi).toEqual({ o_temporale: '1/2' });
+    const n3 = narr.find((x) => x.turno === 3);
+    expect(n3).toMatchObject({ segno_aggiunto: null, righe_prescritte: 1, righe_improvvisate: 2, usa_rifiutati: 0, azioni_pubbliche: 1, azioni_senza_risposta: 0, riparazioni: 1 });
     const turni = fs.readFileSync(path.join(cartella, 'turni.jsonl'), 'utf8').trim().split('\n').map((r) => JSON.parse(r));
-    expect(turni.find((x) => x.turno === 2)).toMatchObject({ modo: 'repertorio', riparazioni: 1, azioni_senza_risposta: 0 });
+    expect(turni.find((x) => x.turno === 3)).toMatchObject({ modo: 'repertorio', riparazioni: 1, azioni_senza_risposta: 0 });
     const salute = (await (await fetch(`${url}/api/salute`)).json()) as { modo: string; sessione: string };
     expect(salute).toMatchObject({ modo: 'repertorio' });
   }, 30_000);

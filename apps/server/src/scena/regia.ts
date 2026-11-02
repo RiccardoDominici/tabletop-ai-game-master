@@ -640,6 +640,17 @@ export class Regia {
       senzaRisposta = this.azioniSenzaRisposta(esito.uscita, pubbliche);
       log.warn({ senza_risposta: prima, dopo_riparazione: senzaRisposta }, 'repertorio: azioni senza risposta, riparazione');
     }
+
+    // B2: il segno d'orologio era dovuto ma il selettore non l'ha usato → lo mette il Motore,
+    // dopo le risposte e prima della frase d'invito (deterministico, nessun token in più).
+    let segnoAggiunto: string | null = null;
+    if (this.statoRepertorio && this.turnoB?.segnoDovuto && !segnoInRisposta.mostrato && esito.esito && !controllo.signal.aborted) {
+      const aggiunto = this.aggiungiSegnoDovuto(turno, esito, segnoInRisposta, log);
+      if (aggiunto) {
+        segnoAggiunto = aggiunto.id;
+        esito.righe_prescritte += aggiunto.righe;
+      }
+    }
     this.controlloLlm = null;
 
     // Orologi: il narratore propone, il Motore controlla (al massimo un segno per risposta).
@@ -685,6 +696,7 @@ export class Regia {
       azioni_pubbliche: pubbliche.size,
       azioni_senza_risposta: senzaRisposta.length,
       riparazioni,
+      segno_aggiunto: segnoAggiunto,
     };
     this.o.registroTurni.scrivi({ ...record, ...conteggi, sessione: this.sessione });
     this.o.registroNarrazioni.scrivi({
@@ -733,6 +745,49 @@ export class Regia {
       battuteDisponibili: s.elencoDisponibili(battute),
       stallo,
     };
+  }
+
+  /**
+   * Fa uscire la battuta del segno dovuto e la mette PRIMA dell'invito finale, se l'ultima riga
+   * improvvisata è un invito (una domanda) e la sua voce non è ancora partita; altrimenti in fondo.
+   * Restituisce la battuta usata e quante righe ha, o null se non c'è un segno disponibile.
+   */
+  private aggiungiSegnoDovuto(turno: number, esito: { uscita: VoceUscita[] }, segno: { mostrato: boolean }, log: Logger): { id: string; righe: number } | null {
+    const s = this.statoRepertorio!;
+    const b = s.disponibili(turno).find((x) => x.tipo === 'segno_orologio' && this.elencoTurno.has(x.id));
+    if (!b) {
+      log.warn({ turno }, 'orologio: segno dovuto ma nessuna battuta di segno disponibile');
+      return null;
+    }
+    const uso = this.usaBattuta(b.id, null, turno, segno);
+    if (!uso.ok) {
+      log.error({ turno, battuta: b.id, motivo: uso.motivo }, 'orologio: segno dovuto non applicabile');
+      return null;
+    }
+    const ultima = esito.uscita.at(-1);
+    const invito = ultima?.tipo === 'improvvisata' && ultima.etichetta === ID_NARRATORE && ultima.testo.includes('?') ? ultima : null;
+    // Voce: prima della prima frase dell'invito, se è ancora in coda.
+    const frasi = uso.righe.map((r, k) => {
+      const { voce_id, nome } = voceDi(this.o.campagna, r.etichetta);
+      return { id_frase: `t${turno}-m${k}`, turno, indice: 900 + k, parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: r.testo_voce, chiave_cache: r.chiave_cache };
+    });
+    const primaDellInvito = this.pipeline.accodaPrima(frasi, invito?.frasi?.[0] ?? '');
+    // Trascrizione: le righe del segno prima della voce dell'invito.
+    const nuove = uso.righe.map((r) =>
+      this.aggiungiTrascrizione({ turno, tipo: r.etichetta === ID_NARRATORE ? 'narrazione' : 'battuta', chi: r.etichetta, nome: voceDi(this.o.campagna, r.etichetta).nome, testo: r.testo }),
+    );
+    const vocInvito = invito?.segmento !== undefined ? this.segmentiAperti.get(`${turno}:${invito.segmento}`) : undefined;
+    if (vocInvito) {
+      this.trascrizione.splice(this.trascrizione.length - nuove.length, nuove.length);
+      this.trascrizione.splice(this.trascrizione.indexOf(vocInvito), 0, ...nuove);
+    }
+    // Uscita del turno: la battuta, marcata come aggiunta dal Motore, prima dell'invito.
+    const voce: VoceUscita = { tipo: 'usa', id: b.id, per: null, versione: uso.versione, righe: uso.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })), motore: true };
+    if (invito) esito.uscita.splice(esito.uscita.length - 1, 0, voce);
+    else esito.uscita.push(voce);
+    log.info({ turno, battuta: b.id, prima_dell_invito: !!invito && primaDellInvito }, 'orologio: segno dovuto aggiunto dal Motore');
+    this.notifica();
+    return { id: b.id, righe: uso.righe.length };
   }
 
   /**

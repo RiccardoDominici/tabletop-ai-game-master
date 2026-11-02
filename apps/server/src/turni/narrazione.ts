@@ -43,9 +43,18 @@ export type EsitoUsaTurno = { ok: true; righe: RigaPronta[]; versione: number } 
 
 /** Voce dell'uscita del turno, nell'ordine di ascolto. */
 export type VoceUscita =
-  | { tipo: 'usa'; id: string; per: string | null; versione: number; righe: Array<{ etichetta: string; testo: string }> }
+  | {
+      tipo: 'usa';
+      id: string;
+      per: string | null;
+      versione: number;
+      righe: Array<{ etichetta: string; testo: string }>;
+      /** Aggiunta dal Motore (es. segno d'orologio dovuto e dimenticato), non scritta dal modello. */
+      motore?: boolean;
+    }
   | { tipo: 'usa_rifiutato'; id: string; per: string | null; motivo: string }
-  | { tipo: 'improvvisata'; etichetta: string; testo: string };
+  /** `frasi`: id delle frasi mandate alla voce; `segmento`: la riga della trascrizione. */
+  | { tipo: 'improvvisata'; etichetta: string; testo: string; frasi?: string[]; segmento?: number };
 
 export interface EsitoTurnoNarrato {
   invito: string[] | 'tutti' | null;
@@ -129,10 +138,13 @@ export async function narraTurno(
         const { voce_id, nome } = voceDi(campagna, e.etichetta);
         p.onFrase({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice });
         const perVoce = p.pronuncia(e.testo);
+        const idFrase = `t${p.turno}-${p.prefissoFrasi ?? 'f'}${indice}`;
         accoda({ parlante: e.etichetta, nome, voce_id, testo: e.testo, ...(perVoce !== e.testo ? { testo_voce: perVoce } : {}) });
-        if (rigaAperta && rigaAperta.segmento === e.segmento) rigaAperta.voce.testo += ` ${e.testo}`;
-        else {
-          const voce = { tipo: 'improvvisata' as const, etichetta: e.etichetta, testo: e.testo };
+        if (rigaAperta && rigaAperta.segmento === e.segmento) {
+          rigaAperta.voce.testo += ` ${e.testo}`;
+          rigaAperta.voce.frasi!.push(idFrase);
+        } else {
+          const voce = { tipo: 'improvvisata' as const, etichetta: e.etichetta, testo: e.testo, frasi: [idFrase], segmento: e.segmento };
           uscita.push(voce);
           rigaAperta = { segmento: e.segmento, voce };
           righeImprovvisate += 1;

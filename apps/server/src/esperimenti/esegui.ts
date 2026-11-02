@@ -221,7 +221,7 @@ function elencoBattute(): string[] {
 }
 
 type VoceUscita =
-  | { tipo: 'usa'; id: string; versione: number; righe: Array<{ etichetta: string; testo: string }> }
+  | { tipo: 'usa'; id: string; versione: number; righe: Array<{ etichetta: string; testo: string }>; motore?: boolean }
   | { tipo: 'usa_rifiutato'; id: string; motivo: string }
   | { tipo: 'improvvisata'; etichetta: string; testo: string };
 
@@ -250,7 +250,8 @@ function trascrizione(etichetta: string, modo: string, sessione: string, narrazi
     for (const riga of testo.split('\n')) {
       if (!riga.trim()) continue;
       if (/^\s*\[usa\]/i.test(riga)) {
-        const u = uscita.find((x) => x.tipo === 'usa' || x.tipo === 'usa_rifiutato');
+        // Le battute aggiunte dal Motore non hanno una riga nel testo del modello: si saltano qui.
+        const u = uscita.find((x) => (x.tipo === 'usa' && !x.motore) || x.tipo === 'usa_rifiutato');
         if (u) uscita.splice(uscita.indexOf(u), 1);
         out.push(riga.trim());
         if (u?.tipo === 'usa') for (const r of u.righe) out.push(`    ⟨pre-scritta${u.versione ? `, variante ${u.versione}` : ''}⟩ [${r.etichetta}] ${r.testo}`);
@@ -260,6 +261,9 @@ function trascrizione(etichetta: string, modo: string, sessione: string, narrazi
       out.push(riga.trim());
     }
     out.push('```', '');
+    for (const u of uscita.filter((x): x is Extract<VoceUscita, { tipo: 'usa' }> => x.tipo === 'usa' && !!x.motore)) {
+      out.push(`Aggiunta dal Motore (segno d'orologio dovuto, detto prima dell'invito): [usa] ${u.id}`, '', '```text', ...u.righe.map((r) => `⟨pre-scritta⟩ [${r.etichetta}] ${r.testo}`), '```', '');
+    }
     const m = (n['misure'] ?? {}) as Record<string, unknown>;
     out.push(
       `- righe pre-scritte ${String(n['righe_prescritte'] ?? 0)}, improvvisate ${String(n['righe_improvvisate'] ?? 0)}, [usa] rifiutati ${String(n['usa_rifiutati'] ?? 0)}; azioni senza risposta ${String(n['azioni_senza_risposta'] ?? 0)}/${String(n['azioni_pubbliche'] ?? 0)}, riparazioni ${String(n['riparazioni'] ?? 0)}; invito: ${JSON.stringify(n['invito'])}; anomalie: ${((n['anomalie'] as unknown[]) ?? []).length}`,

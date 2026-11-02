@@ -111,6 +111,26 @@ export class PipelineVoce {
   }
 
   /**
+   * Inserisce delle frasi PRIMA di una frase ancora in coda (se non è già partita); altrimenti le
+   * accoda in fondo. Restituisce true se l'inserimento è avvenuto prima del riferimento.
+   * Serve al Motore per mettere il segno d'orologio dovuto prima dell'invito finale.
+   */
+  accodaPrima(frasi: FraseDaDire[], primaDi: string): boolean {
+    if (!frasi.length) return true;
+    const t = this.turno(frasi[0]!.turno);
+    if (t.chiuso) {
+      this.opzioni.log.error({ turno: frasi[0]!.turno }, 'voce: inserimento in un turno già chiuso, ignorato');
+      return false;
+    }
+    t.frasi += frasi.length;
+    const i = this.coda.findIndex((f) => f.id_frase === primaDi);
+    if (i >= 0) this.coda.splice(i, 0, ...frasi);
+    else this.coda.push(...frasi);
+    void this.ciclo();
+    return i >= 0;
+  }
+
+  /**
    * Il turno non avrà altre frasi. La promessa si risolve quando tutte le sue frasi sono
    * state generate e inoltrate (o il turno è stato interrotto).
    */

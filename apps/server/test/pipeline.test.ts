@@ -155,3 +155,17 @@ describe('PipelineVoce — audio pre-generato', () => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
 });
+
+describe('PipelineVoce.accodaPrima', () => {
+  it('inserisce prima di una frase ancora in coda; se è già partita, accoda in fondo', async () => {
+    const { uscita, eventi } = registratore();
+    const p = new PipelineVoce({ motore: () => new MotoreVoceMock({ scalaTempo: 0.05 }), uscita, log: loggerMuto() });
+    p.accoda(frase(1, 0, 'Il vento soffia.'));
+    p.accoda(frase(1, 1, 'Anna, cosa fai?'));
+    expect(p.accodaPrima([frase(1, 9, 'Un tuono lontano.')], 't1-f1')).toBe(true);
+    expect(p.accodaPrima([frase(1, 8, 'Dopo tutto.')], 't1-f0')).toBe(false); // t1-f0 è già partita
+    await p.chiudiTurno(1);
+    const ordine = eventi.filter((e): e is ['frase', AudioFrase] => e[0] === 'frase').map((e) => e[1].testo);
+    expect(ordine).toEqual(['Il vento soffia.', 'Un tuono lontano.', 'Anna, cosa fai?', 'Dopo tutto.']);
+  });
+});
