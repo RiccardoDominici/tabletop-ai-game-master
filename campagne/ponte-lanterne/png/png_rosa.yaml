@@ -46,6 +46,7 @@ sa:
   - f_case_lunghe
   - f_debiti_borgo
   - f_un_gruppo
+  - f_ernesto_tosse
 non_sa:
   - f_carte_pronte         # domanda probabile: «Vischi ti ha fatto firmare qualcosa?»
   - f_darsena

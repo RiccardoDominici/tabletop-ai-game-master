@@ -1,6 +1,6 @@
 # Repertorio di Tullio Bellora, il custode del ponte. Voce: tu a tutti, lei a Vischi e al console.
 # Frasi di tre-otto parole, lessico di pedaggio e di pietra. Tic: «Un soldo, e passi.»
-# Segnale quando mente: si gratta la nuca sotto il berretto e guarda la catena.
+# Segnale quando mente: si gratta la nuca sotto il berretto e si guarda le scarpe.
 # Menzogna registrata: tul_catena = «perché chiude la catena al terzo tocco».
 
 battute:
@@ -83,7 +83,7 @@ battute:
     testo:
       - "[png_tullio] La barca è tua. I remi stanno nel casello, dietro la stufa."
       - "[narratore] Tullio indica la scaletta che scende al pontile, senza lasciare la catena."
-      - "[png_tullio] Un viaggio va e torna tra due tocchi. Scegli bene dove."
+      - "[png_tullio] Prima del terzo tocco ci sta un viaggio solo. Scegli bene dove."
     max_usi: 1
   - id: tul_detto
     chi: png_tullio
@@ -121,10 +121,10 @@ battute:
     quando: "un PG chiede a Tullio di aspettare, o perché chiuderà al terzo tocco"
     temi: [aspettare, aspetta, aspetti, chiudi, chiudere, chiusura, catena]
     testo:
-      - "[narratore] Tullio si gratta la nuca sotto il berretto e guarda la catena."
+      - "[narratore] Tullio si gratta la nuca sotto il berretto e si guarda le scarpe."
       - "[png_tullio] La regola è la regola. Al leone si chiude, e basta."
     varianti:
-      - ["[narratore] Tullio si gratta la nuca sotto il berretto, e guarda la catena.", "[png_tullio] Te l'ho detto. Al leone si chiude, e basta."]
+      - ["[narratore] Tullio si gratta la nuca sotto il berretto, e si guarda le scarpe.", "[png_tullio] Te l'ho detto. Al leone si chiude, e basta."]
     effetti: {menzogna_detta: tul_catena}
     max_usi: 2
 
@@ -141,24 +141,23 @@ battute:
     testo:
       - "[narratore] Tullio chiude lo sportello della stufa e si toglie il berretto."
       - "[png_tullio] Il tetto nuovo me l'ha pagato Vischi. Il casello è in pegno."
-      - "[png_tullio] Ha detto: catena su dopo il tocco. E all'alba il casello è suo."
+      - "[png_tullio] Se tengo aperto dopo il tocco, il debito scade. E all'alba il casello è suo."
       - "[png_tullio] Bice non lo sa. Dimmi tu cosa faccio."
     effetti: {rivela_indizi: [i_tullio_minaccia], fatti_noti: [f_minaccia_tullio, f_debito_tullio]}
     max_usi: 1
   - id: tul_catena_arrigo
     chi: png_tullio
     tipo: confessione
-    quando: "un PG chiede a Tullio di dire tutto, in cambio dei suoi passaggi a credito"
-    temi: [credito, crediti, pagina, saldo, saldare]
+    quando: "un PG ripete a Tullio le parole di Vischi sentite sotto la tettoia"
+    temi: [tettoia, sentito, sentite, parole, minacciato]
     richiede:
       da_pg: [pg_arrigo]
       battute_usate: [tul_catena_versione]
       battute_non_usate: [tul_catena_casello, tul_catena_registro]
     testo:
-      - "[narratore] Tullio ride una volta sola, e batte la chiave sul palmo."
-      - "[png_tullio] Vent'anni di passaggi gratis, e adesso vuoi pure la verità. Va bene."
-      - "[png_tullio] Il tetto me l'ha pagato Vischi, con il casello in pegno."
-      - "[png_tullio] Catena su dopo il tocco, e all'alba il casello è suo."
+      - "[narratore] Tullio smette di battere la chiave, e abbassa la voce."
+      - "[png_tullio] Allora l'hai sentito anche tu. Sì, il tetto me l'ha pagato lui."
+      - "[png_tullio] Il casello è in pegno. Se tengo aperto dopo il tocco, all'alba è suo."
     effetti: {rivela_indizi: [i_tullio_minaccia], fatti_noti: [f_minaccia_tullio, f_debito_tullio]}
     max_usi: 1
   - id: tul_catena_registro
@@ -171,8 +170,8 @@ battute:
       battute_non_usate: [tul_catena_casello, tul_catena_arrigo]
     testo:
       - "[narratore] Tullio legge piano, muovendo le labbra, e diventa rosso fino al berretto."
-      - "[png_tullio] Il padre calava il leone. Il figlio mi tiene con il tetto."
-      - "[png_tullio] Sì, il casello è in pegno. Catena su dopo il tocco, e all'alba è suo."
+      - "[png_tullio] Corrado Vischi ha calato il leone. E suo figlio mi tiene con il tetto."
+      - "[png_tullio] Sì, il casello è in pegno. Se tengo aperto dopo il tocco, all'alba è suo."
     effetti: {rivela_indizi: [i_tullio_minaccia], fatti_noti: [f_minaccia_tullio, f_debito_tullio]}
     max_usi: 1
 
@@ -181,35 +180,47 @@ battute:
     chi: png_tullio
     tipo: momento
     scena: scena_terzo_tocco
-    quando: "verso il terzo tocco, un PG parla con Tullio alla catena"
+    quando: "verso il terzo tocco, un PG parla con Tullio alla manovella"
     temi: [manovella, decidi, decidere, decidiamo, rintocco]
     richiede: {orologio: {id: o_piena, min: 7, max: 8}}
     testo:
-      - "[png_tullio] Io tengo la catena. Voi tenete la testa."
+      - "[png_tullio] Io tengo la catena. La testa mettetecela voi."
       - "[narratore] Tullio vi guarda uno per uno, con la mano ferma sulla manovella."
-      - "[png_tullio] Ditemi voi. Giù, o su?"
+      - "[png_tullio] Ditemi voi. Chiudo, o aspetto?"
     max_usi: 1
-  - id: tul_catena_su
+  - id: tul_ponte_aperto
     chi: png_tullio
     tipo: momento
     scena: scena_terzo_tocco
-    quando: "dopo il terzo tocco, i PG chiedono a Tullio di tenere alzata la catena"
-    temi: [tienila, tenerla, alzata, aspetta, aspettare, tieni]
-    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [tul_catena_giu]}
+    quando: "dopo il terzo tocco, i PG chiedono a Tullio di non chiudere la catena"
+    temi: [aspetta, aspettare, aperto, aperta, apri, tienila]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, indizi_rivelati: [i_onda_pilone], battute_non_usate: [tul_catena_tesa]}
     testo:
-      - "[narratore] Tullio stringe la manovella, e non la gira."
-      - "[png_tullio] Un'ora, non di più. E la rampa la tenete voi."
+      - "[narratore] Tullio guarda il pilone di mezzo, poi la manovella, e non la gira."
+      - "[png_tullio] Fino all'onda, non di più. E la rampa la tenete voi."
       - "[narratore] Dall'imbocco il paese mormora, e Vischi parla piano al console."
     max_usi: 1
-  - id: tul_catena_giu
+  - id: tul_senza_prova
+    chi: png_tullio
+    tipo: rifiuto
+    scena: scena_terzo_tocco
+    quando: "dopo il terzo tocco, i PG chiedono a Tullio di aspettare a chiudere"
+    temi: [aspetta, aspettare, aperto, aperta, apri, tienila]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, indizi_non_rivelati: [i_onda_pilone]}
+    testo:
+      - "[png_tullio] Aperto con che cosa? Con le chiacchiere?"
+      - "[narratore] Tullio batte la mano sul parapetto, sopra il pilone di mezzo."
+      - "[png_tullio] Fammi vedere una pietra, e ti credo."
+    max_usi: 1
+  - id: tul_catena_tesa
     chi: png_tullio
     tipo: momento
     scena: scena_terzo_tocco
-    quando: "al terzo tocco, i PG dicono a Tullio di abbassare la catena"
-    temi: [abbassa, abbassare, giù, chiudila, chiudi]
-    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [tul_catena_su]}
+    quando: "al terzo tocco, i PG dicono a Tullio di chiudere"
+    temi: [chiudi, chiudila, chiudere, tendi, tendila]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [tul_ponte_aperto]}
     testo:
-      - "[narratore] Tullio gira la manovella, e la catena scende con un rumore di ferro."
+      - "[narratore] Tullio gira la manovella, e la catena si alza e si tende tra i paletti."
       - "[png_tullio] Fatto. Che il fiume ci perdoni."
     max_usi: 1
 

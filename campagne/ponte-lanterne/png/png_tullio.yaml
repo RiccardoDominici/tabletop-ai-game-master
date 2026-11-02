@@ -13,7 +13,7 @@ aspetto:
   invarianti: ["sessantadue anni", "largo di spalle", "berretto di lana marrone", "barba grigia", "grossa chiave di ferro alla cintura", "mantello cerato giallo"]
   prompt_immagine: "broad-shouldered 62-year-old bridge toll keeper, wet grey beard, brown wool cap pulled down over his ears, yellow oilskin cloak, heavy iron key hanging from his belt, rainy stone bridge with lanterns behind him, [STILE]"
   situazioni:
-    - {id: alla_catena, prompt: "the toll keeper gripping the crank of an iron chain across the bridge at midnight, water over the low ramp, crowd with lanterns in the background"}
+    - {id: alla_catena, prompt: "the toll keeper gripping the crank of the bridge chain at midnight, water over the low ramp, crowd with lanterns in the background"}
 
 personalita:
   superficie: ["brontolone: si lamenta di tutto e intanto aiuta", "conta tutto: soldi, passi, gradini", "fiero del ponte come di un figlio"]
@@ -24,7 +24,7 @@ desiderio: "Tenere il casello per Bice, senza chiudere la catena in faccia al Bo
 paura: "Che Bice resti senza casa per colpa sua."
 
 segreto:
-  testo: "Ha dato il casello in pegno a Vischi per il tetto nuovo, e Vischi gli ha detto che se tiene su la catena dopo il terzo tocco il debito scade all'alba."
+  testo: "Ha dato il casello in pegno a Vischi per il tetto nuovo, e Vischi gli ha detto che se tiene aperto il ponte dopo il terzo tocco il debito scade all'alba."
   chi_altro_sa: [png_vischi]
   se_rivelato: "Il paese capisce perché obbedisce. Bice si arrabbia con lui, poi lo abbraccia. Tullio è libero di decidere sulla parola dei PG, e lo dice."
 
@@ -47,7 +47,8 @@ sa:
   - f_ordine_consiglio
   - f_detto_bellora
   - f_bellora_guardava     # il padre guardava un punto più in alto del leone
-  - f_barca_lanterna
+  - f_barca_bigia
+  - f_secondo_viaggio
   - f_un_viaggio
   - f_un_gruppo
   - f_lanterne_ponte
@@ -55,7 +56,7 @@ sa:
   - f_piena_grande
   - f_borgo_passato
   - f_debito_tullio        # il casello in pegno a Vischi
-  - f_minaccia_tullio      # se tiene su la catena, il debito scade all'alba
+  - f_minaccia_tullio      # se tiene aperto il ponte, il debito scade all'alba
 non_sa:
   - f_leone_calato         # domanda probabile: «il leone è sempre stato lì?»
   - f_onda_pontieri
@@ -71,8 +72,8 @@ mente_su:
     verita: f_minaccia_tullio
     versione: "La regola è la regola. Al leone si chiude, e basta."
     perche: "Vergogna del debito, e paura di lasciare Bice senza casa."
-    segnale: "si gratta la nuca sotto il berretto e guarda la catena"
-    cede_se: "Dice la verità quando un PG glielo chiede dentro il casello, a porta chiusa. Oppure quando Arrigo gli chiede di pagare almeno questo debito con la verità. Oppure quando un PG gli mostra il registro del padre di Vischi."
+    segnale: "si gratta la nuca sotto il berretto e si guarda le scarpe"
+    cede_se: "Dice la verità quando un PG glielo chiede dentro il casello, a porta chiusa. Oppure quando Arrigo gli ripete le parole di Vischi che ha sentito sotto la tettoia. Oppure quando un PG gli mostra il registro del padre di Vischi."
 
 atteggiamento_pg:
   pg_dalia:   {stato: amichevole, perche: "la conosce da bambina, quando passava il ponte con il cesto del bucato del Ricovero", vuole: "che gli dica come stanno i vecchi"}
@@ -90,15 +91,15 @@ relazioni:
 info_chiave: [i_detto_bellora, i_tullio_minaccia]   # r_leone e r_vischi
 
 iniziative:
-  - "Se un PG chiede la barca per il Borgo, gliela dà e indica i remi nel casello, ma non lascia la catena."
+  - "Se un PG chiede la barca per il Borgo, gliela dà e indica i remi nel casello, ma non lascia la manovella."
   - "Al quarto segno dell'orologio conta i soldi del pedaggio e li mette in un sacchetto a parte."
   - "Al settimo segno va alla manovella e non se ne stacca più."
 
 evoluzione:
-  - {se: "cede e racconta del debito", allora: "chiede ai PG di dirgli loro quando abbassare: «Io tengo la catena, voi tenete la testa.»"}
+  - {se: "cede e racconta del debito", allora: "chiede ai PG di dirgli loro se chiudere o aspettare: «Io tengo la catena. La testa mettetecela voi.»"}
   - {se: "vede l'onda sopra il leone, o sente il libro del padre", allora: "ricorda il detto, guarda il pilone a lungo, e chiede al console di aspettare il tempo di una prova"}
-  - {se: "la catena resta su e il secondo viaggio passa", allora: "all'alba consegna la chiave a Vischi senza una parola, se il paese non lo ferma"}
-  - {se: "un PG lo minaccia o tocca la catena con la forza", allora: "abbassa la catena subito e non parla più con quel PG"}
+  - {se: "il ponte resta aperto e il secondo viaggio passa", allora: "all'alba consegna la chiave a Vischi senza una parola, se il paese non lo ferma"}
+  - {se: "un PG gli toglie la manovella con la forza", allora: "non si batte: si siede sul paracarro e non parla più con quel PG. La catena resta come la lascia il PG, e all'alba il casello è di Vischi"}
 
 statistiche: "popolano (SRD 5.2), forte come un barcaiolo"
 registro_attivita: []

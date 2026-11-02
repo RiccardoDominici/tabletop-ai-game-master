@@ -1,14 +1,14 @@
 # Scheda scena/luogo (manuale §4): il Borgo Basso sott'acqua, tra il primo e il terzo tocco.
-# Durata prevista 30–40 minuti. Si arriva con la Lanterna, la barca del ponte.
+# Durata prevista 30–40 minuti. Si arriva con la Bigia, la chiatta del ponte.
 
 id: scena_borgo_basso
 nodo: n_borgo_basso
 nome: "Il Borgo Basso sott'acqua"
 
-descrizione: "Vicoli stretti tra case di pietra e di legno, con l'acqua alla vita di un uomo: la Lanterna passa a spinta di pertica. Dalla rampa bassa del ponte si va a monte o a valle, mai tutti e due nello stesso viaggio. A monte, in fondo, il Ricovero: casa di pietra a due piani, con il pianterreno allagato fino al terzo gradino della scala. Al piano di sopra stanno i sette vecchi, Rosa e l'oca Contessa, intorno alla stufa di ghisa. A valle, all'altro capo, le Case Lunghe: quattro case di legno sull'argine, con le famiglie sui ballatoi e i bambini sul tetto della più alta, sotto una tela cerata, e una lanterna ferma. Da tutti e due i capi si vedono le lanterne del ponte. Chi sente cosa: nei vicoli la pioggia copre le voci a più di tre passi. Al Ricovero, ciò che si dice al pianterreno, con l'acqua alle gambe, non si sente di sopra; ciò che si dice di sopra lo sentono tutti i vecchi. Rosa resta al Ricovero: sale in barca solo dopo l'ultimo dei suoi vecchi, e se passa il ponte va subito in chiesa con loro. Stanotte non va mai sul ponte."
+descrizione: "Vicoli stretti tra case di pietra e di legno, con l'acqua alla vita di un uomo: la Bigia passa a spinta di pertica. Dalla rampa bassa del ponte si va a monte o a valle, mai tutti e due nello stesso viaggio. A monte, in fondo, il Ricovero: casa di pietra a due piani, con il pianterreno allagato fino al terzo gradino della scala. Al piano di sopra stanno i sette vecchi, Rosa e l'oca Contessa, intorno alla stufa di ghisa. A valle, all'altro capo, le Case Lunghe: quattro case di legno sull'argine, con le famiglie sui ballatoi e i bambini sul tetto della più alta, sotto una tela cerata, e una lanterna ferma. Da tutti e due i capi si vedono le lanterne del ponte. Chi sente cosa: nei vicoli la pioggia copre le voci a più di tre passi. Al Ricovero, ciò che si dice al pianterreno, con l'acqua alle gambe, non si sente di sopra; ciò che si dice di sopra lo sentono tutti i vecchi. Rosa resta al Ricovero: sale in barca solo dopo l'ultimo dei suoi vecchi, e se passa il ponte va subito in chiesa con loro. Stanotte non va mai sul ponte. Bice non viene mai nel Borgo: fa da faro dal parapetto."
 
 scopo: {tipo: rivelare_indizio, rif: i_tosse_ernesto}
-domanda_drammatica: "La Lanterna tornerà al ponte con un gruppo a bordo prima del terzo tocco?"
+domanda_drammatica: "La Bigia tornerà al ponte con un gruppo a bordo prima del terzo tocco?"
 
 posta:
   si_guadagna:
@@ -26,7 +26,7 @@ sensi:
   - "Odore di cenere bagnata e di stalla allagata."                         # olfatto
 
 elementi_interattivi:
-  - {cosa: "la Lanterna e la pertica", dove: "nei vicoli", azioni: "si spinge con la pertica o si rema piano; porta otto persone sedute, o sei se qualcuno sta disteso"}
+  - {cosa: "la Bigia e la pertica", dove: "nei vicoli", azioni: "si spinge con la pertica o si rema piano; porta una ventina di persone strette, un gruppo intero, anche con un vecchio disteso"}
   - {cosa: "la scala del Ricovero", dove: "dal pianterreno allagato al piano di sopra", azioni: "scricchiola ma regge; i vecchi che non camminano si portano giù in due, su una barella di tela"}
   - {cosa: "la stufa del piano di sopra", dove: "al Ricovero, in mezzo alla stanza", azioni: "si tocca, si apre; la catasta della legna sta nel sottoscala, al pianterreno"}
   - {cosa: "la finestra con la lanterna", dove: "al Ricovero, di sopra, sul vicolo", azioni: "Rosa la dondola verso il ponte; si può prendere e usare per un segnale"}
@@ -85,7 +85,7 @@ uscite:
 
 mossa_morbida_pronta: "Una porta sfondata scende il vicolo, girando piano su se stessa. Sopra c'è un gatto fradicio che soffia alla barca."
 
-apertura: "La Lanterna scivola tra i muri del Borgo, dove l'acqua arriva alla vita di un uomo. A monte brilla la finestra del Ricovero, a valle i ballatoi delle Case Lunghe. Da che parte spingete la pertica?"
+apertura: "La Bigia scivola tra i muri del Borgo, dove l'acqua arriva alla vita di un uomo. A monte brilla la finestra del Ricovero, a valle i ballatoi delle Case Lunghe. Da che parte spingete la pertica?"
 
 musica:
   tag: inseguimento
@@ -95,4 +95,4 @@ immagine:
   invarianti: ["vicolo allagato tra case di pietra", "barca piatta con una pertica", "casa di pietra a due piani con una lanterna alla finestra di sopra", "case di legno sull'argine con ballatoi", "pioggia fitta", "lanterne del ponte in lontananza"]
   prompt_luogo: "flooded narrow alley of a poor riverside quarter at night, waist-deep brown water between old stone walls, flat wooden boat with a long pole, two-storey stone almshouse with a lantern in an upper window, row of old wooden houses on the riverbank with wooden balconies, heavy rain, distant lanterns of a stone bridge"
 
-taglio: "La scena si chiude quando la Lanterna riparte verso il ponte con un gruppo a bordo, oppure quando i PG decidono di restare di là con chi non entra in barca. Se al sesto segno i PG esitano ancora, Rosa mette in barca chi è più vicino alla scala e spinge via la Lanterna con il piede: la barca torna al ponte con quelli, e la scena si chiude."
+taglio: "La scena si chiude quando la Bigia riparte verso il ponte con un gruppo a bordo, oppure quando i PG decidono di restare di là con chi non entra in barca. Se al sesto segno i PG esitano ancora, Rosa mette in barca chi è più vicino alla scala e spinge via la Bigia con il piede: la barca torna al ponte con quelli, e la scena si chiude."

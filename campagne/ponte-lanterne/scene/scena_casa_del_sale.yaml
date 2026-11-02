@@ -5,10 +5,10 @@ id: scena_casa_del_sale
 nodo: n_casa_del_sale
 nome: "La Casa del Sale, durante il consiglio"
 
-descrizione: "Un magazzino di pietra sulla Riva Alta, a cinquanta passi dalla testa del ponte. Nella sala grande ci sono sacchi di sale fino alle travi, un camino acceso e il tavolo lungo del consiglio: il console Ugolino, quattro consiglieri, Vischi a capotavola, lo scrivano Ottone con i fogli e il calamaio. Barcaioli bagnati entrano a chiedere e a firmare. In fondo alla sala c'è una porta di quercia chiusa, con una guardia davanti: è lo studio di Vischi, con lo scrittoio, un camino piccolo e una cassa di ferro sotto lo scrittoio. Dietro i sacchi, il magazzino ha una porta sul retro. Chi sente cosa: ciò che si dice al tavolo lo sente tutta la sala. Tra i sacchi, sottovoce, non sente nessuno. Nello studio a porta chiusa non si sente niente dalla sala, e dalla sala non si sente niente dello studio. Bice e Tullio restano al ponte."
+descrizione: "Un magazzino di pietra sulla Riva Alta, a cinquanta passi dalla testa del ponte. Nella sala grande ci sono sacchi di sale fino alle travi, un camino acceso e il tavolo lungo del consiglio: il console Ugolino, quattro consiglieri, Vischi a capotavola, lo scrivano Ottone con i fogli e il calamaio. Barcaioli bagnati entrano a chiedere e a firmare. In fondo alla sala c'è una porta di quercia chiusa, con una guardia davanti: è lo studio di Vischi, con lo scrittoio, un camino piccolo e una cassa di ferro sotto lo scrittoio. Chi sente cosa: ciò che si dice al tavolo lo sente tutta la sala. Tra i sacchi, sottovoce, non sente nessuno. Nello studio a porta chiusa non si sente niente dalla sala, e dalla sala non si sente niente dello studio. Bice e Tullio restano al ponte."
 
 scopo: {tipo: rivelare_indizio, rif: i_lista_alba}
-domanda_drammatica: "Il consiglio confermerà la catena giù al terzo tocco?"
+domanda_drammatica: "Il consiglio confermerà la catena chiusa al terzo tocco?"
 
 posta:
   si_guadagna:
@@ -79,6 +79,7 @@ indizi:
     come_si_trova: "Chi ascolta Vischi parlare piano con il console, tra i sacchi o al camino: le Case Lunghe sono legno marcio, dice, e lì ci starebbe bene una darsena."
 
 uscite:
+  - {verso: n_ponte, segnalata_da: [i_corda_nodi, i_registro_padre, i_lista_alba], nota: "Si torna al ponte all'ora in cui si è: per la barca, o per il terzo tocco."}
   - {verso: e_terzo_tocco, segnalata_da: [i_registro_padre, i_corda_nodi, i_lista_alba], nota: "La prova si mostra al ponte, al terzo tocco, davanti a Tullio e al console."}
   - {verso: n_borgo_basso, segnalata_da: [i_carte_pronte, i_vischi_darsena, i_lista_alba], nota: "I nomi sui contratti sono quelli di chi è ancora di là."}
 
@@ -94,4 +95,4 @@ immagine:
   invarianti: ["magazzino di pietra con sacchi di sale fino alle travi", "camino acceso", "tavolo lungo con calamaio, fogli e boccali", "porta di quercia chiusa in fondo alla sala", "mantelli bagnati appesi vicino all'ingresso"]
   prompt_luogo: "warm stone salt warehouse at night, white sacks of salt stacked up to the rafters, crackling fireplace, long council table with inkwell, papers and pewter cups, closed oak door at the far end of the hall, wet cloaks hanging by the entrance"
 
-taglio: "La scena si chiude quando i PG lasciano la Casa del Sale, con una prova o senza. Oppure al sesto segno, quando Vischi sigilla la lista: il consiglio esce sotto la pioggia verso il ponte, e si passa al terzo tocco. Se i PG esitano, il console chiude la seduta e tutti vanno al ponte."
+taglio: "La scena si chiude quando i PG lasciano la Casa del Sale, con una prova o senza. Oppure al sesto segno delle firme, quando Vischi sigilla la lista: il consiglio ha votato, e i PG tornano al ponte all'ora in cui sono, per la barca se non è ancora partita, o per il terzo tocco. Se i PG esitano, il console chiude la seduta e manda tutti fuori sotto la pioggia."

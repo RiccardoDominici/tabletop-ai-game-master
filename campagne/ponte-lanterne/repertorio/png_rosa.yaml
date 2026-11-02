@@ -26,7 +26,7 @@ battute:
     quando: "un PG chiede a Rosa di cose che non sa"
     temi: [domanda]
     testo:
-      - "[png_rosa] Io so di bucato e di brodo, creatura. Il resto chiedilo ai giovani."
+      - "[png_rosa] Di queste cose parla coi giovani, creatura. Io ho sette vecchi da contare."
     max_usi: 1
   - id: ros_domanda_gentile
     chi: png_rosa

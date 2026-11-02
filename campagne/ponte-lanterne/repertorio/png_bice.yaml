@@ -73,26 +73,26 @@ battute:
     max_usi: 1
 
   # --- selezionabili --------------------------------------------------------------------------
-  - id: bic_barca_viene
+  - id: bic_faro
     chi: png_bice
     tipo: richiesta
     quando: "un PG va verso la scaletta del pontile o la barca"
-    temi: [scaletta, pontile, pertica, vengo]
+    temi: [scaletta, pontile, pertica, faro, vicoli]
     testo:
-      - "[png_bice] Vengo anch'io, con la pertica. I vicoli li conosco."
-      - "[narratore] Dal casello Tullio brontola un no, senza voltarsi."
-      - "[png_bice] Scommettiamo che poi dice sì?"
+      - "[png_bice] Vi faccio da faro dal parapetto. I vicoli li conosco tutti."
+      - "[narratore] Bice stacca una lanterna dal gancio e la alza sopra la testa."
+      - "[png_bice] Quando la alzo, girate. Quando la abbasso, dritti."
     max_usi: 1
   - id: bic_libro_cerca
     chi: png_bice
     tipo: indizio
-    quando: "un PG chiede a Bice di cercare nel libro la notte della piena grande"
+    quando: "un PG chiede a Bice di cercare nel libro le notti di piena"
     temi: [libro, piena, cerca, cercare, pagine]
     testo:
-      - "[png_bice] La piena grande? Il bisnonno scriveva storto, vediamo."
-      - "[narratore] Bice sfoglia veloce, poi si ferma su una riga ripassata due volte."
+      - "[png_bice] Le piene? Il bisnonno scriveva storto, vediamo."
+      - "[narratore] Bice sfoglia veloce, fino alla piena di vent'anni fa. Si ferma su una riga ripassata due volte."
       - "[png_bice] Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va."
-      - "[png_bice] Che onda? Scommettiamo che nessuno lo sa?"
+      - "[png_bice] Che onda? Qui nessuno l'ha mai vista."
     effetti: {rivela_indizi: [i_libro_piena]}
     max_usi: 1
   - id: bic_notte_versione
@@ -146,13 +146,13 @@ battute:
     chi: png_bice
     tipo: momento
     scena: scena_terzo_tocco
-    quando: "dopo il terzo tocco, si parla di tenere le lanterne sulla rampa bassa"
+    quando: "a ponte aperto dopo il terzo tocco, si parla di tenere le lanterne sulla rampa"
     temi: [rampa, paletti, tengo, tenere, reggo]
-    richiede: {orologio: {id: o_piena, min: 8, max: 8}}
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_usate: [tul_ponte_aperto]}
     testo:
-      - "[png_bice] Le lanterne sulla rampa le tengo io. Conosco ogni paletto."
-      - "[narratore] Bice stacca due lanterne dal parapetto, una per mano."
-      - "[png_bice] Scommettiamo che reggo più di voi?"
+      - "[png_bice] Chi tiene le lanterne sulla rampa? Io conosco ogni paletto."
+      - "[narratore] Bice stacca due lanterne dal parapetto, una per mano, e vi guarda."
+      - "[png_bice] Da sola non basto. Chi viene?"
     max_usi: 1
 
   # --- riempitivo -----------------------------------------------------------------------------

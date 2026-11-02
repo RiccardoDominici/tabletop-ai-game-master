@@ -1,12 +1,12 @@
 # Scheda PNG (manuale §3). Bice accende le lanterne del ponte. Mente su dov'era ieri notte:
 # pescava anguille sotto il ponte, ed è lì che ha visto lo scrivano misurare il pilone.
-# Non va mai nel Borgo Basso stanotte, e non incontra mai Rosa (voci troppo simili).
+# Non va mai nel Borgo Basso stanotte, e non incontra mai Rosa (voci troppo simili): fa da faro dal parapetto.
 id: png_bice
 nome: "Bice Bellora"
 pronuncia: "Bìce Bellòra"
 alias: [bice, lampionaia, nipote]
 livello: supporto
-ruolo: "nipote del custode e lampionaia del ponte; testimone reticente; aiuto per la barca"
+ruolo: "nipote del custode e lampionaia del ponte; testimone reticente; fa da faro alla barca"
 fronte: fronte_piena
 
 aspetto:
@@ -21,7 +21,7 @@ personalita:
   sotto_pressione: ["diventa seria e pratica, e dà ordini come il nonno", "se la scoprono, ride troppo forte e cambia discorso"]
   contraddizione: "Accende le lanterne per chi passa sopra il ponte, e di notte ci passa sotto di nascosto."
 
-desiderio: "Portare la Lanterna nel Borgo con la pertica, per dimostrare al nonno che sa remare."   # contro Tullio, che glielo vieta
+desiderio: "Fare da faro alla barca dal parapetto, e dimostrare al nonno che sa tenere il ponte da sola."   # contro Tullio, che la tratta da bambina
 paura: "Che il nonno la mandi via dal ponte."
 
 segreto:
@@ -42,7 +42,7 @@ sa:
   - f_bice_anguille
   - f_scrivano_misura      # dalla barchetta, sotto l'arcata
   - f_lanterne_ponte
-  - f_barca_lanterna
+  - f_barca_bigia
   - f_segnali
   - f_regola_leone
   - f_detto_bellora
@@ -68,7 +68,7 @@ mente_su:
 atteggiamento_pg:
   pg_dalia:   {stato: amichevole, perche: "da piccola le portava le mele del Ricovero", vuole: "che le racconti com'era il nonno da giovane"}
   pg_quirino: {stato: amichevole, perche: "uno gnomo che sa il nome di ogni pietra", vuole: "che le insegni a leggere il ponte"}
-  pg_nives:   {stato: amichevole, perche: "la barcaiola più svelta del Borgo, il suo modello", vuole: "remare con lei nella Lanterna"}
+  pg_nives:   {stato: amichevole, perche: "la barcaiola più svelta del Borgo, il suo modello", vuole: "che la segua con la barca, al suo segnale"}
   pg_arrigo:  {stato: amichevole, perche: "le ha insegnato a barare a carte", vuole: "una canzone sulle anguille, da cantare al nonno"}
   pg_ghita:   {stato: indifferente, perche: "una guardia grossa che non ride mai", vuole: "farla ridere almeno una volta"}
 
@@ -81,13 +81,13 @@ info_chiave: [i_bice_scrivano]   # r_leone
 
 iniziative:
   - "A ogni segno dell'orologio controlla una lanterna del parapetto e la riaccende se serve."
-  - "Se un PG va verso la barca, chiede di venire con la pertica. Il nonno dice di no."
-  - "Al terzo tocco si offre per tenere le lanterne sulla rampa bassa."
+  - "Se un PG va verso la barca, si offre di fargli da faro dal parapetto: lanterna alzata vuol dire girare, abbassata dritti."
+  - "Se il ponte resta aperto dopo il terzo tocco, chiede chi scende con lei a tenere le lanterne sulla rampa."
 
 evoluzione:
   - {se: "cede e racconta della notte", allora: "accompagna i PG al parapetto e mostra dove lo scrivano ha grattato il muschio"}
-  - {se: "un PG la porta in barca contro il volere del nonno", allora: "rema benissimo, e Tullio non parla più con quel PG fino a mezzanotte"}
-  - {se: "la catena resta su dopo il terzo tocco", allora: "scende sulla rampa con due lanterne, se nessun PG lo fa prima"}
+  - {se: "un PG le chiede di fare da faro", allora: "tiene la lanterna sul parapetto per tutto il viaggio, e la barca non sbaglia un vicolo"}
+  - {se: "il ponte resta aperto dopo il terzo tocco", allora: "scende sulla rampa con due lanterne insieme a chi la segue; da sola non ci va"}
 
 statistiche: "popolana (SRD 5.2), nuota come un'anguilla"
 registro_attivita: []

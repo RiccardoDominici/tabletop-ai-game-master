@@ -103,12 +103,14 @@ iniziative:
   - "Al primo segno dell'orologio manda lo scrivano a misurare il leone con la corda a nodi."
   - "Se un PG va verso lo studio, si alza e lo accompagna con un sorriso, parlando d'altro."
   - "Al terzo tocco ricorda a Tullio, a voce bassa, che l'alba arriva per tutti."
+  - "Se al terzo tocco i PG hanno trovato l'onda, ma non l'hanno mostrata al console, propone davanti a tutti un patto: catena chiusa al tocco, e all'alba barche gratis per tutti, senza firme."
 
 evoluzione:
+  - {se: "i PG accettano il patto davanti al console", allora: "mantiene la parola: all'alba le barche prendono tutti senza firme. Il leone resta dov'è, e lui resta in consiglio"}
   - {se: "un PG gli mostra il registro in privato", allora: "offre l'accordo: barche gratis per tutti all'alba, e il registro nel camino"}
   - {se: "il registro o l'onda vengono mostrati davanti al console", allora: "dice che è un falso, poi chiama il debito di Tullio davanti a tutti: all'alba il casello è suo"}
-  - {se: "la catena resta su e nessuno lo smaschera", allora: "sorride, e all'alba si prende il casello per il debito"}
-  - {se: "la catena va giù", allora: "manda lo scrivano al Passo Vecchio con la lista sigillata"}
+  - {se: "il ponte resta aperto e nessuno lo smaschera", allora: "sorride, e all'alba si prende il casello per il debito"}
+  - {se: "la catena si chiude al tocco senza patto", allora: "manda lo scrivano al Passo Vecchio con la lista sigillata"}
 
 statistiche: "nobile (SRD 5.2), con due guardie del console che gli obbediscono"
 registro_attivita: []

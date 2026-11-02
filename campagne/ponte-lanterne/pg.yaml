@@ -80,7 +80,7 @@ personaggi:
       - "vendi qualunque cosa a chiunque"
       - "ti ricordi le facce e le chiacchiere"
     conoscenze_private:
-      - {testo: "La settimana scorsa, sotto la tettoia del ponte, hai sentito Vischi dire piano a Tullio: alla terza campana la catena giù, o all'alba il casello è mio.", fatti: [f_minaccia_tullio]}
+      - {testo: "La settimana scorsa, sotto la tettoia del ponte, hai sentito Vischi dire piano a Tullio: se tieni aperto dopo la terza campana, all'alba il casello è mio.", fatti: [f_minaccia_tullio]}
       - {testo: "Il padre di Tullio te lo diceva sempre davanti a un bicchiere: il leone ha paura dell'acqua, il ponte no. Poi rideva, e non spiegava.", fatti: [f_detto_bellora]}
 
   - id: pg_ghita

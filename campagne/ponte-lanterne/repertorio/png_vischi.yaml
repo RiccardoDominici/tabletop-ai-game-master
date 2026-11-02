@@ -33,7 +33,7 @@ battute:
     quando: "un PG chiede a Vischi dei suoi affari"
     temi: [gentile]
     testo:
-      - "[png_vischi] Sale, barche e qualche impegno con la gente del Borgo. Niente che valga la vostra pioggia."
+      - "[png_vischi] Sale, barche e qualche impegno con la gente del Borgo. Niente che valga una serata sotto la pioggia."
     max_usi: 1
   - id: vis_accusa
     chi: png_vischi
@@ -81,7 +81,7 @@ battute:
     temi: [primi, salvare, salviamo, scegliere, scegliamo, sorte]
     testo:
       - "[png_vischi] Con tutto il rispetto, i vecchi del Ricovero prima di tutto. È carità."
-      - "[narratore] Vischi alza la voce perché lo senta il ponte, e qualcuno tra la gente annuisce."
+      - "[narratore] Vischi lo dice piano, ma in modo che lo senta tutto il ponte. Qualcuno annuisce."
       - "[png_vischi] Le Case Lunghe sono gente forte. All'alba ci penso io."
     max_usi: 1
   - id: vis_leone_versione
@@ -126,7 +126,7 @@ battute:
     quando: "un PG va verso la porta di quercia in fondo alla sala"
     temi: [studio, quercia, guardia, entrare]
     testo:
-      - "[narratore] Vischi si alza, vi raggiunge con un sorriso e vi prende sottobraccio."
+      - "[narratore] Vischi si alza, vi si mette accanto con un sorriso, e indica il fuoco."
       - "[png_vischi] Lo studio è un buco pieno di carte noiose. Venga al fuoco, il vino è caldo."
     max_usi: 1
 
@@ -160,14 +160,41 @@ battute:
     chi: png_vischi
     tipo: momento
     scena: scena_terzo_tocco
-    quando: "un PG mostra a tutti, davanti al console, una prova sul leone"
+    quando: "un PG mostra a tutti, davanti al console, che cosa c'è sopra il leone"
     temi: [prova, console, guardate, falso, mostro]
-    richiede: {orologio: {id: o_piena, min: 7, max: 8}}
+    richiede: {orologio: {id: o_piena, min: 7, max: 8}, indizi_rivelati: [i_onda_pilone], battute_non_usate: [vis_smascherato_registro]}
+    testo:
+      - "[narratore] Vischi si sfila un guanto, dito per dito, davanti a tutti."
+      - "[png_vischi] Un sasso scolpito e una notte di pioggia. Ma parliamo di impegni veri."
+      - "[png_vischi] Signor Bellora, se il ponte resta aperto, all'alba il casello è mio."
+    effetti: {fatti_noti: [f_debito_tullio]}
+    max_usi: 1
+  - id: vis_smascherato_registro
+    chi: png_vischi
+    tipo: momento
+    scena: scena_terzo_tocco
+    quando: "un PG legge a tutti, davanti al console, il registro della cassa"
+    temi: [registro, leggo, console, falso, pece]
+    richiede: {orologio: {id: o_piena, min: 7, max: 8}, indizi_rivelati: [i_registro_padre], battute_non_usate: [vis_smascherato]}
     testo:
       - "[narratore] Vischi si sfila un guanto, dito per dito, davanti a tutti."
       - "[png_vischi] Un falso, e un falso bagnato. Ma parliamo di impegni veri."
-      - "[png_vischi] Signor Bellora, se la catena resta su, all'alba il casello è mio."
+      - "[png_vischi] Signor Bellora, se il ponte resta aperto, all'alba il casello è mio."
     effetti: {fatti_noti: [f_debito_tullio]}
+    max_usi: 1
+  - id: vis_patto_ponte
+    chi: png_vischi
+    tipo: momento
+    scena: scena_terzo_tocco
+    quando: "al terzo tocco, Vischi chiede la parola davanti al console e al paese"
+    temi: [manovella, rintocco, campana, console]
+    richiede: {orologio: {id: o_piena, min: 7, max: 8}, indizi_rivelati: [i_onda_pilone], battute_non_usate: [vis_smascherato, vis_smascherato_registro, tul_ponte_aperto]}
+    testo:
+      - "[narratore] Vischi alza una mano guantata, con calma, e il ponte tace."
+      - "[png_vischi] Il consiglio chiude al tocco, come è giusto. Nessuno rischia la vita sulla rampa."
+      - "[png_vischi] E all'alba le mie barche prendono tutti, senza firme. Lo giuro davanti al console."
+      - "[narratore] Poi vi guarda, uno per uno, e aspetta."
+    effetti: {fatti_noti: [f_barche_firma]}
     max_usi: 1
   - id: vis_terzo_tocco
     chi: png_vischi

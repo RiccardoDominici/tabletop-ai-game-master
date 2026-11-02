@@ -30,7 +30,7 @@ battute:
     quando: "è il momento del terzo segno della piena"
     temi: [orologio]
     richiede: {orologio: {id: o_piena, min: 2, max: 2}}
-    testo: ["[narratore] Nel Borgo Basso una lanterna alla finestra si spegne, poi si riaccende."]
+    testo: ["[narratore] Nel Borgo Basso il tetto di una stalla vuota cede, con un tonfo nell'acqua."]
     effetti: {avanza_orologio: o_piena}
     max_usi: 1
   - id: nar_piena_4
@@ -77,6 +77,48 @@ battute:
     richiede: {orologio: {id: o_piena, min: 7, max: 7}}
     testo: ["[narratore] La campana batte il terzo tocco, e l'acqua tocca la criniera del leone.", "[narratore] Tutto il ponte si volta verso la catena."]
     effetti: {avanza_orologio: o_piena}
+    max_usi: 1
+
+  # --- segni dell'orologio o_rampa (solo a ponte aperto dopo il terzo tocco) -----------------
+  - id: nar_rampa_1
+    chi: narratore
+    tipo: segno_orologio
+    scena: scena_terzo_tocco
+    quando: "è il momento del primo segno della rampa"
+    temi: [orologio]
+    richiede: {orologio: {id: o_rampa, min: 0, max: 0}, battute_usate: [tul_ponte_aperto]}
+    testo: ["[narratore] Sulla rampa bassa l'acqua arriva alle ginocchia, e tira."]
+    effetti: {avanza_orologio: o_rampa}
+    max_usi: 1
+  - id: nar_rampa_2
+    chi: narratore
+    tipo: segno_orologio
+    scena: scena_terzo_tocco
+    quando: "è il momento del secondo segno della rampa"
+    temi: [orologio]
+    richiede: {orologio: {id: o_rampa, min: 1, max: 1}, battute_usate: [tul_ponte_aperto]}
+    testo: ["[narratore] Il leone sparisce sotto l'acqua, e la corrente fa un gorgo sul pilone."]
+    effetti: {avanza_orologio: o_rampa}
+    max_usi: 1
+  - id: nar_rampa_3
+    chi: narratore
+    tipo: segno_orologio
+    scena: scena_terzo_tocco
+    quando: "è il momento del terzo segno della rampa"
+    temi: [orologio]
+    richiede: {orologio: {id: o_rampa, min: 2, max: 2}, battute_usate: [tul_ponte_aperto]}
+    testo: ["[narratore] Il fiume si porta via un paletto della rampa, con la sua lanterna.", "[narratore] La luce gira due volte sull'acqua, e si spegne."]
+    effetti: {avanza_orologio: o_rampa}
+    max_usi: 1
+  - id: nar_rampa_4
+    chi: narratore
+    tipo: segno_orologio
+    scena: scena_terzo_tocco
+    quando: "è il momento dell'ultimo segno della rampa"
+    temi: [orologio]
+    richiede: {orologio: {id: o_rampa, min: 3, max: 3}, battute_usate: [tul_ponte_aperto]}
+    testo: ["[narratore] Dal pilone di mezzo sale un gemito lungo, e la rampa trema."]
+    effetti: {avanza_orologio: o_rampa}
     max_usi: 1
 
   # --- segni dell'orologio o_firme (Casa del Sale) -------------------------------------------
@@ -127,7 +169,7 @@ battute:
     quando: "è il momento del quinto segno delle firme"
     temi: [orologio]
     richiede: {orologio: {id: o_firme, min: 4, max: 4}}
-    testo: ["[narratore] Il consiglio vota a mani alzate: catena giù al terzo tocco.", "[narratore] Il console conta le mani due volte, per sicurezza."]
+    testo: ["[narratore] Il consiglio vota a mani alzate: catena chiusa al terzo tocco.", "[narratore] Il console conta le mani due volte, per sicurezza."]
     effetti: {avanza_orologio: o_firme}
     max_usi: 1
   - id: nar_firme_6
@@ -157,7 +199,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "dalla barca, sotto l'arcata, un PG tocca o guarda da vicino il leone"
-    temi: [malta, statua, muso, tocco, toccare]
+    temi: [malta, statua, muso, tocca, toccare, tasto]
     testo:
       - "[narratore] Dalla barca il leone è a portata di mano, bagnato e freddo."
       - "[narratore] Le dita trovano intorno al blocco una malta liscia, che non si sbriciola."
@@ -168,7 +210,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "dal parapetto, un PG gratta con la pertica il muschio del pilone di mezzo"
-    temi: [muschio, gratto, grattare, raschio, pilone, scolpito]
+    temi: [muschio, gratto, grattare, raschio, pilone, scolpito, leone, inciso, incisione]
     testo:
       - "[narratore] La pertica raschia la pietra, e il muschio viene via a strisce nere."
       - "[narratore] Due spanne sopra il leone, nella pietra, c'è un'onda scolpita."
@@ -193,7 +235,7 @@ battute:
     temi: [libro, sfoglio, sfogliare, pagine, leggo, leggere]
     testo:
       - "[narratore] Le pagine vecchie sono gonfie d'umido, scritte con una mano grossa e storta."
-      - "[narratore] Alla notte della piena grande c'è una riga ripassata due volte."
+      - "[narratore] Alla piena di vent'anni fa c'è una riga ripassata due volte."
       - "[narratore] Dice così: «Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va.»"
     effetti: {rivela_indizi: [i_libro_piena], fatti_noti: [f_libro_piena]}
     max_usi: 1
@@ -232,6 +274,28 @@ battute:
       - "[narratore] Dice che il signor Vischi vuole sapere quanto manca al leone, con precisione."
       - "[narratore] Poi aggiunge, piano, che il signor Vischi non sbaglia mai i conti."
     effetti: {rivela_indizi: [i_scrivano_corda]}
+    max_usi: 1
+  - id: nar_fila_ernesto
+    chi: narratore
+    tipo: indizio
+    scena: scena_ponte_imbrunire
+    quando: "un PG chiede alla gente in fila dei vecchi del Ricovero"
+    temi: [fila, ernesto, vecchi, messa]
+    testo:
+      - "[narratore] Una ragazza con una gabbia di galline si ferma sotto la pioggia."
+      - "[narratore] Dice che domenica, a messa, il vecchio Ernesto tossiva già forte."
+      - "[narratore] Poi alza le spalle: Rosa dondola la lanterna, quindi stanno bene."
+    effetti: {rivela_indizi: [i_fila_ernesto], fatti_noti: [f_ernesto_tosse]}
+    max_usi: 1
+  - id: nar_scrivano_fugge
+    chi: narratore
+    tipo: momento
+    scena: scena_ponte_imbrunire
+    quando: "un PG minaccia lo scrivano o lo afferra"
+    temi: [afferro, strattono, spingo, minaccio, scrivano]
+    testo:
+      - "[narratore] Lo scrivano lascia cadere la corda e balbetta: ordini del signor Vischi."
+      - "[narratore] Poi scappa verso la Casa del Sale, senza ombrello e senza voltarsi."
     max_usi: 1
   - id: nar_nassa
     chi: narratore
@@ -415,9 +479,9 @@ battute:
     chi: narratore
     tipo: momento
     scena: scena_terzo_tocco
-    quando: "dopo il terzo tocco, a catena alzata, la barca torna dal Borgo"
+    quando: "dopo il terzo tocco, a ponte aperto, la barca torna dal Borgo"
     temi: [prua, arrivano, aspettiamo]
-    richiede: {battute_usate: [tul_catena_su]}
+    richiede: {battute_usate: [tul_ponte_aperto]}
     testo:
       - "[narratore] Dal buio del Borgo spunta una prua, con una lanterna appesa al remo."
       - "[narratore] La barca accosta alla rampa, carica, con l'acqua che le sale ai fianchi."
@@ -505,7 +569,7 @@ battute:
     temi: [dondolo, sventolo, agito, segnalo, rispondo]
     testo:
       - "[narratore] Per un momento il Borgo non risponde."
-      - "[narratore] Poi una delle due lanterne laggiù dondola piano, una volta sola, come per dire: vi vediamo."
+      - "[narratore] Poi, laggiù, qualcuno alza e abbassa una lanterna, due volte: vi hanno visti."
     max_usi: 1
 
   # --- transizioni ----------------------------------------------------------------------------
@@ -618,7 +682,7 @@ battute:
     temi: [attesa]
     testo:
       - "[narratore] All'imbocco della Riva Alta il paese batte i piedi sulle pietre, a tempo."
-      - "[narratore] Qualcuno grida al custode di tirare giù la catena."
+      - "[narratore] Qualcuno grida al custode di chiudere la catena."
     max_usi: 1
 
   # --- finali del terzo tocco (esiti della scena) ---------------------------------------------
@@ -626,11 +690,11 @@ battute:
     chi: narratore
     tipo: finale
     scena: scena_terzo_tocco
-    quando: "la catena è giù, e le famiglie delle Case Lunghe sono ancora di là"
+    quando: "la catena è chiusa, e le famiglie delle Case Lunghe sono ancora di là"
     temi: [orologio]
-    richiede: {orologio: {id: o_piena, min: 8, max: 8}}
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [vis_patto_ponte, tul_ponte_aperto]}
     testo:
-      - "[narratore] La catena scende, e il ferro suona sulle pietre."
+      - "[narratore] La catena si alza e si tende tra i paletti, con uno schiocco di ferro."
       - "[narratore] Sul tetto delle Case Lunghe la lanterna resta ferma fino all'alba."
       - "[narratore] All'alba arrivano le barche nere di Vischi, con un tavolo e un calamaio."
       - "[narratore] Le madri firmano con una croce, e salgono con i bambini in braccio."
@@ -639,37 +703,63 @@ battute:
     chi: narratore
     tipo: finale
     scena: scena_terzo_tocco
-    quando: "la catena è giù, e i vecchi del Ricovero sono ancora di là"
+    quando: "la catena è chiusa, e i vecchi del Ricovero sono ancora di là"
     temi: [orologio]
-    richiede: {orologio: {id: o_piena, min: 8, max: 8}}
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [vis_patto_ponte, tul_ponte_aperto]}
     testo:
-      - "[narratore] La catena scende, e il ferro suona sulle pietre."
+      - "[narratore] La catena si alza e si tende tra i paletti, con uno schiocco di ferro."
       - "[narratore] Al Ricovero la lanterna dondola piano, sempre più piano, fino all'alba."
       - "[narratore] All'alba Rosa firma il foglio di Vischi, e i vecchi salgono sulle barche nere."
       - "[narratore] Ernesto lo portano su in chiesa avvolto in tre coperte, e non parla."
+    max_usi: 1
+  - id: fin_patto
+    chi: narratore
+    tipo: finale
+    scena: scena_terzo_tocco
+    quando: "dopo la proposta di Vischi, la catena si chiude al terzo tocco"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_usate: [vis_patto_ponte, tul_catena_tesa]}
+    testo:
+      - "[narratore] La catena si tende al terzo tocco, e il paese torna a casa sotto la pioggia."
+      - "[narratore] Di là, chi è rimasto passa la notte sui tetti, sotto le coperte bagnate."
+      - "[narratore] All'alba le barche nere di Vischi prendono tutti, senza un foglio da firmare."
+      - "[narratore] Il leone resta dov'è, con la criniera sott'acqua, e nessuno lo guarda."
     max_usi: 1
   - id: fin_ora_in_piu
     chi: narratore
     tipo: finale
     scena: scena_terzo_tocco
-    quando: "a catena alzata, l'ultima persona del secondo viaggio sale dalla rampa"
+    quando: "a ponte aperto, l'ultima persona del secondo viaggio sale dalla rampa"
     temi: [orologio]
-    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_usate: [tul_catena_su]}
+    richiede: {orologio: {id: o_rampa, min: 0, max: 3}, battute_usate: [tul_ponte_aperto]}
     testo:
-      - "[narratore] L'ultima persona sale dalla rampa con l'acqua alla vita, aggrappata a una lanterna."
-      - "[narratore] Dietro di lei il fiume sale ancora, e il custode abbassa la catena."
+      - "[narratore] L'ultima persona sale dalla rampa con l'acqua alla vita, aggrappata a un paletto."
+      - "[narratore] Dietro l'ultima lanterna il fiume sale ancora, e il custode tende la catena."
       - "[narratore] All'alba Vischi bussa al casello con il foglio del debito e il suo sigillo."
       - "[narratore] Su in chiesa, intanto, il Borgo intero dorme sotto lo stesso tetto."
+    max_usi: 1
+  - id: fin_barca_tardi
+    chi: narratore
+    tipo: finale
+    scena: scena_terzo_tocco
+    quando: "a ponte aperto, il pilone geme e la barca non è ancora alla rampa"
+    temi: [orologio]
+    richiede: {orologio: {id: o_rampa, min: 4, max: 4}, battute_usate: [tul_ponte_aperto]}
+    testo:
+      - "[narratore] Il custode tende la catena, e chi è sulla rampa risale di corsa con le lanterne."
+      - "[narratore] Laggiù la barca vira, e torna nel Borgo con il suo carico."
+      - "[narratore] Passeranno la notte sui tetti, con la pioggia e senza fuoco."
+      - "[narratore] All'alba Vischi bussa al casello con il foglio del debito."
     max_usi: 1
   - id: fin_nessun_viaggio
     chi: narratore
     tipo: finale
     scena: scena_terzo_tocco
-    quando: "la catena è giù, e la barca non è mai partita"
+    quando: "la catena è chiusa, e la barca non è mai partita"
     temi: [orologio]
     richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [tr_borgo]}
     testo:
-      - "[narratore] La catena scende, e la barca resta legata al pontile, piena di pioggia."
+      - "[narratore] La catena si tende, e la Bigia resta legata al pontile, piena di pioggia."
       - "[narratore] Nel Borgo due lanterne restano accese fino all'alba: una dondola, una no."
       - "[narratore] All'alba le barche nere di Vischi risalgono il fiume, con il tavolo e il calamaio."
     max_usi: 1
