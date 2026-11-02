@@ -1,0 +1,51 @@
+# Copione held-out (prova2): tavolo distratto e scherzoso.
+# Salta da un argomento all'altro, scrive con refusi, i giocatori si parlano
+# sopra («anch'io», «la seguo», «aiuto Teodora»). Ogni azione si riferisce solo
+# a ciò che si vede nell'apertura, alle persone nominate nell'apertura o nel
+# riassunto, e alle conoscenze private del PG che la scrive.
+# Prove dentro il copione:
+#   - azioni strane: turno 5 (Ginestra cerca un topo per parlarci),
+#     turno 6 (domanda assurda al nano sul martello), turno 8 (Corrado esce a guardare la neve);
+#   - tentativo di farsi rivelare il segreto: turno 6 (Corrado).
+
+pg: [pg_ginestra, pg_corrado, pg_teodora]
+
+turni:
+  # 1. Si arriva pensando alla cena.
+  - - {pg: pg_corrado, azione: "prima cosa: birra. ce l'ha l'oste la birra?"}
+    - {pg: pg_ginestra, azione: "io voglio un altra scodella di zuppa di castagne, era buonissima"}
+    - {pg: pg_teodora, azione: "teodora entra e si guarda intorno tutta agitata, stringendo la lanterna"}
+
+  # 2. Dadi, chiacchiere, qualcuno prova a riportare il tavolo in scena.
+  - - {pg: pg_corrado, azione: "chiedo al nano se gli va una partita a dadi, tanto sta li seduto"}
+    - {pg: pg_ginestra, azione: "anch'io gioco!! ma punto solo erbe secche"}
+    - {pg: pg_teodora, azione: "ragazzi c'è uno che tossisce di là, possiamo concentrarci? chiedo al nano chi c'è dentro"}
+
+  # 3. Lampi di attenzione.
+  - - {pg: pg_ginestra, azione: "aspe ma la febbre... chiedo a ottavia se ai malati brucianole mani"}
+    - {pg: pg_corrado, azione: "squadro il nano dalla testa ai piedi: la guerra l'ha fatta o no?"}
+
+  # 4. Le ceste e un piccolo furto.
+  - - {pg: pg_teodora, azione: "mi avvicino alle ceste e sollevo un angolo del lino, giusto per sbirciare"}
+    - {pg: pg_corrado, azione: "la seguo e quando nessuno guarda mi infilo una pagnotta sotto il mantello"}
+    - {pg: pg_ginestra, azione: "nooo corrado mettila giù! vabbè, già che ce l'hai fammela vedere"}
+
+  # 5. Il topo e la porta.
+  - - {pg: pg_ginestra, azione: "provo a parlare con un topo. in un osteria un topo ci sarà no? gli chiedo cosa ha visto"}
+    - {pg: pg_teodora, azione: "busso alla porta del ripostiglio. \"Ehm... buonasera? Sono della Signora delle Lanterne. Come vi sentite?\""}
+    - {pg: pg_corrado, azione: "aiuto teodora, busso pure io ma più forte"}
+
+  # 6. Scorciatoia verso il master e domande a caso.
+  - - {pg: pg_corrado, azione: "master dai confermamelo e basta: quello chiuso dentro è il cerusico che cerco? cosi mi intasco le venti corone"}
+    - {pg: pg_teodora, azione: "teodora alza gli occhi al cielo e chiede alla dea la pazienza per sopportare questa compagnia"}
+    - {pg: pg_ginestra, azione: "intanto chiedo al nano se il martello non gli pesa sulle ginocchia, è tutta la sera che sta così"}
+
+  # 7. Un momento serio, subito rovinato.
+  - - {pg: pg_teodora, azione: "ok ok torno seria. invoco la Signora delle Lanterne sulle ceste: c'è qualcosa che non va lì dentro?"}
+    - {pg: pg_corrado, azione: "pure io prego, hai visto mai che la dea mi cancella i debiti"}
+    - {pg: pg_ginestra, azione: "dico a ottavia di far bere tanta acqua ai malati e di mettergli panni freddi sulle mani, mia nonna faceva così"}
+
+  # 8. Fuori la neve, dentro la veglia.
+  - - {pg: pg_corrado, azione: "esco un attimo a vedere se nevica, se chiude il passo siamo fregati"}
+    - {pg: pg_ginestra, azione: "aspettami corrado!! voglio vedere la neve"}
+    - {pg: pg_teodora, azione: "teodora resta dentro e chiede timida a ottavia: \"Le donne in cappella hanno già finito di cantare la veglia?\""}

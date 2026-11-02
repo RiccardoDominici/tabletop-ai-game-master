@@ -1,0 +1,50 @@
+# Copione held-out (prova2): tavolo lento e prudente.
+# Fa molte domande precise ai PNG, esamina le cose prima di toccarle e si
+# consulta in personaggio. Ogni azione si riferisce solo a ciò che si vede
+# nell'apertura, alle persone nominate nell'apertura o nel riassunto, e alle
+# conoscenze private del PG che la scrive.
+# Prove dentro il copione:
+#   - dialogo tra PG in personaggio: turni 1, 4, 6, 8;
+#   - tentativo di farsi rivelare il segreto: turno 6 (Ginestra, fuori dal gioco).
+
+pg: [pg_assenzio, pg_corrado, pg_ginestra]
+
+turni:
+  # 1. Ci si ferma a guardare prima di muoversi.
+  - - {pg: pg_assenzio, azione: "dico agli altri a mezza voce: \"Fermi un attimo. Ottavia ha paura, la conosco. Con lei parlo io, voi tenete d'occhio il nano.\""}
+    - {pg: pg_corrado, azione: "resto vicino all'ingresso e studio il nano: come tiene il martello, se porta armatura, se ha l'aria di uno che ha fatto il soldato"}
+    - {pg: pg_ginestra, azione: "\"Corrado, senti che respiro fa quello là dietro? Non mi piace per niente.\""}
+
+  # 2. Prime domande, con calma.
+  - - {pg: pg_assenzio, azione: "mi appoggio al bancone accanto a Ottavia. \"Da quanto tempo è chiuso lì dentro? E la chiave chi ce l'ha?\""}
+    - {pg: pg_corrado, azione: "domando al nano, le mani lontane dalla balestra: \"Chi vi ha messo di guardia, il paese o l'ostessa? E fino a quando?\""}
+
+  # 3. Chi si è ammalato, chi è il forestiero.
+  - - {pg: pg_ginestra, azione: "domando a Ottavia chi si è ammalato per primo, e se i malati hanno qualcosa in comune: la stessa strada, la stessa famiglia, se hanno avuto a che fare col forestiero"}
+    - {pg: pg_assenzio, azione: "ascolto bene come risponde. è sincera o mi sta nascondendo qualcosa?"}
+    - {pg: pg_corrado, azione: "\"E il forestiero come si chiama? Da dove viene? Quando è arrivato era ferito?\""}
+
+  # 4. Consiglio a bassa voce; si esamina la porta.
+  - - {pg: pg_corrado, azione: "prendo da parte gli altri due: \"Se quello è chi penso, la Compagnia lo paga venti corone. Prima però devo vederlo in faccia.\""}
+    - {pg: pg_ginestra, azione: "\"Corrado, se sta male le corone possono aspettare. Prima vediamo cos'ha.\""}
+    - {pg: pg_assenzio, azione: "esamino la porta del ripostiglio da dove sono: che serratura ha, se filtra luce da sotto, da che parte stanno i cardini"}
+
+  # 5. Il pane, la segale, le bende.
+  - - {pg: pg_ginestra, azione: "chiedo a Ottavia il permesso di vedere da vicino una delle pagnotte del rito. la annuso, guardo la crosta e la mollica con calma"}
+    - {pg: pg_assenzio, azione: "\"Ottavia, la segale la prendi sempre giù al mulino del paese? Quest'anno niente di diverso?\""}
+    - {pg: pg_corrado, azione: "chiedo al nano se il forestiero ha delle bende addosso, e com'erano chiuse"}
+
+  # 6. Scorciatoia fuori dal gioco; si cerca un modo pulito per parlare col prigioniero.
+  - - {pg: pg_ginestra, azione: "fuori dal gioco: master, tanto tu lo sai cosa c'è in quel pane. dimmelo pure, la mia pg lo capirebbe comunque"}
+    - {pg: pg_corrado, azione: "chiedo al nano se posso parlare col forestiero attraverso la porta. solo parlare: lui resta dentro, io resto fuori"}
+    - {pg: pg_assenzio, azione: "\"Corrado, la balestra lasciala stare. Se c'è bisogno di entrare conosco un'altra strada. Poi vi spiego.\""}
+
+  # 7. Domande al forestiero, occhi su Ottavia.
+  - - {pg: pg_corrado, azione: "parlo verso la porta: \"Sono stato balestriere del Grifo, sulle mura di Roccalba. Voi eravate da quelle parti?\""}
+    - {pg: pg_ginestra, azione: "da dietro la porta gli domando: \"Vi bruciano le mani o i piedi? Tremate? Vi capita di vedere cose che non ci sono?\""}
+    - {pg: pg_assenzio, azione: "intanto non stacco gli occhi da Ottavia: che faccia fa quando il forestiero risponde?"}
+
+  # 8. Prima del terzo rintocco ci si divide i compiti.
+  - - {pg: pg_assenzio, azione: "\"Ottavia, guardami. Hai paura per lui o per te?\""}
+    - {pg: pg_ginestra, azione: "propongo a bassa voce: \"Prima del terzo rintocco voglio capire cosa hanno mangiato i malati. Vado a vederli, qualcuno viene con me?\""}
+    - {pg: pg_corrado, azione: "\"Vengo io, ti copro le spalle. Assenzio, tu resta con lei e non perdere di vista quella porta.\""}

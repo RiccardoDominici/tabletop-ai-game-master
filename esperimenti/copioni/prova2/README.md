@@ -1,0 +1,2 @@
+Copioni held-out (`caotico.yaml`, `cauto.yaml`) per un nuovo confronto tra Narratori, scritti dopo la taratura del repertorio sui due copioni precedenti e senza riaprirli; stesso formato: turni di 1–3 azioni `{pg, azione}`, al massimo una per PG.
+Confine rispettato: letti solo `prova-f0/pg.yaml` (ogni PG agisce solo sulle proprie `conoscenze_private`), `campagna.yaml` → `sessione.riassunto_iniziale` e `scena.yaml` → `nome` e `apertura`; niente altro di campagne/, prompts/, docs/, repertorio/, png/, logs/ né dei copioni precedenti.
