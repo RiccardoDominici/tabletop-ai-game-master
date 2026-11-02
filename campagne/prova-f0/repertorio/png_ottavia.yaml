@@ -1,0 +1,347 @@
+# Repertorio di Ottavia (docs/repertorio.md). Voce: tu ai giovani, al gruppo il voi;
+# lei freddo al forestiero e a chi la accusa. Frasi brevi, di cucina. Tic: «Mangia, ché la notte è lunga.»
+# Segnale quando mente: si sistema il fazzoletto rosso e guarda le ceste.
+# Menzogne registrate: ott_segale = «da dove viene la segale»; ott_cane = «il cane».
+# I `quando` non contengono segreti: li legge il selettore, che non conosce le verità.
+
+battute:
+
+  # --- saluto e reazioni di base ---------------------------------------------------------
+  - id: ott_saluto
+    chi: png_ottavia
+    tipo: saluto
+    quando: "i PG si avvicinano a Ottavia o la salutano"
+    temi: [saluto, ostessa, zuppa, cena]
+    testo:
+      - "[narratore] Ottavia batte il mestolo sul bordo del paiolo."
+      - "[png_ottavia] Sedetevi, che fuori gela. La zuppa di castagne è ancora calda."
+    varianti:
+      - ["[png_ottavia] Ancora in piedi? Sedetevi e mangiate, ché la notte è lunga."]
+      - ["[narratore] Ottavia vi indica la panca con il mestolo.", "[png_ottavia] Lì c'è posto. La zuppa ve la porto io."]
+    max_usi: 3
+
+  - id: ott_domanda_gentile
+    chi: png_ottavia
+    tipo: reazione
+    quando: "un PG fa a Ottavia una domanda gentile su di lei o sulla serata"
+    temi: [domanda, osteria, serata, lavoro]
+    testo:
+      - "[png_ottavia] Trent'anni che faccio il pane dei lumi. Un soldo a famiglia, e tutti contenti."
+      - "[narratore] Si asciuga la fronte con il polso, senza smettere di lavorare."
+    varianti:
+      - ["[png_ottavia] Stanotte è la notte dei morti, figlioli. Si lavora fino al terzo rintocco."]
+    max_usi: 2
+
+  - id: ott_accusa
+    chi: png_ottavia
+    tipo: reazione
+    quando: "un PG accusa Ottavia di aver fatto ammalare il paese"
+    temi: [accusa, colpa, febbre, pane]
+    testo:
+      - "[narratore] Ottavia posa il mestolo e abbassa la voce."
+      - "[png_ottavia] Il mio pane lo mangia questo paese da trent'anni. Guardi al pozzo, piuttosto."
+    varianti:
+      - ["[png_ottavia] Lei viene nella mia cucina a dirmi questo? Il mio pane non ha mai fatto male a nessuno."]
+    max_usi: 2
+
+  - id: ott_minaccia
+    chi: png_ottavia
+    tipo: reazione
+    quando: "un PG minaccia Ottavia o alza le mani su di lei"
+    temi: [minaccia, forza, mani]
+    testo:
+      - "[narratore] Ottavia stringe il mestolo come un bastone, e guarda verso il nano."
+      - "[png_ottavia] In casa mia no. Baldrin, li senti?"
+    varianti:
+      - ["[png_ottavia] Un altro passo e chiamo mezzo paese. Mi basta un fiato."]
+    max_usi: 2
+
+  - id: ott_offerta
+    chi: png_ottavia
+    tipo: reazione
+    quando: "un PG offre a Ottavia denaro o un favore"
+    temi: [offerta, soldi, monete, favore, debito]
+    testo:
+      - "[narratore] Ottavia guarda le monete, poi le ceste."
+      - "[png_ottavia] Il pane dei lumi si paga al rintocco, non prima. Cosa volete, in cambio?"
+    varianti:
+      - ["[png_ottavia] Tenete i vostri soldi. Stanotte il pane si spezza per i morti, poi si paga."]
+    max_usi: 2
+
+  - id: ott_aiuto
+    chi: png_ottavia
+    tipo: reazione
+    quando: "un PG aiuta Ottavia in cucina o con le ceste"
+    temi: [aiuto, cucina, ceste, lino, fuoco]
+    testo:
+      - "[png_ottavia] Brava gente. Il lino si piega così, sugli angoli."
+      - "[narratore] Vi porge un telo bianco che sa di bucato e di forno."
+    varianti:
+      - ["[png_ottavia] Mi servono due braccia al fuoco. Attenti, che la brace morde."]
+    max_usi: 2
+
+  - id: ott_rifiuto
+    chi: png_ottavia
+    tipo: rifiuto
+    quando: "un PG chiede a Ottavia di cose lontane dalla sua cucina"
+    temi: [guerra, magia, viaggio, lontano]
+    testo:
+      - "[png_ottavia] Io so di farina e di forno. Il resto chiedetelo a chi gira il mondo."
+    varianti:
+      - ["[narratore] Ottavia scuote la testa e torna al paiolo.", "[png_ottavia] Di queste cose non so niente. Volete altra zuppa?"]
+      - ["[png_ottavia] Domande da città. Qui si parla di pane e di legna."]
+    max_usi: 3
+
+  # --- iniziative e richieste ------------------------------------------------------------
+  - id: ott_chiama_zuppa
+    chi: png_ottavia
+    tipo: richiesta
+    quando: "un PG va verso il retro o verso le ceste del pane"
+    temi: [retro, tenda, ceste, sacchi, zuppa]
+    testo:
+      - "[png_ottavia] Di là non c'è niente da vedere. Venite al paiolo, assaggiate la zuppa."
+      - "[narratore] Il mestolo batte due volte sul bordo. Sa di castagne e di alloro."
+    varianti:
+      - ["[png_ottavia] Le ceste non si toccano prima del rintocco. Piuttosto, assaggiate qui."]
+    max_usi: 2
+
+  - id: ott_pane_prima
+    chi: png_ottavia
+    tipo: reazione
+    quando: "un PG vuole spezzare o assaggiare il pane prima del rintocco"
+    temi: [pane, spezzare, assaggiare, ceste]
+    testo:
+      - "[png_ottavia] Giù le mani dalle ceste! Il pane dei lumi si spezza al rintocco."
+      - "[narratore] Ottavia si mette tra voi e il tavolo, il mestolo alzato."
+    max_usi: 1
+
+  - id: ott_benedizione_chierica
+    chi: png_ottavia
+    tipo: richiesta
+    quando: "dopo il primo rintocco, se c'è la chierica, Ottavia la chiama alla benedizione"
+    temi: [benedizione, chierica, rito, rintocco]
+    richiede:
+      orologio: {id: o_colpevole, min: 3, max: 5}
+      battute_non_usate: [ott_benedizione_massaro]
+    testo:
+      - "[png_ottavia] Sorella, al terzo rintocco tocca a te. Il pane è pronto, manca la benedizione."
+    max_usi: 1
+
+  - id: ott_benedizione_massaro
+    chi: png_ottavia
+    tipo: richiesta
+    quando: "dopo il primo rintocco, se non c'è una chierica, Ottavia chiama il massaro"
+    temi: [benedizione, massaro, rito, rintocco]
+    richiede:
+      orologio: {id: o_colpevole, min: 3, max: 5}
+      battute_non_usate: [ott_benedizione_chierica]
+    testo:
+      - "[png_ottavia] Baldrin, la chierica non c'è. Il pane lo benedici tu, da massaro."
+      - "[narratore] Il nano annuisce, senza alzare gli occhi."
+    max_usi: 1
+
+  - id: ott_brucia_sacchi
+    chi: png_ottavia
+    tipo: momento
+    quando: "davanti a Ottavia i PG indicano il pane come causa della febbre"
+    temi: [pane, causa, febbre, sacchi, forno]
+    richiede:
+      battute_non_usate: [ott_segale_chicco, ott_segale_passato]
+    testo:
+      - "[narratore] Ottavia corre nel retro. Torna con un sacco stretto tra le braccia."
+      - "[narratore] Lo rovescia nella bocca del forno. Sale un fumo acre, che pizzica la gola."
+      - "[png_ottavia] Il forno ha fame, stanotte."
+    max_usi: 1
+
+  # --- verità che sa e dice ---------------------------------------------------------------
+  - id: ott_malati
+    chi: png_ottavia
+    tipo: verita
+    quando: "un PG chiede a Ottavia chi sono i malati"
+    temi: [malati, febbre, bambini, paese]
+    testo:
+      - "[png_ottavia] La piccola di Baldrin, i due del bottaio, la vecchia Tecla. E altri cinque."
+      - "[narratore] Ottavia si ferma un momento, poi riprende a piegare il lino."
+    effetti:
+      fatti_noti: [f_malati_nomi]
+    max_usi: 1
+
+  - id: ott_rito
+    chi: png_ottavia
+    tipo: verita
+    quando: "un PG chiede a Ottavia del pane dei lumi o della veglia"
+    temi: [rito, veglia, pane, morti, rintocco]
+    testo:
+      - "[png_ottavia] Al terzo rintocco viene tutto il paese. Si spezza il pane, e lo mangiano anche i bambini."
+      - "[png_ottavia] Chi lo rifiuta offende i morti. Un soldo a famiglia."
+    effetti:
+      fatti_noti: [f_rito_pane, f_pane_lumi_paga]
+    max_usi: 1
+
+  - id: ott_forestiero
+    chi: png_ottavia
+    tipo: reazione
+    quando: "un PG chiede a Ottavia del forestiero chiuso nel ripostiglio"
+    temi: [forestiero, ripostiglio, straniero, cappuccio]
+    testo:
+      - "[narratore] Ottavia guarda la porta del ripostiglio, poi il paiolo."
+      - "[png_ottavia] È arrivato tre giorni fa, a piedi. Da allora, solo guai."
+    max_usi: 1
+
+  - id: ott_forestiero_parole
+    chi: png_ottavia
+    tipo: reazione
+    quando: "un PG chiede se il forestiero ha parlato con Ottavia"
+    temi: [forestiero, parlato, cucina, detto]
+    testo:
+      - "[png_ottavia] Parla tanto, quello. Parole da forestiero."
+      - "[narratore] Il mestolo batte sul paiolo, più forte di prima."
+    max_usi: 1
+
+  # --- menzogne, sempre con il segnale ---------------------------------------------------
+  - id: ott_segale_versione
+    chi: png_ottavia
+    tipo: menzogna
+    quando: "un PG chiede a Ottavia da dove viene la segale o la farina"
+    temi: [segale, farina, mulino, sacchi, comprata]
+    testo:
+      - "[narratore] Ottavia si sistema il fazzoletto rosso sui capelli e guarda le ceste."
+      - "[png_ottavia] È la segale di sempre, del mulino del paese. La prendo lì da trent'anni."
+    varianti:
+      - ["[narratore] Di nuovo si sistema il fazzoletto rosso, con gli occhi sulle ceste.", "[png_ottavia] Ve l'ho già detto. Il mulino del paese, da trent'anni."]
+    effetti:
+      menzogna_detta: ott_segale
+    max_usi: 2
+
+  - id: ott_cane_versione
+    chi: png_ottavia
+    tipo: menzogna
+    quando: "un PG chiede a Ottavia cos'ha il cane, o cosa ha mangiato"
+    temi: [cane, moro, mangiato, trema]
+    testo:
+      - "[narratore] Ottavia si sistema il fazzoletto rosso, e lo sguardo le scivola sulle ceste."
+      - "[png_ottavia] Avrà mangiato un topo. I cani mangiano i topi."
+    varianti:
+      - ["[narratore] Ancora il fazzoletto rosso, sistemato in fretta, e gli occhi sulle ceste.", "[png_ottavia] Un topo, ve l'ho detto. Passa da sé."]
+    effetti:
+      menzogna_detta: ott_cane
+    max_usi: 2
+
+  # --- confessioni (cede_se) --------------------------------------------------------------
+  - id: ott_segale_chicco
+    chi: png_ottavia
+    tipo: confessione
+    quando: "dove Baldrin non sente, un PG dà a Ottavia un chicco nero dei sacchi"
+    temi: [chicco, sacchi, segale, privato]
+    richiede:
+      indizi_rivelati: [i_speroni_neri]
+      battute_non_usate: [ott_segale_passato]
+    testo:
+      - "[narratore] Ottavia guarda il chicco nel palmo. Le labbra le tremano, senza un suono."
+      - "[png_ottavia] Non è del mulino del paese. È segale di Gualtiero, presa a metà prezzo."
+      - "[png_ottavia] «Prendila tutta», mi ha detto. E io l'ho setacciata due volte."
+      - "[narratore] Si copre la bocca con la mano infarinata."
+    effetti:
+      rivela_indizi: [i_ottavia_confessione]
+      fatti_noti: [f_segale_gualtiero]
+    max_usi: 1
+
+  - id: ott_segale_passato
+    chi: png_ottavia
+    tipo: confessione
+    quando: "in privato, il PG cresciuto all'osteria chiede a Ottavia di essere sincera"
+    temi: [passato, sincera, figlio, privato]
+    richiede:
+      battute_non_usate: [ott_segale_chicco]
+    testo:
+      - "[narratore] Ottavia smette di lavorare. Le mani le restano ferme sul tavolo, aperte."
+      - "[png_ottavia] Per te ho mentito alle guardie, figliolo. A te non ci riesco."
+      - "[png_ottavia] La segale è di Gualtiero, a metà prezzo. «Prendila tutta», mi ha detto."
+    effetti:
+      rivela_indizi: [i_ottavia_confessione]
+      fatti_noti: [f_segale_gualtiero]
+    max_usi: 1
+
+  - id: ott_cane_croste
+    chi: png_ottavia
+    tipo: confessione
+    quando: "un PG mostra a Ottavia le croste nella ciotola del cane"
+    temi: [cane, croste, ciotola]
+    richiede:
+      indizi_rivelati: [i_cane_croste]
+      battute_non_usate: [ott_cane_dopo]
+    testo:
+      - "[narratore] Ottavia guarda la ciotola a lungo."
+      - "[png_ottavia] Le croste del pane nuovo. Ieri gliele ho date io."
+      - "[png_ottavia] Da stamattina trema. E io ho impastato lo stesso."
+    effetti:
+      fatti_noti: [f_cane_croste]
+    max_usi: 1
+
+  - id: ott_cane_dopo
+    chi: png_ottavia
+    tipo: confessione
+    quando: "Ottavia ha già parlato della segale, e le si chiede del cane"
+    temi: [cane, moro, mangiato]
+    richiede:
+      indizi_rivelati: [i_ottavia_confessione]
+      battute_non_usate: [ott_cane_croste]
+    testo:
+      - "[png_ottavia] Il cane? Le croste del pane nuovo, ieri. Non un topo."
+      - "[narratore] Ottavia si siede sulla panca, di colpo."
+    effetti:
+      fatti_noti: [f_cane_croste]
+    max_usi: 1
+
+  # --- dopo la confessione: evoluzione ---------------------------------------------------
+  - id: ott_offre_via
+    chi: png_ottavia
+    tipo: momento
+    quando: "dopo che Ottavia ha parlato, si cerca un modo di liberare il forestiero"
+    temi: [liberare, forestiero, chiave, uscire, nascondere]
+    richiede:
+      indizi_rivelati: [i_ottavia_confessione]
+    testo:
+      - "[narratore] Ottavia abbassa la voce e indica la tenda del retro."
+      - "[png_ottavia] Dal retro si scende in cantina. Nel ripostiglio c'è una botola, sotto un sacco vuoto."
+    effetti:
+      fatti_noti: [f_botola]
+    max_usi: 1
+
+  - id: ott_accetta_paese
+    chi: png_ottavia
+    tipo: momento
+    quando: "un PG chiede a Ottavia di parlare al paese e promette di starle accanto"
+    temi: [paese, parlare, promessa, accanto]
+    richiede:
+      indizi_rivelati: [i_ottavia_confessione]
+    testo:
+      - "[narratore] Ottavia si toglie il grembiule e lo piega sul bancone."
+      - "[png_ottavia] Allora non lasciatemi sola, davanti a loro. Da sola non ce la faccio."
+    max_usi: 1
+
+  - id: ott_altra_offerta
+    chi: png_ottavia
+    tipo: momento
+    quando: "la chierica propone un'altra offerta per i morti, al posto del pane"
+    temi: [offerta, castagne, rito, chierica]
+    testo:
+      - "[narratore] Ottavia alza la testa di scatto. Negli occhi le passa una luce."
+      - "[png_ottavia] Le castagne? Ne ho un sacco intero, e il forno è acceso."
+      - "[png_ottavia] Le arrostisco io. Subito, prima del rintocco."
+    max_usi: 1
+
+  - id: ott_parla_al_paese
+    chi: png_ottavia
+    tipo: momento
+    quando: "al terzo rintocco Ottavia parla al paese, con un PG accanto"
+    temi: [paese, portico, parlare, rintocco]
+    richiede:
+      battute_usate: [ott_accetta_paese]
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Ottavia esce sotto il portico. Tutte le lanterne si voltano verso di lei."
+      - "[png_ottavia] Il pane dei lumi non si mangia. La segale di Gualtiero ha i chicchi neri, e l'ho presa io. Il forestiero me l'aveva detto. Io l'ho cacciato."
+    effetti:
+      fatti_noti: [f_segale_gualtiero, f_avvertimento]
+    max_usi: 1

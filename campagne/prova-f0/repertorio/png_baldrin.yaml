@@ -1,0 +1,348 @@
+# Repertorio di Baldrin (docs/repertorio.md). Voce: tu a tutti, frasi di due-sei parole,
+# lessico di forgia; chiama la gente col mestiere, mai per nome; il forestiero è «quello».
+# Tic: «Ferro è ferro.» Segnale quando mente: abbassa gli occhi sulle mani e alza la voce.
+# Menzogna registrata: bal_testimoni = «chi ha visto il forestiero al pozzo».
+# Nomi di mestiere («sorella», «soldato», «ragazzo») solo nelle battute il cui `quando` dice a chi parla.
+
+battute:
+
+  # --- saluto e reazioni di base ---------------------------------------------------------
+  - id: bal_saluto
+    chi: png_baldrin
+    tipo: saluto
+    quando: "i PG si avvicinano a Baldrin o lo salutano"
+    temi: [saluto, nano, fabbro, guardia]
+    testo:
+      - "[narratore] Baldrin si rigira il martello nel palmo, senza alzarsi."
+      - "[png_baldrin] Sera. Lì c'è la panca, qui no."
+    varianti:
+      - ["[png_baldrin] Seduti, voi. La porta la guardo io."]
+      - ["[narratore] Il nano vi guarda dal basso, senza muovere il martello.", "[png_baldrin] Forestieri anche voi. State al caldo."]
+    max_usi: 3
+
+  - id: bal_domanda_gentile
+    chi: png_baldrin
+    tipo: reazione
+    quando: "un PG fa a Baldrin una domanda gentile su di lui o sulla guardia"
+    temi: [domanda, fabbro, massaro, guardia]
+    testo:
+      - "[png_baldrin] Fabbro, e massaro. Stanotte faccio la guardia."
+      - "[narratore] La chiave gli batte sul petto quando respira."
+    varianti:
+      - ["[png_baldrin] Fabbro, massaro. Basta così."]
+    max_usi: 2
+
+  - id: bal_accusa
+    chi: png_baldrin
+    tipo: reazione
+    quando: "un PG accusa Baldrin di sbagliare o di essere ingiusto"
+    temi: [accusa, ingiusto, sbagli, colpa]
+    testo:
+      - "[narratore] Baldrin si alza piano, con il martello che gli pende dalla mano."
+      - "[png_baldrin] Mia figlia brucia di febbre, e io sbaglio? Al rintocco vedremo."
+    varianti:
+      - ["[png_baldrin] Parole, ne sento tante. Portami fatti."]
+    max_usi: 2
+
+  - id: bal_minaccia
+    chi: png_baldrin
+    tipo: reazione
+    quando: "un PG minaccia Baldrin a parole"
+    temi: [minaccia, forza, martello]
+    testo:
+      - "[narratore] Baldrin non si muove, ma stringe il manico del martello."
+      - "[png_baldrin] Provaci. Il ferro lo batto da cent'anni."
+    varianti:
+      - ["[png_baldrin] Minacce, a un fabbro. Bella idea."]
+    max_usi: 2
+
+  - id: bal_chiave_forza
+    chi: png_baldrin
+    tipo: reazione
+    quando: "un PG prova a prendere la chiave a Baldrin con la forza"
+    temi: [chiave, forza, rubare, collo]
+    testo:
+      - "[narratore] Baldrin va alla finestra in due passi e spalanca l'imposta."
+      - "[png_baldrin] Gente, all'osteria! Mi vogliono prendere la chiave!"
+      - "[narratore] Dalla piazza risponde una voce, poi un'altra, poi una terza."
+    max_usi: 1
+
+  - id: bal_offerta
+    chi: png_baldrin
+    tipo: reazione
+    quando: "un PG offre a Baldrin denaro o un patto"
+    temi: [offerta, soldi, patto, monete]
+    testo:
+      - "[narratore] Baldrin guarda le monete sul tavolo senza toccarle."
+      - "[png_baldrin] Mia figlia non beve soldi. Il prezzo è chi l'ha fatta ammalare."
+    max_usi: 1
+
+  - id: bal_aiuto
+    chi: png_baldrin
+    tipo: reazione
+    quando: "un PG aiuta Baldrin o fa la guardia con lui"
+    temi: [aiuto, guardia, porta]
+    testo:
+      - "[png_baldrin] Bene, due occhi in più. Tu guarda la finestra."
+      - "[narratore] Ti fa posto sulla panca: odora di fuliggine e di ferro caldo."
+    max_usi: 1
+
+  - id: bal_rifiuto
+    chi: png_baldrin
+    tipo: rifiuto
+    quando: "un PG chiede a Baldrin di cose che lui non sa"
+    temi: [domanda, sapere, altro]
+    testo:
+      - "[png_baldrin] Non è affar mio. Io batto ferro."
+    varianti:
+      - ["[narratore] Baldrin alza le spalle e torna a guardare la porta.", "[png_baldrin] Chiedi a chi parla. Io batto ferro."]
+      - ["[png_baldrin] Non è affar del fabbro. Ferro è ferro."]
+    max_usi: 3
+
+  - id: bal_borsa_no
+    chi: png_baldrin
+    tipo: reazione
+    quando: "il PG tiefling chiede di toccare la borsa o di avvicinarsi alla porta"
+    temi: [borsa, porta, tiefling, ragazzo]
+    testo:
+      - "[png_baldrin] Tu no, ragazzo. Tu le mani in tasca."
+      - "[narratore] Baldrin tira la borsa sotto la panca, col tallone."
+    max_usi: 1
+
+  # --- ciò che sa e dice ------------------------------------------------------------------
+  - id: bal_chi_e
+    chi: png_baldrin
+    tipo: verita
+    quando: "un PG chiede a Baldrin chi c'è dietro la porta, o perché"
+    temi: [porta, ripostiglio, forestiero, chiuso]
+    testo:
+      - "[png_baldrin] Lì dentro c'è quello. Il forestiero."
+      - "[png_baldrin] Polvere nel pozzo, ha messo. Al rintocco decide il paese."
+    varianti:
+      - ["[png_baldrin] Il forestiero, quello del pozzo. Al rintocco, fuori."]
+    max_usi: 2
+
+  - id: bal_rintocco
+    chi: png_baldrin
+    tipo: reazione
+    quando: "un PG chiede a Baldrin cosa succederà, o quando"
+    temi: [rintocco, quando, porta, paese]
+    testo:
+      - "[png_baldrin] Al terzo rintocco apro questa porta. Non prima."
+    varianti:
+      - ["[png_baldrin] Tre rintocchi, poi decide il paese. Ferro è ferro."]
+    max_usi: 2
+
+  - id: bal_ilde
+    chi: png_baldrin
+    tipo: verita
+    quando: "un PG chiede a Baldrin della figlia"
+    temi: [figlia, ilde, malata, casa]
+    testo:
+      - "[narratore] Baldrin smette di girare il martello."
+      - "[png_baldrin] Nove anni. Ha le mani rosse come brace."
+      - "[png_baldrin] Le ho promesso il pane dei lumi. Stanotte gliene porto un pezzo."
+      - "[narratore] La voce gli si incrina sull'ultima parola."
+    effetti:
+      fatti_noti: [f_ilde_pane]
+    max_usi: 1
+
+  - id: bal_mostra_polvere
+    chi: png_baldrin
+    tipo: reazione
+    quando: "un PG dubita della colpa del forestiero davanti a Baldrin"
+    temi: [prova, polvere, borsa, veleno, colpa]
+    testo:
+      - "[narratore] Baldrin pesca la borsa ai suoi piedi e ne tira fuori un sacchetto."
+      - "[png_baldrin] Polvere nera, nella sua borsa. Questo è il veleno."
+    varianti:
+      - ["[narratore] Baldrin batte il sacchetto sul tavolo.", "[png_baldrin] Il veleno è qui. Guardalo, se non credi."]
+    max_usi: 2
+
+  - id: bal_borsa_si
+    chi: png_baldrin
+    tipo: reazione
+    quando: "un PG chiede a Baldrin di guardare nella borsa del forestiero"
+    temi: [borsa, guardare, frugare]
+    testo:
+      - "[png_baldrin] Guarda pure. Ma le mani dove le vedo."
+      - "[narratore] Spinge la borsa col piede, verso la luce del forno."
+    max_usi: 1
+
+  # --- indizi -----------------------------------------------------------------------------
+  - id: bal_sano
+    chi: png_baldrin
+    tipo: indizio
+    quando: "un PG chiede a Baldrin se beve al pozzo, o perché lui sta bene"
+    temi: [pozzo, acqua, bere, sano, bene]
+    testo:
+      - "[png_baldrin] Bevo al pozzo da trent'anni. Tutti i giorni."
+      - "[png_baldrin] Il pane di segale non lo tocco. Roba da umani."
+    effetti:
+      rivela_indizi: [i_baldrin_sano]
+      fatti_noti: [f_baldrin_sano]
+    max_usi: 1
+
+  - id: bal_chi_malato
+    chi: png_baldrin
+    tipo: indizio
+    quando: "un PG chiede a Baldrin chi si è ammalato e chi no"
+    temi: [malati, sani, chi, febbre]
+    testo:
+      - "[png_baldrin] Mia figlia, i due del bottaio, Tecla. E altri cinque."
+      - "[narratore] Si ferma, e il martello smette di girargli nel palmo."
+      - "[png_baldrin] I carbonai no. Bevono al pozzo, il pane se lo fanno."
+    effetti:
+      rivela_indizi: [i_carbonai_sani]
+      fatti_noti: [f_carbonai_sani, f_malati_nomi]
+    max_usi: 1
+
+  - id: bal_tecla
+    chi: png_baldrin
+    tipo: indizio
+    quando: "un PG chiede a Baldrin di Tecla, o cosa si dice in paese"
+    temi: [tecla, malati, vecchia, paese]
+    richiede:
+      battute_non_usate: [bal_tecla_notte]
+    testo:
+      - "[png_baldrin] La vecchia Tecla delira. Dice che un corvo le ha dato da bere."
+      - "[narratore] Baldrin scuote la testa. Gli anelli di ferro della barba tintinnano."
+    effetti:
+      rivela_indizi: [i_tecla_corvo]
+      fatti_noti: [f_tecla_dice_corvo]
+    max_usi: 1
+
+  - id: bal_tecla_notte
+    chi: png_baldrin
+    tipo: indizio
+    quando: "un PG chiede a Baldrin cosa è successo quella notte al pozzo"
+    temi: [notte, pozzo, successo, tecla]
+    richiede:
+      battute_non_usate: [bal_tecla]
+    testo:
+      - "[png_baldrin] Accanto al pozzo abita Tecla. Ora delira."
+      - "[png_baldrin] Dice che un corvo le dava da bere."
+    effetti:
+      rivela_indizi: [i_tecla_corvo]
+      fatti_noti: [f_tecla_dice_corvo]
+    max_usi: 1
+
+  # --- menzogna e confessioni --------------------------------------------------------------
+  - id: bal_testimoni_versione
+    chi: png_baldrin
+    tipo: menzogna
+    quando: "un PG chiede a Baldrin chi ha visto il forestiero al pozzo"
+    temi: [pozzo, visto, testimoni, notte, polvere]
+    testo:
+      - "[narratore] Baldrin abbassa gli occhi sulle mani e alza la voce."
+      - "[png_baldrin] L'hanno visto in tre, al pozzo. Versava una polvere."
+    varianti:
+      - ["[narratore] Di nuovo gli occhi sulle mani, e la voce ancora più forte.", "[png_baldrin] In tre, ho detto, al pozzo. Ferro è ferro."]
+    effetti:
+      menzogna_detta: bal_testimoni
+    max_usi: 2
+
+  - id: bal_testimoni_nomi
+    chi: png_baldrin
+    tipo: confessione
+    quando: "un PG chiede a Baldrin i nomi dei tre che hanno visto"
+    temi: [nomi, tre, testimoni, chi]
+    richiede:
+      battute_usate: [bal_testimoni_versione]
+      battute_non_usate: [bal_testimoni_sano]
+    testo:
+      - "[narratore] Baldrin apre la bocca, la richiude, e guarda il martello."
+      - "[png_baldrin] Nomi, non ne ho. C'ero io, e basta."
+      - "[png_baldrin] Da lontano, al buio. La polvere l'ha vista Gualtiero, dice lui."
+    effetti:
+      rivela_indizi: [i_baldrin_testimoni]
+      fatti_noti: [f_testimoni_pozzo]
+    max_usi: 1
+
+  - id: bal_testimoni_sano
+    chi: png_baldrin
+    tipo: confessione
+    quando: "un PG fa notare a Baldrin che lui beve al pozzo e sta bene"
+    temi: [pozzo, bene, sano, bere]
+    richiede:
+      indizi_rivelati: [i_baldrin_sano]
+      battute_non_usate: [bal_testimoni_nomi]
+    testo:
+      - "[narratore] Baldrin si guarda le mani e, per la prima volta, non le stringe."
+      - "[png_baldrin] Bevo e sto bene. Lo so."
+      - "[png_baldrin] Al pozzo c'ero solo io, al buio. La polvere l'ha raccontata Gualtiero."
+    effetti:
+      rivela_indizi: [i_baldrin_testimoni]
+      fatti_noti: [f_testimoni_pozzo]
+    max_usi: 1
+
+  # --- momenti e richieste -----------------------------------------------------------------
+  - id: bal_chiede_sorella
+    chi: png_baldrin
+    tipo: richiesta
+    quando: "Baldrin parla con la chierica"
+    temi: [chierica, sorella, rito, paese]
+    testo:
+      - "[png_baldrin] Sorella, al rintocco parla tu. Di' al paese chi è stato."
+    max_usi: 1
+
+  - id: bal_chiede_soldato
+    chi: png_baldrin
+    tipo: richiesta
+    quando: "Baldrin parla con l'uomo d'armi del gruppo"
+    temi: [soldato, guardia, porta, armi]
+    testo:
+      - "[png_baldrin] Soldato, sta' con me alla porta. Tu sai cos'è una guardia."
+    max_usi: 1
+
+  - id: bal_pane_ilde
+    chi: png_baldrin
+    tipo: momento
+    quando: "qualcuno spezza il pane dei lumi davanti a Baldrin"
+    temi: [pane, spezzare, mollica, figlia]
+    testo:
+      - "[narratore] Baldrin tende la mano e prende un pezzo di mollica."
+      - "[narratore] Lo avvolge nel fazzoletto, con cura, come un ferro caldo."
+      - "[png_baldrin] Per Ilde. Me l'ha chiesto."
+    effetti:
+      fatti_noti: [f_ilde_pane]
+    max_usi: 1
+
+  - id: bal_capisce
+    chi: png_baldrin
+    tipo: momento
+    quando: "i PG mostrano a Baldrin i chicchi neri nel pane"
+    temi: [chicchi, pane, mostrare, prova]
+    richiede:
+      indizi_rivelati: [i_speroni_neri]
+    testo:
+      - "[narratore] Baldrin spezza il pane con due dita. Guarda dentro la mollica, a lungo."
+      - "[png_baldrin] Questo pane lo volevo portare a Ilde."
+      - "[narratore] Si tocca la tasca dove tiene il fazzoletto. La mano gli trema."
+    effetti:
+      fatti_noti: [f_ilde_pane]
+    max_usi: 1
+
+  - id: bal_apre
+    chi: png_baldrin
+    tipo: momento
+    quando: "Baldrin si convince che il forestiero non c'entra, e apre la porta"
+    temi: [aprire, porta, chiave, libero]
+    testo:
+      - "[narratore] Baldrin si sfila la chiave dal collo e la gira nella serratura."
+      - "[png_baldrin] Esci, tu. Ma resta dove ti vedo."
+      - "[narratore] La porta si apre, e dal ripostiglio esce odore di sacchi e di candela spenta."
+    max_usi: 1
+
+  - id: bal_soglia
+    chi: png_baldrin
+    tipo: momento
+    quando: "al terzo rintocco, Baldrin dalla parte dei PG tiene il paese sulla soglia"
+    temi: [soglia, paese, rintocco, ascoltare]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Baldrin apre la porta d'ingresso e si pianta sulla soglia, col martello."
+      - "[png_baldrin] Fermi. Prima si ascolta, poi si decide."
+      - "[narratore] Le lanterne si fermano sotto il portico. Nessuno fa un passo avanti."
+    max_usi: 1

@@ -1,0 +1,562 @@
+# Repertorio del narratore (docs/repertorio.md): rivelazioni degli indizi (una per ogni modo
+# di `come_si_trova`), segni dell'orologio attivo, momenti chiave, finali e transizioni.
+# Niente nomi di PG: il nome e l'invito li aggiunge il raccordo improvvisato.
+# Le rivelazioni descrivono e basta: la conclusione la traggono i giocatori.
+
+battute:
+
+  # --- indizi: oggetti, luoghi, eventi, visioni ------------------------------------------
+  - id: nar_sacco_apre
+    chi: narratore
+    tipo: indizio
+    quando: "un PG apre un sacco di segale nel retro"
+    temi: [sacco, aprire, farina, segale, retro]
+    testo:
+      - "[narratore] Il sacco si apre con un soffio di polvere grigia, che sa di cantina."
+      - "[narratore] Nella farina ci sono chicchi neri e curvi, come piccole unghie."
+    effetti:
+      rivela_indizi: [i_speroni_neri]
+    max_usi: 1
+
+  - id: nar_pagnotta_spezza
+    chi: narratore
+    tipo: indizio
+    quando: "un PG spezza una pagnotta delle ceste"
+    temi: [pagnotta, spezzare, pane, mollica, ceste]
+    testo:
+      - "[narratore] La crosta cede con uno scrocchio. Dentro, la mollica è ancora tiepida."
+      - "[narratore] È grigia, e punteggiata di chicchi neri e curvi, come piccole unghie."
+    effetti:
+      rivela_indizi: [i_speroni_neri]
+    max_usi: 1
+
+  - id: nar_sacchi_marchio
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda i sacchi dietro la tenda"
+    temi: [sacchi, retro, tenda, marchio, guardare]
+    testo:
+      - "[narratore] Dietro la tenda, i sacchi di segale sono legati con lo spago."
+      - "[narratore] Su ognuno c'è una ruota di mulino dipinta di nero, e sotto la parola Valsecca."
+    effetti:
+      rivela_indizi: [i_sacchi_marchio]
+    max_usi: 1
+
+  - id: nar_registro
+    chi: narratore
+    tipo: indizio
+    quando: "un PG sfoglia il quaderno dei conti sotto il bancone"
+    temi: [quaderno, conti, bancone, registro, leggere]
+    testo:
+      - "[narratore] Il quaderno è unto di farina. L'ultima pagina è di quattro giorni fa."
+      - "[narratore] C'è scritto: sei sacchi di segale da Gualtiero, a metà prezzo, metà da pagare a primavera."
+    effetti:
+      rivela_indizi: [i_registro_conti]
+      fatti_noti: [f_segale_gualtiero]
+    max_usi: 1
+
+  - id: nar_cane_guarda
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda il cane o si avvicina al forno"
+    temi: [cane, moro, forno, guardare]
+    testo:
+      - "[narratore] Il cane trema accanto al forno. Si lecca le zampe, piano, senza smettere."
+      - "[narratore] Nella sua ciotola ci sono croste di pane nero."
+    effetti:
+      rivela_indizi: [i_cane_croste]
+    max_usi: 1
+
+  - id: nar_cane_magia
+    chi: narratore
+    tipo: indizio
+    quando: "un PG parla con il cane usando la magia"
+    temi: [cane, magia, parlare, animali]
+    testo:
+      - "[narratore] Il cane ti annusa le dita, poi ti risponde a modo suo."
+      - "[narratore] Le croste erano buone, poi bruciava la bocca, e adesso bruciano le zampe."
+    effetti:
+      rivela_indizi: [i_cane_croste]
+      fatti_noti: [f_cane_croste]
+    max_usi: 1
+
+  - id: nar_cane_mossa
+    chi: narratore
+    tipo: indizio
+    quando: "i PG indugiano, e nessuno ha ancora badato al cane"
+    temi: [indugio, cane, stallo]
+    richiede:
+      indizi_non_rivelati: [i_cane_croste]
+    testo:
+      - "[narratore] Il cane, Moro, si tira su accanto al forno, tremando."
+      - "[narratore] Guaisce e si lecca le zampe. Nella sua ciotola restano croste di pane nero."
+    effetti:
+      rivela_indizi: [i_cane_croste]
+    max_usi: 1
+
+  - id: nar_preghiera
+    chi: narratore
+    tipo: indizio
+    quando: "la chierica prega sul pane o sulla farina, per sentire se è puro"
+    temi: [preghiera, pregare, chierica, puro, pane]
+    testo:
+      - "[narratore] Il pane è tiepido sotto le tue mani."
+      - "[narratore] Poi, in bocca, un freddo improvviso. E un odore di marcio che nessun altro sente."
+    effetti:
+      rivela_indizi: [i_preghiera_pane]
+    max_usi: 1
+
+  - id: nar_borsa
+    chi: narratore
+    tipo: momento
+    quando: "un PG fruga nella borsa del forestiero"
+    temi: [borsa, frugare, aprire, dentro]
+    testo:
+      - "[narratore] La borsa è di cuoio liso. Sa di fumo e di erbe secche."
+      - "[narratore] Dentro: un sacchetto di polvere nera, bende arrotolate, una tazza di stagno, un libretto."
+    effetti:
+      fatti_noti: [f_borsa_contenuto]
+    max_usi: 1
+
+  - id: nar_polvere_tocca
+    chi: narratore
+    tipo: indizio
+    quando: "un PG tocca o annusa la polvere nera del sacchetto"
+    temi: [polvere, toccare, annusare, sacchetto]
+    testo:
+      - "[narratore] La polvere è fine e leggera: sa di bruciato."
+      - "[narratore] Ti resta sulle dita, nera, come quella di un braciere spento."
+    effetti:
+      rivela_indizi: [i_polvere_nera]
+    max_usi: 1
+
+  - id: nar_libretto
+    chi: narratore
+    tipo: indizio
+    quando: "un PG sfoglia il libretto nella borsa del forestiero"
+    temi: [libretto, sfogliare, leggere, scritto]
+    testo:
+      - "[narratore] Il libretto è scritto fitto, in una calligrafia ordinata."
+      - "[narratore] Dosi di erbe, di carbone e di vino, per ferite e per febbri. Non c'è un solo nome."
+    effetti:
+      rivela_indizi: [i_libretto]
+      fatti_noti: [f_libretto]
+    max_usi: 1
+
+  - id: nar_bende
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda le bende nella borsa del forestiero"
+    temi: [bende, nodo, borsa, guardare]
+    testo:
+      - "[narratore] Le bende sono arrotolate strette, ognuna chiusa da un nodo doppio e piatto."
+    effetti:
+      rivela_indizi: [i_nodo_bende]
+    max_usi: 1
+
+  - id: nar_pozzo
+    chi: narratore
+    tipo: indizio
+    quando: "un PG tira su il secchio del pozzo e guarda o assaggia l'acqua"
+    temi: [pozzo, secchio, acqua, assaggiare]
+    testo:
+      - "[narratore] La carrucola cigola nel freddo, e il secchio sale pesante, gocciolando."
+      - "[narratore] L'acqua è limpida e gelata. Ha soltanto il sapore della pietra."
+    effetti:
+      rivela_indizi: [i_pozzo_acqua]
+    max_usi: 1
+
+  - id: nar_tecla
+    chi: narratore
+    tipo: indizio
+    quando: "un PG entra nella casa della vecchia Tecla, accanto al pozzo"
+    temi: [tecla, casa, vecchia, entrare]
+    testo:
+      - "[narratore] Tecla è a letto, con le mani in un catino d'acqua fredda."
+      - "[narratore] Sorride senza denti, e dice che un corvo le ha dato acqua nera."
+      - "[narratore] Da allora, dice, le mani le bruciano un po' meno."
+    effetti:
+      rivela_indizi: [i_tecla_racconta]
+      fatti_noti: [f_tecla_dice_corvo]
+    max_usi: 1
+
+  - id: nar_volto_candela
+    chi: narratore
+    tipo: indizio
+    quando: "un PG accosta una candela alla grata per vedere il forestiero in faccia"
+    temi: [candela, faccia, grata, luce]
+    testo:
+      - "[narratore] La luce passa tra le sbarre. Il forestiero si tira indietro, troppo tardi."
+      - "[narratore] Sotto il cappuccio, una cicatrice bianca gli taglia il sopracciglio sinistro."
+    effetti:
+      rivela_indizi: [i_cicatrice]
+      fatti_noti: [f_cicatrice]
+    max_usi: 1
+
+  - id: nar_volto_uscita
+    chi: narratore
+    tipo: indizio
+    quando: "il forestiero esce dal ripostiglio, alla luce del forno"
+    temi: [esce, luce, cappuccio, faccia]
+    testo:
+      - "[narratore] Il forestiero esce piano, curvo sotto l'architrave, e il cappuccio gli scivola indietro."
+      - "[narratore] Alla luce del forno, una cicatrice bianca gli taglia il sopracciglio sinistro."
+    effetti:
+      rivela_indizi: [i_cicatrice]
+      fatti_noti: [f_cicatrice]
+    max_usi: 1
+
+  # --- segni dell'orologio o_colpevole (uno per segmento) -------------------------------
+  - id: nar_segno_1
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del primo segno del paese"
+    temi: [paese, canto, veglia]
+    richiede:
+      orologio: {id: o_colpevole, min: 0, max: 0}
+    testo:
+      - "[narratore] Dalla cappella, il canto della veglia si interrompe, poi riprende più in fretta."
+    effetti:
+      avanza_orologio: o_colpevole
+    max_usi: 1
+
+  - id: nar_segno_2
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del secondo segno del paese"
+    temi: [paese, sasso, finestra]
+    richiede:
+      orologio: {id: o_colpevole, min: 1, max: 1}
+    testo:
+      - "[narratore] Un sasso batte su un'imposta: Baldrin si alza e va alla finestra."
+      - "[narratore] Fuori, una voce di ragazzo grida corvo, poi si sentono passi che scappano."
+    effetti:
+      avanza_orologio: o_colpevole
+    max_usi: 1
+
+  - id: nar_segno_3
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del terzo segno del paese"
+    temi: [campana, rintocco, chiave]
+    richiede:
+      orologio: {id: o_colpevole, min: 2, max: 2}
+    testo:
+      - "[narratore] La campana suona un rintocco: Baldrin infila la chiave nella serratura, poi la toglie."
+    effetti:
+      avanza_orologio: o_colpevole
+    max_usi: 1
+
+  - id: nar_segno_4
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del quarto segno del paese"
+    temi: [lanterne, finestra, pozzo]
+    richiede:
+      orologio: {id: o_colpevole, min: 3, max: 3}
+    testo:
+      - "[narratore] Dalla finestra, lanterne in fila escono dalla cappella e si fermano vicino al pozzo."
+      - "[narratore] Baldrin va a guardarle. Per un momento, nessuno ascolta la grata."
+    effetti:
+      avanza_orologio: o_colpevole
+    max_usi: 1
+
+  - id: nar_segno_5
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del quinto segno del paese"
+    temi: [portico, passi, maniglia]
+    richiede:
+      orologio: {id: o_colpevole, min: 4, max: 4}
+    testo:
+      - "[narratore] Sotto il portico, passi e voci basse: qualcuno prova la maniglia."
+    effetti:
+      avanza_orologio: o_colpevole
+    max_usi: 1
+
+  - id: nar_segno_6
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento dell'ultimo segno del paese"
+    temi: [rintocchi, veglia, porta, bussano]
+    richiede:
+      orologio: {id: o_colpevole, min: 5, max: 5}
+    testo:
+      - "[narratore] Tre rintocchi: la veglia è finita, e bussano alla porta."
+    effetti:
+      avanza_orologio: o_colpevole
+    max_usi: 1
+
+  # --- momenti chiave ----------------------------------------------------------------------
+  - id: nar_paese_alla_porta
+    chi: narratore
+    tipo: momento
+    quando: "dopo i tre rintocchi, il paese è alla porta e aspetta"
+    temi: [paese, porta, lanterne, folla]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Le lanterne riempiono il portico, e il fiato della gente fuma nel freddo."
+      - "[narratore] Una voce chiede il pane, un'altra chiede il forestiero."
+      - "[narratore] Poi cala il silenzio. Tutto il paese aspetta voi."
+    max_usi: 1
+
+  - id: nar_paese_entra
+    chi: narratore
+    tipo: momento
+    quando: "dopo i tre rintocchi i PG esitano ancora, e Baldrin apre"
+    temi: [esitare, aprire, paese, entra]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Baldrin apre la porta d'ingresso. Con le lanterne entra il freddo della notte."
+      - "[narratore] Il paese è dentro, in silenzio. Guarda le ceste, poi il ripostiglio, poi voi."
+    max_usi: 1
+
+  - id: nar_prove_al_paese
+    chi: narratore
+    tipo: momento
+    quando: "i PG mostrano al paese i chicchi neri nel pane"
+    temi: [prove, mostrare, paese, chicchi, mollica]
+    richiede:
+      indizi_rivelati: [i_speroni_neri]
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] La mollica passa di mano in mano, sotto le lanterne."
+      - "[narratore] Qualcuno guarda le ceste, poi si volta piano verso Ottavia."
+      - "[narratore] Dal fondo, una voce di donna dice: l'ha cotto lei."
+    max_usi: 1
+
+  - id: nar_paese_vuole_lui
+    chi: narratore
+    tipo: momento
+    quando: "dopo i tre rintocchi nessuno porta prove davanti al paese"
+    temi: [paese, forestiero, folla, ripostiglio]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Le voci si alzano tutte insieme: vogliono il forestiero."
+      - "[narratore] Due uomini avanzano verso il ripostiglio, con le lanterne alte."
+    max_usi: 1
+
+  - id: nar_ripostiglio_vuoto
+    chi: narratore
+    tipo: momento
+    quando: "il paese apre il ripostiglio e lo trova vuoto"
+    temi: [ripostiglio, vuoto, sparito, paese]
+    testo:
+      - "[narratore] La porta del ripostiglio si apre su sacchi vuoti e buio."
+      - "[narratore] Il paese guarda dentro, poi si volta verso le ceste e verso di voi."
+    max_usi: 1
+
+  - id: nar_serratura
+    chi: narratore
+    tipo: momento
+    quando: "un PG forza la serratura del ripostiglio"
+    temi: [serratura, forzare, grimaldello, porta]
+    testo:
+      - "[narratore] Il ferro gratta, poi la serratura scatta con un colpo che rimbomba nella sala."
+      - "[narratore] Baldrin si volta di scatto, con il martello già in mano."
+    max_usi: 1
+
+  - id: nar_cantina
+    chi: narratore
+    tipo: momento
+    quando: "un PG scende dal retro in cantina"
+    temi: [cantina, scendere, scala, retro]
+    testo:
+      - "[narratore] La scala scende in un buio che sa di terra, di mele e di vino acido."
+      - "[narratore] In fondo, una grata dà sotto il portico. Sopra la testa, una botola di legno."
+    effetti:
+      fatti_noti: [f_botola]
+    max_usi: 1
+
+  - id: nar_botola_sale
+    chi: narratore
+    tipo: momento
+    quando: "dalla cantina, un PG apre la botola e sale nel ripostiglio"
+    temi: [botola, salire, ripostiglio, aprire]
+    richiede:
+      battute_usate: [nar_cantina]
+    testo:
+      - "[narratore] La botola si alza con un cigolio. Sopra, un sacco vuoto scivola di lato."
+      - "[narratore] Nel buio del ripostiglio due occhi vi guardano, e qualcuno trattiene una tosse."
+    max_usi: 1
+
+  - id: nar_pane_nel_forno
+    chi: narratore
+    tipo: momento
+    quando: "un PG butta il pane dei lumi nel forno"
+    temi: [forno, bruciare, pane, ceste]
+    testo:
+      - "[narratore] Nella brace le pagnotte anneriscono, con la crosta che scoppietta."
+      - "[narratore] Dalla canna esce un fumo acre, e in piazza qualcuno lo annusa."
+    max_usi: 1
+
+  - id: nar_finestra_vuota
+    chi: narratore
+    tipo: momento
+    quando: "un PG guarda fuori dalla finestra, sulla piazza"
+    temi: [finestra, piazza, guardare, fuori]
+    richiede:
+      orologio: {id: o_colpevole, min: 0, max: 3}
+    testo:
+      - "[narratore] La piazza è vuota. A ogni finestra brucia una candela, ferma."
+      - "[narratore] Vedete il pozzo, la casa bassa di Tecla, la cappella illuminata. Da là arriva il canto della veglia."
+    max_usi: 1
+
+  - id: nar_finestra_lanterne
+    chi: narratore
+    tipo: momento
+    quando: "un PG guarda fuori dalla finestra, sulla piazza"
+    temi: [finestra, piazza, guardare, lanterne]
+    richiede:
+      orologio: {id: o_colpevole, min: 4, max: 6}
+    testo:
+      - "[narratore] Vicino al pozzo, le lanterne si muovono piano."
+      - "[narratore] Qualcuno alza il braccio e indica l'osteria."
+    max_usi: 1
+
+  # --- finali (taglio): con il forestiero, con Ottavia, senza nessuno ----------------------
+  - id: fin_consegnato_pane
+    chi: narratore
+    tipo: finale
+    quando: "il paese porta via il forestiero e spezza il pane dei lumi"
+    temi: [finale, consegnato, pane, mangiato]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Il paese si porta via il forestiero, verso il buio della strada."
+      - "[narratore] Poi spezza il pane dei lumi, e ne mangiano anche i bambini."
+      - "[narratore] L'osteria resta vuota, e nel forno la brace si spegne."
+    max_usi: 1
+
+  - id: fin_consegnato_ceste
+    chi: narratore
+    tipo: finale
+    quando: "il paese porta via il forestiero, ma il pane resta nelle ceste"
+    temi: [finale, consegnato, ceste, pane]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Il paese si porta via il forestiero, e lui non si volta indietro."
+      - "[narratore] Le ceste restano sul tavolo, sotto il lino, e nessuno le tocca."
+      - "[narratore] Fuori, la strada del passo è buia e vuota."
+    max_usi: 1
+
+  - id: fin_ottavia
+    chi: narratore
+    tipo: finale
+    quando: "dopo le prove sul pane, il paese se la prende con Ottavia"
+    temi: [finale, ottavia, paese, colpa]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Il paese circonda Ottavia sotto il portico."
+      - "[narratore] Il fazzoletto rosso le scivola dai capelli. Nessuno si china a raccoglierlo."
+      - "[narratore] Le lanterne si allontanano, e lei con loro."
+    max_usi: 1
+
+  - id: fin_nessuno_prove
+    chi: narratore
+    tipo: finale
+    quando: "il paese ha visto le prove, nessuno viene preso, e tutti tornano a casa"
+    temi: [finale, prove, salvo, nessuno]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Le ceste finiscono nel forno, una dopo l'altra."
+      - "[narratore] Il paese torna a casa senza nessuno da punire."
+      - "[narratore] Al bancone Ottavia piange piano, e il forestiero beve un sorso d'acqua."
+    max_usi: 1
+
+  - id: fin_nessuno_offerta
+    chi: narratore
+    tipo: finale
+    quando: "il paese accetta un'altra offerta al posto del pane, e torna a casa"
+    temi: [finale, offerta, rito, castagne]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Le castagne passano di mano in mano, sotto le lanterne."
+      - "[narratore] Il pane dei lumi resta nelle ceste. Per stanotte, i morti si accontentano."
+      - "[narratore] Il paese torna a casa, con le lanterne e le mani calde."
+    max_usi: 1
+
+  - id: fin_nessuno_fuga
+    chi: narratore
+    tipo: finale
+    quando: "il forestiero è sparito e il paese spezza il pane dei lumi"
+    temi: [finale, fuga, sparito, pane]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] Il paese impreca contro il ripostiglio vuoto, poi spezza il pane dei lumi."
+      - "[narratore] Ne mangiano tutti, anche i bambini, e poi tornano a casa."
+      - "[narratore] Sul sentiero del passo, una sagoma col cappuccio si volta verso le candele."
+    max_usi: 1
+
+  # --- transizioni ------------------------------------------------------------------------
+  - id: tr_retro
+    chi: narratore
+    tipo: transizione
+    quando: "i PG passano dietro la tenda, nel retro"
+    temi: [retro, tenda, dietro]
+    testo:
+      - "[narratore] Dietro la tenda fa più freddo. Sacchi, una madia, una scala che scende."
+      - "[narratore] La voce di Baldrin arriva smorzata, lontana."
+    max_usi: 1
+
+  - id: tr_piazza
+    chi: narratore
+    tipo: transizione
+    quando: "i PG escono sotto il portico o in piazza"
+    temi: [uscire, piazza, portico, fuori]
+    testo:
+      - "[narratore] Fuori, il freddo morde le orecchie. Le pietre della piazza sono bagnate e lucide."
+      - "[narratore] Dalla cappella arriva il canto, a ondate, sopra le candele accese."
+    max_usi: 1
+
+  - id: tr_rientro
+    chi: narratore
+    tipo: transizione
+    quando: "i PG rientrano nell'osteria dalla piazza"
+    temi: [rientrare, osteria, dentro]
+    testo:
+      - "[narratore] Dentro, il caldo del forno vi prende in faccia. Baldrin alza gli occhi dal martello."
+    max_usi: 1
+
+  - id: tr_tempo
+    chi: narratore
+    tipo: transizione
+    quando: "passa un po' di tempo senza decisioni nuove"
+    temi: [tempo, attesa, aspettare]
+    testo:
+      - "[narratore] Il fuoco si abbassa, e Ottavia aggiunge un ciocco che sfrigola sulla brace."
+    varianti:
+      - ["[narratore] La candela sul bancone si è consumata di un dito, e il canto continua."]
+    max_usi: 2
+
+  - id: tr_neutra
+    chi: narratore
+    tipo: transizione
+    quando: "bisogna cambiare argomento senza nominarlo"
+    temi: [cambio, pausa, neutra]
+    testo:
+      - "[narratore] Il forno scoppietta. Per un lungo momento nessuno parla."
+      - "[narratore] Poi il canto della veglia torna a farsi sentire."
+    varianti:
+      - ["[narratore] Una folata scuote le imposte, e le candele si piegano e si raddrizzano."]
+    max_usi: 2
+
+  - id: tr_chiusura
+    chi: narratore
+    tipo: transizione
+    quando: "la scena è chiusa e resta la notte davanti"
+    temi: [chiusura, notte, domani, dopo]
+    richiede:
+      orologio: {id: o_colpevole, min: 6, max: 6}
+    testo:
+      - "[narratore] La notte è ancora lunga. Valsecca è a un giorno di cammino, giù a valle."
+      - "[narratore] In paese nove malati aspettano l'alba. Cosa pensate di fare, adesso?"
+    max_usi: 1
