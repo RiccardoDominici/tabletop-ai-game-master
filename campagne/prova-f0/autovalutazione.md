@@ -21,9 +21,25 @@ Valutazione della scena **come progettata**, supponendo un narratore che segua i
 
 Media: 2,67.
 
+## Validatore rigoroso
+
+La scena è nata prima di `strumenti/valida_campagna.py` e delle sue regole rigorose. Il 2 novembre 2026 è stata portata da 52 errori a **0 errori in modo rigoroso** (e 0 in modo normale), con un commit per classe di errore. Il testo delle battute e la storia non sono cambiati; sono cambiati i campi che il Motore e il validatore controllano.
+
+- **IMMAGINI.segreto.** La cicatrice di Sebastiano stava nel ritratto e nelle invarianti, che vanno sul proiettore dal primo turno, e lo identifica come il cerusico ricercato. Ora il ritratto ha il cappuccio calato, e la cicatrice sta nella situazione `senza_cappuccio`, da mostrare dopo la rivelazione. Baldrin e Ottavia non avevano tratti nascosti.
+- **PNG.mente_su, PNG.alias.** Ogni menzogna ha il suo `id` (lo stesso di `menzogna_detta`), e ogni scheda ha i soprannomi che i giocatori useranno (nano, fabbro, massaro; ostessa, fornaia; forestiero, straniero, mercante). Nessun alias svela un segreto.
+- **COPERTURA.modi.** Ogni indizio dichiara quanti modi ha di essere trovato; ognuno ha già la sua battuta.
+- **COPERTURA.temi.** Tolte le parole generiche (fuori, dietro, uomo, nome, gente, detto, parlare, guardare, male). Catalogo medio sui copioni: da 2,8 a 2,6 battute per azione.
+- **COPERTURA.cancello, privata, da_pg.** Ogni confessione ha un cancello che il Motore può controllare: `privata` dove il `cede_se` chiede che Baldrin non senta, `da_pg: [pg_assenzio]` per la confessione di Ottavia «del passato» (quella uscita in pubblico nel giudizio A/B n. 2), `indizi_rivelati: [i_cane_croste]` per Sebastiano davanti a un malato (in scena è il cane), `battute_usate: [seb_guerra_versione]` per la sua confessione sulla guerra: prima nega, poi cede.
+- **SEGRETI.** Quattro regex non trovavano né il loro fatto né le battute che lo rivelano, e quattro fatti nascosti non avevano nessuna parola segreta. Ora ogni regex cerca il legame come lo scrivono il canone o le confessioni.
+
+Avvisi che restano, e perché:
+- `SESSIONE.scene_potenziali`: F0 gioca una scena sola.
+- `SEGRETI.catalogo` su `seb_guerra_roccalba`: ammessa con `ammessa_nel_catalogo`, motivata nella nota. Il Motore la elenca solo quando il giocatore nomina Roccalba, il Grifo o la Compagnia.
+- Non è un avviso, ma va detto: `privata` e `da_pg` li esige il validatore, e il server non li applica ancora (schema.md, lettura 13). Finché non lo fa, `ott_segale_passato` e `seb_mestiere_promessa`, che hanno solo questi cancelli, restano protette dal solo `quando`.
+
 ## Controlli incrociati
 
-Script di bottega nella scratchpad, non nel repo: il validatore vero è compito di F1. Ultimo giro: **0 errori, 0 avvisi**.
+Script di bottega nella scratchpad, prima che esistesse il validatore. Ultimo giro di allora: **0 errori, 0 avvisi**.
 
 - **§3, schede PNG.** Per tutti e tre i PNG:
   - iniziali diverse (O, B, S) e voci diverse (`nadine`, `vincent`, `lucian`, nessuna è `narratore`);
