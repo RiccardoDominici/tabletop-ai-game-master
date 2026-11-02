@@ -78,6 +78,13 @@ Righe come oggi, più una nuova:
 - Il Motore mette nel contesto di ogni turno l'**elenco delle battute disponibili** (condizioni vere, usi rimasti):
   `id · chi · tipo · quando`. Mai il testo delle battute non ancora uscite.
 - `[usa]` con un id non disponibile: scartato e registrato.
+- **Più scene**: una battuta con `scena: <id>` entra in catalogo solo in quella scena; senza `scena` vale ovunque.
+- **Modi degli indizi**: le battute di rivelazione di un indizio con `modi` ≥ 2 sono strade alternative. Trovato per una
+  strada, le altre (solo rivelazione, fatti già noti) escono dal catalogo. All'avvio il Motore avvisa se un indizio ha
+  meno battute di rivelazione dei suoi modi.
+- **Menzogne già dette**: `effetti.menzogna_detta` è l'id di una `mente_su` del PNG. Dopo che è uscita, il messaggio del
+  turno porta «Menzogne già dette» con la versione (già pubblica), così il PNG che improvvisa non si contraddice; la
+  verità non entra mai.
 - **Cancelli sull'azione** (`richiede.privata`, `richiede.da_pg`): il Motore mette in catalogo una battuta solo se nel
   turno c'è un'azione a cui può rispondere (privata per `privata: true`, dei PG elencati per `da_pg`), e accetta
   `[usa] <id> > <pg>` solo verso quell'azione. Le battute senza cancello rispondono solo alle azioni pubbliche:

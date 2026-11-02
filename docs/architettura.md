@@ -152,6 +152,13 @@ Com'è fatto oggi (`/master`, contratto in `packages/shared/src/master.ts`):
     non sono state risolte: tornano ai giocatori come «non è andata», da rimandare.
   - **Cambia luogo** (dissolvenza sul proiettore), **orologio ±1 segno**, **chiudi la finestra ora**, **salta l'azione** di
     un giocatore (torna nella sua casella, chi ne dipendeva deve decidere).
+  - **Cambia scena** (campagne con `scene/*.yaml`): contesto del narratore e orologi attivi della scena nuova (gli orologi
+    tengono lo stato tra le scene), luogo sul proiettore, battute della scena; le azioni in sospeso tornano ai giocatori,
+    il narratore legge l'apertura e si apre la finestra per tutti.
+  - **Immagini di situazione** (`situazione_<png>_<id>`, mai usate come ritratto o luogo): il master le mette e le toglie;
+    in modalità B il Motore le mostra da solo a fine narrazione quando esce la rivelazione collegata
+    (`aspetto.situazioni[].dopo`, oppure l'indizio del PNG il cui `come_si_trova` nomina la situazione), e torna il luogo
+    quando parte la narrazione successiva.
   - **Note di regia**: al massimo 3, da 1 a 15 turni; entrano nel messaggio del narratore (parte variabile, fuori cache) dal
     turno successivo, e ogni turno narrato ne consuma uno. Si azzerano quando la scena ricomincia.
 - **Registro**: ogni comando, riuscito o rifiutato, è una riga di `logs/master.jsonl` e del log del server (`evento: master`).

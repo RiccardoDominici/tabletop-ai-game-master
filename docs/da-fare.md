@@ -5,8 +5,13 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
 ## In corso
 - **Prova alla cieca della skill Preparatore**: un agente nuovo scrive `campagne/ponte-lanterne` seguendo solo la skill.
 - **Immagini vere di prova-f0**: luoghi a 1920x1080, ritratti 3:4, situazioni (es. Sebastiano senza cappuccio).
-- **Server**: riga «X sta parlando» sul proiettore, pannello del master, `richiede.privata`/`da_pg`, `alias`,
-  campagne con più scene, immagini di situazione mostrate solo dopo la rivelazione.
+- **Server** (fatto il 2 novembre sera): riga «X sta parlando» sul proiettore, pannello del master (`/master`),
+  `richiede.privata`/`da_pg`, `alias` dalle schede, `modi` e `mente_su[].id`, campagne con più scene, immagini di
+  situazione dopo la rivelazione. Restano aperti:
+  - skill e validatore: documentare `aspetto.situazioni[].dopo` (il collegamento esplicito alla rivelazione); oggi il
+    Motore lo ricava per somiglianza e in ponte-lanterne non lo trova per `studio_cassa` di Vischi (solo a comando);
+  - in modalità A (improvvisa) gli indizi non hanno id: le situazioni escono solo a comando del master;
+  - le prove e2e che usano il browser condiviso (f0, immagini, stallo, azioni) non chiudono i loro contesti.
 
 ## Dopo
 - **Skill e validatore** (raccogliere insieme alle note della prova alla cieca, `NOTE_SULLA_SKILL.md`):
