@@ -2,7 +2,8 @@
 
 Queste pagine raccolgono ciò che il manuale non dice e le prove hanno insegnato: la scena di prova
 «Il pane dei lumi» (campagne/prova-f0), una revisione indipendente, due esperimenti A/B con giudice
-cieco (esperimenti/giudizio-ab-1 e -2).
+cieco (esperimenti/giudizio-ab-1 e -2), e la prova cieca della skill con «Il ponte delle lanterne»
+(campagne/ponte-lanterne, quattro scene, con le sue NOTE_SULLA_SKILL.md).
 
 ## 1. Situazione, non trama (A3, C3)
 - Parti da **chi vuole cosa**. Il cattivo ha un piano che va avanti anche se i PG stanno fermi. Scrivi
@@ -12,12 +13,20 @@ cieco (esperimenti/giudizio-ab-1 e -2).
 - **Un PNG sa la verità e non è creduto**: tensione buona. Deve però avere un motivo per non dirla tutta
   (paura, vergogna, un'altra colpa), altrimenti la scena si risolve al primo turno.
 - **Il pericolo si sente da fuori**: voci, passi, campane. Un pericolo che si vede solo nei dialoghi non preme.
+- **I conti del mondo tornano.** Nella prova cieca i quattro difetti più gravi erano conti: due viaggi che
+  ci stavano tra due tocchi mentre la storia diceva «uno solo», una barca troppo piccola per i gruppi, una
+  riga del libro datata prima del fatto che provava, una catena che funzionava al contrario. Scrivi la
+  cronologia con le ore e la logistica con minuti e posti (schema.md), e fai rifare i conti al validatore.
+- **La scelta resta difficile a verità scoperta.** Con tutte le prove in mano, la risposta non deve
+  diventare ovvia: se una promessa o un PNG cancella il prezzo di una strada, la scelta è finta.
 
 ## 2. PNG ben delineati (§3, §6)
 - **Tre registri diversi** tra i PNG di una scena: tu e i nomi di mestiere; tu e un lei freddo; lei a
   tutti. Più tre lessici (forgia, cucina, medicina) e tre lunghezze di frase. Prova: leggi le battute
   campione senza nomi e indovina chi parla.
 - **Il «voi» singolare non va usato.** A voce sembra un plurale.
+- **Voci registrate poche.** Due voci uguali o simili (`simile_a` in voci.yaml) non stanno mai nella
+  stessa scena: decidilo al brief, perché decide chi può incontrare chi (§9, «Voci tra le scene»).
 - **Ogni PNG vuole qualcosa in questa scena**, che lo mette contro un altro PNG o un fronte. Il desiderio si
   vede nelle battute: chiede, contratta, pone condizioni (D7). Non regala informazioni.
 - **`sotto_pressione` cambia comportamento**, non intensità: «diventa calmo e lentissimo», non «si arrabbia di più».
@@ -89,3 +98,41 @@ cieco (esperimenti/giudizio-ab-1 e -2).
 | La scena non regge senza un PG preciso | situazione comune senza nomi, ruoli di riserva (se manca la chierica benedice il massaro) |
 | Un PNG «sa la soluzione» e la grida al primo turno | baratta: chiede acqua, una promessa, la porta aperta |
 | Canone contraddetto tra due testi | un fatto, un id, citato ovunque |
+| Due viaggi ci stavano tra due tocchi; barca piccola per i gruppi; riga datata prima del fatto (prova cieca) | cronologia e logistica, rifatte dal validatore (`MONDO`) |
+| La regola «il narratore non dice mai che il leone è stato calato» era il segreto, nel contesto del selettore | regole di prosa generiche; il divieto preciso nel `come_si_trova` |
+| Pianta, taglio e abbozzi con segreti, non controllati; `da_togliere_dal_contesto` solo dichiarato | il validatore compila il contesto vero del modo B |
+| Bice (tabitha) portata nel Borgo di Rosa (nadine) da desiderio, soluzione, battuta e taglio | voci simili come dato, cercate in ogni testo che sposta un PNG |
+| «Tullio, il custode, grida»: il narratore sembra chiamare Tullio | niente nome con la virgola a inizio frase |
+| «sa del leone» trovava «Rosa del leone» | regex con `\b` |
+
+## 9. Più scene (sessioni di due o tre ore)
+Il server gioca una scena alla volta; il master passa alla successiva dal pannello. Ogni scena ha il suo
+contesto, i suoi PNG presenti e i suoi orologi attivi; lo stato (indizi, battute uscite, orologi) resta.
+
+- **Orologio di sessione.** Un pericolo che preme per tutta la sessione ha un orologio da otto segni,
+  attivo in tutte le scene in cui si sente. Un turno dura un paio di minuti (sei segni ogni due turni
+  riempiono mezz'ora), quindi `segno_almeno_ogni` ≈ minuti della sessione ÷ (2 × segmenti): per due ore
+  e mezza e otto segni, circa nove; meno se anche i cambi di scena portano un segno. Con 2 l'orologio si
+  riempirebbe nella prima mezz'ora. Una scena breve dentro la sessione può avere un orologio suo, da sei
+  segni con `segno_almeno_ogni: 2`.
+- **Segni che si sentono ovunque.** Un segno di un orologio attivo in più scene esce in qualunque di esse,
+  quindi si sente da tutte: la campana, la voce del fiume, le grida dal ponte. «La rampa bassa va
+  sott'acqua» non si vede dal Borgo. La battuta del segno non ha `scena` [V].
+- **Lo stesso luogo in due momenti.** Il ponte all'imbrunire e il ponte a mezzanotte sono due schede.
+  La seconda ha come nodo un evento («Il terzo tocco»), con un suo indizio proattivo. Un indizio si
+  definisce in una scheda sola; le sue battute non hanno `scena`, così restano trovabili anche dopo.
+- **Orologi che partono da una scelta.** Un orologio che deve correre solo dopo una scelta («il ponte
+  resta aperto dopo il tocco») dichiara `parte_dopo: [<id della battuta della scelta>]`. Il server non
+  lo applica ancora: fino ad allora scrivi la condizione anche in `avanza_quando` e chiudi il primo segno
+  con `richiede.battute_usate`, e metti l'orologio solo tra gli `orologi_attivi` della scena in cui la
+  scelta si fa, così il ritmo minimo non chiede segni prima del tempo.
+- **Cancelli con «oppure».** Una battuta che vale «se i PG hanno una qualunque delle tre prove» oggi si
+  scrive come tre battute con lo stesso testo e cancelli diversi, che si escludono a vicenda con
+  `battute_non_usate` (repertorio.md §4). Un finale con più cancelli è fragile: rileggilo per ogni via.
+- **Voci tra le scene.** Il Motore non guarda chi è presente: una battuta senza `scena` di un PNG può
+  uscire in ogni scena, se un giocatore lo nomina. Se due PNG hanno voci simili, dai `scena` alle
+  battute di quello che non deve comparire accanto all'altro, e cerca ogni testo che lo sposta:
+  desiderio, iniziative, evoluzione, soluzioni dei colli di bottiglia, taglio, esiti. Il validatore
+  avvisa di ciò che trova; i casi voluti si giustificano in autovalutazione.
+- **I nodi noti.** Un luogo che i PG conoscono dall'inizio (la chiesa del paese) ha `noto_ai_pg: true`:
+  non serve scoprirlo con tre indizi.

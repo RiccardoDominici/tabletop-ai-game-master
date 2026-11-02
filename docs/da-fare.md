@@ -8,14 +8,15 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
 - **Server** (fatto il 2 novembre sera): riga «X sta parlando» sul proiettore, pannello del master (`/master`),
   `richiede.privata`/`da_pg`, `alias` dalle schede, `modi` e `mente_su[].id`, campagne con più scene, immagini di
   situazione dopo la rivelazione. Restano aperti:
-  - skill e validatore: documentare `aspetto.situazioni[].dopo` (il collegamento esplicito alla rivelazione); oggi il
-    Motore lo ricava per somiglianza e in ponte-lanterne non lo trova per `studio_cassa` di Vischi (solo a comando);
+  - Motore, proposte della prova cieca (descritte in `docs/repertorio.md`, «Proposte per il Motore»; il validatore e la
+    skill sono pronti): `richiede.oppure`, `orologi[].parte_dopo`, battute solo dei PNG presenti nella scena;
   - in modalità A (improvvisa) gli indizi non hanno id: le situazioni escono solo a comando del master;
 
 ## Dopo
-- **Skill e validatore** (raccogliere insieme alle note della prova alla cieca, `NOTE_SULLA_SKILL.md`):
-  - il validatore non legge `aspetto.prompt_ritratto` né `nodi[].immagine`: aggiungere controlli su `[STILE]`, lingua, segreti;
-  - `SKILL.md` descrive ancora prova-f0 com'era prima del passaggio al rigoroso (confessioni senza cancello, cicatrice nel ritratto).
+- **Skill e validatore** (fatto il 2 novembre sera, dalle 26 note di `NOTE_SULLA_SKILL.md`): contesto vero del modo B
+  compilato col server, cronologia e logistica (`MONDO`), voci simili (`simile_a`), passi riordinati con `--solo`,
+  più scene, copioni con `scena` e `richiede`, immagini (`prompt_ritratto`, `nodi[].immagine`, `situazioni[].dopo`).
+  Resta da provare: una seconda prova alla cieca con la skill nuova.
 - **Custode dei segreti** (`esperimenti/giudizio-ab-2/conclusioni.md`): controllo sì/no per le battute che rivelano
   un segreto, quando si riprende la qualità della narrazione.
 - **Filtri F1** (agency, battute riferite, lunghezza, canone, chiusura con invito): quando si riprende la narrazione,

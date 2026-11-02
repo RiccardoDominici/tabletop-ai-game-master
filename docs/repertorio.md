@@ -41,6 +41,7 @@ battute:
       orologio: {id: o_colpevole, min: 0, max: 3}   # segni già mostrati, estremi inclusi
       privata: true                   # risponde solo a un'azione segnata privata dal telefono
       da_pg: [pg_assenzio]            # risponde solo alle azioni di questi PG
+      # oppure: [{…}, {…}]            # PROPOSTA, non ancora applicata: vedi «Proposte per il Motore»
     testo:                            # righe nel protocollo del narratore, in ordine
       - "[narratore] Ottavia si sistema il fazzoletto rosso."
       - "[png_ottavia] La segale è di Gualtiero, come ogni anno. Buona."
@@ -96,6 +97,24 @@ Righe come oggi, più una nuova:
 - **Contesto del selettore**: in modalità repertorio i segreti escono dal contesto di Haiku (verità delle menzogne,
   `segreto`, fatti del canone con `noto_ai_pg: false` non ancora rivelati). Restano il pubblico, il carattere dei PNG,
   e il loro `sa` pubblico.
+
+## Proposte per il Motore (dalla prova cieca di ponte-lanterne)
+
+Il validatore e la skill del Preparatore le descrivono già; il server non le applica ancora.
+
+- **`richiede.oppure: [{…}, {…}]`**: la battuta è disponibile se valgono le condizioni di base **e**
+  almeno una delle alternative. Ogni alternativa è un blocco con le stesse chiavi di `richiede` (niente
+  `oppure` annidati). Per i cancelli sull'azione vale l'alternativa scelta: `{privata: true}` oppure
+  `{indizi_rivelati: [i_x]}` vuol dire «un'azione privata, o un'azione pubblica dopo l'indizio». Oggi il
+  caricatore ignora le chiavi che non conosce, quindi una battuta con `oppure` uscirebbe con il cancello
+  aperto: il validatore la rifiuta finché `strumenti/valida/costanti.py → OPPURE_NEL_SERVER` è False.
+- **`orologi[].parte_dopo: [<id battuta o indizio>]`**: l'orologio comincia a correre quando esce una di
+  quelle battute o si rivela uno di quegli indizi. Prima non avanza, non conta per `segno_almeno_ogni` e
+  i suoi segni non entrano nel catalogo. Serve agli orologi che partono da una scelta (ponte-lanterne,
+  `o_rampa`: solo se il ponte resta aperto dopo il terzo tocco).
+- **PNG presenti**: il Motore non mette in catalogo battute di un PNG che non è tra i `png_presenti` della
+  scena in corso (oppure: `scena` accetta una lista). Oggi una battuta senza `scena` di un PNG esce in
+  ogni scena se un giocatore lo nomina, anche accanto a un PNG con una voce simile.
 
 ## Versione 2 (dopo l'esperimento A/B n. 1)
 

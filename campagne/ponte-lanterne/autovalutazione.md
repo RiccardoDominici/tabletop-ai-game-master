@@ -52,7 +52,8 @@ Corretto:
 - **Bice nel Borgo**, insieme a Rosa, in quattro punti (desiderio, collo di bottiglia, battuta, taglio):
   contro il vincolo delle voci. Ora fa da faro dal parapetto.
 - **Il libro dei passi** era datato alla piena grande, quando il leone era ancora al suo posto. Ora la
-  riga è della piena di vent'anni fa.
+  riga è della piena di trentacinque anni fa (prima vent'anni: ma Tullio tiene il casello da trenta, e
+  la riga è del padre; l'ha trovato la cronologia del validatore).
 - **La catena al contrario**: «catena su» voleva dire aperto. Ora a terra è aperto, tesa è chiuso, e le
   battute dicono «chiudere» e «tenere aperto». Anche il prompt dell'immagine mostrava il ponte chiuso.
 - **Il climax senza prova**: «tienila su» bastava. Ora tenere aperto richiede l'onda trovata; senza,
