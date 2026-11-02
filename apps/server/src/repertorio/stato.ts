@@ -12,6 +12,27 @@ import { pngNominati, temaPresente } from './pertinenza';
 import { segretiNelTesto, type ParolaSegreta } from './segreti';
 import type { Battuta, Repertorio, RigaBattuta } from './tipi';
 
+/** Un'azione del turno come la vede il catalogo: chi, cosa, se è privata. */
+export interface AzioneCatalogo {
+  autore: string;
+  testo: string;
+  privata: boolean;
+}
+
+/**
+ * La battuta può rispondere a quest'azione? `richiede.privata` vuole un'azione privata (le altre
+ * battute rispondono solo alle pubbliche); `richiede.da_pg` vuole un'azione di quei PG.
+ */
+export function rispondeA(b: Battuta, a: { autore: string; privata: boolean }): boolean {
+  if (b.richiede.privata !== a.privata) return false;
+  return b.richiede.da_pg.length === 0 || b.richiede.da_pg.includes(a.autore);
+}
+
+/** La battuta ha un cancello sull'azione (privata o da_pg): esce solo con `> pg` verso un'azione adatta. */
+export function haCancelloAzione(b: Battuta): boolean {
+  return b.richiede.privata || b.richiede.da_pg.length > 0;
+}
+
 export type EsitoUso =
   | { ok: true; battuta: Battuta; righe: RigaBattuta[]; /** 0 = testo principale, n = variante n */ versione: number; uso: number }
   | { ok: false; motivo: string };
@@ -80,31 +101,48 @@ export class StatoRepertorio {
    */
   catalogo(o: {
     turno: number;
-    testoAzioni: string;
+    /** Azioni del turno (private comprese): ogni battuta guarda solo quelle a cui può rispondere. */
+    azioni?: AzioneCatalogo[];
+    /** Compatibilità: testo delle azioni pubbliche, se `azioni` manca. */
+    testoAzioni?: string;
     stallo: boolean;
     segnoDovuto: boolean;
     nomiPng: Map<string, string[]>;
     parole: ParolaSegreta[];
   }): { battute: Battuta[]; trattenute: string[]; perche: Record<string, string> } {
-    const nominati = pngNominati(o.testoAzioni, o.nomiPng);
+    const azioni = o.azioni ?? (o.testoAzioni ? [{ autore: '', testo: o.testoAzioni, privata: false }] : []);
+    // Testo delle azioni a cui ogni battuta può rispondere (cache per combinazione di cancelli).
+    const testi = new Map<string, string | null>();
+    const testoPer = (b: Battuta): string | null => {
+      const chiave = `${b.richiede.privata}|${b.richiede.da_pg.join(',')}`;
+      if (!testi.has(chiave)) {
+        const adatte = azioni.filter((a) => rispondeA(b, a));
+        testi.set(chiave, adatte.length ? adatte.map((a) => a.testo).join('\n') : null);
+      }
+      return testi.get(chiave)!;
+    };
     const completi = new Map(this.orologi.elenco.map((x) => [x.id, x.pieni >= x.segmenti ? x.segmenti : null]));
     const perche: Record<string, string> = {};
     const candidate = this.disponibili(o.turno).filter((b) => {
       if (b.solo_esempio) return false;
+      const testo = testoPer(b);
+      // Cancello sull'azione: senza un'azione adatta (privata, del PG giusto) la battuta non entra.
+      if (haCancelloAzione(b) && testo === null) return false;
+      const t = testo ?? '';
       const oro = b.richiede.orologio;
       const segmentiCompleti = oro ? completi.get(oro.id) : null;
       const perStato = segmentiCompleti != null && oro!.min >= segmentiCompleti;
-      const temi = temaPresente(o.testoAzioni, b.temi);
+      const temi = temaPresente(t, b.temi);
       let motivo: string | null = null;
       if (perStato) motivo = 'stato';
       else if (b.tipo === 'segno_orologio') motivo = o.segnoDovuto ? 'segno' : temi ? 'temi' : null;
       else if (b.riempitivo) motivo = o.stallo ? 'stallo' : null;
       else if (temi) motivo = 'temi';
-      else if (b.chi !== 'narratore' && nominati.has(b.chi)) motivo = 'png';
+      else if (b.chi !== 'narratore' && pngNominati(t, o.nomiPng).has(b.chi)) motivo = 'png';
       if (motivo) perche[b.id] = motivo;
       return motivo !== null;
     });
-    const filtrate = this.filtraSegreti(candidate, o.testoAzioni, o.parole);
+    const filtrate = this.filtraSegreti(candidate, (b) => testoPer(b) ?? '', o.parole);
     return { ...filtrate, perche };
   }
 
@@ -120,15 +158,16 @@ export class StatoRepertorio {
    * giocatori, e per la regola di parole_segrete.yaml quello che dice un giocatore è pubblico.
    */
   disponibiliPerTurno(testoAzioni: string, parole: ParolaSegreta[]): { battute: Battuta[]; trattenute: string[] } {
-    return this.filtraSegreti(this.disponibili(), testoAzioni, parole);
+    return this.filtraSegreti(this.disponibili(), () => testoAzioni, parole);
   }
 
-  private filtraSegreti(candidate: Battuta[], testoAzioni: string, parole: ParolaSegreta[]): { battute: Battuta[]; trattenute: string[] } {
-    const azioni = testoAzioni.toLowerCase();
+  /** `testoAzioni(b)`: il testo delle azioni a cui la battuta può rispondere (solo quello «rende pubblica» una parola). */
+  private filtraSegreti(candidate: Battuta[], testoAzioni: (b: Battuta) => string, parole: ParolaSegreta[]): { battute: Battuta[]; trattenute: string[] } {
     const pubblico = { indiziRivelati: this.indiziRivelati, battuteUsate: (id: string) => this.usata(id) };
     const battute: Battuta[] = [];
     const trattenute: string[] = [];
     for (const b of candidate) {
+      const azioni = testoAzioni(b).toLowerCase();
       const segreti = segretiNelTesto(StatoRepertorio.riga(b), parole, pubblico);
       const nominata = b.temi.some((t) => t.length > 2 && azioni.includes(t.toLowerCase())) || segreti.some((p) => p.regex.test(azioni));
       if (segreti.length === 0 || nominata) battute.push(b);

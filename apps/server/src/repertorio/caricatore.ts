@@ -88,6 +88,7 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = path.join
     for (const id of b.effetti.fatti_noti) if (!fatti.has(id)) errori.push(`${b.id}: fatto del canone inesistente «${id}»`);
     if (r.orologio && !orologi.has(r.orologio.id)) errori.push(`${b.id}: orologio inesistente «${r.orologio.id}»`);
     if (b.effetti.avanza_orologio && !orologi.has(b.effetti.avanza_orologio)) errori.push(`${b.id}: orologio inesistente «${b.effetti.avanza_orologio}»`);
+    for (const pg of r.da_pg) if (!c.pg.some((p) => p.id === pg)) errori.push(`${b.id}: richiede.da_pg cita un PG inesistente «${pg}»`);
   }
 
   for (const a of avvisi) log?.warn({ avviso: a }, 'repertorio: avviso');
@@ -159,7 +160,10 @@ function leggiBattuta(
       o && typeof o['id'] === 'string'
         ? { id: o['id'], min: typeof o['min'] === 'number' ? o['min'] : 0, max: typeof o['max'] === 'number' ? o['max'] : Number.POSITIVE_INFINITY }
         : null,
+    privata: r['privata'] === true,
+    da_pg: lista(r['da_pg']),
   };
+  if (r['privata'] !== undefined && typeof r['privata'] !== 'boolean') errori.push(`${qui}: richiede.privata è true o false`);
   const e = (d['effetti'] ?? {}) as DatiYaml;
   const effetti: Effetti = {
     rivela_indizi: lista(e['rivela_indizi']),

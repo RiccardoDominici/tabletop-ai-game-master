@@ -47,7 +47,7 @@ import { normalizza } from '../azioni/regole';
 import { nomiDeiPng } from '../repertorio/pertinenza';
 import { sommaCosti } from '../llm/costi';
 import type { Repertorio } from '../repertorio/tipi';
-import { StatoRepertorio } from '../repertorio/stato';
+import { StatoRepertorio, haCancelloAzione, rispondeA } from '../repertorio/stato';
 import { segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
 import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
 import { voceDi } from '../turni/narrazione';
@@ -130,8 +130,8 @@ export class Regia {
   private statoRepertorio: StatoRepertorio | null = null;
   /** Battute mostrate al selettore in questo turno: un [usa] fuori elenco si rifiuta. */
   private elencoTurno = new Set<string>();
-  /** B2: azioni pubbliche del turno (chi può ricevere una battuta), stallo, segno dovuto. */
-  private turnoB: { azioniPubbliche: Map<string, string>; stallo: boolean; segnoDovuto: boolean } | null = null;
+  /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
+  private turnoB: { azioni: Map<string, { id: string; privata: boolean }>; stallo: boolean; segnoDovuto: boolean } | null = null;
   /** Nomi dei PNG e soprannomi, per la pertinenza del catalogo. */
   private readonly nomiPng: Map<string, string[]>;
   /** Luogo corrente (id della scena o del nodo): sceglie l'immagine del proiettore. */
@@ -293,11 +293,20 @@ export class Regia {
       return { ok: false, motivo: b ? `non era nel catalogo del turno (${s.motivoIndisponibile(b, turno) ?? 'non pertinente alle azioni o trattenuta per un segreto'})` : `battuta inesistente: ${id}` };
     }
     // B2: ogni battuta risponde a un'azione (`> pg`), salvo il segno dovuto e le mosse di stallo.
+    // Cancelli sull'azione: `richiede.privata` solo verso un'azione privata, `da_pg` solo verso quei PG;
+    // le altre battute solo verso azioni pubbliche (un'azione privata non riceve battute qualsiasi).
     const b = s.repertorio.perId.get(id)!;
     const t = this.turnoB;
     if (per) {
-      if (!t?.azioniPubbliche.has(per)) return { ok: false, motivo: `${per} non ha un'azione pubblica in questo turno` };
+      const azione = t?.azioni.get(per);
+      if (!azione) return { ok: false, motivo: `${per} non ha un'azione in questo turno` };
+      if (!rispondeA(b, { autore: per, privata: azione.privata })) {
+        const serve = b.richiede.privata ? 'un’azione privata' : 'un’azione pubblica';
+        const chi = b.richiede.da_pg.length ? ` di ${b.richiede.da_pg.join(', ')}` : '';
+        return { ok: false, motivo: `${id} risponde solo a ${serve}${chi}: ${per} non va bene` };
+      }
     } else {
+      if (haCancelloAzione(b)) return { ok: false, motivo: `${id} ha un cancello sull'azione (privata o da_pg): serve «> pg»` };
       const libera = (b.tipo === 'segno_orologio' && !!t?.segnoDovuto) || (b.riempitivo && !!t?.stallo);
       if (!libera) return { ok: false, motivo: 'battuta senza «> pg»: ammessa solo per il segno dovuto o allo stallo' };
     }
@@ -970,20 +979,19 @@ export class Regia {
   }
 
   /**
-   * Fatti scoperti e catalogo B2 del turno: solo battute pertinenti alle azioni PUBBLICHE (le
-   * private non ricevono battute), il segno se è dovuto, le battute per stato dell'orologio, i
-   * riempitivi allo stallo.
+   * Fatti scoperti e catalogo B2 del turno: solo battute pertinenti alle azioni a cui possono
+   * rispondere (le pubbliche; le private solo per le battute con `richiede.privata`, e `da_pg` solo
+   * per quei PG), il segno se è dovuto, le battute per stato dell'orologio, i riempitivi allo stallo.
    */
   private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; battuteDisponibili: string; stallo: boolean } {
     const s = this.statoRepertorio!;
-    const pubbliche = r.azioni.filter((a) => !a.privata);
-    const testoAzioni = pubbliche.map((a) => a.testo).join('\n');
     // Stallo: 45 s senza input, o una finestra chiusa senza nessuna azione (tutti hanno passato).
     const stallo = r.motivo === 'stallo' || r.azioni.length === 0;
     const segnoDovuto = this.orologi.elenco.some((o) => this.orologi.dovuto(o, r.turno));
-    const { battute, trattenute, perche } = s.catalogo({ turno: r.turno, testoAzioni, stallo, segnoDovuto, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
+    const azioni = r.azioni.map((a) => ({ autore: a.autore, testo: a.testo, privata: a.privata }));
+    const { battute, trattenute, perche } = s.catalogo({ turno: r.turno, azioni, stallo, segnoDovuto, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
     this.elencoTurno = new Set(battute.map((b) => b.id));
-    this.turnoB = { azioniPubbliche: new Map(pubbliche.map((a) => [a.autore, a.id])), stallo, segnoDovuto };
+    this.turnoB = { azioni: new Map(r.azioni.map((a) => [a.autore, { id: a.id, privata: a.privata }])), stallo, segnoDovuto };
     this.o.log.info({ turno: r.turno, catalogo: battute.length, perche, trattenute, stallo, segnoDovuto }, 'repertorio: catalogo del turno');
     return {
       fattiScoperti: s.fattiScoperti.map((id) => `${id} — ${this.testoFatto(id)}`),

@@ -34,6 +34,13 @@ export interface Richiede {
   battute_non_usate: string[];
   /** Segni già mostrati dell'orologio, estremi inclusi. */
   orologio: { id: string; min: number; max: number } | null;
+  /**
+   * true: la battuta risponde solo a un'azione segnata PRIVATA dal telefono (es. una confessione
+   * «dove Baldrin non sente»). Assente o false: solo ad azioni pubbliche (come tutte le altre).
+   */
+  privata: boolean;
+  /** Se non vuota: la battuta risponde solo alle azioni di questi PG («quando Assenzio le chiede…»). */
+  da_pg: string[];
 }
 
 export interface Effetti {

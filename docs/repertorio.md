@@ -39,6 +39,8 @@ battute:
       battute_usate: []               # id di battute già uscite
       battute_non_usate: []
       orologio: {id: o_colpevole, min: 0, max: 3}   # segni già mostrati, estremi inclusi
+      privata: true                   # risponde solo a un'azione segnata privata dal telefono
+      da_pg: [pg_assenzio]            # risponde solo alle azioni di questi PG
     testo:                            # righe nel protocollo del narratore, in ordine
       - "[narratore] Ottavia si sistema il fazzoletto rosso."
       - "[png_ottavia] La segale è di Gualtiero, come ogni anno. Buona."
@@ -76,6 +78,10 @@ Righe come oggi, più una nuova:
 - Il Motore mette nel contesto di ogni turno l'**elenco delle battute disponibili** (condizioni vere, usi rimasti):
   `id · chi · tipo · quando`. Mai il testo delle battute non ancora uscite.
 - `[usa]` con un id non disponibile: scartato e registrato.
+- **Cancelli sull'azione** (`richiede.privata`, `richiede.da_pg`): il Motore mette in catalogo una battuta solo se nel
+  turno c'è un'azione a cui può rispondere (privata per `privata: true`, dei PG elencati per `da_pg`), e accetta
+  `[usa] <id> > <pg>` solo verso quell'azione. Le battute senza cancello rispondono solo alle azioni pubbliche:
+  un'azione privata non riceve battute qualsiasi.
 - Gli effetti li applica il Motore; non serve più la riga `[orologio]` per i segni scritti nel repertorio.
 - Nella trascrizione pubblica entra il testo della battuta uscita (ormai è pubblico).
 - **Contesto del selettore**: in modalità repertorio i segreti escono dal contesto di Haiku (verità delle menzogne,
