@@ -52,7 +52,10 @@ test('serata: proiettore, due telefoni e master; due turni e un cambio di scena'
   schermo.on('console', (m) => m.type() === 'error' && errori.push(`[schermo] ${m.text()}`));
   const salute = (await (await schermo.request.get('/api/salute')).json()) as { campagna: string; modo: string; narratore: string; fase: string };
   test.skip(salute.campagna !== 'ponte-lanterne', 'avvia prima: scripts/partita.sh ponte-lanterne');
-  expect(salute).toMatchObject({ modo: 'repertorio', narratore: 'haiku', fase: 'attesa' });
+  expect(salute).toMatchObject({ modo: 'repertorio', narratore: 'haiku' });
+  // Un proiettore già aperto in un browser vero si ricollega da solo e fa partire la scena: si
+  // riparte dall'apertura (con uno schermo collegato «ricomincia» la legge subito).
+  if (salute.fase !== 'attesa') await schermo.request.post('/api/scena/ricomincia');
   await schermo.goto('/schermo');
 
   const master = await (await browser.newContext({ viewport: { width: 1600, height: 1000 } })).newPage();
