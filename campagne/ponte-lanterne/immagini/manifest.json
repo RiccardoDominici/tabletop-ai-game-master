@@ -1,0 +1,192 @@
+{
+  "immagini": [
+    {
+      "id": "luogo_e_terzo_tocco",
+      "file": "luogo_scena_terzo_tocco.jpg",
+      "tipo": "luogo",
+      "alias_di": "luogo_scena_terzo_tocco",
+      "quando": "2026-11-02 22:34:13"
+    },
+    {
+      "id": "luogo_n_borgo_basso",
+      "file": "luogo_scena_borgo_basso.jpg",
+      "tipo": "luogo",
+      "alias_di": "luogo_scena_borgo_basso",
+      "quando": "2026-11-02 22:34:13"
+    },
+    {
+      "id": "luogo_n_casa_del_sale",
+      "file": "luogo_scena_casa_del_sale.jpg",
+      "tipo": "luogo",
+      "alias_di": "luogo_scena_casa_del_sale",
+      "quando": "2026-11-02 22:34:13"
+    },
+    {
+      "id": "luogo_n_ponte",
+      "file": "luogo_scena_ponte_imbrunire.jpg",
+      "tipo": "luogo",
+      "alias_di": "luogo_scena_ponte_imbrunire",
+      "quando": "2026-11-02 22:34:13"
+    },
+    {
+      "id": "luogo_scena_borgo_basso",
+      "file": "luogo_scena_borgo_basso.jpg",
+      "tipo": "luogo",
+      "prompt": "flooded narrow alley of a poor riverside quarter at night, waist-deep brown water between old stone walls, flat wooden boat with a long pole, two-storey stone almshouse with a lantern in an upper window, row of old wooden houses on the riverbank with wooden balconies, heavy rain, distant lanterns of a stone bridge, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 984255799,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 365.0,
+      "picco_gb": 5.36,
+      "kb": 697,
+      "rifilato_pct": 5.0,
+      "quando": "2026-11-02 22:20:23"
+    },
+    {
+      "id": "luogo_scena_casa_del_sale",
+      "file": "luogo_scena_casa_del_sale.jpg",
+      "tipo": "luogo",
+      "prompt": "warm stone salt warehouse at night, white sacks of salt stacked up to the rafters, crackling fireplace, long council table with inkwell, papers and pewter cups, closed oak door at the far end of the hall, wet cloaks hanging by the entrance, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 269503155,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 386.7,
+      "picco_gb": 5.14,
+      "kb": 634,
+      "rifilato_pct": 0.3,
+      "quando": "2026-11-02 22:26:51"
+    },
+    {
+      "id": "luogo_scena_ponte_imbrunire",
+      "file": "luogo_scena_ponte_imbrunire.jpg",
+      "tipo": "luogo",
+      "prompt": "old six-arched stone toll bridge over a swollen muddy river at dusk in heavy rain, six lit lanterns along the parapet, small wood-and-stone toll house at mid-span, heavy iron chain lying slack on the roadway between two posts beside a crank, weathered stone lion carved on the central pier just above the water, wide flat old barge moored under the toll house, lit windows of a low riverside quarter on the far bank, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 234428160,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 267.3,
+      "picco_gb": 5.3,
+      "kb": 652,
+      "rifilato_pct": 0.5,
+      "quando": "2026-11-02 22:14:18"
+    },
+    {
+      "id": "luogo_scena_terzo_tocco",
+      "file": "luogo_scena_terzo_tocco.jpg",
+      "tipo": "luogo",
+      "prompt": "old six-arched stone toll bridge just before midnight in a raging flood, muddy water lapping over the low ramp, six lanterns along the parapet, wood-and-stone toll house at mid-span, heavy iron chain still lying slack on the roadway between two posts beside a crank, a crowd with lanterns and candles gathered under a shelter at the high end, rain slanting in the lantern light, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 587822524,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 440.9,
+      "picco_gb": 5.41,
+      "kb": 675,
+      "rifilato_pct": 2.0,
+      "quando": "2026-11-02 22:34:13"
+    },
+    {
+      "id": "ritratto_png_bice",
+      "file": "ritratto_png_bice.jpg",
+      "tipo": "ritratto",
+      "prompt": "thin 19-year-old lamplighter, red braid, green hood thrown back, soot smudge on her nose, flint striker in her hand, lit lantern on a stone bridge parapet in the rain. Tratti fissi: diciannove anni; magra; treccia rossa; cappuccio verde buttato indietro; acciarino in mano; fuliggine sul naso, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 357057608,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 114.0,
+      "picco_gb": 4.31,
+      "kb": 258,
+      "rifilato_pct": 0.0,
+      "quando": "2026-11-02 22:36:08"
+    },
+    {
+      "id": "ritratto_png_rosa",
+      "file": "ritratto_png_rosa.jpg",
+      "tipo": "ritratto",
+      "prompt": "tiny 78-year-old almshouse keeper, grey wool shawl, round spectacles, red chapped washerwoman's hands, white goose at her feet, candlelit upper room of an old stone house. Tratti fissi: settantotto anni; minuta; scialle di lana grigia; occhiali tondi; mani rosse da lavandaia; oca bianca ai piedi, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 238954797,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 135.7,
+      "picco_gb": 4.31,
+      "kb": 251,
+      "rifilato_pct": 0.0,
+      "quando": "2026-11-02 22:38:23"
+    },
+    {
+      "id": "ritratto_png_tullio",
+      "file": "ritratto_png_tullio.jpg",
+      "tipo": "ritratto",
+      "prompt": "broad-shouldered 62-year-old bridge toll keeper, wet grey beard, brown wool cap pulled down over his ears, yellow oilskin cloak, heavy iron key hanging from his belt, rainy stone bridge with lanterns behind him. Tratti fissi: sessantadue anni; largo di spalle; berretto di lana marrone; barba grigia; grossa chiave di ferro alla cintura; mantello cerato giallo, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 504256749,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 115.4,
+      "picco_gb": 4.33,
+      "kb": 277,
+      "rifilato_pct": 0.0,
+      "quando": "2026-11-02 22:40:19"
+    },
+    {
+      "id": "ritratto_png_vischi",
+      "file": "ritratto_png_vischi.jpg",
+      "tipo": "ritratto",
+      "prompt": "tall lean 52-year-old merchant and moneylender, grey hair combed back, finely tailored black cloak, black leather gloves, gold signet ring, warm firelit salt warehouse behind him. Tratti fissi: cinquantadue anni; alto e magro; capelli grigi pettinati all'indietro; mantello nero ben cucito; guanti di pelle nera; anello d'oro con sigillo, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 411605989,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 124.8,
+      "picco_gb": 4.29,
+      "kb": 225,
+      "rifilato_pct": 0.0,
+      "quando": "2026-11-02 22:42:24"
+    }
+  ]
+}
