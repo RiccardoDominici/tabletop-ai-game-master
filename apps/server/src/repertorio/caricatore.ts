@@ -180,6 +180,8 @@ function leggiBattuta(
     varianti,
     effetti,
     max_usi: maxUsi,
+    solo_esempio: d['solo_esempio'] === true,
+    riempitivo: d['riempitivo'] === true,
     file,
   };
 }

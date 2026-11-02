@@ -8,6 +8,7 @@
  */
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { StatoOrologi } from '../scena/orologi';
+import { pngNominati, temaPresente } from './pertinenza';
 import { segretiNelTesto, type ParolaSegreta } from './segreti';
 import type { Battuta, Repertorio, RigaBattuta } from './tipi';
 
@@ -23,6 +24,10 @@ export class StatoRepertorio {
   readonly fattiNoti = new Set<string>();
   /** Fatti scoperti durante la scena (non pubblici all'inizio), nell'ordine. */
   readonly fattiScoperti: string[] = [];
+  /** Turno dell'ultimo uso di ogni battuta (anti-ripetizione). */
+  readonly ultimoUso = new Map<string, number>();
+  /** B2: una battuta e le sue varianti non tornano entro questo numero di turni. */
+  static readonly PAUSA_RIPETIZIONE = 3;
 
   constructor(
     readonly repertorio: Repertorio,
@@ -38,10 +43,14 @@ export class StatoRepertorio {
     return (this.usi.get(id) ?? 0) > 0;
   }
 
-  /** Perché una battuta non è disponibile adesso (null = disponibile). */
-  motivoIndisponibile(b: Battuta): string | null {
+  /** Perché una battuta non è disponibile adesso (null = disponibile). `turno` attiva l'anti-ripetizione. */
+  motivoIndisponibile(b: Battuta, turno?: number): string | null {
     const usi = this.usi.get(b.id) ?? 0;
     if (usi >= b.max_usi) return `già usata ${usi} volte (max_usi ${b.max_usi})`;
+    const ultimo = this.ultimoUso.get(b.id);
+    if (turno !== undefined && ultimo !== undefined && turno - ultimo <= StatoRepertorio.PAUSA_RIPETIZIONE) {
+      return `uscita al turno ${ultimo}: non torna prima del turno ${ultimo + StatoRepertorio.PAUSA_RIPETIZIONE + 1}`;
+    }
     const r = b.richiede;
     for (const i of r.indizi_rivelati) if (!this.indiziRivelati.has(i)) return `richiede l'indizio rivelato ${i}`;
     for (const i of r.indizi_non_rivelati) if (this.indiziRivelati.has(i)) return `richiede l'indizio NON rivelato ${i}`;
@@ -56,8 +65,47 @@ export class StatoRepertorio {
     return null;
   }
 
-  disponibili(): Battuta[] {
-    return this.repertorio.battute.filter((b) => this.motivoIndisponibile(b) === null);
+  disponibili(turno?: number): Battuta[] {
+    return this.repertorio.battute.filter((b) => this.motivoIndisponibile(b, turno) === null);
+  }
+
+  /**
+   * Catalogo B2 del turno: solo le battute pertinenti, mai quelle `solo_esempio`.
+   * - pertinenti: i `temi` compaiono nelle azioni, oppure le azioni nominano il PNG che parla;
+   * - il segno d'orologio solo quando è dovuto (o se le azioni ne toccano i temi);
+   * - per stato: a orologio completo, le battute che lo richiedono completo (finali, folla, chiusura),
+   *   anche senza parole dei giocatori;
+   * - i `riempitivo` solo allo stallo (nessuno ha agito);
+   * - sopra a tutto, il filtro dei segreti di `disponibiliPerTurno`.
+   */
+  catalogo(o: {
+    turno: number;
+    testoAzioni: string;
+    stallo: boolean;
+    segnoDovuto: boolean;
+    nomiPng: Map<string, string[]>;
+    parole: ParolaSegreta[];
+  }): { battute: Battuta[]; trattenute: string[]; perche: Record<string, string> } {
+    const nominati = pngNominati(o.testoAzioni, o.nomiPng);
+    const completi = new Map(this.orologi.elenco.map((x) => [x.id, x.pieni >= x.segmenti ? x.segmenti : null]));
+    const perche: Record<string, string> = {};
+    const candidate = this.disponibili(o.turno).filter((b) => {
+      if (b.solo_esempio) return false;
+      const oro = b.richiede.orologio;
+      const segmentiCompleti = oro ? completi.get(oro.id) : null;
+      const perStato = segmentiCompleti != null && oro!.min >= segmentiCompleti;
+      const temi = temaPresente(o.testoAzioni, b.temi);
+      let motivo: string | null = null;
+      if (perStato) motivo = 'stato';
+      else if (b.tipo === 'segno_orologio') motivo = o.segnoDovuto ? 'segno' : temi ? 'temi' : null;
+      else if (b.riempitivo) motivo = o.stallo ? 'stallo' : null;
+      else if (temi) motivo = 'temi';
+      else if (b.chi !== 'narratore' && nominati.has(b.chi)) motivo = 'png';
+      if (motivo) perche[b.id] = motivo;
+      return motivo !== null;
+    });
+    const filtrate = this.filtraSegreti(candidate, o.testoAzioni, o.parole);
+    return { ...filtrate, perche };
   }
 
   /** Riga dell'elenco: `id · chi · tipo · quando`. */
@@ -72,11 +120,15 @@ export class StatoRepertorio {
    * giocatori, e per la regola di parole_segrete.yaml quello che dice un giocatore è pubblico.
    */
   disponibiliPerTurno(testoAzioni: string, parole: ParolaSegreta[]): { battute: Battuta[]; trattenute: string[] } {
+    return this.filtraSegreti(this.disponibili(), testoAzioni, parole);
+  }
+
+  private filtraSegreti(candidate: Battuta[], testoAzioni: string, parole: ParolaSegreta[]): { battute: Battuta[]; trattenute: string[] } {
     const azioni = testoAzioni.toLowerCase();
     const pubblico = { indiziRivelati: this.indiziRivelati, battuteUsate: (id: string) => this.usata(id) };
     const battute: Battuta[] = [];
     const trattenute: string[] = [];
-    for (const b of this.disponibili()) {
+    for (const b of candidate) {
       const segreti = segretiNelTesto(StatoRepertorio.riga(b), parole, pubblico);
       const nominata = b.temi.some((t) => t.length > 2 && azioni.includes(t.toLowerCase())) || segreti.some((p) => p.regex.test(azioni));
       if (segreti.length === 0 || nominata) battute.push(b);
@@ -107,6 +159,7 @@ export class StatoRepertorio {
     }
     const uso = (this.usi.get(id) ?? 0) + 1;
     this.usi.set(id, uso);
+    this.ultimoUso.set(id, turno);
     const versione = uso === 1 || b.varianti.length === 0 ? 0 : ((uso - 2) % b.varianti.length) + 1;
     const righe = versione === 0 ? b.testo : b.varianti[versione - 1]!;
     for (const i of b.effetti.rivela_indizi) this.indiziRivelati.add(i);
@@ -120,9 +173,9 @@ export class StatoRepertorio {
     return { ok: true, battuta: b, righe, versione, uso };
   }
 
-  /** Battute mai uscite (per il riepilogo dell'esperimento). */
+  /** Battute mai uscite (per il riepilogo dell'esperimento; le `solo_esempio` non contano). */
   maiUsate(): string[] {
-    return this.repertorio.battute.filter((b) => !this.usata(b.id)).map((b) => b.id);
+    return this.repertorio.battute.filter((b) => !b.solo_esempio && !this.usata(b.id)).map((b) => b.id);
   }
 
   riepilogo(): Record<string, unknown> {

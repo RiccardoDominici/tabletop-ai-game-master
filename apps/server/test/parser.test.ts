@@ -186,3 +186,14 @@ describe('ParserNarratore — [usa]', () => {
     expect(anomalie(esegui('[usa]\n[invito] tutti', []))).toEqual(['usa_vuoto']);
   });
 });
+
+describe('ParserNarratore — [usa] id > pg (B2)', () => {
+  it('lega la battuta all’azione di un PG (id o nome), o a nessuno', () => {
+    const ev = esegui('[usa] ott_saluto > pg_ginestra\n[usa] bal_x → Corrado\n[usa] nar_segno_1\n[invito] tutti', []);
+    expect(ev.filter((e) => e.tipo === 'usa').map((e) => (e.tipo === 'usa' ? [e.id, e.per] : []))).toEqual([
+      ['ott_saluto', 'pg_ginestra'],
+      ['bal_x', 'pg_corrado'],
+      ['nar_segno_1', null],
+    ]);
+  });
+});

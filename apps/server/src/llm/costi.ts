@@ -84,6 +84,19 @@ export function calcolaCosto(modello: string, uso: UsoToken): Costo {
   };
 }
 
+/** Somma di due costi (una risposta e la sua riparazione nello stesso turno). */
+export function sommaCosti(a: Costo, b: Costo): Costo {
+  return {
+    costo_usd: arrotonda(a.costo_usd + b.costo_usd),
+    token_ingresso: a.token_ingresso + b.token_ingresso,
+    token_uscita: a.token_uscita + b.token_uscita,
+    token_cache_lettura: a.token_cache_lettura + b.token_cache_lettura,
+    token_cache_scrittura: a.token_cache_scrittura + b.token_cache_scrittura,
+    token_prompt: Math.max(a.token_prompt, b.token_prompt),
+    tariffa_alta: a.tariffa_alta || b.tariffa_alta,
+  };
+}
+
 /** 8 decimali bastano (un token d'uscita di Haiku vale 5e-7 $). */
 function arrotonda(x: number): number {
   return Math.round(x * 1e8) / 1e8;

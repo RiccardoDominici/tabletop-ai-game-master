@@ -65,7 +65,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   if (config.modo === 'repertorio') {
     repertorio = caricaRepertorio(campagna, log.child({ modulo: 'repertorio' }));
     filePrompt = config.filePromptSelettore;
-    contesto = compilaContestoRepertorio(campagna, paroleSegrete);
+    contesto = compilaContestoRepertorio(campagna, paroleSegrete, repertorio);
     const fughe = segretiNelTesto(contesto, paroleSegrete);
     if (fughe.length) throw new Error(`contesto del selettore con parole segrete: ${fughe.map((p) => p.parola).join(', ')}`);
   } else {

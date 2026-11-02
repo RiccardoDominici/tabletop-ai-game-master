@@ -27,8 +27,8 @@ export interface DatiMessaggioTurno {
   orologi?: string;
   /** Collegamenti tra le azioni del turno (dipendenze, conflitti), righe già pronte. */
   collegamenti?: string[];
-  /** Modalità repertorio: fatti scoperti in scena (testo), battute disponibili (righe pronte). */
-  repertorio?: { fattiScoperti: string[]; battuteDisponibili: string };
+  /** Modalità repertorio: fatti scoperti (testo), catalogo del turno (righe pronte), stallo. */
+  repertorio?: { fattiScoperti: string[]; battuteDisponibili: string; stallo?: boolean };
   /** Massimo di voci di trascrizione da includere (le più recenti). */
   maxTrascrizione?: number;
 }
@@ -104,7 +104,8 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
   if (d.orologi) parti.push('## Orologi della scena (stato tenuto dal Motore)', d.orologi);
   if (d.repertorio) {
     if (d.repertorio.fattiScoperti.length) parti.push('## Fatti scoperti in scena (ora li conoscono i PG)', d.repertorio.fattiScoperti.map((f) => `- ${f}`).join('\n'));
-    parti.push('## Battute disponibili (id · chi · tipo · quando)', d.repertorio.battuteDisponibili || '(nessuna)');
+    parti.push('## Catalogo: battute pertinenti a questo turno (id · chi · tipo · quando)', d.repertorio.battuteDisponibili || '(nessuna)');
+    if (d.repertorio.stallo) parti.push('Stallo: nessuno ha agito in questo turno.');
   }
 
   // pg_presenti: solo questi si possono invitare (gli altri PG della scheda non sono al tavolo).
@@ -118,4 +119,19 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
           'l’ultima riga è [invito] con gli id dei PG al tavolo che devono rispondere, oppure tutti.',
   );
   return parti.join('\n\n');
+}
+
+/**
+ * B2: messaggio della riparazione. La risposta è già stata detta ad alta voce ma alcune azioni
+ * sono rimaste senza risposta: si chiede solo quella parte, senza invito.
+ */
+export function messaggioRiparazione(messaggio: string, detto: string, mancanti: Array<{ id: string; nome: string; testo: string }>): string {
+  return [
+    messaggio,
+    `## La tua risposta, già detta ad alta voce\n${detto}`,
+    `## Azioni rimaste senza risposta\n${mancanti.map((m) => `- ${m.nome} (${m.id}): ${m.testo}`).join('\n')}`,
+    'Rispondi ora SOLO a queste azioni, nell’ordine: per ognuna una o due righe rivolte a quel PG per nome ' +
+      '([narratore], [png_…], oppure [usa] id > pg_id se una battuta del catalogo risponde proprio a quella azione). ' +
+      'Non ripetere niente di ciò che hai già detto. Niente [invito].',
+  ].join('\n\n');
 }

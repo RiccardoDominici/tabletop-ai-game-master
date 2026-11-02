@@ -58,6 +58,10 @@ export interface Battuta {
   varianti: RigaBattuta[][];
   effetti: Effetti;
   max_usi: number;
+  /** B2: non è selezionabile; le sue righe vanno nel contesto come esempi della voce del PNG. */
+  solo_esempio: boolean;
+  /** B2: mossa senza azione (il cane, il tempo che passa…): in catalogo solo allo stallo. */
+  riempitivo: boolean;
   /** File di provenienza (per gli errori). */
   file: string;
 }

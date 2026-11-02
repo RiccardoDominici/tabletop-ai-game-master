@@ -35,7 +35,11 @@ import type { Orologio } from '../turni/orologio';
 import { azioniPerNarratore } from '../azioni/narratore';
 import { TavoloAzioni, type RiepilogoChiusura } from '../azioni/tavolo';
 import type { Arbitro } from '../azioni/tipi';
-import { narraTurno, type EsitoUsaTurno } from '../turni/narrazione';
+import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
+import { messaggioRiparazione } from '../narrazione/messaggio';
+import { normalizza } from '../azioni/regole';
+import { nomiDeiPng } from '../repertorio/pertinenza';
+import { sommaCosti } from '../llm/costi';
 import type { Repertorio } from '../repertorio/tipi';
 import { StatoRepertorio } from '../repertorio/stato';
 import { segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
@@ -110,6 +114,10 @@ export class Regia {
   private statoRepertorio: StatoRepertorio | null = null;
   /** Battute mostrate al selettore in questo turno: un [usa] fuori elenco si rifiuta. */
   private elencoTurno = new Set<string>();
+  /** B2: azioni pubbliche del turno (chi può ricevere una battuta), stallo, segno dovuto. */
+  private turnoB: { azioniPubbliche: Map<string, string>; stallo: boolean; segnoDovuto: boolean } | null = null;
+  /** Nomi dei PNG e soprannomi, per la pertinenza del catalogo. */
+  private readonly nomiPng: Map<string, string[]>;
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
@@ -141,6 +149,7 @@ export class Regia {
     this.o = opzioni;
     this.pronuncia = creaPronunciatore(opzioni.campagna);
     this.orologi = new StatoOrologi(opzioni.campagna);
+    this.nomiPng = nomiDeiPng(opzioni.campagna);
     this.statoRepertorio = this.nuovoStatoRepertorio();
     this.pipeline = new PipelineVoce({
       motore: () => this.o.voce.attivo,
@@ -216,12 +225,21 @@ export class Regia {
    * `[usa] <id>` dal selettore: la battuta esce se è disponibile; le sue righe vanno alla voce con
    * l'audio pre-generato (stessa normalizzazione dello script di pre-generazione).
    */
-  private usaBattuta(id: string, turno: number, segno: { mostrato: boolean }): EsitoUsaTurno {
+  private usaBattuta(id: string, per: string | null, turno: number, segno: { mostrato: boolean }): EsitoUsaTurno {
     const s = this.statoRepertorio;
     if (!s) return { ok: false, motivo: 'modalità improvvisa: nessun repertorio' };
     if (!this.elencoTurno.has(id)) {
       const b = s.repertorio.perId.get(id);
-      return { ok: false, motivo: b ? `non era nell'elenco del turno (${s.motivoIndisponibile(b) ?? 'trattenuta: tocca un segreto non ancora nominato'})` : `battuta inesistente: ${id}` };
+      return { ok: false, motivo: b ? `non era nel catalogo del turno (${s.motivoIndisponibile(b, turno) ?? 'non pertinente alle azioni o trattenuta per un segreto'})` : `battuta inesistente: ${id}` };
+    }
+    // B2: ogni battuta risponde a un'azione (`> pg`), salvo il segno dovuto e le mosse di stallo.
+    const b = s.repertorio.perId.get(id)!;
+    const t = this.turnoB;
+    if (per) {
+      if (!t?.azioniPubbliche.has(per)) return { ok: false, motivo: `${per} non ha un'azione pubblica in questo turno` };
+    } else {
+      const libera = (b.tipo === 'segno_orologio' && !!t?.segnoDovuto) || (b.riempitivo && !!t?.stallo);
+      if (!libera) return { ok: false, motivo: 'battuta senza «> pg»: ammessa solo per il segno dovuto o allo stallo' };
     }
     const esito = s.usa(id, turno, segno.mostrato);
     if (!esito.ok) return esito;
@@ -570,7 +588,7 @@ export class Regia {
         misuratore,
         ora: () => this.o.orologio.ora(),
         pronuncia: this.pronuncia,
-        usa: this.statoRepertorio ? (id) => this.usaBattuta(id, turno, segnoInRisposta) : null,
+        usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segnoInRisposta) : null,
         onFrase: (f) => {
           if (epoca !== this.epoca) return;
           this.trascriviFrase(turno, f.etichetta, f.nome, f.testo, f.segmento);
@@ -578,6 +596,50 @@ export class Regia {
       },
     );
     if (epoca !== this.epoca) return;
+
+    // Ogni azione dichiarata deve ricevere una risposta (B2). In modalità repertorio, se qualcuna
+    // resta senza, una seconda chiamata breve risponde solo a quelle (una volta per turno).
+    const pubbliche = new Map(azioni.filter((a) => a.testo && !a['privata'] && !a['sospesa']).map((a) => [a.id_pg, a.testo as string]));
+    let senzaRisposta = this.azioniSenzaRisposta(esito.uscita, pubbliche);
+    let riparazioni = 0;
+    if (this.statoRepertorio && senzaRisposta.length && esito.esito && !controllo.signal.aborted) {
+      riparazioni = 1;
+      const primoCosto = esito.esito.costo;
+      const riparazione = await narraTurno(
+        { campagna: this.o.campagna, narratore: this.o.narratore, pipeline: this.pipeline, log },
+        {
+          turno,
+          sistema: this.o.sistema,
+          messaggio: messaggioRiparazione(messaggio, esito.esito.testo, senzaRisposta.map((id) => ({ id, nome: this.nomePg(id), testo: pubbliche.get(id)! }))),
+          signal: controllo.signal,
+          misuratore,
+          ora: () => this.o.orologio.ora(),
+          pronuncia: this.pronuncia,
+          usa: (id, per) => this.usaBattuta(id, per, turno, segnoInRisposta),
+          prefissoFrasi: 'r',
+          ignora: new Set(['invito_mancante']),
+          onFrase: (f) => {
+            if (epoca !== this.epoca) return;
+            this.trascriviFrase(turno, f.etichetta, f.nome, f.testo, 50_000 + f.segmento);
+          },
+        },
+      );
+      if (epoca !== this.epoca) return;
+      esito.uscita.push(...riparazione.uscita);
+      esito.righe_prescritte += riparazione.righe_prescritte;
+      esito.righe_improvvisate += riparazione.righe_improvvisate;
+      esito.usa_rifiutati += riparazione.usa_rifiutati;
+      esito.anomalie.push(...riparazione.anomalie);
+      if (riparazione.esito) {
+        esito.esito.testo += `\n${riparazione.esito.testo}`;
+        esito.esito.costo = sommaCosti(primoCosto, riparazione.esito.costo);
+        misuratore.impostaCosto(esito.esito.costo);
+        this.o.registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'riparazione', turno, modello: riparazione.esito.modello, ...riparazione.esito.costo });
+      }
+      const prima = senzaRisposta;
+      senzaRisposta = this.azioniSenzaRisposta(esito.uscita, pubbliche);
+      log.warn({ senza_risposta: prima, dopo_riparazione: senzaRisposta }, 'repertorio: azioni senza risposta, riparazione');
+    }
     this.controlloLlm = null;
 
     // Orologi: il narratore propone, il Motore controlla (al massimo un segno per risposta).
@@ -615,7 +677,15 @@ export class Regia {
 
     if (this.statoRepertorio && esito.orologi.length) log.warn({ orologi: esito.orologi }, 'repertorio: riga [orologio] ignorata (i segni sono battute)');
     const record = misuratore.record();
-    const conteggi = { modo: this.o.modo, righe_prescritte: esito.righe_prescritte, righe_improvvisate: esito.righe_improvvisate, usa_rifiutati: esito.usa_rifiutati };
+    const conteggi = {
+      modo: this.o.modo,
+      righe_prescritte: esito.righe_prescritte,
+      righe_improvvisate: esito.righe_improvvisate,
+      usa_rifiutati: esito.usa_rifiutati,
+      azioni_pubbliche: pubbliche.size,
+      azioni_senza_risposta: senzaRisposta.length,
+      riparazioni,
+    };
     this.o.registroTurni.scrivi({ ...record, ...conteggi, sessione: this.sessione });
     this.o.registroNarrazioni.scrivi({
       sessione: this.sessione,
@@ -643,17 +713,43 @@ export class Regia {
     this.apriFinestra(esito.invito ?? 'tutti');
   }
 
-  /** Fatti scoperti ed elenco delle battute del turno (modalità repertorio). */
-  private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; battuteDisponibili: string } {
+  /**
+   * Fatti scoperti e catalogo B2 del turno: solo battute pertinenti alle azioni PUBBLICHE (le
+   * private non ricevono battute), il segno se è dovuto, le battute per stato dell'orologio, i
+   * riempitivi allo stallo.
+   */
+  private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; battuteDisponibili: string; stallo: boolean } {
     const s = this.statoRepertorio!;
-    const testoAzioni = r.azioni.map((a) => a.testo).join('\n');
-    const { battute, trattenute } = s.disponibiliPerTurno(testoAzioni, this.o.paroleSegrete ?? []);
+    const pubbliche = r.azioni.filter((a) => !a.privata);
+    const testoAzioni = pubbliche.map((a) => a.testo).join('\n');
+    const stallo = r.azioni.length === 0;
+    const segnoDovuto = this.orologi.elenco.some((o) => this.orologi.dovuto(o, r.turno));
+    const { battute, trattenute, perche } = s.catalogo({ turno: r.turno, testoAzioni, stallo, segnoDovuto, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
     this.elencoTurno = new Set(battute.map((b) => b.id));
-    this.o.log.info({ turno: r.turno, disponibili: battute.length, trattenute }, 'repertorio: battute del turno');
+    this.turnoB = { azioniPubbliche: new Map(pubbliche.map((a) => [a.autore, a.id])), stallo, segnoDovuto };
+    this.o.log.info({ turno: r.turno, catalogo: battute.length, perche, trattenute, stallo, segnoDovuto }, 'repertorio: catalogo del turno');
     return {
       fattiScoperti: s.fattiScoperti.map((id) => `${id} — ${this.testoFatto(id)}`),
       battuteDisponibili: s.elencoDisponibili(battute),
+      stallo,
     };
+  }
+
+  /**
+   * Azioni pubbliche rimaste senza risposta: nessuna battuta `> pg` e nessuna riga improvvisata
+   * che nomina quel PG (per nome, nome breve o soprannome).
+   */
+  private azioniSenzaRisposta(uscita: VoceUscita[], pubbliche: Map<string, string>): string[] {
+    const risposte = new Set<string>();
+    const testoImprovvisato = normalizza(uscita.filter((u) => u.tipo === 'improvvisata').map((u) => (u.tipo === 'improvvisata' ? u.testo : '')).join('\n'));
+    for (const u of uscita) if (u.tipo === 'usa' && u.per) risposte.add(u.per);
+    for (const id of pubbliche.keys()) {
+      if (risposte.has(id)) continue;
+      const nome = this.nomePg(id);
+      const varianti = [nome, nomeBreve(nome), ...Object.entries(this.o.campagna.alias).filter(([, v]) => v === id).map(([k]) => k)];
+      if (varianti.some((v) => v.length > 2 && new RegExp(`(?<![\\p{L}])${normalizza(v).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\p{L}])`, 'u').test(testoImprovvisato))) risposte.add(id);
+    }
+    return [...pubbliche.keys()].filter((id) => !risposte.has(id));
   }
 
   /** Testo di un fatto del canone (per i fatti scoperti). */

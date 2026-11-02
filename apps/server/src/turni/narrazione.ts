@@ -43,8 +43,8 @@ export type EsitoUsaTurno = { ok: true; righe: RigaPronta[]; versione: number } 
 
 /** Voce dell'uscita del turno, nell'ordine di ascolto. */
 export type VoceUscita =
-  | { tipo: 'usa'; id: string; versione: number; righe: Array<{ etichetta: string; testo: string }> }
-  | { tipo: 'usa_rifiutato'; id: string; motivo: string }
+  | { tipo: 'usa'; id: string; per: string | null; versione: number; righe: Array<{ etichetta: string; testo: string }> }
+  | { tipo: 'usa_rifiutato'; id: string; per: string | null; motivo: string }
   | { tipo: 'improvvisata'; etichetta: string; testo: string };
 
 export interface EsitoTurnoNarrato {
@@ -77,7 +77,11 @@ export interface ParametriTurno {
   /** Testo per la voce (nomi con gli accenti di pronuncia). */
   pronuncia: (testo: string) => string;
   /** Modalità repertorio: fa uscire una battuta (null = `[usa]` non ammesso in questa modalità). */
-  usa?: ((id: string) => EsitoUsaTurno) | null;
+  usa?: ((id: string, per: string | null) => EsitoUsaTurno) | null;
+  /** Prefisso degli id delle frasi (le risposte di riparazione non devono collidere). */
+  prefissoFrasi?: string;
+  /** Anomalie da non registrare (es. l'invito mancante in una risposta di riparazione). */
+  ignora?: ReadonlySet<string>;
 }
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
@@ -114,7 +118,7 @@ export async function narraTurno(
 
   const accoda = (f: Omit<FraseDaDire, 'id_frase' | 'turno' | 'indice'>): void => {
     p.misuratore.segna('llm_prima_frase', p.ora());
-    pipeline.accoda({ ...f, id_frase: `t${p.turno}-f${indice}`, turno: p.turno, indice });
+    pipeline.accoda({ ...f, id_frase: `t${p.turno}-${p.prefissoFrasi ?? 'f'}${indice}`, turno: p.turno, indice });
     indice += 1;
   };
 
@@ -135,14 +139,14 @@ export async function narraTurno(
         }
       } else if (e.tipo === 'usa') {
         rigaAperta = null;
-        const esito = p.usa ? p.usa(e.id) : { ok: false as const, motivo: '[usa] non ammesso in modalità improvvisa' };
+        const esito = p.usa ? p.usa(e.id, e.per) : { ok: false as const, motivo: '[usa] non ammesso in modalità improvvisa' };
         if (!esito.ok) {
           usaRifiutati += 1;
-          uscita.push({ tipo: 'usa_rifiutato', id: e.id, motivo: esito.motivo });
-          log.error({ turno: p.turno, battuta: e.id, motivo: esito.motivo }, 'repertorio: [usa] rifiutato');
+          uscita.push({ tipo: 'usa_rifiutato', id: e.id, per: e.per, motivo: esito.motivo });
+          log.error({ turno: p.turno, battuta: e.id, per: e.per, motivo: esito.motivo }, 'repertorio: [usa] rifiutato');
           continue;
         }
-        uscita.push({ tipo: 'usa', id: e.id, versione: esito.versione, righe: esito.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });
+        uscita.push({ tipo: 'usa', id: e.id, per: e.per, versione: esito.versione, righe: esito.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });
         for (const r of esito.righe) {
           const { voce_id, nome } = voceDi(campagna, r.etichetta);
           p.onFrase({ etichetta: r.etichetta, nome, testo: r.testo, segmento: segmentoBattuta++, indice, battuta: e.id });
@@ -156,6 +160,7 @@ export async function narraTurno(
         invito = e.invitati;
         log.info({ turno: p.turno, invito: e.invitati, grezzo: e.grezzo }, 'narratore: invito');
       } else {
+        if (p.ignora?.has(e.codice)) continue;
         anomalie.push({ codice: e.codice, dettaglio: e.dettaglio });
         // Il contratto chiede che le deviazioni dal protocollo finiscano nel log come errori;
         // l'etichetta riconosciuta da un alias (senza png_, maiuscole) è solo un avviso.

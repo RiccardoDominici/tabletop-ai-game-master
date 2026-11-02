@@ -25,6 +25,7 @@ import YAML from 'yaml';
 import type { SezioneContesto } from '../campagna/contesto';
 import { ID_NARRATORE, type Campagna, type DatiYaml } from '../campagna/tipi';
 import { togliFrasiSegrete, type ParolaSegreta } from './segreti';
+import type { Repertorio } from './tipi';
 
 /** Espressioni che svelano un segreto senza essere nella lista delle parole (docs: da_togliere). */
 export const ESPRESSIONI_VIETATE: RegExp[] = [/parola da medico/i];
@@ -73,7 +74,10 @@ export function fattiPubblici(c: Campagna): Map<string, string> {
   return out;
 }
 
-export function sezioniContestoRepertorio(c: Campagna, parole: ParolaSegreta[]): SezioneContesto[] {
+/** Quante battute d'esempio per PNG (bastano per il tono; di più allunga il contesto). */
+const ESEMPI_PER_PNG = 6;
+
+export function sezioniContestoRepertorio(c: Campagna, parole: ParolaSegreta[], repertorio?: Repertorio): SezioneContesto[] {
   const pubblici = fattiPubblici(c);
   const sez: SezioneContesto[] = [];
   const aggiungi = (nome: string, titolo: string, dati: unknown): void => {
@@ -133,6 +137,23 @@ export function sezioniContestoRepertorio(c: Campagna, parole: ParolaSegreta[]):
     });
   }
 
+  // B2: esempi della voce dei PNG (battute `solo_esempio`): il tono per improvvisare, non frasi da ripetere.
+  if (repertorio) {
+    const esempi: string[] = [];
+    for (const p of c.png) {
+      const righe = repertorio.battute
+        .filter((b) => b.solo_esempio && b.chi === p.id)
+        .flatMap((b) => b.testo.filter((r) => r.etichetta === p.id).map((r) => `${b.quando} → ${r.testo}`))
+        .map((r) => togliFrasiSegrete(r, parole, ESPRESSIONI_VIETATE))
+        .filter((r) => r.includes('→ ') && !r.endsWith('→'))
+        .slice(0, ESEMPI_PER_PNG);
+      if (righe.length) esempi.push(`### ${p.nome} [${p.id}]\n${righe.map((r) => `- ${r}`).join('\n')}`);
+    }
+    if (esempi.length) {
+      sez.push({ nome: 'esempi di voce', testo: `## Esempi di voce dei PNG (prendine il tono, non le frasi: non sono battute da usare)\n\n${esempi.join('\n\n')}` });
+    }
+  }
+
   // PG: tutto tranne le conoscenze private (vanno solo ai telefoni).
   const pg = ['## Personaggi giocanti'];
   if (c.situazioneComune) pg.push(`Situazione comune: ${c.situazioneComune}`);
@@ -154,8 +175,8 @@ export function sezioniContestoRepertorio(c: Campagna, parole: ParolaSegreta[]):
   return sez;
 }
 
-export function compilaContestoRepertorio(c: Campagna, parole: ParolaSegreta[]): string {
-  return sezioniContestoRepertorio(c, parole)
+export function compilaContestoRepertorio(c: Campagna, parole: ParolaSegreta[], repertorio?: Repertorio): string {
+  return sezioniContestoRepertorio(c, parole, repertorio)
     .map((s) => s.testo)
     .join('\n\n') + '\n';
 }

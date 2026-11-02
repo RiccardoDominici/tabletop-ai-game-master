@@ -44,8 +44,11 @@ export type EventoNarratore =
   | { tipo: 'invito'; invitati: string[] | 'tutti'; grezzo: string }
   /** Riga [orologio] <id>: il narratore ha mostrato il prossimo segno di quell'orologio. */
   | { tipo: 'orologio'; id: string; grezzo: string }
-  /** Riga [usa] <id_battuta> (modalità repertorio): la battuta pre-scritta esce qui. */
-  | { tipo: 'usa'; id: string; grezzo: string }
+  /**
+   * Riga [usa] <id_battuta> [> <id_pg>] (modalità repertorio): la battuta pre-scritta esce qui;
+   * `per` è il PG alla cui azione risponde (B2), null se non dichiarato.
+   */
+  | { tipo: 'usa'; id: string; per: string | null; grezzo: string }
   | { tipo: 'anomalia'; codice: CodiceAnomalia; dettaglio: string };
 
 export interface OpzioniParser {
@@ -312,13 +315,17 @@ export class ParserNarratore {
     const grezzo = this.bufferInvito.trim();
     this.bufferInvito = '';
     // L'id è la prima parola; tollera `backtick`, virgolette e punteggiatura finale.
-    const id = grezzo.replace(/[`"'«»]/g, '').split(/[\s,;]+/)[0]?.toLowerCase().replace(/[.!?:]+$/, '') ?? '';
+    const [prima, dopo] = grezzo.replace(/[`"'«»]/g, '').split(/>|→/, 2);
+    const id = (prima ?? '').split(/[\s,;]+/).filter(Boolean)[0]?.toLowerCase().replace(/[.!?:]+$/, '') ?? '';
     if (!id) {
       this.anomalia('usa_vuoto', 'riga [usa] senza id');
       return;
     }
+    // «> pg_ginestra» (o il nome): il PG alla cui azione la battuta risponde.
+    const bersaglio = (dopo ?? '').trim().split(/[\s,;]+/)[0]?.toLowerCase().replace(/[.!?:]+$/, '') ?? '';
+    const per = bersaglio ? (this.pg.has(bersaglio) ? bersaglio : (this.alias.get(bersaglio) ?? bersaglio)) : null;
     if (this.invitoVisto) this.anomalia('testo_dopo_invito', `[usa] ${id} dopo [invito]`);
-    this.eventi.push({ tipo: 'usa', id, grezzo });
+    this.eventi.push({ tipo: 'usa', id, per, grezzo });
   }
 
   private chiudiOrologio(): void {
