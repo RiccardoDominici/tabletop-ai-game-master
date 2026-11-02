@@ -44,6 +44,7 @@ sa:
   - f_tecla_curata
   - f_polvere_carbone      # la polvere nera è carbone
   - f_rimedio
+  - f_magia_sollievo
   - f_sebastiano_cerusico
   - f_sebastiano_disertore
   - f_diserzione_motivo
@@ -52,6 +53,7 @@ sa:
   - f_accusa
   - f_chiuso_ripostiglio
   - f_borsa_contenuto
+  - f_libretto
 non_sa:
   - f_segale_gualtiero     # domanda probabile: «da dove viene quella segale?»
   - f_pane_lumi_segale     # può solo supporre: «se è fatto con quella farina, sì»
@@ -66,13 +68,13 @@ mente_su:
     verita: f_sebastiano_cerusico
     versione: "Vendo spezie. Pepe, cannella, chiodi di garofano."
     perche: "Se scoprono che è un cerusico, qualcuno si chiederà di quale esercito."
-    segnale: "nasconde le mani nelle maniche; dice una parola da medico e si corregge subito"
-    cede_se: "Dice di essere un cerusico a chi gli promette, lontano dalle orecchie di Baldrin, di non consegnarlo. Oppure quando un malato ha bisogno di lui davanti ai suoi occhi."
+    segnale: "nasconde le mani nelle maniche e tossisce"
+    cede_se: "Dice di essere un cerusico a chi gli promette di non consegnarlo, quando Baldrin non può sentire: dalla botola, o mentre Baldrin è alla finestra. Oppure quando un malato ha bisogno di lui davanti ai suoi occhi."
   - argomento: "la guerra e da dove viene"
     verita: f_sebastiano_disertore
     versione: "Soldato io? Vengo dal mare. Ho sempre venduto spezie."
     perche: "Paura della forca."
-    segnale: "nasconde le mani nelle maniche; dice una parola da medico e si corregge subito"
+    segnale: "nasconde le mani nelle maniche e tossisce"
     cede_se: "Solo quando un PG nomina Roccalba o la Compagnia del Grifo e gli promette di non venderlo."
 
 atteggiamento_pg:
@@ -90,15 +92,15 @@ info_chiave: [i_sebastiano_avverte, i_sebastiano_tecla, i_parole_da_medico, i_ci
 
 iniziative:
   - "Chiede un sorso d'acqua a chiunque passi vicino alla grata."
-  - "Se sente nominare il pane, avverte di non mangiarlo."
-  - "Se vede la chierica, le chiede di non benedire il pane."
+  - "Non regala ciò che sa: in cambio chiede acqua, una promessa, o la porta aperta. Ma se vede qualcuno portare il pane alla bocca, grida di non mangiarlo."
+  - "Se sente che la chierica benedirà il pane, la chiama alla grata."
   - "Se gli parlano di un malato, anche del cane, chiede di vederlo e spiega il rimedio."
 
 evoluzione:
   - {se: "lo liberano e lo credono", allora: "insegna il rimedio, resta fino all'alba a curare i malati, poi chiede di partire"}
   - {se: "Corrado lo riconosce e lo minaccia", allora: "smette di mentire e chiede solo di salvare prima il paese; dopo, lo consegnino se vogliono"}
   - {se: "lo consegnano al paese", allora: "non si difende più; dice solo, ad alta voce, di non mangiare il pane"}
-  - {se: "scopre la botola", allora: "fugge da solo, a meno che un PG non gli chieda di restare"}
+  - {se: "scopre la botola", allora: "non fugge finché il pane è nelle ceste: prima pretende che nessuno lo mangi. Poi, se nessuno gli chiede di restare, sparisce nella notte"}
 
 statistiche: "popolano (SRD 5.2), con competenza in Medicina"
 registro_attivita: []

@@ -7,13 +7,13 @@ ruolo: "fabbro e massaro di Fontescura; guardiano del ripostiglio; ostacolo che 
 fronte: fronte_fuoco_nero
 
 aspetto:
-  lettura: "Un nano con la barba grigia stretta da anelli di ferro. Tiene il martello sulle ginocchia, e al collo gli pende una chiave."
+  lettura: "Un nano con la barba grigia stretta da anelli di ferro. Ha le mani nere di fuliggine, e al collo una chiave."
   invarianti: ["nano, sembra un uomo sulla cinquantina", "barba grigia con anelli di ferro", "grembiule di cuoio bruciacchiato", "martello da forgia", "chiave di ferro al collo, su un laccio di cuoio", "mani nere di fuliggine"]
   prompt_immagine: "stocky grey-bearded dwarf blacksmith, beard bound with iron rings, scorched leather apron, forge hammer resting on his knees, iron key on a leather cord around his neck, soot-blackened hands, seated before a locked wooden door with an iron grate, [STILE]"
 
 personalita:
   superficie: ["burbero, di poche parole", "crede solo ai fatti e al lavoro fatto bene", "tiene alla sua parola di massaro più che alla sua pelle"]
-  sotto_pressione: ["diventa calmo e lentissimo, e fa paura", "se si parla di Ilde, gli trema la voce e cede"]
+  sotto_pressione: ["diventa calmo e lentissimo, e fa paura", "se si parla di Ilde, gli trema la voce e si ferma ad ascoltare"]
   contraddizione: "Pretende fatti da tutti, ma accusa il forestiero sulla parola di un mugnaio."
 
 desiderio: "Consegnare al paese chi ha fatto ammalare Ilde, prima del terzo rintocco."   # in tensione con Sebastiano e con il pericolo p_folla
@@ -26,7 +26,7 @@ segreto:
 
 voce:
   tts: {voce_id: vincent, eta_apparente: "50-60", altezza: bassa, velocita: 0.9, timbro: "ruvido e profondo, parla dal petto"}
-  registro: "Dà del voi a tutti, anche ai ragazzi: è il massaro. Passa al tu solo con chi salva sua figlia."
+  registro: "Dà del tu a tutti, anche alla chierica: le cerimonie sono roba da città. Chiama la gente col mestiere, «soldato», «erbaiola», «sorella», «ragazzo», mai per nome. Al forestiero non parla: ne parla, e lo chiama «quello»."
   stile: "Frasi di due-sei parole. Lessico di forgia: ferro, tempra, colpo, incudine, brace. Afferma e ordina; quasi mai fa domande."
   tic: ["«Ferro è ferro.» per chiudere un discorso"]
   gesto: "si rigira il martello nel palmo"
@@ -67,7 +67,7 @@ mente_su:
     versione: "L'hanno visto in tre, al pozzo. Versava una polvere."
     perche: "Se l'ha visto solo lui, e al buio, l'accusa del massaro vale poco."
     segnale: "abbassa gli occhi sulle mani e alza la voce"
-    cede_se: "Cede quando un PG gli chiede i nomi dei tre, e lui non ne ha. Oppure quando, lontano dalla finestra e dagli altri, un PG gli fa notare che lui beve al pozzo e sta bene."
+    cede_se: "Cede la prima volta che un PG gli chiede i nomi dei tre: abbassa gli occhi e ammette che c'era solo lui, e che la polvere l'ha vista Gualtiero. Cede anche quando un PG gli fa notare che lui beve al pozzo ogni giorno e sta bene."
 
 atteggiamento_pg:
   pg_corrado:  {stato: amichevole, perche: "un uomo d'armi: sa cos'è una guardia e cos'è un ordine", vuole: "che faccia la guardia con lui alla porta"}
@@ -86,11 +86,12 @@ info_chiave: [i_baldrin_sano, i_carbonai_sani, i_tecla_corvo, i_polvere_nera, i_
 iniziative:
   - "Mostra la polvere nera a chi dubita del forestiero: per lui è la prova."
   - "Se un PG si avvicina alla porta senza il suo permesso, si alza col martello in mano."
-  - "Al terzo segno dell'orologio prova la chiave nella serratura."
+  - "Ai segni due e quattro dell'orologio va alla finestra a guardare la piazza: per un momento nessuno sorveglia la grata."
+  - "Se Teodora non c'è, al terzo rintocco benedice lui il pane, da massaro."
   - "Se il pane viene spezzato in scena, ne avvolge un pezzo nel fazzoletto per Ilde."
 
 evoluzione:
-  - {se: "capisce che è il pane, e che stava per portarne a Ilde", allora: "passa al tu con chi gliel'ha mostrato, apre la porta e al terzo rintocco ferma il paese con la sua parola"}
+  - {se: "capisce che è il pane, e che stava per portarne a Ilde", allora: "chiama per nome chi gliel'ha mostrato e apre la porta. Al terzo rintocco tiene il paese sulla soglia per il tempo di una risposta: la prova la devono dare i PG"}
   - {se: "lo smentiscono in pubblico sui testimoni", allora: "si irrigidisce e minaccia; più tardi, in privato, cede"}
   - {se: "un PG lo minaccia o prova a prendergli la chiave con la forza", allora: "chiama il paese dalla finestra: l'orologio avanza subito di un segno"}
 

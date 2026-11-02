@@ -24,7 +24,7 @@ canone:
   - {id: f_campana, noto_ai_pg: true, stato: confermato, entita: [n_piazza],
      testo: "La campana della cappella suona un rintocco a metà veglia e tre rintocchi alla fine."}
   - {id: f_rito_pane, noto_ai_pg: true, stato: confermato, entita: [n_osteria],
-     testo: "Al terzo rintocco il paese viene all'osteria a spezzare il pane dei lumi. Lo mangiano tutti, anche i bambini. Rifiutarlo offende i morti."}
+     testo: "Al terzo rintocco il paese viene all'osteria a spezzare il pane dei lumi. Lo benedice chi manda il tempio o, se non c'è nessuno, il massaro. Lo mangiano tutti, anche i bambini: rifiutarlo offende i morti."}
   - {id: f_pane_lumi_paga, noto_ai_pg: true, stato: confermato, entita: [png_ottavia],
      testo: "Ogni famiglia paga il pane dei lumi un soldo: è l'incasso più grosso dell'autunno per l'osteria."}
   - {id: f_febbre_sintomi, noto_ai_pg: true, stato: confermato, entita: [],
@@ -40,7 +40,7 @@ canone:
   - {id: f_chiave_baldrin, noto_ai_pg: true, stato: confermato, entita: [png_baldrin],
      testo: "La chiave del ripostiglio è appesa al collo di Baldrin, su un laccio di cuoio."}
   - {id: f_borsa_contenuto, noto_ai_pg: true, stato: confermato, entita: [png_baldrin, png_sebastiano],
-     testo: "Ai piedi di Baldrin c'è la borsa di Sebastiano: dentro, un sacchetto di polvere nera, bende arrotolate, una tazza di stagno e un libretto scritto fitto."}
+     testo: "Ai piedi di Baldrin c'è la borsa di Sebastiano: dentro, un sacchetto di polvere nera, bende arrotolate, una tazza di stagno e un libretto scritto fitto, che Baldrin non sa leggere."}
   - {id: f_baldrin_massaro, noto_ai_pg: true, stato: confermato, entita: [png_baldrin],
      testo: "Baldrin è il fabbro e il massaro di Fontescura: quando parla lui, il paese ascolta."}
   - {id: f_gualtiero_passato, noto_ai_pg: true, stato: confermato, entita: [],
@@ -60,7 +60,7 @@ canone:
   - {id: f_chicchi_neri, noto_ai_pg: false, stato: confermato, entita: [png_ottavia, n_osteria],
      testo: "Nei sacchi di Gualtiero ci sono chicchi neri e curvi. Ottavia ne ha tolti molti col setaccio, ma ne restano."}
   - {id: f_setaccio_inutile, noto_ai_pg: false, stato: confermato, entita: [n_osteria],
-     testo: "Il setaccio non basta: la farina resta guasta, e lo è anche il pane dei lumi."}
+     testo: "Il setaccio non basta: la farina resta guasta."}
   - {id: f_pane_lumi_segale, noto_ai_pg: false, stato: confermato, entita: [n_osteria],
      testo: "Il pane dei lumi nelle ceste è fatto tutto con la segale di Gualtiero."}
   - {id: f_cane_croste, noto_ai_pg: false, stato: confermato, entita: [n_osteria],
@@ -87,6 +87,10 @@ canone:
      testo: "La polvere nera nella borsa è carbone di legna pestato: un rimedio, non un veleno."}
   - {id: f_rimedio, noto_ai_pg: false, stato: confermato, entita: [],
      testo: "Chi smette di mangiare il pane guasto guarisce in pochi giorni. Acqua, carbone pestato e freddo sulle mani aiutano."}
+  - {id: f_libretto, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
+     testo: "Il libretto di Sebastiano è pieno di dosi di erbe, di carbone e di vino, per ferite e febbri. Non ci sono nomi."}
+  - {id: f_magia_sollievo, noto_ai_pg: false, stato: confermato, entita: [],
+     testo: "La magia di cura dei PG calma il bruciore per un'ora, poi la febbre torna, finché si mangia quel pane."}
   - {id: f_sebastiano_cerusico, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
      testo: "Sebastiano è un cerusico, non un mercante di spezie."}
   - {id: f_sebastiano_disertore, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
@@ -100,7 +104,7 @@ canone:
   - {id: f_cicatrice, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
      testo: "Sotto il cappuccio, Sebastiano ha una cicatrice bianca che gli taglia il sopracciglio sinistro."}
   - {id: f_botola, noto_ai_pg: false, stato: confermato, entita: [n_osteria],
-     testo: "Nel ripostiglio, sotto un sacco vuoto, c'è una botola: porta in cantina, e dalla cantina si esce dalla grata sotto il portico."}
+     testo: "Nel ripostiglio, sotto un sacco vuoto, c'è una botola che scende in cantina. Dalla cantina una scala sale nel retro, dietro la tenda, e una grata dà sotto il portico."}
   - {id: f_rito_castagne, noto_ai_pg: false, stato: confermato, entita: [],
      testo: "Il libro del rito dice: se il pane è impuro, i morti accettano le castagne. In paese nessuno se lo ricorda."}
 
@@ -117,17 +121,17 @@ orologi:
     segmenti: 6
     pieni_all_inizio: 0
     segni:
-      - "Dalla cappella il canto della veglia si interrompe. Poi riprende, più forte e più in fretta."
-      - "Un sasso batte contro l'imposta. Fuori, una voce di ragazzo grida «corvo!» e scappa."
-      - "La campana suona un rintocco: la veglia è a metà. Baldrin si alza e prova la chiave nella serratura."
-      - "Dalla finestra si vedono lanterne che escono dalla cappella, in fila, verso la piazza."
-      - "Sotto il portico, passi e voci basse. Qualcuno prova la maniglia della porta d'ingresso."
-      - "Tre rintocchi. La veglia è finita. Bussano alla porta: c'è tutto il paese, con le lanterne."
+      - "Dalla cappella, il canto della veglia si interrompe, poi riprende più in fretta."
+      - "Un sasso batte su un'imposta: Baldrin si alza e va alla finestra."
+      - "La campana suona un rintocco: Baldrin infila la chiave nella serratura, poi la toglie."
+      - "Dalla finestra, lanterne in fila escono dalla cappella e si fermano vicino al pozzo."
+      - "Sotto il portico, passi e voci basse: qualcuno prova la maniglia."
+      - "Tre rintocchi: la veglia è finita, e bussano alla porta."
     avanza_quando:
-      - "ogni due risposte del narratore senza un segno nuovo"
-      - "subito, se i PG fanno rumore, minacciano qualcuno, gridano dalla finestra o escono in piazza"
-      - "subito, se Baldrin si sente sfidato e i PG non lo convincono"
-    al_completo: "Climax della scena: il paese è alla porta e vuole il forestiero e il pane. Vedi `taglio` nella scheda della scena."
+      - "una risposta sì e una no: se la risposta precedente del narratore non conteneva un segno, questa ne mostra uno"
+      - "subito, anche se la risposta precedente ne aveva uno, quando i PG fanno rumore, minacciano Baldrin, gridano dalla finestra o escono in piazza"
+      - "mai due segni nella stessa risposta"
+    al_completo: "Il paese è sotto il portico con le lanterne. Vuole il pane dei lumi, e vuole qualcuno che risponda della febbre stanotte. Se Baldrin è dalla parte dei PG, tiene il paese sulla soglia per il tempo di una risposta, non di più: la prova o la scelta la devono dare i PG. Se i PG mostrano la verità a tutti, la rabbia passa su Ottavia: il paese vuole lei. Se tacciono la verità, il paese vuole il forestiero. Vedi `taglio` nella scheda della scena."
 
   - id: o_febbre
     nome: "La febbre si allarga"
@@ -136,7 +140,7 @@ orologi:
     pieni_all_inizio: 1
     segni:
       - "Nove malati in paese."
-      - "Il pane dei lumi viene spezzato: la febbre entra nelle case sane."
+      - "Il paese spezza il pane dei lumi, e torna a casa con le candele."
       - "Un vecchio muore nella notte: si sa solo il mattino dopo."
       - "Mezzo paese ha le mani che bruciano; i carbonai se ne vanno."
     avanza_quando:
@@ -155,7 +159,7 @@ rivelazioni:
   - id: r_innocente
     chiave: true
     conclusione: "Sebastiano non ha avvelenato il pozzo: di notte curava la vecchia Tecla."
-    indizi: [i_polvere_nera, i_tecla_corvo, i_sebastiano_tecla, i_tecla_racconta]
+    indizi: [i_polvere_nera, i_libretto, i_tecla_corvo, i_sebastiano_tecla, i_tecla_racconta]
   - id: r_gualtiero
     chiave: true
     conclusione: "La segale guasta viene da Gualtiero di Valsecca, e la storia della polvere nel pozzo l'ha messa in giro lui."
@@ -165,28 +169,29 @@ rivelazioni:
     conclusione: "Sebastiano è il cerusico disertore della Compagnia del Grifo."
     indizi: [i_nodo_bende, i_parole_da_medico, i_cicatrice]
 
-# Colli di bottiglia (C4): ognuno ha almeno 3 soluzioni. Il Narratore dice «sì» a tutte.
+# Colli di bottiglia (C4): ognuno ha almeno 3 soluzioni.
+colli_di_bottiglia_nota: "Tutte le soluzioni funzionano se i PG le tentano. Il narratore non suggerisce quelle segnate «solo se la propone chi la conosce»."
 colli_di_bottiglia:
   - id: cb_porta
     ostacolo: "Parlare con Sebastiano, o farlo uscire dal ripostiglio chiuso a chiave."
     soluzioni:
       - "Parlargli attraverso la grata della porta: non serve aprire."
       - "Convincere Baldrin a dare la chiave o ad aprire lui."
-      - "Scendere in cantina e salire dalla botola del ripostiglio: la conoscono Ottavia e Assenzio."
+      - "Passare dal retro alla cantina e salire dalla botola del ripostiglio: Baldrin non sente niente. Solo se la propone chi la conosce (Assenzio, oppure Ottavia dopo aver confessato)."
       - "Forzare la vecchia serratura: si apre, ma scatta forte e Baldrin se ne accorge."
   - id: cb_pane
     ostacolo: "Impedire che il paese mangi il pane dei lumi."
     soluzioni:
       - "Convincere Ottavia a non servirlo."
-      - "Teodora cambia il rito: se il pane è impuro, i morti accettano le castagne."
+      - "Teodora cambia il rito: se il pane è impuro, i morti accettano le castagne. Solo se la propone chi la conosce (Teodora)."
       - "Nascondere, rovesciare o bruciare le ceste."
       - "Spezzare una pagnotta davanti a tutti e mostrare i chicchi neri nella mollica."
   - id: cb_folla
     ostacolo: "Fermare il paese al terzo rintocco."
     soluzioni:
-      - "Convincere Baldrin: la parola del massaro ferma il paese."
+      - "Convincere Baldrin: la parola del massaro tiene il paese sulla soglia, il tempo di farsi ascoltare."
       - "Mostrare le prove a tutti: la mollica, il cane, la polvere che è solo carbone."
-      - "Far sparire Sebastiano dalla botola e lasciare alla folla un ripostiglio vuoto."
+      - "Far sparire Sebastiano dalla botola e lasciare alla folla un ripostiglio vuoto. Solo se la propone chi la conosce."
       - "Teodora parla al paese con l'autorità del rito."
 
 # ---------------------------------------------------------------------------
@@ -203,7 +208,7 @@ nodi:
   - id: n_piazza
     tipo: luogo
     nome: "La piazza di Fontescura"
-    abbozzo: "Piazza di pietra in salita. Al centro il pozzo con la carrucola. Accanto, la casa bassa della vecchia Tecla. In fondo la cappella, con le porte aperte e la veglia dentro. Fino al terzo rintocco la piazza è vuota; a ogni finestra brucia una candela."
+    abbozzo: "Piazza di pietra in salita. Al centro il pozzo con la carrucola. Accanto, la casa bassa della vecchia Tecla. In fondo la cappella, con le porte aperte e la veglia dentro. Fino al primo rintocco la piazza è vuota; dopo, qualcuno esce con la lanterna e si ferma a parlare vicino al pozzo. A ogni finestra brucia una candela."
     indizi:
       - {id: i_pozzo_acqua, conclusione: r_pane, tipo: luogo, essenziale: false, tiro: "nessuno",
          come_si_trova: "Chi tira su il secchio e guarda o assaggia l'acqua: è limpida e gelata, sa solo di pietra."}
@@ -213,7 +218,7 @@ nodi:
   - id: n_mulino_valsecca
     tipo: luogo
     nome: "Il mulino di Valsecca"
-    abbozzo: "Il mulino di Gualtiero, un giorno di cammino più a valle. Prossima sessione: non si raggiunge stanotte."
+    abbozzo: "Il mulino di Gualtiero, a un giorno di cammino più a valle. Con il buio e la neve sul sentiero, stanotte non ci si arriva."
     prossima_sessione: true
     collegamenti: [n_osteria]
   - {id: png_ottavia, tipo: png, scheda: png/png_ottavia.yaml, collegamenti: [n_osteria, n_mulino_valsecca]}
@@ -237,7 +242,7 @@ sessione:
     ingresso_o_guardiano: "Baldrin di guardia alla porta del ripostiglio, col martello e la chiave."
     enigma_o_sfida_sociale: "Chi dice il vero? Ottavia mente sulla segale; Sebastiano mente sul suo mestiere."
     trucco_o_battuta_d_arresto: "La prova di Baldrin, la polvere nera, sembra veleno ed è carbone. Ottavia, messa alle strette, prova a bruciare i sacchi."
-    climax: "Il terzo rintocco: il paese alla porta, il pane sul tavolo, il forestiero dietro la porta."
+    climax: "Il terzo rintocco: il paese alla porta vuole un colpevole. La verità detta a tutti salva il forestiero ma getta Ottavia in pasto alla rabbia del paese; il silenzio salva Ottavia ma non il forestiero."
     ricompensa_o_colpo_di_scena: "Il nome di Gualtiero; e, se c'è Corrado, la taglia sulla testa di Sebastiano."
   # C11: scene potenziali. Per F0 solo la prima ha la scheda completa.
   scene_potenziali: [scena_forno_vecchio]

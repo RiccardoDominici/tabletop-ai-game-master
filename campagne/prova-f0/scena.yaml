@@ -6,7 +6,7 @@ nodo: n_osteria
 nome: "L'osteria del Forno Vecchio, nella Notte dei Lumi"
 
 # Pianta, per non inventare (il Narratore la usa, non la legge a voce così com'è).
-descrizione: "Una sala bassa con le travi nere di fumo. In fondo il forno a legna, acceso. A destra il bancone; dietro, una tenda copre il retro con i sacchi di farina. Al centro il tavolo lungo con le ceste del pane. A sinistra la porta del ripostiglio, con una grata all'altezza degli occhi: lì siede Baldrin. La finestra dà sulla piazza, il pozzo e la cappella. La porta d'ingresso si apre sotto il portico."
+descrizione: "Una sala bassa con le travi nere di fumo. In fondo il forno a legna, acceso. A destra il bancone; dietro, una tenda copre il retro con i sacchi di farina. Al centro il tavolo lungo con le ceste del pane. A sinistra la porta del ripostiglio, con una grata all'altezza degli occhi: lì siede Baldrin. La finestra dà sulla piazza, il pozzo e la cappella. La porta d'ingresso si apre sotto il portico. Chi sente cosa: Baldrin, seduto accanto alla grata, sente tutto ciò che si dice nella sala e alla grata. Non sente ciò che si dice nel retro dietro la tenda, in cantina, sotto il portico, né quando è alla finestra."
 
 # C12: scopo dall'elenco chiuso, e domanda drammatica da sì o no.
 scopo: {tipo: rivelare_indizio, rif: i_speroni_neri}
@@ -37,7 +37,7 @@ elementi_interattivi:
   - {cosa: "il forno a legna", dove: "in fondo alla sala", azioni: "ci si può buttare dentro qualcosa; il fumo esce dalla canna sulla piazza"}
   - {cosa: "Moro, il cane", dove: "accucciato vicino al forno", azioni: "si può guardare, accarezzare; la sua ciotola è accanto"}
   - {cosa: "la finestra sulla piazza", dove: "accanto all'ingresso", azioni: "si vedono il pozzo, la casa di Tecla, la cappella illuminata; si può aprire e gridare"}
-  - {cosa: "la botola del ripostiglio", dove: "nel pavimento del ripostiglio, sotto un sacco vuoto", azioni: "porta in cantina e alla grata sotto il portico. NASCOSTA: non nominarla finché un PG non cerca un'altra via o non la nomina chi la conosce"}
+  - {cosa: "la botola del ripostiglio", dove: "nel pavimento del ripostiglio, sotto un sacco vuoto", azioni: "scende in cantina; dalla cantina una scala sale nel retro e una grata dà sotto il portico. NASCOSTA: non nominarla finché non la nomina chi la conosce, o finché un PG non scende in cantina dal retro"}
 
 png_presenti: [png_ottavia, png_baldrin, png_sebastiano]
 orologi_attivi: [o_colpevole]
@@ -58,7 +58,7 @@ indizi:
     nodo: n_osteria
     essenziale: false
     tiro: "nessuno"
-    come_si_trova: "Chi guarda Moro lo vede tremare e leccarsi le zampe. Nella sua ciotola ci sono croste di pane nero. È anche la mossa morbida della scena."
+    come_si_trova: "Chi guarda Moro lo vede tremare e leccarsi le zampe. Nella sua ciotola ci sono croste di pane nero. Chi gli parla con la magia sente cose da cane: le croste erano buone, poi bruciava la bocca, ora bruciano le zampe. È anche la mossa morbida della scena."
   - id: i_preghiera_pane
     conclusione: r_pane
     tipo: visione
@@ -93,7 +93,14 @@ indizi:
     nodo: n_osteria
     essenziale: false
     tiro: "nessuno"
-    come_si_trova: "Baldrin mostra il sacchetto di polvere nera come prova del veleno. Chi la tocca o la annusa: sa di bruciato e tinge le dita. È carbone di legna pestato."
+    come_si_trova: "Baldrin mostra il sacchetto di polvere nera come prova del veleno. Chi la tocca o la annusa: sa di bruciato e tinge le dita, come la polvere di un braciere spento. Il narratore descrive, non spiega: la conclusione la tirano i giocatori."
+  - id: i_libretto
+    conclusione: r_innocente
+    tipo: documento
+    nodo: n_osteria
+    essenziale: false
+    tiro: "nessuno"
+    come_si_trova: "Chi sfoglia il libretto della borsa: dosi di erbe, di carbone e di vino, per ferite e febbri, in una calligrafia ordinata. Nessun nome."
   - id: i_tecla_corvo
     conclusione: r_innocente
     tipo: png
@@ -160,14 +167,14 @@ indizi:
 
 # Almeno 2 uscite verso altri nodi, ognuna con l'indizio che la segnala.
 uscite:
-  - {verso: n_mulino_valsecca, segnalata_da: [i_sacchi_marchio, i_registro_conti, i_ottavia_confessione], nota: "Non si raggiunge stanotte: è la pista della sessione dopo."}
+  - {verso: n_mulino_valsecca, segnalata_da: [i_sacchi_marchio, i_registro_conti, i_ottavia_confessione], nota: "Stanotte non si raggiunge: è la pista per domani."}
   - {verso: n_piazza, segnalata_da: [i_tecla_corvo, i_sebastiano_tecla, i_baldrin_testimoni], nota: "La casa di Tecla e il pozzo sono a venti passi. Uscire fa avanzare l'orologio."}
 
 # Se i PG indugiano (S1). È anche l'indizio proattivo i_cane_croste.
-mossa_morbida_pronta: "Moro si alza dal forno, tremando. Guaisce e si lecca le zampe, come se bruciassero. Nella sua ciotola restano croste di pane nero."
+mossa_morbida_pronta: "Il cane, Moro, si tira su accanto al forno, tremando. Guaisce e si lecca le zampe. Nella sua ciotola restano croste di pane nero."
 
 # Al massimo 3 frasi per la voce, conformi al §5. Viene letta dopo sessione.riassunto_iniziale.
-apertura: "All'osteria del Forno Vecchio c'è odore di pane caldo e di lana bagnata. Un nano col martello sulle ginocchia sorveglia una porta chiusa a chiave: dietro, qualcuno tossisce. Ottavia, l'ostessa, copre di lino le ceste del pane dei lumi, poi vi guarda: che fate?"
+apertura: "All'osteria del Forno Vecchio c'è odore di pane caldo e di lana bagnata. Un nano col martello sulle ginocchia sorveglia una porta chiusa a chiave: dall'altra parte, qualcuno tossisce. Ottavia, l'ostessa, copre di lino le ceste del pane dei lumi, poi vi guarda: che fate?"
 
 musica:
   tag: esplorazione_tesa
@@ -179,4 +186,4 @@ immagine:
   prompt_luogo: "low-beamed mountain village tavern at night, soot-black rafters, glowing wood-fired bread oven at the back, long table with baskets covered in white linen, heavy wooden storeroom door with a small iron grate, window onto a stone square where a candle burns in every window, black dog curled by the oven"
 
 # Condizione che chiude la scena (T5).
-taglio: "La scena si chiude quando la domanda drammatica ha risposta: il paese se ne va con Sebastiano, oppure senza di lui. Si chiude anche se i PG fuggono con Sebastiano dalla botola. Se al sesto segno i PG esitano ancora, Baldrin apre la porta e il paese entra: i PG hanno una sola risposta, poi la scena si chiude."
+taglio: "La scena si chiude dopo il terzo rintocco, quando il paese alla porta ha avuto la sua risposta: se ne va con Sebastiano, con Ottavia, oppure senza nessuno. Se Sebastiano è già fuggito dalla botola, il paese arriva lo stesso, per il pane e per un colpevole. Se al sesto segno i PG esitano ancora, Baldrin apre la porta e il paese entra: i PG hanno una sola risposta, poi la scena si chiude."

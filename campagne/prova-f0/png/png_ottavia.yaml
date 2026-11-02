@@ -7,12 +7,12 @@ ruolo: "ostessa e fornaia del Forno Vecchio; testimone reticente; può diventare
 fronte: fronte_fuoco_nero
 
 aspetto:
-  lettura: "Una donna larga, sulla sessantina, con le braccia infarinate fino ai gomiti. Ha il grembiule pulito e gli occhi rossi di chi non dorme."
+  lettura: "Una donna robusta, sulla sessantina, con le braccia infarinate fino ai gomiti. Ha il grembiule pulito e gli occhi rossi di chi non dorme."
   invarianti: ["61 anni", "bassa e larga", "capelli bianchi raccolti in un fazzoletto rosso", "braccia infarinate fino ai gomiti", "grembiule di lino pulito", "occhi arrossati"]
   prompt_immagine: "short stout 61-year-old village baker woman, white hair tied in a red headscarf, flour-dusted forearms up to the elbows, clean linen apron, reddened sleepless eyes, glowing bread oven behind her, [STILE]"
 
 personalita:
-  superficie: ["materna e chiacchierona: nutre chiunque entri", "orgogliosa del suo pane come di un figlio", "pettegola: sa tutto di tutti"]
+  superficie: ["materna e chiacchierona: nutre chiunque entri", "orgogliosa del suo pane come di un figlio", "parla senza sosta di cibo e di cotture, per non parlare d'altro"]
   sotto_pressione: ["diventa servile e offre di tutto pur di cambiare discorso", "se la accusano davanti ad altri, si chiude e prova a far sparire le prove"]
   contraddizione: "Ha sfamato il paese per trent'anni, e stanotte rischia di avvelenarlo per non perdere la faccia."
 
@@ -26,7 +26,7 @@ segreto:
 
 voce:
   tts: {voce_id: nadine, eta_apparente: "55-65", altezza: media, velocita: 1.05, timbro: "caldo, un po' affannato"}
-  registro: "Dà del tu a chi ha meno di cinquant'anni e lo chiama «figliolo» o «figliola». Al forestiero e a chi la accusa dà del voi, freddo."
+  registro: "Dà del tu a chi ha meno di cinquant'anni e lo chiama «figliolo» o «figliola». Al forestiero e a chi la accusa dà del lei, freddo."
   stile: "Frasi brevi, spezzate dal lavoro. Parla di cibo, dosi e cotture. Fa domande e non aspetta la risposta."
   tic: ["«Mangia, ché la notte è lunga.»"]
   gesto: "batte il mestolo sul bordo del paiolo"
@@ -64,13 +64,13 @@ mente_su:
     verita: f_segale_gualtiero
     versione: "È la segale di sempre, del mulino del paese. La prendo lì da trent'anni."
     perche: "Vergogna di aver comprato roba da poco. E paura: se è il pane, i bambini li ha fatti ammalare lei."
-    segnale: "si pulisce le mani sul grembiule, anche se sono pulite, e guarda le ceste"
-    cede_se: "Dice la verità quando un PG le mette in mano un chicco nero preso dai suoi sacchi, e Baldrin non può sentire. Oppure quando Assenzio le chiede la verità in nome di tutte le volte che lei ha coperto lui. Mai davanti al paese."
+    segnale: "si sistema il fazzoletto rosso sui capelli e guarda le ceste"
+    cede_se: "Dice la verità quando un PG le mette in mano un chicco nero preso dai suoi sacchi e Baldrin non può sentire: nel retro, dietro la tenda, o in cantina. Oppure quando Assenzio le chiede la verità in nome di tutte le volte che lei ha coperto lui. La prima confessione è sempre in privato, mai davanti al paese."
   - argomento: "il cane"
     verita: f_cane_croste
     versione: "Avrà mangiato un topo. I cani mangiano i topi."
     perche: "Le croste portano dritte al pane."
-    segnale: "si pulisce le mani sul grembiule, anche se sono pulite, e guarda le ceste"
+    segnale: "si sistema il fazzoletto rosso sui capelli e guarda le ceste"
     cede_se: "Quando un PG le mostra le croste nella ciotola di Moro, oppure dopo che ha già confessato sulla segale."
 
 atteggiamento_pg:
@@ -90,11 +90,11 @@ info_chiave: [i_ottavia_confessione]   # conclusione r_gualtiero
 iniziative:
   - "Se un PG va verso il retro o verso le ceste, lo chiama al paiolo ad assaggiare la zuppa di castagne."
   - "Se capisce che i PG sospettano il pane, prova a buttare nel forno i sacchi rimasti. La segale che brucia fa un fumo acre."
-  - "Al terzo segno dell'orologio chiede a Teodora di prepararsi alla benedizione."
+  - "Al terzo segno dell'orologio chiede a chi benedirà il pane di prepararsi: Teodora, o Baldrin se Teodora non c'è."
 
 evoluzione:
-  - {se: "un PG le mostra un chicco nero in privato e le promette di non lasciarla sola", allora: "confessa, piange, e accetta di dire la verità al paese se un PG le sta accanto"}
-  - {se: "la accusano davanti a Baldrin o al paese prima che abbia confessato", allora: "nega con la stessa versione, prova a bruciare i sacchi, diventa ostile con chi l'ha accusata"}
+  - {se: "confessa in privato", allora: "piange e offre la botola per far scappare il forestiero. Dirà la verità al paese solo se un PG le promette di starle accanto davanti a tutti"}
+  - {se: "un PG la accusa davanti a Baldrin o al paese prima che abbia confessato", allora: "nega con la stessa versione, prova a bruciare i sacchi, diventa ostile con chi l'ha accusata"}
   - {se: "Teodora propone le castagne al posto del pane", allora: "si aggrappa all'idea: così salva il paese senza confessare niente"}
   - {se: "il paese spezza il pane dei lumi", allora: "a scena chiusa capisce; il giorno dopo chiude l'osteria"}
 

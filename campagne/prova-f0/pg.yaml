@@ -7,7 +7,7 @@
 #   - conoscenze_private: SOLO sul telefono di quel giocatore. Il Narratore non le dice mai a voce:
 #     diventano pubbliche solo se il giocatore le usa o le racconta.
 
-situazione_comune: "Viaggiate insieme verso la città, prima che la neve chiuda il passo. Siete arrivati a Fontescura al tramonto, nella Notte dei Lumi. Sorella Teodora deve benedire il pane dei lumi alla fine della veglia, e Assenzio è cresciuto proprio qui, nell'osteria di Ottavia. Ottavia vi ha dato una zuppa di castagne e un posto per dormire sopra la stalla. In paese non si parla d'altro: la febbre, e il forestiero chiuso a chiave nel ripostiglio dell'osteria."
+situazione_comune: "Viaggiate insieme verso la città, prima che la neve chiuda il passo. Siete arrivati a Fontescura al tramonto, nella Notte dei Lumi, e vi fermate all'osteria del Forno Vecchio. L'ostessa, Ottavia, vi ha dato una zuppa di castagne e un posto per dormire sopra la stalla. In paese non si parla d'altro: la febbre, e il forestiero chiuso a chiave nel ripostiglio dell'osteria."
 
 personaggi:
   - id: pg_ginestra
@@ -45,6 +45,7 @@ personaggi:
     conoscenze_private:
       - {testo: "La Compagnia del Grifo cerca il suo cerusico, sparito dopo Roccalba: sui quarant'anni, magro, una cicatrice bianca che gli taglia il sopracciglio sinistro. La taglia è di venti corone.", fatti: [f_taglia_cerusico]}
       - {testo: "I cerusici della Compagnia chiudono le bende con un nodo doppio e piatto. Lo riconosceresti ovunque.", fatti: [f_nodo_cerusici]}
+      - {testo: "Il cerusico non l'hai mai visto da vicino: lui stava nelle tende dei feriti, tu sulle mura.", fatti: []}
       - {testo: "Al campo si diceva che il cerusico fosse scappato con la cassa delle medicine. Ma era solo una voce.", fatti: []}
 
   - id: pg_assenzio
@@ -62,8 +63,8 @@ personaggi:
       - "conosci ogni asse e ogni ombra di questa casa"
       - "ti accorgi quando qualcuno mente"
     conoscenze_private:
-      - {testo: "Nel ripostiglio, sotto un sacco vuoto, c'è una botola. Porta in cantina, e dalla cantina si esce dalla grata sotto il portico. Da bambino Ottavia ti ci nascondeva.", fatti: [f_botola]}
-      - {testo: "Quando Ottavia mente, si pulisce le mani sul grembiule anche se sono pulite. Lo fa da sempre.", fatti: []}
+      - {testo: "Nel ripostiglio, sotto un sacco vuoto, c'è una botola che scende in cantina. In cantina si arriva anche dal retro, con una scala dietro la tenda, e una grata dà sotto il portico. Da bambino Ottavia ti ci nascondeva.", fatti: [f_botola]}
+      - {testo: "Quando Ottavia mente, si sistema il fazzoletto rosso sui capelli. Lo fa da sempre.", fatti: []}
       - {testo: "Da trent'anni Ottavia compra la segale al mulino del paese. Non ha mai cambiato.", fatti: [f_segale_di_sempre]}
 
   - id: pg_teodora
@@ -75,7 +76,7 @@ personaggi:
     livello: 1
     aspetto: "Umana di ventidue anni, veste grigia, una piccola lanterna di ottone appesa alla cintura."
     concetto: "Giovane sacerdotessa della Signora delle Lanterne, la dea che accompagna i morti. È al suo primo incarico da sola, e ha paura di sbagliare un rito davanti a un paese intero."
-    aggancio: "Il tempio ti ha mandato a guidare la Notte dei Lumi, perché il curato di Fontescura è morto a settembre. Al terzo rintocco tocca a te benedire e spezzare il pane dei lumi."
+    aggancio: "Il tempio ti ha mandato per la Notte dei Lumi, perché il curato di Fontescura è morto a settembre. Le donne cantano la veglia in cappella; al terzo rintocco tocca a te benedire e spezzare il pane dei lumi, qui all'osteria."
     cosa_sai_fare:
       - "guidi un rito e parli davanti a una folla"
       - "con una preghiera senti se un cibo o una bevanda è impuro"
