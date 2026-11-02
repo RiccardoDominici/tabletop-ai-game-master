@@ -106,7 +106,7 @@ battute *disponibili* invece di rispondere alle azioni. Cambia così:
 - **Elencate per stato, non per temi**: finali, battute della folla e chiusura escono in base allo stato dell'orologio
   (a orologio completo), perché non hanno parole dei giocatori nei `temi`.
 - **Alias dei PNG** per la pertinenza: nano → Baldrin; ostessa/oste → Ottavia; forestiero/prigioniero/«quello là
-  dentro» → Sebastiano (in futuro: campo `alias` nella scheda PNG).
+  dentro» → Sebastiano. Il Motore li legge dal campo `alias` della scheda PNG (nessun elenco nel codice).
 - **Valutazione onesta**: i `temi` della v2 sono stati tarati sui copioni del primo esperimento; il confronto B2 si
   fa su copioni nuovi scritti alla cieca (`esperimenti/copioni/prova2/`).
 

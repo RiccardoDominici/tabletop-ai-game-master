@@ -5,22 +5,20 @@
 import type { Campagna } from '../campagna/tipi';
 import { normalizza } from '../azioni/regole';
 
-/**
- * Soprannomi dei PNG di prova-f0 dal documento del repertorio, finché le schede non hanno il
- * campo `alias` (che, se c'è, ha la precedenza).
- */
-const ALIAS_PREDEFINITI: Record<string, string[]> = {
-  png_baldrin: ['nano'],
-  png_ottavia: ['ostessa', 'oste'],
-  png_sebastiano: ['forestiero', 'prigioniero', 'quello là dentro', 'quello la dentro'],
-};
+/** Soprannomi della scheda del PNG (`alias: [nano, fabbro…]`, schema della skill): come lo chiamano i giocatori. */
+export function aliasDellaScheda(dati: Record<string, unknown>): string[] {
+  return Array.isArray(dati['alias']) ? (dati['alias'] as unknown[]).filter((x): x is string => typeof x === 'string' && x.trim() !== '') : [];
+}
 
-/** Parole e soprannomi con cui le azioni si riferiscono a ogni PNG (minuscole, senza accenti). */
+/**
+ * Parole e soprannomi con cui le azioni si riferiscono a ogni PNG (minuscole, senza accenti):
+ * nome, primo nome e i soprannomi della scheda. Niente elenchi scritti nel codice: una campagna
+ * senza `alias` si riconosce solo per nome (il validatore rigoroso lo segnala).
+ */
 export function nomiDeiPng(c: Campagna): Map<string, string[]> {
   const out = new Map<string, string[]>();
   for (const p of c.png) {
-    const daScheda = Array.isArray(p.dati['alias']) ? (p.dati['alias'] as unknown[]).filter((x): x is string => typeof x === 'string') : null;
-    const parole = [p.nome, p.nome.split(/\s+/)[0] ?? '', ...(daScheda ?? ALIAS_PREDEFINITI[p.id] ?? [])];
+    const parole = [p.nome, p.nome.split(/\s+/)[0] ?? '', ...aliasDellaScheda(p.dati)];
     out.set(p.id, [...new Set(parole.map(normalizza).filter((x) => x.length > 2))]);
   }
   return out;

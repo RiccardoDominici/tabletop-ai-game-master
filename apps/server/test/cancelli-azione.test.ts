@@ -68,3 +68,15 @@ describe.skipIf(!presente)('cancelli sull’azione: richiede.privata e richiede.
     expect(cat(s, [{ ...azione, privata: false }])).not.toContain('ott_segale_chicco');
   });
 });
+
+describe('soprannomi dei PNG dalla scheda', () => {
+  it('nessun elenco nel codice: senza `alias` il PNG si riconosce solo per nome', async () => {
+    const { nomiDeiPng: nomi, pngNominati } = await import('../src/repertorio/pertinenza');
+    const c = caricaCampagna(path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'));
+    const senza = { ...c, png: c.png.map((p) => ({ ...p, dati: { ...p.dati, alias: undefined } })) };
+    const conAlias = { ...c, png: c.png.map((p) => (p.id === 'png_oste' ? { ...p, dati: { ...p.dati, alias: ['locandiere', 'quello del vino'] } } : p)) };
+    expect(pngNominati('parlo col locandiere', nomi(senza)).size).toBe(0);
+    expect([...pngNominati('parlo col locandiere', nomi(conAlias))]).toEqual(['png_oste']);
+    expect([...pngNominati('chiedo a quello del vino', nomi(conAlias))]).toEqual(['png_oste']);
+  });
+});
