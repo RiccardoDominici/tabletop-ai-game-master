@@ -9,6 +9,10 @@
 # - testo_rif: trascrizione esatta della clip
 # - descrizione: a cosa serve la voce (per il preparatore e per chi ascolta)
 #
+# - simile_a: voci che a orecchio si confondono con questa (simmetrico: basta
+#   scriverlo da una parte). Il validatore delle campagne vieta due voci simili
+#   nella stessa scena, come due voci uguali.
+#
 # Le clip sono voci sintetiche HeyGen (non persone reali), prese dalle prove
 # del 1° novembre 2026 (research/). Nadine e Tabitha sono vicine di tono
 # (0,66 semitoni sui cloni): vanno sostituite prima del gioco vero.
@@ -28,6 +32,7 @@ voci:
     file: nadine.wav
     testo_rif: "Siete arrivati tardi, stranieri. La strada per Vallestorta è chiusa da settimane, e chi la percorre di notte non fa più ritorno."
     descrizione: "Locandiera anziana, femminile, voce matura."
+    simile_a: [tabitha]
 
   - id: lucian
     file: lucian.wav
@@ -38,3 +43,4 @@ voci:
     file: tabitha.wav
     testo_rif: "Siete arrivati tardi, stranieri. La strada per Vallestorta è chiusa da settimane, e chi la percorre di notte non fa più ritorno."
     descrizione: "Giovane ladra, femminile, voce giovane e sfacciata."
+    simile_a: [nadine]

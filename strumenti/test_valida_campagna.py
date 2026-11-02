@@ -192,6 +192,50 @@ def test_scena_due_png_con_la_stessa_voce(camp):
     assert "SCENA.voci" in errori(camp)
 
 
+def test_scena_due_png_con_voci_simili(camp):
+    # nadine (Irma) e tabitha sono simili per assets/voci/voci.yaml (simile_a): mai nella stessa scena.
+    modifica(camp, "png/png_bruno.yaml", lambda d: d["voce"]["tts"].update(voce_id="tabitha"))
+    assert "SCENA.voci_simili" in errori(camp)
+
+
+def _seconda_scena(camp: Path, presenti_prima: list[str], presenti_seconda: list[str], taglio: str | None = None) -> None:
+    """Copia la scena del mini come scene/scena_due.yaml (nodo n_cappella) e sceglie chi è presente dove."""
+    (camp / "scene").mkdir(exist_ok=True)
+    due = leggi(camp, "scena.yaml")
+    due.update(id="scena_due", nodo="n_cappella", png_presenti=presenti_seconda, indizi=[])
+    if taglio:
+        due["taglio"] = taglio
+    scrivi(camp, "scene/scena_due.yaml", due)
+    modifica(camp, "scena.yaml", lambda d: d.update(png_presenti=presenti_prima))
+
+
+def test_scena_battute_libere_di_una_voce_simile_altrove(camp):
+    # Nota 21: un PNG assente può parlare con le sue battute senza `scena`, accanto a una voce simile.
+    modifica(camp, "png/png_bruno.yaml", lambda d: d["voce"]["tts"].update(voce_id="tabitha"))
+    _seconda_scena(camp, ["png_bruno"], ["png_irma"])
+    assert "SCENA.voci_simili" not in errori(camp)
+    assert "SCENA.voci_simili_altrove" in avvisi(camp)
+
+
+def test_scena_testo_che_porta_una_voce_simile(camp):
+    modifica(camp, "png/png_bruno.yaml", lambda d: d["voce"]["tts"].update(voce_id="tabitha"))
+    _seconda_scena(camp, ["png_bruno"], ["png_irma"], taglio="Se i PG esitano, Bruno arriva dalla locanda e trascina tutti fuori.")
+    assert "SCENA.voci_simili_testo" in avvisi(camp)
+
+
+def test_scena_desiderio_che_porta_una_voce_simile(camp):
+    modifica(camp, "png/png_bruno.yaml", lambda d: d["voce"]["tts"].update(voce_id="tabitha"))
+    modifica(camp, "png/png_irma.yaml", lambda d: d.update(desiderio="Portare Bruno in cappella prima dell'alba."))
+    assert "SCENA.voci_simili_testo" in avvisi(camp)
+
+
+def test_scena_battuta_di_un_png_assente_in_rigoroso(camp):
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_versione").update(scena="scena_due"))
+    _seconda_scena(camp, ["png_irma", "png_bruno"], ["png_irma"])
+    assert "SCENA.png_assente" not in errori(camp)
+    assert "SCENA.png_assente" in errori(camp, rigoroso=True)
+
+
 def test_scena_apertura_troppo_lunga(camp):
     modifica(camp, "scena.yaml", lambda d: d.update(apertura=d["apertura"].replace(" Dalla", " Fa freddo. Dalla")))
     assert "SCENA.apertura" in errori(camp)

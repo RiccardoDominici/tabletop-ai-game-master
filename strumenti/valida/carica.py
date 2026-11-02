@@ -33,6 +33,7 @@ class Campagna:
     battute: list[dict] = field(default_factory=list)                   # ognuna con "_file"
     parole_segrete: dict | None = None
     voci_registrate: set[str] | None = None
+    voci_simili: dict[str, set[str]] = field(default_factory=dict)       # voce -> voci che si confondono con lei
     voce_narratore: str = "narratore"
 
     # --- viste derivate (calcolate da `deriva`) ---
@@ -68,6 +69,14 @@ class Campagna:
 
     def fatti_nascosti(self) -> set[str]:
         return {i for i, f in self.canone.items() if not f.get("noto_ai_pg")}
+
+    def voce_di(self, pid: str) -> str | None:
+        return (((self.png.get(pid) or ("", {}))[1].get("voce") or {}).get("tts") or {}).get("voce_id")
+
+    def voci_confuse(self, a: str, b: str) -> bool:
+        """Le voci di due PNG si confondono a orecchio: uguali, o simili per il registro (simile_a)."""
+        va, vb = self.voce_di(a), self.voce_di(b)
+        return bool(va and vb and (va == vb or vb in self.voci_simili.get(va, set())))
 
 
 def _leggi(percorso: Path, esito: Esito, obbligatorio: bool) -> Any:
@@ -141,6 +150,12 @@ def carica(cartella: Path, esito: Esito, voci: Path | None = None) -> Campagna:
         reg = yaml.safe_load(percorso_voci.read_text(encoding="utf-8")) or {}
         ids = {v.get("id") for v in reg.get("voci", []) if isinstance(v, dict)}
         c.voci_registrate = {i for i in ids if i}
+        # simile_a è simmetrico: basta scriverlo da una parte.
+        for v in reg.get("voci", []):
+            if isinstance(v, dict) and v.get("id"):
+                for altra in v.get("simile_a") or []:
+                    c.voci_simili.setdefault(v["id"], set()).add(altra)
+                    c.voci_simili.setdefault(altra, set()).add(v["id"])
     deriva(c)
     return c
 
