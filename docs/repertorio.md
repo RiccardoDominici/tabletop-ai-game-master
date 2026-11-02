@@ -97,6 +97,12 @@ battute *disponibili* invece di rispondere alle azioni. Cambia così:
   segno d'orologio dovuto; le battute `riempitivo: true` (il cane, la borsa…) solo quando scatta lo stallo.
 - **Anti-ripetizione**: una battuta e le sue varianti non tornano entro 3 turni.
 - **Orologio**: anche in modalità B il Motore scrive «mostralo in questa risposta» quando il segno è dovuto.
+- **Elencate per stato, non per temi**: finali, battute della folla e chiusura escono in base allo stato dell'orologio
+  (a orologio completo), perché non hanno parole dei giocatori nei `temi`.
+- **Alias dei PNG** per la pertinenza: nano → Baldrin; ostessa/oste → Ottavia; forestiero/prigioniero/«quello là
+  dentro» → Sebastiano (in futuro: campo `alias` nella scheda PNG).
+- **Valutazione onesta**: i `temi` della v2 sono stati tarati sui copioni del primo esperimento; il confronto B2 si
+  fa su copioni nuovi scritti alla cieca (`esperimenti/copioni/prova2/`).
 
 ## Audio pre-generato
 
