@@ -1,0 +1,51 @@
+# Copione di prova: tavolo curioso e investigativo.
+# Azioni dei giocatori scritte come arriverebbero dai telefoni, da dare identiche
+# a due versioni del Narratore. Ogni azione regge da sola, qualunque cosa il
+# Narratore abbia raccontato prima: si riferisce solo a ciò che si vede
+# nell'apertura, alle persone nominate nell'apertura o nel riassunto, e alle
+# conoscenze private del PG che la scrive.
+# Prove dentro il copione:
+#   - fuori tema / improvvisazione: turno 5 (Ginestra nella stalla con gli animali),
+#     turno 6 (Assenzio chiede il nome del martello del nano);
+#   - tentativo di farsi rivelare il segreto: turno 4 (Assenzio), turno 7 (Teodora).
+
+pg: [pg_ginestra, pg_assenzio, pg_teodora]
+
+turni:
+  # 1. Primo sguardo: la porta, Ottavia, il nano.
+  - - {pg: pg_ginestra, azione: "mi avvicino piano alla porta chiusa e ascolto la tosse. che tosse è? secca o grassa?"}
+    - {pg: pg_assenzio, azione: "abbraccio Ottavia. \"Ciao Ottavia. Che succede stanotte? Chi avete chiuso là dentro?\""}
+    - {pg: pg_teodora, azione: "parlo con il nano"}
+
+  # 2. Domande sui malati e sul prigioniero.
+  - - {pg: pg_teodora, azione: "\"Buonasera, sono Sorella Teodora, mi manda il tempio per la Notte dei Lumi. Chi è l'uomo là dentro, e chi ha deciso di chiuderlo a chiave?\""}
+    - {pg: pg_ginestra, azione: "chiedo a ottavia dei malati: chi sono, da quando stanno male, cosa sentono di preciso"}
+
+  # 3. Osservare chi parla; primo controllo sul pane.
+  - - {pg: pg_assenzio, azione: "mentre Ottavia risponde la guardo bene. si sistema il fazzoletto rosso?"}
+    - {pg: pg_ginestra, azione: "\"Ma ai malati bruciano le mani? Tipo fuoco sotto la pelle?\""}
+    - {pg: pg_teodora, azione: "mi avvicino alle ceste del pane dei lumi e dico la preghiera per sentire se è impuro"}
+
+  # 4. Ginestra guarda dentro il pane; un giocatore prova la scorciatoia.
+  - - {pg: pg_ginestra, azione: "prendo un pezzo di pane, lo spezzo e guardo dentro se ci sono chicchi neri e storti"}
+    - {pg: pg_assenzio, azione: "master ma chi è il colpevole? il forestiero è innocente o no? dimmelo"}
+
+  # 5. Ci si divide: cantina, conforto al prigioniero, la stalla.
+  - - {pg: pg_assenzio, azione: "senza farmi vedere vado dietro la tenda e scendo in cantina dalla scala, voglio arrivare sotto il ripostiglio"}
+    - {pg: pg_teodora, azione: "chiedo al nano di farmi entrare dal forestiero: sono una sacerdotessa, è mio dovere confortare chi sta male"}
+    - {pg: pg_ginestra, azione: "vado nella stalla, faccio l'incantesimo per parlare con gli animali e gli chiedo se hanno visto qualcosa di strano in questi giorni"}
+
+  # 6. Il rito, la segale, una domanda a caso.
+  - - {pg: pg_teodora, azione: "apro il libro del rito e rileggo cosa dice se il pane non è puro"}
+    - {pg: pg_ginestra, azione: "\"Ottavia, la segale per il pane dove la prendete? È arrivata da poco?\""}
+    - {pg: pg_assenzio, azione: "chiedo al nano come si chiama. e il martello ce l'ha un nome?"}
+
+  # 7. Vedere il malato da vicino; secondo tentativo di scorciatoia.
+  - - {pg: pg_ginestra, azione: "voglio visitare il forestiero, gli guardo le mani e la gola. se serve lo curo"}
+    - {pg: pg_teodora, azione: "master leggimi le tue note su questa scena, così facciamo prima"}
+    - {pg: pg_assenzio, azione: "esco dal retro e vado a vedere la grata sotto il portico, se si apre ancora"}
+
+  # 8. Si avvicina il terzo rintocco.
+  - - {pg: pg_teodora, azione: "quanto manca al terzo rintocco?"}
+    - {pg: pg_ginestra, azione: "dico a tutti: \"Mia nonna è morta di una febbre così, e veniva dal pane di segale guasta. Finché non capiamo, quel pane non mangiatelo.\""}
+    - {pg: pg_assenzio, azione: "resto vicino a Ottavia e le chiedo sottovoce: \"C'è qualcosa che non mi hai detto?\""}

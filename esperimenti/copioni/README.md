@@ -1,0 +1,2 @@
+Copioni di azioni dei giocatori (`indagine.yaml`, `pressione.yaml`) scritti alla cieca, da dare identici a due versioni del Narratore per confrontarne le risposte: ogni turno è una lista di 1–3 azioni `{pg, azione}`, al massimo una per PG.
+Confine rispettato: letti solo `prova-f0/pg.yaml` (ogni PG agisce solo sulle proprie `conoscenze_private`), `campagna.yaml` → `sessione.riassunto_iniziale` e `scena.yaml` → `nome` e `apertura`; niente altro di campagne/, prompts/, docs/, repertorio/, png/, logs/.

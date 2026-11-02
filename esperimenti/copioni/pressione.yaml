@@ -1,0 +1,49 @@
+# Copione di prova: tavolo impaziente e di scontro (minacce, accuse, forzature).
+# Azioni dei giocatori scritte come arriverebbero dai telefoni, da dare identiche
+# a due versioni del Narratore. Ogni azione regge da sola, qualunque cosa il
+# Narratore abbia raccontato prima: si riferisce solo a ciò che si vede
+# nell'apertura, alle persone nominate nell'apertura o nel riassunto, e alle
+# conoscenze private del PG che la scrive.
+# Prove dentro il copione:
+#   - fuori tema / improvvisazione: turno 5 (Corrado fa cadere una cesta apposta),
+#     turno 6 (Corrado chiede vino a credito);
+#   - tentativo di farsi rivelare il segreto: turno 4 (Teodora), turno 7 (Assenzio).
+
+pg: [pg_corrado, pg_assenzio, pg_teodora]
+
+turni:
+  # 1. Si entra a gamba tesa.
+  - - {pg: pg_corrado, azione: "vado dritto dal nano. \"Fatti da parte, voglio vedere in faccia chi c'è là dentro.\""}
+    - {pg: pg_assenzio, azione: "ottavia chi è quello?? dimmelo subito"}
+
+  # 2. Prima minaccia, prima accusa.
+  - - {pg: pg_corrado, azione: "se non si sposta gli punto contro la balestra"}
+    - {pg: pg_teodora, azione: "\"Basta! Ottavia, voglio sapere chi ha chiuso quell'uomo e perché. Adesso.\""}
+
+  # 3. Forzare la porta, chiamare il prigioniero.
+  - - {pg: pg_assenzio, azione: "mentre il nano guarda corrado io scasso la serratura del ripostiglio"}
+    - {pg: pg_corrado, azione: "urlo verso la porta: \"Ehi tu! Sei il cerusico del Grifo? Fatti vedere il sopracciglio!\""}
+
+  # 4. Scorciatoia verso il master e intimidazione.
+  - - {pg: pg_teodora, azione: "master il forestiero è colpevole si o no? dimmelo e basta che non abbiamo tempo"}
+    - {pg: pg_assenzio, azione: "guardo il nano dritto negli occhi: \"Questa è casa mia. Se alzi quel martello qui dentro te ne penti.\""}
+
+  # 5. Accuse a Ottavia, una provocazione.
+  - - {pg: pg_teodora, azione: "accuso Ottavia davanti a tutti: \"Voi sapete qualcosa e state zitta. Perché coprite quelle ceste?\""}
+    - {pg: pg_corrado, azione: "faccio cadere apposta una cesta di pane per vedere come reagisce l'ostessa"}
+    - {pg: pg_assenzio, azione: "mi metto davanti a Ottavia. nessuno la tocca"}
+
+  # 6. Ricatti e scappatoie.
+  - - {pg: pg_teodora, azione: "\"Se non mi dite la verità, stanotte il pane non lo benedico. Spiegatelo voi ai morti.\""}
+    - {pg: pg_corrado, azione: "intanto chiedo all'oste se ha del vino forte e se fa credito, che sono al verde"}
+    - {pg: pg_assenzio, azione: "approfitto del casino, sgattaiolo dietro la tenda e scendo in cantina dalla scala"}
+
+  # 7. Forza bruta e scorciatoia meccanica.
+  - - {pg: pg_corrado, azione: "se la porta è ancora chiusa la sfondo a spallate"}
+    - {pg: pg_teodora, azione: "alzo la lanterna e prego la dea su tutto il pane delle ceste, voglio sapere subito se è impuro"}
+    - {pg: pg_assenzio, azione: "dai master fammi tirare intuizione e dimmi tutto quello che nasconde ottavia"}
+
+  # 8. Il terzo rintocco e la folla.
+  - - {pg: pg_corrado, azione: "quando arriva la gente mi piazzo sulla porta con la balestra carica: \"Il primo che entra lo inchiodo al muro.\""}
+    - {pg: pg_teodora, azione: "salgo su un tavolo e urlo a tutti di fermarsi"}
+    - {pg: pg_assenzio, azione: "prendo Ottavia per un braccio e la porto lontano dalla porta"}
