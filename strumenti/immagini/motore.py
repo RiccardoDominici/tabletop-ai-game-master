@@ -40,6 +40,8 @@ PASSI_DEFAULT = 4
 
 # Sotto questa carica, a batteria, ci si rifiuta di partire: una generazione lunga può spegnere il Mac.
 BATTERIA_MINIMA = 20
+# Sotto questo spazio libero non si parte: lo swap del sistema vive sullo stesso disco.
+DISCO_MINIMO_GB = 8.0
 
 # I comandi stanno nel venv accanto a questo file (vedi requirements.txt).
 BIN = Path(__file__).resolve().parent / ".venv" / "bin"
@@ -142,16 +144,46 @@ class Motore:
         return Esito(percorso=uscita, secondi=secondi, picco_gb=picco)
 
 
-def salva_jpeg(sorgente: str | Path, percorso: str | Path, lato_max: int = 1280, qualita: int = 85) -> Path:
-    """Salva una copia JPEG (per git e per il proiettore) di un'immagine su disco: lato lungo <= lato_max."""
+def verifica_disco(cartella: str | Path, minimo_gb: float = DISCO_MINIMO_GB) -> None:
+    """Solleva RuntimeError se sul volume di `cartella` restano meno di `minimo_gb` GB liberi.
+
+    Il sistema usa il disco per lo swap: sotto qualche GB una generazione può bloccare il Mac.
+    """
+    import shutil
+
+    libero = shutil.disk_usage(Path(cartella)).free / 1000**3
+    if libero < minimo_gb:
+        raise RuntimeError(f"solo {libero:.1f} GB liberi su disco (minimo {minimo_gb} GB): libera spazio prima di generare.")
+
+
+def salva_jpeg(sorgente: str | Path, percorso: str | Path, lato_max: int = 1280, qualita: int = 85,
+               dimensioni: tuple[int, int] | None = None) -> Path:
+    """Salva una copia JPEG (per git e per il proiettore) di un'immagine su disco.
+
+    Senza `dimensioni`: lato lungo <= lato_max. Con `dimensioni` (larghezza, altezza): ritaglio al
+    centro alle proporzioni chieste, poi ridimensionamento esatto (serve per 1920x1080, che il modello
+    non può generare: si genera 1920x1088 e si tolgono 4 righe sopra e 4 sotto).
+    """
     from PIL import Image
 
     percorso = Path(percorso)
     percorso.parent.mkdir(parents=True, exist_ok=True)
     with Image.open(sorgente) as img:
         img = img.convert("RGB")
-        scala = lato_max / max(img.size)
-        if scala < 1:
-            img = img.resize((round(img.width * scala), round(img.height * scala)), Image.LANCZOS)
+        if dimensioni:
+            lw, la = dimensioni
+            # Il rettangolo più grande con le proporzioni lw:la che sta nell'immagine, centrato.
+            if img.width * la > img.height * lw:
+                w, h = round(img.height * lw / la), img.height
+            else:
+                w, h = img.width, round(img.width * la / lw)
+            x, y = (img.width - w) // 2, (img.height - h) // 2
+            img = img.crop((x, y, x + w, y + h))
+            if img.size != (lw, la):
+                img = img.resize((lw, la), Image.LANCZOS)
+        else:
+            scala = lato_max / max(img.size)
+            if scala < 1:
+                img = img.resize((round(img.width * scala), round(img.height * scala)), Image.LANCZOS)
         img.save(percorso, "JPEG", quality=qualita, optimize=True, progressive=True)
     return percorso
