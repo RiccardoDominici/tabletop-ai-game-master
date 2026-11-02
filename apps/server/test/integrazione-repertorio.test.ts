@@ -73,7 +73,7 @@ beforeAll(async () => {
     messaggi.push(r.messaggio);
     return narra(r, cb);
   };
-  server = await costruisciServer(config, loggerMuto(), { narratore });
+  server = await costruisciServer(config, loggerMuto(), { narratore, arbitro: null });
   await server.avvia();
   url = `http://127.0.0.1:${(server.app.http.server.address() as { port: number }).port}`;
 });

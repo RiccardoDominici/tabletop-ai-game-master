@@ -75,6 +75,11 @@ describe('regole', () => {
     expect(relazioniDaRegole(a('n', 'pg_teodora', "anch'io come corrado"), coda, nomi)).toMatchObject({ dipende_da: ['a2'], certo: true });
   });
 
+  it('«anche io» in mezzo a una frase non è certo (può essere un paragone)', () => {
+    expect(relazioniDaRegole(a('n', 'pg_teodora', 'come ginestra ho fame anche io, ma vado nel retro e mi arrangio'), [coda[0]!], nomi)).toMatchObject({ certo: false });
+    expect(relazioniDaRegole(a('n', 'pg_teodora', 'anche io vado verso la grata'), [coda[0]!], nomi)).toMatchObject({ certo: true, dipende_da: ['a1'] });
+  });
+
   it('nome senza legame non è una dipendenza certa; privata altrui mai candidata', () => {
     expect(relazioniDaRegole(a('n', 'pg_teodora', 'saluto Corrado'), coda, nomi)).toMatchObject({ dipende_da: [], certo: false, formula: null });
     expect(relazioniDaRegole(a('n', 'pg_teodora', 'lo seguo'), [a('p', 'pg_assenzio', 'segreto', true)], nomi)).toMatchObject({ dipende_da: [], certo: false });

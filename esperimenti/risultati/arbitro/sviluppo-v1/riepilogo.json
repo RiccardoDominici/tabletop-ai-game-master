@@ -1,0 +1,274 @@
+{
+  "etichetta": "sviluppo-v1",
+  "insieme": "sviluppo",
+  "modello": "claude-haiku-5-5",
+  "data": "2026-11-02T14:16:10.677Z",
+  "solo_regole": {
+    "sviluppo": {
+      "casi": 25,
+      "dipendenze": {
+        "precisione": 0.83,
+        "richiamo": 0.71,
+        "tp": 5,
+        "fp": 1,
+        "fn": 2
+      },
+      "conflitti_esclusivi": {
+        "precisione": null,
+        "richiamo": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 3
+      },
+      "conflitti_non_esclusivi_predetti": 0,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 7,
+        "con_avviso_sbagliato": 1,
+        "tasso": 0.14
+      },
+      "vecchie": {
+        "accuratezza": 0.4,
+        "n": 5,
+        "impossibili_date_per_valide": 1,
+        "confusione": {
+          "valida→valida": 2,
+          "dubbia→valida": 2,
+          "impossibile→valida": 1
+        }
+      },
+      "cambi": {
+        "accuratezza": 0.33,
+        "n": 3
+      }
+    },
+    "riserva": {
+      "casi": 0,
+      "dipendenze": {
+        "precisione": null,
+        "richiamo": null,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "conflitti_esclusivi": {
+        "precisione": null,
+        "richiamo": null,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "conflitti_non_esclusivi_predetti": 0,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 0,
+        "con_avviso_sbagliato": 0,
+        "tasso": null
+      },
+      "vecchie": {
+        "accuratezza": null,
+        "n": 0,
+        "impossibili_date_per_valide": 0,
+        "confusione": {}
+      },
+      "cambi": {
+        "accuratezza": null,
+        "n": 0
+      }
+    },
+    "tutti": {
+      "casi": 25,
+      "dipendenze": {
+        "precisione": 0.83,
+        "richiamo": 0.71,
+        "tp": 5,
+        "fp": 1,
+        "fn": 2
+      },
+      "conflitti_esclusivi": {
+        "precisione": null,
+        "richiamo": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 3
+      },
+      "conflitti_non_esclusivi_predetti": 0,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 7,
+        "con_avviso_sbagliato": 1,
+        "tasso": 0.14
+      },
+      "vecchie": {
+        "accuratezza": 0.4,
+        "n": 5,
+        "impossibili_date_per_valide": 1,
+        "confusione": {
+          "valida→valida": 2,
+          "dubbia→valida": 2,
+          "impossibile→valida": 1
+        }
+      },
+      "cambi": {
+        "accuratezza": 0.33,
+        "n": 3
+      }
+    }
+  },
+  "regole_piu_haiku": {
+    "sviluppo": {
+      "casi": 25,
+      "dipendenze": {
+        "precisione": 0.88,
+        "richiamo": 1,
+        "tp": 7,
+        "fp": 1,
+        "fn": 0
+      },
+      "conflitti_esclusivi": {
+        "precisione": 0.75,
+        "richiamo": 1,
+        "tp": 3,
+        "fp": 1,
+        "fn": 0
+      },
+      "conflitti_non_esclusivi_predetti": 2,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 7,
+        "con_avviso_sbagliato": 2,
+        "tasso": 0.29
+      },
+      "vecchie": {
+        "accuratezza": 0.8,
+        "n": 5,
+        "impossibili_date_per_valide": 0,
+        "confusione": {
+          "valida→valida": 2,
+          "dubbia→impossibile": 1,
+          "dubbia→dubbia": 1,
+          "impossibile→impossibile": 1
+        }
+      },
+      "cambi": {
+        "accuratezza": 1,
+        "n": 3
+      }
+    },
+    "riserva": {
+      "casi": 0,
+      "dipendenze": {
+        "precisione": null,
+        "richiamo": null,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "conflitti_esclusivi": {
+        "precisione": null,
+        "richiamo": null,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "conflitti_non_esclusivi_predetti": 0,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 0,
+        "con_avviso_sbagliato": 0,
+        "tasso": null
+      },
+      "vecchie": {
+        "accuratezza": null,
+        "n": 0,
+        "impossibili_date_per_valide": 0,
+        "confusione": {}
+      },
+      "cambi": {
+        "accuratezza": null,
+        "n": 0
+      }
+    },
+    "tutti": {
+      "casi": 25,
+      "dipendenze": {
+        "precisione": 0.88,
+        "richiamo": 1,
+        "tp": 7,
+        "fp": 1,
+        "fn": 0
+      },
+      "conflitti_esclusivi": {
+        "precisione": 0.75,
+        "richiamo": 1,
+        "tp": 3,
+        "fp": 1,
+        "fn": 0
+      },
+      "conflitti_non_esclusivi_predetti": 2,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 7,
+        "con_avviso_sbagliato": 2,
+        "tasso": 0.29
+      },
+      "vecchie": {
+        "accuratezza": 0.8,
+        "n": 5,
+        "impossibili_date_per_valide": 0,
+        "confusione": {
+          "valida→valida": 2,
+          "dubbia→impossibile": 1,
+          "dubbia→dubbia": 1,
+          "impossibile→impossibile": 1
+        }
+      },
+      "cambi": {
+        "accuratezza": 1,
+        "n": 3
+      }
+    }
+  },
+  "haiku": {
+    "chiamate": 19,
+    "latenza_ms": {
+      "p50": 1564,
+      "p90": 5770,
+      "max": 5980
+    },
+    "per_tipo": {
+      "relazioni": {
+        "n": 11,
+        "p50": 1513,
+        "p90": 2302
+      },
+      "vecchie": {
+        "n": 5,
+        "p50": 1813,
+        "p90": 5980
+      },
+      "cambio": {
+        "n": 3,
+        "p50": 1699,
+        "p90": 5770
+      }
+    },
+    "costo_usd": 0.002257,
+    "costo_medio_usd": 0.0001188,
+    "token_cache_lettura": [
+      0,
+      2660,
+      2660,
+      2660,
+      2660,
+      2660,
+      2660,
+      0,
+      2668,
+      2668,
+      2668,
+      2668,
+      0,
+      2611,
+      2611,
+      2660,
+      2660,
+      2660,
+      2660
+    ]
+  }
+}

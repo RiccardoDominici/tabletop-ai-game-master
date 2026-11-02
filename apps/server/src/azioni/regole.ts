@@ -49,9 +49,14 @@ export function relazioniDaRegole(nuova: AzioneArbitro, coda: readonly AzioneArb
       return bersaglio ? { dipende_da: [bersaglio.id], certo: true, formula: 'legame_con_nome' } : { dipende_da: [], certo: false, formula: 'legame_con_nome' };
     }
   }
-  // 2. Formula senza nome: certa solo con un'unica azione candidata.
+  // 2. Formula senza nome: certa solo con un'unica azione candidata, e solo se apre l'azione o
+  //    l'azione è brevissima («anch'io», «anche io vado»): in mezzo a una frase è spesso un
+  //    paragone («ho fame anche io, ma vado nel retro») e lo decide il modello.
   for (const [nome, re] of FORMULE_SENZA_NOME) {
-    if (re.test(t)) {
+    const m = re.exec(t);
+    if (m) {
+      const inApertura = m.index <= 2 || t.split(' ').length <= 5;
+      if (!inApertura) return { dipende_da: [], certo: false, formula: nome };
       // «anch'io … come Corrado»: un nome citato restringe i candidati.
       const nominati = [...nomi].filter(([alias, id]) => id !== nuova.autore && new RegExp(`\\b${alias}\\b`).test(t)).map(([, id]) => id);
       const scelti = nominati.length ? candidati.filter((a) => nominati.includes(a.autore)) : candidati;

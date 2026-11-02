@@ -35,6 +35,8 @@ export interface ConfigServer {
   /** Cartella dell'audio pre-generato del repertorio. */
   cacheAudio: string;
 
+  /** Arbitro delle azioni simultanee: regole + Haiku, oppure solo regole. */
+  arbitro: 'haiku' | 'regole';
   llm: {
     modo: ModoLlm;
     modello: string;
@@ -100,6 +102,8 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
       testo(env['CANTASTORIE_PROMPT_NARRATORE']) ?? path.join(RADICE_REPO, 'prompts', 'narratore.md'),
     ...(ipLan ? { ipLan } : {}),
     modo: scelta(env['CANTASTORIE_MODO'], ['improvvisa', 'repertorio'] as const, 'improvvisa'),
+    // Con il narratore a copione (test, prove senza spesa) l'arbitro usa solo le regole.
+    arbitro: scelta(env['CANTASTORIE_ARBITRO'], ['haiku', 'regole'] as const, env['CANTASTORIE_LLM'] === 'finto' ? 'regole' : 'haiku'),
     filePromptSelettore: testo(env['CANTASTORIE_PROMPT_SELETTORE']) ?? path.join(RADICE_REPO, 'prompts', 'selettore.md'),
     cacheAudio: testo(env['CANTASTORIE_CACHE_AUDIO']) ?? path.join(RADICE_REPO, 'cache', 'audio'),
     llm: {

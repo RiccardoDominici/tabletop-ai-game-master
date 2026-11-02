@@ -24,6 +24,10 @@ import { compilaContestoRepertorio } from './repertorio/contesto';
 import { caricaParoleSegrete, segretiNelTesto } from './repertorio/segreti';
 import type { Repertorio } from './repertorio/tipi';
 import { CacheAudio } from './voce/cache-audio';
+import { ArbitroHaiku } from './azioni/arbitro-haiku';
+import { riassuntoPubblico } from './azioni/contesto';
+import type { Arbitro } from './azioni/tipi';
+import { creaClientAnthropic } from './llm/haiku';
 import { collegaSocket, creaUscite } from './trasporto/socket';
 import { orologioDiSistema, type Orologio } from './turni/orologio';
 import { MotoreVoceHttp } from './voce/http';
@@ -42,6 +46,8 @@ export interface ServerCantastorie {
 
 export interface Sostituzioni {
   narratore?: Narratore;
+  /** Arbitro delle azioni (test: uno finto; null = solo regole). */
+  arbitro?: Arbitro | null;
   orologio?: Orologio;
   cartellaWeb?: string;
 }
@@ -80,6 +86,21 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       : new NarratoreHaiku({ modello: config.llm.modello, maxTokens: config.llm.maxTokens, fileChiave: config.llm.fileChiave, log: log.child({ modulo: 'llm' }) }));
   log.info({ narratore: narratore.nome, modello: narratore.modello }, `NARRATORE IN USO: ${narratore.nome}`);
 
+  // Arbitro delle azioni simultanee: regole subito, Haiku (uscita strutturata) per il resto.
+  const registroCosti = new RegistroJsonl(path.join(config.cartellaLog, 'costi.jsonl'));
+  let clientArbitro: ReturnType<typeof creaClientAnthropic> | null = null;
+  const arbitro: Arbitro | null =
+    sost.arbitro !== undefined
+      ? sost.arbitro
+      : config.arbitro === 'haiku'
+        ? new ArbitroHaiku(() => (clientArbitro ??= creaClientAnthropic(config.llm.fileChiave, log.child({ modulo: 'arbitro' }))), {
+            modello: config.llm.modello,
+            log: log.child({ modulo: 'arbitro' }),
+            onMisura: (m) => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: `arbitro_${m.tipo}`, modello: config.llm.modello, ms: m.ms, ...m.costo }),
+          })
+        : null;
+  log.info({ arbitro: arbitro ? 'regole + haiku' : 'solo regole' }, 'ARBITRO DELLE AZIONI');
+
   const voce = new SelettoreVoce(
     config.voce.modo,
     new MotoreVoceHttp(config.voce.url, log.child({ modulo: 'voce-http' })),
@@ -99,7 +120,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     orologio: sost.orologio ?? orologioDiSistema,
     log: log.child({ modulo: 'regia' }),
     registroTurni: new RegistroJsonl(path.join(config.cartellaLog, 'turni.jsonl')),
-    registroCosti: new RegistroJsonl(path.join(config.cartellaLog, 'costi.jsonl')),
+    registroCosti,
     registroNarrazioni: new RegistroJsonl(path.join(config.cartellaLog, 'narrazioni.jsonl')),
     chiusuraDopoPrimaAzioneMs: config.turni.chiusuraDopoPrimaAzioneMs,
     margineFineAudioMs: config.turni.margineFineAudioMs,
@@ -110,6 +131,8 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     paroleSegrete,
     cacheAudio: new CacheAudio(config.cacheAudio),
     finestraATutti: config.turni.finestraATutti,
+    arbitro,
+    scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),
   });
   regia.collega(uscite.regia);
 

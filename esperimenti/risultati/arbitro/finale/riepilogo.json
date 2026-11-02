@@ -1,0 +1,294 @@
+{
+  "etichetta": "finale",
+  "insieme": "tutti",
+  "modello": "claude-haiku-5-5",
+  "data": "2026-11-02T14:18:35.429Z",
+  "solo_regole": {
+    "sviluppo": {
+      "casi": 25,
+      "dipendenze": {
+        "precisione": 1,
+        "richiamo": 0.71,
+        "tp": 5,
+        "fp": 0,
+        "fn": 2
+      },
+      "conflitti_esclusivi": {
+        "precisione": null,
+        "richiamo": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 3
+      },
+      "conflitti_non_esclusivi_predetti": 0,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 7,
+        "con_avviso_sbagliato": 0,
+        "tasso": 0
+      },
+      "vecchie": {
+        "accuratezza": 0.4,
+        "n": 5,
+        "impossibili_date_per_valide": 1,
+        "confusione": {
+          "valida→valida": 2,
+          "dubbia→valida": 2,
+          "impossibile→valida": 1
+        }
+      },
+      "cambi": {
+        "accuratezza": 0.33,
+        "n": 3
+      }
+    },
+    "riserva": {
+      "casi": 13,
+      "dipendenze": {
+        "precisione": 1,
+        "richiamo": 0.33,
+        "tp": 1,
+        "fp": 0,
+        "fn": 2
+      },
+      "conflitti_esclusivi": {
+        "precisione": null,
+        "richiamo": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 2
+      },
+      "conflitti_non_esclusivi_predetti": 0,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 4,
+        "con_avviso_sbagliato": 0,
+        "tasso": 0
+      },
+      "vecchie": {
+        "accuratezza": 0.33,
+        "n": 3,
+        "impossibili_date_per_valide": 1,
+        "confusione": {
+          "valida→valida": 1,
+          "dubbia→valida": 1,
+          "impossibile→valida": 1
+        }
+      },
+      "cambi": {
+        "accuratezza": 1,
+        "n": 1
+      }
+    },
+    "tutti": {
+      "casi": 38,
+      "dipendenze": {
+        "precisione": 1,
+        "richiamo": 0.6,
+        "tp": 6,
+        "fp": 0,
+        "fn": 4
+      },
+      "conflitti_esclusivi": {
+        "precisione": null,
+        "richiamo": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 5
+      },
+      "conflitti_non_esclusivi_predetti": 0,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 11,
+        "con_avviso_sbagliato": 0,
+        "tasso": 0
+      },
+      "vecchie": {
+        "accuratezza": 0.38,
+        "n": 8,
+        "impossibili_date_per_valide": 2,
+        "confusione": {
+          "valida→valida": 3,
+          "dubbia→valida": 3,
+          "impossibile→valida": 2
+        }
+      },
+      "cambi": {
+        "accuratezza": 0.5,
+        "n": 4
+      }
+    }
+  },
+  "regole_piu_haiku": {
+    "sviluppo": {
+      "casi": 25,
+      "dipendenze": {
+        "precisione": 1,
+        "richiamo": 1,
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "conflitti_esclusivi": {
+        "precisione": 1,
+        "richiamo": 1,
+        "tp": 3,
+        "fp": 0,
+        "fn": 0
+      },
+      "conflitti_non_esclusivi_predetti": 2,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 7,
+        "con_avviso_sbagliato": 0,
+        "tasso": 0
+      },
+      "vecchie": {
+        "accuratezza": 1,
+        "n": 5,
+        "impossibili_date_per_valide": 0,
+        "confusione": {
+          "valida→valida": 2,
+          "dubbia→dubbia": 2,
+          "impossibile→impossibile": 1
+        }
+      },
+      "cambi": {
+        "accuratezza": 1,
+        "n": 3
+      }
+    },
+    "riserva": {
+      "casi": 13,
+      "dipendenze": {
+        "precisione": 0.75,
+        "richiamo": 1,
+        "tp": 3,
+        "fp": 1,
+        "fn": 0
+      },
+      "conflitti_esclusivi": {
+        "precisione": 1,
+        "richiamo": 1,
+        "tp": 2,
+        "fp": 0,
+        "fn": 0
+      },
+      "conflitti_non_esclusivi_predetti": 1,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 4,
+        "con_avviso_sbagliato": 1,
+        "tasso": 0.25
+      },
+      "vecchie": {
+        "accuratezza": 0.67,
+        "n": 3,
+        "impossibili_date_per_valide": 0,
+        "confusione": {
+          "valida→valida": 1,
+          "dubbia→impossibile": 1,
+          "impossibile→impossibile": 1
+        }
+      },
+      "cambi": {
+        "accuratezza": 1,
+        "n": 1
+      }
+    },
+    "tutti": {
+      "casi": 38,
+      "dipendenze": {
+        "precisione": 0.91,
+        "richiamo": 1,
+        "tp": 10,
+        "fp": 1,
+        "fn": 0
+      },
+      "conflitti_esclusivi": {
+        "precisione": 1,
+        "richiamo": 1,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0
+      },
+      "conflitti_non_esclusivi_predetti": 3,
+      "falsi_allarmi": {
+        "casi_senza_collegamenti": 11,
+        "con_avviso_sbagliato": 1,
+        "tasso": 0.09
+      },
+      "vecchie": {
+        "accuratezza": 0.88,
+        "n": 8,
+        "impossibili_date_per_valide": 0,
+        "confusione": {
+          "valida→valida": 3,
+          "dubbia→dubbia": 2,
+          "dubbia→impossibile": 1,
+          "impossibile→impossibile": 2
+        }
+      },
+      "cambi": {
+        "accuratezza": 1,
+        "n": 4
+      }
+    }
+  },
+  "haiku": {
+    "chiamate": 32,
+    "latenza_ms": {
+      "p50": 1465,
+      "p90": 1798,
+      "max": 5453
+    },
+    "per_tipo": {
+      "relazioni": {
+        "n": 20,
+        "p50": 1480,
+        "p90": 1698
+      },
+      "vecchie": {
+        "n": 8,
+        "p50": 1454,
+        "p90": 5453
+      },
+      "cambio": {
+        "n": 4,
+        "p50": 1422,
+        "p90": 2743
+      }
+    },
+    "costo_usd": 0.002321,
+    "costo_medio_usd": 0.0000725,
+    "token_cache_lettura": [
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2891,
+      2891,
+      2891,
+      2891,
+      2891,
+      2891,
+      2891,
+      2891,
+      2834,
+      2834,
+      2834,
+      2834,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883,
+      2883
+    ]
+  }
+}

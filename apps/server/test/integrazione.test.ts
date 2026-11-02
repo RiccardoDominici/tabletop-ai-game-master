@@ -81,7 +81,7 @@ beforeAll(async () => {
         ? '[narratore] L’oste posa due boccali. La pioggia batte sui vetri.\n[png_oste] Pagate prima, foresti.\n[ignoto] Frase da etichetta ignota.\n[invito] pg_bruno'
         : '[narratore] Silenzio.\n[invito] tutti',
   });
-  server = await costruisciServer(config, loggerMuto(), { narratore });
+  server = await costruisciServer(config, loggerMuto(), { narratore, arbitro: null });
   await server.avvia();
   const porta = (server.app.http.server.address() as { port: number }).port;
   url = `http://127.0.0.1:${porta}`;
