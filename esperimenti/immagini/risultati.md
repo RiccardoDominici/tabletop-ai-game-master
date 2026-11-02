@@ -163,15 +163,15 @@ due tentativi in più con altri semi (`--rifai --seme`). Le versioni scartate re
   che prompt e seme sono identici a quelli che genera.py compone da fa26f11. L'ho rifilata dal PNG
   originale e nel manifest c'è una `nota` che lo dice.
 
-**Rifilatura (`strumenti/immagini/rifila.py`).** Anche con lo stile v2, 7 luoghi su 8 avevano un orlo
-di carta strappato. Più spesso era sottile (10-60 px), a volte era un margine largo (seme 1000
+**Rifilatura (`strumenti/immagini/rifila.py`).** Anche con lo stile v2, tutti e 7 i tentativi di luogo
+(3 osteria, 1 piazza, 3 mulino) avevano un orlo di carta strappato. Più spesso era sottile (10-60 px), a volte era un margine largo (seme 1000
 dell'osteria). Ora genera.py misura l'orlo contiguo al bordo e ritaglia al centro fino al 5% per lato.
 Oltre, avvisa che conviene rigenerare. La soglia è prudente: carta chiara e poco satura, canale minimo
 sopra 225. Una carta più calda, sotto 225, sfugge, come nel seme 7 dell'osteria. Abbassarla a 205-215
 farebbe però scambiare per carta la neve e i muri illuminati che toccano il bordo. Quindi guardare
 resta necessario.
 
-**Firme finte:** in 3 luoghi su 8, sempre nell'angolo in basso a destra, nonostante «unsigned». Spesso
+**Firme finte:** in 4 tentativi su 7 (osteria id e 7, mulino id e 7), sempre nell'angolo in basso a destra, nonostante «unsigned». Spesso
 stanno dentro l'orlo di carta e la rifilatura le toglie.
 
 **Restano aperti:**
