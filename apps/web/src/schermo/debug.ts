@@ -21,6 +21,10 @@ export interface DebugSchermo {
   buchi: number;
   /** Stato dell'AudioContext: 'assente' prima di «Inizia sessione», poi 'running', 'suspended'… */
   statoAudio: string;
+  /** URL dell'immagine del luogo a schermo (in cima), o null se c'è lo sfondo d'atmosfera. */
+  immagine: string | null;
+  /** Dissolvenze dello sfondo completate (verso un'immagine o verso lo sfondo d'atmosfera). */
+  transizioni: number;
 }
 
 declare global {
@@ -38,6 +42,8 @@ export const debugSchermo: DebugSchermo = {
   turniFiniti: [],
   buchi: 0,
   statoAudio: 'assente',
+  immagine: null,
+  transizioni: 0,
 };
 
 /**

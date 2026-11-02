@@ -16,12 +16,12 @@ export function SchermataInizio({ stato, info }: { stato: StatoTavolo | null; in
     <main className="relative z-10 flex h-dvh flex-col items-center justify-center gap-[4vh] px-[5vw] text-center">
       <header>
         <p className="text-[1.6vw] tracking-[0.35em] text-candela uppercase">Cantastorie</p>
-        <h1 data-testid="titolo-scena" className="mt-[1vh] font-titolo text-[4.6vw] leading-tight font-semibold text-pergamena drop-shadow-[0_4px_18px_rgb(0_0_0/0.7)]">
+        <h1 data-testid="titolo-scena" className="mt-[1vh] font-titolo text-[4.6vw] leading-tight font-semibold text-pergamena [text-shadow:0_0_3px_rgb(0_0_0),0_4px_14px_rgb(0_0_0/0.95),0_0_40px_rgb(0_0_0/0.8)]">
           {stato?.scena.titolo ?? 'Collegamento al tavolo…'}
         </h1>
       </header>
 
-      <section className="flex items-center gap-[3vw] rounded-[2vw] border border-bordo/70 bg-notte/55 p-[2vw] backdrop-blur-sm">
+      <section className="flex items-center gap-[3vw] rounded-[2vw] border border-bordo/70 bg-notte/80 p-[2vw]">
         {info ? (
           <Qr svg={info.qr_svg} className="size-[19vw] max-h-[42vh] max-w-[42vh]" />
         ) : (

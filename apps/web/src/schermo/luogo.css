@@ -1,0 +1,100 @@
+/*
+ * Sfondo del luogo sul proiettore. Leggero apposta: la GPU è condivisa con i modelli locali.
+ * - Si animano solo `transform` (Ken Burns, sull'img) e `opacity` (dissolvenze, sullo strato):
+ *   entrambe composte dalla GPU senza ridipingere. Niente filtri, niente canvas, niente rAF.
+ * - Il velo di leggibilità è un gradiente fermo: si dipinge una volta.
+ */
+.sfondo-luogo {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background-color: var(--color-notte);
+}
+
+.strato-luogo {
+  position: absolute;
+  inset: 0;
+}
+
+/* Dissolvenza incrociata (~1,5 s): la durata va d'accordo con DURATA_DISSOLVENZA_MS in SfondoLuogo.tsx. */
+.strato-luogo[data-stato='entra'] {
+  animation: luogo-entra 1.5s ease-in-out both;
+}
+.strato-luogo[data-stato='esce'] {
+  animation: luogo-esce 1.5s ease-in-out both;
+}
+
+@keyframes luogo-entra {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes luogo-esce {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Ken Burns: 50 s avanti e indietro, zoom lieve (≤ 8%) e un piccolo spostamento. */
+.strato-luogo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  animation: ken-burns-a 50s ease-in-out infinite alternate;
+}
+/* Strati alterni vanno in direzioni diverse: due luoghi di fila non si muovono uguale. */
+.strato-luogo[data-verso='1'] img {
+  animation-name: ken-burns-b;
+}
+
+@keyframes ken-burns-a {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.08) translate3d(-1.6%, -1%, 0);
+  }
+}
+@keyframes ken-burns-b {
+  from {
+    transform: scale(1.08) translate3d(1.4%, 0.8%, 0);
+  }
+  to {
+    transform: scale(1.01) translate3d(0, 0, 0);
+  }
+}
+
+/*
+ * Velo di leggibilità sopra le immagini: scuro in alto (titolo) e soprattutto in basso
+ * (parlante, sottotitolo, QR), il centro resta pulito. Fermo: nessun costo per fotogramma.
+ */
+.velo-luogo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.6) 0%,
+      rgb(0 0 0 / 0.2) 16%,
+      transparent 28%,
+      transparent 40%,
+      rgb(0 0 0 / 0.45) 58%,
+      rgb(0 0 0 / 0.78) 78%,
+      rgb(0 0 0 / 0.88) 100%
+    ),
+    /* Penombra dietro parlante e sottotitolo (centro, 60–80% dell'altezza): il testo non si
+       appoggia mai su una tovaglia bianca o un cielo chiaro. */
+    radial-gradient(ellipse 58% 26% at 50% 70%, rgb(0 0 0 / 0.5), transparent 75%),
+    radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.35) 100%);
+}

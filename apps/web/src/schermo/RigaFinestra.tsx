@@ -44,8 +44,8 @@ export function RigaFinestra({ stato }: { stato: StatoTavolo }) {
           <span
             key={id}
             className={clsx(
-              'rounded-full border px-[0.9vw] py-[0.3vh] backdrop-blur-sm',
-              pronto ? 'border-muschio/70 bg-muschio/20 text-muschio' : 'border-bordo-chiaro bg-notte/60 text-pergamena',
+              'rounded-full border px-[0.9vw] py-[0.3vh]',
+              pronto ? 'border-muschio/70 bg-muschio/20 text-muschio' : 'border-bordo-chiaro bg-notte/80 text-pergamena',
             )}
           >
             <span className="font-semibold">{pg?.nome.split(' ')[0] ?? id}</span>

@@ -59,7 +59,7 @@ export function HudLatenza() {
   return (
     <aside
       data-testid="hud"
-      className="fixed top-4 right-4 z-30 max-h-[calc(100dvh-12vw)] w-[30rem] overflow-y-auto rounded-2xl border border-bordo-chiaro bg-notte/90 p-4 font-mono text-[15px] text-pergamena shadow-profonda backdrop-blur"
+      className="fixed top-4 right-4 z-30 max-h-[calc(100dvh-12vw)] w-[30rem] overflow-y-auto rounded-2xl border border-bordo-chiaro bg-notte/95 p-4 font-mono text-[15px] text-pergamena shadow-profonda"
     >
       <div className="mb-2 flex items-baseline justify-between">
         <h2 className="font-sans text-xl font-bold text-candela">Latenza</h2>
@@ -109,6 +109,11 @@ export function HudLatenza() {
 
       <Sezione titolo="Tavolo">
         <Riga nome="fase / turno" valore={stato ? `${stato.fase} / ${stato.turno}` : '—'} />
+        <Riga nome="luogo" valore={stato?.scena.luogo ?? '—'} />
+        <Riga
+          nome="immagine / dissolvenze"
+          valore={`${debugSchermo.immagine?.split('/').pop() ?? 'atmosfera'} / ${debugSchermo.transizioni}`}
+        />
         <Riga nome="versione stato / scena" valore={stato ? `${stato.versione_stato} / ${stato.versione_scena}` : '—'} />
         <Riga nome="voce" valore={stato?.voce_motore ?? '—'} />
       </Sezione>
