@@ -157,7 +157,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "dalla barca, sotto l'arcata, un PG tocca o guarda da vicino il leone"
-    temi: [leone, criniera, statua, malta, tocco, toccare]
+    temi: [malta, statua, muso, tocco, toccare]
     testo:
       - "[narratore] Dalla barca il leone è a portata di mano, bagnato e freddo."
       - "[narratore] Le dita trovano intorno al blocco una malta liscia, che non si sbriciola."
@@ -416,7 +416,7 @@ battute:
     tipo: momento
     scena: scena_terzo_tocco
     quando: "dopo il terzo tocco, a catena alzata, la barca torna dal Borgo"
-    temi: [barca, arriva, torna, aspettiamo]
+    temi: [prua, arrivano, aspettiamo]
     richiede: {battute_usate: [tul_catena_su]}
     testo:
       - "[narratore] Dal buio del Borgo spunta una prua, con una lanterna appesa al remo."
@@ -488,6 +488,26 @@ battute:
       - "[narratore] L'acqua piovana torna al fiume a secchiate, e la barca si alza piano sul pontile."
     max_usi: 1
 
+  - id: nar_canzone_fila
+    chi: narratore
+    tipo: momento
+    scena: scena_ponte_imbrunire
+    quando: "un PG canta o suona per la gente in fila sul ponte"
+    temi: [canto, cantare, canzone, suono, suonare, liuto, ritornello]
+    testo:
+      - "[narratore] La fila sotto la pioggia rallenta, e qualcuno batte il tempo sulla cesta."
+      - "[narratore] Una vecchia attacca il ritornello a mezza voce. Il mulo, no."
+    max_usi: 1
+  - id: nar_segnale_risposta
+    chi: narratore
+    tipo: momento
+    quando: "un PG fa un segnale con una lanterna verso il Borgo"
+    temi: [dondolo, sventolo, agito, segnalo, rispondo]
+    testo:
+      - "[narratore] Per un momento il Borgo non risponde."
+      - "[narratore] Poi una delle due lanterne laggiù dondola piano, una volta sola, come per dire: vi vediamo."
+    max_usi: 1
+
   # --- transizioni ----------------------------------------------------------------------------
   - id: tr_borgo
     chi: narratore
@@ -525,7 +545,7 @@ battute:
     chi: narratore
     tipo: transizione
     quando: "i PG tornano al ponte verso mezzanotte"
-    temi: [mezzanotte, tocco, torniamo]
+    temi: [mezzanotte, rintocco, torniamo]
     testo:
       - "[narratore] Dalla Riva Alta il paese scende verso il ponte, con lanterne e ceri."
       - "[narratore] Sulla rampa bassa l'acqua è già alle caviglie, e sale."

@@ -78,7 +78,7 @@ battute:
     chi: png_vischi
     tipo: momento
     quando: "davanti a Vischi, i PG discutono chi salvare per primo"
-    temi: [primi, ricovero, vecchi, salvare, salviamo, scegliere, scegliamo]
+    temi: [primi, salvare, salviamo, scegliere, scegliamo, sorte]
     testo:
       - "[png_vischi] Con tutto il rispetto, i vecchi del Ricovero prima di tutto. È carità."
       - "[narratore] Vischi alza la voce perché lo senta il ponte, e qualcuno tra la gente annuisce."
@@ -174,7 +174,7 @@ battute:
     tipo: momento
     scena: scena_terzo_tocco
     quando: "al terzo tocco, Vischi passa accanto alla catena"
-    temi: [manovella, catena, tocco]
+    temi: [manovella, rintocco, campana]
     richiede: {orologio: {id: o_piena, min: 7, max: 8}}
     testo:
       - "[narratore] Vischi passa accanto alla catena senza fermarsi."

@@ -96,6 +96,15 @@ battute:
       - "[png_tullio] Nelle notti d'acqua guardava più su del leone. Mai capito perché."
     effetti: {rivela_indizi: [i_detto_bellora], fatti_noti: [f_bellora_guardava]}
     max_usi: 1
+  - id: tul_costruttori
+    chi: png_tullio
+    tipo: verita
+    quando: "un PG chiede a Tullio chi ha costruito il ponte"
+    temi: [costruttori, costruito, pontieri, costruire]
+    testo:
+      - "[png_tullio] I Pontieri della Valle, trecento anni fa. Pietra su pietra, senza un chiodo."
+      - "[narratore] Tullio batte la mano sul parapetto, come sul collo di un cavallo."
+    max_usi: 1
   - id: tul_libro_credito
     chi: png_tullio
     tipo: verita
@@ -173,7 +182,7 @@ battute:
     tipo: momento
     scena: scena_terzo_tocco
     quando: "verso il terzo tocco, un PG parla con Tullio alla catena"
-    temi: [catena, manovella, decidi, decidere, tocco]
+    temi: [manovella, decidi, decidere, decidiamo, rintocco]
     richiede: {orologio: {id: o_piena, min: 7, max: 8}}
     testo:
       - "[png_tullio] Io tengo la catena. Voi tenete la testa."

@@ -100,3 +100,19 @@ le incontro; in fondo, la classifica dei problemi più gravi.
     dà errore se `max_usi` supera 1 + numero di varianti (anche per gli esempi `solo_esempio`, che il
     selettore non sceglie mai), ma né la skill né `riferimenti/repertorio.md` lo dicono; l'esempio di
     prova-f0 usa `max_usi: 3` con due varianti. *Scelta*: `max_usi: 1` sugli esempi senza varianti.
+
+## Passi 12–13
+
+16. **Il simulatore dei copioni non guarda `scena` né `richiede`.** `strumenti/valida/copioni.py` conta
+    una battuta nel catalogo se un tema compare nell'azione, anche se la battuta è di un'altra scena o è
+    chiusa da un cancello. Per una campagna a più scene il catalogo misurato è più largo di quello vero
+    (le battute di Rosa entrano nelle azioni sul ponte). *Scelta*: ho misurato così com'è e ho stretto
+    i temi lo stesso; il numero è un tetto prudente.
+
+17. **Parole ambigue nei temi.** «tocco» è il rintocco della campana ma anche «io tocco»: la skill vieta
+    le parole generiche, ma non avverte delle parole con due sensi, che il prefiltro per parole intere
+    non distingue. *Scelta*: «rintocco» e «campana» per l'orologio, «tocco» solo per il gesto.
+
+18. **Copioni ciechi scritti prima di un cambio di nomi.** Ho fatto scrivere i copioni prima di rinominare
+    la gilda dei costruttori: i copioni dicono ancora «pontieri dell'onda». Non cambia la misura, ma la
+    skill potrebbe dire di scriverli (o rigenerarli) a campagna ferma, prima del passo 13.

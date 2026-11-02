@@ -77,7 +77,7 @@ battute:
     chi: png_bice
     tipo: richiesta
     quando: "un PG va verso la scaletta del pontile o la barca"
-    temi: [scaletta, pontile, barca, remi, pertica]
+    temi: [scaletta, pontile, pertica, vengo]
     testo:
       - "[png_bice] Vengo anch'io, con la pertica. I vicoli li conosco."
       - "[narratore] Dal casello Tullio brontola un no, senza voltarsi."
