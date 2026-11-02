@@ -235,7 +235,7 @@ battute:
     temi: [libro, sfoglio, sfogliare, pagine, leggo, leggere]
     testo:
       - "[narratore] Le pagine vecchie sono gonfie d'umido, scritte con una mano grossa e storta."
-      - "[narratore] Alla piena di vent'anni fa c'è una riga ripassata due volte."
+      - "[narratore] Alla piena di trentacinque anni fa c'è una riga ripassata due volte."
       - "[narratore] Dice così: «Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va.»"
     effetti: {rivela_indizi: [i_libro_piena], fatti_noti: [f_libro_piena]}
     max_usi: 1
@@ -364,7 +364,7 @@ battute:
     testo:
       - "[narratore] Il lucchetto vecchio cede, e la cassa sa di carta umida."
       - "[narratore] In cima c'è un registro con il nome di Corrado Vischi, sbiadito."
-      - "[narratore] Alla data della piena grande, una riga dice: dieci fiorini a mastro Pece."
+      - "[narratore] Pochi giorni dopo la piena grande, una riga dice: dieci fiorini a mastro Pece."
       - "[narratore] E sotto: «Per il leone del ponte, lavoro di notte, due spanne.»"
     effetti: {rivela_indizi: [i_registro_padre], fatti_noti: [f_registro_padre]}
     max_usi: 1

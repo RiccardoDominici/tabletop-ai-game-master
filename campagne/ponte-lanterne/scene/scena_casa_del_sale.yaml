@@ -44,7 +44,7 @@ indizi:
     essenziale: false
     tiro: "nessuno"
     modi: 1
-    come_si_trova: "Chi apre la cassa di ferro trova il registro di Corrado Vischi, il padre: alla data della piena grande, dieci fiorini a mastro Pece, «per il leone del ponte, lavoro di notte, due spanne»."
+    come_si_trova: "Chi apre la cassa di ferro trova il registro di Corrado Vischi, il padre: pochi giorni dopo la piena grande, dieci fiorini a mastro Pece, «per il leone del ponte, lavoro di notte, due spanne»."
   - id: i_corda_nodi
     conclusione: r_leone
     tipo: oggetto

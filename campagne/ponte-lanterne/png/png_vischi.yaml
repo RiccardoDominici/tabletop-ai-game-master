@@ -65,7 +65,7 @@ non_sa:
   - f_bice_anguille
   - f_rondini
 crede_a_torto:
-  - {testo: "I Bellora non hanno mai scritto niente della piena grande: sanno contare i soldi, non scrivere.", contraddice: f_libro_piena}
+  - {testo: "I Bellora non hanno mai scritto niente sul leone: sanno contare i soldi, non scrivere.", contraddice: f_libro_piena}
 mente_su:
   - id: vis_leone
     argomento: "il leone e la regola"

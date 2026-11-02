@@ -6,14 +6,14 @@ id: scena_terzo_tocco
 nodo: e_terzo_tocco
 nome: "Il terzo tocco, sul ponte"
 
-descrizione: "Il ponte poco prima di mezzanotte, con la stessa pianta della prima scena. La catena è ancora a terra tra i paletti: con la manovella si alza e si tende, e il ponte è chiuso. La rampa bassa è sott'acqua fino alla caviglia, e sale. All'imbocco della Riva Alta, sotto la tettoia, il console e il consiglio; dietro, il paese con lanterne e ceri. Vischi sta accanto al console. Tullio è alla manovella; Bice è alle lanterne del parapetto. Chi è già passato è su in chiesa: Rosa, se è passata, è in chiesa con i suoi vecchi e non scende al ponte. La Bigia, la chiatta del ponte, è al pontile sotto il casello, oppure è nel Borgo per il secondo viaggio. Chi sente cosa: ciò che si dice alla manovella lo sentono Tullio e chi gli sta accanto; ciò che si grida lo sente tutto il ponte, console compreso. Dentro il casello, a porta chiusa, non sente nessuno. Sulla rampa bassa il fiume copre tutto."
+descrizione: "Il ponte poco prima di mezzanotte, con la stessa pianta della prima scena. La catena è ancora a terra tra i paletti: con la manovella si alza e si tende, e il ponte è chiuso. La rampa bassa è sott'acqua fino alla caviglia, e sale. All'imbocco della Riva Alta, sotto la tettoia, il console e il consiglio; dietro, il paese con lanterne e ceri. Vischi sta accanto al console. Tullio è alla manovella; Bice è alle lanterne del parapetto. Chi è già passato è su in chiesa: Rosa, se è passata, è in chiesa con i suoi vecchi e non scende al ponte. La Bigia, la chiatta del ponte, è al pontile sotto il casello, oppure è nel Borgo per il secondo viaggio, se è ripartita appena tornata dal primo. Un viaggio che parte adesso torna tra quasi quattro ore. Chi sente cosa: ciò che si dice alla manovella lo sentono Tullio e chi gli sta accanto; ciò che si grida lo sente tutto il ponte, console compreso. Dentro il casello, a porta chiusa, non sente nessuno. Sulla rampa bassa il fiume copre tutto."
 
 scopo: {tipo: far_avanzare_fronte, rif: fronte_debiti}
 domanda_drammatica: "Al terzo tocco, il ponte resterà aperto?"
 
 posta:
   si_guadagna:
-    cosa: "Un ultimo viaggio per il gruppo rimasto di là, se il ponte resta aperto."
+    cosa: "Il ritorno del secondo viaggio, con il gruppo rimasto di là, se la barca è già partita e il ponte resta aperto."
     per_chi: [png_rosa, pg_nives, pg_dalia]
   si_perde:
     cosa: "Il casello di Tullio, e il rischio sulla rampa, se il ponte resta aperto. Una notte al freddo per chi è ancora di là, se si chiude."
@@ -28,10 +28,10 @@ sensi:
 
 elementi_interattivi:
   - {cosa: "la catena e la manovella", dove: "davanti al casello", azioni: "Tullio la tiene; si alza e si tende in un momento, e il ponte è chiuso"}
-  - {cosa: "le lanterne del parapetto", dove: "una sopra ogni pilone", azioni: "si staccano e si portano sulla rampa bassa: piantate sui paletti segnano il bordo sotto l'acqua"}
+  - {cosa: "le lanterne del parapetto", dove: "una sopra ogni arcata", azioni: "si staccano e si portano sulla rampa bassa: piantate sui paletti segnano il bordo sotto l'acqua"}
   - {cosa: "la rampa bassa", dove: "dalla parte del Borgo", azioni: "ci si scende con l'acqua che sale; ci si sta in piedi tenendosi ai paletti"}
   - {cosa: "il leone e il pilone di mezzo", dove: "sotto il casello, verso monte", azioni: "ci si sporge con una lanterna; si mostra a tutti quello che c'è sul pilone"}
-  - {cosa: "la Bigia", dove: "al pontile sotto il casello, o nel Borgo", azioni: "parte per il secondo viaggio, o torna carica verso la rampa"}
+  - {cosa: "la Bigia", dove: "al pontile sotto il casello, o nel Borgo", azioni: "se è nel Borgo, torna carica verso la rampa; se è al pontile, un viaggio che parte adesso torna tra quasi quattro ore"}
   - {cosa: "il console e il paese", dove: "all'imbocco della Riva Alta", azioni: "si parla davanti a tutti; si mostra una prova; si chiede un voto"}
 
 png_presenti: [png_tullio, png_bice, png_vischi]
@@ -59,7 +59,7 @@ apertura: "Quasi mezzanotte sul ponte: l'acqua lecca la rampa bassa, e il paese 
 
 musica:
   tag: esplorazione_tesa
-  transizione: "Verso inseguimento se la Bigia parte o torna con l'acqua sulla rampa. A scena chiusa: taverna_calda se tutti sono passati, lutto se qualcuno resta di là."
+  transizione: "Verso inseguimento se la Bigia torna con l'acqua sulla rampa. A scena chiusa: taverna_calda se tutti sono passati, lutto se qualcuno resta di là."
 
 immagine:
   invarianti: ["ponte di pietra a sei arcate", "sei lanterne accese sul parapetto", "casello di legno e pietra in mezzo al ponte", "catena di ferro ancora a terra tra due paletti", "rampa bassa sotto l'acqua", "folla con lanterne e ceri in fondo al ponte"]

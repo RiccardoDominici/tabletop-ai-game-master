@@ -32,7 +32,7 @@ battute:
     quando: "un PG chiede a Bice del suo lavoro"
     temi: [gentile]
     testo:
-      - "[png_bice] Sei lanterne, sei piloni. Le accendo da quando avevo otto anni."
+      - "[png_bice] Sei lanterne, sei arcate. Le accendo da quando avevo otto anni."
     max_usi: 1
   - id: bic_accusa
     chi: png_bice
@@ -90,7 +90,7 @@ battute:
     temi: [libro, piena, cerca, cercare, pagine]
     testo:
       - "[png_bice] Le piene? Il bisnonno scriveva storto, vediamo."
-      - "[narratore] Bice sfoglia veloce, fino alla piena di vent'anni fa. Si ferma su una riga ripassata due volte."
+      - "[narratore] Bice sfoglia veloce, fino alla piena di trentacinque anni fa. Si ferma su una riga ripassata due volte."
       - "[png_bice] Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va."
       - "[png_bice] Che onda? Qui nessuno l'ha mai vista."
     effetti: {rivela_indizi: [i_libro_piena]}

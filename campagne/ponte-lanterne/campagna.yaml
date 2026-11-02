@@ -27,7 +27,7 @@ canone:
   - {id: f_tullio_custode, noto_ai_pg: true, stato: confermato, entita: [png_tullio],
      testo: "Tullio tiene il casello da trent'anni, come suo padre prima di lui."}
   - {id: f_lanterne_ponte, noto_ai_pg: true, stato: confermato, entita: [n_ponte, png_bice],
-     testo: "Sul parapetto ci sono sei lanterne, una per pilone. Le accende Bice, la nipote di Tullio."}
+     testo: "Sul parapetto ci sono sei lanterne, una per arcata. Le accende Bice, la nipote di Tullio."}
   - {id: f_tocchi, noto_ai_pg: true, stato: confermato, entita: [],
      testo: "Nelle notti di piena la campana di San Clemente batte tre tocchi: al tramonto, a metà sera e a mezzanotte."}
   - {id: f_regola_leone, noto_ai_pg: true, stato: confermato, entita: [n_ponte, png_tullio],
@@ -43,7 +43,7 @@ canone:
   - {id: f_ricovero, noto_ai_pg: true, stato: confermato, entita: [n_borgo_basso, png_rosa],
      testo: "Al Ricovero, in fondo al Borgo verso monte, vivono sette vecchi con la custode, Rosa Galli. È una casa di pietra a due piani."}
   - {id: f_case_lunghe, noto_ai_pg: true, stato: confermato, entita: [n_borgo_basso],
-     testo: "Le Case Lunghe sono case di legno sull'argine, in fondo al Borgo verso valle. Ci vivono quattro famiglie di barcaioli, con nove bambini."}
+     testo: "Le Case Lunghe sono case di legno sull'argine, in fondo al Borgo verso valle. Ci vivono quattro famiglie di barcaioli: quindici persone, nove delle quali bambini."}
   - {id: f_barca_bigia, noto_ai_pg: true, stato: confermato, entita: [n_ponte, png_tullio],
      testo: "Sotto il casello è legata la Bigia, la vecchia chiatta del ponte: è l'unica barca che entra nei vicoli allagati, e porta una ventina di persone strette."}
   - {id: f_un_viaggio, noto_ai_pg: true, stato: confermato, entita: [n_borgo_basso],
@@ -77,7 +77,7 @@ canone:
   - {id: f_malta_chiara, noto_ai_pg: false, stato: confermato, entita: [n_ponte],
      testo: "Il blocco del leone è murato con una malta chiara e liscia, diversa da quella scura e mangiata del pilone."}
   - {id: f_libro_piena, noto_ai_pg: false, stato: confermato, entita: [n_ponte, png_tullio],
-     testo: "Nel libro dei passi del casello, alla piena di vent'anni fa, il vecchio Bellora scrisse: «Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va.»"}
+     testo: "Nel libro dei passi del casello, alla piena di trentacinque anni fa, il vecchio Bellora scrisse: «Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va.»"}
   - {id: f_bellora_guardava, noto_ai_pg: false, stato: confermato, entita: [png_tullio],
      testo: "Dopo la piena grande, nelle notti d'acqua il vecchio Bellora guardava un punto del pilone più in alto del leone."}
   - {id: f_vischi_sa, noto_ai_pg: false, stato: confermato, entita: [png_vischi],
@@ -139,7 +139,7 @@ orologi:
       - "più uno a ogni cambio di scena: il viaggio della barca e le discussioni consumano la sera. Il segno guadagnato così si mostra nella prima risposta della scena nuova"
       - "all'inizio della scena del terzo tocco, se è sotto sei, sale a sei"
       - "mai due segni nella stessa risposta"
-    al_completo: "La Lenta è al leone e la campana ha battuto il terzo tocco. Il console, il paese e Vischi vogliono la catena chiusa subito. Tullio tiene la manovella e guarda i PG: chiude o aspetta sulla loro parola, non da solo. Se chiude, chi è ancora nel Borgo passa la notte sopra l'acqua e all'alba firma per salire sulle barche di Vischi. Se i PG hanno trovato l'onda, Vischi propone davanti a tutti un patto: catena chiusa al tocco e barche gratis per tutti all'alba, e nessuno parla più del pilone. Se il ponte resta aperto, parte l'orologio della rampa: la Bigia fa un altro viaggio, qualcuno tiene le lanterne sulla rampa con l'acqua alle ginocchia, e all'alba Vischi chiama il debito di Tullio. Vedi il taglio della scena del terzo tocco."
+    al_completo: "La Lenta è al leone e la campana ha battuto il terzo tocco. Il console, il paese e Vischi vogliono la catena chiusa subito. Tullio tiene la manovella e guarda i PG: chiude o aspetta sulla loro parola, non da solo. Se chiude, chi è ancora nel Borgo passa la notte sopra l'acqua e all'alba firma per salire sulle barche di Vischi. Se i PG hanno trovato l'onda, Vischi propone davanti a tutti un patto: catena chiusa al tocco e barche gratis per tutti all'alba, e nessuno parla più del pilone. Se il ponte resta aperto, parte l'orologio della rampa: la Bigia, se è già partita per il secondo viaggio, prova a tornare, qualcuno tiene le lanterne sulla rampa con l'acqua alle ginocchia, e all'alba Vischi chiama il debito di Tullio. Vedi il taglio della scena del terzo tocco."
 
   - id: o_rampa
     nome: "La rampa bassa cede"
@@ -218,7 +218,7 @@ colli_di_bottiglia:
     soluzioni:
       - "Grattare il muschio sopra il leone con una pertica e illuminare l'onda, dal parapetto o dalla barca."
       - "Portare al ponte il registro di Corrado Vischi, preso dalla cassa di ferro."
-      - "Leggere a tutti il libro dei passi della piena grande, nel casello."
+      - "Leggere a tutti la riga del vecchio Bellora nel libro dei passi, nel casello."
       - "Riferire il ricordo di Rosa sulle rondini: Tullio sa dove stavano i nidi."
       - "Quirino riconosce l'onda dei costruttori e lo spiega. Solo se la propone chi la conosce (Quirino)."
   - id: cb_catena
@@ -261,7 +261,7 @@ nodi:
   - id: n_passo_vecchio
     tipo: luogo
     nome: "Il Passo Vecchio"
-    abbozzo: "Il traghetto dei Vischi, un'ora a valle: barconi neri e rematori pagati. Stanotte non ci si arriva: la strada dell'argine è sott'acqua."
+    abbozzo: "Il traghetto dei Vischi, un'ora a valle: barconi neri e rematori pagati. Stanotte la strada dell'argine è sott'acqua: resta la mulattiera della collina, tre ore a piedi nel buio."
     prossima_sessione: true
     collegamenti: []
   - {id: png_tullio, tipo: png, scheda: png/png_tullio.yaml, collegamenti: [n_ponte, e_terzo_tocco]}
@@ -411,3 +411,147 @@ preparazione:
       pg_nives: {tu: "barcaiola senza barca", bisogno: "smettere di vergognarsi del debito", vai: "le Case Lunghe con la lanterna ferma", cerca: "un modo di salvare i suoi senza firmare", trova: "le carte già pronte di Vischi", paga: "mostra il suo debito davanti a tutti", ritorna: "riporta a casa la sua gente", cambia: "da debitrice a chi parla per il Borgo"}
       pg_arrigo: {tu: "venditore ambulante, simpatico e in debito con tutti", bisogno: "pagare almeno un debito, una volta", vai: "Tullio gli ha fatto credito per vent'anni", cerca: "perché Tullio obbedisce a Vischi", trova: "la minaccia sul casello", paga: "rischia per Tullio quello che non ha mai rischiato", ritorna: "tiene la parola data", cambia: "da chi deve a chi restituisce"}
       pg_ghita: {tu: "guardia a pagamento", bisogno: "un lavoro che non le faccia vergogna", vai: "Vischi la paga per sorvegliare lo studio", cerca: "che cosa sta sorvegliando", trova: "le firme e il registro", paga: "rompe il patto e perde la paga", ritorna: "tiene la rampa con le lanterne", cambia: "da spada in affitto a guardia del ponte"}
+
+  # Cronologia e logistica: i conti che il validatore rifà (strumenti/valida/regole_mondo.py, classe MONDO).
+  # Nella prova cieca il revisore ha trovato proprio qui gli errori più gravi (due viaggi tra due tocchi,
+  # una barca da otto per gruppi di venti, una riga del libro datata prima del fatto). Le ore scelte:
+  # l'ultima notte di novembre il sole cala verso le cinque, quindi primo tocco alle 17:00, secondo a metà
+  # sera (20:30), terzo a mezzanotte; l'acqua va dal leone all'onda in un'ora (01:00); l'alba alle 7.
+  # «giorno: 1» è la notte dopo la mezzanotte. Qui ci sono segreti: preparazione non va al narratore.
+  cronologia:
+    eventi:
+      # --- il passato che fonda i segreti ---------------------------------------------------------
+      - {id: t_ponte_costruito, quando: {anni_fa: 300}, fatti: [f_onda_pontieri, f_ponte_unico],
+         cosa: "I Pontieri della Valle costruiscono il ponte e scolpiscono sul pilone di mezzo l'onda, il segno vero dell'acqua pericolosa."}
+      - {id: t_piena_grande, quando: {anni_fa: 40, giorni_fa: 20}, fatti: [f_piena_grande, f_rondini],
+         cosa: "Nella piena grande l'acqua arriva all'onda, dove stava allora il leone, all'altezza dei nidi delle rondini: la rampa bassa se ne va, e quattro persone non tornano."}
+      - {id: t_leone_calato, quando: {anni_fa: 40, giorni_fa: 12}, fatti: [f_leone_calato, f_padre_vischi, f_malta_chiara],
+         cosa: "Di notte, a piena finita, mastro Pece smura il leone e lo rimette due spanne più in basso, con una malta chiara. Paga Corrado Vischi."}
+      - {id: t_regola, quando: {anni_fa: 40, giorni_fa: 5}, fatti: [f_regola_leone],
+         cosa: "Corrado Vischi propone al consiglio la regola del leone: catena chiusa quando l'acqua tocca la criniera. Il consiglio la vota."}
+      - {id: t_piena_bellora, quando: {anni_fa: 35}, fatti: [f_libro_piena, f_bellora_guardava],
+         cosa: "In una piena l'acqua tocca la criniera del leone calato e il ponte non si muove. Il vecchio Bellora, ancora custode, lo scrive nel libro dei passi; da allora, nelle notti d'acqua, guarda l'onda."}
+      - {id: t_tullio_custode, quando: {anni_fa: 30}, fatti: [f_tullio_custode],
+         cosa: "Tullio prende il casello dal padre: le pagine del vecchio Bellora finiscono qui, e Tullio non le rilegge più."}
+      - {id: t_credito_arrigo, quando: {anni_fa: 20},
+         cosa: "Tullio comincia a far passare Arrigo a credito: una pagina intera del libro dei passi."}
+      - {id: t_debito_tullio, quando: {anni_fa: 2}, fatti: [f_debito_tullio],
+         cosa: "Tullio prende da Vischi quaranta fiorini per il tetto del casello, con il casello in pegno."}
+      - {id: t_debiti_comprati, quando: {giorni_fa: 30}, fatti: [f_debiti_borgo],
+         cosa: "Vischi compra dal prestatore di Pieve tutti i debiti delle Case Lunghe."}
+      - {id: t_minaccia, quando: {giorni_fa: 7}, fatti: [f_minaccia_tullio],
+         cosa: "Sotto la tettoia del ponte Vischi dice piano a Tullio che, se tiene aperto dopo il terzo tocco, all'alba il casello è suo. Arrigo lo sente."}
+      - {id: t_messa, quando: {giorni_fa: 4}, fatti: [f_ernesto_tosse],
+         cosa: "Domenica, a messa a San Clemente, Ernesto tossisce già forte."}
+      - {id: t_pioggia, quando: {giorni_fa: 3}, fatti: [f_piena],
+         cosa: "Comincia a piovere su Vadolungo, e la Lenta cresce."}
+      - {id: t_legna, quando: {giorni_fa: 1, ora: "10:00"}, fatti: [f_legna_bagnata, f_ernesto_febbre],
+         cosa: "Al Ricovero l'acqua entra nel sottoscala e copre la legna; la stufa di sopra si spegne, ed Ernesto ha la febbre alta."}
+      - {id: t_croci, quando: {giorni_fa: 1, ora: "15:00"}, fatti: [f_croci_gesso],
+         cosa: "Lo scrivano segna con una croce di gesso le porte delle Case Lunghe e del Ricovero."}
+      - {id: t_contratti, quando: {giorni_fa: 1, ora: "18:00"}, fatti: [f_carte_pronte],
+         cosa: "Alla Casa del Sale lo scrivano scrive in bella copia i contratti di prestito con i nomi delle Case Lunghe e di Rosa, la casa in pegno."}
+      # --- il giorno della sessione ---------------------------------------------------------------
+      - {id: t_misura, quando: {ora: "05:30"}, fatti: [f_scrivano_misura, f_bice_anguille],
+         cosa: "Prima dell'alba lo scrivano, da una barca, misura il pilone con la corda a nodi dal leone in su e gratta il muschio due spanne più in alto. Bice, a pescare anguille sotto l'arcata, lo vede."}
+      - {id: t_scrivano_torna, quando: {ora: "07:00"},
+         cosa: "All'alba lo scrivano torna fradicio con la corda a nodi e dice al padrone: due spanne giuste. Ghita lo vede, e Vischi la paga per la notte di guardia."}
+      - {id: t_ordine, quando: {ora: "11:00"}, fatti: [f_ordine_consiglio, f_console],
+         cosa: "Il consiglio ordina di chiudere la catena al terzo tocco: a quell'ora l'acqua sarà al leone."}
+      - {id: t_lista, quando: {ora: "16:00"}, fatti: [f_barche_firma],
+         cosa: "Alla Casa del Sale Vischi scrive di suo pugno, in cima alla lista per le barche dell'alba, «solo chi ha firmato»."}
+      - {id: t_primo_tocco, quando: {ora: "17:00"}, fatti: [f_tocchi, f_borgo_passato, f_ricovero, f_case_lunghe],
+         cosa: "Al tramonto la campana batte il primo tocco. Quasi tutto il Borgo Basso ha passato il ponte; il Ricovero e le Case Lunghe sono tagliati fuori. Comincia la sessione, sul ponte."}
+      - {id: t_carita, quando: {ora: "17:10"}, fatti: [f_barche_vischi],
+         cosa: "Sotto la tettoia Vischi chiede al console di mandare la barca prima al Ricovero, per carità, e promette le sue barche all'alba."}
+      - {id: t_corda_ponte, quando: {ora: "17:20"}, segno: {orologio: o_piena, n: 1},
+         cosa: "Al primo segno della piena lo scrivano scende dalla tettoia con la corda a nodi, conta i nodi sul leone e torna a scrivere."}
+      - {id: t_prima_partenza, quando: {ora: "17:30"}, fatti: [f_barca_bigia],
+         cosa: "Il primo momento in cui la Bigia, svuotata con i secchi, può partire per il Borgo."}
+      - {id: t_secondo_tocco, quando: {ora: "20:30"}, fatti: [f_tocchi], segno: {orologio: o_piena, n: 4},
+         cosa: "A metà sera la campana batte il secondo tocco. Una barca che parte adesso torna dopo il terzo."}
+      - {id: t_primo_ritorno, quando: {ora: "21:15"}, fatti: [f_un_viaggio, f_un_gruppo],
+         cosa: "Se è partita al più presto, la Bigia torna alla rampa con un gruppo. Se riparte subito per l'altro capo del Borgo, è il secondo viaggio."}
+      - {id: t_voto, quando: {ora: "22:30"}, fatti: [f_consiglio_sale],
+         cosa: "Se nessuno lo ferma, il consiglio conferma a mani alzate la catena chiusa al terzo tocco, e Vischi sigilla la lista."}
+      - {id: t_paese_al_ponte, quando: {ora: "23:30"},
+         cosa: "Il paese scende al ponte con lanterne e ceri; sulla rampa bassa l'acqua è alle caviglie."}
+      - {id: t_terzo_tocco, quando: {ora: "24:00"}, fatti: [f_tocchi, f_regola_leone], segno: {orologio: o_piena, n: 8},
+         cosa: "A mezzanotte la campana batte il terzo tocco e l'acqua tocca la criniera; il ponte non trema. Se i PG non fanno niente, Tullio chiude la catena, e chi è di là passa la notte sopra l'acqua."}
+      - {id: t_scrivano_passo, quando: {giorno: 1, ora: "00:15"},
+         cosa: "A catena chiusa senza patto, Vischi manda lo scrivano al Passo Vecchio con la lista sigillata, per la mulattiera della collina."}
+      - {id: t_secondo_ritorno, quando: {giorno: 1, ora: "01:00"}, fatti: [f_secondo_viaggio],
+         cosa: "Nel migliore dei casi (prima partenza alle 17:30, ripartenza subito) la Bigia torna dal secondo viaggio: un'ora dopo il terzo tocco."}
+      - {id: t_onda, quando: {giorno: 1, ora: "01:00"}, fatti: [f_ora_in_piu], segno: {orologio: o_rampa, n: 4},
+         cosa: "L'acqua arriva all'onda scolpita: la rampa bassa se ne va, e il ponte va chiuso adesso."}
+      - {id: t_alba, quando: {giorno: 1, ora: "07:00"}, fatti: [f_barche_firma],
+         cosa: "All'alba le barche nere di Vischi risalgono dal Passo Vecchio e prendono solo chi ha firmato. Se il ponte è rimasto aperto, Vischi bussa al casello con il foglio del debito."}
+      - {id: t_primavera, quando: {giorno: 120}, fatti: [f_darsena],
+         cosa: "A primavera Vischi butta giù le Case Lunghe per la darsena e chiede il Ricovero per il debito di Rosa."}
+    # Ogni indizio di tipo documento, più le carte datate su cui la storia si regge.
+    documenti:
+      - {id: doc_registro_padre, indizio: i_registro_padre, fatti: [f_registro_padre], datato: {anni_fa: 40, giorni_fa: 11}, prova: [t_leone_calato],
+         cosa: "La riga del registro di Corrado Vischi, nella cassa di ferro: dieci fiorini a mastro Pece, per il leone del ponte, lavoro di notte, due spanne. È del giorno dopo il lavoro, pochi giorni dopo la piena grande."}
+      - {id: doc_libro_piena, indizio: i_libro_piena, fatti: [f_libro_piena], datato: {anni_fa: 35}, prova: [t_piena_grande, t_leone_calato, t_piena_bellora],
+         cosa: "La riga del vecchio Bellora nelle sue pagine del libro dei passi: «Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va.» Ha senso solo a leone già calato."}
+      - {id: doc_carte_pronte, indizio: i_carte_pronte, fatti: [f_carte_pronte], datato: {giorni_fa: 1, ora: "18:00"}, prova: [t_debiti_comprati, t_contratti],
+         cosa: "I contratti di prestito in bella copia, con i nomi delle Case Lunghe (i debiti comprati a Pieve) e di Rosa Galli, la casa in pegno e nessuna firma."}
+      - {id: doc_lista_alba, indizio: i_lista_alba, fatti: [f_barche_firma], datato: {ora: "16:00"}, prova: [t_lista],
+         cosa: "La lista per le barche dell'alba, che lo scrivano ricopia al tavolo: in cima, di pugno di Vischi, «solo chi ha firmato»."}
+      - {id: doc_foglio_debito, fatti: [f_debito_tullio], datato: {anni_fa: 2}, prova: [t_debito_tullio],
+         cosa: "Il foglio del debito di Tullio, con il sigillo di Vischi: quaranta fiorini per il tetto, il casello in pegno. All'alba Vischi bussa al casello con questo."}
+      - {id: doc_lettera_madre, datato: {giorni_fa: 25}, prova: [t_debiti_comprati],
+         cosa: "La lettera della madre di Nives: Vischi ha comprato dal prestatore di Pieve tutti i debiti delle Case Lunghe."}
+      - {id: doc_pagina_arrigo, datato: {anni_fa: 20}, prova: [t_credito_arrigo],
+         cosa: "La pagina di Arrigo nel libro dei passi, tra quelle di Tullio: vent'anni di passaggi a credito, mai un soldo."}
+  logistica:
+    durate:
+      - {id: d_svuotare, minuti: 30, fatti: [f_barca_bigia],
+         cosa: "Svuotare la Bigia, mezza piena di pioggia, con i secchi del casello, e prendere i remi."}
+      - {id: d_viaggio, minuti: 225, fatti: [f_un_viaggio],
+         cosa: "Un viaggio della Bigia nel Borgo, andata e ritorno: i vicoli a spinta di pertica, il carico di un gruppo intero (i vecchi giù dalla scala, i bambini dal ballatoio uno alla volta), il ritorno carica. Più di metà della sera, che dal primo al terzo tocco è di sette ore."}
+      - {id: d_casa_sale, minuti: 120, fatti: [f_consiglio_sale],
+         cosa: "Una visita alla Casa del Sale durante il consiglio, studio compreso, con i cinquanta passi di andata e ritorno."}
+      - {id: d_mulattiera, minuti: 180,
+         cosa: "Dalla Riva Alta al Passo Vecchio a piedi, al buio, per la mulattiera della collina: la strada dell'argine è sott'acqua."}
+      - {id: d_risalita, minuti: 90, fatti: [f_barche_vischi],
+         cosa: "Le barche nere di Vischi risalgono la piena dal Passo Vecchio fino al ponte."}
+    capienze:
+      - {id: c_bigia, posti: 20, fatti: [f_barca_bigia],
+         cosa: "La Bigia, la chiatta del ponte: una ventina di persone strette."}
+    gruppi:
+      - {id: g_pg, persone: 4, cosa: "I PG a bordo: al massimo quattro, quanti i giocatori."}
+      - {id: g_ricovero, persone: 8, fatti: [f_ricovero], cosa: "I sette vecchi del Ricovero e Rosa (l'oca Contessa non conta)."}
+      - {id: g_barella, persone: 2, fatti: [f_ernesto_febbre], cosa: "Il posto in più di Ernesto disteso sulla barella: tre posti invece di uno."}
+      - {id: g_case_lunghe, persone: 15, fatti: [f_case_lunghe], cosa: "Le quattro famiglie delle Case Lunghe: nove bambini e sei grandi."}
+      - {id: g_nerio, persone: 1, cosa: "Nerio, il capo dei barcaioli, se salta in barca."}
+      - {id: g_barcaioli, persone: 2, cosa: "I due barcaioli del Borgo fermi sul ponte, se remano con Nerio."}
+    verifiche:
+      # --- tempi della barca e dei tocchi ---------------------------------------------------------
+      - {tra: [t_primo_tocco, t_terzo_tocco], ci_sta: [d_svuotare, d_viaggio],
+         perche: "«Prima del terzo tocco ci sta un viaggio» (f_un_viaggio, Tullio): svuotata la barca, un viaggio torna in tempo."}
+      - {tra: [t_primo_tocco, t_terzo_tocco], non_ci_sta: [d_viaggio, d_viaggio],
+         perche: "«Ne entra uno solo»: due viaggi non tornano prima del terzo tocco nemmeno partendo al primo."}
+      - {tra: [t_secondo_tocco, t_terzo_tocco], non_ci_sta: [d_viaggio],
+         perche: "Il viaggio dura più di metà della sera: chi parte al secondo tocco torna dopo il terzo. Per questo la prima scena chiede se la Bigia partirà prima del secondo tocco."}
+      - {tra: [t_prima_partenza, t_onda], ci_sta: [d_viaggio, d_viaggio],
+         perche: "Il secondo viaggio, se la barca riparte appena tornata, torna un'ora dopo il terzo tocco (f_secondo_viaggio): proprio l'ora che il ponte regge (f_ora_in_piu). Non c'è margine: decide l'orologio della rampa."}
+      - {tra: [t_terzo_tocco, t_onda], non_ci_sta: [d_viaggio],
+         perche: "Un viaggio che parte al terzo tocco non torna prima dell'onda: a mezzanotte il secondo viaggio c'è solo se la barca è già nel Borgo (scena del terzo tocco)."}
+      - {tra: [t_primo_ritorno, t_terzo_tocco], ci_sta: [d_casa_sale],
+         perche: "La Casa del Sale si può giocare dopo il Borgo Basso, e si torna al ponte per il terzo tocco."}
+      - {tra: [t_primo_tocco, t_terzo_tocco], ci_sta: [d_casa_sale, d_svuotare, d_viaggio],
+         perche: "La Casa del Sale si può giocare anche prima del Borgo: la barca fa ancora in tempo al suo viaggio."}
+      - {tra: [t_scrivano_passo, t_alba], ci_sta: [d_mulattiera, d_risalita],
+         perche: "Lo scrivano porta la lista sigillata al Passo Vecchio dopo il tocco, e le barche nere arrivano lo stesso all'alba."}
+      # --- posti sulla Bigia -----------------------------------------------------------------------
+      - {capienza: c_bigia, porta: [g_pg, g_ricovero, g_barella],
+         perche: "La Bigia porta il Ricovero intero, anche con un vecchio disteso, con i PG a bordo."}
+      - {capienza: c_bigia, porta: [g_pg, g_case_lunghe],
+         perche: "La Bigia porta le Case Lunghe intere, con i PG a bordo."}
+      - {capienza: c_bigia, porta: [g_nerio, g_pg, g_case_lunghe],
+         perche: "Se i PG esitano, Nerio salta in barca e parte con chi risponde: ci stanno anche con il gruppo più grande."}
+      - {capienza: c_bigia, porta: [g_nerio, g_barcaioli, g_case_lunghe],
+         perche: "Nerio e due barcaioli possono remare al posto dei PG (cb_barca)."}
+      - {capienza: c_bigia, non_porta: [g_ricovero, g_case_lunghe],
+         perche: "Un gruppo per volta (f_un_gruppo): i due gruppi insieme non ci stanno nemmeno senza i PG, oltre a stare ai due capi del Borgo."}
