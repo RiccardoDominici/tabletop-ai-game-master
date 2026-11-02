@@ -61,7 +61,14 @@ le divide in frasi e manda ogni frase alla voce giusta.
 - `[invito]`: **ultima riga, obbligatoria**. Elenco degli id dei personaggi giocanti invitati ad agire
   (oppure `tutti`). Non viene letta ad alta voce: apre la finestra delle azioni per quei giocatori.
   Se manca, il server invita tutti e registra l'errore.
+- `[orologio] <id_orologio>`: facoltativa, subito prima di `[invito]`, solo nella risposta in cui il narratore ha
+  mostrato il **prossimo segno** di quell'orologio. Non viene letta. È la versione leggera di `tick_clock`: il Motore
+  controlla che l'orologio esista, sia attivo e non sia completo, poi avanza l'indice; altrimenti rifiuta e registra.
+  Il Motore tiene lo stato degli orologi e mette nel contesto di ogni turno «orologio X: segni mostrati N di M,
+  prossimo segno: …», così il narratore non deve ricostruirlo dalla trascrizione.
 - Righe senza etichetta: si accodano al segmento precedente (tolleranza), con errore nel log.
+- Nomi da pronunciare: prima della sintesi il server sostituisce i nomi dei PNG con la grafia del loro campo
+  `pronuncia` (es. «Bàldrin»), solo nel testo mandato alla voce, non in quello mostrato.
 
 ## File della campagna (F0)
 
