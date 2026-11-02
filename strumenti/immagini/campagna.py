@@ -20,6 +20,10 @@ Tipi di immagine:
   situazione — il PNG in un'altra situazione, 16:9, col RITRATTO come immagine di riferimento,
                così il volto resta quello. Vengono da aspetto.situazioni e, in automatico, da ogni
                scena in cui il PNG è presente (in quel caso si passa anche l'immagine del luogo).
+               Id: situazione_<png>_<id situazione>, situazione_<png>_in_<luogo>. Il prefisso conta:
+               il server cerca solo ritratto_<png> e luogo_<id>, quindi una situazione (per esempio
+               il volto senza cappuccio, cioè un indizio) non può mai finire sul proiettore al posto
+               del ritratto; la mostra solo chi la chiede per id, dopo la rivelazione.
 """
 
 from __future__ import annotations
@@ -39,7 +43,8 @@ SEGNAPOSTO_STILE = "[STILE]"
 # Perché 1920 nativo e non 1280 ingrandito: esperimenti/immagini/risultati.md, «Risoluzione».
 DIM_LUOGO = (1920, 1080)    # 16:9, proiettore a tutto schermo (con Ken Burns fino a +8%)
 DIM_RITRATTO = (768, 1024)  # 3:4, riquadro di chi parla
-DIM_SITUAZIONE = (1024, 576)
+# Le situazioni vanno a tutto schermo come i luoghi (es. il volto rivelato): stessa risoluzione.
+DIM_SITUAZIONE = DIM_LUOGO
 
 
 def dimensioni_generazione(larghezza: int, altezza: int) -> tuple[int, int]:
@@ -168,14 +173,14 @@ def richieste_png(cartella: Path, stile: str, luoghi: dict[str, list[str]]) -> l
         identita = corpo  # la stessa descrizione, ripetuta nelle situazioni: aiuta a tenere i dettagli
         situazioni = [(s["id"], s["prompt"]) for s in (asp.get("situazioni") or []) if s.get("id") and s.get("prompt")]
         for sid, testo in situazioni:
-            ident = f"{pid}_{sid}"
+            ident = f"situazione_{pid}_{sid}"
             prompt = f"The same person as in the reference image, same face, hair and clothes: {identita}. Now {testo}"
             out.append(Richiesta(ident, "situazione", con_stile(prompt, stile), seme_da_id(ident),
                                  *DIM_SITUAZIONE, riferimenti=[rid]))
         for lid, chi in luoghi.items():
             if pid not in chi:
                 continue
-            ident = f"{pid}_in_{lid.removeprefix('luogo_')}"
+            ident = f"situazione_{pid}_in_{lid.removeprefix('luogo_')}"
             prompt = (f"The same person as in the first reference image, same face, hair and clothes: {identita}. "
                       f"Now inside the place shown in the second reference image")
             out.append(Richiesta(ident, "situazione", con_stile(prompt, stile), seme_da_id(ident),
