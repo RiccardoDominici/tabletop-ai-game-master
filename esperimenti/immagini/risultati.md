@@ -137,3 +137,52 @@ JPEG a qualità 88. Misura sulla stessa 1920 nativa:
 Ho guardato un ritaglio della porta ingrandito al 200%. Tra 75 e 95 la differenza è piccola: a 75 la
 grana della carta è un po' impastata, a 88 non la distinguo da 95. Ho scelto 88 come margine
 prudente, perché la cartella di una campagna deve restare sotto 15 MB e a 88 ci sta largamente.
+
+## 5. Il set di prova-f0 (campagne/prova-f0/immagini/)
+
+Generato con `strumenti/immagini/genera.py` dai campi immagine di fa26f11: stile v2, `prompt_ritratto` a
+busto, cane sul pavimento, `nodi[].immagine.prompt_luogo`. Ho guardato ogni immagine e ho fatto fino a
+due tentativi in più con altri semi (`--rifai --seme`). Le versioni scartate restano fuori da git.
+
+| Immagine | Seme tenuto | Secondi | Tentativi (seme: secondi, difetto) |
+|---|---|---|---|
+| luogo_scena_forno_vecchio 1920x1080 | 120891997 (id) | 199 | id: 199 s, orlo sottile e firma nell'angolo, entrambi tolti con la rifilatura del 2,8%; 1000: 213 s, margini di carta larghi su tutti i lati; 7: 208 s, orlo di carta caldo, firma, cane alla finestra |
+| luogo_n_piazza 1920x1080 | 288565684 (id) | 290 | un solo tentativo; rifilato del 3% (orlo sottile a sinistra) |
+| luogo_n_mulino_valsecca 1920x1080 | 1000 | 235 | id: 353 s, firma finta in basso a destra; 1000: rifilato del 5%, pulito; 7: 263 s, firma finta |
+| ritratto_png_ottavia 768x1024 | 72224500 (id) | 71 | uno |
+| ritratto_png_baldrin 768x1024 | 115829536 (id) | 72 | uno |
+| ritratto_png_sebastiano 768x1024 | 12 | 72 | id: 73 s, 11: 70 s, 12: 72 s; in tutti si vedono le mani |
+| luogo_n_osteria | alias di luogo_scena_forno_vecchio | — | — |
+
+- **Tempo GPU totale**, tentativi compresi: 2118 s, circa 35 minuti.
+- **Luoghi a 1920:** 199-353 s invece dei 200 s del banco. Con altre app accese il tempo varia molto.
+- **Ritratti:** 70-73 s.
+- **Picco del processo:** 4,3 GB per i ritratti, 5,1-5,4 GB per i luoghi.
+- **Cartella:** 2,9 MB.
+- **Osteria tenuta:** è l'anteprima generata prima che i campi arrivassero nelle schede. Ho verificato
+  che prompt e seme sono identici a quelli che genera.py compone da fa26f11. L'ho rifilata dal PNG
+  originale e nel manifest c'è una `nota` che lo dice.
+
+**Rifilatura (`strumenti/immagini/rifila.py`).** Anche con lo stile v2, 7 luoghi su 8 avevano un orlo
+di carta strappato. Più spesso era sottile (10-60 px), a volte era un margine largo (seme 1000
+dell'osteria). Ora genera.py misura l'orlo contiguo al bordo e ritaglia al centro fino al 5% per lato.
+Oltre, avvisa che conviene rigenerare. La soglia è prudente: carta chiara e poco satura, canale minimo
+sopra 225. Una carta più calda, sotto 225, sfugge, come nel seme 7 dell'osteria. Abbassarla a 205-215
+farebbe però scambiare per carta la neve e i muri illuminati che toccano il bordo. Quindi guardare
+resta necessario.
+
+**Firme finte:** in 3 luoghi su 8, sempre nell'angolo in basso a destra, nonostante «unsigned». Spesso
+stanno dentro l'orlo di carta e la rifilatura le toglie.
+
+**Restano aperti:**
+- **Sebastiano:** «arms folded with his hands tucked into his sleeves» non basta, il modello disegna
+  le mani in tutti e tre i semi. Il seme 12 le mostra meno degli altri: piccole, in ombra, mezze sotto
+  le pieghe. Per nasconderle va cambiato il prompt, non il seme: per esempio «hands hidden inside wide
+  sleeves» o un'inquadratura più stretta.
+- **Osteria:** la porta del ripostiglio non ha la grata in nessuno dei tre semi. Il cane è sul
+  pavimento, ma vicino alla porta aperta e non al forno.
+- **Baldrin:** gli anelli di ferro sono nei capelli e non nella barba. C'è uno sgorbio d'inchiostro
+  di circa 8x30 px in basso a destra, quasi invisibile.
+- **situazione_png_sebastiano_senza_cappuccio:** non generata, la GPU è ferma per una partita in
+  corso. Il comando è pronto:
+  `genera.py campagne/prova-f0 --id situazione_png_sebastiano_senza_cappuccio`.
