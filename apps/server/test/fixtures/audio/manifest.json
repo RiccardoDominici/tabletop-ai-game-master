@@ -1,0 +1,29 @@
+{
+  "nota": "Fixture del proiettore (apps/server/test/fixtures/audio/genera.sh): toni e rumori di prova, non musica vera.",
+  "brani": [
+    {"id": "luogo_scena_forno_vecchio", "tipo": "musica", "file": "luogo_scena_forno_vecchio.ogg", "loop": true, "lufs": -23, "durata_s": 8, "crediti": "Tono di prova A"},
+    {"id": "luogo_n_piazza", "tipo": "musica", "file": "luogo_n_piazza.ogg", "loop": true, "lufs": -23, "durata_s": 8, "crediti": "Tono di prova B"},
+    {"id": "luogo_n_mancante", "tipo": "musica", "file": "luogo_n_mancante.ogg", "loop": true},
+    {"id": "luogo_n_furbo", "tipo": "musica", "file": "../manifest.json", "loop": true}
+  ],
+  "umori": [
+    {"id": "umore_esplorazione_tesa", "file": "umore_esplorazione_tesa.ogg", "loop": true, "lufs": -23},
+    {"id": "umore_tensione", "file": "umore_tensione.ogg", "loop": true, "lufs": -23}
+  ],
+  "temi": [
+    {"id": "tema_png_ottavia", "file": "tema_png_ottavia.ogg", "durata_s": 3},
+    {"id": "tema_png_baldrin", "file": "tema_png_baldrin.ogg", "durata_s": 3}
+  ],
+  "ambienti": [
+    {"id": "amb_scena_forno_vecchio_fuoco", "file": "amb_scena_forno_vecchio_fuoco.ogg", "loop": true, "volume": 0.5},
+    {"id": "amb_scena_forno_vecchio_folla", "file": "amb_scena_forno_vecchio_folla.ogg", "loop": true, "volume": 0.3},
+    {"id": "amb_n_piazza_vento", "file": "amb_n_piazza_vento.ogg", "loop": true, "volume": 0.4}
+  ],
+  "effetti": [
+    {"id": "sfx_campana", "file": "sfx_campana.ogg"}
+  ],
+  "crediti": [
+    "Toni di prova generati con ffmpeg (fixture, dominio pubblico)",
+    "Esempio: «Titolo», Kevin MacLeod (incompetech.com), CC BY 4.0"
+  ]
+}

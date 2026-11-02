@@ -41,6 +41,8 @@ import { compilaMessaggioTurno } from '../narrazione/messaggio';
 import type { Orologio } from '../turni/orologio';
 import { azioniPerNarratore } from '../azioni/narratore';
 import type { CatalogoImmagini } from '../campagna/immagini';
+import type { CatalogoAudio } from '../audio/catalogo';
+import { audioDellaScena, type UmoreScelto } from '../audio/scena';
 import { TavoloAzioni, type RiepilogoChiusura } from '../azioni/tavolo';
 import type { Arbitro, Azione } from '../azioni/tipi';
 import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
@@ -98,6 +100,8 @@ export interface OpzioniRegia {
   scenaPubblicaPer?: (campagna: Campagna) => string;
   /** Immagini dei luoghi e ritratti dei PNG per il proiettore. */
   immagini?: CatalogoImmagini;
+  /** Musica, ambienti e temi dei PNG per il proiettore (docs/audio.md). */
+  audio?: CatalogoAudio;
   /** Silenzio che fa scattare la mossa contro lo stallo (default 45 s; 0 = mai). */
   stalloMs?: number;
 }
@@ -158,6 +162,8 @@ export class Regia {
   private rivelateNelTurno: string[] = [];
   /** Stalli di fila (S1, S2, S3…): si azzera appena qualcuno agisce. */
   private stalliDiFila = 0;
+  /** Audio: umore scelto dal master o dal Motore (vale solo nella scena in cui è stato scelto). */
+  private umoreScelto: UmoreScelto | null = null;
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
@@ -273,6 +279,22 @@ export class Regia {
     this.o.log.info({ da: this.luogo, a: luogo, immagine: this.o.immagini?.luogo(luogo) ?? null }, 'scena: cambio di luogo');
     this.luogo = luogo;
     this.togliSituazione('cambio di luogo');
+    this.notifica();
+    return { ok: true };
+  }
+
+  // ------------------------------------------------------------------ audio (docs/audio.md)
+
+  /**
+   * Umore musicale scelto dal master o dal Motore (`umore_<tag>` del manifest audio), null per
+   * tornare alla musica del luogo. Sul proiettore cambia subito, senza aspettare l'isteresi.
+   */
+  cambiaUmore(tag: string | null): Esito {
+    if (tag !== null && !this.o.audio?.umore(tag)) return { ok: false, errore: `Nessun brano per l'umore «${tag}».` };
+    const prima = this.umoreScelto?.scena === this.campagna.scena.id ? this.umoreScelto.tag : null;
+    if (prima === tag) return { ok: true };
+    this.o.log.info({ da: prima, a: tag, scena: this.campagna.scena.id }, 'audio: cambio d’umore');
+    this.umoreScelto = tag === null ? null : { tag, scena: this.campagna.scena.id };
     this.notifica();
     return { ok: true };
   }
@@ -414,7 +436,14 @@ export class Regia {
       versione_scena: this.versioneScena,
       fase: this.fase,
       turno: this.turno,
-      scena: { id_campagna: c.id, titolo: c.scena.titolo, umore: c.scena.umore, intensita: c.scena.intensita, ...this.immaginiPubbliche() },
+      scena: {
+        id_campagna: c.id,
+        titolo: c.scena.titolo,
+        umore: c.scena.umore,
+        intensita: c.scena.intensita,
+        ...this.immaginiPubbliche(),
+        ...(this.o.audio ? { audio: audioDellaScena(this.o.audio, c, this.luogo, this.umoreScelto) } : {}),
+      },
       pg: c.pg.map((p) => ({ id: p.id, nome: p.nome, descrizione: p.descrizione, telefoni: conteggio.get(p.id) ?? 0 })),
       finestra: this.tavolo.finestraPubblica(),
       al_tavolo: this.tavolo.alTavolo(),

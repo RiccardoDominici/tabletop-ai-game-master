@@ -173,6 +173,56 @@ export interface ScenaPubblica {
   situazione: string | null;
   /** URL da precaricare (luoghi vicini, ritratti dei PNG presenti), nell'ordine di probabilità. */
   prossime: string[];
+  /** Audio della scena per il proiettore (assente se il server non ha un catalogo audio). */
+  audio?: AudioScena;
+}
+
+// ------------------------------------------------------------------ audio della campagna (docs/audio.md)
+
+/** Strato a cui appartiene una traccia del manifest audio. */
+export type TipoTracciaAudio = 'musica' | 'umore' | 'tema' | 'ambiente' | 'effetto';
+
+/** Traccia del catalogo audio (GET /api/audio): solo quelle col file presente. */
+export interface TracciaAudio {
+  /** Id del manifest: luogo_<id>, umore_<tag>, tema_<id_png>, amb_<luogo>_<tag>, sfx_<tag>. */
+  id: string;
+  tipo: TipoTracciaAudio;
+  /** /api/audio/<file>. */
+  url: string;
+  loop: boolean;
+  /** Guadagno lineare (volume del manifest, corretto coi LUFS se dichiarati). */
+  guadagno: number;
+  durata_s: number | null;
+  /** Punti di loop (s) se il file non va ripetuto intero; null = tutto il file. */
+  loop_inizio_s: number | null;
+  loop_fine_s: number | null;
+  /** Dissolvenza alla giunta del loop (s): 0 = loop nativo, > 0 = due copie sovrapposte. */
+  giunta_s: number;
+}
+
+/** Catalogo audio pubblico (GET /api/audio). */
+export interface CatalogoAudioPubblico {
+  tracce: Record<string, TracciaAudio>;
+  /** Attribuzioni (CC BY) del manifest, per la pagina dei crediti. */
+  crediti: string[];
+}
+
+/** Cosa deve suonare il proiettore adesso: id del catalogo audio. */
+export interface AudioScena {
+  /** Scena in corso (i temi dei PNG suonano una volta per scena). */
+  scena: string;
+  /** Musica del luogo corrente (o, se manca, dell'umore della scena), o null. */
+  musica: string | null;
+  /** Umore scelto dal master o dal Motore: vince su `musica` e non aspetta l'isteresi. */
+  umore: string | null;
+  /** Strati d'ambiente in loop del luogo corrente. */
+  ambienti: string[];
+  /** id_png → id del tema (solo i PNG che ne hanno uno). */
+  temi: Record<string, string>;
+  /** Brani d'umore disponibili: tag → id. */
+  umori: Record<string, string>;
+  /** Id da precaricare (musica e ambienti dei luoghi vicini, temi dei PNG presenti). */
+  prossimi: string[];
 }
 
 /** Istantanea completa del tavolo, mandata a ogni cambiamento. */

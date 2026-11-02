@@ -25,6 +25,7 @@ import { caricaParoleSegrete, segretiNelTesto } from './repertorio/segreti';
 import type { Repertorio } from './repertorio/tipi';
 import { CacheAudio } from './voce/cache-audio';
 import { CatalogoImmagini } from './campagna/immagini';
+import { CatalogoAudio } from './audio/catalogo';
 import { ArbitroHaiku } from './azioni/arbitro-haiku';
 import { riassuntoPubblico } from './azioni/contesto';
 import type { Arbitro } from './azioni/tipi';
@@ -122,6 +123,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   );
 
   const immagini = new CatalogoImmagini(config.cartellaImmagini, log.child({ modulo: 'immagini' }));
+  const audio = new CatalogoAudio(config.cartellaAudio, log.child({ modulo: 'audio' }));
   const app = await creaApp({ log, cartellaWeb: sost.cartellaWeb ?? CARTELLA_WEB_DIST });
   const uscite = creaUscite(app.io);
   const regia = new Regia({
@@ -149,6 +151,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     sistemaPer,
     scenaPubblicaPer: (c) => riassuntoPubblico(c, paroleSegrete),
     immagini,
+    audio,
     stalloMs: config.turni.stalloMs,
   });
   regia.collega(uscite.regia);
@@ -165,7 +168,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     log: log.child({ modulo: 'master' }),
   });
   collegaMaster(app.io, regia, controlliMaster, tokenMaster, log.child({ modulo: 'master' }));
-  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, ...regia.infoSessione }), immagini);
+  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, audio: audio.numero, ...regia.infoSessione }), immagini, audio);
 
   return {
     app,

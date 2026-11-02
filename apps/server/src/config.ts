@@ -37,6 +37,8 @@ export interface ConfigServer {
   cacheAudio: string;
   /** Immagini della campagna (manifest.json + file); default campagne/<id>/immagini. */
   cartellaImmagini: string;
+  /** Audio della campagna (manifest.json + file, docs/audio.md); default campagne/<id>/audio. */
+  cartellaAudio: string;
 
   /** Token fisso del pannello del master (CANTASTORIE_MASTER_TOKEN); se manca se ne crea uno a ogni avvio. */
   tokenMaster?: string;
@@ -118,6 +120,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     cacheAudio: testo(env['CANTASTORIE_CACHE_AUDIO']) ?? path.join(RADICE_REPO, 'cache', 'audio'),
     // I percorsi relativi valgono dalla radice del repo (il server gira in apps/server).
     cartellaImmagini: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_IMMAGINI']) ?? path.join(cartellaCampagna, 'immagini')),
+    cartellaAudio: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_AUDIO']) ?? path.join(cartellaCampagna, 'audio')),
     llm: {
       modo: scelta(env['CANTASTORIE_LLM'], ['haiku', 'finto'] as const, 'haiku'),
       modello: testo(env['CANTASTORIE_MODELLO']) ?? 'claude-haiku-5-5',

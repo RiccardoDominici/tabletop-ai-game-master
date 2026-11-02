@@ -19,6 +19,7 @@ import type { Logger } from './logger';
 import type { Regia } from './scena/regia';
 import type { ServerIo } from './trasporto/socket';
 import type { CatalogoImmagini } from './campagna/immagini';
+import { CatalogoAudio } from './audio/catalogo';
 
 export interface OpzioniApp {
   log: Logger;
@@ -62,8 +63,10 @@ export function registraRotte(
   info: () => InfoServer,
   extra: () => Record<string, unknown>,
   immagini?: CatalogoImmagini,
+  audio?: CatalogoAudio,
 ): void {
   const { http } = app;
+  registraRotteAudio(app, regia, audio);
   // Immagini della campagna: solo i file del manifest, con cache (non cambiano durante la sessione).
   http.get<{ Params: { file: string } }>('/api/immagini/:file', async (req, reply) => {
     const p = immagini?.percorso(req.params.file);
@@ -84,4 +87,24 @@ export function registraRotte(
   http.get('/api/info', async () => info());
   http.post('/api/scena/ferma', async () => regia.ferma('api'));
   http.post('/api/scena/ricomincia', async () => regia.ricomincia());
+}
+
+/**
+ * Audio della campagna (docs/audio.md): catalogo pubblico, file del manifest (con cache: non
+ * cambiano durante la sessione; il proiettore li scarica interi con fetch) e cambio d'umore musicale.
+ */
+function registraRotteAudio(app: App, regia: Regia, audio?: CatalogoAudio): void {
+  const { http } = app;
+  http.get('/api/audio', async () => audio?.pubblico() ?? { tracce: {}, crediti: [] });
+  http.get<{ Params: { file: string } }>('/api/audio/:file', async (req, reply) => {
+    const p = audio?.percorso(req.params.file);
+    if (!p) return reply.status(404).send({ errore: 'Audio non trovato.' });
+    return reply.type(CatalogoAudio.mime(p)).header('cache-control', 'public, max-age=3600').send(fs.createReadStream(p));
+  });
+  // Umore musicale (pannello del master, Motore, prove): null torna alla musica del luogo.
+  http.post<{ Body: { umore?: unknown } }>('/api/scena/umore', async (req, reply) => {
+    const umore = req.body?.umore;
+    if (umore !== null && (typeof umore !== 'string' || !/^[a-z0-9_]{1,64}$/.test(umore))) return reply.status(400).send({ ok: false, errore: 'Umore non valido.' });
+    return regia.cambiaUmore(umore);
+  });
 }
