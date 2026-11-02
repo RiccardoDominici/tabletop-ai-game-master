@@ -129,8 +129,12 @@ class Motore:
         proc = subprocess.run(cmd, capture_output=True, text=True)
         secondi = time.perf_counter() - t0
         if proc.returncode != 0 or not uscita.exists():
-            coda = "\n".join((proc.stdout + proc.stderr).strip().splitlines()[-15:])
-            raise RuntimeError(f"mflux è uscito con codice {proc.returncode} per {uscita.name}:\n{coda}")
+            # Si tolgono le righe statistiche di /usr/bin/time, che altrimenti coprono il messaggio di mflux.
+            # Nota: se la batteria scende sotto il limite, mflux si ferma da sé ed esce con codice 0.
+            righe = [r for r in (proc.stdout + proc.stderr).splitlines()
+                     if r.strip() and not re.match(r"^\s*[\d.,]+\s+[a-z ]+$", r)]
+            coda = "\n".join(righe[-12:])
+            raise RuntimeError(f"mflux (codice {proc.returncode}) non ha scritto {uscita.name}:\n{coda}")
         m = re.search(r"(\d+)\s+peak memory footprint", proc.stderr)
         picco = int(m.group(1)) / 1000**3 if m else None
         log.info("generata %s %dx%d seme=%d rif=%d in %.1f s (picco processo %s GB)", uscita.name, larghezza,

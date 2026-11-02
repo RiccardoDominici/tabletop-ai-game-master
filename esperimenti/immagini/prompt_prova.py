@@ -33,6 +33,20 @@ def prompt_luogo() -> str:
 # --- Varianti del frammento [STILE] provate (vedi risultati.md per il giudizio) -----------------
 STILI: dict[str, str] = {
     "v0": stile_campagna(),
+    # v1: dopo v0 il luogo era a inchiostro e acquerello, i ritratti sembravano dipinti a olio.
+    # Si fissa la tecnica (contorni a inchiostro, tratteggio, velature su carta), il fondo dei ritratti
+    # e un'atmosfera più fredda e tesa (la scena è una notte di febbre e paura, non una taverna accogliente).
+    "v1": ("ink-and-wash illustration from an old Italian folk-tale book: confident dark ink outlines and fine "
+           "cross-hatching, loose transparent watercolour washes on textured off-white paper, cold blue moonlit "
+           "night with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of "
+           "umber, ochre, soot black, linen white and slate blue, no text, no lettering, no signature"),
+}
+
+# Come si descrive il ritratto a busto in ogni versione (il fondo fa parte dello stile).
+RITRATTI: dict[str, str] = {
+    "v0": "head-and-shoulders bust portrait, facing the viewer, plain dark neutral background, of {id}",
+    "v1": "head-and-shoulders bust portrait of {id}, facing the viewer, against a plain background of loose "
+          "blue-grey ink wash on paper",
 }
 
 # --- Identità dei PNG ---------------------------------------------------------------------------
@@ -82,9 +96,10 @@ SITUAZIONI: dict[str, list[tuple[str, str]]] = {
     ],
 }
 
-RITRATTO = "head-and-shoulders bust portrait, facing the viewer, plain dark neutral background"
-LARG_LUOGO, ALT_LUOGO = 1024, 576   # 16:9 per il proiettore
-LARG_RITR, ALT_RITR = 768, 1024     # 3:4 per il riquadro di chi parla
+# Dimensioni scelte dopo le misure (bench/cli.tsv): 768x432 costa ~40 s su M1 contro ~65 s a 1024x576.
+# Il proiettore le ingrandisce; i ritratti hanno circa gli stessi pixel in 3:4.
+LARG_LUOGO, ALT_LUOGO = 768, 432    # 16:9 per il proiettore
+LARG_RITR, ALT_RITR = 480, 640      # 3:4 per il riquadro di chi parla
 
 
 def lavori_stile(versione: str) -> list[dict]:
@@ -98,7 +113,7 @@ def lavori_stile(versione: str) -> list[dict]:
     for nome, d in IDENTITA.items():
         out.append({
             "id": f"{versione}_ritratto_{nome}",
-            "prompt": f"{RITRATTO} of {d['id']}, {stile}",
+            "prompt": f"{RITRATTI[versione].format(id=d['id'])}, {stile}",
             "seme": d["seme"], "larghezza": LARG_RITR, "altezza": ALT_RITR, "riferimenti": [],
         })
     return out
@@ -130,10 +145,13 @@ def lavori_coerenza(versione: str, modo: str) -> list[dict]:
 
 
 def lotto(nome: str) -> list[dict]:
-    """Nomi dei lotti: 'stile_<v>', 'a_<v>', 'b_<v>'."""
+    """Nomi dei lotti: 'stile_<v>', 'a_<v>', 'b_<v>'; con ':<png>' si tiene un solo PNG (es. 'b_v0:ottavia')."""
+    nome, _, solo = nome.partition(":")
     tipo, versione = nome.split("_", 1)
     if tipo == "stile":
-        return lavori_stile(versione)
-    if tipo in ("a", "b"):
-        return lavori_coerenza(versione, tipo)
-    raise ValueError(f"lotto sconosciuto: {nome}")
+        lavori = lavori_stile(versione)
+    elif tipo in ("a", "b"):
+        lavori = lavori_coerenza(versione, tipo)
+    else:
+        raise ValueError(f"lotto sconosciuto: {nome}")
+    return [lav for lav in lavori if not solo or f"_{solo}" in lav["id"]]
