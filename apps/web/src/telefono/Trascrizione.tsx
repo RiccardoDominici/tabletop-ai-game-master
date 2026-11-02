@@ -1,0 +1,143 @@
+/**
+ * Trascrizione pubblica dal vivo: le righe più nuove in fondo.
+ *
+ * Scorrimento automatico «educato»: si scende da soli solo se si era già in fondo (o quasi); se il
+ * giocatore è risalito a rileggere non lo si strattona, e compare un pulsante «nuove righe».
+ */
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
+import type { VoceTrascrizione } from '@cantastorie/shared';
+import { virgolettato } from '../lib/formato';
+
+/** Entro questa distanza dal fondo si considera «in fondo». */
+const SOGLIA_FONDO_PX = 80;
+
+export function Trascrizione({ voci, className }: { voci: VoceTrascrizione[]; className?: string }) {
+  const contenitore = useRef<HTMLDivElement>(null);
+  const eraInFondo = useRef(true);
+  const [nuove, setNuove] = useState(false);
+  const ultimaId = voci[voci.length - 1]?.id ?? null;
+
+  // Prima del render successivo si decide se seguire il fondo; dopo, si scorre.
+  useLayoutEffect(() => {
+    const el = contenitore.current;
+    if (!el) return;
+    if (eraInFondo.current) {
+      el.scrollTop = el.scrollHeight;
+      setNuove(false);
+    } else if (ultimaId !== null) {
+      setNuove(true);
+    }
+  }, [ultimaId]);
+
+  // Se la tastiera o il pannello cambiano l'altezza, si resta in fondo.
+  useEffect(() => {
+    const el = contenitore.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const osservatore = new ResizeObserver(() => {
+      if (eraInFondo.current) el.scrollTop = el.scrollHeight;
+    });
+    osservatore.observe(el);
+    return () => osservatore.disconnect();
+  }, []);
+
+  const suScorrimento = () => {
+    const el = contenitore.current;
+    if (!el) return;
+    eraInFondo.current = el.scrollHeight - el.scrollTop - el.clientHeight < SOGLIA_FONDO_PX;
+    if (eraInFondo.current) setNuove(false);
+  };
+
+  const vaiInFondo = () => {
+    const el = contenitore.current;
+    if (!el) return;
+    eraInFondo.current = true;
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    setNuove(false);
+  };
+
+  return (
+    <div className={clsx('relative', className)}>
+      <div
+        ref={contenitore}
+        onScroll={suScorrimento}
+        data-testid="trascrizione"
+        role="log"
+        aria-label="Trascrizione della scena"
+        // Bordo alto sfumato: la riga tagliata sotto il banner non sembra un errore di layout.
+        className="h-full overflow-y-auto overscroll-contain px-1 pt-4 pb-3 [mask-image:linear-gradient(to_bottom,transparent_0,black_1.5rem)]"
+      >
+        {voci.length === 0 ? (
+          <p className="px-3 py-8 text-center text-cenere">La storia comincia appena il narratore prende la parola.</p>
+        ) : (
+          <ol className="flex flex-col gap-3">
+            {voci.map((voce, i) => {
+              const precedente = voci[i - 1];
+              const cambioTurno = precedente !== undefined && precedente.turno !== voce.turno;
+              return (
+                <li key={voce.id}>
+                  {cambioTurno && <SeparatoreTurno turno={voce.turno} />}
+                  <RigaTrascrizione voce={voce} />
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </div>
+      {nuove && (
+        <button
+          type="button"
+          onClick={vaiInFondo}
+          className="absolute bottom-3 left-1/2 min-h-12 -translate-x-1/2 rounded-full bg-candela px-5 font-bold text-notte shadow-profonda"
+        >
+          ↓ Nuove righe
+        </button>
+      )}
+    </div>
+  );
+}
+
+function SeparatoreTurno({ turno }: { turno: number }) {
+  return (
+    <div className="my-2 flex items-center gap-3 text-xs tracking-[0.2em] text-cenere uppercase" aria-hidden>
+      <span className="h-px flex-1 bg-bordo" />
+      {turno === 0 ? 'Apertura' : `Turno ${turno}`}
+      <span className="h-px flex-1 bg-bordo" />
+    </div>
+  );
+}
+
+/** Una riga: nome in grassetto + testo; le azioni dei giocatori hanno un riquadro tutto loro. */
+function RigaTrascrizione({ voce }: { voce: VoceTrascrizione }) {
+  switch (voce.tipo) {
+    case 'azione':
+      return (
+        <p
+          data-tipo="azione"
+          className="ml-6 rounded-xl border border-candela/30 bg-notte-3 px-4 py-2.5 text-[1.0625rem] leading-relaxed"
+        >
+          <strong className="font-bold text-candela">{voce.nome}</strong>{' '}
+          <span className="text-pergamena">{voce.testo}</span>
+        </p>
+      );
+    case 'battuta':
+      return (
+        <p data-tipo="battuta" className="border-l-2 border-brace/70 px-3 font-racconto text-[1.0625rem] leading-relaxed">
+          <strong className="font-sans font-bold text-brace">{voce.nome}</strong>{' '}
+          <span className="text-pergamena italic">{virgolettato(voce.testo)}</span>
+        </p>
+      );
+    case 'sistema':
+      return (
+        <p data-tipo="sistema" className="px-3 text-center text-sm text-cenere italic">
+          <strong className="font-semibold">{voce.nome}:</strong> {voce.testo}
+        </p>
+      );
+    case 'narrazione':
+      return (
+        <p data-tipo="narrazione" className="px-3 font-racconto text-[1.0625rem] leading-relaxed text-pergamena">
+          <strong className="font-sans font-bold text-pergamena-2">{voce.nome}</strong> {voce.testo}
+        </p>
+      );
+  }
+}

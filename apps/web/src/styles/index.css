@@ -1,0 +1,119 @@
+@import 'tailwindcss';
+
+/*
+ * Cantastorie — token di design. Direzione artistica: «tavolo da gioco di notte».
+ * Fondo inchiostro-viola quasi nero, testo color pergamena, accento caldo di candela.
+ * Tailwind v4 li trasforma in utility: bg-notte, text-pergamena, border-bordo, text-candela,
+ * font-titolo, font-racconto, ... Si estendono liberamente; non si rinominano.
+ */
+@theme {
+  /* Titoli incisi (Cinzel), interfaccia leggibile (Alegreya Sans), racconto (Alegreya serif). */
+  --font-titolo: 'Cinzel Variable', 'Trajan Pro', Georgia, serif;
+  --font-sans: 'Alegreya Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-racconto: 'Alegreya Variable', Georgia, 'Times New Roman', serif;
+
+  --color-notte: #0e0c15;
+  --color-notte-2: #17131f;
+  --color-notte-3: #221c2d;
+  --color-notte-4: #2d2539;
+  --color-bordo: #3b3249;
+  --color-bordo-chiaro: #574b69;
+
+  --color-pergamena: #f2e9d8;
+  --color-pergamena-2: #cfc3ab;
+  --color-cenere: #9d93a8;
+
+  --color-candela: #ecb55c;
+  --color-candela-2: #f7d590;
+  --color-candela-scura: #8a5f1e;
+  --color-brace: #e27b4c;
+  --color-muschio: #8cc79a;
+  --color-lago: #86b0e0;
+  --color-sangue: #e86763;
+
+  --radius-carta: 1rem;
+  --shadow-candela: 0 0 0 1px rgb(236 181 92 / 0.35), 0 8px 30px -8px rgb(236 181 92 / 0.35);
+  --shadow-profonda: 0 18px 40px -18px rgb(0 0 0 / 0.8);
+
+  /* Comparsa morbida di sottotitoli e parlante (`animate-comparsa`). */
+  --animate-comparsa: comparsa 320ms ease-out;
+  @keyframes comparsa {
+    from {
+      opacity: 0;
+      transform: translateY(0.35em);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* Spazi «sicuri» per notch e barra home (index.html usa viewport-fit=cover). */
+@utility sicuro-alto {
+  padding-top: max(env(safe-area-inset-top), 0.75rem);
+}
+@utility sicuro-basso {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
+}
+@utility sicuro-lati {
+  padding-left: max(env(safe-area-inset-left), 1rem);
+  padding-right: max(env(safe-area-inset-right), 1rem);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+  html {
+    /* 17px: testo comodo su telefono senza zoom; iOS non ingrandisce i campi ≥ 16px. */
+    font-size: 106.25%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-notte font-sans text-pergamena antialiased;
+    /* Un alone di candela in alto, appena percettibile: il tavolo «di notte». */
+    background-image:
+      radial-gradient(120% 60% at 50% -10%, rgb(236 181 92 / 0.09), transparent 60%),
+      radial-gradient(90% 50% at 50% 110%, rgb(120 80 160 / 0.08), transparent 60%);
+    background-attachment: fixed;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  [role='button'] {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-candela);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-candela);
+    color: var(--color-notte);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-bordo-chiaro) transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

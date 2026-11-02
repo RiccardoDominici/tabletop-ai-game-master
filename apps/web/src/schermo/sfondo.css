@@ -1,0 +1,103 @@
+/*
+ * Sfondo d'atmosfera del proiettore: tre macchie di colore (gradienti radiali) che derivano piano.
+ * Si animano solo `transform` e `opacity` (composizione su GPU, niente repaint a ogni fotogramma).
+ * I colori sono proprietà registrate con @property: così al cambio di umore sfumano invece di
+ * saltare.
+ */
+@property --fondo {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0e0c15;
+}
+@property --c1 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #3a2955;
+}
+@property --c2 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #5c401d;
+}
+@property --c3 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1e3b47;
+}
+
+.sfondo-umore {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--fondo);
+  transition:
+    --fondo 4s ease,
+    --c1 4s ease,
+    --c2 4s ease,
+    --c3 4s ease;
+  z-index: 0;
+}
+
+.sfondo-umore .macchia {
+  position: absolute;
+  width: 85vmax;
+  height: 85vmax;
+  border-radius: 50%;
+  opacity: var(--opacita, 0.5);
+  mix-blend-mode: screen;
+  will-change: transform;
+  transition: opacity 3s ease;
+}
+
+.sfondo-umore .macchia-1 {
+  left: -25vmax;
+  top: -30vmax;
+  background: radial-gradient(circle at center, var(--c1) 0%, transparent 62%);
+  animation: deriva-1 var(--durata, 40s) ease-in-out infinite alternate;
+}
+.sfondo-umore .macchia-2 {
+  right: -30vmax;
+  bottom: -35vmax;
+  background: radial-gradient(circle at center, var(--c2) 0%, transparent 60%);
+  animation: deriva-2 calc(var(--durata, 40s) * 1.3) ease-in-out infinite alternate;
+}
+.sfondo-umore .macchia-3 {
+  left: 15vmax;
+  bottom: -45vmax;
+  background: radial-gradient(circle at center, var(--c3) 0%, transparent 58%);
+  animation: deriva-3 calc(var(--durata, 40s) * 0.8) ease-in-out infinite alternate;
+}
+
+/* Vignettatura: bordi scuri, il centro (sottotitoli) resta leggibile. */
+.sfondo-umore .vignetta {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 35%, rgb(0 0 0 / 0.55) 100%),
+    linear-gradient(to bottom, rgb(0 0 0 / 0.25), transparent 25%, transparent 60%, rgb(0 0 0 / 0.55));
+}
+
+@keyframes deriva-1 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(22vmax, 14vmax, 0) scale(1.25);
+  }
+}
+@keyframes deriva-2 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  to {
+    transform: translate3d(-26vmax, -12vmax, 0) scale(0.9);
+  }
+}
+@keyframes deriva-3 {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.9);
+  }
+  to {
+    transform: translate3d(18vmax, -20vmax, 0) scale(1.2);
+  }
+}

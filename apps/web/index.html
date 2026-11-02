@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <!--
+      viewport-fit=cover: il contenuto arriva sotto notch e barra home (usiamo env(safe-area-inset-*)).
+      interactive-widget=resizes-content: su Chrome Android la tastiera ridimensiona il layout,
+      così la casella dell'azione resta visibile sopra la tastiera.
+    -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#0d0b14" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="Cantastorie — il narratore del tavolo: telefono dei giocatori e schermo del proiettore" />
+    <!-- Icona inline: evita la richiesta a /favicon.ico (un 404 sporcherebbe la console). -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>"
+    />
+    <title>Cantastorie</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
