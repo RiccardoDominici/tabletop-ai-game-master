@@ -83,10 +83,21 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
     socket.on('azione:invia', (dati, cb) => {
       const id_pg = controllaPg(dati?.id_pg);
       if (!id_pg) return ack<Esito>(cb)(errore('Prima scegli il tuo personaggio.'));
-      if (typeof dati.testo !== 'string' || typeof dati.versione_scena !== 'number') return ack<Esito>(cb)(errore('Richiesta non valida.'));
-      const esito = regia.inviaAzione(id_pg, dati.testo, dati.versione_scena);
-      log.info({ socket: socket.id, id_pg, ok: esito.ok, caratteri: dati.testo.length }, 'azione: invio');
+      if (typeof dati.testo !== 'string' || typeof dati.versione_vista !== 'number') return ack<Esito>(cb)(errore('Richiesta non valida.'));
+      const esito = regia.inviaAzione(id_pg, dati.testo, dati.versione_vista, dati.privata === true);
+      log.info({ socket: socket.id, id_pg, ok: esito.ok, caratteri: dati.testo.length, privata: dati.privata === true }, 'azione: invio');
       ack<Esito>(cb)(esito);
+    });
+
+    socket.on('azione:conferma', (dati, cb) => {
+      const id_pg = controllaPg(dati?.id_pg);
+      if (!id_pg) return ack<Esito>(cb)(errore('Prima scegli il tuo personaggio.'));
+      ack<Esito>(cb)(regia.confermaAzione(id_pg));
+    });
+
+    socket.on('azione:scrivo', (dati) => {
+      const id_pg = controllaPg(dati?.id_pg);
+      if (id_pg) regia.scrivo(id_pg);
     });
 
     socket.on('azione:ritira', (dati, cb) => {

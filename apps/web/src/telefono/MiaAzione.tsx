@@ -13,9 +13,12 @@ import { ETICHETTA_STATO_AZIONE } from './vista';
 
 const STILE_CHIP: Record<StatoAzione, string> = {
   in_coda: 'bg-candela text-notte',
-  in_risoluzione: 'bg-lago text-notte',
+  da_confermare: 'bg-brace text-notte',
+  chiusa: 'bg-lago text-notte',
   risolta: 'bg-muschio text-notte',
   ritirata: 'border border-bordo-chiaro text-cenere',
+  superata: 'border border-brace text-brace',
+  sospesa: 'border border-brace text-brace',
 };
 
 interface Props {

@@ -45,35 +45,75 @@ export interface SchedaPg {
   situazione_comune: string | null;
 }
 
-/** Stato di un'azione scritta da un giocatore. */
+/**
+ * Stato di un'azione (docs/azioni-concorrenti.md). «In coda» e «da confermare» restano distinti:
+ * solo il secondo chiede una scelta al giocatore.
+ */
 export type StatoAzione =
-  /** Inviata, finestra ancora aperta: si può modificare o ritirare. */
+  /** Inviata: aspetta la chiusura della finestra; si può modificare o ritirare. */
   | 'in_coda'
-  /** Finestra chiusa, il narratore la sta risolvendo. */
-  | 'in_risoluzione'
-  /** Narrazione del turno finita. */
+  /** Qualcosa l'ha toccata: il giocatore sceglie Confermo (o Tengo) / Cambio / Ritiro. */
+  | 'da_confermare'
+  /** Ritirata dall'autore. */
+  | 'ritirata'
+  /** Entrata nel gruppo che il narratore sta risolvendo: non si tocca più. */
+  | 'chiusa'
+  /** Il narratore l'ha risolta. */
   | 'risolta'
-  /** Ritirata dal giocatore prima della chiusura. */
-  | 'ritirata';
+  /** Non eseguita: la scena o un'altra azione l'hanno resa impossibile (vedi `motivo`). Si riscrive. */
+  | 'superata'
+  /** Era da confermare e il tempo è scaduto: esclusa dal turno. Si riscrive. */
+  | 'sospesa';
 
-/** Riepilogo pubblico dell'azione di un PG nella finestra corrente (senza il testo). */
+/** Presenza di un invitato nella finestra corrente (senza il testo). */
 export interface AzionePubblica {
   id_pg: string;
-  /** Il PG ha un'azione inviata (non ritirata). */
+  /** Il PG ha un'azione inviata e valida in questa finestra. */
   scritta: boolean;
   pronto: boolean;
 }
 
-/** Azione completa, mandata solo al telefono di chi l'ha scritta (stanza player:<id_pg>). */
+/** Scelta chiesta al giocatore quando la sua azione passa a «da confermare». */
+export interface RichiestaScelta {
+  tipo: 'dipendenza' | 'conflitto' | 'vecchia';
+  /** Cosa è successo e cosa si può fare, in parole semplici (mai il contenuto di azioni private altrui). */
+  testo: string;
+  /** Etichetta del pulsante per tenere l'azione: «Confermo», oppure «Tengo» nei conflitti. */
+  conferma: 'Confermo' | 'Tengo';
+  /** Epoch ms (orologio del server) oltre cui l'azione diventa «sospesa»; null = non ancora fissato. */
+  scadenza_ms: number | null;
+}
+
+/** La mia azione, mandata solo al telefono di chi l'ha scritta (stanza player:<id_pg>). */
 export interface AzionePrivata {
+  id: string;
   id_pg: string;
+  /** Testo corrente: anche quando è superata o sospesa resta qui, pronto da riscrivere. */
+  testo: string;
+  privata: boolean;
+  stato: StatoAzione;
+  /** Frase breve quando lo stato cambia per cause esterne. */
+  motivo: string | null;
+  /** Presente quando lo stato è «da_confermare». */
+  richiesta: RichiestaScelta | null;
+  pronto: boolean;
+  /** Ultima narrazione che il giocatore aveva ricevuto quando ha cominciato a scrivere. */
+  versione_vista: number;
+  /** Turno (finestra) in cui l'azione entra. */
+  turno: number;
+  /** Epoch ms del primo invio (decide l'ordine: prima scrive, prima arriva). */
+  inviata_alle: number;
+}
+
+/** Azione pubblica di un altro giocatore, nella sezione «Al tavolo» dei telefoni. */
+export interface AzioneAlTavolo {
+  id: string;
+  id_pg: string;
+  nome: string;
   testo: string;
   stato: StatoAzione;
-  pronto: boolean;
-  /** Versione della scena su cui l'azione è stata scritta. */
-  versione_scena: number;
-  /** Turno in cui l'azione è stata (o sarà) risolta. */
-  turno: number;
+  /** Nomi dei PG alle cui azioni questa si collega («anch'io», «lo seguo»…). */
+  dipende_da: string[];
 }
 
 /** Finestra delle azioni (vuota quando chiusa). */
@@ -122,6 +162,8 @@ export interface StatoTavolo {
   scena: ScenaPubblica;
   pg: PgPubblico[];
   finestra: FinestraPubblica;
+  /** Azioni pubbliche in attesa (in coda o da confermare) di tutti i giocatori: «Al tavolo». */
+  al_tavolo: AzioneAlTavolo[];
   /** Ultime voci della trascrizione pubblica (le più vecchie possono essere tagliate). */
   trascrizione: VoceTrascrizione[];
   /** Motore voce in uso: 'qwen' (servizio locale) oppure 'mock'. */

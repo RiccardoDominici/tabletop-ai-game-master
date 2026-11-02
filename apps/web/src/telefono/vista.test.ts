@@ -24,17 +24,23 @@ function stato(parziale: Partial<StatoTavolo> = {}): StatoTavolo {
     voce_motore: 'mock',
     schermo_connesso: true,
     ora_server_ms: 1_700_000_000_000,
+    al_tavolo: [],
     ...parziale,
   };
 }
 
 const mia: AzionePrivata = {
+  id: 'a1',
   id_pg: 'aldo',
   testo: 'Apro la botola',
+  privata: false,
   stato: 'in_coda',
+  motivo: null,
+  richiesta: null,
   pronto: true,
-  versione_scena: 1,
+  versione_vista: 1,
   turno: 2,
+  inviata_alle: 0,
 };
 
 describe('vista del telefono', () => {

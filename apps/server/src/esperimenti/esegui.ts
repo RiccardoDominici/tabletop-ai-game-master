@@ -121,7 +121,7 @@ async function main(): Promise<void> {
     for (const { pg, azione } of copione.turni[n - 1]!) {
       const t = telefoni.get(pg);
       if (!t) throw new Error(`turno ${n}: ${pg} non è al tavolo`);
-      const e = await emetti<Esito>((cb) => t.emit('azione:invia', { id_pg: pg, testo: azione, versione_scena: stato.versione_scena }, cb));
+      const e = await emetti<Esito>((cb) => t.emit('azione:invia', { id_pg: pg, testo: azione, versione_vista: stato.versione_scena }, cb));
       if (!e.ok) throw new Error(`turno ${n}: azione di ${pg} rifiutata: ${e.errore}`);
     }
     const dopo = attendiStato(schermo, (s) => s.turno === n + 1 && s.fase === 'finestra', 300_000, `fine del turno ${n}`);

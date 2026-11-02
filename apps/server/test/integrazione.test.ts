@@ -149,16 +149,21 @@ describe('server F0 con client veri', () => {
     expect(byteAudio.get(0)).toBeGreaterThan(0);
 
     // --- Azioni: un telefono non può agire per un altro PG; modifica, ritiro, pronto.
-    expect(await emetti<Esito>((cb) => tel1.emit('azione:invia', { id_pg: 'pg_bruno', testo: 'X', versione_scena: 1 }, cb))).toMatchObject({ ok: false });
+    expect(await emetti<Esito>((cb) => tel1.emit('azione:invia', { id_pg: 'pg_bruno', testo: 'X', versione_vista: 1 }, cb))).toMatchObject({ ok: false });
     const mia: AzionePrivata[] = [];
     tel1.on('azione:mia', (a) => a && mia.push(a));
-    expect(await emetti<Esito>((cb) => tel1.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Ordino da bere.', versione_scena: 1 }, cb))).toEqual({ ok: true });
-    expect(await emetti<Esito>((cb) => tel1.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Ordino vino caldo.', versione_scena: 1 }, cb))).toEqual({ ok: true });
+    expect(await emetti<Esito>((cb) => tel1.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Ordino da bere.', versione_vista: 1 }, cb))).toEqual({ ok: true });
+    expect(await emetti<Esito>((cb) => tel1.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Ordino vino caldo.', versione_vista: 1 }, cb))).toEqual({ ok: true });
     const conTimer = await emetti<StatoTavolo>((cb) => tel2.emit('stato:richiedi', cb));
     expect(conTimer.finestra.chiusura_prevista_ms).toBeGreaterThan(Date.now());
-    expect(JSON.stringify(conTimer)).not.toContain('vino caldo'); // il testo resta privato finché la finestra è aperta
+    // Il tavolo vede le intenzioni pubbliche (docs/azioni-concorrenti.md, principio 2).
+    expect(conTimer.al_tavolo).toMatchObject([{ id_pg: 'pg_anna', testo: 'Ordino vino caldo.', stato: 'in_coda' }]);
     expect(JSON.stringify(conTimer)).not.toContain('SEGRETO_DI_ANNA');
-    expect(await emetti<Esito>((cb) => tel2.emit('azione:invia', { id_pg: 'pg_bruno', testo: 'Guardo la porta.', versione_scena: 1 }, cb))).toEqual({ ok: true });
+    // Un'azione privata non compare al tavolo.
+    expect(await emetti<Esito>((cb) => tel2.emit('azione:invia', { id_pg: 'pg_bruno', testo: 'Rubo una moneta.', versione_vista: 1, privata: true }, cb))).toEqual({ ok: true });
+    const conPrivata = await emetti<StatoTavolo>((cb) => tel1.emit('stato:richiedi', cb));
+    expect(JSON.stringify(conPrivata)).not.toContain('Rubo una moneta');
+    expect(await emetti<Esito>((cb) => tel2.emit('azione:invia', { id_pg: 'pg_bruno', testo: 'Guardo la porta.', versione_vista: 1 }, cb))).toEqual({ ok: true });
     expect(await emetti<Esito>((cb) => tel2.emit('azione:ritira', { id_pg: 'pg_bruno' }, cb))).toEqual({ ok: true });
 
     const finestra2 = attendiStato(tel1, (s) => s.fase === 'finestra' && s.turno === 2);
@@ -178,7 +183,7 @@ describe('server F0 con client veri', () => {
     ]);
     const voci1 = frasiAudio.filter((f) => f.turno === 1);
     expect(voci1.map((f) => f.parlante)).toEqual(['narratore', 'narratore', 'png_oste', 'narratore']);
-    expect(mia.at(-1)).toMatchObject({ stato: 'risolta', testo: 'Ordino vino caldo.', versione_scena: 1, turno: 1 });
+    expect(mia.at(-1)).toMatchObject({ stato: 'risolta', testo: 'Ordino vino caldo.', versione_vista: 1, turno: 1 });
 
     // --- Misure: un record per il turno 1 con tutti i campi del contratto.
     const righe = fs.readFileSync(path.join(cartellaLog, 'turni.jsonl'), 'utf8').trim().split('\n').map((r) => JSON.parse(r));

@@ -98,7 +98,7 @@ describe('modalità repertorio', () => {
     await emetti<Esito>((cb) => schermo.emit('schermo:inizia', cb));
     await f1;
     const f2 = attendiStato(tel, (s) => s.fase === 'finestra' && s.turno === 2);
-    expect(await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Saluto l’oste.', versione_scena: 1 }, cb))).toEqual({ ok: true });
+    expect(await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Saluto l’oste.', versione_vista: 1 }, cb))).toEqual({ ok: true });
     expect(await emetti<Esito>((cb) => tel.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb))).toEqual({ ok: true });
     const s2 = await f2;
 

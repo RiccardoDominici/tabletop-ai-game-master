@@ -1,0 +1,496 @@
+# Casi di valutazione per l'arbitro delle azioni simultanee (docs/azioni-concorrenti.md, «Il classificatore»).
+#
+# Scena: prova F0, l'osteria del Forno Vecchio nella Notte dei Lumi (campagne/prova-f0).
+# Confine delle informazioni: i casi usano SOLO il lato pubblico della scena — nome, descrizione, apertura ed
+# elementi interattivi visibili di scena.yaml, il riassunto iniziale della sessione, e di ogni PG nome, specie,
+# classe, aspetto e concetto. Niente conoscenze private, niente elementi nascosti, niente causa della febbre.
+# PNG pubblici: Ottavia (ostessa), Baldrin (nano, guarda il ripostiglio con la chiave al collo), il forestiero
+# chiuso nel ripostiglio, Moro il cane.
+#
+# Gruppi (prefisso dell'id):
+#   d = dipendenza (10)   c = conflitto (8: 5 esclusivi, 3 non esclusivi)   v = azione vecchia (8: 3 valida,
+#   3 dubbia, 2 impossibile)   m = cambio di un'azione da cui un'altra dipende (4: 2 toccata, 2 no)
+#   f = falso allarme (8: nomi o parole-spia senza legame reale)
+# Insiemi: `riserva` = 13 casi tenuti da parte per la misura finale (almeno uno per gruppo); il resto `sviluppo`.
+#
+# Regole adottate per la risposta giusta (quando il dubbio c'è, la nota del caso lo dice):
+#   - `dipende_da` contiene solo i legami DIRETTI: la catena A → B → C la propaga il Motore (d05).
+#   - Un giocatore non può dipendere da un'azione privata di un altro: non la vede (d02, f06).
+#     Un'azione privata può invece dipendere da un'azione pubblica che il suo autore vede (d10).
+#   - Le azioni private contano per i conflitti esclusivi (c04).
+#   - Conflitto esclusivo: le due azioni non possono riuscire entrambe (stesso oggetto preso da due, stessa porta
+#     aperta e sbarrata, stessa cosa portata in due posti). Vince chi ha scritto prima: in coda c'è sempre l'azione
+#     più vecchia.
+#   - Conflitto non esclusivo: stesso bersaglio e gli esiti si intrecciano (due colpi sullo stesso avversario,
+#     approcci o richieste opposti allo stesso PNG); il narratore li risolve insieme, senza avvisi.
+#     Domande diverse e compatibili allo stesso PNG NON sono conflitto (f03).
+#   - Chi dipende da un'azione non è anche «in conflitto» con lei: fare la stessa cosa insieme è dipendenza.
+#   - Azioni vecchie: `valida` se la narrazione non tocca il presupposto; `dubbia` se il presupposto è cambiato ma
+#     l'azione si può ancora fare; `impossibile` se così com'è scritta non si può più fare (porta già richiusa,
+#     PNG sparito, momento passato).
+
+casi:
+
+  # ─────────────────────────── DIPENDENZE ───────────────────────────
+
+  - id: d01
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "«anche io» secco con una sola azione pubblica in coda: dipendenza certa (la regola basta, senza modello)."
+    narrazione: "Dietro la porta del ripostiglio qualcuno tossisce di nuovo, forte. Baldrin non alza nemmeno gli occhi dal martello."
+    coda:
+      - {id: a1, autore: pg_teodora, testo: "mi avvicino alla grata e chiedo al forestiero se sta male", privata: false}
+    nuova: {id: n1, autore: pg_ginestra, testo: "anche io", privata: false}
+    atteso:
+      dipende_da: [a1]
+      conflitti: []
+
+  - id: d02
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "«lo seguo» con un solo candidato pubblico (Assenzio, a1); l'azione privata di Ginestra (a2) Teodora non la vede, quindi non può contare."
+    narrazione: "Ottavia passa con una cesta vuota e scosta la tenda del retro: dall'altra parte si vedono i sacchi di farina accatastati."
+    coda:
+      - {id: a1, autore: pg_assenzio, testo: "vado nel retro dietro la tenda, voglio vedere com'è messa la cucina", privata: false}
+      - {id: a2, autore: pg_ginestra, testo: "mi accuccio vicino a moro e gli parlo piano con la magia, gli chiedo se ha paura di qualcosa", privata: true}
+    nuova: {id: n1, autore: pg_teodora, testo: "lo seguo", privata: false}
+    atteso:
+      dipende_da: [a1]
+      conflitti: []
+
+  - id: d03
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "due candidati: «lo» è maschile e «sparisce» richiama chi sgattaiola nel retro, quindi Assenzio (a2) e non Ginestra (a1)."
+    narrazione: "Dalla piazza arriva il primo rintocco della cappella. Ottavia si irrigidisce e smette di asciugare le scodelle."
+    coda:
+      - {id: a1, autore: pg_ginestra, testo: "vado alla finestra a vedere cosa succede in piazza", privata: false}
+      - {id: a2, autore: pg_assenzio, testo: "sgattaiolo nel retro dietro la tenda senza dire niente a nessuno", privata: false}
+    nuova: {id: n1, autore: pg_corrado, testo: "lo seguo, nn mi piace ke sparisce così", privata: false}
+    atteso:
+      dipende_da: [a2]
+      conflitti: []
+
+  - id: d04
+    tipo: relazioni
+    insieme: riserva
+    nota: "«anch'io» con due candidati: il seguito (quanti sono i malati) lo lega alla domanda di Teodora a Ottavia (a2), non a Corrado che tratta con Baldrin (a1)."
+    narrazione: "Ottavia posa sul tavolo le scodelle di zuppa di castagne. «Mangiate, che stanotte non si dorme», dice, senza guardarvi."
+    coda:
+      - {id: a1, autore: pg_corrado, testo: "provo a convincere baldrin a farmi dare un'occhiata nel ripostiglio", privata: false}
+      - {id: a2, autore: pg_teodora, testo: "chiedo a ottavia dei malati, chi sono e da quando stanno male", privata: false}
+    nuova: {id: n1, autore: pg_ginestra, testo: "anch'io! voglio sapere quanti sono i malati e cosa sentono, magari ho l'erba giusta", privata: false}
+    atteso:
+      dipende_da: [a2]
+      conflitti: []
+
+  - id: d05
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "catena: Teodora segue Corrado (a2), che a sua volta va con Ginestra (a1). L'arbitro dà solo il legame diretto [a2]; la catena la propaga il Motore."
+    narrazione: "Fuori, sotto il portico, si sente lo scricchiolio di passi sulla neve. Poi più niente."
+    coda:
+      - {id: a1, autore: pg_ginestra, testo: "esco sotto il portico a vedere chi c'è", privata: false}
+      - {id: a2, autore: pg_corrado, testo: "vado con ginestra, la balestra in mano", privata: false}
+    nuova: {id: n1, autore: pg_teodora, testo: "seguo corrado", privata: false}
+    atteso:
+      dipende_da: [a2]
+      conflitti: []
+
+  - id: d06
+    tipo: relazioni
+    insieme: riserva
+    nota: "refusi da telefono («anxhio», «cn», «corado»): resta una dipendenza dall'azione di Corrado (a1); quella di Teodora (a2) non c'entra."
+    narrazione: "Baldrin si gratta la barba e borbotta qualcosa sul freddo. Il fuoco del forno scoppietta."
+    coda:
+      - {id: a1, autore: pg_corrado, testo: "mi metto di guardia alla porta d'ingresso, nessuno entra senza ke lo vedo", privata: false}
+      - {id: a2, autore: pg_teodora, testo: "chiedo a ottavia una coperta in più per stanotte", privata: false}
+    nuova: {id: n1, autore: pg_assenzio, testo: "anxhio vado cn corado alla porta", privata: false}
+    atteso:
+      dipende_da: [a1]
+      conflitti: []
+
+  - id: d07
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "«copro Corrado»: Teodora distrae Baldrin perché Corrado (a1) forzi la serratura: dipendenza esplicita. Parlare a Baldrin non toglie niente a Corrado: nessun conflitto."
+    narrazione: "Baldrin si alza, va alla finestra e guarda la piazza: là fuori qualcuno accende le torce. La chiave gli pende sul petto."
+    coda:
+      - {id: a1, autore: pg_corrado, testo: "mentre il nano è alla finestra provo a forzare la serratura del ripostiglio col coltello", privata: false}
+      - {id: a2, autore: pg_ginestra, testo: "finisco la zuppa al tavolo lungo", privata: false}
+    nuova: {id: n1, autore: pg_teodora, testo: "copro corrado. vado da baldrin alla finestra e gli chiedo delle torce ad alta voce, cosi nn sente niente", privata: false}
+    atteso:
+      dipende_da: [a1]
+      conflitti: []
+
+  - id: d08
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "aiuto implicito, senza nome né «aiuto»: «gli faccio luce sulla serratura» si riferisce ad Assenzio che la sta aprendo (a1)."
+    narrazione: "Baldrin ciondola la testa sul petto: dorme, o quasi. Il martello gli è scivolato di lato sulla panca."
+    coda:
+      - {id: a1, autore: pg_assenzio, testo: "tiro fuori i ferretti e provo ad aprire la serratura del ripostiglio, piano piano", privata: false}
+    nuova: {id: n1, autore: pg_teodora, testo: "accendo la lanterna e gli faccio luce sulla serratura, bassa bassa che il nano nn si svegli", privata: false}
+    atteso:
+      dipende_da: [a1]
+      conflitti: []
+
+  - id: d09
+    tipo: relazioni
+    insieme: riserva
+    nota: "«insieme a ginestra»: dipende da a1 anche se Corrado aggiunge un compito suo (tenere d'occhio il nano); l'azione di Assenzio (a2) non c'entra."
+    narrazione: "Moro si stiracchia vicino al forno e sbadiglia, poi guarda Ginestra battendo la coda sul pavimento."
+    coda:
+      - {id: a1, autore: pg_ginestra, testo: "vado da moro e provo a parlargli con la magia: cosa hai sentito stanotte, bello?", privata: false}
+      - {id: a2, autore: pg_assenzio, testo: "chiedo a ottavia se le serve una mano in cucina", privata: false}
+    nuova: {id: n1, autore: pg_corrado, testo: "vado insieme a ginestra vicino al forno e intanto tengo d'occhio il nano", privata: false}
+    atteso:
+      dipende_da: [a1]
+      conflitti: []
+
+  - id: d10
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "l'azione nuova è privata ma si appoggia a un'azione pubblica che Assenzio vede (a1): dipendenza valida, è privata solo la sua."
+    narrazione: "Ottavia torna dietro il bancone e conta le scodelle, due volte, senza dire una parola."
+    coda:
+      - {id: a1, autore: pg_ginestra, testo: "vado nel retro dietro la tenda a scaldare un po' d'acqua x un infuso", privata: false}
+    nuova: {id: n1, autore: pg_assenzio, testo: "la seguo senza farmi vedere, voglio sapere cosa combina là dietro", privata: true}
+    atteso:
+      dipende_da: [a1]
+      conflitti: []
+
+  # ─────────────────────────── CONFLITTI ───────────────────────────
+
+  - id: c01
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "esclusivo: Assenzio (a1) e Corrado vogliono la stessa chiave dal collo di Baldrin; vince a1 che ha scritto prima. Ginestra (a2) non c'entra."
+    narrazione: "Baldrin russa piano, la testa contro la porta del ripostiglio. La chiave gli dondola sul petto, appesa a un laccio di cuoio."
+    coda:
+      - {id: a1, autore: pg_assenzio, testo: "mi avvicino piano e gli sfilo la chiave dal collo, senza svegliarlo", privata: false}
+      - {id: a2, autore: pg_ginestra, testo: "accarezzo moro vicino al forno", privata: false}
+    nuova: {id: n1, autore: pg_corrado, testo: "taglio il laccio col coltello e mi prendo la chiave", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: [{con: a1, esclusivo: true}]
+
+  - id: c02
+    tipo: relazioni
+    insieme: riserva
+    nota: "esclusivo: la stessa borsa del forestiero presa da due (Teodora la porta al tavolo, Ginestra la prende per sé); una sola persona può averla in mano."
+    narrazione: "Baldrin solleva la borsa del forestiero e la sbatte sulla panca: «Eccola, la prova. Guardate pure, se avete stomaco»."
+    coda:
+      - {id: a1, autore: pg_teodora, testo: "prendo la borsa e la porto al tavolo lungo, la apro alla luce", privata: false}
+    nuova: {id: n1, autore: pg_ginestra, testo: "la borsa la prendo io, voglio vedere cosa c'è dentro", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: [{con: a1, esclusivo: true}]
+
+  - id: c03
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "esclusivo: Corrado sbarra la porta d'ingresso (a1), Teodora la apre per uscire; non possono riuscire entrambe. Ginestra alla finestra (a2) è compatibile."
+    narrazione: "Dalla piazza salgono voci e luce di torce. Qualcuno grida: «Fuori il forestiero!». La porta d'ingresso trema sui cardini."
+    coda:
+      - {id: a1, autore: pg_corrado, testo: "sbarro la porta d'ingresso col paletto e ci metto davanti la panca", privata: false}
+      - {id: a2, autore: pg_ginestra, testo: "vado alla finestra e conto quante torce ci sono", privata: false}
+    nuova: {id: n1, autore: pg_teodora, testo: "apro la porta ed esco sotto il portico a parlare con la gente, devo calmarli", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: [{con: a1, esclusivo: true}]
+
+  - id: c04
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "esclusivo con un'azione privata: Assenzio (a1, privata) si intasca il quaderno; Ginestra non lo sa ma vuole lo stesso oggetto. Va segnalato (l'avviso non ne rivelerà il contenuto). Corrado (a2) è compatibile."
+    narrazione: "Ottavia va alla finestra a guardare la cappella e lascia il bancone scoperto. Sotto, tra i barattoli, si vede un quaderno unto di farina."
+    coda:
+      - {id: a1, autore: pg_assenzio, testo: "mi infilo dietro il bancone e mi metto il quaderno dei conti sotto la giacca, poi lo leggo con calma", privata: true}
+      - {id: a2, autore: pg_corrado, testo: "chiedo a baldrin da quanto tempo il forestiero è chiuso là dentro", privata: false}
+    nuova: {id: n1, autore: pg_ginestra, testo: "prendo il quaderno sotto il bancone e lo sfoglio", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: [{con: a1, esclusivo: true}]
+
+  - id: c05
+    tipo: relazioni
+    insieme: riserva
+    nota: "esclusivo per direzioni opposte: lo stesso cane portato fuori sotto il portico (a1) e chiuso dentro nel retro; non si possono fare tutte e due."
+    narrazione: "Moro comincia ad abbaiare verso la porta d'ingresso e non smette più. Ottavia sbuffa: «Qualcuno lo faccia stare zitto»."
+    coda:
+      - {id: a1, autore: pg_ginestra, testo: "prendo moro e lo porto fuori sotto il portico, all'aria si calma", privata: false}
+    nuova: {id: n1, autore: pg_assenzio, testo: "chiudo moro di là nel retro, lì si calma sempre", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: [{con: a1, esclusivo: true}]
+
+  - id: c06
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "non esclusivo: due azioni fisiche sullo stesso avversario (Baldrin), si sommano e il narratore le risolve insieme. Nessuna dipendenza."
+    narrazione: "Baldrin scatta in piedi col martello alzato: «Chi tocca quella porta, gli spacco le mani!». È a un passo da Assenzio."
+    coda:
+      - {id: a1, autore: pg_corrado, testo: "gli afferro il braccio del martello e glielo torco dietro la schiena", privata: false}
+    nuova: {id: n1, autore: pg_assenzio, testo: "gli tiro un calcio negli stinchi e salto indietro", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: [{con: a1, esclusivo: false}]
+
+  - id: c07
+    tipo: relazioni
+    insieme: riserva
+    nota: "non esclusivo: approcci opposti allo stesso PNG (Corrado minaccia Baldrin, Ginestra lo blandisce); si possono fare entrambi ma Baldrin reagisce a tutti e due. Teodora (a2) è compatibile."
+    narrazione: "Baldrin incrocia le braccia davanti alla porta del ripostiglio. «La chiave resta qui. Al terzo rintocco lo consegno al paese, e basta»."
+    coda:
+      - {id: a1, autore: pg_corrado, testo: "lo prendo per il bavero: «dammi quella chiave, nano, o te la prendo io»", privata: false}
+      - {id: a2, autore: pg_teodora, testo: "vado alla finestra a guardare la cappella", privata: false}
+    nuova: {id: n1, autore: pg_ginestra, testo: "parlo a baldrin con calma: sono un'erborista, voglio solo vedere se il forestiero ha la febbre. nn gli faccio niente", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: [{con: a1, esclusivo: false}]
+
+  - id: c08
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "non esclusivo: consigli opposti alla stessa ostessa (porta chiusa / porta aperta). Sono parole, si dicono entrambe; decide Ottavia e il narratore le risolve insieme. Dubbio: c'è chi lo leggerebbe esclusivo."
+    narrazione: "Ottavia guarda la porta d'ingresso, poi voi. «Quando suona il terzo rintocco verranno qui. Io non so cosa fare»."
+    coda:
+      - {id: a1, autore: pg_teodora, testo: "dico a ottavia di tenere la porta chiusa stanotte e di non aprire a nessuno", privata: false}
+    nuova: {id: n1, autore: pg_corrado, testo: "ottavia, quando arrivano apri. falli entrare e parliamoci, se li lasci fuori al freddo è peggio", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: [{con: a1, esclusivo: false}]
+
+  # ─────────────────────────── AZIONI VECCHIE ───────────────────────────
+  # La narrazione è arrivata DOPO che le azioni sono state scritte (versione_vista precedente).
+
+  - id: v01
+    tipo: vecchie
+    insieme: sviluppo
+    nota: "la narrazione parla d'altro (il pane, il rintocco): la grata e il forestiero sono dove erano → valida."
+    narrazione: "Ottavia toglie il lino da una cesta e mette in tavola il pane ancora caldo. Dalla cappella arriva il primo rintocco."
+    vecchie:
+      - {id: a1, autore: pg_corrado, testo: "vado alla grata e chiedo al forestiero da dove viene", privata: false}
+    atteso:
+      giudizi: {a1: valida}
+
+  - id: v02
+    tipo: vecchie
+    insieme: sviluppo
+    nota: "il cane che beve non tocca né Ottavia né il quaderno → valida."
+    narrazione: "Moro si alza, beve rumorosamente dalla ciotola accanto al forno e torna ad accucciarsi."
+    vecchie:
+      - {id: a1, autore: pg_ginestra, testo: "chiedo a ottavia se posso dare un'occhiata al quaderno dei conti", privata: false}
+    atteso:
+      giudizi: {a1: valida}
+
+  - id: v03
+    tipo: vecchie
+    insieme: riserva
+    nota: "la narrazione nomina Baldrin e la chiave, ma lui resta alla porta e la grata è lì: chiedergli di pregare attraverso la grata resta possibile → valida (falso allarme da parole in comune)."
+    narrazione: "Baldrin si rigira la chiave tra le dita, poi se la rimette al collo e si appoggia di nuovo alla porta, il martello sulle ginocchia."
+    vecchie:
+      - {id: a1, autore: pg_teodora, testo: "chiedo a baldrin se posso dire una preghiera per il forestiero attraverso la grata", privata: false}
+    atteso:
+      giudizi: {a1: valida}
+
+  - id: v04
+    tipo: vecchie
+    insieme: sviluppo
+    nota: "Ottavia è uscita al pozzo ma ha detto «torno subito»: la domanda si può ancora fare (aspettando o andandole dietro), però non com'era pensata → dubbia. Diverso da v08: lì il PNG è sparito."
+    narrazione: "Ottavia prende il secchio ed esce verso il pozzo: «Torno subito». La porta sbatte dietro di lei e il freddo arriva fino al forno."
+    vecchie:
+      - {id: a1, autore: pg_corrado, testo: "chiedo a ottavia chi ha visto per primo il forestiero e quando è arrivato", privata: false}
+    atteso:
+      giudizi: {a1: dubbia}
+
+  - id: v05
+    tipo: vecchie
+    insieme: riserva
+    nota: "azione privata che contava su Baldrin addormentato e la chiave in vista: ora è sveglio e la chiave è sotto la camicia. Tentare si può, ma il presupposto è caduto → dubbia."
+    narrazione: "Baldrin si sveglia di colpo, si infila la chiave sotto la camicia e si mette a sedere dritto, gli occhi ben aperti sulla sala."
+    vecchie:
+      - {id: a1, autore: pg_assenzio, testo: "mentre il nano dorme gli sfilo la chiave dal collo, piano", privata: true}
+    atteso:
+      giudizi: {a1: dubbia}
+
+  - id: v06
+    tipo: vecchie
+    insieme: sviluppo
+    nota: "uscire sotto il portico si può ancora, ma lì fuori ora c'è il paese con le torce: non è più «prendere aria» → dubbia."
+    narrazione: "Sotto il portico si accendono le torce: una decina di paesani si ferma davanti alla porta e qualcuno bussa forte. «Ottavia! Apri!»"
+    vecchie:
+      - {id: a1, autore: pg_teodora, testo: "esco un attimo sotto il portico a prendere aria, qui dentro si soffoca", privata: false}
+    atteso:
+      giudizi: {a1: dubbia}
+
+  - id: v07
+    tipo: vecchie
+    insieme: sviluppo
+    nota: "l'azione aspettava che la porta si aprisse: si è aperta ed è già richiusa a doppia mandata, il momento è passato → impossibile come scritta."
+    narrazione: "Baldrin apre la porta del ripostiglio appena di una spanna, Ottavia passa dentro la brocca d'acqua, e lui richiude subito con due giri di chiave."
+    vecchie:
+      - {id: a1, autore: pg_assenzio, testo: "quando baldrin apre x passare l'acqua mi infilo dentro di corsa", privata: false}
+    atteso:
+      giudizi: {a1: impossibile}
+
+  - id: v08
+    tipo: vecchie
+    insieme: riserva
+    nota: "Moro è scappato fuori ed è sparito nel buio: sedersi vicino a lui accanto al forno e parlargli non si può più (servirebbe un'altra azione, uscire a cercarlo) → impossibile."
+    narrazione: "Ottavia apre la porta per buttare l'acqua sporca: Moro schizza fuori come un fulmine, attraversa la piazza e sparisce nel buio. Lei richiude, imprecando."
+    vecchie:
+      - {id: a1, autore: pg_ginestra, testo: "mi siedo vicino a moro accanto al forno e provo a parlargli con la magia", privata: false}
+    atteso:
+      giudizi: {a1: impossibile}
+
+  # ─────────────────────────── CAMBI ───────────────────────────
+  # `prima` e `dopo` sono due versioni della stessa azione; `dipendente` dipende da lei.
+
+  - id: m01
+    tipo: cambio
+    insieme: sviluppo
+    nota: "cambia solo il modo (senza fare rumore), non la meta: chi va anche lui alla grata non è toccato → nessun avviso."
+    narrazione: "Dietro la porta del ripostiglio il forestiero tossisce ancora, una tosse secca, lunga."
+    prima: {id: a1, autore: pg_ginestra, testo: "vado alla grata del ripostiglio"}
+    dopo: {id: a1, autore: pg_ginestra, testo: "vado alla grata del ripostiglio, senza fare rumore"}
+    dipendente: {id: a2, autore: pg_corrado, testo: "anch'io"}
+    atteso:
+      toccata: false
+
+  - id: m02
+    tipo: cambio
+    insieme: sviluppo
+    nota: "Ginestra precisa la domanda sullo stesso argomento (i malati): Teodora voleva saperlo anche lei e resta così → non toccata."
+    narrazione: "Ottavia si siede un momento sullo sgabello dietro il bancone e si massaggia le mani."
+    prima: {id: a1, autore: pg_ginestra, testo: "chiedo a ottavia dei malati"}
+    dopo: {id: a1, autore: pg_ginestra, testo: "chiedo a ottavia dei malati: quanti sono e da quanti giorni hanno la febbre"}
+    dipendente: {id: a2, autore: pg_teodora, testo: "anche io voglio saperlo, mi siedo al bancone con ginestra"}
+    atteso:
+      toccata: false
+
+  - id: m03
+    tipo: cambio
+    insieme: sviluppo
+    nota: "Assenzio cambia meta (dal retro alla finestra): chi lo seguiva nel retro ora andrebbe altrove → toccata."
+    narrazione: "Ottavia scosta la tenda del retro e ci sparisce dietro con una cesta vuota."
+    prima: {id: a1, autore: pg_assenzio, testo: "vado nel retro dietro la tenda a vedere cosa fa ottavia"}
+    dopo: {id: a1, autore: pg_assenzio, testo: "no lascia stare, vado alla finestra a guardare la piazza"}
+    dipendente: {id: a2, autore: pg_corrado, testo: "lo seguo"}
+    atteso:
+      toccata: true
+
+  - id: m04
+    tipo: cambio
+    insieme: riserva
+    nota: "Teodora aiutava a convincere Baldrin con le buone; Corrado passa a strappargli la chiave: l'aiuto a «convincerlo» non ha più senso → toccata."
+    narrazione: "Baldrin stringe la chiave nel pugno e non risponde. Guarda Corrado dal basso in alto, senza paura."
+    prima: {id: a1, autore: pg_corrado, testo: "parlo con baldrin con calma, gli chiedo di farci vedere il forestiero"}
+    dopo: {id: a1, autore: pg_corrado, testo: "basta parlare. gli strappo la chiave dal collo"}
+    dipendente: {id: a2, autore: pg_teodora, testo: "aiuto corrado a convincerlo, gli dico che anche il forestiero ha diritto a una preghiera"}
+    atteso:
+      toccata: true
+
+  # ─────────────────────────── FALSI ALLARMI ───────────────────────────
+  # Nomi di PG o parole-spia («anche», «come», «aiuto») senza un legame reale: tutto vuoto.
+
+  - id: f01
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "salutare Corrado non dipende da quello che fa Corrado (a1); Assenzio (a2) non c'entra → nessun legame."
+    narrazione: "La sala si riempie del vapore della zuppa. Ottavia passa tra i tavoli col mestolo in mano."
+    coda:
+      - {id: a1, autore: pg_corrado, testo: "mi siedo al tavolo lungo e mangio la zuppa, finalmente", privata: false}
+      - {id: a2, autore: pg_assenzio, testo: "mi siedo sul bancone e rubo una castagna", privata: false}
+    nuova: {id: n1, autore: pg_ginestra, testo: "saluto corrado con la mano e vado a scaldarmi i piedi vicino al forno", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: []
+
+  - id: f02
+    tipo: relazioni
+    insieme: riserva
+    nota: "«guardo cosa fa Teodora» è osservare, non seguire né aiutare: se Teodora cambia azione, Assenzio guarda comunque lei → nessuna dipendenza."
+    narrazione: "Il fuoco del forno tinge la sala di rosso. Baldrin sbadiglia, la chiave che gli si alza e abbassa sul petto."
+    coda:
+      - {id: a1, autore: pg_teodora, testo: "vado alla finestra e guardo la cappella illuminata", privata: false}
+    nuova: {id: n1, autore: pg_assenzio, testo: "guardo cosa fa teodora, poi mi appoggio al bancone con le mani in tasca", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: []
+
+  - id: f03
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "due domande diverse e compatibili alla stessa ostessa: nessuna dipendenza e nessun conflitto, Ottavia risponde a tutti e due. Il non esclusivo è per azioni che si intrecciano (c07, c08). Dubbio: la doc cita «due parlano allo stesso PNG»."
+    narrazione: "Ottavia si appoggia al bancone e si asciuga la fronte col dorso della mano."
+    coda:
+      - {id: a1, autore: pg_ginestra, testo: "chiedo a ottavia da quanti giorni i malati hanno la febbre", privata: false}
+      - {id: a2, autore: pg_assenzio, testo: "gioco con moro vicino al forno", privata: false}
+    nuova: {id: n1, autore: pg_corrado, testo: "ottavia quanto vuoi per un letto vero? sopra la stalla si gela", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: []
+
+  - id: f04
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "«come ginestra ho fame anche io» è un paragone, non un «anch'io» sull'azione: Assenzio fa una cosa sua (va a servirsi da solo). Se Ginestra cambia, lui non cambia."
+    narrazione: "Le scodelle sono vuote. Dal forno arriva odore di castagne arrostite."
+    coda:
+      - {id: a1, autore: pg_ginestra, testo: "chiedo a ottavia un'altra scodella di zuppa, ho una fame da lupi", privata: false}
+    nuova: {id: n1, autore: pg_assenzio, testo: "come ginestra ho fame anche io, ma nn disturbo ottavia: vado nel retro e mi arrangio, so dove tiene le cose", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: []
+
+  - id: f05
+    tipo: relazioni
+    insieme: riserva
+    nota: "Teodora parla a Corrado, ma d'altro (la partenza di domani): la battuta non si appoggia alla sua azione → nessun legame. Ginestra (a2) non c'entra."
+    narrazione: "Fuori il vento ammucchia la neve contro le imposte. Ottavia aggiunge un ciocco nel forno."
+    coda:
+      - {id: a1, autore: pg_corrado, testo: "vado al bancone e chiedo a ottavia del vino caldo", privata: false}
+      - {id: a2, autore: pg_ginestra, testo: "controllo le erbe nella borsa, ne ho ancora per un infuso?", privata: false}
+    nuova: {id: n1, autore: pg_teodora, testo: "dico a corrado: «domattina all'alba ripartiamo, se la neve chiude il passo restiamo bloccati qui»", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: []
+
+  - id: f06
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "l'unica azione in coda è privata: Corrado non la vede, quindi «sto vicino ad assenzio» riguarda la persona, non quell'azione → nessuna dipendenza (e nessun conflitto: non è esclusivo)."
+    narrazione: "Baldrin si alza e va alla finestra a guardare le torce in piazza, dando le spalle alla sala."
+    coda:
+      - {id: a1, autore: pg_assenzio, testo: "approfitto che il nano è alla finestra e mi infilo dietro la tenda senza farmi vedere", privata: true}
+    nuova: {id: n1, autore: pg_corrado, testo: "sto vicino ad assenzio, non mi fido di questo posto", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: []
+
+  - id: f07
+    tipo: relazioni
+    insieme: riserva
+    nota: "Corrado è nominato in una battuta a Ottavia («stasera paga corrado»), ma Ginestra non si appoggia a quello che fa lui (a1) → nessun legame. Teodora (a2) non c'entra."
+    narrazione: "Ottavia accende le candele sul tavolo lungo. Fuori, la cappella brilla nella neve."
+    coda:
+      - {id: a1, autore: pg_corrado, testo: "mi siedo vicino alla porta e pulisco la balestra", privata: false}
+      - {id: a2, autore: pg_teodora, testo: "mi siedo vicino al forno a scaldarmi le mani", privata: false}
+    nuova: {id: n1, autore: pg_ginestra, testo: "dico a ottavia che stasera paga tutto corrado e le chiedo un'altra scodella", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: []
+
+  - id: f08
+    tipo: relazioni
+    insieme: sviluppo
+    nota: "«aiuto» rivolto a un PNG (Ottavia), non a un PG: la regola «aiuto…» non deve scattare, e l'azione di Corrado (a1) non c'entra."
+    narrazione: "Ottavia raccoglie le scodelle sporche, ne impila troppe e barcolla verso il retro."
+    coda:
+      - {id: a1, autore: pg_corrado, testo: "mi metto alla finestra a guardare la piazza", privata: false}
+    nuova: {id: n1, autore: pg_assenzio, testo: "aiuto ottavia a portare le scodelle di là, come quando ero ragazzino", privata: false}
+    atteso:
+      dipende_da: []
+      conflitti: []

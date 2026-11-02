@@ -31,7 +31,10 @@ import type { Narratore } from '../llm/tipi';
 import { MisuratoreTurno } from '../metriche/misure';
 import type { RegistroJsonl } from '../metriche/jsonl';
 import { compilaMessaggioTurno } from '../narrazione/messaggio';
-import { FinestraAzioni, type Orologio, type RiepilogoFinestra } from '../turni/finestra';
+import type { Orologio } from '../turni/orologio';
+import { azioniPerNarratore } from '../azioni/narratore';
+import { TavoloAzioni, type RiepilogoChiusura } from '../azioni/tavolo';
+import type { Arbitro } from '../azioni/tipi';
 import { narraTurno, type EsitoUsaTurno } from '../turni/narrazione';
 import type { Repertorio } from '../repertorio/tipi';
 import { StatoRepertorio } from '../repertorio/stato';
@@ -68,6 +71,10 @@ export interface OpzioniRegia {
   cacheAudio?: CacheAudio;
   /** Esperimenti: la finestra si apre sempre per tutti i PG al tavolo (l'invito resta nel log). */
   finestraATutti?: boolean;
+  /** Arbitro delle azioni simultanee (null = solo regole). */
+  arbitro?: Arbitro | null;
+  /** Riassunto pubblico della scena per l'arbitro. */
+  scenaPubblica?: string;
 }
 
 /** Ascoltatori del trasporto (Socket.IO). */
@@ -105,8 +112,8 @@ export class Regia {
   /** Voce di trascrizione aperta per segmento del turno corrente (per unire le frasi). */
   private segmentiAperti = new Map<string, VoceTrascrizione>();
 
-  private finestra: FinestraAzioni | null = null;
-  private azioniPrivate = new Map<string, AzionePrivata>();
+  /** Azioni dei giocatori e finestra (docs/azioni-concorrenti.md). */
+  private readonly tavolo: TavoloAzioni;
   private controlloLlm: AbortController | null = null;
   private misuratore: MisuratoreTurno | null = null;
   /** Primo pezzo d'audio inviato nel turno corrente (stima della fine se lo schermo tace). */
@@ -142,6 +149,35 @@ export class Regia {
       },
     });
     this.o.voce.onCambio(() => this.notifica());
+    const nomi = new Map<string, string>();
+    for (const [alias, id] of Object.entries(opzioni.campagna.alias)) if (opzioni.campagna.pg.some((p) => p.id === id)) nomi.set(alias, id);
+    this.tavolo = new TavoloAzioni({
+      giocatori: () => this.pgAlTavolo(),
+      nomePg: (id) => this.nomePg(id),
+      nomi,
+      orologio: opzioni.orologio,
+      arbitro: opzioni.arbitro ?? null,
+      contesto: () => ({ narrazione: this.ultimaNarrazione(), scena: opzioni.scenaPubblica ?? '' }),
+      log: opzioni.log.child({ modulo: 'azioni' }),
+      chiusuraDopoPrimaAzioneMs: opzioni.chiusuraDopoPrimaAzioneMs,
+      onCambio: () => this.notifica(),
+      onAzione: (id_pg, a) => this.uscita?.azioneMia(id_pg, a),
+      onChiusura: (r) => this.finestraChiusa(r),
+    });
+  }
+
+  private nomePg(id: string): string {
+    return this.o.campagna.pg.find((p) => p.id === id)?.nome ?? id;
+  }
+
+  /** Testo dell'ultima narrazione pubblica (per l'arbitro). */
+  private ultimaNarrazione(): string {
+    const voci = this.trascrizione.filter((v) => v.tipo === 'narrazione' || v.tipo === 'battuta');
+    const ultimo = voci.at(-1)?.turno;
+    return voci
+      .filter((v) => v.turno === ultimo)
+      .map((v) => (v.tipo === 'battuta' ? `${v.nome}: ${v.testo}` : v.testo))
+      .join('\n');
   }
 
   collega(uscita: UscitaRegia): void {
@@ -202,9 +238,8 @@ export class Regia {
       turno: this.turno,
       scena: { id_campagna: c.id, titolo: c.scena.titolo, umore: c.scena.umore, intensita: c.scena.intensita },
       pg: c.pg.map((p) => ({ id: p.id, nome: p.nome, descrizione: p.descrizione, telefoni: conteggio.get(p.id) ?? 0 })),
-      finestra: this.finestra?.aperta
-        ? this.finestra.pubblica()
-        : { aperta: false, turno: this.turno, invitati: [], azioni: [], chiusura_prevista_ms: null },
+      finestra: this.tavolo.finestraPubblica(),
+      al_tavolo: this.tavolo.alTavolo(),
       trascrizione: this.trascrizione.slice(-this.o.trascrizioneMax),
       voce_motore: this.o.voce.nome,
       schermo_connesso: this.schermi.size > 0,
@@ -213,7 +248,7 @@ export class Regia {
   }
 
   azioneDi(id_pg: string): AzionePrivata | null {
-    return this.azioniPrivate.get(id_pg) ?? null;
+    return this.tavolo.azioneDi(id_pg);
   }
 
   /** Scheda privata del PG (solo per il telefono che l'ha scelto). */
@@ -226,11 +261,6 @@ export class Regia {
     this.uscita?.stato(this.stato());
   }
 
-  private aggiornaAzione(id_pg: string, azione: AzionePrivata | null): void {
-    if (azione) this.azioniPrivate.set(id_pg, azione);
-    else this.azioniPrivate.delete(id_pg);
-    this.uscita?.azioneMia(id_pg, azione);
-  }
 
   private aggiungiTrascrizione(v: Omit<VoceTrascrizione, 'id'>): VoceTrascrizione {
     const voce = { id: this.prossimoIdTrascrizione++, ...v };
@@ -252,7 +282,7 @@ export class Regia {
     const prima = this.telefoni.get(socketId);
     this.telefoni.set(socketId, id_pg);
     if (prima && prima !== id_pg) this.lasciaPg(prima);
-    this.finestra?.aggiungiInvitato(id_pg);
+    this.tavolo.aggiungiInvitato(id_pg);
     this.o.log.info({ socket: socketId, id_pg, prima: prima ?? null }, 'telefono: PG scelto');
     this.notifica();
     return { ok: true };
@@ -269,7 +299,7 @@ export class Regia {
 
   private lasciaPg(id_pg: string): void {
     if ([...this.telefoni.values()].includes(id_pg)) return; // un altro telefono lo tiene
-    this.finestra?.rimuoviInvitato(id_pg);
+    this.tavolo.rimuoviInvitato(id_pg);
   }
 
   /** Lo schermo ha sbloccato l'audio: entra, e la scena parte se era in attesa. */
@@ -339,8 +369,7 @@ export class Regia {
     this.versioneScena = 0;
     this.orologi = new StatoOrologi(this.o.campagna);
     this.statoRepertorio = this.nuovoStatoRepertorio();
-    this.azioniPrivate.clear();
-    for (const id of this.o.campagna.pg.map((p) => p.id)) this.uscita?.azioneMia(id, null);
+    this.tavolo.azzera();
     this.o.log.info({ schermi: this.schermi.size }, 'scena: ricomincia');
     if (this.schermi.size > 0) this.avviaScena();
     else {
@@ -350,46 +379,29 @@ export class Regia {
     return { ok: true };
   }
 
-  /** Comandi dei telefoni sulla finestra corrente. */
-  inviaAzione(id_pg: string, testo: string, versione: number): Esito {
-    if (!this.finestra?.aperta) return { ok: false, errore: 'La finestra delle azioni è chiusa.' };
-    const esito = this.finestra.invia(id_pg, testo, versione);
-    if (esito.ok) this.sincronizzaAzione(id_pg);
-    return esito;
+  /**
+   * Comandi dei telefoni. Si può scrivere sempre: a finestra chiusa (il narratore parla) l'azione
+   * entra nella finestra successiva.
+   */
+  inviaAzione(id_pg: string, testo: string, versioneVista: number, privata = false): Esito {
+    if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: 'La scena non è in corso.' };
+    return this.tavolo.invia(id_pg, testo, versioneVista, privata);
   }
 
   ritiraAzione(id_pg: string): Esito {
-    if (!this.finestra?.aperta) return { ok: false, errore: 'La finestra delle azioni è chiusa.' };
-    const esito = this.finestra.ritira(id_pg);
-    if (esito.ok) this.sincronizzaAzione(id_pg);
-    return esito;
+    return this.tavolo.ritira(id_pg);
+  }
+
+  confermaAzione(id_pg: string): Esito {
+    return this.tavolo.conferma(id_pg);
   }
 
   segnaPronto(id_pg: string, pronto: boolean): Esito {
-    if (!this.finestra?.aperta) return { ok: false, errore: 'La finestra delle azioni è chiusa.' };
-    const finestra = this.finestra;
-    const esito = finestra.pronto(id_pg, pronto);
-    // Se «pronto» ha chiuso la finestra, la chiusura ha già aggiornato le azioni.
-    if (esito.ok && finestra.aperta) this.sincronizzaAzione(id_pg);
-    return esito;
+    return this.tavolo.pronto(id_pg, pronto);
   }
 
-  private sincronizzaAzione(id_pg: string): void {
-    const a = this.finestra?.azioneDi(id_pg);
-    if (!a || !this.finestra) return;
-    if (!a.testo) {
-      // Solo «pronto» senza azione: al telefono non serve una scheda d'azione.
-      if (this.azioniPrivate.has(id_pg) && this.azioniPrivate.get(id_pg)!.turno !== this.finestra.turno) this.aggiornaAzione(id_pg, null);
-      return;
-    }
-    this.aggiornaAzione(id_pg, {
-      id_pg,
-      testo: a.testo,
-      stato: a.ritirata ? 'ritirata' : 'in_coda',
-      pronto: a.pronto,
-      versione_scena: a.versione_scena,
-      turno: this.finestra.turno,
-    });
+  scrivo(id_pg: string): void {
+    this.tavolo.scrivo(id_pg);
   }
 
   // ------------------------------------------------------------------ flusso della scena
@@ -399,8 +411,7 @@ export class Regia {
     this.controlloLlm?.abort(new Error(motivo));
     this.controlloLlm = null;
     this.pipeline.interrompi(motivo);
-    if (this.finestra?.aperta) this.finestra.chiudi('forzata');
-    this.finestra = null;
+    this.tavolo.chiudiForzata();
     if (this.attesaAudio) {
       this.attesaAudio.timer?.();
       this.attesaAudio.risolvi(null);
@@ -469,29 +480,16 @@ export class Regia {
       if (invito !== 'tutti') this.o.log.warn({ invito, presenti }, 'regia: nessun invitato è al tavolo, si invitano tutti');
       invitati = presenti;
     }
-    // Le azioni del turno appena narrato sono risolte.
-    for (const [id, a] of this.azioniPrivate) {
-      if (a.stato === 'in_risoluzione') this.aggiornaAzione(id, { ...a, stato: 'risolta' });
-    }
+    // Le azioni del turno appena narrato si risolvono; quelle scritte nel frattempo si
+    // ricontrollano contro la narrazione appena finita (in sottofondo: la finestra si apre subito).
+    void this.tavolo.dopoNarrazione(this.turno, this.versioneScena);
     this.turno += 1;
     this.segmentiAperti.clear();
-    const turno = this.turno;
-    this.finestra = new FinestraAzioni({
-      turno,
-      invitati,
-      versioneScena: this.versioneScena,
-      chiusuraDopoPrimaAzioneMs: this.o.chiusuraDopoPrimaAzioneMs,
-      invitoATutti: invito === 'tutti',
-      orologio: this.o.orologio,
-      onChiusura: (r) => this.finestraChiusa(r),
-      onCambio: () => this.notifica(),
-    });
     this.fase = 'finestra';
-    this.o.log.info({ turno, invitati, versione_scena: this.versioneScena }, 'finestra: aperta');
-    this.notifica();
+    this.tavolo.apri(this.turno, invitati, this.versioneScena, invito === 'tutti');
   }
 
-  private finestraChiusa(r: RiepilogoFinestra): void {
+  private finestraChiusa(r: RiepilogoChiusura): void {
     if (r.motivo === 'forzata') return; // ferma/ricomincia: niente narrazione
     this.misuratore = new MisuratoreTurno(r.turno, r.chiusa_a, r.durata_ms, this.o.voce.nome, this.o.orologio.adesso());
     // Contratto voce: /sveglia alla chiusura della finestra, in parallelo alla chiamata dell'LLM
@@ -509,25 +507,16 @@ export class Regia {
       'finestra: chiusa',
     );
     const nomePg = (id: string) => c.pg.find((p) => p.id === id)?.nome ?? id;
-    // Le azioni diventano pubbliche nella trascrizione e passano «in risoluzione».
+    // Le azioni pubbliche entrano nella trascrizione (in ordine di risoluzione).
     for (const a of r.azioni) {
-      this.aggiungiTrascrizione({ turno: r.turno, tipo: 'azione', chi: a.id_pg, nome: nomePg(a.id_pg), testo: a.testo });
-      this.aggiornaAzione(a.id_pg, {
-        id_pg: a.id_pg,
-        testo: a.testo,
-        stato: 'in_risoluzione',
-        pronto: a.pronto,
-        versione_scena: a.versione_scena,
-        turno: r.turno,
-      });
+      if (!a.privata) this.aggiungiTrascrizione({ turno: r.turno, tipo: 'azione', chi: a.autore, nome: nomePg(a.autore), testo: a.testo });
     }
+    const perNarratore = azioniPerNarratore(r, nomePg, (id) => this.tavolo.azione(id));
     const messaggio = compilaMessaggioTurno({
       turno: r.turno,
       trascrizione: this.trascrizione,
-      azioni: [
-        ...r.azioni.map((a) => ({ id_pg: a.id_pg, nome: nomePg(a.id_pg), testo: a.testo })),
-        ...r.senzaAzione.map((id) => ({ id_pg: id, nome: nomePg(id), testo: null })),
-      ],
+      azioni: perNarratore.azioni,
+      collegamenti: perNarratore.collegamenti,
       pgAlTavolo: this.pgAlTavolo().map((id) => ({ id, nome: nomePg(id) })),
       orologi: this.statoRepertorio ? this.orologi.descriviRepertorio(r.turno) : this.orologi.descrivi(r.turno),
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
@@ -539,7 +528,8 @@ export class Regia {
     }
     this.notifica();
     const azioni = [
-      ...r.azioni.map((a) => ({ id_pg: a.id_pg, testo: a.testo as string | null })),
+      ...r.azioni.map((a) => ({ id_pg: a.autore, testo: a.testo as string | null, privata: a.privata, dipende_da: a.dipende_da, conflitti: a.conflitti })),
+      ...r.sospese.map((a) => ({ id_pg: a.autore, testo: a.testo as string | null, sospesa: true })),
       ...r.senzaAzione.map((id) => ({ id_pg: id, testo: null as string | null })),
     ];
     void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni);
@@ -549,7 +539,7 @@ export class Regia {
     turno: number,
     messaggio: string,
     epoca: number,
-    azioni: Array<{ id_pg: string; testo: string | null }>,
+    azioni: Array<{ id_pg: string; testo: string | null; [k: string]: unknown }>,
   ): Promise<void> {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
@@ -643,7 +633,7 @@ export class Regia {
   }
 
   /** Fatti scoperti ed elenco delle battute del turno (modalità repertorio). */
-  private elencoRepertorio(r: RiepilogoFinestra): { fattiScoperti: string[]; battuteDisponibili: string } {
+  private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; battuteDisponibili: string } {
     const s = this.statoRepertorio!;
     const testoAzioni = r.azioni.map((a) => a.testo).join('\n');
     const { battute, trattenute } = s.disponibiliPerTurno(testoAzioni, this.o.paroleSegrete ?? []);

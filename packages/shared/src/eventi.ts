@@ -113,10 +113,22 @@ export interface EventiClientVersoServer {
   'telefono:entra': (ack: (stato: StatoTavolo) => void) => void;
   /** Telefono: sceglie (o cambia) il PG; entra nella stanza player:<id_pg>. */
   'telefono:scegli_pg': (dati: { id_pg: string }, ack: (esito: Esito) => void) => void;
+  /**
+   * Invia (o sostituisce: una sola azione per giocatore per finestra) l'azione del PG. Si può
+   * inviare sempre, anche mentre il narratore parla: allora entra nella finestra successiva.
+   * `versione_vista` è quella fissata dal telefono al primo tasto.
+   */
   'azione:invia': (
-    dati: { id_pg: string; testo: string; versione_scena: number },
+    dati: { id_pg: string; testo: string; versione_vista: number; privata?: boolean },
     ack: (esito: Esito) => void,
   ) => void;
+  /** «Confermo» / «Tengo» su un'azione da confermare. */
+  'azione:conferma': (dati: { id_pg: string }, ack: (esito: Esito) => void) => void;
+  /**
+   * Il giocatore sta scrivendo (al primo tasto e poi al massimo una volta al secondo): fissa la
+   * versione vista e tiene aperta la finestra per chi è invitato (indicatore degli ultimi 3 s).
+   */
+  'azione:scrivo': (dati: { id_pg: string; versione_vista: number }) => void;
   'azione:ritira': (dati: { id_pg: string }, ack: (esito: Esito) => void) => void;
   'azione:pronto': (dati: { id_pg: string; pronto: boolean }, ack: (esito: Esito) => void) => void;
   /** Risincronizzazione: risponde con lo stato corrente. */

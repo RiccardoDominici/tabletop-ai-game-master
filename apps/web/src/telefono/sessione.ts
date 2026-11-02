@@ -138,7 +138,7 @@ export function inviaAzione(testo: string): Promise<Esito> {
     conEsito((s, fine) =>
       s.emit(
         'azione:invia',
-        { id_pg: idPg, testo: pulito.slice(0, MASSIMO_CARATTERI_AZIONE), versione_scena: stato.versione_scena },
+        { id_pg: idPg, testo: pulito.slice(0, MASSIMO_CARATTERI_AZIONE), versione_vista: stato.versione_scena },
         fine,
       ),
     ),

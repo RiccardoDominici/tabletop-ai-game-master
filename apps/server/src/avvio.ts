@@ -25,7 +25,7 @@ import { caricaParoleSegrete, segretiNelTesto } from './repertorio/segreti';
 import type { Repertorio } from './repertorio/tipi';
 import { CacheAudio } from './voce/cache-audio';
 import { collegaSocket, creaUscite } from './trasporto/socket';
-import { orologioDiSistema, type Orologio } from './turni/finestra';
+import { orologioDiSistema, type Orologio } from './turni/orologio';
 import { MotoreVoceHttp } from './voce/http';
 import { MotoreVoceMock } from './voce/mock';
 import { SelettoreVoce } from './voce/selettore';

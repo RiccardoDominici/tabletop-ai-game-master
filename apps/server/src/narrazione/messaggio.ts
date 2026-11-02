@@ -10,6 +10,10 @@ export interface AzioneTurno {
   nome: string;
   /** null = il PG era invitato ma non ha scritto niente (ha passato). */
   testo: string | null;
+  /** Posizione nell'ordine di risoluzione (1 = prima). */
+  numero?: number;
+  /** Azione privata: a voce solo ciò che gli altri possono percepire. */
+  privata?: boolean;
 }
 
 export interface DatiMessaggioTurno {
@@ -21,6 +25,8 @@ export interface DatiMessaggioTurno {
   pgAlTavolo: Array<{ id: string; nome: string }>;
   /** Stato degli orologi attivi, tenuto dal Motore (righe già pronte); vuoto = nessuno. */
   orologi?: string;
+  /** Collegamenti tra le azioni del turno (dipendenze, conflitti), righe già pronte. */
+  collegamenti?: string[];
   /** Modalità repertorio: fatti scoperti in scena (testo), battute disponibili (righe pronte). */
   repertorio?: { fattiScoperti: string[]; battuteDisponibili: string };
   /** Massimo di voci di trascrizione da includere (le più recenti). */
@@ -83,9 +89,16 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
   } else {
     parti.push(
       d.azioni
-        .map((a) => (a.testo ? `- ${a.nome} (${a.id_pg}): ${a.testo}` : `- ${a.nome} (${a.id_pg}): nessuna azione, aspetta.`))
+        .map((a) => {
+          if (!a.testo) return `- ${a.nome} (${a.id_pg}): nessuna azione, aspetta.`;
+          const n = a.numero !== undefined ? `[${a.numero}] ` : '';
+          const privata = a.privata ? ' (azione PRIVATA: a voce narra solo ciò che gli altri possono percepire)' : '';
+          return `- ${n}${a.nome} (${a.id_pg}): ${a.testo}${privata}`;
+        })
         .join('\n'),
     );
+    if (d.azioni.some((a) => a.numero !== undefined)) parti.push('Le azioni sono in ordine di invio: risolvile in quest’ordine.');
+    if (d.collegamenti?.length) parti.push('Collegamenti tra le azioni:', d.collegamenti.map((c) => `- ${c}`).join('\n'));
   }
 
   if (d.orologi) parti.push('## Orologi della scena (stato tenuto dal Motore)', d.orologi);

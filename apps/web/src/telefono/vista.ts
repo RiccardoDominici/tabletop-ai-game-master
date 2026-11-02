@@ -104,7 +104,10 @@ export function bannerTelefono(stato: StatoTavolo, idPg: string | null): Banner 
 /** Etichette italiane dello stato dell'azione (chip). */
 export const ETICHETTA_STATO_AZIONE: Record<StatoAzione, string> = {
   in_coda: 'in coda',
-  in_risoluzione: 'il narratore sta rispondendo',
+  da_confermare: 'da decidere',
+  chiusa: 'il narratore sta rispondendo',
   risolta: 'risolta',
   ritirata: 'ritirata',
+  superata: 'non è andata',
+  sospesa: 'rimasta fuori',
 };
