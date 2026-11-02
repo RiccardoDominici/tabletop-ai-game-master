@@ -22,7 +22,7 @@ const NOTA = 'Ogni frase al massimo otto parole.';
 
 type Debug = { immagine: string | null; transizioni: number };
 const debug = (p: Page) => p.evaluate(() => (window as unknown as { __schermoDebug: Debug }).__schermoDebug);
-const salute = async (p: Page) => (await (await p.request.get('/api/salute')).json()) as { fase: string; turno: number };
+const salute = async (p: Page) => (await (await p.request.get('/api/salute')).json()) as { fase: string; turno: number; schermo: boolean };
 
 /** Link del pannello dall'ultimo avvio in logs/server.out (il token cambia a ogni avvio). */
 function linkMaster(): string {
@@ -68,7 +68,10 @@ test('pannello del master: nota, pausa, ripresa, orologio, luogo, freno, salto',
   const schermo = await (await browser.newContext({ viewport: { width: 1920, height: 1080 } })).newPage();
   schermo.on('console', (m) => m.type() === 'error' && errori.push(`[schermo] ${m.text()}`));
   schermo.on('pageerror', (e) => errori.push(`[schermo] ${e.message}`));
+  // Nota: se il proiettore di una prova precedente è ancora collegato (le prove con `browser` non
+  // chiudono i loro contesti), «ricomincia» riparte subito dall'apertura: va bene lo stesso.
   if ((await salute(schermo)).fase !== 'attesa') await schermo.request.post('/api/scena/ricomincia');
+  const solo = !(await salute(schermo)).schermo;
   await schermo.request.post('/api/scena/luogo', { data: { luogo: 'scena_forno_vecchio' } });
   await schermo.goto('/schermo');
 
@@ -99,7 +102,7 @@ test('pannello del master: nota, pausa, ripresa, orologio, luogo, freno, salto',
   await master.goto(linkMaster().replace(/^http:\/\/localhost:\d+/, ''));
   await expect(master.getByTestId('pagina-master')).toHaveAttribute('data-entrata', 'dentro', { timeout: 10_000 });
   expect(master.url()).not.toContain('token=');
-  await expect(master.getByTestId('master-fase')).toHaveAttribute('data-fase', 'attesa');
+  if (solo) await expect(master.getByTestId('master-fase')).toHaveAttribute('data-fase', 'attesa');
 
   // --- Due telefoni scelgono il PG; il proiettore avvia la sessione.
   await ginestra.getByTestId('scelta-pg-pg_ginestra').click();
@@ -194,4 +197,6 @@ test('pannello del master: nota, pausa, ripresa, orologio, luogo, freno, salto',
   // Riordino: luogo iniziale per le prove successive.
   await master.getByTestId('master-luogo-scena_forno_vecchio').click();
   expect(errori, errori.join('\n')).toEqual([]);
+  // Chiude i suoi contesti: un proiettore rimasto collegato farebbe ripartire la scena alla prova dopo.
+  for (const p of [schermo, master, ginestra, corrado]) await p.context().close();
 });

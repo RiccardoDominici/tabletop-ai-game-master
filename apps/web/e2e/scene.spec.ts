@@ -82,4 +82,5 @@ test('più scene: il master passa di scena, proiettore e telefoni seguono', asyn
   await foto(schermo, 'proiettore-casa');
 
   expect(errori, errori.join('\n')).toEqual([]);
+  for (const p of [schermo, master, tel]) await p.context().close();
 });

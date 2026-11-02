@@ -100,4 +100,5 @@ test('situazione dopo la rivelazione: Sebastiano senza cappuccio', async ({ brow
   await expect(master.getByTestId('master-fase')).toHaveAttribute('data-fase', 'finestra', { timeout: 150_000 });
   await foto(schermo, 'proiettore-dopo');
   expect(errori, errori.join('\n')).toEqual([]);
+  for (const p of [schermo, master, tel]) await p.context().close();
 });
