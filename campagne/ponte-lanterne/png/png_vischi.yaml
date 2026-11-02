@@ -13,7 +13,7 @@ aspetto:
   invarianti: ["cinquantadue anni", "alto e magro", "capelli grigi pettinati all'indietro", "mantello nero ben cucito", "guanti di pelle nera", "anello d'oro con sigillo"]
   prompt_immagine: "tall lean 52-year-old merchant and moneylender, grey hair combed back, finely tailored black cloak, black leather gloves, gold signet ring, warm firelit salt warehouse behind him, [STILE]"
   situazioni:
-    - {id: studio_cassa, prompt: "the merchant alone in a small study at night, kneeling by an open iron chest full of old ledgers, candle in hand"}
+    - {id: studio_cassa, dopo: [i_registro_padre], prompt: "the merchant alone in a small study at night, kneeling by an open iron chest full of old ledgers, candle in hand"}
 
 personalita:
   superficie: ["cortese e preciso: ringrazia di tutto", "parla di carità e di prudenza", "offre sempre da sedere e da bere"]

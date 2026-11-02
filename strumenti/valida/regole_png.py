@@ -9,7 +9,7 @@ import re
 from . import costanti as K
 from .carica import Campagna
 from .esito import Esito
-from .testo import frasi, n_parole, problemi_di_prosa
+from .testo import TEMI_GENERICI, frasi, massimo_da_stile, n_parole, problemi_di_prosa
 
 
 def controlla(c: Campagna, e: Esito) -> None:
@@ -81,6 +81,20 @@ def controlla(c: Campagna, e: Esito) -> None:
             e.avviso("PNG.alias", dove, "manca `alias`: i soprannomi con cui i giocatori lo chiameranno (nano, ostessa…)", rigoroso=True)
         elif not (isinstance(alias, list) and all(isinstance(x, str) for x in alias)):
             e.errore("PNG.alias", dove, "alias è una lista di parole")
+        else:
+            generici = sorted({a.lower() for a in alias} & (K.ALIAS_GENERICI | TEMI_GENERICI))
+            if generici:
+                e.avviso("PNG.alias", dove, f"alias generici {generici}: il PNG entrerebbe nella pertinenza di ogni azione "
+                                            "su chiunque. Usa il mestiere o il ruolo (custode, ostessa, scrivano)", rigoroso=True)
+    # Un soprannome di due PNG: il server non sa a chi parla l'azione.
+    di_chi: dict[str, list[str]] = {}
+    for pid, (_, d) in c.png.items():
+        for a in d.get("alias") or [] if isinstance(d.get("alias"), list) else []:
+            if isinstance(a, str):
+                di_chi.setdefault(a.lower(), []).append(pid)
+    for a, chi in sorted(di_chi.items()):
+        if len(set(chi)) > 1:
+            e.errore("PNG.alias", "png/", f"l'alias «{a}» è di più PNG ({', '.join(sorted(set(chi)))}): il Motore non sa a chi parla l'azione")
 
 
 def _voce(c: Campagna, e: Esito, dove: str, d: dict) -> None:
@@ -96,6 +110,9 @@ def _voce(c: Campagna, e: Esito, dove: str, d: dict) -> None:
     for campo in ("registro", "stile", "gesto", "mai_dice", "battuta_campione"):
         if not v.get(campo):
             e.errore("PNG.voce", dove, f"manca voce.{campo}")
+    if v.get("stile") and massimo_da_stile(v["stile"]) is None:
+        e.avviso("PNG.voce_stile", dove, "dallo stile non si legge quante parole per frase («Frasi di tre-otto parole»): "
+                                         "le sue battute hanno il tetto predefinito di sedici")
     if v.get("registro") and not re.search(r"\b(tu|voi|lei)\b", v["registro"].lower()):
         e.errore("PNG.voce", dove, "il registro dice tu, voi o lei")
     if len(v.get("tic") or []) > 2:

@@ -131,6 +131,11 @@ def controlla_fronti(c: Campagna, e: Esito) -> None:
             e.errore("FRONTI.campo", oid, "manca avanza_quando (regola di ritmo)")
         if "segno_almeno_ogni" in o and not (isinstance(o["segno_almeno_ogni"], int) and o["segno_almeno_ogni"] >= 1):
             e.errore("FRONTI.campo", oid, "segno_almeno_ogni è un intero >= 1")
+        # parte_dopo: l'orologio comincia a correre quando esce una di queste battute o si rivela uno di
+        # questi indizi (riferimenti/schema.md). Il server deve ancora applicarlo (vedi mestiere.md §9).
+        for x in o.get("parte_dopo") or []:
+            if x not in c.per_id and x not in c.indizi:
+                e.errore("FRONTI.campo", oid, f"parte_dopo cita un id che non è né una battuta né un indizio: {x}")
     catt = prep.get("cattivo") or {}
     for campo in ("obiettivo", "cronologia_se_i_pg_non_intervengono", "risorse", "reazioni", "stato_di_quiete", "chiamata_all_azione"):
         if not catt.get(campo):

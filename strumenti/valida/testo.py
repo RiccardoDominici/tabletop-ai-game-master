@@ -56,18 +56,40 @@ def radici(testo: str, lunghezza: int = 4) -> set[str]:
     return out
 
 
-def limite_da_stile(stile: str | None, predefinito: int) -> int:
-    """Dallo `stile` di una voce («Frasi di due-sei parole», «da 3 a 8 parole») ricava un tetto per frase."""
+NUMERI = {"uno": 1, "una": 1, "due": 2, "tre": 3, "quattro": 4, "cinque": 5, "sei": 6, "sette": 7, "otto": 8,
+          "nove": 9, "dieci": 10, "undici": 11, "dodici": 12, "tredici": 13, "quattordici": 14, "quindici": 15,
+          "sedici": 16, "diciassette": 17, "diciotto": 18, "diciannove": 19, "venti": 20}
+
+
+def massimo_da_stile(stile: str | None) -> int | None:
+    """Il numero massimo di parole per frase scritto nello `stile` di una voce, o None se non si legge.
+
+    Forme lette: «Frasi di due-sei parole», «di 3-8 parole», «da tre a otto parole», «al massimo sei parole»,
+    con i numeri in lettere da uno a venti o in cifre.
+    """
     if not stile:
-        return predefinito
-    numeri = {"due": 2, "tre": 3, "quattro": 4, "cinque": 5, "sei": 6, "sette": 7, "otto": 8,
-              "nove": 9, "dieci": 10, "dodici": 12}
-    m = re.search(r"frasi di (\w+)\s*[-–a]\s*(\w+) parole|da (\w+) a (\w+) parole", stile.lower())
+        return None
+    m = re.search(r"(\w+)\s*[-–]\s*(\w+) parole|da (\w+) a (\w+) parole|al massimo (\w+) parole", stile.lower())
     if not m:
-        return predefinito
-    massimo = m.group(2) or m.group(4)
-    valore = numeri.get(massimo) or (int(massimo) if massimo.isdigit() else None)
+        return None
+    massimo = m.group(2) or m.group(4) or m.group(5)
+    return NUMERI.get(massimo) or (int(massimo) if massimo.isdigit() else None)
+
+
+def limite_da_stile(stile: str | None, predefinito: int) -> int:
+    """Dallo `stile` di una voce ricava un tetto per frase: il massimo dichiarato più tre, mai oltre il predefinito."""
+    valore = massimo_da_stile(stile)
     return min(predefinito, valore + 3) if valore else predefinito
+
+
+def vocativi(testo: str, nomi: list[str]) -> list[str]:
+    """Nomi propri seguiti da una virgola a inizio frase: a voce suonano come qualcuno chiamato per nome."""
+    out = []
+    for f in frasi(testo):
+        m = re.match(r"^[«\"]?([A-ZÀÈÉÌÒÙ][\wàèéìòù']+),", f.strip())
+        if m and m.group(1) in nomi:
+            out.append(m.group(1))
+    return out
 
 
 def problemi_di_prosa(testo: str, max_parole: int = 20) -> list[tuple[str, str]]:

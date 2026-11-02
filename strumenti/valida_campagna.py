@@ -4,6 +4,7 @@ e il documento del repertorio (docs/repertorio.md).
     python3 -I strumenti/valida_campagna.py campagne/<id>
     python3 -I strumenti/valida_campagna.py campagne/<id> --rigoroso        regole per le campagne nuove
     python3 -I strumenti/valida_campagna.py campagne/<id> --copioni esperimenti/copioni
+    python3 -I strumenti/valida_campagna.py campagne/<id> --solo STILE,CANONE   solo alcune classi (controlli parziali)
     python3 -I strumenti/valida_campagna.py campagne/<id> --classi          elenco delle classi di errore
 
 Uscita: 0 se non ci sono errori (gli avvisi non contano), 1 se ce n'è almeno uno, 2 se gli argomenti
@@ -13,7 +14,11 @@ sono sbagliati. Ogni riga ha un codice `CLASSE.regola`: la classe dice quale par
 `preparatore`: confessioni senza cancello (`richiede.privata`, `da_pg`, indizi), menzogne senza id,
 indizi senza `modi`, PNG senza `alias`, temi generici, tratti nascosti nei prompt delle immagini.
 
-Serve solo PyYAML. Le regole stanno in strumenti/valida/ (un modulo per famiglia di regole).
+--solo serve ai controlli dei passi intermedi della skill: mostra (e conta nel codice d'uscita) solo le
+classi o i codici elencati, così un passo non chiede di correggere errori di file non ancora scritti.
+
+Serve PyYAML. Il contesto vero del modo B si compila con node (strumenti/contesto_modo_b.ts): senza
+node, o con --senza-node, quel controllo diventa un avviso. Le regole stanno in strumenti/valida/.
 """
 
 from __future__ import annotations
@@ -38,6 +43,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--avvisi", action="store_true", help="mostra anche gli avvisi (predefinito: solo il conteggio)")
     ap.add_argument("--senza-node", action="store_true",
                     help="non compilare il contesto vero del modo B (strumenti/contesto_modo_b.ts): resta un avviso")
+    ap.add_argument("--solo", help="classi o codici da mostrare, separati da virgole (es. STILE,CANONE,SCENA.voci)")
     ap.add_argument("--classi", action="store_true", help="elenca le classi di errore ed esce")
     a = ap.parse_args(argv)
     if a.classi:
@@ -47,7 +53,17 @@ def main(argv: list[str] | None = None) -> int:
     if not a.cartella:
         ap.print_usage(sys.stderr)
         return 2
-    esito, campagna = valida(Path(a.cartella), rigoroso=a.rigoroso, voci=a.voci, contesto_b=not a.senza_node)
+    solo = [x.strip() for x in (a.solo or "").split(",") if x.strip()]
+    sconosciute = [x for x in solo if x.split(".")[0] not in CLASSI]
+    if sconosciute:
+        print(f"--solo: classi sconosciute {sconosciute} (vedi --classi)", file=sys.stderr)
+        return 2
+    # Senza le regole del modo B, se --solo non le chiede: risparmia la compilazione con node.
+    serve_b = not solo or any(x.split(".")[0] == "SEGRETI" for x in solo)
+    esito, campagna = valida(Path(a.cartella), rigoroso=a.rigoroso, voci=a.voci, contesto_b=serve_b and not a.senza_node)
+    if solo:
+        tieni = lambda v: any(v.codice == x or v.codice.split(".")[0] == x for x in solo)  # noqa: E731
+        esito.voci = [v for v in esito.voci if tieni(v)]
     for v in esito.errori:
         print(v)
     if a.avvisi:
@@ -59,7 +75,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {riga}")
     per_classe = Counter(v.codice.split(".")[0] for v in esito.errori)
     sintesi = ", ".join(f"{k} {n}" for k, n in sorted(per_classe.items())) or "nessuno"
-    modo = "rigoroso" if a.rigoroso else "normale"
+    modo = ("rigoroso" if a.rigoroso else "normale") + (f", solo {','.join(solo)}" if solo else "")
     print(f"\n{campagna.cartella}: {len(esito.errori)} errori ({sintesi}), {len(esito.avvisi)} avvisi — modo {modo}, "
           f"{len(campagna.scene)} scene, {len(campagna.png)} PNG, {len(campagna.battute)} battute")
     return 1 if esito.errori else 0

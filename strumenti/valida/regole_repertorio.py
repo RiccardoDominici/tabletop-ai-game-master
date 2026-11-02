@@ -19,9 +19,35 @@ from collections import defaultdict
 from . import costanti as K
 from .carica import Campagna
 from .esito import Esito
-from .testo import TEMI_GENERICI, frasi, limite_da_stile, n_parole, problemi_di_prosa, radici
+from .regole_scena import nomi_propri
+from .testo import TEMI_GENERICI, frasi, limite_da_stile, n_parole, problemi_di_prosa, radici, vocativi
 
 GATE = ("indizi_rivelati", "battute_usate", "orologio", "privata", "da_pg")
+
+
+def blocchi_richiede(r: dict) -> list[dict]:
+    """Le condizioni di una battuta come blocchi: la base (senza `oppure`) e ogni alternativa di `oppure`."""
+    base = {k: v for k, v in (r or {}).items() if k != "oppure"}
+    alternative = [a for a in (r or {}).get("oppure") or [] if isinstance(a, dict)]
+    return [base, *alternative]
+
+
+def ha_cancello(r: dict, chiavi=GATE) -> bool:
+    """Cancello strutturale: nella base, oppure in OGNI alternativa di `oppure` (se una ne è senza, passa di lì)."""
+    base, *alternative = blocchi_richiede(r)
+    if any(base.get(k) for k in chiavi):
+        return True
+    return bool(alternative) and all(any(a.get(k) for k in chiavi) for a in alternative)
+
+
+def menziona(r: dict, chiave: str) -> list:
+    """Valori di una condizione in qualunque blocco (base o alternativa): privata, da_pg…"""
+    out = []
+    for blocco in blocchi_richiede(r):
+        v = blocco.get(chiave)
+        if v:
+            out += v if isinstance(v, list) else [v]
+    return out
 
 
 def _righe(b: dict) -> list[list[str]]:
@@ -100,6 +126,18 @@ def _schema(c: Campagna, e: Esito) -> None:
         for k in b.get("richiede") or {}:
             if k not in K.CAMPI_RICHIEDE:
                 e.errore("REPERTORIO.richiede", dove, f"richiede.{k} non previsto")
+        oppure = (b.get("richiede") or {}).get("oppure")
+        if oppure is not None:
+            if not (isinstance(oppure, list) and len(oppure) >= 2 and all(isinstance(a, dict) and a for a in oppure)):
+                e.errore("REPERTORIO.oppure", dove, "richiede.oppure è una lista di almeno due blocchi di condizioni")
+            else:
+                for a in oppure:
+                    for k in a:
+                        if k not in K.CAMPI_RICHIEDE - {"oppure"}:
+                            e.errore("REPERTORIO.oppure", dove, f"alternativa con richiede.{k}: non previsto (niente oppure annidati)")
+            if not K.OPPURE_NEL_SERVER:
+                e.errore("REPERTORIO.oppure", dove, "il server non applica ancora richiede.oppure: la battuta uscirebbe "
+                                                    "con le sole condizioni di base. Per ora duplica la battuta (repertorio.md §4)")
         for k in eff:
             if k not in K.CAMPI_EFFETTI:
                 e.errore("REPERTORIO.effetti", dove, f"effetti.{k} non previsto")
@@ -119,29 +157,8 @@ def _schema(c: Campagna, e: Esito) -> None:
 def _riferimenti(c: Campagna, e: Esito) -> None:
     for b in c.battute:
         dove = f"{b['_file']} {b.get('id', '?')}"
-        r = b.get("richiede") or {}
-        for k in ("indizi_rivelati", "indizi_non_rivelati"):
-            for i in r.get(k) or []:
-                if i not in c.indizi:
-                    e.errore("REPERTORIO.riferimento", dove, f"richiede.{k}: indizio inesistente {i}")
-        for k in ("battute_usate", "battute_non_usate"):
-            for x in r.get(k) or []:
-                if x not in c.per_id:
-                    e.errore("REPERTORIO.riferimento", dove, f"richiede.{k}: battuta inesistente {x}")
-                elif x == b.get("id"):
-                    e.errore("REPERTORIO.riferimento", dove, "richiede se stessa")
-        if "privata" in r and not isinstance(r["privata"], bool):
-            e.errore("REPERTORIO.richiede", dove, "richiede.privata è true o false")
-        for p in r.get("da_pg") or []:
-            if p not in c.pg_ids:
-                e.errore("REPERTORIO.riferimento", dove, f"richiede.da_pg: PG inesistente {p}")
-        if r.get("orologio"):
-            o = r["orologio"]
-            oid = o.get("id") if isinstance(o, dict) else None
-            if oid not in c.orologi:
-                e.errore("REPERTORIO.riferimento", dove, f"richiede.orologio: orologio inesistente {oid}")
-            elif not (0 <= o.get("min", -1) <= o.get("max", -1) <= c.orologi[oid].get("segmenti", 0)):
-                e.errore("REPERTORIO.richiede", dove, f"estremi dell'orologio fuori misura: {o}")
+        for r in blocchi_richiede(b.get("richiede") or {}):
+            _riferimenti_richiede(c, e, b, dove, r)
         eff = b.get("effetti") or {}
         for i in eff.get("rivela_indizi") or []:
             if i not in c.indizi:
@@ -155,6 +172,32 @@ def _riferimenti(c: Campagna, e: Esito) -> None:
             e.errore("REPERTORIO.riferimento", dove, f"avanza un orologio inesistente {eff['avanza_orologio']}")
         if eff.get("menzogna_detta") and b.get("tipo") != "menzogna":
             e.errore("REPERTORIO.effetti", dove, "menzogna_detta solo sulle battute di tipo menzogna")
+
+
+def _riferimenti_richiede(c: Campagna, e: Esito, b: dict, dove: str, r: dict) -> None:
+    """Riferimenti di un blocco di condizioni (la base o un'alternativa di `oppure`)."""
+    for k in ("indizi_rivelati", "indizi_non_rivelati"):
+        for i in r.get(k) or []:
+            if i not in c.indizi:
+                e.errore("REPERTORIO.riferimento", dove, f"richiede.{k}: indizio inesistente {i}")
+    for k in ("battute_usate", "battute_non_usate"):
+        for x in r.get(k) or []:
+            if x not in c.per_id:
+                e.errore("REPERTORIO.riferimento", dove, f"richiede.{k}: battuta inesistente {x}")
+            elif x == b.get("id"):
+                e.errore("REPERTORIO.riferimento", dove, "richiede se stessa")
+    if "privata" in r and not isinstance(r["privata"], bool):
+        e.errore("REPERTORIO.richiede", dove, "richiede.privata è true o false")
+    for p in r.get("da_pg") or []:
+        if p not in c.pg_ids:
+            e.errore("REPERTORIO.riferimento", dove, f"richiede.da_pg: PG inesistente {p}")
+    if r.get("orologio"):
+        o = r["orologio"]
+        oid = o.get("id") if isinstance(o, dict) else None
+        if oid not in c.orologi:
+            e.errore("REPERTORIO.riferimento", dove, f"richiede.orologio: orologio inesistente {oid}")
+        elif not (0 <= o.get("min", -1) <= o.get("max", -1) <= c.orologi[oid].get("segmenti", 0)):
+            e.errore("REPERTORIO.richiede", dove, f"estremi dell'orologio fuori misura: {o}")
 
 
 def _selezionabile(b: dict) -> bool:
@@ -172,6 +215,7 @@ def _copertura(c: Campagna, e: Esito) -> None:
             e.avviso("COPERTURA.modi", i, "indizio senza `modi`: si assume un solo modo di trovarlo", rigoroso=True)
     # Segni degli orologi attivi in qualche scena: uno per segmento, con l'orologio fermo al segno prima.
     attivi = {o for _, s in c.scene for o in (s.get("orologi_attivi") or [])}
+    scene_di = {o: {s.get("id") for _, s in c.scene if o in (s.get("orologi_attivi") or [])} for o in attivi}
     for oid in sorted(attivi):
         o = c.orologi.get(oid)
         if not o:
@@ -184,6 +228,11 @@ def _copertura(c: Campagna, e: Esito) -> None:
             if len(chi) != 1:
                 e.errore("COPERTURA.segno", f"{oid} segno {k}",
                          f"{len(chi)} battute (serve 1, con richiede.orologio min = max = {k - 1})")
+            elif chi[0].get("scena") and scene_di[oid] - {chi[0]["scena"]}:
+                # Un orologio di sessione avanza in ogni scena dove è attivo: il segno deve poter uscire ovunque.
+                e.errore("COPERTURA.segno", chi[0]["id"],
+                         f"vale solo in {chi[0]['scena']}, ma {oid} è attivo anche in {sorted(scene_di[oid] - {chi[0]['scena']})}: "
+                         "togli `scena` e scrivi un segno che si sente da tutte")
             elif k - 1 < len(o.get("segni") or []) and radici(o["segni"][k - 1]) - radici(" ".join(_split(r)[1] for r in chi[0]["testo"])):
                 e.avviso("COPERTURA.segno", chi[0]["id"], "il testo si allontana dal segno scritto in campagna.yaml")
     # Finali.
@@ -278,20 +327,20 @@ def _menzogne_e_confessioni(c: Campagna, e: Esito) -> None:
                     continue
                 gia_avvisate.add(b.get("id"))
                 r = b.get("richiede") or {}
-                if not any(r.get(k) for k in GATE):
+                if not ha_cancello(r):
                     e.avviso("COPERTURA.cancello", f"{b['_file']} {b.get('id')}",
                              "confessione senza cancello strutturale (indizi, battute, orologio, privata, da_pg): "
                              "la protegge solo il quando", rigoroso=True)
-                if re.search(K.CEDE_PRIVATO, str(b.get("quando", "")).lower()) and r.get("privata") is not True:
+                if re.search(K.CEDE_PRIVATO, str(b.get("quando", "")).lower()) and not menziona(r, "privata"):
                     e.avviso("COPERTURA.privata", f"{b['_file']} {b.get('id')}",
                              "il quando chiede un'azione in privato: aggiungi richiede.privata: true", rigoroso=True)
-            if re.search(K.CEDE_PRIVATO, cede.lower()) and not any((b.get("richiede") or {}).get("privata") for b in conf):
+            if re.search(K.CEDE_PRIVATO, cede.lower()) and not any(menziona(b.get("richiede") or {}, "privata") for b in conf):
                 e.avviso("COPERTURA.privata", dove, "cede_se chiede la privatezza, ma nessuna confessione ha richiede.privata",
                          rigoroso=True)
             nominati = [p for p in c.personaggi if p.get("nome") and
                         re.search(rf"\b{re.escape(p['nome'].replace('Sorella ', '').split()[0])}\b", cede)]
             for p in nominati:
-                if not any(p["id"] in ((b.get("richiede") or {}).get("da_pg") or []) for b in conf):
+                if not any(p["id"] in menziona(b.get("richiede") or {}, "da_pg") for b in conf):
                     e.avviso("COPERTURA.da_pg", dove, f"cede_se nomina {p['nome']}: una confessione deve avere richiede.da_pg [{p['id']}]",
                              rigoroso=True)
 
@@ -299,6 +348,7 @@ def _menzogne_e_confessioni(c: Campagna, e: Esito) -> None:
 def _prosa(c: Campagna, e: Esito) -> None:
     nomi_pg = [str(p.get("nome", "")).replace("Sorella ", "").replace("Fratello ", "").split()[0]
                for p in c.personaggi if p.get("nome")]
+    nomi_png = sorted({n for _, d in c.png.values() for n in nomi_propri(d)})
     lung_narr = []
     improvvisi = 0
     for b in c.battute:
@@ -326,6 +376,10 @@ def _prosa(c: Campagna, e: Esito) -> None:
                 for nome in nomi_pg:
                     if re.search(rf"\b{re.escape(nome)}\b", testo):
                         e.errore("PROSA.nome_pg", dove, f"nome di PG «{nome}» nel testo: lo aggiunge il raccordo")
+                if tag == "narratore":
+                    for v in vocativi(testo, nomi_png):
+                        e.avviso("PROSA.vocativo", dove, f"«{v},» a inizio frase suona come il narratore che parla a {v}: "
+                                                         "sposta il nome («Dal casello il custode, Tullio, grida…»)")
                 improvvisi += testo.lower().count("all'improvviso")
             if n_narr > K.MAX_FRASI_NARRATORE_BATTUTA:
                 e.errore("PROSA.blocco", dove, f"{n_narr} frasi di narratore (max {K.MAX_FRASI_NARRATORE_BATTUTA}, N2)")

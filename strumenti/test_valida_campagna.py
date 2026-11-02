@@ -106,6 +106,17 @@ def test_cli_codici_di_uscita(camp):
     assert subprocess.run([sys.executable, "-I", str(script)], capture_output=True).returncode == 2
 
 
+def test_cli_solo_alcune_classi(camp):
+    # Nota 5 e 9: i controlli dei passi intermedi guardano solo le classi già scrivibili.
+    script = QUI / "valida_campagna.py"
+    modifica(camp, "scena.yaml", lambda d: d["sensi"].pop())
+    tutto = subprocess.run([sys.executable, "-I", str(script), str(camp), "--senza-node"], capture_output=True, text=True)
+    solo = subprocess.run([sys.executable, "-I", str(script), str(camp), "--solo", "STILE,CANONE"], capture_output=True, text=True)
+    scena = subprocess.run([sys.executable, "-I", str(script), str(camp), "--solo", "SCENA.sensi"], capture_output=True, text=True)
+    sbagliata = subprocess.run([sys.executable, "-I", str(script), str(camp), "--solo", "NIENTE"], capture_output=True, text=True)
+    assert tutto.returncode == 1 and solo.returncode == 0 and scena.returncode == 1 and sbagliata.returncode == 2
+
+
 # --- STRUTTURA ------------------------------------------------------------------------------------
 
 def test_struttura_file_mancante(camp):
@@ -180,6 +191,28 @@ def test_png_alias_solo_in_rigoroso(camp):
     assert "PNG.alias" in errori(camp, rigoroso=True)
 
 
+def test_png_alias_generico_in_rigoroso(camp):
+    # Nota 11: «vecchio» farebbe entrare il PNG in ogni azione sui vecchi del paese.
+    modifica(camp, "png/png_bruno.yaml", lambda d: d["alias"].append("vecchio"))
+    assert "PNG.alias" not in errori(camp)
+    assert "PNG.alias" in errori(camp, rigoroso=True)
+
+
+def test_png_alias_di_due_png(camp):
+    modifica(camp, "png/png_bruno.yaml", lambda d: d["alias"].append("ostessa"))
+    assert "PNG.alias" in errori(camp)
+
+
+def test_png_stile_senza_numeri_e_un_avviso(camp):
+    from valida.testo import limite_da_stile
+    # Nota 10: prima «otto-quattordici» non si leggeva e valeva il tetto predefinito.
+    assert limite_da_stile("Frasi di otto-quattordici parole, lente.", 16) == 16
+    assert limite_da_stile("Frasi di tre-undici parole.", 16) == 14
+    assert limite_da_stile("Al massimo sei parole per frase.", 16) == 9
+    modifica(camp, "png/png_bruno.yaml", lambda d: d["voce"].update(stile="Parla piano, a frasi brevi."))
+    assert "PNG.voce_stile" in avvisi(camp)
+
+
 # --- SCENA ----------------------------------------------------------------------------------------
 
 def test_scena_sensi_non_tre(camp):
@@ -236,6 +269,14 @@ def test_scena_battuta_di_un_png_assente_in_rigoroso(camp):
     assert "SCENA.png_assente" in errori(camp, rigoroso=True)
 
 
+def test_scena_nodo_noto_ai_pg_non_chiede_tre_indizi(camp):
+    # Nota 8: un luogo che tutti conoscono dall'inizio non va scoperto con tre indizi.
+    modifica(camp, "scena.yaml", lambda d: d["uscite"][1].update(segnalata_da=["i_cera"]))
+    assert "SCENA.uscite" in avvisi(camp)
+    modifica(camp, "campagna.yaml", lambda d: d["nodi"][1].update(noto_ai_pg=True))
+    assert "SCENA.uscite" not in avvisi(camp)
+
+
 def test_scena_apertura_troppo_lunga(camp):
     modifica(camp, "scena.yaml", lambda d: d.update(apertura=d["apertura"].replace(" Dalla", " Fa freddo. Dalla")))
     assert "SCENA.apertura" in errori(camp)
@@ -284,6 +325,14 @@ def test_fronti_un_segno_per_segmento(camp):
 def test_fronti_presagi_del_fronte_di_campagna(camp):
     modifica(camp, "campagna.yaml", lambda d: d["preparazione"]["fronti"][0]["pericoli"][0]["presagi"].pop())
     assert "FRONTI.presagi" in errori(camp)
+
+
+def test_fronti_orologio_che_parte_dopo_un_id_inesistente(camp):
+    # Nota 26: un orologio che parte da una scelta dichiara da quale battuta o indizio (parte_dopo).
+    modifica(camp, "campagna.yaml", lambda d: d["orologi"][0].update(parte_dopo=["irma_lanterna_cera"]))
+    assert "FRONTI.campo" not in errori(camp)
+    modifica(camp, "campagna.yaml", lambda d: d["orologi"][0].update(parte_dopo=["battuta_che_non_esiste"]))
+    assert "FRONTI.campo" in errori(camp)
 
 
 # --- GRAFO ----------------------------------------------------------------------------------------
@@ -402,6 +451,13 @@ def test_prosa_cifre(camp):
     assert "PROSA.cifre" in errori(camp)
 
 
+def test_prosa_vocativo_involontario(camp):
+    # Nota 19: «Irma, dietro il bancone, …» a voce suona come il narratore che chiama Irma.
+    modifica(camp, "repertorio/narrazione.yaml",
+             lambda d: battuta(d, "tr_sala").update(testo=["[narratore] Irma, dietro il bancone, asciuga i boccali in silenzio."]))
+    assert "PROSA.vocativo" in avvisi(camp)
+
+
 # --- REPERTORIO -----------------------------------------------------------------------------------
 
 def test_repertorio_riferimento_inesistente(camp):
@@ -427,7 +483,43 @@ def test_repertorio_da_pg_inesistente(camp):
     assert "REPERTORIO.riferimento" in errori(camp)
 
 
+def test_repertorio_oppure_finche_il_server_non_lo_applica(camp):
+    # Nota 25: il cancello «oppure». Il server oggi ignora le chiavi che non conosce: sarebbe un cancello aperto.
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_promessa").update(
+        richiede={"battute_usate": ["bruno_notte_versione"], "oppure": [{"privata": True}, {"indizi_rivelati": ["i_cera"]}]}))
+    assert "REPERTORIO.oppure" in errori(camp)
+
+
+def test_repertorio_oppure_quando_il_server_lo_applica(camp, monkeypatch):
+    from valida import costanti
+    monkeypatch.setattr(costanti, "OPPURE_NEL_SERVER", True)
+    buono = {"battute_usate": ["bruno_notte_versione"], "oppure": [{"privata": True}, {"indizi_rivelati": ["i_cera"]}]}
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_promessa").update(richiede=buono))
+    assert not {"REPERTORIO.oppure", "COPERTURA.cancello"} & errori(camp, rigoroso=True)
+    # Un'alternativa senza cancello apre la confessione a tutti; un'alternativa annidata non è prevista.
+    aperto = {"oppure": [{"privata": True}, {"battute_non_usate": ["irma_saluto"]}]}
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_promessa").update(richiede=aperto))
+    assert "COPERTURA.cancello" in errori(camp, rigoroso=True)
+    annidato = {"oppure": [{"privata": True}, {"oppure": [{"privata": True}, {"privata": True}]}]}
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_promessa").update(richiede=annidato))
+    assert "REPERTORIO.oppure" in errori(camp)
+
+
+def test_repertorio_riferimento_inesistente_in_un_alternativa(camp):
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_promessa")["richiede"].update(
+        oppure=[{"indizi_rivelati": ["i_fantasma"]}, {"privata": True}]))
+    assert "REPERTORIO.riferimento" in errori(camp)
+
+
 # --- COPERTURA ------------------------------------------------------------------------------------
+
+def test_copertura_segno_legato_a_una_scena_di_un_orologio_di_sessione(camp):
+    # Nota 6: un orologio attivo in più scene avanza ovunque, quindi i suoi segni non hanno `scena`.
+    _seconda_scena(camp, ["png_irma", "png_bruno"], ["png_irma"])
+    assert "COPERTURA.segno" not in errori(camp)
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_segno_2").update(scena="scena_volpe"))
+    assert "COPERTURA.segno" in errori(camp)
+
 
 def test_copertura_menzogna_senza_segnale(camp):
     modifica(camp, "repertorio/png_irma.yaml", lambda d: battuta(d, "irma_lanterna_versione")["testo"].pop(0))
@@ -555,7 +647,46 @@ def test_segreti_regex_che_non_protegge_niente(camp):
     assert "SEGRETI.regex_inerte" in {v.codice for v in esito.avvisi}
 
 
+def test_segreti_regex_che_scatta_dentro_una_parola(camp):
+    # Nota 14: «sa del leone» trovava «Rosa del leone»; qui «egno» trova «pegno».
+    modifica(camp, "repertorio/parole_segrete.yaml", lambda d: d["parole"][1].update(regex="egno|mercante"))
+    assert "SEGRETI.regex_dentro_parola" in avvisi(camp)
+
+
 # --- IMMAGINI -------------------------------------------------------------------------------------
+
+def test_immagini_prompt_ritratto_senza_stile(camp):
+    modifica(camp, "png/png_irma.yaml", lambda d: d["aspetto"].update(prompt_ritratto="bust portrait of a thin innkeeper"))
+    assert "IMMAGINI.ritratto" in errori(camp)
+
+
+def test_immagini_stile_due_volte(camp):
+    modifica(camp, "png/png_irma.yaml", lambda d: d["aspetto"].update(prompt_immagine=d["aspetto"]["prompt_immagine"] + ", [STILE]"))
+    assert "IMMAGINI.ritratto" in errori(camp)
+
+
+def test_immagini_segreto_nel_luogo_di_un_nodo_in_rigoroso(camp):
+    modifica(camp, "campagna.yaml", lambda d: d["nodi"][1].update(
+        immagine={"prompt_luogo": "small stone chapel, the silver lantern hidden behind the altar, no people"}))
+    assert "IMMAGINI.segreto" not in errori(camp)
+    assert "IMMAGINI.segreto" in errori(camp, rigoroso=True)
+
+
+def test_immagini_luogo_di_un_nodo_in_italiano(camp):
+    modifica(camp, "campagna.yaml", lambda d: d["nodi"][1].update(immagine={"prompt_luogo": "una cappella di pietra con la neve sul tetto"}))
+    assert "IMMAGINI.lingua" in avvisi(camp)
+
+
+def test_immagini_situazione_con_dopo_inesistente_e_senza_dopo(camp):
+    sit = {"id": "in_cantina", "prompt": "the innkeeper in the cellar, holding a lantern"}
+    modifica(camp, "png/png_irma.yaml", lambda d: d["aspetto"].update(situazioni=[sit]))
+    assert "IMMAGINI.situazione" not in errori(camp)
+    assert "IMMAGINI.situazione" in errori(camp, rigoroso=True)
+    modifica(camp, "png/png_irma.yaml", lambda d: d["aspetto"].update(situazioni=[{**sit, "dopo": ["i_niente"]}]))
+    assert "IMMAGINI.situazione" in errori(camp)
+    modifica(camp, "png/png_irma.yaml", lambda d: d["aspetto"].update(situazioni=[{**sit, "dopo": ["i_botte"]}]))
+    assert "IMMAGINI.situazione" not in errori(camp, rigoroso=True)
+
 
 def test_immagini_ritratto_senza_stile(camp):
     modifica(camp, "png/png_irma.yaml", lambda d: d["aspetto"].update(prompt_immagine="thin innkeeper woman, firelight"))

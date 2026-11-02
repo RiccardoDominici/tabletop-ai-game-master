@@ -14,7 +14,7 @@ aspetto:
   invarianti: ["diciannove anni", "magra", "treccia rossa", "cappuccio verde buttato indietro", "acciarino in mano", "fuliggine sul naso"]
   prompt_immagine: "thin 19-year-old lamplighter, red braid, green hood thrown back, soot smudge on her nose, flint striker in her hand, lit lantern on a stone bridge parapet in the rain, [STILE]"
   situazioni:
-    - {id: sotto_arcata, prompt: "the young lamplighter in a tiny rowing boat under a stone bridge arch at night, holding a dripping eel trap and a shuttered lantern"}
+    - {id: sotto_arcata, dopo: [i_bice_scrivano], prompt: "the young lamplighter in a tiny rowing boat under a stone bridge arch at night, holding a dripping eel trap and a shuttered lantern"}
 
 personalita:
   superficie: ["sfacciata e allegra", "scommette su tutto", "non sta mai ferma"]

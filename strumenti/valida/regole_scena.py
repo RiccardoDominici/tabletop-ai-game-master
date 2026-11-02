@@ -173,7 +173,8 @@ def _scena(c: Campagna, e: Esito, dove: str, s: dict) -> None:
         for i in segn:
             if i not in c.indizi:
                 e.errore("SCENA.uscite", dove, f"uscita segnalata da un indizio inesistente: {i}")
-        if 0 < len(segn) < 3:
+        noto = (c.nodi.get(u.get("verso")) or {}).get("noto_ai_pg") is True
+        if 0 < len(segn) < 3 and not noto:
             e.avviso("SCENA.uscite", dove, f"il nodo {u.get('verso')} è segnalato da {len(segn)} indizi (C5 ne chiede 3 per i nodi necessari)")
     mossa = s.get("mossa_morbida_pronta") or ""
     for regola, det in problemi_di_prosa(mossa):

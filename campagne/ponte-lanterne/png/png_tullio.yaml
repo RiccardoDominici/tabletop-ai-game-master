@@ -13,7 +13,7 @@ aspetto:
   invarianti: ["sessantadue anni", "largo di spalle", "berretto di lana marrone", "barba grigia", "grossa chiave di ferro alla cintura", "mantello cerato giallo"]
   prompt_immagine: "broad-shouldered 62-year-old bridge toll keeper, wet grey beard, brown wool cap pulled down over his ears, yellow oilskin cloak, heavy iron key hanging from his belt, rainy stone bridge with lanterns behind him, [STILE]"
   situazioni:
-    - {id: alla_catena, prompt: "the toll keeper gripping the crank of the bridge chain at midnight, water over the low ramp, crowd with lanterns in the background"}
+    - {id: alla_catena, dopo: [nar_piena_8], prompt: "the toll keeper gripping the crank of the bridge chain at midnight, water over the low ramp, crowd with lanterns in the background"}
 
 personalita:
   superficie: ["brontolone: si lamenta di tutto e intanto aiuta", "conta tutto: soldi, passi, gradini", "fiero del ponte come di un figlio"]

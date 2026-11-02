@@ -33,7 +33,12 @@ TIPI_BATTUTA = {"menzogna", "verita", "confessione", "reazione", "rifiuto", "ric
 CAMPI_BATTUTA = {"id", "chi", "tipo", "quando", "temi", "richiede", "testo", "varianti", "effetti",
                  "max_usi", "solo_esempio", "riempitivo", "scena"}
 CAMPI_RICHIEDE = {"indizi_rivelati", "indizi_non_rivelati", "battute_usate", "battute_non_usate",
-                  "orologio", "privata", "da_pg"}
+                  "orologio", "privata", "da_pg", "oppure"}
+# `richiede.oppure: [{…}, {…}]`: la battuta è disponibile se valgono le condizioni di base E almeno una
+# delle alternative (docs/repertorio.md, «Cancelli con oppure»). Il server oggi ignora le chiavi che non
+# conosce: una battuta con `oppure` uscirebbe con le sole condizioni di base, cioè con il cancello
+# aperto. Finché il server non lo applica, usarlo è un errore; quando lo applica, mettere True.
+OPPURE_NEL_SERVER = False
 CAMPI_EFFETTI = {"rivela_indizi", "menzogna_detta", "fatti_noti", "avanza_orologio"}
 # Tipi che devono restare selezionabili: non possono essere esempi di voce.
 TIPI_ESSENZIALI = {"menzogna", "confessione", "indizio", "segno_orologio", "finale"}
@@ -41,6 +46,11 @@ TIPI_ESSENZIALI = {"menzogna", "confessione", "indizio", "segno_orologio", "fina
 TIPI_RIEMPITIVO = {"momento", "indizio", "transizione", "richiesta"}
 # Categorie di reazione che ogni PNG dovrebbe avere, come esempio di voce o battuta: id che finisce così.
 CATEGORIE_REAZIONE = ["domanda_gentile", "accusa", "minaccia", "offerta", "aiuto"]
+# Soprannomi che valgono per mezzo paese: un PNG con uno di questi `alias` entra nella pertinenza di
+# ogni azione su un vecchio, una ragazza, un uomo (nota 11 della prova cieca).
+ALIAS_GENERICI = {"uomo", "donna", "vecchio", "vecchia", "vecchi", "vecchie", "ragazzo", "ragazza", "ragazzi",
+                  "bambino", "bambina", "signore", "signora", "tizio", "tizia", "tipo", "amico", "amica", "gente",
+                  "persona", "lui", "lei", "giovane", "anziano", "anziana", "uno", "una", "qualcuno"}
 # Parole che nel `quando` direbbero al selettore chi mente, nasconde o confessa.
 QUANDO_VIETATE = [r"\bment(e|o|ire|isce|ito|iva|ono)\b", r"\bbugi", r"menzogn", r"confess", r"segret",
                   r"nascond", r"\bverità\b"]

@@ -101,10 +101,31 @@ def _campi_pubblici(c: Campagna) -> list[tuple[str, str]]:
     return out
 
 
+def _dentro_parola(c: Campagna, e: Esito, voci: list[dict]) -> None:
+    """Una regex che scatta a metà di una parola più lunga («sa del leone» in «Rosa del leone») trova
+    falsi segreti e fa scrivere male i testi per evitarli: va chiusa con \\b (nota 14 della prova cieca)."""
+    testi = [str(r) for b in c.battute for v in [b.get("testo") or []] + list(b.get("varianti") or []) for r in v]
+    testi += [t for _, t in _campi_pubblici(c)] + [str(f.get("testo", "")) for f in c.canone.values()]
+    testi += [str(s.get(k) or "") for _, s in c.scene for k in ("descrizione", "taglio")]
+    for v in voci:
+        for t in testi:
+            basso = t.lower()
+            m = next((m for m in v["_rx"].finditer(basso) if m.start() > 0 and m.group(0)[:1].isalpha()
+                      and basso[m.start() - 1].isalpha()), None)
+            if m:
+                inizio = basso.rfind(" ", 0, m.start()) + 1
+                fine = basso.find(" ", m.end())
+                parola = basso[inizio:fine if fine >= 0 else len(basso)]
+                e.avviso("SEGRETI.regex_dentro_parola", v["_dove"],
+                         f"la regex scatta dentro «{parola}» («{m.group(0)}»): aggiungi \\b all'inizio")
+                break
+
+
 def controlla(c: Campagna, e: Esito) -> None:
     voci = _voci(c, e)
     if not voci:
         return
+    _dentro_parola(c, e, voci)
     for dove, testo in _campi_pubblici(c):
         for v in voci:
             if v["_rx"].search(testo.lower()):

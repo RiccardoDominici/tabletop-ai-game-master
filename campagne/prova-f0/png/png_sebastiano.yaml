@@ -24,6 +24,7 @@ aspetto:
   prompt_immagine: "gaunt man about forty, worn black hooded cloak pulled low, his brow and eyes lost in the shadow of the hood, hands tucked into his sleeves, three-day stubble, face seen through the small iron grate of a storeroom door, candlelight, [STILE]"
   situazioni:
     - id: senza_cappuccio
+      dopo: [i_cicatrice]   # sul proiettore solo quando la cicatrice è stata vista
       prompt: "his hood pushed back onto his shoulders, brow and eyes uncovered, face fully lit by a candle, a thin white scar splits his left eyebrow"
 
 personalita:
