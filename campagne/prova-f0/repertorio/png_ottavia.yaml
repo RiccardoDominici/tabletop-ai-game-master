@@ -323,7 +323,7 @@ battute:
   - id: ott_altra_offerta
     chi: png_ottavia
     tipo: momento
-    quando: "la chierica propone un'altra offerta per i morti, al posto del pane"
+    quando: "la chierica propone un'altra offerta, al posto del pane"
     temi: [offerta, castagne, rito, chierica]
     testo:
       - "[narratore] Ottavia alza la testa di scatto. Negli occhi le passa una luce."

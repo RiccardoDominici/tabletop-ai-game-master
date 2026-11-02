@@ -295,7 +295,7 @@ battute:
       - "[png_baldrin] Soldato, sta' con me alla porta. Tu sai cos'è una guardia."
     max_usi: 1
 
-  - id: bal_pane_ilde
+  - id: bal_mollica
     chi: png_baldrin
     tipo: momento
     quando: "qualcuno spezza il pane dei lumi davanti a Baldrin"
