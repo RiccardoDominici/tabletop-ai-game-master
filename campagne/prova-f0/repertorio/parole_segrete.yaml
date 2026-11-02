@@ -139,6 +139,11 @@ parole:
     fatti: [f_sebastiano_cerusico]
     pubblica_dopo: [seb_mestiere_promessa, seb_mestiere_malato, seb_guerra_roccalba]
     nota: "f_sebastiano_cerusico: Sebastiano mente sul suo mestiere. «il suo cerusico disertore» nell'aggancio di Corrado è pubblico: conta solo il legame con il forestiero"
+  - parola: "parola da medico"
+    regex: "\\bparol\\w* da medic"
+    fatti: [f_sebastiano_cerusico]
+    pubblica_dopo: [i_parole_da_medico, seb_mestiere_promessa, seb_mestiere_malato, seb_guerra_roccalba]
+    nota: "f_sebastiano_cerusico: voce.stile di Sebastiano («ogni tanto una parola da medico») svela il mestiere al selettore prima dell'indizio. Prima era un'espressione scritta nel codice del server; ora è un dato della campagna"
   - parola: "disertore"
     regex: "(sono|è|era) (un )?disertor|(forestiero|sebastiano)[^.]{0,40}disert|disert[^.]{0,40}(forestiero|sebastiano)|\\bho disertato|me ne sono andat[oa] una notte"
     fatti: [f_sebastiano_disertore]
