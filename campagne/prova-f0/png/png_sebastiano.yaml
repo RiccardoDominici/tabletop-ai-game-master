@@ -8,8 +8,15 @@ fronte: fronte_fuoco_nero
 
 aspetto:
   lettura: "Un uomo magro, sulla quarantina, col cappuccio nero calato sugli occhi. Ha le mani pulite, e non tremano."
-  invarianti: ["circa 40 anni", "alto e magro", "mantello nero col cappuccio, logoro", "cicatrice bianca che taglia il sopracciglio sinistro (si vede solo senza cappuccio)", "mani pulite, unghie corte", "barba di tre giorni"]
-  prompt_immagine: "gaunt man about forty, worn black hooded cloak pulled low, thin white scar splitting his left eyebrow, clean steady hands with short nails, three-day stubble, face seen through the small iron grate of a storeroom door, candlelight, [STILE]"
+  # Ritratto e invarianti vanno sul proiettore dal primo turno: la cicatrice lo identifica come il
+  # cerusico ricercato (f_cicatrice, i_cicatrice), quindi qui c'è solo il cappuccio calato, e il
+  # sopracciglio resta in ombra. La cicatrice compare nella situazione «senza_cappuccio», da
+  # mostrare dopo la rivelazione (nar_volto_candela, nar_volto_uscita).
+  invarianti: ["circa 40 anni", "alto e magro", "mantello nero col cappuccio calato sugli occhi, logoro", "mani pulite, unghie corte", "barba di tre giorni"]
+  prompt_immagine: "gaunt man about forty, worn black hooded cloak pulled low, his brow and eyes lost in the shadow of the hood, clean steady hands with short nails, three-day stubble, face seen through the small iron grate of a storeroom door, candlelight, [STILE]"
+  situazioni:
+    - id: senza_cappuccio
+      prompt: "his hood pushed back onto his shoulders, brow and eyes uncovered, face fully lit by a candle, a thin white scar splits his left eyebrow"
 
 personalita:
   superficie: ["calmo e cortese, anche con chi lo insulta", "preciso: fa domande come un medico", "riservato sul suo passato"]
