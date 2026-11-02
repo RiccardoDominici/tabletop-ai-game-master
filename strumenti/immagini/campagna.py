@@ -67,6 +67,7 @@ class Richiesta:
     altezza: int
     riferimenti: list[str] = field(default_factory=list)
     alias_di: str | None = None
+    extra: dict = field(default_factory=dict)   # campi in più per il manifest (es. `dopo` di una situazione)
 
     @property
     def file(self) -> str:
@@ -135,11 +136,15 @@ def richieste_nodi(cartella: Path, stile: str) -> list[Richiesta]:
     id_scena = {f.relative_to(cartella).as_posix(): _yaml(f).get("id", f.stem) for f in _file_scene(cartella)}
     out = []
     for nodo in _yaml(percorso).get("nodi") or []:
-        if not isinstance(nodo, dict) or nodo.get("tipo") != "luogo" or not nodo.get("id"):
+        # Contano i nodi-luogo e qualunque nodo (anche un evento) la cui scheda è una scena: il master
+        # può spostare il proiettore su quell'id. I nodi dei PNG no: la loro scheda è png/….
+        if not isinstance(nodo, dict) or not nodo.get("id") or nodo.get("tipo") == "png":
             continue
         ident = f"luogo_{nodo['id']}"
         scheda = nodo.get("scheda")
         prompt = (nodo.get("immagine") or {}).get("prompt_luogo")
+        if nodo.get("tipo") != "luogo" and scheda not in id_scena and not prompt:
+            continue
         if scheda in id_scena and not prompt:
             bersaglio = f"luogo_{id_scena[scheda]}"
             if bersaglio != ident:
@@ -185,12 +190,15 @@ def richieste_png(cartella: Path, stile: str, luoghi: dict[str, list[str]]) -> l
         out.append(Richiesta(rid, "ritratto", con_stile(corpo, stile), seme_da_id(rid), *DIM_RITRATTO))
 
         identita = identita_situazioni(asp)
-        situazioni = [(s["id"], s["prompt"]) for s in (asp.get("situazioni") or []) if s.get("id") and s.get("prompt")]
-        for sid, testo in situazioni:
-            ident = f"situazione_{pid}_{sid}"
-            prompt = f"The same person as in the reference image, same face, hair and clothes: {identita}. Now {testo}"
+        situazioni = [s for s in (asp.get("situazioni") or []) if s.get("id") and s.get("prompt")]
+        for s in situazioni:
+            ident = f"situazione_{pid}_{s['id']}"
+            prompt = f"The same person as in the reference image, same face, hair and clothes: {identita}. Now {s['prompt']}"
+            # `dopo`: gli id (indizi, battute) dopo i quali la situazione si può mostrare. Finisce nel
+            # manifest, così chi la proietta sa quando: prima di allora è un segreto.
+            extra = {"png": pid, "dopo": list(s.get("dopo") or [])}
             out.append(Richiesta(ident, "situazione", con_stile(prompt, stile), seme_da_id(ident),
-                                 *DIM_SITUAZIONE, riferimenti=[rid]))
+                                 *DIM_SITUAZIONE, riferimenti=[rid], extra=extra))
         for lid, chi in luoghi.items():
             if pid not in chi:
                 continue
@@ -198,7 +206,7 @@ def richieste_png(cartella: Path, stile: str, luoghi: dict[str, list[str]]) -> l
             prompt = (f"The same person as in the first reference image, same face, hair and clothes: {identita}. "
                       f"Now inside the place shown in the second reference image")
             out.append(Richiesta(ident, "situazione", con_stile(prompt, stile), seme_da_id(ident),
-                                 *DIM_SITUAZIONE, riferimenti=[rid, lid]))
+                                 *DIM_SITUAZIONE, riferimenti=[rid, lid], extra={"png": pid, "dopo": []}))
     return out
 
 

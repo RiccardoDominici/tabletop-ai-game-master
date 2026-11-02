@@ -140,7 +140,7 @@ def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, 
             man.registra({
                 "id": r.id, "file": r.file, "tipo": r.tipo, "prompt": r.prompt, "seme": s,
                 "larghezza": r.larghezza, "altezza": r.altezza, "generata": [gl, ga],
-                "riferimenti": r.riferimenti, "modello": motore.descrizione, "secondi": round(e.secondi, 1),
+                **r.extra, "riferimenti": r.riferimenti, "modello": motore.descrizione, "secondi": round(e.secondi, 1),
                 "picco_gb": round(e.picco_gb, 2) if e.picco_gb else None, "kb": round(kb),
                 "rifilato_pct": round(rifilato * 100, 1),
                 "quando": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -188,11 +188,23 @@ def main() -> None:
     p.add_argument("--rifai", action="store_true", help="rigenera anche se il file c'è già (lo sovrascrive)")
     p.add_argument("--seme", type=int, help="seme al posto di quello ricavato dall'id (solo con un --id)")
     p.add_argument("--no-fp16", action="store_true", help="calcolo in bfloat16 (float16 è il default: ~20%% più veloce su M1)")
+    p.add_argument("--dim-luogo", metavar="LxA",
+                   help="dimensioni di luoghi e situazioni per questa corsa, es. 1280x720 (2,5 volte più veloce di 1920x1080)")
     p.add_argument("--rifila-esistenti", action="store_true",
                    help="non genera: rifila l'orlo di carta dei luoghi già fatti che non sono stati rifilati (solo CPU)")
     args = p.parse_args()
     if args.seme is not None and len(args.ids or []) != 1:
         p.error("--seme vale per una sola immagine: indica esattamente un --id")
+
+    if args.dim_luogo:
+        import campagna
+        try:
+            dim = tuple(int(x) for x in args.dim_luogo.lower().split("x"))
+            assert len(dim) == 2 and min(dim) > 0
+        except (ValueError, AssertionError):
+            p.error("--dim-luogo vuole LARGHEZZAxALTEZZA, es. 1280x720")
+        # Le funzioni di campagna.py leggono queste costanti a ogni chiamata (anche in rileggi()).
+        campagna.DIM_LUOGO = campagna.DIM_SITUAZIONE = dim
 
     cartella = args.campagna.resolve()
     if args.rifila_esistenti:
