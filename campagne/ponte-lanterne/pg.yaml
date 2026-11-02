@@ -36,14 +36,14 @@ personaggi:
     classe: "mago"
     livello: 1
     aspetto: "Gnomo dalla barba bianca a punta, occhialini su una catenella, mantello pieno di tasche e un metro di legno pieghevole."
-    concetto: "Studioso di ponti, ha scritto un trattato di trecento pagine sugli archi che nessuno ha mai letto. Gira la valle per vedere i ponti dei Pontieri dell'Onda prima che il fiume se li porti via."
-    aggancio: "Il Ponte delle Lanterne è l'ultimo ponte dei Pontieri dell'Onda ancora in piedi in questa valle. Sei venuto apposta per lui."
+    concetto: "Studioso di ponti, ha scritto un trattato di trecento pagine sugli archi che nessuno ha mai letto. Gira la valle per vedere i ponti dei Pontieri della Valle prima che il fiume se li porti via."
+    aggancio: "Il Ponte delle Lanterne è l'ultimo ponte dei Pontieri della Valle ancora in piedi in questa valle. Sei venuto apposta per lui."
     cosa_sai_fare:
       - "leggi le pietre, le malte e i segni dei costruttori"
       - "con un trucchetto di magia fai luce sulla punta del bastone"
       - "misuri tutto, a occhio e con il tuo metro"
     conoscenze_private:
-      - {testo: "I Pontieri dell'Onda segnavano l'acqua pericolosa con un'onda scolpita sul pilone, mai con una statua. Le statue, per loro, erano ornamenti.", fatti: []}
+      - {testo: "I Pontieri della Valle segnavano l'acqua pericolosa con un'onda scolpita sul pilone, mai con una statua. Le statue, per loro, erano ornamenti.", fatti: []}
       - {testo: "Una malta chiara e liscia su un pilone di malta scura vuol dire che quella pietra è stata smurata e rimessa, molto dopo il resto.", fatti: []}
 
   - id: pg_nives

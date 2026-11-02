@@ -57,6 +57,7 @@ sa:
   - f_ordine_consiglio
   - f_regola_leone
   - f_piena_grande
+  - f_console
 non_sa:
   - f_ernesto_febbre       # domanda probabile: «i vecchi del Ricovero stanno bene?»
   - f_legna_bagnata

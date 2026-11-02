@@ -1,0 +1,182 @@
+# Repertorio di Leandro Vischi, mercante di sale e prestatore. Voce: lei a tutti, voi al gruppo,
+# mai la voce alta. Frasi di sei-dodici parole, ordinate. Tic: «Con tutto il rispetto.»
+# Segnale quando mente: lucida l'anello con il sigillo sul fazzoletto.
+# Menzogne registrate: vis_leone = «il leone e la regola»; vis_barche = «chi salirà sulle barche dell'alba».
+# Non confessa mai in pubblico: in privato, davanti al registro, contratta.
+
+battute:
+
+  # --- esempi di voce (solo_esempio) ----------------------------------------------------------
+  - id: vis_saluto
+    chi: png_vischi
+    tipo: saluto
+    solo_esempio: true
+    quando: "i PG si avvicinano a Vischi o lo salutano"
+    temi: [saluto]
+    testo:
+      - "[narratore] Vischi si sfila un guanto, dito per dito, e vi tende la mano."
+      - "[png_vischi] Benvenuti a Vadolungo, anche se il fiume non vi fa onore. Posso offrirvi un riparo?"
+    max_usi: 1
+  - id: vis_rifiuto
+    chi: png_vischi
+    tipo: rifiuto
+    solo_esempio: true
+    quando: "un PG chiede a Vischi di cose che non lo riguardano"
+    temi: [domanda]
+    testo:
+      - "[png_vischi] Con tutto il rispetto, di questo non mi occupo. Io mi occupo di garanzie."
+    max_usi: 1
+  - id: vis_domanda_gentile
+    chi: png_vischi
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG chiede a Vischi dei suoi affari"
+    temi: [gentile]
+    testo:
+      - "[png_vischi] Sale, barche e qualche impegno con la gente del Borgo. Niente che valga la vostra pioggia."
+    max_usi: 1
+  - id: vis_accusa
+    chi: png_vischi
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG accusa Vischi di approfittare della piena"
+    temi: [accuso]
+    testo:
+      - "[narratore] Vischi sorride, più gentile di prima."
+      - "[png_vischi] Io offro barche, e lei mi offre sospetti. Vede la differenza?"
+    max_usi: 1
+  - id: vis_minaccia
+    chi: png_vischi
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG minaccia Vischi"
+    temi: [minaccia]
+    testo:
+      - "[png_vischi] Abbassi la voce, prego. Il console è qui vicino, e le sue guardie anche."
+    max_usi: 1
+  - id: vis_offerta
+    chi: png_vischi
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG offre a Vischi denaro o un accordo"
+    temi: [soldi]
+    testo:
+      - "[png_vischi] Un accordo si fa sulla carta, e all'asciutto. Passi dalla Casa del Sale."
+    max_usi: 1
+  - id: vis_aiuto
+    chi: png_vischi
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG chiede a Vischi un aiuto per il Borgo"
+    temi: [aiuto]
+    testo:
+      - "[png_vischi] Le mie barche verranno all'alba, ne ha la mia parola. Stanotte serve prudenza."
+    max_usi: 1
+
+  # --- selezionabili --------------------------------------------------------------------------
+  - id: vis_ricovero_prima
+    chi: png_vischi
+    tipo: momento
+    quando: "davanti a Vischi, i PG discutono chi salvare per primo"
+    temi: [primi, ricovero, vecchi, salvare, salviamo, scegliere, scegliamo]
+    testo:
+      - "[png_vischi] Con tutto il rispetto, i vecchi del Ricovero prima di tutto. È carità."
+      - "[narratore] Vischi alza la voce perché lo senta il ponte, e qualcuno tra la gente annuisce."
+      - "[png_vischi] Le Case Lunghe sono gente forte. All'alba ci penso io."
+    max_usi: 1
+  - id: vis_leone_versione
+    chi: png_vischi
+    tipo: menzogna
+    quando: "un PG chiede a Vischi del leone o della regola della chiusura"
+    temi: [leone, regola, criniera, chiusura, chiudere]
+    testo:
+      - "[narratore] Vischi lucida l'anello con il sigillo sul fazzoletto."
+      - "[png_vischi] Il leone l'hanno messo i costruttori, e la regola salva vite. Lo chieda ai ceri accesi a San Clemente."
+    varianti:
+      - ["[narratore] Vischi lucida l'anello con il sigillo, piano, sul fazzoletto.", "[png_vischi] Gliel'ho già detto. Il leone l'hanno messo i costruttori."]
+    effetti: {menzogna_detta: vis_leone}
+    max_usi: 2
+  - id: vis_barche_versione
+    chi: png_vischi
+    tipo: menzogna
+    quando: "un PG chiede a Vischi chi salirà sulle sue barche all'alba"
+    temi: [barche, barconi, gratis, alba]
+    testo:
+      - "[narratore] Vischi lucida l'anello con il sigillo sul fazzoletto."
+      - "[png_vischi] Le mie barche verranno all'alba per tutti. È carità, non commercio."
+    varianti:
+      - ["[narratore] Vischi lucida l'anello con il sigillo, senza fretta.", "[png_vischi] Per tutti, gliel'ho detto. È carità, e io non faccio differenze."]
+    effetti: {menzogna_detta: vis_barche}
+    max_usi: 2
+  - id: vis_case_marce
+    chi: png_vischi
+    tipo: indizio
+    scena: scena_casa_del_sale
+    quando: "un PG ascolta Vischi che parla piano con il console"
+    temi: [ascolto, origlio, origliare, console, ugolino]
+    testo:
+      - "[narratore] Vischi parla piano al console, vicino al camino, con il bicchiere in mano."
+      - "[png_vischi] Le Case Lunghe sono legno marcio, Ugolino. Lì ci starebbe bene una darsena."
+    effetti: {rivela_indizi: [i_vischi_darsena], fatti_noti: [f_darsena]}
+    max_usi: 1
+  - id: vis_studio_accompagna
+    chi: png_vischi
+    tipo: momento
+    scena: scena_casa_del_sale
+    quando: "un PG va verso la porta di quercia in fondo alla sala"
+    temi: [studio, quercia, guardia, entrare]
+    testo:
+      - "[narratore] Vischi si alza, vi raggiunge con un sorriso e vi prende sottobraccio."
+      - "[png_vischi] Lo studio è un buco pieno di carte noiose. Venga al fuoco, il vino è caldo."
+    max_usi: 1
+
+  # --- confessioni ----------------------------------------------------------------------------
+  - id: vis_leone_accordo
+    chi: png_vischi
+    tipo: confessione
+    quando: "dove il console non sente, un PG mostra a Vischi il registro della cassa"
+    temi: [registro, mostro, pece, accordo]
+    richiede: {privata: true, indizi_rivelati: [i_registro_padre]}
+    testo:
+      - "[narratore] Vischi guarda la pagina e smette di sorridere. Si rinfila il guanto, lentamente."
+      - "[png_vischi] Mio padre era un uomo prudente. Ha calato il leone di due spanne, e ha salvato vite."
+      - "[png_vischi] Facciamo così. Le mie barche all'alba gratis per tutti, e quel registro nel camino."
+    effetti: {fatti_noti: [f_vischi_sa, f_leone_calato, f_padre_vischi]}
+    max_usi: 1
+  - id: vis_barche_lista
+    chi: png_vischi
+    tipo: confessione
+    quando: "un PG legge a Vischi la lista per le barche dell'alba"
+    temi: [lista, elenco, firmato, firmare]
+    richiede: {indizi_rivelati: [i_lista_alba]}
+    testo:
+      - "[narratore] Vischi ascolta fino in fondo, con le mani giunte."
+      - "[png_vischi] Una firma è una garanzia, non un prezzo. Chi non firma non ha niente da dare."
+    effetti: {fatti_noti: [f_barche_firma]}
+    max_usi: 1
+
+  # --- momenti del terzo tocco ----------------------------------------------------------------
+  - id: vis_smascherato
+    chi: png_vischi
+    tipo: momento
+    scena: scena_terzo_tocco
+    quando: "un PG mostra a tutti, davanti al console, una prova sul leone"
+    temi: [prova, console, guardate, falso, mostro]
+    richiede: {orologio: {id: o_piena, min: 7, max: 8}}
+    testo:
+      - "[narratore] Vischi si sfila un guanto, dito per dito, davanti a tutti."
+      - "[png_vischi] Un falso, e un falso bagnato. Ma parliamo di impegni veri."
+      - "[png_vischi] Signor Bellora, se la catena resta su, all'alba il casello è mio."
+    effetti: {fatti_noti: [f_debito_tullio]}
+    max_usi: 1
+  - id: vis_terzo_tocco
+    chi: png_vischi
+    tipo: momento
+    scena: scena_terzo_tocco
+    quando: "al terzo tocco, Vischi passa accanto alla catena"
+    temi: [manovella, catena, tocco]
+    richiede: {orologio: {id: o_piena, min: 7, max: 8}}
+    testo:
+      - "[narratore] Vischi passa accanto alla catena senza fermarsi."
+      - "[png_vischi] Signor Bellora, l'alba arriva per tutti. Anche per i tetti nuovi."
+    max_usi: 1

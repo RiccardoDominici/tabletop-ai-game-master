@@ -1,0 +1,140 @@
+# Parole segrete della campagna «ponte-lanterne» (modo B, repertorio).
+#
+# Ogni voce è un'espressione che porta un segreto: un fatto con noto_ai_pg: false.
+#   parola         forma leggibile
+#   regex          Python re.search sul testo in minuscolo: cerca il legame, non la parola comune
+#   fatti          i fatti del canone che rivela: un PNG che li ha nel suo `sa` può dirla
+#   pubblica_dopo  id di indizi o battute che la rendono pubblica; lista vuota = solo se la dice un giocatore
+#   nota           commento per chi legge
+#
+# Usi: il contesto del selettore in modo B non deve contenere nessuna regex ancora segreta; in una
+# trascrizione, una riga del narratore o di un PNG con una regex prima di `pubblica_dopo` è una fuga.
+
+parole:
+  # --- il leone -------------------------------------------------------------------------------
+  - parola: "il leone calato, abbassato, spostato"
+    regex: "(calat|calav|abbassat|spostat|rimess|smurat)\\w*[^.]{0,30}leone|leone[^.]{0,40}(calat|calav|abbassat|spostat|rimess|smurat)"
+    fatti: [f_leone_calato, f_padre_vischi]
+    pubblica_dopo: [vis_leone_accordo, tul_catena_registro, nar_registro_cassa, i_registro_padre]
+    nota: "la verità principale: il leone non è il segno dei costruttori. Né il narratore né i PNG senza il fatto nel sa la dicono prima della prova"
+  - parola: "l'onda scolpita"
+    regex: "\\bonda\\b"
+    fatti: [f_onda_pontieri, f_libro_piena]
+    pubblica_dopo: [nar_pilone_parapetto, nar_pilone_barca, i_onda_pilone, nar_libro_sfoglia, bic_libro_cerca, i_libro_piena]
+    nota: "il vero segno del pericolo, sul pilone e nel libro dei passi. Per questo la gilda dei costruttori si chiama Pontieri della Valle"
+  - parola: "due spanne"
+    regex: "due spanne"
+    fatti: [f_leone_calato, f_onda_pontieri, f_scrivano_misura]
+    pubblica_dopo: [nar_pilone_parapetto, nar_pilone_barca, i_onda_pilone, nar_corda_studio, i_corda_nodi, nar_registro_cassa, i_registro_padre, bic_notte_promessa, bic_notte_nassa, i_bice_scrivano, vis_leone_accordo]
+    nota: "la distanza tra il leone e l'onda: la misura dello scrivano e la riga del registro"
+  - parola: "un'ora in più"
+    regex: "un'ora in più|regge un'ora|un'ora dopo il terzo tocco|un'ora oltre"
+    fatti: [f_ora_in_piu]
+    pubblica_dopo: []
+    nota: "la conseguenza: la deducono i giocatori dall'onda e dall'acqua che sale. «Un'ora, non di più» di Tullio, a catena alzata, non la dice"
+  - parola: "malta chiara"
+    regex: "malta (chiara|liscia|nuova)"
+    fatti: [f_malta_chiara]
+    pubblica_dopo: [nar_leone_parapetto, nar_leone_barca, i_malta_leone]
+    nota: "la traccia del lavoro di notte intorno al leone"
+  - parola: "ponte saldo"
+    regex: "ponte saldo"
+    fatti: [f_libro_piena]
+    pubblica_dopo: [nar_libro_sfoglia, bic_libro_cerca, i_libro_piena]
+    nota: "la riga del vecchio Bellora nel libro dei passi"
+  - parola: "guardava più in alto del leone"
+    regex: "guardava (più su|più in alto|lassù)"
+    fatti: [f_bellora_guardava]
+    pubblica_dopo: [tul_detto, i_detto_bellora]
+    nota: "il ricordo di Tullio su suo padre"
+  - parola: "rondini"
+    regex: "rondin"
+    fatti: [f_rondini]
+    pubblica_dopo: [ros_leone_giovane, i_rosa_rondini]
+    nota: "il ricordo di Rosa: prima della piena grande il leone stava all'altezza dei nidi"
+  - parola: "mastro Pece, Corrado Vischi, dieci fiorini"
+    regex: "mastro pece|corrado vischi|dieci fiorini"
+    fatti: [f_registro_padre, f_padre_vischi]
+    pubblica_dopo: [nar_registro_cassa, i_registro_padre]
+    nota: "la riga del registro del padre di Vischi"
+  - parola: "Vischi sa del leone"
+    regex: "\\b(vischi|lui) (lo )?sa\\b[^.]{0,30}leone|\\bsa del leone"
+    fatti: [f_vischi_sa]
+    pubblica_dopo: [vis_leone_accordo]
+    nota: "che Vischi conosce la verità"
+  - parola: "lo scrivano ieri notte"
+    regex: "(ieri notte|ieri sera)[^.]{0,60}(scrivano|misur|corda)|(scrivano|corda)[^.]{0,60}(ieri notte|ieri sera)"
+    fatti: [f_scrivano_misura]
+    pubblica_dopo: [bic_notte_promessa, bic_notte_nassa, i_bice_scrivano]
+    nota: "la misura della notte prima; la corda a nodi in sé, stasera sul ponte, è pubblica"
+  - parola: "le anguille di Bice"
+    regex: "per le anguille|pesc\\w* (le )?anguill|anguill\\w*[^.]{0,30}(di notte|sotto l'arcata)"
+    fatti: [f_bice_anguille]
+    pubblica_dopo: [bic_notte_promessa, bic_notte_nassa, i_bice_scrivano]
+    nota: "la nassa dietro il casello è un oggetto visibile; che sia di Bice e che peschi di notte, no"
+
+  # --- i debiti -------------------------------------------------------------------------------
+  - parola: "contratti di prestito, casa in pegno"
+    regex: "contratt\\w* di prestito|casa in pegno"
+    fatti: [f_carte_pronte]
+    pubblica_dopo: [nar_carte_tavolo, nar_carte_cartella, i_carte_pronte]
+    nota: "le carte già pronte con i nomi delle Case Lunghe e del Ricovero"
+  - parola: "solo chi ha firmato"
+    regex: "solo chi (ha )?firma"
+    fatti: [f_barche_firma]
+    pubblica_dopo: [nar_lista_alba, i_lista_alba, vis_barche_lista]
+    nota: "la condizione delle barche dell'alba"
+  - parola: "darsena"
+    regex: "darsena"
+    fatti: [f_darsena]
+    pubblica_dopo: [vis_case_marce, i_vischi_darsena]
+    nota: "che cosa vuole fare Vischi delle Case Lunghe"
+  - parola: "le croci dello scrivano"
+    regex: "(scrivano|vischi)[^.]{0,40}(croc|gesso)|(croc|gesso)[^.]{0,40}(scrivano|vischi)"
+    fatti: [f_croci_gesso]
+    pubblica_dopo: []
+    nota: "le croci di gesso si vedono; chi le ha fatte lo deducono i giocatori"
+  - parola: "il casello in pegno"
+    regex: "casello (è )?in pegno|il casello è (suo|mio)|\\btetto\\b[^.]{0,40}(pagato|vischi)|catena su dopo il (terzo )?tocco"
+    fatti: [f_debito_tullio, f_minaccia_tullio]
+    pubblica_dopo: [tul_catena_casello, tul_catena_arrigo, tul_catena_registro, i_tullio_minaccia, vis_smascherato]
+    nota: "il debito di Tullio e la minaccia di Vischi"
+
+  # --- il Ricovero ----------------------------------------------------------------------------
+  - parola: "la febbre di Ernesto"
+    regex: "febbre"
+    fatti: [f_ernesto_febbre]
+    pubblica_dopo: [ros_ricovero_tosse, ros_ricovero_legna, ros_ricovero_dalia, i_rosa_ernesto]
+    nota: "la tosse si sente; la febbre la dice Rosa quando cede"
+  - parola: "la stufa fredda, la legna sott'acqua"
+    regex: "legna[^.]{0,30}(sott'acqua|bagnat)|stufa[^.]{0,30}(fredda|spenta|non tira)|niente fuoco|non c'è fuoco"
+    fatti: [f_legna_bagnata]
+    pubblica_dopo: [nar_legna_sottoscala, nar_stufa_tocca, i_legna_bagnata, ros_ricovero_tosse, ros_ricovero_legna, ros_ricovero_dalia, i_rosa_ernesto]
+    nota: "al Ricovero non c'è fuoco"
+
+# Parti dei file che il compilatore del contesto deve togliere in modo B (il narratore non conosce i segreti).
+da_togliere_dal_contesto:
+  - percorso: "scena.yaml e scene/*.yaml → indizi[].come_si_trova"
+    motivo: "descrivono l'esito degli indizi (onda, malta, libro, registro, febbre, carte, lista) e la conclusione che sostengono: va tolto tutto il blocco indizi"
+  - percorso: "scena.yaml → elementi_interattivi, la voce «la nassa per anguille» (segnata NASCOSTA)"
+    motivo: "dice che la nassa è di Bice (f_bice_anguille)"
+  - percorso: "scene/scena_casa_del_sale.yaml → elementi_interattivi, la voce «la porta del retro» (segnata NASCOSTA)"
+    motivo: "è la conoscenza privata di Nives"
+  - percorso: "scena.yaml e scene/*.yaml → scopo, posta, taglio, esiti"
+    motivo: "scopo.rif nomina indizi; la posta dice che chi resta di là firma (f_barche_firma) e che serve la verità su chi sta peggio; il taglio del terzo tocco dice «c'è un'ora» (f_ora_in_piu) e parla della prova del leone"
+  - percorso: "stile.yaml → regole_prosa, la regola «Il narratore non dice mai che il leone è stato calato…»"
+    motivo: "la regola stessa svela la soluzione. In modo B: «Il narratore non commenta il leone: descrive pietre, malta e segni, il resto lo dicono i PG»"
+  - percorso: "campagna.yaml → orologi[].al_completo e avanza_quando"
+    motivo: "al_completo di o_piena dice che c'è un'ora fino all'onda; in modo B l'orologio arriva come stato dal Motore e i segni come battute"
+  - percorso: "campagna.yaml → rivelazioni, colli_di_bottiglia, colli_di_bottiglia_nota, sessione.cinque_stanze, sessione.chiusura"
+    motivo: "contengono le verità (il leone calato, l'onda, il registro, il debito, la febbre). Resta solo sessione.riassunto_iniziale"
+  - percorso: "campagna.yaml → canone, i fatti con noto_ai_pg: false"
+    motivo: "previsto da docs/repertorio.md: entrano nel contesto solo quando una battuta li rende noti (effetti.fatti_noti) o un indizio li rivela"
+  - percorso: "png/*.yaml → segreto, mente_su, crede_a_torto, non_sa, sa con fatti nascosti, desiderio, paura, contraddizione, relazioni, info_chiave, iniziative, evoluzione"
+    motivo: "nominano verità e debiti: il desiderio di Vischi «far firmare il Borgo all'alba», la sua paura del registro, le iniziative con lo scrivano e il leone, la contraddizione di Rosa. Restano nome, pronuncia, alias, aspetto.lettura, personalita.superficie e sotto_pressione, voce senza mai_dice"
+  - percorso: "png/*.yaml → voce.mai_dice"
+    motivo: "Tullio «debito», Bice «le anguille», Rosa «la febbre di Ernesto», Vischi «il nome di suo padre»: dicono che c'è qualcosa da dire"
+  - percorso: "png/*.yaml → aspetto.situazioni"
+    motivo: "Bice con la nassa sotto l'arcata, Vischi davanti alla cassa dei registri: servono solo dopo la rivelazione"
+  - percorso: "pg.yaml → personaggi[].conoscenze_private"
+    motivo: "onda dei costruttori, malta nuova, porta del retro, cassa di ferro, minaccia sul casello, corda dello scrivano, segnale di Rosa: vanno solo ai telefoni"

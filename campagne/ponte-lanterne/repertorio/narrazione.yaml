@@ -1,0 +1,667 @@
+# Repertorio del narratore (docs/repertorio.md, versione 2).
+# Segni degli orologi, indizi, momenti, finali, transizioni, riempitivi.
+# I `quando` e gli id non contengono segreti: li legge il selettore, che non conosce le verità.
+# Le battute legate a un luogo hanno `scena`; quelle del ponte valgono sia all'imbrunire sia a mezzanotte.
+
+battute:
+
+  # --- segni dell'orologio o_piena (tutta la sessione) ---------------------------------------
+  - id: nar_piena_1
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del primo segno della piena"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 0, max: 0}}
+    testo: ["[narratore] Il fiume cambia voce: un brontolio basso e continuo, sotto la pioggia."]
+    effetti: {avanza_orologio: o_piena}
+    max_usi: 1
+  - id: nar_piena_2
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del secondo segno della piena"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 1, max: 1}}
+    testo: ["[narratore] Una botte vuota scende veloce sulla corrente e sbatte contro un pilone.", "[narratore] Il colpo rimbomba sotto le arcate, poi la botte sparisce."]
+    effetti: {avanza_orologio: o_piena}
+    max_usi: 1
+  - id: nar_piena_3
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del terzo segno della piena"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 2, max: 2}}
+    testo: ["[narratore] Nel Borgo Basso una lanterna alla finestra si spegne, poi si riaccende."]
+    effetti: {avanza_orologio: o_piena}
+    max_usi: 1
+  - id: nar_piena_4
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del quarto segno della piena"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 3, max: 3}}
+    testo: ["[narratore] La campana di San Clemente batte il secondo tocco, lento e pesante.", "[narratore] Sul ponte qualcuno conta i rintocchi a voce alta."]
+    effetti: {avanza_orologio: o_piena}
+    max_usi: 1
+  - id: nar_piena_5
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del quinto segno della piena"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 4, max: 4}}
+    testo: ["[narratore] Un tronco intero sbatte contro il ponte, e il colpo arriva fino in piazza."]
+    effetti: {avanza_orologio: o_piena}
+    max_usi: 1
+  - id: nar_piena_6
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del sesto segno della piena"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 5, max: 5}}
+    testo: ["[narratore] La pioggia raddoppia, e dal Borgo arriva uno scroscio di tegole cadute."]
+    effetti: {avanza_orologio: o_piena}
+    max_usi: 1
+  - id: nar_piena_7
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del settimo segno della piena"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 6, max: 6}}
+    testo: ["[narratore] Dal ponte gridano che l'acqua è alla zampa del leone.", "[narratore] La voce rimbalza di casa in casa, fino alla chiesa."]
+    effetti: {avanza_orologio: o_piena}
+    max_usi: 1
+  - id: nar_piena_8
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento dell'ultimo segno della piena"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 7, max: 7}}
+    testo: ["[narratore] La campana batte il terzo tocco, e l'acqua tocca la criniera del leone.", "[narratore] Tutto il ponte si volta verso la catena."]
+    effetti: {avanza_orologio: o_piena}
+    max_usi: 1
+
+  # --- segni dell'orologio o_firme (Casa del Sale) -------------------------------------------
+  - id: nar_firme_1
+    chi: narratore
+    tipo: segno_orologio
+    scena: scena_casa_del_sale
+    quando: "è il momento del primo segno delle firme"
+    temi: [orologio]
+    richiede: {orologio: {id: o_firme, min: 0, max: 0}}
+    testo: ["[narratore] Lo scrivano stende i fogli sul tavolo lungo, e intinge la penna."]
+    effetti: {avanza_orologio: o_firme}
+    max_usi: 1
+  - id: nar_firme_2
+    chi: narratore
+    tipo: segno_orologio
+    scena: scena_casa_del_sale
+    quando: "è il momento del secondo segno delle firme"
+    temi: [orologio]
+    richiede: {orologio: {id: o_firme, min: 1, max: 1}}
+    testo: ["[narratore] Un barcaiolo bagnato entra, si toglie il berretto e firma con una croce.", "[narratore] Esce senza guardare nessuno."]
+    effetti: {avanza_orologio: o_firme}
+    max_usi: 1
+  - id: nar_firme_3
+    chi: narratore
+    tipo: segno_orologio
+    scena: scena_casa_del_sale
+    quando: "è il momento del terzo segno delle firme"
+    temi: [orologio]
+    richiede: {orologio: {id: o_firme, min: 2, max: 2}}
+    testo: ["[narratore] Il console alza il bicchiere verso Vischi, e i consiglieri lo imitano."]
+    effetti: {avanza_orologio: o_firme}
+    max_usi: 1
+  - id: nar_firme_4
+    chi: narratore
+    tipo: segno_orologio
+    scena: scena_casa_del_sale
+    quando: "è il momento del quarto segno delle firme"
+    temi: [orologio]
+    richiede: {orologio: {id: o_firme, min: 3, max: 3}}
+    testo: ["[narratore] Lo scrivano ricopia una lista di nomi e la soffia per asciugarla."]
+    effetti: {avanza_orologio: o_firme}
+    max_usi: 1
+  - id: nar_firme_5
+    chi: narratore
+    tipo: segno_orologio
+    scena: scena_casa_del_sale
+    quando: "è il momento del quinto segno delle firme"
+    temi: [orologio]
+    richiede: {orologio: {id: o_firme, min: 4, max: 4}}
+    testo: ["[narratore] Il consiglio vota a mani alzate: catena giù al terzo tocco.", "[narratore] Il console conta le mani due volte, per sicurezza."]
+    effetti: {avanza_orologio: o_firme}
+    max_usi: 1
+  - id: nar_firme_6
+    chi: narratore
+    tipo: segno_orologio
+    scena: scena_casa_del_sale
+    quando: "è il momento dell'ultimo segno delle firme"
+    temi: [orologio]
+    richiede: {orologio: {id: o_firme, min: 5, max: 5}}
+    testo: ["[narratore] Vischi chiude la lista con il suo sigillo, e manda lo scrivano al Passo Vecchio."]
+    effetti: {avanza_orologio: o_firme}
+    max_usi: 1
+
+  # --- indizi del ponte (all'imbrunire e a mezzanotte) ----------------------------------------
+  - id: nar_leone_parapetto
+    chi: narratore
+    tipo: indizio
+    quando: "un PG si sporge dal parapetto con una lanterna e guarda il leone"
+    temi: [leone, criniera, statua, malta, muso]
+    testo:
+      - "[narratore] Sotto la luce, il leone di pietra sporge dal pilone, sopra l'acqua color fango."
+      - "[narratore] Intorno al blocco del leone la malta è chiara e liscia, quasi nuova."
+      - "[narratore] Il resto del pilone ha una malta scura, mangiata dal fiume."
+    effetti: {rivela_indizi: [i_malta_leone], fatti_noti: [f_malta_chiara]}
+    max_usi: 1
+  - id: nar_leone_barca
+    chi: narratore
+    tipo: indizio
+    quando: "dalla barca, sotto l'arcata, un PG tocca o guarda da vicino il leone"
+    temi: [leone, criniera, statua, malta, tocco, toccare]
+    testo:
+      - "[narratore] Dalla barca il leone è a portata di mano, bagnato e freddo."
+      - "[narratore] Le dita trovano intorno al blocco una malta liscia, che non si sbriciola."
+      - "[narratore] Un palmo più in là, la malta del pilone si sfarina sotto l'unghia."
+    effetti: {rivela_indizi: [i_malta_leone], fatti_noti: [f_malta_chiara]}
+    max_usi: 1
+  - id: nar_pilone_parapetto
+    chi: narratore
+    tipo: indizio
+    quando: "dal parapetto, un PG gratta con la pertica il muschio del pilone di mezzo"
+    temi: [muschio, gratto, grattare, raschio, pilone, scolpito]
+    testo:
+      - "[narratore] La pertica raschia la pietra, e il muschio viene via a strisce nere."
+      - "[narratore] Due spanne sopra il leone, nella pietra, c'è un'onda scolpita."
+      - "[narratore] È asciutta, e il fiume le passa ancora lontano."
+    effetti: {rivela_indizi: [i_onda_pilone]}
+    max_usi: 1
+  - id: nar_pilone_barca
+    chi: narratore
+    tipo: indizio
+    quando: "dalla barca, sotto l'arcata, un PG alza la lanterna sul pilone di mezzo"
+    temi: [pilone, arcata, illumino, muschio, scolpito, alzo]
+    testo:
+      - "[narratore] Sotto l'arcata il fiume rimbomba, e la luce sale sul pilone bagnato."
+      - "[narratore] Sopra il leone, tra il muschio, la pietra ha un rilievo: un'onda scolpita."
+      - "[narratore] Sta due spanne più in alto del leone, ed è ancora asciutta."
+    effetti: {rivela_indizi: [i_onda_pilone]}
+    max_usi: 1
+  - id: nar_libro_sfoglia
+    chi: narratore
+    tipo: indizio
+    quando: "un PG sfoglia il libro del casello fino alle pagine più vecchie"
+    temi: [libro, sfoglio, sfogliare, pagine, leggo, leggere]
+    testo:
+      - "[narratore] Le pagine vecchie sono gonfie d'umido, scritte con una mano grossa e storta."
+      - "[narratore] Alla notte della piena grande c'è una riga ripassata due volte."
+      - "[narratore] Dice così: «Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va.»"
+    effetti: {rivela_indizi: [i_libro_piena], fatti_noti: [f_libro_piena]}
+    max_usi: 1
+  - id: nar_lanterna_ricovero
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda a lungo le lanterne alle finestre del Borgo"
+    temi: [finestre, finestra, segnale, segnali, dondola, dondolare]
+    testo:
+      - "[narratore] A monte, la lanterna del Ricovero dondola in fretta, troppo in fretta."
+      - "[narratore] Poi resta ferma per un lungo momento, e ricomincia a dondolare."
+      - "[narratore] A valle, quella delle Case Lunghe resta ferma, senza un tremito."
+    effetti: {rivela_indizi: [i_lanterna_ricovero]}
+    max_usi: 1
+  - id: nar_scrivano_corda
+    chi: narratore
+    tipo: indizio
+    scena: scena_ponte_imbrunire
+    quando: "un PG guarda lo scrivano o il tavolino sotto la tettoia"
+    temi: [scrivano, tavolino, tettoia, corda, nodi]
+    richiede: {battute_non_usate: [nar_scrivano_stallo]}
+    testo:
+      - "[narratore] Lo scrivano scende dalla tettoia con una corda a nodi arrotolata al braccio."
+      - "[narratore] Si sporge sul leone, cala la corda e conta i nodi a mezza voce."
+      - "[narratore] Poi torna al tavolino e scrive qualcosa, coprendolo con la mano."
+    effetti: {rivela_indizi: [i_scrivano_corda]}
+    max_usi: 1
+  - id: nar_scrivano_risponde
+    chi: narratore
+    tipo: indizio
+    scena: scena_ponte_imbrunire
+    quando: "un PG chiede allo scrivano che cosa sta misurando"
+    temi: [scrivano, misuri, misura, misurare, misurando, nodi]
+    testo:
+      - "[narratore] Lo scrivano si stringe la corda al petto, come se fosse sua."
+      - "[narratore] Dice che il signor Vischi vuole sapere quanto manca al leone, con precisione."
+      - "[narratore] Poi aggiunge, piano, che il signor Vischi non sbaglia mai i conti."
+    effetti: {rivela_indizi: [i_scrivano_corda]}
+    max_usi: 1
+  - id: nar_nassa
+    chi: narratore
+    tipo: momento
+    quando: "un PG gira intorno al casello, dalla parte del fiume"
+    temi: [nassa, gàlloccia, galloccia, giro, girare, intorno]
+    testo:
+      - "[narratore] Dalla parte del fiume, legata a una gàlloccia, pende una nassa per anguille."
+      - "[narratore] È fradicia, e sa di fiume e di pesce."
+    max_usi: 1
+
+  # --- indizi del Borgo Basso -----------------------------------------------------------------
+  - id: nar_tosse_ernesto
+    chi: narratore
+    tipo: indizio
+    scena: scena_borgo_basso
+    quando: "un PG entra al Ricovero o sale la scala"
+    temi: [ricovero, scala, salgo, salire, gradini, entro]
+    testo:
+      - "[narratore] Al pianterreno l'acqua arriva al terzo gradino della scala di legno."
+      - "[narratore] Dal piano di sopra scende una tosse lunga e roca."
+      - "[narratore] Poi una voce di vecchio, sottile, chiede da bere."
+    effetti: {rivela_indizi: [i_tosse_ernesto]}
+    max_usi: 1
+  - id: nar_legna_sottoscala
+    chi: narratore
+    tipo: indizio
+    scena: scena_borgo_basso
+    quando: "un PG guarda nel sottoscala del Ricovero con una luce"
+    temi: [sottoscala, legna, catasta, ciocchi]
+    testo:
+      - "[narratore] Nel sottoscala la catasta della legna è sott'acqua fino all'ultimo ciocco."
+      - "[narratore] Galleggiano trucioli, una scopa e una ciabatta spaiata."
+    effetti: {rivela_indizi: [i_legna_bagnata]}
+    max_usi: 1
+  - id: nar_stufa_tocca
+    chi: narratore
+    tipo: indizio
+    scena: scena_borgo_basso
+    quando: "un PG tocca o apre la stufa del piano di sopra"
+    temi: [stufa, ghisa, scaldare, cenere]
+    testo:
+      - "[narratore] La stufa di ghisa è fredda sotto il palmo."
+      - "[narratore] Dentro c'è solo cenere grigia, e un ciocco nero che fuma appena, bagnato."
+    effetti: {rivela_indizi: [i_legna_bagnata]}
+    max_usi: 1
+  - id: nar_croci_gesso
+    chi: narratore
+    tipo: indizio
+    scena: scena_borgo_basso
+    quando: "un PG guarda dalla barca le porte delle case sull'argine"
+    temi: [croce, croci, gesso, porte, segno, segni]
+    testo:
+      - "[narratore] Sulle porte, a pelo d'acqua, la luce trova una croce di gesso."
+      - "[narratore] Ce n'è una per porta, fresca: la pioggia non l'ha ancora lavata."
+    effetti: {rivela_indizi: [i_croci_gesso]}
+    max_usi: 1
+
+  # --- indizi della Casa del Sale -------------------------------------------------------------
+  - id: nar_registro_cassa
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_del_sale
+    quando: "un PG apre la cassa di ferro sotto lo scrittoio"
+    temi: [cassa, lucchetto, forzo, forzare, scasso, registri]
+    testo:
+      - "[narratore] Il lucchetto vecchio cede, e la cassa sa di carta umida."
+      - "[narratore] In cima c'è un registro con il nome di Corrado Vischi, sbiadito."
+      - "[narratore] Alla data della piena grande, una riga dice: dieci fiorini a mastro Pece."
+      - "[narratore] E sotto: «Per il leone del ponte, lavoro di notte, due spanne.»"
+    effetti: {rivela_indizi: [i_registro_padre], fatti_noti: [f_registro_padre]}
+    max_usi: 1
+  - id: nar_corda_studio
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_del_sale
+    quando: "un PG entra nello studio e si guarda intorno"
+    temi: [studio, scrittoio, camino, corda, nastro]
+    testo:
+      - "[narratore] Lo studio è piccolo e caldo, con un camino acceso e lo scrittoio in ordine."
+      - "[narratore] Accanto al fuoco pende ad asciugare una corda a nodi, ancora bagnata."
+      - "[narratore] Due spanne dopo il primo nodo c'è legato un nastro rosso."
+    effetti: {rivela_indizi: [i_corda_nodi]}
+    max_usi: 1
+  - id: nar_carte_tavolo
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_del_sale
+    quando: "un PG guarda i fogli sul tavolo dello scrivano"
+    temi: [fogli, contratti, contratto, carte, firme]
+    testo:
+      - "[narratore] Sono contratti di prestito, già scritti in bella copia."
+      - "[narratore] Ognuno ha il nome di una famiglia delle Case Lunghe, con la casa in pegno."
+      - "[narratore] L'ultimo è per Rosa Galli e il Ricovero, e manca solo la firma."
+    effetti: {rivela_indizi: [i_carte_pronte], fatti_noti: [f_carte_pronte]}
+    max_usi: 1
+  - id: nar_carte_cartella
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_del_sale
+    quando: "un PG apre la cartella di pelle sullo scrittoio"
+    temi: [cartella, scrittoio, frugo, frugare]
+    testo:
+      - "[narratore] La cartella di pelle è piena di contratti di prestito, legati con lo spago."
+      - "[narratore] I nomi sono quelli delle Case Lunghe, e l'ultimo è quello di Rosa Galli."
+      - "[narratore] Ogni foglio mette la casa in pegno. Le firme mancano tutte."
+    effetti: {rivela_indizi: [i_carte_pronte], fatti_noti: [f_carte_pronte]}
+    max_usi: 1
+  - id: nar_lista_alba
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_del_sale
+    quando: "un PG legge la lista che lo scrivano ricopia al tavolo"
+    temi: [lista, elenco, nomi, ricopia, alba]
+    testo:
+      - "[narratore] È la lista per le barche dell'alba, con i nomi in colonna."
+      - "[narratore] In cima, con un inchiostro più scuro, c'è scritto: solo chi ha firmato."
+    effetti: {rivela_indizi: [i_lista_alba], fatti_noti: [f_barche_firma]}
+    max_usi: 1
+  - id: nar_porta_retro
+    chi: narratore
+    tipo: momento
+    scena: scena_casa_del_sale
+    quando: "un PG gira tra i sacchi verso il fondo del magazzino"
+    temi: [sacchi, magazzino, retro, nascondo, nascondermi]
+    testo:
+      - "[narratore] Tra i sacchi il sale scricchiola, e c'è odore di cantina."
+      - "[narratore] In fondo c'è una porticina sul vicolo, senza chiavistello."
+    max_usi: 1
+
+  # --- il terzo tocco -------------------------------------------------------------------------
+  - id: nar_ponte_fermo
+    chi: narratore
+    tipo: indizio
+    scena: scena_terzo_tocco
+    quando: "l'acqua tocca la criniera del leone, e qualcuno ascolta il ponte"
+    temi: [trema, tremare, fermo, regge, reggere, piedi]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}}
+    testo:
+      - "[narratore] L'acqua copre la criniera del leone, e sotto i piedi il ponte non si muove."
+      - "[narratore] Niente tremito, niente scricchiolio: solo il fiume che urla tra le arcate."
+      - "[narratore] Sopra il leone, le pietre del pilone sono ancora asciutte."
+    effetti: {rivela_indizi: [i_ponte_fermo]}
+    max_usi: 1
+  - id: nar_console_onda
+    chi: narratore
+    tipo: momento
+    scena: scena_terzo_tocco
+    quando: "un PG fa vedere al console, davanti al paese, che cosa c'è sopra il leone"
+    temi: [console, ugolino, guardate, mostro, prova]
+    richiede: {indizi_rivelati: [i_onda_pilone], battute_non_usate: [nar_console_registro]}
+    testo:
+      - "[narratore] Il console si sporge, guarda, e si toglie il cappello bagnato."
+      - "[narratore] Lo rigira tra le mani, poi dice troppo forte che il consiglio può aspettare."
+      - "[narratore] Dietro di lui il paese tace, e Vischi si sfila un guanto."
+    max_usi: 1
+  - id: nar_console_registro
+    chi: narratore
+    tipo: momento
+    scena: scena_terzo_tocco
+    quando: "un PG legge al console, davanti al paese, il registro trovato nella cassa"
+    temi: [console, ugolino, registro, leggo, prova]
+    richiede: {indizi_rivelati: [i_registro_padre], battute_non_usate: [nar_console_onda]}
+    testo:
+      - "[narratore] Il console prende il registro con due dita, come un pesce morto."
+      - "[narratore] Legge, guarda Vischi, e dice troppo forte che il consiglio può aspettare."
+      - "[narratore] Dal paese sale un mormorio lungo, che non si ferma più."
+    max_usi: 1
+  - id: nar_rampa_lanterne
+    chi: narratore
+    tipo: momento
+    scena: scena_terzo_tocco
+    quando: "un PG scende sulla rampa bassa con le lanterne"
+    temi: [rampa, paletti, paletto, pianto, piantare]
+    testo:
+      - "[narratore] La rampa bassa è un fiume freddo che ti tira le caviglie."
+      - "[narratore] Le lanterne piantate sui paletti disegnano il bordo, una dopo l'altra."
+      - "[narratore] Oltre l'ultima luce, c'è solo acqua che corre."
+    max_usi: 1
+  - id: nar_seconda_barca
+    chi: narratore
+    tipo: momento
+    scena: scena_terzo_tocco
+    quando: "dopo il terzo tocco, a catena alzata, la barca torna dal Borgo"
+    temi: [barca, arriva, torna, aspettiamo]
+    richiede: {battute_usate: [tul_catena_su]}
+    testo:
+      - "[narratore] Dal buio del Borgo spunta una prua, con una lanterna appesa al remo."
+      - "[narratore] La barca accosta alla rampa, carica, con l'acqua che le sale ai fianchi."
+      - "[narratore] Il fiume tira, le lanterne sui paletti tremano, e reggono."
+    max_usi: 1
+
+  # --- momenti del Borgo Basso ----------------------------------------------------------------
+  - id: nar_ballatoi
+    chi: narratore
+    tipo: momento
+    scena: scena_borgo_basso
+    quando: "la barca arriva ai ballatoi delle Case Lunghe"
+    temi: [ballatoi, ballatoio, lunghe, attracco, ringhiera]
+    testo:
+      - "[narratore] Dai ballatoi delle Case Lunghe si sporgono madri bagnate, con i bambini nelle coperte."
+      - "[narratore] Sul tetto della più alta, sotto una tela cerata, altri bambini contano le lanterne del ponte."
+      - "[narratore] Una donna anziana grida di prendere prima i vecchi del Ricovero."
+    max_usi: 1
+  - id: nar_bambini_barca
+    chi: narratore
+    tipo: momento
+    scena: scena_borgo_basso
+    quando: "i PG passano i bambini dal ballatoio alla barca"
+    temi: [bambini, bambino, piccoli, braccia]
+    testo:
+      - "[narratore] I bambini passano di mano in mano, leggeri e fradici, uno alla volta."
+      - "[narratore] Il più piccolo non piange: vuole sapere se la barca ha un nome."
+    max_usi: 1
+  - id: nar_barella
+    chi: narratore
+    tipo: momento
+    scena: scena_borgo_basso
+    quando: "due PG portano giù un vecchio sulla barella di tela"
+    temi: [barella, sollevo, solleviamo, trasporto, portiamo]
+    testo:
+      - "[narratore] Il vecchio sulla barella pesa poco, e trema sotto la coperta."
+      - "[narratore] Al terzo gradino l'acqua vi arriva alle ginocchia, e la scala geme."
+    max_usi: 1
+  - id: nar_contessa
+    chi: narratore
+    tipo: momento
+    scena: scena_borgo_basso
+    quando: "un PG alza la voce dentro il Ricovero"
+    temi: [grido, gridare, urlo, urlare, svelti]
+    testo:
+      - "[narratore] L'oca bianca sulla scala allunga il collo e ti pizzica il polpaccio."
+      - "[narratore] Dal piano di sopra arriva una risata di vecchi, roca e contenta."
+    max_usi: 1
+  - id: nar_contessa_barca
+    chi: narratore
+    tipo: momento
+    scena: scena_borgo_basso
+    quando: "un PG mette l'oca in barca"
+    temi: [oca, contessa]
+    testo:
+      - "[narratore] L'oca sale in barca da sola, si sistema a prua e guarda avanti."
+      - "[narratore] Dietro di lei, i vecchi cominciano a scendere la scala, uno alla volta."
+    max_usi: 1
+
+  # --- momenti del ponte ----------------------------------------------------------------------
+  - id: nar_barca_svuota
+    chi: narratore
+    tipo: momento
+    quando: "un PG svuota la barca con i secchi del casello"
+    temi: [svuoto, svuotare, secchio, secchi, sgottare]
+    testo:
+      - "[narratore] I secchi del casello sono di legno, con il manico di corda."
+      - "[narratore] L'acqua piovana torna al fiume a secchiate, e la barca si alza piano sul pontile."
+    max_usi: 1
+
+  # --- transizioni ----------------------------------------------------------------------------
+  - id: tr_borgo
+    chi: narratore
+    tipo: transizione
+    quando: "la barca lascia il pontile verso il Borgo"
+    temi: [partiamo, parto, remiamo, salpiamo, andiamo]
+    testo:
+      - "[narratore] La barca si stacca dal pontile, e la corrente la prende di fianco."
+      - "[narratore] Sotto l'arcata il buio rimbomba, poi si aprono i primi tetti del Borgo."
+    varianti:
+      - ["[narratore] Di nuovo giù dal pontile, con la corrente più forte di prima.", "[narratore] Sotto l'arcata l'acqua è più alta, e i tetti del Borgo più bassi."]
+    max_usi: 2
+  - id: tr_ponte_ritorno
+    chi: narratore
+    tipo: transizione
+    scena: scena_borgo_basso
+    quando: "la barca riparte dal Borgo verso il ponte"
+    temi: [torniamo, ritorno, rientriamo, ripartiamo]
+    testo:
+      - "[narratore] La barca risale il vicolo carica, bassa sull'acqua, con la pertica nel fango."
+      - "[narratore] Davanti brillano le sei lanterne del ponte, e la rampa aspetta."
+    varianti:
+      - ["[narratore] La barca torna indietro piano, pesante, con l'acqua quasi al bordo.", "[narratore] Il ponte si avvicina, con le sue sei luci in fila."]
+    max_usi: 2
+  - id: tr_casa_sale
+    chi: narratore
+    tipo: transizione
+    quando: "i PG vanno dal ponte alla Casa del Sale"
+    temi: [consiglio, magazzino, sale]
+    testo:
+      - "[narratore] Cinquanta passi di pioggia, e una porta che si apre su un'aria calda e salata."
+      - "[narratore] Dentro, voci basse e il crepitio di un camino."
+    max_usi: 1
+  - id: tr_mezzanotte
+    chi: narratore
+    tipo: transizione
+    quando: "i PG tornano al ponte verso mezzanotte"
+    temi: [mezzanotte, tocco, torniamo]
+    testo:
+      - "[narratore] Dalla Riva Alta il paese scende verso il ponte, con lanterne e ceri."
+      - "[narratore] Sulla rampa bassa l'acqua è già alle caviglie, e sale."
+    max_usi: 1
+
+  # --- riempitivi: solo allo stallo -----------------------------------------------------------
+  - id: nar_scrivano_stallo
+    chi: narratore
+    tipo: indizio
+    riempitivo: true
+    scena: scena_ponte_imbrunire
+    quando: "i PG indugiano sul ponte"
+    temi: [attesa]
+    richiede: {battute_non_usate: [nar_scrivano_corda]}
+    testo:
+      - "[narratore] Dalla tettoia scende lo scrivano di Vischi, con una corda a nodi al braccio."
+      - "[narratore] Si sporge sul leone, cala la corda e conta i nodi a mezza voce."
+      - "[narratore] Poi torna di corsa al tavolino, e scrive."
+    effetti: {rivela_indizi: [i_scrivano_corda]}
+    max_usi: 1
+  - id: nar_mulo
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    scena: scena_ponte_imbrunire
+    quando: "i PG indugiano, e il ponte è pieno di gente"
+    temi: [attesa]
+    testo:
+      - "[narratore] Un mulo carico di gabbie di galline si pianta in mezzo al ponte."
+      - "[narratore] Il padrone tira, il mulo no, e le galline commentano."
+    max_usi: 1
+  - id: nar_gatto
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    scena: scena_borgo_basso
+    quando: "i PG indugiano nei vicoli"
+    temi: [attesa]
+    testo:
+      - "[narratore] Una porta sfondata scende il vicolo, girando piano su se stessa."
+      - "[narratore] Sopra c'è un gatto fradicio che soffia alla barca."
+    max_usi: 1
+  - id: nar_ricovero_lontano
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    scena: scena_borgo_basso
+    quando: "i PG indugiano lontano dal Ricovero"
+    temi: [attesa]
+    testo:
+      - "[narratore] A monte, la lanterna del Ricovero dondola più forte, come una mano che dice: andate."
+    max_usi: 1
+  - id: nar_console_voto
+    chi: narratore
+    tipo: richiesta
+    riempitivo: true
+    scena: scena_casa_del_sale
+    quando: "i PG indugiano al tavolo del consiglio"
+    temi: [attesa]
+    testo:
+      - "[narratore] Il console batte il bicchiere sul tavolo e chiede silenzio."
+      - "[narratore] Vuole sapere chi è d'accordo a chiudere la catena al terzo tocco."
+    max_usi: 1
+  - id: nar_paese_piedi
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    scena: scena_terzo_tocco
+    quando: "i PG indugiano alla catena"
+    temi: [attesa]
+    testo:
+      - "[narratore] All'imbocco della Riva Alta il paese batte i piedi sulle pietre, a tempo."
+      - "[narratore] Qualcuno grida al custode di tirare giù la catena."
+    max_usi: 1
+
+  # --- finali del terzo tocco (esiti della scena) ---------------------------------------------
+  - id: fin_notte_case_lunghe
+    chi: narratore
+    tipo: finale
+    scena: scena_terzo_tocco
+    quando: "la catena è giù, e le famiglie delle Case Lunghe sono ancora di là"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}}
+    testo:
+      - "[narratore] La catena scende, e il ferro suona sulle pietre."
+      - "[narratore] Sul tetto delle Case Lunghe la lanterna resta ferma fino all'alba."
+      - "[narratore] All'alba arrivano le barche nere di Vischi, con un tavolo e un calamaio."
+      - "[narratore] Le madri firmano con una croce, e salgono con i bambini in braccio."
+    max_usi: 1
+  - id: fin_notte_ricovero
+    chi: narratore
+    tipo: finale
+    scena: scena_terzo_tocco
+    quando: "la catena è giù, e i vecchi del Ricovero sono ancora di là"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}}
+    testo:
+      - "[narratore] La catena scende, e il ferro suona sulle pietre."
+      - "[narratore] Al Ricovero la lanterna dondola piano, sempre più piano, fino all'alba."
+      - "[narratore] All'alba Rosa firma il foglio di Vischi, e i vecchi salgono sulle barche nere."
+      - "[narratore] Il vecchio barcaiolo lo portano su in chiesa avvolto in tre coperte, e non parla."
+    max_usi: 1
+  - id: fin_ora_in_piu
+    chi: narratore
+    tipo: finale
+    scena: scena_terzo_tocco
+    quando: "a catena alzata, l'ultima persona del secondo viaggio sale dalla rampa"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_usate: [tul_catena_su]}
+    testo:
+      - "[narratore] L'ultima persona sale dalla rampa con l'acqua alla vita, aggrappata a una lanterna."
+      - "[narratore] Dietro di lei il fiume copre il pilone, e il custode abbassa la catena."
+      - "[narratore] All'alba Vischi bussa al casello con il foglio del debito e il suo sigillo."
+      - "[narratore] Su in chiesa, intanto, il Borgo intero dorme sotto lo stesso tetto."
+    max_usi: 1
+  - id: fin_nessun_viaggio
+    chi: narratore
+    tipo: finale
+    scena: scena_terzo_tocco
+    quando: "la catena è giù, e la barca non è mai partita"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [tr_borgo]}
+    testo:
+      - "[narratore] La catena scende, e la barca resta legata al pontile, piena di pioggia."
+      - "[narratore] Nel Borgo due lanterne restano accese fino all'alba: una dondola, una no."
+      - "[narratore] All'alba le barche nere di Vischi risalgono il fiume, con il tavolo e il calamaio."
+    max_usi: 1
+  - id: fin_chiusura
+    chi: narratore
+    tipo: finale
+    scena: scena_terzo_tocco
+    quando: "dopo il finale della notte, si chiede ai giocatori che cosa faranno all'alba"
+    temi: [orologio]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}}
+    testo:
+      - "[narratore] Piove ancora, ma più piano, e il fiume ha cambiato voce."
+      - "[narratore] All'alba ci saranno le barche del Passo Vecchio, e i conti da fare con Vischi."
+      - "[narratore] Che cosa pensate di fare, quando sarà giorno?"
+    max_usi: 1

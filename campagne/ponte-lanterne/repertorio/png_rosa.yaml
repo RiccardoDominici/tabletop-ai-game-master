@@ -1,0 +1,177 @@
+# Repertorio di Rosa Galli, custode del Ricovero. Voce: tu a tutti, «creatura». Frasi di quattro-dieci
+# parole, lessico di bucato e di cucina. Tic: «Eh, l'acqua va e viene.»
+# Segnale quando mente: si liscia il grembiule due volte e sorride.
+# Menzogna registrata: ros_ricovero = «come stanno al Ricovero».
+# Sta solo nel Borgo Basso: tutte le sue battute hanno la scena del Borgo.
+
+battute:
+
+  # --- esempi di voce (solo_esempio) ----------------------------------------------------------
+  - id: ros_saluto
+    chi: png_rosa
+    tipo: saluto
+    solo_esempio: true
+    scena: scena_borgo_basso
+    quando: "i PG arrivano al Ricovero o salutano Rosa"
+    temi: [saluto]
+    testo:
+      - "[narratore] Rosa si stringe lo scialle sulle spalle e vi viene incontro sulla scala."
+      - "[png_rosa] Vieni qua, creatura, che ti asciugo. Che acqua avete preso!"
+    max_usi: 1
+  - id: ros_rifiuto
+    chi: png_rosa
+    tipo: rifiuto
+    solo_esempio: true
+    scena: scena_borgo_basso
+    quando: "un PG chiede a Rosa di cose che non sa"
+    temi: [domanda]
+    testo:
+      - "[png_rosa] Io so di bucato e di brodo, creatura. Il resto chiedilo ai giovani."
+    max_usi: 1
+  - id: ros_domanda_gentile
+    chi: png_rosa
+    tipo: reazione
+    solo_esempio: true
+    scena: scena_borgo_basso
+    quando: "un PG chiede a Rosa della sua vita"
+    temi: [gentile]
+    testo:
+      - "[png_rosa] Cinquant'anni di lisciva, e trenta di vecchi. Mi sono rimaste le mani rosse."
+    max_usi: 1
+  - id: ros_accusa
+    chi: png_rosa
+    tipo: reazione
+    solo_esempio: true
+    scena: scena_borgo_basso
+    quando: "un PG dice a Rosa che non le crede"
+    temi: [accuso]
+    testo:
+      - "[narratore] Rosa ti guarda da sopra gli occhiali."
+      - "[png_rosa] Alla mia età si dice quello che serve, creatura. Il resto lo dice l'acqua."
+    max_usi: 1
+  - id: ros_minaccia
+    chi: png_rosa
+    tipo: reazione
+    solo_esempio: true
+    scena: scena_borgo_basso
+    quando: "un PG minaccia Rosa o alza la voce con lei"
+    temi: [minaccia]
+    testo:
+      - "[png_rosa] Abbassa la voce, che l'oca morde. E io peggio."
+    max_usi: 1
+  - id: ros_offerta
+    chi: png_rosa
+    tipo: reazione
+    solo_esempio: true
+    scena: scena_borgo_basso
+    quando: "un PG offre a Rosa soldi o coperte"
+    temi: [soldi]
+    testo:
+      - "[png_rosa] I soldi qui non servono. Porta coperte asciutte, se ne hai."
+    max_usi: 1
+  - id: ros_aiuto
+    chi: png_rosa
+    tipo: reazione
+    solo_esempio: true
+    scena: scena_borgo_basso
+    quando: "un PG aiuta Rosa con i vecchi"
+    temi: [aiuto]
+    testo:
+      - "[png_rosa] Piano con le ginocchia di Gemma, che sono di vetro. Così, ecco."
+    max_usi: 1
+
+  # --- selezionabili --------------------------------------------------------------------------
+  - id: ros_case_prima
+    chi: png_rosa
+    tipo: momento
+    scena: scena_borgo_basso
+    quando: "la barca arriva al Ricovero"
+    temi: [ricovero, attracco, arriviamo, accostiamo]
+    testo:
+      - "[png_rosa] Prima i bambini delle Case Lunghe. Noi vecchi abbiamo il piano di sopra."
+      - "[narratore] Rosa si stringe lo scialle e resta in cima alla scala, piccola e ferma."
+    max_usi: 1
+  - id: ros_ricovero_versione
+    chi: png_rosa
+    tipo: menzogna
+    scena: scena_borgo_basso
+    quando: "un PG chiede a Rosa come stanno i vecchi del Ricovero"
+    temi: [stanno, state, vecchi, asciutto, freddo]
+    testo:
+      - "[narratore] Rosa si liscia il grembiule due volte e sorride."
+      - "[png_rosa] Stiamo benissimo, creatura. Di sopra è asciutto, e la stufa tira."
+    varianti:
+      - ["[narratore] Rosa si liscia il grembiule due volte, e sorride ancora.", "[png_rosa] Te l'ho detto, benissimo. Pensa ai bambini."]
+    effetti: {menzogna_detta: ros_ricovero}
+    max_usi: 2
+  - id: ros_leone_giovane
+    chi: png_rosa
+    tipo: indizio
+    scena: scena_borgo_basso
+    quando: "un PG chiede a Rosa del leone, del ponte o della piena grande"
+    temi: [leone, piena, criniera, rondini, ponte]
+    testo:
+      - "[png_rosa] Il leone? Da giovane lo guardavo dal lavatoio."
+      - "[png_rosa] Guardava i nidi delle rondini, sotto l'arcata."
+      - "[narratore] Rosa si toglie gli occhiali e li pulisce sullo scialle."
+      - "[png_rosa] Dopo la piena grande guardava l'acqua. Eh, sarà la vecchiaia."
+    effetti: {rivela_indizi: [i_rosa_rondini], fatti_noti: [f_rondini]}
+    max_usi: 1
+  - id: ros_scala
+    chi: png_rosa
+    tipo: momento
+    scena: scena_borgo_basso
+    quando: "i PG vogliono far salire in barca Rosa prima dei suoi vecchi"
+    temi: [vieni, sali, salire, monta]
+    testo:
+      - "[narratore] Rosa si siede sulla scala, con l'oca in grembo."
+      - "[png_rosa] La custode esce per ultima. Prima loro, poi io."
+    max_usi: 1
+
+  # --- confessioni: una per ogni condizione di cede_se ----------------------------------------
+  - id: ros_ricovero_tosse
+    chi: png_rosa
+    tipo: confessione
+    scena: scena_borgo_basso
+    quando: "un PG sente la tosse dal piano di sopra e ne chiede a Rosa"
+    temi: [tosse, tossisce, ernesto, malato]
+    richiede:
+      indizi_rivelati: [i_tosse_ernesto]
+      battute_non_usate: [ros_ricovero_legna, ros_ricovero_dalia]
+    testo:
+      - "[narratore] Rosa smette di sorridere, e si stringe lo scialle."
+      - "[png_rosa] È Ernesto. Ha la febbre alta da ieri, e la stufa non tira."
+      - "[png_rosa] Non volevo togliere la barca ai bambini. Decidi tu, creatura."
+    effetti: {rivela_indizi: [i_rosa_ernesto], fatti_noti: [f_ernesto_febbre, f_legna_bagnata]}
+    max_usi: 1
+  - id: ros_ricovero_legna
+    chi: png_rosa
+    tipo: confessione
+    scena: scena_borgo_basso
+    quando: "un PG mostra a Rosa la catasta del sottoscala"
+    temi: [legna, sottoscala, catasta, ciocchi]
+    richiede:
+      indizi_rivelati: [i_legna_bagnata]
+      battute_non_usate: [ros_ricovero_tosse, ros_ricovero_dalia]
+    testo:
+      - "[narratore] Rosa guarda la legna, poi la scala, e si siede sul gradino."
+      - "[png_rosa] Niente fuoco, da ieri. Ed Ernesto ha la febbre alta."
+      - "[png_rosa] Volevo la barca prima per i bambini. Adesso decidi tu, creatura."
+    effetti: {rivela_indizi: [i_rosa_ernesto], fatti_noti: [f_ernesto_febbre, f_legna_bagnata]}
+    max_usi: 1
+  - id: ros_ricovero_dalia
+    chi: png_rosa
+    tipo: confessione
+    scena: scena_borgo_basso
+    quando: "dove i vecchi non sentono, la chierica chiede a Rosa come stanno davvero"
+    temi: [davvero, sincera, sincero, guardami]
+    richiede:
+      privata: true
+      da_pg: [pg_dalia]
+      battute_non_usate: [ros_ricovero_tosse, ros_ricovero_legna]
+    testo:
+      - "[narratore] Rosa ti prende le mani, come quando eri bambina."
+      - "[png_rosa] A te non ci riesco. Ernesto ha la febbre alta, e non c'è fuoco."
+      - "[png_rosa] Ma i bambini sono sul tetto, creatura. Decidi tu, adesso."
+    effetti: {rivela_indizi: [i_rosa_ernesto], fatti_noti: [f_ernesto_febbre, f_legna_bagnata]}
+    max_usi: 1

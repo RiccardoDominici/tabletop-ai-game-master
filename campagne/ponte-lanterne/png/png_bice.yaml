@@ -60,7 +60,7 @@ mente_su:
   - id: bic_notte
     argomento: "dov'era ieri notte"
     verita: f_bice_anguille
-    versione: "Ieri notte? Dormivo. Il nonno russa per tutti e due."
+    versione: "Ieri notte? Dormivo, il nonno russa per tutti e due."
     perche: "Pescare sotto il ponte è vietato, e il nonno la farebbe dormire nella stalla."
     segnale: "si tira la treccia e fischietta"
     cede_se: "Dice dov'era quando un PG le promette, dove Tullio non sente, di non dirlo al nonno. Oppure quando un PG le mostra la nassa per anguille legata dietro il casello."

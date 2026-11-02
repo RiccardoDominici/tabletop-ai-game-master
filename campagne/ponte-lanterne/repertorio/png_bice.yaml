@@ -1,0 +1,169 @@
+# Repertorio di Bice Bellora, la lampionaia. Voce: tu a tutti, voi al gruppo. Frasi di due-sette
+# parole, a raffica. Tic: «Scommettiamo?» Segnale quando mente: si tira la treccia e fischietta.
+# Menzogna registrata: bic_notte = «dov'era ieri notte».
+# Non va mai nel Borgo Basso stanotte: nessuna battuta ha la scena del Borgo.
+
+battute:
+
+  # --- esempi di voce (solo_esempio) ----------------------------------------------------------
+  - id: bic_saluto
+    chi: png_bice
+    tipo: saluto
+    solo_esempio: true
+    quando: "i PG salutano Bice o si avvicinano alle lanterne"
+    temi: [saluto]
+    testo:
+      - "[narratore] Bice fa girare l'acciarino tra le dita e vi squadra dal basso."
+      - "[png_bice] Forestieri bagnati. Scommettiamo che non sapete remare?"
+    max_usi: 1
+  - id: bic_rifiuto
+    chi: png_bice
+    tipo: rifiuto
+    solo_esempio: true
+    quando: "un PG chiede a Bice di cose che non sa"
+    temi: [domanda]
+    testo:
+      - "[png_bice] E che ne so io? Io accendo lanterne."
+    max_usi: 1
+  - id: bic_domanda_gentile
+    chi: png_bice
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG chiede a Bice del suo lavoro"
+    temi: [gentile]
+    testo:
+      - "[png_bice] Sei lanterne, sei piloni. Le accendo da quando avevo otto anni."
+    max_usi: 1
+  - id: bic_accusa
+    chi: png_bice
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG accusa Bice di qualcosa"
+    temi: [accuso]
+    testo:
+      - "[png_bice] Io? Ho solo fuliggine sul naso, guarda altrove."
+    max_usi: 1
+  - id: bic_minaccia
+    chi: png_bice
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG minaccia Bice"
+    temi: [minaccia]
+    testo:
+      - "[narratore] Bice fa un passo indietro, verso il casello."
+      - "[png_bice] Nonno! Vieni a sentire che modi."
+    max_usi: 1
+  - id: bic_offerta
+    chi: png_bice
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG offre soldi a Bice"
+    temi: [soldi]
+    testo:
+      - "[png_bice] Soldi? Li metto da parte, che cosa compri?"
+    max_usi: 1
+  - id: bic_aiuto
+    chi: png_bice
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG aiuta Bice con una lanterna"
+    temi: [aiuto]
+    testo:
+      - "[png_bice] Tieni il vetro. No, dall'altra parte, ecco."
+    max_usi: 1
+
+  # --- selezionabili --------------------------------------------------------------------------
+  - id: bic_barca_viene
+    chi: png_bice
+    tipo: richiesta
+    quando: "un PG va verso la scaletta del pontile o la barca"
+    temi: [scaletta, pontile, barca, remi, pertica]
+    testo:
+      - "[png_bice] Vengo anch'io, con la pertica. I vicoli li conosco."
+      - "[narratore] Dal casello Tullio brontola un no, senza voltarsi."
+      - "[png_bice] Scommettiamo che poi dice sì?"
+    max_usi: 1
+  - id: bic_libro_cerca
+    chi: png_bice
+    tipo: indizio
+    quando: "un PG chiede a Bice di cercare nel libro la notte della piena grande"
+    temi: [libro, piena, cerca, cercare, pagine]
+    testo:
+      - "[png_bice] La piena grande? Il bisnonno scriveva storto, vediamo."
+      - "[narratore] Bice sfoglia veloce, poi si ferma su una riga ripassata due volte."
+      - "[png_bice] Acqua alla criniera, ponte saldo. Acqua all'onda, la rampa se ne va."
+      - "[png_bice] Che onda? Scommettiamo che nessuno lo sa?"
+    effetti: {rivela_indizi: [i_libro_piena]}
+    max_usi: 1
+  - id: bic_notte_versione
+    chi: png_bice
+    tipo: menzogna
+    quando: "un PG chiede a Bice dov'era ieri sera, o se ha visto qualcuno"
+    temi: [ieri, visto, vista, dormivi, scrivano]
+    testo:
+      - "[narratore] Bice si tira la treccia e fischietta."
+      - "[png_bice] Ieri notte? Dormivo, il nonno russa per tutti e due."
+    varianti:
+      - ["[narratore] Bice si tira la treccia, e fischietta due note.", "[png_bice] Te l'ho detto, dormivo. Chiedilo al nonno."]
+    effetti: {menzogna_detta: bic_notte}
+    max_usi: 2
+
+  # --- confessioni: una per ogni condizione di cede_se ----------------------------------------
+  - id: bic_notte_promessa
+    chi: png_bice
+    tipo: confessione
+    quando: "dove Tullio non sente, un PG promette a Bice di non dire niente al nonno"
+    temi: [prometto, giuro, promessa, nonno]
+    richiede:
+      privata: true
+      battute_usate: [bic_notte_versione]
+      battute_non_usate: [bic_notte_nassa]
+    testo:
+      - "[narratore] Bice smette di fischiettare e guarda il casello."
+      - "[png_bice] Ero sotto l'arcata, con la barchetta. Per le anguille, ecco."
+      - "[png_bice] C'era lo scrivano di Vischi, su una barca. Misurava il pilone con una corda a nodi."
+      - "[png_bice] Dal leone in su. Poi ha grattato il muschio, due spanne più in alto."
+    effetti: {rivela_indizi: [i_bice_scrivano], fatti_noti: [f_bice_anguille, f_scrivano_misura]}
+    max_usi: 1
+  - id: bic_notte_nassa
+    chi: png_bice
+    tipo: confessione
+    quando: "un PG mostra a Bice la nassa legata dietro il casello"
+    temi: [nassa, anguille, anguilla]
+    richiede:
+      battute_usate: [nar_nassa]
+      battute_non_usate: [bic_notte_promessa]
+    testo:
+      - "[narratore] Bice diventa rossa come la sua treccia."
+      - "[png_bice] Va bene, va bene. Ero sotto l'arcata, per le anguille."
+      - "[png_bice] E ho visto lo scrivano di Vischi, su una barca. Misurava il pilone con una corda a nodi."
+      - "[png_bice] Dal leone in su, poi ha grattato più in alto. Non dirlo al nonno."
+    effetti: {rivela_indizi: [i_bice_scrivano], fatti_noti: [f_bice_anguille, f_scrivano_misura]}
+    max_usi: 1
+
+  # --- momenti del terzo tocco ----------------------------------------------------------------
+  - id: bic_rampa
+    chi: png_bice
+    tipo: momento
+    scena: scena_terzo_tocco
+    quando: "dopo il terzo tocco, si parla di tenere le lanterne sulla rampa bassa"
+    temi: [rampa, paletti, tengo, tenere, reggo]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}}
+    testo:
+      - "[png_bice] Le lanterne sulla rampa le tengo io. Conosco ogni paletto."
+      - "[narratore] Bice stacca due lanterne dal parapetto, una per mano."
+      - "[png_bice] Scommettiamo che reggo più di voi?"
+    max_usi: 1
+
+  # --- riempitivo -----------------------------------------------------------------------------
+  - id: bic_lanterne_sei
+    chi: png_bice
+    tipo: momento
+    riempitivo: true
+    scena: scena_ponte_imbrunire
+    quando: "i PG indugiano sul ponte, e il vento spegne una lanterna"
+    temi: [attesa]
+    testo:
+      - "[narratore] Bice corre da un pilone all'altro e riaccende la quarta lanterna, spenta dal vento."
+      - "[png_bice] Cinque. Sei. Tutte accese, nonno!"
+    max_usi: 1

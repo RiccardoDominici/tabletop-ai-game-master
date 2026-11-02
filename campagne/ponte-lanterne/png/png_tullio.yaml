@@ -39,6 +39,9 @@ voce:
 
 sa:
   - f_pedaggio
+  - f_piena
+  - f_ponte_unico
+  - f_tocchi
   - f_tullio_custode
   - f_regola_leone
   - f_ordine_consiglio
