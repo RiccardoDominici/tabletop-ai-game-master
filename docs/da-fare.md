@@ -11,7 +11,6 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
   - skill e validatore: documentare `aspetto.situazioni[].dopo` (il collegamento esplicito alla rivelazione); oggi il
     Motore lo ricava per somiglianza e in ponte-lanterne non lo trova per `studio_cassa` di Vischi (solo a comando);
   - in modalità A (improvvisa) gli indizi non hanno id: le situazioni escono solo a comando del master;
-  - le prove e2e che usano il browser condiviso (f0, immagini, stallo, azioni) non chiudono i loro contesti.
 
 ## Dopo
 - **Skill e validatore** (raccogliere insieme alle note della prova alla cieca, `NOTE_SULLA_SKILL.md`):
