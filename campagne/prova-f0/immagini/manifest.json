@@ -1,0 +1,125 @@
+{
+  "immagini": [
+    {
+      "id": "luogo_n_mulino_valsecca",
+      "file": "luogo_n_mulino_valsecca.jpg",
+      "tipo": "luogo",
+      "prompt": "old stone watermill beside a frozen mountain stream in a narrow valley at night, deep snow on the path and on the roof, the wooden water wheel still and iced, no people, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering",
+      "seme": 235170420,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 352.6,
+      "picco_gb": 5.14,
+      "kb": 784,
+      "quando": "2026-11-02 20:08:46"
+    },
+    {
+      "id": "luogo_n_osteria",
+      "file": "luogo_scena_forno_vecchio.jpg",
+      "tipo": "luogo",
+      "alias_di": "luogo_scena_forno_vecchio",
+      "quando": "2026-11-02 20:32:27"
+    },
+    {
+      "id": "luogo_n_piazza",
+      "file": "luogo_n_piazza.jpg",
+      "tipo": "luogo",
+      "prompt": "steep cobbled square of a mountain village at night, light snow, a stone well with a wooden pulley in the centre, a low cottage beside it, a small chapel at the far end with its doors open and warm light inside, a candle burning in every window, no people, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering",
+      "seme": 288565684,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 290.3,
+      "picco_gb": 5.35,
+      "kb": 869,
+      "quando": "2026-11-02 20:02:53"
+    },
+    {
+      "id": "luogo_scena_forno_vecchio",
+      "file": "luogo_scena_forno_vecchio.jpg",
+      "tipo": "luogo",
+      "prompt": "low-beamed mountain village tavern at night, soot-black rafters, glowing wood-fired bread oven at the back, long table with baskets covered in white linen, heavy wooden storeroom door with a small iron grate, window onto a stone square where a candle burns in every window, black dog lying asleep on the stone floor beside the oven, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering",
+      "seme": 1000,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 212.9,
+      "picco_gb": 5.14,
+      "kb": 747,
+      "quando": "2026-11-02 19:58:02"
+    },
+    {
+      "id": "ritratto_png_baldrin",
+      "file": "ritratto_png_baldrin.jpg",
+      "tipo": "ritratto",
+      "prompt": "head-and-shoulders bust portrait of a stocky grey-bearded dwarf blacksmith who looks about fifty, beard bound with iron rings, scorched leather apron, iron key on a leather cord around his neck, soot-blackened hands, facing the viewer, against a plain dark slate-blue ink wash background that fills the frame. Tratti fissi: nano, sembra un uomo sulla cinquantina; barba grigia con anelli di ferro; grembiule di cuoio bruciacchiato; martello da forgia; chiave di ferro al collo, su un laccio di cuoio; mani nere di fuliggine, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering",
+      "seme": 115829536,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 71.5,
+      "picco_gb": 4.33,
+      "kb": 251,
+      "quando": "2026-11-02 19:52:05"
+    },
+    {
+      "id": "ritratto_png_ottavia",
+      "file": "ritratto_png_ottavia.jpg",
+      "tipo": "ritratto",
+      "prompt": "head-and-shoulders bust portrait of a short stout 61-year-old village baker woman, white hair tied in a red headscarf, flour-dusted forearms up to the elbows, clean linen apron, reddened sleepless eyes, facing the viewer, against a plain dark slate-blue ink wash background that fills the frame. Tratti fissi: 61 anni; bassa e larga; capelli bianchi raccolti in un fazzoletto rosso; braccia infarinate fino ai gomiti; grembiule di lino pulito; occhi arrossati, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering",
+      "seme": 72224500,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 70.6,
+      "picco_gb": 4.35,
+      "kb": 269,
+      "quando": "2026-11-02 19:53:16"
+    },
+    {
+      "id": "ritratto_png_sebastiano",
+      "file": "ritratto_png_sebastiano.jpg",
+      "tipo": "ritratto",
+      "prompt": "head-and-shoulders bust portrait of a gaunt tall man about forty, worn black wool travelling cloak with a deep medieval hood pulled low, his brow and eyes in the shadow of the hood, three-day stubble, arms folded with his hands tucked into his sleeves, facing the viewer, against a plain dark slate-blue ink wash background that fills the frame. Tratti fissi: circa 40 anni; alto e magro; mantello nero col cappuccio calato sugli occhi, logoro; barba di tre giorni, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering",
+      "seme": 221464820,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 73.2,
+      "picco_gb": 4.29,
+      "kb": 185,
+      "quando": "2026-11-02 19:54:29"
+    }
+  ]
+}
