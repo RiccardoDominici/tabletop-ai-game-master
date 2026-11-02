@@ -1,0 +1,5 @@
+# Ambiente dello strumento immagini (Python 3.12, Apple Silicon).
+#   uv venv --python 3.12 strumenti/immagini/.venv
+#   uv pip install --python strumenti/immagini/.venv/bin/python -r strumenti/immagini/requirements.txt
+mflux==0.24.0
+pyyaml>=6.0
