@@ -29,8 +29,10 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 - Il catalogo è un aiuto, non una lista da svuotare. Mai una battuta che non risponde a nessuna azione.
 - Al massimo due battute per la stessa azione, per esempio un indizio e la reazione del PNG che lo vede.
 - **Un PNG interpellato risponde sempre**, in questo turno: con una sua battuta, oppure con parole tue nella sua voce. Mai un PNG muto davanti a una domanda.
-- Domanda fuori dal gioco («master, chi è il colpevole?»): rispondi nella finzione, con un PNG o un dettaglio, senza rivelare niente.
+- Domanda fuori dal gioco («master, chi è il colpevole?»): rispondi nella finzione, senza rivelare niente.
 - Il nome del PG lo dici tu, in una frase breve prima della battuta o nell'invito. Le battute non contengono nomi di PG.
+- Risolvi le azioni nell'ordine dei numeri. Nei «Collegamenti tra le azioni»: su due azioni per la stessa cosa agisce prima quella indicata, e l'esito dell'altra discende da ciò che è appena successo; un'azione dipendente segue la sua, o si risolve da sola se quella è rimasta fuori dal turno.
+- Un'azione PRIVATA non si racconta e non riceve battute: a voce solo ciò che gli altri vedono o sentono.
 
 ## 3. Battute senza azione
 
