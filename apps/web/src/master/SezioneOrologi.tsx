@@ -2,10 +2,12 @@
  * Orologi delle minacce: caselle (piene, la prossima evidenziata, vuote), i segni già mostrati e il
  * prossimo, i segni futuri piegati, il badge «dovuto» (il ritmo minimo impone di mostrarlo nella
  * prossima risposta) e cosa succede a orologio completo. −1 / +1 correggono di un segno.
+ * Senza spoiler: «Orologio N · segni 1/6 · dovuto», senza nome, segni né «a orologio completo».
  */
 import clsx from 'clsx';
 import type { OrologioMaster, StatoMaster } from '@cantastorie/shared';
-import { useInCorso } from '../store/master';
+import { useInCorso, useSenzaSpoiler } from '../store/master';
+import { nomeOrologio } from './spoiler';
 import { inviaComando } from './sessione';
 import { Riquadro, Vuoto } from './Riquadro';
 import { Chip } from './Chip';
@@ -33,9 +35,9 @@ export function SezioneOrologi({ stato }: { stato: StatoMaster }) {
         <Vuoto>Questa scena non ha orologi.</Vuoto>
       ) : (
         <ul className="flex flex-col gap-2">
-          {stato.orologi.map((o) => (
+          {stato.orologi.map((o, i) => (
             <li key={o.id}>
-              <Orologio orologio={o} />
+              <Orologio orologio={o} indice={i} />
             </li>
           ))}
         </ul>
@@ -44,15 +46,14 @@ export function SezioneOrologi({ stato }: { stato: StatoMaster }) {
   );
 }
 
-function Orologio({ orologio }: { orologio: OrologioMaster }) {
+function Orologio({ orologio, indice }: { orologio: OrologioMaster; indice: number }) {
   const inCorso = useInCorso(`orologio:${orologio.id}`);
+  const senzaSpoiler = useSenzaSpoiler();
+  const nome = nomeOrologio(orologio.nome, indice, senzaSpoiler);
   const caselle = caselleOrologio(orologio);
   const completo = orologioCompleto(orologio);
   const passo = (verso: 1 | -1) =>
-    void inviaComando(
-      { tipo: 'orologio', id: orologio.id, passo: verso },
-      `Orologio «${orologio.nome}» ${verso > 0 ? '+1' : '−1'}`,
-    );
+    void inviaComando({ tipo: 'orologio', id: orologio.id, passo: verso }, `Orologio «${nome}» ${verso > 0 ? '+1' : '−1'}`);
 
   return (
     <div
@@ -66,10 +67,12 @@ function Orologio({ orologio }: { orologio: OrologioMaster }) {
       )}
     >
       <div className="flex items-center gap-2">
-        <p className="min-w-0 flex-1 truncate font-semibold" title={orologio.id}>
-          {orologio.nome}
+        <p className="min-w-0 flex-1 truncate font-semibold" title={senzaSpoiler ? undefined : orologio.id}>
+          {nome}
         </p>
-        <span className="font-semibold tabular-nums text-pergamena-2">{frazioneOrologio(orologio)}</span>
+        <span data-testid={`master-orologio-${orologio.id}-segni`} className="font-semibold tabular-nums text-pergamena-2">
+          {senzaSpoiler ? `segni ${frazioneOrologio(orologio)}` : frazioneOrologio(orologio)}
+        </span>
         {orologio.dovuto && (
           <Chip tono="brace" titolo="Il ritmo minimo impone di mostrare il prossimo segno nella prossima risposta">
             dovuto
@@ -81,7 +84,7 @@ function Orologio({ orologio }: { orologio: OrologioMaster }) {
           data-testid={`master-orologio-${orologio.id}-indietro`}
           disabled={!puoArretrare(orologio) || inCorso}
           onClick={() => passo(-1)}
-          aria-label={`Orologio ${orologio.nome}: indietro di un segno`}
+          aria-label={`${nome}: indietro di un segno`}
           className={classePulsante('normale', 'piccolo', 'w-10 tabular-nums')}
         >
           −1
@@ -91,7 +94,7 @@ function Orologio({ orologio }: { orologio: OrologioMaster }) {
           data-testid={`master-orologio-${orologio.id}-avanti`}
           disabled={!puoAvanzare(orologio) || inCorso}
           onClick={() => passo(1)}
-          aria-label={`Orologio ${orologio.nome}: avanti di un segno`}
+          aria-label={`${nome}: avanti di un segno`}
           className={classePulsante('normale', 'piccolo', 'w-10 tabular-nums')}
         >
           +1
@@ -102,7 +105,7 @@ function Orologio({ orologio }: { orologio: OrologioMaster }) {
         {caselle.map((c) => (
           <li
             key={c.indice}
-            title={c.segno ?? undefined}
+            title={senzaSpoiler ? undefined : (c.segno ?? undefined)}
             className={clsx(
               'h-4 w-7 rounded-sm border',
               c.stato === 'pieno' && 'border-brace bg-brace',
@@ -113,11 +116,11 @@ function Orologio({ orologio }: { orologio: OrologioMaster }) {
         ))}
       </ol>
 
-      <Segni caselle={caselle} />
+      {!senzaSpoiler && <Segni caselle={caselle} />}
 
       <p className="mt-1 text-xs text-cenere">
         {testoUltimoSegno(orologio)}
-        {orologio.al_completo && (
+        {orologio.al_completo && !senzaSpoiler && (
           <>
             {' · '}
             <span className={completo ? 'font-semibold text-sangue' : 'text-pergamena-2'}>a orologio completo: {orologio.al_completo}</span>

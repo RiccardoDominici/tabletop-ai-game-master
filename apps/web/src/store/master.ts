@@ -10,6 +10,7 @@ import type { StatoMaster, TipoComandoMaster } from '@cantastorie/shared';
 import { creaLog } from '../lib/log';
 import { aggiornaScarto } from '../lib/orologioServer';
 import type { ZonaComando } from '../master/comandi';
+import { leggiSenzaSpoiler, salvaSenzaSpoiler } from '../master/spoiler';
 
 const log = creaLog('master');
 
@@ -52,6 +53,8 @@ interface StoreMaster {
   esiti: Partial<Record<ZonaComando, EsitoComando>>;
   /** Ultimo errore di un comando (master-errore); si toglie al prossimo comando riuscito. */
   ultimoErrore: EsitoComando | null;
+  /** Modalità «senza spoiler» (master/spoiler.ts): attiva per default, salvata in localStorage. */
+  senzaSpoiler: boolean;
 
   /**
    * Applica un'istantanea. Le più vecchie di quella che abbiamo (per `tavolo.versione_stato`) si
@@ -65,6 +68,7 @@ interface StoreMaster {
   concludiComando(chiave: string, zona: ZonaComando, esito: Omit<EsitoComando, 'id' | 'ts'>): void;
   togliEsito(zona: ZonaComando): void;
   togliUltimoErrore(): void;
+  impostaSenzaSpoiler(attiva: boolean): void;
 }
 
 let prossimoId = 1;
@@ -77,6 +81,7 @@ export const useMaster = create<StoreMaster>()((set, get) => ({
   inCorso: {},
   esiti: {},
   ultimoErrore: null,
+  senzaSpoiler: leggiSenzaSpoiler(),
 
   applicaStato: (stato, forza = false) => {
     const attuale = get().stato;
@@ -124,7 +129,18 @@ export const useMaster = create<StoreMaster>()((set, get) => ({
   },
 
   togliUltimoErrore: () => set({ ultimoErrore: null }),
+
+  impostaSenzaSpoiler: (senzaSpoiler) => {
+    salvaSenzaSpoiler(senzaSpoiler);
+    log.info(senzaSpoiler ? 'Pannello senza spoiler' : 'Pannello con gli spoiler (segni, private, battute)');
+    set({ senzaSpoiler });
+  },
 }));
+
+/** La modalità «senza spoiler» è attiva. */
+export function useSenzaSpoiler(): boolean {
+  return useMaster((s) => s.senzaSpoiler);
+}
 
 /** Il comando con questa chiave (master/comandi.ts, chiaveComando) aspetta ancora l'ack. */
 export function useInCorso(chiave: string): boolean {

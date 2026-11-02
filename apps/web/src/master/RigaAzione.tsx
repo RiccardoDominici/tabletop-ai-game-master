@@ -5,7 +5,8 @@
  */
 import clsx from 'clsx';
 import type { AzioneMaster } from '@cantastorie/shared';
-import { useInCorso } from '../store/master';
+import { useInCorso, useSenzaSpoiler } from '../store/master';
+import { TESTO_PRIVATA_NASCOSTA } from './spoiler';
 import { inviaComando } from './sessione';
 import { Chip } from './Chip';
 import { classePulsante } from './stili';
@@ -14,6 +15,8 @@ import { righeLegami } from './legami';
 
 export function RigaAzione({ azione, turnoFinestra }: { azione: AzioneMaster; turnoFinestra: number }) {
   const inCorso = useInCorso(`salta_azione:${azione.id}`);
+  // Senza spoiler il contenuto di un'azione privata (testo e motivo) resta nascosto: autore e stato no.
+  const nascosta = useSenzaSpoiler() && azione.privata;
   const legami = righeLegami(azione);
   // Scritta a finestra chiusa (o mentre si chiudeva): entra nel turno dopo.
   const prossimoTurno = azione.turno > turnoFinestra && (azione.stato === 'in_coda' || azione.stato === 'da_confermare');
@@ -55,9 +58,15 @@ export function RigaAzione({ azione, turnoFinestra }: { azione: AzioneMaster; tu
         )}
       </div>
 
-      <p className="mt-1 leading-snug break-words text-pergamena">{azione.testo}</p>
+      {nascosta ? (
+        <p data-testid={`master-azione-${azione.id}-nascosta`} className="mt-1 text-sm leading-snug text-cenere italic">
+          {TESTO_PRIVATA_NASCOSTA}
+        </p>
+      ) : (
+        <p className="mt-1 leading-snug break-words text-pergamena">{azione.testo}</p>
+      )}
 
-      {azione.motivo && (
+      {azione.motivo && !nascosta && (
         <p className="mt-0.5 text-sm text-candela-2 italic">
           <span className="not-italic text-cenere">motivo:</span> {azione.motivo}
         </p>

@@ -8,8 +8,9 @@
  * master sul Mac. Scenari: un telefono non entra nel pannello; nota di regia che entra nel
  * messaggio del narratore (riga di log); pausa chiesta durante la narrazione (la narrazione finisce,
  * nessuna finestra); ripresa; orologio avanti; cambio di luogo con dissolvenza sul proiettore;
- * freno d'emergenza a metà narrazione; azione saltata. Screenshot in logs/screenshots/master-*.png;
- * nessun errore in console.
+ * freno d'emergenza a metà narrazione; azione saltata; modalità «senza spoiler» attiva per default
+ * (orologi senza testi, azione privata coperta), interruttore che mostra tutto e resta salvato.
+ * Screenshot in logs/screenshots/master-*.png; nessun errore in console.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -111,6 +112,16 @@ test('pannello del master: nota, pausa, ripresa, orologio, luogo, freno, salto',
   await schermo.getByTestId('inizia-sessione').click();
   await expect(master.getByTestId('master-fase')).toHaveAttribute('data-fase', 'finestra', { timeout: 90_000 });
 
+  // --- Senza spoiler per default: l'orologio dice solo «segni 0/6», niente nome né segni.
+  await expect(master.getByTestId('pagina-master')).toHaveAttribute('data-senza-spoiler', 'true');
+  await expect(master.getByTestId('master-spoiler')).toHaveAttribute('data-attivo', 'true');
+  const orologioCoperto = master.getByTestId('master-orologio-o_colpevole');
+  await expect(master.getByTestId('master-orologio-o_colpevole-segni')).toHaveText(/^segni \d\/6$/);
+  await expect(orologioCoperto).toContainText('Orologio 1');
+  await expect(orologioCoperto).not.toContainText('colpevole');
+  await expect(orologioCoperto).not.toContainText('Dalla cappella');
+  await expect(orologioCoperto).not.toContainText('a orologio completo');
+
   // --- Nota di regia: compare nel pannello.
   await master.getByTestId('master-nota-testo').fill(NOTA);
   await master.getByTestId('master-nota-turni').fill('15');
@@ -183,10 +194,25 @@ test('pannello del master: nota, pausa, ripresa, orologio, luogo, freno, salto',
   await scrivi(ginestra, 'Frugo di nascosto nella borsa del nano.');
   await master.getByTestId('master-riprendi').click();
   await expect(master.getByTestId('master-fase')).toHaveAttribute('data-fase', 'finestra', { timeout: 10_000 });
-  const riga = master.locator('[data-testid^="master-azione-"][data-stato="in_coda"]').filter({ hasText: 'Frugo di nascosto' });
+  // Senza spoiler: autore e stato sì, il contenuto dell'azione privata no.
+  const riga = master.locator('[data-testid^="master-azione-"][data-privata="true"][data-stato="in_coda"]');
   await expect(riga).toHaveCount(1);
-  await foto(master, 'pannello-azione');
+  await expect(riga).toContainText('Ginestra');
+  await expect(riga).not.toContainText('Frugo di nascosto');
   const id = ((await riga.getAttribute('data-testid')) ?? '').replace('master-azione-', '');
+  await expect(master.getByTestId(`master-azione-${id}-nascosta`)).toBeVisible();
+  await foto(master, 'pannello-senza-spoiler');
+  // L'interruttore mostra tutto: testo privato, nome e segni dell'orologio.
+  await master.getByTestId('master-spoiler').click();
+  await expect(master.getByTestId('pagina-master')).toHaveAttribute('data-senza-spoiler', 'false');
+  await expect(riga).toContainText('Frugo di nascosto');
+  await expect(master.getByTestId('master-orologio-o_colpevole')).toContainText('Il paese vuole un colpevole');
+  await expect(master.getByTestId('master-orologio-o_colpevole')).toContainText('Dalla cappella');
+  await foto(master, 'pannello-azione');
+  // La scelta resta dopo un ricaricamento.
+  await master.reload();
+  await expect(master.getByTestId('pagina-master')).toHaveAttribute('data-entrata', 'dentro', { timeout: 10_000 });
+  await expect(master.getByTestId('pagina-master')).toHaveAttribute('data-senza-spoiler', 'false');
   await master.getByTestId(`master-salta-${id}`).click();
   await expect(ginestra.getByTestId('stato-mia-azione')).toHaveAttribute('data-stato', 'superata');
   await expect(ginestra.getByTestId('motivo-azione')).toContainText('Il master ha saltato');

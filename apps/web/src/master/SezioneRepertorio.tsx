@@ -2,20 +2,30 @@
  * Repertorio delle battute (solo modalità B): battute già uscite (usi/max_usi), disponibili adesso
  * (id · chi · tipo · quando), quante non lo sono e gli indizi già rivelati. Liste pieghevoli
  * (<details>): le disponibili aperte, il resto chiuso, per non occupare il pannello.
+ * Senza spoiler: delle disponibili solo quante per chi parla; delle uscite niente id e tipo neutro.
  */
 import type { ReactNode } from 'react';
 import type { BattutaMaster, RepertorioMaster } from '@cantastorie/shared';
 import { Riquadro, Vuoto } from './Riquadro';
+import { useSenzaSpoiler } from '../store/master';
+import { contaPerParlante, tipoBattuta } from './spoiler';
 
 export function SezioneRepertorio({ repertorio }: { repertorio: RepertorioMaster }) {
   const { usate, disponibili, non_disponibili: nonDisponibili, indizi_rivelati: indizi } = repertorio;
+  const senzaSpoiler = useSenzaSpoiler();
   return (
     <Riquadro titolo="Repertorio" conteggio={`${disponibili.length} disponibili`} data-testid="master-repertorio">
       <Piega titolo="Disponibili adesso" numero={disponibili.length} aperta testid="master-repertorio-disponibili">
-        {disponibili.length === 0 ? <Vuoto>Nessuna battuta disponibile adesso.</Vuoto> : <ListaBattute battute={disponibili} />}
+        {disponibili.length === 0 ? (
+          <Vuoto>Nessuna battuta disponibile adesso.</Vuoto>
+        ) : senzaSpoiler ? (
+          <ContiPerParlante battute={disponibili} />
+        ) : (
+          <ListaBattute battute={disponibili} senzaSpoiler={false} />
+        )}
       </Piega>
       <Piega titolo="Già uscite" numero={usate.length} testid="master-repertorio-usate">
-        {usate.length === 0 ? <Vuoto>Nessuna battuta ancora uscita.</Vuoto> : <ListaBattute battute={usate} />}
+        {usate.length === 0 ? <Vuoto>Nessuna battuta ancora uscita.</Vuoto> : <ListaBattute battute={usate} senzaSpoiler={senzaSpoiler} />}
       </Piega>
       <Piega titolo="Indizi rivelati" numero={indizi.length} testid="master-repertorio-indizi">
         {indizi.length === 0 ? (
@@ -65,16 +75,33 @@ function Piega({
   );
 }
 
-function ListaBattute({ battute }: { battute: BattutaMaster[] }) {
+/** Senza spoiler: delle battute non uscite si dice solo quante ce ne sono per chi parla. */
+function ContiPerParlante({ battute }: { battute: BattutaMaster[] }) {
+  return (
+    <ul data-testid="master-repertorio-conti" className="flex flex-wrap gap-1.5 text-sm">
+      {contaPerParlante(battute).map(({ chi, quante }) => (
+        <li key={chi} className="rounded border border-bordo px-1.5 py-px">
+          <strong className="font-semibold">{chi}</strong> <span className="text-cenere tabular-nums">{quante}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ListaBattute({ battute, senzaSpoiler }: { battute: BattutaMaster[]; senzaSpoiler: boolean }) {
   return (
     <ul className="flex flex-col gap-1 text-sm">
       {battute.map((b) => (
         <li key={b.id} data-testid={`master-battuta-${b.id}`} className="flex items-baseline gap-2 leading-snug">
           <span className="min-w-0 flex-1">
-            <span className="font-mono text-xs text-candela-2">{b.id}</span>
-            <span className="text-cenere"> · </span>
+            {!senzaSpoiler && (
+              <>
+                <span className="font-mono text-xs text-candela-2">{b.id}</span>
+                <span className="text-cenere"> · </span>
+              </>
+            )}
             <strong className="font-semibold">{b.chi}</strong>
-            <span className="text-cenere"> · {b.tipo} · </span>
+            <span className="text-cenere"> · {tipoBattuta(b.tipo, senzaSpoiler)} · </span>
             <span className="text-pergamena-2">{b.quando}</span>
             {b.scena && <span className="text-xs text-cenere"> · scena {b.scena}</span>}
           </span>

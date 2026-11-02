@@ -55,7 +55,19 @@ test('situazione dopo la rivelazione: Sebastiano senza cappuccio', async ({ brow
   osserva(master, 'master');
   await master.goto(linkMaster());
   await expect(master.getByTestId('pagina-master')).toHaveAttribute('data-entrata', 'dentro', { timeout: 10_000 });
-  await expect(master.getByTestId(`master-situazione-${SITUAZIONE}`)).toContainText('i_cicatrice');
+  // Senza spoiler (default) la situazione è coperta: niente nome, miniatura né rivelazione.
+  const riga = master.getByTestId(`master-situazione-${SITUAZIONE}`);
+  await expect(riga).toHaveAttribute('data-coperta', 'true');
+  await expect(riga).not.toContainText('Sebastiano');
+  await expect(riga).not.toContainText('i_cicatrice');
+  await expect(master.getByTestId('master-repertorio-conti')).toBeVisible(); // solo quante battute, per chi parla
+  await expect(master.getByTestId('master-repertorio')).not.toContainText('nar_volto_candela');
+  await foto(master, 'pannello-senza-spoiler');
+  // Con l'interruttore si vede il collegamento trovato dal Motore.
+  await master.getByTestId('master-spoiler').click();
+  await expect(riga).toContainText('i_cicatrice');
+  await expect(master.getByTestId('master-repertorio')).toContainText('nar_volto_candela');
+  await master.getByTestId('master-spoiler').click();
 
   const tel = await (await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 })).newPage();
   osserva(tel, 'telefono');
@@ -78,6 +90,8 @@ test('situazione dopo la rivelazione: Sebastiano senza cappuccio', async ({ brow
     // Il Motore mette la situazione sul proiettore a rivelazione ascoltata.
     await expect(schermo.getByTestId('sfondo-immagine')).toHaveAttribute('data-src', new RegExp(SITUAZIONE), { timeout: 10_000 });
     await expect(master.getByTestId(`master-situazione-${SITUAZIONE}`)).toHaveAttribute('data-in-onda', 'true');
+    // In onda è pubblica: la riga si scopre anche senza spoiler.
+    await expect(master.getByTestId(`master-situazione-${SITUAZIONE}`)).toHaveAttribute('data-coperta', 'false');
   } else {
     console.log('il selettore non ha usato nar_volto_candela: verifico il percorso del master');
     await master.getByTestId(`master-situazione-${SITUAZIONE}`).click();

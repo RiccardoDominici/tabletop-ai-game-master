@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import type { StatoMaster } from '@cantastorie/shared';
 import { Chip } from './Chip';
 import { ComandiPrincipali, UltimoErrore } from './ComandiPrincipali';
+import { InterruttoreSpoiler } from './InterruttoreSpoiler';
 import {
   ETICHETTA_FASE_MASTER,
   etichettaModo,
@@ -78,6 +79,9 @@ export function Intestazione({ stato }: { stato: StatoMaster }) {
           </Dato>
           <Dato etichetta="Modalità">
             <span className="text-sm">{etichettaModo(stato.modo)}</span>
+          </Dato>
+          <Dato etichetta="Spoiler">
+            <InterruttoreSpoiler />
           </Dato>
         </dl>
 

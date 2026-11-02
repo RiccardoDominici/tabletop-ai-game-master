@@ -24,6 +24,7 @@ export function PaginaMaster() {
 
   const stato = useMaster((s) => s.stato);
   const entrata = useMaster((s) => s.entrata);
+  const senzaSpoiler = useMaster((s) => s.senzaSpoiler);
 
   let contenuto;
   if (entrata === 'senza_token' || entrata === 'rifiutato') {
@@ -40,7 +41,7 @@ export function PaginaMaster() {
   }
 
   return (
-    <div data-testid="pagina-master" data-entrata={entrata} className="flex min-h-dvh flex-col xl:h-dvh xl:overflow-hidden">
+    <div data-testid="pagina-master" data-entrata={entrata} data-senza-spoiler={String(senzaSpoiler)} className="flex min-h-dvh flex-col xl:h-dvh xl:overflow-hidden">
       <BannerConnessione />
       {contenuto}
       <Avvisi />

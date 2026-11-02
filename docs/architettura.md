@@ -162,6 +162,10 @@ Com'è fatto oggi (`/master`, contratto in `packages/shared/src/master.ts`):
   - **Note di regia**: al massimo 3, da 1 a 15 turni; entrano nel messaggio del narratore (parte variabile, fuori cache) dal
     turno successivo, e ogni turno narrato ne consuma uno. Si azzerano quando la scena ricomincia.
 - **Registro**: ogni comando, riuscito o rifiutato, è una riga di `logs/master.jsonl` e del log del server (`evento: master`).
+- **Senza spoiler** (attiva per default, interruttore in alto, scelta salvata nel browser): chi fa da master spesso gioca
+  anche. Il pannello nasconde nome, segni e «a orologio completo» degli orologi («Orologio 1 · segni 1/6 · dovuto»), il
+  contenuto delle azioni private (restano autore e stato), le battute non ancora uscite (solo quante, per chi parla) e il
+  tipo vero di quelle uscite, le situazioni non in onda. Comandi, stati, conteggi, trascrizione, registro e note restano.
 
 **Connessione e vincoli dei telefoni** (dalla ricerca):
 - **Socket.IO v4**, con una stanza per il tavolo e una `player:<id>` per ogni canale privato. Alla riconnessione si risincronizza in base al numero di versione dello stato. Le clip audio si inviano con una POST HTTP.

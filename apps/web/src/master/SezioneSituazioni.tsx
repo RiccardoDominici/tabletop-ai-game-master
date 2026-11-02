@@ -2,10 +2,11 @@
  * Immagini di situazione (`situazione_<png>_<id>`): compaiono sul proiettore solo a comando o da
  * sole dopo la rivelazione giusta (`dopo`). Ogni riga è un interruttore: un clic la mette in onda
  * ({tipo:'situazione', id}), un clic su quella in onda la toglie (id null).
+ * Senza spoiler una situazione non in onda non mostra nome, miniatura né rivelazione collegata.
  */
 import clsx from 'clsx';
 import type { SituazioneMaster, StatoMaster } from '@cantastorie/shared';
-import { useInCorso } from '../store/master';
+import { useInCorso, useSenzaSpoiler } from '../store/master';
 import { inviaComando } from './sessione';
 import { Riquadro } from './Riquadro';
 import { Chip } from './Chip';
@@ -23,9 +24,9 @@ export function SezioneSituazioni({ stato }: { stato: StatoMaster }) {
       data-testid="master-situazioni"
     >
       <ul className="flex flex-col gap-1.5">
-        {situazioni.map((s) => (
+        {situazioni.map((s, i) => (
           <li key={s.id}>
-            <RigaSituazione situazione={s} />
+            <RigaSituazione situazione={s} indice={i} />
           </li>
         ))}
       </ul>
@@ -33,14 +34,17 @@ export function SezioneSituazioni({ stato }: { stato: StatoMaster }) {
   );
 }
 
-function RigaSituazione({ situazione }: { situazione: SituazioneMaster }) {
+function RigaSituazione({ situazione, indice }: { situazione: SituazioneMaster; indice: number }) {
   // Mostrare e togliere condividono la chiave (comandi.ts): un solo comando alla volta.
   const inCorso = useInCorso('situazione');
   const { in_onda: inOnda } = situazione;
+  // In onda è già sul proiettore (pubblica); le altre, senza spoiler, restano coperte.
+  const coperta = useSenzaSpoiler() && !inOnda;
+  const nome = coperta ? `Situazione ${indice + 1}` : situazione.nome;
   const alterna = () =>
     void inviaComando(
       { tipo: 'situazione', id: inOnda ? null : situazione.id },
-      inOnda ? `Togli «${situazione.nome}»` : `Mostra «${situazione.nome}»`,
+      inOnda ? `Togli «${nome}»` : `Mostra «${nome}»`,
     );
 
   return (
@@ -48,6 +52,7 @@ function RigaSituazione({ situazione }: { situazione: SituazioneMaster }) {
       type="button"
       data-testid={`master-situazione-${situazione.id}`}
       data-in-onda={String(inOnda)}
+      data-coperta={String(coperta)}
       aria-pressed={inOnda}
       disabled={inCorso}
       onClick={alterna}
@@ -57,12 +62,12 @@ function RigaSituazione({ situazione }: { situazione: SituazioneMaster }) {
         inOnda ? 'border-brace bg-brace/10' : 'border-bordo bg-notte-3 enabled:hover:border-candela/60 enabled:hover:bg-notte-4',
       )}
     >
-      <Miniatura url={situazione.url} alt="" className="h-10 w-18" />
+      {coperta ? <span aria-hidden className="h-10 w-18 shrink-0 rounded border border-bordo bg-notte" /> : <Miniatura url={situazione.url} alt="" className="h-10 w-18" />}
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-semibold">{situazione.nome}</span>
+        <span className="block truncate font-semibold">{nome}</span>
         <span className="block truncate text-xs text-cenere">
-          {situazione.png ? `${situazione.png} · ` : ''}
-          {situazione.dopo ? `compare da sola dopo «${situazione.dopo}»` : 'solo a comando'}
+          {!coperta && situazione.png ? `${situazione.png} · ` : ''}
+          {situazione.dopo ? (coperta ? 'compare da sola dopo una rivelazione' : `compare da sola dopo «${situazione.dopo}»`) : 'solo a comando'}
         </span>
       </span>
       {inOnda ? <Chip tono="brace">in onda · togli</Chip> : <span className="shrink-0 text-xs font-semibold text-pergamena-2">Mostra</span>}
