@@ -151,6 +151,20 @@ def richieste_nodi(cartella: Path, stile: str) -> list[Richiesta]:
     return out
 
 
+def identita_situazioni(asp: dict) -> str:
+    """Chi è il PNG, da ripetere nelle situazioni: solo tratti, niente inquadratura né fondo.
+
+    Il testo del ritratto NON si riusa: «head-and-shoulders bust portrait… plain background» litiga
+    con l'inquadratura 16:9 della situazione. L'aspetto completo lo porta già il ritratto passato
+    come immagine di riferimento; qui bastano le invarianti. Se mancano, prompt_immagine (che è una
+    descrizione, non un ritratto), senza [STILE].
+    """
+    inv = _invarianti(asp.get("invarianti"))
+    if inv:
+        return f"tratti fissi: {inv}"
+    return (asp.get("prompt_immagine") or "").replace(SEGNAPOSTO_STILE, "").strip().rstrip(",. ")
+
+
 def richieste_png(cartella: Path, stile: str, luoghi: dict[str, list[str]]) -> list[Richiesta]:
     """Ritratto di ogni PNG, poi le sue situazioni (dichiarate e automatiche dalle scene)."""
     out = []
@@ -170,7 +184,7 @@ def richieste_png(cartella: Path, stile: str, luoghi: dict[str, list[str]]) -> l
         rid = f"ritratto_{pid}"
         out.append(Richiesta(rid, "ritratto", con_stile(corpo, stile), seme_da_id(rid), *DIM_RITRATTO))
 
-        identita = corpo  # la stessa descrizione, ripetuta nelle situazioni: aiuta a tenere i dettagli
+        identita = identita_situazioni(asp)
         situazioni = [(s["id"], s["prompt"]) for s in (asp.get("situazioni") or []) if s.get("id") and s.get("prompt")]
         for sid, testo in situazioni:
             ident = f"situazione_{pid}_{sid}"
