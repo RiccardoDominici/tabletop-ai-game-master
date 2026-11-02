@@ -99,9 +99,10 @@ export class StatoRepertorio {
     for (const id of r.battute_usate) if (!this.usata(id)) return `richiede la battuta già usata ${id}`;
     for (const id of r.battute_non_usate) if (this.usata(id)) return `richiede la battuta non usata ${id}`;
     if (r.orologio) {
-      const o = this.orologi.elenco.find((x) => x.id === r.orologio!.id);
+      // Lo stato vero dell'orologio, anche se in questa scena non è attivo (non avanza, ma conta).
+      const o = this.orologi.trova(r.orologio.id);
       const pieni = o?.pieni ?? 0;
-      if (!o) return `orologio ${r.orologio.id} non attivo`;
+      if (!o) return `orologio ${r.orologio.id} inesistente`;
       if (pieni < r.orologio.min || pieni > r.orologio.max) return `orologio ${r.orologio.id} a ${pieni}, serve ${r.orologio.min}–${r.orologio.max}`;
     }
     return null;

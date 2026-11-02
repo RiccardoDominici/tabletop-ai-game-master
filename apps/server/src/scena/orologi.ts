@@ -14,7 +14,7 @@
 
 /** Frase che il prompt del narratore tratta come ordine di mostrare il segno. */
 export const ORDINE_SEGNO = 'Mostralo in questa risposta.';
-import type { Campagna, DatiYaml } from '../campagna/tipi';
+import type { Campagna, DatiYaml, ScenaCaricata } from '../campagna/tipi';
 
 export interface Orologio {
   id: string;
@@ -36,17 +36,20 @@ function testo(v: unknown): string | null {
   return typeof v === 'string' && v.trim() ? v.trim() : null;
 }
 
+/**
+ * Gli orologi sono della CAMPAGNA e tengono il loro stato tra le scene (la piena sale anche mentre
+ * il gruppo è altrove); ogni scena dice quali sono attivi (`orologi_attivi`): solo quelli il
+ * narratore li vede e li può avanzare.
+ */
 export class StatoOrologi {
   private readonly orologi = new Map<string, Orologio>();
+  private attivi = new Set<string>();
 
   constructor(campagna: Campagna) {
-    const attivi = Array.isArray(campagna.scena.dati['orologi_attivi'])
-      ? (campagna.scena.dati['orologi_attivi'] as unknown[]).filter((x): x is string => typeof x === 'string')
-      : [];
     const elenco = Array.isArray(campagna.campagnaNarratore['orologi']) ? (campagna.campagnaNarratore['orologi'] as DatiYaml[]) : [];
     for (const d of elenco) {
       const id = testo(d['id']);
-      if (!id || !attivi.includes(id)) continue;
+      if (!id) continue;
       const segni = Array.isArray(d['segni']) ? (d['segni'] as unknown[]).map((s) => String(s)) : [];
       const segmenti = typeof d['segmenti'] === 'number' ? (d['segmenti'] as number) : segni.length;
       this.orologi.set(id, {
@@ -61,16 +64,29 @@ export class StatoOrologi {
         almenoOgni: typeof d['segno_almeno_ogni'] === 'number' && d['segno_almeno_ogni'] > 0 ? (d['segno_almeno_ogni'] as number) : null,
       });
     }
+    this.impostaScena(campagna.scena);
   }
 
+  /** Cambio di scena: attivi diventano gli orologi della nuova scena; gli stati restano. */
+  impostaScena(scena: ScenaCaricata): void {
+    const attivi = Array.isArray(scena.dati['orologi_attivi']) ? (scena.dati['orologi_attivi'] as unknown[]).filter((x): x is string => typeof x === 'string') : [];
+    this.attivi = new Set(attivi.filter((id) => this.orologi.has(id)));
+  }
+
+  /** Orologi attivi nella scena corrente, nell'ordine di campagna.yaml. */
   get elenco(): Orologio[] {
-    return [...this.orologi.values()];
+    return [...this.orologi.values()].filter((o) => this.attivi.has(o.id));
+  }
+
+  /** Un orologio della campagna, attivo o no (le condizioni del repertorio guardano lo stato vero). */
+  trova(id: string): Orologio | undefined {
+    return this.orologi.get(id);
   }
 
   /** Il narratore propone l'avanzamento: lo si accetta solo se è lecito. */
   avanza(id: string, turno: number, giàAvanzatoInQuestoTurno: boolean): EsitoAvanzamento {
     if (giàAvanzatoInQuestoTurno) return { ok: false, motivo: 'più di un segno nella stessa risposta' };
-    const o = this.orologi.get(id);
+    const o = this.attivi.has(id) ? this.orologi.get(id) : undefined;
     if (!o) return { ok: false, motivo: `orologio inesistente o non attivo in scena: ${id}` };
     if (o.pieni >= o.segmenti) return { ok: false, motivo: `orologio già completo: ${id}` };
     o.pieni += 1;
@@ -83,7 +99,7 @@ export class StatoOrologi {
    * tornerà «prossimo». Il turno dell'ultimo segno non cambia (il ritmo minimo resta quello).
    */
   indietro(id: string): EsitoAvanzamento {
-    const o = this.orologi.get(id);
+    const o = this.attivi.has(id) ? this.orologi.get(id) : undefined;
     if (!o) return { ok: false, motivo: `orologio inesistente o non attivo in scena: ${id}` };
     if (o.pieni <= 0) return { ok: false, motivo: `orologio già a zero: ${id}` };
     o.pieni -= 1;

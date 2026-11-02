@@ -9,7 +9,7 @@ import type { InfoServer } from '@cantastorie/shared';
 import { creaApp, registraRotte, type App } from './app';
 import { caricaCampagna } from './campagna/caricatore';
 import { compilaContestoCampagna } from './campagna/contesto';
-import type { Campagna } from './campagna/tipi';
+import { conScena, type Campagna } from './campagna/tipi';
 import type { ConfigServer } from './config';
 import type { Logger } from './logger';
 import { NarratoreFinto } from './llm/finto';
@@ -67,19 +67,25 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   const cartellaRepertorio = path.join(campagna.cartella, 'repertorio');
   const paroleSegrete = caricaParoleSegrete(cartellaRepertorio);
   let filePrompt = config.filePromptNarratore;
-  let contesto: string;
   if (config.modo === 'repertorio') {
     repertorio = caricaRepertorio(campagna, log.child({ modulo: 'repertorio' }));
     filePrompt = config.filePromptSelettore;
-    contesto = compilaContestoRepertorio(campagna, paroleSegrete, repertorio);
-    const fughe = segretiNelTesto(contesto, paroleSegrete);
-    if (fughe.length) throw new Error(`contesto del selettore con parole segrete: ${fughe.map((p) => p.parola).join(', ')}`);
-  } else {
-    contesto = compilaContestoCampagna(campagna);
   }
+  const rep = repertorio;
+  /** Contesto della campagna vista da una scena (cambia col passaggio di scena). */
+  const contestoPer = (c: Campagna): string => (rep ? compilaContestoRepertorio(c, paroleSegrete, rep) : compilaContestoCampagna(c));
+  // Rete di sicurezza in modalità B: nessuna scena deve portare parole segrete nel contesto del selettore.
+  if (rep) {
+    for (const sc of campagna.scene) {
+      const fughe = segretiNelTesto(contestoPer(conScena(campagna, sc.id)), paroleSegrete);
+      if (fughe.length) throw new Error(`contesto del selettore (scena ${sc.id}) con parole segrete: ${fughe.map((p) => p.parola).join(', ')}`);
+    }
+  }
+  const contesto = contestoPer(campagna);
   const prompt = fs.readFileSync(filePrompt, 'utf8');
   // Blocchi STABILI, in quest'ordine: si mettono in cache (vedi llm/haiku.ts).
   const sistema = [prompt, contesto];
+  const sistemaPer = (c: Campagna): string[] => [prompt, contestoPer(c)];
   log.info(
     { modo: config.modo, prompt: path.relative(process.cwd(), filePrompt), caratteriPrompt: prompt.length, caratteriContesto: contesto.length, paroleSegrete: paroleSegrete.length },
     `NARRATORE IN MODALITÀ: ${config.modo}`,
@@ -140,6 +146,8 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     finestraATutti: config.turni.finestraATutti,
     arbitro,
     scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),
+    sistemaPer,
+    scenaPubblicaPer: (c) => riassuntoPubblico(c, paroleSegrete),
     immagini,
     stalloMs: config.turni.stalloMs,
   });

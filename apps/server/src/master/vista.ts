@@ -43,7 +43,7 @@ export function statoMaster(f: FonteVistaMaster): StatoMaster {
     modo: regia.infoSessione.modo,
     pausa: regia.statoPausa,
     narrazione_in_corso: regia.narrazioneInCorso,
-    scene: sceneMaster(campagna),
+    scene: sceneMaster(campagna, regia.scenaCorrente),
     luoghi: luoghiMaster(campagna, f.immagini),
     situazioni: [] as SituazioneMaster[],
     orologi: orologiMaster(regia),
@@ -55,9 +55,9 @@ export function statoMaster(f: FonteVistaMaster): StatoMaster {
   };
 }
 
-/** Scene della campagna (per ora una sola: scena.yaml). */
-export function sceneMaster(c: Campagna): ScenaMaster[] {
-  return [{ id: c.scena.id, titolo: c.scena.titolo, luogo: c.scena.id, corrente: true }];
+/** Scene della campagna, nell'ordine di caricamento (la prima è scena.yaml). */
+export function sceneMaster(c: Campagna, corrente: string): ScenaMaster[] {
+  return c.scene.map((sc) => ({ id: sc.id, titolo: sc.titolo, luogo: sc.id, corrente: sc.id === corrente }));
 }
 
 /**
@@ -65,7 +65,7 @@ export function sceneMaster(c: Campagna): ScenaMaster[] {
  * che non è già il nodo di una scena (immagine `luogo_<id nodo>`).
  */
 export function luoghiMaster(c: Campagna, immagini?: CatalogoImmagini): LuogoMaster[] {
-  const scene = [c.scena];
+  const scene = c.scene;
   const nodiDiScena = new Set(scene.map((sc) => (typeof sc.dati['nodo'] === 'string' ? (sc.dati['nodo'] as string) : '')));
   const nodi = Array.isArray(c.campagnaNarratore['nodi']) ? (c.campagnaNarratore['nodi'] as DatiYaml[]) : [];
   const luoghi: LuogoMaster[] = scene.map((sc) => ({ id: sc.id, nome: sc.titolo, tipo: 'scena', immagine: immagini?.luogo(sc.id) ?? null }));
@@ -126,7 +126,7 @@ export function azioniMaster(regia: Regia, c: Campagna): AzioneMaster[] {
 }
 
 function battutaMaster(s: StatoRepertorio, b: Battuta): BattutaMaster {
-  return { id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, usi: s.usi.get(b.id) ?? 0, max_usi: b.max_usi, scena: null };
+  return { id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, usi: s.usi.get(b.id) ?? 0, max_usi: b.max_usi, scena: b.scena };
 }
 
 /** Repertorio (modalità B): usate, disponibili adesso (condizioni vere, usi rimasti), quante no. */

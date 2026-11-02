@@ -662,6 +662,23 @@ export class TavoloAzioni {
   }
 
   /**
+   * Cambio di scena: tutte le azioni ancora vive (di qualunque turno) erano per la scena di prima.
+   * Diventano «superate» col motivo, e tornano nella casella dei giocatori.
+   */
+  annullaVive(motivo: string): string[] {
+    const vive = this.tutte().filter((a) => STATI_VIVI.has(a.stato));
+    for (const a of vive) {
+      a.stato = 'superata';
+      a.richiesta = null;
+      a.motivo = motivo;
+      this.notificaAzione(a);
+    }
+    if (vive.length) this.o.log.info({ azioni: vive.map((a) => a.id) }, 'azioni: cambio di scena, da riscrivere');
+    this.o.onCambio();
+    return vive.map((a) => a.id);
+  }
+
+  /**
    * Narrazione interrotta dal master: le azioni «chiuse» di quel turno non sono state risolte.
    * Diventano «superate» con il motivo, così tornano nella casella pronte da rimandare.
    */

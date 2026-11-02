@@ -30,7 +30,7 @@ import type {
 } from '@cantastorie/shared';
 import { schedaPg } from '../campagna/scheda';
 import type { Campagna } from '../campagna/tipi';
-import { ID_NARRATORE, NOME_NARRATORE } from '../campagna/tipi';
+import { ID_NARRATORE, NOME_NARRATORE, conScena } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import type { Narratore } from '../llm/tipi';
 import { MisuratoreTurno } from '../metriche/misure';
@@ -88,6 +88,12 @@ export interface OpzioniRegia {
   arbitro?: Arbitro | null;
   /** Riassunto pubblico della scena per l'arbitro. */
   scenaPubblica?: string;
+  /**
+   * Campagne con più scene: blocchi di sistema e riassunto pubblico per una scena (la campagna
+   * passata ha quella scena come corrente). Senza, il cambio di scena tiene quelli iniziali.
+   */
+  sistemaPer?: (campagna: Campagna) => string[];
+  scenaPubblicaPer?: (campagna: Campagna) => string;
   /** Immagini dei luoghi e ritratti dei PNG per il proiettore. */
   immagini?: CatalogoImmagini;
   /** Silenzio che fa scattare la mossa contro lo stallo (default 45 s; 0 = mai). */
@@ -97,6 +103,7 @@ export interface OpzioniRegia {
 /** Motivi mostrati al giocatore quando il master tocca la sua azione. */
 export const MOTIVO_SALTATA = 'Il master ha saltato questa azione: puoi riscriverla.';
 export const MOTIVO_NARRAZIONE_INTERROTTA = 'Il master ha interrotto la narrazione: la tua azione non è stata risolta, puoi rimandarla.';
+export const MOTIVO_CAMBIO_SCENA = 'Si cambia scena: la tua azione era per il luogo di prima, riscrivila se vale ancora.';
 
 /** Ascoltatori del trasporto (Socket.IO). */
 export interface UscitaRegia {
@@ -137,6 +144,12 @@ export class Regia {
   private readonly nomiPng: Map<string, string[]>;
   /** Luogo corrente (id della scena o del nodo): sceglie l'immagine del proiettore. */
   private luogo: string;
+  /** La campagna vista dalla scena in corso (conScena): contesto, orologi attivi, immagini. */
+  private campagna: Campagna;
+  /** Blocchi di sistema della scena in corso (prompt + contesto), in cache. */
+  private sistema: string[];
+  /** Riassunto pubblico della scena in corso, per l'arbitro. */
+  private scenaPubblica: string;
   /** Stalli di fila (S1, S2, S3…): si azzera appena qualcuno agisce. */
   private stalliDiFila = 0;
   private uscita: UscitaRegia | null = null;
@@ -177,6 +190,9 @@ export class Regia {
 
   constructor(opzioni: OpzioniRegia) {
     this.o = opzioni;
+    this.campagna = opzioni.campagna;
+    this.sistema = opzioni.sistema;
+    this.scenaPubblica = opzioni.scenaPubblica ?? '';
     this.pronuncia = creaPronunciatore(opzioni.campagna);
     this.orologi = new StatoOrologi(opzioni.campagna);
     this.nomiPng = nomiDeiPng(opzioni.campagna);
@@ -208,7 +224,7 @@ export class Regia {
       nomi,
       orologio: opzioni.orologio,
       arbitro: opzioni.arbitro ?? null,
-      contesto: () => ({ narrazione: this.ultimaNarrazione(), scena: opzioni.scenaPubblica ?? '' }),
+      contesto: () => ({ narrazione: this.ultimaNarrazione(), scena: this.scenaPubblica }),
       log: opzioni.log.child({ modulo: 'azioni' }),
       chiusuraDopoPrimaAzioneMs: opzioni.chiusuraDopoPrimaAzioneMs,
       ...(opzioni.stalloMs !== undefined ? { stalloMs: opzioni.stalloMs } : {}),
@@ -222,18 +238,21 @@ export class Regia {
   private immaginiPubbliche(): { luogo: string; immagine: string | null; ritratti: Record<string, string>; prossime: string[] } {
     const img = this.o.immagini;
     const ritratti: Record<string, string> = {};
-    for (const p of this.o.campagna.png) {
+    for (const p of this.campagna.png) {
       const u = img?.ritratto(p.id);
       if (u) ritratti[p.id] = u;
     }
     const immagine = img?.luogo(this.luogo) ?? null;
     // Prossime: i ritratti dei PNG presenti, poi i luoghi collegati al nodo della scena.
-    const nodo = typeof this.o.campagna.scena.dati['nodo'] === 'string' ? (this.o.campagna.scena.dati['nodo'] as string) : null;
-    const nodi = (this.o.campagna.campagnaNarratore['nodi'] as Array<Record<string, unknown>> | undefined) ?? [];
+    const nodo = typeof this.campagna.scena.dati['nodo'] === 'string' ? (this.campagna.scena.dati['nodo'] as string) : null;
+    const nodi = (this.campagna.campagnaNarratore['nodi'] as Array<Record<string, unknown>> | undefined) ?? [];
     const collegati = (nodi.find((n) => n['id'] === nodo)?.['collegamenti'] as string[] | undefined) ?? [];
+    // Scene vicine (campagne con più scene): quelle il cui nodo è un'uscita o un collegamento di questa.
+    const uscite = ((this.campagna.scena.dati['uscite'] as Array<Record<string, unknown>> | undefined) ?? []).map((u) => u?.['verso']);
+    const vicine = this.o.campagna.scene.filter((s) => s.id !== this.campagna.scena.id && [...collegati, ...uscite].includes(s.dati['nodo'])).map((s) => s.id);
     const prossime = [
-      ...this.o.campagna.scena.png_presenti.map((id) => ritratti[id]),
-      ...[this.o.campagna.scena.id, ...collegati].filter((l) => l !== this.luogo).map((l) => img?.luogo(l)),
+      ...this.campagna.scena.png_presenti.map((id) => ritratti[id]),
+      ...[this.campagna.scena.id, ...vicine, ...collegati].filter((l) => l !== this.luogo).map((l) => img?.luogo(l)),
     ].filter((u): u is string => !!u);
     return { luogo: this.luogo, immagine, ritratti, prossime: [...new Set(prossime)] };
   }
@@ -248,7 +267,7 @@ export class Regia {
   }
 
   private nomePg(id: string): string {
-    return this.o.campagna.pg.find((p) => p.id === id)?.nome ?? id;
+    return this.campagna.pg.find((p) => p.id === id)?.nome ?? id;
   }
 
   /** Testo dell'ultima narrazione pubblica (per l'arbitro). */
@@ -273,7 +292,7 @@ export class Regia {
   private nuovoStatoRepertorio(): StatoRepertorio | null {
     if (this.o.modo !== 'repertorio') return null;
     if (!this.o.repertorio) throw new Error('modalità repertorio senza repertorio caricato');
-    return new StatoRepertorio(this.o.repertorio, this.o.campagna, this.orologi);
+    return new StatoRepertorio(this.o.repertorio, this.campagna, this.orologi);
   }
 
   /** Stato pubblico per le parole segrete: indizi rivelati e battute uscite. */
@@ -319,7 +338,7 @@ export class Regia {
       versione: esito.versione,
       righe: esito.righe.map((r) => {
         const { mostrato, voce } = testoPerVoce(r.etichetta, r.testo, this.pronuncia);
-        return { etichetta: r.etichetta, testo: mostrato, testo_voce: voce, chiave_cache: chiaveAudio(voceDi(this.o.campagna, r.etichetta).voce_id, voce) };
+        return { etichetta: r.etichetta, testo: mostrato, testo_voce: voce, chiave_cache: chiaveAudio(voceDi(this.campagna, r.etichetta).voce_id, voce) };
       }),
     };
   }
@@ -327,7 +346,7 @@ export class Regia {
   // ------------------------------------------------------------------ stato
 
   stato(): StatoTavolo {
-    const c = this.o.campagna;
+    const c = this.campagna;
     const conteggio = new Map<string, number>();
     for (const id of this.telefoni.values()) conteggio.set(id, (conteggio.get(id) ?? 0) + 1);
     return {
@@ -352,7 +371,7 @@ export class Regia {
 
   /** Scheda privata del PG (solo per il telefono che l'ha scelto). */
   schedaPg(id_pg: string): SchedaPg | null {
-    return schedaPg(this.o.campagna, id_pg);
+    return schedaPg(this.campagna, id_pg);
   }
 
   private notifica(): void {
@@ -384,12 +403,12 @@ export class Regia {
   /** PG scelti da almeno un telefono (se nessuno, tutti: così chi arriva dopo può giocare). */
   private pgAlTavolo(): string[] {
     const scelti = new Set(this.telefoni.values());
-    const elenco = this.o.campagna.pg.map((p) => p.id).filter((id) => scelti.has(id));
-    return elenco.length ? elenco : this.o.campagna.pg.map((p) => p.id);
+    const elenco = this.campagna.pg.map((p) => p.id).filter((id) => scelti.has(id));
+    return elenco.length ? elenco : this.campagna.pg.map((p) => p.id);
   }
 
   telefonoSceglie(socketId: string, id_pg: string): Esito {
-    if (!this.o.campagna.pg.some((p) => p.id === id_pg)) return { ok: false, errore: 'Personaggio sconosciuto.' };
+    if (!this.campagna.pg.some((p) => p.id === id_pg)) return { ok: false, errore: 'Personaggio sconosciuto.' };
     const prima = this.telefoni.get(socketId);
     this.telefoni.set(socketId, id_pg);
     if (prima && prima !== id_pg) this.lasciaPg(prima);
@@ -478,7 +497,9 @@ export class Regia {
     this.trascrizione = [];
     this.turno = 0;
     this.versioneScena = 0;
+    // Si riparte dalla prima scena, con gli orologi della campagna da capo.
     this.orologi = new StatoOrologi(this.o.campagna);
+    this.impostaScena(this.o.campagna.scene[0]!.id);
     this.statoRepertorio = this.nuovoStatoRepertorio();
     this.tavolo.azzera();
     // Le note di regia contano i turni di questa scena: si riparte senza.
@@ -570,6 +591,43 @@ export class Regia {
     this.fase = 'pausa';
     this.o.log.warn({ turno, fase: faseInterrotta, azioni_annullate: annullate }, 'scena: narrazione interrotta dal master, tavolo in pausa');
     this.notifica();
+    return { ok: true };
+  }
+
+  /** Id della scena in corso. */
+  get scenaCorrente(): string {
+    return this.campagna.scena.id;
+  }
+
+  /**
+   * Passaggio a un'altra scena (pannello del master). Prima dell'avvio o a scena fermata cambia solo
+   * la scena da cui si parte. A tavolo in gioco: le azioni in sospeso (scritte per la scena di
+   * prima) tornano ai giocatori, il proiettore passa al luogo della scena nuova con la dissolvenza,
+   * il narratore ne legge l'apertura e si apre la finestra per tutti.
+   */
+  cambiaScena(id: string): Esito {
+    const nuova = this.o.campagna.scene.find((s) => s.id === id);
+    if (!nuova) return { ok: false, errore: 'Scena sconosciuta.' };
+    if (nuova.id === this.campagna.scena.id) return { ok: false, errore: 'È già la scena in corso.' };
+    if (this.narrazioneInCorso || this.tavolo.chiudendo) return { ok: false, errore: 'Aspetta che finisca la narrazione, o fermala prima.' };
+    const da = this.campagna.scena.id;
+    this.impostaScena(nuova.id);
+    this.o.log.info({ da, a: nuova.id, fase: this.fase, immagine: this.o.immagini?.luogo(nuova.id) ?? null }, 'scena: cambio di scena');
+    if (this.fase === 'attesa' || this.fase === 'fermata') {
+      this.notifica();
+      return { ok: true };
+    }
+    const annullate = this.tavolo.annullaVive(MOTIVO_CAMBIO_SCENA);
+    // A finestra aperta il suo turno non è stato narrato: l'apertura lo prende; altrimenti il successivo.
+    const turno = this.tavolo.aperta ? this.turno : this.turno + 1;
+    this.tavolo.chiudiForzata();
+    this.pausaRichiesta = false;
+    this.invitoSospeso = null;
+    this.turno = turno;
+    this.aggiungiTrascrizione({ turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: `Nuova scena: ${nuova.titolo}.` });
+    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'cambio_scena', da, a: nuova.id, azioni_annullate: annullate, testo: nuova.apertura.map((f) => `[narratore] ${f}`).join('\n') });
+    if (this.o.preriscalda && this.o.narratore.preriscalda) void this.preriscalda();
+    this.leggiApertura(turno, nuova.apertura);
     return { ok: true };
   }
 
@@ -675,21 +733,33 @@ export class Regia {
   }
 
   private avviaScena(): void {
-    const epoca = ++this.epoca;
-    const c = this.o.campagna;
+    const c = this.campagna;
     this.sessione = new Date(this.o.orologio.adesso()).toISOString();
-    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno: 0, tipo: 'apertura', voce: this.o.voce.nome, testo: c.scena.apertura.map((f) => `[narratore] ${f}`).join('\n') });
-    this.fase = 'apertura';
+    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno: 0, tipo: 'apertura', scena: c.scena.id, voce: this.o.voce.nome, testo: c.scena.apertura.map((f) => `[narratore] ${f}`).join('\n') });
     this.turno = 0;
-    this.segmentiAperti.clear();
     this.o.log.info({ scena: c.scena.id, frasi: c.scena.apertura.length, voce: this.o.voce.nome }, 'scena: apertura');
     if (this.o.preriscalda && this.o.narratore.preriscalda) void this.preriscalda();
+    this.leggiApertura(0, c.scena.apertura);
+  }
 
-    this.aggiungiTrascrizione({ turno: 0, tipo: 'narrazione', chi: ID_NARRATORE, nome: NOME_NARRATORE, testo: c.scena.apertura.join(' ') });
-    c.scena.apertura.forEach((testo, indice) =>
+  /**
+   * Il narratore legge l'apertura di una scena (fase «apertura», turno `turno`), poi la finestra si
+   * apre per tutti (o il tavolo va in pausa, se il master l'ha chiesta).
+   */
+  private leggiApertura(turno: number, frasi: string[]): void {
+    const epoca = ++this.epoca;
+    this.fase = 'apertura';
+    this.segmentiAperti.clear();
+    if (frasi.length === 0) {
+      this.versioneScena += 1;
+      this.fineNarrazione('tutti');
+      return;
+    }
+    this.aggiungiTrascrizione({ turno, tipo: 'narrazione', chi: ID_NARRATORE, nome: NOME_NARRATORE, testo: frasi.join(' ') });
+    frasi.forEach((testo, indice) =>
       this.pipeline.accoda({
-        id_frase: `t0-f${indice}`,
-        turno: 0,
+        id_frase: `t${turno}-f${indice}`,
+        turno,
         indice,
         parlante: ID_NARRATORE,
         nome: NOME_NARRATORE,
@@ -700,19 +770,29 @@ export class Regia {
     );
     this.notifica();
     void (async () => {
-      const esito = await this.pipeline.chiudiTurno(0);
+      const esito = await this.pipeline.chiudiTurno(turno);
       if (epoca !== this.epoca || esito.interrotto) return;
-      await this.attendiFineAudio(0, esito.secondi);
+      await this.attendiFineAudio(turno, esito.secondi);
       if (epoca !== this.epoca) return;
       this.versioneScena += 1;
       this.fineNarrazione('tutti');
     })();
   }
 
+  /** La scena corrente diventa `id`: contesto del narratore, orologi attivi, repertorio, luogo. */
+  private impostaScena(id: string): void {
+    this.campagna = conScena(this.o.campagna, id);
+    this.sistema = this.o.sistemaPer?.(this.campagna) ?? this.sistema;
+    this.scenaPubblica = this.o.scenaPubblicaPer?.(this.campagna) ?? this.scenaPubblica;
+    this.orologi.impostaScena(this.campagna.scena);
+    if (this.statoRepertorio) this.statoRepertorio.scena = id;
+    this.luogo = id;
+  }
+
   private async preriscalda(): Promise<void> {
     try {
       const inizio = this.o.orologio.ora();
-      const esito = await this.o.narratore.preriscalda!(this.o.sistema);
+      const esito = await this.o.narratore.preriscalda!(this.sistema);
       if (!esito) return;
       this.o.registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'preriscaldamento', modello: esito.modello, ...esito.costo, ms: Math.round(this.o.orologio.ora() - inizio) });
       this.o.log.info({ ...esito.costo, ms: Math.round(this.o.orologio.ora() - inizio) }, 'llm: cache preriscaldata');
@@ -765,7 +845,7 @@ export class Regia {
       void motoreVoce.sveglia();
     }
     const epoca = this.epoca;
-    const c = this.o.campagna;
+    const c = this.campagna;
     this.fase = 'narrazione';
     this.o.log.info(
       { turno: r.turno, motivo: r.motivo, finestra_ms: r.durata_ms, azioni: r.azioni.length, senzaAzione: r.senzaAzione },
@@ -831,10 +911,10 @@ export class Regia {
     log.debug({ caratteri: messaggio.length }, 'narratore: messaggio del turno');
 
     const esito = await narraTurno(
-      { campagna: this.o.campagna, narratore: this.o.narratore, pipeline: this.pipeline, log },
+      { campagna: this.campagna, narratore: this.o.narratore, pipeline: this.pipeline, log },
       {
         turno,
-        sistema: this.o.sistema,
+        sistema: this.sistema,
         messaggio,
         signal: controllo.signal,
         misuratore,
@@ -858,10 +938,10 @@ export class Regia {
       riparazioni = 1;
       const primoCosto = esito.esito.costo;
       const riparazione = await narraTurno(
-        { campagna: this.o.campagna, narratore: this.o.narratore, pipeline: this.pipeline, log },
+        { campagna: this.campagna, narratore: this.o.narratore, pipeline: this.pipeline, log },
         {
           turno,
-          sistema: this.o.sistema,
+          sistema: this.sistema,
           messaggio: messaggioRiparazione(messaggio, esito.esito.testo, senzaRisposta.map((id) => ({ id, nome: this.nomePg(id), testo: pubbliche.get(id)! }))),
           signal: controllo.signal,
           misuratore,
@@ -998,7 +1078,7 @@ export class Regia {
       fattiScoperti: s.fattiScoperti.map((id) => `${id} — ${this.testoFatto(id)}`),
       battuteDisponibili: s.elencoDisponibili(battute),
       stallo,
-      menzogne: righeMenzogneDette(s.menzogneDette, this.o.campagna, this.o.paroleSegrete ?? [], this.statoPubblico()),
+      menzogne: righeMenzogneDette(s.menzogneDette, this.campagna, this.o.paroleSegrete ?? [], this.statoPubblico()),
     };
   }
 
@@ -1023,13 +1103,13 @@ export class Regia {
     const invito = ultima?.tipo === 'improvvisata' && ultima.etichetta === ID_NARRATORE && ultima.testo.includes('?') ? ultima : null;
     // Voce: prima della prima frase dell'invito, se è ancora in coda.
     const frasi = uso.righe.map((r, k) => {
-      const { voce_id, nome } = voceDi(this.o.campagna, r.etichetta);
+      const { voce_id, nome } = voceDi(this.campagna, r.etichetta);
       return { id_frase: `t${turno}-m${k}`, turno, indice: 900 + k, parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: r.testo_voce, chiave_cache: r.chiave_cache };
     });
     const primaDellInvito = this.pipeline.accodaPrima(frasi, invito?.frasi?.[0] ?? '');
     // Trascrizione: le righe del segno prima della voce dell'invito.
     const nuove = uso.righe.map((r) =>
-      this.aggiungiTrascrizione({ turno, tipo: r.etichetta === ID_NARRATORE ? 'narrazione' : 'battuta', chi: r.etichetta, nome: voceDi(this.o.campagna, r.etichetta).nome, testo: r.testo }),
+      this.aggiungiTrascrizione({ turno, tipo: r.etichetta === ID_NARRATORE ? 'narrazione' : 'battuta', chi: r.etichetta, nome: voceDi(this.campagna, r.etichetta).nome, testo: r.testo }),
     );
     const vocInvito = invito?.segmento !== undefined ? this.segmentiAperti.get(`${turno}:${invito.segmento}`) : undefined;
     if (vocInvito) {
@@ -1056,7 +1136,7 @@ export class Regia {
     for (const id of pubbliche.keys()) {
       if (risposte.has(id)) continue;
       const nome = this.nomePg(id);
-      const varianti = [nome, nomeBreve(nome), ...Object.entries(this.o.campagna.alias).filter(([, v]) => v === id).map(([k]) => k)];
+      const varianti = [nome, nomeBreve(nome), ...Object.entries(this.campagna.alias).filter(([, v]) => v === id).map(([k]) => k)];
       if (varianti.some((v) => v.length > 2 && new RegExp(`(?<![\\p{L}])${normalizza(v).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\p{L}])`, 'u').test(testoImprovvisato))) risposte.add(id);
     }
     return [...pubbliche.keys()].filter((id) => !risposte.has(id));
@@ -1064,7 +1144,7 @@ export class Regia {
 
   /** Testo di un fatto del canone (per i fatti scoperti). */
   private testoFatto(id: string): string {
-    const canone = (this.o.campagna.campagnaNarratore['canone'] as Array<Record<string, unknown>> | undefined) ?? [];
+    const canone = (this.campagna.campagnaNarratore['canone'] as Array<Record<string, unknown>> | undefined) ?? [];
     const f = canone.find((x) => x?.['id'] === id);
     return typeof f?.['testo'] === 'string' ? f['testo'] : id;
   }
@@ -1088,7 +1168,7 @@ export class Regia {
   }
 
   private parlaRiserva(turno: number): void {
-    const mossa = this.o.campagna.scena.dati['mossa_morbida_pronta'];
+    const mossa = this.campagna.scena.dati['mossa_morbida_pronta'];
     const testo = typeof mossa === 'string' && mossa.trim() ? mossa.trim() : 'Il fuoco crepita. Per un momento, nessuno parla.';
     this.trascriviFrase(turno, ID_NARRATORE, NOME_NARRATORE, testo, 999);
     this.pipeline.accoda({

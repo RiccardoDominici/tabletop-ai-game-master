@@ -120,9 +120,11 @@ export class ControlliMaster {
         return { esito, dettagli: `luogo ${da} → ${luogo}${noto.immagine ? '' : ' (senza immagine)'}`, dati: { da, a: luogo } };
       }
       case 'scena': {
-        const scena = typeof c.scena === 'string' ? c.scena : '';
-        if (scena === this.o.campagna.scena.id) return { esito: { ok: true }, dettagli: `scena ${scena} (già in corso)` };
-        return rifiuto('Scena sconosciuta.', `scena sconosciuta «${scena.slice(0, 64)}»`);
+        const scena = typeof c.scena === 'string' && ID_VALIDO.test(c.scena) ? c.scena : '';
+        const da = regia.scenaCorrente;
+        const esito = regia.cambiaScena(scena);
+        if (!esito.ok) return rifiuto(esito.errore, `scena «${scena.slice(0, 64)}»: ${esito.errore}`);
+        return { esito, dettagli: `scena ${da} → ${scena}`, dati: { da, a: scena } };
       }
       case 'situazione':
         return rifiuto('Nessuna immagine di situazione disponibile.');
