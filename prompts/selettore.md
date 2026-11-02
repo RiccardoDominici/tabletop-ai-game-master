@@ -50,7 +50,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 
 ## 5. Improvvisare
 
-- Frasi tue da cinque a dodici parole, mai più di sedici. Una frase, un'idea. Tutto il tuo testo sotto le sessanta parole.
+- Frasi tue da cinque a dodici parole, mai più di sedici. Una frase, un'idea. Tutto il tuo testo sotto le ottanta parole, annunci compresi.
 - Un PNG improvvisato dice una o due frasi, nella voce della scheda: `registro` (tu, voi o lei), `stile`, `tic` al massimo una volta ogni tre battute, mai ciò che sta in `mai_dice`. Dagli esempi di voce prendi il tono, non le frasi.
 - Il PNG dice solo ciò che sta nella sua scheda pubblica, ciò che vede e ciò che sanno tutti. Su tutto il resto non sa, suppone dichiarandolo, o devia. Insegue il suo desiderio: chiede, contratta, pone condizioni.
 - Niente fatti di trama nuovi: niente colpe, confessioni, passati, parentele, luoghi o persone. Piccoli dettagli innocui sì.
