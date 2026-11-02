@@ -18,10 +18,12 @@ import type {
   FaseScena,
   MisureTurno,
   SchermoAudioFinito,
+  SchedaPg,
   SchermoAudioIniziato,
   StatoTavolo,
   VoceTrascrizione,
 } from '@cantastorie/shared';
+import { schedaPg } from '../campagna/scheda';
 import type { Campagna } from '../campagna/tipi';
 import { ID_NARRATORE, NOME_NARRATORE } from '../campagna/tipi';
 import type { Logger } from '../logger';
@@ -32,7 +34,9 @@ import { compilaMessaggioTurno } from '../narrazione/messaggio';
 import { FinestraAzioni, type Orologio, type RiepilogoFinestra } from '../turni/finestra';
 import { narraTurno } from '../turni/narrazione';
 import { PipelineVoce, type UscitaAudio } from '../voce/pipeline';
+import { creaPronunciatore, type Pronunciatore } from '../voce/pronuncia';
 import type { SelettoreVoce } from '../voce/selettore';
+import { StatoOrologi } from './orologi';
 
 export interface OpzioniRegia {
   campagna: Campagna;
@@ -68,6 +72,8 @@ interface AttesaAudio {
 export class Regia {
   private readonly o: OpzioniRegia;
   private readonly pipeline: PipelineVoce;
+  private readonly pronuncia: Pronunciatore;
+  private orologi: StatoOrologi;
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
@@ -95,6 +101,8 @@ export class Regia {
 
   constructor(opzioni: OpzioniRegia) {
     this.o = opzioni;
+    this.pronuncia = creaPronunciatore(opzioni.campagna);
+    this.orologi = new StatoOrologi(opzioni.campagna);
     this.pipeline = new PipelineVoce({
       motore: () => this.o.voce.attivo,
       uscita: opzioni.uscitaAudio,
@@ -142,6 +150,11 @@ export class Regia {
 
   azioneDi(id_pg: string): AzionePrivata | null {
     return this.azioniPrivate.get(id_pg) ?? null;
+  }
+
+  /** Scheda privata del PG (solo per il telefono che l'ha scelto). */
+  schedaPg(id_pg: string): SchedaPg | null {
+    return schedaPg(this.o.campagna, id_pg);
   }
 
   private notifica(): void {
@@ -249,6 +262,7 @@ export class Regia {
     this.trascrizione = [];
     this.turno = 0;
     this.versioneScena = 0;
+    this.orologi = new StatoOrologi(this.o.campagna);
     this.azioniPrivate.clear();
     for (const id of this.o.campagna.pg.map((p) => p.id)) this.uscita?.azioneMia(id, null);
     this.o.log.info({ schermi: this.schermi.size }, 'scena: ricomincia');
@@ -342,6 +356,7 @@ export class Regia {
         nome: NOME_NARRATORE,
         voce_id: ID_NARRATORE,
         testo,
+        testo_voce: this.pronuncia(testo),
       }),
     );
     this.notifica();
@@ -398,6 +413,8 @@ export class Regia {
 
   private finestraChiusa(r: RiepilogoFinestra): void {
     if (r.motivo === 'forzata') return; // ferma/ricomincia: niente narrazione
+    // Contratto voce: /sveglia alla chiusura della finestra, mentre l'LLM scrive la prima frase.
+    void this.o.voce.attivo.sveglia?.();
     const epoca = this.epoca;
     const c = this.o.campagna;
     this.fase = 'narrazione';
@@ -427,6 +444,7 @@ export class Regia {
         ...r.senzaAzione.map((id) => ({ id_pg: id, nome: nomePg(id), testo: null })),
       ],
       pgAlTavolo: this.pgAlTavolo().map((id) => ({ id, nome: nomePg(id) })),
+      orologi: this.orologi.descrivi(r.turno),
     });
     this.notifica();
     void this.eseguiNarrazione(r.turno, messaggio, epoca);
@@ -448,6 +466,7 @@ export class Regia {
         signal: controllo.signal,
         misuratore,
         ora: () => this.o.orologio.ora(),
+        pronuncia: this.pronuncia,
         onFrase: (f) => {
           if (epoca !== this.epoca) return;
           this.trascriviFrase(turno, f.etichetta, f.nome, f.testo, f.segmento);
@@ -457,7 +476,21 @@ export class Regia {
     if (epoca !== this.epoca) return;
     this.controlloLlm = null;
 
+    // Orologi: il narratore propone, il Motore controlla (al massimo un segno per risposta).
+    let avanzato = false;
+    for (const id of esito.orologi) {
+      const a = this.orologi.avanza(id, turno, avanzato);
+      if (a.ok) {
+        avanzato = true;
+        log.info({ orologio: id, pieni: a.orologio.pieni, segmenti: a.orologio.segmenti }, 'orologio: avanzato');
+      } else {
+        log.error({ orologio: id, motivo: a.motivo }, 'orologio: avanzamento rifiutato');
+      }
+    }
+
     if (esito.esito) {
+      // Testo grezzo del narratore: serve a rivedere qualità e protocollo dopo la sessione.
+      log.info({ testo: esito.esito.testo, stop_reason: esito.esito.stopReason }, 'narratore: testo del turno');
       this.o.registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'turno', turno, modello: esito.esito.modello, stop_reason: esito.esito.stopReason, ...esito.esito.costo });
       log.info({ ...esito.esito.costo, frasi: esito.frasi, anomalie: esito.anomalie }, 'narratore: turno narrato');
     }
@@ -505,7 +538,16 @@ export class Regia {
     const mossa = this.o.campagna.scena.dati['mossa_morbida_pronta'];
     const testo = typeof mossa === 'string' && mossa.trim() ? mossa.trim() : 'Il fuoco crepita. Per un momento, nessuno parla.';
     this.trascriviFrase(turno, ID_NARRATORE, NOME_NARRATORE, testo, 999);
-    this.pipeline.accoda({ id_frase: `t${turno}-riserva`, turno, indice: 0, parlante: ID_NARRATORE, nome: NOME_NARRATORE, voce_id: ID_NARRATORE, testo });
+    this.pipeline.accoda({
+      id_frase: `t${turno}-riserva`,
+      turno,
+      indice: 0,
+      parlante: ID_NARRATORE,
+      nome: NOME_NARRATORE,
+      voce_id: ID_NARRATORE,
+      testo,
+      testo_voce: this.pronuncia(testo),
+    });
   }
 
   /**

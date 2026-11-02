@@ -46,4 +46,9 @@ export interface MotoreVoce {
    * si ferma quando il client chiude la connessione).
    */
   sintetizza(richiesta: RichiestaTts, signal: AbortSignal): Promise<FlussoTts>;
+  /**
+   * Facoltativo, non bloccante: «sveglia» il modello dopo una pausa (POST /sveglia del servizio),
+   * così la prima frase vera non paga il primo audio lento. Si chiama alla chiusura della finestra.
+   */
+  sveglia?(): Promise<void>;
 }

@@ -19,6 +19,8 @@ export interface DatiMessaggioTurno {
   azioni: AzioneTurno[];
   /** PG presenti al tavolo (scelti da almeno un telefono): solo loro si possono invitare. */
   pgAlTavolo: Array<{ id: string; nome: string }>;
+  /** Stato degli orologi attivi, tenuto dal Motore (righe già pronte); vuoto = nessuno. */
+  orologi?: string;
   /** Massimo di voci di trascrizione da includere (le più recenti). */
   maxTrascrizione?: number;
 }
@@ -58,6 +60,8 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
         .join('\n'),
     );
   }
+
+  if (d.orologi) parti.push('## Orologi della scena (stato tenuto dal Motore)', d.orologi);
 
   const tavolo = d.pgAlTavolo.map((p) => `${p.nome} (${p.id})`).join(', ');
   parti.push(`PG al tavolo: ${tavolo || '(nessuno)'}.`);

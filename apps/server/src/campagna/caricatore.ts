@@ -156,12 +156,22 @@ export function caricaCampagna(cartella: string, log?: Logger): Campagna {
   return campagna;
 }
 
+function maiuscola(s: string): string {
+  return s ? `${s[0]!.toUpperCase()}${s.slice(1)}` : s;
+}
+
+/**
+ * Riga per il telefono: «Specie classe. Aspetto». Se l'aspetto comincia già con la specie
+ * («Halfling dai ricci…») la specie non si ripete: «Druida. Halfling dai ricci…».
+ */
 function descriviPg(d: DatiYaml): string {
-  const parti = [stringa(d['specie']) ?? stringa(d['razza']), stringa(d['classe'])].filter(Boolean);
-  const testa = parti.join(' ');
+  const specie = stringa(d['specie']) ?? stringa(d['razza']);
+  const classe = stringa(d['classe']);
   const aspetto = stringa(d['aspetto']) ?? stringa(d['descrizione']);
-  if (testa && aspetto) return `${testa[0]!.toUpperCase()}${testa.slice(1)}. ${aspetto}`;
-  return testa || aspetto || '';
+  const ripete = !!(specie && aspetto && aspetto.toLowerCase().startsWith(specie.toLowerCase()));
+  const testa = (ripete ? [classe] : [specie, classe]).filter(Boolean).join(' ');
+  if (testa && aspetto) return `${maiuscola(testa)}. ${aspetto}`;
+  return maiuscola(testa || aspetto || '');
 }
 
 /**

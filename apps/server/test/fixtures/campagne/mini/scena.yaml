@@ -2,6 +2,7 @@ id: scena_locanda
 nome: "La locanda della prova"
 apertura: "La locanda è piena di fumo. Il locandiere vi guarda: che fate?"
 png_presenti: [png_oste, png_guardia]
+orologi_attivi: [o_temporale]
 musica: {tag: taverna_calda}
 intensita: 2
 mossa_morbida_pronta: "Un ceppo crolla nel camino."

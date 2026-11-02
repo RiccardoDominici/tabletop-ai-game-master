@@ -10,7 +10,7 @@
  * Ogni frase è annunciata da `audio:frase`, seguita da N `audio:pezzo` e chiusa da `audio:fine_frase`.
  * `audio:fine_turno` dice che il turno non avrà altre frasi.
  */
-import type { AzionePrivata, MisureTurno, StatoTavolo } from './dominio';
+import type { AzionePrivata, MisureTurno, SchedaPg, StatoTavolo } from './dominio';
 
 /** Risposta standard agli eventi con conferma (ack). */
 export type Esito = { ok: true } | { ok: false; errore: string };
@@ -90,6 +90,8 @@ export interface EventiServerVersoClient {
   stato: (stato: StatoTavolo) => void;
   /** Al telefono che ha scelto il PG: la propria azione (null = nessuna). */
   'azione:mia': (azione: AzionePrivata | null) => void;
+  /** Al telefono che ha scelto il PG: la sua scheda, con le conoscenze private. */
+  'pg:scheda': (scheda: SchedaPg) => void;
   'metriche:turno': (misure: MisureTurno) => void;
   avviso: (avviso: { livello: 'info' | 'errore'; testo: string }) => void;
   'audio:frase': (frase: AudioFrase) => void;

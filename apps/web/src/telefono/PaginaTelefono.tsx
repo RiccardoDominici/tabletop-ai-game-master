@@ -19,6 +19,7 @@ import { BannerStato } from './BannerStato';
 import { Trascrizione } from './Trascrizione';
 import { PresenzeFinestra } from './PresenzeFinestra';
 import { CasellaAzione } from './CasellaAzione';
+import { SchedaPersonaggio } from './SchedaPersonaggio';
 
 export function PaginaTelefono() {
   useEffect(() => avviaTelefono(), []);
@@ -64,6 +65,8 @@ function Attesa() {
 function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
   const pg = stato.pg.find((p) => p.id === idPg);
   const apriScelta = useTelefono((s) => s.apriScelta);
+  const apriScheda = useTelefono((s) => s.apriScheda);
+  const haScheda = useTelefono((s) => s.scheda?.id_pg === idPg);
 
   return (
     <div className="mx-auto flex h-full max-w-2xl flex-col">
@@ -74,6 +77,16 @@ function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
             {pg?.nome ?? idPg}
           </p>
         </div>
+        {haScheda && (
+          <button
+            type="button"
+            onClick={() => apriScheda(true)}
+            data-testid="apri-scheda"
+            className="min-h-12 min-w-12 shrink-0 rounded-full border border-candela/60 px-4 text-[0.95rem] text-candela active:bg-notte-3"
+          >
+            Scheda
+          </button>
+        )}
         <button
           type="button"
           onClick={() => apriScelta(true)}
@@ -94,6 +107,7 @@ function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
         <PresenzeFinestra stato={stato} idPg={idPg} />
         <CasellaAzione stato={stato} />
       </section>
+      <SchedaPersonaggio />
     </div>
   );
 }

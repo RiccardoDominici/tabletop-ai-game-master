@@ -16,6 +16,7 @@ import type {
   EventiServerVersoClient,
   InfoServer,
   MisureTurno,
+  SchedaPg,
   StatoTavolo,
 } from '@cantastorie/shared';
 import { costruisciServer, type ServerCantastorie } from '../src/avvio';
@@ -124,9 +125,16 @@ describe('server F0 con client veri', () => {
     const tel2 = nuovoClient();
     await emetti<StatoTavolo>((cb) => tel1.emit('telefono:entra', cb));
     await emetti<StatoTavolo>((cb) => tel2.emit('telefono:entra', cb));
+    const schede: SchedaPg[] = [];
+    const schedeAltrui: SchedaPg[] = [];
+    tel1.on('pg:scheda', (x) => schede.push(x));
+    tel2.on('pg:scheda', (x) => schedeAltrui.push(x));
     expect(await emetti<Esito>((cb) => tel1.emit('telefono:scegli_pg', { id_pg: 'pg_anna' }, cb))).toEqual({ ok: true });
     expect(await emetti<Esito>((cb) => tel2.emit('telefono:scegli_pg', { id_pg: 'pg_bruno' }, cb))).toEqual({ ok: true });
     expect(await emetti<Esito>((cb) => tel2.emit('telefono:scegli_pg', { id_pg: 'pg_nessuno' }, cb))).toMatchObject({ ok: false });
+    expect(schede.at(-1)).toMatchObject({ id_pg: 'pg_anna', conoscenze_private: ['SEGRETO_DI_ANNA'], situazione_comune: 'Siete in viaggio.' });
+    expect(schedeAltrui.map((x) => x.id_pg)).toEqual(['pg_bruno']);
+    expect(JSON.stringify(schedeAltrui)).not.toContain('SEGRETO_DI_ANNA');
 
     // --- Avvio: l'apertura viene letta, poi si apre la finestra per tutti.
     const finestra1 = attendiStato(tel1, (s) => s.fase === 'finestra' && s.turno === 1);
@@ -147,6 +155,7 @@ describe('server F0 con client veri', () => {
     const conTimer = await emetti<StatoTavolo>((cb) => tel2.emit('stato:richiedi', cb));
     expect(conTimer.finestra.chiusura_prevista_ms).toBeGreaterThan(Date.now());
     expect(JSON.stringify(conTimer)).not.toContain('vino caldo'); // il testo resta privato finché la finestra è aperta
+    expect(JSON.stringify(conTimer)).not.toContain('SEGRETO_DI_ANNA');
     expect(await emetti<Esito>((cb) => tel2.emit('azione:invia', { id_pg: 'pg_bruno', testo: 'Guardo la porta.', versione_scena: 1 }, cb))).toEqual({ ok: true });
     expect(await emetti<Esito>((cb) => tel2.emit('azione:ritira', { id_pg: 'pg_bruno' }, cb))).toEqual({ ok: true });
 

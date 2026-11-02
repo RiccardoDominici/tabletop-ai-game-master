@@ -85,3 +85,13 @@ describe('compilaMessaggioTurno', () => {
     expect(m).toContain('PG al tavolo: Anna (pg_anna), Brunello (pg_bruno).');
   });
 });
+
+describe('descrizione dei PG', () => {
+  it('non ripete la specie se l’aspetto comincia con la specie', () => {
+    const vera = path.join(RADICE_REPO, 'campagne', 'prova-f0');
+    if (!fs.existsSync(path.join(vera, 'pg.yaml'))) return;
+    const c = caricaCampagna(vera);
+    const g = c.pg.find((p) => p.id === 'pg_ginestra');
+    if (g) expect(g.descrizione).toMatch(/^Druida\. Halfling/);
+  });
+});

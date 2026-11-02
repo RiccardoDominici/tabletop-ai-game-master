@@ -19,7 +19,10 @@ export interface FraseDaDire {
   parlante: string;
   nome: string;
   voce_id: string;
+  /** Testo mostrato (sottotitolo, trascrizione). */
   testo: string;
+  /** Testo mandato alla voce, se diverso (nomi con gli accenti di `pronuncia`). */
+  testo_voce?: string;
 }
 
 /** Dove va l'audio (in produzione: la stanza "schermo" di Socket.IO). */
@@ -177,13 +180,13 @@ export class PipelineVoce {
       this.opzioni.osservatore?.richiesta?.(frase, motore.nome);
       let flusso;
       try {
-        flusso = await motore.sintetizza({ id: frase.id_frase, voce, testo: frase.testo }, controllo.signal);
+        flusso = await motore.sintetizza({ id: frase.id_frase, voce, testo: frase.testo_voce ?? frase.testo }, controllo.signal);
       } catch (err) {
         // Voce inesistente nel registro: meglio la voce del narratore che il silenzio.
         if (err instanceof ErroreVoce && err.stato === 404 && voce !== VOCE_RISERVA) {
           log.error({ id_frase: frase.id_frase, voce, parlante: frase.parlante }, 'voce: voce_id sconosciuta al servizio, uso quella del narratore');
           voce = VOCE_RISERVA;
-          flusso = await motore.sintetizza({ id: frase.id_frase, voce, testo: frase.testo }, controllo.signal);
+          flusso = await motore.sintetizza({ id: frase.id_frase, voce, testo: frase.testo_voce ?? frase.testo }, controllo.signal);
         } else {
           throw err;
         }

@@ -66,6 +66,19 @@ export class MotoreVoceHttp implements MotoreVoce {
     return { sampleRate, pezzi: pezzi() };
   }
 
+  /**
+   * POST /sveglia: non blocca il servizio; se il worker è libero fa una breve generazione a vuoto,
+   * interrotta appena arriva una richiesta vera (README del servizio voce). Al meglio, mai bloccante.
+   */
+  async sveglia(): Promise<void> {
+    try {
+      const r = await fetch(`${this.baseUrl}/sveglia`, { method: 'POST', signal: AbortSignal.timeout(1000) });
+      this.log.debug({ stato: r.status }, 'voce: /sveglia');
+    } catch (err) {
+      this.log.debug({ err: (err as Error).message }, 'voce: /sveglia non riuscita');
+    }
+  }
+
   /** Al meglio: se fallisce, la chiusura della connessione basta comunque a fermare la generazione. */
   async annulla(id: string): Promise<void> {
     try {

@@ -74,6 +74,8 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
         pgDi.set(socket.id, id_pg);
         void socket.join([STANZA_TAVOLO, stanzaPg(id_pg)]);
         socket.emit('azione:mia', regia.azioneDi(id_pg));
+        const scheda = regia.schedaPg(id_pg);
+        if (scheda) socket.emit('pg:scheda', scheda);
       }
       ack<Esito>(cb)(esito);
     });

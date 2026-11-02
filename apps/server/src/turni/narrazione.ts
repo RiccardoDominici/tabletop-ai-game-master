@@ -22,6 +22,8 @@ export interface FraseNarrata {
 
 export interface EsitoTurnoNarrato {
   invito: string[] | 'tutti' | null;
+  /** Id proposti con [orologio] (li valida la regia). */
+  orologi: string[];
   esito: EsitoNarrazione | null;
   frasi: number;
   anomalie: number;
@@ -39,6 +41,8 @@ export interface ParametriTurno {
   ora: () => number;
   /** Ogni frase, per la trascrizione pubblica. */
   onFrase: (frase: FraseNarrata) => void;
+  /** Testo per la voce (nomi con gli accenti di pronuncia). */
+  pronuncia: (testo: string) => string;
 }
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
@@ -61,6 +65,7 @@ export async function narraTurno(
   let indice = 0;
   let anomalie = 0;
   let invito: string[] | 'tutti' | null = null;
+  const orologi: string[] = [];
 
   const gestisci = (eventi: EventoNarratore[]): void => {
     for (const e of eventi) {
@@ -77,16 +82,22 @@ export async function narraTurno(
           voce_id,
           testo: e.testo,
         };
+        const perVoce = p.pronuncia(e.testo);
+        if (perVoce !== e.testo) frase.testo_voce = perVoce;
         p.onFrase({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice });
         pipeline.accoda(frase);
         indice += 1;
+      } else if (e.tipo === 'orologio') {
+        orologi.push(e.id);
       } else if (e.tipo === 'invito') {
         invito = e.invitati;
         log.info({ turno: p.turno, invito: e.invitati, grezzo: e.grezzo }, 'narratore: invito');
       } else {
         anomalie += 1;
-        // Il contratto chiede che le deviazioni dal protocollo finiscano nel log come errori.
-        log.error({ turno: p.turno, codice: e.codice, dettaglio: e.dettaglio }, 'narratore: protocollo non rispettato');
+        // Il contratto chiede che le deviazioni dal protocollo finiscano nel log come errori;
+        // l'etichetta riconosciuta da un alias (senza png_, maiuscole) è solo un avviso.
+        const livello = e.codice === 'etichetta_alias' ? 'warn' : 'error';
+        log[livello]({ turno: p.turno, codice: e.codice, dettaglio: e.dettaglio }, 'narratore: protocollo non rispettato');
       }
     }
   };
@@ -105,13 +116,13 @@ export async function narraTurno(
     if (esito.stopReason && esito.stopReason !== 'end_turn') {
       log.error({ turno: p.turno, stop_reason: esito.stopReason }, 'narratore: risposta non conclusa normalmente');
     }
-    return { invito, esito, frasi: indice, anomalie, errore: null, interrotto: false };
+    return { invito, orologi, esito, frasi: indice, anomalie, errore: null, interrotto: false };
   } catch (err) {
     const interrotto = p.signal.aborted;
     if (!interrotto) log.error({ turno: p.turno, err: (err as Error).message, nome: (err as Error).name }, 'narratore: chiamata fallita');
     // Le frasi già arrivate sono valide: si chiude il parser per non perdere l'ultima.
     if (!interrotto) gestisci(parser.chiudi());
     p.misuratore.imposta('llm_fine', p.ora());
-    return { invito, esito: null, frasi: indice, anomalie, errore: interrotto ? null : (err as Error).message, interrotto };
+    return { invito, orologi, esito: null, frasi: indice, anomalie, errore: interrotto ? null : (err as Error).message, interrotto };
   }
 }

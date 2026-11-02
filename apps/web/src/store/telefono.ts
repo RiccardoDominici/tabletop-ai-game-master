@@ -3,7 +3,7 @@
  * comando. Lo stato del tavolo (pubblico) sta in `store/tavolo.ts`.
  */
 import { create } from 'zustand';
-import type { AzionePrivata } from '@cantastorie/shared';
+import type { AzionePrivata, SchedaPg } from '@cantastorie/shared';
 import { CHIAVI, cancellaMemoria, leggiMemoria, scriviMemoria } from '../lib/memoria';
 
 interface StoreTelefono {
@@ -22,6 +22,10 @@ interface StoreTelefono {
   errore: string | null;
   /** Un comando è in attesa di ack: i pulsanti restano bloccati per evitare doppi invii. */
   occupato: boolean;
+  /** La scheda del mio PG (con le conoscenze private), dall'evento `pg:scheda`. */
+  scheda: SchedaPg | null;
+  /** Il pannello della scheda è aperto. */
+  schedaAperta: boolean;
 
   ricordaPg(idPg: string): void;
   dimenticaPg(): void;
@@ -30,6 +34,8 @@ interface StoreTelefono {
   impostaMiaAzione(azione: AzionePrivata | null): void;
   impostaErrore(errore: string | null): void;
   impostaOccupato(occupato: boolean): void;
+  impostaScheda(scheda: SchedaPg | null): void;
+  apriScheda(aperta: boolean): void;
 }
 
 export const useTelefono = create<StoreTelefono>()((set) => ({
@@ -39,6 +45,8 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   miaAzione: null,
   errore: null,
   occupato: false,
+  scheda: null,
+  schedaAperta: false,
 
   ricordaPg: (idPg) => {
     scriviMemoria(CHIAVI.pg, idPg);
@@ -46,11 +54,13 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   },
   dimenticaPg: () => {
     cancellaMemoria(CHIAVI.pg);
-    set({ idPg: null, confermato: false, miaAzione: null });
+    set({ idPg: null, confermato: false, miaAzione: null, scheda: null, schedaAperta: false });
   },
   impostaConfermato: (confermato) => set({ confermato }),
   apriScelta: (sceltaAperta) => set({ sceltaAperta }),
   impostaMiaAzione: (miaAzione) => set({ miaAzione }),
   impostaErrore: (errore) => set({ errore }),
   impostaOccupato: (occupato) => set({ occupato }),
+  impostaScheda: (scheda) => set({ scheda }),
+  apriScheda: (schedaAperta) => set({ schedaAperta }),
 }));

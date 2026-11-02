@@ -154,3 +154,20 @@ describe('ParserNarratore', () => {
     expect(anomalie(ev)).toEqual(['testo_dopo_invito']);
   });
 });
+
+describe('ParserNarratore — [orologio]', () => {
+  it('riga [orologio] prima dell’invito: evento, non letta, a ogni suddivisione', () => {
+    const testo = '[narratore] La campana suona un rintocco.\n[orologio] o_colpevole\n[invito] tutti\n';
+    for (const ev of tutteLeSuddivisioni(testo)) {
+      expect(frasi(ev)).toEqual([['narratore', 'La campana suona un rintocco.', 0]]);
+      expect(ev.find((e) => e.tipo === 'orologio')).toMatchObject({ id: 'o_colpevole' });
+      expect(anomalie(ev)).toEqual([]);
+    }
+  });
+
+  it('[orologio] vuoto → anomalia, nessun evento', () => {
+    const ev = esegui('[narratore] Ok.\n[orologio]\n[invito] tutti', []);
+    expect(ev.some((e) => e.tipo === 'orologio')).toBe(false);
+    expect(anomalie(ev)).toEqual(['orologio_vuoto']);
+  });
+});

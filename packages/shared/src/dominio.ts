@@ -29,6 +29,22 @@ export interface PgPubblico {
   telefoni: number;
 }
 
+/**
+ * Scheda del PG per il SUO telefono (stanza player:<id_pg>): include le conoscenze private,
+ * che non vanno mai al tavolo, allo schermo o al narratore (T9).
+ */
+export interface SchedaPg {
+  id_pg: string;
+  nome: string;
+  descrizione: string;
+  /** Sezioni leggibili (Chi sei, Il tuo aggancio, Cosa sai fare…), nell'ordine della scheda. */
+  sezioni: Array<{ titolo: string; righe: string[] }>;
+  /** Cose che sa solo questo PG: il giocatore decide se e quando dirle. */
+  conoscenze_private: string[];
+  /** Situazione comune a tutto il gruppo. */
+  situazione_comune: string | null;
+}
+
 /** Stato di un'azione scritta da un giocatore. */
 export type StatoAzione =
   /** Inviata, finestra ancora aperta: si può modificare o ritirare. */

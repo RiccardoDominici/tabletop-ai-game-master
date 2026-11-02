@@ -6,7 +6,7 @@
  * può essere stato riavviato) e poi di nuovo `telefono:scegli_pg` col PG ricordato, così il telefono
  * rientra nella stanza player:<id_pg> e riceve di nuovo `azione:mia`.
  */
-import type { AzionePrivata, Esito, StatoTavolo } from '@cantastorie/shared';
+import type { AzionePrivata, Esito, SchedaPg, StatoTavolo } from '@cantastorie/shared';
 import { alRientro, chiedi, conEsito, esitoErrore, prendiSocket } from '../lib/socket';
 import { creaLog } from '../lib/log';
 import { useTavolo } from '../store/tavolo';
@@ -23,6 +23,12 @@ const suMiaAzione = (azione: AzionePrivata | null) => {
   log.debug('Azione privata aggiornata', azione);
   useTelefono.getState().impostaMiaAzione(azione);
 };
+/**
+ * La scheda arriva solo a questo telefono (stanza player:<id_pg>): può contenere segreti del PG.
+ * Arriva PRIMA dell'ack di `telefono:scegli_pg`, quando idPg non è ancora aggiornato: la si tiene
+ * comunque, e la pagina la mostra solo se è quella del PG scelto.
+ */
+const suScheda = (scheda: SchedaPg) => useTelefono.getState().impostaScheda(scheda);
 const suAvviso = (avviso: { livello: 'info' | 'errore'; testo: string }) =>
   useAvvisi.getState().aggiungi(avviso.livello, avviso.testo);
 
@@ -63,6 +69,7 @@ export function avviaTelefono(): () => void {
     const s = prendiSocket();
     s.on('stato', suStato);
     s.on('azione:mia', suMiaAzione);
+    s.on('pg:scheda', suScheda);
     s.on('avviso', suAvviso);
     togliRientro = alRientro(() => void rientra());
   }
@@ -72,6 +79,7 @@ export function avviaTelefono(): () => void {
     const s = prendiSocket();
     s.off('stato', suStato);
     s.off('azione:mia', suMiaAzione);
+    s.off('pg:scheda', suScheda);
     s.off('avviso', suAvviso);
     togliRientro?.();
     togliRientro = null;
@@ -101,7 +109,11 @@ export function scegliPg(idPg: string): Promise<Esito> {
     const esito = await conEsito((s, fine) => s.emit('telefono:scegli_pg', { id_pg: idPg }, fine));
     const store = useTelefono.getState();
     if (esito.ok) {
-      if (store.idPg !== idPg) store.impostaMiaAzione(null);
+      // Cambio di PG: via ciò che era dell'altro PG, ma non quello appena arrivato (che precede l'ack).
+      if (store.idPg !== idPg) {
+        if (store.miaAzione && store.miaAzione.id_pg !== idPg) store.impostaMiaAzione(null);
+        if (store.scheda && store.scheda.id_pg !== idPg) store.impostaScheda(null);
+      }
       store.ricordaPg(idPg);
       store.impostaConfermato(true);
     }
