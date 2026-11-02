@@ -27,6 +27,17 @@ export function neutralizzaAmbienteAnthropic(log: Logger): void {
   if (tolte.length) log.info({ tolte }, 'llm: variabili ANTHROPIC_* della shell ignorate (baseURL fisso su api.anthropic.com)');
 }
 
+/**
+ * Client Anthropic con la chiave letta dal file (una sola riga) e baseURL fisso: usato dal
+ * narratore e dagli strumenti (conteggio dei token).
+ */
+export function creaClientAnthropic(fileChiave: string, log: Logger): Anthropic {
+  neutralizzaAmbienteAnthropic(log);
+  const apiKey = leggiChiaveAnthropic(fileChiave);
+  log.info({ chiave: descriviChiave(apiKey), file: fileChiave, baseURL: URL_API }, 'llm: client Anthropic pronto');
+  return new Anthropic({ apiKey, authToken: null, baseURL: URL_API, maxRetries: 1, timeout: 60_000 });
+}
+
 export interface OpzioniHaiku {
   modello: string;
   maxTokens: number;
@@ -46,10 +57,7 @@ export class NarratoreHaiku implements Narratore {
   /** Client creato al primo uso: la chiave si legge solo quando serve davvero. */
   private cliente(): Anthropic {
     if (this.client) return this.client;
-    neutralizzaAmbienteAnthropic(this.o.log);
-    const apiKey = leggiChiaveAnthropic(this.o.fileChiave);
-    this.o.log.info({ chiave: descriviChiave(apiKey), file: this.o.fileChiave, baseURL: URL_API, modello: this.modello }, 'llm: client Anthropic pronto');
-    this.client = new Anthropic({ apiKey, authToken: null, baseURL: URL_API, maxRetries: 1, timeout: 60_000 });
+    this.client = creaClientAnthropic(this.o.fileChiave, this.o.log);
     return this.client;
   }
 

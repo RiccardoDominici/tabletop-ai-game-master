@@ -5,7 +5,7 @@ describe('Pianificatore', () => {
   it('il primo pezzo parte dopo il jitter, i successivi senza fessure', () => {
     const p = new Pianificatore(0.15);
     const a = p.programma(10, 0.2, false);
-    expect(a).toEqual({ inizio: 10.15, buco: false, ripartenza: true });
+    expect(a).toEqual({ inizio: 10.15, buco: false, ripartenza: true, silenzio: 0 });
     // Arriva mentre il primo è ancora in coda: comincia esattamente dove finisce il precedente.
     const b = p.programma(10.05, 0.2, true);
     expect(b.inizio).toBeCloseTo(10.35, 10);
@@ -53,6 +53,6 @@ describe('Pianificatore', () => {
     expect(p.anticipo(3)).toBe(0);
     p.azzera();
     expect(p.fineProgrammata).toBeNull();
-    expect(p.programma(4, 0.1, true)).toEqual({ inizio: 4.15, buco: false, ripartenza: true });
+    expect(p.programma(4, 0.1, true)).toEqual({ inizio: 4.15, buco: false, ripartenza: true, silenzio: 0 });
   });
 });

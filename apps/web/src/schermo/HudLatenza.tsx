@@ -19,6 +19,7 @@ const FINESTRA_CONFERMA_MS = 3000;
 /** Campi in ms delle misure, nell'ordine in cui accadono nel turno. */
 const CAMPI_MS: ReadonlyArray<readonly [keyof MisureTurno, string]> = [
   ['finestra_ms', 'finestra'],
+  ['voce_sveglia', 'voce sveglia'],
   ['llm_primo_token', 'LLM primo token'],
   ['llm_prima_frase', 'LLM prima frase'],
   ['voce_richiesta', 'voce richiesta'],
@@ -81,6 +82,12 @@ export function HudLatenza() {
               valore={`${metriche.token_cache_lettura} / ${metriche.token_cache_scrittura}`}
             />
             <Riga nome="costo" valore={formattaCosto(metriche.costo_usd)} />
+            <Riga
+              nome="buchi (in frase / tra frasi)"
+              valore={metriche.buchi === null ? '—' : `${metriche.buchi} (${metriche.buchi_in_frase} / ${metriche.buchi_tra_frasi})`}
+              evidenzia={(metriche.buchi_in_frase ?? 0) > 0}
+            />
+            <Riga nome="silenzio dai buchi" valore={formattaMs(metriche.silenzio_ms)} />
           </>
         )}
       </Sezione>

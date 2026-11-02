@@ -23,7 +23,19 @@ export type Segno =
   | { tipo: 'inizio_turno'; t: number; turno: number; id_frase: string }
   | { tipo: 'inizio_frase'; t: number; frase: AudioFrase }
   | { tipo: 'fine_frase'; t: number; id_frase: string; turno: number }
-  | { tipo: 'fine_turno'; t: number; turno: number; buchi: number };
+  | { tipo: 'fine_turno'; t: number; turno: number; buchi: StatisticheBuchi };
+
+/**
+ * Buchi di un turno. «In frase» = il suono si interrompe a metà di una frase (si sente come un
+ * inciampo); «tra frasi» = la frase dopo arriva tardi (si sente come una pausa più lunga).
+ */
+export interface StatisticheBuchi {
+  buchi: number;
+  buchi_in_frase: number;
+  buchi_tra_frasi: number;
+  /** Silenzio totale inserito dai buchi (ms). */
+  silenzio_ms: number;
+}
 
 /** Pezzo pronto per diventare un AudioBuffer. */
 export interface PezzoDaSuonare {
@@ -78,6 +90,8 @@ interface StatoTurno {
   /** Almeno un pezzo del turno è in programma: da qui in poi un ritardo è un buco. */
   iniziato: boolean;
   buchi: number;
+  buchiInFrase: number;
+  silenzio: number;
   /** Fine dell'ultimo pezzo programmato del turno. */
   fine: number | null;
 }
@@ -132,7 +146,7 @@ export class Programmatore {
     const durata = campioni.length / sampleRate;
     const turno = this.turno(frase.meta.turno);
 
-    const { inizio, buco } = this.pianificatore.programma(ora, durata, turno.iniziato);
+    const { inizio, buco, silenzio } = this.pianificatore.programma(ora, durata, turno.iniziato);
 
     const segni: Segno[] = [];
     if (!turno.iniziato) {
@@ -145,6 +159,9 @@ export class Programmatore {
     }
     if (buco) {
       turno.buchi += 1;
+      // Il primo pezzo di una frase che arriva tardi è una pausa tra frasi; gli altri, un inciampo.
+      if (frase.fine !== null) turno.buchiInFrase += 1;
+      turno.silenzio += silenzio;
       this.contatori.buchi += 1;
     }
 
@@ -186,7 +203,16 @@ export class Programmatore {
       if (frase.meta.turno === fine.turno) this.frasi.delete(id);
     }
     const t = turno?.fine ?? ora;
-    return [{ tipo: 'fine_turno', t, turno: fine.turno, buchi: turno?.buchi ?? 0 }];
+    const buchi = turno?.buchi ?? 0;
+    const inFrase = turno?.buchiInFrase ?? 0;
+    return [
+      {
+        tipo: 'fine_turno',
+        t,
+        turno: fine.turno,
+        buchi: { buchi, buchi_in_frase: inFrase, buchi_tra_frasi: buchi - inFrase, silenzio_ms: Math.round((turno?.silenzio ?? 0) * 1000) },
+      },
+    ];
   }
 
   /** `audio:interrompi`: dimentica frasi, turni e linea del tempo. */
@@ -209,7 +235,7 @@ export class Programmatore {
   private turno(numero: number): StatoTurno {
     let stato = this.turni.get(numero);
     if (!stato) {
-      stato = { iniziato: false, buchi: 0, fine: null };
+      stato = { iniziato: false, buchi: 0, buchiInFrase: 0, silenzio: 0, fine: null };
       this.turni.set(numero, stato);
     }
     return stato;

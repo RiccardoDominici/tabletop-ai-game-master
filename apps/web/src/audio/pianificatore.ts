@@ -24,6 +24,8 @@ export interface Programmazione {
   buco: boolean;
   /** Si è ripartiti da fermi (primo pezzo o dopo un buco): applicato il jitter. */
   ripartenza: boolean;
+  /** Silenzio inserito prima di questo pezzo a causa del buco (secondi; 0 se nessun buco). */
+  silenzio: number;
 }
 
 export class Pianificatore {
@@ -42,6 +44,7 @@ export class Pianificatore {
     let inizio: number;
     let buco = false;
     let ripartenza = false;
+    let silenzio = 0;
 
     if (this.prossimoInizio === null) {
       inizio = ora + this.jitterS;
@@ -51,12 +54,13 @@ export class Pianificatore {
       inizio = ora + this.jitterS;
       ripartenza = true;
       buco = aMetaTurno;
+      if (buco) silenzio = inizio - this.prossimoInizio;
     } else {
       inizio = this.prossimoInizio;
     }
 
     this.prossimoInizio = inizio + durata;
-    return { inizio, buco, ripartenza };
+    return { inizio, buco, ripartenza, silenzio };
   }
 
   /** Fine dell'ultimo pezzo programmato (null se nulla). */

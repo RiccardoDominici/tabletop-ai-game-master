@@ -116,7 +116,9 @@ describe('server F0 con client veri', () => {
         schermo.emit('schermo:audio_iniziato', { turno, id_frase: p.id_frase, ritardo_ms: 0 });
       }
     });
-    schermo.on('audio:fine_turno', (f) => schermo.emit('schermo:audio_finito', { turno: f.turno, ritardo_ms: 0, buchi: 0 }));
+    schermo.on('audio:fine_turno', (f) =>
+      schermo.emit('schermo:audio_finito', { turno: f.turno, ritardo_ms: 0, buchi: 1, buchi_in_frase: 0, buchi_tra_frasi: 1, silenzio_ms: 120 }),
+    );
     const metriche: MisureTurno[] = [];
     schermo.on('metriche:turno', (m) => metriche.push(m));
 
@@ -189,6 +191,15 @@ describe('server F0 con client veri', () => {
     expect(r1.voce_richiesta).toBeLessThanOrEqual(r1.voce_primo_audio);
     expect(r1.audio_fine).toBeGreaterThanOrEqual(r1.schermo_inizio_audio);
     for (const campo of ['token_ingresso', 'token_uscita', 'token_cache_lettura', 'token_cache_scrittura', 'costo_usd']) expect(r1).toHaveProperty(campo);
+    expect(r1).toMatchObject({ buchi: 1, buchi_in_frase: 0, buchi_tra_frasi: 1, silenzio_ms: 120, voce_sveglia: null }); // mock: niente /sveglia
+    const narr = fs.readFileSync(path.join(cartellaLog, 'narrazioni.jsonl'), 'utf8').trim().split('\n').map((r) => JSON.parse(r));
+    expect(narr[0]).toMatchObject({ turno: 0, tipo: 'apertura' });
+    expect(narr.find((x) => x.turno === 1)).toMatchObject({
+      tipo: 'turno',
+      azioni: [{ id_pg: 'pg_anna', testo: 'Ordino vino caldo.' }, { id_pg: 'pg_bruno', testo: null }],
+      invito: ['pg_bruno'],
+      anomalie: [{ codice: 'etichetta_sconosciuta' }],
+    });
     expect(metriche.find((m) => m.turno === 1)).toMatchObject({ turno: 1, voce_motore: 'mock' });
     const costi = fs.readFileSync(path.join(cartellaLog, 'costi.jsonl'), 'utf8');
     expect(costi).toContain('"tipo":"turno"');

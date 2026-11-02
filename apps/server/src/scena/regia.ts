@@ -49,6 +49,8 @@ export interface OpzioniRegia {
   log: Logger;
   registroTurni: RegistroJsonl;
   registroCosti: RegistroJsonl;
+  /** Una riga per turno: azioni, testo grezzo del narratore, invito, orologi, anomalie. */
+  registroNarrazioni: RegistroJsonl;
   chiusuraDopoPrimaAzioneMs: number;
   margineFineAudioMs: number;
   trascrizioneMax: number;
@@ -93,6 +95,8 @@ export class Regia {
   /** Primo pezzo d'audio inviato nel turno corrente (stima della fine se lo schermo tace). */
   private primoAudioInviato = new Map<number, number>();
   private attesaAudio: AttesaAudio | null = null;
+  /** Id della scena in corso (ISO dell'avvio): raggruppa le righe di narrazioni.jsonl. */
+  private sessione = '';
 
   /** socket.id → id_pg scelto. */
   private telefoni = new Map<string, string>();
@@ -236,7 +240,18 @@ export class Regia {
 
   schermoAudioFinito(d: SchermoAudioFinito, ricevutoA: number): void {
     const istante = ricevutoA - Math.max(0, d.ritardo_ms);
-    this.o.log.info({ turno: d.turno, buchi: d.buchi, ritardo_ms: d.ritardo_ms }, 'schermo: audio finito');
+    this.o.log.info(
+      { turno: d.turno, buchi: d.buchi, buchi_in_frase: d.buchi_in_frase, buchi_tra_frasi: d.buchi_tra_frasi, silenzio_ms: d.silenzio_ms, ritardo_ms: d.ritardo_ms },
+      'schermo: audio finito',
+    );
+    if (this.misuratore && d.turno === this.misuratore.turno && typeof d.buchi === 'number') {
+      this.misuratore.impostaBuchi({
+        buchi: d.buchi,
+        buchi_in_frase: typeof d.buchi_in_frase === 'number' ? d.buchi_in_frase : 0,
+        buchi_tra_frasi: typeof d.buchi_tra_frasi === 'number' ? d.buchi_tra_frasi : 0,
+        silenzio_ms: typeof d.silenzio_ms === 'number' ? d.silenzio_ms : 0,
+      });
+    }
     const a = this.attesaAudio;
     if (a && a.turno === d.turno) {
       a.timer?.();
@@ -340,6 +355,8 @@ export class Regia {
   private avviaScena(): void {
     const epoca = ++this.epoca;
     const c = this.o.campagna;
+    this.sessione = new Date(this.o.orologio.adesso()).toISOString();
+    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno: 0, tipo: 'apertura', voce: this.o.voce.nome, testo: c.scena.apertura.map((f) => `[narratore] ${f}`).join('\n') });
     this.fase = 'apertura';
     this.turno = 0;
     this.segmentiAperti.clear();
@@ -413,8 +430,14 @@ export class Regia {
 
   private finestraChiusa(r: RiepilogoFinestra): void {
     if (r.motivo === 'forzata') return; // ferma/ricomincia: niente narrazione
-    // Contratto voce: /sveglia alla chiusura della finestra, mentre l'LLM scrive la prima frase.
-    void this.o.voce.attivo.sveglia?.();
+    this.misuratore = new MisuratoreTurno(r.turno, r.chiusa_a, r.durata_ms, this.o.voce.nome, this.o.orologio.adesso());
+    // Contratto voce: /sveglia alla chiusura della finestra, in parallelo alla chiamata dell'LLM
+    // (fire-and-forget: la prima frase arriva dopo ~0,9 s, la sveglia ci sta dentro).
+    const motoreVoce = this.o.voce.attivo;
+    if (motoreVoce.sveglia) {
+      this.misuratore.segna('voce_sveglia', this.o.orologio.ora());
+      void motoreVoce.sveglia();
+    }
     const epoca = this.epoca;
     const c = this.o.campagna;
     this.fase = 'narrazione';
@@ -435,7 +458,6 @@ export class Regia {
         turno: r.turno,
       });
     }
-    this.misuratore = new MisuratoreTurno(r.turno, r.chiusa_a, r.durata_ms, this.o.voce.nome, this.o.orologio.adesso());
     const messaggio = compilaMessaggioTurno({
       turno: r.turno,
       trascrizione: this.trascrizione,
@@ -447,10 +469,19 @@ export class Regia {
       orologi: this.orologi.descrivi(r.turno),
     });
     this.notifica();
-    void this.eseguiNarrazione(r.turno, messaggio, epoca);
+    const azioni = [
+      ...r.azioni.map((a) => ({ id_pg: a.id_pg, testo: a.testo as string | null })),
+      ...r.senzaAzione.map((id) => ({ id_pg: id, testo: null as string | null })),
+    ];
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni);
   }
 
-  private async eseguiNarrazione(turno: number, messaggio: string, epoca: number): Promise<void> {
+  private async eseguiNarrazione(
+    turno: number,
+    messaggio: string,
+    epoca: number,
+    azioni: Array<{ id_pg: string; testo: string | null }>,
+  ): Promise<void> {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
     this.controlloLlm = controllo;
@@ -478,8 +509,10 @@ export class Regia {
 
     // Orologi: il narratore propone, il Motore controlla (al massimo un segno per risposta).
     let avanzato = false;
+    const esitiOrologi: Array<{ id: string; ok: boolean; motivo?: string; stato?: string }> = [];
     for (const id of esito.orologi) {
       const a = this.orologi.avanza(id, turno, avanzato);
+      esitiOrologi.push(a.ok ? { id, ok: true, stato: `${a.orologio.pieni}/${a.orologio.segmenti}` } : { id, ok: false, motivo: a.motivo });
       if (a.ok) {
         avanzato = true;
         log.info({ orologio: id, pieni: a.orologio.pieni, segmenti: a.orologio.segmenti }, 'orologio: avanzato');
@@ -508,6 +541,21 @@ export class Regia {
 
     const record = misuratore.record();
     this.o.registroTurni.scrivi({ ...record });
+    this.o.registroNarrazioni.scrivi({
+      sessione: this.sessione,
+      turno,
+      tipo: 'turno',
+      voce: record.voce_motore,
+      azioni,
+      pg_presenti: this.pgAlTavolo(),
+      testo: esito.esito?.testo ?? null,
+      errore: esito.errore,
+      invito: esito.invito,
+      orologi: esitiOrologi,
+      stato_orologi: this.orologi.riepilogo(),
+      anomalie: esito.anomalie,
+      misure: record,
+    });
     this.uscita?.metriche(record);
     log.info(record, 'turno: misure');
     this.misuratore = null;

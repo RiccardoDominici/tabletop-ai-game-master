@@ -38,17 +38,42 @@ export function rigaTrascrizione(v: VoceTrascrizione): string | null {
   }
 }
 
+/**
+ * Trascrizione divisa per turno, con il numero di ogni risposta del narratore: la regola di
+ * ritmo degli orologi nel prompt conta le risposte («una sì e una no»).
+ */
+function trascrizioneNumerata(voci: VoceTrascrizione[]): string {
+  const blocchi: string[] = [];
+  let turno: number | null = null;
+  let righe: string[] = [];
+  const chiudi = (): void => {
+    if (turno === null || righe.length === 0) return;
+    blocchi.push(`### ${turno === 0 ? 'Turno 0 (apertura)' : `Turno ${turno}`}\n${righe.join('\n')}`);
+  };
+  for (const v of voci) {
+    if (v.turno !== turno) {
+      chiudi();
+      turno = v.turno;
+      righe = [];
+    }
+    const r = rigaTrascrizione(v);
+    if (r) righe.push(r);
+  }
+  chiudi();
+  return blocchi.join('\n\n');
+}
+
 export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
   const max = d.maxTrascrizione ?? 60;
   const storia = d.trascrizione.filter((v) => v.turno < d.turno);
   const recenti = storia.slice(-max);
-  const righe = recenti.map(rigaTrascrizione).filter((r): r is string => r !== null);
   const tagliate = storia.length - recenti.length;
+  const testoStoria = trascrizioneNumerata(recenti);
 
   const parti: string[] = [];
-  parti.push('## Trascrizione pubblica della scena finora');
+  parti.push('## Trascrizione pubblica della scena finora (divisa per turno)');
   if (tagliate > 0) parti.push(`(omesse ${tagliate} voci più vecchie)`);
-  parti.push(righe.length ? righe.join('\n') : '(nessuna)');
+  parti.push(testoStoria || '(nessuna)');
 
   parti.push(`## Turno ${d.turno}: azioni dei giocatori`);
   if (d.azioni.length === 0) {
@@ -63,8 +88,9 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
 
   if (d.orologi) parti.push('## Orologi della scena (stato tenuto dal Motore)', d.orologi);
 
-  const tavolo = d.pgAlTavolo.map((p) => `${p.nome} (${p.id})`).join(', ');
-  parti.push(`PG al tavolo: ${tavolo || '(nessuno)'}.`);
+  // pg_presenti: solo questi si possono invitare (gli altri PG della scheda non sono al tavolo).
+  const nomi = d.pgAlTavolo.map((p) => `${p.id} = ${p.nome}`).join('; ');
+  parti.push(`pg_presenti: [${d.pgAlTavolo.map((p) => p.id).join(', ')}]${nomi ? ` (${nomi})` : ''}`);
   parti.push(
     'Narra ciò che succede ora. Rispondi solo con righe etichettate; ' +
       'l’ultima riga è [invito] con gli id dei PG al tavolo che devono rispondere, oppure tutti.',

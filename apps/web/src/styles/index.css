@@ -35,8 +35,24 @@
   --shadow-candela: 0 0 0 1px rgb(236 181 92 / 0.35), 0 8px 30px -8px rgb(236 181 92 / 0.35);
   --shadow-profonda: 0 18px 40px -18px rgb(0 0 0 / 0.8);
 
-  /* Comparsa morbida di sottotitoli e parlante (`animate-comparsa`). */
+  /* Comparsa morbida degli elementi d'interfaccia (`animate-comparsa`). */
   --animate-comparsa: comparsa 320ms ease-out;
+  /*
+   * Sottotitolo e parlante del proiettore: comparsa BREVE (≤ 200 ms) e solo d'opacità, così lo
+   * stato stabile ad alto contrasto arriva subito (una foto o un occhio a metà dissolvenza non
+   * deve trovare testo grigio).
+   */
+  --animate-sottotitolo: sottotitolo 160ms ease-out;
+  @keyframes sottotitolo {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  /* Testo quasi bianco del sottotitolo: su un proiettore in stanza illuminata il contrasto cala molto. */
+  --color-sottotitolo: #fffaf0;
   @keyframes comparsa {
     from {
       opacity: 0;

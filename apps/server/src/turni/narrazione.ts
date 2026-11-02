@@ -26,7 +26,8 @@ export interface EsitoTurnoNarrato {
   orologi: string[];
   esito: EsitoNarrazione | null;
   frasi: number;
-  anomalie: number;
+  /** Deviazioni dal protocollo (già nel log), per il registro delle narrazioni. */
+  anomalie: Array<{ codice: string; dettaglio: string }>;
   /** Errore del narratore (non per interruzione). */
   errore: string | null;
   interrotto: boolean;
@@ -63,7 +64,7 @@ export async function narraTurno(
     alias: campagna.alias,
   });
   let indice = 0;
-  let anomalie = 0;
+  const anomalie: Array<{ codice: string; dettaglio: string }> = [];
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
 
@@ -93,7 +94,7 @@ export async function narraTurno(
         invito = e.invitati;
         log.info({ turno: p.turno, invito: e.invitati, grezzo: e.grezzo }, 'narratore: invito');
       } else {
-        anomalie += 1;
+        anomalie.push({ codice: e.codice, dettaglio: e.dettaglio });
         // Il contratto chiede che le deviazioni dal protocollo finiscano nel log come errori;
         // l'etichetta riconosciuta da un alias (senza png_, maiuscole) è solo un avviso.
         const livello = e.codice === 'etichetta_alias' ? 'warn' : 'error';

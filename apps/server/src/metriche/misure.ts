@@ -7,6 +7,7 @@ import type { MisureTurno } from '@cantastorie/shared';
 import type { Costo } from '../llm/costi';
 
 export type CampoTempo =
+  | 'voce_sveglia'
   | 'llm_primo_token'
   | 'llm_prima_frase'
   | 'voce_richiesta'
@@ -18,6 +19,7 @@ export type CampoTempo =
 export class MisuratoreTurno {
   private readonly tempi = new Map<CampoTempo, number>();
   private costo: Costo | null = null;
+  private buchi: { buchi: number; buchi_in_frase: number; buchi_tra_frasi: number; silenzio_ms: number } | null = null;
 
   constructor(
     readonly turno: number,
@@ -47,6 +49,11 @@ export class MisuratoreTurno {
     this.costo = costo;
   }
 
+  /** Buchi di riproduzione riferiti dallo schermo a fine turno. */
+  impostaBuchi(b: { buchi: number; buchi_in_frase: number; buchi_tra_frasi: number; silenzio_ms: number }): void {
+    this.buchi = b;
+  }
+
   private rel(campo: CampoTempo): number | null {
     const t = this.tempi.get(campo);
     return t === undefined ? null : Math.round(t - this.t0);
@@ -65,6 +72,11 @@ export class MisuratoreTurno {
       schermo_inizio_audio: this.rel('schermo_inizio_audio'),
       llm_fine: this.rel('llm_fine'),
       audio_fine: this.rel('audio_fine'),
+      voce_sveglia: this.rel('voce_sveglia'),
+      buchi: this.buchi?.buchi ?? null,
+      buchi_in_frase: this.buchi?.buchi_in_frase ?? null,
+      buchi_tra_frasi: this.buchi?.buchi_tra_frasi ?? null,
+      silenzio_ms: this.buchi?.silenzio_ms ?? null,
       token_ingresso: this.costo?.token_ingresso ?? 0,
       token_uscita: this.costo?.token_uscita ?? 0,
       token_cache_lettura: this.costo?.token_cache_lettura ?? 0,

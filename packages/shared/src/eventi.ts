@@ -72,8 +72,14 @@ export interface SchermoAudioIniziato {
 export interface SchermoAudioFinito {
   turno: number;
   ritardo_ms: number;
-  /** Buchi (underrun) contati durante il turno. */
+  /** Buchi (underrun) contati durante il turno: un pezzo programmato dopo la fine del precedente. */
   buchi: number;
+  /** Di cui a metà frase (il suono inciampa). */
+  buchi_in_frase: number;
+  /** Di cui all'inizio di una frase (pausa più lunga tra due frasi). */
+  buchi_tra_frasi: number;
+  /** Silenzio totale inserito dai buchi (ms). */
+  silenzio_ms: number;
 }
 
 /** Informazioni di rete per il QR del proiettore. */

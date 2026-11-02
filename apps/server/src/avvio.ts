@@ -79,6 +79,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     log: log.child({ modulo: 'regia' }),
     registroTurni: new RegistroJsonl(path.join(config.cartellaLog, 'turni.jsonl')),
     registroCosti: new RegistroJsonl(path.join(config.cartellaLog, 'costi.jsonl')),
+    registroNarrazioni: new RegistroJsonl(path.join(config.cartellaLog, 'narrazioni.jsonl')),
     chiusuraDopoPrimaAzioneMs: config.turni.chiusuraDopoPrimaAzioneMs,
     margineFineAudioMs: config.turni.margineFineAudioMs,
     trascrizioneMax: config.turni.trascrizioneMax,

@@ -1,0 +1,61 @@
+/**
+ * Strumento: quanti token pesano il prompt del narratore e il contesto della campagna, sezione
+ * per sezione, contati dall'endpoint count_tokens con il modello vero (claude-haiku-5-5).
+ * Il conteggio non genera testo (nessun token d'uscita).
+ *
+ * Uso: npx tsx apps/server/src/strumenti/conta-token.ts   (stesse variabili d'ambiente del server)
+ */
+import fs from 'node:fs';
+import YAML from 'yaml';
+import { caricaCampagna } from '../campagna/caricatore';
+import { compilaContestoCampagna, sezioniContestoCampagna } from '../campagna/contesto';
+import { caricaConfig } from '../config';
+import { creaClientAnthropic } from '../llm/haiku';
+import { creaLogger } from '../logger';
+
+async function main(): Promise<void> {
+  const config = caricaConfig();
+  const log = creaLogger({ livello: 'warn', cartellaLog: config.cartellaLog, nomeFile: 'strumenti.jsonl' });
+  const client = creaClientAnthropic(config.llm.fileChiave, log);
+  const modello = config.llm.modello;
+  const conta = async (testo: string): Promise<number> =>
+    (await client.messages.countTokens({ model: modello, messages: [{ role: 'user', content: testo }] })).input_tokens;
+
+  const campagna = caricaCampagna(config.cartellaCampagna);
+  const prompt = fs.readFileSync(config.filePromptNarratore, 'utf8');
+  const contesto = compilaContestoCampagna(campagna);
+  const base = await conta('.');
+
+  // Totale come nella richiesta vera: due blocchi di sistema + un messaggio minimo.
+  const totale = (
+    await client.messages.countTokens({
+      model: modello,
+      system: [
+        { type: 'text', text: prompt },
+        { type: 'text', text: contesto },
+      ],
+      messages: [{ role: 'user', content: '.' }],
+    })
+  ).input_tokens;
+
+  const righe: Array<[string, number, number]> = [];
+  const aggiungi = async (nome: string, testo: string): Promise<void> => {
+    righe.push([nome, (await conta(testo)) - base, testo.length]);
+  };
+  await aggiungi('prompts/narratore.md', prompt);
+  await aggiungi('contesto campagna (intero)', contesto);
+  for (const s of sezioniContestoCampagna(campagna)) await aggiungi(`  ${s.nome}`, s.testo);
+  // campagna.yaml chiave per chiave (senza preparazione).
+  for (const [chiave, valore] of Object.entries(campagna.campagnaNarratore)) {
+    if (chiave === 'id') continue;
+    await aggiungi(`    campagna.${chiave}`, YAML.stringify({ [chiave]: valore }, { lineWidth: 0 }));
+  }
+  console.log(`modello ${modello} · sistema+messaggio minimo: ${totale} token (base di un messaggio «.»: ${base})`);
+  console.log('sezione'.padEnd(36), 'token'.padStart(7), 'caratteri'.padStart(10));
+  for (const [nome, token, caratteri] of righe) console.log(nome.padEnd(36), String(token).padStart(7), String(caratteri).padStart(10));
+}
+
+main().catch((err: unknown) => {
+  console.error('conteggio fallito:', (err as Error).message);
+  process.exit(1);
+});

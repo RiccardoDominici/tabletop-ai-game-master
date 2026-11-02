@@ -150,6 +150,13 @@ export interface MisureTurno {
   schermo_inizio_audio: number | null;
   llm_fine: number | null;
   audio_fine: number | null;
+  /** ms da t0 alla chiamata (non bloccante) di POST /sveglia al servizio voce; null se non chiamata. */
+  voce_sveglia: number | null;
+  /** Buchi di riproduzione riferiti dallo schermo (null se lo schermo non ha riferito). */
+  buchi: number | null;
+  buchi_in_frase: number | null;
+  buchi_tra_frasi: number | null;
+  silenzio_ms: number | null;
   token_ingresso: number;
   token_uscita: number;
   token_cache_lettura: number;

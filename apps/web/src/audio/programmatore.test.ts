@@ -45,7 +45,7 @@ describe('Programmatore', () => {
 
     const fineTurno = p.fineTurno({ turno: 1, frasi: 2 }, 10.4);
     expect(fineTurno).toHaveLength(1);
-    expect(fineTurno[0]).toMatchObject({ tipo: 'fine_turno', turno: 1, buchi: 0 });
+    expect(fineTurno[0]).toMatchObject({ tipo: 'fine_turno', turno: 1, buchi: { buchi: 0, buchi_in_frase: 0, buchi_tra_frasi: 0, silenzio_ms: 0 } });
     expect(fineTurno[0]?.t).toBeCloseTo(11.05, 10);
 
     expect(p.contatori.pezzi).toBe(3);
@@ -67,7 +67,8 @@ describe('Programmatore', () => {
     expect(b0.buco).toBe(true);
 
     const [fine] = p.fineTurno({ turno: 2, frasi: 2 }, 3.1);
-    expect(fine).toMatchObject({ tipo: 'fine_turno', buchi: 2 });
+    // a1 arriva a metà frase (0,8 s di silenzio), b0 apre la frase dopo (1,8 s di silenzio).
+    expect(fine).toMatchObject({ tipo: 'fine_turno', buchi: { buchi: 2, buchi_in_frase: 1, buchi_tra_frasi: 1, silenzio_ms: 2600 } });
     expect(p.contatori.buchi).toBe(2);
 
     // Un turno nuovo che parte tardi non è un buco.
@@ -113,7 +114,7 @@ describe('Programmatore', () => {
     p.frase(frase('a', 4, 0));
     expect(p.fineFrase({ id_frase: 'a', turno: 4, secondi: 0, interrotta: true })).toEqual([]);
     const [fine] = p.fineTurno({ turno: 4, frasi: 1 }, 7.5);
-    expect(fine).toEqual({ tipo: 'fine_turno', t: 7.5, turno: 4, buchi: 0 });
+    expect(fine).toEqual({ tipo: 'fine_turno', t: 7.5, turno: 4, buchi: { buchi: 0, buchi_in_frase: 0, buchi_tra_frasi: 0, silenzio_ms: 0 } });
   });
 
   it('interrompi azzera tutto: il pezzo successivo riparte col jitter, senza buco', () => {

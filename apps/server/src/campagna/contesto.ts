@@ -4,7 +4,8 @@
  * F0 passa le schede intere dei PNG (le chiamate separate per PNG arrivano in F1, E2).
  * Già ora però restano fuori le parti che il narratore non deve vedere:
  * - campagna.yaml → `preparazione` (lo toglie il caricatore);
- * - pg.yaml → `conoscenze_private` (solo sul telefono del giocatore, T9);
+ * - (pg.yaml → `conoscenze_private` restano, ma marcate come SEGRETE di quel PG: il prompt vieta
+ *   di dirle a voce; il server le manda solo al telefono di quel giocatore, T9);
  * - i prompt per le immagini (in inglese, non servono alla narrazione).
  *
  * Gli id dei fatti del canone citati nelle schede PNG (`sa`, `non_sa`, `mente_su.verita`,
@@ -65,37 +66,65 @@ function yaml(dati: unknown): string {
   return YAML.stringify(senzaChiavi(dati), { lineWidth: 0, minContentWidth: 0 }).trimEnd();
 }
 
-/** Blocco di contesto della campagna (sistema, in cache). */
-export function compilaContestoCampagna(c: Campagna): string {
-  const parti: string[] = [];
-  parti.push(`# Campagna «${c.titolo}» (id ${c.id})`);
+/** Una parte del contesto, con un nome (per misurarne i token e per il debug). */
+export interface SezioneContesto {
+  nome: string;
+  testo: string;
+}
 
-  parti.push('## Carta di stile', yaml(c.stile));
+/** Le sezioni del contesto, nell'ordine del contratto: stile, campagna, scena, png, pg, etichette. */
+export function sezioniContestoCampagna(c: Campagna): SezioneContesto[] {
+  const sezioni: SezioneContesto[] = [];
+  const canone = mappaCanone(c);
+  sezioni.push({ nome: 'intestazione', testo: `# Campagna «${c.titolo}» (id ${c.id})` });
+  sezioni.push({ nome: 'stile.yaml', testo: ['## Carta di stile', yaml(c.stile)].join('\n\n') });
 
   const { id: _id, ...campagna } = c.campagnaNarratore;
-  if (Object.keys(campagna).length) parti.push('## Campagna: canone, orologi, rivelazioni, nodi, sessione', yaml(campagna));
-
-  parti.push(`## Scena corrente: ${c.scena.titolo}`, yaml(c.scena.dati));
-
-  parti.push('## PNG (schede complete; gli id dei fatti sono risolti col testo del canone)');
-  const canone = mappaCanone(c);
-  for (const p of c.png) {
-    const presente = c.scena.png_presenti.includes(p.id) ? 'presente in scena' : 'non in scena';
-    parti.push(`### ${p.nome} — etichetta [${p.id}], ${presente}`, yaml(risolviFatti(p.dati, canone)));
+  if (Object.keys(campagna).length) {
+    sezioni.push({ nome: 'campagna.yaml', testo: ['## Campagna: canone, orologi, rivelazioni, nodi, sessione', yaml(campagna)].join('\n\n') });
   }
 
-  parti.push('## Personaggi giocanti');
-  if (c.situazioneComune) parti.push(`Situazione comune: ${c.situazioneComune}`);
-  for (const p of c.pg) parti.push(`### ${p.nome} — id ${p.id}`, yaml(p.pubblico));
+  sezioni.push({ nome: 'scena.yaml', testo: [`## Scena corrente: ${c.scena.titolo}`, yaml(c.scena.dati)].join('\n\n') });
 
-  parti.push(
-    '## Etichette valide in questa scena',
-    [
-      `- [${ID_NARRATORE}]`,
-      ...c.png.map((p) => `- [${p.id}] ${p.nome}`),
-      '- [orologio] seguito dall’id di un orologio attivo, solo quando la risposta ne mostra il prossimo segno',
-      `- [invito] seguito da id di PG separati da virgola (${c.pg.map((p) => p.id).join(', ')}) oppure tutti`,
-    ].join('\n'),
-  );
-  return parti.join('\n\n') + '\n';
+  const png: string[] = ['## PNG (schede complete; gli id dei fatti sono risolti col testo del canone)'];
+  sezioni.push({ nome: 'png (titolo)', testo: png[0]! });
+  for (const p of c.png) {
+    const presente = c.scena.png_presenti.includes(p.id) ? 'presente in scena' : 'non in scena';
+    sezioni.push({ nome: `png/${p.id}.yaml`, testo: [`### ${p.nome} — etichetta [${p.id}], ${presente}`, yaml(risolviFatti(p.dati, canone))].join('\n\n') });
+  }
+
+  const pg: string[] = ['## Personaggi giocanti'];
+  if (c.situazioneComune) pg.push(`Situazione comune: ${c.situazioneComune}`);
+  for (const p of c.pg) {
+    pg.push(`### ${p.nome} — id ${p.id}`, yaml(p.pubblico));
+    if (p.privato.length) {
+      pg.push(
+        `conoscenze_private di ${p.id} (SEGRETE: le sa solo questo giocatore. Non dirle mai a voce; ` +
+          `diventano pubbliche solo quando il giocatore le usa o le racconta):`,
+        yaml(risolviFatti(p.privato, canone)),
+      );
+    }
+  }
+  sezioni.push({ nome: 'pg.yaml', testo: pg.join('\n\n') });
+
+  sezioni.push({
+    nome: 'etichette',
+    testo: [
+      '## Etichette valide in questa scena',
+      [
+        `- [${ID_NARRATORE}]`,
+        ...c.png.map((p) => `- [${p.id}] ${p.nome}`),
+        '- [orologio] seguito dall’id di un orologio attivo, solo quando la risposta ne mostra il prossimo segno',
+        `- [invito] seguito da id di PG separati da virgola (${c.pg.map((p) => p.id).join(', ')}) oppure tutti`,
+      ].join('\n'),
+    ].join('\n\n'),
+  });
+  return sezioni;
+}
+
+/** Blocco di contesto della campagna (sistema, in cache). */
+export function compilaContestoCampagna(c: Campagna): string {
+  return sezioniContestoCampagna(c)
+    .map((s) => s.testo)
+    .join('\n\n') + '\n';
 }

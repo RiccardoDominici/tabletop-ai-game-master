@@ -15,7 +15,7 @@ import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@ca
 import { creaLog } from '../lib/log';
 import { comeByte } from './pcm';
 import { JITTER_S } from './pianificatore';
-import { Programmatore, type ContatoriAudio, type PezzoDaSuonare, type Segno } from './programmatore';
+import { Programmatore, type ContatoriAudio, type PezzoDaSuonare, type Segno, type StatisticheBuchi } from './programmatore';
 
 const log = creaLog('audio');
 
@@ -28,7 +28,7 @@ export interface AscoltatoriLettore {
   /** Il primo pezzo del turno ha cominciato a suonare `ritardoMs` fa. */
   inizioTurno(turno: number, idFrase: string, ritardoMs: number): void;
   /** L'ultimo pezzo del turno ha finito di suonare `ritardoMs` fa. */
-  fineTurno(turno: number, ritardoMs: number, buchi: number): void;
+  fineTurno(turno: number, ritardoMs: number, buchi: StatisticheBuchi): void;
   /** Una frase ha cominciato a suonare (sottotitolo). */
   inizioFrase(frase: AudioFrase, ritardoMs: number): void;
   /** Una frase ha finito di suonare. */

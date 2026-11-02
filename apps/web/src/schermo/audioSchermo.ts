@@ -36,7 +36,7 @@ const lettore = new LettorePcm({
   fineTurno(turno, ritardoMs, buchi) {
     debugSchermo.turniFiniti.push(turno);
     const s = prendiSocket();
-    const dati = { turno, ritardo_ms: Math.round(ritardoMs), buchi };
+    const dati = { turno, ritardo_ms: Math.round(ritardoMs), ...buchi };
     if (s.connected) s.emit('schermo:audio_finito', dati);
     else log.warn('Disconnessi: avviso di fine audio non inviato', dati);
     log.info('Audio del turno finito', dati);
