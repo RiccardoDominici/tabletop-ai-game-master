@@ -137,6 +137,25 @@ Tra una sessione e l'altra usa **Claude Code** (abbonamento): riassunto della se
 
 **Pannello master** (sul Mac): stato, orologi, canone, note di regia, pulsanti d'emergenza. È importante, non un di più: i progetti esistenti (CALYPSO, Friends & Fables) insegnano che un umano deve poter correggere o fermare il master IA.
 
+Com'è fatto oggi (`/master`, contratto in `packages/shared/src/master.ts`):
+- **Accesso**: il server stampa nel log all'avvio la riga `PANNELLO MASTER` con il link `http://localhost:4610/master?token=…`
+  (anche `scripts/avvio.sh` lo mostra). Il token cambia a ogni avvio (o si fissa con `CANTASTORIE_MASTER_TOKEN`), apre la
+  stanza Socket.IO `master` e non è mai nel QR: i telefoni non possono entrare (cinque tentativi sbagliati chiudono il socket).
+- **Vede**: scena e luogo sul proiettore, orologi con i segni mostrati e il prossimo, finestra delle azioni, azioni in sospeso
+  con stato e legami (anche le private, segnate), trascrizione pubblica, note di regia, battute del repertorio (modalità B)
+  e il registro dei comandi.
+- **Comanda**:
+  - **Pausa / Riprendi**: nessuna nuova finestra. A finestra aperta la finestra resta aperta ma non si chiude da sola
+    (niente conto alla rovescia, niente stallo); durante una narrazione la si lascia finire e poi il tavolo si ferma (fase
+    `pausa`). I telefoni possono scrivere: l'azione entra alla ripresa.
+  - **Ferma la narrazione**: interrompe subito LLM e voce, lo schermo tace e il tavolo va in pausa. Le azioni di quel turno
+    non sono state risolte: tornano ai giocatori come «non è andata», da rimandare.
+  - **Cambia luogo** (dissolvenza sul proiettore), **orologio ±1 segno**, **chiudi la finestra ora**, **salta l'azione** di
+    un giocatore (torna nella sua casella, chi ne dipendeva deve decidere).
+  - **Note di regia**: al massimo 3, da 1 a 15 turni; entrano nel messaggio del narratore (parte variabile, fuori cache) dal
+    turno successivo, e ogni turno narrato ne consuma uno. Si azzerano quando la scena ricomincia.
+- **Registro**: ogni comando, riuscito o rifiutato, è una riga di `logs/master.jsonl` e del log del server (`evento: master`).
+
 **Connessione e vincoli dei telefoni** (dalla ricerca):
 - **Socket.IO v4**, con una stanza per il tavolo e una `player:<id>` per ogni canale privato. Alla riconnessione si risincronizza in base al numero di versione dello stato. Le clip audio si inviano con una POST HTTP.
 - **Serve HTTPS anche in rete locale**, altrimenti il microfono non si apre: `http://192.168.x.x` non è un contesto sicuro. Ci sono tre strade, da provare su telefoni veri in F2:
