@@ -129,3 +129,74 @@ le incontro; in fondo, la classifica dei problemi più gravi.
     compare solo in un altro riempitivo, che può non essere uscito. La skill non avverte che una
     battuta non deve citare ciò che solo un'altra battuta facoltativa ha introdotto (se serve, va
     legata con `richiede.battute_usate`). *Scelta*: tolto il riferimento.
+
+## Passi 15–16 (ciò che la revisione ha mostrato della skill)
+
+21. **Il vincolo delle voci si rompe da solo, e nessuno lo controlla.** Avevo deciso al brief che Rosa
+    (nadine) e Bice (tabitha) non si incontrano mai, e l'avevo scritto nelle piante. Poi ho portato Bice
+    nel Borgo in quattro punti senza accorgermene: il suo `desiderio`, una soluzione di `cb_barca`, una
+    battuta e il fallback del `taglio` della prima scena. Il vincolo non riguarda solo `png_presenti`: vale
+    per tutto ciò che sposta un PNG (desideri, iniziative, evoluzioni, colli di bottiglia, tagli). L'ha
+    trovato solo il revisore. *Proposta*: una regola del validatore sulle coppie di voci vicine, e una riga
+    al passo 6 che dica di cercare ogni testo che muove un PNG fuori dalle sue scene.
+
+22. **Il modo B perde segreti per costruzione.** Tre vie, nessuna coperta dalla skill:
+    - la riga del catalogo è `id · chi · tipo · quando`, e il `tipo` dice `menzogna` o `confessione`: il
+      selettore sa chi mente e su che cosa (la regola 1 parla solo di id e `quando`);
+    - la regola di prosa obbligatoria del passo 2 contiene la soluzione (nota 12);
+    - `da_togliere_dal_contesto` è una dichiarazione: il revisore ha compilato il contesto con il
+      compilatore del server e ci ha trovato il `taglio`, la `descrizione` e un `abbozzo` con segreti. Il
+      validatore cerca le regex solo in apertura, riassunto, situazione comune, letture, battute campione,
+      segni e catalogo, non in piante, tagli, poste, abbozzi, agganci dei PG.
+    *Scelta*: ho riscritto quei campi senza segreti. *Proposta*: estendere il controllo delle regex ai campi
+    che il compilatore manda davvero, e dire nella skill di scrivere piante e tagli «da modo B».
+
+23. **Manca un controllo sulla logica del mondo prima della revisione.** I primi quattro errori gravi del
+    revisore erano conti: due viaggi ci stavano tra tre tocchi; la barca portava otto persone per gruppi di
+    venti; una riga del libro era datata prima del fatto che doveva provare; la catena funzionava al
+    contrario (tesa voleva dire aperto). I controlli dei passi 1, 3 e 4 non chiedono una cronologia con
+    orari e capienze, né la fisica del meccanismo del climax. *Proposta*: al passo 3, «scrivi la cronologia
+    della sessione con le ore, le distanze e le capienze, e ricontrolla ogni documento contro le date del
+    segreto»; al passo 14, «il gesto del climax si capisce al contrario?».
+
+24. **Il controllo della scelta finale si soddisfa alla lettera.** Il passo 1 chiede due esiti
+    accettabili, ognuno con un prezzo. La mia prima versione li aveva, ma il revisore ha visto che con la
+    prova in mano la risposta era ovvia (tenere aperto, e una promessa del paese cancellava il prezzo).
+    *Scelta*: la terza via è diventata un azzardo con un orologio suo (`o_rampa`) e un finale di
+    fallimento, e Vischi offre un patto pubblico al tocco. *Proposta*: aggiungere al controllo «e quando i
+    PG hanno scoperto tutto, la scelta è ancora difficile?».
+
+25. **`richiede` è solo «e».** Per dire «tenere aperto se i PG hanno una qualunque delle tre prove» non
+    c'è un «oppure»: o si duplicano le battute con `battute_non_usate` incrociati (l'ho fatto per la reazione
+    di Vischi), o si sceglie una prova sola come cancello (l'ho fatto per Tullio, sull'onda). La skill non
+    lo spiega, e i finali con più cancelli diventano fragili (vedi la correzione del patto rifiutato).
+
+26. **Orologi che partono da una scelta.** `o_rampa` deve correre solo se il ponte resta aperto dopo il
+    tocco. Non c'è un campo per l'attivazione: ho messo la condizione in `avanza_quando` (testo) e ho chiuso
+    i segni con `battute_usate`. Il Motore, con `segno_almeno_ogni`, potrebbe chiederli lo stesso.
+
+## Tempi, a grandi linee (dai commit)
+
+| Passo | Tempo |
+|---|---|
+| 0, lettura (manuale, riferimenti, esempi, codice del validatore dove serviva) | 15 minuti |
+| 1–5, situazione, stile, canone, orologi, indizi, schede scena | 10 minuti di scrittura, dopo il progetto fatto durante la lettura |
+| 6–9, PNG, PG, sessione, primo giro | 5 minuti |
+| 10–11, repertorio (124 battute) e parole segrete | 15 minuti, con i copioni ciechi in parallelo |
+| 12–14, immagini, rigoroso, lettura ad alta voce | 5 minuti |
+| 15, revisione (15 minuti del subagente) e correzioni | 40 minuti |
+| 16, README, autovalutazione, note | 10 minuti |
+
+## I cinque problemi più gravi della skill
+
+1. **Segretezza del modo B non garantita** (nota 22, con 12 e 13): il tipo nel catalogo, la regola di
+   prosa obbligatoria e i campi che il compilatore manda davvero ma il validatore non guarda.
+2. **Nessun controllo di coerenza fisica e temporale** (nota 23): i difetti più gravi trovati dal
+   revisore erano conti di ore, posti e date, e la direzione della catena.
+3. **Vincolo delle voci non controllato e non propagato** (note 2 e 21): l'autore lo rompe senza
+   accorgersene in campi che la skill non collega alla presenza in scena.
+4. **Ordine dei passi in conflitto con i controlli** (note 5 e 9): i passi 5 e 9 chiedono zero errori che
+   dipendono dai passi 6, 7, 8 e 10.
+5. **Niente per le sessioni a più scene** (note 6, 7, 16, 25, 26): orologi di sessione, segni percepibili
+   ovunque, stesso luogo in due scene, orologi condizionati, alternative nei cancelli; e la misura dei
+   copioni è tarata su prova-f0 (nota 1) e ignora `scena` e `richiede`.
