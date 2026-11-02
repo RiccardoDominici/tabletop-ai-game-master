@@ -76,13 +76,15 @@ function mediana(xs: number[]): number | null {
 async function main(): Promise<void> {
   const [nomeCopione, modoArg] = process.argv.slice(2);
   const voceVera = process.argv.includes('--voce-vera');
-  const modo = modoArg === 'B' ? 'repertorio' : modoArg === 'A' ? 'improvvisa' : null;
+  // «B2» è il repertorio con le regole della versione 2 (è la modalità repertorio di oggi).
+  const modo = modoArg === 'B' || modoArg === 'B2' ? 'repertorio' : modoArg === 'A' ? 'improvvisa' : null;
   if (!nomeCopione || !modo) {
     console.error('uso: esegui.ts <copione> <A|B>');
     process.exit(2);
   }
   const copione = YAML.parse(fs.readFileSync(path.join(RADICE_REPO, 'esperimenti', 'copioni', `${nomeCopione}.yaml`), 'utf8')) as Copione;
-  const etichetta = `${nomeCopione}-${modoArg}`;
+  // «prova2/caotico» → cartella dei risultati «prova2-caotico-B2».
+  const etichetta = `${nomeCopione.replace(/\//g, '-')}-${modoArg}`;
   const cartellaRisultati = path.join(RADICE_REPO, 'esperimenti', 'risultati', etichetta);
   fs.mkdirSync(cartellaRisultati, { recursive: true });
   const inizioEsperimento = new Date().toISOString();
@@ -181,6 +183,9 @@ async function main(): Promise<void> {
     righe_improvvisate: somma('righe_improvvisate'),
     quota_prescritte: somma('righe_prescritte') / Math.max(1, somma('righe_prescritte') + somma('righe_improvvisate')),
     usa_rifiutati: somma('usa_rifiutati'),
+    azioni_pubbliche: somma('azioni_pubbliche'),
+    azioni_senza_risposta: somma('azioni_senza_risposta'),
+    riparazioni: somma('riparazioni'),
     fughe: {
       nota:
         modo === 'repertorio'
@@ -257,7 +262,7 @@ function trascrizione(etichetta: string, modo: string, sessione: string, narrazi
     out.push('```', '');
     const m = (n['misure'] ?? {}) as Record<string, unknown>;
     out.push(
-      `- righe pre-scritte ${String(n['righe_prescritte'] ?? 0)}, improvvisate ${String(n['righe_improvvisate'] ?? 0)}, [usa] rifiutati ${String(n['usa_rifiutati'] ?? 0)}; invito: ${JSON.stringify(n['invito'])}; anomalie: ${((n['anomalie'] as unknown[]) ?? []).length}`,
+      `- righe pre-scritte ${String(n['righe_prescritte'] ?? 0)}, improvvisate ${String(n['righe_improvvisate'] ?? 0)}, [usa] rifiutati ${String(n['usa_rifiutati'] ?? 0)}; azioni senza risposta ${String(n['azioni_senza_risposta'] ?? 0)}/${String(n['azioni_pubbliche'] ?? 0)}, riparazioni ${String(n['riparazioni'] ?? 0)}; invito: ${JSON.stringify(n['invito'])}; anomalie: ${((n['anomalie'] as unknown[]) ?? []).length}`,
       `- primo audio dalla chiusura della finestra: ${String(m['schermo_inizio_audio'])} ms; buchi ${String(m['buchi'])} (in frase ${String(m['buchi_in_frase'])}, tra frasi ${String(m['buchi_tra_frasi'])}, silenzio ${String(m['silenzio_ms'])} ms); costo $${String(m['costo_usd'])}`,
       '',
     );
