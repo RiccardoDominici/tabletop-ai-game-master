@@ -83,6 +83,8 @@ export class RegistaAudio {
   /** Strati d'ambiente: la traccia, o un gettone mentre il buffer arriva. */
   private readonly ambienti = new Map<string, TracciaInRiproduzione | symbol>();
   private tema: TracciaInRiproduzione | null = null;
+  /** Tracce in dissolvenza d'uscita (musica e ambienti), fino a sorgenti ferme: debug e memoria. */
+  private readonly inUscita = new Set<TracciaInRiproduzione>();
   private readonly isteresi: IsteresiMusica;
   private readonly memoriaTemi = new MemoriaTemi();
   private readonly piano = new PianoDucking();
@@ -171,6 +173,7 @@ export class RegistaAudio {
     if (this.musica) out[`musica:${this.musica.id}`] = this.musica.valore;
     for (const [id, v] of this.ambienti) if (typeof v !== 'symbol') out[`ambiente:${id}`] = v.valore;
     if (this.tema) out[`tema:${this.tema.id}`] = this.tema.valore;
+    for (const t of this.inUscita) out[`uscita:${t.id}`] = t.valore;
     return out;
   }
 
@@ -231,7 +234,7 @@ export class RegistaAudio {
     // Il brano vecchio esce subito: quello nuovo entra appena decodificato (pochi decimi di secondo).
     const vecchia = this.musica;
     this.musica = null;
-    if (vecchia) vecchia.ferma(DISSOLVENZA_MUSICA_S, () => this.o.banca.rilascia(vecchia.traccia.url));
+    if (vecchia) this.esce(vecchia, DISSOLVENZA_MUSICA_S);
     const traccia = id ? this.catalogo?.tracce[id] : undefined;
     if (!traccia) return;
     const buffer = await this.o.banca.prendi(traccia.url);
@@ -251,7 +254,7 @@ export class RegistaAudio {
     for (const [id, v] of [...this.ambienti]) {
       if (voluti.has(id)) continue;
       this.ambienti.delete(id);
-      if (typeof v !== 'symbol') v.ferma(DISSOLVENZA_AMBIENTE_S, () => this.o.banca.rilascia(v.traccia.url));
+      if (typeof v !== 'symbol') this.esce(v, DISSOLVENZA_AMBIENTE_S);
       log.debug('Ambiente: strato esce', { id });
     }
     for (const id of voluti) {
@@ -276,6 +279,15 @@ export class RegistaAudio {
         log.debug('Ambiente: strato entra', { id });
       });
     }
+  }
+
+  /** Dissolvenza d'uscita; a sorgenti ferme il buffer torna alla banca. */
+  private esce(t: TracciaInRiproduzione, durataS: number): void {
+    this.inUscita.add(t);
+    t.ferma(durataS, () => {
+      this.inUscita.delete(t);
+      this.o.banca.rilascia(t.traccia.url);
+    });
   }
 
   private async suonaTema(traccia: TracciaAudio, t: number, png: string): Promise<void> {
