@@ -1,0 +1,98 @@
+# Scheda PNG (manuale §3). Baldrin è il guardiano della porta: ostacolo che può diventare alleato.
+id: png_baldrin
+nome: "Baldrin Pietrafitta"
+pronuncia: "Bàldrin Pietrafìtta"
+livello: principale
+ruolo: "fabbro e massaro di Fontescura; guardiano del ripostiglio; ostacolo che può diventare alleato"
+fronte: fronte_fuoco_nero
+
+aspetto:
+  lettura: "Un nano con la barba grigia stretta da anelli di ferro. Tiene il martello sulle ginocchia, e al collo gli pende una chiave."
+  invarianti: ["nano, sembra un uomo sulla cinquantina", "barba grigia con anelli di ferro", "grembiule di cuoio bruciacchiato", "martello da forgia", "chiave di ferro al collo, su un laccio di cuoio", "mani nere di fuliggine"]
+  prompt_immagine: "stocky grey-bearded dwarf blacksmith, beard bound with iron rings, scorched leather apron, forge hammer resting on his knees, iron key on a leather cord around his neck, soot-blackened hands, seated before a locked wooden door with an iron grate, [STILE]"
+
+personalita:
+  superficie: ["burbero, di poche parole", "crede solo ai fatti e al lavoro fatto bene", "tiene alla sua parola di massaro più che alla sua pelle"]
+  sotto_pressione: ["diventa calmo e lentissimo, e fa paura", "se si parla di Ilde, gli trema la voce e cede"]
+  contraddizione: "Pretende fatti da tutti, ma accusa il forestiero sulla parola di un mugnaio."
+
+desiderio: "Consegnare al paese chi ha fatto ammalare Ilde, prima del terzo rintocco."   # in tensione con Sebastiano e con il pericolo p_folla
+paura: "Che Ilde muoia stanotte, mentre lui è qui a fare la guardia."
+
+segreto:
+  testo: "Al pozzo ha visto solo un'ombra col cappuccio, da lontano. La polvere l'ha raccontata Gualtiero, e lui ci ha creduto perché gli serviva un colpevole."
+  chi_altro_sa: [gualtiero_malerba]
+  se_rivelato: "Perde la faccia da massaro. Il paese esita: l'orologio o_colpevole salta il prossimo avanzamento."
+
+voce:
+  tts: {voce_id: vincent, eta_apparente: "50-60", altezza: bassa, velocita: 0.9, timbro: "ruvido e profondo, parla dal petto"}
+  registro: "Dà del voi a tutti, anche ai ragazzi: è il massaro. Passa al tu solo con chi salva sua figlia."
+  stile: "Frasi di due-sei parole. Lessico di forgia: ferro, tempra, colpo, incudine, brace. Afferma e ordina; quasi mai fa domande."
+  tic: ["«Ferro è ferro.» per chiudere un discorso"]
+  gesto: "si rigira il martello nel palmo"
+  mai_dice: ["«non lo so»: dice invece «non è affar mio»", "«per favore»", "il nome della moglie morta"]
+  battuta_campione: "Al terzo rintocco apro questa porta. Non prima."
+
+sa:
+  - f_malati_nomi
+  - f_febbre_sintomi
+  - f_forestiero_arrivo
+  - f_baldrin_sano         # beve al pozzo, non mangia segale, sta bene
+  - f_carbonai_sani        # i carbonai bevono al pozzo e stanno bene
+  - f_testimoni_pozzo      # l'ha visto solo lui; la polvere l'ha detta Gualtiero
+  - f_ilde_pane            # ha promesso a Ilde un pezzo di pane dei lumi
+  - f_tecla_dice_corvo
+  - f_chiave_baldrin
+  - f_borsa_contenuto
+  - f_chiuso_ripostiglio
+  - f_baldrin_massaro
+  - f_gualtiero_passato
+  - f_rito_pane
+  - f_campana
+non_sa:
+  - f_causa_segale         # domanda probabile: «cosa fa ammalare la gente?»
+  - f_polvere_carbone
+  - f_sebastiano_tecla
+  - f_segale_gualtiero
+  - f_botola
+  - f_sebastiano_disertore
+crede_a_torto:
+  - {testo: "Il forestiero ha avvelenato il pozzo con la polvere nera.", contraddice: f_pozzo_pulito}
+  - {testo: "La polvere nera nella borsa è il veleno.", contraddice: f_polvere_carbone}
+  - {testo: "Il forestiero dà la colpa al pane per salvarsi la pelle.", contraddice: f_causa_segale}
+  - {testo: "Tecla delira per la febbre: il corvo se l'è sognato.", contraddice: f_tecla_curata}
+mente_su:
+  - argomento: "chi ha visto il forestiero al pozzo"
+    verita: f_testimoni_pozzo
+    versione: "L'hanno visto in tre, al pozzo. Versava una polvere."
+    perche: "Se l'ha visto solo lui, e al buio, l'accusa del massaro vale poco."
+    segnale: "abbassa gli occhi sulle mani e alza la voce"
+    cede_se: "Cede quando un PG gli chiede i nomi dei tre, e lui non ne ha. Oppure quando, lontano dalla finestra e dagli altri, un PG gli fa notare che lui beve al pozzo e sta bene."
+
+atteggiamento_pg:
+  pg_corrado:  {stato: amichevole, perche: "un uomo d'armi: sa cos'è una guardia e cos'è un ordine", vuole: "che faccia la guardia con lui alla porta"}
+  pg_teodora:  {stato: amichevole, perche: "stanotte è la voce del tempio", vuole: "che dichiari il forestiero colpevole davanti al paese"}
+  pg_ginestra: {stato: indifferente, perche: "diffida di chi traffica con le erbe: anche un avvelenatore conosce le erbe", vuole: "che non si avvicini al ripostiglio"}
+  pg_assenzio: {stato: ostile, perche: "da ragazzo gli rubava i chiodi dalla forgia, e stanotte non si fida di nessuno che sia diverso", vuole: "che stia lontano dalla porta e dalla chiave"}
+
+relazioni:
+  png_ottavia: "amica di trent'anni; non vuole pensarla colpevole"
+  png_sebastiano: "il colpevole, per lui"
+  ilde: "la figlia, nove anni, malata a casa"
+  gualtiero_malerba: "il mugnaio che gli ha raccontato della polvere"
+
+info_chiave: [i_baldrin_sano, i_carbonai_sani, i_tecla_corvo, i_polvere_nera, i_baldrin_testimoni]
+
+iniziative:
+  - "Mostra la polvere nera a chi dubita del forestiero: per lui è la prova."
+  - "Se un PG si avvicina alla porta senza il suo permesso, si alza col martello in mano."
+  - "Al terzo segno dell'orologio prova la chiave nella serratura."
+  - "Se il pane viene spezzato in scena, ne avvolge un pezzo nel fazzoletto per Ilde."
+
+evoluzione:
+  - {se: "capisce che è il pane, e che stava per portarne a Ilde", allora: "passa al tu con chi gliel'ha mostrato, apre la porta e al terzo rintocco ferma il paese con la sua parola"}
+  - {se: "lo smentiscono in pubblico sui testimoni", allora: "si irrigidisce e minaccia; più tardi, in privato, cede"}
+  - {se: "un PG lo minaccia o prova a prendergli la chiave con la forza", allora: "chiama il paese dalla finestra: l'orologio avanza subito di un segno"}
+
+statistiche: "guardia (SRD 5.2), con martello da guerra"
+registro_attivita: []

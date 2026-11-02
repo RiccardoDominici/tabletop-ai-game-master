@@ -1,0 +1,85 @@
+# Personaggi giocanti pregenerati per la prova F0. Ogni giocatore ne sceglie uno dal telefono.
+# La scena funziona con qualunque gruppo di 3 o 4 di loro.
+#
+# Visibilità (T9):
+#   - situazione_comune: sul telefono di tutti;
+#   - concetto, aggancio, cosa_sai_fare, aspetto: sul telefono del giocatore (e noti al Narratore);
+#   - conoscenze_private: SOLO sul telefono di quel giocatore. Il Narratore non le dice mai a voce:
+#     diventano pubbliche solo se il giocatore le usa o le racconta.
+
+situazione_comune: "Viaggiate insieme verso la città, prima che la neve chiuda il passo. Siete arrivati a Fontescura al tramonto, nella Notte dei Lumi. Sorella Teodora deve benedire il pane dei lumi alla fine della veglia, e Assenzio è cresciuto proprio qui, nell'osteria di Ottavia. Ottavia vi ha dato una zuppa di castagne e un posto per dormire sopra la stalla. In paese non si parla d'altro: la febbre, e il forestiero chiuso a chiave nel ripostiglio dell'osteria."
+
+personaggi:
+  - id: pg_ginestra
+    nome: "Ginestra Fondovalle"
+    pronuncia: "Ginèstra Fondovàlle"
+    pronomi: "lei"
+    specie: "halfling"
+    classe: "druida"
+    livello: 1
+    aspetto: "Halfling dai ricci color castagna, mantello verde muschio, una borsa piena di erbe secche."
+    concetto: "Erborista cresciuta tra i castagneti, parla con le capre meglio che con le persone. Non sopporta di vedere qualcuno soffrire senza poter fare niente."
+    aggancio: "Quando eri piccola, tua nonna è morta di una febbre che le bruciava le mani. Stanotte, a Fontescura, senti parlare di nuovo di mani che bruciano."
+    cosa_sai_fare:
+      - "riconosci erbe, funghi, semi e muffe a colpo d'occhio"
+      - "con un incantesimo puoi parlare con gli animali"
+      - "curi le piccole ferite, con le erbe e con la magia"
+    conoscenze_private:
+      - {testo: "Tua nonna chiamava fuoco nero la febbre della segale guasta: mani e piedi che bruciano, tremori, visioni. Nella segale malata ci sono chicchi neri e curvi, come piccole unghie.", fatti: [f_fuoco_nero]}
+      - {testo: "Contro il fuoco nero la nonna diceva: niente più pane di quella segale, tanta acqua, e freddo sulle mani.", fatti: [f_rimedio]}
+
+  - id: pg_corrado
+    nome: "Corrado Lanzi"
+    pronuncia: "Corràdo Lànzi"
+    pronomi: "lui"
+    specie: "umano"
+    classe: "guerriero"
+    livello: 1
+    aspetto: "Umano sulla trentina, spalle larghe, una balestra a tracolla e un giaco di maglia sotto il mantello."
+    concetto: "Balestriere della Compagnia del Grifo, congedato dopo l'assedio di Roccalba. Cerca un lavoro onesto, ma si porta dietro i debiti di chi ha giocato a dadi tutta la guerra."
+    aggancio: "Devi dodici corone a un usuraio di città, e a primavera viene a riscuotere. La Compagnia paga venti corone a chi le riporta il suo cerusico disertore."
+    cosa_sai_fare:
+      - "tiri di balestra e tieni la spada come si deve"
+      - "riconosci a colpo d'occhio chi ha fatto il soldato"
+      - "reggi il freddo, la fame e le notti di guardia"
+    conoscenze_private:
+      - {testo: "La Compagnia del Grifo cerca il suo cerusico, sparito dopo Roccalba: sui quarant'anni, magro, una cicatrice bianca che gli taglia il sopracciglio sinistro. La taglia è di venti corone.", fatti: [f_taglia_cerusico]}
+      - {testo: "I cerusici della Compagnia chiudono le bende con un nodo doppio e piatto. Lo riconosceresti ovunque.", fatti: [f_nodo_cerusici]}
+      - {testo: "Al campo si diceva che il cerusico fosse scappato con la cassa delle medicine. Ma era solo una voce.", fatti: []}
+
+  - id: pg_assenzio
+    nome: "Assenzio"
+    pronuncia: "Assènzio"
+    pronomi: "lui"
+    specie: "tiefling"
+    classe: "ladro"
+    livello: 1
+    aspetto: "Tiefling di vent'anni, corna corte e scure, coda che tiene arrotolata alla cintura, mani sempre in tasca."
+    concetto: "Trovatello con le corna, cresciuto nella cucina del Forno Vecchio. Il paese non gli ha mai perdonato la coda, e a quindici anni se n'è andato."
+    aggancio: "Ottavia ti ha cresciuto come un figlio, e ti ha sempre coperto. Torni ogni Notte dei Lumi per lei. Stanotte ha paura: lo vedi."
+    cosa_sai_fare:
+      - "apri serrature e borse senza farti notare"
+      - "conosci ogni asse e ogni ombra di questa casa"
+      - "ti accorgi quando qualcuno mente"
+    conoscenze_private:
+      - {testo: "Nel ripostiglio, sotto un sacco vuoto, c'è una botola. Porta in cantina, e dalla cantina si esce dalla grata sotto il portico. Da bambino Ottavia ti ci nascondeva.", fatti: [f_botola]}
+      - {testo: "Quando Ottavia mente, si pulisce le mani sul grembiule anche se sono pulite. Lo fa da sempre.", fatti: []}
+      - {testo: "Da trent'anni Ottavia compra la segale al mulino del paese. Non ha mai cambiato.", fatti: [f_segale_di_sempre]}
+
+  - id: pg_teodora
+    nome: "Sorella Teodora"
+    pronuncia: "Teodòra"
+    pronomi: "lei"
+    specie: "umana"
+    classe: "chierica"
+    livello: 1
+    aspetto: "Umana di ventidue anni, veste grigia, una piccola lanterna di ottone appesa alla cintura."
+    concetto: "Giovane sacerdotessa della Signora delle Lanterne, la dea che accompagna i morti. È al suo primo incarico da sola, e ha paura di sbagliare un rito davanti a un paese intero."
+    aggancio: "Il tempio ti ha mandato a guidare la Notte dei Lumi, perché il curato di Fontescura è morto a settembre. Al terzo rintocco tocca a te benedire e spezzare il pane dei lumi."
+    cosa_sai_fare:
+      - "guidi un rito e parli davanti a una folla"
+      - "con una preghiera senti se un cibo o una bevanda è impuro"
+      - "curi le ferite con la magia della tua dea"
+    conoscenze_private:
+      - {testo: "Il rito: al terzo rintocco la chierica benedice il pane e lo spezza per prima. Poi lo mangiano tutti, anche i bambini. Chi rifiuta il pane offende i morti.", fatti: [f_rito_pane]}
+      - {testo: "In fondo al libro del rito c'è una riga che in paese nessuno ricorda: se il pane è impuro, i morti accettano le castagne.", fatti: [f_rito_castagne]}

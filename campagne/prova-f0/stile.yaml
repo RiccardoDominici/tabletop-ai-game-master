@@ -1,0 +1,46 @@
+# Carta di stile della campagna «prova-f0» (Il pane dei lumi).
+# Contiene C1 del manuale (premessa, tono, tema, linee e veli) e le scelte di stile
+# che il Motore usa per voce, immagini e musica. Il Narratore la riceve per intero.
+
+id: prova-f0
+titolo: "Il pane dei lumi"
+
+# C1 — Premessa in una frase.
+premessa: "Nella Notte dei Lumi un paese di montagna cerca un colpevole per la sua febbre, e il pane per i morti è già nelle ceste."
+
+tono: "Fiaba di paese, cupa ma calda. La paura viene dal tempo che stringe e dalle persone, non dai mostri. C'è spazio per la pietà e per un sorriso amaro."
+tema: "La paura del forestiero; la verità che costa a chi la dice; la pietà per chi ha sbagliato per vergogna."
+
+# Registro del narratore per questa campagna (si aggiunge alle regole N del manuale).
+registro_narratore: "Voce di veglia: bassa, vicina, concreta, come chi racconta accanto al fuoco. Mai solenne, mai ironica sui morti o sui malati."
+
+# Regole di prosa specifiche della campagna (valgono insieme a N1–N14).
+regole_prosa:
+  - "Lessico di paese e di montagna: castagne, segale, madia, paiolo, mestolo, fuliggine, lanterna, portico. Niente arcaismi finti."
+  - "Le immagini ricorrenti sono il pane e le candele: usale, ma mai la stessa immagine due volte di seguito."
+  - "La febbre si mostra dai segni concreti: mani rosse, tremito, labbra secche. Mai dettagli ripugnanti."
+  - "Il narratore non chiama mai veleno il pane e non dice mai da dove viene la febbre. Lo possono dire i PG e i PNG che lo sanno."
+  - "La paura del paese si sente da fuori: voci, passi, colpi alle imposte, la campana. Mai detta come emozione."
+  - "Il pregiudizio contro i tiefling e i forestieri si mostra con sguardi e parole brevi, mai con insulti espliciti."
+  - "Le monete si chiamano corone (oro) e soldi (rame)."
+
+# Frammento [STILE] che il Motore appende a ogni prompt immagine (E14). In inglese.
+stile_immagini: "painterly gouache illustration in the manner of an old Italian folk-tale book, warm candlelight against cold blue night, muted earth palette of umber, ochre, soot black and linen white, soft visible brush strokes, low-key lighting, no text, no lettering"
+
+# Tavolozza musicale: solo tag del vocabolario chiuso del manuale (§4, E14).
+tavolozza_musicale:
+  tag: [esplorazione_tesa, rito_sacro, taverna_calda, lutto]
+  strumenti: "ghironda, organetto, flauto di legno, voci femminili lontane, una campana sola. Niente percussioni da battaglia."
+
+# Linee (mai in gioco) e veli (solo fuori scena, con dissolvenza). T10, E13.
+# Sono i valori di partenza: alla sessione zero i giocatori possono aggiungerne dal telefono.
+linee:
+  - "violenza sessuale"
+  - "violenza sui bambini, mostrata o descritta"
+  - "tortura"
+  - "morte di un animale in scena"
+  - "descrizioni ripugnanti della malattia"
+veli:
+  - "morte di un malato: avviene solo fuori scena, si sa a cose fatte"
+  - "violenza della folla su una persona: dissolvenza, mai descritta"
+  - "la sorte di chi viene cacciato nella neve: si dice solo che se ne va"

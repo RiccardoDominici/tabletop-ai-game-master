@@ -1,0 +1,102 @@
+# Scheda PNG (manuale §3). Ottavia mente sulla segale: è la bugiarda principale della scena.
+id: png_ottavia
+nome: "Ottavia Ferlini"
+pronuncia: "Ottàvia Ferlìni"
+livello: principale
+ruolo: "ostessa e fornaia del Forno Vecchio; testimone reticente; può diventare alleata"
+fronte: fronte_fuoco_nero
+
+aspetto:
+  lettura: "Una donna larga, sulla sessantina, con le braccia infarinate fino ai gomiti. Ha il grembiule pulito e gli occhi rossi di chi non dorme."
+  invarianti: ["61 anni", "bassa e larga", "capelli bianchi raccolti in un fazzoletto rosso", "braccia infarinate fino ai gomiti", "grembiule di lino pulito", "occhi arrossati"]
+  prompt_immagine: "short stout 61-year-old village baker woman, white hair tied in a red headscarf, flour-dusted forearms up to the elbows, clean linen apron, reddened sleepless eyes, glowing bread oven behind her, [STILE]"
+
+personalita:
+  superficie: ["materna e chiacchierona: nutre chiunque entri", "orgogliosa del suo pane come di un figlio", "pettegola: sa tutto di tutti"]
+  sotto_pressione: ["diventa servile e offre di tutto pur di cambiare discorso", "se la accusano davanti ad altri, si chiude e prova a far sparire le prove"]
+  contraddizione: "Ha sfamato il paese per trent'anni, e stanotte rischia di avvelenarlo per non perdere la faccia."
+
+desiderio: "Vendere il pane dei lumi stanotte, per pagare Gualtiero e tenersi il forno."   # in tensione con Sebastiano e con il pericolo p_segale
+paura: "Che il paese scopra che i bambini si sono ammalati col suo pane."
+
+segreto:
+  testo: "Sebastiano l'ha avvertita di non usare la segale nuova, e il cane si è ammalato con le croste. Lei sospetta il pane, e ha impastato lo stesso il pane dei lumi."
+  chi_altro_sa: [png_sebastiano]
+  se_rivelato: "Il paese la ritiene colpevole quanto il forestiero. Baldrin rompe con lei. Il pane dei lumi resta nelle ceste."
+
+voce:
+  tts: {voce_id: nadine, eta_apparente: "55-65", altezza: media, velocita: 1.05, timbro: "caldo, un po' affannato"}
+  registro: "Dà del tu a chi ha meno di cinquant'anni e lo chiama «figliolo» o «figliola». Al forestiero e a chi la accusa dà del voi, freddo."
+  stile: "Frasi brevi, spezzate dal lavoro. Parla di cibo, dosi e cotture. Fa domande e non aspetta la risposta."
+  tic: ["«Mangia, ché la notte è lunga.»"]
+  gesto: "batte il mestolo sul bordo del paiolo"
+  mai_dice: ["la parola «veleno»", "«mi dispiace»", "il nome di Gualtiero, finché non ha confessato"]
+  battuta_campione: "Siediti, figliolo, che le castagne sono calde. Il pane è per dopo."
+
+sa:
+  - f_segale_gualtiero     # sei sacchi da Gualtiero, metà prezzo, metà a credito
+  - f_chicchi_neri         # ha visto i chicchi neri e li ha setacciati
+  - f_pane_lumi_segale     # il pane dei lumi è fatto con quella segale
+  - f_cane_croste          # Moro ha mangiato le croste
+  - f_ottavia_sospetta     # sospetta il pane, ma non vuole crederci
+  - f_avvertimento         # Sebastiano l'ha avvertita, lei l'ha cacciato
+  - f_segale_di_sempre     # trent'anni al mulino del paese
+  - f_botola
+  - f_rito_pane
+  - f_pane_lumi_paga
+  - f_notte_lumi
+  - f_malati_nomi
+  - f_febbre_sintomi
+  - f_forestiero_arrivo
+  - f_chiuso_ripostiglio
+non_sa:
+  - f_causa_segale         # domanda probabile: «il pane può far male?»
+  - f_setaccio_inutile
+  - f_polvere_carbone
+  - f_tecla_curata
+  - f_sebastiano_disertore
+  - f_testimoni_pozzo
+crede_a_torto:
+  - {testo: "Setacciata due volte, la farina è buona: i chicchi neri sono solo brutti da vedere.", contraddice: f_setaccio_inutile}
+  - {testo: "Se c'è un veleno, è nel pozzo: il suo pane non ha mai fatto male a nessuno.", contraddice: f_pozzo_pulito}
+mente_su:
+  - argomento: "da dove viene la segale"
+    verita: f_segale_gualtiero
+    versione: "È la segale di sempre, del mulino del paese. La prendo lì da trent'anni."
+    perche: "Vergogna di aver comprato roba da poco. E paura: se è il pane, i bambini li ha fatti ammalare lei."
+    segnale: "si pulisce le mani sul grembiule, anche se sono pulite, e guarda le ceste"
+    cede_se: "Dice la verità quando un PG le mette in mano un chicco nero preso dai suoi sacchi, e Baldrin non può sentire. Oppure quando Assenzio le chiede la verità in nome di tutte le volte che lei ha coperto lui. Mai davanti al paese."
+  - argomento: "il cane"
+    verita: f_cane_croste
+    versione: "Avrà mangiato un topo. I cani mangiano i topi."
+    perche: "Le croste portano dritte al pane."
+    segnale: "si pulisce le mani sul grembiule, anche se sono pulite, e guarda le ceste"
+    cede_se: "Quando un PG le mostra le croste nella ciotola di Moro, oppure dopo che ha già confessato sulla segale."
+
+atteggiamento_pg:
+  pg_assenzio: {stato: amichevole, perche: "lo ha cresciuto lei, in questa cucina", vuole: "che stia dalla sua parte, qualunque cosa succeda"}
+  pg_teodora:  {stato: amichevole, perche: "è la chierica che benedirà il suo pane", vuole: "la benedizione al terzo rintocco, senza domande"}
+  pg_ginestra: {stato: indifferente, perche: "una halfling che annusa tutto, anche quello che non deve", vuole: "che stia lontana dal retro"}
+  pg_corrado:  {stato: indifferente, perche: "i soldati mangiano e non pagano", vuole: "che tenga calmo Baldrin, se le cose si mettono male"}
+
+relazioni:
+  png_baldrin: "amico di trent'anni; sua figlia Ilde adora il suo pane"
+  png_sebastiano: "il forestiero che l'ha offesa in cucina"
+  gualtiero_malerba: "creditore; le ha venduto la segale"
+  pg_assenzio: "lo ha cresciuto come un figlio"
+
+info_chiave: [i_ottavia_confessione]   # conclusione r_gualtiero
+
+iniziative:
+  - "Se un PG va verso il retro o verso le ceste, lo chiama al paiolo ad assaggiare la zuppa di castagne."
+  - "Se capisce che i PG sospettano il pane, prova a buttare nel forno i sacchi rimasti. La segale che brucia fa un fumo acre."
+  - "Al terzo segno dell'orologio chiede a Teodora di prepararsi alla benedizione."
+
+evoluzione:
+  - {se: "un PG le mostra un chicco nero in privato e le promette di non lasciarla sola", allora: "confessa, piange, e accetta di dire la verità al paese se un PG le sta accanto"}
+  - {se: "la accusano davanti a Baldrin o al paese prima che abbia confessato", allora: "nega con la stessa versione, prova a bruciare i sacchi, diventa ostile con chi l'ha accusata"}
+  - {se: "Teodora propone le castagne al posto del pane", allora: "si aggrappa all'idea: così salva il paese senza confessare niente"}
+  - {se: "il paese spezza il pane dei lumi", allora: "a scena chiusa capisce; il giorno dopo chiude l'osteria"}
+
+statistiche: "popolana (SRD 5.2)"
+registro_attivita: []

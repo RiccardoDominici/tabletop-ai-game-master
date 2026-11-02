@@ -1,0 +1,104 @@
+# Scheda PNG (manuale §3). Sebastiano è il forestiero accusato: dice il vero sul pane, mente su chi è.
+id: png_sebastiano
+nome: "Sebastiano"
+pronuncia: "Sebastiàno"
+livello: principale
+ruolo: "il forestiero accusato; testimone che conosce la causa; alleato se lo si crede"
+fronte: fronte_fuoco_nero
+
+aspetto:
+  lettura: "Un uomo magro, sulla quarantina, col cappuccio nero calato sugli occhi. Ha le mani pulite, e non tremano."
+  invarianti: ["circa 40 anni", "alto e magro", "mantello nero col cappuccio, logoro", "cicatrice bianca che taglia il sopracciglio sinistro (si vede solo senza cappuccio)", "mani pulite, unghie corte", "barba di tre giorni"]
+  prompt_immagine: "gaunt man about forty, worn black hooded cloak pulled low, thin white scar splitting his left eyebrow, clean steady hands with short nails, three-day stubble, face seen through the small iron grate of a storeroom door, candlelight, [STILE]"
+
+personalita:
+  superficie: ["calmo e cortese, anche con chi lo insulta", "preciso: fa domande come un medico", "riservato sul suo passato"]
+  sotto_pressione: ["diventa freddo e tagliente, e dice verità che fanno male", "davanti a un malato dimentica la prudenza e si espone"]
+  contraddizione: "Vuole sparire senza lasciare traccia, ma non riesce a tacere davanti a un malato."
+
+desiderio: "Uscire vivo da Fontescura prima dell'alba, senza che nessuno scopra chi è."   # in tensione con Baldrin, con p_folla e con p_compagnia (Corrado)
+paura: "Essere riconosciuto e riportato alla Compagnia del Grifo, per la forca."
+
+segreto:
+  testo: "È il cerusico disertore della Compagnia del Grifo. È fuggito dopo Roccalba per non lasciar morire i feriti nemici, e sulla sua testa c'è una taglia di venti corone."
+  chi_altro_sa: [compagnia_del_grifo]
+  se_rivelato: "Corrado può consegnarlo per la taglia. Il paese gli crede di più sul pane, ma lo teme come disertore."
+
+voce:
+  tts: {voce_id: lucian, eta_apparente: "40-45", altezza: media, velocita: 0.95, timbro: "basso, rauco di tosse, pacato"}
+  registro: "Dà del lei a tutti, come un medico di città, anche a chi lo insulta. Non dà mai del tu."
+  stile: "Frasi ordinate e brevi. Ogni tanto una parola da medico, corretta subito in parole semplici. Fa domande precise: da quando, quanto, cosa avete mangiato."
+  tic: ["«Mi permetta.» prima di una domanda"]
+  gesto: "si stringe il cappuccio sotto il mento"
+  mai_dice: ["il nome della Compagnia del Grifo, finché non lo dice qualcun altro", "parolacce o insulti", "una promessa che non può mantenere"]
+  battuta_campione: "Mi permetta una domanda. Lei ha mangiato pane, stasera?"
+
+sa:
+  - f_causa_segale         # è il pane di segale, non l'acqua
+  - f_fuoco_nero
+  - f_febbre_sintomi
+  - f_setaccio_inutile
+  - f_avvertimento         # ha avvertito Ottavia due giorni fa
+  - f_pozzo_pulito
+  - f_sebastiano_tecla     # al pozzo prendeva acqua per Tecla
+  - f_tecla_curata
+  - f_polvere_carbone      # la polvere nera è carbone
+  - f_rimedio
+  - f_sebastiano_cerusico
+  - f_sebastiano_disertore
+  - f_diserzione_motivo
+  - f_nodo_cerusici
+  - f_cicatrice
+  - f_accusa
+  - f_chiuso_ripostiglio
+  - f_borsa_contenuto
+non_sa:
+  - f_segale_gualtiero     # domanda probabile: «da dove viene quella segale?»
+  - f_pane_lumi_segale     # può solo supporre: «se è fatto con quella farina, sì»
+  - f_testimoni_pozzo
+  - f_botola
+  - f_ilde_pane
+  - f_ottavia_sospetta
+crede_a_torto:
+  - {testo: "L'ostessa sa benissimo che il pane è guasto, e lo vende lo stesso.", contraddice: f_ottavia_sospetta}
+mente_su:
+  - argomento: "il suo mestiere"
+    verita: f_sebastiano_cerusico
+    versione: "Vendo spezie. Pepe, cannella, chiodi di garofano."
+    perche: "Se scoprono che è un cerusico, qualcuno si chiederà di quale esercito."
+    segnale: "nasconde le mani nelle maniche; dice una parola da medico e si corregge subito"
+    cede_se: "Dice di essere un cerusico a chi gli promette, lontano dalle orecchie di Baldrin, di non consegnarlo. Oppure quando un malato ha bisogno di lui davanti ai suoi occhi."
+  - argomento: "la guerra e da dove viene"
+    verita: f_sebastiano_disertore
+    versione: "Soldato io? Vengo dal mare. Ho sempre venduto spezie."
+    perche: "Paura della forca."
+    segnale: "nasconde le mani nelle maniche; dice una parola da medico e si corregge subito"
+    cede_se: "Solo quando un PG nomina Roccalba o la Compagnia del Grifo e gli promette di non venderlo."
+
+atteggiamento_pg:
+  pg_ginestra: {stato: amichevole, perche: "chi conosce le erbe può capire", vuole: "che guardi la farina con i suoi occhi"}
+  pg_assenzio: {stato: amichevole, perche: "anche lui è guardato storto, come un corvo", vuole: "che apra quella porta, in un modo o nell'altro"}
+  pg_teodora:  {stato: indifferente, perche: "i preti fanno domande sul passato", vuole: "che non benedica il pane"}
+  pg_corrado:  {stato: ostile, perche: "riconosce il passo e la cintura da soldato, e teme la Compagnia", vuole: "che non lo guardi in faccia"}
+
+relazioni:
+  png_ottavia: "l'ha avvertita; lei l'ha cacciato dalla cucina"
+  png_baldrin: "il suo carceriere; gli fa pena, per la figlia"
+  tecla: "la malata che ha curato di notte"
+
+info_chiave: [i_sebastiano_avverte, i_sebastiano_tecla, i_parole_da_medico, i_cicatrice]
+
+iniziative:
+  - "Chiede un sorso d'acqua a chiunque passi vicino alla grata."
+  - "Se sente nominare il pane, avverte di non mangiarlo."
+  - "Se vede la chierica, le chiede di non benedire il pane."
+  - "Se gli parlano di un malato, anche del cane, chiede di vederlo e spiega il rimedio."
+
+evoluzione:
+  - {se: "lo liberano e lo credono", allora: "insegna il rimedio, resta fino all'alba a curare i malati, poi chiede di partire"}
+  - {se: "Corrado lo riconosce e lo minaccia", allora: "smette di mentire e chiede solo di salvare prima il paese; dopo, lo consegnino se vogliono"}
+  - {se: "lo consegnano al paese", allora: "non si difende più; dice solo, ad alta voce, di non mangiare il pane"}
+  - {se: "scopre la botola", allora: "fugge da solo, a meno che un PG non gli chieda di restare"}
+
+statistiche: "popolano (SRD 5.2), con competenza in Medicina"
+registro_attivita: []

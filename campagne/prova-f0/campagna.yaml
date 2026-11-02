@@ -1,0 +1,360 @@
+# Campagna «prova-f0» — Il pane dei lumi. Artefatti del Preparatore (manuale §2).
+#
+# Divisione per pubblico (E2, need-to-know):
+#   - tutto ciò che sta sotto `preparazione` NON va al Narratore (destini, cronologia del
+#     cattivo, segreti astratti, archi dei PG);
+#   - le altre chiavi (canone, orologi, rivelazioni, colli_di_bottiglia, nodi, sessione)
+#     servono al Narratore per giocare la scena in modo coerente.
+#
+# Gli id dei fatti (f_*) sono quelli citati nelle schede PNG (sa, non_sa, mente_su.verita,
+# crede_a_torto.contraddice). Gli id degli indizi (i_*) sono definiti nella scheda della scena
+# o, per i nodi senza scheda, qui sotto in `nodi`.
+
+id: prova-f0
+
+# ---------------------------------------------------------------------------
+# CANONE (E10): fatti confermati all'inizio della sessione.
+# noto_ai_pg: true  = i PG lo sanno o lo sa tutto il paese, si può dire a voce;
+# noto_ai_pg: false = verità nascosta: la può dire solo un PNG che la sa, o un indizio.
+# ---------------------------------------------------------------------------
+canone:
+  # Pubblici
+  - {id: f_notte_lumi, noto_ai_pg: true, stato: confermato, entita: [n_piazza],
+     testo: "Stanotte è la Notte dei Lumi: ogni casa tiene una candela alla finestra per i morti, e le donne cantano la veglia nella cappella."}
+  - {id: f_campana, noto_ai_pg: true, stato: confermato, entita: [n_piazza],
+     testo: "La campana della cappella suona un rintocco a metà veglia e tre rintocchi alla fine."}
+  - {id: f_rito_pane, noto_ai_pg: true, stato: confermato, entita: [n_osteria],
+     testo: "Al terzo rintocco il paese viene all'osteria a spezzare il pane dei lumi. Lo mangiano tutti, anche i bambini. Rifiutarlo offende i morti."}
+  - {id: f_pane_lumi_paga, noto_ai_pg: true, stato: confermato, entita: [png_ottavia],
+     testo: "Ogni famiglia paga il pane dei lumi un soldo: è l'incasso più grosso dell'autunno per l'osteria."}
+  - {id: f_febbre_sintomi, noto_ai_pg: true, stato: confermato, entita: [],
+     testo: "Da due giorni nove persone del paese hanno la febbre: mani e piedi che bruciano, tremori, visioni."}
+  - {id: f_malati_nomi, noto_ai_pg: true, stato: confermato, entita: [png_baldrin],
+     testo: "Tra i malati ci sono Ilde, la figlia di Baldrin, i due figli del bottaio e la vecchia Tecla, che vive sola accanto al pozzo."}
+  - {id: f_accusa, noto_ai_pg: true, stato: confermato, entita: [png_sebastiano],
+     testo: "Il paese dice che due notti fa il forestiero ha versato una polvere nel pozzo."}
+  - {id: f_forestiero_arrivo, noto_ai_pg: true, stato: confermato, entita: [png_sebastiano],
+     testo: "Sebastiano, il forestiero, è arrivato tre giorni fa, a piedi, con una borsa sola. Dice di vendere spezie."}
+  - {id: f_chiuso_ripostiglio, noto_ai_pg: true, stato: confermato, entita: [png_sebastiano, png_baldrin],
+     testo: "Stasera Baldrin ha chiuso Sebastiano a chiave nel ripostiglio dell'osteria, fino alla fine della veglia."}
+  - {id: f_chiave_baldrin, noto_ai_pg: true, stato: confermato, entita: [png_baldrin],
+     testo: "La chiave del ripostiglio è appesa al collo di Baldrin, su un laccio di cuoio."}
+  - {id: f_borsa_contenuto, noto_ai_pg: true, stato: confermato, entita: [png_baldrin, png_sebastiano],
+     testo: "Ai piedi di Baldrin c'è la borsa di Sebastiano: dentro, un sacchetto di polvere nera, bende arrotolate, una tazza di stagno e un libretto scritto fitto."}
+  - {id: f_baldrin_massaro, noto_ai_pg: true, stato: confermato, entita: [png_baldrin],
+     testo: "Baldrin è il fabbro e il massaro di Fontescura: quando parla lui, il paese ascolta."}
+  - {id: f_gualtiero_passato, noto_ai_pg: true, stato: confermato, entita: [],
+     testo: "Gualtiero, il mugnaio di Valsecca, è passato in paese col carro quattro giorni fa ed è ripartito ieri all'alba verso Pievebassa."}
+
+  # Nascosti
+  - {id: f_causa_segale, noto_ai_pg: false, stato: confermato, entita: [png_ottavia],
+     testo: "La febbre è il fuoco nero: viene dal pane fatto con la segale guasta. Il pozzo non c'entra."}
+  - {id: f_pozzo_pulito, noto_ai_pg: false, stato: confermato, entita: [n_piazza],
+     testo: "L'acqua del pozzo è pulita."}
+  - {id: f_fuoco_nero, noto_ai_pg: false, stato: confermato, entita: [],
+     testo: "Il fuoco nero viene dalla segale con gli speroni: chicchi neri e curvi come piccole unghie. Brucia mani e piedi, fa tremare, dà visioni."}
+  - {id: f_segale_gualtiero, noto_ai_pg: false, stato: confermato, entita: [png_ottavia],
+     testo: "Quattro giorni fa Ottavia ha comprato da Gualtiero sei sacchi di segale a metà prezzo. Metà la deve ancora, da pagare a primavera."}
+  - {id: f_segale_di_sempre, noto_ai_pg: false, stato: confermato, entita: [png_ottavia],
+     testo: "Per trent'anni Ottavia ha comprato la segale al mulino del paese, mai altrove, fino a quattro giorni fa."}
+  - {id: f_chicchi_neri, noto_ai_pg: false, stato: confermato, entita: [png_ottavia, n_osteria],
+     testo: "Nei sacchi di Gualtiero ci sono chicchi neri e curvi. Ottavia ne ha tolti molti col setaccio, ma ne restano."}
+  - {id: f_setaccio_inutile, noto_ai_pg: false, stato: confermato, entita: [n_osteria],
+     testo: "Il setaccio non basta: la farina resta guasta, e lo è anche il pane dei lumi."}
+  - {id: f_pane_lumi_segale, noto_ai_pg: false, stato: confermato, entita: [n_osteria],
+     testo: "Il pane dei lumi nelle ceste è fatto tutto con la segale di Gualtiero."}
+  - {id: f_cane_croste, noto_ai_pg: false, stato: confermato, entita: [n_osteria],
+     testo: "Ieri Moro, il cane dell'osteria, ha mangiato le croste del pane nuovo. Da stamattina trema e si lecca le zampe."}
+  - {id: f_ottavia_sospetta, noto_ai_pg: false, stato: confermato, entita: [png_ottavia],
+     testo: "Ottavia sospetta che sia il pane, ma non vuole crederci: si ripete che il setaccio basta."}
+  - {id: f_avvertimento, noto_ai_pg: false, stato: confermato, entita: [png_ottavia, png_sebastiano],
+     testo: "Due giorni fa Sebastiano ha detto a Ottavia, in cucina, di non usare quella segale. Lei lo ha cacciato."}
+  - {id: f_baldrin_sano, noto_ai_pg: false, stato: confermato, entita: [png_baldrin],
+     testo: "Baldrin beve al pozzo ogni giorno, ma il pane di segale non lo mangia: sta bene."}
+  - {id: f_carbonai_sani, noto_ai_pg: false, stato: confermato, entita: [],
+     testo: "I carbonai del bosco bevono al pozzo come tutti, ma il pane lo cuociono da sé: nessuno di loro è malato."}
+  - {id: f_ilde_pane, noto_ai_pg: false, stato: confermato, entita: [png_baldrin],
+     testo: "Ilde ha chiesto al padre un pezzo di pane dei lumi. Baldrin glielo ha promesso per stanotte."}
+  - {id: f_testimoni_pozzo, noto_ai_pg: false, stato: confermato, entita: [png_baldrin],
+     testo: "Al pozzo, due notti fa, Sebastiano l'ha visto solo Baldrin, da lontano. Che versasse una polvere lo ha detto Gualtiero."}
+  - {id: f_sebastiano_tecla, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
+     testo: "Due notti fa Sebastiano è andato al pozzo a prendere acqua per la vecchia Tecla, malata e sola."}
+  - {id: f_tecla_dice_corvo, noto_ai_pg: false, stato: confermato, entita: [],
+     testo: "Tecla racconta che di notte un corvo le ha dato da bere."}
+  - {id: f_tecla_curata, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
+     testo: "Sebastiano ha dato a Tecla acqua e carbone pestato, e le ha messo le mani nella neve. Da allora Tecla sta meglio."}
+  - {id: f_polvere_carbone, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
+     testo: "La polvere nera nella borsa è carbone di legna pestato: un rimedio, non un veleno."}
+  - {id: f_rimedio, noto_ai_pg: false, stato: confermato, entita: [],
+     testo: "Chi smette di mangiare il pane guasto guarisce in pochi giorni. Acqua, carbone pestato e freddo sulle mani aiutano."}
+  - {id: f_sebastiano_cerusico, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
+     testo: "Sebastiano è un cerusico, non un mercante di spezie."}
+  - {id: f_sebastiano_disertore, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
+     testo: "Sebastiano era il cerusico della Compagnia del Grifo. Ha disertato dopo l'assedio di Roccalba, e la Compagnia offre venti corone per riaverlo."}
+  - {id: f_diserzione_motivo, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
+     testo: "Sebastiano ha disertato la notte in cui il capitano gli ordinò di lasciar morire i feriti nemici. Non ha rubato niente: è partito con la sola borsa."}
+  - {id: f_nodo_cerusici, noto_ai_pg: false, stato: confermato, entita: [],
+     testo: "I cerusici della Compagnia del Grifo chiudono le bende con un nodo doppio e piatto."}
+  - {id: f_taglia_cerusico, noto_ai_pg: false, stato: confermato, entita: [],
+     testo: "La Compagnia del Grifo offre venti corone per il suo cerusico disertore: sui quarant'anni, magro, con una cicatrice bianca sul sopracciglio sinistro."}
+  - {id: f_cicatrice, noto_ai_pg: false, stato: confermato, entita: [png_sebastiano],
+     testo: "Sotto il cappuccio, Sebastiano ha una cicatrice bianca che gli taglia il sopracciglio sinistro."}
+  - {id: f_botola, noto_ai_pg: false, stato: confermato, entita: [n_osteria],
+     testo: "Nel ripostiglio, sotto un sacco vuoto, c'è una botola: porta in cantina, e dalla cantina si esce dalla grata sotto il portico."}
+  - {id: f_rito_castagne, noto_ai_pg: false, stato: confermato, entita: [],
+     testo: "Il libro del rito dice: se il pane è impuro, i morti accettano le castagne. In paese nessuno se lo ricorda."}
+
+# ---------------------------------------------------------------------------
+# OROLOGI (C2): uno per pericolo. Il nome è quello dell'ostacolo.
+# `segni` = un segno visibile o udibile per segmento, in ordine. Il Narratore mostra il
+# segno del segmento appena riempito. `avanza_quando` è la regola di ritmo per F0,
+# finché gli orologi non li tiene il Motore (E9).
+# ---------------------------------------------------------------------------
+orologi:
+  - id: o_colpevole
+    nome: "Il paese vuole un colpevole"
+    pericolo: p_folla
+    segmenti: 6
+    pieni_all_inizio: 0
+    segni:
+      - "Dalla cappella il canto della veglia si interrompe. Poi riprende, più forte e più in fretta."
+      - "Un sasso batte contro l'imposta. Fuori, una voce di ragazzo grida «corvo!» e scappa."
+      - "La campana suona un rintocco: la veglia è a metà. Baldrin si alza e prova la chiave nella serratura."
+      - "Dalla finestra si vedono lanterne che escono dalla cappella, in fila, verso la piazza."
+      - "Sotto il portico, passi e voci basse. Qualcuno prova la maniglia della porta d'ingresso."
+      - "Tre rintocchi. La veglia è finita. Bussano alla porta: c'è tutto il paese, con le lanterne."
+    avanza_quando:
+      - "ogni due risposte del narratore senza un segno nuovo"
+      - "subito, se i PG fanno rumore, minacciano qualcuno, gridano dalla finestra o escono in piazza"
+      - "subito, se Baldrin si sente sfidato e i PG non lo convincono"
+    al_completo: "Climax della scena: il paese è alla porta e vuole il forestiero e il pane. Vedi `taglio` nella scheda della scena."
+
+  - id: o_febbre
+    nome: "La febbre si allarga"
+    pericolo: p_segale
+    segmenti: 4
+    pieni_all_inizio: 1
+    segni:
+      - "Nove malati in paese."
+      - "Il pane dei lumi viene spezzato: la febbre entra nelle case sane."
+      - "Un vecchio muore nella notte: si sa solo il mattino dopo."
+      - "Mezzo paese ha le mani che bruciano; i carbonai se ne vanno."
+    avanza_quando:
+      - "fuori scena (T8): +2 se il paese mangia il pane dei lumi; +1 a ogni giorno in cui nessuno capisce la causa"
+
+# ---------------------------------------------------------------------------
+# RIVELAZIONI (C4): conclusioni chiave e indizi che le sostengono.
+# Regola: >=3 indizi, in >=2 nodi, di >=2 tipi. La conclusione si spunta quando i
+# giocatori la accettano, non quando la ipotizzano.
+# ---------------------------------------------------------------------------
+rivelazioni:
+  - id: r_pane
+    chiave: true
+    conclusione: "La febbre viene dal pane di segale di Ottavia, non dal pozzo."
+    indizi: [i_speroni_neri, i_cane_croste, i_baldrin_sano, i_carbonai_sani, i_sebastiano_avverte, i_preghiera_pane, i_pozzo_acqua]
+  - id: r_innocente
+    chiave: true
+    conclusione: "Sebastiano non ha avvelenato il pozzo: di notte curava la vecchia Tecla."
+    indizi: [i_polvere_nera, i_tecla_corvo, i_sebastiano_tecla, i_tecla_racconta]
+  - id: r_gualtiero
+    chiave: true
+    conclusione: "La segale guasta viene da Gualtiero di Valsecca, e la storia della polvere nel pozzo l'ha messa in giro lui."
+    indizi: [i_registro_conti, i_sacchi_marchio, i_baldrin_testimoni, i_ottavia_confessione]
+  - id: r_cerusico
+    chiave: false
+    conclusione: "Sebastiano è il cerusico disertore della Compagnia del Grifo."
+    indizi: [i_nodo_bende, i_parole_da_medico, i_cicatrice]
+
+# Colli di bottiglia (C4): ognuno ha almeno 3 soluzioni. Il Narratore dice «sì» a tutte.
+colli_di_bottiglia:
+  - id: cb_porta
+    ostacolo: "Parlare con Sebastiano, o farlo uscire dal ripostiglio chiuso a chiave."
+    soluzioni:
+      - "Parlargli attraverso la grata della porta: non serve aprire."
+      - "Convincere Baldrin a dare la chiave o ad aprire lui."
+      - "Scendere in cantina e salire dalla botola del ripostiglio: la conoscono Ottavia e Assenzio."
+      - "Forzare la vecchia serratura: si apre, ma scatta forte e Baldrin se ne accorge."
+  - id: cb_pane
+    ostacolo: "Impedire che il paese mangi il pane dei lumi."
+    soluzioni:
+      - "Convincere Ottavia a non servirlo."
+      - "Teodora cambia il rito: se il pane è impuro, i morti accettano le castagne."
+      - "Nascondere, rovesciare o bruciare le ceste."
+      - "Spezzare una pagnotta davanti a tutti e mostrare i chicchi neri nella mollica."
+  - id: cb_folla
+    ostacolo: "Fermare il paese al terzo rintocco."
+    soluzioni:
+      - "Convincere Baldrin: la parola del massaro ferma il paese."
+      - "Mostrare le prove a tutti: la mollica, il cane, la polvere che è solo carbone."
+      - "Far sparire Sebastiano dalla botola e lasciare alla folla un ripostiglio vuoto."
+      - "Teodora parla al paese con l'autorità del rito."
+
+# ---------------------------------------------------------------------------
+# NODI (C5): luoghi, PNG ed eventi collegati da indizi.
+# Solo n_osteria ha una scheda scena completa (scena.yaml). Gli altri luoghi sono
+# abbozzi: bastano al Narratore per non inventare se i PG escono.
+# ---------------------------------------------------------------------------
+nodi:
+  - id: n_osteria
+    tipo: luogo
+    nome: "L'osteria del Forno Vecchio"
+    scheda: scena.yaml
+    collegamenti: [n_piazza, n_mulino_valsecca, png_ottavia, png_baldrin, png_sebastiano, e_terzo_rintocco]
+  - id: n_piazza
+    tipo: luogo
+    nome: "La piazza di Fontescura"
+    abbozzo: "Piazza di pietra in salita. Al centro il pozzo con la carrucola. Accanto, la casa bassa della vecchia Tecla. In fondo la cappella, con le porte aperte e la veglia dentro. Fino al terzo rintocco la piazza è vuota; a ogni finestra brucia una candela."
+    indizi:
+      - {id: i_pozzo_acqua, conclusione: r_pane, tipo: luogo, essenziale: false, tiro: "nessuno",
+         come_si_trova: "Chi tira su il secchio e guarda o assaggia l'acqua: è limpida e gelata, sa solo di pietra."}
+      - {id: i_tecla_racconta, conclusione: r_innocente, tipo: png, essenziale: false, tiro: "nessuno",
+         come_si_trova: "Chi entra da Tecla la trova a letto, con le mani in un catino d'acqua fredda. Dice che il corvo le ha dato acqua nera, e che da allora brucia meno."}
+    collegamenti: [n_osteria, e_terzo_rintocco]
+  - id: n_mulino_valsecca
+    tipo: luogo
+    nome: "Il mulino di Valsecca"
+    abbozzo: "Il mulino di Gualtiero, un giorno di cammino più a valle. Prossima sessione: non si raggiunge stanotte."
+    prossima_sessione: true
+    collegamenti: [n_osteria]
+  - {id: png_ottavia, tipo: png, scheda: png/png_ottavia.yaml, collegamenti: [n_osteria, n_mulino_valsecca]}
+  - {id: png_baldrin, tipo: png, scheda: png/png_baldrin.yaml, collegamenti: [n_osteria, n_piazza, n_mulino_valsecca]}
+  - {id: png_sebastiano, tipo: png, scheda: png/png_sebastiano.yaml, collegamenti: [n_osteria, n_piazza]}
+  - id: e_terzo_rintocco
+    tipo: evento
+    nome: "Il terzo rintocco"
+    abbozzo: "Il paese esce dalla cappella con le lanterne e viene all'osteria: vuole il pane dei lumi e il forestiero."
+    collegamenti: [n_osteria, n_piazza]
+
+# ---------------------------------------------------------------------------
+# SESSIONE (C9–C13). La sessione di prova è una sola scena.
+# ---------------------------------------------------------------------------
+sessione:
+  # C9: letto dal narratore a inizio sessione, prima di scena.apertura.
+  # Riassunto (3 frasi) + apertura (3 frasi) = 6 frasi, il massimo di N2.
+  riassunto_iniziale: "È la Notte dei Lumi, a Fontescura. Da due giorni, nove persone del paese bruciano di febbre. Dicono che sia colpa di un forestiero, e al terzo rintocco verranno a prenderlo."
+  # C10: le cinque stanze, dentro una sola scena.
+  cinque_stanze:
+    ingresso_o_guardiano: "Baldrin di guardia alla porta del ripostiglio, col martello e la chiave."
+    enigma_o_sfida_sociale: "Chi dice il vero? Ottavia mente sulla segale; Sebastiano mente sul suo mestiere."
+    trucco_o_battuta_d_arresto: "La prova di Baldrin, la polvere nera, sembra veleno ed è carbone. Ottavia, messa alle strette, prova a bruciare i sacchi."
+    climax: "Il terzo rintocco: il paese alla porta, il pane sul tavolo, il forestiero dietro la porta."
+    ricompensa_o_colpo_di_scena: "Il nome di Gualtiero; e, se c'è Corrado, la taglia sulla testa di Sebastiano."
+  # C11: scene potenziali. Per F0 solo la prima ha la scheda completa.
+  scene_potenziali: [scena_forno_vecchio]
+  # C13: chiusura.
+  chiusura: "Una scelta aperta: andare a Valsecca a cercare Gualtiero, accompagnare Sebastiano al passo, o restare a curare i malati. Si chiede ai giocatori cosa pensano di fare."
+
+# ===========================================================================
+# PREPARAZIONE: solo per Preparatore, Critico e Motore. NON va nel contesto del Narratore.
+# ===========================================================================
+preparazione:
+
+  # C2 — Fronti.
+  fronti:
+    - id: fronte_grano_marcio
+      livello: campagna
+      nome: "Il grano marcio della valle"
+      pericoli:
+        - id: p_gualtiero
+          tipo: "organizzazione ambiziosa: un mercante senza scrupoli"
+          impulso: "arricchirsi"
+          destino_incombente: "La segale guasta arriva in ogni osteria della valle, e Gualtiero compra per niente i forni falliti."
+          presagi:
+            - {testo: "La segale guasta arriva a Fontescura.", segno_visibile: "Sei sacchi con la ruota nera nel retro dell'osteria."}
+            - {testo: "Gualtiero vende il resto a Pievebassa.", segno_visibile: "Tracce fresche del carro sulla strada verso valle."}
+          mosse: ["vende sottocosto", "sparge una voce", "compra un debito", "sparisce col carro"]
+          cast: [gualtiero_malerba]
+          orologio: o_grano
+        - id: p_compagnia
+          tipo: "orda: una compagnia di ventura che cerca i suoi disertori"
+          impulso: "riprendere"
+          destino_incombente: "La Compagnia del Grifo riporta Sebastiano al campo e lo impicca davanti ai soldati."
+          presagi:
+            - {testo: "La Compagnia mette una taglia sui disertori.", segno_visibile: "Un avviso con il grifo inchiodato alla porta della cappella."}
+          mosse: ["offre una taglia", "manda due cavalieri", "interroga gli osti"]
+          cast: []
+          orologio: o_compagnia
+      domande_di_posta:
+        - "Gualtiero pagherà per la segale?"
+        - "La Compagnia del Grifo avrà Sebastiano?"
+      orologi_extra:
+        - {id: o_grano, nome: "Il grano marcio viaggia", segmenti: 6, pieni_all_inizio: 2}
+        - {id: o_compagnia, nome: "La Compagnia ritrova i suoi", segmenti: 4, pieni_all_inizio: 1}
+
+    - id: fronte_fuoco_nero
+      livello: avventura
+      nome: "Il fuoco nero di Fontescura"
+      pericoli:
+        - id: p_folla
+          tipo: "orda: un paese impaurito"
+          impulso: "punire"
+          destino_incombente: "Il paese caccia Sebastiano nella neve e si convince di essere salvo."
+          presagi:
+            - {testo: "Il paese chiude il forestiero sotto chiave.", segno_visibile: "Baldrin di guardia alla porta del ripostiglio, col martello sulle ginocchia."}
+            - {testo: "Il paese viene a prenderlo.", segno_visibile: "Tre rintocchi e lanterne sotto il portico."}
+          mosse: ["batte alle imposte", "lancia un sasso", "pretende il pane", "spinge la porta", "isola chi difende il forestiero"]
+          cast: [png_baldrin]
+          orologio: o_colpevole
+        - id: p_segale
+          tipo: "piaga: la segale guasta"
+          impulso: "diffondersi"
+          destino_incombente: "Tutto il paese spezza il pane dei lumi, e la febbre entra anche nelle case sane."
+          presagi:
+            - {testo: "Il pane dei lumi è pronto.", segno_visibile: "Le ceste coperte di lino bianco sul tavolo lungo."}
+          mosse: ["fa tremare un corpo", "brucia le mani", "dà una visione", "colpisce un animale"]
+          cast: [png_ottavia]
+          orologio: o_febbre
+      domande_di_posta:
+        - "Sebastiano sarà vivo all'alba?"
+        - "Qualcuno spezzerà il pane dei lumi, stanotte?"
+        - "Ottavia avrà ancora la sua osteria a primavera?"
+
+  # C3 — Cattivo con agenda (fuori scena per tutta la sessione di prova).
+  cattivo:
+    id: gualtiero_malerba
+    nome: "Gualtiero Malerba"
+    pronuncia: "Gualtièro Malèrba"
+    ruolo: "mugnaio di Valsecca; ha venduto la segale guasta"
+    obiettivo: "Liberarsi della segale guasta senza perdere il mulino né il buon nome."
+    cronologia_se_i_pg_non_intervengono:
+      - "Quattro giorni fa vende sei sacchi a Ottavia, a metà prezzo, metà a credito."
+      - "Due notti fa vede un incappucciato al pozzo e dice a Baldrin di avergli visto versare una polvere."
+      - "Ieri all'alba riparte verso Pievebassa con altri dieci sacchi."
+      - "Stanotte il paese mangia il pane dei lumi e caccia il forestiero: nessuno guarda la farina."
+      - "Tra una settimana vende i sacchi a Pievebassa; a primavera compra il forno di Ottavia per il debito."
+    risorse:
+      - {cosa: "carro e mulo", a_cosa_serve: "spostare la segale in fretta, da un paese all'altro"}
+      - {cosa: "il credito di Ottavia", a_cosa_serve: "tenerla zitta e prendersi il forno a primavera"}
+      - {cosa: "la fama di uomo onesto", a_cosa_serve: "essere creduto contro un forestiero"}
+      - {cosa: "la voce della polvere nel pozzo", a_cosa_serve: "dare al paese un colpevole che non sia la farina"}
+    reazioni:
+      - {intrusione: "i PG scoprono che la segale è sua", reazione: "dice che Ottavia ha mischiato la sua farina con roba vecchia"}
+      - {intrusione: "i PG lo cercano a Valsecca", reazione: "nasconde i sacchi nel mulino vecchio e offre un pranzo"}
+      - {intrusione: "Sebastiano viene creduto", reazione: "lo denuncia alla Compagnia del Grifo per la taglia"}
+    stato_di_quiete: "Fontescura viveva di castagne, di carbone e del pane di Ottavia. L'unico nemico era l'inverno."
+    chiamata_all_azione: "Il pane dei lumi è nelle ceste e il paese vuole un colpevole prima del terzo rintocco."
+
+  # C6 — Segreti astratti: una o due frasi, senza luogo fisso. Quelli non usati passano oltre.
+  segreti_astratti:
+    - "Gualtiero sapeva che la segale era guasta: il granaio del conte l'aveva rifiutata un mese fa."
+    - "Sulla testa di Sebastiano c'è una taglia di venti corone della Compagnia del Grifo."
+    - "Sebastiano ha disertato per non lasciar morire i feriti nemici, non per paura."
+    - "Ottavia deve ancora a Gualtiero metà della segale: se non paga a primavera, il forno è suo."
+    - "Quest'estate i campi bassi di Valsecca sono rimasti sott'acqua per due settimane."
+    - "Il sacrestano suona sempre la campana un po' prima, perché in cappella ha freddo."
+    - "Ilde ha chiesto al padre un pezzo di pane dei lumi, e lui gliel'ha promesso."
+    - "Da bambino, quando passavano le guardie, Ottavia nascondeva Assenzio sotto la botola del ripostiglio."
+    - "Il libro del rito ammette le castagne al posto del pane impuro."
+    - "Due cavalieri della Compagnia sono già a Pievebassa e fanno domande nelle osterie."
+
+  # C8 — Archi. Annotati, non imposti.
+  archi:
+    campagna_tre_atti:
+      - "Atto primo: il fuoco nero di Fontescura."
+      - "Atto secondo: la segale di Valsecca e il debito di Ottavia."
+      - "Atto terzo: la Compagnia del Grifo viene a riprendersi i suoi."
+    pg:
+      pg_ginestra: {tu: "erborista schiva", bisogno: "smettere di sentirsi impotente", vai: "riconosce la febbre della nonna", cerca: "la prova nella farina", trova: "il rimedio", paga: "si espone davanti al paese", ritorna: "cura i malati", cambia: "parla per chi non ha voce"}
+      pg_corrado: {tu: "soldato pieno di debiti", bisogno: "una paga pulita", vai: "riconosce il cerusico", cerca: "il prezzo giusto", trova: "perché è fuggito", paga: "rinuncia alla taglia, o alla coscienza", ritorna: "sceglie da che parte stare", cambia: "da mercenario a protettore"}
+      pg_assenzio: {tu: "trovatello guardato storto", bisogno: "essere accettato a casa", vai: "vede Ottavia mentire", cerca: "un modo di salvarla", trova: "la sua vergogna", paga: "la affronta", ritorna: "la difende davanti al paese", cambia: "smette di scappare"}
+      pg_teodora: {tu: "chierica al primo incarico", bisogno: "fidarsi del proprio giudizio", vai: "deve benedire il pane", cerca: "cosa vuole davvero il rito", trova: "la regola delle castagne", paga: "sfida l'usanza davanti a tutti", ritorna: "guida la veglia a modo suo", cambia: "da esecutrice a guida"}
