@@ -93,7 +93,7 @@ function compila(o: Opzioni): { campagna: string; scene: ScenaCompilata[]; avvis
   const scene = scelte.map((s) => ({
     id: s.id,
     sezioni: sezioniContestoRepertorio(conScena(campagna, s.id), parole, repertorio),
-    catalogo: catalogoDi(repertorio, s.id),
+    catalogo: o.catalogo ? catalogoDi(repertorio, s.id) : [],
   }));
   return { campagna: campagna.id, scene, avvisi };
 }
