@@ -1,0 +1,195 @@
+{
+  "copione": "prova2/caotico",
+  "modo": "improvvisa",
+  "sessione": "2026-11-02T14:55:35.878Z",
+  "nota_ambiente": "Copioni held-out prova2. Voce finta (CANTASTORIE_MOCK_SCALA=0.25): contano solo le misure dell'LLM. Arbitro delle azioni solo a regole (CANTASTORIE_ARBITRO=regole), così i telefoni headless ricevono lo stesso insieme di azioni in A e in B2 (nessun avviso da confermare lasciato scadere).",
+  "turni": 8,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 10.5,
+      "peggiore": 27,
+      "n": 8
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 945,
+      "peggiore": 2778,
+      "n": 8
+    },
+    "llm_prima_frase": {
+      "mediana": 1127,
+      "peggiore": 2917,
+      "n": 8
+    },
+    "voce_richiesta": {
+      "mediana": 1127,
+      "peggiore": 2917,
+      "n": 8
+    },
+    "voce_primo_audio": {
+      "mediana": 1291,
+      "peggiore": 3081,
+      "n": 8
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1444.5,
+      "peggiore": 3233,
+      "n": 8
+    },
+    "llm_fine": {
+      "mediana": 2437,
+      "peggiore": 3844,
+      "n": 8
+    },
+    "audio_fine": {
+      "mediana": 31235,
+      "peggiore": 43746,
+      "n": 8
+    }
+  },
+  "buchi": {
+    "totale": 0,
+    "in_frase": 0,
+    "tra_frasi": 0,
+    "silenzio_ms": 0,
+    "per_turno": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 35,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 23,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 2,
+    "prescritte": 0,
+    "elenco": [
+      {
+        "turno": 3,
+        "origine": "improvvisata",
+        "etichetta": "narratore",
+        "riga": "Ottavia si ferma con il mestolo a mezz'aria. Sul suo viso passa un'ombra. Ginestra, dice piano, di quella segale ne ho presa tanta. Poi torna a mescolare il paiolo, più in fretta.",
+        "parola": "un'ombra / gli serviva un colpevole"
+      },
+      {
+        "turno": 4,
+        "origine": "improvvisata",
+        "etichetta": "narratore",
+        "riga": "Teodora, il lino scivola: sotto ci sono pagnotte scure, con chicchi neri e curvi nella mollica.",
+        "parola": "chicchi neri e curvi"
+      }
+    ]
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0.00952736,
+  "costo_mediana_turno_usd": 0.00066432,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 148,
+      "secondi": 29.266666666666598,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 1,
+      "frasi": 6,
+      "pezzi": 113,
+      "secondi": 22.199999999999957,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 2,
+      "frasi": 9,
+      "pezzi": 159,
+      "secondi": 31.266666666666588,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 3,
+      "frasi": 11,
+      "pezzi": 187,
+      "secondi": 36.79999999999998,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 4,
+      "frasi": 6,
+      "pezzi": 135,
+      "secondi": 26.53333333333327,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 5,
+      "frasi": 9,
+      "pezzi": 141,
+      "secondi": 27.533333333333267,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 6,
+      "frasi": 9,
+      "pezzi": 158,
+      "secondi": 31.333333333333254,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 7,
+      "frasi": 7,
+      "pezzi": 136,
+      "secondi": 26.866666666666607,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 10,
+      "pezzi": 210,
+      "secondi": 41.33333333333338,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}

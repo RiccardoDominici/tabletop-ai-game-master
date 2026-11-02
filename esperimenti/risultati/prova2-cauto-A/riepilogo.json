@@ -1,0 +1,195 @@
+{
+  "copione": "prova2/cauto",
+  "modo": "improvvisa",
+  "sessione": "2026-11-02T15:07:42.272Z",
+  "nota_ambiente": "Copioni held-out prova2. Voce finta (CANTASTORIE_MOCK_SCALA=0.25): contano solo le misure dell'LLM. Arbitro delle azioni solo a regole (CANTASTORIE_ARBITRO=regole), così i telefoni headless ricevono lo stesso insieme di azioni in A e in B2 (nessun avviso da confermare lasciato scadere).",
+  "turni": 8,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 9,
+      "peggiore": 15,
+      "n": 8
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 839,
+      "peggiore": 2024,
+      "n": 8
+    },
+    "llm_prima_frase": {
+      "mediana": 1049,
+      "peggiore": 2216,
+      "n": 8
+    },
+    "voce_richiesta": {
+      "mediana": 1049.5,
+      "peggiore": 2216,
+      "n": 8
+    },
+    "voce_primo_audio": {
+      "mediana": 1214.5,
+      "peggiore": 2378,
+      "n": 8
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1367.5,
+      "peggiore": 2530,
+      "n": 8
+    },
+    "llm_fine": {
+      "mediana": 2374.5,
+      "peggiore": 3586,
+      "n": 8
+    },
+    "audio_fine": {
+      "mediana": 35846,
+      "peggiore": 48000,
+      "n": 8
+    }
+  },
+  "buchi": {
+    "totale": 0,
+    "in_frase": 0,
+    "tra_frasi": 0,
+    "silenzio_ms": 0,
+    "per_turno": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 40,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 23,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 2,
+    "prescritte": 0,
+    "elenco": [
+      {
+        "turno": 5,
+        "origine": "improvvisata",
+        "etichetta": "narratore",
+        "riga": "Ginestra, la pagnotta è calda e pesa poco. Sotto la crosta la mollica ha un odore acre, di muffa, e tra le briciole luccicano chicchi neri e curvi come piccole unghie.",
+        "parola": "chicchi neri e curvi"
+      },
+      {
+        "turno": 7,
+        "origine": "improvvisata",
+        "etichetta": "png_sebastiano",
+        "riga": "Roccalba l'ho lasciata da due mesi. Mi chiedevano di lasciar morire i feriti nemici, e non ho obbedito.",
+        "parola": "feriti nemici / il capitano"
+      }
+    ]
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0.00985936,
+  "costo_mediana_turno_usd": 0.00073047,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 148,
+      "secondi": 29.266666666666598,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 1,
+      "frasi": 4,
+      "pezzi": 103,
+      "secondi": 20.39999999999996,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 2,
+      "frasi": 9,
+      "pezzi": 167,
+      "secondi": 32.73333333333326,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 3,
+      "frasi": 15,
+      "pezzi": 239,
+      "secondi": 46.73333333333346,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 4,
+      "frasi": 9,
+      "pezzi": 178,
+      "secondi": 35.1333333333333,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 5,
+      "frasi": 12,
+      "pezzi": 199,
+      "secondi": 38.93333333333336,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 6,
+      "frasi": 6,
+      "pezzi": 118,
+      "secondi": 23.333333333333282,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 7,
+      "frasi": 10,
+      "pezzi": 212,
+      "secondi": 41.80000000000006,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 8,
+      "pezzi": 147,
+      "secondi": 28.866666666666596,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}
