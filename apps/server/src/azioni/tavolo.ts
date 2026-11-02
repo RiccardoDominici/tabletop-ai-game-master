@@ -45,6 +45,8 @@ export interface OpzioniTavolo {
   estensioneMaxMs?: number;
   scritturaRecenteMs?: number;
   attesaArbitroMs?: number;
+  /** Finestra aperta senza nessun input (azioni, scrittura, pronto) per questo tempo → stallo. 0 = mai. */
+  stalloMs?: number;
   onCambio: () => void;
   onAzione: (id_pg: string, azione: AzionePrivata | null) => void;
   onChiusura: (r: RiepilogoChiusura) => void;
@@ -57,7 +59,8 @@ export interface RiepilogoChiusura {
   sospese: Azione[];
   /** Invitati senza azione (hanno passato o non hanno scritto). */
   senzaAzione: string[];
-  motivo: 'tutti_pronti' | 'scadenza' | 'forzata';
+  /** «stallo»: nessun input per 45 s, il narratore fa una mossa contro lo stallo. */
+  motivo: 'tutti_pronti' | 'scadenza' | 'forzata' | 'stallo';
   durata_ms: number;
   /** Istante monotono della chiusura (t0 delle misure). */
   chiusa_a: number;
@@ -90,6 +93,7 @@ export class TavoloAzioni {
   private versioneScena = 0;
   private prossimoId = 1;
   private annullaControllo: (() => void) | null = null;
+  private annullaStallo: (() => void) | null = null;
   private spareggio: Spareggio;
   /** Giocatori con cui è stato creato lo spareggio (la rotazione vale finché il tavolo non cambia). */
   private giocatoriSpareggio: string;
@@ -100,6 +104,7 @@ export class TavoloAzioni {
       estensioneMaxMs: 8_000,
       scritturaRecenteMs: 3_000,
       attesaArbitroMs: 1_200,
+      stalloMs: 45_000,
       ...opzioni,
       nomeBreve: opzioni.nomeBreve ?? opzioni.nomePg,
     };
@@ -228,8 +233,28 @@ export class TavoloAzioni {
       pronti: new Set(),
     };
     this.o.log.info({ turno, invitati: this.finestra.invitati, giaInCoda: this.vive(turno).length }, 'finestra: aperta');
+    this.riarmaStallo();
     this.o.onCambio();
     this.controlla();
+  }
+
+  /**
+   * Stallo (docs/architettura.md, «Turni»): se la finestra resta aperta senza NESSUN input per
+   * `stalloMs`, si chiude con motivo «stallo» e il narratore fa una mossa morbida. Ogni input
+   * (invio, scrittura, pronto, ritiro, conferma) fa ripartire il conto.
+   */
+  private riarmaStallo(): void {
+    this.annullaStallo?.();
+    this.annullaStallo = null;
+    const f = this.finestra;
+    if (!f?.aperta || f.chiudendo || this.o.stalloMs <= 0) return;
+    this.annullaStallo = this.o.orologio.dopo(this.o.stalloMs, () => {
+      this.annullaStallo = null;
+      const g = this.finestra;
+      if (!g?.aperta || g.chiudendo || this.vive(g.turno).length) return;
+      this.o.log.info({ turno: g.turno, ms: this.o.stalloMs }, 'finestra: stallo, nessun input');
+      void this.chiudi('stallo');
+    });
   }
 
   aggiungiInvitato(id_pg: string): void {
@@ -300,6 +325,7 @@ export class TavoloAzioni {
       this.dopoInvio(a);
     }
     this.scritture.delete(id_pg);
+    this.riarmaStallo();
     this.o.onCambio();
     this.controlla();
     return { ok: true };
@@ -315,6 +341,7 @@ export class TavoloAzioni {
     this.o.log.info({ azione: a.id, autore: id_pg }, 'azione: ritirata');
     this.segnalaDipendenti(a, 'ritirata', null);
     this.notificaAzione(a);
+    this.riarmaStallo();
     this.o.onCambio();
     this.controlla();
     return { ok: true };
@@ -329,6 +356,7 @@ export class TavoloAzioni {
     a.motivo = null;
     this.o.log.info({ azione: a.id, autore: id_pg }, 'azione: confermata');
     this.notificaAzione(a);
+    this.riarmaStallo();
     this.o.onCambio();
     this.controlla();
     return { ok: true };
@@ -342,14 +370,16 @@ export class TavoloAzioni {
     else f.pronti.delete(id_pg);
     const a = this.azioneViva(id_pg, f.turno);
     if (a) this.notificaAzione(a);
+    this.riarmaStallo();
     this.o.onCambio();
     this.controlla();
     return { ok: true };
   }
 
-  /** Indicatore «sta scrivendo»: allunga la chiusura per gli invitati. */
+  /** Indicatore «sta scrivendo»: allunga la chiusura per gli invitati (ed è un input: niente stallo). */
   scrivo(id_pg: string): void {
     this.scritture.set(id_pg, this.o.orologio.ora());
+    this.riarmaStallo();
     this.controlla();
   }
 
@@ -552,6 +582,8 @@ export class TavoloAzioni {
     f.chiudendo = true; // lucchetto: da qui gli invii vanno alla finestra successiva
     this.annullaControllo?.();
     this.annullaControllo = null;
+    this.annullaStallo?.();
+    this.annullaStallo = null;
     // Giudizi dell'arbitro ancora in volo: si aspettano per poco, così il narratore ha i collegamenti.
     if (motivo !== 'forzata' && this.inVolo.size) {
       const t0 = this.o.orologio.ora();
@@ -661,6 +693,8 @@ export class TavoloAzioni {
   azzera(): void {
     this.annullaControllo?.();
     this.annullaControllo = null;
+    this.annullaStallo?.();
+    this.annullaStallo = null;
     for (const id of this.ultima.keys()) this.o.onAzione(id, null);
     this.azioni.clear();
     this.ultima.clear();

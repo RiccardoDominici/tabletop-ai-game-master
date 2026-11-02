@@ -136,6 +136,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     arbitro,
     scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),
     immagini,
+    stalloMs: config.turni.stalloMs,
   });
   regia.collega(uscite.regia);
 

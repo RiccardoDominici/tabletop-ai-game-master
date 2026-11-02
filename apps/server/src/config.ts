@@ -72,6 +72,8 @@ export interface ConfigServer {
      * così un copione fisso di azioni si può dare identico a due narratori.
      */
     finestraATutti: boolean;
+    /** Finestra aperta senza nessun input per questo tempo → mossa contro lo stallo (0 = mai). */
+    stalloMs: number;
   };
 }
 
@@ -129,6 +131,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
       margineFineAudioMs: numero(env['CANTASTORIE_MARGINE_AUDIO_MS'], 2500),
       trascrizioneMax: numero(env['CANTASTORIE_TRASCRIZIONE_MAX'], 80),
       finestraATutti: testo(env['CANTASTORIE_FINESTRA_TUTTI']) === '1',
+      stalloMs: numero(env['CANTASTORIE_STALLO_MS'], 45_000),
     },
   };
 }

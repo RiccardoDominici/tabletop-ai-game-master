@@ -27,6 +27,8 @@ export interface DatiMessaggioTurno {
   orologi?: string;
   /** Collegamenti tra le azioni del turno (dipendenze, conflitti), righe già pronte. */
   collegamenti?: string[];
+  /** Stallo: quante finestre di fila senza nessun input (1 = prima mossa, S1). */
+  stallo?: number;
   /** Modalità repertorio: fatti scoperti (testo), catalogo del turno (righe pronte), stallo. */
   repertorio?: { fattiScoperti: string[]; battuteDisponibili: string; stallo?: boolean };
   /** Massimo di voci di trascrizione da includere (le più recenti). */
@@ -102,6 +104,7 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
   }
 
   if (d.orologi) parti.push('## Orologi della scena (stato tenuto dal Motore)', d.orologi);
+  if (d.stallo && !d.repertorio) parti.push(testoStallo(d.stallo));
   if (d.repertorio) {
     if (d.repertorio.fattiScoperti.length) parti.push('## Fatti scoperti in scena (ora li conoscono i PG)', d.repertorio.fattiScoperti.map((f) => `- ${f}`).join('\n'));
     parti.push('## Catalogo: battute pertinenti a questo turno (id · chi · tipo · quando)', d.repertorio.battuteDisponibili || '(nessuna)');
@@ -134,4 +137,18 @@ export function messaggioRiparazione(messaggio: string, detto: string, mancanti:
       '([narratore], [png_…], oppure [usa] id > pg_id se una battuta del catalogo risponde proprio a quella azione). ' +
       'Non ripetere niente di ciò che hai già detto. Niente [invito].',
   ].join('\n\n');
+}
+
+/**
+ * Mossa contro lo stallo (manuale, S1–S3): prima un segno di un fronte attivo, poi un indizio
+ * proattivo, poi un PNG che riassume due o tre strade concrete. Mai un «cosa fate?» a vuoto.
+ */
+export function testoStallo(volte: number): string {
+  const mossa =
+    volte <= 1
+      ? 'una mossa morbida: un segno visibile della minaccia (S1), senza niente di irreversibile'
+      : volte === 2
+        ? 'un indizio proattivo (S2): qualcosa irrompe e porta una pista nuova'
+        : 'un PNG o un ricordo che riassume due o tre strade concrete (S3), nella finzione';
+  return `## Stallo\nDa 45 secondi nessuno scrive niente${volte > 1 ? ` (${volte} volte di fila)` : ''}. Fai ${mossa}. Non decidere per i PG e chiudi con un invito a qualcuno per nome.`;
 }

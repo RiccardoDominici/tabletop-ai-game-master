@@ -326,3 +326,25 @@ describe('azioni simultanee — scenari', () => {
     expect(tavolo.azione('a2')!.dipende_da).toEqual(['a1']);
   });
 });
+
+describe('stallo', () => {
+  it('45 s senza nessun input: la finestra si chiude con motivo «stallo»; ogni input fa ripartire il conto', async () => {
+    const { tavolo, orologio, chiusure } = crea();
+    tavolo.apri(1, ['pg_g', 'pg_c'], 1, true);
+    await orologio.avanza(30_000);
+    tavolo.scrivo('pg_g'); // un input: il conto riparte
+    await orologio.avanza(44_000);
+    expect(tavolo.aperta).toBe(true);
+    await orologio.avanza(1_100);
+    expect(tavolo.aperta).toBe(false);
+    expect(chiusure[0]).toMatchObject({ motivo: 'stallo', azioni: [] });
+  });
+
+  it('con un’azione in coda niente stallo: vale la chiusura normale', async () => {
+    const { tavolo, orologio, chiusure } = crea();
+    tavolo.apri(1, ['pg_g', 'pg_c'], 1, true);
+    tavolo.invia('pg_g', 'ascolto la tosse', 1);
+    await orologio.avanza(50_000);
+    expect(chiusure[0]!.motivo).toBe('scadenza');
+  });
+});

@@ -82,6 +82,8 @@ export interface OpzioniRegia {
   scenaPubblica?: string;
   /** Immagini dei luoghi e ritratti dei PNG per il proiettore. */
   immagini?: CatalogoImmagini;
+  /** Silenzio che fa scattare la mossa contro lo stallo (default 45 s; 0 = mai). */
+  stalloMs?: number;
 }
 
 /** Ascoltatori del trasporto (Socket.IO). */
@@ -123,6 +125,8 @@ export class Regia {
   private readonly nomiPng: Map<string, string[]>;
   /** Luogo corrente (id della scena o del nodo): sceglie l'immagine del proiettore. */
   private luogo: string;
+  /** Stalli di fila (S1, S2, S3…): si azzera appena qualcuno agisce. */
+  private stalliDiFila = 0;
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
@@ -186,6 +190,7 @@ export class Regia {
       contesto: () => ({ narrazione: this.ultimaNarrazione(), scena: opzioni.scenaPubblica ?? '' }),
       log: opzioni.log.child({ modulo: 'azioni' }),
       chiusuraDopoPrimaAzioneMs: opzioni.chiusuraDopoPrimaAzioneMs,
+      ...(opzioni.stalloMs !== undefined ? { stalloMs: opzioni.stalloMs } : {}),
       onCambio: () => this.notifica(),
       onAzione: (id_pg, a) => this.uscita?.azioneMia(id_pg, a),
       onChiusura: (r) => this.finestraChiusa(r),
@@ -576,11 +581,13 @@ export class Regia {
       if (!a.privata) this.aggiungiTrascrizione({ turno: r.turno, tipo: 'azione', chi: a.autore, nome: nomePg(a.autore), testo: a.testo });
     }
     const perNarratore = azioniPerNarratore(r, nomePg, (id) => this.tavolo.azione(id));
+    this.stalliDiFila = r.motivo === 'stallo' ? this.stalliDiFila + 1 : 0;
     const messaggio = compilaMessaggioTurno({
       turno: r.turno,
       trascrizione: this.trascrizione,
       azioni: perNarratore.azioni,
       collegamenti: perNarratore.collegamenti,
+      ...(this.stalliDiFila ? { stallo: this.stalliDiFila } : {}),
       pgAlTavolo: this.pgAlTavolo().map((id) => ({ id, nome: nomePg(id) })),
       orologi: this.statoRepertorio ? this.orologi.descriviRepertorio(r.turno) : this.orologi.descrivi(r.turno),
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
@@ -596,7 +603,7 @@ export class Regia {
       ...r.sospese.map((a) => ({ id_pg: a.autore, testo: a.testo as string | null, sospesa: true })),
       ...r.senzaAzione.map((id) => ({ id_pg: id, testo: null as string | null })),
     ];
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni);
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo);
   }
 
   private async eseguiNarrazione(
@@ -604,6 +611,7 @@ export class Regia {
     messaggio: string,
     epoca: number,
     azioni: Array<{ id_pg: string; testo: string | null; [k: string]: unknown }>,
+    chiusura: RiepilogoChiusura['motivo'],
   ): Promise<void> {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
@@ -738,6 +746,7 @@ export class Regia {
       sessione: this.sessione,
       turno,
       tipo: 'turno',
+      chiusura,
       ...conteggi,
       uscita: esito.uscita,
       ...(this.statoRepertorio ? { stato_repertorio: this.statoRepertorio.riepilogo() } : {}),
@@ -769,7 +778,8 @@ export class Regia {
     const s = this.statoRepertorio!;
     const pubbliche = r.azioni.filter((a) => !a.privata);
     const testoAzioni = pubbliche.map((a) => a.testo).join('\n');
-    const stallo = r.azioni.length === 0;
+    // Stallo: 45 s senza input, o una finestra chiusa senza nessuna azione (tutti hanno passato).
+    const stallo = r.motivo === 'stallo' || r.azioni.length === 0;
     const segnoDovuto = this.orologi.elenco.some((o) => this.orologi.dovuto(o, r.turno));
     const { battute, trattenute, perche } = s.catalogo({ turno: r.turno, testoAzioni, stallo, segnoDovuto, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
     this.elencoTurno = new Set(battute.map((b) => b.id));
