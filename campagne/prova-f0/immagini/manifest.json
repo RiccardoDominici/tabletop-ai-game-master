@@ -5,7 +5,7 @@
       "file": "luogo_n_mulino_valsecca.jpg",
       "tipo": "luogo",
       "prompt": "old stone watermill beside a frozen mountain stream in a narrow valley at night, deep snow on the path and on the roof, the wooden water wheel still and iced, no people, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering",
-      "seme": 235170420,
+      "seme": 1000,
       "larghezza": 1920,
       "altezza": 1080,
       "generata": [
@@ -14,10 +14,11 @@
       ],
       "riferimenti": [],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 352.6,
-      "picco_gb": 5.14,
-      "kb": 784,
-      "quando": "2026-11-02 20:08:46"
+      "secondi": 235.2,
+      "picco_gb": 5.35,
+      "kb": 728,
+      "rifilato_pct": 5.0,
+      "quando": "2026-11-02 20:42:46"
     },
     {
       "id": "luogo_n_osteria",
@@ -42,15 +43,17 @@
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
       "secondi": 290.3,
       "picco_gb": 5.35,
-      "kb": 869,
-      "quando": "2026-11-02 20:02:53"
+      "kb": 838,
+      "quando": "2026-11-02 20:02:53",
+      "rifilato_pct": 3.0,
+      "rifilato_dal_jpeg": true
     },
     {
       "id": "luogo_scena_forno_vecchio",
       "file": "luogo_scena_forno_vecchio.jpg",
       "tipo": "luogo",
       "prompt": "low-beamed mountain village tavern at night, soot-black rafters, glowing wood-fired bread oven at the back, long table with baskets covered in white linen, heavy wooden storeroom door with a small iron grate, window onto a stone square where a candle burns in every window, black dog lying asleep on the stone floor beside the oven, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering",
-      "seme": 1000,
+      "seme": 120891997,
       "larghezza": 1920,
       "altezza": 1080,
       "generata": [
@@ -59,10 +62,12 @@
       ],
       "riferimenti": [],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 212.9,
-      "picco_gb": 5.14,
-      "kb": 747,
-      "quando": "2026-11-02 19:58:02"
+      "secondi": 199.1,
+      "picco_gb": 5.37,
+      "kb": 783,
+      "rifilato_pct": 2.8,
+      "nota": "generata alle 19:42 dall'anteprima (stesso prompt e seme che genera.py compone da fa26f11, verificato), rifilata dal PNG originale; preferita ai semi 1000 e 7 per l'orlo di carta più sottile",
+      "quando": "2026-11-02 19:42:36"
     },
     {
       "id": "ritratto_png_baldrin",
@@ -107,7 +112,7 @@
       "file": "ritratto_png_sebastiano.jpg",
       "tipo": "ritratto",
       "prompt": "head-and-shoulders bust portrait of a gaunt tall man about forty, worn black wool travelling cloak with a deep medieval hood pulled low, his brow and eyes in the shadow of the hood, three-day stubble, arms folded with his hands tucked into his sleeves, facing the viewer, against a plain dark slate-blue ink wash background that fills the frame. Tratti fissi: circa 40 anni; alto e magro; mantello nero col cappuccio calato sugli occhi, logoro; barba di tre giorni, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering",
-      "seme": 221464820,
+      "seme": 12,
       "larghezza": 768,
       "altezza": 1024,
       "generata": [
@@ -116,10 +121,10 @@
       ],
       "riferimenti": [],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 73.2,
-      "picco_gb": 4.29,
-      "kb": 185,
-      "quando": "2026-11-02 19:54:29"
+      "secondi": 71.9,
+      "picco_gb": 4.31,
+      "kb": 184,
+      "quando": "2026-11-02 20:35:22"
     }
   ]
 }
