@@ -62,7 +62,8 @@ crede_a_torto:
   - {testo: "Il forestiero dà la colpa al pane per salvarsi la pelle.", contraddice: f_causa_segale}
   - {testo: "Tecla delira per la febbre: il corvo se l'è sognato.", contraddice: f_tecla_curata}
 mente_su:
-  - argomento: "chi ha visto il forestiero al pozzo"
+  - id: bal_testimoni   # = effetti.menzogna_detta delle sue battute
+    argomento: "chi ha visto il forestiero al pozzo"
     verita: f_testimoni_pozzo
     versione: "L'hanno visto in tre, al pozzo. Versava una polvere."
     perche: "Se l'ha visto solo lui, e al buio, l'accusa del massaro vale poco."

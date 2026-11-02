@@ -71,13 +71,15 @@ non_sa:
 crede_a_torto:
   - {testo: "L'ostessa sa benissimo che il pane è guasto, e lo vende lo stesso.", contraddice: f_ottavia_sospetta}
 mente_su:
-  - argomento: "il suo mestiere"
+  - id: seb_mestiere   # = effetti.menzogna_detta delle sue battute
+    argomento: "il suo mestiere"
     verita: f_sebastiano_cerusico
     versione: "Vendo spezie. Pepe, cannella, chiodi di garofano."
     perche: "Se scoprono che è un cerusico, qualcuno si chiederà di quale esercito."
     segnale: "nasconde le mani nelle maniche e tossisce"
     cede_se: "Dice di essere un cerusico a chi gli promette di non consegnarlo, quando Baldrin non può sentire: dalla botola, o mentre Baldrin è alla finestra. Oppure quando un malato ha bisogno di lui davanti ai suoi occhi."
-  - argomento: "la guerra e da dove viene"
+  - id: seb_guerra   # = effetti.menzogna_detta delle sue battute
+    argomento: "la guerra e da dove viene"
     verita: f_sebastiano_disertore
     versione: "Soldato io? Vengo dal mare. Ho sempre venduto spezie."
     perche: "Paura della forca."

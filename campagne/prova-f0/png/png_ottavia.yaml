@@ -60,13 +60,15 @@ crede_a_torto:
   - {testo: "Setacciata due volte, la farina è buona: i chicchi neri sono solo brutti da vedere.", contraddice: f_setaccio_inutile}
   - {testo: "Se c'è un veleno, è nel pozzo: il suo pane non ha mai fatto male a nessuno.", contraddice: f_pozzo_pulito}
 mente_su:
-  - argomento: "da dove viene la segale"
+  - id: ott_segale   # = effetti.menzogna_detta delle sue battute
+    argomento: "da dove viene la segale"
     verita: f_segale_gualtiero
     versione: "È la segale di sempre, del mulino del paese. La prendo lì da trent'anni."
     perche: "Vergogna di aver comprato roba da poco. E paura: se è il pane, i bambini li ha fatti ammalare lei."
     segnale: "si sistema il fazzoletto rosso sui capelli e guarda le ceste"
     cede_se: "Dice la verità quando un PG le mette in mano un chicco nero preso dai suoi sacchi e Baldrin non può sentire: nel retro, dietro la tenda, o in cantina. Oppure quando Assenzio le chiede la verità in nome di tutte le volte che lei ha coperto lui. La prima confessione è sempre in privato, mai davanti al paese."
-  - argomento: "il cane"
+  - id: ott_cane   # = effetti.menzogna_detta delle sue battute
+    argomento: "il cane"
     verita: f_cane_croste
     versione: "Avrà mangiato un topo. I cani mangiano i topi."
     perche: "Le croste portano dritte al pane."
