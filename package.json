@@ -1,0 +1,30 @@
+{
+  "name": "cantastorie",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Cantastorie — master IA per D&D in presenza (F0: prova end-to-end)",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n server,web -c blue,magenta \"npm run dev -w @cantastorie/server\" \"npm run dev -w @cantastorie/web\"",
+    "build": "npm run build -w @cantastorie/web",
+    "start": "npm run start -w @cantastorie/server",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "e2e": "npm run e2e -w @cantastorie/web",
+    "check": "npm run typecheck && npm run test"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "concurrently": "^10.0.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

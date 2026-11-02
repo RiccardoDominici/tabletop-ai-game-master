@@ -1,0 +1,15 @@
+{
+  "name": "@cantastorie/shared",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Contratto condiviso: tipi degli eventi Socket.IO e dei messaggi tra telefono, server e schermo",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}
