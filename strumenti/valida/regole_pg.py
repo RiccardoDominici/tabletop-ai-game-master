@@ -41,3 +41,7 @@ def controlla(c: Campagna, e: Esito) -> None:
         nome = str(p.get("nome", "")).replace("Sorella ", "").replace("Fratello ", "").split()
         if nome and nome[0] in nomi_png:
             e.errore("PG.nome", pid, f"stesso nome di un PNG: {nome[0]}")
+        comune = c.pg.get("situazione_comune") or "" if isinstance(c.pg, dict) else ""
+        if nome and re.search(rf"\b{re.escape(nome[0])}\b", comune):
+            e.errore("PG.situazione_comune", pid,
+                     f"la situazione comune nomina {nome[0]}: deve valere per qualunque gruppo di giocatori")

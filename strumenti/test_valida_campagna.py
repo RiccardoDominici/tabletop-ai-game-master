@@ -249,6 +249,11 @@ def test_pg_id_non_valido(camp):
     assert "PG.id" in errori(camp)
 
 
+def test_pg_nominato_nella_situazione_comune(camp):
+    modifica(camp, "pg.yaml", lambda d: d.update(situazione_comune="Lia vi ha portati al passo della Volpe."))
+    assert "PG.situazione_comune" in errori(camp)
+
+
 # --- PROSA ----------------------------------------------------------------------------------------
 
 def test_prosa_frase_troppo_lunga(camp):
