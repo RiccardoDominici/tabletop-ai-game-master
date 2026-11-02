@@ -63,9 +63,21 @@ le divide in frasi e manda ogni frase alla voce giusta.
   Se manca, il server invita tutti e registra l'errore.
 - Righe senza etichetta: si accodano al segmento precedente (tolleranza), con errore nel log.
 
+## File della campagna (F0)
+
+`campagne/<id>/`: `stile.yaml`, `campagna.yaml` (fronti e orologi con segni visibili in ordine, grafo degli indizi,
+agenda del cattivo, segreti, registro del canone `canone: [{id, testo, noto_ai_pg}]`), `scena.yaml`,
+`png/png_<nome>.yaml`, `pg.yaml` (`situazione_comune` + `personaggi: [...]`).
+- I campi dei PNG `sa`, `non_sa`, `mente_su.verita` contengono id di fatti del canone; il compilatore li risolve nel testo.
+- Ordine del contesto per il narratore in F0: stile, campagna, scena, png (in ordine), pg. In F1 diventa «solo ciò che serve» (E2).
+- Id: PNG `png_<nome>` (anche l'etichetta del protocollo), PG `pg_<nome>`. Il server accetta l'etichetta anche senza
+  `png_` e senza badare a maiuscole, con un avviso nel log.
+- `conoscenze_private` di ogni PG vanno **solo** al telefono di quel giocatore, mai al tavolo o allo schermo.
+
 ## Turno (F0)
 
-1. All'avvio della scena il server fa leggere il testo d'apertura della scena (`scena.yaml`) e apre la finestra per tutti.
+1. All'avvio della scena il server fa leggere `campagna.yaml → sessione.riassunto_iniziale` (se c'è) e poi
+   `scena.yaml → apertura`, con la voce `narratore`, e apre la finestra per tutti.
 2. Finestra aperta: ogni giocatore invitato scrive un'azione, la può modificare o ritirare, e può premere «pronto».
 3. La finestra si chiude quando tutti gli invitati sono pronti, oppure 10 s dopo la prima azione inviata.
 4. Il server compila il contesto (stile + scena + PNG + PG + trascrizione pubblica + azioni), chiama Haiku in streaming,
