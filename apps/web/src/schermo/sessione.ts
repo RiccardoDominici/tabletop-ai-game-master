@@ -12,6 +12,7 @@ import { useTavolo } from '../store/tavolo';
 import { useSchermo } from '../store/schermo';
 import { useAvvisi } from '../store/avvisi';
 import { collegaAudio, sbloccaAudio } from './audioSchermo';
+import { collegaAudioScena } from './audio/ponte';
 
 const log = creaLog('schermo');
 
@@ -64,12 +65,14 @@ export function avviaSchermo(): () => void {
     s.on('metriche:turno', suMetriche);
     s.on('avviso', suAvviso);
     const scollegaAudio = collegaAudio();
+    const scollegaAudioScena = collegaAudioScena();
     const togliRientro = alRientro(() => void rientra());
     scollega = () => {
       s.off('stato', suStato);
       s.off('metriche:turno', suMetriche);
       s.off('avviso', suAvviso);
       scollegaAudio();
+      scollegaAudioScena();
       togliRientro();
     };
   }

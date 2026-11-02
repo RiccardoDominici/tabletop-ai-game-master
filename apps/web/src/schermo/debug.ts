@@ -25,6 +25,18 @@ export interface DebugSchermo {
   immagine: string | null;
   /** Dissolvenze dello sfondo completate (verso un'immagine o verso lo sfondo d'atmosfera). */
   transizioni: number;
+  /** Musica, ambienti, temi e ducking (schermo/audio/ponte.ts): funzioni lette dal vivo. */
+  audio?: DebugAudio;
+}
+
+/** Audio della scena per l'e2e: `page.evaluate(() => window.__schermoDebug.audio.stato())`. */
+export interface DebugAudio {
+  /** Stato del regista (null prima di «Inizia sessione»). */
+  stato(): import('./audio/regista').StatoRegista | null;
+  /** Guadagni correnti: bus_*, sotto_voce, generale, musica:<id>, ambiente:<id>, tema:<id>. */
+  guadagni(): Record<string, number>;
+  /** Suona un effetto del catalogo (sfx_<tag>). */
+  effetto(id: string): Promise<boolean>;
 }
 
 declare global {

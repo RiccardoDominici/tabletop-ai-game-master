@@ -13,6 +13,7 @@ import { creaLog } from '../lib/log';
 import { prendiSocket } from '../lib/socket';
 import { useSchermo } from '../store/schermo';
 import { debugSchermo } from './debug';
+import { avviaAudioScena, interrompiAudioScena, voceProgrammata } from './audio/ponte';
 
 const log = creaLog('schermo-audio');
 
@@ -64,6 +65,10 @@ const lettore = new LettorePcm({
     debugSchermo.statoAudio = stato;
   },
 
+  programmato(inizio, fine, frase) {
+    voceProgrammata(inizio, fine, frase);
+  },
+
   contatori(c) {
     debugSchermo.pezzi = c.pezzi;
     debugSchermo.byte = c.byte;
@@ -74,7 +79,11 @@ const lettore = new LettorePcm({
 
 /** Va chiamata dentro il gestore del click «Inizia sessione». */
 export function sbloccaAudio(): Promise<void> {
-  return lettore.sblocca();
+  const sblocco = lettore.sblocca();
+  // Il contesto esiste già (parte sincrona dello sblocco): il mixer della scena lo riusa.
+  const ctx = lettore.contesto;
+  if (ctx) avviaAudioScena(ctx, (nodo) => lettore.instradaVerso(nodo));
+  return sblocco;
 }
 
 export function statisticheAudio(): StatisticheLettore {
@@ -87,6 +96,7 @@ const suFineFrase = (fine: AudioFineFrase) => lettore.fineFrase(fine);
 const suFineTurno = (fine: AudioFineTurno) => lettore.fineTurno(fine);
 const suInterrompi = () => {
   lettore.interrompi();
+  interrompiAudioScena();
   useSchermo.getState().togliDaOnda(null);
 };
 

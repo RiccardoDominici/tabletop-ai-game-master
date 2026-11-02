@@ -37,6 +37,11 @@ export interface AscoltatoriLettore {
   statoContesto(stato: string): void;
   /** Contatori aggiornati (dopo ogni pezzo). */
   contatori(contatori: Readonly<ContatoriAudio>): void;
+  /**
+   * Un pezzo è in programma da `inizio` a `fine` sull'orologio del contesto (prima che suoni):
+   * `frase` è l'annuncio se il pezzo apre una frase. Serve al mixer (ducking, temi dei PNG).
+   */
+  programmato?(inizio: number, fine: number, frase: AudioFrase | null): void;
 }
 
 /** Fotografia per l'HUD. */
@@ -97,6 +102,19 @@ export class LettorePcm {
     return this.ctx?.state ?? 'assente';
   }
 
+  /** L'AudioContext (dopo `sblocca`): il mixer del proiettore lo riusa, non ne crea un altro. */
+  get contesto(): AudioContext | null {
+    return this.ctx;
+  }
+
+  /** Manda la voce in `nodo` (il bus voce del mixer) invece che dritta alle casse. */
+  instradaVerso(nodo: AudioNode): void {
+    if (!this.uscita) return;
+    this.uscita.disconnect();
+    this.uscita.connect(nodo);
+    log.info('Voce instradata nel mixer');
+  }
+
   frase(meta: AudioFrase): void {
     this.programmatore.frase(meta);
   }
@@ -119,7 +137,15 @@ export class LettorePcm {
     }
     // info, non warn: con una voce lenta i buchi sono tanti e il conto è già nell'HUD e nel report.
     if (esito.buco) log.info('Buco nell’audio (la generazione è rimasta indietro)', { id_frase: pezzo.id_frase });
-    if (esito.pezzo) this.suona(ctx, esito.pezzo);
+    if (esito.pezzo) {
+      this.suona(ctx, esito.pezzo);
+      const apre = esito.segni.find((x) => x.tipo === 'inizio_frase');
+      try {
+        this.ascoltatori.programmato?.(esito.pezzo.inizio, esito.pezzo.inizio + esito.pezzo.durata, apre?.tipo === 'inizio_frase' ? apre.frase : null);
+      } catch (errore) {
+        log.error('Ascoltatore «programmato» fallito', errore);
+      }
+    }
     this.aggiungiSegni(esito.segni);
     this.ascoltatori.contatori(this.programmatore.contatori);
   }

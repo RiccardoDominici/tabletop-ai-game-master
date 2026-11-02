@@ -5,7 +5,8 @@
  * d'atmosfera); un'immagine di situazione, quando c'è, prende il suo posto con la stessa dissolvenza. Prima di «Inizia sessione»: titolo, QR e pulsante (SchermataInizio). Dopo:
  * titolo della scena, ritratto + parlante + sottotitolo al centro, stato della finestra in basso
  * a sinistra, QR in basso a destra. Niente `backdrop-filter` qui: sopra un'immagine che si muove
- * andrebbe ricalcolato a ogni fotogramma. Tasto «L» (o il pulsantino in alto) per l'HUD di latenza.
+ * andrebbe ricalcolato a ogni fotogramma. Tasto «L» (o il pulsantino in alto) per l'HUD di latenza,
+ * «A» per i volumi dell'audio, «C» per i crediti dei brani.
  * Le misure tipografiche sono in vw: la pagina si adatta a qualunque risoluzione del proiettore.
  */
 import { useEffect } from 'react';
@@ -24,6 +25,7 @@ import { SchermataInizio } from './SchermataInizio';
 import { Narrazione } from './Narrazione';
 import { RigaFinestra } from './RigaFinestra';
 import { HudLatenza } from './HudLatenza';
+import { CreditiAudio, PannelloAudio, PulsanteAudio, useTastiAudio } from './audio/PannelloAudio';
 
 export function PaginaSchermo() {
   useEffect(() => {
@@ -33,6 +35,7 @@ export function PaginaSchermo() {
   useEffect(() => avviaSchermo(), []);
   useSchermoAcceso(true);
   useTastoHud();
+  useTastiAudio();
 
   const stato = useTavolo((s) => s.stato);
   const info = useTavolo((s) => s.info);
@@ -60,6 +63,10 @@ export function PaginaSchermo() {
 
       <PulsanteHud />
       {hudAperto && <HudLatenza />}
+      {/* Audio: volumi per bus (tasto A) e crediti dei brani (tasto C). */}
+      <PulsanteAudio />
+      <PannelloAudio />
+      <CreditiAudio />
       <Avvisi grande />
     </div>
   );
