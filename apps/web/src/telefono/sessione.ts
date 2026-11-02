@@ -1,6 +1,10 @@
 /**
  * Il telefono al tavolo: ascolto degli eventi, rientro a ogni (ri)connessione e comandi
- * (scelta del PG, invio/ritiro dell'azione, «pronto»).
+ * (scelta del PG, bozza e invio/ritiro/conferma dell'azione, «pronto»).
+ *
+ * Bozza (docs/azioni-concorrenti.md): la `versione_vista` si fissa al primo tasto e va con
+ * `azione:invia`; mentre si scrive parte `azione:scrivo` (primo tasto, poi max 1/s). Quando
+ * arriva `azione:mia` la casella si riconcilia senza mai perdere testo non inviato (bozza.ts).
  *
  * Rientro: `telefono:entra` (stato completo, accettato anche se la versione è più bassa: il server
  * può essere stato riavviato) e poi di nuovo `telefono:scegli_pg` col PG ricordato, così il telefono
@@ -12,16 +16,33 @@ import { creaLog } from '../lib/log';
 import { useTavolo } from '../store/tavolo';
 import { useTelefono } from '../store/telefono';
 import { useAvvisi } from '../store/avvisi';
+import { useBozza } from '../store/bozza';
+import { riconciliaBozza, TracciaScrittura } from './bozza';
+import { chiaveRichiesta } from './vista';
 
 const log = creaLog('telefono');
 
 /** Lunghezza massima di un'azione (stessa regola del server). */
 export const MASSIMO_CARATTERI_AZIONE = 500;
 
+/** Versione vista e ritmo di `azione:scrivo` della bozza corrente. */
+const traccia = new TracciaScrittura();
+
 const suStato = (stato: StatoTavolo) => useTavolo.getState().applicaStato(stato);
 const suMiaAzione = (azione: AzionePrivata | null) => {
   log.debug('Azione privata aggiornata', azione);
   useTelefono.getState().impostaMiaAzione(azione);
+  // La casella segue l'azione (testo che torna, casella che si svuota), mai a spese di una bozza.
+  const bozza = useBozza.getState();
+  const esito = riconciliaBozza(bozza.testo, azione);
+  if (esito.testo !== bozza.testo) {
+    bozza.impostaTesto(esito.testo);
+    if (esito.testo.trim() === '') traccia.azzera();
+  }
+  if (esito.privata !== null) bozza.impostaPrivata(esito.privata);
+  // Una richiesta rimandata con «Cambio» non serve più quando ne arriva un'altra (o nessuna).
+  const rimandata = useTelefono.getState().sceltaRimandata;
+  if (rimandata !== null && rimandata !== chiaveRichiesta(azione)) useTelefono.getState().rimandaScelta(null);
 };
 /**
  * La scheda arriva solo a questo telefono (stanza player:<id_pg>): può contenere segreti del PG.
@@ -127,22 +148,76 @@ function pgCorrente(): string | Esito {
   return idPg ?? esitoErrore('Scegli prima un personaggio.');
 }
 
-export function inviaAzione(testo: string): Promise<Esito> {
+/**
+ * Il giocatore ha cambiato il testo della casella: aggiorna la bozza, fissa la versione vista al
+ * primo tasto e segnala «sto scrivendo» (al massimo una volta al secondo, senza ack).
+ */
+export function cambiaBozza(testo: string): void {
+  const limitato = testo.slice(0, MASSIMO_CARATTERI_AZIONE);
+  useBozza.getState().impostaTesto(limitato);
+  if (limitato.trim() === '') {
+    traccia.azzera();
+    return;
+  }
+  const stato = useTavolo.getState().stato;
+  const { idPg } = useTelefono.getState();
+  if (!stato || !idPg) return;
+  const { versioneVista, scrivo } = traccia.tasto(stato.versione_scena, Date.now());
+  if (!scrivo) return;
+  const s = prendiSocket();
+  // Solo un indicatore: se si è disconnessi non lo si accoda (arriverebbe vecchio).
+  if (s.connected) s.emit('azione:scrivo', { id_pg: idPg, versione_vista: versioneVista });
+}
+
+/**
+ * Invia (o sostituisce) l'azione con il testo della casella. La versione vista è quella fissata al
+ * primo tasto; se il testo è tornato da solo nella casella (azione superata) vale la scena attuale.
+ */
+export function inviaAzione(): Promise<Esito> {
   const idPg = pgCorrente();
   if (typeof idPg !== 'string') return Promise.resolve(idPg);
+  const { testo, privata } = useBozza.getState();
   const pulito = testo.trim();
   if (!pulito) return Promise.resolve(esitoErrore('Scrivi cosa fa il tuo personaggio.'));
   const stato = useTavolo.getState().stato;
   if (!stato) return Promise.resolve(esitoErrore('Stato del tavolo non ancora arrivato.'));
-  return comando('invia azione', () =>
-    conEsito((s, fine) =>
+  const versioneVista = traccia.versioneVista ?? stato.versione_scena;
+  return comando('invia azione', async () => {
+    const esito = await conEsito((s, fine) =>
       s.emit(
         'azione:invia',
-        { id_pg: idPg, testo: pulito.slice(0, MASSIMO_CARATTERI_AZIONE), versione_vista: stato.versione_scena },
+        { id_pg: idPg, testo: pulito.slice(0, MASSIMO_CARATTERI_AZIONE), versione_vista: versioneVista, privata },
         fine,
       ),
-    ),
-  );
+    );
+    if (esito.ok) traccia.azzera();
+    return esito;
+  });
+}
+
+/** «Confermo» / «Tengo» sull'azione da decidere. */
+export function confermaAzione(): Promise<Esito> {
+  const idPg = pgCorrente();
+  if (typeof idPg !== 'string') return Promise.resolve(idPg);
+  return comando('conferma azione', () => conEsito((s, fine) => s.emit('azione:conferma', { id_pg: idPg }, fine)));
+}
+
+/**
+ * «Cambio» sull'avviso «da decidere»: l'avviso si mette da parte, il testo dell'azione torna nella
+ * casella (se è vuota: una bozza già scritta resta) e il cursore ci va dentro. Il prossimo invio
+ * sostituisce l'azione.
+ */
+export function cambiaAzione(): void {
+  const { miaAzione } = useTelefono.getState();
+  useTelefono.getState().rimandaScelta(chiaveRichiesta(miaAzione));
+  const bozza = useBozza.getState();
+  if (miaAzione && bozza.testo.trim() === '') bozza.impostaTesto(miaAzione.testo);
+  bozza.chiediFuoco();
+}
+
+/** Riapre l'avviso «da decidere» messo da parte. */
+export function riapriScelta(): void {
+  useTelefono.getState().rimandaScelta(null);
 }
 
 export function ritiraAzione(): Promise<Esito> {

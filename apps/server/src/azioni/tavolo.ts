@@ -33,6 +33,8 @@ export interface OpzioniTavolo {
   /** PG al tavolo (rotazione dei pareggi, presenza). */
   giocatori: () => string[];
   nomePg: (id_pg: string) => string;
+  /** Nome breve per gli avvisi sul telefono («Ginestra», non «Ginestra Fondovalle»). */
+  nomeBreve?: (id_pg: string) => string;
   /** Alias minuscoli → id_pg, per le regole. */
   nomi: ReadonlyMap<string, string>;
   orologio: Orologio;
@@ -75,7 +77,7 @@ interface Finestra {
 }
 
 export class TavoloAzioni {
-  private readonly o: Required<Omit<OpzioniTavolo, 'arbitro'>> & { arbitro: Arbitro | null };
+  private readonly o: Required<Omit<OpzioniTavolo, 'arbitro' | 'nomeBreve'>> & { arbitro: Arbitro | null; nomeBreve: (id: string) => string };
   private readonly azioni = new Map<string, Azione>();
   /** id_pg → id dell'ultima azione del giocatore (qualsiasi stato). */
   private readonly ultima = new Map<string, string>();
@@ -99,6 +101,7 @@ export class TavoloAzioni {
       scritturaRecenteMs: 3_000,
       attesaArbitroMs: 1_200,
       ...opzioni,
+      nomeBreve: opzioni.nomeBreve ?? opzioni.nomePg,
     };
     this.spareggio = new Spareggio(opzioni.giocatori());
     this.giocatoriSpareggio = opzioni.giocatori().join(',');
@@ -176,7 +179,8 @@ export class TavoloAzioni {
         nome: this.o.nomePg(a.autore),
         testo: a.testo,
         stato: a.stato,
-        dipende_da: a.dipende_da.map((d) => this.azioni.get(d)).filter((d): d is Azione => !!d).map((d) => this.o.nomePg(d.autore)),
+        dipende_da: a.dipende_da.map((d) => this.azioni.get(d)).filter((d): d is Azione => !!d).map((d) => this.o.nomeBreve(d.autore)),
+        turno: a.turno,
       }));
   }
 
@@ -322,6 +326,7 @@ export class TavoloAzioni {
     if (!a || a.stato !== 'da_confermare') return { ok: false, errore: 'Non c’è niente da confermare.' };
     a.stato = 'in_coda';
     a.richiesta = null;
+    a.motivo = null;
     this.o.log.info({ azione: a.id, autore: id_pg }, 'azione: confermata');
     this.notificaAzione(a);
     this.o.onCambio();
@@ -390,6 +395,22 @@ export class TavoloAzioni {
       return x && !x.privata;
     });
     if (dipende.length) a.dipende_da = [...new Set([...a.dipende_da, ...dipende])];
+    // Corsa: l'azione a cui si appoggia è stata ritirata (o è uscita dal turno) mentre l'arbitro
+    // decideva. Il legame non vale più, ma l'autore va avvisato come se fosse successo dopo.
+    if (a.stato === 'in_coda') {
+      const caduta = [...new Set(esito.dipende_da)]
+        .map((id) => this.azioni.get(id))
+        .find((x) => x && x.autore !== a.autore && x.turno === a.turno && !x.privata && (x.stato === 'ritirata' || x.stato === 'superata' || x.stato === 'sospesa'));
+      if (caduta) {
+        const evento = caduta.stato as 'ritirata' | 'superata' | 'sospesa';
+        this.chiediScelta(
+          a,
+          { tipo: 'dipendenza', testo: avvisoDipendenza({ nomeRadice: this.o.nomeBreve(caduta.autore), testoRadice: caduta.testo, evento, testoMio: a.testo }), conferma: 'Confermo' },
+          caduta.id,
+        );
+        this.o.log.info({ azione: a.id, radice: caduta.id, evento }, 'azioni: dipendeva da un’azione già caduta');
+      }
+    }
     for (const c of esito.conflitti) {
       const altra = valida(c.con);
       if (!altra || a.conflitti.some((k) => k.con === altra.id)) continue;
@@ -404,7 +425,7 @@ export class TavoloAzioni {
       if (perdente.stato === 'in_coda') {
         this.chiediScelta(perdente, {
           tipo: 'conflitto',
-          testo: avvisoConflitto(vincitrice.privata ? { nomeVincitore: null, testoVincitore: null } : { nomeVincitore: this.o.nomePg(vincitrice.autore), testoVincitore: vincitrice.testo }),
+          testo: avvisoConflitto(vincitrice.privata ? { nomeVincitore: null, testoVincitore: null } : { nomeVincitore: this.o.nomeBreve(vincitrice.autore), testoVincitore: vincitrice.testo }),
           conferma: 'Tengo',
         });
       }
@@ -451,12 +472,12 @@ export class TavoloAzioni {
         {
           tipo: 'dipendenza',
           testo: avvisoDipendenza({
-            nomeRadice: this.o.nomePg(radice.autore),
+            nomeRadice: this.o.nomeBreve(radice.autore),
             testoRadice: testoPrima ?? radice.testo,
             evento,
             testoNuovoRadice: radice.testo,
             testoMio: d.testo,
-            ...(intermedio ? { tramite: this.o.nomePg(intermedio.autore) } : {}),
+            ...(intermedio ? { tramite: this.o.nomeBreve(intermedio.autore) } : {}),
           }),
           conferma: 'Confermo',
         },

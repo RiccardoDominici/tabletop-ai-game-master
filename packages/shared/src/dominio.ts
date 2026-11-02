@@ -114,6 +114,8 @@ export interface AzioneAlTavolo {
   stato: StatoAzione;
   /** Nomi dei PG alle cui azioni questa si collega («anch'io», «lo seguo»…). */
   dipende_da: string[];
+  /** Turno (finestra) in cui l'azione entra: maggiore di quello aperto = aspetta il prossimo. */
+  turno: number;
 }
 
 /** Finestra delle azioni (vuota quando chiusa). */

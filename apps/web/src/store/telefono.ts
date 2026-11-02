@@ -26,6 +26,11 @@ interface StoreTelefono {
   scheda: SchedaPg | null;
   /** Il pannello della scheda è aperto. */
   schedaAperta: boolean;
+  /**
+   * Chiave della richiesta «da decidere» che il giocatore ha messo da parte con «Cambio»: l'avviso
+   * a tutto schermo non si ripresenta finché non arriva una richiesta diversa.
+   */
+  sceltaRimandata: string | null;
 
   ricordaPg(idPg: string): void;
   dimenticaPg(): void;
@@ -36,6 +41,7 @@ interface StoreTelefono {
   impostaOccupato(occupato: boolean): void;
   impostaScheda(scheda: SchedaPg | null): void;
   apriScheda(aperta: boolean): void;
+  rimandaScelta(chiave: string | null): void;
 }
 
 export const useTelefono = create<StoreTelefono>()((set) => ({
@@ -47,6 +53,7 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   occupato: false,
   scheda: null,
   schedaAperta: false,
+  sceltaRimandata: null,
 
   ricordaPg: (idPg) => {
     scriviMemoria(CHIAVI.pg, idPg);
@@ -63,4 +70,5 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   impostaOccupato: (occupato) => set({ occupato }),
   impostaScheda: (scheda) => set({ scheda }),
   apriScheda: (schedaAperta) => set({ schedaAperta }),
+  rimandaScelta: (sceltaRimandata) => set({ sceltaRimandata }),
 }));

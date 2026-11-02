@@ -1,66 +1,125 @@
 /**
- * La mia azione così come la conosce il server (evento `azione:mia`), con il suo stato.
- * Il chip ha `data-testid="stato-mia-azione"` e contiene esattamente l'etichetta dello stato.
+ * La mia azione così come la conosce il server (evento `azione:mia`): stato, note e `motivo`.
  *
- * Due forme:
- * - `compatta` (finestra aperta: il testo è già nella casella): solo una riga col chip, più un
- *   avviso se la bozza è stata cambiata e non ancora inviata;
- * - completa (finestra chiusa: la casella è ridotta): testo dell'azione (max 3 righe) e chip.
+ * - Il chip ha `data-testid="stato-mia-azione"` e contiene esattamente l'etichetta dello stato.
+ * - «in coda» è tranquillo (attesa), «da decidere» è pieno e pulsa: è l'unico che chiede una
+ *   scelta, con il pulsante «Decidi» se l'avviso a tutto schermo è stato messo da parte.
+ * - Il testo dell'azione si ripete qui solo se NON è già nella casella sotto (es. azione chiusa
+ *   o risolta, casella svuotata per la prossima).
+ * - superata / sospesa: il `motivo` (testid `motivo-azione`) e «Riscrivi», che porta il cursore
+ *   nella casella dove il testo è già tornato.
  */
 import clsx from 'clsx';
-import type { AzionePrivata, StatoAzione } from '@cantastorie/shared';
-import { ETICHETTA_STATO_AZIONE } from './vista';
+import type { AzionePrivata, StatoAzione, StatoTavolo } from '@cantastorie/shared';
+import { useBozza } from '../store/bozza';
+import { useTelefono } from '../store/telefono';
+import { riapriScelta } from './sessione';
+import {
+  azioneViva,
+  chiaveRichiesta,
+  daRiscrivere,
+  ETICHETTA_STATO_AZIONE,
+  motivoDaMostrare,
+  perProssimoTurno,
+} from './vista';
 
 const STILE_CHIP: Record<StatoAzione, string> = {
-  in_coda: 'bg-candela text-notte',
-  da_confermare: 'bg-brace text-notte',
-  chiusa: 'bg-lago text-notte',
+  // Attesa: contorno sobrio, nessun colore che «chiama».
+  in_coda: 'border border-pergamena-2/60 text-pergamena-2',
+  // Scelta richiesta: pieno e caldo, con un puntino che pulsa (sotto): l'unico che «chiama».
+  da_confermare: 'bg-candela text-notte',
+  chiusa: 'bg-lago/90 text-notte',
   risolta: 'bg-muschio text-notte',
   ritirata: 'border border-bordo-chiaro text-cenere',
   superata: 'border border-brace text-brace',
   sospesa: 'border border-brace text-brace',
 };
 
-interface Props {
-  azione: AzionePrivata;
-  compatta?: boolean;
-  /** La bozza nella casella è diversa dal testo inviato. */
-  modificheNonInviate?: boolean;
-}
+export function MiaAzione({ azione, stato }: { azione: AzionePrivata; stato: StatoTavolo }) {
+  const bozza = useBozza((s) => s.testo);
+  const chiediFuoco = useBozza((s) => s.chiediFuoco);
+  const sceltaRimandata = useTelefono((s) => s.sceltaRimandata);
 
-export function MiaAzione({ azione, compatta = false, modificheNonInviate = false }: Props) {
-  const chip = (
-    <span
-      data-testid="stato-mia-azione"
-      data-stato={azione.stato}
-      className={clsx('shrink-0 rounded-full px-2.5 py-0.5 text-sm font-bold', STILE_CHIP[azione.stato])}
-    >
-      {ETICHETTA_STATO_AZIONE[azione.stato]}
-    </span>
-  );
-
-  if (compatta) {
-    return (
-      <div className="flex min-h-8 items-center gap-2 text-[0.95rem]">
-        <span className="font-semibold text-pergamena">La tua azione:</span>
-        {chip}
-        {modificheNonInviate && <span className="truncate text-brace">modifiche non inviate</span>}
-      </div>
-    );
-  }
+  const viva = azioneViva(azione);
+  const nellaCasella = bozza.trim() === azione.testo.trim();
+  const motivo = motivoDaMostrare(azione);
+  const prossimo = perProssimoTurno(stato, azione);
+  const rimandata = azione.stato === 'da_confermare' && sceltaRimandata === chiaveRichiesta(azione);
 
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-bordo bg-notte-2 px-3 py-2">
-      <p
-        className={clsx(
-          'line-clamp-3 min-w-0 flex-1 text-[0.95rem] leading-snug',
-          azione.stato === 'ritirata' ? 'text-cenere line-through' : 'text-pergamena-2',
+    <div data-testid="mia-azione" className="flex flex-col gap-1.5">
+      <div className="flex min-h-8 flex-wrap items-center gap-x-2 gap-y-1 text-[0.95rem]">
+        <span className="font-semibold text-pergamena">La tua azione:</span>
+        <span
+          data-testid="stato-mia-azione"
+          data-stato={azione.stato}
+          className={clsx(
+            'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-0.5 text-sm font-bold',
+            STILE_CHIP[azione.stato],
+          )}
+        >
+          {azione.stato === 'da_confermare' && (
+            <span aria-hidden className="relative inline-flex size-2">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-notte/60" />
+              <span className="relative inline-flex size-2 rounded-full bg-notte" />
+            </span>
+          )}
+          {ETICHETTA_STATO_AZIONE[azione.stato]}
+        </span>
+        {prossimo && <span className="text-pergamena-2">· prossimo turno</span>}
+        {azione.privata && <span className="text-lago">· privata</span>}
+        {viva && !nellaCasella && bozza.trim() !== '' && <span className="text-brace">· modifiche non inviate</span>}
+        {rimandata && (
+          <button
+            type="button"
+            onClick={riapriScelta}
+            className="ml-auto min-h-9 rounded-full bg-candela px-3 text-sm font-bold text-notte"
+          >
+            Decidi
+          </button>
         )}
-      >
-        <span className="font-semibold text-pergamena">La tua azione: </span>
-        <span className="break-words">{azione.testo}</span>
-      </p>
-      {chip}
+      </div>
+
+      {!nellaCasella && !viva && (
+        <p
+          className={clsx(
+            'line-clamp-2 text-[0.95rem] leading-snug break-words',
+            azione.stato === 'ritirata' ? 'text-cenere line-through' : 'text-pergamena-2',
+          )}
+        >
+          «{azione.testo}»
+        </p>
+      )}
+
+      {motivo && (
+        <div
+          className={clsx(
+            'flex items-start gap-3 rounded-xl border px-3 py-2',
+            azione.stato === 'da_confermare' ? 'border-candela/50 bg-candela/10' : 'border-brace/50 bg-brace/10',
+          )}
+        >
+          <p
+            data-testid="motivo-azione"
+            // «Da decidere»: il testo intero è nell'avviso (pulsante «Decidi»); qui basta un promemoria.
+            className={clsx(
+              'min-w-0 flex-1 text-[0.95rem] leading-snug text-pergamena',
+              azione.stato === 'da_confermare' ? 'line-clamp-2' : 'line-clamp-4',
+            )}
+          >
+            {motivo}
+          </p>
+          {daRiscrivere(azione) && (
+            <button
+              type="button"
+              data-testid="riscrivi-azione"
+              onClick={chiediFuoco}
+              className="min-h-11 shrink-0 rounded-lg border border-brace px-3 font-bold text-brace"
+            >
+              Riscrivi
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

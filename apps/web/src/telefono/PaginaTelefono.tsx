@@ -1,8 +1,9 @@
 /**
  * Pagina /telefono (giocatori, mobile-first).
  *
- * Disposizione «da chat»: in alto chi sono e il banner di stato, al centro la trascrizione che
- * scorre, in basso il pannello dell'azione. Altezza = 100dvh, così con la tastiera aperta (Chrome
+ * Disposizione «da chat»: in alto chi sono, il banner di stato e «Al tavolo» (le azioni degli
+ * altri), al centro la trascrizione che scorre, in basso il pannello dell'azione. L'avviso «da
+ * decidere» copre tutto lo schermo quando serve. Altezza = 100dvh, così con la tastiera aperta (Chrome
  * Android, `interactive-widget=resizes-content`) il pannello resta sopra la tastiera.
  * Il banner di connessione è nel flusso, sopra tutto: non copre l'intestazione.
  */
@@ -17,9 +18,10 @@ import { avviaTelefono } from './sessione';
 import { SceltaPersonaggio } from './SceltaPersonaggio';
 import { BannerStato } from './BannerStato';
 import { Trascrizione } from './Trascrizione';
-import { PresenzeFinestra } from './PresenzeFinestra';
 import { CasellaAzione } from './CasellaAzione';
 import { SchedaPersonaggio } from './SchedaPersonaggio';
+import { AlTavolo } from './AlTavolo';
+import { SceltaAzione } from './SceltaAzione';
 
 export function PaginaTelefono() {
   useEffect(() => avviaTelefono(), []);
@@ -97,17 +99,18 @@ function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
         </button>
       </header>
 
-      <div className="sicuro-lati">
+      <div className="sicuro-lati flex flex-col gap-2">
         <BannerStato stato={stato} idPg={idPg} />
+        <AlTavolo stato={stato} idPg={idPg} />
       </div>
 
       <Trascrizione voci={stato.trascrizione} className="sicuro-lati mt-1 min-h-0 flex-1" />
 
-      <section className="sicuro-lati sicuro-basso flex flex-col gap-2.5 border-t border-bordo bg-notte-2/95 pt-3 backdrop-blur">
-        <PresenzeFinestra stato={stato} idPg={idPg} />
+      <section className="sicuro-lati sicuro-basso flex flex-col gap-2 border-t border-bordo bg-notte-2/95 pt-2.5 backdrop-blur">
         <CasellaAzione stato={stato} />
       </section>
       <SchedaPersonaggio />
+      <SceltaAzione />
     </div>
   );
 }

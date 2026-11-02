@@ -270,6 +270,27 @@ describe('azioni simultanee — scenari', () => {
     expect(JSON.stringify(t)).not.toContain('mantello');
   });
 
+  it('corsa: la radice viene ritirata mentre l’arbitro decide → l’autore è avvisato lo stesso', async () => {
+    const arbitro = new ArbitroFinto();
+    let sblocca: (() => void) | null = null;
+    arbitro.sospendi = (r) => {
+      sblocca = r;
+    };
+    arbitro.relazioniPer.set('la seguo', (coda) => ({ dipende_da: [coda.find((x) => x.autore === 'pg_g')!.id], conflitti: [] }));
+    const { tavolo, mie } = crea(arbitro);
+    tavolo.apri(1, ['pg_g', 'pg_c', 'pg_a'], 1, true);
+    tavolo.invia('pg_a', 'guardo il cane', 1);
+    tavolo.invia('pg_g', 'vado verso la porta', 1);
+    tavolo.invia('pg_c', 'la seguo', 1); // due candidati: decide il modello (in volo)
+    tavolo.ritira('pg_g');
+    expect(mie.get('pg_c')!.stato).toBe('in_coda');
+    sblocca!();
+    await attendi();
+    await attendi();
+    expect(mie.get('pg_c')).toMatchObject({ stato: 'da_confermare', richiesta: { tipo: 'dipendenza' } });
+    expect(mie.get('pg_c')!.richiesta!.testo).toContain('Ginestra ha ritirato «vado verso la porta»');
+  });
+
   it('chiusura atomica: aspetta per poco l’arbitro in volo, e gli invii nel frattempo vanno alla finestra dopo', async () => {
     const arbitro = new ArbitroFinto();
     let sblocca: (() => void) | null = null;

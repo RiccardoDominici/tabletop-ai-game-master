@@ -1,19 +1,35 @@
 /**
- * Casella dell'azione: scrivi, invia (poi «Aggiorna»), ritira, «Pronto».
+ * Casella dell'azione: scrivi, invia (poi «Aggiorna», o «Invia di nuovo» dopo una superata),
+ * ritira, «Pronto», e l'interruttore «privata».
  *
- * Attiva solo a finestra aperta e se il mio PG è invitato; altrimenti si riduce a una riga
- * (comandi nascosti ma presenti e `disabled`) per lasciare spazio alla trascrizione.
- * La bozza vive qui (stato locale):
- * - a ogni nuova finestra (turno diverso) si azzera;
- * - se il server mi rimanda un'azione in coda e la casella è vuota (es. dopo un ricaricamento),
- *   la si ricopia nella bozza.
+ * - Si scrive SEMPRE a scena in corso (anche mentre il narratore parla o se non si è invitati):
+ *   quello che arriva a finestra chiusa entra nel turno successivo.
+ * - «Pronto» compare solo a finestra aperta per chi è invitato (agli altri il server lo rifiuta);
+ *   resta nel DOM, nascosto e `disabled`, così i testid sono stabili.
+ * - La bozza sta in `store/bozza.ts`: la sessione la riconcilia con `azione:mia` e l'avviso
+ *   «da decidere» ci rimette il testo con «Cambio» (qui si osserva la richiesta di fuoco).
  */
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useEffect, useRef, type FormEvent, type KeyboardEvent } from 'react';
 import clsx from 'clsx';
 import type { StatoTavolo } from '@cantastorie/shared';
 import { useTelefono } from '../store/telefono';
-import { MASSIMO_CARATTERI_AZIONE, impostaPronto, inviaAzione, ritiraAzione } from './sessione';
-import { azioneDellaFinestra, possoAgire, sonoPronto } from './vista';
+import { useBozza } from '../store/bozza';
+import {
+  MASSIMO_CARATTERI_AZIONE,
+  cambiaBozza,
+  impostaPronto,
+  inviaAzione,
+  ritiraAzione,
+} from './sessione';
+import {
+  azioneDellaFinestra,
+  azioneViva,
+  etichettaInvio,
+  finestraAperta,
+  possoDirePronto,
+  possoScrivere,
+  sonoPronto,
+} from './vista';
 import { MiaAzione } from './MiaAzione';
 
 export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
@@ -21,36 +37,36 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
   const miaAzione = useTelefono((s) => s.miaAzione);
   const occupato = useTelefono((s) => s.occupato);
   const errore = useTelefono((s) => s.errore);
+  const bozza = useBozza((s) => s.testo);
+  const privata = useBozza((s) => s.privata);
+  const impostaPrivata = useBozza((s) => s.impostaPrivata);
+  const richiesteFuoco = useBozza((s) => s.richiesteFuoco);
 
-  const attiva = possoAgire(stato, idPg);
-  const azioneFinestra = azioneDellaFinestra(stato, miaAzione);
-  const inviata = azioneFinestra?.stato === 'in_coda' ? azioneFinestra : null;
-  const pronto = sonoPronto(stato, idPg, azioneFinestra);
+  const casella = useRef<HTMLTextAreaElement>(null);
 
-  const [bozza, setBozza] = useState(inviata?.testo ?? '');
-
-  // Nuova finestra → bozza pulita (o l'azione già in coda per quel turno).
-  const turnoFinestra = stato.finestra.turno;
-  const turnoDellaBozza = useRef(turnoFinestra);
+  // «Cambio» / «Riscrivi»: cursore in fondo al testo della casella.
   useEffect(() => {
-    if (turnoDellaBozza.current === turnoFinestra) return;
-    turnoDellaBozza.current = turnoFinestra;
-    setBozza(inviata?.testo ?? '');
-    // Dipende solo dal turno: `inviata` qui si legge, non si osserva (la segue l'effetto sotto).
-  }, [turnoFinestra]);
+    if (richiesteFuoco === 0) return;
+    const el = casella.current;
+    if (!el) return;
+    el.focus();
+    el.setSelectionRange(el.value.length, el.value.length);
+    el.scrollIntoView({ block: 'nearest' });
+  }, [richiesteFuoco]);
 
-  // Azione rimandata dal server con casella vuota → la si ripristina.
-  const testoInviato = inviata?.testo ?? null;
-  useEffect(() => {
-    if (testoInviato !== null) setBozza((attuale) => (attuale.trim() === '' ? testoInviato : attuale));
-  }, [testoInviato]);
+  const scrivibile = possoScrivere(stato, idPg);
+  const prontoPossibile = possoDirePronto(stato, idPg);
+  const viva = azioneViva(miaAzione) ? miaAzione : null;
+  const pronto = sonoPronto(stato, idPg, azioneDellaFinestra(stato, miaAzione));
 
   const pulita = bozza.trim();
-  const puoInviare = attiva && !occupato && pulita.length > 0 && pulita !== testoInviato;
+  // Si può (ri)inviare se c'è testo e qualcosa cambia rispetto all'azione viva (testo o «privata»).
+  const cambiata = !viva || pulita !== viva.testo.trim() || privata !== viva.privata;
+  const puoInviare = scrivibile && !occupato && pulita.length > 0 && cambiata;
 
   const invia = (evento?: FormEvent) => {
     evento?.preventDefault();
-    if (puoInviare) void inviaAzione(pulita);
+    if (puoInviare) void inviaAzione();
   };
 
   // Ctrl/Cmd+Invio invia (comodo con la tastiera fisica); Invio semplice va a capo.
@@ -58,63 +74,89 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
     if (evento.key === 'Enter' && (evento.metaKey || evento.ctrlKey)) invia();
   };
 
-  const etichettaPronto = pronto
-    ? '✓ Pronto · tocca per annullare'
-    : inviata
-      ? 'Pronto'
-      : 'Pronto (passo il turno)';
+  const etichettaPronto = pronto ? '✓ Pronto' : viva ? 'Pronto' : 'Passo';
+  const segnaposto = finestraAperta(stato)
+    ? 'Cosa fa il tuo personaggio? Es.: «Sollevo la lanterna e scendo per primo.»'
+    : 'Scrivi pure: la tua azione entra nel prossimo turno.';
 
   return (
-    <form onSubmit={invia} className="flex flex-col gap-2.5" aria-label="La tua azione">
-      {miaAzione && (
-        <MiaAzione
-          azione={miaAzione}
-          compatta={attiva && inviata !== null}
-          modificheNonInviate={inviata !== null && pulita !== testoInviato && pulita.length > 0}
-        />
-      )}
+    <form onSubmit={invia} className="flex flex-col gap-2" aria-label="La tua azione">
+      {miaAzione && <MiaAzione azione={miaAzione} stato={stato} />}
 
-      {!attiva && (
+      {!scrivibile && (
         <p className="py-1 text-center text-[0.95rem] text-cenere" data-testid="casella-chiusa">
-          La casella si apre quando il narratore ti chiama.
+          {stato.fase === 'fermata'
+            ? 'Scena ferma: si riprende quando il master la fa ripartire.'
+            : 'La casella si apre quando comincia la scena.'}
         </p>
       )}
 
-      {/*
-        A finestra chiusa i comandi restano nel DOM (testid stabili, `disabled`) ma nascosti:
-        il pannello si riduce e lascia spazio alla trascrizione.
-      */}
-      <div className={attiva ? 'contents' : 'hidden'}>
-        <div className="relative">
+      {/* A scena non in corso i comandi restano nel DOM (testid stabili, `disabled`) ma nascosti. */}
+      <div className={scrivibile ? 'contents' : 'hidden'}>
+        <div
+          className={clsx(
+            'rounded-xl border bg-notte-2 transition-colors',
+            'focus-within:border-candela focus-within:ring-2 focus-within:ring-candela/40',
+            privata ? 'border-lago/70' : 'border-bordo-chiaro',
+          )}
+        >
           <label htmlFor="testo-azione" className="sr-only">
             Cosa fa il tuo personaggio
           </label>
           <textarea
+            ref={casella}
             id="testo-azione"
             data-testid="testo-azione"
             value={bozza}
-            onChange={(e) => setBozza(e.target.value.slice(0, MASSIMO_CARATTERI_AZIONE))}
+            onChange={(e) => cambiaBozza(e.target.value)}
             onKeyDown={suTasto}
             maxLength={MASSIMO_CARATTERI_AZIONE}
-            disabled={!attiva}
+            disabled={!scrivibile}
             rows={3}
             enterKeyHint="send"
-            placeholder="Cosa fa il tuo personaggio? Es.: «Sollevo la lanterna e scendo per primo.»"
-            className={clsx(
-              'block w-full resize-none rounded-xl border border-bordo-chiaro bg-notte-2 px-4 pt-3 pb-7',
-              'text-[1.0625rem] leading-snug text-pergamena placeholder:text-cenere',
-              'focus:border-candela focus:ring-2 focus:ring-candela/40 focus:outline-none',
-            )}
+            placeholder={segnaposto}
+            className="block w-full resize-none rounded-t-xl bg-transparent px-4 pt-3 pb-1 text-[1.0625rem] leading-snug text-pergamena placeholder:text-cenere focus:outline-none"
           />
-          <span
-            className={clsx(
-              'pointer-events-none absolute right-3 bottom-2 text-xs tabular-nums',
-              bozza.length > MASSIMO_CARATTERI_AZIONE * 0.9 ? 'text-brace' : 'text-cenere',
-            )}
-            aria-hidden
-          >
-            {bozza.length}/{MASSIMO_CARATTERI_AZIONE}
-          </span>
+          <div className="flex items-center gap-2 pr-3 pl-1">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={privata}
+              data-testid="azione-privata"
+              disabled={!scrivibile}
+              onClick={() => impostaPrivata(!privata)}
+              className={clsx(
+                'flex min-h-11 items-center gap-2 rounded-lg px-2 text-[0.95rem] font-semibold',
+                privata ? 'text-lago' : 'text-cenere',
+              )}
+            >
+              <span
+                aria-hidden
+                className={clsx(
+                  'relative inline-block h-5 w-9 rounded-full transition-colors',
+                  privata ? 'bg-lago' : 'bg-notte-4',
+                )}
+              >
+                <span
+                  className={clsx(
+                    'absolute top-0.5 size-4 rounded-full bg-pergamena transition-[left]',
+                    privata ? 'left-[1.125rem]' : 'left-0.5',
+                  )}
+                />
+              </span>
+              Privata
+            </button>
+            <span className="min-w-0 flex-1 truncate text-xs text-cenere">solo il master la vede</span>
+            <span
+              className={clsx(
+                'shrink-0 text-xs tabular-nums',
+                bozza.length > MASSIMO_CARATTERI_AZIONE * 0.9 ? 'text-brace' : 'text-cenere',
+              )}
+              aria-hidden
+            >
+              {bozza.length}/{MASSIMO_CARATTERI_AZIONE}
+            </span>
+          </div>
         </div>
 
         {errore && (
@@ -123,13 +165,14 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
           </p>
         )}
 
-        <div className="grid grid-cols-[1fr_2fr] gap-2.5">
+        {/* Una riga sola: con «Pronto» accanto il pannello resta basso e la trascrizione respira. */}
+        <div className={clsx('grid gap-2', prontoPossibile ? 'grid-cols-[1fr_1.35fr_1.35fr]' : 'grid-cols-[1fr_2fr]')}>
           <button
             type="button"
             data-testid="ritira-azione"
-            disabled={!attiva || !inviata || occupato}
+            disabled={!scrivibile || !viva || occupato}
             onClick={() => void ritiraAzione()}
-            className="min-h-13 rounded-xl border border-bordo-chiaro px-3 font-semibold text-pergamena-2 transition active:scale-[0.98] disabled:opacity-40"
+            className="min-h-13 rounded-xl border border-bordo-chiaro px-2 font-semibold text-pergamena-2 transition active:scale-[0.98] disabled:opacity-40"
           >
             Ritira
           </button>
@@ -137,29 +180,30 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
             type="submit"
             data-testid="invia-azione"
             disabled={!puoInviare}
-            className="min-h-13 rounded-xl bg-candela px-4 text-lg font-bold text-notte transition active:scale-[0.98] disabled:bg-notte-4 disabled:text-cenere"
+            className="min-h-13 rounded-xl bg-candela px-2 text-lg leading-tight font-bold text-notte transition active:scale-[0.98] disabled:bg-notte-4 disabled:text-cenere"
           >
-            {inviata ? 'Aggiorna' : 'Invia'}
+            {etichettaInvio(miaAzione, bozza)}
+          </button>
+          <button
+            type="button"
+            data-testid="pronto"
+            aria-pressed={pronto}
+            aria-label={pronto ? 'Pronto: tocca per annullare' : viva ? 'Pronto' : 'Pronto senza azione: passo il turno'}
+            disabled={!prontoPossibile || occupato}
+            onClick={() => void impostaPronto(!pronto)}
+            className={clsx(
+              'min-h-13 rounded-xl border-2 px-2 text-lg font-bold transition active:scale-[0.98] disabled:opacity-40',
+              pronto ? 'border-muschio bg-muschio text-notte' : 'border-muschio/80 bg-transparent text-muschio',
+              !prontoPossibile && 'hidden',
+            )}
+          >
+            {etichettaPronto}
           </button>
         </div>
-
-        <button
-          type="button"
-          data-testid="pronto"
-          aria-pressed={pronto}
-          disabled={!attiva || occupato}
-          onClick={() => void impostaPronto(!pronto)}
-          className={clsx(
-            'min-h-14 rounded-xl border-2 px-4 text-xl font-bold transition active:scale-[0.98] disabled:opacity-40',
-            pronto ? 'border-muschio bg-muschio text-notte' : 'border-muschio/70 bg-transparent text-muschio',
-          )}
-        >
-          {etichettaPronto}
-        </button>
       </div>
 
-      {/* Errori anche a finestra chiusa (es. un invio arrivato tardi). */}
-      {!attiva && errore && (
+      {/* Errori anche a scena ferma (es. un invio arrivato tardi). */}
+      {!scrivibile && errore && (
         <p role="alert" className="rounded-lg bg-sangue/10 px-3 py-2 text-[0.95rem] text-sangue">
           {errore}
         </p>

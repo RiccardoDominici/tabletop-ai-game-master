@@ -1,6 +1,7 @@
 /**
  * Chi è chiamato nella finestra corrente: per ogni PG invitato, se ha scritto e se è pronto.
- * Il testo delle azioni altrui resta privato (il server manda solo il riepilogo).
+ * Sta dentro il banner di stato (riga di chip piccoli) per non rubare altezza al pannello
+ * dell'azione. I testi delle azioni sono in «Al tavolo».
  */
 import clsx from 'clsx';
 import type { StatoTavolo } from '@cantastorie/shared';
@@ -14,7 +15,7 @@ export function PresenzeFinestra({ stato, idPg }: { stato: StatoTavolo; idPg: st
   if (invitati.length === 0) return null;
 
   return (
-    <ul className="flex flex-wrap gap-2" aria-label="Personaggi chiamati ad agire">
+    <ul className="flex flex-wrap gap-1.5" aria-label="Personaggi chiamati ad agire">
       {invitati.map((id) => {
         const pg = stato.pg.find((p) => p.id === id);
         const azione = finestra.azioni.find((a) => a.id_pg === id);
@@ -28,7 +29,7 @@ export function PresenzeFinestra({ stato, idPg }: { stato: StatoTavolo; idPg: st
             data-pronto={pronto}
             data-scritta={scritta}
             className={clsx(
-              'flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-1 text-[0.95rem]',
+              'flex min-h-7 items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-sm',
               pronto ? 'border-muschio/60 bg-muschio/15 text-muschio' : 'border-bordo bg-notte-3 text-pergamena-2',
             )}
           >
@@ -36,8 +37,10 @@ export function PresenzeFinestra({ stato, idPg }: { stato: StatoTavolo; idPg: st
               {nome}
               {id === idPg && <span className="font-normal opacity-75"> (tu)</span>}
             </span>
-            <span aria-hidden>·</span>
-            <span>{pronto ? (scritta ? 'pronto ✓' : 'passa ✓') : scritta ? 'ha scritto ✎' : 'pensa…'}</span>
+            {/* Segni brevi (la riga deve stare su una linea); la parola intera va ai lettori di schermo. */}
+            <span aria-label={pronto ? (scritta ? 'pronto' : 'passa') : scritta ? 'ha scritto' : 'sta pensando'}>
+              {pronto ? (scritta ? '✓' : 'passa') : scritta ? '✎' : '…'}
+            </span>
           </li>
         );
       })}

@@ -1,12 +1,14 @@
 /**
  * Banner dello stato della scena per il telefono: dice al giocatore se tocca a lui, se ascoltare
- * o se aspettare. Con la chiusura automatica fissata mostra il conto alla rovescia.
+ * o se aspettare (e che può comunque scrivere). Con la chiusura automatica fissata mostra il conto
+ * alla rovescia (orologio del server); a finestra aperta, sotto, chi è chiamato e chi è pronto.
  */
 import clsx from 'clsx';
 import type { StatoTavolo } from '@cantastorie/shared';
 import { secondiRimasti } from '../lib/formato';
 import { useOra } from '../lib/useOra';
 import { bannerTelefono, type TipoBanner } from './vista';
+import { PresenzeFinestra } from './PresenzeFinestra';
 
 const STILE: Record<TipoBanner, string> = {
   tocca_a_te: 'border-candela bg-candela/15 text-candela-2 shadow-candela',
@@ -27,21 +29,25 @@ export function BannerStato({ stato, idPg }: { stato: StatoTavolo; idPg: string 
       data-tipo={banner.tipo}
       role="status"
       aria-live="polite"
-      className={clsx('flex items-center gap-4 rounded-carta border px-4 py-3', STILE[banner.tipo])}
+      className={clsx('flex flex-col gap-2 rounded-carta border px-4 py-2.5', STILE[banner.tipo])}
     >
-      <div className="min-w-0 flex-1">
-        <p className="text-lg leading-snug font-bold">{banner.titolo}</p>
-        {banner.dettaglio && <p className="mt-0.5 text-[0.95rem] leading-snug opacity-85">{banner.dettaglio}</p>}
-      </div>
-      {secondi !== null && (
-        <div
-          className="flex shrink-0 flex-col items-center rounded-xl bg-notte/60 px-3 py-1"
-          aria-label={`La finestra si chiude tra ${secondi} secondi`}
-        >
-          <span className="font-titolo text-3xl leading-none font-bold tabular-nums">{secondi}</span>
-          <span className="text-xs tracking-wide uppercase opacity-80">sec</span>
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-lg leading-snug font-bold">{banner.titolo}</p>
+          {banner.dettaglio && <p className="mt-0.5 text-[0.95rem] leading-snug opacity-85">{banner.dettaglio}</p>}
         </div>
-      )}
+        {secondi !== null && (
+          <div
+            className="flex shrink-0 items-baseline gap-1 rounded-lg bg-notte/60 px-2.5 py-1"
+            aria-label={`La finestra si chiude tra ${secondi} secondi`}
+          >
+            <span className="font-titolo text-2xl leading-none font-bold tabular-nums">{secondi}</span>
+            <span className="text-xs opacity-80">s</span>
+          </div>
+        )}
+      </div>
+      {/* Chi è chiamato e chi è pronto: una riga a tutta larghezza, sotto il titolo. */}
+      <PresenzeFinestra stato={stato} idPg={idPg} />
     </section>
   );
 }
