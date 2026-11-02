@@ -146,6 +146,34 @@ class MotoreQwen:
             log.info("riscaldamento '%s': %.2f s", vid, tempi[vid])
         return tempi
 
+    def risveglia(self, durata_s: float = 0.8, voce_id: str | None = None,
+                  interrompi=lambda: False) -> tuple[float, bool]:
+        """Genera (e butta) audio per circa `durata_s` secondi: porta GPU e CPU a regime.
+
+        Dopo 20 s di inattività il primo audio sale da ~0,37 a ~0,86 s e il RTF
+        della frase da ~0,93 a ~1,09; 0,8 s di generazione buttata subito prima
+        lo riportano a 0,37 s / 0,96 (banco/inattivita.py). Tenere i pesi
+        residenti (mx.set_wired_limit) o un passo minimo ogni 2 s NON bastano.
+        Pensato per POST /sveglia, che il server chiama quando chiude la finestra
+        delle azioni (l'LLM impiega ~0,9 s per la prima frase).
+        `interrompi()` viene controllata a ogni pezzo: appena arriva una richiesta
+        vera il risveglio si ferma. Restituisce (secondi, interrotto).
+        """
+        t0 = time.perf_counter()
+        interrotto = False
+        voce_id = voce_id or next(iter(self._voci))
+        gen = self.genera(self.impostazioni.frase_riscaldamento, voce_id)
+        try:
+            for _ in gen:
+                if interrompi():
+                    interrotto = True
+                    break
+                if time.perf_counter() - t0 >= durata_s:
+                    break
+        finally:
+            gen.close()
+        return time.perf_counter() - t0, interrotto
+
     # ------------------------------------------------------------ generazione
     @property
     def voci(self) -> list[str]:

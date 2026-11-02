@@ -36,6 +36,15 @@ class MotoreFinto:
     def riscalda(self):
         return {}
 
+    def risveglia(self, durata_s, voce_id=None, interrompi=lambda: False):
+        self.risvegli = getattr(self, "risvegli", 0) + 1
+        t0 = time.perf_counter()
+        while time.perf_counter() - t0 < durata_s:
+            if interrompi():
+                return time.perf_counter() - t0, True
+            time.sleep(0.01)
+        return time.perf_counter() - t0, False
+
     def genera(self, testo, voce, info=None):
         self.thread_usati.add(threading.get_ident())
         self.eseguiti.append(testo)
@@ -178,3 +187,19 @@ def test_non_pronto_503(tmp_path):
     r = c.post("/tts", json={"id": "a", "voce": "narratore", "testo": "Ciao"})
     assert r.status_code == 503
     assert c.get("/salute").json()["pronto"] is False
+
+
+def test_sveglia_si_fa_da_parte_per_le_richieste_vere(ambiente):
+    app, coda, motore, log = ambiente(pezzi=2, pausa_s=0.01)
+    with TestClient(app) as c:
+        _attendi_pronto(coda)
+        assert c.post("/sveglia", json={}).json() == {"accodata": True}
+        assert c.post("/sveglia", json={}).json() == {"accodata": False}  # già in coda/in corso
+        t0 = time.perf_counter()
+        r = c.post("/tts", json={"id": "a", "voce": "narratore", "testo": "Ciao"})
+        attesa = time.perf_counter() - t0
+        assert r.status_code == 200 and len(r.content) == 2 * 4800
+        assert attesa < 0.5  # il risveglio (0,8 s) si è interrotto appena è arrivata la richiesta
+        assert c.post("/sveglia", json={"durata_s": 9}).status_code == 400
+    assert motore.risvegli == 1
+    assert '"evento": "sveglia"' in log.read_text() and '"interrotta": true' in log.read_text()

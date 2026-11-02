@@ -41,6 +41,11 @@ BATTUTE = {
     "vincent": "Bah, non mi guardate così. Ho scavato per tre giorni nelle miniere, portatemi una birra.",
     "tabitha": "Ehi, non vi preoccupate, la borsa l'ho solo presa in prestito. Ve la restituisco, forse.",
 }
+# con --tutte-le-voci si provano anche gli altri due PNG del registro
+BATTUTE_EXTRA = {
+    "nadine": "Sedetevi pure, viandanti. Il brodo è caldo, ma non uscite dopo il tramonto.",
+    "lucian": "Il destino non chiede permesso a nessuno. La chiave che cercate non è mai stata nella torre.",
+}
 TESTO_LUNGO = (
     "Nelle terre di Brunvalle il vento del nord porta l'odore della neve. Ostilia, la vecchia guardiana della "
     "torre, abbassò lo sguardo sulla mappa consumata e sospirò. Le legioni del Re Nero avanzavano lungo la "
@@ -152,6 +157,7 @@ def fmt(x, cifre=3):
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://127.0.0.1:4611")
+    ap.add_argument("--tutte-le-voci", action="store_true", help="prova anche nadine e lucian")
     args = ap.parse_args()
     cl = Client(args.url)
     prefisso = f"prova-{int(time.time())}"
@@ -166,9 +172,10 @@ def main() -> int:
         print("servizio non pronto: avvialo con scripts/voce-avvio.sh")
         return 1
 
-    print("2. narratore + due PNG", flush=True)
+    print("2. narratore + PNG", flush=True)
     misure = []
-    for voce, testo in [("narratore", FRASE_NARRATORE), *BATTUTE.items()]:
+    battute = {**BATTUTE, **(BATTUTE_EXTRA if args.tutte_le_voci else {})}
+    for voce, testo in [("narratore", FRASE_NARRATORE), *battute.items()]:
         id_ = f"{prefisso}-{voce}"
         e = cl.tts(id_, voce, testo)
         srv = riga_server(offset, id_) or {}

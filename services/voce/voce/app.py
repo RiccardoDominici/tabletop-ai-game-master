@@ -29,6 +29,7 @@ from .testo import normalizza
 
 log = logging.getLogger("voce.http")
 
+DURATA_RISVEGLIO_S = 0.8  # misurata con banco/inattivita.py
 MAX_CARATTERI = 2000  # una richiesta è una frase o poco più; oltre è quasi certamente un errore del chiamante
 
 
@@ -106,6 +107,17 @@ def crea_app(imp: Impostazioni, coda: Coda) -> Starlette:
             headers={"X-Sample-Rate": str(coda.sample_rate), "X-Formato": FORMATO, "Cache-Control": "no-store"},
         )
 
+    async def sveglia(request: Request) -> JSONResponse:
+        """Estensione al contratto F0: il server la chiama quando chiude la finestra delle
+        azioni. Non blocca: accoda ~0,8 s di generazione da buttare se il worker è libero."""
+        dati = await _leggi_json(request) or {}
+        durata = dati.get("durata_s", DURATA_RISVEGLIO_S)
+        if not isinstance(durata, (int, float)) or not 0 < durata <= 3:
+            return _errore(400, "durata_s deve essere un numero tra 0 e 3")
+        if not coda.pronto.is_set():
+            return JSONResponse({"accodata": False, "motivo": "non pronto"})
+        return JSONResponse({"accodata": coda.sveglia(float(durata))})
+
     async def annulla(request: Request) -> JSONResponse:
         dati = await _leggi_json(request)
         if dati is None or not isinstance(dati.get("id"), str):
@@ -123,6 +135,7 @@ def crea_app(imp: Impostazioni, coda: Coda) -> Starlette:
             Route("/salute", salute, methods=["GET"]),
             Route("/tts", tts, methods=["POST"]),
             Route("/annulla", annulla, methods=["POST"]),
+            Route("/sveglia", sveglia, methods=["POST"]),
         ],
         lifespan=ciclo_di_vita,
     )

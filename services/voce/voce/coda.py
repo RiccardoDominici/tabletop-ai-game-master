@@ -63,13 +63,22 @@ class Lavoro:
             pass
 
 
+@dataclass
+class Risveglio:
+    """Generazione da buttare per portare la macchina a regime (POST /sveglia)."""
+
+    durata_s: float
+    t_arrivo: float = field(default_factory=time.perf_counter)
+
+
 def _ms(a: float | None, b: float | None) -> float | None:
     return None if a is None or b is None else round((b - a) * 1000, 1)
 
 
 class Coda:
     """Possiede il motore. Interfaccia minima richiesta al motore (vedi motore.MotoreQwen):
-    carica(), prepara_voci(voci), riscalda(), genera(testo, voce, info=...), sample_rate.
+    carica(), prepara_voci(voci), riscalda(), genera(testo, voce, info=...),
+    risveglia(durata_s, interrompi=...), sample_rate.
     """
 
     def __init__(self, motore, voci: dict[str, Voce], diario: DiarioJsonl, qos: str | None = "interattiva"):
@@ -83,6 +92,7 @@ class Coda:
         self._attivi: dict[str, list[Lavoro]] = {}
         self._lock = threading.Lock()
         self._in_corso: Lavoro | None = None
+        self._risveglio_pendente = False  # al massimo un risveglio in coda o in corso
         self._thread = threading.Thread(target=self._esegui, name="voce-worker", daemon=True)
 
     # --------------------------------------------------------------- pubblico
@@ -108,6 +118,18 @@ class Coda:
         with self._lock:
             self._attivi.setdefault(lavoro.id, []).append(lavoro)
         self._q.put(lavoro)
+
+    def sveglia(self, durata_s: float) -> bool:
+        """Accoda un risveglio se il worker è libero. False se è già al lavoro (quindi già caldo)
+        o se un risveglio è già in coda."""
+        with self._lock:
+            occupato = self._in_corso is not None or any(
+                lv.stato == "in_coda" for ls in self._attivi.values() for lv in ls)
+            if occupato or self._risveglio_pendente:
+                return False
+            self._risveglio_pendente = True
+        self._q.put(Risveglio(durata_s))
+        return True
 
     def annulla(self, id_: str, motivo: str = "annulla") -> bool:
         """Ferma il lavoro in corso o lo toglie dalla coda. False se l'id non è attivo."""
@@ -144,6 +166,9 @@ class Coda:
             lavoro = self._q.get()
             if lavoro is None:
                 break
+            if isinstance(lavoro, Risveglio):
+                self._esegui_risveglio(lavoro)
+                continue
             try:
                 self._esegui_lavoro(lavoro)
             finally:
@@ -153,6 +178,22 @@ class Coda:
                         ls.remove(lavoro)
                     if not ls:
                         self._attivi.pop(lavoro.id, None)
+
+    def _esegui_risveglio(self, rv: Risveglio) -> None:
+        """Si ferma appena c'è una richiesta vera in coda (controllo a ogni pezzo, ~0,1-0,2 s)."""
+        try:
+            if not self._q.empty():
+                durata, interrotto = 0.0, True  # c'è già lavoro vero: niente risveglio
+            else:
+                durata, interrotto = self.motore.risveglia(rv.durata_s, interrompi=lambda: not self._q.empty())
+            self.diario.scrivi("sveglia", richiesta_s=rv.durata_s, durata_s=round(durata, 3), interrotta=interrotto,
+                               attesa_ms=_ms(rv.t_arrivo, time.perf_counter() - durata))
+            log.info("risveglio: %.2f s%s", durata, " (interrotto da una richiesta)" if interrotto else "")
+        except Exception:  # noqa: BLE001 — un risveglio fallito non deve fermare il worker
+            log.exception("risveglio fallito")
+        finally:
+            with self._lock:
+                self._risveglio_pendente = False
 
     def _esegui_lavoro(self, lv: Lavoro) -> None:
         info = InfoGenerazione()
