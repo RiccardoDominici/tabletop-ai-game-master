@@ -48,6 +48,7 @@ import { nomiDeiPng } from '../repertorio/pertinenza';
 import { sommaCosti } from '../llm/costi';
 import type { Repertorio } from '../repertorio/tipi';
 import { StatoRepertorio, haCancelloAzione, rispondeA } from '../repertorio/stato';
+import { righeMenzogneDette } from '../repertorio/menzogne';
 import { segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
 import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
 import { voceDi } from '../turni/narrazione';
@@ -983,7 +984,7 @@ export class Regia {
    * rispondere (le pubbliche; le private solo per le battute con `richiede.privata`, e `da_pg` solo
    * per quei PG), il segno se è dovuto, le battute per stato dell'orologio, i riempitivi allo stallo.
    */
-  private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; battuteDisponibili: string; stallo: boolean } {
+  private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; battuteDisponibili: string; stallo: boolean; menzogne: string[] } {
     const s = this.statoRepertorio!;
     // Stallo: 45 s senza input, o una finestra chiusa senza nessuna azione (tutti hanno passato).
     const stallo = r.motivo === 'stallo' || r.azioni.length === 0;
@@ -997,6 +998,7 @@ export class Regia {
       fattiScoperti: s.fattiScoperti.map((id) => `${id} — ${this.testoFatto(id)}`),
       battuteDisponibili: s.elencoDisponibili(battute),
       stallo,
+      menzogne: righeMenzogneDette(s.menzogneDette, this.o.campagna, this.o.paroleSegrete ?? [], this.statoPubblico()),
     };
   }
 

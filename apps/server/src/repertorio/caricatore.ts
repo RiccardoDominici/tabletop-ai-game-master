@@ -12,6 +12,7 @@ import YAML from 'yaml';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import { ID_NARRATORE } from '../campagna/tipi';
 import type { Logger } from '../logger';
+import { indiziCampagna } from '../campagna/indizi';
 import { TIPI_BATTUTA, type Battuta, type Effetti, type Repertorio, type Richiede, type RigaBattuta, type TipoBattuta } from './tipi';
 
 export class ErroreRepertorio extends Error {
@@ -28,13 +29,9 @@ function lista(v: unknown): string[] {
   return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
 }
 
-/** Id degli indizi definiti nella campagna: scheda della scena, nodi senza scheda, rivelazioni. */
+/** Id degli indizi definiti nella campagna: schede di TUTTE le scene, nodi senza scheda, rivelazioni. */
 export function idIndizi(c: Campagna): Set<string> {
-  const ids = new Set<string>();
-  for (const i of (c.scena.dati['indizi'] as DatiYaml[] | undefined) ?? []) if (typeof i?.['id'] === 'string') ids.add(i['id']);
-  for (const n of (c.campagnaNarratore['nodi'] as DatiYaml[] | undefined) ?? []) {
-    for (const i of (n?.['indizi'] as DatiYaml[] | undefined) ?? []) if (typeof i?.['id'] === 'string') ids.add(i['id']);
-  }
+  const ids = new Set(indiziCampagna(c).keys());
   for (const r of (c.campagnaNarratore['rivelazioni'] as DatiYaml[] | undefined) ?? []) for (const id of lista(r?.['indizi'])) ids.add(id);
   return ids;
 }
@@ -89,7 +86,9 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = path.join
     if (r.orologio && !orologi.has(r.orologio.id)) errori.push(`${b.id}: orologio inesistente «${r.orologio.id}»`);
     if (b.effetti.avanza_orologio && !orologi.has(b.effetti.avanza_orologio)) errori.push(`${b.id}: orologio inesistente «${b.effetti.avanza_orologio}»`);
     for (const pg of r.da_pg) if (!c.pg.some((p) => p.id === pg)) errori.push(`${b.id}: richiede.da_pg cita un PG inesistente «${pg}»`);
+    if (b.scena && !c.scene.some((s) => s.id === b.scena)) errori.push(`${b.id}: scena inesistente «${b.scena}»`);
   }
+  avvisi.push(...controllaModi(c, battute), ...controllaMenzogne(c, battute));
 
   for (const a of avvisi) log?.warn({ avviso: a }, 'repertorio: avviso');
   if (errori.length) {
@@ -99,6 +98,39 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = path.join
   const righe = battute.reduce((s, b) => s + b.testo.length + b.varianti.reduce((t, v) => t + v.length, 0), 0);
   log?.info({ battute: battute.length, righe, avvisi: avvisi.length }, 'repertorio caricato');
   return { battute, perId, avvisi };
+}
+
+/**
+ * Copertura dei `modi` (come il validatore, ma a ogni avvio): un indizio che si trova in N modi
+ * vuole N battute di rivelazione, una per modo. Un indizio senza nessuna battuta non conta (lo
+ * rivela l'improvvisazione).
+ */
+function controllaModi(c: Campagna, battute: Battuta[]): string[] {
+  const avvisi: string[] = [];
+  for (const ind of indiziCampagna(c).values()) {
+    const n = battute.filter((b) => !b.solo_esempio && b.effetti.rivela_indizi.includes(ind.id)).length;
+    if (n > 0 && n < ind.modi) avvisi.push(`indizio ${ind.id}: ${n} battute di rivelazione per ${ind.modi} modi di trovarlo`);
+  }
+  return avvisi;
+}
+
+/** Id delle menzogne di una scheda PNG (`mente_su[].id`). */
+export function idMenzogne(dati: DatiYaml): Set<string> {
+  const mente = Array.isArray(dati['mente_su']) ? (dati['mente_su'] as DatiYaml[]) : [];
+  return new Set(mente.map((m) => m?.['id']).filter((x): x is string => typeof x === 'string'));
+}
+
+/** `effetti.menzogna_detta` deve essere l'id di una `mente_su` di chi parla (se la scheda dà gli id). */
+function controllaMenzogne(c: Campagna, battute: Battuta[]): string[] {
+  const avvisi: string[] = [];
+  for (const b of battute) {
+    const id = b.effetti.menzogna_detta;
+    const png = c.png.find((p) => p.id === b.chi);
+    if (!id || !png) continue;
+    const ids = idMenzogne(png.dati);
+    if (ids.size && !ids.has(id)) avvisi.push(`${b.id}: menzogna_detta «${id}» non è l'id di nessuna mente_su di ${b.chi}`);
+  }
+  return avvisi;
 }
 
 function leggiRighe(v: unknown, dove: string, parlanti: Set<string>, errori: string[]): RigaBattuta[] {
@@ -186,6 +218,7 @@ function leggiBattuta(
     max_usi: maxUsi,
     solo_esempio: d['solo_esempio'] === true,
     riempitivo: d['riempitivo'] === true,
+    scena: typeof d['scena'] === 'string' && d['scena'].trim() ? d['scena'].trim() : null,
     file,
   };
 }

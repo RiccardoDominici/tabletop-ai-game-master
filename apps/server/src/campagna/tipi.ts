@@ -45,7 +45,14 @@ export interface Campagna {
   stile: DatiYaml;
   /** campagna.yaml senza `preparazione` (che non va al narratore). */
   campagnaNarratore: DatiYaml;
+  /**
+   * Scena CORRENTE. Al caricamento è la prima (scena.yaml); la regia lavora su una copia della
+   * campagna con la scena in corso (vedi `conScena`), così contesto, orologi attivi e immagini
+   * seguono la scena senza cambiare il resto.
+   */
   scena: ScenaCaricata;
+  /** Tutte le scene, nell'ordine: scena.yaml, scena_*.yaml, scene/*.yaml (come il validatore). */
+  scene: ScenaCaricata[];
   png: PngCaricato[];
   pg: PgCaricato[];
   /** Testo comune a tutti i PG (pg.yaml: situazione_comune), se c'è. */
@@ -58,3 +65,10 @@ export interface Campagna {
 
 export const ID_NARRATORE = 'narratore';
 export const NOME_NARRATORE = 'Narratore';
+
+/** La stessa campagna con un'altra scena corrente (copia superficiale: il resto è condiviso). */
+export function conScena(c: Campagna, idScena: string): Campagna {
+  const scena = c.scene.find((s) => s.id === idScena);
+  if (!scena) throw new Error(`scena inesistente: ${idScena}`);
+  return scena === c.scena ? c : { ...c, scena };
+}

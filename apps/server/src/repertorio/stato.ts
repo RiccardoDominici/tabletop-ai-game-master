@@ -7,6 +7,7 @@
  * testo di quelle non ancora uscite. Un `[usa]` fuori elenco viene rifiutato (e registrato).
  */
 import type { Campagna, DatiYaml } from '../campagna/tipi';
+import { indiziCampagna, type IndizioCampagna } from '../campagna/indizi';
 import type { StatoOrologi } from '../scena/orologi';
 import { pngNominati, temaPresente } from './pertinenza';
 import { segretiNelTesto, type ParolaSegreta } from './segreti';
@@ -49,6 +50,10 @@ export class StatoRepertorio {
   readonly ultimoUso = new Map<string, number>();
   /** B2: una battuta e le sue varianti non tornano entro questo numero di turni. */
   static readonly PAUSA_RIPETIZIONE = 3;
+  /** Scena in corso (campagne con più scene): le battute con `scena` valgono solo lì. null = tutte. */
+  scena: string | null = null;
+  /** Indizi della campagna con i loro `modi`. */
+  private readonly indizi: Map<string, IndizioCampagna>;
 
   constructor(
     readonly repertorio: Repertorio,
@@ -58,6 +63,20 @@ export class StatoRepertorio {
     for (const f of (campagna.campagnaNarratore['canone'] as DatiYaml[] | undefined) ?? []) {
       if (f?.['noto_ai_pg'] === true && typeof f['id'] === 'string') this.fattiNoti.add(f['id']);
     }
+    this.indizi = indiziCampagna(campagna);
+    this.scena = campagna.scena.id;
+  }
+
+  /**
+   * Strada alternativa per un indizio già trovato: una battuta di tipo indizio che rivela solo
+   * indizi con `modi` ≥ 2 già rivelati (e fatti già noti), senza altri effetti. I modi sono strade
+   * diverse per trovare la stessa cosa: trovata per una, le altre non servono più.
+   */
+  private stradaGiàPercorsa(b: Battuta): boolean {
+    const e = b.effetti;
+    if (b.tipo !== 'indizio' || e.rivela_indizi.length === 0 || e.menzogna_detta || e.avanza_orologio) return false;
+    const tutti = e.rivela_indizi.every((i) => this.indiziRivelati.has(i) && (this.indizi.get(i)?.modi ?? 1) >= 2);
+    return tutti && e.fatti_noti.every((f) => this.fattiNoti.has(f));
   }
 
   usata(id: string): boolean {
@@ -68,6 +87,8 @@ export class StatoRepertorio {
   motivoIndisponibile(b: Battuta, turno?: number): string | null {
     const usi = this.usi.get(b.id) ?? 0;
     if (usi >= b.max_usi) return `già usata ${usi} volte (max_usi ${b.max_usi})`;
+    if (b.scena && this.scena && b.scena !== this.scena) return `battuta della scena ${b.scena}`;
+    if (this.stradaGiàPercorsa(b)) return `indizio già trovato in un altro modo (${b.effetti.rivela_indizi.join(', ')})`;
     const ultimo = this.ultimoUso.get(b.id);
     if (turno !== undefined && ultimo !== undefined && turno - ultimo <= StatoRepertorio.PAUSA_RIPETIZIONE) {
       return `uscita al turno ${ultimo}: non torna prima del turno ${ultimo + StatoRepertorio.PAUSA_RIPETIZIONE + 1}`;

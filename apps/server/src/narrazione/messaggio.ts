@@ -29,8 +29,11 @@ export interface DatiMessaggioTurno {
   collegamenti?: string[];
   /** Stallo: quante finestre di fila senza nessun input (1 = prima mossa, S1). */
   stallo?: number;
-  /** Modalità repertorio: fatti scoperti (testo), catalogo del turno (righe pronte), stallo. */
-  repertorio?: { fattiScoperti: string[]; battuteDisponibili: string; stallo?: boolean };
+  /**
+   * Modalità repertorio: fatti scoperti (testo), catalogo del turno (righe pronte), stallo, e le
+   * menzogne già dette (versione pubblica, da tenere ferma quando si improvvisa).
+   */
+  repertorio?: { fattiScoperti: string[]; battuteDisponibili: string; stallo?: boolean; menzogne?: string[] };
   /** Massimo di voci di trascrizione da includere (le più recenti). */
   maxTrascrizione?: number;
   /** Note di regia del master (al massimo 3), da seguire in questa risposta. */
@@ -118,6 +121,12 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
   if (d.stallo && !d.repertorio) parti.push(testoStallo(d.stallo));
   if (d.repertorio) {
     if (d.repertorio.fattiScoperti.length) parti.push('## Fatti scoperti in scena (ora li conoscono i PG)', d.repertorio.fattiScoperti.map((f) => `- ${f}`).join('\n'));
+    if (d.repertorio.menzogne?.length) {
+      parti.push(
+        '## Menzogne già dette dai PNG (se l’argomento torna, il PNG ripete la stessa versione; la verità esce solo con una battuta di confessione)',
+        d.repertorio.menzogne.map((m) => `- ${m}`).join('\n'),
+      );
+    }
     parti.push('## Catalogo: battute pertinenti a questo turno (id · chi · tipo · quando)', d.repertorio.battuteDisponibili || '(nessuna)');
     if (d.repertorio.stallo) parti.push('Stallo: nessuno ha agito in questo turno.');
   }

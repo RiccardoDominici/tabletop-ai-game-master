@@ -1,6 +1,7 @@
 /**
  * Caricatore della cartella campagne/<id>/ (schema del manuale, §2–4):
- *   stile.yaml, scena.yaml, png/<id_png>.yaml, pg.yaml, campagna.yaml (facoltativo).
+ *   stile.yaml, scena.yaml, png/<id_png>.yaml, pg.yaml, campagna.yaml (facoltativo),
+ *   e altre scene in scena_*.yaml e scene/*.yaml (nello stesso ordine del validatore).
  *
  * È tollerante sulla forma (pg.yaml come lista oppure {personaggi|pg: [...]}, titolo o nome,
  * apertura stringa o lista), ma severo su ciò che rompe il gioco: senza scena, senza apertura
@@ -116,25 +117,19 @@ export function caricaCampagna(cartella: string, log?: Logger): Campagna {
     });
   }
 
-  // --- Scena.
+  // --- Scene: la prima (scena.yaml) apre la sessione col riassunto iniziale; le altre si leggono
+  // quando il master ci passa (pannello), ciascuna con la sua apertura.
   const sessione = oggetto(campagnaGrezza['sessione']);
-  const apertura = [...frasiDa(sessione?.['riassunto_iniziale']), ...frasiDa(scenaGrezza['apertura'])];
-  if (apertura.length === 0) throw new ErroreCampagna('scena.yaml: manca il testo d’apertura (apertura)');
-  const musica = oggetto(scenaGrezza['musica']);
-  const intensita = typeof scenaGrezza['intensita'] === 'number' ? (scenaGrezza['intensita'] as number) : null;
-  const presenti = Array.isArray(scenaGrezza['png_presenti'])
-    ? (scenaGrezza['png_presenti'] as unknown[]).filter((x): x is string => typeof x === 'string')
-    : png.map((p) => p.id);
-  for (const p of presenti) if (!png.some((x) => x.id === p)) avvisa(`scena.yaml: png_presenti cita ${p}, che non ha una scheda in png/`);
-  const scena: ScenaCaricata = {
-    id: stringa(scenaGrezza['id']) ?? 'scena',
-    titolo: stringa(scenaGrezza['titolo']) ?? stringa(scenaGrezza['nome']) ?? stringa(stile['titolo']) ?? id,
-    apertura,
-    umore: stringa(musica?.['tag']) ?? stringa(scenaGrezza['umore']) ?? 'esplorazione_tesa',
-    intensita,
-    png_presenti: presenti,
-    dati: scenaGrezza,
-  };
+  const scena = leggiScena(scenaGrezza, 'scena.yaml', frasiDa(sessione?.['riassunto_iniziale']), png, stile, id, avvisa);
+  if (scena.apertura.length === 0) throw new ErroreCampagna('scena.yaml: manca il testo d’apertura (apertura)');
+  const scene = [scena];
+  for (const file of fileAltreScene(cartella)) {
+    const rel = path.relative(cartella, file);
+    const altra = leggiScena(leggiYaml(file, true), rel, [], png, stile, id, avvisa);
+    if (scene.some((s) => s.id === altra.id)) throw new ErroreCampagna(`${rel}: id di scena ripetuto «${altra.id}»`);
+    if (altra.apertura.length === 0) avvisa(`${rel}: manca l'apertura: al passaggio di scena il narratore non la leggerà`);
+    scene.push(altra);
+  }
 
   const campagna: Campagna = {
     id,
@@ -143,6 +138,7 @@ export function caricaCampagna(cartella: string, log?: Logger): Campagna {
     stile,
     campagnaNarratore,
     scena,
+    scene,
     png,
     pg,
     situazioneComune: stringa(pgGrezzo['situazione_comune']),
@@ -150,10 +146,44 @@ export function caricaCampagna(cartella: string, log?: Logger): Campagna {
     avvisi,
   };
   log?.info(
-    { campagna: id, scena: scena.id, png: png.map((p) => `${p.id}→${p.voce_id}`), pg: pg.map((p) => p.id), frasiApertura: apertura.length },
+    { campagna: id, scena: scena.id, scene: scene.map((s) => s.id), png: png.map((p) => `${p.id}→${p.voce_id}`), pg: pg.map((p) => p.id), frasiApertura: scena.apertura.length },
     'campagna caricata',
   );
   return campagna;
+}
+
+/** Altre scene oltre a scena.yaml, nell'ordine del validatore: scena_*.yaml, poi scene/*.yaml. */
+function fileAltreScene(cartella: string): string[] {
+  const radice = fs.readdirSync(cartella).filter((f) => /^scena_.+\.yaml$/.test(f)).sort().map((f) => path.join(cartella, f));
+  const sotto = path.join(cartella, 'scene');
+  const cartellaScene = fs.existsSync(sotto) ? fs.readdirSync(sotto).filter((f) => f.endsWith('.yaml')).sort().map((f) => path.join(sotto, f)) : [];
+  return [...radice, ...cartellaScene];
+}
+
+/** Una scheda scena: `prima` sono le frasi da leggere prima dell'apertura (il riassunto, solo per la prima scena). */
+function leggiScena(
+  dati: DatiYaml,
+  file: string,
+  prima: string[],
+  png: PngCaricato[],
+  stile: DatiYaml,
+  idCampagna: string,
+  avvisa: (msg: string) => void,
+): ScenaCaricata {
+  const musica = oggetto(dati['musica']);
+  const presenti = Array.isArray(dati['png_presenti'])
+    ? (dati['png_presenti'] as unknown[]).filter((x): x is string => typeof x === 'string')
+    : png.map((p) => p.id);
+  for (const p of presenti) if (!png.some((x) => x.id === p)) avvisa(`${file}: png_presenti cita ${p}, che non ha una scheda in png/`);
+  return {
+    id: stringa(dati['id']) ?? path.basename(file, '.yaml'),
+    titolo: stringa(dati['titolo']) ?? stringa(dati['nome']) ?? stringa(stile['titolo']) ?? idCampagna,
+    apertura: [...prima, ...frasiDa(dati['apertura'])],
+    umore: stringa(musica?.['tag']) ?? stringa(dati['umore']) ?? 'esplorazione_tesa',
+    intensita: typeof dati['intensita'] === 'number' ? (dati['intensita'] as number) : null,
+    png_presenti: presenti,
+    dati,
+  };
 }
 
 function maiuscola(s: string): string {

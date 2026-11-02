@@ -69,6 +69,8 @@ export interface Battuta {
   solo_esempio: boolean;
   /** B2: mossa senza azione (il cane, il tempo che passa…): in catalogo solo allo stallo. */
   riempitivo: boolean;
+  /** Campagne con più scene: la battuta vale solo in questa scena (null = in tutte). */
+  scena: string | null;
   /** File di provenienza (per gli errori). */
   file: string;
 }
