@@ -82,6 +82,22 @@ Righe come oggi, più una nuova:
   `segreto`, fatti del canone con `noto_ai_pg: false` non ancora rivelati). Restano il pubblico, il carattere dei PNG,
   e il loro `sa` pubblico.
 
+## Versione 2 (dopo l'esperimento A/B n. 1)
+
+Il giudizio cieco (`esperimenti/giudizio-ab-1/conclusioni.md`) ha mostrato che il selettore riempie i turni con
+battute *disponibili* invece di rispondere alle azioni. Cambia così:
+
+- **Legame con l'azione**: `[usa] <id> > <pg_id>` dice a quale azione risponde la battuta. Una battuta senza `> pg`
+  è ammessa solo se è un segno d'orologio dovuto o una mossa contro lo stallo. Il Motore rifiuta l'uscita se
+  un'azione dichiarata resta senza risposta (né battuta né riga improvvisata rivolta a quel PG).
+- **Solo ciò che conta esce pre-scritto**: bugie, confessioni, indizi, segni d'orologio, momenti, finali. Le reazioni
+  generiche hanno `solo_esempio: true`: non entrano nel catalogo, ma vanno nel contesto come **esempi della voce** del PNG
+  per l'improvvisazione.
+- **Catalogo pertinente**: il Motore mostra le battute i cui `temi` o PNG compaiono nelle azioni del turno, più il
+  segno d'orologio dovuto; le battute `riempitivo: true` (il cane, la borsa…) solo quando scatta lo stallo.
+- **Anti-ripetizione**: una battuta e le sue varianti non tornano entro 3 turni.
+- **Orologio**: anche in modalità B il Motore scrive «mostralo in questa risposta» quando il segno è dovuto.
+
 ## Audio pre-generato
 
 - Uno script genera l'audio di ogni riga di ogni battuta (e variante) con il servizio voce, e lo salva in
