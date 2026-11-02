@@ -40,6 +40,13 @@ STILI: dict[str, str] = {
            "cross-hatching, loose transparent watercolour washes on textured off-white paper, cold blue moonlit "
            "night with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of "
            "umber, ochre, soot black, linen white and slate blue, no text, no lettering, no signature"),
+    # v2: v1 ha unificato la tecnica, ma disegnava il quadro su un foglio con margini bianchi (luce sprecata
+    # e bordi abbaglianti sul proiettore), una luna in ogni fondo e una firma finta nel luogo.
+    "v2": ("full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole "
+           "frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, "
+           "loose transparent watercolour washes with visible paper grain, cold blue night light with small pools "
+           "of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, "
+           "linen white and slate blue, unsigned, no text, no lettering"),
 }
 
 # Come si descrive il ritratto a busto in ogni versione (il fondo fa parte dello stile).
@@ -47,6 +54,8 @@ RITRATTI: dict[str, str] = {
     "v0": "head-and-shoulders bust portrait, facing the viewer, plain dark neutral background, of {id}",
     "v1": "head-and-shoulders bust portrait of {id}, facing the viewer, against a plain background of loose "
           "blue-grey ink wash on paper",
+    "v2": "head-and-shoulders bust portrait of {id}, facing the viewer, against a plain dark slate-blue ink wash "
+          "background that fills the frame",
 }
 
 # --- Identità dei PNG ---------------------------------------------------------------------------
@@ -68,7 +77,8 @@ IDENTITA: dict[str, dict] = {
     },
     "sebastiano": {
         "chi": "man",
-        "id": "a gaunt tall man about forty, worn black hooded cloak with the hood pulled low over his eyes, "
+        "id": "a gaunt tall man about forty, worn black wool travelling cloak with a deep medieval hood pulled low "
+              "over his eyes, "
               "three-day stubble, clean steady hands with short nails",
         "seme": 1303,
     },

@@ -1,0 +1,5 @@
+2026-11-02 15:45:33,621 INFO immagini.motore: generata v2_luogo.png 768x432 seme=1000 rif=0 in 36.2 s (picco processo 4.19 GB)
+2026-11-02 15:46:07,998 INFO immagini.motore: generata v2_ritratto_ottavia.png 480x640 seme=1101 rif=0 in 34.3 s (picco processo 4.18 GB)
+2026-11-02 15:46:43,361 INFO immagini.motore: generata v2_ritratto_baldrin.png 480x640 seme=1202 rif=0 in 35.3 s (picco processo 4.18 GB)
+2026-11-02 15:47:19,407 INFO immagini.motore: generata v2_ritratto_sebastiano.png 480x640 seme=1303 rif=0 in 36.0 s (picco processo 4.18 GB)
+exit=0
