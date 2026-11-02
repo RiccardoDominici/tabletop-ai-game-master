@@ -6,6 +6,7 @@ orologi:
   - id: o_temporale
     nome: "Il temporale arriva"
     segmenti: 2
+    segno_almeno_ogni: 2
     pieni_all_inizio: 0
     segni: ["Un tuono lontano.", "La porta sbatte."]
     al_completo: "Il fiume esonda."

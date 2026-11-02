@@ -6,7 +6,14 @@
  * deve ricostruirlo dalla trascrizione. Il narratore può solo PROPORRE l'avanzamento con la
  * riga [orologio] <id>; qui si controlla che l'orologio esista, sia attivo e non sia completo.
  * Al massimo un segno per risposta.
+ *
+ * Ritmo minimo (`segno_almeno_ogni: N` dell'orologio): se (turno corrente − turno dell'ultimo
+ * segno, 0 se nessuno) ≥ N, la riga dell'orologio finisce con «Mostralo in questa risposta.»,
+ * che il prompt tratta come un ordine. Così il conteggio dei turni resta fuori dal modello.
  */
+
+/** Frase che il prompt del narratore tratta come ordine di mostrare il segno. */
+export const ORDINE_SEGNO = 'Mostralo in questa risposta.';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 
 export interface Orologio {
@@ -19,6 +26,8 @@ export interface Orologio {
   avanzaQuando: string[];
   /** Turno in cui è stato mostrato l'ultimo segno (null = mai in questa scena). */
   ultimoTurno: number | null;
+  /** Ritmo minimo: almeno un segno ogni N risposte (null = nessun obbligo). */
+  almenoOgni: number | null;
 }
 
 export type EsitoAvanzamento = { ok: true; orologio: Orologio } | { ok: false; motivo: string };
@@ -49,6 +58,7 @@ export class StatoOrologi {
         alCompleto: testo(d['al_completo']),
         avanzaQuando: Array.isArray(d['avanza_quando']) ? (d['avanza_quando'] as unknown[]).map(String) : [],
         ultimoTurno: null,
+        almenoOgni: typeof d['segno_almeno_ogni'] === 'number' && d['segno_almeno_ogni'] > 0 ? (d['segno_almeno_ogni'] as number) : null,
       });
     }
   }
@@ -68,6 +78,12 @@ export class StatoOrologi {
     return { ok: true, orologio: o };
   }
 
+  /** Il ritmo minimo impone di mostrare il segno nella risposta del turno `turnoCorrente`? */
+  dovuto(o: Orologio, turnoCorrente: number): boolean {
+    if (o.almenoOgni === null || o.pieni >= o.segmenti) return false;
+    return turnoCorrente - (o.ultimoTurno ?? 0) >= o.almenoOgni;
+  }
+
   /** Righe per il messaggio del turno (parte variabile del prompt). */
   descrivi(turnoCorrente: number): string {
     if (this.orologi.size === 0) return '';
@@ -82,7 +98,8 @@ export class StatoOrologi {
               : `ultimo segno mostrato al turno ${o.ultimoTurno}`;
         if (o.pieni >= o.segmenti) return `${testa}; COMPLETO (${ultimo}). Segui al_completo: ${o.alCompleto ?? '—'}`;
         const prossimo = o.segni[o.pieni] ?? '(segno non scritto)';
-        return `${testa}; ${ultimo}. Prossimo segno: «${prossimo}»`;
+        const ordine = this.dovuto(o, turnoCorrente) ? ` ${ORDINE_SEGNO}` : '';
+        return `${testa}; ${ultimo}. Prossimo segno: «${prossimo}»${ordine}`;
       })
       .join('\n');
   }
