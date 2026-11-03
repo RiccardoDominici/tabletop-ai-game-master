@@ -128,6 +128,8 @@ export const MOTIVO_CAMBIO_SCENA = 'Si cambia scena: la tua azione era per il lu
 export const STALLI_PRIMA_DELLA_PAUSA = 2;
 /** Cosa leggono proiettore e telefoni quando il tavolo si è fermato da solo. */
 export const TESTO_PAUSA_AUTOMATICA = "Il tavolo è in pausa: scrivete un'azione per ripartire.";
+/** Riga di sistema quando il Motore chiude la scena col finale (il tavolo va in pausa, decide il master). */
+export const TESTO_FINE_SCENA = 'La scena è finita: il master sceglie come andare avanti.';
 /** Riga di sistema scritta da «Fine sessione» (pannello del master). */
 export const TESTO_FINE_SESSIONE = 'Fine della sessione.';
 export const MOTIVO_RIPRESA = 'Il gioco si è fermato mentre il narratore rispondeva: la tua azione non è stata risolta, puoi rimandarla.';
@@ -203,6 +205,8 @@ export class Regia {
   private spento = false;
   /** Telefono (token del dispositivo) → PG: alla riconnessione, anche dopo un riavvio, il PG torna. */
   private readonly dispositivi = new Map<string, string>();
+  /** Turno in cui il Motore ha chiuso la scena col finale: a narrazione finita il tavolo va in pausa. */
+  private scenaFinitaAlTurno: number | null = null;
   /** Socket del telefono → token del dispositivo (per il pannello: quali telefoni ricordati sono collegati). */
   private readonly dispositivoDiSocket = new Map<string, string>();
   /** Sessione ripresa dal registro, in attesa del proiettore per ripartire (null = niente da riprendere). */
@@ -733,10 +737,12 @@ export class Regia {
    * `[usa] <id>` dal selettore: la battuta esce se è disponibile; le sue righe vanno alla voce con
    * l'audio pre-generato (stessa normalizzazione dello script di pre-generazione).
    */
-  private usaBattuta(id: string, per: string | null, turno: number, segno: { mostrato: boolean }): EsitoUsaTurno {
+  private usaBattuta(id: string, per: string | null, turno: number, segno: { mostrato: boolean }, motore = false): EsitoUsaTurno {
     const s = this.statoRepertorio;
     if (!s) return { ok: false, motivo: 'modalità improvvisa: nessun repertorio' };
-    if (!this.elencoTurno.has(id)) {
+    // Una battuta scelta dal Motore (finale, chiusura) non passa dal catalogo del selettore: la sua
+    // disponibilità la controlla comunque s.usa.
+    if (!motore && !this.elencoTurno.has(id)) {
       const b = s.repertorio.perId.get(id);
       return { ok: false, motivo: b ? `non era nel catalogo del turno (${s.motivoIndisponibile(b, turno) ?? 'non pertinente alle azioni o trattenuta per un segreto'})` : `battuta inesistente: ${id}` };
     }
@@ -753,8 +759,9 @@ export class Regia {
       }
     } else {
       if (s.serveAzione(b)) return { ok: false, motivo: `${id} ha un cancello sull'azione (privata o da_pg): serve «> pg»` };
-      const libera = (b.tipo === 'segno_orologio' && !!t?.segnoDovuto) || (b.riempitivo && !!t?.stallo);
-      if (!libera) return { ok: false, motivo: 'battuta senza «> pg»: ammessa solo per il segno dovuto o allo stallo' };
+      // Un finale non risponde all'azione di nessuno: chiude la scena (se è disponibile, s.usa lo controlla).
+      const libera = motore || b.tipo === 'finale' || (b.tipo === 'segno_orologio' && !!t?.segnoDovuto) || (b.riempitivo && !!t?.stallo);
+      if (!libera) return { ok: false, motivo: 'battuta senza «> pg»: ammessa solo per il segno dovuto, un finale o allo stallo' };
     }
     const esito = s.usa(id, turno, segno.mostrato);
     if (!esito.ok) return esito;
@@ -1195,6 +1202,7 @@ export class Regia {
   // ------------------------------------------------------------------ flusso della scena
 
   private interrompiTutto(motivo: string): void {
+    this.scenaFinitaAlTurno = null;
     this.interrompiFlussi(motivo);
     this.tavolo.chiudiForzata();
     this.pausaRichiesta = false;
@@ -1309,6 +1317,18 @@ export class Regia {
   private fineNarrazione(invito: string[] | 'tutti'): void {
     void this.tavolo.dopoNarrazione(this.turno, this.versioneScena);
     this.situazioniDopoLeRivelazioni();
+    if (this.scenaFinitaAlTurno === this.turno) {
+      // Il finale è stato detto: niente finestra nuova, il master sceglie (altra scena, Riprendi, Fine sessione).
+      this.scenaFinitaAlTurno = null;
+      this.fase = 'pausa';
+      this.invitoSospeso = 'tutti';
+      this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_FINE_SCENA });
+      this.uscita?.avviso('info', TESTO_FINE_SCENA);
+      this.o.log.info({ turno: this.turno, scena: this.campagna.scena.id }, 'scena: finita col finale, tavolo in pausa');
+      this.notifica();
+      this.salva('fine_scena');
+      return;
+    }
     if (this.pausaRichiesta) {
       this.pausaRichiesta = false;
       this.fase = 'pausa';
@@ -1507,6 +1527,16 @@ export class Regia {
         esito.righe_prescritte += aggiunto.righe;
       }
     }
+    // Il finale: a orologio della scena completo il Motore fa dire il finale disponibile (e la sua
+    // chiusura), poi il tavolo va in pausa e decide il master (docs/repertorio.md, «Il finale»).
+    let finale: string | null = null;
+    if (this.statoRepertorio && esito.esito && !controllo.signal.aborted) {
+      const f = this.finaleDelMotore(turno, esito, segnoInRisposta, log);
+      if (f) {
+        finale = f.finale;
+        esito.righe_prescritte += f.righe;
+      }
+    }
     // Mossa del mondo rimasta vuota (le frasi fuori dalla finzione sono state scartate): rimedia il
     // Motore, senza un'altra chiamata. Modalità B: il segno dovuto o un riempitivo del catalogo;
     // altrimenti la mossa morbida pronta della scena.
@@ -1563,6 +1593,7 @@ export class Regia {
       azioni_senza_risposta: senzaRisposta.length,
       riparazioni,
       segno_aggiunto: segnoAggiunto,
+      finale,
     };
     this.o.registroTurni.scrivi({ ...record, ...conteggi, sessione: this.sessione });
     this.o.registroNarrazioni.scrivi({
@@ -1635,13 +1666,75 @@ export class Regia {
       log.warn({ turno }, 'orologio: segno dovuto ma nessuna battuta di segno disponibile');
       return null;
     }
-    const uso = this.usaBattuta(b.id, null, turno, segno);
+    return this.aggiungiBattutaMotore(turno, esito, segno, log, b, false);
+  }
+
+  /**
+   * Il finale del Motore: se in questa risposta il selettore ha già usato un finale, oppure un
+   * orologio della scena è completo e c'è un finale disponibile (StatoRepertorio.finaleDelMotore),
+   * lo fa dire, poi la chiusura se c'è; l'invito del narratore, se non è ancora partito, si ritira.
+   * A narrazione finita il tavolo va in pausa (fineNarrazione). null = nessun finale in questo turno.
+   */
+  private finaleDelMotore(turno: number, esito: { uscita: VoceUscita[] }, segno: { mostrato: boolean }, log: Logger): { finale: string; righe: number } | null {
+    const s = this.statoRepertorio!;
+    const completi = this.orologi.elenco.filter((o) => o.pieni >= o.segmenti);
+    const giàDetto = esito.uscita.find((u) => u.tipo === 'usa' && s.repertorio.perId.get(u.id)?.tipo === 'finale');
+    let righe = 0;
+    let id: string;
+    if (giàDetto && giàDetto.tipo === 'usa') {
+      id = giàDetto.id;
+      log.info({ turno, finale: id }, 'finale: scelto dal selettore');
+    } else {
+      if (completi.length === 0) return null;
+      const { scelto, candidati, scartati } = s.finaleDelMotore(turno);
+      if (!scelto) {
+        log.info({ turno, orologi: completi.map((o) => o.id), scartati }, 'finale: orologio completo ma nessun finale disponibile');
+        return null;
+      }
+      this.ritiraInvito(turno, esito, log);
+      const detto = this.aggiungiBattutaMotore(turno, esito, segno, log, scelto, true);
+      if (!detto) return null;
+      id = scelto.id;
+      righe += detto.righe;
+      log.info({ turno, finale: id, orologi: completi.map((o) => `${o.id} ${o.pieni}/${o.segmenti}`), candidati, scartati }, 'finale: il Motore chiude la scena (il primo finale disponibile nell\'ordine del repertorio)');
+    }
+    const chiusura = s.chiusuraDelMotore(turno, completi);
+    if (chiusura) {
+      this.ritiraInvito(turno, esito, log);
+      const detta = this.aggiungiBattutaMotore(turno, esito, segno, log, chiusura, true);
+      if (detta) {
+        righe += detta.righe;
+        log.info({ turno, chiusura: chiusura.id }, 'finale: chiusura detta dal Motore');
+      }
+    }
+    this.scenaFinitaAlTurno = turno;
+    return { finale: id, righe };
+  }
+
+  /** L'invito finale del narratore («cosa fate?»), se non è ancora partito, si toglie da voce e trascrizione. */
+  private ritiraInvito(turno: number, esito: { uscita: VoceUscita[] }, log: Logger): void {
+    const ultima = esito.uscita.at(-1);
+    if (ultima?.tipo !== 'improvvisata' || ultima.etichetta !== ID_NARRATORE || !ultima.testo.includes('?') || !ultima.frasi?.length) return;
+    if (!this.pipeline.ritira(ultima.frasi)) return;
+    const voce = ultima.segmento !== undefined ? this.segmentiAperti.get(`${turno}:${ultima.segmento}`) : undefined;
+    if (voce) this.trascrizione.splice(this.trascrizione.indexOf(voce), 1);
+    esito.uscita.pop();
+    log.info({ turno, invito: ultima.testo }, 'finale: invito del narratore ritirato');
+  }
+
+  /**
+   * Fa dire una battuta scelta dal Motore (segno dovuto, finale, chiusura). `inFondo`: dopo tutto il
+   * resto del turno; altrimenti PRIMA dell'invito finale del narratore, se l'ultima riga improvvisata
+   * è una domanda e la sua voce non è ancora partita.
+   */
+  private aggiungiBattutaMotore(turno: number, esito: { uscita: VoceUscita[] }, segno: { mostrato: boolean }, log: Logger, b: Battuta, inFondo: boolean): { id: string; righe: number } | null {
+    const uso = this.usaBattuta(b.id, null, turno, segno, true);
     if (!uso.ok) {
-      log.error({ turno, battuta: b.id, motivo: uso.motivo }, 'orologio: segno dovuto non applicabile');
+      log.error({ turno, battuta: b.id, motivo: uso.motivo }, 'repertorio: battuta del Motore non applicabile');
       return null;
     }
     const ultima = esito.uscita.at(-1);
-    const invito = ultima?.tipo === 'improvvisata' && ultima.etichetta === ID_NARRATORE && ultima.testo.includes('?') ? ultima : null;
+    const invito = !inFondo && ultima?.tipo === 'improvvisata' && ultima.etichetta === ID_NARRATORE && ultima.testo.includes('?') ? ultima : null;
     // Voce: prima della prima frase dell'invito, se è ancora in coda.
     const frasi = uso.righe.map((r, k) => {
       const { voce_id, nome } = voceDi(this.campagna, r.etichetta);
@@ -1661,7 +1754,7 @@ export class Regia {
     const voce: VoceUscita = { tipo: 'usa', id: b.id, per: null, versione: uso.versione, righe: uso.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })), motore: true };
     if (invito) esito.uscita.splice(esito.uscita.length - 1, 0, voce);
     else esito.uscita.push(voce);
-    log.info({ turno, battuta: b.id, prima_dell_invito: !!invito && primaDellInvito }, 'orologio: segno dovuto aggiunto dal Motore');
+    log.info({ turno, battuta: b.id, tipo: b.tipo, prima_dell_invito: !!invito && primaDellInvito }, 'repertorio: battuta aggiunta dal Motore');
     this.notifica();
     return { id: b.id, righe: uso.righe.length };
   }

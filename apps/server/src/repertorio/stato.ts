@@ -318,6 +318,38 @@ export class StatoRepertorio {
     return { ok: true, battuta: b, righe, versione, uso, orologiPartiti };
   }
 
+  /**
+   * Il finale che il Motore fa dire quando un orologio della scena è completo (docs/repertorio.md,
+   * «Il finale»): fra le battute `tipo: finale` disponibili adesso e senza cancello sull'azione
+   * (nessuno le chiede: le dice il Motore), la PRIMA nell'ordine del repertorio. Restituisce anche
+   * perché le altre non valgono, per il log.
+   */
+  finaleDelMotore(turno: number): { scelto: Battuta | null; candidati: string[]; scartati: Record<string, string> } {
+    const scartati: Record<string, string> = {};
+    const candidati: Battuta[] = [];
+    for (const b of this.repertorio.battute) {
+      if (b.tipo !== 'finale') continue;
+      const motivo = this.motivoIndisponibile(b, turno) ?? (this.serveAzione(b) ? 'ha un cancello sull\'azione (privata o da_pg)' : null);
+      if (motivo) scartati[b.id] = motivo;
+      else candidati.push(b);
+    }
+    return { scelto: candidati[0] ?? null, candidati: candidati.map((b) => b.id), scartati };
+  }
+
+  /**
+   * La chiusura dopo il finale: una battuta `momento` disponibile, senza cancello sull'azione, che
+   * richiede uno di questi orologi COMPLETO (`richiede.orologio.min` ≥ segmenti). La prima nell'ordine.
+   */
+  chiusuraDelMotore(turno: number, orologiCompleti: ReadonlyArray<{ id: string; segmenti: number }>): Battuta | null {
+    return (
+      this.repertorio.battute.find((b) => {
+        const o = b.richiede.orologio;
+        const completo = o ? orologiCompleti.find((x) => x.id === o.id) : undefined;
+        return b.tipo === 'momento' && !!completo && o!.min >= completo.segmenti && this.motivoIndisponibile(b, turno) === null && !this.serveAzione(b);
+      }) ?? null
+    );
+  }
+
   /** Battute mai uscite (per il riepilogo dell'esperimento; le `solo_esempio` non contano). */
   maiUsate(): string[] {
     return this.repertorio.battute.filter((b) => !b.solo_esempio && !this.usata(b.id)).map((b) => b.id);

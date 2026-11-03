@@ -140,6 +140,21 @@ export class PipelineVoce {
   }
 
   /**
+   * Toglie dalla coda frasi non ancora partite, tutte o nessuna (se una è già partita non toglie
+   * niente). Serve al Motore quando chiude la scena col finale: l'invito del narratore che
+   * chiedeva «cosa fate?» non ha più senso. Restituisce true se le ha tolte.
+   */
+  ritira(idFrasi: readonly string[]): boolean {
+    if (!idFrasi.length || idFrasi.some((id) => !this.coda.some((f) => f.id_frase === id))) return false;
+    for (const id of idFrasi) {
+      const i = this.coda.findIndex((f) => f.id_frase === id);
+      const [f] = this.coda.splice(i, 1);
+      this.turno(f!.turno).frasi -= 1;
+    }
+    return true;
+  }
+
+  /**
    * Il turno non avrà altre frasi. La promessa si risolve quando tutte le sue frasi sono
    * state generate e inoltrate (o il turno è stato interrotto).
    */
