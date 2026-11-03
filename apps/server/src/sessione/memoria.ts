@@ -33,13 +33,15 @@ export class SessioneSuArchivio implements MemoriaSessione {
     private readonly log: Logger,
     /** Sessione ripresa all'avvio (null = nessuna). */
     ripresa: string | null,
+    /** Pacchetto sessioni/<nn>/ che si gioca (null = one-shot): va in ogni sessione nuova. */
+    private readonly pacchetto: number | null = null,
   ) {
     this.id = ripresa;
   }
 
   nuova(): string {
     const id = new Date().toISOString();
-    this.archivio.crea(id, this.campagna, this.modo);
+    this.archivio.crea(id, this.campagna, this.modo, this.pacchetto);
     this.id = id;
     return id;
   }

@@ -75,6 +75,39 @@ describe('archivio SQLite', () => {
     expect(b.inCorso('mini', 'improvvisa')).toBeNull();
     b.chiudi();
   });
+
+  it('archivio di prima dei pacchetti: la colonna pacchetto si aggiunge e le sessioni vecchie restano', async () => {
+    const file = path.join(tmp(), 'sessioni.sqlite');
+    // Lo schema com'era prima (senza pacchetto), con una sessione dentro.
+    const { DatabaseSync } = (await import('node:sqlite')) as typeof import('node:sqlite');
+    const vecchio = new DatabaseSync(file);
+    vecchio.exec(`
+      CREATE TABLE sessioni (id TEXT PRIMARY KEY, campagna TEXT NOT NULL, modo TEXT NOT NULL, creata TEXT NOT NULL,
+        aggiornata TEXT NOT NULL, stato TEXT NOT NULL, turno INTEGER NOT NULL DEFAULT 0, motivo_chiusura TEXT);
+      CREATE TABLE eventi (seq INTEGER PRIMARY KEY AUTOINCREMENT, sessione TEXT NOT NULL REFERENCES sessioni(id),
+        ts TEXT NOT NULL, tipo TEXT NOT NULL, turno INTEGER, dati TEXT NOT NULL);
+      INSERT INTO sessioni VALUES ('vecchia', 'mini', 'improvvisa', '2026-11-01T10:00:00.000Z', '2026-11-01T11:00:00.000Z', 'in_corso', 7, NULL);
+    `);
+    vecchio.close();
+    const a = new ArchivioSessioni(file, loggerMuto());
+    expect(a.inCorso('mini', 'improvvisa')).toMatchObject({ id: 'vecchia', turno: 7, pacchetto: null, motivo_chiusura: null });
+    a.crea('s-p2', 'mini', 'improvvisa', 2);
+    a.aggiungi('s-p2', [
+      { tipo: 'dispositivo', dati: { dispositivo: 'tel-1', id_pg: 'pg_anna' } },
+      { tipo: 'dispositivo', dati: { dispositivo: 'tel-2', id_pg: 'pg_bruno' } },
+      { tipo: 'dispositivo', dati: { dispositivo: 'tel-1', id_pg: 'pg_bruno' } },
+    ]);
+    expect(a.sessione('s-p2')).toMatchObject({ pacchetto: 2, stato: 'in_corso' });
+    expect(a.sessione('vecchia')).toMatchObject({ stato: 'chiusa', motivo_chiusura: 'nuova sessione' });
+    expect(a.elenco('mini').map((x) => x.id)).toEqual(['s-p2', 'vecchia']); // dalla più recente
+    expect(a.elenco('altra')).toEqual([]);
+    expect([...a.dispositivi('s-p2')]).toEqual([['tel-1', 'pg_bruno'], ['tel-2', 'pg_bruno']]);
+    a.chiudi();
+    // Riaperto: la migrazione non si ripete e il pacchetto c'è ancora.
+    const b = new ArchivioSessioni(file, loggerMuto());
+    expect(b.sessione('s-p2')!.pacchetto).toBe(2);
+    b.chiudi();
+  });
 });
 
 describe('ricostruisci', () => {

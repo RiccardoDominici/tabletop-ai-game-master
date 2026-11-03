@@ -4,8 +4,11 @@
  * stato si ricava dal registro). Una sessione è «in_corso» finché non se ne comincia un'altra.
  *
  * Tabelle:
- *   sessioni(id, campagna, modo, creata, aggiornata, stato, turno, motivo_chiusura)
+ *   sessioni(id, campagna, modo, creata, aggiornata, stato, turno, motivo_chiusura, pacchetto)
  *   eventi(seq, sessione, ts, tipo, turno, dati JSON)
+ *
+ * `pacchetto` è il numero di sessioni/<nn>/ giocato (campagne a più sessioni, docs/strati.md);
+ * null per una one-shot. La colonna si aggiunge da sola agli archivi di prima (migrazione additiva).
  *
  * WAL + synchronous NORMAL: un processo che muore (kill, crash) non perde gli eventi già scritti;
  * le scritture di un passaggio (es. trascrizione del turno + fotografia) vanno in una transazione.
@@ -45,7 +48,12 @@ export interface InfoSessione {
   eventi: number;
   /** Perché è stata chiusa (null finché è in corso). */
   motivo_chiusura: string | null;
+  /** Numero del pacchetto sessioni/<nn>/ (null = one-shot). */
+  pacchetto: number | null;
 }
+
+/** Motivo di chiusura scritto da «Fine sessione»: la sessione dopo parte dal pacchetto seguente. */
+export const MOTIVO_FINE_SESSIONE = 'fine sessione';
 
 export interface EventoSalvato {
   seq: number;
@@ -79,6 +87,12 @@ export class ArchivioSessioni {
       );
       CREATE INDEX IF NOT EXISTS eventi_per_sessione ON eventi (sessione, seq);
     `);
+    // Migrazione additiva: gli archivi scritti prima delle campagne a pacchetti non hanno la colonna.
+    const colonne = (this.db.prepare('PRAGMA table_info(sessioni)').all() as Array<{ name: string }>).map((c) => c.name);
+    if (!colonne.includes('pacchetto')) {
+      this.db.exec('ALTER TABLE sessioni ADD COLUMN pacchetto INTEGER');
+      log?.info({ file }, 'sessioni: archivio aggiornato (colonna pacchetto)');
+    }
     log?.info({ file }, 'sessioni: archivio aperto');
   }
 
@@ -95,6 +109,7 @@ export class ArchivioSessioni {
       turno: Number(riga['turno']),
       eventi: Number(conta.n),
       motivo_chiusura: typeof riga['motivo_chiusura'] === 'string' ? (riga['motivo_chiusura'] as string) : null,
+      pacchetto: riga['pacchetto'] === null || riga['pacchetto'] === undefined ? null : Number(riga['pacchetto']),
     };
   }
 
@@ -110,16 +125,42 @@ export class ArchivioSessioni {
     return this.info(this.db.prepare('SELECT * FROM sessioni WHERE id = ?').get(id) as Record<string, unknown> | undefined);
   }
 
+  /**
+   * Le sessioni di una campagna, dalla più recente (per creazione; a parità, l'ordine d'inserimento).
+   * Serve alla scelta del pacchetto all'avvio e a scripts/registro.sh.
+   */
+  elenco(campagna: string): InfoSessione[] {
+    const righe = this.db.prepare('SELECT * FROM sessioni WHERE campagna = ? ORDER BY creata DESC, rowid DESC').all(campagna) as Array<Record<string, unknown>>;
+    return righe.map((r) => this.info(r)!);
+  }
+
+  /** Telefono → PG di una sessione (l'ultimo evento `dispositivo` di ogni telefono vince). */
+  dispositivi(sessione: string): Map<string, string> {
+    const out = new Map<string, string>();
+    const righe = this.db.prepare("SELECT dati FROM eventi WHERE sessione = ? AND tipo = 'dispositivo' ORDER BY seq").all(sessione) as Array<{ dati: string }>;
+    for (const r of righe) {
+      try {
+        const d = JSON.parse(r.dati) as { dispositivo?: unknown; id_pg?: unknown };
+        if (typeof d.dispositivo === 'string' && typeof d.id_pg === 'string') out.set(d.dispositivo, d.id_pg);
+      } catch {
+        // riga illeggibile: la si salta (come in eventi())
+      }
+    }
+    return out;
+  }
+
   /** Nuova sessione in corso; chiude le altre in corso della stessa campagna (una sola alla volta). */
-  crea(id: string, campagna: string, modo: string): InfoSessione {
+  crea(id: string, campagna: string, modo: string, pacchetto: number | null = null): InfoSessione {
     const ora = new Date().toISOString();
     this.transazione(() => {
       this.db
         .prepare("UPDATE sessioni SET stato = 'chiusa', motivo_chiusura = 'nuova sessione', aggiornata = ? WHERE campagna = ? AND stato = 'in_corso'")
         .run(ora, campagna);
-      this.db.prepare("INSERT INTO sessioni (id, campagna, modo, creata, aggiornata, stato) VALUES (?, ?, ?, ?, ?, 'in_corso')").run(id, campagna, modo, ora, ora);
+      this.db
+        .prepare("INSERT INTO sessioni (id, campagna, modo, creata, aggiornata, stato, pacchetto) VALUES (?, ?, ?, ?, ?, 'in_corso', ?)")
+        .run(id, campagna, modo, ora, ora, pacchetto);
     });
-    this.log?.info({ sessione: id, campagna, modo }, 'sessioni: nuova sessione');
+    this.log?.info({ sessione: id, campagna, modo, pacchetto }, 'sessioni: nuova sessione');
     return this.sessione(id)!;
   }
 
