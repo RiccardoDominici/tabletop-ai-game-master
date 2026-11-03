@@ -169,12 +169,13 @@ describe('narratore: righe [umore] ed [effetto]', () => {
     // [effetto] dopo l'ultima frase: arriva con la fine del turno.
     expect(b.fineTurni.find((f) => f.turno === 1)?.effetti).toEqual(['sfx_campana']);
     expect(b.server.regia.stato().scena.audio?.umore).toBe('umore_inseguimento');
-    expect(automatici(dopo1)).toEqual([
+    // L'ordine tra scarti (al parsing) e segnali applicati (quando la frase parte) dipende dai tempi.
+    expect(automatici(dopo1).sort()).toEqual([
       'umore:no:automatico (narratore): [umore] tensione ignorato: umore «tensione» fuori dal vocabolario (esplorazione_tesa, taverna_calda, rito_sacro, inseguimento, combattimento_epico, lutto, auto)',
       'effetto:no:automatico (narratore): [effetto] tuono ignorato: effetto «tuono» non presente nel catalogo della campagna',
       'umore:ok:automatico (narratore): umore della musica esplorazione_tesa → inseguimento',
       'effetto:ok:automatico (narratore): effetto sfx_porta con la frase',
-    ]);
+    ].sort());
 
     // Turno 2, pochi secondi dopo: un altro umore automatico aspetterebbe il minuto, quindi si ignora.
     const dopo2 = await b.turno('Mi siedo.');
