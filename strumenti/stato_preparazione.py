@@ -87,6 +87,12 @@ def stato_immagini(cartella: Path) -> dict:
             "mancanti": [{"id": r.id, "tipo": r.tipo} for r in mancanti],
             "vecchie": [{"id": r.id, "tipo": r.tipo, "motivo": m} for r, m in st.vecchie],
             "orfane": st.orfane, "alias_mancanti": alias_mancanti,
+            # Qualità (strumenti/immagini/qualita.py): difettose da rifare (le rigenera genera.py con un seme
+            # nuovo), da controllare a mano (difettose anche dopo tutti i tentativi), mai controllate.
+            "difettose": [{"id": r.id, "tipo": r.tipo, "obbligatoria": not facoltativa(r), "motivi": m}
+                          for r, m, _ in st.difettose],
+            "da_controllare": [{"id": r.id, "motivi": m} for r, m in st.da_controllare],
+            "non_controllate": [r.id for r in st.non_controllate],
             "obbligatorie": {"mancanti": [r.id for r in mancanti if not facoltativa(r)],
                              "vecchie": [r.id for r in vecchie if not facoltativa(r)]},
             "facoltative": {"mancanti": [r.id for r in mancanti if facoltativa(r)],
@@ -142,6 +148,9 @@ def prontezza(img: dict, aud: dict) -> tuple[list[str], list[str]]:
         manca.append(f"immagini mancanti: {_elenco(img['obbligatorie']['mancanti'])}")
     if img["obbligatorie"]["vecchie"]:
         manca.append(f"immagini vecchie (schede cambiate): {_elenco(img['obbligatorie']['vecchie'])}")
+    dif = [d["id"] for d in img.get("difettose", []) if d["obbligatoria"]]
+    if dif:
+        manca.append(f"immagini difettose (le rigenera genera.py con un seme nuovo): {_elenco(dif)}")
     if img["manifest"] and img["alias_mancanti"]:
         manca.append(f"alias dei luoghi non registrati: {_elenco(img['alias_mancanti'])}")
     if not aud["manifest"]:
@@ -155,6 +164,12 @@ def prontezza(img: dict, aud: dict) -> tuple[list[str], list[str]]:
         avvisi.append(f"situazioni automatiche da fare {len(fac)} (il proiettore le mostra solo a comando del master)")
     if aud["manifest"] and aud["facoltativi_mancanti"]:
         avvisi.append(f"audio facoltativo mancante: {_elenco(aud['facoltativi_mancanti'])}")
+    if img.get("da_controllare"):
+        avvisi.append("da controllare a mano (difettose anche dopo tutti i tentativi): "
+                      + "; ".join(f"{d['id']}: {', '.join(d['motivi'])}" for d in img["da_controllare"][:4]))
+    if img.get("non_controllate"):
+        avvisi.append(f"immagini mai controllate {len(img['non_controllate'])} "
+                      "(genera.py --controlla, o il prossimo giro, le controlla)")
     if img["orfane"]:
         avvisi.append(f"immagini orfane nel manifest {len(img['orfane'])} (le sposta genera.py)")
     return manca, avvisi

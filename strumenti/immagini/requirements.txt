@@ -3,3 +3,5 @@
 #   uv pip install --python strumenti/immagini/.venv/bin/python -r strumenti/immagini/requirements.txt
 mflux==0.24.0
 pyyaml>=6.0
+# Controllo visivo (visione.py): Claude Haiku 5.5 guarda ogni immagine generata.
+anthropic>=2.4

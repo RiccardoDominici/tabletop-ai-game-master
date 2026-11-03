@@ -139,6 +139,11 @@ class Stato:
     mancanti: list[Richiesta] = field(default_factory=list)
     orfane: list[str] = field(default_factory=list)                      # id nel manifest, non più richiesti
     attese: dict[str, str] = field(default_factory=dict)                 # id → firma di oggi
+    # Qualità (qualita.py), solo tra le aggiornate: difettose da rifare con un seme nuovo, quelle che dopo
+    # tutti i tentativi restano difettose (da guardare a mano), quelle mai controllate.
+    difettose: list[tuple[Richiesta, list[str], int]] = field(default_factory=list)  # (richiesta, motivi, tentativi fatti)
+    da_controllare: list[tuple[Richiesta, list[str]]] = field(default_factory=list)
+    non_controllate: list[Richiesta] = field(default_factory=list)
 
 
 def motivo(r: Richiesta, voce: dict, attese: dict[str, str], registrate: dict[str, str], modello: str) -> str:
@@ -172,7 +177,16 @@ def classifica(richieste: list[Richiesta], tutte: list[Richiesta], man: Manifest
         elif registrate.get(r.id) != attese.get(r.id):
             st.vecchie.append((r, motivo(r, voce, attese, registrate, modello)))
         else:
-            st.aggiornate.append(r)
+            q = voce.get("qualita") or {}
+            if q.get("esito") == "difettosa":
+                st.difettose.append((r, list(q.get("motivi") or []), int(q.get("tentativi") or 1)))
+            elif q.get("esito") == "da_controllare":
+                st.da_controllare.append((r, list(q.get("motivi") or [])))
+                st.aggiornate.append(r)
+            else:
+                if not q:
+                    st.non_controllate.append(r)
+                st.aggiornate.append(r)
     richiesti = {r.id for r in tutte}
     st.orfane = sorted(i for i in man.voci if i not in richiesti)
     return st

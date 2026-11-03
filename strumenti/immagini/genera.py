@@ -21,6 +21,8 @@ Cosa fa:
 --dry-run non carica il modello e non scrive nulla: stampa vecchie (con il perché), orfane, e dove
 scriverebbe e con quale prompt FINALE (stile e formato del proiettore compresi, vedi formato.py).
 --rifai --seme N rigenera un'immagine con un altro seme (il seme usato finisce nel manifest).
+--controlla guarda le immagini già fatte (controlli a pixel + controllo visivo con Claude, qualita.py) senza
+generare niente; le difettose le rigenera con un seme nuovo il giro normale successivo.
 Tempi su M1 16 GB: vedi esperimenti/immagini/risultati.md.
 """
 
@@ -29,6 +31,7 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+import shutil
 import tempfile
 import time
 from pathlib import Path
@@ -38,6 +41,7 @@ sys.path.insert(0, str(QUI))
 
 from campagna import Richiesta, dimensioni_generazione, richieste  # noqa: E402
 from freschezza import Stato, classifica, firma, migra, seme_di, sposta_orfane  # noqa: E402
+from qualita import MAX_TENTATIVI, gravi, seme_tentativo, valuta  # noqa: E402
 from manifest import Manifest  # noqa: E402
 
 log = logging.getLogger("immagini.genera")
@@ -58,6 +62,17 @@ def filtra(tutte: list[Richiesta], solo: list[str] | None, ids: list[str] | None
     if solo:
         tutte = [r for r in tutte if r.tipo in solo]
     return tutte
+
+
+def client_visione():
+    """Il client per il controllo visivo, o None (con un avviso) se la chiave o l'SDK non ci sono."""
+    try:
+        from visione import crea_client
+
+        return crea_client()
+    except Exception as err:  # niente chiave, niente SDK: restano i controlli a pixel
+        log.warning("controllo visivo non disponibile (%s): solo controlli a pixel", type(err).__name__)
+        return None
 
 
 def modello_attuale(fp16: bool) -> str:
@@ -81,7 +96,7 @@ def pianifica(cartella: Path, solo: list[str] | None, ids: list[str] | None, rif
     st = classifica(scelte, tutte, man, modello_attuale(fp16))
     alias = [r for r in scelte if r.alias_di]
     vere = [r for r in scelte if not r.alias_di]
-    da_rifare = {r.id for r in st.mancanti} | {r.id for r, _ in st.vecchie}
+    da_rifare = {r.id for r in st.mancanti} | {r.id for r, _ in st.vecchie} | {r.id for r, _, _ in st.difettose}
     return [r for r in vere if rifai or r.id in da_rifare], st, alias, man
 
 
@@ -89,12 +104,18 @@ def stampa_piano(cartella: Path, da_fare: list[Richiesta], st: Stato, alias: lis
     dest = cartella / "immagini"
     print(f"campagna: {cartella}   destinazione: {dest}/")
     print(f"aggiornate (saltate): {len(st.aggiornate)}   mancanti: {len(st.mancanti)}   vecchie: {len(st.vecchie)}   "
-          f"da generare: {len(da_fare)}   alias: {len(alias)}   orfane: {len(st.orfane)}\n")
+          f"da generare: {len(da_fare)}   alias: {len(alias)}   orfane: {len(st.orfane)}")
+    print(f"qualità: difettose {len(st.difettose)}   da controllare a mano {len(st.da_controllare)}   "
+          f"mai controllate {len(st.non_controllate)} (il giro vero le controlla prima di generare)\n")
     for r, perche in st.vecchie:
         print(f"- [vecchia] {r.id}: {perche}")
+    for r, motivi, n in st.difettose:
+        print(f"- [difettosa] {r.id} (tentativi {n}): {'; '.join(motivi)}")
+    for r, motivi in st.da_controllare:
+        print(f"- [da controllare a mano] {r.id}: {'; '.join(motivi)}")
     for ident in st.orfane:
         print(f"- [orfana] {ident}: non è più nelle schede → {dest}/cache/orfane/")
-    if st.vecchie or st.orfane:
+    if st.vecchie or st.orfane or st.difettose or st.da_controllare:
         print()
     for r in da_fare:
         rif = f"  riferimenti: {', '.join(x + '.jpg' for x in r.riferimenti)}" if r.riferimenti else ""
@@ -128,41 +149,76 @@ def registra_alias(alias: list[Richiesta], man: Manifest) -> None:
         log.info("alias %s → %s", r.id, r.file)
 
 
-def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, seme: int | None,
-           perche: dict[str, str] | None = None) -> None:
-    """Genera davvero: un processo mflux per immagine (vedi motore.py), poi JPEG + voce nel manifest."""
+def _candidato(motore, r: Richiesta, s: int, rif: list[Path], tmp: Path, n: int) -> tuple[Path, object, float]:
+    """Genera un'immagine (tentativo n) in tmp: PNG di mflux, rifilatura, JPEG finale. Ritorna (jpg, esito, rifilato)."""
     from PIL import Image
 
-    from motore import Motore, salva_jpeg, verifica_alimentazione, verifica_disco
+    from motore import salva_jpeg
     from rifila import rifila
 
+    gl, ga = dimensioni_generazione(r.larghezza, r.altezza)
+    e = motore.genera(r.prompt, s, gl, ga, tmp / f"{r.id}_{n}.png", riferimenti=rif)
+    with Image.open(e.percorso) as png:
+        img = png.convert("RGB")
+    # Tutti i tipi: l'orlo bianco abbaglia sul proiettore; su un fondo scuro pieno rifila() non tocca niente.
+    img, rifilato = rifila(img)
+    jpg = tmp / f"{r.id}_{n}.jpg"
+    salva_jpeg(img, jpg, qualita=QUALITA_JPEG, dimensioni=(r.larghezza, r.altezza))
+    return jpg, e, rifilato
+
+
+def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, seme: int | None,
+           perche: dict[str, str] | None = None, client_visione=None,
+           tentativi_da: dict[str, int] | None = None) -> None:
+    """Genera davvero: un processo mflux per tentativo (vedi motore.py), controllo di qualità, voce nel manifest.
+
+    Ogni immagine si controlla (qualita.py: pixel + visione se c'è il client). Se è difettosa si riprova
+    con un seme nuovo, fino a MAX_TENTATIVI immagini; poi si tiene la migliore, «da_controllare».
+    tentativi_da: per le difettose di un giro precedente, da quale tentativo ripartire (mai lo stesso seme).
+    """
+    from motore import Motore, verifica_alimentazione, verifica_disco
+
     dest = cartella / "immagini"
+    dest.mkdir(parents=True, exist_ok=True)  # una campagna nuova non ha ancora la cartella
     motore = Motore(fp16=fp16)
     with tempfile.TemporaryDirectory(prefix="cantastorie-img-") as tmp:
         for i, r in enumerate(da_fare, 1):
             r = rileggi(cartella, r)
             if r is None:
                 continue
-            verifica_alimentazione()
-            verifica_disco(dest.parent)
-            s = seme if seme is not None else seme_di(r, man)  # seme appiccicoso: quello già scelto resta
             rif = [dest / f"{x}.jpg" for x in r.riferimenti]
             mancanti = [p.name for p in rif if not p.exists()]
             if mancanti:
                 log.error("salto %s: mancano i riferimenti %s", r.id, mancanti)
                 continue
             gl, ga = dimensioni_generazione(r.larghezza, r.altezza)
-            log.info("(%d/%d) %s %dx%d seme=%d%s", i, len(da_fare), r.id, gl, ga, s,
-                     f" — vecchia: {perche[r.id]}" if perche and r.id in perche else "")
-            # Il PNG di mflux resta in una cartella temporanea: nella campagna va solo il JPEG.
-            e = motore.genera(r.prompt, s, gl, ga, Path(tmp) / f"{r.id}.png", riferimenti=rif)
-            with Image.open(e.percorso) as png:
-                img, rifilato = png.convert("RGB"), 0.0
-            # Tutti i tipi: l'orlo bianco abbaglia sul proiettore, e i ritratti con lo sfondo dipinto
-            # (ponte-lanterne) hanno lo stesso orlo strappato. Su un fondo scuro pieno rifila() non
-            # trova carta e non tocca niente.
-            img, rifilato = rifila(img)
-            salva_jpeg(img, dest / r.file, qualita=QUALITA_JPEG, dimensioni=(r.larghezza, r.altezza))
+            primo = (tentativi_da or {}).get(r.id, 0)
+            candidati = []
+            for n in range(primo, max(MAX_TENTATIVI, primo + 1)):
+                verifica_alimentazione()
+                verifica_disco(dest.parent)
+                if n == primo and seme is not None:
+                    s = seme
+                elif n == 0:
+                    s = seme_di(r, man)  # seme appiccicoso: quello già scelto resta
+                else:
+                    s = seme_tentativo(r.id, n)
+                log.info("(%d/%d) %s %dx%d seme=%d tentativo %d%s", i, len(da_fare), r.id, gl, ga, s, n + 1,
+                         f" — vecchia: {perche[r.id]}" if perche and r.id in perche and n == primo else "")
+                jpg, e, rifilato = _candidato(motore, r, s, rif, Path(tmp), n)
+                q = valuta(jpg, r, cartella, client_visione)
+                candidati.append((n, s, jpg, e, rifilato, q))
+                log.info("qualità %s tentativo %d: %s%s (controllo visivo $%.5f)", r.id, n + 1, q["esito"],
+                         f" — {'; '.join(q['motivi'])}" if q["motivi"] else "", q.get("costo_usd") or 0)
+                if q["esito"] != "difettosa":
+                    break
+            # La migliore: la prima senza problemi gravi; se tutte ne hanno, quella che ne ha meno.
+            n, s, jpg, e, rifilato, q = min(candidati, key=lambda c: (gravi(c[5]), c[0]))
+            if q["esito"] == "difettosa":
+                q = {**q, "esito": "da_controllare"}
+                log.warning("%s: difettosa dopo %d tentativi, tengo la migliore (tentativo %d) da controllare a mano: %s",
+                            r.id, len(candidati), n + 1, "; ".join(q["motivi"]))
+            shutil.copy2(jpg, dest / r.file)
             kb = (dest / r.file).stat().st_size / 1000
             man.registra({
                 "id": r.id, "file": r.file, "tipo": r.tipo, "prompt": r.prompt, "seme": s,
@@ -173,9 +229,30 @@ def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, 
                 # La firma dei riferimenti è quella registrata ADESSO (sono generati prima di chi li usa).
                 "firma": firma(r.prompt, [(x, (man.voci.get(x) or {}).get("firma")) for x in r.riferimenti],
                                motore.descrizione, (r.larghezza, r.altezza), (gl, ga), s),
+                "qualita": {**q, "tentativi": candidati[-1][0] + 1,
+                            "costo_totale_usd": round(sum(c[5].get("costo_usd") or 0 for c in candidati), 6)},
                 "quando": time.strftime("%Y-%m-%d %H:%M:%S"),
             })
-            log.info("salvata %s (%.0f KB, qualità %d)", r.file, kb, QUALITA_JPEG)
+            log.info("salvata %s (%.0f KB, qualità JPEG %d, esito %s)", r.file, kb, QUALITA_JPEG, q["esito"])
+
+
+def controlla_esistenti(cartella: Path, scelte: list[Richiesta], man: Manifest, client_visione) -> list[str]:
+    """Controlla le immagini già fatte e mai controllate (anche quelle di prima di qualita.py).
+
+    Scrive `qualita` nel manifest (tentativi = 1: il seme registrato è il primo tentativo).
+    Ritorna gli id trovati difettosi, che il piano rigenera con un seme nuovo.
+    """
+    difettose = []
+    for r in scelte:
+        voce = man.voci.get(r.id)
+        if r.alias_di or not voce or voce.get("qualita") or not (man.cartella / voce.get("file", r.file)).exists():
+            continue
+        q = valuta(man.cartella / voce["file"], r, cartella, client_visione)
+        man.registra({**voce, "qualita": {**q, "tentativi": 1, "costo_totale_usd": q.get("costo_usd") or 0}})
+        log.info("controllata %s (già fatta): %s%s", r.id, q["esito"], f" — {'; '.join(q['motivi'])}" if q["motivi"] else "")
+        if q["esito"] == "difettosa":
+            difettose.append(r.id)
+    return difettose
 
 
 def rifila_esistenti(cartella: Path, scelte: list[Richiesta], man: Manifest) -> None:
@@ -222,6 +299,11 @@ def main() -> None:
     p.add_argument("--no-fp16", action="store_true", help="calcolo in bfloat16 (float16 è il default: ~20%% più veloce su M1)")
     p.add_argument("--dim-luogo", metavar="LxA",
                    help="dimensioni di luoghi e situazioni per questa corsa, es. 1280x720 (2,5 volte più veloce di 1920x1080)")
+    p.add_argument("--controlla", action="store_true",
+                   help="non genera: controlla (pixel + visione) le immagini già fatte e mai controllate, sposta le "
+                        "orfane, registra gli alias. Solo CPU e API: si può lanciare mentre la GPU lavora ad altro")
+    p.add_argument("--senza-visione", action="store_true",
+                   help="niente controllo visivo con Claude (restano i controlli a pixel): offline o per risparmiare")
     p.add_argument("--rifila-esistenti", action="store_true",
                    help="non genera: rifila l'orlo di carta dei luoghi già fatti che non sono stati rifilati (solo CPU)")
     args = p.parse_args()
@@ -250,11 +332,24 @@ def main() -> None:
     if args.dry_run:
         stampa_piano(cartella, da_fare, st, alias)
         return
+    sposta_orfane(man, st.orfane)
+    client = None if args.senza_visione else client_visione()
+    if args.controlla:
+        difettose = controlla_esistenti(cartella, st.non_controllate, man, client)
+        registra_alias(alias, man)
+        log.info("controllo finito: %d controllate, %d difettose (%s): le rigenera il prossimo giro senza --controlla",
+                 len(st.non_controllate), len(difettose), ", ".join(difettose) or "nessuna")
+        return
+    # Le immagini già fatte e mai controllate si controllano ora: quelle difettose entrano nel piano.
+    if st.non_controllate and controlla_esistenti(cartella, st.non_controllate, man, client):
+        da_fare, st, alias, man = pianifica(cartella, args.solo, args.ids, args.rifai, fp16=not args.no_fp16)
     for r, perche in st.vecchie:
         log.info("vecchia: %s (%s), la rigenero", r.id, perche)
-    sposta_orfane(man, st.orfane)
+    for r, motivi, n in st.difettose:
+        log.info("difettosa: %s (%s), la rigenero con un seme nuovo (tentativo %d)", r.id, "; ".join(motivi), n + 1)
     if da_fare:
-        esegui(cartella, da_fare, man, fp16=not args.no_fp16, seme=args.seme, perche={r.id: m for r, m in st.vecchie})
+        esegui(cartella, da_fare, man, fp16=not args.no_fp16, seme=args.seme, perche={r.id: m for r, m in st.vecchie},
+               client_visione=client, tentativi_da={r.id: n for r, _, n in st.difettose})
     else:
         log.info("niente da generare: le immagini richieste ci sono già")
     registra_alias(alias, man)

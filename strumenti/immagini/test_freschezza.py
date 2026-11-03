@@ -152,8 +152,11 @@ def test_genera_pianifica_rifa_mancanti_e_vecchie(mini: Path, monkeypatch: pytes
 def test_main_rigenera_la_vecchia_e_dice_perche(mini: Path, monkeypatch: pytest.MonkeyPatch):
     """Il percorso vero di genera.py (main), senza modello: esegui() riceve la vecchia con il perché."""
     monkeypatch.setattr(genera, "modello_attuale", lambda fp16: MODELLO)
+    # I file finti non sono JPEG: qui si prova la freschezza, la qualità ha i suoi test (test_qualita.py).
+    monkeypatch.setattr(genera, "client_visione", lambda: None)
+    monkeypatch.setattr(genera, "controlla_esistenti", lambda *a, **k: [])
     chiamate = {}
-    monkeypatch.setattr(genera, "esegui", lambda cartella, da_fare, man, fp16, seme, perche=None:
+    monkeypatch.setattr(genera, "esegui", lambda cartella, da_fare, man, fp16, seme, perche=None, **kw:
                         chiamate.update(ids=[r.id for r in da_fare], perche=perche))
     _registra_tutto(mini)
     scena = yaml.safe_load((mini / "scena.yaml").read_text())
@@ -163,3 +166,16 @@ def test_main_rigenera_la_vecchia_e_dice_perche(mini: Path, monkeypatch: pytest.
     genera.main()
     assert chiamate["ids"] == ["luogo_scena_sala", "situazione_png_uno_in_scena_sala"]
     assert chiamate["perche"]["luogo_scena_sala"].startswith("il prompt è cambiato")
+
+
+def test_due_processi_che_scrivono_il_manifest_non_si_cancellano_le_voci(tmp_path: Path):
+    """genera.py (un processo per immagine) e un alias registrato da un altro processo nello stesso momento."""
+    a = Manifest(tmp_path)          # il processo A carica il manifest (vuoto)…
+    b = Manifest(tmp_path)          # …e anche B
+    b.registra({"id": "luogo_n_sasso", "file": "luogo_scena_sasso.jpg", "alias_di": "luogo_scena_sasso"})
+    a.registra({"id": "situazione_x", "file": "situazione_x.jpg"})  # A non sa niente della voce di B
+    voci = Manifest(tmp_path).voci
+    assert set(voci) == {"luogo_n_sasso", "situazione_x"}
+    del a.voci["situazione_x"]      # una voce tolta da A (orfana) sparisce, quella di B resta
+    a.salva()
+    assert set(Manifest(tmp_path).voci) == {"luogo_n_sasso"}

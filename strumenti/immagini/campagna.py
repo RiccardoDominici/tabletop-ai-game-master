@@ -176,6 +176,15 @@ def identita_situazioni(asp: dict) -> str:
     return (asp.get("prompt_immagine") or "").replace(SEGNAPOSTO_STILE, "").strip().rstrip(",. ")
 
 
+def segreti_png(cartella: Path, pid: str) -> list[str]:
+    """I prompt delle situazioni dichiarate di un PNG: i tratti che NON devono vedersi altrove (vedi qualita.py)."""
+    for f in sorted((Path(cartella) / "png").glob("*.yaml")):
+        scheda = _yaml(f)
+        if scheda.get("id", f.stem) == pid:
+            return [s["prompt"] for s in ((scheda.get("aspetto") or {}).get("situazioni") or []) if s.get("prompt")]
+    return []
+
+
 def richieste_png(cartella: Path, stile: str, luoghi: dict[str, list[str]]) -> list[Richiesta]:
     """Ritratto di ogni PNG, poi le sue situazioni (dichiarate e automatiche dalle scene)."""
     out = []
