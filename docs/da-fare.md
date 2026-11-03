@@ -15,7 +15,11 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
   situazione dopo la rivelazione. Restano aperti:
   - Motore, proposte della prova cieca (descritte in `docs/repertorio.md`, «Proposte per il Motore»; il validatore e la
     skill sono pronti): `richiede.oppure`, `orologi[].parte_dopo`, battute solo dei PNG presenti nella scena;
-  - in modalità A (improvvisa) gli indizi non hanno id: le situazioni escono solo a comando del master;
+  - in modalità A (improvvisa) gli indizi non hanno id: le situazioni escono solo a comando del master; e con le
+    campagne a più sessioni è più urgente, perché il registro di fine sessione in modalità A non ha indizi,
+    battute, menzogne né fatti noti (sezioni null, docs/strati.md): la sessione dopo si prepara solo da orologi,
+    scene, azioni e trascrizione. Serve un modo di tracciare gli indizi anche in A (per esempio una riga
+    `[indizio] <id>` del narratore, controllata dal Motore come `[orologio]`);
 
 ## Dopo
 - **Motore: i limiti che oggi la campagna deve aggirare** (dalla prova di nozze-neve; la pagina

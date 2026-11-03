@@ -59,14 +59,71 @@ campagne/<id>/
   pg.yaml     personaggi, con crescita
   stato/      stato.yaml                                     # registro canonico del gioco: cresce dopo ogni sessione
   sessioni/<nn>/                                             # il pacchetto: ciò che il Motore gioca
-    sessione.yaml (riassunto_iniziale, scene in ordine, orologi della sessione)
-    scene/*.yaml  png/ (PNG solo di questa sessione)  repertorio/  immagini/ audio/ (solo il nuovo)
-    registro.yaml                                            # estratto a fine sessione, deterministico
+    sessione.yaml (titolo, riassunto_iniziale, scene in ordine, pieni_all_inizio, e la parte di sessione
+                   di campagna.yaml: orologi, canone, rivelazioni, nodi, colli_di_bottiglia; preparazione)
+    scene/*.yaml  png/ (PNG solo di questa sessione, o scheda aggiornata di un ricorrente)
+    repertorio/ (battute e parole_segrete.yaml della sessione)  immagini/ audio/ (solo il nuovo)
+    registro.yaml  trascrizione.yaml                         # scritti a fine sessione dall'archivio, deterministici
 ```
+`<nn>` è un nome di sole cifre (due, per l'ordine: `01`, `02`…) con dentro `sessione.yaml`; le altre cartelle
+in `sessioni/` non contano. Una campagna con `sessioni/` non usa `scena.yaml` e `scene/` della radice.
 Le risorse che durano (ritratti dei PNG ricorrenti, luoghi che tornano, temi musicali) stanno a livello di
 campagna e si riusano; ogni sessione genera solo le immagini e i suoni nuovi.
 L'arco preparato prima (premessa, tappe, atti, finali, PNG ricorrenti, fili) sta in `campagna.yaml →
 preparazione.arco`: contiene il futuro, e `preparazione` non arriva mai al narratore (riferimenti/arco.md).
+
+### Regole di unione (il contratto del compilatore: apps/server/src/campagna/pacchetti.ts e caricatore.ts)
+Il Motore gioca il livello di campagna PIÙ un pacchetto. Le regole, in un posto solo (il validatore le usa
+attraverso `strumenti/unisci_pacchetto.ts`, che scrive la vista unita come una one-shot col codice del server:
+non esiste una seconda copia):
+- **campagna.yaml + sessione.yaml**: le chiavi di `sessione.yaml` si uniscono a quelle di `campagna.yaml`; le
+  liste si accodano (prima la campagna) e un id ripetuto tra le due è un **errore** che nomina i due file; per
+  le altre chiavi vale la sessione, con un avviso. `sessione` di campagna.yaml non vale (il riassunto sta nel
+  pacchetto). Non arrivano al narratore: `riassunto_iniziale`, `scene`, `titolo`, `pieni_all_inizio`,
+  `preparazione` (della campagna e della sessione: per esempio `preparazione.fili`).
+- **pieni_all_inizio** `{id_orologio: n}`: i segni già pieni di un orologio della campagna all'inizio di questa
+  sessione (scritti tra le sessioni dal registro e dal mondo che si muove). Un id che non c'è è un errore; un
+  orologio non citato riparte dal valore di campagna.yaml.
+- **Scene**: solo `scene/*.yaml` del pacchetto, nell'ordine di `sessione.yaml → scene`; la prima legge prima
+  `riassunto_iniziale`. Un id elencato senza file è un errore; un file non elencato va in fondo con un avviso.
+- **PNG**: png/ della campagna più png/ del pacchetto, in ordine di id; una scheda del pacchetto con l'id di un
+  ricorrente lo **sostituisce intera** per quella sessione (non è il caso «id ripetuto = errore», che vale per
+  le liste).
+- **Repertorio**: le battute vengono **solo** dal pacchetto (quelle della sessione prima che valgono ancora le
+  ricopia la preparazione). `parole_segrete.yaml` del pacchetto **sostituisce** quello della campagna (ciò che i
+  PG hanno scoperto smette di essere segreto); senza file nel pacchetto vale quello della campagna.
+- **Immagini e audio**: i manifest di campagna e pacchetto insieme; a parità di id vince il pacchetto (un
+  ritratto invecchiato); un nome di file già usato da un'altra voce dell'altra cartella si scarta.
+- **PG**: `pg.yaml` della campagna, in ogni sessione; i telefoni ritrovano il PG della sessione prima (il master
+  lo cambia o lo dimentica dal pannello, «Telefoni ricordati»).
+
+### Quale sessione si gioca
+La tiene l'archivio (`sessioni.sqlite`, colonna `pacchetto` di ogni sessione giocata; apps/server/src/sessione/
+scelta-pacchetto.ts). All'avvio, in ordine: `--sessione N` (`CANTASTORIE_SESSIONE`); la sessione in corso
+(ripresa); il pacchetto dopo l'ultima sessione chiusa con «Fine sessione» (se è preparato a metà e non si carica,
+si resta su quella finita, con l'avviso nel pannello); l'ultima giocata; la prima. `scripts/partita.sh` chiede la
+stessa scelta al server e valida proprio quel pacchetto.
+
+### Fine sessione e Prossima sessione (pannello del master)
+- **Fine sessione**: il gioco si ferma, la sessione dell'archivio si chiude (`motivo_chiusura: fine sessione`) e il
+  server scrive `registro.yaml` e `trascrizione.yaml` nel pacchetto giocato (una one-shot nei log:
+  `logs/registri/<campagna>/<id>/`). `scripts/registro.sh <campagna> [--sessione nn] [--controlla]` rifà o
+  controlla gli stessi file dall'archivio.
+- **Prossima sessione**: acceso solo se `sessioni/<nn+1>/` c'è e si carica come all'avvio (campagna, repertorio,
+  parole segrete); se la sessione è ancora in corso fa prima Fine sessione. Il server si ricostruisce sullo stesso
+  indirizzo col pacchetto dopo e lo stesso token del master: pannello, proiettore e telefoni si ricollegano come
+  dopo un riavvio, e la sessione nuova comincia dal suo `riassunto_iniziale`.
+
+### Il registro (registro.yaml, formato 1; apps/server/src/sessione/registro.ts)
+Estratto dagli eventi dell'archivio senza modelli; stesso archivio → stessi byte. Contiene le azioni private: è
+per il master e il Preparatore, mai per i giocatori. Sezioni, ognuna col suo turno: `archivio` (id, modo, inizio,
+ultimo evento, stato e motivo di chiusura, turni), `giocatori`, `scene` (dal turno, al turno), `luoghi`,
+`situazioni`, `orologi` (pieni all'inizio e alla fine, ogni segno col turno e la causa: narrazione o master, segni
+tolti, partenza), `indizi`, `battute`, `menzogne`, `fatti_noti` (con la battuta che li porta), `png_incontrati`
+(chi ha parlato, primo e ultimo turno), `pg` (azioni pubbliche e private separate, testo esatto ed esito),
+`momenti` (i turni in cui il Motore ha registrato un cambiamento, con le righe dette e le azioni), `note_del_master`,
+`avvisi`. `trascrizione.yaml` accanto: le voci pubbliche turno per turno, testo esatto. In modalità A il Motore non
+tiene indizi, battute, menzogne e fatti: quelle sezioni sono `null` e un avviso lo dice.
 
 ## Il ciclo tra le sessioni
 1. **Fine sessione** (pannello del master): il server scrive `sessioni/<nn>/registro.yaml` dall'archivio.
@@ -83,8 +140,10 @@ preparazione.arco`: contiene il futuro, e `preparazione` non arriva mai al narra
 ## Fasi di lavoro
 - **D1** livello nel brief: `sessioni`, `strumenti/strati.py`, controllo nel validatore, sezione «Strati» della
   skill. Una one-shot non cambia.
-- **D2** server: pacchetti `sessioni/<nn>/` (una campagna senza `sessioni/` è una one-shot), PG che durano,
-  «Fine sessione» che scrive il registro.
+- **D2** server (fatto il 3 novembre): pacchetti `sessioni/<nn>/` (una campagna senza `sessioni/` è una
+  one-shot), PG che durano, «Fine sessione» che scrive il registro, «Prossima sessione», `scripts/registro.sh`,
+  `strumenti/unisci_pacchetto.ts`, `partita.sh --sessione`. Prove: apps/server/test/pacchetti, cicli, registro,
+  registro-cli; e2e apps/web/e2e/pacchetti.spec.ts (fixture a due sessioni `apps/server/test/fixtures/campagne/arco`).
 - **D3** skill «tra le sessioni» e classi STATO e CONTINUITÀ del validatore.
 - **D4** prova vera: un arco di tre sessioni generato da un brief nuovo, giocato in automatico sessione per
   sessione (i copioni ciechi vedono solo la trascrizione pubblica e il riassunto, come i giocatori), ciclo tra

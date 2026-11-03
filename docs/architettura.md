@@ -61,6 +61,10 @@ Il mestiere del master non è affidato al prompt: è imposto dalla struttura (ve
   delle azioni. All'avvio una sessione in corso della stessa campagna si ricostruisce e aspetta il proiettore: riparte
   senza rileggere l'apertura; se il narratore stava rispondendo, le azioni di quel turno tornano ai giocatori e il turno
   si rigioca. «Nuova sessione» nel pannello, `partita.sh --nuova` o Ricomincia ne cominciano un'altra;
+  campagne a più sessioni (docs/strati.md, D2): il Motore gioca il livello di campagna più un pacchetto
+  `sessioni/<nn>/`, scelto dall'archivio (colonna `pacchetto`); «Fine sessione» chiude la sessione e scrive il
+  registro deterministico (`registro.yaml` + `trascrizione.yaml`) dagli eventi, «Prossima sessione» ricostruisce il
+  server sul pacchetto dopo (apps/server/src/ciclo-server.ts) e i telefoni ritrovano il loro PG;
 - **le regole SRD 5.2** (CC-BY-4.0, dati estratti dal PDF ufficiale, attribuzione obbligatoria nei crediti): dadi, prove, CD, iniziativa, PF. Il dado lo tira sempre il server: la narrazione non può cambiare un esito;
 - **gli orologi delle minacce**, gli atteggiamenti dei PNG, gli indizi rivelati, le menzogne già dette, i contatori dello spotlight;
 - **il canone**: fatti `proposto` e `confermato`, con il flag `noto_ai_pg`;

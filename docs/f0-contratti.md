@@ -92,11 +92,15 @@ agenda del cattivo, segreti, registro del canone `canone: [{id, testo, noto_ai_p
 - Id: PNG `png_<nome>` (anche l'etichetta del protocollo), PG `pg_<nome>`. Il server accetta l'etichetta anche senza
   `png_` e senza badare a maiuscole, con un avviso nel log.
 - `conoscenze_private` di ogni PG vanno **solo** al telefono di quel giocatore, mai al tavolo o allo schermo.
+- Campagne a più sessioni: `sessioni/<nn>/` (sessione.yaml, scene/, png/, repertorio/, immagini/, audio/) si unisce
+  al livello di campagna con le regole di docs/strati.md («Regole di unione»); una campagna senza `sessioni/` si
+  carica come sopra. A fine sessione il server scrive nel pacchetto `registro.yaml` e `trascrizione.yaml`.
 
 ## Turno (F0)
 
-1. All'avvio della scena il server fa leggere `campagna.yaml → sessione.riassunto_iniziale` (se c'è) e poi
-   `scena.yaml → apertura`, con la voce `narratore`, e apre la finestra per tutti.
+1. All'avvio della scena il server fa leggere `campagna.yaml → sessione.riassunto_iniziale` (se c'è; in una
+   campagna a più sessioni `sessioni/<nn>/sessione.yaml → riassunto_iniziale`) e poi l'apertura della prima
+   scena, con la voce `narratore`, e apre la finestra per tutti.
 2. Finestra aperta: ogni giocatore invitato scrive un'azione, la può modificare o ritirare, e può premere «pronto».
 3. La finestra si chiude quando tutti gli invitati sono pronti, oppure 10 s dopo la prima azione inviata.
 4. Il server compila il contesto (stile + scena + PNG + PG + trascrizione pubblica + azioni), chiama Haiku in streaming,
