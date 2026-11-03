@@ -42,6 +42,9 @@ PASSI_DEFAULT = 4
 BATTERIA_MINIMA = 20
 # Sotto questo spazio libero non si parte: lo swap del sistema vive sullo stesso disco.
 DISCO_MINIMO_GB = 8.0
+# Nuovi tentativi quando il watchdog della GPU uccide il calcolo (successo il 3/11 su una situazione a
+# 1920 con riferimento: «[METAL] Command buffer execution failed: Impacting Interactivity»).
+TENTATIVI_GPU = 1
 
 # I comandi stanno nel venv accanto a questo file (vedi requirements.txt).
 BIN = Path(__file__).resolve().parent / ".venv" / "bin"
@@ -129,6 +132,17 @@ class Motore:
         cmd = ["/usr/bin/time", "-l", *self.comando(prompt, seme, larghezza, altezza, uscita, rif, passi)]
         t0 = time.perf_counter()
         proc = subprocess.run(cmd, capture_output=True, text=True)
+        for tentativo in range(1, TENTATIVI_GPU + 1):
+            if proc.returncode == 0 or not _errore_gpu_transitorio(proc):
+                break
+            # Il watchdog di macOS uccide un calcolo Metal che tiene la GPU troppo a lungo mentre
+            # l'interfaccia ne ha bisogno: dipende dal momento, non dal prompt. Si riprova uguale.
+            log.warning("errore transitorio della GPU (Metal «Impacting Interactivity») su %s: nuovo tentativo %d/%d",
+                        uscita.name, tentativo, TENTATIVI_GPU)
+            verifica_alimentazione()
+            uscita.unlink(missing_ok=True)
+            time.sleep(5)
+            proc = subprocess.run(cmd, capture_output=True, text=True)
         secondi = time.perf_counter() - t0
         if proc.returncode != 0 or not uscita.exists():
             # Si tolgono le righe statistiche di /usr/bin/time, che altrimenti coprono il messaggio di mflux.
@@ -142,6 +156,11 @@ class Motore:
         log.info("generata %s %dx%d seme=%d rif=%d in %.1f s (picco processo %s GB)", uscita.name, larghezza,
                  altezza, seme, len(rif or []), secondi, f"{picco:.2f}" if picco else "?")
         return Esito(percorso=uscita, secondi=secondi, picco_gb=picco)
+
+
+def _errore_gpu_transitorio(proc: subprocess.CompletedProcess) -> bool:
+    """Vero se mflux è caduto per il watchdog della GPU (kIOGPUCommandBufferCallbackErrorImpactingInteractivity)."""
+    return "Impacting Interactivity" in (proc.stdout or "") + (proc.stderr or "")
 
 
 def verifica_disco(cartella: str | Path, minimo_gb: float = DISCO_MINIMO_GB) -> None:
