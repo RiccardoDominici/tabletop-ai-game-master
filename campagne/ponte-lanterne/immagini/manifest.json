@@ -64,10 +64,9 @@
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
       "secondi": 386.7,
       "picco_gb": 5.14,
-      "kb": 628,
-      "rifilato_pct": 1.2,
-      "quando": "2026-11-02 22:26:51",
-      "rifilato_dal_jpeg": true
+      "kb": 634,
+      "rifilato_pct": 0.3,
+      "quando": "2026-11-02 22:26:51"
     },
     {
       "id": "luogo_scena_ponte_imbrunire",
@@ -85,10 +84,9 @@
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
       "secondi": 267.3,
       "picco_gb": 5.3,
-      "kb": 644,
-      "rifilato_pct": 1.2,
-      "quando": "2026-11-02 22:14:18",
-      "rifilato_dal_jpeg": true
+      "kb": 652,
+      "rifilato_pct": 0.5,
+      "quando": "2026-11-02 22:14:18"
     },
     {
       "id": "luogo_scena_terzo_tocco",
@@ -126,10 +124,9 @@
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
       "secondi": 114.0,
       "picco_gb": 4.31,
-      "kb": 250,
-      "rifilato_pct": 2.7,
-      "quando": "2026-11-02 22:36:08",
-      "rifilato_dal_jpeg": true
+      "kb": 258,
+      "rifilato_pct": 0.0,
+      "quando": "2026-11-02 22:36:08"
     },
     {
       "id": "ritratto_png_rosa",
@@ -147,10 +144,9 @@
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
       "secondi": 135.7,
       "picco_gb": 4.31,
-      "kb": 259,
-      "rifilato_pct": 5.0,
-      "quando": "2026-11-02 22:38:23",
-      "rifilato_dal_jpeg": true
+      "kb": 251,
+      "rifilato_pct": 0.0,
+      "quando": "2026-11-02 22:38:23"
     },
     {
       "id": "ritratto_png_tullio",
@@ -169,9 +165,8 @@
       "secondi": 115.4,
       "picco_gb": 4.33,
       "kb": 277,
-      "rifilato_pct": 5.0,
-      "quando": "2026-11-02 22:40:19",
-      "rifilato_dal_jpeg": true
+      "rifilato_pct": 0.0,
+      "quando": "2026-11-02 22:40:19"
     },
     {
       "id": "ritratto_png_vischi",
@@ -189,10 +184,111 @@
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
       "secondi": 124.8,
       "picco_gb": 4.29,
-      "kb": 209,
-      "rifilato_pct": 3.9,
-      "quando": "2026-11-02 22:42:24",
-      "rifilato_dal_jpeg": true
+      "kb": 225,
+      "rifilato_pct": 0.0,
+      "quando": "2026-11-02 22:42:24"
+    },
+    {
+      "id": "situazione_png_bice_in_scena_ponte_imbrunire",
+      "file": "situazione_png_bice_in_scena_ponte_imbrunire.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: diciannove anni; magra; treccia rossa; cappuccio verde buttato indietro; acciarino in mano; fuliggine sul naso. Now inside the place shown in the second reference image, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 701625768,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_bice",
+      "dopo": [],
+      "riferimenti": [
+        "ritratto_png_bice",
+        "luogo_scena_ponte_imbrunire"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 427.5,
+      "picco_gb": 7.29,
+      "kb": 649,
+      "rifilato_pct": 1.2,
+      "quando": "2026-11-03 09:45:36"
+    },
+    {
+      "id": "situazione_png_bice_sotto_arcata",
+      "file": "situazione_png_bice_sotto_arcata.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the reference image, same face, hair and clothes: tratti fissi: diciannove anni; magra; treccia rossa; cappuccio verde buttato indietro; acciarino in mano; fuliggine sul naso. Now the young lamplighter in a tiny rowing boat under a stone bridge arch at night, holding a dripping eel trap and a shuttered lantern, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 831856428,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_bice",
+      "dopo": [
+        "i_bice_scrivano"
+      ],
+      "riferimenti": [
+        "ritratto_png_bice"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 392.8,
+      "picco_gb": 6.07,
+      "kb": 617,
+      "rifilato_pct": 0.1,
+      "quando": "2026-11-03 09:17:38"
+    },
+    {
+      "id": "situazione_png_tullio_in_scena_ponte_imbrunire",
+      "file": "situazione_png_tullio_in_scena_ponte_imbrunire.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: sessantadue anni; largo di spalle; berretto di lana marrone; barba grigia; grossa chiave di ferro alla cintura; mantello cerato giallo. Now inside the place shown in the second reference image, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 250229273,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_tullio",
+      "dopo": [],
+      "riferimenti": [
+        "ritratto_png_tullio",
+        "luogo_scena_ponte_imbrunire"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 438.0,
+      "picco_gb": 7.49,
+      "kb": 640,
+      "rifilato_pct": 1.2,
+      "quando": "2026-11-03 09:52:54"
+    },
+    {
+      "id": "situazione_png_vischi_studio_cassa",
+      "file": "situazione_png_vischi_studio_cassa.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the reference image, same face, hair and clothes: tratti fissi: cinquantadue anni; alto e magro; capelli grigi pettinati all'indietro; mantello nero ben cucito; guanti di pelle nera; anello d'oro con sigillo. Now the merchant alone in a small study at night, kneeling by an open iron chest full of old ledgers, candle in hand, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering",
+      "seme": 715520951,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_vischi",
+      "dopo": [
+        "i_registro_padre"
+      ],
+      "riferimenti": [
+        "ritratto_png_vischi"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 747.3,
+      "picco_gb": 6.08,
+      "kb": 462,
+      "rifilato_pct": 1.2,
+      "quando": "2026-11-03 09:38:27"
     }
   ]
 }
