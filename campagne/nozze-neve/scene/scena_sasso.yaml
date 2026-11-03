@@ -1,0 +1,68 @@
+# Scheda scena/luogo (manuale §4): il Sasso delle Promesse al tramonto. È il climax.
+# Durata prevista 25–35 minuti. Nodo evento: lo stesso luogo nel pomeriggio è n_sasso (senza scheda).
+# PNG con voce: Adelina (nadine), Ettore (vincent), Gaspare (lucian). Zelia (tabitha) resta a casa al
+# focolare, come vuole l'usanza.
+
+id: scena_sasso
+nodo: e_tramonto
+nome: "Il Sasso delle Promesse, al tramonto"
+climax: true
+
+# Pianta e «chi sente cosa». Va al selettore del modo B: niente segreti.
+descrizione: "Una grande pietra piatta sotto un larice, sopra il paese, con la neve spazzata e due lanterne accese ai lati. Il Custode Ilario sta dietro il Sasso, con il Libro aperto sul leggio e il corno appeso al larice. Il paese arriva a semicerchio sulla neve, le due case una di qua e una di là, e la Duchessa si ferma accanto alla pietra. Davanti al Sasso ci sono gli sposi: Agnese con il velo, muta, e Tonio che non sa dove mettere le mani. Dietro il larice c'è il casotto di legno del Custode. Chi sente cosa: ciò che si dice davanti al Sasso lo sente tutto il paese; dietro il larice e nel casotto non sente nessuno. Zelia è rimasta a casa al focolare, come vuole l'usanza."
+
+scopo: {tipo: mettere_alla_prova, rif: fronte_faida}
+domanda_drammatica: "Agnese e Tonio saranno benedetti prima che il sole tocchi il passo?"
+
+posta:
+  si_guadagna:
+    cosa: "Le nozze benedette, e la storia che il paese ripeterà."
+    per_chi: [png_adelina, png_ettore, pg_ida]
+  si_perde:
+    cosa: "La dignità di uno dei due vecchi, o le nozze fino a primavera."
+    per_chi: [png_adelina, png_ettore, pg_ida]
+
+intensita: 5
+
+sensi:
+  - "Il freddo che morde le dita, e l'odore di resina del larice."   # tatto e olfatto
+  - "Lo scricchiolio di cento scarponi sulla neve, poi il silenzio."   # udito
+  - "Il sole rosso sulla cresta del passo, che scende a vista d'occhio." # vista
+
+elementi_interattivi:
+  - {cosa: "il Sasso", dove: "sotto il larice", azioni: "la neve è spazzata solo sopra; ai bordi, sotto la neve, la pietra è incisa di iniziali di promesse vecchie"}
+  - {cosa: "il Libro del Sasso", dove: "aperto sul leggio del Custode", azioni: "il Custode ci scrive la storia raccontata; si legge sopra la sua spalla"}
+  - {cosa: "il corno del Custode", dove: "appeso al larice", azioni: "suona i richiami del tramonto; tre colpi chiudono la benedizione"}
+  - {cosa: "il casotto del Custode", dove: "dietro il larice", azioni: "dentro ci sono una panca e una stufetta; ci si parla senza essere sentiti"}
+  - {cosa: "la Duchessa", dove: "accanto al Sasso, in testa alla processione", azioni: "si accarezza, si guarda il campanaccio grande"}
+
+png_presenti: [png_adelina, png_ettore, png_gaspare]
+orologi_attivi: [o_tramonto]
+
+indizi:
+  - id: i_iniziali
+    conclusione: r_anello
+    tipo: luogo
+    nodo: e_tramonto
+    essenziale: false
+    tiro: "nessuno"
+    modi: 2
+    come_si_trova: "Due modi: quando il Custode spazza l'ultima neve dal bordo del Sasso, oppure quando un PG ci passa la mano. Incise nella pietra ci sono una A e una E, con sotto una fila di tacche, come giorni contati. Sono più vecchie delle altre, ma i solchi sono puliti dal muschio, come se qualcuno li grattasse ogni anno. Il narratore descrive, e non dice di chi sono."
+
+# Climax: nessuna uscita obbligatoria. Dopo il tramonto la storia prosegue a valle (prossima sessione).
+uscite: []
+
+mossa_morbida_pronta: "Il Custode alza gli occhi verso il passo, poi guarda la nonna Adelina. Tende la mano aperta, e aspetta l'anello."
+
+apertura: "Al Sasso delle Promesse il larice è carico di neve, e due lanterne fumano nel freddo. Il paese si stringe a semicerchio, Bonfanti di qua e Morlacchi di là, e il Custode apre il Libro. Il sole è a una spanna dal passo: chi parla per primo?"
+
+musica:
+  tag: rito_sacro
+  transizione: "Verso lutto se il sole tocca il passo senza benedizione, o se uno dei due vecchi se ne va."
+
+immagine:
+  invarianti: ["grande pietra piatta spazzata dalla neve", "larice carico di neve", "due lanterne accese ai lati", "casotto di legno con un corno appeso", "il passo con il sole basso sullo sfondo"]
+  prompt_luogo: "a large flat stone under a snow-laden larch tree above a mountain village at sunset, snow swept from the top of the stone, two lit lanterns on either side, a small wooden hut with a long alpine horn hanging by the door, the red sun low over a mountain pass, many footprints in the snow"
+
+# Va al selettore del modo B: niente segreti.
+taglio: "La scena si chiude all'ottavo segno, quando il sole tocca il passo e il corno suona tre volte: la sposa ha l'anello al dito e il paese ha sentito una storia, oppure il Custode chiude il Libro, e niente benedizione fino a primavera. Se i PG esitano, il Custode tende la mano verso l'anello e aspetta: chi ce l'ha decide adesso."

@@ -1,0 +1,43 @@
+# Carta di stile della campagna «nozze-neve» (Le nozze di neve).
+# Contiene C1 del manuale (premessa, tono, tema, linee e veli) e le scelte di stile che il Motore usa per
+# voce, immagini e musica. Va per intero al narratore e al selettore del modo B, che non conosce i
+# segreti: qui non c'è niente che dica dove sta l'anello o di chi è davvero.
+
+id: nozze-neve
+titolo: "Le nozze di neve"
+
+# C1. Premessa in una frase.
+premessa: "Il giorno della prima neve, a Fontanive, la nonna della sposa deve mettere l'anello di casa al dito di Agnese prima del tramonto, ma durante la festa l'anello è sparito."
+
+tono: "Commedia di paese, calda e affettuosa, con una tensione vera sotto. Si ride delle persone perché si vuole loro bene. Il pericolo non sono i mostri: sono l'orgoglio di due vecchi, una festa che può finire a spintoni e un sole che non aspetta."
+tema: "L'orgoglio; una vecchia promessa tra due famiglie; la riconciliazione; chi ha il diritto di raccontare la storia di famiglia."
+
+# Registro del narratore per questa campagna (si aggiunge alle regole N del manuale).
+registro_narratore: "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi. Racconta le persone dai gesti. Sulla tensione si fa asciutta e precisa, mai solenne."
+
+# Regole di prosa della campagna (valgono insieme a N1–N14). Pubbliche: niente soluzioni, nemmeno come divieto.
+regole_prosa:
+  - "Lessico di casera e di mulattiera: forme, caglio, siero, stagionatura, scaffali, basto, finimenti, ferri, campanacci, larice, neve fresca. Niente arcaismi finti."
+  - "Le immagini ricorrenti sono la neve e il formaggio: usale, ma mai la stessa immagine due volte di seguito."
+  - "Il narratore descrive gesti, oggetti e impronte, e non dice mai che cosa vogliono dire: le conclusioni le tirano i PG."
+  - "Il tempo si sente da fuori: il corno del Custode dal Sasso a ogni mezz'ora, la neve che cresce, le ombre dei larici, la luce che cambia. Mai detto come ansia."
+  - "La sposa, per usanza, non parla fino al sì. Risponde con gesti e smorfie, e il narratore li descrive senza tradurli."
+  - "La lite resta a parole, spintoni e palle di neve: nessuno si fa male in scena, né le persone né le bestie."
+  - "Il sorriso sta nelle cose e nelle persone: la riga di forme che divide la sala, un vecchio sordo da un orecchio, uno zio che conta i bicchieri. Mai una battuta del narratore su chi soffre."
+  - "Le monete si chiamano fiorini e soldi."
+
+# Frammento [STILE] che il Motore appende a ogni prompt immagine (E14). In inglese.
+stile_immagini: "watercolor and gouache illustration in the manner of an old Alpine storybook, first snow on a high mountain village, warm hearth light against blue-grey snow, palette of cream, pine green, ochre and cold slate, soft visible brush strokes, gentle and affectionate faces, no text, no lettering"
+
+# Tavolozza musicale: solo tag del vocabolario chiuso del manuale (§4, E14).
+tavolozza_musicale:
+  tag: [taverna_calda, esplorazione_tesa, rito_sacro, lutto]
+  strumenti: "fisarmonica, violino da festa, contrabbasso pizzicato, campanacci lontani; per il Sasso un corno e un coro a bocca chiusa. Niente percussioni da battaglia."
+
+# Linee (mai in gioco) e veli (solo fuori scena, con dissolvenza). T10, E13.
+linee:
+  - "violenza sugli animali mostrata in scena"
+  - "contenuti sessuali"
+  - "feriti nella lite tra le famiglie: si arriva agli spintoni, mai al sangue"
+veli:
+  - "i lutti delle due famiglie, il marito di Adelina e la moglie di Ettore: si nominano, non si raccontano"

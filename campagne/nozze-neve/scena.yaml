@@ -1,0 +1,157 @@
+# Scheda scena/luogo (manuale §4): la casera dei Bonfanti durante la festa, dalle due e mezza.
+# È la prima scena (il server la gioca per prima). Durata prevista 35–45 minuti.
+# PNG con voce: Adelina (nadine), Ettore (vincent), Gaspare (lucian). Zelia (tabitha) è a casa Bonfanti:
+# non viene mai qui, così nadine e tabitha non stanno mai nella stessa scena.
+
+id: scena_casera
+nodo: n_casera
+nome: "La casera dei Bonfanti, durante la festa"
+
+# Pianta e «chi sente cosa». Va al selettore del modo B: niente segreti.
+descrizione: "La sala grande della casera, in cima al paese, con gli scaffali delle forme fino al soffitto e un camino acceso. Due tavolate lunghe: a sinistra i Bonfanti, a destra i Morlacchi, e in mezzo, per terra, una riga di forme di formaggio messa come un confine. In fondo c'è il tavolo alto degli anziani, con la scatolina di noce aperta e vuota, il Custode Ilario con la sua borsa e la vecchia Tilde. Bastiano, il garzone dei Morlacchi, siede imbronciato in fondo alla sua tavolata. Dietro il tavolo alto tre gradini scendono nella cantina delle forme, fresca e buia, che ha una porta di dietro sul vicolo. Chi sente cosa: ciò che si dice al tavolo alto lo sente tutta la sala; a una tavolata lo sente solo quella tavolata, sotto la fisarmonica; nella cantina delle forme e fuori nel vicolo non sente nessuno della sala. La sposa e sua sorella Zelia sono a casa Bonfanti, dall'altra parte del vicolo."
+
+# C12: scopo dall'elenco chiuso, e domanda drammatica da sì o no.
+scopo: {tipo: rivelare_indizio, rif: i_macchia}
+domanda_drammatica: "Le due case resteranno alla stessa festa fino al tramonto?"
+
+posta:
+  si_guadagna:
+    cosa: "Una pista per l'anello, e le due case ancora sotto lo stesso tetto."
+    per_chi: [png_adelina, png_ettore, pg_vanda]
+  si_perde:
+    cosa: "La festa: i Morlacchi escono con le panche nella neve, e il vecchio Ettore non parla più con nessuno."
+    per_chi: [png_ettore, pg_ida, pg_vanda]
+
+intensita: 3
+
+# Esattamente tre dettagli, almeno due non visivi.
+sensi:
+  - "Odore di siero caldo, di crosta di formaggio e di lana bagnata."      # olfatto
+  - "Una fisarmonica che zoppica, e sopra le voci delle due tavolate."      # udito
+  - "Il freddo che entra dalla porta a ogni ospite, con un soffio di neve." # tatto
+
+elementi_interattivi:
+  - {cosa: "la scatolina di noce", dove: "sul tavolo alto", azioni: "è aperta e vuota; si prende in mano, si guarda il velluto rosso dentro"}
+  - {cosa: "la riga di forme", dove: "per terra, in mezzo alla sala", azioni: "si scavalca, si sposta, si fa rotolare una forma"}
+  - {cosa: "la borsa del Custode", dove: "al tavolo alto, sulle ginocchia di Ilario", azioni: "dentro c'è il Libro del Sasso; il Custode lo apre a chi glielo chiede con garbo, o a chi gli porta un bicchiere"}
+  - {cosa: "la cantina delle forme", dove: "dietro il tavolo alto, tre gradini più giù", azioni: "è fresca e buia, e ci si parla senza essere sentiti; in fondo c'è la porta di dietro, sul vicolo"}
+  - {cosa: "il caldaio di rame", dove: "nell'angolo del camino", azioni: "è nuovo e lucido; la casara ne parla volentieri"}
+  - {cosa: "la vecchia Tilde", dove: "al tavolo alto, accanto al Custode", azioni: "ci sente poco e parla forte; ricorda tutte le nascite e tutte le nevi del paese"}
+  - {cosa: "Bastiano", dove: "in fondo alla tavolata dei Morlacchi", azioni: "ha le mani nere fino ai polsi e non vuole parlare con nessuno dei Bonfanti"}
+  - {cosa: "la giacca di Ettore", dove: "addosso a Ettore, o appesa alla panca quando balla o fa a braccio di ferro", azioni: "NASCOSTA: nella tasca interna c'è una lettera chiusa con la ceralacca, con scritto «Per Adelina». Non nominarla finché un PG non fruga nella giacca, o finché Ettore non la tira fuori."}
+
+png_presenti: [png_adelina, png_ettore, png_gaspare]
+orologi_attivi: [o_tramonto, o_lite]
+
+# Indizi di questa scena. Nessuno sta dietro un tiro (F0, senza dadi).
+indizi:
+  - id: i_macchia
+    conclusione: r_zelia
+    tipo: oggetto
+    nodo: n_casera
+    essenziale: true
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi guarda dentro la scatolina vede, sul velluto rosso, una macchia d'inchiostro ancora fresca, piccola come un polpastrello, e un capello rosso preso nella cerniera. Il narratore descrive la macchia e il capello, e non nomina nessuno."
+  - id: i_impronte
+    conclusione: r_zelia
+    tipo: luogo
+    nodo: n_casera
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi esce dalla porta di dietro della cantina delle forme trova nella neve fresca impronte piccole e strette, di scarponcini, che attraversano il vicolo fino alla porta della stalla dei Bonfanti, sotto la casa. Verso la stalla dei Morlacchi, in fondo al vicolo, non va nessuna impronta. La neve le sta coprendo, ma si vedono ancora."
+  - id: i_catenine
+    conclusione: r_anello
+    tipo: documento
+    nodo: n_casera
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi sfoglia il Libro del Sasso, con il permesso del Custode, trova le nozze di neve dei Bonfanti da cent'anni: le spose di prima portano tutte una catenina d'argento. L'anello compare solo ventotto anni fa, alle nozze di Marta, con la storia raccontata da Adelina."
+  - id: i_libro_notte
+    conclusione: r_passo
+    tipo: documento
+    nodo: n_casera
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi cerca nel Libro del Sasso la prima neve di sessant'anni fa trova la riga del Custode di allora: nessuna benedizione; la ragazza Bonfanti ha aspettato al Sasso fino al buio; a notte è salito il giovane Morlacchi, con un mulo e una lanterna, e non ha trovato nessuno. Il narratore legge la riga e non la spiega."
+  - id: i_tilde
+    conclusione: r_passo
+    tipo: png
+    nodo: n_casera
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Quando qualcuno, vicino al tavolo alto, parla della prima neve di sessant'anni fa o della febbre di Gaspare bambino, Tilde alza la voce, perché ci sente poco: quella notte il piccolo Gaspare scottava, e il medico arrivò sul mulo dei Morlacchi, con il ragazzo davanti a tirarlo. Poi chiede chi le ha messo il sale nel vino."
+  - id: i_caldaio
+    conclusione: r_zio
+    tipo: oggetto
+    nodo: n_casera
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi guarda da vicino il caldaio nuovo, o ne chiede alla casara: è di rame di Pontebruno, con il segno del ramaio ancora lucido, e la casara dice che l'ha pagato Gaspare in contanti un mese fa, quando in casa i soldi non c'erano."
+  - id: i_gaspare_vide
+    conclusione: r_zelia
+    tipo: png
+    nodo: png_gaspare
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Quando Gaspare cede: a mezzogiorno, durante il brindisi, ha visto Zelia sfilare l'anello dalla scatolina, e non ha detto niente."
+  - id: i_adelina_anello
+    conclusione: r_anello
+    tipo: png
+    nodo: png_adelina
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Quando Adelina cede, in privato: l'anello gliel'ha dato Ettore, sessant'anni fa, per sposarla alla prima neve. La bisnonna Bonfanti non c'entra."
+  - id: i_ettore_anello
+    conclusione: r_anello
+    tipo: png
+    nodo: png_ettore
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Quando Ettore cede, in privato: l'anello era di sua madre, e lui l'ha dato ad Adelina per sposarla. Lei non l'ha rubato."
+  - id: i_ettore_neve
+    conclusione: r_passo
+    tipo: png
+    nodo: png_ettore
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Quando Ettore cede, in privato: quel giorno era sul passo nella tormenta con il medico per Gaspare bambino, e al Sasso arrivò a notte. Poi tira fuori dalla giacca la lettera chiusa."
+  - id: i_lettera_chiusa
+    conclusione: r_passo
+    tipo: documento
+    nodo: png_ettore
+    essenziale: false
+    tiro: "nessuno"
+    modi: 2
+    come_si_trova: "La lettera chiusa che Ettore porta nella giacca, con la ceralacca intatta e scritto «Per Adelina». Due modi: un PG la apre e la legge; oppure un PG la dà ad Adelina in privato, e lei la apre e la legge. Dentro: non sono venuto perché tuo fratello bruciava di febbre e il medico non voleva salire con la neve; l'ho portato su io, col mulo; al Sasso era buio; tieni l'anello finché non mi perdoni."
+
+# Almeno due uscite, ognuna con gli indizi che la segnalano.
+uscite:
+  - {verso: n_casa_bonfanti, segnalata_da: [i_macchia, i_impronte, i_gaspare_vide], nota: "Le impronte, il capello rosso e l'inchiostro portano a casa Bonfanti, dall'altra parte del vicolo."}
+  - {verso: e_tramonto, segnalata_da: [i_catenine, i_libro_notte, i_tilde], nota: "Il Libro del Sasso e il ricordo di Tilde dicono che la storia dell'anello si gioca al Sasso, al tramonto."}
+  - {verso: n_sasso, segnalata_da: [i_catenine, i_libro_notte, i_ettore_anello], nota: "Chi vuole vedere il Sasso prima del tramonto ci sale in venti minuti: il Custode spazza la neve e prepara le lanterne."}
+
+mossa_morbida_pronta: "Dal lato dei Morlacchi un cugino si alza, rosso in faccia, e punta il dito verso i Bonfanti. Ettore lo rimette a sedere con il bastone, senza una parola."
+
+# Al massimo tre frasi; con il riassunto della sessione non più di sei.
+apertura: "Nella casera dei Bonfanti una riga di forme di formaggio divide la sala in due. A sinistra la nonna Adelina stringe una scatolina vuota; a destra il vecchio Ettore batte il bastone. Senza anello niente benedizione, e il sole non aspetta: chi si muove per primo?"
+
+musica:
+  tag: esplorazione_tesa
+  transizione: "Verso taverna_calda quando le due case tornano a ridere insieme, per una polka o un brindisi comune."
+
+immagine:
+  invarianti: ["sala di pietra con scaffali di forme fino al soffitto", "camino acceso", "due tavolate lunghe con una riga di forme per terra in mezzo", "tavolo alto in fondo con una scatolina di noce aperta", "caldaio di rame lucido nell'angolo"]
+  prompt_luogo: "wide stone dairy hall in a mountain village, wooden shelves stacked with cheese wheels up to the ceiling, crackling fireplace, two long feast tables with a line of cheese wheels on the floor between them, a high table at the far end with a small open walnut box, a shiny new copper cauldron in the corner, pine garlands, snow at the windows"
+
+# Va al selettore del modo B: niente segreti.
+taglio: "La scena si chiude quando i PG lasciano la casera per casa Bonfanti o per il Sasso, con una pista o senza. Oppure al sesto segno della lite, quando i Morlacchi portano fuori le panche: la festa è finita, e i PG escono nel vicolo all'ora in cui sono. Se i PG esitano, il Custode si alza, guarda il cielo e dice che lui sale al Sasso a preparare le lanterne: chi ha qualcosa da dire, lo dica lassù."

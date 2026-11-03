@@ -1,0 +1,74 @@
+# Brief della campagna «Le nozze di neve». Lo legge solo chi prepara.
+# Copiato da .claude/skills/preparatore/modelli/brief.yaml e riempito.
+
+id: "nozze-neve"
+titolo: "Le nozze di neve"
+richiesta: >-
+  Title: «Le nozze di neve». A mountain village on the day of the first snow: a wedding feast between
+  two families who have been rivals for three generations. During the feast the bride's grandmother's
+  heirloom ring disappears, and without it, by village custom, the wedding cannot be blessed before
+  sunset. Tone: warm social comedy with real tension underneath; affectionate humour, no horror.
+  3–5 players, level 1, one evening session of about 2 hours; 3 locations; at most 4 voiced NPCs
+  (registered voices in assets/voci/voci.yaml; respect the similar-voice rules), plus any number of
+  unvoiced extras. Themes: pride, an old promise between the two families, reconciliation, who gets to
+  tell the family story. Lines: no violence against animals shown on scene; no sexual content. Veils:
+  none required. It must NOT reuse the shapes of the existing campaigns (campagne/prova-f0: an inn, a
+  locked stranger, a poisoned food; campagne/ponte-lanterne: a flood, a toll bridge, a falsified mark):
+  a different kind of secret and a different kind of choice.
+
+tono: "Commedia di paese calda e affettuosa, con una tensione vera sotto: l'orgoglio di due vecchi, una festa che può finire a pugni, un tramonto che non aspetta. Niente orrore, niente sangue."
+durata: "una sessione serale di circa due ore, in tre scene e tre luoghi"
+giocatori: "3-5"          # i PG pregenerati sono sei, uno più del massimo
+temi: [l'orgoglio, una vecchia promessa tra le due famiglie, la riconciliazione, chi ha il diritto di raccontare la storia di famiglia]
+linee:
+  - "violenza sugli animali mostrata in scena"
+  - "contenuti sessuali"
+veli:
+  - "i lutti delle due famiglie (il marito di Adelina, la moglie di Ettore): si nominano, non si raccontano"
+ambientazione: >-
+  Fontanive, paese di casari e mulattieri sotto il passo, in testa alla Val Bruna, il giorno della
+  prima neve di novembre. Due famiglie: i Bonfanti, casari della casera in cima al paese, e i Morlacchi,
+  mulattieri che d'inverno scendono a valle con i muli. Sopra il paese, sotto un larice, il Sasso delle
+  Promesse, dove si benedicono le nozze. Fantasy compatibile SRD, senza magia vistosa.
+vincoli:
+  - "niente combattimento necessario: la forza è una strada, mai l'unica, e costa"
+  - "senza dadi: cede_se e indizi solo con condizioni di finzione, tiro nessuno"
+  - "al massimo quattro PNG con voce; nadine e tabitha mai nella stessa scena"
+  - "tre luoghi: la casera, casa Bonfanti con la stalla, il Sasso delle Promesse"
+  - "non riusare le forme di prova-f0 (osteria, forestiero chiuso, cibo avvelenato) né di ponte-lanterne (piena, ponte a pedaggio, segno falsificato)"
+
+decisioni:
+  scene: [scena_casera, scena_casa_bonfanti, scena_sasso]
+  pg: [pg_nando, pg_ida, pg_vanda, pg_remo, pg_livia, pg_gunda]
+  png:
+    - "png_adelina → nadine (la nonna della sposa, settantotto anni: voce matura)"
+    - "png_ettore → vincent (il nonno dello sposo, mulattiere di ottant'anni: voce grave e ruvida)"
+    - "png_gaspare → lucian (lo zio della sposa, il contabile della casera: voce bassa e liscia)"
+    - "png_zelia → tabitha (la sorella della sposa, quindici anni: voce giovane e sfacciata)"
+  situazione: >-
+    Lo zio Gaspare Bonfanti vuole che le nozze saltino prima del tramonto, perché il Prato Alto, la dote
+    della sposa, l'ha già promesso in affitto a un mercante della valle; e per questo tace di aver visto
+    Zelia prendere l'anello, e accusa un ragazzo dei Morlacchi.
+    Se i PG non fanno niente, la festa finisce in lite, al tramonto la nonna non ha l'anello, niente
+    benedizione: all'alba i Morlacchi scendono a valle con lo sposo, le nozze aspettano la primavera e
+    il prato resta a Gaspare.
+    La verità: l'anello è dei Morlacchi, Ettore lo diede ad Adelina sessant'anni fa come promessa di
+    matrimonio, e non arrivò al Sasso perché era sul passo nella tormenta a portare su il medico per
+    Gaspare bambino; Zelia l'ha nascosto nel campanaccio della Duchessa per costringere la nonna a dire
+    la verità.
+    La scelta, al Sasso con l'anello in mano: lasciare che Adelina racconti la leggenda dei Bonfanti
+    (nozze benedette, ma Ettore umiliato se ne va e la faida passa agli sposi), dire la verità al posto
+    suo (Adelina umiliata davanti al paese ritira la dote, e il prato va a Gaspare), o convincerla in
+    privato a dirla lei (perde per sempre la voce del Sasso e l'anello torna ai Morlacchi).
+  altre:
+    - "Tre scene in tre luoghi, come chiede il brief: la casera (la festa), casa Bonfanti con la stalla (la sposa e la sorella), il Sasso al tramonto (il climax). C11 chiede da tre a sei scene potenziali: tre bastano per due ore, circa quaranta minuti l'una."
+    - "Sei PG pregenerati per tre-cinque giocatori: uno più del massimo, come dice la skill."
+    - "Voci: Adelina (nadine) e Zelia (tabitha) non si incontrano mai. Adelina non lascia la casera finché ci sono i Morlacchi (tiene la sala) e poi sale al Sasso; Zelia resta a casa: per usanza, durante la benedizione la più giovane della casa della sposa tiene acceso il fuoco del focolare. Così la sposa, che per usanza non parla fino al sì, non ha bisogno di voce: è una comparsa che mima."
+    - "Forma diversa da prova-f0 e da ponte-lanterne. Luogo: una festa di nozze in una casera di montagna, una casa con la stalla, una pietra all'aperto. Segreto: una storia d'amore taciuta per orgoglio e una gentilezza nascosta (non la causa nascosta di un male, non un'identità, non un segno falsificato); il furto è di una ragazza che vuole la verità, non di un colpevole da punire. Scelta: chi racconta la storia della famiglia davanti al paese, cioè quale memoria erediteranno gli sposi, e la dignità di quale dei due vecchi si sacrifica (non dire o tacere una colpa, non chi salvare per primo)."
+    - "La regola del Sasso (pubblica): ciò che si racconta al Sasso il paese lo ripete; chi ha raccontato al Sasso una storia falsa non racconta più. È il prezzo della terza via: Adelina perde la voce del Sasso, che passa a Zelia."
+    - "La regola della seconda (pubblica, la dice il Custode): se la donna più anziana della casa della sposa non mette l'anello, lo può mettere la seconda, Marta, la madre della sposa. È ciò che rende possibile la verità detta da altri."
+    - "Comparse senza voce: Agnese, la sposa (muta per usanza fino al sì); Tonio, lo sposo (grosso e timido); il Custode del Sasso, Ilario (pedante sulle usanze, tiene il Libro del Sasso e il corno); Marta, la madre della sposa; la vecchia Tilde, levatrice di novant'anni, sorda e a voce alta; Bastiano, il garzone dei Morlacchi accusato da Gaspare; Sior Bortolo, il mercante della valle, che non c'è."
+    - "Il tempo: la prima neve cade all'alba; la festa comincia alle undici; l'anello sparisce a mezzogiorno; la sessione comincia alle due e mezza; il sole tocca il passo alle cinque meno dieci. Il Custode suona il corno a ogni mezz'ora che passa: è il segno che si sente da tutti e tre i luoghi."
+    - "Niente pericolo di morte in scena. La forza (perquisire, strappare la lettera, tenere fermo Ettore) funziona, ma fa salire la lite e costa la fiducia dei vecchi."
+    - "Umorismo: la riga di forme di formaggio che divide la sala, Ettore sordo da un orecchio, la sposa che mima, Zelia che parla come un notaio quando ha paura, Gaspare che conta i bicchieri, il Custode pedante, la Duchessa con il campanaccio muto."
+    - "Monete: fiorini e soldi, come nelle altre campagne della valle."
