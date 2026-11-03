@@ -1,0 +1,88 @@
+# Bruno dopo la sessione 1 (stato: g_bruno_parla): sa delle gocce di cera, si fida di Lia.
+id: png_bruno
+nome: Bruno
+pronuncia: Brùno
+alias:
+- pastore
+- pecoraio
+livello: principale
+ruolo: pastore; testimone
+fronte: fronte_lanterna
+aspetto:
+  lettura: Un vecchio pastore con la barba bianca. Tiene la pipa spenta tra i denti.
+  invarianti:
+  - settanta anni
+  - barba bianca
+  - pipa spenta
+  - mantello di lana
+  prompt_immagine: old shepherd with a white beard, unlit pipe between his teeth,
+    wool cloak, by the fire, [STILE]
+personalita:
+  superficie:
+  - tranquillo
+  - di poche parole
+  sotto_pressione:
+  - si chiude e guarda il fuoco
+  contraddizione: Ama la verità, ma protegge Irma.
+desiderio: Proteggere Irma senza mentire al paese.
+paura: Che Irma finisca davanti al paese.
+segreto:
+  testo: Ha visto Irma con il fagotto e tace.
+  chi_altro_sa: []
+  se_rivelato: Il paese gli toglie la fiducia.
+voce:
+  tts:
+    voce_id: vincent
+    eta_apparente: '70'
+    altezza: bassa
+    velocita: 0.9
+    timbro: roco
+  registro: Dà del voi ai forestieri.
+  stile: Frasi di tre-sette parole, lente.
+  tic:
+  - «Mah.»
+  gesto: batte la pipa sul tavolo
+  mai_dice:
+  - bestemmie
+  battuta_campione: Mah. Il vento porta voci, e io le lascio passare.
+sa:
+- f_lanterna_sparita
+- f_festa_domani
+- f_locanda
+- f_bruno_visto
+- f_bruno_sospetta
+- f_impronte_cera
+non_sa:
+- f_lanterna_cantina
+- f_irma_prestito
+- f_mercante_alba
+crede_a_torto:
+- testo: La lanterna l'ha presa un viandante.
+  contraddice: f_lanterna_cantina
+mente_su:
+- id: bruno_notte
+  argomento: cosa ha visto stanotte
+  verita: f_bruno_visto
+  versione: Stanotte ho dormito. Non ho visto niente.
+  perche: Proteggere Irma.
+  segnale: si gratta la barba e guarda il fuoco
+  cede_se: Dice la verità quando un PG gli promette, in privato, di non dire niente
+    al paese.
+atteggiamento_pg:
+  pg_lia:
+    stato: amichevole
+    perche: ha mantenuto il segreto
+    vuole: che aiuti Irma col tetto
+  pg_tobia:
+    stato: amichevole
+    perche: un nano onesto
+    vuole: che non arresti nessuno
+info_chiave:
+- i_bruno_racconta
+iniziative:
+- Guarda la porta della cantina quando si parla della lanterna.
+evoluzione:
+- se: confessa
+  allora: chiede di non punire Irma
+statistiche: popolano
+registro_attivita: []

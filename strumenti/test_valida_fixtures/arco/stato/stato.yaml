@@ -30,6 +30,6 @@ fatti:
       fili: {filo_mercante: aperto}
 orologi:
   o_processione: {pieni: 4, fonte: {sessione: 1}}
-  o_mercante: {pieni: 1, fonte: {tra_sessioni: 1, motivo: "il pegno non è arrivato all'alba"}}
+  o_mercante: {pieni: 1, fonte: {tra_sessioni: 1, motivo: "o_mercante: il pegno non è arrivato all'alba"}}
 pg:
   pg_tobia: {livello: 1, fonte: {tra_sessioni: 1, motivo: "una sessione sola: niente crescita"}}

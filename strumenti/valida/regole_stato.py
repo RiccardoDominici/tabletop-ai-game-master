@@ -111,8 +111,34 @@ def _ordine(fonte: dict) -> tuple[int, int]:
     return (int(fonte.get("sessione") or 0), int(fonte.get("turno") or 0))
 
 
-def _fonte(e: Esito, dove: str, fonte, registri: dict[int, Registro], dopo: int) -> bool:
-    """La fonte di un fatto esiste nei registri e dice davvero ciò che il fatto le attribuisce."""
+# Le regole che muovono il mondo fuori scena: orologi, pericoli e fronti (dal livello campagna anche le fazioni).
+RX_REGOLA = r"\b(?:o|p|fronte)_[a-z0-9_]+"
+
+
+def regole_del_mondo(c: Campagna) -> set[str]:
+    out = set(c.orologi) | {f.get("id") for f in c.fronti if f.get("id")}
+    out |= {p.get("id") for f in c.fronti for p in f.get("pericoli") or [] if isinstance(p, dict) and p.get("id")}
+    return out
+
+
+def _motivo_con_regola(e: Esito, dove: str, motivo: str, regole: set[str]) -> bool:
+    """docs/strati.md, principio 4: il motivo di un fatto fuori scena nomina l'orologio o la regola che lo produce."""
+    citate = set(re.findall(RX_REGOLA, str(motivo)))
+    if not citate:
+        e.errore("STATO.fonte", dove, "il motivo di un fatto fuori scena nomina l'orologio o la regola che lo produce "
+                                      "(o_…, p_…, fronte_…)")
+        return False
+    for x in sorted(citate - regole):
+        e.errore("STATO.fonte", dove, f"il motivo cita {x}, che non è un orologio, un pericolo o un fronte della campagna")
+        return False
+    return True
+
+
+def _fonte(e: Esito, dove: str, fonte, registri: dict[int, Registro], dopo: int, regole: set[str] | None = None) -> bool:
+    """La fonte di un fatto esiste nei registri e dice davvero ciò che il fatto le attribuisce.
+
+    `regole`: se c'è, un avanzamento fuori scena deve nominare una di queste (fatti e orologi; non la crescita dei PG).
+    """
     if not isinstance(fonte, dict):
         e.errore("STATO.fonte", dove, "ogni fatto ha una fonte: {sessione, turno, citazione | evento} o {tra_sessioni, motivo}")
         return False
@@ -124,7 +150,7 @@ def _fonte(e: Esito, dove: str, fonte, registri: dict[int, Registro], dopo: int)
         if not fonte.get("motivo"):
             e.errore("STATO.fonte", dove, "un avanzamento fuori scena dice il motivo (la regola del fronte o della fazione)")
             return False
-        return True
+        return regole is None or _motivo_con_regola(e, dove, fonte["motivo"], regole)
     n, turno = fonte.get("sessione"), fonte.get("turno")
     reg = registri.get(n) if isinstance(n, int) else None
     if reg is None:
@@ -206,6 +232,7 @@ def _stato(c: Campagna, e: Esito, stato: dict, registri: dict[int, Registro]) ->
         if n not in registri:
             e.errore("STATO.registro", "stato/stato.yaml", f"lo stato arriva alla sessione {dopo}, ma manca sessioni/{n:02d}/registro.yaml")
     fatti = [f for f in stato.get("fatti") or [] if isinstance(f, dict)]
+    regole = regole_del_mondo(c)
     ids = [f.get("id") for f in fatti]
     fatti_gioco = {i for i in ids if i}
     png_sessione = {p.stem for p in (c.cartella / "sessioni").glob("*/png/*.yaml")}
@@ -220,7 +247,7 @@ def _stato(c: Campagna, e: Esito, stato: dict, registri: dict[int, Registro]) ->
         if not f.get("testo"):
             e.errore("STATO.forma", dove, "manca testo")
         per_id[fid] = f
-        _fonte(e, dove, f.get("fonte"), registri, dopo)
+        _fonte(e, dove, f.get("fonte"), registri, dopo, regole)
         for x in f.get("supera") or []:
             if x not in c.canone:
                 e.errore("STATO.riferimento", dove, f"supera un fatto del canone inesistente {x}")
@@ -247,7 +274,7 @@ def _stato(c: Campagna, e: Esito, stato: dict, registri: dict[int, Registro]) ->
         if oid not in c.orologi:
             e.errore("STATO.riferimento", dove, "orologio inesistente")
             continue
-        _fonte_orologio(e, dove, o or {}, registri, dopo, oid)
+        _fonte_orologio(e, dove, o or {}, registri, dopo, oid, regole)
     for pg, p in (stato.get("pg") or {}).items():
         if pg not in c.pg_ids:
             e.errore("STATO.riferimento", f"stato pg {pg}", "PG inesistente")
@@ -258,13 +285,13 @@ def _stato(c: Campagna, e: Esito, stato: dict, registri: dict[int, Registro]) ->
     return fatti, dopo
 
 
-def _fonte_orologio(e: Esito, dove: str, o: dict, registri: dict[int, Registro], dopo: int, oid: str) -> bool:
+def _fonte_orologio(e: Esito, dove: str, o: dict, registri: dict[int, Registro], dopo: int, oid: str, regole: set[str]) -> bool:
     fonte = o.get("fonte")
     if not isinstance(o.get("pieni"), int) or not isinstance(fonte, dict):
         e.errore("STATO.forma", dove, "{pieni: k, fonte: {sessione: n} | {tra_sessioni: n, motivo}}")
         return False
     if "tra_sessioni" in fonte:
-        return _fonte(e, dove, fonte, registri, dopo)
+        return _fonte(e, dove, fonte, registri, dopo, regole)
     reg = registri.get(fonte.get("sessione"))
     if reg is None:
         e.errore("STATO.fonte", dove, f"sessione {fonte.get('sessione')!r} senza registro")
@@ -318,20 +345,30 @@ def _continuita(c: Campagna, e: Esito, stato: dict, fatti: list[dict], dopo: int
     for b in pac["battute"]:
         for pid in sorted(_parlanti(b) & morti):
             e.errore("CONTINUITÀ.morto", f"{b['_file']} {b.get('id')}", f"{pid} è morto nello stato, ma parla")
-    # Chi sa che cosa: ciò che un PNG ha saputo non torna nel suo non_sa; ciò che i PG sanno non è più segreto.
+    # Le schede: quella del pacchetto (intera, stesso id) sostituisce per questa sessione quella della
+    # campagna, che resta la versione iniziale (docs/strati.md, principio 6).
     schede = {**{pid: d_ for pid, (_, d_) in c.png.items()}, **pac["png"]}
-    for pid, p in d.png.items():
+    in_scena = {p for _, s in pac["scene"] for p in s.get("png_presenti") or []} | {p for b in pac["battute"] for p in _parlanti(b)}
+    for pid in sorted(set(pac["png"]) & morti):
+        e.errore("CONTINUITÀ.morto", f"{nome}/png/{pid}.yaml", f"{pid} è morto nello stato, ma il pacchetto ha la sua scheda")
+    for pid, p in sorted(d.png.items()):
+        if p.get("vivo") is False:
+            continue
         scheda = schede.get(pid) or {}
+        cambiato = bool(p["sa"] or p["atteggiamento"] or p.get("dove"))
+        if cambiato and pid in in_scena and pid not in pac["png"]:
+            e.errore("CONTINUITÀ.scheda", f"png {pid}", "è cambiato in gioco (ciò che sa, l'atteggiamento, dove sta) e torna in "
+                                                         f"scena, ma il pacchetto non ha la sua scheda aggiornata: {nome}/png/{pid}.yaml")
         for f in sorted(p["sa"] & set(scheda.get("non_sa") or [])):
             e.errore("CONTINUITÀ.saputo", f"png {pid}", f"ha saputo {f} in gioco, ma la scheda lo mette nel suo non_sa")
-    # Le parole segrete del pacchetto (o, se non ne ha, della campagna) proteggono solo ciò che è ancora segreto.
-    file_parole = pac["cartella"] / "repertorio" / "parole_segrete.yaml"
-    parole = _yaml(file_parole).get("parole") if file_parole.exists() else (c.parole_segrete or {}).get("parole")
-    for v in parole or []:
-        fatti_v = set(v.get("fatti") or []) if isinstance(v, dict) else set()
-        if fatti_v and fatti_v <= d.saputi_dai_pg:
-            e.errore("CONTINUITÀ.saputo", f"parola segreta «{v.get('parola')}»", f"protegge {sorted(fatti_v)}, che i PG hanno già "
-                                                                                 "saputo: il selettore la tratterebbe ancora come segreta")
+        if pid in pac["png"]:
+            for f in sorted(p["sa"] - set(scheda.get("sa") or [])):
+                e.errore("CONTINUITÀ.saputo", f"{nome}/png/{pid}.yaml", f"ha saputo {f} in gioco, ma non è nel sa della scheda aggiornata")
+            for pg, a in sorted(p["atteggiamento"].items()):
+                nella_scheda = ((scheda.get("atteggiamento_pg") or {}).get(pg) or {}).get("stato")
+                if nella_scheda != a:
+                    e.errore("CONTINUITÀ.scheda", f"{nome}/png/{pid}.yaml", f"verso {pg} è {a} nello stato, {nella_scheda} nella scheda")
+    _segreti_del_pacchetto(c, e, pac, d, schede, in_scena, fatti)
     # Orologi: la sessione riparte da dove lo stato li lascia.
     for o in pac["sessione"].get("orologi") or []:
         if not isinstance(o, dict):
@@ -360,6 +397,42 @@ def _continuita(c: Campagna, e: Esito, stato: dict, fatti: list[dict], dopo: int
         attuale = next((x for x in c.personaggi if x.get("id") == pg), {})
         if isinstance(attuale.get("livello"), int) and isinstance((p or {}).get("livello"), int) and attuale["livello"] < p["livello"]:
             e.errore("CONTINUITÀ.pg", "pg.yaml", f"{pg} è di livello {attuale['livello']}, ma nello stato è già {p['livello']}")
+
+
+def _segreti_del_pacchetto(c: Campagna, e: Esito, pac: dict, d: Derivato, schede: dict, in_scena: set[str],
+                           fatti: list[dict]) -> None:
+    """Le parole segrete del pacchetto sostituiscono quelle della campagna: non nascondono ciò che i PG sanno,
+    e ogni fatto ancora segreto che entra nel contesto della sessione ha la sua parola."""
+    nome = pac["nome"]
+    file_parole = pac["cartella"] / "repertorio" / "parole_segrete.yaml"
+    if not file_parole.exists():
+        if pac["battute"]:
+            e.errore("CONTINUITÀ.segreto", f"{nome}/repertorio/parole_segrete.yaml", "il pacchetto ha un repertorio ma non le sue "
+                                                                                    "parole segrete: quelle della campagna non valgono più")
+        return
+    parole = [v for v in _yaml(file_parole).get("parole") or [] if isinstance(v, dict)]
+    for v in parole:
+        fatti_v = set(v.get("fatti") or [])
+        if fatti_v and fatti_v <= d.saputi_dai_pg:
+            e.errore("CONTINUITÀ.saputo", f"parola segreta «{v.get('parola')}»", f"protegge {sorted(fatti_v)}, che i PG hanno già "
+                                                                                 "saputo: il selettore la tratterebbe ancora come segreta")
+    # Ciò che entra nel contesto della sessione: le schede dei PNG in scena, i fatti delle battute del pacchetto.
+    nel_contesto: dict[str, str] = {}
+    for pid in sorted(in_scena):
+        scheda = schede.get(pid) or {}
+        for f in scheda.get("sa") or []:
+            nel_contesto.setdefault(f, f"sa di {pid}")
+        for m in scheda.get("mente_su") or []:
+            if isinstance(m, dict) and m.get("verita"):
+                nel_contesto.setdefault(m["verita"], f"menzogna di {pid}")
+    for b in pac["battute"]:
+        for f in (b.get("effetti") or {}).get("fatti_noti") or []:
+            nel_contesto.setdefault(f, f"battuta {b.get('id')}")
+    segreti = {i for i, f in c.canone.items() if not f.get("noto_ai_pg")} | {f.get("id") for f in fatti if not f.get("noto_ai_pg")}
+    coperti = {x for v in parole for x in v.get("fatti") or []}
+    for f in sorted((set(nel_contesto) & segreti) - d.saputi_dai_pg - coperti):
+        e.errore("CONTINUITÀ.segreto", f"{nome}/repertorio/parole_segrete.yaml",
+                 f"{f} è ancora segreto ed entra nella sessione ({nel_contesto[f]}), ma nessuna parola segreta lo protegge")
 
 
 def controlla(c: Campagna, e: Esito) -> None:

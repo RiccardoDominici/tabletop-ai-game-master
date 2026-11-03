@@ -517,6 +517,14 @@ def test_stato_fuori_scena_senza_motivo(arco):
     assert "STATO.fonte" in stato_continuita(arco)[0]
 
 
+def test_stato_fuori_scena_senza_la_regola_che_lo_produce(arco):
+    # docs/strati.md, principio 4: il motivo nomina l'orologio o la regola, e quella esiste.
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_mercante_riparte")["fonte"].update(motivo="il mercante si è stufato"))
+    assert "STATO.fonte" in stato_continuita(arco)[0]
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_mercante_riparte")["fonte"].update(motivo="o_carovana avanza"))
+    assert "STATO.fonte" in stato_continuita(arco)[0]
+
+
 def test_stato_registro_mancante_o_ritoccato(arco):
     reg = arco / "sessioni" / "01" / "registro.yaml"
     reg.write_text(reg.read_text().replace("Bruno posa la pipa", "Bruno posa il bicchiere"))
@@ -544,6 +552,34 @@ def test_continuita_cio_che_un_png_ha_saputo(arco):
     # Bruno ha saputo dove sta la lanterna, ma la sua scheda lo tiene nel non_sa.
     modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_bruno_parla")["effetti"]["png"]["png_bruno"].update(sa=["f_lanterna_cantina"]))
     assert "CONTINUITÀ.saputo" in stato_continuita(arco)[0]
+
+
+def test_continuita_png_cambiato_senza_scheda_aggiornata(arco):
+    # Principio 6: la scheda del pacchetto sostituisce quella della campagna, che resta la versione iniziale.
+    (arco / "sessioni" / "02" / "png" / "png_bruno.yaml").unlink()
+    assert "CONTINUITÀ.scheda" in stato_continuita(arco)[0]
+
+
+def test_continuita_scheda_aggiornata_che_non_torna(arco):
+    def indietro(d):
+        d["sa"].remove("f_impronte_cera")
+        d["atteggiamento_pg"]["pg_lia"]["stato"] = "ostile"
+    modifica(arco, "sessioni/02/png/png_bruno.yaml", indietro)
+    assert {"CONTINUITÀ.saputo", "CONTINUITÀ.scheda"} <= stato_continuita(arco)[0]
+
+
+def test_continuita_morto_con_la_scheda_nel_pacchetto(arco):
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_bruno_parla")["effetti"]["png"]["png_bruno"].update(vivo=False))
+    modifica(arco, "sessioni/02/scene/scena_due.yaml", lambda d: d.update(png_presenti=["png_irma"]))
+    assert "CONTINUITÀ.morto" in stato_continuita(arco)[0]
+
+
+def test_continuita_segreto_senza_parola_nel_pacchetto(arco):
+    # Le parole del pacchetto sostituiscono quelle della campagna: un segreto che entra in sessione ha la sua.
+    modifica(arco, "sessioni/02/repertorio/parole_segrete.yaml", lambda d: d.update(parole=d["parole"][:1]))
+    assert "CONTINUITÀ.segreto" in stato_continuita(arco)[0]
+    (arco / "sessioni" / "02" / "repertorio" / "parole_segrete.yaml").unlink()
+    assert "CONTINUITÀ.segreto" in stato_continuita(arco)[0]
 
 
 def test_continuita_parola_segreta_di_un_fatto_gia_saputo(arco):
