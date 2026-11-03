@@ -89,13 +89,13 @@ personaggi:
     livello: 1
     aspetto: "Mezzelfa di ventidue anni, capelli castani raccolti sotto un berretto di lana, arco corto in spalla e scarponi da cacciatrice."
     concetto: "Cugina della sposa: sua madre è una Bonfanti che si è sposata a valle. A Fontanive viene solo per le feste, e tutti la chiamano ancora «quella di giù»."
-    aggancio: "Zelia, la sorella della sposa, ti ha scritto la settimana scorsa: vieni alle nozze, succederà qualcosa, e mi serve una dalla mia parte."
+    aggancio: "Zelia, la sorella della sposa, ti ha scritto la settimana scorsa di venire alle nozze: ha bisogno di te."
     cosa_sai_fare:
       - "segui una pista nella neve fresca"
       - "ti muovi senza fare rumore in una casa che non è tua"
       - "conosci le cugine Bonfanti e i loro nascondigli di bambine"
     conoscenze_private:
-      - {testo: "Nella lettera Zelia ha scritto anche: «In soffitta ho trovato lettere d'amore per la nonna, firmate E. Non sono del nonno Pietro.»", fatti: [f_lettere_soffitta, f_zelia_soffitta]}
+      - {testo: "Nella lettera Zelia ha scritto anche: «Al matrimonio succederà qualcosa, e mi serve una dalla mia parte. In soffitta ho trovato lettere d'amore per la nonna, firmate E. Non sono del nonno Pietro.»", fatti: [f_lettere_soffitta, f_zelia_soffitta]}
 
   - id: pg_gunda
     nome: "Gunda Rocciarossa"

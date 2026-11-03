@@ -1,0 +1,147 @@
+# Repertorio di Zelia, la sorella della sposa. Voce tabitha: mai nella scena di Adelina (nadine).
+# Tutte le sue battute hanno `scena: scena_casa_bonfanti`: non va alla casera né al Sasso.
+# Tu a tutti, il voi al gruppo, il lei da notaio quando ha paura. Frasi di quattro-dieci parole, veloci.
+# Tic: «Questo lo scrivo.» Segnale quando mente: si mordicchia la punta della treccia.
+# Menzogna registrata: zel_mezzogiorno = «dov'era a mezzogiorno».
+
+battute:
+
+  # --- esempi di voce (solo_esempio): niente segreti ---------------------------------------------------
+  - id: zel_saluto
+    chi: png_zelia
+    tipo: saluto
+    solo_esempio: true
+    scena: scena_casa_bonfanti
+    quando: "i PG salutano Zelia"
+    temi: [saluto]
+    testo:
+      - "[narratore] Zelia scrive qualcosa nel quaderno senza guardare, poi vi sorride."
+      - "[png_zelia] Forestieri, questo lo scrivo. Come vi chiamate, in ordine?"
+    max_usi: 1
+  - id: zel_rifiuto
+    chi: png_zelia
+    tipo: rifiuto
+    solo_esempio: true
+    scena: scena_casa_bonfanti
+    quando: "un PG chiede a Zelia di cose che non sa o non dice"
+    temi: [domanda]
+    testo:
+      - "[png_zelia] Non è un capitolo che conosco. Chiedete allo zio, lui conta tutto."
+    max_usi: 1
+  - id: zel_domanda_gentile
+    chi: png_zelia
+    tipo: reazione
+    solo_esempio: true
+    scena: scena_casa_bonfanti
+    quando: "un PG chiede a Zelia della sposa"
+    temi: [gentile]
+    testo:
+      - "[png_zelia] Agnese è muta fino al sì. È il giorno più bello della mia vita."
+    max_usi: 1
+  - id: zel_accusa
+    chi: png_zelia
+    tipo: reazione
+    solo_esempio: true
+    scena: scena_casa_bonfanti
+    quando: "un PG accusa Zelia"
+    temi: [accuso]
+    testo:
+      - "[narratore] Zelia si raddrizza sulla sedia, e passa al lei."
+      - "[png_zelia] Lei mi accusa senza prove. Lo metto agli atti."
+    max_usi: 1
+  - id: zel_minaccia
+    chi: png_zelia
+    tipo: reazione
+    solo_esempio: true
+    scena: scena_casa_bonfanti
+    quando: "un PG minaccia Zelia"
+    temi: [minaccia]
+    testo:
+      - "[png_zelia] Se mi tocchi, grido. E la sposa non parla, ma vede tutto."
+    max_usi: 1
+  - id: zel_offerta
+    chi: png_zelia
+    tipo: reazione
+    solo_esempio: true
+    scena: scena_casa_bonfanti
+    quando: "un PG offre qualcosa a Zelia"
+    temi: [soldi]
+    testo:
+      - "[png_zelia] Non voglio soldi. Voglio storie vere, e un pennino nuovo."
+    max_usi: 1
+  - id: zel_aiuto
+    chi: png_zelia
+    tipo: reazione
+    solo_esempio: true
+    scena: scena_casa_bonfanti
+    quando: "un PG offre aiuto a Zelia"
+    temi: [aiuto]
+    testo:
+      - "[png_zelia] Aiutami con il velo, allora. Gli spilli li conto io."
+    max_usi: 1
+
+  # --- selezionabili: menzogna -------------------------------------------------------------------------
+  - id: zel_mezzogiorno_versione
+    chi: png_zelia
+    tipo: menzogna
+    scena: scena_casa_bonfanti
+    quando: "un PG chiede a Zelia dov'era a mezzogiorno"
+    temi: [mezzogiorno, scesa, uscita, brindisi]
+    testo:
+      - "[narratore] Zelia si mordicchia la punta della treccia."
+      - "[png_zelia] Ero qui a vestire Agnese, tutto il giorno. Chiedetelo a lei."
+    varianti:
+      - ["[narratore] Zelia si mordicchia la punta della treccia, e guarda la sorella.", "[png_zelia] Qui, con Agnese. Agli atti."]
+    effetti: {menzogna_detta: zel_mezzogiorno}
+    max_usi: 2
+
+  # --- confessioni: una per condizione di cede_se, ognuna con il suo cancello ---------------------------
+  - id: zel_macchia_privato
+    chi: png_zelia
+    tipo: confessione
+    scena: scena_casa_bonfanti
+    quando: "in privato, un PG mostra a Zelia la macchia d'inchiostro o il capello rosso"
+    temi: [macchia, inchiostro, capello, rosso]
+    richiede: {privata: true, indizi_rivelati: [i_macchia], battute_non_usate: [zel_promessa_privato]}
+    testo:
+      - "[narratore] Zelia si guarda le dita sporche d'inchiostro, e lascia andare la treccia."
+      - "[png_zelia] Va bene, agli atti. L'ho preso io, a mezzogiorno, durante il brindisi."
+      - "[png_zelia] È nel campanaccio della Duchessa. Perché la nonna, al Sasso, dica la storia vera."
+    effetti: {rivela_indizi: [i_zelia_confessa], fatti_noti: [f_zelia_presa, f_campanaccio, f_zelia_motivo]}
+    max_usi: 1
+  - id: zel_promessa_privato
+    chi: png_zelia
+    tipo: confessione
+    scena: scena_casa_bonfanti
+    quando: "in privato, un PG fa a Zelia una promessa per il Sasso"
+    temi: [prometto, promessa, giuro, vera]
+    richiede: {privata: true, battute_non_usate: [zel_macchia_privato]}
+    testo:
+      - "[narratore] Zelia vi guarda a lungo, con il pennino sospeso sopra il quaderno."
+      - "[png_zelia] Promesso? Lo scrivo, e lo firmate. L'ho preso io, a mezzogiorno."
+      - "[png_zelia] È nel campanaccio della Duchessa. Ma al Sasso la storia deve essere quella vera."
+    effetti: {rivela_indizi: [i_zelia_confessa], fatti_noti: [f_zelia_presa, f_campanaccio, f_zelia_motivo]}
+    max_usi: 1
+
+  # --- momenti ----------------------------------------------------------------------------------------
+  - id: zel_motivo
+    chi: png_zelia
+    tipo: momento
+    scena: scena_casa_bonfanti
+    quando: "dopo aver parlato, un PG chiede a Zelia perché vuole la storia vera"
+    temi: [lettere, motivo, storia]
+    richiede: {indizi_rivelati: [i_zelia_confessa]}
+    testo:
+      - "[png_zelia] Nella cassapanca della nonna, in soffitta, sotto i merletti. Lettere, legate con un nastro."
+      - "[png_zelia] Firmate E. E non sono del nonno Pietro, ve lo dico io."
+    effetti: {fatti_noti: [f_lettere_soffitta]}
+    max_usi: 1
+  - id: zel_velo
+    chi: png_zelia
+    tipo: momento
+    scena: scena_casa_bonfanti
+    quando: "un PG si avvicina alla botola della stalla"
+    temi: [botola, stalla]
+    testo:
+      - "[png_zelia] Ehi, aspetta! Mi serve una mano con il velo. Subito, è un'emergenza."
+    max_usi: 1

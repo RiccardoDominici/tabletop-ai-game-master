@@ -184,10 +184,10 @@ orologi:
     segni:
       - "Dal lato dei Morlacchi qualcuno batte il bicchiere sul tavolo, tre volte."
       - "Un Bonfanti spinge una forma, e la riga di formaggio si allarga."
-      - "La fisarmonica si ferma a metà di una polka, e nessuno ride."
+      - "Il violino della festa si ferma a metà di una polka, e nessuno ride."
       - "Dalla porta volano palle di neve, e le comari smettono di ridere."
       - "Due cugini si prendono per il bavero, petto contro petto, sopra le forme."
-      - "Ettore batte il bastone e grida ai suoi di portare fuori le panche."
+      - "Ettore batte il bastone, e i Morlacchi portano fuori le panche."
     avanza_quando:
       - "almeno un segno ogni due risposte del narratore, mentre i PG sono alla casera"
       - "subito, anche se la risposta precedente ne aveva uno, quando un PG accusa davanti a tutti una delle due famiglie senza una prova"
@@ -202,7 +202,7 @@ orologi:
     segno_almeno_ogni: 2
     segni:
       - "Dalla cucina arriva un rumore di cassetti aperti e richiusi."
-      - "Lo zio Gaspare sale la scala, piano, e chiede di Zelia."
+      - "Lo zio Gaspare sale la scala, piano, e bussa alla porta di Zelia."
       - "Dalla stalla arriva un muggito lungo, e una porta che cigola."
       - "Lo zio Gaspare esce dalla stalla, e si pulisce le mani nel fazzoletto."
     avanza_quando:
@@ -375,7 +375,7 @@ preparazione:
           destino_incombente: "La festa finisce a spintoni, le panche dei Morlacchi escono nella neve, e al Sasso le due case salgono separate."
           presagi:
             - {testo: "La sala divisa.", segno_visibile: "Una riga di forme di formaggio divide la sala in due."}
-          mosse: ["un bicchiere sbattuto", "una forma spinta oltre la riga", "una palla di neve dalla porta", "un cugino che si alza", "la musica che si ferma"]
+          mosse: ["un bicchiere sbattuto", "una forma spinta oltre la riga", "una palla di neve dalla porta", "un cugino che si alza", "il violino che si ferma"]
           cast: [png_ettore]
           orologio: o_lite
         - id: p_partenza

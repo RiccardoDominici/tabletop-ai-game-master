@@ -1,0 +1,213 @@
+# Repertorio di Ettore Morlacchi, il nonno dello sposo. Voce vincent.
+# Tu a tutti e i nomi di mestiere solo quando il `quando` dice con chi parla; il voi al gruppo.
+# Frasi di due-sei parole, lessico di mulattiera. Tic: «Parla dall'orecchio buono, eh.»
+# Segnale quando mente: si tira la barba con tutte e due le mani.
+# Menzogne registrate: ett_anello = «di chi è l'anello»; ett_neve = «perché sessant'anni fa non salì al Sasso».
+# Le sue confidenze si chiudono quando la festa si spacca (o_lite al completo).
+
+battute:
+
+  # --- esempi di voce (solo_esempio): niente segreti ---------------------------------------------------
+  - id: ett_saluto
+    chi: png_ettore
+    tipo: saluto
+    solo_esempio: true
+    quando: "i PG salutano Ettore"
+    temi: [saluto]
+    testo:
+      - "[narratore] Ettore batte il bastone per terra, due colpi."
+      - "[png_ettore] Forestieri. Sedete di qua, che di là morde."
+    max_usi: 1
+  - id: ett_rifiuto
+    chi: png_ettore
+    tipo: rifiuto
+    solo_esempio: true
+    quando: "un PG chiede a Ettore di cose che non sa o non dice"
+    temi: [domanda]
+    testo:
+      - "[png_ettore] Eh, non ho sentito. E non sento."
+    max_usi: 1
+  - id: ett_domanda_gentile
+    chi: png_ettore
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG chiede a Ettore dei suoi muli"
+    temi: [gentile]
+    testo:
+      - "[png_ettore] Dodici muli, tutti buoni. Meglio dei Bonfanti."
+    max_usi: 1
+  - id: ett_accusa
+    chi: png_ettore
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG accusa Ettore o i Morlacchi"
+    temi: [accuso]
+    testo:
+      - "[narratore] Ettore si alza, piano, appoggiato al bastone."
+      - "[png_ettore] Ripetilo. Dall'orecchio buono."
+    max_usi: 1
+  - id: ett_minaccia
+    chi: png_ettore
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG minaccia Ettore"
+    temi: [minaccia]
+    testo:
+      - "[png_ettore] Bastone di nocciolo, ottant'anni. Prova pure."
+    max_usi: 1
+  - id: ett_offerta
+    chi: png_ettore
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG offre a Ettore denaro o un patto"
+    temi: [soldi]
+    testo:
+      - "[png_ettore] Soldi ne ho. Mi manca altro."
+    max_usi: 1
+  - id: ett_aiuto
+    chi: png_ettore
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG offre aiuto a Ettore"
+    temi: [aiuto]
+    testo:
+      - "[png_ettore] Scagiona il ragazzo, poi vediamo."
+    max_usi: 1
+
+  # --- selezionabili: menzogne -------------------------------------------------------------------------
+  - id: ett_anello_versione
+    chi: png_ettore
+    tipo: menzogna
+    quando: "un PG chiede a Ettore di chi è l'anello"
+    temi: [nostro, vostro, ladra, rubato, rubata]
+    testo:
+      - "[narratore] Ettore si tira la barba con tutte e due le mani."
+      - "[png_ettore] È nostro, l'anello. La Bonfanti se l'è tenuto, come una ladra."
+    varianti:
+      - ["[narratore] Ettore si tira la barba, forte, con tutte e due le mani.", "[png_ettore] Te l'ho detto. Nostro, e se l'è tenuto."]
+    effetti: {menzogna_detta: ett_anello}
+    max_usi: 2
+  - id: ett_neve_versione
+    chi: png_ettore
+    tipo: menzogna
+    quando: "un PG chiede a Ettore della prima neve di sessant'anni fa"
+    temi: [sessant, sessanta, scappato, mancato, venuto]
+    testo:
+      - "[narratore] Ettore si tira la barba con tutte e due le mani."
+      - "[png_ettore] Quel giorno sono sceso a valle. Avevo muli da vendere."
+    varianti:
+      - ["[narratore] Ettore si tira la barba, e guarda il fuoco.", "[png_ettore] A valle, coi muli. Fine."]
+    effetti: {menzogna_detta: ett_neve}
+    max_usi: 2
+
+  # --- confessioni: una per condizione di cede_se, ognuna con il suo cancello ---------------------------
+  - id: ett_anello_lettere
+    chi: png_ettore
+    tipo: confessione
+    quando: "in privato, un PG mostra a Ettore le lettere della soffitta"
+    temi: [lettere, nastro, soffitta, firmate]
+    richiede: {privata: true, indizi_rivelati: [i_lettere], orologio: {id: o_lite, min: 0, max: 5}, battute_non_usate: [ett_anello_ferro]}
+    testo:
+      - "[narratore] Ettore guarda il nastro rosso, e si toglie il cappello."
+      - "[png_ettore] Le ha tenute. Io le credevo bruciate."
+      - "[png_ettore] L'anello era di mia madre. L'ho dato io alla Bonfanti. Per sposarla."
+    effetti: {rivela_indizi: [i_ettore_anello], fatti_noti: [f_anello_promessa]}
+    max_usi: 1
+  - id: ett_anello_ferro
+    chi: png_ettore
+    tipo: confessione
+    quando: "in privato, un PG mostra a Ettore il ferro di cavallo inciso nell'anello"
+    temi: [ferro, inciso, incisione, fascia]
+    richiede: {privata: true, indizi_rivelati: [i_ferro_inciso], orologio: {id: o_lite, min: 0, max: 5}, battute_non_usate: [ett_anello_lettere]}
+    testo:
+      - "[narratore] Ettore prende l'anello tra due dita grosse, e lo avvicina agli occhi."
+      - "[png_ettore] Il ferro l'ha inciso mio nonno. Era di mia madre."
+      - "[png_ettore] L'ho dato io alla Bonfanti. Per sposarla. Non l'ha rubato."
+    effetti: {rivela_indizi: [i_ettore_anello], fatti_noti: [f_anello_promessa]}
+    max_usi: 1
+  - id: ett_neve_libro
+    chi: png_ettore
+    tipo: confessione
+    quando: "in privato, un PG legge a Ettore la riga del Libro di sessant'anni fa"
+    temi: [libro, riga, sessant, aspettato, buio]
+    richiede: {privata: true, indizi_rivelati: [i_libro_notte], orologio: {id: o_lite, min: 0, max: 5}, battute_non_usate: [ett_neve_tilde]}
+    testo:
+      - "[narratore] Ettore resta zitto e immobile, con le mani strette sul bastone."
+      - "[png_ettore] Fino al buio. Mi ha aspettato fino al buio."
+      - "[png_ettore] Io ero sul passo. Il piccolo Gaspare bruciava, e il medico non saliva. L'ho portato su io."
+      - "[png_ettore] Al Sasso sono arrivato a notte. Non c'era più nessuno."
+    effetti: {rivela_indizi: [i_ettore_neve], fatti_noti: [f_ettore_medico, f_notte_sasso]}
+    max_usi: 1
+  - id: ett_neve_tilde
+    chi: png_ettore
+    tipo: confessione
+    quando: "in privato, un PG ripete a Ettore ciò che ha gridato Tilde"
+    temi: [tilde, mulo, medico, ricorda]
+    richiede: {privata: true, indizi_rivelati: [i_tilde], orologio: {id: o_lite, min: 0, max: 5}, battute_non_usate: [ett_neve_libro]}
+    testo:
+      - "[narratore] Ettore resta zitto e immobile, con le mani strette sul bastone."
+      - "[png_ettore] Le avevo detto di stare zitta. Sessant'anni, e ha tenuto."
+      - "[png_ettore] Io ero sul passo. Il piccolo Gaspare bruciava, e il medico non saliva. L'ho portato su io."
+      - "[png_ettore] Al Sasso sono arrivato a notte. E lei non era salita."
+    effetti: {rivela_indizi: [i_ettore_neve], fatti_noti: [f_ettore_medico, f_notte_sasso]}
+    max_usi: 1
+
+  # --- momenti ----------------------------------------------------------------------------------------
+  - id: ett_lettera_data
+    chi: png_ettore
+    tipo: momento
+    quando: "dopo il racconto di Ettore, un PG gli chiede la lettera"
+    temi: [lettera, dammi, portala, portagliela]
+    richiede: {indizi_rivelati: [i_ettore_neve]}
+    testo:
+      - "[narratore] Ettore infila la mano nella giacca e tira fuori una lettera gialla, chiusa con la ceralacca."
+      - "[png_ettore] Me l'ha rimandata chiusa. Portagliela tu. Io no."
+    effetti: {fatti_noti: [f_lettera_giacca, f_lettera_rimandata]}
+    max_usi: 1
+  - id: ett_giacca_appesa
+    chi: png_ettore
+    tipo: momento
+    scena: scena_casera
+    quando: "un PG sfida Ettore a braccio di ferro o lo invita a ballare"
+    temi: [braccio, sfido, sfida, ballare, balliamo, ballo]
+    testo:
+      - "[narratore] Ettore si toglie la giacca, la appende alla panca e si rimbocca le maniche."
+      - "[png_ettore] Vediamo quanto vali. Piano, che ho ottant'anni."
+    max_usi: 1
+  - id: ett_bastiano
+    chi: png_ettore
+    tipo: indizio
+    scena: scena_casera
+    quando: "un PG chiede a Ettore di Bastiano o dell'accusa dello zio"
+    temi: [bastiano, garzone, accusato]
+    testo:
+      - "[png_ettore] Il ragazzo ferrava la Gigia, a mezzogiorno. Io lo so."
+      - "[png_ettore] I Bonfanti no. Loro sanno sempre tutto."
+    effetti: {rivela_indizi: [i_alibi], fatti_noti: [f_bastiano_innocente]}
+    max_usi: 1
+  - id: ett_sasso_a
+    chi: png_ettore
+    tipo: momento
+    scena: scena_sasso
+    quando: "al Sasso, un PG mette l'anello in mano a Ettore"
+    temi: [consegno, porgo, ridò, ridiamo]
+    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}, battute_non_usate: [ade_sasso_b, ade_sasso_a, ade_sasso_c, ett_neve_libro, ett_sasso_b]}
+    testo:
+      - "[narratore] Ettore prende l'anello e batte il bastone due volte, davanti a tutti."
+      - "[png_ettore] Era di mia madre. L'ho dato io alla Bonfanti, per sposarla."
+      - "[png_ettore] Quel giorno ero sul passo. Col medico, per suo fratello. Lei non è salita."
+    effetti: {fatti_noti: [f_anello_promessa, f_ettore_medico]}
+    max_usi: 1
+  - id: ett_sasso_b
+    chi: png_ettore
+    tipo: momento
+    scena: scena_sasso
+    quando: "al Sasso, un PG mette l'anello in mano a Ettore"
+    temi: [consegno, porgo, ridò, ridiamo]
+    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}, battute_usate: [ett_neve_libro], battute_non_usate: [ade_sasso_b, ade_sasso_a, ade_sasso_c, ett_sasso_a]}
+    testo:
+      - "[narratore] Ettore prende l'anello e batte il bastone due volte, davanti a tutti."
+      - "[png_ettore] Era di mia madre. L'ho dato io alla Bonfanti, per sposarla."
+      - "[png_ettore] Lei mi ha aspettato qui fino al buio. Io ero sul passo, col medico per suo fratello."
+    effetti: {fatti_noti: [f_anello_promessa, f_ettore_medico]}
+    max_usi: 1

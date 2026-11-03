@@ -12,6 +12,8 @@ aspetto:
   lettura: "Un uomo magro e calvo, sulla sessantina, in un panciotto di velluto verde. Ha gli occhiali sulla punta del naso e una matita dietro l'orecchio."
   invarianti: ["sessantasei anni", "magro e calvo", "panciotto di velluto verde", "occhiali sulla punta del naso", "matita dietro l'orecchio", "piccolo libro dei conti in mano"]
   prompt_immagine: "thin bald 66-year-old village bookkeeper, round spectacles on the tip of his nose, green velvet waistcoat, pencil behind his ear, small leather ledger in his hand, polite careful smile, warm alpine kitchen behind him, [STILE]"
+  situazioni:
+    - {id: dalla_stalla, dopo: [nar_zio_4], prompt: "the bookkeeper stepping out of a dim stable door into the snow, wiping his hands on a white handkerchief, glancing over his shoulder"}
 
 personalita:
   superficie: ["gentile e misurato, parla piano", "conta tutto: forme, ospiti, bicchieri", "dà ragione a tutti, poi fa a modo suo"]

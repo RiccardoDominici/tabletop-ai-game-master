@@ -14,6 +14,8 @@ aspetto:
   lettura: "Una donna minuta di settantotto anni, dritta come un fuso, con uno scialle nero frangiato. Porta il grembiule della casera anche alla festa, e un mazzo di chiavi alla cintura."
   invarianti: ["settantotto anni", "minuta e dritta", "capelli bianchi raccolti a crocchia", "scialle nero con le frange", "grembiule bianco della casera sul vestito della festa", "mazzo di chiavi di ferro alla cintura"]
   prompt_immagine: "tiny upright 78-year-old alpine matriarch, white hair in a tight bun, black fringed shawl, white dairy apron over her feast dress, a ring of iron keys at her belt, sharp amused eyes, firelit stone cheese hall behind her, [STILE]"
+  situazioni:
+    - {id: senza_scialle, dopo: [ade_sasso_b], prompt: "the old woman without her shawl at sunset by a large flat stone under a snowy larch, holding up a thin red-gold ring, eyes wet, a small smile"}
 
 personalita:
   superficie: ["lingua tagliente e battuta pronta", "comanda la casera e la famiglia con un'occhiata", "fiera dei Bonfanti fino al ridicolo"]
@@ -57,6 +59,7 @@ sa:
   - f_gaspare_bambino
   - f_marta
   - f_sposa_muta
+  - f_tilde
 non_sa:
   - f_zelia_presa          # domanda probabile: «chi ha preso l'anello?»
   - f_campanaccio
@@ -74,7 +77,7 @@ mente_su:
   - id: ade_anello
     argomento: "da dove viene l'anello"
     verita: f_anello_promessa
-    versione: "È l'anello di mia nonna, Bonfanti come me. Nessun Morlacchi l'ha mai toccato."
+    versione: "È l'anello di mia madre, Bonfanti come me. Nessun Morlacchi l'ha mai toccato."
     perche: "Dire la verità vuol dire dire che ha aspettato un Morlacchi al Sasso, e che il paese ripete da sessant'anni una storia di suo padre."
     segnale: "si aggiusta lo scialle sulle spalle, due volte"
     cede_se: "In privato, quando un PG le mostra le lettere della soffitta firmate E. Oppure in privato, quando un PG le mostra il ferro di cavallo inciso dentro l'anello."

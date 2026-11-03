@@ -125,6 +125,12 @@ musica:
   tag: esplorazione_tesa
   transizione: "Verso taverna_calda se Zelia si fida dei PG e in camera si ride."
 
+# Audio (passo 11): la deduzione metteva campane di chiesa (sono campanacci di vacche) e uno strato di
+# «stalla» che nelle fonti sono oche in volo: in una cucina d'inverno non tornano. Fuoco e vento soltanto.
+audio:
+  ambiente: [{tag: fuoco, volume: 0.35}, {tag: vento, volume: 0.15}]
+  umore_iniziale: esplorazione_tesa
+
 immagine:
   invarianti: ["cucina di pietra con camino e campanella d'ottone sulla mensola", "scala di legno verso il piano di sopra", "botola aperta sulla stalla", "scrittoio con libro dei conti sotto la finestra"]
   prompt_luogo: "cozy stone kitchen of an alpine farmhouse, fireplace with a small brass mule bell hanging from the mantel, steep wooden staircase going up, an open trapdoor with a ladder down to a warm stable with cows, a writing desk with a ledger under a frosted window, snow outside"

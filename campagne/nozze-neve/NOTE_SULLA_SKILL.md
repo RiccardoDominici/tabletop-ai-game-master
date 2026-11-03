@@ -33,3 +33,65 @@ nell'ordine in cui le incontro; in fondo, i tempi e la classifica dei problemi p
    campo `indizio`, che al passo 3 non può esistere.** La skill lo dice tra parentesi («il legame
    `indizio` lo aggiungi al passo 5»), lo schema no: scritto il blocco dallo schema, escono sei errori
    `MONDO.riferimento`. *Scelta*: tolto `indizio` dai documenti al passo 3, rimesso al passo 5.
+
+## Passi 5–8
+
+5. **Il cognome di famiglia fa scattare l'avviso delle voci simili.** `regole_scena.nomina` cerca ogni parola
+   maiuscola del `nome` di un PNG, cognome compreso. Adelina e Zelia sono tutte e due Bonfanti (nadine e
+   tabitha): ogni «casa Bonfanti», «la stalla dei Bonfanti», «la storia dei Bonfanti» in una scena o in un
+   collo di bottiglia diventava «nomina Zelia Bonfanti», quindici avvisi falsi al primo giro. Nessuna
+   regola della skill dice di evitare cognomi comuni tra PNG di voce simile, e in una storia di famiglie
+   è la norma. *Scelta*: `nome` senza cognome per Adelina e Zelia («Adelina», «Zelia»); il cognome resta nel
+   canone. Restano gli avvisi veri (descrizioni che dicono che l'altra è altrove), riformulati.
+
+6. **Il passo 5 chiede di scrivere gli indizi delle scene, ma metà degli indizi nascono al passo 7.**
+   Scrivendo le menzogne (`cede_se`) sono nati due indizi nuovi (l'alibi di Bastiano, il perdono di
+   Adelina) e sono cambiati i `modi` di cinque indizi PNG: ogni condizione di `cede_se` è un modo di
+   trovarli. La skill mette gli indizi al passo 4–5 e i `cede_se` al passo 7, ma i due si progettano
+   insieme. *Scelta*: sono tornato alle schede scena al passo 7. Sarebbe utile una riga: «gli indizi di
+   tipo png hanno tanti modi quante sono le condizioni del `cede_se` che li rivela».
+
+7. **Un PG musicista contro i sensi della scena.** I sensi della casera dicevano «una fisarmonica che
+   zoppica», e un segno della lite «la fisarmonica si ferma»: ma la fisarmonica è di Nando, un PG. Il
+   narratore avrebbe deciso che cosa fa la fisarmonica di un giocatore (N7). Nessun controllo lo trova, e
+   la skill non avverte che i sensi, i segni e le mosse morbide non devono toccare oggetti o azioni dei PG.
+   *Scelta*: il violino del paese, una comparsa.
+
+## Passi 9–11
+
+8. **I segni d'orologio con una battuta di PNG.** Un segno dice «lo zio chiama Zelia» o «Ettore grida ai
+   suoi»: o il narratore riassume un PNG importante (contro D1), o la battuta del segno ha una riga
+   `[png_…]`, che dà l'avviso `REPERTORIO.righe` (riga di PNG in una battuta del narratore). La skill non
+   dice quale delle due è giusta. *Scelta*: segni solo di gesti visibili; i PNG parlano nelle loro battute.
+   Resta un avviso voluto sul finale della terza via, dove parlano i due vecchi.
+
+9. **«Oppure» nei cancelli moltiplica le battute.** La lettera chiusa arriva per due strade (Ettore la dà,
+   o un PG la prende dalla giacca), e Adelina cede per tre (le due lettere, il ricordo di Tilde): senza
+   `richiede.oppure` sono cinque battute con lo stesso testo, più due per la lettura dei PG. Il trucco che
+   tiene in piedi il climax è un indizio-cerniera (`i_adelina_neve`) rivelato da tutte e tre le confessioni,
+   e un solo cancello `indizi_rivelati` sulla battuta del Sasso. La skill potrebbe insegnarlo: «quando
+   una battuta dipende da una qualunque di più strade, fa' rivelare a tutte le strade lo stesso indizio».
+
+10. **Id e `quando` che dicono il segreto, senza parole segrete.** Il validatore cerca le regex nel
+   catalogo, ma non legge gli id come li legge il selettore: `zel_presa_macchia` («Zelia presa»),
+   `gas_vide_alibi` («Gaspare vide»), `ade_verita` («Adelina dice la verità», quindi la leggenda è falsa),
+   `ett_neve_versione` con «perché sessant'anni fa non salì al Sasso» (cioè: era lui il Morlacchi della
+   storia, e doveva salire). Li ho trovati solo leggendo `contesto_modo_b.ts --catalogo`. *Scelta*: id
+   neutri (`ade_sasso_a/b/c`, `zel_macchia_privato`…) e `quando` riscritti. La skill dice «niente segreti
+   nell'id» ma gli esempi sono solo di parole; potrebbe dire «leggi ogni id come una frase».
+
+11. **Il catalogo statico è il caso peggiore, e il validatore lo sa ma non lo dice.** Le righe chiuse da un
+   cancello che rende pubblico il segreto (per esempio «la lettera presa dalla giacca», dopo che è uscita
+   la battuta della giacca) passano il controllo `SEGRETI`, ma nel catalogo statico stampato dallo
+   strumento compaiono lo stesso, e chi legge non sa quali righe il Motore mostrerebbe prima del cancello.
+   Un segno («[chiusa]») accanto alle righe con `richiede` aiuterebbe la lettura del passo 10.
+
+12. **La deduzione dell'audio sbaglia in modi che i campi non correggono del tutto.** La casera (commedia)
+   prendeva una musica «Dark, Eerie»; lo strato `stalla` delle fonti sono oche in volo; `campane` sono
+   campane di chiesa (in casa Bonfanti ci sono campanacci); il Sasso all'aperto è dedotto «dentro», e non
+   c'è un campo per dire «fuori». *Scelta*: `audio.musica` con parole libere (humorous, mysterious) e
+   `audio.ambiente` espliciti; il «dentro» del Sasso resta.
+
+13. **`genera.py --dry-run` dice «manifest: …/immagini/manifest.json» ma non lo scrive.** Va bene così, ma la
+   riga sembra un file creato: a un primo sguardo pensavo che la prova a secco avesse reso la campagna
+   «pronta». Il dry-run dell'audio lo dice meglio («manifest sarebbe …»).

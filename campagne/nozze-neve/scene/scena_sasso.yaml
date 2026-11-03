@@ -60,9 +60,21 @@ musica:
   tag: rito_sacro
   transizione: "Verso lutto se il sole tocca il passo senza benedizione, o se uno dei due vecchi se ne va."
 
+# Audio (passo 11): all'aperto, sopra il paese: vento e neve, e il paese che mormora.
+audio:
+  ambiente: [{tag: vento, volume: 0.3}, {tag: neve, volume: 0.2}, {tag: folla, volume: 0.12}]
+  umore_iniziale: rito_sacro
+
 immagine:
   invarianti: ["grande pietra piatta spazzata dalla neve", "larice carico di neve", "due lanterne accese ai lati", "casotto di legno con un corno appeso", "il passo con il sole basso sullo sfondo"]
   prompt_luogo: "a large flat stone under a snow-laden larch tree above a mountain village at sunset, snow swept from the top of the stone, two lit lanterns on either side, a small wooden hut with a long alpine horn hanging by the door, the red sun low over a mountain pass, many footprints in the snow"
 
 # Va al selettore del modo B: niente segreti.
 taglio: "La scena si chiude all'ottavo segno, quando il sole tocca il passo e il corno suona tre volte: la sposa ha l'anello al dito e il paese ha sentito una storia, oppure il Custode chiude il Libro, e niente benedizione fino a primavera. Se i PG esitano, il Custode tende la mano verso l'anello e aspetta: chi ce l'ha decide adesso."
+
+# Esiti (passo 9): uno per ogni strada del taglio, ognuno con il suo finale.
+esiti:
+  - {id: es_leggenda, descrizione: "Adelina racconta la storia di sempre: nozze benedette, Ettore se ne va con i suoi e si riprende la casetta del lavatoio, la faida passa agli sposi.", finale: fin_sasso_a}
+  - {id: es_verita_adelina, descrizione: "Adelina racconta lei la storia vera: Ettore mette l'anello alla sposa, le due case scendono insieme, e Adelina lascia la voce del Sasso.", finale: fin_sasso_b}
+  - {id: es_verita_altri, descrizione: "La storia vera la racconta qualcun altro: Adelina se ne va umiliata e ritira la dote, Marta mette l'anello, il Prato Alto resta a Gaspare.", finale: fin_sasso_c}
+  - {id: es_tramonto, descrizione: "Il sole tocca il passo senza anello o senza storia: niente benedizione fino a primavera, e all'alba Tonio scende con i muli.", finale: fin_tramonto}

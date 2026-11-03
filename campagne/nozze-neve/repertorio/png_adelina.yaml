@@ -1,0 +1,219 @@
+# Repertorio di Adelina, la nonna della sposa. Voce nadine: mai nella scena di Zelia (tabitha).
+# Tu a tutti, il lei gelido quando si offende, il voi al gruppo. Frasi di tre-nove parole, proverbi di casera.
+# Tic: «Il formaggio buono vuole tempo.» Segnale quando mente: si aggiusta lo scialle sulle spalle, due volte.
+# Menzogne registrate: ade_anello = «da dove viene l'anello»; ade_neve = «la prima neve di sessant'anni fa».
+# Non dice il nome di Ettore finché non sa perché lui non venne.
+
+battute:
+
+  # --- esempi di voce (solo_esempio): niente segreti ---------------------------------------------------
+  - id: ade_saluto
+    chi: png_adelina
+    tipo: saluto
+    solo_esempio: true
+    quando: "i PG salutano Adelina"
+    temi: [saluto]
+    testo:
+      - "[narratore] Adelina fa tintinnare le chiavi alla cintura, e vi squadra dalla testa ai piedi."
+      - "[png_adelina] Forestieri a una festa di casa. Mangiate, che il formaggio non aspetta."
+    max_usi: 1
+  - id: ade_rifiuto
+    chi: png_adelina
+    tipo: rifiuto
+    solo_esempio: true
+    quando: "un PG chiede ad Adelina di cose che non sa o non dice"
+    temi: [domanda]
+    testo:
+      - "[png_adelina] Di questo non parlo. Il formaggio buono vuole tempo, e le domande anche."
+    max_usi: 1
+  - id: ade_domanda_gentile
+    chi: png_adelina
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG chiede ad Adelina come sta"
+    temi: [gentile]
+    testo:
+      - "[png_adelina] Settantotto anni, e una scatolina vuota. Come vuoi che stia?"
+    max_usi: 1
+  - id: ade_accusa
+    chi: png_adelina
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG accusa Adelina di qualcosa"
+    temi: [accuso]
+    testo:
+      - "[narratore] Adelina smette di sorridere, e passa al lei."
+      - "[png_adelina] Lei è a casa mia. Badi a come parla."
+    max_usi: 1
+  - id: ade_minaccia
+    chi: png_adelina
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG minaccia Adelina o alza la voce con lei"
+    temi: [minaccia]
+    testo:
+      - "[png_adelina] Fuori dalla mia casera. Le porte le conosco io."
+    max_usi: 1
+  - id: ade_offerta
+    chi: png_adelina
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG offre denaro ad Adelina"
+    temi: [soldi]
+    testo:
+      - "[png_adelina] Soldi? Qui si paga in forme, e le forme le faccio io."
+    max_usi: 1
+  - id: ade_aiuto
+    chi: png_adelina
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG offre aiuto ad Adelina"
+    temi: [aiuto]
+    testo:
+      - "[png_adelina] Trovami l'anello prima del corno. Il resto lo faccio io."
+    max_usi: 1
+
+  # --- selezionabili: menzogne -------------------------------------------------------------------------
+  - id: ade_anello_versione
+    chi: png_adelina
+    tipo: menzogna
+    quando: "un PG chiede ad Adelina da dove viene l'anello"
+    temi: [bisnonna, eredità, ereditato, provenienza, origine]
+    testo:
+      - "[narratore] Adelina si aggiusta lo scialle sulle spalle, due volte."
+      - "[png_adelina] È l'anello di mia madre, Bonfanti come me. Nessun Morlacchi l'ha mai toccato."
+    varianti:
+      - ["[narratore] Adelina si aggiusta lo scialle sulle spalle, due volte, senza fretta.", "[png_adelina] Te l'ho detto. Di mia madre, e basta."]
+    effetti: {menzogna_detta: ade_anello}
+    max_usi: 2
+  - id: ade_neve_versione
+    chi: png_adelina
+    tipo: menzogna
+    quando: "un PG chiede ad Adelina della prima neve di sessant'anni fa"
+    temi: [sessant, sessanta, scappato, scappò, aspettato, aspettavi]
+    testo:
+      - "[narratore] Adelina si aggiusta lo scialle sulle spalle, due volte."
+      - "[png_adelina] Quel giorno il Morlacchi è scappato a valle. Io non l'aspettavo nemmeno."
+    varianti:
+      - ["[narratore] Adelina si aggiusta lo scialle, due volte, e guarda il fuoco.", "[png_adelina] Scappato a valle. Io non aspettavo nessuno."]
+    effetti: {menzogna_detta: ade_neve}
+    max_usi: 2
+
+  # --- confessioni: una per condizione di cede_se, ognuna con il suo cancello ---------------------------
+  - id: ade_anello_lettere
+    chi: png_adelina
+    tipo: confessione
+    quando: "in privato, un PG mostra ad Adelina le lettere della soffitta"
+    temi: [lettere, nastro, firmate, soffitta]
+    richiede: {privata: true, indizi_rivelati: [i_lettere], battute_non_usate: [ade_anello_ferro]}
+    testo:
+      - "[narratore] Adelina guarda il nastro rosso, e le mani le restano ferme sullo scialle."
+      - "[png_adelina] Me l'ha dato lui, sessant'anni fa. Al Sasso, per sposarmi alla prima neve."
+      - "[png_adelina] Mia madre portava la catenina, come tutte. L'anello è venuto dopo, e mio padre ha fatto il resto."
+    effetti: {rivela_indizi: [i_adelina_anello], fatti_noti: [f_anello_promessa]}
+    max_usi: 1
+  - id: ade_anello_ferro
+    chi: png_adelina
+    tipo: confessione
+    quando: "in privato, un PG mostra ad Adelina il ferro di cavallo inciso nell'anello"
+    temi: [ferro, inciso, incisione, fascia]
+    richiede: {privata: true, indizi_rivelati: [i_ferro_inciso], battute_non_usate: [ade_anello_lettere]}
+    testo:
+      - "[narratore] Adelina passa il pollice sul ferro di cavallo, piano, come su una cicatrice vecchia."
+      - "[png_adelina] Il ferro dei Morlacchi. Me l'ha dato lui, sessant'anni fa, per sposarmi."
+      - "[png_adelina] Mia madre portava la catenina, come tutte. L'anello è venuto dopo, e mio padre ha fatto il resto."
+    effetti: {rivela_indizi: [i_adelina_anello], fatti_noti: [f_anello_promessa]}
+    max_usi: 1
+  - id: ade_neve_lettera
+    chi: png_adelina
+    tipo: confessione
+    quando: "in privato, un PG dà ad Adelina la lettera che Ettore gli ha consegnato"
+    temi: [lettera, ceralacca, consegno, portiamo]
+    richiede: {privata: true, battute_usate: [ett_lettera_data], battute_non_usate: [ade_neve_giacca, ade_neve_tilde]}
+    testo:
+      - "[narratore] Adelina riconosce la grafia, e per un momento le manca il fiato."
+      - "[narratore] Apre la lettera con le dita che tremano, e legge muovendo le labbra."
+      - "[png_adelina] Io l'ho aspettato al Sasso fino al buio. E lui era sul passo, per mio fratello."
+      - "[png_adelina] Sessant'anni a dire che era scappato. Ettore, vecchio mulo testardo."
+    effetti: {rivela_indizi: [i_adelina_neve, i_lettera_chiusa], fatti_noti: [f_attesa_sasso]}
+    max_usi: 1
+  - id: ade_neve_giacca
+    chi: png_adelina
+    tipo: confessione
+    quando: "in privato, un PG dà ad Adelina la lettera presa dalla giacca di Ettore"
+    temi: [lettera, ceralacca, consegno, portiamo]
+    richiede: {privata: true, battute_usate: [nar_giacca_tasca], battute_non_usate: [ade_neve_lettera, ade_neve_tilde]}
+    testo:
+      - "[narratore] Adelina riconosce la grafia, e per un momento le manca il fiato."
+      - "[narratore] Apre la lettera con le dita che tremano, e legge muovendo le labbra."
+      - "[png_adelina] Io l'ho aspettato al Sasso fino al buio. E lui era sul passo, per mio fratello."
+      - "[png_adelina] Sessant'anni a dire che era scappato. Ettore, vecchio mulo testardo."
+    effetti: {rivela_indizi: [i_adelina_neve, i_lettera_chiusa], fatti_noti: [f_attesa_sasso]}
+    max_usi: 1
+  - id: ade_neve_tilde
+    chi: png_adelina
+    tipo: confessione
+    quando: "in privato, un PG ripete ad Adelina ciò che ha gridato Tilde"
+    temi: [tilde, medico, mulo, febbre]
+    richiede: {privata: true, indizi_rivelati: [i_tilde], battute_non_usate: [ade_neve_lettera, ade_neve_giacca]}
+    testo:
+      - "[narratore] Adelina resta ferma, con le chiavi strette nel pugno."
+      - "[png_adelina] Il medico sul mulo dei Morlacchi. E io al Sasso, fino al buio, ad aspettarlo."
+      - "[png_adelina] Sessant'anni a dire che era scappato. Ettore, vecchio mulo testardo."
+    effetti: {rivela_indizi: [i_adelina_neve], fatti_noti: [f_attesa_sasso]}
+    max_usi: 1
+
+  # --- momenti ----------------------------------------------------------------------------------------
+  - id: ade_scatolina
+    chi: png_adelina
+    tipo: momento
+    scena: scena_casera
+    quando: "un PG prende in mano la scatolina di noce"
+    temi: [scatolina, afferro, sollevo]
+    testo:
+      - "[narratore] Adelina vi toglie la scatolina di mano, svelta come una gatta, e la tiene aperta."
+      - "[png_adelina] Guardare sì, toccare no. È roba di casa."
+    max_usi: 1
+  - id: ade_sasso_a
+    chi: png_adelina
+    tipo: menzogna
+    scena: scena_sasso
+    quando: "al Sasso, un PG mette l'anello in mano ad Adelina"
+    temi: [consegno, restituisco, ridò, ridiamo, porgo]
+    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}, battute_non_usate: [ade_neve_lettera, ade_neve_giacca, ade_neve_tilde, ade_sasso_c]}
+    testo:
+      - "[narratore] Adelina prende l'anello, e si aggiusta lo scialle sulle spalle, due volte."
+      - "[png_adelina] Questo anello era di mia madre, Bonfanti come me."
+      - "[png_adelina] Sessant'anni fa un Morlacchi provò a portarlo via. Poi scappò a valle, con la neve."
+      - "[png_adelina] È rimasto ai Bonfanti, come la parola."
+      - "[narratore] Dalla parte dei Morlacchi, Ettore batte il bastone due volte e si rimette il cappello."
+    effetti: {menzogna_detta: ade_anello}
+    max_usi: 1
+  - id: ade_sasso_b
+    chi: png_adelina
+    tipo: momento
+    scena: scena_sasso
+    quando: "al Sasso, un PG mette l'anello in mano ad Adelina"
+    temi: [consegno, restituisco, ridò, ridiamo, porgo]
+    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}, indizi_rivelati: [i_adelina_neve], battute_non_usate: [ade_sasso_a, ade_sasso_c]}
+    testo:
+      - "[narratore] Adelina prende l'anello, lo guarda a lungo, e si toglie lo scialle."
+      - "[png_adelina] Questo anello non era di mia madre. Me l'ha dato Ettore, sessant'anni fa, per sposarmi."
+      - "[png_adelina] Io l'ho aspettato qui fino al buio. Lui era sul passo, con il medico per mio fratello."
+      - "[png_adelina] La storia giusta è questa. E da stasera, al Sasso, non racconto più io."
+    effetti: {fatti_noti: [f_anello_promessa, f_attesa_sasso]}
+    max_usi: 1
+  - id: ade_sasso_c
+    chi: png_adelina
+    tipo: momento
+    scena: scena_sasso
+    quando: "al Sasso, davanti al paese, qualcun altro racconta la storia dell'anello al posto di Adelina"
+    temi: [racconto, raccontare, racconta, vera]
+    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}, battute_non_usate: [ade_sasso_b, ade_sasso_a]}
+    testo:
+      - "[narratore] Adelina ascolta fino in fondo, senza muoversi, con il paese che la guarda."
+      - "[narratore] Poi si toglie lo scialle nero e lo piega in quattro, con cura."
+      - "[png_adelina] Bene. Il paese ha la sua storia nuova. Marta, mettilo tu."
+      - "[png_adelina] E il Prato Alto resta mio. Il formaggio buono vuole tempo."
+      - "[narratore] Scende verso il paese da sola, e nessuno la ferma."
+    max_usi: 1

@@ -8,7 +8,7 @@ nodo: n_casera
 nome: "La casera dei Bonfanti, durante la festa"
 
 # Pianta e «chi sente cosa». Va al selettore del modo B: niente segreti.
-descrizione: "La sala grande della casera, in cima al paese, con gli scaffali delle forme fino al soffitto e un camino acceso. Due tavolate lunghe: a sinistra i Bonfanti, a destra i Morlacchi, e in mezzo, per terra, una riga di forme di formaggio messa come un confine. In fondo c'è il tavolo alto degli anziani, con la scatolina di noce aperta e vuota, il Custode Ilario con la sua borsa e la vecchia Tilde. Bastiano, il garzone dei Morlacchi, siede imbronciato in fondo alla sua tavolata. Dietro il tavolo alto tre gradini scendono nella cantina delle forme, fresca e buia, che ha una porta di dietro sul vicolo. Chi sente cosa: ciò che si dice al tavolo alto lo sente tutta la sala; a una tavolata lo sente solo quella tavolata, sotto la fisarmonica; nella cantina delle forme e fuori nel vicolo non sente nessuno della sala. La sposa e sua sorella sono a casa Bonfanti, dall'altra parte del vicolo."
+descrizione: "La sala grande della casera, in cima al paese, con gli scaffali delle forme fino al soffitto e un camino acceso. Due tavolate lunghe: a sinistra i Bonfanti, a destra i Morlacchi, e in mezzo, per terra, una riga di forme di formaggio messa come un confine. In fondo c'è il tavolo alto degli anziani, con la scatolina di noce aperta e vuota, il Custode Ilario con la sua borsa e la vecchia Tilde. Bastiano, il garzone dei Morlacchi, siede imbronciato in fondo alla sua tavolata. Dietro il tavolo alto tre gradini scendono nella cantina delle forme, fresca e buia, che ha una porta di dietro sul vicolo. Chi sente cosa: ciò che si dice al tavolo alto lo sente tutta la sala; a una tavolata lo sente solo quella tavolata, sotto la musica; nella cantina delle forme e fuori nel vicolo non sente nessuno della sala. La sposa e sua sorella sono a casa Bonfanti, dall'altra parte del vicolo."
 
 # C12: scopo dall'elenco chiuso, e domanda drammatica da sì o no.
 scopo: {tipo: rivelare_indizio, rif: i_macchia}
@@ -27,7 +27,7 @@ intensita: 3
 # Esattamente tre dettagli, almeno due non visivi.
 sensi:
   - "Odore di siero caldo, di crosta di formaggio e di lana bagnata."      # olfatto
-  - "Una fisarmonica che zoppica, e sopra le voci delle due tavolate."      # udito
+  - "Il violino del paese che zoppica, e sopra le voci delle due tavolate."  # udito
   - "Il freddo che entra dalla porta a ogni ospite, con un soffio di neve." # tatto
 
 elementi_interattivi:
@@ -165,6 +165,13 @@ apertura: "Nella casera dei Bonfanti una riga di forme di formaggio divide la sa
 musica:
   tag: esplorazione_tesa
   transizione: "Verso taverna_calda quando le due case tornano a ridere insieme, per una polka o un brindisi comune."
+
+# Audio (passo 11): la deduzione sceglieva una musica «eerie» e cupa per una festa di commedia, e non
+# sentiva le voci delle tavolate. Correggo solo questo.
+audio:
+  musica: [esplorazione_tesa, humorous, mysterious, borgo]
+  ambiente: [{tag: folla, volume: 0.3}, {tag: fuoco, volume: 0.4}, {tag: neve, volume: 0.1}]
+  umore_iniziale: esplorazione_tesa
 
 immagine:
   invarianti: ["sala di pietra con scaffali di forme fino al soffitto", "camino acceso", "due tavolate lunghe con una riga di forme per terra in mezzo", "tavolo alto in fondo con una scatolina di noce aperta", "caldaio di rame lucido nell'angolo"]

@@ -1,0 +1,130 @@
+# Parole segrete della campagna «nozze-neve» (modo B, repertorio).
+#
+# Ogni voce è un'espressione che porta un segreto: un fatto con noto_ai_pg: false.
+#   parola         forma leggibile
+#   regex          Python re.search sul testo in minuscolo: cerca il legame, non la parola comune
+#   fatti          i fatti del canone che rivela: un PNG che li ha nel suo `sa` può dirla
+#   pubblica_dopo  id di indizi o battute che la rendono pubblica; lista vuota = solo se la dice un giocatore
+#   nota           commento per chi legge
+#
+# Parole pubbliche da NON mettere qui: anello, Sasso delle Promesse, campanaccio, Duchessa, ferro di cavallo
+# (i Morlacchi segnano tutto così: f_ferro_morlacchi), la storia dei Bonfanti e quella dei Morlacchi.
+
+parole:
+  # --- l'anello e la promessa (r_anello) -----------------------------------------------------------------
+  - parola: "l'anello dato da Ettore per sposarla"
+    regex: "\\bme l'ha dato (lui|ettore)\\b|\\bl'ho dato io alla bonfanti\\b|\\bper sposar(mi|la|ti)\\b"
+    fatti: [f_anello_promessa]
+    pubblica_dopo: [ade_anello_lettere, ade_anello_ferro, i_adelina_anello, ett_anello_lettere, ett_anello_ferro, i_ettore_anello, ade_sasso_b, ett_sasso_a, ett_sasso_b]
+    nota: "la verità principale: l'anello non è dei Bonfanti, è una promessa di matrimonio di Ettore. Né il narratore né i PNG senza il fatto nel sa la dicono prima della prova"
+  - parola: "le lettere d'amore della soffitta, firmate E"
+    regex: "\\blettere\\b[^.]{0,50}\\b(nastro|firmat|soffitta|cassapanca|merletti)|\\b(nastro|soffitta|cassapanca|merletti)\\w*[^.]{0,50}\\blettere\\b|\\bfirmate (con )?una e\\b"
+    fatti: [f_lettere_soffitta, f_zelia_soffitta]
+    pubblica_dopo: [nar_cassapanca, i_lettere, zel_motivo]
+    nota: "le lettere di Ettore nella cassapanca di Adelina; la scheda della soffitta dice solo «carte di famiglia»"
+  - parola: "il ferro di cavallo dentro l'anello"
+    regex: "\\bdentro\\b[^.]{0,60}\\bferro di cavallo|\\bferro (di cavallo )?inciso nell'anello"
+    fatti: [f_ferro_inciso]
+    pubblica_dopo: [nar_anello_vicino, i_ferro_inciso]
+    nota: "il segno dei Morlacchi dentro la fascia; il ferro sulla campanella è un'altra cosa (f_campanella)"
+  - parola: "la catenina delle spose Bonfanti"
+    regex: "\\bcatenin"
+    fatti: [f_catenine]
+    pubblica_dopo: [nar_libro_spose, i_catenine, ade_anello_lettere, ade_anello_ferro]
+    nota: "nel Libro del Sasso le spose Bonfanti di prima non hanno anello"
+  - parola: "aspettò al Sasso fino al buio"
+    regex: "\\bfino al buio\\b"
+    fatti: [f_attesa_sasso]
+    pubblica_dopo: [nar_libro_pagina, i_libro_notte, ett_neve_libro, ade_neve_lettera, ade_neve_giacca, ade_neve_tilde, i_adelina_neve]
+    nota: "Adelina dice che non aspettava nessuno; il Libro e le sue confessioni dicono il contrario"
+  - parola: "una A e una E incise sul Sasso"
+    regex: "\\buna a,? e una e\\b|\\ba ed e\\b"
+    fatti: [f_iniziali]
+    pubblica_dopo: [nar_iniziali_mano, nar_iniziali_custode, i_iniziali]
+    nota: "le iniziali della promessa, sotto la neve; il Sasso ha anche altre iniziali, che sono pubbliche"
+
+  # --- il giorno della prima neve di sessant'anni fa (r_passo) --------------------------------------------
+  - parola: "il medico portato su da Ettore, sul mulo dei Morlacchi"
+    regex: "\\bmedico\\b[^.]{0,60}\\b(mulo|morlacchi|ettore|portato su)|\\bmulo dei morlacchi\\b|\\bl'ho portato su io\\b|\\bsul passo\\b[^.]{0,60}\\bmedico\\b|\\bmedico per (mio|suo|tuo) fratello\\b|\\bcol medico\\b"
+    fatti: [f_ettore_medico, f_tilde_ricorda, f_ettore_tacque]
+    pubblica_dopo: [nar_tilde, i_tilde, ett_neve_libro, ett_neve_tilde, i_ettore_neve, nar_sigillo_dato, nar_sigillo_preso, i_lettera_chiusa, ade_neve_lettera, ade_neve_giacca, ade_neve_tilde, i_adelina_neve, ett_sasso_a, ett_sasso_b]
+    nota: "perché Ettore non venne al Sasso: la gentilezza nascosta. Il narratore non lo dice prima di Tilde, del Libro o della lettera"
+  - parola: "il medico non voleva salire"
+    regex: "\\bmedico\\b[^.]{0,40}\\bnon (voleva salire|saliva|sale)\\b"
+    fatti: [f_gaspare_febbre]
+    pubblica_dopo: [nar_sigillo_dato, nar_sigillo_preso, i_lettera_chiusa, ett_neve_libro, ett_neve_tilde, i_ettore_neve]
+    nota: "il motivo del viaggio di Ettore; che Gaspare da bambino fosse malato è pubblico (f_gaspare_bambino)"
+  - parola: "il giovane Morlacchi salì al Sasso a notte"
+    regex: "\\b(salito|salì|arrivato)\\b[^.]{0,30}\\ba notte\\b|\\ba notte\\b[^.]{0,40}\\b(salito|morlacchi|lanterna)"
+    fatti: [f_notte_sasso]
+    pubblica_dopo: [nar_libro_pagina, i_libro_notte, ett_neve_libro, ett_neve_tilde, i_ettore_neve]
+    nota: "la riga del Libro del Sasso, e il racconto di Ettore"
+  - parola: "la lettera chiusa nella giacca"
+    regex: "\\blettera\\b[^.]{0,40}\\b(chiusa|ceralacca|giacca|rimandat)|\\b(ceralacca|rimandat)\\w*[^.]{0,40}\\blettera\\b|\\bper adelina\\b"
+    fatti: [f_lettera_giacca, f_lettera_rimandata]
+    pubblica_dopo: [nar_giacca_tasca, nar_ettore_sasso, ett_lettera_data, i_ettore_neve, nar_sigillo_dato, nar_sigillo_preso, i_lettera_chiusa, ade_neve_lettera, ade_neve_giacca]
+    nota: "la lettera che Adelina rimandò chiusa; nella scheda della casera sta in un elemento NASCOSTA"
+  - parola: "la campanella la lasciò Ettore"
+    regex: "\\bcampanell\\w*[^.]{0,60}\\b(ettore|morlacchi|lasciò|lasciata)\\b"
+    fatti: [f_campanella]
+    pubblica_dopo: []
+    nota: "lo deducono i giocatori dal ferro di cavallo sul bordo; nessuna battuta lo dice"
+  - parola: "Ettore sale da solo al Sasso all'alba"
+    regex: "\\bda solo al sasso\\b|\\bsale\\b[^.]{0,20}\\bsasso\\b[^.]{0,30}\\balba\\b"
+    fatti: [f_ettore_alba]
+    pubblica_dopo: []
+    nota: "la conoscenza privata della mulattiera; nessuna battuta lo dice"
+
+  # --- chi ha preso l'anello oggi (r_zelia) ---------------------------------------------------------------
+  - parola: "Zelia ha preso l'anello"
+    regex: "\\bzelia\\b[^.]{0,50}\\b(pres[oa]|sfila\\w*|rubat[oa])\\b|\\bl'ho pres[oa] io\\b|\\b(pres[oa]|sfilat[oa])\\b[^.]{0,30}\\bzelia\\b"
+    fatti: [f_zelia_presa, f_gaspare_vide]
+    pubblica_dopo: [gas_alibi_privato, gas_macchia_privato, i_gaspare_vide, zel_macchia_privato, zel_promessa_privato, i_zelia_confessa]
+    nota: "la ladra è la sorella della sposa; lo zio l'ha vista e tace"
+  - parola: "l'anello nel campanaccio"
+    regex: "\\bcampanacc\\w*[^.]{0,60}\\b(anello|foglio|quaderno)\\b|\\b(anello|foglio di quaderno)\\b[^.]{0,60}\\bcampanacc|\\bnel campanaccio\\b"
+    fatti: [f_campanaccio]
+    pubblica_dopo: [nar_stalla_guardo, nar_processione_duchessa, i_campanaccio, zel_macchia_privato, zel_promessa_privato, i_zelia_confessa]
+    nota: "il nascondiglio; il campanaccio muto della Duchessa è un indizio pubblico, l'anello dentro no"
+  - parola: "la nonna deve dire al Sasso la storia vera"
+    regex: "\\bla nonna,? al sasso,? dica\\b|\\bstoria vera\\b"
+    fatti: [f_zelia_motivo]
+    pubblica_dopo: [zel_macchia_privato, zel_promessa_privato, i_zelia_confessa, nar_quaderno, i_quaderno]
+    nota: "il motivo di Zelia, che dice anche che la storia dei Bonfanti non è vera; «storie vere» al plurale, nel suo esempio di voce, non è un segreto"
+  - parola: "le impronte verso la stalla dei Bonfanti"
+    regex: "\\bimpront\\w*[^.]{0,60}\\bstalla dei bonfanti\\b|\\bstalla dei bonfanti\\b[^.]{0,60}\\bimpront"
+    fatti: [f_impronte]
+    pubblica_dopo: [nar_impronte, i_impronte]
+    nota: "le orme nel vicolo, che lo zio non ha visto o non ha voluto vedere"
+  - parola: "la macchia d'inchiostro e il capello rosso"
+    regex: "\\bmacchia d'inchiostro\\b|\\binchiostro fresco\\b|\\bcapello rosso\\b"
+    fatti: [f_macchia_inchiostro]
+    pubblica_dopo: [nar_scatolina, i_macchia]
+    nota: "le tracce sulla scatolina; le dita macchiate e la treccia rossa di Zelia sono pubbliche, il legame no"
+  - parola: "Bastiano ferrava la Gigia"
+    regex: "\\bferrav\\w*\\b|\\bferrare la (mula )?gigia\\b"
+    fatti: [f_bastiano_innocente]
+    pubblica_dopo: [nar_bastiano, ett_bastiano, i_alibi]
+    nota: "l'alibi del garzone accusato; le mani nere sono pubbliche"
+  - parola: "la paglia sul vestito di Zelia"
+    regex: "\\bpaglia\\b[^.]{0,40}\\b(vestito|zelia)\\b|\\bneve sugli scarponi\\b"
+    fatti: [f_sposa_vide]
+    pubblica_dopo: []
+    nota: "ciò che la sposa ha visto e non può dire"
+
+  # --- il Prato Alto (r_zio) -----------------------------------------------------------------------------
+  - parola: "la caparra e il contratto di Bortolo"
+    regex: "\\bcaparra\\b|\\bcontratto\\b[^.]{0,40}\\b(bortolo|pascolo|prato)\\b|\\b(bortolo|pascolo)\\b[^.]{0,40}\\bcontratto\\b|\\bventi fiorini\\b"
+    fatti: [f_caparra, f_contratto]
+    pubblica_dopo: [nar_scrittoio_cassetto, nar_borsa_garzone, i_contratto, gas_prato_contratto, i_gaspare_prato]
+    nota: "il pascolo già venduto; l'aggancio pubblico del garzone parla solo di «carte» e di «una firma»"
+  - parola: "la caparra spesa nel caldaio"
+    regex: "\\bcaldaio\\b[^.]{0,60}\\b(caparra|anticipo)\\b|\\b(caparra|anticipo)\\b[^.]{0,60}\\bcaldaio\\b"
+    fatti: [f_caparra_spesa]
+    pubblica_dopo: [gas_prato_contratto, i_gaspare_prato]
+    nota: "che il caldaio sia nuovo e pagato in contanti è pubblico; da dove venivano i soldi no"
+  - parola: "Gaspare vuole che le nozze saltino"
+    regex: "\\b(nozze|matrimonio)\\b[^.]{0,30}\\bsalt(ino|are|ano|ate)\\b"
+    fatti: [f_gaspare_vuole]
+    pubblica_dopo: [gas_prato_contratto, i_gaspare_prato, gas_contratto_sorella, gas_silenzio]
+    nota: "il motivo del cattivo"

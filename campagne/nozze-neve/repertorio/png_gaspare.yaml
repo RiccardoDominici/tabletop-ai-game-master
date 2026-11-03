@@ -1,0 +1,207 @@
+# Repertorio di Gaspare Bonfanti, lo zio della sposa e contabile della casera. Voce lucian.
+# Lei a tutti, il voi al gruppo; non alza mai la voce. Frasi di sei-dodici parole, lessico di conti.
+# Tic: «Facciamo due conti.» Segnale quando mente: si toglie gli occhiali e li pulisce sul panciotto.
+# Menzogne registrate: gas_bastiano = «chi era vicino alla scatolina a mezzogiorno»; gas_prato = «il Prato Alto».
+# Non dice mai «caparra»: dice «un piccolo anticipo».
+
+battute:
+
+  # --- esempi di voce (solo_esempio): niente segreti ---------------------------------------------------
+  - id: gas_saluto
+    chi: png_gaspare
+    tipo: saluto
+    solo_esempio: true
+    quando: "i PG salutano Gaspare"
+    temi: [saluto]
+    testo:
+      - "[narratore] Gaspare si toglie la matita da dietro l'orecchio e annota qualcosa, sorridendo."
+      - "[png_gaspare] Benvenuti, benvenuti. Lo chiedo per i bicchieri: quanti siete, di preciso?"
+    max_usi: 1
+  - id: gas_rifiuto
+    chi: png_gaspare
+    tipo: rifiuto
+    solo_esempio: true
+    quando: "un PG chiede a Gaspare di cose che non sa o non dice"
+    temi: [domanda]
+    testo:
+      - "[png_gaspare] Con rispetto parlando, di questo non tengo i conti. Chieda altrove, prego."
+    max_usi: 1
+  - id: gas_domanda_gentile
+    chi: png_gaspare
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG chiede a Gaspare della festa"
+    temi: [gentile]
+    testo:
+      - "[png_gaspare] Centoventi ospiti, trecento bicchieri e un anello di meno. Facciamo due conti."
+    max_usi: 1
+  - id: gas_accusa
+    chi: png_gaspare
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG accusa Gaspare"
+    temi: [accuso]
+    testo:
+      - "[narratore] Gaspare si offende, e diventa lentissimo."
+      - "[png_gaspare] Io tengo i conti di questa casa da quarant'anni. Con rispetto parlando."
+    max_usi: 1
+  - id: gas_minaccia
+    chi: png_gaspare
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG minaccia Gaspare"
+    temi: [minaccia]
+    testo:
+      - "[png_gaspare] Abbassi la voce, prego. Mia sorella ha le chiavi, e una memoria lunghissima."
+    max_usi: 1
+  - id: gas_offerta
+    chi: png_gaspare
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG offre a Gaspare denaro o un patto"
+    temi: [soldi]
+    testo:
+      - "[png_gaspare] Un patto si scrive, e si firma con calma. Non stasera, magari."
+    max_usi: 1
+  - id: gas_aiuto
+    chi: png_gaspare
+    tipo: reazione
+    solo_esempio: true
+    quando: "un PG offre aiuto a Gaspare"
+    temi: [aiuto]
+    testo:
+      - "[png_gaspare] Mi aiuti a tenere i Morlacchi lontani dal tavolo alto. Il resto è contabilità."
+    max_usi: 1
+
+  # --- selezionabili: menzogne -------------------------------------------------------------------------
+  - id: gas_bastiano_versione
+    chi: png_gaspare
+    tipo: menzogna
+    quando: "un PG chiede a Gaspare chi era vicino alla scatolina a mezzogiorno"
+    temi: [mezzogiorno, visto, brindisi, sospetti, sospetto]
+    testo:
+      - "[narratore] Gaspare si toglie gli occhiali e li pulisce sul panciotto."
+      - "[png_gaspare] Ho visto il garzone dei Morlacchi girare intorno al tavolo alto. Lo dico con dispiacere, si capisce."
+    varianti:
+      - ["[narratore] Gaspare si toglie gli occhiali, e li pulisce sul panciotto, piano.", "[png_gaspare] Il garzone dei Morlacchi, gliel'ho detto. Con dispiacere."]
+    effetti: {menzogna_detta: gas_bastiano}
+    max_usi: 2
+  - id: gas_prato_versione
+    chi: png_gaspare
+    tipo: menzogna
+    quando: "un PG chiede a Gaspare del Prato Alto o della dote"
+    temi: [prato, pascolo, dote, bortolo, mercante]
+    testo:
+      - "[narratore] Gaspare si toglie gli occhiali e li pulisce sul panciotto."
+      - "[png_gaspare] Il Prato Alto è la dote di Agnese. Io ne sono felicissimo, si capisce."
+    varianti:
+      - ["[narratore] Gaspare si pulisce di nuovo gli occhiali sul panciotto.", "[png_gaspare] La dote è la dote. Felicissimo, gliel'ho detto."]
+    effetti: {menzogna_detta: gas_prato}
+    max_usi: 2
+
+  # --- confessioni: una per condizione di cede_se, ognuna con il suo cancello ---------------------------
+  - id: gas_alibi_privato
+    chi: png_gaspare
+    tipo: confessione
+    quando: "in privato, un PG dimostra a Gaspare che Bastiano a mezzogiorno ferrava un mulo"
+    temi: [bastiano, ferrava, alibi, garzone]
+    richiede: {privata: true, indizi_rivelati: [i_alibi], battute_non_usate: [gas_macchia_privato]}
+    testo:
+      - "[narratore] Gaspare rimette gli occhiali, li toglie, li rimette."
+      - "[png_gaspare] Va bene. Il garzone non c'entra, e io lo sapevo."
+      - "[png_gaspare] A mezzogiorno ho visto Zelia prendere l'anello dalla scatolina. Ho taciuto, si capisce."
+    effetti: {rivela_indizi: [i_gaspare_vide], fatti_noti: [f_gaspare_vide, f_zelia_presa]}
+    max_usi: 1
+  - id: gas_macchia_privato
+    chi: png_gaspare
+    tipo: confessione
+    quando: "in privato, un PG mostra a Gaspare la macchia d'inchiostro e il capello rosso"
+    temi: [macchia, inchiostro, capello, rosso]
+    richiede: {privata: true, indizi_rivelati: [i_macchia], battute_non_usate: [gas_alibi_privato]}
+    testo:
+      - "[narratore] Gaspare guarda il velluto a lungo, poi la sua matita."
+      - "[png_gaspare] Inchiostro e un capello rosso. Facciamo due conti, allora."
+      - "[png_gaspare] A mezzogiorno ho visto Zelia prendere l'anello dalla scatolina. Ho taciuto, si capisce."
+    effetti: {rivela_indizi: [i_gaspare_vide], fatti_noti: [f_gaspare_vide, f_zelia_presa]}
+    max_usi: 1
+  - id: gas_prato_contratto
+    chi: png_gaspare
+    tipo: confessione
+    quando: "in privato, un PG mostra a Gaspare il contratto di Sior Bortolo"
+    temi: [contratto, bortolo, caparra, firma]
+    richiede: {privata: true, indizi_rivelati: [i_contratto]}
+    testo:
+      - "[narratore] Gaspare diventa lentissimo, e dice le cifre a mezza voce."
+      - "[png_gaspare] Venti fiorini di anticipo. Il caldaio nuovo. La casa senza un soldo."
+      - "[png_gaspare] Se le nozze si benedicono, il prato va agli sposi. E io devo rendere soldi che non ho."
+    effetti: {rivela_indizi: [i_gaspare_prato], fatti_noti: [f_caparra, f_caparra_spesa, f_gaspare_vuole]}
+    max_usi: 1
+
+  # --- momenti: se lo zio ha trovato l'anello (o_zio al completo) --------------------------------------
+  - id: gas_contratto_sorella
+    chi: png_gaspare
+    tipo: momento
+    quando: "un PG mostra a Gaspare il contratto di Bortolo e gli chiede l'anello"
+    temi: [contratto, bortolo, taschino, restituisca]
+    richiede: {orologio: {id: o_zio, min: 4, max: 4}, indizi_rivelati: [i_contratto], battute_non_usate: [gas_colto, gas_silenzio]}
+    testo:
+      - "[narratore] Gaspare si toglie gli occhiali, e per una volta non li pulisce."
+      - "[png_gaspare] Ho sbagliato i conti, con rispetto parlando. Tutti quanti."
+      - "[narratore] Dal taschino del panciotto tira fuori l'anello, e lo posa nella mano più vicina."
+    effetti: {fatti_noti: [f_gaspare_vuole]}
+    max_usi: 1
+  - id: gas_colto
+    chi: png_gaspare
+    tipo: momento
+    quando: "un PG coglie Gaspare con le dita nel taschino del panciotto, davanti ad altri"
+    temi: [taschino, panciotto, tasca]
+    richiede: {orologio: {id: o_zio, min: 4, max: 4}, battute_non_usate: [gas_contratto_sorella, gas_silenzio]}
+    testo:
+      - "[narratore] Le dita di Gaspare escono dal taschino, e con loro l'anello."
+      - "[png_gaspare] Facciamo due conti. Non qui, la prego."
+    max_usi: 1
+  - id: gas_silenzio
+    chi: png_gaspare
+    tipo: momento
+    quando: "in privato, un PG promette a Gaspare il silenzio sul Prato Alto in cambio dell'anello"
+    temi: [prometto, silenzio, taccio, patto]
+    richiede: {privata: true, orologio: {id: o_zio, min: 4, max: 4}, battute_non_usate: [gas_contratto_sorella, gas_colto]}
+    testo:
+      - "[narratore] Gaspare guarda la porta, poi voi, poi di nuovo la porta."
+      - "[png_gaspare] Silenzio con la sorella, e il paese non sa niente. Affare fatto."
+      - "[narratore] Dal taschino tira fuori l'anello, avvolto in un angolo di carta a righe."
+    effetti: {fatti_noti: [f_gaspare_vuole]}
+    max_usi: 1
+
+  - id: gas_campanella
+    chi: png_gaspare
+    tipo: momento
+    scena: scena_casa_bonfanti
+    quando: "un PG chiede a Gaspare della campanella d'ottone del camino"
+    temi: [campanella, ottone]
+    testo:
+      - "[png_gaspare] Me la regalò nostro padre, quando guarii dalla febbre. Avevo sei anni."
+    max_usi: 1
+
+  # --- momenti del Sasso -------------------------------------------------------------------------------
+  - id: gas_rimandare
+    chi: png_gaspare
+    tipo: momento
+    scena: scena_sasso
+    quando: "al Sasso il sole scende, e nessuno ha l'anello in mano"
+    temi: [rimandare, rimandiamo, aspettiamo, primavera]
+    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}}
+    testo:
+      - "[png_gaspare] Con rispetto parlando, sorella, senza anello è meglio aspettare."
+      - "[png_gaspare] La primavera arriva per tutti. Anche per i conti."
+    max_usi: 1
+  - id: gas_occhiali
+    chi: png_gaspare
+    tipo: momento
+    quando: "un PG racconta a Gaspare la notte della sua febbre, sessant'anni fa"
+    temi: [medico, febbre, salvato, salvò]
+    richiede: {indizi_rivelati: [i_ettore_neve]}
+    testo:
+      - "[narratore] Gaspare si toglie gli occhiali, e li guarda a lungo senza pulirli."
+      - "[png_gaspare] Il mulo dei Morlacchi. E io ho accusato il loro garzone."
+    max_usi: 1

@@ -13,9 +13,11 @@ aspetto:
   lettura: "Un uomo grosso e un po' curvo, di ottant'anni, con la barba bianca da caprone. Porta un cappello di feltro con la piuma, un bastone di nocciolo e la fibbia a ferro di cavallo."
   invarianti: ["ottant'anni", "grosso e un po' curvo", "barba bianca lunga", "cappello di feltro con una piuma di gallo", "fibbia della cintura a ferro di cavallo", "bastone di nocciolo"]
   prompt_immagine: "big slightly stooped 80-year-old mule driver, long white goat-like beard, felt hat with a rooster feather, thick wool jacket, belt buckle shaped like a horseshoe, hazel walking stick, gruff weathered face with kind eyes, snowy mule yard behind him, [STILE]"
+  situazioni:
+    - {id: lettera_in_mano, dopo: [nar_giacca_tasca, ett_lettera_data], prompt: "the old mule driver alone in the snow at dusk, turning a yellowed folded letter sealed with red wax in his big hands, hat in his other hand"}
 
 personalita:
-  superficie: ["burbero e rumoroso, batte il bastone per farsi sentire", "fa finta di non sentire ciò che non gli piace", "generoso con le bestie, e con le persone solo di nascosto"]
+  superficie: ["burbero e rumoroso, batte il bastone per farsi sentire", "fa finta di non sentire ciò che non gli piace", "generoso con le bestie, di poche parole con le persone"]
   sotto_pressione: ["diventa zitto e immobile, con le mani sul bastone", "se lo commuovono, si arrabbia con il cappello e lo strapazza"]
   contraddizione: "Grida che i Bonfanti sono ladri, e ogni prima neve sale al Sasso da solo, prima dell'alba."
 
@@ -70,7 +72,7 @@ mente_su:
   - id: ett_anello
     argomento: "di chi è l'anello e come l'ha avuto la Bonfanti"
     verita: f_anello_promessa
-    versione: "È nostro, l'anello. La Bonfanti se l'è tenuto. Come una ladra."
+    versione: "È nostro, l'anello. La Bonfanti se l'è tenuto, come una ladra."
     perche: "Dire che gliel'ha dato lui vuol dire dire che voleva sposarla, e che lei, così crede, non è nemmeno salita al Sasso."
     segnale: "si tira la barba con tutte e due le mani"
     cede_se: "In privato, quando un PG gli mostra le lettere della soffitta: lei le ha tenute, legate con il nastro. Oppure in privato, quando un PG gli mostra il ferro di cavallo inciso dentro l'anello e gli chiede di chi era."
