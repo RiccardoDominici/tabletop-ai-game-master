@@ -167,6 +167,9 @@ nell'ordine in cui le incontro; in fondo, i tempi e la classifica dei problemi p
    DNS; tutti e tre i candidati di ogni luogo venivano da lì, senza un'altra fonte di riserva). Il rapporto
    elenca bene ciò che manca, ma la riga finale e l'uscita 0 dicono il contrario. *Proposta*: «pronta» solo
    senza mancanti essenziali, e un candidato da un'altra fonte (o dalla cache) quando una fonte è giù.
+   Al terzo giro, con incompetech.com di nuovo raggiungibile, i due brani sono arrivati: era un guasto
+   passeggero. Proprio per questo, **una fonte giù per un po' non deve bastare a dichiarare «pronta da giocare»**:
+   il rapporto deve dire «non pronta, riprova più tardi», non «pronta» con due buchi.
 
 ## Tempi, a grandi linee (dall'orologio dei comandi e dai commit)
 

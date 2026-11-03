@@ -2,7 +2,7 @@
   "versione": 1,
   "campagna": "nozze-neve",
   "formato": "AAC-LC in .m4a, 48 kHz, stereo; i loop vanno da loop_inizio_s a loop_fine_s (mezzo secondo di margine prima e dopo)",
-  "aggiornato": "2026-11-03 10:56:25",
+  "aggiornato": "2026-11-03 11:00:12",
   "brani": [
     {
       "id": "luogo_e_tramonto",
@@ -22,6 +22,44 @@
       "licenza": "CC BY 4.0",
       "crediti": "\"Virtutes Vocis\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
       "alias_di": "luogo_scena_sasso"
+    },
+    {
+      "id": "luogo_n_casa_bonfanti",
+      "tipo": "musica",
+      "luogo": "n_casa_bonfanti",
+      "file": "luogo_scena_casa_bonfanti.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 134.25,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 133.75,
+      "titolo": "Duet Musette",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Duet%20Musette.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Duet Musette\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "alias_di": "luogo_scena_casa_bonfanti"
+    },
+    {
+      "id": "luogo_n_casera",
+      "tipo": "musica",
+      "luogo": "n_casera",
+      "file": "luogo_scena_casera.m4a",
+      "loop": true,
+      "lufs": -22.9,
+      "volume": 1.0,
+      "durata_s": 115.25,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 114.75,
+      "titolo": "Frost Waltz",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Frost%20Waltz.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Frost Waltz\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "alias_di": "luogo_scena_casera"
     },
     {
       "id": "luogo_n_sasso",
@@ -174,6 +212,161 @@
         },
         "codec": "aac 128k",
         "kb": 2520,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "luogo_scena_casa_bonfanti",
+      "tipo": "musica",
+      "luogo": "scena_casa_bonfanti",
+      "file": "luogo_scena_casa_bonfanti.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 134.25,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 133.75,
+      "titolo": "Duet Musette",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Duet%20Musette.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Duet Musette\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 4.93,
+        "perche": {
+          "umore": 1.6,
+          "antico": 0.8,
+          "genere": 0.3,
+          "tavolozza": 1.4,
+          "ambientazione": 0.6,
+          "varieta": 0.23
+        },
+        "descrittori": {
+          "umore": "esplorazione_tesa",
+          "energia": "media",
+          "ambientazioni": [
+            "casa",
+            "borgo"
+          ],
+          "ora": null,
+          "meteo": [
+            "neve",
+            "gelo"
+          ],
+          "interno": true,
+          "parole": []
+        },
+        "feel": [
+          "Dark",
+          "Mysterious"
+        ],
+        "strumenti": "Accordion, Violin",
+        "bpm": 60,
+        "scartati": []
+      },
+      "loop_sorgente": {
+        "inizio_s": 3.1,
+        "fine_s": 136.35,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 134.25,
+        "lufs": -23.0,
+        "lra": 4.2,
+        "true_peak_db": -7.0,
+        "picco_db": -7.014488,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 20.0,
+          "rapporto_salto": 0.29,
+          "salto_livello_db": 1.97,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 2179,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "luogo_scena_casera",
+      "tipo": "musica",
+      "luogo": "scena_casera",
+      "file": "luogo_scena_casera.m4a",
+      "loop": true,
+      "lufs": -22.9,
+      "volume": 1.0,
+      "durata_s": 115.25,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 114.75,
+      "titolo": "Frost Waltz",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Frost%20Waltz.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Frost Waltz\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 5.94,
+        "perche": {
+          "umore": 1.1,
+          "parole_umore": 1.5,
+          "parola_chiave": 1.0,
+          "genere": 0.3,
+          "tavolozza": 1.4,
+          "parole_esplicite": 0.6,
+          "varieta": 0.04
+        },
+        "descrittori": {
+          "umore": "esplorazione_tesa",
+          "energia": "media",
+          "ambientazioni": [
+            "borgo"
+          ],
+          "ora": null,
+          "meteo": [
+            "neve"
+          ],
+          "interno": true,
+          "parole": [
+            "humorous",
+            "mysterious"
+          ]
+        },
+        "feel": [
+          "Calming",
+          "Mysterious",
+          "Mystical"
+        ],
+        "strumenti": "Celesta, Glockenspiel, Basses, Cellos, Violas, Violins, French Horns",
+        "bpm": 99,
+        "scartati": []
+      },
+      "loop_sorgente": {
+        "inizio_s": 4.25,
+        "fine_s": 118.5,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 115.25,
+        "lufs": -22.9,
+        "lra": 11.5,
+        "true_peak_db": -7.0,
+        "picco_db": -7.044131,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 23.4,
+          "rapporto_salto": 0.66,
+          "salto_livello_db": 0.16,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 1875,
         "normalizzazione": "linear"
       }
     },
@@ -1569,6 +1762,8 @@
     "\"Virtutes Vocis\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Galway\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Master of the Feast\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Frost Waltz\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Duet Musette\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Curse of the Scarab\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Mary Celeste\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Movement Proposition\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
