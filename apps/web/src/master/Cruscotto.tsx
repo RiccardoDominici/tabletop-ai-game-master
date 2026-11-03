@@ -4,7 +4,7 @@
  * - sinistra: scena e luogo, audio (musica, umori, effetti), situazioni, orologi (cosa c'è sul
  *   proiettore e cosa incombe);
  * - centro: finestra, azioni, trascrizione (cosa succede adesso al tavolo);
- * - destra: note di regia, repertorio (solo modalità B), registro dei comandi.
+ * - destra: note di regia, repertorio (solo modalità B), sessione salvata, registro dei comandi.
  * Sotto i 1280 px le colonne diventano due e la pagina scorre intera.
  */
 import type { StatoMaster } from '@cantastorie/shared';
@@ -18,6 +18,7 @@ import { SezioneTrascrizione } from './SezioneTrascrizione';
 import { SezioneNote } from './SezioneNote';
 import { SezioneRepertorio } from './SezioneRepertorio';
 import { SezioneEventi } from './SezioneEventi';
+import { SezioneSessione } from './SezioneSessione';
 
 const COLONNA = 'flex min-h-0 flex-col gap-3 xl:overflow-y-auto xl:pr-1';
 
@@ -41,6 +42,7 @@ export function Cruscotto({ stato }: { stato: StatoMaster }) {
       <div className={`${COLONNA} lg:col-span-2 xl:col-span-1`}>
         <SezioneNote stato={stato} />
         {stato.repertorio !== null && <SezioneRepertorio repertorio={stato.repertorio} />}
+        <SezioneSessione stato={stato} />
         {/* Il registro prende lo spazio che resta e scorre dentro di sé (almeno 14rem). */}
         <SezioneEventi eventi={stato.eventi} className="max-h-[60vh] min-h-56 xl:max-h-none xl:flex-1" />
       </div>

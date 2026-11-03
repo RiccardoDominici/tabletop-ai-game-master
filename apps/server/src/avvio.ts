@@ -191,7 +191,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   collegaMaster(app.io, regia, controlliMaster, tokenMaster, log.child({ modulo: 'master' }));
   // Segnali audio automatici (narratore, battute) nel registro del pannello.
   regia.suCueAudio((e) => controlliMaster.registraAutomatico(e));
-  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, audio: audio.numero, ...regia.infoSessione }), immagini, audio);
+  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, audio: audio.numero, ...regia.infoSessione, ripresa: regia.infoRegistro.inAttesaDiRipresa }), immagini, audio);
 
   return {
     app,
@@ -220,7 +220,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       voce.ferma();
       // Lo spegnimento non è un evento di gioco: il registro resta all'ultimo stato giocato.
       memoria?.sospendi();
-      regia.ferma('arresto');
+      regia.spegni();
       archivio?.chiudi();
       app.io.close();
       await app.http.close();

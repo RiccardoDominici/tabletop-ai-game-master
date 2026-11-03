@@ -3,12 +3,13 @@
 # (solo se richiesta), compila le pagine, avvia il server e stampa i tre indirizzi da aprire:
 # proiettore, telefoni, pannello del master (col suo token).
 #
-#   scripts/partita.sh <campagna> [--modo A|B] [--voce finta|qwen]
+#   scripts/partita.sh <campagna> [--modo A|B] [--voce finta|qwen] [--nuova]
 #
 #   <campagna>   cartella in campagne/ (es. prova-f0, ponte-lanterne)
 #   --modo B     (predefinito) repertorio: battute pre-scritte scelte da Haiku; A: improvvisa tutto
 #   --voce finta (predefinito) voce finta, nessun servizio da caricare; qwen: voce locale Qwen3-TTS
 #                (fino a 7 GB di RAM, qualche minuto di caricamento la prima volta)
+#   --nuova      ricomincia da capo: senza, se c'è una partita salvata di questa campagna la riprende
 #
 # Il narratore è sempre Haiku vero (la chiave la legge apps/server/src/llm/chiave.ts).
 # Server: variabili CANTASTORIE_CAMPAGNA e CANTASTORIE_MODO (vedi apps/server/src/config.ts).
@@ -25,18 +26,19 @@ export CANTASTORIE_PORTA="$PORTA"
 if [[ "$PORTA" == "4610" ]]; then DIR_LOG="$RADICE/logs"; else DIR_LOG="$RADICE/logs/porta-$PORTA"; fi
 
 uso() {
-  echo "uso: scripts/partita.sh <campagna> [--modo A|B] [--voce finta|qwen]"
+  echo "uso: scripts/partita.sh <campagna> [--modo A|B] [--voce finta|qwen] [--nuova]"
   echo "campagne disponibili: $(ls "$RADICE/campagne" | tr '\n' ' ')"
   exit 2
 }
 
 [[ $# -ge 1 ]] || uso
 CAMPAGNA="$1"; shift
-MODO="B"; VOCE="finta"
+MODO="B"; VOCE="finta"; NUOVA=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --modo) MODO="${2:-}"; shift 2 || uso ;;
     --voce) VOCE="${2:-}"; shift 2 || uso ;;
+    --nuova) NUOVA=1; shift ;;
     -h|--help) uso ;;
     *) echo "opzione sconosciuta: $1"; uso ;;
   esac
@@ -91,7 +93,9 @@ fi
 echo "3/4  Fermo le istanze vecchie, compilo le pagine e avvio il server…"
 export CANTASTORIE_CAMPAGNA="$CAMPAGNA"
 export CANTASTORIE_MODO="$MODO_SERVER"
-unset CANTASTORIE_LLM CANTASTORIE_IMMAGINI CANTASTORIE_CARTELLA_CAMPAGNA
+unset CANTASTORIE_LLM CANTASTORIE_IMMAGINI CANTASTORIE_CARTELLA_CAMPAGNA CANTASTORIE_NUOVA_SESSIONE
+# La partita si salva da sola: senza --nuova riprende quella in corso (dopo un riavvio, un crash…).
+[[ "$NUOVA" == "1" ]] && export CANTASTORIE_NUOVA_SESSIONE=1
 if ! "$RADICE/scripts/avvio.sh" "${OPZIONI_AVVIO[@]}" > "$DIR_LOG/partita.out" 2>&1; then
   echo
   echo "Il server non è partito. Ultime righe:"
@@ -106,12 +110,14 @@ telefono="$(printf '%s' "$info" | node -e 'let s="";process.stdin.on("data",d=>s
 master="$(grep '^  Master:' "$DIR_LOG/partita.out" | awk '{print $2}')"
 salute="$(curl -s --max-time 3 "http://127.0.0.1:$PORTA/api/salute")"
 voce_in_uso="$(printf '%s' "$salute" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const v=JSON.parse(s).voce;console.log(v==="qwen"?"Qwen locale":"finta")})')"
+ripresa="$(printf '%s' "$salute" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const r=JSON.parse(s).ripresa;console.log(r?`Riprende la partita salvata dal turno ${r.turno} (per ricominciare: --nuova)`:"Partita nuova")})')"
 
 cat <<FINE
 
 ==================================================================
   Cantastorie — partita pronta
   Campagna: $CAMPAGNA   ·   modo $MODO ($MODO_SERVER)   ·   voce: $voce_in_uso
+  $ripresa
 ==================================================================
 
   PROIETTORE (su questo Mac, collegato al proiettore e alla cassa):

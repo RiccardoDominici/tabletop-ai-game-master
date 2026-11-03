@@ -26,6 +26,9 @@ if [[ "$PORTA" != "4610" ]]; then
   DIR_LOG="$RADICE/logs/porta-$PORTA"
   export CANTASTORIE_LOG="$DIR_LOG"
   export CANTASTORIE_WEB="$DIR_LOG/web"
+  # Un'istanza di prova parte da capo, salvo chi chiede di riprendere (CANTASTORIE_NUOVA_SESSIONE=0).
+  export CANTASTORIE_NUOVA_SESSIONE="${CANTASTORIE_NUOVA_SESSIONE:-1}"
+  [[ "$CANTASTORIE_NUOVA_SESSIONE" == "0" ]] && unset CANTASTORIE_NUOVA_SESSIONE
 else
   DIR_LOG="$RADICE/logs"
 fi

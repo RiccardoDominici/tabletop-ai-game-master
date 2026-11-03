@@ -181,6 +181,8 @@ export class Regia {
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
+  /** Il server si sta spegnendo: niente più notifiche ai client. */
+  private spento = false;
   /** Telefono (token del dispositivo) → PG: alla riconnessione, anche dopo un riavvio, il PG torna. */
   private readonly dispositivi = new Map<string, string>();
   /** Sessione ripresa dal registro, in attesa del proiettore per ripartire (null = niente da riprendere). */
@@ -741,6 +743,7 @@ export class Regia {
   }
 
   private notifica(): void {
+    if (this.spento) return;
     this.versioneStato += 1;
     this.uscita?.stato(this.stato());
     for (const f of this.ascoltatori) f();
@@ -862,6 +865,18 @@ export class Regia {
     this.notifica();
     if (motivo !== 'arresto') this.salva('fermata');
     return { ok: true };
+  }
+
+  /**
+   * Spegnimento del server: si fermano LLM, voce e timer, senza toccare lo stato del gioco e senza
+   * dirlo ai client (la sessione salvata riprenderà da qui; i telefoni vedranno solo la connessione
+   * che cade e torna, non una «scena fermata»).
+   */
+  spegni(): void {
+    this.spento = true;
+    this.interrompiFlussi('arresto');
+    this.tavolo.spegni();
+    this.o.log.info({ turno: this.turno, fase: this.fase }, 'scena: server in spegnimento');
   }
 
   ricomincia(): Esito {

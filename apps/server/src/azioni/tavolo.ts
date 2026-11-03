@@ -865,6 +865,14 @@ export class TavoloAzioni {
     else this.controlla();
   }
 
+  /** Spegnimento del server: i timer della finestra si fermano, lo stato resta com'è (niente notifiche). */
+  spegni(): void {
+    this.annullaControllo?.();
+    this.annullaControllo = null;
+    this.annullaStallo?.();
+    this.annullaStallo = null;
+  }
+
   /** Ricomincia: dimentica tutto. */
   azzera(): void {
     this.inPausa = false;
