@@ -18,7 +18,8 @@ Per ogni scena in cui un PNG è presente, si genera in automatico anche la sua i
 1. **In inglese** `prompt_luogo`, `prompt_immagine`, `prompt_ritratto` e `situazioni[].prompt` (il
    generatore li capisce meglio) [V avviso]. Le invarianti in italiano vanno bene.
 2. **`[STILE]`** compare in `prompt_immagine` e in `prompt_ritratto` come segnaposto, una volta sola [V]. `stile_immagini` è il
-   suo contenuto: tecnica, tavolozza, luce. Aggiungi sempre «no text, no lettering».
+   suo contenuto: tecnica, tavolozza, luce. Il formato del proiettore (full-bleed, niente margini, firme,
+   testo o lettere) lo accoda lo strumento a ogni prompt (`strumenti/immagini/formato.py`): non scriverlo qui.
 3. **Tratti fissi**: età, corporatura, capelli, un capo d'abbigliamento riconoscibile, un oggetto.
    Le invarianti sono almeno tre [V] e devono essere **visibili a prima vista**.
 4. **Niente segreti**. Le immagini vanno sul proiettore dal primo turno:

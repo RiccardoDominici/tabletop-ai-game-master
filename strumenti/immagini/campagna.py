@@ -35,6 +35,8 @@ from pathlib import Path
 
 import yaml
 
+from formato import con_formato
+
 log = logging.getLogger("immagini.campagna")
 
 SEGNAPOSTO_STILE = "[STILE]"
@@ -80,11 +82,15 @@ def seme_da_id(ident: str) -> int:
 
 
 def con_stile(prompt: str, stile: str) -> str:
-    """Sostituisce il segnaposto [STILE]; se manca, lo accoda. Mai due volte."""
+    """Sostituisce il segnaposto [STILE] (se manca, lo accoda; mai due volte), poi accoda il formato.
+
+    Il formato del proiettore (full-bleed, niente margini, firme o scritte) è dello strumento, non della
+    campagna: vedi formato.py. Viene per ultimo e non ripete ciò che la carta di stile dice già.
+    """
     prompt = prompt.strip().rstrip(",. ")
     if SEGNAPOSTO_STILE in prompt:
-        return prompt.replace(SEGNAPOSTO_STILE, stile)
-    return f"{prompt}, {stile}"
+        return con_formato(prompt.replace(SEGNAPOSTO_STILE, stile))
+    return con_formato(f"{prompt}, {stile}")
 
 
 def _yaml(percorso: Path) -> dict:
