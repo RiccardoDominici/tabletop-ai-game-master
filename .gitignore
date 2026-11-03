@@ -10,3 +10,6 @@ data/sessioni/
 .DS_Store
 *.log
 cache/
+
+# Provini audio (si rigenerano con strumenti/audio/provino.py, pesano decine di MB)
+esperimenti/audio/*.wav

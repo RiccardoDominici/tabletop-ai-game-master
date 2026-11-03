@@ -1,0 +1,9 @@
+# Ambiente dello strumento audio (Python 3.12, Apple Silicon). Lo crea setup.sh:
+#   uv venv --python 3.12 strumenti/audio/.venv
+#   uv pip install --python strumenti/audio/.venv/bin/python -r strumenti/audio/requirements.txt
+# ffmpeg NON si installa da qui: si usa quello di sistema (/opt/homebrew/bin/ffmpeg).
+numpy>=2.0
+pyyaml>=6.0
+# Sintetizzatore SoundFont con la libreria nativa dentro la ruota (niente FluidSynth di sistema).
+# Si porta dietro pyaudio, che non usiamo (la resa è offline).
+tinysoundfont==0.3.7
