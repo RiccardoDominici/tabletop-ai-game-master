@@ -9,7 +9,7 @@
  *   E2E_URL=http://localhost:4622 npx playwright test e2e/audio.spec.ts
  *
  * Il pannello del master (seconda prova) vuole il token del server di prova in E2E_MASTER_TOKEN
- * (CANTASTORIE_MASTER_TOKEN all'avvio). Senza il catalogo di prova (server normale) si saltano. Lo schermo usa
+ * (CANTASTORIE_MASTER_TOKEN all'avvio). Senza il catalogo di prova (server normale, anche prova-f0 con l'audio vero) si saltano. Lo schermo usa
  * `?isteresi_audio_s=12`: le regole sono quelle vere, con un intervallo corto.
  * Screenshot 1920x1080 in logs/screenshots/audio-*.png; nessun errore in console.
  */
@@ -55,6 +55,14 @@ const guadagni = (p: Page) => p.evaluate(() => (window as unknown as FinestraDeb
 const salute = async (p: Page) => (await (await p.request.get('/api/salute')).json()) as { fase: string; turno: number; audio?: number };
 const luogo = (p: Page, id: string) => p.request.post('/api/scena/luogo', { data: { luogo: id } });
 const umore = (p: Page, tag: string | null) => p.request.post('/api/scena/umore', { data: { umore: tag } });
+/**
+ * Il server ha il catalogo di PROVA (test/fixtures/audio)? prova-f0 ora ha anche l'audio vero
+ * della pipeline: con quello queste prove (che contano su id e volumi della fixture) si saltano.
+ */
+const catalogoDiProva = async (p: Page) => {
+  const c = (await (await p.request.get('/api/audio')).json()) as { tracce: Record<string, unknown> };
+  return 'amb_n_piazza_vento' in c.tracce && 'amb_scena_forno_vecchio_folla' in c.tracce;
+};
 
 const FORNO = ['amb_scena_forno_vecchio_folla', 'amb_scena_forno_vecchio_fuoco'];
 
@@ -65,7 +73,7 @@ test('proiettore: musica con dissolvenza e isteresi, ambienti, tema del PNG una 
   const schermo = await (await browser.newContext({ viewport: { width: 1920, height: 1080 } })).newPage();
   schermo.on('console', (m) => m.type() === 'error' && errori.push(m.text()));
   schermo.on('pageerror', (e) => errori.push(e.message));
-  test.skip(((await salute(schermo)).audio ?? 0) < 10, 'serve il server con CANTASTORIE_AUDIO=apps/server/test/fixtures/audio');
+  test.skip(!(await catalogoDiProva(schermo)), 'serve il server con CANTASTORIE_AUDIO=apps/server/test/fixtures/audio');
 
   if ((await salute(schermo)).fase !== 'attesa') await schermo.request.post('/api/scena/ricomincia');
   await luogo(schermo, 'scena_forno_vecchio');
@@ -189,7 +197,7 @@ test('pannello del master: umore subito sul proiettore, «auto», effetto suonat
   const schermo = await (await browser.newContext({ viewport: { width: 1920, height: 1080 } })).newPage();
   schermo.on('console', (m) => m.type() === 'error' && errori.push(`schermo: ${m.text()}`));
   schermo.on('pageerror', (e) => errori.push(`schermo: ${e.message}`));
-  test.skip(((await salute(schermo)).audio ?? 0) < 10 || !token, 'serve il server di prova audio e E2E_MASTER_TOKEN');
+  test.skip(!(await catalogoDiProva(schermo)) || !token, 'serve il server di prova audio e E2E_MASTER_TOKEN');
   await umore(schermo, null);
   await luogo(schermo, 'scena_forno_vecchio');
   await schermo.goto(`/schermo?isteresi_audio_s=${ISTERESI_S}`);
