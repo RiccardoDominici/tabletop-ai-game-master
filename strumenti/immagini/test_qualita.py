@@ -1,4 +1,4 @@
-"""Test della qualità delle immagini (controlli.py, qualita.py, visione.py) e del ciclo dei tentativi di genera.py.
+"""Test della qualità delle immagini (controlli.py, controllo_qualita.py, visione.py) e del ciclo dei tentativi di genera.py.
 
     python3 -m pytest -q strumenti/immagini/test_qualita.py
 
@@ -24,7 +24,7 @@ import campagna
 import controlli
 import genera
 import motore as M
-import qualita
+import controllo_qualita as qualita
 import visione
 from manifest import Manifest
 
@@ -160,3 +160,17 @@ def test_una_gia_fatta_difettosa_entra_nel_piano_e_riparte_dal_tentativo_dopo(mi
     voce = Manifest(mini / "immagini").voci[r.id]
     assert finto.semi == [qualita.seme_tentativo(r.id, 1)]  # mai di nuovo il seme che ha dato il difetto
     assert voce["qualita"]["esito"] == "ok" and voce["qualita"]["tentativi"] == 2
+
+
+def test_un_verdetto_di_un_controllo_vecchio_si_rifa(mini: Path, finto, monkeypatch):
+    """Quando cambiano le istruzioni del controllo (qualita.VERSIONE), i verdetti vecchi non valgono più."""
+    from freschezza import classifica
+    r = next(x for x in campagna.richieste(mini) if x.id == "luogo_n_bosco")
+    finto.difettosi = set()
+    genera.esegui(mini, [r], Manifest(mini / "immagini"), fp16=True, seme=None, client_visione=None)
+    man = Manifest(mini / "immagini")
+    man.voci[r.id]["qualita"] = {**man.voci[r.id]["qualita"], "esito": "difettosa", "versione": qualita.VERSIONE - 1}
+    man.salva()
+    tutte = campagna.richieste(mini)
+    st = classifica([r], tutte, Manifest(mini / "immagini"), MotoreFinto.descrizione)
+    assert [x.id for x in st.non_controllate] == [r.id] and not st.difettose

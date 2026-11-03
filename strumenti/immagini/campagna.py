@@ -177,7 +177,7 @@ def identita_situazioni(asp: dict) -> str:
 
 
 def segreti_png(cartella: Path, pid: str) -> list[str]:
-    """I prompt delle situazioni dichiarate di un PNG: i tratti che NON devono vedersi altrove (vedi qualita.py)."""
+    """I prompt delle situazioni dichiarate di un PNG: i tratti che NON devono vedersi altrove (vedi controllo_qualita.py)."""
     for f in sorted((Path(cartella) / "png").glob("*.yaml")):
         scheda = _yaml(f)
         if scheda.get("id", f.stem) == pid:

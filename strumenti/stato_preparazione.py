@@ -87,7 +87,7 @@ def stato_immagini(cartella: Path) -> dict:
             "mancanti": [{"id": r.id, "tipo": r.tipo} for r in mancanti],
             "vecchie": [{"id": r.id, "tipo": r.tipo, "motivo": m} for r, m in st.vecchie],
             "orfane": st.orfane, "alias_mancanti": alias_mancanti,
-            # Qualità (strumenti/immagini/qualita.py): difettose da rifare (le rigenera genera.py con un seme
+            # Qualità (strumenti/immagini/controllo_qualita.py): difettose da rifare (le rigenera genera.py con un seme
             # nuovo), da controllare a mano (difettose anche dopo tutti i tentativi), mai controllate.
             "difettose": [{"id": r.id, "tipo": r.tipo, "obbligatoria": not facoltativa(r), "motivi": m}
                           for r, m, _ in st.difettose],

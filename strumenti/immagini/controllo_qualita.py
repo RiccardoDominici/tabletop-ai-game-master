@@ -27,6 +27,11 @@ from controlli import controlla_file
 log = logging.getLogger("immagini.qualita")
 
 MAX_TENTATIVI = 3   # l'immagine di partenza + 2 nuovi semi
+# Versione del controllo: cambia quando cambiano istruzioni o regole. Un verdetto di una versione
+# vecchia vale come «mai controllata» e si rifà da solo (la v1 del 3/11 scambiava per firme i fili
+# d'erba nella neve e per segreti la folla di una scena).
+VERSIONE = 2
+# testo_o_firma è grave sempre solo se è una firma o sta in un angolo (vedi _sembra_firma).
 GRAVI_SEMPRE = {"testo_o_firma", "margine", "anatomia", "segreto", "dimensioni", "vuota"}
 
 
@@ -65,13 +70,24 @@ def valuta(percorso: Path, r: Richiesta, cartella: Path, client=None) -> dict:
             log.warning("controllo visivo di %s non riuscito (%s): resta solo quello a pixel", r.id, type(err).__name__)
             visione = {"esito": "non_verificata", "errore": type(err).__name__}
     for p in problemi:
-        if p.get("tipo") in GRAVI_SEMPRE:
+        if p.get("tipo") in GRAVI_SEMPRE and (p["tipo"] != "testo_o_firma" or _sembra_firma(p)):
             p["grave"] = True
     gravi = [p for p in problemi if p.get("grave")]
     esito = "difettosa" if gravi else ("ok" if client is None or (visione or {}).get("esito") != "non_verificata"
                                        else "non_verificata")
-    return {"esito": esito, "motivi": [f"{p['tipo']}: {p['descrizione']} ({p.get('dove', '')})" for p in gravi],
+    return {"esito": esito, "versione": VERSIONE,
+            "motivi": [f"{p['tipo']}: {p['descrizione']} ({p.get('dove', '')})" for p in gravi],
             "problemi": problemi, "visione": visione, "costo_usd": round(costo, 6)}
+
+
+def _sembra_firma(p: dict) -> bool:
+    """Una scritta è grave sempre se è una firma o un monogramma, o se sta in un angolo (dove le mette il modello).
+
+    La pseudo-scrittura su un libro dei conti o una lettera, che il prompt chiede, la decide il giudizio del
+    controllo visivo (nella prova del 3/11 il registro in mano a Gaspare veniva segnato come «scritta»).
+    """
+    testo = f"{p.get('descrizione', '')} {p.get('dove', '')}".lower()
+    return any(k in testo for k in ("firma", "monogramm", "sigla", "signature", "monogram", "initials", "angolo", "corner"))
 
 
 def gravi(q: dict) -> int:

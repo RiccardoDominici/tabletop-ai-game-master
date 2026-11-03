@@ -46,6 +46,7 @@ from pathlib import Path
 from campagna import Richiesta, dimensioni_generazione
 from formato import con_formato
 from manifest import Manifest
+from controllo_qualita import VERSIONE as VERSIONE_CONTROLLO
 
 log = logging.getLogger("immagini.freschezza")
 
@@ -139,7 +140,7 @@ class Stato:
     mancanti: list[Richiesta] = field(default_factory=list)
     orfane: list[str] = field(default_factory=list)                      # id nel manifest, non più richiesti
     attese: dict[str, str] = field(default_factory=dict)                 # id → firma di oggi
-    # Qualità (qualita.py), solo tra le aggiornate: difettose da rifare con un seme nuovo, quelle che dopo
+    # Qualità (controllo_qualita.py), solo tra le aggiornate: difettose da rifare con un seme nuovo, quelle che dopo
     # tutti i tentativi restano difettose (da guardare a mano), quelle mai controllate.
     difettose: list[tuple[Richiesta, list[str], int]] = field(default_factory=list)  # (richiesta, motivi, tentativi fatti)
     da_controllare: list[tuple[Richiesta, list[str]]] = field(default_factory=list)
@@ -178,6 +179,8 @@ def classifica(richieste: list[Richiesta], tutte: list[Richiesta], man: Manifest
             st.vecchie.append((r, motivo(r, voce, attese, registrate, modello)))
         else:
             q = voce.get("qualita") or {}
+            if q and q.get("versione") != VERSIONE_CONTROLLO:
+                q = {}  # verdetto di un controllo vecchio: si rifà (vedi qualita.VERSIONE)
             if q.get("esito") == "difettosa":
                 st.difettose.append((r, list(q.get("motivi") or []), int(q.get("tentativi") or 1)))
             elif q.get("esito") == "da_controllare":

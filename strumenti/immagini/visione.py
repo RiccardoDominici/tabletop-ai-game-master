@@ -79,7 +79,9 @@ You get the full image and, as a second image, a 2x2 mosaic of its four corners 
 
 Check, in this order:
 1. testo_o_firma: any text, letters, numbers, signature, monogram, initials, scribbled autograph or watermark anywhere \
-(corners especially). Pseudo-writing on a book page or ledger that the prompt asks for is NOT a problem.
+(corners especially). Only marks that look WRITTEN count: grass, twigs, cracks, footprints, wood grain, a plain plaque or \
+an ornament are not writing. Unreadable pseudo-writing on books, ledgers, letters, papers or a shop sign is NOT a \
+problem either (it is how these objects look); report it only as a signature if it sits in a corner of the picture.
 2. margine: the picture does not fill the frame: a white or paper-coloured border, a torn paper edge, a painted \
 vignette that ends before the edge. Snow, fog or a white wall that are part of the scene are NOT a margin.
 3. soggetto: the image contradicts the prompt in something that matters: a required element is missing or wrong \
@@ -87,7 +89,9 @@ vignette that ends before the edge. Snow, fog or a white wall that are part of t
 4. anatomia: extra or missing limbs or fingers, melted hands, a duplicated or ghost face, broken perspective on a person.
 5. incongruenza: something that should not be there: rain or snow falling indoors, objects floating, modern objects \
 in a medieval scene, a second copy of the same character.
-6. segreto: if a list of hidden traits is given, any of them is visible. They must NOT appear in this image.
+6. segreto: if a list of hidden traits is given (descriptions of later scenes that reveal something about THIS character), \
+the character shows the revealed thing here (e.g. a scar that must stay hidden, an object found later, an action done in \
+secret). Places, crowds, weather and objects of the scene that those descriptions also mention are NOT secrets.
 
 Ignore the style part of the prompt (technique, palette, light): judge content only. Write each problem's \
 description in Italian. If there is nothing wrong, return an empty list of problems."""
@@ -170,7 +174,8 @@ def controlla(percorso: str | Path, prompt: str, tipo: str, segreti: list[str] |
     intera, mosaico = immagini_da_mandare(percorso)
     testo = [f"Image type: {tipo}.", f"Prompt used to generate it:\n{prompt}"]
     if segreti:
-        testo.append("Hidden traits that must NOT be visible in this image:\n" + "\n".join(f"- {s}" for s in segreti))
+        testo.append("Hidden traits: later scenes that reveal something about this character. What they reveal about the "
+                     "character must NOT be visible here:\n" + "\n".join(f"- {s}" for s in segreti))
     risposta = client.messages.create(
         model=MODELLO,
         max_tokens=8000,

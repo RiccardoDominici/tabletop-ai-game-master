@@ -2,7 +2,7 @@
 
 Una voce per immagine: id, file, tipo, prompt, seme, modello, secondi, riferimenti, quando, firma
 (vedi freschezza.py: dice se l'immagine è ancora quella che le schede di oggi chiederebbero), qualita
-(vedi qualita.py). Serve a sapere da dove viene ogni immagine e a decidere che cosa rifare.
+(vedi controllo_qualita.py). Serve a sapere da dove viene ogni immagine e a decidere che cosa rifare.
 
 Scrittura sicura con più processi (3/11): genera.py gira un processo per immagine, e un altro processo
 (un alias registrato a mano, --controlla) può scrivere nello stesso momento. Ogni processo carica il

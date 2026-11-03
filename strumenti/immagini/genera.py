@@ -21,7 +21,7 @@ Cosa fa:
 --dry-run non carica il modello e non scrive nulla: stampa vecchie (con il perché), orfane, e dove
 scriverebbe e con quale prompt FINALE (stile e formato del proiettore compresi, vedi formato.py).
 --rifai --seme N rigenera un'immagine con un altro seme (il seme usato finisce nel manifest).
---controlla guarda le immagini già fatte (controlli a pixel + controllo visivo con Claude, qualita.py) senza
+--controlla guarda le immagini già fatte (controlli a pixel + controllo visivo con Claude, controllo_qualita.py) senza
 generare niente; le difettose le rigenera con un seme nuovo il giro normale successivo.
 Tempi su M1 16 GB: vedi esperimenti/immagini/risultati.md.
 """
@@ -41,7 +41,8 @@ sys.path.insert(0, str(QUI))
 
 from campagna import Richiesta, dimensioni_generazione, richieste  # noqa: E402
 from freschezza import Stato, classifica, firma, migra, seme_di, sposta_orfane  # noqa: E402
-from qualita import MAX_TENTATIVI, gravi, seme_tentativo, valuta  # noqa: E402
+from controllo_qualita import MAX_TENTATIVI, gravi, seme_tentativo, valuta  # noqa: E402
+from controllo_qualita import VERSIONE as VERSIONE_CONTROLLO  # noqa: E402
 from manifest import Manifest  # noqa: E402
 
 log = logging.getLogger("immagini.genera")
@@ -172,7 +173,7 @@ def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, 
            tentativi_da: dict[str, int] | None = None) -> None:
     """Genera davvero: un processo mflux per tentativo (vedi motore.py), controllo di qualità, voce nel manifest.
 
-    Ogni immagine si controlla (qualita.py: pixel + visione se c'è il client). Se è difettosa si riprova
+    Ogni immagine si controlla (controllo_qualita.py: pixel + visione se c'è il client). Se è difettosa si riprova
     con un seme nuovo, fino a MAX_TENTATIVI immagini; poi si tiene la migliore, «da_controllare».
     tentativi_da: per le difettose di un giro precedente, da quale tentativo ripartire (mai lo stesso seme).
     """
@@ -237,7 +238,7 @@ def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, 
 
 
 def controlla_esistenti(cartella: Path, scelte: list[Richiesta], man: Manifest, client_visione) -> list[str]:
-    """Controlla le immagini già fatte e mai controllate (anche quelle di prima di qualita.py).
+    """Controlla le immagini già fatte e mai controllate (anche quelle di prima di controllo_qualita.py).
 
     Scrive `qualita` nel manifest (tentativi = 1: il seme registrato è il primo tentativo).
     Ritorna gli id trovati difettosi, che il piano rigenera con un seme nuovo.
@@ -245,7 +246,8 @@ def controlla_esistenti(cartella: Path, scelte: list[Richiesta], man: Manifest, 
     difettose = []
     for r in scelte:
         voce = man.voci.get(r.id)
-        if r.alias_di or not voce or voce.get("qualita") or not (man.cartella / voce.get("file", r.file)).exists():
+        q = (voce or {}).get("qualita") or {}
+        if r.alias_di or not voce or q.get("versione") == VERSIONE_CONTROLLO or not (man.cartella / voce.get("file", r.file)).exists():
             continue
         q = valuta(man.cartella / voce["file"], r, cartella, client_visione)
         man.registra({**voce, "qualita": {**q, "tentativi": 1, "costo_totale_usd": q.get("costo_usd") or 0}})
