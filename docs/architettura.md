@@ -55,6 +55,12 @@ Il mestiere del master non è affidato al prompt: è imposto dalla struttura (ve
 ### 1. Motore (deterministico, unica fonte di verità)
 È un server sul Mac e gestisce:
 - **lo stato a eventi**: un log append-only in SQLite, da cui si ricava lo stato. Permette annullamenti, riavvii e il ritiro immediato richiesto dalla X-card;
+  oggi (apps/server/src/sessione/): `node:sqlite` in `<cartella dei log>/sessioni.sqlite`, eventi `inizio`, `fotografia`
+  (scena, luogo, umore, situazione, orologi, repertorio, note, pausa, turno), `trascrizione_turno`, `tavolo` (azioni e
+  finestra) e `dispositivo` (telefono → PG), scritti a ogni turno chiuso, a ogni comando del master e a ogni cambiamento
+  delle azioni. All'avvio una sessione in corso della stessa campagna si ricostruisce e aspetta il proiettore: riparte
+  senza rileggere l'apertura; se il narratore stava rispondendo, le azioni di quel turno tornano ai giocatori e il turno
+  si rigioca. «Nuova sessione» nel pannello, `partita.sh --nuova` o Ricomincia ne cominciano un'altra;
 - **le regole SRD 5.2** (CC-BY-4.0, dati estratti dal PDF ufficiale, attribuzione obbligatoria nei crediti): dadi, prove, CD, iniziativa, PF. Il dado lo tira sempre il server: la narrazione non può cambiare un esito;
 - **gli orologi delle minacce**, gli atteggiamenti dei PNG, gli indizi rivelati, le menzogne già dette, i contatori dello spotlight;
 - **il canone**: fatti `proposto` e `confermato`, con il flag `noto_ai_pg`;

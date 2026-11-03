@@ -10,7 +10,7 @@
    - **Ferma la narrazione** zittisce subito il narratore e mette in pausa;
    - **Pausa / Riprendi** ferma il tavolo senza interrompere la frase in corso;
    - una **nota di regia** («frasi più corte», «Ottavia è più sospettosa») vale per i turni successivi.
-6. Voce vera (pronta in circa 20 s, circa 3 GB di RAM): aggiungi `--voce qwen`. Per finire: `scripts/arresto.sh`.
+6. Voce vera (pronta in circa 20 s, circa 3 GB di RAM): aggiungi `--voce qwen`. Per finire: `scripts/arresto.sh`. La partita si salva da sola: se il server riparte, riprende da dov'era (i telefoni ritrovano il loro personaggio); `--nuova` per ricominciare da capo.
 
 **Principio guida (Riccardo, 2 novembre 2026):** Cantastorie è un *framework che genera infinite campagne*, non una
 campagna fatta bene. Sceneggiatura e repertorio (skill Preparatore), immagini, musica e ambienti escono da pipeline
