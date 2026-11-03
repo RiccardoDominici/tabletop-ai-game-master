@@ -76,9 +76,10 @@ describe('CatalogoAudio', () => {
     const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-audio-'));
     fs.writeFileSync(path.join(cartella, 'borgo.m4a'), 'x');
     fs.writeFileSync(path.join(cartella, 'pioggia.m4a'), 'x');
+    // Come nel manifest vero di ponte-lanterne: l'alias viene prima della voce che richiama.
     const brani = [
-      { id: 'luogo_scena_borgo', file: 'borgo.m4a' },
       { id: 'luogo_n_borgo', file: 'borgo.m4a', alias_di: 'luogo_scena_borgo' },
+      { id: 'luogo_scena_borgo', file: 'borgo.m4a' },
       { id: 'luogo_n_vicolo', file: 'borgo.m4a' },
     ];
     const ambienti = [
@@ -90,6 +91,7 @@ describe('CatalogoAudio', () => {
     expect(c.percorso('borgo.m4a')).toBe(path.join(cartella, 'borgo.m4a'));
     expect(CatalogoAudio.mime('borgo.m4a')).toBe('audio/mp4');
     expect(c.musicaLuogo('n_borgo')).toBe('luogo_scena_borgo');
+    expect(c.musicaLuogo('scena_borgo')).toBe('luogo_scena_borgo');
     expect(c.musicaLuogo('n_vicolo')).toBe('luogo_scena_borgo');
     // Gli strati restano distinti (ognuno col suo volume): il proiettore li passa senza ripartire.
     expect(c.ambienti('n_vicolo', [])).toEqual(['amb_n_vicolo_pioggia']);

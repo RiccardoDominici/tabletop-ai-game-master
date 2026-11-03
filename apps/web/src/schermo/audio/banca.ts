@@ -23,7 +23,7 @@ export type Decodificatore = (byte: ArrayBuffer) => Promise<BufferAudio>;
 export interface OpzioniBanca {
   /** Tetto dei byte compressi tenuti (predefinito 96 MB). */
   maxCompressi?: number;
-  /** Tetto della memoria decodificata (predefinito 512 MB, ~22 minuti di stereo a 48 kHz). */
+  /** Tetto della memoria decodificata (predefinito 384 MB, ~17 minuti di stereo a 48 kHz). */
   maxDecodificati?: number;
 }
 
@@ -65,7 +65,7 @@ export class BancaAudio {
     o: OpzioniBanca = {},
   ) {
     this.maxCompressi = o.maxCompressi ?? 96 * 1024 * 1024;
-    this.maxDecodificati = o.maxDecodificati ?? 512 * 1024 * 1024;
+    this.maxDecodificati = o.maxDecodificati ?? 384 * 1024 * 1024;
   }
 
   /** Scarica (senza decodificare) le URL non ancora in banca. */

@@ -178,7 +178,8 @@ export class CatalogoAudio {
     if (v?.traccia.tipo !== tipo) return null;
     const alias = v.aliasDi ? this.perId.get(v.aliasDi) : undefined;
     if (alias && alias.traccia.tipo === tipo) return alias.traccia.id;
-    for (const altra of this.perId.values()) if (altra.traccia.tipo === tipo && altra.file === v.file) return altra.traccia.id;
+    // Stesso file: vince la voce «vera» (non alias), la prima del manifest.
+    for (const altra of this.perId.values()) if (altra.traccia.tipo === tipo && altra.file === v.file && !altra.aliasDi) return altra.traccia.id;
     return id;
   }
 

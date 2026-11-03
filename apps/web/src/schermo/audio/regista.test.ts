@@ -104,6 +104,17 @@ describe('RegistaAudio: musica', () => {
     expect(banca.statistiche().inUso).toBe(2); // luogo_b + amb_b_vento
   });
 
+  it('memoria: dopo lo spostamento restano decodificati solo i brani di adesso (i vicini compressi)', async () => {
+    const { regista, banca, avanza } = prepara();
+    regista.scena(A, 'esplorazione_tesa', 0);
+    await avanza(61);
+    regista.scena(B, 'esplorazione_tesa', 1); // A è tra i `prossimi` di B: byte sì, buffer no
+    await avanza(5);
+    expect(banca.statistiche()).toMatchObject({ decodificati: 2, inUso: 2 });
+    expect(banca.decodificato('/api/audio/luogo_a.ogg#8')).toBe(false);
+    expect(banca.statistiche().compressi).toBeGreaterThanOrEqual(5);
+  });
+
   it('un umore esplicito non aspetta l’isteresi; toglierlo torna alla musica del luogo', async () => {
     const { regista, avanza } = prepara();
     regista.scena(A, 'esplorazione_tesa', 0);

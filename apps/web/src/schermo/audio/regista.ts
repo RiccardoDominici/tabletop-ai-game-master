@@ -77,8 +77,6 @@ interface ScenaVoluta {
 
 export class RegistaAudio {
   private catalogo: CatalogoAudioPubblico | null = null;
-  /** URL → primo id del catalogo con quel file: id diversi, stesso file = stessa musica. */
-  private readonly primoPerUrl = new Map<string, string>();
   private voluta: ScenaVoluta | null = null;
   /** Ultima scena applicata (per riconoscere i cambi espliciti). */
   private applicata: ScenaVoluta | null = null;
@@ -108,8 +106,6 @@ export class RegistaAudio {
   /** Catalogo del server (GET /api/audio): senza, nulla suona; arrivato, si applica la scena. */
   impostaCatalogo(c: CatalogoAudioPubblico): void {
     this.catalogo = c;
-    this.primoPerUrl.clear();
-    for (const t of Object.values(c.tracce)) if (!this.primoPerUrl.has(t.url)) this.primoPerUrl.set(t.url, t.id);
     log.info('Catalogo audio', { tracce: Object.keys(c.tracce).length, crediti: c.crediti.length });
     this.chiaveApplicata = '';
     this.applica();
@@ -214,11 +210,17 @@ export class RegistaAudio {
     return this.catalogo?.tracce[id]?.url ?? null;
   }
 
-  /** Id canonico di un brano: il primo del catalogo con lo stesso file (alias, riusi). */
+  /**
+   * Un brano con lo stesso file di quello che suona (o che aspetta l'isteresi) è quello stesso:
+   * scena e nodo con un alias, un umore che riusa la musica di un luogo. Così non si dissolve in sé.
+   */
   private canonico(id: string | null): string | null {
     if (id === null) return null;
     const url = this.url(id);
-    return (url && this.primoPerUrl.get(url)) ?? id;
+    for (const altro of [this.isteresi.branoCorrente, this.isteresi.branoPendente]) {
+      if (altro && url && this.url(altro) === url) return altro;
+    }
+    return id;
   }
 
   private applica(): void {
@@ -235,8 +237,10 @@ export class RegistaAudio {
     const correnti = [v.audio.umore, v.audio.musica, ...v.audio.ambienti].filter((x): x is string => !!x);
     const urlCorrenti = correnti.map((id) => this.url(id)).filter((u): u is string => !!u);
     const urlProssimi = v.audio.prossimi.map((id) => this.url(id)).filter((u): u is string => !!u);
+    // Decodificati restano solo i brani di adesso; dei vicini si tengono i byte compressi (pochi MB:
+    // tornarci costa una decodifica di qualche decimo di secondo, coperta dalla dissolvenza).
     this.o.banca.precarica([...urlCorrenti, ...urlProssimi]);
-    this.o.banca.tieni([...urlCorrenti, ...urlProssimi, ...[...this.ambienti.keys(), this.musica?.id ?? ''].map((id) => this.url(id) ?? '')]);
+    this.o.banca.tieni(urlCorrenti);
 
     // Musica: l'umore esplicito vince sul luogo; i cambi espliciti saltano l'isteresi.
     const id = this.canonico(v.audio.umore ?? v.audio.musica);
