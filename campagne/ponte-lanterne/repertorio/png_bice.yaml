@@ -95,7 +95,7 @@ battute:
       - "[png_bice] Che onda? Qui nessuno l'ha mai vista."
     effetti: {rivela_indizi: [i_libro_piena]}
     max_usi: 1
-  - id: bic_notte_versione
+  - id: bic_notte_domanda
     chi: png_bice
     tipo: menzogna
     quando: "un PG chiede a Bice dov'era ieri sera, o se ha visto qualcuno"
@@ -116,7 +116,7 @@ battute:
     temi: [prometto, giuro, promessa, nonno]
     richiede:
       privata: true
-      battute_usate: [bic_notte_versione]
+      battute_usate: [bic_notte_domanda]
       battute_non_usate: [bic_notte_nassa]
     testo:
       - "[narratore] Bice smette di fischiettare e guarda il casello."

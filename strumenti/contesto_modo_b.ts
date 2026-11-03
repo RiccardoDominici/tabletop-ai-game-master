@@ -68,13 +68,33 @@ function leggiOpzioni(argv: string[]): Opzioni | null {
  * riga del server (StatoRepertorio.riga, col tipo neutro). Il Motore poi ne mostra solo una parte per
  * turno (temi, cancelli, segreti): qui c'è il caso peggiore, da leggere come lo leggerebbe il selettore.
  */
+/**
+ * Cancelli di una battuta, in breve: ciò che deve essere vero prima che il Motore la elenchi. Il catalogo
+ * statico è il caso peggiore, e senza questo segno chi lo legge (passo 10 della skill) non sa quali righe il
+ * selettore vedrebbe solo dopo una rivelazione (nota 11 di nozze-neve).
+ */
+function cancelli(b: Repertorio['battute'][number]): string[] {
+  const r = b.richiede;
+  const out: string[] = [];
+  if (r.indizi_rivelati.length) out.push(`dopo ${r.indizi_rivelati.join('+')}`);
+  if (r.battute_usate.length) out.push(`dopo ${r.battute_usate.join('+')}`);
+  if (r.orologio) out.push(`${r.orologio.id} ${r.orologio.min}–${r.orologio.max}`);
+  if (r.privata) out.push('privata');
+  if (r.da_pg.length) out.push(`da ${r.da_pg.join('/')}`);
+  if (r.oppure.length) out.push(`oppure ×${r.oppure.length}`);
+  return out;
+}
+
 function catalogoDi(rep: Repertorio | undefined, scena: { id: string; png_presenti: readonly string[] }): string[] {
   if (!rep) return [];
   // Come il Motore: battute della scena (o di tutte) e solo dei PNG presenti (il narratore sempre).
   return rep.battute
     .filter((b) => !b.solo_esempio && (b.scene.length === 0 || b.scene.includes(scena.id)))
     .filter((b) => parlantiDi(b).every((p) => scena.png_presenti.includes(p)))
-    .map((b) => StatoRepertorio.riga(b));
+    .map((b) => {
+      const c = cancelli(b);
+      return c.length ? `${StatoRepertorio.riga(b)}   [chiusa: ${c.join(', ')}]` : StatoRepertorio.riga(b);
+    });
 }
 
 function compila(o: Opzioni): { campagna: string; scene: ScenaCompilata[]; avvisi: string[] } {

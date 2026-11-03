@@ -218,7 +218,7 @@ battute:
     max_usi: 1
 
   # --- menzogne, sempre con il segnale ---------------------------------------------------
-  - id: ott_segale_versione
+  - id: ott_segale_domanda
     chi: png_ottavia
     tipo: menzogna
     quando: "un PG chiede a Ottavia da dove viene la segale o la farina"
@@ -232,7 +232,7 @@ battute:
       menzogna_detta: ott_segale
     max_usi: 2
 
-  - id: ott_cane_versione
+  - id: ott_cane_domanda
     chi: png_ottavia
     tipo: menzogna
     quando: "un PG chiede a Ottavia cos'ha il cane, o cosa ha mangiato"

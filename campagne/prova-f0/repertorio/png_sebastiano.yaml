@@ -221,7 +221,7 @@ battute:
     max_usi: 1
 
   # --- menzogne, sempre con il segnale ---------------------------------------------------
-  - id: seb_mestiere_versione
+  - id: seb_mestiere_domanda
     chi: png_sebastiano
     tipo: menzogna
     quando: "un PG chiede al forestiero che mestiere fa, o chi è"
@@ -235,7 +235,7 @@ battute:
       menzogna_detta: seb_mestiere
     max_usi: 2
 
-  - id: seb_guerra_versione
+  - id: seb_guerra_domanda
     chi: png_sebastiano
     tipo: menzogna
     quando: "un PG chiede al forestiero se è stato soldato, o da dove viene"
@@ -289,9 +289,9 @@ battute:
     tipo: confessione
     quando: "un PG nomina Roccalba o la Compagnia del Grifo e promette di non venderlo"
     temi: [roccalba, compagnia, grifo, prometto, giuro]
-    # Prima nega (seb_guerra_versione, che ha gli stessi temi grifo e compagnia), poi cede alla promessa.
+    # Prima nega (seb_guerra_domanda, che ha gli stessi temi grifo e compagnia), poi cede alla promessa.
     richiede:
-      battute_usate: [seb_guerra_versione]
+      battute_usate: [seb_guerra_domanda]
     testo:
       - "[narratore] Il forestiero resta immobile a lungo, poi abbassa il cappuccio."
       - "[narratore] Una cicatrice bianca gli taglia il sopracciglio sinistro."

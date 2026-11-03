@@ -258,7 +258,7 @@ def test_scena_battute_libere_di_un_png_assente(camp, tmp_path):
     scrivi(cartella, "seconda.yaml", {"scena": "scena_due", "turni": azione})
     _, c = valida(camp, contesto_b=False)
     righe = copioni.controlla(c, Esito(), cartella)
-    assert "bruno_notte_versione" in righe[0] and "bruno_notte_versione" not in righe[1]
+    assert "bruno_notte_domanda" in righe[0] and "bruno_notte_domanda" not in righe[1]
 
 
 def test_scena_come_lista(camp, tmp_path):
@@ -292,7 +292,7 @@ def test_scena_desiderio_che_porta_una_voce_simile(camp):
 
 
 def test_scena_battuta_di_un_png_assente_in_rigoroso(camp):
-    modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_versione").update(scena="scena_due"))
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_domanda").update(scena="scena_due"))
     _seconda_scena(camp, ["png_irma", "png_bruno"], ["png_irma"])
     assert "SCENA.png_assente" not in errori(camp)
     assert "SCENA.png_assente" in errori(camp, rigoroso=True)
@@ -761,14 +761,23 @@ def test_repertorio_riferimento_inesistente(camp):
 
 
 def test_repertorio_esempio_di_voce_che_mente(camp):
-    modifica(camp, "repertorio/png_irma.yaml", lambda d: battuta(d, "irma_lanterna_versione").update(solo_esempio=True))
+    modifica(camp, "repertorio/png_irma.yaml", lambda d: battuta(d, "irma_lanterna_domanda").update(solo_esempio=True))
     assert "REPERTORIO.flag" in errori(camp)
 
 
 def test_repertorio_quando_che_dice_chi_mente(camp):
     modifica(camp, "repertorio/png_bruno.yaml",
-             lambda d: battuta(d, "bruno_notte_versione").update(quando="Bruno mente su cosa ha visto"))
+             lambda d: battuta(d, "bruno_notte_domanda").update(quando="Bruno mente su cosa ha visto"))
     assert "REPERTORIO.quando" in errori(camp)
+
+
+def test_repertorio_id_che_dice_chi_mente_in_rigoroso(camp):
+    # Note 10 e 19 di nozze-neve: il selettore legge l'id come una frase («segale versione»: è la bugia).
+    def rinomina(d):
+        battuta(d, "irma_lanterna_domanda")["id"] = "irma_lanterna_versione"
+    modifica(camp, "repertorio/png_irma.yaml", rinomina)
+    assert "REPERTORIO.id_rivelatore" not in errori(camp)
+    assert "REPERTORIO.id_rivelatore" in errori(camp, rigoroso=True)
 
 
 def test_repertorio_da_pg_inesistente(camp):
@@ -783,14 +792,14 @@ def test_repertorio_oppure_finche_il_server_non_lo_applica(camp, monkeypatch):
     from valida import costanti
     monkeypatch.setattr(costanti, "OPPURE_NEL_SERVER", False)
     modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_promessa").update(
-        richiede={"battute_usate": ["bruno_notte_versione"], "oppure": [{"privata": True}, {"indizi_rivelati": ["i_cera"]}]}))
+        richiede={"battute_usate": ["bruno_notte_domanda"], "oppure": [{"privata": True}, {"indizi_rivelati": ["i_cera"]}]}))
     assert "REPERTORIO.oppure" in errori(camp)
 
 
 def test_repertorio_oppure_quando_il_server_lo_applica(camp, monkeypatch):
     from valida import costanti
     monkeypatch.setattr(costanti, "OPPURE_NEL_SERVER", True)
-    buono = {"battute_usate": ["bruno_notte_versione"], "oppure": [{"privata": True}, {"indizi_rivelati": ["i_cera"]}]}
+    buono = {"battute_usate": ["bruno_notte_domanda"], "oppure": [{"privata": True}, {"indizi_rivelati": ["i_cera"]}]}
     modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_notte_promessa").update(richiede=buono))
     assert not {"REPERTORIO.oppure", "COPERTURA.cancello"} & errori(camp, rigoroso=True)
     # Un'alternativa senza cancello apre la confessione a tutti; un'alternativa annidata non è prevista.
@@ -819,7 +828,7 @@ def test_copertura_segno_legato_a_una_scena_di_un_orologio_di_sessione(camp):
 
 
 def test_copertura_menzogna_senza_segnale(camp):
-    modifica(camp, "repertorio/png_irma.yaml", lambda d: battuta(d, "irma_lanterna_versione")["testo"].pop(0))
+    modifica(camp, "repertorio/png_irma.yaml", lambda d: battuta(d, "irma_lanterna_domanda")["testo"].pop(0))
     assert "COPERTURA.segnale" in errori(camp)
 
 
@@ -864,7 +873,7 @@ def test_copertura_temi_generici_in_rigoroso(camp):
 
 def test_segreti_nel_catalogo(camp):
     modifica(camp, "repertorio/png_irma.yaml",
-             lambda d: battuta(d, "irma_lanterna_versione").update(quando="un PG chiede a Irma del pegno"))
+             lambda d: battuta(d, "irma_lanterna_domanda").update(quando="un PG chiede a Irma del pegno"))
     assert "SEGRETI.catalogo" in errori(camp)
 
 
@@ -1138,7 +1147,7 @@ def test_copioni_misura_il_catalogo(camp, tmp_path):
                                               [{"pg": "pg_tobia", "azione": "chiedo a Bruno se ha visto qualcosa stanotte"}]]})
     esito, c = valida(camp)
     righe = copioni.controlla(c, Esito(), cartella)
-    assert "nar_botte" in righe[0] and "bruno_notte_versione" in righe[1]
+    assert "nar_botte" in righe[0] and "bruno_notte_domanda" in righe[1]
     assert copioni.catalogo(c, "una frase senza parole utili") == []
 
 
@@ -1156,7 +1165,7 @@ def test_copioni_seguono_cancelli_e_stato(camp, tmp_path):
     _, c = valida(camp, contesto_b=False)
     righe = copioni.controlla(c, Esito(), cartella)
     assert "bruno_notte_promessa" not in righe[0]          # serve prima la sua versione
-    assert "bruno_notte_versione" in righe[1]
+    assert "bruno_notte_domanda" in righe[1]
     assert "bruno_notte_promessa" not in righe[2]          # pubblica: il cancello privata la ferma
     assert "bruno_notte_promessa" in righe[3]              # privata, dopo la versione
 

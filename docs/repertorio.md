@@ -27,7 +27,7 @@ Un file per PNG (`png_<nome>.yaml`) più `narrazione.yaml` (indizi, segni degli 
 
 ```yaml
 battute:
-  - id: ott_segale_versione          # unico nella campagna, minuscolo ascii
+  - id: ott_segale_domanda          # unico nella campagna, minuscolo ascii
     chi: png_ottavia                  # oppure narratore
     tipo: menzogna                    # menzogna | verita | confessione | reazione | rifiuto | richiesta |
                                       # saluto | indizio | segno_orologio | momento | transizione | finale

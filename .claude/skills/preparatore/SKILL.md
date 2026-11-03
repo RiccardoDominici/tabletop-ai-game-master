@@ -260,7 +260,9 @@ che il selettore riceverà, scena per scena, come lo leggerebbe lui:
 ```
 npx tsx strumenti/contesto_modo_b.ts campagne/<id> --catalogo
 ```
-Il validatore ci cerca ogni regex; tu cerca ciò che una regex non prende.
+Il validatore ci cerca ogni regex; tu cerca ciò che una regex non prende. Leggi ogni riga del catalogo come una
+frase, id compreso: «zel presa macchia» dice chi è stato. Le righe con `[chiusa: …]` il selettore le vede solo
+dopo quei cancelli; le altre fin dal primo turno.
 
 **Controllo**: nessun errore `SEGRETI.*` e nessun avviso `SEGRETI.fatto_scoperto`.
 

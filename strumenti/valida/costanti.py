@@ -51,6 +51,12 @@ CATEGORIE_REAZIONE = ["domanda_gentile", "accusa", "minaccia", "offerta", "aiuto
 ALIAS_GENERICI = {"uomo", "donna", "vecchio", "vecchia", "vecchi", "vecchie", "ragazzo", "ragazza", "ragazzi",
                   "bambino", "bambina", "signore", "signora", "tizio", "tizia", "tipo", "amico", "amica", "gente",
                   "persona", "lui", "lei", "giovane", "anziano", "anziana", "uno", "una", "qualcuno"}
+# Parole che in un id di battuta, letto come una frase nel catalogo del selettore, dicono chi mente o che
+# cosa è vero (note 10 e 19 di nozze-neve: `ott_segale_versione`, `ade_verita`). Si confrontano con le parole
+# dell'id divise sui trattini bassi.
+ID_RIVELATORI = {"versione", "vero", "vera", "veri", "verita", "bugia", "bugie", "mente", "mentire", "menzogna",
+                 "confessa", "confessione", "segreto", "segreta", "falso", "falsa", "colpa", "colpevole", "ladro",
+                 "ladra", "nasconde", "nascosto", "nascosta", "ammette", "cede", "rivela", "smaschera"}
 # Parole che nel `quando` direbbero al selettore chi mente, nasconde o confessa.
 QUANDO_VIETATE = [r"\bment(e|o|ire|isce|ito|iva|ono)\b", r"\bbugi", r"menzogn", r"confess", r"segret",
                   r"nascond", r"\bverità\b"]

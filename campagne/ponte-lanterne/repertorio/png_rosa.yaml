@@ -91,7 +91,7 @@ battute:
       - "[png_rosa] Prima i bambini delle Case Lunghe. Noi vecchi abbiamo il piano di sopra."
       - "[narratore] Rosa si stringe lo scialle e resta in cima alla scala, piccola e ferma."
     max_usi: 1
-  - id: ros_ricovero_versione
+  - id: ros_ricovero_domanda
     chi: png_rosa
     tipo: menzogna
     scena: scena_borgo_basso

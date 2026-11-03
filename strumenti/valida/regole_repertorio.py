@@ -87,6 +87,11 @@ def _schema(c: Campagna, e: Esito) -> None:
         visti.add(bid)
         if not re.fullmatch(r"[a-z0-9_]+", str(bid)):
             e.errore("REPERTORIO.id", dove, "id in ascii minuscolo")
+        rivelatrici = sorted(set(str(bid).split("_")) & K.ID_RIVELATORI)
+        if rivelatrici:
+            e.avviso("REPERTORIO.id_rivelatore", dove, f"l'id dice {rivelatrici} al selettore, che lo legge come una frase "
+                                                       "nel catalogo: usa l'argomento («ott_segale_domanda»), non la natura "
+                                                       "della battuta", rigoroso=True)
         for campo in ("id", "chi", "tipo", "quando", "temi", "testo", "max_usi"):
             if campo not in b:
                 e.errore("REPERTORIO.campo", dove, f"manca {campo}")

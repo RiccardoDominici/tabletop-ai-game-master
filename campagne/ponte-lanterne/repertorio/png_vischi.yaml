@@ -84,7 +84,7 @@ battute:
       - "[narratore] Vischi lo dice piano, ma in modo che lo senta tutto il ponte. Qualcuno annuisce."
       - "[png_vischi] Le Case Lunghe sono gente forte. All'alba ci penso io."
     max_usi: 1
-  - id: vis_leone_versione
+  - id: vis_leone_domanda
     chi: png_vischi
     tipo: menzogna
     quando: "un PG chiede a Vischi del leone o della regola della chiusura"
@@ -96,7 +96,7 @@ battute:
       - ["[narratore] Vischi lucida l'anello con il sigillo, piano, sul fazzoletto.", "[png_vischi] Gliel'ho già detto. Il leone l'hanno messo i costruttori."]
     effetti: {menzogna_detta: vis_leone}
     max_usi: 2
-  - id: vis_barche_versione
+  - id: vis_barche_domanda
     chi: png_vischi
     tipo: menzogna
     quando: "un PG chiede a Vischi chi salirà sulle sue barche all'alba"

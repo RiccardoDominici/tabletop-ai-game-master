@@ -14,7 +14,7 @@ battute:
   - {id: bruno_aiuto, chi: png_bruno, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Bruno", temi: [aiuto], max_usi: 1,
      testo: ["[png_bruno] Grazie. Siete gente a posto."]}
 
-  - id: bruno_notte_versione
+  - id: bruno_notte_domanda
     chi: png_bruno
     tipo: menzogna
     quando: "un PG chiede a Bruno cosa ha visto stanotte"
@@ -30,7 +30,7 @@ battute:
     tipo: confessione
     quando: "in privato, un PG promette a Bruno di non dire niente al paese"
     temi: [prometto, giuro, promessa]
-    richiede: {battute_usate: [bruno_notte_versione], privata: true}
+    richiede: {battute_usate: [bruno_notte_domanda], privata: true}
     testo:
       - "[narratore] Bruno posa la pipa e abbassa la voce."
       - "[png_bruno] Ho visto Irma, a mezzanotte. Scendeva in cantina con un fagotto."

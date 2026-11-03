@@ -32,9 +32,15 @@ solo di tipo momento, indizio, transizione o richiesta [V].
 - **id**: `<prefisso>_<argomento neutro>`. Prefissi: `nar_` per il narratore, `fin_` per i finali,
   `tr_` per le transizioni, tre lettere del PNG (`ott_`, `bal_`) per i PNG.
   - **Niente segreti nell'id**: `nar_volto_candela`, non `seb_cicatrice_candela`; `bal_chi_malato`, non `bal_carbonai`.
+  - **L'id si legge come una frase.** Il selettore vede «ott segale domanda» e ne deduce ciò che dice: un id
+    che nomina la natura della battuta (`_versione`, `_verita`, `_confessa`) dice chi mente, uno che nomina
+    l'esito (`zel_presa_macchia`: «Zelia presa») dice chi è stato. Usa l'argomento e la situazione:
+    `ott_segale_domanda`, `zel_macchia_privato`. Le parole che lo tradiscono sono un errore in rigoroso
+    (`REPERTORIO.id_rivelatore`); le altre le trovi solo leggendo il catalogo (`--catalogo`, passo 10).
   - Per le reazioni generiche l'id finisce con la categoria: `ott_saluto`, `ott_domanda_gentile`,
     `ott_accusa`, `ott_minaccia`, `ott_offerta`, `ott_aiuto`, `ott_rifiuto`.
-- **quando**: al massimo 15 parole. Descrive **un fatto osservabile** nella finzione o nell'azione.
+- **quando**: al massimo 15 parole. Descrive **un fatto osservabile** nella finzione o nell'azione. Si legge
+  come una frase anche lui: «un PG chiede a Ettore perché non salì al Sasso» dice che doveva salirci.
   - Niente verità: «un PG mostra a Ottavia un chicco nero, dove Baldrin non sente», non «Ottavia confessa».
   - Niente parole che dicono chi mente: mente, bugia, menzogna, confessa, segreto, nasconde, verità [V].
   - Se serve citare un segreto (il PG ha trovato i chicchi neri), la battuta deve richiedere l'indizio

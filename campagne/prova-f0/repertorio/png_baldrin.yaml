@@ -235,7 +235,7 @@ battute:
     max_usi: 1
 
   # --- menzogna e confessioni --------------------------------------------------------------
-  - id: bal_testimoni_versione
+  - id: bal_testimoni_domanda
     chi: png_baldrin
     tipo: menzogna
     quando: "un PG chiede a Baldrin chi ha visto il forestiero al pozzo"
@@ -255,7 +255,7 @@ battute:
     quando: "un PG chiede a Baldrin i nomi dei tre che hanno visto"
     temi: [nomi, tre, testimoni]
     richiede:
-      battute_usate: [bal_testimoni_versione]
+      battute_usate: [bal_testimoni_domanda]
       battute_non_usate: [bal_testimoni_sano]
     testo:
       - "[narratore] Baldrin apre la bocca, la richiude, e guarda il martello."

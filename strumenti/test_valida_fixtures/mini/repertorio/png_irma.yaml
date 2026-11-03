@@ -14,7 +14,7 @@ battute:
   - {id: irma_aiuto, chi: png_irma, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Irma al bancone", temi: [aiuto], max_usi: 1,
      testo: ["[png_irma] Grazie. Prendi pure un altro boccale, offre la casa."]}
 
-  - id: irma_lanterna_versione
+  - id: irma_lanterna_domanda
     chi: png_irma
     tipo: menzogna
     quando: "un PG chiede a Irma dove è la lanterna"

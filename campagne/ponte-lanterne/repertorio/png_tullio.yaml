@@ -115,7 +115,7 @@ battute:
       - "[narratore] Tullio batte il dito su una pagina fitta, e quasi sorride."
       - "[png_tullio] Paga in canzoni, quello. Stonate."
     max_usi: 1
-  - id: tul_catena_versione
+  - id: tul_catena_domanda
     chi: png_tullio
     tipo: menzogna
     quando: "un PG chiede a Tullio di aspettare, o perché chiuderà al terzo tocco"
@@ -136,7 +136,7 @@ battute:
     temi: [obbedisci, obbedire, paura, debito, tetto]
     richiede:
       privata: true
-      battute_usate: [tul_catena_versione]
+      battute_usate: [tul_catena_domanda]
       battute_non_usate: [tul_catena_arrigo, tul_catena_registro]
     testo:
       - "[narratore] Tullio chiude lo sportello della stufa e si toglie il berretto."
@@ -152,7 +152,7 @@ battute:
     temi: [tettoia, sentito, sentite, parole, minacciato]
     richiede:
       da_pg: [pg_arrigo]
-      battute_usate: [tul_catena_versione]
+      battute_usate: [tul_catena_domanda]
       battute_non_usate: [tul_catena_casello, tul_catena_registro]
     testo:
       - "[narratore] Tullio smette di battere la chiave, e abbassa la voce."
