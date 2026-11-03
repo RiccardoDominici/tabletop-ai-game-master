@@ -1,0 +1,54 @@
+# Tavolo distratto e casinaro: si parlano sopra, scherzano, si dividono tra casera, stalla e sasso, provano cose sceme e forzate (cercare, afferrare, ballare, braccio di ferro, cantare).
+# Scrivono di fretta dal telefono, con qualche typo, qualche "ahah" e qualche maiuscola sbagliata.
+# Azioni fuori copione: nando canta alla sposa per farla parlare, remo chiede a gaspare di firmare il contratto al tramonto, gunda sfida il custode a braccio di ferro per il libro, vanda propone il trenino per cercare l'anello sotto la neve.
+# Segni di scena aggiunti dall'autore dopo la scrittura cieca (le azioni non sono cambiate): servono alla misura del validatore.
+scena: scena_casera
+pg: [pg_nando, pg_gunda, pg_remo, pg_vanda]
+turni:
+  - - {pg: pg_nando, azione: "ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso"}
+    - {pg: pg_gunda, azione: "ferma tutti, mani dove si vedono, io sorrido e basta"}
+    - {pg: pg_remo, azione: "adelina la scatolina vuota la peso a occhio, varra due fiorini"}
+  - - {pg: pg_vanda, azione: "ahah remo non rubare alla festa, ti metto a fare il palo"}
+    - {pg: pg_nando, azione: "ettore col bastone, canzone per te: il vecchio batte il legno, ta ta ta, ballate!"}
+    - {pg: pg_gunda, azione: "quei due si guardano storto, mi metto in mezzo facendo la faccia della colomba"}
+  - - {pg: pg_remo, azione: "vanda scommetto un formaggio che il vento non c'entra niente, ahah"}
+    - {pg: pg_gunda, azione: "ettore ha l'aria di uno che ha perso la scatola e la dignita, lo dico a voce alta"}
+    - {pg: pg_nando, azione: "suoniamo la marcia dei muli, Gigia balla anche lei"}
+  - - {pg: pg_remo, azione: "scendo in cantina a controllare le forme, la scaletta e mia"}
+    - {pg: pg_vanda, azione: "remo ferma, scendo io, la cantina la conosco dai muli"}
+    - {pg: pg_nando, azione: "io seguo la fisarmonica. chi scappa dietro i sacchi lo facciamo ballare"}
+  - - {pg: pg_nando, azione: "treccia rossa! esci fuori, ti canto la canzone della treccia a squarciagola"}
+    - {pg: pg_gunda, azione: "ferma nando, la prendo io per il braccio, piano, tipo sacco di farina"}
+    - {pg: pg_remo, azione: "gunda il pugno chiuso fammelo vedere, sono curioso ahah"}
+  - - {pg: pg_gunda, azione: "vanda braccio di ferro io contro te, chi perde paga il vino"}
+    - {pg: pg_vanda, azione: "va bene, ma se perdi giuro che ti appoggio un basto sulla testa"}
+    - {pg: pg_remo, azione: "gaspare il contratto del prato alto lo firmi dopo il tramonto se le nozze saltano? la penna e mia"}
+  - - {scena: scena_casa_bonfanti}
+    - {pg: pg_nando, azione: "le scale scricchiolano, faccio la scala musicale: do re mi scricchiolo"}
+    - {pg: pg_vanda, azione: "ferma! io salgo, le mule sulle scale non ci vanno"}
+    - {pg: pg_remo, azione: "sposa bella, mi fai un sorriso? lo porto a valle come pegno"}
+  - - {pg: pg_gunda, azione: "stalla! odore di fieno, mi nascondo sotto la mangiatoia e aspetto"}
+    - {pg: pg_vanda, azione: "bastiano! dov'eri a mezzogiorno? fammi vedere le mani, subito"}
+    - {pg: pg_nando, azione: "sposa, ti canto una canzone muta: fai cenno se ti piace, anche solo con gli occhi"}
+  - - {pg: pg_remo, azione: "scommessa: chi apre per primo i cassetti del gaspare ha vinto. zio gaspare, io apro il tuo"}
+    - {pg: pg_vanda, azione: "remo aspetta, li apro io, ho le mani piu grosse"}
+    - {pg: pg_gunda, azione: "cassetti no. ok basta, vado a vedere cosa c'e sotto la scala"}
+  - - {pg: pg_nando, azione: "zio gaspare, pagami la mezza paga e ti canto la canzone del cassetto"}
+    - {pg: pg_remo, azione: "gaspare sei sicuro di non voler firmare il patto ora? ti presto la penna"}
+    - {pg: pg_vanda, azione: "bastiano ti tiro un calcio di mula se mi menti ahah. ferma la mano!"}
+  - - {scena: scena_sasso}
+    - {pg: pg_gunda, azione: "rifacciamo il ballo al sasso: tutti in fila, la carica dei nani!"}
+    - {pg: pg_nando, azione: "il sole sta sotto il passo: ballo finale, tutti in trenino!"}
+    - {pg: pg_remo, azione: "agnese se non parli dimmi solo si o no con la testa, come una contrattazione ahah"}
+  - - {pg: pg_vanda, azione: "ettore, il vento: era vento o hai pianto? lo dico in faccia a tutto il paese"}
+    - {pg: pg_gunda, azione: "braccio di ferro col custode per il libro! chi vince sfoglia la pagina"}
+    - {pg: pg_nando, azione: "custode, ti canto la canzone del libro, la sai? facciamo il coro"}
+  - - {pg: pg_gunda, azione: "ehi tutti, il custode ha un libro con roba di quei due, sessant'anni fa! ah ops"}
+    - {pg: pg_remo, azione: "gunda dillo piu piano, cosi ci scrivo sopra il contratto ahah"}
+    - {pg: pg_vanda, azione: "sessant'anni fa? custode, la neve era la stessa di oggi?"}
+  - - {pg: pg_remo, azione: "sole a una spanna dal passo, ultima chiamata: firmo il contratto con la penna in mano"}
+    - {pg: pg_nando, azione: "lanterne, dondolate! ballo finale con la fisarmonica sulla schiena"}
+    - {pg: pg_gunda, azione: "anch'io ballo, ma con lo scudo sopra la testa e la colomba storta"}
+  - - {pg: pg_vanda, azione: "chi ha l'anello? tutti in fila e ci guardiamo le mani"}
+    - {pg: pg_nando, azione: "tutti in trenino a cercare l'anello sotto la neve! uno-due-tre, sotto!"}
+    - {pg: pg_gunda, azione: "ok, nessuno tira il vestito della sposa, lo dico adesso"}

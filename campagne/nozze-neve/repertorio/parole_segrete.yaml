@@ -62,7 +62,7 @@ parole:
   - parola: "la lettera chiusa nella giacca"
     regex: "\\blettera\\b[^.]{0,40}\\b(chiusa|ceralacca|giacca|rimandat)|\\b(ceralacca|rimandat)\\w*[^.]{0,40}\\blettera\\b|\\bper adelina\\b"
     fatti: [f_lettera_giacca, f_lettera_rimandata]
-    pubblica_dopo: [nar_giacca_tasca, nar_ettore_sasso, ett_lettera_data, i_ettore_neve, nar_sigillo_dato, nar_sigillo_preso, i_lettera_chiusa, ade_neve_lettera, ade_neve_giacca]
+    pubblica_dopo: [nar_giacca_tasca, nar_ettore_sasso, nar_tonio_tasca, ett_lettera_data, i_ettore_neve, nar_sigillo_dato, nar_sigillo_preso, i_lettera_chiusa, ade_neve_lettera, ade_neve_giacca]
     nota: "la lettera che Adelina rimandò chiusa; nella scheda della casera sta in un elemento NASCOSTA"
   - parola: "la campanella la lasciò Ettore"
     regex: "\\bcampanell\\w*[^.]{0,60}\\b(ettore|morlacchi|lasciò|lasciata)\\b"

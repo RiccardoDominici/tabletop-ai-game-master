@@ -236,7 +236,7 @@ battute:
     tipo: indizio
     scena: scena_casera
     quando: "un PG guarda Bastiano o gli chiede dov'era a mezzogiorno"
-    temi: [bastiano, garzone, mani]
+    temi: [bastiano, garzone]
     testo:
       - "[narratore] Bastiano ha le mani nere di grasso da zoccoli, fino ai polsi."
       - "[narratore] Borbotta, senza alzare gli occhi, che a mezzogiorno ferrava la mula Gigia."
@@ -258,7 +258,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG cerca nel Libro del Sasso la prima neve di sessant'anni fa"
-    temi: [sessant, sessanta, sessantanni, mancata, saltata]
+    temi: [sessant, sessanta, sessantanni, mancat, saltat]
     testo:
       - "[narratore] Il Custode trova la pagina: sessant'anni fa, alla prima neve, nessuna benedizione."
       - "[narratore] La ragazza Bonfanti ha aspettato al Sasso fino al buio."
@@ -469,6 +469,34 @@ battute:
       - "[narratore] Una A e una E, con sotto una fila di tacche, sono più vecchie delle altre."
       - "[narratore] Eppure i solchi sono puliti dal muschio, come se qualcuno li grattasse ogni anno."
     effetti: {rivela_indizi: [i_iniziali], fatti_noti: [f_iniziali]}
+    max_usi: 1
+
+  # --- lo sposo, comparsa senza voce: parla per bocca del narratore -------------------------------------
+  - id: nar_tonio
+    chi: narratore
+    tipo: momento
+    scena: [scena_casera, scena_sasso]
+    quando: "un PG parla con Tonio, lo sposo"
+    temi: [tonio, sposo]
+    testo:
+      - "[narratore] Tonio diventa rosso fino alle orecchie, e si rigira il cappello tra le mani grosse."
+      - "[narratore] Borbotta che vuole sposarsi oggi, non a primavera, e che al nonno non si risponde."
+    varianti:
+      - ["[narratore] Tonio si stringe nelle spalle larghe e guarda verso il passo.", "[narratore] Dice che senza anello domattina scende a valle con i muli, e che non è giusto."]
+    max_usi: 2
+  - id: nar_tonio_tasca
+    chi: narratore
+    tipo: momento
+    scena: [scena_casera, scena_sasso]
+    quando: "l'amica d'infanzia di Tonio gli chiede che cosa tiene il nonno nella giacca"
+    temi: [lettera, giacca, tonio]
+    richiede: {da_pg: [pg_ida]}
+    testo:
+      - "[narratore] Tonio guarda verso il nonno, poi abbassa la voce."
+      - "[narratore] La lettera sta nella tasca di dentro della giacca, a sinistra."
+      - "[narratore] Il nonno la tocca quando crede di non essere visto."
+      - "[narratore] Quando balla, dice, la giacca la appende alla panca."
+    effetti: {fatti_noti: [f_lettera_giacca]}
     max_usi: 1
 
   # --- momenti ----------------------------------------------------------------------------------------

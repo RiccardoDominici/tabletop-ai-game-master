@@ -1,0 +1,47 @@
+# Tavolo investigativo: interrogano uno per uno, guardano le impronte e i dettagli, chiedono del passato, cercano di parlare in privato con chi tace (sposa, Tonio, Bastiano).
+# Scrivono con calma dal telefono: frasi corte, domande dirette agli NPC per nome, qualche lettera minuscola.
+# Segni di scena aggiunti dall'autore dopo la scrittura cieca (le azioni non sono cambiate): servono alla misura del validatore.
+scena: scena_casera
+pg: [pg_ida, pg_livia, pg_vanda]
+turni:
+  - - {pg: pg_ida, azione: "adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla"}
+    - {pg: pg_livia, azione: "zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi"}
+    - {pg: pg_vanda, azione: "ettore, sei salito al sasso stamattina? dillo senza scappare"}
+  - - {pg: pg_livia, azione: "guardo le impronte nella neve che entra dalla porta di dietro della cantina: quante persone sono passate, e in che direzione?"}
+    - {pg: pg_ida, azione: "tonio, sei pallido. di cosa hai paura adesso, del sasso o di tuo nonno?"}
+    - {pg: pg_vanda, azione: "bastiano, fammi vedere le mani. cosa c'è di nero sulle dita?"}
+  - - {pg: pg_ida, azione: "adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?"}
+    - {pg: pg_vanda, azione: "ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?"}
+    - {pg: pg_livia, azione: "zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione"}
+  - - {scena: scena_casa_bonfanti}
+    - {pg: pg_livia, azione: "zelia, le lettere d'amore della nonna: dove le hai messe? e chi le ha firmate con la E lo sa?"}
+    - {pg: pg_ida, azione: "tonio, cosa ti ha detto il nonno nella settimana in cui non ti ha parlato? provi a ricordarlo bene"}
+    - {pg: pg_vanda, azione: "gaspare, dove stavi tu a mezzogiorno? e i cassetti della cucina li apri sempre così in fretta?"}
+  - - {scena: scena_casera}
+    - {pg: pg_vanda, azione: "bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?"}
+    - {pg: pg_ida, azione: "tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?"}
+    - {pg: pg_livia, azione: "ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?"}
+  - - {scena: scena_casa_bonfanti}
+    - {pg: pg_ida, azione: "agnese, non ti chiedo di parlare. se ti va, fai un cenno: qualcuno ti ha detto di non dire niente fino al sì?"}
+    - {pg: pg_livia, azione: "zia adelina, la scatolina: vuoi che la guardi con te davanti a tutti, o preferisci a quattr'occhi?"}
+    - {pg: pg_vanda, azione: "gaspare, il tuo fiato ha odore di vino e di paura. cosa hai nascosto nel cassetto?"}
+  - - {pg: pg_livia, azione: "agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no"}
+    - {pg: pg_vanda, azione: "bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?"}
+    - {pg: pg_ida, azione: "adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?"}
+  - - {scena: scena_casera}
+    - {pg: pg_ida, azione: "custode, il libro del sasso: ci sono nozze saltate in passato? mi fai leggere la pagina prima del sole"}
+    - {pg: pg_vanda, azione: "ettore, guardami negli occhi e dimmi cosa hai visto al sasso all'alba"}
+    - {pg: pg_livia, azione: "zelia, il velo lo stai sistemando per la sorella: ti tremano le mani. cosa hai paura che esca dal cassetto?"}
+  - - {pg: pg_livia, azione: "agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente"}
+    - {pg: pg_ida, azione: "custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?"}
+    - {pg: pg_vanda, azione: "tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?"}
+  - - {pg: pg_vanda, azione: "fermi tutti. metto in fila: alba al sasso, mezzogiorno nella stalla, cassetto di gaspare. chi manca?"}
+    - {pg: pg_ida, azione: "adelina, il sole è a una spanna: se l'anello non torna, cosa succede davvero? dimmelo chiaro"}
+    - {pg: pg_livia, azione: "zelia, io ti credo. chi ha messo le mani nel cassetto della cucina oggi?"}
+  - - {scena: scena_sasso}
+    - {pg: pg_livia, azione: "ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?"}
+    - {pg: pg_ida, azione: "tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?"}
+    - {pg: pg_vanda, azione: "ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode"}
+  - - {pg: pg_ida, azione: "custode, prima di aprire il libro: chi ha chiesto a voi due di tenere la pace? lo sapete?"}
+    - {pg: pg_vanda, azione: "bastiano, vieni con me al sasso. se stai dicendo la verità, lo dici anche davanti a loro"}
+    - {pg: pg_livia, azione: "agnese, zelia dice che la nonna ha scritto altre lettere. fai un cenno se vuoi che le cerchi"}

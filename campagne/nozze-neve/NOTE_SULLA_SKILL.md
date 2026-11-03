@@ -95,3 +95,21 @@ nell'ordine in cui le incontro; in fondo, i tempi e la classifica dei problemi p
 13. **`genera.py --dry-run` dice «manifest: …/immagini/manifest.json» ma non lo scrive.** Va bene così, ma la
    riga sembra un file creato: a un primo sguardo pensavo che la prova a secco avesse reso la campagna
    «pronta». Il dry-run dell'audio lo dice meglio («manifest sarebbe …»).
+
+## Passo 12
+
+14. **Il README dei copioni è ancora quello di prova-f0, e non dice dei segni di scena.** Il passo 12 dice
+   «con la forma di `esperimenti/copioni/README.md`», ma quel file descrive solo `{pg, azione}` e il confine
+   di lettura di prova-f0; non dice che `copioni.py` legge `scena:` in cima e `- {scena: <id>}` tra i turni,
+   né `privata: true` sulle azioni. Il subagente cieco non poteva saperlo (e non conosce gli id delle
+   scene). Senza segni di scena la misura gira tutta nella prima scena: le battute di Zelia, che sta solo a
+   casa Bonfanti, non entravano mai. *Scelta*: ho aggiunto io i segni di scena dopo la scrittura cieca, con
+   una riga di commento, senza toccare le azioni. Il tavolo dei copioni si divide spesso (una domanda a
+   Zelia e una ad Adelina nello stesso turno), e un turno ha una scena sola: la misura resta approssimata.
+
+15. **I copioni trovano un buco che la tabella di copertura non chiede: le comparse importanti.** Il copione
+   cieco parla a Tonio, lo sposo, cinque volte su dodici turni (l'aggancio di Ida è lui), e alla sposa
+   quattro. La tabella del §8 chiede battute per ogni PNG con scheda, non per le comparse che i giocatori
+   cercheranno. *Scelta*: due battute del narratore per Tonio (una con il cancello `da_pg` di Ida). La
+   tabella potrebbe dire: «per ogni comparsa nominata in un aggancio o in una situazione comune, almeno
+   una battuta del narratore».
