@@ -42,6 +42,7 @@ import { MasterHeadless } from './master';
 import { ProiettoreVirtuale } from './proiettore';
 import { azioniPrivate, OsservatoreTavolo, testoTavolo } from './tavolo';
 import { trascrizione } from './trascrizione';
+import { versioneCodice } from './versione';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 const CAMPI_LATENZA = ['finestra_ms', 'voce_sveglia', 'llm_primo_token', 'llm_prima_frase', 'voce_richiesta', 'voce_primo_audio', 'schermo_inizio_audio', 'llm_fine', 'audio_fine'] as const;
@@ -178,6 +179,10 @@ async function main(): Promise<void> {
   const inizioEsperimento = new Date().toISOString();
   console.log(`[${etichetta}] campagna ${o.campagna}, porta ${o.porta}, modalità ${modo}: riavvio del server di prova…`);
 
+  // Versione del codice PRIMA di avviare: è quella che il server carica.
+  const versione = versioneCodice(o.campagna);
+  if (versione.modificati.length) console.warn(`[${etichetta}] attenzione: albero non pulito (${versione.modificati.length} file modificati sotto server/prompt/campagna); per una run riproducibile usa un worktree su un commit`);
+
   // 1. Server da zero.
   const token = nuovoToken();
   avviaServer(o, token);
@@ -258,6 +263,8 @@ async function main(): Promise<void> {
     sessione,
     // Condizioni della macchina durante la prova (es. altri carichi sulla GPU), da ESPERIMENTO_NOTA.
     nota_ambiente: process.env['ESPERIMENTO_NOTA'] ?? null,
+    // Commit su cui gira il server e file non committati che contano (vuoto = albero pulito).
+    codice: versione,
     turni: turni.length,
     turni_copione: copione.turni.length,
     cambi_di_scena: cambiScena,
