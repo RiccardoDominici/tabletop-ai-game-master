@@ -49,6 +49,28 @@ VIETATE = (r"traffic|\bcars?\b|street|\bcity\b|urban|\btrain|\btram\b|metro|subw
 # Le stesse, meno quelle che per folla e taverna servono (le voci SONO il suono).
 VIETATE_SENZA_VOCI = VIETATE.replace(r"interview|speech|lecture|", "")
 BUONE = r"ambien|field.?record|soundscape|\bloop|sound effect|\bsfx|\bfx\b|nature|recording|atmos"
+# Titoli da disco o da concerto: un «9. Purple Rain» o un «Live at the … Tavern» dichiarati CC0 sono
+# brani musicali caricati con la licenza sbagliata, non ambienti. Si scartano dal titolo.
+TITOLI_DA_DISCO = (r"^\s*\d+\s*[.\-)]\s|\b(19|20)\d\d-\d\d-\d\d\b|\bd\d+t\d+|\blive (at|in)\b|\bconcert|\bvol\.?\s*\d|compilation|\brecords\b|\balbum\b|"
+                   r"\b(ep|lp)\b|remaster|\bfeat\.|\bcover\b|\bdemo\b|\bsession|\binterv|\bintervjuer|\bpodcast|\bshow\b|\bmixtape")
+
+
+def ammesso(titolo: str, testo: str, parole: tuple[str, ...], con_voci: bool) -> str | None:
+    """None se il candidato va bene, altrimenti il motivo dello scarto (vale anche per il fondo già scaricato).
+
+    Regole: niente parole vietate (traffico, musica, parlato…), niente titoli da disco, e il titolo
+    deve contenere almeno una delle parole cercate (una parola solo nei soggetti non basta: così
+    passavano interviste svedesi come «animali della fattoria»).
+    """
+    t = titolo.lower()
+    if re.search(VIETATE_SENZA_VOCI if con_voci else VIETATE, f"{t} {testo.lower()}"):
+        return "parole vietate (traffico, musica, parlato…)"
+    if re.search(TITOLI_DA_DISCO, t):
+        return "titolo da disco o da concerto"
+    radici = {w[:5] for q in parole for w in q.lower().split() if len(w) >= 3}
+    if not any(r in t for r in radici):
+        return "il titolo non nomina il suono cercato"
+    return None
 
 _ultima = 0.0
 
@@ -104,7 +126,8 @@ def cerca(parole: str, con_voci: bool, durata: tuple[float, float], righe: int =
     """Candidati per una query (inglese), già filtrati per parole e ordinati per punteggio."""
     licenze = " OR ".join(f'licenseurl:"{u}"' for u in LICENZE)
     termini = " AND ".join(parole.split())
-    q = f"mediatype:audio AND ({licenze}) AND (title:({termini}) OR subject:({termini}))"
+    # Fuori il Live Music Archive (etree): sono concerti, anche quando il titolo dice «Tavern».
+    q = f"mediatype:audio AND ({licenze}) AND (title:({termini}) OR subject:({termini})) AND NOT collection:etree"
     params = [("q", q), ("rows", str(righe)), ("output", "json"), ("sort[]", "downloads desc")]
     params += [("fl[]", f) for f in ("identifier", "title", "licenseurl", "creator", "subject", "description", "collection", "downloads")]
     url = f"{CERCA}?{urllib.parse.urlencode(params)}"
@@ -113,12 +136,11 @@ def cerca(parole: str, con_voci: bool, durata: tuple[float, float], righe: int =
     except Exception as e:
         log.warning("archive.org: ricerca «%s» fallita: %s", parole, e)
         return []
-    vietate = VIETATE_SENZA_VOCI if con_voci else VIETATE
     out = []
     for d in docs:
         titolo = _testo(d.get("title"))
         testo = f"{titolo} {_testo(d.get('subject'))} {_testo(d.get('description'))[:600]}".lower()
-        if re.search(vietate, testo):
+        if ammesso(titolo, testo, (parole,), con_voci):
             continue
         if d.get("licenseurl") not in LICENZE:
             continue

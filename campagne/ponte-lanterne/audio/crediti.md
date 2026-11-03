@@ -1,0 +1,34 @@
+# Crediti audio della campagna «ponte-lanterne»
+
+Generato da strumenti/audio/genera_audio.py: non modificare a mano.
+
+## Musica
+
+- `luogo_n_chiesa`: "Virtutes Vocis" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `luogo_n_passo_vecchio`: "Road to Hell" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `luogo_scena_borgo_basso`: "Mistake the Getaway" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `luogo_scena_casa_del_sale`: "Master of the Feast" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `luogo_scena_ponte_imbrunire`: "River of Io" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `luogo_scena_terzo_tocco`: "Mary Celeste" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `umore_combattimento_epico`: "Curse of the Scarab" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `umore_esplorazione_tesa`: "Spider Eyes" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `umore_inseguimento`: "Movement Proposition" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `umore_lutto`: "Plaint" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `umore_rito_sacro`: "Virtutes Instrumenti" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+- `umore_taverna_calda`: "Galway" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/
+
+## Ambienti ed effetti
+
+- `amb_fiume_archivio-waterfallingali.m4a`: «Waterfall In Galicia, Spain» di https://freesound.org/people/ivojesus/, Internet Archive, CC0 1.0 (https://archive.org/details/WaterfallInGaliciaSpain)
+- `amb_folla_archivio-crowdtalkinglou.m4a`: «Crowd Talking Loudly D.D.Teoli Jr.» di D.D.Teoli Jr., Internet Archive, Public Domain Mark 1.0 (https://archive.org/details/CrowdTalkingLoudlyD.D.TeoliJr.)
+- `amb_fuoco_sintesi.m4a`: sintetizzato dalla pipeline (fuoco), nessuna licenza esterna.
+- `amb_pioggia_archivio-soundica-fs-333.m4a`: «Bako National Park, Borneo Island, Rain Forest Ambience» di sconosciuto, Internet Archive, CC0 1.0 (https://archive.org/details/soundica-fs-333225-bako-national-park-borneo-island-rain-fo)
+- `amb_stalla_archivio-2020-05-26-19-5.m4a`: «Geese flying over, 5-26-2020 8 P.M.» di sconosciuto, Internet Archive, Public Domain Mark 1.0 (https://archive.org/details/2020-05-26-19-52-24)
+- `sfx_campana_soundfont.m4a`: sintetizzato dalla pipeline (campana), nessuna licenza esterna.
+- `sfx_chiave_archivio-slidelockpro-v1.m4a`: «Slide Lock Pro» di S.L.P, Internet Archive, Public Domain Mark 1.0 (https://archive.org/details/SlideLockPro.v1.5)
+- `sfx_monete_archivio-coinsfallingout.m4a`: «Coins falling out of a vending machine» di sconosciuto, Internet Archive, CC0 1.0 (https://archive.org/details/CoinsFallingOutOfAVendingMachine)
+- `sfx_porta_archivio-door-knob-sound.m4a`: «Door knob sounds» di sconosciuto, Internet Archive, CC0 1.0 (https://archive.org/details/door-knob-sounds)
+
+## Temi dei personaggi
+
+Temi dei personaggi: composti dalla pipeline (motivo deterministico) e suonati con GeneralUser GS di S. Christian Collins (https://www.schristiancollins.com/generaluser), licenza d'uso libera.

@@ -47,6 +47,7 @@ log = logging.getLogger("audio.genera")
 
 LOOP_MUSICA = {"obiettivo_s": 150.0, "minimo_s": 100.0, "massimo_s": 180.0, "dissolvenza_s": 3.0}
 LIMITE_MB = 40.0
+TENTATIVI_MUSICA = 3     # brani provati per voce prima di tenere il migliore anche se ha difetti
 
 
 def volume_relativo(tipo: str, guadagno: float = 1.0) -> float:
@@ -97,35 +98,48 @@ def fai_musica(c, d, man: ManifestAudio, dry: bool, rifai: bool, rete: bool) -> 
     if brani is None:
         print("  catalogo Incompetech non in cache e niente rete: musica saltata")
         return
-    scelte = INC.scegli([(i, desc) for i, desc, _ in da_fare], prof.strumenti, prof.vietati, prof.epoca, c.id, esclusi, brani)
+    usati = set(esclusi)
     for ident, desc, extra in da_fare:
-        s = scelte.get(ident)
-        if s is None:
-            continue
-        b = s.brano
-        file = f"{ident}.m4a"
-        print(f"- {ident}: «{b.titolo}» ({b.durata_s} s, {', '.join(sorted(b.feel))}) punteggio {s.punteggio} {s.perche}")
-        if dry:
-            continue
-        try:
-            mp3 = INC.scarica_brano(b)
-            loop, info = Q.estrai_loop(Q.decodifica(mp3), **LOOP_MUSICA)
-            ctl = Q.prepara(loop, man.cartella / file, "musica", True, CACHE_LAVORO)
-        except Exception as e:
-            log.error("%s: musica non preparata: %s", ident, e)
-            continue
-        man.registra(sezione(ident), {
-            "id": ident, "tipo": "musica", **extra, "file": file, "loop": True,
-            "lufs": ctl["lufs"], "volume": volume_relativo("musica"), "durata_s": ctl["durata_s"],
-            "loop_inizio_s": ctl["loop_inizio_s"], "loop_fine_s": ctl["loop_fine_s"],
-            "titolo": b.titolo, "autore": "Kevin MacLeod", "fonte": "Incompetech", "url": b.url,
-            "licenza": INC.LICENZA, "crediti": b.crediti,
-            "scelta": {"punteggio": s.punteggio, "perche": s.perche, "descrittori": desc,
-                       "feel": sorted(b.feel), "strumenti": b.strumenti_testo, "bpm": b.bpm},
-            "loop_sorgente": {"inizio_s": info.inizio_s, "fine_s": info.fine_s, "note": info.note},
-            "controllo": _controllo_breve(ctl),
-        })
-        print(f"    → {file} {ctl['durata_s']} s, {ctl['lufs']} LUFS, {ctl['kb']} KB, {'ok' if ctl['ok'] else ctl['problemi']}")
+        scartati = []
+        for tentativo in range(TENTATIVI_MUSICA):
+            s = INC.scegli([(ident, desc)], prof.strumenti, prof.vietati, prof.epoca, c.id, usati | set(scartati), brani).get(ident)
+            if s is None:
+                break
+            b = s.brano
+            file = f"{ident}.m4a"
+            print(f"- {ident}: «{b.titolo}» ({b.durata_s} s, {', '.join(sorted(b.feel))}) punteggio {s.punteggio} {s.perche}")
+            if dry:
+                usati.add(b.titolo)
+                break
+            try:
+                mp3 = INC.scarica_brano(b)
+                loop, info = Q.estrai_loop(Q.decodifica(mp3), **LOOP_MUSICA)
+                ctl = Q.prepara(loop, man.cartella / file, "musica", True, CACHE_LAVORO)
+            except Exception as e:
+                log.error("%s: «%s» non preparato: %s", ident, b.titolo, e)
+                scartati.append(b.titolo)
+                continue
+            print(f"    → {file} {ctl['durata_s']} s, {ctl['lufs']} LUFS, {ctl['kb']} KB, {'ok' if ctl['ok'] else ctl['problemi']}")
+            # Un brano con buchi di silenzio o con una giunta che si sente non fa da sottofondo:
+            # si scarta e si prende il successivo (il motivo resta nel manifest della voce scelta).
+            gravi = [p for p in ctl["problemi"] if p.startswith(("silenzi", "giunta"))]
+            if gravi and tentativo < TENTATIVI_MUSICA - 1:
+                scartati.append(b.titolo)
+                print(f"    scartato: {gravi}")
+                continue
+            usati.add(b.titolo)
+            man.registra(sezione(ident), {
+                "id": ident, "tipo": "musica", **extra, "file": file, "loop": True,
+                "lufs": ctl["lufs"], "volume": volume_relativo("musica"), "durata_s": ctl["durata_s"],
+                "loop_inizio_s": ctl["loop_inizio_s"], "loop_fine_s": ctl["loop_fine_s"],
+                "titolo": b.titolo, "autore": "Kevin MacLeod", "fonte": "Incompetech", "url": b.url,
+                "licenza": INC.LICENZA, "crediti": b.crediti,
+                "scelta": {"punteggio": s.punteggio, "perche": s.perche, "descrittori": desc,
+                           "feel": sorted(b.feel), "strumenti": b.strumenti_testo, "bpm": b.bpm, "scartati": scartati},
+                "loop_sorgente": {"inizio_s": info.inizio_s, "fine_s": info.fine_s, "note": info.note},
+                "controllo": _controllo_breve(ctl),
+            })
+            break
     _alias_brani(d, man, dry)
 
 

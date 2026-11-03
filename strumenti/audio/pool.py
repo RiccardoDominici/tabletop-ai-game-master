@@ -57,7 +57,11 @@ class Pool:
 
     def buone(self, tag: str, tipo: str) -> list[dict]:
         """Le voci buone per un tag, la migliore prima (meno scarti di misura, poi più lunga)."""
-        ok = [v for v in self.voci.values() if v["ok"] and tag in v["tag"] and v["tipo"] == tipo and (CACHE_POOL / v["file"]).exists()]
+        # Le regole sul titolo valgono anche per ciò che è già in cache: se si stringono, il fondo si ripulisce da sé.
+        query = V.AMBIENTI[tag].query if tipo == "ambiente" else V.EFFETTI.get(tag, (tag,))
+        con_voci = tag in ("folla", "taverna")
+        ok = [v for v in self.voci.values() if v["ok"] and tag in v["tag"] and v["tipo"] == tipo
+              and (CACHE_POOL / v["file"]).exists() and not archivio.ammesso(v["titolo"], "", query, con_voci)]
         return sorted(ok, key=lambda v: (-v.get("qualita", 0), v["id"]))
 
     # --- crescita ---------------------------------------------------------------------------
@@ -148,6 +152,8 @@ def misura(percorso: Path, tag: str, tipo: str) -> dict:
         qualita = pia * 3 - lra / 10 + min(durata, 120) / 120
     else:
         rilievo = float(np.max(env) - np.median(env))
+        if durata < 0.3:
+            scarti.append(f"troppo corto: {durata:.2f} s")
         misure["rilievo_db"] = round(rilievo, 1)
         if rilievo < 10:
             scarti.append(f"nessun colpo netto (rilievo {rilievo:.0f} dB)")

@@ -1,0 +1,954 @@
+{
+ "profilo": {
+  "id": "ponte-lanterne",
+  "modo": "misolidio",
+  "tonica": 7,
+  "bpm": 88,
+  "strumenti": [
+   "fisarmonica",
+   "contrabbasso",
+   "clarinetto",
+   "campane"
+  ],
+  "vietati": [
+   "percussioni"
+  ],
+  "epoca": "antica",
+  "umore_base": "esplorazione_tesa",
+  "motivo": null,
+  "perche": {
+   "modo": [
+    "tono: caldo",
+    "tono: paese",
+    "tono: sorris",
+    "tono: umano"
+   ],
+   "tonica": "dall'id della campagna",
+   "strumenti": "fisarmonica, contrabbasso pizzicato, clarinetto, una campana grave. Pioggia e fiume come tappeto. Niente percussioni da battaglia.",
+   "epoca": [
+    "stile_immagini: lantern",
+    "stile_immagini: old italian",
+    "stile_immagini: storybook",
+    "tono: paese"
+   ]
+  }
+ },
+ "luoghi": [
+  {
+   "id": "luogo_scena_ponte_imbrunire",
+   "nome": "Il Ponte delle Lanterne, al primo tocco",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "media",
+    "ambientazioni": [
+     "ponte",
+     "fiume",
+     "borgo",
+     "casa"
+    ],
+    "ora": "imbrunire",
+    "meteo": [
+     "pioggia",
+     "gelo",
+     "nebbia"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "fiume",
+     0.6
+    ],
+    [
+     "pioggia",
+     0.41
+    ]
+   ],
+   "transizioni": [
+    "taverna_calda",
+    "inseguimento"
+   ],
+   "perche": {
+    "umore": "scena.musica.tag",
+    "ambientazioni": {
+     "ponte": {
+      "punti": 5.7,
+      "prove": [
+       "nome: ponte",
+       "prompt_luogo: bridge",
+       "invarianti: ponte",
+       "elementi: ponte"
+      ]
+     },
+     "fiume": {
+      "punti": 4.3,
+      "prove": [
+       "sensi: fium",
+       "prompt_luogo: river",
+       "invarianti: fium",
+       "apertura: fium"
+      ]
+     },
+     "borgo": {
+      "punti": 3.1,
+      "prove": [
+       "prompt_luogo: quarter",
+       "invarianti: borgo",
+       "apertura: borgo",
+       "descrizione: borgo"
+      ]
+     },
+     "casa": {
+      "punti": 1.5,
+      "prove": [
+       "prompt_luogo: house",
+       "descrizione: casa"
+      ]
+     }
+    },
+    "energia": "intensità 3, umore esplorazione_tesa",
+    "ora": {
+     "imbrunire": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: dusk"
+      ]
+     },
+     "notte": {
+      "punti": 0.4,
+      "prove": [
+       "stile_immagini: lantern light",
+       "stile_immagini: night"
+      ]
+     }
+    },
+    "meteo": {
+     "pioggia": {
+      "punti": 4.8,
+      "prove": [
+       "sensi: piogg",
+       "prompt_luogo: rain",
+       "elementi: piogg",
+       "apertura: piove"
+      ]
+     },
+     "gelo": {
+      "punti": 1.2,
+      "prove": [
+       "sensi: gelat"
+      ]
+     },
+     "nebbia": {
+      "punti": 0.35,
+      "prove": [
+       "tono: mist"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 0.5,
+     "esterno": 5.06
+    },
+    "ambiente": {
+     "fiume": {
+      "punti": 5.95,
+      "prove": [
+       "sensi: arcat",
+       "sensi: fium",
+       "prompt_luogo: river",
+       "invarianti: arcat"
+      ]
+     },
+     "pioggia": {
+      "punti": 5.05,
+      "prove": [
+       "sensi: bagnat",
+       "sensi: piogg",
+       "prompt_luogo: rain",
+       "elementi: piogg"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "luogo_scena_borgo_basso",
+   "nome": "Il Borgo Basso sott'acqua",
+   "alias_di": null,
+   "musica": {
+    "umore": "inseguimento",
+    "energia": "alta",
+    "ambientazioni": [
+     "borgo",
+     "ponte",
+     "casa",
+     "montagna"
+    ],
+    "ora": "notte",
+    "meteo": [
+     "pioggia",
+     "gelo",
+     "vento",
+     "nebbia"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "pioggia",
+     0.55
+    ],
+    [
+     "fiume",
+     0.45
+    ],
+    [
+     "stalla",
+     0.15
+    ]
+   ],
+   "transizioni": [
+    "esplorazione_tesa",
+    "lutto"
+   ],
+   "perche": {
+    "umore": "scena.musica.tag",
+    "ambientazioni": {
+     "borgo": {
+      "punti": 5.92,
+      "prove": [
+       "nome: borgo",
+       "prompt_luogo: alley",
+       "prompt_luogo: quarter",
+       "invarianti: vicol"
+      ]
+     },
+     "ponte": {
+      "punti": 2.9,
+      "prove": [
+       "prompt_luogo: bridge",
+       "invarianti: ponte",
+       "elementi: ponte",
+       "descrizione: ponte"
+      ]
+     },
+     "casa": {
+      "punti": 1.9,
+      "prove": [
+       "invarianti: casa",
+       "elementi: stanz",
+       "descrizione: casa"
+      ]
+     },
+     "montagna": {
+      "punti": 1.9,
+      "prove": [
+       "elementi: valle",
+       "apertura: valle",
+       "descrizione: valle"
+      ]
+     }
+    },
+    "energia": "intensità 4, umore inseguimento",
+    "ora": {
+     "notte": {
+      "punti": 1.4,
+      "prove": [
+       "prompt_luogo: night",
+       "stile_immagini: lantern light",
+       "stile_immagini: night"
+      ]
+     }
+    },
+    "meteo": {
+     "pioggia": {
+      "punti": 3.0,
+      "prove": [
+       "prompt_luogo: rain",
+       "invarianti: piogg",
+       "descrizione: piogg",
+       "stile_immagini: rain"
+      ]
+     },
+     "gelo": {
+      "punti": 1.2,
+      "prove": [
+       "sensi: gelat"
+      ]
+     },
+     "vento": {
+      "punti": 1.2,
+      "prove": [
+       "sensi: folat"
+      ]
+     },
+     "nebbia": {
+      "punti": 0.35,
+      "prove": [
+       "tono: mist"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 0.6,
+     "esterno": 4.58
+    },
+    "ambiente": {
+     "pioggia": {
+      "punti": 4.38,
+      "prove": [
+       "sensi: bagnat",
+       "sensi: grondai",
+       "prompt_luogo: rain",
+       "invarianti: piogg"
+      ]
+     },
+     "fiume": {
+      "punti": 3.25,
+      "prove": [
+       "prompt_luogo: river",
+       "invarianti: argin",
+       "elementi: argin",
+       "descrizione: argin"
+      ]
+     },
+     "stalla": {
+      "punti": 2.65,
+      "prove": [
+       "sensi: stalla",
+       "elementi: oca",
+       "descrizione: oca",
+       "tono: oca"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "luogo_scena_casa_del_sale",
+   "nome": "La Casa del Sale, durante il consiglio",
+   "alias_di": null,
+   "musica": {
+    "umore": "taverna_calda",
+    "energia": "media",
+    "ambientazioni": [
+     "casa"
+    ],
+    "ora": "notte",
+    "meteo": [
+     "pioggia",
+     "nebbia"
+    ],
+    "interno": true,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "fuoco",
+     0.45
+    ],
+    [
+     "pioggia",
+     0.21
+    ],
+    [
+     "taverna",
+     0.24
+    ]
+   ],
+   "transizioni": [
+    "esplorazione_tesa"
+   ],
+   "perche": {
+    "umore": "scena.musica.tag",
+    "ambientazioni": {
+     "casa": {
+      "punti": 4.9,
+      "prove": [
+       "nome: casa",
+       "prompt_luogo: hall",
+       "elementi: studio",
+       "apertura: casa"
+      ]
+     }
+    },
+    "energia": "intensità 3, umore taverna_calda",
+    "ora": {
+     "notte": {
+      "punti": 1.4,
+      "prove": [
+       "prompt_luogo: night",
+       "stile_immagini: lantern light",
+       "stile_immagini: night"
+      ]
+     }
+    },
+    "meteo": {
+     "pioggia": {
+      "punti": 0.7,
+      "prove": [
+       "stile_immagini: rain",
+       "tono: piogg"
+      ]
+     },
+     "nebbia": {
+      "punti": 0.35,
+      "prove": [
+       "tono: mist"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 4.44,
+     "esterno": 0.57
+    },
+    "ambiente": {
+     "fuoco": {
+      "punti": 5.02,
+      "prove": [
+       "sensi: camin",
+       "prompt_luogo: fireplace",
+       "invarianti: camin",
+       "elementi: camin"
+      ]
+     },
+     "pioggia": {
+      "punti": 3.8,
+      "prove": [
+       "sensi: fradic",
+       "invarianti: bagnat",
+       "elementi: bagnat",
+       "descrizione: bagnat"
+      ]
+     },
+     "taverna": {
+      "punti": 2.19,
+      "prove": [
+       "sensi: vino",
+       "invarianti: boccal"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "luogo_scena_terzo_tocco",
+   "nome": "Il terzo tocco, sul ponte",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "alta",
+    "ambientazioni": [
+     "ponte",
+     "borgo",
+     "fiume",
+     "casa"
+    ],
+    "ora": "notte",
+    "meteo": [
+     "pioggia",
+     "gelo",
+     "nebbia"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "fiume",
+     0.6
+    ],
+    [
+     "folla",
+     0.26
+    ],
+    [
+     "pioggia",
+     0.33
+    ]
+   ],
+   "transizioni": [
+    "taverna_calda",
+    "inseguimento",
+    "lutto"
+   ],
+   "perche": {
+    "umore": "scena.musica.tag",
+    "ambientazioni": {
+     "ponte": {
+      "punti": 6.9,
+      "prove": [
+       "nome: ponte",
+       "sensi: ponte",
+       "prompt_luogo: bridge",
+       "invarianti: ponte"
+      ]
+     },
+     "borgo": {
+      "punti": 1.9,
+      "prove": [
+       "elementi: borgo",
+       "apertura: borgo",
+       "descrizione: borgo"
+      ]
+     },
+     "fiume": {
+      "punti": 1.7,
+      "prove": [
+       "sensi: fium",
+       "descrizione: fium"
+      ]
+     },
+     "casa": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: house"
+      ]
+     }
+    },
+    "energia": "intensità 5, umore esplorazione_tesa",
+    "ora": {
+     "notte": {
+      "punti": 2.7,
+      "prove": [
+       "prompt_luogo: lantern light",
+       "apertura: mezzanott",
+       "descrizione: mezzanott",
+       "stile_immagini: lantern light"
+      ]
+     }
+    },
+    "meteo": {
+     "pioggia": {
+      "punti": 1.7,
+      "prove": [
+       "prompt_luogo: rain",
+       "stile_immagini: rain",
+       "tono: piogg"
+      ]
+     },
+     "gelo": {
+      "punti": 1.2,
+      "prove": [
+       "sensi: gelat"
+      ]
+     },
+     "nebbia": {
+      "punti": 0.35,
+      "prove": [
+       "tono: mist"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 0.5,
+     "esterno": 6.06
+    },
+    "ambiente": {
+     "fiume": {
+      "punti": 3.63,
+      "prove": [
+       "sensi: arcat",
+       "sensi: fium",
+       "invarianti: arcat",
+       "elementi: arcat"
+      ]
+     },
+     "folla": {
+      "punti": 2.85,
+      "prove": [
+       "sensi: paese",
+       "prompt_luogo: crowd",
+       "invarianti: folla",
+       "elementi: paese"
+      ]
+     },
+     "pioggia": {
+      "punti": 1.7,
+      "prove": [
+       "prompt_luogo: rain",
+       "stile_immagini: rain",
+       "tono: piogg"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "luogo_n_ponte",
+   "nome": "Il Ponte delle Lanterne",
+   "alias_di": "luogo_scena_ponte_imbrunire",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_ponte_imbrunire"
+   }
+  },
+  {
+   "id": "luogo_n_borgo_basso",
+   "nome": "Il Borgo Basso sott'acqua",
+   "alias_di": "luogo_scena_borgo_basso",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_borgo_basso"
+   }
+  },
+  {
+   "id": "luogo_n_casa_del_sale",
+   "nome": "La Casa del Sale",
+   "alias_di": "luogo_scena_casa_del_sale",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_casa_del_sale"
+   }
+  },
+  {
+   "id": "luogo_e_terzo_tocco",
+   "nome": "Il terzo tocco",
+   "alias_di": "luogo_scena_terzo_tocco",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_terzo_tocco"
+   }
+  },
+  {
+   "id": "luogo_n_chiesa",
+   "nome": "La chiesa di San Clemente",
+   "alias_di": null,
+   "musica": {
+    "umore": "rito_sacro",
+    "energia": "bassa",
+    "ambientazioni": [
+     "chiesa",
+     "ponte",
+     "borgo"
+    ],
+    "ora": "notte",
+    "meteo": [
+     "pioggia",
+     "nebbia"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "folla",
+     0.35
+    ]
+   ],
+   "transizioni": [],
+   "perche": {
+    "umore": "ambientazione chiesa",
+    "ambientazioni": {
+     "chiesa": {
+      "punti": 3.0,
+      "prove": [
+       "nome: chiesa",
+       "abbozzo: curato"
+      ]
+     },
+     "ponte": {
+      "punti": 1.0,
+      "prove": [
+       "abbozzo: ponte"
+      ]
+     },
+     "borgo": {
+      "punti": 1.0,
+      "prove": [
+       "abbozzo: borgo"
+      ]
+     }
+    },
+    "energia": "intensità None, umore rito_sacro",
+    "ora": {
+     "notte": {
+      "punti": 0.4,
+      "prove": [
+       "stile_immagini: lantern light",
+       "stile_immagini: night"
+      ]
+     }
+    },
+    "meteo": {
+     "pioggia": {
+      "punti": 0.7,
+      "prove": [
+       "stile_immagini: rain",
+       "tono: piogg"
+      ]
+     },
+     "nebbia": {
+      "punti": 0.35,
+      "prove": [
+       "tono: mist"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 0,
+     "esterno": 1.15
+    },
+    "ambiente": {
+     "folla": {
+      "punti": 1.06,
+      "prove": [
+       "abbozzo: famiglie",
+       "abbozzo: vecchi",
+       "tono: paese"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "luogo_n_passo_vecchio",
+   "nome": "Il Passo Vecchio",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "media",
+    "ambientazioni": [
+     "strada",
+     "montagna"
+    ],
+    "ora": "notte",
+    "meteo": [
+     "pioggia",
+     "nebbia"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "fiume",
+     0.6
+    ]
+   ],
+   "transizioni": [],
+   "perche": {
+    "umore": "umore di base della campagna",
+    "ambientazioni": {
+     "strada": {
+      "punti": 3.15,
+      "prove": [
+       "nome: passo",
+       "abbozzo: mulattier",
+       "abbozzo: strad"
+      ]
+     },
+     "montagna": {
+      "punti": 1.15,
+      "prove": [
+       "abbozzo: collin",
+       "abbozzo: valle"
+      ]
+     }
+    },
+    "energia": "intensità None, umore esplorazione_tesa",
+    "ora": {
+     "notte": {
+      "punti": 1.4,
+      "prove": [
+       "abbozzo: buio",
+       "stile_immagini: lantern light",
+       "stile_immagini: night"
+      ]
+     }
+    },
+    "meteo": {
+     "pioggia": {
+      "punti": 0.7,
+      "prove": [
+       "stile_immagini: rain",
+       "tono: piogg"
+      ]
+     },
+     "nebbia": {
+      "punti": 0.35,
+      "prove": [
+       "tono: mist"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 0,
+     "esterno": 1.45
+    },
+    "ambiente": {
+     "fiume": {
+      "punti": 1.35,
+      "prove": [
+       "abbozzo: argin",
+       "stile_immagini: river"
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "effetti": {
+  "catena": [
+   "regole_prosa: catena",
+   "luogo_scena_ponte_imbrunire.sensi: catena",
+   "luogo_scena_ponte_imbrunire.elementi: catena",
+   "luogo_scena_ponte_imbrunire.descrizione: catena"
+  ],
+  "campana": [
+   "regole_prosa: campan",
+   "regole_prosa: tocchi",
+   "regole_prosa: tocco",
+   "luogo_scena_ponte_imbrunire.nome: tocco"
+  ],
+  "porta": [
+   "luogo_scena_borgo_basso.elementi: le porte",
+   "luogo_scena_casa_del_sale.elementi: la porta",
+   "luogo_scena_casa_del_sale.descrizione: una porta"
+  ],
+  "monete": [
+   "regole_prosa: fiorin",
+   "regole_prosa: monete",
+   "regole_prosa: pedaggi",
+   "regole_prosa: soldi"
+  ],
+  "chiave": [
+   "luogo_scena_ponte_imbrunire.elementi: chiave",
+   "luogo_scena_casa_del_sale.elementi: chiave",
+   "luogo_scena_casa_del_sale.elementi: lucchett"
+  ]
+ },
+ "temi": [
+  {
+   "png": "png_bice",
+   "nome": "Bice Bellora",
+   "carattere": [
+    "gioviale",
+    "burbero"
+   ],
+   "strumento": "fisarmonica",
+   "modo": "misolidio",
+   "registro": "alto",
+   "trasformazioni": [
+    "diminuzione",
+    "staccato",
+    "accento"
+   ],
+   "perche": {
+    "carattere": {
+     "gioviale": [
+      "superficie: allegr",
+      "sotto_pressione: ride",
+      "timbro: svelt"
+     ],
+     "burbero": [
+      "voce: brontol"
+     ]
+    },
+    "modo": "carattere gioviale",
+    "registro": "voce alta",
+    "strumento": "tavolozza della campagna"
+   }
+  },
+  {
+   "png": "png_rosa",
+   "nome": "Rosa Galli",
+   "carattere": [
+    "caldo",
+    "gioviale"
+   ],
+   "strumento": "clarinetto",
+   "modo": "ionio",
+   "registro": "basso",
+   "trasformazioni": [
+    "legato",
+    "diminuzione"
+   ],
+   "perche": {
+    "carattere": {
+     "caldo": [
+      "superficie: matern",
+      "timbro: caldo"
+     ],
+     "gioviale": [
+      "superficie: scherz",
+      "superficie: svelt"
+     ]
+    },
+    "modo": "carattere caldo",
+    "registro": "età 75",
+    "strumento": "tavolozza della campagna"
+   }
+  },
+  {
+   "png": "png_tullio",
+   "nome": "Tullio Bellora",
+   "carattere": [
+    "burbero",
+    "fiero"
+   ],
+   "strumento": "contrabbasso",
+   "modo": "dorico",
+   "registro": "basso",
+   "trasformazioni": [
+    "accento",
+    "salto"
+   ],
+   "perche": {
+    "carattere": {
+     "burbero": [
+      "superficie: brontol",
+      "timbro: ruvid"
+     ],
+     "fiero": [
+      "superficie: fier"
+     ]
+    },
+    "modo": "carattere burbero",
+    "registro": "voce bassa",
+    "strumento": "tavolozza della campagna"
+   }
+  },
+  {
+   "png": "png_vischi",
+   "nome": "Leandro Vischi",
+   "carattere": [
+    "solenne",
+    "pacato"
+   ],
+   "strumento": "organo",
+   "modo": "dorico",
+   "registro": "basso",
+   "trasformazioni": [
+    "aumentazione",
+    "legato"
+   ],
+   "perche": {
+    "carattere": {
+     "solenne": [
+      "superficie: precis",
+      "voce: ordinat"
+     ],
+     "pacato": [
+      "superficie: cortes",
+      "sotto_pressione: lento"
+     ]
+    },
+    "modo": "carattere solenne",
+    "registro": "voce bassa",
+    "strumento": "preferenza del carattere solenne"
+   }
+  }
+ ]
+}

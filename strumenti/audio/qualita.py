@@ -36,7 +36,7 @@ BERSAGLI = {
     "musica": {"lufs": -23.0, "tp": -2.0, "kbps": 128},
     "ambiente": {"lufs": -30.0, "tp": -3.0, "kbps": 96},
     "tema": {"lufs": -20.0, "tp": -1.5, "kbps": 96},
-    "effetto": {"lufs": -21.0, "tp": -1.5, "kbps": 96},
+    "effetto": {"lufs": -21.0, "tp": -3.0, "kbps": 96},
 }
 TOLLERANZA_LUFS = 1.5      # scarto ammesso dal bersaglio sul file finale
 SOGLIA_SILENZIO_DB = -50   # silencedetect: sotto questo livello, per almeno…
@@ -170,6 +170,8 @@ def taglia_effetto(audio: np.ndarray, massimo_s: float = 6.0, sr: int = SR) -> n
     while fine < len(env) - 1 and env[fine] > env[picco] - 45 and (fine - inizio) * passo < massimo_s:
         fine += 1
     a, b = max(0, int((inizio * passo - 0.02) * sr)), int(fine * passo * sr)
+    if b - a < int(0.4 * sr):          # un colpo cortissimo: almeno 0,4 s, per non tagliare la coda
+        b = min(len(audio), a + int(0.4 * sr))
     out = audio[a:b].copy()
     nf = min(int(0.3 * sr), len(out) // 3)
     if nf > 0:
@@ -193,6 +195,13 @@ def misura_loudnorm(sorgente: Path, lufs: float, tp: float, lra: float) -> dict:
     return _json_finale(r.stderr.decode("utf-8", "replace"))
 
 
+def _finito(valore) -> bool:
+    try:
+        return np.isfinite(float(valore))
+    except (TypeError, ValueError):
+        return False
+
+
 def normalizza(sorgente: Path, destinazione: Path, lufs: float, tp: float) -> dict:
     """Due passate: misura, poi applica con linear=true (guadagno costante, nessuna compressione).
 
@@ -201,14 +210,36 @@ def normalizza(sorgente: Path, destinazione: Path, lufs: float, tp: float) -> di
     ffmpeg passa al dinamico: lo si legge in `normalization_type` e finisce nel controllo.
     """
     m1 = misura_loudnorm(sorgente, lufs, tp, 11)
+    if not _finito(m1["input_i"]) or float(m1["input_i"]) < -70:
+        # Troppo corto o troppo piano per la misura EBU R128 (servono 400 ms sopra la soglia):
+        # si porta il picco a tp dB, che per un colpo breve è la normalizzazione sensata.
+        r = _ffmpeg("-i", str(sorgente), "-af", "astats=metadata=0", "-f", "null", "-")
+        picco = float(re.findall(r"Peak level dB:\s+(-?[\d.]+)", r.stderr.decode("utf-8", "replace"))[-1])
+        _ffmpeg("-y", "-i", str(sorgente), "-af", f"volume={tp - picco}dB", "-ar", str(SR), "-c:a", "pcm_f32le", str(destinazione))
+        return {"misura": {k: m1[k] for k in ("input_i", "input_tp", "input_lra")}, "tipo": "picco", "uscita_i": None, "uscita_tp": tp}
     lra = min(50.0, max(11.0, float(m1["input_lra"]) + 1.0))
     filtro = (f"loudnorm=I={lufs}:TP={tp}:LRA={lra}:measured_I={m1['input_i']}:measured_TP={m1['input_tp']}:"
               f"measured_LRA={m1['input_lra']}:measured_thresh={m1['input_thresh']}:offset={m1['target_offset']}:"
               f"linear=true:print_format=json")
     r = _ffmpeg("-y", "-i", str(sorgente), "-af", filtro, "-ar", str(SR), "-c:a", "pcm_f32le", str(destinazione))
     m2 = _json_finale(r.stderr.decode("utf-8", "replace"))
-    return {"misura": {k: m1[k] for k in ("input_i", "input_tp", "input_lra")}, "tipo": m2.get("normalization_type"),
-            "uscita_i": m2.get("output_i"), "uscita_tp": m2.get("output_tp")}
+    out = {"misura": {k: m1[k] for k in ("input_i", "input_tp", "input_lra")}, "tipo": m2.get("normalization_type"),
+           "uscita_i": m2.get("output_i"), "uscita_tp": m2.get("output_tp")}
+    # loudnorm lineare non limita: con colpi secchi (monete) il picco può superare il tetto.
+    # Allora si abbassa tutto quanto basta (guadagno costante, la forma resta quella).
+    picco = _picco_db(destinazione)
+    if picco > tp:
+        tmp = destinazione.with_suffix(".picco.wav")
+        _ffmpeg("-y", "-i", str(destinazione), "-af", f"volume={tp - picco - 0.3:.2f}dB", "-c:a", "pcm_f32le", str(tmp))
+        tmp.replace(destinazione)
+        out["abbassato_db"] = round(tp - picco - 0.3, 2)
+    return out
+
+
+def _picco_db(percorso: Path) -> float:
+    r = _ffmpeg("-i", str(percorso), "-af", "astats=metadata=0", "-f", "null", "-")
+    valori = re.findall(r"Peak level dB:\s+(-?[\d.]+|-inf)", r.stderr.decode("utf-8", "replace"))
+    return float(valori[-1]) if valori and valori[-1] != "-inf" else -99.0
 
 
 def codifica_m4a(sorgente: Path, destinazione: Path, kbps: int) -> str:
@@ -269,7 +300,10 @@ def analizza(percorso: Path, loop: bool, tipo: str, campioni: int | None = None,
            "fattore_piatto": piatto, "campioni_al_limite": int(clipping), "silenzi": silenzi}
     problemi = []
     b = BERSAGLI[tipo]
-    if lufs is None or abs(lufs - b["lufs"]) > TOLLERANZA_LUFS:
+    tolleranza = 3.0 if tipo == "effetto" else TOLLERANZA_LUFS   # su un colpo di mezzo secondo la misura balla
+    if lufs is not None and tipo == "effetto" and durata < 1.0:   # sotto 1 s la loudness integrata non è affidabile
+        tolleranza = 99.0
+    if lufs is None and tipo != "effetto" or lufs is not None and abs(lufs - b["lufs"]) > tolleranza:
         problemi.append(f"loudness {lufs} LUFS lontana dal bersaglio {b['lufs']}")
     if clipping > 0 or picco_campioni >= 0.999:
         problemi.append(f"clipping: {clipping} campioni al limite")
@@ -305,11 +339,17 @@ def giunta(audio: np.ndarray, inizio: int, fine: int, sr: int = SR) -> dict:
         return {"somiglianza_db": None, "rapporto_salto": None, "ok": False, "nota": "mancano i margini attorno al loop"}
     rms = lambda x: float(np.sqrt(np.mean(x ** 2))) + 1e-9
     somiglianza = 20 * np.log10(rms(a) / rms(a - b))
-    tipico = float(np.median(np.abs(np.diff(audio[fine - n:fine + n], axis=0)))) + 1e-6
+    # Il salto al giro contro i salti più forti (99° percentile) che il suono fa da sé lì intorno:
+    # sopra 1,5 si sente un clic. Per i rumori (pioggia) l'AAC non conserva la forma d'onda
+    # (somiglianza bassa) ma un salto dentro un rumore non si sente: conta il salto, non la somiglianza.
+    vicini = np.abs(np.diff(audio[fine - n:fine + n], axis=0))
+    forte = float(np.percentile(vicini, 99)) + 1e-6
     salto = float(np.max(np.abs(audio[fine - 1] - audio[inizio])))
-    rapporto = salto / tipico
-    return {"somiglianza_db": round(float(somiglianza), 1), "rapporto_salto": round(float(rapporto), 1),
-            "ok": bool(somiglianza >= 10.0 and rapporto <= 8.0)}
+    rapporto = salto / forte
+    m = int(0.05 * sr)
+    livello = abs(20 * np.log10(rms(audio[fine - m:fine]) / rms(audio[inizio:inizio + m])))
+    return {"somiglianza_db": round(float(somiglianza), 1), "rapporto_salto": round(float(rapporto), 2),
+            "salto_livello_db": round(float(livello), 2), "ok": bool(rapporto <= 1.5 and livello <= 6.0)}
 
 
 MARGINE_LOOP_S = 0.5    # coda prima e testa dopo il loop, nel file: assorbe ritardi e riempimenti del decoder
