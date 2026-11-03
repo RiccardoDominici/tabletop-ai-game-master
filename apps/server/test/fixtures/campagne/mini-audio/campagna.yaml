@@ -1,4 +1,4 @@
-id: mini
+id: mini-audio
 canone:
   - {id: f_pioggia, noto_ai_pg: true, testo: "Piove da tre giorni."}
   - {id: f_oste_ladro, noto_ai_pg: false, testo: "L'oste annacqua il vino."}

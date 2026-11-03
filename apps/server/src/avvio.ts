@@ -12,7 +12,7 @@ import { compilaContestoCampagna } from './campagna/contesto';
 import { conScena, type Campagna } from './campagna/tipi';
 import type { ConfigServer } from './config';
 import type { Logger } from './logger';
-import { NarratoreFinto } from './llm/finto';
+import { copioneDaFile, NarratoreFinto } from './llm/finto';
 import { NarratoreHaiku } from './llm/haiku';
 import type { Narratore } from './llm/tipi';
 import { RegistroJsonl } from './metriche/jsonl';
@@ -102,7 +102,11 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   const narratore: Narratore =
     sost.narratore ??
     (config.llm.modo === 'finto'
-      ? new NarratoreFinto({ idPng: campagna.png.map((p) => p.id), idPg: campagna.pg.map((p) => p.id) })
+      ? new NarratoreFinto({
+          idPng: campagna.png.map((p) => p.id),
+          idPg: campagna.pg.map((p) => p.id),
+          ...(config.llm.copioneFinto ? { copione: copioneDaFile(config.llm.copioneFinto) } : {}),
+        })
       : new NarratoreHaiku({ modello: config.llm.modello, maxTokens: config.llm.maxTokens, fileChiave: config.llm.fileChiave, log: log.child({ modulo: 'llm' }) }));
   log.info({ narratore: narratore.nome, modello: narratore.modello }, `NARRATORE IN USO: ${narratore.nome}`);
 

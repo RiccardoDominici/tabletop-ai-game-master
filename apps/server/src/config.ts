@@ -67,6 +67,8 @@ export interface ConfigServer {
     url: string;
     /** Ogni quanto controllare /salute in modo auto. */
     intervalloSaluteMs: number;
+    /** Narratore finto: copione da un file (blocchi per turno separati da «---»), per le prove e2e. */
+    copioneFinto?: string;
     /** Fattore di tempo del finto TTS (1 = tempi realistici, 0.05 = test veloci). */
     scalaTempoMock: number;
   };
@@ -145,6 +147,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
       chiusuraDopoPrimaAzioneMs: numero(env['CANTASTORIE_FINESTRA_MS'], 10_000),
       margineFineAudioMs: numero(env['CANTASTORIE_MARGINE_AUDIO_MS'], 2500),
       trascrizioneMax: numero(env['CANTASTORIE_TRASCRIZIONE_MAX'], 80),
+      ...(testo(env['CANTASTORIE_COPIONE_FINTO']) ? { copioneFinto: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_COPIONE_FINTO'])!) } : {}),
       finestraATutti: testo(env['CANTASTORIE_FINESTRA_TUTTI']) === '1',
       stalloMs: numero(env['CANTASTORIE_STALLO_MS'], 45_000),
     },
