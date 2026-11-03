@@ -815,6 +815,55 @@ def test_audio_tema_che_tradisce_chi_mente(camp):
     assert "AUDIO.tema_rivelatore" in avvisi(camp)
 
 
+def test_audio_segnali_delle_battute_giusti(camp):
+    # Il segno nomina la campana nella prima frase: l'effetto parte con lei. «auto» vale nelle battute.
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_segno_1").update(
+        audio={"effetto": "sfx_campana", "umore": "auto"}))
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_segno_4").update(audio={"umore": "rito_sacro"}))
+    assert not {c for c in errori(camp, rigoroso=True) if c.split(".")[0] in ("AUDIO", "REPERTORIO")}
+    assert not {c for c in avvisi(camp) if c.startswith("AUDIO.")}
+
+
+def test_audio_segnali_delle_battute_fuori_vocabolario(camp):
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_segno_1").update(audio={"effetto": "gong"}))
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_segno_2").update(audio={"umore": "suspense"}))
+    assert "AUDIO.vocabolario" in errori(camp)
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_segno_3").update(audio={"volume": 2}))
+    assert "AUDIO.forma" in errori(camp)
+
+
+def test_audio_umore_iniziale_non_e_auto(camp):
+    modifica(camp, "scena.yaml", lambda d: d.update(audio={"umore_iniziale": "auto"}))
+    assert "AUDIO.vocabolario" in errori(camp)
+
+
+def test_audio_effetto_che_la_battuta_non_nomina(camp):
+    # nar_segno_2 parla di qualcuno che bussa: una campana lì suonerebbe a caso.
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_segno_2").update(audio={"effetto": "campana"}))
+    assert "AUDIO.segnale" in avvisi(camp)
+
+
+def test_audio_effetto_assente_dal_catalogo(camp):
+    (camp / "audio").mkdir()
+    (camp / "audio" / "sfx_porta.m4a").write_bytes(b"x")
+    (camp / "audio" / "manifest.json").write_text('{"effetti": [{"id": "sfx_porta", "tag": "porta", "file": "sfx_porta.m4a"}]}')
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_segno_1").update(audio={"effetto": "campana"}))
+    assert "AUDIO.catalogo" in avvisi(camp)
+
+
+def test_audio_segnale_su_un_riempitivo(camp):
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_stallo").update(audio={"umore": "lutto"}))
+    assert "AUDIO.segnale" in avvisi(camp)
+
+
+def test_audio_troppi_cambi_d_umore(camp):
+    def tre(d):
+        for bid in ("nar_segno_1", "nar_segno_2", "nar_segno_3"):
+            battuta(d, bid)["audio"] = {"umore": "inseguimento"}
+    modifica(camp, "repertorio/narrazione.yaml", tre)
+    assert "AUDIO.segnale" in avvisi(camp)
+
+
 def test_copioni_misura_il_catalogo(camp, tmp_path):
     from valida import copioni
     from valida.esito import Esito

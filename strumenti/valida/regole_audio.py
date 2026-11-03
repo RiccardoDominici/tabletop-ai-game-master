@@ -8,6 +8,13 @@ battitura si perde in silenzio: il validatore li controlla contro lo stesso voca
   stile.audio      {tonalita, modo, tempo, strumenti, umore_base, epoca, motivo}
   scena/nodo.audio {musica: [descrittori], ambiente: [tag | {tag, volume}], umore_iniziale}
   png.tema         {carattere, strumento, modo, registro}
+  battuta.audio    {umore, effetto}: segnali automatici (docs/audio.md, «Segnali automatici»); umore anche
+                   `auto` (torna alla musica del luogo), effetto un tag di EFFETTI (`sfx_` tollerato)
+
+Dei segnali delle battute si controlla anche il mestiere: l'effetto parte con la PRIMA frase della
+battuta, che deve nominare quel suono (le parole sono le regole REGOLE_EFFETTI della pipeline);
+l'effetto deve esistere nel catalogo della campagna (audio/manifest.json), o non suona; e i cambi
+d'umore restano rari (il Motore ne applica al massimo uno al minuto).
 
 Un tema non tradisce chi mente: il modo frigio (l'unico «sinistro») su un PNG che mente è un avviso
 rigoroso, e un carattere che la persona pubblica non giustifica è un avviso.
@@ -30,6 +37,9 @@ AUDIO = Path(__file__).resolve().parent.parent / "audio"     # strumenti/audio/
 CHIAVI_STILE = {"tonalita", "modo", "tempo", "strumenti", "umore_base", "epoca", "motivo"}
 CHIAVI_LUOGO = {"musica", "ambiente", "umore_iniziale"}
 CHIAVI_TEMA = {"carattere", "strumento", "modo", "registro"}
+CHIAVI_BATTUTA = {"umore", "effetto"}
+UMORE_AUTO = "auto"          # torna alla musica del luogo: vale nelle battute, non in umore_iniziale
+MAX_UMORI_PER_SCENA = 2      # battute non finali con un cambio d'umore che possono uscire nella stessa scena
 TEMPO = (40, 200)          # bpm plausibili per un motivo cantabile
 
 
@@ -183,9 +193,65 @@ def _tema(c: Campagna, e: Esito, V: ModuleType, pid: str, dove: str, d: dict) ->
                                                           "personalità, voce) lo giustifica. Se viene da ciò che nasconde, il tema lo tradisce")
 
 
+def _effetti_nel_catalogo(c: Campagna) -> set[str] | None:
+    """Tag degli effetti che hanno il loro file nel catalogo della campagna; None se l'audio non è ancora fatto."""
+    import json
+    percorso = c.cartella / "audio" / "manifest.json"
+    if not percorso.exists():
+        return None
+    try:
+        man = json.loads(percorso.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return {v.get("tag") for v in man.get("effetti") or [] if (c.cartella / "audio" / str(v.get("file", ""))).exists()}
+
+
+def _prima_frase(b: dict) -> str:
+    righe = b.get("testo") or []
+    return re.sub(r"^\[[a-z0-9_]+\]\s*", "", str(righe[0])) if righe else ""
+
+
+def _battute(c: Campagna, e: Esito, V: ModuleType) -> None:
+    """`audio: {umore, effetto}` delle battute: vocabolario, catalogo, suono nominato, rarità degli umori."""
+    catalogo = _effetti_nel_catalogo(c)
+    umori_per_scena: dict[str, list[str]] = {}
+    scene = [s.get("id") for _, s in c.scene]
+    for b in c.battute:
+        if "audio" not in b:
+            continue
+        dove = f"{b['_file']} {b.get('id', '?')} audio"
+        a = b["audio"]
+        if not _chiavi(e, dove, a, CHIAVI_BATTUTA):
+            continue
+        if b.get("solo_esempio") or b.get("riempitivo"):
+            e.avviso("AUDIO.segnale", dove, "un esempio di voce non esce mai, un riempitivo esce a caso allo stallo: "
+                                            "il segnale non parte, o parte senza motivo")
+        umore = a.get("umore")
+        if "umore" in a and umore != UMORE_AUTO and umore not in V.UMORI:
+            e.errore("AUDIO.vocabolario", dove, f"umore {umore!r} fuori da {list(V.UMORI)} o «auto» (errore di caricamento del server)")
+        effetto = str(a.get("effetto", "")).removeprefix("sfx_") if "effetto" in a else None
+        if effetto is not None and effetto not in V.EFFETTI:
+            e.errore("AUDIO.vocabolario", dove, f"effetto {a.get('effetto')!r} fuori da {list(V.EFFETTI)} (errore di caricamento del server)")
+        elif effetto is not None:
+            if catalogo is not None and effetto not in catalogo:
+                e.avviso("AUDIO.catalogo", dove, f"effetto {effetto}: il catalogo della campagna non ha sfx_{effetto}, quindi non suona")
+            regole = [r for r in V.REGOLE_EFFETTI if r.tag == effetto]
+            if regole and not any(re.search(r.schema, _prima_frase(b).lower()) for r in regole):
+                e.avviso("AUDIO.segnale", dove, f"l'effetto {effetto} parte con la prima frase, che non nomina quel suono: "
+                                                f"«{_prima_frase(b)[:60]}»")
+        if umore and b.get("tipo") != "finale":
+            for sid in ([b["scena"]] if b.get("scena") else scene):
+                umori_per_scena.setdefault(sid, []).append(b.get("id", "?"))
+    for sid, ids in sorted(umori_per_scena.items()):
+        if len(ids) > MAX_UMORI_PER_SCENA:
+            e.avviso("AUDIO.segnale", sid, f"{len(ids)} battute cambiano l'umore in questa scena ({', '.join(ids)}): "
+                                           f"tienili rari, al massimo {MAX_UMORI_PER_SCENA} oltre ai finali")
+
+
 def controlla(c: Campagna, e: Esito) -> None:
     usati = c.stile.get("audio") is not None or any("audio" in s for _, s in c.scene) \
-        or any("audio" in n for n in c.nodi.values()) or any("tema" in d for _, d in c.png.values())
+        or any("audio" in n for n in c.nodi.values()) or any("tema" in d for _, d in c.png.values()) \
+        or any("audio" in b for b in c.battute)
     if not usati:
         return  # tutto dedotto dalla pipeline: niente da controllare
     V = vocabolario()
@@ -199,3 +265,4 @@ def controlla(c: Campagna, e: Esito) -> None:
         _luogo(c, e, V, f"campagna.yaml nodo {nid} audio", n.get("audio"))
     for pid, (nome, d) in c.png.items():
         _tema(c, e, V, pid, nome, d)
+    _battute(c, e, V)

@@ -93,6 +93,14 @@ allora scrivi una battuta per alternativa, con lo stesso testo, e falle escluder
   per un massimo di quattro frasi.
 - **Momenti chiave**: le iniziative e le evoluzioni dei PNG (Ottavia brucia i sacchi, Baldrin avvolge la
   mollica per la figlia), il climax, le svolte.
+- **Segnali audio** (`audio: {effetto, umore}`, schema.md «Audio»): pochi, e solo dove il testo li chiama.
+  - `effetto` sulle battute la cui **prima frase** nomina il suono: il segno «la campana batte il terzo
+    tocco» porta `effetto: campana`; una porta sfondata, `porta`. Mai un effetto che la battuta non dice:
+    il tavolo sentirebbe un rumore senza causa.
+  - `umore` sulle svolte che la `musica.transizione` della scena già prevede: il segno che fa partire la
+    corsa (`inseguimento`), il finale in cui qualcuno resta indietro (`lutto`), la veglia che finisce
+    (`rito_sacro`). Al massimo due cambi d'umore per scena fuori dai finali; `auto` riporta la musica del luogo.
+  - Niente segnali sugli esempi di voce, sui riempitivi o sulle battute che possono uscire in ogni momento.
 - **Finali**: uno per ogni esito del `taglio` [V almeno uno], con `richiede.orologio` a orologio completo
   se arrivano solo al climax. Se la scena ha `esiti`, ogni esito cita il suo finale [V].
 - **Esempi di voce**: per ogni PNG di supporto o principale, almeno tre, con un saluto e un rifiuto [V].

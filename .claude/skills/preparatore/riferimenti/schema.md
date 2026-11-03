@@ -224,7 +224,8 @@ Nome diverso dal nome di ogni PNG [V].
 
 ## Repertorio: vedi riferimenti/repertorio.md
 Campi della battuta: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi,
-solo_esempio, riempitivo, scena` [V]. Nient'altro [V]. `richiede.oppure` è descritto ma il server non lo
+solo_esempio, riempitivo, scena, audio` [V]. Nient'altro [V]. `audio: {umore, effetto}` è un segnale
+automatico (vedi «Audio» sotto e repertorio.md §6). `richiede.oppure` è descritto ma il server non lo
 applica ancora: oggi è un errore (repertorio.md §4).
 
 ## Audio (facoltativo): stile.audio, scene e nodi audio, png.tema
@@ -254,7 +255,16 @@ audio:
 
 # png
 tema: {carattere: [burbero], strumento: fagotto, modo: dorico, registro: basso}
+
+# battuta del repertorio: segnale automatico quando esce (docs/audio.md, «Segnali automatici»)
+audio: {effetto: campana, umore: lutto}   # uno o tutti e due; nient'altro (errore di caricamento) [V]
 ```
+- **Segnali delle battute**: `umore` è uno dei sei tag di musica, o `auto` (torna alla musica del luogo);
+  `effetto` è un tag di EFFETTI: campana, porta, catena, tuono, monete, chiave (`sfx_campana` vale lo
+  stesso). Il segnale parte con la **prima frase** della battuta, che deve nominare quel suono [V avviso];
+  l'effetto suona solo se il catalogo della campagna lo ha (`audio/manifest.json`) [V avviso]. Il Motore
+  applica al massimo un cambio d'umore automatico al minuto per scena.
+- **`umore_iniziale`** di una scena è l'umore con cui la scena comincia: uno dei sei tag, mai `auto` [V].
 - **Ambienti**: pioggia, temporale, fiume, acqua, vento, neve, fuoco, folla, taverna, campane, canto, notte,
   stalla, gocce, mare, bosco, mulino.
 - **Ambientazioni** (per `musica`): taverna, chiesa, ponte, fiume, borgo, piazza, mulino, montagna, casa,
