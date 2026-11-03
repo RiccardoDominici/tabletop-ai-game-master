@@ -104,7 +104,7 @@ def stampa_piano(cartella: Path, da_fare: list[Richiesta], st: Stato, alias: lis
         print(f"    prompt: {r.prompt}\n")
     for r in alias:
         print(f"- [alias] {r.id} → {r.file}")
-    print(f"\nmanifest: {dest / 'manifest.json'}")
+    print(f"\n(dry-run: niente scritto; manifest sarebbe {dest / 'manifest.json'})")
 
 
 def rileggi(cartella: Path, r: Richiesta) -> Richiesta | None:
@@ -254,7 +254,7 @@ def main() -> None:
         log.info("vecchia: %s (%s), la rigenero", r.id, perche)
     sposta_orfane(man, st.orfane)
     if da_fare:
-        esegui(cartella, da_fare, man, fp16=not args.no_fp16, seme=args.seme, perche=dict(st.vecchie))
+        esegui(cartella, da_fare, man, fp16=not args.no_fp16, seme=args.seme, perche={r.id: m for r, m in st.vecchie})
     else:
         log.info("niente da generare: le immagini richieste ci sono già")
     registra_alias(alias, man)

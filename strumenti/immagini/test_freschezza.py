@@ -147,3 +147,19 @@ def test_genera_pianifica_rifa_mancanti_e_vecchie(mini: Path, monkeypatch: pytes
     # Con --id le orfane si cercano comunque su tutta la campagna, e il filtro vale per da_fare.
     da_fare, st, _, _ = genera.pianifica(mini, None, ["luogo_n_bosco"], rifai=False)
     assert da_fare == [] and st.orfane == []
+
+
+def test_main_rigenera_la_vecchia_e_dice_perche(mini: Path, monkeypatch: pytest.MonkeyPatch):
+    """Il percorso vero di genera.py (main), senza modello: esegui() riceve la vecchia con il perché."""
+    monkeypatch.setattr(genera, "modello_attuale", lambda fp16: MODELLO)
+    chiamate = {}
+    monkeypatch.setattr(genera, "esegui", lambda cartella, da_fare, man, fp16, seme, perche=None:
+                        chiamate.update(ids=[r.id for r in da_fare], perche=perche))
+    _registra_tutto(mini)
+    scena = yaml.safe_load((mini / "scena.yaml").read_text())
+    scena["immagine"]["prompt_luogo"] = "stone hall with a crackling fireplace"
+    scrivi_yaml(mini / "scena.yaml", scena)
+    monkeypatch.setattr("sys.argv", ["genera.py", str(mini)])
+    genera.main()
+    assert chiamate["ids"] == ["luogo_scena_sala", "situazione_png_uno_in_scena_sala"]
+    assert chiamate["perche"]["luogo_scena_sala"].startswith("il prompt è cambiato")
