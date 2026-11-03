@@ -67,3 +67,14 @@ describe('umoreIniziale e blocco di contesto', () => {
     expect(bloccoAudioContesto(new CatalogoAudio('/inesistente'))).toBe('');
   });
 });
+
+describe('copione del narratore finto da file', () => {
+  it('un blocco per turno, commenti tolti, l’ultimo blocco per i turni dopo', async () => {
+    const { copioneDaFile } = await import('../src/llm/finto');
+    const c = copioneDaFile(path.join(import.meta.dirname, 'fixtures', 'copione-audio.txt'));
+    expect(c(1)).toBe('[usa] oste_saluto > pg_anna\n[invito] pg_anna');
+    expect(c(2)).toContain('[effetto] porta');
+    expect(c(2)).not.toContain('#');
+    expect(c(7)).toBe(c(2));
+  });
+});

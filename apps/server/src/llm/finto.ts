@@ -3,6 +3,7 @@
  * Haiku (primo token ~0,5 s, poi pezzi da pochi caratteri). Serve ai test automatici e alle
  * prove dell'interfaccia senza spendere. Costo zero; i token d'uso sono stimati.
  */
+import fs from 'node:fs';
 import { setTimeout as attendi } from 'node:timers/promises';
 import { calcolaCosto } from './costi';
 import type { EsitoNarrazione, Narratore, RichiestaNarrazione } from './tipi';
@@ -15,6 +16,21 @@ export interface OpzioniFinto {
   caratteriPerPezzo?: number;
   /** Copione fisso (per i test); altrimenti uno generico che usa gli id della campagna. */
   copione?: (turno: number) => string;
+}
+
+/**
+ * Copione da un file (CANTASTORIE_COPIONE_FINTO): un blocco di righe del protocollo per turno,
+ * separati da una riga «---»; il blocco k vale per il turno k+1, l'ultimo per tutti i turni dopo.
+ * Le righe che cominciano con «#» sono commenti.
+ */
+export function copioneDaFile(percorso: string): (turno: number) => string {
+  const blocchi = fs
+    .readFileSync(percorso, 'utf8')
+    .split(/^---\s*$/m)
+    .map((b) => b.split('\n').filter((r) => !r.trimStart().startsWith('#')).join('\n').trim())
+    .filter(Boolean);
+  if (!blocchi.length) throw new Error(`copione vuoto: ${percorso}`);
+  return (turno) => blocchi[Math.min(Math.max(turno, 1) - 1, blocchi.length - 1)]!;
 }
 
 export class NarratoreFinto implements Narratore {

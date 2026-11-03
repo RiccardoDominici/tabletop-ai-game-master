@@ -1,0 +1,13 @@
+# Copione del narratore finto per l'e2e dell'audio automatico (apps/web/e2e/audio-automatico.spec.ts):
+# campagna mini-audio, modalità repertorio. Un blocco per turno, separati da «---»; l'ultimo vale
+# anche per i turni dopo.
+# Turno 1: la battuta oste_saluto porta audio {effetto: campana, umore: inseguimento}.
+[usa] oste_saluto > pg_anna
+[invito] pg_anna
+---
+# Turno 2: effetto sulla frase che lo racconta; l'umore «auto» arriva entro il minuto e si ignora.
+[narratore] Anna si volta verso l'ingresso.
+[effetto] porta
+[narratore] La porta sbatte alle sue spalle.
+[umore] auto
+[invito] pg_anna
