@@ -45,7 +45,13 @@ export function SezioneSessione({ stato }: { stato: StatoMaster }) {
       )}
       <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-sm">
         <dt className="text-cenere">iniziata</dt>
-        <dd data-testid="master-sessione-inizio">{s.creata ? `${new Date(s.creata).toLocaleDateString('it-IT')} ${oraBreve(Date.parse(s.creata))}` : 'non ancora (scena da avviare)'}</dd>
+        <dd data-testid="master-sessione-inizio">
+          {s.creata
+            ? `${new Date(s.creata).toLocaleDateString('it-IT')} ${oraBreve(Date.parse(s.creata))}`
+            : s.registro
+              ? 'chiusa con «Fine sessione» (dal proiettore, «Inizia» la rigioca da capo)'
+              : 'non ancora (scena da avviare)'}
+        </dd>
         <dt className="text-cenere">salvataggi</dt>
         <dd className="tabular-nums">{s.eventi}</dd>
         {s.in_attesa_di_ripresa && (
