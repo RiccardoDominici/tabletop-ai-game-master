@@ -161,6 +161,15 @@ export function bannerTelefono(stato: StatoTavolo, idPg: string | null): Banner 
         scadenzaMs: null,
       };
     case 'pausa':
+      // Pausa presa dal Motore (nessuno scriveva): la prima azione la fa ripartire.
+      if (stato.pausa_automatica) {
+        return {
+          tipo: 'pausa',
+          titolo: 'Il tavolo è in pausa',
+          dettaglio: "Scrivete un'azione per ripartire.",
+          scadenzaMs: null,
+        };
+      }
       // Pausa dal pannello del master: si può scrivere, l'azione entra quando il tavolo riparte.
       return {
         tipo: 'pausa',

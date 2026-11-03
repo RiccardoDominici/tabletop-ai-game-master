@@ -246,6 +246,11 @@ export interface StatoTavolo {
   /** Lo schermo ha premuto «Inizia sessione» ed è connesso. */
   schermo_connesso: boolean;
   /**
+   * Il tavolo si è messo in pausa da solo (nessuno scriveva da più mosse contro lo stallo): riparte
+   * alla prima azione di un telefono. Solo con fase 'pausa'.
+   */
+  pausa_automatica: boolean;
+  /**
    * Epoch ms del server quando ha costruito questa istantanea: il client ne ricava lo scarto
    * del proprio orologio, così il conto alla rovescia (`chiusura_prevista_ms`) è giusto anche
    * su un telefono con l'ora sbagliata.

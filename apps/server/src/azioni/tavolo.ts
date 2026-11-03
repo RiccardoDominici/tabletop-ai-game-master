@@ -48,6 +48,8 @@ export interface OpzioniTavolo {
   attesaArbitroMs?: number;
   /** Finestra aperta senza nessun input (azioni, scrittura, pronto) per questo tempo → stallo. 0 = mai. */
   stalloMs?: number;
+  /** Lo stallo può scattare? (falso senza telefoni collegati: nessuno sta giocando). Assente = sempre. */
+  puòStallare?: () => boolean;
   onCambio: () => void;
   onAzione: (id_pg: string, azione: AzionePrivata | null) => void;
   onChiusura: (r: RiepilogoChiusura) => void;
@@ -84,7 +86,11 @@ interface Finestra {
 }
 
 export class TavoloAzioni {
-  private readonly o: Required<Omit<OpzioniTavolo, 'arbitro' | 'nomeBreve'>> & { arbitro: Arbitro | null; nomeBreve: (id: string) => string };
+  private readonly o: Required<Omit<OpzioniTavolo, 'arbitro' | 'nomeBreve' | 'puòStallare'>> & {
+    arbitro: Arbitro | null;
+    nomeBreve: (id: string) => string;
+    puòStallare?: () => boolean;
+  };
   private readonly azioni = new Map<string, Azione>();
   /** id_pg → id dell'ultima azione del giocatore (qualsiasi stato). */
   private readonly ultima = new Map<string, string>();
@@ -272,6 +278,12 @@ export class TavoloAzioni {
       this.annullaStallo = null;
       const g = this.finestra;
       if (!g?.aperta || g.chiudendo || this.vive(g.turno).length) return;
+      // Nessun telefono al tavolo: non c'è nessuno da smuovere. Si riprova più tardi.
+      if (this.o.puòStallare && !this.o.puòStallare()) {
+        this.o.log.debug({ turno: g.turno }, 'finestra: stallo saltato, nessun telefono collegato');
+        this.riarmaStallo();
+        return;
+      }
       this.o.log.info({ turno: g.turno, ms: this.o.stalloMs }, 'finestra: stallo, nessun input');
       void this.chiudi('stallo');
     });

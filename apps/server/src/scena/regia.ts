@@ -32,6 +32,7 @@ import { schedaPg } from '../campagna/scheda';
 import type { Campagna } from '../campagna/tipi';
 import { ID_NARRATORE, NOME_NARRATORE, conScena } from '../campagna/tipi';
 import { nomeBreve } from '../campagna/nomi';
+import { fuoriDallaFinzione } from '../narrazione/finzione';
 import type { MemoriaSessione } from '../sessione/memoria';
 import type { FotografiaSessione, StatoRicostruito, StatoTavoloSalvato } from '../sessione/tipi';
 import { collegaSituazioni, type SituazioneCollegata } from '../campagna/situazioni';
@@ -117,6 +118,10 @@ export interface OpzioniRegia {
 export const MOTIVO_SALTATA = 'Il master ha saltato questa azione: puoi riscriverla.';
 export const MOTIVO_NARRAZIONE_INTERROTTA = 'Il master ha interrotto la narrazione: la tua azione non è stata risolta, puoi rimandarla.';
 export const MOTIVO_CAMBIO_SCENA = 'Si cambia scena: la tua azione era per il luogo di prima, riscrivila se vale ancora.';
+/** Mosse contro lo stallo di fila (senza nessun input) dopo cui il tavolo va in pausa da solo. */
+export const STALLI_PRIMA_DELLA_PAUSA = 2;
+/** Cosa leggono proiettore e telefoni quando il tavolo si è fermato da solo. */
+export const TESTO_PAUSA_AUTOMATICA = "Il tavolo è in pausa: scrivete un'azione per ripartire.";
 export const MOTIVO_RIPRESA = 'Il gioco si è fermato mentre il narratore rispondeva: la tua azione non è stata risolta, puoi rimandarla.';
 /** Token di un telefono (localStorage): lettere, cifre e trattini. */
 const DISPOSITIVO_VALIDO = /^[A-Za-z0-9_-]{8,64}$/;
@@ -181,6 +186,11 @@ export class Regia {
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
+  /**
+   * Pausa presa dal Motore dopo STALLI_PRIMA_DELLA_PAUSA mosse contro lo stallo di fila: nessuno sta
+   * giocando. Riparte da sola alla prima azione di un telefono (o con Riprendi del master).
+   */
+  private pausaAutomatica = false;
   /** Il server si sta spegnendo: niente più notifiche ai client. */
   private spento = false;
   /** Telefono (token del dispositivo) → PG: alla riconnessione, anche dopo un riavvio, il PG torna. */
@@ -276,6 +286,8 @@ export class Regia {
       log: opzioni.log.child({ modulo: 'azioni' }),
       chiusuraDopoPrimaAzioneMs: opzioni.chiusuraDopoPrimaAzioneMs,
       ...(opzioni.stalloMs !== undefined ? { stalloMs: opzioni.stalloMs } : {}),
+      // Senza telefoni con un PG non c'è nessuno da smuovere: niente mosse contro lo stallo.
+      puòStallare: () => this.telefoni.size > 0,
       onCambio: () => {
         this.notifica();
         this.programmaSalvataggioTavolo();
@@ -302,7 +314,7 @@ export class Regia {
       orologi: this.orologi.esporta(),
       repertorio: this.statoRepertorio?.esporta() ?? null,
       note: this.note.esporta(),
-      pausa: { richiesta: this.pausaRichiesta, invitoSospeso: this.invitoSospeso },
+      pausa: { richiesta: this.pausaRichiesta, invitoSospeso: this.invitoSospeso, automatica: this.pausaAutomatica },
       prossimoIdTrascrizione: this.prossimoIdTrascrizione,
     };
   }
@@ -374,6 +386,7 @@ export class Regia {
     this.turno = f.turno;
     this.versioneScena = f.versioneScena;
     this.invitoSospeso = f.pausa?.invitoSospeso ?? null;
+    this.pausaAutomatica = f.pausa?.automatica === true;
     for (const [d, pg] of r.dispositivi) this.dispositivi.set(d, pg);
     const tavolo = r.tavolo ? this.tavolo.importa(r.tavolo, MOTIVO_RIPRESA) : { finestra: null, interrotte: [] };
     this.daRiprendere = { fase: f.fase, finestra: tavolo.finestra, interrotte: tavolo.interrotte, turno: f.turno, quando: r.ultimoEvento };
@@ -729,6 +742,7 @@ export class Regia {
       trascrizione: this.trascrizione.slice(-this.o.trascrizioneMax),
       voce_motore: this.o.voce.nome,
       schermo_connesso: this.schermi.size > 0,
+      pausa_automatica: this.fase === 'pausa' && this.pausaAutomatica,
       ora_server_ms: this.o.orologio.adesso(),
     };
   }
@@ -924,6 +938,12 @@ export class Regia {
    */
   pausa(): Esito {
     if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: 'La scena non è in corso.' };
+    if (this.fase === 'pausa' && this.pausaAutomatica) {
+      // Il master conferma la pausa presa dal Motore: da qui riparte solo con Riprendi.
+      this.pausaAutomatica = false;
+      this.notifica();
+      return { ok: true };
+    }
     if (this.fase === 'pausa') return { ok: false, errore: 'Il tavolo è già in pausa.' };
     if (this.pausaRichiesta) return { ok: false, errore: 'La pausa è già chiesta: scatta alla fine della narrazione.' };
     // A finestra chiusa ma col lucchetto preso la narrazione sta per partire: si comporta come una narrazione.
@@ -942,6 +962,9 @@ export class Regia {
 
   /** Riprende dalla pausa (o annulla una pausa chiesta e non ancora scattata). */
   riprendi(): Esito {
+    // Si riparte (master o prima azione dopo la pausa automatica): il conto degli stalli riparte da zero.
+    this.pausaAutomatica = false;
+    this.stalliDiFila = 0;
     if (this.pausaRichiesta && this.fase !== 'pausa') {
       this.pausaRichiesta = false;
       this.o.log.info({ turno: this.turno }, 'scena: pausa chiesta annullata');
@@ -1083,7 +1106,14 @@ export class Regia {
    */
   inviaAzione(id_pg: string, testo: string, versioneVista: number, privata = false): Esito {
     if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: 'La scena non è in corso.' };
-    return this.tavolo.invia(id_pg, testo, versioneVista, privata);
+    const esito = this.tavolo.invia(id_pg, testo, versioneVista, privata);
+    if (esito.ok && this.fase === 'pausa' && this.pausaAutomatica) {
+      // Qualcuno è tornato a giocare: la pausa presa dal Motore finisce, l'azione entra nella finestra.
+      this.o.log.info({ turno: this.turno, id_pg }, 'scena: azione dopo la pausa automatica, si riparte');
+      this.riprendi();
+      this.salva('ripresa_dopo_stallo');
+    }
+    return esito;
   }
 
   ritiraAzione(id_pg: string): Esito {
@@ -1223,7 +1253,11 @@ export class Regia {
       this.pausaRichiesta = false;
       this.fase = 'pausa';
       this.invitoSospeso = invito;
-      this.o.log.info({ turno: this.turno, invito }, 'scena: in pausa (dopo la narrazione)');
+      this.o.log.info({ turno: this.turno, invito, automatica: this.pausaAutomatica }, 'scena: in pausa (dopo la narrazione)');
+      if (this.pausaAutomatica) {
+        this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_PAUSA_AUTOMATICA });
+        this.uscita?.avviso('info', TESTO_PAUSA_AUTOMATICA);
+      }
       this.notifica();
       this.salva('fine_turno');
       return;
@@ -1274,6 +1308,12 @@ export class Regia {
     }
     const perNarratore = azioniPerNarratore(r, nomePg, (id) => this.tavolo.azione(id));
     this.stalliDiFila = r.motivo === 'stallo' ? this.stalliDiFila + 1 : 0;
+    if (this.stalliDiFila >= STALLI_PRIMA_DELLA_PAUSA && !this.pausaRichiesta) {
+      // Nessuno gioca da un po': questa è l'ultima mossa del mondo, poi il tavolo si ferma da solo.
+      this.pausaRichiesta = true;
+      this.pausaAutomatica = true;
+      this.o.log.info({ turno: r.turno, stalli: this.stalliDiFila }, 'scena: troppi stalli di fila, pausa automatica a fine narrazione');
+    }
     const messaggio = compilaMessaggioTurno({
       turno: r.turno,
       trascrizione: this.trascrizione,
@@ -1307,7 +1347,9 @@ export class Regia {
       ...r.sospese.map((a) => ({ id_pg: a.autore, testo: a.testo as string | null, sospesa: true })),
       ...r.senzaAzione.map((id) => ({ id_pg: id, testo: null as string | null })),
     ];
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo));
+    // Mossa del mondo (stallo, o nessuna azione): la narrazione resta nella finzione (narrazione/finzione.ts).
+    const mossaDelMondo = r.motivo === 'stallo' || r.azioni.length === 0;
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo);
   }
 
   private async eseguiNarrazione(
@@ -1317,6 +1359,7 @@ export class Regia {
     azioni: Array<{ id_pg: string; testo: string | null; [k: string]: unknown }>,
     chiusura: RiepilogoChiusura['motivo'],
     noteRegia: string[] = [],
+    mossaDelMondo = false,
   ): Promise<void> {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
@@ -1337,6 +1380,7 @@ export class Regia {
         ora: () => this.o.orologio.ora(),
         pronuncia: this.pronuncia,
         ...this.parametriAudioTurno(),
+        ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segnoInRisposta) : null,
         onFrase: (f) => {
           if (epoca !== this.epoca) return;
@@ -1365,6 +1409,7 @@ export class Regia {
           ora: () => this.o.orologio.ora(),
           pronuncia: this.pronuncia,
           ...this.parametriAudioTurno(),
+          ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
           usa: (id, per) => this.usaBattuta(id, per, turno, segnoInRisposta),
           prefissoFrasi: 'r',
           ignora: new Set(['invito_mancante']),
@@ -1379,6 +1424,7 @@ export class Regia {
       esito.righe_prescritte += riparazione.righe_prescritte;
       esito.righe_improvvisate += riparazione.righe_improvvisate;
       esito.usa_rifiutati += riparazione.usa_rifiutati;
+      esito.scartate += riparazione.scartate;
       esito.anomalie.push(...riparazione.anomalie);
       if (riparazione.esito) {
         esito.esito.testo += `\n${riparazione.esito.testo}`;
@@ -1400,6 +1446,16 @@ export class Regia {
         segnoAggiunto = aggiunto.id;
         esito.righe_prescritte += aggiunto.righe;
       }
+    }
+    // Mossa del mondo rimasta vuota (le frasi fuori dalla finzione sono state scartate): rimedia il
+    // Motore, senza un'altra chiamata. Modalità B: il segno dovuto o un riempitivo del catalogo;
+    // altrimenti la mossa morbida pronta della scena.
+    if (mossaDelMondo && esito.scartate > 0 && !esito.uscita.some((u) => u.tipo === 'usa' || u.tipo === 'improvvisata') && !controllo.signal.aborted) {
+      const rimedio =
+        this.statoRepertorio && esito.esito ? this.aggiungiSegnoDovuto(turno, esito, segnoInRisposta, log, (b) => (b.tipo === 'segno_orologio' && !!this.turnoB?.segnoDovuto) || b.riempitivo) : null;
+      if (rimedio) esito.righe_prescritte += rimedio.righe;
+      else this.parlaRiserva(turno);
+      log.warn({ turno, scartate: esito.scartate, rimedio: rimedio?.id ?? 'mossa morbida' }, 'stallo: narrazione fuori dalla finzione, rimedio del Motore');
     }
     this.controlloLlm = null;
 
@@ -1505,9 +1561,16 @@ export class Regia {
    * improvvisata è un invito (una domanda) e la sua voce non è ancora partita; altrimenti in fondo.
    * Restituisce la battuta usata e quante righe ha, o null se non c'è un segno disponibile.
    */
-  private aggiungiSegnoDovuto(turno: number, esito: { uscita: VoceUscita[] }, segno: { mostrato: boolean }, log: Logger): { id: string; righe: number } | null {
+  private aggiungiSegnoDovuto(
+    turno: number,
+    esito: { uscita: VoceUscita[] },
+    segno: { mostrato: boolean },
+    log: Logger,
+    /** Quale battuta del catalogo far uscire (predefinito: il segno d'orologio). */
+    scegli: (b: Battuta) => boolean = (b) => b.tipo === 'segno_orologio',
+  ): { id: string; righe: number } | null {
     const s = this.statoRepertorio!;
-    const b = s.disponibili(turno).find((x) => x.tipo === 'segno_orologio' && this.elencoTurno.has(x.id));
+    const b = s.disponibili(turno).find((x) => scegli(x) && this.elencoTurno.has(x.id));
     if (!b) {
       log.warn({ turno }, 'orologio: segno dovuto ma nessuna battuta di segno disponibile');
       return null;

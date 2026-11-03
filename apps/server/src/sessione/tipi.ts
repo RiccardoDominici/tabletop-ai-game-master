@@ -57,7 +57,7 @@ export interface FotografiaSessione {
   orologi: Record<string, StatoOrologioSalvato>;
   repertorio: StatoRepertorioSalvato | null;
   note: { elenco: NotaRegia[]; prossimoId: number };
-  pausa: { richiesta: boolean; invitoSospeso: string[] | 'tutti' | null };
+  pausa: { richiesta: boolean; invitoSospeso: string[] | 'tutti' | null; /** Presa dal Motore dopo gli stalli. */ automatica?: boolean };
   prossimoIdTrascrizione: number;
 }
 

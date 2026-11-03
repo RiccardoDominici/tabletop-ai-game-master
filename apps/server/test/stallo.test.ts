@@ -83,12 +83,13 @@ async function scenaSenzaInput(url: string): Promise<Client> {
 }
 
 describe('mossa contro lo stallo', () => {
-  it('modalità A: due stalli di fila → S1 poi S2, e la finestra si riapre ogni volta', async () => {
+  it('modalità A: due stalli di fila → S1 poi S2, poi il tavolo va in pausa da solo', async () => {
     const { url, messaggi, cartella } = await avvia('improvvisa');
     const tel = await scenaSenzaInput(url);
-    await attendiStato(tel, (s) => s.fase === 'finestra' && s.turno === 3, 10_000); // turni 1 e 2 chiusi per stallo
-    expect(messaggi[0]).toContain('## Stallo\nDa 45 secondi nessuno scrive niente. Fai una mossa morbida');
-    expect(messaggi[1]).toContain('(2 volte di fila)');
+    const pausa = await attendiStato(tel, (s) => s.fase === 'pausa', 10_000); // turni 1 e 2 chiusi per stallo
+    expect(pausa).toMatchObject({ pausa_automatica: true, turno: 2 });
+    expect(messaggi[0]).toContain('## Mossa del mondo\nFai succedere qualcosa nella scena: un segno visibile della minaccia (S1)');
+    expect(messaggi[0]).not.toMatch(/nessuno scrive|45 secondi/);
     expect(messaggi[1]).toContain('indizio proattivo (S2)');
     const narr = fs.readFileSync(path.join(cartella, 'narrazioni.jsonl'), 'utf8').trim().split('\n').map((r) => JSON.parse(r));
     expect(narr.filter((x) => x.tipo === 'turno').slice(0, 2).map((x) => x.chiusura)).toEqual(['stallo', 'stallo']);
@@ -98,7 +99,8 @@ describe('mossa contro lo stallo', () => {
     const { url, messaggi } = await avvia('repertorio');
     const tel = await scenaSenzaInput(url);
     await attendiStato(tel, (s) => s.fase === 'finestra' && s.turno === 2, 10_000);
-    expect(messaggi[0]).toContain('Stallo: nessuno ha agito in questo turno.');
+    expect(messaggi[0]).toContain("Stallo: in questo turno non c'è nessuna azione da risolvere.");
+    expect(messaggi[0]).toContain('non nominare giocatori o PG');
     expect(messaggi[0]).not.toContain('## Stallo\nDa 45'); // il testo di A non va al selettore
   }, 20_000);
 });

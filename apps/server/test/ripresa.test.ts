@@ -195,6 +195,6 @@ describe('sessione ripresa dopo un riavvio a metà partita', () => {
     expect(n.sessione!.ripresa).toBeNull();
     expect(n.note).toEqual([]);
     expect(n.tavolo.trascrizione[0]!.testo).toContain('La locanda è piena di fumo');
-    expect(b.s.sessioni.archivio!.sessione(prima.stato.sessione!.id)!.stato).toBe('chiusa');
+    expect(b.s.sessioni.archivio!.sessione(prima.stato.sessione!.id!)!.stato).toBe('chiusa');
   }, 30_000);
 });

@@ -128,7 +128,7 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
       );
     }
     parti.push('## Catalogo: battute pertinenti a questo turno (id · chi · tipo · quando)', d.repertorio.battuteDisponibili || '(nessuna)');
-    if (d.repertorio.stallo) parti.push('Stallo: nessuno ha agito in questo turno.');
+    if (d.repertorio.stallo) parti.push(TESTO_STALLO_REPERTORIO);
   }
 
   // Note di regia: in fondo, vicino all'ordine di rispondere, perché pesino di più.
@@ -164,15 +164,26 @@ export function messaggioRiparazione(messaggio: string, detto: string, mancanti:
 }
 
 /**
- * Mossa contro lo stallo (manuale, S1–S3): prima un segno di un fronte attivo, poi un indizio
- * proattivo, poi un PNG che riassume due o tre strade concrete. Mai un «cosa fate?» a vuoto.
+ * Regola comune delle mosse contro lo stallo: un EVENTO DEL MONDO, mai un commento sul tavolo.
+ * (In una notte di prova il selettore ha detto per ore «nessuno dei PG ha ancora parlato».) Il
+ * Motore scarta comunque le frasi fuori dalla finzione (narrazione/finzione.ts).
+ */
+const SOLO_FINZIONE =
+  'Racconta solo ciò che accade nella storia: non nominare giocatori o PG come tali, e non parlare di scelte, ' +
+  'attese, silenzi o di qualcuno che non ha ancora fatto qualcosa.';
+
+/** Modalità B: lo stallo per il selettore (la parola «Stallo» la riconosce il suo prompt). */
+export const TESTO_STALLO_REPERTORIO =
+  `Stallo: in questo turno non c'è nessuna azione da risolvere. Fai succedere qualcosa nel mondo con una battuta di riempimento del catalogo, oppure col segno se è dovuto. ${SOLO_FINZIONE}`;
+
+/**
+ * Mossa contro lo stallo (manuale, S1–S2): prima un segno di un fronte attivo, poi un indizio
+ * proattivo. Mai un «cosa fate?» a vuoto. Dopo due mosse di fila il tavolo va in pausa da solo.
  */
 export function testoStallo(volte: number): string {
   const mossa =
     volte <= 1
-      ? 'una mossa morbida: un segno visibile della minaccia (S1), senza niente di irreversibile'
-      : volte === 2
-        ? 'un indizio proattivo (S2): qualcosa irrompe e porta una pista nuova'
-        : 'un PNG o un ricordo che riassume due o tre strade concrete (S3), nella finzione';
-  return `## Stallo\nDa 45 secondi nessuno scrive niente${volte > 1 ? ` (${volte} volte di fila)` : ''}. Fai ${mossa}. Non decidere per i PG e chiudi con un invito a qualcuno per nome.`;
+      ? 'un segno visibile della minaccia (S1), senza niente di irreversibile'
+      : 'un indizio proattivo (S2): qualcosa irrompe e porta una pista nuova, oppure un PNG agisce per conto suo';
+  return `## Mossa del mondo\nFai succedere qualcosa nella scena: ${mossa}. ${SOLO_FINZIONE} Chiudi con un invito a un personaggio per nome, dentro la storia.`;
 }

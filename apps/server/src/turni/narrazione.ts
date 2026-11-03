@@ -75,6 +75,8 @@ export interface EsitoTurnoNarrato {
   righe_prescritte: number;
   righe_improvvisate: number;
   usa_rifiutati: number;
+  /** Frasi scartate prima della voce perché fuori dalla finzione (mosse contro lo stallo). */
+  scartate: number;
   /** Errore del narratore (non per interruzione). */
   errore: string | null;
   interrotto: boolean;
@@ -103,6 +105,11 @@ export interface ParametriTurno {
   cueRifiutato?: (tipo: 'umore' | 'effetto', tag: string, motivo: string) => void;
   /** Un umore scritto dopo l'ultima frase: non ha una frase a cui legarsi, si applica subito. */
   cueSenzaFrase?: (cue: CueAudio) => void;
+  /**
+   * Guardia: il motivo per scartare una frase improvvisata prima della voce (null = la frase va).
+   * La usa la regia nelle mosse contro lo stallo (narrazione/finzione.ts).
+   */
+  scartaFrase?: (testo: string) => string | null;
 }
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
@@ -134,6 +141,7 @@ export async function narraTurno(
   let righePrescritte = 0;
   let righeImprovvisate = 0;
   let usaRifiutati = 0;
+  let scartate = 0;
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
   /** Segnale audio in attesa della prossima frase. */
@@ -172,6 +180,14 @@ export async function narraTurno(
     for (const e of eventi) {
       if (p.signal.aborted) return;
       if (e.tipo === 'frase') {
+        const motivoScarto = p.scartaFrase?.(e.testo) ?? null;
+        if (motivoScarto) {
+          // Fuori dalla finzione: non si sente e non si scrive. La regia rimedia a fine turno.
+          scartate += 1;
+          anomalie.push({ codice: 'fuori_finzione', dettaglio: `${motivoScarto}: «${e.testo.slice(0, 120)}»` });
+          log.warn({ turno: p.turno, etichetta: e.etichetta, motivo: motivoScarto, testo: e.testo }, 'narratore: frase fuori dalla finzione, scartata');
+          continue;
+        }
         const { voce_id, nome } = voceDi(campagna, e.etichetta);
         p.onFrase({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice });
         const perVoce = p.pronuncia(e.testo);
@@ -244,6 +260,7 @@ export async function narraTurno(
     righe_prescritte: righePrescritte,
     righe_improvvisate: righeImprovvisate,
     usa_rifiutati: usaRifiutati,
+    scartate,
     errore,
     interrotto,
   });

@@ -38,6 +38,7 @@ function stato(parziale: Partial<StatoTavolo> = {}): StatoTavolo {
     trascrizione: [],
     voce_motore: 'mock',
     schermo_connesso: true,
+    pausa_automatica: false,
     ora_server_ms: 1_700_000_000_000,
     al_tavolo: [],
     ...parziale,
@@ -191,5 +192,13 @@ describe('vista del telefono: al tavolo e banner', () => {
     s.finestra.chiusura_prevista_ms = 123_456;
     expect(bannerTelefono(s, 'bea').scadenzaMs).toBe(123_456);
     expect(bannerTelefono(s, 'cosimo').scadenzaMs).toBe(123_456);
+  });
+});
+
+describe('pausa automatica (nessuno scriveva)', () => {
+  it('il banner dice di scrivere per ripartire', () => {
+    const b = bannerTelefono(stato({ fase: 'pausa', pausa_automatica: true }), 'pg_a');
+    expect(b).toMatchObject({ tipo: 'pausa', titolo: 'Il tavolo è in pausa', dettaglio: "Scrivete un'azione per ripartire." });
+    expect(bannerTelefono(stato({ fase: 'pausa' }), 'pg_a').titolo).toBe('Tavolo in pausa');
   });
 });

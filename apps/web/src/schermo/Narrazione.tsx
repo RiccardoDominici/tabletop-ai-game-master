@@ -111,7 +111,7 @@ function SuggerimentoFase({ stato }: { stato: StatoTavolo }) {
   } else if (stato.fase === 'fermata') {
     testo = 'Scena fermata';
   } else if (stato.fase === 'pausa') {
-    testo = 'Tavolo in pausa';
+    testo = stato.pausa_automatica ? "Il tavolo è in pausa: scrivete un'azione per ripartire" : 'Tavolo in pausa';
   } else if (stato.fase === 'attesa') {
     testo = 'La scena sta per cominciare';
   } else {
