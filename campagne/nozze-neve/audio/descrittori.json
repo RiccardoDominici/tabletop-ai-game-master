@@ -294,66 +294,12 @@
   {
    "id": "luogo_n_sasso",
    "nome": "Il Sasso delle Promesse",
-   "alias_di": null,
-   "musica": {
-    "umore": "taverna_calda",
-    "energia": "media",
-    "ambientazioni": [],
-    "ora": "giorno",
-    "meteo": [
-     "neve",
-     "vento"
-    ],
-    "interno": false,
-    "parole": []
-   },
-   "ambiente": [
-    [
-     "neve",
-     0.4
-    ]
-   ],
+   "alias_di": "luogo_scena_sasso",
+   "musica": null,
+   "ambiente": [],
    "transizioni": [],
    "perche": {
-    "umore": "umore di base della campagna",
-    "ambientazioni": {},
-    "energia": "intensità None, umore taverna_calda",
-    "ora": {
-     "giorno": {
-      "punti": 1.0,
-      "prove": [
-       "abbozzo: pomerigg"
-      ]
-     }
-    },
-    "meteo": {
-     "neve": {
-      "punti": 1.35,
-      "prove": [
-       "abbozzo: neve",
-       "stile_immagini: snow"
-      ]
-     },
-     "vento": {
-      "punti": 1.0,
-      "prove": [
-       "abbozzo: venti"
-      ]
-     }
-    },
-    "interno": {
-     "interno": 0,
-     "esterno": 0
-    },
-    "ambiente": {
-     "neve": {
-      "punti": 1.35,
-      "prove": [
-       "abbozzo: neve",
-       "stile_immagini: snow"
-      ]
-     }
-    }
+    "alias_di": "luogo_scena_sasso"
    }
   },
   {
@@ -412,17 +358,17 @@
   }
  ],
  "effetti": {
-  "porta": [
-   "luogo_scena_casera.sensi: dalla porta",
-   "luogo_scena_casera.elementi: la porta",
-   "luogo_scena_casera.descrizione: una porta",
-   "luogo_scena_casa_bonfanti.elementi: dalla porta"
-  ],
   "campana": [
    "regole_prosa: campan",
    "luogo_scena_casa_bonfanti.sensi: campan",
    "luogo_scena_casa_bonfanti.elementi: campan",
    "luogo_scena_casa_bonfanti.descrizione: campan"
+  ],
+  "porta": [
+   "luogo_scena_casera.sensi: dalla porta",
+   "luogo_scena_casera.elementi: la porta",
+   "luogo_scena_casera.descrizione: una porta",
+   "luogo_scena_casa_bonfanti.elementi: dalla porta"
   ],
   "monete": [
    "regole_prosa: fiorin",

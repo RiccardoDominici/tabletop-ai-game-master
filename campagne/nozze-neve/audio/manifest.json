@@ -2,7 +2,7 @@
   "versione": 1,
   "campagna": "nozze-neve",
   "formato": "AAC-LC in .m4a, 48 kHz, stereo; i loop vanno da loop_inizio_s a loop_fine_s (mezzo secondo di margine prima e dopo)",
-  "aggiornato": "2026-11-03 11:00:12",
+  "aggiornato": "2026-11-03 14:08:10",
   "brani": [
     {
       "id": "luogo_e_tramonto",
@@ -65,77 +65,20 @@
       "id": "luogo_n_sasso",
       "tipo": "musica",
       "luogo": "n_sasso",
-      "file": "luogo_n_sasso.m4a",
+      "file": "luogo_scena_sasso.m4a",
       "loop": true,
       "lufs": -23.0,
       "volume": 1.0,
-      "durata_s": 151.75,
+      "durata_s": 154.5,
       "loop_inizio_s": 0.5,
-      "loop_fine_s": 151.25,
-      "titolo": "Galway",
+      "loop_fine_s": 153.999979,
+      "titolo": "Virtutes Vocis",
       "autore": "Kevin MacLeod",
       "fonte": "Incompetech",
-      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Galway.mp3",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Virtutes%20Vocis.mp3",
       "licenza": "CC BY 4.0",
-      "crediti": "\"Galway\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
-      "scelta": {
-        "punteggio": 5.48,
-        "perche": {
-          "umore": 2.1,
-          "parole_umore": 1.5,
-          "parola_chiave": 1.0,
-          "antico": 0.8,
-          "genere": 0.3,
-          "tavolozza": 0.7,
-          "vietati": -1.0,
-          "varieta": 0.08
-        },
-        "descrittori": {
-          "umore": "taverna_calda",
-          "energia": "media",
-          "ambientazioni": [],
-          "ora": "giorno",
-          "meteo": [
-            "neve",
-            "vento"
-          ],
-          "interno": false,
-          "parole": []
-        },
-        "feel": [
-          "Bouncy",
-          "Bright",
-          "Relaxed"
-        ],
-        "strumenti": "Fiddle, Flute, Bass, Guitar, Drums",
-        "bpm": 110,
-        "scartati": []
-      },
-      "loop_sorgente": {
-        "inizio_s": 3.0,
-        "fine_s": 153.75,
-        "note": []
-      },
-      "controllo": {
-        "ok": true,
-        "problemi": [],
-        "durata_s": 151.75,
-        "lufs": -23.0,
-        "lra": 2.0,
-        "true_peak_db": -8.2,
-        "picco_db": -8.176917,
-        "campioni_al_limite": 0,
-        "silenzi": [],
-        "giunta": {
-          "somiglianza_db": 17.3,
-          "rapporto_salto": 0.11,
-          "salto_livello_db": 1.54,
-          "ok": true
-        },
-        "codec": "aac 128k",
-        "kb": 2498,
-        "normalizzazione": "linear"
-      }
+      "crediti": "\"Virtutes Vocis\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "alias_di": "luogo_scena_sasso"
     },
     {
       "id": "luogo_n_valle",
@@ -1760,10 +1703,9 @@
   ],
   "crediti": [
     "\"Virtutes Vocis\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
-    "\"Galway\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
-    "\"Master of the Feast\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
-    "\"Frost Waltz\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Duet Musette\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Frost Waltz\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Master of the Feast\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Curse of the Scarab\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Mary Celeste\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Movement Proposition\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
