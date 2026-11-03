@@ -13,6 +13,7 @@ import { pngNominati, temaPresente } from './pertinenza';
 import { segretiNelTesto, type ParolaSegreta } from './segreti';
 import type { Battuta, CondizioniStato, Repertorio, RigaBattuta, TipoBattuta } from './tipi';
 import { accetta, blocchi, bloccoConCancello, type Blocco } from './condizioni';
+import type { StatoRepertorioSalvato } from '../sessione/tipi';
 
 /**
  * Tipi che, scritti nel catalogo, svelerebbero un segreto al selettore: che quella battuta è una
@@ -320,6 +321,33 @@ export class StatoRepertorio {
   /** Battute mai uscite (per il riepilogo dell'esperimento; le `solo_esempio` non contano). */
   maiUsate(): string[] {
     return this.repertorio.battute.filter((b) => !b.solo_esempio && !this.usata(b.id)).map((b) => b.id);
+  }
+
+  /** Stato della scena per il registro della sessione (usi, indizi, menzogne, fatti). */
+  esporta(): StatoRepertorioSalvato {
+    return {
+      usi: [...this.usi],
+      ultimoUso: [...this.ultimoUso],
+      indizi: [...this.indiziRivelati],
+      menzogne: [...this.menzogneDette],
+      fattiNoti: [...this.fattiNoti],
+      fattiScoperti: [...this.fattiScoperti],
+    };
+  }
+
+  /** Ripresa di una sessione. Le battute che il repertorio non ha più si ignorano. */
+  importa(s: StatoRepertorioSalvato): void {
+    const esiste = (id: string): boolean => this.repertorio.perId.has(id);
+    this.usi.clear();
+    for (const [id, n] of s.usi ?? []) if (esiste(id)) this.usi.set(id, n);
+    this.ultimoUso.clear();
+    for (const [id, t] of s.ultimoUso ?? []) if (esiste(id)) this.ultimoUso.set(id, t);
+    this.indiziRivelati.clear();
+    for (const i of s.indizi ?? []) this.indiziRivelati.add(i);
+    this.menzogneDette.clear();
+    for (const m of s.menzogne ?? []) this.menzogneDette.add(m);
+    for (const f of s.fattiNoti ?? []) this.fattiNoti.add(f);
+    this.fattiScoperti.splice(0, this.fattiScoperti.length, ...(s.fattiScoperti ?? []));
   }
 
   riepilogo(): Record<string, unknown> {

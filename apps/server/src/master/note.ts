@@ -54,4 +54,15 @@ export class NoteRegia {
   azzera(): void {
     this.note = [];
   }
+
+  /** Per il registro della sessione. */
+  esporta(): { elenco: NotaRegia[]; prossimoId: number } {
+    return { elenco: this.elenco, prossimoId: this.prossimoId };
+  }
+
+  /** Ripresa di una sessione. */
+  importa(s: { elenco: NotaRegia[]; prossimoId: number }): void {
+    this.note = (s.elenco ?? []).map((n) => ({ ...n }));
+    this.prossimoId = Math.max(s.prossimoId ?? 1, ...this.note.map((n) => Number(n.id.slice(1)) + 1));
+  }
 }

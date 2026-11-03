@@ -26,6 +26,7 @@ import { normalizza, relazioniDaRegole } from './regole';
 import { Spareggio } from './spareggio';
 import { avvisoConflitto, avvisoDipendenza, avvisoVecchia, MOTIVO_SOSPESA, motivoSuperata } from './testi';
 import { STATI_VIVI, type Arbitro, type Azione, type AzioneArbitro, type ContestoArbitro } from './tipi';
+import type { StatoTavoloSalvato } from '../sessione/tipi';
 
 export const MAX_CARATTERI_AZIONE = 500;
 
@@ -805,6 +806,63 @@ export class TavoloAzioni {
     }
     this.o.onCambio();
     this.controlla();
+  }
+
+  // ------------------------------------------------------------------ sessione salvata
+
+  /**
+   * Stato da salvare nel registro della sessione: le azioni che contano ancora (vive, dei due turni
+   * più recenti, e l'ultima di ogni giocatore), la finestra (senza timer) e i contatori.
+   */
+  esporta(): StatoTavoloSalvato {
+    const ultime = new Set(this.ultima.values());
+    const azioni = this.tutte()
+      .filter((a) => STATI_VIVI.has(a.stato) || a.turno >= this.ultimoTurno - 1 || ultime.has(a.id))
+      .map((a) => ({ ...a, dipende_da: [...a.dipende_da], conflitti: a.conflitti.map((c) => ({ ...c })) }));
+    const f = this.finestra;
+    return {
+      azioni,
+      ultima: [...this.ultima],
+      finestra: f ? { turno: f.turno, invitati: [...f.invitati], invitoATutti: f.invitoATutti, aperta: f.aperta, pronti: [...f.pronti] } : null,
+      ultimoTurno: this.ultimoTurno,
+      versioneScena: this.versioneScena,
+      prossimoId: this.prossimoId,
+      inPausa: this.inPausa,
+    };
+  }
+
+  /**
+   * Ripresa di una sessione. La finestra resta CHIUSA (niente timer finché la regia non la riapre):
+   * si restituisce com'era, così la regia sa se riaprirla. Le azioni «chiuse» erano nel turno che il
+   * narratore stava raccontando quando il server si è fermato: non sono state risolte, tornano ai
+   * giocatori come «superate» col motivo dato. Le altre restano com'erano.
+   */
+  importa(s: StatoTavoloSalvato, motivoInterrotte: string): { finestra: StatoTavoloSalvato['finestra']; interrotte: string[] } {
+    this.azzera();
+    for (const a of s.azioni ?? []) this.azioni.set(a.id, { ...a, dipende_da: [...(a.dipende_da ?? [])], conflitti: (a.conflitti ?? []).map((c) => ({ ...c })) });
+    for (const [pg, id] of s.ultima ?? []) if (this.azioni.has(id)) this.ultima.set(pg, id);
+    this.ultimoTurno = s.ultimoTurno ?? 0;
+    this.versioneScena = s.versioneScena ?? 0;
+    this.prossimoId = Math.max(s.prossimoId ?? 1, ...[...this.azioni.keys()].map((id) => Number(id.slice(1)) + 1).filter(Number.isFinite));
+    const interrotte: string[] = [];
+    for (const a of this.azioni.values()) {
+      if (a.stato !== 'chiusa') continue;
+      a.stato = 'superata';
+      a.richiesta = null;
+      a.motivo = motivoInterrotte;
+      interrotte.push(a.id);
+    }
+    for (const a of this.azioni.values()) if (this.ultima.get(a.autore) === a.id) this.o.onAzione(a.autore, this.privata(a));
+    this.o.log.info({ azioni: this.azioni.size, interrotte, finestra: s.finestra }, 'azioni: riprese dalla sessione salvata');
+    return { finestra: s.finestra ?? null, interrotte };
+  }
+
+  /** Riapre una finestra salvata (ripresa): stessi invitati e chi era pronto; i timer ripartono da adesso. */
+  riapri(f: NonNullable<StatoTavoloSalvato['finestra']>, versioneScena: number, inPausa: boolean): void {
+    this.apri(f.turno, f.invitati, versioneScena, f.invitoATutti);
+    for (const p of f.pronti) if (this.finestra?.invitati.includes(p)) this.finestra.pronti.add(p);
+    if (inPausa) this.sospendi();
+    else this.controlla();
   }
 
   /** Ricomincia: dimentica tutto. */

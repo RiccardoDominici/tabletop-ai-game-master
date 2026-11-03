@@ -187,6 +187,22 @@ export class StatoOrologi {
       .join('\n');
   }
 
+  /** Stato di tutti gli orologi della campagna, per il registro della sessione. */
+  esporta(): Record<string, { pieni: number; ultimoTurno: number | null; partito: boolean }> {
+    return Object.fromEntries([...this.orologi.values()].map((o) => [o.id, { pieni: o.pieni, ultimoTurno: o.ultimoTurno, partito: o.partito }]));
+  }
+
+  /** Ripresa di una sessione: gli orologi tornano dove erano (quelli che la campagna non ha più si ignorano). */
+  importa(stati: Record<string, { pieni: number; ultimoTurno: number | null; partito: boolean }>): void {
+    for (const [id, s] of Object.entries(stati ?? {})) {
+      const o = this.orologi.get(id);
+      if (!o) continue;
+      o.pieni = Math.max(0, Math.min(o.segmenti, Math.floor(Number(s.pieni) || 0)));
+      o.ultimoTurno = typeof s.ultimoTurno === 'number' ? s.ultimoTurno : null;
+      o.partito = s.partito !== false;
+    }
+  }
+
   /** Istantanea per il log. */
   riepilogo(): Record<string, string> {
     return Object.fromEntries(this.elenco.map((o) => [o.id, `${o.pieni}/${o.segmenti}`]));

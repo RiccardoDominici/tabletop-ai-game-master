@@ -1,0 +1,119 @@
+/**
+ * Ciò che una sessione salva nel registro e come lo stato si ricostruisce dagli eventi.
+ *
+ * Tipi di evento (tabella `eventi`, docs/architettura.md «Motore»):
+ * - `inizio`             {campagna, modo, scena}: la sessione comincia (apertura letta dal proiettore);
+ * - `fotografia`         FotografiaSessione: lo stato del gioco a un punto stabile (fine di un turno,
+ *                        narrazione fermata, comando del master). Tutto tranne trascrizione e azioni;
+ * - `trascrizione_turno` {turno, voci}: le voci pubbliche di un turno, scritte quando il turno è chiuso
+ *                        (nella stessa transazione della fotografia: tutto o niente);
+ * - `tavolo`             StatoTavoloSalvato: azioni dei giocatori e finestra, a ogni cambiamento;
+ * - `dispositivo`        {dispositivo, id_pg}: il telefono di un giocatore e il suo PG.
+ *
+ * La ricostruzione è un fold puro (ricostruisci): l'ultima fotografia, l'ultima versione di ogni
+ * turno della trascrizione, l'ultimo stato del tavolo, l'ultimo PG di ogni dispositivo.
+ */
+import type { FaseScena, NotaRegia, VoceTrascrizione } from '@cantastorie/shared';
+import type { UmoreScelto } from '../audio/scena';
+import type { Azione } from '../azioni/tipi';
+
+export interface StatoOrologioSalvato {
+  pieni: number;
+  ultimoTurno: number | null;
+  partito: boolean;
+}
+
+export interface StatoRepertorioSalvato {
+  usi: Array<[string, number]>;
+  ultimoUso: Array<[string, number]>;
+  indizi: string[];
+  menzogne: string[];
+  fattiNoti: string[];
+  fattiScoperti: string[];
+}
+
+export interface StatoTavoloSalvato {
+  azioni: Azione[];
+  /** id_pg → id dell'ultima azione del giocatore. */
+  ultima: Array<[string, string]>;
+  /** Finestra al momento della scrittura (null = nessuna). */
+  finestra: { turno: number; invitati: string[]; invitoATutti: boolean; aperta: boolean; pronti: string[] } | null;
+  ultimoTurno: number;
+  versioneScena: number;
+  prossimoId: number;
+  inPausa: boolean;
+}
+
+export interface FotografiaSessione {
+  /** Fase al momento della fotografia (finestra, pausa, apertura, fermata…). */
+  fase: FaseScena;
+  turno: number;
+  versioneScena: number;
+  scena: string;
+  luogo: string;
+  situazione: { id: string; url: string; auto: boolean; turno: number } | null;
+  situazioniMostrate: string[];
+  umore: UmoreScelto | null;
+  orologi: Record<string, StatoOrologioSalvato>;
+  repertorio: StatoRepertorioSalvato | null;
+  note: { elenco: NotaRegia[]; prossimoId: number };
+  pausa: { richiesta: boolean; invitoSospeso: string[] | 'tutti' | null };
+  prossimoIdTrascrizione: number;
+}
+
+/** Lo stato ricostruito dal registro, pronto per Regia.ripristina. */
+export interface StatoRicostruito {
+  sessione: string;
+  fotografia: FotografiaSessione;
+  trascrizione: VoceTrascrizione[];
+  tavolo: StatoTavoloSalvato | null;
+  dispositivi: Map<string, string>;
+  /** Turno dell'ultima fotografia e ora dell'ultimo evento (per il pannello: «ripresa al turno N»). */
+  ultimoEvento: string;
+}
+
+export interface EventoRegistro {
+  tipo: string;
+  dati: unknown;
+  ts?: string;
+}
+
+/**
+ * Fold degli eventi di una sessione. null se non c'è nessuna fotografia (sessione mai partita davvero:
+ * non c'è niente da riprendere).
+ */
+export function ricostruisci(sessione: string, eventi: readonly EventoRegistro[]): StatoRicostruito | null {
+  let fotografia: FotografiaSessione | null = null;
+  const turni = new Map<number, VoceTrascrizione[]>();
+  let tavolo: StatoTavoloSalvato | null = null;
+  const dispositivi = new Map<string, string>();
+  let ultimoEvento = '';
+  for (const e of eventi) {
+    if (e.ts) ultimoEvento = e.ts;
+    const d = e.dati as Record<string, unknown>;
+    switch (e.tipo) {
+      case 'fotografia':
+        fotografia = d as unknown as FotografiaSessione;
+        break;
+      case 'trascrizione_turno':
+        if (typeof d['turno'] === 'number' && Array.isArray(d['voci'])) turni.set(d['turno'], d['voci'] as VoceTrascrizione[]);
+        break;
+      case 'tavolo':
+        tavolo = d as unknown as StatoTavoloSalvato;
+        break;
+      case 'dispositivo':
+        if (typeof d['dispositivo'] === 'string' && typeof d['id_pg'] === 'string') dispositivi.set(d['dispositivo'], d['id_pg']);
+        break;
+      default:
+        break; // inizio e tipi futuri: niente da applicare
+    }
+  }
+  if (!fotografia) return null;
+  // Solo i turni già chiusi dalla fotografia: un turno scritto dopo (impossibile nella stessa
+  // transazione, ma per prudenza) non deve comparire senza il suo stato.
+  const trascrizione = [...turni.entries()]
+    .filter(([t]) => t <= fotografia!.turno)
+    .sort(([a], [b]) => a - b)
+    .flatMap(([, voci]) => voci);
+  return { sessione, fotografia, trascrizione, tavolo, dispositivi, ultimoEvento };
+}
