@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from . import (regole_audio, regole_campagna, regole_immagini, regole_mondo, regole_pg, regole_png, regole_repertorio, regole_scena,
+from . import (regole_audio, regole_campagna, regole_immagini, regole_livello, regole_mondo, regole_pg, regole_png, regole_repertorio, regole_scena,
                regole_segreti)
 from .carica import Campagna, carica
 from .esito import CLASSI, Esito
 
 # Ordine dei controlli: prima la struttura (carica), poi dal generale al particolare.
-MODULI = [regole_campagna, regole_mondo, regole_scena, regole_png, regole_pg, regole_immagini, regole_audio,
+MODULI = [regole_livello, regole_campagna, regole_mondo, regole_scena, regole_png, regole_pg, regole_immagini, regole_audio,
           regole_repertorio, regole_segreti]
 
 

@@ -1,6 +1,7 @@
 """Caricamento di una cartella di campagna in una struttura unica, tollerante agli errori.
 
 Cosa legge (forma descritta in .claude/skills/preparatore/riferimenti/schema.md):
+    brief.yaml                                   facoltativo: sessioni e livello (strumenti/strati.py)
     stile.yaml, campagna.yaml, pg.yaml
     scena.yaml, scena_*.yaml, scene/*.yaml      una o più schede scena (la prima giocata è scena.yaml)
     png/*.yaml                                   schede PNG, il nome del file è l'id
@@ -25,6 +26,7 @@ from .esito import Esito
 @dataclass
 class Campagna:
     cartella: Path
+    brief: dict | None = None                                           # brief.yaml, se c'è (livello, sessioni)
     stile: dict = field(default_factory=dict)
     campagna: dict = field(default_factory=dict)
     pg: dict = field(default_factory=dict)
@@ -106,6 +108,8 @@ def carica(cartella: Path, esito: Esito, voci: Path | None = None) -> Campagna:
     if not cartella.is_dir():
         esito.errore("STRUTTURA.cartella", str(cartella), "la cartella della campagna non esiste")
         return c
+    brief = _leggi(cartella / "brief.yaml", esito, False)
+    c.brief = brief if isinstance(brief, dict) else ({} if (cartella / "brief.yaml").exists() else None)
     c.stile = _leggi(cartella / "stile.yaml", esito, True) or {}
     c.campagna = _leggi(cartella / "campagna.yaml", esito, True) or {}
     c.pg = _leggi(cartella / "pg.yaml", esito, True) or {}

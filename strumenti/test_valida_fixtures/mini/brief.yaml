@@ -1,0 +1,4 @@
+# Brief minimo del mini (la campagna di prova del validatore): una one-shot.
+id: mini
+sessioni: 1
+ore_per_sessione: 0.5

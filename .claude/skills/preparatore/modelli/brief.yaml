@@ -6,7 +6,12 @@ titolo: ""
 richiesta: ""          # le parole di Riccardo, così come le ha scritte
 
 tono: ""               # es. «fiaba di paese, cupa ma calda»
-durata: ""             # es. «una scena, 25 minuti» oppure «una sessione, 3 ore»
+sessioni: 1            # OBBLIGATORIO: quante sessioni dura, o "aperta" per una campagna senza fine.
+                       # Decide il livello e quindi quanti strati si preparano (strumenti/strati.py):
+                       # 1 one-shot, 2–6 arco, 7–20 campagna, 21+ o "aperta" saga. Oggi si gioca la one-shot.
+ore_per_sessione: 2.5  # facoltativo, predefinito 2.5; sotto un'ora la one-shot ha una scena sola
+# livello: arco        # facoltativo: forza un livello diverso da quello delle sessioni, solo col motivo in decisioni.altre
+durata: ""             # nota a parole per Riccardo, es. «una serata, tre scene» (il numero sta in sessioni)
 giocatori: 3           # quanti giocano (o «3-4»); i PG pregenerati sono uno più del massimo
 temi: []               # es. [paura del forestiero, la verità che costa]
 linee: []              # mai in gioco

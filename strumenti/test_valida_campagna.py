@@ -448,6 +448,31 @@ def test_mondo_indizio_documento_senza_data_in_rigoroso(camp):
     assert "MONDO.documento_mancante" in errori(camp, rigoroso=True)
 
 
+# --- LIVELLO (durata in sessioni, strumenti/strati.py) ----------------------------------------------
+
+def test_livello_brief_senza_sessioni_e_un_avviso(camp):
+    modifica(camp, "brief.yaml", lambda d: d.pop("sessioni"))
+    assert "LIVELLO.sessioni" not in errori(camp, rigoroso=True)
+    assert "LIVELLO.sessioni" in avvisi(camp, rigoroso=True)
+    (camp / "brief.yaml").unlink()
+    assert "LIVELLO.sessioni" in avvisi(camp)
+
+
+def test_livello_sopra_la_one_shot_non_e_supportato(camp):
+    # Un arco di quattro sessioni non si sa ancora preparare: meglio un errore che una campagna a metà.
+    modifica(camp, "brief.yaml", lambda d: d.update(sessioni=4))
+    assert "LIVELLO.non_supportato" in errori(camp)
+    modifica(camp, "brief.yaml", lambda d: d.update(sessioni="aperta"))
+    assert "LIVELLO.non_supportato" in errori(camp)
+
+
+def test_livello_valori_sbagliati_e_forzato_senza_motivo(camp):
+    modifica(camp, "brief.yaml", lambda d: d.update(sessioni="tante"))
+    assert "LIVELLO.forma" in errori(camp)
+    modifica(camp, "brief.yaml", lambda d: d.update(sessioni=1, livello="campagna"))
+    assert "LIVELLO.forzato" in errori(camp)
+
+
 # --- PG -------------------------------------------------------------------------------------------
 
 def test_pg_id_non_valido(camp):

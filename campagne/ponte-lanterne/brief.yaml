@@ -16,6 +16,7 @@ richiesta: >-
 
 tono: "Mistero di paese sotto la pioggia, caldo e umano, con qualche sorriso. Niente orrore, niente sangue."
 durata: "una sessione serale, da due ore a due ore e mezza, in quattro scene"
+sessioni: 1            # una one-shot (strumenti/strati.py)
 giocatori: 4            # da 3 a 4: i PG pregenerati sono cinque, uno più del massimo
 temi: [debiti e lealtà, una comunità che deve decidere chi salvare per primo, un segreto sul ponte]
 linee:
