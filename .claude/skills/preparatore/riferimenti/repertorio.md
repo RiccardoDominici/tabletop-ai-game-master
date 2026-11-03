@@ -52,7 +52,9 @@ solo di tipo momento, indizio, transizione o richiesta [V].
   - Niente parole con due sensi che il prefiltro non distingue: «tocco» è il rintocco e «io tocco».
     Scegli la forma che ha un senso solo («rintocco», «campana»).
   - Una battuta entra nel catalogo anche quando l'azione nomina il PNG che parla (nome o `alias`).
-  - Segni d'orologio e finali hanno temi neutri (`[orologio]`), perché li porta lo stato, non le parole.
+  - Segni d'orologio hanno temi neutri (`[orologio]`), perché li porta lo stato, non le parole. Un finale con
+    temi neutri arriva anche lui per stato, ma il Motore lo accetta solo legato a un'azione pubblica del turno
+    (riferimenti/motore.md): almeno un finale per scena ha i temi dell'azione decisiva.
   - Prova i temi sui copioni ciechi della tua campagna: `--copioni esperimenti/copioni/<id>` (passo 12).
     Il catalogo medio per temi deve stare sotto 4 battute per azione.
 - **max_usi**: al massimo 1 più il numero di varianti, anche per gli esempi di voce [V]: oltre,

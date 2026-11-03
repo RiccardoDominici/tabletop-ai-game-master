@@ -76,4 +76,13 @@ const codice = sorgenti(SERVER);
   verifica('oggetti', tipi.every((t) => !/oggett/i.test(t)), 'nessuno stato degli oggetti in sessione/tipi.ts, repertorio/stato.ts, repertorio/tipi.ts');
 }
 
+// 6. Una battuta esce solo legata a un'azione («> pg»), salvo il segno dovuto e i riempitivi allo stallo:
+//    un finale che arriva «per stato» a orologio pieno senza un'azione pubblica nel turno non esce
+//    (playtest di nozze-neve: fin_tramonto e nar_chiusura rifiutati di continuo).
+{
+  const regia = codice.find(([f]) => f === path.join('scena', 'regia.ts'))?.[1] ?? '';
+  const libera = /const libera = \(b\.tipo === 'segno_orologio' && !!t\?\.segnoDovuto\) \|\| \(b\.riempitivo && !!t\?\.stallo\);/.test(regia);
+  verifica('senza_azione', libera, "scena/regia.ts: senza «> pg» passano solo il segno dovuto e i riempitivi allo stallo");
+}
+
 process.stdout.write(JSON.stringify(esiti) + '\n');

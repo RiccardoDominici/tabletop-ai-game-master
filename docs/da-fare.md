@@ -29,7 +29,10 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
     l'orologio a 7»), oggi possibile solo tra le sessioni;
   - **finali per stato**: un modo di dire al Motore «la domanda drammatica ha risposta» (esiti della scena con i
     loro cancelli), invece di affidare i finali prima dell'orologio pieno ai temi;
-  - **stato degli oggetti**: chi ha che cosa, almeno per gli oggetti con un id nella scena (`elementi_interattivi`).
+  - **stato degli oggetti**: chi ha che cosa, almeno per gli oggetti con un id nella scena (`elementi_interattivi`);
+  - **battute «per stato» senza `> pg`**: oggi senza un'azione legata passano solo il segno dovuto e i riempitivi allo
+    stallo (`scena/regia.ts`, usaBattuta); un finale o una chiusura che entra nel catalogo a orologio pieno dovrebbe
+    poter uscire anche senza un'azione (playtest di nozze-neve: il finale non è mai uscito).
 - **Skill e validatore** (fatto il 2 novembre sera, dalle 26 note di `NOTE_SULLA_SKILL.md`): contesto vero del modo B
   compilato col server, cronologia e logistica (`MONDO`), voci simili (`simile_a`), passi riordinati con `--solo`,
   più scene, copioni con `scena` e `richiede`, immagini (`prompt_ritratto`, `nodi[].immagine`, `situazioni[].dopo`).

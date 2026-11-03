@@ -39,6 +39,17 @@ un'azione ne tocca i `temi` o nomina chi parla.
 - **Che cosa fare**: i finali che chiudono la scena prima dell'orologio pieno hanno temi distintivi e i cancelli
   dell'esito (`battute_usate`, `indizi_rivelati`); quelli del climax hanno `richiede.orologio` a orologio pieno.
 
+<!-- limite: senza_azione -->
+## Una battuta esce solo legata a un'azione
+Il selettore usa una battuta legandola all'azione di un PG (`[usa] id > pg`). Senza `> pg` il Motore accetta solo
+il segno d'orologio dovuto e i riempitivi allo stallo. Un finale o una chiusura che entra nel catalogo «per stato»,
+a orologio pieno, esce solo se il selettore la lega a un'azione pubblica di quel turno: se il tavolo è fermo, o
+le azioni del turno sono tutte private, non esce (nel playtest di nozze-neve il finale non è mai uscito).
+- **Che cosa fare**: finché il Motore non lo cambia (docs/da-fare.md), prevedi che il climax arrivi mentre i PG
+  agiscono: l'ultimo segno dell'orologio con temi delle azioni del climax, e almeno un finale che risponde
+  all'azione decisiva (i suoi `temi`, il suo cancello) oltre a quello «per stato». Il validatore avvisa quando i
+  finali di una scena possono arrivare solo per stato (`COPERTURA.finale_senza_azione`).
+
 <!-- limite: oggetti -->
 ## Gli oggetti non hanno uno stato
 Il Motore non tiene chi ha che cosa: un oggetto preso, perso o rotto esiste solo nella trascrizione.
