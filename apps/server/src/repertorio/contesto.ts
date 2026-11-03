@@ -10,7 +10,7 @@
  * - scena: nome, descrizione, domanda drammatica, intensità, sensi, elementi interattivi tranne
  *   quelli NASCOSTI, PNG presenti, taglio;
  * - PNG: nome, pronuncia, aspetto.lettura, personalita (superficie, sotto_pressione), voce senza
- *   mai_dice e senza la «parola da medico», atteggiamento verso i PG (solo lo stato), `sa` limitato
+ *   mai_dice, atteggiamento verso i PG (solo lo stato), `sa` limitato
  *   ai fatti pubblici;
  * - PG: tutto tranne conoscenze_private; situazione comune.
  * Restano fuori, tra l'altro: mente_su (e la verità), segreto, non_sa, crede_a_torto, desiderio,
@@ -18,7 +18,8 @@
  * posta, scopo, mossa morbida, fatti nascosti non ancora scoperti, preparazione.
  *
  * Rete di sicurezza: in ogni stringa ammessa si tolgono le frasi che contengono una parola
- * segreta (parole_segrete.yaml) o un'espressione vietata. Variabile per turno (messaggio utente):
+ * segreta (parole_segrete.yaml: è la campagna a dire cosa è segreto, nel codice non c'è nessuna
+ * espressione di una campagna). Variabile per turno (messaggio utente):
  * fatti scoperti, stato degli orologi, battute disponibili (vedi messaggioRepertorio).
  */
 import YAML from 'yaml';
@@ -27,8 +28,6 @@ import { ID_NARRATORE, type Campagna, type DatiYaml } from '../campagna/tipi';
 import { togliFrasiSegrete, type ParolaSegreta } from './segreti';
 import type { Repertorio } from './tipi';
 
-/** Espressioni che svelano un segreto senza essere nella lista delle parole (docs: da_togliere). */
-export const ESPRESSIONI_VIETATE: RegExp[] = [/parola da medico/i];
 
 function stringa(v: unknown): string | null {
   return typeof v === 'string' && v.trim() ? v.trim() : null;
@@ -37,7 +36,7 @@ function stringa(v: unknown): string | null {
 /** Copia «pulita»: ogni stringa perde le frasi segrete; chiavi e voci vuote spariscono. */
 function pulisci(valore: unknown, parole: ParolaSegreta[]): unknown {
   if (typeof valore === 'string') {
-    const t = togliFrasiSegrete(valore, parole, ESPRESSIONI_VIETATE);
+    const t = togliFrasiSegrete(valore, parole);
     return t || undefined;
   }
   if (Array.isArray(valore)) {
@@ -144,7 +143,7 @@ export function sezioniContestoRepertorio(c: Campagna, parole: ParolaSegreta[], 
       const righe = repertorio.battute
         .filter((b) => b.solo_esempio && b.chi === p.id)
         .flatMap((b) => b.testo.filter((r) => r.etichetta === p.id).map((r) => `${b.quando} → ${r.testo}`))
-        .map((r) => togliFrasiSegrete(r, parole, ESPRESSIONI_VIETATE))
+        .map((r) => togliFrasiSegrete(r, parole))
         .filter((r) => r.includes('→ ') && !r.endsWith('→'))
         .slice(0, ESEMPI_PER_PNG);
       if (righe.length) esempi.push(`### ${p.nome} [${p.id}]\n${righe.map((r) => `- ${r}`).join('\n')}`);

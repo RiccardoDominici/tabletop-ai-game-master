@@ -43,7 +43,7 @@ segreto:
 voce:
   tts: {voce_id: lucian, eta_apparente: "40-45", altezza: media, velocita: 0.95, timbro: "basso, rauco di tosse, pacato"}
   registro: "Dà del lei a tutti, come un medico di città, anche a chi lo insulta. Non dà mai del tu."
-  stile: "Frasi ordinate e brevi. Ogni tanto una parola da medico, corretta subito in parole semplici. Fa domande precise: da quando, quanto, cosa avete mangiato."
+  stile: "Frasi ordinate e brevi. Fa domande precise: da quando, quanto, cosa avete mangiato."
   tic: ["«Mi permetta.» prima di una domanda"]
   gesto: "si stringe il cappuccio sotto il mento"
   mai_dice: ["il nome della Compagnia del Grifo, finché non lo dice qualcun altro", "parolacce o insulti", "una promessa che non può mantenere"]

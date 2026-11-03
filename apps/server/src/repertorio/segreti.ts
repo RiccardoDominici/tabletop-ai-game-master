@@ -79,9 +79,12 @@ export function segretiNelTesto(testo: string, parole: ParolaSegreta[], s: Stato
   return parole.filter((p) => !èPubblica(p, s) && p.regex.test(minuscolo));
 }
 
-/** Toglie da un testo le frasi che contengono una parola ancora segreta (o un'altra espressione vietata). */
-export function togliFrasiSegrete(testo: string, parole: ParolaSegreta[], vietate: RegExp[] = [], s: StatoPubblico | null = null): string {
+/**
+ * Toglie da un testo le frasi che contengono una parola ancora segreta. Ciò che è segreto lo dice
+ * SOLO la campagna (parole_segrete.yaml): nel codice non c'è nessuna espressione di una campagna.
+ */
+export function togliFrasiSegrete(testo: string, parole: ParolaSegreta[], s: StatoPubblico | null = null): string {
   const frasi = testo.split(/(?<=[.!?…])\s+/);
-  const tenute = frasi.filter((f) => segretiNelTesto(f, parole, s).length === 0 && !vietate.some((v) => v.test(f)));
+  const tenute = frasi.filter((f) => segretiNelTesto(f, parole, s).length === 0);
   return tenute.join(' ').trim();
 }
