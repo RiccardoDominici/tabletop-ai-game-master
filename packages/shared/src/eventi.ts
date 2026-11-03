@@ -122,7 +122,12 @@ export interface EventiClientVersoServer {
   /** Telefono: entra nel tavolo e riceve lo stato. */
   'telefono:entra': (ack: (stato: StatoTavolo) => void) => void;
   /** Telefono: sceglie (o cambia) il PG; entra nella stanza player:<id_pg>. */
-  'telefono:scegli_pg': (dati: { id_pg: string }, ack: (esito: Esito) => void) => void;
+  'telefono:scegli_pg': (dati: { id_pg: string; dispositivo?: string }, ack: (esito: Esito) => void) => void;
+  /**
+   * Telefono: si presenta col token del dispositivo (localStorage). Se il server lo conosce (anche da
+   * una sessione ripresa dopo un riavvio) risponde col PG che quel telefono aveva scelto.
+   */
+  'telefono:dispositivo': (dati: { dispositivo: string }, ack: (risposta: { id_pg: string | null }) => void) => void;
   /**
    * Invia (o sostituisce: una sola azione per giocatore per finestra) l'azione del PG. Si può
    * inviare sempre, anche mentre il narratore parla: allora entra nella finestra successiva.

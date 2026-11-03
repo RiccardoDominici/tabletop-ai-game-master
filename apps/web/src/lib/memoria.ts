@@ -35,4 +35,15 @@ export function cancellaMemoria(chiave: string): void {
 export const CHIAVI = {
   /** Id del PG scelto su questo telefono. */
   pg: 'cantastorie:pg',
+  /** Token di questo telefono: il server lo lega al PG e lo riconosce anche dopo un riavvio. */
+  dispositivo: 'cantastorie:dispositivo',
 } as const;
+
+/** Token del dispositivo, creato la prima volta (casuale, senza dati personali). */
+export function tokenDispositivo(): string {
+  const salvato = leggiMemoria(CHIAVI.dispositivo);
+  if (salvato && /^[A-Za-z0-9_-]{8,64}$/.test(salvato)) return salvato;
+  const nuovo = typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`;
+  scriviMemoria(CHIAVI.dispositivo, nuovo);
+  return nuovo;
+}

@@ -67,7 +67,7 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
 
     socket.on('telefono:scegli_pg', (dati, cb) => {
       const id_pg = typeof dati?.id_pg === 'string' ? dati.id_pg : '';
-      const esito = regia.telefonoSceglie(socket.id, id_pg);
+      const esito = regia.telefonoSceglie(socket.id, id_pg, dati?.dispositivo);
       if (esito.ok) {
         const prima = pgDi.get(socket.id);
         if (prima && prima !== id_pg) void socket.leave(stanzaPg(prima));
@@ -113,6 +113,12 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
     });
 
     socket.on('stato:richiedi', (cb) => ack(cb)(regia.stato()));
+
+    socket.on('telefono:dispositivo', (dati, cb) => {
+      const id_pg = regia.pgDelDispositivo(dati?.dispositivo);
+      if (id_pg) log.info({ socket: socket.id, id_pg }, 'telefono: dispositivo riconosciuto');
+      ack<{ id_pg: string | null }>(cb)({ id_pg });
+    });
 
     socket.on('schermo:osserva', (cb) => {
       void socket.join(STANZA_TAVOLO);

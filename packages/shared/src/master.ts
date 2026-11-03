@@ -177,6 +177,22 @@ export interface StatoMaster {
   eventi: EventoMaster[];
   /** Musica, umori ed effetti (assente se il server non ha un catalogo audio). */
   audio?: AudioMaster;
+  /** Sessione salvata nel registro (assente se il server non salva). */
+  sessione?: SessioneMaster;
+}
+
+/** La sessione di gioco salvata: il server la riprende da sola dopo un riavvio. */
+export interface SessioneMaster {
+  /** Id (ISO dell'inizio) della sessione in corso; null = nessuna ancora (scena non avviata). */
+  id: string | null;
+  /** ISO 8601 dell'inizio. */
+  creata: string | null;
+  /** Eventi scritti nel registro. */
+  eventi: number;
+  /** Ultima ripresa dopo un riavvio: quando, e da che turno. */
+  ripresa: { quando: string; turno: number } | null;
+  /** Sessione ripresa dal registro che aspetta il proiettore («Inizia sessione») per ripartire. */
+  in_attesa_di_ripresa: { quando: string; turno: number } | null;
 }
 
 /** Comandi del pannello. Il server li valida tutti: il client non è fidato. */
@@ -206,7 +222,9 @@ export type ComandoMaster =
   /** Umore della musica (tag del catalogo); null = automatico, la musica del luogo. */
   | { tipo: 'umore'; umore: string | null }
   /** Suona un effetto del catalogo (sfx_<tag>) sul proiettore. */
-  | { tipo: 'effetto'; id: string };
+  | { tipo: 'effetto'; id: string }
+  /** Chiude la sessione salvata e ricomincia da capo (il pannello chiede conferma). */
+  | { tipo: 'nuova_sessione' };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

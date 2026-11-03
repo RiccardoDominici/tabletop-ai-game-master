@@ -14,6 +14,7 @@ import {
   type OrologioMaster,
   type RepertorioMaster,
   type ScenaMaster,
+  type SessioneMaster,
   type SituazioneMaster,
   type StatoMaster,
 } from '@cantastorie/shared';
@@ -55,6 +56,7 @@ export function statoMaster(f: FonteVistaMaster): StatoMaster {
     limiti_note: { max: NOTE_REGIA_MAX, turni_max: NOTE_REGIA_TURNI_MAX },
     repertorio: s ? repertorioMaster(s, regia.turnoCorrente) : null,
     eventi: [...f.eventi],
+    sessione: sessioneMaster(regia),
     ...(f.audio ? { audio: audioMaster(tavolo.scena.audio, f.audio) } : {}),
   };
 }
@@ -161,4 +163,10 @@ export function repertorioMaster(s: StatoRepertorio, turno: number): RepertorioM
     non_disponibili: selezionabili.filter((b) => !disponibili.has(b.id)).length,
     indizi_rivelati: [...s.indiziRivelati],
   };
+}
+
+/** La sessione salvata, per il pannello («Riprendi»: quando e da che turno). */
+function sessioneMaster(regia: Regia): SessioneMaster {
+  const r = regia.infoRegistro;
+  return { id: r.sessione, creata: r.creata, eventi: r.eventi, ripresa: r.ripresa, in_attesa_di_ripresa: r.inAttesaDiRipresa };
 }

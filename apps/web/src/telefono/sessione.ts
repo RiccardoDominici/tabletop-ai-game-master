@@ -13,6 +13,7 @@
 import type { AzionePrivata, Esito, SchedaPg, StatoTavolo } from '@cantastorie/shared';
 import { alRientro, chiedi, conEsito, esitoErrore, prendiSocket } from '../lib/socket';
 import { creaLog } from '../lib/log';
+import { tokenDispositivo } from '../lib/memoria';
 import { useTavolo } from '../store/tavolo';
 import { useTelefono } from '../store/telefono';
 import { useAvvisi } from '../store/avvisi';
@@ -64,6 +65,20 @@ async function rientra(): Promise<void> {
   }
   if (!stato) return;
   useTavolo.getState().applicaStato(stato, true);
+
+  // Il server riconosce questo telefono (token del dispositivo) e ricorda il suo PG, anche dopo un
+  // riavvio: vale quello, poi il PG ricordato qui.
+  let dalServer: string | null = null;
+  try {
+    const r = await chiedi<{ id_pg: string | null }>((s, fine) => s.emit('telefono:dispositivo', { dispositivo: tokenDispositivo() }, fine));
+    dalServer = r?.id_pg ?? null;
+  } catch {
+    // Server più vecchio o lento: si usa il PG ricordato.
+  }
+  if (dalServer && dalServer !== useTelefono.getState().idPg) {
+    log.info('Il server ricorda il PG di questo telefono', { idPg: dalServer });
+    useTelefono.getState().ricordaPg(dalServer);
+  }
 
   const { idPg } = useTelefono.getState();
   if (!idPg) return;
@@ -127,7 +142,7 @@ async function comando(nome: string, invia: () => Promise<Esito>): Promise<Esito
 /** Sceglie (o cambia) il PG di questo telefono e lo ricorda. */
 export function scegliPg(idPg: string): Promise<Esito> {
   return comando('scegli personaggio', async () => {
-    const esito = await conEsito((s, fine) => s.emit('telefono:scegli_pg', { id_pg: idPg }, fine));
+    const esito = await conEsito((s, fine) => s.emit('telefono:scegli_pg', { id_pg: idPg, dispositivo: tokenDispositivo() }, fine));
     const store = useTelefono.getState();
     if (esito.ok) {
       // Cambio di PG: via ciò che era dell'altro PG, ma non quello appena arrivato (che precede l'ack).

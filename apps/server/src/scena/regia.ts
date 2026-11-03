@@ -32,6 +32,8 @@ import { schedaPg } from '../campagna/scheda';
 import type { Campagna } from '../campagna/tipi';
 import { ID_NARRATORE, NOME_NARRATORE, conScena } from '../campagna/tipi';
 import { nomeBreve } from '../campagna/nomi';
+import type { MemoriaSessione } from '../sessione/memoria';
+import type { FotografiaSessione, StatoRicostruito, StatoTavoloSalvato } from '../sessione/tipi';
 import { collegaSituazioni, type SituazioneCollegata } from '../campagna/situazioni';
 import type { Logger } from '../logger';
 import type { Narratore } from '../llm/tipi';
@@ -105,12 +107,19 @@ export interface OpzioniRegia {
   audio?: CatalogoAudio;
   /** Silenzio che fa scattare la mossa contro lo stallo (default 45 s; 0 = mai). */
   stalloMs?: number;
+  /** Registro della sessione (persistenza); null o assente = niente salvataggi (test, prove). */
+  memoria?: MemoriaSessione | null;
+  /** Sessione da riprendere, ricostruita dal registro all'avvio del server. */
+  ripresa?: StatoRicostruito | null;
 }
 
 /** Motivi mostrati al giocatore quando il master tocca la sua azione. */
 export const MOTIVO_SALTATA = 'Il master ha saltato questa azione: puoi riscriverla.';
 export const MOTIVO_NARRAZIONE_INTERROTTA = 'Il master ha interrotto la narrazione: la tua azione non è stata risolta, puoi rimandarla.';
 export const MOTIVO_CAMBIO_SCENA = 'Si cambia scena: la tua azione era per il luogo di prima, riscrivila se vale ancora.';
+export const MOTIVO_RIPRESA = 'Il gioco si è fermato mentre il narratore rispondeva: la tua azione non è stata risolta, puoi rimandarla.';
+/** Token di un telefono (localStorage): lettere, cifre e trattini. */
+const DISPOSITIVO_VALIDO = /^[A-Za-z0-9_-]{8,64}$/;
 
 /** Ascoltatori del trasporto (Socket.IO). */
 export interface UscitaRegia {
@@ -172,6 +181,22 @@ export class Regia {
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
+  /** Telefono (token del dispositivo) → PG: alla riconnessione, anche dopo un riavvio, il PG torna. */
+  private readonly dispositivi = new Map<string, string>();
+  /** Sessione ripresa dal registro, in attesa del proiettore per ripartire (null = niente da riprendere). */
+  private daRiprendere: {
+    fase: FaseScena;
+    finestra: StatoTavoloSalvato['finestra'];
+    interrotte: string[];
+    turno: number;
+    quando: string;
+  } | null = null;
+  /** Ultima ripresa fatta (per il pannello: quando e da che turno). */
+  private ripresaFatta: { quando: string; turno: number } | null = null;
+  /** Ultimo stato del tavolo e dei turni della trascrizione già scritti nel registro (niente doppioni). */
+  private tavoloSalvato = '';
+  private readonly turniSalvati = new Map<number, string>();
+  private salvataggioTavoloProgrammato = false;
   private turno = 0;
   private versioneScena = 0;
   private versioneStato = 0;
@@ -249,10 +274,166 @@ export class Regia {
       log: opzioni.log.child({ modulo: 'azioni' }),
       chiusuraDopoPrimaAzioneMs: opzioni.chiusuraDopoPrimaAzioneMs,
       ...(opzioni.stalloMs !== undefined ? { stalloMs: opzioni.stalloMs } : {}),
-      onCambio: () => this.notifica(),
+      onCambio: () => {
+        this.notifica();
+        this.programmaSalvataggioTavolo();
+      },
       onAzione: (id_pg, a) => this.uscita?.azioneMia(id_pg, a),
       onChiusura: (r) => this.finestraChiusa(r),
     });
+    if (opzioni.ripresa) this.ripristina(opzioni.ripresa);
+  }
+
+  // ------------------------------------------------------------------ sessione salvata (registro)
+
+  /** Lo stato del gioco da salvare (tutto tranne trascrizione e azioni, che hanno i loro eventi). */
+  private fotografia(): FotografiaSessione {
+    return {
+      fase: this.fase,
+      turno: this.turno,
+      versioneScena: this.versioneScena,
+      scena: this.campagna.scena.id,
+      luogo: this.luogo,
+      situazione: this.situazione ? { ...this.situazione } : null,
+      situazioniMostrate: [...this.situazioniMostrate],
+      umore: this.umoreScelto ? { ...this.umoreScelto } : null,
+      orologi: this.orologi.esporta(),
+      repertorio: this.statoRepertorio?.esporta() ?? null,
+      note: this.note.esporta(),
+      pausa: { richiesta: this.pausaRichiesta, invitoSospeso: this.invitoSospeso },
+      prossimoIdTrascrizione: this.prossimoIdTrascrizione,
+    };
+  }
+
+  /**
+   * Scrive nel registro, in una transazione: i turni della trascrizione cambiati dall'ultima volta,
+   * la fotografia e il tavolo. Si chiama nei punti stabili (fine di un turno, comandi del master).
+   */
+  salva(causa: string): void {
+    const memoria = this.o.memoria;
+    if (!memoria?.info()) return;
+    const eventi: Array<{ tipo: string; dati: unknown }> = [];
+    const perTurno = new Map<number, VoceTrascrizione[]>();
+    for (const v of this.trascrizione) perTurno.set(v.turno, [...(perTurno.get(v.turno) ?? []), v]);
+    for (const [turno, voci] of perTurno) {
+      const testo = JSON.stringify(voci);
+      if (this.turniSalvati.get(turno) === testo) continue;
+      this.turniSalvati.set(turno, testo);
+      eventi.push({ tipo: 'trascrizione_turno', dati: { turno, voci } });
+    }
+    eventi.push({ tipo: 'fotografia', dati: { ...this.fotografia(), causa } });
+    const tavolo = JSON.stringify(this.tavolo.esporta());
+    if (tavolo !== this.tavoloSalvato) {
+      this.tavoloSalvato = tavolo;
+      eventi.push({ tipo: 'tavolo', dati: JSON.parse(tavolo) });
+    }
+    memoria.scrivi(eventi, this.turno);
+  }
+
+  /** Il master ha cambiato lo stato del gioco (master/comandi.ts): si salva subito. */
+  salvaDopoComando(comando: string): void {
+    this.salva(`master:${comando}`);
+  }
+
+  /** Azioni e finestra cambiano spesso: una sola scrittura per giro dell'event loop, e solo se diverse. */
+  private programmaSalvataggioTavolo(): void {
+    if (this.salvataggioTavoloProgrammato || !this.o.memoria?.info()) return;
+    this.salvataggioTavoloProgrammato = true;
+    setImmediate(() => {
+      this.salvataggioTavoloProgrammato = false;
+      const tavolo = JSON.stringify(this.tavolo.esporta());
+      if (tavolo === this.tavoloSalvato) return;
+      this.tavoloSalvato = tavolo;
+      this.o.memoria?.scrivi([{ tipo: 'tavolo', dati: JSON.parse(tavolo) }], null);
+    });
+  }
+
+  /**
+   * All'avvio del server: lo stato torna quello della sessione salvata. Il gioco non riparte da solo:
+   * aspetta il proiettore («Inizia sessione»), e allora riprende senza rileggere l'apertura.
+   */
+  private ripristina(r: StatoRicostruito): void {
+    const f = r.fotografia;
+    this.sessione = r.sessione;
+    if (this.o.campagna.scene.some((s) => s.id === f.scena)) this.impostaScena(f.scena);
+    this.luogo = f.luogo || this.campagna.scena.id;
+    this.orologi.importa(f.orologi);
+    if (this.statoRepertorio && f.repertorio) this.statoRepertorio.importa(f.repertorio);
+    this.note.importa(f.note);
+    this.umoreScelto = f.umore ? { ...f.umore } : null;
+    this.situazione = f.situazione ? { ...f.situazione } : null;
+    for (const id of f.situazioniMostrate ?? []) this.situazioniMostrate.add(id);
+    this.trascrizione = r.trascrizione.map((v) => ({ ...v }));
+    this.prossimoIdTrascrizione = Math.max(f.prossimoIdTrascrizione ?? 1, ...this.trascrizione.map((v) => v.id + 1));
+    // I turni ripresi sono già nel registro così come sono: non si riscrivono.
+    const perTurno = new Map<number, VoceTrascrizione[]>();
+    for (const v of this.trascrizione) perTurno.set(v.turno, [...(perTurno.get(v.turno) ?? []), v]);
+    for (const [t, voci] of perTurno) this.turniSalvati.set(t, JSON.stringify(voci));
+    this.turno = f.turno;
+    this.versioneScena = f.versioneScena;
+    this.invitoSospeso = f.pausa?.invitoSospeso ?? null;
+    for (const [d, pg] of r.dispositivi) this.dispositivi.set(d, pg);
+    const tavolo = r.tavolo ? this.tavolo.importa(r.tavolo, MOTIVO_RIPRESA) : { finestra: null, interrotte: [] };
+    this.daRiprendere = { fase: f.fase, finestra: tavolo.finestra, interrotte: tavolo.interrotte, turno: f.turno, quando: r.ultimoEvento };
+    this.fase = 'attesa';
+    this.o.log.info(
+      { sessione: r.sessione, turno: f.turno, fase: f.fase, scena: f.scena, luogo: this.luogo, voci: this.trascrizione.length, interrotte: tavolo.interrotte, finestra: tavolo.finestra },
+      'sessione: ripresa dal registro, si aspetta il proiettore',
+    );
+  }
+
+  /** Il proiettore è pronto: la sessione ripresa riparte da dov'era (senza rileggere l'apertura). */
+  private riprendiSessione(): void {
+    const d = this.daRiprendere!;
+    this.daRiprendere = null;
+    this.ripresaFatta = { quando: new Date(this.o.orologio.adesso()).toISOString(), turno: d.turno };
+    this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: 'La sessione riprende da dove si era fermata.' });
+    if (d.fase === 'fermata') {
+      this.fase = 'fermata';
+    } else if (d.fase === 'pausa') {
+      this.fase = 'pausa';
+      if (d.finestra?.aperta) this.tavolo.riapri(d.finestra, this.versioneScena, true);
+    } else if (d.finestra?.aperta) {
+      // La finestra era aperta: torna con le sue azioni in coda e chi era pronto.
+      this.fase = 'finestra';
+      this.tavolo.riapri(d.finestra, this.versioneScena, false);
+    } else if (d.fase === 'apertura') {
+      // Apertura (della sessione o di una scena) a metà: non si rilegge, si passa la parola ai giocatori.
+      this.apriFinestra('tutti');
+    } else {
+      // Il narratore stava rispondendo: quel turno si rigioca (le sue azioni sono tornate ai giocatori).
+      this.turno = Math.max(0, this.turno - 1);
+      this.apriFinestra('tutti');
+    }
+    this.o.log.info({ sessione: this.sessione, turno: this.turno, fase: this.fase, prima: d.fase, interrotte: d.interrotte }, 'sessione: ripresa');
+    this.notifica();
+    this.salva('ripresa');
+  }
+
+  /** Per il pannello: la sessione in corso e la ripresa (fatta, o in attesa del proiettore). */
+  get infoRegistro(): { sessione: string | null; creata: string | null; eventi: number; ripresa: { quando: string; turno: number } | null; inAttesaDiRipresa: { quando: string; turno: number } | null } {
+    const info = this.o.memoria?.info() ?? null;
+    return {
+      sessione: info?.id ?? null,
+      creata: info?.creata ?? null,
+      eventi: info?.eventi ?? 0,
+      ripresa: this.ripresaFatta,
+      inAttesaDiRipresa: this.daRiprendere ? { quando: this.daRiprendere.quando, turno: this.daRiprendere.turno } : null,
+    };
+  }
+
+  /** «Nuova sessione» del pannello: si chiude quella in corso e si ricomincia da capo. */
+  nuovaSessione(): Esito {
+    this.daRiprendere = null;
+    this.ripresaFatta = null;
+    return this.ricomincia();
+  }
+
+  /** Il PG di un telefono conosciuto (token del dispositivo), o null. */
+  pgDelDispositivo(dispositivo: unknown): string | null {
+    if (typeof dispositivo !== 'string' || !DISPOSITIVO_VALIDO.test(dispositivo)) return null;
+    const pg = this.dispositivi.get(dispositivo);
+    return pg && this.campagna.pg.some((p) => p.id === pg) ? pg : null;
   }
 
   /** Immagine del luogo, ritratti e immagini da precaricare (luoghi collegati, ritratti dei presenti). */
@@ -592,8 +773,12 @@ export class Regia {
     return elenco.length ? elenco : this.campagna.pg.map((p) => p.id);
   }
 
-  telefonoSceglie(socketId: string, id_pg: string): Esito {
+  telefonoSceglie(socketId: string, id_pg: string, dispositivo?: unknown): Esito {
     if (!this.campagna.pg.some((p) => p.id === id_pg)) return { ok: false, errore: 'Personaggio sconosciuto.' };
+    if (typeof dispositivo === 'string' && DISPOSITIVO_VALIDO.test(dispositivo) && this.dispositivi.get(dispositivo) !== id_pg) {
+      this.dispositivi.set(dispositivo, id_pg);
+      this.o.memoria?.scrivi([{ tipo: 'dispositivo', dati: { dispositivo, id_pg } }], null);
+    }
     const prima = this.telefoni.get(socketId);
     this.telefoni.set(socketId, id_pg);
     if (prima && prima !== id_pg) this.lasciaPg(prima);
@@ -621,7 +806,8 @@ export class Regia {
   schermoInizia(socketId: string): Esito {
     this.schermi.add(socketId);
     this.o.log.info({ socket: socketId, fase: this.fase, schermi: this.schermi.size }, 'schermo: audio sbloccato');
-    if (this.fase === 'attesa') this.avviaScena();
+    if (this.fase === 'attesa' && this.daRiprendere) this.riprendiSessione();
+    else if (this.fase === 'attesa') this.avviaScena();
     else this.notifica();
     return { ok: true };
   }
@@ -674,11 +860,16 @@ export class Regia {
     this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: 'Scena fermata.' });
     this.o.log.info({ turno: this.turno, motivo }, 'scena: fermata');
     this.notifica();
+    if (motivo !== 'arresto') this.salva('fermata');
     return { ok: true };
   }
 
   ricomincia(): Esito {
     this.interrompiTutto('ricomincia');
+    this.o.memoria?.termina('ricomincia');
+    this.daRiprendere = null;
+    this.turniSalvati.clear();
+    this.tavoloSalvato = '';
     this.trascrizione = [];
     this.turno = 0;
     this.versioneScena = 0;
@@ -925,12 +1116,21 @@ export class Regia {
 
   private avviaScena(): void {
     const c = this.campagna;
-    this.sessione = new Date(this.o.orologio.adesso()).toISOString();
+    this.sessione = this.o.memoria?.nuova() ?? new Date(this.o.orologio.adesso()).toISOString();
+    // I telefoni che hanno scelto il PG prima dell'inizio entrano nella sessione nuova.
+    this.o.memoria?.scrivi(
+      [
+        { tipo: 'inizio', dati: { campagna: this.o.campagna.id, modo: this.o.modo, scena: c.scena.id } },
+        ...[...this.dispositivi].map(([dispositivo, id_pg]) => ({ tipo: 'dispositivo', dati: { dispositivo, id_pg } })),
+      ],
+      0,
+    );
     this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno: 0, tipo: 'apertura', scena: c.scena.id, voce: this.o.voce.nome, testo: c.scena.apertura.map((f) => `[narratore] ${f}`).join('\n') });
     this.turno = 0;
     this.o.log.info({ scena: c.scena.id, frasi: c.scena.apertura.length, voce: this.o.voce.nome }, 'scena: apertura');
     if (this.o.preriscalda && this.o.narratore.preriscalda) void this.preriscalda();
     this.leggiApertura(0, c.scena.apertura);
+    this.salva('inizio');
   }
 
   /**
@@ -1010,9 +1210,11 @@ export class Regia {
       this.invitoSospeso = invito;
       this.o.log.info({ turno: this.turno, invito }, 'scena: in pausa (dopo la narrazione)');
       this.notifica();
+      this.salva('fine_turno');
       return;
     }
     this.apriFinestra(invito);
+    this.salva('fine_turno');
   }
 
   private apriFinestra(invito: string[] | 'tutti'): void {

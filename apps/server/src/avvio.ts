@@ -32,6 +32,9 @@ import type { Arbitro } from './azioni/tipi';
 import { creaClientAnthropic } from './llm/haiku';
 import { collegaSocket, creaUscite, STANZA_SCHERMO } from './trasporto/socket';
 import { collegaMaster } from './trasporto/master';
+import { ArchivioSessioni } from './sessione/archivio';
+import { SessioneSuArchivio, type MemoriaSessione } from './sessione/memoria';
+import { ricostruisci, type StatoRicostruito } from './sessione/tipi';
 import { ControlliMaster } from './master/comandi';
 import { nuovoToken } from './master/token';
 import { orologioDiSistema, type Orologio } from './turni/orologio';
@@ -47,6 +50,8 @@ export interface ServerCantastorie {
   info: InfoServer;
   /** Token del pannello del master (stampato nel log all'avvio). */
   tokenMaster: string;
+  /** Registro delle sessioni (null se spento): i test simulano un processo che muore con memoria.sospendi(). */
+  sessioni: { archivio: ArchivioSessioni | null; memoria: MemoriaSessione | null };
   avvia(): Promise<string>;
   chiudi(): Promise<void>;
 }
@@ -136,7 +141,11 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   const immagini = new CatalogoImmagini(config.cartellaImmagini, log.child({ modulo: 'immagini' }));
   const app = await creaApp({ log, cartellaWeb: sost.cartellaWeb ?? config.cartellaWeb });
   const uscite = creaUscite(app.io);
+  // Registro delle sessioni: se c'è una sessione in corso di questa campagna (e modalità), si riprende.
+  const { archivio, memoria, ripresa } = apriSessioni(config, campagna.id, log.child({ modulo: 'sessioni' }));
   const regia = new Regia({
+    memoria,
+    ripresa,
     campagna,
     sistema,
     narratore,
@@ -190,6 +199,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     campagna,
     voce,
     tokenMaster,
+    sessioni: { archivio, memoria },
     get info() {
       return info;
     },
@@ -208,9 +218,39 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     },
     async chiudi() {
       voce.ferma();
+      // Lo spegnimento non è un evento di gioco: il registro resta all'ultimo stato giocato.
+      memoria?.sospendi();
       regia.ferma('arresto');
+      archivio?.chiudi();
       app.io.close();
       await app.http.close();
     },
   };
+}
+
+/**
+ * Apre il registro delle sessioni e cerca la sessione da riprendere: l'ultima in corso della stessa
+ * campagna e modalità, con almeno una fotografia. Con --nuova (config.nuovaSessione) si chiudono le
+ * sessioni in corso e si parte da capo. Senza registro (CANTASTORIE_SESSIONI=off) non si salva niente.
+ */
+function apriSessioni(
+  config: ConfigServer,
+  campagna: string,
+  log: Logger,
+): { archivio: ArchivioSessioni | null; memoria: MemoriaSessione | null; ripresa: StatoRicostruito | null } {
+  if (!config.fileSessioni) {
+    log.info('sessioni: registro spento (CANTASTORIE_SESSIONI=off)');
+    return { archivio: null, memoria: null, ripresa: null };
+  }
+  const archivio = new ArchivioSessioni(config.fileSessioni, log);
+  if (config.nuovaSessione) {
+    const chiuse = archivio.chiudiInCorso(campagna, 'avvio con --nuova');
+    log.info({ campagna, chiuse }, 'sessioni: nuova sessione richiesta, nessuna ripresa');
+  }
+  const inCorso = archivio.inCorso(campagna, config.modo);
+  const ripresa = inCorso ? ricostruisci(inCorso.id, archivio.eventi(inCorso.id)) : null;
+  if (inCorso && !ripresa) log.info({ sessione: inCorso.id }, 'sessioni: sessione in corso senza stato salvato, si parte da capo');
+  if (ripresa) log.info({ sessione: inCorso!.id, turno: ripresa.fotografia.turno, eventi: inCorso!.eventi }, 'SESSIONE DA RIPRENDERE');
+  const memoria = new SessioneSuArchivio(archivio, campagna, config.modo, log, ripresa ? inCorso!.id : null);
+  return { archivio, memoria, ripresa };
 }

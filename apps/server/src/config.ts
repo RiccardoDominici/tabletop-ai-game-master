@@ -47,6 +47,13 @@ export interface ConfigServer {
 
   /** Token fisso del pannello del master (CANTASTORIE_MASTER_TOKEN); se manca se ne crea uno a ogni avvio. */
   tokenMaster?: string;
+  /**
+   * Registro delle sessioni (SQLite). CANTASTORIE_SESSIONI: percorso del file, oppure «off» per non
+   * salvare. Predefinito: <cartella dei log>/sessioni.sqlite, così ogni istanza (prove comprese) ha il suo.
+   */
+  fileSessioni: string | null;
+  /** CANTASTORIE_NUOVA_SESSIONE=1 (partita.sh --nuova): all'avvio non si riprende la sessione in corso. */
+  nuovaSessione: boolean;
 
   /** Arbitro delle azioni simultanee: regole + Haiku, oppure solo regole. */
   arbitro: 'haiku' | 'regole';
@@ -60,6 +67,8 @@ export interface ConfigServer {
     maxTokens: number;
     /** Riscalda la cache del prompt all'avvio della scena (richiesta max_tokens: 0). */
     preriscalda: boolean;
+    /** Narratore finto: copione da un file (blocchi per turno separati da «---»), per le prove e2e. */
+    copioneFinto?: string;
   };
 
   voce: {
@@ -67,8 +76,6 @@ export interface ConfigServer {
     url: string;
     /** Ogni quanto controllare /salute in modo auto. */
     intervalloSaluteMs: number;
-    /** Narratore finto: copione da un file (blocchi per turno separati da «---»), per le prove e2e. */
-    copioneFinto?: string;
     /** Fattore di tempo del finto TTS (1 = tempi realistici, 0.05 = test veloci). */
     scalaTempoMock: number;
   };
@@ -110,16 +117,20 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
   const cartellaCampagna = testo(env['CANTASTORIE_CARTELLA_CAMPAGNA']) ?? path.join(RADICE_REPO, 'campagne', campagna);
   const ipLan = testo(env['CANTASTORIE_IP']);
   const tokenMaster = tokenDaConfig(env['CANTASTORIE_MASTER_TOKEN']);
+  const cartellaLog = testo(env['CANTASTORIE_LOG']) ?? CARTELLA_LOG;
+  const sessioni = testo(env['CANTASTORIE_SESSIONI']);
   return {
     porta: numero(env['PORT'], PORTA_SERVER),
     host: testo(env['HOST']) ?? '0.0.0.0',
     livelloLog: testo(env['LOG_LEVEL']) ?? 'info',
-    cartellaLog: testo(env['CANTASTORIE_LOG']) ?? CARTELLA_LOG,
+    cartellaLog,
     cartellaCampagna,
     filePromptNarratore:
       testo(env['CANTASTORIE_PROMPT_NARRATORE']) ?? path.join(RADICE_REPO, 'prompts', 'narratore.md'),
     ...(ipLan ? { ipLan } : {}),
     ...(tokenMaster ? { tokenMaster } : {}),
+    fileSessioni: sessioni === 'off' ? null : path.resolve(RADICE_REPO, sessioni ?? path.join(cartellaLog, 'sessioni.sqlite')),
+    nuovaSessione: testo(env['CANTASTORIE_NUOVA_SESSIONE']) === '1',
     modo: scelta(env['CANTASTORIE_MODO'], ['improvvisa', 'repertorio'] as const, 'improvvisa'),
     // Con il narratore a copione (test, prove senza spesa) l'arbitro usa solo le regole.
     arbitro: scelta(env['CANTASTORIE_ARBITRO'], ['haiku', 'regole'] as const, env['CANTASTORIE_LLM'] === 'finto' ? 'regole' : 'haiku'),
@@ -136,6 +147,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
       baseURL: 'https://api.anthropic.com',
       maxTokens: numero(env['CANTASTORIE_MAX_TOKENS'], 1024),
       preriscalda: testo(env['CANTASTORIE_PRERISCALDA']) !== '0',
+      ...(testo(env['CANTASTORIE_COPIONE_FINTO']) ? { copioneFinto: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_COPIONE_FINTO'])!) } : {}),
     },
     voce: {
       modo: scelta(env['CANTASTORIE_TTS'], ['qwen', 'mock', 'auto'] as const, 'auto'),
@@ -147,7 +159,6 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
       chiusuraDopoPrimaAzioneMs: numero(env['CANTASTORIE_FINESTRA_MS'], 10_000),
       margineFineAudioMs: numero(env['CANTASTORIE_MARGINE_AUDIO_MS'], 2500),
       trascrizioneMax: numero(env['CANTASTORIE_TRASCRIZIONE_MAX'], 80),
-      ...(testo(env['CANTASTORIE_COPIONE_FINTO']) ? { copioneFinto: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_COPIONE_FINTO'])!) } : {}),
       finestraATutti: testo(env['CANTASTORIE_FINESTRA_TUTTI']) === '1',
       stalloMs: numero(env['CANTASTORIE_STALLO_MS'], 45_000),
     },

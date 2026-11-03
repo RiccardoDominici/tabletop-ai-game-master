@@ -41,6 +41,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'nota',
   'togli_nota',
   'umore',
+  'nuova_sessione',
   'effetto',
 ]);
 
@@ -80,6 +81,9 @@ export class ControlliMaster {
       r = rifiuto('Errore interno del server.', (err as Error).message);
     }
     this.registra(comando.tipo, r, origine);
+    // Il comando ha cambiato lo stato del gioco: subito nel registro della sessione (un effetto
+    // sonoro non lascia stato).
+    if (r.esito.ok && comando.tipo !== 'effetto' && comando.tipo !== 'nuova_sessione') this.o.regia.salvaDopoComando(comando.tipo);
     return r.esito;
   }
 
@@ -188,6 +192,12 @@ export class ControlliMaster {
         if (!nota) return rifiuto('Nota inesistente o già scaduta.');
         regia.notificaEsterna();
         return { esito: { ok: true }, dettagli: `nota ${nota.id} tolta («${nota.testo}»)`, dati: { nota: nota.id } };
+      }
+      case 'nuova_sessione': {
+        const prima = regia.infoRegistro.sessione;
+        const esito = regia.nuovaSessione();
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: `nuova sessione (chiusa ${prima ?? 'nessuna'})` };
       }
       case 'umore': {
         const tag = c.umore === null ? null : typeof c.umore === 'string' && ID_VALIDO.test(c.umore) ? c.umore : undefined;

@@ -7,7 +7,7 @@
 import type { ComandoMaster, TipoComandoMaster } from '@cantastorie/shared';
 
 /** Zona del pannello in cui si mostra l'esito di un comando. */
-export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio';
+export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio' | 'sessione';
 
 export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   pausa: 'controlli',
@@ -23,6 +23,7 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   togli_nota: 'note',
   umore: 'audio',
   effetto: 'audio',
+  nuova_sessione: 'sessione',
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
@@ -40,6 +41,7 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = {
   togli_nota: 'Togli nota',
   umore: 'Umore della musica',
   effetto: 'Effetto sonoro',
+  nuova_sessione: 'Nuova sessione',
 };
 
 /**
