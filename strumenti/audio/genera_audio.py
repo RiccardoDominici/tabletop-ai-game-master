@@ -125,6 +125,7 @@ def fai_musica(c, d, man: ManifestAudio, dry: bool, rifai: bool, rete: bool) -> 
             gravi = [p for p in ctl["problemi"] if p.startswith(("silenzi", "giunta"))]
             if gravi and tentativo < TENTATIVI_MUSICA - 1:
                 scartati.append(b.titolo)
+                INC.segna_scartato(b.titolo, "; ".join(gravi)[:200])
                 print(f"    scartato: {gravi}")
                 continue
             usati.add(b.titolo)
@@ -184,6 +185,8 @@ def fai_ambienti(c, d, man: ManifestAudio, dry: bool, rifai: bool, rete: bool) -
 
     pool = Pool()
     pronti: dict[tuple[str, str], tuple[A.Sorgente, dict] | None] = {}
+    # Le misure dei file già fatti (durata vera e punti del loop), prima di togliere le voci vecchie.
+    precedenti = {v["file"]: v for sez in ("ambienti", "effetti") for v in man.sezioni[sez].values()}
 
     def prepara(tag: str, tipo: str):
         chiave = (tag, tipo)
@@ -200,14 +203,16 @@ def fai_ambienti(c, d, man: ManifestAudio, dry: bool, rifai: bool, rete: bool) -
             return None
         destinazione = man.cartella / s.nome_file
         if rifai or not destinazione.exists():
-            audio, extra = A.audio_di(s, c.id)
-            ctl = Q.prepara(audio, destinazione, tipo, tipo == "ambiente", CACHE_LAVORO)
+            audio, extra = A.audio_di(s, c.id, d["profilo"].tonica, d["profilo"].modo)
+            ctl = Q.prepara(audio, destinazione, tipo, tipo == "ambiente", CACHE_LAVORO,
+                            silenzi_ammessi=tipo == "effetto" or tag in V.INTERMITTENTI)
         else:
             # Già fatto: si rimisura, con la durata vera presa dal manifest (senza il riempimento AAC).
-            vecchia = next((v for sez in ("ambienti", "effetti") for v in man.sezioni[sez].values() if v["file"] == s.nome_file), None)
+            vecchia = precedenti.get(s.nome_file)
             campioni = round(vecchia["durata_s"] * SR) if vecchia else None
             punti = (round(vecchia["loop_inizio_s"] * SR), round(vecchia["loop_fine_s"] * SR)) if vecchia and "loop_inizio_s" in vecchia else None
-            extra, ctl = {}, Q.analizza(destinazione, tipo == "ambiente", tipo, campioni, punti)
+            extra, ctl = {}, Q.analizza(destinazione, tipo == "ambiente", tipo, campioni, punti,
+                                        silenzi_ammessi=tipo == "effetto" or tag in V.INTERMITTENTI)
             ctl["kb"] = round(destinazione.stat().st_size / 1000)
         print(f"    [{tipo} {tag}] {s.nome_file}: {s.meta().get('titolo', 'sintesi')} — {ctl['durata_s']} s, {ctl['lufs']} LUFS, {'ok' if ctl['ok'] else ctl['problemi']}")
         punti = {k: ctl[k] for k in ("loop_inizio_s", "loop_fine_s") if k in ctl}

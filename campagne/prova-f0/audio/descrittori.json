@@ -1,0 +1,493 @@
+{
+ "profilo": {
+  "id": "prova-f0",
+  "modo": "dorico",
+  "tonica": 4,
+  "bpm": 88,
+  "strumenti": [
+   "ghironda",
+   "organetto",
+   "flauto_dolce",
+   "voci",
+   "campane"
+  ],
+  "vietati": [
+   "percussioni"
+  ],
+  "epoca": "antica",
+  "umore_base": "esplorazione_tesa",
+  "motivo": null,
+  "perche": {
+   "modo": [
+    "tono: cupa",
+    "tono: paura",
+    "tema: paura"
+   ],
+   "tonica": "dall'id della campagna",
+   "strumenti": "ghironda, organetto, flauto di legno, voci femminili lontane, una campana sola. Niente percussioni da battaglia.",
+   "epoca": [
+    "stile_immagini: folk-tale",
+    "stile_immagini: old italian",
+    "tono: fiaba",
+    "tono: paese"
+   ]
+  }
+ },
+ "luoghi": [
+  {
+   "id": "luogo_scena_forno_vecchio",
+   "nome": "L'osteria del Forno Vecchio, nella Notte dei Lumi",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "alta",
+    "ambientazioni": [
+     "piazza",
+     "taverna",
+     "chiesa",
+     "sotterraneo",
+     "borgo",
+     "montagna"
+    ],
+    "ora": "notte",
+    "meteo": [],
+    "interno": true,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "fuoco",
+     0.45
+    ],
+    [
+     "taverna",
+     0.3
+    ]
+   ],
+   "transizioni": [
+    "taverna_calda",
+    "rito_sacro",
+    "lutto"
+   ],
+   "perche": {
+    "umore": "scena.musica.tag",
+    "ambientazioni": {
+     "piazza": {
+      "punti": 4.1,
+      "prove": [
+       "sensi: piazz",
+       "prompt_luogo: square",
+       "invarianti: piazz",
+       "elementi: piazz"
+      ]
+     },
+     "taverna": {
+      "punti": 3.8,
+      "prove": [
+       "nome: osteri",
+       "prompt_luogo: tavern",
+       "apertura: osteri"
+      ]
+     },
+     "chiesa": {
+      "punti": 2.3,
+      "prove": [
+       "sensi: cappell",
+       "elementi: cappell",
+       "descrizione: cappell"
+      ]
+     },
+     "sotterraneo": {
+      "punti": 1.5,
+      "prove": [
+       "prompt_luogo: storeroom",
+       "descrizione: cantin"
+      ]
+     },
+     "borgo": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: village"
+      ]
+     },
+     "montagna": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: mountain"
+      ]
+     }
+    },
+    "energia": "intensità 4, umore esplorazione_tesa",
+    "ora": {
+     "notte": {
+      "punti": 2.4,
+      "prove": [
+       "nome: notte",
+       "prompt_luogo: night",
+       "stile_immagini: candlelight",
+       "stile_immagini: night"
+      ]
+     }
+    },
+    "meteo": {},
+    "interno": {
+     "interno": 5.03,
+     "esterno": 4.1
+    },
+    "ambiente": {
+     "fuoco": {
+      "punti": 5.9,
+      "prove": [
+       "nome: forno",
+       "sensi: forno",
+       "prompt_luogo: oven",
+       "invarianti: forno"
+      ]
+     },
+     "taverna": {
+      "punti": 3.97,
+      "prove": [
+       "nome: osteri",
+       "prompt_luogo: tavern",
+       "elementi: bancone",
+       "apertura: osteri"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "luogo_n_osteria",
+   "nome": "L'osteria del Forno Vecchio",
+   "alias_di": "luogo_scena_forno_vecchio",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_forno_vecchio"
+   }
+  },
+  {
+   "id": "luogo_n_piazza",
+   "nome": "La piazza di Fontescura",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "media",
+    "ambientazioni": [
+     "piazza",
+     "chiesa",
+     "casa",
+     "borgo",
+     "montagna"
+    ],
+    "ora": "notte",
+    "meteo": [
+     "neve"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "campane",
+     0.35
+    ]
+   ],
+   "transizioni": [],
+   "perche": {
+    "umore": "umore di base della campagna",
+    "ambientazioni": {
+     "piazza": {
+      "punti": 4.0,
+      "prove": [
+       "nome: piazz",
+       "abbozzo: piazz",
+       "prompt_luogo: square"
+      ]
+     },
+     "chiesa": {
+      "punti": 2.0,
+      "prove": [
+       "abbozzo: cappell",
+       "prompt_luogo: chapel"
+      ]
+     },
+     "casa": {
+      "punti": 1.0,
+      "prove": [
+       "abbozzo: casa"
+      ]
+     },
+     "borgo": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: village"
+      ]
+     },
+     "montagna": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: mountain"
+      ]
+     }
+    },
+    "energia": "intensità None, umore esplorazione_tesa",
+    "ora": {
+     "notte": {
+      "punti": 1.4,
+      "prove": [
+       "prompt_luogo: night",
+       "stile_immagini: candlelight",
+       "stile_immagini: night"
+      ]
+     }
+    },
+    "meteo": {
+     "neve": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: snow"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 2.0,
+     "esterno": 3.0
+    },
+    "ambiente": {
+     "campane": {
+      "punti": 1.0,
+      "prove": [
+       "abbozzo: rintocc"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "luogo_n_mulino_valsecca",
+   "nome": "Il mulino di Valsecca",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "media",
+    "ambientazioni": [
+     "mulino",
+     "montagna",
+     "strada"
+    ],
+    "ora": "notte",
+    "meteo": [
+     "neve",
+     "gelo"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "mulino",
+     0.4
+    ],
+    [
+     "neve",
+     0.3
+    ]
+   ],
+   "transizioni": [],
+   "perche": {
+    "umore": "umore di base della campagna",
+    "ambientazioni": {
+     "mulino": {
+      "punti": 4.0,
+      "prove": [
+       "nome: mulin",
+       "abbozzo: mulin",
+       "prompt_luogo: watermill"
+      ]
+     },
+     "montagna": {
+      "punti": 2.15,
+      "prove": [
+       "abbozzo: valle",
+       "prompt_luogo: mountain",
+       "prompt_luogo: valley"
+      ]
+     },
+     "strada": {
+      "punti": 2.0,
+      "prove": [
+       "abbozzo: sentier",
+       "prompt_luogo: path"
+      ]
+     }
+    },
+    "energia": "intensità None, umore esplorazione_tesa",
+    "ora": {
+     "notte": {
+      "punti": 2.4,
+      "prove": [
+       "abbozzo: buio",
+       "prompt_luogo: night",
+       "stile_immagini: candlelight",
+       "stile_immagini: night"
+      ]
+     }
+    },
+    "meteo": {
+     "neve": {
+      "punti": 2.0,
+      "prove": [
+       "abbozzo: neve",
+       "prompt_luogo: snow"
+      ]
+     },
+     "gelo": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: frozen"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 0,
+     "esterno": 2.3
+    },
+    "ambiente": {
+     "mulino": {
+      "punti": 3.15,
+      "prove": [
+       "nome: mulin",
+       "abbozzo: mulin",
+       "prompt_luogo: water wheel",
+       "prompt_luogo: watermill"
+      ]
+     },
+     "neve": {
+      "punti": 2.0,
+      "prove": [
+       "abbozzo: neve",
+       "prompt_luogo: snow"
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "effetti": {
+  "porta": [
+   "regole_prosa: imposte",
+   "luogo_scena_forno_vecchio.elementi: la porta",
+   "luogo_scena_forno_vecchio.apertura: una porta",
+   "luogo_scena_forno_vecchio.descrizione: la porta"
+  ],
+  "chiave": [
+   "luogo_scena_forno_vecchio.elementi: chiave",
+   "luogo_scena_forno_vecchio.elementi: serratur",
+   "luogo_scena_forno_vecchio.apertura: chiave"
+  ],
+  "campana": [
+   "regole_prosa: campan",
+   "luogo_n_piazza.abbozzo: rintocc"
+  ],
+  "monete": [
+   "regole_prosa: corone",
+   "regole_prosa: monete",
+   "regole_prosa: soldi"
+  ]
+ },
+ "temi": [
+  {
+   "png": "png_baldrin",
+   "nome": "Baldrin Pietrafitta",
+   "carattere": [
+    "burbero",
+    "nervoso"
+   ],
+   "strumento": "ghironda",
+   "modo": "dorico",
+   "registro": "basso",
+   "trasformazioni": [
+    "accento",
+    "diminuzione"
+   ],
+   "perche": {
+    "carattere": {
+     "burbero": [
+      "superficie: burber",
+      "timbro: ruvid"
+     ],
+     "nervoso": [
+      "sotto_pressione: trem"
+     ]
+    },
+    "modo": "carattere burbero",
+    "registro": "voce bassa",
+    "strumento": "tavolozza della campagna"
+   }
+  },
+  {
+   "png": "png_ottavia",
+   "nome": "Ottavia Ferlini",
+   "carattere": [
+    "caldo",
+    "fiero"
+   ],
+   "strumento": "flauto_dolce",
+   "modo": "ionio",
+   "registro": "basso",
+   "trasformazioni": [
+    "legato",
+    "salto"
+   ],
+   "perche": {
+    "carattere": {
+     "caldo": [
+      "superficie: matern",
+      "voce: calde",
+      "timbro: caldo"
+     ],
+     "fiero": [
+      "superficie: orgoglios"
+     ]
+    },
+    "modo": "carattere caldo",
+    "registro": "età 60",
+    "strumento": "tavolozza della campagna"
+   }
+  },
+  {
+   "png": "png_sebastiano",
+   "nome": "Sebastiano",
+   "carattere": [
+    "pacato",
+    "solenne"
+   ],
+   "strumento": "organetto",
+   "modo": "dorico",
+   "registro": "basso",
+   "trasformazioni": [
+    "legato",
+    "aumentazione"
+   ],
+   "perche": {
+    "carattere": {
+     "pacato": [
+      "superficie: calm",
+      "superficie: cortes",
+      "timbro: pacat"
+     ],
+     "solenne": [
+      "superficie: precis",
+      "voce: ordinat",
+      "voce: precis"
+     ]
+    },
+    "modo": "carattere pacato",
+    "registro": "carattere",
+    "strumento": "tavolozza della campagna"
+   }
+  }
+ ]
+}

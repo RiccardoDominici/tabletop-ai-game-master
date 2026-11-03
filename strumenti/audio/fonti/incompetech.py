@@ -154,6 +154,22 @@ def scarica_brano(b: Brano) -> Path:
     return _scarica(b.url, destinazione)
 
 
+# --- Brani scartati dai controlli (memoria tra campagne) ------------------------------------
+SCARTATI = CACHE_INCOMPETECH / "scartati.json"
+
+
+def scartati() -> dict[str, str]:
+    """Titoli già scartati da un controllo (silenzi, giunta) con il motivo: non si riprovano."""
+    return json.loads(SCARTATI.read_text(encoding="utf-8")) if SCARTATI.exists() else {}
+
+
+def segna_scartato(titolo: str, motivo: str) -> None:
+    dati = scartati()
+    dati[titolo] = motivo
+    SCARTATI.parent.mkdir(parents=True, exist_ok=True)
+    SCARTATI.write_text(json.dumps(dati, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
 # --- Punteggio ---------------------------------------------------------------------------------
 def punteggio(b: Brano, umore: str, energia: str, ambientazioni: list[str], ora: str | None, meteo: list[str],
               tavolozza: list[str], vietati: list[str], epoca: str, parole: list[str], campagna: str) -> tuple[float, dict]:
@@ -226,7 +242,7 @@ def scegli(richieste: list[tuple[str, dict]], tavolozza: list[str], vietati: lis
     migliori; nessun brano si ripete nella campagna (`esclusi` contiene quelli già nel manifest).
     """
     brani = brani if brani is not None else catalogo()
-    usati = set(esclusi or ())
+    usati = set(esclusi or ()) | set(scartati())
     out: dict[str, Scelta] = {}
     for ident, d in richieste:
         migliore = None

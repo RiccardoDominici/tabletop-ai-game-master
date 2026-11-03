@@ -92,6 +92,13 @@ strumenti/audio/.venv/bin/python strumenti/audio/provino.py campagne/<id>   # es
     software; `setup.sh` lo scarica una volta (32 MB, sha256 verificato), fuori da git.
   - **Sintesi** (`fonti/sintesi.py`): pioggia, vento, neve, fiume, fuoco, acqua, mare come rumore modellato e periodico,
     quando il fondo non ha una registrazione buona.
+  - **Ripieghi**, in quest'ordine quando il fondo non ha niente di buono: sintesi per i rumori; SoundFont per
+    `campane` (rintocchi radi) e `canto` (coro lontano nel modo della campagna); un tag vicino (`taverna` → `folla`,
+    `mulino` → `fiume`, `temporale` → `pioggia`, `gocce` → `acqua`, con `ripiego_di` nella voce); per l'effetto
+    `campana`, un rintocco di campana tubolare dal SoundFont. Altrimenti lo strato manca (avviso nel log).
+- Memoria dei controlli: un brano scartato per silenzi o giunta finisce in `cache/audio/incompetech/scartati.json` e
+  non si riprova in nessuna campagna; le regole sui titoli del fondo valgono anche per i file già in cache.
+- Controlli per campagna: `esperimenti/audio/controlli_<id>.md` (in git) e il provino `provino_<id>.wav` (fuori da git).
 
 **Cosa legge il proiettore** (`apps/server/src/audio/catalogo.ts`, 3 novembre 2026):
 - `file`: nome semplice nella cartella `audio/` (niente sottocartelle), `^[a-z0-9][a-z0-9_.-]*\.(ogg|opus|mp3|m4a|wav|flac|webm)$`;

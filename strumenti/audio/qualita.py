@@ -38,6 +38,7 @@ BERSAGLI = {
     "tema": {"lufs": -20.0, "tp": -1.5, "kbps": 96},
     "effetto": {"lufs": -21.0, "tp": -3.0, "kbps": 96},
 }
+ATTACCO_S = 0.05          # silenzio davanti a temi ed effetti (il suono parte a 50 ms)
 TOLLERANZA_LUFS = 1.5      # scarto ammesso dal bersaglio sul file finale
 SOGLIA_SILENZIO_DB = -50   # silencedetect: sotto questo livello, per almeno…
 DURATA_SILENZIO_S = 1.5    # …questi secondi, è un buco (in una musica o in un ambiente non deve esserci)
@@ -259,7 +260,7 @@ def codifica_m4a(sorgente: Path, destinazione: Path, kbps: int) -> str:
 
 # --- Controlli sul file finale ----------------------------------------------------------------
 def analizza(percorso: Path, loop: bool, tipo: str, campioni: int | None = None,
-             punti: tuple[int, int] | None = None) -> dict:
+             punti: tuple[int, int] | None = None, silenzi_ammessi: bool = False) -> dict:
     """Misure sul file così come lo decodificherà il proiettore.
 
     `campioni` è la lunghezza vera del contenuto (prima della codifica): il decodificatore può
@@ -307,7 +308,7 @@ def analizza(percorso: Path, loop: bool, tipo: str, campioni: int | None = None,
         problemi.append(f"loudness {lufs} LUFS lontana dal bersaglio {b['lufs']}")
     if clipping > 0 or picco_campioni >= 0.999:
         problemi.append(f"clipping: {clipping} campioni al limite")
-    if tipo in ("musica", "ambiente") and silenzi:
+    if tipo in ("musica", "ambiente") and silenzi and not silenzi_ammessi:
         problemi.append(f"silenzi: {silenzi}")
     if loop:
         if punti:
@@ -364,7 +365,8 @@ def con_margini(loop: np.ndarray, sr: int = SR) -> tuple[np.ndarray, int, int]:
 
 
 # --- Tutto insieme --------------------------------------------------------------------------------
-def prepara(audio: np.ndarray, destinazione: Path, tipo: str, loop: bool, lavoro: Path) -> dict:
+def prepara(audio: np.ndarray, destinazione: Path, tipo: str, loop: bool, lavoro: Path,
+            silenzi_ammessi: bool = False) -> dict:
     """Normalizza, codifica e controlla un audio già tagliato (o già in loop). Ritorna il controllo.
 
     Per un loop il file ha i margini di `con_margini`; il controllo riporta i punti del loop
@@ -377,10 +379,21 @@ def prepara(audio: np.ndarray, destinazione: Path, tipo: str, loop: bool, lavoro
     if loop:
         audio, i0, i1 = con_margini(audio)
         punti = (i0, i1)
+    else:
+        # 50 ms di silenzio davanti: un attacco secco proprio sul primo frame AAC sfora il picco
+        # (misurato: monete a +0,4 dBFS a 36 ms dall'inizio, anche con 6 dB di margine).
+        audio = np.concatenate([np.zeros((int(ATTACCO_S * SR), audio.shape[1]), dtype=np.float32), audio])
     scrivi_wav(grezzo, audio)
     n = normalizza(grezzo, norm, b["lufs"], b["tp"])
     codec = codifica_m4a(norm, destinazione, b["kbps"])
-    controllo = analizza(destinazione, loop, tipo, len(audio), punti)   # loudnorm lineare non cambia la lunghezza
+    controllo = analizza(destinazione, loop, tipo, len(audio), punti, silenzi_ammessi)   # loudnorm lineare non cambia la lunghezza
+    if any(p.startswith("clipping") for p in controllo["problemi"]):
+        # L'AAC può superare il picco di qualche dB sui colpi secchi: si rifà con 3 dB di margine in più.
+        log.info("%s: clipping dopo la codifica, rifaccio con più margine", destinazione.name)
+        n = normalizza(grezzo, norm, b["lufs"], b["tp"] - 3.0)
+        codec = codifica_m4a(norm, destinazione, b["kbps"])
+        controllo = analizza(destinazione, loop, tipo, len(audio), punti, silenzi_ammessi)
+        controllo["margine_extra_db"] = 3.0
     for f in (grezzo, norm):
         f.unlink(missing_ok=True)
     controllo["normalizzazione"] = n

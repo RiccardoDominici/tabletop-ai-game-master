@@ -2,7 +2,7 @@
   "versione": 1,
   "campagna": "ponte-lanterne",
   "formato": "AAC-LC in .m4a, 48 kHz, stereo; i loop vanno da loop_inizio_s a loop_fine_s (mezzo secondo di margine prima e dopo)",
-  "aggiornato": "2026-11-03 01:23:07",
+  "aggiornato": "2026-11-03 01:32:32",
   "brani": [
     {
       "id": "luogo_e_terzo_tocco",
@@ -996,7 +996,7 @@
       "png": "png_bice",
       "file": "tema_png_bice.m4a",
       "loop": false,
-      "durata_s": 6.4573,
+      "durata_s": 6.5073,
       "lufs": -19.7,
       "volume": 1.413,
       "strumento": "fisarmonica",
@@ -1101,20 +1101,20 @@
       "controllo": {
         "ok": true,
         "problemi": [],
-        "durata_s": 6.4573,
+        "durata_s": 6.5073,
         "lufs": -19.7,
-        "lra": 6.5,
-        "true_peak_db": -9.7,
-        "picco_db": -9.689712,
+        "lra": 6.9,
+        "true_peak_db": -9.6,
+        "picco_db": -9.651195,
         "campioni_al_limite": 0,
         "silenzi": [
           [
-            4.39,
-            6.46
+            4.43,
+            6.53
           ]
         ],
         "codec": "aac 96k",
-        "kb": 61,
+        "kb": 63,
         "normalizzazione": "linear"
       }
     },
@@ -1123,8 +1123,8 @@
       "png": "png_rosa",
       "file": "tema_png_rosa.m4a",
       "loop": false,
-      "durata_s": 7.1174,
-      "lufs": -19.8,
+      "durata_s": 7.1674,
+      "lufs": -19.6,
       "volume": 1.413,
       "strumento": "clarinetto",
       "programma_gm": 71,
@@ -1227,20 +1227,20 @@
       "controllo": {
         "ok": true,
         "problemi": [],
-        "durata_s": 7.1174,
-        "lufs": -19.8,
-        "lra": 11.0,
-        "true_peak_db": -10.0,
-        "picco_db": -10.046633,
+        "durata_s": 7.1674,
+        "lufs": -19.6,
+        "lra": 10.6,
+        "true_peak_db": -9.7,
+        "picco_db": -9.729998,
         "campioni_al_limite": 0,
         "silenzi": [
           [
-            5.01,
-            7.13
+            5.06,
+            7.17
           ]
         ],
         "codec": "aac 96k",
-        "kb": 70,
+        "kb": 72,
         "normalizzazione": "linear"
       }
     },
@@ -1249,7 +1249,7 @@
       "png": "png_tullio",
       "file": "tema_png_tullio.m4a",
       "loop": false,
-      "durata_s": 8.3545,
+      "durata_s": 8.4045,
       "lufs": -20.0,
       "volume": 1.413,
       "strumento": "contrabbasso",
@@ -1352,20 +1352,20 @@
       "controllo": {
         "ok": true,
         "problemi": [],
-        "durata_s": 8.3545,
+        "durata_s": 8.4045,
         "lufs": -20.0,
-        "lra": 13.1,
-        "true_peak_db": -5.1,
-        "picco_db": -5.108575,
+        "lra": 12.8,
+        "true_peak_db": -5.0,
+        "picco_db": -5.030296,
         "campioni_al_limite": 0,
         "silenzi": [
           [
-            6.21,
-            8.36
+            6.24,
+            8.41
           ]
         ],
         "codec": "aac 96k",
-        "kb": 85,
+        "kb": 87,
         "normalizzazione": "linear"
       }
     },
@@ -1374,8 +1374,8 @@
       "png": "png_vischi",
       "file": "tema_png_vischi.m4a",
       "loop": false,
-      "durata_s": 8.4,
-      "lufs": -19.9,
+      "durata_s": 8.45,
+      "lufs": -19.8,
       "volume": 1.413,
       "strumento": "organo",
       "programma_gm": 19,
@@ -1478,20 +1478,20 @@
       "controllo": {
         "ok": true,
         "problemi": [],
-        "durata_s": 8.4,
-        "lufs": -19.9,
+        "durata_s": 8.45,
+        "lufs": -19.8,
         "lra": 4.7,
-        "true_peak_db": -6.9,
-        "picco_db": -6.93686,
+        "true_peak_db": -7.0,
+        "picco_db": -7.007796,
         "campioni_al_limite": 0,
         "silenzi": [
           [
-            6.38,
-            8.41
+            6.43,
+            8.47
           ]
         ],
         "codec": "aac 96k",
-        "kb": 87,
+        "kb": 88,
         "normalizzazione": "linear"
       }
     }
@@ -1799,6 +1799,51 @@
       "lufs": -30.0
     },
     {
+      "id": "amb_scena_casa_del_sale_taverna",
+      "luogo": "scena_casa_del_sale",
+      "tag": "taverna",
+      "file": "amb_folla_archivio-crowdtalkinglou.m4a",
+      "loop": true,
+      "volume": 0.107,
+      "ripiego_di": "folla",
+      "fonte": "Internet Archive",
+      "titolo": "Crowd Talking Loudly D.D.Teoli Jr.",
+      "autore": "D.D.Teoli Jr.",
+      "licenza": "Public Domain Mark 1.0",
+      "licenza_url": "http://creativecommons.org/publicdomain/mark/1.0/",
+      "pagina": "https://archive.org/details/CrowdTalkingLoudlyD.D.TeoliJr.",
+      "url_file": "https://archive.org/download/CrowdTalkingLoudlyD.D.TeoliJr./Crowd%20Talking%20Loudly%20D.D.%20Teoli%20Jr..mp3",
+      "loop_sorgente": {
+        "inizio_s": 2.0,
+        "fine_s": 42.75,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 41.75,
+        "lufs": -30.1,
+        "lra": 3.2,
+        "true_peak_db": -16.6,
+        "picco_db": -16.629995,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 16.2,
+          "rapporto_salto": 1.27,
+          "salto_livello_db": 0.31,
+          "ok": true
+        },
+        "codec": "aac 96k",
+        "kb": 511,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 41.75,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 41.25,
+      "lufs": -30.1
+    },
+    {
       "id": "amb_scena_ponte_imbrunire_fiume",
       "luogo": "scena_ponte_imbrunire",
       "tag": "fiume",
@@ -2027,28 +2072,28 @@
       "loop": false,
       "volume": 1.259,
       "fonte": "sintesi",
-      "licenza": "nessuna (generato dalla pipeline)",
+      "licenza": "nessuna (SoundFont GeneralUser GS)",
       "suono": "Tubular Bells (GeneralUser GS)",
       "controllo": {
         "ok": true,
         "problemi": [],
-        "durata_s": 6.9,
+        "durata_s": 6.95,
         "lufs": -20.6,
-        "lra": 8.7,
-        "true_peak_db": -7.2,
-        "picco_db": -7.183844,
+        "lra": 8.6,
+        "true_peak_db": -7.3,
+        "picco_db": -7.280406,
         "campioni_al_limite": 0,
         "silenzi": [
           [
-            5.25,
-            6.91
+            5.3,
+            6.95
           ]
         ],
         "codec": "aac 96k",
-        "kb": 76,
+        "kb": 78,
         "normalizzazione": "linear"
       },
-      "durata_s": 6.9,
+      "durata_s": 6.95,
       "lufs": -20.6
     },
     {
@@ -2067,19 +2112,19 @@
       "controllo": {
         "ok": true,
         "problemi": [],
-        "durata_s": 0.4,
-        "lufs": -21.1,
+        "durata_s": 0.45,
+        "lufs": -21.0,
         "lra": 0.0,
-        "true_peak_db": -8.2,
-        "picco_db": -8.279989,
+        "true_peak_db": -11.4,
+        "picco_db": -11.628479,
         "campioni_al_limite": 0,
         "silenzi": [],
         "codec": "aac 96k",
         "kb": 6,
         "normalizzazione": "linear"
       },
-      "durata_s": 0.4,
-      "lufs": -21.1
+      "durata_s": 0.45,
+      "lufs": -21.0
     },
     {
       "id": "sfx_monete",
@@ -2095,23 +2140,21 @@
       "pagina": "https://archive.org/details/CoinsFallingOutOfAVendingMachine",
       "url_file": "https://archive.org/download/CoinsFallingOutOfAVendingMachine/STE-006.mp3",
       "controllo": {
-        "ok": false,
-        "problemi": [
-          "clipping: 1 campioni al limite"
-        ],
-        "durata_s": 2.66,
-        "lufs": -20.9,
+        "ok": true,
+        "problemi": [],
+        "durata_s": 2.71,
+        "lufs": -21.0,
         "lra": 0.0,
-        "true_peak_db": 0.7,
-        "picco_db": 0.467569,
-        "campioni_al_limite": 1,
+        "true_peak_db": -3.1,
+        "picco_db": -3.105684,
+        "campioni_al_limite": 0,
         "silenzi": [],
         "codec": "aac 96k",
-        "kb": 33,
+        "kb": 36,
         "normalizzazione": "linear"
       },
-      "durata_s": 2.66,
-      "lufs": -20.9
+      "durata_s": 2.71,
+      "lufs": -21.0
     },
     {
       "id": "sfx_porta",
@@ -2129,34 +2172,34 @@
       "controllo": {
         "ok": true,
         "problemi": [],
-        "durata_s": 0.54,
+        "durata_s": 0.59,
         "lufs": -24.9,
         "lra": 0.0,
         "true_peak_db": -2.9,
-        "picco_db": -3.801668,
+        "picco_db": -3.464095,
         "campioni_al_limite": 0,
         "silenzi": [],
         "codec": "aac 96k",
-        "kb": 7,
+        "kb": 8,
         "normalizzazione": "linear"
       },
-      "durata_s": 0.54,
+      "durata_s": 0.59,
       "lufs": -24.9
     }
   ],
   "crediti": [
-    "\"River of Io\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Mary Celeste\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Mistake the Getaway\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Master of the Feast\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
-    "\"Mary Celeste\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Virtutes Vocis\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Road to Hell\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
-    "\"Spider Eyes\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
-    "\"Galway\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
-    "\"Virtutes Instrumenti\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
-    "\"Movement Proposition\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"River of Io\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Curse of the Scarab\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Spider Eyes\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Movement Proposition\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "\"Plaint\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Virtutes Instrumenti\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Galway\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
     "Temi dei personaggi: composti dalla pipeline (motivo deterministico) e suonati con GeneralUser GS di S. Christian Collins (https://www.schristiancollins.com/generaluser), licenza d'uso libera.",
     "Alcuni ambienti sono sintetizzati dalla pipeline (rumore modellato): nessuna licenza esterna."
   ]

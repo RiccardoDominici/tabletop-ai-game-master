@@ -98,3 +98,34 @@ def rendi(v: Variazione, programma: int, bpm: float, tonica_midi: int, quinta: i
     nf = int(0.4 * SR)
     out[-nf:] *= np.linspace(1, 0, nf, dtype=np.float32)[:, None]
     return out
+
+
+def rendi_libero(note: list[tuple[float, float, int, int]], programma: int, durata_s: float,
+                 canale: int = 2, riverbero_s: float = 2.2, umido: float = 0.35) -> np.ndarray:
+    """Note libere (inizio s, durata s, altezza MIDI, intensità) su un solo strumento, per gli ambienti.
+
+    Il risultato è CIRCOLARE: ciò che suona oltre `durata_s` (rilasci, riverbero) si somma
+    all'inizio, così il file si ripete senza giunta anche con una campana che risuona sul giro.
+    """
+    synth, sfid = _synth()
+    synth.program_select(canale, sfid, 0, programma)
+    eventi = sorted([(a, 1, "on", n, v) for a, d, n, v in note] + [(a + d, 0, "off", n, 0) for a, d, n, v in note])
+    totale = int((durata_s + 6.0) * SR)
+    out = np.zeros((totale, 2), dtype=np.float32)
+    pos = 0
+    for t, _, tipo, nota, vel in eventi:
+        a = min(int(t * SR), totale)
+        if a > pos:
+            out[pos:a] = np.frombuffer(synth.generate_simple(a - pos), dtype=np.float32).reshape(-1, 2)
+            pos = a
+        synth.noteon(canale, nota, vel) if tipo == "on" else synth.noteoff(canale, nota)
+    if pos < totale:
+        out[pos:] = np.frombuffer(synth.generate_simple(totale - pos), dtype=np.float32).reshape(-1, 2)
+    out = riverbero(out, durata_s=riverbero_s, umido=umido)
+    n = int(durata_s * SR)
+    giro = out[:n].copy()
+    coda = out[n:]
+    for i in range(0, len(coda), n):           # avvolge la coda sull'inizio
+        pezzo = coda[i:i + n]
+        giro[: len(pezzo)] += pezzo
+    return giro

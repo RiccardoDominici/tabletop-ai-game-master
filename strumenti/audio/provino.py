@@ -76,7 +76,7 @@ def rapporto(cartella: Path) -> Path:
     for sezione, v in voci_in_ordine(man):
         c = v.get("controllo", {})
         g = c.get("giunta")
-        giunta = f"{g['salto_livello_db']} dB / ×{g['rapporto_salto']}" if g else "—"
+        giunta = f"{g.get('salto_livello_db')} dB / ×{g.get('rapporto_salto')}" if g else "—"
         kb = c.get("kb") or round((cartella / "audio" / v["file"]).stat().st_size / 1000)
         totale += kb
         esito = "ok" if c.get("ok") else "; ".join(c.get("problemi", [])) or "?"

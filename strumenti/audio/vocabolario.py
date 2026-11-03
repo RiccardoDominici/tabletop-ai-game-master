@@ -82,6 +82,9 @@ AMBIENTI: dict[str, TagAmbiente] = {
     "mulino": TagAmbiente(("water mill", "watermill", "mill wheel"), False, 0.4, False),
 }
 
+# Strati fatti di eventi radi (rintocchi, oche, gocce, tuoni): tra un evento e l'altro il silenzio è giusto.
+INTERMITTENTI = ("campane", "stalla", "gocce", "temporale")
+
 # --- Effetti (colpi singoli) --------------------------------------------------------------
 EFFETTI: dict[str, tuple[str, ...]] = {
     "campana": ("church bell toll", "bell toll", "church bell"),

@@ -21,5 +21,5 @@
   110.0 s  ambienti  amb_scena_casa_del_sale_fuoco            amb_fuoco_sintesi.m4a
   115.5 s  effetti   sfx_campana                              sfx_campana_soundfont.m4a
   121.0 s  effetti   sfx_chiave                               sfx_chiave_archivio-slidelockpro-v1.m4a
-  121.9 s  effetti   sfx_monete                               sfx_monete_archivio-coinsfallingout.m4a
-  125.1 s  effetti   sfx_porta                                sfx_porta_archivio-door-knob-sound.m4a
+  122.0 s  effetti   sfx_monete                               sfx_monete_archivio-coinsfallingout.m4a
+  125.2 s  effetti   sfx_porta                                sfx_porta_archivio-door-knob-sound.m4a
