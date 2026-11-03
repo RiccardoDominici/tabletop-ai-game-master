@@ -35,7 +35,7 @@ from .esito import Esito
 AUDIO = Path(__file__).resolve().parent.parent / "audio"     # strumenti/audio/
 
 CHIAVI_STILE = {"tonalita", "modo", "tempo", "strumenti", "umore_base", "epoca", "motivo"}
-CHIAVI_LUOGO = {"musica", "ambiente", "umore_iniziale"}
+CHIAVI_LUOGO = {"musica", "ambiente", "umore_iniziale", "interno"}
 CHIAVI_TEMA = {"carattere", "strumento", "modo", "registro"}
 CHIAVI_BATTUTA = {"umore", "effetto"}
 UMORE_AUTO = "auto"          # torna alla musica del luogo: vale nelle battute, non in umore_iniziale
@@ -150,6 +150,8 @@ def _luogo(c: Campagna, e: Esito, V: ModuleType, dove: str, a) -> None:
             e.errore("AUDIO.vocabolario", dove, f"ambiente {tag!r} fuori da {sorted(V.AMBIENTI)}")
         if vol is not None and not (isinstance(vol, (int, float)) and 0 < vol <= 1):
             e.errore("AUDIO.forma", dove, f"ambiente {tag}: volume {vol!r} è il guadagno dello strato, tra 0 e 1")
+    if "interno" in a and not isinstance(a["interno"], bool):
+        e.errore("AUDIO.forma", dove, "interno è true (al chiuso) o false (all'aperto)")
     if "umore_iniziale" in a and a["umore_iniziale"] not in V.UMORI:
         e.errore("AUDIO.vocabolario", dove, f"umore_iniziale {a['umore_iniziale']!r} fuori da {list(V.UMORI)}")
     _segreti(c, e, dove, a)

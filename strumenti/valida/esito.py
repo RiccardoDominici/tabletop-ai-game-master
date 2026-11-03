@@ -29,6 +29,7 @@ CLASSI = {
     "STATO": "stato del gioco tra le sessioni (stato/stato.yaml): ogni fatto ha una fonte in un registro di sessione",
     "CONTINUITÀ": "il pacchetto della sessione dopo non contraddice lo stato: morti, chi sa cosa, orologi, promesse",
     "ARCO": "il livello arco preparato prima (preparazione.arco): tappe, ritmo, atti, finali, PNG ricorrenti, fili",
+    "SCELTA": "la scelta finale del brief (decisioni.strade): prezzi che pesano su chi non li vuole",
     "LIVELLO": "durata in sessioni e livello della campagna (brief.yaml, strumenti/strati.py, docs/strati.md)",
     "AUDIO": "campi espliciti dell'audio (docs/audio.md): vocabolario chiuso, motivo, niente segreti nei temi",
 }

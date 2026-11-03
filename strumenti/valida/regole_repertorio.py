@@ -394,6 +394,10 @@ def _prosa(c: Campagna, e: Esito) -> None:
                         e.errore("PROSA.nome_pg", dove, f"nome di PG «{nome}» nel testo: il nome lo dice il narratore "
                                                        "nell'annuncio improvvisato dell'azione (manuale N15)")
                 if tag == "narratore":
+                    for citato in re.findall(r"«([^»]+)»", testo):
+                        if re.search(r"\b(io|mio|mia|miei|mie|me|mi|tu|tuo|tua|tuoi|tue|te|ti)\b", citato.lower()):
+                            e.avviso("PROSA.citazione", dove, f"«{citato[:40]}» letto dal narratore in prima o seconda persona "
+                                                              "suona rivolto a un PG: lettere, diari e canzoni in discorso indiretto")
                     for v in vocativi(testo, nomi_png):
                         e.avviso("PROSA.vocativo", dove, f"«{v},» a inizio frase suona come il narratore che parla a {v}: "
                                                          "sposta il nome («Dal casello il custode, Tullio, grida…»)")

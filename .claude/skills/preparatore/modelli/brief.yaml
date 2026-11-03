@@ -24,4 +24,6 @@ decisioni:
   pg: []               # [pg_id, …]
   png: []              # [png_id → voce_id, …]; voci uguali o simili (simile_a in voci.yaml) mai nella stessa scena
   situazione: ""       # quattro frasi: chi vuole cosa; cosa succede se i PG non fanno niente; la verità; la scelta che costa
+  strade: []           # la scelta finale, strada per strada (la terza via compresa), col prezzo e su chi pesa:
+                       # - {strada: "…", prezzo: "…", pesa_su: [png_…]}   il prezzo pesa su chi NON lo vuole (SCELTA)
   altre: []            # ogni altra scelta, con il motivo

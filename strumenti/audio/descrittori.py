@@ -203,6 +203,9 @@ def descrivi_luogo(l: LuogoTesti, prof: ProfiloCampagna, c: CampagnaAudio) -> De
     p_int, _ = _punteggi(V.REGOLE_INTERNO, l.testi, PESI_CAMPI)
     interno = p_int.get("interno", 0) > p_est.get("esterno", 0)
     perche["interno"] = {"interno": round(p_int.get("interno", 0), 2), "esterno": round(p_est.get("esterno", 0), 2)}
+    if isinstance(a.get("interno"), bool):
+        # audio.interno esplicito vince sulla deduzione (nota 12 di nozze-neve: il Sasso all'aperto dedotto «dentro»).
+        interno, perche["interno"] = a["interno"], "audio.interno"
     musica = DescrittoreMusica(umore, energia, ambientazioni, ora, meteo, interno, esplicite["libere"])
 
     # Ambienti: audio.ambiente esplicito (lista di tag, o di {tag, volume}) prima di tutto.

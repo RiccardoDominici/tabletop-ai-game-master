@@ -26,12 +26,16 @@ def _sembra_inglese(t: str) -> bool:
 
 
 def _regex_segrete(c: Campagna) -> list[tuple[re.Pattern, str]]:
+    """Le regex delle parole segrete, più quelle inglesi (`regex_en`): i prompt delle immagini sono in inglese,
+    e una regex italiana non vede «a thin white scar» (immagini2, punto 2)."""
     out = []
     for v in (c.parole_segrete or {}).get("parole") or []:
-        try:
-            out.append((re.compile(v["regex"]), v.get("parola", v["regex"])))
-        except (re.error, KeyError, TypeError):
-            pass  # lo segnala regole_segreti
+        for chiave in ("regex", "regex_en"):
+            try:
+                if v.get(chiave):
+                    out.append((re.compile(str(v[chiave])), v.get("parola", v[chiave])))
+            except (re.error, AttributeError, TypeError):
+                pass  # lo segnala regole_segreti
     return out
 
 
@@ -129,6 +133,41 @@ def _situazione_dopo(c: Campagna, e: Esito, nome: str, pid: str, asp: dict, sit:
                                                       "prima della sua rivelazione")
 
 
+_ARTICOLI = {"il", "lo", "la", "le", "gli", "i", "un", "una", "uno", "del", "della", "dello", "dei", "delle", "di", "da"}
+
+
+def _parola_del_nome(nome: str) -> str | None:
+    """La parola che identifica un luogo nel testo: «Il Sasso delle Promesse» → «sasso», «La cappella» → «cappella»."""
+    parole = [w for w in re.findall(r"[\wàèéìòù']+", nome.lower()) if w not in _ARTICOLI and len(w) >= 4]
+    return parole[0] if parole else None
+
+
+def _nodi_senza_immagine(c: Campagna, e: Esito) -> None:
+    """Un luogo dove il master può portare il tavolo, senza scheda e senza prompt, non ha immagine sul proiettore
+    (immagini2: n_sasso e n_valle in nozze-neve, n_chiesa e n_passo_vecchio in ponte-lanterne). Un'uscita verso
+    di lui è un avviso; una scena che si svolge lì (il suo nodo è un evento collegato al luogo, e il nome della
+    scena lo nomina) è un errore in rigoroso: la scena avrebbe la sua immagine, il luogo no. Rimedio: `scheda` verso la
+    scena (il luogo usa la stessa immagine) o `immagine.prompt_luogo`."""
+    verso = {u.get("verso"): nome for nome, s in c.scene for u in s.get("uscite") or [] if isinstance(u, dict)}
+    for nid, n in c.nodi.items():
+        if n.get("tipo") != "luogo" or n.get("scheda") or (n.get("immagine") or {}).get("prompt_luogo"):
+            continue
+        parola = _parola_del_nome(str(n.get("nome") or ""))
+        for nome, s in c.scene:
+            evento = c.nodi.get(s.get("nodo")) or {}
+            collegati = evento.get("tipo") == "evento" and (nid in (evento.get("collegamenti") or []) or s.get("nodo") in (n.get("collegamenti") or []))
+            # Il nome della scena dice dove si svolge; la descrizione nomina anche i luoghi che si vedono o di cui
+            # si parla («chi è passato è su in chiesa»), quindi non basta.
+            if collegati and parola and re.search(rf"\b{re.escape(parola)}\b", str(s.get("nome") or "").lower()):
+                e.avviso("IMMAGINI.nodo", f"campagna.yaml nodo {nid}", f"la scena {s.get('id')} si svolge qui, ma il luogo non ha "
+                         f"immagine: scheda: {nome}, o immagine.prompt_luogo", rigoroso=True)
+                break
+        else:
+            if nid in verso:
+                e.avviso("IMMAGINI.nodo", f"campagna.yaml nodo {nid}", f"un'uscita di {verso[nid]} porta qui, ma il luogo non ha "
+                         "immagine (né scheda né immagine.prompt_luogo): sul proiettore resterebbe il luogo di prima")
+
+
 def controlla(c: Campagna, e: Esito) -> None:
     stile = c.stile.get("stile_immagini")
     if not stile:
@@ -147,6 +186,7 @@ def controlla(c: Campagna, e: Esito) -> None:
             e.errore("IMMAGINI.luogo", nome, "mancano immagine.invarianti")
         _segreti(e, nome, " ".join([str(img.get("prompt_luogo") or ""), *map(str, img.get("invarianti") or [])]), regex,
                  "il luogo")
+    _nodi_senza_immagine(c, e)
     for nid, n in c.nodi.items():
         img = n.get("immagine") or {}
         if img.get("prompt_luogo"):

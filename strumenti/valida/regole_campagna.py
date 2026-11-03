@@ -15,9 +15,14 @@ from .testo import frasi, n_parole
 
 def controlla_stile(c: Campagna, e: Esito) -> None:
     s = c.stile
-    for campo in ("premessa", "tono", "tema", "registro_narratore", "stile_immagini", "tavolozza_musicale", "linee", "veli"):
+    for campo in ("premessa", "tono", "tema", "registro_narratore", "stile_immagini", "tavolozza_musicale", "linee"):
         if not s.get(campo):
             e.errore("STILE.campo", "stile.yaml", f"manca {campo}")
+    # Nota 1 di nozze-neve: un brief può non volere veli. La chiave resta, la lista può essere vuota.
+    if not isinstance(s.get("veli"), list):
+        e.errore("STILE.campo", "stile.yaml", "manca veli (una lista; vuota se il brief non ne vuole)")
+    elif not s["veli"]:
+        e.avviso("STILE.veli", "stile.yaml", "nessun velo: va bene se il brief non ne vuole, e il brief lo dice")
     if s.get("premessa") and len(frasi(s["premessa"])) != 1:
         e.errore("STILE.premessa", "stile.yaml", "la premessa (C1) deve stare in una frase")
     tav = s.get("tavolozza_musicale") or {}

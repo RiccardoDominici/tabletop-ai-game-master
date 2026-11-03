@@ -127,8 +127,14 @@ Scrivi in quattro frasi, una per voce, dentro `brief.yaml → decisioni.situazio
 
 Leggi `riferimenti/mestiere.md` §1 e §6.
 
+Poi scrivi in `decisioni.strade` ogni strada della scelta finale, la terza via compresa, con il prezzo e su
+chi pesa (`pesa_su`).
+
 **Controllo**:
 - la scelta finale ha almeno due esiti accettabili, e ognuno ha un prezzo;
+- **il prezzo pesa su qualcuno che non lo vuole**: se un PNG o un PG lo desidera, è un premio travestito
+  (nella prova di nozze-neve «Adelina perde la voce, che passa a Zelia» era ciò che Zelia voleva). Il
+  validatore confronta i prezzi con i desideri dei PNG (`SCELTA.premio`);
 - **quando i PG hanno scoperto tutto, la scelta è ancora difficile**: nessuna prova, promessa o PNG
   cancella il prezzo di una delle strade;
 - nessun PNG può risolverla al posto dei PG (D8);

@@ -290,6 +290,7 @@ nodi:
   - id: n_sasso
     tipo: luogo
     nome: "Il Sasso delle Promesse"
+    scheda: scene/scena_sasso.yaml   # la scena del tramonto si svolge qui: stessa immagine (IMMAGINI.nodo)
     abbozzo: "Una grande pietra piatta sotto un larice, sopra il paese, a venti minuti di salita nella neve. Accanto c'è il casotto di legno del Custode, con il corno appeso alla porta. Nel pomeriggio il nipote del Custode spazza la neve, prepara le lanterne e suona il corno a ogni mezz'ora."
     noto_ai_pg: true
     collegamenti: [n_casera, e_tramonto]

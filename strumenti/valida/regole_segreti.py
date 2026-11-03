@@ -50,6 +50,8 @@ def _voci(c: Campagna, e: Esito) -> list[dict]:
                 e.errore("SEGRETI.forma", dove, f"manca {campo}")
         try:
             rx = re.compile(str(v.get("regex", "")))
+            if v.get("regex_en"):
+                re.compile(str(v["regex_en"]))
         except re.error as err:
             e.errore("SEGRETI.regex", dove, f"regex non valida: {err}")
             continue

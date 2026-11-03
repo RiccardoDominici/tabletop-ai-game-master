@@ -713,6 +713,108 @@ def test_arco_forma(arco_mini):
     assert "ARCO.forma" in codici_arco(arco_mini)[0]
 
 
+# --- Note di nozze-neve: regole piccole ------------------------------------------------------------
+
+def test_cognome_comune_non_nomina_una_voce_simile(camp):
+    # Nota 5: Adelina e Zelia Bonfanti; «casa Bonfanti» non nomina Zelia.
+    modifica(camp, "png/png_irma.yaml", lambda d: d.update(nome="Irma Volpi"))
+    modifica(camp, "png/png_bruno.yaml", lambda d: d.update(nome="Bruno Volpi") or d["voce"]["tts"].update(voce_id="tabitha"))
+    def nel_taglio(cartella: Path) -> bool:
+        esito, _ = valida(cartella, voci=VOCI if VOCI.exists() else None, contesto_b=False)
+        return any(v.codice == "SCENA.voci_simili_testo" and "taglio" in v.dove for v in esito.avvisi)
+    _seconda_scena(camp, ["png_bruno"], ["png_irma"], taglio="La scena si chiude quando la famiglia Volpi torna alla locanda.")
+    assert not nel_taglio(camp)
+    _seconda_scena(camp, ["png_bruno"], ["png_irma"], taglio="La scena si chiude quando Bruno torna alla locanda.")
+    assert nel_taglio(camp)
+
+
+def test_veli_vuoti_se_il_brief_non_ne_vuole(camp):
+    # Nota 1: «Veils: none required». La chiave resta, la lista può essere vuota.
+    modifica(camp, "stile.yaml", lambda d: d.update(veli=[]))
+    assert "STILE.campo" not in errori(camp) and "STILE.veli" in avvisi(camp)
+    modifica(camp, "stile.yaml", lambda d: d.pop("veli"))
+    assert "STILE.campo" in errori(camp)
+
+
+def test_pg_uno_piu_del_massimo_dei_giocatori(camp):
+    # Nota 2: «3-5» giocatori vuole sei PG; il mini ne ha due.
+    modifica(camp, "brief.yaml", lambda d: d.update(giocatori="1-2"))
+    assert "PG.numero" in errori(camp, rigoroso=True)
+    modifica(camp, "brief.yaml", lambda d: d.update(giocatori=1))
+    assert "PG.numero" not in errori(camp, rigoroso=True)
+
+
+def test_testi_preparati_che_nominano_un_pg(camp):
+    # Nota 7: la fisarmonica dei sensi era di un PG.
+    modifica(camp, "scena.yaml", lambda d: d["sensi"].__setitem__(0, "La pipa di Tobia manda un odore dolce."))
+    assert "PROSA.nome_pg" in errori(camp)
+
+
+def test_lettera_letta_in_prima_persona(camp):
+    # Nota 16: «tuo fratello…» letto dal narratore suona rivolto a un PG.
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "tr_sala").update(
+        testo=["[narratore] Sul biglietto c'è scritto: «Ti aspetto all'alba, alla cappella.»"]))
+    assert "PROSA.citazione" in avvisi(camp)
+
+
+def test_audio_dentro_o_fuori(camp):
+    modifica(camp, "scena.yaml", lambda d: d.update(audio={"interno": False}))
+    assert not {c for c in errori(camp) if c.startswith("AUDIO.")}
+    modifica(camp, "scena.yaml", lambda d: d.update(audio={"interno": "fuori"}))
+    assert "AUDIO.forma" in errori(camp)
+
+
+def test_luogo_senza_immagine(camp):
+    # immagini2: un luogo dove il master può portare il tavolo, senza scheda né prompt, non ha immagine.
+    modifica(camp, "campagna.yaml", lambda d: d["nodi"][1].pop("abbozzo") and None)
+    assert "IMMAGINI.nodo" in avvisi(camp)                                     # uscita verso n_cappella
+    # Una scena che si svolge lì (nodo evento collegato, e la nomina) è un errore in rigoroso.
+    def evento(d):
+        d["nodi"].append({"id": "e_alba", "tipo": "evento", "nome": "L'alba", "collegamenti": ["n_cappella", "n_locanda"]})
+        d["nodi"][0]["collegamenti"].append("e_alba")
+    modifica(camp, "campagna.yaml", evento)
+    _seconda_scena(camp, ["png_irma", "png_bruno"], ["png_irma"])
+    modifica(camp, "scene/scena_due.yaml", lambda d: d.update(nodo="e_alba", nome="All'alba, davanti alla Cappella"))
+    assert "IMMAGINI.nodo" in errori(camp, rigoroso=True)
+    modifica(camp, "campagna.yaml", lambda d: d["nodi"][1].update(scheda="scene/scena_due.yaml"))
+    assert "IMMAGINI.nodo" not in errori(camp, rigoroso=True)
+
+
+def test_regex_inglese_per_i_prompt(camp):
+    # immagini2, punto 2: i prompt sono in inglese, la regex italiana non li vede.
+    modifica(camp, "png/png_irma.yaml", lambda d: d["aspetto"].update(prompt_ritratto="bust portrait of an innkeeper holding a silver lantern, [STILE]"))
+    assert "IMMAGINI.segreto" not in errori(camp, rigoroso=True)
+    modifica(camp, "repertorio/parole_segrete.yaml", lambda d: d["parole"][0].update(regex_en="silver lantern"))
+    assert "IMMAGINI.segreto" in errori(camp, rigoroso=True)
+
+
+# --- SCELTA (decisioni.strade del brief) ----------------------------------------------------------
+
+STRADE = [{"strada": "Riportare la lanterna e tacere", "prezzo": "Il mercante si prende la locanda all'alba", "pesa_su": ["png_irma"]},
+          {"strada": "Dire tutto al paese", "prezzo": "Bruno perde l'amicizia di Irma", "pesa_su": ["png_bruno"]}]
+
+
+def test_scelta_strade_giuste(camp):
+    modifica(camp, "brief.yaml", lambda d: d.setdefault("decisioni", {}).update(strade=STRADE))
+    assert not {c for c in errori(camp, rigoroso=True) if c.startswith("SCELTA.")}
+    assert not {c for c in avvisi(camp) if c.startswith("SCELTA.")}
+
+
+def test_scelta_premio_travestito_da_prezzo(camp):
+    # Il desiderio di Irma è «Pagare il tetto prima della neve»: se il prezzo è quello, per lei è un premio.
+    premio = [STRADE[0], {"strada": "Il pegno al mercante", "prezzo": "Irma riesce a pagare il tetto", "pesa_su": ["png_irma"]}]
+    modifica(camp, "brief.yaml", lambda d: d.setdefault("decisioni", {}).update(strade=premio))
+    assert "SCELTA.premio" not in errori(camp)
+    assert "SCELTA.premio" in errori(camp, rigoroso=True)
+
+
+def test_scelta_forma_e_strade_mancanti(camp):
+    modifica(camp, "brief.yaml", lambda d: d.setdefault("decisioni", {}).update(strade=[{"strada": "Una sola", "pesa_su": ["png_nessuno"]}]))
+    assert "SCELTA.forma" in errori(camp)
+    modifica(camp, "brief.yaml", lambda d: d["decisioni"].pop("strade"))
+    assert "SCELTA.strade" in avvisi(camp)
+
+
 # --- PG -------------------------------------------------------------------------------------------
 
 def test_pg_id_non_valido(camp):

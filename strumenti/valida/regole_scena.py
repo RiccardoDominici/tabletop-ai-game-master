@@ -28,8 +28,11 @@ def nomi_propri(d: dict) -> list[str]:
             if w.lower() not in _TITOLI and len(w) >= 3]
 
 
-def nomina(testo: str, d: dict) -> bool:
-    return any(re.search(rf"(?<![\w]){re.escape(n)}(?![\w])", testo) for n in nomi_propri(d))
+def nomina(testo: str, d: dict, altri: list[dict] | None = None) -> bool:
+    """Il testo nomina questo PNG? Contano solo le parole del nome che non sono anche nel nome di un altro
+    PNG: «casa Bonfanti» non nomina Zelia Bonfanti, se anche Adelina è una Bonfanti (nota 5 di nozze-neve)."""
+    comuni = {w for a in altri or [] if a is not d for w in nomi_propri(a)}
+    return any(re.search(rf"(?<![\w]){re.escape(n)}(?![\w])", testo) for n in nomi_propri(d) if n not in comuni)
 
 
 def _parlanti(b: dict) -> set[str]:
@@ -59,6 +62,7 @@ def controlla(c: Campagna, e: Esito) -> None:
 def _voci_fuori_scena(c: Campagna, e: Esito) -> None:
     """Ciò che porta un PNG in una scena dove non è presente, accanto a una voce che si confonde con la sua."""
     presenti = {s.get("id"): set(s.get("png_presenti") or []) for _, s in c.scene}
+    tutti = [d for _, d in c.png.values()]
     # 1. Battute legate a una scena (campo `scena`, un id o una lista) in cui parla un PNG che lì non è
     #    presente: il Motore non le metterà mai in catalogo in quella scena.
     for b in c.battute:
@@ -81,12 +85,12 @@ def _voci_fuori_scena(c: Campagna, e: Esito) -> None:
             #    (repertorio/stato.ts, parlantiDi). Niente da segnalare.
             # 3. Testi della scena che portano A qui.
             for campo in ("descrizione", "taglio", "mossa_morbida_pronta", "apertura"):
-                if nomina(str(s.get(campo) or ""), c.png[a][1]):
+                if nomina(str(s.get(campo) or ""), c.png[a][1], tutti):
                     e.avviso("SCENA.voci_simili_testo", f"{nome} {campo}",
                              f"nomina {c.png[a][1].get('nome')} ({a}), voce simile a {', '.join(simili)} presente: "
                              "se entra in scena le due voci si confondono")
             for es in s.get("esiti") or []:
-                if isinstance(es, dict) and nomina(str(es.get("descrizione") or ""), c.png[a][1]):
+                if isinstance(es, dict) and nomina(str(es.get("descrizione") or ""), c.png[a][1], tutti):
                     e.avviso("SCENA.voci_simili_testo", f"{nome} esito {es.get('id')}",
                              f"nomina {c.png[a][1].get('nome')} ({a}), voce simile a {', '.join(simili)} presente")
     # 4. Schede e soluzioni che mettono insieme due PNG dalle voci simili.
@@ -97,12 +101,12 @@ def _voci_fuori_scena(c: Campagna, e: Esito) -> None:
             testi = [("desiderio", d.get("desiderio")), *[("iniziative", t) for t in d.get("iniziative") or []],
                      *[("evoluzione", f"{ev.get('se')} {ev.get('allora')}") for ev in d.get("evoluzione") or [] if isinstance(ev, dict)]]
             for campo, t in testi:
-                if nomina(str(t or ""), c.png[y][1]):
+                if nomina(str(t or ""), c.png[y][1], tutti):
                     e.avviso("SCENA.voci_simili_testo", f"{c.png[x][0]} {campo}",
                              f"cita {c.png[y][1].get('nome')}, che ha una voce simile: le due non devono finire nella stessa scena")
         for cb in c.campagna.get("colli_di_bottiglia") or []:
             for sol in cb.get("soluzioni") or [] if isinstance(cb, dict) else []:
-                if nomina(str(sol), c.png[a][1]) and nomina(str(sol), c.png[b][1]):
+                if nomina(str(sol), c.png[a][1], tutti) and nomina(str(sol), c.png[b][1], tutti):
                     e.avviso("SCENA.voci_simili_testo", f"campagna.yaml {cb.get('id')}",
                              f"una soluzione mette insieme {c.png[a][1].get('nome')} e {c.png[b][1].get('nome')}, voci simili")
 
