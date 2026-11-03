@@ -197,6 +197,8 @@ inglese e invarianti, `riferimenti/immagini.md`), tranne `esiti`, che scrivi al 
 - L'apertura ha tre frasi al massimo, e con il riassunto della sessione non supera sei frasi, con una
   media tra 8 e 14 parole per frase.
 - Il `taglio` copre tutti gli esiti, compreso il caso in cui i PG esitano.
+- Ogni indizio fisico ha il suo `vincolo_pubblico`: ciò che chiunque percepisce, senza il perché, perché
+  l'improvvisazione non lo contraddica (mestiere.md §4). La scena non dice il contrario.
 - Più scene: lo stesso luogo in due momenti, gli orologi condivisi e quelli che partono da una scelta
   sono in mestiere.md §9.
 

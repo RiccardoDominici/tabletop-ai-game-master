@@ -57,6 +57,15 @@ cieco (esperimenti/giudizio-ab-1 e -2), e la prova cieca della skill con «Il po
 - Un indizio si **descrive, non si conclude**: «sa di bruciato e tinge le dita, come la polvere di un
   braciere spento». La parola «carbone» la dicono i giocatori.
 - Scrivi `come_si_trova` con i modi distinti (aprire un sacco; spezzare una pagnotta) e mettili in `modi`.
+- **Ogni indizio fisico ha il suo vincolo pubblico** (`vincolo_pubblico`): che cosa percepisce chiunque, in
+  una frase, senza il perché. Nel giudizio cieco di nozze-neve il campanaccio della Duchessa «suonava forte»:
+  l'indizio era proprio che è muto, ma nessuno l'aveva detto al narratore, e i sensi della scena facevano
+  suonare tutti i campanacci. Il vincolo («il campanaccio grande della Duchessa non suona») va al narratore e
+  al selettore; il perché (dentro c'è l'anello) resta nel `come_si_trova`. Se anche il percepito è segreto,
+  il vincolo dice che lo descrive solo la battuta («la pietra intorno al leone la descrive la battuta»). La
+  scena non deve dire il contrario: sensi, descrizione ed elementi lo rispettano («tutti tranne quello grande»).
+  Per gli altri fatti che l'improvvisazione tende a contraddire (chi ha la lettera, quanti fratelli ha la
+  nonna) ci sono i `vincoli_pubblici` della scena, con le stesse regole.
 - Due indizi nello stesso oggetto (il marchio sul sacco e i chicchi dentro) rendono la soluzione troppo
   rapida. Va bene se il climax regge lo stesso; altrimenti separali.
 

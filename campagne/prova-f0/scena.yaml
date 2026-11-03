@@ -53,6 +53,7 @@ indizi:
     tiro: "nessuno"
     modi: 2   # aprire un sacco; spezzare una pagnotta
     come_si_trova: "Chi apre un sacco nel retro, o spezza una pagnotta delle ceste, trova chicchi neri e curvi come piccole unghie, nella farina e nella mollica. Il narratore non chiama mai veleno il pane e non dice da dove viene la febbre: lo dicono i PG, o i PNG che lo sanno."
+    vincolo_pubblico: "La mollica del pane dei lumi è grigiastra, con puntini scuri; la farina dei sacchi del retro anche."
   - id: i_cane_croste
     conclusione: r_pane
     tipo: evento
@@ -61,6 +62,7 @@ indizi:
     tiro: "nessuno"
     modi: 3   # guardare Moro; parlargli con la magia; la mossa morbida
     come_si_trova: "Chi guarda Moro lo vede tremare e leccarsi le zampe. Nella sua ciotola ci sono croste di pane nero. Chi gli parla con la magia sente cose da cane: le croste erano buone, poi bruciava la bocca, ora bruciano le zampe. È anche la mossa morbida della scena."
+    vincolo_pubblico: "Moro, il cane dell'osteria, trema e si lecca le zampe."
   - id: i_preghiera_pane
     conclusione: r_pane
     tipo: visione
@@ -101,6 +103,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Baldrin mostra il sacchetto di polvere nera come prova del veleno. Chi la tocca o la annusa: sa di bruciato e tinge le dita, come la polvere di un braciere spento. Il narratore descrive, non spiega: la conclusione la tirano i giocatori."
+    vincolo_pubblico: "La polvere nel sacchetto di Baldrin sa di bruciato e tinge le dita."
   - id: i_libretto
     conclusione: r_innocente
     tipo: documento
@@ -133,6 +136,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Nella borsa, bende arrotolate e chiuse con un nodo doppio e piatto. Il narratore descrive il nodo e basta: chi lo riconosce è il giocatore."
+    vincolo_pubblico: "Le bende nella borsa del forestiero sono chiuse tutte con lo stesso nodo, doppio e piatto."
   - id: i_parole_da_medico
     conclusione: r_cerusico
     tipo: png
@@ -165,6 +169,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Sui sacchi nel retro c'è una ruota di mulino dipinta di nero, e sotto la parola Valsecca."
+    vincolo_pubblico: "Sui sacchi di segale del retro c'è una ruota di mulino nera e la scritta Valsecca."
   - id: i_baldrin_testimoni
     conclusione: r_gualtiero
     tipo: png

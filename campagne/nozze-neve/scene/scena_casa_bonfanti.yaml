@@ -25,14 +25,14 @@ intensita: 2
 
 sensi:
   - "Odore di fieno e di latte caldo che sale dalla stalla."          # olfatto
-  - "I campanacci delle vacche che suonano piano sotto il pavimento."  # udito
+  - "I campanacci delle vacche che suonano piano sotto il pavimento, tutti tranne quello grande."  # udito (vincolo di i_campanaccio)
   - "Il legno della scala che scricchiola a ogni gradino."             # udito
 
 elementi_interattivi:
   - {cosa: "la camera della sposa", dove: "al primo piano", azioni: "Agnese è seduta con il velo a metà e risponde solo a gesti; Zelia ha il quaderno legato alla cintura"}
   - {cosa: "il quaderno di Zelia", dove: "legato alla cintura di Zelia con lo spago", azioni: "lei non lo molla mai; si legge se lei lo dà, o se lo lascia sul letto quando scende"}
   - {cosa: "le cassapanche della soffitta", dove: "in cima alla scala a pioli", azioni: "si aprono; dentro ci sono corredi, merletti e carte di famiglia"}
-  - {cosa: "la stalla", dove: "sotto la cucina, giù dalla botola o dalla porta sul vicolo", azioni: "è calda e bassa; le vacche si girano a guardare chi entra, e i campanacci suonano"}
+  - {cosa: "la stalla", dove: "sotto la cucina, giù dalla botola o dalla porta sul vicolo", azioni: "è calda e bassa; le vacche si girano a guardare chi entra, e i campanacci suonano, tutti tranne quello grande della Duchessa"}
   - {cosa: "lo scrittoio di Gaspare", dove: "in cucina, sotto la finestra", azioni: "sopra c'è il libro dei conti; sotto, un cassetto chiuso a chiave che cede a un coltello"}
 
 png_presenti: [png_zelia, png_gaspare]
@@ -47,6 +47,7 @@ indizi:
     tiro: "nessuno"
     modi: 2
     come_si_trova: "Due modi. Chi entra nella stalla sente suonare tutti i campanacci tranne uno: la Duchessa si gira, e il suo campanaccio grande resta muto. Oppure al Sasso, dove la Duchessa si ferma dopo aver guidato la processione con il campanaccio muto: chi ci guarda dentro trova la stessa cosa. Dentro, intorno al batacchio, c'è un foglio di quaderno arrotolato stretto, e nel foglio l'anello. Se lo zio ha già finito di cercare, il campanaccio suona di nuovo ed è vuoto: resta un angolo di carta strappata."
+    vincolo_pubblico: "Il campanaccio grande della Duchessa non suona: gli altri campanacci della stalla sì."
   - id: i_quaderno
     conclusione: r_zelia
     tipo: documento
@@ -63,6 +64,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Quando un PG chiede alla sposa dov'è l'anello, o chi l'ha preso, Agnese non può parlare: guarda la sorella e si spolvera il vestito, come se avesse addosso la paglia; poi si mette due dita sulla testa, come corna. Zelia diventa rossa fino alle orecchie."
+    vincolo_pubblico: "La sposa non parla fino al sì, per usanza: risponde solo a gesti."
   - id: i_zelia_confessa
     conclusione: r_zelia
     tipo: png
@@ -87,6 +89,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Chi guarda l'anello da vicino vede, dentro la fascia, un piccolo ferro di cavallo inciso, consumato dagli anni. Il narratore lo descrive e basta."
+    vincolo_pubblico: "L'interno della fascia dell'anello lo descrive solo la battuta di chi lo guarda da vicino."
   - id: i_campanella
     conclusione: r_passo
     tipo: oggetto
@@ -95,6 +98,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Chi apre il cassetto dello scrittoio di Gaspare trova, avvolta in un fazzoletto, una campanella da mulo d'ottone, con un piccolo ferro di cavallo inciso sul bordo. Il narratore la descrive e non dice di chi è il segno. Se gliela chiedono, Gaspare dice che gliela regalò suo padre quando guarì dalla febbre, da bambino."
+    vincolo_pubblico: "Nel cassetto dello scrittoio di Gaspare c'è un fazzoletto annodato; il contenuto lo dice la battuta."
   - id: i_contratto
     conclusione: r_zio
     tipo: documento

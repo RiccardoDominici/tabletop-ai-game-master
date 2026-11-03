@@ -53,6 +53,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Chi entra nello studio vede, appesa ad asciugare accanto al camino piccolo, una corda a nodi bagnata, con un nastro rosso legato due spanne dopo il primo nodo."
+    vincolo_pubblico: "Nello studio, accanto al camino piccolo, asciuga una corda a nodi con un nastro rosso."
   - id: i_carte_pronte
     conclusione: r_vischi
     tipo: documento

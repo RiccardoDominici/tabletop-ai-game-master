@@ -141,7 +141,9 @@ png_presenti: [png_…]          # esistono [V]; voci diverse e non simili [V]; 
 orologi_attivi: [o_…]          # esistono [V]
 indizi:                        # [V forma; vedi sotto]
   - {id: i_…, conclusione: r_…, tipo: png|oggetto|luogo|evento|documento|visione, nodo: n_…|png_…,
-     essenziale: true|false, tiro: "nessuno", modi: 1, come_si_trova: "…"}
+     essenziale: true|false, tiro: "nessuno", modi: 1, come_si_trova: "…",
+     vincolo_pubblico: "ciò che chiunque percepisce, senza il perché"}   # indizi fisici [R], niente segreti [V]
+vincoli_pubblici: ["…"]        # facoltativi: altri fatti percepibili che l'improvvisazione tende a contraddire
 uscite: [{verso: n_…, segnalata_da: [i_…, …]}]      # almeno 2 (salvo climax: true) [V]; 3 indizi per nodo (avviso)
 mossa_morbida_pronta: "…"      # prosa §5 [V]
 apertura: "…?"                 # al massimo 3 frasi, chiude con un invito [V]

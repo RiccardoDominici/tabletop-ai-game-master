@@ -52,6 +52,7 @@ indizi:
     tiro: "nessuno"
     modi: 2
     come_si_trova: "Chi si sporge dal parapetto con una lanterna e gratta il muschio del pilone di mezzo con la pertica, oppure chi passa sotto l'arcata con la barca e alza la luce: due spanne sopra il leone c'è un'onda scolpita nella pietra, asciutta. Il narratore la descrive e basta: non dice mai che il leone è stato calato, spostato o abbassato, né che il ponte regge oltre il leone."
+    vincolo_pubblico: "Sopra il leone il pilone di mezzo è coperto di muschio: che cosa c'è sotto lo dice solo la battuta."
   - id: i_malta_leone
     conclusione: r_leone
     tipo: oggetto
@@ -60,6 +61,7 @@ indizi:
     tiro: "nessuno"
     modi: 2
     come_si_trova: "Chi guarda da vicino il leone, dal parapetto con una lanterna oppure toccandolo dalla barca: il blocco è murato con una malta chiara e liscia, mentre il resto del pilone ha una malta scura e mangiata dall'acqua."
+    vincolo_pubblico: "La pietra intorno al leone la descrive solo la battuta di chi la guarda da vicino."
   - id: i_libro_piena
     conclusione: r_leone
     tipo: documento
@@ -84,6 +86,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Chi guarda a lungo le lanterne del Borgo: quella del Ricovero dondola, troppo in fretta, poi resta ferma per un po', e riprende a dondolare. Quella delle Case Lunghe resta sempre ferma."
+    vincolo_pubblico: "La lanterna del Ricovero dondola a scatti; quella delle Case Lunghe è sempre ferma."
   - id: i_fila_ernesto
     conclusione: r_ricovero
     tipo: png
@@ -100,6 +103,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Indizio proattivo: lo scrivano di Vischi scende dalla tettoia con una corda a nodi, si sporge sul leone e conta i nodi a mezza voce, poi torna a scrivere. A chi gli chiede, dice che il signor Vischi vuole sapere quanto manca, con precisione."
+    vincolo_pubblico: "Lo scrivano di Vischi misura il leone con una corda a nodi."
   - id: i_tullio_minaccia
     conclusione: r_vischi
     tipo: png

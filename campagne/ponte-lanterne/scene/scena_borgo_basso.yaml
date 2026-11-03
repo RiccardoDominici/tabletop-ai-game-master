@@ -54,6 +54,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Chi entra al Ricovero sente dal piano di sopra una tosse lunga e roca, e la voce di un vecchio che chiede da bere."
+    vincolo_pubblico: "Al Ricovero, dal piano di sopra, si sente tossire un vecchio."
   - id: i_legna_bagnata
     conclusione: r_ricovero
     tipo: oggetto
@@ -62,6 +63,7 @@ indizi:
     tiro: "nessuno"
     modi: 2
     come_si_trova: "Chi guarda nel sottoscala con la lanterna, oppure chi sale e tocca la stufa: la catasta della legna è sott'acqua, e la stufa di sopra è fredda."
+    vincolo_pubblico: "Il sottoscala e la stufa del Ricovero li descrive solo la battuta di chi li guarda."
   - id: i_rosa_ernesto
     conclusione: r_ricovero
     tipo: png
@@ -78,6 +80,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Chi passa con la barca davanti alle porte delle Case Lunghe, o del Ricovero, e alza la luce: su ogni porta c'è una croce di gesso fresca, che la pioggia non ha ancora lavato."
+    vincolo_pubblico: "Sulle porte delle Case Lunghe e del Ricovero c'è una croce di gesso fresca."
 
 uscite:
   - {verso: n_ponte, segnalata_da: [i_rosa_rondini, i_tosse_ernesto, i_legna_bagnata], nota: "Si torna con la barca alla rampa bassa del ponte."}

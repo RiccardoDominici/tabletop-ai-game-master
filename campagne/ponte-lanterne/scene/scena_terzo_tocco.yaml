@@ -46,6 +46,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Indizio proattivo, al terzo tocco: l'acqua tocca la criniera, e chi ha i piedi sul ponte non sente niente, né tremito né scricchiolio. Le pietre del pilone sopra il leone sono ancora asciutte."
+    vincolo_pubblico: "Al terzo tocco il ponte non trema e non scricchiola."
 
 uscite:
   - {verso: n_chiesa, segnalata_da: [i_ponte_fermo], nota: "Chi passa il ponte sale in chiesa."}

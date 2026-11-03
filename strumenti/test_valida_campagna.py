@@ -808,6 +808,31 @@ def test_regex_inglese_per_i_prompt(camp):
     assert "IMMAGINI.segreto" in errori(camp, rigoroso=True)
 
 
+# --- VINCOLI (ciò che chiunque percepisce di un indizio) -------------------------------------------
+
+def test_vincoli_indizio_fisico_senza_vincolo_in_rigoroso(camp):
+    # Giudizio di nozze-neve: il campanaccio muto «suona forte», perché nessuno l'aveva detto al narratore.
+    modifica(camp, "scena.yaml", lambda d: d["indizi"][1].pop("vincolo_pubblico"))
+    assert "VINCOLI.mancante" not in errori(camp)
+    assert "VINCOLI.mancante" in errori(camp, rigoroso=True)
+
+
+def test_vincoli_senza_segreti(camp):
+    modifica(camp, "scena.yaml", lambda d: d["indizi"][1].update(vincolo_pubblico="In una botte vuota c'è la lanterna."))
+    assert "VINCOLI.segreto" in errori(camp)
+    modifica(camp, "scena.yaml", lambda d: d["indizi"][1].update(vincolo_pubblico="Le botti sono vuote.") or
+             d.update(vincoli_pubblici=["Il mercante aspetta il pegno al passo."]))
+    assert "VINCOLI.segreto" in errori(camp)
+
+
+def test_vincoli_contraddetti_dalla_scena(camp):
+    modifica(camp, "scena.yaml", lambda d: d["indizi"][1].update(vincolo_pubblico="La botte grande in fondo non suona quando la si tocca."))
+    modifica(camp, "scena.yaml", lambda d: d["sensi"].__setitem__(1, "La botte grande in fondo suona cupa a ogni colpo di vento."))
+    assert "VINCOLI.contraddetto" in avvisi(camp)
+    modifica(camp, "scena.yaml", lambda d: d["sensi"].__setitem__(1, "Le botti suonano cupe al vento, tranne la grande in fondo."))
+    assert "VINCOLI.contraddetto" not in avvisi(camp)
+
+
 # --- SCELTA (decisioni.strade del brief) ----------------------------------------------------------
 
 STRADE = [{"strada": "Riportare la lanterna e tacere", "prezzo": "Il mercante si prende la locanda all'alba", "pesa_su": ["png_irma"]},

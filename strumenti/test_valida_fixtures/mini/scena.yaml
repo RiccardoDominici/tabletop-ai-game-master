@@ -20,9 +20,11 @@ png_presenti: [png_irma, png_bruno]
 orologi_attivi: [o_processione]
 indizi:
   - {id: i_cera, conclusione: r_lanterna, tipo: oggetto, nodo: n_locanda, essenziale: true, tiro: "nessuno", modi: 1,
-     come_si_trova: "Chi guarda i gradini della cantina trova gocce di cera bianca."}
+     come_si_trova: "Chi guarda i gradini della cantina trova gocce di cera bianca.",
+     vincolo_pubblico: "I gradini della cantina li descrive solo la battuta di chi li guarda."}
   - {id: i_botte, conclusione: r_lanterna, tipo: evento, nodo: n_locanda, essenziale: false, tiro: "nessuno", modi: 1,
-     come_si_trova: "Chi scende in cantina sente un tintinnio dentro una botte vuota."}
+     come_si_trova: "Chi scende in cantina sente un tintinnio dentro una botte vuota.",
+     vincolo_pubblico: "In cantina le botti sono tutte vuote e asciutte."}
   - {id: i_bruno_racconta, conclusione: r_lanterna, tipo: png, nodo: png_bruno, essenziale: false, tiro: "nessuno", modi: 1,
      come_si_trova: "Quando Bruno cede: ha visto Irma scendere in cantina con un fagotto."}
 uscite:

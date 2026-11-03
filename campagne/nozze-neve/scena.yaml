@@ -53,6 +53,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Chi guarda dentro la scatolina vede, sul velluto rosso, una macchia d'inchiostro ancora fresca, piccola come un polpastrello, e un capello rosso preso nella cerniera. Il narratore descrive la macchia e il capello, e non nomina nessuno."
+    vincolo_pubblico: "La scatolina dell'anello è vuota; il velluto dentro lo descrive solo la battuta."
   - id: i_impronte
     conclusione: r_zelia
     tipo: luogo
@@ -61,6 +62,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Chi esce dalla porta di dietro della cantina delle forme trova nella neve fresca impronte piccole e strette, di scarponcini, che attraversano il vicolo fino alla porta della stalla dei Bonfanti, sotto la casa. Verso la stalla dei Morlacchi, in fondo al vicolo, non va nessuna impronta. La neve le sta coprendo, ma si vedono ancora."
+    vincolo_pubblico: "Dietro la cantina delle forme, nella neve fresca, ci sono impronte piccole e strette."
   - id: i_catenine
     conclusione: r_anello
     tipo: documento
@@ -93,6 +95,7 @@ indizi:
     tiro: "nessuno"
     modi: 1
     come_si_trova: "Chi guarda da vicino il caldaio nuovo, o ne chiede alla casara: è di rame di Pontebruno, con il segno del ramaio ancora lucido, e la casara dice che l'ha pagato Gaspare in contanti un mese fa, quando in casa i soldi non c'erano."
+    vincolo_pubblico: "Il caldaio della casera è nuovo, di rame di Pontebruno, con il segno del ramaio ancora lucido."
   - id: i_gaspare_vide
     conclusione: r_zelia
     tipo: png
