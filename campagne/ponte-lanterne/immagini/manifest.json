@@ -5,28 +5,28 @@
       "file": "luogo_scena_terzo_tocco.jpg",
       "tipo": "luogo",
       "alias_di": "luogo_scena_terzo_tocco",
-      "quando": "2026-11-02 22:34:13"
+      "quando": "2026-11-03 14:19:09"
     },
     {
       "id": "luogo_n_borgo_basso",
       "file": "luogo_scena_borgo_basso.jpg",
       "tipo": "luogo",
       "alias_di": "luogo_scena_borgo_basso",
-      "quando": "2026-11-02 22:34:13"
+      "quando": "2026-11-03 14:19:09"
     },
     {
       "id": "luogo_n_casa_del_sale",
       "file": "luogo_scena_casa_del_sale.jpg",
       "tipo": "luogo",
       "alias_di": "luogo_scena_casa_del_sale",
-      "quando": "2026-11-02 22:34:13"
+      "quando": "2026-11-03 14:19:09"
     },
     {
       "id": "luogo_n_ponte",
       "file": "luogo_scena_ponte_imbrunire.jpg",
       "tipo": "luogo",
       "alias_di": "luogo_scena_ponte_imbrunire",
-      "quando": "2026-11-03 10:59:54"
+      "quando": "2026-11-03 14:19:09"
     },
     {
       "id": "luogo_scena_borgo_basso",
@@ -48,7 +48,27 @@
       "rifilato_pct": 5.0,
       "quando": "2026-11-02 22:20:23",
       "firma": "v1:6b1d1d3416b6681c95615fbc",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Un vicolo allagato di notte sotto la pioggia, con muri di pietra, case con balconi di legno, una barca di legno con remo e un ponte illuminato sullo sfondo. Non si vedono testi, firme o bordi.",
+          "costo_usd": 0.000757,
+          "token": {
+            "ingresso": 3875,
+            "uscita": 739
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000757,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000757
+      }
     },
     {
       "id": "luogo_scena_casa_del_sale",
@@ -70,7 +90,71 @@
       "rifilato_pct": 0.3,
       "quando": "2026-11-02 22:26:51",
       "firma": "v1:f5d40dfaf7c06e8952047427",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "difettosa",
+        "motivi": [
+          "margine: Il bordo esterno mostra una cornice di carta bianca irregolare, quindi l'immagine non riempie il fotogramma fino ai bordi. (bordi e angoli dell'intera immagine, visibili in alto a sinistra e in basso a destra)",
+          "incongruenza: Strisce di pioggia cadono dall'alto all'interno della sala, come se piovesse al chiuso. (parte alta e centrale della sala, tra le travi e il tavolo)"
+        ],
+        "problemi": [
+          {
+            "tipo": "margine",
+            "dove": "bordi e angoli dell'intera immagine, visibili in alto a sinistra e in basso a destra",
+            "descrizione": "Il bordo esterno mostra una cornice di carta bianca irregolare, quindi l'immagine non riempie il fotogramma fino ai bordi.",
+            "grave": true
+          },
+          {
+            "tipo": "incongruenza",
+            "dove": "parte alta e centrale della sala, tra le travi e il tavolo",
+            "descrizione": "Strisce di pioggia cadono dall'alto all'interno della sala, come se piovesse al chiuso.",
+            "grave": true
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "tavolo centrale",
+            "descrizione": "Non si vede il calamaio richiesto dal prompt tra gli oggetti del tavolo.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "difettosa",
+          "motivi": [
+            "margine: Il bordo esterno mostra una cornice di carta bianca irregolare, quindi l'immagine non riempie il fotogramma fino ai bordi. (bordi e angoli dell'intera immagine, visibili in alto a sinistra e in basso a destra)",
+            "incongruenza: Strisce di pioggia cadono dall'alto all'interno della sala, come se piovesse al chiuso. (parte alta e centrale della sala, tra le travi e il tavolo)"
+          ],
+          "problemi": [
+            {
+              "tipo": "margine",
+              "dove": "bordi e angoli dell'intera immagine, visibili in alto a sinistra e in basso a destra",
+              "descrizione": "Il bordo esterno mostra una cornice di carta bianca irregolare, quindi l'immagine non riempie il fotogramma fino ai bordi.",
+              "grave": true
+            },
+            {
+              "tipo": "incongruenza",
+              "dove": "parte alta e centrale della sala, tra le travi e il tavolo",
+              "descrizione": "Strisce di pioggia cadono dall'alto all'interno della sala, come se piovesse al chiuso.",
+              "grave": true
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "tavolo centrale",
+              "descrizione": "Non si vede il calamaio richiesto dal prompt tra gli oggetti del tavolo.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Una sala in pietra illustrata ad acquerello, con sacchi di sale impilati fino alle travi, un camino acceso, un lungo tavolo con fogli, tazze e una lanterna, una porta di quercia in fondo e mantelli bagnati appesi all'ingresso.",
+          "costo_usd": 0.000923,
+          "token": {
+            "ingresso": 3848,
+            "uscita": 1077
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000923,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000923
+      }
     },
     {
       "id": "luogo_scena_ponte_imbrunire",
@@ -92,7 +176,65 @@
       "rifilato_pct": 0.5,
       "quando": "2026-11-02 22:14:18",
       "firma": "v1:ff299e61b6489b4e0723ac3f",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "centro-basso dell'immagine",
+            "descrizione": "La catena pende sopra l'acqua tra il pilone e il paletto in acqua, invece di giacere lenta sulla carreggiata tra due paletti accanto a un argano.",
+            "grave": false
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "destra dell'immagine",
+            "descrizione": "La barca è ormeggiata accanto al pilone e non sotto la casetta del pedaggio.",
+            "grave": false
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "parapetto del ponte",
+            "descrizione": "Sul parapetto si contano quattro lanterne in alto più una in basso a sinistra, quindi forse non sei come richiesto.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "centro-basso dell'immagine",
+              "descrizione": "La catena pende sopra l'acqua tra il pilone e il paletto in acqua, invece di giacere lenta sulla carreggiata tra due paletti accanto a un argano.",
+              "grave": false
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "destra dell'immagine",
+              "descrizione": "La barca è ormeggiata accanto al pilone e non sotto la casetta del pedaggio.",
+              "grave": false
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "parapetto del ponte",
+              "descrizione": "Sul parapetto si contano quattro lanterne in alto più una in basso a sinistra, quindi forse non sei come richiesto.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Un vecchio ponte in pietra con archi sopra un fiume fangoso in piena, sotto una pioggia intensa al crepuscolo, con lanterne accese, una casetta del pedaggio a metà campata, un leone di pietra sul pilone centrale e una barca ormeggiata a destra, con case illuminate sulla riva opposta.",
+          "costo_usd": 0.000962,
+          "token": {
+            "ingresso": 3904,
+            "uscita": 1143
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000962,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000962
+      }
     },
     {
       "id": "luogo_scena_terzo_tocco",
@@ -114,7 +256,53 @@
       "rifilato_pct": 2.0,
       "quando": "2026-11-02 22:34:13",
       "firma": "v1:0e9fbae02aa33933bfe2ad9f",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "parapetto del ponte",
+            "descrizione": "Si contano circa sette lanterne lungo il parapetto invece delle sei richieste.",
+            "grave": false
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "primo piano, parte bassa",
+            "descrizione": "La catena giace nell'acqua tra le due bitte invece che sulla carreggiata del ponte.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "parapetto del ponte",
+              "descrizione": "Si contano circa sette lanterne lungo il parapetto invece delle sei richieste.",
+              "grave": false
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "primo piano, parte bassa",
+              "descrizione": "La catena giace nell'acqua tra le due bitte invece che sulla carreggiata del ponte.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Un vecchio ponte in pietra a più arcate sotto una pioggia battente in piena notturna, con una casa del pedaggio a metà ponte, una folla con lanterne sotto una tettoia all'estremità destra e una catena con due bitte immerse nell'acqua alluvionale.",
+          "costo_usd": 0.000931,
+          "token": {
+            "ingresso": 3892,
+            "uscita": 1083
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000931,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000931
+      }
     },
     {
       "id": "ritratto_png_bice",
@@ -136,7 +324,41 @@
       "rifilato_pct": 0.0,
       "quando": "2026-11-02 22:36:08",
       "firma": "v1:ad25942d5c326463b9ceeae9",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "testa e cappuccio",
+            "descrizione": "Il cappuccio verde è tirato su sopra la testa invece di essere buttato indietro come richiesto dal prompt.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "testa e cappuccio",
+              "descrizione": "Il cappuccio verde è tirato su sopra la testa invece di essere buttato indietro come richiesto dal prompt.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Ritratto a mezzo busto di una giovane lampionaia con trecce rosse, cappotto verde e lentiggini sporche di fuliggine, che tiene un acciarino e una lanterna accesa su un parapetto di pietra sotto la pioggia, con un ponte e un canale sullo sfondo.",
+          "costo_usd": 0.000734,
+          "token": {
+            "ingresso": 3059,
+            "uscita": 857
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000734,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000734
+      }
     },
     {
       "id": "ritratto_png_rosa",
@@ -158,7 +380,45 @@
       "rifilato_pct": 0.0,
       "quando": "2026-11-02 22:38:23",
       "firma": "v1:8c1007461d4b08f783a04eec",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "difettosa",
+        "motivi": [
+          "incongruenza: Sono visibili linee di pioggia che cadono all'interno della stanza, accanto alla donna e sulle pareti. (interno della stanza, in alto e sulle pareti di pietra)"
+        ],
+        "problemi": [
+          {
+            "tipo": "incongruenza",
+            "dove": "interno della stanza, in alto e sulle pareti di pietra",
+            "descrizione": "Sono visibili linee di pioggia che cadono all'interno della stanza, accanto alla donna e sulle pareti.",
+            "grave": true
+          }
+        ],
+        "visione": {
+          "esito": "difettosa",
+          "motivi": [
+            "incongruenza: Sono visibili linee di pioggia che cadono all'interno della stanza, accanto alla donna e sulle pareti. (interno della stanza, in alto e sulle pareti di pietra)"
+          ],
+          "problemi": [
+            {
+              "tipo": "incongruenza",
+              "dove": "interno della stanza, in alto e sulle pareti di pietra",
+              "descrizione": "Sono visibili linee di pioggia che cadono all'interno della stanza, accanto alla donna e sulle pareti.",
+              "grave": true
+            }
+          ],
+          "descrizione": "Un'anziana minuta con scialle grigio, occhiali tondi e mani rosse siede in una stanza di pietra illuminata da una candela, con un'oca bianca ai piedi e una finestra che si affaccia su un fiume sotto la pioggia.",
+          "costo_usd": 0.000695,
+          "token": {
+            "ingresso": 2994,
+            "uscita": 791
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000695,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000695
+      }
     },
     {
       "id": "ritratto_png_tullio",
@@ -180,7 +440,27 @@
       "rifilato_pct": 0.0,
       "quando": "2026-11-02 22:40:19",
       "firma": "v1:474f14114a458e1ea30d9776",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Ritratto a mezzo busto di un uomo anziano con barba grigia, berretto di lana marrone e mantello cerato giallo, con una grossa chiave di ferro alla cintura. Alle sue spalle un ponte di pietra, lanterne accese e pioggia su un canale notturno.",
+          "costo_usd": 0.000574,
+          "token": {
+            "ingresso": 3083,
+            "uscita": 531
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000574,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000574
+      }
     },
     {
       "id": "ritratto_png_vischi",
@@ -202,7 +482,27 @@
       "rifilato_pct": 0.0,
       "quando": "2026-11-02 22:42:24",
       "firma": "v1:90d8213b580c45c14ebe8f2f",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Ritratto a mezzo busto di un uomo alto e magro dai capelli grigi pettinati all'indietro, con mantello nero, guanti di pelle nera e un anello d'oro con sigillo. Alle sue spalle ci sono un fuoco acceso sotto un arco di pietra, edifici, botti e uno specchio d'acqua sotto la pioggia notturna.",
+          "costo_usd": 0.000573,
+          "token": {
+            "ingresso": 3064,
+            "uscita": 533
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000573,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000573
+      }
     },
     {
       "id": "situazione_png_bice_in_scena_ponte_imbrunire",
@@ -229,7 +529,102 @@
       "rifilato_pct": 1.2,
       "quando": "2026-11-03 09:45:36",
       "firma": "v1:c2093502e6a577afc54fc823",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "testa della ragazza",
+            "descrizione": "Il cappuccio verde è tirato su sulla testa invece di essere buttato indietro come richiesto dal prompt.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "testa della ragazza",
+              "descrizione": "Il cappuccio verde è tirato su sulla testa invece di essere buttato indietro come richiesto dal prompt.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Una ragazza rossa di treccia con un lungo cappotto verde, in piedi su una riva bagnata dalla pioggia, davanti a un ponte di pietra con lanterne accese, una garitta di legno e un leone di pietra; sullo sfondo un barcone ormeggiato e case illuminate.",
+          "costo_usd": 0.000805,
+          "token": {
+            "ingresso": 3924,
+            "uscita": 825
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000805,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000805
+      }
+    },
+    {
+      "id": "situazione_png_bice_in_scena_terzo_tocco",
+      "file": "situazione_png_bice_in_scena_terzo_tocco.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: diciannove anni; magra; treccia rossa; cappuccio verde buttato indietro; acciarino in mano; fuliggine sul naso. Now inside the place shown in the second reference image, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature",
+      "seme": 686976956,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_bice",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_bice",
+        "luogo_scena_terzo_tocco"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 543.0,
+      "picco_gb": 7.28,
+      "kb": 637,
+      "rifilato_pct": 1.2,
+      "firma": "v1:8f7e2b76b16ab88c1fabb499",
+      "quando": "2026-11-03 13:19:26",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "testa della ragazza",
+            "descrizione": "Il cappuccio verde è tirato sulla testa invece di essere buttato indietro come richiesto dal prompt.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "testa della ragazza",
+              "descrizione": "Il cappuccio verde è tirato sulla testa invece di essere buttato indietro come richiesto dal prompt.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Una ragazza con treccia rossa, cappuccio verde tirato sulla testa e macchie scure sul viso tiene un piccolo acciarino accanto a una lanterna su un muretto di un ponte in pietra, sotto la pioggia notturna. Sullo sfondo, sul ponte e vicino a un edificio, si vede una folla con lanterne.",
+          "costo_usd": 0.00081,
+          "token": {
+            "ingresso": 3924,
+            "uscita": 835
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.00081,
+        "tentativi": 1,
+        "costo_totale_usd": 0.00081
+      }
     },
     {
       "id": "situazione_png_bice_sotto_arcata",
@@ -257,7 +652,190 @@
       "rifilato_pct": 0.1,
       "quando": "2026-11-03 09:17:38",
       "firma": "v1:7e3f575b72131e83090273ca",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "difettosa",
+        "motivi": [
+          "testo_o_firma: È presente una firma o monogramma scarabocchiato in basso a destra. (angolo in basso a destra)"
+        ],
+        "problemi": [
+          {
+            "tipo": "testo_o_firma",
+            "dove": "angolo in basso a destra",
+            "descrizione": "È presente una firma o monogramma scarabocchiato in basso a destra.",
+            "grave": true
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "testa della ragazza",
+            "descrizione": "Il cappuccio verde è tirato su sulla testa, mentre il prompt chiedeva un cappuccio buttato indietro.",
+            "grave": false
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "lanterna in mano alla ragazza",
+            "descrizione": "La lanterna è accesa e luminosa, mentre il prompt chiedeva una lanterna con lo schermo chiuso (shuttered).",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "testo_o_firma",
+              "dove": "angolo in basso a destra",
+              "descrizione": "È presente una firma o monogramma scarabocchiato in basso a destra.",
+              "grave": true
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "testa della ragazza",
+              "descrizione": "Il cappuccio verde è tirato su sulla testa, mentre il prompt chiedeva un cappuccio buttato indietro.",
+              "grave": false
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "lanterna in mano alla ragazza",
+              "descrizione": "La lanterna è accesa e luminosa, mentre il prompt chiedeva una lanterna con lo schermo chiuso (shuttered).",
+              "grave": false
+            }
+          ],
+          "descrizione": "Una giovane con treccia rossa, cappuccio verde e volto sporco di fuliggine rema in una barca sotto un arco di ponte in pietra, reggendo una nassa per anguille e una lanterna accesa, sotto la pioggia notturna.",
+          "costo_usd": 0.000914,
+          "token": {
+            "ingresso": 3890,
+            "uscita": 1050
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000914,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000914
+      }
+    },
+    {
+      "id": "situazione_png_rosa_in_scena_borgo_basso",
+      "file": "situazione_png_rosa_in_scena_borgo_basso.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: settantotto anni; minuta; scialle di lana grigia; occhiali tondi; mani rosse da lavandaia; oca bianca ai piedi. Now inside the place shown in the second reference image, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature",
+      "seme": 204100933,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_rosa",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_rosa",
+        "luogo_scena_borgo_basso"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 540.2,
+      "picco_gb": 7.28,
+      "kb": 698,
+      "rifilato_pct": 1.2,
+      "firma": "v1:86b06564b440c480ce2ef56c",
+      "quando": "2026-11-03 13:01:19",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "primo piano, ai piedi della donna",
+            "descrizione": "Manca l'oca bianca che il prompt richiede ai piedi della donna.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "primo piano, ai piedi della donna",
+              "descrizione": "Manca l'oca bianca che il prompt richiede ai piedi della donna.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Una vecchia minuta con scialle grigio, occhiali tondi e mani rosse sta in piedi su una barca in una strada allagata di un borgo di pietra, sotto la pioggia notturna e tra lanterne accese.",
+          "costo_usd": 0.00075,
+          "token": {
+            "ingresso": 3858,
+            "uscita": 729
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.00075,
+        "tentativi": 1,
+        "costo_totale_usd": 0.00075
+      }
+    },
+    {
+      "id": "situazione_png_tullio_alla_catena",
+      "file": "situazione_png_tullio_alla_catena.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the reference image, same face, hair and clothes: tratti fissi: sessantadue anni; largo di spalle; berretto di lana marrone; barba grigia; grossa chiave di ferro alla cintura; mantello cerato giallo. Now the toll keeper gripping the crank of the bridge chain at midnight, water over the low ramp, crowd with lanterns in the background, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature",
+      "seme": 477100567,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_tullio",
+      "dopo": [
+        "nar_piena_8"
+      ],
+      "automatica": false,
+      "riferimenti": [
+        "ritratto_png_tullio"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 356.8,
+      "picco_gb": 6.08,
+      "kb": 746,
+      "rifilato_pct": 1.2,
+      "firma": "v1:75313ebd5f98f3e4c1a4895c",
+      "quando": "2026-11-03 12:43:23",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "mano sinistra dell'uomo, al centro-sinistra",
+            "descrizione": "La mano stringe un anello o una manetta alla fine della catena invece di una manovella del ponte levatoio, quindi il dettaglio richiesto non si riconosce.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "mano sinistra dell'uomo, al centro-sinistra",
+              "descrizione": "La mano stringe un anello o una manetta alla fine della catena invece di una manovella del ponte levatoio, quindi il dettaglio richiesto non si riconosce.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Un uomo barbuto con berretto marrone, cappotto cerato giallo e chiave di ferro alla cintura tiene una catena pesante in una scena piovosa di un ponte e di un canale, con passanti e lampioni sullo sfondo.",
+          "costo_usd": 0.000893,
+          "token": {
+            "ingresso": 3893,
+            "uscita": 1007
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000893,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000893
+      }
     },
     {
       "id": "situazione_png_tullio_in_scena_ponte_imbrunire",
@@ -284,7 +862,251 @@
       "rifilato_pct": 1.2,
       "quando": "2026-11-03 09:52:54",
       "firma": "v1:afb18b287d9c9bcb0079b026",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Un uomo barbuto con berretto marrone, mantello cerato giallo e grossa chiave di ferro alla cintura sta sotto la pioggia davanti a un ponte di pietra illuminato da lanterne, con un fiume, una barca e un villaggio sullo sfondo.",
+          "costo_usd": 0.000669,
+          "token": {
+            "ingresso": 3927,
+            "uscita": 552
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000669,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000669
+      }
+    },
+    {
+      "id": "situazione_png_tullio_in_scena_terzo_tocco",
+      "file": "situazione_png_tullio_in_scena_terzo_tocco.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: sessantadue anni; largo di spalle; berretto di lana marrone; barba grigia; grossa chiave di ferro alla cintura; mantello cerato giallo. Now inside the place shown in the second reference image, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature",
+      "seme": 534797526,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_tullio",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_tullio",
+        "luogo_scena_terzo_tocco"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 634.6,
+      "picco_gb": 7.99,
+      "kb": 683,
+      "rifilato_pct": 1.2,
+      "firma": "v1:ed009db365faccdf2c1ebc85",
+      "quando": "2026-11-03 13:30:02",
+      "qualita": {
+        "esito": "difettosa",
+        "motivi": [
+          "segreto: Sul ponte è visibile una folla di persone con lanterne, che è uno dei tratti nascosti da non mostrare. (parte destra, sopra il ponte)"
+        ],
+        "problemi": [
+          {
+            "tipo": "segreto",
+            "dove": "parte destra, sopra il ponte",
+            "descrizione": "Sul ponte è visibile una folla di persone con lanterne, che è uno dei tratti nascosti da non mostrare.",
+            "grave": true
+          }
+        ],
+        "visione": {
+          "esito": "difettosa",
+          "motivi": [
+            "segreto: Sul ponte è visibile una folla di persone con lanterne, che è uno dei tratti nascosti da non mostrare. (parte destra, sopra il ponte)"
+          ],
+          "problemi": [
+            {
+              "tipo": "segreto",
+              "dove": "parte destra, sopra il ponte",
+              "descrizione": "Sul ponte è visibile una folla di persone con lanterne, che è uno dei tratti nascosti da non mostrare.",
+              "grave": true
+            }
+          ],
+          "descrizione": "Un uomo barbuto con berretto marrone e mantello cerato giallo, con una grossa chiave appesa alla cintura, sta davanti a un ponte di pietra sotto la pioggia notturna. Sul ponte a destra c'è una folla con lanterne, e in primo piano una catena e un argano di ferro emergono dall'acqua.",
+          "costo_usd": 0.000778,
+          "token": {
+            "ingresso": 3927,
+            "uscita": 770
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000778,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000778
+      }
+    },
+    {
+      "id": "situazione_png_vischi_in_scena_casa_del_sale",
+      "file": "situazione_png_vischi_in_scena_casa_del_sale.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: cinquantadue anni; alto e magro; capelli grigi pettinati all'indietro; mantello nero ben cucito; guanti di pelle nera; anello d'oro con sigillo. Now inside the place shown in the second reference image, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature",
+      "seme": 542351009,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_vischi",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_vischi",
+        "luogo_scena_casa_del_sale"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 542.4,
+      "picco_gb": 7.28,
+      "kb": 599,
+      "rifilato_pct": 1.2,
+      "firma": "v1:7459652d2dd3cfd020d9d853",
+      "quando": "2026-11-03 13:10:22",
+      "qualita": {
+        "esito": "difettosa",
+        "motivi": [
+          "incongruenza: Si vedono strisce di pioggia che cadono all'interno dell'edificio, sotto il soffitto e davanti alle pareti. (zona centrale e destra della sala, sotto le travi del soffitto)"
+        ],
+        "problemi": [
+          {
+            "tipo": "incongruenza",
+            "dove": "zona centrale e destra della sala, sotto le travi del soffitto",
+            "descrizione": "Si vedono strisce di pioggia che cadono all'interno dell'edificio, sotto il soffitto e davanti alle pareti.",
+            "grave": true
+          }
+        ],
+        "visione": {
+          "esito": "difettosa",
+          "motivi": [
+            "incongruenza: Si vedono strisce di pioggia che cadono all'interno dell'edificio, sotto il soffitto e davanti alle pareti. (zona centrale e destra della sala, sotto le travi del soffitto)"
+          ],
+          "problemi": [
+            {
+              "tipo": "incongruenza",
+              "dove": "zona centrale e destra della sala, sotto le travi del soffitto",
+              "descrizione": "Si vedono strisce di pioggia che cadono all'interno dell'edificio, sotto il soffitto e davanti alle pareti.",
+              "grave": true
+            }
+          ],
+          "descrizione": "Un uomo alto e magro dai capelli grigi pettinati all'indietro, in mantello nero, guanti di pelle e un sigillo dorato, si trova in una sala di pietra con sacchi di sabbia, un camino acceso, un tavolo con sedie e appendiabiti con cappotti. Dal soffitto cadono strisce di pioggia all'interno dell'ambiente.",
+          "costo_usd": 0.000807,
+          "token": {
+            "ingresso": 3928,
+            "uscita": 829
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000807,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000807
+      }
+    },
+    {
+      "id": "situazione_png_vischi_in_scena_ponte_imbrunire",
+      "file": "situazione_png_vischi_in_scena_ponte_imbrunire.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: cinquantadue anni; alto e magro; capelli grigi pettinati all'indietro; mantello nero ben cucito; guanti di pelle nera; anello d'oro con sigillo. Now inside the place shown in the second reference image, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature",
+      "seme": 683332041,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_vischi",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_vischi",
+        "luogo_scena_ponte_imbrunire"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 534.6,
+      "picco_gb": 7.44,
+      "kb": 623,
+      "rifilato_pct": 1.2,
+      "firma": "v1:9d2070727b934f6c4944503f",
+      "quando": "2026-11-03 12:52:19",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Un uomo alto e magro con capelli grigi pettinati all'indietro, in lungo cappotto nero e guanti neri, di spalle e di profilo, guarda un ponte di pietra illuminato da lanterne sotto la pioggia, con una barca e un villaggio sullo sfondo.",
+          "costo_usd": 0.000718,
+          "token": {
+            "ingresso": 3928,
+            "uscita": 651
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000718,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000718
+      }
+    },
+    {
+      "id": "situazione_png_vischi_in_scena_terzo_tocco",
+      "file": "situazione_png_vischi_in_scena_terzo_tocco.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: cinquantadue anni; alto e magro; capelli grigi pettinati all'indietro; mantello nero ben cucito; guanti di pelle nera; anello d'oro con sigillo. Now inside the place shown in the second reference image, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature",
+      "seme": 815195554,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_vischi",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_vischi",
+        "luogo_scena_terzo_tocco"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 638.1,
+      "picco_gb": 8.07,
+      "kb": 656,
+      "rifilato_pct": 1.2,
+      "firma": "v1:67468a3ca807474b9ace762c",
+      "quando": "2026-11-03 13:40:41",
+      "qualita": {
+        "esito": "ok",
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Un uomo alto e magro dai capelli grigi pettinati all'indietro, con mantello nero e guanti scuri, sta in primo piano su un ponte di pietra sotto la pioggia notturna, mentre una folla con lanterne osserva dalla sponda e catene con bitte emergono dall'acqua del fiume.",
+          "costo_usd": 0.000834,
+          "token": {
+            "ingresso": 3928,
+            "uscita": 882
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000834,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000834
+      }
     },
     {
       "id": "situazione_png_vischi_studio_cassa",
@@ -312,7 +1134,58 @@
       "rifilato_pct": 1.2,
       "quando": "2026-11-03 09:38:27",
       "firma": "v1:ef1de40ea23d7d3c3c7a539c",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "difettosa",
+        "motivi": [
+          "testo_o_firma: Su un cartoncino appeso alla parete compaiono righe di testo scritto, mentre il prompt chiedeva nessuna scritta. (angolo in alto a sinistra)",
+          "incongruenza: Ci sono strisce di pioggia che cadono all'interno della stanza, sopra la parete, il bauletto e il barile. (interno della stanza, parete e bauletto)"
+        ],
+        "problemi": [
+          {
+            "tipo": "testo_o_firma",
+            "dove": "angolo in alto a sinistra",
+            "descrizione": "Su un cartoncino appeso alla parete compaiono righe di testo scritto, mentre il prompt chiedeva nessuna scritta.",
+            "grave": true
+          },
+          {
+            "tipo": "incongruenza",
+            "dove": "interno della stanza, parete e bauletto",
+            "descrizione": "Ci sono strisce di pioggia che cadono all'interno della stanza, sopra la parete, il bauletto e il barile.",
+            "grave": true
+          }
+        ],
+        "visione": {
+          "esito": "difettosa",
+          "motivi": [
+            "incongruenza: Ci sono strisce di pioggia che cadono all'interno della stanza, sopra la parete, il bauletto e il barile. (interno della stanza, parete e bauletto)"
+          ],
+          "problemi": [
+            {
+              "tipo": "testo_o_firma",
+              "dove": "angolo in alto a sinistra",
+              "descrizione": "Su un cartoncino appeso alla parete compaiono righe di testo scritto, mentre il prompt chiedeva nessuna scritta.",
+              "grave": true
+            },
+            {
+              "tipo": "incongruenza",
+              "dove": "interno della stanza, parete e bauletto",
+              "descrizione": "Ci sono strisce di pioggia che cadono all'interno della stanza, sopra la parete, il bauletto e il barile.",
+              "grave": true
+            }
+          ],
+          "descrizione": "Un uomo anziano dai capelli grigi, in mantello nero, è inginocchiato davanti a un bauletto di ferro aperto pieno di registri, tenendo una candela accesa. Sullo sfondo ci sono una lanterna, una finestra su un fiume notturno e una cassa di legno sul pavimento.",
+          "costo_usd": 0.000923,
+          "token": {
+            "ingresso": 3894,
+            "uscita": 1068
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000923,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000923
+      }
     }
   ]
 }
