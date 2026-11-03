@@ -32,7 +32,7 @@ describe.skipIf(!presente)('cancelli sull’azione: richiede.privata e richiede.
     expect(passato.richiede).toMatchObject({ privata: true, da_pg: ['pg_assenzio'] });
     expect(chicco.richiede).toMatchObject({ privata: true, da_pg: [] });
     expect(haCancelloAzione(passato)).toBe(true);
-    expect(haCancelloAzione(rep.perId.get('ott_segale_versione') ?? rep.battute.find((b) => !b.richiede.privata)!)).toBe(false);
+    expect(haCancelloAzione(rep.perId.get('ott_segale_domanda') ?? rep.battute.find((b) => !b.richiede.privata)!)).toBe(false);
   });
 
   it('rispondeA: privata solo verso privata, da_pg solo verso quei PG, le altre solo verso pubbliche', () => {
