@@ -27,6 +27,9 @@ I valori ammessi sono quelli del vocabolario (un valore sconosciuto si ignora co
   di `musica` sono parole del vocabolario (umore, energia, ora, meteo, ambientazione) o parole libere cercate nelle
   descrizioni dei brani.
 - ogni PNG → `tema: {carattere, strumento, modo, registro}`: niente segreti (il tema non deve tradire chi mente).
+- Il validatore delle campagne controlla questi campi contro lo stesso vocabolario (classe `AUDIO`: valori,
+  motivo, parole segrete, temi che tradirebbero chi mente); la guida per il Preparatore è in
+  `.claude/skills/preparatore/riferimenti/schema.md` («Audio») e `mestiere.md` §10.
   Senza `tema`, il carattere viene SOLO dalla persona pubblica (lettura, personalità di superficie e sotto pressione,
   voce senza `mai_dice`, timbro della voce); nessuna regola dedotta produce il modo frigio.
 
@@ -73,6 +76,9 @@ strumenti/audio/setup.sh                                   # una volta: ambiente
 strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py campagne/<id> [--dry-run] [--solo musica|temi|ambienti] [--rifai] [--senza-rete]
 strumenti/audio/.venv/bin/python strumenti/audio/provino.py campagne/<id>   # esperimenti/audio/provino_<id>.wav e controlli_<id>.md
 ```
+- `scripts/prepara.sh campagne/<id>` la lancia dopo il validatore e le immagini, solo se l'audio non è già
+  completo per le schede di oggi (`strumenti/stato_preparazione.py` confronta i descrittori con
+  `audio/descrittori.json`).
 - `campagna_audio.py` legge solo i campi pubblici; `descrittori.py` li traduce nel vocabolario (`vocabolario.py`);
   `fonti/incompetech.py` sceglie e scarica la musica; `temi/` compone e suona i temi; `pool.py` e `ambienti.py`
   fanno gli strati e gli effetti; `qualita.py` taglia i loop, normalizza, codifica e controlla; `manifest_audio.py`

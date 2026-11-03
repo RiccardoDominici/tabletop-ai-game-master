@@ -140,3 +140,24 @@ contesto, i suoi PNG presenti e i suoi orologi attivi; lo stato (indizi, battute
   avvisa di ciò che trova; i casi voluti si giustificano in autovalutazione.
 - **I nodi noti.** Un luogo che i PG conoscono dall'inizio (la chiesa del paese) ha `noto_ai_pg: true`:
   non serve scoprirlo con tre indizi.
+
+## 10. Musica, ambienti e temi (docs/audio.md)
+La pipeline dell'audio ricava tutto dai campi pubblici: di solito non serve scrivere niente. Guarda la sua
+deduzione con `genera_audio.py --dry-run` e correggi con i campi di schema.md («Audio») solo ciò che non va.
+
+- **L'umore viene dalla domanda della scena, non dall'arredo.** `musica.tag` (e `audio.umore_iniziale`)
+  dice che cosa sente il tavolo: un'osteria dove si cerca un colpevole è `esplorazione_tesa`, non
+  `taverna_calda`. Un solo cambio d'umore a scena, nel punto di svolta della `transizione`.
+- **Gli ambienti sono ciò che si sente da fuori**, gli stessi suoni dei `sensi` e dei segni dell'orologio:
+  la pioggia, il fiume in piena, la folla alla porta. Due o tre strati per luogo, quello che porta il
+  pericolo più forte. Niente che contraddica la scena: niente acqua che scorre dove è ghiacciata, niente
+  grilli d'inverno, niente folla in una stanza chiusa a chiave.
+- **Gli effetti sono colpi che il narratore nomina**: il rintocco, la porta, la catena. Se un oggetto conta
+  per il climax, nominalo nei sensi o negli elementi, così la pipeline lo trova.
+- **Il tema di un PNG nasce dalla sua persona pubblica**: lettura d'aspetto, personalità di superficie e
+  sotto pressione, voce, timbro. Mai dalla menzogna, dal segreto, dal ruolo nella trama: un tema
+  «sinistro» per il PNG che mente dice al tavolo chi cercare prima che lo scopra. Il bugiardo cordiale
+  suona cordiale; il modo frigio non va a chi mente.
+- **I temi della campagna si somigliano**: sono variazioni di un solo motivo (`stile.audio.motivo`, o
+  quello generato). Scrivi il motivo solo se ne hai uno migliore: da quattro a dodici note, per gradi
+  vicini, che chiude lungo sulla tonica o sulla quinta.

@@ -29,6 +29,7 @@ campagne/<id>/
 | `stile_immagini` | il contenuto di `[STILE]`, in inglese; non contiene `[STILE]` [V] |
 | `tavolozza_musicale` | `{tag: [...], strumenti: "..."}`; tag solo da `esplorazione_tesa, taverna_calda, rito_sacro, inseguimento, combattimento_epico, lutto` [V] |
 | `linee`, `veli` | liste non vuote [V] |
+| `audio` | facoltativo: `{tonalita, modo, tempo, strumenti, umore_base, epoca, motivo}`, vedi «Audio» sotto [V] |
 
 ## campagna.yaml
 Chiavi di primo livello: `id`, `canone`, `orologi`, `rivelazioni`, `colli_di_bottiglia`,
@@ -63,7 +64,8 @@ richiede una conoscenza privata lo dice: «Solo se la propone chi la conosce».
 
 **nodi** (C5): `- {id, tipo: luogo|png|evento, nome, scheda | abbozzo, collegamenti: [...], indizi: [...]}`.
 - Facoltativi: `noto_ai_pg: true` (un luogo che i PG conoscono dall'inizio: non chiede tre indizi in
-  entrata) e `immagine: {prompt_luogo}` (un luogo senza scheda che ha un'immagine; vedi immagini.md).
+  entrata), `immagine: {prompt_luogo}` (un luogo senza scheda che ha un'immagine; vedi immagini.md) e
+  `audio` (come nelle scene, vedi «Audio» sotto).
 - `nome` e `abbozzo` vanno al selettore del modo B: niente segreti [V contesto B].
 - Ogni collegamento esiste [V].
 - Tutto è raggiungibile dal nodo della scena iniziale [V].
@@ -145,6 +147,7 @@ immagine: {invarianti: [...], prompt_luogo: "… in inglese"}   # [V]
 taglio: "…"                    # tutti gli esiti, anche «se i PG esitano»; va al selettore: niente segreti
 esiti: [{id, descrizione, finale: <id battuta>}]    # si scrive con i finali (passo 9); ogni finale esiste [V]
 climax: true                   # facoltativo: ammette meno di due uscite
+audio: {musica: [...], ambiente: [...], umore_iniziale: …}   # facoltativo, vedi «Audio» sotto [V]
 ```
 Il contesto del modo B prende da ogni scheda scena nome, descrizione, domanda, intensità, sensi,
 elementi senza «NASCOSTA», PNG presenti e taglio: il validatore ci cerca le regex segrete
@@ -202,6 +205,7 @@ iniziative: ["Se …, allora fa …"]
 evoluzione: [{se, allora}]     # [V]
 statistiche: "…"
 registro_attivita: []          # [V]
+tema: {carattere, strumento, modo, registro}   # facoltativo: il motivo del PNG, vedi «Audio» sotto [V]
 ```
 
 ## pg.yaml
@@ -222,6 +226,46 @@ Nome diverso dal nome di ogni PNG [V].
 Campi della battuta: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi,
 solo_esempio, riempitivo, scena` [V]. Nient'altro [V]. `richiede.oppure` è descritto ma il server non lo
 applica ancora: oggi è un errore (repertorio.md §4).
+
+## Audio (facoltativo): stile.audio, scene e nodi audio, png.tema
+La pipeline dell'audio (`strumenti/audio/`, contratto in `docs/audio.md`) ricava musica, ambienti, effetti
+e temi dai campi pubblici. Questi campi servono solo dove la deduzione sbaglia: controllala con
+`strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py campagne/<id> --dry-run`. I valori sono
+quelli di `strumenti/audio/vocabolario.py`; il validatore rifiuta tutto il resto (classe `AUDIO`), perché
+la pipeline lo ignorerebbe in silenzio. Nessuna parola segreta in questi campi [V].
+
+```yaml
+# stile.yaml
+audio:
+  tonalita: "re dorico"          # una nota (do…si, C…B) e, se vuoi, un modo
+  modo: dorico                   # ionio, dorico, frigio, lidio, misolidio, eolio (o maggiore, minore)
+  tempo: 88                      # battiti al minuto, da 40 a 200
+  strumenti: [fisarmonica, clarinetto]   # o un testo; «niente percussioni» le vieta
+  umore_base: esplorazione_tesa  # uno dei sei tag di musica
+  epoca: antica                  # antica, moderna, futura
+  motivo: {metro: 4, note: [[0, 1], [2, 1], [4, 2], [2, 1], [1, 1], [0, 2]]}   # gradi e durate [V come la pipeline]
+
+# scena (o nodo di campagna.yaml)
+audio:
+  musica: [notte, pioggia, ponte]   # umore, energia (bassa, media, alta), ora (alba, giorno, imbrunire,
+                                    #   notte), meteo, ambientazione, o parole inglesi libere
+  ambiente: [pioggia, {tag: fiume, volume: 0.6}]   # strati in loop; volume tra 0 e 1
+  umore_iniziale: esplorazione_tesa
+
+# png
+tema: {carattere: [burbero], strumento: fagotto, modo: dorico, registro: basso}
+```
+- **Ambienti**: pioggia, temporale, fiume, acqua, vento, neve, fuoco, folla, taverna, campane, canto, notte,
+  stalla, gocce, mare, bosco, mulino.
+- **Ambientazioni** (per `musica`): taverna, chiesa, ponte, fiume, borgo, piazza, mulino, montagna, casa,
+  bosco, strada, sotterraneo, castello, mare, mercato, palazzo. **Meteo**: sereno, pioggia, temporale, neve,
+  vento, nebbia, gelo.
+- **Caratteri** (per `tema`): caldo, gioviale, burbero, solenne, nervoso, freddo, malinconico, fiero,
+  pacato, timido. **Registri**: basso, medio, alto. **Strumenti da motivo**: quelli melodici di
+  `STRUMENTI_TEMA` (flauto, clarinetto, fisarmonica, violino, violoncello, arpa, liuto, organo…).
+- Il tema viene dalla persona pubblica, mai da ciò che il PNG nasconde: un carattere che la lettura, la
+  personalità e la voce non giustificano è un avviso, il modo frigio su un PNG che mente un avviso
+  rigoroso (mestiere.md §10).
 
 ## Letture del manuale adottate
 Dove il manuale è ambiguo, il validatore e questa skill leggono così.

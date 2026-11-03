@@ -1,6 +1,7 @@
 # Cantastorie (nome di lavoro)
 
 ## Come giocare stasera
+0. Campagna nuova (scritta con la skill `preparatore`): prima `scripts/prepara.sh campagne/<id>`. Valida, genera immagini e audio (salta ciò che c'è già) e stampa il comando per giocare.
 1. Sul Mac: `scripts/partita.sh prova-f0` (una scena, ~30 minuti) oppure `scripts/partita.sh ponte-lanterne` (quattro scene: le cambi tu dal pannello del master, «Scene della campagna»). Alla fine stampa i tre indirizzi.
 2. **Proiettore** (Mac collegato a proiettore e cassa): apri `http://localhost:4610/schermo` e clicca «Inizia sessione». Serve quel clic per far partire l'audio.
 3. **Telefoni** (stessa Wi-Fi del Mac): basta il browser. Inquadrano il QR sul proiettore o aprono l'indirizzo stampato, poi scelgono un personaggio. Si gioca scrivendo (il microfono non c'è ancora).

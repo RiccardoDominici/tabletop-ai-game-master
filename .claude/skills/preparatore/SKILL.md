@@ -1,6 +1,6 @@
 ---
 name: preparatore
-description: Scrive una campagna completa di Cantastorie (il master IA per D&D dal vivo, in italiano) a partire da un brief breve, secondo il manuale del master. Produce la cartella campagne/<id>/ con carta di stile, canone, fronti e orologi, cronologia e logistica, schede scena, schede PNG, PG pregenerati, repertorio di battute (versione 2), parole segrete e prompt delle immagini, e la porta fino a zero errori del validatore in modo rigoroso. Usala quando Riccardo chiede di preparare, scrivere o progettare una campagna, un'avventura, una sessione, uno scenario, una «sceneggiatura», o di aggiungere scene e PNG a una campagna esistente.
+description: Scrive una campagna completa di Cantastorie (il master IA per D&D dal vivo, in italiano) a partire da un brief breve, secondo il manuale del master. Produce la cartella campagne/<id>/ con carta di stile, canone, fronti e orologi, cronologia e logistica, schede scena, schede PNG, PG pregenerati, repertorio di battute (versione 2), parole segrete e prompt delle immagini, la porta fino a zero errori del validatore in modo rigoroso, e con scripts/prepara.sh la rende pronta da giocare (immagini e audio). Usala quando Riccardo chiede di preparare, scrivere o progettare una campagna, un'avventura, una sessione, uno scenario, una «sceneggiatura», o di aggiungere scene e PNG a una campagna esistente.
 ---
 
 # Preparatore
@@ -14,7 +14,9 @@ Il tuo lavoro finisce solo quando:
 1. `python3 -I strumenti/valida_campagna.py campagne/<id> --rigoroso` esce con **0 errori**, con node
    installato (senza node il controllo del contesto del modo B resta un avviso, e non basta);
 2. la revisione indipendente (passo 14) è stata fatta e i suoi problemi gravi sono risolti;
-3. `README.md` e `autovalutazione.md` della campagna sono scritti e tutto è committato.
+3. `README.md` e `autovalutazione.md` della campagna sono scritti e tutto è committato;
+4. `scripts/prepara.sh campagne/<id>` ha fatto immagini e audio (passo 16). La campagna è **pronta da
+   giocare** solo quando esistono `immagini/manifest.json` e `audio/manifest.json`.
 
 Non dichiarare finito nulla che il validatore non ha visto passare. Non scrivere a memoria regole che
 sono nei riferimenti: aprili. Ogni regola sta in un posto solo: qui l'ordine del lavoro e le regole che
@@ -83,7 +85,8 @@ le classi già scrivibili; gli altri errori arrivano quando scrivi i file che li
 | 12 | validatore rigoroso e copioni | zero errori, avvisi giustificati, poi commit |
 | 13 | lettura ad alta voce | la lista del passo |
 | 14 | revisione indipendente | i problemi gravi corretti |
-| 15 | `README.md`, `autovalutazione.md` | commit finale |
+| 15 | `README.md`, `autovalutazione.md` | commit |
+| 16 | immagini e audio con `scripts/prepara.sh` | «pronta da giocare», poi commit degli asset |
 
 Il comando del validatore è sempre `python3 -I strumenti/valida_campagna.py campagne/<id>` più le opzioni
 della tabella.
@@ -233,15 +236,19 @@ Il validatore ci cerca ogni regex; tu cerca ciò che una regex non prende.
 
 **Controllo**: nessun errore `SEGRETI.*` e nessun avviso `SEGRETI.fatto_scoperto`.
 
-### 11. Immagini: situazioni e lettura dei prompt
+### 11. Immagini e audio: situazioni, prompt e deduzioni
 I prompt dei luoghi e dei ritratti li hai scritti con le schede. Ora i tratti nascosti: vanno solo in
 `aspetto.situazioni`, ognuna con `dopo`, l'indizio o la battuta dopo cui mostrarla
 (`riferimenti/immagini.md`). Un luogo senza scheda che ha un'immagine sta in `nodi[].immagine`.
 
+L'audio lo deduce la pipeline dalle schede pubbliche. Leggi la sua deduzione con
+`strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py campagne/<id> --dry-run` e correggi,
+solo dove sbaglia, con i campi `audio` e `tema` (schema.md, «Audio»; mestiere.md §10).
+
 **Controllo**: `python3 strumenti/immagini/genera.py campagne/<id> --dry-run` stampa i prompt composti
 senza caricare il modello (basta PyYAML); leggili. Nessun prompt mostra qualcosa che i giocatori non
 devono ancora sapere: le regex sono in italiano e i prompt in inglese, quindi qui decide la tua lettura.
-Non generare le immagini vere: lo fa Riccardo, ci vogliono minuti per immagine.
+Nessun tema tradisce chi mente. Le immagini e l'audio veri si fanno al passo 16, a campagna finita.
 
 ### 12. Validatore rigoroso e copioni
 Fai scrivere a un subagente, alla cieca, due copioni di azioni per la tua campagna in
@@ -278,6 +285,24 @@ corretto e cosa no, con il motivo.
   indizi, orologio e scelta, chi vede quale file.
 - `autovalutazione.md`: i voti R1–R12 del manuale §9 come progettata, con una riga di prova ciascuno;
   l'esito del validatore; gli avvisi giustificati; i tre rischi principali per un narratore piccolo e veloce.
+
+### 16. Immagini e audio: pronta da giocare
+```
+scripts/prepara.sh campagne/<id>
+```
+Valida in modo rigoroso (con errori si ferma), genera le immagini mancanti con la GPU locale (15–40
+minuti per una campagna intera), fa l'audio e stampa il rapporto: asset per tipo, ciò che manca, i pesi,
+e il comando esatto di `scripts/partita.sh`. È idempotente: rilanciarlo salta ciò che c'è già.
+- A batteria le immagini non partono: dillo a Riccardo, o rilancia con l'alimentatore. Non usare
+  `--anche-a-batteria` di tua iniziativa.
+- Se Riccardo sta giocando (server sulla porta 4610), chiedigli prima: la GPU rallenta il Mac.
+  `--senza-immagini` fa solo l'audio e riporta le immagini che mancano.
+- Uno strato d'audio che le fonti non hanno (per esempio una catena) resta fuori: il rapporto lo dice, e
+  il proiettore lo salta. La campagna è pronta lo stesso.
+
+**Controllo**: il rapporto dice «pronta da giocare» (esistono `immagini/manifest.json` e
+`audio/manifest.json`). Committa `campagne/<id>/immagini` e `campagne/<id>/audio`, e scrivi nel
+`README.md` della campagna ciò che manca ancora.
 
 ## Regole che non si discutono
 
@@ -316,8 +341,8 @@ Ognuna nasce da un errore vero, trovato in una prova, da un giudice cieco o da u
 
 ## Commit
 
-- **Quando**: dopo i passi 5, 8, 11 e 12, e alla fine.
-- **Cosa**: aggiungi solo `campagne/<id>` (ed `esperimenti/copioni/<id>`), con un messaggio in italiano
-  che spiega il perché.
+- **Quando**: dopo i passi 5, 8, 11, 12 e 15, e dopo il passo 16 per gli asset.
+- **Cosa**: aggiungi solo `campagne/<id>` (ed `esperimenti/copioni/<id>`, e i controlli dell'audio in
+  `esperimenti/audio/controlli_<id>.md`), con un messaggio in italiano che spiega il perché.
 - **Firma**: chiudi il messaggio con la riga di attribuzione indicata nella conversazione.
 - **Mai**: committare con errori del validatore senza dirlo nel messaggio.
