@@ -394,16 +394,25 @@ def _continuita(c: Campagna, e: Esito, stato: dict, fatti: list[dict], dopo: int
                 if nella_scheda != a:
                     e.errore("CONTINUITÀ.scheda", f"{nome}/png/{pid}.yaml", f"verso {pg} è {a} nello stato, {nella_scheda} nella scheda")
     _segreti_del_pacchetto(c, e, pac, d, schede, in_scena, fatti)
-    # Orologi: la sessione riparte da dove lo stato li lascia.
-    for o in pac["sessione"].get("orologi") or []:
-        if not isinstance(o, dict):
+    # Orologi: la sessione riparte da dove lo stato li lascia. Forma del server (campagna/pacchetti.ts):
+    # sessione.yaml → pieni_all_inizio: {id_orologio: segni}; un orologio senza voce riparte da quello
+    # della campagna, quindi anche quello deve tornare con lo stato.
+    pieni = pac["sessione"].get("pieni_all_inizio") or {}
+    for oid, o in sorted((stato.get("orologi") or {}).items()):
+        atteso = (o or {}).get("pieni")
+        if atteso is None:
             continue
-        atteso = ((stato.get("orologi") or {}).get(o.get("id")) or {}).get("pieni")
-        if atteso is not None and o.get("pieni_all_inizio") != atteso:
-            e.errore("CONTINUITÀ.orologio", f"{nome}/sessione.yaml", f"{o.get('id')} parte da {o.get('pieni_all_inizio')} segni, "
-                                                                      f"ma lo stato ne dice {atteso}")
-    # Promesse aperte: la sessione le riprende o le rimanda, per scritto.
-    citati = {x.get("id") if isinstance(x, dict) else x for x in pac["sessione"].get("fili") or []}
+        parte = pieni.get(oid) if isinstance(pieni, dict) and oid in pieni else (c.orologi.get(oid) or {}).get("pieni_all_inizio", 0)
+        if parte != atteso:
+            e.errore("CONTINUITÀ.orologio", f"{nome}/sessione.yaml", f"{oid} parte da {parte} segni, ma lo stato ne dice {atteso}: "
+                                                                      f"pieni_all_inizio: {{{oid}: {atteso}}}")
+    # Promesse aperte: la sessione le riprende o le rimanda, per scritto. Stanno in preparazione.fili, che
+    # non arriva al narratore (le altre chiavi di sessione.yaml si uniscono al contesto della campagna).
+    fili_pac = (pac["sessione"].get("preparazione") or {}).get("fili") or []
+    citati = {x.get("id") if isinstance(x, dict) else x for x in fili_pac}
+    for x in fili_pac:
+        if isinstance(x, dict) and x.get("come") not in ("ripreso", "rimandato"):
+            e.avviso("CONTINUITÀ.promessa", f"{nome}/sessione.yaml", f"filo {x.get('id')}: come è ripreso o rimandato, non {x.get('come')!r}")
     for pid, p in sorted(d.promesse.items()):
         if p.get("stato") == "aperta" and pid not in citati:
             e.avviso("CONTINUITÀ.promessa", f"{nome}/sessione.yaml", f"la promessa aperta {pid} ({p.get('cosa', '?')}) non è tra i "

@@ -596,12 +596,15 @@ def test_continuita_parola_segreta_di_un_fatto_gia_saputo(arco):
 
 
 def test_continuita_orologio_che_riparte_da_capo(arco):
-    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["orologi"][0].update(pieni_all_inizio=0))
+    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["pieni_all_inizio"].update(o_mercante=0))
+    assert "CONTINUITÀ.orologio" in stato_continuita(arco)[0]
+    # Senza voce l'orologio ripartirebbe da quello della campagna (0), non dai segni dello stato.
+    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d.pop("pieni_all_inizio"))
     assert "CONTINUITÀ.orologio" in stato_continuita(arco)[0]
 
 
 def test_continuita_promessa_dimenticata_e_oggetto_perso(arco):
-    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d.update(fili=[]))
+    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["preparazione"].update(fili=[]))
     modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_lanterna_trovata")["effetti"]["oggetti"]["ogg_lanterna"].update(
         nome="bancone", stato="distrutto"))
     errori_, avvisi_ = stato_continuita(arco)
