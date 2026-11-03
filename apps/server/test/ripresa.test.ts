@@ -186,5 +186,15 @@ describe('sessione ripresa dopo un riavvio a metà partita', () => {
     const ids = s4.trascrizione.map((v) => v.id);
     expect(new Set(ids).size).toBe(ids.length); // nessun id ripetuto
     expect(messaggi.at(-1)).toContain('Frasi corte.'); // la nota di regia c'è ancora
+
+    // «Nuova sessione» dal pannello: la sessione salvata si chiude e si riparte dall'apertura.
+    const nuova = attendi<StatoMaster>(master2, 'master:stato', (s) => s.tavolo.fase === 'finestra' && s.tavolo.turno === 1, 10_000);
+    expect(await emetti<Esito>((cb) => master2.emit('master:comando', { tipo: 'nuova_sessione' }, cb))).toEqual({ ok: true });
+    const n = await nuova;
+    expect(n.sessione!.id).not.toBe(prima.stato.sessione!.id);
+    expect(n.sessione!.ripresa).toBeNull();
+    expect(n.note).toEqual([]);
+    expect(n.tavolo.trascrizione[0]!.testo).toContain('La locanda è piena di fumo');
+    expect(b.s.sessioni.archivio!.sessione(prima.stato.sessione!.id)!.stato).toBe('chiusa');
   }, 30_000);
 });
