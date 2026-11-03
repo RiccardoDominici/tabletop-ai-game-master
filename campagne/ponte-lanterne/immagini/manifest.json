@@ -64,9 +64,10 @@
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
       "secondi": 386.7,
       "picco_gb": 5.14,
-      "kb": 634,
-      "rifilato_pct": 0.3,
-      "quando": "2026-11-02 22:26:51"
+      "kb": 628,
+      "rifilato_pct": 1.2,
+      "quando": "2026-11-02 22:26:51",
+      "rifilato_dal_jpeg": true
     },
     {
       "id": "luogo_scena_ponte_imbrunire",
@@ -84,9 +85,10 @@
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
       "secondi": 267.3,
       "picco_gb": 5.3,
-      "kb": 652,
-      "rifilato_pct": 0.5,
-      "quando": "2026-11-02 22:14:18"
+      "kb": 644,
+      "rifilato_pct": 1.2,
+      "quando": "2026-11-02 22:14:18",
+      "rifilato_dal_jpeg": true
     },
     {
       "id": "luogo_scena_terzo_tocco",

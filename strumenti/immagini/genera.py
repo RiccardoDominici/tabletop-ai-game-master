@@ -158,13 +158,13 @@ def rifila_esistenti(cartella: Path, scelte: list[Richiesta], man: Manifest) -> 
     from PIL import Image
 
     from motore import salva_jpeg
-    from rifila import rifila
+    from rifila import MINIMO, rifila
 
     for r in scelte:
         voce = man.voci.get(r.id)
         # Si salta solo ciò che è già stato rifilato davvero: uno 0 può voler dire «mai controllato»
         # (i ritratti, prima che si rifilassero anche loro), e ricontrollare un'immagine pulita non la tocca.
-        if r.alias_di or not voce or voce.get("rifilato_pct"):
+        if r.alias_di or not voce or (voce.get("rifilato_pct") or 0) >= MINIMO * 100:
             continue
         percorso = man.cartella / voce["file"]
         if not percorso.exists():

@@ -32,6 +32,10 @@ CHIARO = 225        # tutti i canali sopra questo valore…
 SATURAZIONE = 22    # …e poca differenza tra i canali: carta
 PERCENTILE = 99     # profondità dell'orlo su un lato: il 99° percentile delle corse dal bordo
 MASSIMO = 0.05      # mai più del 5% per lato: oltre, il margine è largo e l'immagine va rigenerata
+# Sempre almeno l'1,2% per lato (23 px a 1920): una carta calda appena sotto la soglia (min 215-224,
+# casa del sale di ponte-lanterne) sfugge alla misura, e abbassare la soglia fa scambiare per carta la
+# neve e i muri illuminati. Un ingrandimento del 2,4% non si vede, accanto all'8% del Ken Burns.
+MINIMO = 0.012
 
 
 def _corse_dal_bordo(carta: np.ndarray, cap: int) -> np.ndarray:
@@ -54,7 +58,7 @@ def margini(img: Image.Image) -> dict[str, int]:
     return {lato: int(np.percentile(v, PERCENTILE)) for lato, v in misure.items()}
 
 
-def rifila(img: Image.Image, massimo: float = MASSIMO) -> tuple[Image.Image, float]:
+def rifila(img: Image.Image, massimo: float = MASSIMO, minimo: float = MINIMO) -> tuple[Image.Image, float]:
     """Ritaglia al centro, con le stesse proporzioni, quanto basta a togliere l'orlo di carta.
 
     Ritorna (immagine, frazione tolta per lato). Con frazione 0 l'immagine è quella di partenza.
@@ -63,7 +67,7 @@ def rifila(img: Image.Image, massimo: float = MASSIMO) -> tuple[Image.Image, flo
     w, h = img.size
     # Un ritaglio centrato con le stesse proporzioni toglie la stessa FRAZIONE su ogni lato:
     # deve bastare per il lato peggiore, in orizzontale e in verticale.
-    serve = max(m["sx"] / w, m["dx"] / w, m["su"] / h, m["giu"] / h)
+    serve = max(m["sx"] / w, m["dx"] / w, m["su"] / h, m["giu"] / h, minimo)
     if serve == 0:
         return img, 0.0
     if serve > massimo:
