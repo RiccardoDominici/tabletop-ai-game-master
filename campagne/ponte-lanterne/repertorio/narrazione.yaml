@@ -36,6 +36,7 @@ battute:
   - id: nar_piena_4
     chi: narratore
     tipo: segno_orologio
+    audio: {effetto: campana}   # la campana batte il secondo tocco
     quando: "è il momento del quarto segno della piena"
     temi: [orologio]
     richiede: {orologio: {id: o_piena, min: 3, max: 3}}
@@ -72,6 +73,7 @@ battute:
   - id: nar_piena_8
     chi: narratore
     tipo: segno_orologio
+    audio: {effetto: campana}   # la campana batte il terzo tocco
     quando: "è il momento dell'ultimo segno della piena"
     temi: [orologio]
     richiede: {orologio: {id: o_piena, min: 7, max: 7}}
@@ -83,6 +85,7 @@ battute:
   - id: nar_rampa_1
     chi: narratore
     tipo: segno_orologio
+    audio: {umore: inseguimento}   # musica.transizione: verso inseguimento con l'acqua sulla rampa
     scena: scena_terzo_tocco
     quando: "è il momento del primo segno della rampa"
     temi: [orologio]
@@ -689,6 +692,7 @@ battute:
   - id: fin_notte_case_lunghe
     chi: narratore
     tipo: finale
+    audio: {umore: lutto}   # musica.transizione: lutto se qualcuno resta di là
     scena: scena_terzo_tocco
     quando: "catena chiusa senza patti, e le famiglie delle Case Lunghe ancora di là"
     temi: [orologio]
@@ -702,6 +706,7 @@ battute:
   - id: fin_notte_ricovero
     chi: narratore
     tipo: finale
+    audio: {umore: lutto}   # musica.transizione: lutto se qualcuno resta di là
     scena: scena_terzo_tocco
     quando: "la catena è chiusa senza patti, e i vecchi del Ricovero sono ancora di là"
     temi: [orologio]
@@ -741,6 +746,7 @@ battute:
   - id: fin_barca_tardi
     chi: narratore
     tipo: finale
+    audio: {umore: lutto}   # musica.transizione: lutto se qualcuno resta di là
     scena: scena_terzo_tocco
     quando: "a ponte aperto, il pilone geme e la barca non è ancora alla rampa"
     temi: [orologio]

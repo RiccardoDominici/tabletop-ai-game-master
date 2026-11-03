@@ -238,6 +238,7 @@ battute:
   - id: nar_segno_3
     chi: narratore
     tipo: segno_orologio
+    audio: {effetto: campana}   # la campana suona un rintocco
     quando: "è il momento del terzo segno del paese"
     temi: [orologio]
     richiede:
@@ -278,6 +279,7 @@ battute:
   - id: nar_segno_6
     chi: narratore
     tipo: segno_orologio
+    audio: {effetto: campana, umore: rito_sacro}   # tre rintocchi; musica.transizione: verso rito_sacro al sesto segno
     quando: "è il momento dell'ultimo segno del paese"
     temi: [orologio]
     richiede:
