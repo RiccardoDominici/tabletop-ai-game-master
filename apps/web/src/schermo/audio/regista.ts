@@ -61,6 +61,8 @@ export interface StatoRegista {
   temi: number;
   /** Effetti suonati (ultimo id in coda). */
   effetti: string[];
+  /** Effetti legati a una frase: ritardo rispetto all'inizio della frase (s). */
+  ritardiEffetti: Array<{ id: string; ritardoS: number }>;
   /** Ultimi temi programmati: di quanto precedono la battuta (s; negativo = partiti dopo). */
   anticipiTemi: Array<{ png: string; id: string; anticipoS: number }>;
   sottoVoce: boolean;
@@ -97,6 +99,8 @@ export class RegistaAudio {
   private cambiMusica = 0;
   private temiPartiti = 0;
   private readonly effettiSuonati: string[] = [];
+  /** Effetti legati a una frase: di quanto sono partiti dopo l'inizio voluto (s; 0 = in tempo). */
+  private readonly ritardiEffetti: Array<{ id: string; ritardoS: number }> = [];
   private readonly anticipiTemi: Array<{ png: string; id: string; anticipoS: number }> = [];
 
   constructor(private readonly o: OpzioniRegista) {
@@ -106,6 +110,8 @@ export class RegistaAudio {
   /** Catalogo del server (GET /api/audio): senza, nulla suona; arrivato, si applica la scena. */
   impostaCatalogo(c: CatalogoAudioPubblico): void {
     this.catalogo = c;
+    // Gli effetti sono pochi e brevi: i loro byte si scaricano subito (decodifica all'annuncio).
+    this.o.banca.precarica(Object.values(c.tracce).filter((t) => t.tipo === 'effetto').map((t) => t.url));
     log.info('Catalogo audio', { tracce: Object.keys(c.tracce).length, crediti: c.crediti.length });
     this.chiaveApplicata = '';
     this.applica();
@@ -156,18 +162,35 @@ export class RegistaAudio {
     this.tema = null;
   }
 
-  /** Un effetto singolo (sfx_<tag>) sul bus effetti. */
-  async effetto(id: string): Promise<boolean> {
+  /**
+   * Un effetto singolo (sfx_<tag>) sul bus effetti: subito, oppure a `quando` sull'orologio del
+   * contesto (l'inizio della frase a cui il Motore l'ha legato).
+   */
+  async effetto(id: string, quando?: number): Promise<boolean> {
     const traccia = this.catalogo?.tracce[id];
     if (!traccia) return false;
     const buffer = await this.o.banca.prendi(traccia.url);
     if (!buffer) return false;
+    const ora = this.o.ctx.currentTime;
+    const inizio = Math.max(ora + 0.02, quando ?? 0);
     const t = new TracciaInRiproduzione(this.o.ctx, { ...traccia, loop: false }, buffer, this.o.mixer.bus.effetti, this.o.timer);
-    t.avvia(this.o.ctx.currentTime + 0.02, 0);
+    t.avvia(inizio, 0);
     this.effettiSuonati.push(id);
     if (this.effettiSuonati.length > 20) this.effettiSuonati.shift();
-    this.o.timer.imposta(() => t.ferma(0.1, () => this.o.banca.rilascia(traccia.url)), (buffer.duration + 0.1) * 1000);
+    if (quando !== undefined) this.ritardiEffetti.push({ id, ritardoS: Number((inizio - quando).toFixed(3)) });
+    if (this.ritardiEffetti.length > 10) this.ritardiEffetti.shift();
+    this.o.timer.imposta(() => t.ferma(0.1, () => this.o.banca.rilascia(traccia.url)), (inizio - ora + buffer.duration + 0.1) * 1000);
+    log.info('Effetto', { id, ritardoS: quando === undefined ? null : Number((inizio - quando).toFixed(3)) });
     return true;
+  }
+
+  /** Decodifica in anticipo un effetto (all'annuncio della sua frase), così parte in tempo. */
+  preparaEffetto(id: string): void {
+    const url = this.url(id);
+    if (!url) return;
+    void this.o.banca.prendi(url).then((b) => {
+      if (b) this.o.banca.rilascia(url);
+    });
   }
 
   stato(): StatoRegista {
@@ -180,6 +203,7 @@ export class RegistaAudio {
       temiSuonati: this.memoriaTemi.elenco,
       temi: this.temiPartiti,
       effetti: [...this.effettiSuonati],
+      ritardiEffetti: [...this.ritardiEffetti],
       anticipiTemi: [...this.anticipiTemi],
       sottoVoce: this.piano.sottoVoce,
       abbassamenti: this.piano.abbassamenti,

@@ -87,6 +87,8 @@ export function avviaAudioScena(ctx: AudioContext, instradaVoce: (nodo: AudioNod
 export function voceProgrammata(inizio: number, fine: number, frase: AudioFrase | null): void {
   if (!regista) return;
   if (frase) regista.fraseProgrammata(frase.parlante, inizio);
+  // Effetto legato alla frase dal Motore: parte con lei, sull'orologio audio.
+  if (frase?.effetto) void regista.effetto(frase.effetto, inizio);
   regista.voceProgrammata(inizio, fine);
 }
 
@@ -97,10 +99,26 @@ export function voceProgrammata(inizio: number, fine: number, frase: AudioFrase 
 export function fraseAnnunciata(frase: AudioFrase, codaS: number): void {
   if (!regista || !mixer) return;
   regista.fraseAnnunciata(frase.parlante, (contestoAudio?.currentTime ?? 0) + codaS);
+  if (frase.effetto) regista.preparaEffetto(frase.effetto);
+}
+
+/** Effetti arrivati con `audio:fine_turno`: suonano quando la voce del turno è finita davvero. */
+const effettiFineTurno = new Map<number, string[]>();
+
+export function effettiDopoIlTurno(turno: number, effetti: readonly string[] | undefined): void {
+  if (effetti?.length) effettiFineTurno.set(turno, [...effetti]);
+}
+
+/** La voce del turno è uscita tutta dalle casse: gli effetti in attesa partono adesso. */
+export function turnoSuonato(turno: number): void {
+  const effetti = effettiFineTurno.get(turno);
+  effettiFineTurno.delete(turno);
+  for (const id of effetti ?? []) void regista?.effetto(id);
 }
 
 /** `audio:interrompi`: la voce tace, musica e ambienti risalgono. */
 export function interrompiAudioScena(): void {
+  effettiFineTurno.clear();
   regista?.interrompi();
 }
 

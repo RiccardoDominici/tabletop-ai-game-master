@@ -299,6 +299,23 @@ describe('RegistaAudio: stesso file sotto più nomi', () => {
   });
 });
 
+describe('RegistaAudio: effetti legati a una frase', () => {
+  it('l’effetto parte all’inizio della frase sull’orologio audio; se arriva tardi, subito (e si misura)', async () => {
+    const { ctx, banca, regista, avanza } = prepara();
+    regista.preparaEffetto('sfx_campana'); // all'annuncio della frase: byte e decodifica pronti
+    await avanza(0.01);
+    expect(banca.statistiche().errori).toBe(0);
+    expect(await regista.effetto('sfx_campana', 5.25)).toBe(true);
+    const s = ctx.sorgenti.at(-1)!;
+    expect([s.buffer?.duration, s.avviataA, s.loop]).toEqual([2, 5.25, false]);
+    expect(regista.stato().ritardiEffetti).toEqual([{ id: 'sfx_campana', ritardoS: 0 }]);
+    await avanza(6);
+    expect(await regista.effetto('sfx_campana', 3)).toBe(true); // frase già cominciata: subito
+    expect(ctx.sorgenti.at(-1)!.avviataA).toBeCloseTo(ctx.currentTime + 0.02, 5);
+    expect(regista.stato().ritardiEffetti[1]?.ritardoS).toBeGreaterThan(3);
+  });
+});
+
 describe('RegistaAudio: effetti', () => {
   it('un effetto del catalogo suona una volta sul bus effetti', async () => {
     const { ctx, regista } = prepara();

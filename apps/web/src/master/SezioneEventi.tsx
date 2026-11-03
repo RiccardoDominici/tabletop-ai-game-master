@@ -35,6 +35,11 @@ export function SezioneEventi({ eventi, className }: { eventi: EventoMaster[]; c
                 {oraBreve(e.ts)}
               </time>
               <span className="shrink-0 font-semibold">{etichettaComando(e.comando)}</span>
+              {e.automatico && (
+                <span data-testid="master-evento-automatico" title="Deciso dal Motore (narratore o battuta), non dal pannello">
+                  <Chip tono="lago">auto</Chip>
+                </span>
+              )}
               <Chip tono={e.ok ? 'muschio' : 'sangue'}>{e.ok ? 'ok' : 'rifiutato'}</Chip>
               <span className={clsx('min-w-0 flex-1 break-words', e.ok ? 'text-pergamena-2' : 'text-sangue')}>{e.dettagli}</span>
             </li>

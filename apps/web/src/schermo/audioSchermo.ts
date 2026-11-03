@@ -13,7 +13,7 @@ import { creaLog } from '../lib/log';
 import { prendiSocket } from '../lib/socket';
 import { useSchermo } from '../store/schermo';
 import { debugSchermo } from './debug';
-import { avviaAudioScena, fraseAnnunciata, interrompiAudioScena, voceProgrammata } from './audio/ponte';
+import { avviaAudioScena, effettiDopoIlTurno, fraseAnnunciata, interrompiAudioScena, turnoSuonato, voceProgrammata } from './audio/ponte';
 
 const log = creaLog('schermo-audio');
 
@@ -36,6 +36,7 @@ const lettore = new LettorePcm({
 
   fineTurno(turno, ritardoMs, buchi) {
     debugSchermo.turniFiniti.push(turno);
+    turnoSuonato(turno);
     const s = prendiSocket();
     const dati = { turno, ritardo_ms: Math.round(ritardoMs), ...buchi };
     if (s.connected) s.emit('schermo:audio_finito', dati);
@@ -98,7 +99,10 @@ const suFrase = (frase: AudioFrase) => {
 };
 const suPezzo = (pezzo: AudioPezzo) => lettore.pezzo(pezzo);
 const suFineFrase = (fine: AudioFineFrase) => lettore.fineFrase(fine);
-const suFineTurno = (fine: AudioFineTurno) => lettore.fineTurno(fine);
+const suFineTurno = (fine: AudioFineTurno) => {
+  effettiDopoIlTurno(fine.turno, fine.effetti);
+  lettore.fineTurno(fine);
+};
 const suInterrompi = () => {
   lettore.interrompi();
   interrompiAudioScena();
