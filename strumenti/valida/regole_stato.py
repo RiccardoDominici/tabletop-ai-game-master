@@ -398,9 +398,15 @@ def _continuita(c: Campagna, e: Esito, stato: dict, fatti: list[dict], dopo: int
     # sessione.yaml → pieni_all_inizio: {id_orologio: segni}; un orologio senza voce riparte da quello
     # della campagna, quindi anche quello deve tornare con lo stato.
     pieni = pac["sessione"].get("pieni_all_inizio") or {}
+    # Solo gli orologi di campagna.yaml → orologi: quelli che il Motore gioca e che pieni_all_inizio può
+    # citare (campagna/pacchetti.ts); gli orologi_extra dei fronti avanzano solo nello stato.
+    del_motore = {o.get("id") for o in c.campagna.get("orologi") or [] if isinstance(o, dict)}
+    for oid in sorted(set(pieni) - del_motore) if isinstance(pieni, dict) else []:
+        e.errore("CONTINUITÀ.orologio", f"{nome}/sessione.yaml", f"pieni_all_inizio cita {oid}, che non è tra gli orologi di "
+                                                                  "campagna.yaml: il server rifiuterebbe il pacchetto")
     for oid, o in sorted((stato.get("orologi") or {}).items()):
         atteso = (o or {}).get("pieni")
-        if atteso is None:
+        if atteso is None or oid not in del_motore:
             continue
         parte = pieni.get(oid) if isinstance(pieni, dict) and oid in pieni else (c.orologi.get(oid) or {}).get("pieni_all_inizio", 0)
         if parte != atteso:

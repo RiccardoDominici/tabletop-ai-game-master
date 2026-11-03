@@ -146,7 +146,9 @@ def pacchetto(cartella: Path, n: int) -> int:
     _scrivi(dest / "sessione.yaml", {
         "riassunto_iniziale": "",
         "scene": [],
-        "pieni_all_inizio": {oid: (o or {}).get("pieni") for oid, o in sorted((stato.get("orologi") or {}).items())},
+        # Solo gli orologi che il Motore gioca (campagna.yaml → orologi); quelli dei fronti restano nello stato.
+        "pieni_all_inizio": {oid: (o or {}).get("pieni") for oid, o in sorted((stato.get("orologi") or {}).items())
+                             if oid in {x.get("id") for x in c.campagna.get("orologi") or [] if isinstance(x, dict)}},
         "preparazione": {"fili": fili},
     }, f"# Pacchetto della sessione {n + 1}: scheletro di strumenti/tra_sessioni.py. Da scrivere: riassunto_iniziale\n"
        "# (dai fatti dello stato), scene, repertorio; per ogni filo, come: ripreso o rimandato.\n")

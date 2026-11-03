@@ -43,7 +43,7 @@ def test_scheletro_del_pacchetto_dallo_stato(giocata, capsys):
     assert T.pacchetto(giocata, 1) == 0
     dest = giocata / "sessioni" / "02"
     sessione = yaml.safe_load((dest / "sessione.yaml").read_text())
-    assert sessione["pieni_all_inizio"] == {"o_mercante": 1, "o_processione": 4}
+    assert sessione["pieni_all_inizio"] == {"o_processione": 4}      # o_mercante è dei fronti: resta nello stato
     assert {f["id"] for f in sessione["preparazione"]["fili"]} == {"pr_irma_tetto", "filo_mercante"}
     bruno = yaml.safe_load((dest / "png" / "png_bruno.yaml").read_text())
     assert "f_impronte_cera" in bruno["sa"] and bruno["atteggiamento_pg"]["pg_lia"]["stato"] == "amichevole"

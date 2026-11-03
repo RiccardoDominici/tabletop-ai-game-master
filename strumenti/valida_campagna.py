@@ -5,6 +5,7 @@ e il documento del repertorio (docs/repertorio.md).
     python3 -I strumenti/valida_campagna.py campagne/<id> --rigoroso        regole per le campagne nuove
     python3 -I strumenti/valida_campagna.py campagne/<id> --copioni esperimenti/copioni
     python3 -I strumenti/valida_campagna.py campagne/<id> --solo STILE,CANONE   solo alcune classi (controlli parziali)
+    python3 -I strumenti/valida_campagna.py campagne/<id> --sessione 2      il pacchetto sessioni/02/, unito alla campagna
     python3 -I strumenti/valida_campagna.py campagne/<id> --classi          elenco delle classi di errore
 
 Uscita: 0 se non ci sono errori (gli avvisi non contano), 1 se ce n'è almeno uno, 2 se gli argomenti
@@ -32,6 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))  # con -I la cartella d
 
 from valida import CLASSI, valida  # noqa: E402
 from valida import copioni as prova_copioni  # noqa: E402
+from valida.pacchetto import valida_pacchetto  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -44,6 +46,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--senza-node", action="store_true",
                     help="non compilare il contesto vero del modo B (strumenti/contesto_modo_b.ts): resta un avviso")
     ap.add_argument("--solo", help="classi o codici da mostrare, separati da virgole (es. STILE,CANONE,SCENA.voci)")
+    ap.add_argument("--sessione", type=int, help="valida il pacchetto sessioni/<nn>/ unito alla campagna, più STATO e CONTINUITÀ")
     ap.add_argument("--classi", action="store_true", help="elenca le classi di errore ed esce")
     a = ap.parse_args(argv)
     if a.classi:
@@ -60,7 +63,14 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     # Senza le regole del modo B, se --solo non le chiede: risparmia la compilazione con node.
     serve_b = not solo or any(x.split(".")[0] == "SEGRETI" for x in solo)
-    esito, campagna = valida(Path(a.cartella), rigoroso=a.rigoroso, voci=a.voci, contesto_b=serve_b and not a.senza_node)
+    if a.sessione:
+        try:
+            esito, campagna = valida_pacchetto(Path(a.cartella), a.sessione, a.rigoroso, a.voci, serve_b and not a.senza_node)
+        except RuntimeError as err:
+            print(f"pacchetto della sessione {a.sessione} non validabile: {err}", file=sys.stderr)
+            return 1
+    else:
+        esito, campagna = valida(Path(a.cartella), rigoroso=a.rigoroso, voci=a.voci, contesto_b=serve_b and not a.senza_node)
     if solo:
         tieni = lambda v: any(v.codice == x or v.codice.split(".")[0] == x for x in solo)  # noqa: E731
         esito.voci = [v for v in esito.voci if tieni(v)]

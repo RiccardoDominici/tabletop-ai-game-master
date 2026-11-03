@@ -495,6 +495,23 @@ def _fatto(d: dict, fid: str) -> dict:
     return next(f for f in d["fatti"] if f["id"] == fid)
 
 
+@serve_node
+def test_validare_un_pacchetto_con_la_vista_unita_del_server(arco):
+    # --sessione 2: la vista unita viene da strumenti/unisci_pacchetto.ts; STATO e CONTINUITÀ dalla campagna vera.
+    scena = leggi(arco, "scena.yaml")
+    scena.update(id="scena_due", png_presenti=["png_irma", "png_bruno"])
+    scrivi(arco, "sessioni/02/scene/scena_due.yaml", scena)
+    from valida.pacchetto import valida_pacchetto
+    esito, c = valida_pacchetto(arco, 2, rigoroso=False, voci=VOCI if VOCI.exists() else None, contesto_b_attivo=False)
+    assert [s_.get("id") for _, s_ in c.scene] == ["scena_due"] and [b["id"] for b in c.battute] == ["nar_ritorno"]
+    assert "LIVELLO.non_supportato" in {v.codice for v in esito.avvisi}          # in prova: avviso, non errore
+    assert not {v.codice for v in esito.errori if v.codice.split(".")[0] in ("STATO", "CONTINUITÀ")}
+    # Un morto in scena nel pacchetto lo vede CONTINUITÀ, sulla campagna vera.
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_bruno_parla")["effetti"]["png"]["png_bruno"].update(vivo=False))
+    esito, _ = valida_pacchetto(arco, 2, rigoroso=False, voci=VOCI if VOCI.exists() else None, contesto_b_attivo=False)
+    assert "CONTINUITÀ.morto" in esito.codici()
+
+
 def test_stato_e_continuita_dell_arco_valido(arco):
     assert stato_continuita(arco) == (set(), set())
 
@@ -596,7 +613,10 @@ def test_continuita_parola_segreta_di_un_fatto_gia_saputo(arco):
 
 
 def test_continuita_orologio_che_riparte_da_capo(arco):
-    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["pieni_all_inizio"].update(o_mercante=0))
+    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["pieni_all_inizio"].update(o_processione=0))
+    assert "CONTINUITÀ.orologio" in stato_continuita(arco)[0]
+    # Un orologio dei fronti (orologi_extra) non va in pieni_all_inizio: il server rifiuterebbe il pacchetto.
+    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["pieni_all_inizio"].update(o_processione=4, o_mercante=1))
     assert "CONTINUITÀ.orologio" in stato_continuita(arco)[0]
     # Senza voce l'orologio ripartirebbe da quello della campagna (0), non dai segni dello stato.
     modifica(arco, "sessioni/02/sessione.yaml", lambda d: d.pop("pieni_all_inizio"))
