@@ -73,7 +73,9 @@ describe('campagna a più sessioni', () => {
     expect(c.campagnaNarratore['titolo']).toBeUndefined();
     expect(c.cartellaRepertorio).toBe(path.join(ARCO, 'sessioni', '01', 'repertorio'));
     expect(caricaRepertorio(c).battute.map((b) => b.id)).toContain('oste_confessa');
-    expect(caricaParoleSegreteCampagna(c).map((p) => p.parola).sort()).toEqual(['ANNACQUATO_SEGRETO', 'IL_CATTIVO_E_IL_LOCANDIERE']);
+    // Il pacchetto ha il suo parole_segrete.yaml: SOSTITUISCE quello della campagna (non si unisce).
+    expect(c.cartelleSegreti).toEqual([path.join(ARCO, 'sessioni', '01', 'repertorio')]);
+    expect(caricaParoleSegreteCampagna(c).map((p) => p.parola)).toEqual(['ANNACQUATO_SEGRETO']);
     expect(c.avvisi).toEqual([]);
   });
 
@@ -127,14 +129,24 @@ describe('campagna a più sessioni', () => {
       fs.writeFileSync(path.join(d, 'sessioni', '02', 'sessione.yaml'), fs.readFileSync(path.join(d, 'sessioni', '02', 'sessione.yaml'), 'utf8').replace('{o_temporale: 1}', '{o_nessuno: 1}')), /pieni_all_inizio cita l'orologio «o_nessuno»/],
     ['scene cita una scena senza file', (d: string) =>
       fs.writeFileSync(path.join(d, 'sessioni', '02', 'sessione.yaml'), fs.readFileSync(path.join(d, 'sessioni', '02', 'sessione.yaml'), 'utf8').replace('scena_mulino]', 'scena_mulino, scena_fantasma]')), /scena_fantasma/],
-    ['un PNG della sessione con l\'id di uno ricorrente', (d: string) =>
-      fs.copyFileSync(path.join(d, 'png', 'png_oste.yaml'), path.join(d, 'sessioni', '02', 'png', 'png_oste.yaml')), /il PNG c'è già in png\/ della campagna/],
     ['due cartelle con lo stesso numero', (d: string) => fs.cpSync(path.join(d, 'sessioni', '02'), path.join(d, 'sessioni', '002'), { recursive: true }), /stesso numero di sessione/],
   ])('errore: %s', (_nome, guasta, messaggio) => {
     const d = copia();
     guasta(d);
     expect(() => caricaCampagna(d, undefined, { pacchetto: 2 })).toThrow(ErroreCampagna);
     expect(() => caricaCampagna(d, undefined, { pacchetto: 2 })).toThrow(messaggio);
+  });
+
+  it('una scheda del pacchetto con l\'id di un PNG ricorrente lo sostituisce intera, solo in quella sessione', () => {
+    const d = copia();
+    scrivi(path.join(d, 'sessioni', '02', 'png', 'png_oste.yaml'), 'id: png_oste\nnome: "Oste Bruno, bagnato"\nsa: [f_pioggia, f_oste_ladro, f_corda_tagliata]\nvoce:\n  tts: {voce_id: vincent}\n');
+    const c2 = caricaCampagna(d, undefined, { pacchetto: 2 });
+    const oste = c2.png.find((p) => p.id === 'png_oste')!;
+    expect(c2.png.map((p) => p.id)).toEqual(['png_oste', 'png_barcaiolo']); // stesso posto, niente doppioni
+    expect(oste.nome).toBe('Oste Bruno, bagnato');
+    expect(oste.dati['sa']).toEqual(['f_pioggia', 'f_oste_ladro', 'f_corda_tagliata']);
+    expect(oste.dati['pronuncia']).toBeUndefined(); // scheda intera, non unita campo per campo
+    expect(caricaCampagna(d, undefined, { pacchetto: 1 }).png.find((p) => p.id === 'png_oste')!.nome).toBe('Oste Bruno');
   });
 
   it('errore: una sessione che non c\'è', () => {

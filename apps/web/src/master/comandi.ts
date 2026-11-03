@@ -26,6 +26,7 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   nuova_sessione: 'sessione',
   fine_sessione: 'sessione',
   prossima_sessione: 'sessione',
+  dispositivo: 'sessione',
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
@@ -46,6 +47,7 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = {
   nuova_sessione: 'Nuova sessione',
   fine_sessione: 'Fine sessione',
   prossima_sessione: 'Prossima sessione',
+  dispositivo: 'PG di un telefono',
 };
 
 /**

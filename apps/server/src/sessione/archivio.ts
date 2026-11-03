@@ -142,6 +142,7 @@ export class ArchivioSessioni {
       try {
         const d = JSON.parse(r.dati) as { dispositivo?: unknown; id_pg?: unknown };
         if (typeof d.dispositivo === 'string' && typeof d.id_pg === 'string') out.set(d.dispositivo, d.id_pg);
+        else if (typeof d.dispositivo === 'string' && d.id_pg === null) out.delete(d.dispositivo); // dimenticato dal master
       } catch {
         // riga illeggibile: la si salta (come in eventi())
       }

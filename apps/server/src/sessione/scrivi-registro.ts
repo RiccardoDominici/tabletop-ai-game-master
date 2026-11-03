@@ -19,7 +19,7 @@ export const FILE_REGISTRO = 'registro.yaml';
 const INTESTAZIONE_REGISTRO = [
   '# Registro della sessione: estratto dall’archivio (sessioni.sqlite) dal server, senza modelli.',
   '# Ogni voce porta il turno da cui viene. Non si modifica a mano: si rigenera con scripts/registro.sh.',
-  '# Contiene le azioni PRIVATE dei PG: è materiale del master, non dei giocatori.',
+  '# Contiene le azioni PRIVATE dei PG: solo per il master e il Preparatore, mai per i giocatori.',
 ].join('\n');
 
 const INTESTAZIONE_TRASCRIZIONE = [

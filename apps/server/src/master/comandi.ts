@@ -48,6 +48,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'effetto',
   'fine_sessione',
   'prossima_sessione',
+  'dispositivo',
 ]);
 
 /** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */
@@ -212,6 +213,15 @@ export class ControlliMaster {
         const e = this.o.ciclo.prossimaSessione();
         if (!e.ok) return rifiuto(e.errore);
         return { esito: { ok: true }, dettagli: e.dettagli, dati: e.registro ? { registro: e.registro.registro, sessione: e.registro.sessione } : {} };
+      }
+      case 'dispositivo': {
+        const d = typeof c.dispositivo === 'string' && /^[A-Za-z0-9_-]{8,64}$/.test(c.dispositivo) ? c.dispositivo : null;
+        const pg = c.id_pg === null ? null : typeof c.id_pg === 'string' && ID_VALIDO.test(c.id_pg) ? c.id_pg : undefined;
+        if (!d || pg === undefined) return rifiuto('Telefono o personaggio non validi.');
+        const prima = regia.dispositiviRicordati.find((x) => x.dispositivo === d)?.id_pg ?? null;
+        const esito = regia.assegnaDispositivo(d, pg);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: `telefono ${d.slice(0, 6)}…: ${prima ?? 'nessuno'} → ${pg ?? 'dimenticato'}`, dati: { da: prima, a: pg } };
       }
       case 'nuova_sessione': {
         const prima = regia.infoRegistro.sessione;

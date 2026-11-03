@@ -59,7 +59,11 @@ export function statoMaster(f: FonteVistaMaster): StatoMaster {
     limiti_note: { max: NOTE_REGIA_MAX, turni_max: NOTE_REGIA_TURNI_MAX },
     repertorio: s ? repertorioMaster(s, regia.turnoCorrente) : null,
     eventi: [...f.eventi],
-    sessione: { ...sessioneMaster(regia), ...(f.ciclo ? f.ciclo.vista() : {}) },
+    sessione: {
+      ...sessioneMaster(regia),
+      ...(f.ciclo ? f.ciclo.vista() : {}),
+      telefoni: regia.dispositiviRicordati.map((t) => ({ ...t, nome: campagna.pg.find((p) => p.id === t.id_pg)?.nome ?? t.id_pg })),
+    },
     ...(f.audio ? { audio: audioMaster(tavolo.scena.audio, f.audio) } : {}),
   };
 }

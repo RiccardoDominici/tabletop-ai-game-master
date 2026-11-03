@@ -8,7 +8,8 @@
  * - `trascrizione_turno` {turno, voci}: le voci pubbliche di un turno, scritte quando il turno è chiuso
  *                        (nella stessa transazione della fotografia: tutto o niente);
  * - `tavolo`             StatoTavoloSalvato: azioni dei giocatori e finestra, a ogni cambiamento;
- * - `dispositivo`        {dispositivo, id_pg}: il telefono di un giocatore e il suo PG.
+ * - `dispositivo`        {dispositivo, id_pg}: il telefono di un giocatore e il suo PG (id_pg null:
+ *                        il master l'ha dimenticato dal pannello).
  *
  * La ricostruzione è un fold puro (ricostruisci): l'ultima fotografia, l'ultima versione di ogni
  * turno della trascrizione, l'ultimo stato del tavolo, l'ultimo PG di ogni dispositivo.
@@ -103,6 +104,7 @@ export function ricostruisci(sessione: string, eventi: readonly EventoRegistro[]
         break;
       case 'dispositivo':
         if (typeof d['dispositivo'] === 'string' && typeof d['id_pg'] === 'string') dispositivi.set(d['dispositivo'], d['id_pg']);
+        else if (typeof d['dispositivo'] === 'string' && d['id_pg'] === null) dispositivi.delete(d['dispositivo']);
         break;
       default:
         break; // inizio e tipi futuri: niente da applicare

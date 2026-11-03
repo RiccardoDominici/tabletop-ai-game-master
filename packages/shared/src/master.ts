@@ -202,6 +202,8 @@ export interface SessioneMaster {
   registro?: { sessione: string; file: string; turni: number } | null;
   /** «Fine sessione» è possibile adesso (c'è una sessione in corso). */
   fine_possibile?: boolean;
+  /** Telefoni ricordati (token del dispositivo, abbreviato nel pannello) e il loro PG. */
+  telefoni?: Array<{ dispositivo: string; id_pg: string; nome: string; collegato: boolean }>;
 }
 
 export interface PacchettiMaster {
@@ -247,7 +249,9 @@ export type ComandoMaster =
   /** Fine sessione: il gioco si ferma, la sessione si chiude e il server scrive il registro (registro.yaml). */
   | { tipo: 'fine_sessione' }
   /** Campagna a pacchetti: (fine sessione se serve, poi) si passa al pacchetto dopo, dal suo riassunto iniziale. */
-  | { tipo: 'prossima_sessione' };
+  | { tipo: 'prossima_sessione' }
+  /** Cambia (o dimentica, con null) il PG ricordato di un telefono: vale dal suo prossimo collegamento. */
+  | { tipo: 'dispositivo'; dispositivo: string; id_pg: string | null };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

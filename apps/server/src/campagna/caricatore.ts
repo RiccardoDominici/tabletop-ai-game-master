@@ -144,11 +144,16 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
   }
 
   // --- PNG: quelli ricorrenti (png/ della campagna), più quelli della sola sessione (png/ del pacchetto).
+  // Una scheda del pacchetto con l'id di una ricorrente la SOSTITUISCE intera per questa sessione
+  // (un PNG che ha imparato o è cambiato qualcosa: docs/strati.md, «Regole di unione»).
   const png = caricaPng(path.join(cartella, 'png'), 'png', avvisa);
   if (scelto) {
     for (const p of caricaPng(path.join(scelto.cartella, 'png'), `${relPacchetto}/png`, avvisa)) {
-      if (png.some((x) => x.id === p.id)) throw new ErroreCampagna(`${relPacchetto}/png/${p.id}.yaml: il PNG c'è già in png/ della campagna`);
-      png.push(p);
+      const i = png.findIndex((x) => x.id === p.id);
+      if (i >= 0) {
+        png[i] = p;
+        log?.info({ campagna: cartella, png: p.id, pacchetto: scelto.etichetta }, 'campagna: scheda del PNG sostituita da quella del pacchetto');
+      } else png.push(p);
     }
   }
   const voci = png.map((p) => p.voce_id).filter((v) => v !== ID_NARRATORE);
@@ -206,7 +211,9 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
     avvisi,
     pacchetto,
     cartellaRepertorio,
-    cartelleSegreti: scelto ? [repertorioCampagna, cartellaRepertorio] : [repertorioCampagna],
+    // Parole segrete: quelle del pacchetto SOSTITUISCONO quelle della campagna (ciò che i PG hanno
+    // scoperto smette di essere segreto); senza file nel pacchetto valgono quelle della campagna.
+    cartelleSegreti: [scelto && fs.existsSync(path.join(cartellaRepertorio, 'parole_segrete.yaml')) ? cartellaRepertorio : repertorioCampagna],
   };
   log?.info(
     {

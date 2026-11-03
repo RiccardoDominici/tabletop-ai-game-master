@@ -182,6 +182,14 @@ describe('campagna a due sessioni: fine sessione e prossima sessione', () => {
     expect(t2.riconosciuta).toEqual({ id_pg: 'pg_anna' });
     expect(t2.entrata.sessione?.pacchetti).toMatchObject({ corrente: { numero: 2, etichetta: '02' }, prossima: null });
     expect(t2.entrata.orologi.find((o) => o.id === 'o_temporale')).toMatchObject({ pieni: 1 });
+    // Il master vede i telefoni ricordati e ne può cambiare il PG (vale dal prossimo collegamento).
+    const telefoni = (await emetti<EsitoEntrataMaster>((cb) => t2.master.emit('master:entra', { token: TOKEN }, cb)));
+    if (!telefoni.ok) throw new Error('master');
+    expect(telefoni.stato.sessione?.telefoni).toEqual([{ dispositivo: D_ANNA, id_pg: 'pg_anna', nome: 'Anna Rossi', collegato: true }]);
+    expect(await t2.comanda({ tipo: 'dispositivo', dispositivo: D_ANNA, id_pg: 'pg_bruno' })).toEqual({ ok: true });
+    expect(await t2.comanda({ tipo: 'dispositivo', dispositivo: D_ANNA, id_pg: 'pg_nessuno' })).toMatchObject({ ok: false });
+    expect(await t2.comanda({ tipo: 'dispositivo', dispositivo: 'tel-sconosciuto-000', id_pg: null })).toMatchObject({ ok: false, errore: 'Telefono sconosciuto.' });
+    expect(await t2.comanda({ tipo: 'dispositivo', dispositivo: D_ANNA, id_pg: 'pg_anna' })).toEqual({ ok: true });
     await giocaUnTurno(t2, 'Guardo il palo del traghetto.');
     expect(t2.frasi.slice(0, 3)).toEqual(["Nella sessione precedente l'oste ha confessato.", 'Ora il fiume sale.', 'Il guado è gonfio di pioggia.']);
     const sessione2 = s2.sessioni.archivio!.elenco('arco')[0]!;

@@ -203,6 +203,8 @@ export class Regia {
   private spento = false;
   /** Telefono (token del dispositivo) → PG: alla riconnessione, anche dopo un riavvio, il PG torna. */
   private readonly dispositivi = new Map<string, string>();
+  /** Socket del telefono → token del dispositivo (per il pannello: quali telefoni ricordati sono collegati). */
+  private readonly dispositivoDiSocket = new Map<string, string>();
   /** Sessione ripresa dal registro, in attesa del proiettore per ripartire (null = niente da riprendere). */
   private daRiprendere: {
     fase: FaseScena;
@@ -474,6 +476,28 @@ export class Regia {
     this.daRiprendere = null;
     this.ripresaFatta = null;
     return this.ricomincia();
+  }
+
+  /** Per il pannello: i telefoni ricordati, col loro PG e se sono collegati adesso. */
+  get dispositiviRicordati(): Array<{ dispositivo: string; id_pg: string; collegato: boolean }> {
+    const collegati = new Set(this.dispositivoDiSocket.values());
+    return [...this.dispositivi].map(([dispositivo, id_pg]) => ({ dispositivo, id_pg, collegato: collegati.has(dispositivo) }));
+  }
+
+  /**
+   * Il master cambia il PG ricordato di un telefono (un giocatore che non viene, uno nuovo che entra):
+   * `id_pg` null lo dimentica. Vale dal prossimo collegamento di quel telefono; il cambio va nel
+   * registro (evento `dispositivo`, con id_pg null per «dimenticato»).
+   */
+  assegnaDispositivo(dispositivo: string, id_pg: string | null): Esito {
+    if (!this.dispositivi.has(dispositivo)) return { ok: false, errore: 'Telefono sconosciuto.' };
+    if (id_pg !== null && !this.campagna.pg.some((p) => p.id === id_pg)) return { ok: false, errore: 'Personaggio sconosciuto.' };
+    if (id_pg === null) this.dispositivi.delete(dispositivo);
+    else this.dispositivi.set(dispositivo, id_pg);
+    this.o.memoria?.scrivi([{ tipo: 'dispositivo', dati: { dispositivo, id_pg } }], null);
+    this.o.log.info({ dispositivo: dispositivo.slice(0, 8), id_pg }, 'telefono: PG ricordato cambiato dal master');
+    this.notifica();
+    return { ok: true };
   }
 
   /** Il PG di un telefono conosciuto (token del dispositivo), o null. */
@@ -824,9 +848,12 @@ export class Regia {
 
   telefonoSceglie(socketId: string, id_pg: string, dispositivo?: unknown): Esito {
     if (!this.campagna.pg.some((p) => p.id === id_pg)) return { ok: false, errore: 'Personaggio sconosciuto.' };
-    if (typeof dispositivo === 'string' && DISPOSITIVO_VALIDO.test(dispositivo) && this.dispositivi.get(dispositivo) !== id_pg) {
-      this.dispositivi.set(dispositivo, id_pg);
-      this.o.memoria?.scrivi([{ tipo: 'dispositivo', dati: { dispositivo, id_pg } }], null);
+    if (typeof dispositivo === 'string' && DISPOSITIVO_VALIDO.test(dispositivo)) {
+      this.dispositivoDiSocket.set(socketId, dispositivo);
+      if (this.dispositivi.get(dispositivo) !== id_pg) {
+        this.dispositivi.set(dispositivo, id_pg);
+        this.o.memoria?.scrivi([{ tipo: 'dispositivo', dati: { dispositivo, id_pg } }], null);
+      }
     }
     const prima = this.telefoni.get(socketId);
     this.telefoni.set(socketId, id_pg);
@@ -840,6 +867,7 @@ export class Regia {
   telefonoEsce(socketId: string): void {
     const id_pg = this.telefoni.get(socketId);
     this.telefoni.delete(socketId);
+    this.dispositivoDiSocket.delete(socketId);
     if (id_pg) {
       this.lasciaPg(id_pg);
       this.notifica();

@@ -63,9 +63,8 @@ export function caricaParoleSegrete(cartellaRepertorio: string): ParolaSegreta[]
 }
 
 /**
- * Parole segrete di una campagna: repertorio/ della campagna e, con un pacchetto di sessione, anche
- * repertorio/ del pacchetto (campagna/tipi.ts, cartelleSegreti). Una parola scritta in tutti e due
- * conta una volta.
+ * Parole segrete di una campagna: repertorio/parole_segrete.yaml della campagna o, se il pacchetto di
+ * sessione ne ha uno, quello del pacchetto, che lo sostituisce (campagna/tipi.ts, cartelleSegreti).
  */
 export function caricaParoleSegreteCampagna(c: { cartelleSegreti: readonly string[] }): ParolaSegreta[] {
   const out: ParolaSegreta[] = [];

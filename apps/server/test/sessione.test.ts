@@ -102,6 +102,10 @@ describe('archivio SQLite', () => {
     expect(a.elenco('mini').map((x) => x.id)).toEqual(['s-p2', 'vecchia']); // dalla più recente
     expect(a.elenco('altra')).toEqual([]);
     expect([...a.dispositivi('s-p2')]).toEqual([['tel-1', 'pg_bruno'], ['tel-2', 'pg_bruno']]);
+    // Il master dimentica un telefono dal pannello (id_pg null): sparisce dall'archivio e dalla ripresa.
+    a.aggiungi('s-p2', [{ tipo: 'dispositivo', dati: { dispositivo: 'tel-2', id_pg: null } }, { tipo: 'fotografia', dati: fotografia(1) }], 1);
+    expect([...a.dispositivi('s-p2')]).toEqual([['tel-1', 'pg_bruno']]);
+    expect([...ricostruisci('s-p2', a.eventi('s-p2'))!.dispositivi]).toEqual([['tel-1', 'pg_bruno']]);
     a.chiudi();
     // Riaperto: la migrazione non si ripete e il pacchetto c'è ancora.
     const b = new ArchivioSessioni(file, loggerMuto());

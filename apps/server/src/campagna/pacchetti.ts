@@ -12,6 +12,11 @@
  *   orologi, canone, rivelazioni, nodi, colli_di_bottiglia(_nota), ...: si UNISCONO a campagna.yaml
  *   (liste accodate; un id ripetuto è un errore);
  *   titolo, preparazione: non vanno al narratore.
+ *
+ * Altre regole (docs/strati.md, «Regole di unione»): png/ del pacchetto con l'id di un PNG ricorrente
+ * sostituisce la scheda intera; repertorio/parole_segrete.yaml del pacchetto sostituisce quello della
+ * campagna; le battute vengono solo dal pacchetto; immagini e audio dai due livelli, il pacchetto
+ * vince a parità di id.
  */
 import fs from 'node:fs';
 import path from 'node:path';

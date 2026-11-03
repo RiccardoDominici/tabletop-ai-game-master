@@ -87,6 +87,8 @@ export interface RegistroSessione {
     ultimo_turno: number;
   };
   trascrizione: { file: string; voci: number; turni: number };
+  /** PG che avevano un telefono nella sessione (eventi `dispositivo`), in ordine di pg.yaml. */
+  giocatori: string[];
   scene: Array<{ id: string; titolo: string; dal_turno: number; al_turno: number; png_presenti: string[] }>;
   luoghi: Array<{ id: string; dal_turno: number; causa: Causa | 'inizio' }>;
   situazioni: Array<{ id: string; turno: number; automatica: boolean }>;
@@ -199,6 +201,7 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
   const fotografie: Array<FotografiaSessione & { causa?: string }> = [];
   const turni = new Map<number, VoceTrascrizione[]>();
   const azioni = new Map<string, Azione>();
+  const telefoni = new Map<string, string>();
   let ultimoEvento: string | null = null;
   for (const e of eventi) {
     ultimoEvento = e.ts;
@@ -206,7 +209,9 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
     if (!d || typeof d !== 'object') continue;
     if (e.tipo === 'fotografia') fotografie.push(d as unknown as FotografiaSessione & { causa?: string });
     else if (e.tipo === 'trascrizione_turno' && typeof d['turno'] === 'number' && Array.isArray(d['voci'])) turni.set(d['turno'], d['voci'] as VoceTrascrizione[]);
-    else if (e.tipo === 'tavolo') for (const a of (d as unknown as StatoTavoloSalvato).azioni ?? []) if (a && typeof a.id === 'string') azioni.set(a.id, a);
+    else if (e.tipo === 'tavolo') {
+      for (const a of (d as unknown as StatoTavoloSalvato).azioni ?? []) if (a && typeof a.id === 'string') azioni.set(a.id, a);
+    } else if (e.tipo === 'dispositivo' && typeof d['dispositivo'] === 'string' && typeof d['id_pg'] === 'string') telefoni.set(d['dispositivo'], d['id_pg']);
   }
   if (fotografie.length === 0) avvisi.push('Nessuna fotografia nell’archivio: la sessione non è mai partita davvero.');
   const modoB = fotografie.some((f) => f.repertorio !== null && f.repertorio !== undefined);
@@ -399,6 +404,10 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
       ultimo_turno: ultima?.turno ?? s.turno,
     },
     trascrizione: { file: FILE_TRASCRIZIONE, voci: voci.length, turni: turni.size },
+    giocatori: (() => {
+      const conTelefono = new Set(telefoni.values());
+      return [...def.pg.map((p) => p.id).filter((id) => conTelefono.has(id)), ...[...conTelefono].filter((id) => !idPg.has(id)).sort()];
+    })(),
     scene,
     luoghi,
     situazioni: situazioni.sort((a, b) => a.turno - b.turno || a.id.localeCompare(b.id)),

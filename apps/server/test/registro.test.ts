@@ -148,6 +148,7 @@ describe('registro di fine sessione da una partita vera', () => {
     const { registro: r, trascrizione: t } = estraiRegistro(sessione, archivio.eventi(id), def);
 
     expect(r.archivio).toMatchObject({ id, modo: 'repertorio', stato: 'in_corso', ultimo_turno: 5 });
+    expect(r.giocatori).toEqual(['pg_anna', 'pg_bruno']);
     expect(r.scene).toEqual([{ id: 'scena_locanda', titolo: 'La locanda della prova', dal_turno: 0, al_turno: 5, png_presenti: ['png_oste', 'png_guardia'] }]);
     expect(r.indizi).toEqual([{ id: 'i_brocca', turno: 1, battuta: 'nar_brocca' }]);
     expect(r.menzogne).toEqual([{ id: 'oste_vino', turno: 2, battuta: 'oste_vino_menzogna' }]);

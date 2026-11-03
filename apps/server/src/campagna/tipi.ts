@@ -68,7 +68,10 @@ export interface Campagna {
   pacchetto: PacchettoCaricato | null;
   /** Cartella delle battute (modalità B): repertorio/ del pacchetto, o della campagna in una one-shot. */
   cartellaRepertorio: string;
-  /** Cartelle con parole_segrete.yaml: campagna e pacchetto (si uniscono). */
+  /**
+   * Cartella con il parole_segrete.yaml che vale (una sola): quella del pacchetto se ne ha uno, se
+   * no quella della campagna. Il pacchetto sostituisce, non si unisce.
+   */
   cartelleSegreti: string[];
 }
 
