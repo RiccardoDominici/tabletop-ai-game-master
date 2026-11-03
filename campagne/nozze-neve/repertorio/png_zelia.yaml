@@ -81,7 +81,7 @@ battute:
     max_usi: 1
 
   # --- selezionabili: menzogna -------------------------------------------------------------------------
-  - id: zel_mezzogiorno_versione
+  - id: zel_dove_eri
     chi: png_zelia
     tipo: menzogna
     scena: scena_casa_bonfanti
@@ -100,25 +100,39 @@ battute:
     chi: png_zelia
     tipo: confessione
     scena: scena_casa_bonfanti
-    quando: "in privato, un PG mostra a Zelia la macchia d'inchiostro o il capello rosso"
+    quando: "in privato, un PG mostra a Zelia il capello rosso o le parla della macchia"
     temi: [macchia, inchiostro, capello, rosso]
-    richiede: {privata: true, indizi_rivelati: [i_macchia], battute_non_usate: [zel_promessa_privato]}
+    richiede: {privata: true, indizi_rivelati: [i_macchia], battute_non_usate: [zel_promessa_cugina, zel_promessa_lettere]}
     testo:
       - "[narratore] Zelia si guarda le dita sporche d'inchiostro, e lascia andare la treccia."
       - "[png_zelia] Va bene, agli atti. L'ho preso io, a mezzogiorno, durante il brindisi."
       - "[png_zelia] È nel campanaccio della Duchessa. Perché la nonna, al Sasso, dica la storia vera."
     effetti: {rivela_indizi: [i_zelia_confessa], fatti_noti: [f_zelia_presa, f_campanaccio, f_zelia_motivo]}
     max_usi: 1
-  - id: zel_promessa_privato
+  - id: zel_promessa_cugina
     chi: png_zelia
     tipo: confessione
     scena: scena_casa_bonfanti
-    quando: "in privato, un PG fa a Zelia una promessa per il Sasso"
+    quando: "in privato, la cugina di giù fa a Zelia una promessa per il Sasso"
     temi: [prometto, promessa, giuro, vera]
-    richiede: {privata: true, battute_non_usate: [zel_macchia_privato]}
+    richiede: {privata: true, da_pg: [pg_livia], battute_non_usate: [zel_macchia_privato, zel_promessa_lettere]}
     testo:
       - "[narratore] Zelia vi guarda a lungo, con il pennino sospeso sopra il quaderno."
       - "[png_zelia] Promesso? Lo scrivo, e lo firmate. L'ho preso io, a mezzogiorno."
+      - "[png_zelia] È nel campanaccio della Duchessa. Ma al Sasso la storia deve essere quella vera."
+    effetti: {rivela_indizi: [i_zelia_confessa], fatti_noti: [f_zelia_presa, f_campanaccio, f_zelia_motivo]}
+    max_usi: 1
+
+  - id: zel_promessa_lettere
+    chi: png_zelia
+    tipo: confessione
+    scena: scena_casa_bonfanti
+    quando: "in privato, chi ha letto le lettere fa a Zelia una promessa per il Sasso"
+    temi: [prometto, promessa, giuro, vera]
+    richiede: {privata: true, indizi_rivelati: [i_lettere], battute_non_usate: [zel_macchia_privato, zel_promessa_cugina]}
+    testo:
+      - "[narratore] Zelia vi guarda a lungo, con il pennino sospeso sopra il quaderno."
+      - "[png_zelia] Le avete lette anche voi, allora. L'ho preso io, a mezzogiorno."
       - "[png_zelia] È nel campanaccio della Duchessa. Ma al Sasso la storia deve essere quella vera."
     effetti: {rivela_indizi: [i_zelia_confessa], fatti_noti: [f_zelia_presa, f_campanaccio, f_zelia_motivo]}
     max_usi: 1

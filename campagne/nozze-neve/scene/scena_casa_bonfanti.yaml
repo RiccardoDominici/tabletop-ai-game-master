@@ -8,7 +8,7 @@ nodo: n_casa_bonfanti
 nome: "Casa Bonfanti, con la stalla sotto"
 
 # Pianta e «chi sente cosa». Va al selettore del modo B: niente segreti.
-descrizione: "Casa Bonfanti è di pietra, dall'altra parte del vicolo rispetto alla casera. Al pianterreno c'è la cucina, con il camino, lo scrittoio dei conti di Gaspare e una campanella d'ottone appesa alla mensola; una botola con la scala scende nella stalla, dove stanno le vacche dei Bonfanti e la Duchessa, la più vecchia, con il campanaccio grande. La stalla ha anche una porta sul vicolo. Al primo piano c'è la camera della sposa: Agnese si fa vestire, muta come vuole l'usanza, e Zelia le sistema il velo. In cima, la soffitta con le cassapanche di famiglia. Chi sente cosa: dalla cucina si sentono la scala che scricchiola e i campanacci della stalla, ma non ciò che si dice di sopra a porta chiusa; in soffitta e nella stalla non sente nessuno, se Gaspare è in cucina. La sposa sente tutto ciò che si dice in camera, e non può parlare. La nonna della sposa e il vecchio Ettore sono alla casera."
+descrizione: "Casa Bonfanti è di pietra, dall'altra parte del vicolo rispetto alla casera. Al pianterreno c'è la cucina, con il camino, lo scrittoio dei conti di Gaspare; una botola con la scala scende nella stalla, dove stanno le vacche dei Bonfanti e la Duchessa, la più vecchia, con il campanaccio grande. La stalla ha anche una porta sul vicolo. Al primo piano c'è la camera della sposa: Agnese si fa vestire, muta come vuole l'usanza, e Zelia le sistema il velo. In cima, la soffitta con le cassapanche di famiglia. Chi sente cosa: dalla cucina si sentono la scala che scricchiola e i campanacci della stalla, ma non ciò che si dice di sopra a porta chiusa; in soffitta e nella stalla non sente nessuno, se Gaspare è in cucina. La sposa sente tutto ciò che si dice in camera, e non può parlare. La nonna della sposa e il vecchio Ettore sono alla casera."
 
 scopo: {tipo: rivelare_indizio, rif: i_campanaccio}
 domanda_drammatica: "I PG troveranno l'anello prima dello zio Gaspare?"
@@ -33,7 +33,6 @@ elementi_interattivi:
   - {cosa: "il quaderno di Zelia", dove: "legato alla cintura di Zelia con lo spago", azioni: "lei non lo molla mai; si legge se lei lo dà, o se lo lascia sul letto quando scende"}
   - {cosa: "le cassapanche della soffitta", dove: "in cima alla scala a pioli", azioni: "si aprono; dentro ci sono corredi, merletti e carte di famiglia"}
   - {cosa: "la stalla", dove: "sotto la cucina, giù dalla botola o dalla porta sul vicolo", azioni: "è calda e bassa; le vacche si girano a guardare chi entra, e i campanacci suonano"}
-  - {cosa: "la campanella d'ottone", dove: "appesa alla mensola del camino, in cucina", azioni: "si stacca, si suona, si guarda da vicino"}
   - {cosa: "lo scrittoio di Gaspare", dove: "in cucina, sotto la finestra", azioni: "sopra c'è il libro dei conti; sotto, un cassetto chiuso a chiave che cede a un coltello"}
 
 png_presenti: [png_zelia, png_gaspare]
@@ -47,7 +46,7 @@ indizi:
     essenziale: true
     tiro: "nessuno"
     modi: 2
-    come_si_trova: "Due modi. Chi entra nella stalla sente suonare tutti i campanacci tranne uno: la Duchessa si gira, e il suo campanaccio grande resta muto. Oppure, quando la processione parte, la Duchessa cammina in testa con il campanaccio muto, e chi ci guarda dentro trova la stessa cosa. Dentro, intorno al batacchio, c'è un foglio di quaderno arrotolato stretto, e nel foglio l'anello. Se lo zio ha già finito di cercare, il campanaccio suona di nuovo ed è vuoto: resta un angolo di carta strappata."
+    come_si_trova: "Due modi. Chi entra nella stalla sente suonare tutti i campanacci tranne uno: la Duchessa si gira, e il suo campanaccio grande resta muto. Oppure al Sasso, dove la Duchessa si ferma dopo aver guidato la processione con il campanaccio muto: chi ci guarda dentro trova la stessa cosa. Dentro, intorno al batacchio, c'è un foglio di quaderno arrotolato stretto, e nel foglio l'anello. Se lo zio ha già finito di cercare, il campanaccio suona di nuovo ed è vuoto: resta un angolo di carta strappata."
   - id: i_quaderno
     conclusione: r_zelia
     tipo: documento
@@ -63,15 +62,15 @@ indizi:
     essenziale: false
     tiro: "nessuno"
     modi: 1
-    come_si_trova: "Quando un PG chiede alla sposa dov'è l'anello, o chi l'ha preso, Agnese non può parlare: guarda la sorella, si mette due dita sulla testa come corna e scuote il pugno come un campanaccio. Zelia diventa rossa fino alle orecchie."
+    come_si_trova: "Quando un PG chiede alla sposa dov'è l'anello, o chi l'ha preso, Agnese non può parlare: guarda la sorella e si spolvera il vestito, come se avesse addosso la paglia; poi si mette due dita sulla testa, come corna. Zelia diventa rossa fino alle orecchie."
   - id: i_zelia_confessa
     conclusione: r_zelia
     tipo: png
     nodo: png_zelia
     essenziale: false
     tiro: "nessuno"
-    modi: 2
-    come_si_trova: "Due modi, in privato: quando un PG le mostra la macchia d'inchiostro o il capello rosso della scatolina, oppure quando le promette che al Sasso si racconterà la storia vera. Allora Zelia cede: l'anello l'ha preso lei, a mezzogiorno, ed è nel campanaccio della Duchessa; l'ha fatto perché la nonna al Sasso racconti la storia vera."
+    modi: 3
+    come_si_trova: "Tre modi, in privato: un PG le mostra il capello rosso o le parla della macchia d'inchiostro della scatolina; oppure la cugina Livia le promette che al Sasso si racconterà la storia vera; oppure glielo promette un PG che ha letto le lettere della soffitta. Allora Zelia cede: l'anello l'ha preso lei, a mezzogiorno, ed è nel campanaccio della Duchessa; l'ha fatto perché la nonna al Sasso racconti la storia vera."
   - id: i_lettere
     conclusione: r_anello
     tipo: documento
@@ -95,7 +94,7 @@ indizi:
     essenziale: false
     tiro: "nessuno"
     modi: 1
-    come_si_trova: "Chi guarda da vicino la campanella d'ottone del camino vede un ferro di cavallo inciso sul bordo, come sui finimenti dei Morlacchi. Gaspare dice che gliela regalò suo padre, da bambino, quando guarì dalla febbre."
+    come_si_trova: "Chi apre il cassetto dello scrittoio di Gaspare trova, avvolta in un fazzoletto, una campanella da mulo d'ottone, con un piccolo ferro di cavallo inciso sul bordo. Il narratore la descrive e non dice di chi è il segno. Se gliela chiedono, Gaspare dice che gliela regalò suo padre quando guarì dalla febbre, da bambino."
   - id: i_contratto
     conclusione: r_zio
     tipo: documento
@@ -117,9 +116,9 @@ uscite:
   - {verso: e_tramonto, segnalata_da: [i_campanaccio, i_lettere, i_ferro_inciso], nota: "Con l'anello in mano, o con le lettere, si sale al Sasso per il tramonto."}
   - {verso: n_casera, segnalata_da: [i_campanella, i_quaderno, i_contratto], nota: "Si torna alla casera a parlare con i vecchi, o con lo zio, prima che salgano al Sasso."}
 
-mossa_morbida_pronta: "Dalla stalla arriva un muggito lungo, e i campanacci suonano tutti insieme. Agnese alza gli occhi dal velo e guarda la botola."
+mossa_morbida_pronta: "Dalla stalla arriva un muggito lungo, e un tintinnio di campanacci. Agnese alza gli occhi dal velo e guarda la botola."
 
-apertura: "A casa Bonfanti la scala scricchiola, e dalla stalla sale odore di fieno. In camera la sposa vi guarda dallo specchio, muta, e Zelia le punta il velo con gli spilli. Di sotto lo zio Gaspare apre e chiude i cassetti della cucina: da dove cominciate?"
+apertura: "A casa Bonfanti la scala scricchiola, e dalla stalla sale odore di fieno. In camera la sposa vi guarda dallo specchio, muta, e Zelia le appunta il velo con gli spilli. Dietro di voi entra lo zio Gaspare, scuotendo la neve dal panciotto: da dove cominciate?"
 
 musica:
   tag: esplorazione_tesa
@@ -132,7 +131,7 @@ audio:
   umore_iniziale: esplorazione_tesa
 
 immagine:
-  invarianti: ["cucina di pietra con camino e campanella d'ottone sulla mensola", "scala di legno verso il piano di sopra", "botola aperta sulla stalla", "scrittoio con libro dei conti sotto la finestra"]
-  prompt_luogo: "cozy stone kitchen of an alpine farmhouse, fireplace with a small brass mule bell hanging from the mantel, steep wooden staircase going up, an open trapdoor with a ladder down to a warm stable with cows, a writing desk with a ledger under a frosted window, snow outside"
+  invarianti: ["cucina di pietra con camino acceso", "scala di legno verso il piano di sopra", "botola aperta sulla stalla", "scrittoio con libro dei conti sotto la finestra"]
+  prompt_luogo: "cozy stone kitchen of an alpine farmhouse, crackling fireplace, steep wooden staircase going up, an open trapdoor with a ladder down to a warm stable with cows, a writing desk with a ledger under a frosted window, snow outside"
 
-taglio: "La scena si chiude quando i PG lasciano casa Bonfanti, con l'anello o senza, per tornare alla casera o salire al Sasso. Oppure al settimo segno del tramonto, quando la processione parte e la Duchessa esce dalla stalla: chi è in casa la segue su per la salita. Se i PG esitano, la sposa si alza, si sistema il velo da sola e scende le scale: è ora."
+taglio: "La scena si chiude quando i PG lasciano casa Bonfanti, con l'anello o senza, per tornare alla casera o salire al Sasso. Oppure al sesto segno del tramonto, quando in paese si accendono le lanterne: la Duchessa esce dalla stalla per guidare la processione, e la casa si svuota. Se i PG esitano, la sposa si alza, si sistema il velo da sola e scende le scale: è ora."

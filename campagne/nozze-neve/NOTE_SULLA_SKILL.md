@@ -113,3 +113,45 @@ nell'ordine in cui le incontro; in fondo, i tempi e la classifica dei problemi p
    cercheranno. *Scelta*: due battute del narratore per Tonio (una con il cancello `da_pg` di Ida). La
    tabella potrebbe dire: «per ogni comparsa nominata in un aggancio o in una situazione comune, almeno
    una battuta del narratore».
+
+## Passi 13–16
+
+16. **La lettura ad alta voce e la revisione trovano cose diverse, e la lista del passo 13 manca di due.**
+   Rileggendo ho trovato il meccanismo del climax al contrario (Ettore metteva l'anello, ma la regola dice
+   «nessun altro») e una lettera letta dal narratore in prima persona («tuo fratello…»), che al tavolo suona
+   rivolta a un PG. La seconda non è nella lista (che ha il «voi» singolare e il vocativo, non le citazioni
+   in prima o seconda persona dentro una battuta del narratore). Il revisore ne ha trovate altre tre dello
+   stesso tipo che io avevo lasciato («di mia madre», «la scrivo io»). *Proposta*: una riga al passo 13,
+   «lettere, diari e canzoni letti dal narratore vanno in discorso indiretto».
+
+17. **Il controllo del passo 1 non basta a vedere un premio travestito da prezzo.** Il mio prezzo della terza
+   via («Adelina perde la voce, che passa a Zelia») passava tutti i controlli del passo 1 (due esiti con un
+   prezzo, nessuna prova lo cancella), ma era ciò che Zelia voleva: un premio. Il revisore l'ha visto subito.
+   *Proposta*: al passo 1, «il prezzo di ogni strada pesa su qualcuno che non lo desidera: se qualcuno al
+   tavolo lo vorrebbe, è un premio».
+
+18. **Il revisore legge il codice del Motore, la skill no.** Tre dei cinque problemi gravi venivano da come il
+   server applica le regole: le battute senza cancello non rispondono alle azioni private (`condizioni.ts`),
+   `avanza_quando` non è applicato (`orologi.ts`), i finali escono solo a orologio completo. Nessuno di questi
+   è nella skill o in `riferimenti/repertorio.md`, che dicono il contrario per omissione («le battute senza
+   cancello rispondono solo alle azioni pubbliche» c'è in docs/repertorio.md, ma non tra le regole della skill
+   né nella tabella di copertura). *Proposta*: una sezione «ciò che il Motore non fa» nella skill: azioni
+   private, `avanza_quando`, salti d'orologio ai cambi di scena, stato degli oggetti.
+
+19. **Gli id «_versione» delle menzogne dicono al selettore chi mente.** È il modello stesso della skill:
+   `ott_segale_versione` in docs/repertorio.md, `vis_leone_versione` in ponte-lanterne. Il Motore rende neutro
+   il `tipo` («risposta»), ma l'id resta nel catalogo. *Scelta*: id neutri (`ade_da_dove`, `gas_chi_cera`).
+   La skill dovrebbe cambiare l'esempio.
+
+20. **Le regole cambiano durante la prova.** A metà lavoro il modello del brief ha preso il campo obbligatorio
+   `sessioni` e il validatore la classe `LIVELLO` (commit 8fcfe18); `schema.md` dice ancora che
+   `richiede.oppure` «oggi è un errore», ma il validatore lo accetta dal commit a4b4fbc e docs/repertorio.md
+   dice che il server lo applica. Ho seguito la skill letta all'inizio (copie con `battute_non_usate`,
+   nessun `oppure`) e aggiunto `sessioni: 1` quando è comparso l'avviso. *Proposta*: schema.md allineato al
+   validatore, e una data di versione in cima alla skill.
+
+21. **Le immagini sono partite mentre la campagna cambiava.** Un'altra generazione (non mia) ha fatto i luoghi
+   e tre ritratti alle 10:37–10:47, durante le correzioni del passo 14: `luogo_scena_casa_bonfanti.jpg` viene
+   dal prompt vecchio. `genera.py` salta i file che esistono, quindi non lo rifarà da solo, e `prepara.sh` lo
+   considera fatto. *Proposta*: il manifest delle immagini tenga il prompt, e `prepara.sh` rigeneri un'immagine
+   il cui prompt è cambiato (come fa già l'audio con i descrittori delle schede).

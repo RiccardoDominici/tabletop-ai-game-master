@@ -9,7 +9,7 @@ nome: "Il Sasso delle Promesse, al tramonto"
 climax: true
 
 # Pianta e «chi sente cosa». Va al selettore del modo B: niente segreti.
-descrizione: "Una grande pietra piatta sotto un larice, sopra il paese, con la neve spazzata e due lanterne accese ai lati. Il Custode Ilario sta dietro il Sasso, con il Libro aperto sul leggio e il corno appeso al larice. Il paese arriva a semicerchio sulla neve, le due case una di qua e una di là, e la Duchessa si ferma accanto alla pietra. Davanti al Sasso ci sono gli sposi: Agnese con il velo, muta, e Tonio che non sa dove mettere le mani. Dietro il larice c'è il casotto di legno del Custode. Chi sente cosa: ciò che si dice davanti al Sasso lo sente tutto il paese; dietro il larice e nel casotto non sente nessuno. La sorella della sposa è rimasta a casa al focolare, come vuole l'usanza."
+descrizione: "Una grande pietra piatta sotto un larice, sopra il paese, con la neve spazzata e due lanterne accese ai lati. Il Custode Ilario sta dietro il Sasso, con il Libro aperto sul leggio; suo nipote tiene il corno, appeso al larice. Il paese arriva a semicerchio sulla neve, le due case una di qua e una di là, e la Duchessa si ferma accanto alla pietra. Davanti al Sasso ci sono gli sposi: Agnese con il velo, muta, e Tonio che non sa dove mettere le mani. Dietro il larice c'è il casotto di legno del Custode. Chi sente cosa: ciò che si dice davanti al Sasso lo sente tutto il paese; dietro il larice e nel casotto non sente nessuno. La sorella della sposa è rimasta a casa al focolare, come vuole l'usanza."
 
 scopo: {tipo: mettere_alla_prova, rif: fronte_faida}
 domanda_drammatica: "Agnese e Tonio saranno benedetti prima che il sole tocchi il passo?"
@@ -54,7 +54,7 @@ uscite: []
 
 mossa_morbida_pronta: "Il Custode alza gli occhi verso il passo, poi guarda la nonna Adelina. Tende la mano aperta, e aspetta l'anello."
 
-apertura: "Al Sasso delle Promesse il larice è carico di neve, e due lanterne fumano nel freddo. Il paese si stringe a semicerchio, Bonfanti di qua e Morlacchi di là, e il Custode apre il Libro. Il sole è a una spanna dal passo: chi parla per primo?"
+apertura: "Al Sasso delle Promesse il larice è carico di neve, e due lanterne fumano nel freddo. Il paese si stringe a semicerchio, Bonfanti di qua e Morlacchi di là, e il Custode apre il Libro. Il sole scende verso il passo: chi parla per primo?"
 
 musica:
   tag: rito_sacro
@@ -74,7 +74,7 @@ taglio: "La scena si chiude all'ottavo segno, quando il sole tocca il passo e il
 
 # Esiti (passo 9): uno per ogni strada del taglio, ognuno con il suo finale.
 esiti:
-  - {id: es_leggenda, descrizione: "Adelina racconta la storia di sempre: nozze benedette, Ettore se ne va con i suoi e si riprende la casetta del lavatoio, la faida passa agli sposi.", finale: fin_sasso_a}
-  - {id: es_verita_adelina, descrizione: "Adelina racconta lei la storia vera: Ettore mette l'anello alla sposa, le due case scendono insieme, e Adelina lascia la voce del Sasso.", finale: fin_sasso_b}
-  - {id: es_verita_altri, descrizione: "La storia vera la racconta qualcun altro: Adelina se ne va umiliata e ritira la dote, Marta mette l'anello, il Prato Alto resta a Gaspare.", finale: fin_sasso_c}
+  - {id: es_leggenda, descrizione: "Adelina racconta la storia di sempre e mette l'anello alla sposa: nozze benedette, ma Ettore se ne va con i suoi e si riprende la casetta del lavatoio, e la faida passa agli sposi.", finale: fin_sasso_a}
+  - {id: es_verita_adelina, descrizione: "Adelina racconta lei la storia vera e mette l'anello alla sposa, con Ettore accanto: le due case scendono insieme, ma i Bonfanti perdono la voce del Sasso, e da allora la loro storia la racconta Ettore.", finale: fin_sasso_b}
+  - {id: es_verita_altri, descrizione: "La storia vera la racconta qualcun altro: Adelina, umiliata, lascia l'anello a Marta, ritira la dote e se ne va; il Prato Alto resta in mano a Gaspare, e i Bonfanti perdono la voce del Sasso.", finale: fin_sasso_c}
   - {id: es_tramonto, descrizione: "Il sole tocca il passo senza anello o senza storia: niente benedizione fino a primavera, e all'alba Tonio scende con i muli.", finale: fin_tramonto}

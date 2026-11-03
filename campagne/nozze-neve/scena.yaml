@@ -8,7 +8,7 @@ nodo: n_casera
 nome: "La casera dei Bonfanti, durante la festa"
 
 # Pianta e «chi sente cosa». Va al selettore del modo B: niente segreti.
-descrizione: "La sala grande della casera, in cima al paese, con gli scaffali delle forme fino al soffitto e un camino acceso. Due tavolate lunghe: a sinistra i Bonfanti, a destra i Morlacchi, e in mezzo, per terra, una riga di forme di formaggio messa come un confine. In fondo c'è il tavolo alto degli anziani, con la scatolina di noce aperta e vuota, il Custode Ilario con la sua borsa e la vecchia Tilde. Bastiano, il garzone dei Morlacchi, siede imbronciato in fondo alla sua tavolata. Dietro il tavolo alto tre gradini scendono nella cantina delle forme, fresca e buia, che ha una porta di dietro sul vicolo. Chi sente cosa: ciò che si dice al tavolo alto lo sente tutta la sala; a una tavolata lo sente solo quella tavolata, sotto la musica; nella cantina delle forme e fuori nel vicolo non sente nessuno della sala. La sposa e sua sorella sono a casa Bonfanti, dall'altra parte del vicolo."
+descrizione: "La sala grande della casera, in cima al paese, con gli scaffali delle forme fino al soffitto e un camino acceso. Due tavolate lunghe: a sinistra i Bonfanti, a destra i Morlacchi, e in mezzo, per terra, una riga di forme di formaggio messa come un confine. In fondo c'è il tavolo alto degli anziani, con la scatolina di noce aperta e vuota, il Custode Ilario con la sua borsa. La vecchia Tilde sonnecchia su una sedia imbottita accanto al camino. Bastiano, il garzone dei Morlacchi, siede imbronciato in fondo alla sua tavolata. Dietro il tavolo alto tre gradini scendono nella cantina delle forme, fresca e buia, che ha una porta di dietro sul vicolo. Chi sente cosa: ciò che si dice al tavolo alto lo sente tutta la sala; a una tavolata lo sente solo quella tavolata, sotto la musica; al camino, tra la musica e lo scoppiettio, sente solo chi sta al camino; nella cantina delle forme e fuori nel vicolo non sente nessuno della sala. La sposa e sua sorella sono a casa Bonfanti, dall'altra parte del vicolo."
 
 # C12: scopo dall'elenco chiuso, e domanda drammatica da sì o no.
 scopo: {tipo: rivelare_indizio, rif: i_macchia}
@@ -36,7 +36,7 @@ elementi_interattivi:
   - {cosa: "la borsa del Custode", dove: "al tavolo alto, sulle ginocchia di Ilario", azioni: "dentro c'è il Libro del Sasso; il Custode lo apre a chi glielo chiede con garbo, o a chi gli porta un bicchiere"}
   - {cosa: "la cantina delle forme", dove: "dietro il tavolo alto, tre gradini più giù", azioni: "è fresca e buia, e ci si parla senza essere sentiti; in fondo c'è la porta di dietro, sul vicolo"}
   - {cosa: "il caldaio di rame", dove: "nell'angolo del camino", azioni: "è nuovo e lucido; la casara ne parla volentieri"}
-  - {cosa: "la vecchia Tilde", dove: "al tavolo alto, accanto al Custode", azioni: "ci sente poco e parla forte; ricorda tutte le nascite e tutte le nevi del paese"}
+  - {cosa: "la vecchia Tilde", dove: "su una sedia imbottita accanto al camino", azioni: "ci sente poco e parla forte; ricorda tutte le nascite e tutte le nevi del paese"}
   - {cosa: "Bastiano", dove: "in fondo alla tavolata dei Morlacchi", azioni: "ha le mani nere fino ai polsi e non vuole parlare con nessuno dei Bonfanti"}
   - {cosa: "la giacca di Ettore", dove: "addosso a Ettore, o appesa alla panca quando balla o fa a braccio di ferro", azioni: "NASCOSTA: nella tasca interna c'è una lettera chiusa con la ceralacca, con scritto «Per Adelina». Non nominarla finché un PG non fruga nella giacca, o finché Ettore non la tira fuori."}
 
@@ -84,7 +84,7 @@ indizi:
     essenziale: false
     tiro: "nessuno"
     modi: 1
-    come_si_trova: "Quando qualcuno, vicino al tavolo alto, parla della prima neve di sessant'anni fa o della febbre di Gaspare bambino, Tilde alza la voce, perché ci sente poco: quella notte il piccolo Gaspare scottava, e il medico arrivò sul mulo dei Morlacchi, con il ragazzo davanti a tirarlo. Poi chiede chi le ha messo il sale nel vino."
+    come_si_trova: "Quando un PG, accanto al camino, chiede a Tilde della febbre di Gaspare bambino, lei parla forte, perché ci sente poco: quella notte il piccolo Gaspare scottava, e il medico arrivò sul mulo dei Morlacchi, con davanti a tirarlo il giovane Morlacchi, quello che adesso batte il bastone. Al camino, sotto la musica, la sentono solo quelli che le stanno accanto. Poi chiede chi le ha messo il sale nel vino."
   - id: i_caldaio
     conclusione: r_zio
     tipo: oggetto
@@ -100,7 +100,7 @@ indizi:
     essenziale: false
     tiro: "nessuno"
     modi: 2
-    come_si_trova: "Due modi, in privato: quando un PG gli dimostra che Bastiano a mezzogiorno ferrava un mulo, oppure quando gli mostra la macchia d'inchiostro e il capello rosso. Allora Gaspare cede: a mezzogiorno, durante il brindisi, ha visto Zelia sfilare l'anello dalla scatolina, e non ha detto niente."
+    come_si_trova: "Due modi, davanti ad Adelina: quando un PG gli dimostra che Bastiano a mezzogiorno ferrava un mulo, oppure quando gli mostra la macchia d'inchiostro e il capello rosso. Davanti alla sorella non regge, e cede: a mezzogiorno, durante il brindisi, ha visto Zelia sfilare l'anello dalla scatolina, e non ha detto niente."
   - id: i_adelina_anello
     conclusione: r_anello
     tipo: png
@@ -160,7 +160,7 @@ uscite:
 mossa_morbida_pronta: "Dal lato dei Morlacchi un cugino si alza, rosso in faccia, e punta il dito verso i Bonfanti. Ettore lo rimette a sedere con il bastone, senza una parola."
 
 # Al massimo tre frasi; con il riassunto della sessione non più di sei.
-apertura: "Nella casera dei Bonfanti una riga di forme di formaggio divide la sala in due. A sinistra la nonna Adelina stringe una scatolina vuota; a destra il vecchio Ettore batte il bastone. Senza anello niente benedizione, e il sole non aspetta: chi si muove per primo?"
+apertura: "Nella casera dei Bonfanti una riga di forme di formaggio divide la sala in due. A sinistra la nonna Adelina stringe una scatolina vuota; a destra Ettore, il nonno dello sposo, batte il bastone. Senza anello niente benedizione, e il sole non aspetta: chi si muove per primo?"
 
 musica:
   tag: esplorazione_tesa
@@ -178,4 +178,4 @@ immagine:
   prompt_luogo: "wide stone dairy hall in a mountain village, wooden shelves stacked with cheese wheels up to the ceiling, crackling fireplace, two long feast tables with a line of cheese wheels on the floor between them, a high table at the far end with a small open walnut box, a shiny new copper cauldron in the corner, pine garlands, snow at the windows"
 
 # Va al selettore del modo B: niente segreti.
-taglio: "La scena si chiude quando i PG lasciano la casera per casa Bonfanti o per il Sasso, con una pista o senza. Oppure al sesto segno della lite, quando i Morlacchi portano fuori le panche: la festa è finita, e i PG escono nel vicolo all'ora in cui sono. Se i PG esitano, il Custode si alza, guarda il cielo e dice che lui sale al Sasso a preparare le lanterne: chi ha qualcosa da dire, lo dica lassù."
+taglio: "La scena si chiude quando i PG lasciano la casera per casa Bonfanti o per il Sasso, con una pista o senza. Oppure al sesto segno della lite, quando i Morlacchi portano fuori le panche: la festa è finita, e la sala si svuota. Se i PG esitano, il Custode si alza, guarda il cielo e dice che lui sale al Sasso a preparare le lanterne: chi ha qualcosa da dire, lo dica lassù."

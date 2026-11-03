@@ -67,9 +67,9 @@ mente_su:
     argomento: "chi era vicino alla scatolina a mezzogiorno"
     verita: f_gaspare_vide
     versione: "Ho visto il garzone dei Morlacchi girare intorno al tavolo alto. Lo dico con dispiacere, si capisce."
-    perche: "Se si sa che è stata Zelia, l'anello torna in tempo e le nozze si fanno."
+    perche: "Se si sa che è stata Zelia, l'anello torna in tempo e le nozze si fanno. A quattr'occhi, messo alle strette, dice solo che forse ha visto male."
     segnale: "si toglie gli occhiali e li pulisce sul panciotto"
-    cede_se: "In privato, quando un PG gli dimostra che a mezzogiorno Bastiano ferrava un mulo nella stalla dei Morlacchi. Oppure in privato, quando un PG gli mostra la macchia d'inchiostro e il capello rosso della scatolina."
+    cede_se: "Davanti ad Adelina, quando un PG gli dimostra che a mezzogiorno Bastiano ferrava un mulo nella stalla dei Morlacchi. Oppure davanti ad Adelina, quando un PG gli mostra la macchia d'inchiostro e il capello rosso della scatolina."
   - id: gas_prato
     argomento: "il Prato Alto"
     verita: f_caparra

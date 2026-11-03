@@ -28,13 +28,13 @@ canone:
   - {id: f_regola_ripete, noto_ai_pg: true, stato: confermato, entita: [n_sasso],
      testo: "Ciò che si racconta al Sasso, il paese lo ripete per sempre."}
   - {id: f_regola_voce, noto_ai_pg: true, stato: confermato, entita: [n_sasso],
-     testo: "Chi ha raccontato al Sasso una storia falsa non racconta più al Sasso."}
+     testo: "Se una casa ha raccontato al Sasso una storia falsa, perde la voce del Sasso: da allora la sua storia la racconta la casa che aveva detto il vero."}
   - {id: f_senza_anello, noto_ai_pg: true, stato: confermato, entita: [n_sasso],
      testo: "Senza anello il Custode non benedice, e le nozze di neve aspettano la primavera."}
   - {id: f_custode, noto_ai_pg: true, stato: confermato, entita: [n_sasso],
      testo: "Il Custode del Sasso, Ilario, tiene il Libro del Sasso, dove sono scritte tutte le nozze di neve da cent'anni, con la storia raccontata."}
   - {id: f_corno, noto_ai_pg: true, stato: confermato, entita: [n_sasso],
-     testo: "Il giorno delle nozze di neve il Custode suona il corno dal Sasso a ogni mezz'ora, fino al tramonto."}
+     testo: "Il giorno delle nozze di neve il nipote del Custode suona il corno dal Sasso a ogni mezz'ora, fino al tramonto."}
   - {id: f_partenza_alba, noto_ai_pg: true, stato: confermato, entita: [png_ettore],
      testo: "Domattina all'alba i Morlacchi scendono a valle con i muli per l'inverno, e lo sposo con loro."}
   - {id: f_famiglie, noto_ai_pg: true, stato: confermato, entita: [n_casera],
@@ -56,7 +56,7 @@ canone:
   - {id: f_gaspare_zio, noto_ai_pg: true, stato: confermato, entita: [png_gaspare],
      testo: "Gaspare Bonfanti, il fratello minore di Adelina, tiene i conti della casera."}
   - {id: f_gaspare_bambino, noto_ai_pg: true, stato: confermato, entita: [png_gaspare],
-     testo: "Da bambino Gaspare fu malato di febbre, l'inverno della prima neve di sessant'anni fa, e guarì."}
+     testo: "Da bambino Gaspare fu malato di una febbre forte, e guarì."}
   - {id: f_zelia_sorella, noto_ai_pg: true, stato: confermato, entita: [png_zelia],
      testo: "Zelia, quindici anni, è la sorella della sposa, e scrive tutto in un quaderno."}
   - {id: f_leggenda_bonfanti, noto_ai_pg: true, stato: confermato, entita: [png_adelina],
@@ -66,7 +66,7 @@ canone:
   - {id: f_adelina_racconta, noto_ai_pg: true, stato: confermato, entita: [png_adelina],
      testo: "Da ventotto anni Adelina racconta al Sasso la storia dell'anello a ogni nozze di casa Bonfanti."}
   - {id: f_dote_prato, noto_ai_pg: true, stato: confermato, entita: [png_adelina, png_gaspare],
-     testo: "La dote della sposa è il Prato Alto, il pascolo migliore dei Bonfanti: passa agli sposi se le nozze sono benedette oggi."}
+     testo: "Adelina ha promesso agli sposi come dote il Prato Alto, il pascolo migliore dei Bonfanti, se le nozze sono benedette oggi; il prato lo amministra Gaspare."}
   - {id: f_dono_morlacchi, noto_ai_pg: true, stato: confermato, entita: [png_ettore],
      testo: "Il dono dei Morlacchi agli sposi è la casetta del lavatoio, per passare l'inverno in paese."}
   - {id: f_festa_casera, noto_ai_pg: true, stato: confermato, entita: [n_casera],
@@ -98,11 +98,11 @@ canone:
 
   # --- Nascosti: il giorno della prima neve di sessant'anni fa (r_passo) --------------------------
   - {id: f_gaspare_febbre, noto_ai_pg: false, stato: confermato, entita: [png_gaspare],
-     testo: "Quel giorno Gaspare, a sei anni, bruciava di febbre, e il medico di Pontebruno non voleva salire con la neve."}
+     testo: "Quel giorno Gaspare, a sei anni, bruciava di febbre dalla sera prima, e con la neve il medico di Pontebruno non sarebbe salito da solo."}
   - {id: f_ettore_medico, noto_ai_pg: false, stato: confermato, entita: [png_ettore],
      testo: "Quel giorno Ettore scese a valle con il mulo e portò su il medico nella tormenta, fino a casa Bonfanti, a notte."}
   - {id: f_ettore_tacque, noto_ai_pg: false, stato: confermato, entita: [png_ettore],
-     testo: "Ettore chiese al medico e a Tilde di dire solo che l'aveva portato su un mulattiere: il vecchio Bonfanti non avrebbe accettato l'aiuto di un Morlacchi."}
+     testo: "Ettore chiese al medico e a Tilde di dire solo che l'aveva portato su un mulattiere di Pontebruno: il vecchio Bonfanti non avrebbe accettato l'aiuto di un Morlacchi."}
   - {id: f_notte_sasso, noto_ai_pg: false, stato: confermato, entita: [png_ettore, n_sasso],
      testo: "Quella notte Ettore salì al Sasso con una lanterna, e non trovò nessuno."}
   - {id: f_lettera_rimandata, noto_ai_pg: false, stato: confermato, entita: [png_adelina, png_ettore],
@@ -110,7 +110,7 @@ canone:
   - {id: f_lettera_giacca, noto_ai_pg: false, stato: confermato, entita: [png_ettore],
      testo: "Ettore porta da sessant'anni la lettera chiusa nella tasca interna della giacca."}
   - {id: f_campanella, noto_ai_pg: false, stato: confermato, entita: [n_casa_bonfanti, png_gaspare],
-     testo: "La campanella da mulo appesa al camino di casa Bonfanti la lasciò Ettore a Gaspare bambino, quella notte."}
+     testo: "La campanella da mulo che Gaspare tiene nel cassetto dello scrittoio, avvolta in un fazzoletto, la lasciò Ettore a Gaspare bambino, quella notte."}
   - {id: f_tilde_ricorda, noto_ai_pg: false, stato: confermato, entita: [n_casera],
      testo: "Quella notte Tilde aiutava il medico, e vide il ragazzo dei Morlacchi alla porta con il mulo."}
   - {id: f_ettore_alba, noto_ai_pg: false, stato: confermato, entita: [png_ettore, n_sasso],
@@ -158,29 +158,29 @@ orologi:
     pieni_all_inizio: 0
     # Orologio di tutta la sessione (due ore, tre scene): un segno ogni sette risposte al massimo, più uno
     # a ogni cambio di scena. I segni si sentono e si vedono da tutti e tre i luoghi.
-    segno_almeno_ogni: 7
+    segno_almeno_ogni: 6
     segni:
       - "La neve torna a cadere fitta, a fiocchi grossi come piume."
-      - "Dal Sasso arriva il corno del Custode, un richiamo lungo e basso."
+      - "Dal Sasso arriva il corno, un richiamo lungo e basso."
       - "Le ombre dei larici scendono sulla neve fino alle prime case."
-      - "Il corno del Custode chiama di nuovo, e la luce diventa gialla."
+      - "Il corno chiama di nuovo dal Sasso, e la luce diventa gialla."
       - "Dalla stalla dei Morlacchi arriva il tintinnio dei ferri sui basti."
       - "In paese si accendono le lanterne della processione, una per porta."
-      - "Il corno chiama ancora: la processione della sposa si mette in cammino."
+      - "Il corno chiama ancora, e l'ultima luce lascia i tetti del paese."
       - "Il corno suona tre volte, e il sole tocca il passo."
     avanza_quando:
-      - "almeno un segno ogni sette risposte del narratore, in tutte le scene: quando tocca, il Motore scrive nel contesto «mostralo in questa risposta»"
+      - "almeno un segno ogni sei risposte del narratore, in tutte le scene: quando tocca, il Motore scrive nel contesto «mostralo in questa risposta»"
       - "più uno a ogni cambio di scena: il vicolo, la salita e le discussioni consumano il pomeriggio. Il segno guadagnato così si mostra nella prima risposta della scena nuova"
-      - "all'inizio della scena del Sasso, se è sotto sei, sale a sei"
+      - "all'inizio della scena del Sasso, se è sotto sei, sale a sei; quando al Sasso la storia è stata raccontata e l'anello è al dito della sposa, sale a otto. Il Motore oggi non applica queste due regole: le applica il master dal pannello (README)"
       - "mai due segni nella stessa risposta"
-    al_completo: "Il sole tocca il passo e il corno suona tre volte. Se la sposa ha l'anello al dito con la sua storia raccontata, le nozze sono benedette; se no, il Custode chiude il libro: niente benedizione fino a primavera, e all'alba Tonio scende con i muli. Chi racconta decide che cosa ripeterà il paese. La leggenda dei Bonfanti: Ettore se ne va e si riprende la casetta del lavatoio, e la faida passa agli sposi. La verità detta da altri: Adelina, umiliata, non mette l'anello, lo mette Marta, e Adelina ritira la dote, così il Prato Alto resta a Gaspare. La verità detta da Adelina: perde per sempre la voce del Sasso, che passa a Zelia, e l'anello torna ai Morlacchi. Vedi il taglio della scena del Sasso."
+    al_completo: "Il sole tocca il passo e il corno suona tre volte. Se prima del tramonto la sposa ha avuto l'anello al dito con la sua storia raccontata, le nozze sono benedette; se no, il Custode chiude il Libro: niente benedizione fino a primavera, e all'alba Tonio scende con i muli. Chi racconta decide che cosa ripeterà il paese. La leggenda dei Bonfanti: Ettore se ne va e si riprende la casetta del lavatoio, e la faida passa agli sposi. La verità detta da altri: Adelina, umiliata davanti al paese, lascia l'anello a Marta e ritira la dote, così il Prato Alto resta in mano a Gaspare; i Bonfanti perdono la voce del Sasso. La verità detta da Adelina: le due case si riconciliano, ma per la regola del Sasso i Bonfanti perdono la voce, e da allora la loro storia la racconta Ettore: Zelia non la racconterà mai. Vedi il taglio della scena del Sasso."
 
   - id: o_lite
     nome: "La festa si spacca in due"
     pericolo: p_lite
     segmenti: 6
     pieni_all_inizio: 0
-    segno_almeno_ogni: 2
+    segno_almeno_ogni: 3
     segni:
       - "Dal lato dei Morlacchi qualcuno batte il bicchiere sul tavolo, tre volte."
       - "Un Bonfanti spinge una forma, e la riga di formaggio si allarga."
@@ -189,10 +189,10 @@ orologi:
       - "Due cugini si prendono per il bavero, petto contro petto, sopra le forme."
       - "Ettore batte il bastone, e i Morlacchi portano fuori le panche."
     avanza_quando:
-      - "almeno un segno ogni due risposte del narratore, mentre i PG sono alla casera"
-      - "subito, anche se la risposta precedente ne aveva uno, quando un PG accusa davanti a tutti una delle due famiglie senza una prova"
+      - "almeno un segno ogni tre risposte del narratore, mentre i PG sono alla casera"
+      - "subito, anche se la risposta precedente ne aveva uno, quando un PG accusa davanti a tutti una delle due famiglie senza una prova, o viene sorpreso a frugare nella giacca di Ettore"
       - "mai due segni nella stessa risposta"
-    al_completo: "I Morlacchi portano le loro panche fuori sull'aia e aspettano il tramonto al freddo: la festa è finita, e al Sasso le due case salgono separate. Ettore non parla più a quattr'occhi con nessuno: le sue confidenze sono chiuse, resta solo ciò che si trova da sé. Per riportare i Morlacchi dentro serve una prova che Bastiano non c'entra, o l'anello in mano, e costa a chi la porta una promessa davanti a tutte e due le case."
+    al_completo: "I Morlacchi portano le loro panche fuori sull'aia e aspettano il tramonto al freddo: la festa è finita, e al Sasso le due case salgono separate. Per riportarli dentro serve mostrare a tutta la sala che Bastiano ferrava un mulo a mezzogiorno: allora le panche rientrano, e la lite si ferma lì. Se nessuno lo fa, al Sasso Ettore se ne va alla prima parola storta."
 
   - id: o_zio
     nome: "Lo zio cerca l'anello"
@@ -239,8 +239,8 @@ colli_di_bottiglia:
     ostacolo: "Riavere l'anello prima che il sole tocchi il passo."
     soluzioni:
       - "Seguire le impronte dalla porta di dietro della casera fino alla stalla dei Bonfanti, e guardare nel campanaccio muto della Duchessa."
-      - "Convincere Zelia: le basta una promessa che al Sasso si racconterà la storia vera, o vedersi davanti la macchia d'inchiostro della scatolina, in privato."
-      - "Capire i gesti della sposa, che non può parlare: fa le corna con le dita e scuote un campanaccio invisibile."
+      - "Convincere Zelia, in privato: con il capello rosso e la macchia d'inchiostro della scatolina; o con la promessa che al Sasso si racconterà la storia vera, se la fa la cugina Livia o chi ha letto le lettere della soffitta."
+      - "Capire i gesti della sposa, che non può parlare: si spolvera la paglia dal vestito guardando la sorella, e fa le corna con le dita."
       - "Accorgersi, quando la processione parte, che la Duchessa cammina con il campanaccio muto."
       - "Se l'ha preso Gaspare: mostrare ad Adelina il contratto del pascolo, coglierlo con le dita nel taschino davanti a qualcuno, o promettergli il silenzio sulla caparra."
   - id: cb_lettera
@@ -255,7 +255,7 @@ colli_di_bottiglia:
     soluzioni:
       - "Darle in privato la lettera chiusa di Ettore: la legge, e sa perché lui non venne."
       - "Raccontarle in privato ciò che ricorda Tilde, o leggerle la riga del Libro del Sasso su quella notte."
-      - "Mostrarle la campanella del camino e il ferro di cavallo inciso, e chiederle chi la lasciò al fratello."
+      - "Mostrarle la campanella del cassetto di Gaspare, con il ferro di cavallo inciso, e chiederle chi la lasciò al fratello."
       - "Ricordarle davanti al Sasso che il paese ripeterà la sua storia per sempre: solo se ha già saputo perché Ettore non venne."
   - id: cb_lite
     ostacolo: "Tenere i Morlacchi alla festa, e fuori dalla lite, fino al tramonto."
@@ -290,7 +290,7 @@ nodi:
   - id: n_sasso
     tipo: luogo
     nome: "Il Sasso delle Promesse"
-    abbozzo: "Una grande pietra piatta sotto un larice, sopra il paese, a venti minuti di salita nella neve. Accanto c'è il casotto di legno del Custode, con il corno appeso alla porta. Nel pomeriggio il Custode spazza la neve e prepara le lanterne."
+    abbozzo: "Una grande pietra piatta sotto un larice, sopra il paese, a venti minuti di salita nella neve. Accanto c'è il casotto di legno del Custode, con il corno appeso alla porta. Nel pomeriggio il nipote del Custode spazza la neve, prepara le lanterne e suona il corno a ogni mezz'ora."
     noto_ai_pg: true
     collegamenti: [n_casera, e_tramonto]
   - id: n_valle
@@ -314,7 +314,7 @@ sessione:
     ingresso_o_guardiano: "La casera divisa in due da una riga di forme, con la scatolina vuota sul tavolo alto e due vecchi che non si guardano."
     enigma_o_sfida_sociale: "Chi ha preso l'anello: lo zio accusa il garzone dei Morlacchi, e le impronte nella neve vanno da un'altra parte."
     trucco_o_battuta_d_arresto: "A casa Bonfanti la sorella della sposa nega, e lo zio cerca l'anello prima dei PG; in soffitta ci sono lettere d'amore che non sono del nonno."
-    climax: "Il tramonto al Sasso: chi mette l'anello al dito della sposa, e quale storia sente il paese. La leggenda, e Ettore se ne va; la verità detta da altri, e Adelina è umiliata; la verità detta da lei, e perde la voce del Sasso."
+    climax: "Il tramonto al Sasso: quale storia sente il paese mentre l'anello va al dito della sposa. La leggenda, e Ettore se ne va; la verità detta da altri, e Adelina è umiliata e ritira la dote; la verità detta da lei, e i Bonfanti perdono per sempre la voce del Sasso."
     ricompensa_o_colpo_di_scena: "Sessant'anni fa Ettore non scappò: portava su il medico per Gaspare bambino, nella tormenta, e al Sasso arrivò a notte."
   scene_potenziali: [scena_casera, scena_casa_bonfanti, scena_sasso]
   chiusura: "Una scelta aperta: il contratto di Gaspare con Sior Bortolo, che il garzone aspetta di far firmare; Zelia e la voce del Sasso; e i Morlacchi, che all'alba scendono a valle. Si chiede ai giocatori cosa pensano di fare."
@@ -465,16 +465,16 @@ preparazione:
          cosa: "Al Sasso Ettore dà ad Adelina l'anello di sua madre, con il ferro di cavallo inciso dentro, e incidono sulla pietra una A e una E: si sposeranno alla prima neve."}
       - {id: t_ultima_lettera, quando: {anni_fa: 60, giorni_fa: 18}, fatti: [f_lettere_soffitta],
          cosa: "L'ultima lettera di Ettore prima della neve: porta l'anello di mia madre, e alla prima neve ci vediamo al Sasso."}
-      - {id: t_febbre, quando: {anni_fa: 60, ora: "05:00"}, fatti: [f_gaspare_febbre, f_gaspare_bambino],
-         cosa: "La mattina della prima neve Gaspare, sei anni, brucia di febbre. Il medico di Pontebruno manda a dire che con la neve non sale."}
+      - {id: t_febbre, quando: {anni_fa: 60, giorni_fa: 1, ora: "20:00"}, fatti: [f_gaspare_febbre, f_gaspare_bambino],
+         cosa: "La sera prima della prima neve Gaspare, sei anni, comincia a bruciare di febbre. Di notte il cielo si chiude, e nessuno dei Bonfanti osa scendere a Pontebruno."}
       - {id: t_ettore_parte, quando: {anni_fa: 60, ora: "06:00"}, fatti: [f_ettore_medico],
-         cosa: "Ettore lo sa dalla serva dei Bonfanti, e scende a valle con il mulo a prendere il medico, senza dirlo a nessuno."}
+         cosa: "Ettore lo sa dalla serva dei Bonfanti, e all'alba scende a valle con il mulo a prendere il medico, senza dirlo a nessuno: il medico, con la neve, da solo non salirebbe."}
       - {id: t_attesa, quando: {anni_fa: 60, ora: "15:00"}, fatti: [f_attesa_sasso],
          cosa: "Adelina sale al Sasso con l'anello al dito e aspetta, sola, sotto la neve."}
       - {id: t_tramonto_60, quando: {anni_fa: 60, ora: "17:00"}, fatti: [f_attesa_sasso],
          cosa: "Il sole tocca il passo e nessuno benedice. Adelina aspetta fino al buio, poi scende e dorme dalla zia, in fondo al paese, per non vedere nessuno."}
       - {id: t_medico_arriva, quando: {anni_fa: 60, ora: "20:30"}, fatti: [f_ettore_medico, f_ettore_tacque, f_tilde_ricorda, f_campanella],
-         cosa: "Ettore arriva a casa Bonfanti con il medico sul mulo. Chiede al medico e a Tilde di dire solo «un mulattiere», e lascia al bambino la campanella del mulo."}
+         cosa: "Ettore arriva a casa Bonfanti con il medico sul mulo. Chiede al medico e a Tilde di dire solo «un mulattiere di Pontebruno», e lascia al bambino la campanella del mulo."}
       - {id: t_notte_sasso, quando: {anni_fa: 60, ora: "21:00"}, fatti: [f_notte_sasso],
          cosa: "Ettore sale al Sasso con la lanterna, e non trova nessuno. Il Custode di allora lo vede dal casotto."}
       - {id: t_libro_notte, quando: {anni_fa: 60, ora: "22:00"},
@@ -486,10 +486,10 @@ preparazione:
       - {id: t_nozze_marta, quando: {anni_fa: 28}, fatti: [f_adelina_racconta, f_catenine],
          cosa: "Alle nozze di neve di Marta, Adelina mette per la prima volta l'anello al dito di una sposa, e racconta la leggenda dei Bonfanti. Il Custode la scrive nel libro."}
       # --- le settimane prima ---------------------------------------------------------------------
-      - {id: t_caparra, quando: {giorni_fa: 30}, fatti: [f_caparra, f_contratto, f_caparra_spesa],
-         cosa: "Gaspare prende da Sior Bortolo venti fiorini di caparra per il pascolo del Prato Alto l'estate prossima, e paga con quelli il caldaio nuovo."}
-      - {id: t_dote, quando: {giorni_fa: 20}, fatti: [f_dote_prato, f_gaspare_vuole],
-         cosa: "Adelina annuncia la dote di Agnese: il Prato Alto, se le nozze si benedicono alla prima neve. Gaspare sorride, e da allora spera che saltino."}
+      - {id: t_dote, quando: {giorni_fa: 40}, fatti: [f_dote_prato],
+         cosa: "Adelina annuncia la dote di Agnese: il Prato Alto, se le nozze si benedicono alla prima neve. Gaspare sorride e annota."}
+      - {id: t_caparra, quando: {giorni_fa: 30}, fatti: [f_caparra, f_contratto, f_caparra_spesa, f_gaspare_vuole],
+         cosa: "Gaspare ha bisogno del caldaio nuovo e non ha i soldi: prende da Sior Bortolo venti fiorini di caparra per il pascolo del Prato Alto l'estate prossima, e da allora spera che le nozze saltino."}
       - {id: t_zelia_soffitta, quando: {giorni_fa: 7}, fatti: [f_zelia_soffitta],
          cosa: "Cercando il velo della sposa nella cassapanca della soffitta, Zelia trova le lettere di Ettore e le legge tutte."}
       - {id: t_lettera_livia, quando: {giorni_fa: 6},

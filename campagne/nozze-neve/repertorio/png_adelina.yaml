@@ -74,7 +74,7 @@ battute:
     max_usi: 1
 
   # --- selezionabili: menzogne -------------------------------------------------------------------------
-  - id: ade_anello_versione
+  - id: ade_da_dove
     chi: png_adelina
     tipo: menzogna
     quando: "un PG chiede ad Adelina da dove viene l'anello"
@@ -86,7 +86,7 @@ battute:
       - ["[narratore] Adelina si aggiusta lo scialle sulle spalle, due volte, senza fretta.", "[png_adelina] Te l'ho detto. Di mia madre, e basta."]
     effetti: {menzogna_detta: ade_anello}
     max_usi: 2
-  - id: ade_neve_versione
+  - id: ade_quel_giorno
     chi: png_adelina
     tipo: menzogna
     quando: "un PG chiede ad Adelina della prima neve di sessant'anni fa"
@@ -108,7 +108,7 @@ battute:
     richiede: {privata: true, indizi_rivelati: [i_lettere], battute_non_usate: [ade_anello_ferro]}
     testo:
       - "[narratore] Adelina guarda il nastro rosso, e le mani le restano ferme sullo scialle."
-      - "[png_adelina] Me l'ha dato lui, sessant'anni fa. Al Sasso, per sposarmi alla prima neve."
+      - "[png_adelina] Me l'ha dato quello là, il Morlacchi, sessant'anni fa. Al Sasso, per sposarmi alla prima neve."
       - "[png_adelina] Mia madre portava la catenina, come tutte. L'anello è venuto dopo, e mio padre ha fatto il resto."
     effetti: {rivela_indizi: [i_adelina_anello], fatti_noti: [f_anello_promessa]}
     max_usi: 1
@@ -120,7 +120,7 @@ battute:
     richiede: {privata: true, indizi_rivelati: [i_ferro_inciso], battute_non_usate: [ade_anello_lettere]}
     testo:
       - "[narratore] Adelina passa il pollice sul ferro di cavallo, piano, come su una cicatrice vecchia."
-      - "[png_adelina] Il ferro dei Morlacchi. Me l'ha dato lui, sessant'anni fa, per sposarmi."
+      - "[png_adelina] Il ferro dei Morlacchi. Me l'ha dato quello là, sessant'anni fa, per sposarmi."
       - "[png_adelina] Mia madre portava la catenina, come tutte. L'anello è venuto dopo, e mio padre ha fatto il resto."
     effetti: {rivela_indizi: [i_adelina_anello], fatti_noti: [f_anello_promessa]}
     max_usi: 1
@@ -134,7 +134,7 @@ battute:
       - "[narratore] Adelina riconosce la grafia, e per un momento le manca il fiato."
       - "[narratore] Apre la lettera con le dita che tremano, e legge muovendo le labbra."
       - "[png_adelina] Io l'ho aspettato al Sasso fino al buio. E lui era sul passo, per mio fratello."
-      - "[png_adelina] Sessant'anni a dire che era scappato. Ettore, vecchio mulo testardo."
+      - "[png_adelina] Sessant'anni a dire che era scappato. Che vecchia testarda."
     effetti: {rivela_indizi: [i_adelina_neve, i_lettera_chiusa], fatti_noti: [f_attesa_sasso]}
     max_usi: 1
   - id: ade_neve_giacca
@@ -147,19 +147,19 @@ battute:
       - "[narratore] Adelina riconosce la grafia, e per un momento le manca il fiato."
       - "[narratore] Apre la lettera con le dita che tremano, e legge muovendo le labbra."
       - "[png_adelina] Io l'ho aspettato al Sasso fino al buio. E lui era sul passo, per mio fratello."
-      - "[png_adelina] Sessant'anni a dire che era scappato. Ettore, vecchio mulo testardo."
+      - "[png_adelina] Sessant'anni a dire che era scappato. Che vecchia testarda."
     effetti: {rivela_indizi: [i_adelina_neve, i_lettera_chiusa], fatti_noti: [f_attesa_sasso]}
     max_usi: 1
   - id: ade_neve_tilde
     chi: png_adelina
     tipo: confessione
-    quando: "in privato, un PG ripete ad Adelina ciò che ha gridato Tilde"
+    quando: "in privato, un PG ripete ad Adelina ciò che ha detto Tilde al camino"
     temi: [tilde, medico, mulo, febbre]
     richiede: {privata: true, indizi_rivelati: [i_tilde], battute_non_usate: [ade_neve_lettera, ade_neve_giacca]}
     testo:
       - "[narratore] Adelina resta ferma, con le chiavi strette nel pugno."
       - "[png_adelina] Il medico sul mulo dei Morlacchi. E io al Sasso, fino al buio, ad aspettarlo."
-      - "[png_adelina] Sessant'anni a dire che era scappato. Ettore, vecchio mulo testardo."
+      - "[png_adelina] Sessant'anni a dire che era scappato. Che vecchia testarda."
     effetti: {rivela_indizi: [i_adelina_neve], fatti_noti: [f_attesa_sasso]}
     max_usi: 1
 
@@ -174,18 +174,29 @@ battute:
       - "[narratore] Adelina vi toglie la scatolina di mano, svelta come una gatta, e la tiene aperta."
       - "[png_adelina] Guardare sì, toccare no. È roba di casa."
     max_usi: 1
+  - id: ade_anello_reso
+    chi: png_adelina
+    tipo: momento
+    scena: scena_casera
+    quando: "prima del Sasso, un PG restituisce l'anello ritrovato ad Adelina"
+    temi: [restituisco, ridò, consegno, riportiamo, ritrovato]
+    testo:
+      - "[narratore] Adelina prende l'anello e lo chiude nel pugno, senza guardarlo."
+      - "[png_adelina] Il formaggio buono vuole tempo. Questo lo tengo io, fino al Sasso."
+    max_usi: 1
   - id: ade_sasso_a
     chi: png_adelina
     tipo: menzogna
     scena: scena_sasso
-    quando: "al Sasso, un PG mette l'anello in mano ad Adelina"
-    temi: [consegno, restituisco, ridò, ridiamo, porgo]
-    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}, battute_non_usate: [ade_neve_lettera, ade_neve_giacca, ade_neve_tilde, ade_sasso_c]}
+    quando: "al Sasso, Adelina alza l'anello per raccontarne la storia"
+    temi: [racconta, raccontare, storia, consegno, restituisco, ridò, porgo, benedizione]
+    richiede: {orologio: {id: o_tramonto, min: 4, max: 7}, battute_non_usate: [ade_neve_lettera, ade_neve_giacca, ade_neve_tilde, ade_sasso_c]}
     testo:
-      - "[narratore] Adelina prende l'anello, e si aggiusta lo scialle sulle spalle, due volte."
+      - "[narratore] Adelina alza l'anello nella luce, e si aggiusta lo scialle sulle spalle, due volte."
       - "[png_adelina] Questo anello era di mia madre, Bonfanti come me."
       - "[png_adelina] Sessant'anni fa un Morlacchi provò a portarlo via. Poi scappò a valle, con la neve."
       - "[png_adelina] È rimasto ai Bonfanti, come la parola."
+      - "[narratore] Mette l'anello al dito della sposa, e Agnese dice sì."
       - "[narratore] Dalla parte dei Morlacchi, Ettore batte il bastone due volte e si rimette il cappello."
     effetti: {menzogna_detta: ade_anello}
     max_usi: 1
@@ -193,14 +204,15 @@ battute:
     chi: png_adelina
     tipo: momento
     scena: scena_sasso
-    quando: "al Sasso, un PG mette l'anello in mano ad Adelina"
-    temi: [consegno, restituisco, ridò, ridiamo, porgo]
-    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}, indizi_rivelati: [i_adelina_neve], battute_non_usate: [ade_sasso_a, ade_sasso_c]}
+    quando: "al Sasso, Adelina alza l'anello per raccontarne la storia"
+    temi: [racconta, raccontare, storia, consegno, restituisco, ridò, porgo, benedizione]
+    richiede: {orologio: {id: o_tramonto, min: 4, max: 7}, indizi_rivelati: [i_adelina_neve], battute_non_usate: [ade_sasso_a, ade_sasso_c]}
     testo:
-      - "[narratore] Adelina prende l'anello, lo guarda a lungo, e si toglie lo scialle."
+      - "[narratore] Adelina alza l'anello nella luce, e si toglie lo scialle."
       - "[png_adelina] Questo anello non era di mia madre. Me l'ha dato Ettore, sessant'anni fa, per sposarmi."
-      - "[png_adelina] Io l'ho aspettato qui fino al buio. Lui era sul passo, con il medico per mio fratello."
-      - "[png_adelina] La storia giusta è questa. E da stasera, al Sasso, non racconto più io."
+      - "[png_adelina] Io l'ho aspettato qui fino al buio. Lui era sul passo, col medico per Gaspare."
+      - "[narratore] Ettore le va accanto, e lei mette l'anello al dito della sposa. Agnese dice sì."
+      - "[png_adelina] Abbiamo raccontato il falso, noi Bonfanti. Da stasera la nostra storia la racconta lui."
     effetti: {fatti_noti: [f_anello_promessa, f_attesa_sasso]}
     max_usi: 1
   - id: ade_sasso_c
@@ -209,11 +221,11 @@ battute:
     scena: scena_sasso
     quando: "al Sasso, davanti al paese, qualcun altro racconta la storia dell'anello al posto di Adelina"
     temi: [racconto, raccontare, racconta, vera]
-    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}, battute_non_usate: [ade_sasso_b, ade_sasso_a]}
+    richiede: {orologio: {id: o_tramonto, min: 4, max: 7}, battute_non_usate: [ade_sasso_b, ade_sasso_a]}
     testo:
       - "[narratore] Adelina ascolta fino in fondo, senza muoversi, con il paese che la guarda."
       - "[narratore] Poi si toglie lo scialle nero e lo piega in quattro, con cura."
       - "[png_adelina] Bene. Il paese ha la sua storia nuova. Marta, mettilo tu."
-      - "[png_adelina] E il Prato Alto resta mio. Il formaggio buono vuole tempo."
-      - "[narratore] Scende verso il paese da sola, e nessuno la ferma."
+      - "[png_adelina] E il Prato Alto, finché campo, lo tengo io."
+      - "[narratore] Marta mette l'anello al dito della figlia, e Agnese dice sì. Adelina scende verso il paese da sola."
     max_usi: 1

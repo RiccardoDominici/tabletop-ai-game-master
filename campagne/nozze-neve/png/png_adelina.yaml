@@ -28,7 +28,7 @@ paura: "Che il paese rida di lei, come la sera in cui aspettò al Sasso fino al 
 segreto:
   testo: "L'anello gliel'ha dato Ettore sessant'anni fa, per sposarla alla prima neve. Lo aspettò al Sasso fino al buio, poi disse a tutti che lui era scappato, e suo padre chiamò l'anello «della bisnonna». Tre giorni dopo gli rimandò indietro, chiusa, la sua lettera."
   chi_altro_sa: [png_ettore]
-  se_rivelato: "Davanti al paese, se lo dice un altro: si toglie lo scialle, lascia l'anello alla seconda della casa e ritira la dote. Se lo dice lei: per la regola del Sasso non racconta più, e la voce passa a Zelia."
+  se_rivelato: "Se lo dice un altro, davanti al paese: si toglie lo scialle, lascia l'anello alla seconda della casa e ritira la dote. In tutti e due i casi, per la regola del Sasso, i Bonfanti perdono la voce: la loro storia, da allora, la racconta Ettore."
 
 voce:
   tts: {voce_id: nadine, eta_apparente: "75-80", altezza: media, velocita: 1.0, timbro: "secco e chiaro, con una risata corta in fondo"}
@@ -36,7 +36,7 @@ voce:
   stile: "Frasi di tre-nove parole. Proverbi di casera: latte, caglio, crosta, stagionatura. Chiude spesso con una sentenza."
   tic: ["«Il formaggio buono vuole tempo.»"]
   gesto: "fa tintinnare le chiavi alla cintura"
-  mai_dice: ["il nome di Ettore: dice «quello là» o «il vecchio Morlacchi», finché non ha letto la sua lettera", "la parola «promessa», finché non ha ceduto", "scusa o perdono, finché non sa perché lui non venne"]
+  mai_dice: ["il nome di Ettore: dice «quello là» o «il vecchio Morlacchi», finché non sa perché lui non venne", "la parola «promessa», finché non ha ceduto", "scusa o perdono, finché non sa perché lui non venne"]
   battuta_campione: "Il formaggio buono vuole tempo. Gli anelli no: o tornano, o li vado a prendere."
 
 sa:
@@ -114,8 +114,8 @@ iniziative:
   - "Al Sasso, se ha l'anello in mano, comincia la storia di sempre."
 
 evoluzione:
-  - {se: "legge la lettera di Ettore, o sa da Tilde del medico", allora: "smette di chiamarlo «quello là»; al Sasso, se ha l'anello, racconta la storia vera, e dopo la voce del Sasso passa alla nipote del focolare"}
-  - {se: "qualcun altro racconta la verità al posto suo, davanti al paese", allora: "si toglie lo scialle, dice a Marta di mettere l'anello, e scende in paese da sola; ritira la dote"}
+  - {se: "legge la lettera di Ettore, o sa da Tilde del medico", allora: "smette di chiamarlo «quello là»; al Sasso racconta la storia vera e mette l'anello alla sposa, sapendo che la sua casa perde la voce"}
+  - {se: "qualcun altro racconta la verità al posto suo, davanti al paese", allora: "si toglie lo scialle, dice a Marta di mettere l'anello, ritira la dote e scende in paese da sola"}
   - {se: "racconta la leggenda e Ettore se ne va", allora: "ha vinto, e lo sa: per tutta la sera non guarda nessuno negli occhi"}
   - {se: "il sole tocca il passo senza anello", allora: "dà la colpa ai Morlacchi davanti a tutti, e la faida si fa più dura"}
 

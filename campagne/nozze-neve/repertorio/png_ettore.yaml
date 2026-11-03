@@ -3,7 +3,6 @@
 # Frasi di due-sei parole, lessico di mulattiera. Tic: «Parla dall'orecchio buono, eh.»
 # Segnale quando mente: si tira la barba con tutte e due le mani.
 # Menzogne registrate: ett_anello = «di chi è l'anello»; ett_neve = «perché sessant'anni fa non salì al Sasso».
-# Le sue confidenze si chiudono quando la festa si spacca (o_lite al completo).
 
 battute:
 
@@ -75,7 +74,7 @@ battute:
     max_usi: 1
 
   # --- selezionabili: menzogne -------------------------------------------------------------------------
-  - id: ett_anello_versione
+  - id: ett_di_chi
     chi: png_ettore
     tipo: menzogna
     quando: "un PG chiede a Ettore di chi è l'anello"
@@ -87,7 +86,7 @@ battute:
       - ["[narratore] Ettore si tira la barba, forte, con tutte e due le mani.", "[png_ettore] Te l'ho detto. Nostro, e se l'è tenuto."]
     effetti: {menzogna_detta: ett_anello}
     max_usi: 2
-  - id: ett_neve_versione
+  - id: ett_quel_giorno
     chi: png_ettore
     tipo: menzogna
     quando: "un PG chiede a Ettore della prima neve di sessant'anni fa"
@@ -106,7 +105,7 @@ battute:
     tipo: confessione
     quando: "in privato, un PG mostra a Ettore le lettere della soffitta"
     temi: [lettere, nastro, soffitta, firmate]
-    richiede: {privata: true, indizi_rivelati: [i_lettere], orologio: {id: o_lite, min: 0, max: 5}, battute_non_usate: [ett_anello_ferro]}
+    richiede: {privata: true, indizi_rivelati: [i_lettere], battute_non_usate: [ett_anello_ferro]}
     testo:
       - "[narratore] Ettore guarda il nastro rosso, e si toglie il cappello."
       - "[png_ettore] Le ha tenute. Io le credevo bruciate."
@@ -118,7 +117,7 @@ battute:
     tipo: confessione
     quando: "in privato, un PG mostra a Ettore il ferro di cavallo inciso nell'anello"
     temi: [ferro, inciso, incisione, fascia]
-    richiede: {privata: true, indizi_rivelati: [i_ferro_inciso], orologio: {id: o_lite, min: 0, max: 5}, battute_non_usate: [ett_anello_lettere]}
+    richiede: {privata: true, indizi_rivelati: [i_ferro_inciso], battute_non_usate: [ett_anello_lettere]}
     testo:
       - "[narratore] Ettore prende l'anello tra due dita grosse, e lo avvicina agli occhi."
       - "[png_ettore] Il ferro l'ha inciso mio nonno. Era di mia madre."
@@ -130,7 +129,7 @@ battute:
     tipo: confessione
     quando: "in privato, un PG legge a Ettore la riga del Libro di sessant'anni fa"
     temi: [libro, riga, sessant, aspettato, buio]
-    richiede: {privata: true, indizi_rivelati: [i_libro_notte], orologio: {id: o_lite, min: 0, max: 5}, battute_non_usate: [ett_neve_tilde]}
+    richiede: {privata: true, indizi_rivelati: [i_libro_notte], battute_non_usate: [ett_neve_tilde]}
     testo:
       - "[narratore] Ettore resta zitto e immobile, con le mani strette sul bastone."
       - "[png_ettore] Fino al buio. Mi ha aspettato fino al buio."
@@ -141,12 +140,12 @@ battute:
   - id: ett_neve_tilde
     chi: png_ettore
     tipo: confessione
-    quando: "in privato, un PG ripete a Ettore ciò che ha gridato Tilde"
+    quando: "in privato, un PG ripete a Ettore ciò che ha detto Tilde al camino"
     temi: [tilde, mulo, medico, ricorda]
-    richiede: {privata: true, indizi_rivelati: [i_tilde], orologio: {id: o_lite, min: 0, max: 5}, battute_non_usate: [ett_neve_libro]}
+    richiede: {privata: true, indizi_rivelati: [i_tilde], battute_non_usate: [ett_neve_libro]}
     testo:
       - "[narratore] Ettore resta zitto e immobile, con le mani strette sul bastone."
-      - "[png_ettore] Le avevo detto di stare zitta. Sessant'anni, e ha tenuto."
+      - "[png_ettore] Le avevo detto di stare zitta. Sessant'anni ha tenuto, e oggi parla."
       - "[png_ettore] Io ero sul passo. Il piccolo Gaspare bruciava, e il medico non saliva. L'ho portato su io."
       - "[png_ettore] Al Sasso sono arrivato a notte. E lei non era salita."
     effetti: {rivela_indizi: [i_ettore_neve], fatti_noti: [f_ettore_medico, f_notte_sasso]}
@@ -191,12 +190,12 @@ battute:
     scena: scena_sasso
     quando: "al Sasso, un PG mette l'anello in mano a Ettore"
     temi: [consegno, porgo, ridò, ridiamo]
-    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}, battute_non_usate: [ade_sasso_b, ade_sasso_a, ade_sasso_c, ett_neve_libro, ett_sasso_b]}
+    richiede: {orologio: {id: o_tramonto, min: 4, max: 7}, battute_non_usate: [ade_sasso_b, ade_sasso_a, ade_sasso_c, ett_neve_libro, ett_sasso_b]}
     testo:
       - "[narratore] Ettore prende l'anello e batte il bastone due volte, davanti a tutti."
       - "[png_ettore] Era di mia madre. L'ho dato io alla Bonfanti, per sposarla."
-      - "[png_ettore] Quel giorno ero sul passo. Col medico, per suo fratello. Lei non è salita."
-    effetti: {fatti_noti: [f_anello_promessa, f_ettore_medico]}
+      - "[png_ettore] Lei non è salita al Sasso, quel giorno. E io non ho più chiesto."
+    effetti: {fatti_noti: [f_anello_promessa]}
     max_usi: 1
   - id: ett_sasso_b
     chi: png_ettore
@@ -204,7 +203,7 @@ battute:
     scena: scena_sasso
     quando: "al Sasso, un PG mette l'anello in mano a Ettore"
     temi: [consegno, porgo, ridò, ridiamo]
-    richiede: {orologio: {id: o_tramonto, min: 6, max: 7}, battute_usate: [ett_neve_libro], battute_non_usate: [ade_sasso_b, ade_sasso_a, ade_sasso_c, ett_sasso_a]}
+    richiede: {orologio: {id: o_tramonto, min: 4, max: 7}, battute_usate: [ett_neve_libro], battute_non_usate: [ade_sasso_b, ade_sasso_a, ade_sasso_c, ett_sasso_a]}
     testo:
       - "[narratore] Ettore prende l'anello e batte il bastone due volte, davanti a tutti."
       - "[png_ettore] Era di mia madre. L'ho dato io alla Bonfanti, per sposarla."

@@ -14,7 +14,7 @@ aspetto:
   invarianti: ["ottant'anni", "grosso e un po' curvo", "barba bianca lunga", "cappello di feltro con una piuma di gallo", "fibbia della cintura a ferro di cavallo", "bastone di nocciolo"]
   prompt_immagine: "big slightly stooped 80-year-old mule driver, long white goat-like beard, felt hat with a rooster feather, thick wool jacket, belt buckle shaped like a horseshoe, hazel walking stick, gruff weathered face with kind eyes, snowy mule yard behind him, [STILE]"
   situazioni:
-    - {id: lettera_in_mano, dopo: [nar_giacca_tasca, ett_lettera_data], prompt: "the old mule driver alone in the snow at dusk, turning a yellowed folded letter sealed with red wax in his big hands, hat in his other hand"}
+    - {id: lettera_in_mano, dopo: [nar_giacca_tasca, ett_lettera_data], prompt: "the old mule driver alone in the snow at dusk, one big hand pressed on the empty inner pocket of his jacket, hat in his other hand"}
 
 personalita:
   superficie: ["burbero e rumoroso, batte il bastone per farsi sentire", "fa finta di non sentire ciò che non gli piace", "generoso con le bestie, di poche parole con le persone"]
@@ -112,7 +112,7 @@ evoluzione:
   - {se: "gli mostrano in privato le lettere della soffitta, o il ferro di cavallo dentro l'anello", allora: "si siede, si toglie il cappello e dice da dove viene l'anello"}
   - {se: "sa che lei lo aspettò fino al buio", allora: "racconta il passo e il medico, e dà la lettera a un PG: portagliela tu"}
   - {se: "al Sasso si racconta la leggenda", allora: "si alza, chiama i suoi e se ne va; all'alba si riprende la casetta del lavatoio"}
-  - {se: "Adelina racconta la verità", allora: "le porge la mano, e mette lui l'anello al dito della sposa"}
+  - {se: "Adelina racconta la verità", allora: "le va accanto davanti a tutti, e la chiama per nome mentre lei mette l'anello alla sposa"}
   - {se: "la festa finisce con le panche fuori", allora: "non parla più a quattr'occhi con nessuno"}
 
 statistiche: "popolano robusto (SRD 5.2), Forza alta; non combatte, ma non si sposta"

@@ -13,8 +13,6 @@ aspetto:
   lettura: "Una ragazza lentigginosa di quindici anni, con una treccia rossa e le dita sporche d'inchiostro. Ha un quaderno legato alla cintura con lo spago."
   invarianti: ["quindici anni", "lentiggini", "treccia rossa lunga", "dita macchiate d'inchiostro", "quaderno legato alla cintura con lo spago", "vestito della festa con le maniche troppo lunghe"]
   prompt_immagine: "freckled 15-year-old village girl, long red braid, ink-stained fingers, small notebook tied to her belt with string, feast dress with sleeves too long, cheeky grin, cosy alpine bedroom with a wedding veil on a chair behind her, [STILE]"
-  situazioni:
-    - {id: stalla_duchessa, dopo: [zel_macchia_privato, zel_promessa_privato], prompt: "the girl in a warm low stable, on tiptoe beside an old cow with a huge bronze cowbell, slipping a rolled page of notebook paper into the bell"}
 
 personalita:
   superficie: ["sfacciata e veloce di lingua", "scrive tutto nel quaderno, anche mentre parla", "adora la sorella e la tormenta"]
@@ -68,7 +66,7 @@ mente_su:
     versione: "Ero qui a vestire Agnese, tutto il giorno. Chiedetelo a lei."
     perche: "Se l'anello torna prima del tramonto, la nonna racconta ancora la leggenda."
     segnale: "si mordicchia la punta della treccia"
-    cede_se: "In privato, quando un PG le mostra la macchia d'inchiostro o il capello rosso della scatolina. Oppure in privato, quando un PG le promette che al Sasso si racconterà la storia vera."
+    cede_se: "In privato, quando un PG le mostra il capello rosso della scatolina o le parla della macchia d'inchiostro. Oppure in privato, quando la cugina Livia le promette che al Sasso si racconterà la storia vera. Oppure in privato, quando glielo promette un PG che ha letto le lettere della soffitta."
 
 atteggiamento_pg:
   pg_nando: {stato: amichevole, perche: "un musicista vero, come nei libri", vuole: "una canzone sulla vera storia, da cantare al Sasso"}
@@ -94,7 +92,7 @@ iniziative:
 evoluzione:
   - {se: "le promettono in privato la verità al Sasso", allora: "dice dov'è l'anello, e lascia leggere il quaderno"}
   - {se: "la scoprono davanti allo zio", allora: "diventa formale come un notaio e non dice più niente"}
-  - {se: "la nonna perde la voce del Sasso", allora: "dopo il tramonto la voce passa a lei, e piange per tutta la sera"}
+  - {se: "i Bonfanti perdono la voce del Sasso", allora: "non racconterà mai la storia di casa: piange per tutta la sera, e poi chiede a Ettore di insegnargliela"}
 
 statistiche: "popolana (SRD 5.2), Destrezza alta"
 registro_attivita: []

@@ -24,7 +24,7 @@ battute:
     temi: [orologio]
     richiede: {orologio: {id: o_tramonto, min: 1, max: 1}}
     testo:
-      - "[narratore] Dal Sasso arriva il corno del Custode, un richiamo lungo e basso."
+      - "[narratore] Dal Sasso arriva il corno, un richiamo lungo e basso."
       - "[narratore] In paese qualcuno apre una finestra, per sentire meglio."
     effetti: {avanza_orologio: o_tramonto}
     max_usi: 1
@@ -45,7 +45,7 @@ battute:
     temi: [orologio]
     richiede: {orologio: {id: o_tramonto, min: 3, max: 3}}
     testo:
-      - "[narratore] Il corno del Custode chiama di nuovo, e la luce diventa gialla."
+      - "[narratore] Il corno chiama di nuovo dal Sasso, e la luce diventa gialla."
       - "[narratore] Sui tetti la neve prende il colore del miele."
     effetti: {avanza_orologio: o_tramonto}
     max_usi: 1
@@ -77,8 +77,8 @@ battute:
     temi: [orologio]
     richiede: {orologio: {id: o_tramonto, min: 6, max: 6}}
     testo:
-      - "[narratore] Il corno chiama ancora: la processione della sposa si mette in cammino."
-      - "[narratore] In testa sale piano la Duchessa, e dietro di lei tutto il paese, con le lanterne."
+      - "[narratore] Il corno chiama ancora, e l'ultima luce lascia i tetti del paese."
+      - "[narratore] Sulla neve le ombre sono lunghe e blu, e fa più freddo."
     effetti: {avanza_orologio: o_tramonto}
     max_usi: 1
   - id: nar_sole_8
@@ -269,13 +269,13 @@ battute:
     chi: narratore
     tipo: indizio
     scena: scena_casera
-    quando: "vicino a Tilde, un PG parla della febbre di Gaspare o di sessant'anni fa"
-    temi: [tilde, levatrice, febbre, sessant]
+    quando: "accanto al camino, un PG chiede a Tilde della febbre di Gaspare bambino"
+    temi: [tilde, levatrice, febbre]
     testo:
       - "[narratore] La vecchia Tilde alza la testa e parla forte, perché ci sente poco."
       - "[narratore] Quella notte il piccolo Gaspare scottava, dice."
-      - "[narratore] Il medico arrivò sul mulo dei Morlacchi, con il ragazzo davanti a tirarlo."
-      - "[narratore] Poi chiede chi le ha messo il sale nel vino."
+      - "[narratore] Il medico arrivò sul mulo dei Morlacchi."
+      - "[narratore] A tirarlo c'era il giovane Morlacchi, quello che adesso batte il bastone."
     effetti: {rivela_indizi: [i_tilde], fatti_noti: [f_tilde_ricorda]}
     max_usi: 1
   - id: nar_caldaio
@@ -297,6 +297,19 @@ battute:
     tipo: momento
     quando: "un PG fruga nella giacca di Ettore, appesa o addosso"
     temi: [giacca, frugo, rovisto, sfilo, borseggio]
+    richiede: {battute_non_usate: [nar_giacca_tasca_privato]}
+    testo:
+      - "[narratore] Nella tasca interna c'è una lettera gialla, piegata in quattro e chiusa con la ceralacca."
+      - "[narratore] Sopra, in una grafia storta da mano grossa, c'è scritto: per Adelina."
+      - "[narratore] La carta è morbida come stoffa, a forza di essere toccata."
+    effetti: {fatti_noti: [f_lettera_giacca]}
+    max_usi: 1
+  - id: nar_giacca_tasca_privato
+    chi: narratore
+    tipo: momento
+    quando: "in privato, un PG fruga nella giacca di Ettore"
+    temi: [giacca, frugo, rovisto, sfilo, borseggio]
+    richiede: {privata: true, battute_non_usate: [nar_giacca_tasca]}
     testo:
       - "[narratore] Nella tasca interna c'è una lettera gialla, piegata in quattro e chiusa con la ceralacca."
       - "[narratore] Sopra, in una grafia storta da mano grossa, c'è scritto: per Adelina."
@@ -311,8 +324,9 @@ battute:
     richiede: {battute_usate: [ett_lettera_data], battute_non_usate: [nar_sigillo_preso]}
     testo:
       - "[narratore] La ceralacca si spezza con un rumore secco, come un rametto."
-      - "[narratore] Tuo fratello bruciava di febbre, e il medico non saliva: l'ho portato su io."
-      - "[narratore] Al Sasso era buio. Tieni l'anello finché non mi perdoni."
+      - "[narratore] Ettore scrive che il fratello di Adelina bruciava di febbre, e il medico non saliva."
+      - "[narratore] L'ha portato su lui, col mulo, e al Sasso era già buio."
+      - "[narratore] In fondo, una riga sola: che lei tenga l'anello, finché non lo perdona."
     effetti: {rivela_indizi: [i_lettera_chiusa], fatti_noti: [f_ettore_medico]}
     max_usi: 1
   - id: nar_sigillo_preso
@@ -323,8 +337,9 @@ battute:
     richiede: {battute_usate: [nar_giacca_tasca], battute_non_usate: [nar_sigillo_dato]}
     testo:
       - "[narratore] La ceralacca si spezza con un rumore secco, come un rametto."
-      - "[narratore] Tuo fratello bruciava di febbre, e il medico non saliva: l'ho portato su io."
-      - "[narratore] Al Sasso era buio. Tieni l'anello finché non mi perdoni."
+      - "[narratore] Ettore scrive che il fratello di Adelina bruciava di febbre, e il medico non saliva."
+      - "[narratore] L'ha portato su lui, col mulo, e al Sasso era già buio."
+      - "[narratore] In fondo, una riga sola: che lei tenga l'anello, finché non lo perdona."
     effetti: {rivela_indizi: [i_lettera_chiusa], fatti_noti: [f_ettore_medico]}
     max_usi: 1
 
@@ -346,20 +361,33 @@ battute:
     scena: scena_casa_bonfanti
     quando: "nella stalla, un PG guarda dentro il campanaccio della Duchessa"
     temi: [campanaccio, campanacci, duchessa, batacchio]
-    richiede: {orologio: {id: o_zio, min: 0, max: 3}}
+    richiede: {battute_non_usate: [nar_stalla_guardo_privato], orologio: {id: o_zio, min: 0, max: 3}}
     testo:
-      - "[narratore] Dentro il campanaccio, intorno al batacchio, c'è un foglio di quaderno arrotolato stretto."
+      - "[narratore] Dentro il campanaccio della Duchessa, intorno al batacchio, c'è un foglio di quaderno arrotolato stretto."
+      - "[narratore] Nel foglio c'è l'anello, tiepido del fiato della stalla."
+    effetti: {rivela_indizi: [i_campanaccio], fatti_noti: [f_campanaccio]}
+    max_usi: 1
+  - id: nar_stalla_guardo_privato
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_bonfanti
+    quando: "in privato, nella stalla, un PG guarda dentro il campanaccio della Duchessa"
+    temi: [campanaccio, campanacci, duchessa, batacchio]
+    richiede: {privata: true, battute_non_usate: [nar_stalla_guardo], orologio: {id: o_zio, min: 0, max: 3}}
+    testo:
+      - "[narratore] Dentro il campanaccio della Duchessa, intorno al batacchio, c'è un foglio di quaderno arrotolato stretto."
       - "[narratore] Nel foglio c'è l'anello, tiepido del fiato della stalla."
     effetti: {rivela_indizi: [i_campanaccio], fatti_noti: [f_campanaccio]}
     max_usi: 1
   - id: nar_processione_duchessa
     chi: narratore
     tipo: indizio
-    quando: "la processione è partita, e un PG guarda il campanaccio della Duchessa"
+    scena: scena_sasso
+    quando: "al Sasso, un PG guarda il campanaccio della Duchessa, che ha guidato la processione"
     temi: [duchessa, campanaccio, vacca, mucca, processione]
-    richiede: {orologio: {id: o_tramonto, min: 7, max: 8}, battute_non_usate: [nar_zio_4, nar_stalla_guardo]}
+    richiede: {battute_non_usate: [nar_zio_4, nar_stalla_guardo, nar_stalla_guardo_privato]}
     testo:
-      - "[narratore] La Duchessa cammina in testa alla processione, e il suo campanaccio grande non suona."
+      - "[narratore] La Duchessa si è fermata accanto al Sasso, e il suo campanaccio grande non suona."
       - "[narratore] Dentro, intorno al batacchio, c'è un foglio di quaderno arrotolato stretto."
       - "[narratore] Nel foglio c'è l'anello, freddo di neve."
     effetti: {rivela_indizi: [i_campanaccio], fatti_noti: [f_campanaccio]}
@@ -371,7 +399,7 @@ battute:
     temi: [campanaccio, duchessa, batacchio]
     richiede: {battute_usate: [nar_zio_4]}
     testo:
-      - "[narratore] Il campanaccio della Duchessa suona di nuovo, pieno e tondo."
+      - "[narratore] Il campanaccio della Duchessa suona pieno e tondo, come tutti gli altri."
       - "[narratore] Dentro c'è solo il batacchio, e un angolo di carta strappata, a righe."
     max_usi: 1
   - id: nar_quaderno
@@ -380,10 +408,24 @@ battute:
     scena: scena_casa_bonfanti
     quando: "un PG legge l'ultima pagina del quaderno di Zelia"
     temi: [quaderno, pagina, appunti, capitolo]
+    richiede: {battute_non_usate: [nar_quaderno_privato]}
     testo:
       - "[narratore] L'ultima pagina è scritta fitta, con l'inchiostro che sbava."
-      - "[narratore] La vera storia dell'anello. Capitolo primo: oggi la storia la scrivo io."
-      - "[narratore] Sotto, sottolineato due volte: la Duchessa la tiene per me."
+      - "[narratore] In cima c'è scritto: la vera storia dell'anello, capitolo primo."
+      - "[narratore] Sotto, sottolineato due volte: oggi la storia la scrive lei, e la Duchessa gliela tiene."
+    effetti: {rivela_indizi: [i_quaderno], fatti_noti: [f_zelia_motivo]}
+    max_usi: 1
+  - id: nar_quaderno_privato
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_bonfanti
+    quando: "in privato, un PG legge di nascosto l'ultima pagina del quaderno di Zelia"
+    temi: [quaderno, pagina, appunti, capitolo]
+    richiede: {privata: true, battute_non_usate: [nar_quaderno]}
+    testo:
+      - "[narratore] L'ultima pagina è scritta fitta, con l'inchiostro che sbava."
+      - "[narratore] In cima c'è scritto: la vera storia dell'anello, capitolo primo."
+      - "[narratore] Sotto, sottolineato due volte: oggi la storia la scrive lei, e la Duchessa gliela tiene."
     effetti: {rivela_indizi: [i_quaderno], fatti_noti: [f_zelia_motivo]}
     max_usi: 1
   - id: nar_sposa_mima
@@ -394,9 +436,9 @@ battute:
     temi: [agnese, sposa, gesti, mimare]
     testo:
       - "[narratore] La sposa apre la bocca, si ricorda dell'usanza e la richiude."
-      - "[narratore] Guarda la sorella, e si mette due dita sulla testa, come corna."
-      - "[narratore] Poi scuote il pugno, come un campanaccio. Zelia diventa rossa fino alle orecchie."
-    effetti: {rivela_indizi: [i_sposa_mima]}
+      - "[narratore] Guarda la sorella e si spolvera il vestito, come se avesse addosso la paglia."
+      - "[narratore] Poi si mette due dita sulla testa, come corna. Zelia diventa rossa fino alle orecchie."
+    effetti: {rivela_indizi: [i_sposa_mima], fatti_noti: [f_sposa_vide]}
     max_usi: 1
   - id: nar_cassapanca
     chi: narratore
@@ -404,10 +446,24 @@ battute:
     scena: scena_casa_bonfanti
     quando: "un PG apre la cassapanca della nonna, in soffitta"
     temi: [cassapanca, cassapanche, soffitta, baule, merletti]
+    richiede: {battute_non_usate: [nar_cassapanca_privato]}
     testo:
       - "[narratore] Sotto i merletti c'è un pacco di lettere, legate con un nastro rosso stinto."
       - "[narratore] Sono firmate tutte con una E sola, in una grafia storta da mano grossa."
-      - "[narratore] L'ultima dice: porta l'anello di mia madre, e alla prima neve ci vediamo al Sasso."
+      - "[narratore] L'ultima le chiede di portare l'anello di sua madre al Sasso, alla prima neve."
+    effetti: {rivela_indizi: [i_lettere], fatti_noti: [f_lettere_soffitta]}
+    max_usi: 1
+  - id: nar_cassapanca_privato
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_bonfanti
+    quando: "in privato, un PG apre la cassapanca della nonna, in soffitta"
+    temi: [cassapanca, cassapanche, soffitta, baule, merletti]
+    richiede: {privata: true, battute_non_usate: [nar_cassapanca]}
+    testo:
+      - "[narratore] Sotto i merletti c'è un pacco di lettere, legate con un nastro rosso stinto."
+      - "[narratore] Sono firmate tutte con una E sola, in una grafia storta da mano grossa."
+      - "[narratore] L'ultima le chiede di portare l'anello di sua madre al Sasso, alla prima neve."
     effetti: {rivela_indizi: [i_lettere], fatti_noti: [f_lettere_soffitta]}
     max_usi: 1
   - id: nar_anello_vicino
@@ -415,6 +471,18 @@ battute:
     tipo: indizio
     quando: "un PG esamina da vicino l'anello ritrovato"
     temi: [inciso, incisione, fascia, esamino, ispeziono, rigiro]
+    richiede: {battute_non_usate: [nar_anello_vicino_privato]}
+    testo:
+      - "[narratore] L'anello è d'oro rosso, sottile, con la fascia consumata dagli anni."
+      - "[narratore] Dentro, quasi cancellato, c'è inciso un piccolo ferro di cavallo."
+    effetti: {rivela_indizi: [i_ferro_inciso], fatti_noti: [f_ferro_inciso]}
+    max_usi: 1
+  - id: nar_anello_vicino_privato
+    chi: narratore
+    tipo: indizio
+    quando: "in privato, un PG esamina da vicino l'anello ritrovato"
+    temi: [inciso, incisione, fascia, esamino, ispeziono, rigiro]
+    richiede: {privata: true, battute_non_usate: [nar_anello_vicino]}
     testo:
       - "[narratore] L'anello è d'oro rosso, sottile, con la fascia consumata dagli anni."
       - "[narratore] Dentro, quasi cancellato, c'è inciso un piccolo ferro di cavallo."
@@ -424,11 +492,24 @@ battute:
     chi: narratore
     tipo: indizio
     scena: scena_casa_bonfanti
-    quando: "un PG guarda da vicino la campanella d'ottone del camino"
-    temi: [campanella, ottone, mensola]
+    quando: "un PG guarda la campanella avvolta nel fazzoletto, nel cassetto di Gaspare"
+    temi: [campanella, ottone, fazzoletto]
+    richiede: {battute_non_usate: [nar_campanella_privato]}
     testo:
-      - "[narratore] È una campanella da mulo, d'ottone, con il batacchio legato da un nastrino."
-      - "[narratore] Sul bordo c'è inciso un ferro di cavallo, come sulle borchie dei finimenti dei Morlacchi."
+      - "[narratore] Nel fazzoletto c'è una campanella da mulo, d'ottone, con il batacchio legato da un nastrino."
+      - "[narratore] Sul bordo, consumato dalle dita, c'è inciso un piccolo ferro di cavallo."
+    effetti: {rivela_indizi: [i_campanella]}
+    max_usi: 1
+  - id: nar_campanella_privato
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_bonfanti
+    quando: "in privato, un PG guarda la campanella avvolta nel fazzoletto"
+    temi: [campanella, ottone, fazzoletto]
+    richiede: {privata: true, battute_non_usate: [nar_campanella]}
+    testo:
+      - "[narratore] Nel fazzoletto c'è una campanella da mulo, d'ottone, con il batacchio legato da un nastrino."
+      - "[narratore] Sul bordo, consumato dalle dita, c'è inciso un piccolo ferro di cavallo."
     effetti: {rivela_indizi: [i_campanella]}
     max_usi: 1
   - id: nar_scrittoio_cassetto
@@ -437,6 +518,20 @@ battute:
     scena: scena_casa_bonfanti
     quando: "un PG apre il cassetto dello scrittoio di Gaspare"
     temi: [scrittoio, cassetto, cassetti, conti]
+    richiede: {battute_non_usate: [nar_scrittoio_cassetto_privato]}
+    testo:
+      - "[narratore] Nel cassetto c'è odore di inchiostro vecchio, e un libro dei conti."
+      - "[narratore] Sotto il libro c'è un contratto con Sior Bortolo, mercante di Pontebruno."
+      - "[narratore] Cinque estati di pascolo al Prato Alto, venti fiorini di caparra già pagati. Da firmare dopo il tramonto."
+    effetti: {rivela_indizi: [i_contratto], fatti_noti: [f_caparra, f_contratto]}
+    max_usi: 1
+  - id: nar_scrittoio_cassetto_privato
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_bonfanti
+    quando: "in privato, un PG apre il cassetto dello scrittoio di Gaspare"
+    temi: [scrittoio, cassetto, cassetti, conti]
+    richiede: {privata: true, battute_non_usate: [nar_scrittoio_cassetto]}
     testo:
       - "[narratore] Nel cassetto c'è odore di inchiostro vecchio, e un libro dei conti."
       - "[narratore] Sotto il libro c'è un contratto con Sior Bortolo, mercante di Pontebruno."
@@ -448,7 +543,19 @@ battute:
     tipo: indizio
     quando: "il garzone tira fuori le carte della sua borsa"
     temi: [borsa, contratto, carte, bortolo]
-    richiede: {da_pg: [pg_remo]}
+    richiede: {battute_non_usate: [nar_borsa_garzone_privato], da_pg: [pg_remo]}
+    testo:
+      - "[narratore] Dalla borsa esce un foglio piegato in tre, con il sigillo di Sior Bortolo."
+      - "[narratore] Cinque estati di pascolo al Prato Alto, venti fiorini di caparra già pagati a Gaspare Bonfanti."
+      - "[narratore] In fondo, una riga sola: da firmare dopo il tramonto."
+    effetti: {rivela_indizi: [i_contratto], fatti_noti: [f_caparra, f_contratto]}
+    max_usi: 1
+  - id: nar_borsa_garzone_privato
+    chi: narratore
+    tipo: indizio
+    quando: "in privato, il garzone tira fuori le carte della sua borsa"
+    temi: [borsa, contratto, carte, bortolo]
+    richiede: {privata: true, battute_non_usate: [nar_borsa_garzone], da_pg: [pg_remo]}
     testo:
       - "[narratore] Dalla borsa esce un foglio piegato in tre, con il sigillo di Sior Bortolo."
       - "[narratore] Cinque estati di pascolo al Prato Alto, venti fiorini di caparra già pagati a Gaspare Bonfanti."
@@ -479,7 +586,7 @@ battute:
     quando: "un PG parla con Tonio, lo sposo"
     temi: [tonio, sposo]
     testo:
-      - "[narratore] Tonio diventa rosso fino alle orecchie, e si rigira il cappello tra le mani grosse."
+      - "[narratore] Tonio arrossisce fino al collo, e si rigira il cappello tra le mani grosse."
       - "[narratore] Borbotta che vuole sposarsi oggi, non a primavera, e che al nonno non si risponde."
     varianti:
       - ["[narratore] Tonio si stringe nelle spalle larghe e guarda verso il passo.", "[narratore] Dice che senza anello domattina scende a valle con i muli, e che non è giusto."]
@@ -518,10 +625,21 @@ battute:
     scena: scena_casera
     quando: "davanti alla sala, un PG mostra che Bastiano a mezzogiorno ferrava un mulo"
     temi: [scagionare, scagiono, innocente, ferrava]
-    richiede: {indizi_rivelati: [i_alibi]}
+    richiede: {indizi_rivelati: [i_alibi], orologio: {id: o_lite, min: 0, max: 5}, battute_non_usate: [nar_panche_dentro]}
     testo:
       - "[narratore] La sala guarda le mani nere di Bastiano, e poi lo zio Gaspare."
       - "[narratore] Dal lato dei Morlacchi qualcuno si rimette a sedere. Dal lato dei Bonfanti, qualcuno tossisce."
+    max_usi: 1
+  - id: nar_panche_dentro
+    chi: narratore
+    tipo: momento
+    scena: scena_casera
+    quando: "a panche uscite, un PG mostra a tutti che Bastiano ferrava un mulo"
+    temi: [scagionare, scagiono, innocente, ferrava, panche]
+    richiede: {indizi_rivelati: [i_alibi], orologio: {id: o_lite, min: 6, max: 6}, battute_non_usate: [nar_bastiano_sala]}
+    testo:
+      - "[narratore] Ettore guarda le mani nere di Bastiano, poi la sala, a lungo."
+      - "[narratore] Batte il bastone due volte, e le panche dei Morlacchi rientrano dalla neve, una alla volta."
     max_usi: 1
   - id: nar_custode_regole
     chi: narratore
@@ -529,9 +647,10 @@ battute:
     quando: "un PG chiede al Custode come funziona la benedizione"
     temi: [regola, regole, usanza, benedizione, custode, ilario]
     testo:
-      - "[narratore] Il Custode batte la mano sul Libro, e chi è vicino tace."
-      - "[narratore] Ciò che si racconta al Sasso, il paese lo ripete per sempre. Chi racconta il falso non racconta più."
-      - "[narratore] Se la più anziana non mette l'anello, lo mette la seconda della casa."
+      - "[narratore] Ciò che si racconta al Sasso, dice il Custode, il paese lo ripete per sempre."
+      - "[narratore] La casa che racconta il falso perde la voce."
+      - "[narratore] La sua storia, da allora, la racconta chi ha detto il vero."
+      - "[narratore] E se la più anziana non mette l'anello, lo mette la seconda della casa."
     effetti: {fatti_noti: [f_regola_ripete, f_regola_voce, f_regola_seconda]}
     max_usi: 1
 
@@ -545,7 +664,7 @@ battute:
     temi: [orologio]
     richiede: {orologio: {id: o_tramonto, min: 8, max: 8}, battute_usate: [ade_sasso_a]}
     testo:
-      - "[narratore] Il Custode scrive nel Libro la storia di sempre, e Agnese finalmente dice sì."
+      - "[narratore] Il corno suona tre volte, e il Custode scrive nel Libro la storia di sempre."
       - "[narratore] L'anello brilla al dito della sposa, e le comari dei Bonfanti battono le mani."
       - "[narratore] Dalla parte dei Morlacchi la neve è calpestata e vuota: Ettore è sceso con i suoi."
       - "[narratore] All'alba la casetta del lavatoio resterà chiusa, e Tonio guarda il sentiero senza dire niente."
@@ -558,11 +677,10 @@ battute:
     temi: [orologio]
     richiede: {orologio: {id: o_tramonto, min: 8, max: 8}, battute_usate: [ade_sasso_b]}
     testo:
-      - "[narratore] Ettore si toglie il cappello, attraversa la neve e tende la mano."
-      - "[png_ettore] Adelina. Dammelo, che lo metto io."
-      - "[narratore] Con le dita grosse che tremano, mette l'anello al dito della sposa. Il Custode scrive nel Libro una storia nuova."
-      - "[png_adelina] Da stasera, al Sasso, racconta la piccola. Io ho finito."
-      - "[narratore] Agnese dice sì, e le due case scendono in paese insieme."
+      - "[narratore] Il corno suona tre volte, e il Custode scrive nel Libro una storia nuova."
+      - "[png_ettore] Adelina. Da stasera la vostra storia la racconto io. Giusta."
+      - "[png_adelina] Raccontala bene, vecchio mulo. E insegnala alla piccola."
+      - "[narratore] Le due case scendono in paese insieme, una lanterna dei Bonfanti e una dei Morlacchi."
     max_usi: 1
   - id: fin_sasso_c
     chi: narratore
@@ -573,10 +691,10 @@ battute:
     temi: [orologio]
     richiede: {orologio: {id: o_tramonto, min: 8, max: 8}, battute_usate: [ade_sasso_c]}
     testo:
-      - "[narratore] Marta mette l'anello al dito della figlia, con le mani che non sanno come si fa."
-      - "[narratore] Il Custode scrive nel Libro la storia nuova, e Agnese dice sì sottovoce."
+      - "[narratore] Il corno suona tre volte, e il Custode scrive nel Libro la storia nuova."
+      - "[narratore] Da stasera la storia dei Bonfanti la racconta Ettore, e il paese la ripete sottovoce."
       - "[narratore] Giù in paese, nella casera, una lanterna resta accesa fino a tardi."
-      - "[narratore] Lo zio Gaspare guarda il Prato Alto nel buio, e si pulisce gli occhiali."
+      - "[narratore] Lo zio Gaspare guarda verso il Prato Alto, nel buio, e conta qualcosa sulle dita."
     max_usi: 1
   - id: fin_tramonto
     chi: narratore
@@ -635,7 +753,7 @@ battute:
     quando: "a casa Bonfanti nessuno decide niente"
     temi: [muggito]
     testo:
-      - "[narratore] Dalla stalla arriva un muggito lungo, e i campanacci suonano tutti insieme."
+      - "[narratore] Dalla stalla arriva un muggito lungo, e un tintinnio di campanacci."
       - "[narratore] La sposa alza gli occhi dal velo e guarda la botola."
     max_usi: 1
   - id: nar_duchessa_sasso
@@ -645,7 +763,7 @@ battute:
     scena: scena_sasso
     quando: "al Sasso la Duchessa aspetta accanto alla pietra"
     temi: [duchessa]
-    richiede: {battute_non_usate: [nar_zio_4, nar_stalla_guardo, nar_processione_duchessa]}
+    richiede: {battute_non_usate: [nar_zio_4, nar_stalla_guardo, nar_stalla_guardo_privato, nar_processione_duchessa]}
     testo:
       - "[narratore] La Duchessa si ferma accanto al Sasso, e scuote la testa sbuffando."
       - "[narratore] Il suo campanaccio grande non fa nessun suono."

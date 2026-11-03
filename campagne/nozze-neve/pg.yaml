@@ -112,4 +112,4 @@ personaggi:
       - "fai a braccio di ferro con chiunque, e sai quando perdere"
       - "capisci chi soffia sul fuoco in una sala piena"
     conoscenze_private:
-      - {testo: "Il Custode ti ha confidato che nel Libro del Sasso, sessant'anni fa, c'è una prima neve senza benedizione, e che non ne parla mai. «Roba di quei due», ha detto, e ha guardato i due vecchi.", fatti: []}
+      - {testo: "Il Custode ti ha confidato che nel Libro del Sasso, sessant'anni fa, c'è una prima neve senza benedizione, scritta da suo padre, e che lui non l'ha mai voluta leggere. «Roba di quei due», ha detto, e ha guardato i due vecchi.", fatti: []}

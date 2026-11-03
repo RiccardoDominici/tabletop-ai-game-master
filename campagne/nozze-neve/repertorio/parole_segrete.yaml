@@ -20,12 +20,12 @@ parole:
   - parola: "le lettere d'amore della soffitta, firmate E"
     regex: "\\blettere\\b[^.]{0,50}\\b(nastro|firmat|soffitta|cassapanca|merletti)|\\b(nastro|soffitta|cassapanca|merletti)\\w*[^.]{0,50}\\blettere\\b|\\bfirmate (con )?una e\\b"
     fatti: [f_lettere_soffitta, f_zelia_soffitta]
-    pubblica_dopo: [nar_cassapanca, i_lettere, zel_motivo]
+    pubblica_dopo: [nar_cassapanca, nar_cassapanca_privato, i_lettere, zel_motivo]
     nota: "le lettere di Ettore nella cassapanca di Adelina; la scheda della soffitta dice solo «carte di famiglia»"
   - parola: "il ferro di cavallo dentro l'anello"
     regex: "\\bdentro\\b[^.]{0,60}\\bferro di cavallo|\\bferro (di cavallo )?inciso nell'anello"
     fatti: [f_ferro_inciso]
-    pubblica_dopo: [nar_anello_vicino, i_ferro_inciso]
+    pubblica_dopo: [nar_anello_vicino, nar_anello_vicino_privato, i_ferro_inciso]
     nota: "il segno dei Morlacchi dentro la fascia; il ferro sulla campanella è un'altra cosa (f_campanella)"
   - parola: "la catenina delle spose Bonfanti"
     regex: "\\bcatenin"
@@ -62,10 +62,10 @@ parole:
   - parola: "la lettera chiusa nella giacca"
     regex: "\\blettera\\b[^.]{0,40}\\b(chiusa|ceralacca|giacca|rimandat)|\\b(ceralacca|rimandat)\\w*[^.]{0,40}\\blettera\\b|\\bper adelina\\b"
     fatti: [f_lettera_giacca, f_lettera_rimandata]
-    pubblica_dopo: [nar_giacca_tasca, nar_ettore_sasso, nar_tonio_tasca, ett_lettera_data, i_ettore_neve, nar_sigillo_dato, nar_sigillo_preso, i_lettera_chiusa, ade_neve_lettera, ade_neve_giacca]
+    pubblica_dopo: [nar_giacca_tasca, nar_giacca_tasca_privato, nar_ettore_sasso, nar_tonio_tasca, ett_lettera_data, i_ettore_neve, nar_sigillo_dato, nar_sigillo_preso, i_lettera_chiusa, ade_neve_lettera, ade_neve_giacca]
     nota: "la lettera che Adelina rimandò chiusa; nella scheda della casera sta in un elemento NASCOSTA"
   - parola: "la campanella la lasciò Ettore"
-    regex: "\\bcampanell\\w*[^.]{0,60}\\b(ettore|morlacchi|lasciò|lasciata)\\b"
+    regex: "\\bcampanell\\w*[^.]{0,120}\\b(ettore|morlacchi|lasciò|lasciata)\\b"
     fatti: [f_campanella]
     pubblica_dopo: []
     nota: "lo deducono i giocatori dal ferro di cavallo sul bordo; nessuna battuta lo dice"
@@ -79,17 +79,17 @@ parole:
   - parola: "Zelia ha preso l'anello"
     regex: "\\bzelia\\b[^.]{0,50}\\b(pres[oa]|sfila\\w*|rubat[oa])\\b|\\bl'ho pres[oa] io\\b|\\b(pres[oa]|sfilat[oa])\\b[^.]{0,30}\\bzelia\\b"
     fatti: [f_zelia_presa, f_gaspare_vide]
-    pubblica_dopo: [gas_alibi_privato, gas_macchia_privato, i_gaspare_vide, zel_macchia_privato, zel_promessa_privato, i_zelia_confessa]
+    pubblica_dopo: [gas_alibi_sorella, gas_macchia_sorella, i_gaspare_vide, zel_macchia_privato, zel_promessa_cugina, zel_promessa_lettere, i_zelia_confessa]
     nota: "la ladra è la sorella della sposa; lo zio l'ha vista e tace"
   - parola: "l'anello nel campanaccio"
     regex: "\\bcampanacc\\w*[^.]{0,60}\\b(anello|foglio|quaderno)\\b|\\b(anello|foglio di quaderno)\\b[^.]{0,60}\\bcampanacc|\\bnel campanaccio\\b"
     fatti: [f_campanaccio]
-    pubblica_dopo: [nar_stalla_guardo, nar_processione_duchessa, i_campanaccio, zel_macchia_privato, zel_promessa_privato, i_zelia_confessa]
+    pubblica_dopo: [nar_stalla_guardo, nar_stalla_guardo_privato, nar_processione_duchessa, i_campanaccio, zel_macchia_privato, zel_promessa_cugina, zel_promessa_lettere, i_zelia_confessa]
     nota: "il nascondiglio; il campanaccio muto della Duchessa è un indizio pubblico, l'anello dentro no"
   - parola: "la nonna deve dire al Sasso la storia vera"
     regex: "\\bla nonna,? al sasso,? dica\\b|\\bstoria vera\\b"
     fatti: [f_zelia_motivo]
-    pubblica_dopo: [zel_macchia_privato, zel_promessa_privato, i_zelia_confessa, nar_quaderno, i_quaderno]
+    pubblica_dopo: [zel_macchia_privato, zel_promessa_cugina, zel_promessa_lettere, i_zelia_confessa, nar_quaderno, nar_quaderno_privato, i_quaderno]
     nota: "il motivo di Zelia, che dice anche che la storia dei Bonfanti non è vera; «storie vere» al plurale, nel suo esempio di voce, non è un segreto"
   - parola: "le impronte verso la stalla dei Bonfanti"
     regex: "\\bimpront\\w*[^.]{0,60}\\bstalla dei bonfanti\\b|\\bstalla dei bonfanti\\b[^.]{0,60}\\bimpront"
@@ -116,7 +116,7 @@ parole:
   - parola: "la caparra e il contratto di Bortolo"
     regex: "\\bcaparra\\b|\\bcontratto\\b[^.]{0,40}\\b(bortolo|pascolo|prato)\\b|\\b(bortolo|pascolo)\\b[^.]{0,40}\\bcontratto\\b|\\bventi fiorini\\b"
     fatti: [f_caparra, f_contratto]
-    pubblica_dopo: [nar_scrittoio_cassetto, nar_borsa_garzone, i_contratto, gas_prato_contratto, i_gaspare_prato]
+    pubblica_dopo: [nar_scrittoio_cassetto, nar_scrittoio_cassetto_privato, nar_borsa_garzone, nar_borsa_garzone_privato, i_contratto, gas_prato_contratto, i_gaspare_prato]
     nota: "il pascolo già venduto; l'aggancio pubblico del garzone parla solo di «carte» e di «una firma»"
   - parola: "la caparra spesa nel caldaio"
     regex: "\\bcaldaio\\b[^.]{0,60}\\b(caparra|anticipo)\\b|\\b(caparra|anticipo)\\b[^.]{0,60}\\bcaldaio\\b"

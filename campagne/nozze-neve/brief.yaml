@@ -18,6 +18,7 @@ richiesta: >-
 
 tono: "Commedia di paese calda e affettuosa, con una tensione vera sotto: l'orgoglio di due vecchi, una festa che può finire a pugni, un tramonto che non aspetta. Niente orrore, niente sangue."
 durata: "una sessione serale di circa due ore, in tre scene e tre luoghi"
+sessioni: 1            # una sessione sola (aggiunto: il modello del brief lo rende obbligatorio da metà prova)
 giocatori: "3-5"          # i PG pregenerati sono sei, uno più del massimo
 temi: [l'orgoglio, una vecchia promessa tra le due famiglie, la riconciliazione, chi ha il diritto di raccontare la storia di famiglia]
 linee:
@@ -58,17 +59,19 @@ decisioni:
     la verità.
     La scelta, al Sasso con l'anello in mano: lasciare che Adelina racconti la leggenda dei Bonfanti
     (nozze benedette, ma Ettore umiliato se ne va e la faida passa agli sposi), dire la verità al posto
-    suo (Adelina umiliata davanti al paese ritira la dote, e il prato va a Gaspare), o convincerla in
-    privato a dirla lei (perde per sempre la voce del Sasso e l'anello torna ai Morlacchi).
+    suo (Adelina umiliata davanti al paese ritira la dote, e il prato va a Gaspare), o convincerla in privato a dirla lei (le due case si riconciliano, ma per la regola del Sasso i
+    Bonfanti perdono per sempre la voce: da allora la loro storia la racconta Ettore, e Zelia non la
+    racconterà mai).
   altre:
     - "Tre scene in tre luoghi, come chiede il brief: la casera (la festa), casa Bonfanti con la stalla (la sposa e la sorella), il Sasso al tramonto (il climax). C11 chiede da tre a sei scene potenziali: tre bastano per due ore, circa quaranta minuti l'una."
     - "Sei PG pregenerati per tre-cinque giocatori: uno più del massimo, come dice la skill."
     - "Voci: Adelina (nadine) e Zelia (tabitha) non si incontrano mai. Adelina non lascia la casera finché ci sono i Morlacchi (tiene la sala) e poi sale al Sasso; Zelia resta a casa: per usanza, durante la benedizione la più giovane della casa della sposa tiene acceso il fuoco del focolare. Così la sposa, che per usanza non parla fino al sì, non ha bisogno di voce: è una comparsa che mima."
     - "Forma diversa da prova-f0 e da ponte-lanterne. Luogo: una festa di nozze in una casera di montagna, una casa con la stalla, una pietra all'aperto. Segreto: una storia d'amore taciuta per orgoglio e una gentilezza nascosta (non la causa nascosta di un male, non un'identità, non un segno falsificato); il furto è di una ragazza che vuole la verità, non di un colpevole da punire. Scelta: chi racconta la storia della famiglia davanti al paese, cioè quale memoria erediteranno gli sposi, e la dignità di quale dei due vecchi si sacrifica (non dire o tacere una colpa, non chi salvare per primo)."
-    - "La regola del Sasso (pubblica): ciò che si racconta al Sasso il paese lo ripete; chi ha raccontato al Sasso una storia falsa non racconta più. È il prezzo della terza via: Adelina perde la voce del Sasso, che passa a Zelia."
+    - "La regola del Sasso (pubblica): ciò che si racconta al Sasso il paese lo ripete; la casa che ha raccontato il falso perde la voce, e da allora la sua storia la racconta la casa che aveva detto il vero. È il prezzo della terza via e tocca il tema del brief (chi ha il diritto di raccontare la storia di famiglia): se la verità esce, i Bonfanti non racconteranno più la loro storia, la racconteranno i Morlacchi. Prima della revisione il prezzo era che la voce passava a Zelia: era un premio."
+    - "Dopo la revisione: l'anello va al dito della sposa dentro il racconto, prima del tramonto, e i finali dicono solo il tramonto e il prezzo; una battuta per l'anello riportato ad Adelina prima del Sasso; gemelli privati delle ricerche (una battuta senza cancello non risponde a un'azione privata); Gaspare confessa solo davanti alla sorella; il corno lo suona il nipote del Custode; la campanella di Ettore sta nel cassetto di Gaspare, non sul camino."
     - "La regola della seconda (pubblica, la dice il Custode): se la donna più anziana della casa della sposa non mette l'anello, lo può mettere la seconda, Marta, la madre della sposa. È ciò che rende possibile la verità detta da altri."
     - "Comparse senza voce: Agnese, la sposa (muta per usanza fino al sì); Tonio, lo sposo (grosso e timido); il Custode del Sasso, Ilario (pedante sulle usanze, tiene il Libro del Sasso e il corno); Marta, la madre della sposa; la vecchia Tilde, levatrice di novant'anni, sorda e a voce alta; Bastiano, il garzone dei Morlacchi accusato da Gaspare; Sior Bortolo, il mercante della valle, che non c'è."
-    - "Il tempo: la prima neve cade all'alba; la festa comincia alle undici; l'anello sparisce a mezzogiorno; la sessione comincia alle due e mezza; il sole tocca il passo alle cinque meno dieci. Il Custode suona il corno a ogni mezz'ora che passa: è il segno che si sente da tutti e tre i luoghi."
+    - "Il tempo: la prima neve cade all'alba; la festa comincia alle undici; l'anello sparisce a mezzogiorno; la sessione comincia alle due e mezza; il sole tocca il passo alle cinque meno dieci. Il nipote del Custode suona il corno a ogni mezz'ora che passa: è il segno che si sente da tutti e tre i luoghi."
     - "Niente pericolo di morte in scena. La forza (perquisire, strappare la lettera, tenere fermo Ettore) funziona, ma fa salire la lite e costa la fiducia dei vecchi."
     - "Umorismo: la riga di forme di formaggio che divide la sala, Ettore sordo da un orecchio, la sposa che mima, Zelia che parla come un notaio quando ha paura, Gaspare che conta i bicchieri, il Custode pedante, la Duchessa con il campanaccio muto."
     - "Monete: fiorini e soldi, come nelle altre campagne della valle."
