@@ -613,6 +613,103 @@ def test_continuita_pg_che_torna_indietro(arco):
     assert "CONTINUITÀ.pg" in stato_continuita(arco)[0]
 
 
+# --- ARCO (il livello arco preparato prima: riferimenti/arco.md) -----------------------------------
+
+ARCO_MINI = {
+    "premessa": "Il mercante del passo vuole la locanda di Irma, e un inverno per prendersela.",
+    "domanda": "La locanda della Volpe sarà ancora di Irma a primavera?",
+    "fronte": "fronte_debiti", "orologio": "o_mercante",
+    "tappe": [
+        {"id": "tp_pegno", "segno": 1, "cosa": "Il mercante prende un pegno.", "segno_visibile": "Una lettera sul bancone.", "entro_sessione": 1},
+        {"id": "tp_debito", "segno": 2, "cosa": "Il debito raddoppia.", "segno_visibile": "Un conto nuovo.", "entro_sessione": 2},
+        {"id": "tp_locanda", "segno": 4, "cosa": "Il mercante si prende la locanda.", "segno_visibile": "Un'insegna nuova.", "entro_sessione": 3},
+    ],
+    "ritmo": {"per_sessione": 2, "accelera": ["Irma firma un foglio del mercante"], "rallenta": ["i PG pagano una rata"]},
+    "atti": [{"id": "atto_1", "sessioni": [1], "domanda": "La lanterna tornerà in cappella?"},
+             {"id": "atto_2", "sessioni": [2, 3], "domanda": "Irma pagherà il debito?"}],
+    "finali": [{"id": "fn_salva", "orologio": {"min": 0, "max": 2}, "quando": "il mercante non arriva alla locanda", "esito": "Irma resta"},
+               {"id": "fn_persa", "orologio": {"min": 3, "max": 4}, "quando": "il mercante si prende la locanda", "esito": "Irma parte"}],
+    "png_ricorrenti": ["png_irma", "png_bruno"],
+    "fili": [{"id": "filo_tetto", "cosa": "Il tetto della locanda", "torna_in": [2]}],
+    "sessioni": [{"numero": 2, "abbozzo": "Il mercante torna con le carte del debito.", "png": ["png_irma"], "fili": ["filo_tetto"]},
+                 {"numero": 3, "abbozzo": "La notte dell'asta della locanda.", "png": ["png_bruno"]}],
+}
+
+
+@pytest.fixture
+def arco_mini(camp: Path) -> Path:
+    """Il mini come arco di tre sessioni, con preparazione.arco (le misure del livello sono avvisi)."""
+    import copy
+    modifica(camp, "brief.yaml", lambda d: d.update(sessioni=3))
+    modifica(camp, "campagna.yaml", lambda d: d["preparazione"].update(arco=copy.deepcopy(ARCO_MINI)))
+    return camp
+
+
+def codici_arco(cartella: Path) -> tuple[set[str], set[str]]:
+    esito, _ = valida(cartella, voci=VOCI if VOCI.exists() else None, contesto_b=False)
+    return ({c for c in esito.codici() if c.startswith("ARCO.")}, {v.codice for v in esito.avvisi if v.codice.startswith("ARCO.")})
+
+
+def _arco(d: dict) -> dict:
+    return d["preparazione"]["arco"]
+
+
+def test_arco_valido(arco_mini):
+    errori_, avvisi_ = codici_arco(arco_mini)
+    assert errori_ == set() and avvisi_ <= {"ARCO.misure"}      # il mini ha due PNG, l'arco ne prevede 4–6
+    assert "LIVELLO.non_supportato" in errori(arco_mini)          # il livello arco resta fuori fino alla prova D4
+
+
+def test_arco_tappe_e_orologio_incoerenti(arco_mini):
+    modifica(arco_mini, "campagna.yaml", lambda d: _arco(d)["tappe"][2].update(segno=3))           # destino al segno 4
+    assert "ARCO.tappe" in codici_arco(arco_mini)[0]
+
+
+def test_arco_tappa_prima_di_quanto_il_ritmo_permette(arco_mini):
+    modifica(arco_mini, "campagna.yaml", lambda d: _arco(d)["tappe"][2].update(entro_sessione=1))  # 4 segni a 2 per sessione
+    assert "ARCO.tappe" in codici_arco(arco_mini)[0]
+
+
+def test_arco_fronte_che_non_arriva_mai_o_arriva_subito(arco_mini):
+    modifica(arco_mini, "campagna.yaml", lambda d: _arco(d)["ritmo"].update(per_sessione=1))       # 1 × 3 < 4
+    assert "ARCO.tappe" in codici_arco(arco_mini)[0]
+    modifica(arco_mini, "campagna.yaml", lambda d: _arco(d)["ritmo"].update(per_sessione=4))
+    assert "ARCO.tappe" in codici_arco(arco_mini)[0]
+
+
+def test_arco_finali_con_un_buco_o_con_un_pg(arco_mini):
+    modifica(arco_mini, "campagna.yaml", lambda d: _arco(d)["finali"][1]["orologio"].update(min=4))   # 3 senza finale
+    assert "ARCO.finali" in codici_arco(arco_mini)[0]
+    modifica(arco_mini, "campagna.yaml", lambda d: _arco(d)["finali"][1].update(orologio={"min": 3, "max": 4},
+                                                                                 quando="Lia convince il console"))
+    assert "ARCO.finali" in codici_arco(arco_mini)[0]
+
+
+def test_arco_atti_che_non_coprono_le_sessioni(arco_mini):
+    modifica(arco_mini, "campagna.yaml", lambda d: _arco(d)["atti"][1].update(sessioni=[3]))
+    assert "ARCO.atti" in codici_arco(arco_mini)[0]
+
+
+def test_arco_png_ricorrente_mai_usato_e_filo_che_non_torna(arco_mini):
+    def rompi(d):
+        _arco(d)["sessioni"][1]["png"] = []
+        _arco(d)["fili"].append({"id": "filo_anello", "cosa": "L'anello della madre"})
+    modifica(arco_mini, "campagna.yaml", rompi)
+    modifica(arco_mini, "scena.yaml", lambda d: d.update(png_presenti=["png_irma"]))
+    errori_, _ = codici_arco(arco_mini)
+    assert {"ARCO.png", "ARCO.fili"} <= errori_
+
+
+def test_arco_abbozzo_mancante(arco_mini):
+    modifica(arco_mini, "campagna.yaml", lambda d: _arco(d)["sessioni"].pop())
+    assert "ARCO.sessioni" in codici_arco(arco_mini)[0]
+
+
+def test_arco_forma(arco_mini):
+    modifica(arco_mini, "campagna.yaml", lambda d: _arco(d).update(domanda="Il mercante vincerà", fronte="fronte_lanterna"))
+    assert "ARCO.forma" in codici_arco(arco_mini)[0]
+
+
 # --- PG -------------------------------------------------------------------------------------------
 
 def test_pg_id_non_valido(camp):
