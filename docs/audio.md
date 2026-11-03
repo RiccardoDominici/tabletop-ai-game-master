@@ -121,6 +121,31 @@ strumenti/audio/.venv/bin/python strumenti/audio/provino.py campagne/<id>   # es
 - Fixture di prova: `apps/server/test/fixtures/audio/` (generata da `genera.sh`); `CANTASTORIE_AUDIO=<cartella>` per
   provare un'altra cartella.
 
+## Segnali automatici (Motore, 3 novembre 2026)
+
+Umori ed effetti partono da soli, per qualunque campagna, senza nessuno al pannello. Tre fonti:
+
+| Fonte | Dove | Campi esatti |
+|---|---|---|
+| Narratore o selettore | righe di servizio, non lette | `[umore] <tag>` · `[effetto] <tag>` |
+| Battuta del repertorio | `repertorio/*.yaml`, nella battuta | `audio: {umore: <tag>, effetto: <tag>}` (uno o tutti e due) |
+| Scena | `scena.yaml` / `scene/*.yaml` | `audio: {umore_iniziale: <tag>}` (con `musica` e `ambiente`) |
+
+- Umori (vocabolario chiuso, `strumenti/audio/vocabolario.py` UMORI): `esplorazione_tesa`, `taverna_calda`,
+  `rito_sacro`, `inseguimento`, `combattimento_epico`, `lutto`; in più `auto` = torna alla musica del luogo
+  (non vale per `umore_iniziale`). Effetti: i tag di EFFETTI (`campana`, `porta`, `catena`, `tuono`, `monete`, `chiave`),
+  e in gioco solo quelli presenti nel catalogo della campagna (`sfx_<tag>`); si scrive il tag, `sfx_` è tollerato.
+- Tempi: il segnale vale per la frase che segue la riga (per una battuta, la sua prima riga). L'effetto parte sul
+  proiettore nello stesso istante della frase; l'umore cambia quando la frase comincia. Un `[effetto]` dopo l'ultima
+  frase suona a voce del turno finita; un `[umore]` dopo l'ultima frase vale subito.
+- Limite: al massimo un umore automatico al minuto per scena (anche una scelta del master fa partire il minuto); il
+  cambio di scena (e «Ricomincia») rimette `umore_iniziale` e azzera il conto. I pulsanti del master passano sempre.
+- Scarti: un tag fuori vocabolario o assente dal catalogo si ignora; in battute e scene è un errore di caricamento
+  (vocabolario), in gioco finisce nel log e nel registro del master. Ogni segnale automatico, applicato o scartato,
+  compare nel registro del pannello col chip «auto».
+- Il narratore e il selettore ricevono nel contesto la sezione «Audio» con gli umori e gli effetti di questa campagna;
+  le regole d'uso (rari, solo per suoni nominati) sono nei prompt.
+
 ## In gioco (proiettore, Web Audio)
 
 - Bus musica: dissolvenza incrociata al cambio di luogo o d'umore, con isteresi (non cambia più di una volta ogni

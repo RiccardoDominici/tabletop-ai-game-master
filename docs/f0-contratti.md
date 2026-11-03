@@ -76,6 +76,8 @@ le divide in frasi e manda ogni frase alla voce giusta.
   controlla che l'orologio esista, sia attivo e non sia completo, poi avanza l'indice; altrimenti rifiuta e registra.
   Il Motore tiene lo stato degli orologi e mette nel contesto di ogni turno «orologio X: segni mostrati N di M,
   prossimo segno: …», così il narratore non deve ricostruirlo dalla trascrizione.
+- `[umore] <tag>` e `[effetto] <tag>`: facoltative, rare, non lette (anche nel protocollo del selettore). Valgono per la
+  frase che segue; il vocabolario, il limite di un umore al minuto e i tempi sono in docs/audio.md («Segnali automatici»).
 - Righe senza etichetta: si accodano al segmento precedente (tolleranza), con errore nel log.
 - Nomi da pronunciare: prima della sintesi il server sostituisce i nomi dei PNG con la grafia del loro campo
   `pronuncia` (es. «Bàldrin»), solo nel testo mandato alla voce, non in quello mostrato.

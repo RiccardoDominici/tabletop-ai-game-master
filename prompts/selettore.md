@@ -11,11 +11,15 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 [usa] id_battuta > pg_id
 [narratore] testo tuo
 [png_id] parole improvvisate del PNG
+[umore] tag
+[effetto] tag
 [invito] pg_id,pg_id
 
 - `[usa] id > pg_id`: la battuta parte così com'è e risponde all'azione di quel PG. Non riscriverla, non riassumerla.
 - `[usa] id` senza `> pg_id`: solo per il segno d'orologio dovuto o per una mossa contro lo stallo (vedi §3).
 - `[png_...]`: id esatto del PNG. Solo parole dette: i gesti vanno in `[narratore]`.
+- `[umore]`: rara. Solo quando lo stato emotivo della scena cambia davvero (parte un inseguimento, muore qualcuno): un umore della sezione «Audio» del contesto, o `auto` per tornare alla musica del luogo; sulla riga prima della frase da cui cambia. Le battute che portano già il loro audio non ne hanno bisogno. Non viene letta.
+- `[effetto]`: solo per un suono che le tue righe nominano (una campana, una porta): un effetto della sezione «Audio», sulla riga prima della frase che lo racconta. Non viene letta.
 - `[invito]`: sempre l'ultima riga. Id dei PG che devono rispondere, oppure `tutti`. Non viene letta.
 - Nient'altro: niente `[orologio]`, titoli, markdown, note.
 
