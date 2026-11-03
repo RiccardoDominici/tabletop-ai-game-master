@@ -9,7 +9,20 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
   completo, e il materiale della sessione successiva si prepara tra una sessione e l'altra a partire da ciò che è
   successo davvero. Ricerca in corso (`docs/ricerca-durata.md`), poi progetto degli strati, poi skill, validatore e server.
 - **Prova alla cieca della skill Preparatore**: un agente nuovo scrive `campagne/ponte-lanterne` seguendo solo la skill.
-- **Immagini vere di prova-f0**: luoghi a 1920x1080, ritratti 3:4, situazioni (es. Sebastiano senza cappuccio).
+- **Immagini** (prova-f0, ponte-lanterne, nozze-neve: fatte il 2-3 novembre; pipeline in `strumenti/immagini`,
+  misure in `esperimenti/immagini/risultati.md`). Restano:
+  - **nodi-luogo senza immagine**: un nodo `tipo: luogo` senza `scheda` di scena né `immagine.prompt_luogo` non ha
+    immagine e nessuno lo dice (oggi `n_valle` di nozze-neve, `n_chiesa` e `n_passo_vecchio` di ponte-lanterne;
+    `n_sasso` era il caso più grave, la scena del Sasso stava su un nodo evento: sistemato in d252dd1). La regola
+    del validatore passa alla skill v2: ogni nodo-luogo che il master può raggiungere ha una scheda o un prompt;
+  - **la carta di stile non deve imporre il tempo atmosferico a tutto**: «rain-soaked» in ponte-lanterne fa piovere
+    dentro il magazzino e nella stanza di Rosa; il controllo visivo lo trova, ma un seme nuovo non basta. Meglio
+    il tempo nel prompt dei luoghi all'aperto che nello stile;
+  - **mani di Sebastiano** (prova-f0) e **grata dell'osteria**: il prompt non basta, va cambiato nella scheda
+    («hands hidden inside wide sleeves», inquadratura più stretta);
+  - **il controllo visivo non vede tutto**: nella prova del 3 novembre ha mancato le macchie di fuliggine sul viso
+    di Bice e lo scialle ancora addosso ad Adelina «senza scialle»; i casi da guardare restano in
+    `stato_preparazione` («da controllare a mano»).
 - **Server** (fatto il 2 novembre sera): riga «X sta parlando» sul proiettore, pannello del master (`/master`),
   `richiede.privata`/`da_pg`, `alias` dalle schede, `modi` e `mente_su[].id`, campagne con più scene, immagini di
   situazione dopo la rivelazione. Restano aperti:
