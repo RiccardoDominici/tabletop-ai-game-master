@@ -153,8 +153,12 @@ nell'ordine in cui le incontro; in fondo, i tempi e la classifica dei problemi p
 21. **Le immagini sono partite mentre la campagna cambiava.** Un'altra generazione (non mia) ha fatto i luoghi
    e tre ritratti alle 10:37–10:47, durante le correzioni del passo 14: `luogo_scena_casa_bonfanti.jpg` viene
    dal prompt vecchio. `genera.py` salta i file che esistono, quindi non lo rifarà da solo, e `prepara.sh` lo
-   considera fatto. *Proposta*: il manifest delle immagini tenga il prompt, e `prepara.sh` rigeneri un'immagine
-   il cui prompt è cambiato (come fa già l'audio con i descrittori delle schede).
+   considera fatto. Il caso è generale, non un incidente: **una revisione che cambia i prompt dopo le immagini**
+   (il passo 14 viene dopo il passo 11, e qualcuno può lanciare le immagini in mezzo) lascia sul proiettore
+   immagini che contraddicono la campagna. La pipeline se ne deve accorgere da sola, senza che nessuno cancelli
+   file a mano. *Proposta*, che immagini2 sta già applicando: il manifest tiene un hash del prompt composto, e
+   un'immagine il cui prompt è cambiato si rigenera da sola (come fa già l'audio con i descrittori delle schede).
+   Finché non c'è, la skill dovrebbe dire «le immagini vere solo dopo il passo 14».
 
 22. **`prepara.sh` dice «pronta da giocare: sì» con due brani essenziali mancanti e dodici immagini da fare.**
    Il criterio della skill (esistono `immagini/manifest.json` e `audio/manifest.json`) è soddisfatto da un
