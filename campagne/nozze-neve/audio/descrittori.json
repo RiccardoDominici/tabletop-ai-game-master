@@ -1,0 +1,558 @@
+{
+ "profilo": {
+  "id": "nozze-neve",
+  "modo": "misolidio",
+  "tonica": 0,
+  "bpm": 88,
+  "strumenti": [
+   "fisarmonica",
+   "violino",
+   "contrabbasso",
+   "campane",
+   "corno",
+   "voci"
+  ],
+  "vietati": [
+   "percussioni"
+  ],
+  "epoca": "antica",
+  "umore_base": "taverna_calda",
+  "motivo": null,
+  "perche": {
+   "modo": [
+    "tono: calda",
+    "tono: paese"
+   ],
+   "tonica": "dall'id della campagna",
+   "strumenti": "fisarmonica, violino da festa, contrabbasso pizzicato, campanacci lontani; per il Sasso un corno e un coro a bocca chiusa. Niente percussioni da battaglia.",
+   "epoca": [
+    "stile_immagini: storybook",
+    "tono: paese",
+    "regole_prosa: fiorini"
+   ]
+  }
+ },
+ "luoghi": [
+  {
+   "id": "luogo_scena_casera",
+   "nome": "La casera dei Bonfanti, durante la festa",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "media",
+    "ambientazioni": [
+     "borgo"
+    ],
+    "ora": null,
+    "meteo": [
+     "neve"
+    ],
+    "interno": true,
+    "parole": [
+     "humorous",
+     "mysterious"
+    ]
+   },
+   "ambiente": [
+    [
+     "folla",
+     0.3
+    ],
+    [
+     "fuoco",
+     0.4
+    ],
+    [
+     "neve",
+     0.1
+    ]
+   ],
+   "transizioni": [
+    "taverna_calda"
+   ],
+   "perche": {
+    "umore": "audio.umore_iniziale",
+    "ambientazioni": "audio.musica",
+    "energia": "intensità 3, umore esplorazione_tesa",
+    "ora": {},
+    "meteo": {
+     "neve": {
+      "punti": 3.15,
+      "prove": [
+       "sensi: neve",
+       "prompt_luogo: snow",
+       "elementi: nevi",
+       "stile_immagini: snow"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 3.24,
+     "esterno": 1.1
+    },
+    "ambiente": "audio.ambiente"
+   }
+  },
+  {
+   "id": "luogo_scena_casa_bonfanti",
+   "nome": "Casa Bonfanti, con la stalla sotto",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "media",
+    "ambientazioni": [
+     "casa",
+     "borgo"
+    ],
+    "ora": null,
+    "meteo": [
+     "neve",
+     "gelo"
+    ],
+    "interno": true,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "fuoco",
+     0.35
+    ],
+    [
+     "vento",
+     0.15
+    ]
+   ],
+   "transizioni": [
+    "taverna_calda"
+   ],
+   "perche": {
+    "umore": "audio.umore_iniziale",
+    "ambientazioni": {
+     "casa": {
+      "punti": 3.3,
+      "prove": [
+       "nome: casa",
+       "apertura: casa",
+       "descrizione: casa"
+      ]
+     },
+     "borgo": {
+      "punti": 1.1,
+      "prove": [
+       "elementi: vicol",
+       "descrizione: vicol"
+      ]
+     }
+    },
+    "energia": "intensità 2, umore esplorazione_tesa",
+    "ora": {},
+    "meteo": {
+     "neve": {
+      "punti": 2.15,
+      "prove": [
+       "prompt_luogo: snow",
+       "apertura: neve",
+       "stile_immagini: snow"
+      ]
+     },
+     "gelo": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: frost"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 2.18,
+     "esterno": 1.1
+    },
+    "ambiente": "audio.ambiente"
+   }
+  },
+  {
+   "id": "luogo_scena_sasso",
+   "nome": "Il Sasso delle Promesse, al tramonto",
+   "alias_di": null,
+   "musica": {
+    "umore": "rito_sacro",
+    "energia": "media",
+    "ambientazioni": [
+     "strada",
+     "borgo",
+     "montagna"
+    ],
+    "ora": "imbrunire",
+    "meteo": [
+     "neve"
+    ],
+    "interno": true,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "vento",
+     0.3
+    ],
+    [
+     "neve",
+     0.2
+    ],
+    [
+     "folla",
+     0.12
+    ]
+   ],
+   "transizioni": [
+    "lutto"
+   ],
+   "perche": {
+    "umore": "audio.umore_iniziale",
+    "ambientazioni": {
+     "strada": {
+      "punti": 2.8,
+      "prove": [
+       "sensi: passo",
+       "invarianti: passo",
+       "apertura: passo"
+      ]
+     },
+     "borgo": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: village"
+      ]
+     },
+     "montagna": {
+      "punti": 1.0,
+      "prove": [
+       "prompt_luogo: mountain"
+      ]
+     }
+    },
+    "energia": "intensità 5, umore rito_sacro",
+    "ora": {
+     "imbrunire": {
+      "punti": 2.6,
+      "prove": [
+       "nome: tramont",
+       "prompt_luogo: sunset",
+       "elementi: tramont"
+      ]
+     }
+    },
+    "meteo": {
+     "neve": {
+      "punti": 5.25,
+      "prove": [
+       "sensi: neve",
+       "prompt_luogo: snow",
+       "invarianti: neve",
+       "elementi: neve"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 0.6,
+     "esterno": 0
+    },
+    "ambiente": "audio.ambiente"
+   }
+  },
+  {
+   "id": "luogo_n_casera",
+   "nome": "La casera dei Bonfanti, durante la festa",
+   "alias_di": "luogo_scena_casera",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_casera"
+   }
+  },
+  {
+   "id": "luogo_n_casa_bonfanti",
+   "nome": "Casa Bonfanti, con la stalla sotto",
+   "alias_di": "luogo_scena_casa_bonfanti",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_casa_bonfanti"
+   }
+  },
+  {
+   "id": "luogo_e_tramonto",
+   "nome": "Il tramonto al Sasso delle Promesse",
+   "alias_di": "luogo_scena_sasso",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_sasso"
+   }
+  },
+  {
+   "id": "luogo_n_sasso",
+   "nome": "Il Sasso delle Promesse",
+   "alias_di": null,
+   "musica": {
+    "umore": "taverna_calda",
+    "energia": "media",
+    "ambientazioni": [],
+    "ora": "giorno",
+    "meteo": [
+     "neve",
+     "vento"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "neve",
+     0.4
+    ]
+   ],
+   "transizioni": [],
+   "perche": {
+    "umore": "umore di base della campagna",
+    "ambientazioni": {},
+    "energia": "intensità None, umore taverna_calda",
+    "ora": {
+     "giorno": {
+      "punti": 1.0,
+      "prove": [
+       "abbozzo: pomerigg"
+      ]
+     }
+    },
+    "meteo": {
+     "neve": {
+      "punti": 1.35,
+      "prove": [
+       "abbozzo: neve",
+       "stile_immagini: snow"
+      ]
+     },
+     "vento": {
+      "punti": 1.0,
+      "prove": [
+       "abbozzo: venti"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 0,
+     "esterno": 0
+    },
+    "ambiente": {
+     "neve": {
+      "punti": 1.35,
+      "prove": [
+       "abbozzo: neve",
+       "stile_immagini: snow"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "luogo_n_valle",
+   "nome": "Pontebruno, in fondo alla valle",
+   "alias_di": null,
+   "musica": {
+    "umore": "taverna_calda",
+    "energia": "media",
+    "ambientazioni": [
+     "montagna",
+     "strada"
+    ],
+    "ora": null,
+    "meteo": [
+     "neve"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "umore": "umore di base della campagna",
+    "ambientazioni": {
+     "montagna": {
+      "punti": 3.0,
+      "prove": [
+       "nome: valle",
+       "abbozzo: valle"
+      ]
+     },
+     "strada": {
+      "punti": 1.0,
+      "prove": [
+       "abbozzo: mulattier"
+      ]
+     }
+    },
+    "energia": "intensità None, umore taverna_calda",
+    "ora": {},
+    "meteo": {
+     "neve": {
+      "punti": 0.35,
+      "prove": [
+       "stile_immagini: snow"
+      ]
+     }
+    },
+    "interno": {
+     "interno": 0,
+     "esterno": 2.15
+    },
+    "ambiente": {}
+   }
+  }
+ ],
+ "effetti": {
+  "porta": [
+   "luogo_scena_casera.sensi: dalla porta",
+   "luogo_scena_casera.elementi: la porta",
+   "luogo_scena_casera.descrizione: una porta",
+   "luogo_scena_casa_bonfanti.elementi: dalla porta"
+  ],
+  "campana": [
+   "regole_prosa: campan",
+   "luogo_scena_casa_bonfanti.sensi: campan",
+   "luogo_scena_casa_bonfanti.elementi: campan",
+   "luogo_scena_casa_bonfanti.descrizione: campan"
+  ],
+  "monete": [
+   "regole_prosa: fiorin",
+   "regole_prosa: monete",
+   "regole_prosa: soldi"
+  ],
+  "chiave": [
+   "luogo_scena_casa_bonfanti.elementi: chiave"
+  ]
+ },
+ "temi": [
+  {
+   "png": "png_adelina",
+   "nome": "Adelina",
+   "carattere": [
+    "freddo",
+    "gioviale"
+   ],
+   "strumento": "fisarmonica",
+   "modo": "eolio",
+   "registro": "basso",
+   "trasformazioni": [
+    "inversione",
+    "diminuzione"
+   ],
+   "perche": {
+    "carattere": {
+     "freddo": [
+      "superficie: taglient",
+      "voce: gelid"
+     ],
+     "gioviale": [
+      "superficie: battut",
+      "timbro: risat"
+     ]
+    },
+    "modo": "carattere freddo",
+    "registro": "età 78",
+    "strumento": "tavolozza della campagna"
+   }
+  },
+  {
+   "png": "png_ettore",
+   "nome": "Ettore Morlacchi",
+   "carattere": [
+    "burbero",
+    "caldo"
+   ],
+   "strumento": "contrabbasso",
+   "modo": "dorico",
+   "registro": "basso",
+   "trasformazioni": [
+    "accento",
+    "legato"
+   ],
+   "perche": {
+    "carattere": {
+     "burbero": [
+      "superficie: burber",
+      "timbro: ruvid"
+     ],
+     "caldo": [
+      "voce: buono"
+     ]
+    },
+    "modo": "carattere burbero",
+    "registro": "voce bassa",
+    "strumento": "tavolozza della campagna"
+   }
+  },
+  {
+   "png": "png_gaspare",
+   "nome": "Gaspare Bonfanti",
+   "carattere": [
+    "pacato",
+    "solenne"
+   ],
+   "strumento": "corno",
+   "modo": "dorico",
+   "registro": "basso",
+   "trasformazioni": [
+    "legato",
+    "aumentazione"
+   ],
+   "perche": {
+    "carattere": {
+     "pacato": [
+      "superficie: piano",
+      "sotto_pressione: lento",
+      "voce: calm"
+     ],
+     "solenne": [
+      "superficie: misurat",
+      "sotto_pressione: precis",
+      "voce: ordinat"
+     ]
+    },
+    "modo": "carattere pacato",
+    "registro": "voce bassa",
+    "strumento": "tavolozza della campagna"
+   }
+  },
+  {
+   "png": "png_zelia",
+   "nome": "Zelia",
+   "carattere": [
+    "gioviale",
+    "solenne"
+   ],
+   "strumento": "violino",
+   "modo": "misolidio",
+   "registro": "alto",
+   "trasformazioni": [
+    "diminuzione",
+    "staccato"
+   ],
+   "perche": {
+    "carattere": {
+     "gioviale": [
+      "timbro: risat",
+      "timbro: svelt"
+     ],
+     "solenne": [
+      "sotto_pressione: formal"
+     ]
+    },
+    "modo": "carattere gioviale",
+    "registro": "voce alta",
+    "strumento": "tavolozza della campagna"
+   }
+  }
+ ]
+}

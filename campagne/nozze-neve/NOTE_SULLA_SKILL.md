@@ -155,3 +155,43 @@ nell'ordine in cui le incontro; in fondo, i tempi e la classifica dei problemi p
    dal prompt vecchio. `genera.py` salta i file che esistono, quindi non lo rifarà da solo, e `prepara.sh` lo
    considera fatto. *Proposta*: il manifest delle immagini tenga il prompt, e `prepara.sh` rigeneri un'immagine
    il cui prompt è cambiato (come fa già l'audio con i descrittori delle schede).
+
+22. **`prepara.sh` dice «pronta da giocare: sì» con due brani essenziali mancanti e dodici immagini da fare.**
+   Il criterio della skill (esistono `immagini/manifest.json` e `audio/manifest.json`) è soddisfatto da un
+   manifest parziale: quello delle immagini l'ha scritto la tornata altrui con 6 immagini su 18, quello
+   dell'audio c'è anche se i brani della casera e di casa Bonfanti sono falliti (incompetech.com non risolve il
+   DNS; tutti e tre i candidati di ogni luogo venivano da lì, senza un'altra fonte di riserva). Il rapporto
+   elenca bene ciò che manca, ma la riga finale e l'uscita 0 dicono il contrario. *Proposta*: «pronta» solo
+   senza mancanti essenziali, e un candidato da un'altra fonte (o dalla cache) quando una fonte è giù.
+
+## Tempi, a grandi linee (dall'orologio dei comandi e dai commit)
+
+| Passo | Tempo |
+|---|---|
+| 0, lettura (manuale, riferimenti, esempi, parti del validatore e del server) | 14 minuti |
+| 1, situazione e progetto (scelta del segreto, della scelta e delle voci) | 14 minuti |
+| 2–4, stile, canone, orologi, rivelazioni, nodi, sessione, cronologia | 8 minuti |
+| 5, schede delle tre scene | 4 minuti |
+| 6–8, PG, PNG, primo giro a zero errori | 6 minuti |
+| 9–11, repertorio (128 battute), parole segrete, lettura del contesto B, immagini e audio a secco | 21 minuti (copioni ciechi in parallelo, un minuto e mezzo) |
+| 12, rigoroso e copioni | 2 minuti |
+| 13, lettura ad alta voce | 3 minuti |
+| 14, revisione indipendente (16 minuti del subagente) e correzioni | 28 minuti |
+| 15, README, autovalutazione, note | 5 minuti |
+| 16, `prepara.sh --senza-immagini` (due giri da circa tre minuti) | 8 minuti |
+
+## I cinque problemi più gravi della skill e della pipeline
+
+1. **La skill non dice che cosa il Motore non fa** (nota 18): azioni private senza battute, `avanza_quando` e
+   salti d'orologio non applicati, finali solo a orologio pieno, stato degli oggetti solo nella trascrizione.
+   Tre dei cinque problemi gravi della revisione venivano da qui.
+2. **La segretezza del modo B passa per id e `quando`, che il validatore non legge come frasi** (note 10, 11,
+   19): `zel_presa_*`, `ade_verita`, e il suffisso `_versione` degli esempi della skill stessa dicevano al
+   selettore chi mente e chi ha preso l'anello.
+3. **Il controllo della scelta del passo 1 si supera con un premio travestito da prezzo** (nota 17): solo la
+   revisione l'ha visto.
+4. **Gli asset non seguono la campagna** (note 13, 21, 22): immagini fatte da un prompt superato e mai
+   rifatte, «pronta da giocare» con dodici immagini e due brani essenziali mancanti, nessuna fonte di riserva.
+5. **Strumenti e documenti fuori passo tra loro** (note 4, 14, 20): il README dei copioni non dice dei segni di
+   scena né di `privata`; `schema.md` dice che `oppure` è un errore e il validatore lo accetta; il modello del
+   brief ha cambiato un campo obbligatorio durante la prova.

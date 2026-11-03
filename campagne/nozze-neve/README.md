@@ -74,7 +74,12 @@ la sorella resta a casa, e durante la benedizione tiene il fuoco del focolare.
 
 ## Stato degli asset
 
-- Audio: generato con `scripts/prepara.sh campagne/nozze-neve --senza-immagini` (vedi sotto).
+- Audio: generato con `scripts/prepara.sh campagne/nozze-neve --senza-immagini` (24 MB: umori 6/6, temi 4/4,
+  ambienti 9/9, effetti 4/4, brani dei luoghi 3/5). **Mancano i brani della casera e di casa Bonfanti**: i tre
+  candidati di ciascuno vengono da incompetech.com, che stamattina non risolve il DNS (gli altri siti sì); i
+  brani già in cache sono usciti. Si rifanno con `scripts/prepara.sh campagne/nozze-neve --senza-immagini
+  --riprova-audio` quando il sito torna. Fino ad allora quelle due scene hanno ambienti ed effetti, e la musica
+  d'umore (`umore_esplorazione_tesa`), non il brano del luogo.
 - Immagini: 18 in tutto (3 luoghi, 4 ritratti, 11 situazioni). Non le ho generate io (la GPU era di un'altra
   generazione); una prima tornata, partita mentre correggevo la campagna dopo la revisione, ha fatto i luoghi e
   tre ritratti: `luogo_scena_casa_bonfanti.jpg` viene dal prompt vecchio (la campanella sul camino) e va

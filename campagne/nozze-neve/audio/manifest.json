@@ -1,0 +1,1581 @@
+{
+  "versione": 1,
+  "campagna": "nozze-neve",
+  "formato": "AAC-LC in .m4a, 48 kHz, stereo; i loop vanno da loop_inizio_s a loop_fine_s (mezzo secondo di margine prima e dopo)",
+  "aggiornato": "2026-11-03 10:56:25",
+  "brani": [
+    {
+      "id": "luogo_e_tramonto",
+      "tipo": "musica",
+      "luogo": "e_tramonto",
+      "file": "luogo_scena_sasso.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 154.5,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 153.999979,
+      "titolo": "Virtutes Vocis",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Virtutes%20Vocis.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Virtutes Vocis\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "alias_di": "luogo_scena_sasso"
+    },
+    {
+      "id": "luogo_n_sasso",
+      "tipo": "musica",
+      "luogo": "n_sasso",
+      "file": "luogo_n_sasso.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 151.75,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 151.25,
+      "titolo": "Galway",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Galway.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Galway\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 5.48,
+        "perche": {
+          "umore": 2.1,
+          "parole_umore": 1.5,
+          "parola_chiave": 1.0,
+          "antico": 0.8,
+          "genere": 0.3,
+          "tavolozza": 0.7,
+          "vietati": -1.0,
+          "varieta": 0.08
+        },
+        "descrittori": {
+          "umore": "taverna_calda",
+          "energia": "media",
+          "ambientazioni": [],
+          "ora": "giorno",
+          "meteo": [
+            "neve",
+            "vento"
+          ],
+          "interno": false,
+          "parole": []
+        },
+        "feel": [
+          "Bouncy",
+          "Bright",
+          "Relaxed"
+        ],
+        "strumenti": "Fiddle, Flute, Bass, Guitar, Drums",
+        "bpm": 110,
+        "scartati": []
+      },
+      "loop_sorgente": {
+        "inizio_s": 3.0,
+        "fine_s": 153.75,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 151.75,
+        "lufs": -23.0,
+        "lra": 2.0,
+        "true_peak_db": -8.2,
+        "picco_db": -8.176917,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 17.3,
+          "rapporto_salto": 0.11,
+          "salto_livello_db": 1.54,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 2498,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "luogo_n_valle",
+      "tipo": "musica",
+      "luogo": "n_valle",
+      "file": "luogo_n_valle.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 150.75,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 150.25,
+      "titolo": "Master of the Feast",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Master%20of%20the%20Feast.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Master of the Feast\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 5.06,
+        "perche": {
+          "umore": 2.4,
+          "parole_umore": 1.5,
+          "parola_chiave": 1.0,
+          "antico": 0.8,
+          "genere": 0.3,
+          "vietati": -1.0,
+          "varieta": 0.06
+        },
+        "descrittori": {
+          "umore": "taverna_calda",
+          "energia": "media",
+          "ambientazioni": [
+            "montagna",
+            "strada"
+          ],
+          "ora": null,
+          "meteo": [
+            "neve"
+          ],
+          "interno": false,
+          "parole": []
+        },
+        "feel": [
+          "Bouncy",
+          "Bright",
+          "Humorous",
+          "Uplifting"
+        ],
+        "strumenti": "Crumhorns, Lute, Guitar, Zither, Flute, Percussion",
+        "bpm": 122,
+        "scartati": []
+      },
+      "loop_sorgente": {
+        "inizio_s": 3.0,
+        "fine_s": 152.75,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 150.75,
+        "lufs": -23.0,
+        "lra": 4.0,
+        "true_peak_db": -6.4,
+        "picco_db": -6.430979,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 21.3,
+          "rapporto_salto": 0.31,
+          "salto_livello_db": 0.44,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 2520,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "luogo_scena_sasso",
+      "tipo": "musica",
+      "luogo": "scena_sasso",
+      "file": "luogo_scena_sasso.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 154.5,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 153.999979,
+      "titolo": "Virtutes Vocis",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Virtutes%20Vocis.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Virtutes Vocis\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 5.82,
+        "perche": {
+          "umore": 2.1,
+          "parole_umore": 1.5,
+          "parola_chiave": 1.0,
+          "genere": 0.3,
+          "tavolozza": 0.7,
+          "varieta": 0.22
+        },
+        "descrittori": {
+          "umore": "rito_sacro",
+          "energia": "media",
+          "ambientazioni": [
+            "strada",
+            "borgo",
+            "montagna"
+          ],
+          "ora": "imbrunire",
+          "meteo": [
+            "neve"
+          ],
+          "interno": true,
+          "parole": []
+        },
+        "feel": [
+          "Calming",
+          "Mystical",
+          "Somber",
+          "Uplifting"
+        ],
+        "strumenti": "Voice",
+        "bpm": 56,
+        "scartati": []
+      },
+      "loop_sorgente": {
+        "inizio_s": 3.95,
+        "fine_s": 157.45,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 154.5,
+        "lufs": -23.0,
+        "lra": 5.9,
+        "true_peak_db": -8.6,
+        "picco_db": -8.615578,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 25.1,
+          "rapporto_salto": 0.54,
+          "salto_livello_db": 0.99,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 2507,
+        "normalizzazione": "linear"
+      }
+    }
+  ],
+  "umori": [
+    {
+      "id": "umore_combattimento_epico",
+      "tipo": "musica",
+      "umore": "combattimento_epico",
+      "file": "umore_combattimento_epico.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 134.5,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 134.0,
+      "titolo": "Curse of the Scarab",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Curse%20of%20the%20Scarab.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Curse of the Scarab\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 6.68,
+        "perche": {
+          "umore": 2.5,
+          "parole_umore": 1.5,
+          "parola_chiave": 1.0,
+          "genere": 0.3,
+          "tavolozza": 0.7,
+          "energia": 0.4,
+          "varieta": 0.28
+        },
+        "descrittori": {
+          "umore": "combattimento_epico",
+          "energia": "alta",
+          "ambientazioni": [],
+          "meteo": []
+        },
+        "feel": [
+          "Action",
+          "Dark",
+          "Driving",
+          "Epic"
+        ],
+        "strumenti": "Xylophone, English Horn, Oboe, Bass Clarinet, Flutes, French Horn, Basses, Cellos, Percussion",
+        "bpm": 190,
+        "scartati": [
+          "Volatile Reaction"
+        ]
+      },
+      "loop_sorgente": {
+        "inizio_s": 3.0,
+        "fine_s": 136.5,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 134.5,
+        "lufs": -23.0,
+        "lra": 7.8,
+        "true_peak_db": -7.4,
+        "picco_db": -7.356536,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 15.8,
+          "rapporto_salto": 0.32,
+          "salto_livello_db": 1.52,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 2200,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "umore_esplorazione_tesa",
+      "tipo": "musica",
+      "umore": "esplorazione_tesa",
+      "file": "umore_esplorazione_tesa.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 148.0,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 147.499979,
+      "titolo": "Mary Celeste",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Mary%20Celeste.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Mary Celeste\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 4.93,
+        "perche": {
+          "umore": 1.6,
+          "parole_umore": 1.5,
+          "horror": 0.2,
+          "tavolozza": 1.4,
+          "varieta": 0.23
+        },
+        "descrittori": {
+          "umore": "esplorazione_tesa",
+          "energia": "media",
+          "ambientazioni": [],
+          "meteo": []
+        },
+        "feel": [
+          "Dark",
+          "Intense",
+          "Mysterious"
+        ],
+        "strumenti": "Tuba, Bass Clarinet, French Horns, Contrabassoon, Bass Flute, Flutes, Clarinets, Oboe, Marimba, Tubular Bells, Cellos, Violins, Violas",
+        "bpm": 50,
+        "scartati": [
+          "Frost Waltz",
+          "Past the Edge"
+        ]
+      },
+      "loop_sorgente": {
+        "inizio_s": 4.45,
+        "fine_s": 151.45,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 148.0,
+        "lufs": -23.0,
+        "lra": 7.7,
+        "true_peak_db": -6.8,
+        "picco_db": -6.794015,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 33.0,
+          "rapporto_salto": 1.05,
+          "salto_livello_db": 1.01,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 2406,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "umore_inseguimento",
+      "tipo": "musica",
+      "umore": "inseguimento",
+      "file": "umore_inseguimento.m4a",
+      "loop": true,
+      "lufs": -23.1,
+      "volume": 1.0,
+      "durata_s": 133.75,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 133.25,
+      "titolo": "Movement Proposition",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Movement%20Proposition.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Movement Proposition\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 6.02,
+        "perche": {
+          "umore": 3.0,
+          "parole_umore": 1.5,
+          "parola_chiave": 1.0,
+          "genere": 0.3,
+          "tavolozza": 0.7,
+          "vietati": -1.0,
+          "energia": 0.4,
+          "varieta": 0.12
+        },
+        "descrittori": {
+          "umore": "inseguimento",
+          "energia": "alta",
+          "ambientazioni": [],
+          "meteo": []
+        },
+        "feel": [
+          "Action",
+          "Aggressive",
+          "Driving",
+          "Epic",
+          "Grooving",
+          "Intense"
+        ],
+        "strumenti": "Percussion, Basses, Horns",
+        "bpm": 126,
+        "scartati": []
+      },
+      "loop_sorgente": {
+        "inizio_s": 3.4,
+        "fine_s": 136.15,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 133.75,
+        "lufs": -23.1,
+        "lra": 12.1,
+        "true_peak_db": -10.3,
+        "picco_db": -10.414283,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 15.5,
+          "rapporto_salto": 0.04,
+          "salto_livello_db": 4.61,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 2238,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "umore_lutto",
+      "tipo": "musica",
+      "umore": "lutto",
+      "file": "umore_lutto.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 151.25,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 150.75,
+      "titolo": "Plaint",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Plaint.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Plaint\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 5.12,
+        "perche": {
+          "umore": 1.7,
+          "parole_umore": 1.5,
+          "parola_chiave": 1.0,
+          "genere": 0.3,
+          "energia": 0.4,
+          "varieta": 0.22
+        },
+        "descrittori": {
+          "umore": "lutto",
+          "energia": "bassa",
+          "ambientazioni": [],
+          "meteo": []
+        },
+        "feel": [
+          "Calming",
+          "Dark",
+          "Somber"
+        ],
+        "strumenti": "Bassoon, Harp",
+        "bpm": 65,
+        "scartati": []
+      },
+      "loop_sorgente": {
+        "inizio_s": 3.25,
+        "fine_s": 153.5,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 151.25,
+        "lufs": -23.0,
+        "lra": 5.7,
+        "true_peak_db": -6.2,
+        "picco_db": -6.197403,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 32.9,
+          "rapporto_salto": 0.49,
+          "salto_livello_db": 1.16,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 2455,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "umore_rito_sacro",
+      "tipo": "musica",
+      "umore": "rito_sacro",
+      "file": "umore_rito_sacro.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 148.5,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 148.0,
+      "titolo": "Virtutes Instrumenti",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Virtutes%20Instrumenti.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Virtutes Instrumenti\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 5.36,
+        "perche": {
+          "umore": 2.1,
+          "parole_umore": 1.5,
+          "parola_chiave": 1.0,
+          "genere": 0.3,
+          "energia": 0.4,
+          "varieta": 0.06
+        },
+        "descrittori": {
+          "umore": "rito_sacro",
+          "energia": "bassa",
+          "ambientazioni": [],
+          "meteo": []
+        },
+        "feel": [
+          "Calming",
+          "Mystical",
+          "Somber",
+          "Uplifting"
+        ],
+        "strumenti": "Viol, Drone",
+        "bpm": 56,
+        "scartati": [
+          "Rites"
+        ]
+      },
+      "loop_sorgente": {
+        "inizio_s": 4.0,
+        "fine_s": 151.5,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 148.5,
+        "lufs": -23.0,
+        "lra": 11.3,
+        "true_peak_db": -6.1,
+        "picco_db": -6.134816,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 24.0,
+          "rapporto_salto": 0.44,
+          "salto_livello_db": 0.08,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 2413,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "umore_taverna_calda",
+      "tipo": "musica",
+      "umore": "taverna_calda",
+      "file": "umore_taverna_calda.m4a",
+      "loop": true,
+      "lufs": -23.0,
+      "volume": 1.0,
+      "durata_s": 151.5,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 151.0,
+      "titolo": "Canon in D for Two Renaissance Harps",
+      "autore": "Kevin MacLeod",
+      "fonte": "Incompetech",
+      "url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Canon%20in%20D%20for%20Two%20Renaissance%20Harps.mp3",
+      "licenza": "CC BY 4.0",
+      "crediti": "\"Canon in D for Two Renaissance Harps\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+      "scelta": {
+        "punteggio": 4.39,
+        "perche": {
+          "umore": 1.6,
+          "parole_umore": 1.5,
+          "antico": 0.8,
+          "genere": 0.3,
+          "varieta": 0.19
+        },
+        "descrittori": {
+          "umore": "taverna_calda",
+          "energia": "media",
+          "ambientazioni": [],
+          "meteo": []
+        },
+        "feel": [
+          "Bright",
+          "Calming",
+          "Relaxed"
+        ],
+        "strumenti": "Renaissance Harps",
+        "bpm": 83,
+        "scartati": [
+          "Midnight Tale"
+        ]
+      },
+      "loop_sorgente": {
+        "inizio_s": 3.0,
+        "fine_s": 153.5,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 151.5,
+        "lufs": -23.0,
+        "lra": 16.5,
+        "true_peak_db": -8.1,
+        "picco_db": -8.127039,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 31.3,
+          "rapporto_salto": 0.55,
+          "salto_livello_db": 0.05,
+          "ok": true
+        },
+        "codec": "aac 128k",
+        "kb": 2501,
+        "normalizzazione": "linear"
+      }
+    }
+  ],
+  "temi": [
+    {
+      "id": "tema_png_adelina",
+      "png": "png_adelina",
+      "file": "tema_png_adelina.m4a",
+      "loop": false,
+      "durata_s": 6.45,
+      "lufs": -19.7,
+      "volume": 1.413,
+      "strumento": "fisarmonica",
+      "programma_gm": 21,
+      "suono": "Accordion",
+      "modo": "eolio",
+      "registro": "basso",
+      "bpm": 77.1,
+      "tonica_midi": 60,
+      "trasformazioni": [
+        "inversione",
+        "diminuzione"
+      ],
+      "note": [
+        [
+          60,
+          0.0,
+          0.675,
+          96
+        ],
+        [
+          55,
+          0.75,
+          1.35,
+          80
+        ],
+        [
+          56,
+          2.25,
+          1.35,
+          80
+        ],
+        [
+          53,
+          3.75,
+          0.75,
+          80
+        ]
+      ],
+      "carattere": [
+        "freddo",
+        "gioviale"
+      ],
+      "perche": {
+        "carattere": {
+          "freddo": [
+            "superficie: taglient",
+            "voce: gelid"
+          ],
+          "gioviale": [
+            "superficie: battut",
+            "timbro: risat"
+          ]
+        },
+        "modo": "carattere freddo",
+        "registro": "età 78",
+        "strumento": "tavolozza della campagna"
+      },
+      "motivo": {
+        "metro": 3,
+        "origine": "generato",
+        "note": [
+          [
+            0,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            4,
+            1
+          ]
+        ]
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 6.45,
+        "lufs": -19.7,
+        "lra": 6.0,
+        "true_peak_db": -9.4,
+        "picco_db": -9.373245,
+        "campioni_al_limite": 0,
+        "silenzi": [
+          [
+            4.42,
+            6.46
+          ]
+        ],
+        "codec": "aac 96k",
+        "kb": 62,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "tema_png_ettore",
+      "png": "png_ettore",
+      "file": "tema_png_ettore.m4a",
+      "loop": false,
+      "durata_s": 7.0409,
+      "lufs": -20.0,
+      "volume": 1.413,
+      "strumento": "contrabbasso",
+      "programma_gm": 32,
+      "suono": "Acoustic Bass",
+      "modo": "dorico",
+      "registro": "basso",
+      "bpm": 88.0,
+      "tonica_midi": 48,
+      "trasformazioni": [
+        "legato",
+        "accento"
+      ],
+      "note": [
+        [
+          48,
+          0.0,
+          1.02,
+          110
+        ],
+        [
+          53,
+          1.0,
+          2.04,
+          72
+        ],
+        [
+          51,
+          3.0,
+          2.04,
+          110
+        ],
+        [
+          55,
+          5.0,
+          1.0,
+          72
+        ]
+      ],
+      "carattere": [
+        "burbero",
+        "caldo"
+      ],
+      "perche": {
+        "carattere": {
+          "burbero": [
+            "superficie: burber",
+            "timbro: ruvid"
+          ],
+          "caldo": [
+            "voce: buono"
+          ]
+        },
+        "modo": "carattere burbero",
+        "registro": "voce bassa",
+        "strumento": "tavolozza della campagna"
+      },
+      "motivo": {
+        "metro": 3,
+        "origine": "generato",
+        "note": [
+          [
+            0,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            4,
+            1
+          ]
+        ]
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 7.0409,
+        "lufs": -20.0,
+        "lra": 13.3,
+        "true_peak_db": -3.9,
+        "picco_db": -3.878941,
+        "campioni_al_limite": 0,
+        "silenzi": [
+          [
+            4.86,
+            7.06
+          ]
+        ],
+        "codec": "aac 96k",
+        "kb": 70,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "tema_png_gaspare",
+      "png": "png_gaspare",
+      "file": "tema_png_gaspare.m4a",
+      "loop": false,
+      "durata_s": 8.45,
+      "lufs": -19.7,
+      "volume": 1.413,
+      "strumento": "corno",
+      "programma_gm": 60,
+      "suono": "French Horns",
+      "modo": "dorico",
+      "registro": "basso",
+      "bpm": 98.2,
+      "tonica_midi": 48,
+      "trasformazioni": [
+        "aumentazione",
+        "legato"
+      ],
+      "note": [
+        [
+          48,
+          0.0,
+          1.53,
+          96
+        ],
+        [
+          53,
+          1.5,
+          3.06,
+          80
+        ],
+        [
+          51,
+          4.5,
+          3.06,
+          80
+        ],
+        [
+          55,
+          7.5,
+          1.5,
+          80
+        ]
+      ],
+      "carattere": [
+        "pacato",
+        "solenne"
+      ],
+      "perche": {
+        "carattere": {
+          "pacato": [
+            "superficie: piano",
+            "sotto_pressione: lento",
+            "voce: calm"
+          ],
+          "solenne": [
+            "superficie: misurat",
+            "sotto_pressione: precis",
+            "voce: ordinat"
+          ]
+        },
+        "modo": "carattere pacato",
+        "registro": "voce bassa",
+        "strumento": "tavolozza della campagna"
+      },
+      "motivo": {
+        "metro": 3,
+        "origine": "generato",
+        "note": [
+          [
+            0,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            4,
+            1
+          ]
+        ]
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 8.45,
+        "lufs": -19.7,
+        "lra": 9.5,
+        "true_peak_db": -7.4,
+        "picco_db": -7.375493,
+        "campioni_al_limite": 0,
+        "silenzi": [
+          [
+            6.34,
+            8.47
+          ]
+        ],
+        "codec": "aac 96k",
+        "kb": 88,
+        "normalizzazione": "linear"
+      }
+    },
+    {
+      "id": "tema_png_zelia",
+      "png": "png_zelia",
+      "file": "tema_png_zelia.m4a",
+      "loop": false,
+      "durata_s": 6.45,
+      "lufs": -19.7,
+      "volume": 1.413,
+      "strumento": "violino",
+      "programma_gm": 40,
+      "suono": "Violin",
+      "modo": "misolidio",
+      "registro": "alto",
+      "bpm": 77.1,
+      "tonica_midi": 72,
+      "trasformazioni": [
+        "diminuzione",
+        "staccato"
+      ],
+      "note": [
+        [
+          72,
+          0.0,
+          0.413,
+          96
+        ],
+        [
+          77,
+          0.75,
+          0.825,
+          80
+        ],
+        [
+          76,
+          2.25,
+          0.825,
+          80
+        ],
+        [
+          79,
+          3.75,
+          0.75,
+          80
+        ]
+      ],
+      "carattere": [
+        "gioviale",
+        "solenne"
+      ],
+      "perche": {
+        "carattere": {
+          "gioviale": [
+            "timbro: risat",
+            "timbro: svelt"
+          ],
+          "solenne": [
+            "sotto_pressione: formal"
+          ]
+        },
+        "modo": "carattere gioviale",
+        "registro": "voce alta",
+        "strumento": "tavolozza della campagna"
+      },
+      "motivo": {
+        "metro": 3,
+        "origine": "generato",
+        "note": [
+          [
+            0,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            4,
+            1
+          ]
+        ]
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 6.45,
+        "lufs": -19.7,
+        "lra": 4.2,
+        "true_peak_db": -8.7,
+        "picco_db": -8.677989,
+        "campioni_al_limite": 0,
+        "silenzi": [
+          [
+            4.35,
+            6.46
+          ]
+        ],
+        "codec": "aac 96k",
+        "kb": 63,
+        "normalizzazione": "linear"
+      }
+    }
+  ],
+  "ambienti": [
+    {
+      "id": "amb_n_sasso_neve",
+      "luogo": "n_sasso",
+      "tag": "neve",
+      "file": "amb_neve_sintesi.m4a",
+      "loop": true,
+      "volume": 0.179,
+      "fonte": "sintesi",
+      "licenza": "nessuna (generato dalla pipeline)",
+      "sintesi_s": 42.0,
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 43.0,
+        "lufs": -30.0,
+        "lra": 5.7,
+        "true_peak_db": -17.8,
+        "picco_db": -17.787815,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 15.7,
+          "rapporto_salto": 0.43,
+          "salto_livello_db": 0.08,
+          "ok": true
+        },
+        "codec": "aac 96k",
+        "kb": 527,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 43.0,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 42.5,
+      "lufs": -30.0
+    },
+    {
+      "id": "amb_scena_casa_bonfanti_fuoco",
+      "luogo": "scena_casa_bonfanti",
+      "tag": "fuoco",
+      "file": "amb_fuoco_sintesi.m4a",
+      "loop": true,
+      "volume": 0.156,
+      "fonte": "sintesi",
+      "licenza": "nessuna (generato dalla pipeline)",
+      "sintesi_s": 42.0,
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 43.0,
+        "lufs": -30.4,
+        "lra": 1.2,
+        "true_peak_db": -3.7,
+        "picco_db": -4.17266,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 14.1,
+          "rapporto_salto": 0.07,
+          "salto_livello_db": 1.59,
+          "ok": true
+        },
+        "codec": "aac 96k",
+        "kb": 539,
+        "normalizzazione": "dynamic"
+      },
+      "durata_s": 43.0,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 42.5,
+      "lufs": -30.4
+    },
+    {
+      "id": "amb_scena_casa_bonfanti_vento",
+      "luogo": "scena_casa_bonfanti",
+      "tag": "vento",
+      "file": "amb_vento_sintesi.m4a",
+      "loop": true,
+      "volume": 0.067,
+      "fonte": "sintesi",
+      "licenza": "nessuna (generato dalla pipeline)",
+      "sintesi_s": 42.0,
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 43.0,
+        "lufs": -29.9,
+        "lra": 6.6,
+        "true_peak_db": -15.7,
+        "picco_db": -15.710181,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 23.6,
+          "rapporto_salto": 0.08,
+          "salto_livello_db": 2.05,
+          "ok": true
+        },
+        "codec": "aac 96k",
+        "kb": 526,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 43.0,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 42.5,
+      "lufs": -29.9
+    },
+    {
+      "id": "amb_scena_casera_folla",
+      "luogo": "scena_casera",
+      "tag": "folla",
+      "file": "amb_folla_archivio-crowdtalkinglou.m4a",
+      "loop": true,
+      "volume": 0.134,
+      "fonte": "Internet Archive",
+      "titolo": "Crowd Talking Loudly D.D.Teoli Jr.",
+      "autore": "D.D.Teoli Jr.",
+      "licenza": "Public Domain Mark 1.0",
+      "licenza_url": "http://creativecommons.org/publicdomain/mark/1.0/",
+      "pagina": "https://archive.org/details/CrowdTalkingLoudlyD.D.TeoliJr.",
+      "url_file": "https://archive.org/download/CrowdTalkingLoudlyD.D.TeoliJr./Crowd%20Talking%20Loudly%20D.D.%20Teoli%20Jr..mp3",
+      "loop_sorgente": {
+        "inizio_s": 2.0,
+        "fine_s": 42.75,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 41.75,
+        "lufs": -30.1,
+        "lra": 3.2,
+        "true_peak_db": -16.6,
+        "picco_db": -16.629995,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 16.2,
+          "rapporto_salto": 1.27,
+          "salto_livello_db": 0.31,
+          "ok": true
+        },
+        "codec": "aac 96k",
+        "kb": 511,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 41.75,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 41.25,
+      "lufs": -30.1
+    },
+    {
+      "id": "amb_scena_casera_fuoco",
+      "luogo": "scena_casera",
+      "tag": "fuoco",
+      "file": "amb_fuoco_sintesi.m4a",
+      "loop": true,
+      "volume": 0.179,
+      "fonte": "sintesi",
+      "licenza": "nessuna (generato dalla pipeline)",
+      "sintesi_s": 42.0,
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 43.0,
+        "lufs": -30.4,
+        "lra": 1.2,
+        "true_peak_db": -3.7,
+        "picco_db": -4.17266,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 14.1,
+          "rapporto_salto": 0.07,
+          "salto_livello_db": 1.59,
+          "ok": true
+        },
+        "codec": "aac 96k",
+        "kb": 539,
+        "normalizzazione": "dynamic"
+      },
+      "durata_s": 43.0,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 42.5,
+      "lufs": -30.4
+    },
+    {
+      "id": "amb_scena_casera_neve",
+      "luogo": "scena_casera",
+      "tag": "neve",
+      "file": "amb_neve_sintesi.m4a",
+      "loop": true,
+      "volume": 0.045,
+      "fonte": "sintesi",
+      "licenza": "nessuna (generato dalla pipeline)",
+      "sintesi_s": 42.0,
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 43.0,
+        "lufs": -30.0,
+        "lra": 5.7,
+        "true_peak_db": -17.8,
+        "picco_db": -17.787815,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 15.7,
+          "rapporto_salto": 0.43,
+          "salto_livello_db": 0.08,
+          "ok": true
+        },
+        "codec": "aac 96k",
+        "kb": 527,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 43.0,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 42.5,
+      "lufs": -30.0
+    },
+    {
+      "id": "amb_scena_sasso_folla",
+      "luogo": "scena_sasso",
+      "tag": "folla",
+      "file": "amb_folla_archivio-crowdtalkinglou.m4a",
+      "loop": true,
+      "volume": 0.054,
+      "fonte": "Internet Archive",
+      "titolo": "Crowd Talking Loudly D.D.Teoli Jr.",
+      "autore": "D.D.Teoli Jr.",
+      "licenza": "Public Domain Mark 1.0",
+      "licenza_url": "http://creativecommons.org/publicdomain/mark/1.0/",
+      "pagina": "https://archive.org/details/CrowdTalkingLoudlyD.D.TeoliJr.",
+      "url_file": "https://archive.org/download/CrowdTalkingLoudlyD.D.TeoliJr./Crowd%20Talking%20Loudly%20D.D.%20Teoli%20Jr..mp3",
+      "loop_sorgente": {
+        "inizio_s": 2.0,
+        "fine_s": 42.75,
+        "note": []
+      },
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 41.75,
+        "lufs": -30.1,
+        "lra": 3.2,
+        "true_peak_db": -16.6,
+        "picco_db": -16.629995,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 16.2,
+          "rapporto_salto": 1.27,
+          "salto_livello_db": 0.31,
+          "ok": true
+        },
+        "codec": "aac 96k",
+        "kb": 511,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 41.75,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 41.25,
+      "lufs": -30.1
+    },
+    {
+      "id": "amb_scena_sasso_neve",
+      "luogo": "scena_sasso",
+      "tag": "neve",
+      "file": "amb_neve_sintesi.m4a",
+      "loop": true,
+      "volume": 0.089,
+      "fonte": "sintesi",
+      "licenza": "nessuna (generato dalla pipeline)",
+      "sintesi_s": 42.0,
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 43.0,
+        "lufs": -30.0,
+        "lra": 5.7,
+        "true_peak_db": -17.8,
+        "picco_db": -17.787815,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 15.7,
+          "rapporto_salto": 0.43,
+          "salto_livello_db": 0.08,
+          "ok": true
+        },
+        "codec": "aac 96k",
+        "kb": 527,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 43.0,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 42.5,
+      "lufs": -30.0
+    },
+    {
+      "id": "amb_scena_sasso_vento",
+      "luogo": "scena_sasso",
+      "tag": "vento",
+      "file": "amb_vento_sintesi.m4a",
+      "loop": true,
+      "volume": 0.134,
+      "fonte": "sintesi",
+      "licenza": "nessuna (generato dalla pipeline)",
+      "sintesi_s": 42.0,
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 43.0,
+        "lufs": -29.9,
+        "lra": 6.6,
+        "true_peak_db": -15.7,
+        "picco_db": -15.710181,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "giunta": {
+          "somiglianza_db": 23.6,
+          "rapporto_salto": 0.08,
+          "salto_livello_db": 2.05,
+          "ok": true
+        },
+        "codec": "aac 96k",
+        "kb": 526,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 43.0,
+      "loop_inizio_s": 0.5,
+      "loop_fine_s": 42.5,
+      "lufs": -29.9
+    }
+  ],
+  "effetti": [
+    {
+      "id": "sfx_campana",
+      "tag": "campana",
+      "file": "sfx_campana_soundfont.m4a",
+      "loop": false,
+      "volume": 1.259,
+      "fonte": "sintesi",
+      "licenza": "nessuna (SoundFont GeneralUser GS)",
+      "suono": "Tubular Bells (GeneralUser GS)",
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 6.95,
+        "lufs": -20.6,
+        "lra": 8.6,
+        "true_peak_db": -7.3,
+        "picco_db": -7.280406,
+        "campioni_al_limite": 0,
+        "silenzi": [
+          [
+            5.3,
+            6.95
+          ]
+        ],
+        "codec": "aac 96k",
+        "kb": 78,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 6.95,
+      "lufs": -20.6
+    },
+    {
+      "id": "sfx_chiave",
+      "tag": "chiave",
+      "file": "sfx_chiave_archivio-slidelockpro-v1.m4a",
+      "loop": false,
+      "volume": 1.259,
+      "fonte": "Internet Archive",
+      "titolo": "Slide Lock Pro",
+      "autore": "S.L.P",
+      "licenza": "Public Domain Mark 1.0",
+      "licenza_url": "http://creativecommons.org/publicdomain/mark/1.0/",
+      "pagina": "https://archive.org/details/SlideLockPro.v1.5",
+      "url_file": "https://archive.org/download/SlideLockPro.v1.5/BulberaSL-7.cod",
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 0.45,
+        "lufs": -21.0,
+        "lra": 0.0,
+        "true_peak_db": -11.4,
+        "picco_db": -11.628479,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "codec": "aac 96k",
+        "kb": 6,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 0.45,
+      "lufs": -21.0
+    },
+    {
+      "id": "sfx_monete",
+      "tag": "monete",
+      "file": "sfx_monete_archivio-coinsfallingout.m4a",
+      "loop": false,
+      "volume": 1.259,
+      "fonte": "Internet Archive",
+      "titolo": "Coins falling out of a vending machine",
+      "autore": "sconosciuto",
+      "licenza": "CC0 1.0",
+      "licenza_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "pagina": "https://archive.org/details/CoinsFallingOutOfAVendingMachine",
+      "url_file": "https://archive.org/download/CoinsFallingOutOfAVendingMachine/STE-006.mp3",
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 2.71,
+        "lufs": -21.0,
+        "lra": 0.0,
+        "true_peak_db": -3.1,
+        "picco_db": -3.105684,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "codec": "aac 96k",
+        "kb": 36,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 2.71,
+      "lufs": -21.0
+    },
+    {
+      "id": "sfx_porta",
+      "tag": "porta",
+      "file": "sfx_porta_archivio-door-knob-sound.m4a",
+      "loop": false,
+      "volume": 1.259,
+      "fonte": "Internet Archive",
+      "titolo": "Door knob sounds",
+      "autore": "sconosciuto",
+      "licenza": "CC0 1.0",
+      "licenza_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "pagina": "https://archive.org/details/door-knob-sounds",
+      "url_file": "https://archive.org/download/door-knob-sounds/this-door.mp3",
+      "controllo": {
+        "ok": true,
+        "problemi": [],
+        "durata_s": 0.59,
+        "lufs": -24.9,
+        "lra": 0.0,
+        "true_peak_db": -2.9,
+        "picco_db": -3.464095,
+        "campioni_al_limite": 0,
+        "silenzi": [],
+        "codec": "aac 96k",
+        "kb": 8,
+        "normalizzazione": "linear"
+      },
+      "durata_s": 0.59,
+      "lufs": -24.9
+    }
+  ],
+  "crediti": [
+    "\"Virtutes Vocis\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Galway\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Master of the Feast\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Curse of the Scarab\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Mary Celeste\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Movement Proposition\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Plaint\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Virtutes Instrumenti\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "\"Canon in D for Two Renaissance Harps\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/",
+    "Temi dei personaggi: composti dalla pipeline (motivo deterministico) e suonati con GeneralUser GS di S. Christian Collins (https://www.schristiancollins.com/generaluser), licenza d'uso libera.",
+    "Alcuni ambienti sono sintetizzati dalla pipeline (rumore modellato): nessuna licenza esterna."
+  ]
+}
