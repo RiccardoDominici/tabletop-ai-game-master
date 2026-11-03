@@ -179,6 +179,10 @@ def fai_temi(c, d, man: ManifestAudio, dry: bool, rifai: bool) -> None:
 
 
 # --- Ambienti ed effetti --------------------------------------------------------------------------
+# Campi di una voce d'ambiente o d'effetto che si rifanno a ogni giro (dal luogo, dalla rimisura).
+CAMPI_RIMISURATI = {"id", "luogo", "tag", "file", "loop", "volume", "controllo", "durata_s", "loop_inizio_s",
+                    "loop_fine_s", "lufs"}
+
 def fai_ambienti(c, d, man: ManifestAudio, dry: bool, rifai: bool, rete: bool) -> None:
     import ambienti as A
     from pool import Pool
@@ -202,6 +206,7 @@ def fai_ambienti(c, d, man: ManifestAudio, dry: bool, rifai: bool, rete: bool) -
             pronti[chiave] = None
             return None
         destinazione = man.cartella / s.nome_file
+        vecchia = None
         if rifai or not destinazione.exists():
             audio, extra = A.audio_di(s, c.id, d["profilo"].tonica, d["profilo"].modo)
             ctl = Q.prepara(audio, destinazione, tipo, tipo == "ambiente", CACHE_LAVORO,
@@ -211,12 +216,19 @@ def fai_ambienti(c, d, man: ManifestAudio, dry: bool, rifai: bool, rete: bool) -
             vecchia = precedenti.get(s.nome_file)
             campioni = round(vecchia["durata_s"] * SR) if vecchia else None
             punti = (round(vecchia["loop_inizio_s"] * SR), round(vecchia["loop_fine_s"] * SR)) if vecchia and "loop_inizio_s" in vecchia else None
-            extra, ctl = {}, Q.analizza(destinazione, tipo == "ambiente", tipo, campioni, punti,
-                                        silenzi_ammessi=tipo == "effetto" or tag in V.INTERMITTENTI)
+            ctl = Q.analizza(destinazione, tipo == "ambiente", tipo, campioni, punti,
+                             silenzi_ammessi=tipo == "effetto" or tag in V.INTERMITTENTI)
             ctl["kb"] = round(destinazione.stat().st_size / 1000)
+            # Ciò che sa solo la generazione (il tratto di sorgente usato, il suono, codec e
+            # normalizzazione) resta quello della voce vecchia: un giro che salta tutto non deve
+            # impoverire il manifest (scripts/prepara.sh lo rilancia a ogni preparazione).
+            extra = {k: v for k, v in (vecchia or {}).items() if k not in CAMPI_RIMISURATI and k not in s.meta()}
         print(f"    [{tipo} {tag}] {s.nome_file}: {s.meta().get('titolo', 'sintesi')} — {ctl['durata_s']} s, {ctl['lufs']} LUFS, {'ok' if ctl['ok'] else ctl['problemi']}")
         punti = {k: ctl[k] for k in ("loop_inizio_s", "loop_fine_s") if k in ctl}
-        pronti[chiave] = (s, {**extra, "controllo": _controllo_breve(ctl), "durata_s": ctl["durata_s"], **punti, "lufs": ctl["lufs"]})
+        controllo = _controllo_breve(ctl)
+        if vecchia:
+            controllo = {**(vecchia.get("controllo") or {}), **{k: v for k, v in controllo.items() if v is not None}}
+        pronti[chiave] = (s, {**extra, "controllo": controllo, "durata_s": ctl["durata_s"], **punti, "lufs": ctl["lufs"]})
         return pronti[chiave]
 
     print("\n## Ambienti")
