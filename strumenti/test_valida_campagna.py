@@ -765,6 +765,56 @@ def test_immagini_tratto_in_un_altra_situazione_che_si_vede_prima(camp):
     assert "IMMAGINI.situazione" in errori(camp)
 
 
+# --- AUDIO (campi espliciti di docs/audio.md) ------------------------------------------------------
+
+def test_audio_campi_giusti_passano(camp):
+    modifica(camp, "stile.yaml", lambda d: d.update(audio={
+        "tonalita": "re dorico", "tempo": 88, "strumenti": ["fisarmonica", "clarinetto"], "umore_base": "taverna_calda",
+        "epoca": "antica", "motivo": {"metro": 4, "note": [[0, 1], [2, 1], [4, 1], [2, 1], [1, 2], [0, 2]]}}))
+    modifica(camp, "scena.yaml", lambda d: d.update(audio={"musica": ["notte", "taverna", "fiddle"],
+                                                           "ambiente": ["fuoco", {"tag": "vento", "volume": 0.3}],
+                                                           "umore_iniziale": "taverna_calda"}))
+    modifica(camp, "png/png_irma.yaml", lambda d: d.update(tema={"carattere": ["caldo"], "strumento": "flauto dolce",
+                                                                 "modo": "maggiore", "registro": "medio"}))
+    assert not {c for c in errori(camp, rigoroso=True) if c.startswith("AUDIO.")}
+    assert not {c for c in avvisi(camp) if c.startswith("AUDIO.")}
+
+
+def test_audio_valori_fuori_vocabolario(camp):
+    modifica(camp, "stile.yaml", lambda d: d.update(audio={"umore_base": "allegria", "epoca": "vittoriana", "tonalita": "zeta"}))
+    modifica(camp, "scena.yaml", lambda d: d.update(audio={"ambiente": ["lupi"], "umore_iniziale": "suspense"}))
+    modifica(camp, "png/png_irma.yaml", lambda d: d.update(tema={"carattere": "misteriosa", "strumento": "theremin",
+                                                                 "modo": "esotico", "registro": "altissimo"}))
+    assert "AUDIO.vocabolario" in errori(camp)
+
+
+def test_audio_chiave_sconosciuta_e_volume(camp):
+    modifica(camp, "scena.yaml", lambda d: d.update(audio={"musiche": ["notte"], "ambiente": [{"tag": "fuoco", "volume": 3}]}))
+    assert "AUDIO.forma" in errori(camp)
+
+
+def test_audio_motivo_che_la_pipeline_scarterebbe(camp):
+    # Un salto di un'ottava e mezza e note troppo poche: temi/motivo.py lo scarterebbe in silenzio.
+    modifica(camp, "stile.yaml", lambda d: d.update(audio={"motivo": {"metro": 4, "note": [[0, 1], [9, 3]]}}))
+    assert "AUDIO.motivo" in errori(camp)
+
+
+def test_audio_parola_segreta_in_un_tema_o_in_un_luogo(camp):
+    modifica(camp, "png/png_irma.yaml", lambda d: d.update(tema={"strumento": "fisarmonica del mercante"}))
+    modifica(camp, "campagna.yaml", lambda d: d["nodi"][1].update(audio={"musica": ["fagotto nella cantina"]}))
+    assert "AUDIO.segreto" in errori(camp)
+
+
+def test_audio_tema_che_tradisce_chi_mente(camp):
+    # Irma mente: il frigio la farebbe suonare sinistra prima che il tavolo trovi la bugia.
+    modifica(camp, "png/png_irma.yaml", lambda d: d.update(tema={"modo": "frigio"}))
+    assert "AUDIO.tema_rivelatore" not in errori(camp)
+    assert "AUDIO.tema_rivelatore" in errori(camp, rigoroso=True)
+    # Un carattere che la persona pubblica non giustifica è un avviso.
+    modifica(camp, "png/png_irma.yaml", lambda d: d.update(tema={"carattere": ["freddo"]}))
+    assert "AUDIO.tema_rivelatore" in avvisi(camp)
+
+
 def test_copioni_misura_il_catalogo(camp, tmp_path):
     from valida import copioni
     from valida.esito import Esito

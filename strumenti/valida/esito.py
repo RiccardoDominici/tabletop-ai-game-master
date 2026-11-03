@@ -26,6 +26,7 @@ CLASSI = {
     "SEGRETI": "parole segrete: nulla di nascosto nei campi pubblici o nel catalogo del selettore",
     "IMMAGINI": "prompt delle immagini (strumenti/immagini): [STILE], luoghi, tratti visibili",
     "MONDO": "cronologia e logistica (preparazione): eventi in ordine, date dei documenti, tempi e capienze",
+    "AUDIO": "campi espliciti dell'audio (docs/audio.md): vocabolario chiuso, motivo, niente segreti nei temi",
 }
 
 
