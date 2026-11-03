@@ -1,6 +1,7 @@
 """Manifest delle immagini di una campagna: campagne/<id>/immagini/manifest.json.
 
-Una voce per immagine: id, file, tipo, prompt, seme, modello, secondi, riferimenti, quando.
+Una voce per immagine: id, file, tipo, prompt, seme, modello, secondi, riferimenti, quando, firma
+(vedi freschezza.py: dice se l'immagine è ancora quella che le schede di oggi chiederebbero).
 Serve a due cose: sapere da dove viene ogni immagine (per rigenerarla uguale) e saltare quelle già fatte.
 La scrittura è atomica (file temporaneo + rename), così un'interruzione a metà non lo corrompe.
 """
@@ -30,9 +31,10 @@ class Manifest:
 
     def registra(self, voce: dict) -> None:
         self.voci[voce["id"]] = voce
-        self._salva()
+        self.salva()
 
-    def _salva(self) -> None:
+    def salva(self) -> None:
+        """Scrive il manifest com'è in memoria (anche dopo modifiche dirette a `voci`)."""
         self.cartella.mkdir(parents=True, exist_ok=True)
         dati = {"immagini": sorted(self.voci.values(), key=lambda v: v["id"])}
         fd, tmp = tempfile.mkstemp(dir=self.cartella, suffix=".tmp")

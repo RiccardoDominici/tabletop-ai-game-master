@@ -26,7 +26,7 @@
       "file": "luogo_scena_ponte_imbrunire.jpg",
       "tipo": "luogo",
       "alias_di": "luogo_scena_ponte_imbrunire",
-      "quando": "2026-11-02 22:34:13"
+      "quando": "2026-11-03 10:59:54"
     },
     {
       "id": "luogo_scena_borgo_basso",
@@ -46,7 +46,9 @@
       "picco_gb": 5.36,
       "kb": 697,
       "rifilato_pct": 5.0,
-      "quando": "2026-11-02 22:20:23"
+      "quando": "2026-11-02 22:20:23",
+      "firma": "v1:6b1d1d3416b6681c95615fbc",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "luogo_scena_casa_del_sale",
@@ -66,7 +68,9 @@
       "picco_gb": 5.14,
       "kb": 634,
       "rifilato_pct": 0.3,
-      "quando": "2026-11-02 22:26:51"
+      "quando": "2026-11-02 22:26:51",
+      "firma": "v1:f5d40dfaf7c06e8952047427",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "luogo_scena_ponte_imbrunire",
@@ -86,7 +90,9 @@
       "picco_gb": 5.3,
       "kb": 652,
       "rifilato_pct": 0.5,
-      "quando": "2026-11-02 22:14:18"
+      "quando": "2026-11-02 22:14:18",
+      "firma": "v1:ff299e61b6489b4e0723ac3f",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "luogo_scena_terzo_tocco",
@@ -106,7 +112,9 @@
       "picco_gb": 5.41,
       "kb": 675,
       "rifilato_pct": 2.0,
-      "quando": "2026-11-02 22:34:13"
+      "quando": "2026-11-02 22:34:13",
+      "firma": "v1:0e9fbae02aa33933bfe2ad9f",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "ritratto_png_bice",
@@ -126,7 +134,9 @@
       "picco_gb": 4.31,
       "kb": 258,
       "rifilato_pct": 0.0,
-      "quando": "2026-11-02 22:36:08"
+      "quando": "2026-11-02 22:36:08",
+      "firma": "v1:ad25942d5c326463b9ceeae9",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "ritratto_png_rosa",
@@ -146,7 +156,9 @@
       "picco_gb": 4.31,
       "kb": 251,
       "rifilato_pct": 0.0,
-      "quando": "2026-11-02 22:38:23"
+      "quando": "2026-11-02 22:38:23",
+      "firma": "v1:8c1007461d4b08f783a04eec",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "ritratto_png_tullio",
@@ -166,7 +178,9 @@
       "picco_gb": 4.33,
       "kb": 277,
       "rifilato_pct": 0.0,
-      "quando": "2026-11-02 22:40:19"
+      "quando": "2026-11-02 22:40:19",
+      "firma": "v1:474f14114a458e1ea30d9776",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "ritratto_png_vischi",
@@ -186,7 +200,9 @@
       "picco_gb": 4.29,
       "kb": 225,
       "rifilato_pct": 0.0,
-      "quando": "2026-11-02 22:42:24"
+      "quando": "2026-11-02 22:42:24",
+      "firma": "v1:90d8213b580c45c14ebe8f2f",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "situazione_png_bice_in_scena_ponte_imbrunire",
@@ -211,7 +227,9 @@
       "picco_gb": 7.29,
       "kb": 649,
       "rifilato_pct": 1.2,
-      "quando": "2026-11-03 09:45:36"
+      "quando": "2026-11-03 09:45:36",
+      "firma": "v1:c2093502e6a577afc54fc823",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "situazione_png_bice_sotto_arcata",
@@ -237,7 +255,9 @@
       "picco_gb": 6.07,
       "kb": 617,
       "rifilato_pct": 0.1,
-      "quando": "2026-11-03 09:17:38"
+      "quando": "2026-11-03 09:17:38",
+      "firma": "v1:7e3f575b72131e83090273ca",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "situazione_png_tullio_in_scena_ponte_imbrunire",
@@ -262,7 +282,9 @@
       "picco_gb": 7.49,
       "kb": 640,
       "rifilato_pct": 1.2,
-      "quando": "2026-11-03 09:52:54"
+      "quando": "2026-11-03 09:52:54",
+      "firma": "v1:afb18b287d9c9bcb0079b026",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "situazione_png_vischi_studio_cassa",
@@ -288,7 +310,9 @@
       "picco_gb": 6.08,
       "kb": 462,
       "rifilato_pct": 1.2,
-      "quando": "2026-11-03 09:38:27"
+      "quando": "2026-11-03 09:38:27",
+      "firma": "v1:ef1de40ea23d7d3c3c7a539c",
+      "firma_migrata": "2026-11-03"
     }
   ]
 }

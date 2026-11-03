@@ -75,7 +75,9 @@ def verifica_alimentazione(minima: int = BATTERIA_MINIMA) -> None:
     a_corrente, perc = stato_alimentazione()
     if a_corrente:
         return
-    if perc is not None and perc < minima:
+    # <= e non <: mflux si ferma da sé quando la carica è <= al suo limite (lo stesso valore, vedi
+    # comando()) ed esce con codice 0 senza scrivere niente. Al 20% esatto si partiva per niente.
+    if perc is not None and perc <= minima:
         raise RuntimeError(f"Mac a batteria al {perc}%: collega l'alimentatore prima di generare immagini.")
     log.warning("Mac a batteria (%s%%): ogni immagine consuma molto, meglio collegare l'alimentatore.", perc)
 

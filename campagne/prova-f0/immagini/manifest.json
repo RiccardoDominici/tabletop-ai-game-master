@@ -18,14 +18,16 @@
       "picco_gb": 5.35,
       "kb": 728,
       "rifilato_pct": 5.0,
-      "quando": "2026-11-02 20:42:46"
+      "quando": "2026-11-02 20:42:46",
+      "firma": "v1:5b439c539ea42f07c2861911",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "luogo_n_osteria",
       "file": "luogo_scena_forno_vecchio.jpg",
       "tipo": "luogo",
       "alias_di": "luogo_scena_forno_vecchio",
-      "quando": "2026-11-02 20:32:27"
+      "quando": "2026-11-03 10:59:54"
     },
     {
       "id": "luogo_n_piazza",
@@ -46,7 +48,9 @@
       "kb": 838,
       "quando": "2026-11-02 20:02:53",
       "rifilato_pct": 3.0,
-      "rifilato_dal_jpeg": true
+      "rifilato_dal_jpeg": true,
+      "firma": "v1:32aa844cdea94eee9010dbc6",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "luogo_scena_forno_vecchio",
@@ -67,7 +71,9 @@
       "kb": 783,
       "rifilato_pct": 2.8,
       "nota": "generata alle 19:42 dall'anteprima (stesso prompt e seme che genera.py compone da fa26f11, verificato), rifilata dal PNG originale; preferita ai semi 1000 e 7 per l'orlo di carta più sottile",
-      "quando": "2026-11-02 19:42:36"
+      "quando": "2026-11-02 19:42:36",
+      "firma": "v1:1b00558f92ac128f39ca283f",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "ritratto_png_baldrin",
@@ -86,7 +92,9 @@
       "secondi": 71.5,
       "picco_gb": 4.33,
       "kb": 251,
-      "quando": "2026-11-02 19:52:05"
+      "quando": "2026-11-02 19:52:05",
+      "firma": "v1:90b6c76019a53cdd845625c5",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "ritratto_png_ottavia",
@@ -105,7 +113,9 @@
       "secondi": 70.6,
       "picco_gb": 4.35,
       "kb": 269,
-      "quando": "2026-11-02 19:53:16"
+      "quando": "2026-11-02 19:53:16",
+      "firma": "v1:99ecf687ce8398347fa6bedc",
+      "firma_migrata": "2026-11-03"
     },
     {
       "id": "ritratto_png_sebastiano",
@@ -124,7 +134,9 @@
       "secondi": 71.9,
       "picco_gb": 4.31,
       "kb": 184,
-      "quando": "2026-11-02 20:35:22"
+      "quando": "2026-11-02 20:35:22",
+      "firma": "v1:b5b03b125f86a51fc40dad25",
+      "firma_migrata": "2026-11-03"
     }
   ]
 }

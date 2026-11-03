@@ -36,20 +36,29 @@ def peso(cartella: Path) -> int:
 
 
 def stato_immagini(cartella: Path) -> dict:
+    """Immagini attese, presenti, mancanti e VECCHIE (file c'è ma le schede sono cambiate), più le orfane.
+
+    «Vecchia» viene dalla firma nel manifest (strumenti/immagini/freschezza.py): sola lettura, qui non si
+    migra né si sposta niente (lo fa genera.py quando gira).
+    """
     from campagna import richieste
+    from freschezza import classifica
     from manifest import Manifest
+    from motore import Motore
 
     tutte = richieste(cartella)
     man = Manifest(cartella / "immagini")
     vere = [r for r in tutte if not r.alias_di]
-    mancanti = [r for r in vere if not man.gia_fatta(r.id, r.file)]
+    st = classifica(vere, tutte, man, Motore().descrizione)
+    mancanti = st.mancanti
+    vecchie = [r for r, _ in st.vecchie]
     # Stima del tempo: la media dei secondi già spesi per tipo, o i valori misurati delle prove.
     secondi: dict[str, list[float]] = {}
     for v in man.voci.values():
         if v.get("secondi"):
             secondi.setdefault(v.get("tipo"), []).append(float(v["secondi"]))
     stima = sum((sum(secondi[r.tipo]) / len(secondi[r.tipo])) if secondi.get(r.tipo) else SECONDI_PREDEFINITI.get(r.tipo, 300)
-                for r in mancanti)
+                for r in mancanti + vecchie)
     per_tipo: dict[str, dict[str, int]] = {}
     for r in vere:
         t = per_tipo.setdefault(r.tipo, {"attese": 0, "presenti": 0})
@@ -57,7 +66,9 @@ def stato_immagini(cartella: Path) -> dict:
         t["presenti"] += r not in mancanti
     return {"manifest": man.percorso.exists(), "attese": len(vere), "presenti": len(vere) - len(mancanti),
             "alias": len(tutte) - len(vere), "per_tipo": per_tipo,
-            "mancanti": [{"id": r.id, "tipo": r.tipo} for r in mancanti], "stima_s": round(stima),
+            "mancanti": [{"id": r.id, "tipo": r.tipo} for r in mancanti],
+            "vecchie": [{"id": r.id, "tipo": r.tipo, "motivo": m} for r, m in st.vecchie],
+            "orfane": st.orfane, "stima_s": round(stima),
             "byte": peso(cartella / "immagini")}
 
 
@@ -115,7 +126,15 @@ def rapporto(s: dict) -> str:
                  f"manifest {'sì' if img['manifest'] else 'NO'}")
     if img["mancanti"]:
         nomi = ", ".join(m["id"] for m in img["mancanti"][:6]) + ("…" if len(img["mancanti"]) > 6 else "")
-        righe.append(f"    mancano {len(img['mancanti'])}, circa {round(img['stima_s'] / 60)} minuti di GPU: {nomi}")
+        righe.append(f"    mancano {len(img['mancanti'])}: {nomi}")
+    if img["vecchie"]:
+        nomi = "; ".join(f"{m['id']}: {m['motivo']}" for m in img["vecchie"][:6]) + ("…" if len(img["vecchie"]) > 6 else "")
+        righe.append(f"    vecchie {len(img['vecchie'])} (il file c'è ma le schede sono cambiate): {nomi}")
+    if img["mancanti"] or img["vecchie"]:
+        righe.append(f"    da generare: circa {round(img['stima_s'] / 60)} minuti di GPU")
+    if img["orfane"]:
+        righe.append(f"    orfane {len(img['orfane'])} (non più nelle schede; genera.py le sposta in immagini/cache/orfane/): "
+                     + ", ".join(img["orfane"][:6]))
     sez = ", ".join(f"{k} {v['presenti']}/{v['attesi']}" for k, v in aud["sezioni"].items())
     righe.append(f"  audio: {sez}, {mb(aud['byte'])}, manifest {'sì' if aud['manifest'] else 'NO'}")
     if aud["essenziali_mancanti"]:

@@ -12,48 +12,11 @@ Controlla il contratto che il resto dello strumento dà per scontato:
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
-import pytest
-import yaml
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-import campagna  # noqa: E402
-from formato import CLAUSOLE_FORMATO, con_formato  # noqa: E402
-
-STILE = "watercolor illustration of a mountain village, warm hearth light, palette of cream and slate"
-SEGRETO = "a thin white scar splits his left eyebrow"
-
-
-def _scrivi(percorso: Path, dati: dict) -> None:
-    percorso.parent.mkdir(parents=True, exist_ok=True)
-    percorso.write_text(yaml.safe_dump(dati, allow_unicode=True), encoding="utf-8")
-
-
-@pytest.fixture()
-def mini(tmp_path: Path) -> Path:
-    """Una campagna minima: una scena, un nodo-luogo con prompt, un evento con scheda, un PNG con un segreto."""
-    c = tmp_path / "mini"
-    _scrivi(c / "stile.yaml", {"stile_immagini": STILE})
-    _scrivi(c / "scena.yaml", {
-        "id": "scena_sala", "png_presenti": ["png_uno"],
-        "immagine": {"prompt_luogo": "stone hall with a fireplace", "invarianti": ["camino"]},
-    })
-    _scrivi(c / "campagna.yaml", {"nodi": [
-        {"id": "n_sala", "tipo": "luogo", "scheda": "scena.yaml"},
-        {"id": "e_festa", "tipo": "evento", "scheda": "scena.yaml"},
-        {"id": "n_bosco", "tipo": "luogo", "immagine": {"prompt_luogo": "snowy larch wood at dusk"}},
-        {"id": "n_valle", "tipo": "luogo"},
-        {"id": "png_uno", "tipo": "png", "scheda": "png/png_uno.yaml"},
-    ]})
-    _scrivi(c / "png" / "png_uno.yaml", {"id": "png_uno", "aspetto": {
-        "prompt_immagine": "gaunt man in a black hooded cloak, [STILE]",
-        "invarianti": ["circa 40 anni", "mantello nero"],
-        "situazioni": [{"id": "senza_cappuccio", "dopo": ["i_cicatrice"], "prompt": f"hood lowered, {SEGRETO}"}],
-    }})
-    return c
+import campagna
+from conftest import SEGRETO, STILE
+from formato import CLAUSOLE_FORMATO, con_formato
 
 
 def test_formato_aggiunge_ogni_clausola_una_volta():

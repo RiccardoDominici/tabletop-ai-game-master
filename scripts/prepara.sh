@@ -75,7 +75,8 @@ fi
 # 2. Immagini: FLUX.2 in locale, 15–40 minuti di GPU per una campagna intera.
 echo
 echo "2/4  Immagini…"
-MANCANO_IMG="$(campo 'len(d["immagini"]["mancanti"])')"
+# Da generare = mancanti + vecchie (file presente ma schede cambiate: strumenti/immagini/freschezza.py).
+MANCANO_IMG="$(campo 'len(d["immagini"]["mancanti"]) + len(d["immagini"]["vecchie"])')"
 STIMA_MIN="$(campo 'round(d["immagini"]["stima_s"] / 60)')"
 if [[ "$MANCANO_IMG" == "0" ]]; then
   echo "     tutte presenti: niente da generare."
