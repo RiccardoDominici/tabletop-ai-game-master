@@ -1,0 +1,15 @@
+titolo: "Il guado"
+riassunto_iniziale: "Nella sessione precedente l'oste ha confessato. Ora il fiume sale."
+scene: [scena_guado, scena_mulino]
+# Il fronte della campagna riparte da dove l'ha lasciato la sessione 01.
+pieni_all_inizio: {o_temporale: 1}
+canone:
+  - {id: f_corda_tagliata, noto_ai_pg: false, testo: "Qualcuno ha tagliato la corda del traghetto."}
+orologi:
+  - id: o_piena
+    nome: "La piena"
+    segmenti: 3
+    segni: ["L'acqua copre il primo gradino.", "La corda del traghetto si tende.", "Il ponte di tronchi cede."]
+    al_completo: "Il guado non si passa più."
+preparazione:
+  nota: "non va al narratore"

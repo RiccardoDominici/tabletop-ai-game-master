@@ -1,0 +1,24 @@
+battute:
+  - id: nar_corda
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda il palo del traghetto"
+    temi: [palo, corda]
+    scena: scena_guado
+    testo:
+      - "[narratore] Al palo pende un capo di corda, tagliato netto."
+    effetti:
+      rivela_indizi: [i_corda]
+    max_usi: 1
+  - id: nar_piena
+    chi: narratore
+    tipo: segno_orologio
+    quando: "il fiume sale"
+    temi: [fiume]
+    richiede:
+      orologio: {id: o_piena, min: 0, max: 0}
+    testo:
+      - "[narratore] L'acqua copre il primo gradino."
+    effetti:
+      avanza_orologio: o_piena
+    max_usi: 1

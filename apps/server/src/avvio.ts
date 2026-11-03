@@ -7,7 +7,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { InfoServer } from '@cantastorie/shared';
 import { creaApp, registraRotte, type App } from './app';
-import { caricaCampagna } from './campagna/caricatore';
+import { caricaCampagna, idCampagna } from './campagna/caricatore';
+import { elencoPacchetti } from './campagna/pacchetti';
 import { compilaContestoCampagna } from './campagna/contesto';
 import { conScena, type Campagna } from './campagna/tipi';
 import type { ConfigServer } from './config';
@@ -20,7 +21,7 @@ import { creaInfoServer } from './rete';
 import { Regia } from './scena/regia';
 import { caricaRepertorio } from './repertorio/caricatore';
 import { compilaContestoRepertorio } from './repertorio/contesto';
-import { caricaParoleSegrete, segretiNelTesto } from './repertorio/segreti';
+import { caricaParoleSegreteCampagna, segretiNelTesto } from './repertorio/segreti';
 import type { Repertorio } from './repertorio/tipi';
 import { CacheAudio } from './voce/cache-audio';
 import { CatalogoImmagini } from './campagna/immagini';
@@ -35,6 +36,9 @@ import { collegaMaster } from './trasporto/master';
 import { ArchivioSessioni } from './sessione/archivio';
 import { SessioneSuArchivio, type MemoriaSessione } from './sessione/memoria';
 import { ricostruisci, type StatoRicostruito } from './sessione/tipi';
+import { CicloSessioni } from './sessione/ciclo';
+import { scegliPacchetto, type SceltaPacchetto } from './sessione/scelta-pacchetto';
+import { loggerMuto } from './logger';
 import { ControlliMaster } from './master/comandi';
 import { nuovoToken } from './master/token';
 import { orologioDiSistema, type Orologio } from './turni/orologio';
@@ -52,6 +56,10 @@ export interface ServerCantastorie {
   tokenMaster: string;
   /** Registro delle sessioni (null se spento): i test simulano un processo che muore con memoria.sospendi(). */
   sessioni: { archivio: ArchivioSessioni | null; memoria: MemoriaSessione | null };
+  /** Fine sessione / prossima sessione (pannello del master). */
+  ciclo: CicloSessioni;
+  /** Come è stato scelto il pacchetto all'avvio (one-shot: numero null). */
+  scelta: SceltaPacchetto;
   avvia(): Promise<string>;
   chiudi(): Promise<void>;
 }
@@ -62,25 +70,48 @@ export interface Sostituzioni {
   arbitro?: Arbitro | null;
   orologio?: Orologio;
   cartellaWeb?: string;
+  /**
+   * Chi sa ricostruire il server su un altro pacchetto («Prossima sessione»): ServerConCiclo.
+   * Assente = il pannello non può cambiare pacchetto (lo dice).
+   */
+  passaA?: (numero: number) => void;
 }
 
-export async function costruisciServer(config: ConfigServer, log: Logger, sost: Sostituzioni = {}): Promise<ServerCantastorie> {
-  const campagna = caricaCampagna(config.cartellaCampagna, log.child({ modulo: 'campagna' }));
+/** Campagna pronta da giocare: pacchetto caricato, repertorio, parole segrete, cataloghi, contesto. */
+interface CampagnaPronta {
+  campagna: Campagna;
+  repertorio: Repertorio | undefined;
+  paroleSegrete: ReturnType<typeof caricaParoleSegreteCampagna>;
+  audio: CatalogoAudio;
+  immagini: CatalogoImmagini;
+  contestoPer: (c: Campagna) => string;
+  filePrompt: string;
+}
+
+/**
+ * Carica la campagna (col pacchetto `numero`, se è a più sessioni) come la gioca il server, con tutti i
+ * controlli che fermano l'avvio: repertorio valido in modalità B e nessuna parola segreta nel
+ * contesto del selettore. La usa anche «Prossima sessione» per sapere se il pacchetto dopo si carica.
+ */
+function preparaCampagna(config: ConfigServer, numero: number | null, log: Logger): CampagnaPronta {
+  const campagna = caricaCampagna(config.cartellaCampagna, log.child({ modulo: 'campagna' }), { pacchetto: numero });
   // Modalità A (improvvisa): prompt del narratore + contesto completo della campagna.
   // Modalità B (repertorio): prompt del selettore + contesto per allowlist (niente segreti) e
   // repertorio di battute pre-scritte con il loro audio pre-generato.
   let repertorio: Repertorio | undefined;
-  const cartellaRepertorio = path.join(campagna.cartella, 'repertorio');
-  const paroleSegrete = caricaParoleSegrete(cartellaRepertorio);
+  const paroleSegrete = caricaParoleSegreteCampagna(campagna);
   let filePrompt = config.filePromptNarratore;
   if (config.modo === 'repertorio') {
     repertorio = caricaRepertorio(campagna, log.child({ modulo: 'repertorio' }));
     filePrompt = config.filePromptSelettore;
   }
   const rep = repertorio;
-  // Audio della campagna: serve già qui, perché narratore e selettore sanno quali umori ed effetti
-  // esistono (righe [umore] ed [effetto], docs/audio.md).
-  const audio = new CatalogoAudio(config.cartellaAudio, log.child({ modulo: 'audio' }));
+  // Risorse: quelle della campagna, più quelle nuove del pacchetto (che sostituiscono a parità di id).
+  const cartellePacchetto = (sotto: string): string[] => (campagna.pacchetto ? [path.join(campagna.pacchetto.cartella, sotto)] : []);
+  // Audio: serve già qui, perché narratore e selettore sanno quali umori ed effetti esistono
+  // (righe [umore] ed [effetto], docs/audio.md).
+  const audio = new CatalogoAudio([config.cartellaAudio, ...cartellePacchetto('audio')], log.child({ modulo: 'audio' }));
+  const immagini = new CatalogoImmagini([config.cartellaImmagini, ...cartellePacchetto('immagini')], log.child({ modulo: 'immagini' }));
   const bloccoAudio = bloccoAudioContesto(audio);
   /** Contesto della campagna vista da una scena (cambia col passaggio di scena). */
   const contestoPer = (c: Campagna): string => {
@@ -94,6 +125,42 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       if (fughe.length) throw new Error(`contesto del selettore (scena ${sc.id}) con parole segrete: ${fughe.map((p) => p.parola).join(', ')}`);
     }
   }
+  return { campagna, repertorio, paroleSegrete, audio, immagini, contestoPer, filePrompt };
+}
+
+/** «Prossima sessione»: il pacchetto si carica come all'avvio? (motivo null = sì). */
+function verificaPacchetto(config: ConfigServer, numero: number): { motivo: string | null; titolo: string | null } {
+  try {
+    const p = preparaCampagna(config, numero, loggerMuto());
+    return { motivo: null, titolo: p.campagna.pacchetto?.titolo ?? null };
+  } catch (err) {
+    return { motivo: (err as Error).message.split('\n').slice(0, 3).join(' '), titolo: null };
+  }
+}
+
+export async function costruisciServer(config: ConfigServer, log: Logger, sost: Sostituzioni = {}): Promise<ServerCantastorie> {
+  // Archivio prima della campagna: in una campagna a più sessioni è lui a dire quale pacchetto si gioca.
+  const archivio = config.fileSessioni ? new ArchivioSessioni(config.fileSessioni, log.child({ modulo: 'sessioni' })) : null;
+  const id = idCampagna(config.cartellaCampagna);
+  if (archivio && config.nuovaSessione) {
+    const chiuse = archivio.chiudiInCorso(id, 'avvio con --nuova');
+    log.info({ campagna: id, chiuse }, 'sessioni: nuova sessione richiesta, nessuna ripresa');
+  }
+  let scelta = scegliPacchetto(elencoPacchetti(config.cartellaCampagna), archivio?.elenco(id) ?? [], config.modo, config.sessione);
+  let pronta: CampagnaPronta;
+  try {
+    pronta = preparaCampagna(config, scelta.numero, log);
+  } catch (err) {
+    // Il pacchetto dopo una «Fine sessione» è preparato a metà: si resta su quello appena finito.
+    if (scelta.riserva === undefined) throw err;
+    const motivo = (err as Error).message.split('\n')[0];
+    log.error({ campagna: id, pacchetto: scelta.numero, riserva: scelta.riserva, err: motivo }, 'sessioni: il pacchetto dopo non si carica, si resta su quello finito');
+    scelta = { numero: scelta.riserva, motivo: 'ultima giocata', avviso: `La sessione ${scelta.numero} non si carica (${motivo}): si resta sulla ${scelta.riserva}.` };
+    pronta = preparaCampagna(config, scelta.numero, log);
+  }
+  if (scelta.numero !== null) log.info({ campagna: id, pacchetto: scelta.numero, motivo: scelta.motivo, avviso: scelta.avviso }, `CAMPAGNA A PIÙ SESSIONI: si gioca la sessione ${scelta.numero}`);
+  if (scelta.avviso) log.warn({ campagna: id }, scelta.avviso);
+  const { campagna, repertorio, paroleSegrete, audio, immagini, contestoPer, filePrompt } = pronta;
   const contesto = contestoPer(campagna);
   const prompt = fs.readFileSync(filePrompt, 'utf8');
   // Blocchi STABILI, in quest'ordine: si mettono in cache (vedi llm/haiku.ts).
@@ -138,14 +205,14 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     config.voce.intervalloSaluteMs,
   );
 
-  const immagini = new CatalogoImmagini(config.cartellaImmagini, log.child({ modulo: 'immagini' }));
   const app = await creaApp({ log, cartellaWeb: sost.cartellaWeb ?? config.cartellaWeb });
   const uscite = creaUscite(app.io);
   // Registro delle sessioni: se c'è una sessione in corso di questa campagna (e modalità), si riprende.
-  const { archivio, memoria, ripresa } = apriSessioni(config, campagna.id, log.child({ modulo: 'sessioni' }));
+  const { memoria, ripresa, dispositiviEreditati } = apriSessioni(archivio, config, campagna, log.child({ modulo: 'sessioni' }));
   const regia = new Regia({
     memoria,
     ripresa,
+    dispositiviEreditati,
     campagna,
     sistema,
     narratore,
@@ -179,8 +246,20 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   collegaSocket(app.io, regia, () => info, log.child({ modulo: 'socket' }));
   // Pannello del master: stanza "master" col token (da configurazione, o nuovo a ogni avvio).
   const tokenMaster = config.tokenMaster ?? nuovoToken();
+  const ciclo = new CicloSessioni({
+    cartellaCampagna: config.cartellaCampagna,
+    cartellaLog: config.cartellaLog,
+    campagna,
+    archivio,
+    regia,
+    avvisoScelta: scelta.avviso,
+    verifica: (n) => verificaPacchetto(config, n),
+    passaA: sost.passaA ?? null,
+    log: log.child({ modulo: 'sessioni' }),
+  });
   const controlliMaster = new ControlliMaster({
     regia,
+    ciclo,
     campagna,
     immagini,
     audio,
@@ -191,7 +270,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   collegaMaster(app.io, regia, controlliMaster, tokenMaster, log.child({ modulo: 'master' }));
   // Segnali audio automatici (narratore, battute) nel registro del pannello.
   regia.suCueAudio((e) => controlliMaster.registraAutomatico(e));
-  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, audio: audio.numero, ...regia.infoSessione, ripresa: regia.infoRegistro.inAttesaDiRipresa }), immagini, audio);
+  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, audio: audio.numero, ...regia.infoSessione, ripresa: regia.infoRegistro.inAttesaDiRipresa, pacchetto: campagna.pacchetto?.etichetta ?? null }), immagini, audio);
 
   return {
     app,
@@ -200,6 +279,8 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     voce,
     tokenMaster,
     sessioni: { archivio, memoria },
+    ciclo,
+    scelta,
     get info() {
       return info;
     },
@@ -229,28 +310,36 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
 }
 
 /**
- * Apre il registro delle sessioni e cerca la sessione da riprendere: l'ultima in corso della stessa
- * campagna e modalità, con almeno una fotografia. Con --nuova (config.nuovaSessione) si chiudono le
- * sessioni in corso e si parte da capo. Senza registro (CANTASTORIE_SESSIONI=off) non si salva niente.
+ * Cerca la sessione da riprendere: l'ultima in corso della stessa campagna e modalità (e, in una
+ * campagna a pacchetti, dello stesso pacchetto), con almeno una fotografia. --nuova ha già chiuso
+ * quelle in corso (costruisciServer). Senza registro (CANTASTORIE_SESSIONI=off) non si salva niente.
+ *
+ * Campagna a pacchetti senza ripresa: i telefoni della sessione prima ritrovano il loro PG
+ * (i PG durano tra le sessioni).
  */
 function apriSessioni(
+  archivio: ArchivioSessioni | null,
   config: ConfigServer,
-  campagna: string,
+  campagna: Campagna,
   log: Logger,
-): { archivio: ArchivioSessioni | null; memoria: MemoriaSessione | null; ripresa: StatoRicostruito | null } {
-  if (!config.fileSessioni) {
+): { memoria: MemoriaSessione | null; ripresa: StatoRicostruito | null; dispositiviEreditati: Map<string, string> | null } {
+  if (!archivio) {
     log.info('sessioni: registro spento (CANTASTORIE_SESSIONI=off)');
-    return { archivio: null, memoria: null, ripresa: null };
+    return { memoria: null, ripresa: null, dispositiviEreditati: null };
   }
-  const archivio = new ArchivioSessioni(config.fileSessioni, log);
-  if (config.nuovaSessione) {
-    const chiuse = archivio.chiudiInCorso(campagna, 'avvio con --nuova');
-    log.info({ campagna, chiuse }, 'sessioni: nuova sessione richiesta, nessuna ripresa');
-  }
-  const inCorso = archivio.inCorso(campagna, config.modo);
+  const pacchetto = campagna.pacchetto?.numero ?? null;
+  const candidata = archivio.inCorso(campagna.id, config.modo);
+  // Una sessione in corso di un altro pacchetto (es. avvio con --sessione N) non si riprende qui.
+  const inCorso = candidata && candidata.pacchetto === pacchetto ? candidata : null;
+  if (candidata && !inCorso) log.info({ sessione: candidata.id, suo: candidata.pacchetto, giocato: pacchetto }, 'sessioni: la sessione in corso è di un altro pacchetto, non si riprende');
   const ripresa = inCorso ? ricostruisci(inCorso.id, archivio.eventi(inCorso.id)) : null;
   if (inCorso && !ripresa) log.info({ sessione: inCorso.id }, 'sessioni: sessione in corso senza stato salvato, si parte da capo');
-  if (ripresa) log.info({ sessione: inCorso!.id, turno: ripresa.fotografia.turno, eventi: inCorso!.eventi }, 'SESSIONE DA RIPRENDERE');
-  const memoria = new SessioneSuArchivio(archivio, campagna, config.modo, log, ripresa ? inCorso!.id : null);
-  return { archivio, memoria, ripresa };
+  if (ripresa) log.info({ sessione: inCorso!.id, turno: ripresa.fotografia.turno, eventi: inCorso!.eventi, pacchetto }, 'SESSIONE DA RIPRENDERE');
+  let dispositiviEreditati: Map<string, string> | null = null;
+  if (!ripresa && pacchetto !== null) {
+    const prima = archivio.elenco(campagna.id).find((x) => x.pacchetto !== null);
+    if (prima) dispositiviEreditati = archivio.dispositivi(prima.id);
+  }
+  const memoria = new SessioneSuArchivio(archivio, campagna.id, config.modo, log, ripresa ? inCorso!.id : null, pacchetto);
+  return { memoria, ripresa, dispositiviEreditati };
 }

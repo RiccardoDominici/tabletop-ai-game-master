@@ -54,6 +54,11 @@ export interface ConfigServer {
   fileSessioni: string | null;
   /** CANTASTORIE_NUOVA_SESSIONE=1 (partita.sh --nuova): all'avvio non si riprende la sessione in corso. */
   nuovaSessione: boolean;
+  /**
+   * Campagna a pacchetti: numero della sessione da giocare (CANTASTORIE_SESSIONE, partita.sh
+   * --sessione). null = la sceglie il server dall'archivio (sessione/scelta-pacchetto.ts).
+   */
+  sessione: number | null;
 
   /** Arbitro delle azioni simultanee: regole + Haiku, oppure solo regole. */
   arbitro: 'haiku' | 'regole';
@@ -131,6 +136,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     ...(tokenMaster ? { tokenMaster } : {}),
     fileSessioni: sessioni === 'off' ? null : path.resolve(RADICE_REPO, sessioni ?? path.join(cartellaLog, 'sessioni.sqlite')),
     nuovaSessione: testo(env['CANTASTORIE_NUOVA_SESSIONE']) === '1',
+    sessione: /^\d+$/.test(testo(env['CANTASTORIE_SESSIONE']) ?? '') ? Number(testo(env['CANTASTORIE_SESSIONE'])) : null,
     modo: scelta(env['CANTASTORIE_MODO'], ['improvvisa', 'repertorio'] as const, 'improvvisa'),
     // Con il narratore a copione (test, prove senza spesa) l'arbitro usa solo le regole.
     arbitro: scelta(env['CANTASTORIE_ARBITRO'], ['haiku', 'regole'] as const, env['CANTASTORIE_LLM'] === 'finto' ? 'regole' : 'haiku'),

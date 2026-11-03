@@ -20,7 +20,7 @@ import { caricaConfig } from '../config';
 import { creaClientAnthropic } from '../llm/haiku';
 import { creaLogger } from '../logger';
 import { RADICE_REPO } from '../percorsi';
-import { caricaParoleSegrete } from '../repertorio/segreti';
+import { caricaParoleSegreteCampagna } from '../repertorio/segreti';
 import { ArbitroHaiku, type MisuraChiamata } from '../azioni/arbitro-haiku';
 import { riassuntoPubblico } from '../azioni/contesto';
 import { normalizza, relazioniDaRegole } from '../azioni/regole';
@@ -76,7 +76,7 @@ async function main(): Promise<void> {
   const config = caricaConfig();
   const log = creaLogger({ livello: 'warn', cartellaLog: config.cartellaLog, nomeFile: 'arbitro.jsonl' });
   const campagna = caricaCampagna(config.cartellaCampagna);
-  const scena = riassuntoPubblico(campagna, caricaParoleSegrete(path.join(campagna.cartella, 'repertorio')));
+  const scena = riassuntoPubblico(campagna, caricaParoleSegreteCampagna(campagna));
   const nomePg = (id: string) => campagna.pg.find((p) => p.id === id)?.nome ?? id;
   const nomi = new Map<string, string>();
   for (const [alias, id] of Object.entries(campagna.alias)) if (campagna.pg.some((p) => p.id === id)) nomi.set(alias, id);

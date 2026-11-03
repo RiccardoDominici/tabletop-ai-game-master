@@ -3,6 +3,11 @@
  *   stile.yaml, scena.yaml, png/<id_png>.yaml, pg.yaml, campagna.yaml (facoltativo),
  *   e altre scene in scena_*.yaml e scene/*.yaml (nello stesso ordine del validatore).
  *
+ * Campagna a più sessioni (docs/strati.md, «File»; campagna/pacchetti.ts): se c'è sessioni/<nn>/,
+ * si carica il livello di campagna (stile, campagna.yaml, png/ ricorrenti, pg.yaml) PIÙ un pacchetto:
+ * le sue scene (scene/*.yaml, nell'ordine di sessione.yaml), i suoi PNG, il riassunto iniziale e la
+ * parte di sessione di campagna.yaml. scena.yaml e scene/ della radice non contano.
+ *
  * È tollerante sulla forma (pg.yaml come lista oppure {personaggi|pg: [...]}, titolo o nome,
  * apertura stringa o lista), ma severo su ciò che rompe il gioco: senza scena, senza apertura
  * o senza PG la sessione non parte. Le incoerenze minori diventano `avvisi` (e righe di log).
@@ -12,10 +17,12 @@ import path from 'node:path';
 import YAML from 'yaml';
 import { dividiTesto } from '../narrazione/frasi';
 import type { Logger } from '../logger';
+import { CARTELLA_SESSIONI, elencoPacchetti, ErrorePacchetto, FILE_SESSIONE, ordinaScene, unisciSessione, type Pacchetto } from './pacchetti';
 import {
   ID_NARRATORE,
   type Campagna,
   type DatiYaml,
+  type PacchettoCaricato,
   type PgCaricato,
   type PngCaricato,
   type ScenaCaricata,
@@ -58,7 +65,47 @@ function frasiDa(v: unknown): string[] {
   return [];
 }
 
-export function caricaCampagna(cartella: string, log?: Logger): Campagna {
+export interface OpzioniCaricamento {
+  /**
+   * Numero del pacchetto sessioni/<nn>/ da giocare (campagne a più sessioni). Assente = il primo.
+   * Ignorato in una one-shot (che non ha sessioni/).
+   */
+  pacchetto?: number | null;
+}
+
+/** Id della campagna senza caricarla tutta (serve per l'archivio prima di scegliere il pacchetto). */
+export function idCampagna(cartella: string): string {
+  const campagnaGrezza = leggiYaml(path.join(cartella, 'campagna.yaml'), false) ?? {};
+  const stile = leggiYaml(path.join(cartella, 'stile.yaml'), false) ?? {};
+  return stringa(campagnaGrezza['id']) ?? stringa(stile['id']) ?? path.basename(cartella);
+}
+
+/** PNG di una cartella png/: un file per PNG, id = nome del file. `rel` è il prefisso per gli avvisi. */
+function caricaPng(cartellaPng: string, rel: string, avvisa: (msg: string) => void): PngCaricato[] {
+  const png: PngCaricato[] = [];
+  if (!fs.existsSync(cartellaPng)) return png;
+  for (const nomeFile of fs.readdirSync(cartellaPng).filter((f) => f.endsWith('.yaml')).sort()) {
+    const idFile = nomeFile.replace(/\.yaml$/, '');
+    const dati = leggiYaml(path.join(cartellaPng, nomeFile), true);
+    const idScheda = stringa(dati['id']);
+    if (idScheda && idScheda !== idFile) avvisa(`${rel}/${nomeFile}: id «${idScheda}» diverso dal nome del file; vale il file`);
+    const voce = oggetto(oggetto(dati['voce'])?.['tts']);
+    const voceId = stringa(voce?.['voce_id']);
+    if (!voceId) avvisa(`${rel}/${nomeFile}: manca voce.tts.voce_id, parlerà con la voce del narratore`);
+    png.push({ id: idFile, nome: stringa(dati['nome']) ?? idFile, voce_id: voceId ?? ID_NARRATORE, dati });
+  }
+  return png;
+}
+
+/** Il pacchetto richiesto (o il primo); un numero che non c'è è un errore. */
+function scegliPacchetto(pacchetti: Pacchetto[], numero: number | null | undefined): Pacchetto {
+  if (numero === undefined || numero === null) return pacchetti[0]!;
+  const p = pacchetti.find((x) => x.numero === numero);
+  if (!p) throw new ErroreCampagna(`${CARTELLA_SESSIONI}/: non c'è la sessione ${numero} (ci sono: ${pacchetti.map((x) => x.etichetta).join(', ')})`);
+  return p;
+}
+
+export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniCaricamento = {}): Campagna {
   if (!fs.existsSync(cartella)) throw new ErroreCampagna(`cartella della campagna inesistente: ${cartella}`);
   const avvisi: string[] = [];
   const avvisa = (msg: string): void => {
@@ -66,29 +113,42 @@ export function caricaCampagna(cartella: string, log?: Logger): Campagna {
     log?.warn({ campagna: cartella }, `campagna: ${msg}`);
   };
 
+  let pacchetti: Pacchetto[];
+  try {
+    pacchetti = elencoPacchetti(cartella);
+  } catch (err) {
+    throw new ErroreCampagna((err as Error).message);
+  }
+  const scelto = pacchetti.length ? scegliPacchetto(pacchetti, opzioni.pacchetto) : null;
+  const relPacchetto = scelto ? `${CARTELLA_SESSIONI}/${scelto.etichetta}` : '';
+
   const stile = leggiYaml(path.join(cartella, 'stile.yaml'), true);
-  const scenaGrezza = leggiYaml(path.join(cartella, 'scena.yaml'), true);
   const pgGrezzo = leggiYaml(path.join(cartella, 'pg.yaml'), true);
   const campagnaGrezza = leggiYaml(path.join(cartella, 'campagna.yaml'), false) ?? {};
+  const sessioneGrezza = scelto ? leggiYaml(path.join(scelto.cartella, FILE_SESSIONE), true) : null;
 
   const id = stringa(campagnaGrezza['id']) ?? stringa(stile['id']) ?? path.basename(cartella);
 
-  // campagna.yaml: tutto tranne `preparazione` (destini, cronologia del cattivo, archi: E2).
-  const { preparazione: _preparazione, ...campagnaNarratore } = campagnaGrezza;
+  // campagna.yaml: tutto tranne `preparazione` (destini, cronologia del cattivo, archi: E2). Con un
+  // pacchetto si aggiunge la parte di sessione di sessione.yaml; `sessione` di campagna.yaml non vale.
+  const { preparazione: _preparazione, ...campagnaBase } = campagnaGrezza;
+  let campagnaNarratore: DatiYaml = campagnaBase;
+  if (scelto && sessioneGrezza) {
+    const { sessione: vecchia, ...senzaSessione } = campagnaBase;
+    if (vecchia !== undefined) avvisa(`campagna.yaml: «sessione» non vale in una campagna a pacchetti (il riassunto sta in ${relPacchetto}/${FILE_SESSIONE})`);
+    try {
+      campagnaNarratore = unisciSessione(senzaSessione, sessioneGrezza, `${relPacchetto}/${FILE_SESSIONE}`, avvisa);
+    } catch (err) {
+      throw new ErroreCampagna(err instanceof ErrorePacchetto ? err.message : String(err));
+    }
+  }
 
-  // --- PNG: un file per PNG, id = nome del file.
-  const png: PngCaricato[] = [];
-  const cartellaPng = path.join(cartella, 'png');
-  if (fs.existsSync(cartellaPng)) {
-    for (const nomeFile of fs.readdirSync(cartellaPng).filter((f) => f.endsWith('.yaml')).sort()) {
-      const idFile = nomeFile.replace(/\.yaml$/, '');
-      const dati = leggiYaml(path.join(cartellaPng, nomeFile), true);
-      const idScheda = stringa(dati['id']);
-      if (idScheda && idScheda !== idFile) avvisa(`png/${nomeFile}: id «${idScheda}» diverso dal nome del file; vale il file`);
-      const voce = oggetto(oggetto(dati['voce'])?.['tts']);
-      const voceId = stringa(voce?.['voce_id']);
-      if (!voceId) avvisa(`png/${nomeFile}: manca voce.tts.voce_id, parlerà con la voce del narratore`);
-      png.push({ id: idFile, nome: stringa(dati['nome']) ?? idFile, voce_id: voceId ?? ID_NARRATORE, dati });
+  // --- PNG: quelli ricorrenti (png/ della campagna), più quelli della sola sessione (png/ del pacchetto).
+  const png = caricaPng(path.join(cartella, 'png'), 'png', avvisa);
+  if (scelto) {
+    for (const p of caricaPng(path.join(scelto.cartella, 'png'), `${relPacchetto}/png`, avvisa)) {
+      if (png.some((x) => x.id === p.id)) throw new ErroreCampagna(`${relPacchetto}/png/${p.id}.yaml: il PNG c'è già in png/ della campagna`);
+      png.push(p);
     }
   }
   const voci = png.map((p) => p.voce_id).filter((v) => v !== ID_NARRATORE);
@@ -117,18 +177,18 @@ export function caricaCampagna(cartella: string, log?: Logger): Campagna {
     });
   }
 
-  // --- Scene: la prima (scena.yaml) apre la sessione col riassunto iniziale; le altre si leggono
-  // quando il master ci passa (pannello), ciascuna con la sua apertura.
-  const sessione = oggetto(campagnaGrezza['sessione']);
-  const scena = leggiScena(scenaGrezza, 'scena.yaml', frasiDa(sessione?.['riassunto_iniziale']), png, stile, id, avvisa);
-  if (scena.apertura.length === 0) throw new ErroreCampagna('scena.yaml: manca il testo d’apertura (apertura)');
-  const scene = [scena];
-  for (const file of fileAltreScene(cartella)) {
-    const rel = path.relative(cartella, file);
-    const altra = leggiScena(leggiYaml(file, true), rel, [], png, stile, id, avvisa);
-    if (scene.some((s) => s.id === altra.id)) throw new ErroreCampagna(`${rel}: id di scena ripetuto «${altra.id}»`);
-    if (altra.apertura.length === 0) avvisa(`${rel}: manca l'apertura: al passaggio di scena il narratore non la leggerà`);
-    scene.push(altra);
+  // --- Scene: la prima apre la sessione col riassunto iniziale; le altre si leggono quando il master
+  // ci passa (pannello), ciascuna con la sua apertura.
+  const scene = scelto ? sceneDelPacchetto(cartella, scelto, sessioneGrezza!, png, stile, id, avvisa) : sceneOneShot(cartella, campagnaGrezza, png, stile, id, avvisa);
+  const scena = scene[0]!;
+
+  const pacchetto: PacchettoCaricato | null = scelto
+    ? { numero: scelto.numero, etichetta: scelto.etichetta, cartella: scelto.cartella, titolo: stringa(sessioneGrezza!['titolo']) ?? `Sessione ${scelto.etichetta}` }
+    : null;
+  const repertorioCampagna = path.join(cartella, 'repertorio');
+  const cartellaRepertorio = scelto ? path.join(scelto.cartella, 'repertorio') : repertorioCampagna;
+  if (scelto && fs.existsSync(repertorioCampagna) && fs.readdirSync(repertorioCampagna).some((f) => f.endsWith('.yaml') && f !== 'parole_segrete.yaml')) {
+    avvisa(`repertorio/ della campagna: in una campagna a pacchetti le battute stanno in ${relPacchetto}/repertorio/ (qui vale solo parole_segrete.yaml)`);
   }
 
   const campagna: Campagna = {
@@ -144,12 +204,82 @@ export function caricaCampagna(cartella: string, log?: Logger): Campagna {
     situazioneComune: stringa(pgGrezzo['situazione_comune']),
     alias: costruisciAlias(png, pg),
     avvisi,
+    pacchetto,
+    cartellaRepertorio,
+    cartelleSegreti: scelto ? [repertorioCampagna, cartellaRepertorio] : [repertorioCampagna],
   };
   log?.info(
-    { campagna: id, scena: scena.id, scene: scene.map((s) => s.id), png: png.map((p) => `${p.id}→${p.voce_id}`), pg: pg.map((p) => p.id), frasiApertura: scena.apertura.length },
+    {
+      campagna: id,
+      pacchetto: pacchetto ? `${pacchetto.etichetta} (${pacchetto.titolo})` : null,
+      pacchetti: pacchetti.map((p) => p.etichetta),
+      scena: scena.id,
+      scene: scene.map((s) => s.id),
+      png: png.map((p) => `${p.id}→${p.voce_id}`),
+      pg: pg.map((p) => p.id),
+      frasiApertura: scena.apertura.length,
+    },
     'campagna caricata',
   );
   return campagna;
+}
+
+/** One-shot: scena.yaml (col riassunto di campagna.yaml → sessione), poi scena_*.yaml e scene/*.yaml. */
+function sceneOneShot(cartella: string, campagnaGrezza: DatiYaml, png: PngCaricato[], stile: DatiYaml, id: string, avvisa: (msg: string) => void): ScenaCaricata[] {
+  const scenaGrezza = leggiYaml(path.join(cartella, 'scena.yaml'), true);
+  const sessione = oggetto(campagnaGrezza['sessione']);
+  const scena = leggiScena(scenaGrezza, 'scena.yaml', frasiDa(sessione?.['riassunto_iniziale']), png, stile, id, avvisa);
+  if (scena.apertura.length === 0) throw new ErroreCampagna('scena.yaml: manca il testo d’apertura (apertura)');
+  const scene = [scena];
+  for (const file of fileAltreScene(cartella)) {
+    const rel = path.relative(cartella, file);
+    const altra = leggiScena(leggiYaml(file, true), rel, [], png, stile, id, avvisa);
+    if (scene.some((s) => s.id === altra.id)) throw new ErroreCampagna(`${rel}: id di scena ripetuto «${altra.id}»`);
+    if (altra.apertura.length === 0) avvisa(`${rel}: manca l'apertura: al passaggio di scena il narratore non la leggerà`);
+    scene.push(altra);
+  }
+  return scene;
+}
+
+/**
+ * Pacchetto: le scene di sessioni/<nn>/scene/*.yaml nell'ordine di sessione.yaml `scene`; la prima
+ * legge prima il riassunto_iniziale di sessione.yaml. Le scene della radice non contano (avviso).
+ */
+function sceneDelPacchetto(
+  cartella: string,
+  p: Pacchetto,
+  sessione: DatiYaml,
+  png: PngCaricato[],
+  stile: DatiYaml,
+  id: string,
+  avvisa: (msg: string) => void,
+): ScenaCaricata[] {
+  const rel = `${CARTELLA_SESSIONI}/${p.etichetta}`;
+  if (fs.existsSync(path.join(cartella, 'scena.yaml')) || fileAltreScene(cartella).length > 0) {
+    avvisa(`scena.yaml e scene/ della campagna non valgono in una campagna a pacchetti: si giocano le scene di ${rel}/scene/`);
+  }
+  const sotto = path.join(p.cartella, 'scene');
+  const file = fs.existsSync(sotto) ? fs.readdirSync(sotto).filter((f) => f.endsWith('.yaml')).sort() : [];
+  if (file.length === 0) throw new ErroreCampagna(`${rel}/scene/: nessuna scena`);
+  const lette: ScenaCaricata[] = [];
+  for (const f of file) {
+    const r = `${rel}/scene/${f}`;
+    const s = leggiScena(leggiYaml(path.join(sotto, f), true), r, [], png, stile, id, avvisa);
+    if (lette.some((x) => x.id === s.id)) throw new ErroreCampagna(`${r}: id di scena ripetuto «${s.id}»`);
+    lette.push(s);
+  }
+  let scene: ScenaCaricata[];
+  try {
+    scene = ordinaScene(lette, sessione['scene'], `${rel}/${FILE_SESSIONE}`, avvisa);
+  } catch (err) {
+    throw new ErroreCampagna((err as Error).message);
+  }
+  const riassunto = frasiDa(sessione['riassunto_iniziale']);
+  if (riassunto.length === 0) avvisa(`${rel}/${FILE_SESSIONE}: manca riassunto_iniziale (la sessione comincia senza «nella puntata precedente»)`);
+  const prima = scene[0]!;
+  if (prima.apertura.length === 0) throw new ErroreCampagna(`${rel}: la prima scena «${prima.id}» non ha l'apertura`);
+  for (const s of scene.slice(1)) if (s.apertura.length === 0) avvisa(`${rel}: la scena «${s.id}» non ha l'apertura: al passaggio di scena il narratore non la leggerà`);
+  return [{ ...prima, apertura: [...riassunto, ...prima.apertura] }, ...scene.slice(1)];
 }
 
 /** Altre scene oltre a scena.yaml, nell'ordine del validatore: scena_*.yaml, poi scene/*.yaml. */

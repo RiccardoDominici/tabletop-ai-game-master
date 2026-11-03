@@ -8,6 +8,11 @@
  * ritratto né un luogo: escono solo a comando del master o dopo la rivelazione giusta.
  * Una voce del manifest conta solo se il suo file esiste: se manca, lo schermo usa lo sfondo
  * d'atmosfera (nessun errore). I file si servono da /api/immagini/<file>.
+ *
+ * Più cartelle (campagna a pacchetti, docs/strati.md): prima immagini/ della campagna (ritratti dei
+ * PNG ricorrenti, luoghi che tornano), poi immagini/ del pacchetto (solo il nuovo), ognuna col suo
+ * manifest. Una voce del pacchetto con lo stesso id sostituisce quella della campagna (un ritratto
+ * invecchiato); un nome di file già usato da un'altra voce di un'altra cartella si scarta.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -48,11 +53,19 @@ function èSituazione(v: VoceImmagine): boolean {
 
 export class CatalogoImmagini {
   private readonly perId = new Map<string, VoceImmagine>();
+  /** id → cartella da cui viene la voce. */
+  private readonly cartellaDi = new Map<string, string>();
+  /** La prima cartella (quella della campagna). */
+  readonly cartella: string;
 
-  constructor(
-    readonly cartella: string,
-    log?: Logger,
-  ) {
+  constructor(cartelle: string | readonly string[], log?: Logger) {
+    const elenco = typeof cartelle === 'string' ? [cartelle] : [...cartelle];
+    this.cartella = elenco[0] ?? '';
+    for (const cartella of elenco) this.leggiManifest(cartella, log);
+  }
+
+  /** Legge il manifest di una cartella; le sue voci si aggiungono (o sostituiscono, per id) a quelle già lette. */
+  private leggiManifest(cartella: string, log?: Logger): void {
     const manifest = path.join(cartella, 'manifest.json');
     if (!fs.existsSync(manifest)) {
       log?.info({ cartella }, 'immagini: nessun manifest, lo schermo userà lo sfondo d’atmosfera');
@@ -67,11 +80,23 @@ export class CatalogoImmagini {
       log?.error({ manifest, err: (err as Error).message }, 'immagini: manifest illeggibile');
     }
     const mancanti: string[] = [];
+    const sostituite: string[] = [];
+    const scartate: string[] = [];
     for (const v of voci) {
-      if (NOME_VALIDO.test(v.file) && fs.existsSync(path.join(cartella, v.file))) this.perId.set(v.id, v);
-      else mancanti.push(v.id);
+      if (!NOME_VALIDO.test(v.file) || !fs.existsSync(path.join(cartella, v.file))) {
+        mancanti.push(v.id);
+        continue;
+      }
+      // Un URL /api/immagini/<file> deve indicare un file solo.
+      if ([...this.perId.values()].some((x) => x.id !== v.id && x.file === v.file && this.cartellaDi.get(x.id) !== cartella)) {
+        scartate.push(v.id);
+        continue;
+      }
+      if (this.perId.has(v.id) && this.cartellaDi.get(v.id) !== cartella) sostituite.push(v.id);
+      this.perId.set(v.id, v);
+      this.cartellaDi.set(v.id, cartella);
     }
-    log?.info({ cartella, immagini: this.perId.size, mancanti }, 'immagini: manifest caricato');
+    log?.info({ cartella, immagini: this.perId.size, mancanti, sostituite, scartate }, 'immagini: manifest caricato');
   }
 
   get numero(): number {
@@ -115,7 +140,7 @@ export class CatalogoImmagini {
   /** Percorso su disco di un file servibile (solo quelli del manifest), o null. */
   percorso(nomeFile: string): string | null {
     if (!NOME_VALIDO.test(nomeFile)) return null;
-    for (const v of this.perId.values()) if (v.file === nomeFile) return path.join(this.cartella, v.file);
+    for (const v of this.perId.values()) if (v.file === nomeFile) return path.join(this.cartellaDi.get(v.id) ?? this.cartella, v.file);
     return null;
   }
 }

@@ -18,6 +18,8 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   umore: { tipo: 'umore', umore: 'tensione' },
   effetto: { tipo: 'effetto', id: 'sfx_campana' },
   nuova_sessione: { tipo: 'nuova_sessione' },
+  fine_sessione: { tipo: 'fine_sessione' },
+  prossima_sessione: { tipo: 'prossima_sessione' },
 };
 
 describe('zone ed etichette dei comandi', () => {

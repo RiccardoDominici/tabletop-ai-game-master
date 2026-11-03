@@ -193,6 +193,25 @@ export interface SessioneMaster {
   ripresa: { quando: string; turno: number } | null;
   /** Sessione ripresa dal registro che aspetta il proiettore («Inizia sessione») per ripartire. */
   in_attesa_di_ripresa: { quando: string; turno: number } | null;
+  /**
+   * Campagna a più sessioni (docs/strati.md): il pacchetto sessioni/<nn>/ che si gioca e quello dopo.
+   * Assente in una one-shot.
+   */
+  pacchetti?: PacchettiMaster;
+  /** Ultimo registro scritto da «Fine sessione» (anche in una one-shot). */
+  registro?: { sessione: string; file: string; turni: number } | null;
+  /** «Fine sessione» è possibile adesso (c'è una sessione in corso). */
+  fine_possibile?: boolean;
+}
+
+export interface PacchettiMaster {
+  corrente: { numero: number; etichetta: string; titolo: string };
+  /** Tutti i pacchetti della campagna, in ordine. */
+  elenco: Array<{ numero: number; etichetta: string }>;
+  /** Il pacchetto dopo: `pronta` se si carica senza errori, altrimenti `motivo` dice perché no. null = è l'ultimo. */
+  prossima: { numero: number; etichetta: string; titolo: string | null; pronta: boolean; motivo: string | null } | null;
+  /** Avviso della scelta all'avvio (es. «la sessione 02 è finita e la 03 non c'è ancora»). */
+  avviso: string | null;
 }
 
 /** Comandi del pannello. Il server li valida tutti: il client non è fidato. */
@@ -224,7 +243,11 @@ export type ComandoMaster =
   /** Suona un effetto del catalogo (sfx_<tag>) sul proiettore. */
   | { tipo: 'effetto'; id: string }
   /** Chiude la sessione salvata e ricomincia da capo (il pannello chiede conferma). */
-  | { tipo: 'nuova_sessione' };
+  | { tipo: 'nuova_sessione' }
+  /** Fine sessione: il gioco si ferma, la sessione si chiude e il server scrive il registro (registro.yaml). */
+  | { tipo: 'fine_sessione' }
+  /** Campagna a pacchetti: (fine sessione se serve, poi) si passa al pacchetto dopo, dal suo riassunto iniziale. */
+  | { tipo: 'prossima_sessione' };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

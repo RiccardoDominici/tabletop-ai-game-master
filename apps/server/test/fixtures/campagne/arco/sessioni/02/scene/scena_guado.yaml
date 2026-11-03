@@ -1,0 +1,8 @@
+id: scena_guado
+nome: "Il guado"
+apertura: "Il guado è gonfio di pioggia. Il barcaiolo vi fa cenno: che fate?"
+png_presenti: [png_oste, png_barcaiolo]
+orologi_attivi: [o_temporale, o_piena]
+musica: {tag: esplorazione_tesa}
+indizi:
+  - {id: i_corda, conclusione: r_corda, come_si_trova: "Chi guarda il palo vede la corda tagliata."}

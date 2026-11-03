@@ -1,0 +1,14 @@
+id: arco
+canone:
+  - {id: f_pioggia, noto_ai_pg: true, testo: "Piove da tre giorni."}
+  - {id: f_oste_ladro, noto_ai_pg: false, testo: "L'oste annacqua il vino."}
+# Fronte di campagna: dura tra le sessioni (la 02 dice da dove riparte con pieni_all_inizio).
+orologi:
+  - id: o_temporale
+    nome: "Il temporale arriva"
+    segmenti: 2
+    pieni_all_inizio: 0
+    segni: ["Un tuono lontano.", "La porta sbatte."]
+    al_completo: "Il fiume esonda."
+preparazione:
+  segreto_del_cattivo: "IL_CATTIVO_E_IL_LOCANDIERE"

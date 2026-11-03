@@ -1,0 +1,9 @@
+id: png_oste
+nome: "Oste Bruno"
+pronuncia: "Òste Brùno"
+sa: [f_pioggia, f_oste_ladro]
+voce:
+  tts: {voce_id: vincent}
+  registro: "voi"
+aspetto:
+  lettura: "Un uomo grosso col grembiule."

@@ -61,6 +61,25 @@ export interface Campagna {
   alias: Record<string, string>;
   /** Avvisi raccolti durante il caricamento (anche nel log). */
   avvisi: string[];
+  /**
+   * Pacchetto di sessione giocato (campagne a più sessioni: sessioni/<nn>/, docs/strati.md);
+   * null = one-shot, caricata come sempre.
+   */
+  pacchetto: PacchettoCaricato | null;
+  /** Cartella delle battute (modalità B): repertorio/ del pacchetto, o della campagna in una one-shot. */
+  cartellaRepertorio: string;
+  /** Cartelle con parole_segrete.yaml: campagna e pacchetto (si uniscono). */
+  cartelleSegreti: string[];
+}
+
+/** Il pacchetto di sessione caricato. */
+export interface PacchettoCaricato {
+  numero: number;
+  /** Nome della cartella («02»). */
+  etichetta: string;
+  cartella: string;
+  /** sessione.yaml → titolo, o «Sessione 02». */
+  titolo: string;
 }
 
 export const ID_NARRATORE = 'narratore';

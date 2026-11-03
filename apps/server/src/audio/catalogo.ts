@@ -11,7 +11,12 @@
  * - `crediti`  righe d'attribuzione (CC BY), mostrate nella pagina dei crediti.
  *
  * Una voce conta solo se il suo file esiste e ha un nome semplice (niente percorsi): se manca,
- * il proiettore resta in silenzio su quello strato, senza errori. I file si servono da
+ * il proiettore resta in silenzio su quello strato, senza errori.
+ *
+ * Più cartelle (campagna a pacchetti, docs/strati.md): prima audio/ della campagna (i suoni che
+ * durano), poi audio/ del pacchetto (solo il nuovo), ognuna col suo manifest. Una voce del pacchetto
+ * con lo stesso id sostituisce quella della campagna; un nome di file già usato da un'altra voce di
+ * un'altra cartella si scarta (l'URL /api/audio/<file> deve indicare un file solo). I file si servono da
  * /api/audio/<file>; il catalogo pubblico (GET /api/audio) dà al proiettore url, loop e guadagni.
  */
 import fs from 'node:fs';
@@ -71,6 +76,8 @@ interface VoceManifest {
 interface VoceAudio {
   traccia: TracciaAudio;
   file: string;
+  /** Cartella da cui viene (campagna o pacchetto). */
+  cartella: string;
   /** Solo per gli ambienti con il campo `luogo` esplicito. */
   luogo: string | null;
   /** `alias_di` del manifest: la voce è un altro nome della stessa traccia (es. nodo ↔ scena). */
@@ -97,10 +104,17 @@ export class CatalogoAudio {
   private readonly perId = new Map<string, VoceAudio>();
   private readonly righeCrediti: string[] = [];
 
-  constructor(
-    readonly cartella: string,
-    log?: Logger,
-  ) {
+  /** La prima cartella (quella della campagna). */
+  readonly cartella: string;
+
+  constructor(cartelle: string | readonly string[], log?: Logger) {
+    const elenco = typeof cartelle === 'string' ? [cartelle] : [...cartelle];
+    this.cartella = elenco[0] ?? '';
+    for (const cartella of elenco) this.leggiManifest(cartella, log);
+  }
+
+  /** Legge il manifest di una cartella; le sue voci si aggiungono (o sostituiscono, per id) a quelle già lette. */
+  private leggiManifest(cartella: string, log?: Logger): void {
     const manifest = path.join(cartella, 'manifest.json');
     if (!fs.existsSync(manifest)) {
       log?.info({ cartella }, 'audio: nessun manifest, il proiettore suonerà solo la voce');
@@ -115,10 +129,11 @@ export class CatalogoAudio {
       return;
     }
     const scartate: Array<{ id: unknown; motivo: string }> = [];
+    const sostituite: string[] = [];
     for (const [sezione, tipo, loopPredefinito] of SEZIONI) {
       const voci = Array.isArray(dati[sezione]) ? (dati[sezione] as VoceManifest[]) : [];
       for (const v of voci) {
-        const motivo = this.aggiungi(v, tipo, loopPredefinito);
+        const motivo = this.aggiungi(v, tipo, loopPredefinito, cartella, sostituite);
         if (motivo) scartate.push({ id: v?.id, motivo });
       }
     }
@@ -127,22 +142,29 @@ export class CatalogoAudio {
     }
     const perTipo: Record<string, number> = {};
     for (const v of this.perId.values()) perTipo[v.traccia.tipo] = (perTipo[v.traccia.tipo] ?? 0) + 1;
-    log?.info({ cartella, tracce: this.perId.size, perTipo, crediti: this.righeCrediti.length, scartate }, 'audio: manifest caricato');
+    log?.info({ cartella, tracce: this.perId.size, perTipo, crediti: this.righeCrediti.length, scartate, sostituite }, 'audio: manifest caricato');
   }
 
-  /** Aggiunge una voce valida; restituisce il motivo dello scarto, o null. */
-  private aggiungi(v: VoceManifest, tipo: TipoTracciaAudio, loopPredefinito: boolean): string | null {
+  /**
+   * Aggiunge una voce valida; restituisce il motivo dello scarto, o null. Una voce con l'id di una
+   * di un'altra cartella (letta prima) la sostituisce; nella stessa cartella è un doppione.
+   */
+  private aggiungi(v: VoceManifest, tipo: TipoTracciaAudio, loopPredefinito: boolean, cartella: string, sostituite: string[]): string | null {
     if (!v || typeof v !== 'object') return 'voce non valida';
     if (typeof v.id !== 'string' || !ID_VALIDO.test(v.id)) return 'id non valido';
     if (typeof v.file !== 'string' || !NOME_VALIDO.test(v.file)) return 'nome di file non valido';
-    if (!fs.existsSync(path.join(this.cartella, v.file))) return 'file mancante';
-    if (this.perId.has(v.id)) return 'id doppio';
+    if (!fs.existsSync(path.join(cartella, v.file))) return 'file mancante';
+    const prima = this.perId.get(v.id);
+    if (prima && prima.cartella === cartella) return 'id doppio';
+    for (const [id, altra] of this.perId) if (id !== v.id && altra.file === v.file && altra.cartella !== cartella) return 'nome di file già usato in un’altra cartella';
+    if (prima) sostituite.push(v.id);
     const loopInizio = numeroOppure(v.loop_inizio_s, null);
     const loopFine = numeroOppure(v.loop_fine_s, null);
     // Punti di loop incoerenti: si usa il file intero (meglio una giunta che un loop rotto).
     const puntiValidi = loopInizio !== null && loopFine !== null && loopInizio >= 0 && loopFine > loopInizio;
     this.perId.set(v.id, {
       file: v.file,
+      cartella,
       luogo: typeof v.luogo === 'string' && ID_VALIDO.test(v.luogo) ? v.luogo : null,
       aliasDi: typeof v.alias_di === 'string' && ID_VALIDO.test(v.alias_di) ? v.alias_di : null,
       traccia: {
@@ -240,7 +262,7 @@ export class CatalogoAudio {
   /** Percorso su disco di un file servibile (solo quelli del manifest), o null. */
   percorso(nomeFile: string): string | null {
     if (!NOME_VALIDO.test(nomeFile)) return null;
-    for (const v of this.perId.values()) if (v.file === nomeFile) return path.join(this.cartella, v.file);
+    for (const v of this.perId.values()) if (v.file === nomeFile) return path.join(v.cartella, v.file);
     return null;
   }
 

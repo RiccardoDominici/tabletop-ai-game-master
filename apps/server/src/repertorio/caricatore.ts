@@ -48,7 +48,7 @@ export function idOrologi(c: Campagna): Set<string> {
   return new Set(((c.campagnaNarratore['orologi'] as DatiYaml[] | undefined) ?? []).map((o) => o?.['id']).filter((x): x is string => typeof x === 'string'));
 }
 
-export function caricaRepertorio(c: Campagna, log?: Logger, cartella = path.join(c.cartella, 'repertorio')): Repertorio {
+export function caricaRepertorio(c: Campagna, log?: Logger, cartella = c.cartellaRepertorio): Repertorio {
   if (!fs.existsSync(cartella)) throw new ErroreRepertorio([`cartella del repertorio inesistente: ${cartella}`]);
   const errori: string[] = [];
   const avvisi: string[] = [];

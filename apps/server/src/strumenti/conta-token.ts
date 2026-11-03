@@ -11,7 +11,7 @@ import { caricaCampagna } from '../campagna/caricatore';
 import path from 'node:path';
 import { compilaContestoCampagna, sezioniContestoCampagna } from '../campagna/contesto';
 import { compilaContestoRepertorio, sezioniContestoRepertorio } from '../repertorio/contesto';
-import { caricaParoleSegrete } from '../repertorio/segreti';
+import { caricaParoleSegreteCampagna } from '../repertorio/segreti';
 import { caricaConfig } from '../config';
 import { creaClientAnthropic } from '../llm/haiku';
 import { creaLogger } from '../logger';
@@ -27,7 +27,7 @@ async function main(): Promise<void> {
   const campagna = caricaCampagna(config.cartellaCampagna);
   // CANTASTORIE_MODO=repertorio: prompt del selettore e contesto per allowlist (modalità B).
   const b = config.modo === 'repertorio';
-  const parole = caricaParoleSegrete(path.join(campagna.cartella, 'repertorio'));
+  const parole = caricaParoleSegreteCampagna(campagna);
   const filePrompt = b ? config.filePromptSelettore : config.filePromptNarratore;
   const prompt = fs.readFileSync(filePrompt, 'utf8');
   const contesto = b ? compilaContestoRepertorio(campagna, parole) : compilaContestoCampagna(campagna);

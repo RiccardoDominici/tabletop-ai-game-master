@@ -1,0 +1,14 @@
+{
+  "immagini": [
+    {
+      "id": "ritratto_png_oste",
+      "file": "ritratto_png_oste_bagnato.jpg",
+      "tipo": "ritratto"
+    },
+    {
+      "id": "ritratto_png_barcaiolo",
+      "file": "ritratto_png_barcaiolo.jpg",
+      "tipo": "ritratto"
+    }
+  ]
+}

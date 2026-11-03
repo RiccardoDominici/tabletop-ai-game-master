@@ -1,0 +1,14 @@
+{
+  "immagini": [
+    {
+      "id": "ritratto_png_oste",
+      "file": "ritratto_png_oste.jpg",
+      "tipo": "ritratto"
+    },
+    {
+      "id": "luogo_scena_locanda",
+      "file": "luogo_scena_locanda.jpg",
+      "tipo": "luogo"
+    }
+  ]
+}

@@ -33,6 +33,7 @@ import type { Campagna } from '../campagna/tipi';
 import { ID_NARRATORE, NOME_NARRATORE, conScena } from '../campagna/tipi';
 import { nomeBreve } from '../campagna/nomi';
 import { fuoriDallaFinzione } from '../narrazione/finzione';
+import { MOTIVO_FINE_SESSIONE } from '../sessione/archivio';
 import type { MemoriaSessione } from '../sessione/memoria';
 import type { FotografiaSessione, StatoRicostruito, StatoTavoloSalvato } from '../sessione/tipi';
 import { collegaSituazioni, type SituazioneCollegata } from '../campagna/situazioni';
@@ -112,6 +113,11 @@ export interface OpzioniRegia {
   memoria?: MemoriaSessione | null;
   /** Sessione da riprendere, ricostruita dal registro all'avvio del server. */
   ripresa?: StatoRicostruito | null;
+  /**
+   * Campagna a pacchetti, sessione nuova: telefono → PG della sessione prima (i PG durano tra le
+   * sessioni, e ogni giocatore ritrova il suo senza sceglierlo di nuovo). Ignorato con una ripresa.
+   */
+  dispositiviEreditati?: ReadonlyMap<string, string> | null;
 }
 
 /** Motivi mostrati al giocatore quando il master tocca la sua azione. */
@@ -122,6 +128,8 @@ export const MOTIVO_CAMBIO_SCENA = 'Si cambia scena: la tua azione era per il lu
 export const STALLI_PRIMA_DELLA_PAUSA = 2;
 /** Cosa leggono proiettore e telefoni quando il tavolo si è fermato da solo. */
 export const TESTO_PAUSA_AUTOMATICA = "Il tavolo è in pausa: scrivete un'azione per ripartire.";
+/** Riga di sistema scritta da «Fine sessione» (pannello del master). */
+export const TESTO_FINE_SESSIONE = 'Fine della sessione.';
 export const MOTIVO_RIPRESA = 'Il gioco si è fermato mentre il narratore rispondeva: la tua azione non è stata risolta, puoi rimandarla.';
 /** Token di un telefono (localStorage): lettere, cifre e trattini. */
 const DISPOSITIVO_VALIDO = /^[A-Za-z0-9_-]{8,64}$/;
@@ -296,6 +304,10 @@ export class Regia {
       onChiusura: (r) => this.finestraChiusa(r),
     });
     if (opzioni.ripresa) this.ripristina(opzioni.ripresa);
+    else if (opzioni.dispositiviEreditati) {
+      for (const [d, pg] of opzioni.dispositiviEreditati) if (opzioni.campagna.pg.some((p) => p.id === pg)) this.dispositivi.set(d, pg);
+      if (this.dispositivi.size) opzioni.log.info({ dispositivi: [...this.dispositivi.values()] }, 'sessione: i telefoni ritrovano i PG della sessione prima');
+    }
   }
 
   // ------------------------------------------------------------------ sessione salvata (registro)
@@ -435,6 +447,26 @@ export class Regia {
       ripresa: this.ripresaFatta,
       inAttesaDiRipresa: this.daRiprendere ? { quando: this.daRiprendere.quando, turno: this.daRiprendere.turno } : null,
     };
+  }
+
+  /**
+   * «Fine sessione» (pannello del master): il gioco si ferma, l'ultima fotografia entra nel registro e
+   * la sessione dell'archivio si chiude con MOTIVO_FINE_SESSIONE. Restituisce l'id chiuso: da lì si
+   * estrae il registro (sessione/registra.ts). Il proiettore che dopo preme «Inizia» comincia una
+   * sessione nuova dello stesso pacchetto (si rigioca), finché il master non passa alla prossima.
+   */
+  fineSessione(): { ok: true; sessione: string } | { ok: false; errore: string } {
+    const info = this.o.memoria?.info();
+    if (!info) return { ok: false, errore: 'Nessuna sessione in corso da chiudere.' };
+    if (this.fase !== 'attesa' && this.fase !== 'fermata') this.interrompiTutto('fine sessione');
+    this.daRiprendere = null;
+    if (this.fase !== 'attesa') this.fase = 'fermata';
+    this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_FINE_SESSIONE });
+    this.salva('fine_sessione');
+    this.o.memoria!.termina(MOTIVO_FINE_SESSIONE);
+    this.o.log.info({ sessione: info.id, turno: this.turno, eventi: info.eventi }, 'sessione: fine sessione');
+    this.notifica();
+    return { ok: true, sessione: info.id };
   }
 
   /** «Nuova sessione» del pannello: si chiude quella in corso e si ricomincia da capo. */

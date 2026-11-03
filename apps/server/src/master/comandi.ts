@@ -12,10 +12,13 @@ import type { Campagna } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import type { RegistroJsonl } from '../metriche/jsonl';
 import type { Regia } from '../scena/regia';
+import type { CicloSessioni } from '../sessione/ciclo';
 import { luoghiMaster, statoMaster } from './vista';
 
 export interface OpzioniControlliMaster {
   regia: Regia;
+  /** Fine sessione / prossima sessione; assente = comandi rifiutati (test che non lo usano). */
+  ciclo?: CicloSessioni;
   campagna: Campagna;
   immagini?: CatalogoImmagini;
   /** Catalogo audio: umori ed effetti che il master può comandare. */
@@ -43,7 +46,12 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'umore',
   'nuova_sessione',
   'effetto',
+  'fine_sessione',
+  'prossima_sessione',
 ]);
+
+/** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */
+const SENZA_SALVATAGGIO: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>(['effetto', 'nuova_sessione', 'fine_sessione', 'prossima_sessione']);
 
 /** Id semplici (luoghi, orologi, azioni, note, immagini): niente sorprese nei log. */
 const ID_VALIDO = /^[A-Za-z0-9_]{1,80}$/;
@@ -62,7 +70,7 @@ export class ControlliMaster {
 
   /** Istantanea completa per il pannello. */
   stato(): StatoMaster {
-    return statoMaster({ regia: this.o.regia, campagna: this.o.campagna, immagini: this.o.immagini, audio: this.o.audio, eventi: this.eventi });
+    return statoMaster({ regia: this.o.regia, campagna: this.o.campagna, immagini: this.o.immagini, audio: this.o.audio, eventi: this.eventi, ...(this.o.ciclo ? { ciclo: this.o.ciclo } : {}) });
   }
 
   /** Esegue un comando del pannello e lo registra come evento. `origine`: id del socket. */
@@ -82,8 +90,8 @@ export class ControlliMaster {
     }
     this.registra(comando.tipo, r, origine);
     // Il comando ha cambiato lo stato del gioco: subito nel registro della sessione (un effetto
-    // sonoro non lascia stato).
-    if (r.esito.ok && comando.tipo !== 'effetto' && comando.tipo !== 'nuova_sessione') this.o.regia.salvaDopoComando(comando.tipo);
+    // sonoro non lascia stato; i comandi di sessione salvano da sé).
+    if (r.esito.ok && !SENZA_SALVATAGGIO.has(comando.tipo)) this.o.regia.salvaDopoComando(comando.tipo);
     return r.esito;
   }
 
@@ -192,6 +200,18 @@ export class ControlliMaster {
         if (!nota) return rifiuto('Nota inesistente o già scaduta.');
         regia.notificaEsterna();
         return { esito: { ok: true }, dettagli: `nota ${nota.id} tolta («${nota.testo}»)`, dati: { nota: nota.id } };
+      }
+      case 'fine_sessione': {
+        if (!this.o.ciclo) return rifiuto('Fine sessione non disponibile su questo server.');
+        const e = this.o.ciclo.fine();
+        if (!e.ok) return rifiuto(e.errore);
+        return { esito: { ok: true }, dettagli: e.dettagli, dati: e.registro ? { registro: e.registro.registro, sessione: e.registro.sessione } : {} };
+      }
+      case 'prossima_sessione': {
+        if (!this.o.ciclo) return rifiuto('Prossima sessione non disponibile su questo server.');
+        const e = this.o.ciclo.prossimaSessione();
+        if (!e.ok) return rifiuto(e.errore);
+        return { esito: { ok: true }, dettagli: e.dettagli, dati: e.registro ? { registro: e.registro.registro, sessione: e.registro.sessione } : {} };
       }
       case 'nuova_sessione': {
         const prima = regia.infoRegistro.sessione;

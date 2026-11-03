@@ -24,6 +24,8 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   umore: 'audio',
   effetto: 'audio',
   nuova_sessione: 'sessione',
+  fine_sessione: 'sessione',
+  prossima_sessione: 'sessione',
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
@@ -42,6 +44,8 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = {
   umore: 'Umore della musica',
   effetto: 'Effetto sonoro',
   nuova_sessione: 'Nuova sessione',
+  fine_sessione: 'Fine sessione',
+  prossima_sessione: 'Prossima sessione',
 };
 
 /**

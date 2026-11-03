@@ -26,6 +26,7 @@ import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { StatoRepertorio } from '../repertorio/stato';
 import type { Battuta } from '../repertorio/tipi';
 import { nomeBreve, type Regia } from '../scena/regia';
+import type { CicloSessioni } from '../sessione/ciclo';
 
 export interface FonteVistaMaster {
   regia: Regia;
@@ -33,6 +34,8 @@ export interface FonteVistaMaster {
   immagini?: CatalogoImmagini | undefined;
   audio?: CatalogoAudio | undefined;
   eventi: readonly EventoMaster[];
+  /** Pacchetti, fine sessione e ultimo registro (assente nei test che non lo usano). */
+  ciclo?: CicloSessioni | undefined;
 }
 
 /** Quante azioni già chiuse (del turno precedente) mostrare oltre a quelle vive. */
@@ -56,7 +59,7 @@ export function statoMaster(f: FonteVistaMaster): StatoMaster {
     limiti_note: { max: NOTE_REGIA_MAX, turni_max: NOTE_REGIA_TURNI_MAX },
     repertorio: s ? repertorioMaster(s, regia.turnoCorrente) : null,
     eventi: [...f.eventi],
-    sessione: sessioneMaster(regia),
+    sessione: { ...sessioneMaster(regia), ...(f.ciclo ? f.ciclo.vista() : {}) },
     ...(f.audio ? { audio: audioMaster(tavolo.scena.audio, f.audio) } : {}),
   };
 }

@@ -62,6 +62,19 @@ export function caricaParoleSegrete(cartellaRepertorio: string): ParolaSegreta[]
     });
 }
 
+/**
+ * Parole segrete di una campagna: repertorio/ della campagna e, con un pacchetto di sessione, anche
+ * repertorio/ del pacchetto (campagna/tipi.ts, cartelleSegreti). Una parola scritta in tutti e due
+ * conta una volta.
+ */
+export function caricaParoleSegreteCampagna(c: { cartelleSegreti: readonly string[] }): ParolaSegreta[] {
+  const out: ParolaSegreta[] = [];
+  for (const cartella of c.cartelleSegreti) {
+    for (const p of caricaParoleSegrete(cartella)) if (!out.some((x) => x.sorgente === p.sorgente)) out.push(p);
+  }
+  return out;
+}
+
 /** Stato minimo per decidere se una parola è diventata pubblica. */
 export interface StatoPubblico {
   indiziRivelati: ReadonlySet<string>;

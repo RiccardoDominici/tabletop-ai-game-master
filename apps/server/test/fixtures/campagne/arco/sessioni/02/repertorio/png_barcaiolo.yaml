@@ -1,0 +1,9 @@
+battute:
+  - id: barc_saluto
+    chi: png_barcaiolo
+    tipo: saluto
+    quando: "i PG salutano il barcaiolo"
+    temi: [saluto]
+    testo:
+      - "[png_barcaiolo] Si passa a vostro rischio."
+    max_usi: 2

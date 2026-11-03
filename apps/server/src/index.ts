@@ -1,8 +1,11 @@
 /**
  * Punto d'ingresso del server di Cantastorie (F0).
  * Avvio: config → log → server → ascolto su 0.0.0.0:4610; arresto pulito su SIGINT/SIGTERM.
+ * «Prossima sessione» (campagne a più sessioni) ricostruisce il server sullo stesso indirizzo
+ * (ciclo-server.ts): qui si ristampano gli indirizzi, il token del master resta lo stesso.
  */
-import { costruisciServer } from './avvio';
+import type { ServerCantastorie } from './avvio';
+import { ServerConCiclo } from './ciclo-server';
 import { caricaConfig } from './config';
 import { creaLogger } from './logger';
 
@@ -13,12 +16,16 @@ async function main(): Promise<void> {
     { porta: config.porta, campagna: config.cartellaCampagna, llm: config.llm.modo, voce: config.voce.modo, finestra_ms: config.turni.chiusuraDopoPrimaAzioneMs },
     'Cantastorie: avvio',
   );
-  const server = await costruisciServer(config, log);
-  await server.avvia();
-  log.info({ telefono: server.info.url_telefono, schermo: server.info.url_schermo }, 'Cantastorie: in ascolto');
-  // Il link del pannello del master porta il token: sta solo qui, nel log del server sul Mac.
-  // Si apre da localhost (non è nel QR dei telefoni).
-  log.info({ master: `http://localhost:${config.porta}/master?token=${server.tokenMaster}` }, 'PANNELLO MASTER');
+  const server = await ServerConCiclo.avvia(config, log);
+  const annuncia = (s: ServerCantastorie): void => {
+    const p = s.campagna.pacchetto;
+    log.info({ telefono: s.info.url_telefono, schermo: s.info.url_schermo, sessione: p ? `${p.etichetta} · ${p.titolo}` : null }, 'Cantastorie: in ascolto');
+    // Il link del pannello del master porta il token: sta solo qui, nel log del server sul Mac.
+    // Si apre da localhost (non è nel QR dei telefoni).
+    log.info({ master: `http://localhost:${config.porta}/master?token=${s.tokenMaster}` }, 'PANNELLO MASTER');
+  };
+  annuncia(server.corrente);
+  server.alCambio(annuncia);
 
   let inArresto = false;
   const arresta = async (segnale: string): Promise<void> => {

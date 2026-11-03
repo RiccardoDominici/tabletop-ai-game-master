@@ -1,0 +1,5 @@
+id: scena_mulino
+nome: "Il mulino"
+apertura: "Il mulino è buio e la ruota è ferma."
+png_presenti: [png_barcaiolo]
+orologi_attivi: [o_piena]

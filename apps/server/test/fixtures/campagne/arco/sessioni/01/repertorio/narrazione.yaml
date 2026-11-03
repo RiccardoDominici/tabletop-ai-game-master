@@ -1,0 +1,36 @@
+battute:
+  - id: nar_brocca
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda dietro il banco"
+    temi: [banco, brocca]
+    testo:
+      - "[narratore] Dietro il banco c'è una brocca d'acqua, accanto alla botte."
+    effetti:
+      rivela_indizi: [i_brocca]
+    max_usi: 1
+  - id: nar_tuono
+    chi: narratore
+    tipo: segno_orologio
+    quando: "il temporale si avvicina"
+    temi: [temporale]
+    richiede:
+      orologio: {id: o_temporale, min: 0, max: 0}
+    testo:
+      - "[narratore] Un tuono lontano fa tremare i vetri."
+    effetti:
+      avanza_orologio: o_temporale
+    max_usi: 1
+  - id: nar_porta
+    chi: narratore
+    tipo: segno_orologio
+    quando: "il temporale è vicino"
+    temi: [temporale]
+    richiede:
+      orologio: {id: o_temporale, min: 1, max: 1}
+      battute_non_usate: [oste_confessa]
+    testo:
+      - "[narratore] La porta sbatte."
+    effetti:
+      avanza_orologio: o_temporale
+    max_usi: 1
