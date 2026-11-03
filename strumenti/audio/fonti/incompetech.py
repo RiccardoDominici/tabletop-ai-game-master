@@ -43,22 +43,22 @@ URL_LICENZA = "http://creativecommons.org/licenses/by/4.0/"
 PROFILI_UMORE: dict[str, dict] = {
     "esplorazione_tesa": {"feel": {"Mysterious": 1.0, "Suspenseful": 1.0, "Dark": 0.6, "Eerie": 0.5, "Unnerving": 0.3, "Calming": 0.1,
                                    "Humorous": -1.5, "Bouncy": -1.2, "Grooving": -1.0, "Uplifting": -0.8, "Bright": -0.6, "Aggressive": -0.6, "Action": -0.4, "Epic": -0.3},
-                          "bpm": (50, 115), "parole": r"myster|suspens|tension|tense|dark|explor|sneak|investigat|eerie|uneas|creep|brooding"},
+                          "bpm": (50, 115), "chiave": r"myster|suspens|investigat|sneak", "parole": r"myster|suspens|tension|tense|dark|explor|sneak|investigat|eerie|uneas|creep|brooding"},
     "taverna_calda": {"feel": {"Bouncy": 0.8, "Bright": 0.7, "Relaxed": 0.6, "Uplifting": 0.6, "Humorous": 0.3, "Calming": 0.3, "Grooving": 0.2,
                                "Dark": -1.0, "Eerie": -1.5, "Unnerving": -1.5, "Aggressive": -1.2, "Suspenseful": -0.8, "Intense": -0.5},
-                      "bpm": (80, 170), "parole": r"tavern|celtic|\bfolk|\bjig\b|\breel\b|dance|merry|feast|\bpub\b|irish|ren faire|party|drinking"},
+                      "bpm": (80, 170), "chiave": r"tavern|\bpub\b|\binn\b|drinking|\bale\b|feast", "parole": r"tavern|celtic|\bfolk|\bjig\b|\breel\b|dance|merry|feast|\bpub\b|irish|ren faire|party|drinking"},
     "rito_sacro": {"feel": {"Mystical": 1.0, "Calming": 0.6, "Somber": 0.5, "Relaxed": 0.3, "Mysterious": 0.3,
                             "Bouncy": -1.2, "Grooving": -1.2, "Humorous": -1.5, "Driving": -1.0, "Action": -1.0, "Aggressive": -1.2},
-                   "bpm": (40, 100), "parole": r"choir|chant|church|sacred|monaster|hymn|prayer|organ|requiem|ritual|gregorian|\bmass\b"},
+                   "bpm": (40, 100), "chiave": r"church|choir|chant|monaster|sacred|hymn", "parole": r"choir|chant|church|sacred|monaster|hymn|prayer|organ|requiem|ritual|gregorian|\bmass\b"},
     "inseguimento": {"feel": {"Driving": 1.0, "Action": 1.0, "Intense": 0.8, "Suspenseful": 0.5, "Aggressive": 0.2,
                               "Calming": -1.2, "Relaxed": -1.2, "Humorous": -1.0, "Somber": -0.5, "Bouncy": -0.3},
-                     "bpm": (110, 190), "parole": r"chase|\brun|pursuit|urgent|hurry|action|race|escape|tension|frantic"},
+                     "bpm": (110, 190), "chiave": r"chase|pursuit|escape|getaway", "parole": r"chase|\brun|pursuit|urgent|hurry|action|race|escape|tension|frantic"},
     "combattimento_epico": {"feel": {"Epic": 1.0, "Action": 1.0, "Intense": 0.8, "Aggressive": 0.6, "Driving": 0.5,
                                      "Calming": -1.5, "Relaxed": -1.5, "Humorous": -1.5, "Bouncy": -0.8},
-                            "bpm": (100, 190), "parole": r"battle|fight|epic|\bwar\b|combat|heroic|clash|charge"},
+                            "bpm": (100, 190), "chiave": r"battle|\bfight|combat|\bwar\b", "parole": r"battle|fight|epic|\bwar\b|combat|heroic|clash|charge"},
     "lutto": {"feel": {"Somber": 1.0, "Calming": 0.4, "Dark": 0.3, "Relaxed": 0.2, "Mysterious": 0.1,
                        "Bouncy": -1.5, "Grooving": -1.5, "Humorous": -1.8, "Action": -1.2, "Driving": -1.2, "Aggressive": -1.5, "Uplifting": -0.5, "Bright": -0.8},
-              "bpm": (40, 90), "parole": r"\bsad|sorrow|grief|lament|mourn|funeral|melanchol|\bloss|elegy|tragic|requiem"},
+              "bpm": (40, 90), "chiave": r"funeral|lament|mourn|grief|sorrow|elegy", "parole": r"\bsad|sorrow|grief|lament|mourn|funeral|melanchol|\bloss|elegy|tragic|requiem"},
 }
 
 # Generi (id di genre.json) per un'epoca antica/fantasy: bonus e malus. Gli altri valgono 0.
@@ -163,6 +163,9 @@ def punteggio(b: Brano, umore: str, energia: str, ambientazioni: list[str], ora:
     voci["umore"] = sum(prof["feel"].get(f, 0.0) for f in b.feel)
     if re.search(prof["parole"], testo):
         voci["parole_umore"] = 1.5
+    # La parola che DEFINISCE l'umore («tavern», «funeral», «battle») vale più di un aggettivo.
+    if prof.get("chiave") and re.search(prof["chiave"], testo):
+        voci["parola_chiave"] = 1.0
     if epoca == "antica" and re.search(ANTICHE, testo + " " + " ".join(b.feel).lower() + " " + b.strumenti_testo.lower()):
         voci["antico"] = 0.8
     if epoca == "antica":

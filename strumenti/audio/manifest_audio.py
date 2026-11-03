@@ -17,7 +17,7 @@ from pathlib import Path
 NOME = "manifest.json"
 SEZIONI = ("brani", "umori", "temi", "ambienti", "effetti")
 VERSIONE = 1
-FORMATO = "AAC-LC in .m4a, 48 kHz, stereo; i loop si ripetono così come sono (giunta già cucita)"
+FORMATO = "AAC-LC in .m4a, 48 kHz, stereo; i loop vanno da loop_inizio_s a loop_fine_s (mezzo secondo di margine prima e dopo)"
 NOTA_SOUNDFONT = ("Temi dei personaggi: composti dalla pipeline (motivo deterministico) e suonati con "
                   "GeneralUser GS di S. Christian Collins (https://www.schristiancollins.com/generaluser), licenza d'uso libera.")
 NOTA_SINTESI = "Alcuni ambienti sono sintetizzati dalla pipeline (rumore modellato): nessuna licenza esterna."

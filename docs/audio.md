@@ -48,9 +48,15 @@ I valori ammessi sono quelli del vocabolario (un valore sconosciuto si ignora co
 ```
 - File: AAC-LC `.m4a`, 48 kHz stereo, nomi semplici direttamente in `audio/` (Safari e Chrome li decodificano entrambi).
   Musica 128 kbps, ambienti, temi ed effetti 96 kbps.
-- `durata_s` è la durata VERA del contenuto: il decodificatore AAC può lasciare in coda qualche centinaio di campioni
-  di riempimento, che non fanno parte del loop. Il proiettore ripete il buffer con `loopEnd = durata_s`.
-- I loop sono già cuciti nel file (la coda sfuma nel tratto che precede l'inizio): niente `loop_inizio_s` né `giunta_s`.
+- Loop (brani, umori, ambienti): il file è [0,5 s di coda del loop] + loop + [0,5 s di testa del loop], e la voce porta
+  `loop_inizio_s` (≈ 0,5) e `loop_fine_s` sul file decodificato: il proiettore usa `loopStart`/`loopEnd` con questi
+  valori e parte da 0. Perché: misurato il 3 novembre 2026, ripetere l'intero buffer AAC dà un clic al giro (i primi
+  e gli ultimi frame del codificatore non combaciano: salti di campione 20–47 volte la variazione tipica). Con i
+  margini il contenuto è circolare, quindi anche se il decoder sposta l'inizio di qualche decina di millisecondi
+  (riempimento AAC non tolto) la ripetizione resta senza giunta. Il controllo confronta le due copie della testa.
+- `durata_s` è la durata del contenuto del file (margini compresi); il riempimento AAC in coda non conta.
+- Dentro il loop la giunta è cucita: la coda sfuma (3 s per la musica, 2 s per gli ambienti) nel tratto che precede
+  l'inizio, quindi niente `giunta_s`.
 - `lufs` è la loudness MISURATA del file (musica ≈ −23, ambienti ≈ −30, temi ≈ −20, effetti ≈ −21); il livello voluto
   rispetto alla musica sta in `volume` = guadagno dello strato × 10^((bersaglio + 23)/20), perché il proiettore riporta
   ogni file a −23 col campo `lufs`.

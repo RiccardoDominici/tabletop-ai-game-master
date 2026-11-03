@@ -117,6 +117,7 @@ def fai_musica(c, d, man: ManifestAudio, dry: bool, rifai: bool, rete: bool) -> 
         man.registra(sezione(ident), {
             "id": ident, "tipo": "musica", **extra, "file": file, "loop": True,
             "lufs": ctl["lufs"], "volume": volume_relativo("musica"), "durata_s": ctl["durata_s"],
+            "loop_inizio_s": ctl["loop_inizio_s"], "loop_fine_s": ctl["loop_fine_s"],
             "titolo": b.titolo, "autore": "Kevin MacLeod", "fonte": "Incompetech", "url": b.url,
             "licenza": INC.LICENZA, "crediti": b.crediti,
             "scelta": {"punteggio": s.punteggio, "perche": s.perche, "descrittori": desc,
@@ -191,10 +192,12 @@ def fai_ambienti(c, d, man: ManifestAudio, dry: bool, rifai: bool, rete: bool) -
             # Già fatto: si rimisura, con la durata vera presa dal manifest (senza il riempimento AAC).
             vecchia = next((v for sez in ("ambienti", "effetti") for v in man.sezioni[sez].values() if v["file"] == s.nome_file), None)
             campioni = round(vecchia["durata_s"] * SR) if vecchia else None
-            extra, ctl = {}, Q.analizza(destinazione, tipo == "ambiente", tipo, campioni)
+            punti = (round(vecchia["loop_inizio_s"] * SR), round(vecchia["loop_fine_s"] * SR)) if vecchia and "loop_inizio_s" in vecchia else None
+            extra, ctl = {}, Q.analizza(destinazione, tipo == "ambiente", tipo, campioni, punti)
             ctl["kb"] = round(destinazione.stat().st_size / 1000)
         print(f"    [{tipo} {tag}] {s.nome_file}: {s.meta().get('titolo', 'sintesi')} — {ctl['durata_s']} s, {ctl['lufs']} LUFS, {'ok' if ctl['ok'] else ctl['problemi']}")
-        pronti[chiave] = (s, {**extra, "controllo": _controllo_breve(ctl), "durata_s": ctl["durata_s"], "lufs": ctl["lufs"]})
+        punti = {k: ctl[k] for k in ("loop_inizio_s", "loop_fine_s") if k in ctl}
+        pronti[chiave] = (s, {**extra, "controllo": _controllo_breve(ctl), "durata_s": ctl["durata_s"], **punti, "lufs": ctl["lufs"]})
         return pronti[chiave]
 
     print("\n## Ambienti")

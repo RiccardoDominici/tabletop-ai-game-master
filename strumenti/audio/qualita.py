@@ -6,7 +6,9 @@ Catena di ogni file (vedi `prepara`):
   → WAV → loudnorm a due passate (linear=true) → AAC-LC .m4a (aac_at di macOS, CBR)
   → controllo sul file FINALE decodificato: durata, loudness (ebur128), picco e clipping
     (astats), silenzi (silencedetect), giunta del loop (salto di livello e di campione).
-Se la giunta non passa, si ripara con una dissolvenza corta (40 ms) e si ricodifica una volta.
+Il loop si salva con mezzo secondo di margine prima e dopo (con_margini): la giunta resta perfetta
+anche se il decoder del browser sposta l'inizio (riempimento AAC). Il controllo confronta le due
+copie della testa del loop nel file decodificato.
 
 Perché AAC .m4a: Safari e Chrome lo decodificano entrambi con decodeAudioData (Opus in WebM su
 Safari è arrivato tardi e non ovunque). Il loop è già cucito nel file: il proiettore lo ripete così
@@ -225,7 +227,8 @@ def codifica_m4a(sorgente: Path, destinazione: Path, kbps: int) -> str:
 
 
 # --- Controlli sul file finale ----------------------------------------------------------------
-def analizza(percorso: Path, loop: bool, tipo: str, campioni: int | None = None) -> dict:
+def analizza(percorso: Path, loop: bool, tipo: str, campioni: int | None = None,
+             punti: tuple[int, int] | None = None) -> dict:
     """Misure sul file così come lo decodificherà il proiettore.
 
     `campioni` è la lunghezza vera del contenuto (prima della codifica): il decodificatore può
@@ -273,7 +276,12 @@ def analizza(percorso: Path, loop: bool, tipo: str, campioni: int | None = None)
     if tipo in ("musica", "ambiente") and silenzi:
         problemi.append(f"silenzi: {silenzi}")
     if loop:
-        out["giunta"] = giunta(audio)
+        if punti:
+            out["loop_inizio_s"] = round(punti[0] / SR, 6)
+            out["loop_fine_s"] = round(punti[1] / SR, 6)
+            out["giunta"] = giunta(audio, *punti)
+        else:
+            out["giunta"] = {"ok": False, "nota": "punti del loop sconosciuti"}
         if not out["giunta"]["ok"]:
             problemi.append(f"giunta: {out['giunta']}")
     out["problemi"] = problemi
@@ -281,43 +289,58 @@ def analizza(percorso: Path, loop: bool, tipo: str, campioni: int | None = None)
     return out
 
 
-def giunta(audio: np.ndarray, sr: int = SR) -> dict:
-    """La giunta del loop: livello degli ultimi e dei primi 50 ms, e salto tra l'ultimo e il primo campione.
+def giunta(audio: np.ndarray, inizio: int, fine: int, sr: int = SR) -> dict:
+    """La giunta del loop [inizio, fine) sul file DECODIFICATO.
 
-    Il salto si confronta con la variazione tipica tra due campioni vicini lì intorno: un rapporto
-    molto sopra 1 è un clic udibile.
+    Il file contiene il loop con mezzo secondo prima (la coda del loop) e mezzo secondo dopo (la
+    testa): così le due copie della testa, quella dopo `inizio` e quella dopo `fine`, devono essere
+    uguali a meno del rumore di codifica. Si misura:
+      - somiglianza_db: quanto la differenza tra le due copie (100 ms) sta sotto il segnale;
+      - rapporto_salto: il salto tra il campione prima di `fine` e quello a `inizio` (ciò che si
+        sente al giro), diviso la variazione tipica tra campioni vicini; molto sopra 1 è un clic.
     """
-    n = int(0.05 * sr)
-    coda, testa = audio[-n:], audio[:n]
-    rms = lambda x: _db(np.sqrt(np.mean(x ** 2)))
-    salto_livello = abs(rms(coda) - rms(testa))
-    tipico = float(np.median(np.abs(np.diff(np.concatenate([coda, testa]), axis=0)))) + 1e-6
-    salto = float(np.max(np.abs(audio[0] - audio[-1])))
+    n = int(0.1 * sr)
+    a, b = audio[inizio:inizio + n], audio[fine:fine + n]
+    if len(b) < n or inizio < 1:
+        return {"somiglianza_db": None, "rapporto_salto": None, "ok": False, "nota": "mancano i margini attorno al loop"}
+    rms = lambda x: float(np.sqrt(np.mean(x ** 2))) + 1e-9
+    somiglianza = 20 * np.log10(rms(a) / rms(a - b))
+    tipico = float(np.median(np.abs(np.diff(audio[fine - n:fine + n], axis=0)))) + 1e-6
+    salto = float(np.max(np.abs(audio[fine - 1] - audio[inizio])))
     rapporto = salto / tipico
-    return {"salto_livello_db": round(float(salto_livello), 2), "salto_campione": round(float(salto), 4),
-            "rapporto_salto": round(float(rapporto), 1), "ok": bool(salto_livello <= 3.0 and rapporto <= 8.0)}
+    return {"somiglianza_db": round(float(somiglianza), 1), "rapporto_salto": round(float(rapporto), 1),
+            "ok": bool(somiglianza >= 10.0 and rapporto <= 8.0)}
+
+
+MARGINE_LOOP_S = 0.5    # coda prima e testa dopo il loop, nel file: assorbe ritardi e riempimenti del decoder
+
+
+def con_margini(loop: np.ndarray, sr: int = SR) -> tuple[np.ndarray, int, int]:
+    """[coda del loop] + loop + [testa del loop]: il loop è circolare, quindi ogni tratto lungo quanto
+    il loop preso tra i margini è ancora un loop perfetto. Se il browser sposta l'inizio di qualche
+    decina di millisecondi (riempimento AAC non tolto), la ripetizione resta senza giunta."""
+    m = min(int(MARGINE_LOOP_S * sr), len(loop) // 4)
+    return np.concatenate([loop[-m:], loop, loop[:m]]), m, m + len(loop)
 
 
 # --- Tutto insieme --------------------------------------------------------------------------------
 def prepara(audio: np.ndarray, destinazione: Path, tipo: str, loop: bool, lavoro: Path) -> dict:
-    """Normalizza, codifica e controlla un audio già tagliato (o già in loop). Ritorna il controllo."""
+    """Normalizza, codifica e controlla un audio già tagliato (o già in loop). Ritorna il controllo.
+
+    Per un loop il file ha i margini di `con_margini`; il controllo riporta i punti del loop
+    (`loop_inizio_s`, `loop_fine_s`) che il proiettore usa come loopStart e loopEnd.
+    """
     b = BERSAGLI[tipo]
     lavoro.mkdir(parents=True, exist_ok=True)
     grezzo, norm = lavoro / f"{destinazione.stem}.grezzo.wav", lavoro / f"{destinazione.stem}.norm.wav"
+    punti = None
+    if loop:
+        audio, i0, i1 = con_margini(audio)
+        punti = (i0, i1)
     scrivi_wav(grezzo, audio)
     n = normalizza(grezzo, norm, b["lufs"], b["tp"])
     codec = codifica_m4a(norm, destinazione, b["kbps"])
-    campioni = len(audio)          # loudnorm lineare non cambia la lunghezza
-    controllo = analizza(destinazione, loop, tipo, campioni)
-    if loop and not controllo["giunta"]["ok"]:
-        # Riparazione: dissolvenza corta tra coda e testa del file finale, poi una ricodifica.
-        log.warning("%s: giunta da riparare %s", destinazione.name, controllo["giunta"])
-        riparato = loop_intero(decodifica(destinazione)[:campioni], 0.04)
-        scrivi_wav(norm, riparato)
-        codec = codifica_m4a(norm, destinazione, b["kbps"])
-        campioni = len(riparato)
-        controllo = analizza(destinazione, loop, tipo, campioni)
-        controllo["riparata_giunta"] = True
+    controllo = analizza(destinazione, loop, tipo, len(audio), punti)   # loudnorm lineare non cambia la lunghezza
     for f in (grezzo, norm):
         f.unlink(missing_ok=True)
     controllo["normalizzazione"] = n
