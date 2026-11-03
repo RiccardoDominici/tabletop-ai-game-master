@@ -108,6 +108,8 @@ export interface EventiServerVersoClient {
   'audio:fine_turno': (fine: AudioFineTurno) => void;
   /** Interrompi subito tutto l'audio in coda (scena fermata). */
   'audio:interrompi': () => void;
+  /** Suona un effetto del catalogo audio (comando del master). */
+  'audio:effetto': (effetto: { id: string }) => void;
   /** Solo alla stanza "master": istantanea completa per il pannello. */
   'master:stato': (stato: StatoMaster) => void;
 }

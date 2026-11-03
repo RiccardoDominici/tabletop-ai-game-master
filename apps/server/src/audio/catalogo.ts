@@ -197,6 +197,11 @@ export class CatalogoAudio {
     return this.di(`tema_${idPng}`, 'tema');
   }
 
+  /** Id degli effetti (sfx_<tag>), in ordine alfabetico. */
+  effetti(): string[] {
+    return [...this.perId.values()].filter((v) => v.traccia.tipo === 'effetto').map((v) => v.traccia.id).sort();
+  }
+
   /** Tutti i brani d'umore: tag → id. */
   umori(): Record<string, string> {
     const out: Record<string, string> = {};

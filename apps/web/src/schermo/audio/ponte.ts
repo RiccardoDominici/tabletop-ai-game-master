@@ -13,7 +13,7 @@
  */
 import type { AudioFrase, CatalogoAudioPubblico } from '@cantastorie/shared';
 import { creaLog } from '../../lib/log';
-import { alRientro } from '../../lib/socket';
+import { alRientro, prendiSocket } from '../../lib/socket';
 import { useTavolo } from '../../store/tavolo';
 import { debugSchermo } from '../debug';
 import { BancaAudio, scaricaConFetch } from './banca';
@@ -96,6 +96,13 @@ export function interrompiAudioScena(): void {
 /** Collega catalogo, stato e impostazioni (una volta per pagina); restituisce lo scollegamento. */
 export function collegaAudioScena(): () => void {
   const togliRientro = alRientro(() => void caricaCatalogo());
+  // Effetti comandati dal master (stanza «schermo»).
+  const s = prendiSocket();
+  const suEffetto = (e: { id: string }) => {
+    if (!regista) return;
+    void regista.effetto(e.id).then((ok) => (ok ? log.info('Effetto', e) : log.warn('Effetto non suonato', e)));
+  };
+  s.on('audio:effetto', suEffetto);
   const togliStato = useTavolo.subscribe((s, prima) => {
     if (s.stato !== prima.stato) applicaScena();
   });
@@ -104,6 +111,7 @@ export function collegaAudioScena(): () => void {
     for (const nome of BUS) if (s.impostazioni[nome] !== prima.impostazioni[nome]) mixer.imposta(nome, s.impostazioni[nome]);
   });
   return () => {
+    s.off('audio:effetto', suEffetto);
     togliRientro();
     togliStato();
     togliImpostazioni();

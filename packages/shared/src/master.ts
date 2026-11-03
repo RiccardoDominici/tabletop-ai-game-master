@@ -124,6 +124,20 @@ export interface SituazioneMaster {
   dopo: string | null;
 }
 
+/** Audio della scena per il pannello: cosa suona e cosa si può comandare (nomi non segreti). */
+export interface AudioMaster {
+  /** Musica del luogo corrente (id del catalogo), null = nessuna. */
+  musica: string | null;
+  /** Umore scelto (tag, es. «tensione»), null = automatico (la musica del luogo). */
+  umore: string | null;
+  /** Umori con un brano nel catalogo (tag), in ordine alfabetico. */
+  umori: string[];
+  /** Effetti del catalogo (id sfx_<tag>), in ordine alfabetico. */
+  effetti: string[];
+  /** Strati d'ambiente del luogo corrente. */
+  ambienti: string[];
+}
+
 /** Un comando del master, come è finito nel log. */
 export interface EventoMaster {
   /** ISO 8601. */
@@ -159,6 +173,8 @@ export interface StatoMaster {
   repertorio: RepertorioMaster | null;
   /** Ultimi comandi del master (il più recente per ultimo). */
   eventi: EventoMaster[];
+  /** Musica, umori ed effetti (assente se il server non ha un catalogo audio). */
+  audio?: AudioMaster;
 }
 
 /** Comandi del pannello. Il server li valida tutti: il client non è fidato. */
@@ -184,7 +200,11 @@ export type ComandoMaster =
   /** Nota di regia per i prossimi `turni` turni (1–15; al massimo 3 note insieme). */
   | { tipo: 'nota'; testo: string; turni: number }
   /** Toglie una nota di regia prima della scadenza. */
-  | { tipo: 'togli_nota'; id: string };
+  | { tipo: 'togli_nota'; id: string }
+  /** Umore della musica (tag del catalogo); null = automatico, la musica del luogo. */
+  | { tipo: 'umore'; umore: string | null }
+  /** Suona un effetto del catalogo (sfx_<tag>) sul proiettore. */
+  | { tipo: 'effetto'; id: string };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

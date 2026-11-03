@@ -6,6 +6,7 @@
 import {
   NOTE_REGIA_MAX,
   NOTE_REGIA_TURNI_MAX,
+  type AudioMaster,
   type AzioneMaster,
   type BattutaMaster,
   type EventoMaster,
@@ -19,6 +20,7 @@ import {
 import type { Azione } from '../azioni/tipi';
 import { STATI_VIVI } from '../azioni/tipi';
 import type { CatalogoImmagini } from '../campagna/immagini';
+import type { CatalogoAudio } from '../audio/catalogo';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { StatoRepertorio } from '../repertorio/stato';
 import type { Battuta } from '../repertorio/tipi';
@@ -28,6 +30,7 @@ export interface FonteVistaMaster {
   regia: Regia;
   campagna: Campagna;
   immagini?: CatalogoImmagini | undefined;
+  audio?: CatalogoAudio | undefined;
   eventi: readonly EventoMaster[];
 }
 
@@ -52,6 +55,18 @@ export function statoMaster(f: FonteVistaMaster): StatoMaster {
     limiti_note: { max: NOTE_REGIA_MAX, turni_max: NOTE_REGIA_TURNI_MAX },
     repertorio: s ? repertorioMaster(s, regia.turnoCorrente) : null,
     eventi: [...f.eventi],
+    ...(f.audio ? { audio: audioMaster(tavolo.scena.audio, f.audio) } : {}),
+  };
+}
+
+/** Audio per il pannello: dalla scena pubblica (cosa suona) e dal catalogo (cosa si comanda). */
+export function audioMaster(scena: StatoMaster['tavolo']['scena']['audio'], catalogo: CatalogoAudio): AudioMaster {
+  return {
+    musica: scena?.musica ?? null,
+    umore: scena?.umore ? scena.umore.replace(/^umore_/, '') : null,
+    umori: Object.keys(catalogo.umori()).sort(),
+    effetti: catalogo.effetti(),
+    ambienti: scena?.ambienti ?? [],
   };
 }
 

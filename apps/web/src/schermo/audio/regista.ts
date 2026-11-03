@@ -59,6 +59,8 @@ export interface StatoRegista {
   temiSuonati: string[];
   /** Temi partiti in tutta la sessione. */
   temi: number;
+  /** Effetti suonati (ultimo id in coda). */
+  effetti: string[];
   sottoVoce: boolean;
   abbassamenti: number;
   isteresiMs: number;
@@ -94,6 +96,7 @@ export class RegistaAudio {
   private timerDucking: number | null = null;
   private cambiMusica = 0;
   private temiPartiti = 0;
+  private readonly effettiSuonati: string[] = [];
 
   constructor(private readonly o: OpzioniRegista) {
     this.isteresi = new IsteresiMusica(o.isteresiMs ?? INTERVALLO_MUSICA_MS);
@@ -151,6 +154,8 @@ export class RegistaAudio {
     if (!buffer) return false;
     const t = new TracciaInRiproduzione(this.o.ctx, { ...traccia, loop: false }, buffer, this.o.mixer.bus.effetti, this.o.timer);
     t.avvia(this.o.ctx.currentTime + 0.02, 0);
+    this.effettiSuonati.push(id);
+    if (this.effettiSuonati.length > 20) this.effettiSuonati.shift();
     this.o.timer.imposta(() => t.ferma(0.1, () => this.o.banca.rilascia(traccia.url)), (buffer.duration + 0.1) * 1000);
     return true;
   }
@@ -164,6 +169,7 @@ export class RegistaAudio {
       ambienti: [...this.ambienti.entries()].filter(([, v]) => typeof v !== 'symbol').map(([id]) => id).sort(),
       temiSuonati: this.memoriaTemi.elenco,
       temi: this.temiPartiti,
+      effetti: [...this.effettiSuonati],
       sottoVoce: this.piano.sottoVoce,
       abbassamenti: this.piano.abbassamenti,
       isteresiMs: this.isteresi.intervalloMs,

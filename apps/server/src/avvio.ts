@@ -30,7 +30,7 @@ import { ArbitroHaiku } from './azioni/arbitro-haiku';
 import { riassuntoPubblico } from './azioni/contesto';
 import type { Arbitro } from './azioni/tipi';
 import { creaClientAnthropic } from './llm/haiku';
-import { collegaSocket, creaUscite } from './trasporto/socket';
+import { collegaSocket, creaUscite, STANZA_SCHERMO } from './trasporto/socket';
 import { collegaMaster } from './trasporto/master';
 import { ControlliMaster } from './master/comandi';
 import { nuovoToken } from './master/token';
@@ -164,6 +164,8 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     regia,
     campagna,
     immagini,
+    audio,
+    suonaEffetto: (id) => app.io.to(STANZA_SCHERMO).emit('audio:effetto', { id }),
     registro: new RegistroJsonl(path.join(config.cartellaLog, 'master.jsonl')),
     log: log.child({ modulo: 'master' }),
   });

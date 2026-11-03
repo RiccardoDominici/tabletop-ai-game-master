@@ -7,7 +7,7 @@
 import type { ComandoMaster, TipoComandoMaster } from '@cantastorie/shared';
 
 /** Zona del pannello in cui si mostra l'esito di un comando. */
-export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note';
+export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio';
 
 export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   pausa: 'controlli',
@@ -21,6 +21,8 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   salta_azione: 'azioni',
   nota: 'note',
   togli_nota: 'note',
+  umore: 'audio',
+  effetto: 'audio',
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
@@ -36,6 +38,8 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = {
   salta_azione: 'Salta azione',
   nota: 'Nota di regia',
   togli_nota: 'Togli nota',
+  umore: 'Umore della musica',
+  effetto: 'Effetto sonoro',
 };
 
 /**
@@ -66,7 +70,10 @@ export function chiaveComando(comando: ComandoMaster): string {
       return `salta_azione:${comando.id_azione}`;
     case 'togli_nota':
       return `togli_nota:${comando.id}`;
+    case 'effetto':
+      return `effetto:${comando.id}`;
     default:
+      // «umore»: una chiave sola, due umori di fila non si accavallano.
       return comando.tipo;
   }
 }
@@ -92,6 +99,10 @@ export function descriviComando(comando: ComandoMaster): string {
       return `${nome} (${comando.turni} ${comando.turni === 1 ? 'turno' : 'turni'})`;
     case 'togli_nota':
       return `${nome} ${comando.id}`;
+    case 'umore':
+      return `${nome}: ${comando.umore ?? 'auto'}`;
+    case 'effetto':
+      return `${nome}: ${comando.id}`;
     default:
       return nome;
   }

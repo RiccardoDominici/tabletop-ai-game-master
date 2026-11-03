@@ -15,6 +15,8 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   salta_azione: { tipo: 'salta_azione', id_azione: 'a7' },
   nota: { tipo: 'nota', testo: 'Più ritmo', turni: 5 },
   togli_nota: { tipo: 'togli_nota', id: 'n1' },
+  umore: { tipo: 'umore', umore: 'tensione' },
+  effetto: { tipo: 'effetto', id: 'sfx_campana' },
 };
 
 describe('zone ed etichette dei comandi', () => {
@@ -47,6 +49,17 @@ describe('chiaveComando', () => {
   });
   it('mostrare e togliere una situazione condividono la chiave', () => {
     expect(chiaveComando({ tipo: 'situazione', id: 'x' })).toBe(chiaveComando({ tipo: 'situazione', id: null }));
+  });
+});
+
+describe('comandi dell’audio', () => {
+  it('zona audio; un umore alla volta, effetti diversi indipendenti', () => {
+    expect(ZONA_COMANDO.umore).toBe('audio');
+    expect(ZONA_COMANDO.effetto).toBe('audio');
+    expect(chiaveComando({ tipo: 'umore', umore: 'tensione' })).toBe(chiaveComando({ tipo: 'umore', umore: null }));
+    expect(chiaveComando({ tipo: 'effetto', id: 'sfx_campana' })).not.toBe(chiaveComando({ tipo: 'effetto', id: 'sfx_porta' }));
+    expect(descriviComando({ tipo: 'umore', umore: null })).toBe('Umore della musica: auto');
+    expect(descriviComando({ tipo: 'effetto', id: 'sfx_campana' })).toBe('Effetto sonoro: sfx_campana');
   });
 });
 

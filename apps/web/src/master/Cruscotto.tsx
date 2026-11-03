@@ -1,7 +1,8 @@
 /**
  * Griglia del pannello per lo schermo del Mac (1440–1920 px): tre colonne che scorrono ciascuna
  * per conto suo, così i comandi in alto restano sempre visibili.
- * - sinistra: scena e luogo, situazioni, orologi (cosa c'è sul proiettore e cosa incombe);
+ * - sinistra: scena e luogo, audio (musica, umori, effetti), situazioni, orologi (cosa c'è sul
+ *   proiettore e cosa incombe);
  * - centro: finestra, azioni, trascrizione (cosa succede adesso al tavolo);
  * - destra: note di regia, repertorio (solo modalità B), registro dei comandi.
  * Sotto i 1280 px le colonne diventano due e la pagina scorre intera.
@@ -9,6 +10,7 @@
 import type { StatoMaster } from '@cantastorie/shared';
 import { SezioneScena } from './SezioneScena';
 import { SezioneSituazioni } from './SezioneSituazioni';
+import { SezioneAudio } from './SezioneAudio';
 import { SezioneOrologi } from './SezioneOrologi';
 import { SezioneFinestra } from './SezioneFinestra';
 import { SezioneAzioni } from './SezioneAzioni';
@@ -24,6 +26,7 @@ export function Cruscotto({ stato }: { stato: StatoMaster }) {
     <main className="grid min-h-0 flex-1 grid-cols-1 gap-3 p-3 lg:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)_minmax(0,1fr)]">
       <div className={COLONNA}>
         <SezioneScena stato={stato} />
+        <SezioneAudio stato={stato} />
         <SezioneSituazioni stato={stato} />
         <SezioneOrologi stato={stato} />
       </div>

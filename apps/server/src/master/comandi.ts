@@ -7,6 +7,7 @@
  */
 import type { ComandoMaster, Esito, EventoMaster, StatoMaster, TipoComandoMaster } from '@cantastorie/shared';
 import type { CatalogoImmagini } from '../campagna/immagini';
+import type { CatalogoAudio } from '../audio/catalogo';
 import type { Campagna } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import type { RegistroJsonl } from '../metriche/jsonl';
@@ -17,6 +18,10 @@ export interface OpzioniControlliMaster {
   regia: Regia;
   campagna: Campagna;
   immagini?: CatalogoImmagini;
+  /** Catalogo audio: umori ed effetti che il master può comandare. */
+  audio?: CatalogoAudio;
+  /** Manda un effetto al proiettore (stanza «schermo»). */
+  suonaEffetto?: (id: string) => void;
   registro: RegistroJsonl;
   log: Logger;
   /** Eventi tenuti per il pannello (i più recenti). */
@@ -35,6 +40,8 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'salta_azione',
   'nota',
   'togli_nota',
+  'umore',
+  'effetto',
 ]);
 
 /** Id semplici (luoghi, orologi, azioni, note, immagini): niente sorprese nei log. */
@@ -54,7 +61,7 @@ export class ControlliMaster {
 
   /** Istantanea completa per il pannello. */
   stato(): StatoMaster {
-    return statoMaster({ regia: this.o.regia, campagna: this.o.campagna, immagini: this.o.immagini, eventi: this.eventi });
+    return statoMaster({ regia: this.o.regia, campagna: this.o.campagna, immagini: this.o.immagini, audio: this.o.audio, eventi: this.eventi });
   }
 
   /** Esegue un comando del pannello e lo registra come evento. `origine`: id del socket. */
@@ -167,6 +174,21 @@ export class ControlliMaster {
         if (!nota) return rifiuto('Nota inesistente o già scaduta.');
         regia.notificaEsterna();
         return { esito: { ok: true }, dettagli: `nota ${nota.id} tolta («${nota.testo}»)`, dati: { nota: nota.id } };
+      }
+      case 'umore': {
+        const tag = c.umore === null ? null : typeof c.umore === 'string' && ID_VALIDO.test(c.umore) ? c.umore : undefined;
+        if (tag === undefined) return rifiuto('Umore non valido.');
+        const prima = regia.stato().scena.audio?.umore?.replace(/^umore_/, '') ?? null;
+        const esito = regia.cambiaUmore(tag);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: `umore della musica ${prima ?? 'auto'} → ${tag ?? 'auto'}`, dati: { da: prima, a: tag } };
+      }
+      case 'effetto': {
+        const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : '';
+        if (!this.o.audio?.effetti().includes(id)) return rifiuto('Effetto sconosciuto.', `effetto sconosciuto «${id.slice(0, 64)}»`);
+        if (!regia.stato().schermo_connesso || !this.o.suonaEffetto) return rifiuto('Nessun proiettore con l’audio acceso.');
+        this.o.suonaEffetto(id);
+        return { esito: { ok: true }, dettagli: `effetto ${id} sul proiettore`, dati: { effetto: id } };
       }
     }
   }

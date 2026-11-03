@@ -8,7 +8,8 @@
  *   (pagine: vite build --outDir <cartella>; CANTASTORIE_SERVER=http://127.0.0.1:4620 vite preview --outDir <cartella> --port 4622)
  *   E2E_URL=http://localhost:4622 npx playwright test e2e/audio.spec.ts
  *
- * Senza il catalogo di prova (server normale) la prova si salta da sola. Lo schermo usa
+ * Il pannello del master (seconda prova) vuole il token del server di prova in E2E_MASTER_TOKEN
+ * (CANTASTORIE_MASTER_TOKEN all'avvio). Senza il catalogo di prova (server normale) si saltano. Lo schermo usa
  * `?isteresi_audio_s=12`: le regole sono quelle vere, con un intervallo corto.
  * Screenshot 1920x1080 in logs/screenshots/audio-*.png; nessun errore in console.
  */
@@ -25,6 +26,7 @@ const SCREENSHOT = path.join(RADICE, 'logs', 'screenshots');
 const ISTERESI_S = 12;
 
 interface StatoAudio {
+  effetti: string[];
   musica: string | null;
   musicaPendente: string | null | undefined;
   cambiMusica: number;
@@ -177,5 +179,50 @@ test('proiettore: musica con dissolvenza e isteresi, ambienti, tema del PNG una 
   await schermo.evaluate(() => localStorage.removeItem('cantastorie:mixer'));
 
   await luogo(schermo, 'scena_forno_vecchio');
+  expect(errori, errori.join('\n')).toEqual([]);
+});
+
+test('pannello del master: umore subito sul proiettore, «auto», effetto suonato', async ({ browser }) => {
+  test.setTimeout(90_000);
+  const token = process.env['E2E_MASTER_TOKEN'];
+  const errori: string[] = [];
+  const schermo = await (await browser.newContext({ viewport: { width: 1920, height: 1080 } })).newPage();
+  schermo.on('console', (m) => m.type() === 'error' && errori.push(`schermo: ${m.text()}`));
+  schermo.on('pageerror', (e) => errori.push(`schermo: ${e.message}`));
+  test.skip(((await salute(schermo)).audio ?? 0) < 10 || !token, 'serve il server di prova audio e E2E_MASTER_TOKEN');
+  await umore(schermo, null);
+  await luogo(schermo, 'scena_forno_vecchio');
+  await schermo.goto(`/schermo?isteresi_audio_s=${ISTERESI_S}`);
+  await schermo.getByTestId('inizia-sessione').click();
+  await expect.poll(async () => (await statoAudio(schermo))?.musica, { timeout: 10_000 }).toBe('luogo_scena_forno_vecchio');
+
+  const master = await (await browser.newContext({ viewport: { width: 1600, height: 1000 } })).newPage();
+  master.on('console', (m) => m.type() === 'error' && errori.push(`master: ${m.text()}`));
+  master.on('pageerror', (e) => errori.push(`master: ${e.message}`));
+  await master.goto(`/master?token=${token}`);
+  const card = master.getByTestId('master-audio');
+  await expect(card).toBeVisible({ timeout: 15_000 });
+  await expect(master.getByTestId('master-audio-musica')).toHaveText('scena forno vecchio');
+  await expect(master.getByTestId('master-umore-auto')).toHaveAttribute('aria-pressed', 'true');
+
+  // Umore: il proiettore cambia subito (anche dentro l'isteresi), il pannello lo segna.
+  const prima = Date.now();
+  await master.getByTestId('master-umore-tensione').click();
+  await expect.poll(async () => (await statoAudio(schermo))?.musica, { timeout: 3_000 }).toBe('umore_tensione');
+  expect(Date.now() - prima).toBeLessThan(3_000);
+  await expect(master.getByTestId('master-umore-tensione')).toHaveAttribute('aria-pressed', 'true');
+  await expect(master.getByTestId('master-audio-musica')).toContainText('umore: tensione');
+  await card.screenshot({ path: path.join(SCREENSHOT, 'audio-master-card.png') });
+  await master.screenshot({ path: path.join(SCREENSHOT, 'audio-master-pannello.png') });
+
+  // «auto»: torna la musica del luogo.
+  await master.getByTestId('master-umore-auto').click();
+  await expect.poll(async () => (await statoAudio(schermo))?.musica, { timeout: 3_000 }).toBe('luogo_scena_forno_vecchio');
+  await expect(master.getByTestId('master-umore-auto')).toHaveAttribute('aria-pressed', 'true');
+
+  // Effetto: arriva al proiettore e suona sul bus effetti.
+  await master.getByTestId('master-effetto-sfx_campana').click();
+  await expect.poll(async () => (await statoAudio(schermo))?.effetti, { timeout: 3_000 }).toEqual(['sfx_campana']);
+  await expect(master.getByTestId('master-esito-audio')).toContainText('campana');
   expect(errori, errori.join('\n')).toEqual([]);
 });
