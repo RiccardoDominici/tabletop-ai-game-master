@@ -130,14 +130,13 @@ contesto, i suoi PNG presenti e i suoi orologi attivi; lo stato (indizi, battute
   lo applica ancora: fino ad allora scrivi la condizione anche in `avanza_quando` e chiudi il primo segno
   con `richiede.battute_usate`, e metti l'orologio solo tra gli `orologi_attivi` della scena in cui la
   scelta si fa, così il ritmo minimo non chiede segni prima del tempo.
-- **Cancelli con «oppure».** Una battuta che vale «se i PG hanno una qualunque delle tre prove» oggi si
-  scrive come tre battute con lo stesso testo e cancelli diversi, che si escludono a vicenda con
-  `battute_non_usate` (repertorio.md §4). Un finale con più cancelli è fragile: rileggilo per ogni via.
-- **Voci tra le scene.** Il Motore non guarda chi è presente: una battuta senza `scena` di un PNG può
-  uscire in ogni scena, se un giocatore lo nomina. Se due PNG hanno voci simili, dai `scena` alle
-  battute di quello che non deve comparire accanto all'altro, e cerca ogni testo che lo sposta:
-  desiderio, iniziative, evoluzione, soluzioni dei colli di bottiglia, taglio, esiti. Il validatore
-  avvisa di ciò che trova; i casi voluti si giustificano in autovalutazione.
+- **Cancelli con «oppure».** Una battuta che vale «se i PG hanno una qualunque delle tre prove» ha
+  `richiede.oppure` (repertorio.md §4), o un indizio cerniera che tutte le prove rivelano. Un finale con
+  più cancelli è fragile: rileggilo per ogni via.
+- **Voci tra le scene.** Il Motore non elenca le battute di un PNG assente dalla scena in corso. Restano i
+  testi che lo spostano: desiderio, iniziative, evoluzione, soluzioni dei colli di bottiglia, taglio, esiti.
+  Se due PNG hanno voci simili, cercali: il validatore avvisa di ciò che trova; i casi voluti si
+  giustificano in autovalutazione.
 - **I nodi noti.** Un luogo che i PG conoscono dall'inizio (la chiesa del paese) ha `noto_ai_pg: true`:
   non serve scoprirlo con tre indizi.
 

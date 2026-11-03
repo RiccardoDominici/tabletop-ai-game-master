@@ -80,11 +80,13 @@ Poi:
 - due confessioni alternative della stessa verità si escludono a vicenda con `battute_non_usate`.
 
 **Cancelli con «oppure».** `richiede` vuole tutte le sue condizioni vere. Per «una qualunque di queste
-prove» il formato prevede `richiede.oppure: [{indizi_rivelati: [i_a]}, {indizi_rivelati: [i_b]}]`: le
-condizioni di base, più almeno una alternativa. **Il server non lo applica ancora**, e una battuta con
-`oppure` uscirebbe con le sole condizioni di base: per questo oggi il validatore lo rifiuta. Fino ad
-allora scrivi una battuta per alternativa, con lo stesso testo, e falle escludere a vicenda con
-`battute_non_usate`; per una confessione, ogni copia ha il suo cancello.
+prove» si scrive `richiede.oppure: [{indizi_rivelati: [i_a]}, {indizi_rivelati: [i_b]}]`: le condizioni di
+base, più almeno una alternativa. Il Motore lo applica (`repertorio/condizioni.ts`), e il validatore lo
+controlla: una confessione è chiusa solo se ogni alternativa ha un cancello. Per i cancelli sull'azione vale
+l'alternativa scelta (`{privata: true}` oppure `{indizi_rivelati: [i_x]}`).
+- **L'indizio cerniera.** Quando tante battute dipendono da «una qualunque di più strade» (la lettera
+  arriva in due modi, la nonna cede in tre), fai rivelare a tutte le strade lo stesso indizio, e chiudi le
+  battute che vengono dopo con quel solo indizio (`indizi_rivelati`): niente catene di `oppure` da rileggere.
 
 ## 5. Menzogne
 - Una battuta di tipo `menzogna` per ogni `mente_su`, con `effetti.menzogna_detta: <mente_su.id>`.
@@ -93,10 +95,13 @@ allora scrivi una battuta per alternativa, con lo stesso testo, e falle escluder
   Il mulino del paese»), ma non cambiarne il contenuto.
 
 ## 6. Le altre battute
-- **Indizi**: una battuta per ogni modo (`modi`) di trovarli [V].
+- **Indizi**: una battuta per ogni modo (`modi`) di trovarli [V]. Un indizio di tipo `png` ha tanti modi
+  quante sono le condizioni del `cede_se` che lo rivela: indizi e menzogne si progettano insieme.
   - Descrivi, non concludere.
   - `effetti.rivela_indizi`, più `fatti_noti` solo se il fatto viene detto per intero.
-- **Segni d'orologio**: una battuta per segmento, con `richiede.orologio: {id, min: k-1, max: k-1}` ed
+- **Segni d'orologio**: solo gesti e suoni che si vedono e si sentono; un PNG che parla, parla nelle sue
+  battute (una riga `[png_…]` in un segno è un avviso, e il narratore che riassume un PNG è contro D1).
+  Una battuta per segmento, con `richiede.orologio: {id, min: k-1, max: k-1}` ed
   `effetti.avanza_orologio` [V]. Il testo ricalca il segno di campagna.yaml. Si può aggiungere un dettaglio,
   per un massimo di quattro frasi.
 - **Momenti chiave**: le iniziative e le evoluzioni dei PNG (Ottavia brucia i sacchi, Baldrin avvolge la
@@ -117,7 +122,8 @@ allora scrivi una battuta per alternativa, con lo stesso testo, e falle escluder
 - **Riempitivi**: almeno uno [V]; di solito la mossa morbida della scena e qualche iniziativa dei PNG.
 - **Nessuna battuta presuppone un'altra battuta facoltativa.** «Il mulo, no.» non va, se il mulo compare
   solo in un riempitivo che può non essere uscito. Se il legame serve, scrivilo: `richiede.battute_usate`.
-- **Più scene**: `scena: <id>` lega una battuta a una scena sola. I segni di un orologio attivo in più
+- **Più scene**: `scena: <id>` (o una lista di id) lega una battuta a quelle scene. Il Motore non elenca le
+  battute in cui parla un PNG assente dalla scena in corso. I segni di un orologio attivo in più
   scene e le battute degli indizi trovabili in più momenti non hanno `scena` (mestiere.md §9).
 - **Transizioni**: almeno due (avviso), per entrare e uscire dai luoghi vicini.
 
@@ -133,6 +139,8 @@ parole:
 ```
 - **Una regex cerca il legame, non la parola.** «cerusico» compare anche nell'aggancio pubblico di un
   PG («il suo cerusico disertore»): quello che va cercato è «il forestiero è un cerusico».
+- **I prompt delle immagini sono in inglese.** Per un segreto che un'immagine potrebbe mostrare (la cicatrice,
+  la lanterna nascosta) aggiungi `regex_en` alla voce: il validatore la cerca nei prompt (`IMMAGINI.segreto`).
 - **Confini di parola.** Una regex scatta anche a metà di una parola più lunga: «sa del leone» trovava
   «Rosa del leone», «tetto» trovava «tettoia». Comincia con `\b` (avviso `SEGRETI.regex_dentro_parola`).
 - **Anche i nomi propri portano segreti.** La gilda dei «Pontieri dell'Onda», nell'aggancio di un PG,
@@ -156,6 +164,9 @@ parole:
 - [ ] per ogni orologio attivo: un segno per segmento
 - [ ] per ogni esito del taglio: un finale; più la chiusura con la scelta aperta (C13)
 - [ ] per ogni PNG: saluto, domanda gentile, accusa, minaccia, offerta, aiuto, rifiuto (esempi o selezionabili)
+- [ ] per ogni comparsa nominata in un aggancio o nella situazione comune (lo sposo, la sposa): almeno una
+  battuta del narratore, perché i giocatori la cercheranno
+- [ ] per ogni voce di `riferimenti/motore.md`: la sua risposta (battute private, segni, finali, oggetti)
 - [ ] per ogni domanda probabile dei copioni: una risposta selezionabile, o un esempio di voce che guidi l'improvvisazione
 - [ ] nessuna battuta cita ciò che solo un'altra battuta facoltativa ha introdotto
 - [ ] almeno un riempitivo e due transizioni

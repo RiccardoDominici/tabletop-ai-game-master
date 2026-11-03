@@ -28,7 +28,7 @@ campagne/<id>/
 | `regole_prosa` | lista; va per intero al selettore del modo B: nessun segreto, nemmeno come divieto [V contesto B]. Il divieto della parola-soluzione sta nel `come_si_trova` dell'indizio |
 | `stile_immagini` | il contenuto di `[STILE]`, in inglese; non contiene `[STILE]` [V] |
 | `tavolozza_musicale` | `{tag: [...], strumenti: "..."}`; tag solo da `esplorazione_tesa, taverna_calda, rito_sacro, inseguimento, combattimento_epico, lutto` [V] |
-| `linee`, `veli` | liste non vuote [V] |
+| `linee`, `veli` | liste; `linee` non vuota [V], `veli` vuota solo se il brief non ne vuole (avviso) |
 | `audio` | facoltativo: `{tonalita, modo, tempo, strumenti, umore_base, epoca, motivo}`, vedi «Audio» sotto [V] |
 
 ## campagna.yaml
@@ -67,6 +67,8 @@ richiede una conoscenza privata lo dice: «Solo se la propone chi la conosce».
   entrata), `immagine: {prompt_luogo}` (un luogo senza scheda che ha un'immagine; vedi immagini.md) e
   `audio` (come nelle scene, vedi «Audio» sotto).
 - `nome` e `abbozzo` vanno al selettore del modo B: niente segreti [V contesto B].
+- Un luogo dove il master può portare il tavolo (un'uscita ci porta) ha un'immagine: una `scheda` di scena
+  (stessa immagine) o `immagine.prompt_luogo`; se una scena si svolge lì, è un errore in rigoroso [V IMMAGINI.nodo].
 - Ogni collegamento esiste [V].
 - Tutto è raggiungibile dal nodo della scena iniziale [V].
 - Nessun vicolo cieco, salvo `prossima_sessione: true` [V].
@@ -106,6 +108,7 @@ cronologia:
       segno: {orologio: o_…, n: 3}         # facoltativo: a che segno è l'orologio in quel momento [V crescono col tempo]
   documenti:                               # ogni indizio di tipo documento ha la sua voce [R]
     - {id: doc_<nome>, cosa: "la riga del registro", indizio: i_…, datato: {…come quando…}, prova: [t_…]}
+      # indizio: il legame si aggiunge quando l'indizio esiste (passo 5); al passo 3 il documento non lo ha
 logistica:
   durate:   [{id: d_<nome>, cosa: "…", minuti: 75, fatti: [f_…]}]
   capienze: [{id: c_<nome>, cosa: "la barca", posti: 20}]
@@ -225,8 +228,8 @@ Nome diverso dal nome di ogni PNG [V].
 ## Repertorio: vedi riferimenti/repertorio.md
 Campi della battuta: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi,
 solo_esempio, riempitivo, scena, audio` [V]. Nient'altro [V]. `audio: {umore, effetto}` è un segnale
-automatico (vedi «Audio» sotto e repertorio.md §6). `richiede.oppure` è descritto ma il server non lo
-applica ancora: oggi è un errore (repertorio.md §4).
+automatico (vedi «Audio» sotto e repertorio.md §6). `richiede.oppure` è applicato dal Motore
+(repertorio.md §4); `scena` è un id o una lista di id.
 
 ## Audio (facoltativo): stile.audio, scene e nodi audio, png.tema
 La pipeline dell'audio (`strumenti/audio/`, contratto in `docs/audio.md`) ricava musica, ambienti, effetti
@@ -251,6 +254,7 @@ audio:
   musica: [notte, pioggia, ponte]   # umore, energia (bassa, media, alta), ora (alba, giorno, imbrunire,
                                     #   notte), meteo, ambientazione, o parole inglesi libere
   ambiente: [pioggia, {tag: fiume, volume: 0.6}]   # strati in loop; volume tra 0 e 1
+  interno: false                    # facoltativo: al chiuso (true) o all'aperto (false), se la deduzione sbaglia
   umore_iniziale: esplorazione_tesa
 
 # png
@@ -356,7 +360,7 @@ Dove il manuale è ambiguo, il validatore e questa skill leggono così.
     Il server deve ancora applicarli; il validatore li esige [R].
 14. **Alias** dei PNG: il server li usa per capire a chi parlano le azioni (repertorio, pertinenza).
 15. **Menzogne.** `mente_su[].id` è il valore di `effetti.menzogna_detta`.
-16. **Più scene.** Una battuta valida solo in una scena ha `scena: <id>`.
+16. **Più scene.** Una battuta valida solo in alcune scene ha `scena: <id>` o `scena: [<id>, …]`.
 17. **Eccezioni al catalogo.** `parole_segrete[].ammessa_nel_catalogo` vale solo per una battuta che
     il Motore elenca soltanto dopo che un giocatore ha scritto la parola segreta. Va motivata nella nota.
 18. **Contesto del modo B.** Vale ciò che il compilatore del server manda davvero

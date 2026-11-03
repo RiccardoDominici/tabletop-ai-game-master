@@ -308,6 +308,8 @@ ritmo. Cerca:
 - un «voi» singolare che sembra plurale;
 - calchi dall'inglese, la stessa immagine ripetuta, accordi di genere verso un PG ignoto («sei pronto»);
 - una battuta che cita ciò che solo un'altra battuta facoltativa ha introdotto («Il mulo, no.»);
+- lettere, diari e canzoni letti dal narratore: in discorso indiretto, mai in prima o seconda persona
+  («tuo fratello…» suona rivolto a un PG; il validatore avvisa, `PROSA.citazione`);
 - il meccanismo del climax letto al contrario: ogni testo dice la stessa cosa della riga del passo 3.
 
 ### 14. Revisione indipendente

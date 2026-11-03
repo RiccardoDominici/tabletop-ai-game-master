@@ -65,6 +65,8 @@ campagne/<id>/
 ```
 Le risorse che durano (ritratti dei PNG ricorrenti, luoghi che tornano, temi musicali) stanno a livello di
 campagna e si riusano; ogni sessione genera solo le immagini e i suoni nuovi.
+L'arco preparato prima (premessa, tappe, atti, finali, PNG ricorrenti, fili) sta in `campagna.yaml →
+preparazione.arco`: contiene il futuro, e `preparazione` non arriva mai al narratore (riferimenti/arco.md).
 
 ## Il ciclo tra le sessioni
 1. **Fine sessione** (pannello del master): il server scrive `sessioni/<nn>/registro.yaml` dall'archivio.
