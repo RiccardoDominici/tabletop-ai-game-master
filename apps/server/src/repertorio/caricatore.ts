@@ -14,6 +14,7 @@ import { ID_NARRATORE } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import { indiziCampagna } from '../campagna/indizi';
 import { TIPI_BATTUTA, type AlternativaRichiede, type Battuta, type CondizioniStato, type Effetti, type Repertorio, type Richiede, type RigaBattuta, type TipoBattuta } from './tipi';
+import { EFFETTI, UMORE_AUTO, UMORI } from '../audio/cue';
 
 /** Chiavi ammesse in `richiede` (e, tranne `oppure`, in ogni alternativa). Una chiave sconosciuta è un errore: ignorata, aprirebbe il cancello. */
 const CHIAVI_RICHIEDE = new Set(['indizi_rivelati', 'indizi_non_rivelati', 'battute_usate', 'battute_non_usate', 'orologio', 'privata', 'da_pg', 'oppure']);
@@ -244,6 +245,7 @@ function leggiBattuta(
     fatti_noti: lista(e['fatti_noti']),
     avanza_orologio: typeof e['avanza_orologio'] === 'string' ? e['avanza_orologio'] : null,
   };
+  const audio = leggiAudioBattuta(d['audio'], `${qui} audio`, errori);
   const maxUsi = typeof d['max_usi'] === 'number' && d['max_usi'] >= 1 ? Math.floor(d['max_usi']) : 1;
   if (d['max_usi'] !== undefined && maxUsi !== d['max_usi']) errori.push(`${qui}: max_usi non valido`);
   return {
@@ -260,6 +262,34 @@ function leggiBattuta(
     solo_esempio: d['solo_esempio'] === true,
     riempitivo: d['riempitivo'] === true,
     scene: leggiScene(d['scena'], qui, errori),
+    audio,
     file,
   };
+}
+
+/**
+ * `audio: {umore, effetto}` di una battuta (facoltativo). Vocabolario chiuso come le righe
+ * [umore]/[effetto] del narratore: un tag sbagliato è un errore qui, non un silenzio in gioco.
+ * Se il catalogo della campagna non ha quel brano o effetto, lo dice la regia quando esce.
+ */
+function leggiAudioBattuta(a: unknown, dove: string, errori: string[]): Battuta['audio'] {
+  if (a === undefined || a === null) return null;
+  if (typeof a !== 'object' || Array.isArray(a)) {
+    errori.push(`${dove}: un blocco {umore, effetto}`);
+    return null;
+  }
+  const out: { umore?: string; effetto?: string } = {};
+  for (const [k, v] of Object.entries(a as DatiYaml)) {
+    if (k === 'umore') {
+      if (typeof v === 'string' && (v === UMORE_AUTO || (UMORI as readonly string[]).includes(v))) out.umore = v;
+      else errori.push(`${dove}.umore «${String(v)}» fuori dal vocabolario (${UMORI.join(', ')}, ${UMORE_AUTO})`);
+    } else if (k === 'effetto') {
+      const tag = typeof v === 'string' ? v.replace(/^sfx_/, '') : '';
+      if ((EFFETTI as readonly string[]).includes(tag)) out.effetto = tag;
+      else errori.push(`${dove}.effetto «${String(v)}» fuori dal vocabolario (${EFFETTI.join(', ')})`);
+    } else {
+      errori.push(`${dove}: chiave non prevista «${k}» (solo umore, effetto)`);
+    }
+  }
+  return out.umore || out.effetto ? out : null;
 }

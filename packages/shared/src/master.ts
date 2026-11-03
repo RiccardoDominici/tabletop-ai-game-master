@@ -146,6 +146,8 @@ export interface EventoMaster {
   ok: boolean;
   /** Riassunto leggibile («orologio o_colpevole +1 → 3/6», «rifiutato: la finestra è chiusa»). */
   dettagli: string;
+  /** Deciso dal Motore (riga [umore]/[effetto] del narratore, audio di una battuta), non dal master. */
+  automatico?: boolean;
 }
 
 /** Istantanea completa per il pannello del master. */

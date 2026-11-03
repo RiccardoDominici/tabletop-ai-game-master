@@ -25,7 +25,7 @@ describe('CatalogoAudio', () => {
   const c = new CatalogoAudio(FIXTURE);
 
   it('tiene solo le voci col file e un nome semplice', () => {
-    expect(c.numero).toBe(10); // luogo_n_mancante (senza file) e luogo_n_furbo (percorso) scartati
+    expect(c.numero).toBe(12); // luogo_n_mancante (senza file) e luogo_n_furbo (percorso) scartati
     expect(c.musicaLuogo('n_piazza')).toBe('luogo_n_piazza');
     expect(c.musicaLuogo('n_mancante')).toBeNull();
     expect(c.musicaLuogo('n_furbo')).toBeNull();
@@ -33,7 +33,7 @@ describe('CatalogoAudio', () => {
     expect(c.umore('luogo_n_piazza')).toBeNull();
     expect(c.tema('png_ottavia')).toBe('tema_png_ottavia');
     expect(c.tema('png_sebastiano')).toBeNull();
-    expect(c.umori()).toEqual({ esplorazione_tesa: 'umore_esplorazione_tesa', tensione: 'umore_tensione' });
+    expect(c.umori()).toEqual({ esplorazione_tesa: 'umore_esplorazione_tesa', tensione: 'umore_tensione', inseguimento: 'umore_inseguimento' });
     expect(c.crediti).toHaveLength(2);
   });
 
@@ -167,7 +167,7 @@ describe('rotte dell’audio e cambio d’umore', () => {
 
   it('catalogo pubblico e file del manifest, nient’altro', async () => {
     const catalogo = (await (await fetch(`${url}/api/audio`)).json()) as CatalogoAudioPubblico;
-    expect(Object.keys(catalogo.tracce)).toHaveLength(10);
+    expect(Object.keys(catalogo.tracce)).toHaveLength(12);
     expect(catalogo.crediti).toHaveLength(2);
     const r = await fetch(`${url}/api/audio/luogo_n_piazza.m4a`);
     expect(r.status).toBe(200);
@@ -175,7 +175,7 @@ describe('rotte dell’audio e cambio d’umore', () => {
     expect(r.headers.get('cache-control')).toBe('public, max-age=3600');
     expect((await r.arrayBuffer()).byteLength).toBe(fs.statSync(path.join(FIXTURE, 'luogo_n_piazza.m4a')).size);
     for (const male of ['manifest.json', '..%2Fmanifest.json', 'genera.sh', 'luogo_n_mancante.ogg']) expect((await fetch(`${url}/api/audio/${male}`)).status).toBe(404);
-    expect(await (await fetch(`${url}/api/salute`)).json()).toMatchObject({ audio: 10 });
+    expect(await (await fetch(`${url}/api/salute`)).json()).toMatchObject({ audio: 12 });
   });
 
   it('lo stato porta l’audio della scena; l’umore si sceglie e si toglie', async () => {

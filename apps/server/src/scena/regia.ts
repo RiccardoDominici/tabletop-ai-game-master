@@ -43,6 +43,7 @@ import { azioniPerNarratore } from '../azioni/narratore';
 import type { CatalogoImmagini } from '../campagna/immagini';
 import type { CatalogoAudio } from '../audio/catalogo';
 import { audioDellaScena, type UmoreScelto } from '../audio/scena';
+import { LimiteUmori, risolviEffetto, risolviUmore, type CueAudio } from '../audio/cue';
 import { TavoloAzioni, type RiepilogoChiusura } from '../azioni/tavolo';
 import type { Arbitro, Azione } from '../azioni/tipi';
 import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
@@ -50,7 +51,7 @@ import { messaggioRiparazione } from '../narrazione/messaggio';
 import { normalizza } from '../azioni/regole';
 import { nomiDeiPng } from '../repertorio/pertinenza';
 import { sommaCosti } from '../llm/costi';
-import type { Repertorio } from '../repertorio/tipi';
+import type { Battuta, Repertorio } from '../repertorio/tipi';
 import { StatoRepertorio } from '../repertorio/stato';
 import { righeMenzogneDette } from '../repertorio/menzogne';
 import { segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
@@ -164,6 +165,10 @@ export class Regia {
   private stalliDiFila = 0;
   /** Audio: umore scelto dal master o dal Motore (vale solo nella scena in cui è stato scelto). */
   private umoreScelto: UmoreScelto | null = null;
+  /** Audio: al massimo un cambio d'umore automatico al minuto per scena (anche il master conta). */
+  private readonly limiteUmori = new LimiteUmori();
+  /** Audio: chi registra i segnali automatici (il registro del pannello del master). */
+  private suCue: ((e: { comando: 'umore' | 'effetto'; ok: boolean; dettagli: string }) => void) | null = null;
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
@@ -220,6 +225,8 @@ export class Regia {
       osservatore: {
         richiesta: (f) => {
           if (f.turno === this.misuratore?.turno) this.misuratore.segna('voce_richiesta', this.o.orologio.ora());
+          // Segnale audio legato a questa frase: parte adesso, con lei (l'effetto lo suona lo schermo).
+          if (f.cue) this.applicaCue(f.cue);
         },
         primoAudio: (f) => {
           const ora = this.o.orologio.ora();
@@ -291,12 +298,99 @@ export class Regia {
    */
   cambiaUmore(tag: string | null): Esito {
     if (tag !== null && !this.o.audio?.umore(tag)) return { ok: false, errore: `Nessun brano per l'umore «${tag}».` };
-    const prima = this.umoreScelto?.scena === this.campagna.scena.id ? this.umoreScelto.tag : null;
-    if (prima === tag) return { ok: true };
-    this.o.log.info({ da: prima, a: tag, scena: this.campagna.scena.id }, 'audio: cambio d’umore');
-    this.umoreScelto = tag === null ? null : { tag, scena: this.campagna.scena.id };
+    const scena = this.campagna.scena.id;
+    const prima = this.umoreAttuale;
+    this.limiteUmori.segna(this.o.orologio.ora(), scena);
+    const giàScelto = this.umoreScelto?.scena === scena;
+    this.umoreScelto = { tag, scena };
+    if (prima === tag && giàScelto) return { ok: true };
+    this.o.log.info({ da: prima, a: tag, scena }, 'audio: cambio d’umore');
     this.notifica();
     return { ok: true };
+  }
+
+  /** Umore della musica in vigore (tag), null = la musica del luogo. */
+  get umoreAttuale(): string | null {
+    return this.stato().scena.audio?.umore?.replace(/^umore_/, '') ?? null;
+  }
+
+  /** Parametri audio di un turno di narrazione: controlli dei tag, rifiuti nel registro, umore senza frase. */
+  private parametriAudioTurno(): { audio?: NonNullable<ReturnType<Regia['risolutoreAudio']>>; cueRifiutato: (tipo: 'umore' | 'effetto', tag: string, motivo: string) => void; cueSenzaFrase: (c: CueAudio) => void } {
+    const audio = this.risolutoreAudio();
+    return {
+      ...(audio ? { audio } : {}),
+      cueRifiutato: (tipo, tag, motivo) => {
+        this.suCue?.({ comando: tipo, ok: false, dettagli: `automatico (narratore): [${tipo}] ${tag} ignorato: ${motivo}` });
+        this.notifica();
+      },
+      cueSenzaFrase: (c) => this.applicaCue(c),
+    };
+  }
+
+  /** Chi riceve i segnali audio automatici (il registro del pannello del master). */
+  suCueAudio(f: (e: { comando: 'umore' | 'effetto'; ok: boolean; dettagli: string }) => void): void {
+    this.suCue = f;
+  }
+
+  /** Controlli dei tag [umore]/[effetto] per il turno: vocabolario chiuso e catalogo della campagna. */
+  private risolutoreAudio(): { umore(tag: string): ReturnType<typeof risolviUmore>; effetto(tag: string): ReturnType<typeof risolviEffetto> } | undefined {
+    const cat = this.o.audio;
+    if (!cat) return undefined;
+    return { umore: (t) => risolviUmore(t, cat), effetto: (t) => risolviEffetto(t, cat) };
+  }
+
+  /** Segnale audio automatico arrivato alla sua frase (o senza frase): umore con limite, effetto. */
+  private applicaCue(cue: CueAudio): void {
+    let notificato = false;
+    if (cue.umore !== undefined) notificato = this.umoreAutomatico(cue.umore, cue.origine);
+    if (cue.effetto) {
+      this.suCue?.({ comando: 'effetto', ok: true, dettagli: `automatico (${cue.origine}): effetto ${cue.effetto} con la frase` });
+      this.o.log.info({ effetto: cue.effetto, origine: cue.origine }, 'audio: effetto automatico');
+      if (!notificato) this.notifica();
+    }
+  }
+
+  /**
+   * Cambio d'umore deciso dal Motore: al massimo uno al minuto nella stessa scena (il cambio di
+   * scena azzera il conto). Restituisce true se ha notificato lo stato.
+   */
+  private umoreAutomatico(tag: string | null, origine: string): boolean {
+    const scena = this.campagna.scena.id;
+    const nome = tag ?? 'auto';
+    const prima = this.umoreAttuale;
+    if (prima === tag) return false;
+    const attesa = this.limiteUmori.attesa(this.o.orologio.ora(), scena);
+    if (attesa > 0) {
+      this.o.log.info({ umore: nome, origine, attesa_ms: Math.round(attesa) }, 'audio: umore automatico ignorato (uno al minuto)');
+      this.suCue?.({ comando: 'umore', ok: false, dettagli: `automatico (${origine}): umore ${nome} ignorato, un cambio al minuto (ancora ${Math.ceil(attesa / 1000)} s)` });
+      this.notifica();
+      return true;
+    }
+    this.suCue?.({ comando: 'umore', ok: true, dettagli: `automatico (${origine}): umore della musica ${prima ?? 'auto'} → ${nome}` });
+    const esito = this.cambiaUmore(tag);
+    if (!esito.ok) {
+      this.o.log.warn({ umore: nome, origine, errore: esito.errore }, 'audio: umore automatico non applicato');
+      this.notifica();
+    }
+    return true;
+  }
+
+  /** L'audio di una battuta (`audio: {umore, effetto}`), controllato sul catalogo della campagna. */
+  private cueBattuta(b: Battuta): CueAudio | undefined {
+    if (!b.audio || !this.o.audio) return undefined;
+    const origine = `battuta ${b.id}`;
+    const cue: CueAudio = { origine };
+    if (b.audio.umore) {
+      const r = risolviUmore(b.audio.umore, this.o.audio);
+      if (r.ok) cue.umore = r.valore;
+      else this.suCue?.({ comando: 'umore', ok: false, dettagli: `automatico (${origine}): ${r.motivo}` });
+    }
+    if (b.audio.effetto) {
+      const r = risolviEffetto(b.audio.effetto, this.o.audio);
+      if (r.ok) cue.effetto = r.valore;
+      else this.suCue?.({ comando: 'effetto', ok: false, dettagli: `automatico (${origine}): ${r.motivo}` });
+    }
+    return cue.umore !== undefined || cue.effetto ? cue : undefined;
   }
 
   // ------------------------------------------------------------------ immagini di situazione
@@ -415,9 +509,11 @@ export class Regia {
     if (esito.battuta.effetti.avanza_orologio) segno.mostrato = true;
     this.rivelateNelTurno.push(esito.battuta.id, ...esito.battuta.effetti.rivela_indizi);
     if (esito.orologiPartiti.length) this.o.log.info({ turno, battuta: id, orologi: esito.orologiPartiti }, 'orologio: partito (parte_dopo)');
+    const audio = this.cueBattuta(esito.battuta);
     return {
       ok: true,
       versione: esito.versione,
+      ...(audio ? { audio } : {}),
       righe: esito.righe.map((r) => {
         const { mostrato, voce } = testoPerVoce(r.etichetta, r.testo, this.pronuncia);
         return { etichetta: r.etichetta, testo: mostrato, testo_voce: voce, chiave_cache: chiaveAudio(voceDi(this.campagna, r.etichetta).voce_id, voce) };
@@ -883,6 +979,9 @@ export class Regia {
     this.statoRepertorio?.impostaScena(this.campagna.scena);
     this.luogo = id;
     this.togliSituazione('cambio di scena');
+    // Scena nuova (o ricominciata): torna il suo umore iniziale, e il limite riparte.
+    this.umoreScelto = null;
+    this.limiteUmori.azzera();
   }
 
   private async preriscalda(): Promise<void> {
@@ -1020,6 +1119,7 @@ export class Regia {
         misuratore,
         ora: () => this.o.orologio.ora(),
         pronuncia: this.pronuncia,
+        ...this.parametriAudioTurno(),
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segnoInRisposta) : null,
         onFrase: (f) => {
           if (epoca !== this.epoca) return;
@@ -1047,6 +1147,7 @@ export class Regia {
           misuratore,
           ora: () => this.o.orologio.ora(),
           pronuncia: this.pronuncia,
+          ...this.parametriAudioTurno(),
           usa: (id, per) => this.usaBattuta(id, per, turno, segnoInRisposta),
           prefissoFrasi: 'r',
           ignora: new Set(['invito_mancante']),

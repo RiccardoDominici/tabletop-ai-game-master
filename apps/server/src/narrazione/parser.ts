@@ -4,12 +4,15 @@
  *   [narratore] Testo narrato.
  *   [<id_png>] Battuta del PNG.
  *   [orologio] o_id         ← facoltativa, prima di [invito], non letta a voce
+ *   [umore] tag             ← facoltativa, rara: umore della musica (docs/audio.md), non letta
+ *   [effetto] tag           ← facoltativa: effetto per la frase che segue, non letta
  *   [invito] pg_a,pg_b      ← ultima riga, obbligatoria, non letta a voce
  *
  * Riceve i delta del testo in streaming e produce eventi appena possibile:
  * - `frase`: una frase completa con la sua etichetta (subito, senza aspettare la fine riga);
  * - `invito`: gli id dei PG invitati (oppure 'tutti');
  * - `orologio`: l'id dell'orologio di cui è stato mostrato il segno (lo valida il Motore);
+ * - `umore` / `effetto`: il tag chiesto dal narratore (vocabolario e catalogo li valida il Motore);
  * - `anomalia`: deviazioni dal protocollo, tollerate ma da registrare nel log.
  *
  * Tolleranze (dal contratto): etichetta sconosciuta → voce del narratore; riga senza etichetta →
@@ -30,7 +33,9 @@ export type CodiceAnomalia =
   | 'invito_ripetuto'
   | 'testo_dopo_invito'
   | 'orologio_vuoto'
-  | 'usa_vuoto';
+  | 'usa_vuoto'
+  | 'umore_vuoto'
+  | 'effetto_vuoto';
 
 export type EventoNarratore =
   | {
@@ -49,6 +54,10 @@ export type EventoNarratore =
    * `per` è il PG alla cui azione risponde (B2), null se non dichiarato.
    */
   | { tipo: 'usa'; id: string; per: string | null; grezzo: string }
+  /** Riga [umore] <tag>: cambio d'umore della musica (rara; la valida il Motore). */
+  | { tipo: 'umore'; tag: string; grezzo: string }
+  /** Riga [effetto] <tag>: effetto sonoro sulla frase che segue (lo valida il Motore). */
+  | { tipo: 'effetto'; tag: string; grezzo: string }
   | { tipo: 'anomalia'; codice: CodiceAnomalia; dettaglio: string };
 
 export interface OpzioniParser {
@@ -65,10 +74,12 @@ const NARRATORE = 'narratore';
 const INVITO = 'invito';
 const OROLOGIO = 'orologio';
 const USA = 'usa';
+const UMORE = 'umore';
+const EFFETTO = 'effetto';
 /** Oltre questa lunghezza un «[» a inizio riga senza «]» non è un'etichetta. */
 const MAX_ETICHETTA = 48;
 
-type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'usa';
+type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'usa' | 'umore' | 'effetto';
 
 export class ParserNarratore {
   private readonly png: Set<string>;
@@ -142,6 +153,8 @@ export class ParserNarratore {
       case 'invito':
       case 'orologio':
       case 'usa':
+      case 'umore':
+      case 'effetto':
         this.bufferInvito += c;
         return;
       case 'testo':
@@ -223,7 +236,7 @@ export class ParserNarratore {
       this.bufferInvito = resto;
       return;
     }
-    if (risolta.tipo === 'orologio' || risolta.tipo === 'usa') {
+    if (risolta.tipo === 'orologio' || risolta.tipo === 'usa' || risolta.tipo === 'umore' || risolta.tipo === 'effetto') {
       this.modo = risolta.tipo;
       this.bufferInvito = resto;
       return;
@@ -245,11 +258,20 @@ export class ParserNarratore {
 
   private risolvi(
     grezza: string,
-  ): { tipo: 'invito' } | { tipo: 'orologio' } | { tipo: 'usa' } | { tipo: 'parlante'; id: string; alias: boolean } | { tipo: 'sconosciuta' } {
+  ):
+    | { tipo: 'invito' }
+    | { tipo: 'orologio' }
+    | { tipo: 'usa' }
+    | { tipo: 'umore' }
+    | { tipo: 'effetto' }
+    | { tipo: 'parlante'; id: string; alias: boolean }
+    | { tipo: 'sconosciuta' } {
     const t = grezza.trim().toLowerCase();
     if (t === INVITO) return { tipo: 'invito' };
     if (t === OROLOGIO) return { tipo: 'orologio' };
     if (t === USA) return { tipo: 'usa' };
+    if (t === UMORE) return { tipo: 'umore' };
+    if (t === EFFETTO) return { tipo: 'effetto' };
     if (t === NARRATORE) return { tipo: 'parlante', id: NARRATORE, alias: false };
     if (this.png.has(t)) return { tipo: 'parlante', id: t, alias: false };
     const daAlias = this.alias.get(t) ?? this.alias.get(t.replace(/^png_/, ''));
@@ -297,6 +319,10 @@ export class ParserNarratore {
       case 'usa':
         this.chiudiUsa();
         break;
+      case 'umore':
+      case 'effetto':
+        this.chiudiCue(this.modo);
+        break;
       case 'inizio_riga': {
         const p = this.prefisso.trim();
         this.prefisso = '';
@@ -326,6 +352,18 @@ export class ParserNarratore {
     const per = bersaglio ? (this.pg.has(bersaglio) ? bersaglio : (this.alias.get(bersaglio) ?? bersaglio)) : null;
     if (this.invitoVisto) this.anomalia('testo_dopo_invito', `[usa] ${id} dopo [invito]`);
     this.eventi.push({ tipo: 'usa', id, per, grezzo });
+  }
+
+  /** [umore] / [effetto]: la prima parola è il tag (il Motore lo controlla col vocabolario e il catalogo). */
+  private chiudiCue(tipo: 'umore' | 'effetto'): void {
+    const grezzo = this.bufferInvito.trim();
+    this.bufferInvito = '';
+    const tag = grezzo.replace(/[`"'«»]/g, '').split(/[\s,;]+/)[0]?.toLowerCase().replace(/[.!?:]+$/, '') ?? '';
+    if (!tag) {
+      this.anomalia(tipo === 'umore' ? 'umore_vuoto' : 'effetto_vuoto', `riga [${tipo}] senza tag`);
+      return;
+    }
+    this.eventi.push({ tipo, tag, grezzo });
   }
 
   private chiudiOrologio(): void {

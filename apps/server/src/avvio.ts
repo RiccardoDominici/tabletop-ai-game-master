@@ -25,6 +25,7 @@ import type { Repertorio } from './repertorio/tipi';
 import { CacheAudio } from './voce/cache-audio';
 import { CatalogoImmagini } from './campagna/immagini';
 import { CatalogoAudio } from './audio/catalogo';
+import { bloccoAudioContesto } from './audio/cue';
 import { ArbitroHaiku } from './azioni/arbitro-haiku';
 import { riassuntoPubblico } from './azioni/contesto';
 import type { Arbitro } from './azioni/tipi';
@@ -72,8 +73,15 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     filePrompt = config.filePromptSelettore;
   }
   const rep = repertorio;
+  // Audio della campagna: serve già qui, perché narratore e selettore sanno quali umori ed effetti
+  // esistono (righe [umore] ed [effetto], docs/audio.md).
+  const audio = new CatalogoAudio(config.cartellaAudio, log.child({ modulo: 'audio' }));
+  const bloccoAudio = bloccoAudioContesto(audio);
   /** Contesto della campagna vista da una scena (cambia col passaggio di scena). */
-  const contestoPer = (c: Campagna): string => (rep ? compilaContestoRepertorio(c, paroleSegrete, rep) : compilaContestoCampagna(c));
+  const contestoPer = (c: Campagna): string => {
+    const base = rep ? compilaContestoRepertorio(c, paroleSegrete, rep) : compilaContestoCampagna(c);
+    return bloccoAudio ? `${base}\n\n${bloccoAudio}` : base;
+  };
   // Rete di sicurezza in modalità B: nessuna scena deve portare parole segrete nel contesto del selettore.
   if (rep) {
     for (const sc of campagna.scene) {
@@ -122,7 +130,6 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   );
 
   const immagini = new CatalogoImmagini(config.cartellaImmagini, log.child({ modulo: 'immagini' }));
-  const audio = new CatalogoAudio(config.cartellaAudio, log.child({ modulo: 'audio' }));
   const app = await creaApp({ log, cartellaWeb: sost.cartellaWeb ?? config.cartellaWeb });
   const uscite = creaUscite(app.io);
   const regia = new Regia({
@@ -169,6 +176,8 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     log: log.child({ modulo: 'master' }),
   });
   collegaMaster(app.io, regia, controlliMaster, tokenMaster, log.child({ modulo: 'master' }));
+  // Segnali audio automatici (narratore, battute) nel registro del pannello.
+  regia.suCueAudio((e) => controlliMaster.registraAutomatico(e));
   registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, audio: audio.numero, ...regia.infoSessione }), immagini, audio);
 
   return {

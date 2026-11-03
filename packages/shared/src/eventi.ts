@@ -32,6 +32,8 @@ export interface AudioFrase {
   testo: string;
   /** Frequenza di campionamento del PCM che seguirà. */
   sample_rate: number;
+  /** Effetto del catalogo audio (sfx_<tag>) da far partire insieme alla frase. */
+  effetto?: string;
 }
 
 /** Pezzo di audio di una frase: PCM s16le mono, lunghezza sempre pari (campioni interi). */
@@ -56,6 +58,8 @@ export interface AudioFineTurno {
   turno: number;
   /** Numero di frasi del turno. */
   frasi: number;
+  /** Effetti (sfx_<tag>) da suonare quando la voce del turno è finita (un [effetto] dopo l'ultima frase). */
+  effetti?: string[];
 }
 
 /** Lo schermo avvisa che il primo pezzo di un turno ha cominciato a suonare davvero. */

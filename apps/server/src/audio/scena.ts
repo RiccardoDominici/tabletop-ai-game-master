@@ -7,6 +7,7 @@
  *   lo stesso posto: `scena_forno_vecchio` ↔ `n_osteria`); se manca anche quella, l'umore della
  *   scena (`umore_<musica.tag>`); altrimenti silenzio (null);
  * - umore esplicito (master o Motore, solo per la scena in cui è stato scelto): vince sulla musica;
+ *   se nessuno l'ha scelto, vale l'umore iniziale della scena (`audio.umore_iniziale`), se c'è;
  * - ambienti: gli strati del luogo, o del luogo equivalente;
  * - temi: un tema per ogni PNG della campagna che ne ha uno;
  * - prossimi: musica e ambienti dei luoghi vicini (gli stessi delle immagini: collegamenti del nodo
@@ -15,10 +16,14 @@
 import type { AudioScena } from '@cantastorie/shared';
 import type { Campagna } from '../campagna/tipi';
 import type { CatalogoAudio } from './catalogo';
+import { umoreIniziale } from './cue';
 
-/** Umore scelto dal master o dal Motore: vale solo nella scena in cui è stato scelto. */
+/**
+ * Umore scelto dal master o dal Motore: vale solo nella scena in cui è stato scelto. `tag` null =
+ * scelto «auto» (la musica del luogo, anche se la scena ha un umore iniziale).
+ */
 export interface UmoreScelto {
-  tag: string;
+  tag: string | null;
   scena: string;
 }
 
@@ -87,7 +92,10 @@ export function audioDellaScena(cat: CatalogoAudio, c: Campagna, luogo: string, 
   }
   const musica = musicaDi(cat, c, luogo);
   const ambienti = ambientiDi(cat, c, luogo, noti);
-  const umore = umoreScelto && umoreScelto.scena === c.scena.id ? cat.umore(umoreScelto.tag) : null;
+  // Umore in vigore: quello scelto in questa scena; se nessuno l'ha scelto, l'umore iniziale della scena.
+  const scelto = umoreScelto && umoreScelto.scena === c.scena.id ? umoreScelto : null;
+  const tag = scelto ? scelto.tag : umoreIniziale(c.scena.dati);
+  const umore = tag ? cat.umore(tag) : null;
   const correnti = new Set<string>([...(musica ? [musica] : []), ...(umore ? [umore] : []), ...ambienti]);
   const prossimi = [
     ...luoghiVicini(c, luogo).flatMap((l) => [musicaDi(cat, c, l), ...ambientiDi(cat, c, l, noti)]),

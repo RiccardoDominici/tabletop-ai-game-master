@@ -1,0 +1,39 @@
+battute:
+  - id: oste_saluto
+    chi: png_oste
+    tipo: saluto
+    quando: "i PG entrano o salutano l'oste"
+    temi: [saluto]
+    testo:
+      - "[narratore] L'oste si pulisce le mani."
+      - "[png_oste] Benvenuti, foresti. Accomodatevi."
+    varianti:
+      - ["[png_oste] Ancora voi? Sedete."]
+    max_usi: 3
+    # Segnali audio quando esce (docs/audio.md): l'effetto parte con la prima riga.
+    audio: {effetto: campana, umore: inseguimento}
+  - id: oste_vino_menzogna
+    chi: png_oste
+    tipo: menzogna
+    quando: "un PG chiede del vino"
+    temi: [vino]
+    richiede:
+      indizi_non_rivelati: [i_vino_annacquato]
+    testo:
+      - "[png_oste] Il mio vino è il migliore della valle."
+    effetti:
+      menzogna_detta: oste_vino
+    max_usi: 1
+  - id: oste_confessa
+    chi: png_oste
+    tipo: confessione
+    quando: "un PG gli mostra la brocca"
+    temi: [brocca, confessione]
+    richiede:
+      indizi_rivelati: [i_brocca]
+      battute_usate: [oste_vino_menzogna]
+    testo:
+      - "[png_oste] Va bene. Ci metto l'acqua. Bruno ha fatto il furbo."
+    effetti:
+      fatti_noti: [f_oste_ladro]
+    max_usi: 1

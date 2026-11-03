@@ -83,6 +83,20 @@ export class ControlliMaster {
     return r.esito;
   }
 
+  /**
+   * Segnale audio deciso dal Motore (riga [umore]/[effetto] del narratore, audio di una battuta,
+   * umore scartato dal limite): entra nel registro come un comando, marcato «automatico». I pulsanti
+   * del pannello restano la scelta manuale che lo scavalca.
+   */
+  registraAutomatico(e: { comando: 'umore' | 'effetto'; ok: boolean; dettagli: string }): void {
+    const evento: EventoMaster = { ts: new Date().toISOString(), comando: e.comando, ok: e.ok, dettagli: e.dettagli, automatico: true };
+    this.eventi.push(evento);
+    if (this.eventi.length > this.max) this.eventi.splice(0, this.eventi.length - this.max);
+    const turno = this.o.regia.turnoCorrente;
+    this.o.registro.scrivi({ ...evento, turno, origine: 'motore' });
+    this.o.log.info({ evento: 'master', comando: e.comando, ok: e.ok, dettagli: e.dettagli, turno, automatico: true }, `audio automatico: ${e.comando}`);
+  }
+
   private registra(comando: TipoComandoMaster, r: Risultato, origine: string): void {
     const evento: EventoMaster = { ts: new Date().toISOString(), comando, ok: r.esito.ok, dettagli: r.dettagli };
     this.eventi.push(evento);

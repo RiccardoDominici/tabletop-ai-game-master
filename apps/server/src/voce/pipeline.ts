@@ -11,6 +11,7 @@
 import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@cantastorie/shared';
 import type { Logger } from '../logger';
 import type { CacheAudio } from './cache-audio';
+import type { CueAudio } from '../audio/cue';
 import { ErroreVoce, type MotoreVoce, type NomeMotoreVoce } from './tipi';
 
 /** Pezzi da 0,24 s per l'audio pre-generato (come il servizio voce): lo schermo li programma uguali. */
@@ -32,6 +33,12 @@ export interface FraseDaDire {
    * c'è, parte subito senza sintesi; se manca, si sintetizza dal vivo (e lo si registra).
    */
   chiave_cache?: string;
+  /**
+   * Segnale audio legato all'inizio di questa frase (riga [umore]/[effetto] del narratore, audio di
+   * una battuta): l'effetto viaggia con l'annuncio e lo schermo lo fa partire con la frase;
+   * l'umore lo applica la regia quando la frase parte (osservatore `richiesta`).
+   */
+  cue?: CueAudio;
 }
 
 /** Dove va l'audio (in produzione: la stanza "schermo" di Socket.IO). */
@@ -66,6 +73,8 @@ export interface EsitoTurnoVoce {
 }
 
 interface StatoTurno {
+  /** Effetti da suonare a voce del turno finita (un [effetto] dopo l'ultima frase). */
+  effetti: string[];
   frasi: number;
   finite: number;
   secondi: number;
@@ -134,6 +143,11 @@ export class PipelineVoce {
    * Il turno non avrà altre frasi. La promessa si risolve quando tutte le sue frasi sono
    * state generate e inoltrate (o il turno è stato interrotto).
    */
+  /** Un effetto da suonare quando la voce del turno è finita (arriva con `fine_turno`). */
+  effettoFineTurno(turno: number, id: string): void {
+    this.turno(turno).effetti.push(id);
+  }
+
   chiudiTurno(turno: number): Promise<EsitoTurnoVoce> {
     const t = this.turno(turno);
     t.chiuso = true;
@@ -162,7 +176,7 @@ export class PipelineVoce {
   private turno(n: number): StatoTurno {
     let t = this.turni.get(n);
     if (!t) {
-      t = { frasi: 0, finite: 0, secondi: 0, chiuso: false, attese: [] };
+      t = { effetti: [], frasi: 0, finite: 0, secondi: 0, chiuso: false, attese: [] };
       this.turni.set(n, t);
     }
     return t;
@@ -172,7 +186,7 @@ export class PipelineVoce {
     const t = this.turni.get(turno);
     if (!t || !t.chiuso || t.finite < t.frasi) return;
     this.turni.delete(turno);
-    this.opzioni.uscita.fineTurno({ turno, frasi: t.frasi });
+    this.opzioni.uscita.fineTurno({ turno, frasi: t.frasi, ...(t.effetti.length ? { effetti: t.effetti } : {}) });
     const esito: EsitoTurnoVoce = { turno, frasi: t.frasi, secondi: t.secondi, interrotto: false };
     for (const risolvi of t.attese) risolvi(esito);
   }
@@ -227,6 +241,7 @@ export class PipelineVoce {
       nome: frase.nome,
       testo: frase.testo,
       sample_rate: sampleRate,
+      ...(frase.cue?.effetto ? { effetto: frase.cue.effetto } : {}),
     });
     const passo = CAMPIONI_PER_PEZZO_CACHE * 2;
     let seq = 0;
@@ -274,6 +289,7 @@ export class PipelineVoce {
         nome: frase.nome,
         testo: frase.testo,
         sample_rate: flusso.sampleRate,
+        ...(frase.cue?.effetto ? { effetto: frase.cue.effetto } : {}),
       });
       annunciata = true;
       let seq = 0;

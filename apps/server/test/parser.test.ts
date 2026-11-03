@@ -197,3 +197,36 @@ describe('ParserNarratore — [usa] id > pg (B2)', () => {
     ]);
   });
 });
+
+describe('ParserNarratore: righe audio [umore] ed [effetto]', () => {
+  const testo = '[umore] inseguimento\n[narratore] La Bigia scappa.\n[effetto] campana\n[narratore] La campana suona tre volte.\n[effetto] porta\n[invito] tutti';
+
+  it('non sono frasi: eventi nell’ordine giusto, a ogni suddivisione dello streaming', () => {
+    for (const ev of tutteLeSuddivisioni(testo)) {
+      expect(ev.filter((e) => e.tipo !== 'anomalia').map((e) => (e.tipo === 'frase' ? `frase:${e.testo}` : e.tipo === 'umore' || e.tipo === 'effetto' ? `${e.tipo}:${e.tag}` : e.tipo))).toEqual([
+        'umore:inseguimento',
+        'frase:La Bigia scappa.',
+        'effetto:campana',
+        'frase:La campana suona tre volte.',
+        'effetto:porta',
+        'invito',
+      ]);
+      expect(ev.filter((e) => e.tipo === 'anomalia')).toEqual([]);
+    }
+  });
+
+  it('tag tollerante (maiuscole, punteggiatura, virgolette); riga vuota → anomalia', () => {
+    const ev = esegui('[Umore] «Lutto».\n[EFFETTO] tuono!\n[umore]\n[effetto]   \n[narratore] Silenzio.\n[invito] tutti', []);
+    expect(ev.filter((e) => e.tipo === 'umore' || e.tipo === 'effetto').map((e) => (e.tipo === 'umore' || e.tipo === 'effetto' ? [e.tipo, e.tag] : []))).toEqual([
+      ['umore', 'lutto'],
+      ['effetto', 'tuono'],
+    ]);
+    expect(ev.filter((e) => e.tipo === 'anomalia').map((e) => (e.tipo === 'anomalia' ? e.codice : ''))).toEqual(['umore_vuoto', 'effetto_vuoto']);
+  });
+
+  it('a metà riga apre la riga audio (come [orologio]): niente testo letto dopo', () => {
+    const ev = esegui('[narratore] La porta si apre. [effetto] porta\n[invito] tutti', []);
+    expect(frasi(ev)).toEqual([['narratore', 'La porta si apre.', 0]]);
+    expect(ev.find((e) => e.tipo === 'effetto')).toMatchObject({ tag: 'porta' });
+  });
+});

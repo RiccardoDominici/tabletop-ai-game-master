@@ -88,6 +88,11 @@ export interface Battuta {
   riempitivo: boolean;
   /** Campagne con più scene: la battuta vale solo in queste scene (`scena: id` o una lista; vuota = in tutte). */
   scene: string[];
+  /**
+   * Segnali audio quando la battuta esce (docs/audio.md): `umore` (vocabolario chiuso, o `auto`)
+   * cambia la musica; `effetto` (tag, es. campana) parte con la prima riga. null = nessuno.
+   */
+  audio: { umore?: string; effetto?: string } | null;
   /** File di provenienza (per gli errori). */
   file: string;
 }

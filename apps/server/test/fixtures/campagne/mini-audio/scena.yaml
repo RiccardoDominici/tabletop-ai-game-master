@@ -1,0 +1,22 @@
+id: scena_locanda
+nome: "La locanda della prova"
+apertura: "La locanda è piena di fumo. Il locandiere vi guarda: che fate?"
+png_presenti: [png_oste, png_guardia]
+orologi_attivi: [o_temporale]
+musica: {tag: taverna_calda}
+intensita: 2
+mossa_morbida_pronta: "Un ceppo crolla nel camino."
+immagine: {prompt_luogo: "smoky tavern, english prompt"}
+descrizione: "Una sala piena di fumo, con un camino e una botte."
+domanda_drammatica: "L'oste confesserà?"
+elementi_interattivi:
+  - {cosa: "la botte", azioni: "si può aprire"}
+  - {cosa: "la botola", azioni: "scende in cantina. NASCOSTA: non nominarla"}
+indizi:
+  - {id: i_vino_annacquato, conclusione: r_oste, come_si_trova: "Chi assaggia il vino lo trova ANNACQUATO_SEGRETO."}
+  - {id: i_brocca, conclusione: r_oste, come_si_trova: "Chi guarda dietro il banco vede la brocca."}
+taglio: "Si chiude quando l'oste confessa ANNACQUATO_SEGRETO."
+
+# Fixture dell'audio automatico (copia di «mini»): la scena comincia con questo umore della musica.
+audio:
+  umore_iniziale: esplorazione_tesa

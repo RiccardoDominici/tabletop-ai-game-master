@@ -68,7 +68,7 @@ afterAll(async () => {
 describe('audio dal pannello del master', () => {
   it('lo stato del pannello porta musica, umori ed effetti del catalogo', async () => {
     const { stato } = await entraMaster();
-    expect(stato.audio).toEqual({ musica: null, umore: null, umori: ['esplorazione_tesa', 'tensione'], effetti: ['sfx_campana'], ambienti: [] });
+    expect(stato.audio).toEqual({ musica: null, umore: null, umori: ['esplorazione_tesa', 'inseguimento', 'tensione'], effetti: ['sfx_campana', 'sfx_porta'], ambienti: [] });
   });
 
   it('umore: cambia la musica della scena e torna in automatico; un umore senza brano si rifiuta', async () => {
@@ -95,7 +95,7 @@ describe('audio dal pannello del master', () => {
     const alTelefono: string[] = [];
     schermo.on('audio:effetto', (e) => ricevuti.push(e.id));
     telefono.on('audio:effetto', (e) => alTelefono.push(e.id));
-    expect(await comanda(master, { tipo: 'effetto', id: 'sfx_porta' })).toEqual({ ok: false, errore: 'Effetto sconosciuto.' });
+    expect(await comanda(master, { tipo: 'effetto', id: 'sfx_tuono' })).toEqual({ ok: false, errore: 'Effetto sconosciuto.' });
     expect(await comanda(master, { tipo: 'effetto', id: 'sfx_campana' })).toEqual({ ok: true });
     await new Promise((r) => setTimeout(r, 100));
     expect(ricevuti).toEqual(['sfx_campana']);

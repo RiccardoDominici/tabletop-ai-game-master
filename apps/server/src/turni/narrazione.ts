@@ -8,6 +8,11 @@
  * pre-scritta (`p.usa`). Le sue righe entrano nella stessa coda della voce, nello stesso ordine,
  * con l'audio pre-generato. L'uscita del turno (`uscita`) registra in ordine righe pre-scritte,
  * righe improvvisate e `[usa]` rifiutati: serve alla trascrizione e ai conteggi dell'esperimento.
+ *
+ * Audio (docs/audio.md): `[umore]` ed `[effetto]` non si leggono; il segnale si attacca alla frase
+ * che segue (l'effetto parte con lei sul proiettore), e l'audio di una battuta alla sua prima riga.
+ * Un effetto rimasto dopo l'ultima frase suona a voce del turno finita; un umore rimasto si applica
+ * subito (`cueSenzaFrase`). Vocabolario e catalogo li controlla la regia (`audio`).
  */
 import type { Campagna } from '../campagna/tipi';
 import { ID_NARRATORE, NOME_NARRATORE } from '../campagna/tipi';
@@ -16,6 +21,7 @@ import type { EsitoNarrazione, Narratore } from '../llm/tipi';
 import type { MisuratoreTurno } from '../metriche/misure';
 import { ParserNarratore, type EventoNarratore } from '../narrazione/parser';
 import type { FraseDaDire, PipelineVoce } from '../voce/pipeline';
+import type { CueAudio, Risolto } from '../audio/cue';
 
 export interface FraseNarrata {
   etichetta: string;
@@ -39,7 +45,7 @@ export interface RigaPronta {
   chiave_cache: string;
 }
 
-export type EsitoUsaTurno = { ok: true; righe: RigaPronta[]; versione: number } | { ok: false; motivo: string };
+export type EsitoUsaTurno = { ok: true; righe: RigaPronta[]; versione: number; audio?: CueAudio } | { ok: false; motivo: string };
 
 /** Voce dell'uscita del turno, nell'ordine di ascolto. */
 export type VoceUscita =
@@ -91,6 +97,12 @@ export interface ParametriTurno {
   prefissoFrasi?: string;
   /** Anomalie da non registrare (es. l'invito mancante in una risposta di riparazione). */
   ignora?: ReadonlySet<string>;
+  /** Righe [umore]/[effetto]: la regia controlla il tag (vocabolario chiuso, catalogo della campagna). */
+  audio?: { umore(tag: string): Risolto<string | null>; effetto(tag: string): Risolto<string> };
+  /** Un [umore]/[effetto] scartato (tag sconosciuto o assente dal catalogo): per il registro del master. */
+  cueRifiutato?: (tipo: 'umore' | 'effetto', tag: string, motivo: string) => void;
+  /** Un umore scritto dopo l'ultima frase: non ha una frase a cui legarsi, si applica subito. */
+  cueSenzaFrase?: (cue: CueAudio) => void;
 }
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
@@ -124,6 +136,31 @@ export async function narraTurno(
   let usaRifiutati = 0;
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
+  /** Segnale audio in attesa della prossima frase. */
+  let cuePendente: CueAudio | null = null;
+  /** Il segnale per la prossima frase: quello in attesa unito a quello della battuta (che vince). */
+  const prendiCue = (battuta?: CueAudio): CueAudio | undefined => {
+    const c = cuePendente;
+    cuePendente = null;
+    if (!c && !battuta) return undefined;
+    const origine = [c?.origine, battuta?.origine].filter(Boolean).join(' + ');
+    return { ...c, ...battuta, origine };
+  };
+  const cueNarratore = (tipo: 'umore' | 'effetto', tag: string): void => {
+    if (!p.audio) {
+      log.warn({ turno: p.turno, tipo, tag }, 'audio: riga del narratore ignorata (nessun catalogo audio)');
+      return;
+    }
+    const r = tipo === 'umore' ? p.audio.umore(tag) : p.audio.effetto(tag);
+    if (!r.ok) {
+      log.warn({ turno: p.turno, tipo, tag, motivo: r.motivo }, `audio: [${tipo}] ignorato`);
+      p.cueRifiutato?.(tipo, tag, r.motivo);
+      return;
+    }
+    const base: CueAudio = cuePendente ?? { origine: 'narratore' };
+    cuePendente = tipo === 'umore' ? { ...base, umore: r.valore as string | null } : { ...base, effetto: r.valore as string };
+    log.info({ turno: p.turno, tipo, tag, valore: r.valore }, `audio: [${tipo}] per la prossima frase`);
+  };
 
   const accoda = (f: Omit<FraseDaDire, 'id_frase' | 'turno' | 'indice'>): void => {
     p.misuratore.segna('llm_prima_frase', p.ora());
@@ -139,7 +176,8 @@ export async function narraTurno(
         p.onFrase({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice });
         const perVoce = p.pronuncia(e.testo);
         const idFrase = `t${p.turno}-${p.prefissoFrasi ?? 'f'}${indice}`;
-        accoda({ parlante: e.etichetta, nome, voce_id, testo: e.testo, ...(perVoce !== e.testo ? { testo_voce: perVoce } : {}) });
+        const cue = prendiCue();
+        accoda({ parlante: e.etichetta, nome, voce_id, testo: e.testo, ...(perVoce !== e.testo ? { testo_voce: perVoce } : {}), ...(cue ? { cue } : {}) });
         if (rigaAperta && rigaAperta.segmento === e.segmento) {
           rigaAperta.voce.testo += ` ${e.testo}`;
           rigaAperta.voce.frasi!.push(idFrase);
@@ -159,15 +197,19 @@ export async function narraTurno(
           continue;
         }
         uscita.push({ tipo: 'usa', id: e.id, per: e.per, versione: esito.versione, righe: esito.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });
-        for (const r of esito.righe) {
+        for (const [i, r] of esito.righe.entries()) {
           const { voce_id, nome } = voceDi(campagna, r.etichetta);
           p.onFrase({ etichetta: r.etichetta, nome, testo: r.testo, segmento: segmentoBattuta++, indice, battuta: e.id });
-          accoda({ parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: r.testo_voce, chiave_cache: r.chiave_cache });
+          // L'audio della battuta (e un segnale del narratore in attesa) va con la sua prima riga.
+          const cue = i === 0 ? prendiCue(esito.audio) : undefined;
+          accoda({ parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: r.testo_voce, chiave_cache: r.chiave_cache, ...(cue ? { cue } : {}) });
           righePrescritte += 1;
         }
         log.info({ turno: p.turno, battuta: e.id, versione: esito.versione, righe: esito.righe.length }, 'repertorio: battuta uscita');
       } else if (e.tipo === 'orologio') {
         orologi.push(e.id);
+      } else if (e.tipo === 'umore' || e.tipo === 'effetto') {
+        cueNarratore(e.tipo, e.tag);
       } else if (e.tipo === 'invito') {
         invito = e.invitati;
         log.info({ turno: p.turno, invito: e.invitati, grezzo: e.grezzo }, 'narratore: invito');
@@ -180,6 +222,16 @@ export async function narraTurno(
         log[livello]({ turno: p.turno, codice: e.codice, dettaglio: e.dettaglio }, 'narratore: protocollo non rispettato');
       }
     }
+  };
+
+  /** Un segnale rimasto senza frase dopo di sé: effetto a voce finita, umore subito. */
+  const chiudiCue = (): void => {
+    const c = cuePendente;
+    cuePendente = null;
+    if (!c || p.signal.aborted) return;
+    if (c.effetto) pipeline.effettoFineTurno(p.turno, c.effetto);
+    if (c.umore !== undefined) p.cueSenzaFrase?.({ umore: c.umore, origine: c.origine });
+    log.info({ turno: p.turno, ...c }, 'audio: segnale dopo l’ultima frase');
   };
 
   const risultato = (esito: EsitoNarrazione | null, errore: string | null, interrotto: boolean): EsitoTurnoNarrato => ({
@@ -205,6 +257,7 @@ export async function narraTurno(
       },
     );
     gestisci(parser.chiudi());
+    chiudiCue();
     p.misuratore.imposta('llm_fine', p.ora());
     p.misuratore.impostaCosto(esito.costo);
     if (esito.stopReason && esito.stopReason !== 'end_turn') {
@@ -215,7 +268,10 @@ export async function narraTurno(
     const interrotto = p.signal.aborted;
     if (!interrotto) log.error({ turno: p.turno, err: (err as Error).message, nome: (err as Error).name }, 'narratore: chiamata fallita');
     // Le frasi già arrivate sono valide: si chiude il parser per non perdere l'ultima.
-    if (!interrotto) gestisci(parser.chiudi());
+    if (!interrotto) {
+      gestisci(parser.chiudi());
+      chiudiCue();
+    }
     p.misuratore.imposta('llm_fine', p.ora());
     return risultato(null, interrotto ? null : (err as Error).message, interrotto);
   }

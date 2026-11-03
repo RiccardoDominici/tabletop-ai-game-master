@@ -1,0 +1,3 @@
+# Fixture: parole segrete (schema provvisorio, il file vero lo scrive la scena).
+parole:
+  - {parola: "ANNACQUATO_SEGRETO", pubblica_dopo: {indizi_rivelati: [i_vino_annacquato]}}
