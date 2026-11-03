@@ -1,40 +1,79 @@
-# Registro della sessione 1 (lo scrive il server dall'archivio: mai a mano).
-versione: 1
+# Registro della sessione: estratto dall’archivio (sessioni.sqlite) dal server, senza modelli.
+# Ogni voce porta il turno da cui viene. Non si modifica a mano: si rigenera con scripts/registro.sh.
+# Contiene le azioni PRIVATE dei PG: è materiale del master, non dei giocatori.
+# (Fixture dei test: stessa forma di apps/server/src/sessione/registro.ts, RegistroSessione.)
+formato: 1
 campagna: mini
+titolo: "La lanterna della Volpe"
 sessione: 1
-archivio: "2026-11-03T20:00:00Z"
-inizio: "2026-11-03T20:00:00Z"
-fine: "2026-11-03T20:31:00Z"
-turni_totali: 6
-pg: [pg_lia, pg_tobia]
-turni:
+archivio:
+  id: "2026-11-03T20:00:00.000Z"
+  modo: repertorio
+  creata: "2026-11-03T20:00:00.000Z"
+  ultimo_evento: "2026-11-03T20:31:00.000Z"
+  stato: chiusa
+  motivo_chiusura: fine sessione
+  eventi: 41
+  ultimo_turno: 6
+trascrizione: {file: trascrizione.yaml, voci: 5, turni: 4}
+scene:
+  - {id: scena_volpe, titolo: "La locanda della Volpe, prima dell'alba", dal_turno: 1, al_turno: 6, png_presenti: [png_irma, png_bruno]}
+luoghi:
+  - {id: scena_volpe, dal_turno: 1, causa: inizio}
+situazioni: []
+orologi:
+  - id: o_processione
+    nome: La processione aspetta la lanterna
+    segmenti: 4
+    pieni_all_inizio: 0
+    pieni_alla_fine: 4
+    completo: true
+    al_completo: La processione aspetta una risposta.
+    partito: true
+    partito_al_turno: null
+    segni:
+      - {numero: 1, testo: "Fuori, il sacrestano prova la campana, poi si ferma.", turno: 2, causa: narrazione}
+      - {numero: 2, testo: "Qualcuno bussa e chiede se la lanterna è tornata.", turno: 4, causa: narrazione}
+      - {numero: 3, testo: "Il cielo schiarisce dietro il passo, e i lumini si spengono.", turno: 5, causa: narrazione}
+      - {numero: 4, testo: "La processione si raduna davanti alla cappella, senza lanterna.", turno: 6, causa: narrazione}
+    tolti: []
+indizi:
+  - {id: i_bruno_racconta, turno: 3, battuta: bruno_notte_promessa}
+  - {id: i_botte, turno: 5, battuta: nar_botte}
+battute:
+  - {id: bruno_notte_promessa, chi: png_bruno, tipo: confessione, turno: 3}
+  - {id: nar_botte, chi: narratore, tipo: indizio, turno: 5}
+  - {id: fin_ritrovata, chi: narratore, tipo: finale, turno: 6}
+menzogne: []
+fatti_noti:
+  - {id: f_bruno_visto, turno: 3, battuta: bruno_notte_promessa}
+  - {id: f_lanterna_cantina, turno: 5, battuta: nar_botte}
+png_incontrati:
+  - {id: png_bruno, nome: Bruno, primo_turno: 3, ultimo_turno: 3, battute: 1}
+  - {id: png_irma, nome: Irma, primo_turno: 6, ultimo_turno: 6, battute: 1}
+pg:
+  - id: pg_lia
+    nome: Lia
+    azioni_pubbliche: []
+    azioni_private:
+      - {id: a1, turno: 3, testo: "prometto a Bruno che non dirò niente al paese", esito: risolta, motivo: null}
+  - id: pg_tobia
+    nome: Tobia
+    azioni_pubbliche:
+      - {id: a2, turno: 5, testo: "scendo in cantina e apro le botti una per una", esito: risolta, motivo: null}
+      - {id: a3, turno: 6, testo: "chiedo a Irma come pagherà il tetto, adesso", esito: risolta, motivo: null}
+    azioni_private: []
+momenti:
   - turno: 3
-    scena: scena_volpe
-    azioni:
-      - {pg: pg_lia, testo: "prometto a Bruno che non dirò niente al paese", privata: true}
-    voci:
+    cosa: ["battuta bruno_notte_promessa", "indizio i_bruno_racconta", "fatto f_bruno_visto"]
+    azioni: [{id: a1, pg: pg_lia, privata: true}]
+    righe:
       - {chi: narratore, testo: "Bruno posa la pipa e abbassa la voce."}
       - {chi: png_bruno, testo: "Ho visto Irma, a mezzanotte. Scendeva in cantina con un fagotto."}
-    eventi: {battute: [bruno_notte_promessa], indizi: [i_bruno_racconta], fatti_noti: [f_bruno_visto]}
   - turno: 5
-    scena: scena_volpe
-    azioni:
-      - {pg: pg_tobia, testo: "scendo in cantina e apro le botti una per una", privata: false}
-    voci:
+    cosa: ["battuta nar_botte", "indizio i_botte", "fatto f_lanterna_cantina", "segno 3 di o_processione"]
+    azioni: [{id: a2, pg: pg_tobia, privata: false}]
+    righe:
       - {chi: narratore, testo: "Nella botte vuota c'è la lanterna d'argento, avvolta in un sacco."}
-    eventi: {battute: [nar_botte], indizi: [i_botte], fatti_noti: [f_lanterna_cantina]}
-  - turno: 6
-    scena: scena_volpe
-    azioni:
-      - {pg: pg_tobia, testo: "chiedo a Irma come pagherà il tetto, adesso", privata: false}
-    voci:
-      - {chi: png_irma, testo: "Ti giuro che pagherò il tetto, senza il mercante."}
-    eventi: {battute: [fin_ritrovata], orologi: {o_processione: 4}}
-finale:
-  scena: scena_volpe
-  finale: fin_ritrovata
-  orologi: {o_processione: {pieni: 4, segmenti: 4}}
-  indizi: [i_bruno_racconta, i_botte]
-  fatti_noti: [f_bruno_visto, f_lanterna_cantina]
-  menzogne: []
-firma: 17eb89b016baae5c6f973578da8bd081ea252be271bd3660ebda5d26ae698382
+note_del_master: []
+avvisi: []

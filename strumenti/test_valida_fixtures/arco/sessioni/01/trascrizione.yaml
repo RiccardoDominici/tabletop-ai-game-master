@@ -1,0 +1,12 @@
+# Trascrizione pubblica della sessione: ciò che il tavolo ha sentito e visto, turno per turno.
+# Estratta dall’archivio dal server; niente azioni private.
+formato: 1
+campagna: mini
+sessione: 1
+archivio: "2026-11-03T20:00:00.000Z"
+voci:
+  - {turno: 2, tipo: narrazione, chi: narratore, nome: Narratore, testo: "Fuori, il sacrestano prova la campana, poi si ferma."}
+  - {turno: 3, tipo: narrazione, chi: narratore, nome: Narratore, testo: "Bruno posa la pipa e abbassa la voce."}
+  - {turno: 3, tipo: battuta, chi: png_bruno, nome: Bruno, testo: "Ho visto Irma, a mezzanotte. Scendeva in cantina con un fagotto."}
+  - {turno: 5, tipo: narrazione, chi: narratore, nome: Narratore, testo: "Nella botte vuota c'è la lanterna d'argento, avvolta in un sacco."}
+  - {turno: 6, tipo: battuta, chi: png_irma, nome: Irma, testo: "Ti giuro che pagherò il tetto, senza il mercante."}

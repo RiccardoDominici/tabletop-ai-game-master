@@ -525,12 +525,19 @@ def test_stato_fuori_scena_senza_la_regola_che_lo_produce(arco):
     assert "STATO.fonte" in stato_continuita(arco)[0]
 
 
-def test_stato_registro_mancante_o_ritoccato(arco):
-    reg = arco / "sessioni" / "01" / "registro.yaml"
-    reg.write_text(reg.read_text().replace("Bruno posa la pipa", "Bruno posa il bicchiere"))
+def test_stato_registro_o_trascrizione_mancanti(arco):
+    # Il registro lo scrive il server; la trascrizione accanto serve a verificare le citazioni.
+    (arco / "sessioni" / "01" / "trascrizione.yaml").unlink()
     assert "STATO.registro" in stato_continuita(arco)[0]
-    reg.unlink()
+    (arco / "sessioni" / "01" / "registro.yaml").unlink()
     assert "STATO.registro" in stato_continuita(arco)[0]
+
+
+def test_stato_citazione_da_un_azione_privata_del_registro(arco):
+    # Anche le azioni dei PG sono testo del turno: lo stato può citarle (il registro è del master).
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_bruno_parla")["fonte"].update(
+        citazione="prometto a Bruno che non dirò niente"))
+    assert stato_continuita(arco) == (set(), set())
 
 
 def test_stato_superato_da_un_fatto_che_viene_prima(arco):

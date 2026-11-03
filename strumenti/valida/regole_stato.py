@@ -21,7 +21,6 @@ in modo tollerante, e un campo che manca diventa un errore STATO.registro con il
 
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 import re
@@ -35,8 +34,11 @@ from .esito import Esito
 
 log = logging.getLogger(__name__)
 
-# Gli eventi di un turno del registro che un fatto può citare (fonte.evento: {tipo: id}).
+# Gli eventi del registro che un fatto può citare (fonte.evento: {tipo: id}) → la sezione del registro
+# (apps/server/src/sessione/registro.ts, RegistroSessione): ogni voce ha il suo turno.
 EVENTI = {"battuta": "battute", "indizio": "indizi", "fatto": "fatti_noti", "menzogna": "menzogne", "orologio": "orologi"}
+FORMATO_REGISTRO = 1      # registro.ts, FORMATO_REGISTRO
+FILE_TRASCRIZIONE = "trascrizione.yaml"
 STATI_PROMESSA = {"aperta", "mantenuta", "tradita", "sciolta"}
 STATI_FILO = {"aperto", "chiuso"}
 STATI_ATTEGGIAMENTO = {"ostile", "indifferente", "amichevole"}
@@ -45,11 +47,43 @@ FUORI_SCENA = 10 ** 9      # ordine di un fatto «tra le sessioni»: dopo tutti 
 
 @dataclass
 class Registro:
+    """Il registro di una sessione come lo scrive il server (registro.yaml + trascrizione.yaml accanto)."""
     numero: int
     percorso: Path
-    turni: dict[int, dict]
-    finale: dict
     dati: dict
+    trascrizione: dict
+
+    def ultimo_turno(self) -> int:
+        return int((self.dati.get("archivio") or {}).get("ultimo_turno") or 0)
+
+    def turni(self) -> set[int]:
+        """I turni giocati: da 1 all'ultimo dell'archivio, più quelli che compaiono nella trascrizione."""
+        voci = {v.get("turno") for v in self.trascrizione.get("voci") or [] if isinstance(v, dict)}
+        return set(range(1, self.ultimo_turno() + 1)) | {t for t in voci if isinstance(t, int)}
+
+    def testi(self, turno: int) -> list[str]:
+        """Ciò che si è detto e scritto in un turno, alla lettera: voci pubbliche, righe dei momenti, azioni dei PG."""
+        out = [str(v.get("testo", "")) for v in self.trascrizione.get("voci") or [] if isinstance(v, dict) and v.get("turno") == turno]
+        for m in self.dati.get("momenti") or []:
+            if isinstance(m, dict) and m.get("turno") == turno:
+                out += [str(r.get("testo", "")) for r in m.get("righe") or [] if isinstance(r, dict)]
+        for pg in self.dati.get("pg") or []:
+            for chiave in ("azioni_pubbliche", "azioni_private"):
+                out += [str(a.get("testo", "")) for a in (pg or {}).get(chiave) or [] if isinstance(a, dict) and a.get("turno") == turno]
+        return out
+
+    def eventi(self, tipo: str, turno: int) -> set[str]:
+        """Gli id di un tipo di evento in un turno (per gli orologi: quelli con un segno in quel turno)."""
+        if tipo == "orologio":
+            return {o.get("id") for o in self.dati.get("orologi") or [] if isinstance(o, dict)
+                    and any(isinstance(s, dict) and s.get("turno") == turno for s in o.get("segni") or [])}
+        return {v.get("id") for v in self.dati.get(EVENTI[tipo]) or [] if isinstance(v, dict) and v.get("turno") == turno}
+
+    def pieni_alla_fine(self, oid: str) -> int | None:
+        return next((o.get("pieni_alla_fine") for o in self.dati.get("orologi") or [] if isinstance(o, dict) and o.get("id") == oid), None)
+
+    def fatti_noti(self) -> set[str]:
+        return {v.get("id") for v in self.dati.get("fatti_noti") or [] if isinstance(v, dict)}
 
 
 @dataclass
@@ -84,25 +118,17 @@ def carica_registri(c: Campagna, e: Esito) -> dict[int, Registro]:
             continue
         d = _yaml(f)
         dove = f"sessioni/{cartella.name}/registro.yaml"
-        if d.get("sessione") not in (None, n):
-            e.errore("STATO.registro", dove, f"dice sessione {d.get('sessione')}, ma sta nella cartella {cartella.name}")
-        firma = d.get("firma")
-        if firma:
-            senza = {k: v for k, v in d.items() if k != "firma"}
-            calcolata = hashlib.sha256(json.dumps(senza, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
-            if calcolata != firma:
-                e.errore("STATO.registro", dove, "la firma non torna: il registro è stato modificato a mano (lo scrive solo il server)")
-        turni = {}
-        for t in d.get("turni") or []:
-            if isinstance(t, dict) and isinstance(t.get("turno"), int):
-                turni[t["turno"]] = t
-        out[n] = Registro(n, f, turni, d.get("finale") or {}, d)
+        if d.get("sessione") != n:
+            e.errore("STATO.registro", dove, f"dice sessione {d.get('sessione')!r}, ma sta nella cartella {cartella.name}")
+        if d.get("formato") != FORMATO_REGISTRO:
+            e.avviso("STATO.registro", dove, f"formato {d.get('formato')!r}: il validatore legge il formato {FORMATO_REGISTRO}")
+        if d.get("campagna") not in (None, c.cartella.name, (c.campagna or {}).get("id")):
+            e.errore("STATO.registro", dove, f"è il registro della campagna {d.get('campagna')!r}")
+        file_trascrizione = cartella / str((d.get("trascrizione") or {}).get("file") or FILE_TRASCRIZIONE)
+        if not file_trascrizione.exists():
+            e.errore("STATO.registro", dove, f"manca {file_trascrizione.name}: senza, le citazioni non si possono verificare")
+        out[n] = Registro(n, f, d, _yaml(file_trascrizione) if file_trascrizione.exists() else {})
     return out
-
-
-def testi_del_turno(t: dict) -> list[str]:
-    """Ciò che si è detto e scritto in un turno: voci pubbliche e azioni dei PG, alla lettera."""
-    return [str(v.get("testo", "")) for k in ("voci", "azioni") for v in t.get(k) or [] if isinstance(v, dict)]
 
 
 def _ordine(fonte: dict) -> tuple[int, int]:
@@ -157,15 +183,14 @@ def _fonte(e: Esito, dove: str, fonte, registri: dict[int, Registro], dopo: int,
         e.errore("STATO.fonte", dove, f"sessione {n!r} senza registro (sessioni/{n:02d}/registro.yaml)" if isinstance(n, int)
                  else "fonte senza sessione")
         return False
-    t = reg.turni.get(turno) if isinstance(turno, int) else None
-    if t is None:
+    if not isinstance(turno, int) or turno not in reg.turni():
         e.errore("STATO.fonte", dove, f"il registro della sessione {n} non ha il turno {turno!r}")
         return False
     citazione, evento = fonte.get("citazione"), fonte.get("evento")
     if not citazione and not evento:
         e.errore("STATO.fonte", dove, "la fonte cita il turno con una citazione esatta o con un evento del registro")
         return False
-    if citazione and not any(str(citazione) in testo for testo in testi_del_turno(t)):
+    if citazione and not any(str(citazione) in testo for testo in reg.testi(turno)):
         e.errore("STATO.fonte", dove, f"«{str(citazione)[:60]}» non è nel turno {turno} della sessione {n}: la fonte non lo dice")
         return False
     if evento:
@@ -173,7 +198,7 @@ def _fonte(e: Esito, dove: str, fonte, registri: dict[int, Registro], dopo: int,
             e.errore("STATO.fonte", dove, f"evento nella forma {{tipo: id}} con tipo tra {sorted(EVENTI)}")
             return False
         tipo, ident = next(iter(evento.items()))
-        if ident not in ((t.get("eventi") or {}).get(EVENTI[tipo]) or []):
+        if ident not in reg.eventi(tipo, turno):
             e.errore("STATO.fonte", dove, f"nel turno {turno} della sessione {n} non c'è l'evento {tipo} {ident}")
             return False
     return True
@@ -296,9 +321,9 @@ def _fonte_orologio(e: Esito, dove: str, o: dict, registri: dict[int, Registro],
     if reg is None:
         e.errore("STATO.fonte", dove, f"sessione {fonte.get('sessione')!r} senza registro")
         return False
-    finale = ((reg.finale.get("orologi") or {}).get(oid) or {})
-    if finale.get("pieni") != o["pieni"]:
-        e.errore("STATO.orologio", dove, f"{o['pieni']} segni, ma alla fine della sessione {reg.numero} il registro ne dice {finale.get('pieni')}")
+    alla_fine = reg.pieni_alla_fine(oid)
+    if alla_fine != o["pieni"]:
+        e.errore("STATO.orologio", dove, f"{o['pieni']} segni, ma alla fine della sessione {reg.numero} il registro ne dice {alla_fine}")
         return False
     return True
 
@@ -336,7 +361,7 @@ def _continuita(c: Campagna, e: Esito, stato: dict, fatti: list[dict], dopo: int
     d = deriva(fatti)
     # Ciò che i PG hanno saputo dai registri: i fatti resi noti in gioco, deterministici.
     for reg in registri.values():
-        d.saputi_dai_pg |= set(reg.finale.get("fatti_noti") or [])
+        d.saputi_dai_pg |= reg.fatti_noti()
     nome = pac["nome"]
     morti = {pid for pid, p in d.png.items() if p.get("vivo") is False}
     for sid, s in pac["scene"]:

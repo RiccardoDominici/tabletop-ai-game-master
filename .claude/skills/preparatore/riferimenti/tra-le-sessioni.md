@@ -78,26 +78,16 @@ Lo **stato derivato** (PNG vivi o morti, dove sono, verso chi sono amichevoli, c
 fili; ciò che i PG sanno) si ricava applicando gli `effetti` dei fatti non superati nell'ordine delle loro fonti.
 Non si scrive a parte: così ogni cambiamento ha la sua prova.
 
-## sessioni/<nn>/registro.yaml (forma da allineare con il server, fase D2)
-Ciò che il validatore legge, e chiede al server di scrivere:
-```yaml
-versione: 1
-campagna: mini
-sessione: 1                          # = la cartella sessioni/01
-turni:
-  - turno: 3
-    scena: scena_volpe
-    azioni: [{pg: pg_lia, testo: "…alla lettera…", privata: true}]
-    voci: [{chi: png_bruno, testo: "…alla lettera, come è stato detto…"}]
-    eventi: {battute: [bruno_notte_promessa], indizi: [i_bruno_racconta], fatti_noti: [f_bruno_visto],
-             menzogne: [], orologi: {o_processione: 2}}
-finale:                              # l'ultima fotografia
-  orologi: {o_processione: {pieni: 4, segmenti: 4}}
-  indizi: [...]
-  fatti_noti: [...]
-  finale: fin_ritrovata
-firma: <sha256 del contenuto senza firma>   # facoltativa: rivela un registro ritoccato
-```
+## sessioni/<nn>/registro.yaml e trascrizione.yaml (li scrive il server)
+La forma è quella di `apps/server/src/sessione/registro.ts` (`RegistroSessione`, formato 1). Il validatore legge:
+- `sessione` (= la cartella `sessioni/<nn>`), `campagna`, `formato`, `archivio.ultimo_turno` (i turni giocati);
+- `indizi`, `battute`, `menzogne`, `fatti_noti`: voci `{id, turno, …}`, gli eventi che un fatto può citare;
+- `orologi[]`: `pieni_alla_fine` (lo stato a fine sessione) e `segni[].turno` (l'evento «orologio»);
+- i testi di un turno, alla lettera, per le citazioni: `trascrizione.yaml → voci[]` di quel turno,
+  `momenti[].righe` di quel turno, `pg[].azioni_pubbliche` e `azioni_private` di quel turno.
+
+Il registro contiene le azioni private: è materiale del master. Non si ritocca: si rigenera dall'archivio
+(`scripts/tra-sessioni.sh` controlla che i file nella campagna siano quelli che l'archivio darebbe).
 
 ## sessioni/<nn>/ (il pacchetto, per ciò che CONTINUITÀ legge)
 `sessione.yaml` con `riassunto_iniziale`, `scene` (in ordine), `orologi` (come in campagna.yaml, con
