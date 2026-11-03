@@ -131,10 +131,10 @@ def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, 
             e = motore.genera(r.prompt, s, gl, ga, Path(tmp) / f"{r.id}.png", riferimenti=rif)
             with Image.open(e.percorso) as png:
                 img, rifilato = png.convert("RGB"), 0.0
-            # Solo le immagini a tutto schermo: l'orlo bianco sul nero del proiettore abbaglia.
-            # I ritratti hanno il fondo scuro pieno e stanno in un riquadro: non si toccano.
-            if r.tipo in ("luogo", "situazione"):
-                img, rifilato = rifila(img)
+            # Tutti i tipi: l'orlo bianco abbaglia sul proiettore, e i ritratti con lo sfondo dipinto
+            # (ponte-lanterne) hanno lo stesso orlo strappato. Su un fondo scuro pieno rifila() non
+            # trova carta e non tocca niente.
+            img, rifilato = rifila(img)
             salva_jpeg(img, dest / r.file, qualita=QUALITA_JPEG, dimensioni=(r.larghezza, r.altezza))
             kb = (dest / r.file).stat().st_size / 1000
             man.registra({
@@ -162,7 +162,9 @@ def rifila_esistenti(cartella: Path, scelte: list[Richiesta], man: Manifest) -> 
 
     for r in scelte:
         voce = man.voci.get(r.id)
-        if r.alias_di or r.tipo not in ("luogo", "situazione") or not voce or "rifilato_pct" in voce:
+        # Si salta solo ciò che è già stato rifilato davvero: uno 0 può voler dire «mai controllato»
+        # (i ritratti, prima che si rifilassero anche loro), e ricontrollare un'immagine pulita non la tocca.
+        if r.alias_di or not voce or voce.get("rifilato_pct"):
             continue
         percorso = man.cartella / voce["file"]
         if not percorso.exists():
