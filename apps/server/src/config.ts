@@ -6,7 +6,7 @@
  */
 import path from 'node:path';
 import { PORTA_SERVER, PORTA_VOCE } from '@cantastorie/shared';
-import { CARTELLA_LOG, RADICE_REPO } from './percorsi';
+import { CARTELLA_LOG, CARTELLA_WEB_DIST, RADICE_REPO } from './percorsi';
 import { tokenDaConfig } from './master/token';
 
 /** Quale motore vocale usare: il servizio locale, il finto, o scegliere da solo. */
@@ -37,6 +37,11 @@ export interface ConfigServer {
   cacheAudio: string;
   /** Immagini della campagna (manifest.json + file); default campagne/<id>/immagini. */
   cartellaImmagini: string;
+  /**
+   * Pagine web compilate da servire (CANTASTORIE_WEB; default apps/web/dist). Un'istanza di prova su
+   * un'altra porta ha la sua build: ricompilare apps/web/dist cambierebbe le pagine della partita vera.
+   */
+  cartellaWeb: string;
   /** Audio della campagna (manifest.json + file, docs/audio.md); default campagne/<id>/audio. */
   cartellaAudio: string;
 
@@ -120,6 +125,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     cacheAudio: testo(env['CANTASTORIE_CACHE_AUDIO']) ?? path.join(RADICE_REPO, 'cache', 'audio'),
     // I percorsi relativi valgono dalla radice del repo (il server gira in apps/server).
     cartellaImmagini: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_IMMAGINI']) ?? path.join(cartellaCampagna, 'immagini')),
+    cartellaWeb: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_WEB']) ?? CARTELLA_WEB_DIST),
     cartellaAudio: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_AUDIO']) ?? path.join(cartellaCampagna, 'audio')),
     llm: {
       modo: scelta(env['CANTASTORIE_LLM'], ['haiku', 'finto'] as const, 'haiku'),

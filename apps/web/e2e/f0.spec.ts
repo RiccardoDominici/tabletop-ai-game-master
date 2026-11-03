@@ -10,6 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Browser, type Page } from '@playwright/test';
+import { CARTELLA_LOG } from './percorsi';
 
 // Ogni prova chiude i contesti che ha aperto col browser condiviso, anche se fallisce: un proiettore
 // rimasto collegato farebbe ripartire la scena (e suonerebbe l'audio) nella prova successiva.
@@ -19,7 +20,7 @@ test.afterEach(async ({ browser }) => {
 
 const RADICE = path.resolve(import.meta.dirname, '..', '..', '..');
 const SCREENSHOT = path.join(RADICE, 'logs', 'screenshots');
-const TURNI_JSONL = path.join(RADICE, 'logs', 'turni.jsonl');
+const TURNI_JSONL = path.join(CARTELLA_LOG, 'turni.jsonl');
 const TURNI = Number(process.env.E2E_TURNI ?? 1);
 const CAMPI = [
   'finestra_ms',

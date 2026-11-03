@@ -1,6 +1,6 @@
 /**
  * E2E delle campagne con più scene (campagne/ponte-lanterne) dal pannello del master: server con
- *   CANTASTORIE_CAMPAGNA=ponte-lanterne CANTASTORIE_MODO=repertorio CANTASTORIE_LLM=finto scripts/avvio.sh --mock
+ *   CANTASTORIE_PORTA=4710 CANTASTORIE_CAMPAGNA=ponte-lanterne CANTASTORIE_MODO=repertorio CANTASTORIE_LLM=finto scripts/avvio.sh --mock
  *   npx playwright test -c apps/web/playwright.config.ts scene
  *
  * Il master passa dal ponte al Borgo Basso e poi alla Casa del Sale: il proiettore cambia titolo e
@@ -11,13 +11,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
+import { CARTELLA_LOG } from './percorsi';
 
 const RADICE = path.resolve(import.meta.dirname, '..', '..', '..');
 const SCREENSHOT = path.join(RADICE, 'logs', 'screenshots');
 const salute = async (p: Page) => (await (await p.request.get('/api/salute')).json()) as { fase: string; campagna: string };
 
 function linkMaster(): string {
-  const out = fs.readFileSync(path.join(RADICE, 'logs', 'server.out'), 'utf8');
+  const out = fs.readFileSync(path.join(CARTELLA_LOG, 'server.out'), 'utf8');
   const riga = out.slice(out.lastIndexOf('=== avvio')).split('\n').filter((r) => r.includes('"PANNELLO MASTER"')).at(-1);
   if (!riga) throw new Error('riga PANNELLO MASTER non trovata in logs/server.out');
   return (JSON.parse(riga) as { master: string }).master.replace(/^http:\/\/localhost:\d+/, '');

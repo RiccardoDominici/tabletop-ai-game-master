@@ -13,11 +13,16 @@
 # Il narratore è sempre Haiku vero (la chiave la legge apps/server/src/llm/chiave.ts).
 # Server: variabili CANTASTORIE_CAMPAGNA e CANTASTORIE_MODO (vedi apps/server/src/config.ts).
 # Log: logs/partita.out (questo avvio), logs/server.out, logs/server.jsonl, logs/voce.out.
+#
+# Prova mentre si gioca: CANTASTORIE_PORTA=4710 scripts/partita.sh ponte-lanterne avvia una partita di
+# prova su quella porta (log e pagine in logs/porta-4710/, voce finta) senza toccare la partita vera
+# su 4610 né la voce su 4611 (vedi scripts/avvio.sh).
 set -euo pipefail
 
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
-DIR_LOG="$RADICE/logs"
-PORTA=4610
+PORTA="${CANTASTORIE_PORTA:-4610}"
+export CANTASTORIE_PORTA="$PORTA"
+if [[ "$PORTA" == "4610" ]]; then DIR_LOG="$RADICE/logs"; else DIR_LOG="$RADICE/logs/porta-$PORTA"; fi
 
 uso() {
   echo "uso: scripts/partita.sh <campagna> [--modo A|B] [--voce finta|qwen]"
@@ -38,6 +43,10 @@ while [[ $# -gt 0 ]]; do
 done
 case "$MODO" in A|a) MODO_SERVER="improvvisa"; MODO="A" ;; B|b) MODO_SERVER="repertorio"; MODO="B" ;; *) echo "--modo vuole A o B"; uso ;; esac
 case "$VOCE" in finta|qwen) ;; *) echo "--voce vuole finta o qwen"; uso ;; esac
+if [[ "$PORTA" != "4610" && "$VOCE" == "qwen" ]]; then
+  echo "Su una porta di prova la voce è sempre finta: il servizio voce (4611) è della partita vera."
+  exit 2
+fi
 
 CARTELLA="$RADICE/campagne/$CAMPAGNA"
 if [[ ! -d "$CARTELLA" ]]; then
@@ -69,7 +78,11 @@ if [[ "$VOCE" == "qwen" ]]; then
   fi
   OPZIONI_AVVIO=(--tieni-voce)
 else
-  echo "2/4  Voce finta: fermo l'eventuale servizio voce."
+  if [[ "$PORTA" == "4610" ]]; then
+    echo "2/4  Voce finta: fermo l'eventuale servizio voce."
+  else
+    echo "2/4  Voce finta (partita di prova su :$PORTA: voce e partita vera non si toccano)."
+  fi
   "$RADICE/scripts/arresto.sh" > /dev/null
   OPZIONI_AVVIO=(--mock)
 fi
@@ -112,5 +125,5 @@ cat <<FINE
   PANNELLO DEL MASTER (solo su questo Mac, non darlo ai giocatori):
       ${master:-vedi la riga PANNELLO MASTER in logs/server.out}
 
-  Per finire:  scripts/arresto.sh
+  Per finire:  $( [[ "$PORTA" == "4610" ]] && echo "scripts/arresto.sh" || echo "CANTASTORIE_PORTA=$PORTA scripts/arresto.sh" )
 FINE

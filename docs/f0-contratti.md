@@ -26,6 +26,12 @@ logs               log JSONL (fuori da git)
 | server (API + Socket.IO + pagine web compilate) | 4610 | 0.0.0.0 (i telefoni arrivano dalla LAN) |
 | servizio voce | 4611 | 127.0.0.1 (solo il server lo chiama) |
 | Vite dev (solo sviluppo, proxy verso 4610) | 4612 | 0.0.0.0 |
+| istanza di prova (e2e mentre si gioca): `CANTASTORIE_PORTA=4710 scripts/avvio.sh` | 4710 (o altra) | 0.0.0.0 |
+
+Un'istanza di prova non tocca la partita vera: log e pagine compilate in `logs/porta-<porta>/` (apps/web/dist
+non si ricompila), voce sempre finta (il servizio su 4611 resta della partita), arresto con
+`CANTASTORIE_PORTA=<porta> scripts/arresto.sh` (ferma solo quella porta). Le prove Playwright puntano per
+default alla 4710 (`apps/web/e2e/percorsi.ts`; altre porte con `E2E_PORTA`).
 
 ## Servizio voce (HTTP, 127.0.0.1:4611)
 

@@ -1,6 +1,6 @@
 /**
  * E2E dell'immagine di situazione dopo la rivelazione, col selettore Haiku VERO (modalità B):
- *   CANTASTORIE_MODO=repertorio CANTASTORIE_ARBITRO=regole CANTASTORIE_IMMAGINI=<cartella con
+ *   CANTASTORIE_PORTA=4710 CANTASTORIE_MODO=repertorio CANTASTORIE_ARBITRO=regole CANTASTORIE_IMMAGINI=<cartella con
  *   situazione_png_sebastiano_senza_cappuccio> scripts/avvio.sh --mock
  *   npx playwright test -c apps/web/playwright.config.ts situazione
  *
@@ -13,6 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
+import { CARTELLA_LOG } from './percorsi';
 
 const RADICE = path.resolve(import.meta.dirname, '..', '..', '..');
 const SCREENSHOT = path.join(RADICE, 'logs', 'screenshots');
@@ -20,7 +21,7 @@ const SITUAZIONE = 'situazione_png_sebastiano_senza_cappuccio';
 const salute = async (p: Page) => (await (await p.request.get('/api/salute')).json()) as { fase: string; turno: number; modo: string; narratore: string };
 
 function linkMaster(): string {
-  const out = fs.readFileSync(path.join(RADICE, 'logs', 'server.out'), 'utf8');
+  const out = fs.readFileSync(path.join(CARTELLA_LOG, 'server.out'), 'utf8');
   const riga = out.slice(out.lastIndexOf('=== avvio')).split('\n').filter((r) => r.includes('"PANNELLO MASTER"')).at(-1);
   if (!riga) throw new Error('riga PANNELLO MASTER non trovata in logs/server.out');
   return (JSON.parse(riga) as { master: string }).master.replace(/^http:\/\/localhost:\d+/, '');
@@ -28,7 +29,7 @@ function linkMaster(): string {
 
 /** Battute uscite nell'ultimo turno narrato (logs/narrazioni.jsonl). */
 function battuteDelTurno(turno: number): string[] {
-  const righe = fs.readFileSync(path.join(RADICE, 'logs', 'narrazioni.jsonl'), 'utf8').trim().split('\n').map((r) => JSON.parse(r) as { tipo: string; turno: number; uscita?: Array<{ tipo: string; id?: string }> });
+  const righe = fs.readFileSync(path.join(CARTELLA_LOG, 'narrazioni.jsonl'), 'utf8').trim().split('\n').map((r) => JSON.parse(r) as { tipo: string; turno: number; uscita?: Array<{ tipo: string; id?: string }> });
   const r = righe.filter((x) => x.tipo === 'turno' && x.turno === turno).at(-1);
   return (r?.uscita ?? []).filter((u) => u.tipo === 'usa').map((u) => u.id!);
 }

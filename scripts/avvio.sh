@@ -8,12 +8,28 @@
 #   --finto       narratore a copione (CANTASTORIE_LLM=finto): nessuna chiamata ad Anthropic
 # Le altre variabili CANTASTORIE_* dell'ambiente passano al server (vedi apps/server/src/config.ts).
 #
+# Istanza di prova (e2e mentre si gioca): CANTASTORIE_PORTA=4710 scripts/avvio.sh --finto
+#   - server su quella porta, log in logs/porta-<porta>/, pagine compilate in logs/porta-<porta>/web
+#     (apps/web/dist, che serve la partita vera, non si ricompila);
+#   - voce sempre finta: il servizio voce su 4611 e il server su 4610 non si toccano;
+#   - si ferma con: CANTASTORIE_PORTA=4710 scripts/arresto.sh
+#
 # Log: logs/server.out (leggibile), logs/server.jsonl (strutturato), logs/turni.jsonl, logs/costi.jsonl
 set -euo pipefail
 
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
-DIR_LOG="$RADICE/logs"
-PORTA=4610
+PORTA="${CANTASTORIE_PORTA:-4610}"
+PROVA=0
+if [[ "$PORTA" != "4610" ]]; then
+  case "$PORTA" in 4611|4612) echo "porta $PORTA riservata (voce, Vite): scegline un'altra" >&2; exit 2 ;; esac
+  PROVA=1
+  DIR_LOG="$RADICE/logs/porta-$PORTA"
+  export CANTASTORIE_LOG="$DIR_LOG"
+  export CANTASTORIE_WEB="$DIR_LOG/web"
+else
+  DIR_LOG="$RADICE/logs"
+fi
+export PORT="$PORTA"
 MOCK=0; TIENI_VOCE=0; FINTO=0
 for a in "$@"; do
   case "$a" in
@@ -26,11 +42,14 @@ done
 mkdir -p "$DIR_LOG"
 cd "$RADICE"
 
-# 1. Istanze precedenti: server e Vite sempre; la voce solo se la riavviamo.
-"$RADICE/scripts/arresto.sh" --lascia-voce
+# 1. Istanze precedenti: server e Vite sempre; la voce solo se la riavviamo. (In prova: solo la sua porta.)
+CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" --lascia-voce
 
-# 2. Servizio voce.
-if [[ "$MOCK" == "1" ]]; then
+# 2. Servizio voce. In prova sempre finta: la voce su 4611 è della partita vera.
+if [[ "$PROVA" == "1" ]]; then
+  export CANTASTORIE_TTS=mock
+  echo "voce: finta (istanza di prova su :$PORTA)"
+elif [[ "$MOCK" == "1" ]]; then
   export CANTASTORIE_TTS=mock
   echo "voce: finta (--mock)"
 elif [[ -x "$RADICE/scripts/voce-avvio.sh" ]]; then
@@ -45,7 +64,13 @@ fi
 
 # 3. Pagine web.
 echo "web: compilo le pagine…"
-npm run build --silent >> "$DIR_LOG/build.out" 2>&1 || { echo "web: compilazione fallita, vedi logs/build.out"; tail -n 20 "$DIR_LOG/build.out"; exit 1; }
+if [[ "$PROVA" == "1" ]]; then
+  # Build a parte: apps/web/dist serve la partita vera e non va toccata.
+  npm run build --silent -w @cantastorie/web -- --outDir "$CANTASTORIE_WEB" --emptyOutDir >> "$DIR_LOG/build.out" 2>&1 \
+    || { echo "web: compilazione fallita, vedi $DIR_LOG/build.out"; tail -n 20 "$DIR_LOG/build.out"; exit 1; }
+else
+  npm run build --silent >> "$DIR_LOG/build.out" 2>&1 || { echo "web: compilazione fallita, vedi logs/build.out"; tail -n 20 "$DIR_LOG/build.out"; exit 1; }
+fi
 
 # 4. Server. Le variabili ANTHROPIC_* della shell puntano a un proxy locale: non devono arrivare
 #    al server (che fissa comunque baseURL e le toglie dal proprio ambiente).
@@ -88,4 +113,4 @@ echo "Cantastorie pronto (pid $PID) — $salute"
 echo "  Telefoni:   $telefono"
 echo "  Proiettore: http://localhost:$PORTA/schermo   (premi «Inizia sessione»)"
 echo "  Master:     ${master:-vedi la riga PANNELLO MASTER in logs/server.out}   (solo su questo Mac)"
-echo "  Arresto:    scripts/arresto.sh"
+if [[ "$PROVA" == "1" ]]; then echo "  Arresto:    CANTASTORIE_PORTA=$PORTA scripts/arresto.sh   (istanza di prova)"; else echo "  Arresto:    scripts/arresto.sh"; fi

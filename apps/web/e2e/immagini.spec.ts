@@ -1,6 +1,6 @@
 /**
  * E2E delle immagini sul proiettore: server avviato con le immagini di prova
- *   CANTASTORIE_LLM=finto CANTASTORIE_IMMAGINI=apps/server/test/fixtures/immagini scripts/avvio.sh --mock
+ *   CANTASTORIE_PORTA=4710 CANTASTORIE_LLM=finto CANTASTORIE_IMMAGINI=apps/server/test/fixtures/immagini scripts/avvio.sh --mock
  * Immagine del luogo a tutto schermo, ritratto del PNG accanto al sottotitolo, dissolvenza al
  * cambio di luogo, ritorno allo sfondo d'atmosfera se l'immagine manca. Screenshot 1920x1080 in
  * logs/screenshots/immagini-*.png; nessun errore in console.

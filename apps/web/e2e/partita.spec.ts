@@ -1,6 +1,6 @@
 /**
  * Prova «come un utente» della serata: server avviato con lo script della partita
- *   scripts/partita.sh ponte-lanterne            (modo B, voce finta, Haiku VERO)
+ *   CANTASTORIE_PORTA=4710 scripts/partita.sh ponte-lanterne            (modo B, voce finta, Haiku VERO)
  *   npx playwright test -c apps/web/playwright.config.ts partita
  *
  * Proiettore + due telefoni (390x844) + pannello del master, aperti con gli indirizzi che lo script
@@ -11,6 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Browser, type Page } from '@playwright/test';
+import { CARTELLA_LOG } from './percorsi';
 
 const RADICE = path.resolve(import.meta.dirname, '..', '..', '..');
 const SCREENSHOT = path.join(RADICE, 'logs', 'screenshots');
@@ -21,7 +22,7 @@ test.afterEach(async ({ browser }) => {
 
 /** Indirizzo stampato da scripts/partita.sh (riga «  PANNELLO…» seguita dal link). */
 function linkMasterDallaPartita(): string {
-  const out = fs.readFileSync(path.join(RADICE, 'logs', 'partita.out'), 'utf8');
+  const out = fs.readFileSync(path.join(CARTELLA_LOG, 'partita.out'), 'utf8');
   const riga = out.split('\n').find((r) => r.startsWith('  Master:'));
   if (!riga) throw new Error('logs/partita.out senza il link del master: avvia scripts/partita.sh');
   return riga.trim().split(/\s+/)[1]!.replace(/^http:\/\/localhost:\d+/, '');
@@ -64,7 +65,7 @@ test('serata: proiettore, due telefoni e master; due turni e un cambio di scena'
   await expect(master.getByTestId('pagina-master')).toHaveAttribute('data-entrata', 'dentro', { timeout: 10_000 });
 
   const info = (await (await schermo.request.get('/api/info')).json()) as { url_telefono: string };
-  expect(info.url_telefono).toMatch(/^http:\/\/\d+\.\d+\.\d+\.\d+:4610\/telefono$/);
+  expect(info.url_telefono).toMatch(/^http:\/\/\d+\.\d+\.\d+\.\d+:\d+\/telefono$/);
   const dalia = await telefono(browser, info.url_telefono, 'dalia', errori);
   await dalia.getByTestId('scelta-pg-pg_dalia').click();
   const arrigo = await telefono(browser, info.url_telefono, 'arrigo', errori);

@@ -1,7 +1,7 @@
 /**
  * E2E del pannello del master (docs/architettura.md, «Pannello master»): pannello + proiettore +
  * due telefoni sul server vero. Server avviato con le immagini della campagna e voce finta:
- *   CANTASTORIE_LLM=finto scripts/avvio.sh --mock          (oppure col narratore Haiku vero)
+ *   CANTASTORIE_PORTA=4710 CANTASTORIE_LLM=finto scripts/avvio.sh --mock          (oppure col narratore Haiku vero)
  *   npx playwright test -c apps/web/playwright.config.ts master
  *
  * Il token si legge dal log del server (riga «PANNELLO MASTER» dell'ultimo avvio), come farebbe il
@@ -15,10 +15,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Browser, type Page } from '@playwright/test';
+import { CARTELLA_LOG } from './percorsi';
 
 const RADICE = path.resolve(import.meta.dirname, '..', '..', '..');
 const SCREENSHOT = path.join(RADICE, 'logs', 'screenshots');
-const LOG_SERVER = path.join(RADICE, 'logs', 'server.jsonl');
+const LOG_SERVER = path.join(CARTELLA_LOG, 'server.jsonl');
 const NOTA = 'Ogni frase al massimo otto parole.';
 
 type Debug = { immagine: string | null; transizioni: number };
@@ -27,7 +28,7 @@ const salute = async (p: Page) => (await (await p.request.get('/api/salute')).js
 
 /** Link del pannello dall'ultimo avvio in logs/server.out (il token cambia a ogni avvio). */
 function linkMaster(): string {
-  const out = fs.readFileSync(path.join(RADICE, 'logs', 'server.out'), 'utf8');
+  const out = fs.readFileSync(path.join(CARTELLA_LOG, 'server.out'), 'utf8');
   const ultimo = out.slice(out.lastIndexOf('=== avvio'));
   const riga = ultimo.split('\n').filter((r) => r.includes('"PANNELLO MASTER"')).at(-1);
   if (!riga) throw new Error('riga PANNELLO MASTER non trovata in logs/server.out');

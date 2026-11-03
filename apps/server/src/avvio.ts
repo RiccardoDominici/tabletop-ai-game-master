@@ -16,7 +16,6 @@ import { NarratoreFinto } from './llm/finto';
 import { NarratoreHaiku } from './llm/haiku';
 import type { Narratore } from './llm/tipi';
 import { RegistroJsonl } from './metriche/jsonl';
-import { CARTELLA_WEB_DIST } from './percorsi';
 import { creaInfoServer } from './rete';
 import { Regia } from './scena/regia';
 import { caricaRepertorio } from './repertorio/caricatore';
@@ -124,7 +123,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
 
   const immagini = new CatalogoImmagini(config.cartellaImmagini, log.child({ modulo: 'immagini' }));
   const audio = new CatalogoAudio(config.cartellaAudio, log.child({ modulo: 'audio' }));
-  const app = await creaApp({ log, cartellaWeb: sost.cartellaWeb ?? CARTELLA_WEB_DIST });
+  const app = await creaApp({ log, cartellaWeb: sost.cartellaWeb ?? config.cartellaWeb });
   const uscite = creaUscite(app.io);
   const regia = new Regia({
     campagna,

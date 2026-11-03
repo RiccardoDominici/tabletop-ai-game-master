@@ -1,12 +1,13 @@
 /**
  * E2E della mossa contro lo stallo (timeout accorciato): server avviato con
- *   CANTASTORIE_LLM=finto CANTASTORIE_STALLO_MS=3000 scripts/avvio.sh --mock
+ *   CANTASTORIE_PORTA=4710 CANTASTORIE_LLM=finto CANTASTORIE_STALLO_MS=3000 scripts/avvio.sh --mock
  * Proiettore + un telefono: si apre la finestra, nessuno fa niente; dopo 3 s il narratore muove
  * da solo, poi la finestra si riapre. Nessun errore in console.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
+import { CARTELLA_LOG } from './percorsi';
 
 // Ogni prova chiude i contesti che ha aperto col browser condiviso, anche se fallisce: un proiettore
 // rimasto collegato farebbe ripartire la scena (e suonerebbe l'audio) nella prova successiva.
@@ -43,7 +44,7 @@ test('stallo: senza input la scena va avanti da sola e la finestra si riapre', a
   await expect.poll(async () => (await salute(schermo)).turno, { timeout: 60_000 }).toBe(2);
 
   const { sessione } = await salute(schermo);
-  const righe = fs.readFileSync(path.join(RADICE, 'logs', 'narrazioni.jsonl'), 'utf8').trim().split('\n').map((r) => JSON.parse(r) as Record<string, unknown>);
+  const righe = fs.readFileSync(path.join(CARTELLA_LOG, 'narrazioni.jsonl'), 'utf8').trim().split('\n').map((r) => JSON.parse(r) as Record<string, unknown>);
   const turno1 = righe.find((r) => r['sessione'] === sessione && r['tipo'] === 'turno' && r['turno'] === 1);
   expect(turno1?.['chiusura']).toBe('stallo');
   expect(errori, errori.join('\n')).toEqual([]);
