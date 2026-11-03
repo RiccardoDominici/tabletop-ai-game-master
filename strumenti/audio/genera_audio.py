@@ -296,6 +296,13 @@ def main() -> None:
         print(f"\n(dry-run: niente scritto; manifest sarebbe {man.percorso})")
         return
     man.salva()
+    # File che nessuna voce usa più (uno strato tolto perché le schede sono cambiate): via, o la
+    # cartella cresce a ogni giro e in git finiscono suoni morti.
+    usati = {v["file"] for sez in man.sezioni.values() for v in sez.values()}
+    for f in cartella.glob("*.m4a"):
+        if f.name not in usati:
+            log.info("tolgo %s: nessuna voce del manifest lo usa", f.name)
+            f.unlink()
     shutil.rmtree(CACHE_LAVORO, ignore_errors=True)
     mb = dimensione_mb(cartella)
     print(f"\nmanifest: {man.percorso}  crediti: {cartella / 'crediti.md'}  peso: {mb:.1f} MB  "

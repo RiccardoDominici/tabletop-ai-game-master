@@ -9,6 +9,7 @@ Ogni scelta porta il suo `perche` (campo, parola trovata, peso): finisce in audi
 from __future__ import annotations
 
 import logging
+import re
 import zlib
 from dataclasses import asdict, dataclass, field
 
@@ -227,6 +228,12 @@ def _ambienti_dedotti(l: LuogoTesti, m: DescrittoreMusica, testi_stile: dict, pe
         punti.pop("acqua", None)
     if punti.get("neve", 0) >= SOGLIA_AMBIENTE and punti.get("vento", 0) < punti.get("neve", 0):
         punti.pop("vento", None)
+    # Acqua ghiacciata non scorre: con «frozen», «iced», «ghiacciato» niente fiume, mulino né acqua.
+    tutto_testo = " ".join(l.testi.values()).lower()
+    if re.search(r"\bfrozen|\biced\b|ghiacciat|congelat", tutto_testo):
+        for t in ("fiume", "mulino", "acqua"):
+            if punti.pop(t, None):
+                prove.setdefault("neve", []).append(f"acqua ghiacciata: niente {t}")
     if punti.get("taverna", 0) >= SOGLIA_AMBIENTE:
         punti["taverna"] += 0.5 * punti.pop("folla", 0)   # la taverna è già una folla
     # La notte d'ambiente (grilli, civette) solo fuori, di notte, senza pioggia, neve o gelo.

@@ -10,12 +10,11 @@
    49.5 s  temi      tema_png_baldrin                         tema_png_baldrin.m4a
    55.0 s  temi      tema_png_ottavia                         tema_png_ottavia.m4a
    60.5 s  temi      tema_png_sebastiano                      tema_png_sebastiano.m4a
-   66.0 s  ambienti  amb_n_mulino_valsecca_mulino             amb_fiume_archivio-waterfallingali.m4a
-   71.5 s  ambienti  amb_n_mulino_valsecca_neve               amb_neve_sintesi.m4a
-   77.0 s  ambienti  amb_n_piazza_campane                     amb_campane_archivio-czechchurchbell.m4a
-   82.5 s  ambienti  amb_scena_forno_vecchio_fuoco            amb_fuoco_sintesi.m4a
-   88.0 s  ambienti  amb_scena_forno_vecchio_taverna          amb_folla_archivio-crowdtalkinglou.m4a
-   93.5 s  effetti   sfx_campana                              sfx_campana_soundfont.m4a
-   99.0 s  effetti   sfx_chiave                               sfx_chiave_archivio-slidelockpro-v1.m4a
-  100.0 s  effetti   sfx_monete                               sfx_monete_archivio-coinsfallingout.m4a
-  103.2 s  effetti   sfx_porta                                sfx_porta_archivio-door-knob-sound.m4a
+   66.0 s  ambienti  amb_n_mulino_valsecca_neve               amb_neve_sintesi.m4a
+   71.5 s  ambienti  amb_n_piazza_campane                     amb_campane_archivio-czechchurchbell.m4a
+   77.0 s  ambienti  amb_scena_forno_vecchio_fuoco            amb_fuoco_sintesi.m4a
+   82.5 s  ambienti  amb_scena_forno_vecchio_taverna          amb_folla_archivio-crowdtalkinglou.m4a
+   88.0 s  effetti   sfx_campana                              sfx_campana_soundfont.m4a
+   93.5 s  effetti   sfx_chiave                               sfx_chiave_archivio-slidelockpro-v1.m4a
+   94.5 s  effetti   sfx_monete                               sfx_monete_archivio-coinsfallingout.m4a
+   97.7 s  effetti   sfx_porta                                sfx_porta_archivio-door-knob-sound.m4a

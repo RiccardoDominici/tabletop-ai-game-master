@@ -18,7 +18,6 @@ sulla variazione tipica: sopra 8 è un clic), silenzi (sotto −50 dB per più d
 | tema_png_baldrin | tema_png_baldrin.m4a | 6.45 | -19.6 | -6.8 | 6.5 | — | 1 | 63 | ok |
 | tema_png_ottavia | tema_png_ottavia.m4a | 7.1674 | -19.7 | -9.3 | 7.4 | — | 1 | 71 | ok |
 | tema_png_sebastiano | tema_png_sebastiano.m4a | 8.45 | -19.8 | -9.7 | 6.5 | — | 1 | 87 | ok |
-| amb_n_mulino_valsecca_mulino | amb_fiume_archivio-waterfallingali.m4a | 45.75 | -30.3 | -18.8 | 1.1 | 0.06 dB / ×0.44 | 0 | 560 | ok |
 | amb_n_mulino_valsecca_neve | amb_neve_sintesi.m4a | 43.0 | -30.4 | -17.9 | 5.5 | 0.57 dB / ×1.24 | 0 | 527 | ok |
 | amb_n_piazza_campane | amb_campane_archivio-czechchurchbell.m4a | 29.25 | -30.0 | -15.0 | 5.5 | 1.27 dB / ×0.39 | 0 | 358 | ok |
 | amb_scena_forno_vecchio_fuoco | amb_fuoco_sintesi.m4a | 43.0 | -30.4 | -4.5 | 1.6 | 2.1 dB / ×0.09 | 0 | 539 | ok |
@@ -28,4 +27,4 @@ sulla variazione tipica: sopra 8 è un clic), silenzi (sotto −50 dB per più d
 | sfx_monete | sfx_monete_archivio-coinsfallingout.m4a | 2.71 | -21.0 | -3.1 | 0.0 | — | 0 | 36 | ok |
 | sfx_porta | sfx_porta_archivio-door-knob-sound.m4a | 0.59 | -24.9 | -2.9 | 0.0 | — | 0 | 8 | ok |
 
-Peso totale: 23.2 MB.
+Peso totale: 22.6 MB.

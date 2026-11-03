@@ -287,12 +287,8 @@
    },
    "ambiente": [
     [
-     "mulino",
-     0.4
-    ],
-    [
      "neve",
-     0.3
+     0.4
     ]
    ],
    "transizioni": [],
@@ -355,20 +351,13 @@
      "esterno": 2.3
     },
     "ambiente": {
-     "mulino": {
-      "punti": 3.15,
-      "prove": [
-       "nome: mulin",
-       "abbozzo: mulin",
-       "prompt_luogo: water wheel",
-       "prompt_luogo: watermill"
-      ]
-     },
      "neve": {
       "punti": 2.0,
       "prove": [
        "abbozzo: neve",
-       "prompt_luogo: snow"
+       "prompt_luogo: snow",
+       "acqua ghiacciata: niente fiume",
+       "acqua ghiacciata: niente mulino"
       ]
      }
     }

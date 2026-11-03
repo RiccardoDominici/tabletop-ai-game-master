@@ -2,7 +2,7 @@
   "versione": 1,
   "campagna": "prova-f0",
   "formato": "AAC-LC in .m4a, 48 kHz, stereo; i loop vanno da loop_inizio_s a loop_fine_s (mezzo secondo di margine prima e dopo)",
-  "aggiornato": "2026-11-03 01:33:03",
+  "aggiornato": "2026-11-03 01:34:00",
   "brani": [
     {
       "id": "luogo_n_mulino_valsecca",
@@ -1045,60 +1045,14 @@
   ],
   "ambienti": [
     {
-      "id": "amb_n_mulino_valsecca_mulino",
-      "luogo": "n_mulino_valsecca",
-      "tag": "mulino",
-      "file": "amb_fiume_archivio-waterfallingali.m4a",
-      "loop": true,
-      "volume": 0.179,
-      "ripiego_di": "fiume",
-      "fonte": "Internet Archive",
-      "titolo": "Waterfall In Galicia, Spain",
-      "autore": "https://freesound.org/people/ivojesus/",
-      "licenza": "CC0 1.0",
-      "licenza_url": "http://creativecommons.org/publicdomain/zero/1.0/",
-      "pagina": "https://archive.org/details/WaterfallInGaliciaSpain",
-      "url_file": "https://archive.org/download/WaterfallInGaliciaSpain/Waterfall%20in%20Galicia%2C%20Spain.mp3",
-      "loop_sorgente": {
-        "inizio_s": 2.0,
-        "fine_s": 46.75,
-        "note": []
-      },
-      "controllo": {
-        "ok": true,
-        "problemi": [],
-        "durata_s": 45.75,
-        "lufs": -30.3,
-        "lra": 1.1,
-        "true_peak_db": -18.8,
-        "picco_db": -18.83934,
-        "campioni_al_limite": 0,
-        "silenzi": [],
-        "giunta": {
-          "somiglianza_db": 15.0,
-          "rapporto_salto": 0.44,
-          "salto_livello_db": 0.06,
-          "ok": true
-        },
-        "codec": "aac 96k",
-        "kb": 560,
-        "normalizzazione": "linear"
-      },
-      "durata_s": 45.75,
-      "loop_inizio_s": 0.5,
-      "loop_fine_s": 45.25,
-      "lufs": -30.3
-    },
-    {
       "id": "amb_n_mulino_valsecca_neve",
       "luogo": "n_mulino_valsecca",
       "tag": "neve",
       "file": "amb_neve_sintesi.m4a",
       "loop": true,
-      "volume": 0.134,
+      "volume": 0.179,
       "fonte": "sintesi",
       "licenza": "nessuna (generato dalla pipeline)",
-      "sintesi_s": 42.0,
       "controllo": {
         "ok": true,
         "problemi": [],
@@ -1115,9 +1069,8 @@
           "salto_livello_db": 0.57,
           "ok": true
         },
-        "codec": "aac 96k",
         "kb": 527,
-        "normalizzazione": "linear"
+        "normalizzazione": null
       },
       "durata_s": 43.0,
       "loop_inizio_s": 0.5,
@@ -1138,11 +1091,6 @@
       "licenza_url": "http://creativecommons.org/publicdomain/zero/1.0/",
       "pagina": "https://archive.org/details/CzechChurchBells",
       "url_file": "https://archive.org/download/CzechChurchBells/CHU-002.mp3",
-      "loop_sorgente": {
-        "inizio_s": 2.0,
-        "fine_s": 30.25,
-        "note": []
-      },
       "controllo": {
         "ok": true,
         "problemi": [],
@@ -1159,9 +1107,8 @@
           "salto_livello_db": 1.27,
           "ok": true
         },
-        "codec": "aac 96k",
         "kb": 358,
-        "normalizzazione": "linear"
+        "normalizzazione": null
       },
       "durata_s": 29.25,
       "loop_inizio_s": 0.5,
@@ -1177,7 +1124,6 @@
       "volume": 0.201,
       "fonte": "sintesi",
       "licenza": "nessuna (generato dalla pipeline)",
-      "sintesi_s": 42.0,
       "controllo": {
         "ok": true,
         "problemi": [],
@@ -1194,9 +1140,8 @@
           "salto_livello_db": 2.1,
           "ok": true
         },
-        "codec": "aac 96k",
         "kb": 539,
-        "normalizzazione": "dynamic"
+        "normalizzazione": null
       },
       "durata_s": 43.0,
       "loop_inizio_s": 0.5,
@@ -1218,11 +1163,6 @@
       "licenza_url": "http://creativecommons.org/publicdomain/mark/1.0/",
       "pagina": "https://archive.org/details/CrowdTalkingLoudlyD.D.TeoliJr.",
       "url_file": "https://archive.org/download/CrowdTalkingLoudlyD.D.TeoliJr./Crowd%20Talking%20Loudly%20D.D.%20Teoli%20Jr..mp3",
-      "loop_sorgente": {
-        "inizio_s": 2.0,
-        "fine_s": 42.75,
-        "note": []
-      },
       "controllo": {
         "ok": true,
         "problemi": [],
@@ -1239,9 +1179,8 @@
           "salto_livello_db": 0.31,
           "ok": true
         },
-        "codec": "aac 96k",
         "kb": 511,
-        "normalizzazione": "linear"
+        "normalizzazione": null
       },
       "durata_s": 41.75,
       "loop_inizio_s": 0.5,
@@ -1258,7 +1197,6 @@
       "volume": 1.259,
       "fonte": "sintesi",
       "licenza": "nessuna (SoundFont GeneralUser GS)",
-      "suono": "Tubular Bells (GeneralUser GS)",
       "controllo": {
         "ok": true,
         "problemi": [],
@@ -1274,9 +1212,8 @@
             6.95
           ]
         ],
-        "codec": "aac 96k",
         "kb": 78,
-        "normalizzazione": "linear"
+        "normalizzazione": null
       },
       "durata_s": 6.95,
       "lufs": -20.6
@@ -1304,9 +1241,8 @@
         "picco_db": -11.628479,
         "campioni_al_limite": 0,
         "silenzi": [],
-        "codec": "aac 96k",
         "kb": 6,
-        "normalizzazione": "linear"
+        "normalizzazione": null
       },
       "durata_s": 0.45,
       "lufs": -21.0
@@ -1334,9 +1270,8 @@
         "picco_db": -3.105684,
         "campioni_al_limite": 0,
         "silenzi": [],
-        "codec": "aac 96k",
         "kb": 36,
-        "normalizzazione": "linear"
+        "normalizzazione": null
       },
       "durata_s": 2.71,
       "lufs": -21.0
@@ -1364,9 +1299,8 @@
         "picco_db": -3.464095,
         "campioni_al_limite": 0,
         "silenzi": [],
-        "codec": "aac 96k",
         "kb": 8,
-        "normalizzazione": "linear"
+        "normalizzazione": null
       },
       "durata_s": 0.59,
       "lufs": -24.9

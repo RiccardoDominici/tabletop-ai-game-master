@@ -17,7 +17,6 @@ Generato da strumenti/audio/genera_audio.py: non modificare a mano.
 ## Ambienti ed effetti
 
 - `amb_campane_archivio-czechchurchbell.m4a`: «Czech Church Bells» di sconosciuto, Internet Archive, CC0 1.0 (https://archive.org/details/CzechChurchBells)
-- `amb_fiume_archivio-waterfallingali.m4a`: «Waterfall In Galicia, Spain» di https://freesound.org/people/ivojesus/, Internet Archive, CC0 1.0 (https://archive.org/details/WaterfallInGaliciaSpain)
 - `amb_folla_archivio-crowdtalkinglou.m4a`: «Crowd Talking Loudly D.D.Teoli Jr.» di D.D.Teoli Jr., Internet Archive, Public Domain Mark 1.0 (https://archive.org/details/CrowdTalkingLoudlyD.D.TeoliJr.)
 - `amb_fuoco_sintesi.m4a`: sintetizzato dalla pipeline (fuoco), nessuna licenza esterna.
 - `amb_neve_sintesi.m4a`: sintetizzato dalla pipeline (neve), nessuna licenza esterna.
