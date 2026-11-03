@@ -87,3 +87,75 @@ def test_prepara_si_ferma_se_la_campagna_ha_errori(camp):
     r = subprocess.run(["bash", str(RADICE / "scripts" / "prepara.sh"), str(camp), "--senza-immagini", "--senza-audio"],
                        capture_output=True, text=True, cwd=RADICE)
     assert r.returncode == 1 and "2/4" not in r.stdout
+
+
+# --- «Pronta da giocare»: vera solo con tutto ciò che serve, presente e aggiornato -----------------
+
+def _immagini_complete(camp: Path, salta: tuple[str, ...] = ()) -> None:
+    """Un manifest delle immagini come dopo un giro di genera.py: file, voci con la firma di oggi, alias."""
+    import campagna
+    from freschezza import firme_attese
+    from manifest import Manifest
+    from motore import Motore
+
+    man = Manifest(camp / "immagini")
+    tutte = campagna.richieste(camp)
+    attese = firme_attese(tutte, man, Motore().descrizione)
+    for r in tutte:
+        if r.id in salta:
+            continue
+        if not r.alias_di:
+            (man.cartella / r.file).parent.mkdir(parents=True, exist_ok=True)
+            (man.cartella / r.file).write_bytes(b"jpg")
+        man.voci[r.id] = {"id": r.id, "file": r.file, "tipo": r.tipo, "seme": r.seme, "prompt": r.prompt,
+                          **({"alias_di": r.alias_di} if r.alias_di else {"firma": attese[r.id]})}
+    man.salva()
+
+
+def _situazione_dichiarata(camp: Path) -> None:
+    """Una situazione scritta nella scheda (con la sua rivelazione), come quelle delle campagne vere."""
+    f = camp / "png" / "png_bruno.yaml"
+    d = yaml.safe_load(f.read_text())
+    d.setdefault("aspetto", {})["situazioni"] = [{"id": "di_notte", "dopo": ["i_qualcosa"], "prompt": "at night by the well"}]
+    f.write_text(yaml.safe_dump(d, allow_unicode=True, sort_keys=False))
+
+
+def test_pronta_solo_con_immagini_e_audio_completi_e_aggiornati(camp):
+    _audio_completo(camp)
+    _immagini_complete(camp)
+    s = SP.stato(camp)
+    assert s["pronta"] and s["non_pronta"] == []
+    # La scheda del luogo cambia dopo la generazione: l'immagine è vecchia, la campagna non è pronta.
+    scena = yaml.safe_load((camp / "scena.yaml").read_text())
+    scena["immagine"]["prompt_luogo"] += ", a lantern by the door"
+    (camp / "scena.yaml").write_text(yaml.safe_dump(scena, allow_unicode=True, sort_keys=False))
+    s = SP.stato(camp)
+    assert not s["pronta"] and any("vecchie" in m and "luogo_scena_volpe" in m for m in s["non_pronta"])
+
+
+def test_situazioni_automatiche_sono_solo_un_avviso(camp):
+    _audio_completo(camp)
+    _immagini_complete(camp, salta=("situazione_png_bruno_in_scena_volpe", "situazione_png_irma_in_scena_volpe"))
+    s = SP.stato(camp)
+    assert s["pronta"] and any("situazioni automatiche" in a for a in s["avvisi"])
+
+
+def test_situazione_dichiarata_e_obbligatoria(camp):
+    _situazione_dichiarata(camp)
+    _audio_completo(camp)
+    _immagini_complete(camp, salta=("situazione_png_bruno_di_notte",))
+    s = SP.stato(camp)
+    assert not s["pronta"] and any("situazione_png_bruno_di_notte" in m for m in s["non_pronta"])
+
+
+def test_alias_non_registrato_e_audio_essenziale_mancante(camp):
+    _audio_completo(camp)
+    _immagini_complete(camp, salta=("luogo_n_locanda",))
+    assert any("alias" in m and "luogo_n_locanda" in m for m in SP.stato(camp)["non_pronta"])
+    _immagini_complete(camp)
+    man = json.loads((camp / "audio" / "manifest.json").read_text())
+    man["brani"] = []  # la musica di un luogo: essenziale
+    (camp / "audio" / "manifest.json").write_text(json.dumps(man))
+    s = SP.stato(camp)
+    assert not s["pronta"] and any(m.startswith("audio essenziale mancante") for m in s["non_pronta"])
+    assert "pronta da giocare: no, manca:" in SP.rapporto(s)

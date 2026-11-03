@@ -202,7 +202,7 @@ def richieste_png(cartella: Path, stile: str, luoghi: dict[str, list[str]]) -> l
             prompt = f"The same person as in the reference image, same face, hair and clothes: {identita}. Now {s['prompt']}"
             # `dopo`: gli id (indizi, battute) dopo i quali la situazione si può mostrare. Finisce nel
             # manifest, così chi la proietta sa quando: prima di allora è un segreto.
-            extra = {"png": pid, "dopo": list(s.get("dopo") or [])}
+            extra = {"png": pid, "dopo": list(s.get("dopo") or []), "automatica": False}
             out.append(Richiesta(ident, "situazione", con_stile(prompt, stile), seme_da_id(ident),
                                  *DIM_SITUAZIONE, riferimenti=[rid], extra=extra))
         for lid, chi in luoghi.items():
@@ -212,7 +212,7 @@ def richieste_png(cartella: Path, stile: str, luoghi: dict[str, list[str]]) -> l
             prompt = (f"The same person as in the first reference image, same face, hair and clothes: {identita}. "
                       f"Now inside the place shown in the second reference image")
             out.append(Richiesta(ident, "situazione", con_stile(prompt, stile), seme_da_id(ident),
-                                 *DIM_SITUAZIONE, riferimenti=[rid, lid], extra={"png": pid, "dopo": []}))
+                                 *DIM_SITUAZIONE, riferimenti=[rid, lid], extra={"png": pid, "dopo": [], "automatica": True}))
     return out
 
 

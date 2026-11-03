@@ -140,7 +140,8 @@ if [[ "$PRONTA" == "True" ]]; then
   echo "    scripts/partita.sh $ID$MODO              (voce finta)"
   echo "    scripts/partita.sh $ID$MODO --voce qwen  (voce locale)"
 else
-  echo "Non ancora pronta da giocare: servono i manifest delle immagini e dell'audio (vedi sopra)."
+  echo "Non ancora pronta da giocare. Manca:"
+  campo '"\n".join("    - " + m for m in d["non_pronta"])'
 fi
 [[ "$PRONTA" == "True" && ${#PROBLEMI[@]} -eq 0 ]] && exit 0
 exit 3

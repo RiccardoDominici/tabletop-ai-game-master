@@ -13,6 +13,17 @@ luogo, uno dei sei umori, il tema di un PNG); o i descrittori che la pipeline ri
 sono diversi da quelli del suo ultimo giro (audio/descrittori.json): è cambiato qualcosa che l'audio usa.
 Gli strati d'ambiente e gli effetti che mancano da soli non bastano: la pipeline li cerca a ogni giro, e
 uno che le fonti non hanno (per esempio una catena) farebbe rilanciare tutto ogni volta.
+
+«Pronta da giocare» (`pronta`) è vera solo se c'è tutto ciò che serve, presente e AGGIORNATO; altrimenti
+`non_pronta` elenca che cosa manca. Che cosa serve, e perché (dal comportamento del proiettore):
+  - immagini OBBLIGATORIE: i luoghi (scene e nodi, alias compresi) e i ritratti, che il proiettore mostra
+    dal primo turno (senza: solo lo sfondo d'atmosfera); e le situazioni DICHIARATE nelle schede
+    (aspetto.situazioni), che il server fa comparire da sole quando esce la loro rivelazione (`dopo`):
+    sono il momento scritto dal Preparatore, e senza l'immagine quel momento si perde in silenzio;
+  - immagini FACOLTATIVE (solo un avviso): le situazioni automatiche «<png>_in_<luogo>», che il proiettore
+    mostra solo a comando del master e che costano ~7 minuti di GPU l'una;
+  - audio: pronto se `audio.da_rifare` è falso (manifest, asset essenziali, descrittori di oggi), letto
+    solo da ciò che il manifest dell'audio dice; gli strati facoltativi mancanti danno un avviso.
 """
 
 from __future__ import annotations
@@ -52,6 +63,13 @@ def stato_immagini(cartella: Path) -> dict:
     st = classifica(vere, tutte, man, Motore().descrizione)
     mancanti = st.mancanti
     vecchie = [r for r, _ in st.vecchie]
+
+    def facoltativa(r) -> bool:
+        return r.tipo == "situazione" and bool(r.extra.get("automatica"))
+
+    # Un alias conta solo se è nel manifest e il file a cui punta c'è (è ciò che legge il server).
+    alias_mancanti = [r.id for r in tutte if r.alias_di and not (
+        r.id in man.voci and (man.cartella / man.voci[r.id].get("file", r.file)).exists())]
     # Stima del tempo: la media dei secondi già spesi per tipo, o i valori misurati delle prove.
     secondi: dict[str, list[float]] = {}
     for v in man.voci.values():
@@ -68,7 +86,12 @@ def stato_immagini(cartella: Path) -> dict:
             "alias": len(tutte) - len(vere), "per_tipo": per_tipo,
             "mancanti": [{"id": r.id, "tipo": r.tipo} for r in mancanti],
             "vecchie": [{"id": r.id, "tipo": r.tipo, "motivo": m} for r, m in st.vecchie],
-            "orfane": st.orfane, "stima_s": round(stima),
+            "orfane": st.orfane, "alias_mancanti": alias_mancanti,
+            "obbligatorie": {"mancanti": [r.id for r in mancanti if not facoltativa(r)],
+                             "vecchie": [r.id for r in vecchie if not facoltativa(r)]},
+            "facoltative": {"mancanti": [r.id for r in mancanti if facoltativa(r)],
+                            "vecchie": [r.id for r in vecchie if facoltativa(r)]},
+            "stima_s": round(stima),
             "byte": peso(cartella / "immagini")}
 
 
@@ -106,12 +129,44 @@ def stato_audio(cartella: Path) -> dict:
             "byte": peso(cartella / "audio")}
 
 
+def _elenco(ids: list[str], quanti: int = 6) -> str:
+    return ", ".join(ids[:quanti]) + (f" … (+{len(ids) - quanti})" if len(ids) > quanti else "")
+
+
+def prontezza(img: dict, aud: dict) -> tuple[list[str], list[str]]:
+    """(che cosa manca per giocare, avvisi). Pronta = nessuna voce nella prima lista. Vedi il docstring."""
+    manca, avvisi = [], []
+    if not img["manifest"]:
+        manca.append("immagini: manca il manifest (strumenti/immagini/genera.py non è mai girato)")
+    if img["obbligatorie"]["mancanti"]:
+        manca.append(f"immagini mancanti: {_elenco(img['obbligatorie']['mancanti'])}")
+    if img["obbligatorie"]["vecchie"]:
+        manca.append(f"immagini vecchie (schede cambiate): {_elenco(img['obbligatorie']['vecchie'])}")
+    if img["manifest"] and img["alias_mancanti"]:
+        manca.append(f"alias dei luoghi non registrati: {_elenco(img['alias_mancanti'])}")
+    if not aud["manifest"]:
+        manca.append("audio: manca il manifest")
+    elif aud["essenziali_mancanti"]:
+        manca.append(f"audio essenziale mancante: {_elenco(aud['essenziali_mancanti'])}")
+    if aud["manifest"] and aud["descrittori_cambiati"]:
+        manca.append("audio: le schede sono cambiate dall'ultimo giro (descrittori diversi): va rifatto")
+    fac = img["facoltative"]["mancanti"] + img["facoltative"]["vecchie"]
+    if fac:
+        avvisi.append(f"situazioni automatiche da fare {len(fac)} (il proiettore le mostra solo a comando del master)")
+    if aud["manifest"] and aud["facoltativi_mancanti"]:
+        avvisi.append(f"audio facoltativo mancante: {_elenco(aud['facoltativi_mancanti'])}")
+    if img["orfane"]:
+        avvisi.append(f"immagini orfane nel manifest {len(img['orfane'])} (le sposta genera.py)")
+    return manca, avvisi
+
+
 def stato(cartella: Path) -> dict:
     img, aud = stato_immagini(cartella), stato_audio(cartella)
+    manca, avvisi = prontezza(img, aud)
     return {"campagna": cartella.name, "cartella": str(cartella), "immagini": img, "audio": aud,
             "repertorio": (cartella / "repertorio").is_dir(),
-            # Pronta da giocare: i due manifest esistono (il proiettore salta da solo un file mancante).
-            "pronta": img["manifest"] and aud["manifest"]}
+            # Pronta da giocare solo con tutto ciò che serve presente e aggiornato (vedi il docstring).
+            "pronta": not manca, "non_pronta": manca, "avvisi": avvisi}
 
 
 def mb(n: int) -> str:
@@ -144,7 +199,13 @@ def rapporto(s: dict) -> str:
         righe.append(f"    strati facoltativi {quali}: {', '.join(aud['facoltativi_mancanti'])}")
     if aud["manifest"] and aud["descrittori_cambiati"]:
         righe.append("    le schede sono cambiate in ciò che l'audio usa: va rifatto il giro della pipeline")
-    righe.append(f"  pronta da giocare: {'sì' if s['pronta'] else 'no (serve il manifest delle immagini e dell’audio)'}")
+    for a in s["avvisi"]:
+        righe.append(f"  avviso: {a}")
+    if s["pronta"]:
+        righe.append("  pronta da giocare: sì")
+    else:
+        righe.append("  pronta da giocare: no, manca:")
+        righe.extend(f"    - {m}" for m in s["non_pronta"])
     return "\n".join(righe)
 
 
