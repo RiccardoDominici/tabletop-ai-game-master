@@ -56,13 +56,19 @@ function scriviAtomico(file: string, testo: string): void {
   fs.renameSync(tmp, file);
 }
 
+/** Il testo dei due file, esattamente come si scrivono (serve anche a scripts/registro.sh --controlla). */
+export function testiRegistro(e: EstrattoRegistro): { registro: string; trascrizione: string } {
+  return { registro: yamlStabile(e.registro, INTESTAZIONE_REGISTRO), trascrizione: yamlStabile(e.trascrizione, INTESTAZIONE_TRASCRIZIONE) };
+}
+
 /** Scrive registro.yaml e trascrizione.yaml nella cartella; restituisce i due percorsi. */
 export function scriviRegistro(cartella: string, e: EstrattoRegistro, log?: Logger): { registro: string; trascrizione: string } {
   fs.mkdirSync(cartella, { recursive: true });
   const registro = path.join(cartella, FILE_REGISTRO);
   const trascrizione = path.join(cartella, FILE_TRASCRIZIONE);
-  scriviAtomico(trascrizione, yamlStabile(e.trascrizione, INTESTAZIONE_TRASCRIZIONE));
-  scriviAtomico(registro, yamlStabile(e.registro, INTESTAZIONE_REGISTRO));
+  const testi = testiRegistro(e);
+  scriviAtomico(trascrizione, testi.trascrizione);
+  scriviAtomico(registro, testi.registro);
   log?.info(
     {
       registro,

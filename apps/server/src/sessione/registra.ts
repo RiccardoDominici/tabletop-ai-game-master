@@ -12,7 +12,7 @@ import { caricaCampagna } from '../campagna/caricatore';
 import { elencoPacchetti } from '../campagna/pacchetti';
 import type { Logger } from '../logger';
 import { caricaRepertorio } from '../repertorio/caricatore';
-import type { ArchivioSessioni } from './archivio';
+import type { ArchivioSessioni, InfoSessione } from './archivio';
 import { definizioniRegistro, estraiRegistro, type EstrattoRegistro } from './registro';
 import { cartellaRegistro, scriviRegistro } from './scrivi-registro';
 
@@ -28,7 +28,8 @@ export class ErroreRegistro extends Error {
   override name = 'ErroreRegistro';
 }
 
-export function registraSessione(o: { archivio: ArchivioSessioni; sessione: string; cartellaCampagna: string; cartellaLog: string; log?: Logger }): RegistroScritto {
+/** L'estratto di una sessione dell'archivio e la cartella dove va (senza scrivere niente). */
+export function estraiSessione(o: { archivio: ArchivioSessioni; sessione: string; cartellaCampagna: string; cartellaLog: string }): { info: InfoSessione; estratto: EstrattoRegistro; cartella: string } {
   const info = o.archivio.sessione(o.sessione);
   if (!info) throw new ErroreRegistro(`sessione ${o.sessione} non trovata nell'archivio`);
   const pacchetti = elencoPacchetti(o.cartellaCampagna);
@@ -47,6 +48,12 @@ export function registraSessione(o: { archivio: ArchivioSessioni; sessione: stri
   const estratto = estraiRegistro({ ...info, pacchetto: info.pacchetto }, o.archivio.eventi(info.id), definizioniRegistro(campagna, repertorio));
   estratto.registro.avvisi.push(...avvisi);
   const cartella = cartellaRegistro({ cartellaPacchetto: pacchetto?.cartella ?? null, cartellaLog: o.cartellaLog, campagna: info.campagna, sessione: info.id });
-  const file = scriviRegistro(cartella, estratto, o.log);
+  return { info, estratto, cartella };
+}
+
+/** Estrae e scrive (pannello del master, «Fine sessione»). `uscita` sostituisce la cartella predefinita. */
+export function registraSessione(o: { archivio: ArchivioSessioni; sessione: string; cartellaCampagna: string; cartellaLog: string; uscita?: string; log?: Logger }): RegistroScritto {
+  const { info, estratto, cartella } = estraiSessione(o);
+  const file = scriviRegistro(o.uscita ?? cartella, estratto, o.log);
   return { sessione: info.id, pacchetto: info.pacchetto, ...file, estratto };
 }

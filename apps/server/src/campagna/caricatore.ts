@@ -155,6 +155,9 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
         log?.info({ campagna: cartella, png: p.id, pacchetto: scelto.etichetta }, 'campagna: scheda del PNG sostituita da quella del pacchetto');
       } else png.push(p);
     }
+    // In ordine di id, come in una one-shot (un file per PNG, letti in ordine): così la vista unita
+    // del pacchetto (strumenti/unisci_pacchetto.ts) è la stessa campagna, contesto compreso.
+    png.sort((a, b) => a.id.localeCompare(b.id));
   }
   const voci = png.map((p) => p.voce_id).filter((v) => v !== ID_NARRATORE);
   const doppie = voci.filter((v, i) => voci.indexOf(v) !== i);

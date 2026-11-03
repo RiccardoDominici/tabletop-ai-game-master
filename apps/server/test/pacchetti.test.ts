@@ -68,7 +68,7 @@ describe('campagna a più sessioni', () => {
     expect(c.titolo).toBe("L'arco della prova");
     expect(c.scene.map((s) => s.id)).toEqual(['scena_locanda']);
     expect(c.scena.apertura[0]).toBe('Piove da tre giorni sulla valle.');
-    expect(c.png.map((p) => p.id)).toEqual(['png_oste', 'png_guardia']); // ricorrente + della sessione
+    expect(c.png.map((p) => p.id)).toEqual(['png_guardia', 'png_oste']); // ricorrente + della sessione, in ordine di id
     expect(c.campagnaNarratore['sessione']).toBeUndefined();
     expect(c.campagnaNarratore['titolo']).toBeUndefined();
     expect(c.cartellaRepertorio).toBe(path.join(ARCO, 'sessioni', '01', 'repertorio'));
@@ -85,7 +85,7 @@ describe('campagna a più sessioni', () => {
     expect(c.scene.map((s) => s.id)).toEqual(['scena_guado', 'scena_mulino']);
     expect(c.scena.apertura).toEqual(["Nella sessione precedente l'oste ha confessato.", 'Ora il fiume sale.', 'Il guado è gonfio di pioggia.', 'Il barcaiolo vi fa cenno: che fate?']);
     expect(c.scene[1]!.apertura).toEqual(['Il mulino è buio e la ruota è ferma.']); // il riassunto solo nella prima
-    expect(c.png.map((p) => p.id)).toEqual(['png_oste', 'png_barcaiolo']); // la guardia era solo della 01
+    expect(c.png.map((p) => p.id)).toEqual(['png_barcaiolo', 'png_oste']); // la guardia era solo della 01
     const canone = (c.campagnaNarratore['canone'] as Array<{ id: string }>).map((f) => f.id);
     expect(canone).toEqual(['f_pioggia', 'f_oste_ladro', 'f_corda_tagliata']);
     const orologi = c.campagnaNarratore['orologi'] as Array<{ id: string; pieni_all_inizio?: number }>;
@@ -142,7 +142,7 @@ describe('campagna a più sessioni', () => {
     scrivi(path.join(d, 'sessioni', '02', 'png', 'png_oste.yaml'), 'id: png_oste\nnome: "Oste Bruno, bagnato"\nsa: [f_pioggia, f_oste_ladro, f_corda_tagliata]\nvoce:\n  tts: {voce_id: vincent}\n');
     const c2 = caricaCampagna(d, undefined, { pacchetto: 2 });
     const oste = c2.png.find((p) => p.id === 'png_oste')!;
-    expect(c2.png.map((p) => p.id)).toEqual(['png_oste', 'png_barcaiolo']); // stesso posto, niente doppioni
+    expect(c2.png.map((p) => p.id)).toEqual(['png_barcaiolo', 'png_oste']); // niente doppioni
     expect(oste.nome).toBe('Oste Bruno, bagnato');
     expect(oste.dati['sa']).toEqual(['f_pioggia', 'f_oste_ladro', 'f_corda_tagliata']);
     expect(oste.dati['pronuncia']).toBeUndefined(); // scheda intera, non unita campo per campo
