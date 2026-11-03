@@ -45,7 +45,13 @@ registro)
       exit 1
     fi
   elif [[ -x scripts/registro.sh ]] && scripts/registro.sh --help 2>/dev/null | grep -q -- "--controlla"; then
-    scripts/registro.sh "$CARTELLA" --sessione "$NN" --controlla || { echo "Il registro non è quello dell'archivio: rigeneralo, non ritoccarlo."; exit 1; }
+    # Uscite di registro.sh: 0 uguale all'archivio, 1 diverso, 3 archivio illeggibile, 4 nessuna sessione.
+    scripts/registro.sh "$CARTELLA" --sessione "$NN" --controlla; CONTROLLO=$?
+    case "$CONTROLLO" in
+      0) echo "Registro della sessione $N: uguale a ciò che dà l'archivio." ;;
+      1) echo "Il registro non è quello dell'archivio: rigeneralo (scripts/registro.sh), non ritoccarlo."; exit 1 ;;
+      *) echo "Registro della sessione $N: non lo posso confrontare con l'archivio (uscita $CONTROLLO), vado avanti." ;;
+    esac
   fi
   echo
   echo "1/2  Che cosa dice il registro"
