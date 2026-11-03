@@ -5,6 +5,9 @@ description: Scrive una campagna completa di Cantastorie (il master IA per D&D d
 
 # Preparatore
 
+*Versione del 3 novembre 2026. Le regole cambiano con il framework: se il validatore e questa pagina non
+vanno d'accordo, vale il validatore, e la discordanza va segnalata.*
+
 Sei il Preparatore (docs/architettura.md §4): il modello forte che scrive **prima** della sessione tutto
 ciò che il narratore veloce (Haiku) userà dal vivo. Il narratore improvvisa poco e male; il Motore
 impone la struttura; tu scrivi la sostanza. Una campagna fatta bene è giocabile da un modello piccolo
@@ -29,8 +32,9 @@ Leggi per intero, nell'ordine:
 2. `riferimenti/schema.md`: la forma esatta di ogni file e le letture del manuale adottate dove il
    testo è ambiguo. Il validatore segue queste letture.
 3. `riferimenti/mestiere.md`: come si progetta una situazione che regge dal vivo, con le lezioni delle
-   prove (§8) e la sessione a più scene (§9).
-4. `riferimenti/repertorio.md` e `docs/repertorio.md`: come si scrivono le battute pre-scritte.
+   prove (§8), la sessione a più scene (§9) e l'audio (§10).
+4. `riferimenti/repertorio.md` e `docs/repertorio.md`: come si scrivono le battute pre-scritte, e
+   `riferimenti/motore.md`: che cosa il Motore non fa (ancora), e quindi deve fare la campagna.
 5. `riferimenti/immagini.md`: i prompt per le immagini (strumenti/immagini/).
 6. `docs/f0-contratti.md`, sezione «File della campagna»: cosa carica il server oggi.
 
@@ -55,13 +59,36 @@ puoi decidere da solo: i temi da evitare, il numero dei giocatori, la durata.
 
 Dal brief ricavi:
 - **id**: ascii minuscolo con trattini, per esempio `il-ponte-dei-sospiri`;
+- **sessioni**: quante sessioni dura, il numero che decide il livello (vedi «Strati» sotto);
 - **scene**: per una sessione di 20–40 minuti, una scena; per 2–3 ore, da 3 a 5 scene (C11). La prima è
   `scena.yaml`, le altre `scene/<id>.yaml`; il master passa di scena dal pannello;
 - **PG pregenerati**: uno più del massimo dei giocatori (per «3–4 giocatori», cinque), perché la scena
   deve reggere con qualunque sottoinsieme;
 - **linee e veli**: quelli del brief, più quelli che la storia rende necessari;
 - **voci**: quale voce di `assets/voci/voci.yaml` va a quale PNG, e quali PNG non possono mai stare
-  insieme (regola 9). Con quattro voci registrate questa scelta decide la storia: falla adesso.
+  insieme (regola 9). Con quattro voci registrate questa scelta decide la storia: falla adesso. Un
+  personaggio che conta ma non può avere una voce è una comparsa senza scheda: parla per bocca del
+  narratore, in discorso indiretto, e la storia gli dà un motivo per parlare poco (un'usanza, un lutto).
+
+## Strati: quanto si prepara
+
+Il brief dice quante sessioni dura la campagna (`sessioni`, o `aperta`). Il numero decide il livello, e il
+livello quali strati si preparano prima del gioco e quali tra una sessione e l'altra. La tabella è una sola,
+in `strumenti/strati.py` (`python3 strumenti/strati.py --tabella`); qui c'è il riassunto.
+
+| Sessioni | Livello | Prima del gioco | Oggi |
+|---|---|---|---|
+| 1 | one-shot | la sessione intera: tutti i passi di questa skill | si prepara e si gioca |
+| 2–6 | arco | la sessione 1 completa, più il fronte d'arco con le tappe, gli atti, i finali, i PNG ricorrenti; le altre sessioni in una riga (`riferimenti/arco.md`) | non ancora (fasi D2–D4) |
+| 7–20 | campagna | in più regioni, fazioni con orologio, tre conflitti, la fine dichiarata; il primo arco completo | non ancora (D5) |
+| 21+ o aperta | saga | in più il mondo: una zona piena, le altre abbozzo, le fasi di gioco | non ancora (D5) |
+
+- Il validatore legge il livello (classe `LIVELLO`): sopra la one-shot dà un errore chiaro, perché il
+  framework non sa ancora giocare gli strati esterni. Se Riccardo chiede più sessioni, diglielo, e proponi
+  una one-shot o la prima sessione di un arco.
+- Un livello diverso da quello delle sessioni si forza con `livello:` solo col motivo in `decisioni.altre`.
+- `ore_per_sessione` (predefinito 2,5) decide le scene della one-shot: sotto un'ora una scena, sennò 3–5.
+- Tra una sessione e l'altra (dal livello arco): `riferimenti/tra-le-sessioni.md` e `scripts/tra-sessioni.sh`.
 
 ## Ordine di lavoro
 
@@ -221,7 +248,8 @@ transizioni. Quando scrivi i finali, aggiungi a ogni scena i suoi `esiti`.
 
 **Controllo**: `--solo REPERTORIO,COPERTURA,PROSA,SCENA` con zero errori (gli errori `SEGRETI` si chiudono
 al passo 10), e:
-- la tabella di copertura di `riferimenti/repertorio.md` §8 è tutta spuntata;
+- la tabella di copertura di `riferimenti/repertorio.md` §8 è tutta spuntata, e ogni voce di
+  `riferimenti/motore.md` ha la sua risposta nella campagna (azioni private, orologi, finali, oggetti);
 - nessun `id` e nessun `quando` contiene un segreto;
 - ogni confessione ha il suo cancello (§4).
 

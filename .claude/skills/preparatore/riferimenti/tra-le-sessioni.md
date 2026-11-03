@@ -64,58 +64,9 @@ Il lavoro tra le sessioni lo fa un agente con questa skill, come la preparazione
    validatore sulla sessione `<n+1>` (`valida_campagna.py --rigoroso --sessione <n+1>`; finché non c'è,
    `--solo STATO,CONTINUITÀ,ARCO`), poi `scripts/prepara.sh` sul pacchetto, quando saprà farlo (fase D2).
 
-## stato/stato.yaml
-```yaml
-versione: 1
-dopo_sessione: 1                     # l'ultima sessione che lo stato riflette (i suoi registri esistono) [V]
-
-fatti:                               # ciò che è successo in gioco, in ordine; mai cancellati, solo superati
-  - id: g_irma_promette              # g_<nome> [V]
-    testo: "Irma ha giurato a Tobia che pagherà il tetto senza il mercante."
-    fonte: {sessione: 1, turno: 6, citazione: "Ti giuro che pagherò il tetto"}   # sottostringa ESATTA del turno [V]
-    # fonte: {sessione: 1, turno: 5, evento: {indizio: i_botte}}   # un evento del turno: battuta, indizio,
-    #                                                              # fatto, menzogna, orologio [V]
-    # fonte: {tra_sessioni: 1, motivo: "o_mercante avanza: il pegno non è arrivato"}   # fuori scena: il motivo
-    #                                                              # nomina l'orologio o la regola, che esiste [V]
-    noto_ai_pg: true                 # i PG lo sanno (lo hanno visto o sentito)
-    rende_noti: [f_bruno_visto]      # fatti del canone che i PG ora sanno [V esistono]
-    supera: [f_…]                    # fatti del canone che il gioco ha cambiato [V esistono]
-    superato_da: g_…                 # facoltativo: il fatto più recente che lo supera [V viene dopo]
-    effetti:                         # facoltativi: che cosa cambia nello stato derivato
-      png: {png_bruno: {vivo: false, dove: "la chiesa", atteggiamento: {pg_lia: amichevole}, sa: [f_…, g_…]}}
-      oggetti: {ogg_lanterna: {nome: "lanterna d'argento", chi: pg_tobia, stato: preso}}   # preso, perso, distrutto…
-      promesse: {pr_irma_tetto: {chi: png_irma, a: pg_tobia, cosa: "…", stato: aperta}}  # aperta, mantenuta, tradita, sciolta
-      fili: {filo_mercante: aperto}  # aperto o chiuso
-
-orologi:                             # ogni orologio a fine sessione, e dopo gli avanzamenti fuori scena
-  o_processione: {pieni: 4, fonte: {sessione: 1}}          # = lo stato finale del registro [V]
-  o_mercante: {pieni: 1, fonte: {tra_sessioni: 1, motivo: "o_mercante: il pegno non è arrivato all'alba"}}
-
-pg:                                  # la crescita dei PG
-  pg_tobia: {livello: 1, fonte: {tra_sessioni: 1, motivo: "una sessione sola: niente crescita"}}
-```
-Lo **stato derivato** (PNG vivi o morti, dove sono, verso chi sono amichevoli, che cosa sanno; oggetti; promesse;
-fili; ciò che i PG sanno) si ricava applicando gli `effetti` dei fatti non superati nell'ordine delle loro fonti.
-Non si scrive a parte: così ogni cambiamento ha la sua prova.
-
-## sessioni/<nn>/registro.yaml e trascrizione.yaml (li scrive il server)
-La forma è quella di `apps/server/src/sessione/registro.ts` (`RegistroSessione`, formato 1). Il validatore legge:
-- `sessione` (= la cartella `sessioni/<nn>`), `campagna`, `formato`, `archivio.ultimo_turno` (i turni giocati);
-- `indizi`, `battute`, `menzogne`, `fatti_noti`: voci `{id, turno, …}`, gli eventi che un fatto può citare;
-- `orologi[]`: `pieni_alla_fine` (lo stato a fine sessione) e `segni[].turno` (l'evento «orologio»);
-- i testi di un turno, alla lettera, per le citazioni: `trascrizione.yaml → voci[]` di quel turno,
-  `momenti[].righe` di quel turno, `pg[].azioni_pubbliche` e `azioni_private` di quel turno.
-
-Il registro contiene le azioni private: è materiale del master. Non si ritocca: si rigenera dall'archivio
-(`scripts/tra-sessioni.sh` controlla che i file nella campagna siano quelli che l'archivio darebbe).
-
-## sessioni/<nn>/ (il pacchetto, forma di apps/server/src/campagna/pacchetti.ts)
-`sessione.yaml` con `riassunto_iniziale`, `scene` (in ordine), `pieni_all_inizio: {o_…: segni}` (sostituisce
-quello degli orologi della campagna), eventuali orologi, canone e nodi della sessione (si uniscono a
-campagna.yaml), e `preparazione.fili: [{id, come: ripreso|rimandato}]`, che sta in `preparazione` perché non
-arrivi al narratore. Più `scene/`, `png/` (i PNG di questa sessione e le schede aggiornate dei ricorrenti, che
-sostituiscono quelle della campagna), `repertorio/` con le sue `parole_segrete.yaml` (sostituiscono quelle
-della campagna).
+## Le forme dei file
+Stato, registro e pacchetto sono descritti in `schema.md`, sezione «Tra le sessioni». Qui sotto, che cosa ne
+controlla il validatore.
 
 ## Che cosa controlla il validatore
 | Codice | Controllo |

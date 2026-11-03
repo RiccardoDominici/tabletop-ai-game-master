@@ -18,6 +18,18 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
   - in modalità A (improvvisa) gli indizi non hanno id: le situazioni escono solo a comando del master;
 
 ## Dopo
+- **Motore: i limiti che oggi la campagna deve aggirare** (dalla prova di nozze-neve; la pagina
+  `.claude/skills/preparatore/riferimenti/motore.md` li descrive ed è verificata sul codice da
+  `strumenti/motore_limiti.ts`: quando uno cade, il test diventa rosso e la pagina si aggiorna). Da implementare:
+  - **azioni private**: oggi rispondono solo le battute con `privata: true`; un'azione privata senza battute adatte
+    dovrebbe avere almeno una risposta discreta sul telefono, non il silenzio o una risposta ad alta voce;
+  - **`avanza_quando`**: il Motore lo carica e non lo usa; servirebbe in forma strutturata (cancelli come
+    `richiede`: battute uscite, indizi rivelati → un segno), così l'orologio avanza per i fatti e non solo per il ritmo;
+  - **salti d'orologio al cambio di scena**: un `pieni_all_inizio` per scena («la scena del terzo tocco comincia con
+    l'orologio a 7»), oggi possibile solo tra le sessioni;
+  - **finali per stato**: un modo di dire al Motore «la domanda drammatica ha risposta» (esiti della scena con i
+    loro cancelli), invece di affidare i finali prima dell'orologio pieno ai temi;
+  - **stato degli oggetti**: chi ha che cosa, almeno per gli oggetti con un id nella scena (`elementi_interattivi`).
 - **Skill e validatore** (fatto il 2 novembre sera, dalle 26 note di `NOTE_SULLA_SKILL.md`): contesto vero del modo B
   compilato col server, cronologia e logistica (`MONDO`), voci simili (`simile_a`), passi riordinati con `--solo`,
   più scene, copioni con `scena` e `richiede`, immagini (`prompt_ritratto`, `nodi[].immagine`, `situazioni[].dopo`).
