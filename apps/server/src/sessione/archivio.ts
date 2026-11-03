@@ -43,6 +43,8 @@ export interface InfoSessione {
   /** Ultimo turno registrato. */
   turno: number;
   eventi: number;
+  /** Perché è stata chiusa (null finché è in corso). */
+  motivo_chiusura: string | null;
 }
 
 export interface EventoSalvato {
@@ -92,6 +94,7 @@ export class ArchivioSessioni {
       stato: riga['stato'] as StatoSessione,
       turno: Number(riga['turno']),
       eventi: Number(conta.n),
+      motivo_chiusura: typeof riga['motivo_chiusura'] === 'string' ? (riga['motivo_chiusura'] as string) : null,
     };
   }
 
