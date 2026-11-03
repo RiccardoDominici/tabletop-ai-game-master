@@ -3,13 +3,16 @@
 # (solo se richiesta), compila le pagine, avvia il server e stampa i tre indirizzi da aprire:
 # proiettore, telefoni, pannello del master (col suo token).
 #
-#   scripts/partita.sh <campagna> [--modo A|B] [--voce finta|qwen] [--nuova]
+#   scripts/partita.sh <campagna> [--modo A|B] [--voce finta|qwen] [--nuova] [--sessione N]
 #
 #   <campagna>   cartella in campagne/ (es. prova-f0, ponte-lanterne)
 #   --modo B     (predefinito) repertorio: battute pre-scritte scelte da Haiku; A: improvvisa tutto
 #   --voce finta (predefinito) voce finta, nessun servizio da caricare; qwen: voce locale Qwen3-TTS
 #                (fino a 7 GB di RAM, qualche minuto di caricamento la prima volta)
 #   --nuova      ricomincia da capo: senza, se c'è una partita salvata di questa campagna la riprende
+#   --sessione N campagne a più sessioni (sessioni/<nn>/): gioca quel pacchetto. Senza, lo sceglie il
+#                server dall'archivio: la sessione in corso, o quella dopo l'ultima chiusa con
+#                «Fine sessione» (docs/strati.md); la validazione controlla proprio quello.
 #
 # Il narratore è sempre Haiku vero (la chiave la legge apps/server/src/llm/chiave.ts).
 # Server: variabili CANTASTORIE_CAMPAGNA e CANTASTORIE_MODO (vedi apps/server/src/config.ts).
@@ -26,19 +29,20 @@ export CANTASTORIE_PORTA="$PORTA"
 if [[ "$PORTA" == "4610" ]]; then DIR_LOG="$RADICE/logs"; else DIR_LOG="$RADICE/logs/porta-$PORTA"; fi
 
 uso() {
-  echo "uso: scripts/partita.sh <campagna> [--modo A|B] [--voce finta|qwen] [--nuova]"
+  echo "uso: scripts/partita.sh <campagna> [--modo A|B] [--voce finta|qwen] [--nuova] [--sessione N]"
   echo "campagne disponibili: $(ls "$RADICE/campagne" | tr '\n' ' ')"
   exit 2
 }
 
 [[ $# -ge 1 ]] || uso
 CAMPAGNA="$1"; shift
-MODO="B"; VOCE="finta"; NUOVA=0
+MODO="B"; VOCE="finta"; NUOVA=0; SESSIONE=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --modo) MODO="${2:-}"; shift 2 || uso ;;
     --voce) VOCE="${2:-}"; shift 2 || uso ;;
     --nuova) NUOVA=1; shift ;;
+    --sessione) SESSIONE="${2:-}"; shift 2 || uso; [[ "$SESSIONE" =~ ^[0-9]+$ ]] || { echo "--sessione vuole un numero"; uso; } ;;
     -h|--help) uso ;;
     *) echo "opzione sconosciuta: $1"; uso ;;
   esac
@@ -55,16 +59,46 @@ if [[ ! -d "$CARTELLA" ]]; then
   echo "Campagna «${CAMPAGNA}» non trovata in campagne/."
   uso
 fi
-if [[ "$MODO" == "B" && ! -d "$CARTELLA/repertorio" ]]; then
-  echo "La campagna «${CAMPAGNA}» non ha un repertorio: usa --modo A."
-  exit 1
-fi
 mkdir -p "$DIR_LOG"
 cd "$RADICE"
 
+# Campagna a più sessioni: quale pacchetto si gioca lo decide l'archivio, con le regole del server
+# (apps/server/src/strumenti/scelta.ts); si valida e si gioca quello.
+PACCHETTO=""
+VALIDA=(python3 strumenti/valida_campagna.py "$CARTELLA")
+if [[ -d "$CARTELLA/sessioni" ]]; then
+  [[ "$PORTA" != "4610" ]] && export CANTASTORIE_LOG="${CANTASTORIE_LOG:-$DIR_LOG}"
+  ARGS_SCELTA=("$CARTELLA" --modo "$MODO_SERVER")
+  [[ -n "$SESSIONE" ]] && ARGS_SCELTA+=(--sessione "$SESSIONE")
+  [[ "$NUOVA" == "1" ]] && ARGS_SCELTA+=(--nuova)
+  if ! scelta="$("$RADICE/node_modules/.bin/tsx" apps/server/src/strumenti/scelta.ts "${ARGS_SCELTA[@]}")"; then
+    echo "Non so quale sessione giocare (vedi sopra)."
+    exit 1
+  fi
+  PACCHETTO="$(printf '%s' "$scelta" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).numero))')"
+  avviso="$(printf '%s' "$scelta" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).avviso??""))')"
+  echo "     Campagna a più sessioni: si gioca la sessione $PACCHETTO."
+  [[ -n "$avviso" ]] && echo "     $avviso"
+  export CANTASTORIE_SESSIONE="$PACCHETTO"
+  if python3 strumenti/valida_campagna.py --help 2>/dev/null | grep -q -- '--sessione'; then
+    VALIDA=(python3 strumenti/valida_campagna.py "$CARTELLA" --sessione "$PACCHETTO")
+  else
+    VALIDA=()
+    echo "     Il validatore non conosce ancora i pacchetti: il controllo lo fa solo il server all'avvio."
+  fi
+  REPERTORIO="$(printf '%s/sessioni/%s' "$CARTELLA" "$(ls "$CARTELLA/sessioni" | awk -v n="$PACCHETTO" '$0 ~ /^[0-9]+$/ && $0+0 == n {print; exit}')")/repertorio"
+else
+  unset CANTASTORIE_SESSIONE
+  REPERTORIO="$CARTELLA/repertorio"
+fi
+if [[ "$MODO" == "B" && ! -d "$REPERTORIO" ]]; then
+  echo "La campagna «${CAMPAGNA}» non ha un repertorio (${REPERTORIO#$RADICE/}): usa --modo A."
+  exit 1
+fi
+
 # 1. La campagna deve essere valida: con errori la partita non parte (E1).
 echo "1/4  Controllo la campagna ${CAMPAGNA}…"
-if ! python3 strumenti/valida_campagna.py "$CARTELLA"; then
+if [[ ${#VALIDA[@]} -gt 0 ]] && ! "${VALIDA[@]}"; then
   echo
   echo "La campagna ha errori: la partita non parte. Correggili (vedi sopra) e riprova."
   exit 1
@@ -117,6 +151,7 @@ cat <<FINE
 ==================================================================
   Cantastorie — partita pronta
   Campagna: $CAMPAGNA   ·   modo $MODO ($MODO_SERVER)   ·   voce: $voce_in_uso
+  $( [[ -n "$PACCHETTO" ]] && echo "Sessione $PACCHETTO (a fine serata: «Fine sessione» nel pannello del master)" || echo "One-shot" )
   $ripresa
 ==================================================================
 
