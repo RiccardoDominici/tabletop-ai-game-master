@@ -3,6 +3,11 @@
 Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei documenti di progetto.
 
 ## In corso
+- **Durata in sessioni e strati di gioco** (richiesta di Riccardo, 3 novembre 2026): nel brief si indica la durata
+  stimata in *numero di sessioni*, e da quella dipende quanti strati genera il framework. Una one-shot ha poche cose
+  (situazione, poche scene e PNG: è ciò che fa oggi la skill); una campagna di anni ha più fasi o archi e un mondo
+  completo, e il materiale della sessione successiva si prepara tra una sessione e l'altra a partire da ciò che è
+  successo davvero. Ricerca in corso (`docs/ricerca-durata.md`), poi progetto degli strati, poi skill, validatore e server.
 - **Prova alla cieca della skill Preparatore**: un agente nuovo scrive `campagne/ponte-lanterne` seguendo solo la skill.
 - **Immagini vere di prova-f0**: luoghi a 1920x1080, ritratti 3:4, situazioni (es. Sebastiano senza cappuccio).
 - **Server** (fatto il 2 novembre sera): riga «X sta parlando» sul proiettore, pannello del master (`/master`),
