@@ -1,43 +1,49 @@
 /**
- * Esperimento A/B (docs/repertorio.md): esegue un copione fisso di azioni dei giocatori contro il
- * server VERO, in modalità A (improvvisa) o B (repertorio), con Haiku e la voce veri.
+ * Esperimento (docs/repertorio.md): esegue un copione fisso di azioni dei giocatori contro il
+ * server VERO, in modalità A (improvvisa) o B (repertorio), con Haiku vero, su una campagna qualsiasi.
  *
- *   npx tsx apps/server/src/esperimenti/esegui.ts <copione> <A|B> [--voce-vera]
+ *   CANTASTORIE_PORTA=4710 npx tsx apps/server/src/esperimenti/esegui.ts <copione> <A|B|B2> \
+ *     [--campagna <id>] [--finto] [--lascia-server]
  *
- * La voce è FINTA per default (la sintesi è rimandata alla fase finale): il servizio voce non si
- * tocca. Con --voce-vera si usa il servizio Qwen se è già pronto (--tieni-voce).
+ * Esempi: `esegui.ts indagine B` (prova-f0, come le prime prove);
+ *         `esegui.ts nozze-neve/indagine B --campagna nozze-neve`.
+ * Porta e opzioni: argomenti.ts (default 4710, istanza di prova: la partita vera su 4610 e la voce
+ * su 4611 non si toccano). Formato del copione: copione.ts (scena di partenza, cambi di scena,
+ * azioni private).
  *
- * 1. Riavvia il server da zero (scripts/avvio.sh --tieni-voce) con CANTASTORIE_MODO e
- *    CANTASTORIE_FINESTRA_TUTTI=1: ogni sessione parte senza stato, e la finestra si apre per
- *    tutti così il copione si dà identico ai due narratori (l'invito resta nel registro).
- * 2. Collega un proiettore virtuale (proiettore.ts) e un telefono headless per ogni PG.
- * 3. Turno per turno: aspetta la finestra, invia le azioni del copione, tutti «pronto».
- * 4. Scrive esperimenti/risultati/<copione>-<A|B>/: trascrizione.md (etichette verbatim, [usa]
- *    espansi e marcati come pre-scritti), turni.jsonl (latenze + righe pre-scritte/improvvisate),
- *    costo.json, riepilogo.json.
+ * 1. Controlla il copione contro la campagna, poi riavvia il server di prova da zero
+ *    (CANTASTORIE_PORTA=<porta> scripts/avvio.sh) con CANTASTORIE_CAMPAGNA, CANTASTORIE_MODO,
+ *    CANTASTORIE_FINESTRA_TUTTI=1 (la finestra si apre per tutti, così il copione si dà identico ai
+ *    due narratori; l'invito resta nel registro) e un token del master fissato qui.
+ * 2. Collega un proiettore virtuale (proiettore.ts), un pannello del master headless (master.ts)
+ *    e un telefono headless per ogni PG.
+ * 3. Turno per turno: aspetta la finestra, fa i cambi di scena del copione col comando del master
+ *    (come il pannello), invia le azioni (le private con `privata: true`, come il telefono), tutti «pronto».
+ * 4. Scrive esperimenti/risultati/<etichetta>/: trascrizione.md (verbatim, [usa] espansi e marcati),
+ *    tavolo.md (solo ciò che il tavolo ha sentito e visto, per il giudice cieco), turni.jsonl,
+ *    costo.json, riepilogo.json (latenze, fughe di segreti, quota pre-scritta, costo).
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import YAML from 'yaml';
 import { io as connetti, type Socket } from 'socket.io-client';
 import type { Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@cantastorie/shared';
 import { caricaCampagna } from '../campagna/caricatore';
+import type { Campagna } from '../campagna/tipi';
+import { nuovoToken } from '../master/token';
 import { RADICE_REPO } from '../percorsi';
 import { caricaRepertorio } from '../repertorio/caricatore';
 import { caricaParoleSegrete } from '../repertorio/segreti';
 import type { Repertorio } from '../repertorio/tipi';
+import { ErroreArgomenti, leggiOpzioni, type OpzioniEsperimento } from './argomenti';
+import { caricaCopione, contaPrivate, controllaCopione, type Copione } from './copione';
 import { misuraFughe } from './fughe';
+import { MasterHeadless } from './master';
 import { ProiettoreVirtuale } from './proiettore';
+import { azioniPrivate, OsservatoreTavolo, testoTavolo } from './tavolo';
+import { trascrizione } from './trascrizione';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
-interface Copione {
-  pg: string[];
-  turni: Array<Array<{ pg: string; azione: string }>>;
-}
-
-const URL_SERVER = process.env['E2E_URL'] ?? 'http://127.0.0.1:4610';
-const LOG = path.join(RADICE_REPO, 'logs');
 const CAMPI_LATENZA = ['finestra_ms', 'voce_sveglia', 'llm_primo_token', 'llm_prima_frase', 'voce_richiesta', 'voce_primo_audio', 'schermo_inizio_audio', 'llm_fine', 'audio_fine'] as const;
 
 const emetti = <T>(fn: (cb: (x: T) => void) => void): Promise<T> => new Promise((r) => fn(r));
@@ -73,38 +79,120 @@ function mediana(xs: number[]): number | null {
   return s.length % 2 ? s[m]! : (s[m - 1]! + s[m]!) / 2;
 }
 
-async function main(): Promise<void> {
-  const [nomeCopione, modoArg] = process.argv.slice(2);
-  const voceVera = process.argv.includes('--voce-vera');
-  // «B2» è il repertorio con le regole della versione 2 (è la modalità repertorio di oggi).
-  const modo = modoArg === 'B' || modoArg === 'B2' ? 'repertorio' : modoArg === 'A' ? 'improvvisa' : null;
-  if (!nomeCopione || !modo) {
-    console.error('uso: esegui.ts <copione> <A|B>');
-    process.exit(2);
+/** Il token del master non deve finire sulla console nemmeno se l'avvio fallisce. */
+const senzaToken = (testo: string, token: string): string => testo.split(token).join('***');
+
+/** Riavvia il server di prova da zero, sulla porta e con la campagna dell'esperimento. */
+function avviaServer(o: OpzioniEsperimento, token: string): void {
+  const argomenti = [o.voceVera ? '--tieni-voce' : '--mock', ...(o.finto ? ['--finto'] : [])];
+  const avvio = spawnSync(path.join(RADICE_REPO, 'scripts', 'avvio.sh'), argomenti, {
+    env: {
+      ...process.env,
+      CANTASTORIE_PORTA: String(o.porta),
+      CANTASTORIE_CAMPAGNA: o.campagna,
+      CANTASTORIE_MODO: o.modo,
+      CANTASTORIE_FINESTRA_TUTTI: '1',
+      CANTASTORIE_MASTER_TOKEN: token,
+    },
+    encoding: 'utf8',
+  });
+  if (avvio.status !== 0) throw new Error(`avvio fallito:\n${senzaToken(avvio.stdout, token)}\n${senzaToken(avvio.stderr, token)}`);
+}
+
+function arrestaServer(o: OpzioniEsperimento): void {
+  spawnSync(path.join(RADICE_REPO, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, CANTASTORIE_PORTA: String(o.porta) }, encoding: 'utf8' });
+}
+
+/** Un cambio di scena fatto dal copione: turno del copione, turno del server in cui è avvenuto, scene. */
+export interface CambioScena {
+  turno_copione: number;
+  turno_server: number;
+  a: string;
+}
+
+/**
+ * Esegue i turni del copione; ritorna quando si apre la finestra dopo l'ultimo.
+ *
+ * Il turno del copione e quello del server coincidono finché non si cambia scena: l'apertura della
+ * nuova scena si prende il turno della finestra aperta (regia.cambiaScena) e la finestra successiva
+ * è quella del turno dopo. Per questo si segue il turno del SERVER, letto dallo stato.
+ */
+async function giocaCopione(
+  etichetta: string,
+  copione: Copione,
+  schermo: Client,
+  master: MasterHeadless,
+  telefoni: Map<string, Client>,
+  osservatore: OsservatoreTavolo,
+): Promise<CambioScena[]> {
+  const cambi: CambioScena[] = [];
+  let turnoServer = 1;
+  for (let n = 1; n <= copione.turni.length; n++) {
+    const atteso = turnoServer;
+    let stato = await attendiStato(schermo, (s) => s.fase === 'finestra' && s.turno === atteso && s.finestra.aperta, 240_000, `finestra ${atteso} (turno ${n} del copione)`);
+    for (const p of copione.turni[n - 1]!) {
+      if (p.tipo !== 'scena') continue;
+      const v0 = stato.versione_scena;
+      const t0 = stato.turno;
+      const e = await master.scena(p.scena);
+      if (!e.ok) throw new Error(`turno ${n}: cambio di scena a ${p.scena} rifiutato: ${e.errore}`);
+      cambi.push({ turno_copione: n, turno_server: t0, a: p.scena });
+      console.log(`[${etichetta}] turno ${n} (server ${t0}): scena → ${p.scena}`);
+      // L'apertura della nuova scena alza versione_scena: così non si scambia per buona un'istantanea vecchia.
+      stato = await attendiStato(schermo, (s) => s.fase === 'finestra' && s.finestra.aperta && s.versione_scena > v0 && s.turno >= t0, 240_000, `finestra dopo la scena ${p.scena} (turno ${n} del copione)`);
+    }
+    turnoServer = stato.turno;
+    for (const p of copione.turni[n - 1]!) {
+      if (p.tipo !== 'azione') continue;
+      const t = telefoni.get(p.pg);
+      if (!t) throw new Error(`turno ${n}: ${p.pg} non è al tavolo`);
+      const dati = { id_pg: p.pg, testo: p.azione, versione_vista: stato.versione_scena, ...(p.privata ? { privata: true } : {}) };
+      const e = await emetti<Esito>((cb) => t.emit('azione:invia', dati, cb));
+      if (!e.ok) throw new Error(`turno ${n}: azione di ${p.pg} rifiutata: ${e.errore}`);
+    }
+    osservatore.segnaChiusura(turnoServer);
+    const corrente = turnoServer;
+    const dopo = attendiStato(schermo, (s) => s.turno === corrente + 1 && s.fase === 'finestra', 300_000, `fine del turno ${n} (server ${corrente})`);
+    for (const [pg, t] of telefoni) await emetti<Esito>((cb) => t.emit('azione:pronto', { id_pg: pg, pronto: true }, cb));
+    await dopo;
+    turnoServer = corrente + 1;
+    console.log(`[${etichetta}] turno ${n}/${copione.turni.length} fatto (server ${corrente})`);
   }
-  const copione = YAML.parse(fs.readFileSync(path.join(RADICE_REPO, 'esperimenti', 'copioni', `${nomeCopione}.yaml`), 'utf8')) as Copione;
-  // «prova2/caotico» → cartella dei risultati «prova2-caotico-B2».
-  const etichetta = `${nomeCopione.replace(/\//g, '-')}-${modoArg}`;
+  return cambi;
+}
+
+/** Id di tutte le battute del repertorio della campagna (per «mai usate»). */
+function elencoBattute(repertorio: Repertorio | null): string[] {
+  return repertorio ? repertorio.battute.map((b) => b.id) : [];
+}
+
+async function main(): Promise<void> {
+  const o = leggiOpzioni(process.argv.slice(2), process.env);
+  const { etichetta, modo } = o;
+  const campagna: Campagna = caricaCampagna(path.join(RADICE_REPO, 'campagne', o.campagna));
+  const copione = caricaCopione(o.fileCopione);
+  const errori = controllaCopione(copione, campagna);
+  if (errori.length) throw new Error(`copione ${o.copione} non giocabile su ${o.campagna}:\n- ${errori.join('\n- ')}`);
   const cartellaRisultati = path.join(RADICE_REPO, 'esperimenti', 'risultati', etichetta);
   fs.mkdirSync(cartellaRisultati, { recursive: true });
   const inizioEsperimento = new Date().toISOString();
-  console.log(`[${etichetta}] riavvio del server in modalità ${modo}…`);
+  console.log(`[${etichetta}] campagna ${o.campagna}, porta ${o.porta}, modalità ${modo}: riavvio del server di prova…`);
 
   // 1. Server da zero.
-  const avvio = spawnSync(path.join(RADICE_REPO, 'scripts', 'avvio.sh'), [voceVera ? '--tieni-voce' : '--mock'], {
-    env: { ...process.env, CANTASTORIE_MODO: modo, CANTASTORIE_FINESTRA_TUTTI: '1' },
-    encoding: 'utf8',
-  });
-  if (avvio.status !== 0) throw new Error(`avvio fallito:\n${avvio.stdout}\n${avvio.stderr}`);
-  const salute0 = (await (await fetch(`${URL_SERVER}/api/salute`)).json()) as Record<string, unknown>;
+  const token = nuovoToken();
+  avviaServer(o, token);
+  const salute0 = (await (await fetch(`${o.url}/api/salute`)).json()) as Record<string, unknown>;
   console.log(`[${etichetta}] server: ${JSON.stringify(salute0)}`);
   if (salute0['modo'] !== modo) throw new Error(`modalità attesa ${modo}, il server dice ${String(salute0['modo'])}`);
 
-  // 2. Client: proiettore virtuale + un telefono per PG.
-  const apri = (): Client => connetti(URL_SERVER, { transports: ['websocket'], forceNew: true });
+  // 2. Client: proiettore virtuale (+ osservatore del tavolo), master headless, un telefono per PG.
+  const apri = (): Client => connetti(o.url, { transports: ['websocket'], forceNew: true });
   const schermo = apri();
+  const osservatore = new OsservatoreTavolo(schermo);
   const proiettore = new ProiettoreVirtuale(schermo);
-  await emetti<{ stato: StatoTavolo; info: InfoServer }>((cb) => schermo.emit('schermo:osserva', cb));
+  const osservato = await emetti<{ stato: StatoTavolo; info: InfoServer }>((cb) => schermo.emit('schermo:osserva', cb));
+  osservatore.unisci(osservato.stato);
+  const master = await MasterHeadless.entra(apri(), token);
   const telefoni = new Map<string, Client>();
   for (const pg of copione.pg) {
     const t = apri();
@@ -114,32 +202,26 @@ async function main(): Promise<void> {
     telefoni.set(pg, t);
   }
 
-  // 3. Avvio della scena e turni del copione.
+  // 3. Scena di partenza del copione (prima dell'inizio il cambio non legge nessuna apertura), poi i turni.
+  if (copione.scena && copione.scena !== master.scenaCorrente) {
+    const e = await master.scena(copione.scena);
+    if (!e.ok) throw new Error(`scena di partenza ${copione.scena} rifiutata: ${e.errore}`);
+    console.log(`[${etichetta}] scena di partenza → ${copione.scena}`);
+  }
   const primo = attendiStato(schermo, (s) => s.fase === 'finestra' && s.turno === 1, 180_000, 'prima finestra');
   await emetti<Esito>((cb) => schermo.emit('schermo:inizia', cb));
   await primo;
-  for (let n = 1; n <= copione.turni.length; n++) {
-    const stato = await attendiStato(schermo, (s) => s.fase === 'finestra' && s.turno === n && s.finestra.aperta, 240_000, `finestra ${n}`);
-    for (const { pg, azione } of copione.turni[n - 1]!) {
-      const t = telefoni.get(pg);
-      if (!t) throw new Error(`turno ${n}: ${pg} non è al tavolo`);
-      const e = await emetti<Esito>((cb) => t.emit('azione:invia', { id_pg: pg, testo: azione, versione_vista: stato.versione_scena }, cb));
-      if (!e.ok) throw new Error(`turno ${n}: azione di ${pg} rifiutata: ${e.errore}`);
-    }
-    const dopo = attendiStato(schermo, (s) => s.turno === n + 1 && s.fase === 'finestra', 300_000, `fine del turno ${n}`);
-    for (const [pg, t] of telefoni) await emetti<Esito>((cb) => t.emit('azione:pronto', { id_pg: pg, pronto: true }, cb));
-    await dopo;
-    console.log(`[${etichetta}] turno ${n}/${copione.turni.length} fatto`);
-  }
+  const cambiScena = await giocaCopione(etichetta, copione, schermo, master, telefoni, osservatore);
 
-  // 4. Raccolta dai registri del server (solo questa sessione).
-  const salute = (await (await fetch(`${URL_SERVER}/api/salute`)).json()) as Record<string, unknown>;
+  // 4. Raccolta dai registri del server di prova (solo questa sessione).
+  const salute = (await (await fetch(`${o.url}/api/salute`)).json()) as Record<string, unknown>;
   const sessione = String(salute['sessione']);
   schermo.disconnect();
+  master.chiudi();
   for (const t of telefoni.values()) t.disconnect();
-  const narrazioni = leggiJsonl(path.join(LOG, 'narrazioni.jsonl')).filter((r) => r['sessione'] === sessione);
-  const turni = leggiJsonl(path.join(LOG, 'turni.jsonl')).filter((r) => r['sessione'] === sessione);
-  const costi = leggiJsonl(path.join(LOG, 'costi.jsonl')).filter((r) => String(r['ts']) >= inizioEsperimento);
+  const narrazioni = leggiJsonl(path.join(o.cartellaLog, 'narrazioni.jsonl')).filter((r) => r['sessione'] === sessione);
+  const turni = leggiJsonl(path.join(o.cartellaLog, 'turni.jsonl')).filter((r) => r['sessione'] === sessione);
+  const costi = leggiJsonl(path.join(o.cartellaLog, 'costi.jsonl')).filter((r) => String(r['ts']) >= inizioEsperimento);
 
   fs.writeFileSync(path.join(cartellaRisultati, 'turni.jsonl'), turni.map((r) => JSON.stringify(r)).join('\n') + '\n');
   const costoTurni = costi.filter((c) => c['tipo'] === 'turno').map((c) => Number(c['costo_usd']));
@@ -157,9 +239,7 @@ async function main(): Promise<void> {
   const narrati = narrazioni.filter((r) => r['tipo'] === 'turno');
   const ultimo = narrati.at(-1);
   const usi = ((ultimo?.['stato_repertorio'] as Record<string, unknown> | undefined)?.['usi'] ?? {}) as Record<string, number>;
-  const repertorioIds = modo === 'repertorio' ? elencoBattute() : [];
-  // Fughe di parole segrete (definizione di parole_segrete.yaml), riga per riga.
-  const campagna = caricaCampagna(path.join(RADICE_REPO, 'campagne', 'prova-f0'));
+  // Fughe di parole segrete (definizione di parole_segrete.yaml della campagna), riga per riga.
   const repertorio: Repertorio | null = modo === 'repertorio' ? caricaRepertorio(campagna) : null;
   const fughe = misuraFughe(narrazioni, caricaParoleSegrete(path.join(campagna.cartella, 'repertorio')), repertorio);
   const latenze = Object.fromEntries(
@@ -170,12 +250,18 @@ async function main(): Promise<void> {
   );
   const somma = (k: string) => turni.reduce((s, r) => s + (typeof r[k] === 'number' ? (r[k] as number) : 0), 0);
   const riepilogo = {
-    copione: nomeCopione,
+    copione: o.copione,
+    campagna: o.campagna,
     modo,
+    porta: o.porta,
+    narratore_finto: o.finto,
     sessione,
     // Condizioni della macchina durante la prova (es. altri carichi sulla GPU), da ESPERIMENTO_NOTA.
     nota_ambiente: process.env['ESPERIMENTO_NOTA'] ?? null,
     turni: turni.length,
+    turni_copione: copione.turni.length,
+    cambi_di_scena: cambiScena,
+    azioni_private_copione: contaPrivate(copione),
     voce: salute0['voce'],
     latenze,
     buchi: { totale: somma('buchi'), in_frase: somma('buchi_in_frase'), tra_frasi: somma('buchi_tra_frasi'), silenzio_ms: somma('silenzio_ms'), per_turno: turni.map((r) => r['buchi']) },
@@ -196,85 +282,26 @@ async function main(): Promise<void> {
       elenco: fughe,
     },
     battute_usate: Object.keys(usi).length,
-    battute_mai_usate: repertorioIds.filter((id) => !usi[id]),
+    battute_mai_usate: elencoBattute(repertorio).filter((id) => !usi[id]),
     costo_totale_usd: costo.totale_usd,
     costo_mediana_turno_usd: costo.mediana_per_turno_usd,
     proiettore_virtuale: proiettore.finiti,
   };
   fs.writeFileSync(path.join(cartellaRisultati, 'riepilogo.json'), JSON.stringify(riepilogo, null, 2) + '\n');
-  fs.writeFileSync(path.join(cartellaRisultati, 'trascrizione.md'), trascrizione(etichetta, modo, sessione, narrazioni, copione));
+  fs.writeFileSync(path.join(cartellaRisultati, 'trascrizione.md'), trascrizione(etichetta, modo, sessione, o.campagna, narrazioni, copione));
+  const nomePg = (id: string): string => campagna.pg.find((p) => p.id === id)?.nome ?? id;
+  fs.writeFileSync(path.join(cartellaRisultati, 'tavolo.md'), testoTavolo(osservatore, azioniPrivate(narrazioni, nomePg)));
   console.log(`[${etichetta}] fatto → ${path.relative(RADICE_REPO, cartellaRisultati)} (costo $${costo.totale_usd.toFixed(5)})`);
   // Il server della prova non resta acceso (salvo --lascia-server, per ispezionarlo).
-  if (!process.argv.includes('--lascia-server')) spawnSync(path.join(RADICE_REPO, 'scripts', 'arresto.sh'), ['--lascia-voce'], { encoding: 'utf8' });
+  if (!o.lasciaServer) arrestaServer(o);
   process.exit(0);
 }
 
-/** Id di tutte le battute del repertorio (per «mai usate»). */
-function elencoBattute(): string[] {
-  const dir = path.join(RADICE_REPO, 'campagne', 'prova-f0', 'repertorio');
-  const ids: string[] = [];
-  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.yaml'))) {
-    const d = YAML.parse(fs.readFileSync(path.join(dir, f), 'utf8')) as { battute?: Array<{ id: string }> };
-    for (const b of d.battute ?? []) ids.push(b.id);
-  }
-  return ids;
-}
-
-type VoceUscita =
-  | { tipo: 'usa'; id: string; versione: number; righe: Array<{ etichetta: string; testo: string }>; motore?: boolean }
-  | { tipo: 'usa_rifiutato'; id: string; motivo: string }
-  | { tipo: 'improvvisata'; etichetta: string; testo: string };
-
-/**
- * Trascrizione: per ogni turno le azioni e l'uscita del narratore riga per riga, VERBATIM; ogni
- * `[usa] id` è seguito dalle righe della battuta, marcate come pre-scritte.
- */
-function trascrizione(etichetta: string, modo: string, sessione: string, narrazioni: Array<Record<string, unknown>>, copione: Copione): string {
-  const out: string[] = [`# Trascrizione ${etichetta}`, '', `Modalità: ${modo} · sessione ${sessione} · PG: ${copione.pg.join(', ')}`, ''];
-  out.push(
-    modo === 'repertorio'
-      ? 'Righe dopo `[usa] <id>`: battuta pre-scritta uscita (marcata `⟨pre-scritta⟩`). Le altre righe sono improvvisate dal modello.'
-      : 'Tutte le righe sono improvvisate dal modello.',
-    '',
-  );
-  for (const n of narrazioni) {
-    if (n['tipo'] === 'apertura') {
-      out.push('## Turno 0 — apertura (testo fisso della scena)', '', '```text', String(n['testo']), '```', '');
-      continue;
-    }
-    out.push(`## Turno ${String(n['turno'])}`, '', 'Azioni:');
-    for (const a of (n['azioni'] as Array<{ id_pg: string; testo: string | null }>) ?? []) out.push(`- ${a.id_pg}: ${a.testo ? `«${a.testo}»` : '(nessuna azione)'}`);
-    out.push('', 'Narratore:', '', '```text');
-    const uscita = [...((n['uscita'] as VoceUscita[] | undefined) ?? [])];
-    const testo = typeof n['testo'] === 'string' ? n['testo'] : `(nessun testo: ${String(n['errore'])})`;
-    for (const riga of testo.split('\n')) {
-      if (!riga.trim()) continue;
-      if (/^\s*\[usa\]/i.test(riga)) {
-        // Le battute aggiunte dal Motore non hanno una riga nel testo del modello: si saltano qui.
-        const u = uscita.find((x) => (x.tipo === 'usa' && !x.motore) || x.tipo === 'usa_rifiutato');
-        if (u) uscita.splice(uscita.indexOf(u), 1);
-        out.push(riga.trim());
-        if (u?.tipo === 'usa') for (const r of u.righe) out.push(`    ⟨pre-scritta${u.versione ? `, variante ${u.versione}` : ''}⟩ [${r.etichetta}] ${r.testo}`);
-        else if (u?.tipo === 'usa_rifiutato') out.push(`    ⟨RIFIUTATA: ${u.motivo}⟩`);
-        continue;
-      }
-      out.push(riga.trim());
-    }
-    out.push('```', '');
-    for (const u of uscita.filter((x): x is Extract<VoceUscita, { tipo: 'usa' }> => x.tipo === 'usa' && !!x.motore)) {
-      out.push(`Aggiunta dal Motore (segno d'orologio dovuto, detto prima dell'invito): [usa] ${u.id}`, '', '```text', ...u.righe.map((r) => `⟨pre-scritta⟩ [${r.etichetta}] ${r.testo}`), '```', '');
-    }
-    const m = (n['misure'] ?? {}) as Record<string, unknown>;
-    out.push(
-      `- righe pre-scritte ${String(n['righe_prescritte'] ?? 0)}, improvvisate ${String(n['righe_improvvisate'] ?? 0)}, [usa] rifiutati ${String(n['usa_rifiutati'] ?? 0)}; azioni senza risposta ${String(n['azioni_senza_risposta'] ?? 0)}/${String(n['azioni_pubbliche'] ?? 0)}, riparazioni ${String(n['riparazioni'] ?? 0)}; invito: ${JSON.stringify(n['invito'])}; anomalie: ${((n['anomalie'] as unknown[]) ?? []).length}`,
-      `- primo audio dalla chiusura della finestra: ${String(m['schermo_inizio_audio'])} ms; buchi ${String(m['buchi'])} (in frase ${String(m['buchi_in_frase'])}, tra frasi ${String(m['buchi_tra_frasi'])}, silenzio ${String(m['silenzio_ms'])} ms); costo $${String(m['costo_usd'])}`,
-      '',
-    );
-  }
-  return out.join('\n');
-}
-
 main().catch((err: unknown) => {
+  if (err instanceof ErroreArgomenti) {
+    console.error(err.message);
+    process.exit(2);
+  }
   console.error('esperimento fallito:', (err as Error).message);
   process.exit(1);
 });
