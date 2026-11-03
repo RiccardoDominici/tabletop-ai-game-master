@@ -35,6 +35,8 @@ export interface DebugAudio {
   stato(): import('./audio/regista').StatoRegista | null;
   /** Guadagni correnti: bus_*, sotto_voce, generale, musica:<id>, ambiente:<id>, tema:<id>. */
   guadagni(): Record<string, number>;
+  /** Buffer decodificati e punti di loop delle tracce che suonano. */
+  tracce(): import('./audio/traccia').DettagliTraccia[];
   /** Suona un effetto del catalogo (sfx_<tag>). */
   effetto(id: string): Promise<boolean>;
 }

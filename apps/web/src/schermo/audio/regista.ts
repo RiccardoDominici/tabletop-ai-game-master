@@ -22,7 +22,7 @@ import type { BancaAudio, StatisticheBanca } from './banca';
 import type { ContestoAudio } from './contesto';
 import type { Mixer } from './mixer';
 import { IsteresiMusica, INTERVALLO_MUSICA_MS, MemoriaTemi, PianoDucking, type DecisioneMusica, type EsitoDucking } from './regole';
-import { TracciaInRiproduzione, type Timer } from './traccia';
+import { TracciaInRiproduzione, type DettagliTraccia, type Timer } from './traccia';
 
 const log = creaLog('audio-regista');
 
@@ -73,6 +73,8 @@ interface ScenaVoluta {
 
 export class RegistaAudio {
   private catalogo: CatalogoAudioPubblico | null = null;
+  /** URL → primo id del catalogo con quel file: id diversi, stesso file = stessa musica. */
+  private readonly primoPerUrl = new Map<string, string>();
   private voluta: ScenaVoluta | null = null;
   /** Ultima scena applicata (per riconoscere i cambi espliciti). */
   private applicata: ScenaVoluta | null = null;
@@ -100,6 +102,8 @@ export class RegistaAudio {
   /** Catalogo del server (GET /api/audio): senza, nulla suona; arrivato, si applica la scena. */
   impostaCatalogo(c: CatalogoAudioPubblico): void {
     this.catalogo = c;
+    this.primoPerUrl.clear();
+    for (const t of Object.values(c.tracce)) if (!this.primoPerUrl.has(t.url)) this.primoPerUrl.set(t.url, t.id);
     log.info('Catalogo audio', { tracce: Object.keys(c.tracce).length, crediti: c.crediti.length });
     this.chiaveApplicata = '';
     this.applica();
@@ -167,6 +171,12 @@ export class RegistaAudio {
     };
   }
 
+  /** Buffer e loop delle tracce che suonano (debug: file veri nel browser). */
+  tracce(): DettagliTraccia[] {
+    const tutte = [this.musica, ...this.ambienti.values(), this.tema].filter((t): t is TracciaInRiproduzione => t instanceof TracciaInRiproduzione);
+    return tutte.map((t) => t.dettagli);
+  }
+
   /** Guadagni correnti di bus e tracce (debug e2e). */
   guadagni(): Record<string, number> {
     const out = this.o.mixer.guadagni();
@@ -181,6 +191,13 @@ export class RegistaAudio {
 
   private url(id: string): string | null {
     return this.catalogo?.tracce[id]?.url ?? null;
+  }
+
+  /** Id canonico di un brano: il primo del catalogo con lo stesso file (alias, riusi). */
+  private canonico(id: string | null): string | null {
+    if (id === null) return null;
+    const url = this.url(id);
+    return (url && this.primoPerUrl.get(url)) ?? id;
   }
 
   private applica(): void {
@@ -201,7 +218,7 @@ export class RegistaAudio {
     this.o.banca.tieni([...urlCorrenti, ...urlProssimi, ...[...this.ambienti.keys(), this.musica?.id ?? ''].map((id) => this.url(id) ?? '')]);
 
     // Musica: l'umore esplicito vince sul luogo; i cambi espliciti saltano l'isteresi.
-    const id = v.audio.umore ?? v.audio.musica;
+    const id = this.canonico(v.audio.umore ?? v.audio.musica);
     const forza = !!prima && (v.audio.umore !== prima.audio.umore || v.audio.scena !== prima.audio.scena || v.umoreScena !== prima.umoreScena);
     this.decidiMusica(this.isteresi.chiedi({ id, forza }, this.o.ora()), forza);
 
@@ -251,6 +268,23 @@ export class RegistaAudio {
 
   private aggiornaAmbienti(ids: readonly string[]): void {
     const voluti = new Set(ids);
+    // Lo stesso file usato da due luoghi (la pioggia di tutto il borgo): lo strato continua a
+    // suonare sotto il nome nuovo, al volume nuovo, invece di dissolversi in sé stesso.
+    const nuoviPerUrl = new Map<string, string>();
+    for (const id of voluti) {
+      const url = this.url(id);
+      if (url && !this.ambienti.has(id)) nuoviPerUrl.set(url, id);
+    }
+    for (const [id, v] of [...this.ambienti]) {
+      if (voluti.has(id) || typeof v === 'symbol') continue;
+      const erede = nuoviPerUrl.get(v.traccia.url);
+      if (!erede) continue;
+      nuoviPerUrl.delete(v.traccia.url);
+      this.ambienti.delete(id);
+      this.ambienti.set(erede, v);
+      v.regola(this.catalogo?.tracce[erede]?.guadagno ?? v.traccia.guadagno, DISSOLVENZA_AMBIENTE_S);
+      log.debug('Ambiente: stesso file, lo strato continua', { da: id, a: erede });
+    }
     for (const [id, v] of [...this.ambienti]) {
       if (voluti.has(id)) continue;
       this.ambienti.delete(id);

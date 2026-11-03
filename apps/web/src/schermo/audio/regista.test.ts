@@ -237,6 +237,40 @@ describe('Mixer: volumi dal pannello', () => {
   });
 });
 
+describe('RegistaAudio: stesso file sotto più nomi', () => {
+  const CONDIVISI: CatalogoAudioPubblico = {
+    tracce: {
+      ...CATALOGO.tracce,
+      luogo_n_a: { ...traccia('luogo_a', 'musica', 8), id: 'luogo_n_a' },
+      amb_b_fuoco: { ...traccia('amb_a_fuoco', 'ambiente', 6, 0.2), id: 'amb_b_fuoco' },
+    },
+    crediti: [],
+  };
+
+  it('musica: un alias (nodo ↔ scena) non fa dissolvere il brano in sé stesso', async () => {
+    const { regista, avanza } = prepara();
+    regista.impostaCatalogo(CONDIVISI);
+    regista.scena(A, 'esplorazione_tesa', 0);
+    await avanza(70);
+    regista.scena({ ...A, musica: 'luogo_n_a' }, 'esplorazione_tesa', 1);
+    await avanza(1);
+    expect(regista.stato()).toMatchObject({ musica: 'luogo_a', cambiMusica: 1, musicaPendente: undefined });
+  });
+
+  it('ambienti: lo strato condiviso continua sotto il nome nuovo, al volume nuovo', async () => {
+    const { ctx, regista, avanza } = prepara();
+    regista.impostaCatalogo(CONDIVISI);
+    regista.scena(A, 'esplorazione_tesa', 0);
+    await avanza(4);
+    const sorgenti = ctx.sorgenti.length;
+    regista.scena({ ...A, ambienti: ['amb_b_fuoco'] }, 'esplorazione_tesa', 1);
+    await avanza(3.5);
+    expect(regista.stato().ambienti).toEqual(['amb_b_fuoco']);
+    expect(regista.guadagni()['ambiente:amb_b_fuoco']).toBeCloseTo(0.2, 3);
+    expect(ctx.sorgenti.length).toBe(sorgenti); // nessuna sorgente nuova: è lo stesso loop
+  });
+});
+
 describe('RegistaAudio: effetti', () => {
   it('un effetto del catalogo suona una volta sul bus effetti', async () => {
     const { ctx, regista } = prepara();

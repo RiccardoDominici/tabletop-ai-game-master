@@ -246,6 +246,55 @@ export class PianoDucking {
   }
 }
 
+// ------------------------------------------------------------------ punti di loop dei file AAC
+
+/** Sotto questa differenza tra buffer e durata dichiarata il loop è il file intero (s). */
+export const TOLLERANZA_LOOP_S = 0.005;
+/** Oltre questa differenza la durata dichiarata non è affidabile: si ripete il file intero (s). */
+const ECCESSO_MAX_S = 0.25;
+/** RMS su 1 ms sotto cui un campione iniziale è silenzio di priming (≈ −70 dBFS). */
+const SOGLIA_PRIMING = 3e-4;
+
+/**
+ * Punti di loop di un file che dovrebbe ripetersi intero ma si è decodificato più lungo del
+ * dichiarato (`durata_s`): l'AAC aggiunge ~20–45 ms di «priming» in testa (e un'imbottitura in
+ * coda) che non tutti i decoder tolgono. Si misura il silenzio iniziale sui campioni (finestre di
+ * 1 ms, poi al campione) e il loop va da lì per `durata_s`: la fine del brano torna esattamente al
+ * suo inizio. Senza campioni si assume tutto in testa. null = loop sul buffer intero.
+ */
+export function puntiDiLoop(
+  durataBuffer: number,
+  sampleRate: number,
+  durataDichiarata: number | null,
+  campioni?: Float32Array,
+): { inizio: number; fine: number } | null {
+  if (!durataDichiarata || durataDichiarata <= 0) return null;
+  const eccesso = durataBuffer - durataDichiarata;
+  if (eccesso <= TOLLERANZA_LOOP_S || eccesso > ECCESSO_MAX_S) return null;
+  let primo = Math.round(eccesso * sampleRate);
+  if (campioni) {
+    const finestra = Math.max(1, Math.round(sampleRate / 1000));
+    const max = Math.min(campioni.length, Math.round(eccesso * sampleRate) + finestra);
+    primo = max;
+    for (let i = 0; i < max; i += finestra) {
+      let somma = 0;
+      const fine = Math.min(max, i + finestra);
+      for (let k = i; k < fine; k += 1) somma += campioni[k]! * campioni[k]!;
+      if (Math.sqrt(somma / (fine - i)) > SOGLIA_PRIMING) {
+        // Già la prima finestra è viva: il brano comincia dal primo campione (niente priming).
+        // Altrimenti, dentro la finestra, il primo campione davvero sopra il rumore del codec.
+        let k = i;
+        while (i > 0 && k < fine && Math.abs(campioni[k]!) <= SOGLIA_PRIMING) k += 1;
+        primo = k;
+        break;
+      }
+    }
+    primo = Math.min(primo, Math.round(eccesso * sampleRate));
+  }
+  const inizio = primo / sampleRate;
+  return { inizio, fine: inizio + durataDichiarata };
+}
+
 // ------------------------------------------------------------------ loop con giunta incrociata
 
 /**

@@ -114,5 +114,6 @@ export function collegaAudioScena(): () => void {
 debugSchermo.audio = {
   stato: () => regista?.stato() ?? null,
   guadagni: () => regista?.guadagni() ?? {},
+  tracce: () => regista?.tracce() ?? [],
   effetto: (id: string) => regista?.effetto(id) ?? Promise.resolve(false),
 };

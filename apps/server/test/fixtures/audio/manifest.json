@@ -2,7 +2,7 @@
   "nota": "Fixture del proiettore (apps/server/test/fixtures/audio/genera.sh): toni e rumori di prova, non musica vera.",
   "brani": [
     {"id": "luogo_scena_forno_vecchio", "tipo": "musica", "file": "luogo_scena_forno_vecchio.ogg", "loop": true, "lufs": -23, "durata_s": 8, "crediti": "Tono di prova A"},
-    {"id": "luogo_n_piazza", "tipo": "musica", "file": "luogo_n_piazza.ogg", "loop": true, "lufs": -23, "durata_s": 8, "crediti": "Tono di prova B"},
+    {"id": "luogo_n_piazza", "tipo": "musica", "file": "luogo_n_piazza.m4a", "loop": true, "lufs": -23, "durata_s": 8, "crediti": "Tono di prova B"},
     {"id": "luogo_n_mancante", "tipo": "musica", "file": "luogo_n_mancante.ogg", "loop": true},
     {"id": "luogo_n_furbo", "tipo": "musica", "file": "../manifest.json", "loop": true}
   ],

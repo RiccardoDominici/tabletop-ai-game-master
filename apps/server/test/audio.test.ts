@@ -39,7 +39,7 @@ describe('CatalogoAudio', () => {
 
   it('catalogo pubblico: url, loop per sezione, guadagno dal volume', () => {
     const p = c.pubblico();
-    expect(p.tracce['luogo_n_piazza']).toMatchObject({ tipo: 'musica', url: '/api/audio/luogo_n_piazza.ogg', loop: true, guadagno: 1, durata_s: 8, giunta_s: 0 });
+    expect(p.tracce['luogo_n_piazza']).toMatchObject({ tipo: 'musica', url: '/api/audio/luogo_n_piazza.m4a', loop: true, guadagno: 1, durata_s: 8, giunta_s: 0 });
     expect(p.tracce['tema_png_ottavia']).toMatchObject({ tipo: 'tema', loop: false });
     expect(p.tracce['amb_n_piazza_vento']).toMatchObject({ tipo: 'ambiente', loop: true, guadagno: 0.4 });
     expect(p.tracce['sfx_campana']).toMatchObject({ tipo: 'effetto', loop: false });
@@ -56,7 +56,7 @@ describe('CatalogoAudio', () => {
   });
 
   it('percorsi: solo i file del manifest, mai fuori dalla cartella', () => {
-    expect(c.percorso('luogo_n_piazza.ogg')).toBe(path.join(FIXTURE, 'luogo_n_piazza.ogg'));
+    expect(c.percorso('luogo_n_piazza.m4a')).toBe(path.join(FIXTURE, 'luogo_n_piazza.m4a'));
     expect(c.percorso('manifest.json')).toBeNull();
     expect(c.percorso('../manifest.json')).toBeNull();
     expect(c.percorso('genera.sh')).toBeNull();
@@ -70,6 +70,31 @@ describe('CatalogoAudio', () => {
     expect(guadagnoTraccia(1, -17)).toBeCloseTo(0.5012, 3); // 6 dB più forte → −6 dB
     expect(guadagnoTraccia(1, -80)).toBeCloseTo(3.981, 2); // al massimo +12 dB
     expect(guadagnoTraccia(9, undefined)).toBe(2);
+  });
+
+  it('alias_di e stesso file: il nome canonico è uno solo (il proiettore non dissolve un brano in sé)', () => {
+    const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-audio-'));
+    fs.writeFileSync(path.join(cartella, 'borgo.m4a'), 'x');
+    fs.writeFileSync(path.join(cartella, 'pioggia.m4a'), 'x');
+    const brani = [
+      { id: 'luogo_scena_borgo', file: 'borgo.m4a' },
+      { id: 'luogo_n_borgo', file: 'borgo.m4a', alias_di: 'luogo_scena_borgo' },
+      { id: 'luogo_n_vicolo', file: 'borgo.m4a' },
+    ];
+    const ambienti = [
+      { id: 'amb_scena_borgo_pioggia', luogo: 'scena_borgo', file: 'pioggia.m4a', volume: 0.3, lufs: -30 },
+      { id: 'amb_n_vicolo_pioggia', luogo: 'n_vicolo', file: 'pioggia.m4a', volume: 0.2, lufs: -30 },
+    ];
+    fs.writeFileSync(path.join(cartella, 'manifest.json'), JSON.stringify({ versione: 1, brani, ambienti, crediti: [] }));
+    const c = new CatalogoAudio(cartella);
+    expect(c.percorso('borgo.m4a')).toBe(path.join(cartella, 'borgo.m4a'));
+    expect(CatalogoAudio.mime('borgo.m4a')).toBe('audio/mp4');
+    expect(c.musicaLuogo('n_borgo')).toBe('luogo_scena_borgo');
+    expect(c.musicaLuogo('n_vicolo')).toBe('luogo_scena_borgo');
+    // Gli strati restano distinti (ognuno col suo volume): il proiettore li passa senza ripartire.
+    expect(c.ambienti('n_vicolo', [])).toEqual(['amb_n_vicolo_pioggia']);
+    expect(c.pubblico().tracce['amb_n_vicolo_pioggia']?.guadagno).toBeCloseTo(0.2 * 10 ** (7 / 20), 3);
+    fs.rmSync(cartella, { recursive: true, force: true });
   });
 
   it('senza manifest, o con un manifest rotto: catalogo vuoto, nessun errore', () => {
@@ -142,11 +167,11 @@ describe('rotte dell’audio e cambio d’umore', () => {
     const catalogo = (await (await fetch(`${url}/api/audio`)).json()) as CatalogoAudioPubblico;
     expect(Object.keys(catalogo.tracce)).toHaveLength(10);
     expect(catalogo.crediti).toHaveLength(2);
-    const r = await fetch(`${url}/api/audio/luogo_n_piazza.ogg`);
+    const r = await fetch(`${url}/api/audio/luogo_n_piazza.m4a`);
     expect(r.status).toBe(200);
-    expect(r.headers.get('content-type')).toBe('audio/ogg');
+    expect(r.headers.get('content-type')).toBe('audio/mp4');
     expect(r.headers.get('cache-control')).toBe('public, max-age=3600');
-    expect((await r.arrayBuffer()).byteLength).toBe(fs.statSync(path.join(FIXTURE, 'luogo_n_piazza.ogg')).size);
+    expect((await r.arrayBuffer()).byteLength).toBe(fs.statSync(path.join(FIXTURE, 'luogo_n_piazza.m4a')).size);
     for (const male of ['manifest.json', '..%2Fmanifest.json', 'genera.sh', 'luogo_n_mancante.ogg']) expect((await fetch(`${url}/api/audio/${male}`)).status).toBe(404);
     expect(await (await fetch(`${url}/api/salute`)).json()).toMatchObject({ audio: 10 });
   });

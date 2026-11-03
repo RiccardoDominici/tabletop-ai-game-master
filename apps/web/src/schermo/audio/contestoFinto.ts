@@ -148,8 +148,9 @@ export class SorgenteFinta extends NodoFinto implements SorgenteBuffer {
   }
 }
 
-export function bufferFinto(duration: number, numberOfChannels = 2, sampleRate = 48000): BufferAudio {
-  return { duration, length: Math.round(duration * sampleRate), numberOfChannels, sampleRate };
+export function bufferFinto(duration: number, numberOfChannels = 2, sampleRate = 48000, campioni?: Float32Array): BufferAudio {
+  const b: BufferAudio = { duration, length: Math.round(duration * sampleRate), numberOfChannels, sampleRate };
+  return campioni ? { ...b, getChannelData: () => campioni } : b;
 }
 
 /** Contesto finto con orologio e timer condivisi. */

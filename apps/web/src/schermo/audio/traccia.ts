@@ -13,7 +13,7 @@
 import type { TracciaAudio } from '@cantastorie/shared';
 import { creaLog } from '../../lib/log';
 import { fermaAutomazione, type BufferAudio, type ContestoAudio, type NodoAudio, type NodoGuadagno, type SorgenteBuffer } from './contesto';
-import { curvaPotenzaCostante, giroIncrociato } from './regole';
+import { curvaPotenzaCostante, giroIncrociato, puntiDiLoop } from './regole';
 
 const log = creaLog('audio-traccia');
 
@@ -32,6 +32,18 @@ export const timerFinestra: Timer = {
   cancella: (id) => window.clearTimeout(id),
 };
 
+export interface DettagliTraccia {
+  id: string;
+  durataBuffer: number;
+  durataDichiarata: number | null;
+  canali: number;
+  sampleRate: number;
+  loop: boolean;
+  loopInizio: number | null;
+  loopFine: number | null;
+  giunta: number;
+}
+
 export class TracciaInRiproduzione {
   readonly guadagno: NodoGuadagno;
   private readonly sorgenti = new Set<SorgenteBuffer>();
@@ -39,6 +51,8 @@ export class TracciaInRiproduzione {
   private fermata = false;
   /** Fine prevista dell'ultima uscita (per sapere quando liberare). */
   private onFine: (() => void) | null = null;
+  /** Punti di loop usati (null = buffer intero o niente loop). */
+  private punti: { inizio: number; fine: number } | null = null;
 
   constructor(
     private readonly ctx: ContestoAudio,
@@ -47,7 +61,7 @@ export class TracciaInRiproduzione {
     bus: NodoAudio,
     private readonly timer: Timer,
     /** Guadagno pieno della traccia (guadagno del manifest × livello voluto). */
-    private readonly pieno: number = traccia.guadagno,
+    private pieno: number = traccia.guadagno,
   ) {
     this.guadagno = ctx.createGain();
     this.guadagno.gain.value = 0;
@@ -99,6 +113,35 @@ export class TracciaInRiproduzione {
     this.timer.imposta(() => this.chiudi(), (durata + 0.3) * 1000);
   }
 
+  /**
+   * Nuovo guadagno pieno in `durataS` (lo stesso file passa a un altro strato con un altro volume:
+   * continua a suonare senza ripartire).
+   */
+  regola(guadagno: number, durataS: number): void {
+    if (this.fermata || guadagno === this.pieno) return;
+    const ora = this.ctx.currentTime;
+    const g = this.guadagno.gain;
+    fermaAutomazione(g, ora);
+    g.linearRampToValueAtTime(guadagno, ora + Math.max(0.02, durataS));
+    this.pieno = guadagno;
+  }
+
+  /** Buffer e loop della traccia (debug: verifica dei file veri nel browser). */
+  get dettagli(): DettagliTraccia {
+    const b = this.buffer;
+    return {
+      id: this.id,
+      durataBuffer: b.duration,
+      durataDichiarata: this.traccia.durata_s,
+      canali: b.numberOfChannels,
+      sampleRate: b.sampleRate,
+      loop: this.traccia.loop,
+      loopInizio: this.punti?.inizio ?? null,
+      loopFine: this.punti?.fine ?? null,
+      giunta: this.traccia.giunta_s,
+    };
+  }
+
   /** Valore corrente del guadagno della traccia (debug). */
   get valore(): number {
     return this.guadagno.gain.value;
@@ -119,10 +162,11 @@ export class TracciaInRiproduzione {
     s.buffer = this.buffer;
     if (loop) {
       s.loop = true;
-      const { loop_inizio_s: a, loop_fine_s: b } = this.traccia;
-      if (a !== null && b !== null && b <= this.buffer.duration) {
-        s.loopStart = a;
-        s.loopEnd = b;
+      const punti = this.puntiLoop();
+      this.punti = punti;
+      if (punti) {
+        s.loopStart = punti.inizio;
+        s.loopEnd = punti.fine;
       }
     }
     s.connect(guadagno);
@@ -137,6 +181,19 @@ export class TracciaInRiproduzione {
     this.sorgenti.add(s);
     s.start(t);
     return s;
+  }
+
+  /**
+   * Punti di loop: quelli del manifest se stanno nel file; altrimenti, se il buffer è più lungo
+   * della `durata_s` dichiarata (priming AAC non tolto dal decoder), quelli misurati sui campioni.
+   */
+  private puntiLoop(): { inizio: number; fine: number } | null {
+    const { loop_inizio_s: a, loop_fine_s: b, durata_s } = this.traccia;
+    if (a !== null && b !== null && b <= this.buffer.duration) return { inizio: a, fine: b };
+    const b0 = this.buffer;
+    const punti = puntiDiLoop(b0.duration, b0.sampleRate, durata_s, b0.getChannelData?.(0));
+    if (punti) log.info('Loop senza il priming del codec', { id: this.id, buffer: Number(b0.duration.toFixed(4)), dichiarata: durata_s, inizio: Number(punti.inizio.toFixed(4)) });
+    return punti;
   }
 
   /** Copia `k` di un loop a giunta incrociata, con la sua dissolvenza; programma la successiva. */

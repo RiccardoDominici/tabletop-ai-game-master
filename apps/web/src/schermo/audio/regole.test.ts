@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { curvaPotenzaCostante, dbALineare, giroIncrociato, IsteresiMusica, lineareADb, MemoriaTemi, PianoDucking } from './regole';
+import { curvaPotenzaCostante, dbALineare, giroIncrociato, IsteresiMusica, lineareADb, MemoriaTemi, PianoDucking, puntiDiLoop } from './regole';
 
 describe('IsteresiMusica', () => {
   it('dal silenzio parte subito; un altro brano entro 60 s aspetta', () => {
@@ -93,6 +93,38 @@ describe('PianoDucking', () => {
     expect(p.interrompi(21).comandi).toEqual([{ verso: 'su', valore: 1, a: 21, tau: 0.45 }]);
     expect(p.interrompi(21.5).comandi).toEqual([]);
     expect(p.voce(18, 19, 18).comandi[0]?.a).toBe(21);
+  });
+});
+
+describe('puntiDiLoop (priming AAC)', () => {
+  const SR = 48000;
+  /** Segnale: `silenzio` campioni muti (rumore del codec ~1e-5), poi un seno a −20 dBFS. */
+  function campioni(silenzio: number, totale: number): Float32Array {
+    const c = new Float32Array(totale);
+    for (let i = 0; i < totale; i += 1) c[i] = i < silenzio ? 1e-5 * Math.sin(i) : 0.1 * Math.sin((2 * Math.PI * 440 * i) / SR);
+    return c;
+  }
+
+  it('file intero quando il buffer è lungo quanto dichiarato (o la durata manca o è assurda)', () => {
+    expect(puntiDiLoop(8.003, SR, 8)).toBeNull();
+    expect(puntiDiLoop(8.05, SR, null)).toBeNull();
+    expect(puntiDiLoop(9, SR, 8)).toBeNull();
+  });
+
+  it('priming in testa non tolto dal decoder: il loop salta il silenzio iniziale', () => {
+    const p = puntiDiLoop(8.044, SR, 8, campioni(2112, Math.round(8.044 * SR)))!;
+    expect(p.inizio * SR).toBe(2112);
+    expect(p.fine - p.inizio).toBeCloseTo(8, 9);
+  });
+
+  it('solo imbottitura in coda (priming già tolto): il loop parte da zero', () => {
+    const p = puntiDiLoop(8.021, SR, 8, campioni(0, Math.round(8.021 * SR)))!;
+    expect(p.inizio).toBe(0);
+    expect(p.fine).toBe(8);
+  });
+
+  it('senza campioni: tutto l’eccesso in testa (suggerimento della pipeline)', () => {
+    expect(puntiDiLoop(8.04, SR, 8)).toEqual({ inizio: 1920 / SR, fine: 1920 / SR + 8 });
   });
 });
 

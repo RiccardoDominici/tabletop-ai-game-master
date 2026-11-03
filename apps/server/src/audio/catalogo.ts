@@ -64,6 +64,7 @@ interface VoceManifest {
   giunta_s?: unknown;
   luogo?: unknown;
   tag?: unknown;
+  alias_di?: unknown;
 }
 
 /** Traccia valida in memoria: quella pubblica più il nome del file e il luogo (ambienti). */
@@ -72,6 +73,8 @@ interface VoceAudio {
   file: string;
   /** Solo per gli ambienti con il campo `luogo` esplicito. */
   luogo: string | null;
+  /** `alias_di` del manifest: la voce è un altro nome della stessa traccia (es. nodo ↔ scena). */
+  aliasDi: string | null;
 }
 
 function numeroOppure(v: unknown, predefinito: number | null): number | null {
@@ -141,6 +144,7 @@ export class CatalogoAudio {
     this.perId.set(v.id, {
       file: v.file,
       luogo: typeof v.luogo === 'string' && ID_VALIDO.test(v.luogo) ? v.luogo : null,
+      aliasDi: typeof v.alias_di === 'string' && ID_VALIDO.test(v.alias_di) ? v.alias_di : null,
       traccia: {
         id: v.id,
         tipo,
@@ -164,9 +168,18 @@ export class CatalogoAudio {
     return this.righeCrediti;
   }
 
-  /** La traccia `id` se esiste ed è del tipo atteso. */
+  /**
+   * La traccia `id` se esiste ed è del tipo atteso, col suo nome canonico: l'`alias_di` del
+   * manifest, oppure la prima voce dello stesso tipo con lo stesso file. Così scena e nodo che
+   * condividono un brano danno lo stesso id, e il proiettore non lo dissolve in sé stesso.
+   */
   private di(id: string, tipo: TipoTracciaAudio): string | null {
-    return this.perId.get(id)?.traccia.tipo === tipo ? id : null;
+    const v = this.perId.get(id);
+    if (v?.traccia.tipo !== tipo) return null;
+    const alias = v.aliasDi ? this.perId.get(v.aliasDi) : undefined;
+    if (alias && alias.traccia.tipo === tipo) return alias.traccia.id;
+    for (const altra of this.perId.values()) if (altra.traccia.tipo === tipo && altra.file === v.file) return altra.traccia.id;
+    return id;
   }
 
   /** Musica del luogo (`luogo_<id>`), o null. */

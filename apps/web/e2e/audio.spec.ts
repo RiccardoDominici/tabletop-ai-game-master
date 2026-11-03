@@ -35,9 +35,20 @@ interface StatoAudio {
   abbassamenti: number;
   isteresiMs: number;
 }
-type FinestraDebug = { __schermoDebug: { audio: { stato(): StatoAudio | null; guadagni(): Record<string, number> } } };
+interface DettagliTraccia {
+  id: string;
+  durataBuffer: number;
+  canali: number;
+  sampleRate: number;
+  loopInizio: number | null;
+  loopFine: number | null;
+}
+type FinestraDebug = {
+  __schermoDebug: { audio: { stato(): StatoAudio | null; guadagni(): Record<string, number>; tracce(): DettagliTraccia[] } };
+};
 
 const statoAudio = (p: Page) => p.evaluate(() => (window as unknown as FinestraDebug).__schermoDebug.audio.stato());
+const tracce = (p: Page) => p.evaluate(() => (window as unknown as FinestraDebug).__schermoDebug.audio.tracce());
 const guadagni = (p: Page) => p.evaluate(() => (window as unknown as FinestraDebug).__schermoDebug.audio.guadagni());
 const salute = async (p: Page) => (await (await p.request.get('/api/salute')).json()) as { fase: string; turno: number; audio?: number };
 const luogo = (p: Page, id: string) => p.request.post('/api/scena/luogo', { data: { luogo: id } });
@@ -92,6 +103,13 @@ test('proiettore: musica con dissolvenza e isteresi, ambienti, tema del PNG una 
   expect(meta['uscita:luogo_scena_forno_vecchio']).toBeGreaterThan(0.1);
   expect(meta['uscita:luogo_scena_forno_vecchio']).toBeLessThan(0.99);
   expect((await statoAudio(schermo))?.ambienti).toEqual(['amb_n_piazza_vento']);
+  // La piazza è AAC-LC stereo in .m4a, come la pipeline vera: decodificata, e il loop dura 8 s
+  // (col priming del codec tolto dal decoder o saltato coi punti di loop).
+  const piazza = (await tracce(schermo)).find((t) => t.id === 'luogo_n_piazza');
+  expect(piazza).toMatchObject({ canali: 2 });
+  const giro = piazza!.loopFine !== null ? piazza!.loopFine - piazza!.loopInizio! : piazza!.durataBuffer;
+  expect(Math.abs(giro - 8)).toBeLessThan(0.006);
+  console.log('AAC in Chrome:', JSON.stringify(piazza));
   await schermo.screenshot({ path: path.join(SCREENSHOT, 'audio-dissolvenza-luogo.png') });
   await expect.poll(async () => (await guadagni(schermo))['uscita:luogo_scena_forno_vecchio'] ?? 0, { timeout: 8_000 }).toBe(0);
 

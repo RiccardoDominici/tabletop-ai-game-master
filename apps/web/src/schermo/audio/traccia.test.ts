@@ -23,6 +23,28 @@ describe('TracciaInRiproduzione', () => {
     expect(ctx.sorgenti[1]).toMatchObject({ loop: true, loopStart: 0, loopEnd: 0 });
   });
 
+  it('AAC col priming in testa: loopStart dopo il silenzio, loopEnd dopo `durata_s`', () => {
+    const ctx = new ContestoFinto();
+    const campioni = new Float32Array(Math.round(8.044 * 48000));
+    for (let i = 2112; i < campioni.length; i += 1) campioni[i] = 0.1 * Math.sin(i / 7);
+    new TracciaInRiproduzione(ctx, traccia({ durata_s: 8 }), bufferFinto(8.044, 2, 48000, campioni), ctx.createGain(), ctx).avvia(0, 0);
+    expect(ctx.sorgenti[0]?.loopStart).toBeCloseTo(0.044, 4);
+    expect(ctx.sorgenti[0]?.loopEnd).toBeCloseTo(8.044, 4);
+  });
+
+  it('regola: lo stesso file cambia volume senza ripartire', () => {
+    const ctx = new ContestoFinto();
+    const t = new TracciaInRiproduzione(ctx, traccia(), bufferFinto(8), ctx.createGain(), ctx);
+    t.avvia(0, 0);
+    ctx.avanza(1);
+    t.regola(0.2, 2);
+    ctx.avanza(1);
+    expect(t.valore).toBeCloseTo(0.5, 2);
+    ctx.avanza(1.5);
+    expect(t.valore).toBeCloseTo(0.2, 5);
+    expect(ctx.sorgenti).toHaveLength(1);
+  });
+
   it('entrata a potenza costante fino al guadagno della traccia', () => {
     const ctx = new ContestoFinto();
     const t = new TracciaInRiproduzione(ctx, traccia(), bufferFinto(8), ctx.createGain(), ctx);

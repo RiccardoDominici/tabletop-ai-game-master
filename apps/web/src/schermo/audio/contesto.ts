@@ -29,6 +29,8 @@ export interface BufferAudio {
   readonly length: number;
   readonly numberOfChannels: number;
   readonly sampleRate: number;
+  /** Campioni di un canale (per trovare il silenzio di priming dell'AAC prima del loop). */
+  getChannelData?(canale: number): Float32Array;
 }
 
 export interface SorgenteBuffer extends NodoAudio {

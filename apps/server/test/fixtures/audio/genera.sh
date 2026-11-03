@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# Genera i file di prova dell'audio del proiettore (Ogg Opus 48 kHz mono, pochi KB ciascuno).
+# Genera i file di prova dell'audio del proiettore (Ogg Opus 48 kHz mono, pochi KB ciascuno; un brano AAC .m4a stereo).
 set -euo pipefail
 F="${1:-$(cd "$(dirname "$0")" && pwd)}"; mkdir -p "$F"; cd "$F"
 ff() { /opt/homebrew/bin/ffmpeg -hide_banner -loglevel error -y -f lavfi -i "$1" -ac 1 -ar 48000 -c:a libopus -b:a 24k "$2"; }
 # Musica: sinusoidi con un numero intero di periodi in 8 s (il loop non ha giunta).
 ff "aevalsrc='0.25*sin(2*PI*220*t)+0.18*sin(2*PI*330*t)':d=8:s=48000" luogo_scena_forno_vecchio.ogg
-ff "aevalsrc='0.25*sin(2*PI*262*t)+0.18*sin(2*PI*393*t)':d=8:s=48000" luogo_n_piazza.ogg
+# Come la pipeline vera (docs/audio.md): AAC-LC stereo 48 kHz in .m4a (aac_at, 128k).
+/opt/homebrew/bin/ffmpeg -hide_banner -loglevel error -y -f lavfi \
+  -i "aevalsrc='0.25*sin(2*PI*262*t)+0.18*sin(2*PI*393*t)|0.25*sin(2*PI*262*t+0.5)+0.18*sin(2*PI*393*t+0.3)':d=8:s=48000" \
+  -ac 2 -ar 48000 -c:a aac_at -b:a 128k luogo_n_piazza.m4a
 ff "aevalsrc='0.25*sin(2*PI*147*t)+0.15*sin(2*PI*294*t)':d=8:s=48000" umore_esplorazione_tesa.ogg
 ff "aevalsrc='0.3*sin(2*PI*110*t)*(0.6+0.4*sin(2*PI*2*t))':d=8:s=48000" umore_tensione.ogg
 # Ambienti: rumori in loop.
