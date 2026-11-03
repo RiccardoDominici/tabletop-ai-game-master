@@ -1,0 +1,115 @@
+# Personaggi giocanti pregenerati. Ogni giocatore ne sceglie uno dal telefono.
+# La sessione regge con qualunque gruppo di 3, 4 o 5 di loro (sei PG per 3–5 giocatori).
+#
+# Visibilità (T9):
+#   - situazione_comune: sul telefono di tutti;
+#   - concetto, aggancio, cosa_sai_fare, aspetto: sul telefono del giocatore, e noti al narratore e al
+#     selettore del modo B: niente segreti;
+#   - conoscenze_private: SOLO sul telefono di quel giocatore. Il narratore non le dice mai a voce:
+#     diventano pubbliche solo se il giocatore le usa o le racconta.
+
+situazione_comune: "Siete a Fontanive, paese di casari e mulattieri sotto il passo, per le nozze di Agnese Bonfanti e Tonio Morlacchi. Le due case sono rivali da tre generazioni. Stamattina è caduta la prima neve: per usanza gli sposi si benedicono oggi al Sasso delle Promesse, prima che il sole tocchi il passo. Lì la nonna della sposa mette l'anello di casa al dito di Agnese, e ne racconta la storia davanti al paese; senza anello, niente benedizione fino a primavera. La sposa, per usanza, non parla fino al sì. Domattina i Morlacchi scendono a valle con i muli, e lo sposo con loro. A mezzogiorno, durante la festa nella casera dei Bonfanti, l'anello è sparito."
+
+personaggi:
+  - id: pg_nando
+    nome: "Nando Tremolino"
+    pronuncia: "Nàndo Tremolìno"
+    pronomi: "lui"
+    specie: "gnomo delle rocce"
+    classe: "bardo"
+    livello: 1
+    aspetto: "Gnomo dalla barba castana a punta, gilè a scacchi rossi e una fisarmonica più grande di lui, legata sulla schiena con due cinghie."
+    concetto: "Musicista di feste, di valle in valle: suona per chi paga e non prende mai le parti di nessuno. Conosce una canzone per ogni paese, e una presa in giro per ogni famiglia."
+    aggancio: "Gaspare Bonfanti ti ha pagato metà per suonare alla festa; l'altra metà, ha detto, dopo la benedizione."
+    cosa_sai_fare:
+      - "suoni la fisarmonica e fai ballare anche chi non vuole"
+      - "inventi una canzone su chiunque, in un minuto"
+      - "ti ricordi le facce di tutti quelli che hai visto ballare"
+    conoscenze_private:
+      - {testo: "A mezzogiorno, mentre suonavi il brindisi, hai visto una ragazza con una treccia rossa uscire di corsa dalla porta di dietro della cantina, con qualcosa stretto nel pugno.", fatti: [f_zelia_presa]}
+
+  - id: pg_ida
+    nome: "Ida Fiocchi"
+    pronuncia: "Ìda Fiòcchi"
+    pronomi: "lei"
+    specie: "umana"
+    classe: "chierica"
+    livello: 1
+    aspetto: "Umana di venticinque anni, guance rosse di freddo, mantello di lana grigia e al collo un ciondolo di ferro a forma di fiamma."
+    concetto: "Chierica della Madre del Focolare, che custodisce i fuochi di casa e le promesse fatte davanti a loro. È cresciuta a valle, alla scuola dove andava anche Tonio."
+    aggancio: "Tonio Morlacchi è il tuo amico d'infanzia: ti ha chiesto di stargli accanto al Sasso, perché da solo gli tremano le gambe."
+    cosa_sai_fare:
+      - "curi le ferite e scaldi chi ha freddo con la magia della tua dea"
+      - "sai le parole delle promesse e delle benedizioni di montagna"
+      - "fai sedere allo stesso tavolo chi non si parla"
+    conoscenze_private:
+      - {testo: "Tonio ti ha detto che il nonno Ettore porta sempre nella giacca una lettera vecchia, chiusa con la ceralacca, e che non la apre mai. Una volta Tonio ha provato a toccarla, e il nonno non gli ha parlato per una settimana.", fatti: [f_lettera_giacca]}
+
+  - id: pg_vanda
+    nome: "Vanda Brughiera"
+    pronuncia: "Vànda Brughièra"
+    pronomi: "lei"
+    specie: "mezzorca"
+    classe: "barbara"
+    livello: 1
+    aspetto: "Mezzorca alta e larga, trecce nere legate con lo spago da basto, giaccone di pelle di capra e un ferro di cavallo appeso alla cintura."
+    concetto: "Mulattiera dei Morlacchi da sei inverni: porta i muli oltre il passo con qualunque tempo. Parla poco, e quando parla di solito ha ragione."
+    aggancio: "Lavori per Ettore Morlacchi, che ti tratta come una nipote brontolona. Domattina porti i muli a valle. Bastiano, il ragazzo che lo zio Gaspare accusa del furto, è il tuo garzone."
+    cosa_sai_fare:
+      - "sollevi un basto carico da sola"
+      - "capisci il tempo dal cielo e la neve dalle impronte"
+      - "calmi un mulo, e quasi sempre anche un mulattiere"
+    conoscenze_private:
+      - {testo: "Stamattina all'alba hai visto Ettore salire da solo al Sasso con la lanterna. È tornato con gli occhi rossi, e ha detto che era il vento.", fatti: [f_ettore_alba]}
+      - {testo: "A mezzogiorno Bastiano era con te nella stalla dei Morlacchi, a ferrare la mula Gigia: non si è mosso un momento. Ha ancora il grasso degli zoccoli sulle mani.", fatti: [f_bastiano_innocente]}
+
+  - id: pg_remo
+    nome: "Remo Ciuffo"
+    pronuncia: "Rèmo Ciùffo"
+    pronomi: "lui"
+    specie: "halfling piedelesto"
+    classe: "ladro"
+    livello: 1
+    aspetto: "Halfling dai ricci biondi, cappello a punta troppo grande, una borsa di cuoio a tracolla piena di carte e un lapis dietro l'orecchio."
+    concetto: "Garzone di Sior Bortolo, il mercante di formaggi di Pontebruno: fa i conti, porta le carte e assaggia le forme. Ha le dita svelte e una faccia a cui nessuno dice di no."
+    aggancio: "Sior Bortolo ti ha mandato alle nozze con una borsa di carte da consegnare, e ti ha detto di non tornare a valle senza una firma."
+    cosa_sai_fare:
+      - "sfili un oggetto da una tasca senza che il padrone se ne accorga"
+      - "leggi un contratto al volo e trovi la clausola che conta"
+      - "riconosci a naso l'età di un formaggio"
+    conoscenze_private:
+      - {testo: "Nella borsa hai un contratto per Gaspare Bonfanti: cinque estati di pascolo al Prato Alto per Sior Bortolo, con venti fiorini di caparra già pagati un mese fa. Va firmato dopo il tramonto, non prima: il padrone ha detto «solo se le nozze saltano».", fatti: [f_caparra, f_contratto]}
+
+  - id: pg_livia
+    nome: "Livia Saltari"
+    pronuncia: "Lìvia Saltàri"
+    pronomi: "lei"
+    specie: "mezzelfa"
+    classe: "ranger"
+    livello: 1
+    aspetto: "Mezzelfa di ventidue anni, capelli castani raccolti sotto un berretto di lana, arco corto in spalla e scarponi da cacciatrice."
+    concetto: "Cugina della sposa: sua madre è una Bonfanti che si è sposata a valle. A Fontanive viene solo per le feste, e tutti la chiamano ancora «quella di giù»."
+    aggancio: "Zelia, la sorella della sposa, ti ha scritto la settimana scorsa: vieni alle nozze, succederà qualcosa, e mi serve una dalla mia parte."
+    cosa_sai_fare:
+      - "segui una pista nella neve fresca"
+      - "ti muovi senza fare rumore in una casa che non è tua"
+      - "conosci le cugine Bonfanti e i loro nascondigli di bambine"
+    conoscenze_private:
+      - {testo: "Nella lettera Zelia ha scritto anche: «In soffitta ho trovato lettere d'amore per la nonna, firmate E. Non sono del nonno Pietro.»", fatti: [f_lettere_soffitta, f_zelia_soffitta]}
+
+  - id: pg_gunda
+    nome: "Gunda Rocciarossa"
+    pronuncia: "Gùnda Rocciaróssa"
+    pronomi: "lei"
+    specie: "nana delle colline"
+    classe: "guerriera"
+    livello: 1
+    aspetto: "Nana dalle trecce color stoppa intrecciate di filo di ferro, corazza di cuoio lucidata per la festa e uno scudo rotondo dipinto con una colomba un po' storta."
+    concetto: "Guardia a pagamento, specializzata in matrimoni difficili: sta in mezzo, sorride e tiene le mani dove si vedono. Non ha mai perso una sposa, e nemmeno uno sposo."
+    aggancio: "Il Custode del Sasso ti paga per tenere la pace alla festa: dice che ogni nozze tra queste due case finisce a pugni."
+    cosa_sai_fare:
+      - "ti metti tra due che litigano, e non ti sposta nessuno"
+      - "fai a braccio di ferro con chiunque, e sai quando perdere"
+      - "capisci chi soffia sul fuoco in una sala piena"
+    conoscenze_private:
+      - {testo: "Il Custode ti ha confidato che nel Libro del Sasso, sessant'anni fa, c'è una prima neve senza benedizione, e che non ne parla mai. «Roba di quei due», ha detto, e ha guardato i due vecchi.", fatti: []}

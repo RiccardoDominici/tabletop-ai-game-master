@@ -1,0 +1,98 @@
+# Scheda PNG (manuale §3). La sorella della sposa: ha preso lei l'anello, per far dire la verità.
+# Voce tabitha: non sta mai nella stessa scena di Adelina (nadine). Scena: solo casa Bonfanti.
+# Non va alla casera (veste la sposa) né al Sasso (per usanza tiene il fuoco del focolare).
+id: png_zelia
+nome: "Zelia"
+pronuncia: "Zèlia"
+alias: [zelia, sorella, sorella della sposa, sorellina]
+livello: principale
+ruolo: "sorella della sposa; ha preso l'anello; alleata potenziale"
+fronte: fronte_faida
+
+aspetto:
+  lettura: "Una ragazza lentigginosa di quindici anni, con una treccia rossa e le dita sporche d'inchiostro. Ha un quaderno legato alla cintura con lo spago."
+  invarianti: ["quindici anni", "lentiggini", "treccia rossa lunga", "dita macchiate d'inchiostro", "quaderno legato alla cintura con lo spago", "vestito della festa con le maniche troppo lunghe"]
+  prompt_immagine: "freckled 15-year-old village girl, long red braid, ink-stained fingers, small notebook tied to her belt with string, feast dress with sleeves too long, cheeky grin, cosy alpine bedroom with a wedding veil on a chair behind her, [STILE]"
+
+personalita:
+  superficie: ["sfacciata e veloce di lingua", "scrive tutto nel quaderno, anche mentre parla", "adora la sorella e la tormenta"]
+  sotto_pressione: ["diventa formale come un notaio: dà del lei e parla per punti", "se la fanno ridere, dimentica di negare"]
+  contraddizione: "Vuole la verità a ogni costo, e da mezzogiorno racconta una bugia dopo l'altra."
+
+desiderio: "Costringere la nonna a raccontare al Sasso la storia vera dell'anello."   # contro Adelina e contro Gaspare
+paura: "Che la nonna non le parli mai più."
+
+segreto:
+  testo: "A mezzogiorno ha preso lei l'anello dalla scatolina, e l'ha nascosto nel campanaccio della Duchessa. Una settimana fa ha trovato in soffitta le lettere d'amore di Ettore per la nonna."
+  chi_altro_sa: []
+  se_rivelato: "La casa la sgrida, e la nonna non le parla; ma l'anello torna in tempo."
+
+voce:
+  tts: {voce_id: tabitha, eta_apparente: "14-16", altezza: alta, velocita: 1.1, timbro: "squillante e svelto, con le risate a metà frase"}
+  registro: "Dà del tu a tutti, forestieri compresi. Al gruppo dà del voi. Quando ha paura passa al lei, come un notaio."
+  stile: "Frasi di quattro-dieci parole, veloci. Lessico da libro e da tribunale: capitolo, verbale, testimone, agli atti."
+  tic: ["«Questo lo scrivo.»"]
+  gesto: "scrive nel quaderno senza guardare"
+  mai_dice: ["la parola «campanaccio», finché non ha ceduto", "una bugia sulla sorella"]
+  battuta_campione: "Questo lo scrivo. Capitolo secondo: arrivano i forestieri, e fanno domande."
+
+sa:
+  - f_zelia_presa
+  - f_campanaccio
+  - f_zelia_motivo
+  - f_zelia_soffitta
+  - f_lettere_soffitta
+  - f_anello_promessa
+  - f_leggenda_bonfanti
+  - f_focolare
+  - f_sposa_muta
+  - f_zelia_sorella
+  - f_duchessa
+  - f_adelina_racconta
+  - f_regola_voce
+non_sa:
+  - f_ettore_medico        # domanda probabile: «perché Ettore non venne?»
+  - f_gaspare_vide
+  - f_caparra
+  - f_lettera_rimandata
+  - f_attesa_sasso
+crede_a_torto:
+  - {testo: "Sessant'anni fa il vecchio Ettore ha piantato la nonna al Sasso per orgoglio, e poi ha fatto finta di niente.", contraddice: f_ettore_medico}
+
+mente_su:
+  - id: zel_mezzogiorno
+    argomento: "dov'era a mezzogiorno"
+    verita: f_zelia_presa
+    versione: "Io? Ero qui a vestire Agnese, tutto il giorno. Chiedetelo a lei."
+    perche: "Se l'anello torna prima del tramonto, la nonna racconta ancora la leggenda."
+    segnale: "si mordicchia la punta della treccia"
+    cede_se: "In privato, quando un PG le mostra la macchia d'inchiostro o il capello rosso della scatolina. Oppure in privato, quando un PG le promette che al Sasso si racconterà la storia vera."
+
+atteggiamento_pg:
+  pg_nando: {stato: amichevole, perche: "un musicista vero, come nei libri", vuole: "una canzone sulla vera storia, da cantare al Sasso"}
+  pg_ida:   {stato: amichevole, perche: "l'amica di Tonio: forse sta dalla parte giusta", vuole: "che al Sasso dica che le promesse si tengono"}
+  pg_vanda: {stato: indifferente, perche: "lavora per il vecchio Morlacchi", vuole: "sapere che cosa fa il vecchio all'alba"}
+  pg_remo:  {stato: indifferente, perche: "un garzone di mercante: conti, non storie", vuole: "che le dica che cosa c'è nella borsa"}
+  pg_livia: {stato: amichevole, perche: "l'ha chiamata lei, con la lettera", vuole: "che stia dalla sua parte contro la nonna"}
+  pg_gunda: {stato: indifferente, perche: "una guardia: potrebbe arrestarla", vuole: "che non la porti dalla nonna"}
+
+relazioni:
+  png_adelina: "la nonna: la chiama «la Matriarca» quando è arrabbiata"
+  agnese: "la sorella sposa: muta per usanza, e la guarda storto"
+  png_gaspare: "lo zio dei conti: non le piace come conta i bicchieri"
+  pg_livia: "la cugina di giù, che ha chiamato con una lettera"
+
+info_chiave: [i_zelia_confessa, i_quaderno]   # r_zelia
+
+iniziative:
+  - "Se un PG si avvicina alla botola della stalla, gli chiede di aiutarla con il velo della sposa."
+  - "Se lo zio sale la scala, nasconde il quaderno sotto il cuscino."
+  - "Se le promettono la verità, dice dov'è l'anello, e chiede che sia la nonna a raccontarla."
+
+evoluzione:
+  - {se: "le promettono in privato la verità al Sasso", allora: "dice dov'è l'anello, e lascia leggere il quaderno"}
+  - {se: "la scoprono davanti allo zio", allora: "diventa formale come un notaio e non dice più niente"}
+  - {se: "la nonna perde la voce del Sasso", allora: "dopo il tramonto la voce passa a lei, e piange per tutta la sera"}
+
+statistiche: "popolana (SRD 5.2), Destrezza alta"
+registro_attivita: []

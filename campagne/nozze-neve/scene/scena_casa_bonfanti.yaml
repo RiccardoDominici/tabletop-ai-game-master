@@ -8,7 +8,7 @@ nodo: n_casa_bonfanti
 nome: "Casa Bonfanti, con la stalla sotto"
 
 # Pianta e «chi sente cosa». Va al selettore del modo B: niente segreti.
-descrizione: "Casa Bonfanti è di pietra, dall'altra parte del vicolo rispetto alla casera. Al pianterreno c'è la cucina, con il camino, lo scrittoio dei conti di Gaspare e una campanella d'ottone appesa alla mensola; una botola con la scala scende nella stalla, dove stanno le vacche dei Bonfanti e la Duchessa, la più vecchia, con il campanaccio grande. La stalla ha anche una porta sul vicolo. Al primo piano c'è la camera della sposa: Agnese si fa vestire, muta come vuole l'usanza, e Zelia le sistema il velo. In cima, la soffitta con le cassapanche di famiglia. Chi sente cosa: dalla cucina si sentono la scala che scricchiola e i campanacci della stalla, ma non ciò che si dice di sopra a porta chiusa; in soffitta e nella stalla non sente nessuno, se Gaspare è in cucina. La sposa sente tutto ciò che si dice in camera, e non può parlare. La nonna Adelina e il vecchio Ettore sono alla casera."
+descrizione: "Casa Bonfanti è di pietra, dall'altra parte del vicolo rispetto alla casera. Al pianterreno c'è la cucina, con il camino, lo scrittoio dei conti di Gaspare e una campanella d'ottone appesa alla mensola; una botola con la scala scende nella stalla, dove stanno le vacche dei Bonfanti e la Duchessa, la più vecchia, con il campanaccio grande. La stalla ha anche una porta sul vicolo. Al primo piano c'è la camera della sposa: Agnese si fa vestire, muta come vuole l'usanza, e Zelia le sistema il velo. In cima, la soffitta con le cassapanche di famiglia. Chi sente cosa: dalla cucina si sentono la scala che scricchiola e i campanacci della stalla, ma non ciò che si dice di sopra a porta chiusa; in soffitta e nella stalla non sente nessuno, se Gaspare è in cucina. La sposa sente tutto ciò che si dice in camera, e non può parlare. La nonna della sposa e il vecchio Ettore sono alla casera."
 
 scopo: {tipo: rivelare_indizio, rif: i_campanaccio}
 domanda_drammatica: "I PG troveranno l'anello prima dello zio Gaspare?"
@@ -70,8 +70,8 @@ indizi:
     nodo: png_zelia
     essenziale: false
     tiro: "nessuno"
-    modi: 1
-    come_si_trova: "Quando Zelia cede: l'anello l'ha preso lei, a mezzogiorno, ed è nel campanaccio della Duchessa; l'ha fatto perché la nonna al Sasso racconti la storia vera."
+    modi: 2
+    come_si_trova: "Due modi, in privato: quando un PG le mostra la macchia d'inchiostro o il capello rosso della scatolina, oppure quando le promette che al Sasso si racconterà la storia vera. Allora Zelia cede: l'anello l'ha preso lei, a mezzogiorno, ed è nel campanaccio della Duchessa; l'ha fatto perché la nonna al Sasso racconti la storia vera."
   - id: i_lettere
     conclusione: r_anello
     tipo: documento

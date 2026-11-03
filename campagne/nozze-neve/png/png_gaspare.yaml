@@ -1,0 +1,107 @@
+# Scheda PNG (manuale §3). Il cattivo con agenda (C3): lo zio della sposa, contabile della casera.
+# Voce lucian. Scene: tutte e tre. Non è malvagio: ha fatto un conto sbagliato e ha paura della sorella.
+id: png_gaspare
+nome: "Gaspare Bonfanti"
+pronuncia: "Gàspare Bonfànti"
+alias: [gaspare, zio, zio gaspare, contabile]
+livello: principale
+ruolo: "fratello minore di Adelina e contabile della casera; ostacolo e cattivo della sessione"
+fronte: fronte_faida
+
+aspetto:
+  lettura: "Un uomo magro e calvo, sulla sessantina, in un panciotto di velluto verde. Ha gli occhiali sulla punta del naso e una matita dietro l'orecchio."
+  invarianti: ["sessantasei anni", "magro e calvo", "panciotto di velluto verde", "occhiali sulla punta del naso", "matita dietro l'orecchio", "piccolo libro dei conti in mano"]
+  prompt_immagine: "thin bald 66-year-old village bookkeeper, round spectacles on the tip of his nose, green velvet waistcoat, pencil behind his ear, small leather ledger in his hand, polite careful smile, warm alpine kitchen behind him, [STILE]"
+
+personalita:
+  superficie: ["gentile e misurato, parla piano", "conta tutto: forme, ospiti, bicchieri", "dà ragione a tutti, poi fa a modo suo"]
+  sotto_pressione: ["diventa precisissimo e lento, e cita cifre e date", "se lo smascherano, si offende come un bambino e chiama la sorella"]
+  contraddizione: "Tiene i conti di tutti, e non ha mai fatto i conti con la sorella."
+
+desiderio: "Far saltare le nozze prima del tramonto, per tenersi il Prato Alto."   # contro Adelina, gli sposi e il fronte delle nozze
+paura: "Che Adelina scopra la caparra del mercante."
+
+segreto:
+  testo: "Un mese fa ha preso da Sior Bortolo una caparra per il pascolo del Prato Alto, e l'ha spesa nel caldaio nuovo. A mezzogiorno ha visto Zelia prendere l'anello, e tace; ha accusato Bastiano."
+  chi_altro_sa: [sior_bortolo]
+  se_rivelato: "Davanti alla sorella si offende, poi chiede di non dirlo al paese. Se ha l'anello, lo rende."
+
+voce:
+  tts: {voce_id: lucian, eta_apparente: "60-70", altezza: bassa, velocita: 0.9, timbro: "liscio e basso, quasi un bisbiglio da sagrestia"}
+  registro: "Dà del lei a tutti, perfino alla sorella quando c'è gente. Al gruppo dà del voi. Non alza mai la voce."
+  stile: "Frasi di sei-dodici parole, ordinate. Lessico di conti: cifre, colonne, saldo, interesse, con rispetto parlando."
+  tic: ["«Facciamo due conti.»"]
+  gesto: "si toglie la matita da dietro l'orecchio e annota qualcosa"
+  mai_dice: ["il nome di Sior Bortolo, finché non lo smascherano", "la parola «caparra»: dice «un piccolo anticipo», e mai davanti alla sorella", "una parolaccia"]
+  battuta_campione: "Facciamo due conti, con calma. Un anello sparito vale più di una festa intera."
+
+sa:
+  - f_gaspare_vide
+  - f_zelia_presa
+  - f_caparra
+  - f_contratto
+  - f_caparra_spesa
+  - f_gaspare_vuole
+  - f_accusa_bastiano
+  - f_leggenda_bonfanti
+  - f_dote_prato
+  - f_gaspare_bambino
+  - f_gaspare_zio
+  - f_anello_sparito
+  - f_festa_casera
+non_sa:
+  - f_campanaccio          # domanda probabile: «dov'è l'anello?»
+  - f_ettore_medico
+  - f_anello_promessa
+  - f_lettere_soffitta
+  - f_zelia_motivo
+  - f_bastiano_innocente
+crede_a_torto:
+  - {testo: "Quella notte il medico lo portò su nostro padre, con il mulo di casa.", contraddice: f_ettore_medico}
+  - {testo: "La campanella del camino me la regalò nostro padre, quando guarii.", contraddice: f_campanella}
+
+mente_su:
+  - id: gas_bastiano
+    argomento: "chi era vicino alla scatolina a mezzogiorno"
+    verita: f_gaspare_vide
+    versione: "Ho visto il garzone dei Morlacchi girare intorno al tavolo alto. Lo dico con dispiacere, si capisce."
+    perche: "Se si sa che è stata Zelia, l'anello torna in tempo e le nozze si fanno."
+    segnale: "si toglie gli occhiali e li pulisce sul panciotto"
+    cede_se: "In privato, quando un PG gli dimostra che a mezzogiorno Bastiano ferrava un mulo nella stalla dei Morlacchi. Oppure in privato, quando un PG gli mostra la macchia d'inchiostro e il capello rosso della scatolina."
+  - id: gas_prato
+    argomento: "il Prato Alto"
+    verita: f_caparra
+    versione: "Il Prato Alto è la dote di Agnese. Io ne sono felicissimo, si capisce."
+    perche: "Ha speso la caparra: se si sa, la sorella non glielo perdona, e il paese ride."
+    segnale: "si toglie gli occhiali e li pulisce sul panciotto"
+    cede_se: "In privato, quando un PG gli mostra il contratto di Sior Bortolo."
+
+atteggiamento_pg:
+  pg_nando: {stato: amichevole, perche: "l'ha pagato lui, a metà", vuole: "che suoni forte quando la sala si scalda, e che non faccia domande"}
+  pg_ida:   {stato: indifferente, perche: "una chierica degli sposi", vuole: "che consigli prudenza: meglio rimandare che benedire male"}
+  pg_vanda: {stato: ostile, perche: "difende il garzone che lui ha accusato", vuole: "che porti i suoi muli lontano dalla casera"}
+  pg_remo:  {stato: amichevole, perche: "il garzone di Bortolo: il contratto arriva con lui", vuole: "che aspetti il tramonto, e che taccia fino ad allora"}
+  pg_livia: {stato: indifferente, perche: "la nipote di giù, che si impiccia", vuole: "che stia con la sposa e lontano dalla stalla"}
+  pg_gunda: {stato: amichevole, perche: "una guardia è utile, quando si accusa qualcuno", vuole: "che tenga d'occhio il garzone dei Morlacchi"}
+
+relazioni:
+  png_adelina: "la sorella maggiore: le deve tutto, e la teme"
+  png_zelia: "la nipote: l'ha vista, e tace"
+  png_ettore: "il vecchio Morlacchi: lo disprezza per abitudine"
+  sior_bortolo: "il mercante della valle: gli ha preso venti fiorini"
+
+info_chiave: [i_gaspare_vide, i_gaspare_prato]   # r_zelia, r_zio
+
+iniziative:
+  - "Ripete a chiunque gli chieda di aver visto Bastiano vicino al tavolo alto."
+  - "Se i PG vanno a casa Bonfanti, li segue con la scusa dei conti, e cerca prima di loro tra le cose di Zelia e nella stalla."
+  - "Se trova l'anello, lo tiene nel taschino del panciotto fino a dopo il tramonto."
+  - "Al Sasso, se l'anello non c'è, consiglia alla sorella di rimandare, per onore."
+
+evoluzione:
+  - {se: "lo smascherano sulla caparra davanti ad Adelina", allora: "si offende come un bambino, poi rende l'anello se ce l'ha, e chiede di non dirlo al paese"}
+  - {se: "scopre che fu Ettore a portare su il medico", allora: "si toglie gli occhiali, li guarda a lungo, e per la prima volta non dice una cifra"}
+  - {se: "le nozze saltano", allora: "dopo il tramonto firma il contratto con il garzone di Bortolo"}
+
+statistiche: "popolano (SRD 5.2), Intelligenza alta; non combatte"
+registro_attivita: []

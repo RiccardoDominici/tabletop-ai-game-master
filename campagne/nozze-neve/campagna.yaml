@@ -218,7 +218,7 @@ rivelazioni:
   - id: r_zelia
     chiave: true
     conclusione: "L'anello l'ha preso Zelia a mezzogiorno, e l'ha nascosto nel campanaccio della Duchessa per costringere la nonna a dire la verità al Sasso."
-    indizi: [i_macchia, i_impronte, i_gaspare_vide, i_campanaccio, i_quaderno, i_sposa_mima, i_zelia_confessa]
+    indizi: [i_macchia, i_impronte, i_alibi, i_gaspare_vide, i_campanaccio, i_quaderno, i_sposa_mima, i_zelia_confessa]
   - id: r_anello
     chiave: true
     conclusione: "L'anello è dei Morlacchi: sessant'anni fa Ettore lo diede ad Adelina come promessa di matrimonio, e lei lo ha tenuto."
@@ -226,7 +226,7 @@ rivelazioni:
   - id: r_passo
     chiave: true
     conclusione: "Sessant'anni fa Ettore non scappò: era sul passo nella tormenta a portare su il medico per Gaspare bambino, e al Sasso arrivò a notte."
-    indizi: [i_lettera_chiusa, i_libro_notte, i_tilde, i_campanella, i_ettore_neve]
+    indizi: [i_lettera_chiusa, i_libro_notte, i_tilde, i_campanella, i_ettore_neve, i_adelina_neve]
   - id: r_zio
     chiave: false
     conclusione: "Gaspare vuole che le nozze saltino per tenersi il Prato Alto, di cui ha già venduto il pascolo a Sior Bortolo."

@@ -1,0 +1,120 @@
+# Scheda PNG (manuale §3). La nonna della sposa: l'anello è «suo» da sessant'anni.
+# Voce nadine: non sta mai nella stessa scena di Zelia (tabitha). Scene: la casera, il Sasso.
+# Non entra mai in casa Bonfanti durante la sessione: tiene la sala della casera finché ci sono i
+# Morlacchi, poi sale al Sasso con il Custode.
+id: png_adelina
+nome: "Adelina"
+pronuncia: "Adelìna"
+alias: [adelina, nonna, nonna adelina, matriarca]
+livello: principale
+ruolo: "nonna della sposa e donna più anziana di casa Bonfanti; custode dell'anello; ostacolo e chiave del climax"
+fronte: fronte_faida
+
+aspetto:
+  lettura: "Una donna minuta di settantotto anni, dritta come un fuso, con uno scialle nero frangiato. Porta il grembiule della casera anche alla festa, e un mazzo di chiavi alla cintura."
+  invarianti: ["settantotto anni", "minuta e dritta", "capelli bianchi raccolti a crocchia", "scialle nero con le frange", "grembiule bianco della casera sul vestito della festa", "mazzo di chiavi di ferro alla cintura"]
+  prompt_immagine: "tiny upright 78-year-old alpine matriarch, white hair in a tight bun, black fringed shawl, white dairy apron over her feast dress, a ring of iron keys at her belt, sharp amused eyes, firelit stone cheese hall behind her, [STILE]"
+
+personalita:
+  superficie: ["lingua tagliente e battuta pronta", "comanda la casera e la famiglia con un'occhiata", "fiera dei Bonfanti fino al ridicolo"]
+  sotto_pressione: ["diventa cortese e formale, e dà del lei anche ai nipoti", "se la fanno ridere quando non vuole, si arrabbia con chi l'ha fatta ridere"]
+  contraddizione: "Racconta da ventotto anni la storia dell'anello, e non l'ha mai raccontata vera."
+
+desiderio: "Mettere l'anello al dito di Agnese al Sasso, raccontando la storia dei Bonfanti come l'ha sempre raccontata."   # contro Ettore, Zelia e il fronte della faida
+paura: "Che il paese rida di lei, come la sera in cui aspettò al Sasso fino al buio."
+
+segreto:
+  testo: "L'anello gliel'ha dato Ettore sessant'anni fa, per sposarla alla prima neve. Lo aspettò al Sasso fino al buio, poi disse a tutti che lui era scappato, e suo padre chiamò l'anello «della bisnonna». Tre giorni dopo gli rimandò indietro, chiusa, la sua lettera."
+  chi_altro_sa: [png_ettore]
+  se_rivelato: "Davanti al paese, se lo dice un altro: si toglie lo scialle, lascia l'anello alla seconda della casa e ritira la dote. Se lo dice lei: per la regola del Sasso non racconta più, e la voce passa a Zelia."
+
+voce:
+  tts: {voce_id: nadine, eta_apparente: "75-80", altezza: media, velocita: 1.0, timbro: "secco e chiaro, con una risata corta in fondo"}
+  registro: "Dà del tu a tutti, ai forestieri e al Custode compresi. Passa al lei, gelido, quando si offende. Al gruppo dà del voi."
+  stile: "Frasi di tre-nove parole. Proverbi di casera: latte, caglio, crosta, stagionatura. Chiude spesso con una sentenza."
+  tic: ["«Il formaggio buono vuole tempo.»"]
+  gesto: "fa tintinnare le chiavi alla cintura"
+  mai_dice: ["il nome di Ettore: dice «quello là» o «il vecchio Morlacchi», finché non ha letto la sua lettera", "la parola «promessa», finché non ha ceduto", "scusa o perdono, finché non sa perché lui non venne"]
+  battuta_campione: "Il formaggio buono vuole tempo. Gli anelli no: o tornano, o li vado a prendere."
+
+sa:
+  - f_anello_promessa
+  - f_attesa_sasso
+  - f_lettere_soffitta
+  - f_lettera_rimandata
+  - f_iniziali
+  - f_ferro_inciso
+  - f_catenine
+  - f_leggenda_bonfanti
+  - f_adelina_racconta
+  - f_adelina_nonna
+  - f_usanza_anello
+  - f_regola_seconda
+  - f_regola_ripete
+  - f_regola_voce
+  - f_dote_prato
+  - f_anello_sparito
+  - f_gaspare_bambino
+  - f_marta
+  - f_sposa_muta
+non_sa:
+  - f_zelia_presa          # domanda probabile: «chi ha preso l'anello?»
+  - f_campanaccio
+  - f_ettore_medico
+  - f_gaspare_vide
+  - f_caparra
+  - f_lettera_giacca
+  - f_campanella
+  - f_tilde_ricorda
+crede_a_torto:
+  - {testo: "L'anello l'ha preso un Morlacchi, per riprenderselo.", contraddice: f_zelia_presa}
+  - {testo: "Quel giorno il ragazzo Morlacchi scese a valle a vendere i muli, e non pensò più a lei.", contraddice: f_ettore_medico}
+
+mente_su:
+  - id: ade_anello
+    argomento: "da dove viene l'anello"
+    verita: f_anello_promessa
+    versione: "È l'anello di mia nonna, Bonfanti come me. Nessun Morlacchi l'ha mai toccato."
+    perche: "Dire la verità vuol dire dire che ha aspettato un Morlacchi al Sasso, e che il paese ripete da sessant'anni una storia di suo padre."
+    segnale: "si aggiusta lo scialle sulle spalle, due volte"
+    cede_se: "In privato, quando un PG le mostra le lettere della soffitta firmate E. Oppure in privato, quando un PG le mostra il ferro di cavallo inciso dentro l'anello."
+  - id: ade_neve
+    argomento: "la prima neve di sessant'anni fa"
+    verita: f_attesa_sasso
+    versione: "Quel giorno il Morlacchi è scappato a valle. Io non l'aspettavo nemmeno."
+    perche: "Non vuole che nessuno sappia che è rimasta al Sasso fino al buio, da sola."
+    segnale: "si aggiusta lo scialle sulle spalle, due volte"
+    cede_se: "In privato, quando un PG le dà la lettera chiusa di Ettore: la apre e la legge. Oppure in privato, quando un PG le ripete ciò che grida Tilde: quella notte il medico arrivò sul mulo dei Morlacchi."
+
+atteggiamento_pg:
+  pg_nando: {stato: indifferente, perche: "un musicante pagato da suo fratello: fa rumore, e mangia", vuole: "una polka dei Bonfanti, più forte di quelle dei Morlacchi"}
+  pg_ida:   {stato: indifferente, perche: "una chierica che sta dalla parte dello sposo", vuole: "che benedica il fuoco della casera, non i muli"}
+  pg_vanda: {stato: ostile, perche: "mangia il pane dei Morlacchi e difende il garzone accusato", vuole: "che stia dall'altra parte delle forme"}
+  pg_remo:  {stato: amichevole, perche: "un garzone di mercante che sa riconoscere un formaggio buono", vuole: "che dica a tutti che il formaggio dei Bonfanti è il migliore della valle"}
+  pg_livia: {stato: amichevole, perche: "è sua nipote, anche se è cresciuta a valle", vuole: "che stia vicino alla sposa e non dia retta a Zelia"}
+  pg_gunda: {stato: indifferente, perche: "una guardia pagata dal Custode, che guarda tutti allo stesso modo", vuole: "che tenga i Morlacchi dalla loro parte della sala"}
+
+relazioni:
+  png_ettore: "il vecchio Morlacchi: non lo chiama per nome da sessant'anni"
+  png_gaspare: "il fratello minore: gli lascia i conti, e gli crede"
+  png_zelia: "la nipote più piccola: le somiglia troppo, e per questo litigano"
+  agnese: "la sposa, la nipote più grande"
+  marta: "la figlia, madre della sposa"
+  pietro: "il marito, morto da dieci anni"
+
+info_chiave: [i_adelina_anello, i_adelina_neve]   # r_anello, r_passo
+
+iniziative:
+  - "Se un PG prende in mano la scatolina, gliela toglie: quella non si tocca."
+  - "Se vede i PG parlare piano con Ettore, manda Gaspare a sentire."
+  - "Al quinto segno del tramonto sale al Sasso con il Custode, a prendere posto davanti alla pietra."
+  - "Al Sasso, se ha l'anello in mano, comincia la storia di sempre."
+
+evoluzione:
+  - {se: "legge la lettera di Ettore, o sa da Tilde del medico", allora: "smette di chiamarlo «quello là»; al Sasso, se ha l'anello, racconta la storia vera, e dopo la voce del Sasso passa alla nipote del focolare"}
+  - {se: "qualcun altro racconta la verità al posto suo, davanti al paese", allora: "si toglie lo scialle, dice a Marta di mettere l'anello, e scende in paese da sola; ritira la dote"}
+  - {se: "racconta la leggenda e Ettore se ne va", allora: "ha vinto, e lo sa: per tutta la sera non guarda nessuno negli occhi"}
+  - {se: "il sole tocca il passo senza anello", allora: "dà la colpa ai Morlacchi davanti a tutti, e la faida si fa più dura"}
+
+statistiche: "popolana (SRD 5.2), Saggezza alta"
+registro_attivita: []

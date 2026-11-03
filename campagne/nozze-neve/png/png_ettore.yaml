@@ -1,0 +1,117 @@
+# Scheda PNG (manuale §3). Il nonno dello sposo: sessant'anni fa diede l'anello di sua madre ad Adelina.
+# Voce vincent. Scene: la casera, il Sasso. Non entra mai in casa Bonfanti (orgoglio).
+# Sordo da un orecchio: è il suo modo di non sentire ciò che non vuole.
+id: png_ettore
+nome: "Ettore Morlacchi"
+pronuncia: "Èttore Morlàcchi"
+alias: [ettore, nonno, nonno ettore, mulattiere]
+livello: principale
+ruolo: "nonno dello sposo e capo dei mulattieri; testimone reticente; chi ha dato l'anello"
+fronte: fronte_faida
+
+aspetto:
+  lettura: "Un uomo grosso e un po' curvo, di ottant'anni, con la barba bianca da caprone. Porta un cappello di feltro con la piuma, un bastone di nocciolo e la fibbia a ferro di cavallo."
+  invarianti: ["ottant'anni", "grosso e un po' curvo", "barba bianca lunga", "cappello di feltro con una piuma di gallo", "fibbia della cintura a ferro di cavallo", "bastone di nocciolo"]
+  prompt_immagine: "big slightly stooped 80-year-old mule driver, long white goat-like beard, felt hat with a rooster feather, thick wool jacket, belt buckle shaped like a horseshoe, hazel walking stick, gruff weathered face with kind eyes, snowy mule yard behind him, [STILE]"
+
+personalita:
+  superficie: ["burbero e rumoroso, batte il bastone per farsi sentire", "fa finta di non sentire ciò che non gli piace", "generoso con le bestie, e con le persone solo di nascosto"]
+  sotto_pressione: ["diventa zitto e immobile, con le mani sul bastone", "se lo commuovono, si arrabbia con il cappello e lo strapazza"]
+  contraddizione: "Grida che i Bonfanti sono ladri, e ogni prima neve sale al Sasso da solo, prima dell'alba."
+
+desiderio: "Sentire dire al Sasso, una volta, davanti al paese, che i Morlacchi non hanno mai rubato niente."   # contro Adelina e la leggenda
+paura: "Morire senza che lei sappia perché quel giorno non venne."
+
+segreto:
+  testo: "Sessant'anni fa non venne al Sasso perché era sul passo nella tormenta, a portare su il medico per Gaspare bambino; arrivò al Sasso a notte, e non trovò nessuno. Lei gli rimandò la lettera chiusa, e lui la porta ancora nella giacca."
+  chi_altro_sa: [tilde]
+  se_rivelato: "Se lo dice lui, davanti al paese, Adelina è umiliata. Se lo legge lei, in privato, la storia del Sasso può cambiare."
+
+voce:
+  tts: {voce_id: vincent, eta_apparente: "75-85", altezza: bassa, velocita: 0.95, timbro: "grave e ruvido, come una carriola sul selciato"}
+  registro: "Dà del tu a tutti e chiama la gente con il mestiere: musicante, guardia, garzone, chierica, quando sa con chi parla. Al gruppo dà del voi. Ai Bonfanti non si rivolge: parla di loro, a voce alta."
+  stile: "Frasi di due-sei parole. Lessico di mulattiera: basto, passo, ferri, zoccoli, salita. Risponde spesso con un «Eh?»."
+  tic: ["«Parla dall'orecchio buono, eh.»"]
+  gesto: "batte il bastone per terra, due colpi"
+  mai_dice: ["il nome di Adelina: dice «la Bonfanti», finché lei non lo chiama per nome", "la parola «medico», finché non ha ceduto", "una parola dolce davanti ai suoi"]
+  battuta_campione: "Parla dall'orecchio buono, eh. Con l'altro sento solo i Bonfanti."
+
+sa:
+  - f_anello_promessa
+  - f_iniziali
+  - f_ferro_inciso
+  - f_ferro_morlacchi
+  - f_ettore_medico
+  - f_gaspare_febbre
+  - f_ettore_tacque
+  - f_notte_sasso
+  - f_lettera_rimandata
+  - f_lettera_giacca
+  - f_campanella
+  - f_ettore_alba
+  - f_storia_morlacchi
+  - f_partenza_alba
+  - f_dono_morlacchi
+  - f_bastiano_innocente
+  - f_ettore_nonno
+  - f_faida
+non_sa:
+  - f_zelia_presa          # domanda probabile: «chi ha preso l'anello?»
+  - f_campanaccio
+  - f_lettere_soffitta
+  - f_attesa_sasso
+  - f_caparra
+  - f_gaspare_vide
+crede_a_torto:
+  - {testo: "Quel giorno la Bonfanti al Sasso non è nemmeno salita.", contraddice: f_attesa_sasso}
+  - {testo: "Le sue lettere, la Bonfanti le ha bruciate tutte, il giorno dopo.", contraddice: f_lettere_soffitta}
+
+mente_su:
+  - id: ett_anello
+    argomento: "di chi è l'anello e come l'ha avuto la Bonfanti"
+    verita: f_anello_promessa
+    versione: "È nostro, l'anello. La Bonfanti se l'è tenuto. Come una ladra."
+    perche: "Dire che gliel'ha dato lui vuol dire dire che voleva sposarla, e che lei, così crede, non è nemmeno salita al Sasso."
+    segnale: "si tira la barba con tutte e due le mani"
+    cede_se: "In privato, quando un PG gli mostra le lettere della soffitta: lei le ha tenute, legate con il nastro. Oppure in privato, quando un PG gli mostra il ferro di cavallo inciso dentro l'anello e gli chiede di chi era."
+  - id: ett_neve
+    argomento: "perché sessant'anni fa non salì al Sasso"
+    verita: f_ettore_medico
+    versione: "Quel giorno sono sceso a valle. Avevo muli da vendere."
+    perche: "L'aveva promesso al medico e a Tilde, e poi l'orgoglio: lei non l'aveva aspettato, così crede."
+    segnale: "si tira la barba con tutte e due le mani"
+    cede_se: "In privato, quando un PG gli legge la riga del Libro del Sasso: lei aspettò fino al buio. Oppure in privato, quando un PG gli ripete ciò che grida Tilde: il medico arrivò sul mulo dei Morlacchi."
+
+atteggiamento_pg:
+  pg_nando: {stato: indifferente, perche: "un musicante pagato dai Bonfanti", vuole: "una canzone da mulattieri, una volta tanto"}
+  pg_ida:   {stato: amichevole, perche: "è l'amica di Tonio, e porta il fuoco al collo", vuole: "che stia vicino al nipote al Sasso, e che non lo faccia piangere"}
+  pg_vanda: {stato: amichevole, perche: "la sua mulattiera migliore, quasi una nipote", vuole: "che difenda Bastiano e i muli, e che non gli faccia domande"}
+  pg_remo:  {stato: ostile, perche: "un garzone di mercante: gente che compra quello che portano i muli", vuole: "che stia lontano dai basti"}
+  pg_livia: {stato: indifferente, perche: "una Bonfanti, anche se di giù", vuole: "sapere se è una Bonfanti come la nonna o come la madre"}
+  pg_gunda: {stato: indifferente, perche: "una guardia, e le guardie stanno con chi paga", vuole: "una sfida a braccio di ferro, per vedere quanto vale"}
+
+relazioni:
+  png_adelina: "la Bonfanti: non la chiama per nome da sessant'anni"
+  png_gaspare: "lo zio della sposa: il bambino della febbre, ma lui non lo sa"
+  tonio: "il nipote, lo sposo: l'unica cosa che lo fa sorridere in pubblico"
+  bastiano: "il garzone, accusato a torto"
+  lina: "la moglie, morta da cinque anni: sapeva della promessa"
+  tilde: "la levatrice: l'unica che sa, e non lo ha mai detto"
+
+info_chiave: [i_ettore_anello, i_ettore_neve, i_lettera_chiusa]   # r_anello, r_passo
+
+iniziative:
+  - "Se un Bonfanti dice «ladri», batte il bastone e si alza in piedi."
+  - "Se qualcuno lo invita a ballare o a fare a braccio di ferro, appende la giacca alla panca."
+  - "Al sesto segno della lite manda i suoi fuori con le panche."
+  - "Al Sasso si mette con i Morlacchi, il più lontano possibile da Adelina, e si rigira in mano una lettera chiusa."
+
+evoluzione:
+  - {se: "gli mostrano in privato le lettere della soffitta, o il ferro di cavallo dentro l'anello", allora: "si siede, si toglie il cappello e dice da dove viene l'anello"}
+  - {se: "sa che lei lo aspettò fino al buio", allora: "racconta il passo e il medico, e dà la lettera a un PG: portagliela tu"}
+  - {se: "al Sasso si racconta la leggenda", allora: "si alza, chiama i suoi e se ne va; all'alba si riprende la casetta del lavatoio"}
+  - {se: "Adelina racconta la verità", allora: "le porge la mano, e mette lui l'anello al dito della sposa"}
+  - {se: "la festa finisce con le panche fuori", allora: "non parla più a quattr'occhi con nessuno"}
+
+statistiche: "popolano robusto (SRD 5.2), Forza alta; non combatte, ma non si sposta"
+registro_attivita: []

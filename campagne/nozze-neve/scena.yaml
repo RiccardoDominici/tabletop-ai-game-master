@@ -8,7 +8,7 @@ nodo: n_casera
 nome: "La casera dei Bonfanti, durante la festa"
 
 # Pianta e «chi sente cosa». Va al selettore del modo B: niente segreti.
-descrizione: "La sala grande della casera, in cima al paese, con gli scaffali delle forme fino al soffitto e un camino acceso. Due tavolate lunghe: a sinistra i Bonfanti, a destra i Morlacchi, e in mezzo, per terra, una riga di forme di formaggio messa come un confine. In fondo c'è il tavolo alto degli anziani, con la scatolina di noce aperta e vuota, il Custode Ilario con la sua borsa e la vecchia Tilde. Bastiano, il garzone dei Morlacchi, siede imbronciato in fondo alla sua tavolata. Dietro il tavolo alto tre gradini scendono nella cantina delle forme, fresca e buia, che ha una porta di dietro sul vicolo. Chi sente cosa: ciò che si dice al tavolo alto lo sente tutta la sala; a una tavolata lo sente solo quella tavolata, sotto la fisarmonica; nella cantina delle forme e fuori nel vicolo non sente nessuno della sala. La sposa e sua sorella Zelia sono a casa Bonfanti, dall'altra parte del vicolo."
+descrizione: "La sala grande della casera, in cima al paese, con gli scaffali delle forme fino al soffitto e un camino acceso. Due tavolate lunghe: a sinistra i Bonfanti, a destra i Morlacchi, e in mezzo, per terra, una riga di forme di formaggio messa come un confine. In fondo c'è il tavolo alto degli anziani, con la scatolina di noce aperta e vuota, il Custode Ilario con la sua borsa e la vecchia Tilde. Bastiano, il garzone dei Morlacchi, siede imbronciato in fondo alla sua tavolata. Dietro il tavolo alto tre gradini scendono nella cantina delle forme, fresca e buia, che ha una porta di dietro sul vicolo. Chi sente cosa: ciò che si dice al tavolo alto lo sente tutta la sala; a una tavolata lo sente solo quella tavolata, sotto la fisarmonica; nella cantina delle forme e fuori nel vicolo non sente nessuno della sala. La sposa e sua sorella sono a casa Bonfanti, dall'altra parte del vicolo."
 
 # C12: scopo dall'elenco chiuso, e domanda drammatica da sì o no.
 scopo: {tipo: rivelare_indizio, rif: i_macchia}
@@ -99,32 +99,32 @@ indizi:
     nodo: png_gaspare
     essenziale: false
     tiro: "nessuno"
-    modi: 1
-    come_si_trova: "Quando Gaspare cede: a mezzogiorno, durante il brindisi, ha visto Zelia sfilare l'anello dalla scatolina, e non ha detto niente."
+    modi: 2
+    come_si_trova: "Due modi, in privato: quando un PG gli dimostra che Bastiano a mezzogiorno ferrava un mulo, oppure quando gli mostra la macchia d'inchiostro e il capello rosso. Allora Gaspare cede: a mezzogiorno, durante il brindisi, ha visto Zelia sfilare l'anello dalla scatolina, e non ha detto niente."
   - id: i_adelina_anello
     conclusione: r_anello
     tipo: png
     nodo: png_adelina
     essenziale: false
     tiro: "nessuno"
-    modi: 1
-    come_si_trova: "Quando Adelina cede, in privato: l'anello gliel'ha dato Ettore, sessant'anni fa, per sposarla alla prima neve. La bisnonna Bonfanti non c'entra."
+    modi: 2
+    come_si_trova: "Due modi, in privato: quando un PG le mostra le lettere della soffitta, oppure il ferro di cavallo inciso dentro l'anello. Allora Adelina cede: l'anello gliel'ha dato Ettore, sessant'anni fa, per sposarla alla prima neve. La bisnonna Bonfanti non c'entra."
   - id: i_ettore_anello
     conclusione: r_anello
     tipo: png
     nodo: png_ettore
     essenziale: false
     tiro: "nessuno"
-    modi: 1
-    come_si_trova: "Quando Ettore cede, in privato: l'anello era di sua madre, e lui l'ha dato ad Adelina per sposarla. Lei non l'ha rubato."
+    modi: 2
+    come_si_trova: "Due modi, in privato: quando un PG gli mostra le lettere della soffitta, oppure il ferro di cavallo inciso dentro l'anello. Allora Ettore cede: l'anello era di sua madre, e lui l'ha dato ad Adelina per sposarla. Lei non l'ha rubato."
   - id: i_ettore_neve
     conclusione: r_passo
     tipo: png
     nodo: png_ettore
     essenziale: false
     tiro: "nessuno"
-    modi: 1
-    come_si_trova: "Quando Ettore cede, in privato: quel giorno era sul passo nella tormenta con il medico per Gaspare bambino, e al Sasso arrivò a notte. Poi tira fuori dalla giacca la lettera chiusa."
+    modi: 2
+    come_si_trova: "Due modi, in privato: quando un PG gli legge la riga del Libro del Sasso, oppure gli ripete ciò che grida Tilde. Allora Ettore cede: quel giorno era sul passo nella tormenta con il medico per Gaspare bambino, e al Sasso arrivò a notte. Se un PG gliela chiede, tira fuori dalla giacca la lettera chiusa."
   - id: i_lettera_chiusa
     conclusione: r_passo
     tipo: documento
@@ -133,6 +133,23 @@ indizi:
     tiro: "nessuno"
     modi: 2
     come_si_trova: "La lettera chiusa che Ettore porta nella giacca, con la ceralacca intatta e scritto «Per Adelina». Due modi: un PG la apre e la legge; oppure un PG la dà ad Adelina in privato, e lei la apre e la legge. Dentro: non sono venuto perché tuo fratello bruciava di febbre e il medico non voleva salire con la neve; l'ho portato su io, col mulo; al Sasso era buio; tieni l'anello finché non mi perdoni."
+
+  - id: i_alibi
+    conclusione: r_zelia
+    tipo: png
+    nodo: n_casera
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi guarda da vicino Bastiano, o gli chiede dov'era a mezzogiorno: ha le mani nere di grasso da zoccoli fino ai polsi, e borbotta che era nella stalla dei Morlacchi a ferrare la mula Gigia. La mula ha i ferri nuovi, lucidi."
+  - id: i_adelina_neve
+    conclusione: r_passo
+    tipo: png
+    nodo: png_adelina
+    essenziale: false
+    tiro: "nessuno"
+    modi: 3
+    come_si_trova: "Tre modi, in privato: un PG le dà la lettera chiusa che Ettore le ha consegnato; oppure quella presa dalla sua giacca; oppure le ripete ciò che grida Tilde sul medico e sul mulo dei Morlacchi. Allora Adelina cede: quel giorno lo aspettò al Sasso fino al buio, e adesso sa perché lui non venne."
 
 # Almeno due uscite, ognuna con gli indizi che la segnalano.
 uscite:

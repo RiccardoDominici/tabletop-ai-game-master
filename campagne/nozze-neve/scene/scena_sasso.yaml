@@ -9,7 +9,7 @@ nome: "Il Sasso delle Promesse, al tramonto"
 climax: true
 
 # Pianta e «chi sente cosa». Va al selettore del modo B: niente segreti.
-descrizione: "Una grande pietra piatta sotto un larice, sopra il paese, con la neve spazzata e due lanterne accese ai lati. Il Custode Ilario sta dietro il Sasso, con il Libro aperto sul leggio e il corno appeso al larice. Il paese arriva a semicerchio sulla neve, le due case una di qua e una di là, e la Duchessa si ferma accanto alla pietra. Davanti al Sasso ci sono gli sposi: Agnese con il velo, muta, e Tonio che non sa dove mettere le mani. Dietro il larice c'è il casotto di legno del Custode. Chi sente cosa: ciò che si dice davanti al Sasso lo sente tutto il paese; dietro il larice e nel casotto non sente nessuno. Zelia è rimasta a casa al focolare, come vuole l'usanza."
+descrizione: "Una grande pietra piatta sotto un larice, sopra il paese, con la neve spazzata e due lanterne accese ai lati. Il Custode Ilario sta dietro il Sasso, con il Libro aperto sul leggio e il corno appeso al larice. Il paese arriva a semicerchio sulla neve, le due case una di qua e una di là, e la Duchessa si ferma accanto alla pietra. Davanti al Sasso ci sono gli sposi: Agnese con il velo, muta, e Tonio che non sa dove mettere le mani. Dietro il larice c'è il casotto di legno del Custode. Chi sente cosa: ciò che si dice davanti al Sasso lo sente tutto il paese; dietro il larice e nel casotto non sente nessuno. La sorella della sposa è rimasta a casa al focolare, come vuole l'usanza."
 
 scopo: {tipo: mettere_alla_prova, rif: fronte_faida}
 domanda_drammatica: "Agnese e Tonio saranno benedetti prima che il sole tocchi il passo?"
