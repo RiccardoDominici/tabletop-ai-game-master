@@ -17,9 +17,17 @@ campagna di anni ha più fasi e un mondo completo. Ricerca: `docs/ricerca-durata
    scelte, PNG incontrati, azioni) si estraggono in modo deterministico dall'archivio delle sessioni
    (`sessioni.sqlite`). Il modello forte li interpreta, ma ogni fatto nuovo dello stato cita il turno da cui
    viene, e il validatore lo controlla. È la risposta al rischio principale della ricerca (log scritto male →
-   sessione dopo sbagliata).
-5. **Il canone cresce, non si riscrive.** Un fatto non si cancella: si supera (`superato_da`), con la sessione
-   e il motivo. Un PNG morto resta morto in ogni pacchetto successivo (controllo del validatore).
+   sessione dopo sbagliata). I fatti nati fuori scena, quando il mondo si muove tra le sessioni, hanno una
+   fonte loro: `fonte: {tra_sessioni: <n>, motivo}`, e il motivo nomina l'orologio o la regola che li produce.
+5. **Il canone preparato non si tocca; il gioco aggiunge.** I fatti preparati (`f_…`, in `campagna.yaml`)
+   restano come sono. I fatti di gioco (`g_…`, in `stato/stato.yaml`) si aggiungono e, quando cambiano un
+   fatto preparato, lo dichiarano (`supera: [f_…]`); un fatto di gioco non si cancella, si supera con uno più
+   nuovo (`superato_da`). Un PNG morto resta morto in ogni pacchetto successivo (controllo del validatore).
+6. **Ciò che i PG hanno scoperto smette di essere segreto.** Ogni pacchetto porta il suo
+   `repertorio/parole_segrete.yaml`, che sostituisce quello della campagna; il validatore controlla che non
+   nasconda fatti già noti ai PG. Un PNG ricorrente che ha imparato qualcosa ha nel pacchetto la sua scheda
+   aggiornata (`png/png_<nome>.yaml`, scheda intera con lo stesso id), che per quella sessione sostituisce
+   quella della campagna; la scheda della campagna resta la versione iniziale.
 
 ## Il brief
 ```yaml
