@@ -61,6 +61,8 @@ export interface StatoRegista {
   temi: number;
   /** Effetti suonati (ultimo id in coda). */
   effetti: string[];
+  /** Ultimi temi programmati: di quanto precedono la battuta (s; negativo = partiti dopo). */
+  anticipiTemi: Array<{ png: string; id: string; anticipoS: number }>;
   sottoVoce: boolean;
   abbassamenti: number;
   isteresiMs: number;
@@ -97,6 +99,7 @@ export class RegistaAudio {
   private cambiMusica = 0;
   private temiPartiti = 0;
   private readonly effettiSuonati: string[] = [];
+  private readonly anticipiTemi: Array<{ png: string; id: string; anticipoS: number }> = [];
 
   constructor(private readonly o: OpzioniRegista) {
     this.isteresi = new IsteresiMusica(o.isteresiMs ?? INTERVALLO_MUSICA_MS);
@@ -126,6 +129,17 @@ export class RegistaAudio {
   /** Un pezzo di voce è in programma da `inizio` a `fine` (orologio del contesto). */
   voceProgrammata(inizio: number, fine: number): void {
     this.applicaDucking(this.piano.voce(inizio, fine, this.o.ctx.currentTime));
+  }
+
+  /**
+   * Il server annuncia una frase prima del suo audio: comincerà più o meno quando finisce la voce
+   * già in coda (`tPrevisto`). Se è la prima battuta di un PNG nella scena, il tema parte adesso
+   * con l'anticipo giusto, invece di aspettare che il primo pezzo sia programmato (con la voce in
+   * streaming arriva solo ~150 ms prima di suonare).
+   */
+  fraseAnnunciata(parlante: string, tPrevisto: number): void {
+    // Mai prima di adesso (+30 ms, il margine con cui parte qualunque sorgente).
+    this.fraseProgrammata(parlante, Math.max(tPrevisto, this.o.ctx.currentTime + 0.03));
   }
 
   /** Una frase comincerà a `t` (orologio del contesto): se è la prima di un PNG, il suo tema. */
@@ -170,6 +184,7 @@ export class RegistaAudio {
       temiSuonati: this.memoriaTemi.elenco,
       temi: this.temiPartiti,
       effetti: [...this.effettiSuonati],
+      anticipiTemi: [...this.anticipiTemi],
       sottoVoce: this.piano.sottoVoce,
       abbassamenti: this.piano.abbassamenti,
       isteresiMs: this.isteresi.intervalloMs,
@@ -345,6 +360,8 @@ export class RegistaAudio {
     tema.avvia(inizio, 0.12);
     this.tema = tema;
     this.temiPartiti += 1;
+    this.anticipiTemi.push({ png, id: traccia.id, anticipoS: Number((t - inizio).toFixed(3)) });
+    if (this.anticipiTemi.length > 10) this.anticipiTemi.shift();
     log.info('Tema del PNG', { png, id: traccia.id, anticipoS: Number((t - inizio).toFixed(2)) });
     // A brano finito si pulisce (il tema non è in loop: la sorgente si ferma da sola).
     this.o.timer.imposta(() => {

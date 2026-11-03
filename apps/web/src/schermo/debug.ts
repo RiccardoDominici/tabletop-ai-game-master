@@ -37,6 +37,8 @@ export interface DebugAudio {
   guadagni(): Record<string, number>;
   /** Buffer decodificati e punti di loop delle tracce che suonano. */
   tracce(): import('./audio/traccia').DettagliTraccia[];
+  /** La regola dei punti di loop del proiettore (per i controlli dei file veri). */
+  puntiDiLoop: typeof import('./audio/regole').puntiDiLoop;
   /** Suona un effetto del catalogo (sfx_<tag>). */
   effetto(id: string): Promise<boolean>;
 }

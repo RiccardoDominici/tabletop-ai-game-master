@@ -13,7 +13,7 @@ import { creaLog } from '../lib/log';
 import { prendiSocket } from '../lib/socket';
 import { useSchermo } from '../store/schermo';
 import { debugSchermo } from './debug';
-import { avviaAudioScena, interrompiAudioScena, voceProgrammata } from './audio/ponte';
+import { avviaAudioScena, fraseAnnunciata, interrompiAudioScena, voceProgrammata } from './audio/ponte';
 
 const log = creaLog('schermo-audio');
 
@@ -90,7 +90,12 @@ export function statisticheAudio(): StatisticheLettore {
   return lettore.statistiche();
 }
 
-const suFrase = (frase: AudioFrase) => lettore.frase(frase);
+const suFrase = (frase: AudioFrase) => {
+  // Prima la voce in coda (prima che la frase nuova entri nel programmatore), poi l'annuncio.
+  const codaS = lettore.statistiche().anticipoMs / 1000;
+  lettore.frase(frase);
+  fraseAnnunciata(frase, codaS);
+};
 const suPezzo = (pezzo: AudioPezzo) => lettore.pezzo(pezzo);
 const suFineFrase = (fine: AudioFineFrase) => lettore.fineFrase(fine);
 const suFineTurno = (fine: AudioFineTurno) => lettore.fineTurno(fine);

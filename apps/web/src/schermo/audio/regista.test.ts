@@ -177,6 +177,23 @@ describe('RegistaAudio: temi dei PNG', () => {
     expect(regista.stato()).toMatchObject({ temi: 3, temiSuonati: ['s2:png_o'] });
   });
 
+  it('annuncio della frase: il tema parte 0,6 s prima dell’inizio previsto; il pezzo dopo non lo ripete', async () => {
+    const { ctx, regista, avanza } = prepara();
+    regista.scena(A, 'esplorazione_tesa', 0);
+    await avanza(10);
+    const prima = ctx.sorgenti.length;
+    regista.fraseAnnunciata('png_o', 13); // voce in coda fino a 13 s
+    await avanza(0.01);
+    expect(ctx.sorgenti.slice(prima).find((s) => s.buffer?.duration === 3)?.avviataA).toBeCloseTo(12.4, 5);
+    regista.fraseProgrammata('png_o', 13.2);
+    await avanza(0.01);
+    expect(regista.stato()).toMatchObject({ temi: 1, anticipiTemi: [{ png: 'png_o', anticipoS: 0.6 }] });
+    // Annuncio con la coda vuota: il tema parte subito (la voce arriverà dopo).
+    regista.fraseAnnunciata('png_b', 5);
+    await avanza(0.01);
+    expect(regista.stato().anticipiTemi[1]).toMatchObject({ png: 'png_b', anticipoS: 0 });
+  });
+
   it('PNG senza tema: niente; scena ricominciata (turno indietro): i temi si azzerano', async () => {
     const { regista, avanza } = prepara();
     regista.scena(A, 'esplorazione_tesa', 4);

@@ -20,7 +20,7 @@ import { BancaAudio, scaricaConFetch } from './banca';
 import type { ContestoAudio } from './contesto';
 import { BUS } from './impostazioni';
 import { Mixer } from './mixer';
-import { INTERVALLO_MUSICA_MS } from './regole';
+import { INTERVALLO_MUSICA_MS, puntiDiLoop } from './regole';
 import { RegistaAudio } from './regista';
 import { useAudioSchermo } from './store';
 import { timerFinestra } from './traccia';
@@ -30,6 +30,7 @@ const log = creaLog('audio-scena');
 let regista: RegistaAudio | null = null;
 let mixer: Mixer | null = null;
 let catalogo: CatalogoAudioPubblico | null = null;
+let contestoAudio: AudioContext | null = null;
 
 /** Isteresi della musica: 60 s, o quella dell'URL (solo per prove). */
 function isteresiMs(): number {
@@ -70,6 +71,7 @@ async function caricaCatalogo(): Promise<void> {
  */
 export function avviaAudioScena(ctx: AudioContext, instradaVoce: (nodo: AudioNode) => void): void {
   if (regista) return;
+  contestoAudio = ctx;
   const contesto: ContestoAudio = ctx;
   mixer = new Mixer(contesto, useAudioSchermo.getState().impostazioni);
   instradaVoce(mixer.bus.voce as unknown as AudioNode);
@@ -86,6 +88,15 @@ export function voceProgrammata(inizio: number, fine: number, frase: AudioFrase 
   if (!regista) return;
   if (frase) regista.fraseProgrammata(frase.parlante, inizio);
   regista.voceProgrammata(inizio, fine);
+}
+
+/**
+ * `audio:frase` (annuncio, prima dell'audio): `codaS` = secondi di voce già in programma, quindi la
+ * frase comincerà circa fra `codaS` (di più se la generazione resta indietro).
+ */
+export function fraseAnnunciata(frase: AudioFrase, codaS: number): void {
+  if (!regista || !mixer) return;
+  regista.fraseAnnunciata(frase.parlante, (contestoAudio?.currentTime ?? 0) + codaS);
 }
 
 /** `audio:interrompi`: la voce tace, musica e ambienti risalgono. */
@@ -123,5 +134,6 @@ debugSchermo.audio = {
   stato: () => regista?.stato() ?? null,
   guadagni: () => regista?.guadagni() ?? {},
   tracce: () => regista?.tracce() ?? [],
+  puntiDiLoop,
   effetto: (id: string) => regista?.effetto(id) ?? Promise.resolve(false),
 };
