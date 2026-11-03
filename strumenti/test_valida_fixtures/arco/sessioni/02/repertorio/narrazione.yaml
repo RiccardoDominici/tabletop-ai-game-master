@@ -1,0 +1,8 @@
+battute:
+  - id: nar_ritorno
+    chi: narratore
+    tipo: transizione
+    quando: "i PG tornano alla locanda"
+    temi: [locanda]
+    testo: ["[narratore] La locanda odora di calce fresca: il tetto è nuovo."]
+    max_usi: 1

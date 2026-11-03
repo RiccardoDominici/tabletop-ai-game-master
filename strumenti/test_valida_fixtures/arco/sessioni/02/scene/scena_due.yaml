@@ -1,0 +1,5 @@
+id: scena_due
+nome: "La locanda, una settimana dopo"
+png_presenti: [png_irma, png_bruno]
+elementi_interattivi:
+  - {cosa: "il bancone", dove: "a destra", azioni: "ci sono boccali e un conto nuovo"}

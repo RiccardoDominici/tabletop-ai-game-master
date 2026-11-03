@@ -1,0 +1,112 @@
+# Tra le sessioni (bozza della fase D3)
+
+Che cosa fa il Preparatore tra una sessione e l'altra di una campagna sopra la one-shot (docs/strati.md,
+«Il ciclo tra le sessioni»). Oggi il validatore rifiuta i livelli sopra la one-shot (`LIVELLO.non_supportato`):
+questa procedura entra in uso con la fase D2, quando il server gioca i pacchetti `sessioni/<nn>/` e scrive i
+registri. Le classi `STATO` e `CONTINUITÀ` del validatore sono già pronte, e la seguono.
+
+## Il principio: il registro è la prova, lo stato è la sua lettura
+- **Il registro** (`sessioni/<nn>/registro.yaml`) lo scrive il server a fine sessione, in modo deterministico,
+  dall'archivio (`sessioni.sqlite`). Nessun modello lo scrive o lo ritocca: se ha una `firma`, il validatore
+  controlla che il contenuto torni (`STATO.registro`).
+- **Lo stato** (`stato/stato.yaml`) lo scrive il modello forte. È la lettura del registro: che cosa è successo
+  davvero, che cosa è cambiato per i PNG, che cosa resta aperto. Ogni fatto cita la sua prova, e il
+  validatore la cerca nel registro (`STATO.fonte`). Così un fatto inventato, o letto male, non arriva alla
+  sessione dopo.
+- **Il canone preparato non si riscrive.** `campagna.yaml → canone` resta la bibbia (i fatti `f_`), che
+  cambia solo per una decisione di Riccardo. I fatti di gioco sono `g_` e stanno nello stato; quando il gioco
+  supera un fatto del canone, il fatto `g_` lo dice con `supera: [f_…]`. Un fatto di gioco non si cancella:
+  si supera con uno più recente (`superato_da`).
+
+## I sei passi
+1. **Fine sessione.** Il master preme «Fine sessione» nel pannello; il server scrive
+   `sessioni/<nn>/registro.yaml`. Non si tocca.
+2. **Stato.** Leggi il registro (e, se serve, la trascrizione) e aggiorna `stato/stato.yaml`:
+   - un fatto per ogni cosa successa che conta dopo: chi ha saputo che cosa, chi è morto o ferito, dove sono
+     andati i PNG, che cosa hanno promesso i PG e a chi, quali fili restano aperti;
+   - ogni fatto con la sua `fonte`: il turno del registro e una citazione esatta di ciò che si è detto o
+     scritto, oppure un evento del turno (una battuta uscita, un indizio rivelato, un fatto reso noto);
+   - niente riassunti a memoria: se una cosa non è nel registro, non è successa.
+3. **Il mondo si muove.** Gli orologi dei fronti (e, dal livello campagna, delle fazioni) avanzano con le
+   loro regole fisse; ciò che cambia fuori scena è un fatto con `fonte: {tra_sessioni: <n>, motivo}`. I PG non
+   lo sanno (`noto_ai_pg: false`) finché non lo vedono in gioco.
+4. **Sessione dopo.** Gli stessi passi della skill per una one-shot, a partire da stato e arco: situazione della
+   sessione, scene, PNG, repertorio, e il riassunto da leggere all'apertura, scritto dai fatti dello stato.
+   Aggiorna le schede dei PNG ricorrenti con ciò che hanno saputo, e togli dalle parole segrete ciò che i PG
+   ormai sanno.
+5. **Validatore.** Le classi di sempre sul pacchetto, più `STATO` e `CONTINUITÀ` (sotto).
+6. **Risorse.** `scripts/prepara.sh` sul pacchetto, solo per ciò che manca.
+
+## stato/stato.yaml
+```yaml
+versione: 1
+dopo_sessione: 1                     # l'ultima sessione che lo stato riflette (i suoi registri esistono) [V]
+
+fatti:                               # ciò che è successo in gioco, in ordine; mai cancellati, solo superati
+  - id: g_irma_promette              # g_<nome> [V]
+    testo: "Irma ha giurato a Tobia che pagherà il tetto senza il mercante."
+    fonte: {sessione: 1, turno: 6, citazione: "Ti giuro che pagherò il tetto"}   # sottostringa ESATTA del turno [V]
+    # fonte: {sessione: 1, turno: 5, evento: {indizio: i_botte}}   # un evento del turno: battuta, indizio,
+    #                                                              # fatto, menzogna, orologio [V]
+    # fonte: {tra_sessioni: 1, motivo: "o_mercante avanza: il pegno non è arrivato"}   # fuori scena [V]
+    noto_ai_pg: true                 # i PG lo sanno (lo hanno visto o sentito)
+    rende_noti: [f_bruno_visto]      # fatti del canone che i PG ora sanno [V esistono]
+    supera: [f_…]                    # fatti del canone che il gioco ha cambiato [V esistono]
+    superato_da: g_…                 # facoltativo: il fatto più recente che lo supera [V viene dopo]
+    effetti:                         # facoltativi: che cosa cambia nello stato derivato
+      png: {png_bruno: {vivo: false, dove: "la chiesa", atteggiamento: {pg_lia: amichevole}, sa: [f_…, g_…]}}
+      oggetti: {ogg_lanterna: {nome: "lanterna d'argento", chi: pg_tobia, stato: preso}}   # preso, perso, distrutto…
+      promesse: {pr_irma_tetto: {chi: png_irma, a: pg_tobia, cosa: "…", stato: aperta}}  # aperta, mantenuta, tradita, sciolta
+      fili: {filo_mercante: aperto}  # aperto o chiuso
+
+orologi:                             # ogni orologio a fine sessione, e dopo gli avanzamenti fuori scena
+  o_processione: {pieni: 4, fonte: {sessione: 1}}          # = lo stato finale del registro [V]
+  o_mercante: {pieni: 1, fonte: {tra_sessioni: 1, motivo: "il pegno non è arrivato all'alba"}}
+
+pg:                                  # la crescita dei PG
+  pg_tobia: {livello: 1, fonte: {tra_sessioni: 1, motivo: "una sessione sola: niente crescita"}}
+```
+Lo **stato derivato** (PNG vivi o morti, dove sono, verso chi sono amichevoli, che cosa sanno; oggetti; promesse;
+fili; ciò che i PG sanno) si ricava applicando gli `effetti` dei fatti non superati nell'ordine delle loro fonti.
+Non si scrive a parte: così ogni cambiamento ha la sua prova.
+
+## sessioni/<nn>/registro.yaml (forma da allineare con il server, fase D2)
+Ciò che il validatore legge, e chiede al server di scrivere:
+```yaml
+versione: 1
+campagna: mini
+sessione: 1                          # = la cartella sessioni/01
+turni:
+  - turno: 3
+    scena: scena_volpe
+    azioni: [{pg: pg_lia, testo: "…alla lettera…", privata: true}]
+    voci: [{chi: png_bruno, testo: "…alla lettera, come è stato detto…"}]
+    eventi: {battute: [bruno_notte_promessa], indizi: [i_bruno_racconta], fatti_noti: [f_bruno_visto],
+             menzogne: [], orologi: {o_processione: 2}}
+finale:                              # l'ultima fotografia
+  orologi: {o_processione: {pieni: 4, segmenti: 4}}
+  indizi: [...]
+  fatti_noti: [...]
+  finale: fin_ritrovata
+firma: <sha256 del contenuto senza firma>   # facoltativa: rivela un registro ritoccato
+```
+
+## sessioni/<nn>/ (il pacchetto, per ciò che CONTINUITÀ legge)
+`sessione.yaml` con `riassunto_iniziale`, `scene` (in ordine), `orologi` (come in campagna.yaml, con
+`pieni_all_inizio`) e `fili` (`{id, come: ripreso|rimandato}`), più `scene/`, `png/` (PNG solo di questa sessione),
+`repertorio/` (con le sue `parole_segrete.yaml`, se cambiano).
+
+## Che cosa controlla il validatore
+| Codice | Controllo |
+|---|---|
+| `STATO.registro` | i registri fino a `dopo_sessione` esistono; il numero torna con la cartella; la firma torna |
+| `STATO.fonte` | il turno citato esiste; la citazione è nel turno, alla lettera; l'evento è nel turno; un fatto fuori scena ha il motivo |
+| `STATO.superato` | un fatto è superato solo da uno che viene dopo |
+| `STATO.orologio` | a fine sessione l'orologio ha i segni del registro |
+| `STATO.forma`, `STATO.riferimento` | id `g_`, testo, PNG, PG, fatti, orologi esistenti; stati di promesse e fili |
+| `CONTINUITÀ.morto` | un PNG morto non è tra i presenti e non parla nel pacchetto |
+| `CONTINUITÀ.saputo` | ciò che un PNG ha saputo non è nel suo `non_sa`; nessuna parola segreta per ciò che i PG sanno già |
+| `CONTINUITÀ.orologio` | gli orologi della sessione ripartono dai segni dello stato |
+| `CONTINUITÀ.promessa` | promesse e fili aperti sono tra i `fili` della sessione, ripresi o rimandati (avviso) |
+| `CONTINUITÀ.oggetto` | un oggetto perso o distrutto non torna tra gli elementi delle scene (avviso) |
+| `CONTINUITÀ.pg` | un PG non torna indietro di livello |

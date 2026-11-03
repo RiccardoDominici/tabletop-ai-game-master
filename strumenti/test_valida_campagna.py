@@ -473,6 +473,103 @@ def test_livello_valori_sbagliati_e_forzato_senza_motivo(camp):
     assert "LIVELLO.forzato" in errori(camp)
 
 
+# --- STATO e CONTINUITÀ (il mini giocato una volta: test_valida_fixtures/arco) ----------------------
+
+ARCO = QUI / "test_valida_fixtures" / "arco"
+
+
+@pytest.fixture
+def arco(camp: Path) -> Path:
+    """Il mini con sopra il registro della sessione 1, lo stato e il pacchetto della sessione 2."""
+    shutil.copytree(ARCO, camp, dirs_exist_ok=True)
+    return camp
+
+
+def stato_continuita(cartella: Path) -> tuple[set[str], set[str]]:
+    esito, _ = valida(cartella, voci=VOCI if VOCI.exists() else None, contesto_b=False)
+    tieni = lambda c: c.split(".")[0] in ("STATO", "CONTINUITÀ")  # noqa: E731
+    return {c for c in esito.codici() if tieni(c)}, {v.codice for v in esito.avvisi if tieni(v.codice)}
+
+
+def _fatto(d: dict, fid: str) -> dict:
+    return next(f for f in d["fatti"] if f["id"] == fid)
+
+
+def test_stato_e_continuita_dell_arco_valido(arco):
+    assert stato_continuita(arco) == (set(), set())
+
+
+def test_stato_citazione_che_il_registro_non_dice(arco):
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_irma_promette")["fonte"].update(
+        citazione="Ti giuro che pagherò tutto, anche il mercante"))
+    assert "STATO.fonte" in stato_continuita(arco)[0]
+
+
+def test_stato_evento_e_turno_che_non_ci_sono(arco):
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_lanterna_trovata")["fonte"].update(evento={"indizio": "i_cera"}))
+    assert "STATO.fonte" in stato_continuita(arco)[0]
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_lanterna_trovata").update(fonte={"sessione": 1, "turno": 40, "citazione": "x"}))
+    assert "STATO.fonte" in stato_continuita(arco)[0]
+
+
+def test_stato_fuori_scena_senza_motivo(arco):
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_mercante_riparte")["fonte"].pop("motivo"))
+    assert "STATO.fonte" in stato_continuita(arco)[0]
+
+
+def test_stato_registro_mancante_o_ritoccato(arco):
+    reg = arco / "sessioni" / "01" / "registro.yaml"
+    reg.write_text(reg.read_text().replace("Bruno posa la pipa", "Bruno posa il bicchiere"))
+    assert "STATO.registro" in stato_continuita(arco)[0]
+    reg.unlink()
+    assert "STATO.registro" in stato_continuita(arco)[0]
+
+
+def test_stato_superato_da_un_fatto_che_viene_prima(arco):
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_irma_promette").update(superato_da="g_bruno_parla"))
+    assert "STATO.superato" in stato_continuita(arco)[0]
+
+
+def test_stato_orologio_diverso_dal_registro(arco):
+    modifica(arco, "stato/stato.yaml", lambda d: d["orologi"]["o_processione"].update(pieni=2))
+    assert "STATO.orologio" in stato_continuita(arco)[0]
+
+
+def test_continuita_un_morto_non_parla(arco):
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_bruno_parla")["effetti"]["png"]["png_bruno"].update(vivo=False))
+    assert "CONTINUITÀ.morto" in stato_continuita(arco)[0]
+
+
+def test_continuita_cio_che_un_png_ha_saputo(arco):
+    # Bruno ha saputo dove sta la lanterna, ma la sua scheda lo tiene nel non_sa.
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_bruno_parla")["effetti"]["png"]["png_bruno"].update(sa=["f_lanterna_cantina"]))
+    assert "CONTINUITÀ.saputo" in stato_continuita(arco)[0]
+
+
+def test_continuita_parola_segreta_di_un_fatto_gia_saputo(arco):
+    modifica(arco, "sessioni/02/repertorio/parole_segrete.yaml", lambda d: d["parole"].append(
+        {"parola": "fagotto", "regex": "fagotto", "fatti": ["f_bruno_visto"], "pubblica_dopo": [], "nota": ""}))
+    assert "CONTINUITÀ.saputo" in stato_continuita(arco)[0]
+
+
+def test_continuita_orologio_che_riparte_da_capo(arco):
+    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["orologi"][0].update(pieni_all_inizio=0))
+    assert "CONTINUITÀ.orologio" in stato_continuita(arco)[0]
+
+
+def test_continuita_promessa_dimenticata_e_oggetto_perso(arco):
+    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d.update(fili=[]))
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_lanterna_trovata")["effetti"]["oggetti"]["ogg_lanterna"].update(
+        nome="bancone", stato="distrutto"))
+    errori_, avvisi_ = stato_continuita(arco)
+    assert {"CONTINUITÀ.promessa", "CONTINUITÀ.oggetto"} <= avvisi_ and not errori_
+
+
+def test_continuita_pg_che_torna_indietro(arco):
+    modifica(arco, "stato/stato.yaml", lambda d: d["pg"]["pg_tobia"].update(livello=3))
+    assert "CONTINUITÀ.pg" in stato_continuita(arco)[0]
+
+
 # --- PG -------------------------------------------------------------------------------------------
 
 def test_pg_id_non_valido(camp):

@@ -1,0 +1,40 @@
+# Registro della sessione 1 (lo scrive il server dall'archivio: mai a mano).
+versione: 1
+campagna: mini
+sessione: 1
+archivio: "2026-11-03T20:00:00Z"
+inizio: "2026-11-03T20:00:00Z"
+fine: "2026-11-03T20:31:00Z"
+turni_totali: 6
+pg: [pg_lia, pg_tobia]
+turni:
+  - turno: 3
+    scena: scena_volpe
+    azioni:
+      - {pg: pg_lia, testo: "prometto a Bruno che non dirò niente al paese", privata: true}
+    voci:
+      - {chi: narratore, testo: "Bruno posa la pipa e abbassa la voce."}
+      - {chi: png_bruno, testo: "Ho visto Irma, a mezzanotte. Scendeva in cantina con un fagotto."}
+    eventi: {battute: [bruno_notte_promessa], indizi: [i_bruno_racconta], fatti_noti: [f_bruno_visto]}
+  - turno: 5
+    scena: scena_volpe
+    azioni:
+      - {pg: pg_tobia, testo: "scendo in cantina e apro le botti una per una", privata: false}
+    voci:
+      - {chi: narratore, testo: "Nella botte vuota c'è la lanterna d'argento, avvolta in un sacco."}
+    eventi: {battute: [nar_botte], indizi: [i_botte], fatti_noti: [f_lanterna_cantina]}
+  - turno: 6
+    scena: scena_volpe
+    azioni:
+      - {pg: pg_tobia, testo: "chiedo a Irma come pagherà il tetto, adesso", privata: false}
+    voci:
+      - {chi: png_irma, testo: "Ti giuro che pagherò il tetto, senza il mercante."}
+    eventi: {battute: [fin_ritrovata], orologi: {o_processione: 4}}
+finale:
+  scena: scena_volpe
+  finale: fin_ritrovata
+  orologi: {o_processione: {pieni: 4, segmenti: 4}}
+  indizi: [i_bruno_racconta, i_botte]
+  fatti_noti: [f_bruno_visto, f_lanterna_cantina]
+  menzogne: []
+firma: 17eb89b016baae5c6f973578da8bd081ea252be271bd3660ebda5d26ae698382

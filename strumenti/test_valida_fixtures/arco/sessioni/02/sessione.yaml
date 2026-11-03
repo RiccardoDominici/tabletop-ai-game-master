@@ -1,0 +1,8 @@
+# Pacchetto della sessione 2 (forma di docs/strati.md; i dettagli li fissa la fase D2).
+riassunto_iniziale: "La lanterna è tornata in cappella. Ma il mercante ha giurato di tornare."
+scene: [scena_due]
+orologi:
+  - {id: o_mercante, pieni_all_inizio: 1}
+fili:
+  - {id: pr_irma_tetto, come: ripreso}
+  - {id: filo_mercante, come: ripreso}

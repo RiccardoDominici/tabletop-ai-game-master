@@ -1,0 +1,35 @@
+# Stato dopo la sessione 1: ogni fatto cita il registro (sessione, turno) o un avanzamento fuori scena.
+versione: 1
+dopo_sessione: 1
+fatti:
+  - id: g_bruno_parla
+    testo: "Bruno ha detto ai PG di aver visto Irma con un fagotto, e ora si fida di Lia."
+    fonte: {sessione: 1, turno: 3, citazione: "Scendeva in cantina con un fagotto"}
+    noto_ai_pg: true
+    rende_noti: [f_bruno_visto]
+    effetti:
+      png: {png_bruno: {atteggiamento: {pg_lia: amichevole}, sa: [f_impronte_cera]}}
+  - id: g_lanterna_trovata
+    testo: "Tobia ha trovato la lanterna nella botte vuota."
+    fonte: {sessione: 1, turno: 5, evento: {indizio: i_botte}}
+    noto_ai_pg: true
+    rende_noti: [f_lanterna_cantina]
+    effetti:
+      oggetti: {ogg_lanterna: {nome: "lanterna d'argento", chi: pg_tobia, stato: preso}}
+  - id: g_irma_promette
+    testo: "Irma ha giurato a Tobia che pagherà il tetto senza il mercante."
+    fonte: {sessione: 1, turno: 6, citazione: "Ti giuro che pagherò il tetto"}
+    noto_ai_pg: true
+    effetti:
+      promesse: {pr_irma_tetto: {chi: png_irma, a: pg_tobia, cosa: "pagare il tetto senza il mercante", stato: aperta}}
+  - id: g_mercante_riparte
+    testo: "All'alba il mercante è ripartito senza pegno, e ha giurato di tornare con i debiti della valle."
+    fonte: {tra_sessioni: 1, motivo: "o_mercante avanza di un segno: il pegno non è arrivato"}
+    noto_ai_pg: false
+    effetti:
+      fili: {filo_mercante: aperto}
+orologi:
+  o_processione: {pieni: 4, fonte: {sessione: 1}}
+  o_mercante: {pieni: 1, fonte: {tra_sessioni: 1, motivo: "il pegno non è arrivato all'alba"}}
+pg:
+  pg_tobia: {livello: 1, fonte: {tra_sessioni: 1, motivo: "una sessione sola: niente crescita"}}

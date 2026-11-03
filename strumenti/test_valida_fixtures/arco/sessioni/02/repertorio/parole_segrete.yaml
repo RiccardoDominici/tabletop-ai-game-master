@@ -1,0 +1,3 @@
+# Solo ciò che è ancora segreto dopo la sessione 1: la lanterna e il fagotto ormai li sanno i PG.
+parole:
+  - {parola: "pegno / mercante", regex: "pegno|mercante", fatti: [f_irma_prestito, f_mercante_alba], pubblica_dopo: [], nota: "il debito di Irma"}
