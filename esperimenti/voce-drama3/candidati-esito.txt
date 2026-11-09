@@ -1,0 +1,30 @@
+tab_367577d0 primo byte ms 1378
+nad_e63400ae primo byte ms 1811
+luc_2f76992e primo byte ms 1103
+nar_130bd00e primo byte ms 451
+luc_ac8ce287 primo byte ms 1388
+luc_50be4cf9 primo byte ms 1418
+vin_87b5b857 primo byte ms 1074
+nar_2c8cc8e2 primo byte ms 929
+tab_28b04e20 primo byte ms 877
+vin_bc428593 primo byte ms 1276
+vin_9b0dc462 primo byte ms 1778
+nad_b7c7f4a5 primo byte ms 962
+vin_250d0447 primo byte ms 1033
+tab_25a6bfa4 primo byte ms 1049
+nad_82ff2c16 primo byte ms 1093
+luc_2f76992e.mp3 200 {"text":"Non tutti i segreti stanno sotto la neve signori, alcuni stanno in sacristia ben chiusi."
+luc_50be4cf9.mp3 200 {"text":"Non tutti i segreti stanno sotto la neve, signori. Alcuni stanno in sagrestia, ben chiusi."
+luc_ac8ce287.mp3 200 {"text":"Non tutti i segreti stanno sotto la neve, signori. Alcuni stanno in sagrestia, ben chiusi."
+nad_82ff2c16.mp3 200 {"text":"Quell'anello è dei Bonfanti da tre generazioni. Mettetevi il cuore in pace, ragazzi!"
+nad_b7c7f4a5.mp3 200 {"text":"Quell'anello è dei bonfanti da tre generazioni. Mettetevi il cuore in pace, ragazzi."
+nad_e63400ae.mp3 200 {"text":"Quell'anello è dei Bonfanti da tre generazioni. Mettetevi il cuore in pace, ragazzi."
+nar_130bd00e.mp3 200 {"text":"La neve cade fitta sul vicolo. Dal sasso arriva il corno, lungo e basso. Cosa fate?"
+nar_2c8cc8e2.mp3 200 {"text":"La neve cade fitta sul vicolo. Dal sasso arriva il corno, lungo e basso. Cosa fate?"
+tab_25a6bfa4.mp3 200 {"text":"Io non ho visto niente, giuro, però se mi date un soldo, magari mi torno alla memoria."
+tab_28b04e20.mp3 200 {"text":"Io non ho visto niente, giuro, però se mi date un soldo, magari mi torno alla memoria."
+tab_367577d0.mp3 200 {"text":"Io non ho visto niente, giuro, però se mi date un soldo, magari mi torna alla memoria."
+vin_250d0447.mp3 200 {"text":"Eh? Parla dall'orecchio buono, garzone. I ferri dei muli li ho contati io, stamattina."
+vin_87b5b857.mp3 200 {"text":"Eh? Parla dall'orecchio buono, garzone! I ferri dei muli li ho contati io stamattina!"
+vin_9b0dc462.mp3 200 {"text":"Eh? Parla dall'orecchio buono, garzone. I ferri dei muli li ho contati io stamattina."
+vin_bc428593.mp3 200 {"text":"Eh? Parla dall'orecchio buono, garzone! I ferri dei muli li ho contati io stamattina!"
