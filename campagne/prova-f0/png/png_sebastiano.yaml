@@ -32,6 +32,13 @@ personalita:
   sotto_pressione: ["diventa freddo e tagliente, e dice verità che fanno male", "davanti a un malato dimentica la prudenza e si espone"]
   contraddizione: "Vuole sparire senza lasciare traccia, ma non riesce a tacere davanti a un malato."
 
+scheda:
+  gs: 0
+  caratteristiche: {forza: 10, destrezza: 12, costituzione: 11, intelligenza: 14, saggezza: 13, carisma: 11}
+  competenze: [medicina, percezione]
+  pf: 4
+  attacchi:
+  - {nome: Bastone, caratteristica: forza, danno: 1d4, tipo_danno: contundente}
 desiderio: "Uscire vivo da Fontescura prima dell'alba, senza che nessuno scopra chi è."   # in tensione con Baldrin, con p_folla e con p_compagnia (Corrado)
 paura: "Essere riconosciuto e riportato alla Compagnia del Grifo, per la forca."
 

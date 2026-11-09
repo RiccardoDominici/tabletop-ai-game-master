@@ -22,6 +22,13 @@ personalita:
   sotto_pressione: ["diventa servile e offre di tutto pur di cambiare discorso", "se la accusano davanti ad altri, si chiude e prova a far sparire le prove"]
   contraddizione: "Ha sfamato il paese per trent'anni, e stanotte rischia di avvelenarlo per non perdere la faccia."
 
+scheda:
+  gs: 0
+  caratteristiche: {forza: 10, destrezza: 10, costituzione: 12, intelligenza: 12, saggezza: 14, carisma: 13}
+  competenze: [intuizione, persuasione]
+  pf: 4
+  attacchi:
+  - {nome: Mattarello, caratteristica: forza, danno: 1d4, tipo_danno: contundente}
 desiderio: "Vendere il pane dei lumi stanotte, per pagare Gualtiero e tenersi il forno."   # in tensione con Sebastiano e con il pericolo p_segale
 paura: "Che il paese scopra che i bambini si sono ammalati col suo pane."
 

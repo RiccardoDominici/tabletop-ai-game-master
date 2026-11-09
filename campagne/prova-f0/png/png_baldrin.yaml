@@ -22,6 +22,14 @@ personalita:
   sotto_pressione: ["diventa calmo e lentissimo, e fa paura", "se si parla di Ilde, gli trema la voce e si ferma ad ascoltare"]
   contraddizione: "Pretende fatti da tutti, ma accusa il forestiero sulla parola di un mugnaio."
 
+scheda:
+  gs: 1/8
+  caratteristiche: {forza: 14, destrezza: 10, costituzione: 14, intelligenza: 10, saggezza: 11, carisma: 10}
+  competenze: [percezione, intimidire]
+  armatura: {tipo: armatura di cuoio}
+  pf: 11
+  attacchi:
+  - {nome: Martello da guerra, caratteristica: forza, danno: 1d8, tipo_danno: contundente}
 desiderio: "Consegnare al paese chi ha fatto ammalare Ilde, prima del terzo rintocco."   # in tensione con Sebastiano e con il pericolo p_folla
 paura: "Che Ilde muoia stanotte, mentre lui è qui a fare la guardia."
 

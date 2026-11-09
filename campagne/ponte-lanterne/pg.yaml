@@ -24,6 +24,14 @@ personaggi:
       - "curi le ferite e le febbri con la magia della tua dea"
       - "parli con dolcezza a chi ha paura"
       - "conosci ogni stanza e ogni scricchiolio del Ricovero"
+    scheda:
+      caratteristiche: {forza: 10, destrezza: 12, costituzione: 13, intelligenza: 10, saggezza: 15, carisma: 12}
+      competenze: [medicina, intuizione, religione, percezione]
+      tiri_salvezza: [saggezza, carisma]
+      armatura: nessuna
+      pf: 8
+      attacchi:
+      - {nome: Mazza, caratteristica: forza, danno: 1d6, tipo_danno: contundente}
     conoscenze_private:
       - {testo: "Quando Rosa dice una bugia ai bambini, dondola le cose troppo in fretta e si liscia il grembiule. Lo fa da sempre.", fatti: []}
       - {testo: "Ernesto, il vecchio barcaiolo del Ricovero, ha i polmoni deboli dall'inverno scorso. Una notte al freddo per lui è pericolosa.", fatti: [f_ernesto]}
@@ -42,6 +50,14 @@ personaggi:
       - "leggi le pietre, le malte e i segni dei costruttori"
       - "con un trucchetto di magia fai luce sulla punta del bastone"
       - "misuri tutto, a occhio e con il tuo metro"
+    scheda:
+      caratteristiche: {forza: 6, destrezza: 12, costituzione: 12, intelligenza: 16, saggezza: 12, carisma: 10}
+      competenze: [arcano, storia, indagare, percezione]
+      tiri_salvezza: [intelligenza, saggezza]
+      armatura: nessuna
+      pf: 6
+      attacchi:
+      - {nome: Bastone ferrato, caratteristica: forza, danno: 1d6, tipo_danno: contundente}
     conoscenze_private:
       - {testo: "I Pontieri della Valle segnavano l'acqua pericolosa con un'onda scolpita sul pilone, mai con una statua. Le statue, per loro, erano ornamenti.", fatti: []}
       - {testo: "Una malta chiara e liscia su un pilone di malta scura vuol dire che quella pietra è stata smurata e rimessa, molto dopo il resto.", fatti: []}
@@ -60,6 +76,15 @@ personaggi:
       - "remi e spingi la pertica meglio di chiunque"
       - "apri serrature e lucchetti"
       - "ti muovi senza farti sentire"
+    scheda:
+      caratteristiche: {forza: 12, destrezza: 16, costituzione: 12, intelligenza: 12, saggezza: 12, carisma: 10}
+      competenze: [furtivita, atletica, percezione, intuizione]
+      maestrie: [furtivita]
+      tiri_salvezza: [destrezza, intelligenza]
+      armatura: {tipo: armatura di cuoio}
+      pf: 8
+      attacchi:
+      - {nome: Coltello da barcaiolo, caratteristica: destrezza, danno: 1d4, tipo_danno: perforante}
     conoscenze_private:
       - {testo: "La Casa del Sale di Vischi ha una porta sul retro, nel magazzino dietro i sacchi, senza chiavistello. Da ragazza ci portavi il sale.", fatti: []}
       - {testo: "Un mese fa Vischi ha comprato dal prestatore di Pieve tutti i debiti delle Case Lunghe. Tua madre te l'ha scritto, preoccupata.", fatti: [f_debiti_borgo]}
@@ -79,6 +104,14 @@ personaggi:
       - "canti, racconti e fai ridere una sala intera"
       - "vendi qualunque cosa a chiunque"
       - "ti ricordi le facce e le chiacchiere"
+    scheda:
+      caratteristiche: {forza: 8, destrezza: 14, costituzione: 12, intelligenza: 11, saggezza: 10, carisma: 16}
+      competenze: [intrattenere, persuasione, inganno, percezione]
+      tiri_salvezza: [destrezza, carisma]
+      armatura: {tipo: armatura di cuoio}
+      pf: 8
+      attacchi:
+      - {nome: Pugnale, caratteristica: destrezza, danno: 1d4, tipo_danno: perforante}
     conoscenze_private:
       - {testo: "La settimana scorsa, sotto la tettoia del ponte, hai sentito Vischi dire piano a Tullio: se tieni aperto dopo la terza campana, all'alba il casello è mio.", fatti: [f_minaccia_tullio]}
       - {testo: "Il padre di Tullio te lo diceva sempre davanti a un bicchiere: il leone ha paura dell'acqua, il ponte no. Poi rideva, e non spiegava.", fatti: [f_detto_bellora]}
@@ -97,6 +130,14 @@ personaggi:
       - "porti pesi che due uomini non sollevano"
       - "tieni la posizione con l'acqua alle ginocchia"
       - "spaventi chi va spaventato, e sai quando non serve"
+    scheda:
+      caratteristiche: {forza: 16, destrezza: 12, costituzione: 14, intelligenza: 10, saggezza: 12, carisma: 8}
+      competenze: [atletica, intimidire, percezione, sopravvivenza]
+      tiri_salvezza: [forza, costituzione]
+      armatura: {tipo: armatura di cuoio}
+      pf: 11
+      attacchi:
+      - {nome: Spada lunga, caratteristica: forza, danno: 1d8, tipo_danno: tagliente}
     conoscenze_private:
       - {testo: "Vischi ti ha detto: nessuno entra nello studio, e soprattutto nessuno apre la cassa di ferro sotto lo scrittoio.", fatti: []}
       - {testo: "Stamattina all'alba hai visto lo scrivano di Vischi tornare fradicio dal ponte, con una corda a nodi sulla spalla. Al padrone ha detto: due spanne giuste.", fatti: [f_scrivano_misura]}

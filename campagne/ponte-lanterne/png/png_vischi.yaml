@@ -20,6 +20,13 @@ personalita:
   sotto_pressione: ["diventa più gentile e più lento, come chi detta un contratto", "se lo umiliano davanti al consiglio smette di sorridere, e chiama i debiti a voce alta"]
   contraddizione: "Parla di vite da salvare, e intanto conta le case che restano di là."
 
+scheda:
+  gs: 1/4
+  caratteristiche: {forza: 10, destrezza: 12, costituzione: 11, intelligenza: 14, saggezza: 12, carisma: 13}
+  competenze: [persuasione, inganno, intuizione, percezione]
+  pf: 9
+  attacchi:
+  - {nome: Pugnale, caratteristica: destrezza, danno: 1d4, tipo_danno: perforante}
 desiderio: "Chiudere il ponte al terzo tocco, per far firmare il Borgo all'alba."   # contro Tullio, Rosa e il fronte della piena
 paura: "Che qualcuno legga il registro del padre davanti al paese."
 

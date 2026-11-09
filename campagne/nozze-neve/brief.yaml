@@ -33,7 +33,7 @@ ambientazione: >-
   Promesse, dove si benedicono le nozze. Fantasy compatibile SRD, senza magia vistosa.
 vincoli:
   - "niente combattimento necessario: la forza è una strada, mai l'unica, e costa"
-  - "senza dadi: cede_se e indizi solo con condizioni di finzione, tiro nessuno"
+  - "cede_se e indizi solo con condizioni di finzione: un segreto non si sblocca con un tiro"
   - "al massimo quattro PNG con voce; nadine e tabitha mai nella stessa scena"
   - "tre luoghi: la casera, casa Bonfanti con la stalla, il Sasso delle Promesse"
   - "non riusare le forme di prova-f0 (osteria, forestiero chiuso, cibo avvelenato) né di ponte-lanterne (piena, ponte a pedaggio, segno falsificato)"

@@ -20,6 +20,12 @@ personalita:
   sotto_pressione: ["diventa precisissimo e lento, e cita cifre e date", "se lo smascherano, si offende come un bambino e chiama la sorella"]
   contraddizione: "Tiene i conti di tutti, e non ha mai fatto i conti con la sorella."
 
+scheda:
+  gs: 0
+  caratteristiche: {forza: 9, destrezza: 10, costituzione: 10, intelligenza: 16, saggezza: 12, carisma: 11}
+  competenze: [indagare, persuasione]
+  pf: 4
+  attacchi: []
 desiderio: "Far saltare le nozze prima del tramonto, per tenersi il Prato Alto."   # contro Adelina, gli sposi e il fronte delle nozze
 paura: "Che Adelina scopra la caparra del mercante."
 

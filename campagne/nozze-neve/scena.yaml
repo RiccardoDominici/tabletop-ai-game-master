@@ -185,3 +185,9 @@ immagine:
 
 # Va al selettore del modo B: niente segreti.
 taglio: "La scena si chiude quando i PG lasciano la casera per casa Bonfanti o per il Sasso, con una pista o senza. Oppure al sesto segno della lite, quando i Morlacchi portano fuori le panche: la festa è finita, e la sala si svuota. Se i PG esitano, il Custode si alza, guarda il cielo e dice che lui sale al Sasso a preparare le lanterne: chi ha qualcosa da dire, lo dica lassù."
+prove:
+- {id: p_giacca, quando: un PG fruga nella giacca di Ettore appesa alla panca, abilita: rapidita_di_mano, cd: 15, indizio: i_lettera_chiusa, se_fallisce: Ettore si volta di scatto e stringe la giacca al
+    petto}
+- {id: p_impronte, quando: un PG esce dalla porta di dietro della cantina e guarda la neve, abilita: percezione, cd: 10, indizio: i_impronte}
+- {id: p_bastiano, quando: un PG chiede a Bastiano dov'era a mezzogiorno, abilita: intuizione, cd: 15, indizio: i_alibi, se_fallisce: Bastiano borbotta e si volta verso la stalla}
+- {id: p_caldaio, quando: un PG chiede alla casara da dove viene il caldaio nuovo, abilita: indagare, cd: 10, indizio: i_caldaio}

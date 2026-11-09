@@ -20,6 +20,13 @@ personalita:
   sotto_pressione: ["diventa muto e lento, e si mette a lucidare la catena", "se toccano Bice alza la voce, poi si vergogna e chiede scusa al ponte"]
   contraddizione: "Ha fatto passare a credito mezzo paese per trent'anni, e stanotte chiude la catena in faccia al Borgo."
 
+scheda:
+  gs: 1/8
+  caratteristiche: {forza: 15, destrezza: 10, costituzione: 14, intelligenza: 10, saggezza: 12, carisma: 9}
+  competenze: [atletica, intimidire, percezione]
+  pf: 11
+  attacchi:
+  - {nome: Gancio da barcaiolo, caratteristica: forza, danno: 1d6, tipo_danno: perforante}
 desiderio: "Tenere il casello per Bice, senza chiudere la catena in faccia al Borgo."   # in tensione con Vischi e con p_casello
 paura: "Che Bice resti senza casa per colpa sua."
 

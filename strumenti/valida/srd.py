@@ -85,6 +85,7 @@ DADO_VITA = {
     "druida": 8, "guerriero": 10, "guerriera": 10, "ladro": 8, "ladra": 8, "mago": 6, "maga": 6,
     "monaco": 8, "monaca": 8, "paladino": 10, "paladina": 10, "ramingo": 10, "ramminga": 10,
     "stregone": 6, "stregona": 6, "warlock": 8,
+    "ranger": 10,   # il nome inglese che usano le schede delle campagne (nozze-neve, pg Livia)
 }
 
 # Gradi di sfida ammessi (un intero da 0 a 30, o una frazione standard).

@@ -97,3 +97,9 @@ immagine:
   prompt_luogo: "warm stone salt warehouse at night, white sacks of salt stacked up to the rafters, crackling fireplace, long council table with inkwell, papers and pewter cups, closed oak door at the far end of the hall, wet cloaks hanging by the entrance"
 
 taglio: "La scena si chiude quando i PG lasciano la Casa del Sale, con una prova o senza. Oppure al sesto segno delle firme, quando Vischi sigilla la lista: il consiglio ha votato, e i PG tornano al ponte all'ora in cui sono, per la barca se non è ancora partita, o per il terzo tocco. Se i PG esitano, il console chiude la seduta e manda tutti fuori sotto la pioggia."
+prove:
+- {id: p_cassa, quando: un PG apre il lucchetto della cassa di ferro dello studio, abilita: rapidita_di_mano, cd: 15, indizio: i_registro_padre, se_fallisce: 'il lucchetto cede con un rumore secco, e la
+    guardia si volta'}
+- {id: p_studio, quando: un PG entra nello studio di Vischi senza farsi vedere, abilita: furtivita, cd: 15, se_fallisce: la guardia alla porta chiama Vischi dal tavolo}
+- {id: p_carte, quando: un PG sfoglia le carte di Vischi sullo scrittoio, abilita: indagare, cd: 10, indizio: i_carte_pronte}
+- {id: p_corda, quando: un PG guarda la corda a nodi appesa vicino al camino, abilita: percezione, cd: 10, indizio: i_corda_nodi}

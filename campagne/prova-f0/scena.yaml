@@ -209,3 +209,8 @@ immagine:
 
 # Condizione che chiude la scena (T5).
 taglio: "La scena si chiude dopo il terzo rintocco, quando il paese alla porta ha avuto la sua risposta: se ne va con Sebastiano, con Ottavia, oppure senza nessuno. Se Sebastiano è già sparito, il paese arriva lo stesso, per il pane e per un colpevole. Se al sesto segno i PG esitano ancora, Baldrin apre la porta e il paese entra: i PG hanno una sola risposta, poi la scena si chiude."
+prove:
+- {id: p_ripostiglio, quando: un PG forza la porta del ripostiglio senza la chiave, abilita: atletica, cd: 15, se_fallisce: 'la serratura scatta forte, e Baldrin si alza di scatto'}
+- {id: p_chiave, quando: un PG sfila la chiave dal collo di Baldrin, abilita: rapidita_di_mano, cd: 15, se_fallisce: Baldrin se ne accorge e stringe la chiave nel pugno}
+- {id: p_quaderno, quando: un PG cerca nei conti del quaderno sotto il bancone, abilita: indagare, cd: 15, indizio: i_registro_conti}
+- {id: p_sacchi, quando: un PG setaccia i sacchi di segale nel retro, abilita: percezione, cd: 10, indizio: i_sacchi_marchio}

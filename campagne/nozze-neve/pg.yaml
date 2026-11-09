@@ -25,6 +25,14 @@ personaggi:
       - "suoni la fisarmonica e fai ballare anche chi non vuole"
       - "inventi una canzone su chiunque, in un minuto"
       - "ti ricordi le facce di tutti quelli che hai visto ballare"
+    scheda:
+      caratteristiche: {forza: 8, destrezza: 13, costituzione: 12, intelligenza: 10, saggezza: 10, carisma: 16}
+      competenze: [intrattenere, persuasione, inganno, storia]
+      tiri_salvezza: [destrezza, carisma]
+      armatura: {tipo: armatura di cuoio}
+      pf: 8
+      attacchi:
+      - {nome: Stocco, caratteristica: destrezza, danno: 1d8, tipo_danno: perforante}
     conoscenze_private:
       - {testo: "A mezzogiorno, mentre suonavi il brindisi, hai visto una ragazza con una treccia rossa uscire di corsa dalla porta di dietro della cantina, con qualcosa stretto nel pugno.", fatti: [f_zelia_presa]}
 
@@ -42,6 +50,14 @@ personaggi:
       - "curi le ferite e scaldi chi ha freddo con la magia della tua dea"
       - "sai le parole delle promesse e delle benedizioni di montagna"
       - "fai sedere allo stesso tavolo chi non si parla"
+    scheda:
+      caratteristiche: {forza: 10, destrezza: 10, costituzione: 12, intelligenza: 12, saggezza: 15, carisma: 13}
+      competenze: [religione, intuizione, persuasione, medicina]
+      tiri_salvezza: [saggezza, carisma]
+      armatura: nessuna
+      pf: 8
+      attacchi:
+      - {nome: Mazza, caratteristica: forza, danno: 1d6, tipo_danno: contundente}
     conoscenze_private:
       - {testo: "Tonio ti ha detto che il nonno Ettore porta sempre nella giacca una lettera vecchia, chiusa con la ceralacca, e che non la apre mai. Una volta Tonio ha provato a toccarla, e il nonno non gli ha parlato per una settimana.", fatti: [f_lettera_giacca]}
 
@@ -59,6 +75,14 @@ personaggi:
       - "sollevi un basto carico da sola"
       - "capisci il tempo dal cielo e la neve dalle impronte"
       - "calmi un mulo, e quasi sempre anche un mulattiere"
+    scheda:
+      caratteristiche: {forza: 16, destrezza: 12, costituzione: 14, intelligenza: 8, saggezza: 12, carisma: 8}
+      competenze: [atletica, sopravvivenza, intimidire, addestrare_animali]
+      tiri_salvezza: [forza, costituzione]
+      armatura: nessuna
+      pf: 13
+      attacchi:
+      - {nome: Ascia bipenne, caratteristica: forza, danno: 1d12, tipo_danno: tagliente}
     conoscenze_private:
       - {testo: "Stamattina all'alba hai visto Ettore salire da solo al Sasso con la lanterna. È tornato con gli occhi rossi, e ha detto che era il vento.", fatti: [f_ettore_alba]}
       - {testo: "A mezzogiorno Bastiano era con te nella stalla dei Morlacchi, a ferrare la mula Gigia: non si è mosso un momento. Ha ancora il grasso degli zoccoli sulle mani.", fatti: [f_bastiano_innocente]}
@@ -77,6 +101,15 @@ personaggi:
       - "sfili un oggetto da una tasca senza che il padrone se ne accorga"
       - "leggi un contratto al volo e trovi la clausola che conta"
       - "riconosci a naso l'età di un formaggio"
+    scheda:
+      caratteristiche: {forza: 8, destrezza: 16, costituzione: 12, intelligenza: 13, saggezza: 10, carisma: 13}
+      competenze: [rapidita_di_mano, furtivita, percezione, inganno]
+      maestrie: [rapidita_di_mano, furtivita]
+      tiri_salvezza: [destrezza, intelligenza]
+      armatura: {tipo: armatura di cuoio}
+      pf: 8
+      attacchi:
+      - {nome: Pugnale, caratteristica: destrezza, danno: 1d4, tipo_danno: perforante}
     conoscenze_private:
       - {testo: "Nella borsa hai un contratto per Gaspare Bonfanti: cinque estati di pascolo al Prato Alto per Sior Bortolo, con venti fiorini di caparra già pagati un mese fa. Va firmato dopo il tramonto, non prima: il padrone ha detto «solo se le nozze saltano».", fatti: [f_caparra, f_contratto]}
 
@@ -94,6 +127,15 @@ personaggi:
       - "segui una pista nella neve fresca"
       - "ti muovi senza fare rumore in una casa che non è tua"
       - "conosci le cugine Bonfanti e i loro nascondigli di bambine"
+    scheda:
+      caratteristiche: {forza: 10, destrezza: 16, costituzione: 12, intelligenza: 10, saggezza: 14, carisma: 12}
+      competenze: [sopravvivenza, natura, percezione, furtivita]
+      tiri_salvezza: [forza, destrezza]
+      armatura: {tipo: armatura di pelle}
+      pf: 10
+      attacchi:
+      - {nome: Arco corto, caratteristica: destrezza, danno: 1d6, tipo_danno: perforante, distanza: true}
+      - {nome: Pugnale, caratteristica: destrezza, danno: 1d4, tipo_danno: perforante}
     conoscenze_private:
       - {testo: "Nella lettera Zelia ha scritto anche: «Al matrimonio succederà qualcosa, e mi serve una dalla mia parte. In soffitta ho trovato lettere d'amore per la nonna, firmate E. Non sono del nonno Pietro.»", fatti: [f_lettere_soffitta, f_zelia_soffitta]}
 
@@ -111,5 +153,13 @@ personaggi:
       - "ti metti tra due che litigano, e non ti sposta nessuno"
       - "fai a braccio di ferro con chiunque, e sai quando perdere"
       - "capisci chi soffia sul fuoco in una sala piena"
+    scheda:
+      caratteristiche: {forza: 16, destrezza: 12, costituzione: 16, intelligenza: 10, saggezza: 12, carisma: 10}
+      competenze: [atletica, intimidire, percezione, intuizione]
+      tiri_salvezza: [forza, costituzione]
+      armatura: {tipo: armatura di cuoio borchiato}
+      pf: 12
+      attacchi:
+      - {nome: Martello da guerra, caratteristica: forza, danno: 1d8, tipo_danno: contundente}
     conoscenze_private:
       - {testo: "Il Custode ti ha confidato che nel Libro del Sasso, sessant'anni fa, c'è una prima neve senza benedizione, scritta da suo padre, e che lui non l'ha mai voluta leggere. «Roba di quei due», ha detto, e ha guardato i due vecchi.", fatti: []}

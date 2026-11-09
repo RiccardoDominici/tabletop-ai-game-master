@@ -76,3 +76,6 @@ esiti:
   - {id: e_ora_in_piu, descrizione: "Ponte aperto dopo il tocco: il secondo viaggio torna in tempo, con l'acqua sulla rampa.", finale: fin_ora_in_piu}
   - {id: e_barca_tardi, descrizione: "Ponte aperto dopo il tocco, ma la barca non torna in tempo: la catena si chiude, e la barca resta di là.", finale: fin_barca_tardi}
   - {id: e_nessun_viaggio, descrizione: "La barca non è mai partita: Ricovero e Case Lunghe restano di là.", finale: fin_nessun_viaggio}
+prove:
+- {id: p_rampa, quando: un PG scende la rampa bassa tenendosi ai paletti, abilita: atletica, cd: 10, se_fallisce: l'acqua strappa la lanterna dal paletto e la porta via}
+- {id: p_bigia, quando: 'un PG guida la Bigia nel buio, verso la rampa', caratteristica: forza, cd: 15, se_fallisce: la Bigia urta un paletto e imbarca acqua}

@@ -144,3 +144,8 @@ immagine:
 
 # Condizione che chiude la scena (T5).
 taglio: "La scena si chiude quando la Bigia parte per il Borgo con i PG a bordo, e si passa al Borgo Basso; oppure quando i PG vanno alla Casa del Sale. Se il gruppo si divide, si alternano la barca e la Casa del Sale, una risposta per parte, con più peso al gruppo più numeroso. Se al terzo segno i PG esitano ancora, Nerio, il capo dei barcaioli, salta nella barca e chiede: Ricovero o Case Lunghe? Parte con chi risponde, e la scena si chiude."
+prove:
+- {id: p_libro, quando: un PG sfoglia il libro dei passi fino alle pagine vecchie, abilita: indagare, cd: 15, indizio: i_libro_piena, se_fallisce: 'Tullio chiede che cosa cerchi, e il libro si chiude'}
+- {id: p_leone, quando: un PG guarda da vicino il leone con una lanterna, abilita: percezione, cd: 10, indizio: i_malta_leone}
+- {id: p_catena, quando: 'un PG tende la catena da solo, con la manovella', abilita: atletica, cd: 15, se_fallisce: 'la manovella scatta, e Tullio dal casello grida di lasciarla'}
+- {id: p_lanterna, quando: un PG guarda a lungo la lanterna del Ricovero, abilita: percezione, cd: 15, indizio: i_lanterna_ricovero}

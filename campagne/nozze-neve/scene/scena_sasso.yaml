@@ -83,3 +83,6 @@ esiti:
   - {id: es_verita_adelina, descrizione: "Adelina racconta lei la storia vera e mette l'anello alla sposa, con Ettore accanto: le due case scendono insieme, ma i Bonfanti perdono la voce del Sasso, e da allora la loro storia la racconta Ettore.", finale: fin_sasso_b}
   - {id: es_verita_altri, descrizione: "La storia vera la racconta qualcun altro: Adelina, umiliata, lascia l'anello a Marta, ritira la dote e se ne va; il Prato Alto resta in mano a Gaspare, e i Bonfanti perdono la voce del Sasso.", finale: fin_sasso_c}
   - {id: es_tramonto, descrizione: "Il sole tocca il passo senza anello o senza storia: niente benedizione fino a primavera, e all'alba Tonio scende con i muli.", finale: fin_tramonto}
+prove:
+- {id: p_iniziali, quando: 'un PG passa la mano sul bordo del Sasso, sotto la neve', abilita: percezione, cd: 10, indizio: i_iniziali}
+- {id: p_custode, quando: 'un PG chiede al Custode il Libro, senza giri di parole', abilita: persuasione, cd: 15, se_fallisce: il Custode chiude il Libro e torna a tacere}

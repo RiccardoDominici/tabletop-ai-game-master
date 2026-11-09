@@ -139,3 +139,9 @@ immagine:
   prompt_luogo: "cozy stone kitchen of an alpine farmhouse, crackling fireplace, steep wooden staircase going up, an open trapdoor with a ladder down to a warm stable with cows, a writing desk with a ledger under a frosted window, snow outside"
 
 taglio: "La scena si chiude quando i PG lasciano casa Bonfanti, con l'anello o senza, per tornare alla casera o salire al Sasso. Oppure al sesto segno del tramonto, quando in paese si accendono le lanterne: la Duchessa esce dalla stalla per guidare la processione, e la casa si svuota. Se i PG esitano, la sposa si alza, si sistema il velo da sola e scende le scale: è ora."
+prove:
+- {id: p_cassetto, quando: un PG apre il cassetto dello scrittoio di Gaspare, abilita: rapidita_di_mano, cd: 10, indizio: i_contratto, se_fallisce: 'il cassetto scricchiola, e Gaspare alza la testa dai
+    conti'}
+- {id: p_lettere, quando: un PG apre la cassapanca della nonna in soffitta, abilita: indagare, cd: 10, indizio: i_lettere}
+- {id: p_quaderno, quando: un PG chiede a Zelia il quaderno e lo sfoglia, abilita: persuasione, cd: 15, indizio: i_quaderno, se_fallisce: Zelia stringe il quaderno al petto e lo chiude}
+- {id: p_stalla, quando: un PG scende nella stalla senza far suonare i campanacci, abilita: furtivita, cd: 15, se_fallisce: 'i campanacci suonano, e le vacche si girano'}

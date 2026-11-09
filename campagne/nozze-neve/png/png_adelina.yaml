@@ -22,6 +22,12 @@ personalita:
   sotto_pressione: ["diventa cortese e formale, e dà del lei anche ai nipoti", "se la fanno ridere quando non vuole, si arrabbia con chi l'ha fatta ridere"]
   contraddizione: "Racconta da ventotto anni la storia dell'anello, e non l'ha mai raccontata vera."
 
+scheda:
+  gs: 0
+  caratteristiche: {forza: 8, destrezza: 10, costituzione: 10, intelligenza: 12, saggezza: 16, carisma: 12}
+  competenze: [intuizione, religione]
+  pf: 4
+  attacchi: []
 desiderio: "Mettere l'anello al dito di Agnese al Sasso, raccontando la storia dei Bonfanti come l'ha sempre raccontata."   # contro Ettore, Zelia e il fronte della faida
 paura: "Che il paese rida di lei, come la sera in cui aspettò al Sasso fino al buio."
 

@@ -21,6 +21,12 @@ personalita:
   sotto_pressione: ["diventa seria e pratica, e dà ordini come il nonno", "se la scoprono, ride troppo forte e cambia discorso"]
   contraddizione: "Accende le lanterne per chi passa sopra il ponte, e di notte ci passa sotto di nascosto."
 
+scheda:
+  gs: 0
+  caratteristiche: {forza: 9, destrezza: 15, costituzione: 12, intelligenza: 10, saggezza: 12, carisma: 11}
+  competenze: [atletica, percezione]
+  pf: 4
+  attacchi: []
 desiderio: "Fare da faro alla barca dal parapetto, e dimostrare al nonno che sa tenere il ponte da sola."   # contro Tullio, che la tratta da bambina
 paura: "Che il nonno la mandi via dal ponte."
 

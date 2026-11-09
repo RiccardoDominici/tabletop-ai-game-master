@@ -19,6 +19,12 @@ personalita:
   sotto_pressione: ["diventa formale come un notaio: dà del lei e parla per punti", "se la fanno ridere, dimentica di negare"]
   contraddizione: "Vuole la verità a ogni costo, e da mezzogiorno racconta una bugia dopo l'altra."
 
+scheda:
+  gs: 0
+  caratteristiche: {forza: 8, destrezza: 16, costituzione: 10, intelligenza: 12, saggezza: 12, carisma: 10}
+  competenze: [furtivita, rapidita_di_mano, percezione]
+  pf: 4
+  attacchi: []
 desiderio: "Costringere la nonna a raccontare al Sasso la storia vera dell'anello."   # contro Adelina e contro Gaspare
 paura: "Che la nonna non le parli mai più."
 

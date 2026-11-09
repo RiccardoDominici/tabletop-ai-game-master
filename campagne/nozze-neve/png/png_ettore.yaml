@@ -21,6 +21,13 @@ personalita:
   sotto_pressione: ["diventa zitto e immobile, con le mani sul bastone", "se lo commuovono, si arrabbia con il cappello e lo strapazza"]
   contraddizione: "Grida che i Bonfanti sono ladri, e ogni prima neve sale al Sasso da solo, prima dell'alba."
 
+scheda:
+  gs: 1/8
+  caratteristiche: {forza: 16, destrezza: 10, costituzione: 14, intelligenza: 10, saggezza: 12, carisma: 10}
+  competenze: [atletica, intimidire]
+  pf: 11
+  attacchi:
+  - {nome: Bastone da mulattiere, caratteristica: forza, danno: 1d6, tipo_danno: contundente}
 desiderio: "Sentire dire al Sasso, una volta, davanti al paese, che i Morlacchi non hanno mai rubato niente."   # contro Adelina e la leggenda
 paura: "Morire senza che lei sappia perché quel giorno non venne."
 

@@ -24,6 +24,14 @@ personaggi:
       - "riconosci erbe, funghi, semi e muffe a colpo d'occhio"
       - "con un incantesimo puoi parlare con gli animali"
       - "curi le piccole ferite, con le erbe e con la magia"
+    scheda:
+      caratteristiche: {forza: 8, destrezza: 14, costituzione: 12, intelligenza: 13, saggezza: 15, carisma: 10}
+      competenze: [natura, medicina, addestrare_animali, percezione]
+      tiri_salvezza: [intelligenza, saggezza]
+      armatura: {tipo: armatura di cuoio, scudo: false}
+      pf: 8
+      attacchi:
+      - {nome: Bastone da viaggio, caratteristica: forza, danno: 1d6, tipo_danno: contundente}
     conoscenze_private:
       - {testo: "Tua nonna chiamava fuoco nero la febbre della segale guasta: mani e piedi che bruciano, tremori, visioni. Nella segale malata ci sono chicchi neri e curvi, come piccole unghie.", fatti: [f_fuoco_nero]}
       - {testo: "Contro il fuoco nero la nonna diceva: niente più pane di quella segale, tanta acqua, e freddo sulle mani.", fatti: [f_rimedio]}
@@ -42,6 +50,15 @@ personaggi:
       - "tiri di balestra e tieni la spada come si deve"
       - "riconosci a colpo d'occhio chi ha fatto il soldato"
       - "reggi il freddo, la fame e le notti di guardia"
+    scheda:
+      caratteristiche: {forza: 14, destrezza: 14, costituzione: 14, intelligenza: 10, saggezza: 12, carisma: 9}
+      competenze: [atletica, percezione, intimidire, sopravvivenza]
+      tiri_salvezza: [forza, costituzione]
+      armatura: {tipo: giaco di maglia, scudo: false}
+      pf: 11
+      attacchi:
+      - {nome: Balestra leggera, caratteristica: destrezza, danno: 1d8, tipo_danno: perforante, distanza: true}
+      - {nome: Spada lunga, caratteristica: forza, danno: 1d8, tipo_danno: tagliente}
     conoscenze_private:
       - {testo: "La Compagnia del Grifo cerca il suo cerusico, sparito dopo Roccalba: sui quarant'anni, magro, una cicatrice bianca che gli taglia il sopracciglio sinistro. La taglia è di venti corone.", fatti: [f_taglia_cerusico]}
       - {testo: "I cerusici della Compagnia chiudono le bende con un nodo doppio e piatto. Lo riconosceresti ovunque.", fatti: [f_nodo_cerusici]}
@@ -62,6 +79,16 @@ personaggi:
       - "apri serrature e borse senza farti notare"
       - "conosci ogni asse e ogni ombra di questa casa"
       - "ti accorgi quando qualcuno mente"
+    scheda:
+      caratteristiche: {forza: 8, destrezza: 16, costituzione: 12, intelligenza: 12, saggezza: 14, carisma: 12}
+      competenze: [furtivita, rapidita_di_mano, intuizione, percezione]
+      maestrie: [furtivita, rapidita_di_mano]
+      tiri_salvezza: [destrezza, intelligenza]
+      armatura: {tipo: armatura di cuoio, scudo: false}
+      pf: 8
+      attacchi:
+      - {nome: Pugnale, caratteristica: destrezza, danno: 1d4, tipo_danno: perforante}
+      - {nome: Arco corto, caratteristica: destrezza, danno: 1d6, tipo_danno: perforante, distanza: true}
     conoscenze_private:
       - {testo: "Nel ripostiglio, sotto un sacco vuoto, c'è una botola che scende in cantina. In cantina si arriva anche dal retro, con una scala dietro la tenda, e una grata dà sotto il portico. Da bambino Ottavia ti ci nascondeva.", fatti: [f_botola]}
       - {testo: "Quando Ottavia mente, si sistema il fazzoletto rosso sui capelli. Lo fa da sempre.", fatti: []}
@@ -81,6 +108,14 @@ personaggi:
       - "guidi un rito e parli davanti a una folla"
       - "con una preghiera senti se un cibo o una bevanda è impuro"
       - "curi le ferite con la magia della tua dea"
+    scheda:
+      caratteristiche: {forza: 10, destrezza: 10, costituzione: 13, intelligenza: 12, saggezza: 16, carisma: 14}
+      competenze: [religione, intuizione, persuasione, medicina]
+      tiri_salvezza: [saggezza, carisma]
+      armatura: nessuna
+      pf: 8
+      attacchi:
+      - {nome: Mazza, caratteristica: forza, danno: 1d6, tipo_danno: contundente}
     conoscenze_private:
       - {testo: "Il rito: al terzo rintocco la chierica benedice il pane e lo spezza per prima. Poi lo mangiano tutti, anche i bambini. Chi rifiuta il pane offende i morti.", fatti: [f_rito_pane]}
       - {testo: "In fondo al libro del rito c'è una riga che in paese nessuno ricorda: se il pane è impuro, i morti accettano le castagne.", fatti: [f_rito_castagne]}

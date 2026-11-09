@@ -18,6 +18,12 @@ personalita:
   sotto_pressione: ["diventa calma e lentissima, e parla del bucato", "se le toccano i suoi vecchi si siede sulla scala e non si sposta"]
   contraddizione: "Ha sempre detto la verità ai suoi vecchi, e stanotte mente per loro."
 
+scheda:
+  gs: 0
+  caratteristiche: {forza: 8, destrezza: 10, costituzione: 10, intelligenza: 12, saggezza: 15, carisma: 13}
+  competenze: [intuizione, percezione]
+  pf: 4
+  attacchi: []
 desiderio: "Far salvare prima i bambini delle Case Lunghe, e i suoi vecchi dopo."   # in tensione con Vischi e con la piena
 paura: "Che un bambino passi la notte su un tetto per colpa dei vecchi."
 

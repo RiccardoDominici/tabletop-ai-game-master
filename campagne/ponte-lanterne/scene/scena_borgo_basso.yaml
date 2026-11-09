@@ -99,3 +99,8 @@ immagine:
   prompt_luogo: "flooded narrow alley of a poor riverside quarter at night, waist-deep brown water between old stone walls, flat wooden boat with a long pole, two-storey stone almshouse with a lantern in an upper window, row of old wooden houses on the riverbank with wooden balconies, heavy rain, distant lanterns of a stone bridge"
 
 taglio: "La scena si chiude quando la Bigia riparte verso il ponte con un gruppo a bordo, oppure quando i PG decidono di restare di là con chi non entra in barca. Se al sesto segno i PG esitano ancora, Rosa mette in barca chi è più vicino alla scala e spinge via la Bigia con il piede: la barca torna al ponte con quelli, e la scena si chiude."
+prove:
+- {id: p_scala, quando: un PG porta giù per la scala un vecchio che non cammina, abilita: atletica, cd: 10, se_fallisce: 'la scala scricchiola, e il vecchio scivola di un gradino'}
+- {id: p_legna, quando: un PG cerca la legna nel sottoscala del Ricovero, abilita: percezione, cd: 10, indizio: i_legna_bagnata}
+- {id: p_rosa, quando: un PG chiede a Rosa del leone e delle rondini, abilita: persuasione, cd: 15, indizio: i_rosa_rondini}
+- {id: p_croci, quando: un PG alza la lanterna davanti alle porte delle Case Lunghe, abilita: percezione, cd: 10, indizio: i_croci_gesso}
