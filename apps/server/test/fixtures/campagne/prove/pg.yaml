@@ -1,0 +1,59 @@
+situazione_comune: "Viaggiate insieme verso la città: il guado del Vallone è l'unica strada."
+personaggi:
+  - id: pg_ida
+    nome: "Ida Ferraro"
+    pronomi: "lei"
+    specie: "umana"
+    classe: "barda"
+    livello: 1
+    aspetto: "Umana con un liuto a tracolla e un cappello piumato."
+    concetto: "Cantastorie di piazza che vive di parole. Convincere la gente è il suo mestiere."
+    aggancio: "In città l'aspetta un ingaggio per il torneo."
+    cosa_sai_fare: ["parli bene e convinci", "suoni il liuto", "conosci le storie dei baroni"]
+    scheda:
+      caratteristiche: {forza: 8, destrezza: 14, costituzione: 12, intelligenza: 12, saggezza: 10, carisma: 17}
+      competenze: [persuasione, inganno, intrattenere, storia]
+      tiri_salvezza: [destrezza, carisma]
+      armatura: {tipo: armatura di cuoio}
+      pf: 9
+      attacchi:
+        - {nome: "Stocco", caratteristica: destrezza, danno: "1d8", tipo_danno: perforante}
+  - id: pg_corrado
+    nome: "Corrado Lanzi"
+    pronomi: "lui"
+    specie: "umano"
+    classe: "guerriero"
+    livello: 1
+    aspetto: "Umano dalle spalle larghe, una balestra a tracolla e un giaco di maglia."
+    concetto: "Ex balestriere di una compagnia di ventura. Non ama chi fa il prepotente."
+    aggancio: "Deve consegnare un messaggio in città entro domani."
+    cosa_sai_fare: ["tiri di balestra", "tieni la spada", "reggi la fatica"]
+    scheda:
+      caratteristiche: {forza: 16, destrezza: 14, costituzione: 15, intelligenza: 10, saggezza: 12, carisma: 8}
+      competenze: [atletica, percezione, intimidire, sopravvivenza]
+      tiri_salvezza: [forza, costituzione]
+      armatura: {tipo: giaco di maglia, scudo: false}
+      pf: 12
+      attacchi:
+        - {nome: "Balestra leggera", caratteristica: destrezza, danno: "1d8", tipo_danno: perforante, distanza: true}
+        - {nome: "Spada lunga", caratteristica: forza, danno: "1d8", tipo_danno: tagliente}
+  - id: pg_teo
+    nome: "Teo"
+    pronomi: "lui"
+    specie: "halfling"
+    classe: "ladro"
+    livello: 1
+    aspetto: "Halfling magro con un mantello grigio e le mani sempre in tasca."
+    concetto: "Ladruncolo di città che si è messo in viaggio per sparire un po'."
+    aggancio: "In città qualcuno gli deve dei soldi."
+    cosa_sai_fare: ["apri serrature", "ti muovi senza farti sentire", "sfili borse"]
+    scheda:
+      caratteristiche: {forza: 8, destrezza: 17, costituzione: 12, intelligenza: 13, saggezza: 12, carisma: 10}
+      competenze: [furtivita, rapidita_di_mano, acrobazia, percezione]
+      maestrie: [furtivita, rapidita_di_mano]
+      tiri_salvezza: [destrezza, intelligenza]
+      armatura: {tipo: armatura di cuoio}
+      pf: 9
+      attacchi:
+        - {nome: "Pugnale", caratteristica: destrezza, danno: "1d4", tipo_danno: perforante}
+        - {nome: "Arco corto", caratteristica: destrezza, danno: "1d6", tipo_danno: perforante, distanza: true}

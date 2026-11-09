@@ -1,0 +1,49 @@
+id: scena_guado
+nodo: n_guado
+nome: "Il guado del Vallone, al tramonto"
+descrizione: "Un ponte di legno stretto sul fiume gonfio. A destra il guado coi sassi, che l'acqua comincia a coprire. Sulla riva un casotto: Bertoldo siede accanto alla cassetta del pedaggio. Ruggero lo sgherro sbarra il ponte con la mazza. Una corda tesa attraversa il fiume, per chi vuole guadare."
+domanda_drammatica: "Il gruppo passerà il fiume prima della piena?"
+intensita: 3
+sensi:
+  - "L'acqua del fiume rumoreggia sotto le assi."
+  - "Odore di fango e di legno bagnato."
+  - "Il vento freddo della sera sulle mani."
+elementi_interattivi:
+  - {cosa: "il ponte di legno", dove: "davanti al casotto", azioni: "si attraversa pagando, o passando Ruggero"}
+  - {cosa: "la corda sul guado", dove: "a destra del ponte", azioni: "ci si può aggrappare per attraversare l'acqua"}
+  - {cosa: "la cassetta del pedaggio", dove: "accanto a Bertoldo", azioni: "è chiusa con un lucchetto; dentro ci sono monete e carte"}
+png_presenti: [png_bertoldo, png_ruggero]
+orologi_attivi: [o_piena]
+prove:
+  - id: p_guado
+    quando: "un PG attraversa il fiume a guado, aggrappato alla corda"
+    abilita: atletica
+    cd: 12
+    se_fallisce: "la corrente lo trascina per qualche passo e perde qualcosa dallo zaino"
+  - id: p_cassetta
+    quando: "un PG apre di nascosto il lucchetto della cassetta del pedaggio"
+    abilita: rapidita_di_mano
+    cd: 15
+    indizio: i_lettera
+    se_fallisce: "il lucchetto scatta rumoroso"
+indizi:
+  - id: i_lettera
+    conclusione: r_barone
+    tipo: documento
+    nodo: n_guado
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi apre la cassetta trova una lettera col sigillo del barone: non far passare nessuno."
+  - id: i_sigillo
+    conclusione: r_barone
+    tipo: oggetto
+    nodo: n_guado
+    essenziale: true
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi guarda la mazza di Ruggero vede inciso lo stemma del barone."
+mossa_morbida_pronta: "L'acqua copre un altro sasso del guado."
+apertura: "Il fiume è gonfio e il ponte è sbarrato da un omone con la mazza. Accanto al casotto, un vecchio conta monete. Che fate?"
+musica: {tag: tensione}
+taglio: "Si chiude quando il gruppo passa il fiume o torna indietro."

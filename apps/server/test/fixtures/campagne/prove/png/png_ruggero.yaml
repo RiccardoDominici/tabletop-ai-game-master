@@ -1,0 +1,30 @@
+id: png_ruggero
+nome: "Ruggero lo sgherro"
+pronuncia: "Ruggèro"
+alias: [sgherro, bravo]
+livello: supporto
+ruolo: "sgherro che presidia il ponte"
+aspetto:
+  lettura: "Un omone col naso rotto e una mazza ferrata appoggiata alla spalla."
+  invarianti: ["omone", "naso rotto", "mazza ferrata"]
+personalita: {superficie: ["prepotente", "rozzo"], sotto_pressione: ["diventa codardo"], contraddizione: "Fa il duro ma scappa dal sangue."}
+desiderio: "Che nessuno passi il ponte stanotte."
+voce:
+  tts: {voce_id: dario}
+  registro: "tu"
+  stile: "Frasi di due-sei parole."
+  battuta_campione: "Il ponte è chiuso. Girate al largo."
+sa: [f_pedaggio, f_sgherro_pagato]
+non_sa: [f_lettera_barone]
+atteggiamento_pg:
+  pg_ida: {stato: ostile, perche: "ordini del barone", vuole: "che se ne vadano"}
+  pg_corrado: {stato: ostile, perche: "ordini del barone", vuole: "che se ne vadano"}
+  pg_teo: {stato: ostile, perche: "ordini del barone", vuole: "che se ne vadano"}
+scheda:
+  gs: 1/2
+  caratteristiche: {forza: 15, destrezza: 12, costituzione: 14, intelligenza: 8, saggezza: 10, carisma: 9}
+  competenze: [atletica, intimidire]
+  armatura: {tipo: armatura di pelle}
+  pf: 11
+  attacchi:
+    - {nome: "Mazza ferrata", caratteristica: forza, danno: "1d6", tipo_danno: contundente}

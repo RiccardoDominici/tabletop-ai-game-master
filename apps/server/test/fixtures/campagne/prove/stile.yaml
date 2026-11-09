@@ -1,0 +1,6 @@
+# Campagna di prova per i dadi (docs/prove.md): schede numeriche di PG e PNG, prove della scena,
+# una battuta con il cancello richiede.prova. Segnaposto per i test, non è contenuto di gioco vero.
+id: prove
+titolo: "Il guado del pedaggio"
+tono: "Asciutto, un po' ironico."
+regole_prosa: ["frasi brevi"]
