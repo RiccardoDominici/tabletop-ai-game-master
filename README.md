@@ -17,7 +17,7 @@ Regole, dadi e segreti li tiene il codice, non il modello: il narratore racconta
 ## Cosa serve
 
 - **Un Mac con chip Apple** (M1 o più recente). Serve per le immagini generate in locale e per la voce locale Qwen,
-  che usano le librerie MLX. Il Mac di riferimento del progetto è un M1 con 16 GB di RAM.
+  che usano le librerie MLX. Il progetto è dimensionato per 16 GB di RAM (vedi [architettura](docs/architettura.md)).
   Su un computer senza chip Apple il resto (server, narratore, voce drama-3) non è stato provato: da verificare.
 - **Node 22 o più recente** (campo `engines` di `package.json`).
 - **Python 3 con PyYAML**: lo usa il validatore delle campagne.
