@@ -6,6 +6,8 @@
  * risincronizzano chiedendo `stato:richiedi` quando si riconnettono.
  */
 
+import type { PuntiFerita, TiroMostrato } from './prove';
+
 /** Fasi della scena, nell'ordine in cui normalmente si susseguono. */
 export type FaseScena =
   /** Scena caricata, nessuno ha ancora premuto «Inizia sessione» sullo schermo. */
@@ -32,6 +34,8 @@ export interface PgPubblico {
   descrizione: string;
   /** Quanti telefoni hanno scelto questo PG in questo momento. */
   telefoni: number;
+  /** Punti ferita, se il PG ha una scheda numerica (docs/prove.md); assente o null = senza dadi. */
+  pf?: PuntiFerita | null;
 }
 
 /**
@@ -113,6 +117,11 @@ export interface AzionePrivata {
   turno: number;
   /** Epoch ms del primo invio (decide l'ordine: prima scrive, prima arriva). */
   inviata_alle: number;
+  /**
+   * Carte dei tiri di questa azione nell'ultimo turno risolto (docs/prove.md), anche se è privata:
+   * questo oggetto va solo al telefono del suo autore. Vuoto o assente = nessun tiro.
+   */
+  tiri?: TiroMostrato[];
 }
 
 /** Azione pubblica di un altro giocatore, nella sezione «Al tavolo» dei telefoni. */
@@ -256,6 +265,13 @@ export interface StatoTavolo {
    * su un telefono con l'ora sbagliata.
    */
   ora_server_ms: number;
+  /** La campagna gioca coi dadi del Motore (schede numeriche presenti, docs/prove.md). */
+  dadi?: boolean;
+  /**
+   * Carte dei tiri PUBBLICI dell'ultimo turno risolto, in ordine (proiettore e telefoni); quelle
+   * delle azioni private vanno solo nel `tiri` di AzionePrivata del loro autore.
+   */
+  tiri?: TiroMostrato[];
 }
 
 /** Misure di latenza di un turno (stessi campi di logs/turni.jsonl, docs/f0-contratti.md). */

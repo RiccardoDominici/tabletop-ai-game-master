@@ -38,6 +38,11 @@ export interface DatiMessaggioTurno {
   maxTrascrizione?: number;
   /** Note di regia del master (al massimo 3), da seguire in questa risposta. */
   noteRegia?: string[];
+  /**
+   * Esiti dei tiri del turno (docs/prove.md), righe già pronte dal Motore delle prove, nell'ordine
+   * delle azioni. Assente o vuoto: nessuna sezione (campagna senza dadi).
+   */
+  esitiTiri?: { titolo: string; regola: string; righe: string[] };
 }
 
 /** Titolo della sezione delle note di regia nel messaggio (lo cercano anche i log e i test). */
@@ -115,6 +120,8 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
     );
     if (d.azioni.some((a) => a.numero !== undefined)) parti.push('Le azioni sono in ordine di invio: risolvile in quest’ordine.');
     if (d.collegamenti?.length) parti.push(`Collegamenti tra le azioni:\n${d.collegamenti.map((c) => `- ${c}`).join('\n')}`);
+    // Esiti dei tiri: subito dopo le azioni, perché la risoluzione di ognuna parta da lì.
+    if (d.esitiTiri?.righe.length) parti.push(d.esitiTiri.titolo, d.esitiTiri.regola, d.esitiTiri.righe.map((r) => `- ${r}`).join('\n'));
   }
 
   if (d.orologi) parti.push('## Orologi della scena (stato tenuto dal Motore)', d.orologi);
