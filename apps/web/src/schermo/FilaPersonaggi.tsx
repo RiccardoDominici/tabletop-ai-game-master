@@ -17,7 +17,7 @@ export function FilaPersonaggi({ personaggi, parlante }: { personaggi: readonly 
   return (
     <ul data-testid="fila-personaggi" aria-label="Chi c'è in scena" className="flex flex-wrap items-start gap-[2vw]">
       {presenti.map((p) => (
-        <li key={p.id} data-testid={`personaggio-${p.id}`} data-parla={String(p.id === parlante)} className="flex w-[max(9vw,11rem)] flex-col items-center gap-[2.4vh]">
+        <li key={p.id} data-testid={`personaggio-${p.id}`} data-parla={String(p.id === parlante)} className="flex w-[max(9vw,11rem)] flex-col items-center gap-[3.2vh]">
           <Ritratto personaggio={p} parla={p.id === parlante} />
           <span
             className={clsx(
@@ -42,7 +42,7 @@ function Ritratto({ personaggio, parla }: { personaggio: PersonaggioScena; parla
       className={clsx(
         'flex size-[max(9vw,11rem)] items-center justify-center overflow-hidden rounded-full bg-notte-3 transition-transform duration-300',
         parla
-          ? 'scale-110 ring-[0.6vw] ring-[#ff9a6b] shadow-[0_0_3vw_rgb(255_154_107/0.7),0_1vh_3vh_rgb(0_0_0/0.8)]'
+          ? 'scale-105 ring-[0.45vw] ring-[#ff9a6b] shadow-[0_0_3vw_rgb(255_154_107/0.7),0_1vh_3vh_rgb(0_0_0/0.8)]'
           : 'ring-[0.3vw] ring-[#e8c98a]/70 shadow-[0_1vh_3vh_rgb(0_0_0/0.8)] opacity-90',
       )}
     >
