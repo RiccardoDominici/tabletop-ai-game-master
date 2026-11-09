@@ -37,6 +37,7 @@ Leggi per intero, nell'ordine:
    `riferimenti/motore.md`: che cosa il Motore non fa (ancora), e quindi deve fare la campagna.
 5. `riferimenti/immagini.md`: i prompt per le immagini (strumenti/immagini/).
 6. `docs/f0-contratti.md`, sezione «File della campagna»: cosa carica il server oggi.
+7. `docs/regole.md`, solo se il brief ha `manuale:` (il set di regole, passo 1b).
 
 Poi guarda gli esempi, **senza copiarne il contenuto**:
 - `strumenti/test_valida_fixtures/mini/`: la campagna più piccola che passa in modo rigoroso, con un
@@ -65,6 +66,7 @@ Dal brief ricavi:
 - **PG pregenerati**: uno più del massimo dei giocatori (per «3–4 giocatori», cinque), perché la scena
   deve reggere con qualunque sottoinsieme;
 - **linee e veli**: quelli del brief, più quelli che la storia rende necessari;
+- **manuale**: se Riccardo ha un manuale di regole, `manuale: manuali/<file>` (vedi passo 1b). Vuoto = SRD 5.2.
 - **voci**: quale voce di `assets/voci/voci.yaml` va a quale PNG, e quali PNG non possono mai stare
   insieme (regola 9). Con quattro voci registrate questa scelta decide la storia: falla adesso. Un
   personaggio che conta ma non può avere una voce è una comparsa senza scheda: parla per bocca del
@@ -104,7 +106,10 @@ Preparatore, e la forma dei campi è in `riferimenti/schema.md`.
   (media) o 20 (difficile). Un indizio essenziale non sta mai dietro un tiro.
 - **Repertorio**: `richiede: {prova: …}` solo sulle battute che devono uscire dopo una prova riuscita.
 
-**Controllo**: `--solo SCHEDA` senza errori. Le schede non si scrivono a memoria: il validatore le rifà.
+- **Set non SRD** (con `manuale:`): le caratteristiche, le abilità, le mosse e le difficoltà delle schede e delle prove
+  sono quelle del set, non le sei di D&D. La forma è in `docs/regole.md` §2 («Schede di PG e PNG per un set non SRD»).
+
+**Controllo**: `--solo SCHEDA` senza errori (con un set non SRD, `--solo REGOLE`). Le schede non si scrivono a memoria: il validatore le rifà.
 
 ## Ordine di lavoro
 
@@ -115,6 +120,7 @@ le classi già scrivibili; gli altri errori arrivano quando scrivi i file che li
 | Passo | Scrivi | Controllo |
 |---|---|---|
 | 1 | `brief.yaml → decisioni.situazione` | le domande del passo |
+| 1b | `regole/` (solo con `manuale:`) | `--solo REGOLE` senza errori, poi commit se la licenza è libera |
 | 2 | `stile.yaml` | `--solo STILE` |
 | 3 | `campagna.yaml`: canone, fronti, orologi, cattivo, sessione, cronologia e logistica | `--solo STILE,CANONE,FRONTI,SESSIONE,MONDO` |
 | 4 | `campagna.yaml`: rivelazioni, colli di bottiglia, nodi (gli indizi li progetti qui) | la prova dei due indizi mancanti |
@@ -155,6 +161,23 @@ chi pesa (`pesa_su`).
   cancella il prezzo di una delle strade;
 - nessun PNG può risolverla al posto dei PG (D8);
 - la verità si scopre in almeno tre modi.
+
+### 1b. Regole (solo con `manuale:`)
+Senza `manuale:` non scrivi nulla in `regole/`: vale l'SRD 5.2. Con `manuale: manuali/<file>` il set di regole è
+la base di schede e prove, quindi si scrive prima dei passi 6 e 7. La forma è in `docs/regole.md` §2: qui solo l'ordine.
+
+1. Estrai il testo con `strumenti/regole/.venv/bin/python strumenti/regole/estrai.py manuali/<file>` (sezioni con
+   pagina). Se esce vuoto, il manuale è una scansione: fermati e chiedi a Riccardo una versione testuale.
+2. Leggi il testo per intero, almeno risoluzione, caratteristiche, combattimento, mosse e prove sociali. Il set
+   non copia il manuale: ne ricava la struttura.
+3. Scrivi `campagne/<id>/regole/`: `regole.yaml` (con `fonte.titolo` e `licenza`), `riassunto.md` (per i giocatori,
+   breve) ed `estratti/<id>.md` (un passo per regola, con `parole` e `pagina`). Se non sai la licenza del manuale,
+   dichiara `libera: false` e dillo a Riccardo: il set resta fuori dal repository, e `regole/.gitignore` deve
+   contenere una riga `*` (il validatore lo controlla).
+4. Il set si controlla da solo con `python3 -I strumenti/valida_campagna.py campagne/<id> --solo REGOLE`.
+
+**Controllo**: `--solo REGOLE` senza errori. Poi commit di `regole/` solo se `licenza.libera` è `true`: un set non
+libero resta su questo computer, con il suo `.gitignore`.
 
 ### 2. Carta di stile → `stile.yaml`
 Premessa in una frase, tono, tema, registro del narratore e regole di prosa della campagna. Poi `[STILE]`
