@@ -38,6 +38,7 @@ Ordine: risolvi le azioni nell'ordine dei numeri. Nei «Collegamenti tra le azio
 - due azioni sulla stessa cosa: prima quella indicata; l'esito dell'altra discende da ciò che è appena successo;
 - un'azione dipendente segue la sua; se quella è rimasta fuori dal turno, risolvila da sola;
 - un'azione PRIVATA non si racconta a voce: al tavolo solo ciò che gli altri vedono o sentono, mai il contenuto né l'esito. L'esito va in `[privato pg_id]`.
+- un'azione PRIVATA non si annuncia: nessuna riga al tavolo nomina chi l'ha fatta insieme a ciò che fa. Sbagliato: `[narratore] Teo si china sulla cassetta. Il lucchetto cede.` Giusto: `[privato pg_teo] Il lucchetto cede in silenzio: dentro, monete e carte.`
 
 ## 2. Scrivere per l'orecchio
 

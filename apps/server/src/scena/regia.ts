@@ -84,6 +84,7 @@ import { MotoreProve, type AzionePerProve } from '../prove/motore';
 import type { ArbitroProve, EsitoTurnoProve } from '../prove/tipi';
 import type { FonteDadi } from '../prove/dadi';
 import { REGOLA_ESITI, TITOLO_ESITI } from '../prove/testi';
+import { guardiaPrivate } from '../narrazione/privato';
 import type { SchedaNumerica } from '../campagna/schede';
 
 /** Gli orologi già avanzati in una risposta (un segno per orologio, al massimo due: StatoOrologi.avanza). */
@@ -1651,6 +1652,26 @@ export class Regia {
     this.prove.preclassifica(daFare.map(Regia.versoProve), vive.filter((a) => !daFare.includes(a)).map(Regia.versoProve));
   }
 
+  /**
+   * Guardia delle azioni private del turno (narrazione/privato.ts): una riga al tavolo che nomina
+   * l'autore di un'azione privata e ne riprende il contenuto va al suo telefono. Una per chiamata
+   * del narratore (i segmenti ripartono da capo).
+   */
+  private guardiaPrivate(azioni: ReadonlyArray<{ id_pg: string; testo: string | null; [k: string]: unknown }>): { spostaPrivata?: NonNullable<ReturnType<typeof guardiaPrivate>> } {
+    const c = this.campagna;
+    const nomiDi = (id: string): string[] => {
+      const nome = c.pg.find((p) => p.id === id)?.nome ?? id;
+      return [nome, nomeBreve(nome), ...Object.entries(c.alias).filter(([, x]) => x === id).map(([a]) => a)];
+    };
+    const tutti = new Set([...c.pg.map((p) => p.nome), ...c.png.map((p) => p.nome), ...Object.keys(c.alias)].map((n) => n.toLowerCase()));
+    const g = guardiaPrivate(
+      azioni.map((a) => ({ id_pg: a.id_pg, testo: a.testo, privata: a['privata'] === true })),
+      nomiDi,
+      tutti,
+    );
+    return g ? { spostaPrivata: g } : {};
+  }
+
   /** I dadi del turno chiuso: carte a proiettore e telefoni, fatti per il narratore, prove riuscite. */
   private async tiriDelTurno(r: RiepilogoChiusura): Promise<EsitoTurnoProve> {
     const esito = await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
@@ -1829,6 +1850,7 @@ export class Regia {
         pronuncia: this.pronuncia,
         ...this.parametriAudioTurno(),
         ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
+        ...this.guardiaPrivate(azioni),
         presenti: this.pngInScena(),
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segniInRisposta) : null,
         onFrase: (f) => {
@@ -1865,6 +1887,7 @@ export class Regia {
           pronuncia: this.pronuncia,
           ...this.parametriAudioTurno(),
           ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
+          ...this.guardiaPrivate(azioni),
           presenti: this.pngInScena(),
           usa: (id, per) => this.usaBattuta(id, per, turno, segniInRisposta),
           prefissoFrasi: 'r',

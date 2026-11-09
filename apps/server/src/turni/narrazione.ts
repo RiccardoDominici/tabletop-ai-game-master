@@ -132,6 +132,11 @@ export interface ParametriTurno {
    */
   scartaFrase?: (testo: string) => string | null;
   /**
+   * Guardia delle azioni private (narrazione/privato.ts): il PG al cui telefono spostare una frase
+   * pubblica che racconta la sua azione privata (null = la frase resta al tavolo).
+   */
+  spostaPrivata?: (testo: string, segmento: number) => { id_pg: string; comuni: string[] } | null;
+  /**
    * PNG nella scena in corso (`png_presenti`): una riga improvvisata `[png_x]` di un PNG che non c'è si
    * scarta prima della voce, con una riga di log (assente = nessun filtro).
    */
@@ -232,27 +237,37 @@ export async function narraTurno(
           log.warn({ turno: p.turno, etichetta: e.etichetta, motivo: motivoScarto, testo: e.testo }, 'narratore: frase fuori dalla finzione, scartata');
           continue;
         }
+        // Una riga al tavolo che racconta l'azione privata di un PG va al suo telefono, non si scarta.
+        let privato = e.privato;
+        if (!privato && p.spostaPrivata) {
+          const d = p.spostaPrivata(e.testo, e.segmento);
+          if (d) {
+            privato = d.id_pg;
+            anomalie.push({ codice: 'privata_al_tavolo', dettaglio: `${d.id_pg}: «${e.testo.slice(0, 120)}»` });
+            log.warn({ turno: p.turno, id_pg: d.id_pg, comuni: d.comuni, testo: e.testo }, "narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono");
+          }
+        }
         const { voce_id, nome } = voceDi(campagna, e.etichetta);
         // Esito privato: al telefono di quel PG (testo, e voce solo lì); mai nella trascrizione pubblica.
-        if (e.privato) {
+        if (privato) {
           if (!p.onPrivato) {
-            log.warn({ turno: p.turno, privato: e.privato }, 'narratore: riga privata senza destinatario, scartata');
+            log.warn({ turno: p.turno, privato: privato }, 'narratore: riga privata senza destinatario, scartata');
             continue;
           }
-          p.onPrivato({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice, id_pg: e.privato });
+          p.onPrivato({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice, id_pg: privato });
         } else {
           p.onFrase({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice });
         }
         const perVoce = p.pronuncia(e.voce);
         const idFrase = `t${p.turno}-${p.prefissoFrasi ?? 'f'}${indice}`;
         // Un segnale audio suonerebbe sul proiettore: resta per la prossima frase pubblica.
-        const cue = e.privato ? undefined : prendiCue();
-        accoda({ parlante: e.etichetta, nome, voce_id, testo: e.testo, ...(perVoce !== e.testo ? { testo_voce: perVoce } : {}), ...(cue ? { cue } : {}), ...(e.privato ? { solo_pg: e.privato } : {}) });
-        if (rigaAperta && rigaAperta.segmento === e.segmento) {
+        const cue = privato ? undefined : prendiCue();
+        accoda({ parlante: e.etichetta, nome, voce_id, testo: e.testo, ...(perVoce !== e.testo ? { testo_voce: perVoce } : {}), ...(cue ? { cue } : {}), ...(privato ? { solo_pg: privato } : {}) });
+        if (rigaAperta && rigaAperta.segmento === e.segmento && (rigaAperta.voce.privato ?? null) === (privato ?? null)) {
           rigaAperta.voce.testo += ` ${e.testo}`;
           rigaAperta.voce.frasi!.push(idFrase);
         } else {
-          const voce = { tipo: 'improvvisata' as const, etichetta: e.etichetta, testo: e.testo, frasi: [idFrase], segmento: e.segmento, ...(e.privato ? { privato: e.privato } : {}) };
+          const voce = { tipo: 'improvvisata' as const, etichetta: e.etichetta, testo: e.testo, frasi: [idFrase], segmento: e.segmento, ...(privato ? { privato: privato } : {}) };
           uscita.push(voce);
           rigaAperta = { segmento: e.segmento, voce };
           righeImprovvisate += 1;
