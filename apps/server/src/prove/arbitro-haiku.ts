@@ -27,7 +27,7 @@ Tipi:
 - «prova»: tentativo incerto e rischioso: arrampicarsi, saltare, forzare, scassinare, cercare ciò che è nascosto, seguire tracce, ricordare un sapere, curare una ferita, calmare un animale, convincere, ingannare, intimidire o incantare un PNG che esita (bersaglio = quel PNG). Scegli l'abilità; se nessuna abilità va bene, solo la caratteristica.
 - «salvezza»: il PG reagisce a un pericolo che lo colpisce: una trappola, un crollo, un veleno, una caduta, una magia, il freddo.
 - «attacco»: il PG colpisce o tira a una creatura con un'arma o a mani nude. bersaglio = id della creatura; arma = id di un'arma della scheda del PG, la più vicina a ciò che ha scritto (vuoto = a mani nude).
-- «contrapposta»: il PG agisce contro l'attenzione o la forza di un PNG che gli si oppone: nascondersi o passare non visto davanti a lui (furtivita contro percezione), sfilargli qualcosa (rapidita_di_mano contro percezione), mentirgli in faccia su un fatto che può smascherare (inganno contro intuizione), afferrarlo, spingerlo, trattenerlo (atletica contro atletica). bersaglio = id; abilita_bersaglio = l'abilità del PNG che si oppone.
+- «contrapposta»: il PG agisce contro l'attenzione o la forza di un PNG che gli si oppone: nascondersi o passare non visto davanti a lui (furtivita contro percezione), sfilargli qualcosa di dosso (rapidita_di_mano contro percezione), afferrarlo, spingerlo, trattenerlo (atletica contro atletica). bersaglio = id; abilita_bersaglio = l'abilità del PNG che si oppone. Convincere, mentire, minacciare o incantare un PNG NON è contrapposta: è «prova» con persuasione, inganno, intimidire o intrattenere.
 - «aiuto»: il PG aiuta un altro PG proprio nell'azione che quello sta facendo (azione Aiutare). In «aiuta» l'id di quell'azione. Non tira.
 
 Difficoltà, solo per «prova» e «salvezza»:
@@ -35,7 +35,9 @@ Difficoltà, solo per «prova» e «salvezza»:
 - se è persuasione, inganno, intimidire o intrattenere verso un PNG, lascia vuota la difficoltà: la CD viene dalla scheda del PNG;
 - altrimenti scegli dalla scala: molto_facile, facile, media, difficile, molto_difficile, quasi_impossibile. Nel dubbio, media.
 
-Vantaggio o svantaggio: solo per una circostanza chiara, scritta nell'azione o nella narrazione: un attrezzo adatto, una posizione migliore, la sorpresa, il buio, la fretta, una ferita, un bersaglio a terra o legato, tirare con un'arma a distanza a un nemico che ti sta addosso. L'atteggiamento dei PNG e l'aiuto dei compagni li conta già il programma: non metterli. In «motivo» poche parole per i giocatori, senza segreti.
+Vantaggio o svantaggio: solo per una circostanza chiara, scritta nell'azione o nella narrazione: un attrezzo adatto, una posizione migliore, la sorpresa, il buio, la fretta, una ferita, un bersaglio a terra o legato, tirare con un'arma a distanza mentre un nemico ti sta già addosso in mischia (la narrazione lo dice). Nel dubbio, nessuno. L'atteggiamento dei PNG e l'aiuto dei compagni li conta già il programma: non metterli.
+
+«motivo»: solo con vantaggio, svantaggio o «impossibile»; al massimo dieci parole per i giocatori, senza segreti. In tutti gli altri casi stringa vuota.
 
 Reazione: se l'azione scatena l'attacco di un PNG contro chi la fa (attaccare un PNG ostile e armato che resta in piedi, aggredirlo, fallire mentre gli si passa davanti di nascosto), indica il PNG in reazione_png e in reazione_quando «sempre» o «se_fallisce». Altrimenti reazione_png vuoto e reazione_quando «nessuna». Mai reazioni di PNG amichevoli o indifferenti, salvo una lotta già in corso.
 

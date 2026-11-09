@@ -116,6 +116,26 @@ export function scegliArma(s: SchedaNumerica, arma: string | null): AttaccoSched
   return s.attacchi[0] ?? COLPO_SENZ_ARMI;
 }
 
+/**
+ * Ritocchi deterministici alla decisione dell'arbitro, dove i dati o l'SRD dicono altro:
+ * - una prova della scena valida decide il tipo (prova o salvezza), salvo un attacco;
+ * - convincere, mentire, minacciare, incantare un PNG è Influenzare (prova con la CD del PNG),
+ *   anche se l'arbitro l'ha chiamata «contrapposta»;
+ * - una contrapposta senza abilità né caratteristica diventa una prova di Forza (Atletica).
+ */
+export function normalizzaDecisione(d: DecisioneProva, prove: readonly ProvaScena[]): DecisioneProva {
+  const ps = d.prova_scena ? prove.find((p) => p.id === d.prova_scena) : undefined;
+  if (d.prova_scena && !ps) d = { ...d, prova_scena: null };
+  if (ps && d.tipo !== 'attacco' && d.tipo !== 'aiuto' && d.tipo !== 'impossibile') {
+    return { ...d, tipo: ps.salvezza ? 'salvezza' : 'prova', abilita: ps.abilita, caratteristica: ps.caratteristica };
+  }
+  if (d.tipo === 'contrapposta' && d.abilita && ABILITA_INFLUENZA.has(d.abilita) && d.bersaglio?.startsWith('png_')) {
+    return { ...d, tipo: 'prova', abilita_bersaglio: null, difficolta: null };
+  }
+  if (d.tipo === 'contrapposta' && !d.abilita && !d.caratteristica) return { ...d, abilita: 'atletica' };
+  return d;
+}
+
 export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive'> {
   const perAzione = new Map<string, EsitoAzioneProve>();
   const tiri: TiroMostrato[] = [];
@@ -134,7 +154,9 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
   const carta = (base: Omit<TiroMostrato, 'id' | 'turno'>): TiroMostrato => ({ id: o.stato.nuovoIdTiro(), turno: o.turno, ...base });
 
   o.azioni.forEach((a, i) => {
-    const d = o.decisioni.get(a.id) ?? null;
+    const grezza = o.decisioni.get(a.id) ?? null;
+    const d = grezza ? normalizzaDecisione(grezza, o.proveScena) : null;
+    if (grezza && d && (d.tipo !== grezza.tipo || d.abilita !== grezza.abilita)) o.log.info({ azione: a.id, da: [grezza.tipo, grezza.abilita], a: [d.tipo, d.abilita] }, 'prove: decisione ritoccata dal Motore');
     const prefisso = `[${i + 1}] ${nomePg(a.autore)}${a.privata ? ' (azione PRIVATA: a voce solo ciò che gli altri percepiscono)' : ''}: `;
     const esito: EsitoAzioneProve = { id_azione: a.id, autore: a.autore, decisione: d, tiri: [], fatto: '', riuscite: [], riuscita: null };
     const aggiungi = (t: TiroMostrato): void => {

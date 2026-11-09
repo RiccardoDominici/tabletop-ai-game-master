@@ -1,0 +1,21 @@
+# Casi scritti a mano per l'arbitro delle prove (docs/prove.md, «Verifica»), sulla campagna di
+# prova apps/server/test/fixtures/campagne/prove. `atteso` elenca i campi che contano; più valori
+# separati da | sono tutti accettabili (casi ambigui anche per un master umano).
+narrazione: "[narratore] Ruggero sbarra il ponte con la mazza. Bertoldo conta le monete. Che fate?"
+casi:
+  - {id: c01, autore: pg_ida, testo: "Saluto Bertoldo e gli chiedo quanto costa il ponte", atteso: {tipo: nessuna}}
+  - {id: c02, autore: pg_ida, testo: "Mi siedo sulla riva e accordo il liuto", atteso: {tipo: nessuna}}
+  - {id: c03, autore: pg_ida, testo: "Convinco Bertoldo a lasciarci passare gratis: gli prometto una canzone", atteso: {tipo: prova, abilita: persuasione, bersaglio: png_bertoldo}}
+  - {id: c04, autore: pg_ida, testo: "Dico a Ruggero che il barone mi manda a dargli il cambio, così se ne va", atteso: {tipo: prova|contrapposta, abilita: inganno, bersaglio: png_ruggero}}
+  - {id: c05, autore: pg_corrado, testo: "Tiro un dardo di balestra a Ruggero", atteso: {tipo: attacco, bersaglio: png_ruggero, arma: balestra_leggera}}
+  - {id: c06, autore: pg_corrado, testo: "Attraverso il fiume aggrappato alla corda", atteso: {tipo: prova, prova_scena: p_guado}}
+  - {id: c07, autore: pg_teo, privata: true, testo: "Mentre Bertoldo guarda Ida, apro piano il lucchetto della cassetta", atteso: {tipo: prova|contrapposta, abilita: rapidita_di_mano}}
+  - {id: c08, autore: pg_corrado, testo: "Volo sopra il fiume sbattendo le braccia", atteso: {tipo: impossibile}}
+  - {id: c09, autore: pg_teo, testo: "Guardo bene la mazza di Ruggero", atteso: {tipo: nessuna}}
+  - {id: c10, autore: pg_teo, testo: "Sgattaiolo dietro Ruggero senza farmi vedere e passo il ponte", atteso: {tipo: contrapposta|prova, abilita: furtivita}}
+  - {id: c11, autore: pg_corrado, testo: "Minaccio Ruggero: se non si sposta gli pianto un dardo in pancia", atteso: {tipo: prova, abilita: intimidire, bersaglio: png_ruggero}}
+  - {id: c12, autore: pg_teo, testo: "Aiuto Corrado a reggersi alla corda mentre attraversa", altre: [{id: x1, autore: pg_corrado, testo: "Attraverso il fiume aggrappato alla corda"}], atteso: {tipo: aiuto, aiuta: x1}}
+  - {id: c13, autore: pg_ida, testo: "Cerco di ricordare cosa si racconta del barone di questa valle", atteso: {tipo: prova, abilita: storia}}
+  - {id: c14, autore: pg_teo, testo: "Do un pugno sul naso a Ruggero", atteso: {tipo: attacco, bersaglio: png_ruggero}}
+  - {id: c15, autore: pg_ida, testo: "Chiedo a Bertoldo da quanto tempo c'è lo sgherro sul ponte", atteso: {tipo: nessuna}}
+  - {id: c16, autore: pg_corrado, testo: "Colpisco Ruggero con la spada lunga", atteso: {tipo: attacco, bersaglio: png_ruggero, arma: spada_lunga, reazione_png: png_ruggero}}
