@@ -1,0 +1,22 @@
+# Run interrotta: dopo il finale (T16) il tavolo va in pausa e l harness aspettava la finestra del T17 (timeout).
+# Valido qui solo narrazioni.jsonl (la sessione di questa run): fin_tramonto e nar_chiusura detti dal Motore al T16.
+# I file di riepilogo che c erano erano copie della run originale (nozze-neve-indagine-B) e sono stati tolti.
+[nozze-neve-indagine-B] campagna nozze-neve, porta 4710, modalità repertorio: riavvio del server di prova…
+[nozze-neve-indagine-B] server: {"ok":true,"fase":"attesa","turno":0,"versione_scena":0,"voce":"mock","schermo":false,"narratore":"haiku","modello":"claude-haiku-5-5","campagna":"nozze-neve","immagini":22,"audio":31,"sessione":"","modo":"repertorio","ripresa":null,"pacchetto":null}
+[nozze-neve-indagine-B] turno 1/12 fatto (server 1)
+[nozze-neve-indagine-B] turno 2/12 fatto (server 2)
+[nozze-neve-indagine-B] turno 3/12 fatto (server 3)
+[nozze-neve-indagine-B] turno 4 (server 4): scena → scena_casa_bonfanti
+[nozze-neve-indagine-B] turno 4/12 fatto (server 5)
+[nozze-neve-indagine-B] turno 5 (server 6): scena → scena_casera
+[nozze-neve-indagine-B] turno 5/12 fatto (server 7)
+[nozze-neve-indagine-B] turno 6 (server 8): scena → scena_casa_bonfanti
+[nozze-neve-indagine-B] turno 6/12 fatto (server 9)
+[nozze-neve-indagine-B] turno 7/12 fatto (server 10)
+[nozze-neve-indagine-B] turno 8 (server 11): scena → scena_casera
+[nozze-neve-indagine-B] turno 8/12 fatto (server 12)
+[nozze-neve-indagine-B] turno 9/12 fatto (server 13)
+[nozze-neve-indagine-B] turno 10/12 fatto (server 14)
+[nozze-neve-indagine-B] turno 11 (server 15): scena → scena_sasso
+esperimento fallito: timeout: fine del turno 11 (server 16)
+indagine exit 1
