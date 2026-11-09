@@ -1,27 +1,141 @@
-# Cantastorie (nome di lavoro)
+# Cantastorie
 
-## Come giocare stasera
-0. Campagna nuova (scritta con la skill `preparatore`): prima `scripts/prepara.sh campagne/<id>`. Valida, genera immagini e audio (salta ciò che c'è già) e stampa il comando per giocare.
-1. Sul Mac: `scripts/partita.sh prova-f0` (una scena, ~30 minuti) oppure `scripts/partita.sh ponte-lanterne` (quattro scene: le cambi tu dal pannello del master, «Scene della campagna»). Alla fine stampa i tre indirizzi.
-2. **Proiettore** (Mac collegato a proiettore e cassa): apri `http://localhost:4610/schermo` e clicca «Inizia sessione». Serve quel clic per far partire l'audio.
-3. **Telefoni** (stessa Wi-Fi del Mac): basta il browser. Inquadrano il QR sul proiettore o aprono l'indirizzo stampato, poi scelgono un personaggio. Si gioca scrivendo (il microfono non c'è ancora).
-4. **Pannello del master** (solo sul Mac): il link con `?token=` stampato dallo script. Parte «senza spoiler», così puoi anche giocare.
-5. Se qualcosa va storto, nel pannello:
-   - **Ferma la narrazione** zittisce subito il narratore e mette in pausa;
-   - **Pausa / Riprendi** ferma il tavolo senza interrompere la frase in corso;
-   - una **nota di regia** («frasi più corte», «Ottavia è più sospettosa») vale per i turni successivi.
-6. Voce vera (pronta in circa 20 s, circa 3 GB di RAM): aggiungi `--voce qwen`. Per finire: `scripts/arresto.sh`. La partita si salva da sola: se il server riparte, riprende da dov'era (i telefoni ritrovano il loro personaggio); `--nuova` per ricominciare da capo.
+In questa pagina: che cos'è Cantastorie, cosa ti serve e come fai partire la prima partita.
+Prima di leggere: niente. Questa è la pagina da cui cominciare.
 
-**Principio guida (Riccardo, 2 novembre 2026):** Cantastorie è un *framework che genera infinite campagne*, non una
-campagna fatta bene. Sceneggiatura e repertorio (skill Preparatore), immagini, musica e ambienti escono da pipeline
-automatiche guidate dai dati della campagna; `prova-f0` e `ponte-lanterne` sono solo casi di prova.
+## Che cos'è
 
-Master IA per giocare a D&D in presenza: telefoni dei giocatori, proiettore con la scena,
-cassa con narratore e voci dei personaggi, musica sempre in sottofondo.
+Cantastorie è un framework per giocare a Dungeons & Dragons di persona, attorno a un tavolo, con un narratore IA.
+Il narratore è Claude Haiku: racconta la scena, fa parlare i personaggi non giocanti (PNG) e risponde alle azioni dei giocatori.
+Il proiettore mostra il luogo, i ritratti di chi è in scena e i tiri dei dadi; una cassa porta la voce e la musica.
+Ogni giocatore usa il proprio telefono, con il browser: sceglie il suo personaggio e scrive cosa fa.
+Chi fa da master ha un pannello sul Mac per correggere o fermare il narratore in ogni momento.
+Non è una campagna sola: è un sistema che genera campagne sempre nuove (storia, immagini, musica), da una serata o da molte sessioni.
 
-- `docs/architettura.md` — architettura v1 (copia anche su Notion)
-- `docs/manuale-master.md` — manuale del master: regole di mestiere imposte dal codice (E1–E15, rubrica R1–R12)
-- `docs/ricerca-tecnica.md` — sintesi della ricerca tecnica
-- `research/` — risultati misurati delle prove del 1° novembre 2026 (LLM, TTS, STT, musica)
+Regole, dadi e segreti li tiene il codice, non il modello: il narratore racconta gli esiti, non li decide.
 
-Stato (2 novembre 2026): F0 completata; azioni simultanee, repertorio pre-scritto, immagini, pannello del master, più scene e skill del Preparatore funzionanti. Cose aperte in `docs/da-fare.md`.
+## Cosa serve
+
+- **Un Mac con chip Apple** (M1 o più recente). Serve per le immagini generate in locale e per la voce locale Qwen,
+  che usano le librerie MLX. Il Mac di riferimento del progetto è un M1 con 16 GB di RAM.
+  Su un computer senza chip Apple il resto (server, narratore, voce drama-3) non è stato provato: da verificare.
+- **Node 22 o più recente** (campo `engines` di `package.json`).
+- **Python 3 con PyYAML**: lo usa il validatore delle campagne.
+- **uv e ffmpeg**, solo se vuoi generare immagini e audio o usare la voce locale. Vedi la
+  [guida all'installazione](docs/guida/installazione.md).
+- **Le chiavi API**:
+
+| Chiave | A cosa serve | Serve per forza? |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | il narratore Haiku, l'arbitro dei dadi, il controllo delle immagini | sì, per giocare col narratore vero |
+| `OPENROUTER_API_KEY` | la voce del gioco (drama-3 di Fish Audio, via OpenRouter) | no: senza, usi la voce locale Qwen o la voce finta |
+| `FREESOUND_API_KEY` | suoni d'ambiente CC0 da Freesound | no (la chiave è gratuita) |
+
+**Quanto costa.** Anthropic e OpenRouter si pagano a consumo. L'unica misura completa nel repo è del 9 novembre 2026:
+una sessione di 45 turni costa circa 0,25 $ (circa 0,16 $ di voce drama-3 e 0,08 $ di Haiku), finché drama-3
+resta alla tariffa di lancio. Tutte le cifre, con la fonte e la data: [Voce e costi](docs/guida/voce-e-costi.md).
+
+## Avvio rapido
+
+Questi passi fanno partire la campagna di prova `prova-f0` (una scena, 20–30 minuti, 3 o 4 giocatori).
+
+1. Scarica il repository e entra nella cartella.
+
+   ```bash
+   git clone <indirizzo-del-repository> cantastorie
+   cd cantastorie
+   ```
+
+   L'indirizzo pubblico del repository: da verificare (il repo non ha ancora un remoto).
+
+2. Installa le dipendenze di Node (server, pagine web e pacchetto condiviso, tutto in un colpo).
+
+   ```bash
+   npm install
+   ```
+
+3. Crea il file delle chiavi copiando il modello.
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Poi apri `.env` con un editor di testo e incolla le tue chiavi dopo il segno `=`. Per esempio:
+
+   ```bash
+   ANTHROPIC_API_KEY=la-tua-chiave-anthropic
+   OPENROUTER_API_KEY=la-tua-chiave-openrouter
+   ```
+
+   Sono segnaposto: al loro posto va la tua chiave vera. Il file `.env` è fuori da git e non va mai condiviso.
+   Il codice cerca ogni chiave in quest'ordine: prima la variabile d'ambiente con lo stesso nome, poi la riga del
+   file `.env` alla radice del repo, e per ultimo un file di ripiego facoltativo (vedi `apps/server/src/llm/chiavi.ts`).
+   I dettagli sono nella [guida all'installazione](docs/guida/installazione.md).
+
+4. Fai partire la partita.
+
+   ```bash
+   scripts/partita.sh prova-f0
+   ```
+
+   Lo script controlla la campagna, compila le pagine, avvia il server e alla fine stampa tre indirizzi:
+   il proiettore, i telefoni e il pannello del master.
+
+5. Sul Mac collegato al proiettore apri `http://localhost:4610/schermo` e clicca «Inizia sessione».
+   I giocatori inquadrano il QR sul proiettore con il telefono. Tu apri il link del pannello del master
+   che lo script ha stampato.
+
+6. A fine serata ferma tutto.
+
+   ```bash
+   scripts/arresto.sh
+   ```
+
+Senza chiave OpenRouter, fai partire la partita con la voce finta (un tono al posto della voce):
+
+```bash
+scripts/partita.sh prova-f0 --voce finta
+```
+
+Le altre campagne di esempio sono `ponte-lanterne` (quattro scene, da due ore a due ore e mezza) e
+`nozze-neve` (tre scene, circa due ore). Tutte le opzioni sono in [Una serata di gioco](docs/guida/una-serata.md).
+
+## La guida
+
+Leggila in quest'ordine la prima volta.
+
+1. [Installazione](docs/guida/installazione.md): dipendenze, chiavi, cosa si scarica e quanto pesa.
+2. [Una serata di gioco](docs/guida/una-serata.md): una partita dall'inizio alla fine.
+3. [Collegare i telefoni](docs/guida-telefoni.md): la rete, il QR, cosa fare se un telefono non entra.
+4. [Il pannello del master](docs/guida/il-pannello-del-master.md): ogni sezione e ogni comando.
+5. [Dadi e schede](docs/guida/dadi-e-schede.md): come funzionano le prove e le schede dei personaggi.
+6. [Voce e costi](docs/guida/voce-e-costi.md): le tre voci, il registro delle voci, quanto si spende.
+7. [Creare una campagna](docs/guida/creare-una-campagna.md): dal brief alla campagna pronta da giocare.
+8. [Campagne a più sessioni](docs/guida/campagne-a-piu-sessioni.md): fine sessione, registro, sessione dopo.
+9. [Il tuo manuale di regole](docs/guida/il-tuo-manuale.md): giocare con le regole di un manuale tuo invece dell'SRD 5.2.
+10. [Problemi comuni](docs/guida/problemi-comuni.md): cosa fare quando qualcosa non va.
+11. [Sviluppo](docs/guida/sviluppo.md): test, istanze di prova, come è fatto il codice.
+
+## Per chi vuole capire come è fatto
+
+- `docs/architettura.md`: i moduli, le interfacce, le prove fatte.
+- `docs/manuale-master.md`: le regole di mestiere del master, imposte dal codice.
+- `docs/prove.md`: prove e dadi (ricerca, schema delle schede, misure).
+- `docs/strati.md`: campagne da una sessione o da molte.
+- `docs/da-fare.md`: le cose ancora aperte.
+
+## Cosa non c'è ancora
+
+- Il microfono: oggi si gioca scrivendo sul telefono.
+- Il combattimento completo (iniziativa, turni, condizioni): vedi `docs/prove.md`, «Aperto».
+- La licenza del codice: il repo non ha ancora un file di licenza (da verificare).
+
+## Crediti
+
+Questo lavoro include materiale dal System Reference Document 5.2 («SRD 5.2») di Wizards of the Coast LLC,
+https://www.dndbeyond.com/srd, con licenza Creative Commons Attribution 4.0 International.
+I crediti di musica, suoni, voci e immagini sono in `CREDITI.md`.
+
+## Problemi?
+
+Vai a [Problemi comuni](docs/guida/problemi-comuni.md).
