@@ -198,3 +198,33 @@ def test_il_set_srd_con_i_passi_della_campagna_non_rompe_le_schede(tmp_path: Pat
     (dest / "regole").mkdir()
     (dest / "regole" / "regole.yaml").write_text("id: srd-5.2\nnome: SRD\nfonte: {titolo: SRD 5.2}\nlicenza: {nome: CC-BY-4.0, libera: true}\n", encoding="utf-8")
     assert regole_di(dest) == []
+
+
+# --- richiede.prova: gli id del set, non quelli di D&D --------------------------------------------
+
+def _richiede(cartella: Path, prova: str) -> None:
+    def cambia(d: dict) -> None:
+        d["battute"][0].setdefault("richiede", {})["prova"] = prova
+    modifica(cartella, "repertorio/png_bertoldo.yaml", cambia)
+
+
+def test_richiede_prova_del_set_passa(tmp_path: Path) -> None:
+    """Il fixture pbta ha `prova: convincere`, una mossa del suo set: deve passare, e così un id p_… di scena."""
+    assert not tiene(PBTA, "REGOLE.richiede_prova")
+    dest = copia(PBTA, tmp_path)
+    _richiede(dest, "p_guado")
+    assert not tiene(dest, "REGOLE.richiede_prova")
+
+
+@pytest.mark.parametrize("prova", ["persuadere", "scassinare", "atletica"], ids=["abilita-di-dd", "mossa-inesistente", "abilita-srd"])
+def test_richiede_prova_fuori_dal_set_non_passa(tmp_path: Path, prova: str) -> None:
+    dest = copia(PBTA, tmp_path)
+    _richiede(dest, prova)
+    assert tiene(dest, "REGOLE.richiede_prova")
+
+
+def test_richiede_prova_di_dd_con_il_set_soglia_non_passa(tmp_path: Path) -> None:
+    """Il set soglia ha `persuadere`, ma `convincere` è una mossa del set pbta: fuori dal suo vocabolario."""
+    dest = copia(SOGLIA, tmp_path)
+    _richiede(dest, "convincere")
+    assert tiene(dest, "REGOLE.richiede_prova")

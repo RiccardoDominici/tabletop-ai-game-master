@@ -17,7 +17,8 @@ import yaml
 
 from .carica import Campagna
 from .esito import Esito
-from .regole_schede import dadi_attivi
+from .regole_repertorio import blocchi_richiede
+from .regole_schede import TIPI_PROVA_RICHIEDE, _id_attacchi, _prove_della_campagna, dadi_attivi
 from .testo import n_parole
 
 ID_SRD = "srd-5.2"
@@ -283,6 +284,25 @@ def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool) -> 
                 e.avviso("REGOLE.scheda", dove, f"attacchi[{i}]: senza caratteristica né abilita del set (come si tira?)")
 
 
+def _richiede_prova_set(c: Campagna, e: Esito, car: set[str], abi: set[str], mosse: set[str]) -> None:
+    """`richiede.prova` delle battute: una prova che il set conosce. Come il motore (prove/risolutore-regole.ts),
+    che apre il cancello con mossa, abilità o caratteristica del set, più il tipo di prova, gli id p_… delle scene e
+    gli attacchi delle schede. Gli id di D&D non valgono in un set non SRD."""
+    ammessi = TIPI_PROVA_RICHIEDE | car | abi | mosse | set(_prove_della_campagna(c)) | _id_attacchi(c)
+    dadi = dadi_attivi(c)
+    for b in c.battute:
+        dove = f"{b.get('_file', '?')} {b.get('id', '?')}"
+        for r in blocchi_richiede(b.get("richiede") or {}):
+            if "prova" not in r:
+                continue
+            v = r["prova"]
+            if not isinstance(v, str) or v not in ammessi:
+                _err(e, "richiede_prova", dove, f"richiede.prova «{v}»: una prova del set (mossa, abilità, caratteristica), "
+                                                "un id p_… di una scena, un attacco, o prova/salvezza/attacco/contrapposta")
+            elif not dadi:
+                e.avviso("REGOLE.richiede_prova", dove, "richiede.prova in una campagna senza dadi: la battuta non uscirà mai")
+
+
 def _prove_di_scena(c: Campagna, e: Esito, car: set[str], abi: set[str], mosse: set[str], diff: set[str]) -> None:
     """Le prove della scena (scena.yaml → prove) usano id del set: mossa, abilità, caratteristica, difficoltà."""
     for nome, s in c.scene:
@@ -324,4 +344,5 @@ def controlla(c: Campagna, e: Esito) -> None:
     mosse = _mosse(r, car, e, dove)
     _schede(c, e, car, abi, dadi_attivi(c))
     _prove_di_scena(c, e, car, abi, mosse, diff)
+    _richiede_prova_set(c, e, car, abi, mosse)
     _file_del_set(c, e, c.cartella / "regole")
