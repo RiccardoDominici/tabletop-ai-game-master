@@ -6,7 +6,7 @@
  *
  *   npx tsx apps/server/src/strumenti/valuta-prove.ts [--solo-singole | --solo-gruppo]
  *
- * La chiave la legge llm/chiave.ts: non si stampa mai.
+ * La chiave la cerca llm/chiavi.ts (ambiente, poi .env alla radice): non si stampa mai.
  */
 import fs from 'node:fs';
 import path from 'node:path';

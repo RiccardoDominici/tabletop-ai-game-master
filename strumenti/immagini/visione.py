@@ -16,7 +16,8 @@ Come
   devono vedersi (le situazioni del PNG, per un ritratto o un luogo).
 - Risposta strutturata (json schema): una lista di problemi con tipo, descrizione, grave sì/no.
   L'esito lo decide il codice: «difettosa» se c'è almeno un problema grave.
-- Chiave: SOLO la riga ANTHROPIC_API_KEY= del file (come apps/server/src/llm/chiave.ts), mai stampata;
+- Chiave: ANTHROPIC_API_KEY dell'ambiente, poi la riga del .env alla radice, poi il file di ripiego (come
+  apps/server/src/llm/chiavi.ts); mai stampata;
   URL fisso https://api.anthropic.com, perché ANTHROPIC_BASE_URL della shell punta a un proxy.
 - Costo di ogni chiamata dai token di `usage` (prezzi di Haiku 5.5 fino a 100K token di prompt).
 """
@@ -28,8 +29,12 @@ import io
 import json
 import logging
 import os
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # strumenti/, per chiavi.py
+from chiavi import cerca_chiave, lunghezza_sicura  # noqa: E402
 
 log = logging.getLogger("immagini.visione")
 
@@ -118,31 +123,28 @@ class Verdetto:
                 "costo_usd": round(self.costo_usd, 6), "token": self.token, "modello": self.modello}
 
 
-def leggi_chiave(percorso: str | Path) -> str:
-    """Solo la riga ANTHROPIC_API_KEY= del file; zero o più righe → errore. Il valore non si stampa mai."""
-    prefisso = "ANTHROPIC_API_KEY="
-    righe = [r for r in Path(percorso).read_text(encoding="utf-8").splitlines() if r.startswith(prefisso)]
-    if len(righe) != 1:
-        raise RuntimeError(f"il file della chiave deve avere una sola riga {prefisso}… (ne ha {len(righe)})")
-    valore = righe[0][len(prefisso):].strip()
-    if len(valore) >= 2 and valore[0] == valore[-1] and valore[0] in "\"'":
-        valore = valore[1:-1].strip()
-    if not valore:
-        raise RuntimeError(f"la riga {prefisso}… è vuota")
+def leggi_chiave(percorso: str | Path | None = None) -> str:
+    """Chiave Anthropic: ambiente, poi .env alla radice, poi il file di ripiego (strumenti/chiavi.py)."""
+    valore, origine = cerca_chiave(
+        "ANTHROPIC_API_KEY",
+        file_precedente=percorso or os.environ.get("ANTHROPIC_KEY_FILE") or FILE_CHIAVE_PREDEFINITO,
+    )
+    log.info("chiave Anthropic da: %s (%s)", origine, lunghezza_sicura(valore))
     return valore
 
 
 def crea_client(file_chiave: str | Path | None = None):
-    """Client Anthropic con la chiave del file e l'URL fisso. Toglie le variabili ANTHROPIC_* della shell."""
+    """Client Anthropic con la chiave (ambiente, .env, ripiego) e l'URL fisso. Toglie le variabili ANTHROPIC_*
+    della shell DOPO aver letto la chiave: ANTHROPIC_API_KEY, se c'è, è la prima fonte."""
     import anthropic
 
+    chiave = leggi_chiave(file_chiave)
     tolte = [n for n in VARIABILI_IGNORATE if n in os.environ]
     for n in tolte:
         del os.environ[n]
     if tolte:
         log.info("variabili della shell ignorate (solo i nomi): %s", ", ".join(tolte))
-    percorso = file_chiave or os.environ.get("ANTHROPIC_KEY_FILE") or FILE_CHIAVE_PREDEFINITO
-    return anthropic.Anthropic(api_key=leggi_chiave(percorso), base_url=URL_API, max_retries=2, timeout=120.0)
+    return anthropic.Anthropic(api_key=chiave, base_url=URL_API, max_retries=2, timeout=120.0)
 
 
 def _jpeg_b64(img) -> str:

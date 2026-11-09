@@ -7,11 +7,12 @@
  * - baseURL FISSATO a https://api.anthropic.com: la shell ha ANTHROPIC_BASE_URL verso un proxy
  *   locale (:4000) che NON va usato, e ANTHROPIC_CUSTOM_HEADERS che l'SDK aggiungerebbe da solo.
  *   Per questo le due variabili vengono tolte dall'ambiente del processo prima di creare il client.
- * - la chiave arriva da llm/chiave.ts (una sola riga del file indicato), mai dall'ambiente.
+ * - la chiave arriva da llm/chiavi.ts: prima ANTHROPIC_API_KEY dell'ambiente, poi la riga del .env
+ *   alla radice, poi (ripiego) la riga del file indicato in configurazione. Mai stampata.
  */
 import Anthropic from '@anthropic-ai/sdk';
 import type { Logger } from '../logger';
-import { leggiChiaveAnthropic, descriviChiave } from './chiave';
+import { cercaChiave, descriviChiave, type SorgentiChiave } from './chiavi';
 import { calcolaCosto, type UsoToken } from './costi';
 import type { EsitoNarrazione, Narratore, RichiestaNarrazione } from './tipi';
 
@@ -31,16 +32,18 @@ export function neutralizzaAmbienteAnthropic(log: Logger): void {
  * Client Anthropic con la chiave letta dal file (una sola riga) e baseURL fisso: usato dal
  * narratore e dagli strumenti (conteggio dei token).
  */
-export function creaClientAnthropic(fileChiave: string, log: Logger): Anthropic {
+export function creaClientAnthropic(filePrecedente: string, log: Logger, sorgenti: SorgentiChiave = {}): Anthropic {
+  // La chiave si cerca PRIMA di neutralizzare l'ambiente: ANTHROPIC_API_KEY, se c'è, è la prima fonte.
+  const chiave = cercaChiave('ANTHROPIC_API_KEY', { filePrecedente, ...sorgenti });
   neutralizzaAmbienteAnthropic(log);
-  const apiKey = leggiChiaveAnthropic(fileChiave);
-  log.info({ chiave: descriviChiave(apiKey), file: fileChiave, baseURL: URL_API }, 'llm: client Anthropic pronto');
-  return new Anthropic({ apiKey, authToken: null, baseURL: URL_API, maxRetries: 1, timeout: 60_000 });
+  log.info({ chiave: descriviChiave(chiave.valore), origine: chiave.origine, baseURL: URL_API }, 'llm: client Anthropic pronto');
+  return new Anthropic({ apiKey: chiave.valore, authToken: null, baseURL: URL_API, maxRetries: 1, timeout: 60_000 });
 }
 
 export interface OpzioniHaiku {
   modello: string;
   maxTokens: number;
+  /** File di ripiego con la riga ANTHROPIC_API_KEY= (dopo ambiente e .env alla radice). */
   fileChiave: string;
   log: Logger;
 }

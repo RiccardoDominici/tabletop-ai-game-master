@@ -2,7 +2,7 @@
 
 Come attivarla: creare un account su freesound.org, poi una chiave API in
 https://freesound.org/apiv2/apply/ (gratuita), e metterla nell'ambiente prima di lanciare la pipeline:
-    export FREESOUND_API_KEY=...        (o in .env alla radice, che è fuori da git)
+    export FREESOUND_API_KEY=...        (o una riga FREESOUND_API_KEY= nel .env alla radice, fuori da git)
 Con la sola chiave (token) si leggono ricerca e anteprime (mp3/ogg di buona qualità, ~128 kbps);
 gli originali richiederebbero OAuth2, qui non servono. Limiti: 60 richieste al minuto, 2.000 al giorno.
 Si chiedono solo suoni con licenza «Creative Commons 0» e durata nell'intervallo richiesto.
@@ -13,13 +13,15 @@ from __future__ import annotations
 
 import json
 import logging
-import os
+import sys
 import urllib.parse
 import urllib.request
 from pathlib import Path
 
 from fonti.archivio import Candidato, _get
-from percorsi import RADICE
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # strumenti/, per chiavi.py
+from chiavi import ErroreChiave, cerca_chiave  # noqa: E402
 
 log = logging.getLogger("audio.freesound")
 
@@ -27,14 +29,11 @@ API = "https://freesound.org/apiv2/search/text/"
 
 
 def chiave() -> str | None:
-    if os.environ.get("FREESOUND_API_KEY"):
-        return os.environ["FREESOUND_API_KEY"]
-    env = RADICE / ".env"
-    if env.exists():
-        for riga in env.read_text(encoding="utf-8").splitlines():
-            if riga.strip().startswith("FREESOUND_API_KEY="):
-                return riga.split("=", 1)[1].strip().strip('"')
-    return None
+    """FREESOUND_API_KEY: ambiente, poi .env alla radice (strumenti/chiavi.py). Assente → None."""
+    try:
+        return cerca_chiave("FREESOUND_API_KEY")[0]
+    except ErroreChiave:
+        return None
 
 
 def attiva() -> bool:

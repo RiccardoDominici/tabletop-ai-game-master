@@ -11,10 +11,11 @@
  * riserva (voce/riserva.ts) può ritentare o passare a Qwen senza audio a metà.
  *
  * Per ogni segmento il log ha: voce, byte del testo, primo byte, totale, secondi di audio, costo stimato.
- * La chiave è SOLO la riga OPENROUTER_API_KEY= del file indicato, letta al primo uso, mai nei log.
+ * La chiave si cerca al primo uso (llm/chiavi.ts): OPENROUTER_API_KEY dell'ambiente, poi la riga del .env
+ * alla radice, poi il file indicato in configurazione. Mai nei log.
  */
 import type { Logger } from '../logger';
-import { leggiRigaChiave } from '../llm/chiave';
+import { cercaChiave } from '../llm/chiavi';
 import type { VoceRegistro } from './registro-voci';
 import type { FlussoTts, MotoreVoce, RichiestaTts, SaluteVoce } from './tipi';
 import { ErroreVoce } from './tipi';
@@ -26,7 +27,7 @@ const URL_PREDEFINITO = 'https://openrouter.ai/api/v1';
 const SAMPLE_RATE_ATTESO = 44_100;
 
 export interface OpzioniFish {
-  /** File .env da cui leggere SOLO la riga OPENROUTER_API_KEY=. */
+  /** File di ripiego con la riga OPENROUTER_API_KEY= (dopo ambiente e .env alla radice). */
   fileChiave: string;
   voci: Map<string, VoceRegistro>;
   log: Logger;
@@ -89,9 +90,9 @@ export class MotoreVoceFish implements MotoreVoce {
     this.fetch = o.fetch ?? fetch;
   }
 
-  /** La chiave si legge al primo uso (un errore di file non deve impedire l'avvio del server). */
+  /** La chiave si legge al primo uso (un errore di chiave non deve impedire l'avvio del server). */
   private prendiChiave(): string {
-    this.chiave ??= leggiRigaChiave(this.o.fileChiave, 'OPENROUTER_API_KEY=');
+    this.chiave ??= cercaChiave('OPENROUTER_API_KEY', { filePrecedente: this.o.fileChiave }).valore;
     return this.chiave;
   }
 

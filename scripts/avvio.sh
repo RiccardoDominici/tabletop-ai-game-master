@@ -91,11 +91,12 @@ else
   npm run build --silent >> "$DIR_LOG/build.out" 2>&1 || { echo "web: compilazione fallita, vedi logs/build.out"; tail -n 20 "$DIR_LOG/build.out"; exit 1; }
 fi
 
-# 4. Server. Le variabili ANTHROPIC_* della shell puntano a un proxy locale: non devono arrivare
-#    al server (che fissa comunque baseURL e le toglie dal proprio ambiente).
+# 4. Server. Le variabili ANTHROPIC_BASE_URL, ANTHROPIC_CUSTOM_HEADERS e ANTHROPIC_AUTH_TOKEN della shell
+#    puntano a un proxy locale: non devono arrivare al server (che fissa comunque baseURL).
+#    ANTHROPIC_API_KEY invece NON si toglie: se è nell'ambiente è la prima fonte della chiave (llm/chiavi.ts).
 [[ "$FINTO" == "1" ]] && export CANTASTORIE_LLM=finto
 echo "=== avvio $(date '+%Y-%m-%d %H:%M:%S') ===" >> "$DIR_LOG/server.out"
-env -u ANTHROPIC_BASE_URL -u ANTHROPIC_CUSTOM_HEADERS -u ANTHROPIC_AUTH_TOKEN -u ANTHROPIC_API_KEY \
+env -u ANTHROPIC_BASE_URL -u ANTHROPIC_CUSTOM_HEADERS -u ANTHROPIC_AUTH_TOKEN \
   nohup npm run start --silent >> "$DIR_LOG/server.out" 2>&1 &
 PID=$!
 echo "$PID" > "$DIR_LOG/server.pid"

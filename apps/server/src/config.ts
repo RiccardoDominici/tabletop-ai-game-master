@@ -2,7 +2,7 @@
  * Configurazione del server, tutta da variabili d'ambiente con valori predefiniti di F0.
  *
  * Sicurezza: la chiave Anthropic NON sta qui. Qui c'è solo il percorso del file da cui
- * `llm/chiave.ts` legge la singola riga ANTHROPIC_API_KEY=… al momento dell'uso.
+ * `llm/chiavi.ts` cerca la chiave al momento dell'uso: ambiente, poi .env alla radice, poi il file di ripiego.
  */
 import path from 'node:path';
 import { PORTA_SERVER, PORTA_VOCE } from '@cantastorie/shared';
@@ -73,7 +73,7 @@ export interface ConfigServer {
   llm: {
     modo: ModoLlm;
     modello: string;
-    /** File da cui leggere SOLO la riga ANTHROPIC_API_KEY=… */
+    /** File di ripiego (ANTHROPIC_KEY_FILE): usato solo se ANTHROPIC_API_KEY non è nell'ambiente né nel .env. */
     fileChiave: string;
     /** Fissato: mai il proxy locale di ANTHROPIC_BASE_URL. */
     baseURL: 'https://api.anthropic.com';
@@ -90,7 +90,7 @@ export interface ConfigServer {
     url: string;
     /** drama-3 via OpenRouter (modo fish). */
     fish: {
-      /** File .env da cui si legge SOLO la riga OPENROUTER_API_KEY= (CANTASTORIE_CHIAVE_OPENROUTER). */
+      /** File di ripiego (CANTASTORIE_CHIAVE_OPENROUTER): dopo OPENROUTER_API_KEY dell'ambiente e il .env alla radice. */
       fileChiave: string;
       /** Registro delle voci con i reference_id Fish (assets/voci/voci.yaml). */
       registro: string;
