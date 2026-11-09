@@ -13,11 +13,13 @@ ore_per_sessione: 2.5  # facoltativo, predefinito 2.5; sotto un'ora la one-shot 
 # livello: arco        # facoltativo: forza un livello diverso da quello delle sessioni, solo col motivo in decisioni.altre
 durata: ""             # nota a parole per Riccardo, es. «una serata, tre scene» (il numero sta in sessioni)
 giocatori: 3           # quanti giocano (o «3-4»); i PG pregenerati sono uno più del massimo
+dadi: true            # predefinito: schede e prove (docs/prove.md). false solo se Riccardo chiede una campagna
+                       # senza dadi: allora in campagna.yaml → regole: {dadi: false}
 temi: []               # es. [paura del forestiero, la verità che costa]
 linee: []              # mai in gioco
 veli: []               # solo fuori scena, con dissolvenza
 ambientazione: ""      # facoltativo: luogo, epoca, sapore (fantasy compatibile SRD)
-vincoli: []            # es. «niente combattimento», «senza dadi» (F0)
+vincoli: []            # es. «niente combattimento»
 
 decisioni:
   scene: []            # [id_scena, …]: la prima è scena.yaml

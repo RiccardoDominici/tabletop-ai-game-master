@@ -5,7 +5,7 @@ description: Scrive una campagna completa di Cantastorie (il master IA per D&D d
 
 # Preparatore
 
-*Versione del 3 novembre 2026. Le regole cambiano con il framework: se il validatore e questa pagina non
+*Versione del 9 novembre 2026. Le regole cambiano con il framework: se il validatore e questa pagina non
 vanno d'accordo, vale il validatore, e la discordanza va segnalata.*
 
 Sei il Preparatore (docs/architettura.md §4): il modello forte che scrive **prima** della sessione tutto
@@ -89,6 +89,22 @@ in `strumenti/strati.py` (`python3 strumenti/strati.py --tabella`); qui c'è il 
 - Un livello diverso da quello delle sessioni si forza con `livello:` solo col motivo in `decisioni.altre`.
 - `ore_per_sessione` (predefinito 2,5) decide le scene della one-shot: sotto un'ora una scena, sennò 3–5.
 - Tra una sessione e l'altra (dal livello arco): `riferimenti/tra-le-sessioni.md` e `scripts/tra-sessioni.sh`.
+
+## Schede e prove
+
+Le schede dicono al Motore con quali numeri tirare. La specifica è in `docs/prove.md` §2: qui solo il lavoro del
+Preparatore, e la forma dei campi è in `riferimenti/schema.md`.
+
+- **Dadi per default.** `brief.yaml` ha `dadi: true`. Solo se Riccardo chiede una campagna senza dadi, scrivi
+  `regole: {dadi: false}` in `campagna.yaml`: allora le schede non sono obbligatorie.
+- **PG**: `scheda` in `pg.yaml`, a livello 1 o 2. Caratteristiche, competenze, tiri salvezza, armatura, PF e attacchi
+  che stanno nel personaggio. I modificatori non si scrivono: li calcola il codice.
+- **PNG**: `scheda` in `png/*.yaml`, con un GS basso (sono comparse del paese): CA, PF e attacchi coerenti con il GS.
+- **Scena**: per ogni ostacolo o indizio non essenziale che il testo descrive, 2–4 `prove`, con CD 10 (facile), 15
+  (media) o 20 (difficile). Un indizio essenziale non sta mai dietro un tiro.
+- **Repertorio**: `richiede: {prova: …}` solo sulle battute che devono uscire dopo una prova riuscita.
+
+**Controllo**: `--solo SCHEDA` senza errori. Le schede non si scrivono a memoria: il validatore le rifà.
 
 ## Ordine di lavoro
 
@@ -250,6 +266,8 @@ Leggi `riferimenti/repertorio.md` per intero. Prima l'elenco, poi il testo:
 1. l'elenco delle battute necessarie (la copertura minima, §8);
 2. per ognuna id, `quando`, `temi`, `richiede`, `effetti` e, se serve, `scena`;
 3. solo alla fine il testo.
+
+Voce nelle righe: la direzione va dopo l'etichetta, tra quadre e breve, per esempio `[png_bruno] [offesa, a bassa voce] Non toccare quella porta.`; un sussurro si chiude nella stessa riga: `<whisper>…</whisper>`. Sintassi in `docs/f0-contratti.md`, «Voce espressiva»; il validatore (classe `VOCE`) controlla che i tag siano chiusi.
 
 Ordine: segni d'orologio, indizi, menzogne, confessioni, momenti, finali, esempi di voce, riempitivi,
 transizioni. Quando scrivi i finali, aggiungi a ogni scena i suoi `esiti`.

@@ -229,8 +229,25 @@ personaggi:
     aggancio: "…"              # pubblico, come nome e aspetto: niente segreti [V]
     cosa_sai_fare: [...]
     conoscenze_private: [{testo: "…", fatti: [f_…]}]   # solo al telefono del giocatore (T9) [V riferimenti]
+    scheda: {…}                # le schede numeriche: vedi «Schede e prove» sotto
 ```
 Nome diverso dal nome di ogni PNG [V].
+
+## Schede e prove (docs/prove.md §2)
+La forma completa e le regole stanno in `docs/prove.md` §2. Qui solo dove va ogni chiave, e che cosa controlla il
+validatore (classe `SCHEDA`, codice in `strumenti/valida/regole_schede.py`, tabelle in `srd.py`).
+- `campagna.yaml` → `regole: {dadi: true|false}`. Predefinito: true. Con false le schede non sono obbligatorie.
+- `pg.yaml` → `personaggi[].scheda`: caratteristiche, competenze, maestrie, tiri_salvezza, armatura o ca, pf, attacchi.
+  Il livello è `personaggi[].livello`.
+- `png/<id>.yaml` → `scheda`: gs, caratteristiche, armatura o ca, pf, attacchi, facoltativo `influenza: {cd}`.
+- `scena.yaml` e `scene/*.yaml` → `prove`: una lista di `{id: p_…, quando, abilita | caratteristica | salvezza, cd,
+  indizio?, se_fallisce?}`.
+- Repertorio → `richiede.prova`: un'abilità, una caratteristica, un id `p_…` di scena, il nome di un attacco, oppure
+  `prova`, `salvezza`, `attacco`, `contrapposta`.
+
+Il validatore controlla: schede mancanti (solo con dadi); punteggi e campi; modificatori scritti a mano; CA che non
+viene dall'armatura; PF oltre il dado vita di classe; PNG fuori dalla fascia del GS; CD 5–30; indizio esistente e
+non essenziale; `richiede.prova` che nomina una prova esistente.
 
 ## Repertorio: vedi riferimenti/repertorio.md
 Campi della battuta: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi,
