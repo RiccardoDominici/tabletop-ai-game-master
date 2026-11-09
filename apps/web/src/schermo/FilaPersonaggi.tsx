@@ -17,7 +17,7 @@ export function FilaPersonaggi({ personaggi, parlante }: { personaggi: readonly 
   return (
     <ul data-testid="fila-personaggi" aria-label="Chi c'è in scena" className="flex flex-wrap items-start gap-[2vw]">
       {presenti.map((p) => (
-        <li key={p.id} data-testid={`personaggio-${p.id}`} data-parla={String(p.id === parlante)} className="flex w-[max(9vw,11rem)] flex-col items-center gap-[1vh]">
+        <li key={p.id} data-testid={`personaggio-${p.id}`} data-parla={String(p.id === parlante)} className="flex w-[max(9vw,11rem)] flex-col items-center gap-[2.4vh]">
           <Ritratto personaggio={p} parla={p.id === parlante} />
           <span
             className={clsx(
