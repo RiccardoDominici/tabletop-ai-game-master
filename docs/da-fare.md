@@ -33,10 +33,12 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
     battute, menzogne né fatti noti (sezioni null, docs/strati.md): la sessione dopo si prepara solo da orologi,
     scene, azioni e trascrizione. Serve un modo di tracciare gli indizi anche in A (per esempio una riga
     `[indizio] <id>` del narratore, controllata dal Motore come `[orologio]`);
-- **Personaggi nascosti in scena** (richiesta 2 del 9 novembre): serve un campo `nascosto: true` sulla scheda del PNG
-  per i presenti che non si mostrano sul proiettore né sul telefono finché non vengono rivelati (come le situazioni `dopo`).
-- **Presenza decisa a mano dal master** (comando `presenza`): non sopravvive a un riavvio del server (si perde con lo stato
-  in memoria); da salvare nel registro della sessione se serve. Si azzera anche al cambio di scena.
+- ~~**Personaggi nascosti in scena** (richiesta 2 del 9 novembre): serve un campo `nascosto: true` sulla scheda del PNG
+  per i presenti che non si mostrano sul proiettore né sul telefono finché non vengono rivelati (come le situazioni `dopo`).~~
+  **Fatto**: `nascosto: true` sulla scheda, comando «rivela» dal pannello, validatore e schema (d59f7e2).
+- ~~**Presenza decisa a mano dal master** (comando `presenza`): non sopravvive a un riavvio del server (si perde con lo stato
+  in memoria); da salvare nel registro della sessione se serve. Si azzera anche al cambio di scena.~~
+  **Fatto**: le decisioni vanno nella fotografia della sessione e tornano alla ripresa; il cambio di scena le azzera (a4e360d).
 
 ## Dopo
 - **Skill Preparatore: la voce espressiva di drama-3** (9 novembre 2026; da girare a chi aggiorna la skill, nessuno ha
