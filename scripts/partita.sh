@@ -8,7 +8,8 @@
 #   <campagna>   cartella in campagne/ (es. prova-f0, ponte-lanterne)
 #   --modo B     (predefinito) repertorio: battute pre-scritte scelte da Haiku; A: improvvisa tutto
 #   --voce fish  (predefinito) la voce del gioco: drama-3 via OpenRouter, espressiva (la chiave è la
-#                riga OPENROUTER_API_KEY= di ../agora/.env). Se OpenRouter non risponde, per quella frase
+#                OPENROUTER_API_KEY dell'ambiente, o la riga nel .env alla radice, o il file di ripiego
+#                di configurazione; vedi apps/server/src/llm/chiavi.ts). Se OpenRouter non risponde, per quella frase
 #                usa Qwen locale se è già acceso, altrimenti la frase resta testo sullo schermo.
 #                qwen: voce locale Qwen3-TTS (fino a 7 GB di RAM, qualche minuto la prima volta);
 #                finta: un tono al posto della voce, niente rete né servizi
@@ -17,7 +18,7 @@
 #                server dall'archivio: la sessione in corso, o quella dopo l'ultima chiusa con
 #                «Fine sessione» (docs/strati.md); la validazione controlla proprio quello.
 #
-# Il narratore è sempre Haiku vero (la chiave la legge apps/server/src/llm/chiave.ts).
+# Il narratore è sempre Haiku vero (la chiave la cerca apps/server/src/llm/chiavi.ts: ambiente, poi .env alla radice).
 # Server: variabili CANTASTORIE_CAMPAGNA e CANTASTORIE_MODO (vedi apps/server/src/config.ts).
 # Log: logs/partita.out (questo avvio), logs/server.out, logs/server.jsonl, logs/voce.out.
 #

@@ -58,8 +58,9 @@ Voci di F0 (registro `assets/voci/voci.yaml`, id → clip + testo della clip):
 
 - Server → `POST https://openrouter.ai/api/v1/audio/speech` `{model: 'fish-audio/drama-3', input, voice: <fish>,
   response_format: 'pcm'}` → PCM s16le mono a **44,1 kHz** (dal `Content-Type`), in streaming. `fish` è il
-  reference_id della voce pubblica scritto per ogni voce_id in `assets/voci/voci.yaml`. Chiave: solo la riga
-  `OPENROUTER_API_KEY=` del file `CANTASTORIE_CHIAVE_OPENROUTER` (predefinito ../agora/.env), mai nei log.
+  reference_id della voce pubblica scritto per ogni voce_id in `assets/voci/voci.yaml`. Chiave: `OPENROUTER_API_KEY`
+  dell'ambiente, poi la riga nel `.env` alla radice, poi (ripiego) il file `CANTASTORIE_CHIAVE_OPENROUTER` (predefinito
+  ../agora/.env); la ricerca sta in `apps/server/src/llm/chiavi.ts`. Mai nei log.
 - Una frase per richiesta. La richiesta è riuscita solo al primo pezzo di audio (entro 6 s); poi un ritentativo,
   poi Qwen se è permesso e pronto (mai sulle istanze di prova), poi solo testo: la frase si annuncia con un
   silenzio lungo quanto la lettura e il turno non si ferma (apps/server/src/voce/riserva.ts, pipeline.ts).
