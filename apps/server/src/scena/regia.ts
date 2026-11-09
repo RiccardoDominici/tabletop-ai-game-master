@@ -714,6 +714,14 @@ export class Regia {
     return this.campagna.pg.find((p) => p.id === id)?.nome ?? id;
   }
 
+  /**
+   * PNG che sono nella scena in corso: solo loro parlano (le battute in catalogo e le righe improvvisate).
+   * Oggi è `png_presenti` della scheda; se la presenza diventerà dinamica (ingressi e uscite), cambia qui.
+   */
+  private pngInScena(): ReadonlySet<string> {
+    return new Set(this.campagna.scena.png_presenti);
+  }
+
   /** Testo dell'ultima narrazione pubblica (per l'arbitro). */
   private ultimaNarrazione(): string {
     const voci = this.trascrizione.filter((v) => v.tipo === 'narrazione' || v.tipo === 'battuta');
@@ -1482,6 +1490,7 @@ export class Regia {
         pronuncia: this.pronuncia,
         ...this.parametriAudioTurno(),
         ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
+        presenti: this.pngInScena(),
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segniInRisposta) : null,
         onFrase: (f) => {
           if (epoca !== this.epoca) return;
@@ -1511,6 +1520,7 @@ export class Regia {
           pronuncia: this.pronuncia,
           ...this.parametriAudioTurno(),
           ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
+          presenti: this.pngInScena(),
           usa: (id, per) => this.usaBattuta(id, per, turno, segniInRisposta),
           prefissoFrasi: 'r',
           ignora: new Set(['invito_mancante']),
@@ -1526,6 +1536,7 @@ export class Regia {
       esito.righe_improvvisate += riparazione.righe_improvvisate;
       esito.usa_rifiutati += riparazione.usa_rifiutati;
       esito.scartate += riparazione.scartate;
+      esito.scartate_assenti += riparazione.scartate_assenti;
       esito.anomalie.push(...riparazione.anomalie);
       if (riparazione.esito) {
         esito.esito.testo += `\n${riparazione.esito.testo}`;
@@ -1614,6 +1625,8 @@ export class Regia {
       righe_prescritte: esito.righe_prescritte,
       righe_improvvisate: esito.righe_improvvisate,
       usa_rifiutati: esito.usa_rifiutati,
+      // Righe improvvisate di PNG fuori dalla scena, scartate prima della voce (narraTurno, `presenti`).
+      righe_png_assenti: esito.scartate_assenti,
       azioni_pubbliche: pubbliche.size,
       azioni_senza_risposta: senzaRisposta.length,
       riparazioni,

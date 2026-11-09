@@ -77,6 +77,8 @@ export interface EsitoTurnoNarrato {
   usa_rifiutati: number;
   /** Frasi scartate prima della voce perché fuori dalla finzione (mosse contro lo stallo). */
   scartate: number;
+  /** Frasi improvvisate di PNG che non sono nella scena (`presenti`), scartate prima della voce. */
+  scartate_assenti: number;
   /** Errore del narratore (non per interruzione). */
   errore: string | null;
   interrotto: boolean;
@@ -110,6 +112,11 @@ export interface ParametriTurno {
    * La usa la regia nelle mosse contro lo stallo (narrazione/finzione.ts).
    */
   scartaFrase?: (testo: string) => string | null;
+  /**
+   * PNG nella scena in corso (`png_presenti`): una riga improvvisata `[png_x]` di un PNG che non c'è si
+   * scarta prima della voce, con una riga di log (assente = nessun filtro).
+   */
+  presenti?: ReadonlySet<string>;
 }
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
@@ -142,6 +149,8 @@ export async function narraTurno(
   let righeImprovvisate = 0;
   let usaRifiutati = 0;
   let scartate = 0;
+  let scartateAssenti = 0;
+  const idPng = new Set(campagna.png.map((x) => x.id));
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
   /** Segnale audio in attesa della prossima frase. */
@@ -180,6 +189,14 @@ export async function narraTurno(
     for (const e of eventi) {
       if (p.signal.aborted) return;
       if (e.tipo === 'frase') {
+        // Un PNG che non è nella scena non parla (playtest di nozze-neve: Zelia e Adelina rispondevano da
+        // scene dove non stanno, e le loro voci erano state scelte per non trovarsi mai insieme).
+        if (p.presenti && idPng.has(e.etichetta) && !p.presenti.has(e.etichetta)) {
+          scartateAssenti += 1;
+          anomalie.push({ codice: 'png_assente', dettaglio: `${e.etichetta} non è in questa scena: «${e.testo.slice(0, 120)}»` });
+          log.warn({ turno: p.turno, etichetta: e.etichetta, testo: e.testo }, 'narratore: riga di un PNG assente dalla scena, scartata');
+          continue;
+        }
         const motivoScarto = p.scartaFrase?.(e.testo) ?? null;
         if (motivoScarto) {
           // Fuori dalla finzione: non si sente e non si scrive. La regia rimedia a fine turno.
@@ -261,6 +278,7 @@ export async function narraTurno(
     righe_improvvisate: righeImprovvisate,
     usa_rifiutati: usaRifiutati,
     scartate,
+    scartate_assenti: scartateAssenti,
     errore,
     interrotto,
   });
