@@ -234,6 +234,8 @@ export class MotoreVoceFish implements MotoreVoce {
           secondi_audio: Math.round(secondi * 100) / 100,
           rtf: secondi > 0 ? Math.round((totaleMs / 1000 / secondi) * 100) / 100 : null,
           costo_usd: Math.round(usd * 1e7) / 1e7,
+          // Direzioni e suoni mandati (senza le parole): per capire a orecchio cosa ha chiesto il narratore.
+          direzioni: [...input.matchAll(/\[([^[\]]+)\]/g)].map((m) => m[1]),
           esito,
         };
         if (esito.startsWith('errore')) log.error(riga, 'voce fish: segmento fallito a metà');
