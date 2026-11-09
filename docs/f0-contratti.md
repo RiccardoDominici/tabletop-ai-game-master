@@ -112,6 +112,16 @@ le divide in frasi e manda ogni frase alla voce giusta.
   come tornare al calmo.
 - `[umore] <tag>` e `[effetto] <tag>`: facoltative, rare, non lette (anche nel protocollo del selettore). Valgono per la
   frase che segue; il vocabolario, il limite di un umore al minuto e i tempi sono in docs/audio.md («Segnali automatici»).
+- `[privato pg_id] testo`: l'esito di un'azione PRIVATA, solo per quel PG (anche `[privata …]`, e con l'id, l'alias
+  o il nome del PG). Voce del narratore, una o due frasi. Non va al proiettore né nella trascrizione pubblica: il server
+  la manda al telefono di quel PG (`privato:esiti`, l'elenco completo, anche quando il PG viene scelto o dopo una
+  ripresa) e la scrive nell'archivio (`privati_turno`). Nel registro sta sotto l'azione privata (`risposta_privata`);
+  nel contesto del narratore va in «Esiti privati già dati». La voce va solo ai telefoni di quel PG con «Ascolta qui»
+  acceso (`solo_pg`); se nessuno ascolta, la frase non si sintetizza. Il motivo: il browser non suona niente senza un
+  tocco, e un telefono che parla da solo al tavolo farebbe sentire il segreto ai vicini. Con l'altoparlante acceso
+  è il giocatore a scegliere di ascoltare, magari con le cuffie. Un PG non riconosciuto: riga scartata e errore nel
+  log, mai in pubblico. In modo B una battuta `[usa] id > pg` verso un'azione privata va allo stesso modo solo a quel
+  PG. Anche i tiri privati (dadi) usano questo canale.
 - Righe senza etichetta: si accodano al segmento precedente (tolleranza), con errore nel log.
 - Nomi da pronunciare: prima della sintesi il server sostituisce i nomi dei PNG con la grafia del loro campo
   `pronuncia` (es. «Bàldrin»), solo nel testo mandato alla voce, non in quello mostrato.

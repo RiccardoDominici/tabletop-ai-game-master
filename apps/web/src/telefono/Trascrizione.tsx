@@ -1,22 +1,35 @@
 /**
- * Trascrizione pubblica dal vivo: le righe più nuove in fondo.
+ * Trascrizione pubblica dal vivo: le righe più nuove in fondo. Gli esiti delle MIE azioni private
+ * (`[privato pg_x]`, solo su questo telefono) stanno in fondo al loro turno, con «Solo per te».
  *
  * Scorrimento automatico «educato»: si scende da soli solo se si era già in fondo (o quasi); se il
  * giocatore è risalito a rileggere non lo si strattona, e compare un pulsante «nuove righe».
  */
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import type { VoceTrascrizione } from '@cantastorie/shared';
+import type { EsitoPrivato, VoceTrascrizione } from '@cantastorie/shared';
 import { virgolettato } from '../lib/formato';
+import { useTelefono } from '../store/telefono';
+
+type Voce = { tipo: 'pubblica'; v: VoceTrascrizione } | { tipo: 'privata'; v: EsitoPrivato };
+
+/** Pubbliche e private in ordine di turno; dentro un turno le private dopo (ordinamento stabile). */
+export function uniscoVoci(voci: readonly VoceTrascrizione[], privati: readonly EsitoPrivato[]): Voce[] {
+  const tutte: Voce[] = [...voci.map((v) => ({ tipo: 'pubblica' as const, v })), ...privati.map((v) => ({ tipo: 'privata' as const, v }))];
+  return tutte.sort((a, b) => a.v.turno - b.v.turno || (a.tipo === b.tipo ? 0 : a.tipo === 'pubblica' ? -1 : 1));
+}
 
 /** Entro questa distanza dal fondo si considera «in fondo». */
 const SOGLIA_FONDO_PX = 80;
 
-export function Trascrizione({ voci, className }: { voci: VoceTrascrizione[]; className?: string }) {
+export function Trascrizione({ voci: pubbliche, className }: { voci: VoceTrascrizione[]; className?: string }) {
+  const privati = useTelefono((s) => s.esitiPrivati);
+  const voci = uniscoVoci(pubbliche, privati);
   const contenitore = useRef<HTMLDivElement>(null);
   const eraInFondo = useRef(true);
   const [nuove, setNuove] = useState(false);
-  const ultimaId = voci[voci.length - 1]?.id ?? null;
+  const ultima = voci[voci.length - 1];
+  const ultimaId = ultima ? `${ultima.tipo}:${ultima.v.id}:${ultima.v.testo.length}` : null;
 
   // Prima del render successivo si decide se seguire il fondo; dopo, si scorre.
   useLayoutEffect(() => {
@@ -73,11 +86,11 @@ export function Trascrizione({ voci, className }: { voci: VoceTrascrizione[]; cl
           <ol className="flex flex-col gap-3">
             {voci.map((voce, i) => {
               const precedente = voci[i - 1];
-              const cambioTurno = precedente !== undefined && precedente.turno !== voce.turno;
+              const cambioTurno = precedente !== undefined && precedente.v.turno !== voce.v.turno;
               return (
-                <li key={voce.id}>
-                  {cambioTurno && <SeparatoreTurno turno={voce.turno} />}
-                  <RigaTrascrizione voce={voce} />
+                <li key={`${voce.tipo}:${voce.v.id}`}>
+                  {cambioTurno && <SeparatoreTurno turno={voce.v.turno} />}
+                  {voce.tipo === 'pubblica' ? <RigaTrascrizione voce={voce.v} /> : <RigaPrivata esito={voce.v} />}
                 </li>
               );
             })}
@@ -103,6 +116,19 @@ function SeparatoreTurno({ turno }: { turno: number }) {
       <span className="h-px flex-1 bg-bordo" />
       {turno === 0 ? 'Apertura' : `Turno ${turno}`}
       <span className="h-px flex-1 bg-bordo" />
+    </div>
+  );
+}
+
+/** L'esito di una mia azione privata: il tavolo non l'ha sentito, si vede solo qui. */
+function RigaPrivata({ esito }: { esito: EsitoPrivato }) {
+  return (
+    <div data-tipo="privato" className="mx-2 rounded-xl border border-dashed border-candela/50 bg-notte-2 px-4 py-2.5">
+      <p className="text-xs font-semibold tracking-[0.16em] text-candela uppercase">Solo per te</p>
+      <p className="font-racconto text-[1.0625rem] leading-relaxed text-pergamena">
+        {esito.chi !== 'narratore' && <strong className="font-sans font-bold text-brace">{esito.nome} </strong>}
+        {esito.chi !== 'narratore' ? virgolettato(esito.testo) : esito.testo}
+      </p>
     </div>
   );
 }

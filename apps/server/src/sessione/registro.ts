@@ -127,6 +127,8 @@ export interface AzioneRegistrata {
   /** Stato finale (risolta, superata, sospesa…); in_coda/da_confermare = non arrivata al narratore. */
   esito: string;
   motivo: string | null;
+  /** Solo per le azioni private: ciò che il narratore ha detto a quel PG soltanto (`[privato pg_x]`). */
+  risposta_privata?: string;
 }
 
 export interface TrascrizionePubblica {
@@ -202,6 +204,7 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
   const turni = new Map<number, VoceTrascrizione[]>();
   const azioni = new Map<string, Azione>();
   const telefoni = new Map<string, string>();
+  const privatiTurno = new Map<number, Array<{ id_pg: string; testo: string }>>();
   let ultimoEvento: string | null = null;
   for (const e of eventi) {
     ultimoEvento = e.ts;
@@ -212,6 +215,7 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
     else if (e.tipo === 'tavolo') {
       for (const a of (d as unknown as StatoTavoloSalvato).azioni ?? []) if (a && typeof a.id === 'string') azioni.set(a.id, a);
     } else if (e.tipo === 'dispositivo' && typeof d['dispositivo'] === 'string' && typeof d['id_pg'] === 'string') telefoni.set(d['dispositivo'], d['id_pg']);
+    else if (e.tipo === 'privati_turno' && typeof d['turno'] === 'number' && Array.isArray(d['esiti'])) privatiTurno.set(d['turno'], d['esiti'] as Array<{ id_pg: string; testo: string }>);
   }
   if (fotografie.length === 0) avvisi.push('Nessuna fotografia nell’archivio: la sessione non è mai partita davvero.');
   const modoB = fotografie.some((f) => f.repertorio !== null && f.repertorio !== undefined);
@@ -361,7 +365,13 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
       id,
       nome: def.pg.find((p) => p.id === id)?.nome ?? id,
       azioni_pubbliche: mie.filter((x) => !x.a.privata).map((x) => x.r),
-      azioni_private: mie.filter((x) => x.a.privata).map((x) => x.r),
+      // Sotto ogni azione privata, ciò che il narratore ha detto solo a quel PG in quel turno.
+      azioni_private: mie
+        .filter((x) => x.a.privata)
+        .map((x) => {
+          const detto = (privatiTurno.get(x.r.turno) ?? []).filter((v) => v.id_pg === id).map((v) => v.testo).join(' ');
+          return detto ? { ...x.r, risposta_privata: detto } : x.r;
+        }),
     };
   });
 

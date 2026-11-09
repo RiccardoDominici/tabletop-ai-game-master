@@ -3,7 +3,7 @@
  * comando. Lo stato del tavolo (pubblico) sta in `store/tavolo.ts`.
  */
 import { create } from 'zustand';
-import type { AzionePrivata, SchedaPg } from '@cantastorie/shared';
+import type { AzionePrivata, EsitoPrivato, SchedaPg } from '@cantastorie/shared';
 import { CHIAVI, cancellaMemoria, leggiMemoria, scriviMemoria } from '../lib/memoria';
 
 interface StoreTelefono {
@@ -24,6 +24,8 @@ interface StoreTelefono {
   occupato: boolean;
   /** La scheda del mio PG (con le conoscenze private), dall'evento `pg:scheda`. */
   scheda: SchedaPg | null;
+  /** Gli esiti delle mie azioni private (`privato:esiti`): solo su questo telefono, nella trascrizione. */
+  esitiPrivati: EsitoPrivato[];
   /** Il pannello della scheda è aperto. */
   schedaAperta: boolean;
   /**
@@ -40,6 +42,7 @@ interface StoreTelefono {
   impostaErrore(errore: string | null): void;
   impostaOccupato(occupato: boolean): void;
   impostaScheda(scheda: SchedaPg | null): void;
+  impostaEsitiPrivati(esiti: EsitoPrivato[]): void;
   apriScheda(aperta: boolean): void;
   rimandaScelta(chiave: string | null): void;
 }
@@ -52,6 +55,7 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   errore: null,
   occupato: false,
   scheda: null,
+  esitiPrivati: [],
   schedaAperta: false,
   sceltaRimandata: null,
 
@@ -61,7 +65,7 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   },
   dimenticaPg: () => {
     cancellaMemoria(CHIAVI.pg);
-    set({ idPg: null, confermato: false, miaAzione: null, scheda: null, schedaAperta: false });
+    set({ idPg: null, confermato: false, miaAzione: null, scheda: null, esitiPrivati: [], schedaAperta: false });
   },
   impostaConfermato: (confermato) => set({ confermato }),
   apriScelta: (sceltaAperta) => set({ sceltaAperta }),
@@ -69,6 +73,7 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   impostaErrore: (errore) => set({ errore }),
   impostaOccupato: (occupato) => set({ occupato }),
   impostaScheda: (scheda) => set({ scheda }),
+  impostaEsitiPrivati: (esitiPrivati) => set({ esitiPrivati }),
   apriScheda: (schedaAperta) => set({ schedaAperta }),
   rimandaScelta: (sceltaRimandata) => set({ sceltaRimandata }),
 }));

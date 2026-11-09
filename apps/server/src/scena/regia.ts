@@ -26,6 +26,7 @@
 import type {
   AzionePrivata,
   Esito,
+  EsitoPrivato,
   FaseScena,
   MisureTurno,
   PersonaggioScena,
@@ -184,6 +185,8 @@ export interface UscitaRegia {
   azioneMia(id_pg: string, azione: AzionePrivata | null): void;
   metriche(misure: MisureTurno): void;
   avviso(livello: 'info' | 'errore', testo: string): void;
+  /** Al telefono di quel PG: tutti i suoi esiti privati (`[privato pg_x]`), mai al proiettore. */
+  privati?(id_pg: string, esiti: EsitoPrivato[]): void;
 }
 
 interface AttesaAudio {
@@ -293,6 +296,14 @@ export class Regia {
   private versioneStato = 0;
   private epoca = 0;
   private trascrizione: VoceTrascrizione[] = [];
+  /**
+   * Esiti delle azioni private (righe `[privato pg_x]`, battute verso un'azione privata): solo ai
+   * telefoni di quel PG, nel registro e nel contesto del narratore; mai nella trascrizione pubblica.
+   */
+  private privati: EsitoPrivato[] = [];
+  private privatiSalvati = new Map<number, string>();
+  /** Riga privata aperta per turno:segmento (le frasi della stessa riga si uniscono). */
+  private privatiAperti = new Map<string, EsitoPrivato>();
   private prossimoIdTrascrizione = 1;
   /** Voce di trascrizione aperta per segmento del turno corrente (per unire le frasi). */
   private segmentiAperti = new Map<string, VoceTrascrizione>();
@@ -470,6 +481,15 @@ export class Regia {
       this.tavoloSalvato = tavolo;
       eventi.push({ tipo: 'tavolo', dati: JSON.parse(tavolo) });
     }
+    // Esiti privati per turno: nel registro sotto le azioni private (sessione/registro.ts), e nella ripresa.
+    const privatiPerTurno = new Map<number, EsitoPrivato[]>();
+    for (const v of this.privati) privatiPerTurno.set(v.turno, [...(privatiPerTurno.get(v.turno) ?? []), v]);
+    for (const [turno, esiti] of privatiPerTurno) {
+      const testo = JSON.stringify(esiti);
+      if (this.privatiSalvati.get(turno) === testo) continue;
+      this.privatiSalvati.set(turno, testo);
+      eventi.push({ tipo: 'privati_turno', dati: { turno, esiti } });
+    }
     memoria.scrivi(eventi, this.turno);
   }
 
@@ -521,6 +541,7 @@ export class Regia {
     for (const id of f.sceneVisitate ?? [f.scena]) this.sceneVisitate.add(id);
     for (const id of f.sceneConFinale ?? []) this.sceneConFinale.add(id);
     this.trascrizione = r.trascrizione.map((v) => ({ ...v }));
+    this.privati = (r.privati ?? []).map((v) => ({ ...v }));
     this.prossimoIdTrascrizione = Math.max(f.prossimoIdTrascrizione ?? 1, ...this.trascrizione.map((v) => v.id + 1));
     // I turni ripresi sono già nel registro così come sono: non si riscrivono.
     const perTurno = new Map<number, VoceTrascrizione[]>();
@@ -994,6 +1015,8 @@ export class Regia {
       versione: esito.versione,
       ...(per !== perDato ? { per } : {}),
       ...(audio ? { audio } : {}),
+      // Risponde a un'azione PRIVATA: le righe vanno solo al telefono di quel PG.
+      ...(per && this.turnoB?.azioni.get(per)?.privata ? { privato: per } : {}),
       righe: esito.righe.map((r) => {
         const { mostrato, voce } = testoPerVoce(r.etichetta, r.testo, this.pronuncia);
         return { etichetta: r.etichetta, testo: mostrato, testo_voce: voce, chiave_cache: chiaveAudio(voceDi(this.campagna, r.etichetta).voce_id, voce) };
@@ -1197,6 +1220,9 @@ export class Regia {
     this.turniSalvati.clear();
     this.tavoloSalvato = '';
     this.trascrizione = [];
+    this.privati = [];
+    this.privatiSalvati.clear();
+    this.privatiAperti.clear();
     this.turno = 0;
     this.versioneScena = 0;
     // Si riparte dalla prima scena, con gli orologi della campagna da capo.
@@ -1728,6 +1754,7 @@ export class Regia {
     const messaggioBase = compilaMessaggioTurno({
       turno: r.turno,
       trascrizione: this.trascrizione,
+      privati: this.privati,
       azioni: perNarratore.azioni,
       collegamenti: perNarratore.collegamenti,
       // Nessuna azione (scadenza concitata, o Risolvi ora a mani vuote): il mondo fa una mossa.
@@ -1807,6 +1834,11 @@ export class Regia {
           this.sorvegliante.batti('llm: frase');
           this.trascriviFrase(turno, f.etichetta, f.nome, f.testo, f.segmento);
         },
+        onPrivato: (f) => {
+          if (epoca !== this.epoca) return;
+          this.sorvegliante.batti('llm: frase privata');
+          this.frasePrivata(turno, f);
+        },
       },
     );
     if (epoca !== this.epoca) return;
@@ -1838,6 +1870,10 @@ export class Regia {
           onFrase: (f) => {
             if (epoca !== this.epoca) return;
             this.trascriviFrase(turno, f.etichetta, f.nome, f.testo, 50_000 + f.segmento);
+          },
+          onPrivato: (f) => {
+            if (epoca !== this.epoca) return;
+            this.frasePrivata(turno, { ...f, segmento: 50_000 + f.segmento });
           },
         },
       );
@@ -2202,6 +2238,25 @@ export class Regia {
   }
 
   /** Unisce le frasi dello stesso segmento in una voce di trascrizione. */
+  /** Una frase privata: si unisce alla sua riga e il telefono di quel PG riceve l'elenco aggiornato. */
+  private frasePrivata(turno: number, f: { etichetta: string; nome: string; testo: string; segmento: number; id_pg: string }): void {
+    const chiave = `${turno}:${f.segmento}`;
+    const aperta = this.privatiAperti.get(chiave);
+    if (aperta) aperta.testo = `${aperta.testo} ${f.testo}`;
+    else {
+      const esito: EsitoPrivato = { id: `p${turno}-${f.segmento}`, turno, id_pg: f.id_pg, chi: f.etichetta, nome: f.nome, testo: f.testo };
+      this.privati.push(esito);
+      this.privatiAperti.set(chiave, esito);
+    }
+    this.o.log.info({ turno, id_pg: f.id_pg, chi: f.etichetta, caratteri: f.testo.length }, 'narratore: esito privato');
+    this.uscita?.privati?.(f.id_pg, this.esitiPrivati(f.id_pg));
+  }
+
+  /** Gli esiti privati di un PG (per il suo telefono, anche quando lo sceglie o si riconnette). */
+  esitiPrivati(id_pg: string): EsitoPrivato[] {
+    return this.privati.filter((v) => v.id_pg === id_pg).map((v) => ({ ...v }));
+  }
+
   private trascriviFrase(turno: number, etichetta: string, nome: string, testo: string, segmento: number): void {
     const chiave = `${turno}:${segmento}`;
     const aperta = this.segmentiAperti.get(chiave);

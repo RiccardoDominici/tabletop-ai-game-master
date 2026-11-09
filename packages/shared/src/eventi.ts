@@ -69,6 +69,21 @@ export interface AudioFineTurno {
   effetti?: string[];
 }
 
+/**
+ * Esito di un'azione privata (riga `[privato pg_x]` del narratore, o battuta che risponde a un'azione
+ * privata): solo per il telefono di quel PG, mai per il proiettore né la trascrizione pubblica. Una voce
+ * per riga (le frasi della stessa riga si uniscono).
+ */
+export interface EsitoPrivato {
+  id: string;
+  turno: number;
+  id_pg: string;
+  /** Chi parla: 'narratore' o id_png. */
+  chi: string;
+  nome: string;
+  testo: string;
+}
+
 /** Lo schermo avvisa che il primo pezzo di un turno ha cominciato a suonare davvero. */
 export interface SchermoAudioIniziato {
   turno: number;
@@ -109,6 +124,8 @@ export interface EventiServerVersoClient {
   stato: (stato: StatoTavolo) => void;
   /** Al telefono che ha scelto il PG: la propria azione (null = nessuna). */
   'azione:mia': (azione: AzionePrivata | null) => void;
+  /** Al telefono che ha scelto il PG: tutti i suoi esiti privati della scena (a ogni novità e alla scelta). */
+  'privato:esiti': (esiti: EsitoPrivato[]) => void;
   /** Al telefono che ha scelto il PG: la sua scheda, con le conoscenze private. */
   'pg:scheda': (scheda: SchedaPg) => void;
   'metriche:turno': (misure: MisureTurno) => void;

@@ -47,7 +47,17 @@ export interface RigaPronta {
 }
 
 /** `per`: il PG a cui la battuta risponde davvero, se il Motore l'ha dedotto o corretto (assente = quello del [usa]). */
-export type EsitoUsaTurno = { ok: true; righe: RigaPronta[]; versione: number; audio?: CueAudio; per?: string | null } | { ok: false; motivo: string };
+export type EsitoUsaTurno =
+  | {
+      ok: true;
+      righe: RigaPronta[];
+      versione: number;
+      audio?: CueAudio;
+      per?: string | null;
+      /** La battuta risponde a un'azione PRIVATA di questo PG: le sue righe vanno solo a lui. */
+      privato?: string;
+    }
+  | { ok: false; motivo: string };
 
 /** Voce dell'uscita del turno, nell'ordine di ascolto. */
 export type VoceUscita =
@@ -62,7 +72,7 @@ export type VoceUscita =
     }
   | { tipo: 'usa_rifiutato'; id: string; per: string | null; motivo: string }
   /** `frasi`: id delle frasi mandate alla voce; `segmento`: la riga della trascrizione. */
-  | { tipo: 'improvvisata'; etichetta: string; testo: string; frasi?: string[]; segmento?: number };
+  | { tipo: 'improvvisata'; etichetta: string; testo: string; frasi?: string[]; segmento?: number; privato?: string };
 
 export interface EsitoTurnoNarrato {
   invito: string[] | 'tutti' | null;
@@ -97,6 +107,11 @@ export interface ParametriTurno {
   ora: () => number;
   /** Ogni frase, per la trascrizione pubblica. */
   onFrase: (frase: FraseNarrata) => void;
+  /**
+   * Una frase privata (`[privato pg_x]`, o una battuta che risponde a un'azione privata): va solo al
+   * telefono di quel PG, mai nella trascrizione pubblica. Senza questo gancio la frase si scarta.
+   */
+  onPrivato?: (frase: FraseNarrata & { id_pg: string }) => void;
   /** Testo per la voce (nomi con gli accenti di pronuncia). */
   pronuncia: (testo: string) => string;
   /** Modalità repertorio: fa uscire una battuta (null = `[usa]` non ammesso in questa modalità). */
@@ -218,16 +233,26 @@ export async function narraTurno(
           continue;
         }
         const { voce_id, nome } = voceDi(campagna, e.etichetta);
-        p.onFrase({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice });
+        // Esito privato: al telefono di quel PG (testo, e voce solo lì); mai nella trascrizione pubblica.
+        if (e.privato) {
+          if (!p.onPrivato) {
+            log.warn({ turno: p.turno, privato: e.privato }, 'narratore: riga privata senza destinatario, scartata');
+            continue;
+          }
+          p.onPrivato({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice, id_pg: e.privato });
+        } else {
+          p.onFrase({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice });
+        }
         const perVoce = p.pronuncia(e.voce);
         const idFrase = `t${p.turno}-${p.prefissoFrasi ?? 'f'}${indice}`;
-        const cue = prendiCue();
-        accoda({ parlante: e.etichetta, nome, voce_id, testo: e.testo, ...(perVoce !== e.testo ? { testo_voce: perVoce } : {}), ...(cue ? { cue } : {}) });
+        // Un segnale audio suonerebbe sul proiettore: resta per la prossima frase pubblica.
+        const cue = e.privato ? undefined : prendiCue();
+        accoda({ parlante: e.etichetta, nome, voce_id, testo: e.testo, ...(perVoce !== e.testo ? { testo_voce: perVoce } : {}), ...(cue ? { cue } : {}), ...(e.privato ? { solo_pg: e.privato } : {}) });
         if (rigaAperta && rigaAperta.segmento === e.segmento) {
           rigaAperta.voce.testo += ` ${e.testo}`;
           rigaAperta.voce.frasi!.push(idFrase);
         } else {
-          const voce = { tipo: 'improvvisata' as const, etichetta: e.etichetta, testo: e.testo, frasi: [idFrase], segmento: e.segmento };
+          const voce = { tipo: 'improvvisata' as const, etichetta: e.etichetta, testo: e.testo, frasi: [idFrase], segmento: e.segmento, ...(e.privato ? { privato: e.privato } : {}) };
           uscita.push(voce);
           rigaAperta = { segmento: e.segmento, voce };
           righeImprovvisate += 1;
@@ -244,10 +269,12 @@ export async function narraTurno(
         uscita.push({ tipo: 'usa', id: e.id, per: esito.per !== undefined ? esito.per : e.per, versione: esito.versione, righe: esito.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });
         for (const [i, r] of esito.righe.entries()) {
           const { voce_id, nome } = voceDi(campagna, r.etichetta);
-          p.onFrase({ etichetta: r.etichetta, nome, testo: r.testo, segmento: segmentoBattuta++, indice, battuta: e.id });
+          const fr = { etichetta: r.etichetta, nome, testo: r.testo, segmento: segmentoBattuta++, indice, battuta: e.id };
+          if (esito.privato) p.onPrivato?.({ ...fr, id_pg: esito.privato });
+          else p.onFrase(fr);
           // L'audio della battuta (e un segnale del narratore in attesa) va con la sua prima riga.
-          const cue = i === 0 ? prendiCue(esito.audio) : undefined;
-          accoda({ parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: r.testo_voce, chiave_cache: r.chiave_cache, ...(cue ? { cue } : {}) });
+          const cue = i === 0 && !esito.privato ? prendiCue(esito.audio) : undefined;
+          accoda({ parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: r.testo_voce, chiave_cache: r.chiave_cache, ...(cue ? { cue } : {}), ...(esito.privato ? { solo_pg: esito.privato } : {}) });
           righePrescritte += 1;
         }
         log.info({ turno: p.turno, battuta: e.id, versione: esito.versione, righe: esito.righe.length }, 'repertorio: battuta uscita');

@@ -8,13 +8,15 @@
  * - `trascrizione_turno` {turno, voci}: le voci pubbliche di un turno, scritte quando il turno è chiuso
  *                        (nella stessa transazione della fotografia: tutto o niente);
  * - `tavolo`             StatoTavoloSalvato: azioni dei giocatori e finestra, a ogni cambiamento;
+ * - `privati_turno`     {turno, esiti}: gli esiti privati di un turno (`[privato pg_x]`), solo per i
+ *                        telefoni dei loro PG: tornano a quei telefoni dopo una ripresa;
  * - `dispositivo`        {dispositivo, id_pg}: il telefono di un giocatore e il suo PG (id_pg null:
  *                        il master l'ha dimenticato dal pannello).
  *
  * La ricostruzione è un fold puro (ricostruisci): l'ultima fotografia, l'ultima versione di ogni
  * turno della trascrizione, l'ultimo stato del tavolo, l'ultimo PG di ogni dispositivo.
  */
-import type { FaseScena, NotaRegia, VoceTrascrizione } from '@cantastorie/shared';
+import type { EsitoPrivato, FaseScena, NotaRegia, VoceTrascrizione } from '@cantastorie/shared';
 import type { UmoreScelto } from '../audio/scena';
 import type { Azione } from '../azioni/tipi';
 import type { StatoProveSalvato } from '../prove/stato';
@@ -84,6 +86,8 @@ export interface StatoRicostruito {
   sessione: string;
   fotografia: FotografiaSessione;
   trascrizione: VoceTrascrizione[];
+  /** Esiti privati dei turni chiusi (eventi `privati_turno`). */
+  privati?: EsitoPrivato[];
   tavolo: StatoTavoloSalvato | null;
   dispositivi: Map<string, string>;
   /** Turno dell'ultima fotografia e ora dell'ultimo evento (per il pannello: «ripresa al turno N»). */
@@ -103,6 +107,7 @@ export interface EventoRegistro {
 export function ricostruisci(sessione: string, eventi: readonly EventoRegistro[]): StatoRicostruito | null {
   let fotografia: FotografiaSessione | null = null;
   const turni = new Map<number, VoceTrascrizione[]>();
+  const privati = new Map<number, EsitoPrivato[]>();
   let tavolo: StatoTavoloSalvato | null = null;
   const dispositivi = new Map<string, string>();
   let ultimoEvento = '';
@@ -115,6 +120,9 @@ export function ricostruisci(sessione: string, eventi: readonly EventoRegistro[]
         break;
       case 'trascrizione_turno':
         if (typeof d['turno'] === 'number' && Array.isArray(d['voci'])) turni.set(d['turno'], d['voci'] as VoceTrascrizione[]);
+        break;
+      case 'privati_turno':
+        if (typeof d['turno'] === 'number' && Array.isArray(d['esiti'])) privati.set(d['turno'], d['esiti'] as EsitoPrivato[]);
         break;
       case 'tavolo':
         tavolo = d as unknown as StatoTavoloSalvato;
@@ -134,5 +142,9 @@ export function ricostruisci(sessione: string, eventi: readonly EventoRegistro[]
     .filter(([t]) => t <= fotografia!.turno)
     .sort(([a], [b]) => a - b)
     .flatMap(([, voci]) => voci);
-  return { sessione, fotografia, trascrizione, tavolo, dispositivi, ultimoEvento };
+  const esitiPrivati = [...privati.entries()]
+    .filter(([t]) => t <= fotografia!.turno)
+    .sort(([a], [b]) => a - b)
+    .flatMap(([, v]) => v);
+  return { sessione, fotografia, trascrizione, ...(esitiPrivati.length ? { privati: esitiPrivati } : {}), tavolo, dispositivi, ultimoEvento };
 }

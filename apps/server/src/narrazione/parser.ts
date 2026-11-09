@@ -38,7 +38,8 @@ export type CodiceAnomalia =
   | 'ritmo_sconosciuto'
   | 'usa_vuoto'
   | 'umore_vuoto'
-  | 'effetto_vuoto';
+  | 'effetto_vuoto'
+  | 'privato_pg_sconosciuto';
 
 export type EventoNarratore =
   | {
@@ -48,6 +49,11 @@ export type EventoNarratore =
       testo: string;
       /** Progressivo del segmento (riga etichettata) a cui la frase appartiene. */
       segmento: number;
+      /**
+       * Riga `[privato pg_x]`: l'esito di un'azione privata, solo per quel PG (telefono, mai il
+       * proiettore né la trascrizione pubblica). Assente = frase pubblica.
+       */
+      privato?: string;
     }
   | { tipo: 'invito'; invitati: string[] | 'tutti'; grezzo: string }
   /** Riga [orologio] <id>: il narratore ha mostrato il prossimo segno di quell'orologio. */
@@ -101,6 +107,8 @@ export class ParserNarratore {
   private bufferInvito = '';
   private divisore: DivisoreFrasi;
   private etichetta: string | null = null;
+  /** Segmento `[privato …]`: id del PG; null = PG non riconosciuto (la riga si scarta: mai in pubblico). */
+  private privato: string | null | undefined = undefined;
   private segmento = -1;
   private invitoVisto = false;
   private eventi: EventoNarratore[] = [];
@@ -250,6 +258,15 @@ export class ParserNarratore {
     }
     if (this.invitoVisto) this.anomalia('testo_dopo_invito', `segmento [${grezza}] dopo [invito]`);
     let etichetta: string;
+    if (risolta.tipo === 'privato') {
+      // Esito privato: voce del narratore, solo per quel PG. Un PG sconosciuto non va MAI in pubblico.
+      if (risolta.pg === null) this.anomalia('privato_pg_sconosciuto', `[${grezza}]: PG non riconosciuto, riga scartata`);
+      this.nuovoSegmento(NARRATORE, risolta.pg);
+      this.modo = 'testo';
+      const testo = resto.replace(/^\s+/, '');
+      if (testo) this.testoSegmento(testo);
+      return;
+    }
     if (risolta.tipo === 'sconosciuta') {
       if (!giàSegnalata) this.anomalia('etichetta_sconosciuta', `etichetta sconosciuta [${grezza}]: letta dal narratore`);
       etichetta = NARRATORE;
@@ -273,8 +290,15 @@ export class ParserNarratore {
     | { tipo: 'umore' }
     | { tipo: 'effetto' }
     | { tipo: 'parlante'; id: string; alias: boolean }
+    | { tipo: 'privato'; pg: string | null }
     | { tipo: 'sconosciuta' } {
     const t = grezza.trim().toLowerCase();
+    const privato = /^privat[oa](?:\s+(.+))?$/.exec(t);
+    if (privato) {
+      const chi = (privato[1] ?? '').trim();
+      const id = this.pg.has(chi) ? chi : (this.alias.get(chi) ?? this.alias.get(chi.replace(/^pg_/, '')));
+      return { tipo: 'privato', pg: id && this.pg.has(id) ? id : null };
+    }
     if (t === INVITO) return { tipo: 'invito' };
     if (t === OROLOGIO) return { tipo: 'orologio' };
     if (t === RITMO) return { tipo: 'ritmo' };
@@ -288,8 +312,9 @@ export class ParserNarratore {
     return { tipo: 'sconosciuta' };
   }
 
-  private nuovoSegmento(etichetta: string): void {
+  private nuovoSegmento(etichetta: string, privato?: string | null): void {
     this.etichetta = etichetta;
+    this.privato = privato;
     this.segmento += 1;
     this.divisore = new DivisoreFrasi(this.opzioniDivisore);
   }
@@ -310,8 +335,8 @@ export class ParserNarratore {
   private emettiFrase(testo: string): void {
     const etichetta = this.etichetta ?? NARRATORE;
     const pulita = pulisciFrase(testo, etichetta !== NARRATORE);
-    if (!pulita) return;
-    this.eventi.push({ tipo: 'frase', etichetta, testo: pulita, segmento: Math.max(this.segmento, 0) });
+    if (!pulita || this.privato === null) return;
+    this.eventi.push({ tipo: 'frase', etichetta, testo: pulita, segmento: Math.max(this.segmento, 0), ...(this.privato ? { privato: this.privato } : {}) });
   }
 
   private fineRiga(): void {

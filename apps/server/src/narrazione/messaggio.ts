@@ -20,6 +20,8 @@ export interface DatiMessaggioTurno {
   turno: number;
   /** Trascrizione dei turni precedenti (le azioni del turno corrente sono a parte). */
   trascrizione: VoceTrascrizione[];
+  /** Esiti privati già dati (`[privato pg_x]`): li sa solo quel PG; il narratore li ricorda. */
+  privati?: ReadonlyArray<{ turno: number; id_pg: string; testo: string }>;
   azioni: AzioneTurno[];
   /** PG presenti al tavolo (scelti da almeno un telefono): solo loro si possono invitare. */
   pgAlTavolo: Array<{ id: string; nome: string }>;
@@ -110,6 +112,13 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
   parti.push('## Trascrizione pubblica della scena finora (divisa per turno)');
   if (tagliate > 0) parti.push(`(omesse ${tagliate} voci più vecchie)`);
   parti.push(testoStoria || '(nessuna)');
+  const privati = (d.privati ?? []).filter((v) => v.turno < d.turno).slice(-12);
+  if (privati.length) {
+    parti.push(
+      '## Esiti privati già dati (li sa solo quel PG: non dirli a voce, finché il PG non li usa)',
+      privati.map((v) => `- turno ${v.turno}, ${v.id_pg}: ${v.testo}`).join('\n'),
+    );
+  }
 
   parti.push(`## Turno ${d.turno}: azioni dei giocatori`);
   if (d.azioni.length === 0) {

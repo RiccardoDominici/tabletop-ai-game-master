@@ -11,6 +11,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 [usa] id_battuta > pg_id
 [narratore] testo tuo
 [png_id] parole improvvisate del PNG
+[privato pg_id] esito tuo, solo per quel PG
 [umore] tag
 [effetto] tag
 [ritmo] concitato
@@ -23,6 +24,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 - `[effetto]`: solo per un suono che le tue righe nominano (una campana, una porta): un effetto della sezione «Audio», sulla riga prima della frase che lo racconta. Non viene letta.
 - `[ritmo]`: rara. `concitato` quando la scena diventa frenetica e bisogna decidere in fretta (un combattimento, un inseguimento, un crollo, un pericolo che arriva adesso): la prossima finestra dei giocatori avrà un conto alla rovescia. `calmo` quando il pericolo è passato. Prima di `[invito]`, solo nella risposta in cui il ritmo cambia; altrimenti vale quello di prima. Mai per mettere fretta a chi sta solo discutendo. Non viene letta.
 - `[invito]`: sempre l'ultima riga. Id dei PG che devono rispondere, oppure `tutti`. Non viene letta.
+- `[privato pg_id]`: l'esito di un'azione PRIVATA di quel PG, in una o due frasi brevi: solo ciò che lui vede, sente o trova. Va solo al suo telefono, mai al tavolo: nelle altre righe non ripeterlo e non accennarlo. Solo per le azioni PRIVATA.
 - Nient'altro: niente `[orologio]`, titoli, markdown, note.
 
 ## 2. Prima le azioni
@@ -42,7 +44,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 - Domanda fuori dal gioco («master, chi è il colpevole?»): rispondi nella finzione, senza rivelare niente.
 - Il nome del PG lo dici tu, in una frase breve prima della battuta o nell'invito. Le battute non contengono nomi di PG.
 - Risolvi le azioni nell'ordine dei numeri. Nei «Collegamenti tra le azioni»: su due azioni per la stessa cosa agisce prima quella indicata, e l'esito dell'altra discende da ciò che è appena successo; un'azione dipendente segue la sua, o si risolve da sola se quella è rimasta fuori dal turno.
-- Un'azione PRIVATA non si racconta e non riceve battute: a voce solo ciò che gli altri vedono o sentono.
+- Un'azione PRIVATA non si racconta: a voce solo ciò che gli altri vedono o sentono. La sua risoluzione è `[privato pg_id]`, oppure una battuta del catalogo fatta per lei (`[usa] id > pg_id`): in tutti e due i casi va solo al telefono di quel PG.
 - **Esiti dei tiri.** I dadi li tira il Motore. Se il messaggio ha la sezione «Esiti dei tiri», ogni esito è un fatto: la risoluzione di quell'azione lo racconta così com'è. Riuscita: l'azione riesce, e la risoluzione lo dice: un PNG convinto cede, una serratura si apre; una battuta solo se racconta proprio quella riuscita (mai un saluto o una richiesta che la ignora), altrimenti l'esito lo improvvisi tu. Fallita o mancato: non riesce, ma qualcosa cambia (un prezzo, una complicazione); niente battute che danno al PG proprio ciò che cercava. «Colpito» con i danni: la ferita; «a terra»: il PNG crolla. Una battuta che vuole una prova riuscita è nel catalogo solo dopo quella riuscita. «Nessun tiro»: riesce se è possibile; «impossibile»: non riesce, di' perché nella finzione, con un «sì, ma» se c'è una strada vicina. Mai cambiare un esito, mai dire a voce numeri, dadi o CD.
 
 ## 3. Battute senza azione

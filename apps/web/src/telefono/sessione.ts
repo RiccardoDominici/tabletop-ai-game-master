@@ -10,7 +10,7 @@
  * può essere stato riavviato) e poi di nuovo `telefono:scegli_pg` col PG ricordato, così il telefono
  * rientra nella stanza player:<id_pg> e riceve di nuovo `azione:mia`.
  */
-import type { AzionePrivata, Esito, SchedaPg, StatoTavolo } from '@cantastorie/shared';
+import type { AzionePrivata, Esito, EsitoPrivato, SchedaPg, StatoTavolo } from '@cantastorie/shared';
 import { alRientro, chiedi, conEsito, esitoErrore, prendiSocket } from '../lib/socket';
 import { creaLog } from '../lib/log';
 import { tokenDispositivo } from '../lib/memoria';
@@ -51,6 +51,8 @@ const suMiaAzione = (azione: AzionePrivata | null) => {
  * comunque, e la pagina la mostra solo se è quella del PG scelto.
  */
 const suScheda = (scheda: SchedaPg) => useTelefono.getState().impostaScheda(scheda);
+/** Gli esiti delle mie azioni private: l'elenco completo, a ogni novità e quando scelgo il PG. */
+const suPrivati = (esiti: EsitoPrivato[]) => useTelefono.getState().impostaEsitiPrivati(Array.isArray(esiti) ? esiti : []);
 const suAvviso = (avviso: { livello: 'info' | 'errore'; testo: string }) =>
   useAvvisi.getState().aggiungi(avviso.livello, avviso.testo);
 
@@ -106,6 +108,7 @@ export function avviaTelefono(): () => void {
     s.on('stato', suStato);
     s.on('azione:mia', suMiaAzione);
     s.on('pg:scheda', suScheda);
+    s.on('privato:esiti', suPrivati);
     s.on('avviso', suAvviso);
     togliRientro = alRientro(() => void rientra());
   }
@@ -116,6 +119,7 @@ export function avviaTelefono(): () => void {
     s.off('stato', suStato);
     s.off('azione:mia', suMiaAzione);
     s.off('pg:scheda', suScheda);
+    s.off('privato:esiti', suPrivati);
     s.off('avviso', suAvviso);
     togliRientro?.();
     togliRientro = null;

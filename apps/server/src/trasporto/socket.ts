@@ -40,6 +40,8 @@ export function creaUscitaAudio(io: ServerIo): UscitaAudio {
     return pg ? io.to(stanzaAscoltoPg(pg)) : pubblico();
   };
   return {
+    // Qualcuno ascolta la voce privata di quel PG? Se no, la pipeline non la sintetizza nemmeno.
+    inAscolto: (id_pg) => (io.sockets.adapter.rooms.get(stanzaAscoltoPg(id_pg))?.size ?? 0) > 0,
     frase: (m) => {
       if (m.solo_pg) private_.set(m.id_frase, m.solo_pg);
       verso(m.id_frase).emit('audio:frase', m);
@@ -65,6 +67,7 @@ export function creaUscite(io: ServerIo): { regia: UscitaRegia; audio: UscitaAud
       azioneMia: (id, a) => io.to(stanzaPg(id)).emit('azione:mia', a),
       metriche: (m) => io.to(STANZA_TAVOLO).emit('metriche:turno', m),
       avviso: (livello, testo) => io.to(STANZA_TAVOLO).emit('avviso', { livello, testo }),
+      privati: (id, esiti) => io.to(stanzaPg(id)).emit('privato:esiti', esiti),
     },
     audio: creaUscitaAudio(io),
   };
@@ -108,6 +111,7 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
           void socket.join(stanzaAscoltoPg(id_pg));
         }
         socket.emit('azione:mia', regia.azioneDi(id_pg));
+        socket.emit('privato:esiti', regia.esitiPrivati(id_pg));
         const scheda = regia.schedaPg(id_pg);
         if (scheda) socket.emit('pg:scheda', scheda);
       }

@@ -61,6 +61,11 @@ export interface FraseDaDire {
 
 /** Dove va l'audio (in produzione: la stanza "schermo" di Socket.IO). */
 export interface UscitaAudio {
+  /**
+   * Facoltativo: c'è almeno un telefono in ascolto per la voce privata di quel PG? Se manca o dice
+   * sì, le frasi `solo_pg` si sintetizzano; se dice no si saltano (il testo arriva comunque al telefono).
+   */
+  inAscolto?(id_pg: string): boolean;
   frase(meta: AudioFrase): void;
   pezzo(pezzo: AudioPezzo): void;
   fineFrase(fine: AudioFineFrase): void;
@@ -318,6 +323,11 @@ export class PipelineVoce {
 
   /** Genera una frase e ne inoltra i pezzi. Non lancia mai: gli errori diventano esiti. */
   private async dici(frase: FraseDaDire, epoca: number): Promise<EsitoFrase> {
+    // Voce privata senza nessuno in ascolto: niente sintesi (né spesa né attesa per il tavolo).
+    if (frase.solo_pg && this.opzioni.uscita.inAscolto && !this.opzioni.uscita.inAscolto(frase.solo_pg)) {
+      this.opzioni.log.debug({ id_frase: frase.id_frase, solo_pg: frase.solo_pg }, 'voce: frase privata senza ascolto, solo testo al telefono');
+      return { secondi: 0, interrotta: false, motore: 'testo' };
+    }
     if (frase.chiave_cache) {
       const dove = this.cachePer(this.opzioni.motore(), frase);
       const pronto = dove?.cache.leggi(dove.chiave);
