@@ -1661,6 +1661,8 @@ export class Regia {
         attesa_ms: esito.attesa_ms,
         tardive: esito.tardive,
         tiri: esito.tiri.map((t) => `${t.nome}: ${t.etichetta} ${t.totale} contro ${t.contro.tipo} ${t.contro.valore}, ${t.riuscita ? 'riuscita' : 'fallita'}${t.privata ? ' (privata)' : ''}`),
+        // Le righe esatte che riceve il narratore: per rivedere dopo la partita se ha raccontato l'esito giusto.
+        fatti: esito.fatti,
       },
       'prove: tiri del turno',
     );
