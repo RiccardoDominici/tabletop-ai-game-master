@@ -47,6 +47,11 @@ export interface FraseDaDire {
    */
   chiave_cache?: string;
   /**
+   * Esito privato: la voce va solo ai telefoni di quel PG con «Ascolta qui» (mai al proiettore);
+   * lo instrada il trasporto (trasporto/socket.ts, `creaUscitaAudio`).
+   */
+  solo_pg?: string;
+  /**
    * Segnale audio legato all'inizio di questa frase (riga [umore]/[effetto] del narratore, audio di
    * una battuta): l'effetto viaggia con l'annuncio e lo schermo lo fa partire con la frase;
    * l'umore lo applica la regia quando la frase parte (osservatore `richiesta`).
@@ -355,6 +360,7 @@ export class PipelineVoce {
       testo: frase.testo,
       sample_rate: sampleRate,
       ...(frase.cue?.effetto ? { effetto: frase.cue.effetto } : {}),
+      ...(frase.solo_pg ? { solo_pg: frase.solo_pg } : {}),
     });
     const passo = CAMPIONI_PER_PEZZO_CACHE * 2;
     let seq = 0;
@@ -418,6 +424,7 @@ export class PipelineVoce {
         testo: frase.testo,
         sample_rate: flusso.sampleRate,
         ...(frase.cue?.effetto ? { effetto: frase.cue.effetto } : {}),
+        ...(frase.solo_pg ? { solo_pg: frase.solo_pg } : {}),
       });
       annunciata = true;
       let seq = 0;

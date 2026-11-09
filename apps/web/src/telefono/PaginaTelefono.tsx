@@ -22,6 +22,7 @@ import { CasellaAzione } from './CasellaAzione';
 import { SchedaPersonaggio } from './SchedaPersonaggio';
 import { AlTavolo } from './AlTavolo';
 import { SceltaAzione } from './SceltaAzione';
+import { AscoltaQui } from './AscoltaQui';
 
 export function PaginaTelefono() {
   useEffect(() => avviaTelefono(), []);
@@ -79,6 +80,7 @@ function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
             {pg?.nome ?? idPg}
           </p>
         </div>
+        <AscoltaQui />
         {haScheda && (
           <button
             type="button"

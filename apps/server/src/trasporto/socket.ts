@@ -2,7 +2,9 @@
  * Trasporto Socket.IO: traduce gli eventi dei client in comandi della regia e le uscite della
  * regia/pipeline in eventi verso le stanze.
  *
- * Stanze: "tavolo" (stato per tutti), "schermo" (audio), "player:<id_pg>" (azione privata).
+ * Stanze: "tavolo" (stato per tutti), "schermo" (audio), "player:<id_pg>" (azione privata),
+ * "ascolto" e "ascolto:<id_pg>" (i telefoni con «Ascolta qui»: la voce anche lì; quella di un esito
+ * privato solo al telefono del suo PG, mai al proiettore).
  * I client non sono fidati: ogni dato in ingresso viene controllato, e un telefono può agire
  * solo per il PG che ha scelto.
  */
@@ -23,6 +25,37 @@ type SocketIo = Socket<EventiClientVersoServer, EventiServerVersoClient>;
 export const STANZA_TAVOLO = 'tavolo';
 export const STANZA_SCHERMO = 'schermo';
 export const stanzaPg = (id_pg: string): string => `player:${id_pg}`;
+export const STANZA_ASCOLTO = 'ascolto';
+export const stanzaAscoltoPg = (id_pg: string): string => `ascolto:${id_pg}`;
+
+/**
+ * Uscita dell'audio verso proiettore e telefoni in ascolto. Una frase con `solo_pg` (e i suoi pezzi)
+ * va solo ai telefoni di quel PG in ascolto: il proiettore non la riceve mai.
+ */
+export function creaUscitaAudio(io: ServerIo): UscitaAudio {
+  const private_ = new Map<string, string>();
+  const pubblico = () => io.to([STANZA_SCHERMO, STANZA_ASCOLTO]);
+  const verso = (id_frase: string) => {
+    const pg = private_.get(id_frase);
+    return pg ? io.to(stanzaAscoltoPg(pg)) : pubblico();
+  };
+  return {
+    frase: (m) => {
+      if (m.solo_pg) private_.set(m.id_frase, m.solo_pg);
+      verso(m.id_frase).emit('audio:frase', m);
+    },
+    pezzo: (p) => verso(p.id_frase).emit('audio:pezzo', p),
+    fineFrase: (f) => {
+      verso(f.id_frase).emit('audio:fine_frase', f);
+      private_.delete(f.id_frase);
+    },
+    fineTurno: (f) => pubblico().emit('audio:fine_turno', f),
+    interrompi: () => {
+      private_.clear();
+      pubblico().emit('audio:interrompi');
+    },
+  };
+}
 
 /** Uscite verso i client, da passare a regia e pipeline. */
 export function creaUscite(io: ServerIo): { regia: UscitaRegia; audio: UscitaAudio } {
@@ -33,13 +66,7 @@ export function creaUscite(io: ServerIo): { regia: UscitaRegia; audio: UscitaAud
       metriche: (m) => io.to(STANZA_TAVOLO).emit('metriche:turno', m),
       avviso: (livello, testo) => io.to(STANZA_TAVOLO).emit('avviso', { livello, testo }),
     },
-    audio: {
-      frase: (m) => io.to(STANZA_SCHERMO).emit('audio:frase', m),
-      pezzo: (p) => io.to(STANZA_SCHERMO).emit('audio:pezzo', p),
-      fineFrase: (f) => io.to(STANZA_SCHERMO).emit('audio:fine_frase', f),
-      fineTurno: (f) => io.to(STANZA_SCHERMO).emit('audio:fine_turno', f),
-      interrompi: () => io.to(STANZA_SCHERMO).emit('audio:interrompi'),
-    },
+    audio: creaUscitaAudio(io),
   };
 }
 
@@ -52,6 +79,8 @@ const errore = (testo: string): Esito => ({ ok: false, errore: testo });
 export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer, log: Logger): void {
   /** socket.id → PG scelto (per controllare che il telefono agisca solo per il suo). */
   const pgDi = new Map<string, string>();
+  /** Telefoni con «Ascolta qui» acceso (socket.id). */
+  const inAscolto = new Set<string>();
 
   io.on('connection', (socket: SocketIo) => {
     const indirizzo = socket.handshake.address;
@@ -73,6 +102,11 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
         if (prima && prima !== id_pg) void socket.leave(stanzaPg(prima));
         pgDi.set(socket.id, id_pg);
         void socket.join([STANZA_TAVOLO, stanzaPg(id_pg)]);
+        // In ascolto: la voce privata segue il PG scelto.
+        if (inAscolto.has(socket.id)) {
+          if (prima && prima !== id_pg) void socket.leave(stanzaAscoltoPg(prima));
+          void socket.join(stanzaAscoltoPg(id_pg));
+        }
         socket.emit('azione:mia', regia.azioneDi(id_pg));
         const scheda = regia.schedaPg(id_pg);
         if (scheda) socket.emit('pg:scheda', scheda);
@@ -108,6 +142,21 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
 
     socket.on('stato:richiedi', (cb) => ack(cb)(regia.stato()));
 
+    socket.on('telefono:ascolta', (dati, cb) => {
+      const attivo = dati?.attivo === true;
+      const pg = pgDi.get(socket.id);
+      const stanze = [STANZA_ASCOLTO, ...(pg ? [stanzaAscoltoPg(pg)] : [])];
+      if (attivo) {
+        inAscolto.add(socket.id);
+        void socket.join(stanze);
+      } else {
+        inAscolto.delete(socket.id);
+        for (const s of stanze) void socket.leave(s);
+      }
+      log.info({ socket: socket.id, id_pg: pg ?? null, attivo, in_ascolto: inAscolto.size }, 'telefono: ascolta qui');
+      ack<Esito>(cb)({ ok: true });
+    });
+
     socket.on('telefono:dispositivo', (dati, cb) => {
       const id_pg = regia.pgDelDispositivo(dati?.dispositivo);
       if (id_pg) log.info({ socket: socket.id, id_pg }, 'telefono: dispositivo riconosciuto');
@@ -140,6 +189,7 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
     socket.on('disconnect', (motivo) => {
       log.info({ socket: socket.id, motivo }, 'socket: disconnesso');
       pgDi.delete(socket.id);
+      inAscolto.delete(socket.id);
       regia.telefonoEsce(socket.id);
       regia.schermoEsce(socket.id);
     });

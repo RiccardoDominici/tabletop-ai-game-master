@@ -5,6 +5,8 @@
  * - "tavolo": tutti i telefoni e lo schermo (stato, trascrizione, metriche);
  * - "schermo": solo lo schermo dopo «Inizia sessione» (audio);
  * - "player:<id_pg>": i telefoni che hanno scelto quel PG (azione privata);
+ * - "ascolto": i telefoni con «Ascolta qui» acceso (la voce del gioco anche sul telefono);
+ * - "ascolto:<id_pg>": quelli che hanno anche scelto quel PG (la voce di un esito privato, solo lì);
  * - "master": il pannello del master, entrato col token del log del server (mai i telefoni).
  *
  * L'audio viaggia come PCM s16le mono in binario (Buffer lato server, ArrayBuffer lato browser).
@@ -34,6 +36,11 @@ export interface AudioFrase {
   sample_rate: number;
   /** Effetto del catalogo audio (sfx_<tag>) da far partire insieme alla frase. */
   effetto?: string;
+  /**
+   * Frase privata (l'esito di un'azione privata): la sua voce va SOLO ai telefoni di quel PG con
+   * «Ascolta qui» acceso, mai al proiettore né agli altri telefoni.
+   */
+  solo_pg?: string;
 }
 
 /** Pezzo di audio di una frase: PCM s16le mono, lunghezza sempre pari (campioni interi). */
@@ -128,6 +135,11 @@ export interface EventiClientVersoServer {
    * una sessione ripresa dopo un riavvio) risponde col PG che quel telefono aveva scelto.
    */
   'telefono:dispositivo': (dati: { dispositivo: string }, ack: (risposta: { id_pg: string | null }) => void) => void;
+  /**
+   * Telefono: «Ascolta qui» acceso o spento. Acceso = entra nella stanza "ascolto" (e in
+   * "ascolto:<id_pg>" se ha scelto un PG) e riceve gli stessi `audio:*` del proiettore.
+   */
+  'telefono:ascolta': (dati: { attivo: boolean }, ack: (esito: Esito) => void) => void;
   /**
    * Invia (o sostituisce: una sola azione per giocatore per finestra) l'azione del PG. Si può
    * inviare sempre, anche mentre il narratore parla: allora entra nella finestra successiva.
