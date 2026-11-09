@@ -65,6 +65,11 @@ export interface ConfigServer {
 
   /** Arbitro delle azioni simultanee: regole + Haiku, oppure solo regole. */
   arbitro: 'haiku' | 'regole';
+  /**
+   * Seme fisso dei dadi (CANTASTORIE_SEME_DADI, esadecimale): rifà la stessa sequenza di una partita.
+   * Assente = un seme nuovo a ogni sessione (salvato nell'archivio).
+   */
+  semeDadi: string | null;
   llm: {
     modo: ModoLlm;
     modello: string;
@@ -179,6 +184,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     modo: scelta(env['CANTASTORIE_MODO'], ['improvvisa', 'repertorio'] as const, 'improvvisa'),
     // Con il narratore a copione (test, prove senza spesa) l'arbitro usa solo le regole.
     arbitro: scelta(env['CANTASTORIE_ARBITRO'], ['haiku', 'regole'] as const, env['CANTASTORIE_LLM'] === 'finto' ? 'regole' : 'haiku'),
+    semeDadi: /^[0-9a-f]{8,128}$/i.test(testo(env['CANTASTORIE_SEME_DADI']) ?? '') ? testo(env['CANTASTORIE_SEME_DADI'])! : null,
     filePromptSelettore: testo(env['CANTASTORIE_PROMPT_SELETTORE']) ?? path.join(RADICE_REPO, 'prompts', 'selettore.md'),
     cacheAudio: testo(env['CANTASTORIE_CACHE_AUDIO']) ?? path.join(RADICE_REPO, 'cache', 'audio'),
     // I percorsi relativi valgono dalla radice del repo (il server gira in apps/server).

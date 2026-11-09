@@ -28,6 +28,11 @@ import { CatalogoImmagini } from './campagna/immagini';
 import { CatalogoAudio } from './audio/catalogo';
 import { bloccoAudioContesto } from './audio/cue';
 import { ArbitroHaiku } from './azioni/arbitro-haiku';
+import { caricaSchede } from './campagna/schede';
+import { ArbitroProveHaiku } from './prove/arbitro-haiku';
+import { dadiAttivi } from './prove/motore';
+import type { ArbitroProve } from './prove/tipi';
+import type { FonteDadi } from './prove/dadi';
 import { riassuntoPubblico } from './azioni/contesto';
 import type { Arbitro } from './azioni/tipi';
 import { creaClientAnthropic } from './llm/haiku';
@@ -70,6 +75,10 @@ export interface Sostituzioni {
   narratore?: Narratore;
   /** Arbitro delle azioni (test: uno finto; null = solo regole). */
   arbitro?: Arbitro | null;
+  /** Arbitro delle prove (test: uno finto; null = nessuna decisione, quindi nessun tiro). */
+  arbitroProve?: ArbitroProve | null;
+  /** Dadi delle prove (test: a copione). */
+  dadi?: FonteDadi;
   orologio?: Orologio;
   cartellaWeb?: string;
   /**
@@ -199,6 +208,22 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
         : null;
   log.info({ arbitro: arbitro ? 'regole + haiku' : 'solo regole' }, 'ARBITRO DELLE AZIONI');
 
+  // Prove e dadi (docs/prove.md): schede numeriche dalla campagna, il Motore tira, Haiku decide
+  // soltanto che cosa si tira (stesso client e stesso modello dell'arbitro delle azioni).
+  const schede = caricaSchede(campagna, (m) => log.warn({ modulo: 'prove' }, m));
+  const dadi = dadiAttivi(campagna, schede);
+  const arbitroProve: ArbitroProve | null =
+    sost.arbitroProve !== undefined
+      ? sost.arbitroProve
+      : dadi.attivo && config.arbitro === 'haiku'
+        ? new ArbitroProveHaiku(() => (clientArbitro ??= creaClientAnthropic(config.llm.fileChiave, log.child({ modulo: 'arbitro' }))), {
+            modello: config.llm.modello,
+            log: log.child({ modulo: 'prove' }),
+            onMisura: (m) => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'arbitro_prove', modello: config.llm.modello, ms: m.ms, azioni: m.azioni, ...m.costo }),
+          })
+        : null;
+  log.info({ dadi: dadi.attivo, motivo: dadi.motivo, arbitro: arbitroProve ? 'haiku' : 'nessuno', seme_fisso: !!config.semeDadi }, 'PROVE E DADI');
+
   // drama-3 via OpenRouter (CANTASTORIE_VOCE=fish): voci dal registro, chiave letta al primo uso.
   const fish =
     config.voce.modo === 'fish'
@@ -251,6 +276,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     cacheAudio: new CacheAudio(config.cacheAudio, config.voce.fish.cacheAudio),
     finestraATutti: config.turni.finestraATutti,
     arbitro,
+    prove: { schede, arbitro: arbitroProve, attivo: dadi.attivo, ...(config.semeDadi ? { seme: config.semeDadi } : {}), ...(sost.dadi ? { dadi: sost.dadi } : {}) },
     scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),
     sistemaPer,
     scenaPubblicaPer: (c) => riassuntoPubblico(c, paroleSegrete),

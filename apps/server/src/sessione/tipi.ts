@@ -17,6 +17,7 @@
 import type { FaseScena, NotaRegia, VoceTrascrizione } from '@cantastorie/shared';
 import type { UmoreScelto } from '../audio/scena';
 import type { Azione } from '../azioni/tipi';
+import type { StatoProveSalvato } from '../prove/stato';
 
 export interface StatoOrologioSalvato {
   pieni: number;
@@ -74,6 +75,8 @@ export interface FotografiaSessione {
   sceneVisitate?: string[];
   /** Scene che hanno già avuto il loro finale (un finale per scena; assente negli archivi di prima). */
   sceneConFinale?: string[];
+  /** Prove e dadi (docs/prove.md): punti ferita, seme e contatore dei dadi, ultime carte. Assente = senza dadi. */
+  prove?: StatoProveSalvato;
 }
 
 /** Lo stato ricostruito dal registro, pronto per Regia.ripristina. */

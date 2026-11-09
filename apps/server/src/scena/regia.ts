@@ -79,6 +79,11 @@ import { conBattitoAudio, Sorvegliante, type BloccoSorvegliato } from './sorvegl
 import { sezioneRitmo } from '../narrazione/ritmo';
 import type { Ritmo } from '../azioni/tipi';
 import { sezioneNoteRegia } from '../narrazione/messaggio';
+import { MotoreProve, type AzionePerProve } from '../prove/motore';
+import type { ArbitroProve, EsitoTurnoProve } from '../prove/tipi';
+import type { FonteDadi } from '../prove/dadi';
+import { REGOLA_ESITI, TITOLO_ESITI } from '../prove/testi';
+import type { SchedaNumerica } from '../campagna/schede';
 
 /** Gli orologi già avanzati in una risposta (un segno per orologio, al massimo due: StatoOrologi.avanza). */
 interface SegniInRisposta {
@@ -123,6 +128,12 @@ export interface OpzioniRegia {
   finestraATutti?: boolean;
   /** Arbitro delle azioni simultanee (null = solo regole). */
   arbitro?: Arbitro | null;
+  /**
+   * Prove e dadi (docs/prove.md): schede numeriche, arbitro delle prove, se i dadi sono attivi
+   * (schede presenti e niente `regole.dadi: false`), seme fisso o dadi finti per i test.
+   * Assente = come prima: nessun tiro, il narratore risolve con «sì, ma».
+   */
+  prove?: { schede: ReadonlyMap<string, SchedaNumerica>; arbitro: ArbitroProve | null; attivo: boolean; seme?: string; dadi?: FonteDadi; attesaMaxMs?: number };
   /** Riassunto pubblico della scena per l'arbitro. */
   scenaPubblica?: string;
   /**
@@ -208,7 +219,7 @@ export class Regia {
   /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
   /** Il turno B in corso: azioni per PG, stallo, orologi il cui segno è dovuto (uno per orologio). */
   private turnoB: {
-    azioni: Map<string, { id: string; privata: boolean; testo: string }>;
+    azioni: Map<string, { id: string; privata: boolean; testo: string; prove: readonly string[] }>;
     stallo: boolean;
     dovuti: ReadonlySet<string>;
     /** Preselezione del Motore: id della battuta → PG della cui azione i temi la chiamano. */
@@ -288,6 +299,10 @@ export class Regia {
 
   /** Azioni dei giocatori e finestra (docs/azioni-concorrenti.md). */
   private readonly tavolo: TavoloAzioni;
+  /** Prove e dadi del Motore (null = campagna senza schede o regia di prova senza dadi). */
+  private readonly prove: MotoreProve | null;
+  /** Prove riuscite per azione nel turno che si sta narrando (cancello `richiede.prova` del repertorio). */
+  private riuscitePerAzione = new Map<string, readonly string[]>();
   private controlloLlm: AbortController | null = null;
   private misuratore: MisuratoreTurno | null = null;
   /** Primo pezzo d'audio inviato nel turno corrente (stima della fine se lo schermo tace). */
@@ -374,9 +389,33 @@ export class Regia {
         this.notifica();
         this.programmaSalvataggioTavolo();
       },
-      onAzione: (id_pg, a) => this.uscita?.azioneMia(id_pg, a),
-      onChiusura: (r) => this.finestraChiusa(r),
+      onAzione: (id_pg, a) => this.uscita?.azioneMia(id_pg, this.conTiri(a)),
+      onChiusura: (r) => void this.finestraChiusa(r).catch((err: unknown) => this.dopoEccezione(this.epoca, r.turno, 'narrazione', err)),
     });
+    // Prove e dadi: il Motore tira, l'arbitro decide solo che cosa si tira (docs/prove.md).
+    const po = opzioni.prove;
+    this.prove = po
+      ? new MotoreProve({
+          schede: po.schede,
+          arbitro: po.arbitro,
+          attivo: po.attivo,
+          conIndizi: opzioni.modo === 'improvvisa',
+          log: opzioni.log.child({ modulo: 'prove' }),
+          orologio: opzioni.orologio,
+          contesto: () => ({
+            campagna: this.campagna,
+            scenaPubblica: this.scenaPubblica,
+            narrazione: this.ultimaNarrazione(),
+            versione: this.versioneScena,
+            pgAlTavolo: this.pgAlTavolo(),
+            nome: (id) => this.campagna.pg.find((p) => p.id === id)?.nome ?? this.campagna.png.find((p) => p.id === id)?.nome ?? id,
+          }),
+          ...(po.seme ? { seme: po.seme } : {}),
+          ...(po.dadi ? { dadi: po.dadi } : {}),
+          ...(po.attesaMaxMs !== undefined ? { attesaMaxMs: po.attesaMaxMs } : {}),
+        })
+      : null;
+    if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');
     if (opzioni.ripresa) this.ripristina(opzioni.ripresa);
     else if (opzioni.dispositiviEreditati) {
       for (const [d, pg] of opzioni.dispositiviEreditati) if (opzioni.campagna.pg.some((p) => p.id === pg)) this.dispositivi.set(d, pg);
@@ -405,6 +444,7 @@ export class Regia {
       prossimoIdTrascrizione: this.prossimoIdTrascrizione,
       sceneVisitate: [...this.sceneVisitate],
       sceneConFinale: [...this.sceneConFinale],
+      ...(this.prove?.attivo ? { prove: this.prove.esporta() } : {}),
     };
   }
 
@@ -471,6 +511,7 @@ export class Regia {
     if (this.o.campagna.scene.some((s) => s.id === f.scena)) this.impostaScena(f.scena);
     this.luogo = f.luogo || this.campagna.scena.id;
     this.orologi.importa(f.orologi);
+    if (this.prove?.attivo && f.prove) this.prove.importa(f.prove);
     if (this.statoRepertorio && f.repertorio) this.statoRepertorio.importa(f.repertorio);
     this.note.importa(f.note);
     this.umoreScelto = f.umore ? { ...f.umore } : null;
@@ -980,7 +1021,13 @@ export class Regia {
         personaggi: this.personaggiVisti(),
         ...(this.o.audio ? { audio: audioDellaScena(this.o.audio, c, this.luogo, this.umoreScelto) } : {}),
       },
-      pg: c.pg.map((p) => ({ id: p.id, nome: p.nome, descrizione: p.descrizione, telefoni: conteggio.get(p.id) ?? 0 })),
+      pg: c.pg.map((p) => ({
+        id: p.id,
+        nome: p.nome,
+        descrizione: p.descrizione,
+        telefoni: conteggio.get(p.id) ?? 0,
+        ...(this.prove?.attivo ? { pf: this.prove.stato.puntiFerita(p.id) } : {}),
+      })),
       finestra: this.tavolo.finestraPubblica(),
       al_tavolo: this.tavolo.alTavolo(),
       trascrizione: this.trascrizione.slice(-this.o.trascrizioneMax),
@@ -988,11 +1035,12 @@ export class Regia {
       schermo_connesso: this.schermi.size > 0,
       ritmo: this.ritmo,
       ora_server_ms: this.o.orologio.adesso(),
+      ...(this.prove?.attivo ? { dadi: true, tiri: this.prove.tiriPubblici() } : {}),
     };
   }
 
   azioneDi(id_pg: string): AzionePrivata | null {
-    return this.tavolo.azioneDi(id_pg);
+    return this.conTiri(this.tavolo.azioneDi(id_pg));
   }
 
   /** Scheda privata del PG (solo per il telefono che l'ha scelto). */
@@ -1158,6 +1206,8 @@ export class Regia {
     this.impostaScena(this.o.campagna.scene[0]!.id);
     this.statoRepertorio = this.nuovoStatoRepertorio();
     this.tavolo.azzera();
+    // Punti ferita pieni, dadi con un seme nuovo, nessuna carta.
+    this.prove?.azzera();
     // Le note di regia contano i turni di questa scena: si riparte senza.
     this.note.azzera();
     this.situazioniMostrate.clear();
@@ -1280,6 +1330,8 @@ export class Regia {
     }
     const annullate = this.tavolo.annullaVive(MOTIVO_CAMBIO_SCENA);
     this.tavolo.chiudiForzata();
+    // Le decisioni delle prove valevano per la scena di prima (PF e dadi restano).
+    this.prove?.dimentica();
     this.pausaRichiesta = false;
     this.invitoSospeso = null;
     this.turno = turno;
@@ -1382,7 +1434,10 @@ export class Regia {
    */
   inviaAzione(id_pg: string, testo: string, versioneVista: number, privata = false): Esito {
     if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: 'La scena non è in corso.' };
-    return this.tavolo.invia(id_pg, testo, versioneVista, privata);
+    const esito = this.tavolo.invia(id_pg, testo, versioneVista, privata);
+    // Che cosa si tira lo decide l'arbitro adesso, in sottofondo: alla chiusura è già pronto.
+    if (esito.ok) this.preparaProve(id_pg);
+    return esito;
   }
 
   ritiraAzione(id_pg: string): Esito {
@@ -1545,10 +1600,58 @@ export class Regia {
    * frattempo si ricontrollano contro la narrazione appena finita (in sottofondo). Poi si apre la
    * finestra, oppure, se il master ha chiesto la pausa, il tavolo si ferma con l'invito in serbo.
    */
+  // ------------------------------------------------------------------ prove e dadi (docs/prove.md)
+
+  /** L'azione del giocatore con le carte dei suoi tiri (anche privati: va solo al suo telefono). */
+  private conTiri(a: AzionePrivata | null): AzionePrivata | null {
+    if (!a || !this.prove?.attivo) return a;
+    const tiri = this.prove.tiriDellAzione(a.id);
+    return tiri.length ? { ...a, tiri } : a;
+  }
+
+  private static versoProve(a: Azione): AzionePerProve {
+    return { id: a.id, autore: a.autore, testo: a.testo, privata: a.privata, revisione: a.revisione };
+  }
+
+  /**
+   * In sottofondo, l'arbitro decide che cosa tirano le azioni in coda (solo quella di `id_pg`, o
+   * tutte dopo una narrazione): le decisioni restano in cache per la chiusura.
+   */
+  private preparaProve(id_pg?: string): void {
+    if (!this.prove?.attivo) return;
+    const vive = this.tavolo.tutte().filter((a) => a.stato === 'in_coda' || a.stato === 'da_confermare');
+    const daFare = id_pg ? vive.filter((a) => a.autore === id_pg) : vive;
+    if (!daFare.length) return;
+    this.prove.preclassifica(daFare.map(Regia.versoProve), vive.filter((a) => !daFare.includes(a)).map(Regia.versoProve));
+  }
+
+  /** I dadi del turno chiuso: carte a proiettore e telefoni, fatti per il narratore, prove riuscite. */
+  private async tiriDelTurno(r: RiepilogoChiusura): Promise<EsitoTurnoProve> {
+    const esito = await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
+    this.riuscitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.riuscite]));
+    this.o.log.info(
+      {
+        turno: r.turno,
+        attesa_ms: esito.attesa_ms,
+        tardive: esito.tardive,
+        tiri: esito.tiri.map((t) => `${t.nome}: ${t.etichetta} ${t.totale} contro ${t.contro.tipo} ${t.contro.valore}, ${t.riuscita ? 'riuscita' : 'fallita'}${t.privata ? ' (privata)' : ''}`),
+      },
+      'prove: tiri del turno',
+    );
+    if (esito.tiri.length) {
+      // Proiettore e telefoni: le carte pubbliche (stato.tiri); ogni autore riceve le sue, anche private.
+      this.notifica();
+      for (const a of r.azioni) this.uscita?.azioneMia(a.autore, this.conTiri(this.tavolo.azioneDi(a.autore)));
+    }
+    return esito;
+  }
+
   private fineNarrazione(invito: string[] | 'tutti'): void {
     // Il lavoro del Motore è finito: da qui il tavolo aspetta i giocatori (senza fretta) o il master.
     this.sorvegliante.fine('fine narrazione');
     void this.tavolo.dopoNarrazione(this.turno, this.versioneScena);
+    // Le azioni in coda sono state decise prima di questa narrazione: si rifanno sulla nuova.
+    this.preparaProve();
     this.situazioniDopoLeRivelazioni();
     if (this.scenaFinitaAlTurno === this.turno) {
       // Il finale è stato detto. Prima il tavolo andava in pausa e ripartiva solo con Riprendi del
@@ -1589,7 +1692,7 @@ export class Regia {
     this.tavolo.apri(this.turno, invitati, this.versioneScena, invito === 'tutti', this.ritmo);
   }
 
-  private finestraChiusa(r: RiepilogoChiusura): void {
+  private async finestraChiusa(r: RiepilogoChiusura): Promise<void> {
     if (r.motivo === 'forzata') return; // ferma/ricomincia: niente narrazione
     this.salvaTavoloOra();
     // La situazione messa dopo una rivelazione ha accompagnato la reazione dei giocatori: si torna al luogo.
@@ -1617,6 +1720,11 @@ export class Regia {
       if (!a.privata) this.aggiungiTrascrizione({ turno: r.turno, tipo: 'azione', chi: a.autore, nome: nomePg(a.autore), testo: a.testo });
     }
     const perNarratore = azioniPerNarratore(r, nomePg, (id) => this.tavolo.azione(id));
+    // Tiri del turno (docs/prove.md): il Motore tira PRIMA del narratore, che riceve gli esiti come
+    // fatti. Le decisioni dell'arbitro di solito sono già pronte (prese all'invio): nessuna attesa.
+    this.riuscitePerAzione = new Map();
+    const tiri = this.prove?.attivo && r.azioni.length ? await this.tiriDelTurno(r) : null;
+    if (epoca !== this.epoca) return;
     const messaggioBase = compilaMessaggioTurno({
       turno: r.turno,
       trascrizione: this.trascrizione,
@@ -1628,6 +1736,7 @@ export class Regia {
       orologi: this.statoRepertorio ? this.orologi.descriviRepertorio(r.turno) : this.orologi.descrivi(r.turno),
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
       noteRegia: this.note.testi,
+      ...(tiri?.fatti.length ? { esitiTiri: { titolo: TITOLO_ESITI, regola: REGOLA_ESITI, righe: tiri.fatti } } : {}),
     });
     // Ritmo concitato: il narratore sa che vale ancora, e quando dire `[ritmo] calmo`.
     const ritmo = sezioneRitmo(this.ritmo);
@@ -1925,7 +2034,8 @@ export class Regia {
     const stallo = r.azioni.length === 0;
     // Il segno dovuto è di un orologio preciso: in catalogo entrano solo i segni degli orologi dovuti.
     const dovuti = new Set(this.orologi.dovuti(r.turno).map((o) => o.id));
-    const azioni = r.azioni.map((a) => ({ autore: a.autore, testo: a.testo, privata: a.privata }));
+    // Le prove riuscite dell'azione aprono le battute col cancello `richiede.prova`.
+    const azioni = r.azioni.map((a) => ({ autore: a.autore, testo: a.testo, privata: a.privata, prove: this.riuscitePerAzione.get(a.id) ?? [] }));
     const { battute: catalogoPieno, trattenute, perche } = s.catalogo({ turno: r.turno, azioni, stallo, dovuti, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
     // Preselezione deterministica: per ogni azione le battute i cui temi QUELL'azione tocca; vanno in
     // testa al catalogo e in una sezione loro, con il «> pg» già scritto.
@@ -1935,7 +2045,12 @@ export class Regia {
     const indicate = new Map(perAzione.flatMap((x) => x.ids.map((id) => [id, x.autore] as const)));
     const battute = [...catalogo.filter((b) => indicate.has(b.id)), ...catalogo.filter((b) => !indicate.has(b.id))];
     this.elencoTurno = new Set(battute.map((b) => b.id));
-    this.turnoB = { azioni: new Map(r.azioni.map((a) => [a.autore, { id: a.id, privata: a.privata, testo: a.testo }])), stallo, dovuti, indicate };
+    this.turnoB = {
+      azioni: new Map(r.azioni.map((a) => [a.autore, { id: a.id, privata: a.privata, testo: a.testo, prove: this.riuscitePerAzione.get(a.id) ?? [] }])),
+      stallo,
+      dovuti,
+      indicate,
+    };
     this.o.log.info({ turno: r.turno, catalogo: battute.length, perche, trattenute, stallo, dovuti: [...dovuti], indicate: Object.fromEntries(perAzione.map((x) => [x.autore, x.ids])) }, 'repertorio: catalogo del turno');
     return {
       fattiScoperti: s.fattiScoperti.map((id) => `${id} — ${this.testoFatto(id)}`),

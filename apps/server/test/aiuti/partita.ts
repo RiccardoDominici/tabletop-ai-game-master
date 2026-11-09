@@ -10,7 +10,7 @@ import { expect } from 'vitest';
 import YAML from 'yaml';
 import { io as connetti, type Socket } from 'socket.io-client';
 import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoMaster, StatoTavolo } from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie } from '../../src/avvio';
+import { costruisciServer, type ServerCantastorie, type Sostituzioni } from '../../src/avvio';
 import { caricaConfig } from '../../src/config';
 import { loggerMuto } from '../../src/logger';
 import { NarratoreFinto } from '../../src/llm/finto';
@@ -51,7 +51,13 @@ export class Prova {
     return dest;
   }
 
-  async avvia(cartellaCampagna: string, copione: (turno: number, messaggio: string) => string, env: Record<string, string> = {}): Promise<{ s: ServerCantastorie; url: string; messaggi: string[] }> {
+  async avvia(
+    cartellaCampagna: string,
+    copione: (turno: number, messaggio: string) => string,
+    env: Record<string, string> = {},
+    /** Sostituzioni in più (es. l'arbitro delle prove e i dadi a copione). */
+    altre: Omit<Sostituzioni, 'narratore'> = {},
+  ): Promise<{ s: ServerCantastorie; url: string; messaggi: string[] }> {
     const config = caricaConfig({
       PORT: '0',
       HOST: '127.0.0.1',
@@ -75,7 +81,7 @@ export class Prova {
       messaggi.push(r.messaggio);
       return narra(r, cb);
     };
-    const s = await costruisciServer(config, loggerMuto(), { narratore, arbitro: null });
+    const s = await costruisciServer(config, loggerMuto(), { narratore, arbitro: null, ...altre });
     await s.avvia();
     this.server.push(s);
     return { s, url: `http://127.0.0.1:${(s.app.http.server.address() as { port: number }).port}`, messaggi };

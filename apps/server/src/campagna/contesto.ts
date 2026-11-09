@@ -18,8 +18,12 @@
 import YAML from 'yaml';
 import { ID_NARRATORE, type Campagna, type DatiYaml } from './tipi';
 
-/** Chiavi tolte ovunque nel contesto del narratore (immagini: solo per il generatore). */
-const CHIAVI_ESCLUSE = new Set(['prompt_immagine', 'prompt_luogo', 'stile_immagini', 'immagine', 'registro_attivita']);
+/**
+ * Chiavi tolte ovunque nel contesto del narratore: le immagini (solo per il generatore) e i numeri
+ * delle prove (`scheda` di PG e PNG, `prove` della scena): i dadi li tira il Motore, e il narratore
+ * riceve l'esito come fatto (docs/prove.md). Numeri in meno nel prompt in cache, niente CD lette a voce.
+ */
+const CHIAVI_ESCLUSE = new Set(['prompt_immagine', 'prompt_luogo', 'stile_immagini', 'immagine', 'registro_attivita', 'scheda', 'prove']);
 
 function senzaChiavi(valore: unknown): unknown {
   if (Array.isArray(valore)) return valore.map(senzaChiavi);
