@@ -10,6 +10,7 @@ import { useState } from 'react';
 import clsx from 'clsx';
 import type { AzioneAlTavolo, StatoTavolo } from '@cantastorie/shared';
 import { altriAlTavolo, conChi, ETICHETTA_STATO_AZIONE } from './vista';
+import { QuiConVoi } from './QuiConVoi';
 
 /** Righe visibili a sezione chiusa. */
 const RIGHE_CHIUSA = 2;
@@ -17,40 +18,43 @@ const RIGHE_CHIUSA = 2;
 export function AlTavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
   const [aperta, setAperta] = useState(false);
   const altre = altriAlTavolo(stato, idPg);
-  if (altre.length === 0) return null;
+  if (altre.length === 0) return <QuiConVoi stato={stato} />;
 
   const visibili = aperta ? altre : altre.slice(0, RIGHE_CHIUSA);
   const nascoste = altre.length - visibili.length;
   const alterna = () => setAperta((a) => !a);
 
   return (
-    <section
-      data-testid="al-tavolo"
-      aria-label="Azioni degli altri al tavolo"
-      aria-expanded={aperta}
-      role="button"
-      tabIndex={0}
-      onClick={alterna}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          alterna();
-        }
-      }}
-      className="cursor-pointer rounded-xl border border-bordo bg-notte-2/80 px-3 py-2 select-none"
-    >
-      <div className="flex items-center justify-between text-xs tracking-[0.16em] text-cenere uppercase">
-        <span>Al tavolo</span>
-        <span className="tracking-normal normal-case">
-          {aperta ? 'tocca per ridurre' : nascoste > 0 ? `+${nascoste} · tocca per vedere` : 'tocca per leggere tutto'}
-        </span>
-      </div>
-      <ul className={clsx('mt-1 flex flex-col', aperta ? 'max-h-[40dvh] gap-2 overflow-y-auto' : 'gap-0.5')}>
-        {visibili.map((a) => (
-          <RigaAlTavolo key={a.id} azione={a} intera={aperta} turnoAperto={stato.finestra.aperta ? stato.finestra.turno : null} />
-        ))}
-      </ul>
-    </section>
+    <>
+    <QuiConVoi stato={stato} />
+      <section
+        data-testid="al-tavolo"
+        aria-label="Azioni degli altri al tavolo"
+        aria-expanded={aperta}
+        role="button"
+        tabIndex={0}
+        onClick={alterna}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            alterna();
+          }
+        }}
+        className="cursor-pointer rounded-xl border border-bordo bg-notte-2/80 px-3 py-2 select-none"
+      >
+        <div className="flex items-center justify-between text-xs tracking-[0.16em] text-cenere uppercase">
+          <span>Al tavolo</span>
+          <span className="tracking-normal normal-case">
+            {aperta ? 'tocca per ridurre' : nascoste > 0 ? `+${nascoste} · tocca per vedere` : 'tocca per leggere tutto'}
+          </span>
+        </div>
+        <ul className={clsx('mt-1 flex flex-col', aperta ? 'max-h-[40dvh] gap-2 overflow-y-auto' : 'gap-0.5')}>
+          {visibili.map((a) => (
+            <RigaAlTavolo key={a.id} azione={a} intera={aperta} turnoAperto={stato.finestra.aperta ? stato.finestra.turno : null} />
+          ))}
+        </ul>
+      </section>
+    </>
   );
 }
 

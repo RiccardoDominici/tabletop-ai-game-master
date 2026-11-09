@@ -25,6 +25,7 @@ import { SchermataInizio } from './SchermataInizio';
 import { Narrazione } from './Narrazione';
 import { RigaFinestra } from './RigaFinestra';
 import { HudLatenza } from './HudLatenza';
+import { FilaPersonaggi } from './FilaPersonaggi';
 import { CreditiAudio, PannelloAudio, PulsanteAudio, useTastiAudio } from './audio/PannelloAudio';
 
 export function PaginaSchermo() {
@@ -73,6 +74,8 @@ export function PaginaSchermo() {
 }
 
 function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | null }) {
+  // Chi parla adesso (la frase in onda): il suo ritratto in fila si illumina.
+  const parlante = useSchermo((s) => s.inOnda?.parlante ?? null);
   return (
     <main className="relative z-10 grid h-dvh grid-rows-[auto_1fr_auto] gap-[2vh] px-[3.5vw] pt-[4vh] pb-[4vh]">
       <header className="max-w-[70vw]">
@@ -85,6 +88,10 @@ function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | null })
         >
           {stato.scena.titolo}
         </h1>
+        {/* Ritratti dei PNG in scena (chi parla si illumina): da 3 m si vede con chi si può parlare. */}
+        <div className="mt-[2.2vh]">
+          <FilaPersonaggi personaggi={stato.scena.personaggi} parlante={parlante} />
+        </div>
       </header>
 
       <div className="flex min-h-0 items-end justify-center pb-[2vh]">
