@@ -32,7 +32,11 @@ git grep -nE 'sk-ant-|sk-or-v1|hf_[A-Za-z0-9]{10,}|ghp_[A-Za-z0-9]{10,}|gho_[A-Z
 
 # 3. Regole ricavate da un manuale non libero: il set non va nel repository
 # (un set da un manuale libero, es. SRD CC-BY, può stare nel repo: si fermano solo i set con libera: false)
-git grep -nE '^\s*libera:\s*false' -- 'campagne/*/regole/regole.yaml' && echo "TROVATO: regole con licenza non libera"
+for f in campagne/*/regole/regole.yaml; do
+  [ -e "$f" ] || continue
+  grep -qE '^\s*libera:\s*false' "$f" || continue
+  git ls-files "$(dirname "$f")" | grep . && echo "TROVATO: file tracciati di un set non libero in $(dirname "$f")"
+done
 git check-ignore -q manuali/x.pdf || echo "ATTENZIONE: manuali/ non e' nel .gitignore"
 
 # 4. Token del master copiati dai log (compaiono come ?token=… nel log del server)
