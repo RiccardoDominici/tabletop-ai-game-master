@@ -1,8 +1,8 @@
 // Trascrive un file audio con openai/whisper-1 via OpenRouter. La chiave non si stampa mai.
 import fs from 'node:fs';
+import { chiaveOpenRouter } from './chiave.mjs';
 import path from 'node:path';
-const riga = fs.readFileSync('/Users/riccardo/Developer/agora/.env', 'utf8').split('\n').find((r) => r.startsWith('OPENROUTER_API_KEY='));
-const chiave = riga.slice('OPENROUTER_API_KEY='.length).trim().replace(/^["']|["']$/g, '');
+const chiave = chiaveOpenRouter();
 for (const file of process.argv.slice(2)) {
   const fd = new FormData();
   fd.append('model', 'openai/whisper-1');

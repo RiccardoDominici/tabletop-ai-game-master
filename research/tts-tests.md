@@ -127,7 +127,8 @@ Text: "Ostilia versa due boccali di idromele a Benolfo e Kara, mentre fuori la p
 ## How to finish (after topping up)
 
 ```
-set -a; . /Users/riccardo/Developer/agora/.env; set +a
+# dalla radice del repo: OPENROUTER_API_KEY nel .env (vedi .env.example)
+set -a; . ./.env; set +a
 cd /private/tmp/claude-501/-Users-riccardo-Developer/161e877b-0d39-415a-be00-32dd6f15c6cf/scratchpad/tts-tests
 # WER over all 28 manifest files; resumes automatically (skips rows already scored with 200)
 STT_LANGUAGE=it python3 -I scripts/run_stt.py manifest_all.json stt_results.json \

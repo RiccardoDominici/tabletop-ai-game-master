@@ -3,7 +3,7 @@ La chiave (quale etichetta è quale modalità) va in chiave.json, fuori dalla ca
 import json, random, re, sys
 from pathlib import Path
 
-RIS = Path("/Users/riccardo/Developer/cantastorie/esperimenti/risultati")
+RIS = Path(__file__).resolve().parents[1] / "risultati"
 OUT = Path(sys.argv[1])
 rng = random.Random(20261102)
 chiave = {}

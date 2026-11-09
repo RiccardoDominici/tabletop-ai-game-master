@@ -1,7 +1,7 @@
 // Misura formato pcm/mp3 di drama-3 via OpenRouter. La chiave si legge e non si stampa mai.
 import fs from 'node:fs';
-const riga = fs.readFileSync('/Users/riccardo/Developer/agora/.env', 'utf8').split('\n').find((r) => r.startsWith('OPENROUTER_API_KEY='));
-const chiave = riga.slice('OPENROUTER_API_KEY='.length).trim().replace(/^["']|["']$/g, '');
+import { chiaveOpenRouter } from './chiave.mjs';
+const chiave = chiaveOpenRouter();
 const testo = process.argv[3] ?? '[con calma, a voce bassa] La neve copre il sentiero. Nessuno è passato di qui stanotte.';
 const formato = process.argv[2] ?? 'pcm';
 const voce = process.argv[4] ?? '130bd00e5d89470bb0352d20b8c4bf8b';
