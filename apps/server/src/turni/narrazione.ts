@@ -46,7 +46,8 @@ export interface RigaPronta {
   chiave_cache: string;
 }
 
-export type EsitoUsaTurno = { ok: true; righe: RigaPronta[]; versione: number; audio?: CueAudio } | { ok: false; motivo: string };
+/** `per`: il PG a cui la battuta risponde davvero, se il Motore l'ha dedotto o corretto (assente = quello del [usa]). */
+export type EsitoUsaTurno = { ok: true; righe: RigaPronta[]; versione: number; audio?: CueAudio; per?: string | null } | { ok: false; motivo: string };
 
 /** Voce dell'uscita del turno, nell'ordine di ascolto. */
 export type VoceUscita =
@@ -237,7 +238,7 @@ export async function narraTurno(
           log.error({ turno: p.turno, battuta: e.id, per: e.per, motivo: esito.motivo }, 'repertorio: [usa] rifiutato');
           continue;
         }
-        uscita.push({ tipo: 'usa', id: e.id, per: e.per, versione: esito.versione, righe: esito.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });
+        uscita.push({ tipo: 'usa', id: e.id, per: esito.per !== undefined ? esito.per : e.per, versione: esito.versione, righe: esito.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });
         for (const [i, r] of esito.righe.entries()) {
           const { voce_id, nome } = voceDi(campagna, r.etichetta);
           p.onFrase({ etichetta: r.etichetta, nome, testo: r.testo, segmento: segmentoBattuta++, indice, battuta: e.id });

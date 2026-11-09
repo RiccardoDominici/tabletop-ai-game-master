@@ -23,6 +23,9 @@ import type { StatoRepertorioSalvato } from '../sessione/tipi';
  */
 const TIPI_NEUTRI: Partial<Record<TipoBattuta, string>> = { menzogna: 'risposta', verita: 'risposta', confessione: 'risposta' };
 
+/** Tipi che la preselezione per temi non indica mai (li governano orologio, scena e Motore). */
+const TIPI_NON_INDICATI: ReadonlySet<TipoBattuta> = new Set<TipoBattuta>(['segno_orologio', 'transizione', 'finale']);
+
 /** Il tipo come lo vede il selettore nel catalogo (mai «menzogna», «verita», «confessione»). */
 export function tipoNelCatalogo(tipo: TipoBattuta): string {
   return TIPI_NEUTRI[tipo] ?? tipo;
@@ -254,6 +257,41 @@ export class StatoRepertorio {
     const filtrate = this.filtraSegreti(candidate, (b) => testoPer(b) ?? '', o.parole);
     return { ...filtrate, perche };
   }
+
+  /**
+   * Preselezione deterministica (playtest di nozze-neve: 115 battute su 139 mai uscite, indizi chiesti
+   * dai giocatori e non arrivati): per ogni azione pubblica, le battute del catalogo i cui `temi`
+   * compaiono in QUELL'azione, che possono rispondere a quel PG e che parlano con la voce giusta (il
+   * narratore, o un PNG che l'azione nomina: una domanda a Zelia non riceve la bugia di Gaspare).
+   * Niente segni, transizioni, finali né riempitivi; una battuta va a una sola azione (la prima). Un'azione
+   * con più di MAX_INDICATE candidate non ne riceve: lì sceglie il selettore dal catalogo.
+   */
+  indicatePerAzioni(battute: readonly Battuta[], azioni: readonly AzioneCatalogo[], nomiPng: Map<string, string[]>): Array<{ autore: string; ids: string[] }> {
+    const prese = new Set<string>();
+    const out: Array<{ autore: string; ids: string[] }> = [];
+    for (const a of azioni) {
+      if (a.privata) continue;
+      const nominati = pngNominati(a.testo, nomiPng);
+      const candidate = battute.filter(
+        (b) =>
+          !prese.has(b.id) &&
+          !TIPI_NON_INDICATI.has(b.tipo) &&
+          !b.riempitivo &&
+          (b.chi === 'narratore' || nominati.has(b.chi)) &&
+          temaPresente(a.testo, b.temi) &&
+          this.rispondeA(b, a),
+      );
+      if (candidate.length === 0 || candidate.length > StatoRepertorio.MAX_INDICATE) continue;
+      // Prima gli indizi (sono quelli che i giocatori cercano), poi l'ordine del catalogo.
+      const ids = [...candidate].sort((x, y) => Number(y.tipo === 'indizio') - Number(x.tipo === 'indizio')).map((b) => b.id);
+      for (const id of ids) prese.add(id);
+      out.push({ autore: a.autore, ids });
+    }
+    return out;
+  }
+
+  /** Al massimo tante battute indicate per un'azione (oltre, la preselezione non distingue più). */
+  static readonly MAX_INDICATE = 2;
 
   /** Il segno è dovuto: il suo orologio è fra i dovuti (o, vecchia forma, un segno qualsiasi è dovuto). */
   private segnoDovuto(b: Battuta, o: { dovuti?: ReadonlySet<string>; segnoDovuto?: boolean }): boolean {

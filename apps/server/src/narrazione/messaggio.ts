@@ -33,7 +33,14 @@ export interface DatiMessaggioTurno {
    * Modalità repertorio: fatti scoperti (testo), catalogo del turno (righe pronte), stallo, e le
    * menzogne già dette (versione pubblica, da tenere ferma quando si improvvisa).
    */
-  repertorio?: { fattiScoperti: string[]; battuteDisponibili: string; stallo?: boolean; menzogne?: string[] };
+  repertorio?: {
+    fattiScoperti: string[];
+    battuteDisponibili: string;
+    stallo?: boolean;
+    menzogne?: string[];
+    /** Preselezione del Motore: una riga per azione, con le battute i cui temi quell'azione tocca. */
+    indicate?: string[];
+  };
   /** Massimo di voci di trascrizione da includere (le più recenti). */
   maxTrascrizione?: number;
   /** Note di regia del master (al massimo 3), da seguire in questa risposta. */
@@ -132,6 +139,12 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
       parti.push(
         '## Menzogne già dette dai PNG (se l’argomento torna, il PNG ripete la stessa versione; la verità esce solo con una battuta di confessione)',
         d.repertorio.menzogne.map((m) => `- ${m}`).join('\n'),
+      );
+    }
+    if (d.repertorio.indicate?.length) {
+      parti.push(
+        '## Battute indicate dal Motore (le parole di queste azioni toccano i loro temi: usale per quell’azione, con > pg, se il loro quando la descrive)',
+        d.repertorio.indicate.join('\n'),
       );
     }
     parti.push('## Catalogo: battute pertinenti a questo turno (id · chi · tipo · quando)', d.repertorio.battuteDisponibili || '(nessuna)');

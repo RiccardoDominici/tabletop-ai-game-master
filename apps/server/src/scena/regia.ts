@@ -53,7 +53,7 @@ import type { Arbitro, Azione } from '../azioni/tipi';
 import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
 import { messaggioRiparazione } from '../narrazione/messaggio';
 import { normalizza } from '../azioni/regole';
-import { nomiDeiPng } from '../repertorio/pertinenza';
+import { nomiDeiPng, pngNominati, temaPresente } from '../repertorio/pertinenza';
 import { sommaCosti } from '../llm/costi';
 import type { Battuta, Repertorio } from '../repertorio/tipi';
 import { StatoRepertorio } from '../repertorio/stato';
@@ -177,7 +177,15 @@ export class Regia {
   private readonly sceneVisitate = new Set<string>();
   /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
   /** Il turno B in corso: azioni per PG, stallo, orologi il cui segno è dovuto (uno per orologio). */
-  private turnoB: { azioni: Map<string, { id: string; privata: boolean }>; stallo: boolean; dovuti: ReadonlySet<string> } | null = null;
+  private turnoB: {
+    azioni: Map<string, { id: string; privata: boolean; testo: string }>;
+    stallo: boolean;
+    dovuti: ReadonlySet<string>;
+    /** Preselezione del Motore: id della battuta → PG della cui azione i temi la chiamano. */
+    indicate: ReadonlyMap<string, string>;
+  } | null = null;
+  /** [usa] di questa risposta il cui «> pg» il Motore ha dedotto (mancava) o corretto (era sbagliato). */
+  private pgDedotti = 0;
   /** Nomi dei PNG e soprannomi, per la pertinenza del catalogo. */
   private readonly nomiPng: Map<string, string[]>;
   /** Luogo corrente (id della scena o del nodo): sceglie l'immagine del proiettore. */
@@ -756,6 +764,33 @@ export class Regia {
     return new StatoRepertorio(this.o.repertorio, this.campagna, this.orologi);
   }
 
+  /** Perché la battuta non può rispondere all'azione di `per` in questo turno (null = può). */
+  private motivoPer(b: Battuta, per: string): string | null {
+    const azione = this.turnoB?.azioni.get(per);
+    if (!azione) return `${per} non ha un'azione in questo turno`;
+    if (!this.statoRepertorio!.rispondeA(b, { autore: per, ...azione })) {
+      return `${b.id} non risponde all'azione ${azione.privata ? 'privata' : 'pubblica'} di ${per} (cancelli privata/da_pg delle condizioni aperte)`;
+    }
+    return null;
+  }
+
+  /**
+   * Il PG a cui la battuta risponde, quando il selettore non l'ha detto o ha sbagliato: fra le azioni
+   * del turno che la battuta può accettare (cancelli), l'unica; altrimenti l'unica i cui temi la
+   * chiamano; altrimenti l'unica che nomina chi parla. null = ambigua (il [usa] resta rifiutato).
+   */
+  private deduciPg(b: Battuta): string | null {
+    const s = this.statoRepertorio!;
+    const possibili = [...(this.turnoB?.azioni ?? [])].filter(([autore, a]) => s.rispondeA(b, { autore, ...a }));
+    const unico = (xs: typeof possibili): string | null => (xs.length === 1 ? xs[0]![0] : null);
+    if (possibili.length <= 1) return unico(possibili);
+    const perTemi = possibili.filter(([, a]) => temaPresente(a.testo, b.temi));
+    const daTemi = unico(perTemi);
+    if (daTemi) return daTemi;
+    const base = perTemi.length ? perTemi : possibili;
+    return b.chi === ID_NARRATORE ? null : unico(base.filter(([, a]) => pngNominati(a.testo, this.nomiPng).has(b.chi)));
+  }
+
   /** Stato pubblico per le parole segrete: indizi rivelati e battute uscite. */
   private statoPubblico(): StatoPubblico | null {
     const s = this.statoRepertorio;
@@ -780,19 +815,34 @@ export class Regia {
     // le altre battute solo verso azioni pubbliche (un'azione privata non riceve battute qualsiasi).
     const b = s.repertorio.perId.get(id)!;
     const t = this.turnoB;
+    // Il «> pg» mancante o sbagliato si ripara una volta, se una sola azione del turno può essere quella
+    // giusta (playtest di nozze-neve: tre battute giuste rifiutate per il «> pg» dimenticato, e la scena
+    // restava a metà: il cassetto aperto e il contenuto mai detto).
+    const perDato = per;
     if (per) {
-      const azione = t?.azioni.get(per);
-      if (!azione) return { ok: false, motivo: `${per} non ha un'azione in questo turno` };
-      if (!s.rispondeA(b, { autore: per, privata: azione.privata })) {
-        return { ok: false, motivo: `${id} non risponde all'azione ${azione.privata ? 'privata' : 'pubblica'} di ${per} (cancelli privata/da_pg delle condizioni aperte)` };
+      const motivo = this.motivoPer(b, per);
+      if (motivo) {
+        const giusto = motore ? null : this.deduciPg(b);
+        if (!giusto || giusto === per) return { ok: false, motivo };
+        this.o.log.info({ turno, battuta: id, per, corretto: giusto, motivo }, 'repertorio: [usa] riparato dal Motore («> pg» corretto)');
+        per = giusto;
       }
     } else {
-      if (s.serveAzione(b)) return { ok: false, motivo: `${id} ha un cancello sull'azione (privata o da_pg): serve «> pg»` };
       // Un finale non risponde all'azione di nessuno: chiude la scena (se è disponibile, s.usa lo controlla).
       // Un segno senza «> pg» passa solo se è dovuto IL SUO orologio (non un orologio qualsiasi).
       const libera = motore || b.tipo === 'finale' || (b.tipo === 'segno_orologio' && segnoDovutoDi(b, t?.dovuti)) || (b.riempitivo && !!t?.stallo);
-      if (!libera) return { ok: false, motivo: 'battuta senza «> pg»: ammessa solo per il segno dovuto del suo orologio, un finale o allo stallo' };
+      if (s.serveAzione(b) || !libera) {
+        const dedotto = motore ? null : this.deduciPg(b);
+        if (!dedotto) {
+          return s.serveAzione(b)
+            ? { ok: false, motivo: `${id} ha un cancello sull'azione (privata o da_pg): serve «> pg»` }
+            : { ok: false, motivo: 'battuta senza «> pg»: ammessa solo per il segno dovuto del suo orologio, un finale o allo stallo' };
+        }
+        this.o.log.info({ turno, battuta: id, per: dedotto }, 'repertorio: «> pg» dedotto dal Motore (una sola azione adatta)');
+        per = dedotto;
+      }
     }
+    if (per !== perDato) this.pgDedotti += 1;
     // Ritmo massimo dell'orologio: vale per i segni senza «> pg» (dovuti o del Motore); un segno legato
     // all'azione di un PG lo scavalca. Un segno per orologio, al massimo due orologi per risposta.
     const esito = s.usa(id, turno, { inRisposta: segni.orologi, ritmo: per === null });
@@ -803,6 +853,7 @@ export class Regia {
     return {
       ok: true,
       versione: esito.versione,
+      ...(per !== perDato ? { per } : {}),
       ...(audio ? { audio } : {}),
       righe: esito.righe.map((r) => {
         const { mostrato, voce } = testoPerVoce(r.etichetta, r.testo, this.pronuncia);
@@ -1519,6 +1570,7 @@ export class Regia {
     this.controlloLlm = controllo;
     /** Orologi già avanzati in questa risposta: un segno per orologio, al massimo due orologi. */
     const segniInRisposta: SegniInRisposta = { orologi: new Set<string>() };
+    this.pgDedotti = 0;
     const log = this.o.log.child({ turno });
     log.debug({ caratteri: messaggio.length }, 'narratore: messaggio del turno');
 
@@ -1671,6 +1723,10 @@ export class Regia {
       usa_rifiutati: esito.usa_rifiutati,
       // Righe improvvisate di PNG fuori dalla scena, scartate prima della voce (narraTurno, `presenti`).
       righe_png_assenti: esito.scartate_assenti,
+      // Selettore: «> pg» dedotti o corretti dal Motore; battute indicate dalla preselezione e quante sono uscite.
+      pg_dedotti: this.pgDedotti,
+      battute_indicate: this.turnoB?.indicate.size ?? 0,
+      battute_indicate_usate: esito.uscita.filter((u) => u.tipo === 'usa' && !!this.turnoB?.indicate.has(u.id)).length,
       azioni_pubbliche: pubbliche.size,
       azioni_senza_risposta: senzaRisposta.length,
       riparazioni,
@@ -1713,19 +1769,25 @@ export class Regia {
    * rispondere (le pubbliche; le private solo per le battute con `richiede.privata`, e `da_pg` solo
    * per quei PG), il segno se è dovuto, le battute per stato dell'orologio, i riempitivi allo stallo.
    */
-  private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; battuteDisponibili: string; stallo: boolean; menzogne: string[] } {
+  private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; indicate: string[]; battuteDisponibili: string; stallo: boolean; menzogne: string[] } {
     const s = this.statoRepertorio!;
     // Stallo: 45 s senza input, o una finestra chiusa senza nessuna azione (tutti hanno passato).
     const stallo = r.motivo === 'stallo' || r.azioni.length === 0;
     // Il segno dovuto è di un orologio preciso: in catalogo entrano solo i segni degli orologi dovuti.
     const dovuti = new Set(this.orologi.dovuti(r.turno).map((o) => o.id));
     const azioni = r.azioni.map((a) => ({ autore: a.autore, testo: a.testo, privata: a.privata }));
-    const { battute, trattenute, perche } = s.catalogo({ turno: r.turno, azioni, stallo, dovuti, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
+    const { battute: catalogo, trattenute, perche } = s.catalogo({ turno: r.turno, azioni, stallo, dovuti, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
+    // Preselezione deterministica: per ogni azione le battute i cui temi QUELL'azione tocca; vanno in
+    // testa al catalogo e in una sezione loro, con il «> pg» già scritto.
+    const perAzione = s.indicatePerAzioni(catalogo, azioni, this.nomiPng);
+    const indicate = new Map(perAzione.flatMap((x) => x.ids.map((id) => [id, x.autore] as const)));
+    const battute = [...catalogo.filter((b) => indicate.has(b.id)), ...catalogo.filter((b) => !indicate.has(b.id))];
     this.elencoTurno = new Set(battute.map((b) => b.id));
-    this.turnoB = { azioni: new Map(r.azioni.map((a) => [a.autore, { id: a.id, privata: a.privata }])), stallo, dovuti };
-    this.o.log.info({ turno: r.turno, catalogo: battute.length, perche, trattenute, stallo, dovuti: [...dovuti] }, 'repertorio: catalogo del turno');
+    this.turnoB = { azioni: new Map(r.azioni.map((a) => [a.autore, { id: a.id, privata: a.privata, testo: a.testo }])), stallo, dovuti, indicate };
+    this.o.log.info({ turno: r.turno, catalogo: battute.length, perche, trattenute, stallo, dovuti: [...dovuti], indicate: Object.fromEntries(perAzione.map((x) => [x.autore, x.ids])) }, 'repertorio: catalogo del turno');
     return {
       fattiScoperti: s.fattiScoperti.map((id) => `${id} — ${this.testoFatto(id)}`),
+      indicate: perAzione.map((x) => `- ${x.autore} (${this.nomePg(x.autore)}): ${x.ids.map((id) => `[usa] ${id} > ${x.autore}`).join(' oppure ')}`),
       battuteDisponibili: s.elencoDisponibili(battute),
       stallo,
       menzogne: righeMenzogneDette(s.menzogneDette, this.campagna, this.o.paroleSegrete ?? [], this.statoPubblico()),

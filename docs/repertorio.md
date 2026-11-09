@@ -134,6 +134,15 @@ battute *disponibili* invece di rispondere alle azioni. Cambia così:
 - **Catalogo pertinente**: il Motore mostra le battute i cui `temi` o PNG compaiono nelle azioni del turno, più il
   segno d'orologio dovuto; le battute `riempitivo: true` (il cane, la borsa…) solo quando scatta lo stallo.
 - **Anti-ripetizione**: una battuta e le sue varianti non tornano entro 3 turni.
+- **Il Motore aiuta il selettore** (playtest di nozze-neve: 115 battute su 139 mai uscite, indizi chiesti e non
+  arrivati, battute giuste rifiutate per il «> pg» dimenticato):
+  - *preselezione*: per ogni azione pubblica, le battute del catalogo i cui `temi` compaiono in quell'azione, che
+    rispondono a quel PG e parlano con la voce giusta (il narratore o un PNG che l'azione nomina); niente segni,
+    transizioni, finali né riempitivi; al massimo due per azione. Vanno in testa al catalogo e nella sezione
+    «Battute indicate dal Motore», col `[usa] id > pg` già scritto;
+  - *«> pg» dedotto*: senza `> pg` (o con un `> pg` sbagliato) il Motore lo deduce se una sola azione del turno può
+    essere quella giusta (i cancelli, poi i temi, poi il PNG nominato), e lo registra (`pg_dedotti`); se resta
+    ambiguo il `[usa]` è rifiutato come prima.
 - **Orologio**: anche in modalità B il Motore scrive «mostralo in questa risposta» quando il segno è dovuto.
 - **Ritmo per orologio** (playtest di nozze-neve: il tramonto correva al triplo e affamava la lite e lo zio):
   - il segno dovuto è di UN orologio: in catalogo entrano solo i segni degli orologi dovuti, e se il selettore non

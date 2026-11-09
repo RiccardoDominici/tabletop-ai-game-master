@@ -32,6 +32,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
   - un esito tuo, in una o due frasi;
   - la risposta del PNG interpellato.
 - Il catalogo è un aiuto, non una lista da svuotare. Mai una battuta che non risponde a nessuna azione.
+- Se il messaggio ha «Battute indicate dal Motore», le parole di quell'azione toccano proprio quella battuta: è ciò che il giocatore sta cercando. Usala per quell'azione, così com'è scritta (`[usa] id > pg_id`), se il suo `quando` descrive l'azione; altrimenti rispondi tu.
 - Al massimo due battute per la stessa azione, per esempio un indizio e la reazione del PNG che lo vede.
 - **Un PNG interpellato risponde sempre**, in questo turno: con una sua battuta, oppure con parole tue nella sua voce. Mai un PNG muto davanti a una domanda.
 - Domanda fuori dal gioco («master, chi è il colpevole?»): rispondi nella finzione, senza rivelare niente.

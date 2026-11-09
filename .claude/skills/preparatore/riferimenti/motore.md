@@ -43,7 +43,8 @@ un'azione ne tocca i `temi` o nomina chi parla.
 
 <!-- limite: senza_azione -->
 ## Una battuta esce solo legata a un'azione, salvo segni dovuti, riempitivi e finali
-Il selettore usa una battuta legandola all'azione di un PG (`[usa] id > pg`). Senza `> pg` il Motore accetta solo
+Il selettore usa una battuta legandola all'azione di un PG (`[usa] id > pg`); se lo dimentica o sbaglia PG, il
+Motore lo deduce quando una sola azione del turno può essere quella giusta. Senza un'azione il Motore accetta solo
 il segno dovuto DEL SUO orologio, i riempitivi allo stallo e i finali. A orologio pieno il finale lo dice il Motore
 da sé: il primo `tipo: finale` disponibile nell'ordine del repertorio e senza cancelli sull'azione, poi la chiusura
 (un `momento` che chiede l'orologio pieno), e il tavolo va in pausa. Ogni altra battuta che entra nel catalogo «per
