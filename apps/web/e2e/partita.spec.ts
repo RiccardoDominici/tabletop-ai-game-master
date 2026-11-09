@@ -40,7 +40,6 @@ async function telefono(browser: Browser, url: string, nome: string, errori: str
 async function agisci(p: Page, testo: string): Promise<void> {
   await p.getByTestId('testo-azione').fill(testo);
   await p.getByTestId('invia-azione').click();
-  await p.getByTestId('pronto').click();
 }
 
 test('serata: proiettore, due telefoni e master; due turni e un cambio di scena', async ({ browser }) => {
@@ -75,7 +74,7 @@ test('serata: proiettore, due telefoni e master; due turni e un cambio di scena'
   await expect(master.getByTestId('master-fase')).toHaveAttribute('data-fase', 'finestra', { timeout: 120_000 });
   await foto(dalia, 'telefono-dalia-tocca');
 
-  // Turno 1 e 2: entrambi agiscono e premono «pronto».
+  // Turno 1 e 2: entrambi agiscono (inviare = pronto: quando hanno inviato tutti il turno parte).
   const turni = [
     ['Mi sporgo dal parapetto con una lanterna e guardo il leone di pietra.', 'Chiedo al vecchio del casello quanta gente è rimasta nel Borgo.'],
     ['Conto le persone sulla rampa e le metto in fila per la barca.', 'Tengo ferma la catena e chiedo a Tullio di aspettare.'],

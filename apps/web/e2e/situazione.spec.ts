@@ -81,7 +81,6 @@ test('situazione dopo la rivelazione: Sebastiano senza cappuccio', async ({ brow
   // Turno 1: la candela alla grata.
   await tel.getByTestId('testo-azione').fill('Accosto la candela alla grata per vedere in faccia il forestiero.');
   await tel.getByTestId('invia-azione').click();
-  await tel.getByTestId('pronto').click();
   await expect(master.getByTestId('master-fase')).toHaveAttribute('data-fase', 'narrazione', { timeout: 15_000 });
   await expect(master.getByTestId('master-fase')).toHaveAttribute('data-fase', 'finestra', { timeout: 150_000 });
   const uscite = battuteDelTurno(1);
@@ -105,7 +104,6 @@ test('situazione dopo la rivelazione: Sebastiano senza cappuccio', async ({ brow
   // Turno 2: quando parte la narrazione successiva torna il luogo (se l'aveva messa il Motore).
   await tel.getByTestId('testo-azione').fill('Gli chiedo chi gli ha fatto quella ferita.');
   await tel.getByTestId('invia-azione').click();
-  await tel.getByTestId('pronto').click();
   if (rivelata) {
     await expect(schermo.getByTestId('sfondo-immagine')).toHaveAttribute('data-src', /luogo_scena_forno_vecchio/, { timeout: 30_000 });
   } else {

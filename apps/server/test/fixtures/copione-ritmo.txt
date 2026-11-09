@@ -1,0 +1,27 @@
+# Copione del narratore finto per l'e2e del ritmo (apps/web/e2e/ritmo.spec.ts), campagna prova-f0,
+# modalità improvvisa. Un blocco per turno, separati da «---»; l'ultimo vale anche per i turni dopo.
+# Turno 1: narrazione normale, ritmo calmo.
+[narratore] La lanterna oscilla sopra il bancone. Fuori, la neve copre le orme.
+[png_ottavia] Restate, se volete: il forno è ancora caldo.
+[narratore] Cosa fate?
+[invito] tutti
+---
+# Turno 2: il pericolo arriva, la narrazione chiede il ritmo concitato (conto alla rovescia).
+[narratore] Un boato: il tetto del forno cede e le travi cominciano a cadere!
+[ritmo] concitato
+[narratore] Avete pochi istanti. Cosa fate?
+[invito] tutti
+---
+# Turno 3: il pericolo è passato, si torna al ritmo calmo.
+[narratore] La polvere si posa. Siete fuori, al sicuro, e il paese accorre.
+[ritmo] calmo
+[narratore] Cosa fate adesso?
+[invito] tutti
+---
+# Turno 4: il modello «si appende» (nessun token, nessun errore): il sorvegliante deve riprendere.
+[blocca]
+---
+# Dal turno 5: di nuovo normale.
+[narratore] Ottavia vi porge una coperta e chiude la porta alle vostre spalle.
+[narratore] Cosa fate?
+[invito] tutti

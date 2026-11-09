@@ -59,7 +59,6 @@ test('audio automatico: umore iniziale, battuta con audio, [effetto] in tempo, l
     await expect.poll(async () => (await salute(schermo)).fase, { timeout: 60_000 }).toBe('finestra');
     await tel.getByTestId('testo-azione').fill(testo);
     await tel.getByTestId('invia-azione').click();
-    await tel.getByTestId('pronto').click();
     await expect.poll(async () => (await salute(schermo)).turno, { timeout: 30_000 }).toBe(n);
   };
 

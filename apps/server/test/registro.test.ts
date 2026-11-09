@@ -73,9 +73,9 @@ async function avvia(): Promise<{ s: ServerCantastorie; url: string }> {
     CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
     CANTASTORIE_CACHE_AUDIO: path.join(cartella, 'cache'),
     CANTASTORIE_TTS: 'mock',
+    CANTASTORIE_ASSESTAMENTO_MS: '20',
     CANTASTORIE_MOCK_SCALA: '0.02',
     CANTASTORIE_MARGINE_AUDIO_MS: '50',
-    CANTASTORIE_STALLO_MS: '0',
     CANTASTORIE_PRERISCALDA: '0',
     CANTASTORIE_MASTER_TOKEN: TOKEN,
   } as NodeJS.ProcessEnv);
@@ -107,7 +107,6 @@ async function telefono(url: string, id_pg: string): Promise<Client> {
 
 async function agisci(t: Client, id_pg: string, testo: string, versione: number, privata = false): Promise<void> {
   expect(await emetti<Esito>((cb) => t.emit('azione:invia', { id_pg, testo, versione_vista: versione, privata }, cb))).toEqual({ ok: true });
-  expect(await emetti<Esito>((cb) => t.emit('azione:pronto', { id_pg, pronto: true }, cb))).toEqual({ ok: true });
 }
 
 /** Gioca un turno con le due azioni (Bruno facoltativo) e aspetta la finestra del turno dopo. */

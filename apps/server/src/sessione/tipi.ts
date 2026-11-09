@@ -44,7 +44,8 @@ export interface StatoTavoloSalvato {
   /** id_pg → id dell'ultima azione del giocatore. */
   ultima: Array<[string, string]>;
   /** Finestra al momento della scrittura (null = nessuna). */
-  finestra: { turno: number; invitati: string[]; invitoATutti: boolean; aperta: boolean; pronti: string[] } | null;
+  /** `pronti` c'era negli archivi di prima di «Invia = pronto» (si ignora); `ritmo` assente = calmo. */
+  finestra: { turno: number; invitati: string[]; invitoATutti: boolean; aperta: boolean; ritmo?: 'calmo' | 'concitato'; pronti?: string[] } | null;
   ultimoTurno: number;
   versioneScena: number;
   prossimoId: number;
@@ -64,7 +65,10 @@ export interface FotografiaSessione {
   orologi: Record<string, StatoOrologioSalvato>;
   repertorio: StatoRepertorioSalvato | null;
   note: { elenco: NotaRegia[]; prossimoId: number };
-  pausa: { richiesta: boolean; invitoSospeso: string[] | 'tutti' | null; /** Presa dal Motore dopo gli stalli. */ automatica?: boolean };
+  /** `automatica` c'era negli archivi di prima (pausa dopo gli stalli, tolta): si ignora. */
+  pausa: { richiesta: boolean; invitoSospeso: string[] | 'tutti' | null; automatica?: boolean };
+  /** Ritmo del tavolo (assente negli archivi di prima = calmo). */
+  ritmo?: 'calmo' | 'concitato';
   prossimoIdTrascrizione: number;
   /** Scene già visitate in questa sessione: tornandoci si legge il rientro, non l'apertura (assente negli archivi di prima). */
   sceneVisitate?: string[];

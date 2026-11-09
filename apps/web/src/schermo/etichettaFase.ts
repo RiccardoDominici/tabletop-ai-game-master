@@ -11,7 +11,7 @@ const ETICHETTA_FASE: Record<FaseScena, string> = {
   attesa: 'In attesa di cominciare',
   apertura: 'Il narratore apre la scena',
   finestra: 'Il narratore ascolta',
-  narrazione: 'Il narratore sta parlando',
+  narrazione: 'Il narratore sta preparando…',
   pausa: 'Tavolo in pausa',
   fermata: 'Scena fermata',
 };
@@ -35,6 +35,7 @@ export function primoNome(nome: string): string {
 export function etichettaFase(fase: FaseScena, inOnda: Pick<FraseInOnda, 'parlante' | 'nome'> | null): string {
   const parla = fase === 'narrazione' || fase === 'apertura' || fase === 'pausa';
   if (parla && inOnda && inOnda.parlante !== 'narratore' && inOnda.nome.trim()) return `${primoNome(inOnda.nome)} sta parlando`;
-  if (fase === 'pausa' && inOnda) return 'Il narratore sta parlando';
+  // In narrazione senza niente in onda il Motore sta lavorando (LLM, voce): «sta preparando…».
+  if ((fase === 'pausa' || fase === 'narrazione') && inOnda) return 'Il narratore sta parlando';
   return ETICHETTA_FASE[fase];
 }

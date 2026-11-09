@@ -12,6 +12,7 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   situazione: { tipo: 'situazione', id: 'situazione_seb_cicatrice' },
   orologio: { tipo: 'orologio', id: 'o_colpevole', passo: 1 },
   chiudi_finestra: { tipo: 'chiudi_finestra' },
+  ritmo: { tipo: 'ritmo', ritmo: 'concitato' },
   salta_azione: { tipo: 'salta_azione', id_azione: 'a7' },
   nota: { tipo: 'nota', testo: 'Più ritmo', turni: 5 },
   togli_nota: { tipo: 'togli_nota', id: 'n1' },

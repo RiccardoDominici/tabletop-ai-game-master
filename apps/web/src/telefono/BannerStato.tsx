@@ -1,10 +1,12 @@
 /**
- * Banner dello stato della scena per il telefono: dice al giocatore se tocca a lui, se ascoltare
- * o se aspettare (e che può comunque scrivere). Con la chiusura automatica fissata mostra il conto
- * alla rovescia (orologio del server); a finestra aperta, sotto, chi è chiamato e chi è pronto.
+ * Banner dello stato della scena per il telefono: dice al giocatore se tocca a lui, se il narratore
+ * sta preparando o raccontando, o se aspettare (e che può comunque scrivere). Il conto alla rovescia
+ * c'è solo al ritmo concitato (orologio del server); a finestra aperta, sotto, chi è chiamato, chi
+ * ha già inviato e «Aspettiamo: …».
  */
 import clsx from 'clsx';
 import type { StatoTavolo } from '@cantastorie/shared';
+import { testoAttesa } from '../lib/attesa';
 import { secondiRimasti } from '../lib/formato';
 import { useOra } from '../lib/useOra';
 import { bannerTelefono, type TipoBanner } from './vista';
@@ -12,6 +14,7 @@ import { PresenzeFinestra } from './PresenzeFinestra';
 
 const STILE: Record<TipoBanner, string> = {
   tocca_a_te: 'border-candela bg-candela/15 text-candela-2 shadow-candela',
+  inviata: 'border-muschio/50 bg-muschio/10 text-muschio',
   narratore: 'border-lago/40 bg-lago/10 text-lago',
   non_chiamato: 'border-bordo bg-notte-2 text-pergamena-2',
   attesa: 'border-bordo bg-notte-2 text-pergamena-2',
@@ -23,6 +26,7 @@ export function BannerStato({ stato, idPg }: { stato: StatoTavolo; idPg: string 
   const banner = bannerTelefono(stato, idPg);
   const ora = useOra(banner.scadenzaMs !== null);
   const secondi = banner.scadenzaMs !== null ? secondiRimasti(banner.scadenzaMs, ora) : null;
+  const attesa = testoAttesa(stato, idPg);
 
   return (
     <section
@@ -40,15 +44,21 @@ export function BannerStato({ stato, idPg }: { stato: StatoTavolo; idPg: string 
         {secondi !== null && (
           <div
             className="flex shrink-0 items-baseline gap-1 rounded-lg bg-notte/60 px-2.5 py-1"
-            aria-label={`La finestra si chiude tra ${secondi} secondi`}
+            data-testid="conto-alla-rovescia"
+            aria-label={`Si risolve tra ${secondi} secondi`}
           >
             <span className="font-titolo text-2xl leading-none font-bold tabular-nums">{secondi}</span>
             <span className="text-xs opacity-80">s</span>
           </div>
         )}
       </div>
-      {/* Chi è chiamato e chi è pronto: una riga a tutta larghezza, sotto il titolo. */}
+      {/* Chi è chiamato e chi ha già inviato: una riga a tutta larghezza, sotto il titolo. */}
       <PresenzeFinestra stato={stato} idPg={idPg} />
+      {attesa && (
+        <p data-testid="aspettiamo" className="text-[0.95rem] leading-snug opacity-90">
+          {attesa}
+        </p>
+      )}
     </section>
   );
 }

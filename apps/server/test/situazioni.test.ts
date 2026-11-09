@@ -130,9 +130,9 @@ describe('sul proiettore dopo la rivelazione, e dal master', () => {
       CANTASTORIE_CACHE_AUDIO: path.join(cartella, 'cache'),
       CANTASTORIE_IMMAGINI: immagini,
       CANTASTORIE_TTS: 'mock',
+      CANTASTORIE_ASSESTAMENTO_MS: '20',
       CANTASTORIE_MOCK_SCALA: '0.02',
       CANTASTORIE_MARGINE_AUDIO_MS: '50',
-      CANTASTORIE_STALLO_MS: '0',
       CANTASTORIE_MASTER_TOKEN: TOKEN,
     } as NodeJS.ProcessEnv);
     const narratore = new NarratoreFinto({
@@ -178,7 +178,6 @@ describe('sul proiettore dopo la rivelazione, e dal master', () => {
     const narrando = attendi<StatoTavolo>(tel, 'stato', (s) => s.fase === 'narrazione');
     const f2 = attendi<StatoTavolo>(tel, 'stato', (s) => s.fase === 'finestra' && s.turno === 2);
     await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Saluto l’oste con un cenno.', versione_vista: 1 }, cb));
-    await emetti<Esito>((cb) => tel.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb));
     expect((await narrando).scena.situazione).toBeNull();
     const dopo = await f2;
     expect(dopo.scena.situazione).toBe('/api/immagini/situazione_png_oste_brindisi.jpg');
@@ -188,7 +187,6 @@ describe('sul proiettore dopo la rivelazione, e dal master', () => {
     const narrando2 = attendi<StatoTavolo>(tel, 'stato', (s) => s.fase === 'narrazione' && s.turno === 2);
     const f3 = attendi<StatoTavolo>(tel, 'stato', (s) => s.fase === 'finestra' && s.turno === 3);
     await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Bevo.', versione_vista: 2 }, cb));
-    await emetti<Esito>((cb) => tel.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb));
     expect((await narrando2).scena.situazione).toBeNull();
     expect((await f3).scena.situazione).toBeNull();
 

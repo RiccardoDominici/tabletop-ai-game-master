@@ -39,7 +39,6 @@ export function RigaAzione({ azione, turnoFinestra }: { azione: AzioneMaster; tu
           </Chip>
         )}
         <Chip tono={TONO_STATO_AZIONE[azione.stato]}>{ETICHETTA_STATO_AZIONE_MASTER[azione.stato]}</Chip>
-        {azione.pronto && <span className="text-xs font-semibold text-muschio">✓ pronto</span>}
         <span className="text-xs text-cenere tabular-nums">
           turno {azione.turno}
           {prossimoTurno && ' (prossimo)'} · {oraBreve(azione.inviata_alle)}

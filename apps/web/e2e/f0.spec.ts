@@ -1,8 +1,8 @@
 /**
  * E2E di F0 sul server vero (avviato da scripts/avvio.sh): proiettore + due telefoni.
  *
- * Verifica: «Inizia sessione» sblocca l'audio; i telefoni scelgono il PG, scrivono, premono
- * «pronto»; la narrazione arriva come testo sui telefoni e come audio sul proiettore; lo
+ * Verifica: «Inizia sessione» sblocca l'audio; i telefoni scelgono il PG, scrivono e inviano
+ * (inviare = pronto: quando hanno inviato tutti gli invitati il turno parte); la narrazione arriva come testo sui telefoni e come audio sul proiettore; lo
  * schermo segnala l'inizio reale della riproduzione; in logs/turni.jsonl c'è il record del turno
  * con tutti i campi del contratto. Nessun errore nella console dei browser. Screenshot in
  * logs/screenshots/ (telefono 390x844, proiettore 1920x1080).
@@ -137,7 +137,7 @@ test('F0: proiettore + due telefoni, narrazione con voce e misure di latenza', a
 
   for (let n = 1; n <= TURNI; n++) {
     await attendiFase(schermo, (s) => s.fase === 'finestra' && s.turno === n, 150_000, `finestra del turno ${n}`);
-    // Chi è invitato scrive e preme «pronto»; chi non lo è aspetta. Il banner dice quale dei due.
+    // Chi è invitato scrive e invia (inviare = pronto); chi non lo è aspetta. Il banner dice quale dei due.
     const scritti: string[] = [];
     for (let i = 0; i < tel.length; i++) {
       const p = tel[i]!;
@@ -152,9 +152,6 @@ test('F0: proiettore + due telefoni, narrazione con voce e misure di latenza', a
     }
     expect(scritti.length, `turno ${n}: almeno un telefono invitato`).toBeGreaterThan(0);
     if (n === 1) await tel[0]!.screenshot({ path: path.join(SCREENSHOT, 'telefono-finestra.png') });
-    for (const p of tel) {
-      if (await p.getByTestId('pronto').isEnabled().catch(() => false)) await p.getByTestId('pronto').click();
-    }
 
     // Narrazione: testo sui telefoni, audio sul proiettore, inizio della riproduzione segnalato.
     await attendiFase(schermo, (s) => s.fase === 'narrazione' || (s.fase === 'finestra' && s.turno > n), 20_000, `narrazione del turno ${n}`);

@@ -40,6 +40,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'situazione',
   'orologio',
   'chiudi_finestra',
+  'ritmo',
   'salta_azione',
   'nota',
   'togli_nota',
@@ -180,7 +181,15 @@ export class ControlliMaster {
         const turno = regia.stato().finestra.turno;
         const esito = regia.chiudiFinestraOra();
         if (!esito.ok) return rifiuto(esito.errore);
-        return { esito, dettagli: `finestra del turno ${turno} chiusa dal master` };
+        return { esito, dettagli: `finestra del turno ${turno} chiusa dal master (Risolvi ora)` };
+      }
+      case 'ritmo': {
+        const ritmo = c.ritmo === 'concitato' || c.ritmo === 'calmo' ? c.ritmo : null;
+        if (!ritmo) return rifiuto('Ritmo non valido.');
+        const prima = regia.ritmoCorrente;
+        const esito = regia.impostaRitmo(ritmo, 'master');
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: `ritmo ${prima} → ${ritmo}`, dati: { da: prima, a: ritmo } };
       }
       case 'salta_azione': {
         const id = typeof c.id_azione === 'string' && ID_VALIDO.test(c.id_azione) ? c.id_azione : null;

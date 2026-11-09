@@ -2,8 +2,10 @@
  * Il finale (playtest di nozze-neve, conclusioni §1: nessuna partita aveva un finale, perché
  * `fin_tramonto` e `nar_chiusura` venivano rifiutati 11 volte «senza > pg»):
  * - a orologio della scena completo il Motore fa dire da sé il primo finale disponibile nell'ordine
- *   del repertorio (con il perché degli altri nel log), poi la chiusura, e il tavolo va in pausa;
- * - il selettore può usare un finale senza «> pg»; la chiusura e la pausa seguono lo stesso;
+ *   del repertorio (con il perché degli altri nel log), poi la chiusura; il tavolo NON va in pausa
+ *   (la pausa la mette solo il master, richieste del 9 novembre): la finestra si riapre e il master
+ *   riceve l'avviso per scegliere come andare avanti;
+ * - il selettore può usare un finale senza «> pg»; la chiusura segue lo stesso;
  * - orologio completo ma nessun finale disponibile: si continua come prima.
  */
 import { afterEach, describe, expect, it } from 'vitest';
@@ -31,14 +33,15 @@ async function partita(copione: (turno: number) => string) {
 }
 
 describe('il finale del Motore', () => {
-  it('orologio completo: il Motore dice il primo finale disponibile e la chiusura, poi il tavolo va in pausa', async () => {
+  it('orologio completo: il Motore dice il primo finale disponibile e la chiusura, poi la finestra si riapre', async () => {
     const { tel, s, m } = await partita((t) =>
       t === 1 ? '[usa] nar_tuono > pg_anna\n[narratore] Anna?\n[invito] tutti' : '[usa] nar_porta > pg_anna\n[narratore] Anna, cosa fai?\n[invito] tutti',
     );
     const s2 = await turno(tel, 'pg_anna', s, 'Ascolto il temporale.');
     expect(s2.fase).toBe('finestra');
     const fine = await turno(tel, 'pg_anna', s2, 'Il temporale mi fa chiudere la porta.');
-    expect(fine.fase).toBe('pausa');
+    // Niente pausa dopo il finale (era la pausa «che non riparte da sola»): si gioca, decide il master.
+    expect(fine).toMatchObject({ fase: 'finestra', turno: 3 });
     const testi = fine.trascrizione.filter((v) => v.turno === 2).map((v) => v.testo);
     expect(testi.slice(-3)).toEqual(['Il fiume esonda: la locanda resta un’isola nella notte.', 'All’alba la valle sarà un lago. Chi resta, e chi parte?', TESTO_FINE_SCENA]);
     expect(testi.join(' ')).toContain('La porta sbatte.');
@@ -46,20 +49,19 @@ describe('il finale del Motore', () => {
     const registro = prova.turni().find((r) => r['turno'] === 2)!;
     expect(registro['finale']).toBe('fin_temporale');
     expect((await m.stato()).repertorio!.usate.map((b) => b.id)).toEqual(expect.arrayContaining(['fin_temporale', 'nar_chiusura']));
-    // Il master può riprendere (il tavolo non è morto): si riapre la finestra per tutti.
-    const ripresa = new Promise<void>((ok) => tel.on('stato', (x) => x.fase === 'finestra' && ok()));
-    expect(await m.comanda({ tipo: 'riprendi' })).toEqual({ ok: true });
-    await ripresa;
+    // Nessuna pausa da togliere: Riprendi non ha niente da fare.
+    expect(await m.comanda({ tipo: 'riprendi' })).toMatchObject({ ok: false });
   }, 20_000);
 
-  it('il selettore usa il finale senza «> pg»: accettato, chiusura e pausa seguono', async () => {
+  it('il selettore usa il finale senza «> pg»: accettato, la chiusura segue, niente pausa', async () => {
     // L'orologio lo completa il master a finestra aperta: il finale entra nel catalogo «per stato»
     // e al turno dopo lo sceglie il selettore, senza legarlo a nessuna azione.
     const { tel, s, m } = await partita((t) => (t === 1 ? '[usa] nar_tuono > pg_anna\n[invito] tutti' : t === 2 ? '[narratore] Anna esita.\n[usa] fin_temporale\n[invito] tutti' : '[narratore] Piove.\n[invito] tutti'));
     const s2 = await turno(tel, 'pg_anna', s, 'Ascolto il temporale.');
     expect(await m.comanda({ tipo: 'orologio', id: 'o_temporale', passo: 1 })).toEqual({ ok: true });
     const fine = await turno(tel, 'pg_anna', s2, 'Aspetto.');
-    expect(fine.fase).toBe('pausa');
+    expect(fine).toMatchObject({ fase: 'finestra', turno: 3 });
+    expect(fine.trascrizione.at(-1)).toMatchObject({ tipo: 'sistema', testo: TESTO_FINE_SCENA });
     const r = prova.narrazioni().find((x) => x['tipo'] === 'turno' && x['turno'] === 2)!;
     const uscita = r['uscita'] as Array<{ tipo: string; id?: string; motore?: boolean }>;
     expect(uscita.filter((u) => u.tipo === 'usa_rifiutato')).toEqual([]);

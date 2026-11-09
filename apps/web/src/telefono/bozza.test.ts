@@ -11,7 +11,6 @@ function azione(parziale: Partial<AzionePrivata> = {}): AzionePrivata {
     stato: 'in_coda',
     motivo: null,
     richiesta: null,
-    pronto: false,
     versione_vista: 3,
     turno: 2,
     inviata_alle: 0,

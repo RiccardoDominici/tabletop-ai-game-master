@@ -55,6 +55,7 @@ beforeAll(async () => {
     CANTASTORIE_MODO: 'repertorio',
     CANTASTORIE_CACHE_AUDIO: cartellaCache,
     CANTASTORIE_TTS: 'mock',
+    CANTASTORIE_ASSESTAMENTO_MS: '20',
     CANTASTORIE_MOCK_SCALA: '0.02',
     CANTASTORIE_FINESTRA_TUTTI: '1',
   } as NodeJS.ProcessEnv);
@@ -108,7 +109,6 @@ describe('modalità repertorio', () => {
     // --- Turno 1: «Saluto l'oste.»
     const f2 = attendiStato(tel, (s) => s.fase === 'finestra' && s.turno === 2);
     expect(await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Saluto l’oste.', versione_vista: 1 }, cb))).toEqual({ ok: true });
-    expect(await emetti<Esito>((cb) => tel.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb))).toEqual({ ok: true });
     const s2 = await f2;
     // Catalogo pertinente: il saluto (temi) sì; la confessione (condizioni) e il tuono (segno non dovuto) no.
     expect(messaggi[0]).toContain('## Catalogo: battute pertinenti a questo turno');
@@ -125,7 +125,6 @@ describe('modalità repertorio', () => {
     // --- Turno 2: segno dovuto e dimenticato → il Motore mette nar_tuono prima della domanda finale.
     const f3 = attendiStato(tel, (s) => s.fase === 'finestra' && s.turno === 3);
     await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Guardo fuori dalla finestra.', versione_vista: 2 }, cb));
-    await emetti<Esito>((cb) => tel.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb));
     const s3 = await f3;
     expect(messaggi[1]).toContain('Mostralo in questa risposta.');
     expect(messaggi[1]).toContain('- nar_tuono · narratore · segno_orologio');
@@ -139,7 +138,6 @@ describe('modalità repertorio', () => {
     // --- Turno 3: l'azione di Anna resta senza risposta → riparazione con la battuta della brocca.
     const f4 = attendiStato(tel, (s) => s.fase === 'finestra' && s.turno === 4);
     await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Guardo dietro il banco.', versione_vista: 3 }, cb));
-    await emetti<Esito>((cb) => tel.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb));
     const s4 = await f4;
     expect(messaggi[2]).not.toContain('Mostralo in questa risposta.'); // segno appena mostrato
     expect(messaggi[2]).toContain('- nar_brocca · narratore · indizio');

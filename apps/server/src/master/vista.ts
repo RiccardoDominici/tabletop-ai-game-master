@@ -135,7 +135,6 @@ export function azioniMaster(regia: Regia, c: Campagna): AzioneMaster[] {
     return a ? nomeBreve(nome(a.autore)) : idAzione;
   };
   const daTurno = regia.turnoCorrente - TURNI_DI_CONTESTO;
-  const pronti = new Set(regia.stato().finestra.azioni.filter((x) => x.pronto).map((x) => x.id_pg));
   return tutte
     .filter((a: Readonly<Azione>) => STATI_VIVI.has(a.stato) || a.turno >= daTurno)
     .sort((x, y) => x.turno - y.turno || x.inviata_alle - y.inviata_alle)
@@ -149,7 +148,6 @@ export function azioniMaster(regia: Regia, c: Campagna): AzioneMaster[] {
       motivo: a.motivo,
       turno: a.turno,
       inviata_alle: a.inviata_alle,
-      pronto: STATI_VIVI.has(a.stato) && pronti.has(a.autore),
       dipende_da: a.dipende_da.map((id) => ({ id, nome: breve(id) })),
       conflitti: a.conflitti.map((k) => ({ id: k.con, nome: breve(k.con), esclusivo: k.esclusivo, vince: k.vince === a.id })),
       saltabile: STATI_VIVI.has(a.stato),

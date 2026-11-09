@@ -4,6 +4,7 @@
  *   [narratore] Testo narrato.
  *   [<id_png>] Battuta del PNG.
  *   [orologio] o_id         ← facoltativa, prima di [invito], non letta a voce
+ *   [ritmo] concitato|calmo ← facoltativa, rara: ritmo del tavolo (conto alla rovescia sì/no), non letta
  *   [umore] tag             ← facoltativa, rara: umore della musica (docs/audio.md), non letta
  *   [effetto] tag           ← facoltativa: effetto per la frase che segue, non letta
  *   [invito] pg_a,pg_b      ← ultima riga, obbligatoria, non letta a voce
@@ -12,6 +13,7 @@
  * - `frase`: una frase completa con la sua etichetta (subito, senza aspettare la fine riga);
  * - `invito`: gli id dei PG invitati (oppure 'tutti');
  * - `orologio`: l'id dell'orologio di cui è stato mostrato il segno (lo valida il Motore);
+ * - `ritmo`: «concitato» o «calmo» (vale per la prossima finestra; lo applica il Motore);
  * - `umore` / `effetto`: il tag chiesto dal narratore (vocabolario e catalogo li valida il Motore);
  * - `anomalia`: deviazioni dal protocollo, tollerate ma da registrare nel log.
  *
@@ -33,6 +35,7 @@ export type CodiceAnomalia =
   | 'invito_ripetuto'
   | 'testo_dopo_invito'
   | 'orologio_vuoto'
+  | 'ritmo_sconosciuto'
   | 'usa_vuoto'
   | 'umore_vuoto'
   | 'effetto_vuoto';
@@ -49,6 +52,8 @@ export type EventoNarratore =
   | { tipo: 'invito'; invitati: string[] | 'tutti'; grezzo: string }
   /** Riga [orologio] <id>: il narratore ha mostrato il prossimo segno di quell'orologio. */
   | { tipo: 'orologio'; id: string; grezzo: string }
+  /** Riga [ritmo] concitato|calmo: la narrazione chiede (o toglie) il conto alla rovescia. */
+  | { tipo: 'ritmo'; ritmo: 'concitato' | 'calmo'; grezzo: string }
   /**
    * Riga [usa] <id_battuta> [> <id_pg>] (modalità repertorio): la battuta pre-scritta esce qui;
    * `per` è il PG alla cui azione risponde (B2), null se non dichiarato.
@@ -73,13 +78,14 @@ export interface OpzioniParser {
 const NARRATORE = 'narratore';
 const INVITO = 'invito';
 const OROLOGIO = 'orologio';
+const RITMO = 'ritmo';
 const USA = 'usa';
 const UMORE = 'umore';
 const EFFETTO = 'effetto';
 /** Oltre questa lunghezza un «[» a inizio riga senza «]» non è un'etichetta. */
 const MAX_ETICHETTA = 48;
 
-type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'usa' | 'umore' | 'effetto';
+type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'ritmo' | 'usa' | 'umore' | 'effetto';
 
 export class ParserNarratore {
   private readonly png: Set<string>;
@@ -152,6 +158,7 @@ export class ParserNarratore {
         return;
       case 'invito':
       case 'orologio':
+      case 'ritmo':
       case 'usa':
       case 'umore':
       case 'effetto':
@@ -236,7 +243,7 @@ export class ParserNarratore {
       this.bufferInvito = resto;
       return;
     }
-    if (risolta.tipo === 'orologio' || risolta.tipo === 'usa' || risolta.tipo === 'umore' || risolta.tipo === 'effetto') {
+    if (risolta.tipo === 'orologio' || risolta.tipo === 'ritmo' || risolta.tipo === 'usa' || risolta.tipo === 'umore' || risolta.tipo === 'effetto') {
       this.modo = risolta.tipo;
       this.bufferInvito = resto;
       return;
@@ -261,6 +268,7 @@ export class ParserNarratore {
   ):
     | { tipo: 'invito' }
     | { tipo: 'orologio' }
+    | { tipo: 'ritmo' }
     | { tipo: 'usa' }
     | { tipo: 'umore' }
     | { tipo: 'effetto' }
@@ -269,6 +277,7 @@ export class ParserNarratore {
     const t = grezza.trim().toLowerCase();
     if (t === INVITO) return { tipo: 'invito' };
     if (t === OROLOGIO) return { tipo: 'orologio' };
+    if (t === RITMO) return { tipo: 'ritmo' };
     if (t === USA) return { tipo: 'usa' };
     if (t === UMORE) return { tipo: 'umore' };
     if (t === EFFETTO) return { tipo: 'effetto' };
@@ -315,6 +324,9 @@ export class ParserNarratore {
         break;
       case 'orologio':
         this.chiudiOrologio();
+        break;
+      case 'ritmo':
+        this.chiudiRitmo();
         break;
       case 'usa':
         this.chiudiUsa();
@@ -375,6 +387,19 @@ export class ParserNarratore {
       return;
     }
     this.eventi.push({ tipo: 'orologio', id, grezzo });
+  }
+
+  /** [ritmo] concitato|calmo (tollera maiuscole, punteggiatura, «concitata», «normale»). */
+  private chiudiRitmo(): void {
+    const grezzo = this.bufferInvito.trim();
+    this.bufferInvito = '';
+    const parola = grezzo.replace(/[`"'«»]/g, '').split(/[\s,;]+/)[0]?.toLowerCase().replace(/[.!?:]+$/, '') ?? '';
+    const ritmo = /^concitat[oa]$/.test(parola) ? 'concitato' : /^(calm[oa]|normale)$/.test(parola) ? 'calmo' : null;
+    if (!ritmo) {
+      this.anomalia('ritmo_sconosciuto', `riga [ritmo] con «${grezzo}»: si tiene il ritmo di prima`);
+      return;
+    }
+    this.eventi.push({ tipo: 'ritmo', ritmo, grezzo });
   }
 
   private chiudiInvito(): void {

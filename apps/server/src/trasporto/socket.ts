@@ -106,12 +106,6 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
       ack<Esito>(cb)(regia.ritiraAzione(id_pg));
     });
 
-    socket.on('azione:pronto', (dati, cb) => {
-      const id_pg = controllaPg(dati?.id_pg);
-      if (!id_pg) return ack<Esito>(cb)(errore('Prima scegli il tuo personaggio.'));
-      ack<Esito>(cb)(regia.segnaPronto(id_pg, dati.pronto === true));
-    });
-
     socket.on('stato:richiedi', (cb) => ack(cb)(regia.stato()));
 
     socket.on('telefono:dispositivo', (dati, cb) => {

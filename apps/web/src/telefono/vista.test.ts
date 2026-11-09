@@ -9,12 +9,12 @@ import {
   conChi,
   daRiscrivere,
   etichettaInvio,
+  hoInviato,
   motivoDaMostrare,
+  narratoreAlLavoro,
   perProssimoTurno,
-  possoDirePronto,
   possoScrivere,
   sonoInvitato,
-  sonoPronto,
 } from './vista';
 
 function stato(parziale: Partial<StatoTavolo> = {}): StatoTavolo {
@@ -30,15 +30,16 @@ function stato(parziale: Partial<StatoTavolo> = {}): StatoTavolo {
       turno: 2,
       invitati: ['aldo', 'bea'],
       azioni: [
-        { id_pg: 'aldo', scritta: true, pronto: false },
-        { id_pg: 'bea', scritta: false, pronto: true },
+        { id_pg: 'aldo', scritta: true },
+        { id_pg: 'bea', scritta: false },
       ],
+      aspettiamo: ['bea'],
       chiusura_prevista_ms: null,
     },
     trascrizione: [],
     voce_motore: 'mock',
     schermo_connesso: true,
-    pausa_automatica: false,
+    ritmo: 'calmo',
     ora_server_ms: 1_700_000_000_000,
     al_tavolo: [],
     ...parziale,
@@ -54,7 +55,6 @@ function azione(parziale: Partial<AzionePrivata> = {}): AzionePrivata {
     stato: 'in_coda',
     motivo: null,
     richiesta: null,
-    pronto: true,
     versione_vista: 1,
     turno: 2,
     inviata_alle: 0,
@@ -82,21 +82,21 @@ describe('vista del telefono: permessi', () => {
     expect(possoScrivere(stato(), null)).toBe(false);
   });
 
-  it('«Pronto» solo a finestra aperta e per gli invitati', () => {
-    expect(possoDirePronto(stato(), 'aldo')).toBe(true);
-    expect(possoDirePronto(stato(), 'cosimo')).toBe(false);
-    expect(possoDirePronto(stato({ fase: 'narrazione' }), 'aldo')).toBe(false);
-    const chiusa = stato();
-    chiusa.finestra.aperta = false;
-    expect(possoDirePronto(chiusa, 'aldo')).toBe(false);
+  it('inviare = ho finito: fa fede il riepilogo pubblico, solo a finestra aperta', () => {
+    expect(hoInviato(stato(), 'aldo')).toBe(true);
+    expect(hoInviato(stato(), 'bea')).toBe(false);
+    expect(hoInviato(stato({ fase: 'narrazione' }), 'aldo')).toBe(false);
+    expect(hoInviato(stato(), null)).toBe(false);
   });
 
-  it('pronto: fa fede il riepilogo pubblico, anche senza azione («passo»)', () => {
-    expect(sonoPronto(stato(), 'bea', null)).toBe(true);
-    expect(sonoPronto(stato(), 'aldo', mia)).toBe(false);
-    const senzaRiepilogo = stato();
-    senzaRiepilogo.finestra.azioni = [];
-    expect(sonoPronto(senzaRiepilogo, 'aldo', mia)).toBe(true);
+  it('il narratore al lavoro: «prepara» finché del turno non è arrivato niente, poi «racconta»', () => {
+    expect(narratoreAlLavoro(stato())).toBeNull();
+    expect(narratoreAlLavoro(stato({ fase: 'narrazione' }))).toBe('prepara');
+    const voce = { id: 1, turno: 1, tipo: 'narrazione' as const, chi: 'narratore', nome: 'Narratore', testo: 'La porta cede.' };
+    expect(narratoreAlLavoro(stato({ fase: 'narrazione', trascrizione: [voce] }))).toBe('racconta');
+    const chiudendo = stato();
+    chiudendo.finestra.aperta = false;
+    expect(narratoreAlLavoro(chiudendo)).toBe('prepara');
   });
 
   it('un’azione di un turno passato non vale per la finestra corrente', () => {
@@ -177,28 +177,29 @@ describe('vista del telefono: al tavolo e banner', () => {
     expect(bannerTelefono(stato({ fase: 'attesa' }), 'aldo').tipo).toBe('attesa');
     expect(bannerTelefono(stato({ fase: 'apertura' }), 'aldo').tipo).toBe('narratore');
     const narra = bannerTelefono(stato({ fase: 'narrazione' }), 'aldo');
-    expect(narra.titolo).toBe('Il narratore sta parlando…');
+    expect(narra.titolo).toBe('Il narratore sta preparando…');
     expect(narra.dettaglio).toMatch(/Puoi già scrivere/);
     expect(bannerTelefono(stato({ fase: 'fermata' }), 'aldo').tipo).toBe('fermata');
     const altro = bannerTelefono(stato(), 'cosimo');
     expect(altro.tipo).toBe('non_chiamato');
     expect(altro.titolo).toMatch(/non sei chiamato/);
     expect(altro.dettaglio).toMatch(/Puoi scrivere lo stesso/);
-    expect(bannerTelefono(stato(), 'aldo')).toMatchObject({ tipo: 'tocca_a_te', titolo: 'Tocca a te: cosa fai?', scadenzaMs: null });
+    expect(bannerTelefono(stato(), 'bea')).toMatchObject({ tipo: 'tocca_a_te', titolo: 'Tocca a te: cosa fai?', dettaglio: null, scadenzaMs: null });
+    expect(bannerTelefono(stato(), 'aldo')).toMatchObject({ tipo: 'inviata', titolo: 'Azione inviata' });
   });
 
-  it('il conto alla rovescia arriva nel banner quando la chiusura è fissata', () => {
-    const s = stato();
+  it('il conto alla rovescia arriva nel banner solo al ritmo concitato', () => {
+    const s = stato({ ritmo: 'concitato' });
     s.finestra.chiusura_prevista_ms = 123_456;
-    expect(bannerTelefono(s, 'bea').scadenzaMs).toBe(123_456);
+    expect(bannerTelefono(s, 'bea')).toMatchObject({ scadenzaMs: 123_456, dettaglio: expect.stringMatching(/di corsa/) });
     expect(bannerTelefono(s, 'cosimo').scadenzaMs).toBe(123_456);
   });
 });
 
-describe('pausa automatica (nessuno scriveva)', () => {
-  it('il banner dice di scrivere per ripartire', () => {
-    const b = bannerTelefono(stato({ fase: 'pausa', pausa_automatica: true }), 'pg_a');
-    expect(b).toMatchObject({ tipo: 'pausa', titolo: 'Il tavolo è in pausa', dettaglio: "Scrivete un'azione per ripartire." });
-    expect(bannerTelefono(stato({ fase: 'pausa' }), 'pg_a').titolo).toBe('Tavolo in pausa');
+describe('pausa', () => {
+  it('la mette solo il master: si può scrivere, l’azione entra alla ripresa', () => {
+    const b = bannerTelefono(stato({ fase: 'pausa' }), 'pg_a');
+    expect(b).toMatchObject({ tipo: 'pausa', titolo: 'Tavolo in pausa' });
+    expect(b.dettaglio).toMatch(/master/);
   });
 });

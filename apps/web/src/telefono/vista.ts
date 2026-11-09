@@ -3,9 +3,11 @@
  * mostra. Nessun React qui: banner, permessi ed etichette sono testati in vista.test.ts.
  *
  * Regole (docs/azioni-concorrenti.md):
- * - si può scrivere SEMPRE a scena in corso, anche mentre il narratore parla: l'azione entra
- *   allora nella finestra successiva;
- * - l'invito conta solo per «Pronto» e per le parole del banner;
+ * - si può scrivere SEMPRE a scena in corso, anche mentre il narratore parla (o prepara): l'azione
+ *   entra allora nella finestra successiva;
+ * - inviare vuol dire «ho finito» (non c'è più «Pronto»): quando hanno inviato tutti gli invitati il
+ *   turno parte da solo; l'invito conta per le parole del banner;
+ * - il conto alla rovescia c'è solo al ritmo concitato (lo chiede la narrazione);
  * - «in coda» e «da decidere» restano distinti: solo il secondo chiede una scelta.
  */
 import type {
@@ -47,11 +49,6 @@ export function possoScrivere(stato: StatoTavolo, idPg: string | null): boolean 
   return idPg !== null && scenaInCorso(stato);
 }
 
-/** «Pronto» ha senso solo a finestra aperta e per chi è invitato (il server rifiuta gli altri). */
-export function possoDirePronto(stato: StatoTavolo, idPg: string | null): boolean {
-  return finestraAperta(stato) && sonoInvitato(stato.finestra, idPg);
-}
-
 /** L'azione è ancora modificabile (in coda o da decidere). */
 export function azioneViva(mia: AzionePrivata | null): boolean {
   return mia !== null && STATI_VIVI.has(mia.stato);
@@ -77,15 +74,22 @@ export function motivoDaMostrare(mia: AzionePrivata | null): string | null {
   return mia.motivo;
 }
 
+/** Ho già inviato in questa finestra? Fa fede il riepilogo pubblico (inviare = ho finito). */
+export function hoInviato(stato: StatoTavolo, idPg: string | null): boolean {
+  if (!idPg || !finestraAperta(stato)) return false;
+  return stato.finestra.azioni.some((a) => a.id_pg === idPg && a.scritta);
+}
+
 /**
- * Sono «pronto»? Fa fede il riepilogo pubblico della finestra (vale anche per «passo», cioè
- * pronto senza azione); l'azione privata è il ripiego se il riepilogo non mi elenca.
+ * Il Motore sta lavorando (LLM, voce, audio della narrazione): «sta preparando» finché del turno non
+ * è arrivato niente, poi «sta raccontando». I giocatori possono scrivere: l'azione aspetta il turno dopo.
  */
-export function sonoPronto(stato: StatoTavolo, idPg: string | null, mia: AzionePrivata | null): boolean {
-  if (!idPg) return false;
-  const pubblica = stato.finestra.azioni.find((a) => a.id_pg === idPg);
-  if (pubblica) return pubblica.pronto;
-  return mia !== null && azioneViva(mia) && mia.pronto;
+export function narratoreAlLavoro(stato: StatoTavolo): 'prepara' | 'racconta' | null {
+  const lavora = stato.fase === 'apertura' || stato.fase === 'narrazione' || (stato.fase === 'finestra' && !stato.finestra.aperta);
+  if (!lavora) return null;
+  if (stato.fase === 'finestra') return 'prepara';
+  const detto = stato.trascrizione.some((v) => v.turno === stato.turno && (v.tipo === 'narrazione' || v.tipo === 'battuta'));
+  return detto ? 'racconta' : 'prepara';
 }
 
 /** L'azione privata conta per la finestra corrente (non è un residuo di un turno passato). */
@@ -126,13 +130,13 @@ export function conChi(dipendeDa: readonly string[]): string | null {
 
 // ------------------------------------------------------------------ banner
 
-export type TipoBanner = 'attesa' | 'narratore' | 'tocca_a_te' | 'non_chiamato' | 'fermata' | 'pausa';
+export type TipoBanner = 'attesa' | 'narratore' | 'tocca_a_te' | 'inviata' | 'non_chiamato' | 'fermata' | 'pausa';
 
 export interface Banner {
   tipo: TipoBanner;
   titolo: string;
   dettaglio: string | null;
-  /** Epoch ms (orologio del server) di chiusura automatica della finestra, se fissata. */
+  /** Epoch ms (orologio del server) di chiusura automatica: solo al ritmo concitato. */
   scadenzaMs: number | null;
 }
 
@@ -149,7 +153,7 @@ export function bannerTelefono(stato: StatoTavolo, idPg: string | null): Banner 
     case 'narrazione':
       return {
         tipo: 'narratore',
-        titolo: 'Il narratore sta parlando…',
+        titolo: narratoreAlLavoro(stato) === 'racconta' ? 'Il narratore sta raccontando…' : 'Il narratore sta preparando…',
         dettaglio: 'Puoi già scrivere: la tua azione entra nel prossimo turno.',
         scadenzaMs: null,
       };
@@ -161,16 +165,7 @@ export function bannerTelefono(stato: StatoTavolo, idPg: string | null): Banner 
         scadenzaMs: null,
       };
     case 'pausa':
-      // Pausa presa dal Motore (nessuno scriveva): la prima azione la fa ripartire.
-      if (stato.pausa_automatica) {
-        return {
-          tipo: 'pausa',
-          titolo: 'Il tavolo è in pausa',
-          dettaglio: "Scrivete un'azione per ripartire.",
-          scadenzaMs: null,
-        };
-      }
-      // Pausa dal pannello del master: si può scrivere, l'azione entra quando il tavolo riparte.
+      // La pausa la mette e la toglie solo il master: si può scrivere, l'azione entra alla ripresa.
       return {
         tipo: 'pausa',
         titolo: 'Tavolo in pausa',
@@ -181,16 +176,26 @@ export function bannerTelefono(stato: StatoTavolo, idPg: string | null): Banner 
       if (!stato.finestra.aperta) {
         return {
           tipo: 'narratore',
-          titolo: 'Il narratore sta pensando…',
+          titolo: 'Il narratore sta preparando…',
           dettaglio: 'Puoi già scrivere: la tua azione entra nel prossimo turno.',
           scadenzaMs: null,
         };
       }
+      if (sonoInvitato(stato.finestra, idPg) && hoInviato(stato, idPg)) {
+        return {
+          tipo: 'inviata',
+          titolo: 'Azione inviata',
+          dettaglio: 'Puoi ancora cambiarla o ritirarla finché il turno non parte.',
+          scadenzaMs: stato.finestra.chiusura_prevista_ms,
+        };
+      }
       if (sonoInvitato(stato.finestra, idPg)) {
+        const concitato = stato.ritmo === 'concitato' && stato.finestra.chiusura_prevista_ms !== null;
         return {
           tipo: 'tocca_a_te',
           titolo: 'Tocca a te: cosa fai?',
-          dettaglio: null,
+          // Al ritmo calmo nessuna fretta: si discute al tavolo. Al concitato c'è il conto alla rovescia.
+          dettaglio: concitato ? 'Si va di corsa: allo zero il narratore risolve con quello che c’è.' : null,
           scadenzaMs: stato.finestra.chiusura_prevista_ms,
         };
       }

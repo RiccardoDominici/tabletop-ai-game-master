@@ -103,7 +103,6 @@ test('proiettore: tutti i luoghi, strati, temi dei PNG e memoria', async ({ brow
     await expect.poll(async () => (await salute(schermo)).fase, { timeout: 120_000 }).toBe('finestra');
     await tel.getByTestId('testo-azione').fill(`mi guardo intorno (${n})`);
     await tel.getByTestId('invia-azione').click();
-    await tel.getByTestId('pronto').click();
     await expect.poll(async () => (await salute(schermo)).turno, { timeout: 30_000 }).toBe(n);
   }
   await expect.poll(async () => (await salute(schermo)).fase, { timeout: 120_000 }).toBe('finestra');

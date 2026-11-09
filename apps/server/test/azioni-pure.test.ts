@@ -9,7 +9,7 @@ import { avvisoConflitto, avvisoDipendenza } from '../src/azioni/testi';
 import type { Azione, AzioneArbitro } from '../src/azioni/tipi';
 
 function az(id: string, autore: string, dipende_da: string[] = [], stato: Azione['stato'] = 'in_coda', causa: string | null = null): Azione {
-  return { id, autore, testo: id, privata: false, inviata_alle: 0, modificata_alle: 0, versione_vista: 1, turno: 1, stato, motivo: null, richiesta: null, pronto: false, dipende_da, conflitti: [], revisione: 1, causa };
+  return { id, autore, testo: id, privata: false, inviata_alle: 0, modificata_alle: 0, versione_vista: 1, turno: 1, stato, motivo: null, richiesta: null, dipende_da, conflitti: [], revisione: 1, causa };
 }
 
 describe('propagazione', () => {

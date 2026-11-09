@@ -65,9 +65,10 @@ beforeAll(async () => {
     CANTASTORIE_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
     CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
     CANTASTORIE_TTS: 'mock',
+    CANTASTORIE_ASSESTAMENTO_MS: '20',
     CANTASTORIE_MOCK_SCALA: '0.02',
     CANTASTORIE_LLM: 'finto',
-    CANTASTORIE_FINESTRA_MS: '10000',
+    CANTASTORIE_MASTER_TOKEN: 'token_integrazione_master_42',
     CANTASTORIE_IP: '192.168.1.50',
   };
   const config = caricaConfig(env as NodeJS.ProcessEnv);
@@ -148,14 +149,17 @@ describe('server F0 con client veri', () => {
     expect(frasiAudio.filter((f) => f.turno === 0)).toHaveLength(3);
     expect(byteAudio.get(0)).toBeGreaterThan(0);
 
-    // --- Azioni: un telefono non può agire per un altro PG; modifica, ritiro, pronto.
+    // --- Azioni: un telefono non può agire per un altro PG; modifica, ritiro; niente «pronto».
     expect(await emetti<Esito>((cb) => tel1.emit('azione:invia', { id_pg: 'pg_bruno', testo: 'X', versione_vista: 1 }, cb))).toMatchObject({ ok: false });
     const mia: AzionePrivata[] = [];
     tel1.on('azione:mia', (a) => a && mia.push(a));
     expect(await emetti<Esito>((cb) => tel1.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Ordino da bere.', versione_vista: 1 }, cb))).toEqual({ ok: true });
     expect(await emetti<Esito>((cb) => tel1.emit('azione:invia', { id_pg: 'pg_anna', testo: 'Ordino vino caldo.', versione_vista: 1 }, cb))).toEqual({ ok: true });
     const conTimer = await emetti<StatoTavolo>((cb) => tel2.emit('stato:richiedi', cb));
-    expect(conTimer.finestra.chiusura_prevista_ms).toBeGreaterThan(Date.now());
+    // Ritmo calmo: un'azione in coda non fa partire nessun conto alla rovescia; si aspetta Bruno.
+    expect(conTimer.ritmo).toBe('calmo');
+    expect(conTimer.finestra.chiusura_prevista_ms).toBeNull();
+    expect(conTimer.finestra.aspettiamo).toEqual(['pg_bruno']);
     // Il tavolo vede le intenzioni pubbliche (docs/azioni-concorrenti.md, principio 2).
     expect(conTimer.al_tavolo).toMatchObject([{ id_pg: 'pg_anna', testo: 'Ordino vino caldo.', stato: 'in_coda' }]);
     expect(JSON.stringify(conTimer)).not.toContain('SEGRETO_DI_ANNA');
@@ -166,9 +170,14 @@ describe('server F0 con client veri', () => {
     expect(await emetti<Esito>((cb) => tel2.emit('azione:invia', { id_pg: 'pg_bruno', testo: 'Guardo la porta.', versione_vista: 1 }, cb))).toEqual({ ok: true });
     expect(await emetti<Esito>((cb) => tel2.emit('azione:ritira', { id_pg: 'pg_bruno' }, cb))).toEqual({ ok: true });
 
+    // Bruno ha ritirato: il gioco lo aspetta (senza scadenza), finché il master non preme «Risolvi ora».
+    await new Promise((r) => setTimeout(r, 200));
+    const inAttesa = await emetti<StatoTavolo>((cb) => tel1.emit('stato:richiedi', cb));
+    expect(inAttesa).toMatchObject({ fase: 'finestra', finestra: { aperta: true, aspettiamo: ['pg_bruno'] } });
     const finestra2 = attendiStato(tel1, (s) => s.fase === 'finestra' && s.turno === 2);
-    expect(await emetti<Esito>((cb) => tel1.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb))).toEqual({ ok: true });
-    expect(await emetti<Esito>((cb) => tel2.emit('azione:pronto', { id_pg: 'pg_bruno', pronto: true }, cb))).toEqual({ ok: true });
+    const master = nuovoClient();
+    expect(await emetti<{ ok: boolean }>((cb) => master.emit('master:entra', { token: 'token_integrazione_master_42' }, cb))).toMatchObject({ ok: true });
+    expect(await emetti<Esito>((cb) => master.emit('master:comando', { tipo: 'chiudi_finestra' }, cb))).toEqual({ ok: true });
 
     // --- Narrazione del turno 1, poi finestra 2 solo per chi è stato invitato.
     const s2 = await finestra2;

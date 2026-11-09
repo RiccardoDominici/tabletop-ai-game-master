@@ -46,8 +46,8 @@ beforeAll(async () => {
     CANTASTORIE_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
     CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
     CANTASTORIE_TTS: 'mock',
+    CANTASTORIE_ASSESTAMENTO_MS: '20',
     CANTASTORIE_MOCK_SCALA: '0.02',
-    CANTASTORIE_STALLO_MS: '0',
     CANTASTORIE_MASTER_TOKEN: TOKEN,
     CANTASTORIE_AUDIO: FIXTURE,
   } as NodeJS.ProcessEnv);

@@ -9,7 +9,8 @@ describe('riga di stato del proiettore', () => {
 
   it('il narratore in onda o il silenzio: etichetta della fase', () => {
     expect(etichettaFase('narrazione', { parlante: 'narratore', nome: 'Narratore' })).toBe('Il narratore sta parlando');
-    expect(etichettaFase('narrazione', null)).toBe('Il narratore sta parlando');
+    // Niente in onda durante la narrazione: il Motore sta lavorando (LLM, voce).
+    expect(etichettaFase('narrazione', null)).toBe('Il narratore sta preparando…');
     expect(etichettaFase('apertura', null)).toBe('Il narratore apre la scena');
   });
 
@@ -26,6 +27,7 @@ describe('riga di stato del proiettore', () => {
 
   it('nome vuoto: si resta sull’etichetta di fase', () => {
     expect(etichettaFase('narrazione', { parlante: 'png_x', nome: '  ' })).toBe('Il narratore sta parlando');
+    expect(etichettaFase('finestra', null)).toBe('Il narratore ascolta');
   });
 
   it('nome breve: primo nome, saltando i titoli', () => {

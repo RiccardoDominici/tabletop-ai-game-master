@@ -17,6 +17,7 @@ import { caricaCampagna } from '../src/campagna/caricatore';
 import { conScena } from '../src/campagna/tipi';
 import { RADICE_REPO } from '../src/percorsi';
 import { StatoOrologi } from '../src/scena/orologi';
+import { TESTO_FINE_SCENA } from '../src/scena/regia';
 import { attendi, inizia, Prova, turno } from './aiuti/partita';
 
 const NOZZE = path.join(RADICE_REPO, 'campagne', 'nozze-neve');
@@ -127,7 +128,8 @@ describe('nozze-neve, indagine rigiocata col selettore avido', () => {
     const m = await prova.master(url);
     const cambi: Record<number, string> = { 4: 'scena_casa_bonfanti', 6: 'scena_casera', 8: 'scena_casa_bonfanti', 11: 'scena_casera', 15: 'scena_sasso' };
     let s = await inizia(schermo, tel);
-    while (s.fase === 'finestra' && s.turno <= 20) {
+    // Fino al finale: dopo il finale il tavolo non va più in pausa (la pausa la mette solo il master).
+    while (s.fase === 'finestra' && s.turno <= 20 && !prova.turni().some((r) => r['finale'])) {
       const a = cambi[s.turno];
       if (a) {
         const t0 = s.turno;
@@ -138,7 +140,9 @@ describe('nozze-neve, indagine rigiocata col selettore avido', () => {
       }
       s = await turno(tel, 'pg_ida', s, 'Ida aspetta e guarda il cielo.');
     }
-    expect(s.fase).toBe('pausa'); // il finale ha chiuso la scena
+    // Il finale ha chiuso la scena: la finestra si riapre e il master riceve l'avviso.
+    expect(s.fase).toBe('finestra');
+    expect(s.trascrizione.some((v) => v.tipo === 'sistema' && v.testo === TESTO_FINE_SCENA)).toBe(true);
 
     const narrati = prova.narrazioni().filter((r) => r['tipo'] === 'turno');
     const statoAl = (n: number) => (narrati.find((r) => r['turno'] === n)?.['stato_orologi'] ?? {}) as Record<string, string>;

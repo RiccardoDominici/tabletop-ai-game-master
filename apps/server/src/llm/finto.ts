@@ -33,6 +33,14 @@ export function copioneDaFile(percorso: string): (turno: number) => string {
   return (turno) => blocchi[Math.min(Math.max(turno, 1) - 1, blocchi.length - 1)]!;
 }
 
+/**
+ * Prove del sorvegliante: un blocco di copione che è solo `[blocca]` simula il modello che non
+ * risponde più (nessun token, nessun errore) finché la chiamata non viene annullata; `[errore]`
+ * simula una chiamata fallita.
+ */
+export const COPIONE_BLOCCA = '[blocca]';
+export const COPIONE_ERRORE = '[errore]';
+
 export class NarratoreFinto implements Narratore {
   readonly nome = 'finto' as const;
   readonly modello = 'claude-haiku-5-5';
@@ -55,6 +63,17 @@ export class NarratoreFinto implements Narratore {
 
   async narra(r: RichiestaNarrazione, onTesto: (delta: string) => void): Promise<EsitoNarrazione> {
     const testo = this.copione(r.turno);
+    if (testo.trim() === COPIONE_BLOCCA) {
+      // Il modello «appeso»: si esce solo quando la regia annulla la chiamata (sorvegliante).
+      await new Promise<never>((_, rifiuta) => {
+        if (r.signal?.aborted) return rifiuta(r.signal.reason);
+        r.signal?.addEventListener('abort', () => rifiuta(r.signal?.reason ?? new Error('annullata')), { once: true });
+      });
+    }
+    if (testo.trim() === COPIONE_ERRORE) {
+      await attendi(this.o.primoTokenMs ?? 500, undefined, { signal: r.signal });
+      throw new Error('narratore finto: errore simulato (copione [errore])');
+    }
     const passo = this.o.caratteriPerPezzo ?? 6;
     await attendi(this.o.primoTokenMs ?? 500, undefined, { signal: r.signal });
     for (let i = 0; i < testo.length; i += passo) {

@@ -87,9 +87,9 @@ function configPer(cartellaCampagna: string, log: string) {
     CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
     CANTASTORIE_CACHE_AUDIO: path.join(log, 'cache'),
     CANTASTORIE_TTS: 'mock',
+    CANTASTORIE_ASSESTAMENTO_MS: '20',
     CANTASTORIE_MOCK_SCALA: '0.02',
     CANTASTORIE_MARGINE_AUDIO_MS: '50',
-    CANTASTORIE_STALLO_MS: '0',
     CANTASTORIE_PRERISCALDA: '0',
     CANTASTORIE_MASTER_TOKEN: TOKEN,
   } as NodeJS.ProcessEnv);
@@ -134,7 +134,6 @@ async function giocaUnTurno(t: Awaited<ReturnType<typeof tavolo>>, testo: string
   const s = await primo;
   const dopo = attendi<StatoTavolo>(t.anna, 'stato', (x) => x.fase === 'finestra' && x.turno === 2);
   expect(await emetti<Esito>((cb) => t.anna.emit('azione:invia', { id_pg: 'pg_anna', testo, versione_vista: s.versione_scena }, cb))).toEqual({ ok: true });
-  expect(await emetti<Esito>((cb) => t.anna.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb))).toEqual({ ok: true });
   return dopo;
 }
 

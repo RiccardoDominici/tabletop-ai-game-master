@@ -18,6 +18,7 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   situazione: 'situazioni',
   orologio: 'orologi',
   chiudi_finestra: 'finestra',
+  ritmo: 'finestra',
   salta_azione: 'azioni',
   nota: 'note',
   togli_nota: 'note',
@@ -38,7 +39,8 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = {
   scena: 'Cambio di scena',
   situazione: 'Immagine di situazione',
   orologio: 'Orologio',
-  chiudi_finestra: 'Chiudi la finestra',
+  chiudi_finestra: 'Risolvi ora',
+  ritmo: 'Ritmo',
   salta_azione: 'Salta azione',
   nota: 'Nota di regia',
   togli_nota: 'Togli nota',
@@ -109,6 +111,8 @@ export function descriviComando(comando: ComandoMaster): string {
       return `${nome} ${comando.id}`;
     case 'umore':
       return `${nome}: ${comando.umore ?? 'auto'}`;
+    case 'ritmo':
+      return `${nome}: ${comando.ritmo}`;
     case 'effetto':
       return `${nome}: ${comando.id}`;
     default:

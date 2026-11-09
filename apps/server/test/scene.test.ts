@@ -71,9 +71,10 @@ describe.skipIf(!presente)('campagne con più scene (ponte-lanterne)', () => {
       CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
       CANTASTORIE_CACHE_AUDIO: path.join(cartella, 'cache'),
       CANTASTORIE_TTS: 'mock',
+      // Assestamento lungo: l'azione di Dalia deve restare in coda mentre il master cambia scena.
+      CANTASTORIE_ASSESTAMENTO_MS: '3000',
       CANTASTORIE_MOCK_SCALA: '0.02',
       CANTASTORIE_MARGINE_AUDIO_MS: '50',
-      CANTASTORIE_STALLO_MS: '0',
       CANTASTORIE_PRERISCALDA: '0',
       CANTASTORIE_MASTER_TOKEN: TOKEN,
     } as NodeJS.ProcessEnv);

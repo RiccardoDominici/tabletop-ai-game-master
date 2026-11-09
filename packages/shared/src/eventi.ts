@@ -141,11 +141,11 @@ export interface EventiClientVersoServer {
   'azione:conferma': (dati: { id_pg: string }, ack: (esito: Esito) => void) => void;
   /**
    * Il giocatore sta scrivendo (al primo tasto e poi al massimo una volta al secondo): fissa la
-   * versione vista e tiene aperta la finestra per chi è invitato (indicatore degli ultimi 3 s).
+   * versione vista e allunga di poco l'assestamento prima della chiusura (indicatore degli ultimi
+   * 3 s), per un «anch'io» in arrivo. Non fa partire nessun conto alla rovescia.
    */
   'azione:scrivo': (dati: { id_pg: string; versione_vista: number }) => void;
   'azione:ritira': (dati: { id_pg: string }, ack: (esito: Esito) => void) => void;
-  'azione:pronto': (dati: { id_pg: string; pronto: boolean }, ack: (esito: Esito) => void) => void;
   /** Risincronizzazione: risponde con lo stato corrente. */
   'stato:richiedi': (ack: (stato: StatoTavolo) => void) => void;
 

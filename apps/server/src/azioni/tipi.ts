@@ -1,7 +1,9 @@
 /**
  * Azioni simultanee dei giocatori (docs/azioni-concorrenti.md): modello lato server.
  */
-import type { RichiestaScelta, StatoAzione } from '@cantastorie/shared';
+import type { RichiestaScelta, Ritmo, StatoAzione } from '@cantastorie/shared';
+
+export type { Ritmo };
 
 export interface Conflitto {
   /** Id dell'altra azione. */
@@ -25,7 +27,6 @@ export interface Azione {
   stato: StatoAzione;
   motivo: string | null;
   richiesta: RichiestaScelta | null;
-  pronto: boolean;
   dipende_da: string[];
   conflitti: Conflitto[];
   /** Cresce a ogni modifica: un giudizio dell'arbitro su una revisione vecchia si ignora. */

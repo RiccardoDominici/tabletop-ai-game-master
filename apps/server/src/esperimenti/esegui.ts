@@ -18,7 +18,8 @@
  * 2. Collega un proiettore virtuale (proiettore.ts), un pannello del master headless (master.ts)
  *    e un telefono headless per ogni PG.
  * 3. Turno per turno: aspetta la finestra, fa i cambi di scena del copione col comando del master
- *    (come il pannello), invia le azioni (le private con `privata: true`, come il telefono), tutti «pronto».
+ *    (come il pannello), invia le azioni (le private con `privata: true`, come il telefono), poi
+ *    «Risolvi ora» dal master (chi non agisce in quel turno del copione non si aspetta).
  * 4. Scrive esperimenti/risultati/<etichetta>/: trascrizione.md (verbatim, [usa] espansi e marcati),
  *    tavolo.md (solo ciò che il tavolo ha sentito e visto, per il giudice cieco), turni.jsonl,
  *    costo.json, riepilogo.json (latenze, fughe di segreti, quota pre-scritta, costo).
@@ -164,7 +165,10 @@ async function giocaCopione(
     osservatore.segnaChiusura(turnoServer);
     const corrente = turnoServer;
     const dopo = attendiStato(schermo, (s) => (s.turno === corrente + 1 && s.fase === 'finestra') || (s.fase === 'pausa' && s.turno === corrente), 300_000, `fine del turno ${n} (server ${corrente})`);
-    for (const [pg, t] of telefoni) await emetti<Esito>((cb) => t.emit('azione:pronto', { id_pg: pg, pronto: true }, cb));
+    // Inviare = pronto: con tutti i PG del copione la finestra si chiude da sola; chi in questo turno
+    // non agisce non si aspetta, quindi si chiude col «Risolvi ora» del master (un rifiuto vuol dire
+    // che si è già chiusa da sola, e va bene).
+    await master.comando({ tipo: 'chiudi_finestra' });
     const finito = await dopo;
     if (finito.fase === 'pausa') {
       const motivo = finito.trascrizione.at(-1)?.testo === TESTO_FINE_SCENA ? 'finale' : 'pausa';

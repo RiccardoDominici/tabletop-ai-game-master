@@ -1,6 +1,6 @@
 /**
  * Il telefono al tavolo: ascolto degli eventi, rientro a ogni (ri)connessione e comandi
- * (scelta del PG, bozza e invio/ritiro/conferma dell'azione, «pronto»).
+ * (scelta del PG, bozza e invio/ritiro/conferma dell'azione; inviare = pronto, non c'è altro).
  *
  * Bozza (docs/azioni-concorrenti.md): la `versione_vista` si fissa al primo tasto e va con
  * `azione:invia`; mentre si scrive parte `azione:scrivo` (primo tasto, poi max 1/s). Quando
@@ -241,9 +241,3 @@ export function ritiraAzione(): Promise<Esito> {
   return comando('ritira azione', () => conEsito((s, fine) => s.emit('azione:ritira', { id_pg: idPg }, fine)));
 }
 
-/** «Pronto» (anche senza azione: vuol dire «passo»). */
-export function impostaPronto(pronto: boolean): Promise<Esito> {
-  const idPg = pgCorrente();
-  if (typeof idPg !== 'string') return Promise.resolve(idPg);
-  return comando('pronto', () => conEsito((s, fine) => s.emit('azione:pronto', { id_pg: idPg, pronto }, fine)));
-}

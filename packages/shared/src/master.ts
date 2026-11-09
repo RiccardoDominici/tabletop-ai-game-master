@@ -53,7 +53,6 @@ export interface AzioneMaster {
   turno: number;
   /** Epoch ms del primo invio. */
   inviata_alle: number;
-  pronto: boolean;
   dipende_da: LegameAzione[];
   conflitti: Array<LegameAzione & { esclusivo: boolean; /** Questa azione vince il conflitto. */ vince: boolean }>;
   /** Si può saltare (in coda o da confermare). */
@@ -232,8 +231,10 @@ export type ComandoMaster =
   | { tipo: 'situazione'; id: string | null }
   /** Avanza (+1) o riporta indietro (-1) un orologio di un segno. */
   | { tipo: 'orologio'; id: string; passo: 1 | -1 }
-  /** Chiude subito la finestra delle azioni: il narratore risponde a quelle inviate. */
+  /** «Risolvi ora»: chiude subito la finestra, il narratore risponde alle azioni inviate (senza aspettare chi manca). */
   | { tipo: 'chiudi_finestra' }
+  /** Ritmo del tavolo: concitato (conto alla rovescia) o calmo; a finestra aperta vale subito. */
+  | { tipo: 'ritmo'; ritmo: 'calmo' | 'concitato' }
   /** Salta l'azione di un giocatore: non entra nel turno (torna nella sua casella da riscrivere). */
   | { tipo: 'salta_azione'; id_azione: string }
   /** Nota di regia per i prossimi `turni` turni (1–15; al massimo 3 note insieme). */

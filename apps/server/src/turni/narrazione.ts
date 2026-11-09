@@ -68,6 +68,8 @@ export interface EsitoTurnoNarrato {
   invito: string[] | 'tutti' | null;
   /** Id proposti con [orologio] (li valida la regia). */
   orologi: string[];
+  /** Ritmo chiesto con [ritmo] (vale l'ultima riga), null se il narratore non l'ha detto. */
+  ritmo: 'concitato' | 'calmo' | null;
   esito: EsitoNarrazione | null;
   frasi: number;
   /** Deviazioni dal protocollo (già nel log), per il registro delle narrazioni. */
@@ -161,6 +163,7 @@ export async function narraTurno(
   const idPng = new Set(campagna.png.map((x) => x.id));
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
+  let ritmo: 'concitato' | 'calmo' | null = null;
   /** Segnale audio in attesa della prossima frase. */
   let cuePendente: CueAudio | null = null;
   /** Il segnale per la prossima frase: quello in attesa unito a quello della battuta (che vince). */
@@ -250,6 +253,9 @@ export async function narraTurno(
         log.info({ turno: p.turno, battuta: e.id, versione: esito.versione, righe: esito.righe.length }, 'repertorio: battuta uscita');
       } else if (e.tipo === 'orologio') {
         orologi.push(e.id);
+      } else if (e.tipo === 'ritmo') {
+        ritmo = e.ritmo;
+        log.info({ turno: p.turno, ritmo: e.ritmo, grezzo: e.grezzo }, 'narratore: ritmo');
       } else if (e.tipo === 'umore' || e.tipo === 'effetto') {
         cueNarratore(e.tipo, e.tag);
       } else if (e.tipo === 'invito') {
@@ -280,6 +286,7 @@ export async function narraTurno(
   const risultato = (esito: EsitoNarrazione | null, errore: string | null, interrotto: boolean): EsitoTurnoNarrato => ({
     invito,
     orologi,
+    ritmo,
     esito,
     frasi: indice,
     anomalie,

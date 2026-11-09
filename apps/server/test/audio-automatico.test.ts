@@ -75,9 +75,9 @@ async function banco(modo: 'improvvisa' | 'repertorio', copione: (turno: number)
     CANTASTORIE_CACHE_AUDIO: path.join(cartella, 'cache'),
     CANTASTORIE_MODO: modo,
     CANTASTORIE_TTS: 'mock',
+    CANTASTORIE_ASSESTAMENTO_MS: '20',
     CANTASTORIE_MOCK_SCALA: '0.02',
     CANTASTORIE_MARGINE_AUDIO_MS: '50',
-    CANTASTORIE_STALLO_MS: '0',
     CANTASTORIE_MASTER_TOKEN: TOKEN,
     CANTASTORIE_AUDIO: AUDIO,
   } as NodeJS.ProcessEnv);

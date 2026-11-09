@@ -239,7 +239,9 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     registroTurni: new RegistroJsonl(path.join(config.cartellaLog, 'turni.jsonl')),
     registroCosti,
     registroNarrazioni: new RegistroJsonl(path.join(config.cartellaLog, 'narrazioni.jsonl')),
-    chiusuraDopoPrimaAzioneMs: config.turni.chiusuraDopoPrimaAzioneMs,
+    assestamentoMs: config.turni.assestamentoMs,
+    concitatoMs: config.turni.concitatoMs,
+    sorveglianteMs: config.turni.sorveglianteMs,
     margineFineAudioMs: config.turni.margineFineAudioMs,
     trascrizioneMax: config.turni.trascrizioneMax,
     preriscalda: config.llm.preriscalda,
@@ -254,7 +256,6 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     scenaPubblicaPer: (c) => riassuntoPubblico(c, paroleSegrete),
     immagini,
     audio,
-    stalloMs: config.turni.stalloMs,
   });
   regia.collega(uscite.regia);
 

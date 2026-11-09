@@ -154,6 +154,7 @@ describe('rotte dell’audio e cambio d’umore', () => {
       CANTASTORIE_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
       CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
       CANTASTORIE_TTS: 'mock',
+      CANTASTORIE_ASSESTAMENTO_MS: '20',
       CANTASTORIE_AUDIO: FIXTURE,
     } as NodeJS.ProcessEnv);
     server = await costruisciServer(config, loggerMuto(), { narratore: new NarratoreFinto({ idPng: [], idPg: [] }), arbitro: null });

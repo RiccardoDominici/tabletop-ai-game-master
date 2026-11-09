@@ -8,9 +8,13 @@
  *   dipende (anche lungo la catena) passa a «da confermare».
  * - Conflitti esclusivi: vince chi ha inviato prima (pareggi entro 1 s a rotazione); l'altro lo
  *   sa subito, finché può cambiare idea.
- * - Finestra: si chiude quando tutti gli invitati sono pronti o 10 s dopo la prima azione, ma si
- *   allunga (max 8 s) se ci sono azioni da confermare o un invitato sta scrivendo; allo scadere
- *   le «da confermare» diventano «sospese».
+ * - Finestra (richieste del 9 novembre): inviare vuol dire «ho finito». Si chiude quando TUTTI gli
+ *   invitati hanno un'azione viva, nessuna è da confermare, ed è passata una breve attesa di
+ *   assestamento (2,5 s, allungata finché qualcuno sta scrivendo, per un «anch'io» o una
+ *   correzione). Al ritmo calmo non c'è nessuna scadenza: se nessuno scrive, il gioco aspetta.
+ *   Al ritmo concitato (lo chiede la narrazione) la finestra ha una scadenza dall'apertura; allo
+ *   scadere si allunga di poco per chi scrive o deve confermare, poi le «da confermare» diventano
+ *   «sospese» e si risolve con quello che c'è. Un'azione in coda NON fa mai partire un conto.
  * - Chiusura atomica: si decide, si blocca la finestra (gli invii vanno alla successiva), si
  *   aspettano per poco i giudizi dell'arbitro in volo, poi in un solo passo sincrono tutte le
  *   azioni vive diventano «chiuse» (o «sospese»).
@@ -25,7 +29,7 @@ import { daSegnalare, percorsoVerso } from './propagazione';
 import { normalizza, relazioniDaRegole } from './regole';
 import { Spareggio } from './spareggio';
 import { avvisoConflitto, avvisoDipendenza, avvisoVecchia, MOTIVO_SOSPESA, motivoSuperata } from './testi';
-import { STATI_VIVI, type Arbitro, type Azione, type AzioneArbitro, type ContestoArbitro } from './tipi';
+import { STATI_VIVI, type Arbitro, type Azione, type AzioneArbitro, type ContestoArbitro, type Ritmo } from './tipi';
 import type { StatoTavoloSalvato } from '../sessione/tipi';
 
 export const MAX_CARATTERI_AZIONE = 500;
@@ -42,14 +46,14 @@ export interface OpzioniTavolo {
   arbitro: Arbitro | null;
   contesto: () => ContestoArbitro;
   log: Logger;
-  chiusuraDopoPrimaAzioneMs?: number;
+  /** Attesa dopo che tutti gli invitati hanno inviato, prima di chiudere (default 2,5 s). */
+  assestamentoMs?: number;
+  /** Ritmo concitato: la finestra si chiude da sola questo tempo dopo l'apertura (default 25 s). */
+  concitatoMs?: number;
+  /** Allungamento massimo per chi sta scrivendo o deve confermare (assestamento e scadenza). */
   estensioneMaxMs?: number;
   scritturaRecenteMs?: number;
   attesaArbitroMs?: number;
-  /** Finestra aperta senza nessun input (azioni, scrittura, pronto) per questo tempo → stallo. 0 = mai. */
-  stalloMs?: number;
-  /** Lo stallo può scattare? (falso senza telefoni collegati: nessuno sta giocando). Assente = sempre. */
-  puòStallare?: () => boolean;
   onCambio: () => void;
   onAzione: (id_pg: string, azione: AzionePrivata | null) => void;
   onChiusura: (r: RiepilogoChiusura) => void;
@@ -63,10 +67,12 @@ export interface RiepilogoChiusura {
   /** Invitati senza azione (hanno passato o non hanno scritto). */
   senzaAzione: string[];
   /**
-   * «stallo»: nessun input per 45 s, il narratore fa una mossa contro lo stallo.
-   * «master»: il master l'ha chiusa dal pannello.
+   * «tutti_inviato»: ogni invitato ha la sua azione (dopo l'assestamento).
+   * «scadenza»: ritmo concitato, il tempo è finito; si risolve con quello che c'è.
+   * «master»: il master l'ha chiusa dal pannello («Risolvi ora»).
+   * «forzata»: ferma/ricomincia/cambio di scena, niente narrazione.
    */
-  motivo: 'tutti_pronti' | 'scadenza' | 'forzata' | 'stallo' | 'master';
+  motivo: 'tutti_inviato' | 'scadenza' | 'forzata' | 'master';
   durata_ms: number;
   /** Istante monotono della chiusura (t0 delle misure). */
   chiusa_a: number;
@@ -75,21 +81,25 @@ export interface RiepilogoChiusura {
 interface Finestra {
   turno: number;
   invitati: string[];
+  /** Invitati all'apertura: chi si riconnette dopo essere caduto torna nell'elenco. */
+  chiamati: string[];
   invitoATutti: boolean;
   aperta: boolean;
   chiudendo: boolean;
   apertaA: number;
-  primaAzioneA: number | null;
-  /** Quando la chiusura è diventata dovuta (inizio dell'eventuale allungamento). */
+  ritmo: Ritmo;
+  /** Ritmo concitato: istante (monotono) della scadenza; null al ritmo calmo. */
+  scadenzaA: number | null;
+  /** La scadenza concitata è passata: inizio dell'allungamento (null = non ancora). */
   dovutaA: number | null;
-  pronti: Set<string>;
+  /** Tutti gli invitati hanno inviato: da qui conta l'assestamento (null = qualcuno manca). */
+  completaA: number | null;
 }
 
 export class TavoloAzioni {
-  private readonly o: Required<Omit<OpzioniTavolo, 'arbitro' | 'nomeBreve' | 'puòStallare'>> & {
+  private readonly o: Required<Omit<OpzioniTavolo, 'arbitro' | 'nomeBreve'>> & {
     arbitro: Arbitro | null;
     nomeBreve: (id: string) => string;
-    puòStallare?: () => boolean;
   };
   private readonly azioni = new Map<string, Azione>();
   /** id_pg → id dell'ultima azione del giocatore (qualsiasi stato). */
@@ -103,23 +113,22 @@ export class TavoloAzioni {
   private versioneScena = 0;
   private prossimoId = 1;
   private annullaControllo: (() => void) | null = null;
-  private annullaStallo: (() => void) | null = null;
   private spareggio: Spareggio;
   /** Giocatori con cui è stato creato lo spareggio (la rotazione vale finché il tavolo non cambia). */
   private giocatoriSpareggio: string;
   /**
    * Pausa del master: la finestra resta aperta (si scrive, si modifica, si ritira) ma non si chiude
-   * da sola e lo stallo non scatta finché il master non riprende.
+   * da sola finché il master non riprende.
    */
   private inPausa = false;
 
   constructor(opzioni: OpzioniTavolo) {
     this.o = {
-      chiusuraDopoPrimaAzioneMs: 10_000,
+      assestamentoMs: 2_500,
+      concitatoMs: 25_000,
       estensioneMaxMs: 8_000,
       scritturaRecenteMs: 3_000,
       attesaArbitroMs: 1_200,
-      stalloMs: 45_000,
       ...opzioni,
       nomeBreve: opzioni.nomeBreve ?? opzioni.nomePg,
     };
@@ -185,7 +194,6 @@ export class TavoloAzioni {
       stato: a.stato,
       motivo: a.motivo,
       richiesta: a.richiesta,
-      pronto: !!this.finestra?.pronti.has(a.autore) && this.finestra.turno === a.turno,
       versione_vista: a.versione_vista,
       turno: a.turno,
       inviata_alle: a.inviata_alle,
@@ -216,18 +224,38 @@ export class TavoloAzioni {
 
   finestraPubblica(): FinestraPubblica {
     const f = this.finestra;
-    if (!f || !f.aperta) return { aperta: false, turno: this.ultimoTurno, invitati: [], azioni: [], chiusura_prevista_ms: null };
-    const azioni: AzionePubblica[] = f.invitati.map((id) => ({ id_pg: id, scritta: !!this.azioneViva(id, f.turno), pronto: f.pronti.has(id) }));
-    // In pausa nessun conto alla rovescia: la finestra non si chiude da sola.
-    return { aperta: true, turno: f.turno, invitati: [...f.invitati], azioni, chiusura_prevista_ms: this.inPausa ? null : this.scadenzaEpoch() };
+    if (!f || !f.aperta) return { aperta: false, turno: this.ultimoTurno, invitati: [], azioni: [], aspettiamo: [], chiusura_prevista_ms: null };
+    const azioni: AzionePubblica[] = f.invitati.map((id) => ({ id_pg: id, scritta: !!this.azioneViva(id, f.turno) }));
+    return {
+      aperta: true,
+      turno: f.turno,
+      invitati: [...f.invitati],
+      azioni,
+      aspettiamo: this.mancano(f),
+      // Solo al ritmo concitato c'è un conto alla rovescia; in pausa la finestra non si chiude da sola.
+      chiusura_prevista_ms: this.inPausa ? null : this.scadenzaEpoch(),
+    };
   }
 
-  /** Epoch ms della prossima chiusura prevista (base 10 s, o fine dell'allungamento). */
+  /** Invitati che non hanno ancora un'azione viva in questa finestra (chi stiamo aspettando). */
+  private mancano(f: Finestra): string[] {
+    return f.invitati.filter((id) => !this.azioneViva(id, f.turno));
+  }
+
+  /**
+   * Epoch ms della chiusura automatica: solo al ritmo concitato (la scadenza, o la fine
+   * dell'allungamento una volta scaduta). Al ritmo calmo null: nessun conto alla rovescia.
+   */
   private scadenzaEpoch(): number | null {
     const f = this.finestra;
-    if (!f) return null;
-    const mono = f.dovutaA !== null ? f.dovutaA + this.o.estensioneMaxMs : f.primaAzioneA !== null ? f.primaAzioneA + this.o.chiusuraDopoPrimaAzioneMs : null;
-    return mono === null ? null : this.epoch(mono);
+    if (!f || f.scadenzaA === null) return null;
+    const mono = f.dovutaA !== null ? f.dovutaA + this.o.estensioneMaxMs : f.scadenzaA;
+    return this.epoch(mono);
+  }
+
+  /** Ritmo della finestra aperta (null a finestra chiusa). */
+  get ritmo(): Ritmo | null {
+    return this.finestra?.aperta ? this.finestra.ritmo : null;
   }
 
   private epoch(mono: number): number {
@@ -236,7 +264,12 @@ export class TavoloAzioni {
 
   // ------------------------------------------------------------------ finestra
 
-  apri(turno: number, invitati: string[], versioneScena: number, invitoATutti: boolean): void {
+  /**
+   * Apre la finestra del turno. `ritmo` concitato fissa la scadenza da adesso (la narrazione l'ha
+   * chiesto); al ritmo calmo nessuna scadenza. Le azioni già in coda (scritte mentre il narratore
+   * parlava) contano subito, ma non fanno partire nessun conto alla rovescia.
+   */
+  apri(turno: number, invitati: string[], versioneScena: number, invitoATutti: boolean, ritmo: Ritmo = 'calmo'): void {
     this.versioneScena = versioneScena;
     this.ultimoTurno = turno - 1;
     // La rotazione dei pareggi continua tra le finestre; riparte solo se cambiano i giocatori.
@@ -246,61 +279,79 @@ export class TavoloAzioni {
       this.giocatoriSpareggio = giocatori.join(',');
     }
     const ora = this.o.orologio.ora();
+    const elenco = [...new Set(invitati)];
     this.finestra = {
       turno,
-      invitati: [...new Set(invitati)],
+      invitati: elenco,
+      chiamati: [...elenco],
       invitoATutti,
       aperta: true,
       chiudendo: false,
       apertaA: ora,
-      // Azioni scritte mentre il narratore parlava: il conto alla rovescia parte all'apertura.
-      primaAzioneA: this.vive(turno).length ? ora : null,
+      ritmo,
+      scadenzaA: ritmo === 'concitato' ? ora + this.o.concitatoMs : null,
       dovutaA: null,
-      pronti: new Set(),
+      completaA: null,
     };
-    this.o.log.info({ turno, invitati: this.finestra.invitati, giaInCoda: this.vive(turno).length }, 'finestra: aperta');
-    this.riarmaStallo();
+    this.o.log.info({ turno, invitati: elenco, giaInCoda: this.vive(turno).length, ritmo, scadenza_ms: ritmo === 'concitato' ? this.o.concitatoMs : null }, 'finestra: aperta');
     this.o.onCambio();
     this.controlla();
   }
 
   /**
-   * Stallo (docs/architettura.md, «Turni»): se la finestra resta aperta senza NESSUN input per
-   * `stalloMs`, si chiude con motivo «stallo» e il narratore fa una mossa morbida. Ogni input
-   * (invio, scrittura, pronto, ritiro, conferma) fa ripartire il conto.
+   * Cambio di ritmo a finestra aperta (master): concitato fissa la scadenza da adesso, calmo la
+   * toglie (e azzera l'eventuale allungamento). A finestra chiusa vale per la prossima (lo passa
+   * la regia ad `apri`).
    */
-  private riarmaStallo(): void {
-    this.annullaStallo?.();
-    this.annullaStallo = null;
+  impostaRitmo(ritmo: Ritmo): void {
     const f = this.finestra;
-    if (!f?.aperta || f.chiudendo || this.o.stalloMs <= 0 || this.inPausa) return;
-    this.annullaStallo = this.o.orologio.dopo(this.o.stalloMs, () => {
-      this.annullaStallo = null;
-      const g = this.finestra;
-      if (!g?.aperta || g.chiudendo || this.vive(g.turno).length) return;
-      // Nessun telefono al tavolo: non c'è nessuno da smuovere. Si riprova più tardi.
-      if (this.o.puòStallare && !this.o.puòStallare()) {
-        this.o.log.debug({ turno: g.turno }, 'finestra: stallo saltato, nessun telefono collegato');
-        this.riarmaStallo();
-        return;
+    if (!f?.aperta || f.chiudendo || f.ritmo === ritmo) return;
+    f.ritmo = ritmo;
+    f.scadenzaA = ritmo === 'concitato' ? this.o.orologio.ora() + this.o.concitatoMs : null;
+    f.dovutaA = null;
+    this.o.log.info({ turno: f.turno, ritmo }, 'finestra: ritmo cambiato a finestra aperta');
+    for (const a of this.vive(f.turno)) {
+      if (a.richiesta) {
+        a.richiesta = { ...a.richiesta, scadenza_ms: this.scadenzaEpoch() };
+        this.notificaAzione(a);
       }
-      this.o.log.info({ turno: g.turno, ms: this.o.stalloMs }, 'finestra: stallo, nessun input');
-      void this.chiudi('stallo');
-    });
+    }
+    this.o.onCambio();
+    this.controlla();
   }
 
+  /**
+   * Un telefono ha scelto (o ritrovato) il suo PG: con l'invito a `tutti` entra nell'elenco; con
+   * un invito per nome rientra solo se era chiamato all'apertura (era caduto la connessione).
+   */
   aggiungiInvitato(id_pg: string): void {
     const f = this.finestra;
-    if (!f?.aperta || !f.invitoATutti || f.invitati.includes(id_pg)) return;
+    if (!f?.aperta || f.chiudendo || f.invitati.includes(id_pg)) return;
+    if (!f.invitoATutti && !f.chiamati.includes(id_pg)) return;
     f.invitati.push(id_pg);
+    this.o.log.info({ turno: f.turno, id_pg }, 'finestra: invitato (ri)entrato');
     this.o.onCambio();
+    this.controlla();
   }
 
+  /**
+   * Il telefono di un invitato si è scollegato: non lo si aspetta (se ha già scritto, la sua azione
+   * conta comunque). Se non resta nessun invitato si aspetta chiunque sia al tavolo, così il
+   * turno non parte mai senza un'azione.
+   */
   rimuoviInvitato(id_pg: string): void {
     const f = this.finestra;
-    if (!f?.aperta || f.invitati.length <= 1) return;
+    if (!f?.aperta || f.chiudendo || !f.invitati.includes(id_pg)) return;
     if (this.azioneViva(id_pg, f.turno)) return; // ha scritto: la sua azione conta comunque
     f.invitati = f.invitati.filter((x) => x !== id_pg);
+    if (f.invitati.length === 0) {
+      f.invitati = this.o.giocatori().filter((x) => x !== id_pg);
+      if (f.invitati.length === 0) f.invitati = [id_pg];
+      f.invitoATutti = true;
+      this.o.log.info({ turno: f.turno, uscito: id_pg, invitati: f.invitati }, 'finestra: nessun invitato collegato, si aspetta il tavolo');
+    } else {
+      this.o.log.info({ turno: f.turno, uscito: id_pg, invitati: f.invitati }, 'finestra: invitato scollegato, non lo si aspetta');
+    }
     this.o.onCambio();
     this.controlla();
   }
@@ -311,7 +362,6 @@ export class TavoloAzioni {
     const pulito = testo.trim();
     if (!pulito) return { ok: false, errore: 'Scrivi cosa fa il tuo personaggio.' };
     if (pulito.length > MAX_CARATTERI_AZIONE) return { ok: false, errore: `Massimo ${MAX_CARATTERI_AZIONE} caratteri.` };
-    const ora = this.o.orologio.ora();
     const adesso = this.o.orologio.adesso();
     const turno = this.turnoDestinazione;
     const esistente = this.azioneViva(id_pg, turno);
@@ -343,7 +393,6 @@ export class TavoloAzioni {
         stato: 'in_coda',
         motivo: null,
         richiesta: null,
-        pronto: false,
         dipende_da: [],
         conflitti: [],
         revisione: 1,
@@ -351,13 +400,11 @@ export class TavoloAzioni {
       };
       this.azioni.set(a.id, a);
       this.ultima.set(id_pg, a.id);
-      const f = this.finestra;
-      if (f?.aperta && !f.chiudendo && f.turno === turno && f.primaAzioneA === null) f.primaAzioneA = ora;
       this.o.log.info({ azione: a.id, autore: id_pg, turno, privata, versione_vista: a.versione_vista, finestra_aperta: this.aperta }, 'azione: inviata');
       this.dopoInvio(a);
     }
     this.scritture.delete(id_pg);
-    this.riarmaStallo();
+    this.riavviaAssestamento();
     this.o.onCambio();
     this.controlla();
     return { ok: true };
@@ -369,11 +416,10 @@ export class TavoloAzioni {
     a.stato = 'ritirata';
     a.richiesta = null;
     a.motivo = null;
-    this.finestra?.pronti.delete(id_pg);
     this.o.log.info({ azione: a.id, autore: id_pg }, 'azione: ritirata');
     this.segnalaDipendenti(a, 'ritirata', null);
     this.notificaAzione(a);
-    this.riarmaStallo();
+    this.riavviaAssestamento();
     this.o.onCambio();
     this.controlla();
     return { ok: true };
@@ -388,31 +434,24 @@ export class TavoloAzioni {
     a.motivo = null;
     this.o.log.info({ azione: a.id, autore: id_pg }, 'azione: confermata');
     this.notificaAzione(a);
-    this.riarmaStallo();
+    this.riavviaAssestamento();
     this.o.onCambio();
     this.controlla();
     return { ok: true };
   }
 
-  pronto(id_pg: string, pronto: boolean): Esito {
-    const f = this.finestra;
-    if (!f?.aperta || f.chiudendo) return { ok: false, errore: 'La finestra delle azioni è chiusa: la tua azione entrerà nella prossima.' };
-    if (!f.invitati.includes(id_pg)) return { ok: false, errore: 'Questa volta il narratore non ha chiamato il tuo personaggio: scrivi pure, la tua azione entra comunque.' };
-    if (pronto) f.pronti.add(id_pg);
-    else f.pronti.delete(id_pg);
-    const a = this.azioneViva(id_pg, f.turno);
-    if (a) this.notificaAzione(a);
-    this.riarmaStallo();
-    this.o.onCambio();
-    this.controlla();
-    return { ok: true };
-  }
-
-  /** Indicatore «sta scrivendo»: allunga la chiusura per gli invitati (ed è un input: niente stallo). */
+  /**
+   * Indicatore «sta scrivendo»: allunga l'assestamento (un «anch'io» in arrivo) e, al ritmo
+   * concitato, l'allungamento dopo la scadenza. Non fa mai partire un conto alla rovescia.
+   */
   scrivo(id_pg: string): void {
     this.scritture.set(id_pg, this.o.orologio.ora());
-    this.riarmaStallo();
     this.controlla();
+  }
+
+  /** Qualcosa è cambiato (invio, modifica, ritiro, conferma): l'assestamento riparte da adesso. */
+  private riavviaAssestamento(): void {
+    if (this.finestra?.aperta && !this.finestra.chiudendo) this.finestra.completaA = null;
   }
 
   // ------------------------------------------------------------------ arbitro
@@ -555,7 +594,8 @@ export class TavoloAzioni {
     // La spinta giusta: chi ha perso l'appoggio (dipendenza, conflitto) probabilmente cambia;
     // un'azione vecchia ma dubbia probabilmente vale ancora.
     const consigliato = r.tipo === 'vecchia' ? 'conferma' : 'cambio';
-    a.richiesta = { ...r, consigliato, scadenza_ms: this.finestra?.dovutaA != null && this.finestra.turno === a.turno ? this.scadenzaEpoch() : null };
+    // Al ritmo concitato la scelta ha la scadenza della finestra; al calmo nessuna (si aspetta).
+    a.richiesta = { ...r, consigliato, scadenza_ms: this.finestra?.aperta && this.finestra.turno === a.turno ? this.scadenzaEpoch() : null };
     a.motivo = r.testo;
     this.notificaAzione(a);
   }
@@ -566,41 +606,73 @@ export class TavoloAzioni {
 
   // ------------------------------------------------------------------ chiusura
 
-  /** Ricontrolla le condizioni di chiusura e programma il prossimo controllo. */
+  /**
+   * Ricontrolla le condizioni di chiusura e programma il prossimo controllo (un solo timer).
+   *
+   * 1. Completa: ogni invitato ha un'azione viva e nessuna azione è da confermare → si chiude
+   *    dopo `assestamentoMs` dal momento in cui lo è diventata (ogni invio, ritiro o conferma lo
+   *    fa ripartire), allungato finché qualcuno sta scrivendo, al massimo di `estensioneMaxMs`.
+   * 2. Ritmo concitato e scadenza passata → allungamento (al massimo `estensioneMaxMs`) finché
+   *    c'è chi scrive o deve confermare, poi si chiude con quello che c'è.
+   * 3. Altrimenti si aspetta, senza timer: al ritmo calmo il gioco non ha fretta.
+   */
   private controlla(): void {
     const f = this.finestra;
     if (!f?.aperta || f.chiudendo || this.inPausa) return;
     this.annullaControllo?.();
     this.annullaControllo = null;
     const ora = this.o.orologio.ora();
-    const tuttiPronti = f.invitati.length > 0 && f.invitati.every((p) => f.pronti.has(p));
-    const scadenzaBase = f.primaAzioneA === null ? null : f.primaAzioneA + this.o.chiusuraDopoPrimaAzioneMs;
-    if (!tuttiPronti && (scadenzaBase === null || ora < scadenzaBase)) {
-      if (scadenzaBase !== null) this.annullaControllo = this.o.orologio.dopo(scadenzaBase - ora, () => this.controlla());
-      return;
+    const vive = this.vive(f.turno);
+    const daConfermare = vive.some((a) => a.stato === 'da_confermare');
+    const completa = f.invitati.length > 0 && this.mancano(f).length === 0 && !daConfermare;
+    // Chi sta scrivendo adesso (anche chi non è invitato: la sua azione entra in questo turno).
+    const scriventi = [...this.scritture.values()].filter((t) => ora - t < this.o.scritturaRecenteMs);
+    const fineScrittura = scriventi.length ? Math.max(...scriventi) + this.o.scritturaRecenteMs : 0;
+    const scadenze: number[] = [];
+
+    if (completa) {
+      if (f.completaA === null) {
+        f.completaA = ora;
+        this.o.log.debug({ turno: f.turno, assestamento_ms: this.o.assestamentoMs }, 'finestra: tutti hanno inviato, assestamento');
+      }
+      const base = f.completaA + this.o.assestamentoMs;
+      const fine = Math.min(Math.max(base, fineScrittura), base + this.o.estensioneMaxMs);
+      if (ora >= fine) return void this.chiudi('tutti_inviato');
+      scadenze.push(fine);
+    } else {
+      f.completaA = null;
     }
-    const motivo = tuttiPronti ? 'tutti_pronti' : 'scadenza';
-    if (f.dovutaA === null) {
-      f.dovutaA = ora;
-      // Le scelte in sospeso ora hanno una scadenza precisa.
-      for (const a of this.vive(f.turno)) {
-        if (a.richiesta && a.richiesta.scadenza_ms === null) {
-          a.richiesta = { ...a.richiesta, scadenza_ms: this.scadenzaEpoch() };
-          this.notificaAzione(a);
+
+    if (f.scadenzaA !== null) {
+      if (ora >= f.scadenzaA) {
+        if (f.dovutaA === null) {
+          f.dovutaA = ora;
+          this.o.log.info({ turno: f.turno, mancano: this.mancano(f), daConfermare }, 'finestra: scadenza del ritmo concitato');
+          // Le scelte in sospeso ora hanno una scadenza precisa (la fine dell'allungamento).
+          for (const a of vive) {
+            if (a.richiesta) {
+              a.richiesta = { ...a.richiesta, scadenza_ms: this.scadenzaEpoch() };
+              this.notificaAzione(a);
+            }
+          }
+          this.o.onCambio();
         }
+        const fine = f.dovutaA + this.o.estensioneMaxMs;
+        const invitatiScrivono = f.invitati.some((p) => {
+          const t = this.scritture.get(p);
+          return t !== undefined && ora - t < this.o.scritturaRecenteMs;
+        });
+        if (!(daConfermare || invitatiScrivono) || ora >= fine) return void this.chiudi('scadenza');
+        scadenze.push(Math.min(fine, fineScrittura || fine));
+      } else {
+        scadenze.push(f.scadenzaA);
       }
     }
-    const fine = f.dovutaA + this.o.estensioneMaxMs;
-    const daConfermare = this.vive(f.turno).some((a) => a.stato === 'da_confermare');
-    const scriventi = f.invitati.map((p) => this.scritture.get(p)).filter((t): t is number => t !== undefined && ora - t < this.o.scritturaRecenteMs);
-    if ((daConfermare || scriventi.length) && ora < fine) {
-      // Si allunga: prossimo controllo quando smette di scrivere o allo scadere dell'allungamento.
-      const prossimo = Math.min(fine, ...scriventi.map((t) => t + this.o.scritturaRecenteMs));
+
+    if (scadenze.length) {
+      const prossimo = Math.min(...scadenze);
       this.annullaControllo = this.o.orologio.dopo(Math.max(10, prossimo - ora), () => this.controlla());
-      this.o.onCambio();
-      return;
     }
-    void this.chiudi(motivo);
   }
 
   /** Chiusura forzata (ferma/ricomincia): niente narrazione. */
@@ -612,35 +684,32 @@ export class TavoloAzioni {
   // ------------------------------------------------------------------ comandi del master
 
   /**
-   * Pausa del master a finestra aperta: niente chiusura automatica e niente stallo. Le azioni
-   * restano vive e modificabili; i timer si fermano.
+   * Pausa del master a finestra aperta: niente chiusura automatica. Le azioni restano vive e
+   * modificabili; i timer si fermano.
    */
   sospendi(): void {
     if (this.inPausa) return;
     this.inPausa = true;
     this.annullaControllo?.();
     this.annullaControllo = null;
-    this.annullaStallo?.();
-    this.annullaStallo = null;
     this.o.log.info({ turno: this.finestra?.turno ?? null }, 'finestra: sospesa dal master');
     this.o.onCambio();
   }
 
   /**
-   * Ripresa dopo la pausa: il conto alla rovescia riparte da capo (10 s se c'è già un'azione) e
-   * l'allungamento si azzera; chi era pronto resta pronto.
+   * Ripresa dopo la pausa: al ritmo concitato la scadenza riparte da capo (tutto il tempo di
+   * nuovo), l'allungamento e l'assestamento si azzerano.
    */
   riprendi(): void {
     if (!this.inPausa) return;
     this.inPausa = false;
     const f = this.finestra;
     if (f?.aperta && !f.chiudendo) {
-      const ora = this.o.orologio.ora();
-      f.primaAzioneA = this.vive(f.turno).length ? ora : null;
+      f.scadenzaA = f.ritmo === 'concitato' ? this.o.orologio.ora() + this.o.concitatoMs : null;
       f.dovutaA = null;
+      f.completaA = null;
     }
     this.o.log.info({ turno: f?.turno ?? null }, 'finestra: ripresa dal master');
-    this.riarmaStallo();
     this.o.onCambio();
     this.controlla();
   }
@@ -665,7 +734,7 @@ export class TavoloAzioni {
     a.stato = 'superata';
     a.richiesta = null;
     a.motivo = motivo;
-    if (this.finestra?.turno === a.turno) this.finestra.pronti.delete(a.autore);
+    this.riavviaAssestamento();
     this.o.log.info({ azione: a.id, autore: a.autore, turno: a.turno }, 'azione: saltata dal master');
     this.segnalaDipendenti(a, 'superata', null);
     this.notificaAzione(a);
@@ -713,8 +782,6 @@ export class TavoloAzioni {
     f.chiudendo = true; // lucchetto: da qui gli invii vanno alla finestra successiva
     this.annullaControllo?.();
     this.annullaControllo = null;
-    this.annullaStallo?.();
-    this.annullaStallo = null;
     // Giudizi dell'arbitro ancora in volo: si aspettano per poco, così il narratore ha i collegamenti.
     if (motivo !== 'forzata' && this.inVolo.size) {
       const t0 = this.o.orologio.ora();
@@ -756,7 +823,7 @@ export class TavoloAzioni {
       chiusa_a: ora,
     };
     for (const a of vive) this.notificaAzione(a);
-    this.o.log.info({ turno: f.turno, motivo, chiuse: ordinate.map((a) => a.id), sospese: sospese.map((a) => a.id), durata_ms: r.durata_ms }, 'finestra: chiusa');
+    this.o.log.info({ turno: f.turno, motivo, ritmo: f.ritmo, chiuse: ordinate.map((a) => a.id), sospese: sospese.map((a) => a.id), durata_ms: r.durata_ms }, 'finestra: chiusa');
     if (motivo !== 'forzata') this.o.onChiusura(r);
     this.o.onCambio();
   }
@@ -835,7 +902,7 @@ export class TavoloAzioni {
     return {
       azioni,
       ultima: [...this.ultima],
-      finestra: f ? { turno: f.turno, invitati: [...f.invitati], invitoATutti: f.invitoATutti, aperta: f.aperta, pronti: [...f.pronti] } : null,
+      finestra: f ? { turno: f.turno, invitati: [...f.invitati], invitoATutti: f.invitoATutti, aperta: f.aperta, ritmo: f.ritmo } : null,
       ultimoTurno: this.ultimoTurno,
       versioneScena: this.versioneScena,
       prossimoId: this.prossimoId,
@@ -869,10 +936,12 @@ export class TavoloAzioni {
     return { finestra: s.finestra ?? null, interrotte };
   }
 
-  /** Riapre una finestra salvata (ripresa): stessi invitati e chi era pronto; i timer ripartono da adesso. */
+  /**
+   * Riapre una finestra salvata (ripresa): stessi invitati e stesso ritmo; l'eventuale scadenza
+   * concitata riparte da adesso (gli archivi di prima avevano anche `pronti`: si ignora).
+   */
   riapri(f: NonNullable<StatoTavoloSalvato['finestra']>, versioneScena: number, inPausa: boolean): void {
-    this.apri(f.turno, f.invitati, versioneScena, f.invitoATutti);
-    for (const p of f.pronti) if (this.finestra?.invitati.includes(p)) this.finestra.pronti.add(p);
+    this.apri(f.turno, f.invitati, versioneScena, f.invitoATutti, f.ritmo === 'concitato' ? 'concitato' : 'calmo');
     if (inPausa) this.sospendi();
     else this.controlla();
   }
@@ -881,8 +950,6 @@ export class TavoloAzioni {
   spegni(): void {
     this.annullaControllo?.();
     this.annullaControllo = null;
-    this.annullaStallo?.();
-    this.annullaStallo = null;
   }
 
   /** Ricomincia: dimentica tutto. */
@@ -890,8 +957,6 @@ export class TavoloAzioni {
     this.inPausa = false;
     this.annullaControllo?.();
     this.annullaControllo = null;
-    this.annullaStallo?.();
-    this.annullaStallo = null;
     for (const id of this.ultima.keys()) this.o.onAzione(id, null);
     this.azioni.clear();
     this.ultima.clear();

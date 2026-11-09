@@ -2,17 +2,20 @@
  * E2E delle azioni simultanee (docs/azioni-concorrenti.md, «Verifica»): proiettore + tre
  * telefoni sul server vero, avviato con narratore a copione, arbitro vero (regole + Haiku) e
  * voce finta:
- *   CANTASTORIE_PORTA=4710 CANTASTORIE_LLM=finto CANTASTORIE_ARBITRO=haiku CANTASTORIE_MOCK_SCALA=0.25 scripts/avvio.sh --mock
+ *   CANTASTORIE_PORTA=4710 CANTASTORIE_LLM=finto CANTASTORIE_ARBITRO=haiku CANTASTORIE_MOCK_SCALA=0.25 \
+ *     CANTASTORIE_CONCITATO_MS=10000 scripts/avvio.sh --mock
  *   npx playwright test -c apps/web/playwright.config.ts azioni
  *
  * Scenari: dipendenza («anch'io») + ritiro → avviso a tutto schermo; conflitto esclusivo (Haiku)
- * → «Tengo / Cambio / Ritiro» e cambio; scrittura mentre il narratore parla; scelta lasciata
- * scadere → «rimasta fuori» con il testo restituito. Screenshot degli avvisi in
- * logs/screenshots/azioni-*.png; nessun errore in console.
+ * → «Tengo / Cambio / Ritiro» e cambio; inviare = pronto (la finestra si chiude quando hanno
+ * inviato tutti); scrittura mentre il narratore parla; al ritmo concitato (dal pannello del master)
+ * una scelta lasciata scadere → «rimasta fuori» con il testo restituito. Al ritmo calmo una scelta
+ * non scade mai. Screenshot degli avvisi in logs/screenshots/azioni-*.png; nessun errore in console.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Browser, type Page } from '@playwright/test';
+import { CARTELLA_LOG } from './percorsi';
 
 // Ogni prova chiude i contesti che ha aperto col browser condiviso, anche se fallisce: un proiettore
 // rimasto collegato farebbe ripartire la scena (e suonerebbe l'audio) nella prova successiva.
@@ -22,6 +25,15 @@ test.afterEach(async ({ browser }) => {
 
 const RADICE = path.resolve(import.meta.dirname, '..', '..', '..');
 const SCREENSHOT = path.join(RADICE, 'logs', 'screenshots');
+
+/** Link del pannello dall'ultimo avvio in server.out (il token cambia a ogni avvio). */
+function linkMaster(): string {
+  const out = fs.readFileSync(path.join(CARTELLA_LOG, 'server.out'), 'utf8');
+  const ultimo = out.slice(out.lastIndexOf('=== avvio'));
+  const riga = ultimo.split('\n').filter((r) => r.includes('"PANNELLO MASTER"')).at(-1);
+  if (!riga) throw new Error('riga PANNELLO MASTER non trovata in server.out');
+  return (JSON.parse(riga) as { master: string }).master;
+}
 
 interface Salute {
   fase: string;
@@ -111,11 +123,7 @@ test('azioni simultanee: dipendenze, conflitti, scrittura durante la narrazione,
   await scrivi(ginestra, 'tengo alta la lanterna per Assenzio');
   await expect(ginestra.getByTestId('stato-mia-azione')).toHaveText('in coda');
 
-  // Pronti: la finestra si chiude, il narratore (a copione) parla.
-  for (const p of [ginestra, corrado, assenzio]) {
-    const b = p.getByTestId('pronto');
-    if (await b.isEnabled().catch(() => false)) await b.click();
-  }
+  // Inviare = pronto: hanno un'azione tutti e tre, la finestra si chiude da sola e il narratore parla.
   await attendiFase(schermo, (s) => s.fase === 'narrazione', 20_000, 'narrazione del turno 1');
 
   // --- 3. Si scrive mentre il narratore parla: l'azione aspetta la finestra dopo.
@@ -125,13 +133,19 @@ test('azioni simultanee: dipendenze, conflitti, scrittura durante la narrazione,
   await assenzio.screenshot({ path: path.join(SCREENSHOT, 'azioni-durante-narrazione.png') });
   await attendiFase(schermo, (s) => s.fase === 'finestra' && s.turno === 2, 90_000, 'seconda finestra');
 
-  // --- 4. Scelta lasciata scadere: l'azione resta fuori e il testo torna nella casella.
+  // --- 4. Ritmo concitato dal pannello del master: una scelta lasciata scadere resta fuori, e il
+  // testo torna nella casella (al ritmo calmo non scadrebbe mai: si aspetta chi deve decidere).
+  const master = await (await browser.newContext({ viewport: { width: 1440, height: 1000 } })).newPage();
+  master.on('console', (m) => m.type() === 'error' && errori.push(`[master] ${m.text()}`));
+  await master.goto(linkMaster());
+  await master.getByTestId('master-ritmo').click();
+  await expect(master.getByTestId('master-ritmo-stato')).toHaveText('ritmo concitato');
   await scrivi(ginestra, "vado verso la porta d'ingresso");
   await scrivi(corrado, 'la seguo');
   await expect(ginestra.getByTestId('al-tavolo')).toContainText('la seguo');
   await ginestra.getByTestId('ritira-azione').click();
   await expect(corrado.getByTestId('scelta-azione')).toBeVisible({ timeout: 5000 });
-  // Nessuno risponde: dopo 10 s dalla prima azione la chiusura è dovuta, si allunga di 8 s, poi «sospesa».
+  // Nessuno risponde: alla scadenza concitata (10 s) la chiusura è dovuta, si allunga di 8 s, poi «sospesa».
   await expect(corrado.getByTestId('scelta-conto')).toBeVisible({ timeout: 15_000 });
   await corrado.screenshot({ path: path.join(SCREENSHOT, 'azioni-avviso-conto.png') });
   await expect(corrado.getByTestId('stato-mia-azione')).toHaveText('rimasta fuori', { timeout: 30_000 });

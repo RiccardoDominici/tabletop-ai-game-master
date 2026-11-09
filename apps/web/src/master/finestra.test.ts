@@ -9,25 +9,25 @@ const pg: PgPubblico[] = [
 ];
 
 function finestra(parziale: Partial<FinestraPubblica>): FinestraPubblica {
-  return { aperta: true, turno: 2, invitati: [], azioni: [], chiusura_prevista_ms: null, ...parziale };
+  return { aperta: true, turno: 2, invitati: [], azioni: [], aspettiamo: [], chiusura_prevista_ms: null, ...parziale };
 }
 
 describe('righeInvitati', () => {
-  it('invitati con scritta/pronto, poi chi ha scritto senza invito', () => {
+  it('invitati con «ha inviato» sì/no, poi chi ha scritto senza invito', () => {
     const righe = righeInvitati({
       pg,
       finestra: finestra({
         invitati: ['ginestra', 'corrado'],
         azioni: [
-          { id_pg: 'corrado', scritta: true, pronto: true },
-          { id_pg: 'bruno', scritta: true, pronto: false },
+          { id_pg: 'corrado', scritta: true },
+          { id_pg: 'bruno', scritta: true },
         ],
       }),
     });
     expect(righe).toEqual([
-      { id_pg: 'ginestra', nome: 'Ginestra', invitato: true, scritta: false, pronto: false },
-      { id_pg: 'corrado', nome: 'Corrado', invitato: true, scritta: true, pronto: true },
-      { id_pg: 'bruno', nome: 'Bruno', invitato: false, scritta: true, pronto: false },
+      { id_pg: 'ginestra', nome: 'Ginestra', invitato: true, scritta: false },
+      { id_pg: 'corrado', nome: 'Corrado', invitato: true, scritta: true },
+      { id_pg: 'bruno', nome: 'Bruno', invitato: false, scritta: true },
     ]);
   });
   it('«tutti» si espande in tutti i PG', () => {
@@ -37,6 +37,6 @@ describe('righeInvitati', () => {
   });
   it('un id sconosciuto si mostra come id; niente doppioni', () => {
     const righe = righeInvitati({ pg, finestra: finestra({ invitati: ['zeta', 'zeta'] }) });
-    expect(righe).toEqual([{ id_pg: 'zeta', nome: 'zeta', invitato: true, scritta: false, pronto: false }]);
+    expect(righe).toEqual([{ id_pg: 'zeta', nome: 'zeta', invitato: true, scritta: false }]);
   });
 });

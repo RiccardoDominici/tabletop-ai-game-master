@@ -95,7 +95,6 @@ test('due sessioni: fine sessione col registro, prossima sessione dal riassunto,
   await expect(tel.getByTestId('trascrizione')).toContainText('Piove da tre giorni sulla valle.');
   await tel.getByTestId('testo-azione').fill('Guardo dietro il banco.');
   await tel.getByTestId('invia-azione').click();
-  await tel.getByTestId('pronto').click();
   await expect(master.getByTestId('master-turno')).toContainText('turno 2', { timeout: 90_000 });
   await expect(master.getByTestId('master-fase')).toHaveAttribute('data-fase', 'finestra', { timeout: 90_000 });
   await foto(master, 'master-01');

@@ -111,7 +111,10 @@ function SuggerimentoFase({ stato }: { stato: StatoTavolo }) {
   } else if (stato.fase === 'fermata') {
     testo = 'Scena fermata';
   } else if (stato.fase === 'pausa') {
-    testo = stato.pausa_automatica ? "Il tavolo è in pausa: scrivete un'azione per ripartire" : 'Tavolo in pausa';
+    testo = 'Tavolo in pausa';
+  } else if (stato.fase === 'narrazione' || stato.fase === 'apertura' || (stato.fase === 'finestra' && !stato.finestra.aperta)) {
+    // Il Motore lavora (LLM, voce): in silenzio si dice che il narratore sta preparando.
+    testo = 'Il narratore sta preparando…';
   } else if (stato.fase === 'attesa') {
     testo = 'La scena sta per cominciare';
   } else {

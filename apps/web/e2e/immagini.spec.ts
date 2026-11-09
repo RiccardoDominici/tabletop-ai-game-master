@@ -48,7 +48,6 @@ test('proiettore: immagine del luogo, ritratto di chi parla, dissolvenza, ripieg
   await expect.poll(async () => (await salute(schermo)).fase, { timeout: 90_000 }).toBe('finestra');
   await tel.getByTestId('testo-azione').fill('saluto l’ostessa');
   await tel.getByTestId('invia-azione').click();
-  await tel.getByTestId('pronto').click();
   await expect(schermo.getByTestId('ritratto')).toBeVisible({ timeout: 30_000 });
   await expect(schermo.getByTestId('ritratto')).toHaveAttribute('src', /ritratto_png_ottavia\.jpg/);
   // La riga di stato in basso dice chi parla davvero, non «Il narratore sta parlando».

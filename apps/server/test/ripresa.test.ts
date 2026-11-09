@@ -59,9 +59,9 @@ async function avvia(): Promise<{ s: ServerCantastorie; url: string }> {
     CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
     CANTASTORIE_CACHE_AUDIO: path.join(cartella, 'cache'),
     CANTASTORIE_TTS: 'mock',
+    CANTASTORIE_ASSESTAMENTO_MS: '20',
     CANTASTORIE_MOCK_SCALA: '0.02',
     CANTASTORIE_MARGINE_AUDIO_MS: '50',
-    CANTASTORIE_STALLO_MS: '0',
     CANTASTORIE_PRERISCALDA: '0',
     CANTASTORIE_MASTER_TOKEN: TOKEN,
   } as NodeJS.ProcessEnv);
@@ -101,7 +101,6 @@ async function proiettore(url: string): Promise<Client> {
 
 async function agisci(tel: Client, testo: string, versione: number): Promise<void> {
   expect(await emetti<Esito>((cb) => tel.emit('azione:invia', { id_pg: 'pg_anna', testo, versione_vista: versione }, cb))).toEqual({ ok: true });
-  expect(await emetti<Esito>((cb) => tel.emit('azione:pronto', { id_pg: 'pg_anna', pronto: true }, cb))).toEqual({ ok: true });
 }
 
 describe('sessione ripresa dopo un riavvio a metà partita', () => {

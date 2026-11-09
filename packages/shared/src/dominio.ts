@@ -14,7 +14,10 @@ export type FaseScena =
   | 'attesa'
   /** Il narratore legge il testo d'apertura della scena. */
   | 'apertura'
-  /** Finestra delle azioni aperta: gli invitati scrivono, modificano, ritirano, premono «pronto». */
+  /**
+   * Finestra delle azioni aperta: gli invitati scrivono, modificano, ritirano. Inviare vuol dire
+   * «ho finito»: quando hanno inviato tutti, il turno parte da solo (docs/f0-contratti.md, «Turno»).
+   */
   | 'finestra'
   /** Finestra chiusa: Haiku narra, la voce parla, lo schermo suona. */
   | 'narrazione'
@@ -77,10 +80,16 @@ export type StatoAzione =
 /** Presenza di un invitato nella finestra corrente (senza il testo). */
 export interface AzionePubblica {
   id_pg: string;
-  /** Il PG ha un'azione inviata e valida in questa finestra. */
+  /** Il PG ha un'azione inviata e valida in questa finestra (inviare = ha finito). */
   scritta: boolean;
-  pronto: boolean;
 }
+
+/**
+ * Ritmo del tavolo. «calmo» (normale): nessuna scadenza, il turno parte quando hanno inviato
+ * tutti gli invitati. «concitato» (la narrazione lo chiede: combattimento, inseguimento,
+ * pericolo imminente): la finestra ha un conto alla rovescia dall'apertura.
+ */
+export type Ritmo = 'calmo' | 'concitato';
 
 /** Scelta chiesta al giocatore quando la sua azione passa a «da confermare». */
 export interface RichiestaScelta {
@@ -110,7 +119,6 @@ export interface AzionePrivata {
   motivo: string | null;
   /** Presente quando lo stato è «da_confermare». */
   richiesta: RichiestaScelta | null;
-  pronto: boolean;
   /** Ultima narrazione che il giocatore aveva ricevuto quando ha cominciato a scrivere. */
   versione_vista: number;
   /** Turno (finestra) in cui l'azione entra. */
@@ -144,7 +152,12 @@ export interface FinestraPubblica {
   turno: number;
   invitati: string[];
   azioni: AzionePubblica[];
-  /** Epoch ms in cui la finestra si chiuderà da sola (10 s dopo la prima azione), se fissato. */
+  /** Invitati che non hanno ancora inviato: «Aspettiamo: Paolo, Giulia» (vuoto a finestra chiusa). */
+  aspettiamo: string[];
+  /**
+   * Epoch ms in cui la finestra si chiuderà da sola: SOLO al ritmo concitato (conto alla rovescia).
+   * Al ritmo calmo è null: si aspetta che inviino tutti, o il «Risolvi ora» del master.
+   */
   chiusura_prevista_ms: number | null;
 }
 
@@ -255,10 +268,10 @@ export interface StatoTavolo {
   /** Lo schermo ha premuto «Inizia sessione» ed è connesso. */
   schermo_connesso: boolean;
   /**
-   * Il tavolo si è messo in pausa da solo (nessuno scriveva da più mosse contro lo stallo): riparte
-   * alla prima azione di un telefono. Solo con fase 'pausa'.
+   * Ritmo del tavolo (vale per la finestra aperta, o per la prossima): «concitato» solo quando la
+   * narrazione lo chiede; si torna a «calmo» quando lo dice il narratore o si cambia scena.
    */
-  pausa_automatica: boolean;
+  ritmo: Ritmo;
   /**
    * Epoch ms del server quando ha costruito questa istantanea: il client ne ricava lo scarto
    * del proprio orologio, così il conto alla rovescia (`chiusura_prevista_ms`) è giusto anche

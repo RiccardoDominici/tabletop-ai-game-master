@@ -78,9 +78,10 @@ beforeAll(async () => {
     CANTASTORIE_CARTELLA_CAMPAGNA: campagna,
     CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
     CANTASTORIE_TTS: 'mock',
+    // Assestamento lungo: qui il master chiude e mette in pausa a mano subito dopo un invio.
+    CANTASTORIE_ASSESTAMENTO_MS: '1500',
     CANTASTORIE_MOCK_SCALA: '0.02',
     CANTASTORIE_MARGINE_AUDIO_MS: '50',
-    CANTASTORIE_STALLO_MS: '0',
     CANTASTORIE_MASTER_TOKEN: TOKEN,
   } as NodeJS.ProcessEnv);
   const narratore = new NarratoreFinto({
@@ -202,7 +203,8 @@ describe('pannello del master', () => {
     const attesaRipresa = attendi<StatoMaster>(master, 'master:stato', (s) => s.tavolo.fase === 'finestra');
     expect(await comanda(master, { tipo: 'riprendi' })).toEqual({ ok: true });
     const ripresa = await attesaRipresa;
-    expect(ripresa.tavolo.finestra.chiusura_prevista_ms).not.toBeNull();
+    // Ritmo calmo: nessun conto alla rovescia nemmeno dopo la ripresa; Anna ha già inviato.
+    expect(ripresa.tavolo.finestra).toMatchObject({ chiusura_prevista_ms: null, aspettiamo: [] });
 
     // Seconda narrazione: la nota c'è ancora (ultimo turno), poi scade.
     const dopo = attendi<StatoMaster>(master, 'master:stato', (s) => s.tavolo.fase === 'finestra' && s.tavolo.turno === 3);

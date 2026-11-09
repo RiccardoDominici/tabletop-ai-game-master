@@ -1,11 +1,12 @@
 /**
  * Casella dell'azione: scrivi, invia (poi «Aggiorna», o «Invia di nuovo» dopo una superata),
- * ritira, «Pronto», e l'interruttore «privata».
+ * ritira, e l'interruttore «privata». Solo due pulsanti (richieste del 9 novembre, punto 7):
+ * inviare vuol dire «ho finito», non c'è un «Pronto» da premere dopo.
  *
- * - Si scrive SEMPRE a scena in corso (anche mentre il narratore parla o se non si è invitati):
- *   quello che arriva a finestra chiusa entra nel turno successivo.
- * - «Pronto» compare solo a finestra aperta per chi è invitato (agli altri il server lo rifiuta);
- *   resta nel DOM, nascosto e `disabled`, così i testid sono stabili.
+ * - Si scrive SEMPRE a scena in corso (anche mentre il narratore parla o prepara, o se non si è
+ *   invitati): quello che arriva a finestra chiusa entra nel turno successivo.
+ * - Quando hanno inviato tutti gli invitati il turno parte da solo dopo un attimo (per un
+ *   «anch'io» o una correzione); fino ad allora si può cambiare o ritirare.
  * - La bozza sta in `store/bozza.ts`: la sessione la riconcilia con `azione:mia` e l'avviso
  *   «da decidere» ci rimette il testo con «Cambio» (qui si osserva la richiesta di fuoco).
  */
@@ -17,19 +18,10 @@ import { useBozza } from '../store/bozza';
 import {
   MASSIMO_CARATTERI_AZIONE,
   cambiaBozza,
-  impostaPronto,
   inviaAzione,
   ritiraAzione,
 } from './sessione';
-import {
-  azioneDellaFinestra,
-  azioneViva,
-  etichettaInvio,
-  finestraAperta,
-  possoDirePronto,
-  possoScrivere,
-  sonoPronto,
-} from './vista';
+import { azioneViva, etichettaInvio, finestraAperta, possoScrivere } from './vista';
 import { MiaAzione } from './MiaAzione';
 
 export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
@@ -55,9 +47,7 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
   }, [richiesteFuoco]);
 
   const scrivibile = possoScrivere(stato, idPg);
-  const prontoPossibile = possoDirePronto(stato, idPg);
   const viva = azioneViva(miaAzione) ? miaAzione : null;
-  const pronto = sonoPronto(stato, idPg, azioneDellaFinestra(stato, miaAzione));
 
   const pulita = bozza.trim();
   // Si può (ri)inviare se c'è testo e qualcosa cambia rispetto all'azione viva (testo o «privata»).
@@ -74,9 +64,8 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
     if (evento.key === 'Enter' && (evento.metaKey || evento.ctrlKey)) invia();
   };
 
-  const etichettaPronto = pronto ? '✓ Pronto' : viva ? 'Pronto' : 'Passo';
   const segnaposto = finestraAperta(stato)
-    ? 'Cosa fa il tuo personaggio? Es.: «Sollevo la lanterna e scendo per primo.»'
+    ? 'Cosa fa il tuo personaggio? Es.: «Sollevo la lanterna e scendo per primo.» (o «Aspetto»)'
     : 'Scrivi pure: la tua azione entra nel prossimo turno.';
 
   return (
@@ -165,8 +154,8 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
           </p>
         )}
 
-        {/* Una riga sola: con «Pronto» accanto il pannello resta basso e la trascrizione respira. */}
-        <div className={clsx('grid gap-2', prontoPossibile ? 'grid-cols-[1fr_1.35fr_1.35fr]' : 'grid-cols-[1fr_2fr]')}>
+        {/* Solo due pulsanti, su una riga: il pannello resta basso e la trascrizione respira. */}
+        <div className="grid grid-cols-[1fr_2fr] gap-2">
           <button
             type="button"
             data-testid="ritira-azione"
@@ -183,21 +172,6 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
             className="min-h-13 rounded-xl bg-candela px-2 text-lg leading-tight font-bold text-notte transition active:scale-[0.98] disabled:bg-notte-4 disabled:text-cenere"
           >
             {etichettaInvio(miaAzione, bozza)}
-          </button>
-          <button
-            type="button"
-            data-testid="pronto"
-            aria-pressed={pronto}
-            aria-label={pronto ? 'Pronto: tocca per annullare' : viva ? 'Pronto' : 'Pronto senza azione: passo il turno'}
-            disabled={!prontoPossibile || occupato}
-            onClick={() => void impostaPronto(!pronto)}
-            className={clsx(
-              'min-h-13 rounded-xl border-2 px-2 text-lg font-bold transition active:scale-[0.98] disabled:opacity-40',
-              pronto ? 'border-muschio bg-muschio text-notte' : 'border-muschio/80 bg-transparent text-muschio',
-              !prontoPossibile && 'hidden',
-            )}
-          >
-            {etichettaPronto}
           </button>
         </div>
       </div>

@@ -40,7 +40,6 @@ function riavviaServerDiProva(): void {
 async function agisci(p: Page, testo: string): Promise<void> {
   await p.getByTestId('testo-azione').fill(testo);
   await p.getByTestId('invia-azione').click();
-  await p.getByTestId('pronto').click();
 }
 
 test('partita salvata: due turni, riavvio del server, il telefono tiene il PG, il turno 3 continua', async ({ browser }) => {

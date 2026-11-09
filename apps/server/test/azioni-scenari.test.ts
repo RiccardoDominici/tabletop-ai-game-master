@@ -1,9 +1,11 @@
 /**
  * Scenari deterministici delle azioni simultanee (docs/azioni-concorrenti.md, «Verifica»), con
  * un arbitro finto a copione e un orologio finto: dipendenza e ritiro, catena A→B→C, conflitto
- * esclusivo con il secondo che cambia, azioni vecchie valida/dubbia/impossibile, scadenza →
- * sospesa, azione privata; in più: scrittura durante la narrazione, allungamento per chi
- * scrive, chiusura che aspetta l'arbitro in volo.
+ * esclusivo con il secondo che cambia, azioni vecchie valida/dubbia/impossibile, scadenza
+ * concitata → sospesa, azione privata; in più: scrittura durante la narrazione, assestamento
+ * allungato per chi scrive, chiusura che aspetta l'arbitro in volo. E il turno senza scadenza
+ * (richieste del 9 novembre): inviare = pronto, niente timer al ritmo calmo, conto alla rovescia
+ * solo al ritmo concitato, chi si scollega non si aspetta, «Risolvi ora» del master.
  */
 import { describe, expect, it } from 'vitest';
 import type { AzionePrivata } from '@cantastorie/shared';
@@ -167,10 +169,9 @@ describe('azioni simultanee — scenari', () => {
     await orologio.avanza(2000);
     tavolo.invia('pg_g', 'prendo io la chiave', 1);
     await attendi();
-    tavolo.conferma('pg_g'); // «Tengo»
-    tavolo.pronto('pg_g', true);
-    tavolo.pronto('pg_c', true);
-    await attendi();
+    tavolo.conferma('pg_g'); // «Tengo»: hanno inviato tutti, nessuna scelta aperta → assestamento
+    await orologio.avanza(2600);
+    expect(chiusure[0]!.motivo).toBe('tutti_inviato');
     expect(chiusure[0]!.azioni.map((a) => a.autore)).toEqual(['pg_c', 'pg_g']);
     expect(mie.get('pg_g')!.stato).toBe('chiusa');
     await tavolo.dopoNarrazione(1, 2);
@@ -179,7 +180,7 @@ describe('azioni simultanee — scenari', () => {
   });
 
   it('pareggio entro 1 s: vince a rotazione tra le finestre, non sempre lo stesso posto', async () => {
-    const { tavolo, arbitro, mie } = crea();
+    const { tavolo, arbitro, mie, orologio } = crea();
     arbitro.relazioniPer.set('la chiave è mia', (coda) => ({ dipende_da: [], conflitti: [{ con: coda[0]!.id, esclusivo: true }] }));
     const vincitori: string[] = [];
     for (let turno = 1; turno <= 2; turno++) {
@@ -191,9 +192,8 @@ describe('azioni simultanee — scenari', () => {
       vincitori.push(tavolo.azione(c.conflitti[0]!.vince)!.autore);
       tavolo.conferma('pg_g');
       tavolo.conferma('pg_c');
-      tavolo.pronto('pg_g', true);
-      tavolo.pronto('pg_c', true);
-      await attendi();
+      await orologio.avanza(2600);
+      expect(tavolo.aperta).toBe(false);
       await tavolo.dopoNarrazione(turno, turno + 1);
     }
     expect(vincitori).toEqual(['pg_g', 'pg_c']); // ordine pg_g, pg_c, …: prima pg_g, poi tocca a pg_c
@@ -206,7 +206,7 @@ describe('azioni simultanee — scenari', () => {
     arbitro.vecchiePer.set('parlo con Ottavia', { giudizio: 'impossibile', motivo: 'Ottavia è uscita in piazza.' });
     // Finestra 1 chiusa: le azioni scritte ora vanno alla finestra 2 (il narratore parla).
     tavolo.apri(1, ['pg_t'], 1, true);
-    tavolo.pronto('pg_t', true);
+    expect(tavolo.chiudiOra()).toEqual({ ok: true }); // «Risolvi ora» del master
     await attendi();
     expect(tavolo.aperta).toBe(false);
     tavolo.invia('pg_g', 'guardo il cane', 1);
@@ -222,36 +222,48 @@ describe('azioni simultanee — scenari', () => {
     expect(mie.get('pg_a')).toMatchObject({ stato: 'superata', testo: 'parlo con Ottavia', motivo: 'Ottavia è uscita in piazza. Puoi riscrivere la tua azione.' });
   });
 
-  it('scadenza: la finestra si allunga al massimo di 8 s, poi la da confermare diventa sospesa', async () => {
+  it('scadenza concitata: allo scadere si allunga al massimo di 8 s, poi la da confermare diventa sospesa', async () => {
     const { tavolo, mie, arbitro, orologio, chiusure } = crea();
     arbitro.relazioniPer.set('prendo io il pane', (coda) => ({ dipende_da: [], conflitti: [{ con: coda[0]!.id, esclusivo: true }] }));
-    tavolo.apri(1, ['pg_g', 'pg_c'], 1, true);
+    tavolo.apri(1, ['pg_g', 'pg_c'], 1, true, 'concitato');
     tavolo.invia('pg_c', 'prendo il pane', 1);
     await orologio.avanza(1500);
     tavolo.invia('pg_g', 'prendo io il pane', 1);
     await attendi();
     expect(mie.get('pg_g')!.stato).toBe('da_confermare');
-    await orologio.avanza(8500); // 10 s dalla prima azione: chiusura dovuta, ma c'è una scelta aperta
+    // Al ritmo concitato la scelta porta la scadenza della finestra (25 s dall'apertura).
+    expect(mie.get('pg_g')!.richiesta!.scadenza_ms).toBe(1_800_000_000_000 + 25_000);
+    await orologio.avanza(23_600); // 25,1 s: scaduta, ma c'è una scelta aperta → allungamento
     expect(tavolo.aperta).toBe(true);
-    expect(mie.get('pg_g')!.richiesta!.scadenza_ms).toBe(1_800_000_000_000 + 10_000 + 8_000);
-    await orologio.avanza(7900);
+    expect(mie.get('pg_g')!.richiesta!.scadenza_ms).toBe(1_800_000_000_000 + 25_000 + 8_000);
+    await orologio.avanza(7800);
     expect(tavolo.aperta).toBe(true);
     await orologio.avanza(200);
     expect(tavolo.aperta).toBe(false);
+    expect(chiusure[0]!.motivo).toBe('scadenza');
     expect(chiusure[0]!.sospese.map((a) => a.autore)).toEqual(['pg_g']);
     expect(mie.get('pg_g')).toMatchObject({ stato: 'sospesa', testo: 'prendo io il pane' });
     expect(mie.get('pg_g')!.motivo).toMatch(/fuori da questo turno/);
   });
 
-  it('chi sta scrivendo allunga la chiusura (ultimi 3 s), senza superare gli 8 s', async () => {
+  it('assestamento: chi sta scrivendo (anche non invitato, per un «anch’io») lo allunga, senza superare 2,5 + 8 s', async () => {
     const { tavolo, orologio } = crea();
     tavolo.apri(1, ['pg_g', 'pg_c'], 1, true);
     tavolo.invia('pg_g', 'ascolto la tosse', 1);
-    await orologio.avanza(9000);
-    tavolo.scrivo('pg_c');
-    await orologio.avanza(1500); // 10,5 s: dovuta, ma Corrado scrive da 1,5 s
+    tavolo.invia('pg_c', 'guardo fuori', 1);
+    await orologio.avanza(1500);
+    tavolo.scrivo('pg_a'); // Assenzio sta scrivendo «anch'io»
+    await orologio.avanza(1500); // 3 s dall'invio: l'assestamento sarebbe finito, ma Assenzio scrive
     expect(tavolo.aperta).toBe(true);
     await orologio.avanza(1600); // 3,1 s dall'ultimo tasto
+    expect(tavolo.aperta).toBe(false);
+    // Tetto: chi scrive senza mai inviare non tiene il tavolo oltre 2,5 + 8 s.
+    tavolo.apri(2, ['pg_g'], 2, true);
+    tavolo.invia('pg_g', 'resto qui', 2);
+    for (let i = 0; i < 6; i++) {
+      tavolo.scrivo('pg_c');
+      await orologio.avanza(2000);
+    }
     expect(tavolo.aperta).toBe(false);
   });
 
@@ -302,10 +314,8 @@ describe('azioni simultanee — scenari', () => {
     tavolo.apri(1, ['pg_g', 'pg_c'], 1, true);
     tavolo.invia('pg_g', 'apro la porta', 1);
     tavolo.invia('pg_c', 'mi metto davanti alla porta', 1);
-    tavolo.pronto('pg_g', true);
-    tavolo.pronto('pg_c', true);
-    await attendi();
-    expect(chiusure).toHaveLength(0); // in attesa dell'arbitro (max 1,2 s)
+    await orologio.avanza(2600); // hanno inviato tutti: dopo l'assestamento si chiude…
+    expect(chiusure).toHaveLength(0); // …ma aspetta l'arbitro in volo (max 1,2 s)
     expect(tavolo.invia('pg_a', 'arrivo di corsa', 1)).toEqual({ ok: true });
     expect(mie.get('pg_a')!.turno).toBe(2);
     sblocca!();
@@ -327,24 +337,118 @@ describe('azioni simultanee — scenari', () => {
   });
 });
 
-describe('stallo', () => {
-  it('45 s senza nessun input: la finestra si chiude con motivo «stallo»; ogni input fa ripartire il conto', async () => {
+describe('turno senza scadenza (richieste del 9 novembre)', () => {
+  it('ritmo calmo: nessun timer, nemmeno con un’azione in coda; il gioco aspetta chi manca', async () => {
     const { tavolo, orologio, chiusure } = crea();
     tavolo.apri(1, ['pg_g', 'pg_c'], 1, true);
-    await orologio.avanza(30_000);
-    tavolo.scrivo('pg_g'); // un input: il conto riparte
-    await orologio.avanza(44_000);
+    await orologio.avanza(10 * 60_000); // dieci minuti di discussione al tavolo: niente stallo
     expect(tavolo.aperta).toBe(true);
-    await orologio.avanza(1_100);
-    expect(tavolo.aperta).toBe(false);
-    expect(chiusure[0]).toMatchObject({ motivo: 'stallo', azioni: [] });
+    tavolo.invia('pg_g', 'ascolto la tosse', 1);
+    expect(tavolo.finestraPubblica()).toMatchObject({ chiusura_prevista_ms: null, aspettiamo: ['pg_c'] });
+    await orologio.avanza(10 * 60_000); // un'azione in coda non fa partire nessun conto
+    expect(tavolo.aperta).toBe(true);
+    expect(chiusure).toHaveLength(0);
   });
 
-  it('con un’azione in coda niente stallo: vale la chiusura normale', async () => {
+  it('inviare = pronto: hanno inviato tutti → chiusura dopo 2,5 s; una correzione fa ripartire l’attesa', async () => {
     const { tavolo, orologio, chiusure } = crea();
     tavolo.apri(1, ['pg_g', 'pg_c'], 1, true);
-    tavolo.invia('pg_g', 'ascolto la tosse', 1);
-    await orologio.avanza(50_000);
-    expect(chiusure[0]!.motivo).toBe('scadenza');
+    tavolo.invia('pg_g', 'apro la porta', 1);
+    tavolo.invia('pg_c', 'tengo la lanterna', 1);
+    expect(tavolo.finestraPubblica().aspettiamo).toEqual([]);
+    await orologio.avanza(2000);
+    tavolo.invia('pg_g', 'apro la porta piano', 1); // correzione: l'assestamento riparte
+    await orologio.avanza(2000);
+    expect(tavolo.aperta).toBe(true);
+    await orologio.avanza(600);
+    expect(tavolo.aperta).toBe(false);
+    expect(chiusure[0]).toMatchObject({ motivo: 'tutti_inviato' });
+    expect(chiusure[0]!.azioni.map((a) => a.testo)).toEqual(['apro la porta piano', 'tengo la lanterna']);
+  });
+
+  it('un ritiro durante l’assestamento lo annulla: si torna ad aspettare', async () => {
+    const { tavolo, orologio } = crea();
+    tavolo.apri(1, ['pg_g'], 1, false);
+    tavolo.invia('pg_g', 'apro la porta', 1);
+    await orologio.avanza(1000);
+    tavolo.ritira('pg_g');
+    await orologio.avanza(60_000);
+    expect(tavolo.aperta).toBe(true);
+    expect(tavolo.finestraPubblica().aspettiamo).toEqual(['pg_g']);
+  });
+
+  it('chi si scollega non si aspetta (se rientra sì); se non resta nessun invitato si aspetta il tavolo', async () => {
+    const { tavolo, orologio, chiusure } = crea();
+    tavolo.apri(1, ['pg_g', 'pg_c'], 1, false);
+    tavolo.invia('pg_g', 'apro la porta', 1);
+    tavolo.rimuoviInvitato('pg_c'); // telefono di Corrado caduto
+    expect(tavolo.finestraPubblica().aspettiamo).toEqual([]);
+    await orologio.avanza(1000);
+    tavolo.aggiungiInvitato('pg_c'); // rientra: era chiamato, lo si aspetta di nuovo
+    expect(tavolo.finestraPubblica().aspettiamo).toEqual(['pg_c']);
+    await orologio.avanza(10_000);
+    expect(tavolo.aperta).toBe(true);
+    tavolo.rimuoviInvitato('pg_c');
+    await orologio.avanza(2600);
+    expect(chiusure[0]!.azioni.map((a) => a.autore)).toEqual(['pg_g']);
+    // Un invitato solo, scollegato prima di scrivere: si aspetta chiunque sia al tavolo.
+    tavolo.apri(2, ['pg_t'], 2, false);
+    tavolo.rimuoviInvitato('pg_t');
+    expect(tavolo.finestraPubblica().invitati).toEqual(['pg_g', 'pg_c', 'pg_a']);
+    // Un estraneo (non chiamato) che si collega con l'invito per nome non entra nell'elenco.
+    tavolo.apri(3, ['pg_g'], 3, false);
+    tavolo.aggiungiInvitato('pg_a');
+    expect(tavolo.finestraPubblica().invitati).toEqual(['pg_g']);
+  });
+
+  it('ritmo concitato: conto alla rovescia dall’apertura, poi si risolve con quello che c’è', async () => {
+    const { tavolo, orologio, chiusure } = crea();
+    tavolo.apri(1, ['pg_g', 'pg_c'], 1, true, 'concitato');
+    expect(tavolo.finestraPubblica().chiusura_prevista_ms).toBe(1_800_000_000_000 + 25_000);
+    await orologio.avanza(20_000);
+    tavolo.invia('pg_g', 'scappo verso il ponte', 1); // un'azione in coda non cambia la scadenza
+    expect(tavolo.finestraPubblica().chiusura_prevista_ms).toBe(1_800_000_000_000 + 25_000);
+    await orologio.avanza(5_100);
+    expect(chiusure[0]).toMatchObject({ motivo: 'scadenza', senzaAzione: ['pg_c'] });
+    expect(chiusure[0]!.azioni.map((a) => a.autore)).toEqual(['pg_g']);
+    // Anche al ritmo concitato, se hanno inviato tutti si parte prima.
+    tavolo.apri(2, ['pg_g'], 2, true, 'concitato');
+    tavolo.invia('pg_g', 'salto', 2);
+    await orologio.avanza(2600);
+    expect(chiusure[1]!.motivo).toBe('tutti_inviato');
+  });
+
+  it('ritmo cambiato dal master a finestra aperta: concitato fa partire il conto da adesso, calmo lo toglie', async () => {
+    const { tavolo, orologio } = crea();
+    tavolo.apri(1, ['pg_g', 'pg_c'], 1, true);
+    await orologio.avanza(60_000);
+    tavolo.impostaRitmo('concitato');
+    expect(tavolo.finestraPubblica().chiusura_prevista_ms).toBe(1_800_000_000_000 + 60_000 + 25_000);
+    await orologio.avanza(10_000);
+    tavolo.impostaRitmo('calmo');
+    expect(tavolo.finestraPubblica().chiusura_prevista_ms).toBeNull();
+    await orologio.avanza(60_000);
+    expect(tavolo.aperta).toBe(true);
+  });
+
+  it('pausa del master: il conto concitato si ferma; alla ripresa riparte da capo', async () => {
+    const { tavolo, orologio } = crea();
+    tavolo.apri(1, ['pg_g'], 1, true, 'concitato');
+    await orologio.avanza(20_000);
+    tavolo.sospendi();
+    expect(tavolo.finestraPubblica().chiusura_prevista_ms).toBeNull();
+    await orologio.avanza(120_000);
+    expect(tavolo.aperta).toBe(true);
+    tavolo.riprendi();
+    expect(tavolo.finestraPubblica().chiusura_prevista_ms).toBe(1_800_000_000_000 + 140_000 + 25_000);
+  });
+
+  it('«Risolvi ora»: il master chiude subito, chi manca non si aspetta', async () => {
+    const { tavolo, chiusure } = crea();
+    tavolo.apri(1, ['pg_g', 'pg_c'], 1, true);
+    tavolo.invia('pg_g', 'apro la porta', 1);
+    expect(tavolo.chiudiOra()).toEqual({ ok: true });
+    await attendi();
+    expect(chiusure[0]).toMatchObject({ motivo: 'master', senzaAzione: ['pg_c'] });
   });
 });

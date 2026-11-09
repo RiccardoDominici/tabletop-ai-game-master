@@ -13,7 +13,7 @@ async function main(): Promise<void> {
   const config = caricaConfig();
   const log = creaLogger({ livello: config.livelloLog, cartellaLog: config.cartellaLog });
   log.info(
-    { porta: config.porta, campagna: config.cartellaCampagna, llm: config.llm.modo, voce: config.voce.modo, finestra_ms: config.turni.chiusuraDopoPrimaAzioneMs },
+    { porta: config.porta, campagna: config.cartellaCampagna, llm: config.llm.modo, voce: config.voce.modo, assestamento_ms: config.turni.assestamentoMs, concitato_ms: config.turni.concitatoMs, sorvegliante_ms: config.turni.sorveglianteMs },
     'Cantastorie: avvio',
   );
   const server = await ServerConCiclo.avvia(config, log);

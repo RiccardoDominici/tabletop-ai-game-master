@@ -196,7 +196,6 @@ describe('andata e ritorno dello stato', () => {
         arbitro: null,
         contesto: () => ({ narrazione: '', scena: '' }),
         log: loggerMuto(),
-        stalloMs: 0,
         onCambio: () => undefined,
         onAzione: (id, a) => mie.set(id, a),
         onChiusura: () => undefined,
@@ -207,7 +206,6 @@ describe('andata e ritorno dello stato', () => {
     a.invia('pg_g', 'vado avanti verso la grata', 1);
     a.invia('pg_c', "anch'io", 1); // dipende da Ginestra (regola)
     a.invia('pg_a', 'guardo il forestiero, in segreto', 1, true);
-    a.pronto('pg_g', true);
     a.ritira('pg_g'); // Corrado → da confermare
     expect(mieA.get('pg_c')!.stato).toBe('da_confermare');
 
@@ -217,7 +215,7 @@ describe('andata e ritorno dello stato', () => {
     const b = nuovo(mieB);
     const { finestra, interrotte } = b.importa(salvato, 'interrotta');
     expect(interrotte).toEqual([]);
-    expect(finestra).toMatchObject({ turno: 1, aperta: true, invitati: ['pg_g', 'pg_c', 'pg_a'] });
+    expect(finestra).toMatchObject({ turno: 1, aperta: true, invitati: ['pg_g', 'pg_c', 'pg_a'], ritmo: 'calmo' });
     expect(b.aperta).toBe(false); // niente timer finché la regia non la riapre
     expect(mieB.get('pg_c')).toMatchObject({ stato: 'da_confermare', testo: "anch'io", richiesta: { tipo: 'dipendenza' } });
     expect(mieB.get('pg_a')).toMatchObject({ stato: 'in_coda', privata: true });

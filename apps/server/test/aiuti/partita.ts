@@ -61,9 +61,9 @@ export class Prova {
       CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, '..', 'fixtures', 'prompt-prova.md'),
       CANTASTORIE_CACHE_AUDIO: path.join(this.cartella, 'cache'),
       CANTASTORIE_TTS: 'mock',
+      CANTASTORIE_ASSESTAMENTO_MS: '20',
       CANTASTORIE_MOCK_SCALA: '0.02',
       CANTASTORIE_MARGINE_AUDIO_MS: '50',
-      CANTASTORIE_STALLO_MS: '0',
       CANTASTORIE_PRERISCALDA: '0',
       CANTASTORIE_MASTER_TOKEN: TOKEN,
       ...env,
@@ -141,10 +141,9 @@ export function attendi(c: Client, cond: (s: StatoTavolo) => boolean, ms = 8000)
   });
 }
 
-/** Un'azione inviata e «pronto». */
+/** Un'azione inviata (inviare = pronto: con l'ultimo invitato il turno parte dopo l'assestamento). */
 export async function agisci(t: Client, id_pg: string, testo: string, versione: number, privata = false): Promise<void> {
   expect(await emetti<Esito>((cb) => t.emit('azione:invia', { id_pg, testo, versione_vista: versione, privata }, cb))).toEqual({ ok: true });
-  expect(await emetti<Esito>((cb) => t.emit('azione:pronto', { id_pg, pronto: true }, cb))).toEqual({ ok: true });
 }
 
 /** Il proiettore comincia; si aspetta la prima finestra. */

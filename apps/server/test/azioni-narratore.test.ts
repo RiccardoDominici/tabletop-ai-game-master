@@ -9,7 +9,7 @@ import { compilaMessaggioTurno } from '../src/narrazione/messaggio';
 
 const NOMI: Record<string, string> = { pg_g: 'Ginestra', pg_c: 'Corrado', pg_a: 'Assenzio', pg_t: 'Teodora' };
 function az(id: string, autore: string, testo: string, extra: Partial<Azione> = {}): Azione {
-  return { id, autore, testo, privata: false, inviata_alle: 0, modificata_alle: 0, versione_vista: 1, turno: 1, stato: 'chiusa', motivo: null, richiesta: null, pronto: true, dipende_da: [], conflitti: [], revisione: 1, causa: null, ...extra };
+  return { id, autore, testo, privata: false, inviata_alle: 0, modificata_alle: 0, versione_vista: 1, turno: 1, stato: 'chiusa', motivo: null, richiesta: null, dipende_da: [], conflitti: [], revisione: 1, causa: null, ...extra };
 }
 
 describe('azioniPerNarratore', () => {
@@ -19,7 +19,7 @@ describe('azioniPerNarratore', () => {
     const a3 = az('a3', 'pg_a', 'gli sfilo la chiave', { conflitti: [{ con: 'a1', esclusivo: true, vince: 'a1' }], privata: true });
     const fuori = az('a9', 'pg_x', 'azione sospesa', { stato: 'sospesa' });
     const a4 = az('a4', 'pg_t', 'anch’io vado', { dipende_da: ['a9'] });
-    const r: RiepilogoChiusura = { turno: 2, azioni: [a1, a2, a3, a4], sospese: [fuori], senzaAzione: ['pg_z'], motivo: 'tutti_pronti', durata_ms: 1, chiusa_a: 0 };
+    const r: RiepilogoChiusura = { turno: 2, azioni: [a1, a2, a3, a4], sospese: [fuori], senzaAzione: ['pg_z'], motivo: 'tutti_inviato', durata_ms: 1, chiusa_a: 0 };
     const tutte = new Map([a1, a2, a3, a4, fuori].map((a) => [a.id, a]));
     const { azioni, collegamenti } = azioniPerNarratore(r, (id) => NOMI[id] ?? 'Zeno', (id) => tutte.get(id));
     expect(azioni.map((a) => [a.numero, a.id_pg])).toEqual([[1, 'pg_c'], [2, 'pg_g'], [3, 'pg_a'], [4, 'pg_t'], [undefined, 'pg_z']]);

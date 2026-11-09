@@ -2,9 +2,15 @@
  * Regia della scena (F0): l'unico «scrittore» dello stato del tavolo e del ciclo dei turni.
  *
  *   attesa ──(schermo: Inizia sessione)──▶ apertura ──(audio finito)──▶ finestra
- *   finestra ──(tutti pronti | 10 s dopo la prima azione | master)──▶ narrazione
+ *   finestra ──(hanno inviato tutti + assestamento | scadenza concitata | Risolvi ora)──▶ narrazione
  *   narrazione ──(LLM finito + voce finita + audio suonato)──▶ finestra (turno+1)
+ *   apertura | narrazione ──(sorvegliante: nessun segno di vita)──▶ finestra (turno+1)
  *   qualsiasi ──(ferma)──▶ fermata ──(ricomincia)──▶ apertura
+ *
+ * Ritmo (docs/f0-contratti.md, «Turno»): calmo = nessuna scadenza, si aspetta che inviino tutti;
+ * concitato = conto alla rovescia dall'apertura della finestra. Lo chiede il narratore con
+ * `[ritmo]` o la scena (`ritmo` nei dati); si torna a calmo col narratore o cambiando scena.
+ * Nessuna pausa automatica: la pausa la mette e la toglie solo il master.
  *
  * Pannello del master (master/comandi.ts):
  *   finestra ──(pausa)──▶ pausa (finestra sospesa) ──(riprendi)──▶ finestra
@@ -67,6 +73,9 @@ import { creaPronunciatore, type Pronunciatore } from '../voce/pronuncia';
 import type { SelettoreVoce } from '../voce/selettore';
 import { StatoOrologi, type EsitoAvanzamento, type Orologio as OrologioMinaccia } from './orologi';
 import { NoteRegia } from '../master/note';
+import { Sorvegliante, type BloccoSorvegliato } from './sorvegliante';
+import { sezioneRitmo } from '../narrazione/ritmo';
+import type { Ritmo } from '../azioni/tipi';
 import { sezioneNoteRegia } from '../narrazione/messaggio';
 
 /** Gli orologi già avanzati in una risposta (un segno per orologio, al massimo due: StatoOrologi.avanza). */
@@ -93,7 +102,12 @@ export interface OpzioniRegia {
   registroCosti: RegistroJsonl;
   /** Una riga per turno: azioni, testo grezzo del narratore, invito, orologi, anomalie. */
   registroNarrazioni: RegistroJsonl;
-  chiusuraDopoPrimaAzioneMs: number;
+  /** Attesa dopo che hanno inviato tutti gli invitati, prima di chiudere (default 2,5 s). */
+  assestamentoMs?: number;
+  /** Ritmo concitato: durata della finestra dall'apertura (default 25 s). */
+  concitatoMs?: number;
+  /** Sorvegliante: silenzio massimo di LLM/voce/audio prima di riprendere il gioco (default 60 s; 0 = spento). */
+  sorveglianteMs?: number;
   margineFineAudioMs: number;
   trascrizioneMax: number;
   preriscalda: boolean;
@@ -119,8 +133,6 @@ export interface OpzioniRegia {
   immagini?: CatalogoImmagini;
   /** Musica, ambienti e temi dei PNG per il proiettore (docs/audio.md). */
   audio?: CatalogoAudio;
-  /** Silenzio che fa scattare la mossa contro lo stallo (default 45 s; 0 = mai). */
-  stalloMs?: number;
   /** Registro della sessione (persistenza); null o assente = niente salvataggi (test, prove). */
   memoria?: MemoriaSessione | null;
   /** Sessione da riprendere, ricostruita dal registro all'avvio del server. */
@@ -136,12 +148,17 @@ export interface OpzioniRegia {
 export const MOTIVO_SALTATA = 'Il master ha saltato questa azione: puoi riscriverla.';
 export const MOTIVO_NARRAZIONE_INTERROTTA = 'Il master ha interrotto la narrazione: la tua azione non è stata risolta, puoi rimandarla.';
 export const MOTIVO_CAMBIO_SCENA = 'Si cambia scena: la tua azione era per il luogo di prima, riscrivila se vale ancora.';
-/** Mosse contro lo stallo di fila (senza nessun input) dopo cui il tavolo va in pausa da solo. */
-export const STALLI_PRIMA_DELLA_PAUSA = 2;
-/** Cosa leggono proiettore e telefoni quando il tavolo si è fermato da solo. */
-export const TESTO_PAUSA_AUTOMATICA = "Il tavolo è in pausa: scrivete un'azione per ripartire.";
-/** Riga di sistema quando il Motore chiude la scena col finale (il tavolo va in pausa, decide il master). */
+/**
+ * Riga di sistema e avviso quando il Motore chiude la scena col finale. Il tavolo NON va in pausa
+ * (la pausa la mette solo il master): la finestra si riapre e il master sceglie come andare avanti.
+ */
 export const TESTO_FINE_SCENA = 'La scena è finita: il master sceglie come andare avanti.';
+/** Il sorvegliante ha ripreso il gioco: le azioni del turno bloccato tornano ai giocatori. */
+export const MOTIVO_BLOCCO = 'Il narratore si è bloccato prima di rispondere: la tua azione non è stata risolta, puoi rimandarla.';
+/** Riga di sistema (e avviso) quando il sorvegliante riprende il gioco. */
+export const TESTO_BLOCCO = 'Il narratore si era bloccato: si riparte.';
+/** Riserva del narratore (solo testo: la voce potrebbe essere proprio ciò che si è bloccato). */
+export const TESTO_RISERVA_BLOCCO = 'Il narratore riprende il filo: ditegli di nuovo cosa fate.';
 /** Riga di sistema scritta da «Fine sessione» (pannello del master). */
 export const TESTO_FINE_SESSIONE = 'Fine della sessione.';
 export const MOTIVO_RIPRESA = 'Il gioco si è fermato mentre il narratore rispondeva: la tua azione non è stata risolta, puoi rimandarla.';
@@ -163,6 +180,11 @@ interface AttesaAudio {
 }
 
 export { nomeBreve };
+
+/** Ritmo dichiarato dalla scena (`ritmo: concitato` in scena.yaml); assente o altro = calmo. */
+export function ritmoDellaScena(c: Campagna): Ritmo {
+  return c.scena.dati['ritmo'] === 'concitato' ? 'concitato' : 'calmo';
+}
 
 export class Regia {
   private readonly o: OpzioniRegia;
@@ -208,8 +230,10 @@ export class Regia {
   private readonly situazioniMostrate = new Set<string>();
   /** Indizi e battute usciti nella narrazione in corso (per le situazioni). */
   private rivelateNelTurno: string[] = [];
-  /** Stalli di fila (S1, S2, S3…): si azzera appena qualcuno agisce. */
-  private stalliDiFila = 0;
+  /** Ritmo del tavolo: vale per la finestra aperta o per la prossima (calmo = nessuna scadenza). */
+  private ritmo: Ritmo = 'calmo';
+  /** Sorvegliante delle attese del Motore (apertura, narrazione): mai un'attesa senza fine. */
+  private readonly sorvegliante: Sorvegliante;
   /** Audio: umore scelto dal master o dal Motore (vale solo nella scena in cui è stato scelto). */
   private umoreScelto: UmoreScelto | null = null;
   /** Audio: al massimo un cambio d'umore automatico al minuto per scena (anche il master conta). */
@@ -219,11 +243,6 @@ export class Regia {
   private uscita: UscitaRegia | null = null;
 
   private fase: FaseScena = 'attesa';
-  /**
-   * Pausa presa dal Motore dopo STALLI_PRIMA_DELLA_PAUSA mosse contro lo stallo di fila: nessuno sta
-   * giocando. Riparte da sola alla prima azione di un telefono (o con Riprendi del master).
-   */
-  private pausaAutomatica = false;
   /** Il server si sta spegnendo: niente più notifiche ai client. */
   private spento = false;
   /** Telefono (token del dispositivo) → PG: alla riconnessione, anche dopo un riavvio, il PG torna. */
@@ -235,6 +254,8 @@ export class Regia {
   /** Sessione ripresa dal registro, in attesa del proiettore per ripartire (null = niente da riprendere). */
   private daRiprendere: {
     fase: FaseScena;
+    /** Archivi di prima: era la pausa presa dal Motore dopo gli stalli (non c'è più: si riparte). */
+    pausaAutomatica: boolean;
     finestra: StatoTavoloSalvato['finestra'];
     interrotte: string[];
     turno: number;
@@ -290,6 +311,13 @@ export class Regia {
     this.orologi = new StatoOrologi(opzioni.campagna);
     this.nomiPng = nomiDeiPng(opzioni.campagna);
     this.luogo = opzioni.campagna.scena.id;
+    this.ritmo = ritmoDellaScena(this.campagna);
+    this.sorvegliante = new Sorvegliante({
+      orologio: opzioni.orologio,
+      log: opzioni.log.child({ modulo: 'sorvegliante' }),
+      silenzioMs: opzioni.sorveglianteMs ?? 60_000,
+      onBlocco: (b) => this.riprendiDopoBlocco(b),
+    });
     this.statoRepertorio = this.nuovoStatoRepertorio();
     this.pipeline = new PipelineVoce({
       motore: () => this.o.voce.attivo,
@@ -301,11 +329,13 @@ export class Regia {
       registraCosto: (riga) => this.o.registroCosti.scrivi({ ...riga }),
       osservatore: {
         richiesta: (f) => {
+          this.sorvegliante.batti(`voce: richiesta ${f.id_frase}`);
           if (f.turno === this.misuratore?.turno) this.misuratore.segna('voce_richiesta', this.o.orologio.ora());
           // Segnale audio legato a questa frase: parte adesso, con lei (l'effetto lo suona lo schermo).
           if (f.cue) this.applicaCue(f.cue);
         },
         primoAudio: (f) => {
+          this.sorvegliante.batti(`voce: primo audio ${f.id_frase}`);
           const ora = this.o.orologio.ora();
           if (!this.primoAudioInviato.has(f.turno)) this.primoAudioInviato.set(f.turno, ora);
           if (f.turno === this.misuratore?.turno) this.misuratore.segna('voce_primo_audio', ora);
@@ -324,11 +354,12 @@ export class Regia {
       arbitro: opzioni.arbitro ?? null,
       contesto: () => ({ narrazione: this.ultimaNarrazione(), scena: this.scenaPubblica }),
       log: opzioni.log.child({ modulo: 'azioni' }),
-      chiusuraDopoPrimaAzioneMs: opzioni.chiusuraDopoPrimaAzioneMs,
-      ...(opzioni.stalloMs !== undefined ? { stalloMs: opzioni.stalloMs } : {}),
-      // Senza telefoni con un PG non c'è nessuno da smuovere: niente mosse contro lo stallo.
-      puòStallare: () => this.telefoni.size > 0,
+      ...(opzioni.assestamentoMs !== undefined ? { assestamentoMs: opzioni.assestamentoMs } : {}),
+      ...(opzioni.concitatoMs !== undefined ? { concitatoMs: opzioni.concitatoMs } : {}),
       onCambio: () => {
+        // Server in spegnimento: niente notifiche né salvataggi (l'archivio può essere già chiuso,
+        // e i telefoni che cadono adesso toglierebbero invitati da una finestra che non c'è più).
+        if (this.spento) return;
         this.notifica();
         this.programmaSalvataggioTavolo();
       },
@@ -358,7 +389,8 @@ export class Regia {
       orologi: this.orologi.esporta(),
       repertorio: this.statoRepertorio?.esporta() ?? null,
       note: this.note.esporta(),
-      pausa: { richiesta: this.pausaRichiesta, invitoSospeso: this.invitoSospeso, automatica: this.pausaAutomatica },
+      pausa: { richiesta: this.pausaRichiesta, invitoSospeso: this.invitoSospeso },
+      ritmo: this.ritmo,
       prossimoIdTrascrizione: this.prossimoIdTrascrizione,
       sceneVisitate: [...this.sceneVisitate],
     };
@@ -400,11 +432,21 @@ export class Regia {
     this.salvataggioTavoloProgrammato = true;
     setImmediate(() => {
       this.salvataggioTavoloProgrammato = false;
-      const tavolo = JSON.stringify(this.tavolo.esporta());
-      if (tavolo === this.tavoloSalvato) return;
-      this.tavoloSalvato = tavolo;
-      this.o.memoria?.scrivi([{ tipo: 'tavolo', dati: JSON.parse(tavolo) }], null);
+      this.salvaTavoloOra();
     });
+  }
+
+  /**
+   * Scrive subito il tavolo nel registro, se è cambiato. Serve nei punti stabili: alla chiusura della
+   * finestra (che ora scatta da un timer, l'assestamento) le azioni «chiuse» devono essere nel
+   * registro prima che la narrazione cominci, se no un riavvio a metà le perderebbe.
+   */
+  private salvaTavoloOra(): void {
+    if (this.spento || !this.o.memoria?.info()) return;
+    const tavolo = JSON.stringify(this.tavolo.esporta());
+    if (tavolo === this.tavoloSalvato) return;
+    this.tavoloSalvato = tavolo;
+    this.o.memoria.scrivi([{ tipo: 'tavolo', dati: JSON.parse(tavolo) }], null);
   }
 
   /**
@@ -433,10 +475,12 @@ export class Regia {
     this.turno = f.turno;
     this.versioneScena = f.versioneScena;
     this.invitoSospeso = f.pausa?.invitoSospeso ?? null;
-    this.pausaAutomatica = f.pausa?.automatica === true;
+    // La pausa «automatica» degli archivi di prima non esiste più: torna una finestra normale.
+    if (f.pausa?.automatica === true && f.fase === 'pausa') this.o.log.info({ turno: f.turno }, 'sessione: la pausa automatica salvata non vale più, si riparte');
+    this.ritmo = f.ritmo === 'concitato' ? 'concitato' : 'calmo';
     for (const [d, pg] of r.dispositivi) this.dispositivi.set(d, pg);
     const tavolo = r.tavolo ? this.tavolo.importa(r.tavolo, MOTIVO_RIPRESA) : { finestra: null, interrotte: [] };
-    this.daRiprendere = { fase: f.fase, finestra: tavolo.finestra, interrotte: tavolo.interrotte, turno: f.turno, quando: r.ultimoEvento };
+    this.daRiprendere = { fase: f.fase, pausaAutomatica: f.pausa?.automatica === true, finestra: tavolo.finestra, interrotte: tavolo.interrotte, turno: f.turno, quando: r.ultimoEvento };
     this.fase = 'attesa';
     this.o.log.info(
       { sessione: r.sessione, turno: f.turno, fase: f.fase, scena: f.scena, luogo: this.luogo, voci: this.trascrizione.length, interrotte: tavolo.interrotte, finestra: tavolo.finestra },
@@ -452,9 +496,19 @@ export class Regia {
     this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: 'La sessione riprende da dove si era fermata.' });
     if (d.fase === 'fermata') {
       this.fase = 'fermata';
-    } else if (d.fase === 'pausa') {
+    } else if (d.fase === 'pausa' && !d.pausaAutomatica) {
       this.fase = 'pausa';
       if (d.finestra?.aperta) this.tavolo.riapri(d.finestra, this.versioneScena, true);
+    } else if (d.fase === 'pausa') {
+      // Archivi di prima: la pausa presa dal Motore dopo gli stalli non esiste più, si riparte.
+      if (d.finestra?.aperta) {
+        this.fase = 'finestra';
+        this.tavolo.riapri(d.finestra, this.versioneScena, false);
+      } else {
+        const invito = this.invitoSospeso ?? 'tutti';
+        this.invitoSospeso = null;
+        this.apriFinestra(invito);
+      }
     } else if (d.finestra?.aperta) {
       // La finestra era aperta: torna con le sue azioni in coda e chi era pronto.
       this.fase = 'finestra';
@@ -887,7 +941,7 @@ export class Regia {
       trascrizione: this.trascrizione.slice(-this.o.trascrizioneMax),
       voce_motore: this.o.voce.nome,
       schermo_connesso: this.schermi.size > 0,
-      pausa_automatica: this.fase === 'pausa' && this.pausaAutomatica,
+      ritmo: this.ritmo,
       ora_server_ms: this.o.orologio.adesso(),
     };
   }
@@ -989,6 +1043,7 @@ export class Regia {
 
   schermoAudioIniziato(d: SchermoAudioIniziato, ricevutoA: number): void {
     const istante = ricevutoA - Math.max(0, d.ritardo_ms);
+    this.sorvegliante.batti(`schermo: audio iniziato ${d.id_frase}`);
     if (this.misuratore && d.turno === this.misuratore.turno) {
       this.misuratore.segna('schermo_inizio_audio', istante);
     }
@@ -1088,12 +1143,6 @@ export class Regia {
    */
   pausa(): Esito {
     if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: 'La scena non è in corso.' };
-    if (this.fase === 'pausa' && this.pausaAutomatica) {
-      // Il master conferma la pausa presa dal Motore: da qui riparte solo con Riprendi.
-      this.pausaAutomatica = false;
-      this.notifica();
-      return { ok: true };
-    }
     if (this.fase === 'pausa') return { ok: false, errore: 'Il tavolo è già in pausa.' };
     if (this.pausaRichiesta) return { ok: false, errore: 'La pausa è già chiesta: scatta alla fine della narrazione.' };
     // A finestra chiusa ma col lucchetto preso la narrazione sta per partire: si comporta come una narrazione.
@@ -1112,9 +1161,6 @@ export class Regia {
 
   /** Riprende dalla pausa (o annulla una pausa chiesta e non ancora scattata). */
   riprendi(): Esito {
-    // Si riparte (master o prima azione dopo la pausa automatica): il conto degli stalli riparte da zero.
-    this.pausaAutomatica = false;
-    this.stalliDiFila = 0;
     if (this.pausaRichiesta && this.fase !== 'pausa') {
       this.pausaRichiesta = false;
       this.o.log.info({ turno: this.turno }, 'scena: pausa chiesta annullata');
@@ -1212,7 +1258,26 @@ export class Regia {
     return { ok: true };
   }
 
-  /** Il master chiude la finestra adesso (il narratore risponde alle azioni inviate). */
+  /** Ritmo del tavolo adesso (per il pannello). */
+  get ritmoCorrente(): Ritmo {
+    return this.ritmo;
+  }
+
+  /**
+   * Cambia il ritmo: dal narratore (`[ritmo]`, vale per la prossima finestra), dalla scena o dal
+   * master (a finestra aperta vale subito: concitato fa partire il conto da adesso, calmo lo toglie).
+   */
+  impostaRitmo(ritmo: Ritmo, origine: 'narratore' | 'scena' | 'master'): Esito {
+    if (ritmo !== 'calmo' && ritmo !== 'concitato') return { ok: false, errore: 'Ritmo sconosciuto.' };
+    const prima = this.ritmo;
+    this.ritmo = ritmo;
+    if (this.fase === 'finestra') this.tavolo.impostaRitmo(ritmo);
+    if (prima !== ritmo) this.o.log.info({ turno: this.turno, da: prima, a: ritmo, origine, fase: this.fase }, 'ritmo: cambiato');
+    this.notifica();
+    return { ok: true };
+  }
+
+  /** Il master chiude la finestra adesso («Risolvi ora»: il narratore risponde alle azioni inviate). */
   chiudiFinestraOra(): Esito {
     if (this.fase === 'pausa') return { ok: false, errore: 'Il tavolo è in pausa: riprendi prima di chiudere la finestra.' };
     if (this.fase !== 'finestra') return { ok: false, errore: 'La finestra delle azioni non è aperta.' };
@@ -1271,14 +1336,7 @@ export class Regia {
    */
   inviaAzione(id_pg: string, testo: string, versioneVista: number, privata = false): Esito {
     if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: 'La scena non è in corso.' };
-    const esito = this.tavolo.invia(id_pg, testo, versioneVista, privata);
-    if (esito.ok && this.fase === 'pausa' && this.pausaAutomatica) {
-      // Qualcuno è tornato a giocare: la pausa presa dal Motore finisce, l'azione entra nella finestra.
-      this.o.log.info({ turno: this.turno, id_pg }, 'scena: azione dopo la pausa automatica, si riparte');
-      this.riprendi();
-      this.salva('ripresa_dopo_stallo');
-    }
-    return esito;
+    return this.tavolo.invia(id_pg, testo, versioneVista, privata);
   }
 
   ritiraAzione(id_pg: string): Esito {
@@ -1287,10 +1345,6 @@ export class Regia {
 
   confermaAzione(id_pg: string): Esito {
     return this.tavolo.conferma(id_pg);
-  }
-
-  segnaPronto(id_pg: string, pronto: boolean): Esito {
-    return this.tavolo.pronto(id_pg, pronto);
   }
 
   scrivo(id_pg: string): void {
@@ -1310,6 +1364,7 @@ export class Regia {
   /** Ferma LLM, voce, attese dell'audio e misure in corso (i flussi vecchi escono per `epoca`). */
   private interrompiFlussi(motivo: string): void {
     this.epoca += 1;
+    this.sorvegliante.fine(motivo);
     this.controlloLlm?.abort(new Error(motivo));
     this.controlloLlm = null;
     this.pipeline.interrompi(motivo);
@@ -1352,6 +1407,7 @@ export class Regia {
   private leggiApertura(turno: number, frasi: string[]): void {
     const epoca = ++this.epoca;
     this.fase = 'apertura';
+    this.sorvegliante.inizia(turno, 'apertura', 'apertura: frasi alla voce');
     this.segmentiAperti.clear();
     if (frasi.length === 0) {
       this.versioneScena += 1;
@@ -1379,7 +1435,7 @@ export class Regia {
       if (epoca !== this.epoca) return;
       this.versioneScena += 1;
       this.fineNarrazione('tutti');
-    })();
+    })().catch((err: unknown) => this.dopoEccezione(epoca, turno, 'apertura', err));
   }
 
   /**
@@ -1400,6 +1456,10 @@ export class Regia {
     // Scena nuova (o ricominciata): torna il suo umore iniziale, e il limite riparte.
     this.umoreScelto = null;
     this.limiteUmori.azzera();
+    // Scena nuova: il ritmo torna quello della scena (calmo, se la scena non dice niente).
+    const ritmo = ritmoDellaScena(this.campagna);
+    if (ritmo !== this.ritmo) this.o.log.info({ scena: id, da: this.ritmo, a: ritmo }, 'ritmo: quello della scena nuova');
+    this.ritmo = ritmo;
   }
 
   /**
@@ -1439,29 +1499,26 @@ export class Regia {
    * finestra, oppure, se il master ha chiesto la pausa, il tavolo si ferma con l'invito in serbo.
    */
   private fineNarrazione(invito: string[] | 'tutti'): void {
+    // Il lavoro del Motore è finito: da qui il tavolo aspetta i giocatori (senza fretta) o il master.
+    this.sorvegliante.fine('fine narrazione');
     void this.tavolo.dopoNarrazione(this.turno, this.versioneScena);
     this.situazioniDopoLeRivelazioni();
     if (this.scenaFinitaAlTurno === this.turno) {
-      // Il finale è stato detto: niente finestra nuova, il master sceglie (altra scena, Riprendi, Fine sessione).
+      // Il finale è stato detto. Prima il tavolo andava in pausa e ripartiva solo con Riprendi del
+      // master (la pausa «che non riparte da sola» della prova del 3 novembre): ora la finestra si
+      // riapre per tutti e il master riceve l'avviso per scegliere come andare avanti.
       this.scenaFinitaAlTurno = null;
-      this.fase = 'pausa';
-      this.invitoSospeso = 'tutti';
       this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_FINE_SCENA });
       this.uscita?.avviso('info', TESTO_FINE_SCENA);
-      this.o.log.info({ turno: this.turno, scena: this.campagna.scena.id }, 'scena: finita col finale, tavolo in pausa');
-      this.notifica();
-      this.salva('fine_scena');
-      return;
+      this.o.log.info({ turno: this.turno, scena: this.campagna.scena.id }, 'scena: finita col finale, la finestra si riapre (decide il master)');
+      invito = 'tutti';
     }
     if (this.pausaRichiesta) {
+      // Pausa chiesta dal master durante la narrazione: scatta adesso, e riparte solo con Riprendi.
       this.pausaRichiesta = false;
       this.fase = 'pausa';
       this.invitoSospeso = invito;
-      this.o.log.info({ turno: this.turno, invito, automatica: this.pausaAutomatica }, 'scena: in pausa (dopo la narrazione)');
-      if (this.pausaAutomatica) {
-        this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_PAUSA_AUTOMATICA });
-        this.uscita?.avviso('info', TESTO_PAUSA_AUTOMATICA);
-      }
+      this.o.log.info({ turno: this.turno, invito }, 'scena: in pausa (dopo la narrazione)');
       this.notifica();
       this.salva('fine_turno');
       return;
@@ -1482,11 +1539,12 @@ export class Regia {
     this.turno += 1;
     this.segmentiAperti.clear();
     this.fase = 'finestra';
-    this.tavolo.apri(this.turno, invitati, this.versioneScena, invito === 'tutti');
+    this.tavolo.apri(this.turno, invitati, this.versioneScena, invito === 'tutti', this.ritmo);
   }
 
   private finestraChiusa(r: RiepilogoChiusura): void {
     if (r.motivo === 'forzata') return; // ferma/ricomincia: niente narrazione
+    this.salvaTavoloOra();
     // La situazione messa dopo una rivelazione ha accompagnato la reazione dei giocatori: si torna al luogo.
     if (this.situazione?.auto && this.situazione.turno < r.turno) this.togliSituazione('narrazione successiva');
     this.rivelateNelTurno = [];
@@ -1501,6 +1559,7 @@ export class Regia {
     const epoca = this.epoca;
     const c = this.campagna;
     this.fase = 'narrazione';
+    this.sorvegliante.inizia(r.turno, 'narrazione', 'llm: chiamata');
     this.o.log.info(
       { turno: r.turno, motivo: r.motivo, finestra_ms: r.durata_ms, azioni: r.azioni.length, senzaAzione: r.senzaAzione },
       'finestra: chiusa',
@@ -1511,24 +1570,21 @@ export class Regia {
       if (!a.privata) this.aggiungiTrascrizione({ turno: r.turno, tipo: 'azione', chi: a.autore, nome: nomePg(a.autore), testo: a.testo });
     }
     const perNarratore = azioniPerNarratore(r, nomePg, (id) => this.tavolo.azione(id));
-    this.stalliDiFila = r.motivo === 'stallo' ? this.stalliDiFila + 1 : 0;
-    if (this.stalliDiFila >= STALLI_PRIMA_DELLA_PAUSA && !this.pausaRichiesta) {
-      // Nessuno gioca da un po': questa è l'ultima mossa del mondo, poi il tavolo si ferma da solo.
-      this.pausaRichiesta = true;
-      this.pausaAutomatica = true;
-      this.o.log.info({ turno: r.turno, stalli: this.stalliDiFila }, 'scena: troppi stalli di fila, pausa automatica a fine narrazione');
-    }
-    const messaggio = compilaMessaggioTurno({
+    const messaggioBase = compilaMessaggioTurno({
       turno: r.turno,
       trascrizione: this.trascrizione,
       azioni: perNarratore.azioni,
       collegamenti: perNarratore.collegamenti,
-      ...(this.stalliDiFila ? { stallo: this.stalliDiFila } : {}),
+      // Nessuna azione (scadenza concitata, o Risolvi ora a mani vuote): il mondo fa una mossa.
+      ...(r.azioni.length === 0 ? { stallo: 1 } : {}),
       pgAlTavolo: this.pgAlTavolo().map((id) => ({ id, nome: nomePg(id) })),
       orologi: this.statoRepertorio ? this.orologi.descriviRepertorio(r.turno) : this.orologi.descrivi(r.turno),
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
       noteRegia: this.note.testi,
     });
+    // Ritmo concitato: il narratore sa che vale ancora, e quando dire `[ritmo] calmo`.
+    const ritmo = sezioneRitmo(this.ritmo);
+    const messaggio = ritmo ? `${messaggioBase}\n\n${ritmo}` : messaggioBase;
     // Note di regia: entrano in questa chiamata (e nella sua eventuale riparazione) e consumano un turno.
     const noteNelMessaggio = this.note.elenco;
     if (noteNelMessaggio.length) {
@@ -1551,9 +1607,11 @@ export class Regia {
       ...r.sospese.map((a) => ({ id_pg: a.autore, testo: a.testo as string | null, sospesa: true })),
       ...r.senzaAzione.map((id) => ({ id_pg: id, testo: null as string | null })),
     ];
-    // Mossa del mondo (stallo, o nessuna azione): la narrazione resta nella finzione (narrazione/finzione.ts).
-    const mossaDelMondo = r.motivo === 'stallo' || r.azioni.length === 0;
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo);
+    // Mossa del mondo (nessuna azione): la narrazione resta nella finzione (narrazione/finzione.ts).
+    const mossaDelMondo = r.azioni.length === 0;
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo).catch((err: unknown) =>
+      this.dopoEccezione(epoca, r.turno, 'narrazione', err),
+    );
   }
 
   private async eseguiNarrazione(
@@ -1590,6 +1648,7 @@ export class Regia {
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segniInRisposta) : null,
         onFrase: (f) => {
           if (epoca !== this.epoca) return;
+          this.sorvegliante.batti('llm: frase');
           this.trascriviFrase(turno, f.etichetta, f.nome, f.testo, f.segmento);
         },
       },
@@ -1708,6 +1767,7 @@ export class Regia {
       this.parlaRiserva(turno);
     }
 
+    this.sorvegliante.batti('llm: fine, si aspetta la voce');
     const voce = await this.pipeline.chiudiTurno(turno);
     if (epoca !== this.epoca || voce.interrotto) return;
     const fine = await this.attendiFineAudio(turno, voce.secondi);
@@ -1761,7 +1821,50 @@ export class Regia {
     this.misuratore = null;
     this.primoAudioInviato.delete(turno);
     this.versioneScena += 1;
+    // [ritmo] del narratore: vale dalla finestra che si apre adesso.
+    if (esito.ritmo) this.impostaRitmo(esito.ritmo, 'narratore');
     this.fineNarrazione(esito.invito ?? 'tutti');
+  }
+
+  /**
+   * Un flusso asincrono della narrazione (o dell'apertura) è caduto con un'eccezione: se è ancora
+   * quello in corso, il gioco riparte subito come per un blocco (invece di restare appeso).
+   */
+  private dopoEccezione(epoca: number, turno: number, fase: string, err: unknown): void {
+    this.o.log.error({ turno, fase, err: (err as Error)?.message ?? String(err), stack: (err as Error)?.stack }, 'regia: eccezione nel flusso della narrazione');
+    if (epoca !== this.epoca || !this.narrazioneInCorso) return;
+    this.riprendiDopoBlocco({ turno, fase, ultimo: `eccezione: ${(err as Error)?.message ?? String(err)}`, fermo_ms: 0, durata_ms: 0 });
+  }
+
+  /**
+   * Il sorvegliante ha visto un'attesa senza segni di vita (o un flusso è caduto): si registra la
+   * causa, si fermano LLM e voce, e il gioco riparte con una finestra per tutti. Se il narratore
+   * non aveva detto niente del turno, le azioni tornano ai giocatori (non sono state risolte) e
+   * resta una breve riserva del narratore, solo testo.
+   */
+  private riprendiDopoBlocco(b: BloccoSorvegliato): void {
+    if (!this.narrazioneInCorso) return;
+    const turno = this.turno;
+    const fase = this.fase;
+    const causa = b.ultimo.startsWith('eccezione')
+      ? b.ultimo
+      : this.controlloLlm
+        ? 'il modello non risponde'
+        : this.attesaAudio
+          ? 'lo schermo non ha detto che l’audio è finito'
+          : 'la voce non ha finito le frasi del turno';
+    const inCodaVoce = this.pipeline.inCoda;
+    const detto = this.trascrizione.some((v) => v.turno === turno && (v.tipo === 'narrazione' || v.tipo === 'battuta'));
+    this.interrompiFlussi('sorvegliante');
+    this.primoAudioInviato.delete(turno);
+    const annullate = fase === 'narrazione' && !detto ? this.tavolo.annullaChiuse(turno, MOTIVO_BLOCCO) : [];
+    if (!detto && fase === 'narrazione') this.trascriviFrase(turno, ID_NARRATORE, NOME_NARRATORE, TESTO_RISERVA_BLOCCO, 998);
+    this.aggiungiTrascrizione({ turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_BLOCCO });
+    this.o.log.error({ turno, fase, causa, ultimo: b.ultimo, fermo_ms: b.fermo_ms, durata_ms: b.durata_ms, voce_in_coda: inCodaVoce, detto, azioni_annullate: annullate }, 'sorvegliante: attesa bloccata, il gioco riparte');
+    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'sorvegliante', fase, causa, ultimo: b.ultimo, fermo_ms: b.fermo_ms, azioni_annullate: annullate });
+    this.uscita?.avviso('errore', TESTO_BLOCCO);
+    this.versioneScena += 1;
+    this.fineNarrazione('tutti');
   }
 
   /**
@@ -1771,8 +1874,8 @@ export class Regia {
    */
   private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; indicate: string[]; battuteDisponibili: string; stallo: boolean; menzogne: string[] } {
     const s = this.statoRepertorio!;
-    // Stallo: 45 s senza input, o una finestra chiusa senza nessuna azione (tutti hanno passato).
-    const stallo = r.motivo === 'stallo' || r.azioni.length === 0;
+    // «Stallo»: una finestra chiusa senza nessuna azione (scadenza concitata o Risolvi ora a mani vuote).
+    const stallo = r.azioni.length === 0;
     // Il segno dovuto è di un orologio preciso: in catalogo entrano solo i segni degli orologi dovuti.
     const dovuti = new Set(this.orologi.dovuti(r.turno).map((o) => o.id));
     const azioni = r.azioni.map((a) => ({ autore: a.autore, testo: a.testo, privata: a.privata }));
@@ -1973,6 +2076,8 @@ export class Regia {
    */
   private attendiFineAudio(turno: number, secondi: number): Promise<number | null> {
     if (this.schermi.size === 0 || secondi === 0) return Promise.resolve(null);
+    // Attesa lunga ma prevista: il sorvegliante aspetta l'audio del turno, più il margine.
+    this.sorvegliante.batti('audio: in riproduzione sul proiettore', secondi * 1000 + this.o.margineFineAudioMs);
     return new Promise((risolvi) => {
       const attesa: AttesaAudio = { turno, risolvi, timer: null };
       this.attesaAudio = attesa;

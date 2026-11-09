@@ -106,8 +106,18 @@ export interface ConfigServer {
   };
 
   turni: {
-    /** Chiusura automatica dopo la prima azione (contratto: 10 s). */
-    chiusuraDopoPrimaAzioneMs: number;
+    /**
+     * Attesa dopo che hanno inviato tutti gli invitati, prima che il turno parta: per un «anch'io»
+     * o una correzione (contratto: 2,5 s). Nessuna scadenza in condizioni normali.
+     */
+    assestamentoMs: number;
+    /** Ritmo concitato (lo chiede la narrazione): la finestra si chiude da sola dopo questo tempo. */
+    concitatoMs: number;
+    /**
+     * Sorvegliante: se apertura o narrazione non danno segni di vita (LLM, voce, audio) per questo
+     * tempo, il gioco registra la causa e riparte con una finestra nuova (0 = spento).
+     */
+    sorveglianteMs: number;
     /** Margine oltre la durata stimata dell'audio, se lo schermo non avvisa la fine. */
     margineFineAudioMs: number;
     /** Voci della trascrizione tenute nello stato mandato ai client. */
@@ -117,8 +127,6 @@ export interface ConfigServer {
      * così un copione fisso di azioni si può dare identico a due narratori.
      */
     finestraATutti: boolean;
-    /** Finestra aperta senza nessun input per questo tempo → mossa contro lo stallo (0 = mai). */
-    stalloMs: number;
   };
 }
 
@@ -201,11 +209,12 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
       scalaTempoMock: numero(env['CANTASTORIE_MOCK_SCALA'], 1),
     },
     turni: {
-      chiusuraDopoPrimaAzioneMs: numero(env['CANTASTORIE_FINESTRA_MS'], 10_000),
+      assestamentoMs: numero(env['CANTASTORIE_ASSESTAMENTO_MS'], 2500),
+      concitatoMs: numero(env['CANTASTORIE_CONCITATO_MS'], 25_000),
+      sorveglianteMs: numero(env['CANTASTORIE_SORVEGLIANTE_MS'], 60_000),
       margineFineAudioMs: numero(env['CANTASTORIE_MARGINE_AUDIO_MS'], 2500),
       trascrizioneMax: numero(env['CANTASTORIE_TRASCRIZIONE_MAX'], 80),
       finestraATutti: testo(env['CANTASTORIE_FINESTRA_TUTTI']) === '1',
-      stalloMs: numero(env['CANTASTORIE_STALLO_MS'], 45_000),
     },
   };
 }
