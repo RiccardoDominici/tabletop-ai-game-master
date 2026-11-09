@@ -24,11 +24,13 @@ impone il segno quando è dovuto) e quando il narratore o il selettore sceglie u
   chi legge.
 
 <!-- limite: cambio_scena -->
-## Al cambio di scena gli orologi non saltano
-Cambiare scena cambia solo quali orologi sono attivi: i segni restano quelli che erano, e nessun orologio
-avanza da solo.
-- **Che cosa fare**: se una scena deve cominciare con l'orologio più avanti («al terzo tocco»), mettilo come
-  primo segno della scena (una battuta di segno con `scena:`), o, tra una sessione e l'altra, in
+## Al cambio di scena gli orologi saltano solo se la scena lo dice
+Cambiare scena cambia quali orologi sono attivi: i segni restano quelli che erano, e nessun orologio avanza da
+solo (niente «+1 a ogni cambio di scena»). Il ritmo minimo conta solo i turni in cui l'orologio è attivo, e quelli
+delle visite precedenti si sommano: entrare in una scena non rende subito dovuto un segno.
+- **Che cosa fare**: se una scena deve cominciare con l'orologio più avanti («al Sasso il tramonto è almeno a
+  sei»), scrivilo nella scheda della scena: `orologi_in_scena: {o_…: {pieni_almeno: 6}}`; lì l'orologio può anche
+  correre a un altro ritmo (`segno_almeno_ogni: 2` dentro la stessa voce). Tra una sessione e l'altra resta
   `pieni_all_inizio` del pacchetto.
 
 <!-- limite: finali -->
@@ -40,15 +42,15 @@ un'azione ne tocca i `temi` o nomina chi parla.
   dell'esito (`battute_usate`, `indizi_rivelati`); quelli del climax hanno `richiede.orologio` a orologio pieno.
 
 <!-- limite: senza_azione -->
-## Una battuta esce solo legata a un'azione
+## Una battuta esce solo legata a un'azione, salvo segni dovuti, riempitivi e finali
 Il selettore usa una battuta legandola all'azione di un PG (`[usa] id > pg`). Senza `> pg` il Motore accetta solo
-il segno d'orologio dovuto e i riempitivi allo stallo. Un finale o una chiusura che entra nel catalogo «per stato»,
-a orologio pieno, esce solo se il selettore la lega a un'azione pubblica di quel turno: se il tavolo è fermo, o
-le azioni del turno sono tutte private, non esce (nel playtest di nozze-neve il finale non è mai uscito).
-- **Che cosa fare**: finché il Motore non lo cambia (docs/da-fare.md), prevedi che il climax arrivi mentre i PG
-  agiscono: l'ultimo segno dell'orologio con temi delle azioni del climax, e almeno un finale che risponde
-  all'azione decisiva (i suoi `temi`, il suo cancello) oltre a quello «per stato». Il validatore avvisa quando i
-  finali di una scena possono arrivare solo per stato (`COPERTURA.finale_senza_azione`).
+il segno dovuto DEL SUO orologio, i riempitivi allo stallo e i finali. A orologio pieno il finale lo dice il Motore
+da sé: il primo `tipo: finale` disponibile nell'ordine del repertorio e senza cancelli sull'azione, poi la chiusura
+(un `momento` che chiede l'orologio pieno), e il tavolo va in pausa. Ogni altra battuta che entra nel catalogo «per
+stato» (la folla, un momento a orologio pieno) esce solo legata a un'azione pubblica del turno.
+- **Che cosa fare**: metti i finali nell'ordine in cui devono vincere (il più specifico prima, con i cancelli
+  dell'esito: `battute_usate`, `indizi_rivelati`), senza `privata` né `da_pg`, e chiudi con un finale senza
+  cancelli d'esito come rete. Una reazione della folla a orologio pieno va legata a un'azione (i suoi `temi`).
 
 <!-- limite: oggetti -->
 ## Gli oggetti non hanno uno stato

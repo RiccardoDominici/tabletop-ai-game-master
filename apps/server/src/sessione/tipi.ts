@@ -22,6 +22,12 @@ export interface StatoOrologioSalvato {
   pieni: number;
   ultimoTurno: number | null;
   partito: boolean;
+  /** Turno della partenza per parte_dopo (assente: corre da subito, o archivio di prima). */
+  partitoAl?: number;
+  /** Turno da cui è attivo nella visita corrente della scena (ritmo minimo). */
+  attivoDal?: number;
+  /** Turni passati attivo nelle visite precedenti, dall'ultimo segno (ritmo minimo; assente = 0). */
+  turniAccumulati?: number;
 }
 
 export interface StatoRepertorioSalvato {

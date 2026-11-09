@@ -56,9 +56,11 @@ la sorella resta a casa, e durante la benedizione tiene il fuoco del focolare.
 
 ## Per il master (cose che il Motore oggi non fa da solo)
 
-- **Orologio del tramonto dal pannello**: +1 a ogni cambio di scena; all'arrivo al Sasso portalo a sei se è
-  sotto; quando al Sasso la storia è stata raccontata e l'anello è al dito della sposa, portalo a otto (escono
-  il tramonto e il finale). `avanza_quando` lo dice, ma il Motore non lo applica.
+- **Orologio del tramonto**: all'arrivo al Sasso il Motore lo porta da solo a sei se è sotto, e lassù gli fa
+  correre un segno ogni due risposte (`orologi_in_scena` della scena del Sasso); al settimo e all'ottavo segno
+  escono il tramonto e il finale. Dal pannello resta a te il +1 a ogni cambio di scena, se vuoi che il
+  pomeriggio corra, e il «portalo a otto» quando al Sasso la storia è stata raccontata e l'anello è al dito
+  della sposa.
 - Se i giocatori salgono al Sasso nel pomeriggio, prima del climax, non c'è una scheda: il narratore improvvisa
   dall'abbozzo di `n_sasso` (il nipote del Custode spazza la neve). La scena del Sasso è il tramonto.
 - Ettore (vincent) e Gaspare (lucian) sono due voci maschili basse nella stessa scena: se a orecchio si

@@ -37,7 +37,8 @@ describe('parte_dopo', () => {
     expect(o.segnala(['nar_altro'], 2).map((x) => x.id)).toEqual([]);
     expect(o.segnala(['nar_brocca', 'i_brocca'], 4).map((x) => x.id)).toEqual(['o_temporale']);
     const t = o.elenco[0]!;
-    expect(t).toMatchObject({ partito: true, ultimoTurno: 4 });
+    // La partenza non è un segno: ultimoTurno resta quello dell'ultimo segno, il ritmo conta da partitoAl.
+    expect(t).toMatchObject({ partito: true, partitoAl: 4, ultimoTurno: null });
     expect(o.dovuto(t, 5)).toBe(false); // segno_almeno_ogni: 2
     expect(o.dovuto(t, 6)).toBe(true);
     expect(o.avanza('o_temporale', 6, false).ok).toBe(true);

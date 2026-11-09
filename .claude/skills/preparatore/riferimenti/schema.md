@@ -49,6 +49,7 @@ contesto del narratore (E2): lì vanno destini, cronologia del cattivo, segreti 
   segmenti: 6                              # 4, 6 o 8 [V]
   pieni_all_inizio: 0
   segno_almeno_ogni: 2                     # il Motore scrive «mostralo in questa risposta» [V intero >= 1]
+  segno_al_massimo_ogni: 2                 # facoltativo: non più di un segno ogni N turni (predefinito 2; 1 = anche di fila)
   parte_dopo: [<id battuta o indizio>]     # facoltativo, proposta: l'orologio parte quando ne esce uno [V esistono]
   segni: ["…", "…", …]                     # uno per segmento, in ordine [V]
   avanza_quando: ["…"]                     # [V presente]
@@ -139,6 +140,8 @@ sensi: [3 dettagli]            # esattamente 3, almeno 2 non visivi [V sul numer
 elementi_interattivi: [{cosa, dove, azioni}]        # almeno 3 [V]; una cosa nascosta lo scrive in azioni: «NASCOSTA: …»
 png_presenti: [png_…]          # esistono [V]; voci diverse e non simili [V]; iniziali diverse [V]
 orologi_attivi: [o_…]          # esistono [V]
+orologi_in_scena:              # facoltativo: regole del Motore per questa scena
+  o_…: {pieni_almeno: 6, segno_almeno_ogni: 2}   # entrando l'orologio sale ad almeno 6; qui corre a 1 segno ogni 2
 indizi:                        # [V forma; vedi sotto]
   - {id: i_…, conclusione: r_…, tipo: png|oggetto|luogo|evento|documento|visione, nodo: n_…|png_…,
      essenziale: true|false, tiro: "nessuno", modi: 1, come_si_trova: "…",

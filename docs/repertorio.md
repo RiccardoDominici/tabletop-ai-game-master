@@ -123,7 +123,7 @@ Il giudizio cieco (`esperimenti/giudizio-ab-1/conclusioni.md`) ha mostrato che i
 battute *disponibili* invece di rispondere alle azioni. Cambia così:
 
 - **Legame con l'azione**: `[usa] <id> > <pg_id>` dice a quale azione risponde la battuta. Una battuta senza `> pg`
-  è ammessa solo se è un segno d'orologio dovuto o una mossa contro lo stallo. Il Motore rifiuta l'uscita se
+  è ammessa solo se è il segno dovuto del suo orologio, un finale o una mossa contro lo stallo. Il Motore rifiuta l'uscita se
   un'azione dichiarata resta senza risposta (né battuta né riga improvvisata rivolta a quel PG).
 - **Solo ciò che conta esce pre-scritto**: bugie, confessioni, indizi, segni d'orologio, momenti, finali. Le reazioni
   generiche hanno `solo_esempio: true`: non entrano nel catalogo, ma vanno nel contesto come **esempi della voce** del PNG
@@ -132,6 +132,15 @@ battute *disponibili* invece di rispondere alle azioni. Cambia così:
   segno d'orologio dovuto; le battute `riempitivo: true` (il cane, la borsa…) solo quando scatta lo stallo.
 - **Anti-ripetizione**: una battuta e le sue varianti non tornano entro 3 turni.
 - **Orologio**: anche in modalità B il Motore scrive «mostralo in questa risposta» quando il segno è dovuto.
+- **Ritmo per orologio** (playtest di nozze-neve: il tramonto correva al triplo e affamava la lite e lo zio):
+  - il segno dovuto è di UN orologio: in catalogo entrano solo i segni degli orologi dovuti, e se il selettore non
+    li usa il Motore li dice da sé, uno per orologio;
+  - `segno_almeno_ogni` conta i turni in cui l'orologio è attivo (le visite precedenti si sommano, l'ingresso in
+    una scena non lo rende dovuto); `segno_al_massimo_ogni` (predefinito 2) vieta segni di fila, salvo quelli
+    legati all'azione di un PG (i temi del segno) e il master;
+  - al massimo un segno per orologio e due orologi per risposta;
+  - `orologi_in_scena` nella scheda scena: entrando, l'orologio sale ad almeno `pieni_almeno`, e lì può avere un
+    suo `segno_almeno_ogni` (nozze-neve: al Sasso il tramonto è almeno a sei e corre a un segno ogni due).
 - **Elencate per stato, non per temi**: finali, battute della folla e chiusura escono in base allo stato dell'orologio
   (a orologio completo), perché non hanno parole dei giocatori nei `temi`.
 - **Alias dei PNG** per la pertinenza: nano → Baldrin; ostessa/oste → Ottavia; forestiero/prigioniero/«quello là

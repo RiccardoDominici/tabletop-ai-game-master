@@ -68,6 +68,17 @@ import { StatoOrologi, type EsitoAvanzamento, type Orologio as OrologioMinaccia 
 import { NoteRegia } from '../master/note';
 import { sezioneNoteRegia } from '../narrazione/messaggio';
 
+/** Gli orologi già avanzati in una risposta (un segno per orologio, al massimo due: StatoOrologi.avanza). */
+interface SegniInRisposta {
+  orologi: Set<string>;
+}
+
+/** Il segno è quello di un orologio dovuto in questo turno (un segno senza orologio: basta un dovuto). */
+function segnoDovutoDi(b: Battuta, dovuti: ReadonlySet<string> | undefined): boolean {
+  if (!dovuti?.size) return false;
+  return b.effetti.avanza_orologio ? dovuti.has(b.effetti.avanza_orologio) : true;
+}
+
 export interface OpzioniRegia {
   campagna: Campagna;
   /** Blocchi di sistema stabili: [prompt del narratore, contesto della campagna]. */
@@ -162,7 +173,8 @@ export class Regia {
   /** Battute mostrate al selettore in questo turno: un [usa] fuori elenco si rifiuta. */
   private elencoTurno = new Set<string>();
   /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
-  private turnoB: { azioni: Map<string, { id: string; privata: boolean }>; stallo: boolean; segnoDovuto: boolean } | null = null;
+  /** Il turno B in corso: azioni per PG, stallo, orologi il cui segno è dovuto (uno per orologio). */
+  private turnoB: { azioni: Map<string, { id: string; privata: boolean }>; stallo: boolean; dovuti: ReadonlySet<string> } | null = null;
   /** Nomi dei PNG e soprannomi, per la pertinenza del catalogo. */
   private readonly nomiPng: Map<string, string[]>;
   /** Luogo corrente (id della scena o del nodo): sceglie l'immagine del proiettore. */
@@ -737,7 +749,7 @@ export class Regia {
    * `[usa] <id>` dal selettore: la battuta esce se è disponibile; le sue righe vanno alla voce con
    * l'audio pre-generato (stessa normalizzazione dello script di pre-generazione).
    */
-  private usaBattuta(id: string, per: string | null, turno: number, segno: { mostrato: boolean }, motore = false): EsitoUsaTurno {
+  private usaBattuta(id: string, per: string | null, turno: number, segni: SegniInRisposta, motore = false): EsitoUsaTurno {
     const s = this.statoRepertorio;
     if (!s) return { ok: false, motivo: 'modalità improvvisa: nessun repertorio' };
     // Una battuta scelta dal Motore (finale, chiusura) non passa dal catalogo del selettore: la sua
@@ -760,12 +772,14 @@ export class Regia {
     } else {
       if (s.serveAzione(b)) return { ok: false, motivo: `${id} ha un cancello sull'azione (privata o da_pg): serve «> pg»` };
       // Un finale non risponde all'azione di nessuno: chiude la scena (se è disponibile, s.usa lo controlla).
-      const libera = motore || b.tipo === 'finale' || (b.tipo === 'segno_orologio' && !!t?.segnoDovuto) || (b.riempitivo && !!t?.stallo);
-      if (!libera) return { ok: false, motivo: 'battuta senza «> pg»: ammessa solo per il segno dovuto, un finale o allo stallo' };
+      // Un segno senza «> pg» passa solo se è dovuto IL SUO orologio (non un orologio qualsiasi).
+      const libera = motore || b.tipo === 'finale' || (b.tipo === 'segno_orologio' && segnoDovutoDi(b, t?.dovuti)) || (b.riempitivo && !!t?.stallo);
+      if (!libera) return { ok: false, motivo: 'battuta senza «> pg»: ammessa solo per il segno dovuto del suo orologio, un finale o allo stallo' };
     }
-    const esito = s.usa(id, turno, segno.mostrato);
+    // Ritmo massimo dell'orologio: vale per i segni senza «> pg» (dovuti o del Motore); un segno legato
+    // all'azione di un PG lo scavalca. Un segno per orologio, al massimo due orologi per risposta.
+    const esito = s.usa(id, turno, { inRisposta: segni.orologi, ritmo: per === null });
     if (!esito.ok) return esito;
-    if (esito.battuta.effetti.avanza_orologio) segno.mostrato = true;
     this.rivelateNelTurno.push(esito.battuta.id, ...esito.battuta.effetti.rivela_indizi);
     if (esito.orologiPartiti.length) this.o.log.info({ turno, battuta: id, orologi: esito.orologiPartiti }, 'orologio: partito (parte_dopo)');
     const audio = this.cueBattuta(esito.battuta);
@@ -1094,15 +1108,16 @@ export class Regia {
     if (nuova.id === this.campagna.scena.id) return { ok: false, errore: 'È già la scena in corso.' };
     if (this.narrazioneInCorso || this.tavolo.chiudendo) return { ok: false, errore: 'Aspetta che finisca la narrazione, o fermala prima.' };
     const da = this.campagna.scena.id;
-    this.impostaScena(nuova.id);
+    const inGioco = this.fase !== 'attesa' && this.fase !== 'fermata';
+    // A finestra aperta il suo turno non è stato narrato: l'apertura lo prende; altrimenti il successivo.
+    const turno = !inGioco ? this.turno : this.tavolo.aperta ? this.turno : this.turno + 1;
+    this.impostaScena(nuova.id, turno);
     this.o.log.info({ da, a: nuova.id, fase: this.fase, immagine: this.o.immagini?.luogo(nuova.id) ?? null }, 'scena: cambio di scena');
-    if (this.fase === 'attesa' || this.fase === 'fermata') {
+    if (!inGioco) {
       this.notifica();
       return { ok: true };
     }
     const annullate = this.tavolo.annullaVive(MOTIVO_CAMBIO_SCENA);
-    // A finestra aperta il suo turno non è stato narrato: l'apertura lo prende; altrimenti il successivo.
-    const turno = this.tavolo.aperta ? this.turno : this.turno + 1;
     this.tavolo.chiudiForzata();
     this.pausaRichiesta = false;
     this.invitoSospeso = null;
@@ -1283,12 +1298,18 @@ export class Regia {
     })();
   }
 
-  /** La scena corrente diventa `id`: contesto del narratore, orologi attivi, repertorio, luogo. */
-  private impostaScena(id: string): void {
+  /**
+   * La scena corrente diventa `id`: contesto del narratore, orologi attivi, repertorio, luogo.
+   * `turno`: quello dell'apertura della scena (gli orologi contano il ritmo da lì e applicano le
+   * regole `orologi_in_scena`, es. «al Sasso il tramonto sale a sei»).
+   */
+  private impostaScena(id: string, turno = 0): void {
     this.campagna = conScena(this.o.campagna, id);
     this.sistema = this.o.sistemaPer?.(this.campagna) ?? this.sistema;
     this.scenaPubblica = this.o.scenaPubblicaPer?.(this.campagna) ?? this.scenaPubblica;
-    this.orologi.impostaScena(this.campagna.scena);
+    for (const salto of this.orologi.impostaScena(this.campagna.scena, turno)) {
+      this.o.log.info({ scena: id, turno, orologio: salto.id, da: salto.da, a: salto.a }, 'orologio: sale entrando nella scena (orologi_in_scena.pieni_almeno)');
+    }
     this.statoRepertorio?.impostaScena(this.campagna.scena);
     this.luogo = id;
     this.togliSituazione('cambio di scena');
@@ -1444,8 +1465,8 @@ export class Regia {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
     this.controlloLlm = controllo;
-    /** Un segno di orologio è già uscito in questa risposta (mai due). */
-    const segnoInRisposta = { mostrato: false };
+    /** Orologi già avanzati in questa risposta: un segno per orologio, al massimo due orologi. */
+    const segniInRisposta: SegniInRisposta = { orologi: new Set<string>() };
     const log = this.o.log.child({ turno });
     log.debug({ caratteri: messaggio.length }, 'narratore: messaggio del turno');
 
@@ -1461,7 +1482,7 @@ export class Regia {
         pronuncia: this.pronuncia,
         ...this.parametriAudioTurno(),
         ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
-        usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segnoInRisposta) : null,
+        usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segniInRisposta) : null,
         onFrase: (f) => {
           if (epoca !== this.epoca) return;
           this.trascriviFrase(turno, f.etichetta, f.nome, f.testo, f.segmento);
@@ -1490,7 +1511,7 @@ export class Regia {
           pronuncia: this.pronuncia,
           ...this.parametriAudioTurno(),
           ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
-          usa: (id, per) => this.usaBattuta(id, per, turno, segnoInRisposta),
+          usa: (id, per) => this.usaBattuta(id, per, turno, segniInRisposta),
           prefissoFrasi: 'r',
           ignora: new Set(['invito_mancante']),
           onFrase: (f) => {
@@ -1517,21 +1538,25 @@ export class Regia {
       log.warn({ senza_risposta: prima, dopo_riparazione: senzaRisposta }, 'repertorio: azioni senza risposta, riparazione');
     }
 
-    // B2: il segno d'orologio era dovuto ma il selettore non l'ha usato → lo mette il Motore,
-    // dopo le risposte e prima della frase d'invito (deterministico, nessun token in più).
-    let segnoAggiunto: string | null = null;
-    if (this.statoRepertorio && this.turnoB?.segnoDovuto && !segnoInRisposta.mostrato && esito.esito && !controllo.signal.aborted) {
-      const aggiunto = this.aggiungiSegnoDovuto(turno, esito, segnoInRisposta, log);
-      if (aggiunto) {
-        segnoAggiunto = aggiunto.id;
-        esito.righe_prescritte += aggiunto.righe;
+    // B2: il segno di un orologio era dovuto ma il selettore non l'ha usato → lo mette il Motore,
+    // orologio per orologio (al massimo due), dopo le risposte e prima della frase d'invito
+    // (deterministico, nessun token in più).
+    const segniAggiunti: string[] = [];
+    if (this.statoRepertorio && this.turnoB?.dovuti.size && esito.esito && !controllo.signal.aborted) {
+      for (const idOrologio of this.turnoB.dovuti) {
+        if (segniInRisposta.orologi.has(idOrologio)) continue;
+        const aggiunto = this.aggiungiSegnoDovuto(turno, esito, segniInRisposta, log, (b) => b.tipo === 'segno_orologio' && b.effetti.avanza_orologio === idOrologio, idOrologio);
+        if (aggiunto) {
+          segniAggiunti.push(aggiunto.id);
+          esito.righe_prescritte += aggiunto.righe;
+        }
       }
     }
     // Il finale: a orologio della scena completo il Motore fa dire il finale disponibile (e la sua
     // chiusura), poi il tavolo va in pausa e decide il master (docs/repertorio.md, «Il finale»).
     let finale: string | null = null;
     if (this.statoRepertorio && esito.esito && !controllo.signal.aborted) {
-      const f = this.finaleDelMotore(turno, esito, segnoInRisposta, log);
+      const f = this.finaleDelMotore(turno, esito, segniInRisposta, log);
       if (f) {
         finale = f.finale;
         esito.righe_prescritte += f.righe;
@@ -1542,22 +1567,22 @@ export class Regia {
     // altrimenti la mossa morbida pronta della scena.
     if (mossaDelMondo && esito.scartate > 0 && !esito.uscita.some((u) => u.tipo === 'usa' || u.tipo === 'improvvisata') && !controllo.signal.aborted) {
       const rimedio =
-        this.statoRepertorio && esito.esito ? this.aggiungiSegnoDovuto(turno, esito, segnoInRisposta, log, (b) => (b.tipo === 'segno_orologio' && !!this.turnoB?.segnoDovuto) || b.riempitivo) : null;
+        this.statoRepertorio && esito.esito ? this.aggiungiSegnoDovuto(turno, esito, segniInRisposta, log, (b) => (b.tipo === 'segno_orologio' && segnoDovutoDi(b, this.turnoB?.dovuti)) || b.riempitivo) : null;
       if (rimedio) esito.righe_prescritte += rimedio.righe;
       else this.parlaRiserva(turno);
       log.warn({ turno, scartate: esito.scartate, rimedio: rimedio?.id ?? 'mossa morbida' }, 'stallo: narrazione fuori dalla finzione, rimedio del Motore');
     }
     this.controlloLlm = null;
 
-    // Orologi: il narratore propone, il Motore controlla (al massimo un segno per risposta).
-    // In modalità repertorio i segni sono battute: la riga [orologio] non vale.
-    let avanzato = segnoInRisposta.mostrato;
+    // Orologi: il narratore propone, il Motore controlla (un segno per orologio, al massimo due
+    // orologi per risposta, il ritmo massimo di ciascuno). In modalità repertorio i segni sono
+    // battute: la riga [orologio] non vale.
     const esitiOrologi: Array<{ id: string; ok: boolean; motivo?: string; stato?: string }> = [];
     for (const id of this.statoRepertorio ? [] : esito.orologi) {
-      const a = this.orologi.avanza(id, turno, avanzato);
+      const a = this.orologi.avanza(id, turno, { inRisposta: segniInRisposta.orologi, ritmo: true });
       esitiOrologi.push(a.ok ? { id, ok: true, stato: `${a.orologio.pieni}/${a.orologio.segmenti}` } : { id, ok: false, motivo: a.motivo });
       if (a.ok) {
-        avanzato = true;
+        segniInRisposta.orologi.add(id);
         log.info({ orologio: id, pieni: a.orologio.pieni, segmenti: a.orologio.segmenti }, 'orologio: avanzato');
       } else {
         log.error({ orologio: id, motivo: a.motivo }, 'orologio: avanzamento rifiutato');
@@ -1592,7 +1617,9 @@ export class Regia {
       azioni_pubbliche: pubbliche.size,
       azioni_senza_risposta: senzaRisposta.length,
       riparazioni,
-      segno_aggiunto: segnoAggiunto,
+      // Il primo segno aggiunto dal Motore (come prima) e tutti quelli del turno (uno per orologio dovuto).
+      segno_aggiunto: segniAggiunti[0] ?? null,
+      segni_aggiunti: segniAggiunti,
       finale,
     };
     this.o.registroTurni.scrivi({ ...record, ...conteggi, sessione: this.sessione });
@@ -1633,12 +1660,13 @@ export class Regia {
     const s = this.statoRepertorio!;
     // Stallo: 45 s senza input, o una finestra chiusa senza nessuna azione (tutti hanno passato).
     const stallo = r.motivo === 'stallo' || r.azioni.length === 0;
-    const segnoDovuto = this.orologi.elenco.some((o) => this.orologi.dovuto(o, r.turno));
+    // Il segno dovuto è di un orologio preciso: in catalogo entrano solo i segni degli orologi dovuti.
+    const dovuti = new Set(this.orologi.dovuti(r.turno).map((o) => o.id));
     const azioni = r.azioni.map((a) => ({ autore: a.autore, testo: a.testo, privata: a.privata }));
-    const { battute, trattenute, perche } = s.catalogo({ turno: r.turno, azioni, stallo, segnoDovuto, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
+    const { battute, trattenute, perche } = s.catalogo({ turno: r.turno, azioni, stallo, dovuti, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
     this.elencoTurno = new Set(battute.map((b) => b.id));
-    this.turnoB = { azioni: new Map(r.azioni.map((a) => [a.autore, { id: a.id, privata: a.privata }])), stallo, segnoDovuto };
-    this.o.log.info({ turno: r.turno, catalogo: battute.length, perche, trattenute, stallo, segnoDovuto }, 'repertorio: catalogo del turno');
+    this.turnoB = { azioni: new Map(r.azioni.map((a) => [a.autore, { id: a.id, privata: a.privata }])), stallo, dovuti };
+    this.o.log.info({ turno: r.turno, catalogo: battute.length, perche, trattenute, stallo, dovuti: [...dovuti] }, 'repertorio: catalogo del turno');
     return {
       fattiScoperti: s.fattiScoperti.map((id) => `${id} — ${this.testoFatto(id)}`),
       battuteDisponibili: s.elencoDisponibili(battute),
@@ -1655,18 +1683,20 @@ export class Regia {
   private aggiungiSegnoDovuto(
     turno: number,
     esito: { uscita: VoceUscita[] },
-    segno: { mostrato: boolean },
+    segni: SegniInRisposta,
     log: Logger,
-    /** Quale battuta del catalogo far uscire (predefinito: il segno d'orologio). */
+    /** Quale battuta del catalogo far uscire (predefinito: un segno d'orologio). */
     scegli: (b: Battuta) => boolean = (b) => b.tipo === 'segno_orologio',
+    /** L'orologio dovuto (per il log). */
+    orologio: string | null = null,
   ): { id: string; righe: number } | null {
     const s = this.statoRepertorio!;
     const b = s.disponibili(turno).find((x) => scegli(x) && this.elencoTurno.has(x.id));
     if (!b) {
-      log.warn({ turno }, 'orologio: segno dovuto ma nessuna battuta di segno disponibile');
+      log.warn({ turno, orologio }, 'orologio: segno dovuto ma nessuna battuta di segno disponibile');
       return null;
     }
-    return this.aggiungiBattutaMotore(turno, esito, segno, log, b, false);
+    return this.aggiungiBattutaMotore(turno, esito, segni, log, b, false);
   }
 
   /**
@@ -1675,7 +1705,7 @@ export class Regia {
    * lo fa dire, poi la chiusura se c'è; l'invito del narratore, se non è ancora partito, si ritira.
    * A narrazione finita il tavolo va in pausa (fineNarrazione). null = nessun finale in questo turno.
    */
-  private finaleDelMotore(turno: number, esito: { uscita: VoceUscita[] }, segno: { mostrato: boolean }, log: Logger): { finale: string; righe: number } | null {
+  private finaleDelMotore(turno: number, esito: { uscita: VoceUscita[] }, segno: SegniInRisposta, log: Logger): { finale: string; righe: number } | null {
     const s = this.statoRepertorio!;
     const completi = this.orologi.elenco.filter((o) => o.pieni >= o.segmenti);
     const giàDetto = esito.uscita.find((u) => u.tipo === 'usa' && s.repertorio.perId.get(u.id)?.tipo === 'finale');
@@ -1727,7 +1757,7 @@ export class Regia {
    * resto del turno; altrimenti PRIMA dell'invito finale del narratore, se l'ultima riga improvvisata
    * è una domanda e la sua voce non è ancora partita.
    */
-  private aggiungiBattutaMotore(turno: number, esito: { uscita: VoceUscita[] }, segno: { mostrato: boolean }, log: Logger, b: Battuta, inFondo: boolean): { id: string; righe: number } | null {
+  private aggiungiBattutaMotore(turno: number, esito: { uscita: VoceUscita[] }, segno: SegniInRisposta, log: Logger, b: Battuta, inFondo: boolean): { id: string; righe: number } | null {
     const uso = this.usaBattuta(b.id, null, turno, segno, true);
     if (!uso.ok) {
       log.error({ turno, battuta: b.id, motivo: uso.motivo }, 'repertorio: battuta del Motore non applicabile');

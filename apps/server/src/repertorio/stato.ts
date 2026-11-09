@@ -196,7 +196,9 @@ export class StatoRepertorio {
   /**
    * Catalogo B2 del turno: solo le battute pertinenti, mai quelle `solo_esempio`.
    * - pertinenti: i `temi` compaiono nelle azioni, oppure le azioni nominano il PNG che parla;
-   * - il segno d'orologio solo quando è dovuto (o se le azioni ne toccano i temi);
+   * - il segno d'orologio solo quando è dovuto IL SUO orologio (`dovuti`; il tramonto di nozze-neve
+   *   usciva a ogni turno perché bastava un orologio dovuto qualsiasi), o se le azioni ne toccano i temi
+   *   (allora lo porta un PG, e il ritmo massimo non lo ferma);
    * - per stato: a orologio completo, le battute che lo richiedono completo (finali, folla, chiusura),
    *   anche senza parole dei giocatori;
    * - i `riempitivo` solo allo stallo (nessuno ha agito);
@@ -209,7 +211,10 @@ export class StatoRepertorio {
     /** Compatibilità: testo delle azioni pubbliche, se `azioni` manca. */
     testoAzioni?: string;
     stallo: boolean;
-    segnoDovuto: boolean;
+    /** Orologi il cui segno è dovuto in questo turno (StatoOrologi.dovuti). */
+    dovuti?: ReadonlySet<string>;
+    /** Vecchia forma: true = entrano i segni di tutti gli orologi (se `dovuti` manca). */
+    segnoDovuto?: boolean;
     nomiPng: Map<string, string[]>;
     parole: ParolaSegreta[];
   }): { battute: Battuta[]; trattenute: string[]; perche: Record<string, string> } {
@@ -237,7 +242,7 @@ export class StatoRepertorio {
       const temi = temaPresente(t, b.temi);
       let motivo: string | null = null;
       if (perStato) motivo = 'stato';
-      else if (b.tipo === 'segno_orologio') motivo = o.segnoDovuto ? 'segno' : temi ? 'temi' : null;
+      else if (b.tipo === 'segno_orologio') motivo = this.segnoDovuto(b, o) ? 'segno' : temi ? 'temi' : null;
       else if (b.riempitivo) motivo = o.stallo ? 'stallo' : null;
       else if (temi) motivo = 'temi';
       else if (b.chi !== 'narratore' && pngNominati(t, o.nomiPng).has(b.chi)) motivo = 'png';
@@ -246,6 +251,13 @@ export class StatoRepertorio {
     });
     const filtrate = this.filtraSegreti(candidate, (b) => testoPer(b) ?? '', o.parole);
     return { ...filtrate, perche };
+  }
+
+  /** Il segno è dovuto: il suo orologio è fra i dovuti (o, vecchia forma, un segno qualsiasi è dovuto). */
+  private segnoDovuto(b: Battuta, o: { dovuti?: ReadonlySet<string>; segnoDovuto?: boolean }): boolean {
+    const id = b.effetti.avanza_orologio;
+    if (o.dovuti) return id ? o.dovuti.has(id) : o.dovuti.size > 0;
+    return !!o.segnoDovuto;
   }
 
   /**
@@ -288,18 +300,22 @@ export class StatoRepertorio {
 
   /**
    * Fa uscire una battuta: controlla che sia disponibile, sceglie il testo (principale al primo
-   * uso, poi le varianti in ordine) e applica gli effetti. `segnoGiàMostrato`: in questa risposta
-   * un orologio è già avanzato (mai due segni in una risposta).
+   * uso, poi le varianti in ordine) e applica gli effetti. `segni`: gli orologi già avanzati in questa
+   * risposta (un segno per orologio, al massimo due orologi; StatoOrologi.avanza), più `ritmo` se vale
+   * il ritmo massimo dell'orologio (segno dovuto o senza «> pg»). La forma booleana di prima
+   * (`true` = un segno è già uscito) resta per chi la usava.
    */
-  usa(id: string, turno: number, segnoGiàMostrato: boolean): EsitoUso {
+  usa(id: string, turno: number, segni: boolean | { inRisposta: Set<string>; ritmo?: boolean } = { inRisposta: new Set() }): EsitoUso {
     const b = this.repertorio.perId.get(id);
     if (!b) return { ok: false, motivo: `battuta inesistente: ${id}` };
     const motivo = this.motivoIndisponibile(b);
     if (motivo) return { ok: false, motivo };
-    if (b.effetti.avanza_orologio && segnoGiàMostrato) return { ok: false, motivo: 'un segno di orologio è già uscito in questa risposta' };
     if (b.effetti.avanza_orologio) {
-      const a = this.orologi.avanza(b.effetti.avanza_orologio, turno, false);
+      if (segni === true) return { ok: false, motivo: 'un segno di orologio è già uscito in questa risposta' };
+      const op = typeof segni === 'boolean' ? {} : { inRisposta: segni.inRisposta, ritmo: !!segni.ritmo };
+      const a = this.orologi.avanza(b.effetti.avanza_orologio, turno, op);
       if (!a.ok) return { ok: false, motivo: a.motivo };
+      if (typeof segni !== 'boolean') segni.inRisposta.add(b.effetti.avanza_orologio);
     }
     const uso = (this.usi.get(id) ?? 0) + 1;
     this.usi.set(id, uso);

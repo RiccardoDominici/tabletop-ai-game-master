@@ -38,6 +38,10 @@ elementi_interattivi:
 
 png_presenti: [png_adelina, png_ettore, png_gaspare]
 orologi_attivi: [o_tramonto]
+# Regole del Motore per questa scena (scena/orologi.ts): arrivando al Sasso il tramonto sale ad almeno
+# sei segni (il pomeriggio è passato), e qui corre a un segno ogni due risposte: il climax dura pochi turni.
+orologi_in_scena:
+  o_tramonto: {pieni_almeno: 6, segno_almeno_ogni: 2}
 
 indizi:
   - id: i_iniziali

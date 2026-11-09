@@ -42,14 +42,13 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
     dovrebbe avere almeno una risposta discreta sul telefono, non il silenzio o una risposta ad alta voce;
   - **`avanza_quando`**: il Motore lo carica e non lo usa; servirebbe in forma strutturata (cancelli come
     `richiede`: battute uscite, indizi rivelati → un segno), così l'orologio avanza per i fatti e non solo per il ritmo;
-  - **salti d'orologio al cambio di scena**: un `pieni_all_inizio` per scena («la scena del terzo tocco comincia con
-    l'orologio a 7»), oggi possibile solo tra le sessioni;
+  - ~~salti d'orologio al cambio di scena~~: fatto il 9 novembre (`orologi_in_scena` della scheda scena:
+    `pieni_almeno` e ritmo di scena); resta il «+1 a ogni cambio di scena», che oggi fa il master;
   - **finali per stato**: un modo di dire al Motore «la domanda drammatica ha risposta» (esiti della scena con i
     loro cancelli), invece di affidare i finali prima dell'orologio pieno ai temi;
   - **stato degli oggetti**: chi ha che cosa, almeno per gli oggetti con un id nella scena (`elementi_interattivi`);
-  - **battute «per stato» senza `> pg`**: oggi senza un'azione legata passano solo il segno dovuto e i riempitivi allo
-    stallo (`scena/regia.ts`, usaBattuta); un finale o una chiusura che entra nel catalogo a orologio pieno dovrebbe
-    poter uscire anche senza un'azione (playtest di nozze-neve: il finale non è mai uscito).
+  - ~~battute «per stato» senza `> pg`~~ per i finali: fatto il 3 novembre (a orologio pieno il finale e la chiusura
+    li dice il Motore); il validatore avvisa ancora con `COPERTURA.finale_senza_azione`, un avviso ormai prudente;
 - **Skill e validatore** (fatto il 2 novembre sera, dalle 26 note di `NOTE_SULLA_SKILL.md`): contesto vero del modo B
   compilato col server, cronologia e logistica (`MONDO`), voci simili (`simile_a`), passi riordinati con `--solo`,
   più scene, copioni con `scena` e `richiede`, immagini (`prompt_ritratto`, `nodi[].immagine`, `situazioni[].dopo`).

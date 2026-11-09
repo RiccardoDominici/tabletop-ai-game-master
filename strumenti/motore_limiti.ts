@@ -48,7 +48,8 @@ const codice = sorgenti(SERVER);
     `avanzaQuando compare solo in scena/orologi.ts (tipo e caricamento): ${usi.length} occorrenze`);
 }
 
-// 3. Cambio di scena: gli orologi tengono i loro segni e nessuno avanza da solo.
+// 3. Cambio di scena: gli orologi tengono i loro segni e nessuno avanza da solo (ponte-lanterne non ha
+//    `orologi_in_scena`, l'unico modo di farli salire entrando in una scena).
 {
   const c = caricaCampagna(path.join(RADICE, 'campagne', 'ponte-lanterne'));
   const o = new StatoOrologi(c);
@@ -76,13 +77,13 @@ const codice = sorgenti(SERVER);
   verifica('oggetti', tipi.every((t) => !/oggett/i.test(t)), 'nessuno stato degli oggetti in sessione/tipi.ts, repertorio/stato.ts, repertorio/tipi.ts');
 }
 
-// 6. Una battuta esce solo legata a un'azione («> pg»), salvo il segno dovuto e i riempitivi allo stallo:
-//    un finale che arriva «per stato» a orologio pieno senza un'azione pubblica nel turno non esce
-//    (playtest di nozze-neve: fin_tramonto e nar_chiusura rifiutati di continuo).
+// 6. Una battuta esce solo legata a un'azione («> pg»), salvo il segno dovuto del suo orologio, i riempitivi
+//    allo stallo e i finali (dal playtest di nozze-neve il finale a orologio pieno lo dice il Motore): ogni
+//    altra battuta «per stato» senza un'azione pubblica nel turno non esce.
 {
   const regia = codice.find(([f]) => f === path.join('scena', 'regia.ts'))?.[1] ?? '';
-  const libera = /const libera = \(b\.tipo === 'segno_orologio' && !!t\?\.segnoDovuto\) \|\| \(b\.riempitivo && !!t\?\.stallo\);/.test(regia);
-  verifica('senza_azione', libera, "scena/regia.ts: senza «> pg» passano solo il segno dovuto e i riempitivi allo stallo");
+  const libera = /const libera = motore \|\| b\.tipo === 'finale' \|\| \(b\.tipo === 'segno_orologio' && segnoDovutoDi\(b, t\?\.dovuti\)\) \|\| \(b\.riempitivo && !!t\?\.stallo\);/.test(regia);
+  verifica('senza_azione', libera, "scena/regia.ts: senza «> pg» passano solo il segno dovuto del suo orologio, i riempitivi allo stallo e i finali");
 }
 
 process.stdout.write(JSON.stringify(esiti) + '\n');
