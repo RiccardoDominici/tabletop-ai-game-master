@@ -64,3 +64,15 @@ Questi devono essere gli unici due pulsanti necessari per la gestione delle azio
 - **Prove e tiri (4).** Regole SRD 5.2. Il Motore tira i dadi (non il modello): un arbitro veloce con output strutturato decide per ogni azione se serve una prova, quale caratteristica/abilità, la CD (dai dati quando ci sono, altrimenti 5/10/15/20/25/30), vantaggio/svantaggio, o un tiro per colpire contro la CA con il danno. Proiettore e telefono mostrano abilità, dado, modificatore, totale, CD ed esito; il narratore riceve l'esito come fatto e lo racconta. Niente tiro per le azioni banali o impossibili. PG e PNG hanno schede numeriche (caratteristiche, competenze, CA, PF, attacchi), generate dalla skill e controllate dal validatore.
 - **Voce (6).** fish-audio/drama-3 via OpenRouter con direzioni espressive, come voce del gioco (la voce locale resta come riserva). Il proiettore la suona; ogni telefono può attivare «Ascolta qui».
 - **Ritratti (2).** Sul proiettore una fila di ritratti dei PNG presenti nella scena, con chi parla in evidenza; sul telefono «Qui con voi» e «Altrove» (i PNG già incontrati). La presenza viene dai dati della scena e dagli ingressi/uscite che il Motore registra; il master la può correggere.
+
+---
+
+## Aggiunte della sera (9 novembre 2026)
+
+### 8. Il proprio manuale di regole
+«Vorrei anche che aggiungesse la possibilità di mettere nella cartella di Workspace il proprio manuale e vorrei che la gente capisse le regole. Quando crea la campagna, si crea anche il suo set di regole le usasse di volta in volta. Deve essere caricato il manuale facoltativo sulle regole ovviamente. Una volta che c'è tutto fai dei test end to end, anche su coerenza di gioco e fluidità.»
+- Decisioni: cartella `manuali/` fuori da git; set di regole per campagna in `campagne/<id>/regole/` (strutturato, riassunto per i giocatori, estratti consultabili); senza manuale SRD 5.2; motore delle prove generalizzato (d20 contro CD, 2d6 a fasce, tiro sotto soglia); scheda «Regole» e «Chiedi una regola» sul telefono. Progetto in docs/regole.md.
+
+### 9. Sessioni: riassunto e chiusura
+«I giochi generalmente sono su più sessioni, quindi devi anche gestire le sessioni; dato che abbiamo le trascrizioni sarebbe carino avere un riassunto che spiega cosa è accaduto prima e che ogni fine sessione abbia una fine lineare.»
+- Decisioni: a ogni sessione che continua (pacchetto successivo o partita ripresa un'altra sera) il narratore apre con «la volta scorsa…», scritto dai fatti pubblici del registro e della trascrizione, mai dalle azioni private né dai segreti; un «Diario» sul telefono con il riassunto di ogni sessione; la chiusura è guidata: il Motore conosce la durata prevista (`ore_per_sessione`), avvisa il master quando manca poco e porta il narratore verso una pausa naturale; «Chiudi la sessione» fa dire al narratore una chiusura vera (immagine finale, un aggancio per la prossima volta), poi lo schermo mostra «Cosa è successo stasera» e si scrive il registro.
