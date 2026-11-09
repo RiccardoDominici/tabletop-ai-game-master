@@ -12,7 +12,7 @@ import type { StatoOrologi } from '../scena/orologi';
 import { pngNominati, temaPresente } from './pertinenza';
 import { segretiNelTesto, type ParolaSegreta } from './segreti';
 import type { Battuta, CondizioniStato, Repertorio, RigaBattuta, TipoBattuta } from './tipi';
-import { accetta, blocchi, bloccoConCancello, type Blocco } from './condizioni';
+import { accetta, blocchi, bloccoConCancello, type AzioneAlCancello, type Blocco } from './condizioni';
 import type { StatoRepertorioSalvato } from '../sessione/tipi';
 
 /**
@@ -28,11 +28,13 @@ export function tipoNelCatalogo(tipo: TipoBattuta): string {
   return TIPI_NEUTRI[tipo] ?? tipo;
 }
 
-/** Un'azione del turno come la vede il catalogo: chi, cosa, se è privata. */
+/** Un'azione del turno come la vede il catalogo: chi, cosa, se è privata, le prove superate. */
 export interface AzioneCatalogo {
   autore: string;
   testo: string;
   privata: boolean;
+  /** Prove riuscite di questa azione nel turno (cancello `richiede.prova`, docs/prove.md). */
+  prove?: readonly string[];
 }
 
 /**
@@ -41,7 +43,7 @@ export interface AzioneCatalogo {
  * battute rispondono solo alle pubbliche); `da_pg` vuole un'azione di quei PG. Per lo stato vero
  * c'è StatoRepertorio.rispondeA, che guarda solo i blocchi aperti.
  */
-export function rispondeA(b: Battuta, a: { autore: string; privata: boolean }): boolean {
+export function rispondeA(b: Battuta, a: AzioneAlCancello): boolean {
   return blocchi(b).some((bl) => accetta(bl, a));
 }
 
@@ -164,7 +166,7 @@ export class StatoRepertorio {
   }
 
   /** La battuta può rispondere a quest'azione ADESSO (un blocco aperto ne accetta i cancelli)? */
-  rispondeA(b: Battuta, a: { autore: string; privata: boolean }): boolean {
+  rispondeA(b: Battuta, a: AzioneAlCancello): boolean {
     return this.blocchiAperti(b).some((bl) => accetta(bl, a));
   }
 

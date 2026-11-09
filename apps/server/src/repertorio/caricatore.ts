@@ -15,9 +15,10 @@ import type { Logger } from '../logger';
 import { indiziCampagna } from '../campagna/indizi';
 import { TIPI_BATTUTA, type AlternativaRichiede, type Battuta, type CondizioniStato, type Effetti, type Repertorio, type Richiede, type RigaBattuta, type TipoBattuta } from './tipi';
 import { EFFETTI, UMORE_AUTO, UMORI } from '../audio/cue';
+import { comeAbilita, comeCaratteristica } from '../campagna/regole-srd';
 
 /** Chiavi ammesse in `richiede` (e, tranne `oppure`, in ogni alternativa). Una chiave sconosciuta è un errore: ignorata, aprirebbe il cancello. */
-const CHIAVI_RICHIEDE = new Set(['indizi_rivelati', 'indizi_non_rivelati', 'battute_usate', 'battute_non_usate', 'orologio', 'privata', 'da_pg', 'oppure']);
+const CHIAVI_RICHIEDE = new Set(['indizi_rivelati', 'indizi_non_rivelati', 'battute_usate', 'battute_non_usate', 'orologio', 'privata', 'da_pg', 'prova', 'oppure']);
 
 export class ErroreRepertorio extends Error {
   override name = 'ErroreRepertorio';
@@ -103,6 +104,27 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = c.cartell
   const righe = battute.reduce((s, b) => s + b.testo.length + b.varianti.reduce((t, v) => t + v.length, 0), 0);
   log?.info({ battute: battute.length, righe, avvisi: avvisi.length }, 'repertorio caricato');
   return { battute, perId, avvisi };
+}
+
+/** Tipi di riuscita che un cancello `richiede.prova` può chiedere senza dire l'abilità. */
+const PROVE_GENERICHE = new Set(['prova', 'salvezza', 'attacco', 'contrapposta']);
+
+/**
+ * `richiede.prova` (docs/prove.md): un'abilità o una caratteristica (anche col nome italiano),
+ * l'id di una prova della scena (p_…), oppure prova / salvezza / attacco / contrapposta. Un valore
+ * che non si capisce è un errore: ignorarlo aprirebbe il cancello.
+ */
+function leggiCancelloProva(v: unknown, dove: string, errori: string[]): string | null {
+  if (v === undefined || v === null) return null;
+  if (typeof v !== 'string' || !v.trim()) {
+    errori.push(`${dove}: prova è un'abilità, una caratteristica, l'id di una prova della scena o prova/salvezza/attacco`);
+    return null;
+  }
+  const t = v.trim();
+  if (PROVE_GENERICHE.has(t) || /^p_[a-z0-9_]+$/.test(t)) return t;
+  const id = comeAbilita(t) ?? comeCaratteristica(t);
+  if (!id) errori.push(`${dove}: prova «${t}» non è un'abilità, una caratteristica, una prova della scena (p_…) né prova/salvezza/attacco`);
+  return id;
 }
 
 /**
@@ -228,14 +250,20 @@ function leggiBattuta(
     ...leggiCondizioni(r, `${qui} richiede`, errori, true),
     privata: r['privata'] === true,
     da_pg: lista(r['da_pg']),
+    prova: leggiCancelloProva(r['prova'], `${qui} richiede`, errori),
     oppure: (Array.isArray(alternative) ? alternative : []).map((a, i): AlternativaRichiede => {
       const dove = `${qui} richiede.oppure[${i + 1}]`;
       if (!a || typeof a !== 'object' || Array.isArray(a) || Object.keys(a).length === 0) {
         errori.push(`${dove}: un'alternativa è un blocco di condizioni non vuoto`);
-        return { ...leggiCondizioni({}, dove, errori, false), privata: null, da_pg: [] };
+        return { ...leggiCondizioni({}, dove, errori, false), privata: null, da_pg: [], prova: null };
       }
       const alt = a as DatiYaml;
-      return { ...leggiCondizioni(alt, dove, errori, false), privata: typeof alt['privata'] === 'boolean' ? alt['privata'] : null, da_pg: lista(alt['da_pg']) };
+      return {
+        ...leggiCondizioni(alt, dove, errori, false),
+        privata: typeof alt['privata'] === 'boolean' ? alt['privata'] : null,
+        da_pg: lista(alt['da_pg']),
+        prova: leggiCancelloProva(alt['prova'], dove, errori),
+      };
     }),
   };
   const e = (d['effetti'] ?? {}) as DatiYaml;

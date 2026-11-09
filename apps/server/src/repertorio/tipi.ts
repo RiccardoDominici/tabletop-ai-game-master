@@ -42,6 +42,8 @@ export interface AlternativaRichiede extends CondizioniStato {
   /** null = non detto: vale quello della base. */
   privata: boolean | null;
   da_pg: string[];
+  /** null = non detto: vale quello della base. */
+  prova: string | null;
 }
 
 export interface Richiede extends CondizioniStato {
@@ -52,6 +54,13 @@ export interface Richiede extends CondizioniStato {
   privata: boolean;
   /** Se non vuota: la battuta risponde solo alle azioni di questi PG («quando Assenzio le chiede…»). */
   da_pg: string[];
+  /**
+   * Cancello sul tiro (docs/prove.md, «Repertorio»): la battuta risponde solo a un'azione che ha
+   * superato questa prova. Il valore è un'abilità o una caratteristica (`persuasione`, `forza`),
+   * l'id di una prova della scena (`p_cassetta`), oppure `prova` / `salvezza` / `attacco` (una
+   * qualsiasi riuscita di quel tipo). null = nessun cancello.
+   */
+  prova: string | null;
   /**
    * Alternative (docs/repertorio.md, «Proposte per il Motore»): la battuta è disponibile se valgono
    * le condizioni di base E almeno un'alternativa. I cancelli sull'azione valgono per l'alternativa
