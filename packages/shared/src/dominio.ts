@@ -174,6 +174,15 @@ export interface VoceTrascrizione {
   testo: string;
 }
 
+/** Un PNG nella vista di scena: presente (nella scena) oppure altrove (già incontrato). */
+export interface PersonaggioScena {
+  id: string;
+  nome: string;
+  /** URL del ritratto, o null se la campagna non ne ha uno (il client mostra l'iniziale). */
+  ritratto: string | null;
+  presente: boolean;
+}
+
 /** Scena come la vede lo schermo. */
 export interface ScenaPubblica {
   id_campagna: string;
@@ -188,6 +197,12 @@ export interface ScenaPubblica {
   immagine: string | null;
   /** Ritratti dei PNG che ne hanno uno: id_png → URL. Il narratore non ha ritratto. */
   ritratti: Record<string, string>;
+  /**
+   * Personaggi non giocanti da mostrare: quelli presenti nella scena e quelli che i PG hanno già
+   * incontrato (parlano nella trascrizione) ma che ora sono altrove. Un PNG mai incontrato e non
+   * presente non compare (niente spoiler). Assente se il server non lo calcola.
+   */
+  personaggi?: PersonaggioScena[];
   /**
    * Immagine di situazione a tutto schermo al posto del luogo (es. il PNG senza cappuccio, dopo la
    * rivelazione della cicatrice), o null. La mette il Motore dopo la rivelazione giusta o il master.

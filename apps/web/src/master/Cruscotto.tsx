@@ -10,6 +10,7 @@
 import type { StatoMaster } from '@cantastorie/shared';
 import { SezioneScena } from './SezioneScena';
 import { SezioneSituazioni } from './SezioneSituazioni';
+import { SezionePresenze } from './SezionePresenze';
 import { SezioneAudio } from './SezioneAudio';
 import { SezioneOrologi } from './SezioneOrologi';
 import { SezioneFinestra } from './SezioneFinestra';
@@ -27,6 +28,7 @@ export function Cruscotto({ stato }: { stato: StatoMaster }) {
     <main className="grid min-h-0 flex-1 grid-cols-1 gap-3 p-3 lg:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)_minmax(0,1fr)]">
       <div className={COLONNA}>
         <SezioneScena stato={stato} />
+        <SezionePresenze stato={stato} />
         <SezioneAudio stato={stato} />
         <SezioneSituazioni stato={stato} />
         <SezioneOrologi stato={stato} />

@@ -178,6 +178,18 @@ export interface StatoMaster {
   audio?: AudioMaster;
   /** Sessione salvata nel registro (assente se il server non salva). */
   sessione?: SessioneMaster;
+  /** Tutti i PNG della campagna con la presenza in scena (per il pannello: anche quelli mai incontrati). */
+  presenze?: PresenzaMaster[];
+}
+
+/** Un PNG nel pannello: se è in scena, e se il master l'ha deciso a mano (altrimenti dice la scena). */
+export interface PresenzaMaster {
+  id: string;
+  nome: string;
+  presente: boolean;
+  manuale: boolean;
+  /** Ha già parlato nella trascrizione di questa sessione. */
+  incontrato: boolean;
 }
 
 /** La sessione di gioco salvata: il server la riprende da sola dopo un riavvio. */
@@ -252,7 +264,9 @@ export type ComandoMaster =
   /** Campagna a pacchetti: (fine sessione se serve, poi) si passa al pacchetto dopo, dal suo riassunto iniziale. */
   | { tipo: 'prossima_sessione' }
   /** Cambia (o dimentica, con null) il PG ricordato di un telefono: vale dal suo prossimo collegamento. */
-  | { tipo: 'dispositivo'; dispositivo: string; id_pg: string | null };
+  | { tipo: 'dispositivo'; dispositivo: string; id_pg: string | null }
+  /** Mette un PNG in scena o altrove a mano (null = torna a quanto dice la scena). Vale finché non cambia scena. */
+  | { tipo: 'presenza'; id_png: string; presente: boolean | null };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

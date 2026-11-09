@@ -50,6 +50,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'fine_sessione',
   'prossima_sessione',
   'dispositivo',
+  'presenza',
 ]);
 
 /** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */
@@ -231,6 +232,16 @@ export class ControlliMaster {
         const esito = regia.assegnaDispositivo(d, pg);
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito, dettagli: `telefono ${d.slice(0, 6)}…: ${prima ?? 'nessuno'} → ${pg ?? 'dimenticato'}`, dati: { da: prima, a: pg } };
+      }
+      case 'presenza': {
+        const id = typeof c.id_png === 'string' && ID_VALIDO.test(c.id_png) ? c.id_png : null;
+        const presente = c.presente === null ? null : typeof c.presente === 'boolean' ? c.presente : undefined;
+        if (!id || presente === undefined) return rifiuto('PNG o presenza non validi.');
+        const nome = this.o.campagna.png.find((p) => p.id === id)?.nome ?? id;
+        const esito = regia.impostaPresenza(id, presente);
+        if (!esito.ok) return rifiuto(esito.errore);
+        const come = presente === null ? 'automatica (dalla scena)' : presente ? 'in scena' : 'altrove';
+        return { esito, dettagli: `${nome}: ${come}`, dati: { id_png: id, presente } };
       }
       case 'nuova_sessione': {
         const prima = regia.infoRegistro.sessione;

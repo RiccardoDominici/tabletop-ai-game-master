@@ -28,6 +28,7 @@ import type {
   Esito,
   FaseScena,
   MisureTurno,
+  PersonaggioScena,
   SchermoAudioFinito,
   SchedaPg,
   SchermoAudioIniziato,
@@ -60,6 +61,7 @@ import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narraz
 import { messaggioRiparazione } from '../narrazione/messaggio';
 import { normalizza } from '../azioni/regole';
 import { nomiDeiPng, pngNominati, temaPresente } from '../repertorio/pertinenza';
+import { personaggiScena, pngIncontrati, presenzaEffettiva, presenzeMaster } from './presenze';
 import { sommaCosti } from '../llm/costi';
 import type { Battuta, Repertorio } from '../repertorio/tipi';
 import { StatoRepertorio } from '../repertorio/stato';
@@ -220,6 +222,8 @@ export class Regia {
   private luogo: string;
   /** La campagna vista dalla scena in corso (conScena): contesto, orologi attivi, immagini. */
   private campagna: Campagna;
+  /** Presenza dei PNG decisa a mano dal master (true = in scena, false = altrove). Si azzera a ogni cambio di scena. */
+  private presenzeManuali = new Map<string, boolean>();
   /** Blocchi di sistema della scena in corso (prompt + contesto), in cache. */
   private sistema: string[];
   /** Riassunto pubblico della scena in corso, per l'arbitro. */
@@ -795,10 +799,41 @@ export class Regia {
 
   /**
    * PNG che sono nella scena in corso: solo loro parlano (le battute in catalogo e le righe improvvisate).
-   * Oggi è `png_presenti` della scheda; se la presenza diventerà dinamica (ingressi e uscite), cambia qui.
+   * È `png_presenti` della scheda, corretta dal master a mano (`presenzeManuali`): unico punto della regia.
    */
   private pngInScena(): ReadonlySet<string> {
-    return new Set(this.campagna.scena.png_presenti);
+    return presenzaEffettiva(this.campagna.scena.png_presenti, this.presenzeManuali);
+  }
+
+  /** PNG della campagna visti dal tavolo: presenti in scena e già incontrati (vedi presenze.ts). */
+  private personaggiVisti(): PersonaggioScena[] {
+    const img = this.o.immagini;
+    return personaggiScena({
+      png: this.campagna.png,
+      presenti: this.pngInScena(),
+      incontrati: pngIncontrati(this.trascrizione, this.campagna.png),
+      ritratto: (id) => img?.ritratto(id) ?? null,
+    });
+  }
+
+  /** Il master mette un PNG in scena o altrove (null = torna a quanto dice la scena). */
+  impostaPresenza(id_png: string, presente: boolean | null): Esito {
+    if (!this.campagna.png.some((p) => p.id === id_png)) return { ok: false, errore: 'Personaggio sconosciuto.' };
+    if (presente === null) this.presenzeManuali.delete(id_png);
+    else this.presenzeManuali.set(id_png, presente);
+    this.o.log.info({ png: id_png, presente, scena: this.campagna.scena.id }, 'scena: presenza di un PNG decisa dal master');
+    this.notifica();
+    return { ok: true };
+  }
+
+  /** Presenze per il pannello del master (anche i PNG mai incontrati). */
+  presenzeMasterVista(): ReturnType<typeof presenzeMaster> {
+    return presenzeMaster({
+      png: this.campagna.png,
+      presenti: this.pngInScena(),
+      incontrati: pngIncontrati(this.trascrizione, this.campagna.png),
+      manuali: this.presenzeManuali,
+    });
   }
 
   /** Testo dell'ultima narrazione pubblica (per l'arbitro). */
@@ -941,6 +976,7 @@ export class Regia {
         umore: c.scena.umore,
         intensita: c.scena.intensita,
         ...this.immaginiPubbliche(),
+        personaggi: this.personaggiVisti(),
         ...(this.o.audio ? { audio: audioDellaScena(this.o.audio, c, this.luogo, this.umoreScelto) } : {}),
       },
       pg: c.pg.map((p) => ({ id: p.id, nome: p.nome, descrizione: p.descrizione, telefoni: conteggio.get(p.id) ?? 0 })),
@@ -1454,6 +1490,7 @@ export class Regia {
    */
   private impostaScena(id: string, turno = 0): void {
     this.campagna = conScena(this.o.campagna, id);
+    this.presenzeManuali.clear();
     this.sistema = this.o.sistemaPer?.(this.campagna) ?? this.sistema;
     this.scenaPubblica = this.o.scenaPubblicaPer?.(this.campagna) ?? this.scenaPubblica;
     for (const salto of this.orologi.impostaScena(this.campagna.scena, turno)) {
