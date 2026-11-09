@@ -110,7 +110,7 @@ Leggila in quest'ordine la prima volta.
 4. [Il pannello del master](docs/guida/il-pannello-del-master.md): ogni sezione e ogni comando.
 5. [Dadi e schede](docs/guida/dadi-e-schede.md): come funzionano le prove e le schede dei personaggi.
 6. [Voce e costi](docs/guida/voce-e-costi.md): le tre voci, il registro delle voci, quanto si spende.
-7. [Creare una campagna](docs/guida/creare-una-campagna.md): dal brief alla campagna pronta da giocare.
+7. [Creare una campagna](docs/guida/creare-una-campagna.md): dal brief alla campagna pronta da giocare, con PNG nascosti e battute pronte.
 8. [Campagne a più sessioni](docs/guida/campagne-a-piu-sessioni.md): fine sessione, registro, sessione dopo.
 9. [Il tuo manuale di regole](docs/guida/il-tuo-manuale.md): giocare con le regole di un manuale tuo invece dell'SRD 5.2.
 10. [Problemi comuni](docs/guida/problemi-comuni.md): cosa fare quando qualcosa non va.

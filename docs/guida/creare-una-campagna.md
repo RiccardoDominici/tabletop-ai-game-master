@@ -340,6 +340,24 @@ python3 strumenti/stato_preparazione.py campagne/<id>
 
 Stampa quali immagini e suoni ci sono, quali mancano, quanto pesano, e se la campagna è pronta.
 
+### PNG nascosti
+
+Un PNG può entrare in scena senza essere mostrato subito. Nel suo file `campagne/<id>/png/<id>.yaml` scrivi:
+
+```yaml
+nascosto: true
+```
+
+Il narratore lo conosce e può farlo parlare, ma il proiettore e i telefoni non lo mostrano finché non ha parlato
+o finché il master non preme **Rivela** nel pannello (vedi [il pannello del master](il-pannello-del-master.md)).
+Assente, o `false`, vuol dire visibile dall'inizio.
+
+### Battute pronte
+
+Le battute del repertorio con la voce Qwen si possono registrare prima della serata, così partono subito. Il
+comando, e cosa costa con drama-3, è in [Voce e costi](voce-e-costi.md#le-battute-già-pronte). `prepara.sh`
+non ha un'opzione per questo.
+
 ## 6. Le immagini
 
 Le immagini si generano **in locale**, sul Mac con chip Apple, con FLUX.2 klein 4B attraverso mflux. Il codice è

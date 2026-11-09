@@ -240,6 +240,9 @@ Codice d'uscita dello script: `0` fatto (o fermo dove tocca all'agente); `1` c'�
 
 ## In lavorazione
 
+**In arrivo:** il riepilogo di fine serata e la chiusura guidata della sessione (lavoro in corso sul Motore). Fino
+ad allora si usa «Fine sessione» come descritto sotto.
+
 Le richieste del 9 novembre ([docs/richieste-2026-11-09.md](../richieste-2026-11-09.md), §9) chiedono una chiusura
 guidata della serata («Chiudi la sessione»), un «La volta scorsa…» all'apertura, un avviso quando la serata sta per
 finire e un Diario sul telefono. Il progetto è in [docs/strati.md](../strati.md), «Riassunto e chiusura della

@@ -137,6 +137,7 @@ suo telefono e viene solo dai testi delle regole, mai dalla campagna (`docs/rego
 
 Apri sul Mac il link del pannello stampato dallo script. Parte in modalità «senza spoiler», così chi fa da
 master può anche giocare. Tutte le sezioni e i comandi: [Il pannello del master](il-pannello-del-master.md).
+Un PNG segnato come nascosto compare al tavolo quando lo riveli dal pannello con **Rivela** (vedi [Creare una campagna](creare-una-campagna.md#png-nascosti)).
 
 ## Come va un turno
 
