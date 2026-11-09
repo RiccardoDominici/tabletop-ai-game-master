@@ -75,7 +75,7 @@ import { creaPronunciatore, type Pronunciatore } from '../voce/pronuncia';
 import type { SelettoreVoce } from '../voce/selettore';
 import { StatoOrologi, type EsitoAvanzamento, type Orologio as OrologioMinaccia } from './orologi';
 import { NoteRegia } from '../master/note';
-import { Sorvegliante, type BloccoSorvegliato } from './sorvegliante';
+import { conBattitoAudio, Sorvegliante, type BloccoSorvegliato } from './sorvegliante';
 import { sezioneRitmo } from '../narrazione/ritmo';
 import type { Ritmo } from '../azioni/tipi';
 import { sezioneNoteRegia } from '../narrazione/messaggio';
@@ -160,7 +160,7 @@ export const MOTIVO_BLOCCO = 'Il narratore si è bloccato prima di rispondere: l
 /** Riga di sistema (e avviso) quando il sorvegliante riprende il gioco. */
 export const TESTO_BLOCCO = 'Il narratore si era bloccato: si riparte.';
 /** Riserva del narratore (solo testo: la voce potrebbe essere proprio ciò che si è bloccato). */
-export const TESTO_RISERVA_BLOCCO = 'Il narratore riprende il filo: ditegli di nuovo cosa fate.';
+export const TESTO_RISERVA_BLOCCO = 'Scusate, ho perso il filo per un momento: ditemi di nuovo cosa fate.';
 /** Riga di sistema scritta da «Fine sessione» (pannello del master). */
 export const TESTO_FINE_SESSIONE = 'Fine della sessione.';
 export const MOTIVO_RIPRESA = 'Il gioco si è fermato mentre il narratore rispondeva: la tua azione non è stata risolta, puoi rimandarla.';
@@ -331,7 +331,8 @@ export class Regia {
     this.statoRepertorio = this.nuovoStatoRepertorio();
     this.pipeline = new PipelineVoce({
       motore: () => this.o.voce.attivo,
-      uscita: opzioni.uscitaAudio,
+      // Ogni pezzo d'audio che esce è un segno di vita per il sorvegliante (una frase lunga non è un blocco).
+      uscita: conBattitoAudio(opzioni.uscitaAudio, () => this.sorvegliante.batti('voce: audio in uscita')),
       log: opzioni.log.child({ modulo: 'voce' }),
       ...(opzioni.cacheAudio ? { cache: opzioni.cacheAudio } : {}),
       // Voce espressiva (drama-3): direzione di chi parla dalla scheda o dalla carta di stile; costo a fine turno.

@@ -11,12 +11,14 @@ Scrivi solo righe con un'etichetta:
 [narratore] testo del narratore
 [png_id] parole dette dal PNG, senza virgolette e senza «disse»
 [orologio] id_orologio
+[ritmo] concitato
 [umore] tag
 [effetto] tag
 [invito] pg_id,pg_id
 
 - `[png_...]`: solo PNG con scheda, con l'id esatto del campo `id`. Solo parole dette: i gesti vanno in `[narratore]`.
 - `[orologio]`: l'id dell'orologio, prima di `[invito]`, solo se la risposta ne mostra il prossimo segno. Non viene letta.
+- `[ritmo]`: rara. `concitato` quando la scena diventa frenetica e bisogna decidere in fretta (un combattimento, un inseguimento, un crollo, un pericolo che arriva adesso): la prossima finestra dei giocatori avrà un conto alla rovescia. `calmo` quando il pericolo è passato. Prima di `[invito]`, solo nella risposta in cui il ritmo cambia; altrimenti vale quello di prima. Mai per mettere fretta a chi sta solo discutendo. Non viene letta.
 - `[umore]`: rara. Solo quando lo stato emotivo della scena cambia davvero (parte un inseguimento, muore qualcuno, arriva la `transizione` della scena): un umore della sezione «Audio» del contesto, o `auto` per tornare alla musica del luogo; sulla riga prima della frase da cui cambia. Non viene letta.
 - `[effetto]`: solo per un suono che la narrazione nomina (una campana, una porta): un effetto della sezione «Audio», sulla riga prima della frase che lo racconta. Non viene letta.
 - `[invito]`: sempre l'ultima riga. Id dei PG che devono rispondere, separati da virgola, oppure `tutti`. Non viene letta.

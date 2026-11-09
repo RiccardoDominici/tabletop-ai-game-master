@@ -156,11 +156,13 @@ Com'è fatto oggi (`/master`, contratto in `packages/shared/src/master.ts`):
   e il registro dei comandi.
 - **Comanda**:
   - **Pausa / Riprendi**: nessuna nuova finestra. A finestra aperta la finestra resta aperta ma non si chiude da sola
-    (niente conto alla rovescia, niente stallo); durante una narrazione la si lascia finire e poi il tavolo si ferma (fase
-    `pausa`). I telefoni possono scrivere: l'azione entra alla ripresa.
+    (il conto alla rovescia del ritmo concitato si ferma, e alla ripresa riparte da capo); durante una narrazione la si
+    lascia finire e poi il tavolo si ferma (fase `pausa`). I telefoni possono scrivere: l'azione entra alla ripresa. La
+    pausa la mette e la toglie solo il master: il Motore non si ferma mai da solo.
   - **Ferma la narrazione**: interrompe subito LLM e voce, lo schermo tace e il tavolo va in pausa. Le azioni di quel turno
     non sono state risolte: tornano ai giocatori come «non è andata», da rimandare.
-  - **Cambia luogo** (dissolvenza sul proiettore), **orologio ±1 segno**, **chiudi la finestra ora**, **salta l'azione** di
+  - **Cambia luogo** (dissolvenza sul proiettore), **orologio ±1 segno**, **Risolvi ora** (chiude la finestra: il narratore risponde alle
+    azioni inviate, senza aspettare chi manca), **ritmo calmo / concitato**, **salta l'azione** di
     un giocatore (torna nella sua casella, chi ne dipendeva deve decidere).
   - **Cambia scena** (campagne con `scene/*.yaml`): contesto del narratore e orologi attivi della scena nuova (gli orologi
     tengono lo stato tra le scene), luogo sul proiettore, battute della scena; le azioni in sospeso tornano ai giocatori,
@@ -191,10 +193,12 @@ Com'è fatto oggi (`/master`, contratto in `packages/shared/src/master.ts`):
 Ogni scena ha un **numero di versione**. Ogni azione inviata porta con sé la versione in cui è stata scritta.
 
 **Esplorazione e dialogo: finestre.** Quando la narrazione finisce con un invito a un personaggio giocante, si apre una finestra.
-- La finestra si chiude in uno di tre casi:
-  - tutti i giocatori invitati hanno premuto «pronto»;
-  - sono passati circa 10 s dalla prima azione;
-  - sono passati 45 s senza nessun input: allora scatta la mossa contro lo stallo.
+- La finestra si chiude in uno di tre casi (docs/f0-contratti.md, «Turno»):
+  - hanno inviato tutti i giocatori invitati (inviare = pronto), dopo 2,5 s di assestamento;
+  - al ritmo concitato (lo chiede la narrazione), alla scadenza: 25 s dall'apertura;
+  - il master preme «Risolvi ora».
+- Al ritmo calmo non c'è nessuna scadenza né mossa contro lo stallo: se nessuno scrive, il gioco aspetta. Un sorvegliante
+  riprende il gioco se il Motore resta fermo (modello, voce) senza segni di vita.
 - Finché la finestra è aperta, ogni azione si può modificare o annullare.
 - Alla risoluzione, le azioni scritte su una versione vecchia diventano **superate**. Il telefono chiede: «La scena è cambiata: confermi o riscrivi?».
 - Esempio: «faccio un passo avanti» mentre il narratore parla. Se il compagno ti anticipa, la tua azione viene segnata come superata invece che eseguita alla cieca.

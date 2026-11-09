@@ -161,6 +161,9 @@ test('ritmo: niente timer al calmo, coda senza conto, concitato col conto, Risol
   const righe = narrazioni(sessione);
   const turni = righe.filter((r) => r['tipo'] === 'turno');
   expect(turni.slice(0, 3).map((r) => r['chiusura'])).toEqual(['tutti_inviato', 'tutti_inviato', 'scadenza']);
-  expect(righe.find((r) => r['tipo'] === 'sorvegliante')).toMatchObject({ turno: 4, fase: 'narrazione', causa: 'il modello non risponde' });
+  // Il sorvegliante interviene solo sul turno bloccato: l'apertura (frasi lunghe della voce) va fino in fondo.
+  const blocchi = righe.filter((r) => r['tipo'] === 'sorvegliante');
+  expect(blocchi).toHaveLength(1);
+  expect(blocchi[0]).toMatchObject({ turno: 4, fase: 'narrazione', causa: 'il modello non risponde' });
   expect(errori, errori.join('\n')).toEqual([]);
 });

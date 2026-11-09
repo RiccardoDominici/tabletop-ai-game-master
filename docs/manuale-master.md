@@ -480,7 +480,7 @@ Segue un controllo di contraddizione: prima il recupero dal canone, poi una veri
 
 Se un criterio prende ≤1 per due volte di fila, il Motore stringe i limiti oppure passa le battute di quel PNG al modello forte.
 
-**E12 Spotlight e stallo.** Lo scheduler applica le soglie di T1 e sceglie il destinatario. Il rilevatore di stallo scatta in due casi: 45 secondi senza input dopo un invito, oppure 2 input senza decisioni nuove (lo stabilisce un classificatore). Alla prima volta inietta una mossa morbida (S1), alla seconda un indizio proattivo (S2).
+**E12 Spotlight e stallo.** Lo scheduler applica le soglie di T1 e sceglie il destinatario. Il rilevatore di stallo non guarda l'orologio: al tavolo il silenzio è discussione, e il gioco aspetta (richieste del 9 novembre). Scatta quando una finestra si chiude senza nessuna azione (la scadenza del ritmo concitato, o «Risolvi ora» del master a mani vuote), oppure dopo 2 input senza decisioni nuove (lo stabilisce un classificatore). Alla prima volta inietta una mossa morbida (S1), alla seconda un indizio proattivo (S2).
 
 **E13 Sicurezza.**
 - Le linee sono un filtro duro su preparazione e uscita (lista più classificatore).

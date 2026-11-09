@@ -34,7 +34,7 @@ Stati:
 | `chiusa` | entrata nel gruppo che il narratore sta risolvendo | no |
 | `risolta` | il narratore l'ha risolta | — |
 | `superata` | non eseguita: la scena o un'altra azione l'hanno resa impossibile (con `motivo`) | si riscrive |
-| `sospesa` | era `da_confermare` e il tempo è scaduto: esclusa dal turno, il giocatore lo sa | si riscrive |
+| `sospesa` | era `da_confermare` e il tempo è scaduto (ritmo concitato) o il master ha risolto: esclusa dal turno, il giocatore lo sa | si riscrive |
 
 ## I tre casi
 
@@ -65,10 +65,19 @@ Stati:
 
 ## La finestra
 
-- Si apre dopo l'invito, come in F0, e si chiude quando tutti gli invitati sono pronti oppure 10 s dopo la prima azione.
-- **Non si chiude** mentre ci sono azioni `da_confermare` o un invitato sta scrivendo (indicatore negli ultimi 3 s):
-  si allunga di poco, al massimo di 8 s in tutto. Allo scadere le `da_confermare` diventano `sospese` (escluse,
-  con avviso), così nessuno blocca il tavolo.
+Rivista dopo le richieste del 9 novembre (docs/richieste-2026-11-09.md; dettagli in docs/f0-contratti.md, «Turno»).
+
+- Si apre dopo l'invito. Inviare vuol dire «ho finito» (non c'è «Pronto»): si chiude quando tutti gli invitati hanno
+  un'azione viva e nessuna è `da_confermare`, dopo 2,5 s di assestamento per un «anch'io» o una correzione (ogni invio,
+  ritiro o conferma lo fa ripartire, e chi sta scrivendo lo allunga, al massimo di 8 s). Un telefono scollegato non si
+  aspetta.
+- **Ritmo calmo** (normale): nessuna scadenza. Una scelta `da_confermare` aspetta chi la deve fare; il master ha
+  «Risolvi ora», e allora le `da_confermare` diventano `sospese`.
+- **Ritmo concitato** (lo chiede la narrazione con `[ritmo] concitato`, oppure la scena o il master): la finestra si
+  chiude da sola 25 s dopo l'apertura. **Non si chiude** mentre ci sono azioni `da_confermare` o un invitato sta
+  scrivendo (indicatore negli ultimi 3 s): si allunga di poco, al massimo di 8 s. Allo scadere le `da_confermare`
+  diventano `sospese` (escluse, con avviso), così nessuno blocca il tavolo.
+- Un'azione in coda non fa mai partire un conto alla rovescia.
 - Il narratore riceve le azioni chiuse **in ordine di invio**, con i collegamenti: chi dipende da chi, chi ha vinto
   quale conflitto.
 
@@ -89,7 +98,9 @@ Stati:
 
 - Sezione «Al tavolo»: le azioni pubbliche in coda degli altri, con stato.
 - La propria azione: stato, `motivo` quando cambia per cause esterne.
-- Avviso a tutto schermo per `da_confermare`, con tre pulsanti e un conto alla rovescia; vibrazione dove esiste.
+- Avviso a tutto schermo per `da_confermare`, con tre pulsanti (e un conto alla rovescia solo al ritmo concitato);
+  vibrazione dove esiste.
+- Solo «Invia» e «Ritira»: chi ha inviato vede «Azione inviata» e, sotto, «Aspettiamo: …».
 - Esiti per chi è stato superato: privati, brevi, con il pulsante «Riscrivi».
 
 ## Scelte dopo la ricerca (`docs/ricerca-azioni.md`)
@@ -110,6 +121,7 @@ Stati:
 ## Verifica
 
 - Test deterministici sugli scenari (classificatore finto): dipendenza e ritiro, catena A→B→C, conflitto esclusivo
-  con il secondo che cambia, azione vecchia valida/dubbia/impossibile, scadenza → sospesa, azione privata.
+  con il secondo che cambia, azione vecchia valida/dubbia/impossibile, scadenza concitata → sospesa, azione privata;
+  turno senza scadenza (calmo), assestamento, invitato scollegato, «Risolvi ora».
 - Insieme di casi per il classificatore vero (Haiku), con precisione e richiamo.
 - Prova end-to-end con tre telefoni (Playwright) sugli stessi scenari, con screenshot degli avvisi.

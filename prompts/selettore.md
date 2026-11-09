@@ -13,6 +13,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 [png_id] parole improvvisate del PNG
 [umore] tag
 [effetto] tag
+[ritmo] concitato
 [invito] pg_id,pg_id
 
 - `[usa] id > pg_id`: la battuta parte così com'è e risponde all'azione di quel PG. Non riscriverla, non riassumerla.
@@ -20,6 +21,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 - `[png_...]`: id esatto del PNG. Solo parole dette: i gesti vanno in `[narratore]`.
 - `[umore]`: rara. Solo quando lo stato emotivo della scena cambia davvero (parte un inseguimento, muore qualcuno): un umore della sezione «Audio» del contesto, o `auto` per tornare alla musica del luogo; sulla riga prima della frase da cui cambia. Le battute che portano già il loro audio non ne hanno bisogno. Non viene letta.
 - `[effetto]`: solo per un suono che le tue righe nominano (una campana, una porta): un effetto della sezione «Audio», sulla riga prima della frase che lo racconta. Non viene letta.
+- `[ritmo]`: rara. `concitato` quando la scena diventa frenetica e bisogna decidere in fretta (un combattimento, un inseguimento, un crollo, un pericolo che arriva adesso): la prossima finestra dei giocatori avrà un conto alla rovescia. `calmo` quando il pericolo è passato. Prima di `[invito]`, solo nella risposta in cui il ritmo cambia; altrimenti vale quello di prima. Mai per mettere fretta a chi sta solo discutendo. Non viene letta.
 - `[invito]`: sempre l'ultima riga. Id dei PG che devono rispondere, oppure `tutti`. Non viene letta.
 - Nient'altro: niente `[orologio]`, titoli, markdown, note.
 

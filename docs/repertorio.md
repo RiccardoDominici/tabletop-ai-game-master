@@ -132,7 +132,8 @@ battute *disponibili* invece di rispondere alle azioni. Cambia così:
   generiche hanno `solo_esempio: true`: non entrano nel catalogo, ma vanno nel contesto come **esempi della voce** del PNG
   per l'improvvisazione.
 - **Catalogo pertinente**: il Motore mostra le battute i cui `temi` o PNG compaiono nelle azioni del turno, più il
-  segno d'orologio dovuto; le battute `riempitivo: true` (il cane, la borsa…) solo quando scatta lo stallo.
+  segno d'orologio dovuto; le battute `riempitivo: true` (il cane, la borsa…) solo allo stallo, cioè una finestra chiusa senza
+  azioni (scadenza del ritmo concitato, o «Risolvi ora» a mani vuote).
 - **Anti-ripetizione**: una battuta e le sue varianti non tornano entro 3 turni.
 - **Il Motore aiuta il selettore** (playtest di nozze-neve: 115 battute su 139 mai uscite, indizi chiesti e non
   arrivati, battute giuste rifiutate per il «> pg» dimenticato):

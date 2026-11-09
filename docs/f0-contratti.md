@@ -76,6 +76,13 @@ le divide in frasi e manda ogni frase alla voce giusta.
   controlla che l'orologio esista, sia attivo e non sia completo, poi avanza l'indice; altrimenti rifiuta e registra.
   Il Motore tiene lo stato degli orologi e mette nel contesto di ogni turno «orologio X: segni mostrati N di M,
   prossimo segno: …», così il narratore non deve ricostruirlo dalla trascrizione.
+- `[ritmo] concitato` / `[ritmo] calmo`: facoltativa e rara, subito prima di `[invito]`, non letta (anche nel protocollo
+  del selettore). `concitato` quando la narrazione diventa frenetica (combattimento, inseguimento, pericolo imminente): la
+  finestra che si apre dopo ha un conto alla rovescia. `calmo` quando la situazione si calma. Vale l'ultima riga della
+  risposta; un valore sconosciuto si ignora (anomalia `ritmo_sconosciuto`). Il ritmo viene anche dalla scena
+  (`ritmo: concitato` in scena.yaml, all'ingresso nella scena) e lo cambia il master dal pannello; cambiando scena torna
+  quello della scena. Finché vale `concitato`, il messaggio del turno ha la sezione «## Ritmo», che ricorda al narratore
+  come tornare al calmo.
 - `[umore] <tag>` e `[effetto] <tag>`: facoltative, rare, non lette (anche nel protocollo del selettore). Valgono per la
   frase che segue; il vocabolario, il limite di un umore al minuto e i tempi sono in docs/audio.md («Segnali automatici»).
 - Righe senza etichetta: si accodano al segmento precedente (tolleranza), con errore nel log.
@@ -96,16 +103,47 @@ agenda del cattivo, segreti, registro del canone `canone: [{id, testo, noto_ai_p
   al livello di campagna con le regole di docs/strati.md («Regole di unione»); una campagna senza `sessioni/` si
   carica come sopra. A fine sessione il server scrive nel pacchetto `registro.yaml` e `trascrizione.yaml`.
 
-## Turno (F0)
+## Turno
+
+Rivisto dopo le richieste di Riccardo del 9 novembre (docs/richieste-2026-11-09.md, punti 1, 3, 5 e 7): nessuna scadenza
+in condizioni normali, inviare = pronto, il conto alla rovescia solo quando la narrazione lo chiede, mai una pausa senza fine.
 
 1. All'avvio della scena il server fa leggere `campagna.yaml → sessione.riassunto_iniziale` (se c'è; in una
    campagna a più sessioni `sessioni/<nn>/sessione.yaml → riassunto_iniziale`) e poi l'apertura della prima
    scena, con la voce `narratore`, e apre la finestra per tutti.
-2. Finestra aperta: ogni giocatore invitato scrive un'azione, la può modificare o ritirare, e può premere «pronto».
-3. La finestra si chiude quando tutti gli invitati sono pronti, oppure 10 s dopo la prima azione inviata.
+2. Finestra aperta: ogni giocatore invitato scrive un'azione, la può modificare o ritirare. Sul telefono ci sono solo
+   «Invia» e «Ritira»: inviare vuol dire «ho finito», non c'è un «Pronto» da premere dopo (chi non vuole fare niente
+   scrive «Aspetto»). Si può scrivere anche a finestra chiusa, mentre il narratore prepara o parla: l'azione entra nella
+   finestra dopo.
+3. La finestra si chiude:
+   - quando **hanno inviato tutti gli invitati** (con `tutti`: tutti i PG con un telefono collegato) e nessuna azione è da
+     confermare, dopo un **assestamento** di 2,5 s (`CANTASTORIE_ASSESTAMENTO_MS`) per un «anch'io» o una correzione:
+     ogni invio, ritiro o conferma lo fa ripartire, e chi sta scrivendo lo allunga, al massimo di 8 s. Un telefono
+     scollegato non si aspetta; se rientra, lo si aspetta di nuovo;
+   - al **ritmo concitato**, alla scadenza: `CANTASTORIE_CONCITATO_MS` (25 s) dall'apertura della finestra. Allo scadere
+     si allunga al massimo di 8 s per chi scrive o deve confermare, poi le «da confermare» diventano «sospese» e si risolve
+     con quello che c'è (anche niente: allora il mondo fa una mossa);
+   - con **«Risolvi ora»** del master (comando `chiudi_finestra`).
+
+   Al ritmo calmo non c'è nessuna scadenza: se nessuno scrive, il gioco aspetta (niente mosse contro lo stallo, niente
+   pausa per inattività). Un'azione in coda non fa mai partire un conto alla rovescia. `finestra.aspettiamo` dice chi
+   manca («Aspettiamo: Paolo e Giulia» su proiettore, telefoni e pannello); `finestra.chiusura_prevista_ms` c'è solo al
+   ritmo concitato; `StatoTavolo.ritmo` dice il ritmo.
 4. Il server compila il contesto (stile + scena + PNG + PG + trascrizione pubblica + azioni), chiama Haiku in streaming,
-   legge le righe, manda le frasi alla voce, inoltra l'audio allo schermo.
-5. Quando arriva `[invito]`, a narrazione finita, si apre la finestra successiva.
+   legge le righe, manda le frasi alla voce, inoltra l'audio allo schermo. Intanto i telefoni dicono «Il narratore sta
+   preparando…» (poi «sta raccontando…»).
+5. Quando arriva `[invito]`, a narrazione finita, si apre da sola la finestra successiva, con il ritmo chiesto da
+   `[ritmo]`, se c'era.
+6. **Pausa**: la mettono e la tolgono solo il master (Pausa / Riprendi, Ferma la narrazione). Nemmeno il finale di una
+   scena mette in pausa: la finestra si riapre e il master riceve l'avviso per scegliere come andare avanti. In pausa i
+   telefoni scrivono, e le azioni entrano alla ripresa.
+7. **Sorvegliante** (`apps/server/src/scena/sorvegliante.ts`): in apertura e in narrazione ogni segno di vita (frase
+   dell'LLM, richiesta e pezzi d'audio della voce, audio che parte sul proiettore, durata prevista dell'audio) sposta una
+   scadenza (`CANTASTORIE_SORVEGLIANTE_MS`, 60 s; 0 = spento). Se passa senza segni di vita, il Motore registra la causa
+   (log e `narrazioni.jsonl`, riga di tipo `sorvegliante`: «il modello non risponde», «la voce non ha finito le frasi del
+   turno», un'eccezione), ferma LLM e voce e riapre la finestra per tutti. Se il narratore non aveva ancora detto niente,
+   le azioni del turno tornano ai giocatori («non è andata», da rimandare) e resta una riga di riserva del narratore,
+   solo testo. Anche un'eccezione in un flusso della narrazione fa ripartire subito il gioco.
 
 ## Misure di latenza (per ogni turno, in `logs/turni.jsonl`)
 

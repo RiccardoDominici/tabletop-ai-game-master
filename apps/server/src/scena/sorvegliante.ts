@@ -106,3 +106,24 @@ export class Sorvegliante {
     });
   }
 }
+
+/**
+ * L'uscita dell'audio con un segno di vita per ogni pezzo che esce: una frase lunga della voce (o
+ * una voce lenta) può durare più del silenzio massimo senza nessun altro evento, e non è un blocco.
+ * È un Proxy, così inoltra senza cambiarli anche i metodi che l'interfaccia avrà in futuro.
+ */
+export function conBattitoAudio<T extends { pezzo(p: never): void }>(uscita: T, batti: () => void): T {
+  return new Proxy(uscita, {
+    get(bersaglio, chiave, ricevente) {
+      const valore = Reflect.get(bersaglio, chiave, ricevente) as unknown;
+      if (typeof valore !== 'function') return valore;
+      if (chiave === 'pezzo') {
+        return (...argomenti: unknown[]) => {
+          batti();
+          return (valore as (...a: unknown[]) => unknown).apply(bersaglio, argomenti);
+        };
+      }
+      return (valore as (...a: unknown[]) => unknown).bind(bersaglio);
+    },
+  });
+}
