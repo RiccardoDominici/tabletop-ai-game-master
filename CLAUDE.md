@@ -31,7 +31,7 @@ git ls-files | grep -E '(^|/)\.env(\.[^e][^/]*)?$|^logs/|^cache/|(^|/)\.venv/|__
 git grep -nE 'sk-ant-|sk-or-v1|hf_[A-Za-z0-9]{10,}|ghp_[A-Za-z0-9]{10,}|gho_[A-Za-z0-9]{10,}|[A-Z_]*_API_KEY=[^[:space:]]+' -- ':!.env.example' && echo "TROVATO: pattern di chiave"
 
 # 3. Regole ricavate da un manuale non libero: il set non va nel repository
-git ls-files | grep -E '^campagne/[^/]+/regole/' && echo "TROVATO: file di un set di regole tracciato"
+# (un set da un manuale libero, es. SRD CC-BY, può stare nel repo: si fermano solo i set con libera: false)
 git grep -nE '^\s*libera:\s*false' -- 'campagne/*/regole/regole.yaml' && echo "TROVATO: regole con licenza non libera"
 git check-ignore -q manuali/x.pdf || echo "ATTENZIONE: manuali/ non e' nel .gitignore"
 
