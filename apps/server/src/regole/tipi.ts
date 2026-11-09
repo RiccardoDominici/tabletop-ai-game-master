@@ -19,6 +19,8 @@ export interface Fascia {
   min: number | null;
   esito: 'successo' | 'parziale' | 'fallimento';
   nome: string;
+  /** Che cosa vuol dire per il racconto (per il narratore); null = il significato standard dell'esito. */
+  significato: string | null;
 }
 
 export interface Difficolta extends Voce {
@@ -34,6 +36,7 @@ export interface Difficolta extends Voce {
 export interface Grado {
   divisore: number;
   nome: string;
+  significato: string | null;
 }
 
 export interface Mossa extends Voce {
@@ -48,6 +51,8 @@ export interface SistemaRegole {
   nome: string;
   /** L'SRD 5.2 del codice (prove/risolutore.ts) invece del motore generico. */
   srd: boolean;
+  /** Riassunto per il narratore in una o due frasi (regole.yaml → per_il_narratore); null = dal set. */
+  perNarratore: string | null;
   fonte: { titolo: string; autore: string | null; file: string | null };
   licenza: { nome: string; libera: boolean; attribuzione: string | null };
   risoluzione: {

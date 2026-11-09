@@ -1819,7 +1819,7 @@ export class Regia {
       orologi: this.statoRepertorio ? this.orologi.descriviRepertorio(r.turno) : this.orologi.descrivi(r.turno),
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
       noteRegia: this.note.testi,
-      ...(tiri?.fatti.length ? { esitiTiri: { titolo: TITOLO_ESITI, regola: REGOLA_ESITI, righe: tiri.fatti } } : {}),
+      ...(tiri?.fatti.length ? { esitiTiri: { titolo: TITOLO_ESITI, regola: this.prove?.regolaEsiti() ?? REGOLA_ESITI, righe: tiri.fatti } } : {}),
     });
     // Ritmo concitato: il narratore sa che vale ancora, e quando dire `[ritmo] calmo`.
     const ritmo = sezioneRitmo(this.ritmo);

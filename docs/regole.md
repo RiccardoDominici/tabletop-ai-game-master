@@ -40,6 +40,7 @@ passi vengono da `assets/regole/srd-5.2/`. Anche le campagne di oggi giocano cos
 ```yaml
 id: due-sei-mondo            # [V] minuscole, cifre, - e .; «srd-5.2» = l'SRD del codice
 nome: "Mondo a 2d6"          # [V] come lo vedono i giocatori
+per_il_narratore: "…"        # facoltativo: come si tira, in una frase (se manca la scrive il codice)
 fonte:
   titolo: "…"                # [V] titolo del manuale
   autore: "…"                # facoltativo
@@ -54,13 +55,13 @@ risoluzione:
   # 2d6_fasce:    dadi: 2; fasce dalla più alta, min incluso, l'ultima con min vuoto
   fasce:
     - {min: 10, esito: successo, nome: "Successo pieno"}
-    - {min: 7, esito: parziale, nome: "Successo con un costo"}
+    - {min: 7, esito: parziale, nome: "Successo con un costo", significato: "riesce, ma…"}   # significato facoltativo
     - {min: null, esito: fallimento, nome: "Fallimento"}
   # sotto_soglia: dado: 20 | 100 [V]; facoltativi critico (≤ questo), disastro (≥ questo), gradi
   dado: 100
   critico: 1
   disastro: 100
-  gradi: [{divisore: 5, nome: "Successo estremo"}, {divisore: 2, nome: "Successo difficile"}]
+  gradi: [{divisore: 5, nome: "Successo estremo"}, {divisore: 2, nome: "Successo difficile"}]   # anche significato
 caratteristiche:              # [V] almeno una; id snake_case senza accenti, unici
   - {id: fascino, nome: "Fascino"}
 abilita:                      # facoltative; caratteristica = id esistente [V]
@@ -114,8 +115,9 @@ Con l'SRD 5.2 le schede restano quelle di docs/prove.md §2 (punteggi, competenz
 **Prove della scena** con un set non SRD, in `scena.yaml → prove`:
 `{id: p_…, quando, mossa | abilita | caratteristica (id del set), difficolta (id del set), se_fallisce}`.
 
-**Repertorio.** `richiede.prova` con un set non SRD per ora accetta `prova`, `attacco`, `salvezza` o un id `p_…`. Gli
-id delle mosse e delle abilità del set non sono ancora riconosciuti dal caricatore (vedi §6).
+**Repertorio.** `richiede.prova` con un set non SRD accetta anche gli id del set (mosse, abilità, caratteristiche):
+`richiede: {prova: convincere}` apre la battuta solo dopo una riuscita della mossa Convincere. Il caricatore legge il
+set della campagna; un id che non è del set né dell'SRD è un errore.
 
 ### riassunto.md e estratti/
 - **riassunto.md**: al massimo 400 parole, per i giocatori. Dice come si tira, cosa vogliono dire i risultati, le mosse
@@ -158,6 +160,12 @@ id delle mosse e delle abilità del set non sono ancora riconosciuti dal caricat
 - **Schema**: le enum sono gli id del set, quindi il modello non può inventare un'abilità.
 - **Normalizzazione**: il Motore scarta ciò che non torna con i dati, come per l'SRD.
 
+**Narratore e selettore.** Quando ci sono tiri, la sezione «Esiti dei tiri» del messaggio porta anche le regole del set
+(regole/narratore.ts): come si tira (`per_il_narratore`, o una frase del codice) e che cosa vuol dire ogni esito nel
+racconto. Per il 2d6, per esempio: «7–9 «Successo con un costo»: riesce, ma devi dare un costo, una scelta difficile o una
+complicazione: raccontali insieme alla riuscita, mai come un successo pieno». Il `significato` di fasce e gradi lo
+sostituisce. Con l'SRD 5.2 la regola resta quella di sempre.
+
 ## 5. Far capire le regole (telefono)
 
 - **Scheda «Regole»** (`regole:leggi`): nome del set, fonte, licenza e attribuzione, e `riassunto.md`.
@@ -173,8 +181,5 @@ id delle mosse e delle abilità del set non sono ancora riconosciuti dal caricat
 - **Skill e validatore** (agente haiku): estrarre il testo del manuale da `manuali/`, scrivere il set con questo
   schema, aggiungere i controlli `[V]` a `valida_campagna.py`, e generare le schede col vocabolario del set.
   Per l'SRD basta non scrivere `regole/`.
-- **Narratore**: oggi riceve gli esiti come fatti, con la regola, ma non il riassunto del set. Per i giochi molto
-  diversi (sanità, condizioni) servirebbe un blocco di regole nel suo contesto.
-- **Repertorio**: `richiede.prova` con gli id del set (mosse, abilità).
-- **Condizioni e sottosistemi** sono solo testo; il Motore non li applica ancora.
+- **Condizioni e sottosistemi** sono solo testo; il Motore non li applica ancora (in docs/da-fare.md).
 - **Prove contrapposte e tiri salvezza** in un set non SRD diventano prove normali.

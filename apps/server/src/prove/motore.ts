@@ -24,6 +24,8 @@ import { StatoProve, type StatoProveSalvato } from './stato';
 import type { ArbitroProve, AzioneDaClassificare, DecisioneProva, DecisioneRegole, EsitoTurnoProve, IngressoArbitroProve } from './tipi';
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
 import { proveScenaRegole, risolviTurnoRegole } from './risolutore-regole';
+import { regolePerNarratore } from '../regole/narratore';
+import { REGOLA_ESITI } from './testi';
 
 /** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
 type Decisione = DecisioneProva | DecisioneRegole;
@@ -115,6 +117,16 @@ export class MotoreProve {
     const g = this.generico;
     if (g) return g.schede.get(id)?.attacchi.map((a) => a.id) ?? null;
     return this.o.schede.get(id)?.attacchi.map((a) => `${a.id}${a.distanza ? ' (a distanza)' : ''}`) ?? null;
+  }
+
+  /**
+   * La regola della sezione «Esiti dei tiri» per narratore e selettore: con un set non SRD anche come
+   * si tira e che cosa vuol dire ogni esito (regole/narratore.ts), così un 7–9 non diventa un successo.
+   */
+  regolaEsiti(): string {
+    const g = this.generico;
+    const blocco = g ? regolePerNarratore(g.regole) : null;
+    return blocco ? `${REGOLA_ESITI}\n${blocco}` : REGOLA_ESITI;
   }
 
   get attivo(): boolean {

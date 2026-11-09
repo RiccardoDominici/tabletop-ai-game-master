@@ -90,3 +90,6 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
 - **Musica** (F5): prova di generazione locale (ACE-Step o Stable Audio 3 con login Hugging Face) o biblioteca CC0/CC-BY;
   allineare il vocabolario dei tag tra manuale §4 e architettura.
 - **Telefoni veri in stanza**: HTTPS per il microfono (tunnel, mkcert o Tailscale), trascrizione con Whisper.
+- **Set di regole: condizioni e sottosistemi** (docs/regole.md §6): oggi sono solo testo in regole.yaml (`condizioni`,
+  `sottosistemi`). Il Motore non li applica: niente stato «prono», «spaventato», sanità o magia con i loro effetti sui
+  tiri. Prima di farlo serve un set vero che li usi.

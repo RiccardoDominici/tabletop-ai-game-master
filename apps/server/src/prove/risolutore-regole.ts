@@ -230,7 +230,8 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         const b = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
         aggiungi(cartaDa(e, a.autore, 'prova', cosa.etichetta, b, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, a.privata));
         esito.riuscita = e.riuscita;
-        if (e.riuscita) esito.riuscite.push('prova', ...[d.abilita, d.caratteristica, d.mossa, ps?.id].filter((x): x is string => !!x));
+        // Prove riuscite per il cancello `richiede.prova`: anche gli id del set (mossa, abilità, caratteristica).
+        if (e.riuscita) esito.riuscite.push(...new Set(['prova', ...[d.abilita, d.caratteristica, d.mossa, ps?.id, ps?.mossa, ps?.abilita, ps?.caratteristica, cosa.mossa?.id, cosa.mossa?.caratteristica].filter((x): x is string => !!x)]));
         testo = `${e.regola}${e.vantaggio ? ` (con ${e.vantaggio})` : ''}: ${s.risoluzione.tipo === 'sotto_soglia' ? `${e.dado}` : `${e.totale}`} → ${esitoInParole(e)}.`;
         if (cosa.mossa) {
           const esitoMossa = e.grado?.id === 'parziale' ? (cosa.mossa.esiti.parziale ?? cosa.mossa.esiti.successo) : e.riuscita ? cosa.mossa.esiti.successo : cosa.mossa.esiti.fallimento;

@@ -69,7 +69,7 @@ function dueD6(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta,
   const totale = somma + modTot;
   const fasce = s.risoluzione.fasce;
   const i = Math.max(0, fasce.findIndex((f) => f.min === null || totale >= f.min));
-  const f = fasce[i] ?? { min: null, esito: 'fallimento' as const, nome: 'Fallimento' };
+  const f = fasce[i] ?? { min: null, esito: 'fallimento' as const, nome: 'Fallimento', significato: null };
   const intervallo = intervalloFascia(fasce, i);
   return {
     dadi: tiri,

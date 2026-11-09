@@ -82,16 +82,16 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
         errori.push(`risoluzione.fasce[${i + 1}]: esito successo, parziale o fallimento`);
         continue;
       }
-      fasce.push({ min: num(o['min']), esito, nome: str(o['nome']) ?? esito });
+      fasce.push({ min: num(o['min']), esito, nome: str(o['nome']) ?? esito, significato: str(o['significato']) });
     }
-    if (!fasce.length) fasce.push({ min: 10, esito: 'successo', nome: 'Successo pieno' }, { min: 7, esito: 'parziale', nome: 'Successo con un costo' }, { min: null, esito: 'fallimento', nome: 'Fallimento' });
+    if (!fasce.length) fasce.push({ min: 10, esito: 'successo', nome: 'Successo pieno', significato: null }, { min: 7, esito: 'parziale', nome: 'Successo con un costo', significato: null }, { min: null, esito: 'fallimento', nome: 'Fallimento', significato: null });
     fasce.sort((a, b) => (b.min ?? -Infinity) - (a.min ?? -Infinity));
     if (fasce.at(-1)!.min !== null) avvisi.push('risoluzione.fasce: manca la fascia più bassa (min vuoto): sotto la minima è un fallimento');
   }
   const gradi = (Array.isArray(r['gradi']) ? r['gradi'] : []).flatMap((x) => {
     const o = ogg(x);
     const div = num(o?.['divisore']);
-    return o && div && div > 1 ? [{ divisore: div, nome: str(o['nome']) ?? `1/${div}` }] : [];
+    return o && div && div > 1 ? [{ divisore: div, nome: str(o['nome']) ?? `1/${div}`, significato: str(o['significato']) }] : [];
   });
   gradi.sort((a, b) => b.divisore - a.divisore);
 
@@ -145,6 +145,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     id: id ?? 'senza-id',
     nome: str(d['nome']) ?? id ?? 'Regole',
     srd: false,
+    perNarratore: str(d['per_il_narratore']),
     fonte: { titolo: str(fonte['titolo']) ?? 'manuale senza titolo', autore: str(fonte['autore']), file: str(fonte['file']) },
     licenza: { nome: str(lic['nome']) ?? 'non dichiarata', libera: lic['libera'] === true, attribuzione: str(lic['attribuzione']) },
     risoluzione: { tipo, facce, numero: tipo === '2d6_fasce' ? (num(r['dadi']) ?? 2) : 1, fasce, gradi, critico: num(r['critico']), disastro: num(r['disastro']) },

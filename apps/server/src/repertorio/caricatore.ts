@@ -16,6 +16,7 @@ import { indiziCampagna } from '../campagna/indizi';
 import { TIPI_BATTUTA, type AlternativaRichiede, type Battuta, type CondizioniStato, type Effetti, type Repertorio, type Richiede, type RigaBattuta, type TipoBattuta } from './tipi';
 import { EFFETTI, UMORE_AUTO, UMORI } from '../audio/cue';
 import { comeAbilita, comeCaratteristica } from '../campagna/regole-srd';
+import { caricaRegole } from '../regole/caricatore';
 
 /** Chiavi ammesse in `richiede` (e, tranne `oppure`, in ogni alternativa). Una chiave sconosciuta è un errore: ignorata, aprirebbe il cancello. */
 const CHIAVI_RICHIEDE = new Set(['indizi_rivelati', 'indizi_non_rivelati', 'battute_usate', 'battute_non_usate', 'orologio', 'privata', 'da_pg', 'prova', 'oppure']);
@@ -55,6 +56,7 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = c.cartell
   const avvisi: string[] = [];
   const parlanti = new Set([ID_NARRATORE, ...c.png.map((p) => p.id)]);
   const battute: Battuta[] = [];
+  const idSet = idDelSet(c);
 
   for (const nomeFile of fs.readdirSync(cartella).filter((f) => f.endsWith('.yaml')).sort()) {
     let dati: DatiYaml;
@@ -67,7 +69,7 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = c.cartell
     if (!Array.isArray(dati['battute'])) continue; // non è un file di battute
     (dati['battute'] as unknown[]).forEach((grezza, i) => {
       const dove = `${nomeFile}#${i + 1}`;
-      const b = leggiBattuta(grezza, nomeFile, dove, parlanti, errori, avvisi);
+      const b = leggiBattuta(grezza, nomeFile, dove, parlanti, errori, avvisi, idSet);
       if (b) battute.push(b);
     });
   }
@@ -114,14 +116,20 @@ const PROVE_GENERICHE = new Set(['prova', 'salvezza', 'attacco', 'contrapposta']
  * l'id di una prova della scena (p_…), oppure prova / salvezza / attacco / contrapposta. Un valore
  * che non si capisce è un errore: ignorarlo aprirebbe il cancello.
  */
-function leggiCancelloProva(v: unknown, dove: string, errori: string[]): string | null {
+/** Id del set di regole non SRD della campagna (mosse, abilità, caratteristiche): validi in `richiede.prova`. */
+function idDelSet(c: Campagna): ReadonlySet<string> {
+  const s = caricaRegole(c.cartella).sistema;
+  return s.srd ? new Set() : new Set([...s.mosse, ...s.abilita, ...s.caratteristiche].map((x) => x.id));
+}
+
+function leggiCancelloProva(v: unknown, dove: string, errori: string[], idSet: ReadonlySet<string>): string | null {
   if (v === undefined || v === null) return null;
   if (typeof v !== 'string' || !v.trim()) {
     errori.push(`${dove}: prova è un'abilità, una caratteristica, l'id di una prova della scena o prova/salvezza/attacco`);
     return null;
   }
   const t = v.trim();
-  if (PROVE_GENERICHE.has(t) || /^p_[a-z0-9_]+$/.test(t)) return t;
+  if (idSet.has(t) || PROVE_GENERICHE.has(t) || /^p_[a-z0-9_]+$/.test(t)) return t;
   const id = comeAbilita(t) ?? comeCaratteristica(t);
   if (!id) errori.push(`${dove}: prova «${t}» non è un'abilità, una caratteristica, una prova della scena (p_…) né prova/salvezza/attacco`);
   return id;
@@ -219,6 +227,7 @@ function leggiBattuta(
   parlanti: Set<string>,
   errori: string[],
   avvisi: string[],
+  idSet: ReadonlySet<string>,
 ): Battuta | null {
   if (!grezza || typeof grezza !== 'object' || Array.isArray(grezza)) {
     errori.push(`${dove}: la battuta non è un oggetto`);
@@ -250,7 +259,7 @@ function leggiBattuta(
     ...leggiCondizioni(r, `${qui} richiede`, errori, true),
     privata: r['privata'] === true,
     da_pg: lista(r['da_pg']),
-    prova: leggiCancelloProva(r['prova'], `${qui} richiede`, errori),
+    prova: leggiCancelloProva(r['prova'], `${qui} richiede`, errori, idSet),
     oppure: (Array.isArray(alternative) ? alternative : []).map((a, i): AlternativaRichiede => {
       const dove = `${qui} richiede.oppure[${i + 1}]`;
       if (!a || typeof a !== 'object' || Array.isArray(a) || Object.keys(a).length === 0) {
@@ -262,7 +271,7 @@ function leggiBattuta(
         ...leggiCondizioni(alt, dove, errori, false),
         privata: typeof alt['privata'] === 'boolean' ? alt['privata'] : null,
         da_pg: lista(alt['da_pg']),
-        prova: leggiCancelloProva(alt['prova'], dove, errori),
+        prova: leggiCancelloProva(alt['prova'], dove, errori, idSet),
       };
     }),
   };

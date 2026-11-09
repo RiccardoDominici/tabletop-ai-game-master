@@ -19,6 +19,9 @@ import { intervalloFascia, tiraCol } from '../src/regole/risoluzione';
 import { caricaSchedeGeneriche } from '../src/regole/schede';
 import type { RegoleCampagna } from '../src/regole/tipi';
 import { orologioDiSistema } from '../src/turni/orologio';
+import { caricaRepertorio } from '../src/repertorio/caricatore';
+import { rispondeA } from '../src/repertorio/stato';
+import { REGOLA_ESITI } from '../src/prove/testi';
 
 const FIX = path.join(import.meta.dirname, 'fixtures', 'campagne');
 
@@ -171,5 +174,31 @@ describe('un turno coi set di prova', () => {
     const r = await m.risolvi(1, [az('a1', 'pg_ida', 'Convinco Bertoldo a lasciarci passare')]);
     expect(r.tiri[0]).toMatchObject({ risoluzione: 'sotto_soglia', facce: 100, dado: 23, contro: { tipo: 'soglia', valore: 32 }, grado: { nome: 'Successo difficile' }, riuscita: true });
     expect(r.fatti[0]).toBe('[1] Ida Ferraro: Persuadere 65%: d100 difficile, serve 32 o meno: 23 → SUCCESSO DIFFICILE.');
+  });
+});
+
+describe('coerenza col set: narratore e repertorio', () => {
+  it('il narratore riceve come si tira e che cosa vuol dire ogni fascia (un 7–9 non è un successo pieno)', () => {
+    const { m } = motore('pbta', [1], new ArbitroFinto({}));
+    const r = m.regolaEsiti();
+    expect(r.startsWith(REGOLA_ESITI)).toBe(true);
+    expect(r).toContain('Regole del manuale «Mondo a 2d6 (set di prova)»: Si tirano 2d6 più la statistica');
+    expect(r).toContain('- 7–9 «Successo con un costo»: riesce, ma devi dare un costo, una scelta difficile o una complicazione');
+    expect(r).toContain('- 6- «Fallimento»: non riesce, e la situazione peggiora');
+    expect(r).toContain('anche l’avversario colpisce');
+    const { m: d100 } = motore('soglia', [1], new ArbitroFinto({}));
+    expect(d100.regolaEsiti()).toMatch(/«Successo difficile»: riesce particolarmente bene\.[\s\S]*«Disastro»/);
+  });
+
+  it('richiede.prova accetta gli id del set (la mossa convincere) e si apre solo dopo quella riuscita', async () => {
+    const c = caricaCampagna(path.join(FIX, 'pbta'));
+    const b = caricaRepertorio(c).perId.get('bertoldo_confessa')!;
+    expect(b.richiede.prova).toBe('convincere');
+    const { m } = motore('pbta', [6, 4], new ArbitroFinto({ 'Convinco Bertoldo': { tipo: 'prova', mossa: 'convincere', bersaglio: 'png_bertoldo' } }));
+    const r = await m.risolvi(1, [az('a1', 'pg_ida', 'Convinco Bertoldo')]);
+    const prove = r.perAzione.get('a1')!.riuscite;
+    expect(prove).toEqual(expect.arrayContaining(['prova', 'convincere', 'fascino']));
+    expect(rispondeA(b, { autore: 'pg_ida', privata: false, prove })).toBe(true);
+    expect(rispondeA(b, { autore: 'pg_ida', privata: false, prove: ['prova'] })).toBe(false);
   });
 });

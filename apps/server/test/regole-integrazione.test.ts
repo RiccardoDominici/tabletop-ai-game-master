@@ -41,6 +41,8 @@ describe('set di regole col server intero', () => {
     // 6 + 3 + Fascino 2 = 11: successo pieno.
     expect(dopo.tiri?.[0]).toMatchObject({ risoluzione: '2d6_fasce', dadi: [6, 3], totale: 11, grado: { id: 'successo', nome: 'Successo pieno' }, regola: '2d6+2 (Fascino, Convincere qualcuno): 10+, successo pieno' });
     expect(messaggi.at(-1)).toContain('Esito della mossa «Convincere qualcuno»: il PNG fa ciò che chiedi.');
+    // Il selettore sa che cosa vuol dire ogni fascia del set.
+    expect(messaggi.at(-1)).toContain('- 7–9 «Successo con un costo»: riesce, ma devi dare un costo');
   });
 
   it('nessun set da un manuale non libero tra i file tracciati (docs/regole.md, «Licenza»)', () => {

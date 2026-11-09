@@ -22,6 +22,7 @@ export function sistemaSrd(): SistemaRegole {
     id: ID_SRD,
     nome: 'SRD 5.2 (D&D 5e)',
     srd: true,
+    perNarratore: null,
     fonte: { titolo: 'System Reference Document 5.2', autore: 'Wizards of the Coast', file: null },
     licenza: { nome: 'CC-BY-4.0', libera: true, attribuzione: ATTRIBUZIONE_SRD },
     risoluzione: { tipo: 'd20_cd', facce: 20, numero: 1, fasce: [], gradi: [], critico: null, disastro: null },
