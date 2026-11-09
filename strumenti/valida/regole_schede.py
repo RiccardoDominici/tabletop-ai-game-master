@@ -34,6 +34,12 @@ TIPI_PROVA_RICHIEDE = {"prova", "salvezza", "attacco", "contrapposta"}
 DANNO = re.compile(r"^(\d*)d(\d+)$")
 
 
+def _set_non_srd(c: Campagna) -> bool:
+    """Un regole/regole.yaml con un id diverso da srd-5.2 (import locale per evitare il ciclo con regole_set)."""
+    from .regole_set import attivo
+    return attivo(c)
+
+
 def dadi_attivi(c: Campagna) -> bool:
     regole = c.campagna.get("regole")
     return not (isinstance(regole, dict) and regole.get("dadi") is False)
@@ -354,6 +360,8 @@ def _richiede_prova(c: Campagna, e: Esito, dadi: bool, prove_ids: set[str]) -> N
 
 
 def controlla(c: Campagna, e: Esito) -> None:
+    if _set_non_srd(c):
+        return  # schede e prove seguono il set della campagna: vedi regole_set.py (classe REGOLE)
     _regole(c, e)
     dadi = dadi_attivi(c)
     doppie = {pid for pid, scene in _prove_della_campagna(c).items() if len(scene) > 1}

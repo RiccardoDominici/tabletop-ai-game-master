@@ -34,6 +34,7 @@ class Campagna:
     png: dict[str, tuple[str, dict]] = field(default_factory=dict)      # id -> (nome file, dati)
     battute: list[dict] = field(default_factory=list)                   # ognuna con "_file"
     parole_segrete: dict | None = None
+    regole: dict | None = None                                          # regole/regole.yaml, se c'è (docs/regole.md)
     voci_registrate: set[str] | None = None
     voci_simili: dict[str, set[str]] = field(default_factory=dict)       # voce -> voci che si confondono con lei
     voce_narratore: str = "narratore"
@@ -113,6 +114,7 @@ def carica(cartella: Path, esito: Esito, voci: Path | None = None) -> Campagna:
     c.stile = _leggi(cartella / "stile.yaml", esito, True) or {}
     c.campagna = _leggi(cartella / "campagna.yaml", esito, True) or {}
     c.pg = _leggi(cartella / "pg.yaml", esito, True) or {}
+    c.regole = _leggi(cartella / "regole" / "regole.yaml", esito, False)
 
     file_scene = [cartella / "scena.yaml"] if (cartella / "scena.yaml").exists() else []
     file_scene += sorted(p for p in cartella.glob("scena_*.yaml"))

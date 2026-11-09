@@ -1602,3 +1602,11 @@ def test_richiede_prova_deve_esistere(camp):
     assert "SCHEDA.richiede_prova" not in errori(camp)
     modifica(camp, "repertorio/png_bruno.yaml", con_prova("p_cassetta"))
     assert "SCHEDA.richiede_prova" not in errori(camp)
+
+
+def test_set_di_regole_le_schede_seguono_il_set(camp: Path) -> None:
+    """Classe REGOLE (regole_set.py): con un set non SRD le schede usano le caratteristiche del set, non quelle di D&D."""
+    shutil.copytree(QUI.parent / "apps" / "server" / "test" / "fixtures" / "campagne" / "pbta" / "regole", camp / "regole")
+    codici = errori(camp)
+    assert "REGOLE.scheda" in codici
+    assert "SCHEDA.caratteristiche" not in codici
