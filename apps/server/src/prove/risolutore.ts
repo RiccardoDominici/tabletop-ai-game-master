@@ -157,7 +157,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     const grezza = o.decisioni.get(a.id) ?? null;
     const d = grezza ? normalizzaDecisione(grezza, o.proveScena) : null;
     if (grezza && d && (d.tipo !== grezza.tipo || d.abilita !== grezza.abilita)) o.log.info({ azione: a.id, da: [grezza.tipo, grezza.abilita], a: [d.tipo, d.abilita] }, 'prove: decisione ritoccata dal Motore');
-    const prefisso = `[${i + 1}] ${nomePg(a.autore)}${a.privata ? ' (azione PRIVATA: a voce solo ciò che gli altri percepiscono)' : ''}: `;
+    const prefisso = `[${i + 1}] ${nomePg(a.autore)}${a.privata ? ' (azione PRIVATA: non raccontarla a voce, l’esito va solo a quel PG; al tavolo solo ciò che gli altri vedono o sentono)' : ''}: `;
     const esito: EsitoAzioneProve = { id_azione: a.id, autore: a.autore, decisione: d, tiri: [], fatto: '', riuscite: [], riuscita: null };
     const aggiungi = (t: TiroMostrato): void => {
       esito.tiri.push(t);
