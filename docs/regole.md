@@ -178,8 +178,9 @@ sostituisce. Con l'SRD 5.2 la regola resta quella di sempre.
 
 ## 6. Aperto
 
-- **Skill e validatore** (agente haiku): estrarre il testo del manuale da `manuali/`, scrivere il set con questo
-  schema, aggiungere i controlli `[V]` a `valida_campagna.py`, e generare le schede col vocabolario del set.
-  Per l'SRD basta non scrivere `regole/`.
+- **Skill e validatore**: fatti. Il testo si estrae con `strumenti/regole/estrai.py`; la skill Preparatore scrive il
+  set al passo 1b; i controlli `[V]` stanno nella classe `REGOLE` (`strumenti/valida/regole_set.py`). Per l'SRD basta
+  non scrivere `regole/`.
+- **Richiede con un set non SRD**: `richiede.prova` non è ancora controllato contro gli id del set dal validatore.
 - **Condizioni e sottosistemi** sono solo testo; il Motore non li applica ancora (in docs/da-fare.md).
 - **Prove contrapposte e tiri salvezza** in un set non SRD diventano prove normali.
