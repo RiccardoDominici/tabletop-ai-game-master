@@ -72,6 +72,8 @@ export interface FotografiaSessione {
   prossimoIdTrascrizione: number;
   /** Scene già visitate in questa sessione: tornandoci si legge il rientro, non l'apertura (assente negli archivi di prima). */
   sceneVisitate?: string[];
+  /** Scene che hanno già avuto il loro finale (un finale per scena; assente negli archivi di prima). */
+  sceneConFinale?: string[];
 }
 
 /** Lo stato ricostruito dal registro, pronto per Regia.ripristina. */

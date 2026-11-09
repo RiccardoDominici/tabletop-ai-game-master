@@ -197,6 +197,12 @@ export class Regia {
   private elencoTurno = new Set<string>();
   /** Scene già visitate in questa sessione: tornandoci il narratore legge il rientro, non l'apertura. */
   private readonly sceneVisitate = new Set<string>();
+  /**
+   * Scene che hanno già avuto il loro finale: un finale per scena. Dopo il finale il tavolo riapre la
+   * finestra (decide il master) e l'orologio resta completo: senza questa guardia ogni turno ne diceva
+   * un altro (log del 3 novembre: sei finali di fila a o_colpevole 6/6).
+   */
+  private readonly sceneConFinale = new Set<string>();
   /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
   /** Il turno B in corso: azioni per PG, stallo, orologi il cui segno è dovuto (uno per orologio). */
   private turnoB: {
@@ -393,6 +399,7 @@ export class Regia {
       ritmo: this.ritmo,
       prossimoIdTrascrizione: this.prossimoIdTrascrizione,
       sceneVisitate: [...this.sceneVisitate],
+      sceneConFinale: [...this.sceneConFinale],
     };
   }
 
@@ -466,6 +473,7 @@ export class Regia {
     for (const id of f.situazioniMostrate ?? []) this.situazioniMostrate.add(id);
     // Archivi di prima: almeno la scena in corso è già stata visitata.
     for (const id of f.sceneVisitate ?? [f.scena]) this.sceneVisitate.add(id);
+    for (const id of f.sceneConFinale ?? []) this.sceneConFinale.add(id);
     this.trascrizione = r.trascrizione.map((v) => ({ ...v }));
     this.prossimoIdTrascrizione = Math.max(f.prossimoIdTrascrizione ?? 1, ...this.trascrizione.map((v) => v.id + 1));
     // I turni ripresi sono già nel registro così come sono: non si riscrivono.
@@ -1109,6 +1117,7 @@ export class Regia {
     // Si riparte dalla prima scena, con gli orologi della campagna da capo.
     this.orologi = new StatoOrologi(this.o.campagna);
     this.sceneVisitate.clear();
+    this.sceneConFinale.clear();
     this.impostaScena(this.o.campagna.scene[0]!.id);
     this.statoRepertorio = this.nuovoStatoRepertorio();
     this.tavolo.azzera();
@@ -1879,9 +1888,11 @@ export class Regia {
     // Il segno dovuto è di un orologio preciso: in catalogo entrano solo i segni degli orologi dovuti.
     const dovuti = new Set(this.orologi.dovuti(r.turno).map((o) => o.id));
     const azioni = r.azioni.map((a) => ({ autore: a.autore, testo: a.testo, privata: a.privata }));
-    const { battute: catalogo, trattenute, perche } = s.catalogo({ turno: r.turno, azioni, stallo, dovuti, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
+    const { battute: catalogoPieno, trattenute, perche } = s.catalogo({ turno: r.turno, azioni, stallo, dovuti, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
     // Preselezione deterministica: per ogni azione le battute i cui temi QUELL'azione tocca; vanno in
     // testa al catalogo e in una sezione loro, con il «> pg» già scritto.
+    // Un finale per scena: detto quello, gli altri finali escono dal catalogo del selettore.
+    const catalogo = this.sceneConFinale.has(this.campagna.scena.id) ? catalogoPieno.filter((b) => b.tipo !== 'finale') : catalogoPieno;
     const perAzione = s.indicatePerAzioni(catalogo, azioni, this.nomiPng);
     const indicate = new Map(perAzione.flatMap((x) => x.ids.map((id) => [id, x.autore] as const)));
     const battute = [...catalogo.filter((b) => indicate.has(b.id)), ...catalogo.filter((b) => !indicate.has(b.id))];
@@ -1938,6 +1949,7 @@ export class Regia {
       log.info({ turno, finale: id }, 'finale: scelto dal selettore');
     } else {
       if (completi.length === 0) return null;
+      if (this.sceneConFinale.has(this.campagna.scena.id)) return null; // la scena ha già avuto il suo finale
       const { scelto, candidati, scartati } = s.finaleDelMotore(turno);
       if (!scelto) {
         log.info({ turno, orologi: completi.map((o) => o.id), scartati }, 'finale: orologio completo ma nessun finale disponibile');
@@ -1960,6 +1972,7 @@ export class Regia {
       }
     }
     this.scenaFinitaAlTurno = turno;
+    this.sceneConFinale.add(this.campagna.scena.id);
     return { finale: id, righe };
   }
 
