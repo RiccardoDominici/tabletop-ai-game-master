@@ -23,6 +23,7 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   prossima_sessione: { tipo: 'prossima_sessione' },
   dispositivo: { tipo: 'dispositivo', dispositivo: 'tel-anna-0123456789', id_pg: null },
   presenza: { tipo: 'presenza', id_png: 'png_oste', presente: true },
+  rivela: { tipo: 'rivela', id_png: 'png_oste' },
 };
 
 describe('zone ed etichette dei comandi', () => {

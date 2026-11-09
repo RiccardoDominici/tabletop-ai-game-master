@@ -29,6 +29,7 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   prossima_sessione: 'sessione',
   dispositivo: 'sessione',
   presenza: 'scena',
+  rivela: 'scena',
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
@@ -52,6 +53,7 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = {
   prossima_sessione: 'Prossima sessione',
   dispositivo: 'PG di un telefono',
   presenza: 'Presenza di un PNG',
+  rivela: 'Rivelazione di un PNG',
 };
 
 /**
@@ -103,6 +105,8 @@ export function descriviComando(comando: ComandoMaster): string {
       return `${nome}: ${comando.scena}`;
     case 'presenza':
       return `${nome}: ${comando.id_png} ${comando.presente === null ? 'automatica' : comando.presente ? 'in scena' : 'altrove'}`;
+    case 'rivela':
+      return `${nome}: ${comando.id_png} rivelato`;
     case 'situazione':
       return comando.id === null ? 'Togli l’immagine di situazione' : `${nome}: ${comando.id}`;
     case 'orologio':

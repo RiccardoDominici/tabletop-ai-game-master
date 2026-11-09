@@ -32,6 +32,12 @@ def controlla(c: Campagna, e: Esito) -> None:
         pieno = livello in ("supporto", "principale")
         if d.get("fronte") and d["fronte"] not in fronti:
             e.errore("PNG.fronte", dove, f"fronte inesistente {d['fronte']}")
+        # `nascosto` (richiesta 2 del 9 novembre): booleano; ha senso solo su un PNG presente in una scena.
+        if "nascosto" in d:
+            if not isinstance(d["nascosto"], bool):
+                e.errore("PNG.nascosto", dove, "nascosto deve essere true o false")
+            elif d["nascosto"] and not any(pid in (s.get("png_presenti") or []) for _, s in c.scene):
+                e.avviso("PNG.nascosto", dove, "nascosto: true, ma non è presente in nessuna scena: il flag non serve")
 
         asp = d.get("aspetto") or {}
         lettura = asp.get("lettura") or ""

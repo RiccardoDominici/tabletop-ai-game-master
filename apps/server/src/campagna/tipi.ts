@@ -13,6 +13,11 @@ export interface PngCaricato {
   /** voce.tts.voce_id della scheda; 'narratore' se manca (con errore nel log). */
   voce_id: string;
   dati: DatiYaml;
+  /**
+   * Scheda con `nascosto: true` (richiesta 2 del 9 novembre): è in scena per il Motore, ma non si mostra
+   * al proiettore né al telefono finché non ha parlato o il master non lo rivela. Assente = false.
+   */
+  nascosto?: boolean;
 }
 
 export interface PgCaricato {

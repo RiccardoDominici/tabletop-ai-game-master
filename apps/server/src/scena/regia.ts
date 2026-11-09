@@ -239,6 +239,8 @@ export class Regia {
   private campagna: Campagna;
   /** Presenza dei PNG decisa a mano dal master (true = in scena, false = altrove). Si azzera a ogni cambio di scena. */
   private presenzeManuali = new Map<string, boolean>();
+  /** PNG nascosti (scheda `nascosto: true`) che il master ha rivelato a mano. Vale per la sessione. */
+  private rivelati = new Set<string>();
   /** Blocchi di sistema della scena in corso (prompt + contesto), in cache. */
   private sistema: string[];
   /** Riassunto pubblico della scena in corso, per l'arbitro. */
@@ -456,6 +458,8 @@ export class Regia {
       prossimoIdTrascrizione: this.prossimoIdTrascrizione,
       sceneVisitate: [...this.sceneVisitate],
       sceneConFinale: [...this.sceneConFinale],
+      // Rivelazioni del master: nel registro, così una ripresa le ritrova (assenti = nessuna).
+      ...(this.rivelati.size ? { rivelati: [...this.rivelati] } : {}),
       ...(this.prove?.attivo ? { prove: this.prove.esporta() } : {}),
     };
   }
@@ -530,6 +534,7 @@ export class Regia {
     const f = r.fotografia;
     this.sessione = r.sessione;
     if (this.o.campagna.scene.some((s) => s.id === f.scena)) this.impostaScena(f.scena);
+    for (const id of f.rivelati ?? []) this.rivelati.add(id);
     this.luogo = f.luogo || this.campagna.scena.id;
     this.orologi.importa(f.orologi);
     if (this.prove?.attivo && f.prove) this.prove.importa(f.prove);
@@ -876,6 +881,7 @@ export class Regia {
       png: this.campagna.png,
       presenti: this.pngInScena(),
       incontrati: pngIncontrati(this.trascrizione, this.campagna.png),
+      rivelati: this.rivelati,
       ritratto: (id) => img?.ritratto(id) ?? null,
     });
   }
@@ -890,6 +896,17 @@ export class Regia {
     return { ok: true };
   }
 
+  /** Il master rivela a mano un PNG nascosto: da ora si mostra al tavolo anche senza aver parlato. */
+  rivela(id_png: string): Esito {
+    const png = this.campagna.png.find((p) => p.id === id_png);
+    if (!png) return { ok: false, errore: 'Personaggio sconosciuto.' };
+    if (png.nascosto !== true) return { ok: false, errore: 'Il personaggio non è nascosto: si vede già.' };
+    this.rivelati.add(id_png);
+    this.o.log.info({ png: id_png, scena: this.campagna.scena.id }, 'scena: PNG nascosto rivelato dal master');
+    this.notifica();
+    return { ok: true };
+  }
+
   /** Presenze per il pannello del master (anche i PNG mai incontrati). */
   presenzeMasterVista(): ReturnType<typeof presenzeMaster> {
     return presenzeMaster({
@@ -897,6 +914,7 @@ export class Regia {
       presenti: this.pngInScena(),
       incontrati: pngIncontrati(this.trascrizione, this.campagna.png),
       manuali: this.presenzeManuali,
+      rivelati: this.rivelati,
     });
   }
 
@@ -1230,6 +1248,7 @@ export class Regia {
     this.orologi = new StatoOrologi(this.o.campagna);
     this.sceneVisitate.clear();
     this.sceneConFinale.clear();
+    this.rivelati.clear();
     this.impostaScena(this.o.campagna.scene[0]!.id);
     this.statoRepertorio = this.nuovoStatoRepertorio();
     this.tavolo.azzera();

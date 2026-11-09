@@ -92,7 +92,8 @@ function caricaPng(cartellaPng: string, rel: string, avvisa: (msg: string) => vo
     const voce = oggetto(oggetto(dati['voce'])?.['tts']);
     const voceId = stringa(voce?.['voce_id']);
     if (!voceId) avvisa(`${rel}/${nomeFile}: manca voce.tts.voce_id, parlerà con la voce del narratore`);
-    png.push({ id: idFile, nome: stringa(dati['nome']) ?? idFile, voce_id: voceId ?? ID_NARRATORE, dati });
+    const nascosto = dati['nascosto'] === true;
+    png.push({ id: idFile, nome: stringa(dati['nome']) ?? idFile, voce_id: voceId ?? ID_NARRATORE, dati, ...(nascosto ? { nascosto } : {}) });
   }
   return png;
 }

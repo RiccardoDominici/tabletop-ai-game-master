@@ -190,6 +190,10 @@ export interface PresenzaMaster {
   manuale: boolean;
   /** Ha già parlato nella trascrizione di questa sessione. */
   incontrato: boolean;
+  /** Scheda con `nascosto: true`: non si mostra al tavolo finché non parla o il master non lo rivela. */
+  nascosto: boolean;
+  /** Il master l'ha rivelato a mano (comando `rivela`): da quel momento si mostra anche se muto. */
+  rivelato: boolean;
 }
 
 /** La sessione di gioco salvata: il server la riprende da sola dopo un riavvio. */
@@ -266,7 +270,9 @@ export type ComandoMaster =
   /** Cambia (o dimentica, con null) il PG ricordato di un telefono: vale dal suo prossimo collegamento. */
   | { tipo: 'dispositivo'; dispositivo: string; id_pg: string | null }
   /** Mette un PNG in scena o altrove a mano (null = torna a quanto dice la scena). Vale finché non cambia scena. */
-  | { tipo: 'presenza'; id_png: string; presente: boolean | null };
+  | { tipo: 'presenza'; id_png: string; presente: boolean | null }
+  /** Rivela a mano un PNG nascosto (scheda `nascosto: true`): si mostra al tavolo anche senza aver parlato. */
+  | { tipo: 'rivela'; id_png: string };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

@@ -77,6 +77,8 @@ export interface FotografiaSessione {
   sceneVisitate?: string[];
   /** Scene che hanno già avuto il loro finale (un finale per scena; assente negli archivi di prima). */
   sceneConFinale?: string[];
+  /** PNG nascosti rivelati a mano dal master (assente = nessuno). */
+  rivelati?: string[];
   /** Prove e dadi (docs/prove.md): punti ferita, seme e contatore dei dadi, ultime carte. Assente = senza dadi. */
   prove?: StatoProveSalvato;
 }

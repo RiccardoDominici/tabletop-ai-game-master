@@ -5,7 +5,9 @@
  * - presente = il PNG è nella scena (`png_presenti` della scheda di scena), salvo che il master l'abbia
  *   deciso a mano (`manuale`: vale finché non cambia scena);
  * - altrove = il PNG ha già parlato nella trascrizione pubblica di questa sessione, ma ora non è in scena;
- * - un PNG mai incontrato e non presente non compare mai (niente spoiler).
+ * - un PNG mai incontrato e non presente non compare mai (niente spoiler);
+ * - un PNG nascosto (scheda `nascosto: true`) è presente per il Motore, ma non compare al tavolo finché
+ *   non ha parlato nella trascrizione o il master non lo rivela a mano (`rivelati`).
  *
  * Funzioni pure: il Regia le chiama con i suoi dati (vedi `Regia.personaggiScena`).
  */
@@ -38,10 +40,13 @@ export function personaggiScena(args: {
   png: readonly PngCaricato[];
   presenti: ReadonlySet<string>;
   incontrati: ReadonlySet<string>;
+  /** PNG nascosti che il master ha rivelato a mano. */
+  rivelati?: ReadonlySet<string>;
   ritratto: (id: string) => string | null;
 }): PersonaggioScena[] {
   const vista = args.png
     .filter((p) => args.presenti.has(p.id) || args.incontrati.has(p.id))
+    .filter((p) => visibileAlTavolo(p, args.incontrati, args.rivelati))
     .map((p) => ({ id: p.id, nome: p.nome, ritratto: args.ritratto(p.id), presente: args.presenti.has(p.id) }));
   return [...vista.filter((p) => p.presente), ...vista.filter((p) => !p.presente)];
 }
@@ -52,6 +57,7 @@ export function presenzeMaster(args: {
   presenti: ReadonlySet<string>;
   incontrati: ReadonlySet<string>;
   manuali: ReadonlyMap<string, boolean>;
+  rivelati?: ReadonlySet<string>;
 }): PresenzaMaster[] {
   return args.png.map((p) => ({
     id: p.id,
@@ -59,5 +65,13 @@ export function presenzeMaster(args: {
     presente: args.presenti.has(p.id),
     manuale: args.manuali.has(p.id),
     incontrato: args.incontrati.has(p.id),
+    nascosto: p.nascosto === true,
+    rivelato: args.rivelati?.has(p.id) ?? false,
   }));
+}
+
+/** Un PNG si vede al tavolo se non è nascosto, o ha già parlato, o il master l'ha rivelato. */
+export function visibileAlTavolo(p: PngCaricato, incontrati: ReadonlySet<string>, rivelati?: ReadonlySet<string>): boolean {
+  if (p.nascosto !== true) return true;
+  return incontrati.has(p.id) || (rivelati?.has(p.id) ?? false);
 }

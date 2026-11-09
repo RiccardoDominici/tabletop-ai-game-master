@@ -173,6 +173,7 @@ come 1 [R avvisa].
 id: png_<nome>                 # = nome del file, ascii minuscolo [V]; diventa l'etichetta [png_<nome>]
 nome: "…"                      # iniziale diversa dagli altri PNG della scena [V]
 pronuncia: "…"                 # con l'accento: la usa il TTS
+nascosto: true|false           # facoltativo [V booleano]: presente per il Motore, ma non si mostra a proiettore e telefono finché non parla o il master lo rivela
 alias: [soprannomi]            # come lo chiameranno i giocatori: nano, ostessa, forestiero [R]; mai generici
                                #   (vecchio, ragazza) [R], mai lo stesso di un altro PNG [V]
 livello: comparsa|supporto|principale               # supporto e principale: obblighi pieni [V]

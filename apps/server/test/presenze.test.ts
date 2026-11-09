@@ -36,6 +36,18 @@ describe('presenze: parti pure', () => {
     expect(vista.some((p) => p.id === 'png_fabbro')).toBe(false);
   });
 
+  it('PNG nascosto: non compare finché non ha parlato o non è rivelato; il pannello lo mostra sempre', () => {
+    const NASCOSTO = PNG.map((p) => (p.id === 'png_guardia' ? { ...p, nascosto: true } : p));
+    const senzaParlare = personaggiScena({ png: NASCOSTO, presenti: new Set(['png_guardia']), incontrati: new Set(), ritratto });
+    expect(senzaParlare).toEqual([]);
+    const rivelato = personaggiScena({ png: NASCOSTO, presenti: new Set(['png_guardia']), incontrati: new Set(), rivelati: new Set(['png_guardia']), ritratto });
+    expect(rivelato).toEqual([{ id: 'png_guardia', nome: 'Guardia Lia', ritratto: null, presente: true }]);
+    const dopoAverParlato = personaggiScena({ png: NASCOSTO, presenti: new Set(['png_guardia']), incontrati: new Set(['png_guardia']), ritratto });
+    expect(dopoAverParlato.map((p) => p.id)).toEqual(['png_guardia']);
+    const m = presenzeMaster({ png: NASCOSTO, presenti: new Set(['png_guardia']), incontrati: new Set(), manuali: new Map() });
+    expect(m.find((p) => p.id === 'png_guardia')).toMatchObject({ nascosto: true, rivelato: false });
+  });
+
   it('scena vuota e nessuno incontrato: lista vuota (nessuno spoiler)', () => {
     expect(personaggiScena({ png: PNG, presenti: new Set(), incontrati: new Set(), ritratto })).toEqual([]);
   });
@@ -89,5 +101,26 @@ describe('presenze: il tavolo', () => {
     expect(await master.comanda({ tipo: 'presenza', id_png: 'png_guardia', presente: null })).toEqual({ ok: true });
     expect((await master.stato()).tavolo.scena.personaggi?.map((p) => p.id)).toEqual(['png_oste']);
     expect(await master.comanda({ tipo: 'presenza', id_png: 'png_nessuno', presente: true })).toMatchObject({ ok: false });
+  }, 30_000);
+
+  it('nascosto: il PNG presente per il Motore compare solo quando parla; il master lo rivela a mano', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mini', { ritocchi: { 'png/png_guardia.yaml': (d) => (d['nascosto'] = true) } });
+    const { url } = await prova.avvia(cartella, () => '[png_oste] Benvenuta: siediti.\n[invito] tutti');
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const s0 = await inizia(schermo, tel);
+    // La guardia è in scena (la scheda lo dice) ma è nascosta: non compare, l'oste sì.
+    expect(s0.scena.personaggi?.map((p) => p.id)).toEqual(['png_oste']);
+
+    const master = await prova.master(url);
+    expect(await master.comanda({ tipo: 'rivela', id_png: 'png_guardia' })).toEqual({ ok: true });
+    // Ordine della campagna (png_guardia prima di png_oste): entrambi presenti.
+    expect((await master.stato()).tavolo.scena.personaggi?.map((p) => [p.id, p.presente])).toEqual([
+      ['png_guardia', true],
+      ['png_oste', true],
+    ]);
+    // Rivelare un PNG che non è nascosto si rifiuta.
+    expect(await master.comanda({ tipo: 'rivela', id_png: 'png_oste' })).toMatchObject({ ok: false });
   }, 30_000);
 });

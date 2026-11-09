@@ -51,6 +51,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'prossima_sessione',
   'dispositivo',
   'presenza',
+  'rivela',
 ]);
 
 /** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */
@@ -242,6 +243,14 @@ export class ControlliMaster {
         if (!esito.ok) return rifiuto(esito.errore);
         const come = presente === null ? 'automatica (dalla scena)' : presente ? 'in scena' : 'altrove';
         return { esito, dettagli: `${nome}: ${come}`, dati: { id_png: id, presente } };
+      }
+      case 'rivela': {
+        const id = typeof c.id_png === 'string' && ID_VALIDO.test(c.id_png) ? c.id_png : null;
+        if (!id) return rifiuto('PNG non valido.');
+        const nome = this.o.campagna.png.find((p) => p.id === id)?.nome ?? id;
+        const esito = regia.rivela(id);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: `${nome}: rivelato al tavolo`, dati: { id_png: id } };
       }
       case 'nuova_sessione': {
         const prima = regia.infoRegistro.sessione;

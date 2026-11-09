@@ -29,15 +29,23 @@ export function SezionePresenze({ stato }: { stato: StatoMaster }) {
 }
 
 function RigaPresenza({ presenza }: { presenza: PresenzaMaster }) {
-  const { id, nome, presente, manuale, incontrato } = presenza;
+  const { id, nome, presente, manuale, incontrato, nascosto, rivelato } = presenza;
   const decidi = (valore: boolean | null) => void inviaComando({ tipo: 'presenza', id_png: id, presente: valore }, `${nome}: ${valore === null ? 'automatica' : valore ? 'in scena' : 'altrove'}`);
+  // Un PNG nascosto non si mostra al tavolo finché non parla: il master può rivelarlo a mano.
+  const daRivelare = nascosto && !rivelato && !incontrato;
   return (
-    <div data-testid={`master-presenza-${id}`} data-presente={String(presente)} data-manuale={String(manuale)} className="flex items-center gap-2 rounded-lg border border-bordo bg-notte-3 p-1.5 text-sm">
+    <div data-testid={`master-presenza-${id}`} data-presente={String(presente)} data-manuale={String(manuale)} data-nascosto={String(daRivelare)} className="flex items-center gap-2 rounded-lg border border-bordo bg-notte-3 p-1.5 text-sm">
       <div className="min-w-0 flex-1">
         <span className="block truncate font-semibold">{nome}</span>
         <span className="block truncate text-xs text-cenere">{incontrato ? 'ha già parlato' : 'non ancora incontrato'}</span>
       </div>
       {manuale && <Chip tono="brace">a mano</Chip>}
+      {daRivelare && <Chip tono="cenere">nascosto</Chip>}
+      {daRivelare && (
+        <button type="button" data-testid={`master-presenza-rivela-${id}`} onClick={() => void inviaComando({ tipo: 'rivela', id_png: id }, `${nome}: rivelato`)} className={classePulsante('normale', 'piccolo')}>
+          Rivela
+        </button>
+      )}
       <Chip tono={presente ? 'muschio' : 'cenere'}>{presente ? 'in scena' : 'altrove'}</Chip>
       <button type="button" data-testid={`master-presenza-in-${id}`} aria-pressed={presente} onClick={() => decidi(true)} className={classePulsante('normale', 'piccolo', clsx(presente && 'border-muschio'))}>
         In scena
