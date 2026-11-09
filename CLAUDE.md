@@ -40,7 +40,7 @@ done
 git check-ignore -q manuali/x.pdf || echo "ATTENZIONE: manuali/ non e' nel .gitignore"
 
 # 4. Token del master copiati dai log (compaiono come ?token=… nel log del server)
-for t in $(grep -ohE 'token=[A-Za-z0-9_-]{12,}' logs/*.out logs/*.jsonl logs/*/*.out 2>/dev/null | cut -d= -f2 | sort -u); do git grep -nF "$t" && echo "TROVATO: token del master"; done
+for t in $(grep -ohE 'token=[A-Za-z0-9_-]{12,}' logs/*.out logs/*.jsonl logs/*/*.out 2>/dev/null | cut -d= -f2 | sort -u); do git grep -nF -e "$t" && echo "TROVATO: token del master"; done
 ```
 
 Il controllo 4 vale solo se esistono log; i valori dei token non si stampano mai nel terminale o nei messaggi
