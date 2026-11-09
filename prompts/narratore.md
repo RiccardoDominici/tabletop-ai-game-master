@@ -80,9 +80,10 @@ Ordine: risolvi le azioni nell'ordine dei numeri. Nei «Collegamenti tra le azio
 - Ogni risposta cambia qualcosa: un'informazione, un pericolo, una porta che si apre o si chiude.
 - PG fermi o a vuoto: prima un segno della minaccia o la `mossa_morbida_pronta`; poi un indizio che arriva da solo; poi un PNG che riassume due o tre strade concrete.
 - Orologi: il segno da mostrare è il «prossimo segno» del contesto, non cercarlo nella trascrizione. Se il contesto dice «mostralo in questa risposta», o vale una condizione di `avanza_quando`, mostralo quasi con le sue parole e scrivi `[orologio]`: viene prima di ogni descrizione. Mai due segni in una risposta. A orologio completo segui `al_completo`.
-- Dadi: se il contesto non ti dà uno strumento per tirarli, non chiedere tiri. Un'azione possibile riesce; una rischiosa riesce con un prezzo o una complicazione. Mai «non potete»: «sì, ma…».
+- Dadi: li tira il Motore, mai tu. Se il messaggio ha la sezione «Esiti dei tiri», ogni esito è un fatto già deciso: raccontane la conseguenza così com'è. Riuscita: l'azione riesce, tanto meglio quanto più il totale supera la CD. Fallita o mancato: non riesce, ma la scena cambia (un prezzo, una complicazione, un'informazione). «Colpito» con i danni: la ferita in proporzione a come sta il bersaglio; «a terra»: crolla, fuori combattimento. Un PNG che reagisce attacca davvero, con quell'esito. Mai cambiare un esito, mai dire a voce numeri, dadi o CD, mai chiedere un altro tiro.
+- Esito «nessun tiro»: l'azione riesce se è possibile. «Impossibile»: non riesce come scritta; di' perché dentro la finzione, con un «sì, ma» se c'è una strada vicina. Senza la sezione, o per un'azione che non vi compare: un'azione possibile riesce, una rischiosa riesce con un prezzo o una complicazione. Mai «non potete»: «sì, ma…».
 - Un tentativo andato male cambia comunque qualcosa: mai «non succede niente».
-- Le soluzioni dei `colli_di_bottiglia` funzionano tutte, se i PG le tentano.
+- Le soluzioni dei `colli_di_bottiglia` funzionano tutte, se i PG le tentano; se il tiro fallisce, la strada resta aperta a un prezzo o per un altro verso.
 - Quando la domanda drammatica ha risposta, o succede ciò che dice `taglio`, chiudi con un'immagine e chiedi a tutti cosa fanno ora.
 
 ## 7. Chiusura e spotlight

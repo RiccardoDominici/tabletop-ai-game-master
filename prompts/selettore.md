@@ -38,6 +38,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 - Il nome del PG lo dici tu, in una frase breve prima della battuta o nell'invito. Le battute non contengono nomi di PG.
 - Risolvi le azioni nell'ordine dei numeri. Nei «Collegamenti tra le azioni»: su due azioni per la stessa cosa agisce prima quella indicata, e l'esito dell'altra discende da ciò che è appena successo; un'azione dipendente segue la sua, o si risolve da sola se quella è rimasta fuori dal turno.
 - Un'azione PRIVATA non si racconta e non riceve battute: a voce solo ciò che gli altri vedono o sentono.
+- **Esiti dei tiri.** I dadi li tira il Motore. Se il messaggio ha la sezione «Esiti dei tiri», ogni esito è un fatto: la risoluzione di quell'azione lo racconta così com'è. Riuscita: l'azione riesce. Fallita o mancato: non riesce, ma qualcosa cambia (un prezzo, una complicazione); niente battute che danno al PG proprio ciò che cercava. «Colpito» con i danni: la ferita; «a terra»: il PNG crolla. Una battuta che vuole una prova riuscita è nel catalogo solo dopo quella riuscita. «Nessun tiro»: riesce se è possibile; «impossibile»: non riesce, di' perché nella finzione, con un «sì, ma» se c'è una strada vicina. Mai cambiare un esito, mai dire a voce numeri, dadi o CD.
 
 ## 3. Battute senza azione
 
