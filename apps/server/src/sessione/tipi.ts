@@ -77,6 +77,8 @@ export interface FotografiaSessione {
   sceneVisitate?: string[];
   /** Scene che hanno già avuto il loro finale (un finale per scena; assente negli archivi di prima). */
   sceneConFinale?: string[];
+  /** Presenze dei PNG decise a mano dal master (true = in scena), valide per questa scena (assente = nessuna). */
+  presenzeManuali?: Array<[string, boolean]>;
   /** PNG nascosti rivelati a mano dal master (assente = nessuno). */
   rivelati?: string[];
   /** Prove e dadi (docs/prove.md): punti ferita, seme e contatore dei dadi, ultime carte. Assente = senza dadi. */

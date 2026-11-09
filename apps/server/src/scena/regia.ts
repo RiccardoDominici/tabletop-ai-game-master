@@ -458,7 +458,8 @@ export class Regia {
       prossimoIdTrascrizione: this.prossimoIdTrascrizione,
       sceneVisitate: [...this.sceneVisitate],
       sceneConFinale: [...this.sceneConFinale],
-      // Rivelazioni del master: nel registro, così una ripresa le ritrova (assenti = nessuna).
+      // Decisioni del master su presenze e rivelazioni: nel registro, così una ripresa le ritrova (assenti = nessuna).
+      ...(this.presenzeManuali.size ? { presenzeManuali: [...this.presenzeManuali] } : {}),
       ...(this.rivelati.size ? { rivelati: [...this.rivelati] } : {}),
       ...(this.prove?.attivo ? { prove: this.prove.esporta() } : {}),
     };
@@ -534,6 +535,8 @@ export class Regia {
     const f = r.fotografia;
     this.sessione = r.sessione;
     if (this.o.campagna.scene.some((s) => s.id === f.scena)) this.impostaScena(f.scena);
+    // Dopo impostaScena (che azzera le presenze a mano): le decisioni del master di questa scena tornano.
+    for (const [id, presente] of f.presenzeManuali ?? []) this.presenzeManuali.set(id, presente);
     for (const id of f.rivelati ?? []) this.rivelati.add(id);
     this.luogo = f.luogo || this.campagna.scena.id;
     this.orologi.importa(f.orologi);
