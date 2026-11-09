@@ -2219,7 +2219,8 @@ export class Regia {
    */
   private azioniSenzaRisposta(uscita: VoceUscita[], pubbliche: Map<string, string>): string[] {
     const risposte = new Set<string>();
-    const testoImprovvisato = normalizza(uscita.filter((u) => u.tipo === 'improvvisata').map((u) => (u.tipo === 'improvvisata' ? u.testo : '')).join('\n'));
+    // Le righe private (`[privato pg_x]`) non rispondono a un'azione pubblica: il tavolo non le sente.
+    const testoImprovvisato = normalizza(uscita.filter((u) => u.tipo === 'improvvisata' && !u.privato).map((u) => (u.tipo === 'improvvisata' ? u.testo : '')).join('\n'));
     for (const u of uscita) if (u.tipo === 'usa' && u.per) risposte.add(u.per);
     for (const id of pubbliche.keys()) {
       if (risposte.has(id)) continue;

@@ -92,34 +92,36 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
 
   return (
     <div className="mx-auto flex h-full max-w-2xl flex-col">
-      <header className="sicuro-lati flex items-center gap-3 pt-3 pb-2">
-        <div className="min-w-0 flex-1">
-          <p className="text-xs tracking-[0.18em] text-cenere uppercase">Giochi come</p>
-          <p className="line-clamp-2 font-titolo text-xl leading-tight font-semibold" data-testid="nome-pg">
-            {pg?.nome ?? idPg}
-          </p>
-          {/* Punti ferita sotto il nome, solo con le schede numeriche (docs/prove.md). */}
-          <PuntiFeritaPg pf={pg?.pf} />
-        </div>
-        <AscoltaQui />
-        {haScheda && (
+      {/* Due righe: in alto l'etichetta e i pulsanti, sotto il nome a tutta larghezza (a 390 px, accanto
+          a tre pulsanti, un nome come «Ginestra Fondovalle» si tagliava). */}
+      <header className="sicuro-lati flex flex-col gap-1 pt-3 pb-2">
+        <div className="flex items-center gap-2">
+          <p className="min-w-0 flex-1 text-xs tracking-[0.18em] text-cenere uppercase">Giochi come</p>
+          <AscoltaQui />
+          {haScheda && (
+            <button
+              type="button"
+              onClick={() => apriScheda(true)}
+              data-testid="apri-scheda"
+              className="min-h-12 min-w-12 shrink-0 rounded-full border border-candela/60 px-4 text-[0.95rem] text-candela active:bg-notte-3"
+            >
+              Scheda
+            </button>
+          )}
           <button
             type="button"
-            onClick={() => apriScheda(true)}
-            data-testid="apri-scheda"
-            className="min-h-12 min-w-12 shrink-0 rounded-full border border-candela/60 px-4 text-[0.95rem] text-candela active:bg-notte-3"
+            onClick={() => apriScelta(true)}
+            aria-label="Cambia personaggio"
+            className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-4 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
           >
-            Scheda
+            Cambia
           </button>
-        )}
-        <button
-          type="button"
-          onClick={() => apriScelta(true)}
-          aria-label="Cambia personaggio"
-          className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-4 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
-        >
-          Cambia
-        </button>
+        </div>
+        <p className="font-titolo text-xl leading-tight font-semibold break-words" data-testid="nome-pg">
+          {pg?.nome ?? idPg}
+        </p>
+        {/* Punti ferita sotto il nome, solo con le schede numeriche (docs/prove.md). */}
+        <PuntiFeritaPg pf={pg?.pf} />
       </header>
 
       <div className="sicuro-lati flex flex-col gap-2">
