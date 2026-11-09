@@ -49,6 +49,16 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
   - **stato degli oggetti**: chi ha che cosa, almeno per gli oggetti con un id nella scena (`elementi_interattivi`);
   - ~~battute «per stato» senza `> pg`~~ per i finali: fatto il 3 novembre (a orologio pieno il finale e la chiusura
     li dice il Motore); il validatore avvisa ancora con `COPERTURA.finale_senza_azione`, un avviso ormai prudente;
+- **Selettore che non trova le battute** (playtest di nozze-neve, conclusioni §4; 115 battute su 139 mai uscite).
+  Nel codice dal 9 novembre (commit 2597566, con prove unitarie): preselezione per `temi` dell'azione (con la voce
+  giusta, al massimo due per azione, sezione «Battute indicate» nel messaggio) e «> pg» dedotto o corretto quando
+  una sola azione può essere quella giusta. Da fare:
+  - la misura prima/dopo con l'harness sugli stessi copioni (`esegui.ts nozze-neve/<copione> B --campagna nozze-neve
+    --uscita correzioni-motore/<cartella>`, porta 4740), rimandata per il budget di token: confrontare quota
+    pre-scritta, battute usate, `usa_rifiutati_per_motivo`, `battute_indicate_usate`, `pg_dedotti`;
+  - decidere se il Motore deve far dire da sé un indizio indicato e ignorato: rigiocando i cataloghi il filtro per
+    temi indica anche battute sbagliate (le regole del Custode per «prima della benedizione»), quindi oggi non lo fa;
+  - la riparazione con una seconda chiamata per i [usa] rifiutati per altri motivi (fuori catalogo, ritmo).
 - **Skill e validatore** (fatto il 2 novembre sera, dalle 26 note di `NOTE_SULLA_SKILL.md`): contesto vero del modo B
   compilato col server, cronologia e logistica (`MONDO`), voci simili (`simile_a`), passi riordinati con `--solo`,
   più scene, copioni con `scena` e `richiede`, immagini (`prompt_ritratto`, `nodi[].immagine`, `situazioni[].dopo`).
