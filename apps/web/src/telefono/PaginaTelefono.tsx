@@ -21,6 +21,7 @@ import { Trascrizione } from './Trascrizione';
 import { CasellaAzione } from './CasellaAzione';
 import { SchedaPersonaggio } from './SchedaPersonaggio';
 import { Regole } from './Regole';
+import { Diario } from './Diario';
 import { AlTavolo } from './AlTavolo';
 import { SceltaAzione } from './SceltaAzione';
 import { TiriTurno } from './TiriTurno';
@@ -91,29 +92,41 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
   const apriScheda = useTelefono((s) => s.apriScheda);
   const haScheda = useTelefono((s) => s.scheda?.id_pg === idPg);
   const [regoleAperte, setRegoleAperte] = useState(false);
+  const [diarioAperto, setDiarioAperto] = useState(false);
 
   return (
     <div className="mx-auto flex h-full max-w-2xl flex-col">
-      {/* Due righe: in alto l'etichetta e i pulsanti, sotto il nome a tutta larghezza (a 390 px, accanto
-          a tre pulsanti, un nome come «Ginestra Fondovalle» si tagliava). */}
+      {/* Tre righe: l'etichetta e l'ascolto; i pulsanti (Regole, Diario, Scheda, Cambia) a capo sotto,
+          così stanno in 390 px senza tagliarsi; poi il nome a tutta larghezza (un nome come «Ginestra
+          Fondovalle» non deve stringersi accanto ai pulsanti). */}
       <header className="sicuro-lati flex flex-col gap-1 pt-3 pb-2">
         <div className="flex items-center gap-2">
           <p className="min-w-0 flex-1 text-xs tracking-[0.18em] text-cenere uppercase">Giochi come</p>
           <AscoltaQui />
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => setRegoleAperte(true)}
             data-testid="apri-regole"
-            className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-4 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
+            className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-3 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
           >
             Regole
+          </button>
+          <button
+            type="button"
+            onClick={() => setDiarioAperto(true)}
+            data-testid="apri-diario"
+            className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-3 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
+          >
+            Diario
           </button>
           {haScheda && (
             <button
               type="button"
               onClick={() => apriScheda(true)}
               data-testid="apri-scheda"
-              className="min-h-12 min-w-12 shrink-0 rounded-full border border-candela/60 px-4 text-[0.95rem] text-candela active:bg-notte-3"
+              className="min-h-12 min-w-12 shrink-0 rounded-full border border-candela/60 px-3 text-[0.95rem] text-candela active:bg-notte-3"
             >
               Scheda
             </button>
@@ -122,7 +135,7 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
             type="button"
             onClick={() => apriScelta(true)}
             aria-label="Cambia personaggio"
-            className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-4 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
+            className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-3 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
           >
             Cambia
           </button>
@@ -147,6 +160,7 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
       </section>
       <SchedaPersonaggio />
       <Regole aperta={regoleAperte} onChiudi={() => setRegoleAperte(false)} />
+      <Diario aperta={diarioAperto} diario={stato.diario} onChiudi={() => setDiarioAperto(false)} />
       <SceltaAzione />
     </div>
   );

@@ -25,6 +25,8 @@ import { usePrecaricamentoScena } from './immaginiScena';
 import { SchermataInizio } from './SchermataInizio';
 import { Narrazione } from './Narrazione';
 import { RigaFinestra } from './RigaFinestra';
+import { LaVoltaScorsa } from './LaVoltaScorsa';
+import { FineSerata } from './FineSerata';
 import { HudLatenza } from './HudLatenza';
 import { FilaPersonaggi } from './FilaPersonaggi';
 import { CreditiAudio, PannelloAudio, PulsanteAudio, useTastiAudio } from './audio/PannelloAudio';
@@ -98,45 +100,54 @@ export function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | 
   // Chi parla adesso (la frase in onda): il suo ritratto in fila si illumina.
   const parlante = useSchermo((s) => s.inOnda?.parlante ?? null);
   return (
-    <main className="relative z-10 grid h-dvh grid-rows-[auto_1fr_auto] gap-[2vh] px-[3.5vw] pt-[4vh] pb-[4vh]">
-      <header className="max-w-[70vw]">
-        <p className="text-[1.1vw] tracking-[0.35em] text-candela/90 uppercase drop-shadow-[0_2px_6px_rgb(0_0_0/0.9)]">
-          Cantastorie
-        </p>
-        <h1
-          data-testid="titolo-scena"
-          className="font-titolo text-[2.6vw] leading-tight font-semibold text-pergamena drop-shadow-[0_3px_12px_rgb(0_0_0/0.9)]"
-        >
-          {stato.scena.titolo}
-        </h1>
-        {/* Ritratti dei PNG in scena (chi parla si illumina): da 3 m si vede con chi si può parlare. */}
-        <div className="mt-[2.2vh]">
-          <FilaPersonaggi personaggi={stato.scena.personaggi} parlante={parlante} />
-        </div>
-      </header>
-
-      {/* Mentre si narrano i tiri la narrazione lascia libera la colonna delle carte a destra. */}
-      <div className={clsx('flex min-h-0 items-end justify-center pb-[2vh]', vistaTiri.lasciaSpazio && 'pr-[17vw]')}>
-        <Narrazione stato={stato} />
-      </div>
-      <TiriSchermo vista={vistaTiri} />
-
-      <footer className="flex items-end justify-between gap-[3vw]">
-        <div className="min-w-0 flex-1 pb-[0.5vh]">
-          <RigaFinestra stato={stato} />
-        </div>
-        {info && (
-          <div className="flex shrink-0 items-end gap-[1vw]">
-            <p className="pb-[0.4vh] text-right text-[1.05vw] leading-snug whitespace-nowrap text-pergamena-2 drop-shadow-[0_2px_6px_rgb(0_0_0/0.9)]">
-              Unisciti col telefono
-              <br />
-              <span className="font-mono text-candela-2">{info.url_telefono}</span>
-            </p>
-            <Qr svg={info.qr_svg} className="size-[8.5vw] p-[0.5vw]" />
+    <>
+      <main className="relative z-10 grid h-dvh grid-rows-[auto_1fr_auto] gap-[2vh] px-[3.5vw] pt-[4vh] pb-[4vh]">
+        <header className="max-w-[70vw]">
+          <p className="text-[1.1vw] tracking-[0.35em] text-candela/90 uppercase drop-shadow-[0_2px_6px_rgb(0_0_0/0.9)]">
+            Cantastorie
+          </p>
+          <h1
+            data-testid="titolo-scena"
+            className="font-titolo text-[2.6vw] leading-tight font-semibold text-pergamena drop-shadow-[0_3px_12px_rgb(0_0_0/0.9)]"
+          >
+            {stato.scena.titolo}
+          </h1>
+          {/* Ritratti dei PNG in scena (chi parla si illumina): da 3 m si vede con chi si può parlare. */}
+          <div className="mt-[2.2vh]">
+            <FilaPersonaggi personaggi={stato.scena.personaggi} parlante={parlante} />
           </div>
-        )}
-      </footer>
-    </main>
+          {stato.la_volta_scorsa && (
+            <div className="mt-[2vh]">
+              <LaVoltaScorsa testo={stato.la_volta_scorsa} />
+            </div>
+          )}
+        </header>
+
+        {/* Mentre si narrano i tiri la narrazione lascia libera la colonna delle carte a destra. */}
+        <div className={clsx('flex min-h-0 items-end justify-center pb-[2vh]', vistaTiri.lasciaSpazio && 'pr-[17vw]')}>
+          <Narrazione stato={stato} />
+        </div>
+        <TiriSchermo vista={vistaTiri} />
+
+        <footer className="flex items-end justify-between gap-[3vw]">
+          <div className="min-w-0 flex-1 pb-[0.5vh]">
+            <RigaFinestra stato={stato} />
+          </div>
+          {info && (
+            <div className="flex shrink-0 items-end gap-[1vw]">
+              <p className="pb-[0.4vh] text-right text-[1.05vw] leading-snug whitespace-nowrap text-pergamena-2 drop-shadow-[0_2px_6px_rgb(0_0_0/0.9)]">
+                Unisciti col telefono
+                <br />
+                <span className="font-mono text-candela-2">{info.url_telefono}</span>
+              </p>
+              <Qr svg={info.qr_svg} className="size-[8.5vw] p-[0.5vw]" />
+            </div>
+          )}
+        </footer>
+      </main>
+      {/* «Cosa è successo stasera»: sopra la scena, finché il gioco non riprende. */}
+      {stato.fine_serata && <FineSerata fine={stato.fine_serata} pg={stato.pg} />}
+    </>
   );
 }
 

@@ -17,6 +17,7 @@ import { classePulsante } from './stili';
 import { oraBreve } from './etichette';
 import { rigaPacchetto, statoProssima } from './pacchetti';
 import { TelefoniRicordati } from './TelefoniRicordati';
+import { SerataMasterRiquadro } from './SerataMaster';
 import { useConferma } from './useConferma';
 
 export function SezioneSessione({ stato }: { stato: StatoMaster }) {
@@ -79,18 +80,20 @@ export function SezioneSessione({ stato }: { stato: StatoMaster }) {
           </>
         )}
       </dl>
-      <div className="flex flex-wrap gap-2">
+      {s.serata && <SerataMasterRiquadro serata={s.serata} />}
+      <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           data-testid="master-fine-sessione"
           data-conferma={String(confermaFine)}
           disabled={fineInCorso || s.fine_possibile === false}
           onClick={clicFine}
-          title="Ferma il gioco, chiude la sessione e scrive il registro (registro.yaml)"
+          title="Uscita d'emergenza: ferma il gioco subito, senza narrazione, e scrive il registro (registro.yaml)"
           className={classePulsante(confermaFine ? 'pericolo' : 'normale', 'piccolo')}
         >
           {confermaFine ? 'Confermi la fine della sessione?' : 'Fine sessione'}
         </button>
+        <span className="text-xs text-cenere">uscita d’emergenza: subito, senza narrazione</span>
         {prossima && (
           <button
             type="button"
