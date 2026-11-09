@@ -21,7 +21,12 @@ import { NOME_ABILITA, NOME_CARATTERISTICA } from '../campagna/regole-srd';
 import { DadiCrittografici, type FonteDadi } from './dadi';
 import { risolviTurno, type Atteggiamento, type AzioneRisolvibile } from './risolutore';
 import { StatoProve, type StatoProveSalvato } from './stato';
-import type { ArbitroProve, AzioneDaClassificare, DecisioneProva, EsitoTurnoProve, IngressoArbitroProve } from './tipi';
+import type { ArbitroProve, AzioneDaClassificare, DecisioneProva, DecisioneRegole, EsitoTurnoProve, IngressoArbitroProve } from './tipi';
+import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
+import { proveScenaRegole, risolviTurnoRegole } from './risolutore-regole';
+
+/** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
+type Decisione = DecisioneProva | DecisioneRegole;
 
 /** Azione come la passa la regia (dal tavolo). */
 export interface AzionePerProve extends AzioneRisolvibile {
@@ -41,7 +46,12 @@ export interface ContestoProve {
 
 export interface OpzioniMotoreProve {
   schede: ReadonlyMap<string, SchedaNumerica>;
-  arbitro: ArbitroProve | null;
+  arbitro: ArbitroProve<DecisioneProva> | ArbitroProve<DecisioneRegole> | null;
+  /**
+   * Set di regole non SRD (docs/regole.md): le prove le risolve prove/risolutore-regole.ts con le
+   * schede del set. Assente, o col set SRD: tutto come prima.
+   */
+  regole?: { regole: RegoleCampagna; schede: ReadonlyMap<string, SchedaGenerica> } | null;
   log: Logger;
   orologio: Orologio;
   /** Dadi o no (campagna con schede e senza `regole.dadi: false`). */
@@ -60,7 +70,7 @@ export interface OpzioniMotoreProve {
 interface VoceCache {
   revisione: number;
   versione: number;
-  promessa: Promise<DecisioneProva | null>;
+  promessa: Promise<Decisione | null>;
   pronta: boolean;
 }
 
@@ -73,6 +83,15 @@ export function dadiAttivi(c: Campagna, schede: ReadonlyMap<string, SchedaNumeri
   return { attivo: true, motivo: `${pgConScheda}/${c.pg.length} PG e ${[...schede.values()].filter((s) => s.di_png).length} PNG con la scheda` };
 }
 
+/** Come dadiAttivi, per un set non SRD: schede del set sui PG. */
+export function dadiAttiviRegole(c: Campagna, schede: ReadonlyMap<string, SchedaGenerica>, nomeSet: string): { attivo: boolean; motivo: string } {
+  const regole = c.campagnaNarratore['regole'] as DatiYaml | undefined;
+  if (regole && regole['dadi'] === false) return { attivo: false, motivo: 'campagna senza dadi (regole.dadi: false)' };
+  const pg = c.pg.filter((p) => schede.has(p.id)).length;
+  if (!pg) return { attivo: false, motivo: `nessun PG ha una scheda del set «${nomeSet}»: niente dadi, il narratore risolve con «sì, ma»` };
+  return { attivo: true, motivo: `set «${nomeSet}»: ${pg}/${c.pg.length} PG e ${[...schede.values()].filter((s) => s.di_png).length} PNG con la scheda` };
+}
+
 export class MotoreProve {
   readonly stato: StatoProve;
   private dadi: FonteDadi;
@@ -82,8 +101,20 @@ export class MotoreProve {
   private ultimoTurno: { turno: number; tiri: TiroMostrato[] } | null = null;
 
   constructor(private readonly o: OpzioniMotoreProve) {
-    this.stato = new StatoProve(o.schede);
+    this.stato = new StatoProve(this.generico ? this.generico.schede : o.schede);
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
+  }
+
+  /** Il set non SRD in uso (null = SRD 5.2). */
+  private get generico(): { regole: RegoleCampagna; schede: ReadonlyMap<string, SchedaGenerica> } | null {
+    return this.o.regole && !this.o.regole.regole.sistema.srd ? this.o.regole : null;
+  }
+
+  /** Armi di un personaggio per l'arbitro (id, e se a distanza nell'SRD). */
+  private armi(id: string): string[] | null {
+    const g = this.generico;
+    if (g) return g.schede.get(id)?.attacchi.map((a) => a.id) ?? null;
+    return this.o.schede.get(id)?.attacchi.map((a) => `${a.id}${a.distanza ? ' (a distanza)' : ''}`) ?? null;
   }
 
   get attivo(): boolean {
@@ -109,9 +140,9 @@ export class MotoreProve {
   righePersonaggi(c: ContestoProve): string {
     const righe: string[] = ['PG al tavolo:'];
     for (const id of c.pgAlTavolo) {
-      const s = this.o.schede.get(id);
-      const armi = s?.attacchi.map((a) => `${a.id}${a.distanza ? ' (a distanza)' : ''}`).join(', ');
-      righe.push(`- ${id} = ${c.nome(id)}${s ? ` · armi: ${armi || 'nessuna (mani nude)'}` : ' · senza scheda'}${this.stato.aTerra(id) ? ' · A TERRA' : ''}`);
+      const a = this.armi(id);
+      const armi = a?.join(', ');
+      righe.push(`- ${id} = ${c.nome(id)}${a ? ` · armi: ${armi || 'nessuna (mani nude)'}` : ' · senza scheda'}${this.stato.aTerra(id) ? ' · A TERRA' : ''}`);
     }
     const presenti = new Set(c.campagna.scena.png_presenti);
     const inScena = c.campagna.png.filter((p) => presenti.has(p.id));
@@ -142,7 +173,9 @@ export class MotoreProve {
       scena: c.scenaPubblica,
       narrazione: c.narrazione,
       personaggi: this.righePersonaggi(c),
-      proveScena: prove.map((p) => `- ${p.id} · ${p.quando} · ${p.salvezza ? `tiro salvezza su ${NOME_CARATTERISTICA[p.caratteristica!]}` : p.abilita ? NOME_ABILITA[p.abilita] : NOME_CARATTERISTICA[p.caratteristica!]}`).join('\n'),
+      proveScena: this.generico
+        ? proveScenaRegole(this.generico.regole.sistema, c.campagna).map((p) => `- ${p.id} · ${p.quando} · ${p.mossa ?? p.abilita ?? p.caratteristica ?? ''}`).join('\n')
+        : prove.map((p) => `- ${p.id} · ${p.quando} · ${p.salvezza ? `tiro salvezza su ${NOME_CARATTERISTICA[p.caratteristica!]}` : p.abilita ? NOME_ABILITA[p.abilita] : NOME_CARATTERISTICA[p.caratteristica!]}`).join('\n'),
       azioni: azioni.map((a) => this.versoArbitro(a, c)),
       // Le azioni private degli altri non entrano: l'arbitro le vede solo come azioni da giudicare.
       altre: altre.filter((x) => !x.privata && !azioni.some((a) => a.id === x.id)).map((a) => this.versoArbitro(a, c)),
@@ -150,19 +183,18 @@ export class MotoreProve {
   }
 
   /** Una chiamata per un gruppo di azioni; ogni azione riceve la sua promessa (null se fallisce). */
-  private chiedi(azioni: AzionePerProve[], altre: AzioneRisolvibile[], c: ContestoProve, motivo: string): Map<string, Promise<DecisioneProva | null>> {
-    const out = new Map<string, Promise<DecisioneProva | null>>();
+  private chiedi(azioni: AzionePerProve[], altre: AzioneRisolvibile[], c: ContestoProve, motivo: string): Map<string, Promise<Decisione | null>> {
+    const out = new Map<string, Promise<Decisione | null>>();
     if (!this.o.arbitro || !azioni.length) return out;
     const t0 = this.o.orologio.ora();
-    const tutte = this.o.arbitro
-      .classifica(this.ingresso(azioni, altre, c))
+    const tutte = (this.o.arbitro.classifica(this.ingresso(azioni, altre, c)) as Promise<Record<string, Decisione>>)
       .then((r) => {
         this.o.log.info({ motivo, ms: Math.round(this.o.orologio.ora() - t0), decisioni: Object.values(r).map((d) => ({ id: d.id, tipo: d.tipo, abilita: d.abilita, caratteristica: d.caratteristica, bersaglio: d.bersaglio, arma: d.arma, prova_scena: d.prova_scena, difficolta: d.difficolta, vantaggio: d.vantaggio, motivo: d.motivo, aiuta: d.aiuta, reazione: d.reazione })) }, 'prove: decisioni');
         return r;
       })
       .catch((err: unknown) => {
         this.o.log.error({ motivo, azioni: azioni.map((a) => a.id), err: (err as Error).message }, 'prove: arbitro fallito (nessun tiro per queste azioni)');
-        return {} as Record<string, DecisioneProva>;
+        return {} as Record<string, Decisione>;
       });
     for (const a of azioni) {
       const p = tutte.then((r) => r[a.id] ?? null);
@@ -202,10 +234,10 @@ export class MotoreProve {
   async risolvi(turno: number, azioni: AzionePerProve[]): Promise<EsitoTurnoProve> {
     const t0 = this.o.orologio.ora();
     const c = this.o.contesto();
-    const decisioni = new Map<string, DecisioneProva | null>();
+    const decisioni = new Map<string, Decisione | null>();
     const tardive: string[] = [];
     if (this.attivo && azioni.length) {
-      const attese = new Map<string, Promise<DecisioneProva | null>>();
+      const attese = new Map<string, Promise<Decisione | null>>();
       const mancanti: AzionePerProve[] = [];
       for (const a of azioni) {
         const v = this.cache.get(a.id);
@@ -233,10 +265,26 @@ export class MotoreProve {
     const attesa_ms = Math.round(this.o.orologio.ora() - t0);
     if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], attesa_ms, tardive };
 
-    const r = risolviTurno({
+    const g = this.generico;
+    const esiste = (id: string): boolean => c.campagna.pg.some((p) => p.id === id) || c.campagna.png.some((p) => p.id === id);
+    const r = g
+      ? risolviTurnoRegole({
+          turno,
+          azioni,
+          decisioni: decisioni as Map<string, DecisioneRegole | null>,
+          sistema: g.regole.sistema,
+          schede: g.schede,
+          stato: this.stato,
+          dadi: this.dadi,
+          proveScena: proveScenaRegole(g.regole.sistema, c.campagna),
+          nome: c.nome,
+          esiste,
+          log: this.o.log.child({ turno }),
+        })
+      : risolviTurno({
       turno,
       azioni,
-      decisioni,
+      decisioni: decisioni as Map<string, DecisioneProva | null>,
       schede: this.o.schede,
       stato: this.stato,
       dadi: this.dadi,

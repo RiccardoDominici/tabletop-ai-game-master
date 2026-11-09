@@ -32,7 +32,8 @@ export class StatoProve {
   private prossimo = 1;
   private recentiTiri: TiroMostrato[] = [];
 
-  constructor(private readonly schede: ReadonlyMap<string, SchedaNumerica>) {
+  /** Schede SRD o del set del manuale: servono solo id e punti ferita massimi. */
+  constructor(private readonly schede: ReadonlyMap<string, Pick<SchedaNumerica, 'id' | 'pf_massimi'>>) {
     this.azzeraPf();
   }
 

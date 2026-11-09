@@ -21,9 +21,50 @@ export function conSegno(n: number): string {
   return n < 0 ? `${MENO}${Math.abs(n)}` : `+${n}`;
 }
 
-/** Il numero da battere: «CD 15» (prove, salvezze) o «CA 13» (attacchi). */
+/** Il numero da battere: «CD 15» (prove, salvezze), «CA 13» (attacchi), «soglia 45» (sotto soglia). */
 export function testoContro(tiro: Pick<TiroMostrato, 'contro'>): string {
   return `${tiro.contro.tipo} ${tiro.contro.valore}`;
+}
+
+/** Il set di regole con cui si è tirato; senza `risoluzione` vale il d20 contro CD o CA, come sempre. */
+export type RisoluzioneTiro = NonNullable<TiroMostrato['risoluzione']>;
+
+export function risoluzioneDi(tiro: Pick<TiroMostrato, 'risoluzione'>): RisoluzioneTiro {
+  return tiro.risoluzione ?? 'd20_cd';
+}
+
+/** Facce del dado (dei `dadi`): 20 se non dichiarate. */
+export function facceDi(tiro: Pick<TiroMostrato, 'facce'>): number {
+  return tiro.facce && tiro.facce > 0 ? tiro.facce : 20;
+}
+
+/**
+ * Il valore da mostrare su un dado durante il giro: l'animazione tira facce del d20 a caso, quindi
+ * su un d6 o un d100 si riportano nel range del dado (1..facce).
+ */
+export function facciaNelRange(valore: number, facce: number): number {
+  if (facce <= 0) return valore;
+  return ((Math.max(1, valore) - 1) % facce) + 1;
+}
+
+/**
+ * Il posto del «CD 15» sulla carta: col 2d6 a fasce è il nome della fascia («Successo con un costo»);
+ * altrimenti il numero da battere.
+ */
+export function testoBersaglioCarta(tiro: Pick<TiroMostrato, 'contro' | 'risoluzione' | 'grado'>): string {
+  if (risoluzioneDi(tiro) === '2d6_fasce' && tiro.grado) return tiro.grado.nome;
+  return testoContro(tiro);
+}
+
+/** Sotto soglia: «tiro 23 ≤ 45?», il tiro e la soglia da non superare. */
+export function testoTiroSottoSoglia(tiro: Pick<TiroMostrato, 'dado' | 'contro'>): string {
+  return `tiro ${tiro.dado} ≤ ${tiro.contro.valore}?`;
+}
+
+/** La riga «Regola: …» della carta intera, o null se la regola non c'è o è vuota. */
+export function testoRegola(tiro: Pick<TiroMostrato, 'regola'>): string | null {
+  const regola = tiro.regola?.trim();
+  return regola ? `Regola: ${regola}` : null;
 }
 
 /** Cosa si tira, col bersaglio se c'è: «Balestra leggera contro il goblin». */
@@ -49,10 +90,40 @@ export function pareggio(tiro: Pick<TiroMostrato, 'avversario' | 'totale'>): boo
   return tiro.avversario !== null && tiro.avversario.totale === tiro.totale;
 }
 
+const TONO_GRADO: Record<NonNullable<TiroMostrato['grado']>['id'], TonoEsito> = {
+  successo: 'buono',
+  parziale: 'pari',
+  fallimento: 'cattivo',
+  critico: 'buono',
+  disastro: 'cattivo',
+};
+
+/** Parole del badge per le fasce del 2d6 (il nome della fascia sta già al posto della CD). */
+const PAROLA_FASCIA: Record<NonNullable<TiroMostrato['grado']>['id'], string> = {
+  successo: 'Riuscita',
+  parziale: 'Parziale',
+  fallimento: 'Fallita',
+  critico: 'Critico',
+  disastro: 'Disastro',
+};
+
+/**
+ * L'esito a gradi (2d6 a fasce, sotto soglia): colore dal `grado.id`, testo dal nome della fascia
+ * sotto soglia e dalla parola breve nel 2d6. Critico e disastro hanno una stella e sono speciali.
+ */
+export function esitoDaGrado(grado: NonNullable<TiroMostrato['grado']>, risoluzione: RisoluzioneTiro): EsitoTiro {
+  const tono = TONO_GRADO[grado.id];
+  const speciale = grado.id === 'critico' || grado.id === 'disastro';
+  const testo = risoluzione === 'sotto_soglia' ? grado.nome : PAROLA_FASCIA[grado.id];
+  const simbolo = speciale ? '★' : tono === 'buono' ? '✔' : tono === 'pari' ? '~' : '✘';
+  return { testo, tono, simbolo, speciale };
+}
+
 /** L'esito della carta, con le parole del tavolo. */
 export function esitoTiro(
-  tiro: Pick<TiroMostrato, 'tipo' | 'riuscita' | 'critico' | 'fallimento_critico' | 'avversario' | 'totale'>,
+  tiro: Pick<TiroMostrato, 'tipo' | 'riuscita' | 'critico' | 'fallimento_critico' | 'avversario' | 'totale' | 'risoluzione' | 'grado'>,
 ): EsitoTiro {
+  if (tiro.grado) return esitoDaGrado(tiro.grado, risoluzioneDi(tiro));
   if (tiro.tipo === 'attacco') {
     if (tiro.critico) return { testo: 'Colpo critico', tono: 'buono', simbolo: '✦', speciale: true };
     if (tiro.fallimento_critico) return { testo: '1 naturale', tono: 'cattivo', simbolo: '✘', speciale: true };
@@ -70,7 +141,9 @@ export function esitoTiro(
  * Indice del d20 scartato quando se ne tirano due (vantaggio/svantaggio), o null. Conta quello che
  * vale `dado`; con due facce uguali si scarta la seconda.
  */
-export function indiceDadoScartato(tiro: Pick<TiroMostrato, 'dadi' | 'dado'>): number | null {
+export function indiceDadoScartato(tiro: Pick<TiroMostrato, 'dadi' | 'dado' | 'risoluzione'>): number | null {
+  // Col 2d6 a fasce i due dadi si sommano: nessuno si scarta. Sotto soglia c'è un solo dado.
+  if (risoluzioneDi(tiro) !== 'd20_cd') return null;
   if (tiro.dadi.length < 2) return null;
   const contato = tiro.dadi.indexOf(tiro.dado);
   // Il Motore manda sempre `dado` tra i `dadi`; se non fosse così si scarta il secondo (mai nessuno a caso).
@@ -131,10 +204,19 @@ export function contoTiro(tiro: Pick<TiroMostrato, 'dado' | 'modificatore' | 'to
 /** Una frase intera per i lettori di schermo e i log: «Arianna, Persuasione (Carisma): 17 + 5 = 22 contro CD 15. Riuscita.» */
 export function descriviTiro(tiro: TiroMostrato): string {
   const esito = esitoTiro(tiro);
-  const contro = tiro.avversario
-    ? `contro ${tiro.avversario.nome} (${contoTiro(tiro.avversario)})`
-    : `contro ${testoContro(tiro)}`;
-  const parti = [`${tiro.nome}, ${testoCosa(tiro)}: ${contoTiro(tiro)} ${contro}. ${esito.testo}.`];
+  const risoluzione = risoluzioneDi(tiro);
+  let conto: string;
+  if (risoluzione === 'sotto_soglia') {
+    conto = `tiro ${tiro.dado} ≤ ${tiro.contro.valore}`;
+  } else if (risoluzione === '2d6_fasce') {
+    conto = `${tiro.dadi.join(' + ')} ${conSegno(tiro.modificatore)} = ${tiro.totale} contro ${tiro.grado?.nome ?? testoContro(tiro)}`;
+  } else {
+    const contro = tiro.avversario
+      ? `contro ${tiro.avversario.nome} (${contoTiro(tiro.avversario)})`
+      : `contro ${testoContro(tiro)}`;
+    conto = `${contoTiro(tiro)} ${contro}`;
+  }
+  const parti = [`${tiro.nome}, ${testoCosa(tiro)}: ${conto}. ${esito.testo}.`];
   const vantaggio = testoVantaggio(tiro);
   if (vantaggio) parti.push(`${vantaggio}.`);
   if (tiro.danno && tiro.riuscita) parti.push(`${testoDanno(tiro.danno)}.`);

@@ -8,6 +8,11 @@
  * battere (con la sua descrizione), l'esito (muschio = buono, brace = cattivo, candela = pareggio)
  * e, per un colpo, la riga del danno e «a terra».
  *
+ * Set di regole non SRD (`risoluzione`, docs/regole.md): col 2d6 a fasce si mostrano i d6 (quadrati)
+ * e il posto della CD va al nome della fascia; sotto soglia c'è un solo dado (d100 o d20) e la riga
+ * dice «tiro 23 ≤ 45?». Senza `risoluzione` la carta è quella di sempre. `regola` è una riga in
+ * più nella forma intera.
+ *
  * Due forme: intera (`compatta` falso) e compatta (striscia del proiettore: due righe; elenco chiuso
  * del telefono: una riga). L'animazione è in useAnimazioneTiro.ts, una volta per id; le parti
  * ancora nascoste restano al loro posto (`invisible`), così la carta non cambia misura mentre si anima.
@@ -19,11 +24,17 @@ import {
   contoTiro,
   descriviTiro,
   esitoTiro,
+  facceDi,
+  facciaNelRange,
   giaVisibile,
   indiceDadoScartato,
+  risoluzioneDi,
+  testoBersaglioCarta,
   testoContro,
   testoCosa,
   testoDanno,
+  testoRegola,
+  testoTiroSottoSoglia,
   testoVantaggio,
   TEMPI_ANIMAZIONE,
   type EsitoTiro,
@@ -55,6 +66,7 @@ const MISURE = {
     colonnaDadi: 'gap-[0.4vh]',
     dado: 'size-[4.2vw] text-[1.85vw]',
     dadoScartato: 'size-[2.5vw] text-[1.05vw]',
+    dadoQuadrato: 'size-[3.2vw] text-[1.4vw]',
     corpo: 'gap-[0.3vh]',
     testa: 'gap-[0.5vw]',
     nome: 'text-[1.35vw]',
@@ -68,6 +80,7 @@ const MISURE = {
     contro: 'gap-[0.3vw] rounded-[0.4vw] px-[0.5vw] py-[0.1vh] text-[1.35vw]',
     controTipo: 'text-[0.95vw]',
     piccolo: 'text-[0.92vw]',
+    regola: 'text-[0.95vw]',
     danno: 'gap-x-[0.5vw] gap-y-[0.3vh] text-[1.08vw]',
   },
   telefono: {
@@ -75,6 +88,7 @@ const MISURE = {
     colonnaDadi: 'gap-0.5',
     dado: 'size-12 text-xl',
     dadoScartato: 'size-8 text-sm',
+    dadoQuadrato: 'size-9 text-base',
     corpo: 'gap-0.5',
     testa: 'gap-1.5',
     nome: 'text-[0.95rem]',
@@ -88,6 +102,7 @@ const MISURE = {
     contro: 'gap-1 rounded px-1.5 text-sm',
     controTipo: 'text-xs',
     piccolo: 'text-xs',
+    regola: 'text-xs',
     danno: 'gap-x-1.5 text-sm',
   },
 } as const satisfies Record<VarianteCarta, Record<string, string>>;
@@ -166,8 +181,11 @@ function CartaIntera(p: PropsInterne) {
   const vantaggio = testoVantaggio(tiro);
   const avversario = tiro.avversario;
   const colpito = tiro.danno !== null && tiro.riuscita;
+  const risoluzione = risoluzioneDi(tiro);
+  const facce = facceDi(tiro);
   // Il d20 che conta in alto e grande, quello scartato sotto, piccolo e spento: la carta resta stretta.
   const ordine = scartato === null ? p.facce.map((_, i) => i) : [scartato === 0 ? 1 : 0, scartato];
+  const regola = testoRegola(tiro);
   const note = [!avversario && tiro.contro.descrizione ? tiro.contro.descrizione : null, vantaggio].filter(Boolean);
 
   return (
@@ -175,6 +193,7 @@ function CartaIntera(p: PropsInterne) {
       data-testid="carta-tiro"
       data-id={tiro.id}
       data-tipo={tiro.tipo}
+      data-risoluzione={risoluzione}
       data-esito={esito.tono}
       data-passo={p.passo}
       data-png={tiro.di_png}
@@ -182,16 +201,22 @@ function CartaIntera(p: PropsInterne) {
       className={clsx(classiCarta(p), m.carta)}
     >
       <div className={clsx('flex shrink-0 flex-col items-center justify-center', m.colonnaDadi)} aria-hidden>
-        {ordine.map((i) => (
-          <DadoD20
-            key={i}
-            faccia={p.facce[i] ?? tiro.dado}
-            scartato={i === scartato}
-            passo={p.passo}
-            animata={p.animata}
-            className={i === scartato ? m.dadoScartato : m.dado}
-          />
-        ))}
+        {risoluzione === '2d6_fasce'
+          ? // Due d6: si sommano, nessuno si scarta.
+            tiro.dadi.map((_, i) => (
+              <DadoD6 key={i} faccia={facciaNelRange(p.facce[i] ?? 1, 6)} passo={p.passo} animata={p.animata} className={m.dadoQuadrato} />
+            ))
+          : ordine.map((i) => (
+              <DadoD20
+                key={i}
+                faccia={facciaNelRange(p.facce[i] ?? tiro.dado, facce)}
+                scartato={i === scartato}
+                naturali={risoluzione === 'd20_cd'}
+                passo={p.passo}
+                animata={p.animata}
+                className={i === scartato ? m.dadoScartato : m.dado}
+              />
+            ))}
       </div>
 
       <div className={clsx('flex min-w-0 flex-1 flex-col justify-center', m.corpo)}>
@@ -215,24 +240,45 @@ function CartaIntera(p: PropsInterne) {
 
         {/* «+5 = 22  CD 15  ✔ Riuscita»: il conto, il numero da battere (o il totale dell'altro PG), l'esito. */}
         <div className={clsx('flex flex-wrap items-center leading-none', m.riga)}>
-          <span data-testid="carta-modificatore" className={clsx('font-bold text-pergamena-2 tabular-nums', m.modificatore, comparsa(p, 'modificatore'))}>
-            {conSegno(tiro.modificatore)}
-          </span>
-          <span className={clsx('text-cenere', m.uguale, comparsa(p, 'totale'))}>=</span>
-          <span data-testid="carta-totale" className={clsx('font-extrabold text-pergamena tabular-nums', m.totale, comparsa(p, 'totale'))}>
-            {tiro.totale}
-          </span>
+          {risoluzione === 'sotto_soglia' ? (
+            // Sotto soglia: il tiro al posto di «+mod = totale», poi la soglia da non superare.
+            <>
+              <Chip className={clsx(m.chip, 'border-bordo-chiaro text-cenere')}>{`d${facce}`}</Chip>
+              <span data-testid="carta-tiro-soglia" className={clsx('font-extrabold text-pergamena tabular-nums', m.totale, comparsa(p, 'totale'))}>
+                tiro {tiro.dado}
+              </span>
+              <span className={clsx('text-cenere', m.uguale, comparsa(p, 'totale'))}>≤</span>
+            </>
+          ) : (
+            // «+5 = 22» (d20 e 2d6): il modificatore, il totale.
+            <>
+              <span data-testid="carta-modificatore" className={clsx('font-bold text-pergamena-2 tabular-nums', m.modificatore, comparsa(p, 'modificatore'))}>
+                {conSegno(tiro.modificatore)}
+              </span>
+              <span className={clsx('text-cenere', m.uguale, comparsa(p, 'totale'))}>=</span>
+              <span data-testid="carta-totale" className={clsx('font-extrabold text-pergamena tabular-nums', m.totale, comparsa(p, 'totale'))}>
+                {tiro.totale}
+              </span>
+            </>
+          )}
           <span
             data-testid="carta-contro"
-            aria-label={avversario ? `${avversario.nome} ${avversario.totale}` : testoContro(tiro)}
+            aria-label={avversario ? `${avversario.nome} ${avversario.totale}` : testoBersaglioCarta(tiro)}
             className={clsx(
               'inline-flex shrink-0 items-baseline border border-bordo-chiaro bg-notte-3 font-bold whitespace-nowrap text-pergamena-2 tabular-nums',
               m.contro,
               comparsa(p, 'totale'),
             )}
           >
-            <span className={clsx('font-semibold text-cenere', m.controTipo)}>{avversario ? avversario.nome : tiro.contro.tipo}</span>
-            {avversario ? avversario.totale : tiro.contro.valore}
+            {risoluzione === '2d6_fasce' ? (
+              // Il 2d6 a fasce: al posto della CD c'è il nome della fascia.
+              <span className="font-semibold text-candela-2">{testoBersaglioCarta(tiro)}</span>
+            ) : (
+              <>
+                <span className={clsx('font-semibold text-cenere', m.controTipo)}>{avversario ? avversario.nome : tiro.contro.tipo}</span>
+                {avversario ? avversario.totale : tiro.contro.valore}
+              </>
+            )}
           </span>
           {/* L'esito in fondo a destra; se non ci sta (es. «Colpo critico») va a capo, sempre a destra. */}
           <BadgeEsito esito={esito} className={clsx('ml-auto', m.badge, comparsa(p, 'esito', 'tiro-esito'))} />
@@ -259,6 +305,13 @@ function CartaIntera(p: PropsInterne) {
           </p>
         )}
 
+        {regola && (
+          // La regola applicata, in una riga piccola: solo nella forma intera (il telefono e il proiettore).
+          <p data-testid="carta-regola" className={clsx('line-clamp-2 leading-snug text-cenere italic', m.regola)}>
+            {regola}
+          </p>
+        )}
+
         {(colpito || tiro.a_terra) && (
           // Il danno e, se il bersaglio cade, «a terra»: si scoprono con l'esito.
           <p data-testid="carta-danno" className={clsx('flex flex-wrap items-center leading-snug', m.danno, comparsa(p, 'esito'))}>
@@ -275,17 +328,23 @@ function CartaCompatta(p: PropsInterne) {
   const { tiro, variante, esito } = p;
   const m = MISURE_COMPATTE[variante];
   const scartato = indiceDadoScartato(tiro);
-  // Nella forma compatta solo il d20 che conta.
+  const risoluzione = risoluzioneDi(tiro);
+  // Nella forma compatta solo il dado che conta (col 2d6 la somma, sotto soglia il tiro).
   const contato = scartato === null ? 0 : scartato === 0 ? 1 : 0;
-  const faccia = p.facce[contato] ?? tiro.dado;
+  // Col 2d6 il numero del quadratino è la somma (`dado`), non una faccia: niente riporto nel range.
+  const faccia = risoluzione === '2d6_fasce' ? tiro.dado : facciaNelRange(p.facce[contato] ?? tiro.dado, facceDi(tiro));
   const proiettore = variante === 'proiettore';
 
   // Sul telefono la riga è stretta: niente modificatore (c'è nella carta intera, a un tocco).
+  // Sotto soglia il numero è il tiro (la soglia sta dopo il punto); col 2d6 il totale e la fascia.
   const conto = (
     <span className={clsx('shrink-0 whitespace-nowrap tabular-nums', comparsa(p, 'totale'))}>
-      {proiettore && <span className="text-pergamena-2">{conSegno(tiro.modificatore)} = </span>}
-      <strong className={clsx('font-extrabold text-pergamena', m.totale)}>{tiro.totale}</strong>
-      <span className="text-cenere"> · {tiro.avversario ? `${tiro.avversario.nome} ${tiro.avversario.totale}` : testoContro(tiro)}</span>
+      {proiettore && risoluzione !== 'sotto_soglia' && <span className="text-pergamena-2">{conSegno(tiro.modificatore)} = </span>}
+      <strong className={clsx('font-extrabold text-pergamena', m.totale)}>{risoluzione === 'sotto_soglia' ? tiro.dado : tiro.totale}</strong>
+      <span className="text-cenere">
+        {' '}
+        · {tiro.avversario ? `${tiro.avversario.nome} ${tiro.avversario.totale}` : testoBersaglioCarta(tiro)}
+      </span>
     </span>
   );
   const chi = (
@@ -309,7 +368,11 @@ function CartaCompatta(p: PropsInterne) {
       aria-label={descriviTiro(tiro)}
       className={clsx(classiCarta(p), 'items-center', m.carta, m.testo)}
     >
-      <DadoD20 faccia={faccia} scartato={false} passo={p.passo} animata={p.animata} className={m.dado} />
+      {risoluzione === '2d6_fasce' ? (
+        <DadoD6 faccia={faccia} passo={p.passo} animata={p.animata} className={m.dado} />
+      ) : (
+        <DadoD20 faccia={faccia} scartato={false} naturali={risoluzione === 'd20_cd'} passo={p.passo} animata={p.animata} className={m.dado} />
+      )}
       {proiettore ? (
         // Proiettore: due righe (chi e cosa; conto ed esito), larghe quanto la colonna.
         <div className="flex min-w-0 flex-1 flex-col gap-[0.3vh] leading-tight">
@@ -359,25 +422,52 @@ function BadgeEsito({ esito, className }: { esito: EsitoTiro; className?: string
 }
 
 /**
+ * Un d6 (quadratino col numero): il 2d6 a fasce. Gira come il d20 e, fermo, mostra la faccia uscita;
+ * niente accensioni a 6 o 1 (la fascia dice già tutto).
+ */
+function DadoD6({ faccia, passo, animata, className }: { faccia: number; passo: PassoAnimazione; animata: boolean; className: string }) {
+  const gira = passo === 'lancio';
+  const fermo = !gira && passo !== 'attesa';
+  return (
+    <span
+      data-testid="carta-dado"
+      data-tipo-dado="d6"
+      data-faccia={fermo ? faccia : undefined}
+      className={clsx(
+        'inline-grid shrink-0 place-items-center rounded-[18%] border-2 border-current bg-notte-3 leading-none font-extrabold tabular-nums',
+        className,
+        gira ? 'tiro-gira text-candela' : 'text-pergamena',
+        fermo && animata && 'tiro-fermo',
+      )}
+    >
+      {passo === 'attesa' ? '' : faccia}
+    </span>
+  );
+}
+
+/**
  * Un d20 disegnato (esagono con il triangolo della faccia) col numero al centro. Mentre gira rotola
  * e il bordo è color candela; fermo, il 20 si accende d'oro e l'1 di brace. Quello scartato è spento.
  */
 function DadoD20({
   faccia,
   scartato,
+  naturali = true,
   passo,
   animata,
   className,
 }: {
   faccia: number;
   scartato: boolean;
+  /** 20 e 1 naturali si accendono solo col d20 contro CD o CA: sotto soglia il numero non dice «bene» o «male». */
+  naturali?: boolean;
   passo: PassoAnimazione;
   animata: boolean;
   className: string;
 }) {
   const gira = passo === 'lancio';
   const fermo = !gira && passo !== 'attesa';
-  const naturale = fermo && !scartato ? (faccia === 20 ? 'venti' : faccia === 1 ? 'uno' : null) : null;
+  const naturale = fermo && !scartato && naturali ? (faccia === 20 ? 'venti' : faccia === 1 ? 'uno' : null) : null;
   return (
     <span
       data-testid="carta-dado"

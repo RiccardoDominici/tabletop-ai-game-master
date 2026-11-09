@@ -30,8 +30,13 @@ import { bloccoAudioContesto } from './audio/cue';
 import { ArbitroHaiku } from './azioni/arbitro-haiku';
 import { caricaSchede } from './campagna/schede';
 import { ArbitroProveHaiku } from './prove/arbitro-haiku';
-import { dadiAttivi } from './prove/motore';
-import type { ArbitroProve } from './prove/tipi';
+import { dadiAttivi, dadiAttiviRegole } from './prove/motore';
+import type { ArbitroProve, DecisioneProva, DecisioneRegole } from './prove/tipi';
+import { caricaRegole } from './regole/caricatore';
+import { caricaSchedeGeneriche } from './regole/schede';
+import { ArbitroRegoleHaiku } from './prove/arbitro-regole';
+import { RisponditoreRegole } from './regole/chiedi';
+import { collegaRegole } from './trasporto/regole';
 import type { FonteDadi } from './prove/dadi';
 import { riassuntoPubblico } from './azioni/contesto';
 import type { Arbitro } from './azioni/tipi';
@@ -76,7 +81,7 @@ export interface Sostituzioni {
   /** Arbitro delle azioni (test: uno finto; null = solo regole). */
   arbitro?: Arbitro | null;
   /** Arbitro delle prove (test: uno finto; null = nessuna decisione, quindi nessun tiro). */
-  arbitroProve?: ArbitroProve | null;
+  arbitroProve?: ArbitroProve<DecisioneProva> | ArbitroProve<DecisioneRegole> | null;
   /** Dadi delle prove (test: a copione). */
   dadi?: FonteDadi;
   orologio?: Orologio;
@@ -210,19 +215,30 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
 
   // Prove e dadi (docs/prove.md): schede numeriche dalla campagna, il Motore tira, Haiku decide
   // soltanto che cosa si tira (stesso client e stesso modello dell'arbitro delle azioni).
-  const schede = caricaSchede(campagna, (m) => log.warn({ modulo: 'prove' }, m));
-  const dadi = dadiAttivi(campagna, schede);
-  const arbitroProve: ArbitroProve | null =
+  // Il set di regole (docs/regole.md): quello della campagna (regole/regole.yaml), o l'SRD 5.2.
+  const regole = caricaRegole(config.cartellaCampagna, log.child({ modulo: 'regole' }));
+  const generico = !regole.sistema.srd;
+  const avvisaScheda = (m: string): void => void log.warn({ modulo: 'prove' }, m);
+  const schede = generico ? new Map() : caricaSchede(campagna, avvisaScheda);
+  const schedeRegole = generico ? caricaSchedeGeneriche(regole.sistema, campagna, avvisaScheda) : null;
+  const dadi = schedeRegole ? dadiAttiviRegole(campagna, schedeRegole, regole.sistema.nome) : dadiAttivi(campagna, schede);
+  const clientCondiviso = (): ReturnType<typeof creaClientAnthropic> => (clientArbitro ??= creaClientAnthropic(config.llm.fileChiave, log.child({ modulo: 'arbitro' })));
+  const misuraProve = (m: { ms: number; azioni: number; costo: object }): void => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'arbitro_prove', modello: config.llm.modello, ms: m.ms, azioni: m.azioni, ...m.costo });
+  const arbitroProve: ArbitroProve<DecisioneProva> | ArbitroProve<DecisioneRegole> | null =
     sost.arbitroProve !== undefined
       ? sost.arbitroProve
       : dadi.attivo && config.arbitro === 'haiku'
-        ? new ArbitroProveHaiku(() => (clientArbitro ??= creaClientAnthropic(config.llm.fileChiave, log.child({ modulo: 'arbitro' }))), {
-            modello: config.llm.modello,
-            log: log.child({ modulo: 'prove' }),
-            onMisura: (m) => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'arbitro_prove', modello: config.llm.modello, ms: m.ms, azioni: m.azioni, ...m.costo }),
-          })
+        ? generico
+          ? new ArbitroRegoleHaiku(regole, clientCondiviso, { modello: config.llm.modello, log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
+          : new ArbitroProveHaiku(clientCondiviso, { modello: config.llm.modello, log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
         : null;
-  log.info({ dadi: dadi.attivo, motivo: dadi.motivo, arbitro: arbitroProve ? 'haiku' : 'nessuno', seme_fisso: !!config.semeDadi }, 'PROVE E DADI');
+  log.info({ dadi: dadi.attivo, motivo: dadi.motivo, regole: regole.sistema.id, risoluzione: regole.sistema.risoluzione.tipo, arbitro: arbitroProve ? 'haiku' : 'nessuno', seme_fisso: !!config.semeDadi }, 'PROVE E DADI');
+  // «Chiedi una regola» dal telefono: Haiku sui soli testi del set (mai la campagna).
+  const risponditore = new RisponditoreRegole(regole, config.arbitro === 'haiku' ? clientCondiviso : null, {
+    modello: config.llm.modello,
+    log: log.child({ modulo: 'regole' }),
+    onCosto: (ms, costo) => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'regole_domanda', modello: config.llm.modello, ms, ...costo }),
+  });
 
   // drama-3 via OpenRouter (CANTASTORIE_VOCE=fish): voci dal registro, chiave letta al primo uso.
   const fish =
@@ -276,7 +292,14 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     cacheAudio: new CacheAudio(config.cacheAudio, config.voce.fish.cacheAudio),
     finestraATutti: config.turni.finestraATutti,
     arbitro,
-    prove: { schede, arbitro: arbitroProve, attivo: dadi.attivo, ...(config.semeDadi ? { seme: config.semeDadi } : {}), ...(sost.dadi ? { dadi: sost.dadi } : {}) },
+    prove: {
+      schede,
+      arbitro: arbitroProve,
+      attivo: dadi.attivo,
+      ...(schedeRegole ? { regole: { regole, schede: schedeRegole } } : {}),
+      ...(config.semeDadi ? { seme: config.semeDadi } : {}),
+      ...(sost.dadi ? { dadi: sost.dadi } : {}),
+    },
     scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),
     sistemaPer,
     scenaPubblicaPer: (c) => riassuntoPubblico(c, paroleSegrete),
@@ -287,6 +310,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
 
   let info = await creaInfoServer(config.porta, config.ipLan);
   collegaSocket(app.io, regia, () => info, log.child({ modulo: 'socket' }));
+  collegaRegole(app.io, regole, risponditore, log.child({ modulo: 'regole' }));
   // Pannello del master: stanza "master" col token (da configurazione, o nuovo a ogni avvio).
   const tokenMaster = config.tokenMaster ?? nuovoToken();
   const ciclo = new CicloSessioni({

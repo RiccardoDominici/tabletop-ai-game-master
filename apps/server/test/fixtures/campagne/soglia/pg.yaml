@@ -1,0 +1,90 @@
+situazione_comune: 'Viaggiate insieme verso la città: il guado del Vallone è l''unica strada.'
+personaggi:
+- id: pg_ida
+  nome: Ida Ferraro
+  pronomi: lei
+  specie: umana
+  classe: barda
+  livello: 1
+  aspetto: Umana con un liuto a tracolla e un cappello piumato.
+  concetto: Cantastorie di piazza che vive di parole. Convincere la gente è il suo mestiere.
+  aggancio: In città l'aspetta un ingaggio per il torneo.
+  cosa_sai_fare:
+  - parli bene e convinci
+  - suoni il liuto
+  - conosci le storie dei baroni
+  scheda:
+    caratteristiche:
+      forza: 40
+      destrezza: 60
+      potere: 55
+    abilita:
+      persuadere: 65
+      furtivita: 30
+      combattere: 30
+      osservare: 50
+    pf: 10
+    attacchi:
+    - nome: Stocco
+      danno: 1d6
+      abilita: combattere
+- id: pg_corrado
+  nome: Corrado Lanzi
+  pronomi: lui
+  specie: umano
+  classe: guerriero
+  livello: 1
+  aspetto: Umano dalle spalle larghe, una balestra a tracolla e un giaco di maglia.
+  concetto: Ex balestriere di una compagnia di ventura. Non ama chi fa il prepotente.
+  aggancio: Deve consegnare un messaggio in città entro domani.
+  cosa_sai_fare:
+  - tiri di balestra
+  - tieni la spada
+  - reggi la fatica
+  scheda:
+    caratteristiche:
+      forza: 70
+      destrezza: 55
+      potere: 45
+    abilita:
+      persuadere: 25
+      furtivita: 20
+      combattere: 60
+      osservare: 45
+    pf: 13
+    armatura: 2
+    attacchi:
+    - nome: Balestra
+      danno: 1d8
+      abilita: combattere
+    - nome: Spada
+      danno: 1d8
+      abilita: combattere
+- id: pg_teo
+  nome: Teo
+  pronomi: lui
+  specie: halfling
+  classe: ladro
+  livello: 1
+  aspetto: Halfling magro con un mantello grigio e le mani sempre in tasca.
+  concetto: Ladruncolo di città che si è messo in viaggio per sparire un po'.
+  aggancio: In città qualcuno gli deve dei soldi.
+  cosa_sai_fare:
+  - apri serrature
+  - ti muovi senza farti sentire
+  - sfili borse
+  scheda:
+    caratteristiche:
+      forza: 35
+      destrezza: 80
+      potere: 50
+    abilita:
+      persuadere: 40
+      furtivita: 70
+      combattere: 35
+      osservare: 60
+    pf: 9
+    attacchi:
+    - nome: Pugnale
+      danno: 1d4
+      abilita: combattere

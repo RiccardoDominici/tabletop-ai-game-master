@@ -1,0 +1,28 @@
+id: soglia
+canone:
+- id: f_pedaggio
+  noto_ai_pg: true
+  testo: Per passare il ponte si pagano due monete.
+- id: f_ponte_marcio
+  noto_ai_pg: true
+  testo: Il ponte di legno scricchiola e ha assi marce.
+- id: f_sgherro_pagato
+  noto_ai_pg: false
+  testo: Lo sgherro Ruggero è pagato dal barone per spaventare i viandanti.
+- id: f_lettera_barone
+  noto_ai_pg: false
+  testo: Nella cassetta del pedaggio c'è una lettera del barone che ordina di non far passare nessuno.
+orologi:
+- id: o_piena
+  nome: La piena del fiume
+  segmenti: 4
+  segno_almeno_ogni: 3
+  pieni_all_inizio: 0
+  segni:
+  - L'acqua sale di un palmo.
+  - I sassi del guado spariscono.
+  - Il ponte trema.
+  - La corrente porta via un albero.
+  al_completo: 'Il fiume rompe gli argini: il guado è chiuso fino a domani.'
+sessione:
+  riassunto_iniziale: Siete arrivati al guado del Vallone al tramonto.

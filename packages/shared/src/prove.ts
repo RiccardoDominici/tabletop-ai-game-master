@@ -67,7 +67,7 @@ export interface TiroMostrato {
   modificatore: number;
   totale: number;
   /** Il numero da raggiungere: CD (prove e salvezze) o CA (attacchi). */
-  contro: { tipo: 'CD' | 'CA'; valore: number; descrizione: string | null };
+  contro: { tipo: 'CD' | 'CA' | 'soglia' | 'fasce'; valore: number; descrizione: string | null };
   /** Bersaglio dell'attacco o dell'azione (PNG o PG), se c'è. */
   bersaglio: { id: string; nome: string } | null;
   riuscita: boolean;
@@ -82,6 +82,18 @@ export interface TiroMostrato {
   privata: boolean;
   /** Prova contrapposta tra due PG: il tiro dell'altro. */
   avversario: TiroAvversario | null;
+  /**
+   * Set di regole non SRD (docs/regole.md). Assenti = d20 contro CD o CA, come sempre.
+   * - `risoluzione`: come si è tirato; con '2d6_fasce' `dadi` sono i d6 e `dado` la loro somma; con
+   *   'sotto_soglia' `dado` è il tiro e `contro` la soglia da non superare (`contro.tipo` 'soglia').
+   * - `facce`: facce dei dadi in `dadi` (20 se assente).
+   * - `grado`: l'esito a gradi del manuale («Successo con un costo», «Successo difficile»).
+   */
+  risoluzione?: 'd20_cd' | '2d6_fasce' | 'sotto_soglia';
+  facce?: number;
+  grado?: { id: 'successo' | 'parziale' | 'fallimento' | 'critico' | 'disastro'; nome: string } | null;
+  /** La regola applicata, in parole: «Persuasione: Carisma + competenza, CD 15», «2d6+Fascino: 7–9». */
+  regola?: string;
 }
 
 /** Punti ferita attuali e massimi (PG sul telefono; PNG solo nel pannello del master). */

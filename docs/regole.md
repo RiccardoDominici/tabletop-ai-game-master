@@ -1,0 +1,180 @@
+# Set di regole delle campagne
+
+Richiesta di Riccardo: l'utente può mettere il suo manuale di regole in una cartella del progetto. Il manuale è
+facoltativo: senza, vale l'SRD 5.2. Quando si crea una campagna si crea anche un set di regole ricavato dal manuale,
+e la partita lo usa ogni volta. Così «la gente capisce le regole».
+
+In breve:
+- `manuali/` contiene il manuale (PDF, md, txt) e non entra mai in git.
+- `campagne/<id>/regole/` contiene il set: `regole.yaml` (la struttura), `riassunto.md` (per i giocatori) e
+  `estratti/*.md` (passi del manuale da consultare).
+- Il Motore tira con il set.
+- L'arbitro decide con il vocabolario del manuale, e riceve solo i passi pertinenti all'azione.
+- La carta mostra la regola applicata.
+- Il telefono ha la scheda «Regole» e «Chiedi una regola».
+
+## 1. Dove sta cosa
+
+| Percorso | Chi lo scrive | In git |
+|---|---|---|
+| `manuali/<file>.pdf|.md|.txt` | l'utente | **mai** (`manuali/` nel .gitignore della radice) |
+| `campagne/<id>/regole/regole.yaml` | la skill Preparatore, dal testo estratto del manuale | solo se `licenza.libera: true` |
+| `campagne/<id>/regole/riassunto.md` | la skill (≤ 400 parole, per i giocatori) | come sopra |
+| `campagne/<id>/regole/estratti/<id>.md` | la skill (passi del manuale, ≤ 12 righe ciascuno) | come sopra |
+| `assets/regole/srd-5.2/` | il codice (riassunto e passi dell'SRD 5.2, CC-BY-4.0) | sì |
+
+**Senza `regole/regole.yaml`** la campagna gioca con l'SRD 5.2 del codice (apps/server/src/regole/srd.ts). Riassunto e
+passi vengono da `assets/regole/srd-5.2/`. Anche le campagne di oggi giocano così, identiche a prima.
+- **Con `id: srd-5.2`** vale lo stesso, ma riassunto ed estratti della campagna prendono il posto di quelli dell'SRD.
+- **Un `regole.yaml` rotto** non ferma la sessione: l'errore va nel log («set non valido, si gioca con l'SRD 5.2») e
+  si torna all'SRD.
+
+**Licenza.** Un set ricavato da un manuale non libero (`licenza.libera: false`) resta su questo computer.
+- Il caricatore scrive `regole/.gitignore` con `*`.
+- Il test `apps/server/test/regole-integrazione.test.ts` fallisce se un `regole.yaml` tracciato da git ha
+  `libera: false`, oppure se manca `manuali/` nel .gitignore.
+- I passi di un manuale non libero sono citazioni brevi, per uso personale; non si pubblicano.
+
+## 2. regole.yaml: lo schema (per il validatore e per la skill)
+
+```yaml
+id: due-sei-mondo            # [V] minuscole, cifre, - e .; «srd-5.2» = l'SRD del codice
+nome: "Mondo a 2d6"          # [V] come lo vedono i giocatori
+fonte:
+  titolo: "…"                # [V] titolo del manuale
+  autore: "…"                # facoltativo
+  file: "manuali/mondo.pdf"  # facoltativo: da dove è stato estratto
+licenza:
+  nome: "CC-BY-4.0"          # [V] o «proprietaria», «CC0», …
+  libera: true               # [V] booleano; false = il set non va nel repository
+  attribuzione: "…"          # facoltativa: va nei crediti e nella scheda «Regole»
+risoluzione:
+  tipo: d20_cd | 2d6_fasce | sotto_soglia   # [V]
+  # d20_cd:       dado: 20
+  # 2d6_fasce:    dadi: 2; fasce dalla più alta, min incluso, l'ultima con min vuoto
+  fasce:
+    - {min: 10, esito: successo, nome: "Successo pieno"}
+    - {min: 7, esito: parziale, nome: "Successo con un costo"}
+    - {min: null, esito: fallimento, nome: "Fallimento"}
+  # sotto_soglia: dado: 20 | 100 [V]; facoltativi critico (≤ questo), disastro (≥ questo), gradi
+  dado: 100
+  critico: 1
+  disastro: 100
+  gradi: [{divisore: 5, nome: "Successo estremo"}, {divisore: 2, nome: "Successo difficile"}]
+caratteristiche:              # [V] almeno una; id snake_case senza accenti, unici
+  - {id: fascino, nome: "Fascino"}
+abilita:                      # facoltative; caratteristica = id esistente [V]
+  - {id: persuadere, nome: "Persuadere", caratteristica: potere}
+modificatore:
+  tipo: srd | diretto | soglia # [V] srd = (p−10)/2; diretto = il valore è il bonus; soglia = solo con sotto_soglia [V]
+difficolta:                   # [V] d20_cd: valore (la CD) obbligatorio; sotto_soglia: divisore (1 = normale);
+  - {id: normale, nome: "Normale", modificatore: 0}          #     2d6_fasce: modificatore al tiro (0 se manca)
+  - {id: rischiosa, nome: "Rischiosa", modificatore: -1}
+difficolta_predefinita: normale   # [V] tra le difficoltà; se manca, quella di mezzo
+vantaggio:
+  tipo: due_dadi | dado_bonus | bonus | nessuno   # [V] due_dadi: si tira un dado in più (d20: il migliore;
+  valore: 1                                        #   2d6: si tengono i due migliori; sotto soglia: il più basso)
+                                                   #   dado_bonus: solo d100, un dado delle decine in più
+                                                   #   bonus: ± valore al tiro
+attacchi:
+  tipo: prova | automatico   # prova: si tira con l'abilità/caratteristica dell'arma (d20_cd contro la difesa
+  armatura_riduce: true      #   del bersaglio); automatico: colpisce sempre, si tira solo il danno
+  parziale: scambio          # 2d6: con un successo parziale anche il bersaglio colpisce
+danni: {nome: "Ferite", a_zero: "Fuori gioco: …"}
+condizioni: [{id, nome, effetto}]          # testo per narratore e riassunto
+sociale:                                    # che cosa si tira per convincere un PNG, se l'arbitro non lo dice
+  caratteristica: fascino                   # [V] esistente
+  abilita: persuadere                       # [V] esistente
+  nota: "Per convincere si usa la mossa Convincere."   # la legge l'arbitro
+mosse:                                      # facoltative (giochi alla PbtA)
+  - id: convincere                          # [V]
+    nome: "Convincere qualcuno"
+    quando: "quando cerchi di convincere un PNG con parole, promesse o minacce"   # la legge l'arbitro
+    caratteristica: fascino                 # [V] esistente
+    esiti: {successo: "…", parziale: "…", fallimento: "…"}   # [V] successo e fallimento obbligatori
+sottosistemi: [{id, nome, testo}]           # altro (magia, sanità…): solo testo, per ora
+```
+
+### Schede di PG e PNG per un set non SRD
+Le schede stanno negli stessi posti delle schede SRD: `pg.yaml → personaggi[].scheda` e `png/<id>.yaml → scheda`. I
+valori seguono il set, non più le sei caratteristiche di D&D:
+
+```yaml
+scheda:
+  caratteristiche: {fascino: 2, vigore: -1, …}  # [V] tutte e sole quelle del set; interi
+  abilita: {persuadere: 65}                     # facoltative, id del set: bonus (d20, 2d6) o soglia (sotto_soglia)
+  pf: 6                                         # [V] > 0 (si chiamano come danni.nome)
+  difesa: 13                                    # d20_cd: la CA del bersaglio; senza, CD della difficoltà predefinita
+  armatura: 1                                   # con armatura_riduce: si toglie dal danno subito
+  attacchi: [{nome: "Spada", danno: "1d8", caratteristica: vigore}]   # oppure abilita: combattere
+```
+
+Con l'SRD 5.2 le schede restano quelle di docs/prove.md §2 (punteggi, competenze, CA calcolata).
+
+**Prove della scena** con un set non SRD, in `scena.yaml → prove`:
+`{id: p_…, quando, mossa | abilita | caratteristica (id del set), difficolta (id del set), se_fallisce}`.
+
+**Repertorio.** `richiede.prova` con un set non SRD per ora accetta `prova`, `attacco`, `salvezza` o un id `p_…`. Gli
+id delle mosse e delle abilità del set non sono ancora riconosciuti dal caricatore (vedi §6).
+
+### riassunto.md e estratti/
+- **riassunto.md**: al massimo 400 parole, per i giocatori. Dice come si tira, cosa vogliono dire i risultati, le mosse
+  o le abilità principali, il combattimento e cosa fa il vantaggio. Usa solo titoli `#`/`##`, elenchi `-` e
+  **grassetto**: il telefono lo mostra così, senza HTML.
+- **estratti/<id>.md**: un passo per regola, al massimo 12 righe, con l'intestazione:
+  ```
+  ---
+  titolo: "Convincere qualcuno"
+  parole: [convincere, persuadere, promettere, minacciare]   # [V] almeno una: è così che lo si trova
+  pagina: 34                                                  # facoltativa
+  ---
+  Quando cerchi di convincere un PNG, tira 2d6+Fascino. Con 10+ …
+  ```
+  Le `parole` contano più del testo. La ricerca è per radici di cinque lettere: «convinco» trova «convincere».
+  Quindi vanno messi i verbi che i giocatori scrivono nelle azioni.
+
+## 3. Motore (apps/server/src/regole/, prove/risolutore-regole.ts)
+
+- **SRD 5.2**: tutto com'era (prove/risolutore.ts e arbitro-haiku.ts). La suite resta verde.
+- **Set non SRD**: `MotoreProve` passa a `risolviTurnoRegole`. Le schede sono quelle del set
+  (regole/schede.ts) e i tiri escono da regole/risoluzione.ts:
+  - `d20_cd`: d20 + modificatore (caratteristica col tipo del set + bonus dell'abilità) contro la CD della difficoltà.
+  - `2d6_fasce`: 2d6 + statistica della mossa, o della caratteristica o abilità, + la difficoltà, e la fascia
+    corrispondente. Con una mossa, il fatto per il narratore porta l'esito scritto nel manuale.
+  - `sotto_soglia`: d20 o d100 ≤ soglia ÷ divisore della difficoltà. Il risultato ha un grado (estremo, difficile),
+    oppure critico o disastro.
+  - **Attacchi**: `prova` tira e, se riesce, applica il danno meno l'armatura; con un 2d6 parziale e `parziale:
+    scambio` colpisce anche il bersaglio. `automatico` applica solo il danno.
+- **Carta**: i campi in più sono `risoluzione`, `facce`, `grado` e `regola`. `regola` è la regola applicata, in parole:
+  «2d6+2 (Fascino, Convincere qualcuno): 7–9, successo con un costo», «Persuadere 65%: d100 difficile, serve 32 o
+  meno».
+
+## 4. Arbitro (prove/arbitro-regole.ts)
+
+- **Prompt di sistema**, in cache per tutta la sessione: la regola d'oro, gli elenchi del set (caratteristiche,
+  abilità, mosse col loro `quando`, difficoltà), la nota sociale e il riassunto, tagliato a 2500 caratteri.
+- **Messaggio**: solo i passi pertinenti alle azioni (al massimo tre, otto righe ciascuno, trovati per parole chiave),
+  più personaggi, prove della scena e azioni, come per l'SRD.
+- **Schema**: le enum sono gli id del set, quindi il modello non può inventare un'abilità.
+- **Normalizzazione**: il Motore scarta ciò che non torna con i dati, come per l'SRD.
+
+## 5. Far capire le regole (telefono)
+
+- **Scheda «Regole»** (`regole:leggi`): nome del set, fonte, licenza e attribuzione, e `riassunto.md`.
+- **«Chiedi una regola»** (`regole:chiedi`): la risposta arriva solo a chi ha chiesto, nell'ack dell'evento. La dà
+  Haiku (regole/chiedi.ts) in al massimo ottanta parole.
+  - Il contesto contiene solo il riassunto e i passi trovati per la domanda: niente scene, PNG o segreti della
+    campagna.
+  - Una domanda alla volta per telefono, una ogni 4 s.
+  - Senza modello (narratore a copione) la casella non c'è (`domande: false`).
+
+## 6. Aperto
+
+- **Skill e validatore** (agente haiku): estrarre il testo del manuale da `manuali/`, scrivere il set con questo
+  schema, aggiungere i controlli `[V]` a `valida_campagna.py`, e generare le schede col vocabolario del set.
+  Per l'SRD basta non scrivere `regole/`.
+- **Narratore**: oggi riceve gli esiti come fatti, con la regola, ma non il riassunto del set. Per i giochi molto
+  diversi (sanità, condizioni) servirebbe un blocco di regole nel suo contesto.
+- **Repertorio**: `richiede.prova` con gli id del set (mosse, abilità).
+- **Condizioni e sottosistemi** sono solo testo; il Motore non li applica ancora.
+- **Prove contrapposte e tiri salvezza** in un set non SRD diventano prove normali.

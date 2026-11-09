@@ -1,0 +1,115 @@
+/**
+ * Set di regole di una campagna (docs/regole.md): campagne/<id>/regole/regole.yaml, ricavato dal
+ * manuale dell'utente (manuali/, mai nel repository) o, senza manuale, l'SRD 5.2 prodotto dal codice.
+ *
+ * Il Motore lo usa per tirare (risoluzione, caratteristiche, modificatori, difficoltà, vantaggio,
+ * attacchi, danni); l'arbitro per decidere che cosa si tira col vocabolario del manuale; il telefono
+ * per far capire le regole (riassunto.md, «Chiedi una regola» sui passi in estratti/).
+ */
+import type { TipoRisoluzione } from '@cantastorie/shared';
+import type { FormulaDadi } from '../campagna/regole-srd';
+
+export interface Voce {
+  id: string;
+  nome: string;
+}
+
+export interface Fascia {
+  /** Totale minimo, incluso; null = tutto il resto (la fascia più bassa). */
+  min: number | null;
+  esito: 'successo' | 'parziale' | 'fallimento';
+  nome: string;
+}
+
+export interface Difficolta extends Voce {
+  /** d20_cd: la CD. */
+  valore: number | null;
+  /** sotto_soglia: la soglia si divide per questo (difficile = 2, estrema = 5). */
+  divisore: number | null;
+  /** 2d6_fasce: si somma al tiro (rischiosa = −1). */
+  modificatore: number | null;
+}
+
+/** Gradi di successo di un tiro sotto soglia (d100: estremo = un quinto, difficile = metà). */
+export interface Grado {
+  divisore: number;
+  nome: string;
+}
+
+export interface Mossa extends Voce {
+  /** Quando si usa, in parole (la vede l'arbitro). */
+  quando: string;
+  caratteristica: string;
+  esiti: { successo: string; parziale: string | null; fallimento: string };
+}
+
+export interface SistemaRegole {
+  id: string;
+  nome: string;
+  /** L'SRD 5.2 del codice (prove/risolutore.ts) invece del motore generico. */
+  srd: boolean;
+  fonte: { titolo: string; autore: string | null; file: string | null };
+  licenza: { nome: string; libera: boolean; attribuzione: string | null };
+  risoluzione: {
+    tipo: TipoRisoluzione;
+    /** Facce del dado: 20 (d20_cd, sotto_soglia d20), 100 (sotto_soglia d100), 6 (2d6_fasce). */
+    facce: number;
+    /** Quanti dadi si sommano (2 per 2d6_fasce, 1 altrimenti). */
+    numero: number;
+    fasce: Fascia[];
+    gradi: Grado[];
+    /** sotto_soglia: questo tiro o meno è un critico; questo o più un disastro. */
+    critico: number | null;
+    disastro: number | null;
+  };
+  caratteristiche: Voce[];
+  abilita: Array<Voce & { caratteristica: string | null }>;
+  /** Come il valore di una caratteristica entra nel tiro. */
+  modificatore: 'srd' | 'diretto' | 'soglia';
+  difficolta: Difficolta[];
+  difficoltaPredefinita: string;
+  vantaggio: { tipo: 'due_dadi' | 'dado_bonus' | 'bonus' | 'nessuno'; valore: number };
+  attacchi: { tipo: 'prova' | 'automatico'; armaturaRiduce: boolean; parzialeScambio: boolean };
+  danni: { nome: string; aZero: string };
+  condizioni: Array<Voce & { effetto: string }>;
+  sociale: { caratteristica: string | null; abilita: string | null; nota: string | null };
+  mosse: Mossa[];
+  sottosistemi: Array<Voce & { testo: string }>;
+}
+
+/** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
+export interface Estratto {
+  id: string;
+  titolo: string;
+  parole: string[];
+  pagina: string | null;
+  testo: string;
+}
+
+/** Il set caricato, con i testi per i giocatori. */
+export interface RegoleCampagna {
+  sistema: SistemaRegole;
+  riassunto: string;
+  estratti: Estratto[];
+  /** Cartella del set (null = SRD del codice, senza cartella nella campagna). */
+  cartella: string | null;
+  avvisi: string[];
+}
+
+/** Scheda di un PG o PNG per un set non SRD: i valori seguono le caratteristiche del set. */
+export interface SchedaGenerica {
+  id: string;
+  nome: string;
+  di_png: boolean;
+  /** id della caratteristica → valore (bonus, punteggio o soglia, secondo `modificatore`). */
+  caratteristiche: Record<string, number>;
+  /** id dell'abilità → bonus (d20, 2d6) o soglia (sotto_soglia). */
+  abilita: Record<string, number>;
+  pf_massimi: number;
+  /** d20_cd: la CA; altrimenti null. */
+  difesa: number | null;
+  /** Attacchi automatici: riduce il danno subito. */
+  armatura: number;
+  attacchi: Array<{ id: string; nome: string; danno: FormulaDadi; caratteristica: string | null; abilita: string | null; tipo_danno: string | null }>;
+  avvisi: string[];
+}

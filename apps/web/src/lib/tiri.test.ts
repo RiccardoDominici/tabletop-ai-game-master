@@ -8,17 +8,24 @@ import {
   conSegno,
   contoTiro,
   descriviTiro,
+  esitoDaGrado,
   esitoTiro,
+  facceDi,
   facciaCasuale,
+  facciaNelRange,
   giaVisibile,
   indiceDadoScartato,
   livelloPf,
   passoAnimazione,
+  risoluzioneDi,
   sommaDanno,
+  testoBersaglioCarta,
   testoContro,
   testoCosa,
   testoDanno,
   testoPf,
+  testoRegola,
+  testoTiroSottoSoglia,
   testoVantaggio,
   tipoDannoPlurale,
   tiriPubbliciSenzaMiei,
@@ -159,6 +166,86 @@ describe('testi della carta', () => {
       'Corrado, Balestra leggera contro il goblin: 20 + 5 = 25 contro CA 13. Colpo critico. ' +
         'Danni 2d8+3: 6 + 4 + 3 = 13 perforanti. Il goblin è a terra.',
     );
+  });
+});
+
+describe('risoluzioni nuove (2d6 a fasce, sotto soglia)', () => {
+  const fasce = tiro({
+    risoluzione: '2d6_fasce',
+    facce: 6,
+    dadi: [4, 3],
+    dado: 7,
+    modificatore: 1,
+    totale: 8,
+    contro: { tipo: 'fasce', valore: 7, descrizione: '7–9' },
+    grado: { id: 'parziale', nome: 'Successo con un costo' },
+    regola: '2d6+Fascino: 7–9, successo con un costo',
+  });
+  const sottoSoglia = tiro({
+    risoluzione: 'sotto_soglia',
+    facce: 100,
+    dadi: [23],
+    dado: 23,
+    modificatore: 0,
+    totale: 23,
+    contro: { tipo: 'soglia', valore: 45, descrizione: null },
+    grado: { id: 'successo', nome: 'Successo difficile' },
+  });
+
+  it('senza risoluzione vale il d20 contro CD, come prima', () => {
+    expect(risoluzioneDi(tiro())).toBe('d20_cd');
+    expect(facceDi(tiro())).toBe(20);
+    expect(facceDi(tiro({ facce: 100 }))).toBe(100);
+    expect(testoBersaglioCarta(tiro())).toBe('CD 15');
+    expect(indiceDadoScartato(tiro({ risoluzione: '2d6_fasce', dadi: [3, 4], dado: 7 }))).toBeNull();
+  });
+
+  it('il posto della CD nel 2d6 è il nome della fascia', () => {
+    expect(risoluzioneDi(fasce)).toBe('2d6_fasce');
+    expect(testoBersaglioCarta(fasce)).toBe('Successo con un costo');
+    expect(indiceDadoScartato(fasce)).toBeNull();
+  });
+
+  it('esito del 2d6 dal grado: colore per id, parola breve', () => {
+    expect(esitoTiro(fasce)).toMatchObject({ testo: 'Parziale', tono: 'pari', speciale: false });
+    expect(esitoTiro(tiro({ ...fasce, grado: { id: 'successo', nome: 'Successo pieno' } }))).toMatchObject({ testo: 'Riuscita', tono: 'buono' });
+    expect(esitoTiro(tiro({ ...fasce, grado: { id: 'fallimento', nome: 'Fallimento' } }))).toMatchObject({ testo: 'Fallita', tono: 'cattivo' });
+  });
+
+  it('esito sotto soglia: nome del grado, critico con stella, disastro in brace', () => {
+    expect(esitoTiro(sottoSoglia)).toMatchObject({ testo: 'Successo difficile', tono: 'buono', simbolo: '✔', speciale: false });
+    expect(esitoDaGrado({ id: 'critico', nome: 'Successo critico' }, 'sotto_soglia')).toMatchObject({
+      testo: 'Successo critico',
+      tono: 'buono',
+      simbolo: '★',
+      speciale: true,
+    });
+    expect(esitoDaGrado({ id: 'disastro', nome: 'Disastro' }, 'sotto_soglia')).toMatchObject({ tono: 'cattivo', simbolo: '★', speciale: true });
+    expect(esitoDaGrado({ id: 'fallimento', nome: 'Fallimento' }, 'sotto_soglia')).toMatchObject({ testo: 'Fallimento', tono: 'cattivo' });
+  });
+
+  it('sotto soglia: «tiro 23 ≤ 45?»', () => {
+    expect(testoTiroSottoSoglia(sottoSoglia)).toBe('tiro 23 ≤ 45?');
+    expect(testoContro(sottoSoglia)).toBe('soglia 45');
+  });
+
+  it('il valore del giro si riporta nel range del dado', () => {
+    expect(facciaNelRange(17, 6)).toBe(5);
+    expect(facciaNelRange(6, 6)).toBe(6);
+    expect(facciaNelRange(7, 6)).toBe(1);
+    expect(facciaNelRange(13, 20)).toBe(13);
+    expect(facciaNelRange(3, 0)).toBe(3);
+  });
+
+  it('riga della regola: assente o vuota non si mostra', () => {
+    expect(testoRegola(fasce)).toBe('Regola: 2d6+Fascino: 7–9, successo con un costo');
+    expect(testoRegola(sottoSoglia)).toBeNull();
+    expect(testoRegola(tiro({ regola: '   ' }))).toBeNull();
+  });
+
+  it('descrizione intera per lettori di schermo e log', () => {
+    expect(descriviTiro(fasce)).toBe('Arianna, Persuasione (Carisma): 4 + 3 +1 = 8 contro Successo con un costo. Parziale.');
+    expect(descriviTiro(sottoSoglia)).toBe('Arianna, Persuasione (Carisma): tiro 23 ≤ 45. Successo difficile.');
   });
 });
 

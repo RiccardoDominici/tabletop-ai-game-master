@@ -1,0 +1,62 @@
+id: percentuali-prova
+nome: Percentuali (set di prova)
+fonte:
+  titolo: Set di prova di Cantastorie, scritto per i test
+  autore: Cantastorie
+licenza:
+  nome: CC0
+  libera: true
+risoluzione:
+  tipo: sotto_soglia
+  dado: 100
+  critico: 1
+  disastro: 100
+  gradi:
+  - divisore: 5
+    nome: Successo estremo
+  - divisore: 2
+    nome: Successo difficile
+caratteristiche:
+- id: forza
+  nome: Forza
+- id: destrezza
+  nome: Destrezza
+- id: potere
+  nome: Potere
+abilita:
+- id: persuadere
+  nome: Persuadere
+  caratteristica: potere
+- id: furtivita
+  nome: Furtività
+  caratteristica: destrezza
+- id: combattere
+  nome: Combattere
+  caratteristica: forza
+- id: osservare
+  nome: Osservare
+  caratteristica: potere
+modificatore:
+  tipo: soglia
+difficolta:
+- id: normale
+  nome: Normale
+  divisore: 1
+- id: difficile
+  nome: Difficile
+  divisore: 2
+- id: estrema
+  nome: Estrema
+  divisore: 5
+difficolta_predefinita: normale
+vantaggio:
+  tipo: dado_bonus
+attacchi:
+  tipo: prova
+  armatura_riduce: true
+danni:
+  nome: Punti ferita
+  a_zero: Privo di sensi o morente.
+sociale:
+  abilita: persuadere
+  nota: Convincere è una prova di Persuadere; un PNG ostile la rende difficile.

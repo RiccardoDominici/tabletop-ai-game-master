@@ -7,7 +7,7 @@
  * Android, `interactive-widget=resizes-content`) il pannello resta sopra la tastiera.
  * Il banner di connessione è nel flusso, sopra tutto: non copre l'intestazione.
  */
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import type { StatoTavolo } from '@cantastorie/shared';
 import { BannerConnessione } from '../components/BannerConnessione';
 import { Avvisi } from '../components/Avvisi';
@@ -20,6 +20,7 @@ import { BannerStato } from './BannerStato';
 import { Trascrizione } from './Trascrizione';
 import { CasellaAzione } from './CasellaAzione';
 import { SchedaPersonaggio } from './SchedaPersonaggio';
+import { Regole } from './Regole';
 import { AlTavolo } from './AlTavolo';
 import { SceltaAzione } from './SceltaAzione';
 import { TiriTurno } from './TiriTurno';
@@ -89,6 +90,7 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
   const apriScelta = useTelefono((s) => s.apriScelta);
   const apriScheda = useTelefono((s) => s.apriScheda);
   const haScheda = useTelefono((s) => s.scheda?.id_pg === idPg);
+  const [regoleAperte, setRegoleAperte] = useState(false);
 
   return (
     <div className="mx-auto flex h-full max-w-2xl flex-col">
@@ -98,6 +100,14 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
         <div className="flex items-center gap-2">
           <p className="min-w-0 flex-1 text-xs tracking-[0.18em] text-cenere uppercase">Giochi come</p>
           <AscoltaQui />
+          <button
+            type="button"
+            onClick={() => setRegoleAperte(true)}
+            data-testid="apri-regole"
+            className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-4 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
+          >
+            Regole
+          </button>
           {haScheda && (
             <button
               type="button"
@@ -136,6 +146,7 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
         <CasellaAzione stato={stato} />
       </section>
       <SchedaPersonaggio />
+      <Regole aperta={regoleAperte} onChiudi={() => setRegoleAperte(false)} />
       <SceltaAzione />
     </div>
   );

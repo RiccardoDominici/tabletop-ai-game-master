@@ -17,3 +17,6 @@ esperimenti/audio/*.wav
 
 # Lock del manifest delle immagini (strumenti/immagini/manifest.py): scritture di più processi.
 manifest.json.lock
+
+# Manuali di regole dell'utente (docs/regole.md): spesso sotto copyright, mai nel repository.
+manuali/

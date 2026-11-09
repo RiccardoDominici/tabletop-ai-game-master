@@ -1,0 +1,78 @@
+situazione_comune: 'Viaggiate insieme verso la città: il guado del Vallone è l''unica strada.'
+personaggi:
+- id: pg_ida
+  nome: Ida Ferraro
+  pronomi: lei
+  specie: umana
+  classe: barda
+  livello: 1
+  aspetto: Umana con un liuto a tracolla e un cappello piumato.
+  concetto: Cantastorie di piazza che vive di parole. Convincere la gente è il suo mestiere.
+  aggancio: In città l'aspetta un ingaggio per il torneo.
+  cosa_sai_fare:
+  - parli bene e convinci
+  - suoni il liuto
+  - conosci le storie dei baroni
+  scheda:
+    caratteristiche:
+      vigore: -1
+      astuzia: 1
+      fascino: 2
+      sangue_freddo: 0
+    pf: 6
+    attacchi:
+    - nome: Stocco
+      danno: 1d6
+      caratteristica: vigore
+- id: pg_corrado
+  nome: Corrado Lanzi
+  pronomi: lui
+  specie: umano
+  classe: guerriero
+  livello: 1
+  aspetto: Umano dalle spalle larghe, una balestra a tracolla e un giaco di maglia.
+  concetto: Ex balestriere di una compagnia di ventura. Non ama chi fa il prepotente.
+  aggancio: Deve consegnare un messaggio in città entro domani.
+  cosa_sai_fare:
+  - tiri di balestra
+  - tieni la spada
+  - reggi la fatica
+  scheda:
+    caratteristiche:
+      vigore: 2
+      astuzia: 0
+      fascino: -1
+      sangue_freddo: 1
+    pf: 8
+    armatura: 1
+    attacchi:
+    - nome: Balestra
+      danno: 1d8
+      caratteristica: sangue_freddo
+    - nome: Spada
+      danno: 1d8
+      caratteristica: vigore
+- id: pg_teo
+  nome: Teo
+  pronomi: lui
+  specie: halfling
+  classe: ladro
+  livello: 1
+  aspetto: Halfling magro con un mantello grigio e le mani sempre in tasca.
+  concetto: Ladruncolo di città che si è messo in viaggio per sparire un po'.
+  aggancio: In città qualcuno gli deve dei soldi.
+  cosa_sai_fare:
+  - apri serrature
+  - ti muovi senza farti sentire
+  - sfili borse
+  scheda:
+    caratteristiche:
+      vigore: 0
+      astuzia: 2
+      fascino: 0
+      sangue_freddo: 1
+    pf: 6
+    attacchi:
+    - nome: Pugnale
+      danno: 1d4
+      caratteristica: sangue_freddo

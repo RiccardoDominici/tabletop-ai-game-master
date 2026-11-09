@@ -15,6 +15,7 @@
  */
 import type { AzionePrivata, MisureTurno, SchedaPg, StatoTavolo } from './dominio';
 import type { ComandoMaster, EsitoEntrataMaster, StatoMaster } from './master';
+import type { RegolePubbliche, RispostaRegola } from './regole';
 
 /** Risposta standard agli eventi con conferma (ack). */
 export type Esito = { ok: true } | { ok: false; errore: string };
@@ -177,6 +178,10 @@ export interface EventiClientVersoServer {
   'azione:ritira': (dati: { id_pg: string }, ack: (esito: Esito) => void) => void;
   /** Risincronizzazione: risponde con lo stato corrente. */
   'stato:richiedi': (ack: (stato: StatoTavolo) => void) => void;
+  /** Telefono: il set di regole della campagna (scheda «Regole», docs/regole.md). */
+  'regole:leggi': (ack: (regole: RegolePubbliche) => void) => void;
+  /** Telefono: «Chiedi una regola». La risposta va solo a chi chiede (ack), presa dai passi del manuale. */
+  'regole:chiedi': (dati: { domanda: string }, ack: (risposta: RispostaRegola) => void) => void;
 
   /** Schermo: osserva il tavolo (stato, QR) prima di «Inizia sessione». */
   'schermo:osserva': (ack: (risposta: { stato: StatoTavolo; info: InfoServer }) => void) => void;

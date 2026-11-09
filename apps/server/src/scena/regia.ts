@@ -81,7 +81,8 @@ import { sezioneRitmo } from '../narrazione/ritmo';
 import type { Ritmo } from '../azioni/tipi';
 import { sezioneNoteRegia } from '../narrazione/messaggio';
 import { MotoreProve, type AzionePerProve } from '../prove/motore';
-import type { ArbitroProve, EsitoTurnoProve } from '../prove/tipi';
+import type { ArbitroProve, DecisioneProva, DecisioneRegole, EsitoTurnoProve } from '../prove/tipi';
+import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
 import type { FonteDadi } from '../prove/dadi';
 import { REGOLA_ESITI, TITOLO_ESITI } from '../prove/testi';
 import { guardiaPrivate } from '../narrazione/privato';
@@ -135,7 +136,16 @@ export interface OpzioniRegia {
    * (schede presenti e niente `regole.dadi: false`), seme fisso o dadi finti per i test.
    * Assente = come prima: nessun tiro, il narratore risolve con «sì, ma».
    */
-  prove?: { schede: ReadonlyMap<string, SchedaNumerica>; arbitro: ArbitroProve | null; attivo: boolean; seme?: string; dadi?: FonteDadi; attesaMaxMs?: number };
+  prove?: {
+    schede: ReadonlyMap<string, SchedaNumerica>;
+    arbitro: ArbitroProve<DecisioneProva> | ArbitroProve<DecisioneRegole> | null;
+    attivo: boolean;
+    /** Set di regole non SRD con le sue schede (docs/regole.md); assente = SRD 5.2. */
+    regole?: { regole: RegoleCampagna; schede: ReadonlyMap<string, SchedaGenerica> };
+    seme?: string;
+    dadi?: FonteDadi;
+    attesaMaxMs?: number;
+  };
   /** Riassunto pubblico della scena per l'arbitro. */
   scenaPubblica?: string;
   /**
@@ -427,6 +437,7 @@ export class Regia {
           ...(po.seme ? { seme: po.seme } : {}),
           ...(po.dadi ? { dadi: po.dadi } : {}),
           ...(po.attesaMaxMs !== undefined ? { attesaMaxMs: po.attesaMaxMs } : {}),
+          ...(po.regole ? { regole: po.regole } : {}),
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');

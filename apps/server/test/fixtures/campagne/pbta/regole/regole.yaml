@@ -1,0 +1,86 @@
+id: due-sei-prova
+nome: Mondo a 2d6 (set di prova)
+fonte:
+  titolo: Set di prova di Cantastorie, scritto per i test
+  autore: Cantastorie
+licenza:
+  nome: CC0
+  libera: true
+risoluzione:
+  tipo: 2d6_fasce
+  dadi: 2
+  fasce:
+  - min: 10
+    esito: successo
+    nome: Successo pieno
+  - min: 7
+    esito: parziale
+    nome: Successo con un costo
+  - min: null
+    esito: fallimento
+    nome: Fallimento
+caratteristiche:
+- id: vigore
+  nome: Vigore
+- id: astuzia
+  nome: Astuzia
+- id: fascino
+  nome: Fascino
+- id: sangue_freddo
+  nome: Sangue freddo
+modificatore:
+  tipo: diretto
+difficolta:
+- id: normale
+  nome: Normale
+  modificatore: 0
+- id: rischiosa
+  nome: Rischiosa
+  modificatore: -1
+difficolta_predefinita: normale
+vantaggio:
+  tipo: bonus
+  valore: 1
+attacchi:
+  tipo: prova
+  parziale: scambio
+  armatura_riduce: true
+danni:
+  nome: Ferite
+  a_zero: 'Fuori gioco: non agisce finché qualcuno non lo rimette in piedi.'
+sociale:
+  caratteristica: fascino
+  nota: Per convincere un PNG si usa la mossa Convincere.
+mosse:
+- id: convincere
+  nome: Convincere qualcuno
+  quando: quando cerchi di convincere un PNG con le parole, una promessa o una minaccia
+  caratteristica: fascino
+  esiti:
+    successo: il PNG fa ciò che chiedi.
+    parziale: il PNG lo fa, ma vuole qualcosa in cambio, subito.
+    fallimento: il PNG rifiuta, e la situazione peggiora.
+- id: agire_sotto_pressione
+  nome: Agire sotto pressione
+  quando: 'quando fai qualcosa di rischioso mentre il pericolo incombe: arrampicarsi, guadare, scassinare in fretta'
+  caratteristica: sangue_freddo
+  esiti:
+    successo: ce la fai.
+    parziale: ce la fai, ma con un prezzo o una scelta difficile.
+    fallimento: non ce la fai, e succede qualcosa di brutto.
+- id: menare_le_mani
+  nome: Menare le mani
+  quando: quando attacchi qualcuno in mischia o a distanza
+  caratteristica: vigore
+  esiti:
+    successo: colpisci e scegli dove.
+    parziale: colpisci, ma anche lui colpisce te.
+    fallimento: manchi e sei esposto.
+- id: leggere_la_situazione
+  nome: Leggere la situazione
+  quando: quando osservi con attenzione un luogo o una persona per capire cosa sta succedendo
+  caratteristica: astuzia
+  esiti:
+    successo: fai tre domande al narratore.
+    parziale: fai una domanda.
+    fallimento: ti sfugge qualcosa di importante.

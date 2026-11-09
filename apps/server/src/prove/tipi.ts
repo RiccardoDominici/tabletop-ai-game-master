@@ -45,6 +45,18 @@ export interface DecisioneProva {
   reazione: { png: string; condizione: 'sempre' | 'se_fallisce' } | null;
 }
 
+/**
+ * Decisione per un set di regole non SRD (docs/regole.md): stessi campi, ma caratteristiche, abilità e
+ * difficoltà sono gli id del set, e c'è la mossa (PbtA) se il set ne ha.
+ */
+export interface DecisioneRegole extends Omit<DecisioneProva, 'caratteristica' | 'abilita' | 'difficolta' | 'abilita_bersaglio'> {
+  caratteristica: string | null;
+  abilita: string | null;
+  difficolta: string | null;
+  abilita_bersaglio: string | null;
+  mossa: string | null;
+}
+
 /** Azione come la vede l'arbitro delle prove. */
 export interface AzioneDaClassificare {
   id: string;
@@ -69,8 +81,8 @@ export interface IngressoArbitroProve {
   altre: AzioneDaClassificare[];
 }
 
-export interface ArbitroProve {
-  classifica(i: IngressoArbitroProve): Promise<Record<string, DecisioneProva>>;
+export interface ArbitroProve<D = DecisioneProva> {
+  classifica(i: IngressoArbitroProve): Promise<Record<string, D>>;
 }
 
 /** Esito dei tiri di un'azione: le carte e il fatto per il narratore. */
