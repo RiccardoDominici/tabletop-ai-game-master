@@ -35,6 +35,18 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
     `[indizio] <id>` del narratore, controllata dal Motore come `[orologio]`);
 
 ## Dopo
+- **Skill Preparatore: la voce espressiva di drama-3** (9 novembre 2026; da girare a chi aggiorna la skill, nessuno ha
+  risposto). La voce del gioco è drama-3 (docs/ricerca-voce-drama3.md). Le righe del repertorio possono avere una
+  direzione breve a inizio riga (`[png_ettore] [offeso, ma a voce bassa] Non venni.`), suoni (`[sigh]`, `[laugh]`,
+  `[breath]`, `[pause]`) e tag chiusi nella stessa riga (`<whisper>…</whisper>`, `<emphasis>`, `<soft>`, `<fast>`,
+  `<slow>`, `<stress>`, `<forceful>`); il validatore li controlla (classe `VOCE`: tag conosciuti e chiusi, direzioni
+  sotto le otto parole e senza punti, al massimo tre segni per riga) e la prosa conta solo le parole. Le schede dei
+  PNG possono fissare la direzione predefinita in `voce.tts.direzione`; la carta di stile quella del narratore in
+  `direzione_voce`; senza, il server la compone da `personalita.superficie`, `voce.tts.timbro`, `eta_apparente` e
+  `velocita`. Da aggiungere alla skill (SKILL.md, passo delle schede PNG e del repertorio): quando usare una
+  direzione (cambi di tono veri: menzogne col loro segnale, confessioni, minacce), non in ogni riga, e mai per dire
+  cosa provano i PG. Il `pronuncia` dei nomi resta com'è.
+
 - **Motore: i limiti che oggi la campagna deve aggirare** (dalla prova di nozze-neve; la pagina
   `.claude/skills/preparatore/riferimenti/motore.md` li descrive ed è verificata sul codice da
   `strumenti/motore_limiti.ts`: quando uno cade, il test diventa rosso e la pagina si aggiorna). Da implementare:

@@ -20,6 +20,7 @@ from . import costanti as K
 from .carica import Campagna
 from .esito import Esito
 from .regole_scena import nomi_propri
+from .voce import solo_parole
 from .testo import TEMI_GENERICI, frasi, limite_da_stile, n_parole, problemi_di_prosa, radici, vocativi
 
 GATE = ("indizi_rivelati", "battute_usate", "orologio", "privata", "da_pg")
@@ -61,8 +62,9 @@ def _righe(b: dict) -> list[list[str]]:
 
 
 def _split(riga: str) -> tuple[str | None, str]:
+    """[chi] e le PAROLE della riga: direzioni, suoni e tag della voce (regole_voce) non si misurano."""
     m = re.match(r"^\[([a-z0-9_]+)\] (.+)$", str(riga))
-    return (m.group(1), m.group(2)) if m else (None, str(riga))
+    return (m.group(1), solo_parole(m.group(2))) if m else (None, str(riga))
 
 
 def controlla(c: Campagna, e: Esito) -> None:

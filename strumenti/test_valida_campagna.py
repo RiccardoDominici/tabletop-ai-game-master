@@ -1366,3 +1366,30 @@ def test_ogni_classe_ha_almeno_un_test():
     testo = Path(__file__).read_text(encoding="utf-8")
     for classe in CLASSI:
         assert f'"{classe}.' in testo, f"nessun test per la classe {classe}"
+
+
+def _riga_bruno(camp, riga):
+    """Mette una riga di prova nella battuta bruno_rifiuto (repertorio del mini)."""
+    modifica(camp, "repertorio/png_bruno.yaml",
+             lambda d: next(b for b in d["battute"] if b["id"] == "bruno_rifiuto").update(testo=[riga]))
+
+
+def test_voce_markup_valido_passa_e_non_conta_come_parole(camp):
+    # Direzione a inizio riga, un suono e un tag chiuso: nessun errore, e la prosa misura solo le parole.
+    _riga_bruno(camp, "[png_bruno] [seccato, a mezza voce] Non lo so. [sigh] Chiedete a <emphasis>chi sa</emphasis>.")
+    assert not {c for c in errori(camp, rigoroso=True) if c.startswith("VOCE.")}
+    assert not {c for c in avvisi(camp) if c.startswith("VOCE.")}
+    assert not {c for c in errori(camp, rigoroso=True) if c.startswith("PROSA.")}
+
+
+def test_voce_markup_rotto(camp):
+    _riga_bruno(camp, "[png_bruno] Non lo so. <whisper>Chiedete a chi sa.")
+    assert "VOCE.tag_non_chiuso" in errori(camp)
+    _riga_bruno(camp, "[png_bruno] Non lo so. <shout>Chiedete</shout> a chi sa.")
+    assert "VOCE.tag_sconosciuto" in errori(camp)
+    _riga_bruno(camp, "[png_bruno] [Seccato. Molto] Non lo so.")
+    assert "VOCE.direzione_punto" in errori(camp)
+    _riga_bruno(camp, "[png_bruno] [" + "molto " * 15 + "seccato] Non lo so.")
+    assert "VOCE.direzione_lunga" in errori(camp)
+    _riga_bruno(camp, "[png_bruno] Non lo so. [seccato] Chiedete a chi sa.")
+    assert "VOCE.direzione_a_meta" in avvisi(camp)

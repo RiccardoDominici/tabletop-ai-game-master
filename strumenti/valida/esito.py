@@ -33,6 +33,7 @@ CLASSI = {
     "VINCOLI": "vincoli pubblici degli indizi: ciò che chiunque percepisce, senza il perché, e che la scena non contraddice",
     "LIVELLO": "durata in sessioni e livello della campagna (brief.yaml, strumenti/strati.py, docs/strati.md)",
     "AUDIO": "campi espliciti dell'audio (docs/audio.md): vocabolario chiuso, motivo, niente segreti nei temi",
+    "VOCE": "voce espressiva drama-3 (docs/ricerca-voce-drama3.md): direzioni brevi, tag conosciuti e chiusi nella riga",
 }
 
 
