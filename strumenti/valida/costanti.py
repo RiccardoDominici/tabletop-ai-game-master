@@ -33,7 +33,7 @@ TIPI_BATTUTA = {"menzogna", "verita", "confessione", "reazione", "rifiuto", "ric
 CAMPI_BATTUTA = {"id", "chi", "tipo", "quando", "temi", "richiede", "testo", "varianti", "effetti",
                  "max_usi", "solo_esempio", "riempitivo", "scena", "audio"}
 CAMPI_RICHIEDE = {"indizi_rivelati", "indizi_non_rivelati", "battute_usate", "battute_non_usate",
-                  "orologio", "privata", "da_pg", "oppure"}
+                  "orologio", "privata", "da_pg", "oppure", "prova"}
 # `richiede.oppure: [{…}, {…}]`: la battuta è disponibile se valgono le condizioni di base E almeno una
 # delle alternative (docs/repertorio.md, «Cancelli con oppure»). Il server oggi ignora le chiavi che non
 # conosce: una battuta con `oppure` uscirebbe con le sole condizioni di base, cioè con il cancello

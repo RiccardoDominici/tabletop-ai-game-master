@@ -5,6 +5,13 @@ alias: [ostessa, locandiera]
 livello: principale
 ruolo: "ostessa; testimone reticente"
 fronte: fronte_lanterna
+scheda:
+  gs: 0
+  caratteristiche: {forza: 9, destrezza: 11, costituzione: 10, intelligenza: 12, saggezza: 11, carisma: 13}
+  competenze: [intuizione, inganno]
+  ca: 10
+  pf: 4
+  attacchi: []
 aspetto:
   lettura: "Una donna magra, sulla cinquantina, con le maniche rimboccate. Ha un orecchino d'argento solo."
   invarianti: ["cinquanta anni", "magra", "maniche rimboccate", "un orecchino d'argento"]

@@ -1393,3 +1393,201 @@ def test_voce_markup_rotto(camp):
     assert "VOCE.direzione_lunga" in errori(camp)
     _riga_bruno(camp, "[png_bruno] Non lo so. [seccato] Chiedete a chi sa.")
     assert "VOCE.direzione_a_meta" in avvisi(camp)
+
+
+# --- schede numeriche e prove (docs/prove.md §2) ---------------------------------------------------
+
+def _scheda_pg(d: dict, pid: str = "pg_lia") -> dict:
+    return next(p for p in d["personaggi"] if p["id"] == pid)["scheda"]
+
+
+def _scheda_png(d: dict) -> dict:
+    return d["scheda"]
+
+
+def _codici_schede(cartella: Path) -> set[str]:
+    return {c for c in errori(cartella) if c.startswith("SCHEDA.")}
+
+
+def test_schede_mancanti_con_i_dadi(camp):
+    modifica(camp, "pg.yaml", lambda d: next(p for p in d["personaggi"] if p["id"] == "pg_lia").pop("scheda"))
+    modifica(camp, "png/png_irma.yaml", lambda d: d.pop("scheda"))
+    assert {"SCHEDA.mancante"} <= errori(camp)
+
+
+def test_schede_mancanti_senza_dadi_non_sono_un_errore(camp):
+    modifica(camp, "campagna.yaml", lambda d: d.update(regole={"dadi": False}))
+    modifica(camp, "pg.yaml", lambda d: next(p for p in d["personaggi"] if p["id"] == "pg_lia").pop("scheda"))
+    modifica(camp, "png/png_irma.yaml", lambda d: d.pop("scheda"))
+    assert not _codici_schede(camp)
+    assert errori(camp, rigoroso=True) == set()
+
+
+def test_regole_dadi_deve_essere_booleano(camp):
+    modifica(camp, "campagna.yaml", lambda d: d.update(regole={"dadi": "no"}))
+    assert "SCHEDA.regole" in errori(camp)
+
+
+def test_scheda_caratteristiche_pg_fino_a_20_png_fino_a_30(camp):
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("caratteristiche", {**_scheda_pg(d)["caratteristiche"], "forza": 25}))
+    assert "SCHEDA.caratteristiche" in errori(camp)
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("caratteristiche", {**_scheda_pg(d)["caratteristiche"], "forza": 20}))
+    modifica(camp, "png/png_bruno.yaml", lambda d: _scheda_png(d)["caratteristiche"].__setitem__("carisma", 25))
+    assert not _codici_schede(camp)
+
+
+def test_scheda_caratteristica_mancante_o_sconosciuta(camp):
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d)["caratteristiche"].pop("carisma"))
+    assert "SCHEDA.caratteristiche" in errori(camp)
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d)["caratteristiche"].update(fortuna=10))
+    assert "SCHEDA.caratteristiche" in errori(camp)
+
+
+def test_scheda_modificatore_scritto_a_mano(camp):
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d)["caratteristiche"].__setitem__("forza", "+3"))
+    assert "SCHEDA.modificatore_a_mano" in errori(camp)
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).update(modificatore={"furtivita": 5}))
+    assert "SCHEDA.modificatore_a_mano" in errori(camp)
+
+
+def test_scheda_abilita_e_maestria(camp):
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("competenze", ["volare"]))
+    assert "SCHEDA.abilita" in errori(camp)
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).update(competenze=["percezione"], maestrie=["furtivita"]))
+    assert "SCHEDA.abilita" in errori(camp)
+
+
+def test_scheda_abilita_con_nome_italiano_e_accettata(camp):
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("competenze", ["Rapidità di mano", "Furtività"]))
+    assert not _codici_schede(camp)
+
+
+def test_scheda_armatura_dell_srd_o_ca(camp):
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("armatura", {"tipo": "tuta spaziale", "scudo": False}))
+    assert "SCHEDA.armatura" in errori(camp)
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).update(armatura="nessuna", ca=14))
+    assert not _codici_schede(camp)
+
+
+def test_scheda_ca_scritta_diversa_dall_armatura(camp):
+    # Lia: armatura di cuoio con Destrezza 16 (+3) fa 14. Scriverne un'altra è un errore.
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("ca", 12))
+    assert "SCHEDA.ca" in errori(camp)
+
+
+def test_scheda_pf_non_oltre_il_massimo_di_classe(camp):
+    # Lia: ladra, dado 8, Costituzione +1: al livello 1 il massimo è 9.
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("pf", 9))
+    assert "SCHEDA.pf" not in errori(camp)
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("pf", 10))
+    assert "SCHEDA.pf" in errori(camp)
+
+
+def test_scheda_classe_sconosciuta_e_un_avviso(camp):
+    modifica(camp, "pg.yaml", lambda d: next(p for p in d["personaggi"] if p["id"] == "pg_lia").__setitem__("classe", "pirata"))
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("pf", 50))
+    assert "SCHEDA.pf" in avvisi(camp)
+    assert "SCHEDA.pf" not in errori(camp)
+
+
+def test_scheda_pg_due_tiri_salvezza(camp):
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("tiri_salvezza", ["destrezza"]))
+    assert "SCHEDA.tiri_salvezza" in errori(camp)
+
+
+def test_scheda_attacchi(camp):
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d)["attacchi"][0].__setitem__("danno", "1d7"))
+    assert "SCHEDA.attacco" in errori(camp)
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d)["attacchi"][0].update(danno="1d8+1"))
+    assert "SCHEDA.attacco" in errori(camp)
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d)["attacchi"][0].pop("caratteristica"))
+    assert "SCHEDA.attacco" in errori(camp)
+    modifica(camp, "pg.yaml", lambda d: _scheda_pg(d)["attacchi"][0].update(danno="1d8", bonus=1, caratteristica="destrezza"))
+    assert not _codici_schede(camp)
+
+
+def test_png_gs_non_valido(camp):
+    modifica(camp, "png/png_bruno.yaml", lambda d: _scheda_png(d).__setitem__("gs", "3/5"))
+    assert "SCHEDA.gs" in errori(camp)
+
+
+def test_png_gs_frazione_e_livello(camp):
+    modifica(camp, "png/png_bruno.yaml", lambda d: _scheda_png(d).update(gs="1/8", ca=12))
+    assert not _codici_schede(camp)
+    modifica(camp, "png/png_bruno.yaml", lambda d: (_scheda_png(d).pop("gs"), _scheda_png(d).update(livello=1)))
+    assert not _codici_schede(camp)
+
+
+def test_png_ca_fuori_dalla_fascia_del_gs(camp):
+    modifica(camp, "png/png_bruno.yaml", lambda d: _scheda_png(d).__setitem__("ca", 18))
+    assert "SCHEDA.gs" in errori(camp)
+
+
+def test_png_pf_fuori_dalla_fascia_del_gs(camp):
+    modifica(camp, "png/png_irma.yaml", lambda d: _scheda_png(d).__setitem__("pf", 40))
+    assert "SCHEDA.gs" in errori(camp)
+
+
+def test_png_attacco_con_piu_di_due_dadi_a_gs_basso(camp):
+    modifica(camp, "png/png_bruno.yaml", lambda d: _scheda_png(d)["attacchi"][0].update(danno="3d6"))
+    assert "SCHEDA.gs" in errori(camp)
+
+
+def _prova(**campi) -> dict:
+    base = {"id": "p_cassetta", "quando": "un PG apre il lucchetto della cassetta del pedaggio",
+            "abilita": "rapidita_di_mano", "cd": 15}
+    base.update(campi)
+    return base
+
+
+def _metti_prove(camp: Path, prove: list) -> None:
+    modifica(camp, "scena.yaml", lambda d: d.__setitem__("prove", prove))
+
+
+def test_prove_della_scena_valide(camp):
+    _metti_prove(camp, [_prova(), _prova(id="p_sala", abilita="percezione", indizio="i_botte"),
+                        _prova(id="p_forza", abilita=None, caratteristica="forza", cd=10)])
+    modifica(camp, "scena.yaml", lambda d: d["prove"][2].pop("abilita"))
+    assert not _codici_schede(camp)
+
+
+def test_prove_della_scena_regole(camp):
+    casi = {
+        "id senza p_": _prova(id="cassetta"),
+        "cd fuori scala": _prova(cd=40),
+        "abilita inventata": _prova(abilita="volare"),
+        "nessuna abilita": {k: v for k, v in _prova().items() if k != "abilita"},
+        "due abilita": _prova(caratteristica="forza"),
+        "quando troppo lungo": _prova(quando="un PG " + " ".join(["apre"] * 16) + " la cassetta"),
+        "indizio inesistente": _prova(indizio="i_fantasma"),
+        "indizio essenziale": _prova(indizio="i_cera"),
+    }
+    for nome, prova in casi.items():
+        modifica(camp, "scena.yaml", lambda d, p=prova: d.__setitem__("prove", [p]))
+        assert "SCHEDA.prove" in errori(camp), nome
+
+
+def test_prove_con_id_ripetuto_in_due_scene(camp, tmp_path):
+    _metti_prove(camp, [_prova()])
+    scrivi(camp / "scene", "seconda.yaml", {"id": "scena_due", "prove": [_prova()]}) if (camp / "scene").is_dir() else None
+    if not (camp / "scene").is_dir():
+        (camp / "scene").mkdir()
+        scrivi(camp / "scene", "seconda.yaml", {"id": "scena_due", "prove": [_prova()]})
+    assert "SCHEDA.prove" in errori(camp)
+
+
+def test_richiede_prova_deve_esistere(camp):
+    def con_prova(valore):
+        def f(d):
+            battuta(d, "bruno_notte_promessa")["richiede"] = {"prova": valore}
+        return f
+    modifica(camp, "repertorio/png_bruno.yaml", con_prova("persuasione"))
+    assert "SCHEDA.richiede_prova" not in errori(camp)
+    modifica(camp, "repertorio/png_bruno.yaml", con_prova("volare"))
+    assert "SCHEDA.richiede_prova" in errori(camp)
+    modifica(camp, "repertorio/png_bruno.yaml", con_prova("p_cassetta"))
+    assert "SCHEDA.richiede_prova" in errori(camp)
+    _metti_prove(camp, [_prova()])
+    assert "SCHEDA.richiede_prova" not in errori(camp)
+    modifica(camp, "repertorio/png_bruno.yaml", con_prova("p_cassetta"))
+    assert "SCHEDA.richiede_prova" not in errori(camp)

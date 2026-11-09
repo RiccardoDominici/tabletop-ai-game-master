@@ -20,6 +20,7 @@ CLASSI = {
     "GRAFO": "nodi e collegamenti senza vicoli ciechi (C5)",
     "SESSIONE": "inizio forte, cinque stanze, scene potenziali, chiusura (C9–C13)",
     "PG": "personaggi giocanti e conoscenze private (T9)",
+    "SCHEDA": "schede numeriche e prove (docs/prove.md §2): caratteristiche, CA, PF, attacchi, prove della scena, richiede.prova",
     "PROSA": "scrittura per l'ascolto (§5, §6: N1, N2, N5, N11, D3)",
     "REPERTORIO": "schema delle battute e riferimenti (docs/repertorio.md)",
     "COPERTURA": "copertura minima del repertorio: indizi, menzogne, confessioni, segni, finali, voce",

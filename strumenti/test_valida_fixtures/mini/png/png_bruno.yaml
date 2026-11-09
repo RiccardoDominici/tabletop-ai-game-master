@@ -5,6 +5,14 @@ alias: [pastore, pecoraio]
 livello: principale
 ruolo: "pastore; testimone"
 fronte: fronte_lanterna
+scheda:
+  gs: 0
+  caratteristiche: {forza: 10, destrezza: 10, costituzione: 11, intelligenza: 10, saggezza: 13, carisma: 9}
+  competenze: [percezione, intuizione]
+  ca: 10
+  pf: 4
+  attacchi:
+    - {nome: "Bastone da pastore", caratteristica: forza, danno: "1d4", tipo_danno: contundente}
 aspetto:
   lettura: "Un vecchio pastore con la barba bianca. Tiene la pipa spenta tra i denti."
   invarianti: ["settanta anni", "barba bianca", "pipa spenta", "mantello di lana"]

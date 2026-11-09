@@ -8,6 +8,15 @@ personaggi:
     livello: 1
     concetto: "Cercatrice di cose perdute. Non sopporta le bugie dette per vergogna."
     aggancio: "Irma ti ha ospitata gratis l'inverno scorso."
+    scheda:
+      caratteristiche: {forza: 9, destrezza: 16, costituzione: 12, intelligenza: 13, saggezza: 14, carisma: 10}
+      competenze: [furtivita, rapidita_di_mano, percezione, indagare]
+      maestrie: [furtivita]
+      tiri_salvezza: [destrezza, intelligenza]
+      armatura: {tipo: armatura di cuoio, scudo: false}
+      pf: 8
+      attacchi:
+        - {nome: "Pugnale", caratteristica: destrezza, danno: "1d4", tipo_danno: perforante}
     cosa_sai_fare: ["trovi le tracce", "apri le serrature"]
     conoscenze_private:
       - {testo: "La botola del cortile porta in cantina.", fatti: []}
@@ -19,6 +28,14 @@ personaggi:
     livello: 1
     concetto: "Guardia della valle in licenza. Crede nella legge più che nelle persone."
     aggancio: "Il capitano ti ha chiesto di riportare la lanterna."
+    scheda:
+      caratteristiche: {forza: 16, destrezza: 12, costituzione: 14, intelligenza: 10, saggezza: 12, carisma: 8}
+      competenze: [atletica, intimidire, percezione, sopravvivenza]
+      tiri_salvezza: [forza, costituzione]
+      armatura: {tipo: giaco di maglia, scudo: true}
+      pf: 11
+      attacchi:
+        - {nome: "Spada lunga", caratteristica: forza, danno: "1d8", tipo_danno: tagliente}
     cosa_sai_fare: ["fai la guardia", "intimidisci"]
     conoscenze_private:
       - {testo: "Il mercante della valle compra debiti.", fatti: [f_mercante_alba]}
