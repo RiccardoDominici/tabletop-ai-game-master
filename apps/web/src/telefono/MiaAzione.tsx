@@ -14,6 +14,7 @@ import type { AzionePrivata, StatoAzione, StatoTavolo } from '@cantastorie/share
 import { useBozza } from '../store/bozza';
 import { useTelefono } from '../store/telefono';
 import { riapriScelta } from './sessione';
+import { TiriMiaAzione } from './TiriTurno';
 import {
   azioneViva,
   chiaveRichiesta,
@@ -120,6 +121,9 @@ export function MiaAzione({ azione, stato }: { azione: AzionePrivata; stato: Sta
           )}
         </div>
       )}
+
+      {/* I tiri del Motore per questa azione (anche privati: questo oggetto arriva solo a me). */}
+      {azione.tiri && azione.tiri.length > 0 && <TiriMiaAzione tiri={azione.tiri} stato={stato} />}
     </div>
   );
 }

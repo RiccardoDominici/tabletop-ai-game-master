@@ -9,7 +9,8 @@
  * «A» per i volumi dell'audio, «C» per i crediti dei brani.
  * Le misure tipografiche sono in vw: la pagina si adatta a qualunque risoluzione del proiettore.
  */
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
+import clsx from 'clsx';
 import type { InfoServer, StatoTavolo } from '@cantastorie/shared';
 import { BannerConnessione } from '../components/BannerConnessione';
 import { Avvisi } from '../components/Avvisi';
@@ -27,8 +28,25 @@ import { RigaFinestra } from './RigaFinestra';
 import { HudLatenza } from './HudLatenza';
 import { FilaPersonaggi } from './FilaPersonaggi';
 import { CreditiAudio, PannelloAudio, PulsanteAudio, useTastiAudio } from './audio/PannelloAudio';
+import { TiriSchermo, useVistaTiri } from './TiriSchermo';
+import { provaCarteRichiesta } from '../debug/richiesta';
+
+// DEBUG: banco di prova delle carte dei tiri (/schermo?carte=prova), senza server; si carica a parte.
+const ProvaCarteSchermo = lazy(() => import('../debug/ProvaCarte').then((m) => ({ default: m.ProvaCarteSchermo })));
 
 export function PaginaSchermo() {
+  // DEBUG: con ?carte=… il banco di prova al posto della pagina (non si collega al server).
+  if (provaCarteRichiesta()) {
+    return (
+      <Suspense fallback={null}>
+        <ProvaCarteSchermo />
+      </Suspense>
+    );
+  }
+  return <PaginaSchermoVera />;
+}
+
+function PaginaSchermoVera() {
   useEffect(() => {
     esponiDebugSchermo();
     document.title = 'Cantastorie · Schermo';
@@ -73,7 +91,10 @@ export function PaginaSchermo() {
   );
 }
 
-function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | null }) {
+/** Esportata per il banco di prova delle carte (debug/ProvaCarte.tsx). */
+export function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | null }) {
+  // Carte dei tiri del turno (colonna a destra, TiriSchermo.tsx).
+  const vistaTiri = useVistaTiri(stato);
   // Chi parla adesso (la frase in onda): il suo ritratto in fila si illumina.
   const parlante = useSchermo((s) => s.inOnda?.parlante ?? null);
   return (
@@ -94,9 +115,11 @@ function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | null })
         </div>
       </header>
 
-      <div className="flex min-h-0 items-end justify-center pb-[2vh]">
+      {/* Mentre si narrano i tiri la narrazione lascia libera la colonna delle carte a destra. */}
+      <div className={clsx('flex min-h-0 items-end justify-center pb-[2vh]', vistaTiri.lasciaSpazio && 'pr-[17vw]')}>
         <Narrazione stato={stato} />
       </div>
+      <TiriSchermo vista={vistaTiri} />
 
       <footer className="flex items-end justify-between gap-[3vw]">
         <div className="min-w-0 flex-1 pb-[0.5vh]">

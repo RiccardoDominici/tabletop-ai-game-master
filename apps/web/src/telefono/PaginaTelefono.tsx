@@ -7,7 +7,7 @@
  * Android, `interactive-widget=resizes-content`) il pannello resta sopra la tastiera.
  * Il banner di connessione è nel flusso, sopra tutto: non copre l'intestazione.
  */
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import type { StatoTavolo } from '@cantastorie/shared';
 import { BannerConnessione } from '../components/BannerConnessione';
 import { Avvisi } from '../components/Avvisi';
@@ -22,9 +22,27 @@ import { CasellaAzione } from './CasellaAzione';
 import { SchedaPersonaggio } from './SchedaPersonaggio';
 import { AlTavolo } from './AlTavolo';
 import { SceltaAzione } from './SceltaAzione';
+import { TiriTurno } from './TiriTurno';
+import { PuntiFeritaPg } from './PuntiFeritaPg';
+import { provaCarteRichiesta } from '../debug/richiesta';
 import { AscoltaQui } from './AscoltaQui';
 
+// DEBUG: banco di prova delle carte dei tiri (/telefono?carte=prova), senza server; si carica a parte.
+const ProvaCarteTelefono = lazy(() => import('../debug/ProvaCarte').then((m) => ({ default: m.ProvaCarteTelefono })));
+
 export function PaginaTelefono() {
+  // DEBUG: con ?carte=… il banco di prova al posto della pagina (non si collega al server).
+  if (provaCarteRichiesta()) {
+    return (
+      <Suspense fallback={null}>
+        <ProvaCarteTelefono />
+      </Suspense>
+    );
+  }
+  return <PaginaTelefonoVera />;
+}
+
+function PaginaTelefonoVera() {
   useEffect(() => avviaTelefono(), []);
   useSchermoAcceso(true);
 
@@ -65,7 +83,8 @@ function Attesa() {
   );
 }
 
-function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
+/** Esportato per il banco di prova delle carte (debug/ProvaCarte.tsx). */
+export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
   const pg = stato.pg.find((p) => p.id === idPg);
   const apriScelta = useTelefono((s) => s.apriScelta);
   const apriScheda = useTelefono((s) => s.apriScheda);
@@ -79,6 +98,8 @@ function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
           <p className="line-clamp-2 font-titolo text-xl leading-tight font-semibold" data-testid="nome-pg">
             {pg?.nome ?? idPg}
           </p>
+          {/* Punti ferita sotto il nome, solo con le schede numeriche (docs/prove.md). */}
+          <PuntiFeritaPg pf={pg?.pf} />
         </div>
         <AscoltaQui />
         {haScheda && (
@@ -104,6 +125,7 @@ function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
       <div className="sicuro-lati flex flex-col gap-2">
         <BannerStato stato={stato} idPg={idPg} />
         <AlTavolo stato={stato} idPg={idPg} />
+        <TiriTurno stato={stato} />
       </div>
 
       <Trascrizione voci={stato.trascrizione} className="sicuro-lati mt-1 min-h-0 flex-1" />
