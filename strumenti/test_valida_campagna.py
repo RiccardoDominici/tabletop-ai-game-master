@@ -220,6 +220,23 @@ def test_scena_sensi_non_tre(camp):
     assert "SCENA.sensi" in errori(camp)
 
 
+def test_scena_orologi_in_scena(camp):
+    # Regole del Motore entrando nella scena (scena/orologi.ts): solo orologi attivi, interi sensati.
+    modifica(camp, "scena.yaml", lambda d: d.update(orologi_in_scena={"o_processione": {"pieni_almeno": 2, "segno_almeno_ogni": 1}}))
+    assert "SCENA.orologi_in_scena" not in errori(camp)
+    modifica(camp, "scena.yaml", lambda d: d.update(orologi_in_scena={"o_processione": {"pieni_almeno": 9}, "o_altro": {"segno_almeno_ogni": 0}}))
+    assert "SCENA.orologi_in_scena" in errori(camp)
+
+
+def test_scena_rientro_con_battuta_inesistente(camp):
+    modifica(camp, "scena.yaml", lambda d: d.update(rientro="nar_cera"))
+    assert "SCENA.rientro" not in errori(camp)
+    modifica(camp, "scena.yaml", lambda d: d.update(rientro="tr_mai_scritta"))
+    assert "SCENA.rientro" in errori(camp)
+    modifica(camp, "scena.yaml", lambda d: d.update(rientro="Di nuovo in piazza, tra le bancarelle."))
+    assert "SCENA.rientro" not in errori(camp)
+
+
 def test_scena_due_png_con_la_stessa_voce(camp):
     modifica(camp, "png/png_bruno.yaml", lambda d: d["voce"]["tts"].update(voce_id="nadine"))
     assert "SCENA.voci" in errori(camp)

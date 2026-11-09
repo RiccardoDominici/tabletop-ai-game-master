@@ -111,6 +111,31 @@ def _voci_fuori_scena(c: Campagna, e: Esito) -> None:
                              f"una soluzione mette insieme {c.png[a][1].get('nome')} e {c.png[b][1].get('nome')}, voci simili")
 
 
+def _orologi_in_scena(c: Campagna, e: Esito, dove: str, s: dict) -> None:
+    """`orologi_in_scena: {o_x: {pieni_almeno, segno_almeno_ogni}}` (Motore, scena/orologi.ts): entrando
+    nella scena l'orologio sale ad almeno `pieni_almeno` e lì corre col suo ritmo. Vale solo per gli
+    orologi attivi della scena."""
+    regole = s.get("orologi_in_scena")
+    if regole is None:
+        return
+    if not isinstance(regole, dict):
+        e.errore("SCENA.orologi_in_scena", dove, "orologi_in_scena è {id_orologio: {pieni_almeno, segno_almeno_ogni}}")
+        return
+    attivi = s.get("orologi_attivi") or []
+    for oid, r in regole.items():
+        if oid not in attivi:
+            e.errore("SCENA.orologi_in_scena", dove, f"{oid} non è tra gli orologi_attivi della scena")
+        r = r if isinstance(r, dict) else {}
+        pieni, ogni = r.get("pieni_almeno"), r.get("segno_almeno_ogni")
+        segmenti = (c.orologi.get(oid) or {}).get("segmenti")
+        if pieni is None and ogni is None:
+            e.errore("SCENA.orologi_in_scena", dove, f"{oid}: serve pieni_almeno o segno_almeno_ogni")
+        if pieni is not None and not (isinstance(pieni, int) and 0 <= pieni and (not isinstance(segmenti, int) or pieni <= segmenti)):
+            e.errore("SCENA.orologi_in_scena", dove, f"{oid}: pieni_almeno è un intero da 0 ai segmenti dell'orologio")
+        if ogni is not None and not (isinstance(ogni, int) and ogni >= 1):
+            e.errore("SCENA.orologi_in_scena", dove, f"{oid}: segno_almeno_ogni è un intero >= 1")
+
+
 def _scena(c: Campagna, e: Esito, dove: str, s: dict) -> None:
     for campo in ("id", "nodo", "nome", "scopo", "domanda_drammatica", "posta", "intensita", "sensi",
                   "elementi_interattivi", "png_presenti", "orologi_attivi", "indizi", "uscite",
@@ -161,6 +186,11 @@ def _scena(c: Campagna, e: Esito, dove: str, s: dict) -> None:
     for o in s.get("orologi_attivi") or []:
         if o not in c.orologi:
             e.errore("SCENA.orologi", dove, f"orologio inesistente {o}")
+    _orologi_in_scena(c, e, dove, s)
+    # rientro: un id di battuta (la dice il Motore tornando nella scena) o un testo da leggere.
+    rientro = s.get("rientro")
+    if isinstance(rientro, str) and re.fullmatch(r"[a-z][a-z0-9]*_[a-z0-9_]+", rientro.strip()) and c.per_id and rientro.strip() not in c.per_id:
+        e.errore("SCENA.rientro", dove, f"rientro: battuta inesistente {rientro.strip()}")
     for ind in s.get("indizi") or []:
         if isinstance(ind, dict) and ind.get("nodo") and ind["nodo"] not in c.nodi and ind["nodo"] not in c.png:
             e.errore("SCENA.indizi", dove, f"{ind.get('id')}: nodo inesistente {ind['nodo']}")
