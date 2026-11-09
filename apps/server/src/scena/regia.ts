@@ -29,7 +29,7 @@ import type {
   VoceTrascrizione,
 } from '@cantastorie/shared';
 import { schedaPg } from '../campagna/scheda';
-import type { Campagna } from '../campagna/tipi';
+import type { Campagna, ScenaCaricata } from '../campagna/tipi';
 import { ID_NARRATORE, NOME_NARRATORE, conScena } from '../campagna/tipi';
 import { nomeBreve } from '../campagna/nomi';
 import { fuoriDallaFinzione } from '../narrazione/finzione';
@@ -172,6 +172,8 @@ export class Regia {
   private statoRepertorio: StatoRepertorio | null = null;
   /** Battute mostrate al selettore in questo turno: un [usa] fuori elenco si rifiuta. */
   private elencoTurno = new Set<string>();
+  /** Scene già visitate in questa sessione: tornandoci il narratore legge il rientro, non l'apertura. */
+  private readonly sceneVisitate = new Set<string>();
   /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
   /** Il turno B in corso: azioni per PG, stallo, orologi il cui segno è dovuto (uno per orologio). */
   private turnoB: { azioni: Map<string, { id: string; privata: boolean }>; stallo: boolean; dovuti: ReadonlySet<string> } | null = null;
@@ -346,6 +348,7 @@ export class Regia {
       note: this.note.esporta(),
       pausa: { richiesta: this.pausaRichiesta, invitoSospeso: this.invitoSospeso, automatica: this.pausaAutomatica },
       prossimoIdTrascrizione: this.prossimoIdTrascrizione,
+      sceneVisitate: [...this.sceneVisitate],
     };
   }
 
@@ -407,6 +410,8 @@ export class Regia {
     this.umoreScelto = f.umore ? { ...f.umore } : null;
     this.situazione = f.situazione ? { ...f.situazione } : null;
     for (const id of f.situazioniMostrate ?? []) this.situazioniMostrate.add(id);
+    // Archivi di prima: almeno la scena in corso è già stata visitata.
+    for (const id of f.sceneVisitate ?? [f.scena]) this.sceneVisitate.add(id);
     this.trascrizione = r.trascrizione.map((v) => ({ ...v }));
     this.prossimoIdTrascrizione = Math.max(f.prossimoIdTrascrizione ?? 1, ...this.trascrizione.map((v) => v.id + 1));
     // I turni ripresi sono già nel registro così come sono: non si riscrivono.
@@ -993,6 +998,7 @@ export class Regia {
     this.versioneScena = 0;
     // Si riparte dalla prima scena, con gli orologi della campagna da capo.
     this.orologi = new StatoOrologi(this.o.campagna);
+    this.sceneVisitate.clear();
     this.impostaScena(this.o.campagna.scene[0]!.id);
     this.statoRepertorio = this.nuovoStatoRepertorio();
     this.tavolo.azzera();
@@ -1131,9 +1137,23 @@ export class Regia {
     this.invitoSospeso = null;
     this.turno = turno;
     this.aggiungiTrascrizione({ turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: `Nuova scena: ${nuova.titolo}.` });
-    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'cambio_scena', da, a: nuova.id, azioni_annullate: annullate, testo: nuova.apertura.map((f) => `[narratore] ${f}`).join('\n') });
+    // Una scena già visitata non riapre con l'apertura (e la prima scena col riassunto di sessione):
+    // si legge il suo rientro (playtest di nozze-neve: la casera si rileggeva da capo a ogni ritorno).
+    const rientro = this.sceneVisitate.has(nuova.id) ? this.rientroIn(nuova, turno) : null;
+    this.sceneVisitate.add(nuova.id);
+    const frasi = rientro?.frasi ?? nuova.apertura;
+    this.o.registroNarrazioni.scrivi({
+      sessione: this.sessione,
+      turno,
+      tipo: 'cambio_scena',
+      da,
+      a: nuova.id,
+      azioni_annullate: annullate,
+      ...(rientro ? { rientro: rientro.battuta ?? 'testo' } : {}),
+      testo: frasi.map((f) => `[narratore] ${f}`).join('\n'),
+    });
     if (this.o.preriscalda && this.o.narratore.preriscalda) void this.preriscalda();
-    this.leggiApertura(turno, nuova.apertura);
+    this.leggiApertura(turno, frasi);
     return { ok: true };
   }
 
@@ -1265,6 +1285,7 @@ export class Regia {
     this.turno = 0;
     this.o.log.info({ scena: c.scena.id, frasi: c.scena.apertura.length, voce: this.o.voce.nome }, 'scena: apertura');
     if (this.o.preriscalda && this.o.narratore.preriscalda) void this.preriscalda();
+    this.sceneVisitate.add(c.scena.id);
     this.leggiApertura(0, c.scena.apertura);
     this.salva('inizio');
   }
@@ -1324,6 +1345,25 @@ export class Regia {
     // Scena nuova (o ricominciata): torna il suo umore iniziale, e il limite riparte.
     this.umoreScelto = null;
     this.limiteUmori.azzera();
+  }
+
+  /**
+   * Il rientro in una scena già visitata: in modalità B la battuta di `rientro` della scheda, se è
+   * ancora disponibile (es. `tr_casera`, max_usi 1: esce e conta come usata); altrimenti il testo di
+   * `rientro`, o la prima frase dell'apertura della scena (campagna/caricatore.ts, rientroDa).
+   */
+  private rientroIn(scena: ScenaCaricata, turno: number): { frasi: string[]; battuta: string | null } {
+    const id = scena.rientro.battuta;
+    if (id && this.statoRepertorio) {
+      const uso = this.statoRepertorio.usa(id, turno, { inRisposta: new Set() });
+      if (uso.ok) {
+        this.o.log.info({ scena: scena.id, turno, battuta: id }, 'scena: rientro con la battuta della scheda');
+        return { frasi: uso.righe.map((r) => r.testo), battuta: id };
+      }
+      this.o.log.info({ scena: scena.id, turno, battuta: id, motivo: uso.motivo }, 'scena: battuta di rientro non disponibile, si legge il testo di riserva');
+    }
+    this.o.log.info({ scena: scena.id, turno, frasi: scena.rientro.frasi.length }, 'scena: rientro (senza rileggere l’apertura)');
+    return { frasi: scena.rientro.frasi, battuta: null };
   }
 
   private async preriscalda(): Promise<void> {

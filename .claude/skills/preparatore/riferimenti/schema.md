@@ -150,6 +150,8 @@ vincoli_pubblici: ["…"]        # facoltativi: altri fatti percepibili che l'im
 uscite: [{verso: n_…, segnalata_da: [i_…, …]}]      # almeno 2 (salvo climax: true) [V]; 3 indizi per nodo (avviso)
 mossa_morbida_pronta: "…"      # prosa §5 [V]
 apertura: "…?"                 # al massimo 3 frasi, chiude con un invito [V]
+rientro: tr_…                  # facoltativo: tornando in una scena già visitata il Motore non rilegge l'apertura;
+                               # dice questa battuta (o questo testo), poi la prima frase dell'apertura
 musica: {tag: …, transizione: "…"}                  # tag e tag citati nella transizione dal vocabolario [V]
 immagine: {invarianti: [...], prompt_luogo: "… in inglese"}   # [V]
 taglio: "…"                    # tutti gli esiti, anche «se i PG esitano»; va al selettore: niente segreti

@@ -66,6 +66,8 @@ export interface FotografiaSessione {
   note: { elenco: NotaRegia[]; prossimoId: number };
   pausa: { richiesta: boolean; invitoSospeso: string[] | 'tutti' | null; /** Presa dal Motore dopo gli stalli. */ automatica?: boolean };
   prossimoIdTrascrizione: number;
+  /** Scene già visitate in questa sessione: tornandoci si legge il rientro, non l'apertura (assente negli archivi di prima). */
+  sceneVisitate?: string[];
 }
 
 /** Lo stato ricostruito dal registro, pronto per Regia.ripristina. */

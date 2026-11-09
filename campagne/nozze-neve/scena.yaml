@@ -164,6 +164,9 @@ mossa_morbida_pronta: "Dal lato dei Morlacchi un cugino si alza, rosso in faccia
 
 # Al massimo tre frasi; con il riassunto della sessione non più di sei.
 apertura: "Nella casera dei Bonfanti una riga di forme di formaggio divide la sala in due. A sinistra la nonna Adelina stringe una scatolina vuota; a destra Ettore, il nonno dello sposo, batte il bastone. Senza anello niente benedizione, e il sole non aspetta: chi si muove per primo?"
+# Tornando in casera da un'altra scena il narratore non rilegge l'apertura (né il riassunto di sessione):
+# dice la battuta di rientro (la prima volta), poi la prima frase dell'apertura.
+rientro: tr_casera
 
 musica:
   tag: esplorazione_tesa

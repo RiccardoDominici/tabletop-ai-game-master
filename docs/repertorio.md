@@ -82,6 +82,9 @@ Righe come oggi, più una nuova:
   pannello del master.
 - `[usa]` con un id non disponibile: scartato e registrato.
 - **Più scene**: una battuta con `scena: <id>` entra in catalogo solo in quella scena; senza `scena` vale ovunque.
+- **Rientro**: tornando in una scena già visitata il Motore non rilegge l'apertura (né, per la prima scena, il
+  riassunto di sessione): dice la battuta di `rientro` della scheda (`rientro: tr_casera`, se è ancora disponibile;
+  esce e conta come usata), oppure il testo di `rientro`, oppure la prima frase dell'apertura.
 - **Modi degli indizi**: le battute di rivelazione di un indizio con `modi` ≥ 2 sono strade alternative. Trovato per una
   strada, le altre (solo rivelazione, fatti già noti) escono dal catalogo. All'avvio il Motore avvisa se un indizio ha
   meno battute di rivelazione dei suoi modi.

@@ -35,6 +35,13 @@ export interface ScenaCaricata {
   umore: string;
   intensita: number | null;
   png_presenti: string[];
+  /**
+   * Il ritorno in una scena già visitata (playtest di nozze-neve: tornando in casera si rileggeva
+   * l'apertura col riassunto di sessione). `battuta`: id di una battuta del repertorio da far dire
+   * (modalità B, se è ancora disponibile; `rientro: tr_casera` nella scheda); `frasi`: il testo
+   * `rientro` della scheda, o la prima frase della sua apertura (riserva anche per la battuta).
+   */
+  rientro: { battuta: string | null; frasi: string[] };
   dati: DatiYaml;
 }
 

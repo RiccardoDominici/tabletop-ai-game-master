@@ -300,6 +300,21 @@ function fileAltreScene(cartella: string): string[] {
   return [...radice, ...cartellaScene];
 }
 
+/** `rientro: tr_casera` è l'id di una battuta; ogni altro testo si legge così com'è. */
+const ID_BATTUTA = /^[a-z][a-z0-9]*_[a-z0-9_]+$/;
+
+/**
+ * Cosa si legge tornando nella scena: la battuta o il testo di `rientro`; senza, la prima frase
+ * dell'apertura della scena (senza il riassunto di sessione), che di solito nomina il luogo.
+ */
+function rientroDa(dati: DatiYaml, apertura: string[]): ScenaCaricata['rientro'] {
+  const grezzo = dati['rientro'];
+  const riserva = apertura.slice(0, 1);
+  if (typeof grezzo === 'string' && ID_BATTUTA.test(grezzo.trim())) return { battuta: grezzo.trim(), frasi: riserva };
+  const frasi = frasiDa(grezzo);
+  return { battuta: null, frasi: frasi.length ? frasi : riserva };
+}
+
 /** Una scheda scena: `prima` sono le frasi da leggere prima dell'apertura (il riassunto, solo per la prima scena). */
 function leggiScena(
   dati: DatiYaml,
@@ -315,13 +330,15 @@ function leggiScena(
     ? (dati['png_presenti'] as unknown[]).filter((x): x is string => typeof x === 'string')
     : png.map((p) => p.id);
   for (const p of presenti) if (!png.some((x) => x.id === p)) avvisa(`${file}: png_presenti cita ${p}, che non ha una scheda in png/`);
+  const apertura = frasiDa(dati['apertura']);
   return {
     id: stringa(dati['id']) ?? path.basename(file, '.yaml'),
     titolo: stringa(dati['titolo']) ?? stringa(dati['nome']) ?? stringa(stile['titolo']) ?? idCampagna,
-    apertura: [...prima, ...frasiDa(dati['apertura'])],
+    apertura: [...prima, ...apertura],
     umore: stringa(musica?.['tag']) ?? stringa(dati['umore']) ?? 'esplorazione_tesa',
     intensita: typeof dati['intensita'] === 'number' ? (dati['intensita'] as number) : null,
     png_presenti: presenti,
+    rientro: rientroDa(dati, apertura),
     dati,
   };
 }
