@@ -32,6 +32,7 @@ describe('fase e pausa', () => {
 describe('voce, modo, turni', () => {
   it('motore voce e modalità', () => {
     expect(etichettaVoce('qwen')).toBe('Qwen (locale)');
+    expect(etichettaVoce('fish')).toBe('drama-3 (Fish)');
     expect(etichettaVoce('mock')).toBe('finta (mock)');
     expect(etichettaModo('improvvisa')).toBe('A · improvvisa');
     expect(etichettaModo('repertorio')).toBe('B · repertorio');

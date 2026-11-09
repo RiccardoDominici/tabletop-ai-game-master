@@ -47,7 +47,9 @@ export function tonoPausa(pausa: StatoMaster['pausa']): Tono {
 
 /** Motore della voce (tavolo.voce_motore). */
 export function etichettaVoce(motore: StatoTavolo['voce_motore']): string {
-  return motore === 'qwen' ? 'Qwen (locale)' : 'finta (mock)';
+  if (motore === 'fish') return 'drama-3 (Fish)';
+  if (motore === 'qwen') return 'Qwen (locale)';
+  return 'finta (mock)';
 }
 
 /** Modalità del master: A improvvisa, B repertorio di battute. */
