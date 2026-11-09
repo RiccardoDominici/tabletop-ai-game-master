@@ -263,6 +263,32 @@ export interface AudioScena {
 }
 
 /** Istantanea completa del tavolo, mandata a ogni cambiamento. */
+/** Il riassunto di una serata chiusa (docs/strati.md, «Riassunto e chiusura»): solo fatti pubblici. */
+export interface RiassuntoSerata {
+  /** «Sessione 01», «Serata del 9 novembre»… */
+  etichetta: string;
+  /** ISO 8601 della chiusura. */
+  quando: string;
+  /** Tre-cinque frasi, al passato, per l'orecchio. */
+  testo: string;
+  /** Fili aperti: domande che la serata lascia (al massimo tre). */
+  fili: string[];
+}
+
+/** Schermata di fine serata sul proiettore («Cosa è successo stasera»); lo stato dei PG è in `pg[].pf`. */
+export interface FineSerata {
+  riassunto: RiassuntoSerata;
+  /** true = il riassunto è la riserva del Motore (il modello non ha risposto o diceva un segreto). */
+  di_riserva: boolean;
+}
+
+/** Diario pubblico: uguale per tutti i telefoni; gli esiti privati restano nel loro evento (privato:esiti). */
+export interface DiarioPubblico {
+  serate: RiassuntoSerata[];
+  /** «Finora stasera»: righe deterministiche (scene attraversate, fatti scoperti, segni del tempo). */
+  stasera: string[];
+}
+
 export interface StatoTavolo {
   /** Cresce a ogni cambiamento dello stato: serve alla risincronizzazione. */
   versione_stato: number;
@@ -295,6 +321,15 @@ export interface StatoTavolo {
   ora_server_ms: number;
   /** La campagna gioca coi dadi del Motore (schede numeriche presenti, docs/prove.md). */
   dadi?: boolean;
+  /**
+   * «La volta scorsa…» letto all'inizio di questa serata (sessione che continua): il proiettore lo mostra
+   * finché non si chiude la prima finestra. null/assente = la serata non riprende niente.
+   */
+  la_volta_scorsa?: string | null;
+  /** «Cosa è successo stasera»: dopo «Chiudi la sessione», finché il gioco non riprende. */
+  fine_serata?: FineSerata | null;
+  /** Diario pubblico (telefono, scheda «Diario»): i riassunti delle serate chiuse e «finora stasera». */
+  diario?: DiarioPubblico;
   /**
    * Carte dei tiri PUBBLICI dell'ultimo turno risolto, in ordine (proiettore e telefoni); quelle
    * delle azioni private vanno solo nel `tiri` di AzionePrivata del loro autore.

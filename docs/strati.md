@@ -114,6 +114,29 @@ stessa scelta al server e valida proprio quel pacchetto.
   indirizzo col pacchetto dopo e lo stesso token del master: pannello, proiettore e telefoni si ricollegano come
   dopo un riavvio, e la sessione nuova comincia dal suo `riassunto_iniziale`.
 
+### Riassunto e chiusura della serata (richieste del 9 novembre, §9)
+- **Chiudi la sessione** (pannello): chiusura guidata. Le azioni in coda tornano ai giocatori; il narratore chiude
+  la serata (da tre a cinque righe: il momento in corso, un'immagine finale, un aggancio; niente misteri nuovi; in
+  modalità B improvvisata, oppure una battuta `tipo: chiusura` del repertorio se c'è, detta dal Motore); poi il
+  proiettore mostra «Cosa è successo stasera» (riassunto, fili aperti, PF dei PG) e il server scrive il registro
+  e, accanto, `riassunto.yaml` (una voce per serata: `etichetta`, `quando`, `testo`, `fili`). La sessione
+  dell'archivio resta APERTA: una one-shot riprende la sera dopo (Riprendi, o riavvio del server); in una campagna
+  a pacchetti la chiude «Prossima sessione». **Fine sessione** resta, subito e senza narrazione, per le emergenze.
+- **Il riassunto** (`apps/server/src/sessione/riassunto.ts`): lo scrive Haiku (lo stesso client del narratore, un
+  altro prompt) dalla sola trascrizione pubblica; mai azioni private, righe `[privato]` o fatti `noto_ai_pg: false`.
+  Poi una guardia deterministica: una parola di `parole_segrete.yaml` ancora segreta e mai detta al tavolo fa
+  scartare il testo, e si legge la riserva (luoghi attraversati e ultimi segni degli orologi, detti a voce).
+- **La volta scorsa…** (`apps/server/src/scena/serata.ts`), letta prima dell'apertura o della ripresa e mostrata dal
+  proiettore fino alla prima finestra chiusa: il pacchetto dopo senza `riassunto_iniziale` usa l'ultimo
+  `riassunto.yaml` del pacchetto prima (o lo fa scrivere dalla sua `trascrizione.yaml`); una serata chiusa riprende
+  dal suo riassunto; una sessione lasciata aperta e ripresa dopo tre ore lo fa scrivere dalla trascrizione ripresa.
+  Il modello lavora in sottofondo dall'avvio; se all'«Inizia» non ha finito, si legge la riserva.
+- **Durata**: `ore_per_sessione` del brief (predefinito 2,5; il master la cambia dal pannello). A venti minuti dalla
+  fine il pannello lo segnala e il messaggio del turno porta un consiglio («avvicinati a una pausa naturale»), mai
+  durante un climax (scena con `climax: true`, o un orologio attivo a un segno dalla fine).
+- **Diario** (telefono): i riassunti delle serate chiuse (pacchetti prima compresi) e «finora stasera» (luoghi,
+  segni del tempo), pubblici; gli esiti privati restano solo sul telefono del loro PG.
+
 ### Il registro (registro.yaml, formato 1; apps/server/src/sessione/registro.ts)
 Estratto dagli eventi dell'archivio senza modelli; stesso archivio → stessi byte. Contiene le azioni private: è
 per il master e il Preparatore, mai per i giocatori. Sezioni, ognuna col suo turno: `archivio` (id, modo, inizio,

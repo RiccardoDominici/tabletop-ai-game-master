@@ -44,6 +44,7 @@ import { fuoriDallaFinzione } from '../narrazione/finzione';
 import { MOTIVO_FINE_SESSIONE } from '../sessione/archivio';
 import type { MemoriaSessione } from '../sessione/memoria';
 import type { FotografiaSessione, StatoRicostruito, StatoTavoloSalvato } from '../sessione/tipi';
+import type { RiassuntoSerata, SerataMaster } from '@cantastorie/shared';
 import { collegaSituazioni, type SituazioneCollegata } from '../campagna/situazioni';
 import type { Logger } from '../logger';
 import type { Narratore } from '../llm/tipi';
@@ -59,7 +60,9 @@ import { LimiteUmori, risolviEffetto, risolviUmore, type CueAudio } from '../aud
 import { TavoloAzioni, type RiepilogoChiusura } from '../azioni/tavolo';
 import type { Arbitro, Azione } from '../azioni/tipi';
 import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
-import { messaggioRiparazione } from '../narrazione/messaggio';
+import { messaggioChiusura, messaggioRiparazione } from '../narrazione/messaggio';
+import { SerataGuidata } from './serata';
+import { climaxInCorso } from '../sessione/durata';
 import { normalizza } from '../azioni/regole';
 import { nomiDeiPng, pngNominati, temaPresente } from '../repertorio/pertinenza';
 import { personaggiScena, pngIncontrati, presenzaEffettiva, presenzeMaster } from './presenze';
@@ -186,6 +189,10 @@ export const TESTO_BLOCCO = 'Il narratore si era bloccato: si riparte.';
 export const TESTO_RISERVA_BLOCCO = 'Scusate, ho perso il filo per un momento: ditemi di nuovo cosa fate.';
 /** Riga di sistema scritta da «Fine sessione» (pannello del master). */
 export const TESTO_FINE_SESSIONE = 'Fine della sessione.';
+/** Riga di sistema quando la chiusura guidata è finita (la sessione resta riprendibile). */
+export const TESTO_SERATA_CHIUSA = 'La serata è chiusa: alla prossima.';
+/** Le azioni rimaste in coda quando si chiude la serata, o quando ne comincia un'altra. */
+export const MOTIVO_CHIUSURA_SERATA = 'La serata si è chiusa: la tua azione non è stata risolta, riscrivila la prossima volta se vale ancora.';
 export const MOTIVO_RIPRESA = 'Il gioco si è fermato mentre il narratore rispondeva: la tua azione non è stata risolta, puoi rimandarla.';
 /** Token di un telefono (localStorage): lettere, cifre e trattini. */
 const DISPOSITIVO_VALIDO = /^[A-Za-z0-9_-]{8,64}$/;
@@ -230,6 +237,8 @@ export class Regia {
    * un altro (log del 3 novembre: sei finali di fila a o_colpevole 6/6).
    */
   private readonly sceneConFinale = new Set<string>();
+  /** La serata: «La volta scorsa…», Diario, durata e chiusura guidata (scena/serata.ts). */
+  private readonly serata: SerataGuidata;
   /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
   /** Il turno B in corso: azioni per PG, stallo, orologi il cui segno è dovuto (uno per orologio). */
   private turnoB: {
@@ -441,6 +450,8 @@ export class Regia {
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');
+    this.serata = new SerataGuidata({ campagna: opzioni.campagna, narratore: opzioni.narratore, log: opzioni.log, parole: () => this.o.paroleSegrete ?? [], pubblico: () => this.statoPubblico() });
+    if (!opzioni.ripresa) this.serata.preparaPerPacchetto();
     if (opzioni.ripresa) this.ripristina(opzioni.ripresa);
     else if (opzioni.dispositiviEreditati) {
       for (const [d, pg] of opzioni.dispositiviEreditati) if (opzioni.campagna.pg.some((p) => p.id === pg)) this.dispositivi.set(d, pg);
@@ -469,6 +480,7 @@ export class Regia {
       prossimoIdTrascrizione: this.prossimoIdTrascrizione,
       sceneVisitate: [...this.sceneVisitate],
       sceneConFinale: [...this.sceneConFinale],
+      serata: this.serata.esporta(),
       // Decisioni del master su presenze e rivelazioni: nel registro, così una ripresa le ritrova (assenti = nessuna).
       ...(this.presenzeManuali.size ? { presenzeManuali: [...this.presenzeManuali] } : {}),
       ...(this.rivelati.size ? { rivelati: [...this.rivelati] } : {}),
@@ -560,6 +572,7 @@ export class Regia {
     // Archivi di prima: almeno la scena in corso è già stata visitata.
     for (const id of f.sceneVisitate ?? [f.scena]) this.sceneVisitate.add(id);
     for (const id of f.sceneConFinale ?? []) this.sceneConFinale.add(id);
+    this.serata.preparaPerRipresa(f.serata, r.trascrizione, r.ultimoEvento, this.o.orologio.adesso(), this.titoliScene(f.sceneVisitate ?? [f.scena]), this.segniMostrati());
     this.trascrizione = r.trascrizione.map((v) => ({ ...v }));
     this.privati = (r.privati ?? []).map((v) => ({ ...v }));
     this.prossimoIdTrascrizione = Math.max(f.prossimoIdTrascrizione ?? 1, ...this.trascrizione.map((v) => v.id + 1));
@@ -589,6 +602,15 @@ export class Regia {
     this.daRiprendere = null;
     this.ripresaFatta = { quando: new Date(this.o.orologio.adesso()).toISOString(), turno: d.turno };
     this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: 'La sessione riprende da dove si era fermata.' });
+    // Un'altra serata (chiusa con «Chiudi la sessione», o lasciata aperta per ore): comincia con
+    // «La volta scorsa…», poi la finestra per tutti; le azioni rimaste in coda tornano ai giocatori.
+    const eraChiusa = this.serata.serataChiusa;
+    const recap = this.serata.prendiLaVoltaScorsa();
+    this.serata.riparte(this.o.orologio.adesso());
+    if (eraChiusa || recap.length) {
+      this.cominciaNuovaSerata(recap, eraChiusa ? 'ripresa dopo una serata chiusa' : 'ripresa di un’altra sera');
+      return;
+    }
     if (d.fase === 'fermata') {
       this.fase = 'fermata';
     } else if (d.fase === 'pausa' && !d.pausaAutomatica) {
@@ -932,6 +954,161 @@ export class Regia {
     });
   }
 
+  // ------------------------------------------------------------------ serata (scena/serata.ts)
+
+  /** Titoli delle scene, nell'ordine dato. */
+  private titoliScene(ids: readonly string[]): string[] {
+    return ids.map((id) => this.o.campagna.scene.find((s) => s.id === id)?.titolo ?? id);
+  }
+
+  /** I testi dei segni mostrati dagli orologi attivi (detti a voce: pubblici). */
+  private segniMostrati(): string[] {
+    return this.orologi.elenco.flatMap((o) => o.segni.slice(0, o.pieni));
+  }
+
+  /** «Finora stasera» per il Diario: scene attraversate e segni del tempo, niente di privato. */
+  private finoraStasera(): string[] {
+    const righe = this.sceneVisitate.size ? [`Luoghi: ${this.titoliScene([...this.sceneVisitate]).join(', ')}.`] : [];
+    return [...righe, ...this.segniMostrati().slice(-3)];
+  }
+
+  /** La scena è nel climax: il consiglio di chiudere aspetta (sessione/durata.ts). */
+  private climax(): boolean {
+    return climaxInCorso(this.campagna.scena, this.orologi.elenco);
+  }
+
+  /** Il consiglio di avvicinarsi a una pausa naturale, per il messaggio del turno (null = niente). */
+  private consiglioSerata(turno: number): string | null {
+    this.serata.togliLaVoltaScorsa();
+    const c = this.serata.consiglio(this.o.orologio.adesso(), this.climax());
+    if (c) this.o.log.info({ turno }, 'serata: fine vicina, consiglio di pausa naturale nel contesto');
+    return c;
+  }
+
+  /** Un'altra serata comincia: le azioni rimaste tornano ai giocatori, «La volta scorsa…», poi la finestra per tutti. */
+  private cominciaNuovaSerata(recap: string[], perché: string): void {
+    this.tavolo.annullaVive(MOTIVO_CHIUSURA_SERATA);
+    this.tavolo.chiudiForzata();
+    this.turno += 1;
+    this.o.log.info({ sessione: this.sessione, turno: this.turno, frasi: recap.length, perché }, 'serata: comincia un’altra serata');
+    this.leggiApertura(this.turno, recap);
+    this.notifica();
+    this.salva('nuova_serata');
+  }
+
+  /** Per il pannello del master. */
+  get serataMaster(): SerataMaster {
+    const chiudibile = (this.fase === 'finestra' || this.fase === 'pausa') && !this.tavolo.chiudendo && !this.serata.serataChiusa;
+    return this.serata.master(this.o.orologio.adesso(), this.climax(), chiudibile);
+  }
+
+  /** Il master cambia la durata prevista della serata. */
+  impostaOreSerata(ore: number): Esito {
+    if (!this.serata.impostaOre(ore)) return { ok: false, errore: 'Durata non valida: da mezz’ora a otto ore.' };
+    this.o.log.info({ ore }, 'serata: durata cambiata dal master');
+    this.notifica();
+    return { ok: true };
+  }
+
+  /**
+   * «Chiudi la sessione» (chiusura guidata): le azioni in coda tornano ai giocatori, il narratore chiude
+   * la serata (in modalità B una battuta `chiusura` del repertorio, se c'è, la dice il Motore; se no
+   * improvvisa), poi il riassunto della serata (modello + guardia, o riserva) va sul proiettore e nel
+   * Diario, e `alFinire` lo riceve (sessione/ciclo.ts scrive registro e riassunto.yaml). La sessione
+   * resta riprendibile: la prossima volta comincia con «La volta scorsa…».
+   */
+  chiudiSessione(alFinire?: (r: RiassuntoSerata) => void): Esito {
+    if (this.serata.inChiusura) return { ok: false, errore: 'La chiusura della serata è già in corso.' };
+    if (this.serata.serataChiusa) return { ok: false, errore: 'La serata è già chiusa.' };
+    if (this.narrazioneInCorso || this.tavolo.chiudendo) return { ok: false, errore: 'Aspetta che finisca la narrazione, o fermala prima.' };
+    if (this.fase !== 'finestra' && this.fase !== 'pausa') return { ok: false, errore: 'La serata non è in corso.' };
+    const annullate = this.tavolo.annullaVive(MOTIVO_CHIUSURA_SERATA);
+    const turno = this.tavolo.aperta ? this.turno : this.turno + 1;
+    this.tavolo.chiudiForzata();
+    this.pausaRichiesta = false;
+    this.invitoSospeso = null;
+    this.turno = turno;
+    this.serata.iniziaChiusura();
+    this.o.log.info({ turno, azioni_annullate: annullate.length }, 'serata: chiusura guidata');
+    void this.eseguiChiusura(turno, alFinire).catch((err: unknown) => {
+      this.o.log.error({ turno, err: (err as Error).message }, 'serata: chiusura fallita');
+      this.serata.annullaChiusura();
+      this.fase = 'pausa';
+      this.invitoSospeso = 'tutti';
+      this.notifica();
+    });
+    return { ok: true };
+  }
+
+  private async eseguiChiusura(turno: number, alFinire?: (r: RiassuntoSerata) => void): Promise<void> {
+    const epoca = ++this.epoca;
+    this.fase = 'narrazione';
+    this.segmentiAperti.clear();
+    this.sorvegliante.inizia(turno, 'narrazione', 'chiusura della serata');
+    this.notifica();
+    const log = this.o.log.child({ turno, chiusura: true });
+    const battuta = this.statoRepertorio?.disponibili(turno).find((b) => b.tipo === 'chiusura') ?? null;
+    const uso = battuta ? this.statoRepertorio!.usa(battuta.id, turno, { inRisposta: new Set() }) : null;
+    if (uso?.ok) {
+      log.info({ battuta: uso.battuta.id }, 'serata: chiusura dal repertorio');
+      uso.righe.forEach((r, k) => {
+        const { voce_id, nome } = voceDi(this.campagna, r.etichetta);
+        this.aggiungiTrascrizione({ turno, tipo: r.etichetta === ID_NARRATORE ? 'narrazione' : 'battuta', chi: r.etichetta, nome, testo: r.testo });
+        this.pipeline.accoda({ id_frase: `t${turno}-c${k}`, turno, indice: k, parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: this.pronuncia(r.testo) });
+      });
+    } else {
+      const controllo = new AbortController();
+      this.controlloLlm = controllo;
+      const messaggio = messaggioChiusura({
+        trascrizione: this.trascrizione,
+        pgAlTavolo: this.pgAlTavolo().map((id) => ({ id, nome: this.nomePg(id) })),
+        orologi: this.statoRepertorio ? this.orologi.descriviRepertorio(turno) : this.orologi.descrivi(turno),
+      });
+      const esito = await narraTurno(
+        { campagna: this.campagna, narratore: this.o.narratore, pipeline: this.pipeline, log },
+        {
+          turno,
+          sistema: this.sistema,
+          messaggio,
+          signal: controllo.signal,
+          misuratore: new MisuratoreTurno(turno, this.o.orologio.ora(), 0, this.o.voce.nome, this.o.orologio.adesso()),
+          ora: () => this.o.orologio.ora(),
+          pronuncia: this.pronuncia,
+          presenti: this.pngInScena(),
+          usa: null,
+          ignora: new Set(['invito_mancante']),
+          onFrase: (f) => {
+            if (epoca !== this.epoca) return;
+            this.sorvegliante.batti('llm: frase della chiusura');
+            this.trascriviFrase(turno, f.etichetta, f.nome, f.testo, f.segmento);
+          },
+        },
+      );
+      this.controlloLlm = null;
+      if (epoca !== this.epoca) return;
+      if (esito.esito) this.o.registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'chiusura', turno, modello: esito.esito.modello, ...esito.esito.costo });
+      log.info({ frasi: esito.frasi, errore: esito.errore }, 'serata: chiusura narrata');
+    }
+    // Il riassunto si scrive mentre la voce legge la chiusura.
+    const riassunto = this.serata.riassumi(this.trascrizione, this.titoliScene([...this.sceneVisitate]), this.segniMostrati(), turno);
+    const voce = await this.pipeline.chiudiTurno(turno);
+    if (epoca !== this.epoca || voce.interrotto) return;
+    await this.attendiFineAudio(turno, voce.secondi);
+    const r = await riassunto;
+    if (epoca !== this.epoca) return;
+    this.sorvegliante.fine('chiusura della serata');
+    const s = this.serata.chiudi(r, new Date(this.o.orologio.adesso()).toISOString());
+    this.versioneScena += 1;
+    this.fase = 'pausa';
+    this.invitoSospeso = 'tutti';
+    this.aggiungiTrascrizione({ turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_SERATA_CHIUSA });
+    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'chiusura_serata', origine: r.origine, motivo: r.motivo ?? null, riassunto: s.testo, fili: s.fili });
+    log.info({ origine: r.origine, fili: s.fili.length }, 'serata: chiusa, riassunto sul proiettore');
+    this.notifica();
+    this.salva('chiusura_serata');
+    alFinire?.(s);
+  }
+
   /** Testo dell'ultima narrazione pubblica (per l'arbitro). */
   private ultimaNarrazione(): string {
     const voci = this.trascrizione.filter((v) => v.tipo === 'narrazione' || v.tipo === 'battuta');
@@ -1092,6 +1269,7 @@ export class Regia {
       ritmo: this.ritmo,
       ora_server_ms: this.o.orologio.adesso(),
       ...(this.prove?.attivo ? { dadi: true, tiri: this.prove.tiriPubblici() } : {}),
+      ...this.serata.pubblico(this.finoraStasera()),
     };
   }
 
@@ -1324,6 +1502,13 @@ export class Regia {
       return { ok: true };
     }
     if (this.fase !== 'pausa') return { ok: false, errore: 'Il tavolo non è in pausa.' };
+    if (this.serata.serataChiusa) {
+      // Dopo «Chiudi la sessione», Riprendi comincia un'altra serata: «La volta scorsa…», poi si gioca.
+      const recap = this.serata.prendiLaVoltaScorsa();
+      this.serata.riparte(this.o.orologio.adesso());
+      this.cominciaNuovaSerata(recap, 'riprendi dopo una serata chiusa');
+      return { ok: true };
+    }
     if (this.tavolo.aperta) {
       this.fase = 'finestra';
       this.tavolo.riprendi();
@@ -1557,7 +1742,9 @@ export class Regia {
     this.o.log.info({ scena: c.scena.id, frasi: c.scena.apertura.length, voce: this.o.voce.nome }, 'scena: apertura');
     if (this.o.preriscalda && this.o.narratore.preriscalda) void this.preriscalda();
     this.sceneVisitate.add(c.scena.id);
-    this.leggiApertura(0, c.scena.apertura);
+    // Una sessione che continua (pacchetto dopo, senza riassunto_iniziale) comincia con «La volta scorsa…».
+    this.serata.riparte(this.o.orologio.adesso());
+    this.leggiApertura(0, [...this.serata.prendiLaVoltaScorsa(), ...c.scena.apertura]);
     this.salva('inizio');
   }
 
@@ -1819,6 +2006,7 @@ export class Regia {
       orologi: this.statoRepertorio ? this.orologi.descriviRepertorio(r.turno) : this.orologi.descrivi(r.turno),
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
       noteRegia: this.note.testi,
+      tempoSerata: this.consiglioSerata(r.turno),
       ...(tiri?.fatti.length ? { esitiTiri: { titolo: TITOLO_ESITI, regola: this.prove?.regolaEsiti() ?? REGOLA_ESITI, righe: tiri.fatti } } : {}),
     });
     // Ritmo concitato: il narratore sa che vale ancora, e quando dire `[ritmo] calmo`.

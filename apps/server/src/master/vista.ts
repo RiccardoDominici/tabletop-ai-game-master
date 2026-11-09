@@ -174,5 +174,5 @@ export function repertorioMaster(s: StatoRepertorio, turno: number): RepertorioM
 /** La sessione salvata, per il pannello («Riprendi»: quando e da che turno). */
 function sessioneMaster(regia: Regia): SessioneMaster {
   const r = regia.infoRegistro;
-  return { id: r.sessione, creata: r.creata, eventi: r.eventi, ripresa: r.ripresa, in_attesa_di_ripresa: r.inAttesaDiRipresa };
+  return { id: r.sessione, creata: r.creata, eventi: r.eventi, ripresa: r.ripresa, in_attesa_di_ripresa: r.inAttesaDiRipresa, serata: regia.serataMaster };
 }

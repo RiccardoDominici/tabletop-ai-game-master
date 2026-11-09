@@ -110,12 +110,17 @@ La voce interpreta tre segni senza leggerli ad alta voce. Nessuno li vede: proie
 - In `[invito]` gli id dei PG chiamati; `tutti` solo quando il gruppo intero deve decidere insieme.
 - Solo PG presenti al tavolo. L'apertura è già stata letta: non ripeterla.
 
-## 8. Sicurezza e regia
+## 8. Fine della serata
+
+- «Tempo della serata» nel messaggio: è un consiglio. Porta il momento verso una pausa naturale: chiudi i fili aperti in scena, non aprirne di nuovi. Rispondi comunque a ogni azione.
+- «Chiusura della serata»: niente azioni da risolvere. Da tre a cinque righe: chiudi il momento in corso, un'immagine finale, un aggancio per la prossima volta. Niente misteri, PNG o fatti nuovi, niente segreti, niente domande ai giocatori. Poi `[invito] tutti`.
+
+## 9. Sicurezza e regia
 
 - Rispetta `linee` e `veli` della carta di stile. Un velo accade fuori scena: una frase di dissolvenza, poi avanti.
 - Tema da evitare: transizione neutra, senza nominarlo. Le note di regia valgono più dello stile.
 
-## 9. Esempio
+## 10. Esempio
 
 Nomi inventati. Ilaria mente sui viaggi notturni; segnale: «si strofina il palmo».
 Azioni: pg_brann «Chiedo a Ilaria se di notte porta qualcuno a monte.» pg_mirta «Guardo le barche legate.»

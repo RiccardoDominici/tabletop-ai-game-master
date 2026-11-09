@@ -52,6 +52,8 @@ export interface DatiMessaggioTurno {
    * delle azioni. Assente o vuoto: nessuna sezione (campagna senza dadi).
    */
   esitiTiri?: { titolo: string; regola: string; righe: string[] };
+  /** Fine della serata vicina (sessione/durata.ts, consiglioDiChiusura): un consiglio, non un ordine. */
+  tempoSerata?: string | null;
 }
 
 /** Titolo della sezione delle note di regia nel messaggio (lo cercano anche i log e i test). */
@@ -160,6 +162,8 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
     if (d.repertorio.stallo) parti.push(TESTO_STALLO_REPERTORIO);
   }
 
+  if (d.tempoSerata) parti.push('## Tempo della serata', d.tempoSerata);
+
   // Note di regia: in fondo, vicino all'ordine di rispondere, perché pesino di più.
   const note = sezioneNoteRegia(d.noteRegia ?? []);
   if (note) parti.push(note);
@@ -173,6 +177,29 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
           'l’ultima riga è [invito] con gli id dei PG al tavolo che devono rispondere, oppure tutti.'
       : 'Narra ciò che succede ora. Rispondi solo con righe etichettate; ' +
           'l’ultima riga è [invito] con gli id dei PG al tavolo che devono rispondere, oppure tutti.',
+  );
+  return parti.join('\n\n');
+}
+
+/** Titolo della sezione della chiusura guidata (la cercano il prompt, i log e le prove). */
+export const TITOLO_CHIUSURA = '## Chiusura della serata';
+
+/**
+ * «Chiudi la sessione» (chiusura guidata): niente azioni da risolvere, il narratore chiude la serata.
+ * In modalità B la chiusura è improvvisata ([usa] non vale): una battuta `chiusura` del repertorio, se
+ * c'è, la dice il Motore senza chiamare il modello.
+ */
+export function messaggioChiusura(d: { trascrizione: VoceTrascrizione[]; maxTrascrizione?: number; pgAlTavolo: Array<{ id: string; nome: string }>; orologi?: string }): string {
+  const voci = d.trascrizione.filter((v) => v.tipo !== 'sistema').slice(-(d.maxTrascrizione ?? 30));
+  const parti = ['## Trascrizione recente', voci.map((v) => `${v.nome}: ${v.testo}`).join('\n') || '(vuota)'];
+  if (d.orologi) parti.push('## Orologi della scena (stato tenuto dal Motore)', d.orologi);
+  parti.push(
+    TITOLO_CHIUSURA,
+    'Il master chiude la serata adesso. Niente azioni da risolvere. Scrivi da tre a cinque righe [narratore] (i PNG presenti possono dire una frase): ' +
+      'chiudi il momento in corso, dai un’immagine finale, lascia un aggancio per la prossima volta. ' +
+      'Niente misteri, PNG o fatti nuovi, niente segreti, niente domande ai giocatori, niente [usa], niente [orologio].',
+    `pg_presenti: [${d.pgAlTavolo.map((p) => p.id).join(', ')}]`,
+    'Rispondi ora con le righe etichettate; l’ultima riga è [invito] tutti.',
   );
   return parti.join('\n\n');
 }

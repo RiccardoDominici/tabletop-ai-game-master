@@ -10,7 +10,9 @@
  * costruiscono una volta all'avvio dal pacchetto, quindi il server si ricostruisce (avvio.ts,
  * ServerConCiclo) e i client si ricollegano come dopo un riavvio (strada già provata dalla ripresa).
  */
-import type { PacchettiMaster, SessioneMaster } from '@cantastorie/shared';
+import path from 'node:path';
+import type { PacchettiMaster, RiassuntoSerata, SessioneMaster } from '@cantastorie/shared';
+import { scriviRiassuntoSerata } from './riassunto';
 import { elencoPacchetti, pacchettoDopo, type Pacchetto } from '../campagna/pacchetti';
 import type { Campagna } from '../campagna/tipi';
 import type { Logger } from '../logger';
@@ -30,6 +32,8 @@ export interface OpzioniCiclo {
   archivio: ArchivioSessioni | null;
   regia: {
     fineSessione(): { ok: true; sessione: string } | { ok: false; errore: string };
+    /** Chiusura guidata della serata (scena/regia.ts); `alFinire` riceve il riassunto a serata chiusa. */
+    chiudiSessione(alFinire?: (s: RiassuntoSerata) => void): { ok: true } | { ok: false; errore: string };
     readonly infoRegistro: { sessione: string | null };
   };
   /** Avviso della scelta del pacchetto all'avvio (sessione/scelta-pacchetto.ts). */
@@ -96,6 +100,32 @@ export class CicloSessioni {
       out.pacchetti = pacchetti;
     }
     return out;
+  }
+
+  /**
+   * «Chiudi la sessione»: la chiusura guidata della serata. A serata chiusa (narrazione, riassunto sul
+   * proiettore) si scrivono il registro e, accanto, riassunto.yaml; la sessione dell'archivio resta
+   * aperta, così la serata dopo riprende (one-shot) o «Prossima sessione» la chiude (pacchetti).
+   */
+  chiudi(): EsitoCiclo {
+    const sessione = this.o.regia.infoRegistro.sessione;
+    const r = this.o.regia.chiudiSessione((s) => this.scriviSerata(sessione, s));
+    if (!r.ok) return r;
+    return { ok: true, dettagli: 'chiusura della serata in corso: il narratore chiude, poi riassunto sul proiettore e registro', registro: null };
+  }
+
+  private scriviSerata(sessione: string | null, s: RiassuntoSerata): void {
+    if (!this.o.archivio || !sessione) {
+      this.o.log.warn({ sessione }, 'sessioni: serata chiusa senza archivio, niente registro né riassunto.yaml');
+      return;
+    }
+    try {
+      const scritto = registraSessione({ archivio: this.o.archivio, sessione, cartellaCampagna: this.o.cartellaCampagna, cartellaLog: this.o.cartellaLog, log: this.o.log });
+      this.ultimoRegistro = { sessione, file: scritto.registro, turni: scritto.estratto.registro.archivio.ultimo_turno };
+      scriviRiassuntoSerata(path.dirname(scritto.registro), s, this.o.log);
+    } catch (err) {
+      this.o.log.error({ sessione, err: (err as Error).message }, 'sessioni: registro o riassunto della serata non scritti');
+    }
   }
 
   /** «Fine sessione»: si chiude la sessione in corso e si scrive il suo registro. */

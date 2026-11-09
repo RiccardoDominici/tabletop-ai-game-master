@@ -197,6 +197,28 @@ export interface PresenzaMaster {
 }
 
 /** La sessione di gioco salvata: il server la riprende da sola dopo un riavvio. */
+/** La serata vista dal pannello (chiusura guidata, docs/richieste-2026-11-09.md §9). */
+export interface SerataMaster {
+  /** Durata prevista in ore (`ore_per_sessione` del brief, o quella data dal master). */
+  ore: number;
+  /** Da dove viene la durata: il brief, il predefinito (2,5) o il pannello. */
+  origine_ore: 'brief' | 'predefinito' | 'master';
+  /** Minuti dall'inizio della serata (avvio o ripresa); null = la serata non è cominciata. */
+  minuti_passati: number | null;
+  /** Minuti alla fine prevista (negativi = oltre); null = non cominciata. */
+  minuti_rimasti: number | null;
+  /** Mancano MINUTI_PREAVVISO o meno: il narratore riceve il consiglio di avvicinarsi a una pausa naturale. */
+  fine_vicina: boolean;
+  /** Il consiglio è sospeso perché la scena è in un climax. */
+  climax: boolean;
+  /** «Chiudi la sessione» è possibile adesso (gioco in corso, nessuna narrazione). */
+  chiudibile: boolean;
+  /** La chiusura guidata è in corso (narrazione di chiusura e riassunto). */
+  chiusura_in_corso: boolean;
+  /** La serata è stata chiusa (si aspetta Riprendi, Prossima sessione o Fine sessione). */
+  chiusa: boolean;
+}
+
 export interface SessioneMaster {
   /** Id (ISO dell'inizio) della sessione in corso; null = nessuna ancora (scena non avviata). */
   id: string | null;
@@ -213,6 +235,8 @@ export interface SessioneMaster {
    * Assente in una one-shot.
    */
   pacchetti?: PacchettiMaster;
+  /** La serata: durata prevista, tempo passato, preavviso di fine, chiusura guidata. */
+  serata?: SerataMaster;
   /** Ultimo registro scritto da «Fine sessione» (anche in una one-shot). */
   registro?: { sessione: string; file: string; turni: number } | null;
   /** «Fine sessione» è possibile adesso (c'è una sessione in corso). */
@@ -265,6 +289,13 @@ export type ComandoMaster =
   | { tipo: 'nuova_sessione' }
   /** Fine sessione: il gioco si ferma, la sessione si chiude e il server scrive il registro (registro.yaml). */
   | { tipo: 'fine_sessione' }
+  /**
+   * Chiusura guidata della serata: il narratore chiude il momento (immagine finale, un aggancio), poi il
+   * proiettore mostra «Cosa è successo stasera» e si scrive il registro. La sessione resta riprendibile.
+   */
+  | { tipo: 'chiudi_sessione' }
+  /** Durata prevista della serata, in ore (0,5–8): sostituisce `ore_per_sessione` del brief. */
+  | { tipo: 'durata_sessione'; ore: number }
   /** Campagna a pacchetti: (fine sessione se serve, poi) si passa al pacchetto dopo, dal suo riassunto iniziale. */
   | { tipo: 'prossima_sessione' }
   /** Cambia (o dimentica, con null) il PG ricordato di un telefono: vale dal suo prossimo collegamento. */

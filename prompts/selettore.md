@@ -102,7 +102,12 @@ La voce interpreta tre segni senza leggerli ad alta voce. Nessuno li vede: proie
 - Rispetta `linee` e `veli`: un velo accade fuori scena, con una frase di dissolvenza. Un tema da evitare: una frase neutra, senza nominarlo. Le note di regia valgono più di queste istruzioni.
 - A voce mai regole, orologi, mosse, indizi, id.
 
-## 9. Esempio
+## 9. Fine della serata
+
+- «Tempo della serata» nel messaggio: è un consiglio. Porta il momento verso una pausa naturale: chiudi i fili aperti in scena, non aprirne di nuovi. Rispondi comunque a ogni azione.
+- «Chiusura della serata»: niente azioni da risolvere e niente `[usa]`. Da tre a cinque righe tue: chiudi il momento in corso, un'immagine finale, un aggancio per la prossima volta. Niente misteri, PNG o fatti nuovi, niente segreti, niente domande ai giocatori. Poi `[invito] tutti`.
+
+## 10. Esempio
 
 Nomi inventati. Catalogo:
 - `ila_notte · png_ilaria · risposta · un PG chiede a Ilaria dove va di notte con la barca`

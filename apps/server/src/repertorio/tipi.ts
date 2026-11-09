@@ -17,6 +17,8 @@ export const TIPI_BATTUTA = [
   'momento',
   'transizione',
   'finale',
+  // Chiusura della SERATA (non della scena): la dice il Motore a «Chiudi la sessione», mai il selettore.
+  'chiusura',
 ] as const;
 export type TipoBattuta = (typeof TIPI_BATTUTA)[number];
 

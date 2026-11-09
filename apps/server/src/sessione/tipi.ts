@@ -16,7 +16,7 @@
  * La ricostruzione è un fold puro (ricostruisci): l'ultima fotografia, l'ultima versione di ogni
  * turno della trascrizione, l'ultimo stato del tavolo, l'ultimo PG di ogni dispositivo.
  */
-import type { EsitoPrivato, FaseScena, NotaRegia, VoceTrascrizione } from '@cantastorie/shared';
+import type { EsitoPrivato, FaseScena, NotaRegia, RiassuntoSerata, VoceTrascrizione } from '@cantastorie/shared';
 import type { UmoreScelto } from '../audio/scena';
 import type { Azione } from '../azioni/tipi';
 import type { StatoProveSalvato } from '../prove/stato';
@@ -77,6 +77,8 @@ export interface FotografiaSessione {
   sceneVisitate?: string[];
   /** Scene che hanno già avuto il loro finale (un finale per scena; assente negli archivi di prima). */
   sceneConFinale?: string[];
+  /** La serata: riassunti delle serate chiuse, chiusura, durata (assente negli archivi di prima). */
+  serata?: SerataSalvata;
   /** Presenze dei PNG decise a mano dal master (true = in scena), valide per questa scena (assente = nessuna). */
   presenzeManuali?: Array<[string, boolean]>;
   /** PNG nascosti rivelati a mano dal master (assente = nessuno). */
@@ -86,6 +88,16 @@ export interface FotografiaSessione {
 }
 
 /** Lo stato ricostruito dal registro, pronto per Regia.ripristina. */
+/** La serata nella fotografia (scena/serata.ts): serate chiuse, se l'ultima è chiusa, la durata del master. */
+export interface SerataSalvata {
+  /** Le serate chiuse di questa sessione, in ordine. */
+  riassunti: RiassuntoSerata[];
+  /** L'ultima serata è stata chiusa con «Chiudi la sessione»: la ripresa comincia col suo riassunto. */
+  chiusa: boolean;
+  /** Durata data dal master (null = quella del brief). */
+  oreMaster: number | null;
+}
+
 export interface StatoRicostruito {
   sessione: string;
   fotografia: FotografiaSessione;

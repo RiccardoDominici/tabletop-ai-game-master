@@ -20,6 +20,8 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   effetto: { tipo: 'effetto', id: 'sfx_campana' },
   nuova_sessione: { tipo: 'nuova_sessione' },
   fine_sessione: { tipo: 'fine_sessione' },
+  chiudi_sessione: { tipo: 'chiudi_sessione' },
+  durata_sessione: { tipo: 'durata_sessione', ore: 2 },
   prossima_sessione: { tipo: 'prossima_sessione' },
   dispositivo: { tipo: 'dispositivo', dispositivo: 'tel-anna-0123456789', id_pg: null },
   presenza: { tipo: 'presenza', id_png: 'png_oste', presente: true },

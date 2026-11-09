@@ -182,6 +182,19 @@ in condizioni normali, inviare = pronto, il conto alla rovescia solo quando la n
    le azioni del turno tornano ai giocatori («non è andata», da rimandare) e resta una riga di riserva del narratore,
    solo testo. Anche un'eccezione in un flusso della narrazione fa ripartire subito il gioco.
 
+## Serata: riassunto, durata, chiusura guidata (docs/strati.md, «Riassunto e chiusura della serata»)
+- **StatoTavolo**: `la_volta_scorsa` (testo letto all'inizio della serata, finché non si chiude la prima finestra),
+  `fine_serata` (`{riassunto: {etichetta, quando, testo, fili}, di_riserva}` dopo «Chiudi la sessione», finché il
+  gioco non riprende), `diario` (`{serate, stasera}`: pubblico, uguale per tutti; gli esiti privati restano
+  nell'evento `privato:esiti` della stanza del PG).
+- **Master**: comandi `{tipo: 'chiudi_sessione'}` e `{tipo: 'durata_sessione', ore}` (0,5–8);
+  `StatoMaster.sessione.serata` = `{ore, origine_ore, minuti_passati, minuti_rimasti, fine_vicina, climax,
+  chiudibile, chiusura_in_corso, chiusa}`.
+- **Narratore**: sezione «## Tempo della serata» nel messaggio del turno quando la fine è vicina (consiglio);
+  messaggio di chiusura con «## Chiusura della serata» (niente azioni, niente `[usa]`, ultima riga `[invito] tutti`).
+- **Registro**: `narrazioni.jsonl` ha una riga `tipo: chiusura_serata` (origine del riassunto, motivo della riserva,
+  testo, fili); la fotografia della sessione porta `serata` (`riassunti`, `chiusa`, `oreMaster`).
+
 ## Misure di latenza (per ogni turno, in `logs/turni.jsonl`)
 
 Tutti i tempi in ms dal momento in cui la finestra si chiude (`t0`), più la durata della finestra stessa:

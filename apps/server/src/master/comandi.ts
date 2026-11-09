@@ -48,6 +48,8 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'nuova_sessione',
   'effetto',
   'fine_sessione',
+  'chiudi_sessione',
+  'durata_sessione',
   'prossima_sessione',
   'dispositivo',
   'presenza',
@@ -55,7 +57,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
 ]);
 
 /** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */
-const SENZA_SALVATAGGIO: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>(['effetto', 'nuova_sessione', 'fine_sessione', 'prossima_sessione']);
+const SENZA_SALVATAGGIO: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>(['effetto', 'nuova_sessione', 'fine_sessione', 'chiudi_sessione', 'prossima_sessione']);
 
 /** Id semplici (luoghi, orologi, azioni, note, immagini): niente sorprese nei log. */
 const ID_VALIDO = /^[A-Za-z0-9_]{1,80}$/;
@@ -218,6 +220,20 @@ export class ControlliMaster {
         const e = this.o.ciclo.fine();
         if (!e.ok) return rifiuto(e.errore);
         return { esito: { ok: true }, dettagli: e.dettagli, dati: e.registro ? { registro: e.registro.registro, sessione: e.registro.sessione } : {} };
+      }
+      case 'chiudi_sessione': {
+        if (!this.o.ciclo) {
+          const e = regia.chiudiSessione();
+          return e.ok ? { esito: e, dettagli: 'chiusura della serata in corso (senza registro: nessun ciclo delle sessioni)' } : rifiuto(e.errore);
+        }
+        const e = this.o.ciclo.chiudi();
+        if (!e.ok) return rifiuto(e.errore);
+        return { esito: { ok: true }, dettagli: e.dettagli };
+      }
+      case 'durata_sessione': {
+        const e = regia.impostaOreSerata(Number(c.ore));
+        if (!e.ok) return rifiuto(e.errore);
+        return { esito: e, dettagli: `durata della serata: ${Number(c.ore)} ore`, dati: { ore: Number(c.ore) } };
       }
       case 'prossima_sessione': {
         if (!this.o.ciclo) return rifiuto('Prossima sessione non disponibile su questo server.');

@@ -24,7 +24,7 @@ import type { StatoRepertorioSalvato } from '../sessione/tipi';
 const TIPI_NEUTRI: Partial<Record<TipoBattuta, string>> = { menzogna: 'risposta', verita: 'risposta', confessione: 'risposta' };
 
 /** Tipi che la preselezione per temi non indica mai (li governano orologio, scena e Motore). */
-const TIPI_NON_INDICATI: ReadonlySet<TipoBattuta> = new Set<TipoBattuta>(['segno_orologio', 'transizione', 'finale']);
+const TIPI_NON_INDICATI: ReadonlySet<TipoBattuta> = new Set<TipoBattuta>(['segno_orologio', 'transizione', 'finale', 'chiusura']);
 
 /** Il tipo come lo vede il selettore nel catalogo (mai «menzogna», «verita», «confessione»). */
 export function tipoNelCatalogo(tipo: TipoBattuta): string {
@@ -236,7 +236,8 @@ export class StatoRepertorio {
     const completi = new Map(this.orologi.elenco.map((x) => [x.id, x.pieni >= x.segmenti ? x.segmenti : null]));
     const perche: Record<string, string> = {};
     const candidate = this.disponibili(o.turno).filter((b) => {
-      if (b.solo_esempio) return false;
+      // Le chiusure della serata le dice solo il Motore, a «Chiudi la sessione» (scena/regia.ts).
+      if (b.solo_esempio || b.tipo === 'chiusura') return false;
       const testo = testoPer(b);
       // Cancello sull'azione: senza un'azione adatta (privata, del PG giusto) la battuta non entra.
       if (this.serveAzione(b) && testo === null) return false;
