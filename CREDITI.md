@@ -81,7 +81,7 @@ Fonti nel repo: `assets/voci/voci.yaml` (campi `fish`, `fish_titolo`, `fish_perc
 | lucian | ITAL | 60b51b6e9e654e06b54871895b1c9a71 | non indicato nel repo | da verificare: licenza non scritta nel repo | `assets/voci/voci.yaml` |
 | tabitha | Voce Vivace Italiana | 367577d036bb49e4a7799169ed5ec0fc | non indicato nel repo | da verificare: licenza non scritta nel repo | `assets/voci/voci.yaml` |
 
-- Il repo non scrive la licenza delle voci community di Fish. `docs/ricerca-voce-drama3.md` dice: «Sulle voci della community non ho trovato termini di licenza chiari». Riporta anche, da uno snippet di un blog, che la licenza dei pesi di drama-3 vieta di clonare una persona reale senza consenso. Da verificare sulla pagina Fish Audio o sulla scheda del modello.
+- Il repo non scrive la licenza delle voci community di Fish. `docs/ricerca-voce-drama3.md` dice: «Sulle voci della community non ho trovato termini di licenza chiari». Riporta anche, da uno snippet di un blog, che la licenza dei pesi di drama-3 vieta di clonare una persona reale senza consenso. Da verificare sui termini d'uso di Fish Audio (sito: https://fish.audio; la pagina esatta dei termini non è ancora registrata nel repo) e sulla scheda del modello drama-3 (documentazione API: https://docs.fish.audio).
 - Il registro esclude le voci con nomi di persone reali o di personaggi (vedi `docs/ricerca-voce-drama3.md`, sezione 4).
 - Riserva Qwen (`assets/voci/*.wav`: `narratore.wav`, `vincent.wav`, `nadine.wav`, `lucian.wav`, `tabitha.wav`): `assets/voci/voci.yaml` dice che sono «voci sintetiche HeyGen (non persone reali)». Licenza: da verificare, non scritta nel repo.
 
