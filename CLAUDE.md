@@ -30,11 +30,16 @@ git ls-files | grep -E '(^|/)\.env(\.[^e][^/]*)?$|^logs/|^cache/|(^|/)\.venv/|__
 # 2. Pattern di chiavi e token nel contenuto dei file tracciati
 git grep -nE 'sk-ant-|sk-or-v1|hf_[A-Za-z0-9]{10,}|ghp_[A-Za-z0-9]{10,}|gho_[A-Za-z0-9]{10,}|[A-Z_]*_API_KEY=[^[:space:]]+' -- ':!.env.example' && echo "TROVATO: pattern di chiave"
 
-# 3. Token del master copiati dai log (compaiono come ?token=… nel log del server)
+# 3. Regole ricavate da un manuale non libero: il set non va nel repository
+git ls-files | grep -E '^campagne/[^/]+/regole/' && echo "TROVATO: file di un set di regole tracciato"
+git grep -nE '^\s*libera:\s*false' -- 'campagne/*/regole/regole.yaml' && echo "TROVATO: regole con licenza non libera"
+git check-ignore -q manuali/x.pdf || echo "ATTENZIONE: manuali/ non e' nel .gitignore"
+
+# 4. Token del master copiati dai log (compaiono come ?token=… nel log del server)
 for t in $(grep -ohE 'token=[A-Za-z0-9_-]{12,}' logs/*.out logs/*.jsonl logs/*/*.out 2>/dev/null | cut -d= -f2 | sort -u); do git grep -nF "$t" && echo "TROVATO: token del master"; done
 ```
 
-Il controllo 3 vale solo se esistono log; i valori dei token non si stampano mai nel terminale o nei messaggi
+Il controllo 4 vale solo se esistono log; i valori dei token non si stampano mai nel terminale o nei messaggi
 di commit. Se un segreto è già finito in un commit, non basta cancellarlo: va revocato e il commit riscritto
 prima di pubblicare.
 
