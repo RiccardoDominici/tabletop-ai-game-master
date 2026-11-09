@@ -62,6 +62,7 @@ import { segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repe
 import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
 import { voceDi } from '../turni/narrazione';
 import { PipelineVoce, type UscitaAudio } from '../voce/pipeline';
+import { direzionePredefinita } from '../voce/espressione';
 import { creaPronunciatore, type Pronunciatore } from '../voce/pronuncia';
 import type { SelettoreVoce } from '../voce/selettore';
 import { StatoOrologi, type EsitoAvanzamento, type Orologio as OrologioMinaccia } from './orologi';
@@ -287,6 +288,9 @@ export class Regia {
       uscita: opzioni.uscitaAudio,
       log: opzioni.log.child({ modulo: 'voce' }),
       ...(opzioni.cacheAudio ? { cache: opzioni.cacheAudio } : {}),
+      // Voce espressiva (drama-3): direzione di chi parla dalla scheda o dalla carta di stile; costo a fine turno.
+      direzione: (parlante) => direzionePredefinita(this.campagna, parlante),
+      registraCosto: (riga) => this.o.registroCosti.scrivi({ ...riga }),
       osservatore: {
         richiesta: (f) => {
           if (f.turno === this.misuratore?.turno) this.misuratore.segna('voce_richiesta', this.o.orologio.ora());

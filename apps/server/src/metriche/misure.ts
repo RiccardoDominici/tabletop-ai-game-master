@@ -26,7 +26,7 @@ export class MisuratoreTurno {
     /** Istante monotono di chiusura della finestra (ms). */
     readonly t0: number,
     readonly finestraMs: number,
-    readonly voceMotore: 'qwen' | 'mock',
+    readonly voceMotore: 'fish' | 'qwen' | 'mock',
     /** Epoch ms di t0, per il campo ts. */
     private readonly t0Epoch: number,
   ) {}

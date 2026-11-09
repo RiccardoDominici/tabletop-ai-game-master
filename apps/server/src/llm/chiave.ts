@@ -21,6 +21,14 @@ export class ErroreChiave extends Error {
  * (`"…"` o `'…'`), come farebbe una shell, e nient'altro.
  */
 export function leggiChiaveAnthropic(percorsoFile: string): string {
+  return leggiRigaChiave(percorsoFile, PREFISSO);
+}
+
+/**
+ * Stesse regole per un'altra chiave dello stesso tipo di file (es. `OPENROUTER_API_KEY=` per la voce
+ * drama-3): solo la riga col prefisso, una sola, mai stampata.
+ */
+export function leggiRigaChiave(percorsoFile: string, PREFISSO: string): string {
   let contenuto: string;
   try {
     contenuto = fs.readFileSync(percorsoFile, 'utf8');

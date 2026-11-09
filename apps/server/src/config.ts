@@ -9,8 +9,11 @@ import { PORTA_SERVER, PORTA_VOCE } from '@cantastorie/shared';
 import { CARTELLA_LOG, CARTELLA_WEB_DIST, RADICE_REPO } from './percorsi';
 import { tokenDaConfig } from './master/token';
 
-/** Quale motore vocale usare: il servizio locale, il finto, o scegliere da solo. */
-export type ModoVoce = 'qwen' | 'mock' | 'auto';
+/**
+ * Quale motore vocale usare: drama-3 via OpenRouter (fish), il servizio locale (qwen), il finto
+ * (mock), o scegliere da solo tra qwen e finto (auto).
+ */
+export type ModoVoce = 'fish' | 'qwen' | 'mock' | 'auto';
 
 /** Quale narratore usare: Haiku vero oppure un copione finto (test e prove senza spesa). */
 export type ModoLlm = 'haiku' | 'finto';
@@ -78,7 +81,24 @@ export interface ConfigServer {
 
   voce: {
     modo: ModoVoce;
+    /** Servizio Qwen locale (anche riserva di fish). */
     url: string;
+    /** drama-3 via OpenRouter (modo fish). */
+    fish: {
+      /** File .env da cui si legge SOLO la riga OPENROUTER_API_KEY= (CANTASTORIE_CHIAVE_OPENROUTER). */
+      fileChiave: string;
+      /** Registro delle voci con i reference_id Fish (assets/voci/voci.yaml). */
+      registro: string;
+      /** Attesa massima del primo pezzo di audio, poi ritentativo/riserva (CANTASTORIE_FISH_PRIMO_MS). */
+      primoByteMs: number;
+      /**
+       * Riserva Qwen per frase se drama-3 non risponde (CANTASTORIE_VOCE_RISERVA=qwen|no). Predefinita
+       * solo sulla porta della partita vera: le istanze di prova non toccano mai il servizio su 4611.
+       */
+      riservaQwen: boolean;
+      /** Audio pre-generato delle battute con drama-3 (separato da quello di Qwen: voci diverse). */
+      cacheAudio: string;
+    };
     /** Ogni quanto controllare /salute in modo auto. */
     intervalloSaluteMs: number;
     /** Fattore di tempo del finto TTS (1 = tempi realistici, 0.05 = test veloci). */
@@ -115,6 +135,17 @@ function testo(valore: string | undefined): string | undefined {
 function scelta<T extends string>(valore: string | undefined, ammessi: readonly T[], predefinito: T): T {
   const t = testo(valore) as T | undefined;
   return t && ammessi.includes(t) ? t : predefinito;
+}
+
+/**
+ * CANTASTORIE_VOCE=fish|qwen|finta (scripts/partita.sh --voce) vince su CANTASTORIE_TTS=qwen|mock|auto
+ * (il nome vecchio, che resta per gli script e i test che lo usano).
+ */
+function modoVoce(env: NodeJS.ProcessEnv): ModoVoce {
+  const nuovo = testo(env['CANTASTORIE_VOCE']);
+  if (nuovo === 'fish' || nuovo === 'qwen') return nuovo;
+  if (nuovo === 'finta' || nuovo === 'mock') return 'mock';
+  return scelta(env['CANTASTORIE_TTS'], ['qwen', 'mock', 'auto', 'fish'] as const, 'auto');
 }
 
 export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer {
@@ -156,8 +187,16 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
       ...(testo(env['CANTASTORIE_COPIONE_FINTO']) ? { copioneFinto: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_COPIONE_FINTO'])!) } : {}),
     },
     voce: {
-      modo: scelta(env['CANTASTORIE_TTS'], ['qwen', 'mock', 'auto'] as const, 'auto'),
+      modo: modoVoce(env),
       url: testo(env['CANTASTORIE_VOCE_URL']) ?? `http://127.0.0.1:${PORTA_VOCE}`,
+      fish: {
+        fileChiave: testo(env['CANTASTORIE_CHIAVE_OPENROUTER']) ?? '/Users/riccardo/Developer/agora/.env',
+        registro: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_VOCI']) ?? path.join('assets', 'voci', 'voci.yaml')),
+        primoByteMs: numero(env['CANTASTORIE_FISH_PRIMO_MS'], 6000),
+        riservaQwen:
+          scelta(env['CANTASTORIE_VOCE_RISERVA'], ['qwen', 'no'] as const, numero(env['PORT'], PORTA_SERVER) === PORTA_SERVER ? 'qwen' : 'no') === 'qwen',
+        cacheAudio: testo(env['CANTASTORIE_CACHE_AUDIO_FISH']) ?? path.join(RADICE_REPO, 'cache', 'audio-fish'),
+      },
       intervalloSaluteMs: numero(env['CANTASTORIE_VOCE_SALUTE_MS'], 5000),
       scalaTempoMock: numero(env['CANTASTORIE_MOCK_SCALA'], 1),
     },

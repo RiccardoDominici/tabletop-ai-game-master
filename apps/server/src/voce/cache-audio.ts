@@ -12,6 +12,7 @@ import path from 'node:path';
 import { pulisciFrase } from '../narrazione/parser';
 import { ID_NARRATORE } from '../campagna/tipi';
 import type { Pronunciatore } from './pronuncia';
+import { soloParole } from './espressione';
 
 export interface VoceIndice {
   voce: string;
@@ -22,21 +23,41 @@ export interface VoceIndice {
   creato: string;
 }
 
-/** Testo che va alla voce per una riga del protocollo (stessa normalizzazione del gioco). */
+/**
+ * Testo che va alla voce per una riga del protocollo (stessa normalizzazione del gioco).
+ * Una riga del repertorio può avere direzioni, suoni e tag di drama-3 (voce/espressione.ts):
+ * `mostrato` è senza (proiettore, trascrizione), `voce` li tiene (la pipeline li toglie per Qwen).
+ * Senza markup il risultato è quello di sempre, e così le chiavi dell'audio già pre-generato.
+ */
 export function testoPerVoce(etichetta: string, testo: string, pronuncia: Pronunciatore): { mostrato: string; voce: string } {
-  const mostrato = pulisciFrase(testo, etichetta !== ID_NARRATORE);
-  return { mostrato, voce: pronuncia(mostrato) };
+  const pulito = pulisciFrase(testo, etichetta !== ID_NARRATORE);
+  return { mostrato: soloParole(pulito), voce: pronuncia(pulito) };
 }
 
 export function chiaveAudio(voce: string, testoVoce: string): string {
   return createHash('sha256').update(`${voce}\n${testoVoce}`).digest('hex');
 }
 
+/**
+ * Chiave dell'audio di un motore espressivo (drama-3): motore, voce e testo ESATTO mandato (direzione
+ * predefinita compresa). Se cambiano la scheda o la riga, cambia la chiave. Se si cambia la voce Fish
+ * di un voce_id nel registro, va svuotata cache/audio-fish.
+ */
+export function chiaveAudioEspressiva(motore: string, voce: string, testoEspressivo: string): string {
+  return chiaveAudio(`${motore}:${voce}`, testoEspressivo);
+}
+
 export class CacheAudio {
   private indice: Record<string, VoceIndice> = {};
   private readonly fileIndice: string;
+  /** Cache di drama-3 (voci diverse da Qwen: cartella a parte), se configurata. */
+  readonly fish: CacheAudio | null;
 
-  constructor(readonly cartella: string) {
+  constructor(
+    readonly cartella: string,
+    cartellaFish?: string,
+  ) {
+    this.fish = cartellaFish ? new CacheAudio(cartellaFish) : null;
     this.fileIndice = path.join(cartella, 'indice.json');
     if (fs.existsSync(this.fileIndice)) {
       try {

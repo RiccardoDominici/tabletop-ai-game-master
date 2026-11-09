@@ -3,7 +3,7 @@
  * Il contratto è quello del servizio voce di docs/f0-contratti.md: PCM s16le mono in streaming.
  */
 
-export type NomeMotoreVoce = 'qwen' | 'mock';
+export type NomeMotoreVoce = 'qwen' | 'mock' | 'fish';
 
 export interface SaluteVoce {
   pronto: boolean;
@@ -18,13 +18,25 @@ export interface RichiestaTts {
   id: string;
   /** voce_id del registro (narratore, vincent, nadine, …). */
   voce: string;
+  /** Solo parole, senza markup espressivo (Qwen e il finto leggerebbero direzioni e tag). */
   testo: string;
+  /**
+   * Testo per i motori espressivi (drama-3): direzione, suoni e tag bilanciati, già passati dalla
+   * guardia di voce/espressione.ts. Lo prepara la pipeline solo se il motore ha `espressivo`.
+   */
+  espressivo?: string;
 }
 
 export interface FlussoTts {
   sampleRate: number;
   /** Pezzi PCM nell'ordine in cui il motore li produce. */
   pezzi: AsyncIterable<Uint8Array>;
+  /** Motore che ha parlato davvero (con la riserva può non essere quello scelto). */
+  motore?: NomeMotoreVoce;
+  /** Costo stimato della richiesta in dollari (motori a pagamento), noto alla partenza. */
+  costo_usd?: number;
+  /** Byte UTF-8 del testo mandato (la tariffa di drama-3 è per byte). */
+  byte_testo?: number;
 }
 
 export class ErroreVoce extends Error {
@@ -40,6 +52,8 @@ export class ErroreVoce extends Error {
 
 export interface MotoreVoce {
   readonly nome: NomeMotoreVoce;
+  /** Capisce direzioni, suoni e tag (drama-3): la pipeline gli prepara `espressivo`. */
+  readonly espressivo?: boolean;
   salute(signal?: AbortSignal): Promise<SaluteVoce>;
   /**
    * Avvia la sintesi. Interrompere `signal` deve fermare la generazione (il servizio vero

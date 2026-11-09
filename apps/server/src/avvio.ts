@@ -45,6 +45,8 @@ import { orologioDiSistema, type Orologio } from './turni/orologio';
 import { MotoreVoceHttp } from './voce/http';
 import { MotoreVoceMock } from './voce/mock';
 import { SelettoreVoce } from './voce/selettore';
+import { MotoreVoceFish } from './voce/fish';
+import { caricaRegistroVoci } from './voce/registro-voci';
 
 export interface ServerCantastorie {
   app: App;
@@ -197,12 +199,26 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
         : null;
   log.info({ arbitro: arbitro ? 'regole + haiku' : 'solo regole' }, 'ARBITRO DELLE AZIONI');
 
+  // drama-3 via OpenRouter (CANTASTORIE_VOCE=fish): voci dal registro, chiave letta al primo uso.
+  const fish =
+    config.voce.modo === 'fish'
+      ? {
+          motore: new MotoreVoceFish({
+            fileChiave: config.voce.fish.fileChiave,
+            voci: caricaRegistroVoci(config.voce.fish.registro),
+            primoByteMs: config.voce.fish.primoByteMs,
+            log: log.child({ modulo: 'voce-fish' }),
+          }),
+          riservaQwen: config.voce.fish.riservaQwen,
+        }
+      : undefined;
   const voce = new SelettoreVoce(
     config.voce.modo,
     new MotoreVoceHttp(config.voce.url, log.child({ modulo: 'voce-http' })),
     new MotoreVoceMock({ scalaTempo: config.voce.scalaTempoMock }),
     log.child({ modulo: 'voce' }),
     config.voce.intervalloSaluteMs,
+    fish,
   );
 
   const app = await creaApp({ log, cartellaWeb: sost.cartellaWeb ?? config.cartellaWeb });
@@ -230,7 +246,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     modo: config.modo,
     ...(repertorio ? { repertorio } : {}),
     paroleSegrete,
-    cacheAudio: new CacheAudio(config.cacheAudio),
+    cacheAudio: new CacheAudio(config.cacheAudio, config.voce.fish.cacheAudio),
     finestraATutti: config.turni.finestraATutti,
     arbitro,
     scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),

@@ -7,12 +7,22 @@
  * dichiarato chiuso (`chiudiTurno`) e l'ultima frase è finita, manda `fine_turno`.
  * `interrompi()` ferma la frase in corso (AbortController → il servizio smette di generare),
  * svuota la coda e dice allo schermo di tacere.
+ *
+ * Voce espressiva (drama-3, voce/espressione.ts): `testo_voce` può contenere direzioni, suoni e tag.
+ * Ai motori espressivi va il testo passato dalla guardia, con la direzione predefinita di chi parla
+ * se la riga non ne ha una; a Qwen e al finto vanno solo le parole. Se nessun motore riesce a dire la
+ * frase, la frase si annuncia lo stesso con un silenzio lungo quanto la lettura: il sottotitolo resta
+ * sullo schermo e il turno va avanti (mai un turno bloccato dalla voce).
+ *
+ * Costi: a fine turno una riga `tipo: 'voce'` (byte, frasi, dollari stimati) per `registraCosto`.
  */
 import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@cantastorie/shared';
 import type { Logger } from '../logger';
 import type { CacheAudio } from './cache-audio';
 import type { CueAudio } from '../audio/cue';
 import { ErroreVoce, type MotoreVoce, type NomeMotoreVoce } from './tipi';
+import { analizza, conDirezione, soloParole } from './espressione';
+import { chiaveAudioEspressiva } from './cache-audio';
 
 /** Pezzi da 0,24 s per l'audio pre-generato (come il servizio voce): lo schermo li programma uguali. */
 const CAMPIONI_PER_PEZZO_CACHE = 5760;
@@ -26,7 +36,10 @@ export interface FraseDaDire {
   voce_id: string;
   /** Testo mostrato (sottotitolo, trascrizione). */
   testo: string;
-  /** Testo mandato alla voce, se diverso (nomi con gli accenti di `pronuncia`). */
+  /**
+   * Testo mandato alla voce, se diverso (nomi con gli accenti di `pronuncia`; direzioni, suoni e tag
+   * di drama-3, che ai motori non espressivi non arrivano).
+   */
   testo_voce?: string;
   /**
    * Riga di una battuta del repertorio: chiave dell'audio pre-generato (cache/audio). Se il file
@@ -54,13 +67,13 @@ export interface EsitoFrase {
   secondi: number;
   interrotta: boolean;
   errore?: string;
-  /** 'cache' = audio pre-generato del repertorio. */
-  motore: NomeMotoreVoce | 'cache';
+  /** 'cache' = audio pre-generato del repertorio; 'testo' = nessuna voce, solo il sottotitolo. */
+  motore: NomeMotoreVoce | 'cache' | 'testo';
 }
 
 /** Ganci per le misure di latenza (tutti facoltativi). */
 export interface OsservatorePipeline {
-  richiesta?(frase: FraseDaDire, motore: NomeMotoreVoce | 'cache'): void;
+  richiesta?(frase: FraseDaDire, motore: NomeMotoreVoce | 'cache' | 'testo'): void;
   primoAudio?(frase: FraseDaDire): void;
   fineFrase?(frase: FraseDaDire, esito: EsitoFrase): void;
 }
@@ -72,9 +85,36 @@ export interface EsitoTurnoVoce {
   interrotto: boolean;
 }
 
+/** Riga di logs/costi.jsonl per la voce di un turno (solo se un motore a pagamento ha parlato). */
+export interface CostoVoceTurno {
+  ts: string;
+  tipo: 'voce';
+  turno: number;
+  motore: NomeMotoreVoce;
+  modello: string;
+  frasi: number;
+  byte_testo: number;
+  secondi_audio: number;
+  costo_usd: number;
+  /** Frasi dette da un altro motore (riserva) o rimaste solo testo. */
+  riserva: number;
+  solo_testo: number;
+  interrotto: boolean;
+}
+
+interface CostoTurno {
+  frasi: number;
+  byte: number;
+  usd: number;
+  secondi: number;
+  riserva: number;
+  soloTesto: number;
+}
+
 interface StatoTurno {
   /** Effetti da suonare a voce del turno finita (un [effetto] dopo l'ultima frase). */
   effetti: string[];
+  costo: CostoTurno;
   frasi: number;
   finite: number;
   secondi: number;
@@ -98,8 +138,12 @@ export class PipelineVoce {
       uscita: UscitaAudio;
       log: Logger;
       osservatore?: OsservatorePipeline;
-      /** Audio pre-generato del repertorio (facoltativo). */
+      /** Audio pre-generato del repertorio (facoltativo); `cache.fish` per drama-3. */
       cache?: CacheAudio;
+      /** Direzione predefinita di chi parla (scheda del PNG, carta di stile), per i motori espressivi. */
+      direzione?: (parlante: string) => string | null;
+      /** Riga dei costi della voce a fine turno (logs/costi.jsonl). */
+      registraCosto?: (riga: CostoVoceTurno) => void;
     },
   ) {}
 
@@ -183,6 +227,7 @@ export class PipelineVoce {
     for (const [turno, t] of this.turni) {
       const esito: EsitoTurnoVoce = { turno, frasi: t.frasi, secondi: t.secondi, interrotto: true };
       for (const risolvi of t.attese) risolvi(esito);
+      this.scriviCosto(turno, t, true);
     }
     this.turni.clear();
     this.opzioni.uscita.interrompi();
@@ -191,7 +236,7 @@ export class PipelineVoce {
   private turno(n: number): StatoTurno {
     let t = this.turni.get(n);
     if (!t) {
-      t = { effetti: [], frasi: 0, finite: 0, secondi: 0, chiuso: false, attese: [] };
+      t = { effetti: [], costo: { frasi: 0, byte: 0, usd: 0, secondi: 0, riserva: 0, soloTesto: 0 }, frasi: 0, finite: 0, secondi: 0, chiuso: false, attese: [] };
       this.turni.set(n, t);
     }
     return t;
@@ -201,6 +246,7 @@ export class PipelineVoce {
     const t = this.turni.get(turno);
     if (!t || !t.chiuso || t.finite < t.frasi) return;
     this.turni.delete(turno);
+    this.scriviCosto(turno, t, false);
     this.opzioni.uscita.fineTurno({ turno, frasi: t.frasi, ...(t.effetti.length ? { effetti: t.effetti } : {}) });
     const esito: EsitoTurnoVoce = { turno, frasi: t.frasi, secondi: t.secondi, interrotto: false };
     for (const risolvi of t.attese) risolvi(esito);
@@ -228,13 +274,51 @@ export class PipelineVoce {
     }
   }
 
+  /** Una riga dei costi per il turno, se un motore a pagamento ha parlato (o doveva parlare). */
+  private scriviCosto(turno: number, t: StatoTurno, interrotto: boolean): void {
+    const c = t.costo;
+    if (!this.opzioni.registraCosto || (c.byte === 0 && c.soloTesto === 0 && c.riserva === 0)) return;
+    this.opzioni.registraCosto({
+      ts: new Date().toISOString(),
+      tipo: 'voce',
+      turno,
+      motore: 'fish',
+      modello: 'fish-audio/drama-3',
+      frasi: c.frasi,
+      byte_testo: c.byte,
+      secondi_audio: Math.round(c.secondi * 100) / 100,
+      costo_usd: Math.round(c.usd * 1e7) / 1e7,
+      riserva: c.riserva,
+      solo_testo: c.soloTesto,
+      interrotto,
+    });
+  }
+
+  /** Testo per un motore espressivo: guardia, poi la direzione predefinita di chi parla se manca. */
+  private testoEspressivo(frase: FraseDaDire): string {
+    const a = analizza(frase.testo_voce ?? frase.testo);
+    for (const x of a.anomalie) {
+      this.opzioni.log.warn({ id_frase: frase.id_frase, parlante: frase.parlante, codice: x.codice, dettaglio: x.dettaglio }, 'voce: markup espressivo corretto');
+    }
+    return conDirezione(a, this.opzioni.direzione?.(frase.parlante) ?? null);
+  }
+
+  /** Cache dell'audio per il motore attivo: drama-3 ha la sua (voci diverse), con la chiave del testo espressivo. */
+  private cachePer(motore: MotoreVoce, frase: FraseDaDire): { cache: CacheAudio; chiave: string } | null {
+    if (!frase.chiave_cache || !this.opzioni.cache) return null;
+    if (!motore.espressivo) return { cache: this.opzioni.cache, chiave: frase.chiave_cache };
+    const fish = this.opzioni.cache.fish;
+    return fish ? { cache: fish, chiave: chiaveAudioEspressiva(motore.nome, frase.voce_id, this.testoEspressivo(frase)) } : null;
+  }
+
   /** Genera una frase e ne inoltra i pezzi. Non lancia mai: gli errori diventano esiti. */
   private async dici(frase: FraseDaDire, epoca: number): Promise<EsitoFrase> {
     if (frase.chiave_cache) {
-      const pronto = this.opzioni.cache?.leggi(frase.chiave_cache);
+      const dove = this.cachePer(this.opzioni.motore(), frase);
+      const pronto = dove?.cache.leggi(dove.chiave);
       if (pronto) return this.diciDaCache(frase, pronto.pcm, pronto.sampleRate);
       this.opzioni.log.warn(
-        { id_frase: frase.id_frase, chiave: frase.chiave_cache.slice(0, 16), testo: frase.testo },
+        { id_frase: frase.id_frase, chiave: (dove?.chiave ?? frase.chiave_cache).slice(0, 16), testo: frase.testo },
         'voce: audio pre-generato mancante, sintesi dal vivo',
       );
     }
@@ -242,12 +326,26 @@ export class PipelineVoce {
   }
 
   /**
+   * Nessun motore ha potuto dire la frase: la si annuncia lo stesso, con un silenzio lungo quanto la
+   * lettura (sottotitolo sullo schermo, turno che va avanti, misure coerenti).
+   */
+  private diciSoloTesto(frase: FraseDaDire, motivo: string): EsitoFrase {
+    const sampleRate = 24_000;
+    const secondi = Math.min(12, Math.max(1.5, frase.testo.length / 14));
+    const t = this.turni.get(frase.turno);
+    if (t) t.costo.soloTesto += 1;
+    this.opzioni.log.warn({ id_frase: frase.id_frase, parlante: frase.parlante, secondi: arrotonda(secondi), motivo }, 'voce: frase senza voce, resta il testo');
+    this.diciDaCache(frase, Buffer.alloc(Math.round(secondi * sampleRate) * 2), sampleRate, false);
+    return { secondi, interrotta: false, errore: motivo, motore: 'testo' };
+  }
+
+  /**
    * Audio pre-generato: annuncio e pezzi partono subito, tutti insieme (lo schermo li mette in
    * fila sulla linea del tempo). Nessuna attesa del servizio voce.
    */
-  private diciDaCache(frase: FraseDaDire, pcm: Buffer, sampleRate: number): EsitoFrase {
+  private diciDaCache(frase: FraseDaDire, pcm: Buffer, sampleRate: number, avvisa = true): EsitoFrase {
     const { uscita } = this.opzioni;
-    this.opzioni.osservatore?.richiesta?.(frase, 'cache');
+    if (avvisa) this.opzioni.osservatore?.richiesta?.(frase, 'cache');
     uscita.frase({
       id_frase: frase.id_frase,
       turno: frase.turno,
@@ -280,22 +378,37 @@ export class PipelineVoce {
     let voce = frase.voce_id;
     let secondi = 0;
     let annunciata = false;
+    // Parole per Qwen e il finto; testo con direzioni e tag (passato dalla guardia) per drama-3.
+    const testo = soloParole(frase.testo_voce ?? frase.testo);
+    const espressivo = motore.espressivo ? this.testoEspressivo(frase) : undefined;
+    const richiesta = (v: string) => ({ id: frase.id_frase, voce: v, testo, ...(espressivo ? { espressivo } : {}) });
     try {
       this.opzioni.osservatore?.richiesta?.(frase, motore.nome);
       let flusso;
       try {
-        flusso = await motore.sintetizza({ id: frase.id_frase, voce, testo: frase.testo_voce ?? frase.testo }, controllo.signal);
+        flusso = await motore.sintetizza(richiesta(voce), controllo.signal);
       } catch (err) {
         // Voce inesistente nel registro: meglio la voce del narratore che il silenzio.
         if (err instanceof ErroreVoce && err.stato === 404 && voce !== VOCE_RISERVA) {
           log.error({ id_frase: frase.id_frase, voce, parlante: frase.parlante }, 'voce: voce_id sconosciuta al servizio, uso quella del narratore');
           voce = VOCE_RISERVA;
-          flusso = await motore.sintetizza({ id: frase.id_frase, voce, testo: frase.testo_voce ?? frase.testo }, controllo.signal);
+          flusso = await motore.sintetizza(richiesta(voce), controllo.signal);
         } else {
           throw err;
         }
       }
       if (epoca !== this.epoca) return { secondi: 0, interrotta: true, motore: motore.nome };
+      const parlato = flusso.motore ?? motore.nome;
+      const costo = this.turni.get(frase.turno)?.costo;
+      if (costo) {
+        costo.frasi += 1;
+        costo.byte += flusso.byte_testo ?? 0;
+        costo.usd += flusso.costo_usd ?? 0;
+        if (parlato !== motore.nome) costo.riserva += 1;
+      }
+      // Battuta del repertorio detta dal vivo da drama-3: la si conserva, la prossima volta è gratis.
+      const daConservare = parlato === motore.nome ? this.cachePer(motore, frase) : null;
+      const conservati: Buffer[] | null = daConservare && motore.espressivo ? [] : null;
       uscita.frase({
         id_frase: frase.id_frase,
         turno: frase.turno,
@@ -325,19 +438,31 @@ export class PipelineVoce {
         const pcm = Buffer.from(pezzo.buffer, pezzo.byteOffset, pari);
         if (seq === 0) this.opzioni.osservatore?.primoAudio?.(frase);
         uscita.pezzo({ id_frase: frase.id_frase, seq, pcm });
+        conservati?.push(Buffer.from(pcm));
         seq += 1;
         secondi += pari / 2 / flusso.sampleRate;
       }
       const interrotta = epoca !== this.epoca;
       uscita.fineFrase({ id_frase: frase.id_frase, turno: frase.turno, secondi, interrotta });
-      log.debug({ id_frase: frase.id_frase, voce, secondi: arrotonda(secondi), pezzi: seq, motore: motore.nome }, 'voce: frase inoltrata');
-      return { secondi, interrotta, motore: motore.nome };
+      if (costo) costo.secondi += secondi;
+      if (daConservare && conservati && !interrotta && secondi > 0.3) {
+        try {
+          daConservare.cache.scrivi(daConservare.chiave, Buffer.concat(conservati), { voce, testo: espressivo ?? testo, sample_rate: flusso.sampleRate });
+          log.info({ id_frase: frase.id_frase, chiave: daConservare.chiave.slice(0, 16), secondi: arrotonda(secondi) }, 'voce: battuta conservata nella cache di drama-3');
+        } catch (err) {
+          log.warn({ id_frase: frase.id_frase, err: (err as Error).message }, 'voce: cache di drama-3 non scritta');
+        }
+      }
+      log.debug({ id_frase: frase.id_frase, voce, secondi: arrotonda(secondi), pezzi: seq, motore: parlato }, 'voce: frase inoltrata');
+      return { secondi, interrotta, motore: parlato };
     } catch (err) {
       const interrotta = controllo.signal.aborted || epoca !== this.epoca;
       if (!interrotta) {
         log.error({ id_frase: frase.id_frase, voce, motore: motore.nome, err: (err as Error).message }, 'voce: frase fallita');
       }
       if (annunciata) uscita.fineFrase({ id_frase: frase.id_frase, turno: frase.turno, secondi, interrotta: true });
+      // Nessun audio partito e nessuna interruzione: la frase resta testo, il turno non si ferma.
+      if (!annunciata && !interrotta) return this.diciSoloTesto(frase, (err as Error).message);
       return { secondi, interrotta: true, errore: (err as Error).message, motore: motore.nome };
     } finally {
       if (this.inCorso?.controllo === controllo) this.inCorso = null;

@@ -250,8 +250,8 @@ export interface StatoTavolo {
   al_tavolo: AzioneAlTavolo[];
   /** Ultime voci della trascrizione pubblica (le più vecchie possono essere tagliate). */
   trascrizione: VoceTrascrizione[];
-  /** Motore voce in uso: 'qwen' (servizio locale) oppure 'mock'. */
-  voce_motore: 'qwen' | 'mock';
+  /** Motore voce in uso: 'fish' (drama-3 via OpenRouter), 'qwen' (servizio locale) oppure 'mock'. */
+  voce_motore: 'fish' | 'qwen' | 'mock';
   /** Lo schermo ha premuto «Inizia sessione» ed è connesso. */
   schermo_connesso: boolean;
   /**
@@ -279,7 +279,7 @@ export interface MisureTurno {
   turno: number;
   /** ISO 8601 dell'istante di chiusura della finestra (t0). */
   ts: string;
-  voce_motore: 'qwen' | 'mock';
+  voce_motore: 'fish' | 'qwen' | 'mock';
   finestra_ms: number;
   llm_primo_token: number | null;
   llm_prima_frase: number | null;

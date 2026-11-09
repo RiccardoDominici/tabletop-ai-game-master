@@ -21,6 +21,7 @@ import type { EsitoNarrazione, Narratore } from '../llm/tipi';
 import type { MisuratoreTurno } from '../metriche/misure';
 import { ParserNarratore, type EventoNarratore } from '../narrazione/parser';
 import type { FraseDaDire, PipelineVoce } from '../voce/pipeline';
+import { EspressioneTurno } from '../voce/espressione';
 import type { CueAudio, Risolto } from '../audio/cue';
 
 export interface FraseNarrata {
@@ -142,6 +143,12 @@ export async function narraTurno(
   let indice = 0;
   let segmentoBattuta = BASE_SEGMENTI_BATTUTE;
   const anomalie: Array<{ codice: string; dettaglio: string }> = [];
+  // Voce espressiva (voce/espressione.ts): direzioni, suoni e tag di drama-3 vanno solo alla voce, mai
+  // al proiettore né alla trascrizione (e quindi nemmeno nella cronologia che Haiku rilegge).
+  const espressione = new EspressioneTurno((a) => {
+    anomalie.push({ codice: a.codice, dettaglio: a.dettaglio });
+    log.warn({ turno: p.turno, segmento: a.segmento, codice: a.codice, dettaglio: a.dettaglio }, 'narratore: markup espressivo corretto');
+  });
   const uscita: VoceUscita[] = [];
   /** Riga improvvisata in corso (per segmento del parser). */
   let rigaAperta: { segmento: number; voce: Extract<VoceUscita, { tipo: 'improvvisata' }> } | null = null;
@@ -185,7 +192,8 @@ export async function narraTurno(
     indice += 1;
   };
 
-  const gestisci = (eventi: EventoNarratore[]): void => {
+  const gestisci = (grezzi: EventoNarratore[]): void => {
+    const eventi = espressione.trasforma(grezzi);
     for (const e of eventi) {
       if (p.signal.aborted) return;
       if (e.tipo === 'frase') {
@@ -207,7 +215,7 @@ export async function narraTurno(
         }
         const { voce_id, nome } = voceDi(campagna, e.etichetta);
         p.onFrase({ etichetta: e.etichetta, nome, testo: e.testo, segmento: e.segmento, indice });
-        const perVoce = p.pronuncia(e.testo);
+        const perVoce = p.pronuncia(e.voce);
         const idFrase = `t${p.turno}-${p.prefissoFrasi ?? 'f'}${indice}`;
         const cue = prendiCue();
         accoda({ parlante: e.etichetta, nome, voce_id, testo: e.testo, ...(perVoce !== e.testo ? { testo_voce: perVoce } : {}), ...(cue ? { cue } : {}) });
@@ -259,6 +267,7 @@ export async function narraTurno(
 
   /** Un segnale rimasto senza frase dopo di sé: effetto a voce finita, umore subito. */
   const chiudiCue = (): void => {
+    espressione.chiudi(); // fine della risposta: un tag rimasto aperto nell'ultima riga si registra
     const c = cuePendente;
     cuePendente = null;
     if (!c || p.signal.aborted) return;

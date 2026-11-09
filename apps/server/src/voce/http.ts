@@ -9,6 +9,7 @@
 import type { Logger } from '../logger';
 import type { FlussoTts, MotoreVoce, RichiestaTts, SaluteVoce } from './tipi';
 import { ErroreVoce } from './tipi';
+import { soloParole } from './espressione';
 
 export class MotoreVoceHttp implements MotoreVoce {
   readonly nome = 'qwen' as const;
@@ -32,7 +33,8 @@ export class MotoreVoceHttp implements MotoreVoce {
       risposta = await fetch(`${this.baseUrl}/tts`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(richiesta),
+        // Solo id, voce e parole: Qwen leggerebbe ad alta voce direzioni e tag di drama-3.
+        body: JSON.stringify({ id: richiesta.id, voce: richiesta.voce, testo: soloParole(richiesta.testo) }),
         signal,
       });
     } catch (err) {
