@@ -64,7 +64,7 @@ Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei
     loro cancelli), invece di affidare i finali prima dell'orologio pieno ai temi;
   - **stato degli oggetti**: chi ha che cosa, almeno per gli oggetti con un id nella scena (`elementi_interattivi`);
   - ~~battute «per stato» senza `> pg`~~ per i finali: fatto il 3 novembre (a orologio pieno il finale e la chiusura
-    li dice il Motore); il validatore avvisa ancora con `COPERTURA.finale_senza_azione`, un avviso ormai prudente;
+    li dice il Motore); il validatore non avvisa più (`COPERTURA.finale_senza_azione` è tolto: il Motore dice il finale da sé);
 - **Selettore che non trova le battute** (playtest di nozze-neve, conclusioni §4; 115 battute su 139 mai uscite).
   Nel codice dal 9 novembre (commit 2597566, con prove unitarie): preselezione per `temi` dell'azione (con la voce
   giusta, al massimo due per azione, sezione «Battute indicate» nel messaggio) e «> pg» dedotto o corretto quando

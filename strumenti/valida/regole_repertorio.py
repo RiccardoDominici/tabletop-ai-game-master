@@ -257,16 +257,6 @@ def _copertura(c: Campagna, e: Esito) -> None:
     finali = [b for b in c.battute if b.get("tipo") == "finale"]
     if not finali:
         e.errore("COPERTURA.finale", "repertorio/", "nessuna battuta di tipo finale")
-    # Il Motore accetta una battuta senza «> pg» solo se è il segno dovuto o un riempitivo allo stallo
-    # (riferimenti/motore.md, «senza_azione»): un finale che arriva solo «per stato», con temi neutri, esce solo
-    # se il selettore lo lega a un'azione pubblica del turno. Se tutti i finali di una scena sono così, avviso.
-    for sid in [s.get("id") for _, s in c.scene] or [None]:
-        della_scena = [b for b in finali if not b.get("scena") or b.get("scena") == sid or sid in (b.get("scena") or [])]
-        solo_stato = [b for b in della_scena if set(b.get("temi") or []) <= {"orologio"} and (b.get("richiede") or {}).get("orologio")]
-        if della_scena and len(solo_stato) == len(della_scena):
-            e.avviso("COPERTURA.finale_senza_azione", f"scena {sid}", f"i finali ({', '.join(b['id'] for b in della_scena)}) arrivano "
-                     "solo a orologio pieno, con temi neutri: il Motore li accetta solo legati a un'azione pubblica del turno. "
-                     "Dai a un finale i temi dell'azione decisiva (riferimenti/motore.md)")
     # Stallo e transizioni.
     if not [b for b in c.battute if b.get("riempitivo")]:
         e.errore("COPERTURA.riempitivo", "repertorio/", "nessuna battuta riempitivo: allo stallo il selettore non ha mosse")

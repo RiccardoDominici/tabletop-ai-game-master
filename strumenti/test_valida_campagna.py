@@ -1021,17 +1021,6 @@ def test_copertura_cancello_e_privata_solo_in_rigoroso(camp):
     assert {"COPERTURA.cancello", "COPERTURA.privata"} <= errori(camp, rigoroso=True)
 
 
-def test_copertura_finali_solo_per_stato(camp):
-    # Playtest di nozze-neve: finali con temi neutri e cancello d'orologio non uscivano mai senza un'azione.
-    def neutri(d):
-        for b in d["battute"]:
-            if b["tipo"] == "finale":
-                b["temi"] = ["orologio"]
-                b.setdefault("richiede", {})["orologio"] = {"id": "o_processione", "min": 4, "max": 4}
-    modifica(camp, "repertorio/narrazione.yaml", neutri)
-    assert "COPERTURA.finale_senza_azione" in avvisi(camp)
-
-
 def test_copertura_voce_senza_esempi(camp):
     modifica(camp, "repertorio/png_bruno.yaml",
              lambda d: d.update(battute=[b for b in d["battute"] if not b.get("solo_esempio")]))
