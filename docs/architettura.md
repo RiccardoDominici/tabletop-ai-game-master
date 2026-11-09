@@ -107,8 +107,17 @@ Tra una sessione e l'altra usa **Claude Code** (abbonamento): riassunto della se
 
 ### 5. Voce e ascolto
 - **Sintesi vocale** dietro un'interfaccia `TtsProvider`, per poter cambiare motore senza toccare il resto:
-  - `QwenLocal`: ora;
-  - `HeyGen` via OpenRouter: dopo la ricarica.
+  - **drama-3 di Fish Audio via OpenRouter**: la voce del gioco dal 9 novembre 2026 (`CANTASTORIE_VOCE=fish`,
+    predefinita in scripts/partita.sh). PCM a 44,1 kHz in streaming, con direzioni espressive: il narratore
+    scrive `[offesa, a voce bassa]`, i suoni (`[sigh]`) e i tag (`<whisper>…</whisper>`), e la voce li interpreta
+    senza leggerli. Proiettore, telefoni e trascrizione mostrano solo le parole. Fonti e misure in
+    docs/ricerca-voce-drama3.md;
+  - `QwenLocal`: la riserva. Se drama-3 non risponde (dopo un ritentativo) si usa Qwen, se è acceso;
+    altrimenti la frase resta testo sullo schermo e il turno va avanti.
+- **«Ascolta qui»**: ogni telefono può accendere la voce del gioco anche su di sé. La voce dell'esito di
+  un'azione privata va solo al telefono di quel PG, mai al proiettore (`solo_pg`).
+- **Costi**: a fine turno una riga `tipo: voce` in logs/costi.jsonl, accanto a quella dell'LLM;
+  scripts/costi.sh fa la somma per sessione.
 - **Registro voci**:
   - il narratore ha una voce fissa;
   - ogni PNG ha un `voce_id` e una clip di riferimento. Il validatore vieta voci uguali nella stessa scena e controlla la distanza di tono tra le voci.

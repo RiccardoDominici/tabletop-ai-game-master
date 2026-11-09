@@ -1,0 +1,28 @@
+{
+ "porta": 4730,
+ "campagna": "nozze-neve",
+ "modo": "repertorio",
+ "turni_narrati": 3,
+ "frasi_proiettore": 49,
+ "frasi_telefono_in_ascolto": 49,
+ "stesse_frasi": true,
+ "segmenti_fish": 49,
+ "primo_byte_ms": {
+  "minimo": 214,
+  "mediana": 288,
+  "p90": 757,
+  "massimo": 889
+ },
+ "voce_usd": 0.01245,
+ "llm_usd": 0.005292,
+ "voce_byte": 6225,
+ "secondi_voce": 158.1,
+ "errori_voce": [],
+ "markup_corretto": [],
+ "mp3": {
+  "file": "esperimenti/voce-drama3/partita/partita-drama3.mp3",
+  "secondi": 59.8,
+  "frasi": 20
+ },
+ "buchi_proiettore": 0
+}

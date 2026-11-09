@@ -54,6 +54,33 @@ default alla 4710 (`apps/web/e2e/percorsi.ts`; altre porte con `E2E_PORTA`).
 Voci di F0 (registro `assets/voci/voci.yaml`, id → clip + testo della clip):
 `narratore` (voce fissa del narratore), `vincent`, `nadine`, `lucian`, `tabitha` (voci per i PNG).
 
+## Voce del gioco: drama-3 via OpenRouter (dal 9 novembre 2026)
+
+- Server → `POST https://openrouter.ai/api/v1/audio/speech` `{model: 'fish-audio/drama-3', input, voice: <fish>,
+  response_format: 'pcm'}` → PCM s16le mono a **44,1 kHz** (dal `Content-Type`), in streaming. `fish` è il
+  reference_id della voce pubblica scritto per ogni voce_id in `assets/voci/voci.yaml`. Chiave: solo la riga
+  `OPENROUTER_API_KEY=` del file `CANTASTORIE_CHIAVE_OPENROUTER` (predefinito ../agora/.env), mai nei log.
+- Una frase per richiesta. La richiesta è riuscita solo al primo pezzo di audio (entro 6 s); poi un ritentativo,
+  poi Qwen se è permesso e pronto (mai sulle istanze di prova), poi solo testo: la frase si annuncia con un
+  silenzio lungo quanto la lettura e il turno non si ferma (apps/server/src/voce/riserva.ts, pipeline.ts).
+- `audio:frase.sample_rate` cambia per frase (44100 con drama-3, 24000 con Qwen e per le frasi senza voce).
+- `audio:frase.solo_pg` (facoltativo): la frase è privata e va solo alla stanza `ascolto:<id_pg>` (telefoni di
+  quel PG con «Ascolta qui»). Evento `telefono:ascolta {attivo}` → stanze `ascolto` e `ascolto:<id_pg>`.
+
+## Voce espressiva nelle righe del protocollo
+
+Dentro il testo di `[narratore]` e `[<id_png>]` (e nelle righe del repertorio):
+- `[direzione]` a inizio riga, breve, in italiano, senza punti: vale per tutta la riga (il server la riporta sulle
+  frasi seguenti, perché ogni frase è una richiesta a sé). Senza direzione vale quella predefinita: scheda del PNG
+  (`voce.tts.direzione`, altrimenti carattere, timbro, età, velocità) o carta di stile (`direzione_voce`,
+  altrimenti la prima frase di `registro_narratore`).
+- Suoni: `[sigh] [laugh] [breath] [pause]` (e simili), dove cadono.
+- Tag accoppiati, chiusi nella stessa frase: `<whisper> <emphasis> <soft> <fast> <slow> <stress> <forceful>`.
+- Il server toglie tutto questo da ciò che si mostra, dalla trascrizione e dalla cronologia per Haiku, e lo manda
+  solo a drama-3, dopo una guardia: tag sconosciuti, chiusure senza apertura e direzioni oltre 80 caratteri si
+  tolgono e si registrano nel log; un tag ancora aperto a fine frase si chiude lì e si riapre nella frase dopo
+  della stessa riga. Qwen riceve solo le parole.
+
 ## Protocollo di uscita del narratore (Haiku, testo in streaming)
 
 Il narratore scrive **solo righe etichettate**, una per segmento. Il server le legge mentre arrivano,

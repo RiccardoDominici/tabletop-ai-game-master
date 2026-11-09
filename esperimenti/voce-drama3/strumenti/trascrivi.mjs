@@ -10,5 +10,5 @@ for (const file of process.argv.slice(2)) {
   fd.append('file', new Blob([fs.readFileSync(file)], { type: 'audio/mpeg' }), path.basename(file));
   const r = await fetch('https://openrouter.ai/api/v1/audio/transcriptions', { method: 'POST', headers: { authorization: `Bearer ${chiave}` }, body: fd });
   const t = await r.text();
-  console.log(path.basename(file), r.status, t.slice(0, 600));
+  console.log(path.basename(file), r.status, process.env.INTERO ? t : t.slice(0, 600));
 }

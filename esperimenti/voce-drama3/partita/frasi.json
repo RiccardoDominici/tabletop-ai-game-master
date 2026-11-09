@@ -1,0 +1,541 @@
+[
+ {
+  "id": "t0-f0",
+  "turno": 0,
+  "parlante": "narratore",
+  "testo": "Stamattina su Fontanive è caduta la prima neve dell'anno.",
+  "secondi": 2.93,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 822
+ },
+ {
+  "id": "t0-f1",
+  "turno": 0,
+  "parlante": "narratore",
+  "testo": "Per usanza Agnese Bonfanti e Tonio Morlacchi si sposano oggi al Sasso, prima del tramonto.",
+  "secondi": 4.6,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 871
+ },
+ {
+  "id": "t0-f2",
+  "turno": 0,
+  "parlante": "narratore",
+  "testo": "A mezzogiorno, durante la festa, è sparito l'anello della nonna della sposa.",
+  "secondi": 4.18,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 757
+ },
+ {
+  "id": "t0-f3",
+  "turno": 0,
+  "parlante": "narratore",
+  "testo": "Nella casera dei Bonfanti una riga di forme di formaggio divide la sala in due.",
+  "secondi": 3.95,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 636
+ },
+ {
+  "id": "t0-f4",
+  "turno": 0,
+  "parlante": "narratore",
+  "testo": "A sinistra la nonna Adelina stringe una scatolina vuota; a destra Ettore, il nonno dello sposo, batte il bastone.",
+  "secondi": 5.62,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 396
+ },
+ {
+  "id": "t0-f5",
+  "turno": 0,
+  "parlante": "narratore",
+  "testo": "Senza anello niente benedizione, e il sole non aspetta: chi si muove per primo?",
+  "secondi": 4.09,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 277
+ },
+ {
+  "id": "t1-f0",
+  "turno": 1,
+  "parlante": "narratore",
+  "testo": "Ida si china sulla scatolina senza sfiorarla.",
+  "secondi": 2.46,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 326
+ },
+ {
+  "id": "t1-f1",
+  "turno": 1,
+  "parlante": "narratore",
+  "testo": "Il velluto rosso è ancora impresso dall'anello.",
+  "secondi": 2.83,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 328
+ },
+ {
+  "id": "t1-f2",
+  "turno": 1,
+  "parlante": "narratore",
+  "testo": "Dentro, il velluto rosso conserva ancora l'impronta tonda dell'anello.",
+  "secondi": 3.53,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 275
+ },
+ {
+  "id": "t1-f3",
+  "turno": 1,
+  "parlante": "narratore",
+  "testo": "Accanto c'è una macchia d'inchiostro fresco, piccola come un polpastrello.",
+  "secondi": 3.53,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 364
+ },
+ {
+  "id": "t1-f4",
+  "turno": 1,
+  "parlante": "narratore",
+  "testo": "Nella cerniera è rimasto preso un capello rosso, lungo.",
+  "secondi": 3.02,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 496
+ },
+ {
+  "id": "t1-f5",
+  "turno": 1,
+  "parlante": "narratore",
+  "testo": "Vanda chiede a Ettore se è salito al Sasso.",
+  "secondi": 2.28,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 493
+ },
+ {
+  "id": "t1-f6",
+  "turno": 1,
+  "parlante": "narratore",
+  "testo": "Il vecchio batte il bastone due volte.",
+  "secondi": 2.14,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 601
+ },
+ {
+  "id": "t1-f7",
+  "turno": 1,
+  "parlante": "png_ettore",
+  "testo": "Eh?",
+  "secondi": 0.79,
+  "direzioni": [
+   "brontolando"
+  ],
+  "primo_byte_ms": 501
+ },
+ {
+  "id": "t1-f8",
+  "turno": 1,
+  "parlante": "png_ettore",
+  "testo": "Sono salito a messa, come ogni anno.",
+  "secondi": 3.34,
+  "direzioni": [
+   "brontolando"
+  ],
+  "primo_byte_ms": 401
+ },
+ {
+  "id": "t1-f9",
+  "turno": 1,
+  "parlante": "png_ettore",
+  "testo": "Parla dall'orecchio buono, ragazza.",
+  "secondi": 2.69,
+  "direzioni": [
+   "brontolando"
+  ],
+  "primo_byte_ms": 634
+ },
+ {
+  "id": "t1-f10",
+  "turno": 1,
+  "parlante": "narratore",
+  "testo": "Livia fissa Zelia.",
+  "secondi": 1.39,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 392
+ },
+ {
+  "id": "t1-f11",
+  "turno": 1,
+  "parlante": "narratore",
+  "testo": "La ragazza chiude il quaderno di scatto.",
+  "secondi": 2.14,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 250
+ },
+ {
+  "id": "t2-f0",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Vanda chiede a Bastiano di mostrare le mani.",
+  "secondi": 2.41,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 837
+ },
+ {
+  "id": "t2-f1",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Il garzone le tiene nascoste dietro la schiena.",
+  "secondi": 2.41,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 889
+ },
+ {
+  "id": "t2-f2",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Bastiano ha le mani nere di grasso da zoccoli, fino ai polsi.",
+  "secondi": 3.16,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 350
+ },
+ {
+  "id": "t2-f3",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Borbotta, senza alzare gli occhi, che a mezzogiorno ferrava la mula Gigia.",
+  "secondi": 4.09,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 300
+ },
+ {
+  "id": "t2-f4",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Sotto le unghie ha ancora la limatura dei ferri nuovi.",
+  "secondi": 2.69,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 260
+ },
+ {
+  "id": "t2-f5",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Livia si china sulla neve che entra dalla porta di dietro della cantina.",
+  "secondi": 3.34,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 261
+ },
+ {
+  "id": "t2-f6",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Le orme sono fresche.",
+  "secondi": 1.53,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 237
+ },
+ {
+  "id": "t2-f7",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Fuori dalla porta di dietro la neve è fresca, e tiene tutto.",
+  "secondi": 3.07,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 261
+ },
+ {
+  "id": "t2-f8",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Impronte piccole e strette attraversano il vicolo, fino alla porta della stalla dei Bonfanti.",
+  "secondi": 4.6,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 262
+ },
+ {
+  "id": "t2-f9",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Verso la stalla dei Morlacchi, in fondo al vicolo, la neve è liscia.",
+  "secondi": 3.67,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 451
+ },
+ {
+  "id": "t2-f10",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Ida chiede a Tonio di cosa ha paura.",
+  "secondi": 2.18,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 242
+ },
+ {
+  "id": "t2-f11",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Lo sposo deglutisce e guarda verso il tavolo alto.",
+  "secondi": 2.83,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 235
+ },
+ {
+  "id": "t2-f12",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Tonio guarda verso il nonno, poi abbassa la voce.",
+  "secondi": 2.6,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 252
+ },
+ {
+  "id": "t2-f13",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "La lettera sta nella tasca di dentro della giacca, a sinistra.",
+  "secondi": 2.88,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 240
+ },
+ {
+  "id": "t2-f14",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Il nonno la tocca quando crede di non essere visto.",
+  "secondi": 2.37,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 225
+ },
+ {
+  "id": "t2-f15",
+  "turno": 2,
+  "parlante": "narratore",
+  "testo": "Quando balla, dice, la giacca la appende alla panca.",
+  "secondi": 2.93,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 233
+ },
+ {
+  "id": "t3-f0",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "Livia chiede a Zelia di portarla in soffitta, prima della benedizione.",
+  "secondi": 3.53,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 277
+ },
+ {
+  "id": "t3-f1",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "La ragazza stringe il quaderno al petto.",
+  "secondi": 2.14,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 360
+ },
+ {
+  "id": "t3-f2",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "Ciò che si racconta al Sasso, dice il Custode, il paese lo ripete per sempre.",
+  "secondi": 4.32,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 288
+ },
+ {
+  "id": "t3-f3",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "La casa che racconta il falso perde la voce.",
+  "secondi": 2.55,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 309
+ },
+ {
+  "id": "t3-f4",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "La sua storia, da allora, la racconta chi ha detto il vero.",
+  "secondi": 2.97,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 302
+ },
+ {
+  "id": "t3-f5",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "E se la più anziana non mette l'anello, lo mette la seconda della casa.",
+  "secondi": 3.53,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 266
+ },
+ {
+  "id": "t3-f6",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "Ida chiede ad Adelina se qualcuno tiene sempre l'anello di casa, o se la nonna lo lascia in giro.",
+  "secondi": 4.41,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 233
+ },
+ {
+  "id": "t3-f7",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "Adelina si aggiusta lo scialle sulle spalle, due volte.",
+  "secondi": 2.88,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 266
+ },
+ {
+  "id": "t3-f8",
+  "turno": 3,
+  "parlante": "png_adelina",
+  "testo": "È l'anello di mia madre, Bonfanti come me. Nessun Morlacchi l'ha mai toccato.",
+  "secondi": 7.57,
+  "direzioni": [
+   "lingua tagliente e battuta pronta; timbro secco e chiaro, con una risata corta in fondo; sui 75-80 anni"
+  ],
+  "primo_byte_ms": 243
+ },
+ {
+  "id": "t3-f9",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "Vanda chiede a Ettore se il vento di stamattina era vento o pianto.",
+  "secondi": 3.85,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 434
+ },
+ {
+  "id": "t3-f10",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "Il vecchio fa un colpo di bastone sulla pietra della tavolata.",
+  "secondi": 3.07,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 248
+ },
+ {
+  "id": "t3-f11",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "Ettore si tira la barba con tutte e due le mani.",
+  "secondi": 2.32,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 269
+ },
+ {
+  "id": "t3-f12",
+  "turno": 3,
+  "parlante": "png_ettore",
+  "testo": "Quel giorno sono sceso a valle. Avevo muli da vendere.",
+  "secondi": 4.27,
+  "direzioni": [
+   "burbero e rumoroso; timbro grave e ruvido, come una carriola sul selciato; sui 75-85 anni"
+  ],
+  "primo_byte_ms": 214
+ },
+ {
+  "id": "t3-f13",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "Il vento di stamattina, anche se qualcuno lo dice diverso, non è sceso dal Sasso.",
+  "secondi": 4.41,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 258
+ },
+ {
+  "id": "t3-f14",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "Dal lato dei Morlacchi qualcuno batte il bicchiere sul tavolo, tre volte.",
+  "secondi": 4.04,
+  "direzioni": [
+   "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi"
+  ],
+  "primo_byte_ms": 249
+ }
+]

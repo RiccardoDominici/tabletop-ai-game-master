@@ -112,3 +112,19 @@ Scelte (apps/server/src/voce/espressione.ts):
   vera.
 - Le battute del repertorio dette dal vivo da drama-3 si conservano in cache/audio-fish, separata
   dalla cache di Qwen perché le voci sono diverse. La seconda volta sono gratis e istantanee.
+
+## 6. Prova vera (9 novembre 2026, istanza 4730)
+
+`esperimenti/voce-drama3/gioca.ts`: nozze-neve in modo B, Haiku vero, drama-3 vero. Apertura e tre turni del
+copione `indagine`. I risultati sono in esperimenti/voce-drama3/partita/.
+- 49 frasi, tutte dette da drama-3: nessun ritentativo, nessuna riserva, nessuna correzione della guardia,
+  nessun buco sul proiettore. Il telefono con «Ascolta qui» ha ricevuto le stesse 49 frasi del proiettore.
+- Primo byte per frase: minimo 214 ms, mediana 288, p90 757, massimo 889. La generazione va 5–6 volte più
+  veloce del parlato, e quindi dopo la prima frase la voce non aspetta più.
+- Costo: voce 0,0124 $ (6.225 byte, 158 s di audio) e LLM 0,0053 $. In media la voce costa circa 0,0035 $
+  a turno: la direzione predefinita del narratore, lunga 67 caratteri, ne fa più di metà. Una sessione di
+  45 turni costa circa 0,16 $ di voce e 0,08 $ di LLM, cioè circa 0,25 $ in tutto, finché resta la tariffa di
+  lancio. Le 22 righe del repertorio dette in questa prova sono già in cache/audio-fish: alla prossima
+  partita non si pagano.
+- Il selettore ha scritto da solo una direzione (`[png_ettore] [brontolando] Eh? …`), riportata sulle tre
+  frasi della riga. Whisper sull'mp3 di 60 s: nessuna parola delle direzioni nella trascrizione.

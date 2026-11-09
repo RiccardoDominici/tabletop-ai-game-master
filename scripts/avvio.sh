@@ -3,6 +3,8 @@
 # avvia il server su 0.0.0.0:4610 in background e stampa gli indirizzi per telefoni e proiettore.
 #
 # Opzioni:
+#   --fish        voce drama-3 via OpenRouter (CANTASTORIE_VOCE=fish): il servizio voce locale non si
+#                 avvia né si ferma; se è già pronto fa da riserva (solo sulla 4610)
 #   --mock        voce finta (CANTASTORIE_TTS=mock): il servizio voce non si tocca
 #   --tieni-voce  se il servizio voce è già pronto non lo riavvia (risparmia il caricamento)
 #   --finto       narratore a copione (CANTASTORIE_LLM=finto): nessuna chiamata ad Anthropic
@@ -11,7 +13,8 @@
 # Istanza di prova (e2e mentre si gioca): CANTASTORIE_PORTA=4710 scripts/avvio.sh --finto
 #   - server su quella porta, log in logs/porta-<porta>/, pagine compilate in logs/porta-<porta>/web
 #     (apps/web/dist, che serve la partita vera, non si ricompila);
-#   - voce sempre finta: il servizio voce su 4611 e il server su 4610 non si toccano;
+#   - voce finta, oppure drama-3 con --fish (o CANTASTORIE_VOCE=fish), mai Qwen: il servizio voce su
+#     4611 e il server su 4610 non si toccano;
 #   - si ferma con: CANTASTORIE_PORTA=4710 scripts/arresto.sh
 #
 # Log: logs/server.out (leggibile), logs/server.jsonl (strutturato), logs/turni.jsonl, logs/costi.jsonl
@@ -33,9 +36,11 @@ else
   DIR_LOG="$RADICE/logs"
 fi
 export PORT="$PORTA"
-MOCK=0; TIENI_VOCE=0; FINTO=0
+MOCK=0; TIENI_VOCE=0; FINTO=0; FISH=0
+[[ "${CANTASTORIE_VOCE:-}" == "fish" ]] && FISH=1
 for a in "$@"; do
   case "$a" in
+    --fish) FISH=1 ;;
     --mock) MOCK=1 ;;
     --tieni-voce) TIENI_VOCE=1 ;;
     --finto) FINTO=1 ;;
@@ -48,11 +53,22 @@ cd "$RADICE"
 # 1. Istanze precedenti: server e Vite sempre; la voce solo se la riavviamo. (In prova: solo la sua porta.)
 CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" --lascia-voce
 
-# 2. Servizio voce. In prova sempre finta: la voce su 4611 è della partita vera.
-if [[ "$PROVA" == "1" ]]; then
+# 2. Servizio voce. drama-3 non ha servizi locali da avviare. In prova mai Qwen: la voce su 4611 è
+#    della partita vera (con drama-3 la riserva Qwen è spenta, CANTASTORIE_VOCE_RISERVA=no).
+if [[ "$FISH" == "1" ]]; then
+  export CANTASTORIE_VOCE=fish
+  if [[ "$PROVA" == "1" ]]; then
+    export CANTASTORIE_VOCE_RISERVA=no
+    echo "voce: drama-3 via OpenRouter (istanza di prova su :$PORTA, nessuna riserva Qwen)"
+  else
+    echo "voce: drama-3 via OpenRouter (riserva: Qwen locale se è già pronto)"
+  fi
+elif [[ "$PROVA" == "1" ]]; then
+  unset CANTASTORIE_VOCE
   export CANTASTORIE_TTS=mock
   echo "voce: finta (istanza di prova su :$PORTA)"
 elif [[ "$MOCK" == "1" ]]; then
+  unset CANTASTORIE_VOCE
   export CANTASTORIE_TTS=mock
   echo "voce: finta (--mock)"
 elif [[ -x "$RADICE/scripts/voce-avvio.sh" ]]; then
