@@ -71,6 +71,9 @@ def main(argv: list[str] | None = None) -> int:
             return 1
     else:
         esito, campagna = valida(Path(a.cartella), rigoroso=a.rigoroso, voci=a.voci, contesto_b=serve_b and not a.senza_node)
+    # I copioni prima della stampa: i loro avvisi (catalogo largo, azioni private, essenziali mai raggiunti)
+    # devono uscire con gli altri.
+    righe_copioni = prova_copioni.controlla(campagna, esito, a.copioni) if a.copioni else []
     if solo:
         tieni = lambda v: any(v.codice == x or v.codice.split(".")[0] == x for x in solo)  # noqa: E731
         esito.voci = [v for v in esito.voci if tieni(v)]
@@ -81,7 +84,7 @@ def main(argv: list[str] | None = None) -> int:
             print(v)
     if a.copioni:
         print("\n== Catalogo per azione (copioni) ==")
-        for riga in prova_copioni.controlla(campagna, esito, a.copioni):
+        for riga in righe_copioni:
             print(f"  {riga}")
     per_classe = Counter(v.codice.split(".")[0] for v in esito.errori)
     sintesi = ", ".join(f"{k} {n}" for k, n in sorted(per_classe.items())) or "nessuno"

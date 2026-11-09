@@ -155,8 +155,24 @@ def per_nome(c: Campagna, azione: dict, stato: Stato, gia: list[str]) -> list[st
             and _risponde(b, azione, stato, presenti)]
 
 
+MIN_PRIVATE = 2   # azioni private per copione: i cedimenti decisivi sono quasi sempre «in privato»
+
+
+def _conoscenze(c: Campagna) -> dict[str, set[str]]:
+    """Radici delle conoscenze private di ogni PG: un'azione che le usa ne ripete almeno due."""
+    out = {}
+    for p in c.personaggi:
+        testo = " ".join(str(k.get("testo", "")) for k in p.get("conoscenze_private") or [] if isinstance(k, dict))
+        out[p.get("id")] = {w[:5] for w in re.findall(r"[a-zàèéìòù]+", testo.lower()) if len(w) >= 5}
+    return out
+
+
 def controlla(c: Campagna, e: Esito, cartella_copioni: Path) -> list[str]:
+    """Misura i copioni come il Motore, e dice anche che cosa non hanno messo alla prova (giudizio di nozze-neve):
+    le azioni private, le conoscenze private dei PG, e le battute che nessuna azione dei copioni raggiunge."""
     righe, misure, extra = [], [], []
+    raggiunte: set[str] = set()
+    conoscenze = _conoscenze(c)
     scene = {s.get("id") for _, s in c.scene}
     iniziale = (c.scena_iniziale() or {}).get("id")
     for f in sorted(Path(cartella_copioni).rglob("*.yaml")):
@@ -165,6 +181,14 @@ def controlla(c: Campagna, e: Esito, cartella_copioni: Path) -> list[str]:
         if stato.scena not in scene:
             righe.append(f"{f.stem}: scena {stato.scena} inesistente, copione saltato")
             continue
+        azioni = [a for t in cop.get("turni") or [] for a in t or [] if isinstance(a, dict) and "azione" in a]
+        private = sum(1 for a in azioni if a.get("privata"))
+        usano = sum(1 for a in azioni if len(conoscenze.get(a.get("pg"), set()) &
+                                             {w[:5] for w in re.findall(r"[a-zàèéìòù]+", str(a.get("azione", "")).lower()) if len(w) >= 5}) >= 2)
+        sintesi = f"{f.stem}: {len(azioni)} azioni, {private} private, {usano} che usano una conoscenza privata del PG"
+        if private < MIN_PRIVATE:
+            e.avviso("COPERTURA.copioni_private", f.stem, f"{private} azioni private: un copione ne ha almeno {MIN_PRIVATE}, "
+                                                          "perché i cedimenti decisivi e i finali migliori sono «in privato»")
         for n, turno in enumerate(cop.get("turni") or [], 1):
             entrate: set[str] = set()
             for a in turno or []:
@@ -182,9 +206,21 @@ def controlla(c: Campagna, e: Esito, cartella_copioni: Path) -> list[str]:
                 if len(cat) > TETTO:
                     e.avviso("COPERTURA.catalogo", f"{f.stem} T{n} {a.get('pg')}", f"{len(cat)} battute per una sola azione (tetto {TETTO})")
             # Dal turno dopo, ciò che è entrato può essere uscito: si aprono i cancelli che ne dipendono.
+            raggiunte |= entrate
             stato.usate |= entrate
             stato.rivelati |= {i for b in c.battute if b.get("id") in entrate for i in (b.get("effetti") or {}).get("rivela_indizi") or []}
+        righe.append(sintesi)
     if misure:
         righe.append(f"catalogo per azione (temi): media {statistics.mean(misure):.1f}, massimo {max(misure)}, su {len(misure)} azioni")
         righe.append(f"in più perché l'azione nomina chi parla: media {statistics.mean(extra):.1f}, massimo {max(extra)}")
+        # Materiale che nessuna azione plausibile raggiunge (nozze-neve: 115 battute su 139 mai uscite).
+        candidate = [b for b in c.battute if _candidata(b)]
+        mai = [b for b in candidate if b["id"] not in raggiunte]
+        righe.append(f"battute raggiunte dai copioni: {len(candidate) - len(mai)} su {len(candidate)} selezionabili")
+        essenziali = {i for i, ind in c.indizi.items() if ind.get("essenziale")}
+        for b in mai:
+            rivela = set((b.get("effetti") or {}).get("rivela_indizi") or []) & essenziali
+            if rivela:
+                e.avviso("COPERTURA.copioni_essenziali", b["id"], f"rivela {sorted(rivela)}, essenziale, ma nessuna azione dei copioni "
+                                                                  "la porta nel catalogo: temi, cancelli o scena da rivedere")
     return righe

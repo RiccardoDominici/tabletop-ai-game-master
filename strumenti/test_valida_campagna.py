@@ -290,7 +290,7 @@ def test_scena_come_lista(camp, tmp_path):
     scrivi(cartella, "volpe.yaml", {"turni": azione})
     scrivi(cartella, "zdue.yaml", {"scena": "scena_due", "turni": azione})
     _, c = valida(camp, contesto_b=False)
-    righe = copioni.controlla(c, Esito(), cartella)
+    righe = [r for r in copioni.controlla(c, Esito(), cartella) if " T1 " in r]
     assert "nar_botte" in righe[0] and "nar_botte" in righe[1]
     modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").update(scena=["scena_volpe", "scena_inventata"]))
     assert "REPERTORIO.scena" in errori(camp)
@@ -1345,6 +1345,28 @@ def test_copioni_seguono_cancelli_e_stato(camp, tmp_path):
     assert "bruno_notte_promessa" in righe[3]              # privata, dopo la versione
 
 
+def test_copioni_contano_le_azioni_private_e_gli_essenziali(camp, tmp_path):
+    # Giudizio di nozze-neve: i copioni non avevano azioni private, e 115 battute su 139 non sono mai uscite.
+    from valida import copioni
+    from valida.esito import Esito
+    cartella = tmp_path / "copioni"
+    cartella.mkdir()
+    scrivi(cartella, "pubblico.yaml", {"turni": [[{"pg": "pg_lia", "azione": "guardo il camino"}]]})
+    _, c = valida(camp, contesto_b=False)
+    es = Esito()
+    righe = copioni.controlla(c, es, cartella)
+    codici = {v.codice for v in es.avvisi}
+    assert "COPERTURA.copioni_private" in codici
+    assert "COPERTURA.copioni_essenziali" in codici                    # i_cera, essenziale, non è mai raggiunto
+    assert any("0 private" in r for r in righe) and any("battute raggiunte dai copioni" in r for r in righe)
+    scrivi(cartella, "pubblico.yaml", {"turni": [[{"pg": "pg_lia", "azione": "guardo i gradini della cantina", "privata": True}],
+                                                 [{"pg": "pg_lia", "azione": "prometto a Bruno di tacere", "privata": True}],
+                                                 [{"pg": "pg_tobia", "azione": "guardo la cera sui gradini"}]]})
+    es = Esito()
+    copioni.controlla(c, es, cartella)
+    assert "COPERTURA.copioni_private" not in {v.codice for v in es.avvisi}
+
+
 def test_copioni_seguono_la_scena(camp, tmp_path):
     from valida import copioni
     from valida.esito import Esito
@@ -1356,7 +1378,7 @@ def test_copioni_seguono_la_scena(camp, tmp_path):
     scrivi(cartella, "volpe.yaml", {"turni": azione})
     scrivi(cartella, "zdue.yaml", {"scena": "scena_due", "turni": azione})
     _, c = valida(camp, contesto_b=False)
-    righe = copioni.controlla(c, Esito(), cartella)
+    righe = [r for r in copioni.controlla(c, Esito(), cartella) if " T1 " in r]
     assert "nar_botte" not in righe[0] and "nar_botte" in righe[1]
 
 
