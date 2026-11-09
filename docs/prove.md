@@ -162,6 +162,20 @@ tiro per colpire, danno e CA dall'armatura. Né il file né il modello scrivono 
 - `richiede.prova` riconoscibile;
 - `regole.dadi` booleano.
 
+**Scelte del validatore** (strumenti/valida/regole_schede.py, già in uso; dove il testo sopra lascia spazio):
+- **(a) Punteggi.** PG da 1 a 20, PNG da 1 a 30. Il livello del PG va da 1 a 20: fuori, è un errore.
+- **(b) Indizio essenziale.** Un indizio essenziale citato da una prova è un **errore**, non un avviso: la prova
+  non può essere l'unica strada verso un indizio che la campagna dichiara essenziale. Il Motore lo dà comunque con
+  un prezzo; il validatore vieta di scrivere il collegamento.
+- **(c) Fasce di GS.** CA, PF e tiro per colpire dei PNG sono fasce **approssimate dalle tabelle del Manuale del
+  Master 2014**, non dall'SRD 5.2: CA da 9 a tipica+3, PF fino al tetto del GS, tiro per colpire non oltre competenza
+  +5, e non più di due dadi di danno sotto GS 2. Sono in `strumenti/valida/srd.py` e vanno riviste con una fonte
+  migliore.
+- **(d) Forme di `richiede.prova`.** Accettate: un'abilità o una caratteristica con l'id esatto (`persuasione`,
+  `rapidita_di_mano`), un id `p_…` di una prova della scena, il nome di un attacco come id (`balestra_leggera`), e i
+  tipi `prova`, `salvezza`, `attacco`, `contrapposta`. Il Motore confronta le stringhe esatte: un nome italiano o una
+  maiuscola non basta.
+
 Coerenze consigliate (avvisi):
 - ogni PG giocabile ha una scheda;
 - ogni PNG che può combattere o va convinto ha una scheda;

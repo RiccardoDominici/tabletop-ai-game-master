@@ -30,7 +30,6 @@ ambientazione: >-
   delle Lanterne, a pedaggio. Fantasy compatibile SRD, senza magia vistosa.
 vincoli:
   - "niente combattimento necessario: la forza è una strada, mai l'unica"
-  - "senza dadi in F0: cede_se e indizi solo con condizioni di finzione"
   - "al massimo quattro PNG con voce; nadine e tabitha mai nella stessa scena"
   - "non riusare la forma di prova-f0: niente osteria, niente prigioniero chiuso a chiave, niente cibo avvelenato"
 
