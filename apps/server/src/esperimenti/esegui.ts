@@ -43,6 +43,7 @@ import { ProiettoreVirtuale } from './proiettore';
 import { azioniPrivate, OsservatoreTavolo, testoTavolo } from './tavolo';
 import { trascrizione } from './trascrizione';
 import { versioneCodice } from './versione';
+import { TESTO_FINE_SCENA } from '../scena/regia';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 const CAMPI_LATENZA = ['finestra_ms', 'voce_sveglia', 'llm_primo_token', 'llm_prima_frase', 'voce_richiesta', 'voce_primo_audio', 'schermo_inizio_audio', 'llm_fine', 'audio_fine'] as const;
@@ -104,6 +105,13 @@ function arrestaServer(o: OpzioniEsperimento): void {
   spawnSync(path.join(RADICE_REPO, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, CANTASTORIE_PORTA: String(o.porta) }, encoding: 'utf8' });
 }
 
+/** Come è finita la partita prima della fine del copione: il finale ha chiuso la scena, o il tavolo si è fermato. */
+export interface FinePartita {
+  turno_copione: number;
+  turno_server: number;
+  motivo: 'finale' | 'pausa';
+}
+
 /** Un cambio di scena fatto dal copione: turno del copione, turno del server in cui è avvenuto, scene. */
 export interface CambioScena {
   turno_copione: number;
@@ -112,7 +120,9 @@ export interface CambioScena {
 }
 
 /**
- * Esegue i turni del copione; ritorna quando si apre la finestra dopo l'ultimo.
+ * Esegue i turni del copione; ritorna quando si apre la finestra dopo l'ultimo, oppure quando il
+ * tavolo va in pausa a fine turno: dopo il finale del Motore (TESTO_FINE_SCENA) la scena è chiusa e
+ * il copione finisce lì (prima l'harness aspettava la finestra dopo e scadeva).
  *
  * Il turno del copione e quello del server coincidono finché non si cambia scena: l'apertura della
  * nuova scena si prende il turno della finestra aperta (regia.cambiaScena) e la finestra successiva
@@ -125,7 +135,7 @@ async function giocaCopione(
   master: MasterHeadless,
   telefoni: Map<string, Client>,
   osservatore: OsservatoreTavolo,
-): Promise<CambioScena[]> {
+): Promise<{ cambi: CambioScena[]; fine: FinePartita | null }> {
   const cambi: CambioScena[] = [];
   let turnoServer = 1;
   for (let n = 1; n <= copione.turni.length; n++) {
@@ -153,13 +163,48 @@ async function giocaCopione(
     }
     osservatore.segnaChiusura(turnoServer);
     const corrente = turnoServer;
-    const dopo = attendiStato(schermo, (s) => s.turno === corrente + 1 && s.fase === 'finestra', 300_000, `fine del turno ${n} (server ${corrente})`);
+    const dopo = attendiStato(schermo, (s) => (s.turno === corrente + 1 && s.fase === 'finestra') || (s.fase === 'pausa' && s.turno === corrente), 300_000, `fine del turno ${n} (server ${corrente})`);
     for (const [pg, t] of telefoni) await emetti<Esito>((cb) => t.emit('azione:pronto', { id_pg: pg, pronto: true }, cb));
-    await dopo;
+    const finito = await dopo;
+    if (finito.fase === 'pausa') {
+      const motivo = finito.trascrizione.at(-1)?.testo === TESTO_FINE_SCENA ? 'finale' : 'pausa';
+      console.log(`[${etichetta}] turno ${n}/${copione.turni.length} (server ${corrente}): ${motivo === 'finale' ? 'il finale ha chiuso la scena' : 'il tavolo è in pausa'}, il copione finisce qui`);
+      return { cambi, fine: { turno_copione: n, turno_server: corrente, motivo } };
+    }
     turnoServer = corrente + 1;
     console.log(`[${etichetta}] turno ${n}/${copione.turni.length} fatto (server ${corrente})`);
   }
-  return cambi;
+  return { cambi, fine: null };
+}
+
+/**
+ * Gli orologi turno per turno (stato_orologi del registro delle narrazioni: solo quelli attivi nella
+ * scena), il turno in cui ciascuno si è riempito e quanti segni ha avuto in tutto.
+ */
+function misuraOrologi(narrati: Array<Record<string, unknown>>): { per_turno: Array<{ turno: unknown; stato: unknown }>; massimo: Record<string, string>; completo_al_turno: Record<string, unknown> } {
+  const massimo: Record<string, string> = {};
+  const completo: Record<string, unknown> = {};
+  for (const r of narrati) {
+    for (const [id, v] of Object.entries((r['stato_orologi'] ?? {}) as Record<string, string>)) {
+      const [p, s] = v.split('/').map(Number);
+      if (!massimo[id] || Number(massimo[id]!.split('/')[0]) < p!) massimo[id] = v;
+      if (p === s && completo[id] === undefined) completo[id] = r['turno'];
+    }
+  }
+  return { per_turno: narrati.map((r) => ({ turno: r['turno'], stato: r['stato_orologi'] })), massimo, completo_al_turno: completo };
+}
+
+/** I [usa] rifiutati raggruppati per motivo (la prima parte, senza id). */
+function motiviRifiuto(narrati: Array<Record<string, unknown>>): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const r of narrati) {
+    for (const u of (r['uscita'] ?? []) as Array<{ tipo: string; id: string; motivo?: string }>) {
+      if (u.tipo !== 'usa_rifiutato') continue;
+      const m = (u.motivo ?? '?').replaceAll(u.id, '<id>').replace(/\bpg_\w+/g, '<pg>').replace(/\(.*$/, '').replace(/[: ]+$/, '').slice(0, 80);
+      out[m] = (out[m] ?? 0) + 1;
+    }
+  }
+  return out;
 }
 
 /** Id di tutte le battute del repertorio della campagna (per «mai usate»). */
@@ -174,7 +219,7 @@ async function main(): Promise<void> {
   const copione = caricaCopione(o.fileCopione);
   const errori = controllaCopione(copione, campagna);
   if (errori.length) throw new Error(`copione ${o.copione} non giocabile su ${o.campagna}:\n- ${errori.join('\n- ')}`);
-  const cartellaRisultati = path.join(RADICE_REPO, 'esperimenti', 'risultati', etichetta);
+  const cartellaRisultati = path.join(RADICE_REPO, 'esperimenti', 'risultati', o.uscita ?? etichetta);
   fs.mkdirSync(cartellaRisultati, { recursive: true });
   const inizioEsperimento = new Date().toISOString();
   console.log(`[${etichetta}] campagna ${o.campagna}, porta ${o.porta}, modalità ${modo}: riavvio del server di prova…`);
@@ -216,7 +261,7 @@ async function main(): Promise<void> {
   const primo = attendiStato(schermo, (s) => s.fase === 'finestra' && s.turno === 1, 180_000, 'prima finestra');
   await emetti<Esito>((cb) => schermo.emit('schermo:inizia', cb));
   await primo;
-  const cambiScena = await giocaCopione(etichetta, copione, schermo, master, telefoni, osservatore);
+  const { cambi: cambiScena, fine } = await giocaCopione(etichetta, copione, schermo, master, telefoni, osservatore);
 
   // 4. Raccolta dai registri del server di prova (solo questa sessione).
   const salute = (await (await fetch(`${o.url}/api/salute`)).json()) as Record<string, unknown>;
@@ -268,6 +313,10 @@ async function main(): Promise<void> {
     turni: turni.length,
     turni_copione: copione.turni.length,
     cambi_di_scena: cambiScena,
+    fine_prima_del_copione: fine,
+    // Il finale (detto dal Motore o dal selettore) e gli orologi turno per turno: le misure del playtest.
+    finale: turni.filter((r) => r['finale']).map((r) => ({ turno: r['turno'], id: r['finale'] }))[0] ?? null,
+    orologi: misuraOrologi(narrati),
     azioni_private_copione: contaPrivate(copione),
     voce: salute0['voce'],
     latenze,
@@ -279,6 +328,13 @@ async function main(): Promise<void> {
     azioni_pubbliche: somma('azioni_pubbliche'),
     azioni_senza_risposta: somma('azioni_senza_risposta'),
     riparazioni: somma('riparazioni'),
+    // Selettore (correzioni del playtest di nozze-neve): «> pg» dedotti o corretti dal Motore, battute
+    // indicate dalla preselezione per temi e quante ne sono uscite, righe di PNG fuori scena scartate.
+    pg_dedotti: somma('pg_dedotti'),
+    battute_indicate: somma('battute_indicate'),
+    battute_indicate_usate: somma('battute_indicate_usate'),
+    righe_png_assenti: somma('righe_png_assenti'),
+    usa_rifiutati_per_motivo: motiviRifiuto(narrati),
     fughe: {
       nota:
         modo === 'repertorio'

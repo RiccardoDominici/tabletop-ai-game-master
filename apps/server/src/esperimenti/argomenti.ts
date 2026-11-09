@@ -34,6 +34,8 @@ export interface OpzioniEsperimento {
   lasciaServer: boolean;
   /** Cartella dei risultati: esperimenti/risultati/<etichetta>. */
   etichetta: string;
+  /** `--uscita <cartella>`: i risultati vanno in esperimenti/risultati/<cartella> (così una misura non sovrascrive la run di riferimento). */
+  uscita: string | null;
 }
 
 export const PORTA_ESPERIMENTI = 4710;
@@ -53,7 +55,7 @@ function valoreOpzione(argv: string[], nome: string): string | null {
 }
 
 export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsperimento {
-  const conValore = new Set(['--campagna']);
+  const conValore = new Set(['--campagna', '--uscita']);
   const posizionali: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
@@ -63,9 +65,11 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
   const [copione, etichettaModo] = posizionali;
   // «B2» è il repertorio con le regole della versione 2 (è la modalità repertorio di oggi).
   const modo: ModoEsperimento | null = etichettaModo === 'B' || etichettaModo === 'B2' ? 'repertorio' : etichettaModo === 'A' ? 'improvvisa' : null;
-  if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--voce-vera] [--finto] [--lascia-server]');
+  if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--voce-vera] [--finto] [--lascia-server]');
 
   const campagna = valoreOpzione(argv, '--campagna') ?? CAMPAGNA_DEFAULT;
+  const uscita = valoreOpzione(argv, '--uscita');
+  if (uscita !== null && (path.isAbsolute(uscita) || uscita.split(/[\\/]/).includes('..'))) throw new ErroreArgomenti('--uscita è una cartella dentro esperimenti/risultati');
   if (!/^[a-z0-9][a-z0-9_-]*$/i.test(campagna) || !fs.existsSync(path.join(RADICE_REPO, 'campagne', campagna))) {
     throw new ErroreArgomenti(`campagna inesistente: campagne/${campagna}`);
   }
@@ -106,5 +110,6 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
     finto,
     lasciaServer: argv.includes('--lascia-server'),
     etichetta,
+    uscita,
   };
 }
