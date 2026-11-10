@@ -18,7 +18,7 @@
 import type { Logger } from '../logger';
 import { costoZero, type ModelloLinguaggio, type RispostaModello } from './modello';
 import { chiediStrutturato } from './strutturato';
-import type { EsitoNarrazione, Narratore, RichiestaNarrazione } from './tipi';
+import type { AzionePreclassifica, EsitoNarrazione, Narratore, RichiestaNarrazione } from './tipi';
 
 export interface AzioneLetta {
   id_pg: string;
@@ -72,7 +72,7 @@ export function leggiTurno(messaggio: string): TurnoLetto {
 
 const PROMPT = `Sei il lettore di una partita di D&D in italiano. Non scrivi la storia: per ogni azione scegli l'ID della battuta che le risponde, fra i candidati di quell'azione, oppure "nessuna" se nessun candidato descrive davvero quell'azione.
 "battuta" è SOLO l'id (la parola prima dei due punti), mai il testo.
-Esempio di risposta: {"risposte":[{"pg":"pg_mirta","battuta":"nar_impronte"}]}`;
+Forma della risposta (gli id veri sono solo quelli dei candidati): {"risposte":[{"pg":"pg_…","battuta":"…"}]}`;
 
 const SCHEMA = {
   type: 'object',
@@ -164,15 +164,66 @@ export interface OpzioniMinimo {
   maxTokens?: number;
 }
 
+/** Una classificazione fatta all'invio: per quale testo, e la scelta (o null se fallita). */
+interface Preclassificata {
+  testo: string;
+  controllo: AbortController;
+  scelta: Promise<string | null>;
+  inizio: number;
+}
+
 export class NarratoreMinimo implements Narratore {
   readonly nome = 'minimo' as const;
   readonly modello: string;
+  /** Per PG: l'azione inviata e la sua battuta scelta in anticipo (il turno non ha scadenza). */
+  private readonly pronte = new Map<string, Preclassificata>();
+  /** Le risposte del modello date in anticipo, da contare nel turno che le usa. */
+  private risposteAnticipo: RispostaModello[] = [];
 
   constructor(
     private readonly m: ModelloLinguaggio,
     private readonly o: OpzioniMinimo,
   ) {
     this.modello = m.modello;
+  }
+
+  /**
+   * All'invio di un'azione: la si classifica subito, da sola, col catalogo che il Motore le darebbe adesso.
+   * Mentre gli altri scrivono il lettore ha tempo; alla chiusura resta da fare solo ciò che manca.
+   */
+  preclassifica(azione: AzionePreclassifica, catalogo: { indicate: string[]; righe: Map<string, string> }): void {
+    const prima = this.pronte.get(azione.id_pg);
+    if (prima?.testo === azione.testo) return;
+    prima?.controllo.abort(new Error('azione cambiata'));
+    const controllo = new AbortController();
+    const t: TurnoLetto = { azioni: [{ ...azione }], indicate: new Map([[azione.id_pg, catalogo.indicate]]), catalogo: catalogo.righe, attesa: [] };
+    const inizio = performance.now();
+    const scelta = this.classifica(t, controllo.signal, this.risposteAnticipo)
+      .then((r) => r.find((x) => x.pg === azione.id_pg)?.battuta ?? null)
+      .catch(() => null);
+    this.pronte.set(azione.id_pg, { testo: azione.testo, controllo, scelta, inizio });
+    void scelta.then((b) => this.o.log.info({ id_pg: azione.id_pg, battuta: b, ms: Math.round(performance.now() - inizio) }, 'lettore minimo: azione classificata all’invio'));
+  }
+
+  annullaPreclassifica(id_pg: string): void {
+    this.pronte.get(id_pg)?.controllo.abort(new Error('azione ritirata'));
+    this.pronte.delete(id_pg);
+  }
+
+  /**
+   * Le scelte fatte all'invio che valgono ancora: stesso testo, e battuta ancora fra i candidati di
+   * quell'azione nel catalogo della chiusura (dipendenze e stato possono averla tolta). Le altre: da rifare.
+   */
+  private async giaPronte(t: TurnoLetto): Promise<Map<string, string>> {
+    const out = new Map<string, string>();
+    for (const a of t.azioni) {
+      const p = this.pronte.get(a.id_pg);
+      if (!p || p.testo !== a.testo) continue;
+      const b = await p.scelta;
+      if (b === null) continue;
+      if (b === 'nessuna' || candidati(t, a.id_pg, a.testo).includes(b)) out.set(a.id_pg, b);
+    }
+    return out;
   }
 
   /**
@@ -211,7 +262,16 @@ export class NarratoreMinimo implements Narratore {
     let prossimo = 0;
     if (pubbliche.length) annuncia(pubbliche[prossimo++]!);
     let finito = false;
-    const scelta = (t.azioni.length ? this.classifica(t, r.signal, risposte) : Promise.resolve([] as Risposte['risposte'])).finally(() => {
+    // Le azioni già classificate all'invio non tornano al modello: una chiamata sola per quelle che mancano.
+    const scelta = (async (): Promise<Risposte['risposte']> => {
+      const pronte = await this.giaPronte(t);
+      const mancano = t.azioni.filter((a) => !pronte.has(a.id_pg));
+      const nuove = mancano.length ? await this.classifica({ ...t, azioni: mancano }, r.signal, risposte) : [];
+      risposte.push(...this.risposteAnticipo.splice(0));
+      for (const a of t.azioni) this.pronte.delete(a.id_pg);
+      this.o.log.info({ turno: r.turno, gia_pronte: pronte.size, da_fare: mancano.length }, 'lettore minimo: scelte pronte alla chiusura');
+      return [...[...pronte].map(([pg, battuta]) => ({ pg, battuta })), ...nuove];
+    })().finally(() => {
       finito = true;
     });
     // Gli annunci seguenti mentre il classificatore lavora, al ritmo stimato della voce.

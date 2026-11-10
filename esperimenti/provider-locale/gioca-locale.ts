@@ -36,6 +36,8 @@ const VOCE_FISH = opzione('--voce', '') === 'fish';
 const ETICHETTA = opzione('--etichetta', '');
 /** --modello <id mlx>: un altro modello locale per il lettore (scritto in un locale.yaml di prova). */
 const MODELLO = opzione('--modello', '');
+/** --pausa-s <s>: i giocatori parlano s secondi; le azioni arrivano scaglionate in quel tempo, poi si chiude. */
+const PAUSA_MS = Number(opzione('--pausa-s', '0')) * 1000;
 const URL = `http://127.0.0.1:${PORTA}`;
 const LOG = path.join(RADICE, 'logs', `porta-${PORTA}`);
 
@@ -129,7 +131,13 @@ async function principale(): Promise<void> {
   const ascolta = telefoni.get(copione.pg[0]!)!;
   const registrate = new Map<string, FraseRegistrata>();
   // Tempi visti dal telefono in ascolto, dalla chiusura della finestra: ogni frase quando arriva il suo audio.
+  // La chiusura la vede il proiettore: lo stato passa da «finestra» a un'altra fase (da sola o col master).
   let chiusaAlle = 0;
+  let faseVista = '';
+  schermo.on('stato', (st) => {
+    if (faseVista === 'finestra' && st.fase !== 'finestra') chiusaAlle = Date.now();
+    faseVista = st.fase;
+  });
   const arrivi: Array<{ turno: number; ms: number; annuncio: boolean; testo: string }> = [];
   ascolta.on('audio:frase', (m) => {
     registrate.set(m.id_frase, { meta: m, pezzi: [], secondi: 0 });
@@ -154,7 +162,10 @@ async function principale(): Promise<void> {
   // 3. Turni del copione.
   for (let n = 0; n < TURNI; n++) {
     const s = await attendiStato(schermo, (x) => x.fase === 'finestra' && x.finestra.aperta, 300_000, `finestra del turno ${n + 1}`);
-    for (const a of copione.turni[n] ?? []) {
+    const daInviare = (copione.turni[n] ?? []).filter((x) => x.pg && x.azione && telefoni.has(x.pg));
+    for (const [k, a] of daInviare.entries()) {
+      // Giocatori che parlano: le azioni arrivano scaglionate nella pausa (la prima subito).
+      if (PAUSA_MS && k > 0) await new Promise((r) => setTimeout(r, PAUSA_MS / daInviare.length));
       if (!a.pg || !a.azione) continue;
       const t = telefoni.get(a.pg);
       if (!t) continue;
@@ -163,8 +174,7 @@ async function principale(): Promise<void> {
     }
     const corrente = s.turno;
     const dopo = attendiStato(schermo, (x) => (x.turno > corrente && x.fase === 'finestra') || x.fase === 'pausa', 300_000, `fine del turno ${n + 1}`);
-    await new Promise((r) => setTimeout(r, 500));
-    chiusaAlle = Date.now();
+    await new Promise((r) => setTimeout(r, PAUSA_MS ? PAUSA_MS / Math.max(1, daInviare.length) : 500));
     const chiusa = await master.comando({ tipo: 'chiudi_finestra' });
     if (!chiusa.ok) console.log(`  (Risolvi ora: ${chiusa.errore})`);
     const fine = await dopo;

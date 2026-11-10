@@ -192,6 +192,30 @@ describe('lettore minimo', () => {
     expect(chiamate).toBe(1);
   });
 
+  it('classificata all’invio: alla chiusura nessuna chiamata; testo cambiato o battuta fuori catalogo → solo quella', async () => {
+    const chiesti: string[] = [];
+    const fetchFinto = (async (_u: string, init: RequestInit) => {
+      const msg = (JSON.parse(String(init.body)) as { messages: Array<{ content: string }> }).messages.at(-1)!.content;
+      chiesti.push(msg);
+      const pg = [...msg.matchAll(/\((pg_\w+)\)/g)].map((m) => m[1]);
+      const risposte = pg.map((p) => ({ pg: p, battuta: p === 'pg_ida' ? 'nar_scatolina' : 'nar_impronte' }));
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ risposte }) }, finish_reason: 'stop' }] }), { status: 200 });
+    }) as unknown as typeof fetch;
+    const n = new NarratoreMinimo(new ModelloOpenAI({ url: 'http://pre/v1', modello: 'm', fetch: fetchFinto }), { log: loggerMuto() });
+    const righe = new Map(leggiTurno(messaggio).catalogo);
+    n.preclassifica({ id_pg: 'pg_ida', nome: 'Ida', testo: 'guardo la scatolina da vicino', privata: false }, { indicate: ['nar_scatolina'], righe });
+    n.preclassifica({ id_pg: 'pg_livia', nome: 'Livia', testo: 'testo poi cambiato', privata: true }, { indicate: [], righe });
+    await new Promise((r) => setTimeout(r, 50));
+    const prima = chiesti.length;
+    const e = await n.narra({ turno: 3, sistema: [], messaggio, signal: new AbortController().signal }, () => undefined);
+    // Ida era pronta; Livia aveva un altro testo: al modello va solo lei.
+    expect(chiesti.length - prima).toBe(1);
+    expect(chiesti.at(-1)).toContain('pg_livia');
+    expect(chiesti.at(-1)).not.toContain('pg_ida');
+    expect(e.testo).toContain('[usa] nar_scatolina > pg_ida');
+    expect(e.testo).toContain('[usa] nar_impronte > pg_livia');
+  });
+
   it('voce e lettore locali: solo il primo annuncio in anticipo, il secondo dopo il classificatore', async () => {
     const msg = messaggio.replace('(azione PRIVATA: a voce narra solo ciò che gli altri possono percepire)', '');
     const lento = (async () => {

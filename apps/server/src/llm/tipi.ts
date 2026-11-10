@@ -25,6 +25,13 @@ export interface EsitoNarrazione {
 /** Chi narra: Haiku (Anthropic), un modello compatibile OpenAI (locale o in rete), il lettore minimo, il copione finto. */
 export type NomeNarratore = 'haiku' | 'anthropic' | 'locale' | 'openrouter' | 'openai' | 'minimo' | 'finto';
 
+export interface AzionePreclassifica {
+  id_pg: string;
+  nome: string;
+  testo: string;
+  privata: boolean;
+}
+
 export interface Narratore {
   readonly nome: NomeNarratore;
   readonly modello: string;
@@ -33,6 +40,13 @@ export interface Narratore {
    * La promessa si risolve a stream finito (o rifiuta se interrotto o in errore).
    */
   narra(richiesta: RichiestaNarrazione, onTesto: (delta: string) => void): Promise<EsitoNarrazione>;
+  /**
+   * Facoltativo (lettore minimo): classifica un'azione appena inviata, in sottofondo, col catalogo che il
+   * Motore le darebbe adesso; alla chiusura la scelta è già pronta. Un'azione modificata si riclassifica.
+   */
+  preclassifica?(azione: AzionePreclassifica, catalogo: { indicate: string[]; righe: Map<string, string> }): void;
+  /** L'azione di quel PG è stata ritirata: la classificazione in corso si butta. */
+  annullaPreclassifica?(id_pg: string): void;
   /** Scrive in cache i blocchi di sistema prima del primo turno (facoltativo). */
   preriscalda?(sistema: string[]): Promise<EsitoNarrazione | null>;
 }

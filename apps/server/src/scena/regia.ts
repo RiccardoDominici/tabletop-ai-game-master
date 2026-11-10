@@ -1858,11 +1858,33 @@ export class Regia {
     const esito = this.tavolo.invia(id_pg, testo, versioneVista, privata);
     // Che cosa si tira lo decide l'arbitro adesso, in sottofondo: alla chiusura è già pronto.
     if (esito.ok) this.preparaProve(id_pg);
+    // Lo stesso per la battuta del lettore minimo: la sceglie adesso, mentre gli altri scrivono.
+    if (esito.ok) this.preparaLettore(id_pg);
     return esito;
   }
 
   ritiraAzione(id_pg: string): Esito {
-    return this.tavolo.ritira(id_pg);
+    const esito = this.tavolo.ritira(id_pg);
+    if (esito.ok) this.o.narratore.annullaPreclassifica?.(id_pg);
+    return esito;
+  }
+
+  /**
+   * Lettore minimo (llm/minimo.ts): l'azione appena inviata si classifica subito col catalogo che il
+   * Motore le darebbe adesso (stessi cancelli, stessa preselezione). Alla chiusura il lettore controlla
+   * che la scelta valga ancora nel catalogo del turno, e rifà solo le azioni che non tornano.
+   */
+  private preparaLettore(id_pg: string): void {
+    const s = this.statoRepertorio;
+    if (!s || !this.o.narratore.preclassifica) return;
+    const a = this.tavolo.tutte().find((x) => x.autore === id_pg && (x.stato === 'in_coda' || x.stato === 'da_confermare'));
+    if (!a) return;
+    const azioni = [{ autore: id_pg, testo: a.testo, privata: a.privata, prove: [] as string[] }];
+    const dovuti = new Set(this.orologi.dovuti(this.turno).map((o) => o.id));
+    const { battute } = s.catalogo({ turno: this.turno, azioni, stallo: false, dovuti, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
+    const indicate = s.indicatePerAzioni(battute, azioni, this.nomiPng).find((x) => x.autore === id_pg)?.ids ?? [];
+    const righe = new Map(battute.map((b) => [b.id, StatoRepertorio.riga(b).replace(/^- /, '')]));
+    this.o.narratore.preclassifica({ id_pg, nome: this.nomePg(id_pg), testo: a.testo, privata: a.privata }, { indicate, righe });
   }
 
   confermaAzione(id_pg: string): Esito {
