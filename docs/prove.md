@@ -251,6 +251,7 @@ Esempi di fatti nel messaggio (veri, dalla partita sulla 4720):
 - [2] Corrado Lanzi: attacco con Balestra leggera a Ruggero lo sgherro: 19 contro CA 13 → COLPITO, 7 danni perforanti; Ruggero lo sgherro è ferito gravemente. Poi Ruggero lo sgherro reagisce: attacco con Mazza ferrata a Corrado Lanzi: 21 contro CA 15 → COLPITO, 5 danni contundenti; Corrado Lanzi ha 7 punti ferita su 12.
 - [3] Teo (azione PRIVATA: …): Rapidità di mano (Destrezza): 16 contro CD 15 → RIUSCITA.
 ```
+- **Numeri a voce:** punti ferita, CA e CD non si dicono (prompt). Se il narratore li scrive lo stesso («quattro punti di vita», «la CA 15»), narrazione/numeri-regole.ts toglie il numero prima della voce e della trascrizione: li mostra già la carta.
 - **PF a voce:** dei PNG il narratore sente solo come stanno («ferito ma regge», «a terra»), mai i numeri. Dei PG sente
   i numeri, che i giocatori vedono comunque sul telefono.
 - **Proiettore** (apps/web/src/schermo/TiriSchermo.tsx, components/CartaTiro.tsx). Una colonna di carte a destra:

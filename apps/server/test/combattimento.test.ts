@@ -41,7 +41,8 @@ function scontro(regole: Combattimento, pf: Record<string, number>, dadi: number
       if (n === null) return null;
       attacchi.push({ png, pg, fase: fase.id });
       stato.danneggia(pg, n);
-      return { t: { id: `x${attacchi.length}`, tipo: 'attacco' } as TiroMostrato, testo: `colpisce ${pg} per ${n}.` };
+      const t = { id: `x${attacchi.length}`, tipo: 'attacco', nome: png, bersaglio: { id: pg, nome: pg }, riuscita: true, danno: { totale: n }, a_terra: stato.aTerra(pg) } as TiroMostrato;
+      return { t, testo: `colpisce ${pg} per ${n}.` };
     },
     morale: (png) => (png === 'png_y' ? 7 : null),
     nuovoIdTiro: () => 'tm',
@@ -89,7 +90,7 @@ describe('combattimento SRD 5.2', () => {
     // Turno di x (stordito), poi il round finisce e la condizione scade.
     expect(r.fatti).toEqual(['Turno di x: è stordito, non agisce.', 'x: Stordito finisce.']);
     const r2 = g.dopoAzioni({ turno: 3, attacchi: [], autori: ['pg_a'], candidati: () => cand });
-    expect(r2.fatti).toEqual(['Turno di x: colpisce pg_a per 1.']);
+    expect(r2.fatti).toEqual(['Turno di x: png_x colpisce pg_a: 1 danno (raccontalo in una frase sua). Dettagli: colpisce pg_a per 1.']);
 
     // Col Motore vero: Corrado attacca Ruggero prono → vantaggio, motivo dalla condizione.
     const c = caricaCampagna(path.join(FIX, 'prove'));

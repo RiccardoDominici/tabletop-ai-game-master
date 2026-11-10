@@ -98,6 +98,17 @@ export function fattoGiaATerra(nome: string): string {
   return `${nome} è già a terra: nessun tiro, l’azione riesce.`;
 }
 
+/**
+ * La frase esplicita di un attacco di un PNG, prima dei dettagli: «Ruggero colpisce Corrado: 6 danni.»
+ * oppure «Ruggero manca Corrado.». La e2e del 10 novembre: il narratore lasciava il colpo solo intuire.
+ */
+export function fraseAttaccoPng(t: TiroMostrato): string {
+  const b = t.bersaglio?.nome ?? 'il bersaglio';
+  if (!t.riuscita) return `${t.nome} manca ${b} (raccontalo in una frase sua).`;
+  const n = t.danno?.totale ?? 0;
+  return `${t.nome} colpisce ${b}: ${n} ${n === 1 ? 'danno' : 'danni'}${t.a_terra ? `, e ${b} va a terra` : ''} (raccontalo in una frase sua).`;
+}
+
 /** Intestazione della sezione nel messaggio del narratore. */
 export const TITOLO_ESITI = '## Esiti dei tiri (li ha tirati il Motore: sono fatti, raccontali così)';
 export const REGOLA_ESITI =

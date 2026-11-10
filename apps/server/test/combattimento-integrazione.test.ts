@@ -50,7 +50,8 @@ describe('combattimento col server intero', () => {
     const s3: StatoTavolo = await attendi(ida, (x) => x.fase === 'finestra' && x.turno === 3);
     expect(s3.combattimento?.turno_di).toEqual(['pg_corrado']);
     expect(s3.finestra.invitati).toEqual(['pg_corrado']);
-    expect(messaggi.at(-1)).toMatch(/Turno di Ruggero lo sgherro: attacco con Mazza ferrata a Corrado Lanzi: 19 contro CA 15 → COLPITO, 6 danni contundenti/);
+    // Il colpo del PNG detto chiaro, poi i dettagli: il narratore lo racconta in una frase sua.
+    expect(messaggi.at(-1)).toMatch(/Turno di Ruggero lo sgherro: Ruggero lo sgherro colpisce Corrado Lanzi: 6 danni \(raccontalo in una frase sua\)\. Dettagli: attacco con Mazza ferrata a Corrado Lanzi: 19 contro CA 15 → COLPITO, 6 danni contundenti/);
     expect(messaggi.at(-1)).not.toMatch(/Colpisco ancora Ruggero/);
     expect(s3.pg.find((p) => p.id === 'pg_corrado')?.pf).toEqual({ attuali: 6, massimi: 12 });
     expect(mieCorrado.some((a) => a.testo === 'Colpisco ancora Ruggero' && a.stato === 'in_coda' && a.turno === 3)).toBe(true);

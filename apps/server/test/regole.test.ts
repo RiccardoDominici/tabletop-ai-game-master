@@ -166,7 +166,7 @@ describe('un turno coi set di prova', () => {
     ]);
     expect(m.stato.puntiFerita('png_ruggero')).toEqual({ attuali: 3, massimi: 7 });
     expect(m.stato.puntiFerita('pg_corrado')).toEqual({ attuali: 3, massimi: 8 });
-    expect(r.fatti[1]).toMatch(/Scambio: Ruggero lo sgherro colpisce a sua volta/);
+    expect(r.fatti[1]).toMatch(/Scambio: Ruggero lo sgherro colpisce Corrado Lanzi: 5 danni \(raccontalo in una frase sua\)/);
   });
 
   it('d100: Persuadere difficile sotto la soglia, con il grado nella carta e nel fatto', async () => {

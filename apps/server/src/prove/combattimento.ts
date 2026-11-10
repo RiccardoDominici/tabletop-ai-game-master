@@ -18,6 +18,7 @@ import type { Logger } from '../logger';
 import type { Combattimento, Condizione, Effetto, Fase } from '../regole/combattimento';
 import type { FonteDadi } from './dadi';
 import type { StatoProve } from './stato';
+import { fraseAttaccoPng } from './testi';
 
 export type Lato = 'pg' | 'png';
 export type EsitoCombattente = 'in_gioco' | 'stabile' | 'morto' | 'fuggito';
@@ -312,7 +313,7 @@ export class GestoreCombattimento {
     const r = this.d.attacca(id, bersaglio, fase, turno);
     if (!r) return;
     tiri.push(r.t);
-    fatti.push(`Turno di ${p.nome}: ${r.testo}`);
+    fatti.push(`Turno di ${p.nome}: ${fraseAttaccoPng(r.t)} Dettagli: ${r.testo}`);
     const b = this.part(bersaglio);
     if (b) this.controllaZero(b, fatti);
   }

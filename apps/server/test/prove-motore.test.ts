@@ -155,7 +155,8 @@ describe('un turno di tiri', () => {
       ['png_ruggero', 'Mazza ferrata', 19, 15, true, 6],
     ]);
     expect(m.stato.puntiFerita('pg_corrado')).toEqual({ attuali: 6, massimi: 12 });
-    expect(r.fatti[0]).toMatch(/Poi Ruggero lo sgherro reagisce: attacco con Mazza ferrata a Corrado Lanzi: 19 contro CA 15 → COLPITO, 6 danni contundenti; Corrado Lanzi ha 6 punti ferita su 12\./);
+    // Prima la frase esplicita del colpo del PNG, poi i dettagli del tiro.
+    expect(r.fatti[0]).toMatch(/Poi Ruggero lo sgherro reagisce\. Ruggero lo sgherro colpisce Corrado Lanzi: 6 danni \(raccontalo in una frase sua\)\. Dettagli: attacco con Mazza ferrata a Corrado Lanzi: 19 contro CA 15 → COLPITO, 6 danni contundenti; Corrado Lanzi ha 6 punti ferita su 12\./);
   });
 
   it('aiuto: l\'azione aiutata ha vantaggio, chi aiuta non tira; svantaggio dell\'arbitro e aiuto si annullano', async () => {

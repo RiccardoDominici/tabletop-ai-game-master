@@ -14,6 +14,7 @@
  * Un effetto rimasto dopo l'ultima frase suona a voce del turno finita; un umore rimasto si applica
  * subito (`cueSenzaFrase`). Vocabolario e catalogo li controlla la regia (`audio`).
  */
+import { togliNumeriRegole } from '../narrazione/numeri-regole';
 import type { Campagna } from '../campagna/tipi';
 import { ID_NARRATORE, NOME_NARRATORE } from '../campagna/tipi';
 import type { Logger } from '../logger';
@@ -232,6 +233,14 @@ export async function narraTurno(
     for (const e of eventi) {
       if (p.signal.aborted) return;
       if (e.tipo === 'frase') {
+        // Numeri delle regole a voce (PF, CA, CD): via prima della voce, li mostra già la carta del tiro.
+        const senzaNumeri = togliNumeriRegole(e.testo);
+        if (senzaNumeri.tolti.length) {
+          anomalie.push({ codice: 'numeri_regole', dettaglio: `${senzaNumeri.tolti.join(', ')}: «${e.testo.slice(0, 120)}»` });
+          log.warn({ turno: p.turno, etichetta: e.etichetta, tolti: senzaNumeri.tolti, testo: e.testo }, 'narratore: numeri delle regole a voce, tolti');
+          e.testo = senzaNumeri.testo;
+          e.voce = togliNumeriRegole(e.voce).testo;
+        }
         // Un PNG che non è nella scena non parla (playtest di nozze-neve: Zelia e Adelina rispondevano da
         // scene dove non stanno, e le loro voci erano state scelte per non trovarsi mai insieme).
         if (p.presenti && idPng.has(e.etichetta) && !p.presenti.has(e.etichetta)) {

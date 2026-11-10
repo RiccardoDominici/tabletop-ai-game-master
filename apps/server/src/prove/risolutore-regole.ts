@@ -15,7 +15,7 @@ import type { FonteDadi } from './dadi';
 import { combinaVantaggi, danno as tiraDanno } from './regole';
 import type { StatoProve } from './stato';
 import type { DecisioneRegole, EsitoAzioneProve, EsitoTurnoProve } from './tipi';
-import { FATTO_NESSUN_TIRO, FATTO_SENZA_ARBITRO, FATTO_SENZA_SCHEDA, fattoAiuto, fattoGiaATerra, fattoImpossibile, salute, tipoDanno } from './testi';
+import { FATTO_NESSUN_TIRO, FATTO_SENZA_ARBITRO, FATTO_SENZA_SCHEDA, fattoAiuto, fattoGiaATerra, fattoImpossibile, fraseAttaccoPng, salute, tipoDanno } from './testi';
 import type { AzioneRisolvibile } from './risolutore';
 import { conEffetto, fontiAttacco, type CondizioniDi } from './condizioni';
 
@@ -125,7 +125,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
           const x = attacca(b, a.autore, null, [], a.privata);
           if (x && !o.stato.aTerra(b)) {
             aggiungi(x.t);
-            testo += ` Scambio: ${o.nome(b)} colpisce a sua volta: ${x.testo}`;
+            testo += ` Scambio: ${fraseAttaccoPng(x.t)} Dettagli: ${x.testo}`;
           }
         }
       }
@@ -161,7 +161,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       const x = attacca(r.png, a.autore, null, [], a.privata);
       if (x) {
         aggiungi(x.t);
-        testo += ` Poi ${o.nome(r.png)} reagisce: ${x.testo}`;
+        testo += ` Poi ${o.nome(r.png)} reagisce. ${fraseAttaccoPng(x.t)} Dettagli: ${x.testo}`;
       }
     }
     esito.decisione = null;

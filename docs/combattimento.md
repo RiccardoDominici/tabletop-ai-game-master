@@ -73,7 +73,7 @@ combattimento:
 4. **Condizioni**: le mette il Motore (a 0) o il master; scadono a inizio round, se hanno una durata. I loro effetti
    entrano nei tiri: vantaggio o svantaggio col motivo sulla carta, critico, TS falliti, turno perso.
 5. **Fine**: nemici a terra o fuggiti, PG tutti a terra, morale fallito (B/X), oppure «Termina combattimento».
-6. **Narratore**: la sezione «Esiti dei tiri» porta «Combattimento, round N, fase X. Ordine … Tocca ora a: …». Il
+6. **Narratore**: ogni attacco di un PNG arriva come frase esplicita prima dei dettagli («Ruggero lo sgherro colpisce Corrado Lanzi: 6 danni», «… manca …»), e il prompt chiede di raccontarlo in una frase sua, mai per accenni. La sezione «Esiti dei tiri» porta «Combattimento, round N, fase X. Ordine … Tocca ora a: …». Il
    narratore chiude invitando solo chi è di turno e non inventa attacchi o danni.
 
 ## 4. Schermi

@@ -39,6 +39,7 @@ import {
   fattoGiaATerra,
   fattoImpossibile,
   fattoTiro,
+  fraseAttaccoPng,
   salute,
 } from './testi';
 
@@ -453,7 +454,7 @@ function reazione(o: OpzioniRisolutore, a: AzioneRisolvibile, png: string, aggiu
   const r = attaccoPngSrd(o, png, a.autore, a.privata);
   if (!r) return null;
   aggiungi(r.t);
-  return `Poi ${o.nome(png)} reagisce: ${r.testo}`;
+  return `Poi ${o.nome(png)} reagisce. ${fraseAttaccoPng(r.t)} Dettagli: ${r.testo}`;
 }
 
 /**
