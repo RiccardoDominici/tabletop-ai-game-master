@@ -1,0 +1,174 @@
+# Prose rules of the validator in English (strumenti/valida/): the same checks as lingue/it/prosa.yaml,
+# with English data (docs/lingue.md). The check logic is in the code; this file holds the language data.
+# Same keys as lingue/it/prosa.yaml. Messages for campaign authors stay in Italian, in the code.
+
+# N5 (manuale §5): clichés of fantasy narration, and words that name the emotion instead of showing it.
+# Matched as substrings, lowercase.
+cliche:
+  - a shiver ran down
+  - shiver ran down
+  - shivers ran down
+  - blood ran cold
+  - ice in his veins
+  - ice in her veins
+  - ice in their veins
+  - the air was thick
+  - the air was heavy
+  - the air was charged
+  - deafening silence
+  - as if time had stopped
+  - as though time had stopped
+  - little did they know
+  - a sense of foreboding
+  - an aura of mystery
+  - dance of shadows
+  - suddenly
+  - eerie
+  - ominous
+  - spine-chilling
+  - bloodcurdling
+  - breathtaking
+  - unsettling
+  - terrifying
+  - mysterious
+  - epic
+  - could not help but
+  - couldn't help but
+
+# Words too common to be `temi` or a character's alias: they would bring a line into the catalogue at every action.
+temi_generici:
+  - who
+  - what
+  - where
+  - when
+  - why
+  - which
+  - how
+  - much
+  - night
+  - day
+  - evening
+  - house
+  - door
+  - man
+  - woman
+  - people
+  - everyone
+  - here
+  - there
+  - do
+  - go
+  - look
+  - see
+  - say
+  - talk
+  - ask
+  - want
+  - take
+  - open
+  - inside
+  - outside
+  - under
+  - above
+  - behind
+  - front
+  - now
+  - well
+  - bad
+  - name
+  - said
+
+# Words that do not make a root (roots are the first four letters of words of at least four letters, without these).
+parole_vuote:
+  - that
+  - this
+  - with
+  - from
+  - they
+  - them
+  - their
+  - were
+  - have
+  - been
+  - also
+  - when
+  - where
+  - while
+  - always
+  - every
+  - then
+  - into
+  - onto
+  - about
+  - there
+  - which
+  - would
+  - could
+  - should
+  - your
+  - just
+  - than
+
+# Numbers in words: the ones a voice's register can state ("Sentences of two-six words").
+numeri:
+  one: 1
+  two: 2
+  three: 3
+  four: 4
+  five: 5
+  six: 6
+  seven: 7
+  eight: 8
+  nine: 9
+  ten: 10
+  eleven: 11
+  twelve: 12
+  thirteen: 13
+  fourteen: 14
+  fifteen: 15
+  sixteen: 16
+  seventeen: 17
+  eighteen: 18
+  nineteen: 19
+  twenty: 20
+
+# Sounds and words of drama-3 that are not directions (sigh, laugh, pause…).
+suoni:
+  - sigh
+  - sighs
+  - laugh
+  - laughs
+  - laughing
+  - chuckle
+  - chuckles
+  - breath
+  - breathes
+  - deep breath
+  - shaky breath
+  - pause
+  - long pause
+  - cough
+  - coughs
+  - gasp
+  - gasps
+  - sniff
+  - groan
+  - hum
+
+# Forms of a voice's `stile` that say how many words per sentence: "3-8 words", "from three to eight words",
+# "at most six words". Three groups per form: the maximum is in the second, fourth or fifth (see testo.py).
+stile_frasi: '(\w+)\s*[-–]\s*(\w+) words|from (\w+) to (\w+) words|at most (\w+) words'
+
+# The voice's register says which pronoun it is addressed with (regole_png.py).
+registro_pronomi: '\b(you|thou)\b'
+
+# Lengths of the listening-ready prose (N1, N2, D3, the narrator's prompt). Same norms as Italian.
+lunghezze:
+  frase_max: 20
+  narratore_battuta: 16
+  png_battuta: 16
+  media_narratore: [8, 14]
+  frasi_narratore_battuta: 4
+  parole_battuta: 70
+  frasi_png: 2
+  frasi_png_rivelazione: 4

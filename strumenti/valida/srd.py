@@ -74,6 +74,15 @@ SINONIMI_ARMATURA = {
     "breastplate": "corazza_di_piastre", "half_plate": "mezza_armatura", "ring_mail": "corazza_ad_anelli",
     "chain_mail": "cotta_di_maglia", "splint": "corazza_a_strisce", "plate": "armatura_a_piastre",
     "piastre": "armatura_a_piastre",
+    # Nomi inglesi dell'SRD 5.2 (Padded, Leather, … e le forme «… Armor»): stesse armature, stessa CA.
+    "padded": "armatura_imbottita", "padded_armor": "armatura_imbottita",
+    "leather": "armatura_di_cuoio", "leather_armor": "armatura_di_cuoio",
+    "studded_leather": "armatura_di_cuoio_borchiato", "studded_leather_armor": "armatura_di_cuoio_borchiato",
+    "hide": "armatura_di_pelle", "hide_armor": "armatura_di_pelle",
+    "chain_shirt_armor": "giaco_di_maglia", "scale_mail_armor": "corazza_a_scaglie",
+    "breastplate_armor": "corazza_di_piastre", "half_plate_armor": "mezza_armatura",
+    "ring_mail_armor": "corazza_ad_anelli", "chain_mail_armor": "cotta_di_maglia",
+    "splint_armor": "corazza_a_strisce", "plate_armor": "armatura_a_piastre",
 }
 
 BONUS_SCUDO = 2
@@ -86,6 +95,9 @@ DADO_VITA = {
     "monaco": 8, "monaca": 8, "paladino": 10, "paladina": 10, "ramingo": 10, "ramminga": 10,
     "stregone": 6, "stregona": 6, "warlock": 8,
     "ranger": 10,   # il nome inglese che usano le schede delle campagne (nozze-neve, pg Livia)
+    # Classi inglesi dell'SRD 5.2 (le campagne in inglese).
+    "barbarian": 12, "bard": 8, "cleric": 8, "druid": 8, "fighter": 10, "monk": 8, "paladin": 10,
+    "rogue": 8, "sorcerer": 6, "wizard": 6,
 }
 
 # Gradi di sfida ammessi (un intero da 0 a 30, o una frazione standard).

@@ -1,0 +1,177 @@
+# Regole di prosa del validatore in italiano (strumenti/valida/): la lingua di riferimento (docs/lingue.md).
+# Il controllo sta nel codice e non cambia con la lingua; qui stanno i dati che dipendono dalla lingua.
+# Ogni altra lingua (lingue/<codice>/prosa.yaml) ha esattamente queste chiavi.
+# I messaggi per chi scrive la campagna restano in italiano, nel codice.
+
+# N5 (manuale §5): cliché e aggettivi che nominano l'emozione. Si cercano come sottostringhe, in minuscolo.
+cliche:
+  - brivido lungo la schiena
+  - sangue gelato
+  - gelato nelle vene
+  - l'aria è densa
+  - l'aria è carica
+  - silenzio assordante
+  - come se il tempo si fosse fermato
+  - non potete fare a meno di
+  - sentite che qualcosa non va
+  - aura di mistero
+  - danza di ombre
+  - inquietante
+  - misterios
+  - terrificante
+  - mozzafiato
+  - epic
+
+# Parole troppo comuni per fare da `temi` o da alias di un PNG: farebbero entrare una battuta nel catalogo a
+# ogni azione (lezione dell'esperimento A/B n. 1: catalogo largo = turni riempiti con battute non pertinenti).
+temi_generici:
+  - chi
+  - che
+  - cosa
+  - come
+  - dove
+  - quando
+  - perché
+  - perche
+  - quale
+  - quanto
+  - notte
+  - giorno
+  - sera
+  - casa
+  - porta
+  - uomo
+  - donna
+  - gente
+  - tutti
+  - qui
+  - là
+  - fare
+  - faccio
+  - vado
+  - andare
+  - guardo
+  - guardare
+  - vedo
+  - dico
+  - dire
+  - parlo
+  - parlare
+  - chiedo
+  - chiedere
+  - voglio
+  - prendo
+  - apro
+  - dentro
+  - fuori
+  - sotto
+  - sopra
+  - dietro
+  - davanti
+  - subito
+  - adesso
+  - ora
+  - bene
+  - male
+  - cosa
+  - nome
+  - detto
+
+# Parole che non fanno radice (le radici sono le prime quattro lettere delle parole di almeno quattro lettere,
+# senza queste): segnali delle menzogne, versioni, prezzi delle scelte.
+parole_vuote:
+  - della
+  - delle
+  - degli
+  - dello
+  - nella
+  - nelle
+  - negli
+  - sulla
+  - sulle
+  - sugli
+  - anche
+  - sono
+  - come
+  - quando
+  - dove
+  - perché
+  - mentre
+  - sempre
+  - ogni
+  - poi
+
+# Numeri in lettere: quelli che il registro di una voce può dire («Frasi di due-sei parole»).
+numeri:
+  uno: 1
+  una: 1
+  due: 2
+  tre: 3
+  quattro: 4
+  cinque: 5
+  sei: 6
+  sette: 7
+  otto: 8
+  nove: 9
+  dieci: 10
+  undici: 11
+  dodici: 12
+  tredici: 13
+  quattordici: 14
+  quindici: 15
+  sedici: 16
+  diciassette: 17
+  diciotto: 18
+  diciannove: 19
+  venti: 20
+
+# Suoni e parole di drama-3 da non prendere per direzioni (sigh, risata, sospiro…). Ammessi anche in italiano.
+suoni:
+  - sigh
+  - sighs
+  - laugh
+  - laughs
+  - laughing
+  - chuckle
+  - chuckles
+  - breath
+  - breathes
+  - deep breath
+  - shaky breath
+  - pause
+  - long pause
+  - cough
+  - coughs
+  - gasp
+  - gasps
+  - sniff
+  - groan
+  - hum
+  - sospiro
+  - sospira
+  - risata
+  - ride
+  - risatina
+  - respiro
+  - respira
+  - pausa
+  - tosse
+  - tossisce
+
+# Forme dello `stile` di una voce che dicono quante parole per frase: «di 3-8 parole», «da tre a otto parole»,
+# «al massimo sei parole». Tre gruppi per forma: il massimo è nel secondo, quarto o quinto (vedi testo.py).
+stile_frasi: '(\w+)\s*[-–]\s*(\w+) parole|da (\w+) a (\w+) parole|al massimo (\w+) parole'
+
+# Il registro di una voce dice con quale pronome si dà del tu, del voi o del lei (regole_png.py).
+registro_pronomi: '\b(tu|voi|lei)\b'
+
+# Lunghezze della scrittura per l'ascolto (N1, N2, D3, prompt del narratore). Vedi docs/manuale-master.md §5.
+lunghezze:
+  frase_max: 20                 # N1: parole per frase nei testi da leggere delle schede
+  narratore_battuta: 16         # prompt §2: parole per frase delle battute del narratore
+  png_battuta: 16               # parole per frase delle battute di un PNG, se lo stile non dice altro
+  media_narratore: [8, 14]      # N1: media parole per frase del narratore
+  frasi_narratore_battuta: 4    # N2: frasi di narratore in una battuta
+  parole_battuta: 70            # tetto di parole di una battuta intera
+  frasi_png: 2                  # D3: frasi di un PNG in una battuta
+  frasi_png_rivelazione: 4      # D3, eccezione per confessione, momento e finale

@@ -1,30 +1,16 @@
-"""Strumenti sul testo italiano: frasi, parole, radici, e le regole di scrittura per l'ascolto (§5).
+"""Strumenti sul testo: frasi, parole, radici, e le regole di scrittura per l'ascolto (§5).
 
-Le funzioni sono pure: ricevono testo e restituiscono misure. Le regole che usano queste misure
-stanno in regole_prosa.py e negli altri moduli di regole.
+Le funzioni sono pure: ricevono testo e restituiscono misure. I dati che dipendono dalla lingua (cliché,
+numeri in lettere, parole vuote, parole generiche, forme di stile) stanno in lingue/<codice>/prosa.yaml
+e arrivano come `prosa` (strumenti/valida/lingua.py); senza, vale l'italiano. Le regole che usano queste
+misure stanno negli altri moduli di regole.
 """
 
 from __future__ import annotations
 
 import re
 
-# N5: cliché e aggettivi che nominano l'emozione (manuale §5). Si cercano come sottostringhe.
-VIETATE = [
-    "brivido lungo la schiena", "sangue gelato", "gelato nelle vene", "l'aria è densa", "l'aria è carica",
-    "silenzio assordante", "come se il tempo si fosse fermato", "non potete fare a meno di",
-    "sentite che qualcosa non va", "aura di mistero", "danza di ombre",
-    "inquietante", "misterios", "terrificante", "mozzafiato", "epic",
-]
-
-# Parole troppo comuni per fare da `temi`: farebbero entrare una battuta nel catalogo a ogni azione
-# (lezione dell'esperimento A/B n. 1: catalogo largo = turni riempiti con battute non pertinenti).
-TEMI_GENERICI = {
-    "chi", "che", "cosa", "come", "dove", "quando", "perché", "perche", "quale", "quanto",
-    "notte", "giorno", "sera", "casa", "porta", "uomo", "donna", "gente", "tutti", "qui", "là",
-    "fare", "faccio", "vado", "andare", "guardo", "guardare", "vedo", "dico", "dire", "parlo",
-    "parlare", "chiedo", "chiedere", "voglio", "prendo", "apro", "dentro", "fuori", "sotto", "sopra",
-    "dietro", "davanti", "subito", "adesso", "ora", "bene", "male", "cosa", "nome", "detto",
-}
+from .lingua import Prosa, prosa_predefinita
 
 
 def frasi(testo: str) -> list[str]:
@@ -42,43 +28,35 @@ def n_parole(testo: str) -> int:
     return len(parole(testo))
 
 
-_STOP = {"della", "delle", "degli", "dello", "nella", "nelle", "negli", "sulla", "sulle", "sugli",
-         "anche", "sono", "come", "quando", "dove", "perché", "mentre", "sempre", "ogni", "poi"}
-
-
-def radici(testo: str, lunghezza: int = 4) -> set[str]:
-    """Radici grezze: prime `lunghezza` lettere delle parole di almeno quattro lettere, senza stopword."""
+def radici(testo: str, lunghezza: int = 4, prosa: Prosa | None = None) -> set[str]:
+    """Radici grezze: prime `lunghezza` lettere delle parole di almeno quattro lettere, senza le parole vuote."""
+    vuote = (prosa or prosa_predefinita()).parole_vuote
     out = set()
     for w in parole(testo):
         w = w.split("'")[-1]
-        if len(w) >= 4 and w not in _STOP:
+        if len(w) >= 4 and w not in vuote:
             out.add(w[:lunghezza])
     return out
 
 
-NUMERI = {"uno": 1, "una": 1, "due": 2, "tre": 3, "quattro": 4, "cinque": 5, "sei": 6, "sette": 7, "otto": 8,
-          "nove": 9, "dieci": 10, "undici": 11, "dodici": 12, "tredici": 13, "quattordici": 14, "quindici": 15,
-          "sedici": 16, "diciassette": 17, "diciotto": 18, "diciannove": 19, "venti": 20}
-
-
-def massimo_da_stile(stile: str | None) -> int | None:
+def massimo_da_stile(stile: str | None, prosa: Prosa | None = None) -> int | None:
     """Il numero massimo di parole per frase scritto nello `stile` di una voce, o None se non si legge.
 
-    Forme lette: «Frasi di due-sei parole», «di 3-8 parole», «da tre a otto parole», «al massimo sei parole»,
-    con i numeri in lettere da uno a venti o in cifre.
+    Forme lette (dal pacchetto della lingua, `stile_frasi`), con i numeri in lettere o in cifre.
     """
     if not stile:
         return None
-    m = re.search(r"(\w+)\s*[-–]\s*(\w+) parole|da (\w+) a (\w+) parole|al massimo (\w+) parole", stile.lower())
+    pacco = prosa or prosa_predefinita()
+    m = pacco.stile_frasi.search(stile.lower())
     if not m:
         return None
     massimo = m.group(2) or m.group(4) or m.group(5)
-    return NUMERI.get(massimo) or (int(massimo) if massimo.isdigit() else None)
+    return pacco.numeri.get(massimo) or (int(massimo) if massimo.isdigit() else None)
 
 
-def limite_da_stile(stile: str | None, predefinito: int) -> int:
+def limite_da_stile(stile: str | None, predefinito: int, prosa: Prosa | None = None) -> int:
     """Dallo `stile` di una voce ricava un tetto per frase: il massimo dichiarato più tre, mai oltre il predefinito."""
-    valore = massimo_da_stile(stile)
+    valore = massimo_da_stile(stile, prosa)
     return min(predefinito, valore + 3) if valore else predefinito
 
 
@@ -92,15 +70,20 @@ def vocativi(testo: str, nomi: list[str]) -> list[str]:
     return out
 
 
-def problemi_di_prosa(testo: str, max_parole: int = 20) -> list[tuple[str, str]]:
-    """Regole N1, N5, N11 su un testo da leggere ad alta voce. Restituisce [(regola, dettaglio)]."""
+def problemi_di_prosa(testo: str, max_parole: int | None = None, prosa: Prosa | None = None) -> list[tuple[str, str]]:
+    """Regole N1, N5, N11 su un testo da leggere ad alta voce. Restituisce [(regola, dettaglio)].
+
+    `max_parole` predefinito: il tetto di frase della lingua (N1)."""
+    pacco = prosa or prosa_predefinita()
+    if max_parole is None:
+        max_parole = pacco.frase_max
     out = []
     for f in frasi(testo):
         n = n_parole(f)
         if n > max_parole:
             out.append(("frase_lunga", f"{n} parole (max {max_parole}): «{f[:70]}»"))
     basso = testo.lower()
-    for v in VIETATE:
+    for v in pacco.cliche:
         if v in basso:
             out.append(("espressione_vietata", f"«{v}»"))
     if re.search(r"\d", testo):

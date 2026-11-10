@@ -62,13 +62,3 @@ QUANDO_VIETATE = [r"\bment(e|o|ire|isce|ito|iva|ono)\b", r"\bbugi", r"menzogn", 
                   r"nascond", r"\bverità\b"]
 # Indizi di privatezza o di un PG preciso dentro `cede_se`: la confessione deve avere il cancello strutturale.
 CEDE_PRIVATO = r"privat|non (può|puo) sentire|non sente|da solo a solo|sottovoce|lontano da(lle orecchie)?|senza testimoni"
-
-# Lunghezze (§5 e prompt del narratore).
-MAX_PAROLE_FRASE = 20            # N1, testi da leggere delle schede
-MAX_PAROLE_NARRATORE = 16        # prompt §2, battute del narratore
-MAX_PAROLE_PNG = 16
-MEDIA_NARRATORE = (8, 14)        # N1
-MAX_FRASI_NARRATORE_BATTUTA = 4  # N2
-MAX_PAROLE_BATTUTA = 70
-MAX_FRASI_PNG = 2                # D3
-MAX_FRASI_PNG_RIVELAZIONE = 4    # D3, eccezione della rivelazione

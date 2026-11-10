@@ -21,7 +21,7 @@ from .carica import Campagna
 from .esito import Esito
 from .regole_scena import nomi_propri
 from .voce import solo_parole
-from .testo import TEMI_GENERICI, frasi, limite_da_stile, n_parole, problemi_di_prosa, radici, vocativi
+from .testo import frasi, limite_da_stile, n_parole, problemi_di_prosa, radici, vocativi
 
 GATE = ("indizi_rivelati", "battute_usate", "orologio", "privata", "da_pg")
 
@@ -251,7 +251,7 @@ def _copertura(c: Campagna, e: Esito) -> None:
                          f"vale solo in {sorted(_scene_battuta(chi[0]))}, ma {oid} è attivo anche in "
                          f"{sorted(scene_di[oid] - _scene_battuta(chi[0]))}: togli `scena` (o elenca tutte) e scrivi un "
                          "segno che si sente da tutte")
-            elif k - 1 < len(o.get("segni") or []) and radici(o["segni"][k - 1]) - radici(" ".join(_split(r)[1] for r in chi[0]["testo"])):
+            elif k - 1 < len(o.get("segni") or []) and radici(o["segni"][k - 1], prosa=c.prosa) - radici(" ".join(_split(r)[1] for r in chi[0]["testo"]), prosa=c.prosa):
                 e.avviso("COPERTURA.segno", chi[0]["id"], "il testo si allontana dal segno scritto in campagna.yaml")
     # Finali.
     finali = [b for b in c.battute if b.get("tipo") == "finale"]
@@ -279,7 +279,7 @@ def _copertura(c: Campagna, e: Esito) -> None:
     for b in c.battute:
         if not _selezionabile(b) or b.get("tipo") in ("segno_orologio", "finale"):
             continue
-        generici = sorted(set(b.get("temi") or []) & TEMI_GENERICI)
+        generici = sorted(set(b.get("temi") or []) & c.prosa.temi_generici)
         if generici:
             e.avviso("COPERTURA.temi", f"{b['_file']} {b.get('id')}", f"temi troppo generici {generici}", rigoroso=True)
 
@@ -305,7 +305,7 @@ def _mappa_menzogne(c: Campagna, e: Esito) -> dict[tuple[str, str], dict]:
             out[(pid, mid)] = per_id[mid]
             continue
         testo = " ".join(_split(r)[1] for b in bb for r in b.get("testo") or [] if r.startswith(f"[{pid}]"))
-        punti = [(len(radici(m.get("versione", "")) & radici(testo)), m) for m in mente]
+        punti = [(len(radici(m.get("versione", ""), prosa=c.prosa) & radici(testo, prosa=c.prosa)), m) for m in mente]
         if punti:
             out[(pid, mid)] = max(punti, key=lambda x: x[0])[1]
     return out
@@ -323,12 +323,12 @@ def _menzogne_e_confessioni(c: Campagna, e: Esito) -> None:
             if not versioni:
                 e.errore("COPERTURA.menzogna", dove, "nessuna battuta con la versione della menzogna")
             # Il segnale in ogni versione (testo e varianti).
-            segnale = radici(m.get("segnale", ""))
+            segnale = radici(m.get("segnale", ""), prosa=c.prosa)
             serve = min(2, len(segnale))
             for b in versioni:
                 for v in _righe(b):
                     narr = " ".join(_split(r)[1] for r in v if r.startswith("[narratore]"))
-                    if len(segnale & radici(narr)) < serve:
+                    if len(segnale & radici(narr, prosa=c.prosa)) < serve:
                         e.errore("COPERTURA.segnale", f"{b['_file']} {b.get('id')}",
                                  f"una versione della menzogna non mostra il segnale «{m.get('segnale')}»")
             # Confessioni: battute che rendono nota la verità.
@@ -381,16 +381,16 @@ def _prosa(c: Campagna, e: Esito) -> None:
                 fs = frasi(testo)
                 tot += n_parole(testo)
                 if tag == "narratore":
-                    lim = K.MAX_PAROLE_NARRATORE
+                    lim = c.prosa.narratore_battuta
                     n_narr += len(fs)
                     lung_narr += [n_parole(f) for f in fs]
                 else:
                     stile = ((c.png.get(tag, ("", {}))[1].get("voce") or {}).get("stile"))
-                    lim = limite_da_stile(stile, K.MAX_PAROLE_PNG)
-                    maxf = K.MAX_FRASI_PNG_RIVELAZIONE if b.get("tipo") in ("confessione", "momento", "finale") else K.MAX_FRASI_PNG
+                    lim = limite_da_stile(stile, c.prosa.png_battuta, c.prosa)
+                    maxf = c.prosa.frasi_png_rivelazione if b.get("tipo") in ("confessione", "momento", "finale") else c.prosa.frasi_png
                     if len(fs) > maxf:
                         e.errore("PROSA.frasi_battuta", dove, f"battuta di {tag} con {len(fs)} frasi (max {maxf}, D3)")
-                for regola, det in problemi_di_prosa(testo, max_parole=lim):
+                for regola, det in problemi_di_prosa(testo, max_parole=lim, prosa=c.prosa):
                     e.errore(f"PROSA.{regola}", f"{dove} [{tag}]", det)
                 for nome in nomi_pg:
                     if re.search(rf"\b{re.escape(nome)}\b", testo):
@@ -405,13 +405,13 @@ def _prosa(c: Campagna, e: Esito) -> None:
                         e.avviso("PROSA.vocativo", dove, f"«{v},» a inizio frase suona come il narratore che parla a {v}: "
                                                          "sposta il nome («Dal casello il custode, Tullio, grida…»)")
                 improvvisi += testo.lower().count("all'improvviso")
-            if n_narr > K.MAX_FRASI_NARRATORE_BATTUTA:
-                e.errore("PROSA.blocco", dove, f"{n_narr} frasi di narratore (max {K.MAX_FRASI_NARRATORE_BATTUTA}, N2)")
-            if tot > K.MAX_PAROLE_BATTUTA:
-                e.errore("PROSA.blocco", dove, f"{tot} parole in tutto (max {K.MAX_PAROLE_BATTUTA})")
+            if n_narr > c.prosa.frasi_narratore_battuta:
+                e.errore("PROSA.blocco", dove, f"{n_narr} frasi di narratore (max {c.prosa.frasi_narratore_battuta}, N2)")
+            if tot > c.prosa.parole_battuta:
+                e.errore("PROSA.blocco", dove, f"{tot} parole in tutto (max {c.prosa.parole_battuta})")
     if lung_narr:
         media = statistics.mean(lung_narr)
-        if not K.MEDIA_NARRATORE[0] <= media <= K.MEDIA_NARRATORE[1]:
+        if not c.prosa.media_narratore[0] <= media <= c.prosa.media_narratore[1]:
             e.errore("PROSA.media", "repertorio/", f"media delle frasi del narratore {media:.1f} parole (8-14, N1)")
     if improvvisi > max(1, len(c.scene)):
         e.errore("PROSA.all_improvviso", "repertorio/", f"«all'improvviso» {improvvisi} volte (una per scena, N5)")

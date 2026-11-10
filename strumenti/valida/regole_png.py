@@ -9,7 +9,7 @@ import re
 from . import costanti as K
 from .carica import Campagna
 from .esito import Esito
-from .testo import TEMI_GENERICI, frasi, massimo_da_stile, n_parole, problemi_di_prosa
+from .testo import frasi, massimo_da_stile, n_parole, problemi_di_prosa
 
 
 def controlla(c: Campagna, e: Esito) -> None:
@@ -47,7 +47,7 @@ def controlla(c: Campagna, e: Esito) -> None:
             nf, nw = len(frasi(lettura)), n_parole(lettura)
             if not (1 <= nf <= 2 and nw <= 35):
                 e.errore("PNG.lettura", dove, f"aspetto.lettura di {nf} frasi e {nw} parole (max 2 e 35)")
-            for regola, det in problemi_di_prosa(lettura):
+            for regola, det in problemi_di_prosa(lettura, prosa=c.prosa):
                 e.errore(f"PROSA.{regola}", f"{dove} aspetto.lettura", det)
         if len(asp.get("invarianti") or []) < 3:
             e.errore("PNG.invarianti", dove, "servono almeno tre invarianti per la coerenza delle immagini")
@@ -88,7 +88,7 @@ def controlla(c: Campagna, e: Esito) -> None:
         elif not (isinstance(alias, list) and all(isinstance(x, str) for x in alias)):
             e.errore("PNG.alias", dove, "alias è una lista di parole")
         else:
-            generici = sorted({a.lower() for a in alias} & (K.ALIAS_GENERICI | TEMI_GENERICI))
+            generici = sorted({a.lower() for a in alias} & (K.ALIAS_GENERICI | c.prosa.temi_generici))
             if generici:
                 e.avviso("PNG.alias", dove, f"alias generici {generici}: il PNG entrerebbe nella pertinenza di ogni azione "
                                             "su chiunque. Usa il mestiere o il ruolo (custode, ostessa, scrivano)", rigoroso=True)
@@ -116,18 +116,18 @@ def _voce(c: Campagna, e: Esito, dove: str, d: dict) -> None:
     for campo in ("registro", "stile", "gesto", "mai_dice", "battuta_campione"):
         if not v.get(campo):
             e.errore("PNG.voce", dove, f"manca voce.{campo}")
-    if v.get("stile") and massimo_da_stile(v["stile"]) is None:
+    if v.get("stile") and massimo_da_stile(v["stile"], c.prosa) is None:
         e.avviso("PNG.voce_stile", dove, "dallo stile non si legge quante parole per frase («Frasi di tre-otto parole»): "
                                          "le sue battute hanno il tetto predefinito di sedici")
-    if v.get("registro") and not re.search(r"\b(tu|voi|lei)\b", v["registro"].lower()):
+    if v.get("registro") and not c.prosa.registro_pronomi.search(v["registro"].lower()):
         e.errore("PNG.voce", dove, "il registro dice tu, voi o lei")
     if len(v.get("tic") or []) > 2:
         e.errore("PNG.voce", dove, "al massimo due tic")
     campione = v.get("battuta_campione") or ""
     if campione:
-        if len(frasi(campione)) > 2:
+        if len(frasi(campione)) > c.prosa.frasi_png:
             e.errore("PROSA.frasi_battuta", f"{dove} battuta_campione", "al massimo due frasi (D3)")
-        for regola, det in problemi_di_prosa(campione):
+        for regola, det in problemi_di_prosa(campione, prosa=c.prosa):
             e.errore(f"PROSA.{regola}", f"{dove} battuta_campione", det)
     segnali = [m.get("segnale") for m in d.get("mente_su") or [] if isinstance(m, dict)]
     if v.get("gesto") and v["gesto"] in segnali:
@@ -170,5 +170,5 @@ def _conoscenza(c: Campagna, e: Esito, dove: str, d: dict, pieno: bool) -> None:
             e.errore("PNG.mente_su", dove, f"menzogna «{arg}»: la verità {m['verita']} non è nel suo sa")
         if not m.get("id"):
             e.avviso("PNG.mente_su", dove, f"menzogna «{arg}» senza id: il repertorio la cita in menzogna_detta", rigoroso=True)
-        for regola, det in problemi_di_prosa(m.get("versione") or ""):
+        for regola, det in problemi_di_prosa(m.get("versione") or "", prosa=c.prosa):
             e.errore(f"PROSA.{regola}", f"{dove} versione «{arg}»", det)

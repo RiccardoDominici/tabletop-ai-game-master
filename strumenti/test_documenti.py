@@ -41,4 +41,4 @@ def test_readme_dei_copioni_dice_cio_che_copioni_legge():
 
 
 def test_la_skill_ha_una_data_di_versione():
-    assert "versione del" in _testo(SKILL / "SKILL.md")
+    assert "versione del" in _testo(SKILL / "SKILL.md") or "version of" in _testo(SKILL / "SKILL.md")

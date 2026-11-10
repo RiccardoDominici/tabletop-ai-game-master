@@ -21,6 +21,7 @@ from typing import Any
 import yaml
 
 from .esito import Esito
+from .lingua import LINGUA_PREDEFINITA, Prosa, carica_prosa, lingua_della_campagna, lingue_disponibili, prosa_predefinita
 
 
 @dataclass
@@ -38,6 +39,8 @@ class Campagna:
     voci_registrate: set[str] | None = None
     voci_simili: dict[str, set[str]] = field(default_factory=dict)       # voce -> voci che si confondono con lei
     voce_narratore: str = "narratore"
+    lingua: str = LINGUA_PREDEFINITA                                     # `lingua` di campagna.yaml (assente = it)
+    prosa: Prosa = field(default_factory=prosa_predefinita)             # regole di prosa della lingua (lingue/<codice>/prosa.yaml)
 
     # --- viste derivate (calcolate da `deriva`) ---
     canone: dict[str, dict] = field(default_factory=dict)
@@ -113,6 +116,13 @@ def carica(cartella: Path, esito: Esito, voci: Path | None = None) -> Campagna:
     c.brief = brief if isinstance(brief, dict) else ({} if (cartella / "brief.yaml").exists() else None)
     c.stile = _leggi(cartella / "stile.yaml", esito, True) or {}
     c.campagna = _leggi(cartella / "campagna.yaml", esito, True) or {}
+    codice = lingua_della_campagna(c.campagna)
+    if codice is None:
+        grezza = c.campagna.get("lingua") if isinstance(c.campagna, dict) else None
+        esito.errore("STRUTTURA.lingua", "campagna.yaml",
+                     f"lingua {grezza!r} sconosciuta (ammesse: {', '.join(lingue_disponibili())}; assente = it)")
+        codice = LINGUA_PREDEFINITA
+    c.lingua, c.prosa = codice, carica_prosa(codice)
     c.pg = _leggi(cartella / "pg.yaml", esito, True) or {}
     c.regole = _leggi(cartella / "regole" / "regole.yaml", esito, False)
 

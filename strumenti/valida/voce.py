@@ -12,12 +12,9 @@ from __future__ import annotations
 
 import re
 
+from .lingua import Prosa, prosa_predefinita
+
 TAG_ACCOPPIATI = {"whisper", "emphasis", "soft", "fast", "slow", "stress", "forceful"}
-SUONI = {
-    "sigh", "sighs", "laugh", "laughs", "laughing", "chuckle", "chuckles", "breath", "breathes", "deep breath",
-    "shaky breath", "pause", "long pause", "cough", "coughs", "gasp", "gasps", "sniff", "groan", "hum",
-    "sospiro", "sospira", "risata", "ride", "risatina", "respiro", "respira", "pausa", "tosse", "tossisce",
-}
 MAX_DIREZIONE = 80          # caratteri: oltre, il server la toglie
 MAX_PAROLE_DIREZIONE = 8    # la regola dei prompt: «sotto le otto parole»
 MAX_SEGNI_RIGA = 3          # direzioni + suoni + tag per riga (oltre, drama-3 recita peggio)
@@ -25,8 +22,10 @@ MAX_SEGNI_RIGA = 3          # direzioni + suoni + tag per riga (oltre, drama-3 r
 _PEZZI = re.compile(r"\[([^\[\]]{0,160})\]|<(/?)([A-Za-z][A-Za-z_-]{0,24})\s*>")
 
 
-def e_suono(contenuto: str) -> bool:
-    return re.sub(r"\s+", " ", contenuto.strip().lower()) in SUONI
+def e_suono(contenuto: str, suoni: frozenset[str] | None = None) -> bool:
+    """Un suono di drama-3 (sospiro, sigh…) del pacchetto di lingua; senza, quello italiano."""
+    pacco = suoni if suoni is not None else prosa_predefinita().suoni
+    return re.sub(r"\s+", " ", contenuto.strip().lower()) in pacco
 
 
 def solo_parole(testo: str) -> str:
@@ -40,7 +39,7 @@ def solo_parole(testo: str) -> str:
     return t.strip()
 
 
-def problemi(testo: str) -> list[tuple[str, str, str]]:
+def problemi(testo: str, prosa: Prosa | None = None) -> list[tuple[str, str, str]]:
     """Problemi del markup di una riga (senza l'etichetta [chi]): [(gravità, regola, dettaglio)]."""
     out: list[tuple[str, str, str]] = []
     pila: list[str] = []
@@ -57,7 +56,7 @@ def problemi(testo: str) -> list[tuple[str, str, str]]:
             if not c:
                 out.append(("errore", "vuota", "parentesi quadre vuote"))
                 continue
-            if e_suono(c):
+            if e_suono(c, (prosa or prosa_predefinita()).suoni):
                 continue
             if len(c) > MAX_DIREZIONE:
                 out.append(("errore", "direzione_lunga", f"direzione di {len(c)} caratteri (max {MAX_DIREZIONE}): il server la toglie: «{c[:50]}…»"))

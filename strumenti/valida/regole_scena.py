@@ -210,7 +210,7 @@ def _scena(c: Campagna, e: Esito, dove: str, s: dict) -> None:
         if 0 < len(segn) < 3 and not noto:
             e.avviso("SCENA.uscite", dove, f"il nodo {u.get('verso')} è segnalato da {len(segn)} indizi (C5 ne chiede 3 per i nodi necessari)")
     mossa = s.get("mossa_morbida_pronta") or ""
-    for regola, det in problemi_di_prosa(mossa):
+    for regola, det in problemi_di_prosa(mossa, prosa=c.prosa):
         e.errore(f"PROSA.{regola}", f"{dove} mossa_morbida_pronta", det)
     ap = s.get("apertura") or ""
     if ap:
@@ -218,7 +218,7 @@ def _scena(c: Campagna, e: Esito, dove: str, s: dict) -> None:
             e.errore("SCENA.apertura", dove, f"apertura di {len(frasi(ap))} frasi (max 3, §4)")
         if not ap.strip().endswith("?"):
             e.errore("SCENA.apertura", dove, "l'apertura chiude con un invito ad agire")
-        for regola, det in problemi_di_prosa(ap):
+        for regola, det in problemi_di_prosa(ap, prosa=c.prosa):
             e.errore(f"PROSA.{regola}", f"{dove} apertura", det)
     mus = s.get("musica") or {}
     if mus.get("tag") not in K.TAG_MUSICA:

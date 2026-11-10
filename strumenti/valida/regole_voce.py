@@ -32,7 +32,7 @@ def controlla(c: Campagna, e: Esito) -> None:
         for riga in _righe(b):
             m = re.match(r"^\[([a-z0-9_]+)\]\s?(.*)$", riga)
             testo = m.group(2) if m else riga
-            for gravita, regola, dettaglio in problemi(testo):
+            for gravita, regola, dettaglio in problemi(testo, c.prosa):
                 (e.errore if gravita == "errore" else e.avviso)(f"VOCE.{regola}", dove, dettaglio)
     for pid, (_, d) in c.png.items():
         tts = ((d.get("voce") or {}).get("tts") or {}) if isinstance(d.get("voce"), dict) else {}

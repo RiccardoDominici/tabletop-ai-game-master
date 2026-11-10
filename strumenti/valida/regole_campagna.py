@@ -255,7 +255,7 @@ def controlla_sessione(c: Campagna, e: Esito) -> None:
             e.errore("SESSIONE.inizio_lungo", "sessione", f"riassunto più apertura: {n} frasi (max 6, N2)")
         lung = [n_parole(f) for f in frasi(rias) + frasi(iniziale["apertura"])]
         media = sum(lung) / len(lung)
-        if not K.MEDIA_NARRATORE[0] <= media <= K.MEDIA_NARRATORE[1]:
+        if not c.prosa.media_narratore[0] <= media <= c.prosa.media_narratore[1]:
             e.errore("PROSA.media", "inizio di sessione", f"media {media:.1f} parole per frase (8-14, N1)")
 
 
