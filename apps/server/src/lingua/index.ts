@@ -20,9 +20,8 @@ export const LINGUA_PREDEFINITA: Lingua = 'it';
 /** La lingua di riferimento: le sue chiavi sono quelle che ogni pacchetto deve avere. */
 export const LINGUA_RIFERIMENTO: Lingua = 'it';
 
-/** File di dati di un pacchetto (YAML); `testi` è piatto a chiavi «sezione.voce», gli altri restano oggetti. */
-const FILE = ['testi', 'motore', 'prove'] as const;
-export type FilePacco = (typeof FILE)[number];
+/** File di regole di un pacchetto (oltre alle frasi fisse testi*.yaml). */
+export type FilePacco = 'motore' | 'prove';
 
 export function èLingua(x: unknown): x is Lingua {
   return typeof x === 'string' && (LINGUE as readonly string[]).includes(x);
@@ -73,10 +72,28 @@ function leggi(codice: Lingua, file: FilePacco): unknown {
   return YAML.parse(fs.readFileSync(p, 'utf8')) ?? {};
 }
 
+/**
+ * Le frasi fisse: testi.yaml più i file testi-<area>.yaml (uno per area del Motore, così chi lavora su
+ * un'area non tocca il file degli altri). Una chiave ripetuta in due file è un errore.
+ */
+function leggiTesti(codice: Lingua): Record<string, string> {
+  const cartella = path.join(radice, codice);
+  const file = fs.existsSync(cartella) ? fs.readdirSync(cartella).filter((f) => /^testi(-[a-z0-9]+)?\.yaml$/.test(f)).sort() : [];
+  const tutti: Record<string, string> = {};
+  for (const f of file) {
+    const parte = appiattisci(YAML.parse(fs.readFileSync(path.join(cartella, f), 'utf8')) ?? {});
+    for (const [k, v] of Object.entries(parte)) {
+      if (k in tutti) throw new Error(`${codice}/${f}: la chiave «${k}» c'è già in un altro file testi`);
+      tutti[k] = v;
+    }
+  }
+  return tutti;
+}
+
 function leggiPacco(codice: Lingua): Pacco {
   return {
     codice,
-    testi: appiattisci(leggi(codice, 'testi')),
+    testi: leggiTesti(codice),
     motore: leggi(codice, 'motore') as Record<string, unknown>,
     prove: leggi(codice, 'prove') as Record<string, unknown>,
   };
