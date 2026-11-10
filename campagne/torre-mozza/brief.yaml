@@ -1,0 +1,58 @@
+# Brief della campagna «La chiave della Torre Mozza» (one-shot, Basic Fantasy RPG).
+# Ciò che la richiesta non dice l'ha deciso il Preparatore: è scritto in `decisioni`, con il motivo.
+
+id: torre-mozza
+titolo: "La chiave della Torre Mozza"
+richiesta: "Prepara una one-shot in italiano: 1 sessione da circa 2 ore, 2–3 scene, 3–4 PNG con voce, un mistero con conoscenze private per i PG e almeno uno scontro probabile. Usa il manuale manuali/basic-fantasy-rpg-r142.pdf. lingua: it. 3 giocatori."
+lingua: it
+manuale: manuali/basic-fantasy-rpg-r142.pdf
+
+tono: "fiaba di montagna, asciutta e un po' cupa, con un fondo di tenerezza"
+sessioni: 1
+ore_per_sessione: 2
+durata: "una serata di circa due ore, tre scene: l'ovile all'imbrunire, la carbonaia a notte, la torre a mezzanotte"
+giocatori: 3
+dadi: true
+temi: ["la bugia detta per amore", "la colpa che cade sul più antipatico", "il debito che spinge a sbagliare"]
+linee: ["violenza esplicita su bambini e ragazzi", "tortura"]
+veli: ["uccisione di animali", "ferite descritte nel dettaglio"]
+ambientazione: "Spinalba, un borgo di pastori sulle colline di confine, sotto una torre di guardia in rovina; tardo autunno, prima della neve. Fantasy classico da Basic Fantasy: goblin, nani, elfi, halfling, personaggi di primo livello."
+vincoli: ["almeno uno scontro probabile, sopravvivibile ma pericoloso per PG di primo livello", "3–4 PNG con voce", "conoscenze private per i PG"]
+
+decisioni:
+  scene: [scena_ovile, scena_carbonaia, scena_torre]
+  pg: [pg_livia, pg_fulco, pg_nespola, pg_eliandro]
+  png:
+    - "png_berta → nadine (pastora matura, madre di Tonio; resta all'ovile: mai nella scena di Zirrà)"
+    - "png_ugo → vincent (vecchio carbonaio burbero)"
+    - "png_zirra → tabitha (guerriera goblin, voce giovane e sfacciata; solo alla torre: mai con Berta)"
+    - "png_grosso → lucian (hobgoblin di guardia, voce bassa e scura)"
+  situazione: |
+    Zirrà, una guerriera goblin con il suo hobgoblin, vuole l'argento della cripta sotto la Torre Mozza, e per aprirla le serve la chiave dei Benni.
+    Se i PG non fanno niente, a mezzanotte Berta porta la chiave, Zirrà svuota la cripta e si porta via Tonio, e il paese caccia Ugo dal bosco.
+    La verità è che Tonio non è stato rapito: ha portato lui i goblin alla torre per pagare con l'argento la decima della madre, e il biglietto l'ha scritto lui.
+    Chi scopre tutto deve scegliere se dire al paese la verità, che per usanza manda Tonio lontano per sette inverni, o tacere e lasciare la colpa su Ugo.
+  strade:
+    - strada: "La verità al paese: Tonio ha aperto l'ovile ai goblin"
+      prezzo: "Per l'usanza della valle il ragazzo deve partire per sette inverni, e la madre resta sola con le pecore"
+      pesa_su: [png_berta]
+    - strada: "Il silenzio: Tonio era un prigioniero, e basta"
+      prezzo: "Il borgo resta convinto che i goblin li abbia chiamati Ugo: gli spengono la catasta e lo cacciano dalla valle"
+      pesa_su: [png_ugo]
+    - strada: "La terza via: scagionare Ugo con la sua caccia di frodo, e tacere sul ragazzo"
+      prezzo: "Il balivo multa Ugo per il cervo della riserva e gli toglie il diritto di far legna sul crinale"
+      pesa_su: [png_ugo]
+  altre:
+    - "Id e titolo: torre-mozza, «La chiave della Torre Mozza». La chiave è l'oggetto che tutti vogliono e il titolo non svela il segreto (Tonio complice)."
+    - "Ambientazione: un borgo di pastori, una carbonaia nel bosco e una torre in rovina con la sua cripta: il «piccolo dungeon» di Basic Fantasy, alla misura di PG di primo livello."
+    - "Tre scene per due ore (la richiesta dice 2–3, la skill da 3 a 5 per una sessione di due ore): tre le soddisfa entrambe. La terza è il climax, nell'ultimo terzo (T4)."
+    - "Quattro PNG con voce, il massimo della richiesta e delle voci registrate. Lo scontro è con due di loro (Zirrà e Grosso), così i combattenti hanno un carattere, possono trattare e arrendersi (morale)."
+    - "Voci: nadine e tabitha sono simili (simile_a): Berta resta all'ovile, Zirrà resta alla torre. Nessun testo porta Berta alla torre o Zirrà in paese."
+    - "Tonio è una comparsa senza scheda né voce: parla poco perché si vergogna; quando parla, parla il narratore in discorso indiretto."
+    - "PG: quattro pregenerati (tre giocatori più uno), uno per classe del manuale (guerriera umana, chierico nano, ladra halfling, mago elfo), tutti di primo livello."
+    - "Punti ferita dei PG: il dado vita al massimo più la Costituzione, il valore più alto che il manuale ammette al primo livello: restano fragili (quattro-nove punti), ma un colpo solo non abbatte tutti."
+    - "Il mago conosce leggere il magico e dardo incantato (il manuale lascia al master la scelta del secondo incantesimo): sonno chiuderebbe lo scontro con un tiro solo."
+    - "Regole: il set è ricavato dal manuale (regole/), libero sotto CC BY-SA 4.0. Le scelte e le approssimazioni sono commentate in regole/regole.yaml."
+    - "A zero punti ferita: il manuale dice morte, e propone come regola facoltativa il tiro salvezza contro la morte (pagina 188). Uso la regola facoltativa per i PG, perché una one-shot di due ore non regge un giocatore fuori al primo scontro; i PNG muoiono come da regola base."
+    - "Scontro: Zirrà (guerriera goblin, tre dadi vita meno tre) e Grosso (hobgoblin, un dado vita) contro tre PG di primo livello: pericoloso (un colpo di Grosso abbatte il mago o la ladra) ma vincibile, e il morale (Zirrà 7, Grosso 8) può chiuderlo con una fuga o una resa."
+    - "Orologio di sessione: «La torre aspetta la chiave», otto segni, uno ogni sette risposte nelle prime due scene; alla torre sale ad almeno sei e corre più piano, così il pieno arriva dopo lo scontro."

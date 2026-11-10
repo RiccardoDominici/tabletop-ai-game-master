@@ -1,0 +1,177 @@
+# Set di regole ricavato da Basic Fantasy Role-Playing Game, 4ª edizione, release 142 (CC BY-SA 4.0).
+# Le pagine citate sono quelle stampate nel manuale (pagina del PDF = pagina stampata + 4).
+#
+# Come il set traduce il manuale nello schema del Motore (docs/regole.md §2):
+# - Risoluzione d20_cd: il manuale tira quasi tutto con il d20 contro un numero (attacchi contro la Classe
+#   d'Armatura, tiri salvezza contro la tabella della classe, prove di caratteristica contro il «Target» della
+#   regola facoltativa Ability Rolls, p. 189). Il «Target» al primo livello è 17: è la difficoltà normale.
+# - Modificatore «diretto»: il manuale non usa (punteggio − 10) / 2 ma una tabella (3: −3; 4–5: −2; 6–8: −1;
+#   9–12: 0; 13–15: +1; 16–17: +2; 18: +3, p. 4). Lo schema non ha un tipo «tabella», quindi nelle schede ogni
+#   caratteristica vale il suo bonus del manuale; il punteggio da 3 a 18 resta nel commento della scheda.
+# - Percentuali (abilità del ladro, p. 9) e possibilità «x su 1d6» (porte, trappole, porte segrete, p. 43–44):
+#   lo schema ha un solo tipo di risoluzione, quindi diventano bonus sul d20 contro 17. La conversione è
+#   esatta a passi del 5%: riuscire con il p% = d20 + (p/5 − 4) ≥ 17. Esempi: 25% = +1, 80% = +12, 10% = −2.
+#   «1 su 6» (16,7%) diventa +0 (20%); «2 su 6» +3 (35%); «3 su 6» +6 (50%).
+# - Tiri salvezza (p. 60–61): d20 ≥ numero della tabella. Con la difficoltà normale (17) il bonus è 17 − numero,
+#   più il bonus di razza (nani e halfling +4, elfi +1/+2): è esatto. Il 20 naturale che riesce sempre e l'1 che
+#   fallisce sempre, negli attacchi e nei tiri salvezza, il Motore non li applica (d20_cd non ha critici).
+# - Bonus d'attacco (p. 53): un'abilità «mischia» (con la Forza) e una «distanza» (con la Destrezza); nella
+#   scheda vale il bonus della tabella (+1 per tutte le classi al primo livello; per i mostri i dadi vita).
+#   Il bonus di Forza al danno in mischia (p. 55) è scritto nella formula del danno dell'arma («1d8+2»).
+# - Il Motore non tiene conto di: danno minimo di un punto, gittata (+1, −2), attacco alle spalle (+2) e
+#   carica, rateo di fuoco delle balestre, sorpresa con 1d6, numero di incantesimi al giorno.
+id: basic-fantasy-r142
+nome: "Basic Fantasy (4ª edizione)"
+per_il_narratore: "Si tira un d20 e si somma un bonus: gli attacchi contro la Classe d'Armatura, tutto il resto contro diciassette al primo livello; a zero punti ferita si rischia la morte."
+fonte:
+  titolo: "Basic Fantasy Role-Playing Game, 4th Edition, Release 142"
+  autore: "Chris Gonnerman e i collaboratori del Basic Fantasy Project"
+  file: "manuali/basic-fantasy-rpg-r142.pdf"
+licenza:
+  nome: "CC-BY-SA-4.0"
+  libera: true
+  attribuzione: "Regole ricavate da Chris Gonnerman, Basic Fantasy RPG 4th Ed. r142, CC BY-SA 4.0 (basicfantasy.org); questo set derivato è condiviso con la stessa licenza."
+
+risoluzione:
+  tipo: d20_cd
+  dado: 20
+
+# Le sei caratteristiche del manuale (p. 4). Nelle schede vale il bonus della tabella, da −3 a +3.
+caratteristiche:
+  - {id: forza, nome: "Forza"}
+  - {id: intelligenza, nome: "Intelligenza"}
+  - {id: saggezza, nome: "Saggezza"}
+  - {id: destrezza, nome: "Destrezza"}
+  - {id: costituzione, nome: "Costituzione"}
+  - {id: carisma, nome: "Carisma"}
+
+modificatore:
+  tipo: diretto
+
+abilita:
+  # Bonus d'attacco della tabella (p. 53): Forza in mischia, Destrezza con le armi da lancio e da tiro.
+  - {id: mischia, nome: "Attacco in mischia", caratteristica: forza}
+  - {id: distanza, nome: "Attacco a distanza", caratteristica: destrezza}
+  # Attacco furtivo del ladro (p. 9): +4 al tiro e danno doppio. Il +4 è nel bonus della scheda, il danno doppio
+  # nella formula dell'arma (due dadi invece di uno: stessa media, distribuzione un po' diversa).
+  - {id: alle_spalle, nome: "Attacco furtivo", caratteristica: forza}
+  # Dardo incantato colpisce sempre (incantesimo del mago di primo livello): un bonus così alto che nessuna
+  # Classe d'Armatura della campagna lo ferma. Una volta al giorno: il Motore non lo conta, lo dice la scheda.
+  - {id: dardo_incantato, nome: "Dardo incantato", caratteristica: null}
+  # I cinque tiri salvezza (p. 60–61): bonus = 17 − numero della tabella della classe, più la razza.
+  - {id: ts_morte, nome: "Tiro salvezza contro raggio della morte o veleno", caratteristica: null}
+  - {id: ts_bacchette, nome: "Tiro salvezza contro bacchette magiche", caratteristica: null}
+  - {id: ts_paralisi, nome: "Tiro salvezza contro paralisi o pietrificazione", caratteristica: null}
+  - {id: ts_soffio, nome: "Tiro salvezza contro soffio del drago", caratteristica: null}
+  - {id: ts_incantesimi, nome: "Tiro salvezza contro incantesimi", caratteristica: null}
+  # Abilità del ladro (p. 9), in percentuale nel manuale: bonus = percentuale / 5 − 4.
+  - {id: scassinare, nome: "Scassinare serrature", caratteristica: null}
+  - {id: trappole, nome: "Trovare e togliere trappole", caratteristica: null}
+  - {id: borseggiare, nome: "Borseggiare", caratteristica: null}
+  - {id: muoversi_in_silenzio, nome: "Muoversi in silenzio", caratteristica: null}
+  - {id: scalare, nome: "Scalare pareti", caratteristica: null}
+  - {id: nascondersi, nome: "Nascondersi", caratteristica: null}
+  - {id: ascoltare, nome: "Ascoltare", caratteristica: null}
+  # Possibilità «su 1d6» di tutti (p. 43–44). Senza valore nella scheda vale +0, cioè «1 su 6».
+  - {id: cercare, nome: "Cercare porte segrete e trappole", caratteristica: null}
+  - {id: forzare, nome: "Forzare una porta bloccata", caratteristica: null}
+  - {id: pietra, nome: "Occhio per la pietra (nani)", caratteristica: null}
+
+# Difficoltà: il «Target» delle prove di caratteristica al primo livello è 17 (p. 189); il master può dare un
+# bonus o una penalità. Facile = +4, difficile = −2, ardua = −4 (gli aggiustamenti che il manuale usa più spesso:
+# alle spalle +2, cieco −4, colpo furtivo +4). Tiri salvezza e abilità del ladro si tirano a difficoltà normale.
+difficolta:
+  - {id: facile, nome: "Facile", valore: 13}
+  - {id: normale, nome: "Normale", valore: 17}
+  - {id: difficile, nome: "Difficile", valore: 19}
+  - {id: ardua, nome: "Ardua", valore: 21}
+difficolta_predefinita: normale
+
+# Il manuale non ha il vantaggio: ha bonus e penalità di situazione, il più comune è ±2 (alle spalle, carica).
+vantaggio:
+  tipo: bonus
+  valore: 2
+
+# Si colpisce con d20 + bonus contro la Classe d'Armatura (p. 53); l'armatura non riduce il danno.
+attacchi:
+  tipo: prova
+  armatura_riduce: false
+
+danni:
+  nome: "Punti ferita"
+  a_zero: "A zero punti ferita un personaggio muore; con la regola facoltativa del manuale un PG tira un salvezza contro la morte e, se riesce, resta svenuto finché qualcuno non gli fascia le ferite"
+
+# Reazione dei mostri (p. 50): il manuale tira 2d6 + Carisma (8–11 favorevole, 12+ molto favorevole). Lo schema ha
+# una sola risoluzione, quindi si convince con una prova di Carisma: facile (13) vale circa il «favorevole» del 2d6
+# (40% contro 42%), normale (17) il «molto favorevole».
+sociale:
+  caratteristica: carisma
+  nota: "Per convincere, trattare o spaventare un PNG si tira Carisma: facile se il PNG è disposto a trattare o gli si offre qualcosa che vuole, normale se è diffidente, difficile o ardua se è ostile. È la reazione del manuale (2d6 più Carisma) portata sul d20."
+
+condizioni:
+  - {id: sorpreso, nome: "Sorpreso", effetto: "Per un round non si muove e non attacca, ma si difende (p. 50)."}
+  - {id: accecato, nome: "Accecato", effetto: "−4 ai tiri per colpire e alla Classe d'Armatura, −2 all'iniziativa (p. 59)."}
+  - {id: trattenuto, nome: "Trattenuto", effetto: "Afferrato in una lotta: non si muove, −4 alla Classe d'Armatura contro gli altri (p. 56)."}
+  - {id: svenuto, nome: "Svenuto", effetto: "A terra senza sensi: non si muove, non combatte, non lancia incantesimi."}
+
+sottosistemi:
+  - id: incantesimi
+    nome: "Incantesimi"
+    testo: "Il mago di primo livello conosce leggere il magico e un incantesimo di primo livello, e ne lancia uno al giorno. Il chierico lancia incantesimi solo dal secondo livello."
+  - id: scacciare
+    nome: "Scacciare i non morti"
+    testo: "Il chierico mostra il simbolo sacro e tira un d20 contro la tabella del suo livello e del tipo di non morto: al primo livello 13 per gli scheletri, 17 per gli zombi, 19 per i ghoul (p. 57)."
+  - id: sorpresa
+    nome: "Sorpresa"
+    testo: "Prima di uno scontro si tira 1d6 per ogni parte che può essere sorpresa: con 1–2 è sorpresa e perde il primo round (p. 50). Il Motore conta come sorpresa solo l'attacco che apre lo scontro."
+  - id: cadute
+    nome: "Cadute e fosse"
+    testo: "Si prende 1d6 di danno ogni tre metri di caduta. Per non cadere in una fossa coperta si tira salvezza contro raggio della morte, con il bonus di Destrezza (p. 43, 59)."
+  - id: guarigione
+    nome: "Guarigione"
+    testo: "Si recupera un punto ferita per ogni notte di sonno (p. 59). Chi è stato fasciato a zero punti ferita non combatte finché non torna sopra zero (p. 188)."
+
+parole_chiave:
+  scassinare: [scassino, scassinare, grimaldello, grimaldelli, serratura, lucchetto]
+  trappole: [trappola, trappole, disinnesco, disinnescare, tagliola]
+  borseggiare: [borseggio, sfilo, sfilare, tasca]
+  muoversi_in_silenzio: [silenzio, silenziosa, silenzioso, furtiva, furtivo, quatta, quatto]
+  scalare: [scalo, scalare, arrampico, arrampicarmi, parete]
+  nascondersi: [nascondo, nascondermi, acquatto, ombra]
+  ascoltare: [ascolto, ascoltare, origlio, orecchio]
+  cercare: [cerco, frugo, esamino, perquisisco, passaggio]
+  forzare: [forzo, sfondo, spallata, scardino]
+  pietra: [muratura, malta, mattoni, pietre]
+  ts_morte: [veleno, schivo, evito, balzo]
+  carisma: [convinco, persuado, prometto, tratto, minaccio]
+
+combattimento:
+  # Iniziativa (p. 51): ogni round 1d6 più la Destrezza, per ogni personaggio e mostro; chi fa di più agisce prima,
+  # i pari agiscono insieme. Il Motore tira l'iniziativa individuale una volta sola e rompe i pari con un ordine fisso:
+  # `ogni_round` resta quello del manuale.
+  iniziativa: {tipo: individuale, dado: 6, caratteristica: destrezza, ogni_round: true}
+  # Il round del manuale non ha fasi: al suo numero d'iniziativa ognuno si muove e poi attacca (p. 51).
+  fasi:
+    - {id: turno, nome: "Turno: movimento e attacco", png: attacco}
+  azioni:
+    - {id: movimento, nome: "Movimento", quante: "fino al movimento d'incontro, prima di attaccare"}
+    - {id: attacco, nome: "Attacco", quante: "uno, oppure un incantesimo, una pozione, una corsa"}
+  danni:
+    modello: pf
+    # Regola base: a zero punti ferita si muore (p. 55). Per i PG la regola facoltativa «Save vs. Death» (p. 188):
+    # un tiro salvezza contro raggio della morte; riuscito, si resta vivi e svenuti. Lo schema ha i tiri contro la
+    # morte dell'SRD: con un successo e un fallimento basta un tiro solo. Il numero da fare cambia con la classe e la
+    # razza (da 7 a 13 tra i PG di questa campagna); qui è uno per tutti, 10. Il 20 che rimette in piedi con un punto
+    # e l'1 che conta doppio sono del Motore, non del manuale.
+    a_zero: {pg: tiri_morte, png: morte}
+    tiri_morte: {cd: 10, successi: 1, fallimenti: 1}
+  condizioni:
+    - {id: sorpreso, nome: "Sorpreso", icona: "SO", effetti: [perde_turno, non_si_muove], testo: "Per un round non si muove e non attacca, ma si difende."}
+    # −4 del manuale ai tiri e alla Classe d'Armatura: gli effetti del Motore valgono ±2 (il vantaggio del set).
+    - {id: accecato, nome: "Accecato", icona: "AC", effetti: [svantaggio_attacchi, attacchi_contro_vantaggio], testo: "Colpisce peggio ed è più facile da colpire."}
+    - {id: trattenuto, nome: "Trattenuto", icona: "TR", effetti: [non_si_muove, attacchi_contro_vantaggio], testo: "Afferrato: non si muove ed è più facile da colpire."}
+    - {id: svenuto, nome: "Svenuto", icona: "SV", effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: "A terra senza sensi, finché qualcuno non gli fascia le ferite."}
+  condizione_a_zero: svenuto
+  # Morale (p. 57): 2d6, con più del morale il mostro fugge o si arrende. Il manuale lo tira al primo scontro e a metà
+  # forze; il Motore al primo caduto e a metà caduti, contro il morale più basso tra chi resta in piedi.
+  fine: {morale: true}
