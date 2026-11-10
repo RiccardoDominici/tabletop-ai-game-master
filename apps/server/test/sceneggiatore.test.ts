@@ -11,6 +11,8 @@ import { caricaCampagna } from '../src/campagna/caricatore';
 import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
 import { cartelle, leggiJson, scriviJson, type RichiestaSceneggiatore } from '../src/sceneggiatore/protocollo';
 import { estraiYaml, nomiDeiPg, pgCheAgisce, validaBattute } from '../src/sceneggiatore/valida';
+import { messaggioSceneggiatore, promptSceneggiatore } from '../src/sceneggiatore/prompt';
+import { impostaLingua } from '../src/lingua';
 import { giaUsati, righeDellaRisposta, ticBloccati, unisciGiaUsati } from '../src/sceneggiatore/ripetizioni';
 import YAML from 'yaml';
 import { codaAudioFish } from '../src/sceneggiatore/audio';
@@ -108,6 +110,37 @@ describe('ripetizioni e tic, corpo dei PG, audio delle battute nuove', () => {
     await coda([b]);
     expect(sintesi).toBe(1); // già in cache
     fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe('lingua dei contenuti: prompt e guardia dello sceneggiatore in it e in en', () => {
+  afterEach(() => impostaLingua('it'));
+
+  it('il prompt e le sezioni del messaggio vengono da prompts/<lingua> e lingue/<lingua>', () => {
+    const rq = { id: 'x', tipo: 'subito', creata: '', turno: 1, campagna: '', scena: { id: 's', titolo: 'T', png_presenti: [] }, azione: { id_pg: 'pg_a', nome: 'A', testo: 'guardo', privata: true }, trascrizione: [], stato: { indizi_rivelati: [], fatti_noti: [], battute_usate: [], orologi: {} }, prefisso: 'sc_', quante: 1 } as RichiestaSceneggiatore;
+    expect(promptSceneggiatore()).toBe(fs.readFileSync(path.join(RADICE_REPO, 'prompts', 'it', 'sceneggiatore.md'), 'utf8').replace(/\s+$/, ''));
+    expect(messaggioSceneggiatore(rq, 'C', [], '')).toContain('## Compito\nScrivi UNA battuta');
+    expect(messaggioSceneggiatore(rq, 'C', [], '')).toContain('È un\'azione PRIVATA');
+    impostaLingua('en');
+    expect(promptSceneggiatore()).toMatch(/^You are the SCRIPTWRITER/);
+    const en = messaggioSceneggiatore(rq, 'C', [], '');
+    expect(en).toContain('## Task\nWrite ONE line');
+    expect(en).toContain('It is a PRIVATE action');
+    expect(en).toContain('NPCs present: none');
+  });
+
+  it('in inglese: soggetto, parte del corpo (anche col genitivo sassone); vocativo, complemento e oggetto no', () => {
+    impostaLingua('en');
+    const nomi = nomiDeiPg(caricaCampagna(path.join(FIXTURE, 'en-mini')));
+    expect(nomi).toEqual(expect.arrayContaining(['Mara Quill', 'Mara']));
+    expect(pgCheAgisce('Mara opens her fist in front of the whole table.', nomi)).not.toBeNull();
+    expect(pgCheAgisce('The room goes quiet, and then Mara stands up.', nomi)).not.toBeNull();
+    expect(pgCheAgisce('Mara doesn’t open her fist.', nomi)).not.toBeNull();
+    expect(pgCheAgisce('Mara’s fist stays closed on the table.', nomi)).not.toBeNull();
+    expect(pgCheAgisce('The hands of Mara tremble.', nomi)).not.toBeNull();
+    expect(pgCheAgisce('Mara, the whole room is waiting.', nomi)).toBeNull();
+    expect(pgCheAgisce('The keeper glances at Mara and says nothing.', nomi)).toBeNull();
+    expect(pgCheAgisce("Mara's mug is still half full.", nomi)).toBeNull();
   });
 });
 

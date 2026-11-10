@@ -37,6 +37,22 @@ modelli:
   riassunto:
     messaggio: "## Public transcript of the evening\n{materiale}\n\n## The summary"
     azione: "{nome} (action)"
+  # Scriptwriter (apps/server/src/sceneggiatore/prompt.ts); the prompt is prompts/<code>/sceneggiatore.md.
+  sceneggiatore:
+    contesto: "## Campaign and scene (what the narrator knows)\n{contesto}"
+    scena: "## Current scene: {titolo} ({id}); NPCs present: {presenti}"
+    stato: "## State\nclues revealed: {indizi}\nfacts known to the PCs: {fatti}\nclocks: {orologi}"
+    segrete: "## Secret words (NEVER in your lines)\n{elenco}"
+    trascrizione: "## Last lines heard at the table\n{righe}"
+    gia_usati: "## Already used in the last turns (do NOT repeat them)\nopenings: {attacchi}\nimages: {immagini}\ntics heard recently: {tic}"
+    esempi: "## Example lines from this campaign\n{esempi}"
+    compito: "## Task\n{compito}\nId prefix: {prefisso}. Answer only with the YAML block."
+    subito: "Write ONE line that answers this action, now (the player is waiting): {nome} ({id_pg}): «{testo}». If the action is aimed at an NPC who is present, that NPC answers; otherwise the narrator tells the effect.{privata}"
+    privata: " It is a PRIVATE action: only that player hears the answer, on their phone. The NPC speaks under their breath, or the narrator tells what only that PC sees or hears; nobody else at the table notices."
+    prossime: "Write {quante} lines for the most likely actions of the next turn, different from each other: who talks to whom, what they touch, what they ask. At least one for every NPC present."
+    nessuno: "none"
+    nessuna: "(none)"
+    trattino: "—"
   # Generic script of the fake narrator (apps/server/src/llm/finto.ts), for trials without a model.
   finto:
     apertura: "[narratore] The oven crackles at the back of the hall. Someone knocks twice at the door."

@@ -141,3 +141,17 @@ privato:
 # Short names of PCs and NPCs (apps/server/src/campagna/nomi.ts): titles skipped («Sister Teodora» → «Teodora»).
 nomi:
   titoli: [sister, brother, father, mother, sir, lady, lord, dame, master, mistress, friar, mr, mrs, ms, miss, dr, doctor, captain, sergeant, uncle, aunt, old, young, saint, st]
+
+# Scriptwriter guard (apps/server/src/sceneggiatore/valida.ts, pgCheAgisce): a narrator line whose subject is a PC
+# («Gunda opens her fist», «Then Remo stands up», «Remo and Vanda laugh») or a part of their body («Gunda's fist stays
+# closed», «The fist of Gunda stays closed») decides for a player. The subject is the name at the start of a sentence,
+# after a comma or after a conjunction, followed by a lowercase word (the verb); the vocative («Gunda, …») is not.
+sceneggiatore:
+  congiunzioni: [and, then, so, but, when, while, as]
+  coordinanti: [and]
+  negazioni: [does not, "doesn't", did not, "didn't", never, will not, "won't", cannot, "can't"]
+  clitici: []
+  articoli: [the]
+  genitivo: [of]
+  possessivo: "'s"
+  parti_del_corpo: [hand, hands, fist, fists, finger, fingers, arm, arms, shoulder, shoulders, back, head, face, eye, eyes, gaze, mouth, lips, voice, smile, breath, breathing, heart, leg, legs, foot, feet, step, steps, knee, knees, forehead, cheeks, chin, neck, skin, body, jaw, brow]

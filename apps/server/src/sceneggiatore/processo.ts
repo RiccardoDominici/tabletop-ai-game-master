@@ -28,7 +28,8 @@ import { caricaRepertorio } from '../repertorio/caricatore';
 import { compilaContestoRepertorio } from '../repertorio/contesto';
 import { caricaParoleSegreteCampagna } from '../repertorio/segreti';
 import { cartelle, leggiJson, scriviJson, type RichiestaSceneggiatore, type RispostaSceneggiatore } from './protocollo';
-import { PROMPT_SCENEGGIATORE, messaggioSceneggiatore } from './prompt';
+import { messaggioSceneggiatore, promptSceneggiatore } from './prompt';
+import { impostaLingua, LINGUA_PREDEFINITA } from '../lingua';
 import YAML from 'yaml';
 import { righeDellaRisposta, unisciGiaUsati } from './ripetizioni';
 import { estraiYaml } from './valida';
@@ -74,7 +75,7 @@ function registra(riga: Record<string, unknown>): void {
 function chiediAClaudeCode(prompt: string, modello: string): Promise<{ testo: string; ms: number }> {
   const inizio = Date.now();
   return new Promise((ok, ko) => {
-    const p = spawn(CLAUDE, ['-p', '--model', modello, '--output-format', 'json', '--no-session-persistence', '--tools', '', '--append-system-prompt', PROMPT_SCENEGGIATORE], {
+    const p = spawn(CLAUDE, ['-p', '--model', modello, '--output-format', 'json', '--no-session-persistence', '--tools', '', '--append-system-prompt', promptSceneggiatore()], {
       cwd: RADICE_REPO,
       stdio: ['pipe', 'pipe', 'pipe'],
     });
@@ -106,6 +107,8 @@ function chiediAClaudeCode(prompt: string, modello: string): Promise<{ testo: st
 /** Il contesto della scena come lo vede il narratore in modo B (niente segreti), per Claude Code. */
 function contestoDi(rq: RichiestaSceneggiatore): { contesto: string; segrete: string[]; esempi: string } {
   const campagna = conScena(caricaCampagna(rq.campagna), rq.scena.id);
+  // La lingua dei contenuti è quella della campagna (docs/lingue.md): prompt, sezioni e regole.
+  impostaLingua(campagna.lingua ?? LINGUA_PREDEFINITA);
   const parole = caricaParoleSegreteCampagna(campagna);
   const rep = caricaRepertorio(campagna);
   const esempi = rep.battute

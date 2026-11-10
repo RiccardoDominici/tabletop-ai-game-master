@@ -26,6 +26,7 @@ import { caricaRepertorio, ErroreRepertorio } from '../repertorio/caricatore';
 import type { ParolaSegreta, StatoPubblico } from '../repertorio/segreti';
 import type { Battuta, TipoBattuta } from '../repertorio/tipi';
 import { normalizzaFrase } from './ripetizioni';
+import { campoElenco, campoTesto, regole } from '../lingua/motore';
 
 const FILE = 'sceneggiatore.yaml';
 export const TIPI_SCENEGGIATORE: ReadonlySet<TipoBattuta> = new Set<TipoBattuta>(['reazione', 'momento', 'richiesta', 'rifiuto', 'saluto']);
@@ -113,13 +114,6 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
   return { accettate: battute, scartate };
 }
 
-/** Parti del corpo e modi di stare: «il pugno di Gunda» come soggetto decide per Gunda. */
-const PARTI_DEL_CORPO = [
-  'mano', 'mani', 'pugno', 'pugni', 'dito', 'dita', 'braccio', 'braccia', 'spalla', 'spalle', 'schiena', 'testa', 'viso', 'faccia', 'volto',
-  'occhio', 'occhi', 'sguardo', 'bocca', 'labbra', 'voce', 'sorriso', 'fiato', 'respiro', 'cuore', 'gamba', 'gambe', 'piede', 'piedi', 'passo',
-  'passi', 'ginocchia', 'fronte', 'guance', 'mento', 'collo', 'pelle', 'corpo',
-].join('|');
-
 /** I nomi con cui una riga può indicare un PG: nome intero, primo nome, alias della campagna. */
 export function nomiDeiPg(c: Campagna): string[] {
   const out = new Set<string>();
@@ -140,17 +134,44 @@ export function nomiDeiPg(c: Campagna): string[] {
  * («guarda Gunda») e il genitivo di una cosa che non è il corpo («la bottiglia di Remo»).
  */
 export function pgCheAgisce(testo: string, nomi: readonly string[]): string | null {
-  for (const frase of testo.split(/(?<=[.!?…;:])\s+/)) {
+  const g = guardia();
+  for (const frase of testo.replace(/’/g, "'").split(/(?<=[.!?…;:])\s+/)) {
     for (const n of nomi) {
-      const nome = n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const corpo = new RegExp(`(?:^|[,]\\s+|\\b(?:e|ed|poi|allora|ma|quando|mentre)\\s+)(?:il|lo|la|l'|i|gli|le)\\s*(?:${PARTI_DEL_CORPO})\\s+(?:di|del|della)\\s+${nome}(?![\\p{L}\\p{N}])`, 'iu');
+      const nome = escapa(n);
+      const prima = `(?:^|[,]\\s+|\\b(?:${g.congiunzioni})\\s+)`;
+      const dopo = '(?![\\p{L}\\p{N}])';
+      const corpo = new RegExp(
+        `${prima}(?:(?:${g.articoli})\\s*(?:${g.corpo})\\s+(?:${g.genitivo})\\s+${nome}${dopo}${g.possessivo ? `|${nome}${g.possessivo}\\s+(?:${g.corpo})${dopo}` : ''})`,
+        'iu',
+      );
       if (corpo.test(frase.trim())) return frase.trim();
-      const soggetto = new RegExp(`(?:^|[,]\\s+|\\b(?:e|ed|poi|allora|ma|quando|mentre)\\s+)${nome}(?![\\p{L}\\p{N}])(?!\\s*,)\\s+(?:e\\s+\\p{Lu}\\p{L}*\\s+)?(?:non\\s+)?(?:(?:si|ci|ne|lo|la|li|le|gli|vi|mi|ti)\\s+)?\\p{Ll}`, 'iu');
+      const soggetto = new RegExp(
+        `${prima}${nome}${dopo}(?!\\s*,)\\s+(?:(?:${g.coordinanti})\\s+\\p{Lu}\\p{L}*\\s+)?(?:(?:${g.negazioni})\\s+)?${g.clitici ? `(?:(?:${g.clitici})\\s+)?` : ''}\\p{Ll}`,
+        'iu',
+      );
       if (soggetto.test(frase.trim())) return frase.trim();
     }
   }
   return null;
 }
+
+const escapa = (x: string): string => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** Le parole della guardia nella lingua dei contenuti (lingue/<codice>/motore.yaml, sezione `sceneggiatore`). */
+const guardia = (): { congiunzioni: string; coordinanti: string; negazioni: string; clitici: string; articoli: string; genitivo: string; possessivo: string; corpo: string } =>
+  regole('sceneggiatore', (s) => {
+    const alt = (k: string): string => campoElenco(s, k).map((x) => escapa(x).replace(/ /g, '\\s+')).join('|');
+    return {
+      congiunzioni: alt('congiunzioni'),
+      coordinanti: alt('coordinanti'),
+      negazioni: alt('negazioni'),
+      clitici: alt('clitici'),
+      articoli: alt('articoli'),
+      genitivo: alt('genitivo'),
+      possessivo: escapa(campoTesto(s, 'possessivo')),
+      corpo: alt('parti_del_corpo'),
+    };
+  });
 
 /** Legge le battute col caricatore vero; quelle con errori si tolgono e si riprova una volta. */
 function carica(pulite: Record<string, unknown>[], c: Campagna, scartate: EsitoValidazione['scartate']): Battuta[] {

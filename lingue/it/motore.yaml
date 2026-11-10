@@ -133,3 +133,17 @@ privato:
 # Nomi brevi di PG e PNG (apps/server/src/campagna/nomi.ts): titoli da saltare («Sorella Teodora» → «Teodora»).
 nomi:
   titoli: [sorella, fratello, padre, madre, ser, messer, donna, dama, mastro, frate, suor]
+
+# Guardia dello sceneggiatore (apps/server/src/sceneggiatore/valida.ts, pgCheAgisce): una riga del narratore che ha per
+# soggetto un PG («Gunda apre il pugno», «Poi Remo si alza», «Remo e Vanda ridono») o una parte del suo corpo
+# («Il pugno di Gunda resta chiuso») decide per un giocatore. Il soggetto è il nome all'inizio della frase, dopo una
+# virgola o dopo una congiunzione, seguito da una parola minuscola (il verbo); il vocativo («Gunda, …») no.
+sceneggiatore:
+  congiunzioni: [e, ed, poi, allora, ma, quando, mentre]
+  coordinanti: [e, ed]
+  negazioni: [non]
+  clitici: [si, ci, ne, lo, la, li, le, gli, vi, mi, ti]
+  articoli: [il, lo, la, "l'", i, gli, le]
+  genitivo: [di, del, della]
+  possessivo: ''
+  parti_del_corpo: [mano, mani, pugno, pugni, dito, dita, braccio, braccia, spalla, spalle, schiena, testa, viso, faccia, volto, occhio, occhi, sguardo, bocca, labbra, voce, sorriso, fiato, respiro, cuore, gamba, gambe, piede, piedi, passo, passi, ginocchia, fronte, guance, mento, collo, pelle, corpo]
