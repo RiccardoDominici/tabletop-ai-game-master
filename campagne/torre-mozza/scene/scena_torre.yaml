@@ -3,7 +3,7 @@
 id: scena_torre
 nodo: n_torre
 nome: "La Torre Mozza, a mezzanotte"
-descrizione: "Il piano terra della torre, senza tetto: un cerchio di muri alti e il cielo sopra. In mezzo arde un fuoco, e Grosso ci sta accanto con un osso di montone; Zirrà sta sui gradini della scala rotta, che sale fino al muro crollato. In un angolo una scala scende alla cantina e alla porta di ferro della cripta; nella cantina, dietro la scala, un buco nel muro soffia aria fredda. Tonio è seduto sui gradini della cantina, con una corda avvolta ai polsi. Chi sente che cosa: intorno al fuoco si sente tutto. Giù in cantina, davanti alla porta di ferro, chi parla sottovoce non è sentito da chi sta al fuoco."
+descrizione: "Il piano terra della torre, senza tetto: un cerchio di muri alti e il cielo sopra. In mezzo arde un fuoco, e Grosso ci sta accanto con un osso di montone e un tamburo di pelle; Zirrà, con un corno di capra alla cintura, sta sui gradini della scala rotta, che sale fino al muro crollato. In un angolo una scala scende alla cantina e alla porta di ferro della cripta; nella cantina, dietro la scala, un buco nel muro soffia aria fredda. Tonio è seduto sui gradini della cantina, con una corda ai polsi. Chi sente che cosa: intorno al fuoco si sente tutto. Giù in cantina, davanti alla porta di ferro, chi parla sottovoce non è sentito da chi sta al fuoco."
 scopo: {tipo: mettere_alla_prova, rif: cb_tonio}
 domanda_drammatica: "Tonio uscirà vivo dalla torre?"
 posta:
@@ -17,7 +17,7 @@ sensi:
 elementi_interattivi:
   - {cosa: "il fuoco", dove: "in mezzo alla torre", azioni: "si spegne, si sparpaglia con un calcio, ci si accende una torcia"}
   - {cosa: "la scala rotta", dove: "lungo il muro, fino al crollo", azioni: "ci si sale; dal crollo si scappa fuori sul crinale"}
-  - {cosa: "la porta di ferro della cripta", dove: "in fondo alla scala della cantina", azioni: "si apre con la chiave dei Benni; senza chiave si prende a colpi"}
+  - {cosa: "la porta di ferro della cripta", dove: "in fondo alla scala della cantina", azioni: "si apre con la chiave dei Benni o con un grimaldello; senza, si prende a colpi"}
   - {cosa: "il muro accanto alla porta di ferro", dove: "in cantina", azioni: "NASCOSTA: a carbone, una fila di tacche e la scritta storta «decima, quaranta d'argento», con le erre rovesciate"}
   - {cosa: "i segni a carbone", dove: "sul muro accanto al fuoco", azioni: "si guardano da vicino con una torcia"}
   - {cosa: "il disegno dei segni", dove: "sul muro accanto al fuoco", azioni: "NASCOSTA: è la pianta della torre con la strada per la cripta, e la scritta «cripta» ha le erre rovesciate"}
@@ -25,11 +25,9 @@ elementi_interattivi:
   - {cosa: "il nodo della corda", dove: "ai polsi del ragazzo", azioni: "NASCOSTA: non c'è nodo, la corda è solo avvolta"}
   - {cosa: "il cosciotto di montone", dove: "accanto a Grosso", azioni: "Grosso lo rosicchia; con del cibo in più si compra la sua attenzione"}
 png_presenti: [png_zirra, png_grosso]
-orologi_attivi: [o_mezzanotte]
-orologi_in_scena:
-  # Entrando, la mezzanotte è vicina: almeno sei segni. Qui corre piano (uno ogni otto risposte), perché il pieno
-  # porta il finale del Motore e non deve arrivare nel mezzo dello scontro.
-  o_mezzanotte: {pieni_almeno: 6, segno_almeno_ogni: 8}
+# Nessun orologio attivo: qui è già mezzanotte. Un orologio pieno farebbe dire al Motore un finale nel mezzo dello scontro;
+# i finali della torre li sceglie il tavolo (che cosa si racconta a Spinalba, o la discesa).
+orologi_attivi: []
 indizi:
   - id: i_tonio_libero
     conclusione: r_tonio
@@ -38,8 +36,8 @@ indizi:
     essenziale: true
     tiro: "nessuno"
     modi: 3
-    come_si_trova: "Arriva da solo, con la mossa morbida: quando Zirrà schiocca le dita, Tonio si alza, lascia cadere la corda e le porta il piccone senza che nessuno lo spinga. Oppure chi guarda da vicino la corda vede che non c'è nodo. Oppure quando un PG mostra la chiave a Zirrà, lei chiama il ragazzo e lui si alza da solo, e la corda gli scivola dai polsi. Il narratore non dice mai che il ragazzo è d'accordo con i goblin: lo concludono i PG."
-    vincolo_pubblico: "Tonio ha una corda avvolta ai polsi."
+    come_si_trova: "Arriva anche da solo, con una battuta d'attesa: quando Zirrà schiocca le dita, Tonio si alza, lascia cadere la corda e porta a Zirrà il piccone senza che nessuno lo spinga. Oppure chi guarda da vicino la corda vede che non c'è nodo. Oppure quando un PG mostra la chiave a Zirrà, lei chiama il ragazzo e lui si alza da solo, e la corda gli scivola dai polsi. Il narratore non dice mai che il ragazzo è d'accordo con i goblin: lo concludono i PG."
+    vincolo_pubblico: "Tonio ha una corda ai polsi."
   - id: i_mappa
     conclusione: r_tonio
     tipo: documento
@@ -67,17 +65,18 @@ indizi:
     modi: 1
     come_si_trova: "Se un PG gli dà da mangiare, Grosso borbotta che il ragazzo è venuto con le sue gambe, e che il pane lo porta lui."
 vincoli_pubblici:
-  - "La porta di ferro della cripta resta chiusa finché qualcuno gira nella serratura la chiave dei Benni."
+  - "La porta di ferro della cripta resta chiusa finché qualcuno gira nella serratura la chiave dei Benni, o un grimaldello buono."
+  - "Tonio parla poco e a voce bassa, e davanti ai goblin chiede soltanto la chiave."
   - "Nella banda ci sono solo Zirrà e Grosso: gli altri goblin se ne sono andati."
 uscite:
   - {verso: n_ovile, segnalata_da: [i_tonio_libero, i_conto]}
 climax: true
-mossa_morbida_pronta: "Zirrà schiocca le dita. Il ragazzo si alza e lascia cadere la corda dai polsi. Poi le porta un piccone, senza che nessuno lo spinga."
-apertura: "La torre non ha più il tetto, e un fuoco illumina il cerchio dei muri. Sulla scala rotta una goblin svelta si volta verso di voi, e al fuoco un hobgoblin rosicchia un osso. Sui gradini della cantina un ragazzo con una corda ai polsi alza la testa: che cosa fate?"
+mossa_morbida_pronta: "Grosso si alza piano e batte la mazza sul palmo, senza smettere di masticare."
+apertura: "La torre non ha più il tetto, e un fuoco illumina il cerchio dei muri. Sulla scala rotta siede una goblin svelta, e al fuoco un hobgoblin rosicchia un osso. Sui gradini della cantina un ragazzo con una corda ai polsi alza la testa: che cosa fate?"
 musica: {tag: esplorazione_tesa, transizione: "verso combattimento_epico al primo colpo; torna esplorazione_tesa quando lo scontro finisce"}
 immagine:
   invarianti: ["torre rotonda senza tetto, cielo di notte sopra", "fuoco in mezzo al pavimento di pietra", "scala rotta lungo il muro fino a un crollo", "scala che scende a una porta di ferro", "segni a carbone sui muri"]
-  prompt_luogo: "interior of a roofless ruined round stone watchtower at midnight, moon and night sky above the broken walls, a campfire in the middle of the stone floor, a broken stone stair climbing the wall to a collapsed gap, a narrow stair going down to a rusty iron door, charcoal scribbles on the walls"
+  prompt_luogo: "interior of a roofless ruined round stone watchtower at midnight, moon and night sky above the broken walls, a campfire with a skin drum beside it in the middle of the stone floor, a broken stone stair climbing the wall to a collapsed gap, a narrow stair going down to a rusty iron door, charcoal scribbles on the walls"
 audio:
   musica: [castello, notte, vento]
   ambiente: [{tag: fuoco, volume: 0.5}, {tag: vento, volume: 0.5}]
@@ -85,10 +84,10 @@ audio:
   umore_iniziale: esplorazione_tesa
 taglio: "La scena si chiude quando la sorte di Tonio è decisa: i goblin battuti, fuggiti o arresi; un patto con Zirrà; oppure Zirrà che scappa dal crollo. Se i PG esitano, Zirrà minaccia il ragazzo e Grosso si alza con la mazza. Poi i PG dicono che cosa racconteranno a Spinalba, e la sessione si chiude su quella scelta."
 esiti:
-  - {id: es_alba, descrizione: "Passa la mezzanotte e la notte finisce: la scelta su che cosa raccontare resta aperta.", finale: fin_alba_brace}
-  - {id: es_fontana, descrizione: "A Spinalba si racconta che Tonio ha aperto l'ovile ai goblin.", finale: fin_alba_fontana}
+  - {id: es_fontana, descrizione: "A Spinalba si racconta che Tonio ha aiutato i goblin.", finale: fin_alba_fontana}
   - {id: es_silenzio, descrizione: "A Spinalba Tonio è soltanto un prigioniero liberato, e la colpa resta su Ugo.", finale: fin_alba_silenzio}
   - {id: es_riserva, descrizione: "I PG scagionano Ugo con la sua caccia nella riserva, e tacciono sul ragazzo.", finale: fin_alba_riserva}
+  - {id: es_discesa, descrizione: "I PG scendono dalla torre con il ragazzo, e la scelta su che cosa raccontare resta aperta.", finale: fin_alba_discesa}
 prove:
   - {id: p_zirra_patto, quando: "un PG tratta con Zirrà il prezzo del ragazzo", caratteristica: carisma, difficolta: difficile, se_fallisce: "Zirrà ride e alza il prezzo: adesso vuole tutta la cassa", parole: [tratto, patto, prezzo, argento]}
   - {id: p_grosso_cibo, quando: "un PG offre da mangiare a Grosso perché si faccia da parte", caratteristica: carisma, difficolta: facile, indizio: i_grosso, se_fallisce: "Grosso prende il cibo e resta dov'è, masticando", parole: [cibo, mangiare, carne, pane]}

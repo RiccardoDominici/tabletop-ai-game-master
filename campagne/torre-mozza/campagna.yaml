@@ -8,30 +8,30 @@ canone:
   - {id: f_spinalba, noto_ai_pg: true, stato: confermato, entita: [n_ovile], testo: "Spinalba è un borgo di pastori sulle colline di confine, sotto la Torre Mozza."}
   - {id: f_torre_rovina, noto_ai_pg: true, stato: confermato, entita: [n_torre], testo: "La Torre Mozza è una torre di guardia in rovina, vuota da cento anni."}
   - {id: f_goblin_torre, noto_ai_pg: true, stato: confermato, entita: [png_zirra, n_torre], testo: "Da tre settimane una banda di goblin sta nella Torre Mozza."}
-  - {id: f_tonio_sparito, noto_ai_pg: true, stato: confermato, entita: [png_berta], testo: "Stanotte Tonio Benni, sedici anni, è sparito dall'ovile di sua madre."}
+  - {id: f_tonio_sparito, noto_ai_pg: true, stato: confermato, entita: [png_berta], testo: "La notte scorsa Tonio Benni, sedici anni, è sparito dall'ovile di sua madre."}
   - {id: f_lavagna, noto_ai_pg: true, stato: confermato, entita: [png_berta, png_zirra], testo: "All'alba sulla porta dei Benni c'era una lavagna: la chiave alla torre entro mezzanotte, o il ragazzo muore."}
   - {id: f_chiave_castellano, noto_ai_pg: true, stato: confermato, entita: [png_berta], testo: "I Benni discendono dal castellano della torre e custodiscono la sua chiave di ferro."}
   - {id: f_cripta_leggenda, noto_ai_pg: true, stato: confermato, entita: [n_torre], testo: "Si racconta che sotto la torre ci sia una cripta chiusa da una porta di ferro, con la paga della guarnigione."}
   - {id: f_ugo_carbonaio, noto_ai_pg: true, stato: confermato, entita: [png_ugo, n_carbonaia], testo: "Ugo il carbonaio vive da solo nel bosco sotto la torre, accanto alla sua carbonaia."}
   - {id: f_ugo_sospettato, noto_ai_pg: true, stato: confermato, entita: [png_ugo], testo: "In paese dicono che i goblin li abbia portati Ugo."}
   - {id: f_lite_vecchia, noto_ai_pg: true, stato: confermato, entita: [png_ugo, png_berta], testo: "Anni fa il marito di Berta accusò Ugo di avergli rubato tre pecore, senza prove."}
-  - {id: f_usanza, noto_ai_pg: true, stato: confermato, entita: [n_ovile], testo: "Per l'usanza della valle, chi apre l'ovile ai lupi lascia la valle per sette inverni."}
+  - {id: f_usanza, noto_ai_pg: true, stato: confermato, entita: [n_ovile], testo: "Per l'usanza della valle, chi aiuta i lupi o i predoni contro il paese lascia la valle per sette inverni."}
   - {id: f_berta_vedova, noto_ai_pg: true, stato: confermato, entita: [png_berta], testo: "Berta Benni è vedova e manda avanti l'ovile con il figlio Tonio."}
-  - {id: f_carbonaia_fuoco, noto_ai_pg: true, stato: confermato, entita: [n_carbonaia], testo: "Una carbonaia accesa va sorvegliata giorno e notte, o prende fuoco tutta."}
+  - {id: f_carbonaia_fuoco, noto_ai_pg: true, stato: confermato, entita: [n_carbonaia], testo: "Una carbonaia accesa va guardata ogni poche ore, e di notte non si lascia mai."}
   - {id: f_riserva, noto_ai_pg: true, stato: confermato, entita: [n_carbonaia], testo: "Il bosco sotto il crinale è riserva di caccia del signore della valle."}
   - {id: f_balivo_lontano, noto_ai_pg: true, stato: confermato, entita: [n_valdirame], testo: "Il balivo del signore sta a Valdirame, a quattro ore di cammino."}
   # --- Nascosto: la verità, ciò che sanno i PNG, le conoscenze private dei PG.
   - {id: f_tonio_complice, noto_ai_pg: false, stato: confermato, entita: [n_torre], testo: "Tonio non è stato rapito: ha portato lui i goblin alla cripta e ha finto il rapimento."}
   - {id: f_tonio_lavagna, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "La lavagna l'ha scritta Tonio, con il carbone."}
   - {id: f_tonio_pane, noto_ai_pg: false, stato: confermato, entita: [n_torre], testo: "Da tre notti Tonio sale alla torre con il pane per i goblin."}
-  - {id: f_cani_chiusi, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "Stanotte Tonio ha chiuso i cani nel fienile prima di uscire."}
+  - {id: f_cani_chiusi, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "La notte scorsa Tonio ha chiuso i cani nel fienile prima di uscire."}
   - {id: f_tonio_stivali, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "Tonio è partito con gli stivali buoni, il mantello e il pane della settimana."}
-  - {id: f_nessuna_pecora, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "Stanotte dallo stazzo non manca nemmeno una pecora."}
+  - {id: f_nessuna_pecora, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "Dallo stazzo non manca nemmeno una pecora."}
   - {id: f_debito, noto_ai_pg: false, stato: confermato, entita: [png_berta], testo: "I Benni non hanno pagato la decima: alla prima neve il balivo si prende l'ovile."}
   - {id: f_tonio_motivo, noto_ai_pg: false, stato: confermato, entita: [n_torre], testo: "Tonio vuole l'argento della cripta per pagare la decima della madre."}
   - {id: f_argento, noto_ai_pg: false, stato: confermato, entita: [n_torre], testo: "Nella cripta c'è davvero la cassa d'argento della guarnigione."}
   - {id: f_zirra_inganno, noto_ai_pg: false, stato: confermato, entita: [png_zirra], testo: "Zirrà vuole tenersi tutto l'argento e portarsi via Tonio come ostaggio."}
-  - {id: f_ugo_frodo, noto_ai_pg: false, stato: confermato, entita: [png_ugo], testo: "Stanotte Ugo era a caccia di frodo nella riserva, sotto la torre."}
+  - {id: f_ugo_frodo, noto_ai_pg: false, stato: confermato, entita: [png_ugo], testo: "La notte scorsa Ugo era a caccia di frodo nella riserva, sotto la torre."}
   - {id: f_ugo_visto, noto_ai_pg: false, stato: confermato, entita: [png_ugo], testo: "Ugo ha visto Tonio salire alla torre da solo, con il pane sotto il braccio."}
   - {id: f_postierla, noto_ai_pg: false, stato: confermato, entita: [n_carbonaia, n_torre], testo: "Dietro la carbonaia, sotto i rovi, una postierla crollata porta alla cantina della torre."}
   - {id: f_postierle_torri, noto_ai_pg: false, stato: confermato, entita: [n_torre], testo: "Sotto ogni torre di confine c'è una postierla, un passaggio basso verso il bosco per le sortite."}
@@ -39,14 +39,16 @@ canone:
   - {id: f_tonio_libero, noto_ai_pg: false, stato: confermato, entita: [n_torre], testo: "Nella torre Tonio non è legato: aiuta i goblin a scavare."}
   - {id: f_tonio_mercato, noto_ai_pg: false, stato: confermato, entita: [n_valdirame], testo: "Una settimana fa al mercato Tonio ha chiesto quanto vale l'argento vecchio coniato con la torre."}
   - {id: f_goblin_scrittura, noto_ai_pg: false, stato: confermato, entita: [png_zirra], testo: "I goblin non scrivono la lingua comune: incidono segni sul legno."}
+  - {id: f_monete_torre, noto_ai_pg: false, stato: confermato, entita: [n_torre], testo: "Le monete della paga hanno la torre coniata: in valle chi le spende si fa riconoscere dal balivo."}
   - {id: f_fossa, noto_ai_pg: false, stato: confermato, entita: [n_carbonaia], testo: "A metà del sentiero dei goblin c'è una fossa coperta di frasche."}
   - {id: f_cani_fienile, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "Stamattina i cani dei Benni erano chiusi nel fienile, con la sbarra calata da fuori."}
   - {id: f_pali_tonio, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "I nomi delle pecore sui pali del cancello li ha incisi Tonio."}
   - {id: f_lettere_tonio, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "Tonio scrive con le erre rovesciate, come gli ha insegnato il vecchio curato."}
 
 # Il meccanismo del climax, una riga per stato (ogni testo che lo nomina va riletto contro queste righe):
-#   chiave nella serratura e girata: la porta di ferro della cripta si apre;
-#   senza chiave: la porta tiene, e Zirrà la prende a colpi fino all'alba senza aprirla;
+#   chiave dei Benni girata nella serratura, oppure un grimaldello riuscito: la porta di ferro della cripta si apre;
+#   senza l'una e senza l'altro: la porta tiene; Zirrà la prende a colpi, e prima dell'alba rinuncia e scende a
+#   bruciare il fienile dei Benni;
 #   cripta aperta: dentro c'è la cassa d'argento, che pesa quanto un uomo e si porta in due.
 orologi:
   - id: o_mezzanotte
@@ -54,25 +56,24 @@ orologi:
     pericolo: p_zirra
     segmenti: 8
     pieni_all_inizio: 0
-    # Orologio di tutta la sessione, attivo in tutte e tre le scene: un segno ogni sette risposte al massimo
-    # nelle prime due (circa due segni per scena), poi alla torre sale ad almeno sei e corre un segno ogni otto,
-    # così il pieno (e con lui il finale del Motore) arriva dopo lo scontro, non durante.
-    segno_almeno_ogni: 7
+    # Orologio della sera, attivo all'ovile e alla carbonaia (un segno ogni nove risposte al massimo). Alla torre non
+    # è attivo: là è già mezzanotte, e un orologio pieno farebbe dire al Motore un finale nel mezzo dello scontro.
+    segno_almeno_ogni: 9
     segno_al_massimo_ogni: 2
     segni:
       - "Dal crinale scende un corno di capra, lungo e stonato."
-      - "In cima alla Torre Mozza si accende un fuoco, piccolo come una stella."
+      - "Nella Torre Mozza si accende un fuoco, e i muri rotti si arrossano."
       - "I cani di Spinalba abbaiano tutti insieme, poi tacciono di colpo."
       - "La luna esce dalle nuvole e fa bianca la torre sul crinale."
       - "Due colpi di corno, corti e vicini: i goblin chiamano."
-      - "Lassù comincia a battere un tamburo, lento, e non smette più."
-      - "Il fuoco sulla torre si alza alto, e il tamburo accelera."
+      - "Lassù comincia a battere un tamburo, lento e sordo."
+      - "Il fuoco della torre divampa, e le scintille volano oltre i muri."
       - "Tre colpi di corno: è mezzanotte, e la torre aspetta la chiave."
     avanza_quando:
-      - "almeno un segno ogni sette risposte nell'ovile e alla carbonaia, ogni otto alla torre: il Motore scrive «mostralo in questa risposta»"
-      - "entrando nella torre sale ad almeno sei"
+      - "almeno un segno ogni nove risposte, all'ovile e alla carbonaia: il Motore scrive «mostralo in questa risposta»"
+      - "alla torre l'orologio non corre: la mezzanotte è arrivata"
       - "mai due segni nella stessa risposta"
-    al_completo: "È mezzanotte e Zirrà vuole la chiave. Se gliela portano, tratta: apre la cripta, prende l'argento e prova a tenersi anche il ragazzo, e con Grosso attacca chi la ferma. Se la chiave non arriva, prende a colpi la porta di ferro senza aprirla e prima dell'alba scende a bruciare il fienile dei Benni. Se i PG sono già nella torre, con la chiave in mano tratta, senza la chiave attacca. Ogni risposta costa: la chiave consegnata è l'argento perso, la chiave tenuta è lo scontro."
+    al_completo: "È mezzanotte e i PG non sono ancora alla torre. Zirrà manda il corno tre volte, poi prende a colpi la porta di ferro senza aprirla, e prima dell'alba scende con Grosso a bruciare il fienile dei Benni. Chi sale adesso la trova furiosa: con la chiave in mano tratta, senza la chiave attacca. Ogni risposta costa: la chiave consegnata è l'argento perso, la chiave tenuta è lo scontro."
 
 preparazione:
   fronti:
@@ -85,7 +86,7 @@ preparazione:
           impulso: "riscuotere"
           destino_incombente: "Alla prima neve il balivo si prende l'ovile dei Benni con tutto il gregge."
           presagi:
-            - {testo: "Il balivo inchioda l'avviso della decima sulla porta dei Benni.", segno_visibile: "Un foglio con il sigillo rosso, dentro la porta di casa."}
+            - {testo: "Il balivo manda ai Benni l'avviso della decima non pagata.", segno_visibile: "Un foglio con il sigillo rosso, dentro la porta di casa."}
             - {testo: "Il balivo manda a contare le pecore dello stazzo.", segno_visibile: "Un uomo con una tavoletta di cera al cancello."}
           mosse: ["inchioda un avviso", "manda a contare il gregge", "sequestra le pecore alla prima neve"]
           cast: []
@@ -134,7 +135,7 @@ preparazione:
     obiettivo: "Prendere tutto l'argento della cripta e tenersi Tonio per un secondo riscatto."
     cronologia_se_i_pg_non_intervengono:
       - "All'imbrunire suona il corno, per ricordare la scadenza al paese."
-      - "Verso le dieci accende il fuoco sulla torre e fa battere il tamburo a Grosso."
+      - "Al tramonto accende il fuoco nella torre; più tardi fa battere il tamburo a Grosso."
       - "A mezzanotte Berta sale con la chiave; Zirrà apre la cripta e lega Tonio sul serio."
       - "Prima dell'alba scende con Grosso e la cassa, e dà fuoco al fienile dei Benni per coprirsi la fuga."
       - "All'alba il paese trova la cripta vuota e Tonio sparito, e sale al bosco a cercare Ugo."
@@ -166,7 +167,7 @@ preparazione:
     - "Nella capanna di Ugo c'è un cervo della riserva appeso a una trave, ancora caldo."
 
   archi:
-    campagna_tre_atti: ["L'ovile: chi ha preso Tonio?", "Il bosco: chi dice la verità su stanotte?", "La torre: che cosa si racconta al paese?"]
+    campagna_tre_atti: ["L'ovile: chi ha preso Tonio?", "Il bosco: chi dice il vero sulla notte scorsa?", "La torre: che cosa si racconta al paese?"]
     pg:
       pg_livia: {tu: "guerriera della milizia, abituata a obbedire", bisogno: "decidere da sola che cosa è giusto", vai: "sale alla torre per Berta", cerca: "il rapitore del ragazzo", trova: "un ragazzo che ha mentito per amore", paga: "la scelta tra la legge della valle e la pietà", ritorna: "all'ovile prima dell'alba", cambia: "sa che una regola giusta può schiacciare un innocente"}
       pg_fulco: {tu: "chierico nano venuto a benedire gli ovili", bisogno: "essere utile a gente che non è la sua", vai: "dalla benedizione all'ovile alla torre", cerca: "la pietra viva sotto la rovina", trova: "la postierla e la porta della cripta", paga: "il rischio dello scontro, con il ragazzo in mezzo", ritorna: "con Tonio vivo", cambia: "capisce che a volte la carità è tacere"}
@@ -177,7 +178,7 @@ preparazione:
     eventi:
       - {id: t_lite, quando: {anni_fa: 9}, cosa: "Il marito di Berta accusa Ugo del furto di tre pecore, e non si prova niente.", fatti: [f_lite_vecchia]}
       - {id: t_goblin, quando: {giorni_fa: 21}, cosa: "La banda di Zirrà si prende la Torre Mozza.", fatti: [f_goblin_torre]}
-      - {id: t_avviso, quando: {giorni_fa: 10}, cosa: "Il balivo inchioda sulla porta dei Benni l'avviso della decima non pagata.", fatti: [f_debito]}
+      - {id: t_avviso, quando: {giorni_fa: 10}, cosa: "Il messo del balivo porta ai Benni l'avviso della decima non pagata; Berta lo inchioda dentro casa, sotto un mantello.", fatti: [f_debito]}
       - {id: t_mercato, quando: {giorni_fa: 7}, cosa: "Al mercato di Valdirame Tonio chiede quanto vale l'argento vecchio coniato con la torre.", fatti: [f_tonio_mercato, f_tonio_motivo]}
       - {id: t_pane_1, quando: {giorni_fa: 3, ora: "23:00"}, cosa: "Tonio sale alla torre con il pane e fa il patto con Zirrà; dal bosco Ugo lo vede passare.", fatti: [f_tonio_pane, f_tonio_complice, f_ugo_visto]}
       - {id: t_rientro_1, quando: {giorni_fa: 2, ora: "05:00"}, cosa: "Tonio è di nuovo nel fienile, prima che la madre si alzi."}
@@ -215,10 +216,10 @@ rivelazioni:
   - id: r_postierla
     chiave: false
     conclusione: "Dalla carbonaia si entra nella torre di nascosto, per una postierla sotto i rovi."
-    indizi: [i_rovi, i_ugo_postierla]
+    indizi: [i_rovi]
   - id: r_ugo
     chiave: false
-    conclusione: "Ugo non c'entra con i goblin: stanotte era a caccia di frodo nella riserva."
+    conclusione: "Ugo non c'entra con i goblin: la notte scorsa era a caccia di frodo nella riserva."
     indizi: [i_cervo, i_ugo_frodo]
 
 colli_di_bottiglia_nota: "Tutte le soluzioni funzionano se i PG le tentano. Il narratore non suggerisce quelle segnate «solo se la propone chi la conosce» o «solo se la trovano»."
@@ -234,7 +235,7 @@ colli_di_bottiglia:
     ostacolo: "La fossa coperta di frasche sul sentiero dei goblin."
     soluzioni:
       - "Notarla cercando trappole, oppure seguendo le impronte, che la scavalcano."
-      - "Farsi guidare da Ugo, che quel sentiero lo fa ogni notte."
+      - "Chiedere a Ugo com'è il sentiero: conosce le frasche a metà salita."
       - "Non passare dal sentiero: la postierla, o il muro crollato."
       - "Caderci dentro: chi tira salvezza contro la morte si aggrappa al bordo; chi lo fallisce cade, si fa male e fa rumore."
   - id: cb_tonio
@@ -255,15 +256,15 @@ nodi:
   - {id: n_valdirame, tipo: luogo, nome: "Valdirame", noto_ai_pg: true, prossima_sessione: true,
      abbozzo: "Il borgo del mercato e del balivo, a quattro ore di cammino giù per la valle.", collegamenti: []}
   - {id: png_berta, tipo: png, scheda: png/png_berta.yaml, collegamenti: [n_ovile], indizi: [i_berta_debito]}
-  - {id: png_ugo, tipo: png, scheda: png/png_ugo.yaml, collegamenti: [n_ovile, n_carbonaia], indizi: [i_ugo_racconta, i_ugo_frodo, i_ugo_postierla]}
+  - {id: png_ugo, tipo: png, scheda: png/png_ugo.yaml, collegamenti: [n_ovile, n_carbonaia], indizi: [i_ugo_racconta, i_ugo_frodo]}
   - {id: png_zirra, tipo: png, scheda: png/png_zirra.yaml, collegamenti: [n_torre], indizi: []}
   - {id: png_grosso, tipo: png, scheda: png/png_grosso.yaml, collegamenti: [n_torre], indizi: [i_grosso]}
 
 sessione:
-  riassunto_iniziale: "Spinalba è un borgo di pastori sotto la Torre Mozza. Da tre settimane, nella torre in rovina, ci sono i goblin. Stanotte è sparito Tonio, il figlio della pastora Berta, e sulla porta è comparsa una lavagna."
+  riassunto_iniziale: "Spinalba è un borgo di pastori sotto la Torre Mozza. Da tre settimane, nella torre in rovina, ci sono i goblin. La notte scorsa è sparito Tonio, il figlio della pastora Berta, e sulla porta è comparsa una lavagna."
   cinque_stanze:
     ingresso_o_guardiano: "L'ovile dei Benni: Berta con la chiave in pugno, e Ugo accusato davanti a tutti."
-    enigma_o_sfida_sociale: "Chi dice il vero su stanotte: la madre, il carbonaio, la lavagna?"
+    enigma_o_sfida_sociale: "Chi dice il vero sulla notte scorsa: la madre, il carbonaio, la lavagna?"
     trucco_o_battuta_d_arresto: "Il sentiero dei goblin con la fossa coperta, e la postierla sotto i rovi."
     climax: "La torre a mezzanotte: Zirrà, Grosso e la porta di ferro della cripta."
     ricompensa_o_colpo_di_scena: "Tonio non era un prigioniero: che cosa si racconta a Spinalba?"

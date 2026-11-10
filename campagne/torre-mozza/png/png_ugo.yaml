@@ -31,7 +31,7 @@ personalita:
 desiderio: "Vendere il carbone d'inverno senza che il paese gli faccia domande."
 paura: "Che il balivo scopra le sue cacce nella riserva e gli tolga il bosco."
 segreto:
-  testo: "Va a caccia di frodo nella riserva del signore, e stanotte, appostato sotto la torre, ha visto Tonio salire da solo."
+  testo: "Va a caccia di frodo nella riserva del signore, e la notte scorsa, appostato sotto la torre, ha visto Tonio salire da solo."
   chi_altro_sa: []
   se_rivelato: "Se lo sa il balivo, Ugo perde il diritto al bosco e paga la multa; se lo sa il paese, Ugo ha il suo alibi."
 voce:
@@ -48,9 +48,9 @@ crede_a_torto:
   - {testo: "Il ragazzo va lassù a rubare ai goblin, come un ladruncolo.", contraddice: f_tonio_motivo}
 mente_su:
   - id: ugo_notte
-    argomento: "dove era stanotte"
+    argomento: "dove era la notte scorsa"
     verita: f_ugo_frodo
-    versione: "Stanotte? Alla carbonaia, il fuoco non si lascia."
+    versione: "Ieri notte? Alla carbonaia, il fuoco non si lascia."
     perche: "La caccia nella riserva gli costa il bosco e la multa del balivo."
     segnale: "si toglie il cappello e se lo rigira tra le mani"
     cede_se: "Dice la verità quando un PG gli mostra il cervo trovato nella capanna. Oppure in privato, se un PG gli promette di non dirlo al balivo."
@@ -59,7 +59,7 @@ mente_su:
     verita: f_ugo_visto
     versione: "Io non vedo niente. Guardo il fuoco, io."
     perche: "Nessuno in paese gli crederebbe, e per dirlo dovrebbe spiegare che cosa ci faceva sotto la torre."
-    segnale: "guarda verso la torre e sputa per terra"
+    segnale: "si gratta la barba bruciacchiata e guarda altrove"
     cede_se: "Racconta ciò che ha visto in privato, sottovoce, dove nessuno del paese lo sente. Oppure quando un PG gli descrive le impronte del ragazzo sul sentiero."
 atteggiamento_pg:
   pg_livia: {stato: indifferente, perche: "una soldata con la croce della milizia: per lui è gente del balivo", vuole: "che non metta il naso nella sua capanna"}
@@ -70,7 +70,7 @@ relazioni:
   png_berta: "la vedova di chi lo accusò delle tre pecore"
   Tonio: "il ragazzo che a volte gli porta il latte, e che ha visto salire alla torre"
   png_zirra: "i goblin della torre, che gli rubano la legna"
-info_chiave: [i_ugo_racconta, i_ugo_frodo, i_ugo_postierla]
+info_chiave: [i_ugo_racconta, i_ugo_frodo, i_rovi]
 iniziative:
   - "Se il paese lo accusa, se ne torna alla carbonaia prima che faccia buio."
   - "Se un PG lo aiuta con la carbonaia, gli indica la postierla sotto i rovi."

@@ -6,7 +6,7 @@ battute:
   - {id: ber_domanda_gentile, chi: png_berta, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Berta come sta", temi: [gentile], max_usi: 1,
      testo: ["[png_berta] Ho un figlio lassù. Chiedimelo domani."]}
   - {id: ber_accusa, chi: png_berta, tipo: reazione, solo_esempio: true, quando: "un PG accusa Berta di non dire tutto", temi: [accuso], max_usi: 1,
-     testo: ["[png_berta] Stanotte ho perso un figlio. Guarda il carbonaio, non me."]}
+     testo: ["[png_berta] Ieri notte ho perso un figlio. Guarda il carbonaio, non me."]}
   - {id: ber_minaccia, chi: png_berta, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Berta", temi: [minaccia], max_usi: 1,
      testo: ["[png_berta] Fuori dal mio cortile. Le pecore hanno più giudizio."]}
   - {id: ber_offerta, chi: png_berta, tipo: reazione, solo_esempio: true, quando: "un PG offre denaro a Berta", temi: [offerta], max_usi: 1,
@@ -32,9 +32,10 @@ battute:
     riempitivo: true
     quando: "nessuno dei PG si offre di salire alla torre"
     temi: [attesa]
+    richiede: {battute_non_usate: [ber_chiave, nar_chiave_presa]}
     testo:
-      - "[narratore] Berta stringe la chiave nel pugno e si alza dalla panca."
-      - "[png_berta] Se non sale nessuno, salgo io. A mezzanotte, con la chiave."
+      - "[narratore] Berta si alza dalla panca, con gli occhi sul crinale."
+      - "[png_berta] Se non sale nessuno, aspetto qui con la chiave. E all'alba sarò sola."
     max_usi: 1
 
   # Risposte a domande precise.
@@ -44,7 +45,7 @@ battute:
     quando: "un PG chiede a Berta dei cani"
     temi: [cani, abbaiato, abbaiare, abbaiano]
     testo:
-      - "[png_berta] Stanotte non hanno fatto un verso. Stamattina erano nel fienile, con la sbarra calata da fuori."
+      - "[png_berta] Ieri notte non hanno fatto un verso. Stamattina erano nel fienile, con la sbarra calata da fuori."
     effetti: {fatti_noti: [f_cani_fienile]}
     max_usi: 1
 
@@ -110,6 +111,7 @@ battute:
         - {prova: carisma}
         - {battute_usate: [ber_conti_fienile]}
         - {battute_usate: [ber_conti_foglio]}
+      battute_non_usate: [nar_chiave_presa]
     testo:
       - "[narratore] Berta si sfila il laccio dal collo e vi mette in mano la chiave."
       - "[png_berta] È fredda, la chiave. Riportami lui, non l'argento."
@@ -149,7 +151,7 @@ battute:
     temi: [avviso, foglio, sigillo, mostro]
     richiede: {indizi_rivelati: [i_avviso], battute_non_usate: [ber_conti_fienile]}
     testo:
-      - "[narratore] Berta guarda il sigillo rosso e smette di stringere la chiave."
+      - "[narratore] Berta guarda il sigillo rosso e si siede sul gradino."
       - "[png_berta] Sì, la decima. Non l'ho pagata. Alla prima neve si prendono tutto. Tonio lo sa."
     effetti: {rivela_indizi: [i_berta_debito], fatti_noti: [f_debito]}
     max_usi: 1
@@ -158,15 +160,10 @@ battute:
   - id: ber_non_ci_crede
     chi: png_berta
     tipo: momento
-    quando: "un PG dice a Berta che il figlio non è un prigioniero dei goblin"
+    quando: "un PG dice a Berta che il figlio è salito alla torre da solo"
     temi: [volontà, accordo, d'accordo, complice, apposta]
-    richiede:
-      oppure:
-        - {indizi_rivelati: [i_impronte]}
-        - {indizi_rivelati: [i_ugo_racconta]}
-        - {indizi_rivelati: [i_tonio_libero]}
-        - {indizi_rivelati: [i_grosso]}
+    richiede: {indizi_rivelati: [i_ugo_racconta]}
     testo:
-      - "[narratore] Berta diventa bianca e stringe la chiave fino a farsi male."
+      - "[narratore] Berta diventa bianca e si appoggia allo stipite."
       - "[png_berta] Mio figlio? Con quelle bestie? Voglio sentirlo dire da lui."
     max_usi: 1

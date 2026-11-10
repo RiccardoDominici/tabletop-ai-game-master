@@ -26,6 +26,6 @@ battute:
     temi: [carne, cibo, mangiare, pane, salame, formaggio]
     testo:
       - "[narratore] Grosso prende il cibo, lo annusa e lo inghiotte in due morsi."
-      - "[png_grosso] Ragazzo venuto da solo. Porta pane."
+      - "[png_grosso] Ragazzo venuto da solo. Il pane lo porta lui."
     effetti: {rivela_indizi: [i_grosso], fatti_noti: [f_tonio_pane]}
     max_usi: 1

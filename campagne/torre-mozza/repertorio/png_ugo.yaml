@@ -42,6 +42,7 @@ battute:
     tipo: reazione
     quando: "un PG chiede a Ugo com'è il sentiero dei goblin"
     temi: [sentiero, salita, frasche, trappola]
+    scena: scena_carbonaia
     testo:
       - "[png_ugo] Occhio alle frasche, a metà salita. Sotto c'è il buco."
     effetti: {fatti_noti: [f_fossa]}
@@ -56,8 +57,8 @@ battute:
     scena: scena_carbonaia
     testo:
       - "[narratore] Ugo pianta la pala nella terra e indica i rovi con il mento."
-      - "[png_ugo] Lì sotto c'è il buco dei soldati. Porta in cantina, tu."
-    effetti: {rivela_indizi: [i_ugo_postierla], fatti_noti: [f_postierla]}
+      - "[png_ugo] Lì sotto c'è il buco dei soldati. Arriva fino in cantina."
+    effetti: {rivela_indizi: [i_rovi], fatti_noti: [f_postierla]}
     max_usi: 1
 
   # Le due menzogne, con il segnale in ogni versione.
@@ -68,7 +69,7 @@ battute:
     temi: [stanotte, dormito, dormivi, ieri]
     testo:
       - "[narratore] Ugo si toglie il cappello e se lo rigira tra le mani."
-      - "[png_ugo] Stanotte? Alla carbonaia, il fuoco non si lascia."
+      - "[png_ugo] Ieri notte? Alla carbonaia, il fuoco non si lascia."
     varianti:
       - ["[narratore] Ugo si toglie il cappello e se lo rigira tra le mani.", "[png_ugo] L'ho già detto. Alla carbonaia."]
     effetti: {menzogna_detta: ugo_notte}
@@ -80,10 +81,10 @@ battute:
     quando: "un PG chiede a Ugo se ha visto qualcuno sul sentiero della torre"
     temi: [visto, vedere, passare, passato, qualcuno]
     testo:
-      - "[narratore] Ugo guarda verso la torre e sputa per terra."
+      - "[narratore] Ugo si gratta la barba bruciacchiata e guarda altrove."
       - "[png_ugo] Io non vedo niente. Guardo il fuoco, io."
     varianti:
-      - ["[narratore] Ugo guarda verso la torre e sputa per terra.", "[png_ugo] Niente. Il fuoco, guardo."]
+      - ["[narratore] Ugo si gratta la barba bruciacchiata e guarda altrove.", "[png_ugo] Niente. Il fuoco, guardo."]
     effetti: {menzogna_detta: ugo_sentiero}
     max_usi: 2
 
@@ -103,12 +104,12 @@ battute:
   - id: ugo_notte_promessa
     chi: png_ugo
     tipo: confessione
-    quando: "in privato, un PG promette a Ugo di non parlare al balivo"
+    quando: "in privato, un PG promette a Ugo di tenere per sé ciò che dirà"
     temi: [prometto, giuro, balivo, parola]
     richiede: {privata: true, battute_non_usate: [ugo_notte_cervo]}
     testo:
-      - "[narratore] Ugo vi guarda a lungo, poi abbassa la voce."
-      - "[png_ugo] Stanotte ero nella riserva. A caccia. Tu non hai sentito niente."
+      - "[narratore] Ugo ti guarda a lungo, poi abbassa la voce."
+      - "[png_ugo] Ieri notte ero nella riserva. A caccia. Tu non hai sentito niente."
     effetti: {rivela_indizi: [i_ugo_frodo], fatti_noti: [f_ugo_frodo]}
     max_usi: 1
 

@@ -33,7 +33,7 @@ battute:
     quando: "un PG mostra la chiave a Zirrà o propone uno scambio"
     temi: [chiave, scambio, scambiare, consegno, consegnare]
     testo:
-      - "[narratore] Zirrà allunga la mano libera, a palmo in su, e schiocca le dita verso la cantina."
+      - "[narratore] Zirrà pianta la spada corta tra due pietre e allunga la mano, a palmo in su. Poi schiocca le dita verso la cantina."
       - "[narratore] Il ragazzo si alza da solo, e la corda gli scivola dai polsi."
       - "[png_zirra] Prima la chiave, poi il ragazzo. Buttala qui, ai miei piedi."
     effetti: {rivela_indizi: [i_tonio_libero]}
@@ -67,7 +67,7 @@ battute:
     tipo: momento
     quando: "la cripta è aperta e un PG si avvicina alla cassa"
     temi: [cassa, argento, monete, forziere]
-    richiede: {battute_usate: [nar_cripta], battute_non_usate: [zir_patto]}
+    richiede: {battute_non_usate: [zir_patto, zir_resa], oppure: [{battute_usate: [nar_cripta]}, {battute_usate: [nar_cripta_grimaldello]}]}
     testo:
       - "[narratore] Zirrà afferra il ragazzo per il colletto e lo tira dietro lo scudo."
       - "[png_zirra] Mia la cassa, e mio il ragazzo. Fuori, tutti quanti."

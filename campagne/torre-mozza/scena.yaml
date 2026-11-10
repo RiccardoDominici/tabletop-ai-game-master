@@ -20,7 +20,7 @@ elementi_interattivi:
   - {cosa: "ciò che manca dal giaciglio", dove: "nel fienile", azioni: "NASCOSTA: mancano gli stivali buoni, il mantello e il pane della settimana"}
   - {cosa: "i cani", dove: "chiusi nel fienile", azioni: "si calmano, si fanno uscire, si seguono"}
   - {cosa: "il cancello dello stazzo", dove: "a sinistra del cortile, tra i pali scolpiti", azioni: "si esamina il chiavistello, si contano le pecore"}
-  - {cosa: "il chiavistello dello stazzo", dove: "sul cancello", azioni: "NASCOSTA: è stato alzato da dentro, senza segni di forza, e non manca nemmeno una pecora"}
+  - {cosa: "le pecore dello stazzo", dove: "dentro il recinto", azioni: "NASCOSTA: ci sono tutte, non manca nemmeno un agnello"}
   - {cosa: "i pali del cancello", dove: "ai lati del cancello", azioni: "si leggono i nomi delle pecore incisi col coltello"}
   - {cosa: "le lettere dei pali", dove: "sui pali del cancello", azioni: "NASCOSTA: le erre sono rovesciate, come sulla lavagna"}
   - {cosa: "la porta di casa", dove: "sotto il portico", azioni: "si entra; dietro il battente è appeso un mantello da pastore"}
@@ -45,7 +45,7 @@ indizi:
     essenziale: false
     tiro: "nessuno"
     modi: 2
-    come_si_trova: "Chi fa uscire i cani li vede correre al sentiero del bosco scodinzolando, senza ringhiare, come dietro a uno di casa. Arriva anche da solo, con la mossa morbida."
+    come_si_trova: "Chi fa uscire i cani li vede correre al sentiero del bosco scodinzolando, senza ringhiare, come dietro a uno di casa. Arriva anche da solo, con una battuta d'attesa: un cane apre la porta del fienile e corre al sentiero."
     vincolo_pubblico: "I cani dei Benni sono chiusi nel fienile e guaiscono; quando escono non ringhiano."
   - id: i_lavagna
     conclusione: r_tonio
@@ -72,7 +72,7 @@ indizi:
     essenziale: false
     tiro: "nessuno"
     modi: 1
-    come_si_trova: "Chi esamina il cancello dello stazzo vede che il chiavistello è stato alzato da dentro, senza segni di forza; chi conta le pecore le trova tutte."
+    come_si_trova: "Chi esamina lo stazzo vede il cancello intero e il chiavistello al suo posto, e chi conta le pecore le trova tutte: chi ha preso il ragazzo non ha preso nemmeno un agnello."
     vincolo_pubblico: "Il cancello dello stazzo è chiuso e intero, e le pecore sono dentro."
   - id: i_avviso
     conclusione: r_debito
@@ -93,11 +93,11 @@ indizi:
     come_si_trova: "Quando Berta cede sulla decima: in privato, nel fienile; oppure davanti all'avviso del balivo, se i PG l'hanno trovato."
 vincoli_pubblici:
   - "Berta porta la chiave di ferro al collo, appesa a un laccio di cuoio, e non la toglie."
-  - "Ugo è sceso in paese a vendere il carbone; quando fa buio torna alla carbonaia."
+  - "Ugo è sceso in paese a vendere il carbone; prima che faccia buio torna alla carbonaia, che di notte non si lascia."
 uscite:
   - {verso: n_carbonaia, segnalata_da: [i_cani, i_giaciglio, i_recinto]}
   - {verso: n_torre, segnalata_da: [i_lavagna, i_giaciglio, i_cani]}
-mossa_morbida_pronta: "Un cane spalanca con il muso la porta del fienile e corre al sentiero del bosco, scodinzolando. Al limite degli alberi si ferma, si volta e aspetta."
+mossa_morbida_pronta: "Dal fienile un cane abbaia una volta sola, verso il bosco. Poi tace, e si sente solo il vento."
 apertura: "All'ovile l'aria sa di lana bagnata, e dal fienile guaiscono i cani. Berta vi aspetta sotto il portico, con una chiave di ferro stretta nel pugno. Al cancello Ugo il carbonaio sputa per terra: chi di voi parla per primo?"
 musica: {tag: esplorazione_tesa, transizione: "resta esplorazione_tesa; verso inseguimento se i PG corrono al bosco dietro ai cani"}
 immagine:
@@ -110,9 +110,10 @@ audio:
   umore_iniziale: esplorazione_tesa
 taglio: "La scena si chiude quando i PG partono per il bosco o per la torre, con la chiave o senza. Ugo torna comunque alla carbonaia prima di loro, perché una carbonaia accesa non si lascia sola: se i PG lo accusano, il paese lo lascia andare lo stesso, a male parole. Se Berta non affida la chiave, la tiene al collo e resta all'ovile ad aspettare. Se i PG esitano, il corno della torre e i cani che scappano verso il sentiero li spingono a partire."
 esiti:
+  - {id: es_ovile_mezzanotte, descrizione: "Arriva la mezzanotte mentre i PG sono ancora all'ovile.", finale: fin_ovile_mezzanotte}
   - {id: es_ovile_chiave, descrizione: "I PG partono per il bosco con la chiave di Berta.", finale: fin_ovile_chiave}
   - {id: es_ovile_senza, descrizione: "I PG partono per il bosco senza la chiave: Berta la tiene al collo.", finale: fin_ovile_senza}
 prove:
-  - {id: p_berta_chiave, quando: "un PG chiede a Berta di affidargli la chiave", caratteristica: carisma, difficolta: normale, se_fallisce: "Berta stringe la chiave e dice che a mezzanotte salirà lei, da sola", parole: [chiave, affidare, consegnare]}
+  - {id: p_berta_chiave, quando: "un PG chiede a Berta di affidargli la chiave", caratteristica: carisma, difficolta: normale, se_fallisce: "Berta stringe la chiave e dice che non la dà a nessuno: aspetterà sulla soglia che le riportino il figlio", parole: [chiave, affidare, consegnare]}
   - {id: p_cani, quando: "un PG calma i cani e li segue fino al bosco", caratteristica: saggezza, difficolta: facile, indizio: i_cani, se_fallisce: "i cani scappano tra gli alberi e non tornano: il PG resta solo sul sentiero buio", parole: [cani, seguo, fiuto]}
-  - {id: p_lettere, quando: "un PG confronta le lettere della lavagna con altre scritte del cortile", caratteristica: intelligenza, difficolta: facile, indizio: i_pali, se_fallisce: "con questa luce le lettere sembrano tutte uguali", parole: [lettere, scrittura, confronto]}
+  - {id: p_lettere, quando: "un PG confronta le lettere della lavagna con altre scritte del cortile", caratteristica: intelligenza, difficolta: facile, indizio: i_pali, se_fallisce: "con questa luce le lettere si confondono, e intanto Ugo carica il mulo e se ne va verso il bosco", parole: [lettere, scrittura, confronto]}

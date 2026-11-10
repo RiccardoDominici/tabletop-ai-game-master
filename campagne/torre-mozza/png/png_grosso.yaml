@@ -8,16 +8,16 @@ ruolo: "hobgoblin, guardaspalle di Zirrà; un ostacolo che si può comprare con 
 fronte: fronte_torre
 scheda:
   # Hobgoblin (p. 113): Classe d'Armatura 14 (pelli e scudo di legno), un dado vita, quindi bonus d'attacco +1 e
-  # 1d8 punti ferita (qui 6). Un'arma 1d8. Salva come guerriero di livello 1 (12, 13, 14, 15, 17). Morale 8.
+  # 1d8 punti ferita (qui 7). Un'arma 1d8. Salva come guerriero di livello 1 (12, 13, 14, 15, 17). Morale 8.
   caratteristiche: {forza: 0, intelligenza: 0, saggezza: 0, destrezza: 0, costituzione: 0, carisma: 0}
   abilita: {mischia: 1, distanza: 1, ts_morte: 5, ts_bacchette: 4, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 0}
-  pf: 6
+  pf: 7
   difesa: 14
   morale: 8
   attacchi:
     - {nome: "Mazza ferrata", danno: "1d8", abilita: mischia}
 aspetto:
-  lettura: "Un hobgoblin alto come un uomo, con la pelle color fango e mezzo orecchio mozzato. Porta una pelle d'orso sulle spalle e una mazza ferrata."
+  lettura: "Un hobgoblin alto come un uomo, con il muso color fango e mezzo orecchio mozzato. Porta una pelle d'orso sulle spalle e una mazza ferrata."
   invarianti: ["hobgoblin alto come un uomo", "pelle color fango", "mezzo orecchio sinistro mozzato", "pelle d'orso sulle spalle", "mazza ferrata", "scudo di legno"]
   prompt_immagine: "big hobgoblin the size of a man, mud-brown skin, half of the left ear cut off, a bear pelt over the shoulders, a wooden shield and a spiked club, gnawing a mutton bone by a campfire inside a ruined tower, [STILE]"
 personalita:

@@ -5,7 +5,7 @@ nodo: n_carbonaia
 nome: "La carbonaia di Ugo, a notte"
 descrizione: "Una radura nel bosco di faggi, mezz'ora sotto la torre. In mezzo fuma la carbonaia, una cupola di terra alta due uomini; accanto c'è la capanna di frasche di Ugo, con il mulo legato. Da un lato sale il sentiero dei goblin verso la torre; dietro la carbonaia, contro la roccia, c'è un muro di rovi. Chi sente che cosa: nella radura si sente tutto. Accanto alla carbonaia il sibilo del fuoco copre le voci: chi parla lì sottovoce non è sentito dalla capanna né dal sentiero."
 scopo: {tipo: rivelare_indizio, rif: i_impronte}
-domanda_drammatica: "Ugo dirà ai PG che cosa ha visto stanotte?"
+domanda_drammatica: "Ugo aiuterà i PG a raggiungere la torre?"
 posta:
   si_guadagna: {cosa: "Il racconto di Ugo e la strada nascosta per la torre.", per_chi: [png_ugo, pg_fulco]}
   si_perde: {cosa: "La caccia di Ugo, se viene fuori davanti a chi la racconterà al balivo.", per_chi: [png_ugo]}
@@ -49,17 +49,9 @@ indizi:
     nodo: n_carbonaia
     essenziale: false
     tiro: "nessuno"
-    modi: 1
-    come_si_trova: "Chi guarda il fumo della carbonaia lo vede piegarsi e sparire dentro i rovi. Chi scosta i rovi sente un'aria fredda e trova pietre squadrate e un arco basso, mezzo crollato."
+    modi: 2
+    come_si_trova: "Chi guarda il fumo della carbonaia lo vede piegarsi e sparire dentro i rovi; chi scosta i rovi sente un'aria fredda e trova pietre squadrate e un arco basso, mezzo crollato. Oppure Ugo indica i rovi a chi lo aiuta a tappare la carbonaia, o gli chiede un consiglio sulla torre."
     vincolo_pubblico: "Dietro la carbonaia c'è un muro di rovi alto due uomini."
-  - id: i_ugo_postierla
-    conclusione: r_postierla
-    tipo: png
-    nodo: png_ugo
-    essenziale: false
-    tiro: "nessuno"
-    modi: 1
-    come_si_trova: "Se un PG lo aiuta a tappare la carbonaia, o gli chiede come si entra nella torre senza farsi vedere, Ugo indica i rovi: lì sotto c'è il buco dei soldati, che porta alla cantina."
   - id: i_cervo
     conclusione: r_ugo
     tipo: oggetto
@@ -80,10 +72,10 @@ indizi:
 vincoli_pubblici:
   - "Ugo resta alla carbonaia tutta la notte, perché una carbonaia accesa va sorvegliata."
 uscite:
-  - {verso: n_torre, segnalata_da: [i_impronte, i_rovi, i_ugo_postierla]}
+  - {verso: n_torre, segnalata_da: [i_impronte, i_rovi, i_ugo_racconta]}
   - {verso: n_ovile, segnalata_da: [i_impronte, i_ugo_racconta, i_cervo]}
-mossa_morbida_pronta: "La carbonaia sbuffa, e da una crepa esce una lingua di fuoco. Ugo corre con la pala e impreca: da solo non ce la fa."
-apertura: "La radura della carbonaia è calda, e il fumo sa di legna dolce. Il mulo sbuffa legato alla capanna, e sopra gli alberi si vede la torre, nera sul cielo. Ugo è accanto alla carbonaia, con la pala in mano: che cosa fate?"
+mossa_morbida_pronta: "Il mulo tira la corda e scalcia, con le orecchie dritte verso la torre."
+apertura: "La radura della carbonaia è calda, e il fumo sa di legna dolce. Il mulo scuote la testa, legato alla capanna, e sopra gli alberi si vede la torre, nera sul cielo. Ugo è accanto alla carbonaia, con la pala in mano: che cosa fate?"
 musica: {tag: esplorazione_tesa, transizione: "resta esplorazione_tesa; verso inseguimento se i PG salgono di corsa verso la torre"}
 immagine:
   invarianti: ["radura nel bosco di faggi", "carbonaia fumante a cupola di terra", "capanna di frasche con un mulo legato", "muro di rovi contro la roccia", "torre mozza nera sul cielo, sopra gli alberi"]
@@ -93,12 +85,12 @@ audio:
   ambiente: [bosco, {tag: fuoco, volume: 0.4}]
   interno: false
   umore_iniziale: esplorazione_tesa
-taglio: "La scena si chiude quando i PG salgono alla torre, per il sentiero o per un'altra via. Se aiutano Ugo con la carbonaia, lui li ripaga con un consiglio; se lo accusano, tace e torna alla pala. Ugo resta comunque alla carbonaia. Se i PG esitano, il tamburo della torre e la carbonaia che sbuffa li spingono a decidere."
+taglio: "La scena si chiude quando i PG salgono alla torre, per il sentiero o per un'altra via. Se aiutano Ugo con la carbonaia, lui li ripaga con un consiglio; se lo accusano, tace e torna alla pala. Ugo resta comunque alla carbonaia. Se i PG esitano, il corno della torre e la carbonaia che sbuffa li spingono a decidere."
 esiti:
+  - {id: es_carbonaia_mezzanotte, descrizione: "Arriva la mezzanotte mentre i PG sono ancora alla carbonaia.", finale: fin_carbonaia_mezzanotte}
   - {id: es_postierla, descrizione: "I PG entrano nella torre dalla postierla sotto i rovi.", finale: fin_carbonaia_cunicolo}
   - {id: es_sentiero, descrizione: "I PG salgono alla torre per il sentiero dei goblin.", finale: fin_carbonaia_sentiero}
 prove:
-  - {id: p_fossa_cercare, quando: "un PG cerca trappole sul sentiero dei goblin", abilita: trappole, difficolta: normale, se_fallisce: "non vede niente: le frasche restano frasche", parole: [trappola, trappole, frasche]}
-  - {id: p_fossa_salvezza, quando: "un PG mette il piede sulle frasche a metà salita", abilita: ts_morte, difficolta: normale, se_fallisce: "cade nella fossa: si fa male alle gambe, e il tonfo arriva fino alla torre", parole: [salto, aggrappo, fossa]}
-  - {id: p_rovi, quando: "un PG cerca un passaggio dietro i rovi", abilita: cercare, difficolta: facile, indizio: i_rovi, se_fallisce: "si graffia mani e faccia e non trova niente, per ora", parole: [rovi, passaggio, scosto]}
-  - {id: p_ugo_parla, quando: "un PG convince Ugo a parlare di stanotte", caratteristica: carisma, difficolta: difficile, se_fallisce: "Ugo sputa nel fuoco e torna alla pala", parole: [convinco, stanotte, parla]}
+  - {id: p_fossa_cercare, quando: "un PG cerca trappole sul sentiero dei goblin", abilita: trappole, difficolta: normale, se_fallisce: "non vede niente, e chi va in testa mette il piede sulle frasche: tocca a lui il salvezza", parole: [trappola, trappole, frasche]}
+  - {id: p_fossa_salvezza, quando: "un PG mette il piede sulle frasche a metà salita", abilita: ts_morte_destrezza, difficolta: normale, se_fallisce: "cade nella fossa: si fa male alle gambe, e il tonfo arriva fino alla torre", parole: [salto, aggrappo, fossa]}
+  - {id: p_rovi, quando: "un PG cerca un passaggio dietro i rovi", abilita: cercare, difficolta: facile, indizio: i_rovi, se_fallisce: "si graffia mani e faccia, e intanto la carbonaia sbuffa fuoco: Ugo chiama aiuto", parole: [rovi, passaggio, scosto]}

@@ -5,7 +5,7 @@
 # punteggio è nel commento); i tiri salvezza, le abilità del ladro e le possibilità «su 1d6» sono bonus sul d20
 # contro 17 (bonus = 17 − numero della tabella; percentuale / 5 − 4). Bonus d'attacco +1 a tutti al primo livello.
 # Punti ferita: dado vita al massimo più la Costituzione (decisione nel brief).
-situazione_comune: "Siete arrivati a Spinalba all'imbrunire, ognuno per la sua strada, e la pastora Berta Benni vi ha chiamati al suo ovile. In paese dicono che stanotte i goblin della Torre Mozza le hanno preso il figlio, e che vogliono la chiave di famiglia entro mezzanotte."
+situazione_comune: "Siete arrivati a Spinalba all'imbrunire, ognuno per la sua strada, e la pastora Berta Benni vi ha chiamati al suo ovile. In paese dicono che la notte scorsa i goblin della Torre Mozza le hanno preso il figlio, e che vogliono la chiave di famiglia entro mezzanotte."
 personaggi:
   - id: pg_livia
     nome: "Livia Sarti"
@@ -28,7 +28,7 @@ personaggi:
       # Forza 16, Intelligenza 10, Saggezza 9, Destrezza 13, Costituzione 15, Carisma 11.
       caratteristiche: {forza: 2, intelligenza: 0, saggezza: 0, destrezza: 1, costituzione: 1, carisma: 0}
       # Guerriera di primo livello: salvezza 12, 13, 14, 15, 17. Porte bloccate: 3 su 6 con la Forza.
-      abilita: {mischia: 1, distanza: 1, ts_morte: 5, ts_bacchette: 4, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 0, forzare: 6}
+      abilita: {mischia: 1, distanza: 1, ts_morte: 5, ts_morte_destrezza: 5, ts_bacchette: 4, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 0, forzare: 6}
       pf: 9                      # 1d8 al massimo, più 1 di Costituzione
       difesa: 17                 # cotta di maglia 15, scudo +1, Destrezza +1
       attacchi:
@@ -58,11 +58,12 @@ personaggi:
       caratteristiche: {forza: 1, intelligenza: 0, saggezza: 1, destrezza: -1, costituzione: 1, carisma: 0}
       # Chierico di primo livello (11, 12, 14, 16, 15) con il bonus dei nani (+4, e +3 al soffio).
       # Occhio per la pietra: 2 su 6. Porte bloccate: 2 su 6 con la Forza.
-      abilita: {mischia: 1, distanza: 1, ts_morte: 10, ts_bacchette: 9, ts_paralisi: 7, ts_soffio: 4, ts_incantesimi: 6, forzare: 3, pietra: 3}
+      abilita: {mischia: 1, distanza: 1, ts_morte: 10, ts_morte_destrezza: 10, ts_bacchette: 9, ts_paralisi: 7, ts_soffio: 4, ts_incantesimi: 6, forzare: 3, pietra: 3}
       pf: 7                      # 1d6 al massimo, più 1 di Costituzione
       difesa: 15                 # cotta di maglia 15, scudo +1, Destrezza −1
       attacchi:
         - {nome: "Mazza", danno: "1d8+1", abilita: mischia}
+        # La fionda somma la Forza al danno (p. 55: «sling bullets or stones do»).
         - {nome: "Fionda", danno: "1d4+1", abilita: distanza, distanza: true}
 
   - id: pg_nespola
@@ -88,8 +89,9 @@ personaggi:
       caratteristiche: {forza: 0, intelligenza: 0, saggezza: 0, destrezza: 2, costituzione: 1, carisma: 1}
       # Ladra di primo livello (13, 14, 13, 16, 15) con il bonus degli halfling (+4, e +3 al soffio).
       # Abilità del ladro 25, 20, 30, 25, 80, 30 per cento; nascondersi al chiuso come halfling (70%).
-      # Distanza: +1 degli halfling. Attacco furtivo: +4.
-      abilita: {mischia: 1, distanza: 2, alle_spalle: 5, ts_morte: 8, ts_bacchette: 7, ts_paralisi: 8, ts_soffio: 4, ts_incantesimi: 6,
+      # Distanza: +1 degli halfling. Attacco furtivo: +4. Il +1 degli halfling all'iniziativa lo schema non lo porta
+      # (l'iniziativa somma solo la Destrezza).
+      abilita: {mischia: 1, distanza: 2, alle_spalle: 5, ts_morte: 8, ts_morte_destrezza: 8, ts_bacchette: 7, ts_paralisi: 8, ts_soffio: 4, ts_incantesimi: 6,
                 scassinare: 1, trappole: 0, borseggiare: 2, muoversi_in_silenzio: 1, scalare: 12, nascondersi: 10, ascoltare: 2}
       pf: 5                      # 1d4 al massimo, più 1 di Costituzione
       difesa: 15                 # armatura di cuoio 13, Destrezza +2
@@ -121,7 +123,7 @@ personaggi:
       caratteristiche: {forza: 0, intelligenza: 2, saggezza: 0, destrezza: 1, costituzione: 0, carisma: 0}
       # Mago di primo livello (13, 14, 13, 16, 15) con il bonus degli elfi (+2 bacchette e incantesimi, +1 paralisi).
       # Porte segrete: 3 su 6 (elfo con Intelligenza 15 o più). Dardo incantato: colpisce sempre (+20).
-      abilita: {mischia: 1, distanza: 1, dardo_incantato: 20, ts_morte: 4, ts_bacchette: 5, ts_paralisi: 5, ts_soffio: 1, ts_incantesimi: 4, cercare: 6}
+      abilita: {mischia: 1, distanza: 1, dardo_incantato: 20, ts_morte: 4, ts_morte_destrezza: 4, ts_bacchette: 5, ts_paralisi: 5, ts_soffio: 1, ts_incantesimi: 4, cercare: 6}
       pf: 4                      # 1d4 al massimo
       difesa: 12                 # senza armatura 11, Destrezza +1
       attacchi:

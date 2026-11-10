@@ -3,12 +3,12 @@
 # che le faccia Tonio. `pubblica_dopo`: le battute e gli indizi dopo i quali il fatto è dei PG.
 parole:
   - parola: "Tonio è salito da solo, d'accordo con i goblin"
-    regex: "\\bvenut[oa] da sol[oa]\\b|\\bdi sua volontà\\b|\\bfinto il rapimento\\b|\\bha portato lui\\b|\\bd'accordo con i goblin\\b|\\bsaliva da solo\\b|\\bsalire da solo\\b|\\bcon le sue gambe\\b"
+    regex: "\\bapposta\\b|\\bfatto rapire\\b|\\bd'accordo con (zirrà|i goblin|la goblin)\\b|\\bnon (è stato|l'hanno) rapito\\b|\\bnon è (un )?prigioniero\\b|\\bportato (lui )?i goblin\\b|\\bsalito\\b[^.]{0,30}\\bda solo\\b|\\bandato da solo\\b|\\bcomplice\\b|\\bfinto\\b|\\bvenut[oa] da sol[oa]\\b|\\bdi sua volontà\\b|\\bfinto il rapimento\\b|\\bha portato lui\\b|\\bd'accordo con i goblin\\b|\\bsaliva da solo\\b|\\bsalire da solo\\b|\\bcon le sue gambe\\b"
     fatti: [f_tonio_complice]
     pubblica_dopo: [i_tonio_libero, nar_corda, nar_piccone, zir_chiave_prima, i_impronte, nar_impronte, i_ugo_racconta, ugo_sentiero_privato, ugo_sentiero_impronte, i_grosso, gro_cibo, zir_corda, zir_carbonaio, nar_tonio_parla]
     nota: "La verità della campagna. La dicono Zirrà, Grosso e Ugo quando cedono, e il narratore quando Tonio parla; la mostrano la corda senza nodo e le impronte."
   - parola: "la lavagna l'ha scritta Tonio"
-    regex: "\\b(scritt[ao]|scrive|ha scritto)\\b[^.]{0,30}\\b(tonio|il ragazzo)\\b|\\b(tonio|il ragazzo)\\b[^.]{0,30}\\b(ha scritto|l'ha scritta)\\b"
+    regex: "\\bstessa mano\\b|\\bgrafia\\b[^.]{0,40}\\b(pali|ragazzo|tonio)\\b|\\berre\\b[^.]{0,30}\\b(del ragazzo|di tonio)\\b|\\bl'ha scritta lui\\b|\\bscritta da tonio\\b|\\b(scritt[ao]|scrive|ha scritto)\\b[^.]{0,30}\\b(tonio|il ragazzo)\\b|\\b(tonio|il ragazzo)\\b[^.]{0,30}\\b(ha scritto|l'ha scritta)\\b"
     fatti: [f_tonio_lavagna]
     pubblica_dopo: []
     nota: "Nessuna battuta lo dice: lo concludono i PG accostando le erre della lavagna a quelle dei pali e della mappa."
@@ -18,12 +18,12 @@ parole:
     pubblica_dopo: [zir_corda, zir_carbonaio, gro_cibo]
     nota: "Il pane della settimana sparito dal giaciglio è pubblico; segreto è a chi lo porta."
   - parola: "Ugo ha visto il ragazzo salire"
-    regex: "\\bcol pane sotto il braccio\\b|\\bl'ho visto\\b|\\bsaliva da solo\\b"
+    regex: "\\bvisto salire\\b|\\bl'ha visto\\b|\\bcol pane sotto il braccio\\b|\\bl'ho visto\\b|\\bsaliva da solo\\b"
     fatti: [f_ugo_visto]
     pubblica_dopo: [ugo_sentiero_privato, ugo_sentiero_impronte, i_ugo_racconta]
     nota: "Ciò che Ugo tace sul sentiero."
   - parola: "Tonio ha chiuso i cani"
-    regex: "\\b(tonio|il ragazzo)\\b[^.]{0,40}\\bchius[oi]\\b[^.]{0,20}\\bcani\\b|\\bha chiuso i cani\\b"
+    regex: "\\bqualcuno di casa\\b|\\bli ha chiusi\\b|\\b(tonio|il ragazzo)\\b[^.]{0,40}\\bchius[oi]\\b[^.]{0,20}\\bcani\\b|\\bha chiuso i cani\\b"
     fatti: [f_cani_chiusi]
     pubblica_dopo: []
     nota: "Lo deducono i PG dai cani che scodinzolano verso il sentiero."
@@ -38,34 +38,34 @@ parole:
     pubblica_dopo: [i_recinto, nar_recinto]
     nota: "I goblin che rapiscono non prendono pecore: strano."
   - parola: "la decima non pagata"
-    regex: "\\bdecima\\b[^.]{0,40}\\b(non|pagat[oa])\\b|\\bnon l'ho pagata\\b|\\bbalivo\\b[^.]{0,40}\\bovile\\b|\\bprima neve\\b[^.]{0,40}\\b(ovile|balivo|tutto)\\b"
+    regex: "\\bpieni di debiti\\b|\\bdeve la decima\\b|\\bdebiti\\b[^.]{0,20}\\b(balivo|signore)\\b|\\bnon (hanno|ha) pagato\\b|\\bdecima\\b[^.]{0,40}\\b(non|pagat[oa])\\b|\\bnon l'ho pagata\\b|\\bbalivo\\b[^.]{0,40}\\bovile\\b|\\bprima neve\\b[^.]{0,40}\\b(ovile|balivo|tutto)\\b"
     fatti: [f_debito]
     pubblica_dopo: [i_avviso, nar_avviso, i_berta_debito, ber_conti_fienile, ber_conti_foglio, nar_tonio_parla]
     nota: "Il segreto di Berta, e il motivo di Tonio."
   - parola: "l'argento per la decima"
-    regex: "\\bargento\\b[^.]{0,40}\\b(decima|pagare)\\b|\\b(decima|pagare)\\b[^.]{0,40}\\bargento\\b|\\bunico modo\\b"
+    regex: "\\bpagare la decima\\b|\\bper la decima\\b|\\bargento\\b[^.]{0,40}\\b(decima|pagare)\\b|\\b(decima|pagare)\\b[^.]{0,40}\\bargento\\b|\\bunico modo\\b"
     fatti: [f_tonio_motivo]
     pubblica_dopo: [i_conto, nar_conto, nar_tonio_parla]
     nota: "Perché Tonio l'ha fatto: il conto a carbone accanto alla porta, o le sue parole."
   - parola: "la cassa d'argento nella cripta"
-    regex: "\\bcassa d'argento\\b|\\bcassa cerchiata\\b|\\bluccicano monete\\b"
+    regex: "\\bc'è davvero\\b[^.]{0,30}\\b(cassa|argento)\\b|\\bcassa d'argento\\b|\\bcassa cerchiata\\b|\\bluccicano monete\\b"
     fatti: [f_argento]
-    pubblica_dopo: [nar_cripta]
+    pubblica_dopo: [nar_cripta, nar_cripta_grimaldello]
     nota: "La leggenda della paga è pubblica; che la cassa ci sia davvero si vede solo aprendo la porta."
   - parola: "Zirrà si tiene tutto e il ragazzo"
-    regex: "\\bmio il ragazzo\\b|\\btenersi (anche )?il ragazzo\\b|\\bsecondo riscatto\\b|\\btenersi tutto\\b"
+    regex: "\\bostaggio\\b|\\btradir\\w*|\\btenersi la cassa\\b|\\bmio il ragazzo\\b|\\btenersi (anche )?il ragazzo\\b|\\bsecondo riscatto\\b|\\btenersi tutto\\b"
     fatti: [f_zirra_inganno]
     pubblica_dopo: [zir_cassa]
     nota: "Il tradimento di Zirrà, che si vede quando la cripta è aperta."
   - parola: "la caccia di frodo di Ugo"
-    regex: "\\bcaccia di frodo\\b|\\b(ero|era) nella riserva\\b|\\bnella riserva, a caccia\\b|\\bcacciava\\b"
+    regex: "\\bcervo\\b[^.]{0,30}\\b(riserva|suo)\\b|\\bbracconier\\w*|\\bdi frodo\\b|\\bcaccia di frodo\\b|\\b(ero|era) nella riserva\\b|\\bnella riserva, a caccia\\b|\\bcacciava\\b"
     fatti: [f_ugo_frodo]
     pubblica_dopo: [i_cervo, i_ugo_frodo, ugo_notte_cervo, ugo_notte_promessa, fin_alba_riserva]
     nota: "L'alibi di Ugo, e la sua colpa davanti al balivo."
   - parola: "la postierla dietro la carbonaia"
-    regex: "\\bbuco dei soldati\\b|\\b(sotto|dietro) i rovi\\b[^.]{0,60}\\b(cantina|passaggio|postierla)\\b|\\bpostierla\\b[^.]{0,60}\\b(rovi|carbonaia)\\b|\\b(rovi|carbonaia)\\b[^.]{0,60}\\bpostierla\\b"
+    regex: "\\bcantina\\b[^.]{0,40}\\bcarbonaia\\b|\\bcarbonaia\\b[^.]{0,40}\\bcantina\\b|\\bsotto i rovi\\b|\\bcunicolo\\b|\\bbuco dei soldati\\b|\\b(sotto|dietro) i rovi\\b[^.]{0,60}\\b(cantina|passaggio|postierla)\\b|\\bpostierla\\b[^.]{0,60}\\b(rovi|carbonaia)\\b|\\b(rovi|carbonaia)\\b[^.]{0,60}\\bpostierla\\b"
     fatti: [f_postierla]
-    pubblica_dopo: [i_rovi, nar_rovi, i_ugo_postierla, ugo_consiglio, fin_carbonaia_cunicolo]
+    pubblica_dopo: [i_rovi, nar_rovi, ugo_consiglio, fin_carbonaia_cunicolo]
     nota: "La strada nascosta per la torre. Il buco nel muro della cantina si vede dalla torre; il legame con i rovi no."
   - parola: "le postierle delle torri"
     regex: "\\bsotto ogni torre\\b|\\bper le sortite\\b"
@@ -73,12 +73,12 @@ parole:
     pubblica_dopo: []
     nota: "Conoscenza privata del chierico nano."
   - parola: "Grosso non si fida di Zirrà"
-    regex: "\\bnon si fida di zirrà\\b|\\bcambierebbe padrone\\b"
+    regex: "\\bgrosso\\b[^.]{0,20}\\bnon si fida\\b|\\bnon si fida di zirrà\\b|\\bcambierebbe padrone\\b"
     fatti: [f_grosso_fame]
     pubblica_dopo: []
     nota: "La fame di Grosso è pubblica; la sfiducia no."
   - parola: "la corda senza nodo"
-    regex: "\\bnon c'è (nessun )?nodo\\b|\\bsenza nodo\\b|\\bnon ha nodo\\b|\\bsolo avvolta\\b|\\baiuta (i goblin )?a scavare\\b"
+    regex: "\\bcorda\\b[^.]{0,30}\\b(avvolta|lenta|non stringe|senza stringere)\\b|\\bnon c'è (nessun )?nodo\\b|\\bsenza nodo\\b|\\bnon ha nodo\\b|\\bsolo avvolta\\b|\\baiuta (i goblin )?a scavare\\b"
     fatti: [f_tonio_libero]
     pubblica_dopo: [i_tonio_libero, nar_corda, nar_piccone, zir_chiave_prima, zir_corda]
     nota: "Il ragazzo non è legato davvero."
@@ -112,3 +112,8 @@ parole:
     fatti: [f_lettere_tonio]
     pubblica_dopo: [ber_nomi_pali]
     nota: "Il legame tra la grafia della lavagna e il ragazzo."
+  - parola: "le monete con la torre coniata"
+    regex: "\\btorre coniata\\b|\\bmonete\\b[^.]{0,40}\\briconosc"
+    fatti: [f_monete_torre]
+    pubblica_dopo: [nar_cripta, nar_cripta_grimaldello]
+    nota: "L'argento della cripta si riconosce: non paga in segreto né la decima né una multa."

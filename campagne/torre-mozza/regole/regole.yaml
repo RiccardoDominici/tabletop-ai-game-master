@@ -60,6 +60,9 @@ abilita:
   - {id: dardo_incantato, nome: "Dardo incantato", caratteristica: null}
   # I cinque tiri salvezza (p. 60–61): bonus = 17 − numero della tabella della classe, più la razza.
   - {id: ts_morte, nome: "Tiro salvezza contro raggio della morte o veleno", caratteristica: null}
+  # Lo stesso salvezza con la Destrezza, come il manuale lo chiede per fosse, cadute e inseguimenti (p. 43, 52): stesso
+  # bonus della scheda, e il Motore somma la Destrezza.
+  - {id: ts_morte_destrezza, nome: "Tiro salvezza contro raggio della morte, con la Destrezza", caratteristica: destrezza}
   - {id: ts_bacchette, nome: "Tiro salvezza contro bacchette magiche", caratteristica: null}
   - {id: ts_paralisi, nome: "Tiro salvezza contro paralisi o pietrificazione", caratteristica: null}
   - {id: ts_soffio, nome: "Tiro salvezza contro soffio del drago", caratteristica: null}
@@ -126,7 +129,7 @@ sottosistemi:
     testo: "Prima di uno scontro si tira 1d6 per ogni parte che può essere sorpresa: con 1–2 è sorpresa e perde il primo round (p. 50). Il Motore conta come sorpresa solo l'attacco che apre lo scontro."
   - id: cadute
     nome: "Cadute e fosse"
-    testo: "Si prende 1d6 di danno ogni tre metri di caduta. Per non cadere in una fossa coperta si tira salvezza contro raggio della morte, con il bonus di Destrezza (p. 43, 59)."
+    testo: "Si prende 1d6 di danno ogni tre metri di caduta, arrotondando: già da un metro e mezzo si prende 1d6. Per non cadere in una fossa coperta si tira salvezza contro raggio della morte con la Destrezza (p. 43, 59)."
   - id: guarigione
     nome: "Guarigione"
     testo: "Si recupera un punto ferita per ogni notte di sonno (p. 59). Chi è stato fasciato a zero punti ferita non combatte finché non torna sopra zero (p. 188)."
@@ -142,7 +145,8 @@ parole_chiave:
   cercare: [cerco, frugo, esamino, perquisisco, passaggio]
   forzare: [forzo, sfondo, spallata, scardino]
   pietra: [muratura, malta, mattoni, pietre]
-  ts_morte: [veleno, schivo, evito, balzo]
+  ts_morte: [veleno, avvelenato]
+  ts_morte_destrezza: [schivo, evito, balzo, aggrappo]
   carisma: [convinco, persuado, prometto, tratto, minaccio]
 
 combattimento:

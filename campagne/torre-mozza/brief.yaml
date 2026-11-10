@@ -33,15 +33,15 @@ decisioni:
     La verità è che Tonio non è stato rapito: ha portato lui i goblin alla torre per pagare con l'argento la decima della madre, e il biglietto l'ha scritto lui.
     Chi scopre tutto deve scegliere se dire al paese la verità, che per usanza manda Tonio lontano per sette inverni, o tacere e lasciare la colpa su Ugo.
   strade:
-    - strada: "La verità al paese: Tonio ha aperto l'ovile ai goblin"
+    - strada: "La verità al paese: Tonio ha aiutato i goblin"
       prezzo: "Per l'usanza della valle il ragazzo deve partire per sette inverni, e la madre resta sola con le pecore"
       pesa_su: [png_berta]
     - strada: "Il silenzio: Tonio era un prigioniero, e basta"
       prezzo: "Il borgo resta convinto che i goblin li abbia chiamati Ugo: gli spengono la catasta e lo cacciano dal bosco"
       pesa_su: [png_ugo]
     - strada: "La terza via: scagionare Ugo con la sua caccia di frodo, e tacere sul ragazzo"
-      prezzo: "Il balivo multa Ugo per il cervo della riserva e gli toglie il diritto di far legna sul crinale"
-      pesa_su: [png_ugo]
+      prezzo: "Il balivo, salito per il cervo della riserva, toglie a Ugo il bosco e intanto conta anche le pecore dei Benni"
+      pesa_su: [png_ugo, png_berta]
   altre:
     - "Id e titolo: torre-mozza, «La chiave della Torre Mozza». La chiave è l'oggetto che tutti vogliono e il titolo non svela il segreto (Tonio complice)."
     - "Ambientazione: un borgo di pastori, una carbonaia nel bosco e una torre in rovina con la sua cripta: il «piccolo dungeon» di Basic Fantasy, alla misura di PG di primo livello."
@@ -51,8 +51,9 @@ decisioni:
     - "Tonio è una comparsa senza scheda né voce: parla poco perché si vergogna; quando parla, parla il narratore in discorso indiretto."
     - "PG: quattro pregenerati (tre giocatori più uno), uno per classe del manuale (guerriera umana, chierico nano, ladra halfling, mago elfo), tutti di primo livello."
     - "Punti ferita dei PG: il dado vita al massimo più la Costituzione, il valore più alto che il manuale ammette al primo livello: restano fragili (quattro-nove punti), ma un colpo solo non abbatte tutti."
+    - "Le monete della cassa hanno la torre coniata e il balivo le riconosce: l'argento non può pagare in segreto la decima né la multa, quindi non cancella il prezzo di nessuna strada."
     - "Il mago conosce leggere il magico e dardo incantato (il manuale lascia al master la scelta del secondo incantesimo): sonno chiuderebbe lo scontro con un tiro solo."
     - "Regole: il set è ricavato dal manuale (regole/), libero sotto CC BY-SA 4.0. Le scelte e le approssimazioni sono commentate in regole/regole.yaml."
     - "A zero punti ferita: il manuale dice morte, e propone come regola facoltativa il tiro salvezza contro la morte (pagina 188). Uso la regola facoltativa per i PG, perché una one-shot di due ore non regge un giocatore fuori al primo scontro; i PNG muoiono come da regola base."
-    - "Scontro: Zirrà (guerriera goblin, tre dadi vita meno tre) e Grosso (hobgoblin, un dado vita) contro tre PG di primo livello: pericoloso (un colpo di Grosso abbatte il mago o la ladra) ma vincibile, e il morale (Zirrà 7, Grosso 8) può chiuderlo con una fuga o una resa."
-    - "Orologio di sessione: «La torre aspetta la chiave», otto segni, uno ogni sette risposte nelle prime due scene; alla torre sale ad almeno sei e corre più piano, così il pieno arriva dopo lo scontro."
+    - "Scontro: Zirrà (guerriera goblin, tre dadi vita meno tre, dodici punti ferita) e Grosso (hobgoblin, un dado vita, sette punti ferita) contro tre PG di primo livello: pericoloso (un colpo di Grosso, 1d8, abbatte spesso il mago o la ladra) ma vincibile, e il morale (Zirrà 7, Grosso 8) può chiuderlo con una fuga o una resa."
+    - "Orologio della sera: «La torre aspetta la chiave», otto segni, uno ogni nove risposte, attivo solo all'ovile e alla carbonaia. Alla torre non corre: a orologio pieno il Motore dice un finale e ferma il tavolo, e lì non deve succedere nel mezzo dello scontro (revisione indipendente). I finali della torre li sceglie il tavolo."

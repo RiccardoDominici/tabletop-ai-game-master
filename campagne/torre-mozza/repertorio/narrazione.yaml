@@ -73,8 +73,8 @@ battute:
     temi: [cancello, chiavistello, stazzo, recinto, pecore]
     scena: scena_ovile
     testo:
-      - "[narratore] Il chiavistello è di legno, alzato e riabbassato con cura."
-      - "[narratore] Sul cancello non c'è un graffio. Dentro, le pecore ci sono tutte, e ruminano."
+      - "[narratore] Il cancello è intero, e il chiavistello è al suo posto."
+      - "[narratore] Dentro, le pecore ci sono tutte, e ruminano tranquille."
     effetti: {rivela_indizi: [i_recinto], fatti_noti: [f_nessuna_pecora]}
     max_usi: 1
 
@@ -102,16 +102,41 @@ battute:
       - "[narratore] Nello stazzo una pecora bela, e un'altra le risponde. Dal paese arriva odore di minestra e di fumo."
     max_usi: 1
 
+  # A orologio pieno il Motore dice il primo finale disponibile: questo, che non decide dove vanno i PG.
+  - id: fin_ovile_mezzanotte
+    chi: narratore
+    tipo: finale
+    quando: "arriva la mezzanotte mentre i PG sono ancora all'ovile"
+    temi: [orologio]
+    scena: scena_ovile
+    richiede: {orologio: {id: o_mezzanotte, min: 8, max: 8}}
+    testo:
+      - "[narratore] Spinalba spegne le lanterne a una a una."
+      - "[narratore] Berta resta sulla soglia, e il sentiero del bosco aspetta nel buio."
+    max_usi: 1
+
+  - id: nar_chiave_presa
+    chi: narratore
+    tipo: momento
+    quando: "un PG prende la chiave a Berta senza il suo permesso"
+    temi: [sfilo, sfilare, strappo, strappare, rubo, rubare]
+    scena: scena_ovile
+    richiede: {battute_non_usate: [ber_chiave], oppure: [{privata: true, prova: borseggiare}, {prova: borseggiare}, {prova: forza}, {prova: destrezza}]}
+    testo:
+      - "[narratore] Il laccio si spezza, e la chiave di ferro passa di mano."
+      - "[narratore] Berta resta con il pugno vuoto, e vi guarda come si guarda un lupo."
+    max_usi: 1
+
   - id: fin_ovile_chiave
     chi: narratore
     tipo: finale
     quando: "i PG partono per il bosco con la chiave di Berta"
     temi: [partiamo, andiamo, bosco, carbonaia, sentiero]
     scena: scena_ovile
-    richiede: {battute_usate: [ber_chiave]}
+    richiede: {oppure: [{battute_usate: [ber_chiave]}, {battute_usate: [nar_chiave_presa]}]}
     testo:
       - "[narratore] Il sentiero entra nel bosco subito dietro il fienile."
-      - "[narratore] La chiave è fredda e pesante, e Berta resta sotto il portico a guardarvi andare. Tra i faggi, il mulo di Ugo è già un'ombra."
+      - "[narratore] La chiave è fredda e pesante. Dal portico Berta vi guarda andare. Tra i faggi, il mulo di Ugo è già un'ombra."
     max_usi: 1
 
   - id: fin_ovile_senza
@@ -120,7 +145,7 @@ battute:
     quando: "i PG partono per il bosco senza la chiave di Berta"
     temi: [partiamo, andiamo, bosco, carbonaia, sentiero]
     scena: scena_ovile
-    richiede: {battute_non_usate: [ber_chiave]}
+    richiede: {battute_non_usate: [ber_chiave, nar_chiave_presa]}
     testo:
       - "[narratore] Il sentiero entra nel bosco subito dietro il fienile."
       - "[narratore] Berta resta sotto il portico, con la chiave stretta nel pugno. Tra i faggi, il mulo di Ugo è già un'ombra."
@@ -201,13 +226,25 @@ battute:
       - "[narratore] Ugo corre con la pala e impreca: da solo non ce la fa."
     max_usi: 1
 
+  - id: fin_carbonaia_mezzanotte
+    chi: narratore
+    tipo: finale
+    quando: "arriva la mezzanotte mentre i PG sono ancora alla carbonaia"
+    temi: [orologio]
+    scena: scena_carbonaia
+    richiede: {orologio: {id: o_mezzanotte, min: 8, max: 8}}
+    testo:
+      - "[narratore] Ugo si toglie il cappello e guarda il crinale, senza dire niente."
+      - "[narratore] Sopra gli alberi, il fuoco della torre è una brace rossa."
+    max_usi: 1
+
   - id: fin_carbonaia_cunicolo
     chi: narratore
     tipo: finale
     quando: "i PG entrano nel passaggio sotto i rovi"
     temi: [postierla, cunicolo, carponi, strisciamo, entriamo]
     scena: scena_carbonaia
-    richiede: {oppure: [{indizi_rivelati: [i_rovi]}, {indizi_rivelati: [i_ugo_postierla]}]}
+    richiede: {indizi_rivelati: [i_rovi]}
     testo:
       - "[narratore] Il cunicolo è basso, e si va carponi sulle pietre bagnate."
       - "[narratore] Il fumo della carbonaia vi segue per un tratto, poi resta indietro. In fondo al buio trema una luce rossa."
@@ -220,7 +257,7 @@ battute:
     temi: [saliamo, salita, partiamo, cima]
     scena: scena_carbonaia
     testo:
-      - "[narratore] Il sentiero sale ripido tra i faggi. A ogni passo il tamburo si fa più forte."
+      - "[narratore] Il sentiero sale ripido tra i faggi. A ogni passo il bosco si fa più rado."
       - "[narratore] In cima al crinale la torre è nera contro la luna."
     max_usi: 1
 
@@ -247,7 +284,7 @@ battute:
     scena: scena_torre
     testo:
       - "[narratore] Zirrà schiocca le dita."
-      - "[narratore] Il ragazzo si alza e lascia cadere la corda dai polsi. Poi le porta un piccone, senza che nessuno lo spinga."
+      - "[narratore] Il ragazzo si alza e lascia cadere la corda dai polsi. Poi porta a Zirrà un piccone, senza che nessuno lo spinga."
     effetti: {rivela_indizi: [i_tonio_libero], fatti_noti: [f_tonio_libero]}
     max_usi: 1
 
@@ -293,24 +330,25 @@ battute:
     quando: "un PG apre la porta di ferro con la chiave dei Benni"
     temi: [chiave, serratura, cripta]
     scena: scena_torre
-    richiede: {battute_usate: [ber_chiave]}
+    richiede: {oppure: [{battute_usate: [ber_chiave]}, {battute_usate: [nar_chiave_presa]}]}
     testo:
       - "[narratore] La chiave gira nella serratura con un rumore di ferro vecchio."
-      - "[narratore] La porta si apre su un buco che sa di muffa. In fondo c'è una cassa cerchiata di ferro, e dal coperchio socchiuso luccicano monete."
-    effetti: {fatti_noti: [f_argento]}
+      - "[narratore] La porta si apre su un buco che sa di muffa. In fondo c'è una cassa cerchiata di ferro, e dal coperchio socchiuso luccicano monete. Ognuna ha una torre coniata sopra."
+    effetti: {fatti_noti: [f_argento, f_monete_torre]}
     audio: {effetto: chiave}
     max_usi: 1
 
-  - id: nar_porta_colpi
+  - id: nar_cripta_grimaldello
     chi: narratore
     tipo: momento
-    riempitivo: true
-    quando: "la porta di ferro è ancora chiusa e i PG indugiano"
-    temi: [attesa]
+    quando: "un PG apre la porta di ferro con i grimaldelli"
+    temi: [grimaldello, grimaldelli, scassino, scassinare]
     scena: scena_torre
-    richiede: {battute_non_usate: [nar_cripta]}
+    richiede: {prova: scassinare}
     testo:
-      - "[narratore] Grosso prende a mazzate la porta di ferro della cripta. Il ferro rimbomba, ma la porta tiene."
+      - "[narratore] La serratura è vecchia e dura, ma alla fine qualcosa scatta."
+      - "[narratore] La porta si apre su un buco che sa di muffa. In fondo c'è una cassa cerchiata di ferro, e dal coperchio socchiuso luccicano monete. Ognuna ha una torre coniata sopra."
+    effetti: {fatti_noti: [f_argento, f_monete_torre]}
     max_usi: 1
 
   - id: nar_tonio_zitto
@@ -323,7 +361,10 @@ battute:
     testo:
       - "[narratore] Il ragazzo guarda Zirrà prima di rispondere."
       - "[narratore] Dice soltanto che sta bene, e che dovete portare la chiave."
-    max_usi: 1
+    varianti:
+      - ["[narratore] Il ragazzo abbassa gli occhi.", "[narratore] Dice che sta bene, e che la chiave è tutto quello che serve."]
+      - ["[narratore] Il ragazzo guarda la porta di ferro, poi voi.", "[narratore] Ripete soltanto una parola: la chiave."]
+    max_usi: 3
 
   - id: nar_tonio_parla
     chi: narratore
@@ -364,28 +405,15 @@ battute:
     temi: [attesa]
     scena: scena_torre
     testo:
-      - "[narratore] Il vento fischia nei buchi del muro, e il fuoco si abbassa. In alto, da qualche parte, cade un sasso."
+      - "[narratore] Il fuoco si abbassa, e le ombre dei muri si allungano. In alto, da qualche parte, cade un sasso."
     max_usi: 1
 
-  # Finali della torre. Il primo è la rete di sicurezza: a orologio pieno il Motore dice il primo finale
-  # disponibile senza cancello sull'azione, e i tre finali della scelta non devono uscire da soli, al posto dei
-  # giocatori. Quelli li sceglie il selettore, quando un giocatore dice che cosa racconterà a Spinalba.
-  - id: fin_alba_brace
-    chi: narratore
-    tipo: finale
-    quando: "è passata la mezzanotte e la notte finisce"
-    temi: [orologio]
-    scena: scena_torre
-    richiede: {orologio: {id: o_mezzanotte, min: 8, max: 8}}
-    testo:
-      - "[narratore] Il tamburo tace, e il fuoco della torre diventa brace."
-      - "[narratore] Giù a Spinalba si accende una finestra sola, quella dei Benni. La strada per scendere è lunga."
-    max_usi: 1
-
+  # Finali della torre: qui nessun orologio è attivo, quindi il Motore non ne dice nessuno da solo. Li sceglie il
+  # selettore quando un giocatore dice che cosa racconterà a Spinalba, o che il gruppo scende con il ragazzo.
   - id: fin_alba_fontana
     chi: narratore
     tipo: finale
-    quando: "un PG dice che a Spinalba racconteranno chi ha aperto l'ovile ai goblin"
+    quando: "un PG dice che a Spinalba racconteranno chi ha aiutato i goblin"
     temi: [racconteremo, raccontiamo, diremo, diciamo, sapere]
     scena: scena_torre
     richiede:
@@ -397,7 +425,7 @@ battute:
     testo:
       - "[narratore] All'alba, davanti alla fontana di Spinalba, la storia del ragazzo è detta tutta."
       - "[narratore] Il paese tace a lungo. Poi il più vecchio ricorda l'usanza: sette inverni lontano dalla valle."
-      - "[narratore] Berta stringe il figlio, e davanti a nessuno piange."
+      - "[narratore] Berta stringe il figlio, e non piange davanti a nessuno."
     max_usi: 1
 
   - id: fin_alba_silenzio
@@ -429,19 +457,19 @@ battute:
         - {indizi_rivelati: [i_ugo_frodo]}
     testo:
       - "[narratore] All'alba il ragazzo torna a casa, e del sentiero della torre non parla nessuno."
-      - "[narratore] Per Ugo basta la sua caccia: stanotte era nella riserva, non con i goblin. Il paese gli rende il saluto, e il balivo gli prende il bosco."
+      - "[narratore] Per Ugo basta la sua caccia: quella notte era nella riserva, non con i goblin. Il paese gli rende il saluto. Prima della neve, però, il balivo gli prende il bosco e conta le pecore dei Benni."
     max_usi: 1
 
   # La chiusura (C13): la dice il Motore dopo il finale, a orologio pieno. La scelta resta aperta.
-  - id: nar_chiusura
+  - id: fin_alba_discesa
     chi: narratore
-    tipo: momento
-    quando: "la notte è finita e resta da dire che cosa si racconta"
-    temi: [orologio]
+    tipo: finale
+    quando: "i PG scendono dalla torre con il ragazzo"
+    temi: [scendiamo, torniamo, riportiamo, andiamocene, riportarlo]
     scena: scena_torre
-    richiede: {orologio: {id: o_mezzanotte, min: 8, max: 8}}
     testo:
-      - "[narratore] A Spinalba aspettano una storia, e tocca a voi raccontarla. Che cosa direte, all'alba?"
+      - "[narratore] La discesa è lunga, e il ragazzo cammina in mezzo a voi senza parlare."
+      - "[narratore] Giù a Spinalba si accende una finestra sola, quella dei Benni. All'alba vi chiederanno che cosa è successo lassù: che cosa direte?"
     max_usi: 1
 
   # ------------------------------------------------------------------ segni dell'orologio di sessione
@@ -461,7 +489,7 @@ battute:
     quando: "è il momento del secondo segno della notte"
     temi: [orologio]
     richiede: {orologio: {id: o_mezzanotte, min: 1, max: 1}}
-    testo: ["[narratore] In cima alla Torre Mozza si accende un fuoco, piccolo come una stella."]
+    testo: ["[narratore] Nella Torre Mozza si accende un fuoco, e i muri rotti si arrossano."]
     effetti: {avanza_orologio: o_mezzanotte}
     max_usi: 1
 
@@ -501,7 +529,7 @@ battute:
     quando: "è il momento del sesto segno della notte"
     temi: [orologio]
     richiede: {orologio: {id: o_mezzanotte, min: 5, max: 5}}
-    testo: ["[narratore] Lassù comincia a battere un tamburo, lento, e non smette più."]
+    testo: ["[narratore] Lassù comincia a battere un tamburo, lento e sordo."]
     effetti: {avanza_orologio: o_mezzanotte}
     max_usi: 1
 
@@ -511,7 +539,7 @@ battute:
     quando: "è il momento del settimo segno della notte"
     temi: [orologio]
     richiede: {orologio: {id: o_mezzanotte, min: 6, max: 6}}
-    testo: ["[narratore] Il fuoco sulla torre si alza alto, e il tamburo accelera."]
+    testo: ["[narratore] Il fuoco della torre divampa, e le scintille volano oltre i muri."]
     effetti: {avanza_orologio: o_mezzanotte}
     max_usi: 1
 
@@ -534,7 +562,7 @@ battute:
     scena: [scena_ovile, scena_carbonaia]
     testo:
       - "[narratore] Sotto i faggi il buio arriva di colpo."
-      - "[narratore] L'odore di fumo cresce a ogni passo, e da lontano si sente sbuffare una carbonaia."
+      - "[narratore] L'odore di fumo cresce a ogni passo, e da lontano si sente sibilare una carbonaia."
     max_usi: 1
 
   - id: tr_crinale
@@ -545,5 +573,5 @@ battute:
     scena: [scena_carbonaia, scena_torre]
     testo:
       - "[narratore] Il bosco finisce, e il crinale è nudo e bianco di luna."
-      - "[narratore] La torre vi guarda dall'alto, con il fuoco acceso in cima."
+      - "[narratore] La torre vi guarda dall'alto, con le sue mura spezzate."
     max_usi: 1

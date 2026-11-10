@@ -59,7 +59,7 @@ relazioni:
   png_zirra: "la goblin che, a quanto crede, le ha preso il figlio"
 info_chiave: [i_berta_debito, i_giaciglio, i_pali]
 iniziative:
-  - "Se nessuno si offre, a mezzanotte vuole salire lei alla torre con la chiave."
+  - "Se nessuno si offre, dice che aspetterà sulla soglia con la chiave, sola."
   - "Se un PG accusa Ugo, gli dà ragione davanti a tutti."
   - "Se un PG le chiede dei nomi sui pali, racconta che li ha incisi Tonio, da piccolo."
 evoluzione:

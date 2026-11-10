@@ -9,11 +9,11 @@ ruolo: "guerriera goblin, capa della banda della Torre Mozza; la cattiva"
 fronte: fronte_torre
 scheda:
   # Goblin, guerriera (p. 104): Classe d'Armatura 14 (cuoio e scudo), dadi vita 3-3, quindi bonus d'attacco +3
-  # e 3d8−3 punti ferita (qui 10). Salva come guerriero di livello 3 (11, 12, 14, 15, 16). Morale 7.
+  # e 3d8−3 punti ferita (qui 12). Salva come guerriero di livello 3 (11, 12, 14, 15, 16). Morale 7.
   # Il manuale non dà caratteristiche ai mostri: valgono tutte zero.
   caratteristiche: {forza: 0, intelligenza: 0, saggezza: 0, destrezza: 0, costituzione: 0, carisma: 0}
   abilita: {mischia: 3, distanza: 3, ts_morte: 6, ts_bacchette: 5, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 1}
-  pf: 10
+  pf: 12
   difesa: 14
   morale: 7
   attacchi:
