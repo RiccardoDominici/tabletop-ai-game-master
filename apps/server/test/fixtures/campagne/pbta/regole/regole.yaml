@@ -84,3 +84,11 @@ mosse:
     successo: fai tre domande al narratore.
     parziale: fai una domanda.
     fallimento: ti sfugge qualcosa di importante.
+combattimento:
+  iniziativa:
+    tipo: nessuna
+  danni:
+    modello: ferite
+    a_zero:
+      pg: fuori_gioco
+      png: fuori_gioco

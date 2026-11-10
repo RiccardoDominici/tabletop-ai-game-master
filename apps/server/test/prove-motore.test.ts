@@ -283,10 +283,13 @@ describe('riproducibilità e ripresa', () => {
     expect(b.r.tiri.map((t) => [t.dadi, t.danno?.dadi])).toEqual(a.r.tiri.map((t) => [t.dadi, t.danno?.dadi]));
     const salvato = a.m.esporta();
     expect(salvato.seme).toBe(seme);
-    expect(salvato.contatore).toBe(new DadiCrittografici(seme).contatore + (a.r.tiri[0]!.danno ? 2 : 1));
+    // Il contatore conta tutti i dadi (anche l'iniziativa dello scontro che l'attacco ha aperto).
+    expect(salvato.contatore).toBeGreaterThan(new DadiCrittografici(seme).contatore);
     const ripreso = motore({ arbitro: null });
     ripreso.importa(salvato);
     expect(ripreso.seme).toBe(seme);
+    expect(ripreso.esporta().contatore).toBe(salvato.contatore);
+    expect(ripreso.inCombattimento).toBe(a.m.inCombattimento);
     expect(ripreso.stato.puntiFerita('png_ruggero')).toEqual(a.m.stato.puntiFerita('png_ruggero'));
     expect(ripreso.tiriPubblici().map((t) => t.id)).toEqual(a.r.tiri.map((t) => t.id));
   });

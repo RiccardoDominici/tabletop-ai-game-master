@@ -44,6 +44,17 @@ there is the switch **«Ascolta qui»** (the exact button label in the app; in E
 here"). Tap it once to hear the game voice on that phone too. Without that tap the phone stays
 silent, because the browser requires it.
 
+## Combat
+
+When a fight is on, a line above the transcript shows the round and whose turn it is, for example «Combattimento · round 2 · tocca a» followed by a name. If the rule set has no turn order, it reads «agisce chi vuole» (anyone can act). The line also shows your HP and your conditions.
+
+When it is your character's turn, the line becomes a banner, «È il tuo turno» (It's your turn), with:
+- your HP (PF), and, if you are down, your death saving throws;
+- your conditions, each with its icon;
+- the actions available this turn, from the rule set (for example «Azione: una», action: one).
+
+Only your character is invited to act on its turn. If you write at another time, your action waits and is resolved on your turn. See [Dice and sheets](dice-and-sheets.md#combat) for the rules.
+
 ## Later (not now)
 
 The site runs over HTTP. The phone's **microphone** and **keeping the screen on** require a secure

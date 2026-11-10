@@ -124,6 +124,16 @@ The threat clocks of the scene: a row of boxes, filled up to the tick already sh
 - "completo" (full): the clock is full. With spoilers visible, the panel says what happens "a orologio completo" (when the clock is full).
 - "non ancora partito" (not started yet): the clock is waiting for a line or a clue. +1 starts it by hand.
 
+### Combat
+
+Shown only when the campaign has dice and character sheets (see [Dice and sheets](dice-and-sheets.md)). It is the last box of this column.
+
+- **Inizia combattimento** (Start combat): starts the fight with the player characters at the table, the NPCs involved, and the hostile NPCs on stage that have a sheet. The rules of the fight come from the campaign's rule set.
+- During the fight the box shows the round, the phase, and «Tocca a» (It's X's turn): who has to act now, or «nessuno» (nobody).
+- **Termina combattimento** (End combat): the first click asks for confirmation, the button turns red and reads «Conferma: termina combattimento» (Confirm: end combat). The second click ends the fight.
+- **HP**: each sheet, player's characters and NPCs, shows its current and maximum HP. Type a number from 0 to 999 in the box and press **Imposta** (Set), or Enter. The number is the new value, not a change: it replaces the current HP.
+- **Conditions**: during the fight, each combatant lists its active conditions with their icon. Click one to remove it. To add one, choose it in the «Condizione…» (Condition…) list and press **Aggiungi** (Add).
+
 ## Centre column
 
 ### Window

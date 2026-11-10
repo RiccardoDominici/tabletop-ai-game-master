@@ -3,7 +3,8 @@
  *
  * Sotto tutto, l'immagine del luogo con un lento Ken Burns (o, senza immagine, lo sfondo
  * d'atmosfera); un'immagine di situazione, quando c'è, prende il suo posto con la stessa dissolvenza. Prima di «Inizia sessione»: titolo, QR e pulsante (SchermataInizio). Dopo:
- * titolo della scena, ritratto + parlante + sottotitolo al centro, stato della finestra in basso
+ * titolo della scena, ritratto + parlante + sottotitolo al centro (durante uno scontro la barra
+ * dell'iniziativa sostituisce i ritratti, BarraIniziativa.tsx), stato della finestra in basso
  * a sinistra, QR in basso a destra. Niente `backdrop-filter` qui: sopra un'immagine che si muove
  * andrebbe ricalcolato a ogni fotogramma. Tasto «L» (o il pulsantino in alto) per l'HUD di latenza,
  * «A» per i volumi dell'audio, «C» per i crediti dei brani.
@@ -29,6 +30,7 @@ import { LaVoltaScorsa } from './LaVoltaScorsa';
 import { FineSerata } from './FineSerata';
 import { HudLatenza } from './HudLatenza';
 import { FilaPersonaggi } from './FilaPersonaggi';
+import { BarraIniziativa } from './BarraIniziativa';
 import { CreditiAudio, PannelloAudio, PulsanteAudio, useTastiAudio } from './audio/PannelloAudio';
 import { TiriSchermo, useVistaTiri } from './TiriSchermo';
 import { provaCarteRichiesta } from '../debug/richiesta';
@@ -112,10 +114,20 @@ export function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | 
           >
             {stato.scena.titolo}
           </h1>
-          {/* Ritratti dei PNG in scena (chi parla si illumina): da 3 m si vede con chi si può parlare. */}
-          <div className="mt-[2.2vh]">
-            <FilaPersonaggi personaggi={stato.scena.personaggi} parlante={parlante} />
-          </div>
+          {/* Durante uno scontro la barra dell'iniziativa prende il posto della fila dei ritratti: con
+              tutte e due, la fila (alta quanto un ritratto da 9vw) spingeva il sottotitolo sopra i nomi.
+              Le schede della barra portano già i nomi di tutti; chi parla resta scritto sull'etichetta
+              del sottotitolo. Finito lo scontro la fila torna com'era. */}
+          {stato.combattimento ? (
+            <div className="mt-[1.6vh]">
+              <BarraIniziativa combattimento={stato.combattimento} />
+            </div>
+          ) : (
+            /* Ritratti dei PNG in scena (chi parla si illumina): da 3 m si vede con chi si può parlare. */
+            <div className="mt-[2.2vh]">
+              <FilaPersonaggi personaggi={stato.scena.personaggi} parlante={parlante} />
+            </div>
+          )}
           {stato.la_volta_scorsa && (
             <div className="mt-[2vh]">
               <LaVoltaScorsa testo={stato.la_volta_scorsa} />

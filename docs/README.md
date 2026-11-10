@@ -9,6 +9,7 @@ The user guide, in English, is in [guide/](guide/) and the project overview is i
 | [architettura.md](architettura.md) | Architecture v1: the server owns the game state, the two models, and the modules. |
 | [audio.md](audio.md) | Audio framework: background music, character themes, ambient sounds, and their sources. |
 | [azioni-concorrenti.md](azioni-concorrenti.md) | Simultaneous player actions: how they affect each other and the narration, and how they can be cancelled. |
+| [combattimento.md](combattimento.md) | Combat driven by the campaign's rule set: initiative, phases, NPC turns, 0 HP, conditions, end of combat. |
 | [da-fare.md](da-fare.md) | Live list of open items and who holds each one. |
 | [f0-contratti.md](f0-contratti.md) | Phase 0 (one complete scene): contracts between the phone, server, projector and voice. |
 | [manuale-master.md](manuale-master.md) | The narrator's craft rules for D&D played live, enforced by the code. |

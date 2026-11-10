@@ -7,7 +7,15 @@
  * finita pari, prova privata, 1 naturale di un PNG, prova con svantaggio e modificatore negativo.
  * In coda, i set di regole non SRD: 2d6 a fasce (parziale, fallimento) e sotto soglia (d100, d20).
  */
-import type { AzionePrivata, InfoServer, StatoTavolo, TiroMostrato, VoceTrascrizione } from '@cantastorie/shared';
+import type {
+  AzionePrivata,
+  CombattimentoPubblico,
+  InfoServer,
+  PgPubblico,
+  StatoTavolo,
+  TiroMostrato,
+  VoceTrascrizione,
+} from '@cantastorie/shared';
 
 export const TURNO_ESEMPIO = 3;
 
@@ -251,6 +259,10 @@ export function statoEsempio(opzioni: {
   pf?: { attuali: number; massimi: number } | null;
   immagine?: string | null;
   ritratti?: Record<string, string>;
+  /** Lo scontro in corso (barra del proiettore, riquadro del telefono); assente = nessuno. */
+  combattimento?: CombattimentoPubblico | null;
+  /** I PG del tavolo; assenti = i tre di sempre (Arianna, Corrado, Bianca). */
+  pg?: PgPubblico[];
 }): StatoTavolo {
   const dopo = opzioni.fase === 'dopo';
   const turno = dopo ? TURNO_ESEMPIO + 1 : TURNO_ESEMPIO;
@@ -276,11 +288,12 @@ export function statoEsempio(opzioni: {
         { id: 'lupo', nome: 'Lupo', ritratto: null, presente: true },
       ],
     },
-    pg: [
+    pg: opzioni.pg ?? [
       { id: 'arianna', nome: 'Arianna Valsecca', descrizione: 'mezzelfa, barda', telefoni: 1, pf: opzioni.pf === undefined ? { attuali: 5, massimi: 12 } : opzioni.pf },
       { id: 'corrado', nome: 'Corrado', descrizione: 'umano, guerriero', telefoni: 1, pf: { attuali: 14, massimi: 14 } },
       { id: 'bianca', nome: 'Bianca', descrizione: 'halfling, ladra', telefoni: 1, pf: { attuali: 0, massimi: 9 } },
     ],
+    combattimento: opzioni.combattimento ?? null,
     finestra: {
       aperta: dopo,
       turno,
@@ -300,11 +313,60 @@ export function statoEsempio(opzioni: {
   };
 }
 
-/** La mia azione finta (Arianna): risolta, con una carta pubblica e una privata. */
-export function azioneEsempio(tiri: TiroMostrato[]): AzionePrivata {
+/**
+ * Lo scontro del banco di prova, round 2: Ida di turno (PG, pieno), Ruggero (PNG, ferito, prono),
+ * Corrado (PG a 0 PF, a terra, con i tiri contro la morte), Bertoldo (PNG fuggito).
+ */
+export function combattimentoEsempio(): CombattimentoPubblico {
+  return {
+    round: 2,
+    fase: null,
+    iniziativa: 'individuale',
+    combattenti: [
+      { id: 'ida', nome: 'Ida', di_png: false, iniziativa: 18, corrente: true, pf: { attuali: 9, massimi: 9 }, condizioni: [], stato: 'in_gioco', tiri_morte: null },
+      {
+        id: 'ruggero',
+        nome: 'Ruggero',
+        di_png: true,
+        iniziativa: 15,
+        corrente: false,
+        pf: { attuali: 3, massimi: 11 },
+        condizioni: [{ id: 'prono', nome: 'Prono', icona: '⬇' }],
+        stato: 'in_gioco',
+        tiri_morte: null,
+      },
+      {
+        id: 'corrado',
+        nome: 'Corrado',
+        di_png: false,
+        iniziativa: 12,
+        corrente: false,
+        pf: { attuali: 0, massimi: 12 },
+        condizioni: [{ id: 'privo_di_sensi', nome: 'Privo di sensi', icona: '💤' }],
+        stato: 'a_terra',
+        tiri_morte: { successi: 1, fallimenti: 2 },
+      },
+      { id: 'bertoldo', nome: 'Bertoldo', di_png: true, iniziativa: 9, corrente: false, pf: null, condizioni: [], stato: 'fuggito', tiri_morte: null },
+    ],
+    turno_di: ['ida'],
+    azioni: [
+      { nome: 'Azione', quante: 'una' },
+      { nome: 'Movimento', quante: 'fino alla tua Velocità' },
+    ],
+  };
+}
+
+/** I PG dello scontro (Ida e Corrado con i PF del combattimento), per il telefono del banco di prova. */
+export const PG_COMBATTIMENTO: PgPubblico[] = [
+  { id: 'ida', nome: 'Ida', descrizione: 'umana, ladra', telefoni: 1, pf: { attuali: 9, massimi: 9 } },
+  { id: 'corrado', nome: 'Corrado', descrizione: 'umano, guerriero', telefoni: 1, pf: { attuali: 0, massimi: 12 } },
+];
+
+/** La mia azione finta: risolta, con una carta pubblica e una privata (per il PG `idPg`). */
+export function azioneEsempio(tiri: TiroMostrato[], idPg = 'arianna'): AzionePrivata {
   return {
     id: 'azione-prova',
-    id_pg: 'arianna',
+    id_pg: idPg,
     testo: 'Convinco Bran a farci entrare e intanto gli sfilo la chiave dalla tasca.',
     privata: false,
     stato: 'risolta',

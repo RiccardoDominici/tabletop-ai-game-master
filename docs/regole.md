@@ -94,7 +94,27 @@ mosse:                                      # facoltative (giochi alla PbtA)
     caratteristica: fascino                 # [V] esistente
     esiti: {successo: "…", parziale: "…", fallimento: "…"}   # [V] successo e fallimento obbligatori
 sottosistemi: [{id, nome, testo}]           # altro (magia, sanità…): solo testo, per ora
+combattimento:                              # facoltativo: senza, SRD completo per l'SRD e un default per gli altri tipi
+  iniziativa:
+    tipo: individuale | per_schieramento | nessuna   # [V]
+    dado: 20                                # [V] 4, 6, 8, 10, 12 o 20
+    caratteristica: destrezza               # [V] esistente, o null
+    ogni_round: false                       # booleano: si ritira a ogni round (B/X)
+  fasi:                                     # [V] almeno una; id snake_case
+    - {id: mischia, nome: "Mischia", png: attacco_mischia}   # [V] png: attacco | attacco_distanza | attacco_mischia | null
+  azioni: [{id, nome, quante}]              # economia del turno (testo)
+  danni:
+    modello: pf | ferite | stress           # [V]
+    a_zero: {pg: tiri_morte | fuori_gioco | morte, png: morte | fuori_gioco}   # [V]
+    tiri_morte: {cd: 10, successi: 3, fallimenti: 3}
+  condizioni:                               # [V] id snake_case; effetti dall'elenco chiuso (docs/combattimento.md §2)
+    - {id: prono, nome: "Prono", icona: "⬇", effetti: [svantaggio_attacchi, attacchi_contro_vantaggio], testo: "…"}
+  condizione_a_zero: privo_di_sensi         # [V] tra le condizioni, o null
+  fine: {morale: true}                      # morale B/X: 2d6 contro scheda.morale dei PNG
 ```
+
+Per il combattimento le schede dei set non SRD possono avere `attacchi[].distanza: true` (fase dei proiettili) e, per i
+PNG, `morale` (2–12).
 
 ### Schede di PG e PNG per un set non SRD
 Le schede stanno negli stessi posti delle schede SRD: `pg.yaml → personaggi[].scheda` e `png/<id>.yaml → scheda`. I

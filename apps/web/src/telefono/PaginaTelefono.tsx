@@ -17,6 +17,7 @@ import { useTelefono } from '../store/telefono';
 import { avviaTelefono } from './sessione';
 import { SceltaPersonaggio } from './SceltaPersonaggio';
 import { BannerStato } from './BannerStato';
+import { TurnoCombattimento } from './TurnoCombattimento';
 import { Trascrizione } from './Trascrizione';
 import { CasellaAzione } from './CasellaAzione';
 import { SchedaPersonaggio } from './SchedaPersonaggio';
@@ -149,6 +150,8 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
 
       <div className="sicuro-lati flex flex-col gap-2">
         <BannerStato stato={stato} idPg={idPg} />
+        {/* Combattimento in corso: di chi è il turno e i miei PF (solo con uno scontro). */}
+        <TurnoCombattimento combattimento={stato.combattimento} idPg={idPg} />
         <AlTavolo stato={stato} idPg={idPg} />
         <TiriTurno stato={stato} />
       </div>

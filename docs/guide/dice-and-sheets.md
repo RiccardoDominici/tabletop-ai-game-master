@@ -69,8 +69,8 @@ Everything comes from `docs/prove.md`, §1, which cites the SRD 5.2.
 **A natural 20 and a natural 1** count only on attack rolls: a 20 is always a critical hit (the damage dice are rolled twice), and a 1 always misses. In checks and saving throws they do not count.
 
 **Attacks.** The roll is compared with the target's AC. A ranged weapon has disadvantage if an enemy who can see the attacker is within 1.5 metres of it.
-- At 0 PF an NPC dies or is knocked out.
-- At 0 PF a player's character falls unconscious. Today it stays «a terra, privo di sensi» (down, unconscious) and does not act until it is healed: death saving throws do not exist yet.
+- At 0 PF an NPC dies or is knocked out, as its rule set says.
+- At 0 PF a player's character falls unconscious and makes death saving throws: see [Combat](#combat).
 
 **Persuading an NPC («Influenzare», Influence).**
 - If the NPC is well disposed, no roll is made: it works. If it is hostile, no roll is made: it does not work.
@@ -88,6 +88,31 @@ Everything comes from `docs/prove.md`, §1, which cites the SRD 5.2.
 - grappling and shoving are simplified to Athletics against the passive score.
 
 **NPC reactions.** If you hit a hostile NPC that stays on its feet, it can respond at once: the Engine rolls its attack after your action, in the same turn.
+
+## Combat
+
+**How a fight starts.** Either an attack hits or targets a character with a sheet (a player's character attacks an NPC, or an NPC answers), or the Game Master presses «Inizia combattimento» (Start combat) in the panel. The fight takes in the player characters at the table, the NPCs involved, and the hostile NPCs on stage that have a sheet. The attack that opened the fight counts as a surprise attack.
+
+**Initiative** comes from the campaign's rule set. With the SRD 5.2 (the default), each combatant rolls a d20 plus its Dexterity modifier once, and the order stays the same for the whole fight. A manual can use initiative by side instead (for example 1d6 per side, rolled again each round, as in B/X), or none, as in PbtA games. See [Your rules manual](your-rules-manual.md).
+
+**Turns.**
+- A round is a series of phases (movement, ranged attacks, melee, as the set defines them). In each phase the combatants act in initiative order.
+- When it is a player's character's turn, only that character is invited to act. The other players can still write, but their action waits in line and is resolved on their own turn.
+- NPCs act on their own turn, without input. In their phase they attack a standing player's character: first the one that hit them, otherwise the one who acted last, otherwise the first one standing. The narrator describes their actions in the same reply.
+- A player's character has one action per turn. Bonus actions, multiple attacks and spells are described, not resolved.
+
+**At 0 HP.**
+- An NPC dies or is knocked out, according to its rule set (SRD: it dies).
+- A player's character falls «Privo di sensi» (Unconscious). With the SRD it makes a death saving throw at the start of each of its turns: DC 10; 3 successes and it is stable; 3 failures and it dies. A natural 20 brings it back to 1 HP; a natural 1 counts as two failures; damage taken at 0 HP counts as one failure.
+- The Game Master can restore HP in the panel. A character back above 0 gets up.
+
+**Conditions** have mechanical effects. The SRD 5.2 conditions (for example Prone, Poisoned, Stunned) and the Dodge action change the rolls: disadvantage on attacks, attacks against them with advantage, failed saves, a lost turn, and so on. The Engine adds Unconscious at 0 HP. The Game Master adds or removes the others in the panel, and a condition with a duration ends at the start of the round when it expires.
+
+**How a fight ends:**
+- the enemies are down or have fled;
+- all the player characters are down;
+- a side's morale fails (sets with morale, as in B/X: 2d6 against the morale score of each NPC, after the first fall and when half are down; a failure means flight or surrender);
+- the Game Master presses «Termina combattimento» (End combat) and confirms it.
 
 ## Character sheets
 
@@ -202,8 +227,9 @@ This checks the `nozze-neve` campaign. It finishes with no errors if everything 
 ## What is not there yet
 
 From `docs/prove.md`, §7:
-- real combat: initiative and turn order, unprovoked NPC attacks, death saving throws, conditions (prone, grappled…), multiple attacks, spells;
-- the Game Master's panel handles the HP of characters and NPCs by hand (care, damage, and rest): today NPC HP is only in the logs and the archive;
+- combat with movement and distances, opportunity attacks, several attacks or spells in one turn: see [Combat](#combat);
+- conditions from the narrator: only the Engine (at 0 HP) and the Game Master set them;
+- HP are set by hand in the panel's Combat section (see [The Game Master panel](master-panel.md));
 - an NPC's attitude that changes during the story: the advantage does not follow it yet.
 
 ## A rule set different from the SRD

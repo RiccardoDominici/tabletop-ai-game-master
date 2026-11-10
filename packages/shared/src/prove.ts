@@ -101,3 +101,36 @@ export interface PuntiFerita {
   attuali: number;
   massimi: number;
 }
+
+// ------------------------------------------------------------------ combattimento (docs/combattimento.md)
+
+/** Un combattente nella barra dell'iniziativa. */
+export interface CombattentePubblico {
+  id: string;
+  nome: string;
+  di_png: boolean;
+  /** Valore d'iniziativa (individuale); null con l'iniziativa per schieramento o senza. */
+  iniziativa: number | null;
+  /** Tocca a lui (o al suo schieramento) adesso. */
+  corrente: boolean;
+  /** Punti ferita: dei PG sempre; dei PNG per la sola barra del proiettore (niente numeri a voce). */
+  pf: PuntiFerita | null;
+  condizioni: Array<{ id: string; nome: string; icona: string }>;
+  stato: 'in_gioco' | 'a_terra' | 'stabile' | 'morto' | 'fuggito';
+  /** PG a 0 con i tiri salvezza contro la morte (SRD). */
+  tiri_morte: { successi: number; fallimenti: number } | null;
+}
+
+/** Lo scontro in corso (StatoTavolo.combattimento): proiettore, telefoni, pannello del master. */
+export interface CombattimentoPubblico {
+  round: number;
+  /** Fase del round (B/X: movimento, proiettili, magia, mischia); null con una sola fase. */
+  fase: string | null;
+  iniziativa: 'individuale' | 'per_schieramento' | 'nessuna';
+  /** In ordine d'iniziativa (PG e PNG). */
+  combattenti: CombattentePubblico[];
+  /** PG che devono agire adesso (vuoto senza iniziativa: agisce chi vuole). */
+  turno_di: string[];
+  /** Economia del turno del set, per il telefono («Azione: una», «Movimento: …»). */
+  azioni: Array<{ nome: string; quante: string }>;
+}

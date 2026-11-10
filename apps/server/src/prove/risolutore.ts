@@ -28,6 +28,7 @@ import type { FonteDadi } from './dadi';
 import { attacco, combinaVantaggi, contesa, prova, type EsitoAttacco } from './regole';
 import type { StatoProve } from './stato';
 import type { DecisioneProva, EsitoAzioneProve, EsitoTurnoProve } from './tipi';
+import { conEffetto, fontiAttacco, type CondizioniDi } from './condizioni';
 import {
   FATTO_NESSUN_TIRO,
   FATTO_SENZA_ARBITRO,
@@ -67,6 +68,8 @@ export interface OpzioniRisolutore {
   atteggiamento: (png: string, pg: string) => Atteggiamento | null;
   /** Modalità A: il narratore conosce gli indizi, si può nominare quello che la prova sblocca. */
   conIndizi: boolean;
+  /** Condizioni attive (combattimento): vantaggi, svantaggi, critici, turni persi. Assente = nessuna. */
+  condizioni?: CondizioniDi;
   log: Logger;
 }
 
@@ -136,7 +139,7 @@ export function normalizzaDecisione(d: DecisioneProva, prove: readonly ProvaScen
   return d;
 }
 
-export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive'> {
+export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive' | 'combattimento'> {
   const perAzione = new Map<string, EsitoAzioneProve>();
   const tiri: TiroMostrato[] = [];
   const fatti: string[] = [];
@@ -174,6 +177,8 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
       log.warn('prove: nessuna decisione dell\'arbitro, nessun tiro');
     } else if (o.stato.aTerra(a.autore)) {
       testo = 'è a terra, privo di sensi: non può agire finché qualcuno non lo cura.';
+    } else if (conEffetto(o.condizioni, a.autore, 'perde_turno')) {
+      testo = `è ${conEffetto(o.condizioni, a.autore, 'perde_turno')!.toLowerCase()}: perde il turno, nessun tiro.`;
     } else if (d.tipo === 'nessuna') {
       testo = FATTO_NESSUN_TIRO;
     } else if (d.tipo === 'impossibile') {
@@ -233,6 +238,10 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     }
     const bersaglio = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
     const fonti = [...fontiArbitro, ...fontiAiuto];
+    const condSv = conEffetto(o.condizioni, a.autore, salvezza ? 'svantaggio_salvezze' : 'svantaggio_prove');
+    if (condSv) fonti.push({ v: 'svantaggio', motivo: condSv.toLowerCase() });
+    // Paralizzato, stordito, privo di sensi (SRD 5.2): i TS di Forza e Destrezza falliscono da soli.
+    const autoFallita = salvezza && (car === 'forza' || car === 'destrezza') ? conEffetto(o.condizioni, a.autore, 'fallisce_salvezze_forza_destrezza') : null;
     let cd: number;
     let descrizione: string | null;
     if (ps) {
@@ -253,6 +262,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     const { v, motivo } = vantaggioDa(fonti);
     const mod = salvezza ? modSalvezza(s, car!) : abil ? modAbilita(s, abil) : modCaratteristica(s, car!);
     const e = prova(o.dadi, mod, cd, v);
+    if (autoFallita) e.riuscita = false;
     const t = carta({
       chi: a.autore,
       nome: o.nome(a.autore),
@@ -279,6 +289,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     esito.riuscita = e.riuscita;
     if (e.riuscita) esito.riuscite.push(...[salvezza ? 'salvezza' : 'prova', abil, car, ps?.id].filter((x): x is string => !!x));
     let f = fattoTiro(t, null);
+    if (autoFallita) f += ` Fallisce da solo: è ${autoFallita.toLowerCase()}.`;
     if (ps?.se_fallisce && !e.riuscita) f += ` Prezzo del fallimento: ${ps.se_fallisce}.`;
     if (ps?.essenziale && !e.riuscita) f += ' Ciò che cercava è essenziale: lo trova comunque, ma con un prezzo.';
     if (ps?.indizio && e.riuscita && o.conIndizi && !ps.essenziale) f += ` Trova ciò che cercava (indizio ${ps.indizio}).`;
@@ -305,8 +316,8 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     if (o.stato.aTerra(id)) return fattoGiaATerra(o.nome(id));
     const arma = scegliArma(s, d.arma);
     if (d.arma && arma.id !== chiave(d.arma)) log.info({ arma: d.arma, usata: arma.id }, 'prove: arma dell\'arbitro ricondotta alla scheda');
-    const { v, motivo } = vantaggioDa(fonti);
-    const e = attacco(o.dadi, bonusAttacco(s, arma), ts.ca, v, arma.danno, bonusDanno(s, arma));
+    const { v, motivo } = vantaggioDa([...fonti, ...fontiAttacco(o.condizioni, a.autore, id)]);
+    const e = attacco(o.dadi, bonusAttacco(s, arma), ts.ca, v, arma.danno, bonusDanno(s, arma), !!conEffetto(o.condizioni, id, 'critico_contro'));
     const { t, saluteTesto } = cartaAttacco(o, a.autore, id, arma, e, v ? motivo : null, a.privata);
     aggiungi(t);
     esito.riuscita = e.riuscita;
@@ -384,59 +395,78 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     return fattoTiro(t, null);
   }
 
-  function cartaAttacco(
-    o: OpzioniRisolutore,
-    chi: string,
-    bersaglio: string,
-    arma: AttaccoScheda,
-    e: EsitoAttacco,
-    motivo: string | null,
-    privata: boolean,
-  ): { t: TiroMostrato; saluteTesto: string | null } {
-    const ts = o.schede.get(bersaglio)!;
-    const applicato = e.danno ? o.stato.danneggia(bersaglio, e.danno.totale) : null;
-    const pf = o.stato.puntiFerita(bersaglio);
-    const saluteTesto = applicato && pf ? (ts.di_png ? salute(pf.attuali, pf.massimi) : pf.attuali <= 0 ? 'è A TERRA (0 punti ferita): privo di sensi' : `ha ${pf.attuali} punti ferita su ${pf.massimi}`) : null;
-    const t = carta({
-      chi,
-      nome: o.nome(chi),
-      di_png: o.schede.get(chi)?.di_png ?? chi.startsWith('png_'),
-      tipo: 'attacco',
-      etichetta: arma.nome,
-      dadi: e.dadi,
-      dado: e.dado,
-      vantaggio: e.vantaggio,
-      motivo_vantaggio: e.vantaggio ? motivo : null,
-      modificatore: e.modificatore,
-      totale: e.totale,
-      contro: { tipo: 'CA', valore: ts.ca, descrizione: `CA di ${o.nome(bersaglio)}` },
-      bersaglio: { id: bersaglio, nome: o.nome(bersaglio) },
-      riuscita: e.riuscita,
-      critico: e.critico,
-      fallimento_critico: e.fallimento_critico,
-      danno: e.danno ? { formula: e.danno.formula, dadi: e.danno.dadi, bonus: e.danno.bonus, totale: e.danno.totale, tipo: arma.tipo_danno } : null,
-      a_terra: !!pf && pf.attuali <= 0,
-      privata,
-      avversario: null,
-    });
-    return { t, saluteTesto };
-  }
-
-  /** Il PNG reagisce attaccando l'autore dell'azione (se ha una scheda ed è in piedi). */
-  function reazione(o: OpzioniRisolutore, a: AzioneRisolvibile, png: string, aggiungi: (t: TiroMostrato) => void, log: Logger): string | null {
-    const ps = o.schede.get(png);
-    const bs = o.schede.get(a.autore);
-    if (!ps || !ps.di_png || !bs) {
-      log.info({ png }, 'prove: reazione senza schede, nessun tiro');
-      return null;
-    }
-    if (o.stato.aTerra(png) || o.stato.aTerra(a.autore)) return null;
-    const arma = scegliArma(ps, null);
-    const e = attacco(o.dadi, bonusAttacco(ps, arma), bs.ca, null, arma.danno, bonusDanno(ps, arma));
-    const { t, saluteTesto } = cartaAttacco(o, png, a.autore, arma, e, null, a.privata);
-    aggiungi(t);
-    return `Poi ${o.nome(png)} reagisce: ${fattoTiro(t, saluteTesto)}`;
-  }
-
   return { turno: o.turno, perAzione, tiri, fatti };
+}
+
+/** Una carta nuova col prossimo id del turno. */
+function nuovaCarta(o: Omit<OpzioniRisolutore, 'azioni' | 'decisioni'>, base: Omit<TiroMostrato, 'id' | 'turno'>): TiroMostrato {
+  return { id: o.stato.nuovoIdTiro(), turno: o.turno, ...base };
+}
+
+export function cartaAttacco(
+  o: Omit<OpzioniRisolutore, 'azioni' | 'decisioni'>,
+  chi: string,
+  bersaglio: string,
+  arma: AttaccoScheda,
+  e: EsitoAttacco,
+  motivo: string | null,
+  privata: boolean,
+): { t: TiroMostrato; saluteTesto: string | null } {
+  const ts = o.schede.get(bersaglio)!;
+  const applicato = e.danno ? o.stato.danneggia(bersaglio, e.danno.totale) : null;
+  const pf = o.stato.puntiFerita(bersaglio);
+  const saluteTesto = applicato && pf ? (ts.di_png ? salute(pf.attuali, pf.massimi) : pf.attuali <= 0 ? 'è A TERRA (0 punti ferita): privo di sensi' : `ha ${pf.attuali} punti ferita su ${pf.massimi}`) : null;
+  const t = nuovaCarta(o, {
+    chi,
+    nome: o.nome(chi),
+    di_png: o.schede.get(chi)?.di_png ?? chi.startsWith('png_'),
+    tipo: 'attacco',
+    etichetta: arma.nome,
+    dadi: e.dadi,
+    dado: e.dado,
+    vantaggio: e.vantaggio,
+    motivo_vantaggio: e.vantaggio ? motivo : null,
+    modificatore: e.modificatore,
+    totale: e.totale,
+    contro: { tipo: 'CA', valore: ts.ca, descrizione: `CA di ${o.nome(bersaglio)}` },
+    bersaglio: { id: bersaglio, nome: o.nome(bersaglio) },
+    riuscita: e.riuscita,
+    critico: e.critico,
+    fallimento_critico: e.fallimento_critico,
+    danno: e.danno ? { formula: e.danno.formula, dadi: e.danno.dadi, bonus: e.danno.bonus, totale: e.danno.totale, tipo: arma.tipo_danno } : null,
+    a_terra: !!pf && pf.attuali <= 0,
+    privata,
+    avversario: null,
+  });
+  return { t, saluteTesto };
+}
+
+/** Il PNG reagisce attaccando l'autore dell'azione (se ha una scheda ed è in piedi). */
+function reazione(o: OpzioniRisolutore, a: AzioneRisolvibile, png: string, aggiungi: (t: TiroMostrato) => void, log: Logger): string | null {
+  const ps = o.schede.get(png);
+  const bs = o.schede.get(a.autore);
+  if (!ps || !ps.di_png || !bs) {
+    log.info({ png }, 'prove: reazione senza schede, nessun tiro');
+    return null;
+  }
+  if (o.stato.aTerra(png) || o.stato.aTerra(a.autore)) return null;
+  const r = attaccoPngSrd(o, png, a.autore, a.privata);
+  if (!r) return null;
+  aggiungi(r.t);
+  return `Poi ${o.nome(png)} reagisce: ${r.testo}`;
+}
+
+/**
+ * Un PNG attacca un PG (reazione, o il suo turno in combattimento): prima arma della scheda, contro
+ * la CA del PG, con le condizioni di tutti e due. null se mancano le schede o uno dei due è a terra.
+ */
+export function attaccoPngSrd(o: Omit<OpzioniRisolutore, 'azioni' | 'decisioni'>, png: string, bersaglio: string, privata = false, idArma: string | null = null): { t: TiroMostrato; testo: string } | null {
+  const ps = o.schede.get(png);
+  const bs = o.schede.get(bersaglio);
+  if (!ps || !bs || o.stato.aTerra(png) || o.stato.aTerra(bersaglio)) return null;
+  const arma = scegliArma(ps, idArma);
+  const { v, motivo } = vantaggioDa(fontiAttacco(o.condizioni, png, bersaglio));
+  const e = attacco(o.dadi, bonusAttacco(ps, arma), bs.ca, v, arma.danno, bonusDanno(ps, arma), !!conEffetto(o.condizioni, bersaglio, 'critico_contro'));
+  const { t, saluteTesto } = cartaAttacco(o, png, bersaglio, arma, e, v ? motivo : null, privata);
+  return { t, testo: fattoTiro(t, saluteTesto) };
 }

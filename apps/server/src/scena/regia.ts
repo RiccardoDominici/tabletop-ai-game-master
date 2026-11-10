@@ -87,6 +87,7 @@ import { sezioneNoteRegia } from '../narrazione/messaggio';
 import { MotoreProve, type AzionePerProve } from '../prove/motore';
 import type { ArbitroProve, DecisioneProva, DecisioneRegole, EsitoTurnoProve } from '../prove/tipi';
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
+import type { CombattimentoMaster } from '@cantastorie/shared';
 import type { FonteDadi } from '../prove/dadi';
 import { REGOLA_ESITI, TITOLO_ESITI } from '../prove/testi';
 import { guardiaPrivate } from '../narrazione/privato';
@@ -1297,6 +1298,7 @@ export class Regia {
       ritmo: this.ritmo,
       ora_server_ms: this.o.orologio.adesso(),
       ...(this.prove?.attivo ? { dadi: true, tiri: this.prove.tiriPubblici() } : {}),
+      ...(this.prove?.inCombattimento ? { combattimento: this.prove.vistaCombattimento() } : {}),
       ...this.serata.pubblico(this.finoraStasera()),
     };
   }
@@ -1967,6 +1969,51 @@ export class Regia {
     return g ? { spostaPrivata: g } : {};
   }
 
+  /** Per il pannello del master: schede coi PF e condizioni del set (null senza dadi). */
+  get combattimentoMaster(): CombattimentoMaster | null {
+    return this.prove?.attivo ? this.prove.combattimentoMaster() : null;
+  }
+
+  /** Combattimento a turni: tiene le azioni di chi è di turno, rinvia le altre (tornano in coda). */
+  private soloChiEraDiTurno(r: RiepilogoChiusura): RiepilogoChiusura {
+    const diTurno = this.prove?.turnoCombattimento();
+    if (!diTurno?.length) return r;
+    const fuori = r.azioni.filter((a) => !diTurno.includes(a.autore));
+    if (!fuori.length) return r;
+    this.tavolo.rinvia(fuori.map((a) => a.id));
+    this.o.log.info({ turno: r.turno, di_turno: diTurno, rinviate: fuori.map((a) => a.autore) }, 'combattimento: risolve solo chi è di turno');
+    return { ...r, azioni: r.azioni.filter((a) => diTurno.includes(a.autore)) };
+  }
+
+  /** Pannello del master: comincia o finisce lo scontro, corregge PF e condizioni. */
+  iniziaCombattimento(): Esito {
+    const fatto = this.prove?.iniziaCombattimento();
+    if (!fatto) return { ok: false, errore: this.prove?.attivo ? 'C’è già un combattimento in corso.' : 'Questa campagna non gioca coi dadi.' };
+    this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: fatto });
+    this.o.log.info({ turno: this.turno }, 'combattimento: aperto dal master');
+    this.notifica();
+    return { ok: true };
+  }
+
+  terminaCombattimento(): Esito {
+    if (!this.prove?.terminaCombattimento()) return { ok: false, errore: 'Nessun combattimento in corso.' };
+    this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: 'Il master chiude il combattimento.' });
+    this.notifica();
+    return { ok: true };
+  }
+
+  impostaPf(id: string, valore: number): Esito {
+    if (!this.prove?.impostaPf(id, valore)) return { ok: false, errore: 'PF non validi o personaggio senza scheda.' };
+    this.notifica();
+    return { ok: true };
+  }
+
+  condizioneCombattimento(id: string, condizione: string, attiva: boolean): Esito {
+    if (!this.prove?.condizione(id, condizione, attiva)) return { ok: false, errore: 'Condizione sconosciuta, o nessun combattimento in corso.' };
+    this.notifica();
+    return { ok: true };
+  }
+
   /** I dadi del turno chiuso: carte a proiettore e telefoni, fatti per il narratore, prove riuscite. */
   private async tiriDelTurno(r: RiepilogoChiusura): Promise<EsitoTurnoProve> {
     const esito = await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
@@ -1991,6 +2038,9 @@ export class Regia {
   }
 
   private fineNarrazione(invito: string[] | 'tutti'): void {
+    // Combattimento a turni: invita il Motore, non il narratore (solo chi è di turno).
+    const diTurno = this.prove?.turnoCombattimento();
+    if (diTurno?.length) invito = diTurno;
     // Il lavoro del Motore è finito: da qui il tavolo aspetta i giocatori (senza fretta) o il master.
     this.sorvegliante.fine('fine narrazione');
     void this.tavolo.dopoNarrazione(this.turno, this.versioneScena);
@@ -2038,6 +2088,8 @@ export class Regia {
 
   private async finestraChiusa(r: RiepilogoChiusura): Promise<void> {
     if (r.motivo === 'forzata') return; // ferma/ricomincia: niente narrazione
+    // Combattimento a turni: si risolve solo chi era di turno; le azioni degli altri tornano in coda.
+    r = this.soloChiEraDiTurno(r);
     this.salvaTavoloOra();
     // La situazione messa dopo una rivelazione ha accompagnato la reazione dei giocatori: si torna al luogo.
     if (this.situazione?.auto && this.situazione.turno < r.turno) this.togliSituazione('narrazione successiva');
@@ -2067,7 +2119,8 @@ export class Regia {
     // Tiri del turno (docs/prove.md): il Motore tira PRIMA del narratore, che riceve gli esiti come
     // fatti. Le decisioni dell'arbitro di solito sono già pronte (prese all'invio): nessuna attesa.
     this.riuscitePerAzione = new Map();
-    const tiri = this.prove?.attivo && r.azioni.length ? await this.tiriDelTurno(r) : null;
+    // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
+    const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r) : null;
     if (epoca !== this.epoca) return;
     const messaggioBase = compilaMessaggioTurno({
       turno: r.turno,

@@ -26,6 +26,14 @@ import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
 import { proveScenaRegole, risolviTurnoRegole } from './risolutore-regole';
 import { regolePerNarratore } from '../regole/narratore';
 import { REGOLA_ESITI } from './testi';
+import { GestoreCombattimento } from './combattimento';
+import { combattimentoSrd, type Combattimento, type Fase } from '../regole/combattimento';
+import { strumentiRegole } from './risolutore-regole';
+import { attaccoPngSrd } from './risolutore';
+import { valoreCaratteristica } from '../regole/schede';
+import { comeCaratteristica } from '../campagna/regole-srd';
+import { modCaratteristica } from '../campagna/schede';
+import type { CombattimentoMaster, CombattimentoPubblico } from '@cantastorie/shared';
 
 /** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
 type Decisione = DecisioneProva | DecisioneRegole;
@@ -97,6 +105,10 @@ export function dadiAttiviRegole(c: Campagna, schede: ReadonlyMap<string, Scheda
 export class MotoreProve {
   readonly stato: StatoProve;
   private dadi: FonteDadi;
+  /** Lo scontro in corso, se c'è (prove/combattimento.ts). */
+  readonly combattimento: GestoreCombattimento;
+  /** Situazione dello scontro per il narratore, dall'ultimo turno risolto. */
+  private intestazione: string | null = null;
   private readonly cache = new Map<string, VoceCache>();
   /** Esiti dell'ultimo turno con tiri, per azione (le carte dell'azione privata vanno al suo telefono). */
   private ultimi = new Map<string, TiroMostrato[]>();
@@ -105,6 +117,19 @@ export class MotoreProve {
   constructor(private readonly o: OpzioniMotoreProve) {
     this.stato = new StatoProve(this.generico ? this.generico.schede : o.schede);
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
+    this.combattimento = new GestoreCombattimento({
+      regole: this.regoleCombattimento(),
+      stato: this.stato,
+      dadi: () => this.dadi,
+      nome: (id) => this.o.contesto().nome(id),
+      attacca: (png, pg, fase, turno) => this.attaccaPng(png, pg, fase, turno),
+      morale: (png) => {
+        const sch = this.o.contesto().campagna.png.find((p) => p.id === png)?.dati['scheda'] as DatiYaml | undefined;
+        return typeof sch?.['morale'] === 'number' ? sch['morale'] : null;
+      },
+      nuovoIdTiro: () => this.stato.nuovoIdTiro(),
+      log: o.log.child({ modulo: 'combattimento' }),
+    });
   }
 
   /** Il set non SRD in uso (null = SRD 5.2). */
@@ -126,7 +151,7 @@ export class MotoreProve {
   regolaEsiti(): string {
     const g = this.generico;
     const blocco = g ? regolePerNarratore(g.regole) : null;
-    return blocco ? `${REGOLA_ESITI}\n${blocco}` : REGOLA_ESITI;
+    return [REGOLA_ESITI, blocco, this.inCombattimento ? this.intestazione : null].filter(Boolean).join('\n');
   }
 
   get attivo(): boolean {
@@ -275,28 +300,32 @@ export class MotoreProve {
       if (scaduto) this.o.log.warn({ turno, senza: azioni.filter((a) => !decisioni.get(a.id)).map((a) => a.id), limite_ms: limite }, 'prove: arbitro troppo lento alla chiusura');
     }
     const attesa_ms = Math.round(this.o.orologio.ora() - t0);
-    if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], attesa_ms, tardive };
+    if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], attesa_ms, tardive, combattimento: null };
 
+    // Nello scontro a turni i PNG agiscono nel loro turno: niente reazioni in più dall'arbitro
+    // (la e2e del 10 novembre: Ruggero colpiva due volte per round, di reazione e di turno).
+    if (this.combattimento.aTurni) for (const [id, d] of decisioni) if (d?.reazione) decisioni.set(id, { ...d, reazione: null } as Decisione);
     const g = this.generico;
-    const esiste = (id: string): boolean => c.campagna.pg.some((p) => p.id === id) || c.campagna.png.some((p) => p.id === id);
-    const r = g
-      ? risolviTurnoRegole({
-          turno,
-          azioni,
-          decisioni: decisioni as Map<string, DecisioneRegole | null>,
-          sistema: g.regole.sistema,
-          schede: g.schede,
-          stato: this.stato,
-          dadi: this.dadi,
-          proveScena: proveScenaRegole(g.regole.sistema, c.campagna),
-          nome: c.nome,
-          esiste,
-          log: this.o.log.child({ turno }),
-        })
-      : risolviTurno({
+    const r = g ? risolviTurnoRegole({ ...this.opzioniRegole(turno, c, g), azioni, decisioni: decisioni as Map<string, DecisioneRegole | null> }) : risolviTurno({ ...this.opzioniSrd(turno, c), azioni, decisioni: decisioni as Map<string, DecisioneProva | null> });
+    // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
+    const attacchi = r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id }));
+    const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.map((a) => a.autore), candidati: () => this.candidati(c, attacchi) });
+    r.fatti.push(...comb.fatti);
+    r.tiri.push(...comb.tiri);
+    this.intestazione = comb.intestazione;
+    this.stato.registraTiri(r.tiri);
+    this.ultimi = new Map([...r.perAzione].map(([id, e]) => [id, e.tiri]));
+    this.ultimoTurno = { turno, tiri: r.tiri };
+    for (const a of azioni) this.cache.delete(a.id);
+    this.o.log.info({ turno, attesa_ms, tardive, tiri: r.tiri.length, seme: this.dadi.seme, contatore: this.dadi.contatore }, 'prove: turno risolto');
+    return { ...r, attesa_ms, tardive, combattimento: comb };
+  }
+
+  // ------------------------------------------------------------------ combattimento (docs/combattimento.md)
+
+  private opzioniSrd(turno: number, c: ContestoProve): Omit<Parameters<typeof risolviTurno>[0], 'azioni' | 'decisioni'> {
+    return {
       turno,
-      azioni,
-      decisioni: decisioni as Map<string, DecisioneProva | null>,
       schede: this.o.schede,
       stato: this.stato,
       dadi: this.dadi,
@@ -305,14 +334,129 @@ export class MotoreProve {
       esiste: (id) => c.campagna.pg.some((p) => p.id === id) || c.campagna.png.some((p) => p.id === id),
       atteggiamento: (png, pg) => this.atteggiamento(c.campagna, png, pg),
       conIndizi: this.o.conIndizi,
+      condizioni: (id) => this.combattimento.condizioniDi(id),
       log: this.o.log.child({ turno }),
-    });
-    this.stato.registraTiri(r.tiri);
-    this.ultimi = new Map([...r.perAzione].map(([id, e]) => [id, e.tiri]));
-    this.ultimoTurno = { turno, tiri: r.tiri };
-    for (const a of azioni) this.cache.delete(a.id);
-    this.o.log.info({ turno, attesa_ms, tardive, tiri: r.tiri.length, seme: this.dadi.seme, contatore: this.dadi.contatore }, 'prove: turno risolto');
-    return { ...r, attesa_ms, tardive };
+    };
+  }
+
+  private opzioniRegole(turno: number, c: ContestoProve, g: { regole: RegoleCampagna; schede: ReadonlyMap<string, SchedaGenerica> }): Omit<Parameters<typeof risolviTurnoRegole>[0], 'azioni' | 'decisioni'> {
+    return {
+      turno,
+      sistema: g.regole.sistema,
+      schede: g.schede,
+      stato: this.stato,
+      dadi: this.dadi,
+      proveScena: proveScenaRegole(g.regole.sistema, c.campagna),
+      nome: c.nome,
+      esiste: (id) => c.campagna.pg.some((p) => p.id === id) || c.campagna.png.some((p) => p.id === id),
+      condizioni: (id) => this.combattimento.condizioniDi(id),
+      log: this.o.log.child({ turno }),
+    };
+  }
+
+  /** Le regole di combattimento del set (SRD 5.2 se la campagna non ne ha un altro). */
+  private regoleCombattimento(): Combattimento {
+    return this.o.regole?.regole.sistema.combattimento ?? combattimentoSrd();
+  }
+
+  /** Chi entra nello scontro: i PG al tavolo con la scheda, i PNG coinvolti e quelli ostili in scena con la scheda. */
+  private candidati(c: ContestoProve, attacchi: Array<{ chi: string; bersaglio: string }>): Array<{ id: string; lato: 'pg' | 'png'; mod: number }> {
+    const g = this.generico;
+    const ha = (id: string): boolean => (g ? g.schede.has(id) : this.o.schede.has(id));
+    const car = this.regoleCombattimento().iniziativa.caratteristica;
+    const mod = (id: string): number => {
+      if (!car) return 0;
+      if (g) {
+        const sch = g.schede.get(id);
+        return sch ? valoreCaratteristica(g.regole.sistema, sch, car) : 0;
+      }
+      const sch = this.o.schede.get(id);
+      const k = comeCaratteristica(car);
+      return sch && k ? modCaratteristica(sch, k) : 0;
+    };
+    const coinvolti = new Set(attacchi.flatMap((a) => [a.chi, a.bersaglio]));
+    const presenti = new Set(c.campagna.scena.png_presenti);
+    const pg = c.pgAlTavolo.filter(ha).map((id) => ({ id, lato: 'pg' as const, mod: mod(id) }));
+    const png = c.campagna.png
+      .filter((p) => ha(p.id) && !this.stato.aTerra(p.id) && (coinvolti.has(p.id) || (presenti.has(p.id) && c.pgAlTavolo.some((x) => this.atteggiamento(c.campagna, p.id, x) === 'ostile'))))
+      .map((p) => ({ id: p.id, lato: 'png' as const, mod: mod(p.id) }));
+    // Un PNG coinvolto ma già a terra (colpito dall'attacco che apre lo scontro) entra lo stesso.
+    for (const id of coinvolti) if (id.startsWith('png_') && ha(id) && !png.some((p) => p.id === id)) png.push({ id, lato: 'png', mod: mod(id) });
+    return [...pg, ...png];
+  }
+
+  /** Un PNG attacca un PG nel suo turno, con l'arma adatta alla fase (B/X: proiettili o mischia). */
+  private attaccaPng(png: string, pg: string, fase: Fase, turno: number): { t: TiroMostrato; testo: string } | null {
+    const c = this.o.contesto();
+    const g = this.generico;
+    const armi = (g ? g.schede.get(png)?.attacchi : this.o.schede.get(png)?.attacchi) ?? null;
+    if (!armi) return null;
+    // B/X: nella fase dei proiettili solo chi ha un'arma a distanza, in mischia solo le armi da mischia.
+    const adatte = armi.filter((a) => (fase.png === 'attacco_distanza' ? a.distanza : fase.png === 'attacco_mischia' ? !a.distanza : true));
+    if (fase.png !== 'attacco' && !adatte.length) return null;
+    if (g) return strumentiRegole(this.opzioniRegole(turno, c, g)).attacca(png, pg, adatte[0]?.id ?? null, [], false);
+    return attaccoPngSrd(this.opzioniSrd(turno, c), png, pg, false, adatte[0]?.id ?? null);
+  }
+
+  /** Per il pannello del master: PF di chi ha una scheda, condizioni del set. */
+  combattimentoMaster(): CombattimentoMaster {
+    const c = this.o.contesto();
+    const g = this.generico;
+    const ids = g ? [...g.schede.keys()] : [...this.o.schede.keys()];
+    return {
+      attivo: this.combattimento.attivo,
+      schede: ids.flatMap((id) => {
+        const pf = this.stato.puntiFerita(id);
+        return pf ? [{ id, nome: c.nome(id), di_png: id.startsWith('png_'), pf }] : [];
+      }),
+      condizioni: this.regoleCombattimento().condizioni.map((x) => ({ id: x.id, nome: x.nome, icona: x.icona, testo: x.testo })),
+    };
+  }
+
+  get inCombattimento(): boolean {
+    return this.attivo && this.combattimento.attivo;
+  }
+
+  /** PG che devono agire adesso nello scontro a turni (null = niente turni: decide il narratore). */
+  turnoCombattimento(): string[] | null {
+    return this.inCombattimento ? this.combattimento.turnoDi() : null;
+  }
+
+  vistaCombattimento(): CombattimentoPubblico | null {
+    return this.inCombattimento ? this.combattimento.vista((id) => this.stato.puntiFerita(id)) : null;
+  }
+
+  /** Il master apre lo scontro (senza un attacco): tutti i PG al tavolo e i PNG ostili in scena. */
+  iniziaCombattimento(): string | null {
+    if (!this.attivo || this.combattimento.attivo) return null;
+    const c = this.o.contesto();
+    const fatto = this.combattimento.inizia(this.candidati(c, []));
+    this.intestazione = null;
+    return fatto;
+  }
+
+  terminaCombattimento(motivo = 'il master lo chiude'): boolean {
+    if (!this.combattimento.attivo) return false;
+    this.combattimento.termina(motivo);
+    this.intestazione = null;
+    return true;
+  }
+
+  /** Il master corregge i PF (cura o danno): chi torna sopra 0 si rialza. */
+  impostaPf(id: string, valore: number): boolean {
+    const p = this.stato.puntiFerita(id);
+    if (!p || !Number.isInteger(valore)) return false;
+    const v = Math.max(0, Math.min(p.massimi, valore));
+    if (v > p.attuali) this.stato.cura(id, v - p.attuali);
+    else if (v < p.attuali) this.stato.danneggia(id, p.attuali - v);
+    if (v > 0) this.combattimento.dopoCura(id);
+    return true;
+  }
+
+  /** Il master mette o toglie una condizione (solo durante lo scontro). */
+  condizione(id: string, condizione: string, attiva: boolean): boolean {
+    if (!this.combattimento.attivo) return false;
+    return attiva ? this.combattimento.aggiungiCondizione(id, condizione) : this.combattimento.togliCondizione(id, condizione);
   }
 
   /** Atteggiamento del PNG verso il PG dalla scheda (atteggiamento_pg.<pg>.stato). */
@@ -338,11 +482,12 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return this.stato.esporta(this.dadi.seme, this.dadi.contatore);
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta() };
   }
 
   importa(s: StatoProveSalvato): void {
     this.stato.importa(s);
+    this.combattimento.importa(s.combattimento ?? null);
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
     const ultimo = s.recenti?.at(-1)?.turno;
     this.ultimoTurno = ultimo !== undefined ? { turno: ultimo, tiri: (s.recenti ?? []).filter((t) => t.turno === ultimo) } : null;
@@ -352,6 +497,8 @@ export class MotoreProve {
   /** Ricomincia: PF pieni, dadi con un seme nuovo, niente carte. */
   azzera(): void {
     this.stato.azzeraPf();
+    this.combattimento.importa(null);
+    this.intestazione = null;
     this.cache.clear();
     this.ultimi.clear();
     this.ultimoTurno = null;

@@ -6,7 +6,7 @@
  * risincronizzano chiedendo `stato:richiedi` quando si riconnettono.
  */
 
-import type { PuntiFerita, TiroMostrato } from './prove';
+import type { CombattimentoPubblico, PuntiFerita, TiroMostrato } from './prove';
 
 /** Fasi della scena, nell'ordine in cui normalmente si susseguono. */
 export type FaseScena =
@@ -335,6 +335,8 @@ export interface StatoTavolo {
    * delle azioni private vanno solo nel `tiri` di AzionePrivata del loro autore.
    */
   tiri?: TiroMostrato[];
+  /** Combattimento in corso (docs/combattimento.md): barra dell'iniziativa, turno, PF, condizioni. */
+  combattimento?: CombattimentoPubblico | null;
 }
 
 /** Misure di latenza di un turno (stessi campi di logs/turni.jsonl, docs/f0-contratti.md). */

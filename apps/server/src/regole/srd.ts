@@ -9,6 +9,7 @@ import path from 'node:path';
 import { ABILITA, CARATTERISTICA_DI, CARATTERISTICHE, DIFFICOLTA, NOME_ABILITA, NOME_CARATTERISTICA, NOME_DIFFICOLTA } from '../campagna/regole-srd';
 import { RADICE_REPO } from '../percorsi';
 import type { SistemaRegole } from './tipi';
+import { combattimentoSrd } from './combattimento';
 
 export const ID_SRD = 'srd-5.2';
 /** Riassunto e passi dell'SRD 5.2 (CC-BY-4.0), nel repository. */
@@ -38,6 +39,7 @@ export function sistemaSrd(): SistemaRegole {
     sociale: { caratteristica: 'carisma', abilita: 'persuasione', nota: 'Influenzare: CD 15 o l’Intelligenza del PNG; amichevole vantaggio, ostile svantaggio.' },
     mosse: [],
     sottosistemi: [],
+    combattimento: combattimentoSrd(),
   };
 }
 

@@ -4,6 +4,7 @@
  */
 import type { TiroMostrato } from '@cantastorie/shared';
 import type { Abilita, Caratteristica, Difficolta } from '../campagna/regole-srd';
+import type { EsitoCombattimento } from './combattimento';
 
 /**
  * Che cosa serve per risolvere un'azione.
@@ -110,4 +111,6 @@ export interface EsitoTurnoProve {
   attesa_ms: number;
   /** Azioni classificate solo alla chiusura (l'arbitro all'invio non c'era o era vecchio). */
   tardive: string[];
+  /** Lo scontro dopo questo turno (invitati, intestazione per il narratore, fine), o null. */
+  combattimento: EsitoCombattimento | null;
 }

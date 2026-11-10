@@ -26,6 +26,10 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   dispositivo: { tipo: 'dispositivo', dispositivo: 'tel-anna-0123456789', id_pg: null },
   presenza: { tipo: 'presenza', id_png: 'png_oste', presente: true },
   rivela: { tipo: 'rivela', id_png: 'png_oste' },
+  combattimento_inizia: { tipo: 'combattimento_inizia' },
+  combattimento_termina: { tipo: 'combattimento_termina' },
+  pf: { tipo: 'pf', id: 'pg_anna', valore: 4 },
+  condizione: { tipo: 'condizione', id: 'pg_anna', condizione: 'avvelenato', attiva: true },
 };
 
 describe('zone ed etichette dei comandi', () => {
@@ -80,5 +84,14 @@ describe('descriviComando', () => {
     expect(descriviComando({ tipo: 'nota', testo: 'x', turni: 1 })).toBe('Nota di regia (1 turno)');
     expect(descriviComando({ tipo: 'nota', testo: 'x', turni: 15 })).toBe('Nota di regia (15 turni)');
     expect(descriviComando({ tipo: 'pausa' })).toBe('Pausa');
+  });
+  it('riassume i punti ferita e le condizioni del combattimento', () => {
+    expect(descriviComando({ tipo: 'pf', id: 'pg_anna', valore: 4 })).toBe('pg_anna: PF 4');
+    expect(descriviComando({ tipo: 'condizione', id: 'pg_anna', condizione: 'avvelenato', attiva: true })).toBe('Condizione pg_anna: avvelenato messa');
+    expect(descriviComando({ tipo: 'condizione', id: 'pg_anna', condizione: 'avvelenato', attiva: false })).toBe('Condizione pg_anna: avvelenato tolta');
+  });
+  it('le condizioni della stessa scheda hanno chiavi diverse; i PF della stessa scheda condividono la chiave', () => {
+    expect(chiaveComando({ tipo: 'condizione', id: 'a', condizione: 'x', attiva: true })).not.toBe(chiaveComando({ tipo: 'condizione', id: 'a', condizione: 'y', attiva: true }));
+    expect(chiaveComando({ tipo: 'pf', id: 'a', valore: 1 })).toBe(chiaveComando({ tipo: 'pf', id: 'a', valore: 2 }));
   });
 });

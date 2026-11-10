@@ -1,0 +1,59 @@
+id: png_bertoldo
+nome: Bertoldo
+pronuncia: Bertòldo
+alias:
+- gabelliere
+- pedaggiere
+livello: supporto
+ruolo: gabelliere del ponte
+aspetto:
+  lettura: Un vecchio magro col berretto di lana, seduto su uno sgabello accanto alla cassetta del pedaggio.
+  invarianti:
+  - vecchio magro
+  - berretto di lana
+  - cassetta di legno
+personalita:
+  superficie:
+  - pignolo
+  - pauroso
+  sotto_pressione:
+  - balbetta
+  contraddizione: Ha paura del barone ma lo odia.
+desiderio: Arrivare a sera senza guai.
+voce:
+  tts:
+    voce_id: vincent
+  registro: voi
+  stile: Frasi di tre-otto parole.
+  battuta_campione: Due monete, e il ponte è vostro.
+sa:
+- f_pedaggio
+- f_ponte_marcio
+- f_sgherro_pagato
+non_sa:
+- f_lettera_barone
+atteggiamento_pg:
+  pg_ida:
+    stato: amichevole
+    perche: gli piacciono le canzoni
+    vuole: una canzone
+  pg_corrado:
+    stato: indifferente
+    perche: un soldato come tanti
+    vuole: le due monete
+  pg_teo:
+    stato: ostile
+    perche: diffida degli halfling
+    vuole: che stia lontano dalla cassetta
+scheda:
+  caratteristiche:
+    forza: 9
+    destrezza: 10
+    potere: 11
+  pf: 4
+  difesa: 11
+  attacchi:
+  - nome: Bastone
+    danno: 1d4
+    caratteristica: forza
+  morale: 6

@@ -1,0 +1,29 @@
+battute:
+- id: bertoldo_saluto
+  chi: png_bertoldo
+  tipo: saluto
+  quando: i PG salutano Bertoldo o chiedono del ponte
+  temi:
+  - ponte
+  - pedaggio
+  - saluto
+  testo:
+  - '[png_bertoldo] Due monete a testa, signori. Il ponte è vostro.'
+  max_usi: 2
+- id: bertoldo_confessa
+  chi: png_bertoldo
+  tipo: confessione
+  quando: un PG convince Bertoldo a dire chi paga lo sgherro
+  temi:
+  - sgherro
+  - ruggero
+  - chi paga
+  richiede:
+    prova: prova
+  testo:
+  - '[narratore] Bertoldo abbassa la voce.'
+  - '[png_bertoldo] Lo paga il barone. Per tenervi lontani dalla città.'
+  effetti:
+    fatti_noti:
+    - f_sgherro_pagato
+  max_usi: 1

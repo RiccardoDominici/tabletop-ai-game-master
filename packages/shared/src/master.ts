@@ -180,6 +180,17 @@ export interface StatoMaster {
   sessione?: SessioneMaster;
   /** Tutti i PNG della campagna con la presenza in scena (per il pannello: anche quelli mai incontrati). */
   presenze?: PresenzaMaster[];
+  /**
+   * Combattimento (docs/combattimento.md): chi ha una scheda coi suoi PF (correggibili), le condizioni
+   * del set. Lo scontro in corso è in `tavolo.combattimento`. Assente senza dadi.
+   */
+  combattimento?: CombattimentoMaster;
+}
+
+export interface CombattimentoMaster {
+  attivo: boolean;
+  schede: Array<{ id: string; nome: string; di_png: boolean; pf: { attuali: number; massimi: number } }>;
+  condizioni: Array<{ id: string; nome: string; icona: string; testo: string }>;
 }
 
 /** Un PNG nel pannello: se è in scena, e se il master l'ha deciso a mano (altrimenti dice la scena). */
@@ -296,6 +307,14 @@ export type ComandoMaster =
   | { tipo: 'chiudi_sessione' }
   /** Durata prevista della serata, in ore (0,5–8): sostituisce `ore_per_sessione` del brief. */
   | { tipo: 'durata_sessione'; ore: number }
+  /** Combattimento (docs/combattimento.md): comincia lo scontro con i PG al tavolo e i PNG ostili in scena. */
+  | { tipo: 'combattimento_inizia' }
+  /** «Termina combattimento». */
+  | { tipo: 'combattimento_termina' }
+  /** Punti ferita di un PG o PNG con la scheda (cura o danno a mano). */
+  | { tipo: 'pf'; id: string; valore: number }
+  /** Mette o toglie una condizione a un combattente (solo durante lo scontro). */
+  | { tipo: 'condizione'; id: string; condizione: string; attiva: boolean }
   /** Campagna a pacchetti: (fine sessione se serve, poi) si passa al pacchetto dopo, dal suo riassunto iniziale. */
   | { tipo: 'prossima_sessione' }
   /** Cambia (o dimentica, con null) il PG ricordato di un telefono: vale dal suo prossimo collegamento. */

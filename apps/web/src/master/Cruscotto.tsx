@@ -13,6 +13,7 @@ import { SezioneSituazioni } from './SezioneSituazioni';
 import { SezionePresenze } from './SezionePresenze';
 import { SezioneAudio } from './SezioneAudio';
 import { SezioneOrologi } from './SezioneOrologi';
+import { SezioneCombattimento } from './SezioneCombattimento';
 import { SezioneFinestra } from './SezioneFinestra';
 import { SezioneAzioni } from './SezioneAzioni';
 import { SezioneTrascrizione } from './SezioneTrascrizione';
@@ -32,6 +33,7 @@ export function Cruscotto({ stato }: { stato: StatoMaster }) {
         <SezioneAudio stato={stato} />
         <SezioneSituazioni stato={stato} />
         <SezioneOrologi stato={stato} />
+        {stato.combattimento && <SezioneCombattimento stato={stato} />}
       </div>
 
       {/* Colonna centrale: le azioni scorrono dentro il loro riquadro, la trascrizione prende il resto. */}

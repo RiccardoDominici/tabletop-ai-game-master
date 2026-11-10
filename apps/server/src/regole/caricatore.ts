@@ -19,6 +19,7 @@ import type { Logger } from '../logger';
 import { leggiEstratti } from './estratti';
 import { CARTELLA_SRD, ID_SRD, riassuntoSrd, sistemaSrd } from './srd';
 import type { Difficolta, Fascia, Mossa, RegoleCampagna, SistemaRegole, Voce } from './tipi';
+import { combattimentoPredefinito, leggiCombattimento } from './combattimento';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -169,6 +170,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
       const sid = str(o?.['id']);
       return o && sid ? [{ id: sid, nome: str(o['nome']) ?? sid, testo: str(o['testo']) ?? '' }] : [];
     }),
+    combattimento: leggiCombattimento(d['combattimento'], combattimentoPredefinito(tipo, false, [...idCar]), idCar, errori),
   };
 }
 

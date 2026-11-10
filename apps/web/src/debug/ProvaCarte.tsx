@@ -17,6 +17,10 @@
  *                                azione risolta (una carta pubblica e una privata) e i tiri del turno
  *   &pf=5                        punti ferita attuali di Arianna su 12 (0 = a terra; «no» = senza PF)
  *   &fase=dopo &aperta=1         finestra successiva aperta; sezione «Tiri del turno» già aperta
+ *   &pg=corrado                  il PG del telefono (default ida, di turno; corrado è a terra)
+ *   &combattimento=no            senza scontro (tavolo di sempre, con Arianna)
+ *   Proiettore: &combattimento=no senza la barra dell'iniziativa (confronto del layout).
+ * Entrambi: lo scontro d'esempio (barra del proiettore, riquadro del turno sul telefono).
  */
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import clsx from 'clsx';
@@ -29,7 +33,17 @@ import { useTelefono } from '../store/telefono';
 import { Scena } from '../schermo/PaginaSchermo';
 import { SfondoLuogo } from '../schermo/SfondoLuogo';
 import { Tavolo } from '../telefono/PaginaTelefono';
-import { azioneEsempio, carteEsempio, ID_GRANDI, INFO_ESEMPIO, statoEsempio, TURNO_ESEMPIO, type FaseProva } from './carteEsempio';
+import {
+  azioneEsempio,
+  carteEsempio,
+  combattimentoEsempio,
+  ID_GRANDI,
+  INFO_ESEMPIO,
+  PG_COMBATTIMENTO,
+  statoEsempio,
+  TURNO_ESEMPIO,
+  type FaseProva,
+} from './carteEsempio';
 import { provaCarteRichiesta } from './richiesta';
 
 const log = creaLog('prova-carte');
@@ -103,7 +117,14 @@ function ScenaProva() {
       const base = ordinate[i % ordinate.length]!;
       return i < ordinate.length ? base : { ...base, id: `${base.id}-${i}` };
     });
-    return statoEsempio({ fase, tiri, immagine: p.get('sfondo'), ritratti: ritratto ? { bran: ritratto } : {} });
+    return statoEsempio({
+      fase,
+      tiri,
+      immagine: p.get('sfondo'),
+      ritratti: ritratto ? { bran: ritratto } : {},
+      // &combattimento=no: senza barra dell'iniziativa (per confrontare il layout dei ritratti).
+      combattimento: p.get('combattimento') === 'no' ? null : combattimentoEsempio(),
+    });
     // I parametri dell'URL non cambiano senza ricaricare la pagina.
   }, [giro, fase, n]);
 
@@ -188,20 +209,28 @@ export function ProvaCarteTelefono() {
   const fase: FaseProva = p.get('fase') === 'dopo' ? 'dopo' : 'narrazione';
   const pfParam = p.get('pf');
   const pf = pfParam === 'no' ? null : { attuali: Number(pfParam ?? 5) || 0, massimi: 12 };
+  // Di default c'è lo scontro d'esempio e il PG del telefono è Ida (di turno); `pg=corrado` mostra
+  // il PG a terra con i tiri contro la morte; `combattimento=no` torna al tavolo senza scontro.
+  const conCombattimento = p.get('combattimento') !== 'no';
+  const idPg = p.get('pg') ?? (conCombattimento ? 'ida' : 'arianna');
 
   const { stato, azione } = useMemo(() => {
     const tutte = carteEsempio(`tel${giro}`);
     const mie = tutte.filter((t) => t.id.endsWith('-persuasione') || t.id.endsWith('-privata'));
     // Pubbliche: tutte tranne la privata (la mia persuasione si filtra da sola, per id).
     const pubbliche = tutte.filter((t) => !t.privata).slice(0, 5);
-    return { stato: statoEsempio({ fase, tiri: pubbliche, pf }), azione: azioneEsempio(mie) };
-  }, [giro, fase, pfParam]);
+    const combattimento = conCombattimento ? combattimentoEsempio() : null;
+    return {
+      stato: statoEsempio({ fase, tiri: pubbliche, pf, combattimento, pg: conCombattimento ? PG_COMBATTIMENTO : undefined }),
+      azione: azioneEsempio(mie, idPg),
+    };
+  }, [giro, fase, pfParam, conCombattimento, idPg]);
 
   useEffect(() => {
     document.title = 'Tabletop AI Game Master · Telefono · DEBUG carte';
     log.warn('Banco di prova delle carte dei tiri (debug): nessun server, dati finti');
-    useTelefono.setState({ idPg: 'arianna', confermato: true, miaAzione: azione });
-  }, [azione]);
+    useTelefono.setState({ idPg, confermato: true, miaAzione: azione });
+  }, [azione, idPg]);
 
   // «Tiri del turno» già aperta: si simula il tocco appena montata.
   useEffect(() => {
@@ -214,9 +243,19 @@ export function ProvaCarteTelefono() {
     <div className="flex h-dvh flex-col pt-[env(safe-area-inset-top)]">
       <div className="min-h-0 flex-1 overflow-y-auto">
         {/* Il tavolo si monta quando lo store ha già la mia azione finta (come dopo `azione:mia`). */}
-        {mia?.id === azione.id && mia.tiri === azione.tiri ? <Tavolo key={giro} stato={stato} idPg="arianna" /> : null}
+        {mia?.id === azione.id && mia.tiri === azione.tiri ? <Tavolo key={giro} stato={stato} idPg={idPg} /> : null}
       </div>
-      <BarraDebug rilancia={rilancia} collegamenti={[['PF 5', '?carte=prova&pf=5'], ['PF 0', '?carte=prova&pf=0'], ['aperta', '?carte=prova&aperta=1']]} />
+      <BarraDebug
+        rilancia={rilancia}
+        collegamenti={[
+          ['Ida di turno', '?carte=prova'],
+          ['Corrado a terra', '?carte=prova&pg=corrado'],
+          ['senza scontro', '?carte=prova&combattimento=no'],
+          ['PF 5', '?carte=prova&combattimento=no&pf=5'],
+          ['PF 0', '?carte=prova&combattimento=no&pf=0'],
+          ['aperta', '?carte=prova&combattimento=no&aperta=1'],
+        ]}
+      />
     </div>
   );
 }

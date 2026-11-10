@@ -8,6 +8,7 @@
  */
 import type { TipoRisoluzione } from '@cantastorie/shared';
 import type { FormulaDadi } from '../campagna/regole-srd';
+import type { Combattimento } from './combattimento';
 
 export interface Voce {
   id: string;
@@ -80,6 +81,8 @@ export interface SistemaRegole {
   sociale: { caratteristica: string | null; abilita: string | null; nota: string | null };
   mosse: Mossa[];
   sottosistemi: Array<Voce & { testo: string }>;
+  /** Come si combatte nel set (docs/combattimento.md). */
+  combattimento: Combattimento;
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
@@ -115,6 +118,6 @@ export interface SchedaGenerica {
   difesa: number | null;
   /** Attacchi automatici: riduce il danno subito. */
   armatura: number;
-  attacchi: Array<{ id: string; nome: string; danno: FormulaDadi; caratteristica: string | null; abilita: string | null; tipo_danno: string | null }>;
+  attacchi: Array<{ id: string; nome: string; danno: FormulaDadi; caratteristica: string | null; abilita: string | null; tipo_danno: string | null; distanza: boolean }>;
   avvisi: string[];
 }

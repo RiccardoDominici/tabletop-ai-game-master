@@ -1,0 +1,2 @@
+parole:
+  - {parola: "BARONE_SEGRETO", pubblica_dopo: {indizi_rivelati: [i_lettera]}}

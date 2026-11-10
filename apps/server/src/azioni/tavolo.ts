@@ -776,6 +776,28 @@ export class TavoloAzioni {
     return chiuse.map((a) => a.id);
   }
 
+  /**
+   * Combattimento a turni (docs/combattimento.md): le azioni chiuse di chi NON era di turno tornano in
+   * coda per il turno successivo, così si risolvono quando tocca a loro (nessuno perde ciò che ha scritto).
+   */
+  rinvia(ids: readonly string[]): string[] {
+    const fatte: string[] = [];
+    for (const id of ids) {
+      const a = this.azioni.get(id);
+      if (!a || a.stato !== 'chiusa') continue;
+      a.stato = 'in_coda';
+      a.turno = this.ultimoTurno + 1;
+      a.motivo = null;
+      this.notificaAzione(a);
+      fatte.push(id);
+    }
+    if (fatte.length) {
+      this.o.log.info({ azioni: fatte, turno: this.ultimoTurno + 1 }, 'azioni: rinviate al turno del loro PG (combattimento)');
+      this.o.onCambio();
+    }
+    return fatte;
+  }
+
   private async chiudi(motivo: RiepilogoChiusura['motivo']): Promise<void> {
     const f = this.finestra;
     if (!f?.aperta || f.chiudendo) return;

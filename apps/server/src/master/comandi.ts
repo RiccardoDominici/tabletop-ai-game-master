@@ -54,6 +54,10 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'dispositivo',
   'presenza',
   'rivela',
+  'combattimento_inizia',
+  'combattimento_termina',
+  'pf',
+  'condizione',
 ]);
 
 /** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */
@@ -281,6 +285,32 @@ export class ControlliMaster {
         const esito = regia.cambiaUmore(tag);
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito, dettagli: `umore della musica ${prima ?? 'auto'} → ${tag ?? 'auto'}`, dati: { da: prima, a: tag } };
+      }
+      case 'combattimento_inizia': {
+        const esito = regia.iniziaCombattimento();
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: 'combattimento iniziato dal master' };
+      }
+      case 'combattimento_termina': {
+        const esito = regia.terminaCombattimento();
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: 'combattimento terminato dal master' };
+      }
+      case 'pf': {
+        const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : null;
+        const valore = typeof c.valore === 'number' && Number.isInteger(c.valore) && c.valore >= 0 && c.valore <= 999 ? c.valore : null;
+        if (!id || valore === null) return rifiuto('Personaggio o PF non validi.');
+        const esito = regia.impostaPf(id, valore);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: `${id}: PF ${valore}`, dati: { id, valore } };
+      }
+      case 'condizione': {
+        const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : null;
+        const cond = typeof c.condizione === 'string' && ID_VALIDO.test(c.condizione) ? c.condizione : null;
+        if (!id || !cond || typeof c.attiva !== 'boolean') return rifiuto('Condizione non valida.');
+        const esito = regia.condizioneCombattimento(id, cond, c.attiva);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: `${id}: ${cond} ${c.attiva ? 'messa' : 'tolta'}`, dati: { id, condizione: cond, attiva: c.attiva } };
       }
       case 'effetto': {
         const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : '';

@@ -7,7 +7,7 @@
 import type { ComandoMaster, TipoComandoMaster } from '@cantastorie/shared';
 
 /** Zona del pannello in cui si mostra l'esito di un comando. */
-export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio' | 'sessione';
+export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio' | 'sessione' | 'combattimento';
 
 export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   pausa: 'controlli',
@@ -32,6 +32,10 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   dispositivo: 'sessione',
   presenza: 'scena',
   rivela: 'scena',
+  combattimento_inizia: 'combattimento',
+  combattimento_termina: 'combattimento',
+  pf: 'combattimento',
+  condizione: 'combattimento',
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
@@ -58,6 +62,10 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = {
   dispositivo: 'PG di un telefono',
   presenza: 'Presenza di un PNG',
   rivela: 'Rivelazione di un PNG',
+  combattimento_inizia: 'Inizia combattimento',
+  combattimento_termina: 'Termina combattimento',
+  pf: 'Punti ferita',
+  condizione: 'Condizione',
 };
 
 /**
@@ -90,6 +98,11 @@ export function chiaveComando(comando: ComandoMaster): string {
       return `togli_nota:${comando.id}`;
     case 'effetto':
       return `effetto:${comando.id}`;
+    case 'pf':
+      // Un PG o PNG alla volta: due correzioni sulla stessa scheda non si accavallano.
+      return `pf:${comando.id}`;
+    case 'condizione':
+      return `condizione:${comando.id}:${comando.condizione}`;
     default:
       // «umore»: una chiave sola, due umori di fila non si accavallano.
       return comando.tipo;
@@ -127,6 +140,10 @@ export function descriviComando(comando: ComandoMaster): string {
       return `${nome}: ${comando.ritmo}`;
     case 'effetto':
       return `${nome}: ${comando.id}`;
+    case 'pf':
+      return `${comando.id}: PF ${comando.valore}`;
+    case 'condizione':
+      return `${nome} ${comando.id}: ${comando.condizione} ${comando.attiva ? 'messa' : 'tolta'}`;
     default:
       return nome;
   }

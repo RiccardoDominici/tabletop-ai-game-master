@@ -75,12 +75,13 @@ export interface EsitoAttacco extends EsitoD20 {
 }
 
 /** Tiro per colpire contro la CA, e il danno se colpisce. */
-export function attacco(dadi: FonteDadi, bonus: number, ca: number, vantaggio: Vantaggio | null, f: FormulaDadi, bonusDanno: number): EsitoAttacco {
+export function attacco(dadi: FonteDadi, bonus: number, ca: number, vantaggio: Vantaggio | null, f: FormulaDadi, bonusDanno: number, forzaCritico = false): EsitoAttacco {
   const d = tiraD20(dadi, vantaggio);
   const totale = d.dado + bonus;
-  const critico = d.dado === 20;
   const fallimento_critico = d.dado === 1;
-  const riuscita = critico || (!fallimento_critico && totale >= ca);
+  const riuscita = d.dado === 20 || (!fallimento_critico && totale >= ca);
+  // `forzaCritico`: il bersaglio è paralizzato o privo di sensi (SRD 5.2): ogni colpo è critico.
+  const critico = d.dado === 20 || (forzaCritico && riuscita);
   return {
     ...d,
     modificatore: bonus,

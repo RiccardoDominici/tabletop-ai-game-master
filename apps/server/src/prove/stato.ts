@@ -5,6 +5,7 @@
  */
 import type { PuntiFerita, TiroMostrato } from '@cantastorie/shared';
 import type { SchedaNumerica } from '../campagna/schede';
+import type { StatoCombattimentoSalvato } from './combattimento';
 
 export interface StatoProveSalvato {
   seme: string;
@@ -14,6 +15,8 @@ export interface StatoProveSalvato {
   prossimoTiro: number;
   /** Carte dell'ultimo turno con tiri (per il proiettore dopo una ripresa). */
   recenti: TiroMostrato[];
+  /** Lo scontro in corso (prove/combattimento.ts), se c'era. */
+  combattimento?: StatoCombattimentoSalvato | null;
 }
 
 export interface EsitoDannoApplicato {

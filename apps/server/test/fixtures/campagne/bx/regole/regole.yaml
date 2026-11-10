@@ -1,0 +1,81 @@
+id: bx-prova
+nome: Vecchia scuola (set di prova)
+fonte:
+  titolo: Set di prova di Cantastorie, scritto per i test
+  autore: Cantastorie
+licenza:
+  nome: CC0
+  libera: true
+risoluzione:
+  tipo: d20_cd
+  dado: 20
+caratteristiche:
+- id: forza
+  nome: Forza
+- id: destrezza
+  nome: Destrezza
+- id: potere
+  nome: Saggezza
+abilita: []
+modificatore:
+  tipo: srd
+difficolta:
+- id: facile
+  nome: Facile
+  valore: 10
+- id: normale
+  nome: Normale
+  valore: 13
+- id: difficile
+  nome: Difficile
+  valore: 16
+difficolta_predefinita: normale
+vantaggio:
+  tipo: bonus
+  valore: 2
+attacchi:
+  tipo: prova
+danni:
+  nome: Punti ferita
+  a_zero: Privo di sensi o morente.
+sociale:
+  caratteristica: potere
+  nota: Si tira Saggezza contro la reazione del PNG.
+combattimento:
+  iniziativa:
+    tipo: per_schieramento
+    dado: 6
+    caratteristica: null
+    ogni_round: true
+  fasi:
+  - id: movimento
+    nome: Movimento
+    png: null
+  - id: proiettili
+    nome: Proiettili
+    png: attacco_distanza
+  - id: magia
+    nome: Magia
+    png: null
+  - id: mischia
+    nome: Mischia
+    png: attacco_mischia
+  azioni:
+  - id: fase
+    nome: Un'azione per fase
+    quante: muoviti, tira, lancia o colpisci nella fase giusta
+  danni:
+    modello: pf
+    a_zero:
+      pg: morte
+      png: morte
+  condizioni:
+  - id: paralizzato
+    nome: Paralizzato
+    icona: 🧊
+    effetti:
+    - perde_turno
+    - attacchi_contro_vantaggio
+    testo: Non agisce; chi lo attacca ha vantaggio.
+  fine:
+    morale: true
