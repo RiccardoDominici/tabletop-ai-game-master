@@ -61,6 +61,7 @@ import { TavoloAzioni, type RiepilogoChiusura } from '../azioni/tavolo';
 import type { Arbitro, Azione } from '../azioni/tipi';
 import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
 import { messaggioChiusura, messaggioRiparazione } from '../narrazione/messaggio';
+import { segretiNascosti, type EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 import { SerataGuidata } from './serata';
 import { climaxInCorso } from '../sessione/durata';
 import { normalizza } from '../azioni/regole';
@@ -237,6 +238,14 @@ export class Regia {
    * un altro (log del 3 novembre: sei finali di fila a o_colpevole 6/6).
    */
   private readonly sceneConFinale = new Set<string>();
+  /**
+   * Battute dette SOLO a un'azione privata, e indizi rivelati solo da loro: il PG le ha sentite, il tavolo
+   * no. La guardia dei segreti non le conta come «pubblica_dopo» (narrazione/guardia-segreti.ts).
+   */
+  private readonly battutePrivate = new Set<string>();
+  private readonly indiziPrivati = new Set<string>();
+  /** Quante volte ogni PNG ha già detto la sua deviazione (si alternano testo e varianti). */
+  private readonly deviazioniDette = new Map<string, number>();
   /** La serata: «La volta scorsa…», Diario, durata e chiusura guidata (scena/serata.ts). */
   private readonly serata: SerataGuidata;
   /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
@@ -481,6 +490,7 @@ export class Regia {
       sceneVisitate: [...this.sceneVisitate],
       sceneConFinale: [...this.sceneConFinale],
       serata: this.serata.esporta(),
+      segretiPrivati: { battute: [...this.battutePrivate], indizi: [...this.indiziPrivati] },
       // Decisioni del master su presenze e rivelazioni: nel registro, così una ripresa le ritrova (assenti = nessuna).
       ...(this.presenzeManuali.size ? { presenzeManuali: [...this.presenzeManuali] } : {}),
       ...(this.rivelati.size ? { rivelati: [...this.rivelati] } : {}),
@@ -572,6 +582,8 @@ export class Regia {
     // Archivi di prima: almeno la scena in corso è già stata visitata.
     for (const id of f.sceneVisitate ?? [f.scena]) this.sceneVisitate.add(id);
     for (const id of f.sceneConFinale ?? []) this.sceneConFinale.add(id);
+    for (const id of f.segretiPrivati?.battute ?? []) this.battutePrivate.add(id);
+    for (const id of f.segretiPrivati?.indizi ?? []) this.indiziPrivati.add(id);
     this.serata.preparaPerRipresa(f.serata, r.trascrizione, r.ultimoEvento, this.o.orologio.adesso(), this.titoliScene(f.sceneVisitate ?? [f.scena]), this.segniMostrati());
     this.trascrizione = r.trascrizione.map((v) => ({ ...v }));
     this.privati = (r.privati ?? []).map((v) => ({ ...v }));
@@ -1215,8 +1227,17 @@ export class Regia {
     if (per !== perDato) this.pgDedotti += 1;
     // Ritmo massimo dell'orologio: vale per i segni senza «> pg» (dovuti o del Motore); un segno legato
     // all'azione di un PG lo scavalca. Un segno per orologio, al massimo due orologi per risposta.
+    const nuoviIndizi = b.effetti.rivela_indizi.filter((i) => !s.indiziRivelati.has(i));
     const esito = s.usa(id, turno, { inRisposta: segni.orologi, ritmo: per === null });
     if (!esito.ok) return esito;
+    // Detta a un'azione privata: la sente solo quel PG, e per la guardia dei segreti non è pubblica.
+    if (per && t?.azioni.get(per)?.privata) {
+      this.battutePrivate.add(id);
+      for (const i of nuoviIndizi) this.indiziPrivati.add(i);
+    } else {
+      this.battutePrivate.delete(id);
+      for (const i of b.effetti.rivela_indizi) this.indiziPrivati.delete(i);
+    }
     this.rivelateNelTurno.push(esito.battuta.id, ...esito.battuta.effetti.rivela_indizi);
     if (esito.orologiPartiti.length) this.o.log.info({ turno, battuta: id, orologi: esito.orologiPartiti }, 'orologio: partito (parte_dopo)');
     const audio = this.cueBattuta(esito.battuta);
@@ -1877,6 +1898,53 @@ export class Regia {
    * l'autore di un'azione privata e ne riprende il contenuto va al suo telefono. Una per chiamata
    * del narratore (i segmenti ripartono da capo).
    */
+  /**
+   * La guardia dei segreti del turno (narrazione/guardia-segreti.ts). Pubblico è ciò che il tavolo ha
+   * sentito: la trascrizione pubblica, le azioni pubbliche del turno, le battute e gli indizi usciti al
+   * tavolo (non quelli detti a un'azione privata). Una riga che direbbe un segreto ancora nascosto va al
+   * telefono dell'autore se il turno ha solo la sua azione privata (è la risposta a quella); se no il
+   * PNG dice la sua deviazione (battuta `rifiuto` del repertorio) e una riga del narratore si toglie.
+   */
+  private guardiaSegreti(azioni: ReadonlyArray<{ id_pg: string; testo: string | null; [k: string]: unknown }>): { guardiaSegreti?: (etichetta: string, testo: string) => EsitoGuardiaSegreti | null } {
+    const parole = this.o.paroleSegrete ?? [];
+    if (!parole.length) return {};
+    const s = this.statoRepertorio;
+    const pubblico: StatoPubblico | null = s
+      ? { indiziRivelati: new Set([...s.indiziRivelati].filter((i) => !this.indiziPrivati.has(i))), battuteUsate: (id) => s.usata(id) && !this.battutePrivate.has(id) }
+      : null;
+    const conTesto = azioni.filter((a) => a.testo);
+    const pubbliche = conTesto.filter((a) => a['privata'] !== true);
+    const autoriPrivati = new Set(conTesto.filter((a) => a['privata'] === true).map((a) => a.id_pg));
+    const soloPrivato = pubbliche.length === 0 && autoriPrivati.size === 1 ? [...autoriPrivati][0]! : null;
+    const detto = [
+      ...this.trascrizione.filter((v) => v.tipo === 'narrazione' || v.tipo === 'battuta' || v.tipo === 'azione').map((v) => v.testo),
+      ...pubbliche.map((a) => a.testo as string),
+    ].join('\n');
+    return {
+      guardiaSegreti: (etichetta, testo) => {
+        const trovate = segretiNascosti(testo, parole, pubblico, detto);
+        if (!trovate.length) return null;
+        return soloPrivato ? { parole: trovate, privato: soloPrivato } : { parole: trovate, sostituto: this.deviazioneDi(etichetta) };
+      },
+    };
+  }
+
+  /**
+   * Ciò che dice un PNG al posto di una riga che svelerebbe un segreto: la sua battuta `rifiuto` del
+   * repertorio (testo, poi le varianti a turno), anche se è solo un esempio di voce; senza, una riga
+   * neutra del narratore. Per il narratore: niente (la riga si toglie).
+   */
+  private deviazioneDi(etichetta: string): Array<{ etichetta: string; testo: string }> {
+    if (etichetta === ID_NARRATORE) return [];
+    const b = this.o.repertorio?.battute.find((x) => x.chi === etichetta && x.tipo === 'rifiuto');
+    const nome = voceDi(this.campagna, etichetta).nome;
+    if (!b) return [{ etichetta: ID_NARRATORE, testo: `${nome} scuote la testa e non risponde.` }];
+    const n = this.deviazioniDette.get(etichetta) ?? 0;
+    this.deviazioniDette.set(etichetta, n + 1);
+    const versioni = [b.testo, ...b.varianti];
+    return versioni[n % versioni.length]!.map((r) => ({ etichetta: r.etichetta, testo: r.testo }));
+  }
+
   private guardiaPrivate(azioni: ReadonlyArray<{ id_pg: string; testo: string | null; [k: string]: unknown }>): { spostaPrivata?: NonNullable<ReturnType<typeof guardiaPrivate>> } {
     const c = this.campagna;
     const nomiDi = (id: string): string[] => {
@@ -2072,6 +2140,7 @@ export class Regia {
         ...this.parametriAudioTurno(),
         ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
         ...this.guardiaPrivate(azioni),
+        ...this.guardiaSegreti(azioni),
         presenti: this.pngInScena(),
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segniInRisposta) : null,
         onFrase: (f) => {
@@ -2109,6 +2178,7 @@ export class Regia {
           ...this.parametriAudioTurno(),
           ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
           ...this.guardiaPrivate(azioni),
+          ...this.guardiaSegreti(azioni),
           presenti: this.pngInScena(),
           usa: (id, per) => this.usaBattuta(id, per, turno, segniInRisposta),
           prefissoFrasi: 'r',
@@ -2130,6 +2200,7 @@ export class Regia {
       esito.usa_rifiutati += riparazione.usa_rifiutati;
       esito.scartate += riparazione.scartate;
       esito.scartate_assenti += riparazione.scartate_assenti;
+      esito.scartate_segreti += riparazione.scartate_segreti;
       esito.anomalie.push(...riparazione.anomalie);
       if (riparazione.esito) {
         esito.esito.testo += `\n${riparazione.esito.testo}`;
@@ -2221,6 +2292,8 @@ export class Regia {
       usa_rifiutati: esito.usa_rifiutati,
       // Righe improvvisate di PNG fuori dalla scena, scartate prima della voce (narraTurno, `presenti`).
       righe_png_assenti: esito.scartate_assenti,
+      // Righe improvvisate al tavolo fermate dalla guardia dei segreti (spostate al telefono o sostituite).
+      righe_segrete_fermate: esito.scartate_segreti,
       // Selettore: «> pg» dedotti o corretti dal Motore; battute indicate dalla preselezione e quante sono uscite.
       pg_dedotti: this.pgDedotti,
       battute_indicate: this.turnoB?.indicate.size ?? 0,

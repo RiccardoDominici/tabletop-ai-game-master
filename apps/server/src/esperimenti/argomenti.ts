@@ -36,6 +36,8 @@ export interface OpzioniEsperimento {
   etichetta: string;
   /** `--uscita <cartella>`: i risultati vanno in esperimenti/risultati/<cartella> (così una misura non sovrascrive la run di riferimento). */
   uscita: string | null;
+  /** `--turni <n>`: si giocano solo i primi n turni del copione (una prova breve). null = tutti. */
+  turniMax: number | null;
 }
 
 export const PORTA_ESPERIMENTI = 4710;
@@ -55,7 +57,7 @@ function valoreOpzione(argv: string[], nome: string): string | null {
 }
 
 export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsperimento {
-  const conValore = new Set(['--campagna', '--uscita']);
+  const conValore = new Set(['--campagna', '--uscita', '--turni']);
   const posizionali: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
@@ -69,6 +71,9 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
 
   const campagna = valoreOpzione(argv, '--campagna') ?? CAMPAGNA_DEFAULT;
   const uscita = valoreOpzione(argv, '--uscita');
+  const turni = valoreOpzione(argv, '--turni');
+  const turniMax = turni === null ? null : Number(turni);
+  if (turniMax !== null && (!Number.isInteger(turniMax) || turniMax < 1)) throw new ErroreArgomenti('--turni vuole un intero ≥ 1');
   if (uscita !== null && (path.isAbsolute(uscita) || uscita.split(/[\\/]/).includes('..'))) throw new ErroreArgomenti('--uscita è una cartella dentro esperimenti/risultati');
   if (!/^[a-z0-9][a-z0-9_-]*$/i.test(campagna) || !fs.existsSync(path.join(RADICE_REPO, 'campagne', campagna))) {
     throw new ErroreArgomenti(`campagna inesistente: campagne/${campagna}`);
@@ -111,5 +116,6 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
     lasciaServer: argv.includes('--lascia-server'),
     etichetta,
     uscita,
+    turniMax,
   };
 }

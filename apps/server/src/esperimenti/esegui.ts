@@ -220,7 +220,9 @@ async function main(): Promise<void> {
   const o = leggiOpzioni(process.argv.slice(2), process.env);
   const { etichetta, modo } = o;
   const campagna: Campagna = caricaCampagna(path.join(RADICE_REPO, 'campagne', o.campagna));
-  const copione = caricaCopione(o.fileCopione);
+  const copioneIntero = caricaCopione(o.fileCopione);
+  // Prova breve (--turni n): solo i primi n turni del copione.
+  const copione: Copione = o.turniMax ? { ...copioneIntero, turni: copioneIntero.turni.slice(0, o.turniMax) } : copioneIntero;
   const errori = controllaCopione(copione, campagna);
   if (errori.length) throw new Error(`copione ${o.copione} non giocabile su ${o.campagna}:\n- ${errori.join('\n- ')}`);
   const cartellaRisultati = path.join(RADICE_REPO, 'esperimenti', 'risultati', o.uscita ?? etichetta);
@@ -332,6 +334,7 @@ async function main(): Promise<void> {
     azioni_pubbliche: somma('azioni_pubbliche'),
     azioni_senza_risposta: somma('azioni_senza_risposta'),
     riparazioni: somma('riparazioni'),
+    righe_segrete_fermate: somma('righe_segrete_fermate'),
     // Selettore (correzioni del playtest di nozze-neve): «> pg» dedotti o corretti dal Motore, battute
     // indicate dalla preselezione per temi e quante ne sono uscite, righe di PNG fuori scena scartate.
     pg_dedotti: somma('pg_dedotti'),

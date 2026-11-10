@@ -23,6 +23,7 @@ import { ParserNarratore, type EventoNarratore } from '../narrazione/parser';
 import type { FraseDaDire, PipelineVoce } from '../voce/pipeline';
 import { EspressioneTurno } from '../voce/espressione';
 import type { CueAudio, Risolto } from '../audio/cue';
+import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 
 export interface FraseNarrata {
   etichetta: string;
@@ -93,6 +94,8 @@ export interface EsitoTurnoNarrato {
   scartate: number;
   /** Frasi improvvisate di PNG che non sono nella scena (`presenti`), scartate prima della voce. */
   scartate_assenti: number;
+  /** Frasi improvvisate pubbliche fermate dalla guardia dei segreti (spostate al telefono o sostituite). */
+  scartate_segreti: number;
   /** Errore del narratore (non per interruzione). */
   errore: string | null;
   interrotto: boolean;
@@ -141,6 +144,11 @@ export interface ParametriTurno {
    * scarta prima della voce, con una riga di log (assente = nessun filtro).
    */
   presenti?: ReadonlySet<string>;
+  /**
+   * Guardia dei segreti (narrazione/guardia-segreti.ts): per una frase improvvisata PUBBLICA, che cosa
+   * fare se direbbe un segreto ancora nascosto (null = la frase va). La decide la regia.
+   */
+  guardiaSegreti?: (etichetta: string, testo: string) => EsitoGuardiaSegreti | null;
 }
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
@@ -180,6 +188,9 @@ export async function narraTurno(
   let usaRifiutati = 0;
   let scartate = 0;
   let scartateAssenti = 0;
+  let scartateSegreti = 0;
+  /** Segmenti (righe) già sostituiti dalla guardia dei segreti: il resto della riga non si dice. */
+  const segmentiFermati = new Set<number>();
   const idPng = new Set(campagna.png.map((x) => x.id));
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
@@ -245,6 +256,31 @@ export async function narraTurno(
             privato = d.id_pg;
             anomalie.push({ codice: 'privata_al_tavolo', dettaglio: `${d.id_pg}: «${e.testo.slice(0, 120)}»` });
             log.warn({ turno: p.turno, id_pg: d.id_pg, comuni: d.comuni, testo: e.testo }, "narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono");
+          }
+        }
+        // Segreto ancora nascosto in una riga al tavolo: al telefono di chi l'ha chiesto in privato, oppure
+        // la deviazione del PNG al posto della riga (una volta per riga), con il log.
+        if (!privato && segmentiFermati.has(e.segmento)) continue;
+        const segreto = !privato && p.guardiaSegreti ? p.guardiaSegreti(e.etichetta, e.testo) : null;
+        if (segreto) {
+          scartateSegreti += 1;
+          anomalie.push({ codice: 'segreto_al_tavolo', dettaglio: `${e.etichetta} (${segreto.parole.join(', ')}): «${e.testo.slice(0, 120)}»` });
+          if (segreto.privato) {
+            privato = segreto.privato;
+            log.warn({ turno: p.turno, etichetta: e.etichetta, parole: segreto.parole, id_pg: privato, testo: e.testo }, 'narratore: segreto in una riga al tavolo, spostata al telefono di chi ha agito in privato');
+          } else {
+            segmentiFermati.add(e.segmento);
+            rigaAperta = null;
+            log.warn({ turno: p.turno, etichetta: e.etichetta, parole: segreto.parole, testo: e.testo, sostituto: segreto.sostituto?.map((r) => r.testo) ?? null }, 'narratore: segreto in una riga al tavolo, riga fermata');
+            for (const r of segreto.sostituto ?? []) {
+              const v = voceDi(campagna, r.etichetta);
+              p.onFrase({ etichetta: r.etichetta, nome: v.nome, testo: r.testo, segmento: e.segmento, indice });
+              const perVoceSost = p.pronuncia(r.testo);
+              accoda({ parlante: r.etichetta, nome: v.nome, voce_id: v.voce_id, testo: r.testo, ...(perVoceSost !== r.testo ? { testo_voce: perVoceSost } : {}) });
+              uscita.push({ tipo: 'improvvisata', etichetta: r.etichetta, testo: r.testo, segmento: e.segmento });
+              righeImprovvisate += 1;
+            }
+            continue;
           }
         }
         const { voce_id, nome } = voceDi(campagna, e.etichetta);
@@ -338,6 +374,7 @@ export async function narraTurno(
     usa_rifiutati: usaRifiutati,
     scartate,
     scartate_assenti: scartateAssenti,
+    scartate_segreti: scartateSegreti,
     errore,
     interrotto,
   });

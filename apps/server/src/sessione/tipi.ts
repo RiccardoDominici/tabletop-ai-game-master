@@ -79,6 +79,8 @@ export interface FotografiaSessione {
   sceneConFinale?: string[];
   /** La serata: riassunti delle serate chiuse, chiusura, durata (assente negli archivi di prima). */
   serata?: SerataSalvata;
+  /** Battute e indizi usciti solo per azioni private: la guardia dei segreti non li conta come pubblici. */
+  segretiPrivati?: { battute: string[]; indizi: string[] };
   /** Presenze dei PNG decise a mano dal master (true = in scena), valide per questa scena (assente = nessuna). */
   presenzeManuali?: Array<[string, boolean]>;
   /** PNG nascosti rivelati a mano dal master (assente = nessuno). */
