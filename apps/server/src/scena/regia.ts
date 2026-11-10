@@ -62,6 +62,12 @@ import type { Arbitro, Azione } from '../azioni/tipi';
 import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
 import { messaggioChiusura, messaggioRiparazione } from '../narrazione/messaggio';
 import { segretiNascosti, type EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
+import { CanaleSceneggiatore } from '../sceneggiatore/canale';
+import type { RichiestaSceneggiatore, RispostaSceneggiatore } from '../sceneggiatore/protocollo';
+import { validaBattute } from '../sceneggiatore/valida';
+
+/** Oltre questo tempo la battuta chiesta «subito» allo sceneggiatore non si dice più (resta nel repertorio). */
+export const TETTO_SCENEGGIATORE_MS = 90_000;
 import { SerataGuidata } from './serata';
 import { climaxInCorso } from '../sessione/durata';
 import { normalizza } from '../azioni/regole';
@@ -138,6 +144,11 @@ export interface OpzioniRegia {
   attesaNelCatalogo?: boolean;
   /** «La volta scorsa»: un narratore a parte (il lettore minimo non scrive prosa); null = riserva dai segni. */
   narratoreRiassunto?: Narratore | null;
+  /**
+   * Lo sceneggiatore (docs/sceneggiatore.md): la cartella sorvegliata dove chiedere battute a Claude Code
+   * mentre si gioca, e il tetto oltre cui la battuta scritta su richiesta non si dice più. null = spento.
+   */
+  sceneggiatore?: { radice: string; tettoMs?: number } | null;
   cacheAudio?: CacheAudio;
   /** Esperimenti: la finestra si apre sempre per tutti i PG al tavolo (l'invito resta nel log). */
   finestraATutti?: boolean;
@@ -254,6 +265,12 @@ export class Regia {
   private readonly indiziPrivati = new Set<string>();
   /** Quante volte ogni PNG ha già detto la sua deviazione (si alternano testo e varianti). */
   private readonly deviazioniDette = new Map<string, number>();
+  /** Lo sceneggiatore (sceneggiatore/canale.ts), se acceso. */
+  private readonly sceneggiatore: CanaleSceneggiatore | null;
+  /** Battute chieste «subito» per un'azione rimasta senza risposta: id richiesta → PG e turno. */
+  private readonly attesaSubito = new Map<string, { pg: string; turno: number }>();
+  /** Progressivo delle frasi dette dallo sceneggiatore (id delle frasi della voce). */
+  private frasiSceneggiatore = 0;
   /** La serata: «La volta scorsa…», Diario, durata e chiusura guidata (scena/serata.ts). */
   private readonly serata: SerataGuidata;
   /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
@@ -467,6 +484,9 @@ export class Regia {
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');
+    this.sceneggiatore = opzioni.sceneggiatore
+      ? new CanaleSceneggiatore({ radice: opzioni.sceneggiatore.radice, log: opzioni.log.child({ modulo: 'sceneggiatore' }), adesso: () => this.o.orologio.adesso(), onRisposta: (rq, rs) => this.dalloSceneggiatore(rq, rs) })
+      : null;
     this.serata = new SerataGuidata({ campagna: opzioni.campagna, narratore: opzioni.narratoreRiassunto !== undefined ? opzioni.narratoreRiassunto : opzioni.narratore, log: opzioni.log, parole: () => this.o.paroleSegrete ?? [], pubblico: () => this.statoPubblico() });
     if (!opzioni.ripresa) this.serata.preparaPerPacchetto();
     if (opzioni.ripresa) this.ripristina(opzioni.ripresa);
@@ -1129,6 +1149,111 @@ export class Regia {
     alFinire?.(s);
   }
 
+  // ------------------------------------------------------------------ sceneggiatore (docs/sceneggiatore.md)
+
+  /**
+   * Dopo un turno: per ogni azione pubblica a cui il lettore non ha trovato una battuta («nessuna»: solo
+   * una battuta d'attesa, o niente) si chiede SUBITO la sua battuta; poi, in sottofondo, le battute per
+   * le azioni probabili del prossimo turno. Lo sceneggiatore lavora mentre il tavolo parla.
+   */
+  private chiediAlloSceneggiatore(turno: number, azioni: ReadonlyArray<{ id_pg: string; testo: string | null; [k: string]: unknown }>, uscita: readonly VoceUscita[]): void {
+    const s = this.statoRepertorio!;
+    const canale = this.sceneggiatore!;
+    if (!canale.vivo) return;
+    const risposte = new Set(uscita.filter((u) => u.tipo === 'usa' && u.per && !s.repertorio.perId.get(u.id)?.riempitivo).map((u) => (u.tipo === 'usa' ? u.per! : '')));
+    for (const a of azioni) {
+      if (!a.testo || a['privata'] === true || a['sospesa'] === true || risposte.has(a.id_pg)) continue;
+      const id = canale.nuovoId('subito', turno);
+      if (canale.chiedi(this.richiestaSceneggiatore(id, 'subito', turno, 1, { id_pg: a.id_pg, nome: this.nomePg(a.id_pg), testo: a.testo }))) this.attesaSubito.set(id, { pg: a.id_pg, turno });
+    }
+    canale.chiedi(this.richiestaSceneggiatore(canale.nuovoId('prossime', turno), 'prossime', turno, 6));
+  }
+
+  private richiestaSceneggiatore(id: string, tipo: RichiestaSceneggiatore['tipo'], turno: number, quante: number, azione?: RichiestaSceneggiatore['azione']): RichiestaSceneggiatore {
+    const s = this.statoRepertorio!;
+    const sc = this.campagna.scena;
+    return {
+      id,
+      tipo,
+      creata: new Date(this.o.orologio.adesso()).toISOString(),
+      turno,
+      campagna: this.o.campagna.cartella,
+      scena: { id: sc.id, titolo: sc.titolo, png_presenti: [...this.pngInScena()] },
+      ...(azione ? { azione } : {}),
+      trascrizione: this.trascrizione.filter((v) => v.tipo !== 'sistema').slice(-30).map((v) => `${v.nome}: ${v.testo}`),
+      stato: { indizi_rivelati: [...s.indiziRivelati], fatti_noti: [...s.fattiNoti], battute_usate: [...s.usi.keys()], orologi: this.orologi.riepilogo() },
+      prefisso: `sc_${id.replace(/[^a-z0-9]+/gi, '_').toLowerCase()}_`,
+      quante,
+    };
+  }
+
+  /**
+   * Una risposta dello sceneggiatore: le battute che passano il controllo (sceneggiatore/valida.ts)
+   * entrano nel repertorio vivo, e da lì nel catalogo dei turni dopo. Quella chiesta «subito» si dice
+   * adesso, se il tavolo è in finestra nella stessa scena e il tetto non è passato; se no resta nel
+   * repertorio per la prossima volta.
+   */
+  private dalloSceneggiatore(rq: RichiestaSceneggiatore, rs: RispostaSceneggiatore): void {
+    const s = this.statoRepertorio;
+    const subito = this.attesaSubito.get(rq.id);
+    this.attesaSubito.delete(rq.id);
+    const ms = this.o.orologio.adesso() - Date.parse(rq.creata);
+    const riga = { sessione: this.sessione, turno: this.turno, tipo: 'sceneggiatore', richiesta: rq.id, tipo_richiesta: rq.tipo, per_turno: rq.turno, esito: rs.esito, ms_claude: rs.ms, ms_totale: ms } as Record<string, unknown>;
+    if (!s || rs.esito !== 'ok' || !rs.yaml || this.spento) {
+      this.o.registroNarrazioni.scrivi({ ...riga, accettate: [], scartate: [], consegnata: false, ...(rs.errore ? { errore: rs.errore } : {}) });
+      return;
+    }
+    const v = validaBattute(rs.yaml, {
+      campagna: this.campagna,
+      scena: rq.scena.id,
+      presenti: new Set(rq.scena.png_presenti),
+      esistenti: s.repertorio.perId,
+      prefisso: rq.prefisso,
+      parole: this.o.paroleSegrete ?? [],
+      pubblico: this.statoPubblicoAlTavolo(),
+      detto: this.trascrizione.filter((x) => x.tipo !== 'sistema').map((x) => x.testo).join('\n'),
+    });
+    for (const b of v.accettate) {
+      s.repertorio.battute.push(b);
+      s.repertorio.perId.set(b.id, b);
+    }
+    this.o.log.info({ richiesta: rq.id, tipo: rq.tipo, accettate: v.accettate.map((b) => b.id), scartate: v.scartate, ms }, 'sceneggiatore: battute nel repertorio');
+    const tetto = this.o.sceneggiatore?.tettoMs ?? TETTO_SCENEGGIATORE_MS;
+    const prima = v.accettate[0];
+    let consegnata = false;
+    if (subito && prima) {
+      if (ms > tetto) this.o.log.info({ richiesta: rq.id, ms, tetto }, 'sceneggiatore: battuta arrivata oltre il tetto, resta nel repertorio');
+      else if (this.fase !== 'finestra' || this.campagna.scena.id !== rq.scena.id) this.o.log.info({ richiesta: rq.id, fase: this.fase }, 'sceneggiatore: il tavolo è andato avanti, la battuta resta nel repertorio');
+      else consegnata = this.diciDelloSceneggiatore(prima, subito.pg, rq);
+    }
+    this.o.registroNarrazioni.scrivi({ ...riga, accettate: v.accettate.map((b) => ({ id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, temi: b.temi, testo: b.testo })), scartate: v.scartate, consegnata, ...(subito ? { per_pg: subito.pg, azione: rq.azione?.testo ?? null } : {}) });
+  }
+
+  /** La battuta scritta su richiesta, detta a finestra aperta (la voce la mette nel turno in corso). */
+  private diciDelloSceneggiatore(b: Battuta, pg: string, rq: RichiestaSceneggiatore): boolean {
+    const uso = this.statoRepertorio!.usa(b.id, this.turno, { inRisposta: new Set() });
+    if (!uso.ok) {
+      this.o.log.warn({ battuta: b.id, motivo: uso.motivo }, 'sceneggiatore: battuta non usabile');
+      return false;
+    }
+    const turno = this.turno;
+    for (const r of uso.righe) {
+      const { voce_id, nome } = voceDi(this.campagna, r.etichetta);
+      this.aggiungiTrascrizione({ turno, tipo: r.etichetta === ID_NARRATORE ? 'narrazione' : 'battuta', chi: r.etichetta, nome, testo: r.testo });
+      this.frasiSceneggiatore += 1;
+      this.pipeline.accoda({ id_frase: `t${turno}-s${this.frasiSceneggiatore}`, turno, indice: 700 + this.frasiSceneggiatore, parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: this.pronuncia(r.testo) });
+    }
+    this.o.log.info({ battuta: b.id, per: pg, richiesta: rq.id, turno }, 'sceneggiatore: battuta detta a finestra aperta');
+    this.notifica();
+    return true;
+  }
+
+  /** Lo stato pubblico al tavolo (battute e indizi usciti solo in privato non contano), come la guardia dei segreti. */
+  private statoPubblicoAlTavolo(): StatoPubblico | null {
+    const s = this.statoRepertorio;
+    return s ? { indiziRivelati: new Set([...s.indiziRivelati].filter((i) => !this.indiziPrivati.has(i))), battuteUsate: (id) => s.usata(id) && !this.battutePrivate.has(id) } : null;
+  }
+
   /** Testo dell'ultima narrazione pubblica (per l'arbitro). */
   private ultimaNarrazione(): string {
     const voci = this.trascrizione.filter((v) => v.tipo === 'narrazione' || v.tipo === 'battuta');
@@ -1448,6 +1573,7 @@ export class Regia {
    * che cade e torna, non una «scena fermata»).
    */
   spegni(): void {
+    this.sceneggiatore?.chiudi();
     this.spento = true;
     this.interrompiFlussi('arresto');
     this.tavolo.spegni();
@@ -2394,6 +2520,7 @@ export class Regia {
     this.versioneScena += 1;
     // [ritmo] del narratore: vale dalla finestra che si apre adesso.
     if (esito.ritmo) this.impostaRitmo(esito.ritmo, 'narratore');
+    if (this.statoRepertorio && this.sceneggiatore) this.chiediAlloSceneggiatore(turno, azioni, esito.uscita);
     this.fineNarrazione(esito.invito ?? 'tutti');
   }
 

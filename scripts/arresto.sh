@@ -52,9 +52,11 @@ ferma_porta() {
 if [[ "$PORTA" != "4610" ]]; then
   case "$PORTA" in 4611|4612) echo "porta $PORTA riservata (voce, Vite): non è un server di prova" >&2; exit 2 ;; esac
   ferma_porta "server di prova" "$PORTA" "$RADICE/logs/porta-$PORTA/server.pid"
+  CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/sceneggiatore.sh" ferma >/dev/null
   exit 0
 fi
 ferma_porta "server" 4610 "$RADICE/logs/server.pid"
+CANTASTORIE_PORTA=4610 "$RADICE/scripts/sceneggiatore.sh" ferma >/dev/null
 ferma_porta "vite" 4612 ""
 if [[ "$LASCIA_VOCE" == "0" && -x "$RADICE/scripts/voce-arresto.sh" ]]; then
   "$RADICE/scripts/voce-arresto.sh"

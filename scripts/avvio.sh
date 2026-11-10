@@ -130,6 +130,11 @@ for _ in $(seq 1 60); do
   fi
   sleep 0.5
 done
+# 5. Lo sceneggiatore (docs/sceneggiatore.md): Claude Code scrive ciò che il lettore locale non trova.
+#    Parte se `claude` è installato (CANTASTORIE_SCENEGGIATORE=no lo spegne); col narratore finto no.
+if [[ "$FINTO" != "1" ]]; then
+  CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/sceneggiatore.sh" avvia || echo "sceneggiatore: non partito (vedi il suo log)"
+fi
 salute="$(curl -s --max-time 2 "http://127.0.0.1:$PORTA/api/salute" || true)"
 info="$(curl -s --max-time 2 "http://127.0.0.1:$PORTA/api/info" || true)"
 if [[ -z "$info" ]]; then
