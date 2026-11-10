@@ -59,6 +59,30 @@ describe('provider compatibile OpenAI', () => {
   });
 });
 
+describe('coda del server locale', () => {
+  it('una richiesta alla volta; il lettore passa davanti; una bassa che aspetta troppo rinuncia', async () => {
+    const ordine: string[] = [];
+    const lento = (async (_u: string, init: RequestInit) => {
+      const msg = (JSON.parse(String(init.body)) as { messages: Array<{ content: string }> }).messages.at(-1)!.content;
+      ordine.push(msg);
+      await new Promise((r) => setTimeout(r, 60));
+      return new Response(JSON.stringify({ choices: [{ message: { content: msg }, finish_reason: 'stop' }] }), { status: 200 });
+    }) as unknown as typeof fetch;
+    const base = { url: 'http://coda.prova/v1', modello: 'm', fetch: lento };
+    const bassa = new ModelloOpenAI({ ...base, coda: { concorrenza: 1, priorita: 'bassa', attesaMaxMs: 500 } });
+    const pigra = new ModelloOpenAI({ ...base, coda: { concorrenza: 1, priorita: 'bassa', attesaMaxMs: 10 } });
+    const alta = new ModelloOpenAI({ ...base, coda: { concorrenza: 1, priorita: 'alta' } });
+    const r = (m: ModelloOpenAI, t: string) => m.chiedi({ sistema: [], messaggi: [{ ruolo: 'user', testo: t }], maxTokens: 5 });
+    const p1 = r(bassa, 'b1');
+    const p2 = r(bassa, 'b2');
+    const p3 = r(alta, 'lettore');
+    const p4 = r(pigra, 'rinuncia');
+    await expect(p4).rejects.toThrow(/occupato/);
+    await Promise.all([p1, p2, p3]);
+    expect(ordine).toEqual(['b1', 'lettore', 'b2']);
+  });
+});
+
 describe('uscita strutturata senza supporto del provider', () => {
   const schema = { type: 'object', additionalProperties: false, required: ['scelta'], properties: { scelta: { type: 'string', enum: ['a', 'b'] } } };
 

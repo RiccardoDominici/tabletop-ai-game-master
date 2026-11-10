@@ -28,8 +28,57 @@ export interface OpzioniOpenAI {
   timeoutMs?: number;
   /** Etichetta del provider per i log (locale, openrouter, openai). */
   etichetta?: string;
+  /**
+   * Coda per server (stesso `url`): al più `concorrenza` richieste in volo. Un server locale su una GPU
+   * sola regge male le richieste in parallelo (mlx-lm: «Impacting Interactivity», 10/11/2026), e il
+   * lettore non deve aspettare dietro agli arbitri: `priorita` alta passa avanti; una richiesta a
+   * priorità bassa che aspetta in coda più di `attesaMaxMs` rinuncia senza partire.
+   */
+  coda?: { concorrenza: number; priorita: 'alta' | 'bassa'; attesaMaxMs?: number };
   /** Per i test: fetch finto. */
   fetch?: typeof fetch;
+}
+
+interface InAttesa {
+  alta: boolean;
+  parti: () => void;
+  rinuncia: (e: Error) => void;
+  timer: NodeJS.Timeout | null;
+}
+
+/** Code dei server (per URL): richieste in volo e in attesa, con la priorità del lettore. */
+const CODE = new Map<string, { inVolo: number; attesa: InAttesa[] }>();
+
+async function inCoda<T>(url: string, o: NonNullable<OpzioniOpenAI['coda']>, lavoro: () => Promise<T>): Promise<T> {
+  let c = CODE.get(url);
+  if (!c) CODE.set(url, (c = { inVolo: 0, attesa: [] }));
+  const coda = c;
+  if (coda.inVolo >= o.concorrenza) {
+    await new Promise<void>((parti, rinuncia) => {
+      const voce: InAttesa = { alta: o.priorita === 'alta', parti, rinuncia, timer: null };
+      if (!voce.alta && o.attesaMaxMs !== undefined) {
+        voce.timer = setTimeout(() => {
+          coda.attesa.splice(coda.attesa.indexOf(voce), 1);
+          rinuncia(new Error(`server occupato da più di ${o.attesaMaxMs} ms (precedenza al lettore)`));
+        }, o.attesaMaxMs);
+      }
+      // L'alta priorità va prima di tutte le basse in attesa.
+      const i = voce.alta ? coda.attesa.findIndex((x) => !x.alta) : -1;
+      if (i >= 0) coda.attesa.splice(i, 0, voce);
+      else coda.attesa.push(voce);
+    });
+  }
+  coda.inVolo += 1;
+  try {
+    return await lavoro();
+  } finally {
+    coda.inVolo -= 1;
+    const prossima = coda.attesa.shift();
+    if (prossima) {
+      if (prossima.timer) clearTimeout(prossima.timer);
+      prossima.parti();
+    }
+  }
 }
 
 interface RispostaChat {
@@ -95,14 +144,27 @@ export class ModelloOpenAI implements ModelloLinguaggio {
     return { testo, modello: j?.model ?? this.modello, stopReason, uso, costo: TARIFFE[this.modello] ? calcolaCosto(this.modello, uso) : costoZero(uso), id: j?.id ?? null };
   }
 
-  async chiedi(r: RichiestaModello): Promise<RispostaModello> {
+  /** In coda (se configurata) per il server di questo URL. */
+  private inCoda<T>(lavoro: () => Promise<T>): Promise<T> {
+    return this.o.coda ? inCoda(this.o.url, this.o.coda, lavoro) : lavoro();
+  }
+
+  chiedi(r: RichiestaModello): Promise<RispostaModello> {
+    return this.inCoda(() => this.chiediOra(r));
+  }
+
+  flusso(r: RichiestaModello, onDelta: (delta: string) => void): Promise<RispostaModello> {
+    return this.inCoda(() => this.flussoOra(r, onDelta));
+  }
+
+  private async chiediOra(r: RichiestaModello): Promise<RispostaModello> {
     const j = (await (await this.invia(r, false)).json()) as RispostaChat;
     const scelta = j.choices?.[0];
     return this.esito(scelta?.message?.content ?? '', j, scelta?.finish_reason ?? null);
   }
 
   /** Streaming SSE: righe `data: {…}`, fino a `data: [DONE]`. */
-  async flusso(r: RichiestaModello, onDelta: (delta: string) => void): Promise<RispostaModello> {
+  private async flussoOra(r: RichiestaModello, onDelta: (delta: string) => void): Promise<RispostaModello> {
     const risposta = await this.invia(r, true);
     if (!risposta.body) throw new Error(`${this.descrizione}: risposta senza corpo`);
     const decoder = new TextDecoder();

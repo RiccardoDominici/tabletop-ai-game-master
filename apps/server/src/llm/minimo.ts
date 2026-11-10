@@ -68,9 +68,10 @@ export function leggiTurno(messaggio: string): TurnoLetto {
   return { azioni, indicate, catalogo, attesa };
 }
 
-const PROMPT = `Sei il lettore di una partita di D&D dal vivo, in italiano. NON scrivi la storia: per ogni azione dei giocatori scegli quale battuta già scritta risponde, dall'elenco dei candidati di QUELL'azione, oppure "nessuna" se nessun candidato descrive davvero l'azione.
-Per ogni azione scrivi anche l'annuncio: UNA frase breve, in terza persona, col nome del personaggio, che dice solo ciò che il giocatore ha scritto (es. «Mirta guarda le impronte nella neve.»). Niente esito, niente emozioni, niente parole in più. Per le azioni PRIVATE l'annuncio è vuoto.
-Rispondi solo in JSON.`;
+const PROMPT = `Sei il lettore di una partita di D&D in italiano. Non scrivi la storia: per ogni azione scegli l'ID della battuta che le risponde, fra i candidati di quell'azione, oppure "nessuna".
+Per ogni azione scrivi anche "annuncio": una frase breve in terza persona col nome del personaggio, solo ciò che il giocatore ha scritto (es. "Mirta guarda le impronte nella neve."). Per le azioni PRIVATE l'annuncio è "".
+"battuta" è SOLO l'id (la parola prima dei due punti), mai il testo.
+Esempio di risposta: {"risposte":[{"pg":"pg_mirta","battuta":"nar_impronte","annuncio":"Mirta guarda le impronte nella neve."}]}`;
 
 const SCHEMA = {
   type: 'object',
@@ -92,11 +93,26 @@ const SCHEMA = {
 
 type Risposte = { risposte: Array<{ pg: string; battuta: string; annuncio: string }> };
 
-/** Candidati di un'azione: le indicate dal Motore, poi il resto del catalogo (al più `max`). */
-export function candidati(t: TurnoLetto, pg: string, max = 12): string[] {
+const radici = (s: string): Set<string> => new Set((s.toLowerCase().match(/\p{L}{4,}/gu) ?? []).map((w) => w.slice(0, 5)));
+
+/**
+ * Candidati di un'azione, pochi perché un modello piccolo legge piano: le indicate dal Motore, poi le
+ * battute del catalogo il cui «quando» condivide più radici col testo dell'azione (al più `max` in tutto).
+ */
+export function candidati(t: TurnoLetto, pg: string, testo = '', max = 6): string[] {
   const ind = t.indicate.get(pg) ?? [];
-  const resto = [...t.catalogo.keys()].filter((id) => !ind.includes(id));
-  return [...ind, ...resto].slice(0, Math.max(max, ind.length));
+  const mie = radici(testo);
+  const punteggio = (id: string): number => [...radici(t.catalogo.get(id) ?? '')].filter((r) => mie.has(r)).length;
+  const resto = [...t.catalogo.keys()].filter((id) => !ind.includes(id)).map((id) => [id, punteggio(id)] as const);
+  resto.sort((a, b) => b[1] - a[1]);
+  return [...ind, ...resto.filter(([, p]) => p > 0).map(([id]) => id)].slice(0, Math.max(max, ind.length));
+}
+
+/** «id: quando» dalla riga del catalogo «id · chi · tipo · quando». */
+function rigaBreve(t: TurnoLetto, id: string): string {
+  const riga = t.catalogo.get(id) ?? id;
+  const parti = riga.split(' · ');
+  return parti.length >= 4 ? `${parti[0]}: ${parti.slice(3).join(' · ')}` : riga;
 }
 
 /** L'annuncio passa solo se è una frase breve, in terza persona, col nome del PG e senza markup. */
@@ -131,18 +147,18 @@ export class NarratoreMinimo implements Narratore {
     const risposte: RispostaModello[] = [];
     let scelte: Risposte['risposte'] = [];
     if (t.azioni.length) {
-      const per = new Map(t.azioni.map((a) => [a.id_pg, candidati(t, a.id_pg)]));
+      const per = new Map(t.azioni.map((a) => [a.id_pg, candidati(t, a.id_pg, a.testo)]));
       const elenco = t.azioni
         .map((a, i) => {
           const c = per.get(a.id_pg)!;
-          const righe = c.map((id) => `   - ${t.catalogo.get(id) ?? id}`).join('\n') || '   (nessun candidato)';
-          return `${i + 1}. ${a.nome} (${a.id_pg})${a.privata ? ' [PRIVATA]' : ''}: ${a.testo}\n   Candidati (id · chi · tipo · quando):\n${righe}`;
+          const righe = c.map((id) => `   - ${rigaBreve(t, id)}`).join('\n') || '   (nessun candidato: battuta "nessuna")';
+          return `${i + 1}. ${a.nome} (${a.id_pg})${a.privata ? ' [PRIVATA]' : ''}: ${a.testo}\n   Candidati (id: quando):\n${righe}`;
         })
         .join('\n');
       const ripiego = (): Risposte => ({ risposte: t.azioni.map((a) => ({ pg: a.id_pg, battuta: t.indicate.get(a.id_pg)?.[0] ?? 'nessuna', annuncio: '' })) });
       const risposta = await chiediStrutturato<Risposte>(
         this.m,
-        { sistema: [{ testo: PROMPT, cache: true }], messaggi: [{ ruolo: 'user', testo: `Azioni del turno:\n${elenco}` }], maxTokens: this.o.maxTokens ?? 400, signal: r.signal },
+        { sistema: [{ testo: PROMPT, cache: true }], messaggi: [{ ruolo: 'user', testo: `Azioni del turno:\n${elenco}` }], maxTokens: this.o.maxTokens ?? 40 + 50 * t.azioni.length, signal: r.signal },
         {
           schema: SCHEMA,
           cosa: 'lettore minimo',

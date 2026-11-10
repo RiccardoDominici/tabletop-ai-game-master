@@ -45,7 +45,8 @@ export class FabbricaModelli {
   modello(c: NomeComponente): ModelloLinguaggio | null {
     const s = this.scelte[c];
     if (!this.usaModello(c)) return null;
-    const chiave = `${s.provider}|${s.url ?? ''}|${s.modello ?? ''}`;
+    // In locale un modello per componente (stesso server, priorità diverse); altrove uno per (provider, modello).
+    const chiave = `${s.provider}|${s.url ?? ''}|${s.modello ?? ''}${s.provider === 'locale' ? `|${c}` : ''}`;
     let m = this.modelli.get(chiave);
     if (m) return m;
     const loc = this.cfg.backend.locale;
@@ -54,7 +55,15 @@ export class FabbricaModelli {
         m = new ModelloAnthropic(() => (this.clientAnthropic ??= creaClientAnthropic(this.o.fileChiaveAnthropic, this.o.log)), s.modello ?? 'claude-haiku-5-5');
         break;
       case 'locale':
-        m = new ModelloOpenAI({ url: s.url!, modello: s.modello ?? loc.modello ?? 'locale', strutturato: loc.strutturato === true, timeoutMs: loc.timeout_ms ?? 120_000, etichetta: 'locale' });
+        m = new ModelloOpenAI({
+          url: s.url!,
+          modello: s.modello ?? loc.modello ?? 'locale',
+          strutturato: loc.strutturato === true,
+          timeoutMs: loc.timeout_ms ?? 120_000,
+          etichetta: 'locale',
+          // Una richiesta alla volta sulla GPU; il lettore passa davanti, gli altri rinunciano dopo 8 s di coda.
+          coda: { concorrenza: 1, priorita: c === 'lettore' ? 'alta' : 'bassa', attesaMaxMs: 8000 },
+        });
         break;
       case 'openrouter':
         m = new ModelloOpenAI({

@@ -1,0 +1,67 @@
+{
+ "porta": 4730,
+ "campagna": "prova-f0",
+ "modo": "repertorio",
+ "turni_narrati": 3,
+ "frasi_proiettore": 32,
+ "frasi_telefono_in_ascolto": 32,
+ "stesse_frasi": true,
+ "segmenti_fish": 0,
+ "primo_byte_ms": {
+  "minimo": null,
+  "mediana": null,
+  "p90": null,
+  "massimo": null
+ },
+ "voce_usd": 0,
+ "llm_usd": 0,
+ "voce_byte": 0,
+ "secondi_voce": 143,
+ "errori_voce": [],
+ "markup_corretto": [],
+ "provider": [
+  "lettore         → locale (minimo) mlx-community/Qwen3-4B-Instruct-2507-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "arbitro_azioni  → locale mlx-community/Qwen3-4B-Instruct-2507-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "arbitro_prove   → locale mlx-community/Qwen3-4B-Instruct-2507-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "riassunto       → locale mlx-community/Qwen3-4B-Instruct-2507-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "regole          → locale mlx-community/Qwen3-4B-Instruct-2507-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "voce            → locale qwen3-tts (services/voce) — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "immagini        → nessuno — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)"
+ ],
+ "lettore_minimo": [
+  {
+   "turno": 1,
+   "scelte": [
+    "pg_ginestra:bal_chi_e",
+    "pg_assenzio:ott_forestiero",
+    "pg_teodora:nessuna"
+   ],
+   "chiamate": 1
+  },
+  {
+   "turno": 2,
+   "scelte": [
+    "pg_teodora:ott_malati",
+    "pg_ginestra:ott_malati"
+   ],
+   "chiamate": 1
+  },
+  {
+   "turno": 3,
+   "scelte": [
+    "pg_ginestra:seb_sintomi",
+    "pg_assenzio:ott_cane_domanda",
+    "pg_teodora:nar_preghiera"
+   ],
+   "chiamate": 1
+  }
+ ],
+ "strutturato_non_valido": 22,
+ "chiamate_api": 0,
+ "llm_ms": [
+  33561,
+  31708,
+  35990
+ ],
+ "buchi_proiettore": 4
+}
