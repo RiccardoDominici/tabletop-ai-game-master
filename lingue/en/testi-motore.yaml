@@ -1,0 +1,333 @@
+# Fixed phrases of the Engine in English (docs/lingue.md): what the server shows to the players (phone,
+# projector), to the Game Master (panel: refusals and event details) or sends to the narrator (turn message,
+# context). Same keys and {placeholders} as lingue/it/testi-motore.yaml. Protocol labels ([usa], [invito],
+# tutti, [orologio], > pg…) and field names (al_completo, segno_orologio, finale) stay as they are.
+
+# Scene direction (apps/server/src/scena/regia.ts).
+regia:
+  # Name of the system lines in the transcript.
+  nome_sistema: "System"
+  # Reasons shown to a player when their action comes back (phone).
+  motivi:
+    saltata: "The Game Master skipped this action: you can write it again."
+    narrazione_interrotta: "The Game Master stopped the narration: your action was not resolved, you can send it again."
+    cambio_scena: "The scene is changing: your action was meant for the previous place, write it again if it still applies."
+    blocco: "The narrator got stuck before answering: your action was not resolved, you can send it again."
+    chiusura_serata: "The evening is over: your action was not resolved, write it again next time if it still applies."
+    ripresa: "The game stopped while the narrator was answering: your action was not resolved, you can send it again."
+  # System lines of the transcript (phones, projector, panel); some are also notices.
+  righe:
+    fine_scena: "The scene is over: the Game Master chooses how to go on."
+    blocco: "The narrator got stuck: starting again."
+    fine_sessione: "End of the session."
+    serata_chiusa: "The evening is over: see you next time."
+    ripresa: "The session picks up where it left off."
+    scena_fermata: "Scene stopped."
+    narrazione_interrotta: "The Game Master stopped the narration."
+    nuova_scena: "New scene: {titolo}."
+    combattimento_chiuso: "The Game Master ends the combat."
+  # Notices to the projector and the panel.
+  avvisi:
+    narratore_muto: "The narrator is not answering: I will try again next turn."
+  # Narrator sentences the Engine says when the model is missing (fallbacks) or keeps a secret.
+  narratore:
+    riserva_blocco: "Sorry, I lost the thread for a moment: tell me again what you do."
+    riserva_turno: "The fire crackles. For a moment, nobody speaks."
+    deviazione: "{nome} shakes their head and does not answer."
+  # "So far tonight" in the phones' Diary.
+  diario:
+    luoghi: "Places: {luoghi}."
+  # Command errors (Game Master panel, phones).
+  errori:
+    nessuna_sessione: "No session in progress to close."
+    telefono_sconosciuto: "Unknown phone."
+    personaggio_sconosciuto: "Unknown character."
+    umore_senza_brano: "No track for the mood “{umore}”."
+    nessuna_situazione: "No situation on the projector."
+    situazione_sconosciuta: "Unknown situation image."
+    png_visibile: "The character is not hidden: the table already sees them."
+    durata_non_valida: "Invalid length: from half an hour to eight hours."
+    chiusura_in_corso: "The evening is already closing."
+    serata_gia_chiusa: "The evening is already closed."
+    aspetta_narrazione: "Wait for the narration to end, or stop it first."
+    serata_non_in_corso: "The evening is not in progress."
+    scena_non_in_corso: "The scene is not in progress."
+    gia_in_pausa: "The table is already paused."
+    pausa_gia_chiesta: "A pause is already requested: it starts when the narration ends."
+    non_in_pausa: "The table is not paused."
+    nessuna_narrazione: "No narration in progress."
+    scena_sconosciuta: "Unknown scene."
+    scena_gia_in_corso: "This is already the current scene."
+    ritmo_sconosciuto: "Unknown pace."
+    azione_inesistente: "The action does not exist or is already out of the turn."
+    combattimento_in_corso: "A combat is already in progress."
+    senza_dadi: "This campaign does not play with dice."
+    nessun_combattimento: "No combat in progress."
+    pf_non_validi: "Invalid HP, or the character has no sheet."
+    condizione_sconosciuta: "Unknown condition, or no combat in progress."
+  # Automatic audio cues in the panel's event list ({origine}: "line <id>" or the cue's own origin).
+  audio:
+    origine_battuta: "line {id}"
+    rifiutato: "automatic ({origine}): {motivo}"
+    effetto: "automatic ({origine}): effect {effetto} with the sentence"
+    umore_ignorato: "automatic ({origine}): mood {umore} ignored, one change per minute ({secondi} s to go)"
+    umore: "automatic ({origine}): music mood {da} → {a}"
+  # Parts of the turn message built by the scene direction (lines pointed out per action).
+  modello:
+    oppure: "or"
+
+# Clock state for the turn message, and refusals of an advance (apps/server/src/scena/orologi.ts).
+orologi:
+  # Sentence the narrator prompt treats as the order to show the sign.
+  ordine_segno: "Show it in this response."
+  nessun_segno: "no sign so far"
+  segno_precedente: "your previous response showed a sign"
+  ultimo_segno: "last sign at turn {turno}"
+  # Start of every line: {testa} in the lines below.
+  testa: "- [{id}] “{nome}”: signs shown {pieni} of {segmenti}"
+  non_partito: "{testa}; not started yet: no sign to show."
+  completo: "{testa}; COMPLETE ({ultimo}). Follow al_completo: {al_completo}"
+  segno_non_scritto: "(sign not written)"
+  prossimo: "{testa}; {ultimo}. Next sign: “{prossimo}”"
+  fermo: "Do not show another sign before turn {turno}."
+  # Repertoire mode: the state without the text of the sign.
+  repertorio:
+    completo: "{testa}; COMPLETE: use a line of type finale when the scene calls for it."
+    riga: "{testa}; {ultimo}."
+    usa_segno: "Use the segno_orologio line of this clock."
+  # Why an advance is not allowed (Game Master panel when it moves a clock, turn record).
+  rifiuti:
+    ritmo: "clock {id}: at most one sign every {ogni} turns (the last one at turn {turno})"
+    due_segni: "more than one sign in the same response"
+    gia_uscito: "a sign of {id} has already come out in this response"
+    troppi: "{max} clocks already advanced in this response"
+    inesistente: "clock missing or not active in the scene: {id}"
+    non_partito: "clock not started yet (it starts after {dopo}): {id}"
+    completo: "clock already complete: {id}"
+    a_zero: "clock already at zero: {id}"
+
+# Turn message, guided closing and repair message (apps/server/src/narrazione/messaggio.ts).
+messaggio:
+  titolo_note_regia: "## Director's notes from the Game Master"
+  note_regia: "{titolo} (follow them in this response, before your habits; never quote them aloud)"
+  riga_azione: "(action by {nome}, {chi}) {testo}"
+  turno_apertura: "### Turn 0 (opening)"
+  turno: "### Turn {turno}"
+  titolo_trascrizione: "## Public transcript of the scene so far (by turn)"
+  omesse: "(older entries left out: {n})"
+  nessuna: "(none)"
+  titolo_privati: "## Private outcomes already given (only that PC knows them: do not say them aloud until the PC uses them)"
+  riga_privato: "- turn {turno}, {pg}: {testo}"
+  titolo_azioni: "## Turn {turno}: the players' actions"
+  nessuna_azione: "Nobody has written an action: everyone is waiting for something to happen."
+  passa: "no action, waiting."
+  azione_privata: "(PRIVATE action: aloud, narrate only what the others can perceive)"
+  ordine_invio: "The actions are in the order they were sent: resolve them in this order."
+  titolo_collegamenti: "Links between the actions:"
+  titolo_orologi: "## Clocks of the scene (state kept by the Engine)"
+  titolo_fatti_scoperti: "## Facts discovered in the scene (the PCs know them now)"
+  titolo_menzogne: "## Lies already told by the NPCs (if the subject comes back, the NPC repeats the same version; the truth comes out only with a confession line)"
+  titolo_indicate: "## Lines pointed out by the Engine (the words of these actions touch their themes: use them for that action, with > pg, if their quando describes it)"
+  titolo_catalogo: "## Catalogue: lines relevant to this turn (id · chi · tipo · quando)"
+  titolo_attesa: "## Waiting lines (fillers, only if no line answers)"
+  titolo_tempo_serata: "## Time of the evening"
+  rispondi_repertorio: "Respond now: only labelled lines ([usa] with the id of an available line, [narratore], [png_…]); the last line is [invito] with the ids of the PCs at the table who must respond, or tutti."
+  rispondi_narratore: "Narrate what happens now. Respond only with labelled lines; the last line is [invito] with the ids of the PCs at the table who must respond, or tutti."
+  titolo_trascrizione_recente: "## Recent transcript"
+  vuota: "(empty)"
+  titolo_chiusura: "## Closing the evening"
+  chiusura: "The Game Master is closing the evening now. No actions to resolve. Write three to five [narratore] lines (the NPCs present may say one sentence): close the moment in progress, give a final image, leave a hook for next time. No mysteries, new NPCs or new facts, no secrets, no questions to the players, no [usa], no [orologio]."
+  rispondi_chiusura: "Respond now with labelled lines; the last line is [invito] tutti."
+  titolo_detto: "## Your response, already said aloud"
+  titolo_mancanti: "## Actions left without a response"
+  riparazione: "Respond now ONLY to these actions, in order: for each one, one or two lines addressed to that PC by name ([narratore], [png_…], or [usa] id > pg_id if a catalogue line answers exactly that action). Do not repeat anything you have already said. No [invito]."
+  solo_finzione: "Tell only what happens in the story: do not name players or PCs as such, and do not talk about choices, waiting, silences or someone who has not done something yet."
+  stallo_repertorio: "Stall: there is no action to resolve in this turn. Make something happen in the world with a filler line from the catalogue, or with the sign if it is due. {solo_finzione}"
+  titolo_mossa_mondo: "## The world moves"
+  mossa_mondo: "Make something happen in the scene: {mossa}. {solo_finzione} End with an invitation to a character by name, inside the story."
+  mossa_segno: "a visible sign of the threat (S1), with nothing irreversible"
+  mossa_indizio: "a proactive clue (S2): something bursts in and brings a new lead, or an NPC acts on their own"
+
+# Urgent pace section at the end of the turn message (apps/server/src/narrazione/ritmo.ts).
+ritmo:
+  titolo: "## Pace"
+  concitato: "Urgent: the players had a countdown to decide. If the danger has passed (the fight is over, the chase has ended, the party is safe), write `[ritmo] calmo` before `[invito]`; otherwise write nothing and the countdown stays."
+
+# Context compiled for the model (cached system block): entries shared by the two compilers.
+contesto:
+  carta_stile: "## Style sheet"
+  scena: "## Current scene: {titolo}"
+  png: "### {nome} — label [{id}], {presenza}"
+  presente: "present in the scene"
+  assente: "not in the scene"
+  titolo_pg: "## Player characters"
+  situazione_comune: "Shared situation: {testo}"
+  pg: "### {nome} — id {id}"
+  titolo_etichette: "## Valid labels in this scene"
+  etichetta_invito: "- [invito] followed by PC ids separated by commas ({pg}) or tutti"
+  # Narrator context, full sheets (apps/server/src/campagna/contesto.ts).
+  campagna:
+    intestazione: "# Campaign “{titolo}” (id {id})"
+    titolo_campagna: "## Campaign: canon, clocks, revelations, nodes, session"
+    titolo_png: "## NPCs (full sheets; fact ids are resolved with the text of the canon)"
+    conoscenze_private: "conoscenze_private of {id} (SECRET: only this player knows them. Never say them aloud; they become public only when the player uses them or tells them):"
+    etichetta_orologio: "- [orologio] followed by the id of an active clock, only when the response shows its next sign"
+  # Selector context, public part only (apps/server/src/repertorio/contesto.ts).
+  repertorio:
+    intestazione: "# Campaign “{titolo}” (public part)"
+    titolo_campagna: "## Campaign: facts known to everyone, places, clocks"
+    titolo_png: "## NPCs (public part: appearance, character, voice, what they know that is public)"
+    titolo_esempi: "## Voice samples of the NPCs (take their tone, not their sentences: these are not lines to use)"
+    etichetta_usa: "- [usa] followed by the id of an available line"
+
+# Closing advice in the turn message when the end of the evening is near (apps/server/src/sessione/durata.ts).
+durata:
+  mancano: "About {minuti} minutes are left before the planned end of the evening."
+  oltre: "The evening has gone past its planned length."
+  consiglio: "{quanto} Move toward a natural pause: bring the moment in progress to its end, no new mysteries. It is advice, not an order: still respond to every action."
+
+# Action notices to the phones (azioni/testi.ts, docs/azioni-concorrenti.md «Parole degli avvisi»).
+azioni:
+  # An action's text quoted in a notice (already shortened by the code).
+  citazione: "“{testo}”"
+  # An action mine depended on fell or changed: fact, link, choice (three sentences joined by a space).
+  dipendenza:
+    ritirata: "{nome} withdrew {azione}."
+    cambiata: "{nome} changed {azione} to {nuova}."
+    fuori_turno: "{nome}’s action {azione} is left out of this turn."
+    legame: "Your action {mia} depended on it."
+    legame_tramite: "Your action {mia} followed {tramite}’s, which depended on it."
+    scelta: "Confirm, change or withdraw?"
+  # To the second player in an exclusive conflict (never the text of someone else's private action).
+  conflitto:
+    anonimo: "Someone else got there first. Do you want to change your action?"
+    vincitore: "{nome} has already written {azione}. Do you want to change your action?"
+  # Action written before the last narration that has become doubtful ({motivo} already ends with a full stop).
+  vecchia: "Meanwhile: {motivo} Do you confirm {mia}?"
+  # Action overtaken by the narration ({motivo} already ends with a full stop).
+  superata: "{motivo} You can rewrite your action."
+  # Still to confirm when the urgent window runs out.
+  sospesa: "Time to choose is up: your action is left out of this turn. You can write it again."
+
+# Errors of the phone and Game Master commands on actions (azioni/tavolo.ts).
+tavolo:
+  scrivi_azione: "Write what your character does."
+  troppo_lunga: "{max} characters at most."
+  niente_da_ritirare: "There is no action to withdraw."
+  niente_da_confermare: "There is nothing to confirm."
+  finestra_chiusa: "The action window is not open."
+  finestra_in_chiusura: "The window is already closing."
+  in_pausa: "The table is paused: resume before closing the window."
+
+# Game Master panel: command refusals and events (master/comandi.ts, master/note.ts, master/vista.ts).
+master:
+  # Error shown in the panel when a command is refused (master/comandi.ts).
+  rifiuti:
+    comando_sconosciuto: "Unknown command."
+    errore_interno: "Internal server error."
+    luogo_sconosciuto: "Unknown place."
+    situazione_non_valida: "Invalid situation."
+    orologio_non_valido: "Invalid clock or step."
+    ritmo_non_valido: "Invalid pace."
+    azione_non_valida: "Invalid action."
+    nota_inesistente: "That note does not exist or has already expired."
+    fine_non_disponibile: "End session is not available on this server."
+    prossima_non_disponibile: "Next session is not available on this server."
+    dispositivo_non_valido: "Invalid phone or character."
+    presenza_non_valida: "Invalid NPC or presence."
+    png_non_valido: "Invalid NPC."
+    umore_non_valido: "Invalid mood."
+    pf_non_validi: "Invalid character or HP."
+    condizione_non_valida: "Invalid condition."
+    effetto_sconosciuto: "Unknown effect."
+    senza_proiettore: "No projector with sound on."
+  # Details of an event in the panel's list (master/comandi.ts → SezioneEventi).
+  dettagli:
+    rifiutato: "rejected: {dettagli}"
+    luogo_sconosciuto: "unknown place “{luogo}”"
+    scena_rifiutata: "scene “{scena}”: {errore}"
+    effetto_sconosciuto: "unknown effect “{effetto}”"
+    pausa: "table paused"
+    pausa_chiesta: "pause at the end of the narration"
+    ripreso: "table resumed"
+    pausa_annullata: "requested pause cancelled"
+    narrazione_fermata: "narration of turn {turno} stopped, table paused"
+    luogo: "place {da} → {a}"
+    luogo_senza_immagine: "place {da} → {a} (no image)"
+    scena: "scene {da} → {a}"
+    situazione: "situation {id} on the projector"
+    situazione_tolta: "situation {id} removed"
+    orologio: "clock {id} {passo} → {pieni}/{segmenti}"
+    finestra_chiusa: "window of turn {turno} closed by the Game Master (Resolve now)"
+    ritmo: "pace {da} → {a}"
+    ritmo_calmo: "calm"
+    ritmo_concitato: "urgent"
+    azione_saltata: "action {id} by {autore} skipped"
+    azione_saltata_privata: "private action {id} by {autore} skipped"
+    nota: "note {id} for {turni} turns: “{testo}”"
+    nota_tolta: "note {id} removed (“{testo}”)"
+    chiusura_senza_ciclo: "closing the evening (no log: no session cycle)"
+    durata: "evening length: {ore} hours"
+    dispositivo: "phone {telefono}…: {da} → {a}"
+    nessuno: "none"
+    dimenticato: "forgotten"
+    presenza_auto: "{nome}: automatic (from the scene)"
+    presenza_in_scena: "{nome}: in the scene"
+    presenza_altrove: "{nome}: elsewhere"
+    rivelato: "{nome}: revealed to the table"
+    nuova_sessione: "new session ({sessione} closed)"
+    nuova_sessione_prima: "new session (none closed)"
+    umore: "music mood {da} → {a}"
+    auto: "auto"
+    combattimento_iniziato: "combat started by the Game Master"
+    combattimento_terminato: "combat ended by the Game Master"
+    pf: "{id}: HP {valore}"
+    condizione_messa: "{id}: {condizione} applied"
+    condizione_tolta: "{id}: {condizione} removed"
+    effetto: "effect {id} on the projector"
+  # Errors of the director's notes written from the panel (master/note.ts).
+  note:
+    testo_vuoto: "Write the text of the note."
+    troppo_lunga: "{max} characters at most."
+    turni_fuori: "Turns go from 1 to {max}."
+    troppe: "There are already {max} notes: remove one first."
+  # Panel snapshot (master/vista.ts).
+  vista:
+    segno_non_scritto: "(sign not written)"
+
+# Errors of the phone commands on the socket (trasporto/socket.ts).
+socket:
+  scegli_pg: "Choose your character first."
+  richiesta_non_valida: "Invalid request."
+
+# HTTP API errors (app.ts).
+api:
+  risorsa_non_trovata: "Resource not found."
+  immagine_non_trovata: "Image not found."
+  luogo_non_valido: "Invalid place."
+  audio_non_trovato: "Audio not found."
+  umore_non_valido: "Invalid mood."
+
+# Session cycle seen from the panel and the evening summary (sessione/ciclo.ts, scelta-pacchetto.ts, riassunto.ts).
+sessione:
+  # Outcomes of «End session», «Close the session» and «Next session» (panel errors and details).
+  ciclo:
+    chiusura_in_corso: "closing the evening: the narrator wraps up, then the summary on the projector and the log"
+    registro_spento: "The session log is off: nothing to write."
+    sessione_chiusa: "session {sessione} closed, log in {file}"
+    registro_non_scritto: "Session closed, but the log was not written ({errore}). Rebuild it with scripts/registro.sh."
+    one_shot: "This campaign is a one-shot: it has no sessioni/ folder."
+    cambio_in_corso: "The move to the next session is already under way."
+    manca_dopo: "There is no package in sessioni/ after session {sessione}: it is prepared between sessions."
+    non_si_carica: "Session {sessione} does not load: {motivo}"
+    senza_passaggio: "This server cannot switch package by itself: restart it with scripts/partita.sh."
+    non_cominciata: "Session {sessione} has not started yet: play it first."
+    si_passa: "session {sessione} closed, moving on to {dopo}"
+  # Panel notice about the package chosen at startup (sessione/scelta-pacchetto.ts).
+  scelta:
+    rigioca: "Session {numero} is over and the next one is not in sessioni/ yet: session {numero} is played again."
+  # Read aloud and shown: the summary fallback and «Last time…» (sessione/riassunto.ts).
+  riassunto:
+    la_volta_scorsa: "Last time."
+    passati_da: "You went through: {scene}."
+    riprende: "The story picks up where it left off."

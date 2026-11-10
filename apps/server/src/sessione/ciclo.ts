@@ -15,6 +15,7 @@ import type { PacchettiMaster, RiassuntoSerata, SessioneMaster } from '@cantasto
 import { scriviRiassuntoSerata } from './riassunto';
 import { elencoPacchetti, pacchettoDopo, type Pacchetto } from '../campagna/pacchetti';
 import type { Campagna } from '../campagna/tipi';
+import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import { MOTIVO_FINE_SESSIONE, type ArchivioSessioni } from './archivio';
 import { registraSessione, type RegistroScritto } from './registra';
@@ -46,7 +47,11 @@ export interface OpzioniCiclo {
   adesso?: () => number;
 }
 
+/** Esito per il pannello: `dettagli` e `errore` sono frasi del pacchetto della lingua (sezione `sessione.ciclo`). */
 export type EsitoCiclo = { ok: true; dettagli: string; registro: RegistroScritto | null } | { ok: false; errore: string };
+
+/** Una frase del ciclo nella lingua attiva, composta quando serve. */
+const frase = (chiave: string, valori: Record<string, string | number> = {}): string => testo(`sessione.ciclo.${chiave}`, valori);
 
 export class CicloSessioni {
   private ultimoRegistro: { sessione: string; file: string; turni: number } | null = null;
@@ -111,7 +116,7 @@ export class CicloSessioni {
     const sessione = this.o.regia.infoRegistro.sessione;
     const r = this.o.regia.chiudiSessione((s) => this.scriviSerata(sessione, s));
     if (!r.ok) return r;
-    return { ok: true, dettagli: 'chiusura della serata in corso: il narratore chiude, poi riassunto sul proiettore e registro', registro: null };
+    return { ok: true, dettagli: frase('chiusura_in_corso'), registro: null };
   }
 
   private scriviSerata(sessione: string | null, s: RiassuntoSerata): void {
@@ -136,14 +141,14 @@ export class CicloSessioni {
   }
 
   private scrivi(sessione: string): EsitoCiclo {
-    if (!this.o.archivio) return { ok: false, errore: 'Registro delle sessioni spento: niente da scrivere.' };
+    if (!this.o.archivio) return { ok: false, errore: frase('registro_spento') };
     try {
       const scritto = registraSessione({ archivio: this.o.archivio, sessione, cartellaCampagna: this.o.cartellaCampagna, cartellaLog: this.o.cartellaLog, log: this.o.log });
       this.ultimoRegistro = { sessione, file: scritto.registro, turni: scritto.estratto.registro.archivio.ultimo_turno };
-      return { ok: true, dettagli: `sessione ${sessione} chiusa, registro in ${scritto.registro}`, registro: scritto };
+      return { ok: true, dettagli: frase('sessione_chiusa', { sessione, file: scritto.registro }), registro: scritto };
     } catch (err) {
       this.o.log.error({ sessione, err: (err as Error).message }, 'sessioni: registro non scritto');
-      return { ok: false, errore: `Sessione chiusa, ma il registro non si è scritto (${(err as Error).message}). Si rifà con scripts/registro.sh.` };
+      return { ok: false, errore: frase('registro_non_scritto', { errore: (err as Error).message }) };
     }
   }
 
@@ -153,12 +158,13 @@ export class CicloSessioni {
    */
   prossimaSessione(): EsitoCiclo {
     const corrente = this.o.campagna.pacchetto;
-    if (!corrente) return { ok: false, errore: 'Questa campagna è una one-shot: non ha sessioni/.' };
-    if (this.cambioInCorso) return { ok: false, errore: 'Il passaggio alla sessione dopo è già in corso.' };
+    if (!corrente) return { ok: false, errore: frase('one_shot') };
+    if (this.cambioInCorso) return { ok: false, errore: frase('cambio_in_corso') };
     const dopo = this.prossima(true);
-    if (!dopo) return { ok: false, errore: `Dopo la sessione ${corrente.etichetta} non c'è un pacchetto in sessioni/: si prepara tra le sessioni.` };
-    if (dopo.motivo) return { ok: false, errore: `La sessione ${dopo.p.etichetta} non si carica: ${dopo.motivo}` };
-    if (!this.o.passaA) return { ok: false, errore: 'Questo server non sa cambiare pacchetto da solo: riavvialo con scripts/partita.sh.' };
+    if (!dopo) return { ok: false, errore: frase('manca_dopo', { sessione: corrente.etichetta }) };
+    // Il motivo viene dal caricatore della campagna (errore per chi la scrive): resta com'è.
+    if (dopo.motivo) return { ok: false, errore: frase('non_si_carica', { sessione: dopo.p.etichetta, motivo: dopo.motivo }) };
+    if (!this.o.passaA) return { ok: false, errore: frase('senza_passaggio') };
 
     let registro: RegistroScritto | null = null;
     if (this.o.regia.infoRegistro.sessione !== null) {
@@ -168,13 +174,13 @@ export class CicloSessioni {
     } else {
       // Nessuna sessione in corso: va bene solo se questo pacchetto è già stato chiuso con «Fine sessione».
       const finita = this.o.archivio?.elenco(this.o.campagna.id).find((s) => s.pacchetto === corrente.numero && s.motivo_chiusura === MOTIVO_FINE_SESSIONE);
-      if (!finita) return { ok: false, errore: `La sessione ${corrente.etichetta} non è ancora cominciata: prima si gioca.` };
+      if (!finita) return { ok: false, errore: frase('non_cominciata', { sessione: corrente.etichetta }) };
     }
     this.cambioInCorso = true;
     const numero = dopo.p.numero;
     this.o.log.info({ da: corrente.etichetta, a: dopo.p.etichetta }, 'sessioni: si passa alla sessione dopo');
     const passaA = this.o.passaA;
     setTimeout(() => passaA(numero), ATTESA_CAMBIO_MS);
-    return { ok: true, dettagli: `sessione ${corrente.etichetta} chiusa, si passa alla ${etichettaPacchetto(numero)}`, registro };
+    return { ok: true, dettagli: frase('si_passa', { sessione: corrente.etichetta, dopo: etichettaPacchetto(numero) }), registro };
   }
 }

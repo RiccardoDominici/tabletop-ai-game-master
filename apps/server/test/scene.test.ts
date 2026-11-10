@@ -26,7 +26,7 @@ import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
 import { RADICE_REPO } from '../src/percorsi';
-import { MOTIVO_CAMBIO_SCENA } from '../src/scena/regia';
+import { testo } from '../src/lingua';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 const PONTE = path.join(RADICE_REPO, 'campagne', 'ponte-lanterne');
@@ -143,7 +143,7 @@ describe.skipIf(!presente)('campagne con più scene (ponte-lanterne)', () => {
     expect(a.scene.find((s) => s.corrente)?.id).toBe('scena_borgo_basso');
     expect(a.tavolo.trascrizione.some((v) => v.tipo === 'sistema' && v.testo.startsWith('Nuova scena: Il Borgo Basso'))).toBe(true);
     // L'azione scritta per il ponte torna al giocatore.
-    expect(mie.at(-1)).toMatchObject({ stato: 'superata', motivo: MOTIVO_CAMBIO_SCENA, testo: 'Tiro la catena.' });
+    expect(mie.at(-1)).toMatchObject({ stato: 'superata', motivo: testo('regia.motivi.cambio_scena'), testo: 'Tiro la catena.' });
 
     const s = await nuovaFinestra;
     expect(s.orologi.map((o) => o.id)).toEqual(['o_piena']);

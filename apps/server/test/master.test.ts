@@ -24,8 +24,7 @@ import { costruisciServer, type ServerCantastorie } from '../src/avvio';
 import { caricaConfig } from '../src/config';
 import { creaLogger, loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
-import { TITOLO_NOTE_REGIA } from '../src/narrazione/messaggio';
-import { MOTIVO_NARRAZIONE_INTERROTTA, MOTIVO_SALTATA } from '../src/scena/regia';
+import { testo } from '../src/lingua';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 const TOKEN = 'token_di_prova_master_123';
@@ -174,7 +173,7 @@ describe('pannello del master', () => {
     expect(inPausa.tavolo.finestra.aperta).toBe(false);
     // La nota è entrata nel messaggio del narratore, e ha consumato un turno.
     const ultimo = messaggi.at(-1)!;
-    expect(ultimo).toContain(TITOLO_NOTE_REGIA);
+    expect(ultimo).toContain(testo('messaggio.titolo_note_regia'));
     expect(ultimo).toContain('- Ottavia parla solo a monosillabi.');
     expect(inPausa.note).toMatchObject([{ testo: 'Ottavia parla solo a monosillabi.', turni_rimasti: 1, turni_totali: 2 }]);
     // L'azione chiusa è stata risolta.
@@ -190,7 +189,7 @@ describe('pannello del master', () => {
 
     // Salta: l'azione privata diventa «superata» e il giocatore ne sa il motivo.
     expect(await comanda(master, { tipo: 'salta_azione', id_azione: privata!.id })).toEqual({ ok: true });
-    expect(mie.at(-1)).toMatchObject({ stato: 'superata', motivo: MOTIVO_SALTATA, testo: 'Guardo la botte, in segreto.' });
+    expect(mie.at(-1)).toMatchObject({ stato: 'superata', motivo: testo('regia.motivi.saltata'), testo: 'Guardo la botte, in segreto.' });
     expect(await comanda(master, { tipo: 'salta_azione', id_azione: privata!.id })).toMatchObject({ ok: false });
 
     // Pausa a finestra aperta: la finestra resta aperta, senza conto alla rovescia.
@@ -240,7 +239,7 @@ describe('pannello del master', () => {
     expect(ferma.narrazione_in_corso).toBe(false);
     expect(interrotto).toBeGreaterThan(0);
     expect(ferma.tavolo.trascrizione.at(-1)).toMatchObject({ tipo: 'sistema', testo: 'Il master ha interrotto la narrazione.' });
-    expect(mie.at(-1)).toMatchObject({ stato: 'superata', motivo: MOTIVO_NARRAZIONE_INTERROTTA, testo: 'Prego ad alta voce.' });
+    expect(mie.at(-1)).toMatchObject({ stato: 'superata', motivo: testo('regia.motivi.narrazione_interrotta'), testo: 'Prego ad alta voce.' });
     expect(await comanda(master, { tipo: 'ferma_narrazione' })).toMatchObject({ ok: false });
     // Nessuna narrazione «fantasma» riapre la finestra da sola.
     await new Promise((r) => setTimeout(r, 300));

@@ -15,6 +15,7 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import { Server } from 'socket.io';
 import type { InfoServer } from '@cantastorie/shared';
+import { testo } from './lingua';
 import type { Logger } from './logger';
 import type { Regia } from './scena/regia';
 import type { ServerIo } from './trasporto/socket';
@@ -51,12 +52,13 @@ export async function creaApp(o: OpzioniApp): Promise<App> {
     if (req.method === 'GET' && !url.startsWith('/api') && !url.startsWith('/socket.io') && fs.existsSync(indice)) {
       return reply.type('text/html; charset=utf-8').sendFile('index.html');
     }
-    return reply.status(404).send({ errore: 'Risorsa non trovata.' });
+    return reply.status(404).send({ errore: testo('api.risorsa_non_trovata') });
   });
 
   return { http, io };
 }
 
+/** Gli errori delle API sono frasi del pacchetto della lingua (sezione `api`), composte alla richiesta. */
 export function registraRotte(
   app: App,
   regia: Regia,
@@ -70,14 +72,14 @@ export function registraRotte(
   // Immagini della campagna: solo i file del manifest, con cache (non cambiano durante la sessione).
   http.get<{ Params: { file: string } }>('/api/immagini/:file', async (req, reply) => {
     const p = immagini?.percorso(req.params.file);
-    if (!p) return reply.status(404).send({ errore: 'Immagine non trovata.' });
+    if (!p) return reply.status(404).send({ errore: testo('api.immagine_non_trovata') });
     const tipo = p.endsWith('.png') ? 'image/png' : p.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
     return reply.type(tipo).header('cache-control', 'public, max-age=3600').send(fs.createReadStream(p));
   });
   // Cambio di luogo (pannello del master, prove): lo schermo fa la dissolvenza sull'immagine nuova.
   http.post<{ Body: { luogo?: unknown } }>('/api/scena/luogo', async (req, reply) => {
     const luogo = typeof req.body?.luogo === 'string' ? req.body.luogo : '';
-    if (!/^[a-z0-9_]{1,64}$/.test(luogo)) return reply.status(400).send({ ok: false, errore: 'Luogo non valido.' });
+    if (!/^[a-z0-9_]{1,64}$/.test(luogo)) return reply.status(400).send({ ok: false, errore: testo('api.luogo_non_valido') });
     return regia.cambiaLuogo(luogo);
   });
   http.get('/api/salute', async () => {
@@ -98,13 +100,13 @@ function registraRotteAudio(app: App, regia: Regia, audio?: CatalogoAudio): void
   http.get('/api/audio', async () => audio?.pubblico() ?? { tracce: {}, crediti: [] });
   http.get<{ Params: { file: string } }>('/api/audio/:file', async (req, reply) => {
     const p = audio?.percorso(req.params.file);
-    if (!p) return reply.status(404).send({ errore: 'Audio non trovato.' });
+    if (!p) return reply.status(404).send({ errore: testo('api.audio_non_trovato') });
     return reply.type(CatalogoAudio.mime(p)).header('cache-control', 'public, max-age=3600').send(fs.createReadStream(p));
   });
   // Umore musicale (pannello del master, Motore, prove): null torna alla musica del luogo.
   http.post<{ Body: { umore?: unknown } }>('/api/scena/umore', async (req, reply) => {
     const umore = req.body?.umore;
-    if (umore !== null && (typeof umore !== 'string' || !/^[a-z0-9_]{1,64}$/.test(umore))) return reply.status(400).send({ ok: false, errore: 'Umore non valido.' });
+    if (umore !== null && (typeof umore !== 'string' || !/^[a-z0-9_]{1,64}$/.test(umore))) return reply.status(400).send({ ok: false, errore: testo('api.umore_non_valido') });
     return regia.cambiaUmore(umore);
   });
 }

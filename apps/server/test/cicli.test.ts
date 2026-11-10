@@ -20,7 +20,7 @@ import { ServerConCiclo } from '../src/ciclo-server';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
-import { TESTO_FINE_SESSIONE } from '../src/scena/regia';
+import { testo } from '../src/lingua';
 import type { RegistroSessione } from '../src/sessione/registro';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
@@ -151,7 +151,7 @@ describe('campagna a due sessioni: fine sessione e prossima sessione', () => {
     expect(t1.frasi[0]).toBe('Piove da tre giorni sulla valle.');
     const fermata = attendi<StatoTavolo>(t1.anna, 'stato', (x) => x.fase === 'fermata');
     expect(await t1.comanda({ tipo: 'fine_sessione' })).toEqual({ ok: true });
-    expect((await fermata).trascrizione.at(-1)).toMatchObject({ tipo: 'sistema', testo: TESTO_FINE_SESSIONE });
+    expect((await fermata).trascrizione.at(-1)).toMatchObject({ tipo: 'sistema', testo: testo('regia.righe.fine_sessione') });
     const fileRegistro = path.join(ARCO, 'sessioni', '01', 'registro.yaml');
     const r1 = YAML.parse(fs.readFileSync(fileRegistro, 'utf8')) as RegistroSessione;
     expect(r1).toMatchObject({ campagna: 'arco', sessione: 1, archivio: { stato: 'chiusa', motivo_chiusura: 'fine sessione', ultimo_turno: 2 } });

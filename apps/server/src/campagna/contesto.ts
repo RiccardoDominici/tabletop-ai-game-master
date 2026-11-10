@@ -16,6 +16,7 @@
  * tutta la scena (niente orari né contatori): sta in un blocco di sistema in cache.
  */
 import YAML from 'yaml';
+import { testo } from '../lingua';
 import { ID_NARRATORE, type Campagna, type DatiYaml } from './tipi';
 
 /**
@@ -76,37 +77,37 @@ export interface SezioneContesto {
   testo: string;
 }
 
-/** Le sezioni del contesto, nell'ordine del contratto: stile, campagna, scena, png, pg, etichette. */
+/**
+ * Le sezioni del contesto, nell'ordine del contratto: stile, campagna, scena, png, pg, etichette.
+ * Titoli e frasi vengono dal pacchetto della lingua dei contenuti (`contesto` e `contesto.campagna`),
+ * letti a ogni compilazione; i `nome` delle sezioni sono id per il conteggio dei token, non testo.
+ */
 export function sezioniContestoCampagna(c: Campagna): SezioneContesto[] {
   const sezioni: SezioneContesto[] = [];
   const canone = mappaCanone(c);
-  sezioni.push({ nome: 'intestazione', testo: `# Campagna «${c.titolo}» (id ${c.id})` });
-  sezioni.push({ nome: 'stile.yaml', testo: ['## Carta di stile', yaml(c.stile)].join('\n\n') });
+  sezioni.push({ nome: 'intestazione', testo: testo('contesto.campagna.intestazione', { titolo: c.titolo, id: c.id }) });
+  sezioni.push({ nome: 'stile.yaml', testo: [testo('contesto.carta_stile'), yaml(c.stile)].join('\n\n') });
 
   const { id: _id, ...campagna } = c.campagnaNarratore;
   if (Object.keys(campagna).length) {
-    sezioni.push({ nome: 'campagna.yaml', testo: ['## Campagna: canone, orologi, rivelazioni, nodi, sessione', yaml(campagna)].join('\n\n') });
+    sezioni.push({ nome: 'campagna.yaml', testo: [testo('contesto.campagna.titolo_campagna'), yaml(campagna)].join('\n\n') });
   }
 
-  sezioni.push({ nome: 'scena.yaml', testo: [`## Scena corrente: ${c.scena.titolo}`, yaml(c.scena.dati)].join('\n\n') });
+  sezioni.push({ nome: 'scena.yaml', testo: [testo('contesto.scena', { titolo: c.scena.titolo }), yaml(c.scena.dati)].join('\n\n') });
 
-  const png: string[] = ['## PNG (schede complete; gli id dei fatti sono risolti col testo del canone)'];
-  sezioni.push({ nome: 'png (titolo)', testo: png[0]! });
+  sezioni.push({ nome: 'png (titolo)', testo: testo('contesto.campagna.titolo_png') });
   for (const p of c.png) {
-    const presente = c.scena.png_presenti.includes(p.id) ? 'presente in scena' : 'non in scena';
-    sezioni.push({ nome: `png/${p.id}.yaml`, testo: [`### ${p.nome} — etichetta [${p.id}], ${presente}`, yaml(risolviFatti(p.dati, canone))].join('\n\n') });
+    const presenza = testo(c.scena.png_presenti.includes(p.id) ? 'contesto.presente' : 'contesto.assente');
+    sezioni.push({ nome: `png/${p.id}.yaml`, testo: [testo('contesto.png', { nome: p.nome, id: p.id, presenza }), yaml(risolviFatti(p.dati, canone))].join('\n\n') });
   }
 
-  const pg: string[] = ['## Personaggi giocanti'];
-  if (c.situazioneComune) pg.push(`Situazione comune: ${c.situazioneComune}`);
+  const pg: string[] = [testo('contesto.titolo_pg')];
+  if (c.situazioneComune) pg.push(testo('contesto.situazione_comune', { testo: c.situazioneComune }));
   for (const p of c.pg) {
-    pg.push(`### ${p.nome} — id ${p.id}`, yaml(p.pubblico));
+    pg.push(testo('contesto.pg', { nome: p.nome, id: p.id }), yaml(p.pubblico));
     if (p.privato.length) {
-      pg.push(
-        `conoscenze_private di ${p.id} (SEGRETE: le sa solo questo giocatore. Non dirle mai a voce; ` +
-          `diventano pubbliche solo quando il giocatore le usa o le racconta):`,
-        yaml(risolviFatti(p.privato, canone)),
-      );
+      // `conoscenze_private` è il nome del campo: resta tale in ogni lingua.
+      pg.push(testo('contesto.campagna.conoscenze_private', { id: p.id }), yaml(risolviFatti(p.privato, canone)));
     }
   }
   sezioni.push({ nome: 'pg.yaml', testo: pg.join('\n\n') });
@@ -114,12 +115,12 @@ export function sezioniContestoCampagna(c: Campagna): SezioneContesto[] {
   sezioni.push({
     nome: 'etichette',
     testo: [
-      '## Etichette valide in questa scena',
+      testo('contesto.titolo_etichette'),
       [
         `- [${ID_NARRATORE}]`,
         ...c.png.map((p) => `- [${p.id}] ${p.nome}`),
-        '- [orologio] seguito dall’id di un orologio attivo, solo quando la risposta ne mostra il prossimo segno',
-        `- [invito] seguito da id di PG separati da virgola (${c.pg.map((p) => p.id).join(', ')}) oppure tutti`,
+        testo('contesto.campagna.etichetta_orologio'),
+        testo('contesto.etichetta_invito', { pg: c.pg.map((p) => p.id).join(', ') }),
       ].join('\n'),
     ].join('\n\n'),
   });

@@ -44,7 +44,7 @@ import { ProiettoreVirtuale } from './proiettore';
 import { azioniPrivate, OsservatoreTavolo, testoTavolo } from './tavolo';
 import { trascrizione } from './trascrizione';
 import { versioneCodice } from './versione';
-import { TESTO_FINE_SCENA } from '../scena/regia';
+import { testo } from '../lingua';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 const CAMPI_LATENZA = ['finestra_ms', 'voce_sveglia', 'llm_primo_token', 'llm_prima_frase', 'voce_richiesta', 'voce_primo_audio', 'schermo_inizio_audio', 'llm_fine', 'audio_fine'] as const;
@@ -124,7 +124,7 @@ export interface CambioScena {
 
 /**
  * Esegue i turni del copione; ritorna quando si apre la finestra dopo l'ultimo, oppure quando il
- * tavolo va in pausa a fine turno: dopo il finale del Motore (TESTO_FINE_SCENA) la scena è chiusa e
+ * tavolo va in pausa a fine turno: dopo il finale del Motore (la riga regia.righe.fine_scena) la scena è chiusa e
  * il copione finisce lì (prima l'harness aspettava la finestra dopo e scadeva).
  *
  * Il turno del copione e quello del server coincidono finché non si cambia scena: l'apertura della
@@ -176,7 +176,7 @@ async function giocaCopione(
     await master.comando({ tipo: 'chiudi_finestra' });
     const finito = await dopo;
     if (finito.fase === 'pausa') {
-      const motivo = finito.trascrizione.at(-1)?.testo === TESTO_FINE_SCENA ? 'finale' : 'pausa';
+      const motivo = finito.trascrizione.at(-1)?.testo === testo('regia.righe.fine_scena') ? 'finale' : 'pausa';
       console.log(`[${etichetta}] turno ${n}/${copione.turni.length} (server ${corrente}): ${motivo === 'finale' ? 'il finale ha chiuso la scena' : 'il tavolo è in pausa'}, il copione finisce qui`);
       return { cambi, fine: { turno_copione: n, turno_server: corrente, motivo } };
     }

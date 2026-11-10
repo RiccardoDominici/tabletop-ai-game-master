@@ -27,9 +27,15 @@
  * Lo stato (ultimo segno, partenza, turni attivi accumulati) sopravvive ai cambi di scena e alla ripresa.
  */
 
-/** Frase che il prompt del narratore tratta come ordine di mostrare il segno. */
-export const ORDINE_SEGNO = 'Mostralo in questa risposta.';
 import type { Campagna, DatiYaml, ScenaCaricata } from '../campagna/tipi';
+// `testo` qui è già il lettore dei campi YAML: la frase fissa della lingua si chiama testoFisso.
+import { testo as testoFisso } from '../lingua';
+
+/**
+ * Frase che il prompt del narratore tratta come ordine di mostrare il segno («Mostralo in questa
+ * risposta.»), nella lingua dei contenuti: il prompt di ogni lingua cita la sua.
+ */
+export const ordineSegno = (): string => testoFisso('orologi.ordine_segno');
 
 /** Orologi diversi che possono avanzare nella stessa risposta (un segno ciascuno). */
 export const MAX_OROLOGI_PER_RISPOSTA = 2;
@@ -238,7 +244,7 @@ export class StatoOrologi {
   /** Perché il ritmo massimo non lascia avanzare l'orologio al turno `turno` (null = può). */
   motivoRitmo(o: Orologio, turno: number): string | null {
     if (o.ultimoTurno !== null && turno - o.ultimoTurno < o.alMassimoOgni) {
-      return `orologio ${o.id}: al massimo un segno ogni ${o.alMassimoOgni} turni (l'ultimo al turno ${o.ultimoTurno})`;
+      return testoFisso('orologi.rifiuti.ritmo', { id: o.id, ogni: o.alMassimoOgni, turno: o.ultimoTurno });
     }
     return null;
   }
@@ -249,13 +255,13 @@ export class StatoOrologi {
    */
   avanza(id: string, turno: number, opzioni: boolean | OpzioniAvanza = {}): EsitoAvanzamento {
     const op: OpzioniAvanza = typeof opzioni === 'boolean' ? { giàAvanzato: opzioni } : opzioni;
-    if (op.giàAvanzato) return { ok: false, motivo: 'più di un segno nella stessa risposta' };
-    if (op.inRisposta?.has(id)) return { ok: false, motivo: `un segno di ${id} è già uscito in questa risposta` };
-    if (op.inRisposta && op.inRisposta.size >= MAX_OROLOGI_PER_RISPOSTA) return { ok: false, motivo: `già ${MAX_OROLOGI_PER_RISPOSTA} orologi avanzati in questa risposta` };
+    if (op.giàAvanzato) return { ok: false, motivo: testoFisso('orologi.rifiuti.due_segni') };
+    if (op.inRisposta?.has(id)) return { ok: false, motivo: testoFisso('orologi.rifiuti.gia_uscito', { id }) };
+    if (op.inRisposta && op.inRisposta.size >= MAX_OROLOGI_PER_RISPOSTA) return { ok: false, motivo: testoFisso('orologi.rifiuti.troppi', { max: MAX_OROLOGI_PER_RISPOSTA }) };
     const o = this.attivi.has(id) ? this.orologi.get(id) : undefined;
-    if (!o) return { ok: false, motivo: `orologio inesistente o non attivo in scena: ${id}` };
-    if (!o.partito) return { ok: false, motivo: `orologio non ancora partito (parte dopo ${o.parteDopo.join(', ')}): ${id}` };
-    if (o.pieni >= o.segmenti) return { ok: false, motivo: `orologio già completo: ${id}` };
+    if (!o) return { ok: false, motivo: testoFisso('orologi.rifiuti.inesistente', { id }) };
+    if (!o.partito) return { ok: false, motivo: testoFisso('orologi.rifiuti.non_partito', { dopo: o.parteDopo.join(', '), id }) };
+    if (o.pieni >= o.segmenti) return { ok: false, motivo: testoFisso('orologi.rifiuti.completo', { id }) };
     const ritmo = op.ritmo ? this.motivoRitmo(o, turno) : null;
     if (ritmo) return { ok: false, motivo: ritmo };
     o.pieni += 1;
@@ -270,8 +276,8 @@ export class StatoOrologi {
    */
   indietro(id: string): EsitoAvanzamento {
     const o = this.attivi.has(id) ? this.orologi.get(id) : undefined;
-    if (!o) return { ok: false, motivo: `orologio inesistente o non attivo in scena: ${id}` };
-    if (o.pieni <= 0) return { ok: false, motivo: `orologio già a zero: ${id}` };
+    if (!o) return { ok: false, motivo: testoFisso('orologi.rifiuti.inesistente', { id }) };
+    if (o.pieni <= 0) return { ok: false, motivo: testoFisso('orologi.rifiuti.a_zero', { id }) };
     o.pieni -= 1;
     return { ok: true, orologio: o };
   }
@@ -299,24 +305,30 @@ export class StatoOrologi {
 
   /** Frase sull'ultimo segno, per le righe del contesto. */
   private ultimoSegno(o: Orologio, turnoCorrente: number): string {
-    if (o.ultimoTurno === null) return 'nessun segno finora';
-    if (o.ultimoTurno === turnoCorrente - 1) return 'la tua risposta precedente ha mostrato un segno';
-    return `ultimo segno al turno ${o.ultimoTurno}`;
+    if (o.ultimoTurno === null) return testoFisso('orologi.nessun_segno');
+    if (o.ultimoTurno === turnoCorrente - 1) return testoFisso('orologi.segno_precedente');
+    return testoFisso('orologi.ultimo_segno', { turno: o.ultimoTurno });
   }
 
-  /** Righe per il messaggio del turno (parte variabile del prompt). */
+  /** Inizio della riga di un orologio nel messaggio del turno («- [id] «nome»: segni mostrati N di M»). */
+  private testa(o: Orologio): string {
+    return testoFisso('orologi.testa', { id: o.id, nome: o.nome, pieni: o.pieni, segmenti: o.segmenti });
+  }
+
+  /** Righe per il messaggio del turno (parte variabile del prompt), nella lingua dei contenuti. */
   descrivi(turnoCorrente: number): string {
     if (this.orologi.size === 0) return '';
     return this.elenco
       .map((o) => {
-        const testa = `- [${o.id}] «${o.nome}»: segni mostrati ${o.pieni} di ${o.segmenti}`;
-        if (!o.partito) return `${testa}; non ancora partito: nessun segno da mostrare.`;
+        const testa = this.testa(o);
+        if (!o.partito) return testoFisso('orologi.non_partito', { testa });
         const ultimo = this.ultimoSegno(o, turnoCorrente);
-        if (o.pieni >= o.segmenti) return `${testa}; COMPLETO (${ultimo}). Segui al_completo: ${o.alCompleto ?? '—'}`;
-        const prossimo = o.segni[o.pieni] ?? '(segno non scritto)';
-        const fermo = this.motivoRitmo(o, turnoCorrente) ? ` Non mostrare un altro segno prima del turno ${o.ultimoTurno! + o.alMassimoOgni}.` : '';
-        const ordine = this.dovuto(o, turnoCorrente) ? ` ${ORDINE_SEGNO}` : '';
-        return `${testa}; ${ultimo}. Prossimo segno: «${prossimo}»${fermo}${ordine}`;
+        if (o.pieni >= o.segmenti) return testoFisso('orologi.completo', { testa, ultimo, al_completo: o.alCompleto ?? '—' });
+        const prossimo = o.segni[o.pieni] ?? testoFisso('orologi.segno_non_scritto');
+        // Coda della riga: il divieto del ritmo massimo e l'ordine del ritmo minimo, ognuno dopo uno spazio.
+        const fermo = this.motivoRitmo(o, turnoCorrente) ? ` ${testoFisso('orologi.fermo', { turno: o.ultimoTurno! + o.alMassimoOgni })}` : '';
+        const ordine = this.dovuto(o, turnoCorrente) ? ` ${ordineSegno()}` : '';
+        return `${testoFisso('orologi.prossimo', { testa, ultimo, prossimo })}${fermo}${ordine}`;
       })
       .join('\n');
   }
@@ -330,11 +342,11 @@ export class StatoOrologi {
     if (this.orologi.size === 0) return '';
     return this.elenco
       .map((o) => {
-        const testa = `- [${o.id}] «${o.nome}»: segni mostrati ${o.pieni} di ${o.segmenti}`;
-        if (!o.partito) return `${testa}; non ancora partito: nessun segno da mostrare.`;
-        if (o.pieni >= o.segmenti) return `${testa}; COMPLETO: usa una battuta di tipo finale quando la scena lo chiede.`;
-        const ordine = this.dovuto(o, turnoCorrente) ? ` ${ORDINE_SEGNO} Usa la battuta segno_orologio di questo orologio.` : '';
-        return `${testa}; ${this.ultimoSegno(o, turnoCorrente)}.${ordine}`;
+        const testa = this.testa(o);
+        if (!o.partito) return testoFisso('orologi.non_partito', { testa });
+        if (o.pieni >= o.segmenti) return testoFisso('orologi.repertorio.completo', { testa });
+        const ordine = this.dovuto(o, turnoCorrente) ? ` ${ordineSegno()} ${testoFisso('orologi.repertorio.usa_segno')}` : '';
+        return `${testoFisso('orologi.repertorio.riga', { testa, ultimo: this.ultimoSegno(o, turnoCorrente) })}${ordine}`;
       })
       .join('\n');
   }

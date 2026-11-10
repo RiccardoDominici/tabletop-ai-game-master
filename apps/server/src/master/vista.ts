@@ -27,6 +27,7 @@ import type { StatoRepertorio } from '../repertorio/stato';
 import type { Battuta } from '../repertorio/tipi';
 import { nomeBreve, type Regia } from '../scena/regia';
 import type { CicloSessioni } from '../sessione/ciclo';
+import { testo } from '../lingua';
 
 export interface FonteVistaMaster {
   regia: Regia;
@@ -116,7 +117,8 @@ function orologiMaster(regia: Regia): OrologioMaster[] {
     pieni: o.pieni,
     segmenti: o.segmenti,
     segni: [...o.segni],
-    prossimo: o.pieni < o.segmenti ? (o.segni[o.pieni] ?? '(segno non scritto)') : null,
+    // Segno mancante nel file della campagna: il pannello lo dice con le parole della lingua.
+    prossimo: o.pieni < o.segmenti ? (o.segni[o.pieni] ?? testo('master.vista.segno_non_scritto')) : null,
     dovuto: o.dovuto,
     ultimo_turno: o.ultimoTurno,
     al_completo: o.alCompleto,

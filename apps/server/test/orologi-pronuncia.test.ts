@@ -2,7 +2,8 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { compilaContestoCampagna } from '../src/campagna/contesto';
-import { ORDINE_SEGNO, StatoOrologi } from '../src/scena/orologi';
+import { testo } from '../src/lingua';
+import { StatoOrologi } from '../src/scena/orologi';
 import { creaPronunciatore } from '../src/voce/pronuncia';
 
 const MINI = path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini');
@@ -29,14 +30,14 @@ describe('StatoOrologi', () => {
 describe('StatoOrologi — segno_almeno_ogni', () => {
   it('ordina il segno quando (turno − ultimo segno, 0 se nessuno) ≥ N, e mai a orologio completo', () => {
     const o = new StatoOrologi(caricaCampagna(MINI)); // o_temporale: segno_almeno_ogni 2, 2 segmenti
-    expect(o.descrivi(1)).not.toContain(ORDINE_SEGNO); // 1 − 0 = 1
-    expect(o.descrivi(2)).toContain(`«Un tuono lontano.» ${ORDINE_SEGNO}`); // 2 − 0 = 2
+    expect(o.descrivi(1)).not.toContain(testo('orologi.ordine_segno')); // 1 − 0 = 1
+    expect(o.descrivi(2)).toContain(`«Un tuono lontano.» ${testo('orologi.ordine_segno')}`); // 2 − 0 = 2
     expect(o.avanza('o_temporale', 2, false)).toMatchObject({ ok: true });
-    expect(o.descrivi(3)).not.toContain(ORDINE_SEGNO); // 3 − 2 = 1
-    expect(o.descrivi(4)).toContain(ORDINE_SEGNO); // 4 − 2 = 2
-    expect(o.descrivi(9)).toContain(ORDINE_SEGNO);
+    expect(o.descrivi(3)).not.toContain(testo('orologi.ordine_segno')); // 3 − 2 = 1
+    expect(o.descrivi(4)).toContain(testo('orologi.ordine_segno')); // 4 − 2 = 2
+    expect(o.descrivi(9)).toContain(testo('orologi.ordine_segno'));
     expect(o.avanza('o_temporale', 9, false)).toMatchObject({ ok: true }); // ora completo
-    expect(o.descrivi(20)).not.toContain(ORDINE_SEGNO);
+    expect(o.descrivi(20)).not.toContain(testo('orologi.ordine_segno'));
     expect(o.descrivi(20)).toContain('COMPLETO');
   });
 });

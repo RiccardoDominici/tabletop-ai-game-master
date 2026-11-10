@@ -15,7 +15,7 @@ import { costruisciServer, type ServerCantastorie } from '../src/avvio';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
-import { MOTIVO_RIPRESA } from '../src/scena/regia';
+import { testo } from '../src/lingua';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 const MINI = path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini');
@@ -164,7 +164,7 @@ describe('sessione ripresa dopo un riavvio a metà partita', () => {
     await emetti<StatoTavolo>((cb) => tel2.emit('telefono:entra', cb));
     expect(await emetti<{ id_pg: string | null }>((cb) => tel2.emit('telefono:dispositivo', { dispositivo: DISPOSITIVO }, cb))).toEqual({ id_pg: 'pg_anna' });
     expect(await emetti<Esito>((cb) => tel2.emit('telefono:scegli_pg', { id_pg: 'pg_anna', dispositivo: DISPOSITIVO }, cb))).toEqual({ ok: true });
-    expect(mie.at(-1)).toMatchObject({ stato: 'superata', motivo: MOTIVO_RIPRESA, testo: 'Apro la porta della cantina.' });
+    expect(mie.at(-1)).toMatchObject({ stato: 'superata', motivo: testo('regia.motivi.ripresa'), testo: 'Apro la porta della cantina.' });
 
     // Il proiettore fa ripartire: niente apertura riletta, si rigioca il turno 3.
     const frasi: string[] = [];

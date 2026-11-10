@@ -8,6 +8,7 @@
  * turno di ogni nota; a zero la nota esce.
  */
 import { NOTA_REGIA_MAX_CARATTERI, NOTE_REGIA_MAX, NOTE_REGIA_TURNI_MAX, type NotaRegia } from '@cantastorie/shared';
+import { testo } from '../lingua';
 
 export type EsitoNota = { ok: true; nota: NotaRegia } | { ok: false; errore: string };
 
@@ -25,13 +26,14 @@ export class NoteRegia {
     return this.note.map((n) => n.testo);
   }
 
-  aggiungi(testo: unknown, turni: unknown, turnoCorrente: number): EsitoNota {
-    const t = typeof testo === 'string' ? testo.replace(/\s+/g, ' ').trim() : '';
-    if (!t) return { ok: false, errore: 'Scrivi il testo della nota.' };
-    if (t.length > NOTA_REGIA_MAX_CARATTERI) return { ok: false, errore: `Al massimo ${NOTA_REGIA_MAX_CARATTERI} caratteri.` };
+  aggiungi(testoNota: unknown, turni: unknown, turnoCorrente: number): EsitoNota {
+    const t = typeof testoNota === 'string' ? testoNota.replace(/\s+/g, ' ').trim() : '';
+    // Errori per il pannello: frasi del pacchetto della lingua (sezione `master.note`).
+    if (!t) return { ok: false, errore: testo('master.note.testo_vuoto') };
+    if (t.length > NOTA_REGIA_MAX_CARATTERI) return { ok: false, errore: testo('master.note.troppo_lunga', { max: NOTA_REGIA_MAX_CARATTERI }) };
     const n = typeof turni === 'number' && Number.isInteger(turni) ? turni : NaN;
-    if (!(n >= 1 && n <= NOTE_REGIA_TURNI_MAX)) return { ok: false, errore: `I turni vanno da 1 a ${NOTE_REGIA_TURNI_MAX}.` };
-    if (this.note.length >= NOTE_REGIA_MAX) return { ok: false, errore: `Ci sono già ${NOTE_REGIA_MAX} note: togline una prima.` };
+    if (!(n >= 1 && n <= NOTE_REGIA_TURNI_MAX)) return { ok: false, errore: testo('master.note.turni_fuori', { max: NOTE_REGIA_TURNI_MAX }) };
+    if (this.note.length >= NOTE_REGIA_MAX) return { ok: false, errore: testo('master.note.troppe', { max: NOTE_REGIA_MAX }) };
     const nota: NotaRegia = { id: `n${this.prossimoId++}`, testo: t, turni_rimasti: n, turni_totali: n, creata_al_turno: turnoCorrente };
     this.note.push(nota);
     return { ok: true, nota: { ...nota } };

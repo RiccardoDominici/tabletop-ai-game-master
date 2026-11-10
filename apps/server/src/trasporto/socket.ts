@@ -15,6 +15,7 @@ import type {
   EventiServerVersoClient,
   InfoServer,
 } from '@cantastorie/shared';
+import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import type { Regia, UscitaRegia } from '../scena/regia';
 import type { UscitaAudio } from '../voce/pipeline';
@@ -77,7 +78,8 @@ const nessunAck = (): void => undefined;
 function ack<T>(cb: unknown): (x: T) => void {
   return typeof cb === 'function' ? (cb as (x: T) => void) : nessunAck;
 }
-const errore = (testo: string): Esito => ({ ok: false, errore: testo });
+/** Errore per il telefono: una frase del pacchetto della lingua (sezione `socket`), composta alla richiesta. */
+const errore = (chiave: 'scegli_pg' | 'richiesta_non_valida'): Esito => ({ ok: false, errore: testo(`socket.${chiave}`) });
 
 export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer, log: Logger): void {
   /** socket.id → PG scelto (per controllare che il telefono agisca solo per il suo). */
@@ -120,8 +122,8 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
 
     socket.on('azione:invia', (dati, cb) => {
       const id_pg = controllaPg(dati?.id_pg);
-      if (!id_pg) return ack<Esito>(cb)(errore('Prima scegli il tuo personaggio.'));
-      if (typeof dati.testo !== 'string' || typeof dati.versione_vista !== 'number') return ack<Esito>(cb)(errore('Richiesta non valida.'));
+      if (!id_pg) return ack<Esito>(cb)(errore('scegli_pg'));
+      if (typeof dati.testo !== 'string' || typeof dati.versione_vista !== 'number') return ack<Esito>(cb)(errore('richiesta_non_valida'));
       const esito = regia.inviaAzione(id_pg, dati.testo, dati.versione_vista, dati.privata === true);
       log.info({ socket: socket.id, id_pg, ok: esito.ok, caratteri: dati.testo.length, privata: dati.privata === true }, 'azione: invio');
       ack<Esito>(cb)(esito);
@@ -129,7 +131,7 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
 
     socket.on('azione:conferma', (dati, cb) => {
       const id_pg = controllaPg(dati?.id_pg);
-      if (!id_pg) return ack<Esito>(cb)(errore('Prima scegli il tuo personaggio.'));
+      if (!id_pg) return ack<Esito>(cb)(errore('scegli_pg'));
       ack<Esito>(cb)(regia.confermaAzione(id_pg));
     });
 
@@ -140,7 +142,7 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
 
     socket.on('azione:ritira', (dati, cb) => {
       const id_pg = controllaPg(dati?.id_pg);
-      if (!id_pg) return ack<Esito>(cb)(errore('Prima scegli il tuo personaggio.'));
+      if (!id_pg) return ack<Esito>(cb)(errore('scegli_pg'));
       ack<Esito>(cb)(regia.ritiraAzione(id_pg));
     });
 

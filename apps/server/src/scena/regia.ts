@@ -23,7 +23,9 @@
  * Ogni flusso asincrono controlla `epoca`: ferma/ricomincia la incrementano e i flussi vecchi,
  * al risveglio da un await, si accorgono di essere superati ed escono senza toccare lo stato.
  */
-import { LINGUA_PREDEFINITA, linguaAttiva, type Lingua } from '../lingua';
+// Frasi fisse nella lingua dei contenuti (lingue/<codice>/testi-motore.yaml, sezione `regia`). Alias perché
+// `testo` qui è spesso un parametro o un campo (il testo di un'azione, di una frase).
+import { LINGUA_PREDEFINITA, linguaAttiva, testo as testoFisso, type Lingua } from '../lingua';
 import type {
   AzionePrivata,
   Esito,
@@ -198,28 +200,16 @@ export interface OpzioniRegia {
   dispositiviEreditati?: ReadonlyMap<string, string> | null;
 }
 
-/** Motivi mostrati al giocatore quando il master tocca la sua azione. */
-export const MOTIVO_SALTATA = 'Il master ha saltato questa azione: puoi riscriverla.';
-export const MOTIVO_NARRAZIONE_INTERROTTA = 'Il master ha interrotto la narrazione: la tua azione non è stata risolta, puoi rimandarla.';
-export const MOTIVO_CAMBIO_SCENA = 'Si cambia scena: la tua azione era per il luogo di prima, riscrivila se vale ancora.';
-/**
- * Riga di sistema e avviso quando il Motore chiude la scena col finale. Il tavolo NON va in pausa
- * (la pausa la mette solo il master): la finestra si riapre e il master sceglie come andare avanti.
+/*
+ * Le frasi fisse della regia stanno nel pacchetto della lingua (sezione `regia`), chieste quando servono:
+ * - `regia.motivi.*`: perché un'azione torna al giocatore (saltata dal master, narrazione interrotta,
+ *   cambio di scena, blocco del narratore, serata chiusa, ripresa dopo un arresto);
+ * - `regia.righe.*`: righe di sistema della trascrizione (fine scena col finale: il tavolo NON va in
+ *   pausa, il master sceglie come andare avanti; blocco; fine sessione; serata chiusa…);
+ * - `regia.narratore.riserva_blocco`: riserva del narratore dopo un blocco (solo testo: la voce
+ *   potrebbe essere proprio ciò che si è bloccato);
+ * - `regia.errori.*`: rifiuti dei comandi (pannello, telefoni).
  */
-export const TESTO_FINE_SCENA = 'La scena è finita: il master sceglie come andare avanti.';
-/** Il sorvegliante ha ripreso il gioco: le azioni del turno bloccato tornano ai giocatori. */
-export const MOTIVO_BLOCCO = 'Il narratore si è bloccato prima di rispondere: la tua azione non è stata risolta, puoi rimandarla.';
-/** Riga di sistema (e avviso) quando il sorvegliante riprende il gioco. */
-export const TESTO_BLOCCO = 'Il narratore si era bloccato: si riparte.';
-/** Riserva del narratore (solo testo: la voce potrebbe essere proprio ciò che si è bloccato). */
-export const TESTO_RISERVA_BLOCCO = 'Scusate, ho perso il filo per un momento: ditemi di nuovo cosa fate.';
-/** Riga di sistema scritta da «Fine sessione» (pannello del master). */
-export const TESTO_FINE_SESSIONE = 'Fine della sessione.';
-/** Riga di sistema quando la chiusura guidata è finita (la sessione resta riprendibile). */
-export const TESTO_SERATA_CHIUSA = 'La serata è chiusa: alla prossima.';
-/** Le azioni rimaste in coda quando si chiude la serata, o quando ne comincia un'altra. */
-export const MOTIVO_CHIUSURA_SERATA = 'La serata si è chiusa: la tua azione non è stata risolta, riscrivila la prossima volta se vale ancora.';
-export const MOTIVO_RIPRESA = 'Il gioco si è fermato mentre il narratore rispondeva: la tua azione non è stata risolta, puoi rimandarla.';
 /** Token di un telefono (localStorage): lettere, cifre e trattini. */
 const DISPOSITIVO_VALIDO = /^[A-Za-z0-9_-]{8,64}$/;
 
@@ -633,7 +623,7 @@ export class Regia {
     if (f.pausa?.automatica === true && f.fase === 'pausa') this.o.log.info({ turno: f.turno }, 'sessione: la pausa automatica salvata non vale più, si riparte');
     this.ritmo = f.ritmo === 'concitato' ? 'concitato' : 'calmo';
     for (const [d, pg] of r.dispositivi) this.dispositivi.set(d, pg);
-    const tavolo = r.tavolo ? this.tavolo.importa(r.tavolo, MOTIVO_RIPRESA) : { finestra: null, interrotte: [] };
+    const tavolo = r.tavolo ? this.tavolo.importa(r.tavolo, testoFisso('regia.motivi.ripresa')) : { finestra: null, interrotte: [] };
     this.daRiprendere = { fase: f.fase, pausaAutomatica: f.pausa?.automatica === true, finestra: tavolo.finestra, interrotte: tavolo.interrotte, turno: f.turno, quando: r.ultimoEvento };
     this.fase = 'attesa';
     this.o.log.info(
@@ -647,7 +637,7 @@ export class Regia {
     const d = this.daRiprendere!;
     this.daRiprendere = null;
     this.ripresaFatta = { quando: new Date(this.o.orologio.adesso()).toISOString(), turno: d.turno };
-    this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: 'La sessione riprende da dove si era fermata.' });
+    this.rigaDiSistema(this.turno, testoFisso('regia.righe.ripresa'));
     // Un'altra serata (chiusa con «Chiudi la sessione», o lasciata aperta per ore): comincia con
     // «La volta scorsa…», poi la finestra per tutti; le azioni rimaste in coda tornano ai giocatori.
     const eraChiusa = this.serata.serataChiusa;
@@ -709,11 +699,11 @@ export class Regia {
    */
   fineSessione(): { ok: true; sessione: string } | { ok: false; errore: string } {
     const info = this.o.memoria?.info();
-    if (!info) return { ok: false, errore: 'Nessuna sessione in corso da chiudere.' };
+    if (!info) return { ok: false, errore: testoFisso('regia.errori.nessuna_sessione') };
     if (this.fase !== 'attesa' && this.fase !== 'fermata') this.interrompiTutto('fine sessione');
     this.daRiprendere = null;
     if (this.fase !== 'attesa') this.fase = 'fermata';
-    this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_FINE_SESSIONE });
+    this.rigaDiSistema(this.turno, testoFisso('regia.righe.fine_sessione'));
     this.salva('fine_sessione');
     this.o.memoria!.termina(MOTIVO_FINE_SESSIONE);
     this.o.log.info({ sessione: info.id, turno: this.turno, eventi: info.eventi }, 'sessione: fine sessione');
@@ -740,8 +730,8 @@ export class Regia {
    * registro (evento `dispositivo`, con id_pg null per «dimenticato»).
    */
   assegnaDispositivo(dispositivo: string, id_pg: string | null): Esito {
-    if (!this.dispositivi.has(dispositivo)) return { ok: false, errore: 'Telefono sconosciuto.' };
-    if (id_pg !== null && !this.campagna.pg.some((p) => p.id === id_pg)) return { ok: false, errore: 'Personaggio sconosciuto.' };
+    if (!this.dispositivi.has(dispositivo)) return { ok: false, errore: testoFisso('regia.errori.telefono_sconosciuto') };
+    if (id_pg !== null && !this.campagna.pg.some((p) => p.id === id_pg)) return { ok: false, errore: testoFisso('regia.errori.personaggio_sconosciuto') };
     if (id_pg === null) this.dispositivi.delete(dispositivo);
     else this.dispositivi.set(dispositivo, id_pg);
     this.o.memoria?.scrivi([{ tipo: 'dispositivo', dati: { dispositivo, id_pg } }], null);
@@ -799,7 +789,7 @@ export class Regia {
    * tornare alla musica del luogo. Sul proiettore cambia subito, senza aspettare l'isteresi.
    */
   cambiaUmore(tag: string | null): Esito {
-    if (tag !== null && !this.o.audio?.umore(tag)) return { ok: false, errore: `Nessun brano per l'umore «${tag}».` };
+    if (tag !== null && !this.o.audio?.umore(tag)) return { ok: false, errore: testoFisso('regia.errori.umore_senza_brano', { umore: tag }) };
     const scena = this.campagna.scena.id;
     const prima = this.umoreAttuale;
     this.limiteUmori.segna(this.o.orologio.ora(), scena);
@@ -846,7 +836,7 @@ export class Regia {
     let notificato = false;
     if (cue.umore !== undefined) notificato = this.umoreAutomatico(cue.umore, cue.origine);
     if (cue.effetto) {
-      this.suCue?.({ comando: 'effetto', ok: true, dettagli: `automatico (${cue.origine}): effetto ${cue.effetto} con la frase` });
+      this.suCue?.({ comando: 'effetto', ok: true, dettagli: testoFisso('regia.audio.effetto', { origine: cue.origine, effetto: cue.effetto }) });
       this.o.log.info({ effetto: cue.effetto, origine: cue.origine }, 'audio: effetto automatico');
       if (!notificato) this.notifica();
     }
@@ -864,11 +854,11 @@ export class Regia {
     const attesa = this.limiteUmori.attesa(this.o.orologio.ora(), scena);
     if (attesa > 0) {
       this.o.log.info({ umore: nome, origine, attesa_ms: Math.round(attesa) }, 'audio: umore automatico ignorato (uno al minuto)');
-      this.suCue?.({ comando: 'umore', ok: false, dettagli: `automatico (${origine}): umore ${nome} ignorato, un cambio al minuto (ancora ${Math.ceil(attesa / 1000)} s)` });
+      this.suCue?.({ comando: 'umore', ok: false, dettagli: testoFisso('regia.audio.umore_ignorato', { origine, umore: nome, secondi: Math.ceil(attesa / 1000) }) });
       this.notifica();
       return true;
     }
-    this.suCue?.({ comando: 'umore', ok: true, dettagli: `automatico (${origine}): umore della musica ${prima ?? 'auto'} → ${nome}` });
+    this.suCue?.({ comando: 'umore', ok: true, dettagli: testoFisso('regia.audio.umore', { origine, da: prima ?? 'auto', a: nome }) });
     const esito = this.cambiaUmore(tag);
     if (!esito.ok) {
       this.o.log.warn({ umore: nome, origine, errore: esito.errore }, 'audio: umore automatico non applicato');
@@ -880,17 +870,17 @@ export class Regia {
   /** L'audio di una battuta (`audio: {umore, effetto}`), controllato sul catalogo della campagna. */
   private cueBattuta(b: Battuta): CueAudio | undefined {
     if (!b.audio || !this.o.audio) return undefined;
-    const origine = `battuta ${b.id}`;
+    const origine = testoFisso('regia.audio.origine_battuta', { id: b.id });
     const cue: CueAudio = { origine };
     if (b.audio.umore) {
       const r = risolviUmore(b.audio.umore, this.o.audio);
       if (r.ok) cue.umore = r.valore;
-      else this.suCue?.({ comando: 'umore', ok: false, dettagli: `automatico (${origine}): ${r.motivo}` });
+      else this.suCue?.({ comando: 'umore', ok: false, dettagli: testoFisso('regia.audio.rifiutato', { origine, motivo: r.motivo }) });
     }
     if (b.audio.effetto) {
       const r = risolviEffetto(b.audio.effetto, this.o.audio);
       if (r.ok) cue.effetto = r.valore;
-      else this.suCue?.({ comando: 'effetto', ok: false, dettagli: `automatico (${origine}): ${r.motivo}` });
+      else this.suCue?.({ comando: 'effetto', ok: false, dettagli: testoFisso('regia.audio.rifiutato', { origine, motivo: r.motivo }) });
     }
     return cue.umore !== undefined || cue.effetto ? cue : undefined;
   }
@@ -910,13 +900,13 @@ export class Regia {
   /** Il master mette (o toglie, con null) un'immagine di situazione sul proiettore. */
   mostraSituazione(id: string | null): Esito {
     if (id === null) {
-      if (!this.situazione) return { ok: false, errore: 'Nessuna situazione sul proiettore.' };
+      if (!this.situazione) return { ok: false, errore: testoFisso('regia.errori.nessuna_situazione') };
       this.togliSituazione('master');
       this.notifica();
       return { ok: true };
     }
     const s = this.situazioni.find((x) => x.id === id);
-    if (!s) return { ok: false, errore: 'Immagine di situazione sconosciuta.' };
+    if (!s) return { ok: false, errore: testoFisso('regia.errori.situazione_sconosciuta') };
     this.situazione = { id: s.id, url: s.url, auto: false, turno: this.turno };
     this.o.log.info({ situazione: s.id, da: 'master' }, 'immagini: situazione sul proiettore');
     this.notifica();
@@ -970,7 +960,7 @@ export class Regia {
 
   /** Il master mette un PNG in scena o altrove (null = torna a quanto dice la scena). */
   impostaPresenza(id_png: string, presente: boolean | null): Esito {
-    if (!this.campagna.png.some((p) => p.id === id_png)) return { ok: false, errore: 'Personaggio sconosciuto.' };
+    if (!this.campagna.png.some((p) => p.id === id_png)) return { ok: false, errore: testoFisso('regia.errori.personaggio_sconosciuto') };
     if (presente === null) this.presenzeManuali.delete(id_png);
     else this.presenzeManuali.set(id_png, presente);
     this.o.log.info({ png: id_png, presente, scena: this.campagna.scena.id }, 'scena: presenza di un PNG decisa dal master');
@@ -981,8 +971,8 @@ export class Regia {
   /** Il master rivela a mano un PNG nascosto: da ora si mostra al tavolo anche senza aver parlato. */
   rivela(id_png: string): Esito {
     const png = this.campagna.png.find((p) => p.id === id_png);
-    if (!png) return { ok: false, errore: 'Personaggio sconosciuto.' };
-    if (png.nascosto !== true) return { ok: false, errore: 'Il personaggio non è nascosto: si vede già.' };
+    if (!png) return { ok: false, errore: testoFisso('regia.errori.personaggio_sconosciuto') };
+    if (png.nascosto !== true) return { ok: false, errore: testoFisso('regia.errori.png_visibile') };
     this.rivelati.add(id_png);
     this.o.log.info({ png: id_png, scena: this.campagna.scena.id }, 'scena: PNG nascosto rivelato dal master');
     this.notifica();
@@ -1014,7 +1004,7 @@ export class Regia {
 
   /** «Finora stasera» per il Diario: scene attraversate e segni del tempo, niente di privato. */
   private finoraStasera(): string[] {
-    const righe = this.sceneVisitate.size ? [`Luoghi: ${this.titoliScene([...this.sceneVisitate]).join(', ')}.`] : [];
+    const righe = this.sceneVisitate.size ? [testoFisso('regia.diario.luoghi', { luoghi: this.titoliScene([...this.sceneVisitate]).join(', ') })] : [];
     return [...righe, ...this.segniMostrati().slice(-3)];
   }
 
@@ -1033,7 +1023,7 @@ export class Regia {
 
   /** Un'altra serata comincia: le azioni rimaste tornano ai giocatori, «La volta scorsa…», poi la finestra per tutti. */
   private cominciaNuovaSerata(recap: string[], perché: string): void {
-    this.tavolo.annullaVive(MOTIVO_CHIUSURA_SERATA);
+    this.tavolo.annullaVive(testoFisso('regia.motivi.chiusura_serata'));
     this.tavolo.chiudiForzata();
     this.turno += 1;
     this.o.log.info({ sessione: this.sessione, turno: this.turno, frasi: recap.length, perché }, 'serata: comincia un’altra serata');
@@ -1050,7 +1040,7 @@ export class Regia {
 
   /** Il master cambia la durata prevista della serata. */
   impostaOreSerata(ore: number): Esito {
-    if (!this.serata.impostaOre(ore)) return { ok: false, errore: 'Durata non valida: da mezz’ora a otto ore.' };
+    if (!this.serata.impostaOre(ore)) return { ok: false, errore: testoFisso('regia.errori.durata_non_valida') };
     this.o.log.info({ ore }, 'serata: durata cambiata dal master');
     this.notifica();
     return { ok: true };
@@ -1064,11 +1054,11 @@ export class Regia {
    * resta riprendibile: la prossima volta comincia con «La volta scorsa…».
    */
   chiudiSessione(alFinire?: (r: RiassuntoSerata) => void): Esito {
-    if (this.serata.inChiusura) return { ok: false, errore: 'La chiusura della serata è già in corso.' };
-    if (this.serata.serataChiusa) return { ok: false, errore: 'La serata è già chiusa.' };
-    if (this.narrazioneInCorso || this.tavolo.chiudendo) return { ok: false, errore: 'Aspetta che finisca la narrazione, o fermala prima.' };
-    if (this.fase !== 'finestra' && this.fase !== 'pausa') return { ok: false, errore: 'La serata non è in corso.' };
-    const annullate = this.tavolo.annullaVive(MOTIVO_CHIUSURA_SERATA);
+    if (this.serata.inChiusura) return { ok: false, errore: testoFisso('regia.errori.chiusura_in_corso') };
+    if (this.serata.serataChiusa) return { ok: false, errore: testoFisso('regia.errori.serata_gia_chiusa') };
+    if (this.narrazioneInCorso || this.tavolo.chiudendo) return { ok: false, errore: testoFisso('regia.errori.aspetta_narrazione') };
+    if (this.fase !== 'finestra' && this.fase !== 'pausa') return { ok: false, errore: testoFisso('regia.errori.serata_non_in_corso') };
+    const annullate = this.tavolo.annullaVive(testoFisso('regia.motivi.chiusura_serata'));
     const turno = this.tavolo.aperta ? this.turno : this.turno + 1;
     this.tavolo.chiudiForzata();
     this.pausaRichiesta = false;
@@ -1147,7 +1137,7 @@ export class Regia {
     this.versioneScena += 1;
     this.fase = 'pausa';
     this.invitoSospeso = 'tutti';
-    this.aggiungiTrascrizione({ turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_SERATA_CHIUSA });
+    this.rigaDiSistema(turno, testoFisso('regia.righe.serata_chiusa'));
     this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'chiusura_serata', origine: r.origine, motivo: r.motivo ?? null, riassunto: s.testo, fili: s.fili });
     log.info({ origine: r.origine, fili: s.fili.length }, 'serata: chiusa, riassunto sul proiettore');
     this.notifica();
@@ -1476,6 +1466,11 @@ export class Regia {
   }
 
 
+  /** Riga di sistema della trascrizione (telefoni, proiettore, pannello): chi «sistema», nome nella lingua dei contenuti. */
+  private rigaDiSistema(turno: number, testo: string): VoceTrascrizione {
+    return this.aggiungiTrascrizione({ turno, tipo: 'sistema', chi: 'sistema', nome: testoFisso('regia.nome_sistema'), testo });
+  }
+
   private aggiungiTrascrizione(v: Omit<VoceTrascrizione, 'id'>): VoceTrascrizione {
     const voce = { id: this.prossimoIdTrascrizione++, ...v };
     this.trascrizione.push(voce);
@@ -1492,7 +1487,7 @@ export class Regia {
   }
 
   telefonoSceglie(socketId: string, id_pg: string, dispositivo?: unknown): Esito {
-    if (!this.campagna.pg.some((p) => p.id === id_pg)) return { ok: false, errore: 'Personaggio sconosciuto.' };
+    if (!this.campagna.pg.some((p) => p.id === id_pg)) return { ok: false, errore: testoFisso('regia.errori.personaggio_sconosciuto') };
     if (typeof dispositivo === 'string' && DISPOSITIVO_VALIDO.test(dispositivo)) {
       this.dispositivoDiSocket.set(socketId, dispositivo);
       if (this.dispositivi.get(dispositivo) !== id_pg) {
@@ -1577,10 +1572,10 @@ export class Regia {
   // ------------------------------------------------------------------ comandi della scena
 
   ferma(motivo = 'comando'): Esito {
-    if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: 'La scena non è in corso.' };
+    if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: testoFisso('regia.errori.scena_non_in_corso') };
     this.interrompiTutto(motivo);
     this.fase = 'fermata';
-    this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: 'Scena fermata.' });
+    this.rigaDiSistema(this.turno, testoFisso('regia.righe.scena_fermata'));
     this.o.log.info({ turno: this.turno, motivo }, 'scena: fermata');
     this.notifica();
     if (motivo !== 'arresto') this.salva('fermata');
@@ -1652,9 +1647,9 @@ export class Regia {
    * sola (e niente stallo); durante una narrazione la si lascia finire e poi il tavolo si ferma.
    */
   pausa(): Esito {
-    if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: 'La scena non è in corso.' };
-    if (this.fase === 'pausa') return { ok: false, errore: 'Il tavolo è già in pausa.' };
-    if (this.pausaRichiesta) return { ok: false, errore: 'La pausa è già chiesta: scatta alla fine della narrazione.' };
+    if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: testoFisso('regia.errori.scena_non_in_corso') };
+    if (this.fase === 'pausa') return { ok: false, errore: testoFisso('regia.errori.gia_in_pausa') };
+    if (this.pausaRichiesta) return { ok: false, errore: testoFisso('regia.errori.pausa_gia_chiesta') };
     // A finestra chiusa ma col lucchetto preso la narrazione sta per partire: si comporta come una narrazione.
     if (this.fase === 'finestra' && !this.tavolo.chiudendo) {
       this.tavolo.sospendi();
@@ -1677,7 +1672,7 @@ export class Regia {
       this.notifica();
       return { ok: true };
     }
-    if (this.fase !== 'pausa') return { ok: false, errore: 'Il tavolo non è in pausa.' };
+    if (this.fase !== 'pausa') return { ok: false, errore: testoFisso('regia.errori.non_in_pausa') };
     if (this.serata.serataChiusa) {
       // Dopo «Chiudi la sessione», Riprendi comincia un'altra serata: «La volta scorsa…», poi si gioca.
       const recap = this.serata.prendiLaVoltaScorsa();
@@ -1704,13 +1699,13 @@ export class Regia {
    * Le azioni del turno interrotto non sono state risolte: tornano ai giocatori da rimandare.
    */
   fermaNarrazione(): Esito {
-    if (!this.narrazioneInCorso) return { ok: false, errore: 'Nessuna narrazione in corso.' };
+    if (!this.narrazioneInCorso) return { ok: false, errore: testoFisso('regia.errori.nessuna_narrazione') };
     const turno = this.turno;
     const faseInterrotta = this.fase;
     this.interrompiFlussi('master');
     this.primoAudioInviato.delete(turno);
-    const annullate = this.tavolo.annullaChiuse(turno, MOTIVO_NARRAZIONE_INTERROTTA);
-    this.aggiungiTrascrizione({ turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: 'Il master ha interrotto la narrazione.' });
+    const annullate = this.tavolo.annullaChiuse(turno, testoFisso('regia.motivi.narrazione_interrotta'));
+    this.rigaDiSistema(turno, testoFisso('regia.righe.narrazione_interrotta'));
     this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'interrotta', fase: faseInterrotta, azioni_annullate: annullate });
     // La parte già detta è pubblica: le azioni scritte nel frattempo si ricontrollano contro di essa.
     this.versioneScena += 1;
@@ -1736,9 +1731,9 @@ export class Regia {
    */
   cambiaScena(id: string): Esito {
     const nuova = this.o.campagna.scene.find((s) => s.id === id);
-    if (!nuova) return { ok: false, errore: 'Scena sconosciuta.' };
-    if (nuova.id === this.campagna.scena.id) return { ok: false, errore: 'È già la scena in corso.' };
-    if (this.narrazioneInCorso || this.tavolo.chiudendo) return { ok: false, errore: 'Aspetta che finisca la narrazione, o fermala prima.' };
+    if (!nuova) return { ok: false, errore: testoFisso('regia.errori.scena_sconosciuta') };
+    if (nuova.id === this.campagna.scena.id) return { ok: false, errore: testoFisso('regia.errori.scena_gia_in_corso') };
+    if (this.narrazioneInCorso || this.tavolo.chiudendo) return { ok: false, errore: testoFisso('regia.errori.aspetta_narrazione') };
     const da = this.campagna.scena.id;
     const inGioco = this.fase !== 'attesa' && this.fase !== 'fermata';
     // A finestra aperta il suo turno non è stato narrato: l'apertura lo prende; altrimenti il successivo.
@@ -1749,14 +1744,14 @@ export class Regia {
       this.notifica();
       return { ok: true };
     }
-    const annullate = this.tavolo.annullaVive(MOTIVO_CAMBIO_SCENA);
+    const annullate = this.tavolo.annullaVive(testoFisso('regia.motivi.cambio_scena'));
     this.tavolo.chiudiForzata();
     // Le decisioni delle prove valevano per la scena di prima (PF e dadi restano).
     this.prove?.dimentica();
     this.pausaRichiesta = false;
     this.invitoSospeso = null;
     this.turno = turno;
-    this.aggiungiTrascrizione({ turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: `Nuova scena: ${nuova.titolo}.` });
+    this.rigaDiSistema(turno, testoFisso('regia.righe.nuova_scena', { titolo: nuova.titolo }));
     // Una scena già visitata non riapre con l'apertura (e la prima scena col riassunto di sessione):
     // si legge il suo rientro (playtest di nozze-neve: la casera si rileggeva da capo a ogni ritorno).
     const rientro = this.sceneVisitate.has(nuova.id) ? this.rientroIn(nuova, turno) : null;
@@ -1787,7 +1782,7 @@ export class Regia {
    * master (a finestra aperta vale subito: concitato fa partire il conto da adesso, calmo lo toglie).
    */
   impostaRitmo(ritmo: Ritmo, origine: 'narratore' | 'scena' | 'master'): Esito {
-    if (ritmo !== 'calmo' && ritmo !== 'concitato') return { ok: false, errore: 'Ritmo sconosciuto.' };
+    if (ritmo !== 'calmo' && ritmo !== 'concitato') return { ok: false, errore: testoFisso('regia.errori.ritmo_sconosciuto') };
     const prima = this.ritmo;
     this.ritmo = ritmo;
     if (this.fase === 'finestra') this.tavolo.impostaRitmo(ritmo);
@@ -1798,15 +1793,15 @@ export class Regia {
 
   /** Il master chiude la finestra adesso («Risolvi ora»: il narratore risponde alle azioni inviate). */
   chiudiFinestraOra(): Esito {
-    if (this.fase === 'pausa') return { ok: false, errore: 'Il tavolo è in pausa: riprendi prima di chiudere la finestra.' };
-    if (this.fase !== 'finestra') return { ok: false, errore: 'La finestra delle azioni non è aperta.' };
+    if (this.fase === 'pausa') return { ok: false, errore: testoFisso('tavolo.in_pausa') };
+    if (this.fase !== 'finestra') return { ok: false, errore: testoFisso('tavolo.finestra_chiusa') };
     return this.tavolo.chiudiOra();
   }
 
   /** Il master salta l'azione di un giocatore (non entra nel turno). */
   saltaAzione(idAzione: string): Esito {
-    const a = this.tavolo.salta(idAzione, MOTIVO_SALTATA);
-    if (!a) return { ok: false, errore: 'Azione inesistente o già fuori dal turno.' };
+    const a = this.tavolo.salta(idAzione, testoFisso('regia.motivi.saltata'));
+    if (!a) return { ok: false, errore: testoFisso('regia.errori.azione_inesistente') };
     return { ok: true };
   }
 
@@ -1854,7 +1849,7 @@ export class Regia {
    * entra nella finestra successiva.
    */
   inviaAzione(id_pg: string, testo: string, versioneVista: number, privata = false): Esito {
-    if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: 'La scena non è in corso.' };
+    if (this.fase === 'attesa' || this.fase === 'fermata') return { ok: false, errore: testoFisso('regia.errori.scena_non_in_corso') };
     const esito = this.tavolo.invia(id_pg, testo, versioneVista, privata);
     // Che cosa si tira lo decide l'arbitro adesso, in sottofondo: alla chiusura è già pronto.
     if (esito.ok) this.preparaProve(id_pg);
@@ -2115,7 +2110,7 @@ export class Regia {
     if (etichetta === ID_NARRATORE) return [];
     const b = this.o.repertorio?.battute.find((x) => x.chi === etichetta && x.tipo === 'rifiuto');
     const nome = voceDi(this.campagna, etichetta).nome;
-    if (!b) return [{ etichetta: ID_NARRATORE, testo: `${nome} scuote la testa e non risponde.` }];
+    if (!b) return [{ etichetta: ID_NARRATORE, testo: testoFisso('regia.narratore.deviazione', { nome }) }];
     const n = this.deviazioniDette.get(etichetta) ?? 0;
     this.deviazioniDette.set(etichetta, n + 1);
     const versioni = [b.testo, ...b.varianti];
@@ -2156,28 +2151,28 @@ export class Regia {
   /** Pannello del master: comincia o finisce lo scontro, corregge PF e condizioni. */
   iniziaCombattimento(): Esito {
     const fatto = this.prove?.iniziaCombattimento();
-    if (!fatto) return { ok: false, errore: this.prove?.attivo ? 'C’è già un combattimento in corso.' : 'Questa campagna non gioca coi dadi.' };
-    this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: fatto });
+    if (!fatto) return { ok: false, errore: testoFisso(this.prove?.attivo ? 'regia.errori.combattimento_in_corso' : 'regia.errori.senza_dadi') };
+    this.rigaDiSistema(this.turno, fatto);
     this.o.log.info({ turno: this.turno }, 'combattimento: aperto dal master');
     this.notifica();
     return { ok: true };
   }
 
   terminaCombattimento(): Esito {
-    if (!this.prove?.terminaCombattimento()) return { ok: false, errore: 'Nessun combattimento in corso.' };
-    this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: 'Il master chiude il combattimento.' });
+    if (!this.prove?.terminaCombattimento()) return { ok: false, errore: testoFisso('regia.errori.nessun_combattimento') };
+    this.rigaDiSistema(this.turno, testoFisso('regia.righe.combattimento_chiuso'));
     this.notifica();
     return { ok: true };
   }
 
   impostaPf(id: string, valore: number): Esito {
-    if (!this.prove?.impostaPf(id, valore)) return { ok: false, errore: 'PF non validi o personaggio senza scheda.' };
+    if (!this.prove?.impostaPf(id, valore)) return { ok: false, errore: testoFisso('regia.errori.pf_non_validi') };
     this.notifica();
     return { ok: true };
   }
 
   condizioneCombattimento(id: string, condizione: string, attiva: boolean): Esito {
-    if (!this.prove?.condizione(id, condizione, attiva)) return { ok: false, errore: 'Condizione sconosciuta, o nessun combattimento in corso.' };
+    if (!this.prove?.condizione(id, condizione, attiva)) return { ok: false, errore: testoFisso('regia.errori.condizione_sconosciuta') };
     this.notifica();
     return { ok: true };
   }
@@ -2220,8 +2215,9 @@ export class Regia {
       // master (la pausa «che non riparte da sola» della prova del 3 novembre): ora la finestra si
       // riapre per tutti e il master riceve l'avviso per scegliere come andare avanti.
       this.scenaFinitaAlTurno = null;
-      this.aggiungiTrascrizione({ turno: this.turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_FINE_SCENA });
-      this.uscita?.avviso('info', TESTO_FINE_SCENA);
+      const fine = testoFisso('regia.righe.fine_scena');
+      this.rigaDiSistema(this.turno, fine);
+      this.uscita?.avviso('info', fine);
       this.o.log.info({ turno: this.turno, scena: this.campagna.scena.id }, 'scena: finita col finale, la finestra si riapre (decide il master)');
       invito = 'tutti';
     }
@@ -2500,7 +2496,7 @@ export class Regia {
     }
     // Il narratore è caduto senza dire niente: la mossa morbida pronta tiene viva la scena (E3).
     if (esito.errore && esito.frasi === 0) {
-      this.uscita?.avviso('errore', 'Il narratore non risponde: riprovo al prossimo turno.');
+      this.uscita?.avviso('errore', testoFisso('regia.avvisi.narratore_muto'));
       this.parlaRiserva(turno);
     }
 
@@ -2597,12 +2593,13 @@ export class Regia {
     const detto = this.trascrizione.some((v) => v.turno === turno && (v.tipo === 'narrazione' || v.tipo === 'battuta'));
     this.interrompiFlussi('sorvegliante');
     this.primoAudioInviato.delete(turno);
-    const annullate = fase === 'narrazione' && !detto ? this.tavolo.annullaChiuse(turno, MOTIVO_BLOCCO) : [];
-    if (!detto && fase === 'narrazione') this.trascriviFrase(turno, ID_NARRATORE, NOME_NARRATORE, TESTO_RISERVA_BLOCCO, 998);
-    this.aggiungiTrascrizione({ turno, tipo: 'sistema', chi: 'sistema', nome: 'Sistema', testo: TESTO_BLOCCO });
+    const annullate = fase === 'narrazione' && !detto ? this.tavolo.annullaChiuse(turno, testoFisso('regia.motivi.blocco')) : [];
+    if (!detto && fase === 'narrazione') this.trascriviFrase(turno, ID_NARRATORE, NOME_NARRATORE, testoFisso('regia.narratore.riserva_blocco'), 998);
+    const riga = testoFisso('regia.righe.blocco');
+    this.rigaDiSistema(turno, riga);
     this.o.log.error({ turno, fase, causa, ultimo: b.ultimo, fermo_ms: b.fermo_ms, durata_ms: b.durata_ms, voce_in_coda: inCodaVoce, detto, azioni_annullate: annullate }, 'sorvegliante: attesa bloccata, il gioco riparte');
     this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'sorvegliante', fase, causa, ultimo: b.ultimo, fermo_ms: b.fermo_ms, azioni_annullate: annullate });
-    this.uscita?.avviso('errore', TESTO_BLOCCO);
+    this.uscita?.avviso('errore', riga);
     this.versioneScena += 1;
     this.fineNarrazione('tutti');
   }
@@ -2644,7 +2641,7 @@ export class Regia {
     this.o.log.info({ turno: r.turno, catalogo: battute.length, perche, trattenute, stallo, dovuti: [...dovuti], indicate: Object.fromEntries(perAzione.map((x) => [x.autore, x.ids])) }, 'repertorio: catalogo del turno');
     return {
       fattiScoperti: s.fattiScoperti.map((id) => `${id} — ${this.testoFatto(id)}`),
-      indicate: perAzione.map((x) => `- ${x.autore} (${this.nomePg(x.autore)}): ${x.ids.map((id) => `[usa] ${id} > ${x.autore}`).join(' oppure ')}`),
+      indicate: perAzione.map((x) => `- ${x.autore} (${this.nomePg(x.autore)}): ${x.ids.map((id) => `[usa] ${id} > ${x.autore}`).join(` ${testoFisso('regia.modello.oppure')} `)}`),
       battuteDisponibili: s.elencoDisponibili(battute),
       attesa: s.elencoDisponibili(attesa),
       stallo,
@@ -2832,7 +2829,7 @@ export class Regia {
 
   private parlaRiserva(turno: number): void {
     const mossa = this.campagna.scena.dati['mossa_morbida_pronta'];
-    const testo = typeof mossa === 'string' && mossa.trim() ? mossa.trim() : 'Il fuoco crepita. Per un momento, nessuno parla.';
+    const testo = typeof mossa === 'string' && mossa.trim() ? mossa.trim() : testoFisso('regia.narratore.riserva_turno');
     this.trascriviFrase(turno, ID_NARRATORE, NOME_NARRATORE, testo, 999);
     this.pipeline.accoda({
       id_frase: `t${turno}-riserva`,

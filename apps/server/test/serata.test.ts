@@ -13,7 +13,7 @@ import { NarratoreFinto } from '../src/llm/finto';
 import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
 import { climaxInCorso, consiglioDiChiusura, DurataSerata, MINUTI_PREAVVISO } from '../src/sessione/durata';
 import { analizzaRiassunto, frasiLaVoltaScorsa, leggiRiassunti, materialePubblico, paroleScappate, riservaDa, scriviRiassunto } from '../src/sessione/riassunto';
-import { TITOLO_CHIUSURA } from '../src/narrazione/messaggio';
+import { testo } from '../src/lingua';
 import { attendi, emetti, inizia, Prova, turno } from './aiuti/partita';
 
 const voce = (tipo: VoceTrascrizione['tipo'], nome: string, testo: string, turno = 1): VoceTrascrizione => ({ id: Math.random(), turno, tipo, chi: nome, nome, testo }) as VoceTrascrizione;
@@ -85,7 +85,7 @@ afterEach(async () => prova?.chiudi());
 /** Il narratore finto: chiusura, riassunto o turno normale, a seconda del messaggio. */
 const copione = (_t: number, messaggio: string): string => {
   if (messaggio.includes('## Il riassunto')) return 'Anna ha ascoltato il temporale sulla locanda.\nFILO: Chi arriverà con la piena?';
-  if (messaggio.includes(TITOLO_CHIUSURA)) return '[narratore] La pioggia batte sui vetri, e la locanda si fa silenziosa.\n[narratore] Domani il fiume dirà la sua.\n[invito] tutti';
+  if (messaggio.includes(testo('messaggio.titolo_chiusura'))) return '[narratore] La pioggia batte sui vetri, e la locanda si fa silenziosa.\n[narratore] Domani il fiume dirà la sua.\n[invito] tutti';
   return '[narratore] Anna, il tuono rotola lontano.\n[invito] tutti';
 };
 

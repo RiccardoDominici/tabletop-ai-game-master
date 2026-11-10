@@ -17,7 +17,7 @@ import { caricaCampagna } from '../src/campagna/caricatore';
 import { conScena } from '../src/campagna/tipi';
 import { RADICE_REPO } from '../src/percorsi';
 import { StatoOrologi } from '../src/scena/orologi';
-import { TESTO_FINE_SCENA } from '../src/scena/regia';
+import { testo } from '../src/lingua';
 import { attendi, inizia, Prova, turno } from './aiuti/partita';
 
 const NOZZE = path.join(RADICE_REPO, 'campagne', 'nozze-neve');
@@ -142,7 +142,7 @@ describe('nozze-neve, indagine rigiocata col selettore avido', () => {
     }
     // Il finale ha chiuso la scena: la finestra si riapre e il master riceve l'avviso.
     expect(s.fase).toBe('finestra');
-    expect(s.trascrizione.some((v) => v.tipo === 'sistema' && v.testo === TESTO_FINE_SCENA)).toBe(true);
+    expect(s.trascrizione.some((v) => v.tipo === 'sistema' && v.testo === testo('regia.righe.fine_scena'))).toBe(true);
 
     const narrati = prova.narrazioni().filter((r) => r['tipo'] === 'turno');
     const statoAl = (n: number) => (narrati.find((r) => r['turno'] === n)?.['stato_orologi'] ?? {}) as Record<string, string>;

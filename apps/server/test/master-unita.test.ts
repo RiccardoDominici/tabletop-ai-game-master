@@ -2,7 +2,8 @@
 import { describe, expect, it } from 'vitest';
 import { NoteRegia } from '../src/master/note';
 import { nuovoToken, tokenDaConfig, tokenValido } from '../src/master/token';
-import { compilaMessaggioTurno, sezioneNoteRegia, TITOLO_NOTE_REGIA } from '../src/narrazione/messaggio';
+import { testo } from '../src/lingua';
+import { compilaMessaggioTurno, sezioneNoteRegia } from '../src/narrazione/messaggio';
 
 describe('token del master', () => {
   it('nuovo a ogni avvio, sicuro per un URL', () => {
@@ -57,9 +58,9 @@ describe('note di regia', () => {
   it('nel messaggio del turno, vicino all’ordine di rispondere', () => {
     expect(sezioneNoteRegia([])).toBeNull();
     const m = compilaMessaggioTurno({ turno: 2, trascrizione: [], azioni: [], pgAlTavolo: [{ id: 'pg_a', nome: 'A' }], noteRegia: ['Frasi corte.'] });
-    expect(m).toContain(`${TITOLO_NOTE_REGIA} (`);
-    expect(m.indexOf(TITOLO_NOTE_REGIA)).toBeGreaterThan(m.indexOf('## Turno 2'));
-    expect(m.indexOf(TITOLO_NOTE_REGIA)).toBeLessThan(m.indexOf('pg_presenti'));
-    expect(compilaMessaggioTurno({ turno: 2, trascrizione: [], azioni: [], pgAlTavolo: [] })).not.toContain(TITOLO_NOTE_REGIA);
+    expect(m).toContain(`${testo('messaggio.titolo_note_regia')} (`);
+    expect(m.indexOf(testo('messaggio.titolo_note_regia'))).toBeGreaterThan(m.indexOf('## Turno 2'));
+    expect(m.indexOf(testo('messaggio.titolo_note_regia'))).toBeLessThan(m.indexOf('pg_presenti'));
+    expect(compilaMessaggioTurno({ turno: 2, trascrizione: [], azioni: [], pgAlTavolo: [] })).not.toContain(testo('messaggio.titolo_note_regia'));
   });
 });

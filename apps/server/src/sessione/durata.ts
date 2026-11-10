@@ -12,6 +12,7 @@ import path from 'node:path';
 import YAML from 'yaml';
 import type { ScenaCaricata } from '../campagna/tipi';
 import type { Orologio } from '../scena/orologi';
+import { testo } from '../lingua';
 
 export const ORE_PREDEFINITE = 2.5;
 export const MINUTI_PREAVVISO = 20;
@@ -76,9 +77,12 @@ export class DurataSerata {
   }
 }
 
-/** La sezione per il messaggio del turno, quando la fine è vicina e non c'è un climax (null = niente). */
+/**
+ * La sezione per il messaggio del turno, quando la fine è vicina e non c'è un climax (null = niente).
+ * Il testo è per il modello, nella lingua dei contenuti (sezione `durata` del pacchetto).
+ */
 export function consiglioDiChiusura(s: StatoDurata, climax: boolean): string | null {
   if (!s.fineVicina || climax || s.minutiRimasti === null) return null;
-  const quanto = s.minutiRimasti > 0 ? `Mancano circa ${s.minutiRimasti} minuti alla fine prevista della serata.` : 'La serata è oltre la durata prevista.';
-  return `${quanto} Avvicinati a una pausa naturale: porta a compimento il momento in corso, niente misteri nuovi. È un consiglio, non un ordine: rispondi comunque a ogni azione.`;
+  const quanto = s.minutiRimasti > 0 ? testo('durata.mancano', { minuti: s.minutiRimasti }) : testo('durata.oltre');
+  return testo('durata.consiglio', { quanto });
 }

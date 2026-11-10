@@ -9,7 +9,7 @@
  * - orologio completo ma nessun finale disponibile: si continua come prima.
  */
 import { afterEach, describe, expect, it } from 'vitest';
-import { TESTO_FINE_SCENA } from '../src/scena/regia';
+import { testo } from '../src/lingua';
 import { inizia, Prova, turno } from './aiuti/partita';
 
 const FINALI = [
@@ -43,7 +43,7 @@ describe('il finale del Motore', () => {
     // Niente pausa dopo il finale (era la pausa «che non riparte da sola»): si gioca, decide il master.
     expect(fine).toMatchObject({ fase: 'finestra', turno: 3 });
     const testi = fine.trascrizione.filter((v) => v.turno === 2).map((v) => v.testo);
-    expect(testi.slice(-3)).toEqual(['Il fiume esonda: la locanda resta un’isola nella notte.', 'All’alba la valle sarà un lago. Chi resta, e chi parte?', TESTO_FINE_SCENA]);
+    expect(testi.slice(-3)).toEqual(['Il fiume esonda: la locanda resta un’isola nella notte.', 'All’alba la valle sarà un lago. Chi resta, e chi parte?', testo('regia.righe.fine_scena')]);
     expect(testi.join(' ')).toContain('La porta sbatte.');
     expect(testi.join(' ')).not.toContain('L’oste chiude il conto'); // il finale che non vale
     const registro = prova.turni().find((r) => r['turno'] === 2)!;
@@ -61,7 +61,7 @@ describe('il finale del Motore', () => {
     expect(await m.comanda({ tipo: 'orologio', id: 'o_temporale', passo: 1 })).toEqual({ ok: true });
     const fine = await turno(tel, 'pg_anna', s2, 'Aspetto.');
     expect(fine).toMatchObject({ fase: 'finestra', turno: 3 });
-    expect(fine.trascrizione.at(-1)).toMatchObject({ tipo: 'sistema', testo: TESTO_FINE_SCENA });
+    expect(fine.trascrizione.at(-1)).toMatchObject({ tipo: 'sistema', testo: testo('regia.righe.fine_scena') });
     const r = prova.narrazioni().find((x) => x['tipo'] === 'turno' && x['turno'] === 2)!;
     const uscita = r['uscita'] as Array<{ tipo: string; id?: string; motore?: boolean }>;
     expect(uscita.filter((u) => u.tipo === 'usa_rifiutato')).toEqual([]);

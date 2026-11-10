@@ -77,10 +77,11 @@ export function paroleScappate(testo: string, materiale: string, parole: ParolaS
 /** La riserva: fatti detti a voce, senza modello. Le righe con una parola segreta si tolgono. */
 export function riservaDa(o: { scene: string[]; segni: string[]; parole: ParolaSegreta[]; pubblico: StatoPubblico | null }): string {
   const righe: string[] = [];
-  if (o.scene.length) righe.push(`Siete passati da: ${o.scene.join(', ')}.`);
+  // Frasi della riserva: dal pacchetto della lingua (sezione `sessione.riassunto`), lette a voce.
+  if (o.scene.length) righe.push(testo('sessione.riassunto.passati_da', { scene: o.scene.join(', ') }));
   for (const s of o.segni.slice(-2)) righe.push(s.endsWith('.') ? s : `${s}.`);
   const pulite = righe.filter((r) => segretiNelTesto(r, o.parole, o.pubblico).length === 0);
-  return pulite.length ? pulite.join(' ') : 'La storia riprende da dove si era fermata.';
+  return pulite.length ? pulite.join(' ') : testo('sessione.riassunto.riprende');
 }
 
 export interface EsitoRiassunto {
@@ -129,10 +130,14 @@ export async function scriviRiassunto(
 }
 
 /** Le frasi da leggere a voce per «La volta scorsa…». */
-export function frasiLaVoltaScorsa(testo: string): string[] {
-  const t = testo.trim();
+export function frasiLaVoltaScorsa(riassunto: string): string[] {
+  const t = riassunto.trim();
   const frasi = t.split(/(?<=[.!?…])\s+/).filter(Boolean);
-  return /^la volta scorsa/i.test(t) ? frasi : ['La volta scorsa.', ...frasi];
+  // «La volta scorsa.» nella lingua attiva; se il riassunto comincia già così (senza badare alle
+  // maiuscole né al punto finale) non si ripete.
+  const apertura = testo('sessione.riassunto.la_volta_scorsa');
+  const inizio = apertura.replace(/[.!?…]+$/, '').toLowerCase();
+  return t.toLowerCase().startsWith(inizio) ? frasi : [apertura, ...frasi];
 }
 
 // ------------------------------------------------------------------------------------------- file

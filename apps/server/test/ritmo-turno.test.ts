@@ -21,8 +21,7 @@ import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
 import { COPIONE_BLOCCA, COPIONE_ERRORE, NarratoreFinto } from '../src/llm/finto';
 import { fuoriDallaFinzione } from '../src/narrazione/finzione';
-import { TITOLO_RITMO } from '../src/narrazione/ritmo';
-import { MOTIVO_BLOCCO, TESTO_BLOCCO, TESTO_RISERVA_BLOCCO } from '../src/scena/regia';
+import { testo } from '../src/lingua';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 const MINI = path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini');
@@ -157,8 +156,8 @@ describe('turno senza scadenza', () => {
     expect(s3.finestra.chiusura_prevista_ms).toBeNull();
     expect(messaggi[1]).toContain('## Mossa del mondo');
     // Finché vale il concitato il messaggio lo ricorda al narratore (e come tornare al calmo).
-    expect(messaggi[0]).not.toContain(TITOLO_RITMO);
-    expect(messaggi[1]).toContain(TITOLO_RITMO);
+    expect(messaggi[0]).not.toContain(testo('ritmo.titolo'));
+    expect(messaggi[1]).toContain(testo('ritmo.titolo'));
     expect(messaggi[1]).toContain('[ritmo] calmo');
     const turni = leggiNarrazioni().filter((x) => x['tipo'] === 'turno');
     expect(turni.map((x) => x['chiusura'])).toEqual(['tutti_inviato', 'scadenza']);
@@ -205,10 +204,10 @@ describe('sorvegliante', () => {
     const s2 = await ripresa;
     expect(Date.now() - t0).toBeGreaterThanOrEqual(400);
     const ultime = s2.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo);
-    expect(ultime).toContain(TESTO_RISERVA_BLOCCO);
-    expect(ultime).toContain(TESTO_BLOCCO);
-    expect(avvisi).toContain(TESTO_BLOCCO);
-    expect(mie.at(-1)).toMatchObject({ stato: 'superata', testo: 'Apro la botola.', motivo: MOTIVO_BLOCCO });
+    expect(ultime).toContain(testo('regia.narratore.riserva_blocco'));
+    expect(ultime).toContain(testo('regia.righe.blocco'));
+    expect(avvisi).toContain(testo('regia.righe.blocco'));
+    expect(mie.at(-1)).toMatchObject({ stato: 'superata', testo: 'Apro la botola.', motivo: testo('regia.motivi.blocco') });
     const blocco = leggiNarrazioni().find((x) => x['tipo'] === 'sorvegliante');
     expect(blocco).toMatchObject({ turno: 1, fase: 'narrazione', causa: 'il modello non risponde' });
     // Il turno dopo funziona normalmente.

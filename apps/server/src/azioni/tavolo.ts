@@ -23,12 +23,13 @@
  *   «superata».
  */
 import type { AzioneAlTavolo, AzionePrivata, AzionePubblica, Esito, FinestraPubblica, RichiestaScelta } from '@cantastorie/shared';
+import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import type { Orologio } from '../turni/orologio';
 import { daSegnalare, percorsoVerso } from './propagazione';
 import { normalizza, relazioniDaRegole } from './regole';
 import { Spareggio } from './spareggio';
-import { avvisoConflitto, avvisoDipendenza, avvisoVecchia, MOTIVO_SOSPESA, motivoSuperata } from './testi';
+import { avvisoConflitto, avvisoDipendenza, avvisoVecchia, motivoSospesa, motivoSuperata } from './testi';
 import { STATI_VIVI, type Arbitro, type Azione, type AzioneArbitro, type ContestoArbitro, type Ritmo } from './tipi';
 import type { StatoTavoloSalvato } from '../sessione/tipi';
 
@@ -358,10 +359,11 @@ export class TavoloAzioni {
 
   // ------------------------------------------------------------------ comandi dei telefoni
 
-  invia(id_pg: string, testo: string, versioneVista: number, privata = false): Esito {
-    const pulito = testo.trim();
-    if (!pulito) return { ok: false, errore: 'Scrivi cosa fa il tuo personaggio.' };
-    if (pulito.length > MAX_CARATTERI_AZIONE) return { ok: false, errore: `Massimo ${MAX_CARATTERI_AZIONE} caratteri.` };
+  invia(id_pg: string, testoAzione: string, versioneVista: number, privata = false): Esito {
+    const pulito = testoAzione.trim();
+    // Errori per il telefono: frasi del pacchetto della lingua (sezione `tavolo`).
+    if (!pulito) return { ok: false, errore: testo('tavolo.scrivi_azione') };
+    if (pulito.length > MAX_CARATTERI_AZIONE) return { ok: false, errore: testo('tavolo.troppo_lunga', { max: MAX_CARATTERI_AZIONE }) };
     const adesso = this.o.orologio.adesso();
     const turno = this.turnoDestinazione;
     const esistente = this.azioneViva(id_pg, turno);
@@ -412,7 +414,7 @@ export class TavoloAzioni {
 
   ritira(id_pg: string): Esito {
     const a = this.azioneViva(id_pg);
-    if (!a) return { ok: false, errore: 'Non c’è nessuna azione da ritirare.' };
+    if (!a) return { ok: false, errore: testo('tavolo.niente_da_ritirare') };
     a.stato = 'ritirata';
     a.richiesta = null;
     a.motivo = null;
@@ -428,7 +430,7 @@ export class TavoloAzioni {
   /** «Confermo» / «Tengo». */
   conferma(id_pg: string): Esito {
     const a = this.azioneViva(id_pg);
-    if (!a || a.stato !== 'da_confermare') return { ok: false, errore: 'Non c’è niente da confermare.' };
+    if (!a || a.stato !== 'da_confermare') return { ok: false, errore: testo('tavolo.niente_da_confermare') };
     a.stato = 'in_coda';
     a.richiesta = null;
     a.motivo = null;
@@ -717,9 +719,9 @@ export class TavoloAzioni {
   /** Il master chiude la finestra adesso: il narratore risponde alle azioni inviate. */
   chiudiOra(): Esito {
     const f = this.finestra;
-    if (!f?.aperta) return { ok: false, errore: 'La finestra delle azioni non è aperta.' };
-    if (f.chiudendo) return { ok: false, errore: 'La finestra si sta già chiudendo.' };
-    if (this.inPausa) return { ok: false, errore: 'Il tavolo è in pausa: riprendi prima di chiudere la finestra.' };
+    if (!f?.aperta) return { ok: false, errore: testo('tavolo.finestra_chiusa') };
+    if (f.chiudendo) return { ok: false, errore: testo('tavolo.finestra_in_chiusura') };
+    if (this.inPausa) return { ok: false, errore: testo('tavolo.in_pausa') };
     void this.chiudi('master');
     return { ok: true };
   }
@@ -820,7 +822,7 @@ export class TavoloAzioni {
         if (motivo !== 'forzata') {
           a.stato = 'sospesa';
           a.richiesta = null;
-          a.motivo = MOTIVO_SOSPESA;
+          a.motivo = motivoSospesa();
           sospese.push(a);
         }
       } else {

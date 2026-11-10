@@ -13,6 +13,7 @@
  */
 import { pacchettoDopo, type Pacchetto } from '../campagna/pacchetti';
 import { MOTIVO_FINE_SESSIONE, type InfoSessione } from './archivio';
+import { testo } from '../lingua';
 
 export type MotivoScelta = 'one-shot' | 'richiesto' | 'ripresa' | 'dopo la fine' | 'ultima giocata' | 'prima';
 
@@ -48,10 +49,16 @@ export function scegliPacchetto(pacchetti: readonly Pacchetto[], sessioni: reado
     if (ultima.stato === 'chiusa' && ultima.motivo_chiusura === MOTIVO_FINE_SESSIONE) {
       const dopo = pacchettoDopo(pacchetti, ultima.pacchetto!);
       if (dopo) return { numero: dopo.numero, motivo: 'dopo la fine', avviso: null, riserva: ultima.pacchetto! };
+      const numero = ultima.pacchetto!;
       return {
-        numero: ultima.pacchetto!,
+        numero,
         motivo: 'ultima giocata',
-        avviso: `La sessione ${ultima.pacchetto} è finita e la seguente non c'è ancora in sessioni/: si rigioca la ${ultima.pacchetto}.`,
+        // Getter: la frase si compone quando la si legge (log e pannello), nella lingua dei contenuti.
+        // La scelta del pacchetto viene prima del caricamento della campagna, che imposta la lingua
+        // (avvio.ts): composta qui sarebbe nella lingua di prima.
+        get avviso(): string {
+          return testo('sessione.scelta.rigioca', { numero });
+        },
       };
     }
     return { numero: ultima.pacchetto!, motivo: 'ultima giocata', avviso: null };

@@ -1,0 +1,334 @@
+# Frasi fisse del Motore in italiano (docs/lingue.md): ciò che il server mostra ai giocatori (telefono,
+# proiettore), al master (pannello: rifiuti e dettagli degli eventi) o manda al narratore (messaggio del
+# turno, contesto). Italiano = riferimento: lingue/<codice>/testi-motore.yaml ha le stesse chiavi e gli
+# stessi segnaposto {nome}. Le etichette del protocollo ([usa], [invito], tutti, [orologio], > pg…) e i nomi
+# dei campi (al_completo, segno_orologio, finale) restano come sono in ogni lingua.
+
+# Regia della scena (apps/server/src/scena/regia.ts).
+regia:
+  # Nome delle righe di sistema nella trascrizione.
+  nome_sistema: "Sistema"
+  # Motivi mostrati al giocatore quando la sua azione torna indietro (telefono).
+  motivi:
+    saltata: "Il master ha saltato questa azione: puoi riscriverla."
+    narrazione_interrotta: "Il master ha interrotto la narrazione: la tua azione non è stata risolta, puoi rimandarla."
+    cambio_scena: "Si cambia scena: la tua azione era per il luogo di prima, riscrivila se vale ancora."
+    blocco: "Il narratore si è bloccato prima di rispondere: la tua azione non è stata risolta, puoi rimandarla."
+    chiusura_serata: "La serata si è chiusa: la tua azione non è stata risolta, riscrivila la prossima volta se vale ancora."
+    ripresa: "Il gioco si è fermato mentre il narratore rispondeva: la tua azione non è stata risolta, puoi rimandarla."
+  # Righe di sistema della trascrizione (telefoni, proiettore, pannello); alcune sono anche avvisi.
+  righe:
+    fine_scena: "La scena è finita: il master sceglie come andare avanti."
+    blocco: "Il narratore si era bloccato: si riparte."
+    fine_sessione: "Fine della sessione."
+    serata_chiusa: "La serata è chiusa: alla prossima."
+    ripresa: "La sessione riprende da dove si era fermata."
+    scena_fermata: "Scena fermata."
+    narrazione_interrotta: "Il master ha interrotto la narrazione."
+    nuova_scena: "Nuova scena: {titolo}."
+    combattimento_chiuso: "Il master chiude il combattimento."
+  # Avvisi al proiettore e al pannello.
+  avvisi:
+    narratore_muto: "Il narratore non risponde: riprovo al prossimo turno."
+  # Frasi del narratore dette dal Motore quando il modello manca (riserve) o tace un segreto.
+  narratore:
+    riserva_blocco: "Scusate, ho perso il filo per un momento: ditemi di nuovo cosa fate."
+    riserva_turno: "Il fuoco crepita. Per un momento, nessuno parla."
+    deviazione: "{nome} scuote la testa e non risponde."
+  # «Finora stasera» nel Diario dei telefoni.
+  diario:
+    luoghi: "Luoghi: {luoghi}."
+  # Errori dei comandi (pannello del master, telefoni).
+  errori:
+    nessuna_sessione: "Nessuna sessione in corso da chiudere."
+    telefono_sconosciuto: "Telefono sconosciuto."
+    personaggio_sconosciuto: "Personaggio sconosciuto."
+    umore_senza_brano: "Nessun brano per l'umore «{umore}»."
+    nessuna_situazione: "Nessuna situazione sul proiettore."
+    situazione_sconosciuta: "Immagine di situazione sconosciuta."
+    png_visibile: "Il personaggio non è nascosto: si vede già."
+    durata_non_valida: "Durata non valida: da mezz’ora a otto ore."
+    chiusura_in_corso: "La chiusura della serata è già in corso."
+    serata_gia_chiusa: "La serata è già chiusa."
+    aspetta_narrazione: "Aspetta che finisca la narrazione, o fermala prima."
+    serata_non_in_corso: "La serata non è in corso."
+    scena_non_in_corso: "La scena non è in corso."
+    gia_in_pausa: "Il tavolo è già in pausa."
+    pausa_gia_chiesta: "La pausa è già chiesta: scatta alla fine della narrazione."
+    non_in_pausa: "Il tavolo non è in pausa."
+    nessuna_narrazione: "Nessuna narrazione in corso."
+    scena_sconosciuta: "Scena sconosciuta."
+    scena_gia_in_corso: "È già la scena in corso."
+    ritmo_sconosciuto: "Ritmo sconosciuto."
+    azione_inesistente: "Azione inesistente o già fuori dal turno."
+    combattimento_in_corso: "C’è già un combattimento in corso."
+    senza_dadi: "Questa campagna non gioca coi dadi."
+    nessun_combattimento: "Nessun combattimento in corso."
+    pf_non_validi: "PF non validi o personaggio senza scheda."
+    condizione_sconosciuta: "Condizione sconosciuta, o nessun combattimento in corso."
+  # Segnali audio automatici nell'elenco degli eventi del pannello ({origine}: «battuta <id>» o quella del segnale).
+  audio:
+    origine_battuta: "battuta {id}"
+    rifiutato: "automatico ({origine}): {motivo}"
+    effetto: "automatico ({origine}): effetto {effetto} con la frase"
+    umore_ignorato: "automatico ({origine}): umore {umore} ignorato, un cambio al minuto (ancora {secondi} s)"
+    umore: "automatico ({origine}): umore della musica {da} → {a}"
+  # Parti del messaggio del turno costruite dalla regia (battute indicate per azione).
+  modello:
+    oppure: "oppure"
+
+# Stato degli orologi per il messaggio del turno, e rifiuti di un avanzamento (apps/server/src/scena/orologi.ts).
+orologi:
+  # Frase che il prompt del narratore tratta come ordine di mostrare il segno.
+  ordine_segno: "Mostralo in questa risposta."
+  nessun_segno: "nessun segno finora"
+  segno_precedente: "la tua risposta precedente ha mostrato un segno"
+  ultimo_segno: "ultimo segno al turno {turno}"
+  # Inizio di ogni riga: {testa} nelle righe sotto.
+  testa: "- [{id}] «{nome}»: segni mostrati {pieni} di {segmenti}"
+  non_partito: "{testa}; non ancora partito: nessun segno da mostrare."
+  completo: "{testa}; COMPLETO ({ultimo}). Segui al_completo: {al_completo}"
+  segno_non_scritto: "(segno non scritto)"
+  prossimo: "{testa}; {ultimo}. Prossimo segno: «{prossimo}»"
+  fermo: "Non mostrare un altro segno prima del turno {turno}."
+  # Modalità repertorio: lo stato senza il testo del segno.
+  repertorio:
+    completo: "{testa}; COMPLETO: usa una battuta di tipo finale quando la scena lo chiede."
+    riga: "{testa}; {ultimo}."
+    usa_segno: "Usa la battuta segno_orologio di questo orologio."
+  # Perché un avanzamento non vale (pannello del master quando sposta un orologio, registro del turno).
+  rifiuti:
+    ritmo: "orologio {id}: al massimo un segno ogni {ogni} turni (l'ultimo al turno {turno})"
+    due_segni: "più di un segno nella stessa risposta"
+    gia_uscito: "un segno di {id} è già uscito in questa risposta"
+    troppi: "già {max} orologi avanzati in questa risposta"
+    inesistente: "orologio inesistente o non attivo in scena: {id}"
+    non_partito: "orologio non ancora partito (parte dopo {dopo}): {id}"
+    completo: "orologio già completo: {id}"
+    a_zero: "orologio già a zero: {id}"
+
+# Messaggio del turno, della chiusura guidata e della riparazione (apps/server/src/narrazione/messaggio.ts).
+messaggio:
+  titolo_note_regia: "## Note di regia del master"
+  note_regia: "{titolo} (seguile in questa risposta, prima delle tue abitudini; non citarle mai ad alta voce)"
+  riga_azione: "(azione di {nome}, {chi}) {testo}"
+  turno_apertura: "### Turno 0 (apertura)"
+  turno: "### Turno {turno}"
+  titolo_trascrizione: "## Trascrizione pubblica della scena finora (divisa per turno)"
+  omesse: "(omesse {n} voci più vecchie)"
+  nessuna: "(nessuna)"
+  titolo_privati: "## Esiti privati già dati (li sa solo quel PG: non dirli a voce, finché il PG non li usa)"
+  riga_privato: "- turno {turno}, {pg}: {testo}"
+  titolo_azioni: "## Turno {turno}: azioni dei giocatori"
+  nessuna_azione: "Nessuno ha scritto un’azione: tutti aspettano che succeda qualcosa."
+  passa: "nessuna azione, aspetta."
+  azione_privata: "(azione PRIVATA: a voce narra solo ciò che gli altri possono percepire)"
+  ordine_invio: "Le azioni sono in ordine di invio: risolvile in quest’ordine."
+  titolo_collegamenti: "Collegamenti tra le azioni:"
+  titolo_orologi: "## Orologi della scena (stato tenuto dal Motore)"
+  titolo_fatti_scoperti: "## Fatti scoperti in scena (ora li conoscono i PG)"
+  titolo_menzogne: "## Menzogne già dette dai PNG (se l’argomento torna, il PNG ripete la stessa versione; la verità esce solo con una battuta di confessione)"
+  titolo_indicate: "## Battute indicate dal Motore (le parole di queste azioni toccano i loro temi: usale per quell’azione, con > pg, se il loro quando la descrive)"
+  titolo_catalogo: "## Catalogo: battute pertinenti a questo turno (id · chi · tipo · quando)"
+  titolo_attesa: "## Battute d’attesa (riempitivi, solo se nessuna battuta risponde)"
+  titolo_tempo_serata: "## Tempo della serata"
+  rispondi_repertorio: "Rispondi ora: solo righe etichettate ([usa] con l’id di una battuta disponibile, [narratore], [png_…]); l’ultima riga è [invito] con gli id dei PG al tavolo che devono rispondere, oppure tutti."
+  rispondi_narratore: "Narra ciò che succede ora. Rispondi solo con righe etichettate; l’ultima riga è [invito] con gli id dei PG al tavolo che devono rispondere, oppure tutti."
+  titolo_trascrizione_recente: "## Trascrizione recente"
+  vuota: "(vuota)"
+  titolo_chiusura: "## Chiusura della serata"
+  chiusura: "Il master chiude la serata adesso. Niente azioni da risolvere. Scrivi da tre a cinque righe [narratore] (i PNG presenti possono dire una frase): chiudi il momento in corso, dai un’immagine finale, lascia un aggancio per la prossima volta. Niente misteri, PNG o fatti nuovi, niente segreti, niente domande ai giocatori, niente [usa], niente [orologio]."
+  rispondi_chiusura: "Rispondi ora con le righe etichettate; l’ultima riga è [invito] tutti."
+  titolo_detto: "## La tua risposta, già detta ad alta voce"
+  titolo_mancanti: "## Azioni rimaste senza risposta"
+  riparazione: "Rispondi ora SOLO a queste azioni, nell’ordine: per ognuna una o due righe rivolte a quel PG per nome ([narratore], [png_…], oppure [usa] id > pg_id se una battuta del catalogo risponde proprio a quella azione). Non ripetere niente di ciò che hai già detto. Niente [invito]."
+  solo_finzione: "Racconta solo ciò che accade nella storia: non nominare giocatori o PG come tali, e non parlare di scelte, attese, silenzi o di qualcuno che non ha ancora fatto qualcosa."
+  stallo_repertorio: "Stallo: in questo turno non c'è nessuna azione da risolvere. Fai succedere qualcosa nel mondo con una battuta di riempimento del catalogo, oppure col segno se è dovuto. {solo_finzione}"
+  titolo_mossa_mondo: "## Mossa del mondo"
+  mossa_mondo: "Fai succedere qualcosa nella scena: {mossa}. {solo_finzione} Chiudi con un invito a un personaggio per nome, dentro la storia."
+  mossa_segno: "un segno visibile della minaccia (S1), senza niente di irreversibile"
+  mossa_indizio: "un indizio proattivo (S2): qualcosa irrompe e porta una pista nuova, oppure un PNG agisce per conto suo"
+
+# Sezione del ritmo concitato in fondo al messaggio del turno (apps/server/src/narrazione/ritmo.ts).
+ritmo:
+  titolo: "## Ritmo"
+  concitato: "Concitato: i giocatori hanno avuto un conto alla rovescia per decidere. Se il pericolo è passato (lo scontro è finito, l'inseguimento si è chiuso, siete al sicuro), scrivi `[ritmo] calmo` prima di `[invito]`; altrimenti non scrivere niente e il conto resta."
+
+# Contesto compilato per il modello (blocco di sistema in cache): voci comuni ai due compilatori.
+contesto:
+  carta_stile: "## Carta di stile"
+  scena: "## Scena corrente: {titolo}"
+  png: "### {nome} — etichetta [{id}], {presenza}"
+  presente: "presente in scena"
+  assente: "non in scena"
+  titolo_pg: "## Personaggi giocanti"
+  situazione_comune: "Situazione comune: {testo}"
+  pg: "### {nome} — id {id}"
+  titolo_etichette: "## Etichette valide in questa scena"
+  etichetta_invito: "- [invito] seguito da id di PG separati da virgola ({pg}) oppure tutti"
+  # Contesto del narratore, schede complete (apps/server/src/campagna/contesto.ts).
+  campagna:
+    intestazione: "# Campagna «{titolo}» (id {id})"
+    titolo_campagna: "## Campagna: canone, orologi, rivelazioni, nodi, sessione"
+    titolo_png: "## PNG (schede complete; gli id dei fatti sono risolti col testo del canone)"
+    conoscenze_private: "conoscenze_private di {id} (SEGRETE: le sa solo questo giocatore. Non dirle mai a voce; diventano pubbliche solo quando il giocatore le usa o le racconta):"
+    etichetta_orologio: "- [orologio] seguito dall’id di un orologio attivo, solo quando la risposta ne mostra il prossimo segno"
+  # Contesto del selettore, solo la parte pubblica (apps/server/src/repertorio/contesto.ts).
+  repertorio:
+    intestazione: "# Campagna «{titolo}» (parte pubblica)"
+    titolo_campagna: "## Campagna: fatti noti a tutti, luoghi, orologi"
+    titolo_png: "## PNG (parte pubblica: aspetto, carattere, voce, cosa sanno di pubblico)"
+    titolo_esempi: "## Esempi di voce dei PNG (prendine il tono, non le frasi: non sono battute da usare)"
+    etichetta_usa: "- [usa] seguito dall’id di una battuta disponibile"
+
+# Consiglio di chiusura nel messaggio del turno, a fine serata vicina (apps/server/src/sessione/durata.ts).
+durata:
+  mancano: "Mancano circa {minuti} minuti alla fine prevista della serata."
+  oltre: "La serata è oltre la durata prevista."
+  consiglio: "{quanto} Avvicinati a una pausa naturale: porta a compimento il momento in corso, niente misteri nuovi. È un consiglio, non un ordine: rispondi comunque a ogni azione."
+
+# Avvisi ai telefoni sulle azioni (azioni/testi.ts, docs/azioni-concorrenti.md «Parole degli avvisi»).
+azioni:
+  # Testo di un'azione citato in un avviso (già accorciato dal codice).
+  citazione: "«{testo}»"
+  # Un'azione da cui la mia dipendeva è caduta o cambiata: fatto, legame, scelta (tre frasi unite da uno spazio).
+  dipendenza:
+    ritirata: "{nome} ha ritirato {azione}."
+    cambiata: "{nome} ha cambiato {azione} in {nuova}."
+    fuori_turno: "L'azione di {nome} {azione} resta fuori da questo turno."
+    legame: "La tua {mia} dipendeva da quella."
+    legame_tramite: "La tua {mia} seguiva {tramite}, che dipendeva da quella."
+    scelta: "Confermi, cambi o ritiri?"
+  # Al secondo di un conflitto esclusivo (mai il testo di un'azione privata altrui).
+  conflitto:
+    anonimo: "Qualcun altro ci è arrivato prima. Vuoi cambiare azione?"
+    vincitore: "{nome} ha già scritto {azione}. Vuoi cambiare azione?"
+  # Azione scritta prima dell'ultima narrazione e diventata dubbia ({motivo} finisce già col punto).
+  vecchia: "Nel frattempo: {motivo} Confermi {mia}?"
+  # Azione superata dalla narrazione ({motivo} finisce già col punto).
+  superata: "{motivo} Puoi riscrivere la tua azione."
+  # Da confermare allo scadere della finestra concitata.
+  sospesa: "Il tempo per scegliere è finito: la tua azione resta fuori da questo turno. Puoi riscriverla."
+
+# Errori dei comandi dei telefoni e del master sulle azioni (azioni/tavolo.ts).
+tavolo:
+  scrivi_azione: "Scrivi cosa fa il tuo personaggio."
+  troppo_lunga: "Massimo {max} caratteri."
+  niente_da_ritirare: "Non c’è nessuna azione da ritirare."
+  niente_da_confermare: "Non c’è niente da confermare."
+  finestra_chiusa: "La finestra delle azioni non è aperta."
+  finestra_in_chiusura: "La finestra si sta già chiudendo."
+  in_pausa: "Il tavolo è in pausa: riprendi prima di chiudere la finestra."
+
+# Pannello del master: rifiuti dei comandi ed eventi (master/comandi.ts, master/note.ts, master/vista.ts).
+master:
+  # Errore mostrato al pannello quando un comando è rifiutato (master/comandi.ts).
+  rifiuti:
+    comando_sconosciuto: "Comando sconosciuto."
+    errore_interno: "Errore interno del server."
+    luogo_sconosciuto: "Luogo sconosciuto."
+    situazione_non_valida: "Situazione non valida."
+    orologio_non_valido: "Orologio o passo non validi."
+    ritmo_non_valido: "Ritmo non valido."
+    azione_non_valida: "Azione non valida."
+    nota_inesistente: "Nota inesistente o già scaduta."
+    fine_non_disponibile: "Fine sessione non disponibile su questo server."
+    prossima_non_disponibile: "Prossima sessione non disponibile su questo server."
+    dispositivo_non_valido: "Telefono o personaggio non validi."
+    presenza_non_valida: "PNG o presenza non validi."
+    png_non_valido: "PNG non valido."
+    umore_non_valido: "Umore non valido."
+    pf_non_validi: "Personaggio o PF non validi."
+    condizione_non_valida: "Condizione non valida."
+    effetto_sconosciuto: "Effetto sconosciuto."
+    senza_proiettore: "Nessun proiettore con l’audio acceso."
+  # Dettagli di un evento nell'elenco del pannello (master/comandi.ts → SezioneEventi).
+  dettagli:
+    rifiutato: "rifiutato: {dettagli}"
+    luogo_sconosciuto: "luogo sconosciuto «{luogo}»"
+    scena_rifiutata: "scena «{scena}»: {errore}"
+    effetto_sconosciuto: "effetto sconosciuto «{effetto}»"
+    pausa: "tavolo in pausa"
+    pausa_chiesta: "pausa alla fine della narrazione"
+    ripreso: "tavolo ripreso"
+    pausa_annullata: "pausa chiesta annullata"
+    narrazione_fermata: "narrazione del turno {turno} interrotta, tavolo in pausa"
+    luogo: "luogo {da} → {a}"
+    luogo_senza_immagine: "luogo {da} → {a} (senza immagine)"
+    scena: "scena {da} → {a}"
+    situazione: "situazione {id} sul proiettore"
+    situazione_tolta: "situazione {id} tolta"
+    orologio: "orologio {id} {passo} → {pieni}/{segmenti}"
+    finestra_chiusa: "finestra del turno {turno} chiusa dal master (Risolvi ora)"
+    ritmo: "ritmo {da} → {a}"
+    ritmo_calmo: "calmo"
+    ritmo_concitato: "concitato"
+    azione_saltata: "azione {id} di {autore} saltata"
+    azione_saltata_privata: "azione {id} di {autore} saltata (privata)"
+    nota: "nota {id} per {turni} turni: «{testo}»"
+    nota_tolta: "nota {id} tolta («{testo}»)"
+    chiusura_senza_ciclo: "chiusura della serata in corso (senza registro: nessun ciclo delle sessioni)"
+    durata: "durata della serata: {ore} ore"
+    dispositivo: "telefono {telefono}…: {da} → {a}"
+    nessuno: "nessuno"
+    dimenticato: "dimenticato"
+    presenza_auto: "{nome}: automatica (dalla scena)"
+    presenza_in_scena: "{nome}: in scena"
+    presenza_altrove: "{nome}: altrove"
+    rivelato: "{nome}: rivelato al tavolo"
+    nuova_sessione: "nuova sessione (chiusa {sessione})"
+    nuova_sessione_prima: "nuova sessione (chiusa nessuna)"
+    umore: "umore della musica {da} → {a}"
+    auto: "auto"
+    combattimento_iniziato: "combattimento iniziato dal master"
+    combattimento_terminato: "combattimento terminato dal master"
+    pf: "{id}: PF {valore}"
+    condizione_messa: "{id}: {condizione} messa"
+    condizione_tolta: "{id}: {condizione} tolta"
+    effetto: "effetto {id} sul proiettore"
+  # Errori delle note di regia scritte dal pannello (master/note.ts).
+  note:
+    testo_vuoto: "Scrivi il testo della nota."
+    troppo_lunga: "Al massimo {max} caratteri."
+    turni_fuori: "I turni vanno da 1 a {max}."
+    troppe: "Ci sono già {max} note: togline una prima."
+  # Istantanea del pannello (master/vista.ts).
+  vista:
+    segno_non_scritto: "(segno non scritto)"
+
+# Errori dei comandi dei telefoni sul socket (trasporto/socket.ts).
+socket:
+  scegli_pg: "Prima scegli il tuo personaggio."
+  richiesta_non_valida: "Richiesta non valida."
+
+# Errori delle API HTTP (app.ts).
+api:
+  risorsa_non_trovata: "Risorsa non trovata."
+  immagine_non_trovata: "Immagine non trovata."
+  luogo_non_valido: "Luogo non valido."
+  audio_non_trovato: "Audio non trovato."
+  umore_non_valido: "Umore non valido."
+
+# Ciclo delle sessioni visto dal pannello e riassunto della serata (sessione/ciclo.ts, scelta-pacchetto.ts, riassunto.ts).
+sessione:
+  # Esiti di «Fine sessione», «Chiudi la sessione» e «Prossima sessione» (errori e dettagli del pannello).
+  ciclo:
+    chiusura_in_corso: "chiusura della serata in corso: il narratore chiude, poi riassunto sul proiettore e registro"
+    registro_spento: "Registro delle sessioni spento: niente da scrivere."
+    sessione_chiusa: "sessione {sessione} chiusa, registro in {file}"
+    registro_non_scritto: "Sessione chiusa, ma il registro non si è scritto ({errore}). Si rifà con scripts/registro.sh."
+    one_shot: "Questa campagna è una one-shot: non ha sessioni/."
+    cambio_in_corso: "Il passaggio alla sessione dopo è già in corso."
+    manca_dopo: "Dopo la sessione {sessione} non c'è un pacchetto in sessioni/: si prepara tra le sessioni."
+    non_si_carica: "La sessione {sessione} non si carica: {motivo}"
+    senza_passaggio: "Questo server non sa cambiare pacchetto da solo: riavvialo con scripts/partita.sh."
+    non_cominciata: "La sessione {sessione} non è ancora cominciata: prima si gioca."
+    si_passa: "sessione {sessione} chiusa, si passa alla {dopo}"
+  # Avviso del pannello sulla scelta del pacchetto all'avvio (sessione/scelta-pacchetto.ts).
+  scelta:
+    rigioca: "La sessione {numero} è finita e la seguente non c'è ancora in sessioni/: si rigioca la {numero}."
+  # Letti a voce e mostrati: la riserva del riassunto e «La volta scorsa…» (sessione/riassunto.ts).
+  riassunto:
+    la_volta_scorsa: "La volta scorsa."
+    passati_da: "Siete passati da: {scene}."
+    riprende: "La storia riprende da dove si era fermata."
