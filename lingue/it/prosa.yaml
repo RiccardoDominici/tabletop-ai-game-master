@@ -175,3 +175,28 @@ lunghezze:
   parole_battuta: 70            # tetto di parole di una battuta intera
   frasi_png: 2                  # D3: frasi di un PNG in una battuta
   frasi_png_rivelazione: 4      # D3, eccezione per confessione, momento e finale
+
+# Soprannomi che valgono per mezzo paese: un PNG con uno di questi `alias` entra nella pertinenza di ogni azione
+# su un vecchio, una ragazza, un uomo (nota 11 della prova cieca).
+alias_generici: [uomo, donna, vecchio, vecchia, vecchi, vecchie, ragazzo, ragazza, ragazzi, bambino, bambina, signore,
+  signora, tizio, tizia, tipo, amico, amica, gente, persona, lui, lei, giovane, anziano, anziana, uno, una, qualcuno]
+
+# Parole che in un id di battuta, letto come una frase nel catalogo del selettore, dicono chi mente o che cosa è vero
+# (note 10 e 19 di nozze-neve: `ott_segale_versione`, `ade_verita`). Si confrontano con le parole dell'id divise sui
+# trattini bassi.
+id_rivelatori: [versione, vero, vera, veri, verita, bugia, bugie, mente, mentire, menzogna, confessa, confessione,
+  segreto, segreta, falso, falsa, colpa, colpevole, ladro, ladra, nasconde, nascosto, nascosta, ammette, cede, rivela,
+  smaschera]
+
+# Parole che nel `quando` direbbero al selettore chi mente, nasconde o confessa (espressioni regolari, minuscole).
+quando_vietate:
+  - '\bment(e|o|ire|isce|ito|iva|ono)\b'
+  - '\bbugi'
+  - 'menzogn'
+  - 'confess'
+  - 'segret'
+  - 'nascond'
+  - '\bverità\b'
+
+# Indizi di privatezza o di un PG preciso dentro `cede_se`: la confessione deve avere il cancello strutturale.
+cede_privato: 'privat|non (può|puo) sentire|non sente|da solo a solo|sottovoce|lontano da(lle orecchie)?|senza testimoni'

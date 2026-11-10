@@ -193,3 +193,76 @@ def test_armatura_inglese_sconosciuta_resta_un_errore(camp):
     _scrivi(camp, "pg.yaml", dati)
     esito, _ = _valida(camp)
     assert any(v.codice == "SCHEDA.armatura" for v in esito.errori)
+
+
+# --- liste di parole per lingua: alias, id e quando delle battute, privatezza (lingue/<codice>/prosa.yaml) ---
+
+def _battuta(cartella: Path, bid: str, quando: str, chi: str = "narratore") -> None:
+    dati = _leggi(cartella, "repertorio/narrazione.yaml")
+    dati["battute"].append({"id": bid, "chi": chi, "tipo": "indizio", "quando": quando, "temi": ["cantina"],
+                            "testo": [f"[{chi}] Una prova."], "max_usi": 1})
+    _scrivi(cartella, "repertorio/narrazione.yaml", dati)
+
+
+def _alias(cartella: Path, alias: list[str]) -> None:
+    dati = _leggi(cartella, "png/png_bruno.yaml")
+    dati["alias"] = alias
+    _scrivi(cartella, "png/png_bruno.yaml", dati)
+
+
+def test_ogni_pacchetto_ha_le_sue_parole():
+    assert "truth" in EN.id_rivelatori and "truth" not in IT.id_rivelatori
+    assert "verita" in IT.id_rivelatori and "verita" not in EN.id_rivelatori
+    assert "old man" in EN.alias_generici and "old man" not in IT.alias_generici
+    assert "vecchio" in IT.alias_generici and "vecchio" not in EN.alias_generici
+    assert EN.cede_privato.search("when he talks alone with the girl") and not IT.cede_privato.search("when he talks alone with the girl")
+    assert IT.cede_privato.search("quando parla da solo a solo con la figlia")
+
+
+def test_il_quando_vietato_segue_la_lingua():
+    assert any(rx.search("when the liar lies to the guard") for rx in EN.quando_vietate)
+    assert not any(rx.search("when the liar lies to the guard") for rx in IT.quando_vietate)
+    assert any(rx.search("quando mente al gabelliere") for rx in IT.quando_vietate)
+    assert not any(rx.search("quando mente al gabelliere") for rx in EN.quando_vietate)
+
+
+def test_campagna_inglese_legge_il_quando_in_inglese(camp):
+    _lingua(camp, "en")
+    _battuta(camp, "nar_bugia", "when he tells a lie to the guard")
+    esito, _ = valida(camp, rigoroso=True, contesto_b=False)
+    assert any(v.codice == "REPERTORIO.quando" and "nar_bugia" in v.dove for v in esito.errori)
+
+
+def test_campagna_italiana_non_legge_il_quando_in_inglese(camp):
+    _battuta(camp, "nar_bugia", "when he tells a lie to the guard")
+    esito, _ = valida(camp, rigoroso=True, contesto_b=False)
+    assert not any(v.codice == "REPERTORIO.quando" and "nar_bugia" in v.dove for v in esito.errori)
+
+
+def test_id_rivelatore_nella_lingua_della_campagna(camp):
+    _lingua(camp, "en")
+    _battuta(camp, "hale_truth_clue", "when the guard asks about the wine")
+    esito, _ = valida(camp, rigoroso=True, contesto_b=False)
+    assert any(v.codice == "REPERTORIO.id_rivelatore" and "truth" in v.messaggio for v in esito.errori)
+
+
+def test_id_rivelatore_italiano_nella_campagna_italiana(camp):
+    _battuta(camp, "ott_segale_versione", "quando chiedono del vino")
+    esito, _ = valida(camp, rigoroso=True, contesto_b=False)
+    assert any(v.codice == "REPERTORIO.id_rivelatore" and "versione" in v.messaggio for v in esito.errori)
+
+
+def test_alias_generico_in_inglese_e_in_italiano(camp):
+    _lingua(camp, "en")
+    _alias(camp, ["old man"])
+    esito, _ = valida(camp, rigoroso=True, contesto_b=False)
+    assert any(v.codice == "PNG.alias" and "old man" in v.messaggio for v in esito.errori)
+    _alias(camp, ["vecchio"])  # in inglese «vecchio» non è generico
+    esito, _ = valida(camp, rigoroso=True, contesto_b=False)
+    assert not any(v.codice == "PNG.alias" for v in esito.errori)
+
+
+def test_alias_generico_italiano_nella_campagna_italiana(camp):
+    _alias(camp, ["vecchio"])
+    esito, _ = valida(camp, rigoroso=True, contesto_b=False)
+    assert any(v.codice == "PNG.alias" and "vecchio" in v.messaggio for v in esito.errori)

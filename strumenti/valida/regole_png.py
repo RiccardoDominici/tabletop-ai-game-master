@@ -88,7 +88,7 @@ def controlla(c: Campagna, e: Esito) -> None:
         elif not (isinstance(alias, list) and all(isinstance(x, str) for x in alias)):
             e.errore("PNG.alias", dove, "alias è una lista di parole")
         else:
-            generici = sorted({a.lower() for a in alias} & (K.ALIAS_GENERICI | c.prosa.temi_generici))
+            generici = sorted({a.lower() for a in alias} & (c.prosa.alias_generici | c.prosa.temi_generici))
             if generici:
                 e.avviso("PNG.alias", dove, f"alias generici {generici}: il PNG entrerebbe nella pertinenza di ogni azione "
                                             "su chiunque. Usa il mestiere o il ruolo (custode, ostessa, scrivano)", rigoroso=True)

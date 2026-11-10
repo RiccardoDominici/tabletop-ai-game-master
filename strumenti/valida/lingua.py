@@ -1,7 +1,8 @@
 """Pacchetto di prosa del validatore: le regole di scrittura per l'ascolto che dipendono dalla lingua.
 
 Il dato sta in lingue/<codice>/prosa.yaml (cliché, numeri in lettere, parole vuote, parole generiche,
-versi dei suoni, lunghezze, forme di «stile», pronomi del registro). La logica dei controlli sta nei
+versi dei suoni, lunghezze, forme di «stile», pronomi del registro, alias generici, parole dell'id e del quando
+che dicono chi mente, privatezza). La logica dei controlli sta nei
 moduli testo.py, voce.py e nelle regole, e non cambia con la lingua: riceve il pacchetto.
 
 La lingua di una campagna è `lingua` in campagna.yaml (assente = it). Un codice sconosciuto è un
@@ -39,6 +40,10 @@ class Prosa:
     parole_battuta: int                     # tetto di parole di una battuta intera
     frasi_png: int                          # D3
     frasi_png_rivelazione: int              # D3, eccezione della rivelazione
+    alias_generici: frozenset[str]          # soprannomi che valgono per mezzo paese (alias di un PNG)
+    id_rivelatori: frozenset[str]           # parole che in un id di battuta dicono chi mente o che cosa è vero
+    quando_vietate: tuple[re.Pattern, ...] # il `quando` non dice chi mente, nasconde o confessa
+    cede_privato: re.Pattern                # cede_se chiede la privatezza: serve il cancello privata
 
 
 def lingue_disponibili() -> list[str]:
@@ -70,6 +75,10 @@ def carica_prosa(codice: str) -> Prosa:
         parole_battuta=int(lun["parole_battuta"]),
         frasi_png=int(lun["frasi_png"]),
         frasi_png_rivelazione=int(lun["frasi_png_rivelazione"]),
+        alias_generici=frozenset(str(x).lower() for x in dati["alias_generici"]),
+        id_rivelatori=frozenset(str(x).lower() for x in dati["id_rivelatori"]),
+        quando_vietate=tuple(re.compile(str(x)) for x in dati["quando_vietate"]),
+        cede_privato=re.compile(str(dati["cede_privato"])),
     )
 
 

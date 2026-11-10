@@ -23,7 +23,7 @@ prompts/<codice>/*.md            prompt dei modelli (narratore, selettore, arbit
 lingue/<codice>/testi*.yaml      frasi fisse del Motore, a chiavi, con {segnaposto} (testi-modelli.yaml: ciò che va ai modelli)
 lingue/<codice>/motore.yaml      regole linguistiche del Motore (annuncio, collegamenti tra azioni, frasi, guardie, nomi)
 lingue/<codice>/prove.yaml       parole chiave dell'arbitro dei dadi (SRD 5.2) e nomi di caratteristiche e abilità
-lingue/<codice>/prosa.yaml       regole di prosa del validatore (frasi, cliché, numeri in lettere, voce e tono)
+lingue/<codice>/prosa.yaml       regole di prosa del validatore (frasi, cliché, numeri in lettere, voce e tono), e le liste di parole dei controlli su alias, id e quando delle battute, e privatezza
 lingue/<codice>/preparatore/     gli esempi del Preparatore in quella lingua (skill.md, riferimenti.md)
 apps/web/src/lingua/<codice>/    dizionari dell'interfaccia (TypeScript: le chiavi le controlla il compilatore)
 assets/voci/voci.yaml            voci per lingua (Fish e Qwen)

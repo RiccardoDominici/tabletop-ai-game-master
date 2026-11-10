@@ -172,3 +172,25 @@ lunghezze:
   parole_battuta: 70
   frasi_png: 2
   frasi_png_rivelazione: 4
+
+# Nicknames that fit half the village: a PNG with one of these `alias` enters the relevance of every action
+# toward an old man, a girl, a man (note 11 of the blind test, translated).
+alias_generici: [man, woman, old, old man, old woman, boy, girl, kid, child, lad, lass, sir, madam, lady, lord,
+  guy, person, one, someone, somebody, he, she, him, her, young, elder, elderly, friend, stranger]
+
+# Words that in a battuta id, read as a sentence in the selector's catalogue, say who lies or what is true
+# (notes 10 and 19 of the Nozze-neve test). They are matched against the id's words split on underscores.
+id_rivelatori: [version, true, truth, lie, lies, liar, lying, false, guilty, guilt, thief, confess, confession,
+  secret, hidden, hides, hide, conceals, admits, yields, reveals, unmasks]
+
+# Words that in a `quando` would tell the selector who lies, hides or confesses (regular expressions, lowercase).
+quando_vietate:
+  - '\blie[sd]?\b|\blying\b|\bliar'
+  - '\bdecei|\bdecept'
+  - 'confess'
+  - 'secret'
+  - '\bhid(e|es|den|ing)\b|\bconceal'
+  - '\btruth\b'
+
+# Hints of privacy, or of one PG in particular, inside `cede_se`: the confession needs the structural gate.
+cede_privato: "private|can(not|'t) hear|does(n't| not) hear|not hear|alone with|one[- ]on[- ]one|whisper|out of earshot|without witnesses"

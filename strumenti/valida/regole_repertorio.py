@@ -89,7 +89,7 @@ def _schema(c: Campagna, e: Esito) -> None:
         visti.add(bid)
         if not re.fullmatch(r"[a-z0-9_]+", str(bid)):
             e.errore("REPERTORIO.id", dove, "id in ascii minuscolo")
-        rivelatrici = sorted(set(str(bid).split("_")) & K.ID_RIVELATORI)
+        rivelatrici = sorted(set(str(bid).split("_")) & c.prosa.id_rivelatori)
         if rivelatrici:
             e.avviso("REPERTORIO.id_rivelatore", dove, f"l'id dice {rivelatrici} al selettore, che lo legge come una frase "
                                                        "nel catalogo: usa l'argomento («ott_segale_domanda»), non la natura "
@@ -111,9 +111,9 @@ def _schema(c: Campagna, e: Esito) -> None:
         q = str(b.get("quando") or "")
         if n_parole(q) > 15:
             e.errore("REPERTORIO.quando", dove, f"quando di {n_parole(q)} parole (max 15)")
-        for rx in K.QUANDO_VIETATE:
-            if re.search(rx, q.lower()):
-                e.errore("REPERTORIO.quando", dove, f"il quando dice chi mente, nasconde o confessa (/{rx}/): lo legge il selettore")
+        for rx in c.prosa.quando_vietate:
+            if rx.search(q.lower()):
+                e.errore("REPERTORIO.quando", dove, f"il quando dice chi mente, nasconde o confessa (/{rx.pattern}/): lo legge il selettore")
         temi = b.get("temi")
         if not isinstance(temi, list) or not temi or not all(isinstance(t, str) and t == t.lower() for t in temi):
             e.errore("REPERTORIO.temi", dove, "temi: lista non vuota di parole minuscole")
@@ -350,10 +350,10 @@ def _menzogne_e_confessioni(c: Campagna, e: Esito) -> None:
                     e.avviso("COPERTURA.cancello", f"{b['_file']} {b.get('id')}",
                              "confessione senza cancello strutturale (indizi, battute, orologio, privata, da_pg): "
                              "la protegge solo il quando", rigoroso=True)
-                if re.search(K.CEDE_PRIVATO, str(b.get("quando", "")).lower()) and not menziona(r, "privata"):
+                if c.prosa.cede_privato.search(str(b.get("quando", "")).lower()) and not menziona(r, "privata"):
                     e.avviso("COPERTURA.privata", f"{b['_file']} {b.get('id')}",
                              "il quando chiede un'azione in privato: aggiungi richiede.privata: true", rigoroso=True)
-            if re.search(K.CEDE_PRIVATO, cede.lower()) and not any(menziona(b.get("richiede") or {}, "privata") for b in conf):
+            if c.prosa.cede_privato.search(cede.lower()) and not any(menziona(b.get("richiede") or {}, "privata") for b in conf):
                 e.avviso("COPERTURA.privata", dove, "cede_se chiede la privatezza, ma nessuna confessione ha richiede.privata",
                          rigoroso=True)
             nominati = [p for p in c.personaggi if p.get("nome") and
