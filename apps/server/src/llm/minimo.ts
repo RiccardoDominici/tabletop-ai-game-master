@@ -1,7 +1,9 @@
 /**
  * Lettore minimo (docs/provider.md, «Lettore»): con un modello locale piccolo il lettore non scrive
  * prosa. Per ogni azione del turno sceglie UNA battuta del catalogo che il Motore ha già preparato (o
- * «nessuna») e, al più, scrive l'annuncio in terza persona. Tutto il resto viene dal repertorio scritto
+ * «nessuna»). L'annuncio NON lo scrive il modello (nelle misure di «lettore» inventava parole nel 66%
+ * dei casi): è deterministico, il nome del PG e la prima frase breve di ciò che ha scritto il giocatore,
+ * che telefoni e proiettore mostrano già per intero. Tutto il resto viene dal repertorio scritto
  * da Claude Code. Il risultato è il protocollo di sempre (`[narratore] …`, `[usa] id > pg`, `[invito]`),
  * quindi parser, regia, voce e controlli non cambiano.
  *
@@ -10,8 +12,8 @@
  * - Il modello risponde in JSON (llm/strutturato.ts: validazione severa, un ritentativo). Il ripiego è
  *   deterministico: la prima battuta indicata per quell'azione, altrimenti «nessuna».
  * - «nessuna»: una battuta d'attesa del repertorio (riempitivo), se il Motore ne ha messe; mai prosa nuova.
- * - L'annuncio passa da una guardia: una riga, col nome del PG, senza markup, ≤ 20 parole; se no, niente
- *   annuncio. Le azioni PRIVATE non si annunciano mai.
+ * - Annuncio: `annuncioBreve` (nome + prima frase, tagliata alla prima virgola o pausa, ≤ 12 parole).
+ *   Le azioni PRIVATE non si annunciano mai.
  */
 import type { Logger } from '../logger';
 import { costoZero, type ModelloLinguaggio, type RispostaModello } from './modello';
@@ -68,10 +70,9 @@ export function leggiTurno(messaggio: string): TurnoLetto {
   return { azioni, indicate, catalogo, attesa };
 }
 
-const PROMPT = `Sei il lettore di una partita di D&D in italiano. Non scrivi la storia: per ogni azione scegli l'ID della battuta che le risponde, fra i candidati di quell'azione, oppure "nessuna".
-Per ogni azione scrivi anche "annuncio": una frase breve in terza persona col nome del personaggio, solo ciò che il giocatore ha scritto (es. "Mirta guarda le impronte nella neve."). Per le azioni PRIVATE l'annuncio è "".
+const PROMPT = `Sei il lettore di una partita di D&D in italiano. Non scrivi la storia: per ogni azione scegli l'ID della battuta che le risponde, fra i candidati di quell'azione, oppure "nessuna" se nessun candidato descrive davvero quell'azione.
 "battuta" è SOLO l'id (la parola prima dei due punti), mai il testo.
-Esempio di risposta: {"risposte":[{"pg":"pg_mirta","battuta":"nar_impronte","annuncio":"Mirta guarda le impronte nella neve."}]}`;
+Esempio di risposta: {"risposte":[{"pg":"pg_mirta","battuta":"nar_impronte"}]}`;
 
 const SCHEMA = {
   type: 'object',
@@ -84,14 +85,38 @@ const SCHEMA = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['pg', 'battuta', 'annuncio'],
-        properties: { pg: { type: 'string' }, battuta: { type: 'string' }, annuncio: { type: 'string', maxLength: 200 } },
+        required: ['pg', 'battuta'],
+        properties: { pg: { type: 'string' }, battuta: { type: 'string' } },
       },
     },
   },
 };
 
-type Risposte = { risposte: Array<{ pg: string; battuta: string; annuncio: string }> };
+type Risposte = { risposte: Array<{ pg: string; battuta: string }> };
+
+/** Intercalari da chat che a voce non servono («ok», «ahah», «allora»…). */
+const INTERCALARI = /^(ok(ay)?|ah+|ahah\w*|eh|ehi|allora|bene|dai|uff|mah|beh|ecco|si|sì|no)\b[\s,!.]*/i;
+
+/**
+ * L'annuncio deterministico: «Nome: «prima frase».», con la prima frase di ciò che il giocatore ha
+ * scritto tagliata alla prima virgola o pausa (e prima di una congiunzione se va oltre), al massimo 12
+ * parole col nome. Niente parole che il giocatore non ha scritto. null se non resta niente.
+ */
+export function annuncioBreve(nome: string, testo: string): string | null {
+  let t = testo.replace(/\b(a(h|ha)+h?|lol|xd)\b/gi, ' ').replace(/[^\p{L}\p{N}\s'’,;:.!?…«»"-]/gu, ' ').replace(/\s+/g, ' ').trim();
+  for (let i = 0; i < 3 && INTERCALARI.test(t); i++) t = t.replace(INTERCALARI, '').trim();
+  t = t.replace(/^["«]|["»]$/g, '').trim();
+  const pezzi = t.split(/\s*[,;:.!?…]+\s*|\s+-\s+/).filter(Boolean);
+  const prima = pezzi.find((x) => x.split(' ').length >= 2) ?? pezzi[0] ?? '';
+  const max = Math.max(3, 12 - nome.split(/\s+/).length);
+  const parole = prima.split(' ').filter(Boolean);
+  let frase = parole.slice(0, max).join(' ');
+  // Se si taglia a metà, meglio fermarsi prima di una congiunzione («e», «ma», «poi»…).
+  if (parole.length > max) frase = frase.replace(/\s+(e|ma|poi|però|mentre|che|perché|se)(\s+\S+)?$/i, '');
+  frase = frase.replace(/[\s'’-]+$/, '').trim();
+  if (!frase) return null;
+  return `${nome}: «${frase.charAt(0).toUpperCase()}${frase.slice(1)}».`;
+}
 
 const radici = (s: string): Set<string> => new Set((s.toLowerCase().match(/\p{L}{4,}/gu) ?? []).map((w) => w.slice(0, 5)));
 
@@ -113,17 +138,6 @@ function rigaBreve(t: TurnoLetto, id: string): string {
   const riga = t.catalogo.get(id) ?? id;
   const parti = riga.split(' · ');
   return parti.length >= 4 ? `${parti[0]}: ${parti.slice(3).join(' · ')}` : riga;
-}
-
-/** L'annuncio passa solo se è una frase breve, in terza persona, col nome del PG e senza markup. */
-export function annuncioValido(annuncio: string, nome: string): string | null {
-  const a = annuncio.replace(/\s+/g, ' ').trim();
-  if (!a || /[[\]<>\n]/.test(a)) return null;
-  const parole = a.split(' ').length;
-  const primo = nome.split(/\s+/)[0]!;
-  if (parole > 20 || !a.toLowerCase().includes(primo.toLowerCase())) return null;
-  if (/\b(io|mi|tu|ti|voi|vi)\b/i.test(a.split(' ').slice(0, 2).join(' '))) return null;
-  return /[.!?…]$/.test(a) ? a : `${a}.`;
 }
 
 export interface OpzioniMinimo {
@@ -155,7 +169,7 @@ export class NarratoreMinimo implements Narratore {
           return `${i + 1}. ${a.nome} (${a.id_pg})${a.privata ? ' [PRIVATA]' : ''}: ${a.testo}\n   Candidati (id: quando):\n${righe}`;
         })
         .join('\n');
-      const ripiego = (): Risposte => ({ risposte: t.azioni.map((a) => ({ pg: a.id_pg, battuta: t.indicate.get(a.id_pg)?.[0] ?? 'nessuna', annuncio: '' })) });
+      const ripiego = (): Risposte => ({ risposte: t.azioni.map((a) => ({ pg: a.id_pg, battuta: t.indicate.get(a.id_pg)?.[0] ?? 'nessuna' })) });
       const risposta = await chiediStrutturato<Risposte>(
         this.m,
         { sistema: [{ testo: PROMPT, cache: true }], messaggi: [{ ruolo: 'user', testo: `Azioni del turno:\n${elenco}` }], maxTokens: this.o.maxTokens ?? 40 + 50 * t.azioni.length, signal: r.signal },
@@ -191,7 +205,7 @@ export class NarratoreMinimo implements Narratore {
     const usate = new Set<string>();
     for (const a of t.azioni) {
       const s = scelte.find((x) => x.pg === a.id_pg);
-      const annuncio = a.privata ? null : annuncioValido(s?.annuncio ?? '', a.nome);
+      const annuncio = a.privata ? null : annuncioBreve(a.nome, a.testo);
       if (annuncio) righe.push(`[narratore] ${annuncio}`);
       let id = s?.battuta && s.battuta !== 'nessuna' && !usate.has(s.battuta) ? s.battuta : null;
       // «nessuna»: una battuta d'attesa del repertorio, mai per un'azione privata (si sentirebbe al tavolo).

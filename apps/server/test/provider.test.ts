@@ -8,7 +8,7 @@ import type { AddressInfo } from 'node:net';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { loggerMuto } from '../src/logger';
 import { ModelloAnthropic } from '../src/llm/anthropic';
-import { annuncioValido, leggiTurno, NarratoreMinimo } from '../src/llm/minimo';
+import { annuncioBreve, leggiTurno, NarratoreMinimo } from '../src/llm/minimo';
 import { ModelloOpenAI } from '../src/llm/openai';
 import { chiediStrutturato, erroriSchema, estraiJson } from '../src/llm/strutturato';
 import { caricaConfigProvider, risolvi } from '../src/provider/config';
@@ -166,26 +166,28 @@ describe('lettore minimo', () => {
     expect(t.attesa).toEqual(['nar_neve']);
   });
 
-  it('JSON del modello → protocollo: annuncio valido, [usa] per le battute, «nessuna» → attesa; privata senza annuncio', async () => {
-    coda.push(JSON.stringify({ risposte: [{ pg: 'pg_ida', battuta: 'nessuna', annuncio: 'Ida guarda la scatolina da vicino.' }, { pg: 'pg_livia', battuta: 'nar_impronte', annuncio: 'Livia segue le impronte.' }] }));
+  it('JSON del modello → protocollo: annuncio deterministico, [usa] per le battute, «nessuna» → attesa; privata senza annuncio', async () => {
+    coda.push(JSON.stringify({ risposte: [{ pg: 'pg_ida', battuta: 'nessuna' }, { pg: 'pg_livia', battuta: 'nar_impronte' }] }));
     const n = new NarratoreMinimo(locale(), { log: loggerMuto() });
     const delta: string[] = [];
     const e = await n.narra({ turno: 3, sistema: [], messaggio, signal: new AbortController().signal }, (d) => delta.push(d));
-    expect(e.testo).toBe('[narratore] Ida guarda la scatolina da vicino.\n[usa] nar_neve > pg_ida\n[usa] nar_impronte > pg_livia\n[invito] tutti\n');
+    expect(e.testo).toBe('[narratore] Ida: «Guardo la scatolina da vicino».\n[usa] nar_neve > pg_ida\n[usa] nar_impronte > pg_livia\n[invito] tutti\n');
     expect(delta.join('')).toBe(e.testo);
   });
 
-  it('risposte non valide due volte → ripiego: la prima battuta indicata, niente annuncio', async () => {
-    coda.push('{"risposte":[{"pg":"pg_ida","battuta":"inventata","annuncio":""}]}', 'non è JSON');
+  it('risposte non valide due volte → ripiego: la prima battuta indicata', async () => {
+    coda.push('{"risposte":[{"pg":"pg_ida","battuta":"inventata"}]}', 'non è JSON');
     const n = new NarratoreMinimo(locale(), { log: loggerMuto() });
     const e = await n.narra({ turno: 3, sistema: [], messaggio, signal: new AbortController().signal }, () => undefined);
-    expect(e.testo).toBe('[usa] nar_scatolina > pg_ida\n[invito] tutti\n');
+    expect(e.testo).toBe('[narratore] Ida: «Guardo la scatolina da vicino».\n[usa] nar_scatolina > pg_ida\n[invito] tutti\n');
   });
 
-  it('guardia dell’annuncio: nome del PG, terza persona, breve, senza markup', () => {
-    expect(annuncioValido('Ida apre la porta', 'Ida Brandi')).toBe('Ida apre la porta.');
-    expect(annuncioValido('Io apro la porta, Ida.', 'Ida')).toBeNull();
-    expect(annuncioValido('Qualcuno apre la porta.', 'Ida')).toBeNull();
-    expect(annuncioValido('[narratore] Ida apre.', 'Ida')).toBeNull();
+  it('annuncio deterministico: nome + prima frase, senza intercalari, al massimo 12 parole', () => {
+    expect(annuncioBreve('Nando', 'ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso')).toBe('Nando: «La fisarmonica la tiro fuori io».');
+    expect(annuncioBreve('Remo', 'adelina la scatolina vuota la peso a occhio, varra due fiorini')).toBe('Remo: «Adelina la scatolina vuota la peso a occhio».');
+    expect(annuncioBreve('Sorella Teodora', 'mi avvicino alle ceste del pane dei lumi e dico la preghiera della sera per tutti')).toBe('Sorella Teodora: «Mi avvicino alle ceste del pane dei lumi».');
+    expect(annuncioBreve('Ida', 'ahah ok!!')).toBeNull();
+    const n = annuncioBreve('Ida', 'guardo la porta del ripostiglio con calma senza farmi vedere da nessuno della sala grande')!;
+    expect(n.split(' ').length).toBeLessThanOrEqual(12);
   });
 });
