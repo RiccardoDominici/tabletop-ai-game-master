@@ -14,7 +14,7 @@ inspired it? If a special case seems needed for a single campaign, look for the 
 - Every change updates, in the same commit, the documentation it affects: `README.md`, the pages of
   `docs/guide/` (the step-by-step user guide) and the project `docs/*.md` files that describe the changed
   behaviour (`docs/prove.md`, `docs/strati.md`, `docs/audio.md`, `docs/architettura.md`, …). These
-  internal design documents under `docs/` (not `docs/guide/`) stay in Italian for now.
+  older internal design documents under `docs/` (not `docs/guide/`) are still in Italian and get translated later; new documents are written in English.
 - A new feature or option is not finished until it appears in the guide, with the real command.
   Do not write commands or flags without checking them in the code or in the scripts.
 - A change that makes a guide page false is a bug, even if the code works.
