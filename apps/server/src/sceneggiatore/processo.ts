@@ -4,7 +4,12 @@
  * diretta) le battute che il lettore locale non trova. Legge le richieste del server da una cartella
  * sorvegliata, una alla volta, e scrive le risposte accanto (sceneggiatore/protocollo.ts).
  *
- *   npx tsx apps/server/src/sceneggiatore/processo.ts --radice <log>/sceneggiatore [--modello haiku] [--attesa-s 180]
+ *   npx tsx apps/server/src/sceneggiatore/processo.ts --radice <log>/sceneggiatore [--attesa-s 180]
+ *
+ * Modelli: `subito` con sonnet (misurato da «lettore»: una battuta in ~4 s, contro ~7,5 s con haiku, e
+ * scritta meglio), le `prossime` in sottofondo con haiku (costano meno quota e nessuno le aspetta).
+ * CANTASTORIE_SCENEGGIATORE_MODELLO_SUBITO / _PROSSIME li cambiano; CANTASTORIE_SCENEGGIATORE_MODELLO
+ * vale per tutti e due.
  *
  * - Una richiesta alla volta: prima le `subito` (un'azione rimasta senza battuta, la più vecchia), poi la
  *   `prossime` più recente; le `prossime` più vecchie si saltano (la scena è già andata avanti).
@@ -30,7 +35,10 @@ const arg = (nome: string, predefinito: string): string => {
   return i >= 0 && process.argv[i + 1] ? process.argv[i + 1]! : predefinito;
 };
 const RADICE = path.resolve(arg('--radice', path.join(RADICE_REPO, 'logs', 'sceneggiatore')));
-const MODELLO = arg('--modello', process.env['CANTASTORIE_SCENEGGIATORE_MODELLO'] ?? 'haiku');
+const MODELLI: Record<RichiestaSceneggiatore['tipo'], string> = {
+  subito: process.env['CANTASTORIE_SCENEGGIATORE_MODELLO_SUBITO'] ?? process.env['CANTASTORIE_SCENEGGIATORE_MODELLO'] ?? 'sonnet',
+  prossime: process.env['CANTASTORIE_SCENEGGIATORE_MODELLO_PROSSIME'] ?? process.env['CANTASTORIE_SCENEGGIATORE_MODELLO'] ?? 'haiku',
+};
 const ATTESA_MS = Number(arg('--attesa-s', '180')) * 1000;
 const CLAUDE = process.env['CANTASTORIE_CLAUDE'] ?? 'claude';
 const c = cartelle(RADICE);
@@ -40,10 +48,10 @@ function registra(riga: Record<string, unknown>): void {
 }
 
 /** Claude Code in modalità non interattiva: prompt su stdin, risposta JSON ({ result }) su stdout. */
-function chiediAClaudeCode(prompt: string): Promise<{ testo: string; ms: number }> {
+function chiediAClaudeCode(prompt: string, modello: string): Promise<{ testo: string; ms: number }> {
   const inizio = Date.now();
   return new Promise((ok, ko) => {
-    const p = spawn(CLAUDE, ['-p', '--model', MODELLO, '--output-format', 'json', '--no-session-persistence', '--tools', '', '--append-system-prompt', PROMPT_SCENEGGIATORE], {
+    const p = spawn(CLAUDE, ['-p', '--model', modello, '--output-format', 'json', '--no-session-persistence', '--tools', '', '--append-system-prompt', PROMPT_SCENEGGIATORE], {
       cwd: RADICE_REPO,
       stdio: ['pipe', 'pipe', 'pipe'],
     });
@@ -113,9 +121,10 @@ async function lavora(rq: RichiestaSceneggiatore): Promise<void> {
   const attesaInCoda = Date.now() - Date.parse(rq.creata);
   try {
     const { contesto, segrete, esempi } = contestoDi(rq);
-    const { testo, ms } = await chiediAClaudeCode(messaggioSceneggiatore(rq, contesto, segrete, esempi));
+    const modello = MODELLI[rq.tipo];
+    const { testo, ms } = await chiediAClaudeCode(messaggioSceneggiatore(rq, contesto, segrete, esempi), modello);
     rispondi(rq, { id: rq.id, esito: 'ok', ms, yaml: testo });
-    registra({ id: rq.id, tipo: rq.tipo, turno: rq.turno, esito: 'ok', ms_claude: ms, ms_in_coda: attesaInCoda, caratteri: testo.length });
+    registra({ id: rq.id, tipo: rq.tipo, turno: rq.turno, privata: rq.azione?.privata === true, modello, esito: 'ok', ms_claude: ms, ms_in_coda: attesaInCoda, caratteri: testo.length });
   } catch (err) {
     const errore = (err as Error).message.slice(0, 300);
     rispondi(rq, { id: rq.id, esito: 'errore', ms: 0, errore });
@@ -126,10 +135,10 @@ async function lavora(rq: RichiestaSceneggiatore): Promise<void> {
 async function main(): Promise<void> {
   fs.mkdirSync(c.richieste, { recursive: true });
   fs.mkdirSync(c.risposte, { recursive: true });
-  const battito = (): void => scriviJson(c.vivo, { ts: Date.now(), pid: process.pid, modello: MODELLO });
+  const battito = (): void => scriviJson(c.vivo, { ts: Date.now(), pid: process.pid, modelli: MODELLI });
   battito();
   setInterval(battito, 5000);
-  registra({ esito: 'avvio', modello: MODELLO, pid: process.pid });
+  registra({ esito: 'avvio', modelli: MODELLI, pid: process.pid });
   let fermo = false;
   const fine = (): void => {
     fermo = true;

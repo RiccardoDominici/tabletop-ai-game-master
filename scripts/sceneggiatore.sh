@@ -7,7 +7,8 @@
 #   scripts/sceneggiatore.sh avvia|ferma|stato        (CANTASTORIE_PORTA sceglie l'istanza, come avvio.sh)
 #
 #   CANTASTORIE_SCENEGGIATORE=no                spento
-#   CANTASTORIE_SCENEGGIATORE_MODELLO=haiku     il modello di Claude Code (predefinito haiku: è il più svelto)
+#   modelli: le battute «subito» con sonnet (una battuta in ~4 s), le «prossime» in sottofondo con haiku;
+#   CANTASTORIE_SCENEGGIATORE_MODELLO_SUBITO / _PROSSIME li cambiano, CANTASTORIE_SCENEGGIATORE_MODELLO tutti e due
 # Log: <log>/sceneggiatore/sceneggiatore.out e sceneggiatore.jsonl (una riga per richiesta).
 set -uo pipefail
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
@@ -45,6 +46,6 @@ ferma >/dev/null
 mkdir -p "$DIR"
 echo "=== avvio $(date '+%Y-%m-%d %H:%M:%S') ===" >> "$DIR/sceneggiatore.out"
 cd "$RADICE"
-nohup npx tsx apps/server/src/sceneggiatore/processo.ts --radice "$DIR" --modello "${CANTASTORIE_SCENEGGIATORE_MODELLO:-haiku}" >> "$DIR/sceneggiatore.out" 2>&1 &
+nohup npx tsx apps/server/src/sceneggiatore/processo.ts --radice "$DIR" >> "$DIR/sceneggiatore.out" 2>&1 &
 echo "$!" > "$FILE_PID"
-echo "sceneggiatore: avviato (pid $!, modello ${CANTASTORIE_SCENEGGIATORE_MODELLO:-haiku}; log in ${DIR#$RADICE/}/)"
+echo "sceneggiatore: avviato (pid $!; log in ${DIR#$RADICE/}/)"

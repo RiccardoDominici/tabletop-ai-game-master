@@ -15,6 +15,14 @@ chiamate dirette.
   - `prossime`: 6 battute per le azioni più probabili del turno dopo, una per ogni PNG presente.
 - **Una richiesta alla volta**: prima le `subito`, la più vecchia; poi la `prossime` più recente. Quelle più vecchie
   si saltano, perché la scena è già andata avanti.
+- **Modelli**: le `subito` con sonnet. «lettore» ha misurato `claude -p`: una battuta in ~4 s con sonnet, ~7,5 s con
+  haiku, e sonnet la scrive anche meglio; il tavolo la sta aspettando. Le `prossime` vanno con haiku, perché nessuno
+  le aspetta e consumano meno quota. Le variabili `CANTASTORIE_SCENEGGIATORE_MODELLO_SUBITO` e `_PROSSIME` li
+  cambiano. Il lettore locale dice «nessuna» circa una volta su due, quindi lo sceneggiatore è la fonte principale
+  della prosa. Per questo le `subito` passano sempre davanti, e ogni PNG ha la sua battuta d'attesa.
+- **Azioni private**: anche loro. La risposta va al telefono di quel PG (esito privato, voce `solo_pg`), mai in
+  trascrizione. Se arriva tardi, resta nel repertorio col cancello `privata: true`: risponderà solo a un'azione
+  privata.
 - Solo quando il lettore è il minimo e il processo dello sceneggiatore gira (`vivo.json` recente). Il server non
   aspetta mai lo sceneggiatore per andare avanti.
 
@@ -47,6 +55,9 @@ Le stesse regole del repertorio preparato, più quelle di chi scrive al volo:
 - **tipi**: mai indizi, confessioni, menzogne, segni, finali, transizioni, chiusure;
 - **segreti**: nessuna parola ancora segreta che il tavolo non abbia sentito (la stessa regola della guardia,
   `narrazione/guardia-segreti.ts`);
+- **i PG sono dei giocatori**: una riga del narratore che ha un PG per soggetto («Gunda apre il pugno», «Poi Remo si
+  alza») decide al posto di un giocatore, e la battuta esce (`pgCheAgisce`). Il vocativo («Gunda, …»), il
+  complemento e il genitivo vanno bene;
 - **voce**: al massimo 4 righe da 240 caratteri.
 
 Le battute che passano entrano **a caldo** nel repertorio vivo, e da lì nel catalogo dei turni dopo, coi loro
@@ -65,16 +76,14 @@ Le battute che passano entrano **a caldo** nel repertorio vivo, e da lì nel cat
 - `scripts/sceneggiatore.sh avvia|ferma|stato`. Lo avvia `scripts/avvio.sh`, quindi anche `partita.sh` e l'harness,
   se `claude` è installato e il narratore non è finto (`CANTASTORIE_SCENEGGIATORE=no` lo spegne). Lo ferma
   `scripts/arresto.sh`.
-- Il processo è `apps/server/src/sceneggiatore/processo.ts`. Lancia `claude -p --model haiku --output-format json
-  --no-session-persistence --tools ""`: nessuno strumento, il prompt ha tutto. Il modello si cambia con
-  `CANTASTORIE_SCENEGGIATORE_MODELLO`. Non legge né stampa credenziali e non apre `~/.claude`.
+- Il processo è `apps/server/src/sceneggiatore/processo.ts`. Lancia `claude -p --model <sonnet|haiku> --output-format
+  json --no-session-persistence --tools ""`: nessuno strumento, il prompt ha tutto. Non legge né stampa credenziali e
+  non apre `~/.claude`. Le chiamate contano sullo stesso limite dell'account di chi gioca.
 - La cartella è `<log>/sceneggiatore/`: `richieste/`, `risposte/`, `vivo.json` (battito ogni 5 s),
   `sceneggiatore.jsonl` (una riga per richiesta: tempi in coda e di Claude Code, esito), `sceneggiatore.out`.
 - Il server (`sceneggiatore/canale.ts`) scrive le richieste e raccoglie le risposte ogni secondo. Le misure finiscono
   in `narrazioni.jsonl`, righe `tipo: sceneggiatore`: tempi, accettate, scartate col motivo, consegnata.
 
 ## Limiti di oggi
-- Niente risposte alle azioni private: la battuta d'attesa non le copre, e la guardia dei segreti le terrebbe al
-  telefono.
 - Le battute scritte al volo non hanno l'audio pre-generato: la voce le sintetizza dal vivo.
 - Se lo sceneggiatore è lento, la sua battuta può arrivare a turno già chiuso: allora resta nel repertorio.

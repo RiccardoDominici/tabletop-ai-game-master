@@ -27,9 +27,12 @@ Regole:
 - Niente richiede, effetti, varianti: il Motore li rifiuta.`;
 
 export function messaggioSceneggiatore(rq: RichiestaSceneggiatore, contesto: string, paroleSegrete: string[], esempi: string): string {
+  const privata = rq.azione?.privata
+    ? ' È un\'azione PRIVATA: la risposta la sente solo quel giocatore, sul suo telefono. Il PNG parla a bassa voce, o il narratore dice ciò che solo quel PG vede o sente; nessun altro al tavolo se ne accorge.'
+    : '';
   const compito =
     rq.tipo === 'subito' && rq.azione
-      ? `Scrivi UNA battuta che risponde a questa azione, adesso (il tavolo sta aspettando): ${rq.azione.nome} (${rq.azione.id_pg}): «${rq.azione.testo}». Se l'azione si rivolge a un PNG presente, risponde lui; altrimenti il narratore dice l'effetto.`
+      ? `Scrivi UNA battuta che risponde a questa azione, adesso (il giocatore sta aspettando): ${rq.azione.nome} (${rq.azione.id_pg}): «${rq.azione.testo}». Se l'azione si rivolge a un PNG presente, risponde lui; altrimenti il narratore dice l'effetto.${privata}`
       : `Scrivi ${rq.quante} battute per le azioni più probabili del prossimo turno, diverse fra loro: chi parla con chi, cosa toccano, cosa chiedono. Almeno una per ogni PNG presente.`;
   return [
     `## Campagna e scena (ciò che sa il narratore)\n${contesto}`,

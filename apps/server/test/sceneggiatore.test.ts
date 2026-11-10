@@ -10,8 +10,10 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
 import { cartelle, leggiJson, scriviJson, type RichiestaSceneggiatore } from '../src/sceneggiatore/protocollo';
-import { estraiYaml, validaBattute } from '../src/sceneggiatore/valida';
-import { attendi, FIXTURE, inizia, Prova, turno } from './aiuti/partita';
+import { estraiYaml, nomiDeiPg, pgCheAgisce, validaBattute } from '../src/sceneggiatore/valida';
+import { RADICE_REPO } from '../src/percorsi';
+import type { EsitoPrivato } from '@cantastorie/shared';
+import { agisci, attendi, FIXTURE, inizia, Prova, turno } from './aiuti/partita';
 
 const vino: ParolaSegreta = { parola: 'il vino annacquato', sorgente: '\\bannacquat', regex: regexDaPython('\\bannacquat'), pubblica_dopo: [], fatti: [] };
 const battuta = (o: Record<string, unknown>) => ({ id: 'sc_x_1', chi: 'png_oste', tipo: 'reazione', quando: 'un PG chiede del vino', temi: ['vino'], testo: ['[png_oste] Il vino è buono, signora.'], ...o });
@@ -47,6 +49,27 @@ describe('controllo delle battute dello sceneggiatore', () => {
     ]);
     expect(validaBattute('battute: [', ctx).scartate[0]!.motivo).toMatch(/YAML non valido/);
     expect(estraiYaml('Ecco:\n```yaml\nbattute: []\n```\nfine')).toBe('battute: []');
+  });
+});
+
+describe('i PG sono dei giocatori: niente righe che decidono per loro', () => {
+  const nozze = caricaCampagna(path.join(RADICE_REPO, 'campagne', 'nozze-neve'));
+  const nomi = nomiDeiPg(nozze);
+  it('un PG soggetto di un verbo è una decisione al suo posto; vocativo, complemento e genitivo no', () => {
+    expect(pgCheAgisce('Gunda apre il pugno con calma, davanti a tutta la tavolata.', nomi)).toBe('Gunda apre il pugno con calma, davanti a tutta la tavolata.');
+    expect(pgCheAgisce('La fisarmonica tace. Poi Remo si alza dal tavolo.', nomi)).toBe('Poi Remo si alza dal tavolo.');
+    expect(pgCheAgisce('Gunda, la tavolata aspetta il tuo pugno.', nomi)).toBeNull();
+    expect(pgCheAgisce('La sala guarda Gunda, e nessuno ride.', nomi)).toBeNull();
+    expect(pgCheAgisce('Il pugno di Gunda resta chiuso sul tavolo.', nomi)).toBeNull();
+  });
+
+  it('l’esempio del playtest esce dal controllo; con un’azione privata la battuta risponde solo in privato', () => {
+    const ctx = { campagna: nozze, scena: 'scena_casera', presenti: new Set(['png_gaspare', 'png_ettore', 'png_adelina']), esistenti: new Map(), prefisso: 'sc_g_', parole: [], pubblico: null, detto: '' };
+    const gunda = { id: 'sc_g_1', chi: 'narratore', tipo: 'reazione', quando: 'un PG chiede a un altro di aprire il pugno', temi: ['pugno'], testo: ['[narratore] Gunda apre il pugno con calma, davanti a tutta la tavolata.', '[narratore] Il palmo è vuoto, pulito.'] };
+    expect(validaBattute(JSON.stringify({ battute: [gunda] }), ctx).scartate[0]!.motivo).toMatch(/decide per un PG: «Gunda apre il pugno/);
+    const sala = { ...gunda, testo: ['[narratore] La tavolata si sporge a guardare quel pugno chiuso.'] };
+    const r = validaBattute(JSON.stringify({ battute: [sala] }), { ...ctx, privata: true });
+    expect(r.accettate[0]!.richiede.privata).toBe(true);
   });
 });
 
@@ -87,5 +110,35 @@ describe('lo sceneggiatore al tavolo', () => {
     const riga = prova.narrazioni().find((r) => r['tipo'] === 'sceneggiatore' && r['tipo_richiesta'] === 'subito')!;
     expect(riga).toMatchObject({ consegnata: true, per_pg: 'pg_anna', esito: 'ok' });
     expect((await m.stato()).repertorio!.usate.map((b) => b.id)).toContain(`${subito.prefisso}1`);
+  }, 30_000);
+
+  it('un’azione privata senza battuta: la risposta dello sceneggiatore va solo al telefono del PG', async () => {
+    prova = new Prova();
+    const radice = path.join(prova.cartella, 'sceneggiatore');
+    const c = cartelle(radice);
+    scriviJson(c.vivo, { ts: Date.now(), pid: 0, modello: 'prova' });
+    const { url } = await prova.avvia(prova.campagna('mini'), () => '[invito] tutti', {}, { sceneggiatore: { radice, tettoMs: 30_000 } });
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const privati: EsitoPrivato[][] = [];
+    tel.on('privato:esiti', (e: EsitoPrivato[]) => privati.push(e));
+    const s = await inizia(schermo, tel);
+    const dopo = attendi(tel, (x) => x.fase === 'finestra' && x.turno === 2);
+    await agisci(tel, 'pg_anna', 'Sussurro all’oste: chi ha bevuto dalla brocca?', s.versione_scena, true);
+    await dopo;
+    const subito = fs.readdirSync(c.richieste).map((f) => leggiJson<RichiestaSceneggiatore>(path.join(c.richieste, f))!).find((r) => r.tipo === 'subito')!;
+    expect(subito.azione).toMatchObject({ id_pg: 'pg_anna', privata: true });
+    scriviJson(path.join(c.risposte, `${subito.id}.json`), {
+      id: subito.id,
+      esito: 'ok',
+      ms: 900,
+      yaml: `battute:\n  - chi: png_oste\n    tipo: reazione\n    quando: "in privato, un PG chiede all'oste della brocca"\n    temi: [brocca]\n    testo:\n      - "[png_oste] A voce bassa: la brocca l'ho riempita io, stamattina."\n`,
+    });
+    const fine = Date.now() + 8000;
+    while (!privati.flat().some((e) => e.testo.includes('riempita io')) && Date.now() < fine) await new Promise((r) => setTimeout(r, 100));
+    expect(privati.flat().map((e) => e.testo).join(' ')).toContain('la brocca l\'ho riempita io');
+    const stato = await new Promise<{ trascrizione: Array<{ testo: string }> }>((r) => tel.emit('stato:richiedi', r as never));
+    expect(stato.trascrizione.map((v) => v.testo).join(' ')).not.toContain('riempita io');
+    expect(prova.narrazioni().find((r) => r['tipo'] === 'sceneggiatore' && r['tipo_richiesta'] === 'subito')).toMatchObject({ consegnata: true, privata: true });
   }, 30_000);
 });

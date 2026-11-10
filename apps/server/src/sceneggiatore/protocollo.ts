@@ -26,8 +26,8 @@ export interface RichiestaSceneggiatore {
   /** Cartella della campagna (lo sceneggiatore legge da lì schede, canone e repertorio). */
   campagna: string;
   scena: { id: string; titolo: string; png_presenti: string[] };
-  /** `subito`: l'azione rimasta senza battuta («nessuna»), a cui scrivere la risposta. */
-  azione?: { id_pg: string; nome: string; testo: string };
+  /** `subito`: l'azione rimasta senza battuta («nessuna»), a cui scrivere la risposta; `privata`: la sente solo quel PG. */
+  azione?: { id_pg: string; nome: string; testo: string; privata?: boolean };
   /** Le ultime righe che il tavolo ha sentito («Nome: testo»). */
   trascrizione: string[];
   stato: { indizi_rivelati: string[]; fatti_noti: string[]; battute_usate: string[]; orologi: Record<string, string> };
