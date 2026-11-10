@@ -9,6 +9,7 @@
  * passa le azioni del turno e riceve, per ogni frase, il PG a cui spostarla (o null).
  */
 import { normalizza } from '../azioni/regole';
+import { campoElenco, regole } from '../lingua/motore';
 
 export interface AzionePrivataTurno {
   id_pg: string;
@@ -20,21 +21,19 @@ export interface AzionePrivataTurno {
 /** Radici in comune sotto cui la riga resta al tavolo. */
 export const MIN_RADICI_COMUNI = 2;
 
-/** Parole frequenti che non dicono il contenuto di un'azione (≥ 4 lettere, già senza accenti). */
-const VUOTE = new Set([
-  'mentre', 'quando', 'questo', 'questa', 'quello', 'quella', 'quelli', 'sono', 'siete', 'della', 'delle', 'dello', 'degli',
-  'dalla', 'dalle', 'dallo', 'dagli', 'nella', 'nelle', 'nello', 'negli', 'sulla', 'sulle', 'sullo', 'sugli', 'alla', 'alle',
-  'allo', 'agli', 'verso', 'dopo', 'prima', 'senza', 'sotto', 'sopra', 'dentro', 'fuori', 'anche', 'ancora', 'molto', 'poco',
-  'tutto', 'tutti', 'tutta', 'ogni', 'come', 'cosa', 'perche', 'pero', 'piano', 'intanto', 'subito', 'appena', 'proprio',
-  'vostro', 'vostra', 'nostro', 'nostra', 'suoi', 'sue', 'loro', 'altro', 'altra', 'altri', 'qualche', 'niente', 'nulla',
-]);
+/**
+ * Parole frequenti che non dicono il contenuto di un'azione (≥ 4 lettere, già senza accenti), della lingua
+ * dei contenuti: lingue/<codice>/motore.yaml, sezione `privato`.
+ */
+const vuote = (): ReadonlySet<string> => regole('privato', (s) => new Set(campoElenco(s, 'parole_vuote')));
 
 /** Parole di almeno 4 lettere, senza le vuote e senza i nomi dati. */
 function parole(t: string, nomi: ReadonlySet<string>): string[] {
+  const escluse = vuote();
   return normalizza(t)
     .replace(/[^a-z0-9' ]/g, ' ')
     .split(/[\s']+/)
-    .filter((p) => p.length >= 4 && !VUOTE.has(p) && !nomi.has(p));
+    .filter((p) => p.length >= 4 && !escluse.has(p) && !nomi.has(p));
 }
 
 /** Radice grezza: le prime cinque lettere («cassetta», «cassette» → «casse»; «lucchetto» → «lucch»). */

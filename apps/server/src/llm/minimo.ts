@@ -12,13 +12,23 @@
  * - Il modello risponde in JSON (llm/strutturato.ts: validazione severa, un ritentativo). Il ripiego è
  *   deterministico: la prima battuta indicata per quell'azione, altrimenti «nessuna».
  * - «nessuna»: una battuta d'attesa del repertorio (riempitivo), se il Motore ne ha messe; mai prosa nuova.
- * - Annuncio: `annuncioBreve` (nome + prima frase, tagliata alla prima virgola o pausa, ≤ 12 parole).
- *   Le azioni PRIVATE non si annunciano mai.
+ * - Annuncio: `annuncioBreve` (llm/annuncio.ts: nome + prima frase, tagliata alla prima virgola o pausa,
+ *   ≤ 12 parole; in inglese in terza persona). Le azioni PRIVATE non si annunciano mai.
+ * - Lingua: prompt in prompts/<codice>/lettore-minimo.md, righe del messaggio in lingue/<codice>/
+ *   testi-modelli.yaml (`modelli.lettore`). Il turno arriva come DATI (`RichiestaNarrazione.dati`, lo stesso
+ *   oggetto da cui narrazione/messaggio.ts compila il testo): il lettore non dipende dai titoli del
+ *   messaggio, che cambiano con la lingua. `leggiTurno` (dal testo italiano) resta per strumenti e prove
+ *   che passano solo il messaggio.
  */
+import { testo } from '../lingua';
+import { prompt } from '../lingua/motore';
 import type { Logger } from '../logger';
+import { annuncioBreve } from './annuncio';
 import { costoZero, type ModelloLinguaggio, type RispostaModello } from './modello';
 import { chiediStrutturato } from './strutturato';
-import type { AzionePreclassifica, EsitoNarrazione, Narratore, RichiestaNarrazione } from './tipi';
+import type { AzionePreclassifica, DatiTurnoLettore, EsitoNarrazione, Narratore, RichiestaNarrazione } from './tipi';
+
+export { annuncioBreve };
 
 export interface AzioneLetta {
   id_pg: string;
@@ -37,7 +47,49 @@ export interface TurnoLetto {
   attesa: string[];
 }
 
-/** Legge dal messaggio del turno le sezioni che servono al lettore minimo. */
+/** «- pg_x (Nome): [usa] id > pg_x oppure [usa] …» → pg → id indicati (righe nel formato del protocollo). */
+function indicateDa(righe: readonly string[]): Map<string, string[]> {
+  const indicate = new Map<string, string[]>();
+  for (const r of righe) {
+    const m = /^- (pg_[\w-]+) /.exec(r.trim());
+    if (m) indicate.set(m[1]!, [...r.matchAll(/\[usa\] ([\w-]+) >/g)].map((x) => x[1]!));
+  }
+  return indicate;
+}
+
+/** «- id · chi · tipo · quando» → id → riga (senza il trattino). */
+function catalogoDa(righe: readonly string[]): Map<string, string> {
+  const catalogo = new Map<string, string>();
+  for (const r of righe) {
+    const m = /^- ([\w-]+) · /.exec(r.trim());
+    if (m) catalogo.set(m[1]!, r.trim().slice(2));
+  }
+  return catalogo;
+}
+
+/** «- id …» → gli id delle battute d'attesa. */
+const attesaDa = (righe: readonly string[]): string[] => righe.map((r) => /^- ([\w-]+)/.exec(r.trim())?.[1]).filter((x): x is string => !!x);
+
+/**
+ * Il turno dai DATI del Motore (lo stesso oggetto da cui narrazione/messaggio.ts compila il testo): azioni,
+ * privacy e «nessuna azione» sono campi, non frasi; indicate, catalogo e attesa sono righe nel formato del
+ * protocollo (id, «[usa] id > pg», «id · chi · tipo · quando»), uguale in ogni lingua.
+ */
+export function turnoDaDati(d: DatiTurnoLettore): TurnoLetto {
+  const azioni = d.azioni.filter((a): a is typeof a & { testo: string } => !!a.testo).map((a) => ({ id_pg: a.id_pg, nome: a.nome, testo: a.testo.trim(), privata: !!a.privata }));
+  const rep = d.repertorio;
+  return {
+    azioni,
+    indicate: indicateDa(rep?.indicate ?? []),
+    catalogo: catalogoDa((rep?.battuteDisponibili ?? '').split('\n')),
+    attesa: attesaDa((rep?.attesa ?? '').split('\n')),
+  };
+}
+
+/**
+ * Legge dal messaggio del turno (testo italiano) le sezioni che servono al lettore minimo. Solo per chi
+ * passa il messaggio senza i dati (strumenti, prove): il Motore passa sempre `dati`.
+ */
 export function leggiTurno(messaggio: string): TurnoLetto {
   const sezioni = new Map<string, string[]>();
   let corrente: string | null = null;
@@ -56,23 +108,16 @@ export function leggiTurno(messaggio: string): TurnoLetto {
     const privata = m[3]!.includes('(azione PRIVATA');
     azioni.push({ nome: m[1]!, id_pg: m[2]!, testo: m[3]!.replace(/\s*\(azione PRIVATA[^)]*\)\s*$/, '').trim(), privata });
   }
-  const indicate = new Map<string, string[]>();
-  for (const r of trova(/^Battute indicate dal Motore/)) {
-    const m = /^- (pg_[\w-]+) /.exec(r.trim());
-    if (m) indicate.set(m[1]!, [...r.matchAll(/\[usa\] ([\w-]+) >/g)].map((x) => x[1]!));
-  }
-  const catalogo = new Map<string, string>();
-  for (const r of trova(/^Catalogo: battute pertinenti/)) {
-    const m = /^- ([\w-]+) · /.exec(r.trim());
-    if (m) catalogo.set(m[1]!, r.trim().slice(2));
-  }
-  const attesa = trova(/^Battute d.attesa/).map((r) => /^- ([\w-]+)/.exec(r.trim())?.[1]).filter((x): x is string => !!x);
-  return { azioni, indicate, catalogo, attesa };
+  return {
+    azioni,
+    indicate: indicateDa(trova(/^Battute indicate dal Motore/)),
+    catalogo: catalogoDa(trova(/^Catalogo: battute pertinenti/)),
+    attesa: attesaDa(trova(/^Battute d.attesa/)),
+  };
 }
 
-const PROMPT = `Sei il lettore di una partita di D&D in italiano. Non scrivi la storia: per ogni azione scegli l'ID della battuta che le risponde, fra i candidati di quell'azione, oppure "nessuna" se nessun candidato descrive davvero quell'azione.
-"battuta" è SOLO l'id (la parola prima dei due punti), mai il testo.
-Forma della risposta (gli id veri sono solo quelli dei candidati): {"risposte":[{"pg":"pg_…","battuta":"…"}]}`;
+/** Il prompt del lettore nella lingua dei contenuti: prompts/<codice>/lettore-minimo.md. */
+const promptLettore = (): string => prompt('lettore-minimo');
 
 const SCHEMA = {
   type: 'object',
@@ -93,30 +138,6 @@ const SCHEMA = {
 };
 
 type Risposte = { risposte: Array<{ pg: string; battuta: string }> };
-
-/** Intercalari da chat che a voce non servono («ok», «ahah», «allora»…). */
-const INTERCALARI = /^(ok(ay)?|ah+|ahah\w*|eh|ehi|allora|bene|dai|uff|mah|beh|ecco|si|sì|no)\b[\s,!.]*/i;
-
-/**
- * L'annuncio deterministico: «Nome: «prima frase».», con la prima frase di ciò che il giocatore ha
- * scritto tagliata alla prima virgola o pausa (e prima di una congiunzione se va oltre), al massimo 12
- * parole col nome. Niente parole che il giocatore non ha scritto. null se non resta niente.
- */
-export function annuncioBreve(nome: string, testo: string): string | null {
-  let t = testo.replace(/\b(a(h|ha)+h?|lol|xd)\b/gi, ' ').replace(/[^\p{L}\p{N}\s'’,;:.!?…«»"-]/gu, ' ').replace(/\s+/g, ' ').trim();
-  for (let i = 0; i < 3 && INTERCALARI.test(t); i++) t = t.replace(INTERCALARI, '').trim();
-  t = t.replace(/^["«]|["»]$/g, '').trim();
-  const pezzi = t.split(/\s*[,;:.!?…]+\s*|\s+-\s+/).filter(Boolean);
-  const prima = pezzi.find((x) => x.split(' ').length >= 2) ?? pezzi[0] ?? '';
-  const max = Math.max(3, 12 - nome.split(/\s+/).length);
-  const parole = prima.split(' ').filter(Boolean);
-  let frase = parole.slice(0, max).join(' ');
-  // Se si taglia a metà, meglio fermarsi prima di una congiunzione («e», «ma», «poi»…).
-  if (parole.length > max) frase = frase.replace(/\s+(e|ma|poi|però|mentre|che|perché|se)(\s+\S+)?$/i, '');
-  frase = frase.replace(/[\s'’-]+$/, '').trim();
-  if (!frase) return null;
-  return `${nome}: «${frase.charAt(0).toUpperCase()}${frase.slice(1)}».`;
-}
 
 const radici = (s: string): Set<string> => new Set((s.toLowerCase().match(/\p{L}{4,}/gu) ?? []).map((w) => w.slice(0, 5)));
 
@@ -246,11 +267,11 @@ export class NarratoreMinimo implements Narratore {
       return { testo, modello: this.modello, stopReason: 'end_turn', uso, costo: risposte.reduce((a, x) => (x.costo.costo_usd ? { ...a, costo_usd: a.costo_usd + x.costo.costo_usd } : a), costoZero(uso)), idMessaggio: null };
     };
     // Chiamata di riparazione (azioni rimaste senza risposta): il lettore minimo non improvvisa niente.
-    if (/^## Azioni rimaste senza risposta/m.test(r.messaggio)) {
+    if (r.dati ? r.dati.riparazione : /^## Azioni rimaste senza risposta/m.test(r.messaggio)) {
       emetti('[invito] tutti\n');
       return esito();
     }
-    const t = leggiTurno(r.messaggio);
+    const t = r.dati ? turnoDaDati(r.dati) : leggiTurno(r.messaggio);
     const pubbliche = t.azioni.filter((a) => !a.privata);
     const annunci = new Map(pubbliche.map((a) => [a.id_pg, annuncioBreve(a.nome, a.testo)]));
     const detti = new Set<string>();
@@ -292,14 +313,14 @@ export class NarratoreMinimo implements Narratore {
     const elenco = t.azioni
       .map((a, i) => {
         const c = per.get(a.id_pg)!;
-        const righe = c.map((id) => `   - ${rigaBreve(t, id)}`).join('\n') || '   (nessun candidato: battuta "nessuna")';
-        return `${i + 1}. ${a.nome} (${a.id_pg})${a.privata ? ' [PRIVATA]' : ''}: ${a.testo}\n   Candidati (id: quando):\n${righe}`;
+        const righe = c.map((id) => `   - ${rigaBreve(t, id)}`).join('\n') || testo('modelli.lettore.nessun_candidato');
+        return testo('modelli.lettore.riga', { numero: i + 1, nome: a.nome, id_pg: a.id_pg, privata: a.privata ? testo('modelli.lettore.privata') : '', testo: a.testo, candidati: righe });
       })
       .join('\n');
     const ripiego = (): Risposte => ({ risposte: t.azioni.map((a) => ({ pg: a.id_pg, battuta: t.indicate.get(a.id_pg)?.[0] ?? 'nessuna' })) });
     const r = await chiediStrutturato<Risposte>(
       this.m,
-      { sistema: [{ testo: PROMPT, cache: true }], messaggi: [{ ruolo: 'user', testo: `Azioni del turno:\n${elenco}` }], maxTokens: this.o.maxTokens ?? 40 + 30 * t.azioni.length, signal },
+      { sistema: [{ testo: promptLettore(), cache: true }], messaggi: [{ ruolo: 'user', testo: testo('modelli.lettore.azioni', { elenco }) }], maxTokens: this.o.maxTokens ?? 40 + 30 * t.azioni.length, signal },
       {
         schema: SCHEMA,
         cosa: 'lettore minimo',

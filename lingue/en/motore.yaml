@@ -1,0 +1,143 @@
+# Language rules of the Engine in English (docs/lingue.md). Same keys as lingue/it/motore.yaml (the reference);
+# lists are leaves, their content is per language. Regular expressions are single-quoted strings: a backslash is
+# literal, an apostrophe is written twice (''). An empty string means «this rule does not exist in this
+# language». Each section names the server file that reads it; the code sets the regex flags.
+
+# Deterministic announcement of the minimal reader (apps/server/src/llm/minimo.ts, annuncioBreve): the PC name and
+# the first short sentence of what the player wrote. English turns the first person into the third
+# («I open the door» → «Ginestra opens the door.»); when it cannot do it safely it quotes the player.
+annuncio:
+  # The player's words quoted ({nome}, {frase}): always valid, used whenever the third person is unsure.
+  citazione: '{nome}: “{frase}.”'
+  # Third person: {nome} and the turned sentence.
+  terza_persona: '{nome} {frase}.'
+  # Chat laughter removed everywhere (flags gi).
+  risate: '\b(h?a(h|ha)+h?|lol|lmao|xd)\b'
+  # Opening fillers removed, up to three in a row (flag i).
+  intercalari: '^(ok(ay)?|ah+|oh+|uh+|um+|hm+|haha\w*|ahah\w*|eh|hey|so|well|alright|yeah|yep|yes|no(?! one)|nope)\b[\s,!.]*'
+  # Quotes at both ends of the text, removed (flag g).
+  virgolette: '^["«“]|["»”]$'
+  # When the sentence is cut in the middle: stop before a trailing conjunction (flag i).
+  congiunzione_finale: '\s+(and|but|then|or|while|that|because|if|so|as)(\s+\S+)?$'
+  # Words at most, name included (at least three words of the sentence always stay).
+  max_parole: 12
+  # First person → third person. Every rule ignores case and works on whole words.
+  prima_persona:
+    # Subject and verb fused at the start, replaced by the third-person form ([from, to]).
+    contrazioni: [["i'm", is], ["i've", has], ["i'll", will], ["i'd", would]]
+    # The first-person subject at the start (removed; the verb after it goes to the third person).
+    soggetto: '^i\s+'
+    # One word between subject and verb that does not change (adverbs).
+    avverbi: '^(also|then|just|still|now|first|really|immediately|instead|again|simply|only|never|always|already|actually|\w{2,}[^p]ly)$'
+    # Words that cannot be the verb: if found there, the announcement quotes the player instead.
+    non_verbi: '^(the|a|an|my|your|his|her|their|our|its|this|that|these|those|to|at|in|on|of|for|with|from|by|and|or|but|not|no|it|him|them|you|we|they|she|he|me|i|there|here|too|as|so|very)$'
+    # Verbs that stay the same in the third person (modals, irregular pasts, negated auxiliaries).
+    invariabili: [can, could, will, would, shall, should, may, might, must, did, was, had, "can't", cannot, "won't", "wouldn't", "couldn't", "shouldn't", "didn't", "wasn't", "hadn't", "mustn't", went, took, saw, came, got, made, said, told, gave, found, ran, threw, left, kept, held, sat, stood, put, let, hit, cut, set]
+    # Verbs that do not follow the endings ([from, to]).
+    irregolari: [[am, is], [have, has], [do, does], ["don't", "doesn't"], ["haven't", "hasn't"], [go, goes]]
+    # Regular past: stays as it is.
+    passato: '[^e]ed$'
+    # Third-person endings, the first that matches ([regex, replacement with $1, $&]).
+    desinenze: [['(?:s|x|z|ch|sh|o)$', '$&es'], ['([^aeiou])y$', '$1ies'], ['$', 's']]
+    # A conjunction followed by a new first-person subject («and I look»): group 1 stays, the rest is turned.
+    coordinata: '(\s(?:and|then|but|or|so)(?:\s+then)?)\s+(?=i\b)'
+    # A conjunction followed by a verb without subject («and look»): cut from there (it cannot be conjugated).
+    coordinata_senza_soggetto: '\s+(?:and|then|or)\s+(?!(?:the|a|an|my|his|her|their|its|this|that|these|those|some|i)\b)\S.*$'
+    # First-person pronouns in the rest of the sentence ([regex, replacement]).
+    pronomi: [['\bmyself\b', themselves], ['\bmy\b', their], ['\bmine\b', theirs], ['\bme\b', them], ["\\bi'm\\b", "they're"], ['\bi am\b', they are], ['\bi was\b', they were], ["\\bi've\\b", "they've"], ["\\bi'll\\b", "they'll"], ["\\bi'd\\b", "they'd"], ['\bi\b', they]]
+
+# Links between actions (apps/server/src/azioni/regole.ts): explicit dependency formulas, on normalized text
+# (lowercase, no accents, straight apostrophe).
+collegamenti:
+  # Formulas that, alone, refer to someone else's action. `nome` is the formula id (the same in every language:
+  # logs and tests read it).
+  formule_senza_nome:
+    - nome: anch_io
+      regex: '\b(me,? too|me as well|same here|same for me|same thing|ditto|likewise|so do i|as do i|i do the same( thing)?|i''ll do the same( thing)?|i''m doing the same|i do (it|that) too|i''ll do (it|that) too|i join (him|her|them)|i do what (he|she|they) (does|do|did)|i do as (he|she|they) (does|do))\b'
+    - nome: seguo_pronome
+      regex: '\b(follow|accompany|cover|help|back|protect|guard) (him|her|them)\b|\b(go|stay|stick|come|stand|walk) with (him|her|them)\b|\b(behind|beside|next to) (him|her|them)\b|\b(give|lend) (him|her|them) a hand\b'
+  # Verbs that bind to a named PC: «I follow X», «together with X», «I help X», «I cover X»… (one group).
+  legame_con_nome: '(follow|go with|going with|come with|coming with|stay with|staying with|stick with|stick close to|stay close to|keep close to|stand with|stand by|together with|along with|alongside|accompany|help|assist|give a hand to|lend a hand to|back up|cover|protect|guard|shield|support|go behind|stay behind|stand behind|behind|do as|do what|same as|copy)'
+  # Between the binding verb and the name (optional): nothing in English.
+  prima_del_nome: ''
+
+# Sentence splitter for the voice (apps/server/src/narrazione/frasi.ts).
+frasi:
+  # Abbreviations after which a full stop does not end the sentence (lowercase, without the final dot). Not «no»,
+  # «etc», «a.m», «p.m»: they end sentences too often.
+  abbreviazioni: [mr, mrs, ms, dr, prof, st, sr, jr, mt, ft, vs, e.g, i.e, cf, capt, col, gen, lt, sgt, cpl, maj, rev, hon, gov, sen, rep, pres, fr, br, ave, rd, blvd, approx, dept, inc, ltd, vol, ch, fig, pp, p]
+
+# Fiction guard for the moves against a stall (apps/server/src/narrazione/finzione.ts): phrases about the table
+# instead of the world. `nome` is for the log. A deliberately narrow list.
+finzione:
+  espressioni:
+    - { nome: 'PC', regex: '\bPCs?\b', flags: '' }
+    - { nome: 'players', regex: '\b(players|player characters?)\b', flags: i }
+    - { nome: 'none of you', regex: '\b(none|neither|not one) of you\b', flags: i }
+    - { nome: 'none of the PCs/characters', regex: '\b(none|neither|nobody|no one|not one) of the (pcs|characters|players|heroes|party)\b', flags: i }
+    - { nome: 'nobody has yet…', regex: '\b(nobody|no one|none of you) (has|have) (yet )?(chosen|decided|spoken|acted|written|answered|replied|done|moved|said)\b', flags: i }
+    - { nome: 'you have not yet…', regex: '\byou (have not|haven''t|still haven''t|have yet to|still have to) (yet )?(chosen|decided|spoken|acted|written|answered|replied|done|choose|decide|speak|act|write|answer|reply)\b', flags: i }
+    - { nome: 'decides for you', regex: '\bdecid\w* for you\b', flags: i }
+    - { nome: 'nobody speaks?', regex: '\b(nobody|no one) (speaks|answers|decides|chooses|moves|says anything)\s*\?', flags: i }
+    - { nome: 'we are waiting for you', regex: '\b(i am|i''m|we are|we''re|they are|they''re) (still )?waiting (for|on) you\b', flags: i }
+    - { nome: 'silence of the table', regex: '\bsilence (at|around|of|from) the (table|group|players)\b|\bthe table''s silence\b', flags: i }
+
+# Guard for rule numbers spoken aloud (apps/server/src/narrazione/numeri-regole.ts): hit points, AC and DC lose
+# their number. Rules apply in order; in `regex`, {N} is a number (digits or `numero`). Named groups: `n` = the
+# number (one of `zero` → `sostituto_zero`), `maiuscola` = if it starts with a capital, so does the replacement;
+# any other group `x` can be used in the replacement as {x} (lowercase).
+numeri_regole:
+  numero: 'zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty[- ](?:one|two|three|four|five|six|seven|eight|nine)|twenty|thirty'
+  zero: ['0', zero]
+  regole:
+    # «is at 0 hit points» → «is down», «drops to zero HP» → «drops down».
+    - nome: a_zero
+      regex: '\b(?:at|to)\s+(?:0|zero)\s+(?:hit\s+points?|HP)\b'
+      flags: gi
+      sostituto: down
+      sostituto_zero: ''
+    # «7 hit points (out of 12)», «four hit points», «0 hit points».
+    - nome: punti_ferita
+      regex: '\b(?<n>{N})\s+(?<maiuscola>hit)\s+points?(?:\s+(?:out\s+of|of)\s+{N})?'
+      flags: gi
+      sostituto: some hit points
+      sostituto_zero: no hit points
+    # «7/12 HP», «7 HP».
+    - nome: sigla_pf
+      regex: '\b(?<n>{N})(?:\s*/\s*{N})?\s*HP\b'
+      flags: g
+      sostituto: some hit points
+      sostituto_zero: no hit points
+    # «Ruggero's AC 15» → «Ruggero's armor».
+    - nome: classe_armatura_di
+      regex: '(?<=\w''s\s+)(?:AC|[Aa]rmou?r\s+[Cc]lass)(?:\s+(?:of|is))?\s+{N}\b'
+      flags: g
+      sostituto: armor
+      sostituto_zero: ''
+    # «the AC 15», «an AC of 15», «her armor class is 15».
+    - nome: classe_armatura
+      regex: '\b(?:(?:an?|the|its|his|her|their)\s+)?(?:AC|[Aa]rmou?r\s+[Cc]lass)(?:\s+(?:of|is))?\s+{N}\b'
+      flags: g
+      sostituto: the armor
+      sostituto_zero: ''
+    # «a DC 15 Dexterity saving throw» → «a Dexterity saving throw».
+    - nome: classe_difficolta_davanti
+      regex: '\b(?:DC|[Dd]ifficulty\s+[Cc]lass)\s+{N}\s+(?=\p{Lu})'
+      flags: gu
+      sostituto: ''
+      sostituto_zero: ''
+    # «the DC 15», «a DC of 15», «difficulty class 15».
+    - nome: classe_difficolta
+      regex: '\b(?:(?:an?|the)\s+)?(?:DC|[Dd]ifficulty\s+[Cc]lass)(?:\s+(?:of|is))?\s+{N}\b'
+      flags: g
+      sostituto: the difficulty
+      sostituto_zero: ''
+
+# Guard for private actions (apps/server/src/narrazione/privato.ts): frequent words (≥ 4 letters, already without
+# accents, apostrophes split) that do not say what an action is about and do not count as shared roots.
+privato:
+  parole_vuote: [while, when, then, than, this, that, these, those, there, here, with, without, from, into, onto, upon, over, under, after, before, inside, outside, through, also, still, very, much, more, most, less, little, every, each, some, many, what, which, where, their, them, they, have, been, were, your, yours, ours, just, only, even, again, toward, towards, around, about, other, another, nothing, something, anything, because, though, although, myself, himself, herself, themselves, does, doing, will, would, could, should, might, must, quietly, slowly, quickly, carefully, softly, gently, really, away, down, back, being, both, such, like]
+
+# Short names of PCs and NPCs (apps/server/src/campagna/nomi.ts): titles skipped («Sister Teodora» → «Teodora»).
+nomi:
+  titoli: [sister, brother, father, mother, sir, lady, lord, dame, master, mistress, friar, mr, mrs, ms, miss, dr, doctor, captain, sergeant, uncle, aunt, old, young, saint, st]

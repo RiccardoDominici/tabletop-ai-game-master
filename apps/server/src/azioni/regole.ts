@@ -1,9 +1,12 @@
 /**
  * Prima parte dell'arbitro: regole istantanee, senza modello. Riconoscono le dipendenze
- * esplicite («anch'io», «lo seguo», «insieme a Ginestra», «aiuto Corrado», «copro Teodora»…)
- * quando c'è una sola azione candidata (quella del PG nominato, o l'unica pubblica in coda).
- * Tutto il resto (conflitti, casi ambigui, nomi citati senza legame) va al modello.
+ * esplicite («anch'io», «lo seguo», «insieme a Ginestra», «aiuto Corrado», «copro Teodora»; in inglese
+ * «me too», «I follow Corrado»…) quando c'è una sola azione candidata (quella del PG nominato, o l'unica
+ * pubblica in coda). Tutto il resto (conflitti, casi ambigui, nomi citati senza legame) va al modello.
+ *
+ * Le formule sono della lingua dei contenuti: lingue/<codice>/motore.yaml, sezione `collegamenti`.
  */
+import { campoOggetti, campoRegex, campoTesto, regole, type Sezione } from '../lingua/motore';
 import type { AzioneArbitro } from './tipi';
 
 export interface EsitoRegole {
@@ -25,25 +28,39 @@ export function normalizza(t: string): string {
     .trim();
 }
 
-/** Formule che, da sole, si riferiscono all'azione di qualcun altro. */
-const FORMULE_SENZA_NOME: Array<[string, RegExp]> = [
-  ['anch_io', /\b(anch'? ?io|anche io|anchio|pure io|idem|io pure|stessa cosa|faccio lo stesso|faccio come (lui|lei|loro))\b/],
-  ['seguo_pronome', /\b(lo|la|li|le) (seguo|seguiamo|accompagno|copro|aiuto)\b|\b(vado|resto|sto|vengo) con (lui|lei|loro)\b|\b(dietro|accanto) a (lui|lei)\b|\bgli (do|dò) (una )?mano\b|\ble (do|dò) (una )?mano\b/],
-];
+interface RegoleCollegamenti {
+  /** Formule che, da sole, si riferiscono all'azione di qualcun altro: [id della formula, espressione]. */
+  formuleSenzaNome: Array<[string, RegExp]>;
+  /** Verbi che legano a un PG nominato: «seguo X», «insieme a X», «aiuto X», «copro X»… (un gruppo). */
+  legameConNome: string;
+  /** Fra il verbo di legame e il nome («(a |ad )?» in italiano). */
+  primaDelNome: string;
+}
 
-/** Verbi che legano a un PG nominato: «seguo X», «insieme a X», «aiuto X», «copro X»… */
-const LEGAME_CON_NOME = '(seguo|seguiamo|vado con|vengo con|resto con|sto con|insieme a|insieme con|assieme a|accompagno|aiuto|do una mano a|do man forte a|copro|proteggo|sostengo|vado dietro a|resto dietro a|sto dietro a|dietro a|faccio come|come fa)';
+function compila(s: Sezione): RegoleCollegamenti {
+  return {
+    formuleSenzaNome: campoOggetti(s, 'formule_senza_nome').flatMap((f): Array<[string, RegExp]> => {
+      const re = campoRegex(f, 'regex');
+      return re ? [[campoTesto(f, 'nome'), re]] : [];
+    }),
+    legameConNome: campoTesto(s, 'legame_con_nome'),
+    primaDelNome: campoTesto(s, 'prima_del_nome'),
+  };
+}
+
+const collegamenti = (): RegoleCollegamenti => regole('collegamenti', compila);
 
 export function relazioniDaRegole(nuova: AzioneArbitro, coda: readonly AzioneArbitro[], nomi: ReadonlyMap<string, string>): EsitoRegole {
   const t = normalizza(nuova.testo);
   // Candidati: azioni PUBBLICHE degli altri (da un'azione privata altrui non si può dipendere).
   const candidati = coda.filter((a) => a.autore !== nuova.autore && !a.privata);
   const perAutore = new Map(candidati.map((a) => [a.autore, a]));
+  const r = collegamenti();
 
   // 1. Verbo di legame + nome di un PG: dipendenza dall'azione di quel PG, se ce l'ha.
   for (const [alias, idPg] of nomi) {
     if (idPg === nuova.autore) continue;
-    const re = new RegExp(`\\b${LEGAME_CON_NOME} (a |ad )?${alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
+    const re = new RegExp(`\\b${r.legameConNome} ${r.primaDelNome}${alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
     if (re.test(t)) {
       const bersaglio = perAutore.get(idPg);
       return bersaglio ? { dipende_da: [bersaglio.id], certo: true, formula: 'legame_con_nome' } : { dipende_da: [], certo: false, formula: 'legame_con_nome' };
@@ -52,7 +69,7 @@ export function relazioniDaRegole(nuova: AzioneArbitro, coda: readonly AzioneArb
   // 2. Formula senza nome: certa solo con un'unica azione candidata, e solo se apre l'azione o
   //    l'azione è brevissima («anch'io», «anche io vado»): in mezzo a una frase è spesso un
   //    paragone («ho fame anche io, ma vado nel retro») e lo decide il modello.
-  for (const [nome, re] of FORMULE_SENZA_NOME) {
+  for (const [nome, re] of r.formuleSenzaNome) {
     const m = re.exec(t);
     if (m) {
       const inApertura = m.index <= 2 || t.split(' ').length <= 5;

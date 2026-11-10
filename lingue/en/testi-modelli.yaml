@@ -1,0 +1,44 @@
+# Fixed phrases the Engine sends to the MODELS outside the turn message: action referee, minimal reader, evening
+# summary, structured output (JSON), cache warm-up, script of the fake narrator. Same keys and placeholders as
+# lingue/it/testi-modelli.yaml (the reference). JSON field names (dipende_da, giudizio, risposte, battuta…), their
+# fixed values (valida, dubbia, impossibile, nessuna) and the protocol labels ([narratore], [invito], pg_…, FILO:)
+# stay as they are.
+modelli:
+  # Structured output on providers without a native schema (apps/server/src/llm/strutturato.ts).
+  json:
+    istruzione: "Answer ONLY with a JSON object valid for this schema, with no text before or after, no comments:\n{schema}"
+    correzione: "The previous answer was not valid ({motivo}). {istruzione}"
+  # Zero-token call that writes the system blocks into the cache (apps/server/src/llm/narratore.ts).
+  preriscaldamento: "Cache warm-up: do not answer."
+  # Action referee (apps/server/src/azioni/arbitro-haiku.ts); the prompt is prompts/<code>/arbitro-azioni.md.
+  arbitro:
+    scena: "Scene (public part):\n{scena}"
+    riga: "- id {id} · {nome} ({autore}){privata}: “{testo}”"
+    privata: " · PRIVATE"
+    nessuna: "(none)"
+    ultima_narrazione: "Latest narration:\n{narrazione}"
+    in_coda: "Actions already queued:\n{azioni}"
+    nuova: "New action:\n{azione}"
+    domanda_relazioni: "Which queued actions does the new action depend on, and which does it conflict with? Use only ids from the «queued» list."
+    narrazione_arrivata: "Narration that just arrived (after these actions were written):\n{narrazione}"
+    scritte_prima: "Actions written before:\n{azioni}"
+    domanda_vecchie: "Judge each action: valida, dubbia or impossibile, with the reason for the player."
+    prima_del_cambio: "Action before the change:\n{azione}"
+    dopo_il_cambio: "Action after the change:\n{azione}"
+    dipendenti: "Actions that depended on it:\n{azioni}"
+    domanda_cambio: "For each action that depended on it: does the change affect it?"
+  # Minimal reader (apps/server/src/llm/minimo.ts); the prompt is prompts/<code>/lettore-minimo.md.
+  lettore:
+    azioni: "Actions of the turn:\n{elenco}"
+    riga: "{numero}. {nome} ({id_pg}){privata}: {testo}\n   Candidates (id: when):\n{candidati}"
+    privata: " [PRIVATE]"
+    nessun_candidato: "   (no candidate: line \"nessuna\")"
+  # Evening summary (apps/server/src/sessione/riassunto.ts); the prompt is prompts/<code>/riassunto.md.
+  riassunto:
+    messaggio: "## Public transcript of the evening\n{materiale}\n\n## The summary"
+    azione: "{nome} (action)"
+  # Generic script of the fake narrator (apps/server/src/llm/finto.ts), for trials without a model.
+  finto:
+    apertura: "[narratore] The oven crackles at the back of the hall. Someone knocks twice at the door."
+    png: "[{png}] Who is it at this hour? Answer, or I won't open."
+    chiusura: "[narratore] The wind carries the smell of snow. What do you do?"

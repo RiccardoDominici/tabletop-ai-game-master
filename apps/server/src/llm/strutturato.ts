@@ -7,6 +7,7 @@
  *   se non va, si ritenta UNA volta dicendo l'errore. Poi `ripiego` (deterministico) se c'è, altrimenti
  *   un errore: chi chiama ha già la sua riserva a regole (arbitri) o il suo «nessuna».
  */
+import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import type { ModelloLinguaggio, RichiestaModello, RispostaModello } from './modello';
 
@@ -59,8 +60,8 @@ export interface OpzioniStrutturato<T> {
   onRisposta?: (r: RispostaModello) => void;
 }
 
-const ISTRUZIONE = (schema: Schema): string =>
-  `Rispondi SOLO con un oggetto JSON valido per questo schema, senza testo prima o dopo, senza commenti:\n${JSON.stringify(schema)}`;
+/** L'istruzione di rispondere solo JSON, nella lingua dei contenuti (lingue/<codice>/testi-modelli.yaml). */
+const ISTRUZIONE = (schema: Schema): string => testo('modelli.json.istruzione', { schema: JSON.stringify(schema) });
 
 export async function chiediStrutturato<T>(m: ModelloLinguaggio, r: Omit<RichiestaModello, 'schema'>, o: OpzioniStrutturato<T>): Promise<T> {
   if (m.capacita.strutturato) {
@@ -75,7 +76,7 @@ export async function chiediStrutturato<T>(m: ModelloLinguaggio, r: Omit<Richies
   const messaggi = ultimo ? [...r.messaggi.slice(0, -1), { ...ultimo, testo: `${ultimo.testo}\n\n${ISTRUZIONE(o.schema)}` }] : [{ ruolo: 'user' as const, testo: ISTRUZIONE(o.schema) }];
   let motivo = '';
   for (let tentativo = 1; tentativo <= 2; tentativo++) {
-    const correzione = tentativo > 1 ? [{ ruolo: 'user' as const, testo: `La risposta di prima non andava (${motivo}). ${ISTRUZIONE(o.schema)}` }] : [];
+    const correzione = tentativo > 1 ? [{ ruolo: 'user' as const, testo: testo('modelli.json.correzione', { motivo, istruzione: ISTRUZIONE(o.schema) }) }] : [];
     try {
       const risposta = await m.chiedi({ ...r, messaggi: [...messaggi, ...correzione] });
       o.onRisposta?.(risposta);

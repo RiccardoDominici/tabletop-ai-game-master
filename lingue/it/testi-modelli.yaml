@@ -1,0 +1,44 @@
+# Frasi fisse che il Motore manda ai MODELLI fuori dal messaggio del turno: arbitro delle azioni, lettore minimo,
+# riassunto della serata, uscita strutturata (JSON), preriscaldamento della cache, copione del narratore finto.
+# Italiano = riferimento: lingue/<codice>/testi-modelli.yaml ha le stesse chiavi e gli stessi segnaposto.
+# I nomi dei campi JSON (dipende_da, giudizio, risposte, battuta…), i loro valori fissi (valida, dubbia,
+# impossibile, nessuna) e le etichette del protocollo ([narratore], [invito], pg_…, FILO:) restano come sono.
+modelli:
+  # Uscita strutturata sui provider senza schema nativo (apps/server/src/llm/strutturato.ts).
+  json:
+    istruzione: "Rispondi SOLO con un oggetto JSON valido per questo schema, senza testo prima o dopo, senza commenti:\n{schema}"
+    correzione: "La risposta di prima non andava ({motivo}). {istruzione}"
+  # Chiamata a 0 token che scrive in cache i blocchi di sistema (apps/server/src/llm/narratore.ts).
+  preriscaldamento: "Preriscaldamento della cache: non rispondere."
+  # Arbitro delle azioni (apps/server/src/azioni/arbitro-haiku.ts); il prompt è prompts/<codice>/arbitro-azioni.md.
+  arbitro:
+    scena: "Scena (parte pubblica):\n{scena}"
+    riga: "- id {id} · {nome} ({autore}){privata}: «{testo}»"
+    privata: " · PRIVATA"
+    nessuna: "(nessuna)"
+    ultima_narrazione: "Ultima narrazione:\n{narrazione}"
+    in_coda: "Azioni già in coda:\n{azioni}"
+    nuova: "Azione nuova:\n{azione}"
+    domanda_relazioni: "Da quali azioni in coda dipende l’azione nuova, e con quali è in conflitto? Usa solo id dell’elenco «in coda»."
+    narrazione_arrivata: "Narrazione appena arrivata (dopo che queste azioni erano state scritte):\n{narrazione}"
+    scritte_prima: "Azioni scritte prima:\n{azioni}"
+    domanda_vecchie: "Giudica ogni azione: valida, dubbia o impossibile, con il motivo per il giocatore."
+    prima_del_cambio: "Azione prima del cambio:\n{azione}"
+    dopo_il_cambio: "Azione dopo il cambio:\n{azione}"
+    dipendenti: "Azioni che ne dipendevano:\n{azioni}"
+    domanda_cambio: "Per ogni azione che ne dipendeva: il cambio la tocca?"
+  # Lettore minimo (apps/server/src/llm/minimo.ts); il prompt è prompts/<codice>/lettore-minimo.md.
+  lettore:
+    azioni: "Azioni del turno:\n{elenco}"
+    riga: "{numero}. {nome} ({id_pg}){privata}: {testo}\n   Candidati (id: quando):\n{candidati}"
+    privata: " [PRIVATA]"
+    nessun_candidato: "   (nessun candidato: battuta \"nessuna\")"
+  # Riassunto della serata (apps/server/src/sessione/riassunto.ts); il prompt è prompts/<codice>/riassunto.md.
+  riassunto:
+    messaggio: "## Trascrizione pubblica della serata\n{materiale}\n\n## Il riassunto"
+    azione: "{nome} (azione)"
+  # Copione generico del narratore finto (apps/server/src/llm/finto.ts), per prove senza modello.
+  finto:
+    apertura: "[narratore] Il forno crepita in fondo alla sala. Qualcuno bussa due volte alla porta."
+    png: "[{png}] Chi è a quest'ora? Rispondete, o non apro."
+    chiusura: "[narratore] Il vento porta l'odore della neve. Cosa fate?"

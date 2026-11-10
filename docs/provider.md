@@ -65,8 +65,14 @@ Il lettore ha un modo. `auto` vuol dire minimo in locale e completo con un'API.
 
 - Per ogni azione sceglie una battuta fra i candidati (le indicate dal Motore e al più 6 del catalogo
   che condividono parole con l'azione), oppure «nessuna».
-- Può scrivere un annuncio in terza persona, col nome del PG, al massimo 20 parole. Le azioni private
-  non si annunciano mai.
+- L'annuncio non lo scrive il modello: lo compone il Motore (`llm/annuncio.ts`), col nome del PG e la prima
+  frase breve del giocatore, al massimo 12 parole. In italiano le sue parole si citano («Ida: «Guardo la
+  scatolina».»); in inglese la prima persona si volta in terza («Ginestra opens the door.») e, se non si può
+  con certezza, si cita. Le regole sono in `lingue/<codice>/motore.yaml` (`annuncio`). Le azioni private non
+  si annunciano mai.
+- Il turno gli arriva come dati (`RichiestaNarrazione.dati`, lo stesso oggetto da cui
+  `narrazione/messaggio.ts` compila il testo), non dal testo del messaggio: così non dipende dalla lingua dei
+  titoli. Prompt in `prompts/<codice>/lettore-minimo.md`.
 - «Nessuna» vuol dire una battuta d'attesa del repertorio. Non nasce mai prosa nuova.
 - Perché: un modello piccolo non scrive prosa buona. La prosa viene dal repertorio. Il protocollo
   (`[narratore]`, `[usa]`, `[invito]`) resta quello di sempre.

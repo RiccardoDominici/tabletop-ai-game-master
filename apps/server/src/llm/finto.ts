@@ -5,6 +5,7 @@
  */
 import fs from 'node:fs';
 import { setTimeout as attendi } from 'node:timers/promises';
+import { testo } from '../lingua';
 import { calcolaCosto } from './costi';
 import type { EsitoNarrazione, Narratore, RichiestaNarrazione } from './tipi';
 
@@ -51,12 +52,8 @@ export class NarratoreFinto implements Narratore {
     if (this.o.copione) return this.o.copione(turno);
     const png = this.o.idPng[turno % Math.max(1, this.o.idPng.length)];
     const invito = this.o.idPg.slice(0, 2).join(',') || 'tutti';
-    return [
-      `[narratore] Il forno crepita in fondo alla sala. Qualcuno bussa due volte alla porta.`,
-      png ? `[${png}] Chi è a quest'ora? Rispondete, o non apro.` : '',
-      `[narratore] Il vento porta l'odore della neve. Cosa fate?`,
-      `[invito] ${invito}`,
-    ]
+    // Le frasi nella lingua dei contenuti (lingue/<codice>/testi-modelli.yaml, `modelli.finto`).
+    return [testo('modelli.finto.apertura'), png ? testo('modelli.finto.png', { png }) : '', testo('modelli.finto.chiusura'), `[invito] ${invito}`]
       .filter(Boolean)
       .join('\n');
   }

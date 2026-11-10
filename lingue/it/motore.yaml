@@ -1,0 +1,135 @@
+# Regole linguistiche del Motore in italiano (docs/lingue.md): la lingua di riferimento.
+# Ogni altra lingua (lingue/<codice>/motore.yaml) ha esattamente le stesse chiavi; gli elenchi sono foglie (il
+# loro contenuto cambia da lingua a lingua). Le espressioni regolari sono testi tra apici singoli: la barra
+# rovesciata vale com'è, un apostrofo si scrive due volte (''). Un testo vuoto vuol dire «regola assente in
+# questa lingua». Ogni sezione dice quale file del server la legge; i flag delle espressioni li mette il codice.
+#
+# I dati italiani sono quelli che stavano nel codice, spostati parola per parola: il comportamento non cambia.
+
+# Annuncio deterministico del lettore minimo (apps/server/src/llm/minimo.ts, annuncioBreve): il nome del PG e la
+# prima frase breve di ciò che ha scritto il giocatore. In italiano le sue parole si citano tra virgolette.
+annuncio:
+  # Forma con le parole del giocatore citate ({nome}, {frase}): vale sempre.
+  citazione: '{nome}: «{frase}».'
+  # Forma in terza persona ({nome} {frase}), se la lingua sa voltare la prima persona (vedi prima_persona).
+  # Vuota: si usa sempre la citazione.
+  terza_persona: ''
+  # Risate da chat da togliere ovunque (flag gi).
+  risate: '\b(a(h|ha)+h?|lol|xd)\b'
+  # Intercalari in apertura da togliere, fino a tre di fila (flag i).
+  intercalari: '^(ok(ay)?|ah+|ahah\w*|eh|ehi|allora|bene|dai|uff|mah|beh|ecco|si|sì|no)\b[\s,!.]*'
+  # Virgolette ai due capi del testo, da togliere (flag g).
+  virgolette: '^["«]|["»]$'
+  # Se la frase si taglia a metà: ci si ferma prima di una congiunzione finale (flag i).
+  congiunzione_finale: '\s+(e|ma|poi|però|mentre|che|perché|se)(\s+\S+)?$'
+  # Parole al massimo, nome compreso (almeno tre parole di frase restano sempre).
+  max_parole: 12
+  # Prima persona → terza (solo le lingue che la sanno voltare con regole semplici; in italiano vuoto).
+  # Ogni regola si applica senza badare alle maiuscole, a parole intere.
+  prima_persona:
+    # Soggetto e verbo fusi all'inizio, da sostituire col verbo in terza persona ([da, a]).
+    contrazioni: []
+    # Il soggetto di prima persona all'inizio (si toglie; il verbo dopo va in terza persona).
+    soggetto: ''
+    # Una parola che sta fra soggetto e verbo e non cambia (avverbi: «also», «quickly»).
+    avverbi: ''
+    # Parole che non possono essere il verbo: se le si trova lì, si torna alla citazione.
+    non_verbi: ''
+    # Verbi che in terza persona restano uguali (modali, passati irregolari).
+    invariabili: []
+    # Verbi che in terza persona non seguono le desinenze ([da, a]).
+    irregolari: []
+    # Passato regolare: resta com'è.
+    passato: ''
+    # Desinenze della terza persona, la prima che vale ([espressione, sostituto con $1, $&]).
+    desinenze: []
+    # Congiunzione seguita da un nuovo soggetto di prima persona («and I look»): il gruppo 1 resta, poi si
+    # volta la frase che segue.
+    coordinata: ''
+    # Congiunzione seguita da un verbo senza soggetto («and look»): da lì si taglia (non si sa coniugare).
+    coordinata_senza_soggetto: ''
+    # Pronomi di prima persona nel resto della frase ([espressione, sostituto]).
+    pronomi: []
+
+# Collegamenti tra le azioni (apps/server/src/azioni/regole.ts): formule di dipendenza esplicite, su testo già
+# normalizzato (minuscolo, senza accenti, apostrofo dritto).
+collegamenti:
+  # Formule che, da sole, si riferiscono all'azione di qualcun altro. `nome` è l'id della formula (resta uguale
+  # in ogni lingua: lo leggono log e test).
+  formule_senza_nome:
+    - nome: anch_io
+      regex: '\b(anch''? ?io|anche io|anchio|pure io|idem|io pure|stessa cosa|faccio lo stesso|faccio come (lui|lei|loro))\b'
+    - nome: seguo_pronome
+      regex: '\b(lo|la|li|le) (seguo|seguiamo|accompagno|copro|aiuto)\b|\b(vado|resto|sto|vengo) con (lui|lei|loro)\b|\b(dietro|accanto) a (lui|lei)\b|\bgli (do|dò) (una )?mano\b|\ble (do|dò) (una )?mano\b'
+  # Verbi che legano a un PG nominato: «seguo X», «insieme a X», «aiuto X», «copro X»… (un gruppo, alternative).
+  legame_con_nome: '(seguo|seguiamo|vado con|vengo con|resto con|sto con|insieme a|insieme con|assieme a|accompagno|aiuto|do una mano a|do man forte a|copro|proteggo|sostengo|vado dietro a|resto dietro a|sto dietro a|dietro a|faccio come|come fa)'
+  # Fra il verbo di legame e il nome (facoltativo).
+  prima_del_nome: '(a |ad )?'
+
+# Divisore di frasi per la voce (apps/server/src/narrazione/frasi.ts).
+frasi:
+  # Abbreviazioni dopo cui il punto non chiude la frase (minuscolo, senza il punto finale).
+  abbreviazioni: [sig, sigg, sig.ra, sig.na, dott, dott.ssa, dr, prof, prof.ssa, avv, ing, mons, gen, col, cav, 'on', egr, gent, spett, ill, mr, mrs, st, s, ss, n, nr, pag, pagg, cap, art, vol, fig, tel, ca, cfr, es, p.es]
+
+# Guardia della finzione per le mosse contro lo stallo (apps/server/src/narrazione/finzione.ts): espressioni che
+# parlano del tavolo invece che del mondo. `nome` è per il log. Elenco volutamente stretto.
+finzione:
+  espressioni:
+    - { nome: PG, regex: '\bPG\b', flags: '' }
+    - { nome: giocatori, regex: '\bgiocator[ei]\b', flags: i }
+    - { nome: nessuno di voi, regex: '\bnessuno di voi\b', flags: i }
+    - { nome: nessuno dei PG/personaggi, regex: '\bnessuno dei (pg|personaggi|presenti|giocatori)\b', flags: i }
+    - { nome: nessuno ha ancora…, regex: '\bnessuno (ha|avete|di voi ha) (ancora )?(scelto|deciso|parlato|agito|scritto|risposto|fatto)\b', flags: i }
+    - { nome: non avete ancora…, regex: '\bnon (avete|hai) ancora (scelto|deciso|parlato|agito|scritto|risposto|fatto)\b', flags: i }
+    - { nome: decide per voi, regex: '\bdecid\w* per voi\b', flags: i }
+    - { nome: nessuno parla?, regex: '\bnessuno (parla|risponde|decide|sceglie)\s*\?', flags: i }
+    - { nome: vi stiamo aspettando, regex: '\b(vi|ti) (sto|stiamo|stanno) aspettando\b', flags: i }
+    - { nome: silenzio del tavolo, regex: '\bsilenzio (del tavolo|del gruppo|dei giocatori|dei presenti)\b', flags: i }
+
+# Guardia dei numeri delle regole a voce (apps/server/src/narrazione/numeri-regole.ts): punti ferita, CA e CD
+# perdono il numero. Le regole si applicano nell'ordine; in `regex`, {N} è un numero (cifre o `numero`).
+# Gruppi con nome: `n` = il numero (se è uno di `zero` si usa `sostituto_zero`), `maiuscola` = se comincia con
+# una maiuscola, il sostituto pure; ogni altro gruppo `x` si può usare nel sostituto come {x} (minuscolo).
+numeri_regole:
+  numero: 'zero|uno|un|una|due|tre|quattro|cinque|sei|sette|otto|nove|dieci|undici|dodici|tredici|quattordici|quindici|sedici|diciassette|diciotto|diciannove|venti|ventuno|ventidue|ventitré|ventitre|ventiquattro|venticinque|ventisei|ventisette|ventotto|ventinove|trenta'
+  zero: ['0', zero]
+  regole:
+    # «è a 0 punti ferita» → «è a terra».
+    - nome: a_zero
+      regex: '\ba\s+(?:0|zero)\s+punti\s+(?:ferita|di\s+vita)\b'
+      flags: gi
+      sostituto: a terra
+      sostituto_zero: ''
+    # «7 punti ferita (su 12)», «quattro punti di vita», «0 punti ferita».
+    - nome: punti_ferita
+      regex: '\b(?<n>{N})\s+(?<maiuscola>punt[oi])\s+(?<unita>ferita|di\s+vita)(?:\s+su\s+{N})?'
+      flags: gi
+      sostituto: 'alcuni punti {unita}'
+      sostituto_zero: 'nessun punto {unita}'
+    # «7/12 PF», «7 PF».
+    - nome: sigla_pf
+      regex: '\b(?<n>{N})(?:\s*/\s*{N})?\s*PF\b'
+      flags: g
+      sostituto: alcuni punti ferita
+      sostituto_zero: nessun punto ferita
+    # «la CA 15», «CA di 15» (sigla maiuscola), «classe armatura 15».
+    - nome: classe_armatura
+      regex: '\b(?:(?:la|una)\s+)?(?:CA|[Cc]lasse\s+[Aa]rmatura)(?:\s+(?:di|è))?\s+{N}\b'
+      flags: g
+      sostituto: l'armatura
+      sostituto_zero: ''
+    # «la CD 15», «CD di 15», «classe difficoltà 15».
+    - nome: classe_difficolta
+      regex: '\b(?:(?:la|una)\s+)?(?:CD|[Cc]lasse\s+(?:di\s+)?[Dd]ifficoltà)(?:\s+(?:di|è))?\s+{N}\b'
+      flags: g
+      sostituto: la difficoltà
+      sostituto_zero: ''
+
+# Guardia delle azioni private (apps/server/src/narrazione/privato.ts): parole frequenti (≥ 4 lettere, già senza
+# accenti) che non dicono il contenuto di un'azione e non contano come radici in comune.
+privato:
+  parole_vuote: [mentre, quando, questo, questa, quello, quella, quelli, sono, siete, della, delle, dello, degli, dalla, dalle, dallo, dagli, nella, nelle, nello, negli, sulla, sulle, sullo, sugli, alla, alle, allo, agli, verso, dopo, prima, senza, sotto, sopra, dentro, fuori, anche, ancora, molto, poco, tutto, tutti, tutta, ogni, come, cosa, perche, pero, piano, intanto, subito, appena, proprio, vostro, vostra, nostro, nostra, suoi, sue, loro, altro, altra, altri, qualche, niente, nulla]
+
+# Nomi brevi di PG e PNG (apps/server/src/campagna/nomi.ts): titoli da saltare («Sorella Teodora» → «Teodora»).
+nomi:
+  titoli: [sorella, fratello, padre, madre, ser, messer, donna, dama, mastro, frate, suor]

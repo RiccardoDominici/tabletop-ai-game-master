@@ -1,49 +1,74 @@
 /**
  * Guardia dei numeri delle regole a voce (docs/prove.md, «Narrazione»): punti ferita, CA e CD non si
  * leggono ad alta voce, li mostra già la carta del tiro sul proiettore. Una frase del narratore che li
- * dice («Corrado ha quattro punti di vita», «contro la CA 15») perde il numero prima della voce e
- * della trascrizione; il resto della frase resta com'è. Logica pura.
+ * dice («Corrado ha quattro punti di vita», «contro la CA 15»; «Corrado has four hit points», «against
+ * AC 15») perde il numero prima della voce e della trascrizione; il resto della frase resta com'è.
+ * Logica pura.
+ *
+ * Le regole sono della lingua dei contenuti: lingue/<codice>/motore.yaml, sezione `numeri_regole`. Ogni
+ * regola è un'espressione (con {N} al posto di un numero, in cifre o in lettere) e il suo sostituto;
+ * si applicano nell'ordine del file. Gruppi con nome nell'espressione:
+ * - `n`: il numero; se è uno di `zero` («0», «zero») si usa `sostituto_zero` («nessun punto ferita»);
+ * - `maiuscola`: se comincia con una maiuscola, il sostituto pure («Alcuni punti ferita»);
+ * - ogni altro gruppo `x` si mette nel sostituto al posto di {x}, minuscolo e con gli spazi normali
+ *   («punti di  vita» → «alcuni punti di vita»).
  */
+import { campoElenco, campoOggetti, campoTesto, regole, type Sezione } from '../lingua/motore';
 
-const NUMERI = 'zero|uno|un|una|due|tre|quattro|cinque|sei|sette|otto|nove|dieci|undici|dodici|tredici|quattordici|quindici|sedici|diciassette|diciotto|diciannove|venti|ventuno|ventidue|ventitré|ventitre|ventiquattro|venticinque|ventisei|ventisette|ventotto|ventinove|trenta';
-const N = `(\\d+|${NUMERI})`;
+interface RegolaNumero {
+  nome: string;
+  regex: RegExp;
+  sostituto: string;
+  /** Vuoto = come `sostituto`. */
+  sostitutoZero: string;
+}
 
-/** «7 punti ferita (su 12)», «quattro punti di vita», «0 punti ferita». */
-const PF = new RegExp(`\\b${N}\\s+(punt[oi])\\s+(ferita|di\\s+vita)(?:\\s+su\\s+${N})?`, 'gi');
-/** «7/12 PF», «7 PF». */
-const PF_SIGLA = new RegExp(`\\b${N}(?:\\s*/\\s*${N})?\\s*PF\\b`, 'g');
-/** «la CA 15», «CA di 15» (sigla maiuscola), «classe armatura 15». */
-const CA = new RegExp(`\\b(?:(?:la|una)\\s+)?(?:CA|[Cc]lasse\\s+[Aa]rmatura)(?:\\s+(?:di|è))?\\s+${N}\\b`, 'g');
-/** «la CD 15», «CD di 15», «classe difficoltà 15». */
-const CD = new RegExp(`\\b(?:(?:la|una)\\s+)?(?:CD|[Cc]lasse\\s+(?:di\\s+)?[Dd]ifficoltà)(?:\\s+(?:di|è))?\\s+${N}\\b`, 'g');
+interface RegoleNumeri {
+  regole: RegolaNumero[];
+  /** Le forme dello zero, minuscole. */
+  zero: ReadonlySet<string>;
+}
 
-const zero = (n: string): boolean => n === '0' || n.toLowerCase() === 'zero';
+function compila(s: Sezione): RegoleNumeri {
+  // {N}: un numero in cifre o in lettere, senza cattura (il numero lo cattura il gruppo `n`, se c'è).
+  const n = `(?:\\d+|${campoTesto(s, 'numero')})`;
+  return {
+    zero: new Set(campoElenco(s, 'zero').map((z) => z.toLowerCase())),
+    regole: campoOggetti(s, 'regole').map((r) => {
+      const nome = campoTesto(r, 'nome');
+      const testo = campoTesto(r, 'regex').replaceAll('{N}', n);
+      let regex: RegExp;
+      try {
+        regex = new RegExp(testo, campoTesto(r, 'flags'));
+      } catch (err) {
+        throw new Error(`motore.yaml: numeri_regole «${nome}» non è un'espressione regolare valida (${(err as Error).message})`);
+      }
+      return { nome, regex, sostituto: campoTesto(r, 'sostituto'), sostitutoZero: campoTesto(r, 'sostituto_zero') };
+    }),
+  };
+}
 
-/** «è a 0 punti ferita» → «è a terra». */
-const A_ZERO = /\ba\s+(?:0|zero)\s+punti\s+(?:ferita|di\s+vita)\b/gi;
+/** Il sostituto di una corrispondenza, con i gruppi al posto dei {segnaposto}. */
+function sostituto(r: RegolaNumero, gruppi: Record<string, string | undefined> | undefined, zero: ReadonlySet<string>): string {
+  const g = gruppi ?? {};
+  const èZero = g['n'] !== undefined && zero.has(g['n'].toLowerCase());
+  let t = (èZero && r.sostitutoZero) || r.sostituto;
+  t = t.replace(/\{(\w+)\}/g, (tutto, k: string) => (g[k] !== undefined ? g[k]!.toLowerCase().replace(/\s+/g, ' ') : tutto));
+  // La maiuscola vale per il sostituto «pieno», non per quello dello zero (com'era prima: «Nessun…» mai).
+  const maiuscola = !èZero && g['maiuscola'] !== undefined && /^\p{Lu}/u.test(g['maiuscola']);
+  return maiuscola ? `${t.charAt(0).toUpperCase()}${t.slice(1)}` : t;
+}
 
 export function togliNumeriRegole(testo: string): { testo: string; tolti: string[] } {
+  const { regole: elenco, zero } = regole('numeri_regole', compila);
   const tolti: string[] = [];
-  let t = testo.replace(A_ZERO, (m: string) => {
-    tolti.push(m);
-    return 'a terra';
-  });
-  t = t.replace(PF, (m: string, n: string, punti: string, unita: string) => {
-    tolti.push(m);
-    const di = unita.toLowerCase().startsWith('di') ? 'di vita' : 'ferita';
-    return zero(n) ? `nessun punto ${di}` : `${punti[0] === 'P' ? 'Alcuni' : 'alcuni'} punti ${di}`;
-  });
-  t = t.replace(PF_SIGLA, (m: string, n: string) => {
-    tolti.push(m);
-    return zero(n) ? 'nessun punto ferita' : 'alcuni punti ferita';
-  });
-  t = t.replace(CA, (m: string) => {
-    tolti.push(m);
-    return "l'armatura";
-  });
-  t = t.replace(CD, (m: string) => {
-    tolti.push(m);
-    return 'la difficoltà';
-  });
+  let t = testo;
+  for (const r of elenco) {
+    t = t.replace(r.regex, (...a: unknown[]) => {
+      tolti.push(a[0] as string);
+      const ultimo = a.at(-1);
+      return sostituto(r, typeof ultimo === 'object' ? (ultimo as Record<string, string | undefined>) : undefined, zero);
+    });
+  }
   return { testo: t, tolti };
 }

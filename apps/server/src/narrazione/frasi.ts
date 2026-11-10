@@ -1,5 +1,5 @@
 /**
- * Divisore incrementale di frasi italiane, per mandare alla voce ogni frase appena è completa.
+ * Divisore incrementale di frasi, per mandare alla voce ogni frase appena è completa.
  *
  * Riceve il testo di UN segmento (senza a capo: le righe le gestisce il parser del narratore)
  * a pezzi arbitrari, come arrivano dallo streaming, e restituisce le frasi finite.
@@ -12,12 +12,18 @@
  * - virgolette « » “ ” e "…": dentro una citazione non si spezza (salvo frasi lunghissime);
  *   le virgolette di chiusura dopo il terminatore restano nella frase («Fermi.» → una frase);
  * - numeri: «3.500» o «1,5» non spezzano (dopo il punto non c'è spazio);
- * - abbreviazioni comuni (sig., dott., prof., …) e iniziali maiuscole («A. Rossi»);
+ * - abbreviazioni comuni della lingua dei contenuti (sig., dott., prof.; Mr., Dr., St. …: lingue/<codice>/
+ *   motore.yaml, sezione `frasi`) e iniziali maiuscole («A. Rossi»);
  * - frase troppo lunga senza terminatori: si spezza a «,» «;» «:» oltre `maxCaratteri`,
  *   e in ultima istanza a uno spazio oltre `maxDuro`, così la voce non aspetta troppo.
  */
 
+import type { Lingua } from '../lingua';
+import { campoElenco, regole } from '../lingua/motore';
+
 export interface OpzioniDivisore {
+  /** Lingua delle abbreviazioni (default: la lingua dei contenuti attiva). */
+  lingua?: Lingua;
   /** Oltre questa lunghezza si accetta di spezzare a , ; : (default 220). */
   maxCaratteri?: number;
   /** Oltre questa lunghezza si spezza al primo spazio (default 420). */
@@ -29,12 +35,8 @@ const TERMINATORI = new Set(['.', '!', '?', '…']);
 const CHIUSURE = new Set(['»', '”', '"', "'", ')', ']', '’']);
 const PAUSE = new Set([',', ';', ':']);
 
-/** Abbreviazioni dopo cui il punto non chiude la frase (confronto minuscolo, senza punto). */
-const ABBREVIAZIONI = new Set([
-  'sig', 'sigg', 'sig.ra', 'sig.na', 'dott', 'dott.ssa', 'dr', 'prof', 'prof.ssa', 'avv', 'ing',
-  'mons', 'gen', 'col', 'cav', 'on', 'egr', 'gent', 'spett', 'ill', 'mr', 'mrs', 'st', 's', 'ss',
-  'n', 'nr', 'pag', 'pagg', 'cap', 'art', 'vol', 'fig', 'tel', 'ca', 'cfr', 'es', 'p.es',
-]);
+/** Abbreviazioni della lingua dei contenuti dopo cui il punto non chiude la frase (minuscolo, senza punto). */
+const abbreviazioni = (lingua?: Lingua): ReadonlySet<string> => regole('frasi', (s) => new Set(campoElenco(s, 'abbreviazioni')), lingua);
 
 function èSpazio(c: string | undefined): boolean {
   return c !== undefined && /\s/.test(c);
@@ -58,10 +60,13 @@ export class DivisoreFrasi {
   private buf = '';
   private readonly maxCaratteri: number;
   private readonly maxDuro: number;
+  private readonly abbreviazioni: ReadonlySet<string>;
 
   constructor(opzioni: OpzioniDivisore = {}) {
     this.maxCaratteri = opzioni.maxCaratteri ?? 220;
     this.maxDuro = opzioni.maxDuro ?? 420;
+    // Lette alla costruzione: un divisore vive un segmento, la lingua non cambia sotto di lui.
+    this.abbreviazioni = abbreviazioni(opzioni.lingua);
   }
 
   /** Aggiunge testo e restituisce le frasi che ora sono sicuramente complete. */
@@ -176,7 +181,7 @@ export class DivisoreFrasi {
     if (!parola) return false;
     // Iniziale: una sola lettera maiuscola («A. Rossi»).
     if (parola.length === 1 && /\p{Lu}/u.test(parola)) return true;
-    return ABBREVIAZIONI.has(parola.toLowerCase());
+    return this.abbreviazioni.has(parola.toLowerCase());
   }
 }
 

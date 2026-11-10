@@ -19,9 +19,9 @@ la lingua di gioco si sceglie in configurazione. Oggi tutto è in italiano; l'in
 ```
 config/predefinita.yaml          lingua: it                       (la scelta della configurazione)
 campagne/<id>/campagna.yaml      lingua: en                       (la lingua della campagna)
-prompts/<codice>/*.md            prompt dei modelli (narratore, selettore, arbitri, lettore, riassunto, regole)
-lingue/<codice>/testi.yaml       frasi fisse del Motore, a chiavi, con {segnaposto}
-lingue/<codice>/motore.yaml      regole linguistiche del Motore (annuncio, collegamenti tra azioni, guardie, frasi)
+prompts/<codice>/*.md            prompt dei modelli (narratore, selettore, arbitro-azioni, lettore-minimo, riassunto, regole)
+lingue/<codice>/testi*.yaml      frasi fisse del Motore, a chiavi, con {segnaposto} (testi-modelli.yaml: ciò che va ai modelli)
+lingue/<codice>/motore.yaml      regole linguistiche del Motore (annuncio, collegamenti tra azioni, frasi, guardie, nomi)
 lingue/<codice>/prove.yaml       parole chiave dell'arbitro dei dadi (SRD 5.2) e nomi di caratteristiche e abilità
 lingue/<codice>/prosa.yaml       regole di prosa del validatore (frasi, cliché, numeri in lettere, voce e tono)
 lingue/<codice>/preparatore.md   gli esempi del Preparatore in quella lingua
@@ -43,6 +43,15 @@ assets/voci/voci.yaml            voci per lingua (Fish e Qwen)
   Le funzioni del Motore chiedono `testo('chiave', { nome })` e `pacco().motore…`; senza una lingua impostata vale
   l'italiano, così test e strumenti che non la impostano si comportano come prima.
 - Prompt: `prompts/<lingua>/<nome>.md`. Le variabili `CANTASTORIE_PROMPT_*` forzano ancora un file preciso.
+- Regole linguistiche (`lingua/motore.ts`): ogni modulo chiede la sua sezione di `motore.yaml` con
+  `regole('sezione', compila)`; le espressioni sono testi, compilati alla prima richiesta e tenuti in cache
+  accanto al pacchetto della lingua. Le sezioni: `annuncio` (llm/annuncio.ts: in italiano si cita il
+  giocatore, in inglese si volta in terza persona), `collegamenti` (azioni/regole.ts: «anch'io», «me too»,
+  «I follow Corrado»), `frasi` (abbreviazioni del divisore), `finzione` e `numeri_regole` (le due guardie
+  della voce), `privato` (parole vuote della guardia delle azioni private), `nomi` (titoli saltati nei nomi
+  brevi). I prompt che stavano nel codice (`arbitro-azioni`, `lettore-minimo`, `riassunto`) si leggono con
+  `prompt(nome)`; i campi JSON e le etichette del protocollo restano uguali in ogni lingua.
+- Il lettore minimo riceve il turno come dati (`RichiestaNarrazione.dati`), non dal testo del messaggio.
 - Web: `apps/web/src/lingua/` (`t('chiave', { … })`), nessuna dipendenza nuova. La lingua dell'interfaccia arriva dal
   server (`/api/salute` all'avvio della pagina e `StatoTavolo.lingua`); finché non arriva vale l'italiano.
 - Validatore: `strumenti/valida/` legge `lingue/<lingua della campagna>/prosa.yaml`.

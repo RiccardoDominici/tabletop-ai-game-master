@@ -4,6 +4,7 @@
  * sistema tutti in cache, preriscaldamento a 0 token); con un server compatibile OpenAI (locale o in
  * rete) lo stesso prompt e lo stesso messaggio, e il prefisso fisso lo riusa la cache del server.
  */
+import { testo } from '../lingua';
 import type { ModelloLinguaggio, RichiestaModello } from './modello';
 import type { EsitoNarrazione, NomeNarratore, Narratore, RichiestaNarrazione } from './tipi';
 
@@ -30,7 +31,7 @@ export class NarratoreModello implements Narratore {
 
   /** Solo dove il provider lo ammette (Anthropic: max_tokens 0, non in streaming, stessi parametri dei turni). */
   preriscalda?: (sistema: string[]) => Promise<EsitoNarrazione | null> = async (sistema) => {
-    const e = await this.m.chiedi(this.richiesta(sistema, 'Preriscaldamento della cache: non rispondere.', 0));
+    const e = await this.m.chiedi(this.richiesta(sistema, testo('modelli.preriscaldamento'), 0));
     return { testo: '', modello: e.modello, stopReason: e.stopReason, uso: e.uso, costo: e.costo, idMessaggio: e.id };
   };
 }

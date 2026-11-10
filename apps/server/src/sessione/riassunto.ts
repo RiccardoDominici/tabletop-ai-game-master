@@ -19,6 +19,8 @@ import type { RiassuntoSerata, VoceTrascrizione } from '@cantastorie/shared';
 import { elencoPacchetti } from '../campagna/pacchetti';
 import type { Campagna } from '../campagna/tipi';
 import type { Narratore } from '../llm/tipi';
+import { testo } from '../lingua';
+import { prompt } from '../lingua/motore';
 import type { Logger } from '../logger';
 import { segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
 import { FILE_TRASCRIZIONE } from './registro';
@@ -34,16 +36,12 @@ export const MAX_FILI = 3;
 /** Attesa massima del modello per un riassunto, poi la riserva. */
 export const ATTESA_MODELLO_MS = 20_000;
 
-export const PROMPT_RIASSUNTO = `Riassumi una serata di una partita di Dungeons & Dragons dal vivo, in italiano. Ricevi SOLO ciò che il tavolo ha sentito: la trascrizione pubblica.
-
-Scrivi da tre a cinque frasi brevi, al passato prossimo, per l'orecchio: le legge una voce sintetica a tutto il tavolo. Chi ha fatto cosa, cosa hanno scoperto, cosa è cambiato. Usa i nomi dei personaggi.
-- Solo fatti della trascrizione. Niente supposizioni, niente colpevoli, segreti o spiegazioni che nessuno ha detto.
-- Niente titoli, elenchi, markdown, virgolette lunghe. Frasi da otto a sedici parole.
-- Poi, se ci sono, da una a tre righe che cominciano con «FILO:»: domande rimaste aperte, così come le sentirebbero i giocatori.`;
+/** Il prompt del riassunto nella lingua dei contenuti: prompts/<codice>/riassunto.md. */
+export const promptRiassunto = (): string => prompt('riassunto');
 
 /** Righe che il tavolo ha sentito (niente righe di sistema; le private non sono in trascrizione). */
 export function materialePubblico(voci: readonly VoceTrascrizione[], max = MAX_MATERIALE): string {
-  const righe = voci.filter((v) => v.tipo === 'narrazione' || v.tipo === 'battuta' || v.tipo === 'azione').map((v) => `${v.tipo === 'azione' ? `${v.nome} (azione)` : v.nome}: ${v.testo}`);
+  const righe = voci.filter((v) => v.tipo === 'narrazione' || v.tipo === 'battuta' || v.tipo === 'azione').map((v) => `${v.tipo === 'azione' ? testo('modelli.riassunto.azione', { nome: v.nome }) : v.nome}: ${v.testo}`);
   const out: string[] = [];
   let n = 0;
   for (let i = righe.length - 1; i >= 0; i--) {
@@ -108,11 +106,13 @@ export async function scriviRiassunto(
   };
   if (!o.narratore) return riserva('nessun modello');
   if (!r.materiale.trim()) return riserva('trascrizione pubblica vuota');
+  // Il messaggio fuori dal try: lì dentro `testo` è il testo del riassunto, non la funzione delle frasi fisse.
+  const messaggio = testo('modelli.riassunto.messaggio', { materiale: r.materiale });
   const controllo = new AbortController();
   const timer = setTimeout(() => controllo.abort(new Error('tempo scaduto')), r.attesaMs ?? ATTESA_MODELLO_MS);
   try {
     const esito = await o.narratore.narra(
-      { turno: r.turno, sistema: [PROMPT_RIASSUNTO], messaggio: `## Trascrizione pubblica della serata\n${r.materiale}\n\n## Il riassunto`, signal: controllo.signal },
+      { turno: r.turno, sistema: [promptRiassunto()], messaggio, signal: controllo.signal },
       () => undefined,
     );
     const { testo, fili } = analizzaRiassunto(esito.testo);

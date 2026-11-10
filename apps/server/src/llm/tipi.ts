@@ -11,6 +11,32 @@ export interface RichiestaNarrazione {
   /** Messaggio utente del turno (trascrizione + azioni). */
   messaggio: string;
   signal: AbortSignal;
+  /**
+   * Il turno come DATI, per chi non legge il testo (il lettore minimo): lo stesso oggetto da cui
+   * narrazione/messaggio.ts compila `messaggio`, così non dipende dalla lingua dei titoli. Assente
+   * (riassunto, strumenti) = vale solo il testo.
+   */
+  dati?: DatiTurnoLettore;
+}
+
+/**
+ * Ciò che il lettore minimo usa del turno: un sottoinsieme di `DatiMessaggioTurno` (narrazione/messaggio.ts),
+ * più il segno della chiamata di riparazione. Le righe di repertorio sono nel formato del protocollo
+ * («- id · chi · tipo · quando», «[usa] id > pg»), uguale in ogni lingua.
+ */
+export interface DatiTurnoLettore {
+  /** Azioni del turno nell'ordine di risoluzione; `testo: null` = il PG ha passato. */
+  azioni: ReadonlyArray<{ id_pg: string; nome: string; testo: string | null; privata?: boolean }>;
+  repertorio?: {
+    /** Una riga per azione: «- pg_x (Nome): [usa] id > pg_x …». */
+    indicate?: readonly string[];
+    /** Il catalogo del turno, una battuta per riga. */
+    battuteDisponibili: string;
+    /** Le battute d'attesa, una per riga. */
+    attesa?: string;
+  };
+  /** Chiamata di riparazione (azioni rimaste senza risposta): il lettore minimo non improvvisa niente. */
+  riparazione?: boolean;
 }
 
 export interface EsitoNarrazione {

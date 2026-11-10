@@ -18,7 +18,7 @@ import { togliNumeriRegole } from '../narrazione/numeri-regole';
 import type { Campagna } from '../campagna/tipi';
 import { ID_NARRATORE, NOME_NARRATORE } from '../campagna/tipi';
 import type { Logger } from '../logger';
-import type { EsitoNarrazione, Narratore } from '../llm/tipi';
+import type { DatiTurnoLettore, EsitoNarrazione, Narratore } from '../llm/tipi';
 import type { MisuratoreTurno } from '../metriche/misure';
 import { ParserNarratore, type EventoNarratore } from '../narrazione/parser';
 import type { FraseDaDire, PipelineVoce } from '../voce/pipeline';
@@ -106,6 +106,8 @@ export interface ParametriTurno {
   turno: number;
   sistema: string[];
   messaggio: string;
+  /** Il turno come dati (lo stesso oggetto del messaggio), per il lettore minimo: non legge il testo. */
+  dati?: DatiTurnoLettore;
   signal: AbortSignal;
   misuratore: MisuratoreTurno;
   ora: () => number;
@@ -390,7 +392,7 @@ export async function narraTurno(
 
   try {
     const esito = await narratore.narra(
-      { turno: p.turno, sistema: p.sistema, messaggio: p.messaggio, signal: p.signal },
+      { turno: p.turno, sistema: p.sistema, messaggio: p.messaggio, ...(p.dati ? { dati: p.dati } : {}), signal: p.signal },
       (delta) => {
         p.misuratore.segna('llm_primo_token', p.ora());
         gestisci(parser.aggiungi(delta));
