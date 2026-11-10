@@ -37,3 +37,12 @@ battute:
       - "[png_irma] Volevo darla in pegno al mercante. Per il tetto, prima della neve."
     effetti: {fatti_noti: [f_lanterna_cantina, f_irma_prestito]}
     max_usi: 1
+
+  - id: irma_attesa
+    chi: png_irma
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG indugiano al bancone senza chiedere niente"
+    temi: [bancone, boccale, bere]
+    testo: ["[png_irma] Volete ancora da bere, o siete venuti solo a guardare?"]
+    max_usi: 1

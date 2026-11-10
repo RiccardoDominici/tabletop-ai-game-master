@@ -13,7 +13,8 @@ sono sbagliati. Ogni riga ha un codice `CLASSE.regola`: la classe dice quale par
 
 --rigoroso trasforma in errori gli avvisi pensati per le campagne nuove scritte con la skill
 `preparatore`: confessioni senza cancello (`richiede.privata`, `da_pg`, indizi), menzogne senza id,
-indizi senza `modi`, PNG senza `alias`, temi generici, tratti nascosti nei prompt delle immagini.
+indizi senza `modi`, PNG senza `alias`, temi generici, tratti nascosti nei prompt delle immagini,
+battute d'attesa e deviazioni mancanti (COPERTURA.attesa_scena, attesa_png, deviazione_png).
 
 --solo serve ai controlli dei passi intermedi della skill: mostra (e conta nel codice d'uscita) solo le
 classi o i codici elencati, così un passo non chiede di correggere errori di file non ancora scritti.

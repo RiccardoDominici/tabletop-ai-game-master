@@ -300,6 +300,13 @@ Voce nelle righe: la direzione va dopo l'etichetta, tra quadre e breve, per esem
 Ordine: segni d'orologio, indizi, menzogne, confessioni, momenti, finali, esempi di voce, riempitivi,
 transizioni. Quando scrivi i finali, aggiungi a ogni scena i suoi `esiti`.
 
+**Battute d'attesa e deviazioni (sempre)**: per ogni scena una battuta d'attesa del narratore (`chi: narratore`,
+`riempitivo: true`, senza `scena` o con quella scena); per ogni PNG presente in una scena una sua battuta d'attesa
+(`chi: <png>`, `riempitivo: true`) e una deviazione (`tipo: rifiuto`, anche `solo_esempio: true`). Servono perché,
+quando il lettore locale non trova una risposta, usa proprio quelle: il tavolo sente qualcosa di preparato, mai il
+silenzio. Lo sceneggiatore scrive la risposta vera mentre il tavolo aspetta. Codici `COPERTURA.attesa_scena`,
+`COPERTURA.attesa_png`, `COPERTURA.deviazione_png` (avvisi in modo normale, errori in modo rigoroso).
+
 **Controllo**: `--solo REPERTORIO,COPERTURA,PROSA,SCENA` con zero errori (gli errori `SEGRETI` si chiudono
 al passo 10), e:
 - la tabella di copertura di `riferimenti/repertorio.md` §8 è tutta spuntata, e ogni voce di

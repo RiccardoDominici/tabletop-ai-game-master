@@ -255,6 +255,11 @@ Campi della battuta: `id, chi, tipo, quando, temi, richiede, testo, varianti, ef
 solo_esempio, riempitivo, scena, audio` [V]. Nient'altro [V]. `audio: {umore, effetto}` è un segnale
 automatico (vedi «Audio» sotto e repertorio.md §6). `richiede.oppure` è applicato dal Motore
 (repertorio.md §4); `scena` è un id o una lista di id.
+Ogni scena ha almeno una battuta d'attesa del narratore (`chi: narratore`, `riempitivo: true`, senza `scena` o con
+quella scena); ogni PNG presente in una scena ha una sua battuta d'attesa (`chi: <png>`, `riempitivo: true`) e una
+deviazione (`tipo: rifiuto`, anche `solo_esempio: true`) [V]. Il lettore locale le usa quando non trova una risposta:
+il tavolo non resta mai in silenzio, mentre lo sceneggiatore scrive la risposta vera. Codici `COPERTURA.attesa_scena`,
+`COPERTURA.attesa_png`, `COPERTURA.deviazione_png`.
 
 ## Audio (facoltativo): stile.audio, scene e nodi audio, png.tema
 La pipeline dell'audio (`strumenti/audio/`, contratto in `docs/audio.md`) ricava musica, ambienti, effetti

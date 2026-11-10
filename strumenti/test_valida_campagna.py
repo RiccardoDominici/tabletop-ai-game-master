@@ -1033,6 +1033,44 @@ def test_copertura_temi_generici_in_rigoroso(camp):
     assert "COPERTURA.temi" in errori(camp, rigoroso=True)
 
 
+def dove_di(cartella: Path, codice: str, rigoroso: bool = False) -> set[str]:
+    """Su quali id (scena o PNG) cade un codice, come avviso o come errore in modo rigoroso."""
+    esito, _ = valida(cartella, rigoroso=rigoroso, voci=VOCI if VOCI.exists() else None, contesto_b=False)
+    return {v.dove for v in esito.voci if v.codice == codice}
+
+
+def test_copertura_attesa_e_deviazione_intatte_nel_mini(camp):
+    assert not {"COPERTURA.attesa_scena", "COPERTURA.attesa_png", "COPERTURA.deviazione_png"} & avvisi(camp, rigoroso=True)
+
+
+def test_copertura_attesa_scena_senza_narratore_riempitivo(camp):
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_stallo").pop("riempitivo"))
+    assert dove_di(camp, "COPERTURA.attesa_scena") == {"scena_volpe"}
+    assert "COPERTURA.attesa_scena" not in errori(camp)
+    assert "COPERTURA.attesa_scena" in errori(camp, rigoroso=True)
+
+
+def test_copertura_attesa_scena_che_vale_solo_altrove(camp):
+    # Un'attesa del narratore con `scena` che non elenca questa scena non conta per lei.
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_stallo").update(scena=["scena_altrove"]))
+    assert dove_di(camp, "COPERTURA.attesa_scena") == {"scena_volpe"}
+
+
+def test_copertura_attesa_png_senza_battuta_d_attesa(camp):
+    modifica(camp, "repertorio/png_irma.yaml", lambda d: d.update(battute=[b for b in d["battute"] if b.get("id") != "irma_attesa"]))
+    assert dove_di(camp, "COPERTURA.attesa_png") == {"png_irma"}
+    assert "COPERTURA.attesa_png" not in errori(camp)
+    assert "COPERTURA.attesa_png" in errori(camp, rigoroso=True)
+
+
+def test_copertura_deviazione_png_senza_rifiuto(camp):
+    # Un rifiuto di esempio (solo_esempio) vale: basta che il PNG abbia tipo rifiuto.
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: battuta(d, "bruno_rifiuto").update(tipo="reazione"))
+    assert dove_di(camp, "COPERTURA.deviazione_png") == {"png_bruno"}
+    assert "COPERTURA.deviazione_png" not in errori(camp)
+    assert "COPERTURA.deviazione_png" in errori(camp, rigoroso=True)
+
+
 # --- SEGRETI --------------------------------------------------------------------------------------
 
 def test_segreti_nel_catalogo(camp):

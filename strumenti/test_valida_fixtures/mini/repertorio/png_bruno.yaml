@@ -36,3 +36,12 @@ battute:
       - "[png_bruno] Ho visto Irma, a mezzanotte. Scendeva in cantina con un fagotto."
     effetti: {rivela_indizi: [i_bruno_racconta], fatti_noti: [f_bruno_visto]}
     max_usi: 1
+
+  - id: bruno_attesa
+    chi: png_bruno
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG tacciono davanti al fuoco"
+    temi: [pipa, tabacco, fuoco]
+    testo: ["[png_bruno] Il fuoco tira bene stasera. Ma dalla finestra entra un freddo cane."]
+    max_usi: 1
