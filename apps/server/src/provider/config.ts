@@ -37,7 +37,7 @@ export interface VoceComponente {
   url?: string;
   chiave?: string;
   riserve?: NomeProviderConfig[];
-  /** Solo lettore: minimo | completo | auto. */
+  /** Solo lettore e arbitro_prove: minimo | completo | auto (minimo in locale). */
   modo?: 'minimo' | 'completo' | 'auto';
 }
 
@@ -53,7 +53,7 @@ export interface Scelta {
   provider: NomeProviderConfig;
   modello: string | null;
   url: string | null;
-  /** Solo lettore: il modo effettivo. */
+  /** Solo lettore e arbitro_prove: il modo effettivo. */
   modo?: 'minimo' | 'completo';
   /** Perché questo provider (o perché i precedenti della catena sono stati saltati). */
   perche: string;
@@ -166,7 +166,8 @@ export function risolvi(cfg: ConfigProvider, chiavi: FontiChiavi = {}): Record<N
       break;
     }
     scelta ??= { componente: c, provider: c === 'voce' || c === 'lettore' ? 'finto' : 'regole', modello: null, url: null, perche: `nessun provider disponibile (${saltati.join('; ')})` };
-    if (c === 'lettore') {
+    // Lettore e arbitro delle prove: in locale il modo minimo (un modello piccolo non regge il prompt completo).
+    if (c === 'lettore' || c === 'arbitro_prove') {
       const modo = v.modo ?? 'auto';
       scelta.modo = modo === 'auto' ? (scelta.provider === 'locale' ? 'minimo' : 'completo') : modo;
     }

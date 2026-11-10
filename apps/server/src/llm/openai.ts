@@ -49,7 +49,7 @@ interface InAttesa {
 /** Code dei server (per URL): richieste in volo e in attesa, con la priorità del lettore. */
 const CODE = new Map<string, { inVolo: number; attesa: InAttesa[] }>();
 
-async function inCoda<T>(url: string, o: NonNullable<OpzioniOpenAI['coda']>, lavoro: () => Promise<T>): Promise<T> {
+async function inCoda<T>(url: string, o: NonNullable<OpzioniOpenAI['coda']>, lavoro: () => Promise<T>, signal?: AbortSignal): Promise<T> {
   let c = CODE.get(url);
   if (!c) CODE.set(url, (c = { inVolo: 0, attesa: [] }));
   const coda = c;
@@ -62,6 +62,18 @@ async function inCoda<T>(url: string, o: NonNullable<OpzioniOpenAI['coda']>, lav
           rinuncia(new Error(`server occupato da più di ${o.attesaMaxMs} ms (precedenza al lettore)`));
         }, o.attesaMaxMs);
       }
+      // Chi chiama rinuncia (il suo tempo è scaduto): esce dalla coda senza partire.
+      signal?.addEventListener(
+        'abort',
+        () => {
+          const k = coda.attesa.indexOf(voce);
+          if (k < 0) return;
+          coda.attesa.splice(k, 1);
+          if (voce.timer) clearTimeout(voce.timer);
+          rinuncia(new Error('rinuncia in coda: tempo scaduto'));
+        },
+        { once: true },
+      );
       // L'alta priorità va prima di tutte le basse in attesa.
       const i = voce.alta ? coda.attesa.findIndex((x) => !x.alta) : -1;
       if (i >= 0) coda.attesa.splice(i, 0, voce);
@@ -145,16 +157,16 @@ export class ModelloOpenAI implements ModelloLinguaggio {
   }
 
   /** In coda (se configurata) per il server di questo URL. */
-  private inCoda<T>(lavoro: () => Promise<T>): Promise<T> {
-    return this.o.coda ? inCoda(this.o.url, this.o.coda, lavoro) : lavoro();
+  private inCoda<T>(lavoro: () => Promise<T>, signal?: AbortSignal): Promise<T> {
+    return this.o.coda ? inCoda(this.o.url, this.o.coda, lavoro, signal) : lavoro();
   }
 
   chiedi(r: RichiestaModello): Promise<RispostaModello> {
-    return this.inCoda(() => this.chiediOra(r));
+    return this.inCoda(() => this.chiediOra(r), r.signal);
   }
 
   flusso(r: RichiestaModello, onDelta: (delta: string) => void): Promise<RispostaModello> {
-    return this.inCoda(() => this.flussoOra(r, onDelta));
+    return this.inCoda(() => this.flussoOra(r, onDelta), r.signal);
   }
 
   private async chiediOra(r: RichiestaModello): Promise<RispostaModello> {

@@ -35,6 +35,7 @@ import type { ArbitroProve, DecisioneProva, DecisioneRegole } from './prove/tipi
 import { caricaRegole } from './regole/caricatore';
 import { caricaSchedeGeneriche } from './regole/schede';
 import { ArbitroRegoleHaiku } from './prove/arbitro-regole';
+import { ArbitroProveMinimo } from './prove/arbitro-minimo';
 import { RisponditoreRegole } from './regole/chiedi';
 import { collegaRegole } from './trasporto/regole';
 import type { FonteDadi } from './prove/dadi';
@@ -250,9 +251,17 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       : dadi.attivo && usaModello('arbitro_prove')
         ? generico
           ? new ArbitroRegoleHaiku(regole, modelloProve, { modello: etichettaModello('arbitro_prove'), log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
-          : new ArbitroProveHaiku(modelloProve, { modello: etichettaModello('arbitro_prove'), log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
+          : scelte.arbitro_prove.modo === 'minimo'
+            ? new ArbitroProveMinimo(modelloProve, { log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
+            : new ArbitroProveHaiku(modelloProve, { modello: etichettaModello('arbitro_prove'), log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
         : null;
-  log.info({ dadi: dadi.attivo, motivo: dadi.motivo, regole: regole.sistema.id, risoluzione: regole.sistema.risoluzione.tipo, arbitro: arbitroProve ? scelte.arbitro_prove.provider : 'nessuno', seme_fisso: !!config.semeDadi }, 'PROVE E DADI');
+  // Quale arbitro dei tiri è in uso, scritto chiaro nel log d'avvio.
+  const nomeArbitroProve = !arbitroProve
+    ? 'nessuno (niente tiri)'
+    : sost.arbitroProve !== undefined
+      ? 'sostituito (prove)'
+      : `${scelte.arbitro_prove.provider} ${generico ? 'completo (set generico)' : scelte.arbitro_prove.modo === 'minimo' ? 'minimo (parole chiave + scelta breve, ripiego a regole)' : 'completo'}`;
+  log.info({ dadi: dadi.attivo, motivo: dadi.motivo, regole: regole.sistema.id, risoluzione: regole.sistema.risoluzione.tipo, arbitro: nomeArbitroProve, seme_fisso: !!config.semeDadi }, `PROVE E DADI: arbitro ${nomeArbitroProve}`);
   // «Chiedi una regola» dal telefono: il modello sui soli testi del set (mai la campagna).
   const risponditore = new RisponditoreRegole(regole, fabbrica.usaModello('regole') ? () => fabbrica.modello('regole')! : null, {
     modello: etichettaModello('regole'),

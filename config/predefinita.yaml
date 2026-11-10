@@ -38,10 +38,12 @@ componenti:
   # o «nessuna») + al più l'annuncio in terza persona; tutta la prosa viene dal repertorio. modo completo:
   # il narratore di sempre, che scrive le righe. auto = minimo in locale, completo con un'API.
   lettore:        {provider: locale, modo: auto, riserve: [finto]}
-  # Arbitro delle azioni simultanee (dipendenze, conflitti): riserva a regole.
-  arbitro_azioni: {provider: locale, riserve: [regole]}
-  # Arbitro delle prove e dei tiri (SRD 5.2): riserva a regole.
-  arbitro_prove:  {provider: locale, riserve: [regole]}
+  # Arbitro delle azioni simultanee (dipendenze, conflitti). In locale a regole: un modello da 4B ci metteva
+  # 15–30 s a chiamata e cedeva comunque il server al lettore (misura del 10/11/2026); con un'API: anthropic.
+  arbitro_azioni: {provider: regole}
+  # Arbitro delle prove e dei tiri (SRD 5.2). modo minimo (auto, in locale): parole chiave → abilità candidate,
+  # il modello sceglie fra poche, ripiego a regole se non risponde in 3 s (prove/arbitro-minimo.ts).
+  arbitro_prove:  {provider: locale, modo: auto, riserve: [regole]}
   # «La volta scorsa…»: riserva = il riassunto deterministico dai segni.
   riassunto:      {provider: locale, riserve: [regole]}
   # «Chiedi una regola» dal telefono: riserva = la ricerca nelle regole, senza modello.
