@@ -128,3 +128,18 @@ copione `indagine`. I risultati sono in esperimenti/voce-drama3/partita/.
   partita non si pagano.
 - Il selettore ha scritto da solo una direzione (`[png_ettore] [brontolando] Eh? …`), riportata sulle tre
   frasi della riga. Whisper sull'mp3 di 60 s: nessuna parola delle direzioni nella trascrizione.
+
+## 7. English voices (10 November 2026)
+
+- Search: `GET https://api.fish.audio/model?language=en&tag=…&sort_by=task_count` (tags male, female, narration,
+  calm, old, young, deep, storytelling…). The API returns at most 1000 results per query, so the list is built
+  from several tag queries. Candidates were then checked on title, author, description and sample (no real
+  person, no film or cartoon character, no name in the sample), then on median f0 and spectral centroid of the
+  public sample.
+- Chosen (assets/voci/voci.yaml, `fish.en`, `fish_titolo_en`, `fish_perche_en`): narratore «Adrian», vincent
+  «BOOK RECORD REGULAR», nadine «Laura», lucian «horror», tabitha «Friendly Women». Four are Fish Official
+  voices; the others are generic community titles. Open risk: vincent and lucian both sit near 77 Hz, and
+  only the timbre separates them. This was not checked with Whisper and needs a listen.
+- Server: `caricaRegistroVoci` takes the Fish id of the content language (`linguaAttiva()`). Without an English
+  id it falls back to Italian with a warning. Qwen is unchanged and stays the fallback: its clones read English
+  with the Italian accent of the reference clip.

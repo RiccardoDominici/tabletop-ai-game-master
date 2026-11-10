@@ -21,6 +21,16 @@
 # - fish: reference_id di una voce pubblica di Fish Audio (api.fish.audio/model/<id>), letto dal server
 #   (apps/server/src/voce/registro-voci.ts); i campi sopra restano per Qwen, che è la riserva.
 # - fish_titolo, fish_perche: com'è intitolata su Fish e perché è stata scelta.
+# - fish: {it: <id>, en: <id>}: una voce pubblica di Fish per lingua dei contenuti (docs/lingue.md).
+#   La forma vecchia `fish: <id>` (solo italiano) resta valida e vale come `it`. Il registro
+#   (apps/server/src/voce/registro-voci.ts) sceglie l'id della lingua della campagna; se manca, ripiega
+#   sull'italiano con un avviso.
+# - fish_titolo_en, fish_perche_en: titolo e motivo della voce inglese (fish_titolo e fish_perche sono
+#   quelli italiani). Le voci inglesi vengono da api.fish.audio/model?language=en, ordinate per task_count,
+#   con i tag male/female/narration/calm/old/young/deep. Misure del 10/11: f0 mediana e baricentro sul
+#   campione pubblico di ciascuna (non su una battuta di prova, né con Whisper come per l'italiano).
+# - Qwen (file, testo_rif) resta com'è: è la riserva, non la voce inglese. Un clone ICL italiano legge
+#   l'inglese con l'accento della clip di riferimento.
 # Criteri di scelta: voce in italiano; titolo e campione generici, cioè nessun clone dichiarato di una
 # persona reale (attori, doppiatori, youtuber, politici) né di un personaggio di film o cartoni; voci
 # distinte tra loro a orecchio. Misure del 9/11 su una battuta di prova per voce: f0 mediana e
@@ -33,40 +43,60 @@ voci:
     file: narratore.wav
     testo_rif: "Benvenuti, avventurieri, nella taverna del Cervo Azzurro, dove il fuoco non si spegne mai e ogni storia ha un prezzo."
     descrizione: "Voce fissa del narratore (clip «bram» delle prove HeyGen), sempre la stessa per tutta la campagna."
-    fish: 130bd00e5d89470bb0352d20b8c4bf8b
+    fish:
+      it: 130bd00e5d89470bb0352d20b8c4bf8b
+      en: bf322df2096a46f18c579d0baa36f41d
     fish_titolo: "Narratore Calmo"
     fish_perche: "Maschile, calda e misurata, la voce italiana per il racconto più usata su Fish (6.657 usi, 27 like). Chiara alla trascrizione, primo audio in circa 0,45 s. f0 135 Hz: sta in mezzo tra le voci dei PNG e non si confonde con nessuna."
+    fish_titolo_en: "Adrian"
+    fish_perche_en: "Maschile di mezza età, profonda, lenta e misurata (tag: narration, deep, slow, storytelling). Voce Fish Official, la più usata per il racconto in inglese (circa 1,15 milioni di usi), generica. Campione di narrativa, senza nomi di persone. f0 111 Hz, come il narratore italiano: il timbro è diverso dalle voci dei PNG."
 
   - id: vincent
     file: vincent.wav
     testo_rif: "Siete arrivati tardi, stranieri. La strada per Vallestorta è chiusa da settimane, e chi la percorre di notte non fa più ritorno."
     descrizione: "Nano burbero, maschile, voce grave e ruvida."
-    fish: 9b0dc46209e0464483dcc0015a032111
+    fish:
+      it: 9b0dc46209e0464483dcc0015a032111
+      en: f8dfe9c83081432386f143e2fe9767ef
     fish_titolo: "Voce bassa"
     fish_perche: "Maschile anziana, profonda e autorevole (tag: deep, low, dark). È la più grave delle voci maschili provate: f0 111 Hz, quattro semitoni sotto il narratore. Va bene per i vecchi burberi delle campagne: Ettore, Baldrin, Tullio. Scartate «Voce Maschile Scontroso» e «Voce Ironica Anziana», che a un tono neutro rispondevano gridando (circa 200 Hz)."
+    fish_titolo_en: "BOOK RECORD REGULAR"
+    fish_perche_en: "Maschile anziana, profonda e roca (tag: old, deep, raspy, measured), descritta come autorevole e saggia. Il timbro ruvido è quello del burbero vincent. f0 78 Hz, baricentro 1511 Hz. Campione generico, senza nomi. Attenzione: la f0 è quasi quella di lucian (76 Hz); la separa il timbro (lucian ha il baricentro a 2422 Hz), ma va sentita in scena."
 
   - id: nadine
     file: nadine.wav
     testo_rif: "Siete arrivati tardi, stranieri. La strada per Vallestorta è chiusa da settimane, e chi la percorre di notte non fa più ritorno."
     descrizione: "Locandiera anziana, femminile, voce matura."
     simile_a: [tabitha]
-    fish: e63400ae1f9d4e5a994b87095f6a9dbb
+    fish:
+      it: e63400ae1f9d4e5a994b87095f6a9dbb
+      en: e3cd384158934cc9a01029cd7d278634
     fish_titolo: "Nonna barbara"
     fish_perche: "Femminile anziana, calma ed espressiva, da racconto (tag: old, warm, storytelling). Va bene per le donne mature delle campagne: Adelina, Ottavia, Rosa. f0 210 Hz. Scartate «Iadda» e «Annammorrria», più piatte e da conversazione quotidiana."
+    fish_titolo_en: "Laura"
+    fish_perche_en: "Femminile di mezza età, calda e calma (tag: warm, calm, conversational, educational). Voce Fish Official, generica. Per le donne mature delle campagne: Adelina, Ottavia, Rosa. f0 150 Hz, a circa sei semitoni da tabitha (219 Hz)."
 
   - id: lucian
     file: lucian.wav
     testo_rif: "Siete arrivati tardi, stranieri. La strada per Vallestorta è chiusa da settimane, e chi la percorre di notte non fa più ritorno."
     descrizione: "Straniero incappucciato, maschile, voce bassa e misteriosa."
-    fish: 60b51b6e9e654e06b54871895b1c9a71
+    fish:
+      it: 60b51b6e9e654e06b54871895b1c9a71
+      en: ef9c79b62ef34530bf452c0e50e3c260
     fish_titolo: "ITAL"
     fish_perche: "Maschile di mezza età, bassa, scura e raccolta (tag: mysterious, deep, intimate). Il campione è un generico racconto di nebbia. È il timbro più scuro tra le voci provate (baricentro 860 Hz contro 1014 di vincent e 1358 del narratore), f0 96 Hz: va bene per i «quasi un sussurro» come Gaspare e Vischi. Scartate «Scanner» e «Narratore Solenne», perché i loro campioni sembrano battute di film doppiati (Transformers per il secondo)."
+    fish_titolo_en: "horror"
+    fish_perche_en: "Maschile di mezza età, bassa e misteriosa (tag: deep, low, mysterious, calm, storytelling). Il campione è un racconto di fenomeni notturni, senza nomi di persone. Titolo di genere, non di un personaggio. f0 76 Hz, baricentro 2422 Hz: per i «quasi un sussurro» come Gaspare e Vischi, da sentire in scena."
 
   - id: tabitha
     file: tabitha.wav
     testo_rif: "Siete arrivati tardi, stranieri. La strada per Vallestorta è chiusa da settimane, e chi la percorre di notte non fa più ritorno."
     descrizione: "Giovane ladra, femminile, voce giovane e sfacciata."
     simile_a: [nadine]
-    fish: 367577d036bb49e4a7799169ed5ec0fc
+    fish:
+      it: 367577d036bb49e4a7799169ed5ec0fc
+      en: b545c585f631496c914815291da4e893
     fish_titolo: "Voce Vivace Italiana"
     fish_perche: "Femminile giovane, energica ed espressiva (tag: young, playful). È la più alta delle voci provate (f0 296 Hz), lontana da nadine. Va bene per le ragazze svelte: Zelia, Bice. Scartata «Ragazza Vivace» (219 Hz), che si sarebbe confusa con nadine."
+    fish_titolo_en: "Friendly Women"
+    fish_perche_en: "Femminile giovane, brillante ed energica (tag: young, bright, energetic, playful). Titolo generico, campione di prova generico. Per le ragazze svelte: Zelia, Bice. f0 219 Hz, a circa sei semitoni da nadine (150 Hz)."
