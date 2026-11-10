@@ -1,0 +1,49 @@
+{
+ "turni": 6,
+ "azioni_pubbliche": 18,
+ "nessuna_richieste_subito": 8,
+ "subito_consegnate": 6,
+ "copertura": "6/8",
+ "subito_esiti": {
+  "ok": 8,
+  "errore": 0,
+  "saltata": 0
+ },
+ "ms_totale_subito": {
+  "mediana": 15515.0,
+  "max": 41042,
+  "min": 8010
+ },
+ "ms_claude": {
+  "mediana": 11253,
+  "max": 28011
+ },
+ "prossime": 5,
+ "battute_accettate": 39,
+ "battute_scartate": 3,
+ "motivi_scarto": [
+  "sceneggiatore.yaml:sc_subito_t3_mwaptmxf_5_1: chi sconosciut"
+ ],
+ "usate_dal_lettore_dopo": [
+  "sc_prossime_t1_mwapqdx4_1_1",
+  "sc_prossime_t1_mwapqdx4_1_5"
+ ]
+}
+--- 2 pg_vanda | ahah remo non rubare alla festa, ti metto a fare il palo | consegnata True 9010 ms
+    [png_gaspare] Con rispetto parlando, il palo non è un gioco. / [png_gaspare] Facciamo due conti: un anello sparito non fa ridere.
+--- 2 pg_gunda | quei due si guardano storto, mi metto in mezzo facendo la faccia della colomba | consegnata True 22023 ms
+    [narratore] La nana si mette in mezzo, mani aperte, tra le due tavolate. / [narratore] Lo scudo con la colomba storta pende verso i Morlacchi.
+--- 3 pg_remo | vanda scommetto un formaggio che il vento non c'entra niente, ahah | consegnata False 8010 ms
+   scartata: {'id': 'sc_subito_t3_mwaptmxf_5_1', 'motivo': 'sceneggiatore.yaml:sc_subito_t3_mwaptmxf_5_1: chi sconosciuto «pg_remo»'}
+   scartata: {'id': 'sc_subito_t3_mwaptmxf_5_2', 'motivo': 'sceneggiatore.yaml:sc_subito_t3_mwaptmxf_5_1: chi sconosciuto «pg_remo»'}
+   scartata: {'id': 'sc_subito_t3_mwaptmxf_5_3', 'motivo': 'sceneggiatore.yaml:sc_subito_t3_mwaptmxf_5_1: chi sconosciuto «pg_remo»'}
+--- 3 pg_nando | suoniamo la marcia dei muli, Gigia balla anche lei | consegnata True 19019 ms
+    [narratore] Ettore batte il bastone per terra, due colpi, a tempo. / [png_ettore] Eh? La marcia dei muli, questa. Gigia balla, eh.
+--- 4 pg_nando | io seguo la fisarmonica. chi scappa dietro i sacchi lo facciamo ballare | consegnata True 12011 ms
+    [narratore] La fisarmonica attacca la marcia, e la sala si mette a tempo. / [narratore] Dietro i sacchi qualcuno si ferma di colpo, e ride.
+--- 5 pg_remo | gunda il pugno chiuso fammelo vedere, sono curioso ahah | consegnata True 11011 ms
+    [narratore] Gunda apre il pugno con calma, davanti a tutta la tavolata. / [narratore] Il palmo è vuoto, pulito, con una riga di crosta di formaggio.
+--- 5 pg_gunda | ferma nando, la prendo io per il braccio, piano, tipo sacco di farina | consegnata True 22022 ms
+    [narratore] La mano si chiude sul braccio, piano, e il soffietto si ferma. / [narratore] Il suonatore ride e alza le mani, senza protestare.
+--- 5 pg_nando | treccia rossa! esci fuori, ti canto la canzone della treccia a squarciagola | consegnata False 41042 ms
+    [narratore] Dai sacchi non esce nessuno, e la fisarmonica non si ferma. / [narratore] Un passo leggero si allontana verso la porta di dietro. / [narratore] Gaspare si toglie la matita da dietro l'orecchio e annota qualcosa.

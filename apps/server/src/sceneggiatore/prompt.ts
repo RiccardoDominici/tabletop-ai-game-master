@@ -20,6 +20,7 @@ battute:
 
 Regole:
 - Ogni battuta risponde a un'azione PROBABILE del prossimo turno (o a quella data), senza nomi di PG.
+- I PG sono dei giocatori: una battuta non fa mai fare, dire, mostrare o trovare niente a un PG, nemmeno a chi agisce. Racconta l'effetto nel mondo o la reazione di un PNG presente. Se l'azione si rivolge a un altro PG, la risposta è sua: scrivi solo come reagisce la sala. «chi» e le etichette non sono mai un pg_…
 - Da una a tre righe per battuta, frasi da cinque a dodici parole, presente indicativo, cose precise.
 - Il PNG parla con la voce della sua scheda (registro, stile, lessico), dice solo ciò che sa o vede, mai ciò che sta in mai_dice.
 - Niente fatti di trama nuovi, niente indizi, confessioni o segreti: le rivelazioni sono già preparate. Le PAROLE SEGRETE elencate non si dicono mai.

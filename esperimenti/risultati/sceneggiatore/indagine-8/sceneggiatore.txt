@@ -1,0 +1,38 @@
+{
+ "turni": 8,
+ "azioni_pubbliche": 24,
+ "nessuna_richieste_subito": 4,
+ "subito_consegnate": 1,
+ "copertura": "1/4",
+ "subito_esiti": {
+  "ok": 4,
+  "errore": 0,
+  "saltata": 0
+ },
+ "ms_totale_subito": {
+  "mediana": 15516.5,
+  "max": 31028,
+  "min": 12013
+ },
+ "ms_claude": {
+  "mediana": 19498,
+  "max": 29658
+ },
+ "prossime": 7,
+ "battute_accettate": 46,
+ "battute_scartate": 0,
+ "motivi_scarto": [],
+ "usate_dal_lettore_dopo": [
+  "sc_prossime_t1_mwap9bxa_1_03",
+  "sc_subito_t3_mwapd7no_4_1",
+  "sc_subito_t5_mwapf9i6_6_1"
+ ]
+}
+--- 3 pg_ida | adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro? | consegnata False 16016 ms
+    [narratore] Adelina tocca la scatolina vuota con due dita, senza guardarla. / [png_adelina] In giro mai. L'anello di casa sta dove lo metto io, sempre.
+--- 3 pg_vanda | ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso? | consegnata False 31028 ms
+    [narratore] Ettore si tira il cappello sugli occhi, batte il bastone. / [png_ettore] Vento, mulattiera. Il vento di stamattina spingeva la neve, basta.
+--- 5 pg_ida | tonio, cosa ti ha detto il nonno nella settimana in cui non ti ha parlato? provi a ricordarlo bene | consegnata False 12013 ms
+    [narratore] Tonio abbassa lo sguardo, e per un momento non dice niente. / [narratore] Poi si sfrega la tempia con il pollice, come chi cerca una parola vecchia.
+--- 12 pg_livia | zelia, il velo lo stai sistemando per la sorella: ti tremano le mani. cosa hai paura che esca dal cassetto? | consegnata True 15017 ms
+    [narratore] Dall'altra parte del vicolo nessuna risposta arriva in sala. / [narratore] Il violino zoppica, e la festa non si ferma. / [narratore] Il fuoco scoppietta nel camino, e Tilde apre un occhio.
