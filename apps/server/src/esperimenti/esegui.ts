@@ -136,6 +136,8 @@ async function giocaCopione(
   master: MasterHeadless,
   telefoni: Map<string, Client>,
   osservatore: OsservatoreTavolo,
+  /** Attesa prima di mandare le azioni di ogni turno: i giocatori che parlano fra loro (--pausa-s). */
+  pausaMs = 0,
 ): Promise<{ cambi: CambioScena[]; fine: FinePartita | null }> {
   const cambi: CambioScena[] = [];
   let turnoServer = 1;
@@ -154,6 +156,7 @@ async function giocaCopione(
       stato = await attendiStato(schermo, (s) => s.fase === 'finestra' && s.finestra.aperta && s.versione_scena > v0 && s.turno >= t0, 240_000, `finestra dopo la scena ${p.scena} (turno ${n} del copione)`);
     }
     turnoServer = stato.turno;
+    if (pausaMs > 0) await new Promise((r) => setTimeout(r, pausaMs));
     for (const p of copione.turni[n - 1]!) {
       if (p.tipo !== 'azione') continue;
       const t = telefoni.get(p.pg);
@@ -267,7 +270,7 @@ async function main(): Promise<void> {
   const primo = attendiStato(schermo, (s) => s.fase === 'finestra' && s.turno === 1, 180_000, 'prima finestra');
   await emetti<Esito>((cb) => schermo.emit('schermo:inizia', cb));
   await primo;
-  const { cambi: cambiScena, fine } = await giocaCopione(etichetta, copione, schermo, master, telefoni, osservatore);
+  const { cambi: cambiScena, fine } = await giocaCopione(etichetta, copione, schermo, master, telefoni, osservatore, o.pausaMs);
 
   // 4. Raccolta dai registri del server di prova (solo questa sessione).
   const salute = (await (await fetch(`${o.url}/api/salute`)).json()) as Record<string, unknown>;
