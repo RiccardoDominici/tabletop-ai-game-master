@@ -309,6 +309,13 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     ...(narratoreRiassunto !== undefined ? { narratoreRiassunto } : {}),
     // Il lettore minimo sceglie anche le battute d'attesa (riempitivi) quando nessuna battuta risponde.
     attesaNelCatalogo: narratore.nome === 'minimo',
+    // Lo sceneggiatore (docs/sceneggiatore.md) scrive con Claude Code ciò che il lettore minimo non trova:
+    // le richieste partono solo se il suo processo gira (scripts/sceneggiatore.sh). Spento nei server di
+    // prova (narratore sostituito) e con CANTASTORIE_SCENEGGIATORE=no.
+    sceneggiatore:
+      narratore.nome === 'minimo' && !chiuso && process.env['CANTASTORIE_SCENEGGIATORE'] !== 'no'
+        ? { radice: path.join(config.cartellaLog, 'sceneggiatore'), tettoMs: Number(process.env['CANTASTORIE_SCENEGGIATORE_TETTO_S'] ?? 90) * 1000 }
+        : null,
     voce,
     uscitaAudio: uscite.audio,
     orologio: sost.orologio ?? orologioDiSistema,
@@ -335,8 +342,6 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       ...(schedeRegole ? { regole: { regole, schede: schedeRegole } } : {}),
       ...(config.semeDadi ? { seme: config.semeDadi } : {}),
       ...(sost.dadi ? { dadi: sost.dadi } : {}),
-      // Un modello locale impiega 3–10 s a chiamata: alla chiusura lo si aspetta di più (poi la riserva a regole).
-      ...(scelte.arbitro_prove.provider === 'locale' ? { attesaMaxMs: 10_000 } : {}),
     },
     scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),
     sistemaPer,

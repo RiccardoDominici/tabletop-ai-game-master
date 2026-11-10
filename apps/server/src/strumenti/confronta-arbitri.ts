@@ -27,6 +27,22 @@ import { ArbitroProveHaiku } from '../prove/arbitro-haiku';
 import { classificaARegole, type IngressoClassificatore } from '../prove/classificatore-regole';
 import { MotoreProve, type ContestoProve } from '../prove/motore';
 import type { DecisioneProva } from '../prove/tipi';
+import { ABILITA_INFLUENZA, DIFFICOLTA } from '../campagna/regole-srd';
+import { cdInfluenza, passiva } from '../campagna/schede';
+
+/** La CD (o la CA) che il Motore userebbe per questa decisione (null = niente tiro). */
+function cdDi(d: DecisioneProva | undefined, c: Campagna, schede: ReturnType<typeof caricaSchede>): number | null {
+  if (!d || ['nessuna', 'impossibile', 'aiuto'].includes(d.tipo)) return null;
+  const b = d.bersaglio ? (schede.get(d.bersaglio) ?? null) : null;
+  if (d.tipo === 'attacco') return b?.ca ?? null;
+  if (d.prova_scena) {
+    const p = proveDellaScena(c, c.scena).find((x) => x.id === d.prova_scena);
+    if (p) return p.cd;
+  }
+  if (d.tipo === 'contrapposta') return b ? passiva(b, d.abilita_bersaglio ?? 'percezione') : 10;
+  if (d.abilita && ABILITA_INFLUENZA.has(d.abilita) && d.bersaglio?.startsWith('png_')) return cdInfluenza(b);
+  return DIFFICOLTA[d.difficolta ?? 'media'];
+}
 import { orologioDiSistema } from '../turni/orologio';
 
 interface Azione {
@@ -46,9 +62,15 @@ class Conteggio {
   proveUguali = 0;
   attacchiEntrambi = 0;
   attacchiUguali = 0;
+  cdEntrambi = 0;
+  cdUguali = 0;
   disaccordi: string[] = [];
-  aggiungi(testo: string, h: DecisioneProva | undefined, r: DecisioneProva): void {
+  aggiungi(testo: string, h: DecisioneProva | undefined, r: DecisioneProva, cd?: { h: number | null; r: number | null }): void {
     this.n++;
+    if (cd && cd.h !== null && cd.r !== null) {
+      this.cdEntrambi++;
+      if (cd.h === cd.r) this.cdUguali++;
+    }
     if (tira(h) === tira(r)) this.tiroUguale++;
     if (h?.tipo === r.tipo) this.tipoUguale++;
     if (h && tira(h) && tira(r) && h.tipo !== 'attacco' && r.tipo !== 'attacco') {
@@ -65,7 +87,7 @@ class Conteggio {
   stampa(titolo: string): void {
     const pc = (a: number, b: number): string => (b ? `${a}/${b} (${Math.round((100 * a) / b)}%)` : '—');
     console.log(`\n== ${titolo}: ${this.n} azioni`);
-    console.log(`si tira sì/no uguale ${pc(this.tiroUguale, this.n)} · tipo uguale ${pc(this.tipoUguale, this.n)} · stessa prova ${pc(this.proveUguali, this.proveEntrambi)} · stesso bersaglio ${pc(this.attacchiUguali, this.attacchiEntrambi)}`);
+    console.log(`si tira sì/no uguale ${pc(this.tiroUguale, this.n)} · tipo uguale ${pc(this.tipoUguale, this.n)} · stessa abilità o prova ${pc(this.proveUguali, this.proveEntrambi)} · stessa CD/CA quando tirano entrambi ${pc(this.cdUguali, this.cdEntrambi)} · stesso bersaglio ${pc(this.attacchiUguali, this.attacchiEntrambi)}`);
     console.log(`disaccordi (${this.disaccordi.length}):\n${this.disaccordi.join('\n')}`);
   }
 }
@@ -129,7 +151,7 @@ async function main(): Promise<void> {
       const altre = (caso.altre ?? []).map((a) => ({ ...a, privata: false }));
       const h = (await chiediHaiku(c, schede, [az], narrazione))[caso.id];
       const r = classificaARegole(az, ingressoRegole(c, schede, altre)) as DecisioneProva;
-      conto.aggiungi(caso.testo, h, r);
+      conto.aggiungi(caso.testo, h, r, { h: cdDi(h, c, schede), r: cdDi(r, c, schede) });
     }
     conto.stampa('A. 16 casi scritti a mano');
   }
@@ -150,7 +172,10 @@ async function main(): Promise<void> {
         }
         if (!azioni.length) continue;
         const h = await chiediHaiku(c, schede, azioni, '(i PG sono in scena e agiscono)');
-        for (const a of azioni) conto.aggiungi(a.testo, h[a.id], classificaARegole(a, ingressoRegole(c, schede, azioni)) as DecisioneProva);
+        for (const a of azioni) {
+          const r = classificaARegole(a, ingressoRegole(c, schede, azioni)) as DecisioneProva;
+          conto.aggiungi(a.testo, h[a.id], r, { h: cdDi(h[a.id], c, schede), r: cdDi(r, c, schede) });
+        }
       }
     }
     conto.stampa('B. turni B3 di nozze-neve (indagine, caotico, privato)');

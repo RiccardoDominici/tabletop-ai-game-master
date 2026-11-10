@@ -16,20 +16,16 @@ import { sommaCosti } from '../llm/costi';
 import type { ModelloLinguaggio, RispostaModello } from '../llm/modello';
 import { chiediStrutturato } from '../llm/strutturato';
 import { daGrezza, type DecisioneGrezza, type MisuraProve } from './arbitro-haiku';
-import { PAROLE_SRD } from './classificatore-regole';
+import { candidatiSrd } from './parole-chiave';
 import type { ArbitroProve, AzioneDaClassificare, DecisioneProva, IngressoArbitroProve } from './tipi';
 
 const DIFF = ['molto_facile', 'facile', 'media', 'difficile', 'molto_difficile'] as const;
 
-/** Le abilità candidate dalle parole chiave del classificatore a regole (al più `max`, nel suo ordine). */
+/** Le abilità candidate dalle parole chiave (prove/parole-chiave.ts, la stessa tabella del classificatore a regole). */
 export function candidatiAbilita(testo: string, max = 3): Abilita[] {
-  const out: Abilita[] = [];
-  const t = testo.toLowerCase();
-  for (const { abilita, re } of PAROLE_SRD) if (re.test(t) && !out.includes(abilita)) out.push(abilita);
-  return out.slice(0, max);
+  return candidatiSrd(testo, max);
 }
 
-/** I PNG in scena dalle righe «- png_x = Nome · …» di prove/motore.ts. */
 export function pngInScena(righe: string): Array<{ id: string; nome: string }> {
   return [...righe.matchAll(/^- (png_[\w-]+) = ([^·\n]+?)(?: ·|$)/gm)].map((m) => ({ id: m[1]!, nome: m[2]!.trim() }));
 }

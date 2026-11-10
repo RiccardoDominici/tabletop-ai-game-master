@@ -22,28 +22,10 @@ import { radici } from '../narrazione/privato';
 import { nomiDeiPng, pngNominati } from '../repertorio/pertinenza';
 import type { RegoleCampagna } from '../regole/tipi';
 import type { DecisioneProva, DecisioneRegole } from './tipi';
+import { PAROLE_SRD, candidatiSet, candidatiSrd } from './parole-chiave';
 
-/** Tabella SRD 5.2: parole (radici, regex sul testo normalizzato) → abilità. Le più specifiche prima. */
-export const PAROLE_SRD: Array<{ abilita: Abilita; re: RegExp }> = [
-  { abilita: 'storia', re: /\b(ricordo|cerco di ricordar|mi ricordo|mi viene in mente|leggend|si racconta|stemma|casata|cronac)/ },
-  { abilita: 'intuizione', re: /\b(capire se ment|se dice il vero|se mente|guardami in faccia|negli occhi|leggo (il|nel) (viso|volto|sguardo)|sincer)/ },
-  { abilita: 'persuasione', re: /\b(convinc|persuad|prometto|supplic|tratt(o|iamo) con|contratt|implor|ti prego|la prego|(gli|le|ti) chiedo di)/ },
-  { abilita: 'inganno', re: /\b(mento|mentire|ingann|fingo|fingendo|faccio finta|bluff|raggir|travest)/ },
-  { abilita: 'intimidire', re: /\b(minacci|intimid|spavent|ringhio)/ },
-  { abilita: 'intrattenere', re: /\b(canto|cantare|suono il|recito|ballo|danzo|esibisc)/ },
-  { abilita: 'furtivita', re: /\b(di nascosto|senza farmi (vedere|sentire|notare)|mi nascondo|nascondermi|sgattaiol|furtiv|di soppiatto|acquatt|in punta di piedi)/ },
-  { abilita: 'rapidita_di_mano', re: /\b(scassin|serratur|lucchett|grimaldell|borsegg|sfilo|rubo|frugo nella (giacca|tasca|borsa))/ },
-  { abilita: 'atletica', re: /\b(arrampic|scalo|salto|nuot|guad|sollev|spingo|sfond|trascin|inseguo|mi aggrappo|braccio di ferro|tengo fermo|trattengo|blocco|afferr|(la|lo) prendo per il braccio|mi metto (in mezzo|tra))/ },
-  { abilita: 'acrobazia', re: /\b(in equilibrio|capriol|schiv|rotolo|mi butto)/ },
-  { abilita: 'medicina', re: /\b(curo|curare|fascio|medic|tampono|polso|bende)/ },
-  { abilita: 'sopravvivenza', re: /\b(seguo le tracce|tracce|orient|caccio|accendo un fuoco)/ },
-  { abilita: 'religione', re: /\b(prego|preghier|benedico|consacro|celebro il rito|faccio il segno)/ },
-  { abilita: 'arcano', re: /\b(magia|magic|runa|incantesim|arcan)/ },
-  { abilita: 'natura', re: /\b(erbe|funghi|piante|bacche|semi)/ },
-  { abilita: 'addestrare_animali', re: /\b(calmo il|accarezz|ammans|cavalc)/ },
-  { abilita: 'indagare', re: /\b(cerco|frugo|perquis|esamin|ispezion|indag|rovist)/ },
-  { abilita: 'percezione', re: /\b(ascolto|origli|tengo d'occhio|scruto|impronte|cerco di (vedere|sentire|scorgere)|guardo (chi|se|come))/ },
-];
+/** Esportata anche da qui (il modo minimo la importava da questo modulo). */
+export { PAROLE_SRD };
 
 const SOCIALI: ReadonlySet<Abilita> = new Set(['persuasione', 'inganno', 'intimidire', 'intrattenere']);
 const ATTACCO = /\b(colpisc|attacc|ferisc|accoltell|trafigg|sparo|scocc|tiro (un|una|il|la) (dardo|freccia|colpo|pugno|sasso|coltello)|pugno|calcio|mi (lancio|getto) (contro|addosso)|affond|fendent|mazzat)/;
@@ -85,21 +67,6 @@ function haParola(testo: string, parole: readonly string[]): boolean {
   return parole.some((p) => [...radici(p)].some((r) => a.has(r)));
 }
 
-/** Set non SRD: l'id (abilità, mossa o caratteristica) le cui parole chiave l'azione contiene di più. */
-function idDalSet(testo: string, r: RegoleCampagna): string | null {
-  const s = r.sistema;
-  const punti = new Map<string, number>();
-  const conta = (id: string, parole: readonly string[]): void => {
-    const a = radici(testo);
-    const n = parole.flatMap((p) => [...radici(p)]).filter((x) => a.has(x)).length;
-    if (n) punti.set(id, (punti.get(id) ?? 0) + n);
-  };
-  for (const [id, parole] of Object.entries(s.paroleChiave)) conta(id, parole);
-  for (const e of r.estratti) if (e.per) conta(e.per, e.parole);
-  for (const m of s.mosse) if (somiglianza(testo, `${m.nome} ${m.quando}`) >= 2) punti.set(m.id, (punti.get(m.id) ?? 0) + 1);
-  return [...punti].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
-}
-
 export function classificaARegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | DecisioneRegole {
   const d = vuota(az.id);
   const t = normalizza(az.testo);
@@ -129,13 +96,13 @@ export function classificaARegole(az: { id: string; testo: string; autore: strin
   if (ps) return { ...d, tipo: 'prova', prova_scena: ps.p.id, bersaglio: png } as DecisioneProva;
   // 4. Abilità o mossa per parole chiave.
   if (!s) {
-    const f = PAROLE_SRD.find((x) => x.re.test(t));
-    if (!f) return d as DecisioneProva;
-    if (SOCIALI.has(f.abilita) && !png) return d as DecisioneProva; // parlare a nessuno in particolare
-    if (png && (f.abilita === 'furtivita' || f.abilita === 'rapidita_di_mano')) return { ...d, tipo: 'contrapposta', abilita: f.abilita, bersaglio: png, abilita_bersaglio: 'percezione' } as DecisioneProva;
-    return { ...d, tipo: 'prova', abilita: f.abilita, bersaglio: png } as DecisioneProva;
+    const abilita = candidatiSrd(az.testo, 1)[0];
+    if (!abilita) return d as DecisioneProva;
+    if (SOCIALI.has(abilita) && !png) return d as DecisioneProva; // parlare a nessuno in particolare
+    if (png && (abilita === 'furtivita' || abilita === 'rapidita_di_mano')) return { ...d, tipo: 'contrapposta', abilita, bersaglio: png, abilita_bersaglio: 'percezione' } as DecisioneProva;
+    return { ...d, tipo: 'prova', abilita, bersaglio: png } as DecisioneProva;
   }
-  const id = idDalSet(az.testo, i.regole!);
+  const id = candidatiSet(az.testo, i.regole!, 1)[0] ?? null;
   if (!id) return d as DecisioneRegole;
   if (s.mosse.some((m) => m.id === id)) return { ...d, tipo: 'prova', mossa: id, bersaglio: png } as DecisioneRegole;
   if (s.abilita.some((a) => a.id === id)) return { ...d, tipo: 'prova', abilita: id, bersaglio: png } as DecisioneRegole;

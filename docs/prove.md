@@ -189,7 +189,7 @@ Coerenze consigliate (avvisi):
    - Se l'azione cambia, si rifà.
    - Alla fine di una narrazione si rifanno insieme le azioni in coda, ormai vecchie.
 2. **Chiusura della finestra** (Regia.finestraChiusa, ora asincrona). `MotoreProve.risolvi` prende le decisioni.
-   - Quelle in volo le aspetta al massimo 4 s (10 s se `arbitro_prove` è un modello locale, che impiega 3–10 s a chiamata).
+   - Quelle in volo le aspetta al massimo 4 s (con l'arbitro a regole non c'è niente da aspettare).
    - Quelle mancanti le chiede in una chiamata sola.
    - Allo scadere, o senza modello, decide l'**arbitro a regole** (prove/classificatore-regole.ts). È il default del profilo tutto locale (`arbitro_prove: {provider: regole}`): il modello piccolo ha meno responsabilità possibile. In ordine:
      1. attacco: verbo d'attacco o un'arma della scheda dell'autore, contro un bersaglio nominato con la scheda;
@@ -198,10 +198,16 @@ Coerenze consigliate (avvisi):
      4. abilità per parole chiave: la tabella SRD `PAROLE_SRD`; per un set non SRD `parole_chiave` di regole.yaml, le `parole` dei passi con `per:` e il `quando` delle mosse. Furtività e Rapidità di mano verso un PNG sono contrapposte, le sociali senza un PNG non tirano;
      5. il resto, senza parole chiave: nessun tiro.
      - La CD la decide il Motore, come sempre. Niente vantaggi né «impossibile», ma il dado si tira lo stesso e non si resta mai bloccati.
-     - Accordo con Haiku (strumenti/confronta-arbitri.ts, 10 novembre):
-       - 16 casi scritti a mano: si tira sì/no uguale 15/16, stesso tipo 14/16;
-       - 95 azioni dei turni B3 di nozze-neve: sì/no uguale 71/95 (75%), stessa prova 6/11.
-       - Molti disaccordi sono domande ai PNG che Haiku tira a volte sì e a volte no («Intimidire» per «ettore, sei salito al sasso?»).
+     - Quale arbitro: `regole` è il default del profilo locale (nessun modello, nessuna attesa alla chiusura, nessuna gara col lettore per la GPU); `anthropic` è il default quando c'è la chiave; `{provider: locale, modo: minimo}` è un'opzione esplicita per chi ha una macchina più potente (prove/arbitro-minimo.ts: il modello sceglie fra le candidate, entro 3 s, se no decide il classificatore). Il log d'avvio dice quale è in uso.
+     - Le parole chiave stanno in UN modulo, prove/parole-chiave.ts (tabella SRD `PAROLE_SRD`, candidate per set), usato dal classificatore e dal modo minimo.
+     - Accordo con l'arbitro Haiku (strumenti/confronta-arbitri.ts, 10 novembre; le decisioni di Haiku sono in cache, così la misura si ripete uguale):
+
+       | Insieme | si tira sì/no | stesso tipo | stessa abilità o prova | stessa CD/CA (quando tirano entrambi) |
+       |---|---|---|---|---|
+       | 16 casi scritti a mano | 15/16 (94%) | 14/16 (88%) | 5/6 | 9/9 |
+       | 95 azioni dei turni B3 di nozze-neve | 71/95 (75%) | 66/95 (69%) | 6/11 | 9/11 (82%) |
+
+       Molti disaccordi B3 sono domande ai PNG che Haiku stesso tira in un run e non in un altro (per esempio «Intimidire» per «ettore, sei salito al sasso?»). Altri sono mancanze vere del classificatore: niente «impossibile», niente vantaggi, e la bugia senza un verbo di menzogna («dico a Ruggero che il barone mi manda»).
 3. **Tiri** (prove/risolutore.ts).
    - Prima si raccolgono gli «aiuto», che danno vantaggio all'azione aiutata.
    - Poi ogni azione tira, nell'ordine di risoluzione del tavolo.
