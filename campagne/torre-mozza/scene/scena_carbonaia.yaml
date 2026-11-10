@@ -1,0 +1,96 @@
+# Scena 2: la carbonaia di Ugo, a notte. Trucco o battuta d'arresto: la fossa sul sentiero, la postierla,
+# il racconto di Ugo (che ha i suoi motivi per tacere).
+id: scena_carbonaia
+nodo: n_carbonaia
+nome: "La carbonaia di Ugo, a notte"
+descrizione: "Una radura nel bosco di faggi, mezz'ora sotto la torre. In mezzo fuma la carbonaia, una cupola di terra alta due uomini; accanto c'è la capanna di frasche di Ugo, con il mulo legato. Da un lato sale il sentiero dei goblin verso la torre; dietro la carbonaia, contro la roccia, c'è un muro di rovi. Chi sente che cosa: nella radura si sente tutto. Accanto alla carbonaia il sibilo del fuoco copre le voci: chi parla lì sottovoce non è sentito dalla capanna né dal sentiero."
+scopo: {tipo: rivelare_indizio, rif: i_impronte}
+domanda_drammatica: "Ugo dirà ai PG che cosa ha visto stanotte?"
+posta:
+  si_guadagna: {cosa: "Il racconto di Ugo e la strada nascosta per la torre.", per_chi: [png_ugo, pg_fulco]}
+  si_perde: {cosa: "La caccia di Ugo, se viene fuori davanti a chi la racconterà al balivo.", per_chi: [png_ugo]}
+intensita: 3
+sensi:
+  - "Fumo dolce di legna che cuoce, che pizzica gli occhi."
+  - "La carbonaia sibila piano e ogni tanto sbuffa."
+  - "La terra intorno è calda sotto le suole."
+elementi_interattivi:
+  - {cosa: "la carbonaia", dove: "in mezzo alla radura", azioni: "si sorveglia, si tappa con la pala quando sbuffa fuoco"}
+  - {cosa: "la capanna di Ugo", dove: "sul lato del bosco", azioni: "si entra chinandosi, slegando il legaccio della porta"}
+  - {cosa: "la trave della capanna", dove: "dentro la capanna", azioni: "NASCOSTA: ci è appeso un cervo ucciso da poco, con un laccio di filo di ferro al collo"}
+  - {cosa: "il sentiero dei goblin", dove: "sale dal lato della radura verso la torre", azioni: "si guardano le impronte nel fango, si sale"}
+  - {cosa: "le frasche a metà salita", dove: "sul sentiero dei goblin", azioni: "NASCOSTA: coprono una fossa profonda come un uomo"}
+  - {cosa: "il muro di rovi", dove: "dietro la carbonaia, contro la roccia", azioni: "si scosta, si taglia con un coltello"}
+  - {cosa: "sotto i rovi", dove: "dietro la carbonaia", azioni: "NASCOSTA: un arco basso di pietre squadrate, mezzo crollato, che porta alla cantina della torre"}
+  - {cosa: "il mulo di Ugo", dove: "legato alla capanna", azioni: "si slega, si carica, si porta sul sentiero"}
+png_presenti: [png_ugo]
+orologi_attivi: [o_mezzanotte]
+indizi:
+  - id: i_impronte
+    conclusione: r_tonio
+    tipo: luogo
+    nodo: n_carbonaia
+    essenziale: true
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi guarda il sentiero dei goblin vede impronte di stivali da ragazzo accanto a quelle piccole dei goblin, a passo lungo, e a tratti davanti alle altre. Nessuno è stato trascinato. Il narratore non dice mai che il ragazzo guidava: lo concludono i PG."
+    vincolo_pubblico: "Sul sentiero ci sono impronte nel fango, e le descrive solo la battuta di chi le guarda."
+  - id: i_ugo_racconta
+    conclusione: r_tonio
+    tipo: png
+    nodo: png_ugo
+    essenziale: false
+    tiro: "nessuno"
+    modi: 2
+    come_si_trova: "Quando Ugo cede su ciò che ha visto: in privato, accanto alla carbonaia; oppure quando un PG gli descrive le impronte del ragazzo sul sentiero. Ha visto Tonio salire alla torre da solo, con il pane sotto il braccio."
+  - id: i_rovi
+    conclusione: r_postierla
+    tipo: luogo
+    nodo: n_carbonaia
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi guarda il fumo della carbonaia lo vede piegarsi e sparire dentro i rovi. Chi scosta i rovi sente un'aria fredda e trova pietre squadrate e un arco basso, mezzo crollato."
+    vincolo_pubblico: "Dietro la carbonaia c'è un muro di rovi alto due uomini."
+  - id: i_ugo_postierla
+    conclusione: r_postierla
+    tipo: png
+    nodo: png_ugo
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Se un PG lo aiuta a tappare la carbonaia, o gli chiede come si entra nella torre senza farsi vedere, Ugo indica i rovi: lì sotto c'è il buco dei soldati, che porta alla cantina."
+  - id: i_cervo
+    conclusione: r_ugo
+    tipo: oggetto
+    nodo: n_carbonaia
+    essenziale: false
+    tiro: "nessuno"
+    modi: 1
+    come_si_trova: "Chi entra nella capanna trova appeso a una trave un cervo ucciso da poco, con al collo un laccio di filo di ferro come quelli della riserva."
+    vincolo_pubblico: "La porta di frasche della capanna è chiusa con un legaccio."
+  - id: i_ugo_frodo
+    conclusione: r_ugo
+    tipo: png
+    nodo: png_ugo
+    essenziale: false
+    tiro: "nessuno"
+    modi: 2
+    come_si_trova: "Quando Ugo cede sulla notte passata: davanti al cervo trovato nella capanna; oppure in privato, se un PG gli promette di non dirlo al balivo."
+vincoli_pubblici:
+  - "Ugo non sale alla torre: resta alla carbonaia, che non si lascia sola."
+uscite:
+  - {verso: n_torre, segnalata_da: [i_impronte, i_rovi, i_ugo_postierla]}
+  - {verso: n_ovile, segnalata_da: [i_impronte, i_ugo_racconta, i_cervo]}
+mossa_morbida_pronta: "La carbonaia sbuffa, e da una crepa esce una lingua di fuoco. Ugo corre con la pala e impreca: da solo non ce la fa."
+apertura: "La radura della carbonaia è calda, e il fumo sa di legna dolce. Il mulo sbuffa legato alla capanna, e sopra gli alberi si vede la torre, nera sul cielo. Ugo è accanto alla carbonaia, con la pala in mano: che cosa fate?"
+musica: {tag: esplorazione_tesa, transizione: "resta esplorazione_tesa; verso inseguimento se i PG salgono di corsa verso la torre"}
+immagine:
+  invarianti: ["radura nel bosco di faggi", "carbonaia fumante a cupola di terra", "capanna di frasche con un mulo legato", "muro di rovi contro la roccia", "torre mozza nera sul cielo, sopra gli alberi"]
+  prompt_luogo: "forest clearing at night among tall beech trees, a smoking dome-shaped charcoal kiln covered in earth, a small hut of branches with a mule tied outside, a thick wall of brambles against a rock face behind the kiln, a muddy path climbing into the trees, a ruined watchtower black against the moonlit sky above the treetops"
+taglio: "La scena si chiude quando i PG salgono alla torre, dal sentiero o dalla postierla. Se aiutano Ugo con la carbonaia, lui indica la postierla; se lo accusano, tace e torna alla pala. Ugo resta comunque alla carbonaia. Se i PG esitano, il tamburo della torre e la carbonaia che sbuffa li spingono a decidere."
+prove:
+  - {id: p_fossa_cercare, quando: "un PG cerca trappole sul sentiero dei goblin", abilita: trappole, difficolta: normale, se_fallisce: "non vede niente: le frasche restano frasche", parole: [trappola, trappole, frasche]}
+  - {id: p_fossa_salvezza, quando: "un PG mette il piede sulle frasche a metà salita", abilita: ts_morte, difficolta: normale, se_fallisce: "cade nella fossa: si fa male alle gambe, e il tonfo arriva fino alla torre", parole: [salto, aggrappo, fossa]}
+  - {id: p_rovi, quando: "un PG cerca un passaggio dietro i rovi", abilita: cercare, difficolta: facile, indizio: i_rovi, se_fallisce: "si graffia mani e faccia e non trova niente, per ora", parole: [rovi, passaggio, scosto]}
+  - {id: p_ugo_parla, quando: "un PG convince Ugo a parlare di stanotte", caratteristica: carisma, difficolta: difficile, se_fallisce: "Ugo sputa nel fuoco e torna alla pala", parole: [convinco, stanotte, parla]}

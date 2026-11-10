@@ -1,0 +1,20 @@
+# Carta di stile (C1). Va intera al selettore della modalità B: niente segreti, nemmeno come divieto.
+id: torre-mozza
+titolo: "La chiave della Torre Mozza"
+premessa: "A Spinalba i goblin della Torre Mozza chiedono la chiave dei Benni in cambio del giovane Tonio, e a mezzanotte la torre aspetta la risposta."
+tono: "Fiaba di montagna, asciutta e un po' cupa, con un fondo di tenerezza tra madre e figlio."
+tema: "La bugia detta per amore; la colpa che cade sul più antipatico."
+registro_narratore: "Voce calma e bassa, da veglia davanti al fuoco, che lascia parlare i silenzi."
+regole_prosa:
+  - "Lessico di pastori e di bosco: ovile, stazzo, lana, cagliata, carbonaia, catasta, crinale, rovo."
+  - "Il narratore descrive tracce, oggetti e gesti, mai che cosa significano: le conclusioni le tirano i PG."
+  - "Le misure sono quelle del paese: passi, braccia, un tiro di sasso, il tempo di una preghiera."
+  - "Il vento scende dal crinale e porta fino al paese i suoni della torre: corni, tamburi, sassi."
+  - "I goblin parlano la lingua comune svelti e storti, ma non sono buffi: sono affamati e pericolosi."
+  - "Tonio parla poco e a voce bassa: le sue parole le riferisce il narratore, in discorso indiretto."
+stile_immagini: "gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white"
+tavolozza_musicale:
+  tag: [esplorazione_tesa, combattimento_epico, inseguimento]
+  strumenti: "zampogna, flauto di canna, tamburo a cornice"
+linee: ["violenza esplicita su bambini e ragazzi", "tortura"]
+veli: ["uccisione di animali", "ferite descritte nel dettaglio"]
