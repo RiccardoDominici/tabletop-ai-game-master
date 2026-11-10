@@ -58,31 +58,9 @@ It must finish with no errors. The same check is part of the full campaign check
 
 **License.** The set carries the license that the Preparer declares in `regole.yaml`. If the manual is not free, the set must be declared with `libera: false`: the `regole/` folder then gets its own `.gitignore`, and the set stays out of the repository. If you are unsure about the license, ask the Preparer before you commit.
 
-## 5. Combat (optional)
+## 5. Combat
 
-The set can describe how a fight works in an optional `combattimento:` section of `regole.yaml`. Without it, the SRD 5.2 combat applies, and the other types get sensible defaults. You write only what you want to change. For a B/X-style set (initiative by side, rolled every round, morale):
-
-```yaml
-combattimento:
-  iniziativa: {tipo: per_schieramento, dado: 6, caratteristica: null, ogni_round: true}
-  fasi:
-    - {id: movimento, nome: "Movimento", png: null}
-    - {id: proiettili, nome: "Proiettili", png: attacco_distanza}
-    - {id: mischia, nome: "Mischia", png: attacco_mischia}
-  danni: {modello: pf, a_zero: {pg: morte, png: morte}}
-  condizioni: []
-  fine: {morale: true}
-```
-
-- `iniziativa.tipo`: `individuale` (each combatant rolls, as in the SRD: d20 plus Dexterity), `per_schieramento` (one roll per side), or `nessuna` (no turns).
-- `fasi`: the phases of a round, in order. `png` is what the NPCs do on their own in that phase: `attacco_mischia`, `attacco_distanza`, `attacco`, or `null`.
-- `danni.a_zero`: what happens at 0 HP, for player characters (`tiri_morte`, `fuori_gioco`, `morte`) and for NPCs (`morte`, `fuori_gioco`).
-- `condizioni`: each with an `id`, a `nome`, an `icona`, and `effetti` from a closed list (for example `svantaggio_attacchi` or `perde_turno`). The Engine applies them to the rolls.
-- `fine.morale`: with `true`, a side checks morale: 2d6 against the `morale` in the NPC's sheet (7 if it is missing).
-
-For a PbtA-style set, which has no turns, one line is enough: `combattimento: {iniziativa: {tipo: nessuna}}`.
-
-The full schema, with every field and its errors, is in [docs/regole.md](../regole.md), §2. How fights work in general is in `docs/combattimento.md`.
+If the manual describes how a fight works, the Preparer writes it into an optional `combattimento:` section of `regole.yaml`: how initiative is rolled (once for each side, for each character, or not at all, as in a PbtA game), the phases of a round in order, what happens at 0 hit points, the conditions and their effects, and whether the sides check morale. Only the effects from the Engine's closed list can be used, so a condition described in words in the manual becomes one of those effects, or a text without a mechanical effect. Without the section, the SRD 5.2 combat applies, and the other types get sensible defaults; a PbtA-style set needs only `combattimento: {iniziativa: {tipo: nessuna}}`. The full schema is in [docs/regole.md](../regole.md), §2, and how fights work in general is in `docs/combattimento.md`.
 
 ## 6. What the players see
 
