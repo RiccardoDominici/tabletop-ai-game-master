@@ -188,6 +188,17 @@ export function conDirezione(analisi: Pick<Analisi, 'espressivo' | 'iniziaConDir
   return `[${predefinita}] ${analisi.espressivo}`;
 }
 
+/**
+ * Testo che va a drama-3 per una riga: guardia (anomalie da registrare) e, se la riga non ha una
+ * direzione sua, quella predefinita di chi parla. È il punto unico per la pipeline del gioco e per la
+ * pre-generazione (strumenti/prerender-fish.ts): la chiave della cache (voce/cache-audio.ts) dipende da
+ * questo testo esatto, quindi le due strade devono usare questa funzione e basta.
+ */
+export function testoEspressivoDi(testo: string, predefinita: string | null): { espressivo: string; anomalie: AnomaliaEspressione[] } {
+  const a = analizza(testo);
+  return { espressivo: conDirezione(a, predefinita), anomalie: a.anomalie };
+}
+
 /** Stato di una risposta del narratore: direzione e tag che passano da una frase all'altra della riga. */
 export class EspressioneTurno {
   private segmento = -1;

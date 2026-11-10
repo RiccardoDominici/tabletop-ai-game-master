@@ -21,7 +21,7 @@ import type { Logger } from '../logger';
 import type { CacheAudio } from './cache-audio';
 import type { CueAudio } from '../audio/cue';
 import { ErroreVoce, type MotoreVoce, type NomeMotoreVoce } from './tipi';
-import { analizza, conDirezione, soloParole } from './espressione';
+import { soloParole, testoEspressivoDi } from './espressione';
 import { chiaveAudioEspressiva } from './cache-audio';
 
 /** Pezzi da 0,24 s per l'audio pre-generato (come il servizio voce): lo schermo li programma uguali. */
@@ -306,11 +306,11 @@ export class PipelineVoce {
 
   /** Testo per un motore espressivo: guardia, poi la direzione predefinita di chi parla se manca. */
   private testoEspressivo(frase: FraseDaDire): string {
-    const a = analizza(frase.testo_voce ?? frase.testo);
-    for (const x of a.anomalie) {
+    const { espressivo, anomalie } = testoEspressivoDi(frase.testo_voce ?? frase.testo, this.opzioni.direzione?.(frase.parlante) ?? null);
+    for (const x of anomalie) {
       this.opzioni.log.warn({ id_frase: frase.id_frase, parlante: frase.parlante, codice: x.codice, dettaglio: x.dettaglio }, 'voce: markup espressivo corretto');
     }
-    return conDirezione(a, this.opzioni.direzione?.(frase.parlante) ?? null);
+    return espressivo;
   }
 
   /** Cache dell'audio per il motore attivo: drama-3 ha la sua (voci diverse), con la chiave del testo espressivo. */
