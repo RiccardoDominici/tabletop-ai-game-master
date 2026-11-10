@@ -257,7 +257,9 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
         : null;
   // Quale arbitro dei tiri è in uso, scritto chiaro nel log d'avvio.
   const nomeArbitroProve = !arbitroProve
-    ? 'nessuno (niente tiri)'
+    ? dadi.attivo
+      ? 'regole (classificatore del Motore, senza modello)'
+      : 'nessuno (niente tiri)'
     : sost.arbitroProve !== undefined
       ? 'sostituito (prove)'
       : `${scelte.arbitro_prove.provider} ${generico ? 'completo (set generico)' : scelte.arbitro_prove.modo === 'minimo' ? 'minimo (parole chiave + scelta breve, ripiego a regole)' : 'completo'}`;

@@ -41,9 +41,11 @@ componenti:
   # Arbitro delle azioni simultanee (dipendenze, conflitti). In locale a regole: un modello da 4B ci metteva
   # 15–30 s a chiamata e cedeva comunque il server al lettore (misura del 10/11/2026); con un'API: anthropic.
   arbitro_azioni: {provider: regole}
-  # Arbitro delle prove e dei tiri (SRD 5.2). modo minimo (auto, in locale): parole chiave → abilità candidate,
-  # il modello sceglie fra poche, ripiego a regole se non risponde in 3 s (prove/arbitro-minimo.ts).
-  arbitro_prove:  {provider: locale, modo: auto, riserve: [regole]}
+  # Arbitro delle prove e dei tiri (SRD 5.2). regole = senza modello: il classificatore del Motore
+  # (prove/classificatore-regole.ts: prova della scena, abilità per parole chiave, attacchi, aiuto). Il
+  # modello piccolo ha meno responsabilità possibile. A mano: {provider: locale, modo: minimo} (il modello
+  # sceglie fra poche abilità candidate, prove/arbitro-minimo.ts) o {provider: anthropic}.
+  arbitro_prove:  {provider: regole}
   # «La volta scorsa…»: riserva = il riassunto deterministico dai segni.
   riassunto:      {provider: locale, riserve: [regole]}
   # «Chiedi una regola» dal telefono: riserva = la ricerca nelle regole, senza modello.

@@ -24,8 +24,8 @@
 | Componente | Chi è | Provider di base | Riserva |
 |---|---|---|---|
 | `lettore` | legge il turno e sceglie le battute | locale (modo minimo) | finto |
-| `arbitro_azioni` | azioni simultanee: dipendenze e conflitti | locale | regole |
-| `arbitro_prove` | prove e tiri (SRD 5.2) | locale | regole |
+| `arbitro_azioni` | azioni simultanee: dipendenze e conflitti | regole (un 4B ci metteva 15–30 s) | — |
+| `arbitro_prove` | prove e tiri (SRD 5.2) | regole (classificatore del Motore); a mano `locale, modo: minimo` | regole |
 | `riassunto` | «La volta scorsa…» | locale | regole (riassunto dai segni) |
 | `regole` | «Chiedi una regola» dal telefono | locale | regole (ricerca nelle regole) |
 | `voce` | voce del narratore e dei PG | locale (Qwen3-TTS) | finto |
