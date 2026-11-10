@@ -17,6 +17,7 @@ import yaml
 
 from .carica import Campagna
 from .esito import Esito
+from . import regole_combattimento
 from .regole_repertorio import blocchi_richiede
 from .regole_schede import TIPI_PROVA_RICHIEDE, _id_attacchi, _prove_della_campagna, dadi_attivi
 from .testo import n_parole
@@ -272,8 +273,12 @@ def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool) -> 
         for campo in ("difesa", "armatura"):
             if s.get(campo) is not None and not _intero(s[campo]):
                 _err(e, "scheda", dove, f"{campo}: un numero intero")
+        if "morale" in s and not (_intero(s["morale"]) and 2 <= s["morale"] <= 12):
+            _err(e, "scheda", dove, "morale: un numero da 2 a 12 (2d6 contro il morale, docs/combattimento.md)")
         for i, at in enumerate(s.get("attacchi") or [], start=1):
             o = _ogg(at) or {}
+            if "distanza" in o and not isinstance(o["distanza"], bool):
+                _err(e, "scheda", dove, f"attacchi[{i}].distanza: true o false")
             if not _testo(o.get("nome")):
                 _err(e, "scheda", dove, f"attacchi[{i}]: manca nome")
             if "caratteristica" in o and o["caratteristica"] not in car:
@@ -342,6 +347,7 @@ def controlla(c: Campagna, e: Esito) -> None:
     _vantaggio(r, dado, e, dove)
     _schema_sociale_attacchi(r, car, abi, e, dove)
     mosse = _mosse(r, car, e, dove)
+    regole_combattimento.controlla(r, car, e, dove)
     _schede(c, e, car, abi, dadi_attivi(c))
     _prove_di_scena(c, e, car, abi, mosse, diff)
     _richiede_prova_set(c, e, car, abi, mosse)

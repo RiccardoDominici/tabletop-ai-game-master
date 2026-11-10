@@ -27,6 +27,8 @@ RADICE = QUI.parent
 FIXTURE = RADICE / "apps" / "server" / "test" / "fixtures" / "campagne"
 PBTA = FIXTURE / "pbta"
 SOGLIA = FIXTURE / "soglia"
+BX = FIXTURE / "bx"
+ENGINE_COMBATTIMENTO = RADICE / "apps" / "server" / "src" / "regole" / "combattimento.ts"
 MINI = QUI / "test_valida_fixtures" / "mini"
 
 
@@ -57,7 +59,7 @@ def modifica(cartella: Path, rel: str, funzione) -> None:
 
 # --- i set validi ---------------------------------------------------------------------------------
 
-@pytest.mark.parametrize("sorgente", [PBTA, SOGLIA], ids=["pbta", "soglia"])
+@pytest.mark.parametrize("sorgente", [PBTA, SOGLIA, BX], ids=["pbta", "soglia", "bx"])
 def test_i_set_del_motore_sono_validi(sorgente: Path) -> None:
     assert regole_di(sorgente) == []
 
@@ -228,3 +230,74 @@ def test_richiede_prova_di_dd_con_il_set_soglia_non_passa(tmp_path: Path) -> Non
     dest = copia(SOGLIA, tmp_path)
     _richiede(dest, "convincere")
     assert tiene(dest, "REGOLE.richiede_prova")
+
+
+# --- combattimento: la sezione combattimento: di regole.yaml (docs/combattimento.md, classe REGOLE) ----
+
+def _combattimento(cartella: Path, rompi) -> None:
+    modifica(cartella, "regole/regole.yaml", lambda d: rompi(d["combattimento"]))
+
+
+@pytest.mark.parametrize(
+    "rompi, dettaglio",
+    [
+        (lambda c: c["iniziativa"].update(tipo="a_turni"), "iniziativa.tipo"),
+        (lambda c: c["iniziativa"].update(dado=7), "iniziativa.dado"),
+        (lambda c: c["iniziativa"].update(caratteristica="fede"), "iniziativa.caratteristica"),
+        (lambda c: c["iniziativa"].update(ogni_round="sempre"), "iniziativa.ogni_round"),
+        (lambda c: c.update(fasi=[]), "fasi: almeno una"),
+        (lambda c: c["fasi"][0].update(id="Movimento"), "fasi[1]: serve un id"),
+        (lambda c: c["fasi"][1].update(png="magia_nera"), "fasi.proiettili.png"),
+        (lambda c: c["danni"].update(modello="sangue"), "danni.modello"),
+        (lambda c: c["danni"]["a_zero"].update(pg="fuga"), "danni.a_zero.pg"),
+        (lambda c: c["danni"]["a_zero"].update(png="svenuto"), "danni.a_zero.png"),
+        (lambda c: c["danni"].update(tiri_morte={"cd": 0, "successi": 3, "fallimenti": 3}), "danni.tiri_morte"),
+        (lambda c: c["condizioni"][0]["effetti"].append("volare"), "effetto «volare»"),
+        (lambda c: c["condizioni"].append(dict(c["condizioni"][0])), "id ripetuto"),
+        (lambda c: c.update(condizione_a_zero="inesistente"), "condizione_a_zero"),
+        (lambda c: c.update(fine={"morale": "sì"}), "fine.morale"),
+    ],
+    ids=["tipo", "dado", "caratteristica", "ogni-round", "fasi-vuote", "fase-id", "fase-png", "modello",
+         "a-zero-pg", "a-zero-png", "tiri-morte", "effetto-chiuso", "condizione-doppia", "a-zero-condizione", "morale"],
+)
+def test_combattimento_del_set_bx(tmp_path: Path, rompi, dettaglio: str) -> None:
+    dest = copia(BX, tmp_path)
+    _combattimento(dest, rompi)
+    assert any("REGOLE.combattimento" in r and dettaglio in r for r in regole_di(dest)), regole_di(dest)
+
+
+def test_combattimento_bx_valido(tmp_path: Path) -> None:
+    assert not tiene(BX, "REGOLE.combattimento")
+
+
+def test_combattimento_non_mappa(tmp_path: Path) -> None:
+    dest = copia(BX, tmp_path)
+    modifica(dest, "regole/regole.yaml", lambda d: d.update(combattimento="a turni"))
+    assert tiene(dest, "REGOLE.combattimento")
+
+
+def test_pbta_senza_iniziativa_e_valido(tmp_path: Path) -> None:
+    """Un set PbtA senza turni: una riga, iniziativa nessuna."""
+    dest = copia(PBTA, tmp_path)
+    modifica(dest, "regole/regole.yaml", lambda d: d.update(combattimento={"iniziativa": {"tipo": "nessuna"}}))
+    assert regole_di(dest) == []
+
+
+def test_pbta_senza_sezione_usa_i_default(tmp_path: Path) -> None:
+    assert not tiene(PBTA, "REGOLE.combattimento")
+
+
+def test_morale_del_png_fuori_da_2_12(tmp_path: Path) -> None:
+    dest = copia(BX, tmp_path)
+    modifica(dest, "png/png_bertoldo.yaml", lambda d: d["scheda"].update(morale=13))
+    assert tiene(dest, "REGOLE.scheda")
+
+
+def test_effetti_come_il_motore() -> None:
+    """Gli effetti del validatore e del motore devono coincidere: un effetto nuovo va in entrambi."""
+    import re as _re
+    from valida.regole_combattimento import EFFETTI
+    testo = ENGINE_COMBATTIMENTO.read_text(encoding="utf-8")
+    blocco = _re.search(r"export const EFFETTI = \[(.*?)\] as const", testo, _re.S).group(1)
+    motore = tuple(_re.findall(r"'([a-z_]+)'", blocco))
+    assert tuple(EFFETTI) == motore
