@@ -1,0 +1,212 @@
+# Arbitro dei dadi e regole SRD 5.2 in italiano (docs/lingue.md, docs/prove.md): la lingua di riferimento.
+# Nomi dall'SRD 5.2.1 in italiano (CC-BY-4.0, Wizards of the Coast). Gli id (forza, rapidita_di_mano…) sono
+# stabili e uguali in ogni lingua: cambiano solo i nomi e le parole chiave. Ogni altra lingua
+# (lingue/<codice>/prove.yaml) ha esattamente questi campi; gli elenchi (parole chiave) possono essere diversi.
+# Le frasi fisse delle prove stanno in testi-prove.yaml.
+
+nomi:
+  # Le sei caratteristiche (SRD 5.2.1, «Caratteristiche»).
+  caratteristiche:
+    forza: Forza
+    destrezza: Destrezza
+    costituzione: Costituzione
+    intelligenza: Intelligenza
+    saggezza: Saggezza
+    carisma: Carisma
+  # Le diciotto abilità (SRD 5.2.1, «Abilità»).
+  abilita:
+    acrobazia: Acrobazia
+    addestrare_animali: Addestrare animali
+    arcano: Arcano
+    atletica: Atletica
+    furtivita: Furtività
+    indagare: Indagare
+    inganno: Inganno
+    intimidire: Intimidire
+    intrattenere: Intrattenere
+    intuizione: Intuizione
+    medicina: Medicina
+    natura: Natura
+    percezione: Percezione
+    persuasione: Persuasione
+    rapidita_di_mano: Rapidità di mano
+    religione: Religione
+    sopravvivenza: Sopravvivenza
+    storia: Storia
+  # Classi Difficoltà tipiche (minuscole: si leggono dentro una frase).
+  difficolta:
+    molto_facile: molto facile
+    facile: facile
+    media: media
+    difficile: difficile
+    molto_difficile: molto difficile
+    quasi_impossibile: quasi impossibile
+  # Armature (SRD 5.2.1, «Armature»).
+  armature:
+    armatura_imbottita: Armatura imbottita
+    armatura_di_cuoio: Armatura di cuoio
+    armatura_di_cuoio_borchiato: Armatura di cuoio borchiato
+    armatura_di_pelle: Armatura di pelle
+    giaco_di_maglia: Giaco di maglia
+    corazza_a_scaglie: Corazza a scaglie
+    corazza_di_piastre: Corazza di piastre
+    mezza_armatura: Mezza armatura
+    corazza_ad_anelli: Corazza ad anelli
+    cotta_di_maglia: Cotta di maglia
+    corazza_a_strisce: Corazza a strisce
+    armatura_a_piastre: Armatura a piastre
+  # Vantaggio e svantaggio dentro una frase («con vantaggio»).
+  vantaggio:
+    vantaggio: vantaggio
+    svantaggio: svantaggio
+  # Contro che cosa si tira: Classe Difficoltà, Classe Armatura.
+  contro:
+    CD: CD
+    CA: CA
+  # Atteggiamento di un PNG verso un PG (atteggiamento_pg.<pg>.stato), per l'arbitro.
+  atteggiamenti:
+    ostile: ostile
+    indifferente: indifferente
+    amichevole: amichevole
+  # L'attacco senz'armi dell'SRD e quello di un set senza armi nella scheda.
+  colpo_senz_armi: Colpo senz’armi
+  a_mani_nude: A mani nude
+  # Tipi di danno (SRD 5.2), per id italiano: il nome e il plurale dopo «danni». Un tipo che non è qui
+  # resta com'è scritto; al plurale si applica regola_plurale (finale → sostituto), se c'è.
+  danni:
+    nome:
+      acido: acido
+      contundente: contundente
+      freddo: freddo
+      fuoco: fuoco
+      forza: forza
+      fulmine: fulmine
+      necrotico: necrotico
+      perforante: perforante
+      psichico: psichico
+      radioso: radioso
+      tagliente: tagliente
+      tuono: tuono
+      veleno: veleno
+    plurale:
+      acido: da acido
+      contundente: contundenti
+      freddo: da freddo
+      fuoco: da fuoco
+      forza: da forza
+      fulmine: da fulmine
+      necrotico: necrotici
+      perforante: perforanti
+      psichico: psichici
+      radioso: radiosi
+      tagliente: taglienti
+      tuono: da tuono
+      veleno: da veleno
+    regola_plurale: [e, i]
+  # Le 15 condizioni dell'SRD 5.2.1 (più la Schivata), per il narratore, il telefono e il pannello.
+  condizioni:
+    accecato:
+      nome: Accecato
+      testo: "Non vede: fallisce le prove che richiedono la vista; i suoi attacchi hanno svantaggio, quelli contro di lui vantaggio."
+    affascinato:
+      nome: Affascinato
+      testo: "Non può attaccare chi lo affascina; chi lo affascina ha vantaggio nelle prove sociali contro di lui."
+    assordato:
+      nome: Assordato
+      testo: "Non sente: fallisce le prove che richiedono l’udito."
+    indebolimento:
+      nome: Indebolimento
+      testo: "Cumulativo: −2 ai tiri d20 per livello (il Motore lo tratta come svantaggio alle prove); a 6 livelli si muore."
+    spaventato:
+      nome: Spaventato
+      testo: "Svantaggio a prove e attacchi finché vede la fonte della paura; non può avvicinarsi."
+    afferrato:
+      nome: Afferrato
+      testo: "Velocità 0; svantaggio agli attacchi contro chi non lo afferra."
+    incapacitato:
+      nome: Incapacitato
+      testo: "Niente azioni, azioni bonus né reazioni."
+    invisibile:
+      nome: Invisibile
+      testo: "I suoi attacchi hanno vantaggio, quelli contro di lui svantaggio."
+    paralizzato:
+      nome: Paralizzato
+      testo: "Incapacitato, Velocità 0; fallisce i TS di Forza e Destrezza; attacchi contro con vantaggio, a portata sono critici."
+    pietrificato:
+      nome: Pietrificato
+      testo: "Trasformato in pietra: incapacitato, fallisce i TS di Forza e Destrezza, resiste a tutti i danni."
+    avvelenato:
+      nome: Avvelenato
+      testo: "Svantaggio ai tiri per colpire e alle prove di caratteristica."
+    prono:
+      nome: Prono
+      testo: "A terra: i suoi attacchi hanno svantaggio, quelli da vicino contro di lui vantaggio; rialzarsi costa metà movimento."
+    trattenuto:
+      nome: Trattenuto
+      testo: "Velocità 0; i suoi attacchi con svantaggio, quelli contro con vantaggio; svantaggio ai TS di Destrezza."
+    stordito:
+      nome: Stordito
+      testo: "Incapacitato; fallisce i TS di Forza e Destrezza; attacchi contro con vantaggio."
+    privo_di_sensi:
+      nome: Privo di sensi
+      testo: "Incapacitato e prono, lascia cadere ciò che tiene; attacchi contro con vantaggio, a portata sono critici."
+    schivata:
+      nome: In guardia (Schivata)
+      testo: "Azione Schivata: fino al suo prossimo turno gli attacchi contro di lui hanno svantaggio."
+  # Il round e l'economia delle azioni (SRD 5.2.1, «Combattimento»), per il telefono e il narratore.
+  combattimento:
+    turno: Turno
+    azione: Azione
+    una: una
+    azioni_srd:
+      movimento:
+        nome: Movimento
+        quante: fino alla tua Velocità
+      azione:
+        nome: Azione
+        quante: "una (Attacco, Scatto, Disimpegno, Schivata, Aiuto, Nascondersi, Influenza, Magia, Prepararsi, Cerca, Studia, Utilizza)"
+      bonus:
+        nome: Azione bonus
+        quante: una, solo se un tuo privilegio la concede
+      reazione:
+        nome: Reazione
+        quante: una per round (es. attacco di opportunità)
+
+# Il set SRD 5.2 come lo vede il resto del Motore (regole/srd.ts).
+srd:
+  danni:
+    nome: Punti ferita
+    a_zero: Il PNG è fuori combattimento; il PG perde i sensi e fa i tiri salvezza contro la morte.
+  sociale: "Influenzare: CD 15 o l’Intelligenza del PNG; amichevole vantaggio, ostile svantaggio."
+  attribuzione: "Questo lavoro include materiale dal System Reference Document 5.2 («SRD 5.2») di Wizards of the Coast LLC, https://www.dndbeyond.com/srd, con licenza Creative Commons Attribution 4.0 International."
+
+# Parole chiave dell'arbitro a regole (prove/classificatore-regole.ts) e del modo minimo (prove/arbitro-minimo.ts).
+# Ogni voce è un pezzo di espressione regolare sul testo normalizzato (minuscole, senza accenti): una radice
+# che deve cominciare una parola («convinc» trova «convinco», «convincere»); \b in fondo vuole la parola intera.
+parole:
+  # Abilità SRD, nell'ordine in cui si provano: le più specifiche prima (la prima che trova vince).
+  abilita:
+    storia: [ricordo, cerco di ricordar, mi ricordo, mi viene in mente, leggend, si racconta, stemma, casata, cronac]
+    intuizione: [capire se ment, se dice il vero, se mente, guardami in faccia, negli occhi, 'leggo (il|nel) (viso|volto|sguardo)', sincer]
+    persuasione: [convinc, persuad, prometto, supplic, 'tratt(o|iamo) con', contratt, implor, ti prego, la prego, '(gli|le|ti) chiedo di']
+    inganno: [mento, mentire, ingann, fingo, fingendo, faccio finta, bluff, raggir, travest]
+    intimidire: [minacci, intimid, spavent, ringhio]
+    intrattenere: [canto, cantare, suono il, recito, ballo, danzo, esibisc]
+    furtivita: [di nascosto, 'senza farmi (vedere|sentire|notare)', mi nascondo, nascondermi, sgattaiol, furtiv, di soppiatto, acquatt, in punta di piedi]
+    rapidita_di_mano: [scassin, serratur, lucchett, grimaldell, borsegg, sfilo, rubo, 'frugo nella (giacca|tasca|borsa)']
+    atletica: [arrampic, scalo, salto, nuot, guad, sollev, spingo, sfond, trascin, inseguo, mi aggrappo, braccio di ferro, tengo fermo, trattengo, blocco, afferr, '(la|lo) prendo per il braccio', 'mi metto (in mezzo|tra)']
+    acrobazia: [in equilibrio, capriol, schiv, rotolo, mi butto]
+    medicina: [curo, curare, fascio, medic, tampono, polso, bende]
+    sopravvivenza: [seguo le tracce, tracce, orient, caccio, accendo un fuoco]
+    religione: [prego, preghier, benedico, consacro, celebro il rito, faccio il segno]
+    arcano: [magia, magic, runa, incantesim, arcan]
+    natura: [erbe, funghi, piante, bacche, semi]
+    addestrare_animali: [calmo il, accarezz, ammans, cavalc]
+    indagare: [cerco, frugo, perquis, esamin, ispezion, indag, rovist]
+    percezione: [ascolto, origli, 'tengo d''occhio', scruto, impronte, 'cerco di (vedere|sentire|scorgere)', 'guardo (chi|se|come)']
+  # Un verbo d'attacco (con un bersaglio con la scheda nominato, è un tiro per colpire).
+  attacco: [colpisc, attacc, ferisc, accoltell, trafigg, sparo, scocc, 'tiro (un|una|il|la) (dardo|freccia|colpo|pugno|sasso|coltello)', pugno, calcio, 'mi (lancio|getto) (contro|addosso)', affond, fendent, mazzat]
+  # Aiutare un compagno (con il nome di un PG che agisce nello stesso turno).
+  aiuto: ['aiuto\b', 'do una mano a\b', 'copro\b', 'sostengo\b', 'faccio luce a\b']
+  # L'arma scelta dall'arbitro (id in snake_case) che vuol dire «a mani nude»: qualsiasi punto dell'id.
+  senz_armi: [mani_nude, pugno, senz_armi, calcio]

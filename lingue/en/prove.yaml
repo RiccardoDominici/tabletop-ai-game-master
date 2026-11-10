@@ -1,0 +1,204 @@
+# Dice arbiter and SRD 5.2 rules in English (docs/lingue.md, docs/prove.md). Same fields as lingue/it/prove.yaml
+# (the reference); the ids (forza, rapidita_di_mano…) are stable and shared by every language: only the names and
+# the keywords change. Names from the English System Reference Document 5.2 (CC-BY-4.0, Wizards of the Coast).
+# The fixed phrases of the dice live in testi-prove.yaml.
+
+nomi:
+  caratteristiche:
+    forza: Strength
+    destrezza: Dexterity
+    costituzione: Constitution
+    intelligenza: Intelligence
+    saggezza: Wisdom
+    carisma: Charisma
+  abilita:
+    acrobazia: Acrobatics
+    addestrare_animali: Animal Handling
+    arcano: Arcana
+    atletica: Athletics
+    furtivita: Stealth
+    indagare: Investigation
+    inganno: Deception
+    intimidire: Intimidation
+    intrattenere: Performance
+    intuizione: Insight
+    medicina: Medicine
+    natura: Nature
+    percezione: Perception
+    persuasione: Persuasion
+    rapidita_di_mano: Sleight of Hand
+    religione: Religion
+    sopravvivenza: Survival
+    storia: History
+  # Typical Difficulty Classes (lower case: they are read inside a sentence).
+  difficolta:
+    molto_facile: very easy
+    facile: easy
+    media: medium
+    difficile: hard
+    molto_difficile: very hard
+    quasi_impossibile: nearly impossible
+  armature:
+    armatura_imbottita: Padded Armor
+    armatura_di_cuoio: Leather Armor
+    armatura_di_cuoio_borchiato: Studded Leather Armor
+    armatura_di_pelle: Hide Armor
+    giaco_di_maglia: Chain Shirt
+    corazza_a_scaglie: Scale Mail
+    corazza_di_piastre: Breastplate
+    mezza_armatura: Half Plate Armor
+    corazza_ad_anelli: Ring Mail
+    cotta_di_maglia: Chain Mail
+    corazza_a_strisce: Splint Armor
+    armatura_a_piastre: Plate Armor
+  vantaggio:
+    vantaggio: advantage
+    svantaggio: disadvantage
+  # What the roll is against: Difficulty Class, Armor Class.
+  contro:
+    CD: DC
+    CA: AC
+  atteggiamenti:
+    ostile: hostile
+    indifferente: indifferent
+    amichevole: friendly
+  colpo_senz_armi: Unarmed Strike
+  a_mani_nude: Bare hands
+  # Damage types by Italian id (sheets may use either language): the English name, which is also the form after
+  # «damage». A type that is not listed stays as written; English has no plural rule.
+  danni:
+    nome:
+      acido: acid
+      contundente: bludgeoning
+      freddo: cold
+      fuoco: fire
+      forza: force
+      fulmine: lightning
+      necrotico: necrotic
+      perforante: piercing
+      psichico: psychic
+      radioso: radiant
+      tagliente: slashing
+      tuono: thunder
+      veleno: poison
+    plurale:
+      acido: acid
+      contundente: bludgeoning
+      freddo: cold
+      fuoco: fire
+      forza: force
+      fulmine: lightning
+      necrotico: necrotic
+      perforante: piercing
+      psichico: psychic
+      radioso: radiant
+      tagliente: slashing
+      tuono: thunder
+      veleno: poison
+    regola_plurale: []
+  # The 15 SRD 5.2 conditions (plus Dodge), for the narrator, the phones and the Game Master's panel.
+  condizioni:
+    accecato:
+      nome: Blinded
+      testo: "Can't see: fails any check that requires sight; its attacks have disadvantage, attacks against it have advantage."
+    affascinato:
+      nome: Charmed
+      testo: "Can't attack the charmer; the charmer has advantage on social checks against it."
+    assordato:
+      nome: Deafened
+      testo: "Can't hear: fails any check that requires hearing."
+    indebolimento:
+      nome: Exhaustion
+      testo: "Cumulative: −2 to d20 tests per level (the Engine treats it as disadvantage on checks); at 6 levels the creature dies."
+    spaventato:
+      nome: Frightened
+      testo: "Disadvantage on checks and attacks while it can see the source of its fear; it can't move closer to it."
+    afferrato:
+      nome: Grappled
+      testo: "Speed 0; disadvantage on attacks against anyone other than the grappler."
+    incapacitato:
+      nome: Incapacitated
+      testo: "No actions, Bonus Actions or Reactions."
+    invisibile:
+      nome: Invisible
+      testo: "Its attacks have advantage, attacks against it have disadvantage."
+    paralizzato:
+      nome: Paralyzed
+      testo: "Incapacitated, Speed 0; fails Strength and Dexterity saving throws; attacks against it have advantage, and hits from within 5 feet are critical."
+    pietrificato:
+      nome: Petrified
+      testo: "Turned to stone: incapacitated, fails Strength and Dexterity saving throws, resistant to all damage."
+    avvelenato:
+      nome: Poisoned
+      testo: "Disadvantage on attack rolls and ability checks."
+    prono:
+      nome: Prone
+      testo: "On the ground: its attacks have disadvantage, attacks against it from close by have advantage; standing up costs half its movement."
+    trattenuto:
+      nome: Restrained
+      testo: "Speed 0; its attacks have disadvantage, attacks against it have advantage; disadvantage on Dexterity saving throws."
+    stordito:
+      nome: Stunned
+      testo: "Incapacitated; fails Strength and Dexterity saving throws; attacks against it have advantage."
+    privo_di_sensi:
+      nome: Unconscious
+      testo: "Incapacitated and prone, drops whatever it is holding; attacks against it have advantage, and hits from within 5 feet are critical."
+    schivata:
+      nome: On guard (Dodge)
+      testo: "Dodge action: until its next turn, attacks against it have disadvantage."
+  combattimento:
+    turno: Turn
+    azione: Action
+    una: one
+    azioni_srd:
+      movimento:
+        nome: Movement
+        quante: up to your Speed
+      azione:
+        nome: Action
+        quante: "one (Attack, Dash, Disengage, Dodge, Help, Hide, Influence, Magic, Ready, Search, Study, Utilize)"
+      bonus:
+        nome: Bonus Action
+        quante: one, only if one of your features grants it
+      reazione:
+        nome: Reaction
+        quante: one per round (e.g. an Opportunity Attack)
+
+srd:
+  danni:
+    nome: Hit Points
+    a_zero: The NPC is out of the fight; the PC falls unconscious and makes Death Saving Throws.
+  sociale: "Influence: DC 15 or the NPC's Intelligence, if higher; friendly gives advantage, hostile disadvantage."
+  attribuzione: "This work includes material from the System Reference Document 5.2 (“SRD 5.2”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode."
+
+# Keywords of the rule-based arbiter (prove/classificatore-regole.ts) and of the minimal mode (prove/arbitro-minimo.ts).
+# Each item is a piece of regular expression on the normalized text (lower case, no accents, ’ written as '):
+# a stem that must start a word («persua» finds «persuade», «persuasion»); \b at the end wants the whole word.
+# Players write in the first person («I climb the wall»), so the phrases are first-person where it matters.
+parole:
+  # SRD skills, in the order they are tried: the most specific first (the first that matches wins).
+  abilita:
+    storia: [i remember, 'try(ing)? to remember', 'do i (know|remember)', what do i know, recall, legend, 'lore\b', coat of arms, heraldr, 'crest\b', 'noble (house|family)', chronicl, histor]
+    intuizione: ['tell if (he|she|they)', '(if|whether) (he|she|they)(''s| is| are|''re) (lying|telling the truth|honest|sincere)', '(is|are) (he|she|they) (lying|telling the truth|honest|sincere)', telling the truth, 'look (him|her|them) in the eye', in the eye, 'read (his|her|their) (face|expression|eyes|body language|mood|intention)', sincer, true intention, 'what (he|she|they) really (want|mean|think)', 'size (him|her|them) up']
+    persuasione: [persua, convinc, 'talk (him|her|them) (into|out of)', promis, 'beg\b', begging, plead, implor, negotiat, bargain, haggl, reason with, appeal to, 'win (him|her|them) over', 'ask (him|her|them|you) to', 'sweet.?talk']
+    inganno: [lie to, lying to, 'a lie\b', deceiv, decept, 'trick (him|her|them)', 'fool (him|her|them)', pretend, bluff, 'con (him|her|them)\b', disguis, 'make up (a|an|some) (story|excuse|tale)', feign, pass myself off, pose as, impersonat, 'fake\b', faking]
+    intimidire: [threaten, intimidat, scare, frighten, menac, growl, bully, glare at, loom over]
+    intrattenere: ['sing\b', singing, 'play (the|my|a|an|some) (lute|flute|fiddle|harp|drum|horn|lyre|pipes|song|tune|melody|music)', 'perform (a song|a dance|a piece|a tune|for)', recit, danc, juggl, entertain, put on a show, 'tell (a|the) (story|tale|joke)']
+    furtivita: [sneak, stealth, 'hide (behind|in|under|among|from|myself|out)', 'hiding (behind|in|under|among|from)', 'without (being|getting) (seen|heard|noticed|spotted)', unseen, unnoticed, tiptoe, creep, crouch, 'slip (past|away|by|behind|through|into|out)', secretly, in the shadows, 'stay (hidden|out of sight)', keep out of sight]
+    rapidita_di_mano: ['pick (the|a|his|her|their|that|this) lock', lockpick, 'lock\b', 'locks\b', padlock, pickpocket, 'pick (his|her|their) pocket', 'steal\b', stealing, 'stole\b', pilfer, filch, 'swipe\b', 'palm (the|a|it)\b', 'lift (his|her|their) (purse|wallet|pouch|keys|key)', 'rummage (in|through) (his|her|their) (pocket|coat|bag|purse)', sleight of hand, 'slip (it|the \w+) into']
+    atletica: [climb, 'scale (the|a|that|this)', jump, leap, swim, 'wade\b', 'ford\b', 'lift (the|a|it|him|her)', push, shove, 'break (down|through|open)', 'force (the|it|open)', 'bash\b', drag, 'haul\b', chase, pursue, run after, 'grab (on|hold)', hold on, cling, hang on, 'arm.?wrestl', 'hold (him|her|them|it) (down|still|back|fast)', restrain, 'pin (him|her|them)', block, grab, grapple, seize, tackle, '(take|grab) (him|her|them) by the arm', 'step (in front|between)', get between, stand between]
+    acrobazia: [balanc, somersault, cartwheel, 'flip\b', dodge, 'roll (under|away|aside|out|over|across|to)', rolling, tumbl, 'dive (for|into|out|aside|behind|under|through)', throw myself, fling myself, acrobat, tightrope, 'keep my (balance|footing)', land on my feet, 'vault\b']
+    medicina: ['heal\b', healing, 'treat (the|his|her|their|my|its) (wound|injur|burn|bite)', bandag, first aid, 'tend (to )?(the|his|her|their|my) (wound|injur)', stitch, stanch, staunch, pulse, medic, diagnos, 'dress (the|his|her|their|my) wound', stop the bleeding]
+    sopravvivenza: ['follow (the|his|her|their|its) (tracks|trail|footprints|prints)', 'tracks\b', 'track (him|her|them|it|the|down)', tracking, 'trail\b', 'find (my|our|the) way', navigat, orient, hunt, forag, '(light|start|build|make) a (fire|campfire)', make camp]
+    religione: [pray, bless, consecrat, '(perform|celebrate|hold|lead) (the|a) (rite|ritual|ceremony)', make the sign]
+    arcano: [magic, rune, spell, arcan, enchant, sigil, glyph]
+    natura: [herb, mushroom, fung, plant, berr, seed]
+    addestrare_animali: ['calm (the|down the|my)', soothe, 'pet (the|my)\b', 'stroke (the|its|my)', tame, 'ride\b', riding, 'mount (the|my)', gallop, 'spur\b', 'reins\b']
+    indagare: [search, look for, looking for, rummage, examin, inspect, investigat, frisk, 'go through (his|her|their|the)', 'study (the|his|her|their|it)', scrutin, 'check (the|his|her|their|for)']
+    percezione: [listen, eavesdrop, overhear, keep an eye on, keep watch, 'watch (for|out|the|who|over)', 'scan (the|for)', peer, footprint, 'try to (see|hear|spot|make out|notice)', 'look (to see|if|whether|who|at who|how|around for)', spot, notice, scout]
+  # An attack verb (with a named target that has a sheet, it is an attack roll).
+  attacco: [attack, 'hit\b', strike, struck, stab, slash, shoot, shot at, 'fire (at|on|my|an|a)\b', 'loose (an|a|my) (arrow|bolt)', 'throw (a|my|the) (dagger|knife|spear|rock|stone|javelin|axe|hammer|punch)', punch, kick, smash, 'swing (at|my)', lunge, thrust, 'cut (him|her|them|at|down)', 'club\b', bludgeon, 'charge (at|into)', '(throw|hurl|fling) myself (at|on)', 'wound\b', skewer, impale, 'run (him|her|them) through', cleave, 'kill\b', 'fight\b']
+  # Helping a companion (together with the name of a PC acting in the same turn).
+  aiuto: ['help\b', 'helping\b', assist, 'give (\w+ ){1,3}a hand', 'lend (\w+ )?a hand', 'a hand to\b', 'i cover\b', 'back (\w+ ){1,2}up\b', 'support\b', 'steady\b', 'boost\b', 'hold the (light|torch|lantern) for\b']
+  # The weapon id chosen by the arbiter (snake_case) that means «bare-handed»: anywhere in the id.
+  senz_armi: [mani_nude, pugno, senz_armi, calcio, unarmed, fist, punch, kick, bare_hand, barehand]

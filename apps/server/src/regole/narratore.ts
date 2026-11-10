@@ -2,29 +2,29 @@
  * Le regole del set per il narratore e il selettore (docs/regole.md, «Narrazione»): una riga su come
  * si tira e, soprattutto, che cosa vuol dire ogni esito nel racconto. Senza, un «7–9» del 2d6 verrebbe
  * raccontato come un successo pieno. Entra nella sezione «Esiti dei tiri» del messaggio del turno,
- * solo quando ci sono tiri (parte variabile, fuori cache: poche righe).
+ * solo quando ci sono tiri (parte variabile, fuori cache: poche righe). Le frasi sono nella lingua dei
+ * contenuti (testi-prove.yaml, «regole.narratore.…» e «regole.significato.…»).
  */
+import { testo } from '../lingua';
 import type { RegoleCampagna } from './tipi';
 import { intervalloFascia } from './risoluzione';
 
+export type Significato = 'successo' | 'parziale' | 'fallimento' | 'critico' | 'disastro';
+
 /** Che cosa vuol dire un esito quando il manuale non lo scrive. */
-export const SIGNIFICATO: Record<'successo' | 'parziale' | 'fallimento' | 'critico' | 'disastro', string> = {
-  successo: 'l’azione riesce come voleva il giocatore.',
-  parziale: 'riesce, ma devi dare un costo, una scelta difficile o una complicazione: raccontali insieme alla riuscita, mai come un successo pieno.',
-  fallimento: 'non riesce, e la situazione peggiora: fai succedere qualcosa di difficile, mai «non succede niente».',
-  critico: 'riesce oltre le attese.',
-  disastro: 'va storto nel modo peggiore.',
-};
+export function significato(esito: Significato): string {
+  return testo(`regole.significato.${esito}`);
+}
 
 function comeSiTira(r: RegoleCampagna): string {
   const s = r.sistema;
   switch (s.risoluzione.tipo) {
     case 'd20_cd':
-      return 'Si tira un d20 più il modificatore contro la CD.';
+      return testo('regole.narratore.d20');
     case '2d6_fasce':
-      return `Si tirano ${s.risoluzione.numero}d6 più la statistica, e conta la fascia del totale.`;
+      return testo('regole.narratore.dued6', { n: s.risoluzione.numero });
     case 'sotto_soglia':
-      return `Si tira un d${s.risoluzione.facce}: riesce se fa quanto la soglia o meno.`;
+      return testo('regole.narratore.soglia', { facce: s.risoluzione.facce });
   }
 }
 
@@ -32,18 +32,19 @@ function comeSiTira(r: RegoleCampagna): string {
 export function regolePerNarratore(r: RegoleCampagna): string | null {
   const s = r.sistema;
   if (s.srd) return null;
-  const righe = [`Regole del manuale «${s.nome}»: ${s.perNarratore ?? comeSiTira(r)} Che cosa vuol dire ogni esito:`];
+  const righe = [testo('regole.narratore.intro', { nome: s.nome, come: s.perNarratore ?? comeSiTira(r) })];
+  const grado = (nome: string, sig: string): string => testo('regole.narratore.grado', { nome, significato: sig });
   if (s.risoluzione.tipo === '2d6_fasce') {
-    s.risoluzione.fasce.forEach((f, i) => righe.push(`- ${intervalloFascia(s.risoluzione.fasce, i)} «${f.nome}»: ${f.significato ?? SIGNIFICATO[f.esito]}`));
+    s.risoluzione.fasce.forEach((f, i) => righe.push(testo('regole.narratore.fascia', { intervallo: intervalloFascia(s.risoluzione.fasce, i), nome: f.nome, significato: f.significato ?? significato(f.esito) })));
   } else if (s.risoluzione.tipo === 'sotto_soglia') {
-    for (const g of s.risoluzione.gradi) righe.push(`- «${g.nome}»: ${g.significato ?? 'riesce particolarmente bene.'}`);
-    righe.push(`- «Successo»: ${SIGNIFICATO.successo}`, `- «Fallimento»: ${SIGNIFICATO.fallimento}`);
-    if (s.risoluzione.critico !== null) righe.push(`- «Successo critico»: ${SIGNIFICATO.critico}`);
-    if (s.risoluzione.disastro !== null) righe.push(`- «Disastro»: ${SIGNIFICATO.disastro}`);
+    for (const g of s.risoluzione.gradi) righe.push(grado(g.nome, g.significato ?? testo('regole.significato.grado')));
+    righe.push(grado(testo('regole.esito.successo'), significato('successo')), grado(testo('regole.esito.fallimento'), significato('fallimento')));
+    if (s.risoluzione.critico !== null) righe.push(grado(testo('regole.esito.critico'), significato('critico')));
+    if (s.risoluzione.disastro !== null) righe.push(grado(testo('regole.esito.disastro'), significato('disastro')));
   } else {
-    righe.push(`- riuscita: ${SIGNIFICATO.successo}`, `- fallita: ${SIGNIFICATO.fallimento}`);
+    righe.push(testo('regole.narratore.riuscita', { significato: significato('successo') }), testo('regole.narratore.fallita', { significato: significato('fallimento') }));
   }
-  if (s.mosse.length) righe.push('- Con una mossa, il fatto porta anche l’esito scritto nel manuale: raccontalo così.');
-  if (s.attacchi.parzialeScambio) righe.push('- In un attacco con successo parziale anche l’avversario colpisce: è già nei fatti.');
+  if (s.mosse.length) righe.push(testo('regole.narratore.mosse'));
+  if (s.attacchi.parzialeScambio) righe.push(testo('regole.narratore.scambio'));
   return righe.join('\n');
 }

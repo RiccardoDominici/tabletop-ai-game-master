@@ -6,9 +6,11 @@
  * - sotto_soglia: d20 o d100 sotto la soglia della scheda, divisa per la difficoltà (difficile = metà);
  *   gradi di successo, critico e disastro se il set li ha (vantaggio: due dadi e il più basso, o il
  *   dado delle decine in più del d100).
+ * Le parole della regola applicata e dei gradi sono nella lingua dei contenuti (testi-prove.yaml, «regole.…»).
  */
 import type { Vantaggio } from '@cantastorie/shared';
 import { conSegno } from '../campagna/regole-srd';
+import { testo } from '../lingua';
 import type { FonteDadi } from '../prove/dadi';
 import type { Difficolta, Fascia, SistemaRegole } from './tipi';
 
@@ -30,7 +32,7 @@ export interface EsitoTiroGenerico {
 export function intervalloFascia(fasce: readonly Fascia[], i: number): string {
   const f = fasce[i]!;
   const sopra = i > 0 ? fasce[i - 1]!.min : null;
-  if (f.min === null) return sopra !== null ? `${sopra - 1}-` : 'sempre';
+  if (f.min === null) return sopra !== null ? `${sopra - 1}-` : testo('regole.fascia.sempre');
   if (sopra === null) return `${f.min}+`;
   return sopra - 1 === f.min ? `${f.min}` : `${f.min}–${sopra - 1}`;
 }
@@ -53,7 +55,7 @@ function d20Cd(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta,
     riuscita: totale >= cd,
     grado: null,
     vantaggio: v && s.vantaggio.tipo !== 'nessuno' ? v : null,
-    regola: `${etichetta}: d20${conSegno(mod)} contro CD ${cd} (${diff.nome.toLowerCase()})`,
+    regola: testo('regole.regola.d20', { etichetta, mod: conSegno(mod), cd, difficolta: diff.nome.toLowerCase() }),
   };
 }
 
@@ -69,7 +71,7 @@ function dueD6(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta,
   const totale = somma + modTot;
   const fasce = s.risoluzione.fasce;
   const i = Math.max(0, fasce.findIndex((f) => f.min === null || totale >= f.min));
-  const f = fasce[i] ?? { min: null, esito: 'fallimento' as const, nome: 'Fallimento', significato: null };
+  const f = fasce[i] ?? { min: null, esito: 'fallimento' as const, nome: testo('regole.esito.fallimento'), significato: null };
   const intervallo = intervalloFascia(fasce, i);
   return {
     dadi: tiri,
@@ -81,7 +83,7 @@ function dueD6(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta,
     riuscita: f.esito !== 'fallimento',
     grado: { id: f.esito, nome: f.nome },
     vantaggio: v && s.vantaggio.tipo !== 'nessuno' ? v : null,
-    regola: `${n}d6${conSegno(mod)} (${etichetta})${diff.modificatore ? `, ${diff.nome.toLowerCase()} ${conSegno(diff.modificatore)}` : ''}: ${intervallo}, ${f.nome.toLowerCase()}`,
+    regola: testo('regole.regola.dued6', { n, mod: conSegno(mod), etichetta, difficolta: diff.modificatore ? testo('regole.regola.dued6_difficolta', { difficolta: diff.nome.toLowerCase(), mod: conSegno(diff.modificatore) }) : '', intervallo, fascia: f.nome.toLowerCase() }),
   };
 }
 
@@ -119,14 +121,14 @@ function sottoSoglia(s: SistemaRegole, dadi: FonteDadi, soglia: number, diff: Di
   let grado: EsitoTiroGenerico['grado'];
   if (disastro !== null && dado >= disastro) {
     riuscita = false;
-    grado = { id: 'disastro', nome: 'Disastro' };
+    grado = { id: 'disastro', nome: testo('regole.esito.disastro') };
   } else if (critico !== null && dado <= critico) {
     riuscita = true;
-    grado = { id: 'critico', nome: 'Successo critico' };
+    grado = { id: 'critico', nome: testo('regole.esito.critico') };
   } else if (riuscita) {
     const g = gradi.find((x) => dado <= Math.floor(soglia / x.divisore));
-    grado = { id: 'successo', nome: g?.nome ?? 'Successo' };
-  } else grado = { id: 'fallimento', nome: 'Fallimento' };
+    grado = { id: 'successo', nome: g?.nome ?? testo('regole.esito.successo') };
+  } else grado = { id: 'fallimento', nome: testo('regole.esito.fallimento') };
   const unita = facce === 100 ? '%' : '';
   return {
     dadi: tiri,
@@ -138,7 +140,7 @@ function sottoSoglia(s: SistemaRegole, dadi: FonteDadi, soglia: number, diff: Di
     riuscita,
     grado,
     vantaggio,
-    regola: `${etichetta} ${soglia}${unita}: d${facce} ${divisore !== 1 ? `${diff.nome.toLowerCase()}, ` : ''}serve ${serve} o meno`,
+    regola: testo('regole.regola.soglia', { etichetta, soglia: `${soglia}${unita}`, facce, difficolta: divisore !== 1 ? testo('regole.regola.soglia_difficolta', { difficolta: diff.nome.toLowerCase() }) : '', serve }),
   };
 }
 

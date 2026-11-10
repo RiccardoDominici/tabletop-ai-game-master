@@ -2,7 +2,7 @@
  * Caricatore del set di regole di una campagna (docs/regole.md):
  *   campagne/<id>/regole/regole.yaml  (struttura) · riassunto.md (per i giocatori) · estratti/*.md
  *
- * Senza regole.yaml: l'SRD 5.2 del codice, con riassunto e passi da assets/regole/srd-5.2/. Con
+ * Senza regole.yaml: l'SRD 5.2 del codice, con riassunto e passi da assets/regole/srd-5.2/ (nella lingua dei contenuti). Con
  * `id: srd-5.2`: lo stesso, ma riassunto ed estratti della campagna se ci sono. Un file rotto non
  * ferma la sessione: errori ed avvisi vanno nel log e si torna all'SRD (gioca, ma lo dice forte).
  *
@@ -15,9 +15,10 @@ import path from 'node:path';
 import YAML from 'yaml';
 import type { TipoRisoluzione } from '@cantastorie/shared';
 import { chiave } from '../campagna/regole-srd';
+import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import { leggiEstratti } from './estratti';
-import { CARTELLA_SRD, ID_SRD, riassuntoSrd, sistemaSrd } from './srd';
+import { ID_SRD, estrattiSrd, riassuntoSrd, sistemaSrd } from './srd';
 import type { Difficolta, Fascia, Mossa, RegoleCampagna, SistemaRegole, Voce } from './tipi';
 import { combattimentoPredefinito, leggiCombattimento } from './combattimento';
 
@@ -85,7 +86,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
       }
       fasce.push({ min: num(o['min']), esito, nome: str(o['nome']) ?? esito, significato: str(o['significato']) });
     }
-    if (!fasce.length) fasce.push({ min: 10, esito: 'successo', nome: 'Successo pieno', significato: null }, { min: 7, esito: 'parziale', nome: 'Successo con un costo', significato: null }, { min: null, esito: 'fallimento', nome: 'Fallimento', significato: null });
+    // Le fasce PbtA di default, coi nomi nella lingua dei contenuti (testi-prove.yaml, regole.predefiniti).
+    if (!fasce.length) fasce.push({ min: 10, esito: 'successo', nome: testo('regole.predefiniti.successo_pieno'), significato: null }, { min: 7, esito: 'parziale', nome: testo('regole.predefiniti.successo_costo'), significato: null }, { min: null, esito: 'fallimento', nome: testo('regole.esito.fallimento'), significato: null });
     fasce.sort((a, b) => (b.min ?? -Infinity) - (a.min ?? -Infinity));
     if (fasce.at(-1)!.min !== null) avvisi.push('risoluzione.fasce: manca la fascia più bassa (min vuoto): sotto la minima è un fallimento');
   }
@@ -110,7 +112,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
   }
   if (!difficolta.length) {
     if (tipo === 'd20_cd') errori.push('difficolta: almeno una, con la CD');
-    else difficolta.push({ id: 'normale', nome: 'Normale', valore: null, divisore: tipo === 'sotto_soglia' ? 1 : null, modificatore: tipo === '2d6_fasce' ? 0 : null });
+    else difficolta.push({ id: 'normale', nome: testo('regole.predefiniti.normale'), valore: null, divisore: tipo === 'sotto_soglia' ? 1 : null, modificatore: tipo === '2d6_fasce' ? 0 : null });
   }
   const predefinita = str(d['difficolta_predefinita']) ?? difficolta[Math.floor((difficolta.length - 1) / 2)]?.id ?? 'normale';
   if (!difficolta.some((x) => x.id === predefinita)) errori.push(`difficolta_predefinita: «${predefinita}» non è tra le difficoltà`);
@@ -144,10 +146,10 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
   if (typeof lic['libera'] !== 'boolean') errori.push('licenza.libera: true o false (un set da un manuale non libero resta fuori dal repository)');
   return {
     id: id ?? 'senza-id',
-    nome: str(d['nome']) ?? id ?? 'Regole',
+    nome: str(d['nome']) ?? id ?? testo('regole.predefiniti.nome'),
     srd: false,
     perNarratore: str(d['per_il_narratore']),
-    fonte: { titolo: str(fonte['titolo']) ?? 'manuale senza titolo', autore: str(fonte['autore']), file: str(fonte['file']) },
+    fonte: { titolo: str(fonte['titolo']) ?? testo('regole.predefiniti.fonte'), autore: str(fonte['autore']), file: str(fonte['file']) },
     licenza: { nome: str(lic['nome']) ?? 'non dichiarata', libera: lic['libera'] === true, attribuzione: str(lic['attribuzione']) },
     risoluzione: { tipo, facce, numero: tipo === '2d6_fasce' ? (num(r['dadi']) ?? 2) : 1, fasce, gradi, critico: num(r['critico']), disastro: num(r['disastro']) },
     caratteristiche,
@@ -157,7 +159,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     difficoltaPredefinita: predefinita,
     vantaggio: { tipo: tipoV, valore: num(v['valore']) ?? 1 },
     attacchi: { tipo: tipoA, armaturaRiduce: a['armatura_riduce'] === true, parzialeScambio: a['parziale'] === 'scambio' },
-    danni: { nome: str(danni['nome']) ?? 'Punti ferita', aZero: str(danni['a_zero']) ?? 'Fuori combattimento.' },
+    danni: { nome: str(danni['nome']) ?? testo('regole.predefiniti.danni'), aZero: str(danni['a_zero']) ?? testo('regole.predefiniti.a_zero') },
     condizioni: (Array.isArray(d['condizioni']) ? d['condizioni'] : []).flatMap((x) => {
       const o = ogg(x);
       const cid = str(o?.['id']);
@@ -195,7 +197,7 @@ export function caricaRegole(cartellaCampagna: string, log?: Logger): RegoleCamp
   const avvisi: string[] = [];
   const srdBase = (motivo: string): RegoleCampagna => {
     log?.info({ motivo }, 'regole: SRD 5.2');
-    return { sistema: sistemaSrd(), riassunto: riassuntoSrd(), estratti: leggiEstratti(path.join(CARTELLA_SRD, 'estratti')), cartella: null, avvisi };
+    return { sistema: sistemaSrd(), riassunto: riassuntoSrd(), estratti: estrattiSrd(), cartella: null, avvisi };
   };
   if (!fs.existsSync(file)) return srdBase('nessun regole/regole.yaml');
   let dati: D;
@@ -224,7 +226,7 @@ export function caricaRegole(cartellaCampagna: string, log?: Logger): RegoleCamp
   const riassunto = fs.existsSync(fileRiassunto) ? fs.readFileSync(fileRiassunto, 'utf8') : sistema.srd ? riassuntoSrd() : '';
   if (!riassunto) avvisi.push('riassunto.md mancante: la scheda «Regole» del telefono resta vuota');
   const cartellaEstratti = path.join(cartella, 'estratti');
-  const estratti = fs.existsSync(cartellaEstratti) ? leggiEstratti(cartellaEstratti, avvisa) : sistema.srd ? leggiEstratti(path.join(CARTELLA_SRD, 'estratti')) : [];
+  const estratti = fs.existsSync(cartellaEstratti) ? leggiEstratti(cartellaEstratti, avvisa) : sistema.srd ? estrattiSrd() : [];
   for (const a of avvisi) log?.warn({ avviso: a }, 'regole: avviso');
   log?.info({ id: sistema.id, risoluzione: sistema.risoluzione.tipo, caratteristiche: sistema.caratteristiche.length, mosse: sistema.mosse.length, estratti: estratti.length, licenza: sistema.licenza.nome }, 'regole: set della campagna');
   return { sistema, riassunto, estratti, cartella, avvisi };

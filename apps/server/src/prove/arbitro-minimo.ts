@@ -5,7 +5,7 @@
  * Misurato il 10/11/2026 sulla 4730: l'arbitro completo con Qwen3 4B impiegava 15–36 s a chiamata.
  *
  * Qui il modello sceglie poco, e le regole restano in un posto solo:
- * 1. le parole chiave del classificatore (PAROLE_SRD) danno al più tre abilità candidate;
+ * 1. le parole chiave del classificatore (lingue/<codice>/prove.yaml) danno al più tre abilità candidate;
  * 2. nessuna candidata → nessuna decisione: decide la riserva a regole del Motore (scena, attacchi, aiuto);
  * 3. altrimenti un prompt corto: l'azione, le candidate come enum, la difficoltà; JSON, 3 s al massimo;
  * 4. il modello non risponde in tempo o male → nessuna decisione, e decide di nuovo la riserva del Motore.
@@ -16,6 +16,8 @@ import { sommaCosti } from '../llm/costi';
 import type { ModelloLinguaggio, RispostaModello } from '../llm/modello';
 import { chiediStrutturato } from '../llm/strutturato';
 import { daGrezza, type DecisioneGrezza, type MisuraProve } from './arbitro-haiku';
+import { testo } from '../lingua';
+import { promptProve } from './lingua';
 import { candidatiSrd } from './parole-chiave';
 import type { ArbitroProve, AzioneDaClassificare, DecisioneProva, IngressoArbitroProve } from './tipi';
 
@@ -73,13 +75,13 @@ export class ArbitroProveMinimo implements ArbitroProve {
       required: ['tipo', 'abilita', 'difficolta'],
       properties: { tipo: { type: 'string', enum: ['nessuna', 'prova'] }, abilita: { type: 'string', enum: ['', ...candidate] }, difficolta: { type: 'string', enum: ['', ...DIFF] } },
     };
-    const sistema =
-      'Arbitro di D&D 5e. Si tira solo se l’esito è incerto e il fallimento conta. tipo: "nessuna" (azione banale o sicura) oppure "prova" con una delle abilità date. difficolta solo per "prova": molto_facile, facile, media, difficile, molto_difficile (nel dubbio media). Rispondi solo JSON, es. {"tipo":"prova","abilita":"atletica","difficolta":"media"}.';
+    // Il prompt corto nella lingua dei contenuti (prompts/<lingua>/arbitro-minimo.md); gli id restano quelli dello schema.
+    const sistema = promptProve('arbitro-minimo');
     const risposte: RispostaModello[] = [];
     try {
       const r = await chiediStrutturato<{ tipo: string; abilita: string; difficolta: string }>(
         this.modello(),
-        { sistema: [{ testo: sistema, cache: true }], messaggi: [{ ruolo: 'user', testo: `Azione di ${a.nome}: «${a.testo}»\nAbilità possibili: ${candidate.join(', ')}` }], maxTokens: 40, signal: AbortSignal.timeout(this.o.attesaMs ?? 3000) },
+        { sistema: [{ testo: sistema, cache: true }], messaggi: [{ ruolo: 'user', testo: testo('prove.minimo.messaggio', { nome: a.nome, testo: a.testo, abilita: candidate.join(', ') }) }], maxTokens: 40, signal: AbortSignal.timeout(this.o.attesaMs ?? 3000) },
         { schema, cosa: 'arbitro delle prove (minimo)', log: this.o.log, onRisposta: (x) => risposte.push(x) },
       );
       if (r.tipo !== 'prova' || !r.abilita) return daGrezza(grezza(a.id, { tipo: 'nessuna' }));

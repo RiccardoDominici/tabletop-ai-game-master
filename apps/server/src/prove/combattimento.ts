@@ -18,6 +18,7 @@ import type { Logger } from '../logger';
 import type { Combattimento, Condizione, Effetto, Fase } from '../regole/combattimento';
 import type { FonteDadi } from './dadi';
 import type { StatoProve } from './stato';
+import { testo } from '../lingua';
 import { fraseAttaccoPng } from './testi';
 
 export type Lato = 'pg' | 'png';
@@ -172,12 +173,12 @@ export class GestoreCombattimento {
     for (const p of partecipanti) this.controllaZero(p);
     const ordine =
       r.iniziativa.tipo === 'individuale'
-        ? `Iniziativa: ${partecipanti.map((p) => `${p.nome} ${p.iniziativa}`).join(', ')}.`
+        ? testo('prove.combattimento.iniziativa', { ordine: partecipanti.map((p) => `${p.nome} ${p.iniziativa}`).join(', ') })
         : r.iniziativa.tipo === 'per_schieramento'
-          ? `Iniziativa per schieramento: PG ${lati!.pg}, PNG ${lati!.png}; ${this.s.primo === 'pg' ? 'agiscono prima i PG' : 'agiscono prima i PNG'}.`
-          : 'Senza iniziativa: si agisce seguendo la storia.';
+          ? testo('prove.combattimento.iniziativa_schieramento', { pg: lati!.pg, png: lati!.png, primo: testo(this.s.primo === 'pg' ? 'prove.combattimento.agiscono_prima_pg' : 'prove.combattimento.agiscono_prima_png') })
+          : testo('prove.combattimento.senza_iniziativa');
     this.d.log.info({ partecipanti: partecipanti.map((p) => ({ id: p.id, lato: p.lato, iniziativa: p.iniziativa })), primo: this.s.primo }, 'combattimento: inizia');
-    return `Inizia il combattimento. ${ordine}`;
+    return testo('prove.combattimento.inizia', { ordine });
   }
 
   /** Per schieramento: un dado per parte, pari si ritira (al quinto pari, prima i PG). */
@@ -224,12 +225,12 @@ export class GestoreCombattimento {
     s.indice = 0;
     for (const p of s.partecipanti) {
       const scadute = p.condizioni.filter((c) => c.fino !== null && c.fino <= s.round);
-      if (scadute.length) fatti.push(`${p.nome}: ${scadute.map((c) => this.cond(c.id)?.nome ?? c.id).join(', ')} finisce.`);
+      if (scadute.length) fatti.push(testo('prove.combattimento.finisce', { nome: p.nome, condizioni: scadute.map((c) => this.cond(c.id)?.nome ?? c.id).join(', ') }));
       p.condizioni = p.condizioni.filter((c) => !scadute.includes(c));
     }
     if (this.d.regole.iniziativa.ogniRound) {
       const lati = this.tiraLati();
-      if (lati) fatti.push(`Round ${s.round}: iniziativa PG ${lati.pg}, PNG ${lati.png}; ${s.primo === 'pg' ? 'prima i PG' : 'prima i PNG'}.`);
+      if (lati) fatti.push(testo('prove.combattimento.round', { round: s.round, pg: lati.pg, png: lati.png, primo: testo(s.primo === 'pg' ? 'prove.combattimento.prima_pg' : 'prove.combattimento.prima_png') }));
     }
     s.passi = this.costruisciPassi();
   }
@@ -293,7 +294,7 @@ export class GestoreCombattimento {
 
   private chiudi(turno: number, fatti: string[], tiri: TiroMostrato[]): EsitoCombattimento {
     void turno;
-    if (!this.s) return { fatti, tiri, intestazione: null, invitati: null, finito: fatti.at(-1) ?? 'fine' };
+    if (!this.s) return { fatti, tiri, intestazione: null, invitati: null, finito: fatti.at(-1) ?? testo('prove.combattimento.fine') };
     const invitati = this.turnoDi();
     return { fatti, tiri, intestazione: this.intestazione(), invitati: invitati && invitati.length ? invitati : null, finito: null };
   }
@@ -304,7 +305,7 @@ export class GestoreCombattimento {
     if (!p || p.esito !== 'in_gioco' || this.d.stato.aTerra(id)) return;
     const perde = this.haEffetto(id, 'perde_turno');
     if (perde) {
-      fatti.push(`Turno di ${p.nome}: è ${perde.toLowerCase()}, non agisce.`);
+      fatti.push(testo('prove.combattimento.png_non_agisce', { nome: p.nome, condizione: perde.toLowerCase() }));
       return;
     }
     if (!fase.png) return;
@@ -313,7 +314,7 @@ export class GestoreCombattimento {
     const r = this.d.attacca(id, bersaglio, fase, turno);
     if (!r) return;
     tiri.push(r.t);
-    fatti.push(`Turno di ${p.nome}: ${fraseAttaccoPng(r.t)} Dettagli: ${r.testo}`);
+    fatti.push(testo('prove.combattimento.turno_png', { nome: p.nome, frase: fraseAttaccoPng(r.t), dettagli: r.testo }));
     const b = this.part(bersaglio);
     if (b) this.controllaZero(b, fatti);
   }
@@ -343,20 +344,20 @@ export class GestoreCombattimento {
       else p.tiriMorte.fallimenti += 1;
       tiri.push(this.cartaMorte(p, dado, riuscita, turno, tm.cd));
       let esito: string;
-      if (dado === 20) esito = 'venti naturale: torna in sé con 1 punto ferita';
+      if (dado === 20) esito = testo('prove.combattimento.morte_venti');
       else if (p.tiriMorte && p.tiriMorte.fallimenti >= tm.fallimenti) {
         p.esito = 'morto';
-        esito = 'terzo fallimento: è MORTO';
+        esito = testo('prove.combattimento.morte_morto');
       } else if (p.tiriMorte && p.tiriMorte.successi >= tm.successi) {
         p.esito = 'stabile';
         p.tiriMorte = null;
-        esito = 'terzo successo: è stabile, resta privo di sensi';
-      } else esito = `${riuscita ? 'riuscito' : 'fallito'} (successi ${p.tiriMorte!.successi}, fallimenti ${p.tiriMorte!.fallimenti})`;
-      fatti.push(`${p.nome} è a terra: tiro salvezza contro la morte ${dado} contro CD ${tm.cd} → ${esito}.`);
+        esito = testo('prove.combattimento.morte_stabile');
+      } else esito = testo('prove.combattimento.morte_parziale', { esito: testo(riuscita ? 'prove.combattimento.morte_riuscito' : 'prove.combattimento.morte_fallito'), successi: p.tiriMorte!.successi, fallimenti: p.tiriMorte!.fallimenti });
+      fatti.push(testo('prove.combattimento.tiro_morte', { nome: p.nome, dado, cd: tm.cd, esito }));
       return;
     }
     const perde = this.haEffetto(id, 'perde_turno');
-    if (perde && !this.d.stato.aTerra(id)) fatti.push(`${p.nome} è ${perde.toLowerCase()}: salta il turno.`);
+    if (perde && !this.d.stato.aTerra(id)) fatti.push(testo('prove.combattimento.salta_turno', { nome: p.nome, condizione: perde.toLowerCase() }));
   }
 
   private cartaMorte(p: Partecipante, dado: number, riuscita: boolean, turno: number, cd: number): TiroMostrato {
@@ -367,7 +368,7 @@ export class GestoreCombattimento {
       nome: p.nome,
       di_png: false,
       tipo: 'salvezza',
-      etichetta: 'Tiro salvezza contro la morte',
+      etichetta: testo('prove.combattimento.etichetta_morte'),
       dadi: [dado],
       dado,
       vantaggio: null,
@@ -417,8 +418,8 @@ export class GestoreCombattimento {
     const tiro = dadi.tira(6) + dadi.tira(6);
     if (tiro > morale) {
       for (const p of vivi) p.esito = 'fuggito';
-      fatti.push(`Morale dei nemici: ${tiro} contro ${morale} → CEDONO e fuggono (${vivi.map((p) => p.nome).join(', ')}).`);
-    } else fatti.push(`Morale dei nemici: ${tiro} contro ${morale} → tengono.`);
+      fatti.push(testo('prove.combattimento.morale_cedono', { tiro, morale, nomi: vivi.map((p) => p.nome).join(', ') }));
+    } else fatti.push(testo('prove.combattimento.morale_tengono', { tiro, morale }));
   }
 
   /** Fine dello scontro: nemici fuori combattimento, o PG tutti a terra. true se è finito. */
@@ -428,8 +429,8 @@ export class GestoreCombattimento {
     const fuori = (p: Partecipante): boolean => p.esito !== 'in_gioco' || this.d.stato.aTerra(p.id);
     const png = s.partecipanti.filter((p) => p.lato === 'png');
     const pg = s.partecipanti.filter((p) => p.lato === 'pg');
-    if (png.length && png.every(fuori)) return this.termina(png.some((p) => p.esito === 'fuggito') ? 'i nemici sono fuggiti o fuori combattimento' : 'i nemici sono a terra', fatti);
-    if (pg.length && pg.every(fuori)) return this.termina('i PG sono tutti a terra', fatti);
+    if (png.length && png.every(fuori)) return this.termina(testo(png.some((p) => p.esito === 'fuggito') ? 'prove.combattimento.fine_fuggiti' : 'prove.combattimento.fine_nemici'), fatti);
+    if (pg.length && pg.every(fuori)) return this.termina(testo('prove.combattimento.fine_pg'), fatti);
     return false;
   }
 
@@ -439,7 +440,7 @@ export class GestoreCombattimento {
       for (const p of this.s.partecipanti) p.condizioni = p.condizioni.filter((c) => c.id === this.d.regole.condizioneAZero && this.d.stato.aTerra(p.id));
       this.d.log.info({ motivo, round: this.s.round }, 'combattimento: finito');
     }
-    fatti.push(`Il combattimento è finito: ${motivo}.`);
+    fatti.push(testo('prove.combattimento.finito', { motivo }));
     this.s = null;
     return true;
   }
@@ -458,13 +459,13 @@ export class GestoreCombattimento {
   private intestazione(): string {
     const s = this.s!;
     const r = this.d.regole;
-    if (r.iniziativa.tipo === 'nessuna') return `Combattimento in corso (senza iniziativa: si agisce seguendo la storia). I PNG colpiscono solo come dicono i fatti.`;
+    if (r.iniziativa.tipo === 'nessuna') return testo('prove.combattimento.intestazione_senza');
     const p = s.passi[s.indice];
-    const fase = r.fasi.length > 1 && p ? `, fase «${p.fase.nome}»` : '';
-    const ordine = r.iniziativa.tipo === 'individuale' ? ` Ordine: ${s.partecipanti.filter((x) => x.esito !== 'morto' && x.esito !== 'fuggito').map((x) => x.nome).join(', ')}.` : '';
+    const fase = r.fasi.length > 1 && p ? testo('prove.combattimento.intestazione_fase', { fase: p.fase.nome }) : '';
+    const ordine = r.iniziativa.tipo === 'individuale' ? testo('prove.combattimento.intestazione_ordine', { ordine: s.partecipanti.filter((x) => x.esito !== 'morto' && x.esito !== 'fuggito').map((x) => x.nome).join(', ') }) : '';
     const ora = this.turnoDi() ?? [];
-    const chi = ora.length ? ` Tocca ora a: ${ora.map((id) => `${this.d.nome(id)} (${id})`).join(', ')}: chiudi invitando solo ${ora.length > 1 ? 'loro' : 'lui o lei'}, è il suo turno.` : '';
-    return `Combattimento, round ${s.round}${fase}.${ordine}${chi} Racconta i fatti nell'ordine; non inventare attacchi, danni o morti che non sono nei fatti.`;
+    const tocca = ora.length ? testo('prove.combattimento.intestazione_tocca', { chi: ora.map((id) => `${this.d.nome(id)} (${id})`).join(', '), pronome: testo(ora.length > 1 ? 'prove.combattimento.loro' : 'prove.combattimento.lui_o_lei') }) : '';
+    return testo('prove.combattimento.intestazione', { round: s.round, fase, ordine, tocca });
   }
 
   vista(pf: (id: string) => { attuali: number; massimi: number } | null): CombattimentoPubblico | null {

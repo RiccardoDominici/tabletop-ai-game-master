@@ -16,12 +16,14 @@ import {
   ABILITA_INFLUENZA,
   CARATTERISTICA_DI,
   DIFFICOLTA,
-  NOME_ABILITA,
-  NOME_DIFFICOLTA,
   chiave,
+  nomeAbilita,
+  nomeDifficolta,
   type Abilita,
   type Caratteristica,
 } from '../campagna/regole-srd';
+import { testo } from '../lingua';
+import { datiProve, paroleProve } from './lingua';
 import { bonusAttacco, bonusDanno, cdInfluenza, modAbilita, modCaratteristica, modSalvezza, passiva, type AttaccoScheda, type SchedaNumerica } from '../campagna/schede';
 import type { ProvaScena } from '../campagna/prove-scena';
 import type { FonteDadi } from './dadi';
@@ -30,17 +32,20 @@ import type { StatoProve } from './stato';
 import type { DecisioneProva, EsitoAzioneProve, EsitoTurnoProve } from './tipi';
 import { conEffetto, fontiAttacco, type CondizioniDi } from './condizioni';
 import {
-  FATTO_NESSUN_TIRO,
-  FATTO_SENZA_ARBITRO,
-  FATTO_SENZA_SCHEDA,
   etichettaProva,
   etichettaSalvezza,
   fattoAiuto,
+  fattoAttaccoSenzaScheda,
   fattoGiaATerra,
   fattoImpossibile,
+  fattoNessunTiro,
+  fattoSenzaArbitro,
+  fattoSenzaScheda,
   fattoTiro,
   fraseAttaccoPng,
+  prefissoFatto,
   salute,
+  salutePg,
 } from './testi';
 
 export type Atteggiamento = 'ostile' | 'indifferente' | 'amichevole';
@@ -74,17 +79,22 @@ export interface OpzioniRisolutore {
   log: Logger;
 }
 
-/** Colpo senz'armi (SRD 5.2): Forza + competenza per colpire, 1 + Forza di danno contundente. */
-const COLPO_SENZ_ARMI: AttaccoScheda = {
-  id: 'colpo_senz_armi',
-  nome: 'Colpo senz’armi',
-  caratteristica: 'forza',
-  competente: true,
-  danno: { numero: 0, facce: 0, bonus: 1 },
-  tipo_danno: 'contundente',
-  distanza: false,
-  bonus: 0,
-};
+/**
+ * Colpo senz'armi (SRD 5.2): Forza + competenza per colpire, 1 + Forza di danno contundente. Il nome,
+ * sulla carta, è quello della lingua dei contenuti (prove.yaml, nomi.colpo_senz_armi).
+ */
+function colpoSenzArmi(): AttaccoScheda {
+  return {
+    id: 'colpo_senz_armi',
+    nome: datiProve().nomi.colpo_senz_armi,
+    caratteristica: 'forza',
+    competente: true,
+    danno: { numero: 0, facce: 0, bonus: 1 },
+    tipo_danno: 'contundente',
+    distanza: false,
+    bonus: 0,
+  };
+}
 
 /** Abilità che di solito si oppone a quella del PG, se l'arbitro non la dice. */
 const OPPOSTA: Partial<Record<Abilita, Abilita>> = {
@@ -104,7 +114,7 @@ interface FonteVantaggio {
 
 function vantaggioDa(fonti: FonteVantaggio[]): { v: Vantaggio | null; motivo: string | null } {
   const v = combinaVantaggi(fonti.map((f) => f.v));
-  if (!v) return { v: null, motivo: fonti.length ? 'vantaggio e svantaggio si annullano' : null };
+  if (!v) return { v: null, motivo: fonti.length ? testo('prove.motivo.annullati') : null };
   const motivi = fonti.filter((f) => f.v === v && f.motivo).map((f) => f.motivo);
   return { v, motivo: motivi.length ? motivi.join('; ') : null };
 }
@@ -115,9 +125,9 @@ export function scegliArma(s: SchedaNumerica, arma: string | null): AttaccoSched
     const k = chiave(arma);
     const trovata = s.attacchi.find((a) => a.id === k) ?? s.attacchi.find((a) => a.id.includes(k) || k.includes(a.id));
     if (trovata) return trovata;
-    if (/mani_nude|pugno|senz_armi|calcio/.test(k)) return COLPO_SENZ_ARMI;
+    if (paroleProve().senzArmi.test(k)) return colpoSenzArmi();
   }
-  return s.attacchi[0] ?? COLPO_SENZ_ARMI;
+  return s.attacchi[0] ?? colpoSenzArmi();
 }
 
 /**
@@ -161,7 +171,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     const grezza = o.decisioni.get(a.id) ?? null;
     const d = grezza ? normalizzaDecisione(grezza, o.proveScena) : null;
     if (grezza && d && (d.tipo !== grezza.tipo || d.abilita !== grezza.abilita)) o.log.info({ azione: a.id, da: [grezza.tipo, grezza.abilita], a: [d.tipo, d.abilita] }, 'prove: decisione ritoccata dal Motore');
-    const prefisso = `[${i + 1}] ${nomePg(a.autore)}${a.privata ? ` (azione PRIVATA: l’esito solo in una riga [privato ${a.autore}], mai nelle righe al tavolo, che non la nominano)` : ''}: `;
+    const prefisso = prefissoFatto(i + 1, nomePg(a.autore), a.autore, a.privata);
     const esito: EsitoAzioneProve = { id_azione: a.id, autore: a.autore, decisione: d, tiri: [], fatto: '', riuscite: [], riuscita: null };
     const aggiungi = (t: TiroMostrato): void => {
       esito.tiri.push(t);
@@ -169,42 +179,42 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     };
     const log = o.log.child({ azione: a.id, autore: a.autore });
     const scheda = o.schede.get(a.autore) ?? null;
-    const fontiAiuto: FonteVantaggio[] = (aiutanti.get(a.id) ?? []).map((n) => ({ v: 'vantaggio', motivo: `${n} aiuta` }));
+    const fontiAiuto: FonteVantaggio[] = (aiutanti.get(a.id) ?? []).map((n) => ({ v: 'vantaggio', motivo: testo('prove.motivo.aiuta', { nome: n }) }));
     const fonteArbitro: FonteVantaggio[] = d?.vantaggio ? [{ v: d.vantaggio, motivo: d.motivo }] : [];
 
-    let testo: string;
+    let fatto: string;
     if (!d) {
-      testo = FATTO_SENZA_ARBITRO;
+      fatto = fattoSenzaArbitro();
       log.warn('prove: nessuna decisione dell\'arbitro, nessun tiro');
     } else if (o.stato.aTerra(a.autore)) {
-      testo = 'è a terra, privo di sensi: non può agire finché qualcuno non lo cura.';
+      fatto = testo('prove.fatto.a_terra_autore');
     } else if (conEffetto(o.condizioni, a.autore, 'perde_turno')) {
-      testo = `è ${conEffetto(o.condizioni, a.autore, 'perde_turno')!.toLowerCase()}: perde il turno, nessun tiro.`;
+      fatto = testo('prove.fatto.perde_turno', { condizione: conEffetto(o.condizioni, a.autore, 'perde_turno')!.toLowerCase() });
     } else if (d.tipo === 'nessuna') {
-      testo = FATTO_NESSUN_TIRO;
+      fatto = fattoNessunTiro();
     } else if (d.tipo === 'impossibile') {
-      testo = fattoImpossibile(d.motivo);
+      fatto = fattoImpossibile(d.motivo);
     } else if (d.tipo === 'aiuto') {
       const aiutata = d.aiuta && idAzioni.has(d.aiuta) && d.aiuta !== a.id ? o.azioni.find((x) => x.id === d.aiuta)! : null;
-      testo = fattoAiuto(aiutata ? nomePg(aiutata.autore) : null);
+      fatto = fattoAiuto(aiutata ? nomePg(aiutata.autore) : null);
     } else if (!scheda) {
-      testo = FATTO_SENZA_SCHEDA;
+      fatto = fattoSenzaScheda();
       log.warn({ tipo: d.tipo }, 'prove: serve un tiro ma il PG non ha una scheda numerica («sì, ma»)');
     } else if (d.tipo === 'attacco') {
-      testo = risolviAttacco(o, a, d, scheda, [...fonteArbitro, ...fontiAiuto], aggiungi, esito, log);
+      fatto = risolviAttacco(o, a, d, scheda, [...fonteArbitro, ...fontiAiuto], aggiungi, esito, log);
     } else if (d.tipo === 'contrapposta') {
-      testo = risolviContrapposta(o, a, d, scheda, [...fonteArbitro, ...fontiAiuto], aggiungi, esito, log);
+      fatto = risolviContrapposta(o, a, d, scheda, [...fonteArbitro, ...fontiAiuto], aggiungi, esito, log);
     } else {
-      testo = risolviProva(o, a, d, scheda, fonteArbitro, fontiAiuto, aggiungi, esito, log);
+      fatto = risolviProva(o, a, d, scheda, fonteArbitro, fontiAiuto, aggiungi, esito, log);
     }
 
     // Reazione del PNG: dopo l'azione, se la condizione vale e chi reagisce è in piedi.
     const r = d?.reazione;
     if (r && (r.condizione === 'sempre' || (r.condizione === 'se_fallisce' && esito.riuscita === false))) {
       const extra = reazione(o, a, r.png, aggiungi, log);
-      if (extra) testo += ` ${extra}`;
+      if (extra) fatto += ` ${extra}`;
     }
-    esito.fatto = prefisso + testo;
+    esito.fatto = prefisso + fatto;
     fatti.push(esito.fatto);
     perAzione.set(a.id, esito);
     log.info(
@@ -235,7 +245,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     }
     if (!abil && !car) {
       log.warn('prove: prova senza abilità né caratteristica, nessun tiro');
-      return FATTO_NESSUN_TIRO;
+      return fattoNessunTiro();
     }
     const bersaglio = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
     const fonti = [...fontiArbitro, ...fontiAiuto];
@@ -251,14 +261,14 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     } else if (!salvezza && abil && ABILITA_INFLUENZA.has(abil) && bersaglio?.startsWith('png_')) {
       // Influenzare (SRD 5.2): CD 15 o l'Intelligenza del PNG; amichevole vantaggio, ostile svantaggio.
       cd = cdInfluenza(o.schede.get(bersaglio) ?? null);
-      descrizione = `influenzare ${o.nome(bersaglio)}`;
+      descrizione = testo('prove.cd.influenzare', { nome: o.nome(bersaglio) });
       const att = o.atteggiamento(bersaglio, a.autore);
-      if (att === 'amichevole') fonti.push({ v: 'vantaggio', motivo: `${o.nome(bersaglio)} è ben disposto` });
-      if (att === 'ostile') fonti.push({ v: 'svantaggio', motivo: `${o.nome(bersaglio)} è ostile` });
+      if (att === 'amichevole') fonti.push({ v: 'vantaggio', motivo: testo('prove.motivo.ben_disposto', { nome: o.nome(bersaglio) }) });
+      if (att === 'ostile') fonti.push({ v: 'svantaggio', motivo: testo('prove.motivo.ostile', { nome: o.nome(bersaglio) }) });
     } else {
       const diff = d.difficolta ?? 'media';
       cd = DIFFICOLTA[diff];
-      descrizione = NOME_DIFFICOLTA[diff];
+      descrizione = nomeDifficolta(diff);
     }
     const { v, motivo } = vantaggioDa(fonti);
     const mod = salvezza ? modSalvezza(s, car!) : abil ? modAbilita(s, abil) : modCaratteristica(s, car!);
@@ -290,11 +300,11 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     esito.riuscita = e.riuscita;
     if (e.riuscita) esito.riuscite.push(...[salvezza ? 'salvezza' : 'prova', abil, car, ps?.id].filter((x): x is string => !!x));
     let f = fattoTiro(t, null);
-    if (autoFallita) f += ` Fallisce da solo: è ${autoFallita.toLowerCase()}.`;
-    if (ps?.se_fallisce && !e.riuscita) f += ` Prezzo del fallimento: ${ps.se_fallisce}.`;
-    if (ps?.essenziale && !e.riuscita) f += ' Ciò che cercava è essenziale: lo trova comunque, ma con un prezzo.';
-    if (ps?.indizio && e.riuscita && o.conIndizi && !ps.essenziale) f += ` Trova ciò che cercava (indizio ${ps.indizio}).`;
-    if (ps?.indizio && !e.riuscita && !ps.essenziale) f += ' Non trova ciò che cercava, per ora.';
+    if (autoFallita) f += testo('prove.fatto.fallisce_da_solo', { condizione: autoFallita.toLowerCase() });
+    if (ps?.se_fallisce && !e.riuscita) f += testo('prove.fatto.prezzo', { prezzo: ps.se_fallisce });
+    if (ps?.essenziale && !e.riuscita) f += testo('prove.fatto.essenziale');
+    if (ps?.indizio && e.riuscita && o.conIndizi && !ps.essenziale) f += testo('prove.fatto.trova_indizio', { indizio: ps.indizio });
+    if (ps?.indizio && !e.riuscita && !ps.essenziale) f += testo('prove.fatto.non_trova');
     return f;
   }
 
@@ -312,7 +322,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     const ts = id ? (o.schede.get(id) ?? null) : null;
     if (!id || !ts) {
       log.warn({ bersaglio: d.bersaglio }, 'prove: attacco a un bersaglio senza scheda («sì, ma»)');
-      return `attacca ${id ? o.nome(id) : 'qualcuno'}, ma il bersaglio non ha una scheda: nessun tiro, risolvi con un «sì, ma».`;
+      return fattoAttaccoSenzaScheda(id ? o.nome(id) : null);
     }
     if (o.stato.aTerra(id)) return fattoGiaATerra(o.nome(id));
     const arma = scegliArma(s, d.arma);
@@ -368,7 +378,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
         dadi: c.a.dadi,
         dado: c.a.dado,
         totale: c.a.totale,
-        contro: { tipo: 'CD', valore: c.b.totale, descrizione: `tiro di ${o.nome(id)}` },
+        contro: { tipo: 'CD', valore: c.b.totale, descrizione: testo('prove.cd.tiro_di', { nome: o.nome(id) }) },
         riuscita: c.vince === 'a',
         avversario: { nome: o.nome(id), etichetta: etichettaProva(abilB, null), dadi: c.b.dadi, dado: c.b.dado, modificatore: modB, totale: c.b.totale },
       });
@@ -386,7 +396,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
       dadi: e.dadi,
       dado: e.dado,
       totale: e.totale,
-      contro: { tipo: 'CD', valore: cd, descrizione: id ? `${NOME_ABILITA[abilB]} passiva di ${o.nome(id)}` : `${NOME_ABILITA[abilB]} passiva` },
+      contro: { tipo: 'CD', valore: cd, descrizione: id ? testo('prove.cd.passiva_di', { abilita: nomeAbilita(abilB), nome: o.nome(id) }) : testo('prove.cd.passiva', { abilita: nomeAbilita(abilB) }) },
       riuscita: e.riuscita,
       avversario: null,
     });
@@ -416,7 +426,7 @@ export function cartaAttacco(
   const ts = o.schede.get(bersaglio)!;
   const applicato = e.danno ? o.stato.danneggia(bersaglio, e.danno.totale) : null;
   const pf = o.stato.puntiFerita(bersaglio);
-  const saluteTesto = applicato && pf ? (ts.di_png ? salute(pf.attuali, pf.massimi) : pf.attuali <= 0 ? 'è A TERRA (0 punti ferita): privo di sensi' : `ha ${pf.attuali} punti ferita su ${pf.massimi}`) : null;
+  const saluteTesto = applicato && pf ? (ts.di_png ? salute(pf.attuali, pf.massimi) : salutePg(pf.attuali, pf.massimi)) : null;
   const t = nuovaCarta(o, {
     chi,
     nome: o.nome(chi),
@@ -429,7 +439,7 @@ export function cartaAttacco(
     motivo_vantaggio: e.vantaggio ? motivo : null,
     modificatore: e.modificatore,
     totale: e.totale,
-    contro: { tipo: 'CA', valore: ts.ca, descrizione: `CA di ${o.nome(bersaglio)}` },
+    contro: { tipo: 'CA', valore: ts.ca, descrizione: testo('prove.cd.ca_di', { nome: o.nome(bersaglio) }) },
     bersaglio: { id: bersaglio, nome: o.nome(bersaglio) },
     riuscita: e.riuscita,
     critico: e.critico,
@@ -454,7 +464,7 @@ function reazione(o: OpzioniRisolutore, a: AzioneRisolvibile, png: string, aggiu
   const r = attaccoPngSrd(o, png, a.autore, a.privata);
   if (!r) return null;
   aggiungi(r.t);
-  return `Poi ${o.nome(png)} reagisce. ${fraseAttaccoPng(r.t)} Dettagli: ${r.testo}`;
+  return testo('prove.fatto.reazione', { nome: o.nome(png), frase: fraseAttaccoPng(r.t), dettagli: r.testo });
 }
 
 /**

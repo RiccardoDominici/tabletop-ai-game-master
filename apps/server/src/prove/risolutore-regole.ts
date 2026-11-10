@@ -15,7 +15,26 @@ import type { FonteDadi } from './dadi';
 import { combinaVantaggi, danno as tiraDanno } from './regole';
 import type { StatoProve } from './stato';
 import type { DecisioneRegole, EsitoAzioneProve, EsitoTurnoProve } from './tipi';
-import { FATTO_NESSUN_TIRO, FATTO_SENZA_ARBITRO, FATTO_SENZA_SCHEDA, fattoAiuto, fattoGiaATerra, fattoImpossibile, fraseAttaccoPng, salute, tipoDanno } from './testi';
+import { testo } from '../lingua';
+import { datiProve } from './lingua';
+import {
+  conVantaggio,
+  esitoAttacco,
+  esitoProva,
+  etichettaComposta,
+  fattoAiuto,
+  fattoAttaccoSenzaScheda,
+  fattoGiaATerra,
+  fattoImpossibile,
+  fattoNessunTiro,
+  fattoSenzaArbitro,
+  fattoSenzaScheda,
+  fraseAttaccoPng,
+  fraseDanno,
+  prefissoFatto,
+  salute,
+  tipoDanno,
+} from './testi';
 import type { AzioneRisolvibile } from './risolutore';
 import { conEffetto, fontiAttacco, type CondizioniDi } from './condizioni';
 
@@ -60,7 +79,8 @@ export interface OpzioniRisolutoreRegole {
 }
 
 type Attacco = SchedaGenerica['attacchi'][number];
-const SENZ_ARMI: Attacco = { id: 'senz_armi', nome: 'A mani nude', danno: { numero: 1, facce: 4, bonus: 0 }, caratteristica: null, abilita: null, tipo_danno: null, distanza: false };
+/** Senza armi nella scheda: 1d4 a mani nude (il nome nella lingua dei contenuti, prove.yaml). */
+const senzArmi = (): Attacco => ({ id: 'senz_armi', nome: datiProve().nomi.a_mani_nude, danno: { numero: 1, facce: 4, bonus: 0 }, caratteristica: null, abilita: null, tipo_danno: null, distanza: false });
 
 function arma(s: SchedaGenerica, id: string | null): Attacco {
   if (id) {
@@ -68,12 +88,12 @@ function arma(s: SchedaGenerica, id: string | null): Attacco {
     const a = s.attacchi.find((x) => x.id === k) ?? s.attacchi.find((x) => x.id.includes(k) || k.includes(x.id));
     if (a) return a;
   }
-  return s.attacchi[0] ?? SENZ_ARMI;
+  return s.attacchi[0] ?? senzArmi();
 }
 
 function esitoInParole(e: EsitoTiroGenerico, attacco = false): string {
   if (e.grado) return e.grado.nome.toUpperCase();
-  return attacco ? (e.riuscita ? 'COLPITO' : 'MANCATO') : e.riuscita ? 'RIUSCITA' : 'FALLITA';
+  return attacco ? esitoAttacco(e.riuscita) : esitoProva(e.riuscita);
 }
 
 export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive' | 'combattimento'> {
@@ -91,42 +111,42 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
 
   o.azioni.forEach((a, i) => {
     const d = o.decisioni.get(a.id) ?? null;
-    const prefisso = `[${i + 1}] ${o.nome(a.autore)}${a.privata ? ` (azione PRIVATA: l’esito solo in una riga [privato ${a.autore}], mai nelle righe al tavolo, che non la nominano)` : ''}: `;
+    const prefisso = prefissoFatto(i + 1, o.nome(a.autore), a.autore, a.privata);
     const esito: EsitoAzioneProve = { id_azione: a.id, autore: a.autore, decisione: null, tiri: [], fatto: '', riuscite: [], riuscita: null };
     const aggiungi = (t: TiroMostrato): void => {
       esito.tiri.push(t);
       tiri.push(t);
     };
     const sch = o.schede.get(a.autore) ?? null;
-    const fonti: Array<{ v: Vantaggio; motivo: string }> = [...(d?.vantaggio ? [{ v: d.vantaggio, motivo: d.motivo }] : []), ...(aiutanti.get(a.id) ?? []).map((n) => ({ v: 'vantaggio' as const, motivo: `${n} aiuta` }))];
-    let testo: string;
-    if (!d) testo = FATTO_SENZA_ARBITRO;
-    else if (o.stato.aTerra(a.autore)) testo = `è a terra: ${s.danni.aZero}`;
-    else if (conEffetto(o.condizioni, a.autore, 'perde_turno')) testo = `è ${conEffetto(o.condizioni, a.autore, 'perde_turno')!.toLowerCase()}: perde il turno, nessun tiro.`;
-    else if (d.tipo === 'nessuna') testo = FATTO_NESSUN_TIRO;
-    else if (d.tipo === 'impossibile') testo = fattoImpossibile(d.motivo);
+    const fonti: Array<{ v: Vantaggio; motivo: string }> = [...(d?.vantaggio ? [{ v: d.vantaggio, motivo: d.motivo }] : []), ...(aiutanti.get(a.id) ?? []).map((n) => ({ v: 'vantaggio' as const, motivo: testo('prove.motivo.aiuta', { nome: n }) }))];
+    let fatto: string;
+    if (!d) fatto = fattoSenzaArbitro();
+    else if (o.stato.aTerra(a.autore)) fatto = testo('prove.fatto.a_terra_set', { a_zero: s.danni.aZero });
+    else if (conEffetto(o.condizioni, a.autore, 'perde_turno')) fatto = testo('prove.fatto.perde_turno', { condizione: conEffetto(o.condizioni, a.autore, 'perde_turno')!.toLowerCase() });
+    else if (d.tipo === 'nessuna') fatto = fattoNessunTiro();
+    else if (d.tipo === 'impossibile') fatto = fattoImpossibile(d.motivo);
     else if (d.tipo === 'aiuto') {
       const aiutata = d.aiuta && ids.has(d.aiuta) && d.aiuta !== a.id ? o.azioni.find((x) => x.id === d.aiuta)! : null;
-      testo = fattoAiuto(aiutata ? o.nome(aiutata.autore) : null);
+      fatto = fattoAiuto(aiutata ? o.nome(aiutata.autore) : null);
     } else if (!sch) {
-      testo = FATTO_SENZA_SCHEDA;
+      fatto = fattoSenzaScheda();
       o.log.warn({ azione: a.id, autore: a.autore }, 'prove: serve un tiro ma il PG non ha una scheda del set («sì, ma»)');
     } else if (d.tipo === 'attacco') {
       const b = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
-      if (!b || !o.schede.get(b)) testo = `attacca ${b ? o.nome(b) : 'qualcuno'}, ma il bersaglio non ha una scheda: nessun tiro, risolvi con un «sì, ma».`;
-      else if (o.stato.aTerra(b)) testo = fattoGiaATerra(o.nome(b));
+      if (!b || !o.schede.get(b)) fatto = fattoAttaccoSenzaScheda(b ? o.nome(b) : null);
+      else if (o.stato.aTerra(b)) fatto = fattoGiaATerra(o.nome(b));
       else {
         const r = attacca(a.autore, b, d.arma, fonti, a.privata)!;
         aggiungi(r.t);
         esito.riuscita = r.esito?.riuscita ?? null;
         if (r.esito?.riuscita) esito.riuscite.push('attacco', r.t.etichetta);
-        testo = r.testo;
+        fatto = r.testo;
         // 2d6: con un successo parziale anche il bersaglio colpisce (lo scambio del manuale).
         if (r.esito?.grado?.id === 'parziale' && s.attacchi.parzialeScambio && !d.reazione) {
           const x = attacca(b, a.autore, null, [], a.privata);
           if (x && !o.stato.aTerra(b)) {
             aggiungi(x.t);
-            testo += ` Scambio: ${fraseAttaccoPng(x.t)} Dettagli: ${x.testo}`;
+            fatto += testo('prove.fatto.scambio', { frase: fraseAttaccoPng(x.t), dettagli: x.testo });
           }
         }
       }
@@ -136,7 +156,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       const sociale = !!d.bersaglio?.startsWith('png_');
       const cosa = cheCosa(sch, ps ?? d, sociale);
       if (!cosa) {
-        testo = FATTO_NESSUN_TIRO;
+        fatto = fattoNessunTiro();
         o.log.warn({ azione: a.id, decisione: d }, 'prove: decisione senza caratteristica, abilità né mossa del set: nessun tiro');
       } else {
         const condSv = conEffetto(o.condizioni, a.autore, 'svantaggio_prove');
@@ -148,12 +168,12 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         esito.riuscita = e.riuscita;
         // Prove riuscite per il cancello `richiede.prova`: anche gli id del set (mossa, abilità, caratteristica).
         if (e.riuscita) esito.riuscite.push(...new Set(['prova', ...[d.abilita, d.caratteristica, d.mossa, ps?.id, ps?.mossa, ps?.abilita, ps?.caratteristica, cosa.mossa?.id, cosa.mossa?.caratteristica].filter((x): x is string => !!x)]));
-        testo = `${e.regola}${e.vantaggio ? ` (con ${e.vantaggio})` : ''}: ${s.risoluzione.tipo === 'sotto_soglia' ? `${e.dado}` : `${e.totale}`} → ${esitoInParole(e)}.`;
+        fatto = testo('prove.fatto.prova_set', { regola: e.regola, vantaggio: conVantaggio(e.vantaggio), valore: s.risoluzione.tipo === 'sotto_soglia' ? e.dado : e.totale, esito: esitoInParole(e) });
         if (cosa.mossa) {
           const esitoMossa = e.grado?.id === 'parziale' ? (cosa.mossa.esiti.parziale ?? cosa.mossa.esiti.successo) : e.riuscita ? cosa.mossa.esiti.successo : cosa.mossa.esiti.fallimento;
-          testo += ` Esito della mossa «${cosa.mossa.nome}»: ${esitoMossa}`;
+          fatto += testo('prove.fatto.esito_mossa', { mossa: cosa.mossa.nome, esito: esitoMossa });
         }
-        if (!e.riuscita && ps?.se_fallisce) testo += ` Prezzo del fallimento: ${ps.se_fallisce}.`;
+        if (!e.riuscita && ps?.se_fallisce) fatto += testo('prove.fatto.prezzo', { prezzo: ps.se_fallisce });
       }
     }
     // Reazione del PNG: dopo l'azione, se la condizione vale.
@@ -162,11 +182,11 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       const x = attacca(r.png, a.autore, null, [], a.privata);
       if (x) {
         aggiungi(x.t);
-        testo += ` Poi ${o.nome(r.png)} reagisce. ${fraseAttaccoPng(x.t)} Dettagli: ${x.testo}`;
+        fatto += ` ${testo('prove.fatto.reazione', { nome: o.nome(r.png), frase: fraseAttaccoPng(x.t), dettagli: x.testo })}`;
       }
     }
     esito.decisione = null;
-    esito.fatto = prefisso + testo;
+    esito.fatto = prefisso + fatto;
     fatti.push(esito.fatto);
     perAzione.set(a.id, esito);
     o.log.info({ azione: a.id, autore: a.autore, tipo: d?.tipo ?? null, mossa: d?.mossa ?? null, tiri: esito.tiri.map((t) => ({ etichetta: t.etichetta, dadi: t.dadi, totale: t.totale, regola: t.regola, grado: t.grado?.nome ?? null })) }, 'prove: azione risolta (set del manuale)');
@@ -201,7 +221,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
         return { valore: v, etichetta: nomeAbil(abil), mossa: null };
       }
       const base = carAbil ? valoreCaratteristica(s, sch, carAbil) : 0;
-      return { valore: base + (sch.abilita[abil] ?? 0), etichetta: carAbil ? `${nomeAbil(abil)} (${nomeCar(carAbil)})` : nomeAbil(abil), mossa: null };
+      return { valore: base + (sch.abilita[abil] ?? 0), etichetta: carAbil ? etichettaComposta(nomeAbil(abil), nomeCar(carAbil)) : nomeAbil(abil), mossa: null };
     }
     if (car) return { valore: valoreCaratteristica(s, sch, car), etichetta: nomeCar(car), mossa: null };
     return null;
@@ -244,10 +264,11 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     t.danno = { formula: d.formula, dadi: d.dadi, bonus: d.bonus, totale: ridotto, tipo: attaccante.tipo_danno };
     const pf = o.stato.puntiFerita(bersaglio.id)!;
     t.a_terra = pf.attuali <= 0;
-    const stato = bersaglio.di_png ? salute(pf.attuali, pf.massimi) : pf.attuali <= 0 ? `è A TERRA (0 ${s.danni.nome.toLowerCase()}): ${s.danni.aZero}` : `ha ${pf.attuali} ${s.danni.nome.toLowerCase()} su ${pf.massimi}`;
-    const armatura = s.attacchi.armaturaRiduce && bersaglio.armatura ? ` (armatura −${bersaglio.armatura})` : '';
+    const danni = s.danni.nome.toLowerCase();
+    const stato = bersaglio.di_png ? salute(pf.attuali, pf.massimi) : pf.attuali <= 0 ? testo('prove.salute.set_a_terra', { danni, a_zero: s.danni.aZero }) : testo('prove.salute.set', { attuali: pf.attuali, danni, massimi: pf.massimi });
+    const armatura = s.attacchi.armaturaRiduce && bersaglio.armatura ? testo('prove.fatto.armatura', { armatura: bersaglio.armatura }) : '';
     void r;
-    return `${ridotto} ${ridotto === 1 ? 'danno' : 'danni'}${attaccante.tipo_danno ? ` ${tipoDanno(attaccante.tipo_danno)}` : ''}${armatura}; ${o.nome(bersaglio.id)} ${stato}`;
+    return testo('prove.fatto.danno_set', { danno: fraseDanno(ridotto, attaccante.tipo_danno ? tipoDanno(attaccante.tipo_danno) : null), armatura, nome: o.nome(bersaglio.id), stato });
   }
 
   /** Un attacco col set (prova o automatico); null se mancano le schede. */
@@ -257,22 +278,23 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     if (!sa || !sb) return null;
     const a = arma(sa, idArma);
     if (s.attacchi.tipo === 'automatico') {
-      const e: EsitoTiroGenerico = { dadi: [], facce: a.danno.facce || 6, dado: 0, modificatore: 0, totale: 0, contro: { tipo: 'soglia', valore: 0, descrizione: 'colpisce sempre' }, riuscita: true, grado: { id: 'successo', nome: 'Colpisce' }, vantaggio: null, regola: `Attacco automatico: ${a.nome} ${a.danno.numero}d${a.danno.facce}${s.attacchi.armaturaRiduce ? ' meno l’armatura' : ''}` };
+      const regola = testo('prove.regola.automatico', { arma: a.nome, dadi: `${a.danno.numero}d${a.danno.facce}`, armatura: s.attacchi.armaturaRiduce ? testo('prove.regola.meno_armatura') : '' });
+      const e: EsitoTiroGenerico = { dadi: [], facce: a.danno.facce || 6, dado: 0, modificatore: 0, totale: 0, contro: { tipo: 'soglia', valore: 0, descrizione: testo('prove.cd.colpisce_sempre') }, riuscita: true, grado: { id: 'successo', nome: testo('prove.regola.colpisce') }, vantaggio: null, regola };
       const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, null, privata);
-      const testo = colpisci(t, a, sb, false);
+      const danno = colpisci(t, a, sb, false);
       t.totale = t.danno?.totale ?? 0;
-      return { t, testo: `attacco con ${a.nome} a ${o.nome(bersaglio)} (${e.regola}) → COLPISCE, ${testo}.`, esito: e };
+      return { t, testo: testo('prove.fatto.attacco_automatico', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, danno }), esito: e };
     }
     const cosa = cheCosa(sa, { caratteristica: a.caratteristica, abilita: a.abilita, mossa: null }, false) ?? { valore: 0, etichetta: a.nome, mossa: null };
     const fonti = [...fontiDate, ...fontiAttacco(o.condizioni, chi, bersaglio)];
     const v = combinaVantaggi(fonti.map((f) => f.v));
     // d20 contro la difesa del bersaglio; gli altri tipi con la loro risoluzione (fasce, soglia).
-    const sist = s.risoluzione.tipo === 'd20_cd' && sb.difesa !== null ? { ...s, difficolta: [{ id: '_difesa', nome: `difesa di ${o.nome(bersaglio)}`, valore: sb.difesa, divisore: null, modificatore: null }] } : s;
+    const sist = s.risoluzione.tipo === 'd20_cd' && sb.difesa !== null ? { ...s, difficolta: [{ id: '_difesa', nome: testo('prove.cd.difesa_di', { nome: o.nome(bersaglio) }), valore: sb.difesa, divisore: null, modificatore: null }] } : s;
     const e = tiraCol(sist, o.dadi, cosa.valore, sist === s ? null : '_difesa', v, `${a.nome}, ${cosa.etichetta}`);
     const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, privata);
-    if (!e.riuscita) return { t, testo: `attacco con ${a.nome} a ${o.nome(bersaglio)}: ${e.regola} → ${esitoInParole(e, true)}.`, esito: e };
-    const testo = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'));
-    return { t, testo: `attacco con ${a.nome} a ${o.nome(bersaglio)}: ${e.regola} → ${esitoInParole(e, true)}, ${testo}.`, esito: e };
+    if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e };
+    const danno = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'));
+    return { t, testo: testo('prove.fatto.attacco_set_colpito', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true), danno }), esito: e };
   }
   return { cheCosa, cartaDa, colpisci, attacca };
 }

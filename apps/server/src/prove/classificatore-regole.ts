@@ -9,11 +9,14 @@
  * 2. AIUTO: «aiuto / do una mano a / copro» + un PG che agisce nello stesso turno;
  * 3. PROVA DELLA SCENA: il suo `quando` ha almeno due radici in comune con l'azione (i nomi non
  *    contano), o una delle sue `parole`;
- * 4. ABILITÀ O MOSSA per parole chiave: la tabella dell'SRD (qui sotto), oppure per un set non SRD
+ * 4. ABILITÀ O MOSSA per parole chiave: la tabella dell'SRD (prove/parole-chiave.ts), oppure per un set non SRD
  *    `parole_chiave` di regole.yaml, le `parole` dei passi del manuale legati a un'abilità o mossa
  *    (`per:`), e il `quando` delle mosse;
  * 5. nient'altro → nessun tiro (banale: parlare, chiedere, guardare).
  * La CD la decide il Motore: dati della scena, scheda del PNG (Influenzare), o la scala predefinita.
+ *
+ * Le parole (verbi d'attacco, d'aiuto, abilità) sono quelle della lingua dei contenuti:
+ * lingue/<codice>/prove.yaml, sezione `parole` (docs/lingue.md).
  */
 import { normalizza } from '../azioni/regole';
 import type { Abilita } from '../campagna/regole-srd';
@@ -22,14 +25,10 @@ import { radici } from '../narrazione/privato';
 import { nomiDeiPng, pngNominati } from '../repertorio/pertinenza';
 import type { RegoleCampagna } from '../regole/tipi';
 import type { DecisioneProva, DecisioneRegole } from './tipi';
-import { PAROLE_SRD, candidatiSet, candidatiSrd } from './parole-chiave';
-
-/** Esportata anche da qui (il modo minimo la importava da questo modulo). */
-export { PAROLE_SRD };
+import { paroleProve } from './lingua';
+import { candidatiSet, candidatiSrd } from './parole-chiave';
 
 const SOCIALI: ReadonlySet<Abilita> = new Set(['persuasione', 'inganno', 'intimidire', 'intrattenere']);
-const ATTACCO = /\b(colpisc|attacc|ferisc|accoltell|trafigg|sparo|scocc|tiro (un|una|il|la) (dardo|freccia|colpo|pugno|sasso|coltello)|pugno|calcio|mi (lancio|getto) (contro|addosso)|affond|fendent|mazzat)/;
-const AIUTO = /\b(aiuto|do una mano a|copro|sostengo|faccio luce a)\b/;
 
 export interface IngressoClassificatore {
   campagna: Campagna;
@@ -78,9 +77,10 @@ export function classificaARegole(az: { id: string; testo: string; autore: strin
   // 1. Attacco: un verbo d'attacco o un'arma della scheda, contro chi ha una scheda.
   const armi = i.armi(az.autore);
   const arma = armi.find((a) => a.split('_').some((p) => p.length > 3 && t.includes(p))) ?? null;
-  if (png && (ATTACCO.test(t) || arma)) return { ...d, tipo: 'attacco', bersaglio: png, arma } as DecisioneProva;
+  const parole = paroleProve();
+  if (png && (parole.attacco.test(t) || arma)) return { ...d, tipo: 'attacco', bersaglio: png, arma } as DecisioneProva;
   // 2. Aiuto a un altro PG del turno (prima della prova della scena: chi aiuta non tira).
-  if (AIUTO.test(t)) {
+  if (parole.aiuto.test(t)) {
     for (const o of i.altre) {
       if (o.autore === az.autore) continue;
       const nomi = nomiPg.get(o.autore) ?? [];

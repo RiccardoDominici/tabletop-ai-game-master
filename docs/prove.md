@@ -193,13 +193,14 @@ Coerenze consigliate (avvisi):
    - Quelle mancanti le chiede in una chiamata sola.
    - Allo scadere, o senza modello, decide l'**arbitro a regole** (prove/classificatore-regole.ts). È il default del profilo tutto locale (`arbitro_prove: {provider: regole}`): il modello piccolo ha meno responsabilità possibile. In ordine:
      1. attacco: verbo d'attacco o un'arma della scheda dell'autore, contro un bersaglio nominato con la scheda;
-     2. aiuto: «aiuto / do una mano a / copro» + un PG che agisce nello stesso turno;
+     2. aiuto: «aiuto / do una mano a / copro» («help / give … a hand / I cover» in inglese) + un PG che agisce nello stesso turno;
      3. prova della scena: il suo `quando` ha almeno due radici in comune con l'azione (i nomi non contano), o una delle sue `parole`;
-     4. abilità per parole chiave: la tabella SRD `PAROLE_SRD`; per un set non SRD `parole_chiave` di regole.yaml, le `parole` dei passi con `per:` e il `quando` delle mosse. Furtività e Rapidità di mano verso un PNG sono contrapposte, le sociali senza un PNG non tirano;
+     4. abilità per parole chiave: la tabella SRD della lingua dei contenuti (`parole.abilita` di lingue/<codice>/prove.yaml); per un set non SRD `parole_chiave` di regole.yaml, le `parole` dei passi con `per:` e il `quando` delle mosse. Furtività e Rapidità di mano verso un PNG sono contrapposte, le sociali senza un PNG non tirano;
      5. il resto, senza parole chiave: nessun tiro.
      - La CD la decide il Motore, come sempre. Niente vantaggi né «impossibile», ma il dado si tira lo stesso e non si resta mai bloccati.
      - Quale arbitro: `regole` è il default del profilo locale (nessun modello, nessuna attesa alla chiusura, nessuna gara col lettore per la GPU); `anthropic` è il default quando c'è la chiave; `{provider: locale, modo: minimo}` è un'opzione esplicita per chi ha una macchina più potente (prove/arbitro-minimo.ts: il modello sceglie fra le candidate, entro 3 s, se no decide il classificatore). Il log d'avvio dice quale è in uso.
-     - Le parole chiave stanno in UN modulo, prove/parole-chiave.ts (tabella SRD `PAROLE_SRD`, candidate per set), usato dal classificatore e dal modo minimo.
+     - Le parole chiave stanno in UN posto per lingua, lingue/<codice>/prove.yaml (`parole`: abilità SRD, verbi d'attacco e d'aiuto, «a mani nude»), radici come regex sul testo normalizzato; prove/parole-chiave.ts le compila (`paroleSrd()`, candidate per set) per il classificatore e il modo minimo. L'italiano è la tabella di sempre; l'inglese copre le stesse abilità e mosse («I climb the wall» → Atletica, «I try to persuade the guard» → Persuasione, «I shoot Ruggero with my crossbow» → attacco: test/prove-lingua.test.ts).
+     - Lingua: nomi SRD (caratteristiche, abilità, difficoltà, armature, condizioni, tipi di danno) da prove.yaml (italiano dall'SRD 5.2.1 in italiano, inglese dall'SRD 5.2); frasi dei fatti, delle carte e dei messaggi agli arbitri da lingue/<codice>/testi-prove.yaml (chiavi `prove.…` e `regole.…`); prompt degli arbitri e di «Chiedi una regola» in prompts/<codice>/arbitro-prove.md, arbitro-minimo.md, risponditore-regole.md. Gli id (schema JSON, schede) restano gli stessi in ogni lingua (docs/lingue.md).
      - Accordo con l'arbitro Haiku (strumenti/confronta-arbitri.ts, 10 novembre; le decisioni di Haiku sono in cache, così la misura si ripete uguale):
 
        | Insieme | si tira sì/no | stesso tipo | stessa abilità o prova | stessa CD/CA (quando tirano entrambi) |
@@ -235,7 +236,7 @@ senza distorsione.
   (`prove: azione risolta`, con dadi, modificatore, totale, CD ed esito). Ogni turno è nel log (`prove: turno
   risolto`, con attesa, decisioni tardive, seme e contatore).
 
-## 4. Che cosa decide l'arbitro (prove/arbitro-haiku.ts)
+## 4. Che cosa decide l'arbitro (prove/arbitro-haiku.ts, prompt in prompts/<codice>/arbitro-prove.md)
 
 Lo schema JSON ha questi campi, con la stringa vuota quando non servono:
 - `tipo`: nessuna, impossibile, prova, salvezza, attacco, contrapposta o aiuto;

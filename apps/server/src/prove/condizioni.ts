@@ -4,6 +4,7 @@
  * Logica pura: le condizioni attive le tiene lo scontro (prove/scontro.ts).
  */
 import type { Vantaggio } from '@cantastorie/shared';
+import { testo } from '../lingua';
 import type { Effetto } from '../regole/combattimento';
 
 /** Condizioni attive di un personaggio (nome ed effetti). */
@@ -17,10 +18,11 @@ export function conEffetto(c: CondizioniDi | undefined, id: string, e: Effetto):
 /** Fonti di vantaggio/svantaggio di un attacco: chi attacca e chi è attaccato. */
 export function fontiAttacco(c: CondizioniDi | undefined, chi: string, bersaglio: string): Array<{ v: Vantaggio; motivo: string }> {
   const out: Array<{ v: Vantaggio; motivo: string }> = [];
-  const add = (v: Vantaggio, nome: string | null, di: string): void => void (nome && out.push({ v, motivo: `${di} ${nome.toLowerCase()}` }));
-  add('svantaggio', conEffetto(c, chi, 'svantaggio_attacchi'), 'chi attacca è');
-  add('vantaggio', conEffetto(c, chi, 'vantaggio_attacchi'), 'chi attacca è');
-  add('vantaggio', conEffetto(c, bersaglio, 'attacchi_contro_vantaggio'), 'il bersaglio è');
-  add('svantaggio', conEffetto(c, bersaglio, 'attacchi_contro_svantaggio'), 'il bersaglio è');
+  // «chi attacca è avvelenato», «il bersaglio è prono» (prove.motivo.*, nella lingua dei contenuti).
+  const add = (v: Vantaggio, nome: string | null, chiave: 'attaccante' | 'bersaglio'): void => void (nome && out.push({ v, motivo: testo(`prove.motivo.${chiave}`, { condizione: nome.toLowerCase() }) }));
+  add('svantaggio', conEffetto(c, chi, 'svantaggio_attacchi'), 'attaccante');
+  add('vantaggio', conEffetto(c, chi, 'vantaggio_attacchi'), 'attaccante');
+  add('vantaggio', conEffetto(c, bersaglio, 'attacchi_contro_vantaggio'), 'bersaglio');
+  add('svantaggio', conEffetto(c, bersaglio, 'attacchi_contro_svantaggio'), 'bersaglio');
   return out;
 }

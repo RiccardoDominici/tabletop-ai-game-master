@@ -17,7 +17,9 @@ import type { Logger } from '../logger';
 import type { Orologio } from '../turni/orologio';
 import type { SchedaNumerica } from '../campagna/schede';
 import { proveDellaScena, type ProvaScena } from '../campagna/prove-scena';
-import { NOME_ABILITA, NOME_CARATTERISTICA } from '../campagna/regole-srd';
+import { nomeAbilita, nomeCaratteristica } from '../campagna/regole-srd';
+import { testo } from '../lingua';
+import { nomeOppure } from './lingua';
 import { DadiCrittografici, type FonteDadi } from './dadi';
 import { risolviTurno, type Atteggiamento, type AzioneRisolvibile } from './risolutore';
 import { StatoProve, type StatoProveSalvato } from './stato';
@@ -25,7 +27,7 @@ import type { ArbitroProve, AzioneDaClassificare, DecisioneProva, DecisioneRegol
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
 import { proveScenaRegole, risolviTurnoRegole } from './risolutore-regole';
 import { regolePerNarratore } from '../regole/narratore';
-import { REGOLA_ESITI } from './testi';
+import { regolaEsiti } from './testi';
 import { GestoreCombattimento } from './combattimento';
 import { classificaARegole, type IngressoClassificatore } from './classificatore-regole';
 import { combattimentoSrd, type Combattimento, type Fase } from '../regole/combattimento';
@@ -144,7 +146,7 @@ export class MotoreProve {
   private armi(id: string): string[] | null {
     const g = this.generico;
     if (g) return g.schede.get(id)?.attacchi.map((a) => a.id) ?? null;
-    return this.o.schede.get(id)?.attacchi.map((a) => `${a.id}${a.distanza ? ' (a distanza)' : ''}`) ?? null;
+    return this.o.schede.get(id)?.attacchi.map((a) => `${a.id}${a.distanza ? testo('prove.arbitro.a_distanza') : ''}`) ?? null;
   }
 
   /**
@@ -154,7 +156,7 @@ export class MotoreProve {
   regolaEsiti(): string {
     const g = this.generico;
     const blocco = g ? regolePerNarratore(g.regole) : null;
-    return [REGOLA_ESITI, blocco, this.inCombattimento ? this.intestazione : null].filter(Boolean).join('\n');
+    return [regolaEsiti(), blocco, this.inCombattimento ? this.intestazione : null].filter(Boolean).join('\n');
   }
 
   get attivo(): boolean {
@@ -176,30 +178,34 @@ export class MotoreProve {
     return { id: a.id, autore: a.autore, nome: c.nome(a.autore), testo: a.testo, privata: a.privata };
   }
 
-  /** Righe dei personaggi per l'arbitro: id, nome, armi, atteggiamenti, chi è a terra. */
+  /**
+   * Righe dei personaggi per l'arbitro: id, nome, armi, atteggiamenti, chi è a terra. La forma
+   * «- id = nome · …» è fissa in ogni lingua (la legge anche prove/arbitro-minimo.ts, pngInScena).
+   */
   righePersonaggi(c: ContestoProve): string {
-    const righe: string[] = ['PG al tavolo:'];
+    const aTerra = (id: string): string => (this.stato.aTerra(id) ? testo('prove.arbitro.a_terra') : '');
+    const righe: string[] = [testo('prove.arbitro.pg_al_tavolo')];
     for (const id of c.pgAlTavolo) {
       const a = this.armi(id);
       const armi = a?.join(', ');
-      righe.push(`- ${id} = ${c.nome(id)}${a ? ` · armi: ${armi || 'nessuna (mani nude)'}` : ' · senza scheda'}${this.stato.aTerra(id) ? ' · A TERRA' : ''}`);
+      righe.push(`- ${id} = ${c.nome(id)}${a ? testo('prove.arbitro.armi', { armi: armi || testo('prove.arbitro.mani_nude') }) : testo('prove.arbitro.senza_scheda')}${aTerra(id)}`);
     }
     const presenti = new Set(c.campagna.scena.png_presenti);
     const inScena = c.campagna.png.filter((p) => presenti.has(p.id));
-    righe.push('PNG in scena:');
+    righe.push(testo('prove.arbitro.png_in_scena'));
     for (const p of inScena) {
       const s = this.o.schede.get(p.id);
       const att = c.pgAlTavolo
         .map((pg) => [pg, this.atteggiamento(c.campagna, p.id, pg)] as const)
         .filter(([, a]) => a)
-        .map(([pg, a]) => `${pg} ${a}`)
+        .map(([pg, a]) => `${pg} ${nomeOppure('atteggiamenti', a!)}`)
         .join(', ');
       const armi = s?.attacchi.map((a) => a.id).join(', ');
-      righe.push(`- ${p.id} = ${p.nome}${att ? ` · verso i PG: ${att}` : ''}${s ? ` · armi: ${armi || 'nessuna'}` : ''}${this.stato.aTerra(p.id) ? ' · A TERRA' : ''}`);
+      righe.push(`- ${p.id} = ${p.nome}${att ? testo('prove.arbitro.verso_i_pg', { atteggiamenti: att }) : ''}${s ? testo('prove.arbitro.armi', { armi: armi || testo('prove.arbitro.nessuna_arma') }) : ''}${aTerra(p.id)}`);
     }
-    if (!inScena.length) righe.push('(nessuno)');
+    if (!inScena.length) righe.push(testo('prove.arbitro.nessuno'));
     const altrove = c.campagna.png.filter((p) => !presenti.has(p.id));
-    if (altrove.length) righe.push(`Altri PNG (non in scena): ${altrove.map((p) => `${p.id} = ${p.nome}`).join('; ')}`);
+    if (altrove.length) righe.push(testo('prove.arbitro.altri_png', { png: altrove.map((p) => `${p.id} = ${p.nome}`).join('; ') }));
     return righe.join('\n');
   }
 
@@ -215,7 +221,7 @@ export class MotoreProve {
       personaggi: this.righePersonaggi(c),
       proveScena: this.generico
         ? proveScenaRegole(this.generico.regole.sistema, c.campagna).map((p) => `- ${p.id} · ${p.quando} · ${p.mossa ?? p.abilita ?? p.caratteristica ?? ''}`).join('\n')
-        : prove.map((p) => `- ${p.id} · ${p.quando} · ${p.salvezza ? `tiro salvezza su ${NOME_CARATTERISTICA[p.caratteristica!]}` : p.abilita ? NOME_ABILITA[p.abilita] : NOME_CARATTERISTICA[p.caratteristica!]}`).join('\n'),
+        : prove.map((p) => `- ${p.id} · ${p.quando} · ${p.salvezza ? testo('prove.arbitro.salvezza_su', { caratteristica: nomeCaratteristica(p.caratteristica!) }) : p.abilita ? nomeAbilita(p.abilita) : nomeCaratteristica(p.caratteristica!)}`).join('\n'),
       azioni: azioni.map((a) => this.versoArbitro(a, c)),
       // Le azioni private degli altri non entrano: l'arbitro le vede solo come azioni da giudicare.
       altre: altre.filter((x) => !x.privata && !azioni.some((a) => a.id === x.id)).map((a) => this.versoArbitro(a, c)),
@@ -461,7 +467,7 @@ export class MotoreProve {
     return fatto;
   }
 
-  terminaCombattimento(motivo = 'il master lo chiude'): boolean {
+  terminaCombattimento(motivo = testo('prove.combattimento.motivo_master')): boolean {
     if (!this.combattimento.attivo) return false;
     this.combattimento.termina(motivo);
     this.intestazione = null;

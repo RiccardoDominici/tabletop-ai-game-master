@@ -1,26 +1,37 @@
 /**
- * Tabelle e formule SRD 5.2 (CC-BY-4.0, Wizards of the Coast; nomi italiani dall'SRD 5.2.1 in
- * italiano) che servono alle schede numeriche e alle prove. Logica pura, senza stato.
+ * Tabelle e formule SRD 5.2 (CC-BY-4.0, Wizards of the Coast) che servono alle schede numeriche e alle
+ * prove. Logica pura, senza stato. Gli id (forza, rapidita_di_mano, giaco_di_maglia…) sono stabili e
+ * uguali in ogni lingua; i NOMI da mostrare dipendono dalla lingua dei contenuti (docs/lingue.md) e si
+ * leggono al momento dell'uso da lingue/<codice>/prove.yaml: italiano dall'SRD 5.2.1 in italiano,
+ * inglese dall'SRD 5.2 in inglese.
  *
  * Attribuzione (obbligatoria nei crediti): «This work includes material from the System Reference
  * Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC, available at
  * https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0
  * International License.»
  */
+import { nomeDi } from '../prove/lingua';
 
 /** Le sei caratteristiche, con id brevi e stabili (quelli delle schede YAML). */
 export const CARATTERISTICHE = ['forza', 'destrezza', 'costituzione', 'intelligenza', 'saggezza', 'carisma'] as const;
 export type Caratteristica = (typeof CARATTERISTICHE)[number];
 
-/** Nome da mostrare (SRD italiano). */
-export const NOME_CARATTERISTICA: Record<Caratteristica, string> = {
-  forza: 'Forza',
-  destrezza: 'Destrezza',
-  costituzione: 'Costituzione',
-  intelligenza: 'Intelligenza',
-  saggezza: 'Saggezza',
-  carisma: 'Carisma',
-};
+/**
+ * Una tabella id → nome che legge il pacchetto della lingua attiva a ogni accesso: chi importa
+ * NOME_ABILITA (anche fuori dalle prove, per esempio le schede) mostra sempre i nomi della lingua in uso.
+ */
+function vistaNomi<K extends string>(ids: readonly K[], nome: (k: K) => string): Readonly<Record<K, string>> {
+  const o = {} as Record<K, string>;
+  for (const k of ids) Object.defineProperty(o, k, { enumerable: true, get: () => nome(k) });
+  return Object.freeze(o);
+}
+
+/** Nome da mostrare di una caratteristica, nella lingua dei contenuti. */
+export function nomeCaratteristica(c: Caratteristica): string {
+  return nomeDi('caratteristiche', c);
+}
+
+export const NOME_CARATTERISTICA: Readonly<Record<Caratteristica, string>> = vistaNomi(CARATTERISTICHE, nomeCaratteristica);
 
 /** Le diciotto abilità (SRD 5.2, «Abilità»), id in snake_case senza accenti. */
 export const ABILITA = [
@@ -67,26 +78,12 @@ export const CARATTERISTICA_DI: Record<Abilita, Caratteristica> = {
   storia: 'intelligenza',
 };
 
-export const NOME_ABILITA: Record<Abilita, string> = {
-  acrobazia: 'Acrobazia',
-  addestrare_animali: 'Addestrare animali',
-  arcano: 'Arcano',
-  atletica: 'Atletica',
-  furtivita: 'Furtività',
-  indagare: 'Indagare',
-  inganno: 'Inganno',
-  intimidire: 'Intimidire',
-  intrattenere: 'Intrattenere',
-  intuizione: 'Intuizione',
-  medicina: 'Medicina',
-  natura: 'Natura',
-  percezione: 'Percezione',
-  persuasione: 'Persuasione',
-  rapidita_di_mano: 'Rapidità di mano',
-  religione: 'Religione',
-  sopravvivenza: 'Sopravvivenza',
-  storia: 'Storia',
-};
+/** Nome da mostrare di un'abilità, nella lingua dei contenuti. */
+export function nomeAbilita(a: Abilita): string {
+  return nomeDi('abilita', a);
+}
+
+export const NOME_ABILITA: Readonly<Record<Abilita, string>> = vistaNomi(ABILITA, nomeAbilita);
 
 /** Abilità dell'azione Influenzare (SRD 5.2, «Influenzare»): si usano verso un PNG esitante. */
 export const ABILITA_INFLUENZA: ReadonlySet<Abilita> = new Set(['persuasione', 'inganno', 'intimidire', 'intrattenere', 'addestrare_animali']);
@@ -195,56 +192,75 @@ export const DIFFICOLTA = {
 } as const;
 export type Difficolta = keyof typeof DIFFICOLTA;
 
-export const NOME_DIFFICOLTA: Record<Difficolta, string> = {
-  molto_facile: 'molto facile',
-  facile: 'facile',
-  media: 'media',
-  difficile: 'difficile',
-  molto_difficile: 'molto difficile',
-  quasi_impossibile: 'quasi impossibile',
-};
+/** Nome di una difficoltà (minuscolo: si legge dentro una frase), nella lingua dei contenuti. */
+export function nomeDifficolta(d: Difficolta): string {
+  return nomeDi('difficolta', d);
+}
+
+export const NOME_DIFFICOLTA: Readonly<Record<Difficolta, string>> = vistaNomi(Object.keys(DIFFICOLTA) as Difficolta[], nomeDifficolta);
 
 /** Armature (SRD 5.2, «Armature»): CA base, quanta Destrezza si somma (null = tutta). */
 export interface DatiArmatura {
-  nome: string;
+  /** Nome da mostrare, nella lingua dei contenuti (letto a ogni accesso). */
+  readonly nome: string;
   base: number;
   /** Massimo della Destrezza aggiunta: null = tutta, 0 = niente (armature pesanti). */
   maxDestrezza: number | null;
 }
 
+/** Nome da mostrare di un'armatura (id di ARMATURE), nella lingua dei contenuti. */
+export function nomeArmatura(id: string): string {
+  return nomeDi('armature', id);
+}
+
+/** Un'armatura con il nome letto dal pacchetto della lingua attiva. */
+function armatura(id: string, base: number, maxDestrezza: number | null): DatiArmatura {
+  return Object.freeze({ get nome() { return nomeArmatura(id); }, base, maxDestrezza });
+}
+
 export const ARMATURE: Record<string, DatiArmatura> = {
-  armatura_imbottita: { nome: 'Armatura imbottita', base: 11, maxDestrezza: null },
-  armatura_di_cuoio: { nome: 'Armatura di cuoio', base: 11, maxDestrezza: null },
-  armatura_di_cuoio_borchiato: { nome: 'Armatura di cuoio borchiato', base: 12, maxDestrezza: null },
-  armatura_di_pelle: { nome: 'Armatura di pelle', base: 12, maxDestrezza: 2 },
-  giaco_di_maglia: { nome: 'Giaco di maglia', base: 13, maxDestrezza: 2 },
-  corazza_a_scaglie: { nome: 'Corazza a scaglie', base: 14, maxDestrezza: 2 },
-  corazza_di_piastre: { nome: 'Corazza di piastre', base: 14, maxDestrezza: 2 },
-  mezza_armatura: { nome: 'Mezza armatura', base: 15, maxDestrezza: 2 },
-  corazza_ad_anelli: { nome: 'Corazza ad anelli', base: 14, maxDestrezza: 0 },
-  cotta_di_maglia: { nome: 'Cotta di maglia', base: 16, maxDestrezza: 0 },
-  corazza_a_strisce: { nome: 'Corazza a strisce', base: 17, maxDestrezza: 0 },
-  armatura_a_piastre: { nome: 'Armatura a piastre', base: 18, maxDestrezza: 0 },
+  armatura_imbottita: armatura('armatura_imbottita', 11, null),
+  armatura_di_cuoio: armatura('armatura_di_cuoio', 11, null),
+  armatura_di_cuoio_borchiato: armatura('armatura_di_cuoio_borchiato', 12, null),
+  armatura_di_pelle: armatura('armatura_di_pelle', 12, 2),
+  giaco_di_maglia: armatura('giaco_di_maglia', 13, 2),
+  corazza_a_scaglie: armatura('corazza_a_scaglie', 14, 2),
+  corazza_di_piastre: armatura('corazza_di_piastre', 14, 2),
+  mezza_armatura: armatura('mezza_armatura', 15, 2),
+  corazza_ad_anelli: armatura('corazza_ad_anelli', 14, 0),
+  cotta_di_maglia: armatura('cotta_di_maglia', 16, 0),
+  corazza_a_strisce: armatura('corazza_a_strisce', 17, 0),
+  armatura_a_piastre: armatura('armatura_a_piastre', 18, 0),
 };
 
-/** Sinonimi brevi delle armature («cuoio», «piastre», inglese dell'SRD). */
+/**
+ * Sinonimi brevi delle armature («cuoio», «piastre») e i nomi dell'SRD inglese, interi o brevi: una
+ * scheda si legge uguale in ogni lingua.
+ */
 const SINONIMI_ARMATURA: Record<string, string> = {
   imbottita: 'armatura_imbottita',
   padded: 'armatura_imbottita',
+  padded_armor: 'armatura_imbottita',
   cuoio: 'armatura_di_cuoio',
   leather: 'armatura_di_cuoio',
+  leather_armor: 'armatura_di_cuoio',
   cuoio_borchiato: 'armatura_di_cuoio_borchiato',
   studded_leather: 'armatura_di_cuoio_borchiato',
+  studded_leather_armor: 'armatura_di_cuoio_borchiato',
   pelle: 'armatura_di_pelle',
   hide: 'armatura_di_pelle',
+  hide_armor: 'armatura_di_pelle',
   chain_shirt: 'giaco_di_maglia',
   scale_mail: 'corazza_a_scaglie',
   breastplate: 'corazza_di_piastre',
   half_plate: 'mezza_armatura',
+  half_plate_armor: 'mezza_armatura',
   ring_mail: 'corazza_ad_anelli',
   chain_mail: 'cotta_di_maglia',
   splint: 'corazza_a_strisce',
+  splint_armor: 'corazza_a_strisce',
   plate: 'armatura_a_piastre',
+  plate_armor: 'armatura_a_piastre',
   piastre: 'armatura_a_piastre',
 };
 

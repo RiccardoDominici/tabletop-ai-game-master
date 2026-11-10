@@ -21,10 +21,11 @@ In breve:
 | `campagne/<id>/regole/regole.yaml` | la skill Preparatore, dal testo estratto del manuale | solo se `licenza.libera: true` |
 | `campagne/<id>/regole/riassunto.md` | la skill (≤ 400 parole, per i giocatori) | come sopra |
 | `campagne/<id>/regole/estratti/<id>.md` | la skill (passi del manuale, ≤ 12 righe ciascuno) | come sopra |
-| `assets/regole/srd-5.2/` | il codice (riassunto e passi dell'SRD 5.2, CC-BY-4.0) | sì |
+| `assets/regole/srd-5.2/` | il codice (riassunto e passi dell'SRD 5.2, CC-BY-4.0; in `en/` quelli inglesi) | sì |
 
 **Senza `regole/regole.yaml`** la campagna gioca con l'SRD 5.2 del codice (apps/server/src/regole/srd.ts). Riassunto e
-passi vengono da `assets/regole/srd-5.2/`. Anche le campagne di oggi giocano così, identiche a prima.
+passi vengono da `assets/regole/srd-5.2/` (in italiano; nelle altre lingue dei contenuti da `assets/regole/srd-5.2/<codice>/`, oggi `en/`).
+Anche le campagne di oggi giocano così, identiche a prima.
 - **Con `id: srd-5.2`** vale lo stesso, ma riassunto ed estratti della campagna prendono il posto di quelli dell'SRD.
 - **Un `regole.yaml` rotto** non ferma la sessione: l'errore va nel log («set non valido, si gioca con l'SRD 5.2») e
   si torna all'SRD.

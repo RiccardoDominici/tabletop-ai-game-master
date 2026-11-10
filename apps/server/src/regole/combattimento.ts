@@ -4,8 +4,11 @@
  * delle azioni, modello del danno e cosa succede a 0, condizioni con effetti MECCANICI (un elenco
  * chiuso di effetti che il Motore applica ai tiri), fine del combattimento (nemici a terra, fuga,
  * resa, morale). Senza la sezione: l'SRD 5.2 completo per l'SRD, valori sensati per gli altri tipi.
+ * I nomi del codice (condizioni, fasi, azioni dell'SRD) sono nella lingua dei contenuti, letti quando
+ * si costruisce il combattimento (prove.yaml, nomi.condizioni e nomi.combattimento).
  */
 import type { TipoRisoluzione } from '@cantastorie/shared';
+import { datiProve } from '../prove/lingua';
 
 /** Effetti meccanici che il Motore sa applicare (le condizioni li combinano). */
 export const EFFETTI = [
@@ -72,39 +75,49 @@ export interface Combattimento {
   };
 }
 
-/** Le 15 condizioni dell'SRD 5.2 con i loro effetti meccanici (nomi dall'SRD 5.2.1 in italiano). */
-export const CONDIZIONI_SRD: Condizione[] = [
-  { id: 'accecato', nome: 'Accecato', icona: '👁', effetti: ['svantaggio_attacchi', 'attacchi_contro_vantaggio'], testo: 'Non vede: fallisce le prove che richiedono la vista; i suoi attacchi hanno svantaggio, quelli contro di lui vantaggio.' },
-  { id: 'affascinato', nome: 'Affascinato', icona: '💗', effetti: [], testo: 'Non può attaccare chi lo affascina; chi lo affascina ha vantaggio nelle prove sociali contro di lui.' },
-  { id: 'assordato', nome: 'Assordato', icona: '🔇', effetti: [], testo: 'Non sente: fallisce le prove che richiedono l’udito.' },
-  { id: 'indebolimento', nome: 'Indebolimento', icona: '😩', effetti: ['svantaggio_prove'], testo: 'Cumulativo: −2 ai tiri d20 per livello (il Motore lo tratta come svantaggio alle prove); a 6 livelli si muore.' },
-  { id: 'spaventato', nome: 'Spaventato', icona: '😱', effetti: ['svantaggio_attacchi', 'svantaggio_prove'], testo: 'Svantaggio a prove e attacchi finché vede la fonte della paura; non può avvicinarsi.' },
-  { id: 'afferrato', nome: 'Afferrato', icona: '✊', effetti: ['non_si_muove'], testo: 'Velocità 0; svantaggio agli attacchi contro chi non lo afferra.' },
-  { id: 'incapacitato', nome: 'Incapacitato', icona: '💫', effetti: ['perde_turno'], testo: 'Niente azioni, azioni bonus né reazioni.' },
-  { id: 'invisibile', nome: 'Invisibile', icona: '👻', effetti: ['vantaggio_attacchi', 'attacchi_contro_svantaggio'], testo: 'I suoi attacchi hanno vantaggio, quelli contro di lui svantaggio.' },
-  { id: 'paralizzato', nome: 'Paralizzato', icona: '🧊', effetti: ['perde_turno', 'non_si_muove', 'fallisce_salvezze_forza_destrezza', 'attacchi_contro_vantaggio', 'critico_contro'], testo: 'Incapacitato, Velocità 0; fallisce i TS di Forza e Destrezza; attacchi contro con vantaggio, a portata sono critici.' },
-  { id: 'pietrificato', nome: 'Pietrificato', icona: '🗿', effetti: ['perde_turno', 'non_si_muove', 'fallisce_salvezze_forza_destrezza', 'attacchi_contro_vantaggio'], testo: 'Trasformato in pietra: incapacitato, fallisce i TS di Forza e Destrezza, resiste a tutti i danni.' },
-  { id: 'avvelenato', nome: 'Avvelenato', icona: '🤢', effetti: ['svantaggio_attacchi', 'svantaggio_prove'], testo: 'Svantaggio ai tiri per colpire e alle prove di caratteristica.' },
-  { id: 'prono', nome: 'Prono', icona: '⬇', effetti: ['svantaggio_attacchi', 'attacchi_contro_vantaggio'], testo: 'A terra: i suoi attacchi hanno svantaggio, quelli da vicino contro di lui vantaggio; rialzarsi costa metà movimento.' },
-  { id: 'trattenuto', nome: 'Trattenuto', icona: '⛓', effetti: ['non_si_muove', 'svantaggio_attacchi', 'attacchi_contro_vantaggio', 'svantaggio_salvezze'], testo: 'Velocità 0; i suoi attacchi con svantaggio, quelli contro con vantaggio; svantaggio ai TS di Destrezza.' },
-  { id: 'stordito', nome: 'Stordito', icona: '💥', effetti: ['perde_turno', 'fallisce_salvezze_forza_destrezza', 'attacchi_contro_vantaggio'], testo: 'Incapacitato; fallisce i TS di Forza e Destrezza; attacchi contro con vantaggio.' },
-  { id: 'privo_di_sensi', nome: 'Privo di sensi', icona: '💤', effetti: ['perde_turno', 'non_si_muove', 'fallisce_salvezze_forza_destrezza', 'attacchi_contro_vantaggio', 'critico_contro'], testo: 'Incapacitato e prono, lascia cadere ciò che tiene; attacchi contro con vantaggio, a portata sono critici.' },
-  // Non è una condizione dell'SRD: l'effetto dell'azione Schivata fino al prossimo turno.
-  { id: 'schivata', nome: 'In guardia (Schivata)', icona: '🛡', effetti: ['attacchi_contro_svantaggio'], testo: 'Azione Schivata: fino al suo prossimo turno gli attacchi contro di lui hanno svantaggio.' },
+/**
+ * Le 15 condizioni dell'SRD 5.2 (più la Schivata) con i loro effetti meccanici: id, icona ed effetti
+ * sono del codice; nome e testo, nella lingua dei contenuti, da lingue/<codice>/prove.yaml
+ * (nomi.condizioni.<id>: italiano dall'SRD 5.2.1 in italiano, inglese dall'SRD 5.2).
+ */
+const EFFETTI_SRD: ReadonlyArray<{ id: string; icona: string; effetti: Effetto[] }> = [
+  { id: 'accecato', icona: '👁', effetti: ['svantaggio_attacchi', 'attacchi_contro_vantaggio'] },
+  { id: 'affascinato', icona: '💗', effetti: [] },
+  { id: 'assordato', icona: '🔇', effetti: [] },
+  { id: 'indebolimento', icona: '😩', effetti: ['svantaggio_prove'] },
+  { id: 'spaventato', icona: '😱', effetti: ['svantaggio_attacchi', 'svantaggio_prove'] },
+  { id: 'afferrato', icona: '✊', effetti: ['non_si_muove'] },
+  { id: 'incapacitato', icona: '💫', effetti: ['perde_turno'] },
+  { id: 'invisibile', icona: '👻', effetti: ['vantaggio_attacchi', 'attacchi_contro_svantaggio'] },
+  { id: 'paralizzato', icona: '🧊', effetti: ['perde_turno', 'non_si_muove', 'fallisce_salvezze_forza_destrezza', 'attacchi_contro_vantaggio', 'critico_contro'] },
+  { id: 'pietrificato', icona: '🗿', effetti: ['perde_turno', 'non_si_muove', 'fallisce_salvezze_forza_destrezza', 'attacchi_contro_vantaggio'] },
+  { id: 'avvelenato', icona: '🤢', effetti: ['svantaggio_attacchi', 'svantaggio_prove'] },
+  { id: 'prono', icona: '⬇', effetti: ['svantaggio_attacchi', 'attacchi_contro_vantaggio'] },
+  { id: 'trattenuto', icona: '⛓', effetti: ['non_si_muove', 'svantaggio_attacchi', 'attacchi_contro_vantaggio', 'svantaggio_salvezze'] },
+  { id: 'stordito', icona: '💥', effetti: ['perde_turno', 'fallisce_salvezze_forza_destrezza', 'attacchi_contro_vantaggio'] },
+  { id: 'privo_di_sensi', icona: '💤', effetti: ['perde_turno', 'non_si_muove', 'fallisce_salvezze_forza_destrezza', 'attacchi_contro_vantaggio', 'critico_contro'] },
+  { id: 'schivata', icona: '🛡', effetti: ['attacchi_contro_svantaggio'] },
 ];
 
+/** Le condizioni dell'SRD con nome e testo nella lingua attiva (lette adesso). */
+export function condizioniSrd(): Condizione[] {
+  const nomi = datiProve().nomi.condizioni;
+  return EFFETTI_SRD.map((c) => {
+    const n = nomi[c.id];
+    if (!n) throw new Error(`prove.yaml: manca nomi.condizioni.${c.id}`);
+    return { id: c.id, nome: n.nome, icona: c.icona, effetti: [...c.effetti], testo: n.testo };
+  });
+}
+
 export function combattimentoSrd(): Combattimento {
+  const n = datiProve().nomi.combattimento;
+  const azione = (id: 'movimento' | 'azione' | 'bonus' | 'reazione'): { id: string; nome: string; quante: string } => ({ id, ...n.azioni_srd[id]! });
   return {
     iniziativa: { tipo: 'individuale', dado: 20, caratteristica: 'destrezza', ogniRound: false },
-    fasi: [{ id: 'turno', nome: 'Turno', png: 'attacco' }],
-    azioni: [
-      { id: 'movimento', nome: 'Movimento', quante: 'fino alla tua Velocità' },
-      { id: 'azione', nome: 'Azione', quante: 'una (Attacco, Scatto, Disimpegno, Schivata, Aiuto, Nascondersi, Influenza, Magia, Prepararsi, Cerca, Studia, Utilizza)' },
-      { id: 'bonus', nome: 'Azione bonus', quante: 'una, solo se un tuo privilegio la concede' },
-      { id: 'reazione', nome: 'Reazione', quante: 'una per round (es. attacco di opportunità)' },
-    ],
+    fasi: [{ id: 'turno', nome: n.turno, png: 'attacco' }],
+    azioni: [azione('movimento'), azione('azione'), azione('bonus'), azione('reazione')],
     danni: { modello: 'pf', pgAZero: 'tiri_morte', pngAZero: 'morte', tiriMorte: { cd: 10, successi: 3, fallimenti: 3 } },
-    condizioni: CONDIZIONI_SRD,
+    condizioni: condizioniSrd(),
     condizioneAZero: 'privo_di_sensi',
     fine: { morale: false },
   };
@@ -113,11 +126,12 @@ export function combattimentoSrd(): Combattimento {
 /** Senza la sezione: SRD per l'SRD; per gli altri tipi un combattimento semplice e coerente. */
 export function combattimentoPredefinito(tipo: TipoRisoluzione, srd: boolean, caratteristiche: string[]): Combattimento {
   if (srd) return combattimentoSrd();
+  const n = datiProve().nomi.combattimento;
   return {
     // Il 2d6 alla PbtA non ha iniziativa: la scena segue la finzione e i PNG colpiscono con lo scambio.
     iniziativa: tipo === '2d6_fasce' ? { tipo: 'nessuna', dado: 6, caratteristica: null, ogniRound: false } : { tipo: 'individuale', dado: tipo === 'sotto_soglia' ? 10 : 20, caratteristica: caratteristiche.includes('destrezza') ? 'destrezza' : null, ogniRound: false },
-    fasi: [{ id: 'turno', nome: 'Turno', png: 'attacco' }],
-    azioni: [{ id: 'azione', nome: 'Azione', quante: 'una' }],
+    fasi: [{ id: 'turno', nome: n.turno, png: 'attacco' }],
+    azioni: [{ id: 'azione', nome: n.azione, quante: n.una }],
     danni: { modello: 'pf', pgAZero: 'fuori_gioco', pngAZero: 'fuori_gioco', tiriMorte: null },
     condizioni: [],
     condizioneAZero: null,
@@ -163,7 +177,7 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
     if (!fasi.length) errori.push('combattimento.fasi: almeno una');
     else out.fasi = fasi;
   }
-  if (Array.isArray(d['azioni'])) out.azioni = d['azioni'].flatMap((x) => { const o = ogg(x); const id = str(o?.['id']); return o && id ? [{ id, nome: str(o['nome']) ?? id, quante: str(o['quante']) ?? 'una' }] : []; });
+  if (Array.isArray(d['azioni'])) out.azioni = d['azioni'].flatMap((x) => { const o = ogg(x); const id = str(o?.['id']); return o && id ? [{ id, nome: str(o['nome']) ?? id, quante: str(o['quante']) ?? datiProve().nomi.combattimento.una }] : []; });
   const dan = ogg(d['danni']);
   if (dan) {
     if (dan['modello'] !== undefined) {

@@ -11,27 +11,29 @@ import type { ModelloLinguaggio, RispostaModello } from '../llm/modello';
 import { chiediStrutturato } from '../llm/strutturato';
 import { cercaEstratti, testoEstratto } from '../regole/estratti';
 import type { RegoleCampagna } from '../regole/tipi';
-import { messaggioProve, type MisuraProve } from './arbitro-haiku';
+import { testo } from '../lingua';
+import { messaggioProve, scenaPerArbitro, type MisuraProve } from './arbitro-haiku';
 import type { ArbitroProve, DecisioneRegole, IngressoArbitroProve, TipoDecisione } from './tipi';
 
 const TIPI: readonly TipoDecisione[] = ['nessuna', 'impossibile', 'prova', 'attacco', 'aiuto'];
 
-/** Prompt di sistema per il set (stabile per tutta la sessione: va in cache). */
+/**
+ * Prompt di sistema per il set (stabile per tutta la sessione: va in cache), a pezzi dal pacchetto della
+ * lingua dei contenuti (testi-prove.yaml, prove.arbitro_regole.*): alcuni pezzi ci sono solo se il set li ha.
+ */
 export function promptArbitroRegole(r: RegoleCampagna): string {
   const s = r.sistema;
-  const elenco = (xs: Array<{ id: string; nome: string }>): string => xs.map((x) => `${x.id} (${x.nome})`).join(', ') || '(nessuna)';
+  const elenco = (xs: Array<{ id: string; nome: string }>): string => xs.map((x) => `${x.id} (${x.nome})`).join(', ') || testo('prove.arbitro.nessuna');
   return [
-    `Sei l'arbitro delle prove di una partita di gioco di ruolo dal vivo, in italiano, con le regole del manuale «${s.nome}». I giocatori scrivono cosa fanno i loro personaggi (PG). Per ogni azione decidi se serve un tiro e quale, con il vocabolario di questo manuale. Non narri e non tiri i dadi: lo fa il programma. Rispondi solo con il JSON richiesto.`,
-    `Regola d'oro: si tira solo quando l'esito è incerto E il fallimento conta. Azioni banali o sicure (parlare, chiedere, guardarsi intorno, camminare): «nessuna». Ciò che non può riuscire come scritto: «impossibile», con il motivo in una frase. Un PG che aiuta l'azione di un altro: «aiuto», con l'id di quell'azione in «aiuta». Colpire una creatura: «attacco», con bersaglio e arma della scheda. Tutto il resto che è incerto e rischioso: «prova».`,
-    s.mosse.length
-      ? `Mosse del manuale: se l'azione è una di queste, metti il suo id in «mossa» (la statistica la sa il programma):\n${s.mosse.map((m) => `- ${m.id} (${m.nome}): ${m.quando}`).join('\n')}`
-      : '',
-    `Per una «prova» senza mossa scegli l'abilità o, se nessuna va bene, la caratteristica.\n- Caratteristiche: ${elenco(s.caratteristiche)}\n- Abilità: ${elenco(s.abilita)}\n- Difficoltà: ${elenco(s.difficolta)} (nel dubbio ${s.difficoltaPredefinita})`,
-    s.sociale.nota ? `Prove sociali nel manuale: ${s.sociale.nota}` : '',
-    s.vantaggio.tipo !== 'nessuno' ? 'Vantaggio o svantaggio: solo per una circostanza chiara scritta nell\'azione o nella narrazione; «motivo» in poche parole, senza segreti. Altrimenti «nessuno» e motivo vuoto.' : 'Il manuale non ha vantaggio o svantaggio: «nessuno».',
-    'Reazione: se l\'azione scatena l\'attacco di un PNG ostile contro chi la fa, il PNG in reazione_png e «sempre» o «se_fallisce» in reazione_quando; altrimenti vuoto e «nessuna».',
-    `Riassunto delle regole:\n${r.riassunto.slice(0, 2500)}`,
-    'Usa solo id degli elenchi. Un campo che non serve è una stringa vuota.',
+    testo('prove.arbitro_regole.intro', { nome: s.nome }),
+    testo('prove.arbitro_regole.regola_oro'),
+    s.mosse.length ? testo('prove.arbitro_regole.mosse', { mosse: s.mosse.map((m) => `- ${m.id} (${m.nome}): ${m.quando}`).join('\n') }) : '',
+    testo('prove.arbitro_regole.prova', { caratteristiche: elenco(s.caratteristiche), abilita: elenco(s.abilita), difficolta: elenco(s.difficolta), predefinita: s.difficoltaPredefinita }),
+    s.sociale.nota ? testo('prove.arbitro_regole.sociale', { nota: s.sociale.nota }) : '',
+    testo(s.vantaggio.tipo !== 'nessuno' ? 'prove.arbitro_regole.vantaggio' : 'prove.arbitro_regole.senza_vantaggio'),
+    testo('prove.arbitro_regole.reazione'),
+    testo('prove.arbitro_regole.riassunto', { riassunto: r.riassunto.slice(0, 2500) }),
+    testo('prove.arbitro_regole.finale'),
   ]
     .filter(Boolean)
     .join('\n\n');
@@ -121,14 +123,14 @@ export class ArbitroRegoleHaiku implements ArbitroProve<DecisioneRegole> {
   async classifica(i: IngressoArbitroProve): Promise<Record<string, DecisioneRegole>> {
     const t0 = performance.now();
     const passi = passiPerAzioni(this.regole, i.azioni.map((a) => a.testo));
-    const messaggio = `${passi ? `Passi del manuale pertinenti:\n${passi}\n\n` : ''}${messaggioProve(i)}`;
+    const messaggio = `${passi ? testo('prove.arbitro_regole.passi', { passi }) : ''}${messaggioProve(i)}`;
     const risposte: RispostaModello[] = [];
     let r: { decisioni: Grezza[] };
     try {
       r = await chiediStrutturato<{ decisioni: Grezza[] }>(
         this.modello(),
         {
-          sistema: [{ testo: this.sistema }, { testo: `Scena (parte pubblica):\n${i.scena}`, cache: true }],
+          sistema: [{ testo: this.sistema }, { testo: scenaPerArbitro(i.scena), cache: true }],
           messaggi: [{ ruolo: 'user', testo: messaggio }],
           maxTokens: 300 + 160 * i.azioni.length,
         },

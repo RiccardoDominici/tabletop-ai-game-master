@@ -1,0 +1,248 @@
+# Frasi fisse dei dadi e delle regole in italiano (docs/lingue.md, docs/prove.md): la lingua di riferimento.
+# Carte (proiettore, telefono), righe di fatto e regole per il narratore, messaggi agli arbitri, risposte di
+# «Chiedi una regola». Chiavi «prove.…» (prove/*) e «regole.…» (regole/*), segnaposto {nome}.
+# Ogni altra lingua (lingue/<codice>/testi-prove.yaml) ha esattamente queste chiavi, con gli stessi segnaposto.
+# I nomi (abilità, condizioni, armature…) e le parole chiave stanno in prove.yaml.
+
+prove:
+  # Etichette delle carte.
+  etichetta:
+    abilita: "{abilita} ({caratteristica})"
+    caratteristica: "Prova di {caratteristica}"
+    salvezza: "Tiro salvezza su {caratteristica}"
+  # Come sta un personaggio dopo un colpo (dei PNG il narratore sente solo le parole, mai i numeri).
+  salute:
+    a_terra: "è A TERRA (0 punti ferita): fuori combattimento"
+    regge: "è ferito ma regge"
+    grave: "è ferito gravemente"
+    pg_a_terra: "è A TERRA (0 punti ferita): privo di sensi"
+    pg: "ha {attuali} punti ferita su {massimi}"
+    set_a_terra: "è A TERRA (0 {danni}): {a_zero}"
+    set: "ha {attuali} {danni} su {massimi}"
+  danno:
+    uno: "{n} danno"
+    molti: "{n} danni"
+    uno_tipo: "{n} danno {tipo}"
+    molti_tipo: "{n} danni {tipo}"
+  vantaggio:
+    con: " (con {vantaggio})"
+    con_motivo: " (con {vantaggio}: {motivo})"
+  # «17 contro CD 15».
+  confronto: "{totale} contro {contro} {valore}"
+  esito:
+    riuscita: "RIUSCITA"
+    fallita: "FALLITA"
+    riuscito: "RIUSCITO"
+    fallito: "FALLITO"
+    colpito: "COLPITO"
+    mancato: "MANCATO"
+    vince: "VINCE"
+    perde: "PERDE"
+    pari: "PARI: nessuno prevale, la situazione resta com’era"
+  # Righe di fatto per il narratore: l'esito è già deciso, ne racconta la conseguenza.
+  fatto:
+    attacco: "attacco con {arma}{verso}{vantaggio}: {confronto}{naturale} → {esito}{critico}{danno}{stato}."
+    verso_attacco: " a {bersaglio}"
+    uno_naturale: " (1 naturale)"
+    critico: " (colpo critico)"
+    danno: ", {danno}"
+    stato: "; {bersaglio} {salute}"
+    salvezza: "{etichetta}{vantaggio}: {confronto} → {esito}."
+    contrapposta: "{etichetta} contro {etichetta_avversario} di {avversario}{vantaggio}: {totale} contro {totale_avversario} → {esito}."
+    contrapposta_passiva: "{etichetta}{contro}{vantaggio}: {confronto} → {esito}."
+    contro: " contro {descrizione}"
+    prova: "{etichetta}{verso}{vantaggio}: {confronto} → {esito}."
+    verso_prova: " verso {bersaglio}"
+    nessun_tiro: "nessun tiro: l’azione riesce se è possibile."
+    senza_scheda: "servirebbe un tiro, ma manca la scheda: nessun tiro, risolvi con un «sì, ma»."
+    senza_arbitro: "nessun tiro deciso (arbitro non disponibile): un’azione possibile riesce, una rischiosa riesce con un prezzo."
+    impossibile: "impossibile così, nessun tiro{motivo}: non riesce come scritta; dillo dentro la finzione, con un «sì, ma» se c'è una strada vicina."
+    impossibile_motivo: " ({motivo})"
+    aiuta: "aiuta {aiutato}: nessun tiro, l'altro ha vantaggio."
+    aiuta_niente: "aiuta, ma non c’è un’azione da aiutare in questo turno: nessun tiro."
+    gia_a_terra: "{nome} è già a terra: nessun tiro, l’azione riesce."
+    png_manca: "{nome} manca {bersaglio} (raccontalo in una frase sua)."
+    png_colpisce: "{nome} colpisce {bersaglio}: {danni}{a_terra} (raccontalo in una frase sua)."
+    png_a_terra: ", e {bersaglio} va a terra"
+    il_bersaglio: "il bersaglio"
+    qualcuno: "qualcuno"
+    privata: " (azione PRIVATA: l’esito solo in una riga [privato {autore}], mai nelle righe al tavolo, che non la nominano)"
+    a_terra_autore: "è a terra, privo di sensi: non può agire finché qualcuno non lo cura."
+    a_terra_set: "è a terra: {a_zero}"
+    perde_turno: "è {condizione}: perde il turno, nessun tiro."
+    fallisce_da_solo: " Fallisce da solo: è {condizione}."
+    prezzo: " Prezzo del fallimento: {prezzo}."
+    essenziale: " Ciò che cercava è essenziale: lo trova comunque, ma con un prezzo."
+    trova_indizio: " Trova ciò che cercava (indizio {indizio})."
+    non_trova: " Non trova ciò che cercava, per ora."
+    attacco_senza_scheda: "attacca {bersaglio}, ma il bersaglio non ha una scheda: nessun tiro, risolvi con un «sì, ma»."
+    reazione: "Poi {nome} reagisce. {frase} Dettagli: {dettagli}"
+    scambio: " Scambio: {frase} Dettagli: {dettagli}"
+    # Set di regole non SRD (prove/risolutore-regole.ts).
+    prova_set: "{regola}{vantaggio}: {valore} → {esito}."
+    esito_mossa: " Esito della mossa «{mossa}»: {esito}"
+    armatura: " (armatura −{armatura})"
+    danno_set: "{danno}{armatura}; {nome} {stato}"
+    attacco_automatico: "attacco con {arma} a {bersaglio} ({regola}) → COLPISCE, {danno}."
+    attacco_set: "attacco con {arma} a {bersaglio}: {regola} → {esito}."
+    attacco_set_colpito: "attacco con {arma} a {bersaglio}: {regola} → {esito}, {danno}."
+  # Il perché di un vantaggio o di uno svantaggio, sulla carta.
+  motivo:
+    annullati: "vantaggio e svantaggio si annullano"
+    aiuta: "{nome} aiuta"
+    ben_disposto: "{nome} è ben disposto"
+    ostile: "{nome} è ostile"
+    attaccante: "chi attacca è {condizione}"
+    bersaglio: "il bersaglio è {condizione}"
+  # Contro che cosa si tira, sulla carta.
+  cd:
+    influenzare: "influenzare {nome}"
+    tiro_di: "tiro di {nome}"
+    passiva_di: "{abilita} passiva di {nome}"
+    passiva: "{abilita} passiva"
+    ca_di: "CA di {nome}"
+    difesa_di: "difesa di {nome}"
+    colpisce_sempre: "colpisce sempre"
+  regola:
+    automatico: "Attacco automatico: {arma} {dadi}{armatura}"
+    meno_armatura: " meno l’armatura"
+    colpisce: "Colpisce"
+  # La sezione «Esiti dei tiri» del messaggio del narratore e del selettore.
+  esiti:
+    titolo: "## Esiti dei tiri (li ha tirati il Motore: sono fatti, raccontali così)"
+    regola: "Ogni esito è già deciso: riuscita, l’azione riesce; fallita o mancato, non riesce, ma la scena cambia (un prezzo, una complicazione, un’informazione). Non cambiare mai un esito, non dire numeri, dadi o CD a voce, non chiedere altri tiri."
+  # Il messaggio per l'arbitro (prove/arbitro-haiku.ts, prove/motore.ts).
+  arbitro:
+    scena: "Scena (parte pubblica):\n{scena}"
+    a_distanza: " (a distanza)"
+    pg_al_tavolo: "PG al tavolo:"
+    armi: " · armi: {armi}"
+    mani_nude: "nessuna (mani nude)"
+    nessuna_arma: "nessuna"
+    senza_scheda: " · senza scheda"
+    a_terra: " · A TERRA"
+    png_in_scena: "PNG in scena:"
+    verso_i_pg: " · verso i PG: {atteggiamenti}"
+    altri_png: "Altri PNG (non in scena): {png}"
+    salvezza_su: "tiro salvezza su {caratteristica}"
+    nessuno: "(nessuno)"
+    nessuna: "(nessuna)"
+    riga: "- id {id} · {nome} ({autore}){privata}: «{testo}»"
+    privata: " · PRIVATA"
+    narrazione: "Ultima narrazione:\n{narrazione}"
+    personaggi: "Personaggi:\n{personaggi}"
+    prove_scena: "Prove della scena (id · quando · prova):\n{prove}"
+    altre: "Altre azioni dei PG in questo turno:\n{azioni}"
+    da_giudicare: "Azioni da giudicare:\n{azioni}"
+    domanda: "Per ogni azione da giudicare: serve un tiro, e quale?"
+  # L'arbitro minimo (prove/arbitro-minimo.ts): il prompt di sistema è prompts/<lingua>/arbitro-minimo.md.
+  minimo:
+    messaggio: "Azione di {nome}: «{testo}»\nAbilità possibili: {abilita}"
+  # L'arbitro di un set di regole non SRD (prove/arbitro-regole.ts): il prompt di sistema, a pezzi.
+  arbitro_regole:
+    intro: "Sei l'arbitro delle prove di una partita di gioco di ruolo dal vivo, in italiano, con le regole del manuale «{nome}». I giocatori scrivono cosa fanno i loro personaggi (PG). Per ogni azione decidi se serve un tiro e quale, con il vocabolario di questo manuale. Non narri e non tiri i dadi: lo fa il programma. Rispondi solo con il JSON richiesto."
+    regola_oro: "Regola d'oro: si tira solo quando l'esito è incerto E il fallimento conta. Azioni banali o sicure (parlare, chiedere, guardarsi intorno, camminare): «nessuna». Ciò che non può riuscire come scritto: «impossibile», con il motivo in una frase. Un PG che aiuta l'azione di un altro: «aiuto», con l'id di quell'azione in «aiuta». Colpire una creatura: «attacco», con bersaglio e arma della scheda. Tutto il resto che è incerto e rischioso: «prova»."
+    mosse: "Mosse del manuale: se l'azione è una di queste, metti il suo id in «mossa» (la statistica la sa il programma):\n{mosse}"
+    prova: "Per una «prova» senza mossa scegli l'abilità o, se nessuna va bene, la caratteristica.\n- Caratteristiche: {caratteristiche}\n- Abilità: {abilita}\n- Difficoltà: {difficolta} (nel dubbio {predefinita})"
+    sociale: "Prove sociali nel manuale: {nota}"
+    vantaggio: "Vantaggio o svantaggio: solo per una circostanza chiara scritta nell'azione o nella narrazione; «motivo» in poche parole, senza segreti. Altrimenti «nessuno» e motivo vuoto."
+    senza_vantaggio: "Il manuale non ha vantaggio o svantaggio: «nessuno»."
+    reazione: "Reazione: se l'azione scatena l'attacco di un PNG ostile contro chi la fa, il PNG in reazione_png e «sempre» o «se_fallisce» in reazione_quando; altrimenti vuoto e «nessuna»."
+    riassunto: "Riassunto delle regole:\n{riassunto}"
+    finale: "Usa solo id degli elenchi. Un campo che non serve è una stringa vuota."
+    passi: "Passi del manuale pertinenti:\n{passi}\n\n"
+  # Lo scontro (prove/combattimento.ts): righe di fatto e situazione per il narratore.
+  combattimento:
+    inizia: "Inizia il combattimento. {ordine}"
+    iniziativa: "Iniziativa: {ordine}."
+    iniziativa_schieramento: "Iniziativa per schieramento: PG {pg}, PNG {png}; {primo}."
+    agiscono_prima_pg: "agiscono prima i PG"
+    agiscono_prima_png: "agiscono prima i PNG"
+    senza_iniziativa: "Senza iniziativa: si agisce seguendo la storia."
+    finisce: "{nome}: {condizioni} finisce."
+    round: "Round {round}: iniziativa PG {pg}, PNG {png}; {primo}."
+    prima_pg: "prima i PG"
+    prima_png: "prima i PNG"
+    png_non_agisce: "Turno di {nome}: è {condizione}, non agisce."
+    turno_png: "Turno di {nome}: {frase} Dettagli: {dettagli}"
+    morte_venti: "venti naturale: torna in sé con 1 punto ferita"
+    morte_morto: "terzo fallimento: è MORTO"
+    morte_stabile: "terzo successo: è stabile, resta privo di sensi"
+    morte_parziale: "{esito} (successi {successi}, fallimenti {fallimenti})"
+    morte_riuscito: "riuscito"
+    morte_fallito: "fallito"
+    tiro_morte: "{nome} è a terra: tiro salvezza contro la morte {dado} contro CD {cd} → {esito}."
+    salta_turno: "{nome} è {condizione}: salta il turno."
+    etichetta_morte: "Tiro salvezza contro la morte"
+    morale_cedono: "Morale dei nemici: {tiro} contro {morale} → CEDONO e fuggono ({nomi})."
+    morale_tengono: "Morale dei nemici: {tiro} contro {morale} → tengono."
+    fine_fuggiti: "i nemici sono fuggiti o fuori combattimento"
+    fine_nemici: "i nemici sono a terra"
+    fine_pg: "i PG sono tutti a terra"
+    finito: "Il combattimento è finito: {motivo}."
+    fine: "fine"
+    motivo_master: "il master lo chiude"
+    intestazione: "Combattimento, round {round}{fase}.{ordine}{tocca} Racconta i fatti nell'ordine; non inventare attacchi, danni o morti che non sono nei fatti."
+    intestazione_senza: "Combattimento in corso (senza iniziativa: si agisce seguendo la storia). I PNG colpiscono solo come dicono i fatti."
+    intestazione_fase: ", fase «{fase}»"
+    intestazione_ordine: " Ordine: {ordine}."
+    intestazione_tocca: " Tocca ora a: {chi}: chiudi invitando solo {pronome}, è il suo turno."
+    loro: "loro"
+    lui_o_lei: "lui o lei"
+
+regole:
+  # «Chiedi una regola» (regole/chiedi.ts): il prompt di sistema è prompts/<lingua>/risponditore-regole.md.
+  domanda:
+    vuota: "Scrivi la domanda."
+    lunga: "Al massimo {max} caratteri."
+    spente: "Per questa campagna le domande sulle regole non sono attive."
+    una_alla_volta: "Un momento: rispondo a una domanda alla volta."
+    nessuna_risposta: "Nessuna risposta: riprova."
+    errore: "Non riesco a rispondere adesso: riprova tra poco."
+    passi: "Passi del manuale:\n{passi}\n\n"
+    nessun_passo: "Nessun passo del manuale trovato per questa domanda.\n\n"
+    domanda: "Domanda: {domanda}"
+  # Che cosa vuol dire un esito quando il manuale non lo scrive (regole/narratore.ts).
+  significato:
+    successo: "l’azione riesce come voleva il giocatore."
+    parziale: "riesce, ma devi dare un costo, una scelta difficile o una complicazione: raccontali insieme alla riuscita, mai come un successo pieno."
+    fallimento: "non riesce, e la situazione peggiora: fai succedere qualcosa di difficile, mai «non succede niente»."
+    critico: "riesce oltre le attese."
+    disastro: "va storto nel modo peggiore."
+    grado: "riesce particolarmente bene."
+  # Le regole del set per il narratore (regole/narratore.ts).
+  narratore:
+    d20: "Si tira un d20 più il modificatore contro la CD."
+    dued6: "Si tirano {n}d6 più la statistica, e conta la fascia del totale."
+    soglia: "Si tira un d{facce}: riesce se fa quanto la soglia o meno."
+    intro: "Regole del manuale «{nome}»: {come} Che cosa vuol dire ogni esito:"
+    fascia: "- {intervallo} «{nome}»: {significato}"
+    grado: "- «{nome}»: {significato}"
+    riuscita: "- riuscita: {significato}"
+    fallita: "- fallita: {significato}"
+    mosse: "- Con una mossa, il fatto porta anche l’esito scritto nel manuale: raccontalo così."
+    scambio: "- In un attacco con successo parziale anche l’avversario colpisce: è già nei fatti."
+  # Gli esiti dei tiri di un set (regole/risoluzione.ts).
+  esito:
+    successo: "Successo"
+    fallimento: "Fallimento"
+    critico: "Successo critico"
+    disastro: "Disastro"
+  # I nomi che il caricatore usa quando regole.yaml non li scrive (regole/caricatore.ts).
+  predefiniti:
+    successo_pieno: "Successo pieno"
+    successo_costo: "Successo con un costo"
+    normale: "Normale"
+    nome: "Regole"
+    fonte: "manuale senza titolo"
+    danni: "Punti ferita"
+    a_zero: "Fuori combattimento."
+  fascia:
+    sempre: "sempre"
+  # La regola applicata, in parole, sulla carta e per il narratore.
+  regola:
+    d20: "{etichetta}: d20{mod} contro CD {cd} ({difficolta})"
+    dued6: "{n}d6{mod} ({etichetta}){difficolta}: {intervallo}, {fascia}"
+    dued6_difficolta: ", {difficolta} {mod}"
+    soglia: "{etichetta} {soglia}: d{facce} {difficolta}serve {serve} o meno"
+    soglia_difficolta: "{difficolta}, "
