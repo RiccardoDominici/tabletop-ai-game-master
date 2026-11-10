@@ -1,0 +1,75 @@
+# Zirrà: la cattiva, guerriera goblin. Voce tabitha: solo alla torre, mai con Berta (nadine, voce simile).
+# Combatte: scheda dal manuale (Goblin, guerriera di 3-3 dadi vita) con il morale.
+id: png_zirra
+nome: "Zirrà"
+pronuncia: "Zirrà"
+alias: [goblin, goblina, capobanda]
+livello: principale
+ruolo: "guerriera goblin, capa della banda della Torre Mozza; la cattiva"
+fronte: fronte_torre
+scheda:
+  # Goblin, guerriera (p. 104): Classe d'Armatura 14 (cuoio e scudo), dadi vita 3-3, quindi bonus d'attacco +3
+  # e 3d8−3 punti ferita (qui 10). Salva come guerriero di livello 3 (11, 12, 14, 15, 16). Morale 7.
+  # Il manuale non dà caratteristiche ai mostri: valgono tutte zero.
+  caratteristiche: {forza: 0, intelligenza: 0, saggezza: 0, destrezza: 0, costituzione: 0, carisma: 0}
+  abilita: {mischia: 3, distanza: 3, ts_morte: 6, ts_bacchette: 5, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 1}
+  pf: 10
+  difesa: 14
+  morale: 7
+  attacchi:
+    - {nome: "Spada corta", danno: "1d6", abilita: mischia}
+    - {nome: "Coltello lanciato", danno: "1d4", abilita: distanza, distanza: true}
+aspetto:
+  lettura: "Una goblin piccola come un bambino, con la pelle grigioverde e gli occhi gialli. Porta uno scudo dipinto di rosso e una spada corta troppo grande per lei."
+  invarianti: ["goblin piccola", "pelle grigioverde", "occhi gialli", "scudo rotondo dipinto di rosso", "spada corta", "giubba di cuoio con le borchie"]
+  prompt_immagine: "small female goblin warrior the size of a child, grey-green skin, bright yellow eyes, sharp grin, studded leather jerkin, a round shield painted red, a short sword too big for her, firelight in a ruined stone tower, [STILE]"
+personalita:
+  superficie: ["sfacciata e allegra, ride delle minacce", "parla svelta e dà un soprannome a tutti"]
+  sotto_pressione: ["diventa seria e lenta, e conta le monete sulle dita"]
+  contraddizione: "Si vanta di non avere paura di niente, ma tratta appena resta senza il suo guardaspalle."
+desiderio: "Prendere tutto l'argento della cripta e portarselo via dalla valle."
+paura: "Tornare dalla sua tribù a mani vuote, dopo che l'hanno cacciata."
+segreto:
+  testo: "Vuole tenersi tutto l'argento e portarsi via Tonio come ostaggio per un secondo riscatto, mentre il ragazzo crede di dividere con lei."
+  chi_altro_sa: []
+  se_rivelato: "Tonio si rivolta contro di lei e corre dai PG; Grosso non si fida più."
+voce:
+  tts: {voce_id: tabitha, eta_apparente: "giovane", altezza: alta, velocita: 1.15, timbro: "acuto, svelto, con una risatina in gola"}
+  registro: "Dà del tu a tutti e a ognuno un soprannome di cosa, mai di persona: scudo bianco, barbetta, orecchie a punta, mezza misura."
+  stile: "Frasi di due-otto parole, svelte, con domande a raffica. Lessico di bottino: roba, luccica, mio, prezzo. Storpia le parole lunghe."
+  tic: ["ride corto prima di dire un prezzo"]
+  gesto: "batte la spada corta sullo scudo"
+  mai_dice: ["che il ragazzo è venuto con le sue gambe, finché non ha ceduto", "il nome della sua tribù", "per favore"]
+  battuta_campione: "La chiave l'avete? Niente chiave, niente ragazzo."
+sa: [f_goblin_torre, f_tonio_complice, f_tonio_pane, f_tonio_libero, f_zirra_inganno, f_argento, f_cripta_leggenda, f_chiave_castellano, f_goblin_scrittura, f_tonio_lavagna, f_tonio_motivo, f_debito]
+non_sa: [f_postierla, f_ugo_frodo, f_ugo_visto, f_grosso_fame, f_lite_vecchia]
+crede_a_torto:
+  - {testo: "Grosso farà sempre quello che gli dice lei, finché c'è carne.", contraddice: f_grosso_fame}
+mente_su:
+  - id: zir_ragazzo
+    argomento: "il ragazzo"
+    verita: f_tonio_complice
+    versione: "Il ragazzo? Mio. L'ho preso nel fienile, mentre dormiva."
+    perche: "Se il paese sa che il ragazzo l'ha portata lui, non paga niente."
+    segnale: "si gratta l'orecchio con la punta della spada e sorride storto"
+    cede_se: "Ride e ammette quando un PG le fa notare che la corda del ragazzo non ha nodo. Oppure quando un PG le ripete che cosa ha visto il carbonaio sul sentiero."
+atteggiamento_pg:
+  pg_livia: {stato: ostile, perche: "una soldata con lo scudo: è venuta a prenderle l'argento", vuole: "la chiave, e poi che se ne vada"}
+  pg_fulco: {stato: ostile, perche: "i nani scavano meglio dei goblin, e potrebbero prenderle la cassa", vuole: "che apra la porta di ferro al posto suo"}
+  pg_nespola: {stato: ostile, perche: "una halfling è una ladra come lei: concorrenza", vuole: "che tenga le mani lontane dalla cassa"}
+  pg_eliandro: {stato: ostile, perche: "un mago fa paura anche a lei", vuole: "che non faccia magie vicino alla cripta"}
+relazioni:
+  png_grosso: "il suo guardaspalle, che le obbedisce per la carne"
+  Tonio: "il ragazzo che le apre la cripta, e che vuole tenersi"
+  png_berta: "la madre che deve portare la chiave"
+info_chiave: [i_tonio_libero, i_mappa]
+iniziative:
+  - "Se i PG arrivano con la chiave, tratta: vuole la chiave in mano prima di parlare del ragazzo."
+  - "Se la cripta si apre, prende Tonio per il collo e dice ai PG di andarsene a mani vuote."
+  - "Se Grosso cade, prova a scappare dal muro crollato, oppure si arrende e offre il ragazzo."
+evoluzione:
+  - {se: "Grosso è a terra e il morale le cede", allora: "si arrende, offre il ragazzo e chiede di andarsene con una manciata d'argento"}
+  - {se: "i PG le offrono una parte dell'argento", allora: "tratta, e mantiene il patto finché ha la cassa sotto gli occhi"}
+  - {se: "la feriscono mentre Grosso è in piedi", allora: "attacca il più piccolo e minaccia il ragazzo"}
+statistiche: "Goblin, guerriera (manuale p. 104): Classe d'Armatura 14, dadi vita 3-3 (bonus d'attacco +3), spada corta 1d6, morale 7, salva come guerriero di livello 3."
+registro_attivita: []

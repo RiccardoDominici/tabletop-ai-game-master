@@ -23,8 +23,8 @@ elementi_interattivi:
   - {cosa: "il chiavistello dello stazzo", dove: "sul cancello", azioni: "NASCOSTA: è stato alzato da dentro, senza segni di forza, e non manca nemmeno una pecora"}
   - {cosa: "i pali del cancello", dove: "ai lati del cancello", azioni: "si leggono i nomi delle pecore incisi col coltello"}
   - {cosa: "le lettere dei pali", dove: "sui pali del cancello", azioni: "NASCOSTA: le erre sono rovesciate, come sulla lavagna"}
-  - {cosa: "la porta di casa", dove: "sotto il portico", azioni: "si entra; dietro il battente è appeso uno scialle nero"}
-  - {cosa: "sotto lo scialle", dove: "dietro la porta di casa", azioni: "NASCOSTA: c'è l'avviso del balivo, con il sigillo rosso"}
+  - {cosa: "la porta di casa", dove: "sotto il portico", azioni: "si entra; dietro il battente è appeso un mantello da pastore"}
+  - {cosa: "sotto il mantello", dove: "dietro la porta di casa", azioni: "NASCOSTA: c'è l'avviso del balivo, con il sigillo rosso"}
   - {cosa: "il mulo di Ugo", dove: "al cancello del cortile", azioni: "porta due sacchi di carbone; si accarezza, si scarica"}
 png_presenti: [png_berta, png_ugo]
 orologi_attivi: [o_mezzanotte]
@@ -81,8 +81,8 @@ indizi:
     essenziale: true
     tiro: "nessuno"
     modi: 1
-    come_si_trova: "Chi entra in casa e sposta lo scialle appeso dietro la porta trova un foglio con il sigillo rosso del balivo: la decima dei Benni non è pagata, e alla prima neve l'ovile passa al signore."
-    vincolo_pubblico: "Dietro la porta di casa è appeso uno scialle nero."
+    come_si_trova: "Chi entra in casa e sposta il mantello appeso dietro la porta trova un foglio con il sigillo rosso del balivo: la decima dei Benni non è pagata, e alla prima neve l'ovile passa al signore."
+    vincolo_pubblico: "Dietro la porta di casa è appeso un mantello da pastore."
   - id: i_berta_debito
     conclusione: r_debito
     tipo: png

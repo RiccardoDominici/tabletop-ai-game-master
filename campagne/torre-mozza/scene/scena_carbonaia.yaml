@@ -78,7 +78,7 @@ indizi:
     modi: 2
     come_si_trova: "Quando Ugo cede sulla notte passata: davanti al cervo trovato nella capanna; oppure in privato, se un PG gli promette di non dirlo al balivo."
 vincoli_pubblici:
-  - "Ugo non sale alla torre: resta alla carbonaia, che non si lascia sola."
+  - "Ugo resta alla carbonaia tutta la notte, perché una carbonaia accesa va sorvegliata."
 uscite:
   - {verso: n_torre, segnalata_da: [i_impronte, i_rovi, i_ugo_postierla]}
   - {verso: n_ovile, segnalata_da: [i_impronte, i_ugo_racconta, i_cervo]}

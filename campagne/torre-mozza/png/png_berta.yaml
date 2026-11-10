@@ -1,0 +1,70 @@
+# Berta Benni: la madre, custode della chiave. Voce nadine: mai nella scena di Zirrà (tabitha, voce simile).
+id: png_berta
+nome: "Berta Benni"
+pronuncia: "Bèrta Bènni"
+alias: [pastora, vedova]
+livello: principale
+ruolo: "pastora, madre di Tonio, custode della chiave del castellano; testimone reticente"
+fronte: fronte_torre
+scheda:
+  # Gente comune (Normal Man, p. 53): bonus d'attacco +0, 1d4 punti ferita. Non combatte.
+  caratteristiche: {forza: 0, intelligenza: 0, saggezza: 1, destrezza: 0, costituzione: 1, carisma: 0}
+  abilita: {mischia: 0}
+  pf: 3
+  difesa: 11
+  attacchi: []
+aspetto:
+  lettura: "Una donna robusta sulla cinquantina, con lo scialle nero dei vedovi e le mani screpolate dal latte. Al collo, su un laccio di cuoio, porta una grossa chiave di ferro."
+  invarianti: ["cinquant'anni", "robusta", "scialle nero da vedova", "chiave di ferro al collo su un laccio di cuoio", "mani screpolate"]
+  prompt_immagine: "sturdy shepherd woman in her fifties, black widow's shawl over her shoulders, chapped red hands, a large old iron key hanging from a leather cord around her neck, grey hair under a kerchief, standing by a dry-stone sheep pen at dusk, [STILE]"
+personalita:
+  superficie: ["dura e sbrigativa, parla di pecore e di lavoro", "orgogliosa del nome dei Benni"]
+  sotto_pressione: ["diventa calmissima e parla piano, come a una pecora spaventata"]
+  contraddizione: "Vuole la verità su chi le ha preso il figlio, ma nasconde a tutti la decima che non può pagare."
+desiderio: "Riportare a casa Tonio prima di mezzanotte, a qualunque prezzo."
+paura: "Che il paese sappia della decima e la tratti come una mendicante."
+segreto:
+  testo: "Non ha pagato la decima: alla prima neve il balivo si prende l'ovile, e lei ha nascosto l'avviso dietro la porta di casa."
+  chi_altro_sa: ["Tonio"]
+  se_rivelato: "Il paese la compatisce e la evita; lei, ferita nell'orgoglio, smette di chiedere aiuto."
+voce:
+  tts: {voce_id: nadine, eta_apparente: "50-55", altezza: media, velocita: 1.0, timbro: "caldo e roco, da chi chiama le pecore"}
+  registro: "Dà del tu a tutti, come ai pastori, e chiama ognuno con il suo mestiere: soldata, nano, elfo, halfling."
+  stile: "Frasi di tre-sette parole, da cortile. Lessico di pecore e di latte: stazzo, agnelli, cagliata, tosare. Quando ha paura ripete il nome del figlio."
+  tic: ["«Le pecore non aspettano.» per chiudere un discorso"]
+  gesto: "stringe nel pugno la chiave che ha al collo"
+  mai_dice: ["la parola «decima», finché non ha ceduto", "una parola buona per Ugo", "che ha paura"]
+  battuta_campione: "Mio figlio è lassù. Tu sali, o no?"
+sa: [f_tonio_sparito, f_lavagna, f_chiave_castellano, f_berta_vedova, f_lite_vecchia, f_usanza, f_debito, f_tonio_stivali, f_nessuna_pecora, f_cani_fienile, f_pali_tonio, f_goblin_torre, f_spinalba]
+non_sa: [f_tonio_complice, f_tonio_lavagna, f_cani_chiusi, f_tonio_motivo, f_ugo_frodo, f_ugo_visto, f_zirra_inganno, f_postierla]
+crede_a_torto:
+  - {testo: "Ugo ha venduto ai goblin il sentiero, per vendicarsi di suo marito.", contraddice: f_tonio_complice}
+  - {testo: "I goblin hanno chiuso i cani nel fienile perché non abbaiassero.", contraddice: f_cani_chiusi}
+mente_su:
+  - id: ber_conti
+    argomento: "i debiti dell'ovile"
+    verita: f_debito
+    versione: "Noi Benni non dobbiamo niente a nessuno. Mai dovuto."
+    perche: "Vergogna: in paese nessuno lo sa, e lei non vuole la pietà di nessuno."
+    segnale: "si tira lo scialle sulle spalle e guarda la porta di casa"
+    cede_se: "Dice la verità in privato, nel fienile, dove dal cortile non si sente. Oppure quando un PG le mostra l'avviso del balivo trovato dietro la porta."
+atteggiamento_pg:
+  pg_livia: {stato: amichevole, perche: "si ricorda della soldata della milizia che dormì nel suo fienile", vuole: "che salga alla torre e le riporti il figlio"}
+  pg_fulco: {stato: amichevole, perche: "un chierico porta fortuna agli ovili", vuole: "una benedizione per Tonio, e il silenzio sugli affari di casa"}
+  pg_nespola: {stato: indifferente, perche: "diffida dei forestieri piccoli e svelti, che rubano le galline", vuole: "che tenga le mani lontane dalla casa"}
+  pg_eliandro: {stato: indifferente, perche: "un elfo che copia le pietre non serve a un ovile", vuole: "che usi la sua magia per riportarle il figlio"}
+relazioni:
+  Tonio: "il figlio di sedici anni, l'unico che le resta"
+  png_ugo: "lo odia dai tempi delle tre pecore sparite"
+  png_zirra: "la goblin che, a quanto crede, le ha preso il figlio"
+info_chiave: [i_berta_debito, i_giaciglio, i_pali]
+iniziative:
+  - "Se nessuno si offre, a mezzanotte vuole salire lei alla torre con la chiave."
+  - "Se un PG accusa Ugo, gli dà ragione davanti a tutti."
+  - "Se un PG le chiede dei nomi sui pali, racconta che li ha incisi Tonio, da piccolo."
+evoluzione:
+  - {se: "un PG le mostra l'avviso del balivo", allora: "cede sulla decima e chiede di non dirlo in paese"}
+  - {se: "i PG le promettono di riportare Tonio", allora: "affida loro la chiave e resta all'ovile ad aspettare"}
+  - {se: "le dicono che Tonio è d'accordo con i goblin", allora: "non ci crede, e vuole sentirlo dire da lui"}
+statistiche: "Gente comune (Normal Man del manuale): bonus d'attacco +0, 1d4 punti ferita, Classe d'Armatura 11; non combatte."
+registro_attivita: []

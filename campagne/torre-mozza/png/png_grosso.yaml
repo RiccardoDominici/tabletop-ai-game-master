@@ -1,0 +1,62 @@
+# Grosso: l'hobgoblin di guardia, comparsa che combatte. Voce lucian. Solo alla torre.
+id: png_grosso
+nome: "Grosso"
+pronuncia: "Gròsso"
+alias: [hobgoblin, guardaspalle]
+livello: comparsa
+ruolo: "hobgoblin, guardaspalle di Zirrà; un ostacolo che si può comprare con il cibo"
+fronte: fronte_torre
+scheda:
+  # Hobgoblin (p. 113): Classe d'Armatura 14 (pelli e scudo di legno), un dado vita, quindi bonus d'attacco +1 e
+  # 1d8 punti ferita (qui 6). Un'arma 1d8. Salva come guerriero di livello 1 (12, 13, 14, 15, 17). Morale 8.
+  caratteristiche: {forza: 0, intelligenza: 0, saggezza: 0, destrezza: 0, costituzione: 0, carisma: 0}
+  abilita: {mischia: 1, distanza: 1, ts_morte: 5, ts_bacchette: 4, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 0}
+  pf: 6
+  difesa: 14
+  morale: 8
+  attacchi:
+    - {nome: "Mazza ferrata", danno: "1d8", abilita: mischia}
+aspetto:
+  lettura: "Un hobgoblin alto come un uomo, con la pelle color fango e mezzo orecchio mozzato. Porta una pelle d'orso sulle spalle e una mazza ferrata."
+  invarianti: ["hobgoblin alto come un uomo", "pelle color fango", "mezzo orecchio sinistro mozzato", "pelle d'orso sulle spalle", "mazza ferrata", "scudo di legno"]
+  prompt_immagine: "big hobgoblin the size of a man, mud-brown skin, half of the left ear cut off, a bear pelt over the shoulders, a wooden shield and a spiked club, gnawing a mutton bone by a campfire inside a ruined tower, [STILE]"
+personalita:
+  superficie: ["lento e taciturno, mastica sempre qualcosa", "fissa gli elfi senza battere le palpebre"]
+  sotto_pressione: ["si siede per terra e chiede da mangiare, come un bambino offeso"]
+  contraddizione: "È il più forte della banda, ma obbedisce a Zirrà per un pezzo di carne."
+desiderio: "Mangiare carne fresca tutte le sere, invece degli ossi che gli lascia Zirrà."
+paura: "Restare solo e senza cibo nel bosco, d'inverno."
+segreto:
+  testo: "Non si fida di Zirrà e sa che il ragazzo è venuto da solo: per un pasto vero cambierebbe padrone."
+  chi_altro_sa: []
+  se_rivelato: "Zirrà resta senza guardaspalle, e preferisce trattare."
+voce:
+  tts: {voce_id: lucian, eta_apparente: "adulto", altezza: bassa, velocita: 0.8, timbro: "basso, scuro e lento, come da dentro una botte"}
+  registro: "Dà del tu a tutti, con poche parole. Agli elfi non parla: li chiama solo «elfo»."
+  stile: "Frasi di una-quattro parole, lente. Parla quasi solo di cibo: carne, pane, fame, osso."
+  tic: ["si lecca le dita"]
+  gesto: "rosicchia l'osso e lo punta come un dito"
+  mai_dice: ["il nome di Zirrà con rispetto", "più di quattro parole di fila"]
+  battuta_campione: "Fame. Hai carne?"
+sa: [f_goblin_torre, f_tonio_libero, f_tonio_pane, f_grosso_fame]
+non_sa: [f_zirra_inganno, f_postierla, f_debito, f_argento]
+crede_a_torto:
+  - {testo: "Nella cripta non c'è niente: Zirrà racconta storie.", contraddice: f_argento}
+mente_su: []
+atteggiamento_pg:
+  pg_livia: {stato: ostile, perche: "la soldata è quella che colpisce più forte", vuole: "che stia lontana dalla sua carne"}
+  pg_fulco: {stato: ostile, perche: "i nani scavano e prendono le cose", vuole: "che se ne vada"}
+  pg_nespola: {stato: indifferente, perche: "una halfling è troppo piccola per fargli paura", vuole: "il pane che ha in tasca"}
+  pg_eliandro: {stato: ostile, perche: "odia gli elfi", vuole: "vederlo scappare, o peggio"}
+relazioni:
+  png_zirra: "la capa che lo paga con gli ossi"
+  Tonio: "il ragazzo del pane"
+info_chiave: [i_grosso]
+iniziative:
+  - "Se vede un elfo, si mette tra lui e Zirrà con la mazza alzata."
+  - "Se un PG gli offre carne o pane, smette di guardare la porta."
+evoluzione:
+  - {se: "un PG gli dà da mangiare", allora: "borbotta del ragazzo e si fa da parte, finché ha cibo in bocca"}
+  - {se: "Zirrà cade", allora: "se il morale gli cede, scappa dal muro crollato"}
+statistiche: "Hobgoblin (manuale p. 113): Classe d'Armatura 14, un dado vita (bonus d'attacco +1), mazza 1d8, morale 8, salva come guerriero di livello 1."
+registro_attivita: []

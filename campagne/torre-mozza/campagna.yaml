@@ -39,6 +39,8 @@ canone:
   - {id: f_tonio_libero, noto_ai_pg: false, stato: confermato, entita: [n_torre], testo: "Nella torre Tonio non è legato: aiuta i goblin a scavare."}
   - {id: f_tonio_mercato, noto_ai_pg: false, stato: confermato, entita: [n_valdirame], testo: "Una settimana fa al mercato Tonio ha chiesto quanto vale l'argento vecchio coniato con la torre."}
   - {id: f_goblin_scrittura, noto_ai_pg: false, stato: confermato, entita: [png_zirra], testo: "I goblin non scrivono la lingua comune: incidono segni sul legno."}
+  - {id: f_cani_fienile, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "Stamattina i cani dei Benni erano chiusi nel fienile, con la sbarra calata da fuori."}
+  - {id: f_pali_tonio, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "I nomi delle pecore sui pali del cancello li ha incisi Tonio."}
   - {id: f_lettere_tonio, noto_ai_pg: false, stato: confermato, entita: [n_ovile], testo: "Tonio scrive con le erre rovesciate, come gli ha insegnato il vecchio curato."}
 
 # Il meccanismo del climax, una riga per stato (ogni testo che lo nomina va riletto contro queste righe):

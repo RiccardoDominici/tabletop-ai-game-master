@@ -67,7 +67,7 @@ indizi:
     modi: 1
     come_si_trova: "Se un PG gli dà da mangiare, Grosso borbotta che il ragazzo è venuto con le sue gambe, e che il pane lo porta lui."
 vincoli_pubblici:
-  - "La porta di ferro della cripta è chiusa a chiave, e senza la chiave dei Benni non si apre."
+  - "La porta di ferro della cripta resta chiusa finché qualcuno gira nella serratura la chiave dei Benni."
   - "Nella banda ci sono solo Zirrà e Grosso: gli altri goblin se ne sono andati."
 uscite:
   - {verso: n_ovile, segnalata_da: [i_tonio_libero, i_conto]}

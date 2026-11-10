@@ -1,0 +1,78 @@
+# Ugo Faggioli: il carbonaio che il paese accusa. Voce vincent. All'ovile (scena 1) e alla carbonaia (scena 2);
+# non sale mai alla torre: una carbonaia accesa non si lascia sola.
+id: png_ugo
+nome: "Ugo Faggioli"
+pronuncia: "Ùgo Faggiòli"
+alias: [carbonaio]
+livello: principale
+ruolo: "carbonaio del bosco sotto la torre; il sospettato del paese; testimone reticente"
+fronte: fronte_torre
+scheda:
+  # Gente comune (Normal Man, p. 53), forte di braccia: bonus d'attacco +0, accetta con la Forza.
+  caratteristiche: {forza: 1, intelligenza: 0, saggezza: 1, destrezza: 0, costituzione: 1, carisma: -1}
+  abilita: {mischia: 0}
+  pf: 4
+  difesa: 11
+  attacchi:
+    - {nome: "Accetta", danno: "1d6+1", abilita: mischia}
+aspetto:
+  lettura: "Un vecchio curvo e nero di fuliggine, con la barba bruciacchiata e un cappello di feltro sfondato. Ha le mani grandi come pale e un'accetta alla cintura."
+  invarianti: ["vecchio curvo", "viso nero di fuliggine", "barba grigia bruciacchiata", "cappello di feltro sfondato", "accetta alla cintura"]
+  prompt_immagine: "hunched old charcoal burner, face blackened with soot, singed grey beard, battered felt hat, huge rough hands, a hatchet at his belt, woodsmoke behind him, [STILE]"
+personalita:
+  superficie: ["burbero, risponde a monosillabi", "sputa per terra quando sente nominare il paese"]
+  sotto_pressione: ["smette di brontolare e diventa gentile in modo goffo, offre da bere"]
+  contraddizione: "Odia il paese che lo accusa, ma non sopporta che a un ragazzo succeda qualcosa."
+desiderio: "Vendere il carbone d'inverno senza che il paese gli faccia domande."
+paura: "Che il balivo scopra le sue cacce nella riserva e gli tolga il bosco."
+segreto:
+  testo: "Va a caccia di frodo nella riserva del signore, e stanotte, appostato sotto la torre, ha visto Tonio salire da solo."
+  chi_altro_sa: []
+  se_rivelato: "Se lo sa il balivo, Ugo perde il diritto al bosco e paga la multa; se lo sa il paese, Ugo ha il suo alibi."
+voce:
+  tts: {voce_id: vincent, eta_apparente: "65-70", altezza: bassa, velocita: 0.85, timbro: "grave e ruvido, raschiato dal fumo"}
+  registro: "Dà del lei a tutti, freddo, per tenere lontani i forestieri. Passa al tu solo con chi lo aiuta alla carbonaia."
+  stile: "Frasi di due-sei parole, a strappi. Lessico di bosco e di fuoco: catasta, tizzone, faggio, sbuffo. Spesso risponde con una domanda."
+  tic: ["dice «Paese.» come un insulto, e sputa"]
+  gesto: "batte la pala per terra due volte"
+  mai_dice: ["il nome di Tonio, finché non ha ceduto", "la parola «cervo»", "grazie"]
+  battuta_campione: "Lei cosa vuole? Il carbone costa."
+sa: [f_ugo_carbonaio, f_carbonaia_fuoco, f_riserva, f_lite_vecchia, f_ugo_sospettato, f_ugo_frodo, f_ugo_visto, f_postierla, f_goblin_torre, f_torre_rovina, f_balivo_lontano]
+non_sa: [f_tonio_complice, f_tonio_motivo, f_debito, f_zirra_inganno, f_argento, f_tonio_lavagna]
+crede_a_torto:
+  - {testo: "Il ragazzo va lassù a rubare ai goblin, come un ladruncolo.", contraddice: f_tonio_motivo}
+mente_su:
+  - id: ugo_notte
+    argomento: "dove era stanotte"
+    verita: f_ugo_frodo
+    versione: "Stanotte? Ero qui. La carbonaia non si lascia."
+    perche: "La caccia nella riserva gli costa il bosco e la multa del balivo."
+    segnale: "si toglie il cappello e se lo rigira tra le mani"
+    cede_se: "Dice la verità quando un PG gli mostra il cervo trovato nella capanna. Oppure in privato, se un PG gli promette di non dirlo al balivo."
+  - id: ugo_sentiero
+    argomento: "che cosa ha visto sul sentiero"
+    verita: f_ugo_visto
+    versione: "Io non vedo niente. Guardo il fuoco, io."
+    perche: "Nessuno in paese gli crederebbe, e per dirlo dovrebbe spiegare che cosa ci faceva sotto la torre."
+    segnale: "guarda il sentiero della torre e poi sputa nel fuoco"
+    cede_se: "Racconta ciò che ha visto in privato, sottovoce, dove nessuno del paese lo sente. Oppure quando un PG gli descrive le impronte del ragazzo sul sentiero."
+atteggiamento_pg:
+  pg_livia: {stato: indifferente, perche: "una soldata con la croce della milizia: per lui è gente del balivo", vuole: "che non metta il naso nella sua capanna"}
+  pg_fulco: {stato: amichevole, perche: "un nano sa che cos'è un fuoco che lavora sotto la terra", vuole: "una mano con la carbonaia"}
+  pg_nespola: {stato: indifferente, perche: "le deve tre monete, e lei è venuta a prenderle", vuole: "che se ne torni da dove è venuta, senza soldi"}
+  pg_eliandro: {stato: indifferente, perche: "gli elfi parlano agli alberi e poi li lasciano tagliare agli altri", vuole: "che non tocchi i suoi faggi"}
+relazioni:
+  png_berta: "la vedova di chi lo accusò delle tre pecore"
+  Tonio: "il ragazzo che a volte gli porta il latte, e che ha visto salire alla torre"
+  png_zirra: "i goblin della torre, che gli rubano la legna"
+info_chiave: [i_ugo_racconta, i_ugo_frodo, i_ugo_postierla]
+iniziative:
+  - "Se il paese lo accusa, se ne torna alla carbonaia prima che faccia buio."
+  - "Se un PG lo aiuta con la carbonaia, gli indica la postierla sotto i rovi."
+  - "Se un PG entra nella capanna, si mette davanti alla porta con l'accetta."
+evoluzione:
+  - {se: "un PG gli promette di non dirlo al balivo", allora: "racconta della notte e passa al tu"}
+  - {se: "il paese sale al bosco con le torce", allora: "spegne la carbonaia e se ne va dalla valle"}
+  - {se: "un PG gli condona il debito dei dadi", allora: "diventa un alleato e accompagna i PG fino ai rovi, ma non oltre"}
+statistiche: "Gente comune (Normal Man del manuale): bonus d'attacco +0, accetta 1d6 più la Forza, Classe d'Armatura 11; combatte solo se lo attaccano."
+registro_attivita: []
