@@ -4,7 +4,7 @@
   "turno": 0,
   "parlante": "narratore",
   "testo": "È la Notte dei Lumi, a Fontescura.",
-  "secondi": 2.8,
+  "secondi": 2.56,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -13,7 +13,7 @@
   "turno": 0,
   "parlante": "narratore",
   "testo": "Da due giorni, nove persone del paese bruciano di febbre.",
-  "secondi": 4,
+  "secondi": 3.84,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -22,7 +22,7 @@
   "turno": 0,
   "parlante": "narratore",
   "testo": "Dicono che sia colpa di un forestiero, e al terzo rintocco verranno a prenderlo.",
-  "secondi": 5.44,
+  "secondi": 4.56,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -31,7 +31,7 @@
   "turno": 0,
   "parlante": "narratore",
   "testo": "All'osteria del Forno Vecchio c'è odore di pane caldo e di lana bagnata.",
-  "secondi": 4.8,
+  "secondi": 5.12,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -40,7 +40,7 @@
   "turno": 0,
   "parlante": "narratore",
   "testo": "Un nano col martello sulle ginocchia sorveglia una porta chiusa a chiave: dall'altra parte, qualcuno tossisce.",
-  "secondi": 7.36,
+  "secondi": 6.4,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -57,8 +57,8 @@
   "id": "t1-f0",
   "turno": 1,
   "parlante": "narratore",
-  "testo": "Ginestra si avvicina alla porta e ascolta la tosse.",
-  "secondi": 4.16,
+  "testo": "Ginestra Fondovalle: «Mi avvicino piano alla porta chiusa e ascolto la tosse».",
+  "secondi": 5.68,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -84,8 +84,8 @@
   "id": "t1-f3",
   "turno": 1,
   "parlante": "narratore",
-  "testo": "Assenzio abbraccia Ottavia e le chiede cosa succede stanotte.",
-  "secondi": 3.84,
+  "testo": "Assenzio: «Abbraccio Ottavia».",
+  "secondi": 2.72,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -94,7 +94,7 @@
   "turno": 1,
   "parlante": "narratore",
   "testo": "Ottavia guarda la porta del ripostiglio, poi il paiolo.",
-  "secondi": 4.08,
+  "secondi": 3.92,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -103,7 +103,7 @@
   "turno": 1,
   "parlante": "png_ottavia",
   "testo": "È arrivato tre giorni fa, a piedi. Da allora, solo guai.",
-  "secondi": 4.8,
+  "secondi": 3.92,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -111,8 +111,8 @@
   "id": "t1-f6",
   "turno": 1,
   "parlante": "narratore",
-  "testo": "Sorella Teodora parla con il nano.",
-  "secondi": 2.56,
+  "testo": "Sorella Teodora: «Parlo con il nano».",
+  "secondi": 3.12,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -138,8 +138,8 @@
   "id": "t2-f0",
   "turno": 2,
   "parlante": "narratore",
-  "testo": "Sorella Teodora chiede a Ottavia chi sono i malati.",
-  "secondi": 3.2,
+  "testo": "Sorella Teodora: «Sono Sorella Teodora».",
+  "secondi": 3.12,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -157,7 +157,7 @@
   "turno": 2,
   "parlante": "narratore",
   "testo": "Ottavia si ferma un momento, poi riprende a piegare il lino.",
-  "secondi": 4.16,
+  "secondi": 4.32,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -166,7 +166,7 @@
   "turno": 2,
   "parlante": "png_ottavia",
   "testo": "Da due giorni. Gli bruciano le mani, e di notte vedono cose.",
-  "secondi": 4.4,
+  "secondi": 4.8,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -174,8 +174,8 @@
   "id": "t2-f4",
   "turno": 2,
   "parlante": "narratore",
-  "testo": "Ginestra Fondovalle chiede a Ottavia chi sono i malati, da quando stanno male, cosa sentono di preciso.",
-  "secondi": 6.32,
+  "testo": "Ginestra Fondovalle: «Chiedo a ottavia dei malati».",
+  "secondi": 3.52,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -210,8 +210,8 @@
   "id": "t3-f0",
   "turno": 3,
   "parlante": "narratore",
-  "testo": "Ginestra Fondovalle chiede a chi bruciano le mani dei malati.",
-  "secondi": 4.24,
+  "testo": "Ginestra Fondovalle: «Ma ai malati bruciano le mani».",
+  "secondi": 3.92,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -220,7 +220,7 @@
   "turno": 3,
   "parlante": "png_sebastiano",
   "testo": "Mi permetta: le estremità ardono, cioè le mani e i piedi? E vedono cose?",
-  "secondi": 6.24,
+  "secondi": 5.76,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -237,8 +237,8 @@
   "id": "t3-f3",
   "turno": 3,
   "parlante": "narratore",
-  "testo": "Assenzio guarda bene mentre si sistema il fazzoletto rosso.",
-  "secondi": 3.92,
+  "testo": "Assenzio: «Mentre Ottavia risponde la guardo bene».",
+  "secondi": 3.52,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -246,8 +246,8 @@
   "id": "t3-f4",
   "turno": 3,
   "parlante": "narratore",
-  "testo": "Ottavia si sistema il fazzoletto rosso, e lo sguardo le scivola sulle ceste.",
-  "secondi": 5.2,
+  "testo": "Ottavia guarda la ciotola a lungo.",
+  "secondi": 2.24,
   "direzioni": [],
   "primo_byte_ms": null
  },
@@ -255,22 +255,31 @@
   "id": "t3-f5",
   "turno": 3,
   "parlante": "png_ottavia",
-  "testo": "Avrà mangiato un topo. I cani mangiano i topi.",
-  "secondi": 3.68,
+  "testo": "Le croste del pane nuovo. Ieri gliele ho date io.",
+  "secondi": 3.84,
   "direzioni": [],
   "primo_byte_ms": null
  },
  {
   "id": "t3-f6",
   "turno": 3,
-  "parlante": "narratore",
-  "testo": "Sorella Teodora si avvicina alle ceste del pane e dice la preghiera.",
-  "secondi": 4.72,
+  "parlante": "png_ottavia",
+  "testo": "Da stamattina trema. E io ho impastato lo stesso.",
+  "secondi": 3.76,
   "direzioni": [],
   "primo_byte_ms": null
  },
  {
   "id": "t3-f7",
+  "turno": 3,
+  "parlante": "narratore",
+  "testo": "Sorella Teodora: «Mi avvicino alle ceste del pane dei lumi».",
+  "secondi": 4.4,
+  "direzioni": [],
+  "primo_byte_ms": null
+ },
+ {
+  "id": "t3-f8",
   "turno": 3,
   "parlante": "narratore",
   "testo": "Il pane è tiepido sotto le tue mani.",
@@ -279,7 +288,7 @@
   "primo_byte_ms": null
  },
  {
-  "id": "t3-f8",
+  "id": "t3-f9",
   "turno": 3,
   "parlante": "narratore",
   "testo": "Poi, in bocca, un freddo improvviso. E un odore di marcio che nessun altro sente.",

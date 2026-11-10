@@ -1,0 +1,99 @@
+{
+ "porta": 4730,
+ "campagna": "prova-f0",
+ "modo": "repertorio",
+ "turni_narrati": 3,
+ "frasi_proiettore": 33,
+ "frasi_telefono_in_ascolto": 33,
+ "stesse_frasi": true,
+ "segmenti_fish": 0,
+ "primo_byte_ms": {
+  "minimo": null,
+  "mediana": null,
+  "p90": null,
+  "massimo": null
+ },
+ "voce_usd": 0,
+ "llm_usd": 0,
+ "voce_byte": 0,
+ "secondi_voce": 138.1,
+ "errori_voce": [],
+ "markup_corretto": [],
+ "provider": [
+  "lettore         → locale (minimo) mlx-community/Qwen3-4B-Instruct-2507-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "arbitro_azioni  → regole — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "arbitro_prove   → regole (completo) — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "riassunto       → locale mlx-community/Qwen3-4B-Instruct-2507-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "regole          → locale mlx-community/Qwen3-4B-Instruct-2507-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "voce            → locale qwen3-tts (services/voce) — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)"
+ ],
+ "lettore_minimo": [
+  {
+   "turno": 1,
+   "scelte": [
+    "pg_ginestra:bal_chi_e",
+    "pg_assenzio:ott_forestiero",
+    "pg_teodora:nessuna"
+   ],
+   "chiamate": 1
+  },
+  {
+   "turno": 2,
+   "scelte": [
+    "pg_teodora:ott_malati",
+    "pg_ginestra:ott_malati"
+   ],
+   "chiamate": 1
+  },
+  {
+   "turno": 3,
+   "scelte": [
+    "pg_ginestra:seb_sintomi",
+    "pg_assenzio:ott_cane_croste",
+    "pg_teodora:nar_preghiera"
+   ],
+   "chiamate": 1
+  }
+ ],
+ "strutturato_non_valido": 0,
+ "chiamate_api": 0,
+ "llm_ms": [
+  4880,
+  8054,
+  10139
+ ],
+ "turni": [
+  {
+   "turno": 1,
+   "voce": "qwen",
+   "llm_fine": 4880,
+   "voce_richiesta": 4871,
+   "voce_primo_audio": 5607,
+   "schermo_inizio_audio": 5765,
+   "audio_fine": 41517,
+   "buchi": 2
+  },
+  {
+   "turno": 2,
+   "voce": "qwen",
+   "llm_fine": 8054,
+   "voce_richiesta": 8052,
+   "voce_primo_audio": 9112,
+   "schermo_inizio_audio": 9265,
+   "audio_fine": 44545,
+   "buchi": 0
+  },
+  {
+   "turno": 3,
+   "voce": "qwen",
+   "llm_fine": 10139,
+   "voce_richiesta": 10132,
+   "voce_primo_audio": 11141,
+   "schermo_inizio_audio": 11296,
+   "audio_fine": null,
+   "buchi": null
+  }
+ ],
+ "buchi_proiettore": 6
+}
