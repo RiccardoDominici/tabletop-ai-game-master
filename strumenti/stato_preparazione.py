@@ -23,7 +23,11 @@ uno che le fonti non hanno (per esempio una catena) farebbe rilanciare tutto ogn
   - immagini FACOLTATIVE (solo un avviso): le situazioni automatiche «<png>_in_<luogo>», che il proiettore
     mostra solo a comando del master e che costano ~7 minuti di GPU l'una;
   - audio: pronto se `audio.da_rifare` è falso (manifest, asset essenziali, descrittori di oggi), letto
-    solo da ciò che il manifest dell'audio dice; gli strati facoltativi mancanti danno un avviso.
+    solo da ciò che il manifest dell'audio dice; gli strati facoltativi mancanti danno un avviso;
+  - battute pre-generate con drama-3 (`battute_fish`): quante delle battute del repertorio hanno già
+    l'audio in cache/audio-fish. È un AVVISO, non blocca «pronta»: il gioco le sintetizza dal vivo se
+    mancano. Si conta con lo stesso piano dello script (apps/server/src/strumenti/prerender-fish.ts),
+    lanciato in --dry-run: non spende e non scrive.
 """
 
 from __future__ import annotations
@@ -31,10 +35,12 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import subprocess
 import sys
 from pathlib import Path
 
 QUI = Path(__file__).resolve().parent
+RADICE = QUI.parent
 sys.path.insert(0, str(QUI / "immagini"))
 sys.path.insert(0, str(QUI / "audio"))
 
@@ -135,6 +141,32 @@ def stato_audio(cartella: Path) -> dict:
             "byte": peso(cartella / "audio")}
 
 
+def stato_battute_fish(cartella: Path) -> dict | None:
+    """Battute del repertorio pre-generate con drama-3: {voci, in_cache, da_generare}, o None se non si può dire.
+
+    Chiede il conteggio al server (apps/server/src/strumenti/prerender.ts --dry-run --json): è lo stesso
+    piano che poi genera, quindi il numero non può divergere dalla cache. Senza repertorio o senza tsx
+    (installazione non fatta) si risponde None e lo stato lo dice.
+    """
+    if not (cartella / "repertorio").is_dir():
+        return None
+    tsx = RADICE / "node_modules" / ".bin" / "tsx"
+    script = RADICE / "apps" / "server" / "src" / "strumenti" / "prerender.ts"
+    if not (tsx.exists() and script.exists()):
+        return None
+    try:
+        r = subprocess.run([str(tsx), str(script), str(cartella), "--motore", "fish", "--dry-run", "--json"],
+                           cwd=str(RADICE), capture_output=True, text=True, timeout=180)
+        riga = next((x for x in reversed(r.stdout.splitlines()) if x.startswith("{")), None)
+        if r.returncode != 0 or riga is None:
+            return None
+        d = json.loads(riga)
+        return {"voci": d["voci"], "in_cache": d["in_cache"], "da_generare": d["da_generare"],
+                "costo_da_generare_usd": d["costo_da_generare_usd"]}
+    except (subprocess.SubprocessError, ValueError, KeyError, OSError):
+        return None
+
+
 def _elenco(ids: list[str], quanti: int = 6) -> str:
     return ", ".join(ids[:quanti]) + (f" … (+{len(ids) - quanti})" if len(ids) > quanti else "")
 
@@ -178,8 +210,13 @@ def prontezza(img: dict, aud: dict) -> tuple[list[str], list[str]]:
 def stato(cartella: Path) -> dict:
     img, aud = stato_immagini(cartella), stato_audio(cartella)
     manca, avvisi = prontezza(img, aud)
+    # Battute drama-3 pre-generate: un avviso, mai un motivo per non essere «pronta».
+    fish = stato_battute_fish(cartella)
+    if fish and fish["in_cache"] < fish["voci"]:
+        avvisi.append(f"battute pre-generate {fish['in_cache']}/{fish['voci']} (drama-3): "
+                      f"scripts/prepara.sh --voce le genera (circa ${fish['costo_da_generare_usd']:.2f})")
     return {"campagna": cartella.name, "cartella": str(cartella), "immagini": img, "audio": aud,
-            "repertorio": (cartella / "repertorio").is_dir(),
+            "repertorio": (cartella / "repertorio").is_dir(), "battute_fish": fish,
             # Pronta da giocare solo con tutto ciò che serve presente e aggiornato (vedi il docstring).
             "pronta": not manca, "non_pronta": manca, "avvisi": avvisi}
 
@@ -214,6 +251,10 @@ def rapporto(s: dict) -> str:
         righe.append(f"    strati facoltativi {quali}: {', '.join(aud['facoltativi_mancanti'])}")
     if aud["manifest"] and aud["descrittori_cambiati"]:
         righe.append("    le schede sono cambiate in ciò che l'audio usa: va rifatto il giro della pipeline")
+    fish = s.get("battute_fish")
+    if fish:
+        righe.append(f"  battute pre-generate (drama-3): {fish['in_cache']}/{fish['voci']}"
+                     + (f", da generare {fish['da_generare']}" if fish["da_generare"] else ""))
     for a in s["avvisi"]:
         righe.append(f"  avviso: {a}")
     if s["pronta"]:

@@ -2,13 +2,16 @@
 # Da campagna valida a campagna pronta da giocare, in un comando: valida in modo rigoroso, genera le
 # immagini (GPU locale) e l'audio, e stampa il rapporto con il comando per giocare.
 #
-#   scripts/prepara.sh campagne/<id> [--senza-immagini] [--senza-audio] [--anche-a-batteria] [--riprova-audio]
+#   scripts/prepara.sh campagne/<id> [--senza-immagini] [--senza-audio] [--anche-a-batteria] [--riprova-audio] [--voce]
 #
 #   --senza-immagini    non lancia la generazione delle immagini (riporta solo cosa manca)
 #   --senza-audio       non lancia la pipeline dell'audio
 #   --anche-a-batteria  genera le immagini anche senza alimentatore (sconsigliato: 15–40 minuti di GPU)
 #   --riprova-audio     rilancia l'audio anche se è completo per queste schede (per ricercare gli strati
 #                       che le fonti non avevano)
+#   --voce              pre-genera le battute del repertorio con drama-3 (OpenRouter): COSTA, circa
+#                       $2 per milione di byte; le righe già in cache non si pagano. Opzionale: senza,
+#                       il gioco le sintetizza dal vivo. Lo stato le segnala come avviso, non blocca «pronta».
 #
 # Idempotente: le pipeline saltano ciò che ha già il suo file, e l'audio non si rilancia se i descrittori
 # delle schede sono quelli del suo ultimo giro (strumenti/stato_preparazione.py). Non avvia server e non
@@ -21,20 +24,21 @@ set -uo pipefail
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
 
 uso() {
-  echo "uso: scripts/prepara.sh campagne/<id> [--senza-immagini] [--senza-audio] [--anche-a-batteria] [--riprova-audio]"
+  echo "uso: scripts/prepara.sh campagne/<id> [--senza-immagini] [--senza-audio] [--anche-a-batteria] [--riprova-audio] [--voce]"
   echo "campagne disponibili: $(ls "$RADICE/campagne" | tr '\n' ' ')"
   exit 2
 }
 
 [[ $# -ge 1 ]] || uso
 ARG="$1"; shift
-IMMAGINI=1; AUDIO=1; A_BATTERIA=0; RIPROVA_AUDIO=0
+IMMAGINI=1; AUDIO=1; A_BATTERIA=0; RIPROVA_AUDIO=0; VOCE=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --senza-immagini) IMMAGINI=0 ;;
     --senza-audio) AUDIO=0 ;;
     --anche-a-batteria) A_BATTERIA=1 ;;
     --riprova-audio) RIPROVA_AUDIO=1 ;;
+    --voce) VOCE=1 ;;
     -h|--help) uso ;;
     *) echo "opzione sconosciuta: $1"; uso ;;
   esac
@@ -124,6 +128,19 @@ elif [[ ! -x "$PY_AUDIO" ]]; then
   PROBLEMI+=("audio: ambiente assente")
 elif ! "$PY_AUDIO" strumenti/audio/genera_audio.py "$CARTELLA"; then
   PROBLEMI+=("audio: la pipeline si è fermata (vedi sopra; rilancia: salta ciò che è già fatto)")
+fi
+
+# 3b. Battute con drama-3 (opzionale: --voce). Costa; le righe già in cache non si ripagano, e il
+# comando si può rilanciare: riparte da dove era.
+echo
+echo "3b   Battute drama-3…"
+if [[ "$VOCE" == "0" ]]; then
+  echo "     saltate (per pre-generarle con drama-3: --voce; costa, vedi lo stato)."
+elif [[ ! -x "$RADICE/node_modules/.bin/tsx" ]]; then
+  echo "     manca tsx (npm install nella radice del repo)."
+  PROBLEMI+=("battute drama-3: tsx assente")
+elif ! "$RADICE/node_modules/.bin/tsx" apps/server/src/strumenti/prerender.ts "$CARTELLA" --motore fish; then
+  PROBLEMI+=("battute drama-3: la pre-generazione si è fermata (vedi sopra; rilancia: riparte dalla cache)")
 fi
 
 # 4. Rapporto: cosa c'è, cosa manca, quanto pesa, e come si gioca.
