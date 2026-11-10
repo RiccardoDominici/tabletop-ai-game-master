@@ -29,8 +29,14 @@ export interface DannoMostrato {
   /** Bonus fisso (modificatore della caratteristica dell'arma). */
   bonus: number;
   totale: number;
-  /** Tipo di danno («perforante»), se la scheda lo dice. */
+  /** Tipo di danno («perforante»), se la scheda lo dice: l'id com'è scritto nella scheda. */
   tipo: string | null;
+  /**
+   * Il tipo come si legge dopo il totale, nella lingua dei contenuti («perforanti», «da fuoco»,
+   * «piercing»): lo compone il Motore (lingue/<codice>/prove.yaml), l'interfaccia lo mostra com'è.
+   * Assente nelle carte di prima (si ripiega sul tipo, con la grammatica italiana).
+   */
+  nome_tipo?: string | null;
 }
 
 /** Il tiro dell'avversario in una prova contrapposta tra due PG. */

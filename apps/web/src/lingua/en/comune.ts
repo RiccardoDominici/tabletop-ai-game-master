@@ -52,6 +52,8 @@ export const comune = {
   'comune.tiri.svantaggio': 'Disadvantage',
   'comune.tiri.con_motivo': '{parola}: {motivo}',
   'comune.tiri.danni': 'Damage {formula}: {somma}',
+  /** Con il tipo di danno com'è arrivato dal Motore, nella lingua dei contenuti («perforanti», «piercing»). */
+  'comune.tiri.danni_tipo': 'Damage {formula}: {somma} {tipo}',
   'comune.tiri.frase': '{nome}, {cosa}: {conto}. {esito}.',
   'comune.tiri.conto_fasce': '{dadi} {mod} = {totale} against {bersaglio}',
   'comune.tiri.contro_avversario': 'against {nome} ({conto})',

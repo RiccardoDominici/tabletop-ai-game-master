@@ -47,6 +47,14 @@ export function linguaInterfaccia(): CodiceLingua {
   return attiva;
 }
 
+/** Tag BCP 47 di ogni lingua dell'interfaccia, per date e ore (toLocaleDateString, toLocaleTimeString). */
+const LOCALI: Record<CodiceLingua, string> = { it: 'it-IT', en: 'en-GB' };
+
+/** Il tag BCP 47 della lingua dell'interfaccia («it-IT», «en-GB»): date e ore si scrivono come la legge chi gioca. */
+export function localeInterfaccia(lingua: CodiceLingua = attiva): string {
+  return LOCALI[lingua];
+}
+
 /** Chi deve ridisegnarsi quando la lingua cambia (App). Restituisce la funzione che lo toglie. */
 export function alCambioLingua(f: (l: CodiceLingua) => void): () => void {
   ascoltatori.add(f);

@@ -19,6 +19,7 @@ import { testo } from '../lingua';
 import { datiProve } from './lingua';
 import {
   conVantaggio,
+  dannoMostrato,
   esitoAttacco,
   esitoProva,
   etichettaComposta,
@@ -261,7 +262,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const d = tiraDanno(o.dadi, attaccante.danno, 0, critico);
     const ridotto = s.attacchi.armaturaRiduce ? Math.max(0, d.totale - bersaglio.armatura) : d.totale;
     const r = o.stato.danneggia(bersaglio.id, ridotto);
-    t.danno = { formula: d.formula, dadi: d.dadi, bonus: d.bonus, totale: ridotto, tipo: attaccante.tipo_danno };
+    t.danno = dannoMostrato({ formula: d.formula, dadi: d.dadi, bonus: d.bonus, totale: ridotto, tipo: attaccante.tipo_danno });
     const pf = o.stato.puntiFerita(bersaglio.id)!;
     t.a_terra = pf.attuali <= 0;
     const danni = s.danni.nome.toLowerCase();

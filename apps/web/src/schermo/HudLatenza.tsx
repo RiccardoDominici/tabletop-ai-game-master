@@ -11,7 +11,7 @@ import { useSchermo } from '../store/schermo';
 import { statisticheAudio } from './audioSchermo';
 import { debugSchermo } from './debug';
 import { fermaScena, ricominciaScena } from './sessione';
-import { t, type Chiave } from '../lingua';
+import { localeInterfaccia, t, type Chiave } from '../lingua';
 
 const AGGIORNAMENTO_MS = 250;
 /** Il secondo clic su «Ricomincia» vale solo entro questo tempo (evita ripartenze per sbaglio). */
@@ -70,7 +70,7 @@ export function HudLatenza() {
       <Sezione titolo={metriche ? t('schermo.hud.turno', { turno: metriche.turno, voce: metriche.voce_motore }) : t('schermo.hud.nessun_turno')}>
         {metriche && (
           <>
-            <Riga nome={t('schermo.hud.t0')} valore={new Date(metriche.ts).toLocaleTimeString('it-IT')} />
+            <Riga nome={t('schermo.hud.t0')} valore={new Date(metriche.ts).toLocaleTimeString(localeInterfaccia())} />
             {CAMPI_MS.map(([campo, chiave]) => (
               <Riga key={campo} nome={t(chiave)} valore={formattaMs(metriche[campo] as number | null)} />
             ))}

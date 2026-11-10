@@ -6,7 +6,7 @@
  * Le frasi stanno nel pacchetto della lingua dei contenuti (lingue/<codice>/testi-prove.yaml, chiavi
  * «prove.…») e i nomi in prove.yaml: qui solo come si compongono. Si leggono al momento dell'uso.
  */
-import type { TiroMostrato } from '@cantastorie/shared';
+import type { DannoMostrato, TiroMostrato } from '@cantastorie/shared';
 import { CARATTERISTICA_DI, nomeAbilita, nomeCaratteristica, type Abilita, type Caratteristica } from '../campagna/regole-srd';
 import { testo } from '../lingua';
 import { datiProve, nomeOppure } from './lingua';
@@ -58,6 +58,14 @@ export function tipoDannoSingolare(tipo: string): string {
   const k = tipo.trim().toLowerCase();
   const nomi = datiProve().nomi.danni.nome;
   return Object.hasOwn(nomi, k) && nomi[k] !== k ? nomi[k]! : tipo;
+}
+
+/**
+ * Il danno di una carta con il nome del tipo da mostrare (`nome_tipo`), nella lingua dei contenuti:
+ * telefono e proiettore lo mettono dopo il totale così com'è («8 perforanti», «8 da fuoco», «8 piercing»).
+ */
+export function dannoMostrato(d: Omit<DannoMostrato, 'nome_tipo'>): DannoMostrato {
+  return { ...d, nome_tipo: d.tipo ? tipoDanno(d.tipo) : null };
 }
 
 /** «7 danni perforanti» / «1 danno» / «7 piercing damage»: `tipo` già nella forma giusta, o null. */

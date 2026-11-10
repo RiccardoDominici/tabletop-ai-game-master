@@ -171,7 +171,11 @@ export function testoVantaggio(tiro: Pick<TiroMostrato, 'vantaggio' | 'motivo_va
   return motivo ? t('comune.tiri.con_motivo', { parola, motivo }) : parola;
 }
 
-/** Tipi di danno che in italiano si dicono «da …» (danni da fuoco, non «danni fuochi»). */
+/**
+ * Tipi di danno che in italiano si dicono «da …» (danni da fuoco, non «danni fuochi»). Serve solo alle
+ * carte senza `nome_tipo` (quelle di prima): il nome da mostrare lo compone il Motore, nella lingua dei
+ * contenuti (lingue/<codice>/prove.yaml).
+ */
 const DANNI_DA = new Set(['acido', 'freddo', 'fuoco', 'forza', 'fulmine', 'tuono', 'veleno']);
 
 /**
@@ -202,10 +206,15 @@ export function sommaDanno(danno: Pick<DannoMostrato, 'dadi' | 'bonus' | 'totale
   return `${testo} = ${danno.totale}`;
 }
 
-/** La riga del danno: «Danni 1d8+2: 6 + 2 = 8 perforanti». */
+/**
+ * La riga del danno: «Danni 1d8+2: 6 + 2 = 8 perforanti», «Damage 1d8+2: 6 + 2 = 8 piercing». Il tipo
+ * arriva già nella forma giusta (`nome_tipo`, lingua dei contenuti); una carta che non l'ha ripiega
+ * sulla grammatica italiana del tipo scritto nella scheda.
+ */
 export function testoDanno(danno: DannoMostrato): string {
-  const tipo = danno.tipo ? tipoDannoPlurale(danno.tipo) : '';
-  return `${t('comune.tiri.danni', { formula: danno.formula, somma: sommaDanno(danno) })}${tipo ? ` ${tipo}` : ''}`;
+  const tipo = danno.nome_tipo ?? (danno.tipo ? tipoDannoPlurale(danno.tipo) : '');
+  const valori = { formula: danno.formula, somma: sommaDanno(danno) };
+  return tipo ? t('comune.tiri.danni_tipo', { ...valori, tipo }) : t('comune.tiri.danni', valori);
 }
 
 /** Il conto del d20: «17 + 5 = 22» (col meno vero se il modificatore è negativo). */

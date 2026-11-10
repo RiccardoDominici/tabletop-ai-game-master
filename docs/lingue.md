@@ -54,6 +54,10 @@ assets/voci/voci.yaml            voci per lingua (Fish e Qwen)
 - Il lettore minimo riceve il turno come dati (`RichiestaNarrazione.dati`), non dal testo del messaggio.
 - Web: `apps/web/src/lingua/` (`t('chiave', { … })`), nessuna dipendenza nuova. La lingua dell'interfaccia arriva dal
   server (`/api/salute` all'avvio della pagina e `StatoTavolo.lingua`); finché non arriva vale l'italiano.
+  Date e ore si scrivono con `localeInterfaccia()` (`it-IT`, `en-GB`). Il tipo di danno delle carte arriva dal
+  Motore già nella lingua dei contenuti (`DannoMostrato.nome_tipo`, da `prove.yaml`: «perforanti», «piercing») e
+  il web lo mette nella frase del dizionario (`comune.tiri.danni_tipo`); solo una carta di prima, senza
+  `nome_tipo`, ripiega sulla grammatica italiana del tipo scritto nella scheda (`tipoDannoPlurale`).
 - Validatore: `strumenti/valida/` legge `lingue/<lingua della campagna>/prosa.yaml`.
 - Voci: il registro ha le voci per lingua; i PNG di una campagna scelgono fra quelle della sua lingua.
 

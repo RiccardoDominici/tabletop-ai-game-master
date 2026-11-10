@@ -32,6 +32,7 @@ import type { StatoProve } from './stato';
 import type { DecisioneProva, EsitoAzioneProve, EsitoTurnoProve } from './tipi';
 import { conEffetto, fontiAttacco, type CondizioniDi } from './condizioni';
 import {
+  dannoMostrato,
   etichettaProva,
   etichettaSalvezza,
   fattoAiuto,
@@ -444,7 +445,7 @@ export function cartaAttacco(
     riuscita: e.riuscita,
     critico: e.critico,
     fallimento_critico: e.fallimento_critico,
-    danno: e.danno ? { formula: e.danno.formula, dadi: e.danno.dadi, bonus: e.danno.bonus, totale: e.danno.totale, tipo: arma.tipo_danno } : null,
+    danno: e.danno ? dannoMostrato({ formula: e.danno.formula, dadi: e.danno.dadi, bonus: e.danno.bonus, totale: e.danno.totale, tipo: arma.tipo_danno }) : null,
     a_terra: !!pf && pf.attuali <= 0,
     privata,
     avversario: null,

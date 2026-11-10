@@ -139,7 +139,8 @@ describe('un turno di tiri', () => {
     const r = await m.risolvi(4, [azione('a1', 'pg_corrado', 'Tiro un dardo a Ruggero'), azione('a2', 'pg_teo', 'Colpisco Ruggero col pugnale')]);
     expect(r.tiri).toHaveLength(1);
     expect(r.tiri[0]).toMatchObject({ tipo: 'attacco', etichetta: 'Balestra leggera', critico: true, riuscita: true, contro: { tipo: 'CA', valore: 13 }, a_terra: true });
-    expect(r.tiri[0]!.danno).toEqual({ formula: '2d8+2', dadi: [6, 4], bonus: 2, totale: 12, tipo: 'perforante' });
+    // nome_tipo: il tipo come lo mostrano telefono e proiettore, nella lingua dei contenuti.
+    expect(r.tiri[0]!.danno).toEqual({ formula: '2d8+2', dadi: [6, 4], bonus: 2, totale: 12, tipo: 'perforante', nome_tipo: 'perforanti' });
     expect(m.stato.puntiFerita('png_ruggero')).toEqual({ attuali: 0, massimi: 11 });
     expect(r.fatti[0]).toMatch(/COLPITO \(colpo critico\), 12 danni perforanti; Ruggero lo sgherro è A TERRA/);
     expect(r.fatti[1]).toMatch(/Ruggero lo sgherro è già a terra: nessun tiro/);

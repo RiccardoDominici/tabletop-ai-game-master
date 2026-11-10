@@ -4,7 +4,7 @@
  *
  * Le durate si leggono come le direbbe chi gioca: «35 min», «1 h 05 min», «2,5 ore».
  */
-import { linguaInterfaccia, t } from '../lingua';
+import { linguaInterfaccia, localeInterfaccia, t } from '../lingua';
 
 /** Durata scelta dal master per la serata, in ore: passo di un quarto d'ora, da mezz'ora a otto ore. */
 export const MIN_ORE_SERATA = 0.5;
@@ -15,7 +15,7 @@ export const PASSO_ORE_SERATA = 0.25;
 export function dataLeggibile(iso: string): string {
   const data = new Date(iso);
   if (Number.isNaN(data.getTime())) return '';
-  return data.toLocaleDateString(linguaInterfaccia() === 'it' ? 'it-IT' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  return data.toLocaleDateString(localeInterfaccia(), { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 /** Minuti come «35 min» o «1 h 05 min»; sotto zero (oltre la fine prevista) come «oltre di 5 min». */

@@ -19,7 +19,7 @@ import { rigaPacchetto, statoProssima } from './pacchetti';
 import { TelefoniRicordati } from './TelefoniRicordati';
 import { SerataMasterRiquadro } from './SerataMaster';
 import { useConferma } from './useConferma';
-import { t } from '../lingua';
+import { localeInterfaccia, t } from '../lingua';
 
 export function SezioneSessione({ stato }: { stato: StatoMaster }) {
   const s = stato.sessione;
@@ -49,7 +49,7 @@ export function SezioneSessione({ stato }: { stato: StatoMaster }) {
         <dt className="text-cenere">{t('master.sessione.iniziata')}</dt>
         <dd data-testid="master-sessione-inizio">
           {s.creata
-            ? `${new Date(s.creata).toLocaleDateString('it-IT')} ${oraBreve(Date.parse(s.creata))}`
+            ? `${new Date(s.creata).toLocaleDateString(localeInterfaccia())} ${oraBreve(Date.parse(s.creata))}`
             : s.registro
               ? t('master.sessione.chiusa')
               : t('master.sessione.non_ancora')}
