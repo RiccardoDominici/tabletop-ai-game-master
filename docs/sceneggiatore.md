@@ -61,7 +61,9 @@ Le stesse regole del repertorio preparato, più quelle di chi scrive al volo:
   cosa («il boccale di Remo») vanno bene. Il prompt va oltre: mai il corpo, i gesti, lo sguardo o le reazioni di un
   PG, solo il mondo e i PNG;
 - **ripetizioni e tic** (`sceneggiatore/ripetizioni.ts`): la richiesta porta gli attacchi (le prime parole di ogni
-  frase) e le immagini (la prima proposizione) degli ultimi 4 turni, con la regola di non ripeterli. Porta anche i
+  frase) e le immagini (la prima proposizione) degli ultimi 4 turni, con la regola di non ripeterli. Il processo
+  aggiunge le righe che ha scritto da poco (le ultime 6 risposte, 10 minuti), che il tavolo può non aver ancora
+  sentito: due risposte dello stesso turno partono insieme, e la seconda sa che cosa ha scritto la prima. Porta anche i
   tic usciti nelle ultime due righe di ogni PNG: una battuta che ripete un tic troppo presto esce, perché vale la
   regola del narratore, un tic al massimo ogni tre righe;
 - **voce**: al massimo 4 righe da 240 caratteri.
@@ -86,8 +88,10 @@ alla volta, e un errore si registra senza fermare le altre. Le battute `subito` 
 quelle la voce resta dal vivo.
 
 ## Processi e file
-- `scripts/sceneggiatore.sh avvia|ferma|stato`. Lo avvia `scripts/avvio.sh`, quindi anche `partita.sh` e l'harness,
-  se `claude` è installato e il narratore non è finto (`CANTASTORIE_SCENEGGIATORE=no` lo spegne). Lo ferma
+- `scripts/sceneggiatore.sh avvia|ferma|stato`. Lo avvia `scripts/avvio.sh`, quindi anche `partita.sh`, ma da sé
+  solo sulla partita vera (4610), se `claude` è installato e il narratore non è finto: ogni `claude -p` usa
+  l'abbonamento di chi gioca. Sulle istanze di prova (harness, e2e) parte solo con `CANTASTORIE_SCENEGGIATORE=si`,
+  e l'harness lo accende con `--sceneggiatore`. `CANTASTORIE_SCENEGGIATORE=no` lo spegne ovunque. Lo ferma
   `scripts/arresto.sh`.
 - Il processo è `apps/server/src/sceneggiatore/processo.ts`. Lancia `claude -p --model <sonnet|haiku> --output-format
   json --no-session-persistence --tools ""`: nessuno strumento, il prompt ha tutto. Non legge né stampa credenziali e

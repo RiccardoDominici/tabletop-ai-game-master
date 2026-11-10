@@ -131,8 +131,11 @@ for _ in $(seq 1 60); do
   sleep 0.5
 done
 # 5. Lo sceneggiatore (docs/sceneggiatore.md): Claude Code scrive ciò che il lettore locale non trova.
-#    Parte se `claude` è installato (CANTASTORIE_SCENEGGIATORE=no lo spegne); col narratore finto no.
-if [[ "$FINTO" != "1" ]]; then
+#    Ogni `claude -p` consuma l'abbonamento di chi gioca: parte da sé solo sulla partita vera (4610) e se
+#    `claude` è installato. Sulle istanze di prova (harness, e2e) solo con CANTASTORIE_SCENEGGIATORE=si;
+#    CANTASTORIE_SCENEGGIATORE=no lo spegne ovunque. Col narratore finto mai.
+SCENEGGIATORE="${CANTASTORIE_SCENEGGIATORE:-auto}"
+if [[ "$FINTO" != "1" && "$SCENEGGIATORE" != "no" && ( "$PROVA" != "1" || "$SCENEGGIATORE" == "si" ) ]]; then
   CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/sceneggiatore.sh" avvia || echo "sceneggiatore: non partito (vedi il suo log)"
 fi
 salute="$(curl -s --max-time 2 "http://127.0.0.1:$PORTA/api/salute" || true)"

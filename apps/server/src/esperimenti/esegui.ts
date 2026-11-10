@@ -95,6 +95,8 @@ function avviaServer(o: OpzioniEsperimento, token: string): void {
       CANTASTORIE_CAMPAGNA: o.campagna,
       CANTASTORIE_MODO: o.modo,
       CANTASTORIE_FINESTRA_TUTTI: '1',
+      // Ogni chiamata dello sceneggiatore usa l'abbonamento di Riccardo: solo se la prova lo chiede.
+      CANTASTORIE_SCENEGGIATORE: o.sceneggiatore ? 'si' : 'no',
       CANTASTORIE_MASTER_TOKEN: token,
     },
     encoding: 'utf8',

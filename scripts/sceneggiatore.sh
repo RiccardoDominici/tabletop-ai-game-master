@@ -6,7 +6,7 @@
 #
 #   scripts/sceneggiatore.sh avvia|ferma|stato        (CANTASTORIE_PORTA sceglie l'istanza, come avvio.sh)
 #
-#   CANTASTORIE_SCENEGGIATORE=no                spento
+#   CANTASTORIE_SCENEGGIATORE=no                spento (avvio.sh: sulle istanze di prova parte solo con =si)
 #   modelli: le battute «subito» con sonnet (una battuta in ~4 s), le «prossime» in sottofondo con haiku;
 #   CANTASTORIE_SCENEGGIATORE_MODELLO_SUBITO / _PROSSIME li cambiano, CANTASTORIE_SCENEGGIATORE_MODELLO tutti e due
 # Log: <log>/sceneggiatore/sceneggiatore.out e sceneggiatore.jsonl (una riga per richiesta).

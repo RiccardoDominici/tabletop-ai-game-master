@@ -48,11 +48,16 @@ export function ticBloccati(voci: readonly VoceTrascrizione[], png: readonly Png
  * virgola) delle righe che il tavolo ha sentito negli ultimi TURNI_RECENTI turni.
  */
 export function giaUsati(voci: readonly VoceTrascrizione[], turnoCorrente: number): { attacchi: string[]; immagini: string[] } {
+  const testi = voci.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno >= turnoCorrente - TURNI_RECENTI + 1).map((v) => v.testo);
+  return attacchiEImmagini(testi);
+}
+
+/** Attacchi (prime quattro parole di ogni frase) e immagini (prima proposizione, fino a otto parole) di questi testi. */
+export function attacchiEImmagini(testi: readonly string[]): { attacchi: string[]; immagini: string[] } {
   const attacchi = new Set<string>();
   const immagini = new Set<string>();
-  for (const v of voci) {
-    if ((v.tipo !== 'narrazione' && v.tipo !== 'battuta') || v.turno < turnoCorrente - TURNI_RECENTI + 1) continue;
-    for (const frase of v.testo.split(/(?<=[.!?…])\s+/)) {
+  for (const t of testi) {
+    for (const frase of t.split(/(?<=[.!?…])\s+/)) {
       const parole = frase.replace(/[«»"]/g, '').trim().split(/\s+/).filter(Boolean);
       if (parole.length < 3) continue;
       attacchi.add(parole.slice(0, 4).join(' ').replace(/[,.;:!?]+$/, ''));
@@ -61,4 +66,27 @@ export function giaUsati(voci: readonly VoceTrascrizione[], turnoCorrente: numbe
     }
   }
   return { attacchi: [...attacchi].slice(-MAX_VOCI), immagini: [...immagini].slice(-MAX_VOCI) };
+}
+
+/**
+ * I «già usati» della richiesta più le righe che lo sceneggiatore ha scritto da poco e che il tavolo può
+ * non aver ancora sentito: due risposte dello stesso turno partono insieme, e la seconda deve sapere
+ * che cosa ha già scritto la prima.
+ */
+export function unisciGiaUsati(
+  g: { attacchi: string[]; immagini: string[]; tic: Record<string, string[]> } | undefined,
+  inVolo: readonly string[],
+): { attacchi: string[]; immagini: string[]; tic: Record<string, string[]> } {
+  const v = attacchiEImmagini(inVolo);
+  const unici = (xs: string[]): string[] => [...new Set(xs)].slice(-2 * MAX_VOCI);
+  return { attacchi: unici([...(g?.attacchi ?? []), ...v.attacchi]), immagini: unici([...(g?.immagini ?? []), ...v.immagini]), tic: g?.tic ?? {} };
+}
+
+/** Il testo delle righe (senza etichetta) di una risposta YAML dello sceneggiatore; [] se non si legge. */
+export function righeDellaRisposta(yaml: unknown): string[] {
+  const lista = Array.isArray(yaml) ? yaml : Array.isArray((yaml as { battute?: unknown } | null)?.battute) ? (yaml as { battute: unknown[] }).battute : [];
+  return lista.flatMap((b) => {
+    const testo = (b as { testo?: unknown } | null)?.testo;
+    return Array.isArray(testo) ? testo.filter((r): r is string => typeof r === 'string').map((r) => r.replace(/^\s*\[[^\]]+\]\s*/, '')) : [];
+  });
 }

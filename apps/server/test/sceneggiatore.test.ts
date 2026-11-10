@@ -11,7 +11,8 @@ import { caricaCampagna } from '../src/campagna/caricatore';
 import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
 import { cartelle, leggiJson, scriviJson, type RichiestaSceneggiatore } from '../src/sceneggiatore/protocollo';
 import { estraiYaml, nomiDeiPg, pgCheAgisce, validaBattute } from '../src/sceneggiatore/valida';
-import { giaUsati, ticBloccati } from '../src/sceneggiatore/ripetizioni';
+import { giaUsati, righeDellaRisposta, ticBloccati, unisciGiaUsati } from '../src/sceneggiatore/ripetizioni';
+import YAML from 'yaml';
 import { codaAudioFish } from '../src/sceneggiatore/audio';
 import { CacheAudio } from '../src/voce/cache-audio';
 import { loggerMuto } from '../src/logger';
@@ -82,6 +83,17 @@ describe('ripetizioni e tic, corpo dei PG, audio delle battute nuove', () => {
     const ctx = { campagna: nozze, scena: 'scena_casera', presenti: new Set(['png_ettore']), esistenti: new Map(), prefisso: 'sc_t_', parole: [], pubblico: null, detto: '', ticBloccati: bloccati };
     const tic = { id: 'sc_t_1', chi: 'png_ettore', tipo: 'reazione', quando: 'un PG parla a Ettore', temi: ['ettore'], testo: ["[png_ettore] Parla dall'orecchio buono, eh. La neve è neve."] };
     expect(validaBattute(JSON.stringify({ battute: [tic] }), ctx).scartate[0]!.motivo).toMatch(/tic di png_ettore troppo vicino/);
+  });
+
+  it('le righe in volo entrano nei «già usati»: la seconda risposta dello stesso turno sa cosa ha scritto la prima', () => {
+    const yaml = YAML.parse('battute:\n  - testo:\n      - "[narratore] Dietro il tavolo alto, i tre gradini aspettano nel buio fresco."\n');
+    const righe = righeDellaRisposta(yaml);
+    expect(righe).toEqual(['Dietro il tavolo alto, i tre gradini aspettano nel buio fresco.']);
+    const g = unisciGiaUsati({ attacchi: ['Sulla tavolata dei Morlacchi'], immagini: [], tic: { png_ettore: ['x'] } }, righe);
+    expect(g.attacchi).toEqual(['Sulla tavolata dei Morlacchi', 'Dietro il tavolo alto']);
+    expect(g.immagini).toEqual(['Dietro il tavolo alto']);
+    expect(g.tic).toEqual({ png_ettore: ['x'] });
+    expect(unisciGiaUsati(undefined, []).attacchi).toEqual([]);
   });
 
   it('le battute nuove: la voce drama-3 va in cache in sottofondo, una volta sola', async () => {

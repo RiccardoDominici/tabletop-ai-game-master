@@ -29,6 +29,29 @@ import { compilaContestoRepertorio } from '../repertorio/contesto';
 import { caricaParoleSegreteCampagna } from '../repertorio/segreti';
 import { cartelle, leggiJson, scriviJson, type RichiestaSceneggiatore, type RispostaSceneggiatore } from './protocollo';
 import { PROMPT_SCENEGGIATORE, messaggioSceneggiatore } from './prompt';
+import YAML from 'yaml';
+import { righeDellaRisposta, unisciGiaUsati } from './ripetizioni';
+import { estraiYaml } from './valida';
+
+/**
+ * Le righe scritte di recente, «in volo» (il tavolo può non averle ancora sentite): entrano nei «già
+ * usati» delle richieste dopo. Si tengono le ultime IN_VOLO_RISPOSTE risposte, per IN_VOLO_MS.
+ */
+const IN_VOLO_RISPOSTE = 6;
+const IN_VOLO_MS = 10 * 60_000;
+const inVolo: Array<{ ts: number; righe: string[] }> = [];
+function righeInVolo(): string[] {
+  const adesso = Date.now();
+  while (inVolo.length && (inVolo.length > IN_VOLO_RISPOSTE || adesso - inVolo[0]!.ts > IN_VOLO_MS)) inVolo.shift();
+  return inVolo.flatMap((x) => x.righe);
+}
+function ricordaRisposta(testo: string): void {
+  try {
+    inVolo.push({ ts: Date.now(), righe: righeDellaRisposta(YAML.parse(estraiYaml(testo))) });
+  } catch {
+    // Una risposta che non si legge non ha righe da ricordare (il server la scarterà).
+  }
+}
 
 const arg = (nome: string, predefinito: string): string => {
   const i = process.argv.indexOf(nome);
@@ -122,7 +145,9 @@ async function lavora(rq: RichiestaSceneggiatore): Promise<void> {
   try {
     const { contesto, segrete, esempi } = contestoDi(rq);
     const modello = MODELLI[rq.tipo];
-    const { testo, ms } = await chiediAClaudeCode(messaggioSceneggiatore(rq, contesto, segrete, esempi), modello);
+    const conVolo: RichiestaSceneggiatore = { ...rq, gia_usati: unisciGiaUsati(rq.gia_usati, righeInVolo()) };
+    const { testo, ms } = await chiediAClaudeCode(messaggioSceneggiatore(conVolo, contesto, segrete, esempi), modello);
+    ricordaRisposta(testo);
     rispondi(rq, { id: rq.id, esito: 'ok', ms, yaml: testo });
     registra({ id: rq.id, tipo: rq.tipo, turno: rq.turno, privata: rq.azione?.privata === true, modello, esito: 'ok', ms_claude: ms, ms_in_coda: attesaInCoda, caratteri: testo.length });
   } catch (err) {

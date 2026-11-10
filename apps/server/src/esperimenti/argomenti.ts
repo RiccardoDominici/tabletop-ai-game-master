@@ -1,7 +1,9 @@
 /**
  * Argomenti e ambiente di un esperimento (esegui.ts): copione, modalità, campagna, porta.
  *
- *   esegui.ts <copione> <A|B|B2> [--campagna <id>] [--voce-vera] [--finto] [--lascia-server] [--partita-vera]
+ *   esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore]
+ *             [--voce-vera] [--finto] [--lascia-server] [--partita-vera]
+ * --sceneggiatore accende lo sceneggiatore (Claude Code: ogni chiamata usa l'abbonamento); di base è spento.
  *
  * Porta: CANTASTORIE_PORTA (default 4710, istanza di prova di scripts/avvio.sh: log e pagine in
  * logs/porta-<porta>/, voce sempre finta). La 4610 è la partita vera: si usa solo con
@@ -40,6 +42,8 @@ export interface OpzioniEsperimento {
   turniMax: number | null;
   /** `--pausa-s <s>`: i giocatori parlano s secondi prima di mandare le azioni (0 = subito). */
   pausaMs: number;
+  /** `--sceneggiatore`: accende lo sceneggiatore (Claude Code, l'abbonamento di Riccardo); di base spento. */
+  sceneggiatore: boolean;
 }
 
 export const PORTA_ESPERIMENTI = 4710;
@@ -69,7 +73,7 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
   const [copione, etichettaModo] = posizionali;
   // «B2» è il repertorio con le regole della versione 2 (è la modalità repertorio di oggi).
   const modo: ModoEsperimento | null = etichettaModo === 'B' || etichettaModo === 'B2' ? 'repertorio' : etichettaModo === 'A' ? 'improvvisa' : null;
-  if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--voce-vera] [--finto] [--lascia-server]');
+  if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore] [--voce-vera] [--finto] [--lascia-server]');
 
   const campagna = valoreOpzione(argv, '--campagna') ?? CAMPAGNA_DEFAULT;
   const uscita = valoreOpzione(argv, '--uscita');
@@ -121,5 +125,6 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
     uscita,
     turniMax,
     pausaMs,
+    sceneggiatore: argv.includes('--sceneggiatore'),
   };
 }
