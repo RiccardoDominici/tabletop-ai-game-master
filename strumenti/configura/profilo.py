@@ -59,8 +59,16 @@ def _gb(modelli: list[str]) -> float:
     return round(sum(DIMENSIONI_APPROSSIMATE_GB[m] for m in modelli), 1)
 
 
-def scegli(rilevamento: dict[str, Any], applica_chiavi: bool = False) -> dict[str, Any]:
-    """Il profilo per questo computer. Sempre deterministico: stesso rilevamento, stessa scelta."""
+LINGUE = ("it", "en")  # docs/lingue.md: codici ISO 639-1 supportati dalla configurazione
+
+
+def scegli(rilevamento: dict[str, Any], applica_chiavi: bool = False, lingua: str = "it") -> dict[str, Any]:
+    """Il profilo per questo computer. Sempre deterministico: stesso rilevamento, stessa scelta.
+
+    `lingua` è la lingua dell'interfaccia e dei testi fissi (docs/lingue.md). Non cambia la scelta dei modelli.
+    """
+    if lingua not in LINGUE:
+        raise ValueError(f"lingua non supportata: {lingua!r} (valide: {', '.join(LINGUE)})")
     chiavi = rilevamento.get("chiavi", {})
     anthropic = bool(chiavi.get("ANTHROPIC_API_KEY"))
     openrouter = bool(chiavi.get("OPENROUTER_API_KEY"))
@@ -134,6 +142,7 @@ def scegli(rilevamento: dict[str, Any], applica_chiavi: bool = False) -> dict[st
     }
     modelli_da_scaricare = _modelli_mancanti(rilevamento, modelli)
     return {
+        "lingua": lingua,
         "id": profilo_id,
         "nome": nome,
         "apple_silicon": apple,
@@ -157,6 +166,10 @@ def testo_locale(profilo: dict[str, Any], quando: str | None = None) -> str:
     ]
     if profilo.get("modello_lettore") and profilo["modello_lettore"] != MODELLO_LETTORE_GRANDE:
         righe += ["backend:", "  locale:", f"    # Smaller reader for this Mac (under 16 GB).", f"    modello: {profilo['modello_lettore']}"]
+    righe += [
+        "# Language of the interface and fixed texts (docs/lingue.md). Overrides config/predefinita.yaml.",
+        f"lingua: {profilo.get('lingua', 'it')}",
+    ]
     righe.append("componenti:")
     for nome, scelta in profilo["componenti"].items():
         righe.append(f"  # {scelta['motivo']}")

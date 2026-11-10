@@ -46,8 +46,9 @@ Run every command from the repository root. Use `python3 -I` for the Python tool
    - If no: continue without `--con-chiavi`.
 2. **Play language.** Say: "Which language do you want to play in? Italian is complete today. English is being prepared;
    if the repository does not support the language they choose yet, say so and play in Italian."
-   Check the repo to see whether the chosen language is ready (the README and `docs/da-fare.md` say). If it is not,
-   say so once and continue in Italian. Do not write a language key that the server does not read.
+   Remember the answer as `it` or `en`. Write it in step 5 with `--lingua <it|en>`: the key `lingua` goes into
+   `config/locale.yaml` now. Until the server reads it, the game is in Italian whatever the choice; if the user picked
+   `en` and it is not ready yet (check `docs/lingue.md`), say so once and continue in Italian.
 
 If the computer is not Apple silicon, say plainly: "On this computer the local reader and voice are not supported
 yet. Without an Anthropic key the narrator is a scripted test narrator, not a real game. Do you want to add an
@@ -56,7 +57,8 @@ Anthropic key now?" Ask that once, then continue.
 ## 5. Write the config
 
 - If `config/locale.yaml` already exists, show it to the user and ask before overwriting it.
-- `python3 -I strumenti/configura/configura.py --out config/locale.yaml` (add `--con-chiavi` if the user chose keys).
+- `python3 -I strumenti/configura/configura.py --out config/locale.yaml --lingua <it|en>` (add `--con-chiavi` if the
+  user chose keys).
 - Show the file. Do not add values that are not in the file.
 
 ## 6. Download

@@ -174,3 +174,13 @@ def test_esegui_scarica_solo_le_voci_mancanti_con_il_loro_python(tmp_path: Path)
     assert MODELLO_LETTORE_GRANDE in chiamate[0][2]
     assert esiti == [f"downloaded {MODELLO_LETTORE_GRANDE}"]
     assert cache[MODELLO_VOCE] is True
+
+
+def test_lingua_scritta_in_cima_e_validata() -> None:
+    p = scegli(rilevamento(ram=16.0, disco=50.0), lingua="en")
+    testo = profilo.testo_locale(p, quando="x")
+    assert "\nlingua: en\n" in testo
+    assert testo.index("lingua: en") < testo.index("componenti:")
+    assert "\nlingua: it\n" in profilo.testo_locale(scegli(rilevamento()), quando="x")
+    with pytest.raises(ValueError):
+        scegli(rilevamento(), lingua="fr")

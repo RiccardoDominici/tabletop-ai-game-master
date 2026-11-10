@@ -34,7 +34,7 @@ def riepilogo(rilevamento: dict, profilo: dict) -> list[str]:
     righe = [
         f"This computer: {rilevamento['sistema']['os']}, {cpu['nome'] or 'chip not read'}, "
         f"RAM {rilevamento['ram_gb']} GB, free disk {rilevamento['disco_libero_gb']} GB.",
-        f"Profile: {profilo['nome']} ({profilo['id']}).",
+        f"Profile: {profilo['nome']} ({profilo['id']}). Interface language: {profilo['lingua']}.",
     ]
     for nome, scelta in profilo["componenti"].items():
         riserve = f" (fallback: {', '.join(scelta['riserve'])})" if scelta["riserve"] else ""
@@ -56,11 +56,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--scarica", action="store_true", help="download what the profile needs")
     parser.add_argument("--si", action="store_true", help="with --scarica: do not ask for confirmation")
     parser.add_argument("--json", action="store_true", help="print the detection and the profile as JSON")
+    parser.add_argument("--lingua", choices=("it", "en"), default="it",
+                        help="interface language written to config/locale.yaml (default: it)")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
     rilevamento = rileva()
-    profilo = scegli(rilevamento, applica_chiavi=args.con_chiavi)
+    profilo = scegli(rilevamento, applica_chiavi=args.con_chiavi, lingua=args.lingua)
     if args.json:
         print(json.dumps({"rilevamento": rilevamento, "profilo": profilo}, indent=2, ensure_ascii=False))
     else:
