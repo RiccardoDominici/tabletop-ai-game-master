@@ -21,7 +21,7 @@ const REF = '0123456789abcdef0123456789abcdef';
 function fileChiave(): string {
   const d = fs.mkdtempSync(path.join(os.tmpdir(), 'chiave-'));
   const f = path.join(d, '.env');
-  fs.writeFileSync(f, 'ALTRO=1\nOPENROUTER_API_KEY=sk-prova\n');
+  fs.writeFileSync(f, 'ALTRO=1\nOPENROUTER_API_KEY=sk-or-prova-0000000000\n');
   return f;
 }
 
@@ -67,7 +67,7 @@ describe('motore fish (OpenRouter finto)', () => {
     const espressivo = '[sottovoce] Non venni.';
     const f = await motore.sintetizza({ id: 't1-f0', voce: 'narratore', testo: 'Non venni.', espressivo }, new AbortController().signal);
     expect(corpo).toEqual({ model: 'fish-audio/drama-3', input: espressivo, voice: REF, response_format: 'pcm' });
-    expect(auth).toBe('Bearer sk-prova');
+    expect(auth).toBe('Bearer sk-or-prova-0000000000');
     expect(f.sampleRate).toBe(44_100);
     expect(f.motore).toBe('fish');
     expect(f.byte_testo).toBe(Buffer.byteLength(espressivo));

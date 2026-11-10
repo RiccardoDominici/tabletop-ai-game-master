@@ -136,7 +136,7 @@ describe('scelta dei provider', () => {
     expect(senzaChiavi.lettore.provider).toBe('finto');
     expect(senzaChiavi.lettore.perche).toMatch(/ANTHROPIC_API_KEY mancante/);
     expect(senzaChiavi.voce.provider).toBe('finto');
-    const conChiavi = risolvi(cfg, { ambiente: { ANTHROPIC_API_KEY: 'k', OPENROUTER_API_KEY: 'k' } });
+    const conChiavi = risolvi(cfg, { ambiente: { ANTHROPIC_API_KEY: 'sk-ant-finta-0000000000000000', OPENROUTER_API_KEY: 'sk-or-finta-0000000000000000' } });
     expect(conChiavi.lettore).toMatchObject({ provider: 'anthropic', modo: 'completo', modello: 'claude-haiku-5-5' });
     expect(conChiavi.voce.provider).toBe('openrouter');
   });

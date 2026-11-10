@@ -45,20 +45,53 @@ export class ErroreChiave extends Error {
 }
 
 /**
- * Restituisce la chiave `nome` dal primo passo che la contiene. Lancia `ErroreChiave` se nessun passo
- * la trova; il messaggio nomina i passi controllati, mai i valori.
+ * Forma attesa per le chiavi con un formato noto: (prefisso, lunghezza minima). Un valore che non la
+ * rispetta (segnaposto, valore troncato) non è una chiave: si scarta e si passa alla fonte successiva.
+ * Le altre chiavi non hanno una forma nota qui e non si controllano. Specchio di strumenti/chiavi.py.
+ */
+export const FORME_CHIAVE: Readonly<Record<string, { prefisso: string; minimo: number }>> = {
+  ANTHROPIC_API_KEY: { prefisso: 'sk-ant-', minimo: 20 },
+  OPENROUTER_API_KEY: { prefisso: 'sk-or-', minimo: 20 },
+};
+
+/** True se il valore ha la forma attesa per `nome` (o se per `nome` una forma non è definita). */
+export function formaValida(nome: string, valore: string): boolean {
+  const regola = FORME_CHIAVE[nome];
+  if (!regola) return true;
+  return valore.startsWith(regola.prefisso) && valore.length >= regola.minimo;
+}
+
+/** Avviso di scarto: nomina l'origine e la lunghezza, mai i caratteri del valore. */
+function avvisaScarto(nome: string, origine: OrigineChiave, valore: string): void {
+  console.warn(
+    `[chiavi] ${nome} da ${origine} scartata: non ha la forma attesa (${descriviChiave(valore)}); passo alla fonte successiva`,
+  );
+}
+
+/**
+ * Restituisce la chiave `nome` dal primo passo che la contiene con una forma valida. Un valore con
+ * forma errata viene scartato con un avviso e la ricerca prosegue. Lancia `ErroreChiave` se nessun
+ * passo la trova; il messaggio nomina i passi controllati e quelli scartati, mai i valori.
  */
 export function cercaChiave(nome: string, sorgenti: SorgentiChiave = {}): ChiaveTrovata {
   const ambiente = sorgenti.ambiente ?? process.env;
-  const daAmbiente = pulisci(ambiente[nome]);
-  if (daAmbiente) return { valore: daAmbiente, origine: 'ambiente' };
+  const scartate: OrigineChiave[] = [];
 
-  const daRadice = leggiRigaOpzionale(sorgenti.fileEnvRadice ?? FILE_ENV_RADICE, `${nome}=`);
-  if (daRadice) return { valore: daRadice, origine: 'env-radice' };
-
+  // Pigro: un file si legge solo se le fonti prima di lui non hanno dato una chiave valida.
+  const fonti: Array<[OrigineChiave, () => string | undefined]> = [
+    ['ambiente', () => pulisci(ambiente[nome])],
+    ['env-radice', () => leggiRigaOpzionale(sorgenti.fileEnvRadice ?? FILE_ENV_RADICE, `${nome}=`)],
+  ];
   if (sorgenti.filePrecedente) {
-    const daPrecedente = leggiRigaOpzionale(sorgenti.filePrecedente, `${nome}=`);
-    if (daPrecedente) return { valore: daPrecedente, origine: 'file-precedente' };
+    fonti.push(['file-precedente', () => leggiRigaOpzionale(sorgenti.filePrecedente as string, `${nome}=`)]);
+  }
+
+  for (const [origine, leggi] of fonti) {
+    const valore = leggi();
+    if (!valore) continue;
+    if (formaValida(nome, valore)) return { valore, origine };
+    avvisaScarto(nome, origine, valore);
+    scartate.push(origine);
   }
 
   const passi = [
@@ -66,7 +99,11 @@ export function cercaChiave(nome: string, sorgenti: SorgentiChiave = {}): Chiave
     `una riga ${nome}= nel file .env alla radice del repo (vedi .env.example)`,
   ];
   if (sorgenti.filePrecedente) passi.push('il file di ripiego configurato');
-  throw new ErroreChiave(`${nome} non trovata. Controllato: ${passi.join('; ')}.`);
+  let messaggio = `${nome} non trovata. Controllato: ${passi.join('; ')}.`;
+  if (scartate.length > 0) {
+    messaggio += ` Scartate perché non hanno la forma attesa: ${scartate.join(', ')}.`;
+  }
+  throw new ErroreChiave(messaggio);
 }
 
 /**
