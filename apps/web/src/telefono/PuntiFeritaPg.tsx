@@ -5,6 +5,7 @@
  * ha già i pulsanti (Ascolta qui, Scheda, Cambia) e su 390 px non c'è altro spazio in larghezza.
  * Senza PF (campagna senza schede numeriche) non c'è: l'intestazione resta com'era.
  */
+import { t } from '../lingua';
 import clsx from 'clsx';
 import type { PuntiFerita } from '@cantastorie/shared';
 import { livelloPf, testoPf, type LivelloPf } from '../lib/tiri';
@@ -27,9 +28,9 @@ export function PuntiFeritaPg({ pf }: { pf: PuntiFerita | null | undefined }) {
         STILE[livello],
       )}
     >
-      <span className="tracking-[0.12em]">PF</span>
+      <span className="tracking-[0.12em]">{t('telefono.pf.sigla')}</span>
       <span className="text-[0.85rem] font-extrabold">{testoPf(pf)}</span>
-      {livello === 'a_terra' && <span className="tracking-wide uppercase">· a terra</span>}
+      {livello === 'a_terra' && <span className="tracking-wide uppercase">{t('telefono.pf.a_terra')}</span>}
     </p>
   );
 }

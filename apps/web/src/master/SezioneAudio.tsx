@@ -10,6 +10,7 @@ import { useInCorso } from '../store/master';
 import { nomeEffetto, nomeTraccia, nomeUmore } from './audio';
 import { inviaComando } from './sessione';
 import { Riquadro } from './Riquadro';
+import { t } from '../lingua';
 
 const PULSANTE = 'min-h-9 rounded-lg border px-2.5 text-sm font-semibold transition-colors disabled:opacity-60';
 
@@ -17,14 +18,14 @@ export function SezioneAudio({ stato }: { stato: StatoMaster }) {
   const audio = stato.audio;
   if (!audio || (audio.umori.length === 0 && audio.effetti.length === 0 && !audio.musica && audio.ambienti.length === 0)) return null;
   return (
-    <Riquadro titolo="Audio" zona="audio" data-testid="master-audio">
+    <Riquadro titolo={t('master.audio.titolo')} zona="audio" data-testid="master-audio">
       <dl className="mb-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-sm">
-        <dt className="text-cenere">Musica</dt>
+        <dt className="text-cenere">{t('master.audio.musica')}</dt>
         <dd data-testid="master-audio-musica" className="truncate">
-          {audio.umore ? `umore: ${nomeUmore(audio.umore)}` : nomeTraccia(audio.musica)}
-          {audio.umore && <span className="text-cenere"> (luogo: {nomeTraccia(audio.musica)})</span>}
+          {audio.umore ? t('master.audio.umore', { nome: nomeUmore(audio.umore) }) : nomeTraccia(audio.musica)}
+          {audio.umore && <span className="text-cenere"> ({t('master.audio.luogo', { nome: nomeTraccia(audio.musica) })})</span>}
         </dd>
-        <dt className="text-cenere">Ambienti</dt>
+        <dt className="text-cenere">{t('master.audio.ambienti')}</dt>
         <dd className="truncate">{audio.ambienti.map(nomeTraccia).join(', ') || '—'}</dd>
       </dl>
       {audio.umori.length > 0 && <Umori audio={audio} />}
@@ -36,16 +37,16 @@ export function SezioneAudio({ stato }: { stato: StatoMaster }) {
 function Umori({ audio }: { audio: AudioMaster }) {
   const inCorso = useInCorso('umore');
   const scegli = (umore: string | null) =>
-    void inviaComando({ tipo: 'umore', umore }, umore ? `Umore: ${nomeUmore(umore)}` : 'Umore: auto (musica del luogo)');
+    void inviaComando({ tipo: 'umore', umore }, umore ? t('master.audio.descr_umore', { nome: nomeUmore(umore) }) : t('master.audio.descr_umore_auto'));
   return (
     <div className="mb-2">
-      <p className="mb-1 text-xs tracking-wide text-cenere uppercase">Umore della musica</p>
+      <p className="mb-1 text-xs tracking-wide text-cenere uppercase">{t('master.audio.umore_titolo')}</p>
       <div className="flex flex-wrap gap-1.5">
-        <BottoneUmore attivo={audio.umore === null} disabilitato={inCorso} onClick={() => scegli(null)} testid="master-umore-auto" titolo="Torna alla musica del luogo">
-          auto
+        <BottoneUmore attivo={audio.umore === null} disabilitato={inCorso} onClick={() => scegli(null)} testid="master-umore-auto" titolo={t('master.audio.torna_luogo')}>
+          {t('master.umore.auto')}
         </BottoneUmore>
         {audio.umori.map((tag) => (
-          <BottoneUmore key={tag} attivo={audio.umore === tag} disabilitato={inCorso} onClick={() => scegli(tag)} testid={`master-umore-${tag}`} titolo="Cambia subito la musica">
+          <BottoneUmore key={tag} attivo={audio.umore === tag} disabilitato={inCorso} onClick={() => scegli(tag)} testid={`master-umore-${tag}`} titolo={t('master.audio.cambia_subito')}>
             {nomeUmore(tag)}
           </BottoneUmore>
         ))}
@@ -73,7 +74,7 @@ function BottoneUmore(p: { attivo: boolean; disabilitato: boolean; onClick: () =
 function Effetti({ effetti }: { effetti: string[] }) {
   return (
     <div>
-      <p className="mb-1 text-xs tracking-wide text-cenere uppercase">Effetti</p>
+      <p className="mb-1 text-xs tracking-wide text-cenere uppercase">{t('master.audio.effetti')}</p>
       <div className="flex flex-wrap gap-1.5">
         {effetti.map((id) => (
           <BottoneEffetto key={id} id={id} />
@@ -90,8 +91,8 @@ function BottoneEffetto({ id }: { id: string }) {
       type="button"
       data-testid={`master-effetto-${id}`}
       disabled={inCorso}
-      onClick={() => void inviaComando({ tipo: 'effetto', id }, `Effetto: ${nomeEffetto(id)}`)}
-      title="Suona sul proiettore"
+      onClick={() => void inviaComando({ tipo: 'effetto', id }, t('master.audio.descr_effetto', { nome: nomeEffetto(id) }))}
+      title={t('master.audio.suona')}
       className={clsx(PULSANTE, 'border-bordo bg-notte-3 text-pergamena-2 enabled:hover:border-lago/70 enabled:hover:text-lago')}
     >
       ♪ {nomeEffetto(id)}

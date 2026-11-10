@@ -4,6 +4,7 @@
  * «Altrove» dei PNG già incontrati ma non in scena, attenuati. Mai i PNG mai incontrati (lo decide
  * il server, niente spoiler).
  */
+import { t } from '../lingua';
 import clsx from 'clsx';
 import type { PersonaggioScena, StatoTavolo } from '@cantastorie/shared';
 import { useBozza } from '../store/bozza';
@@ -23,10 +24,10 @@ export function QuiConVoi({ stato }: { stato: StatoTavolo }) {
   };
 
   return (
-    <section data-testid="qui-con-voi" aria-label="Personaggi della scena" className="flex flex-col gap-2 rounded-xl border border-bordo bg-notte-2/80 px-3 py-2">
+    <section data-testid="qui-con-voi" aria-label={t('telefono.qui.aria')} className="flex flex-col gap-2 rounded-xl border border-bordo bg-notte-2/80 px-3 py-2">
       {presenti.length > 0 && (
         <div>
-          <p className="text-xs tracking-[0.16em] text-cenere uppercase">Qui con voi</p>
+          <p className="text-xs tracking-[0.16em] text-cenere uppercase">{t('telefono.qui.presenti')}</p>
           <ul className="mt-1 flex flex-wrap gap-2">
             {presenti.map((p) => (
               <li key={p.id}>
@@ -34,7 +35,7 @@ export function QuiConVoi({ stato }: { stato: StatoTavolo }) {
                   type="button"
                   data-testid={`qui-con-voi-${p.id}`}
                   onClick={() => rivolgiti(p)}
-                  aria-label={`Rivolgiti a ${p.nome}`}
+                  aria-label={t('telefono.qui.rivolgiti', { nome: p.nome })}
                   className="flex min-h-11 w-[4.25rem] flex-col items-center gap-0.5 rounded-lg active:bg-notte-3"
                 >
                   <Avatar personaggio={p} className="size-12 ring-2 ring-candela/70" />
@@ -47,7 +48,7 @@ export function QuiConVoi({ stato }: { stato: StatoTavolo }) {
       )}
       {assenti.length > 0 && (
         <div data-testid="altrove" className="opacity-60">
-          <p className="text-xs tracking-[0.16em] text-cenere uppercase">Altrove</p>
+          <p className="text-xs tracking-[0.16em] text-cenere uppercase">{t('telefono.qui.altrove')}</p>
           <ul className="mt-1 flex flex-wrap gap-2">
             {assenti.map((p) => (
               <li key={p.id} data-testid={`altrove-${p.id}`} className="flex items-center gap-1.5 text-sm text-cenere">

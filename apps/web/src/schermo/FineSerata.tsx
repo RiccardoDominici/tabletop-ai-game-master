@@ -7,6 +7,7 @@
 import type { FineSerata as FineSerataStato, PgPubblico } from '@cantastorie/shared';
 import { testoPf } from '../lib/tiri';
 import { dataLeggibile } from '../lib/serata';
+import { t } from '../lingua';
 
 export function FineSerata({ fine, pg }: { fine: FineSerataStato; pg: PgPubblico[] }) {
   const { riassunto } = fine;
@@ -18,7 +19,7 @@ export function FineSerata({ fine, pg }: { fine: FineSerataStato; pg: PgPubblico
     >
       <header>
         <p className="text-[1.3vw] tracking-[0.35em] text-candela uppercase">{riassunto.etichetta}</p>
-        <h1 className="mt-[1vh] font-titolo text-[3.6vw] leading-tight font-semibold text-pergamena">Cosa è successo stasera</h1>
+        <h1 className="mt-[1vh] font-titolo text-[3.6vw] leading-tight font-semibold text-pergamena">{t('schermo.fine.titolo')}</h1>
         {data && <p className="mt-[0.8vh] text-[1.3vw] text-cenere">{data}</p>}
       </header>
 
@@ -27,7 +28,7 @@ export function FineSerata({ fine, pg }: { fine: FineSerataStato; pg: PgPubblico
       <div className="mx-auto grid w-full max-w-[80vw] grid-cols-[1fr_1fr] items-start gap-[5vw] text-left">
         {riassunto.fili.length > 0 && (
           <div>
-            <h2 className="text-[1.2vw] tracking-[0.25em] text-candela uppercase">Fili aperti</h2>
+            <h2 className="text-[1.2vw] tracking-[0.25em] text-candela uppercase">{t('schermo.fine.fili')}</h2>
             <ul className="mt-[1.2vh] flex list-disc flex-col gap-[0.8vh] pl-[1.6vw] text-[1.5vw] text-pergamena-2">
               {riassunto.fili.map((filo, i) => (
                 <li key={i}>{filo}</li>
@@ -36,19 +37,19 @@ export function FineSerata({ fine, pg }: { fine: FineSerataStato; pg: PgPubblico
           </div>
         )}
         <div className={riassunto.fili.length > 0 ? undefined : 'col-span-2 mx-auto'}>
-          <h2 className="text-[1.2vw] tracking-[0.25em] text-candela uppercase">Chi c’è</h2>
+          <h2 className="text-[1.2vw] tracking-[0.25em] text-candela uppercase">{t('schermo.fine.chi_c_e')}</h2>
           <ul className="mt-[1.2vh] flex flex-col gap-[0.8vh] text-[1.5vw] text-pergamena">
             {pg.map((p) => (
               <li key={p.id} data-testid="fine-serata-pg" className="flex items-baseline gap-[1vw]">
                 <span>{p.nome}</span>
-                {p.pf && <span className="font-mono text-[1.3vw] text-candela-2">PF {testoPf(p.pf)}</span>}
+                {p.pf && <span className="font-mono text-[1.3vw] text-candela-2">{t('schermo.pf')} {testoPf(p.pf)}</span>}
               </li>
             ))}
           </ul>
         </div>
       </div>
 
-      {fine.di_riserva && <p className="text-[1vw] text-cenere">riassunto essenziale</p>}
+      {fine.di_riserva && <p className="text-[1vw] text-cenere">{t('schermo.fine.di_riserva')}</p>}
     </section>
   );
 }

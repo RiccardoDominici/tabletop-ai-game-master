@@ -15,11 +15,12 @@ import { classePulsante } from './stili';
 import { FormToken } from './FormToken';
 import { Intestazione } from './Intestazione';
 import { Cruscotto } from './Cruscotto';
+import { t } from '../lingua';
 
 export function PaginaMaster() {
   useEffect(() => avviaMaster(), []);
   useEffect(() => {
-    document.title = 'Tabletop AI Game Master · Master';
+    document.title = t('master.titolo_pagina');
   }, []);
 
   const stato = useMaster((s) => s.stato);
@@ -52,13 +53,13 @@ export function PaginaMaster() {
 function Entrando() {
   return (
     <main data-testid="master-entrando" className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-      <p className="font-titolo text-3xl font-semibold text-candela">Pannello del master</p>
-      <p className="text-pergamena-2">Entro nel tavolo col token…</p>
+      <p className="font-titolo text-3xl font-semibold text-candela">{t('master.token.titolo')}</p>
+      <p className="text-pergamena-2">{t('master.entrando.corpo')}</p>
       <p className="max-w-md text-sm text-cenere">
-        Se resta qui, il server non risponde ancora al pannello: controlla che sia avviato.
+        {t('master.entrando.attesa')}
       </p>
       <button type="button" data-testid="master-cambia-token" onClick={cambiaToken} className={classePulsante('tenue', 'medio')}>
-        Usa un altro token
+        {t('master.entrando.altro')}
       </button>
     </main>
   );

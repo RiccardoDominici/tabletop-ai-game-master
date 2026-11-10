@@ -10,13 +10,14 @@ import { Riquadro } from './Riquadro';
 import { Chip } from './Chip';
 import { classePulsante } from './stili';
 import { inviaComando } from './sessione';
+import { t } from '../lingua';
 
 export function SezionePresenze({ stato }: { stato: StatoMaster }) {
   const presenze = stato.presenze ?? [];
   if (presenze.length === 0) return null;
   const inScena = presenze.filter((p) => p.presente).length;
   return (
-    <Riquadro titolo="Personaggi" conteggio={`${inScena} in scena`} zona="scena" data-testid="master-presenze">
+    <Riquadro titolo={t('master.presenze.titolo')} conteggio={t('master.presenze.conteggio', { n: inScena })} zona="scena" data-testid="master-presenze">
       <ul className="flex flex-col gap-1.5">
         {presenze.map((p) => (
           <li key={p.id}>
@@ -30,32 +31,32 @@ export function SezionePresenze({ stato }: { stato: StatoMaster }) {
 
 function RigaPresenza({ presenza }: { presenza: PresenzaMaster }) {
   const { id, nome, presente, manuale, incontrato, nascosto, rivelato } = presenza;
-  const decidi = (valore: boolean | null) => void inviaComando({ tipo: 'presenza', id_png: id, presente: valore }, `${nome}: ${valore === null ? 'automatica' : valore ? 'in scena' : 'altrove'}`);
+  const decidi = (valore: boolean | null) => void inviaComando({ tipo: 'presenza', id_png: id, presente: valore }, `${nome}: ${valore === null ? t('master.presenza.automatica') : valore ? t('master.presenza.in_scena') : t('master.presenza.altrove')}`);
   // Un PNG nascosto non si mostra al tavolo finché non parla: il master può rivelarlo a mano.
   const daRivelare = nascosto && !rivelato && !incontrato;
   return (
     <div data-testid={`master-presenza-${id}`} data-presente={String(presente)} data-manuale={String(manuale)} data-nascosto={String(daRivelare)} className="flex items-center gap-2 rounded-lg border border-bordo bg-notte-3 p-1.5 text-sm">
       <div className="min-w-0 flex-1">
         <span className="block truncate font-semibold">{nome}</span>
-        <span className="block truncate text-xs text-cenere">{incontrato ? 'ha già parlato' : 'non ancora incontrato'}</span>
+        <span className="block truncate text-xs text-cenere">{incontrato ? t('master.presenze.ha_parlato') : t('master.presenze.non_incontrato')}</span>
       </div>
-      {manuale && <Chip tono="brace">a mano</Chip>}
-      {daRivelare && <Chip tono="cenere">nascosto</Chip>}
+      {manuale && <Chip tono="brace">{t('master.presenze.a_mano')}</Chip>}
+      {daRivelare && <Chip tono="cenere">{t('master.presenze.nascosto')}</Chip>}
       {daRivelare && (
-        <button type="button" data-testid={`master-presenza-rivela-${id}`} onClick={() => void inviaComando({ tipo: 'rivela', id_png: id }, `${nome}: rivelato`)} className={classePulsante('normale', 'piccolo')}>
-          Rivela
+        <button type="button" data-testid={`master-presenza-rivela-${id}`} onClick={() => void inviaComando({ tipo: 'rivela', id_png: id }, `${nome}: ${t('master.presenza.rivelato')}`)} className={classePulsante('normale', 'piccolo')}>
+          {t('master.presenze.rivela')}
         </button>
       )}
-      <Chip tono={presente ? 'muschio' : 'cenere'}>{presente ? 'in scena' : 'altrove'}</Chip>
+      <Chip tono={presente ? 'muschio' : 'cenere'}>{presente ? t('master.presenza.in_scena') : t('master.presenza.altrove')}</Chip>
       <button type="button" data-testid={`master-presenza-in-${id}`} aria-pressed={presente} onClick={() => decidi(true)} className={classePulsante('normale', 'piccolo', clsx(presente && 'border-muschio'))}>
-        In scena
+        {t('master.presenze.btn_in_scena')}
       </button>
       <button type="button" data-testid={`master-presenza-altrove-${id}`} aria-pressed={!presente} onClick={() => decidi(false)} className={classePulsante('normale', 'piccolo')}>
-        Altrove
+        {t('master.presenze.btn_altrove')}
       </button>
       {manuale && (
-        <button type="button" data-testid={`master-presenza-auto-${id}`} onClick={() => decidi(null)} className={classePulsante('tenue', 'piccolo')} title="Torna a quanto dice la scena">
-          Auto
+        <button type="button" data-testid={`master-presenza-auto-${id}`} onClick={() => decidi(null)} className={classePulsante('tenue', 'piccolo')} title={t('master.presenze.auto_titolo')}>
+          {t('master.presenze.btn_auto')}
         </button>
       )}
     </div>

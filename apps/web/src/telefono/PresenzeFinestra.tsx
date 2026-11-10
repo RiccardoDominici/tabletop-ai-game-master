@@ -3,6 +3,7 @@
  * finito) o se ci sta ancora pensando. Sta dentro il banner di stato (riga di chip piccoli) per non
  * rubare altezza al pannello dell'azione. I testi delle azioni sono in «Al tavolo».
  */
+import { t } from '../lingua';
 import clsx from 'clsx';
 import type { StatoTavolo } from '@cantastorie/shared';
 
@@ -15,7 +16,7 @@ export function PresenzeFinestra({ stato, idPg }: { stato: StatoTavolo; idPg: st
   if (invitati.length === 0) return null;
 
   return (
-    <ul className="flex flex-wrap gap-1.5" aria-label="Personaggi chiamati ad agire">
+    <ul className="flex flex-wrap gap-1.5" aria-label={t('telefono.presenze.aria')}>
       {invitati.map((id) => {
         const pg = stato.pg.find((p) => p.id === id);
         const azione = finestra.azioni.find((a) => a.id_pg === id);
@@ -33,10 +34,10 @@ export function PresenzeFinestra({ stato, idPg }: { stato: StatoTavolo; idPg: st
           >
             <span className="font-semibold">
               {nome}
-              {id === idPg && <span className="font-normal opacity-75"> (tu)</span>}
+              {id === idPg && <span className="font-normal opacity-75">{t('telefono.presenze.tu')}</span>}
             </span>
             {/* Segni brevi (la riga deve stare su una linea); la parola intera va ai lettori di schermo. */}
-            <span aria-label={scritta ? 'ha inviato' : 'sta pensando'}>{scritta ? '✓' : '…'}</span>
+            <span aria-label={scritta ? t('telefono.presenze.inviato') : t('telefono.presenze.pensando')}>{scritta ? '✓' : '…'}</span>
           </li>
         );
       })}

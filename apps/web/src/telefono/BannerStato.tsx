@@ -4,6 +4,7 @@
  * c'è solo al ritmo concitato (orologio del server); a finestra aperta, sotto, chi è chiamato, chi
  * ha già inviato e «Aspettiamo: …».
  */
+import { t } from '../lingua';
 import clsx from 'clsx';
 import type { StatoTavolo } from '@cantastorie/shared';
 import { testoAttesa } from '../lib/attesa';
@@ -45,10 +46,10 @@ export function BannerStato({ stato, idPg }: { stato: StatoTavolo; idPg: string 
           <div
             className="flex shrink-0 items-baseline gap-1 rounded-lg bg-notte/60 px-2.5 py-1"
             data-testid="conto-alla-rovescia"
-            aria-label={`Si risolve tra ${secondi} secondi`}
+            aria-label={t('telefono.banner.conto_aria', { n: secondi ?? 0 })}
           >
             <span className="font-titolo text-2xl leading-none font-bold tabular-nums">{secondi}</span>
-            <span className="text-xs opacity-80">s</span>
+            <span className="text-xs opacity-80">{t('telefono.banner.secondi_breve')}</span>
           </div>
         )}
       </div>

@@ -10,6 +10,7 @@
  * - La bozza sta in `store/bozza.ts`: la sessione la riconcilia con `azione:mia` e l'avviso
  *   «da decidere» ci rimette il testo con «Cambio» (qui si osserva la richiesta di fuoco).
  */
+import { t } from '../lingua';
 import { useEffect, useRef, type FormEvent, type KeyboardEvent } from 'react';
 import clsx from 'clsx';
 import type { StatoTavolo } from '@cantastorie/shared';
@@ -64,19 +65,17 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
     if (evento.key === 'Enter' && (evento.metaKey || evento.ctrlKey)) invia();
   };
 
-  const segnaposto = finestraAperta(stato)
-    ? 'Cosa fa il tuo personaggio? Es.: «Sollevo la lanterna e scendo per primo.» (o «Aspetto»)'
-    : 'Scrivi pure: la tua azione entra nel prossimo turno.';
+  const segnaposto = finestraAperta(stato) ? t('telefono.casella.segnaposto_aperta') : t('telefono.casella.segnaposto_chiusa');
 
   return (
-    <form onSubmit={invia} className="flex flex-col gap-2" aria-label="La tua azione">
+    <form onSubmit={invia} className="flex flex-col gap-2" aria-label={t('telefono.casella.aria')}>
       {miaAzione && <MiaAzione azione={miaAzione} stato={stato} />}
 
       {!scrivibile && (
         <p className="py-1 text-center text-[0.95rem] text-cenere" data-testid="casella-chiusa">
           {stato.fase === 'fermata'
-            ? 'Scena ferma: si riprende quando il master la fa ripartire.'
-            : 'La casella si apre quando comincia la scena.'}
+            ? t('telefono.casella.fermata')
+            : t('telefono.casella.chiusa')}
         </p>
       )}
 
@@ -90,7 +89,7 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
           )}
         >
           <label htmlFor="testo-azione" className="sr-only">
-            Cosa fa il tuo personaggio
+            {t('telefono.casella.campo')}
           </label>
           <textarea
             ref={casella}
@@ -133,9 +132,9 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
                   )}
                 />
               </span>
-              Privata
+              {t('telefono.casella.privata')}
             </button>
-            <span className="min-w-0 flex-1 truncate text-xs text-cenere">solo il master la vede</span>
+            <span className="min-w-0 flex-1 truncate text-xs text-cenere">{t('telefono.casella.solo_master')}</span>
             <span
               className={clsx(
                 'shrink-0 text-xs tabular-nums',
@@ -163,7 +162,7 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
             onClick={() => void ritiraAzione()}
             className="min-h-13 rounded-xl border border-bordo-chiaro px-2 font-semibold text-pergamena-2 transition active:scale-[0.98] disabled:opacity-40"
           >
-            Ritira
+            {t('telefono.casella.ritira')}
           </button>
           <button
             type="submit"

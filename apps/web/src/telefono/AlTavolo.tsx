@@ -9,7 +9,8 @@
 import { useState } from 'react';
 import clsx from 'clsx';
 import type { AzioneAlTavolo, StatoTavolo } from '@cantastorie/shared';
-import { altriAlTavolo, conChi, ETICHETTA_STATO_AZIONE } from './vista';
+import { altriAlTavolo, conChi, etichettaStatoAzione } from './vista';
+import { t } from '../lingua';
 import { QuiConVoi } from './QuiConVoi';
 
 /** Righe visibili a sezione chiusa. */
@@ -29,7 +30,7 @@ export function AlTavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) 
     <QuiConVoi stato={stato} />
       <section
         data-testid="al-tavolo"
-        aria-label="Azioni degli altri al tavolo"
+        aria-label={t('telefono.altri.aria')}
         aria-expanded={aperta}
         role="button"
         tabIndex={0}
@@ -43,9 +44,9 @@ export function AlTavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) 
         className="cursor-pointer rounded-xl border border-bordo bg-notte-2/80 px-3 py-2 select-none"
       >
         <div className="flex items-center justify-between text-xs tracking-[0.16em] text-cenere uppercase">
-          <span>Al tavolo</span>
+          <span>{t('telefono.altri.titolo')}</span>
           <span className="tracking-normal normal-case">
-            {aperta ? 'tocca per ridurre' : nascoste > 0 ? `+${nascoste} · tocca per vedere` : 'tocca per leggere tutto'}
+            {aperta ? t('telefono.sezione.riduci') : nascoste > 0 ? t('telefono.sezione.nascoste', { n: nascoste }) : t('telefono.sezione.leggi')}
           </span>
         </div>
         <ul className={clsx('mt-1 flex flex-col', aperta ? 'max-h-[40dvh] gap-2 overflow-y-auto' : 'gap-0.5')}>
@@ -79,8 +80,8 @@ function RigaAlTavolo({ azione, intera, turnoAperto }: { azione: AzioneAlTavolo;
           daDecidere ? 'bg-candela/90 text-notte' : 'border border-pergamena-2/50 text-pergamena-2',
         )}
       >
-        {ETICHETTA_STATO_AZIONE[azione.stato]}
-        {prossimo && azione.stato === 'in_coda' ? ' · prossimo turno' : ''}
+        {etichettaStatoAzione(azione.stato)}
+        {prossimo && azione.stato === 'in_coda' ? ` ${t('telefono.stato.prossimo_turno')}` : ''}
       </span>
     </li>
   );

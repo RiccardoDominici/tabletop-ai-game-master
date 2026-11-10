@@ -6,6 +6,7 @@
  * non deve rompere la riga di caselle, e `segni` può avere meno testi dei segmenti.
  */
 import type { OrologioMaster } from '@cantastorie/shared';
+import { t } from '../lingua';
 
 export type StatoCasella = 'pieno' | 'prossimo' | 'vuoto';
 
@@ -61,5 +62,5 @@ export function puoArretrare(orologio: Pick<OrologioMaster, 'pieni' | 'segmenti'
 
 /** «ultimo segno al turno 4» / «nessun segno ancora». */
 export function testoUltimoSegno(orologio: Pick<OrologioMaster, 'ultimo_turno'>): string {
-  return orologio.ultimo_turno === null ? 'nessun segno ancora' : `ultimo segno al turno ${orologio.ultimo_turno}`;
+  return orologio.ultimo_turno === null ? t('master.orologi.nessun_segno') : t('master.orologi.ultimo_segno', { turno: orologio.ultimo_turno });
 }

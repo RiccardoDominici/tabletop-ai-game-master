@@ -8,6 +8,7 @@
  */
 import type { AzioneMaster, LegameAzione } from '@cantastorie/shared';
 import { elencoNomi } from '../lib/formato';
+import { t } from '../lingua';
 
 /** Nomi senza vuoti e senza doppioni, nell'ordine in cui arrivano. */
 function nomiUnici(legami: readonly LegameAzione[]): string[] {
@@ -18,7 +19,7 @@ function nomiUnici(legami: readonly LegameAzione[]): string[] {
 /** «dipende da Ginestra», «dipende da Ginestra e Corrado», o null se non dipende da nessuno. */
 export function testoDipendenze(dipendeDa: readonly LegameAzione[]): string | null {
   const nomi = nomiUnici(dipendeDa);
-  return nomi.length === 0 ? null : `dipende da ${elencoNomi(nomi)}`;
+  return nomi.length === 0 ? null : t('master.legami.dipende', { nomi: elencoNomi(nomi) });
 }
 
 type Conflitto = AzioneMaster['conflitti'][number];
@@ -26,8 +27,8 @@ type Conflitto = AzioneMaster['conflitti'][number];
 /** «in conflitto con Corrado · esclusivo · vince» / «… · esclusivo · perde» / «… · non esclusivo». */
 export function testoConflitto(conflitto: Conflitto): string {
   const nome = conflitto.nome.trim() || conflitto.id;
-  if (!conflitto.esclusivo) return `in conflitto con ${nome} · non esclusivo`;
-  return `in conflitto con ${nome} · esclusivo · ${conflitto.vince ? 'vince' : 'perde'}`;
+  if (!conflitto.esclusivo) return t('master.legami.non_esclusivo', { nome });
+  return t('master.legami.esclusivo', { nome, esito: t(conflitto.vince ? 'master.legami.vince' : 'master.legami.perde') });
 }
 
 /** Tutte le righe dei legami di un'azione, dipendenze prima (pronte da mostrare). */

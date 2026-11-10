@@ -14,6 +14,7 @@ import { useConferma } from './useConferma';
 import { Riquadro, Vuoto } from './Riquadro';
 import { Chip } from './Chip';
 import { classePulsante } from './stili';
+import { t } from '../lingua';
 
 export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
   const [daConfermare, clicTermina] = useConferma(() => void inviaComando({ tipo: 'combattimento_termina' }));
@@ -30,8 +31,8 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
 
   return (
     <Riquadro
-      titolo="Combattimento"
-      conteggio={attivo ? `round ${vivo?.round ?? '–'}` : 'non in corso'}
+      titolo={t('master.combattimento.titolo')}
+      conteggio={attivo ? t('master.combattimento.round', { n: vivo?.round ?? '–' }) : t('master.combattimento.non_in_corso')}
       zona="combattimento"
       data-testid="master-combattimento"
       azioni={
@@ -43,7 +44,7 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
             onClick={clicTermina}
             className={classePulsante(daConfermare ? 'pericolo' : 'normale', 'piccolo')}
           >
-            {daConfermare ? 'Conferma: termina combattimento' : 'Termina combattimento'}
+            {daConfermare ? t('master.combattimento.conferma_termina') : t('master.cmd.combattimento_termina')}
           </button>
         ) : (
           <button
@@ -53,21 +54,21 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
             onClick={() => void inviaComando({ tipo: 'combattimento_inizia' })}
             className={classePulsante('primario', 'piccolo')}
           >
-            Inizia combattimento
+            {t('master.cmd.combattimento_inizia')}
           </button>
         )
       }
     >
       {attivo && vivo && (
         <p className="text-sm text-pergamena-2" data-testid="master-combattimento-turno">
-          Fase: <span className="font-semibold text-pergamena">{vivo.fase ?? 'unica'}</span>
+          {t('master.combattimento.fase')} <span className="font-semibold text-pergamena">{vivo.fase ?? t('master.combattimento.fase_unica')}</span>
           {' · '}
-          Tocca a: <span className="font-semibold text-pergamena">{turno || 'nessuno'}</span>
+          {t('master.combattimento.tocca_a')} <span className="font-semibold text-pergamena">{turno || t('master.combattimento.nessuno')}</span>
         </p>
       )}
 
       {cmb.schede.length === 0 ? (
-        <Vuoto>Nessuna scheda con punti ferita in questa scena.</Vuoto>
+        <Vuoto>{t('master.combattimento.nessuna_scheda')}</Vuoto>
       ) : (
         <ul className="flex flex-col gap-1.5">
           {cmb.schede.map((s) => (
@@ -108,9 +109,9 @@ function CondizioneAttiva({ id, nome, condizione }: { id: string; nome: string; 
     <button
       type="button"
       data-testid={`master-scheda-${id}-togli-${condizione.id}`}
-      title={`Togli «${condizione.nome}»`}
+      title={t('master.combattimento.togli_condizione', { nome: condizione.nome })}
       disabled={inCorso}
-      onClick={() => void inviaComando({ tipo: 'condizione', id, condizione: condizione.id, attiva: false }, `${nome}: ${condizione.nome} tolta`)}
+      onClick={() => void inviaComando({ tipo: 'condizione', id, condizione: condizione.id, attiva: false }, t('master.combattimento.condizione_tolta', { nome, condizione: condizione.nome }))}
       className={classePulsante('calmo', 'piccolo')}
     >
       <span aria-hidden="true">{condizione.icona}</span>
@@ -138,7 +139,7 @@ function RigaScheda({ id, nome, diPng, attuali, massimi, condizioniAttive, catal
   const aggiungi = () => {
     if (!condizione) return;
     const scelta = catalogo.find((c) => c.id === condizione);
-    void inviaComando({ tipo: 'condizione', id, condizione, attiva: true }, `${nome}: ${scelta?.nome ?? condizione} messa`);
+    void inviaComando({ tipo: 'condizione', id, condizione, attiva: true }, t('master.combattimento.condizione_messa', { nome, condizione: scelta?.nome ?? condizione }));
     setCondizione('');
   };
 
@@ -150,12 +151,12 @@ function RigaScheda({ id, nome, diPng, attuali, massimi, condizioniAttive, catal
     <div data-testid={`master-scheda-${id}`} data-di-png={String(diPng)} className="flex flex-col gap-1.5 rounded-lg border border-bordo bg-notte-3 p-2 text-sm">
       <div className="flex flex-wrap items-center gap-2">
         <span className="min-w-0 flex-1 truncate font-semibold">{nome}</span>
-        {!diPng && <Chip tono="lago">PG</Chip>}
+        {!diPng && <Chip tono="lago">{t('master.combattimento.pg')}</Chip>}
         <span data-testid={`master-scheda-${id}-pf`} className="font-semibold tabular-nums text-pergamena-2">
-          PF {attuali}/{massimi}
+          {t('master.pf')} {attuali}/{massimi}
         </span>
         <label className="sr-only" htmlFor={`pf-${id}`}>
-          Nuovi PF di {nome}
+          {t('master.combattimento.nuovi_pf', { nome })}
         </label>
         <input
           id={`pf-${id}`}
@@ -180,13 +181,13 @@ function RigaScheda({ id, nome, diPng, attuali, massimi, condizioniAttive, catal
           onClick={imposta}
           className={classePulsante('normale', 'piccolo')}
         >
-          Imposta
+          {t('master.combattimento.imposta')}
         </button>
       </div>
 
       {condizioniAttive !== null && (
         <div className="flex flex-wrap items-center gap-1.5">
-          {condizioniAttive.length === 0 && <span className="text-xs text-cenere">nessuna condizione</span>}
+          {condizioniAttive.length === 0 && <span className="text-xs text-cenere">{t('master.combattimento.nessuna_condizione')}</span>}
           {condizioniAttive.map((c) => (
             <CondizioneAttiva key={c.id} id={id} nome={nome} condizione={c} />
           ))}
@@ -194,7 +195,7 @@ function RigaScheda({ id, nome, diPng, attuali, massimi, condizioniAttive, catal
           {daAggiungere.length > 0 && (
             <>
               <label className="sr-only" htmlFor={`condizione-${id}`}>
-                Condizione da aggiungere a {nome}
+                {t('master.combattimento.da_aggiungere', { nome })}
               </label>
               <select
                 id={`condizione-${id}`}
@@ -203,7 +204,7 @@ function RigaScheda({ id, nome, diPng, attuali, massimi, condizioniAttive, catal
                 onChange={(e) => setCondizione(e.target.value)}
                 className="rounded-md border border-bordo-chiaro bg-notte px-2 py-1 text-sm text-pergamena"
               >
-                <option value="">Condizione…</option>
+                <option value="">{t('master.combattimento.scegli')}</option>
                 {daAggiungere.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.icona} {c.nome}
@@ -217,7 +218,7 @@ function RigaScheda({ id, nome, diPng, attuali, massimi, condizioniAttive, catal
                 onClick={aggiungi}
                 className={classePulsante('normale', 'piccolo')}
               >
-                Aggiungi
+                {t('master.combattimento.aggiungi')}
               </button>
             </>
           )}

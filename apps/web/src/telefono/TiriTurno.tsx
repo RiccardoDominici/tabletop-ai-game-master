@@ -10,6 +10,7 @@
  * Le carte si animano (una volta per id) solo mentre si narra il loro turno.
  * Senza carte non si mostra niente: le campagne senza schede restano com'erano.
  */
+import { t } from '../lingua';
 import { useState } from 'react';
 import clsx from 'clsx';
 import type { StatoTavolo, TiroMostrato } from '@cantastorie/shared';
@@ -38,7 +39,7 @@ export function TiriTurno({ stato }: { stato: StatoTavolo }) {
   return (
     <section
       data-testid="tiri-turno"
-      aria-label="Tiri del turno"
+      aria-label={t('telefono.tiri.titolo')}
       aria-expanded={aperta}
       role="button"
       tabIndex={0}
@@ -52,9 +53,9 @@ export function TiriTurno({ stato }: { stato: StatoTavolo }) {
       className="cursor-pointer rounded-xl border border-bordo bg-notte-2/80 px-3 py-2 select-none"
     >
       <div className="flex items-center justify-between text-xs tracking-[0.16em] text-cenere uppercase">
-        <span>Tiri del turno</span>
+        <span>{t('telefono.tiri.titolo')}</span>
         <span className="tracking-normal normal-case">
-          {aperta ? 'tocca per ridurre' : nascoste > 0 ? `+${nascoste} · tocca per vedere` : 'tocca per i dettagli'}
+          {aperta ? t('telefono.sezione.riduci') : nascoste > 0 ? t('telefono.sezione.nascoste', { n: nascoste }) : t('telefono.tiri.dettagli')}
         </span>
       </div>
       <ul className={clsx('mt-1 flex flex-col', aperta ? 'max-h-[40dvh] gap-2 overflow-y-auto' : 'gap-1')}>
@@ -76,7 +77,7 @@ export function TiriMiaAzione({ tiri, stato }: { tiri: TiroMostrato[]; stato: St
   return (
     <ul
       data-testid="tiri-mia-azione"
-      aria-label="I tuoi tiri"
+      aria-label={t('telefono.tiri.mia_aria')}
       aria-expanded={aperta}
       role="button"
       tabIndex={0}

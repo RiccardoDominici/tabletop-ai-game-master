@@ -8,7 +8,8 @@
  * Senza combattimento non c'è niente: il tavolo è quello di sempre.
  */
 import type { CombattentePubblico, CombattimentoPubblico } from '@cantastorie/shared';
-import { combattenteDi, elencoItaliano, etichettaTiriMorte, nomiDiTurno, testoPf } from '../lib/combattimento';
+import { combattenteDi, etichettaTiriMorte, nomiDiTurno, testoPf } from '../lib/combattimento';
+import { elenco, t } from '../lingua';
 
 export function TurnoCombattimento({ combattimento, idPg }: { combattimento: CombattimentoPubblico | null | undefined; idPg: string }) {
   if (!combattimento) return null;
@@ -18,7 +19,7 @@ export function TurnoCombattimento({ combattimento, idPg }: { combattimento: Com
   if (tocca) {
     return (
       <section data-testid="tuo-turno" className="flex flex-col gap-1.5 rounded-xl border-2 border-candela bg-candela/15 px-3 py-2.5 shadow-candela">
-        <p className="font-titolo text-lg leading-tight font-semibold text-candela-2">È il tuo turno</p>
+        <p className="font-titolo text-lg leading-tight font-semibold text-candela-2">{t('telefono.combat.tuo_turno')}</p>
         {io && <RigaMia combattente={io} />}
         {combattimento.azioni.length > 0 && (
           <ul className="flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-pergamena-2">
@@ -37,8 +38,8 @@ export function TurnoCombattimento({ combattimento, idPg }: { combattimento: Com
   return (
     <section data-testid="turno-altri" className="flex flex-col gap-1 rounded-lg border border-bordo bg-notte-3/60 px-3 py-2 text-sm text-pergamena-2">
       <p>
-        Combattimento · round {combattimento.round}
-        {agiscono.length > 0 ? ` · tocca a ${elencoItaliano(agiscono)}` : ' · agisce chi vuole'}
+        {t('telefono.combat.riga', { round: combattimento.round })}
+        {agiscono.length > 0 ? t('telefono.combat.tocca_a', { nomi: elenco(agiscono) }) : t('telefono.combat.agisce_chi_vuole')}
       </p>
       {io && <RigaMia combattente={io} />}
     </section>
@@ -50,7 +51,7 @@ function RigaMia({ combattente: c }: { combattente: CombattentePubblico }) {
   const testo = testoPf(c);
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      {testo && <span className="font-mono text-pergamena">PF {testo}</span>}
+      {testo && <span className="font-mono text-pergamena">{t('telefono.pf.sigla')} {testo}</span>}
       {c.condizioni.map((k) => (
         <span key={k.id} className="inline-flex items-center gap-1 rounded-full border border-bordo-chiaro px-2 py-0.5 text-xs text-pergamena">
           <span aria-hidden>{k.icona}</span>

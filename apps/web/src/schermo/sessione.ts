@@ -13,6 +13,7 @@ import { useSchermo } from '../store/schermo';
 import { useAvvisi } from '../store/avvisi';
 import { collegaAudio, sbloccaAudio } from './audioSchermo';
 import { collegaAudioScena } from './audio/ponte';
+import { t } from '../lingua';
 
 const log = creaLog('schermo');
 
@@ -100,17 +101,17 @@ export function iniziaSessione(): void {
       log.warn('Audio non sbloccato', errore);
       useSchermo
         .getState()
-        .impostaErroreAvvio('Il browser non ha permesso l’audio: tocca di nuovo «Inizia sessione».');
+        .impostaErroreAvvio(t('schermo.errore.audio_negato'));
     },
   );
 }
 
 export async function fermaScena(): Promise<void> {
   const esito = await conEsito((s, fine) => s.emit('scena:ferma', fine));
-  useSchermo.getState().impostaEsitoComando(esito.ok ? 'Scena fermata.' : esito.errore);
+  useSchermo.getState().impostaEsitoComando(esito.ok ? t('schermo.comando.fermata_ok') : esito.errore);
 }
 
 export async function ricominciaScena(): Promise<void> {
   const esito = await conEsito((s, fine) => s.emit('scena:ricomincia', fine));
-  useSchermo.getState().impostaEsitoComando(esito.ok ? 'Scena ricominciata dall’apertura.' : esito.errore);
+  useSchermo.getState().impostaEsitoComando(esito.ok ? t('schermo.comando.ricominciata_ok') : esito.errore);
 }

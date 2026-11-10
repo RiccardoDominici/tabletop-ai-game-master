@@ -19,21 +19,22 @@ import { rigaPacchetto, statoProssima } from './pacchetti';
 import { TelefoniRicordati } from './TelefoniRicordati';
 import { SerataMasterRiquadro } from './SerataMaster';
 import { useConferma } from './useConferma';
+import { t } from '../lingua';
 
 export function SezioneSessione({ stato }: { stato: StatoMaster }) {
   const s = stato.sessione;
   const nuovaInCorso = useInCorso('nuova_sessione');
   const fineInCorso = useInCorso('fine_sessione');
   const prossimaInCorso = useInCorso('prossima_sessione');
-  const [confermaNuova, clicNuova] = useConferma(() => void inviaComando({ tipo: 'nuova_sessione' }, 'Nuova sessione'));
-  const [confermaFine, clicFine] = useConferma(() => void inviaComando({ tipo: 'fine_sessione' }, 'Fine sessione'));
-  const [confermaProssima, clicProssima] = useConferma(() => void inviaComando({ tipo: 'prossima_sessione' }, 'Prossima sessione'));
+  const [confermaNuova, clicNuova] = useConferma(() => void inviaComando({ tipo: 'nuova_sessione' }, t('master.cmd.nuova_sessione')));
+  const [confermaFine, clicFine] = useConferma(() => void inviaComando({ tipo: 'fine_sessione' }, t('master.cmd.fine_sessione')));
+  const [confermaProssima, clicProssima] = useConferma(() => void inviaComando({ tipo: 'prossima_sessione' }, t('master.cmd.prossima_sessione')));
   if (!s) return null;
   const pacchetti = s.pacchetti;
   const prossima = pacchetti ? statoProssima(pacchetti) : null;
 
   return (
-    <Riquadro titolo="Sessione" zona="sessione" data-testid="master-sessione">
+    <Riquadro titolo={t('master.sessione.titolo')} zona="sessione" data-testid="master-sessione">
       {pacchetti && (
         <p data-testid="master-pacchetto" className="text-sm font-semibold text-pergamena">
           {rigaPacchetto(pacchetti)}
@@ -45,37 +46,37 @@ export function SezioneSessione({ stato }: { stato: StatoMaster }) {
         </p>
       )}
       <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-sm">
-        <dt className="text-cenere">iniziata</dt>
+        <dt className="text-cenere">{t('master.sessione.iniziata')}</dt>
         <dd data-testid="master-sessione-inizio">
           {s.creata
             ? `${new Date(s.creata).toLocaleDateString('it-IT')} ${oraBreve(Date.parse(s.creata))}`
             : s.registro
-              ? 'chiusa con «Fine sessione» (dal proiettore, «Inizia» la rigioca da capo)'
-              : 'non ancora (scena da avviare)'}
+              ? t('master.sessione.chiusa')
+              : t('master.sessione.non_ancora')}
         </dd>
-        <dt className="text-cenere">salvataggi</dt>
+        <dt className="text-cenere">{t('master.sessione.salvataggi')}</dt>
         <dd className="tabular-nums">{s.eventi}</dd>
         {s.in_attesa_di_ripresa && (
           <>
-            <dt className="text-candela">da riprendere</dt>
+            <dt className="text-candela">{t('master.sessione.da_riprendere')}</dt>
             <dd data-testid="master-sessione-attesa" className="text-candela-2">
-              turno {s.in_attesa_di_ripresa.turno} (salvata alle {oraBreve(Date.parse(s.in_attesa_di_ripresa.quando))}): riparte con «Inizia sessione» sul proiettore
+              {t('master.sessione.attesa', { turno: s.in_attesa_di_ripresa.turno, ora: oraBreve(Date.parse(s.in_attesa_di_ripresa.quando)) })}
             </dd>
           </>
         )}
         {s.ripresa && (
           <>
-            <dt className="text-cenere">ripresa</dt>
+            <dt className="text-cenere">{t('master.sessione.ripresa')}</dt>
             <dd data-testid="master-sessione-ripresa">
-              alle {oraBreve(Date.parse(s.ripresa.quando))}, dal turno {s.ripresa.turno}
+              {t('master.sessione.ripresa_da', { ora: oraBreve(Date.parse(s.ripresa.quando)), turno: s.ripresa.turno })}
             </dd>
           </>
         )}
         {s.registro && (
           <>
-            <dt className="text-cenere">registro</dt>
+            <dt className="text-cenere">{t('master.sessione.registro')}</dt>
             <dd data-testid="master-sessione-registro" className="break-all font-mono text-xs" title={s.registro.file}>
-              {s.registro.file.split('/').slice(-3).join('/')} · {s.registro.turni} turni
+              {s.registro.file.split('/').slice(-3).join('/')} · {t('master.turni.plurale', { n: s.registro.turni })}
             </dd>
           </>
         )}
@@ -88,12 +89,12 @@ export function SezioneSessione({ stato }: { stato: StatoMaster }) {
           data-conferma={String(confermaFine)}
           disabled={fineInCorso || s.fine_possibile === false}
           onClick={clicFine}
-          title="Uscita d'emergenza: ferma il gioco subito, senza narrazione, e scrive il registro (registro.yaml)"
+          title={t('master.sessione.fine_titolo')}
           className={classePulsante(confermaFine ? 'pericolo' : 'normale', 'piccolo')}
         >
-          {confermaFine ? 'Confermi la fine della sessione?' : 'Fine sessione'}
+          {confermaFine ? t('master.sessione.conferma_fine') : t('master.cmd.fine_sessione')}
         </button>
-        <span className="text-xs text-cenere">uscita d’emergenza: subito, senza narrazione</span>
+        <span className="text-xs text-cenere">{t('master.sessione.uscita')}</span>
         {prossima && (
           <button
             type="button"
@@ -104,7 +105,7 @@ export function SezioneSessione({ stato }: { stato: StatoMaster }) {
             title={prossima.spiegazione}
             className={classePulsante(confermaProssima ? 'pericolo' : 'primario', 'piccolo')}
           >
-            {confermaProssima ? 'Confermi? Questa sessione si chiude' : prossima.testo}
+            {confermaProssima ? t('master.sessione.conferma_prossima') : prossima.testo}
           </button>
         )}
         <button
@@ -113,10 +114,10 @@ export function SezioneSessione({ stato }: { stato: StatoMaster }) {
           data-conferma={String(confermaNuova)}
           disabled={nuovaInCorso}
           onClick={clicNuova}
-          title="Chiude la sessione salvata e ricomincia dall'apertura della prima scena"
+          title={t('master.sessione.nuova_titolo')}
           className={classePulsante(confermaNuova ? 'pericolo' : 'tenue', 'piccolo')}
         >
-          {confermaNuova ? 'Confermi? La partita in corso si perde' : 'Nuova sessione'}
+          {confermaNuova ? t('master.sessione.conferma_nuova') : t('master.cmd.nuova_sessione')}
         </button>
       </div>
       {prossima && !prossima.abilitato && (

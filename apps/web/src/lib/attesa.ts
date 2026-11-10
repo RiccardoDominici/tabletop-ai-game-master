@@ -6,7 +6,7 @@
  * Funzioni pure, testate in attesa.test.ts.
  */
 import type { StatoTavolo } from '@cantastorie/shared';
-import { elencoNomi } from './formato';
+import { elenco, t } from '../lingua';
 
 export interface Attesa {
   /** Id dei PG che non hanno ancora inviato. */
@@ -27,7 +27,7 @@ function primoNome(stato: StatoTavolo, id: string): string {
 export function attesaFinestra(stato: StatoTavolo, idPg: string | null = null): Attesa | null {
   if (stato.fase !== 'finestra' || !stato.finestra.aperta) return null;
   const ids = stato.finestra.aspettiamo ?? [];
-  const nomi = ids.map((id) => (id === idPg ? 'te' : primoNome(stato, id)));
+  const nomi = ids.map((id) => (id === idPg ? t('telefono.attesa.te') : primoNome(stato, id)));
   return { ids, nomi, tutti: ids.length === 0 };
 }
 
@@ -35,6 +35,6 @@ export function attesaFinestra(stato: StatoTavolo, idPg: string | null = null): 
 export function testoAttesa(stato: StatoTavolo, idPg: string | null = null): string | null {
   const a = attesaFinestra(stato, idPg);
   if (!a) return null;
-  if (a.tutti) return 'Hanno scritto tutti: si parte…';
-  return `Aspettiamo: ${elencoNomi(a.nomi)}`;
+  if (a.tutti) return t('telefono.attesa.tutti');
+  return t('telefono.attesa.aspettiamo', { nomi: elenco(a.nomi) });
 }

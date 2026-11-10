@@ -8,7 +8,8 @@ import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { useSchermo } from '../../store/schermo';
 import { debugSchermo } from '../debug';
-import { BUS, NOMI_BUS } from './impostazioni';
+import { BUS, nomeBus } from './impostazioni';
+import { t } from '../../lingua';
 import type { StatoRegista } from './regista';
 import { useAudioSchermo } from './store';
 
@@ -24,13 +25,13 @@ export function PulsanteAudio() {
       type="button"
       data-testid="apri-audio"
       onClick={alterna}
-      title="Volumi (tasto A) · crediti (tasto C)"
+      title={t('schermo.audio.pulsante_titolo')}
       className={clsx(
         'fixed top-4 z-30 rounded-lg border border-bordo/60 bg-notte/80 px-3 py-1.5 font-mono text-sm text-cenere opacity-60 transition hover:opacity-100',
         hudAperto ? 'right-[32rem]' : 'right-36',
       )}
     >
-      A · audio
+      {t('schermo.audio.pulsante')}
     </button>
   );
 }
@@ -63,16 +64,16 @@ function Pannello({ spostato }: { spostato: boolean }) {
       )}
     >
       <div className="mb-2 flex items-baseline justify-between">
-        <h2 className="text-xl font-bold text-candela">Audio</h2>
-        <span className="font-mono text-cenere">A per chiudere</span>
+        <h2 className="text-xl font-bold text-candela">{t('schermo.audio.titolo')}</h2>
+        <span className="font-mono text-cenere">{t('schermo.audio.chiudi')}</span>
       </div>
-      {!pronto && <p className="mb-2 text-cenere">Parte dopo «Inizia sessione».</p>}
+      {!pronto && <p className="mb-2 text-cenere">{t('schermo.audio.parte_dopo')}</p>}
       <ul className="grid gap-2">
         {BUS.map((nome) => {
           const b = impostazioni[nome];
           return (
             <li key={nome} className="grid grid-cols-[5.5rem_1fr_3rem_2.75rem] items-center gap-2">
-              <span className={b.muto ? 'text-cenere line-through' : ''}>{NOMI_BUS[nome]}</span>
+              <span className={b.muto ? 'text-cenere line-through' : ''}>{nomeBus(nome)}</span>
               <input
                 type="range"
                 min={0}
@@ -80,7 +81,7 @@ function Pannello({ spostato }: { spostato: boolean }) {
                 step={5}
                 value={Math.round(b.volume * 100)}
                 data-testid={`volume-${nome}`}
-                aria-label={`Volume ${NOMI_BUS[nome]}`}
+                aria-label={t('schermo.audio.volume_di', { bus: nomeBus(nome) })}
                 onChange={(e) => impostaBus(nome, { volume: Number(e.target.value) / 100 })}
                 className="accent-candela"
               />
@@ -95,7 +96,7 @@ function Pannello({ spostato }: { spostato: boolean }) {
                   b.muto ? 'border-sangue/70 text-sangue' : 'border-bordo-chiaro text-cenere hover:text-pergamena',
                 )}
               >
-                {b.muto ? 'muto' : 'on'}
+                {b.muto ? t('schermo.audio.muto') : t('schermo.audio.acceso')}
               </button>
             </li>
           );
@@ -103,15 +104,15 @@ function Pannello({ spostato }: { spostato: boolean }) {
       </ul>
       {regista && (
         <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 border-t border-bordo pt-2 font-mono text-xs text-pergamena-2">
-          <dt className="text-cenere">musica</dt>
+          <dt className="text-cenere">{t('schermo.audio.musica')}</dt>
           <dd className="truncate">
             {regista.musica ?? '—'}
-            {regista.musicaPendente !== undefined && ` → ${regista.musicaPendente ?? 'silenzio'} (attesa)`}
+            {regista.musicaPendente !== undefined && t('schermo.audio.in_attesa', { brano: regista.musicaPendente ?? t('schermo.audio.silenzio') })}
           </dd>
-          <dt className="text-cenere">ambienti</dt>
+          <dt className="text-cenere">{t('schermo.audio.ambienti')}</dt>
           <dd className="truncate">{regista.ambienti.join(', ') || '—'}</dd>
-          <dt className="text-cenere">sotto voce</dt>
-          <dd>{regista.sottoVoce ? 'sì' : 'no'}</dd>
+          <dt className="text-cenere">{t('schermo.audio.sotto_voce')}</dt>
+          <dd>{regista.sottoVoce ? t('schermo.audio.si') : t('schermo.audio.no')}</dd>
         </dl>
       )}
       <button
@@ -120,7 +121,7 @@ function Pannello({ spostato }: { spostato: boolean }) {
         onClick={alternaCrediti}
         className="mt-3 w-full rounded-lg border border-bordo-chiaro py-1.5 text-pergamena-2 hover:text-pergamena"
       >
-        Crediti (C)
+        {t('schermo.audio.crediti')}
       </button>
     </aside>
   );
@@ -139,11 +140,11 @@ export function CreditiAudio() {
         className="max-h-[80vh] w-full max-w-[60vw] overflow-y-auto rounded-[1vw] border border-bordo-chiaro bg-notte/95 px-[3vw] py-[3vh] shadow-profonda"
       >
         <div className="mb-[2vh] flex items-baseline justify-between gap-4">
-          <h2 className="font-titolo text-[2.4vw] font-semibold text-candela">Crediti</h2>
-          <span className="font-mono text-[1vw] text-cenere">C per chiudere</span>
+          <h2 className="font-titolo text-[2.4vw] font-semibold text-candela">{t('schermo.crediti.titolo')}</h2>
+          <span className="font-mono text-[1vw] text-cenere">{t('schermo.crediti.chiudi')}</span>
         </div>
         {crediti.length === 0 ? (
-          <p className="text-[1.4vw] text-pergamena-2">Nessun brano con attribuzione in questa campagna.</p>
+          <p className="text-[1.4vw] text-pergamena-2">{t('schermo.crediti.vuoti')}</p>
         ) : (
           <ul className="grid gap-[1vh] text-[1.4vw] leading-snug text-pergamena">
             {crediti.map((riga) => (

@@ -2,6 +2,7 @@
  * Banner di connessione persa (telefono e schermo). Durante il primo collegamento compare solo
  * dopo un attimo, per non lampeggiare a ogni apertura della pagina.
  */
+import { t } from '../lingua';
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { useConnessione } from '../store/connessione';
@@ -25,8 +26,10 @@ export function BannerConnessione({ grande = false }: { grande?: boolean }) {
 
   const testo =
     stato === 'persa'
-      ? `Connessione persa: riprovo${tentativi > 1 ? ` (tentativo ${tentativi})` : ''}…`
-      : 'Collegamento al tavolo…';
+      ? tentativi > 1
+        ? t('comune.connessione.persa_tentativo', { n: tentativi })
+        : t('comune.connessione.persa')
+      : t('comune.connessione.collegamento');
 
   return (
     <div

@@ -20,6 +20,7 @@ import { CartaTiro } from '../components/CartaTiro';
 import { creaLog } from '../lib/log';
 import { useSchermo } from '../store/schermo';
 import { chiaveTiri, DURATA_CODA_MS, turnoInNarrazione, vistaTiriSchermo, type ModoTiriSchermo } from '../lib/tiri';
+import { t } from '../lingua';
 
 const log = creaLog('tiri');
 
@@ -95,7 +96,7 @@ export function TiriSchermo({ vista }: { vista: VistaTiri }) {
     <aside
       data-testid="tiri-schermo"
       data-modo={modo}
-      aria-label="Tiri del turno"
+      aria-label={t('schermo.tiri.aria')}
       className={clsx(
         // Colonna a destra: sotto i pulsantini in alto (HUD, audio), sopra il QR in basso.
         'pointer-events-none absolute top-[6.5vh] right-[3.5vw] z-20 flex max-h-[73vh] w-[27vw] flex-col overflow-hidden',

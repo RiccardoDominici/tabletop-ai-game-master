@@ -11,22 +11,23 @@ import { useSchermo } from '../store/schermo';
 import { statisticheAudio } from './audioSchermo';
 import { debugSchermo } from './debug';
 import { fermaScena, ricominciaScena } from './sessione';
+import { t, type Chiave } from '../lingua';
 
 const AGGIORNAMENTO_MS = 250;
 /** Il secondo clic su «Ricomincia» vale solo entro questo tempo (evita ripartenze per sbaglio). */
 const FINESTRA_CONFERMA_MS = 3000;
 
 /** Campi in ms delle misure, nell'ordine in cui accadono nel turno. */
-const CAMPI_MS: ReadonlyArray<readonly [keyof MisureTurno, string]> = [
-  ['finestra_ms', 'finestra'],
-  ['voce_sveglia', 'voce sveglia'],
-  ['llm_primo_token', 'LLM primo token'],
-  ['llm_prima_frase', 'LLM prima frase'],
-  ['voce_richiesta', 'voce richiesta'],
-  ['voce_primo_audio', 'voce primo audio'],
-  ['schermo_inizio_audio', 'schermo inizio audio'],
-  ['llm_fine', 'LLM fine'],
-  ['audio_fine', 'audio fine'],
+const CAMPI_MS: ReadonlyArray<readonly [keyof MisureTurno, Chiave]> = [
+  ['finestra_ms', 'schermo.hud.campo.finestra'],
+  ['voce_sveglia', 'schermo.hud.campo.voce_sveglia'],
+  ['llm_primo_token', 'schermo.hud.campo.llm_primo_token'],
+  ['llm_prima_frase', 'schermo.hud.campo.llm_prima_frase'],
+  ['voce_richiesta', 'schermo.hud.campo.voce_richiesta'],
+  ['voce_primo_audio', 'schermo.hud.campo.voce_primo_audio'],
+  ['schermo_inizio_audio', 'schermo.hud.campo.schermo_inizio_audio'],
+  ['llm_fine', 'schermo.hud.campo.llm_fine'],
+  ['audio_fine', 'schermo.hud.campo.audio_fine'],
 ];
 
 export function HudLatenza() {
@@ -62,60 +63,60 @@ export function HudLatenza() {
       className="fixed top-4 right-4 z-30 max-h-[calc(100dvh-12vw)] w-[30rem] overflow-y-auto rounded-2xl border border-bordo-chiaro bg-notte/95 p-4 font-mono text-[15px] text-pergamena shadow-profonda"
     >
       <div className="mb-2 flex items-baseline justify-between">
-        <h2 className="font-sans text-xl font-bold text-candela">Latenza</h2>
-        <span className="text-cenere">L per chiudere</span>
+        <h2 className="font-sans text-xl font-bold text-candela">{t('schermo.hud.titolo')}</h2>
+        <span className="text-cenere">{t('schermo.hud.chiudi')}</span>
       </div>
 
-      <Sezione titolo={metriche ? `Turno ${metriche.turno} · voce ${metriche.voce_motore}` : 'Nessun turno misurato'}>
+      <Sezione titolo={metriche ? t('schermo.hud.turno', { turno: metriche.turno, voce: metriche.voce_motore }) : t('schermo.hud.nessun_turno')}>
         {metriche && (
           <>
-            <Riga nome="t0 (chiusura finestra)" valore={new Date(metriche.ts).toLocaleTimeString('it-IT')} />
-            {CAMPI_MS.map(([campo, nome]) => (
-              <Riga key={campo} nome={nome} valore={formattaMs(metriche[campo] as number | null)} />
+            <Riga nome={t('schermo.hud.t0')} valore={new Date(metriche.ts).toLocaleTimeString('it-IT')} />
+            {CAMPI_MS.map(([campo, chiave]) => (
+              <Riga key={campo} nome={t(chiave)} valore={formattaMs(metriche[campo] as number | null)} />
             ))}
             <Riga
-              nome="token in/out"
+              nome={t('schermo.hud.token_in_out')}
               valore={`${metriche.token_ingresso} / ${metriche.token_uscita}`}
             />
             <Riga
-              nome="token cache lett./scritt."
+              nome={t('schermo.hud.token_cache')}
               valore={`${metriche.token_cache_lettura} / ${metriche.token_cache_scrittura}`}
             />
-            <Riga nome="costo" valore={formattaCosto(metriche.costo_usd)} />
+            <Riga nome={t('schermo.hud.costo')} valore={formattaCosto(metriche.costo_usd)} />
             <Riga
-              nome="buchi (in frase / tra frasi)"
+              nome={t('schermo.hud.buchi')}
               valore={metriche.buchi === null ? '—' : `${metriche.buchi} (${metriche.buchi_in_frase} / ${metriche.buchi_tra_frasi})`}
               evidenzia={(metriche.buchi_in_frase ?? 0) > 0}
             />
-            <Riga nome="silenzio dai buchi" valore={formattaMs(metriche.silenzio_ms)} />
+            <Riga nome={t('schermo.hud.silenzio_buchi')} valore={formattaMs(metriche.silenzio_ms)} />
           </>
         )}
       </Sezione>
 
-      <Sezione titolo="Lettore audio">
+      <Sezione titolo={t('schermo.hud.lettore')}>
         <Riga nome="AudioContext" valore={`${audio.stato}${audio.sampleRate ? ` · ${audio.sampleRate} Hz` : ''}`} />
-        <Riga nome="latenza uscita / base" valore={`${fmt(audio.latenzaUscitaMs)} / ${fmt(audio.latenzaBaseMs)}`} />
-        <Riga nome="jitter iniziale" valore={formattaMs(audio.jitterMs)} />
-        <Riga nome="audio in coda" valore={formattaMs(audio.anticipoMs)} />
-        <Riga nome="pezzi ricevuti" valore={`${audio.pezzi} (${(audio.byte / 1024).toFixed(0)} KiB)`} />
-        <Riga nome="secondi programmati" valore={audio.secondiProgrammati.toFixed(2)} />
-        <Riga nome="buchi" valore={String(audio.buchi)} evidenzia={audio.buchi > 0} />
-        <Riga nome="frasi iniziate" valore={String(debugSchermo.frasiIniziate)} />
-        <Riga nome="sorgenti attive / segni" valore={`${audio.sorgentiAttive} / ${audio.segniInAttesa}`} />
+        <Riga nome={t('schermo.hud.latenza_uscita')} valore={`${fmt(audio.latenzaUscitaMs)} / ${fmt(audio.latenzaBaseMs)}`} />
+        <Riga nome={t('schermo.hud.jitter')} valore={formattaMs(audio.jitterMs)} />
+        <Riga nome={t('schermo.hud.coda')} valore={formattaMs(audio.anticipoMs)} />
+        <Riga nome={t('schermo.hud.pezzi')} valore={`${audio.pezzi} (${(audio.byte / 1024).toFixed(0)} KiB)`} />
+        <Riga nome={t('schermo.hud.secondi_programmati')} valore={audio.secondiProgrammati.toFixed(2)} />
+        <Riga nome={t('schermo.hud.buchi_breve')} valore={String(audio.buchi)} evidenzia={audio.buchi > 0} />
+        <Riga nome={t('schermo.hud.frasi_iniziate')} valore={String(debugSchermo.frasiIniziate)} />
+        <Riga nome={t('schermo.hud.sorgenti')} valore={`${audio.sorgentiAttive} / ${audio.segniInAttesa}`} />
         {(audio.pezziSenzaFrase > 0 || audio.byteOrfani > 0) && (
-          <Riga nome="scartati (senza frase / byte orfani)" valore={`${audio.pezziSenzaFrase} / ${audio.byteOrfani}`} evidenzia />
+          <Riga nome={t('schermo.hud.scartati')} valore={`${audio.pezziSenzaFrase} / ${audio.byteOrfani}`} evidenzia />
         )}
       </Sezione>
 
-      <Sezione titolo="Tavolo">
-        <Riga nome="fase / turno" valore={stato ? `${stato.fase} / ${stato.turno}` : '—'} />
-        <Riga nome="luogo" valore={stato?.scena.luogo ?? '—'} />
+      <Sezione titolo={t('schermo.hud.tavolo')}>
+        <Riga nome={t('schermo.hud.fase_turno')} valore={stato ? `${stato.fase} / ${stato.turno}` : '—'} />
+        <Riga nome={t('schermo.hud.luogo')} valore={stato?.scena.luogo ?? '—'} />
         <Riga
-          nome="immagine / dissolvenze"
-          valore={`${debugSchermo.immagine?.split('/').pop() ?? 'atmosfera'} / ${debugSchermo.transizioni}`}
+          nome={t('schermo.hud.immagine')}
+          valore={`${debugSchermo.immagine?.split('/').pop() ?? t('schermo.hud.atmosfera')} / ${debugSchermo.transizioni}`}
         />
-        <Riga nome="versione stato / scena" valore={stato ? `${stato.versione_stato} / ${stato.versione_scena}` : '—'} />
-        <Riga nome="voce" valore={stato?.voce_motore ?? '—'} />
+        <Riga nome={t('schermo.hud.versioni')} valore={stato ? `${stato.versione_stato} / ${stato.versione_scena}` : '—'} />
+        <Riga nome={t('schermo.hud.voce')} valore={stato?.voce_motore ?? '—'} />
       </Sezione>
 
       <div className="mt-3 grid grid-cols-2 gap-2 font-sans">
@@ -125,7 +126,7 @@ export function HudLatenza() {
           onClick={() => void fermaScena()}
           className="min-h-11 rounded-lg border border-sangue/70 text-base font-bold text-sangue hover:bg-sangue/10"
         >
-          Ferma
+          {t('schermo.hud.ferma')}
         </button>
         <button
           type="button"
@@ -133,7 +134,7 @@ export function HudLatenza() {
           onClick={ricomincia}
           className="min-h-11 rounded-lg border border-candela/70 text-base font-bold text-candela hover:bg-candela/10"
         >
-          {confermaRicomincia ? 'Conferma: ricomincia' : 'Ricomincia'}
+          {confermaRicomincia ? t('schermo.hud.conferma_ricomincia') : t('schermo.hud.ricomincia')}
         </button>
       </div>
       {esitoComando && <p className="mt-2 font-sans text-base text-pergamena-2">{esitoComando}</p>}

@@ -4,6 +4,7 @@
  * contratto condiviso (NOTA_REGIA_MAX_CARATTERI).
  */
 import { NOTA_REGIA_MAX_CARATTERI, type NotaRegia } from '@cantastorie/shared';
+import { t } from '../lingua';
 import { turni } from './etichette';
 
 export interface ControlloNota {
@@ -28,9 +29,9 @@ export function controllaNota(testoGrezzo: string, turniGrezzi: string, turniMax
 
   let problema: string | null = null;
   if (testo.length > NOTA_REGIA_MAX_CARATTERI) {
-    problema = `La nota è troppo lunga: al massimo ${NOTA_REGIA_MAX_CARATTERI} caratteri.`;
+    problema = t('master.note.troppo_lunga', { max: NOTA_REGIA_MAX_CARATTERI });
   } else if (turniValidi === null) {
-    problema = `I turni vanno da 1 a ${turniMax}.`;
+    problema = t('master.note.turni_intervallo', { max: turniMax });
   }
   return {
     valida: problema === null && testo.length > 0,
@@ -42,11 +43,11 @@ export function controllaNota(testoGrezzo: string, turniGrezzi: string, turniMax
 
 /** «ancora 5 turni su 15» / «ultimo turno (su 15)». */
 export function testoTurniNota(nota: Pick<NotaRegia, 'turni_rimasti' | 'turni_totali'>): string {
-  if (nota.turni_rimasti <= 1) return `ultimo turno (su ${nota.turni_totali})`;
-  return `ancora ${turni(nota.turni_rimasti)} su ${nota.turni_totali}`;
+  if (nota.turni_rimasti <= 1) return t('master.note.ultimo_turno', { totale: nota.turni_totali });
+  return t('master.note.ancora', { turni: turni(nota.turni_rimasti), totale: nota.turni_totali });
 }
 
 /** Spiegazione quando le note sono al completo. */
 export function testoNoteAlCompleto(max: number): string {
-  return `Al massimo ${max} note insieme: togline una per scriverne un’altra.`;
+  return t('master.note.al_completo', { max });
 }

@@ -27,6 +27,7 @@ import {
   testoPf,
   tonoPf,
 } from '../lib/combattimento';
+import { t } from '../lingua';
 
 export function BarraIniziativa({ combattimento }: { combattimento: CombattimentoPubblico | null | undefined }) {
   if (!combattimento) return null;
@@ -34,7 +35,7 @@ export function BarraIniziativa({ combattimento }: { combattimento: Combattiment
   const molti = ordinati.length > SOGLIA_INIZIALI;
   const conOrdine = combattimento.iniziativa !== 'nessuna';
   return (
-    <section data-testid="barra-iniziativa" aria-label="Iniziativa" className="flex max-w-full flex-wrap items-center gap-x-[1.2vw] gap-y-[1vh]">
+    <section data-testid="barra-iniziativa" aria-label={t('schermo.iniziativa.aria')} className="flex max-w-full flex-wrap items-center gap-x-[1.2vw] gap-y-[1vh]">
       <p
         data-testid="barra-round"
         className="rounded-lg border border-candela/60 bg-notte/85 px-[0.9vw] py-[0.6vh] font-titolo text-[1.2vw] leading-none font-semibold whitespace-nowrap text-candela-2"
@@ -83,7 +84,7 @@ function Scheda({ combattente: c, molti, evidenzia }: { combattente: Combattente
       </div>
       {c.pf && (
         <div className="flex items-center gap-[0.5vw]">
-          <div className="h-[0.9vh] min-w-[4vw] flex-1 overflow-hidden rounded-full bg-notte-4" role="meter" aria-valuemin={0} aria-valuemax={c.pf.massimi} aria-valuenow={c.pf.attuali} aria-label={`Punti ferita di ${c.nome}`}>
+          <div className="h-[0.9vh] min-w-[4vw] flex-1 overflow-hidden rounded-full bg-notte-4" role="meter" aria-valuemin={0} aria-valuemax={c.pf.massimi} aria-valuenow={c.pf.attuali} aria-label={t('schermo.iniziativa.pf_di', { nome: c.nome })}>
             <div className={clsx('h-full rounded-full', CLASSE_TONO_PF[tonoPf(c.pf.attuali, c.pf.massimi)])} style={{ width: `${quota * 100}%` }} />
           </div>
           {testo && <span className="font-mono text-[0.95vw] leading-none text-pergamena-2">{testo}</span>}

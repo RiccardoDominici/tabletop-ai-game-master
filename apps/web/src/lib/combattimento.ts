@@ -4,6 +4,7 @@
  * Il server manda già i combattenti in ordine d'iniziativa; qui si decide solo cosa mostrare in fondo
  * (chi è morto o fuggito) e come si colorano e si scrivono i dati.
  */
+import { elenco, t } from '../lingua';
 import type { CombattentePubblico, CombattimentoPubblico } from '@cantastorie/shared';
 
 /** Tono della barra dei PF: verde sopra il 50%, giallo fino al 50%, rosso a 0. */
@@ -42,11 +43,11 @@ export function tonoPf(attuali: number, massimi: number): TonoPf {
 export function etichettaStato(stato: CombattentePubblico['stato']): string | null {
   switch (stato) {
     case 'a_terra':
-      return 'a terra';
+      return t('comune.combat.a_terra');
     case 'morto':
-      return 'morto';
+      return t('comune.combat.morto');
     case 'fuggito':
-      return 'fuggito';
+      return t('comune.combat.fuggito');
     default:
       return null;
   }
@@ -70,7 +71,7 @@ export function iniziali(nome: string): string {
 
 /** «Round 2», o «Round 2 · fase movimento» quando la fase c'è. */
 export function etichettaRound(round: number, fase: string | null): string {
-  return fase ? `Round ${round} · fase ${fase}` : `Round ${round}`;
+  return fase ? t('comune.combat.round_fase', { n: round, fase }) : t('comune.combat.round', { n: round });
 }
 
 /** Testo dei PF di un PG («7/12»); null per i PNG (niente numeri a voce: solo la barra). */
@@ -86,8 +87,7 @@ export function etichettaTiriMorte(tiri: { successi: number; fallimenti: number 
 
 /** Nomi di chi deve agire, uniti in italiano («Ida», «Ida e Ruggero», «Ida, Ruggero e Corrado»). */
 export function elencoItaliano(nomi: readonly string[]): string {
-  if (nomi.length <= 1) return nomi[0] ?? '';
-  return `${nomi.slice(0, -1).join(', ')} e ${nomi[nomi.length - 1]}`;
+  return elenco(nomi);
 }
 
 /** Nomi di chi tocca adesso: il nome del combattente, o l'id se non è in lista. */

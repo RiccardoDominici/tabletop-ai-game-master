@@ -15,6 +15,7 @@ import type { StatoTavolo } from '@cantastorie/shared';
 import { elencoNomi, virgolettato } from '../lib/formato';
 import { creaLog } from '../lib/log';
 import { useSchermo, type FraseInOnda } from '../store/schermo';
+import { t } from '../lingua';
 
 const log = creaLog('ritratti');
 
@@ -50,7 +51,7 @@ export function Narrazione({ stato }: { stato: StatoTavolo }) {
               key={`r-${inOnda.parlante}`}
               data-testid="ritratto"
               src={ritratto}
-              alt={`Ritratto di ${inOnda.nome}`}
+              alt={t('schermo.ritratto_alt', { nome: inOnda.nome })}
               draggable={false}
               onError={() => {
                 log.warn('Ritratto non caricato: si nasconde', { url: ritratto });
@@ -107,16 +108,16 @@ function SuggerimentoFase({ stato }: { stato: StatoTavolo }) {
     const nomi = (tutti ? stato.pg : stato.pg.filter((p) => stato.finestra.invitati.includes(p.id))).map(
       (p) => p.nome.split(' ')[0] ?? p.nome,
     );
-    testo = nomi.length > 0 ? `${elencoNomi(nomi)}, cosa fate?` : 'Cosa fate?';
+    testo = nomi.length > 0 ? t('schermo.fase.cosa_fate_di', { nomi: elencoNomi(nomi) }) : t('schermo.fase.cosa_fate');
   } else if (stato.fase === 'fermata') {
-    testo = 'Scena fermata';
+    testo = t('schermo.fase.fermata');
   } else if (stato.fase === 'pausa') {
-    testo = 'Tavolo in pausa';
+    testo = t('schermo.fase.pausa');
   } else if (stato.fase === 'narrazione' || stato.fase === 'apertura' || (stato.fase === 'finestra' && !stato.finestra.aperta)) {
     // Il Motore lavora (LLM, voce): in silenzio si dice che il narratore sta preparando.
-    testo = 'Il narratore sta preparando…';
+    testo = t('schermo.fase.preparando');
   } else if (stato.fase === 'attesa') {
-    testo = 'La scena sta per cominciare';
+    testo = t('schermo.fase.per_cominciare');
   } else {
     testo = '…';
   }

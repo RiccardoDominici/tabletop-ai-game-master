@@ -11,6 +11,7 @@ import { inviaComando } from './sessione';
 import { Riquadro } from './Riquadro';
 import { Chip } from './Chip';
 import { Miniatura } from './Miniatura';
+import { t } from '../lingua';
 
 export function SezioneSituazioni({ stato }: { stato: StatoMaster }) {
   const { situazioni } = stato;
@@ -18,8 +19,8 @@ export function SezioneSituazioni({ stato }: { stato: StatoMaster }) {
   const inOnda = situazioni.filter((s) => s.in_onda).length;
   return (
     <Riquadro
-      titolo="Situazioni"
-      conteggio={inOnda > 0 ? `${situazioni.length} · ${inOnda} in onda` : situazioni.length}
+      titolo={t('master.situazioni.titolo')}
+      conteggio={inOnda > 0 ? t('master.situazioni.conteggio', { totale: situazioni.length, onda: inOnda }) : situazioni.length}
       zona="situazioni"
       data-testid="master-situazioni"
     >
@@ -40,11 +41,11 @@ function RigaSituazione({ situazione, indice }: { situazione: SituazioneMaster; 
   const { in_onda: inOnda } = situazione;
   // In onda è già sul proiettore (pubblica); le altre, senza spoiler, restano coperte.
   const coperta = useSenzaSpoiler() && !inOnda;
-  const nome = coperta ? `Situazione ${indice + 1}` : situazione.nome;
+  const nome = coperta ? t('master.situazioni.coperta', { n: indice + 1 }) : situazione.nome;
   const alterna = () =>
     void inviaComando(
       { tipo: 'situazione', id: inOnda ? null : situazione.id },
-      inOnda ? `Togli «${nome}»` : `Mostra «${nome}»`,
+      inOnda ? t('master.situazioni.togli', { nome }) : t('master.situazioni.mostra', { nome }),
     );
 
   return (
@@ -56,7 +57,7 @@ function RigaSituazione({ situazione, indice }: { situazione: SituazioneMaster; 
       aria-pressed={inOnda}
       disabled={inCorso}
       onClick={alterna}
-      title={inOnda ? 'Togli l’immagine dal proiettore' : 'Metti l’immagine sul proiettore'}
+      title={inOnda ? t('master.situazioni.togli_titolo') : t('master.situazioni.metti_titolo')}
       className={clsx(
         'flex w-full items-center gap-2.5 rounded-lg border p-1.5 text-left text-sm transition-colors disabled:opacity-60',
         inOnda ? 'border-brace bg-brace/10' : 'border-bordo bg-notte-3 enabled:hover:border-candela/60 enabled:hover:bg-notte-4',
@@ -67,10 +68,10 @@ function RigaSituazione({ situazione, indice }: { situazione: SituazioneMaster; 
         <span className="block truncate font-semibold">{nome}</span>
         <span className="block truncate text-xs text-cenere">
           {!coperta && situazione.png ? `${situazione.png} · ` : ''}
-          {situazione.dopo ? (coperta ? 'compare da sola dopo una rivelazione' : `compare da sola dopo «${situazione.dopo}»`) : 'solo a comando'}
+          {situazione.dopo ? (coperta ? t('master.situazioni.dopo_coperta') : t('master.situazioni.dopo', { dopo: situazione.dopo })) : t('master.situazioni.solo_comando')}
         </span>
       </span>
-      {inOnda ? <Chip tono="brace">in onda · togli</Chip> : <span className="shrink-0 text-xs font-semibold text-pergamena-2">Mostra</span>}
+      {inOnda ? <Chip tono="brace">{t('master.situazioni.in_onda_togli')}</Chip> : <span className="shrink-0 text-xs font-semibold text-pergamena-2">{t('master.situazioni.mostra_btn')}</span>}
     </button>
   );
 }

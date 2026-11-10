@@ -4,6 +4,7 @@
  * Le conoscenze private non compaiono mai altrove (né al tavolo né sullo schermo): il giocatore
  * decide se e quando raccontarle.
  */
+import { t } from '../lingua';
 import { useEffect } from 'react';
 import { useTelefono } from '../store/telefono';
 
@@ -32,7 +33,7 @@ export function SchedaPersonaggio() {
     >
       <header className="sicuro-lati flex items-center gap-3 border-b border-bordo py-3">
         <div className="min-w-0 flex-1">
-          <p className="text-xs tracking-[0.18em] text-cenere uppercase">La tua scheda</p>
+          <p className="text-xs tracking-[0.18em] text-cenere uppercase">{t('telefono.scheda.etichetta')}</p>
           <h2 id="titolo-scheda" className="font-titolo text-xl leading-tight font-semibold text-pergamena">
             {scheda.nome}
           </h2>
@@ -42,7 +43,7 @@ export function SchedaPersonaggio() {
           onClick={() => apriScheda(false)}
           className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-4 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
         >
-          Chiudi
+          {t('telefono.chiudi')}
         </button>
       </header>
       <div className="sicuro-lati sicuro-basso min-h-0 flex-1 overflow-y-auto py-4">
@@ -51,8 +52,8 @@ export function SchedaPersonaggio() {
 
           {scheda.conoscenze_private.length > 0 && (
             <section className="rounded-carta border border-candela/50 bg-candela-scura/15 p-4" data-testid="conoscenze-private">
-              <h3 className="font-titolo text-base font-semibold text-candela">Solo tu lo sai</h3>
-              <p className="mt-1 text-sm text-cenere">Decidi tu se e quando raccontarlo agli altri.</p>
+              <h3 className="font-titolo text-base font-semibold text-candela">{t('telefono.scheda.solo_tu')}</h3>
+              <p className="mt-1 text-sm text-cenere">{t('telefono.scheda.decidi')}</p>
               <ul className="mt-3 flex list-disc flex-col gap-2 pl-5 font-racconto text-[1.05rem] leading-snug text-pergamena">
                 {scheda.conoscenze_private.map((r, i) => (
                   <li key={i}>{r}</li>
@@ -78,7 +79,7 @@ export function SchedaPersonaggio() {
 
           {scheda.situazione_comune && (
             <section>
-              <h3 className="font-titolo text-base font-semibold text-candela-2">Il gruppo</h3>
+              <h3 className="font-titolo text-base font-semibold text-candela-2">{t('telefono.scheda.gruppo')}</h3>
               <p className="mt-1 font-racconto text-[1.05rem] leading-snug text-pergamena-2">{scheda.situazione_comune}</p>
             </section>
           )}

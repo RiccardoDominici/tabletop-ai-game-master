@@ -6,14 +6,16 @@
  */
 import type { FaseScena } from '@cantastorie/shared';
 import type { FraseInOnda } from '../store/schermo';
+import { t, type Chiave } from '../lingua';
 
-const ETICHETTA_FASE: Record<FaseScena, string> = {
-  attesa: 'In attesa di cominciare',
-  apertura: 'Il narratore apre la scena',
-  finestra: 'Il narratore ascolta',
-  narrazione: 'Il narratore sta preparando…',
-  pausa: 'Tavolo in pausa',
-  fermata: 'Scena fermata',
+/** Chiave del testo di ciascuna fase (schermo.fase.*): la lingua si legge al momento dell'uso. */
+const CHIAVE_FASE: Record<FaseScena, Chiave> = {
+  attesa: 'schermo.fase.attesa',
+  apertura: 'schermo.fase.apertura',
+  finestra: 'schermo.fase.ascolta',
+  narrazione: 'schermo.fase.preparando',
+  pausa: 'schermo.fase.pausa',
+  fermata: 'schermo.fase.fermata',
 };
 
 /** Titoli da saltare nel nome breve («Sorella Teodora» → «Teodora»), come fa il server negli avvisi. */
@@ -34,8 +36,8 @@ export function primoNome(nome: string): string {
  */
 export function etichettaFase(fase: FaseScena, inOnda: Pick<FraseInOnda, 'parlante' | 'nome'> | null): string {
   const parla = fase === 'narrazione' || fase === 'apertura' || fase === 'pausa';
-  if (parla && inOnda && inOnda.parlante !== 'narratore' && inOnda.nome.trim()) return `${primoNome(inOnda.nome)} sta parlando`;
+  if (parla && inOnda && inOnda.parlante !== 'narratore' && inOnda.nome.trim()) return t('schermo.fase.sta_parlando', { nome: primoNome(inOnda.nome) });
   // In narrazione senza niente in onda il Motore sta lavorando (LLM, voce): «sta preparando…».
-  if ((fase === 'pausa' || fase === 'narrazione') && inOnda) return 'Il narratore sta parlando';
-  return ETICHETTA_FASE[fase];
+  if ((fase === 'pausa' || fase === 'narrazione') && inOnda) return t('schermo.fase.narratore_parla');
+  return t(CHIAVE_FASE[fase]);
 }

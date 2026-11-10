@@ -4,6 +4,7 @@
  * privata, quota): si lavora comunque coi valori predefiniti, senza errori.
  */
 import { creaLog } from '../../lib/log';
+import { t, type Chiave } from '../../lingua';
 
 const log = creaLog('audio-impostazioni');
 
@@ -12,13 +13,18 @@ export type NomeBus = 'musica' | 'ambiente' | 'temi' | 'effetti' | 'voce';
 /** Ordine dei controlli nel pannello. */
 export const BUS: readonly NomeBus[] = ['voce', 'musica', 'ambiente', 'temi', 'effetti'];
 
-export const NOMI_BUS: Record<NomeBus, string> = {
-  voce: 'Voce',
-  musica: 'Musica',
-  ambiente: 'Ambienti',
-  temi: 'Temi',
-  effetti: 'Effetti',
+const CHIAVE_BUS: Record<NomeBus, Chiave> = {
+  voce: 'schermo.bus.voce',
+  musica: 'schermo.bus.musica',
+  ambiente: 'schermo.bus.ambiente',
+  temi: 'schermo.bus.temi',
+  effetti: 'schermo.bus.effetti',
 };
+
+/** Nome leggibile di un bus nella lingua dell'interfaccia (letto al momento della chiamata). */
+export function nomeBus(nome: NomeBus): string {
+  return t(CHIAVE_BUS[nome]);
+}
 
 export interface ImpostazioneBus {
   /** Guadagno lineare del bus, 0–1. */

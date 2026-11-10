@@ -10,6 +10,7 @@
  * può essere stato riavviato) e poi di nuovo `telefono:scegli_pg` col PG ricordato, così il telefono
  * rientra nella stanza player:<id_pg> e riceve di nuovo `azione:mia`.
  */
+import { t } from '../lingua';
 import type { AzionePrivata, Esito, EsitoPrivato, SchedaPg, StatoTavolo } from '@cantastorie/shared';
 import { alRientro, chiedi, conEsito, esitoErrore, prendiSocket } from '../lib/socket';
 import { creaLog } from '../lib/log';
@@ -164,7 +165,7 @@ export function scegliPg(idPg: string): Promise<Esito> {
 /** Il PG confermato, o un esito d'errore pronto se manca. */
 function pgCorrente(): string | Esito {
   const { idPg } = useTelefono.getState();
-  return idPg ?? esitoErrore('Scegli prima un personaggio.');
+  return idPg ?? esitoErrore(t('telefono.errore.scegli_pg'));
 }
 
 /**
@@ -197,9 +198,9 @@ export function inviaAzione(): Promise<Esito> {
   if (typeof idPg !== 'string') return Promise.resolve(idPg);
   const { testo, privata } = useBozza.getState();
   const pulito = testo.trim();
-  if (!pulito) return Promise.resolve(esitoErrore('Scrivi cosa fa il tuo personaggio.'));
+  if (!pulito) return Promise.resolve(esitoErrore(t('telefono.errore.scrivi')));
   const stato = useTavolo.getState().stato;
-  if (!stato) return Promise.resolve(esitoErrore('Stato del tavolo non ancora arrivato.'));
+  if (!stato) return Promise.resolve(esitoErrore(t('telefono.errore.stato_non_arrivato')));
   const versioneVista = traccia.versioneVista ?? stato.versione_scena;
   return comando('invia azione', async () => {
     const esito = await conEsito((s, fine) =>

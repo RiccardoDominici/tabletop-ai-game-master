@@ -17,7 +17,7 @@ import type {
   StatoAzione,
   StatoTavolo,
 } from '@cantastorie/shared';
-import { elencoNomi } from '../lib/formato';
+import { elenco, t } from '../lingua';
 
 /** Il narratore può invitare `tutti` (il server normalmente espande l'elenco, ma per sicurezza). */
 const TUTTI = 'tutti';
@@ -99,11 +99,11 @@ export function azioneDellaFinestra(stato: StatoTavolo, mia: AzionePrivata | nul
 }
 
 /** Etichetta del pulsante d'invio: sostituire, rimandare o inviare. */
-export function etichettaInvio(mia: AzionePrivata | null, bozza: string): 'Aggiorna' | 'Invia di nuovo' | 'Invia' {
-  if (!mia) return 'Invia';
-  if (azioneViva(mia)) return 'Aggiorna';
-  if (daRiscrivere(mia) && bozza.trim() === mia.testo.trim()) return 'Invia di nuovo';
-  return 'Invia';
+export function etichettaInvio(mia: AzionePrivata | null, bozza: string): string {
+  if (!mia) return t('telefono.invio.invia');
+  if (azioneViva(mia)) return t('telefono.invio.aggiorna');
+  if (daRiscrivere(mia) && bozza.trim() === mia.testo.trim()) return t('telefono.invio.di_nuovo');
+  return t('telefono.invio.invia');
 }
 
 /**
@@ -125,7 +125,7 @@ export function altriAlTavolo(stato: StatoTavolo, idPg: string | null): AzioneAl
 /** «con Ginestra», «con Ginestra e Corrado», o null se l'azione non si appoggia ad altre. */
 export function conChi(dipendeDa: readonly string[]): string | null {
   const nomi = dipendeDa.map((n) => n.split(' ')[0] ?? n).filter((n) => n.length > 0);
-  return nomi.length === 0 ? null : `con ${elencoNomi([...new Set(nomi)])}`;
+  return nomi.length === 0 ? null : t('telefono.altri.con', { nomi: elenco([...new Set(nomi)]) });
 }
 
 // ------------------------------------------------------------------ banner
@@ -145,47 +145,47 @@ export function bannerTelefono(stato: StatoTavolo, idPg: string | null): Banner 
     case 'attesa':
       return {
         tipo: 'attesa',
-        titolo: 'In attesa che inizi la sessione',
-        dettaglio: 'Il master deve premere «Inizia sessione» sullo schermo.',
+        titolo: t('telefono.banner.attesa_titolo'),
+        dettaglio: t('telefono.banner.attesa_dettaglio'),
         scadenzaMs: null,
       };
     case 'apertura':
     case 'narrazione':
       return {
         tipo: 'narratore',
-        titolo: narratoreAlLavoro(stato) === 'racconta' ? 'Il narratore sta raccontando…' : 'Il narratore sta preparando…',
-        dettaglio: 'Puoi già scrivere: la tua azione entra nel prossimo turno.',
+        titolo: narratoreAlLavoro(stato) === 'racconta' ? t('telefono.banner.racconta') : t('telefono.banner.prepara'),
+        dettaglio: t('telefono.banner.puoi_scrivere'),
         scadenzaMs: null,
       };
     case 'fermata':
       return {
         tipo: 'fermata',
-        titolo: 'Scena fermata',
-        dettaglio: 'Il master ha fermato la scena.',
+        titolo: t('telefono.banner.fermata_titolo'),
+        dettaglio: t('telefono.banner.fermata_dettaglio'),
         scadenzaMs: null,
       };
     case 'pausa':
       // La pausa la mette e la toglie solo il master: si può scrivere, l'azione entra alla ripresa.
       return {
         tipo: 'pausa',
-        titolo: 'Tavolo in pausa',
-        dettaglio: 'Il master ha fermato il gioco per un momento. Puoi scrivere: la tua azione entra alla ripresa.',
+        titolo: t('telefono.banner.pausa_titolo'),
+        dettaglio: t('telefono.banner.pausa_dettaglio'),
         scadenzaMs: null,
       };
     case 'finestra':
       if (!stato.finestra.aperta) {
         return {
           tipo: 'narratore',
-          titolo: 'Il narratore sta preparando…',
-          dettaglio: 'Puoi già scrivere: la tua azione entra nel prossimo turno.',
+          titolo: t('telefono.banner.prepara'),
+          dettaglio: t('telefono.banner.puoi_scrivere'),
           scadenzaMs: null,
         };
       }
       if (sonoInvitato(stato.finestra, idPg) && hoInviato(stato, idPg)) {
         return {
           tipo: 'inviata',
-          titolo: 'Azione inviata',
-          dettaglio: 'Puoi ancora cambiarla o ritirarla finché il turno non parte.',
+          titolo: t('telefono.banner.inviata_titolo'),
+          dettaglio: t('telefono.banner.inviata_dettaglio'),
           scadenzaMs: stato.finestra.chiusura_prevista_ms,
         };
       }
@@ -193,28 +193,37 @@ export function bannerTelefono(stato: StatoTavolo, idPg: string | null): Banner 
         const concitato = stato.ritmo === 'concitato' && stato.finestra.chiusura_prevista_ms !== null;
         return {
           tipo: 'tocca_a_te',
-          titolo: 'Tocca a te: cosa fai?',
+          titolo: t('telefono.banner.tocca_titolo'),
           // Al ritmo calmo nessuna fretta: si discute al tavolo. Al concitato c'è il conto alla rovescia.
-          dettaglio: concitato ? 'Si va di corsa: allo zero il narratore risolve con quello che c’è.' : null,
+          dettaglio: concitato ? t('telefono.banner.tocca_corsa') : null,
           scadenzaMs: stato.finestra.chiusura_prevista_ms,
         };
       }
       return {
         tipo: 'non_chiamato',
-        titolo: 'Stavolta non sei chiamato',
-        dettaglio: 'Puoi scrivere lo stesso: la tua azione entra in questo turno.',
+        titolo: t('telefono.banner.non_chiamato_titolo'),
+        dettaglio: t('telefono.banner.non_chiamato_dettaglio'),
         scadenzaMs: stato.finestra.chiusura_prevista_ms,
       };
   }
 }
 
-/** Etichette italiane, neutre, dello stato dell'azione (chip). Mai «Conflitto!». */
-export const ETICHETTA_STATO_AZIONE: Record<StatoAzione, string> = {
-  in_coda: 'in coda',
-  da_confermare: 'da decidere',
-  chiusa: 'il narratore sta rispondendo',
-  risolta: 'risolta',
-  ritirata: 'ritirata',
-  superata: 'non è andata',
-  sospesa: 'rimasta fuori',
-};
+/** Etichetta dello stato dell'azione (chip), neutra nella lingua dell'interfaccia. Mai «Conflitto!». */
+export function etichettaStatoAzione(stato: StatoAzione): string {
+  switch (stato) {
+    case 'in_coda':
+      return t('telefono.stato.in_coda');
+    case 'da_confermare':
+      return t('telefono.stato.da_confermare');
+    case 'chiusa':
+      return t('telefono.stato.chiusa');
+    case 'risolta':
+      return t('telefono.stato.risolta');
+    case 'ritirata':
+      return t('telefono.stato.ritirata');
+    case 'superata':
+      return t('telefono.stato.superata');
+    case 'sospesa':
+      return t('telefono.stato.sospesa');
+  }
+}

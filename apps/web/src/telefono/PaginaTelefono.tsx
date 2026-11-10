@@ -7,6 +7,7 @@
  * Android, `interactive-widget=resizes-content`) il pannello resta sopra la tastiera.
  * Il banner di connessione è nel flusso, sopra tutto: non copre l'intestazione.
  */
+import { t } from '../lingua';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import type { StatoTavolo } from '@cantastorie/shared';
 import { BannerConnessione } from '../components/BannerConnessione';
@@ -50,7 +51,7 @@ function PaginaTelefonoVera() {
   useSchermoAcceso(true);
 
   useEffect(() => {
-    document.title = 'Tabletop AI Game Master · Telefono';
+    document.title = t('telefono.titolo_pagina');
   }, []);
 
   const stato = useTavolo((s) => s.stato);
@@ -80,8 +81,8 @@ function PaginaTelefonoVera() {
 function Attesa() {
   return (
     <main className="sicuro-lati flex h-full flex-col items-center justify-center gap-4 text-center">
-      <p className="font-titolo text-3xl font-semibold text-candela">Tabletop AI Game Master</p>
-      <p className="text-pergamena-2">Mi collego al tavolo…</p>
+      <p className="font-titolo text-3xl font-semibold text-candela">{t('telefono.marchio')}</p>
+      <p className="text-pergamena-2">{t('telefono.attesa.collego')}</p>
     </main>
   );
 }
@@ -102,7 +103,7 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
           Fondovalle» non deve stringersi accanto ai pulsanti). */}
       <header className="sicuro-lati flex flex-col gap-1 pt-3 pb-2">
         <div className="flex items-center gap-2">
-          <p className="min-w-0 flex-1 text-xs tracking-[0.18em] text-cenere uppercase">Giochi come</p>
+          <p className="min-w-0 flex-1 text-xs tracking-[0.18em] text-cenere uppercase">{t('telefono.tavolo.giochi_come')}</p>
           <AscoltaQui />
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -112,7 +113,7 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
             data-testid="apri-regole"
             className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-3 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
           >
-            Regole
+            {t('telefono.tavolo.regole')}
           </button>
           <button
             type="button"
@@ -120,7 +121,7 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
             data-testid="apri-diario"
             className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-3 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
           >
-            Diario
+            {t('telefono.tavolo.diario')}
           </button>
           {haScheda && (
             <button
@@ -129,16 +130,16 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
               data-testid="apri-scheda"
               className="min-h-12 min-w-12 shrink-0 rounded-full border border-candela/60 px-3 text-[0.95rem] text-candela active:bg-notte-3"
             >
-              Scheda
+              {t('telefono.tavolo.scheda')}
             </button>
           )}
           <button
             type="button"
             onClick={() => apriScelta(true)}
-            aria-label="Cambia personaggio"
+            aria-label={t('telefono.tavolo.cambia_aria')}
             className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-3 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
           >
-            Cambia
+            {t('telefono.tavolo.cambia')}
           </button>
         </div>
         <p className="font-titolo text-xl leading-tight font-semibold break-words" data-testid="nome-pg">

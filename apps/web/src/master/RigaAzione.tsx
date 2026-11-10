@@ -6,12 +6,13 @@
 import clsx from 'clsx';
 import type { AzioneMaster } from '@cantastorie/shared';
 import { useInCorso, useSenzaSpoiler } from '../store/master';
-import { TESTO_PRIVATA_NASCOSTA } from './spoiler';
+import { testoPrivataNascosta } from './spoiler';
 import { inviaComando } from './sessione';
 import { Chip } from './Chip';
 import { classePulsante } from './stili';
 import { ETICHETTA_STATO_AZIONE_MASTER, oraBreve, TONO_STATO_AZIONE } from './etichette';
 import { righeLegami } from './legami';
+import { t } from '../lingua';
 
 export function RigaAzione({ azione, turnoFinestra }: { azione: AzioneMaster; turnoFinestra: number }) {
   const inCorso = useInCorso(`salta_azione:${azione.id}`);
@@ -34,32 +35,32 @@ export function RigaAzione({ azione, turnoFinestra }: { azione: AzioneMaster; tu
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <strong className="font-bold text-pergamena">{azione.nome}</strong>
         {azione.privata && (
-          <Chip tono="lago" titolo="Azione privata: i telefoni degli altri non la vedono" testid={`master-azione-${azione.id}-privata`}>
-            privata
+          <Chip tono="lago" titolo={t('master.azione.privata_titolo')} testid={`master-azione-${azione.id}-privata`}>
+            {t('master.azione.privata')}
           </Chip>
         )}
         <Chip tono={TONO_STATO_AZIONE[azione.stato]}>{ETICHETTA_STATO_AZIONE_MASTER[azione.stato]}</Chip>
         <span className="text-xs text-cenere tabular-nums">
-          turno {azione.turno}
-          {prossimoTurno && ' (prossimo)'} · {oraBreve(azione.inviata_alle)}
+          {t('master.turno.numero', { n: azione.turno })}
+          {prossimoTurno && ` (${t('master.azione.prossimo')})`} · {oraBreve(azione.inviata_alle)}
         </span>
         {azione.saltabile && (
           <button
             type="button"
             data-testid={`master-salta-${azione.id}`}
             disabled={inCorso}
-            onClick={() => void inviaComando({ tipo: 'salta_azione', id_azione: azione.id }, `Salta l’azione di ${azione.nome}`)}
-            title="Non entra nel turno: torna nella casella del giocatore, da riscrivere."
+            onClick={() => void inviaComando({ tipo: 'salta_azione', id_azione: azione.id }, t('master.azione.descr_salta', { nome: azione.nome }))}
+            title={t('master.azione.salta_titolo')}
             className={classePulsante('normale', 'piccolo', 'ml-auto')}
           >
-            Salta
+            {t('master.azione.salta')}
           </button>
         )}
       </div>
 
       {nascosta ? (
         <p data-testid={`master-azione-${azione.id}-nascosta`} className="mt-1 text-sm leading-snug text-cenere italic">
-          {TESTO_PRIVATA_NASCOSTA}
+          {testoPrivataNascosta()}
         </p>
       ) : (
         <p className="mt-1 leading-snug break-words text-pergamena">{azione.testo}</p>
@@ -67,7 +68,7 @@ export function RigaAzione({ azione, turnoFinestra }: { azione: AzioneMaster; tu
 
       {azione.motivo && !nascosta && (
         <p className="mt-0.5 text-sm text-candela-2 italic">
-          <span className="not-italic text-cenere">motivo:</span> {azione.motivo}
+          <span className="not-italic text-cenere">{t('master.azione.motivo')}</span> {azione.motivo}
         </p>
       )}
 

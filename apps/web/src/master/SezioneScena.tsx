@@ -10,6 +10,7 @@ import { inviaComando } from './sessione';
 import { Riquadro, Sottotitolo, Vuoto } from './Riquadro';
 import { Chip } from './Chip';
 import { Miniatura } from './Miniatura';
+import { t } from '../lingua';
 
 export function SezioneScena({ stato }: { stato: StatoMaster }) {
   const { tavolo, luoghi, scene } = stato;
@@ -20,23 +21,23 @@ export function SezioneScena({ stato }: { stato: StatoMaster }) {
   const situazione = stato.situazioni.find((x) => x.in_onda) ?? null;
 
   return (
-    <Riquadro titolo="Scena e luogo" zona="scena" data-testid="master-scena">
+    <Riquadro titolo={t('master.scena.titolo')} zona="scena" data-testid="master-scena">
       <div data-testid="master-luogo-corrente" data-luogo={idLuogo} className="flex items-center gap-3">
         <Miniatura url={tavolo.scena.situazione ?? tavolo.scena.immagine} alt={situazione?.nome ?? luogoCorrente?.nome ?? idLuogo} className="h-20 w-36" />
         <div className="min-w-0">
-          <p className="text-xs tracking-[0.16em] text-cenere uppercase">Sul proiettore</p>
+          <p className="text-xs tracking-[0.16em] text-cenere uppercase">{t('master.scena.sul_proiettore')}</p>
           <p className="truncate font-semibold text-pergamena">{luogoCorrente?.nome ?? idLuogo}</p>
           <p className="truncate text-sm text-pergamena-2">
-            Scena: {scenaCorrente?.titolo ?? tavolo.scena.titolo}
+            {t('master.scena.scena', { titolo: scenaCorrente?.titolo ?? tavolo.scena.titolo })}
           </p>
-          {situazione && <p className="truncate text-xs text-candela-2">ora: {situazione.nome} (al posto del luogo)</p>}
-          {!tavolo.scena.immagine && !situazione && <p className="text-xs text-cenere italic">nessuna immagine: sfondo d’atmosfera</p>}
+          {situazione && <p className="truncate text-xs text-candela-2">{t('master.scena.ora', { nome: situazione.nome })}</p>}
+          {!tavolo.scena.immagine && !situazione && <p className="text-xs text-cenere italic">{t('master.scena.nessuna_immagine')}</p>}
         </div>
       </div>
 
-      <Sottotitolo>Luoghi</Sottotitolo>
+      <Sottotitolo>{t('master.scena.luoghi')}</Sottotitolo>
       {luoghi.length === 0 ? (
-        <Vuoto>Nessun luogo disponibile.</Vuoto>
+        <Vuoto>{t('master.scena.nessun_luogo')}</Vuoto>
       ) : (
         <ul className="grid grid-cols-2 gap-1.5">
           {luoghi.map((l) => (
@@ -49,7 +50,7 @@ export function SezioneScena({ stato }: { stato: StatoMaster }) {
 
       {scene.length > 1 && (
         <>
-          <Sottotitolo>Scene della campagna</Sottotitolo>
+          <Sottotitolo>{t('master.scena.scene_campagna')}</Sottotitolo>
           <ul className="flex flex-col gap-1">
             {scene.map((s) => (
               <li key={s.id}>
@@ -71,8 +72,8 @@ function PulsanteLuogo({ luogo, corrente }: { luogo: LuogoMaster; corrente: bool
       data-testid={`master-luogo-${luogo.id}`}
       aria-pressed={corrente}
       disabled={corrente || inCorso}
-      onClick={() => void inviaComando({ tipo: 'luogo', luogo: luogo.id }, `Luogo «${luogo.nome}»`)}
-      title={corrente ? 'È già sul proiettore' : `Metti «${luogo.nome}» sul proiettore`}
+      onClick={() => void inviaComando({ tipo: 'luogo', luogo: luogo.id }, t('master.scena.descr_luogo', { nome: luogo.nome }))}
+      title={corrente ? t('master.scena.gia_sul_proiettore') : t('master.scena.metti', { nome: luogo.nome })}
       className={clsx(
         'flex w-full items-center gap-2 rounded-lg border p-1.5 text-left text-sm transition-colors',
         corrente
@@ -84,8 +85,8 @@ function PulsanteLuogo({ luogo, corrente }: { luogo: LuogoMaster; corrente: bool
       <span className="min-w-0 flex-1">
         <span className="block truncate font-semibold">{luogo.nome}</span>
         <span className="block truncate text-xs text-cenere">
-          {luogo.tipo === 'scena' ? 'luogo della scena' : 'nodo'}
-          {corrente && <strong className="font-semibold text-candela"> · in onda</strong>}
+          {luogo.tipo === 'scena' ? t('master.scena.tipo_scena') : t('master.scena.tipo_nodo')}
+          {corrente && <strong className="font-semibold text-candela"> · {t('master.scena.in_onda')}</strong>}
         </span>
       </span>
     </button>
@@ -100,8 +101,8 @@ function PulsanteScena({ scena, nomeLuogo }: { scena: ScenaMaster; nomeLuogo: st
       data-testid={`master-scena-${scena.id}`}
       aria-pressed={scena.corrente}
       disabled={scena.corrente || inCorso}
-      onClick={() => void inviaComando({ tipo: 'scena', scena: scena.id }, `Scena «${scena.titolo}»`)}
-      title={scena.corrente ? 'È la scena in corso' : `Passa alla scena «${scena.titolo}» (cambia anche il luogo)`}
+      onClick={() => void inviaComando({ tipo: 'scena', scena: scena.id }, t('master.scena.descr_scena', { titolo: scena.titolo }))}
+      title={scena.corrente ? t('master.scena.gia_in_corso') : t('master.scena.passa', { titolo: scena.titolo })}
       className={clsx(
         'flex w-full items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left text-sm',
         scena.corrente
@@ -111,7 +112,7 @@ function PulsanteScena({ scena, nomeLuogo }: { scena: ScenaMaster; nomeLuogo: st
     >
       <span className="min-w-0 flex-1 truncate font-semibold">{scena.titolo}</span>
       <span className="shrink-0 truncate text-xs text-cenere">{nomeLuogo}</span>
-      {scena.corrente && <Chip tono="candela">corrente</Chip>}
+      {scena.corrente && <Chip tono="candela">{t('master.scena.corrente')}</Chip>}
     </button>
   );
 }

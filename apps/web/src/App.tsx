@@ -6,6 +6,7 @@
  * /master non è collegata da nessuna parte e si carica a parte (lazy): i telefoni non scaricano il
  * codice del pannello.
  */
+import { t } from './lingua';
 import { lazy, Suspense, useEffect, useReducer } from 'react';
 import { alCambioLingua } from './lingua';
 import { Redirect, Route, Switch } from 'wouter';
@@ -38,7 +39,7 @@ export function App() {
 function CaricoMaster() {
   return (
     <main className="flex min-h-dvh items-center justify-center">
-      <p className="text-pergamena-2">Carico il pannello del master…</p>
+      <p className="text-pergamena-2">{t('comune.app.carico_master')}</p>
     </main>
   );
 }
@@ -46,10 +47,10 @@ function CaricoMaster() {
 function NonTrovata() {
   return (
     <main className="sicuro-lati flex min-h-dvh flex-col items-center justify-center gap-4 text-center">
-      <p className="font-titolo text-3xl text-candela">Pagina non trovata</p>
+      <p className="font-titolo text-3xl text-candela">{t('comune.app.non_trovata')}</p>
       <p className="text-pergamena-2">
-        Apri <a className="text-candela-2 underline" href="/telefono">/telefono</a> per giocare o{' '}
-        <a className="text-candela-2 underline" href="/schermo">/schermo</a> sul proiettore.
+        {t('comune.app.apri')} <a className="text-candela-2 underline" href="/telefono">/telefono</a> {t('comune.app.per_giocare_o')}{' '}
+        <a className="text-candela-2 underline" href="/schermo">/schermo</a> {t('comune.app.sul_proiettore')}
       </p>
     </main>
   );

@@ -11,17 +11,18 @@ import { useInCorso } from '../store/master';
 import { inviaComando } from './sessione';
 import { classePulsante } from './stili';
 import { useConferma } from './useConferma';
+import { t, type Chiave } from '../lingua';
 
-const ORIGINE: Record<SerataMaster['origine_ore'], string> = {
-  brief: 'dal brief',
-  predefinito: 'predefinita',
-  master: 'impostata dal master',
+const CHIAVE_ORIGINE: Record<SerataMaster['origine_ore'], Chiave> = {
+  brief: 'master.serata.origine_brief',
+  predefinito: 'master.serata.origine_predefinito',
+  master: 'master.serata.origine_master',
 };
 
 export function SerataMasterRiquadro({ serata }: { serata: SerataMaster }) {
   const durataInCorso = useInCorso('durata_sessione');
   const chiudiInCorso = useInCorso('chiudi_sessione');
-  const [confermaChiudi, clicChiudi] = useConferma(() => void inviaComando({ tipo: 'chiudi_sessione' }, 'Chiudi la sessione'));
+  const [confermaChiudi, clicChiudi] = useConferma(() => void inviaComando({ tipo: 'chiudi_sessione' }, t('master.cmd.chiudi_sessione')));
   const [oreTesto, setOreTesto] = useState(String(serata.ore));
 
   // Quando il server cambia la durata (comando, o brief ricaricato) il campo segue.
@@ -31,23 +32,23 @@ export function SerataMasterRiquadro({ serata }: { serata: SerataMaster }) {
   const oreOk = oreTesto.trim() !== '' && oreValide(ore);
   const imposta = () => {
     if (!oreOk) return;
-    void inviaComando({ tipo: 'durata_sessione', ore }, `Durata della serata: ${testoOre(ore)}`);
+    void inviaComando({ tipo: 'durata_sessione', ore }, t('master.serata.descr_durata', { durata: testoOre(ore) }));
   };
 
   return (
     <div data-testid="master-serata" className="flex flex-col gap-2 rounded-lg border border-bordo bg-notte/60 p-2.5">
-      <h3 className="font-titolo text-xs font-semibold tracking-[0.14em] text-candela uppercase">Serata</h3>
+      <h3 className="font-titolo text-xs font-semibold tracking-[0.14em] text-candela uppercase">{t('master.serata.titolo')}</h3>
 
       <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-sm">
-        <dt className="text-cenere">durata</dt>
+        <dt className="text-cenere">{t('master.serata.durata')}</dt>
         <dd data-testid="master-serata-durata" className="tabular-nums">
-          {testoOre(serata.ore)} <span className="text-cenere">({ORIGINE[serata.origine_ore]})</span>
+          {testoOre(serata.ore)} <span className="text-cenere">({t(CHIAVE_ORIGINE[serata.origine_ore])})</span>
         </dd>
-        <dt className="text-cenere">passati</dt>
+        <dt className="text-cenere">{t('master.serata.passati')}</dt>
         <dd data-testid="master-serata-passati" className="tabular-nums">
-          {serata.minuti_passati === null ? 'la serata non è ancora cominciata' : testoMinuti(serata.minuti_passati)}
+          {serata.minuti_passati === null ? t('master.serata.non_cominciata') : testoMinuti(serata.minuti_passati)}
         </dd>
-        <dt className="text-cenere">rimasti</dt>
+        <dt className="text-cenere">{t('master.serata.rimasti')}</dt>
         <dd data-testid="master-serata-rimasti" className="tabular-nums">
           {serata.minuti_rimasti === null ? '—' : testoMinuti(serata.minuti_rimasti)}
         </dd>
@@ -71,7 +72,7 @@ export function SerataMasterRiquadro({ serata }: { serata: SerataMaster }) {
         }}
       >
         <label className="flex items-center gap-1.5 text-sm text-cenere">
-          ore
+          {t('master.serata.ore')}
           <input
             type="number"
             inputMode="decimal"
@@ -90,7 +91,7 @@ export function SerataMasterRiquadro({ serata }: { serata: SerataMaster }) {
           disabled={!oreOk || durataInCorso}
           className={classePulsante('normale', 'piccolo')}
         >
-          Imposta durata
+          {t('master.serata.imposta')}
         </button>
       </form>
 
@@ -100,13 +101,13 @@ export function SerataMasterRiquadro({ serata }: { serata: SerataMaster }) {
         data-conferma={String(confermaChiudi)}
         disabled={!serata.chiudibile || serata.chiusura_in_corso || chiudiInCorso}
         onClick={clicChiudi}
-        title="Chiusura guidata: il narratore chiude la scena e il proiettore mostra «Cosa è successo stasera»"
+        title={t('master.serata.chiusura_titolo')}
         className={classePulsante(confermaChiudi ? 'pericolo' : 'primario', 'medio')}
       >
-        {confermaChiudi ? 'Confermi la chiusura della serata?' : 'Chiudi la sessione'}
+        {confermaChiudi ? t('master.serata.conferma_chiudi') : t('master.cmd.chiudi_sessione')}
       </button>
-      {serata.chiusura_in_corso && <p className="text-xs text-cenere">Chiusura in corso: il narratore scrive il riassunto.</p>}
-      {serata.chiusa && <p className="text-xs text-cenere">Serata chiusa: «Riprendi» la riapre; la sessione resta salvata.</p>}
+      {serata.chiusura_in_corso && <p className="text-xs text-cenere">{t('master.serata.chiusura_in_corso')}</p>}
+      {serata.chiusa && <p className="text-xs text-cenere">{t('master.serata.chiusa')}</p>}
     </div>
   );
 }

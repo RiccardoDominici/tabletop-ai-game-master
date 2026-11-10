@@ -9,6 +9,7 @@
  * - superata / sospesa: il `motivo` (testid `motivo-azione`) e «Riscrivi», che porta il cursore
  *   nella casella dove il testo è già tornato.
  */
+import { t } from '../lingua';
 import clsx from 'clsx';
 import type { AzionePrivata, StatoAzione, StatoTavolo } from '@cantastorie/shared';
 import { useBozza } from '../store/bozza';
@@ -19,7 +20,7 @@ import {
   azioneViva,
   chiaveRichiesta,
   daRiscrivere,
-  ETICHETTA_STATO_AZIONE,
+  etichettaStatoAzione,
   motivoDaMostrare,
   perProssimoTurno,
 } from './vista';
@@ -50,7 +51,7 @@ export function MiaAzione({ azione, stato }: { azione: AzionePrivata; stato: Sta
   return (
     <div data-testid="mia-azione" className="flex flex-col gap-1.5">
       <div className="flex min-h-8 flex-wrap items-center gap-x-2 gap-y-1 text-[0.95rem]">
-        <span className="font-semibold text-pergamena">La tua azione:</span>
+        <span className="font-semibold text-pergamena">{t('telefono.mia.tua_azione')}</span>
         <span
           data-testid="stato-mia-azione"
           data-stato={azione.stato}
@@ -65,18 +66,18 @@ export function MiaAzione({ azione, stato }: { azione: AzionePrivata; stato: Sta
               <span className="relative inline-flex size-2 rounded-full bg-notte" />
             </span>
           )}
-          {ETICHETTA_STATO_AZIONE[azione.stato]}
+          {etichettaStatoAzione(azione.stato)}
         </span>
-        {prossimo && <span className="text-pergamena-2">· prossimo turno</span>}
-        {azione.privata && <span className="text-lago">· privata</span>}
-        {viva && !nellaCasella && bozza.trim() !== '' && <span className="text-brace">· modifiche non inviate</span>}
+        {prossimo && <span className="text-pergamena-2">{t('telefono.stato.prossimo_turno')}</span>}
+        {azione.privata && <span className="text-lago">{t('telefono.mia.privata')}</span>}
+        {viva && !nellaCasella && bozza.trim() !== '' && <span className="text-brace">{t('telefono.mia.non_inviate')}</span>}
         {rimandata && (
           <button
             type="button"
             onClick={riapriScelta}
             className="ml-auto min-h-9 rounded-full bg-candela px-3 text-sm font-bold text-notte"
           >
-            Decidi
+            {t('telefono.mia.decidi')}
           </button>
         )}
       </div>
@@ -88,7 +89,7 @@ export function MiaAzione({ azione, stato }: { azione: AzionePrivata; stato: Sta
             azione.stato === 'ritirata' ? 'text-cenere line-through' : 'text-pergamena-2',
           )}
         >
-          «{azione.testo}»
+          {t('comune.citazione', { testo: azione.testo })}
         </p>
       )}
 
@@ -116,7 +117,7 @@ export function MiaAzione({ azione, stato }: { azione: AzionePrivata; stato: Sta
               onClick={chiediFuoco}
               className="min-h-11 shrink-0 rounded-lg border border-brace px-3 font-bold text-brace"
             >
-              Riscrivi
+              {t('telefono.mia.riscrivi')}
             </button>
           )}
         </div>

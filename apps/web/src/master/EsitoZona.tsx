@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { useMaster } from '../store/master';
 import type { ZonaComando } from './comandi';
 import { oraBreve } from './etichette';
+import { t } from '../lingua';
 
 export function EsitoZona({ zona, className }: { zona: ZonaComando; className?: string }) {
   const esito = useMaster((s) => s.esiti[zona]);
@@ -26,10 +27,10 @@ export function EsitoZona({ zona, className }: { zona: ZonaComando; className?: 
     >
       <span className="min-w-0 flex-1">
         {esito.ok ? (
-          <>Fatto: {esito.descrizione}</>
+          <>{t('master.esito.fatto', { descrizione: esito.descrizione })}</>
         ) : (
           <>
-            <strong className="font-semibold">«{esito.descrizione}» rifiutato:</strong> {esito.errore}
+            <strong className="font-semibold">{t('master.esito.rifiutato', { descrizione: esito.descrizione })}</strong> {esito.errore}
           </>
         )}
       </span>
@@ -37,7 +38,7 @@ export function EsitoZona({ zona, className }: { zona: ZonaComando; className?: 
       <button
         type="button"
         onClick={() => togli(zona)}
-        aria-label="Chiudi l’avviso"
+        aria-label={t('master.esito.chiudi')}
         className="-my-0.5 shrink-0 rounded px-1 font-bold opacity-80 hover:opacity-100"
       >
         ×

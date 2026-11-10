@@ -9,23 +9,24 @@ import { virgolettato } from '../lib/formato';
 import { Riquadro } from './Riquadro';
 import { useSegueFondo } from './useSegueFondo';
 import { etichettaTurno } from './etichette';
+import { t } from '../lingua';
 
 export function SezioneTrascrizione({ voci, className }: { voci: VoceTrascrizione[]; className?: string }) {
   const ultima = voci[voci.length - 1]?.id ?? null;
   const { ref, suScorrimento, nuove, vaiInFondo } = useSegueFondo<HTMLDivElement>(ultima);
 
   return (
-    <Riquadro titolo="Trascrizione" conteggio={voci.length} className={className} classeCorpo="relative flex-1">
+    <Riquadro titolo={t('master.trascrizione.titolo')} conteggio={voci.length} className={className} classeCorpo="relative flex-1">
       <div
         ref={ref}
         onScroll={suScorrimento}
         data-testid="master-trascrizione"
         role="log"
-        aria-label="Trascrizione pubblica della scena"
+        aria-label={t('master.trascrizione.aria')}
         className="h-full min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1"
       >
         {voci.length === 0 ? (
-          <p className="py-6 text-center text-sm text-cenere italic">Ancora niente: la scena non è cominciata.</p>
+          <p className="py-6 text-center text-sm text-cenere italic">{t('master.trascrizione.vuota')}</p>
         ) : (
           <ol className="flex flex-col gap-1.5">
             {voci.map((voce, i) => {
@@ -47,7 +48,7 @@ export function SezioneTrascrizione({ voci, className }: { voci: VoceTrascrizion
           onClick={vaiInFondo}
           className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-candela px-4 py-1 text-sm font-bold text-notte shadow-profonda"
         >
-          ↓ Nuove righe
+          {t('master.trascrizione.nuove')}
         </button>
       )}
     </Riquadro>

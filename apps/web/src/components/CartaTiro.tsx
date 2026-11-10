@@ -17,6 +17,7 @@
  * del telefono: una riga). L'animazione è in useAnimazioneTiro.ts, una volta per id; le parti
  * ancora nascoste restano al loro posto (`invisible`), così la carta non cambia misura mentre si anima.
  */
+import { t } from '../lingua';
 import clsx from 'clsx';
 import type { TiroMostrato } from '@cantastorie/shared';
 import {
@@ -224,8 +225,8 @@ function CartaIntera(p: PropsInterne) {
           <p data-testid="carta-chi" className={clsx('min-w-0 truncate font-titolo leading-tight font-bold', m.nome, coloreNome(tiro))}>
             {tiro.nome}
           </p>
-          {tiro.di_png && <Chip className={clsx(m.chip, 'border-[#ff9a6b]/70 text-[#ff9a6b]')}>PNG</Chip>}
-          {tiro.privata && <Chip className={clsx(m.chip, 'border-lago/70 text-lago')}>privata</Chip>}
+          {tiro.di_png && <Chip className={clsx(m.chip, 'border-[#ff9a6b]/70 text-[#ff9a6b]')}>{t('comune.carta.png')}</Chip>}
+          {tiro.privata && <Chip className={clsx(m.chip, 'border-lago/70 text-lago')}>{t('comune.carta.privata')}</Chip>}
         </div>
 
         <p data-testid="carta-cosa" className={clsx('line-clamp-2 leading-snug text-pergamena', m.cosa)}>
@@ -233,7 +234,7 @@ function CartaIntera(p: PropsInterne) {
           {tiro.bersaglio && (
             <>
               {' '}
-              <span className="text-cenere">contro</span> <strong className="font-bold">{tiro.bersaglio.nome}</strong>
+              <span className="text-cenere">{t('comune.carta.contro')}</span> <strong className="font-bold">{tiro.bersaglio.nome}</strong>
             </>
           )}
         </p>
@@ -245,7 +246,7 @@ function CartaIntera(p: PropsInterne) {
             <>
               <Chip className={clsx(m.chip, 'border-bordo-chiaro text-cenere')}>{`d${facce}`}</Chip>
               <span data-testid="carta-tiro-soglia" className={clsx('font-extrabold text-pergamena tabular-nums', m.totale, comparsa(p, 'totale'))}>
-                tiro {tiro.dado}
+                {t('comune.tiri.tiro', { dado: tiro.dado })}
               </span>
               <span className={clsx('text-cenere', m.uguale, comparsa(p, 'totale'))}>≤</span>
             </>
@@ -316,7 +317,7 @@ function CartaIntera(p: PropsInterne) {
           // Il danno e, se il bersaglio cade, «a terra»: si scoprono con l'esito.
           <p data-testid="carta-danno" className={clsx('flex flex-wrap items-center leading-snug', m.danno, comparsa(p, 'esito'))}>
             {colpito && tiro.danno && <span className="font-semibold text-pergamena">{testoDanno(tiro.danno)}</span>}
-            {tiro.a_terra && <Chip className={clsx(m.chip, 'border-sangue bg-sangue/20 text-sangue uppercase')}>a terra</Chip>}
+            {tiro.a_terra && <Chip className={clsx(m.chip, 'border-sangue bg-sangue/20 text-sangue uppercase')}>{t('comune.carta.a_terra')}</Chip>}
           </p>
         )}
       </div>
@@ -350,8 +351,8 @@ function CartaCompatta(p: PropsInterne) {
   const chi = (
     <span className="min-w-0 truncate">
       <strong className={clsx('font-bold', coloreNome(tiro))}>{tiro.nome}</strong>
-      {tiro.di_png && <span className="text-[#ff9a6b]"> (PNG)</span>}
-      {tiro.privata && <span className="text-lago"> (privata)</span>}
+      {tiro.di_png && <span className="text-[#ff9a6b]"> ({t('comune.carta.png')})</span>}
+      {tiro.privata && <span className="text-lago"> ({t('comune.carta.privata')})</span>}
       <span className="text-pergamena-2"> · {testoCosa(tiro)}</span>
     </span>
   );

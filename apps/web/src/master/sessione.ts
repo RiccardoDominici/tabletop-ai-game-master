@@ -19,6 +19,7 @@ import { useMaster } from '../store/master';
 import { useAvvisi } from '../store/avvisi';
 import { chiaveComando, descriviComando, ZONA_COMANDO } from './comandi';
 import { ambienteDelBrowser, dimenticaToken, pulisciToken, salvaToken, tokenIniziale } from './token';
+import { t } from '../lingua';
 
 const log = creaLog('master');
 
@@ -145,12 +146,12 @@ export async function inviaComando(comando: ComandoMaster, descrizione = descriv
   const chiave = chiaveComando(comando);
   const zona = ZONA_COMANDO[comando.tipo];
   const store = useMaster.getState();
-  if (store.inCorso[chiave]) return esitoErrore('Comando già in corso: aspetta la risposta.');
+  if (store.inCorso[chiave]) return esitoErrore(t('master.errore.gia_in_corso'));
 
   let esito: Esito;
   store.iniziaComando(chiave);
   if (store.entrata !== 'dentro') {
-    esito = esitoErrore('Il pannello non è ancora entrato nel tavolo: aspetta il collegamento.');
+    esito = esitoErrore(t('master.errore.non_entrato'));
   } else {
     log.info('Comando inviato', { tipo: comando.tipo, descrizione });
     esito = await conEsito((s, fine) => s.emit('master:comando', comando, fine));

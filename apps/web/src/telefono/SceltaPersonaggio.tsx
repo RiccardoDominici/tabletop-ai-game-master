@@ -3,6 +3,7 @@
  * telefono l'ha già preso. Scegliere un PG già preso è permesso (il server conta i telefoni):
  * l'etichetta serve solo a evitare doppioni per sbaglio.
  */
+import { t } from '../lingua';
 import clsx from 'clsx';
 import type { StatoTavolo } from '@cantastorie/shared';
 import { useTelefono } from '../store/telefono';
@@ -19,16 +20,16 @@ export function SceltaPersonaggio({ stato }: { stato: StatoTavolo }) {
   return (
     <main className="sicuro-basso sicuro-lati mx-auto flex min-h-full max-w-lg flex-col gap-5 pt-3">
       <header className="pt-2">
-        <p className="text-sm tracking-[0.2em] text-candela uppercase">Tabletop AI Game Master</p>
-        <h1 className="mt-1 font-titolo text-[1.75rem] leading-tight font-semibold">Scegli il tuo personaggio</h1>
+        <p className="text-sm tracking-[0.2em] text-candela uppercase">{t('telefono.marchio')}</p>
+        <h1 className="mt-1 font-titolo text-[1.75rem] leading-tight font-semibold">{t('telefono.scelta.titolo')}</h1>
         <p className="mt-2 text-pergamena-2">
-          Scena: <span className="font-racconto italic">{stato.scena.titolo}</span>
+          {t('telefono.scelta.scena')} <span className="font-racconto italic">{stato.scena.titolo}</span>
         </p>
       </header>
 
       {stato.pg.length === 0 ? (
         <p className="rounded-carta border border-bordo bg-notte-2 p-5 text-pergamena-2">
-          Nessun personaggio in questa scena: chiedi al master di caricarla.
+          {t('telefono.scelta.nessuno')}
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
@@ -53,9 +54,9 @@ export function SceltaPersonaggio({ stato }: { stato: StatoTavolo }) {
                   <span className="flex items-center justify-between gap-3">
                     <span className="font-titolo text-xl font-semibold text-pergamena">{pg.nome}</span>
                     {mio ? (
-                      <Etichetta tono="candela">il tuo</Etichetta>
+                      <Etichetta tono="candela">{t('telefono.scelta.il_tuo')}</Etichetta>
                     ) : presoDaAltri ? (
-                      <Etichetta tono="cenere">già scelto</Etichetta>
+                      <Etichetta tono="cenere">{t('telefono.scelta.gia_scelto')}</Etichetta>
                     ) : null}
                   </span>
                   {pg.descrizione && <span className="text-pergamena-2">{pg.descrizione}</span>}
@@ -78,12 +79,12 @@ export function SceltaPersonaggio({ stato }: { stato: StatoTavolo }) {
           onClick={() => apriScelta(false)}
           className="min-h-12 self-center rounded-full px-6 text-pergamena-2 underline underline-offset-4"
         >
-          Annulla, resto con il mio personaggio
+          {t('telefono.scelta.annulla')}
         </button>
       )}
 
       <p className="mt-auto text-center text-sm text-cenere">
-        La scelta resta salvata su questo telefono: puoi cambiarla in qualsiasi momento.
+        {t('telefono.scelta.salvata')}
       </p>
     </main>
   );

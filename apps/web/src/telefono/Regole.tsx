@@ -8,6 +8,7 @@
  *   a questo telefono (`regole:chiedi`), presa dai passi del manuale, e non si condivide col tavolo.
  * - Il socket e gli ack passano da `chiedi` (lib/socket.ts): timeout esplicito, nessun invio in coda.
  */
+import { t } from '../lingua';
 import { useEffect, useState, type FormEvent } from 'react';
 import clsx from 'clsx';
 import type { RegolePubbliche, RispostaRegola } from '@cantastorie/shared';
@@ -19,9 +20,6 @@ const log = creaLog('regole');
 
 /** Lunghezza massima di una domanda (caratteri): una regola si chiede in una frase. */
 export const MASSIMO_DOMANDA = 300;
-
-const ERRORE_LETTURA = 'Non riesco a leggere le regole adesso: riprova tra un attimo.';
-const ERRORE_RISPOSTA = 'Non riesco a rispondere adesso: riprova tra un attimo.';
 
 type Caricamento = { stato: 'carico' } | { stato: 'pronto'; regole: RegolePubbliche } | { stato: 'errore' };
 
@@ -78,9 +76,9 @@ export function Regole({ aperta, onChiudi }: PropsRegole) {
     >
       <header className="sicuro-lati flex items-center gap-3 border-b border-bordo py-3">
         <div className="min-w-0 flex-1">
-          <p className="text-xs tracking-[0.18em] text-cenere uppercase">Regole</p>
+          <p className="text-xs tracking-[0.18em] text-cenere uppercase">{t('telefono.tavolo.regole')}</p>
           <h2 id="titolo-regole" className="font-titolo text-xl leading-tight font-semibold break-words text-pergamena">
-            {caricamento.stato === 'pronto' ? caricamento.regole.nome : 'Il set di regole'}
+            {caricamento.stato === 'pronto' ? caricamento.regole.nome : t('telefono.regole.set')}
           </h2>
         </div>
         <button
@@ -88,25 +86,25 @@ export function Regole({ aperta, onChiudi }: PropsRegole) {
           onClick={onChiudi}
           className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-4 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
         >
-          Chiudi
+          {t('telefono.chiudi')}
         </button>
       </header>
 
       <div className="sicuro-lati sicuro-basso min-h-0 flex-1 overflow-y-auto py-4">
         <div className="mx-auto flex max-w-2xl flex-col gap-5">
-          {caricamento.stato === 'carico' && <p className="text-pergamena-2">Carico le regole…</p>}
+          {caricamento.stato === 'carico' && <p className="text-pergamena-2">{t('telefono.regole.carico')}</p>}
 
           {caricamento.stato === 'errore' && (
             <div className="flex flex-col items-start gap-3">
               <p role="alert" className="text-sangue">
-                {ERRORE_LETTURA}
+                {t('telefono.regole.errore_lettura')}
               </p>
               <button
                 type="button"
                 onClick={() => setTentativo((n) => n + 1)}
                 className="min-h-12 rounded-full border border-candela/60 px-5 text-[0.95rem] text-candela active:bg-notte-3"
               >
-                Riprova
+                {t('telefono.regole.riprova')}
               </button>
             </div>
           )}
@@ -124,14 +122,14 @@ function SetRegole({ regole }: { regole: RegolePubbliche }) {
     <>
       <section data-testid="fonte-regole" className="flex flex-col gap-1 text-sm text-cenere">
         <p>
-          <span className="text-pergamena-2">Fonte:</span> {regole.fonte}
+          <span className="text-pergamena-2">{t('telefono.regole.fonte')}</span> {regole.fonte}
         </p>
         <p>
-          <span className="text-pergamena-2">Licenza:</span> {regole.licenza}
+          <span className="text-pergamena-2">{t('telefono.regole.licenza')}</span> {regole.licenza}
         </p>
         {regole.attribuzione && (
           <p>
-            <span className="text-pergamena-2">Attribuzione:</span> {regole.attribuzione}
+            <span className="text-pergamena-2">{t('telefono.regole.attribuzione')}</span> {regole.attribuzione}
           </p>
         )}
       </section>
@@ -210,12 +208,12 @@ function ChiediRegola() {
     setRisposta(null);
     chiedi<RispostaRegola>((s, fine) => s.emit('regole:chiedi', { domanda: testo }, fine)).then(
       (r) => {
-        setRisposta(r ?? { ok: false, errore: ERRORE_RISPOSTA });
+        setRisposta(r ?? { ok: false, errore: t('telefono.regole.errore_risposta') });
         setInviando(false);
       },
       (errore: unknown) => {
         log.warn('Domanda sulla regola non riuscita', { messaggio: errore instanceof Error ? errore.message : String(errore) });
-        setRisposta({ ok: false, errore: ERRORE_RISPOSTA });
+        setRisposta({ ok: false, errore: t('telefono.regole.errore_risposta') });
         setInviando(false);
       },
     );
@@ -223,17 +221,17 @@ function ChiediRegola() {
 
   return (
     <section className="rounded-carta border border-candela/50 bg-candela-scura/15 p-4" data-testid="chiedi-regola-box">
-      <h3 className="font-titolo text-base font-semibold text-candela">Chiedi una regola</h3>
+      <h3 className="font-titolo text-base font-semibold text-candela">{t('telefono.regole.chiedi_titolo')}</h3>
       <form onSubmit={invia} className="mt-3 flex flex-col gap-3">
         <label className="flex flex-col gap-1 text-sm text-cenere">
-          La tua domanda
+          {t('telefono.regole.domanda')}
           <textarea
             value={domanda}
             onChange={(e) => setDomanda(e.target.value)}
             maxLength={MASSIMO_DOMANDA}
             rows={3}
             data-testid="domanda-regola"
-            placeholder="Per esempio: come si risolve un tentativo di convincere qualcuno?"
+            placeholder={t('telefono.regole.domanda_segnaposto')}
             className="resize-none rounded-lg border border-bordo-chiaro bg-notte-2 p-3 text-base text-pergamena placeholder:text-cenere/70 focus:border-candela focus:outline-none"
           />
         </label>
@@ -247,7 +245,7 @@ function ChiediRegola() {
             disabled={inviando || testo === ''}
             className="min-h-12 rounded-full border border-candela/60 px-5 text-[0.95rem] text-candela active:bg-notte-3 disabled:opacity-40"
           >
-            {inviando ? 'Cerco…' : 'Chiedi'}
+            {inviando ? t('telefono.regole.cerco') : t('telefono.regole.chiedi')}
           </button>
         </div>
       </form>
@@ -260,7 +258,7 @@ function ChiediRegola() {
                 {risposta.testo}
               </p>
               {risposta.fonti.length > 0 && (
-                <p className="mt-2 text-sm text-cenere">Dal manuale: {risposta.fonti.join(' · ')}</p>
+                <p className="mt-2 text-sm text-cenere">{t('telefono.regole.dal_manuale', { fonti: risposta.fonti.join(' · ') })}</p>
               )}
             </>
           ) : (
@@ -268,7 +266,7 @@ function ChiediRegola() {
               {risposta.errore}
             </p>
           )}
-          <p className="mt-3 text-xs text-cenere">La risposta si vede solo su questo telefono.</p>
+          <p className="mt-3 text-xs text-cenere">{t('telefono.regole.solo_telefono')}</p>
         </div>
       )}
     </section>

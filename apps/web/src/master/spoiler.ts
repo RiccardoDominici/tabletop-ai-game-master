@@ -15,6 +15,7 @@
 import type { BattutaMaster } from '@cantastorie/shared';
 import { archivioDelBrowser, type Archivio } from './token';
 import { creaLog } from '../lib/log';
+import { t } from '../lingua';
 
 const log = creaLog('master');
 
@@ -43,7 +44,7 @@ export function salvaSenzaSpoiler(attiva: boolean, archivio: Archivio | null = a
 
 /** Etichetta dell'orologio: col nome, o neutra («Orologio 2») senza spoiler. */
 export function nomeOrologio(nome: string, indice: number, senzaSpoiler: boolean): string {
-  return senzaSpoiler ? `Orologio ${indice + 1}` : nome;
+  return senzaSpoiler ? t('master.spoiler.orologio', { n: indice + 1 }) : nome;
 }
 
 /** Tipi che svelano un segreto anche dopo l'uscita (stessa scelta del catalogo del selettore). */
@@ -51,7 +52,7 @@ const TIPI_RIVELATORI = new Set(['menzogna', 'verita', 'confessione']);
 
 /** Il tipo di una battuta da mostrare: senza spoiler «risposta» al posto di menzogna/verità/confessione. */
 export function tipoBattuta(tipo: string, senzaSpoiler: boolean): string {
-  return senzaSpoiler && TIPI_RIVELATORI.has(tipo) ? 'risposta' : tipo;
+  return senzaSpoiler && TIPI_RIVELATORI.has(tipo) ? t('master.spoiler.risposta') : tipo;
 }
 
 /** Battute non ancora uscite, senza spoiler: solo quante per chi parla, in ordine di numero. */
@@ -61,5 +62,7 @@ export function contaPerParlante(battute: readonly BattutaMaster[]): Array<{ chi
   return [...conti].map(([chi, quante]) => ({ chi, quante })).sort((a, b) => b.quante - a.quante || a.chi.localeCompare(b.chi));
 }
 
-/** Testo da mostrare al posto del contenuto di un'azione privata. */
-export const TESTO_PRIVATA_NASCOSTA = 'Contenuto nascosto (azione privata): spegni «senza spoiler» per leggerlo.';
+/** Testo da mostrare al posto del contenuto di un'azione privata (nella lingua attiva, al momento della lettura). */
+export function testoPrivataNascosta(): string {
+  return t('master.spoiler.privata_nascosta');
+}

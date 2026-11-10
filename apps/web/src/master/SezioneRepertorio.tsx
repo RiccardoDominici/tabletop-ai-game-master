@@ -9,27 +9,28 @@ import type { BattutaMaster, RepertorioMaster } from '@cantastorie/shared';
 import { Riquadro, Vuoto } from './Riquadro';
 import { useSenzaSpoiler } from '../store/master';
 import { contaPerParlante, tipoBattuta } from './spoiler';
+import { t } from '../lingua';
 
 export function SezioneRepertorio({ repertorio }: { repertorio: RepertorioMaster }) {
   const { usate, disponibili, non_disponibili: nonDisponibili, indizi_rivelati: indizi } = repertorio;
   const senzaSpoiler = useSenzaSpoiler();
   return (
-    <Riquadro titolo="Repertorio" conteggio={`${disponibili.length} disponibili`} data-testid="master-repertorio">
-      <Piega titolo="Disponibili adesso" numero={disponibili.length} aperta testid="master-repertorio-disponibili">
+    <Riquadro titolo={t('master.repertorio.titolo')} conteggio={t('master.repertorio.conteggio', { n: disponibili.length })} data-testid="master-repertorio">
+      <Piega titolo={t('master.repertorio.disponibili')} numero={disponibili.length} aperta testid="master-repertorio-disponibili">
         {disponibili.length === 0 ? (
-          <Vuoto>Nessuna battuta disponibile adesso.</Vuoto>
+          <Vuoto>{t('master.repertorio.nessuna_disponibile')}</Vuoto>
         ) : senzaSpoiler ? (
           <ContiPerParlante battute={disponibili} />
         ) : (
           <ListaBattute battute={disponibili} senzaSpoiler={false} />
         )}
       </Piega>
-      <Piega titolo="Già uscite" numero={usate.length} testid="master-repertorio-usate">
-        {usate.length === 0 ? <Vuoto>Nessuna battuta ancora uscita.</Vuoto> : <ListaBattute battute={usate} senzaSpoiler={senzaSpoiler} />}
+      <Piega titolo={t('master.repertorio.usate')} numero={usate.length} testid="master-repertorio-usate">
+        {usate.length === 0 ? <Vuoto>{t('master.repertorio.nessuna_uscita')}</Vuoto> : <ListaBattute battute={usate} senzaSpoiler={senzaSpoiler} />}
       </Piega>
-      <Piega titolo="Indizi rivelati" numero={indizi.length} testid="master-repertorio-indizi">
+      <Piega titolo={t('master.repertorio.indizi')} numero={indizi.length} testid="master-repertorio-indizi">
         {indizi.length === 0 ? (
-          <Vuoto>Nessun indizio rivelato.</Vuoto>
+          <Vuoto>{t('master.repertorio.nessun_indizio')}</Vuoto>
         ) : (
           <ul className="flex flex-wrap gap-1">
             {indizi.map((id) => (
@@ -41,8 +42,8 @@ export function SezioneRepertorio({ repertorio }: { repertorio: RepertorioMaster
         )}
       </Piega>
       <p className="text-sm text-cenere">
-        Non disponibili adesso: <strong className="text-pergamena-2 tabular-nums">{nonDisponibili}</strong>{' '}
-        <span className="text-xs">(condizioni false, esaurite o di un’altra scena)</span>
+        {t('master.repertorio.non_disponibili')} <strong className="text-pergamena-2 tabular-nums">{nonDisponibili}</strong>{' '}
+        <span className="text-xs">{t('master.repertorio.motivi')}</span>
       </p>
     </Riquadro>
   );
@@ -103,9 +104,9 @@ function ListaBattute({ battute, senzaSpoiler }: { battute: BattutaMaster[]; sen
             <strong className="font-semibold">{b.chi}</strong>
             <span className="text-cenere"> · {tipoBattuta(b.tipo, senzaSpoiler)} · </span>
             <span className="text-pergamena-2">{b.quando}</span>
-            {b.scena && <span className="text-xs text-cenere"> · scena {b.scena}</span>}
+            {b.scena && <span className="text-xs text-cenere"> · {t('master.repertorio.scena', { scena: b.scena })}</span>}
           </span>
-          <span className="shrink-0 text-xs text-cenere tabular-nums" title="usi / massimo">
+          <span className="shrink-0 text-xs text-cenere tabular-nums" title={t('master.repertorio.usi')}>
             {b.usi}/{b.max_usi}
           </span>
         </li>

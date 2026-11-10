@@ -10,6 +10,7 @@
  * rovescia da `richiesta.scadenza_ms` (orologio del server, corretto dallo scarto); allo scadere il
  * server la rende «sospesa». Vibrazione all'apparire, se il telefono la permette.
  */
+import { t } from '../lingua';
 import { ordinePulsanti, type Scelta } from './scelta';
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
@@ -70,8 +71,8 @@ function Avviso({ azione }: { azione: AzionePrivata }) {
   const Pulsante = ({ scelta, primario = false, rif }: { scelta: Scelta; primario?: boolean; rif?: typeof primo }) => {
     const dati = {
       conferma: { testid: 'scelta-conferma', etichetta: richiesta.conferma, azione: () => void confermaAzione() },
-      cambio: { testid: 'scelta-cambio', etichetta: 'Cambio', azione: cambiaAzione },
-      ritiro: { testid: 'scelta-ritiro', etichetta: 'Ritiro', azione: () => void ritiraAzione() },
+      cambio: { testid: 'scelta-cambio', etichetta: t('telefono.decisione.cambio'), azione: cambiaAzione },
+      ritiro: { testid: 'scelta-ritiro', etichetta: t('telefono.decisione.ritiro'), azione: () => void ritiraAzione() },
     }[scelta];
     return (
       <button
@@ -106,16 +107,16 @@ function Avviso({ azione }: { azione: AzionePrivata }) {
     >
       <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-5 overflow-y-auto pt-4">
         <p className="self-start rounded-full bg-candela px-3 py-1 text-sm font-bold tracking-wide text-notte uppercase">
-          Da decidere
+          {t('telefono.decisione.da_decidere')}
         </p>
         <h2 id="scelta-titolo" className="font-titolo text-2xl leading-tight font-semibold text-pergamena">
-          Qualcosa è cambiato
+          {t('telefono.decisione.titolo')}
         </h2>
         <p id="scelta-testo" data-testid="scelta-testo" className="font-racconto text-[1.3rem] leading-relaxed text-pergamena">
           {richiesta.testo}
         </p>
         <p className="rounded-xl border border-bordo bg-notte-2 px-4 py-3 text-pergamena-2">
-          <span className="font-semibold text-pergamena">La tua azione: </span>«{azione.testo}»
+          <span className="font-semibold text-pergamena">{t('telefono.decisione.tua_azione')}</span>{t('comune.citazione', { testo: azione.testo })}
         </p>
 
         {secondi !== null && (
@@ -123,8 +124,8 @@ function Avviso({ azione }: { azione: AzionePrivata }) {
             <span className="font-titolo text-4xl leading-none font-bold text-candela tabular-nums">{secondi}</span>
             <span className="leading-snug">
               {secondi > 0
-                ? `second${secondi === 1 ? 'o' : 'i'} per scegliere, poi l’azione resta fuori da questo turno`
-                : 'Tempo finito: l’azione resta fuori da questo turno'}
+                ? t(secondi === 1 ? 'telefono.decisione.conto_uno' : 'telefono.decisione.conto_molti')
+                : t('telefono.decisione.conto_finito')}
             </span>
           </div>
         )}

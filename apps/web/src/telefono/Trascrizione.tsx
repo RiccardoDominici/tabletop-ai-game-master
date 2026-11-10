@@ -5,6 +5,7 @@
  * Scorrimento automatico «educato»: si scende da soli solo se si era già in fondo (o quasi); se il
  * giocatore è risalito a rileggere non lo si strattona, e compare un pulsante «nuove righe».
  */
+import { t } from '../lingua';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import type { EsitoPrivato, VoceTrascrizione } from '@cantastorie/shared';
@@ -76,12 +77,12 @@ export function Trascrizione({ voci: pubbliche, className }: { voci: VoceTrascri
         onScroll={suScorrimento}
         data-testid="trascrizione"
         role="log"
-        aria-label="Trascrizione della scena"
+        aria-label={t('telefono.trascrizione.aria')}
         // Bordo alto sfumato: la riga tagliata sotto il banner non sembra un errore di layout.
         className="h-full overflow-y-auto overscroll-contain px-1 pt-4 pb-3 [mask-image:linear-gradient(to_bottom,transparent_0,black_1.5rem)]"
       >
         {voci.length === 0 ? (
-          <p className="px-3 py-8 text-center text-cenere">La storia comincia appena il narratore prende la parola.</p>
+          <p className="px-3 py-8 text-center text-cenere">{t('telefono.trascrizione.vuota')}</p>
         ) : (
           <ol className="flex flex-col gap-3">
             {voci.map((voce, i) => {
@@ -103,7 +104,7 @@ export function Trascrizione({ voci: pubbliche, className }: { voci: VoceTrascri
           onClick={vaiInFondo}
           className="absolute bottom-3 left-1/2 min-h-12 -translate-x-1/2 rounded-full bg-candela px-5 font-bold text-notte shadow-profonda"
         >
-          ↓ Nuove righe
+          ↓ {t('telefono.trascrizione.nuove')}
         </button>
       )}
     </div>
@@ -114,7 +115,7 @@ function SeparatoreTurno({ turno }: { turno: number }) {
   return (
     <div className="my-2 flex items-center gap-3 text-xs tracking-[0.2em] text-cenere uppercase" aria-hidden>
       <span className="h-px flex-1 bg-bordo" />
-      {turno === 0 ? 'Apertura' : `Turno ${turno}`}
+      {turno === 0 ? t('telefono.trascrizione.apertura') : t('telefono.turno', { n: turno })}
       <span className="h-px flex-1 bg-bordo" />
     </div>
   );
@@ -124,7 +125,7 @@ function SeparatoreTurno({ turno }: { turno: number }) {
 function RigaPrivata({ esito }: { esito: EsitoPrivato }) {
   return (
     <div data-tipo="privato" className="mx-2 rounded-xl border border-dashed border-candela/50 bg-notte-2 px-4 py-2.5">
-      <p className="text-xs font-semibold tracking-[0.16em] text-candela uppercase">Solo per te</p>
+      <p className="text-xs font-semibold tracking-[0.16em] text-candela uppercase">{t('telefono.trascrizione.solo_per_te')}</p>
       <p className="font-racconto text-[1.0625rem] leading-relaxed text-pergamena">
         {esito.chi !== 'narratore' && <strong className="font-sans font-bold text-brace">{esito.nome} </strong>}
         {esito.chi !== 'narratore' ? virgolettato(esito.testo) : esito.testo}

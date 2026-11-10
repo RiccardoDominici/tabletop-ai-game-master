@@ -9,6 +9,7 @@
  * - La scelta resta in localStorage: dopo un ricaricamento il primo tocco sulla pagina la riaccende.
  * - Il telefono non manda avvisi di inizio/fine audio: le misure le fa solo il proiettore.
  */
+import { t } from '../lingua';
 import { create } from 'zustand';
 import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@cantastorie/shared';
 import { LettorePcm } from '../audio/lettore';
@@ -106,7 +107,7 @@ export async function accendiAscolto(): Promise<void> {
     await lettore.sblocca();
   } catch (err) {
     log.warn('Ascolta qui: audio non disponibile', { err: (err as Error).message });
-    useAscolto.setState({ errore: 'Questo browser non riesce a suonare l’audio.' });
+    useAscolto.setState({ errore: t('telefono.ascolta.no_audio') });
     return;
   }
   scollega = collegaEventi(lettore);

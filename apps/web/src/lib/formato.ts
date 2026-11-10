@@ -1,6 +1,7 @@
 /**
  * Formattazione pura per l'interfaccia (testata in formato.test.ts).
  */
+import { elenco, t } from '../lingua';
 
 /** Spazio fine non separabile: separa le migliaia senza confondersi col punto decimale. */
 const SPAZIO_MIGLIAIA = '\u202f';
@@ -19,7 +20,7 @@ export function formattaMs(ms: number | null | undefined): string {
 export function virgolettato(testo: string): string {
   const pulito = testo.trim();
   if (/^[«"“„']/.test(pulito)) return pulito;
-  return `«${pulito}»`;
+  return t('comune.citazione', { testo: pulito });
 }
 
 /** Costo in dollari con abbastanza decimali per i centesimi di centesimo. */
@@ -35,7 +36,5 @@ export function secondiRimasti(scadenzaMs: number, oraMs: number): number {
 
 /** Elenco italiano: «A», «A e B», «A, B e C». */
 export function elencoNomi(nomi: readonly string[]): string {
-  if (nomi.length === 0) return '';
-  if (nomi.length === 1) return nomi[0] ?? '';
-  return `${nomi.slice(0, -1).join(', ')} e ${nomi[nomi.length - 1] ?? ''}`;
+  return elenco(nomi);
 }

@@ -10,13 +10,14 @@ import { classePulsante } from './stili';
 import { FormNota } from './FormNota';
 import { testoTurniNota } from './note';
 import { etichettaTurno } from './etichette';
+import { t } from '../lingua';
 
 export function SezioneNote({ stato }: { stato: StatoMaster }) {
   const { note, limiti_note: limiti } = stato;
   return (
-    <Riquadro titolo="Note di regia" conteggio={`${note.length}/${limiti.max}`} zona="note" data-testid="master-note">
+    <Riquadro titolo={t('master.note.titolo')} conteggio={`${note.length}/${limiti.max}`} zona="note" data-testid="master-note">
       {note.length === 0 ? (
-        <Vuoto>Nessuna nota: il narratore segue solo la scena.</Vuoto>
+        <Vuoto>{t('master.note.nessuna')}</Vuoto>
       ) : (
         <ul className="flex flex-col gap-1.5">
           {note.map((n) => (
@@ -45,10 +46,10 @@ function RigaNota({ nota }: { nota: NotaRegia }) {
           type="button"
           data-testid={`master-togli-nota-${nota.id}`}
           disabled={inCorso}
-          onClick={() => void inviaComando({ tipo: 'togli_nota', id: nota.id }, 'Togli la nota di regia')}
+          onClick={() => void inviaComando({ tipo: 'togli_nota', id: nota.id }, t('master.note.descr_togli'))}
           className={classePulsante('tenue', 'piccolo')}
         >
-          Togli
+          {t('master.note.togli')}
         </button>
       </div>
       <div className="mt-1 flex items-center gap-2 text-xs text-cenere">
@@ -59,7 +60,7 @@ function RigaNota({ nota }: { nota: NotaRegia }) {
           <span className="block h-full rounded-full bg-candela/70" style={{ width: `${quota * 100}%` }} />
         </span>
         <span>
-          {testoTurniNota(nota)} · scritta al {etichettaTurno(nota.creata_al_turno)}
+          {testoTurniNota(nota)} · {t('master.note.scritta_al', { turno: etichettaTurno(nota.creata_al_turno) })}
         </span>
       </div>
     </li>

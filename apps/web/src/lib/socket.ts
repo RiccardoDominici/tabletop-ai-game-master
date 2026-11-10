@@ -11,6 +11,7 @@
  * - Gli eventi con ack passano da `conEsito`/`chiedi`: timeout esplicito e niente invii «in coda»
  *   mentre si è disconnessi (un'azione bufferizzata e spedita minuti dopo sarebbe sbagliata).
  */
+import { t } from '../lingua';
 import { impostaLinguaInterfaccia } from '../lingua';
 import { io, type Socket } from 'socket.io-client';
 import type { Esito, EventiClientVersoServer, EventiServerVersoClient } from '@cantastorie/shared';
@@ -107,10 +108,10 @@ export function esitoErrore(errore: string): Esito {
 export function conEsito(
   emetti: (s: SocketConTimeout, fine: (errore: Error | null, esito?: Esito) => void) => void,
 ): Promise<Esito> {
-  if (!prendiSocket().connected) return Promise.resolve(esitoErrore(MESSAGGIO_NON_CONNESSO));
+  if (!prendiSocket().connected) return Promise.resolve(esitoErrore(messaggioNonConnesso()));
   return chiedi<Esito>(emetti).then(
-    (esito) => esito ?? esitoErrore('Risposta vuota dal server.'),
-    () => esitoErrore('Il server non ha risposto in tempo: riprova.'),
+    (esito) => esito ?? esitoErrore(t('comune.socket.risposta_vuota')),
+    () => esitoErrore(t('comune.socket.timeout')),
   );
 }
 
@@ -124,7 +125,7 @@ export function chiedi<T>(
   return new Promise<T | undefined>((risolvi, rifiuta) => {
     const s = prendiSocket();
     if (!s.connected) {
-      rifiuta(new Error('Non connesso al server'));
+      rifiuta(new Error(t('comune.socket.non_connesso')));
       return;
     }
     emetti(s.timeout(TIMEOUT_ACK_MS), (errore, risposta) => {
@@ -139,4 +140,6 @@ export function chiedi<T>(
 }
 
 /** Errore mostrato quando un'azione parte senza connessione. */
-export const MESSAGGIO_NON_CONNESSO = 'Non sei connesso al tavolo: riprova tra un attimo.';
+export function messaggioNonConnesso(): string {
+  return t('comune.socket.non_connesso_tavolo');
+}

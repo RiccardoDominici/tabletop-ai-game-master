@@ -4,11 +4,12 @@
  * Logica pura, testata in pacchetti.test.ts.
  */
 import type { PacchettiMaster } from '@cantastorie/shared';
+import { t } from '../lingua';
 
 /** «Sessione 02 di 3 · Il guado». */
 export function rigaPacchetto(p: PacchettiMaster): string {
   const ultimo = p.elenco.at(-1)?.numero ?? p.corrente.numero;
-  return `Sessione ${p.corrente.etichetta} di ${ultimo} · ${p.corrente.titolo}`;
+  return t('master.pacchetti.riga', { etichetta: p.corrente.etichetta, ultimo, titolo: p.corrente.titolo });
 }
 
 export interface StatoProssima {
@@ -22,10 +23,17 @@ export interface StatoProssima {
 /** Il pulsante «Prossima sessione»: acceso solo se il pacchetto dopo c'è e si carica. */
 export function statoProssima(p: PacchettiMaster): StatoProssima {
   const dopo = p.prossima;
-  if (!dopo) return { abilitato: false, testo: 'Prossima sessione', spiegazione: 'È l’ultima sessione preparata: la prossima si prepara tra le sessioni.' };
-  const nome = `sessione ${dopo.etichetta}${dopo.titolo ? ` · ${dopo.titolo}` : ''}`;
-  if (!dopo.pronta) return { abilitato: false, testo: `Prossima: ${dopo.etichetta}`, spiegazione: `La ${nome} non si carica: ${dopo.motivo ?? 'motivo sconosciuto'}` };
-  return { abilitato: true, testo: `Prossima: ${nome}`, spiegazione: 'Chiude questa sessione (col registro) e riparte dal riassunto della prossima.' };
+  if (!dopo) return { abilitato: false, testo: t('master.cmd.prossima_sessione'), spiegazione: t('master.pacchetti.ultima') };
+  const nome = dopo.titolo
+    ? t('master.pacchetti.sessione_titolo', { etichetta: dopo.etichetta, titolo: dopo.titolo })
+    : t('master.pacchetti.sessione', { etichetta: dopo.etichetta });
+  if (!dopo.pronta)
+    return {
+      abilitato: false,
+      testo: t('master.pacchetti.prossima', { etichetta: dopo.etichetta }),
+      spiegazione: t('master.pacchetti.non_si_carica', { nome, motivo: dopo.motivo ?? t('master.pacchetti.motivo_ignoto') }),
+    };
+  return { abilitato: true, testo: t('master.pacchetti.prossima', { etichetta: nome }), spiegazione: t('master.pacchetti.spiega') };
 }
 
 /** Il token di un telefono è lungo e anonimo: bastano le prime lettere per riconoscerlo. */

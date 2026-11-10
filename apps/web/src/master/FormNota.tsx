@@ -10,6 +10,7 @@ import { inviaComando } from './sessione';
 import { classePulsante } from './stili';
 import { controllaNota, testoNoteAlCompleto } from './note';
 import { turni as testoTurni } from './etichette';
+import { t } from '../lingua';
 
 export function FormNota({ piene, max, turniMax }: { piene: boolean; max: number; turniMax: number }) {
   const [testo, setTesto] = useState('');
@@ -25,15 +26,15 @@ export function FormNota({ piene, max, turniMax }: { piene: boolean; max: number
     if (spento || !controllo.valida || controllo.turni === null) return;
     const esito = await inviaComando(
       { tipo: 'nota', testo: controllo.testo, turni: controllo.turni },
-      `Nota di regia (${testoTurni(controllo.turni)})`,
+      t('master.nota.descr', { turni: testoTurni(controllo.turni) }),
     );
     if (esito.ok) setTesto('');
   };
 
   return (
-    <form onSubmit={(e) => void invia(e)} className="mt-1 flex flex-col gap-1.5 border-t border-bordo pt-2" aria-label="Nuova nota di regia">
+    <form onSubmit={(e) => void invia(e)} className="mt-1 flex flex-col gap-1.5 border-t border-bordo pt-2" aria-label={t('master.nota.form')}>
       <label htmlFor={idTesto} className="text-xs font-semibold tracking-[0.16em] text-cenere uppercase">
-        Nuova nota
+        {t('master.nota.nuova')}
       </label>
       <textarea
         id={idTesto}
@@ -46,12 +47,12 @@ export function FormNota({ piene, max, turniMax }: { piene: boolean; max: number
         maxLength={NOTA_REGIA_MAX_CARATTERI}
         rows={3}
         disabled={piene}
-        placeholder={piene ? '' : 'Es. «Ottavia diventa più sospettosa», «più ritmo, meno descrizioni»…'}
+        placeholder={piene ? '' : t('master.nota.placeholder')}
         className="w-full resize-y rounded-lg border border-bordo-chiaro bg-notte px-2.5 py-1.5 text-sm text-pergamena placeholder:text-cenere/70 focus:border-candela disabled:opacity-40"
       />
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <label htmlFor={idTurni} className="text-pergamena-2">
-          per
+          {t('master.nota.per')}
         </label>
         <input
           id={idTurni}
@@ -66,7 +67,7 @@ export function FormNota({ piene, max, turniMax }: { piene: boolean; max: number
           disabled={piene}
           className="w-16 rounded-lg border border-bordo-chiaro bg-notte px-2 py-1 text-pergamena tabular-nums focus:border-candela disabled:opacity-40"
         />
-        <span className="text-pergamena-2">turni (1–{turniMax})</span>
+        <span className="text-pergamena-2">{t('master.nota.intervallo', { max: turniMax })}</span>
         <span className="ml-auto text-xs text-cenere tabular-nums">
           {testo.length}/{NOTA_REGIA_MAX_CARATTERI}
         </span>
@@ -76,7 +77,7 @@ export function FormNota({ piene, max, turniMax }: { piene: boolean; max: number
           disabled={spento || !controllo.valida}
           className={classePulsante('primario', 'medio')}
         >
-          Aggiungi nota
+          {t('master.nota.aggiungi')}
         </button>
       </div>
       {piene ? (

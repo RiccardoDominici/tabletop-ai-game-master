@@ -9,6 +9,7 @@
  *   ripetere le mie, il colore dei punti ferita.
  * - Animazione: la linea del tempo di una carta (d20 che gira, poi modificatore, totale, esito).
  */
+import { t } from '../lingua';
 import type { DannoMostrato, FaseScena, PuntiFerita, TiroMostrato } from '@cantastorie/shared';
 
 /** Segno meno tipografico (U+2212): più leggibile del trattino da lontano. */
@@ -23,7 +24,15 @@ export function conSegno(n: number): string {
 
 /** Il numero da battere: «CD 15» (prove, salvezze), «CA 13» (attacchi), «soglia 45» (sotto soglia). */
 export function testoContro(tiro: Pick<TiroMostrato, 'contro'>): string {
-  return `${tiro.contro.tipo} ${tiro.contro.valore}`;
+  return `${siglaContro(tiro.contro.tipo)} ${tiro.contro.valore}`;
+}
+
+/** Sigla del tipo di bersaglio nella lingua dell'interfaccia: CD → DC, CA → AC; il resto com'è. */
+function siglaContro(tipo: string): string {
+  if (tipo === 'CD') return t('comune.tiri.cd');
+  if (tipo === 'CA') return t('comune.tiri.ca');
+  if (tipo === 'soglia') return t('comune.tiri.soglia');
+  return tipo;
 }
 
 /** Il set di regole con cui si è tirato; senza `risoluzione` vale il d20 contro CD o CA, come sempre. */
@@ -58,18 +67,18 @@ export function testoBersaglioCarta(tiro: Pick<TiroMostrato, 'contro' | 'risoluz
 
 /** Sotto soglia: «tiro 23 ≤ 45?», il tiro e la soglia da non superare. */
 export function testoTiroSottoSoglia(tiro: Pick<TiroMostrato, 'dado' | 'contro'>): string {
-  return `tiro ${tiro.dado} ≤ ${tiro.contro.valore}?`;
+  return t('comune.tiri.sotto_soglia_domanda', { dado: tiro.dado, valore: tiro.contro.valore });
 }
 
 /** La riga «Regola: …» della carta intera, o null se la regola non c'è o è vuota. */
 export function testoRegola(tiro: Pick<TiroMostrato, 'regola'>): string | null {
   const regola = tiro.regola?.trim();
-  return regola ? `Regola: ${regola}` : null;
+  return regola ? t('comune.tiri.regola', { regola }) : null;
 }
 
 /** Cosa si tira, col bersaglio se c'è: «Balestra leggera contro il goblin». */
 export function testoCosa(tiro: Pick<TiroMostrato, 'etichetta' | 'bersaglio'>): string {
-  return tiro.bersaglio ? `${tiro.etichetta} contro ${tiro.bersaglio.nome}` : tiro.etichetta;
+  return tiro.bersaglio ? t('comune.tiri.contro_nome', { cosa: tiro.etichetta, nome: tiro.bersaglio.nome }) : tiro.etichetta;
 }
 
 /** Tono dell'esito: decide il colore (muschio = buono, brace = cattivo, candela = pari). */
@@ -99,13 +108,17 @@ const TONO_GRADO: Record<NonNullable<TiroMostrato['grado']>['id'], TonoEsito> = 
 };
 
 /** Parole del badge per le fasce del 2d6 (il nome della fascia sta già al posto della CD). */
-const PAROLA_FASCIA: Record<NonNullable<TiroMostrato['grado']>['id'], string> = {
-  successo: 'Riuscita',
-  parziale: 'Parziale',
-  fallimento: 'Fallita',
-  critico: 'Critico',
-  disastro: 'Disastro',
-};
+/** La parola della fascia del 2d6, nella lingua dell'interfaccia (letta al momento dell'uso). */
+function parolaFascia(id: NonNullable<TiroMostrato['grado']>['id']): string {
+  const chiavi = {
+    successo: 'comune.esito.riuscita',
+    parziale: 'comune.esito.parziale',
+    fallimento: 'comune.esito.fallita',
+    critico: 'comune.esito.critico',
+    disastro: 'comune.esito.disastro',
+  } as const;
+  return t(chiavi[id]);
+}
 
 /**
  * L'esito a gradi (2d6 a fasce, sotto soglia): colore dal `grado.id`, testo dal nome della fascia
@@ -114,7 +127,7 @@ const PAROLA_FASCIA: Record<NonNullable<TiroMostrato['grado']>['id'], string> = 
 export function esitoDaGrado(grado: NonNullable<TiroMostrato['grado']>, risoluzione: RisoluzioneTiro): EsitoTiro {
   const tono = TONO_GRADO[grado.id];
   const speciale = grado.id === 'critico' || grado.id === 'disastro';
-  const testo = risoluzione === 'sotto_soglia' ? grado.nome : PAROLA_FASCIA[grado.id];
+  const testo = risoluzione === 'sotto_soglia' ? grado.nome : parolaFascia(grado.id);
   const simbolo = speciale ? '★' : tono === 'buono' ? '✔' : tono === 'pari' ? '~' : '✘';
   return { testo, tono, simbolo, speciale };
 }
@@ -125,16 +138,16 @@ export function esitoTiro(
 ): EsitoTiro {
   if (tiro.grado) return esitoDaGrado(tiro.grado, risoluzioneDi(tiro));
   if (tiro.tipo === 'attacco') {
-    if (tiro.critico) return { testo: 'Colpo critico', tono: 'buono', simbolo: '✦', speciale: true };
-    if (tiro.fallimento_critico) return { testo: '1 naturale', tono: 'cattivo', simbolo: '✘', speciale: true };
+    if (tiro.critico) return { testo: t('comune.esito.colpo_critico'), tono: 'buono', simbolo: '✦', speciale: true };
+    if (tiro.fallimento_critico) return { testo: t('comune.esito.uno_naturale'), tono: 'cattivo', simbolo: '✘', speciale: true };
     return tiro.riuscita
-      ? { testo: 'Colpito', tono: 'buono', simbolo: '✔', speciale: false }
-      : { testo: 'Mancato', tono: 'cattivo', simbolo: '✘', speciale: false };
+      ? { testo: t('comune.esito.colpito'), tono: 'buono', simbolo: '✔', speciale: false }
+      : { testo: t('comune.esito.mancato'), tono: 'cattivo', simbolo: '✘', speciale: false };
   }
-  if (pareggio(tiro)) return { testo: 'Pareggio', tono: 'pari', simbolo: '=', speciale: false };
+  if (pareggio(tiro)) return { testo: t('comune.esito.pareggio'), tono: 'pari', simbolo: '=', speciale: false };
   return tiro.riuscita
-    ? { testo: 'Riuscita', tono: 'buono', simbolo: '✔', speciale: false }
-    : { testo: 'Fallita', tono: 'cattivo', simbolo: '✘', speciale: false };
+    ? { testo: t('comune.esito.riuscita'), tono: 'buono', simbolo: '✔', speciale: false }
+    : { testo: t('comune.esito.fallita'), tono: 'cattivo', simbolo: '✘', speciale: false };
 }
 
 /**
@@ -153,9 +166,9 @@ export function indiceDadoScartato(tiro: Pick<TiroMostrato, 'dadi' | 'dado' | 'r
 /** «Vantaggio: Corrado lo aiuta», «Svantaggio», oppure null senza vantaggio. */
 export function testoVantaggio(tiro: Pick<TiroMostrato, 'vantaggio' | 'motivo_vantaggio'>): string | null {
   if (!tiro.vantaggio) return null;
-  const parola = tiro.vantaggio === 'vantaggio' ? 'Vantaggio' : 'Svantaggio';
+  const parola = tiro.vantaggio === 'vantaggio' ? t('comune.tiri.vantaggio') : t('comune.tiri.svantaggio');
   const motivo = tiro.motivo_vantaggio?.trim();
-  return motivo ? `${parola}: ${motivo}` : parola;
+  return motivo ? t('comune.tiri.con_motivo', { parola, motivo }) : parola;
 }
 
 /** Tipi di danno che in italiano si dicono «da …» (danni da fuoco, non «danni fuochi»). */
@@ -192,7 +205,7 @@ export function sommaDanno(danno: Pick<DannoMostrato, 'dadi' | 'bonus' | 'totale
 /** La riga del danno: «Danni 1d8+2: 6 + 2 = 8 perforanti». */
 export function testoDanno(danno: DannoMostrato): string {
   const tipo = danno.tipo ? tipoDannoPlurale(danno.tipo) : '';
-  return `Danni ${danno.formula}: ${sommaDanno(danno)}${tipo ? ` ${tipo}` : ''}`;
+  return `${t('comune.tiri.danni', { formula: danno.formula, somma: sommaDanno(danno) })}${tipo ? ` ${tipo}` : ''}`;
 }
 
 /** Il conto del d20: «17 + 5 = 22» (col meno vero se il modificatore è negativo). */
@@ -207,22 +220,27 @@ export function descriviTiro(tiro: TiroMostrato): string {
   const risoluzione = risoluzioneDi(tiro);
   let conto: string;
   if (risoluzione === 'sotto_soglia') {
-    conto = `tiro ${tiro.dado} ≤ ${tiro.contro.valore}`;
+    conto = t('comune.tiri.sotto_soglia', { dado: tiro.dado, valore: tiro.contro.valore });
   } else if (risoluzione === '2d6_fasce') {
-    conto = `${tiro.dadi.join(' + ')} ${conSegno(tiro.modificatore)} = ${tiro.totale} contro ${tiro.grado?.nome ?? testoContro(tiro)}`;
+    conto = t('comune.tiri.conto_fasce', {
+      dadi: tiro.dadi.join(' + '),
+      mod: conSegno(tiro.modificatore),
+      totale: tiro.totale,
+      bersaglio: tiro.grado?.nome ?? testoContro(tiro),
+    });
   } else {
     const contro = tiro.avversario
-      ? `contro ${tiro.avversario.nome} (${contoTiro(tiro.avversario)})`
-      : `contro ${testoContro(tiro)}`;
+      ? t('comune.tiri.contro_avversario', { nome: tiro.avversario.nome, conto: contoTiro(tiro.avversario) })
+      : t('comune.tiri.contro_valore', { bersaglio: testoContro(tiro) });
     conto = `${contoTiro(tiro)} ${contro}`;
   }
-  const parti = [`${tiro.nome}, ${testoCosa(tiro)}: ${conto}. ${esito.testo}.`];
+  const parti = [t('comune.tiri.frase', { nome: tiro.nome, cosa: testoCosa(tiro), conto, esito: esito.testo })];
   const vantaggio = testoVantaggio(tiro);
   if (vantaggio) parti.push(`${vantaggio}.`);
   if (tiro.danno && tiro.riuscita) parti.push(`${testoDanno(tiro.danno)}.`);
   if (tiro.a_terra) {
-    const chi = tiro.bersaglio?.nome ?? 'il bersaglio';
-    parti.push(`${chi.charAt(0).toUpperCase()}${chi.slice(1)} è a terra.`);
+    const chi = tiro.bersaglio?.nome ?? t('comune.tiri.il_bersaglio');
+    parti.push(t('comune.tiri.a_terra_frase', { chi: `${chi.charAt(0).toUpperCase()}${chi.slice(1)}` }));
   }
   return parti.join(' ');
 }

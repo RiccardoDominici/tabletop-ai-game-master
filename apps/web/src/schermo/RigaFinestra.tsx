@@ -10,6 +10,7 @@ import { secondiRimasti } from '../lib/formato';
 import { useOra } from '../lib/useOra';
 import { useSchermo } from '../store/schermo';
 import { etichettaFase } from './etichettaFase';
+import { t } from '../lingua';
 
 export function RigaFinestra({ stato }: { stato: StatoTavolo }) {
   const { finestra } = stato;
@@ -34,7 +35,7 @@ export function RigaFinestra({ stato }: { stato: StatoTavolo }) {
   return (
     <div data-testid="riga-finestra" data-ritmo={stato.ritmo} className="flex flex-col gap-[0.6vh]">
       <div className="flex flex-wrap items-center gap-[0.8vw] text-[1.45vw]">
-        <span className="font-semibold text-pergamena drop-shadow-[0_2px_6px_rgb(0_0_0/0.9)]">Tocca a:</span>
+        <span className="font-semibold text-pergamena drop-shadow-[0_2px_6px_rgb(0_0_0/0.9)]">{t('schermo.finestra.tocca_a')}</span>
         {invitati.map((id) => {
           const pg = stato.pg.find((p) => p.id === id);
           const scritta = finestra.azioni.find((a) => a.id_pg === id)?.scritta ?? false;
@@ -49,14 +50,14 @@ export function RigaFinestra({ stato }: { stato: StatoTavolo }) {
               )}
             >
               <span className="font-semibold">{pg?.nome.split(' ')[0] ?? id}</span>
-              <span className="ml-[0.5vw] opacity-90">{scritta ? '✓ ha scritto' : 'pensa…'}</span>
+              <span className="ml-[0.5vw] opacity-90">{scritta ? t('schermo.finestra.ha_scritto') : t('schermo.finestra.pensa')}</span>
             </span>
           );
         })}
         {secondi !== null && (
           // Solo al ritmo concitato: la narrazione ha chiesto di fare in fretta.
           <span data-testid="schermo-conto" className="ml-[0.5vw] rounded-full bg-candela px-[0.9vw] py-[0.3vh] font-bold text-notte tabular-nums">
-            ⏱ {secondi} s
+            {t('schermo.finestra.conto', { secondi })}
           </span>
         )}
       </div>

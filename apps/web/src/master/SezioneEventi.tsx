@@ -8,19 +8,20 @@ import { Riquadro, Vuoto } from './Riquadro';
 import { Chip } from './Chip';
 import { etichettaComando } from './comandi';
 import { oraBreve } from './etichette';
+import { t } from '../lingua';
 
 export function SezioneEventi({ eventi, className }: { eventi: EventoMaster[]; className?: string }) {
   const recentiPrima = [...eventi].reverse();
   return (
     <Riquadro
-      titolo="Registro"
+      titolo={t('master.eventi.titolo')}
       conteggio={eventi.length}
       data-testid="master-eventi"
       className={className}
       classeCorpo="overflow-y-auto pr-1"
     >
       {recentiPrima.length === 0 ? (
-        <Vuoto>Nessun comando ancora.</Vuoto>
+        <Vuoto>{t('master.eventi.nessuno')}</Vuoto>
       ) : (
         <ol className="flex flex-col divide-y divide-bordo/60 text-sm">
           {recentiPrima.map((e, i) => (
@@ -36,11 +37,11 @@ export function SezioneEventi({ eventi, className }: { eventi: EventoMaster[]; c
               </time>
               <span className="shrink-0 font-semibold">{etichettaComando(e.comando)}</span>
               {e.automatico && (
-                <span data-testid="master-evento-automatico" title="Deciso dal Motore (narratore o battuta), non dal pannello">
-                  <Chip tono="lago">auto</Chip>
+                <span data-testid="master-evento-automatico" title={t('master.eventi.automatico_titolo')}>
+                  <Chip tono="lago">{t('master.eventi.auto')}</Chip>
                 </span>
               )}
-              <Chip tono={e.ok ? 'muschio' : 'sangue'}>{e.ok ? 'ok' : 'rifiutato'}</Chip>
+              <Chip tono={e.ok ? 'muschio' : 'sangue'}>{e.ok ? t('master.eventi.ok') : t('master.eventi.rifiutato')}</Chip>
               <span className={clsx('min-w-0 flex-1 break-words', e.ok ? 'text-pergamena-2' : 'text-sangue')}>{e.dettagli}</span>
             </li>
           ))}

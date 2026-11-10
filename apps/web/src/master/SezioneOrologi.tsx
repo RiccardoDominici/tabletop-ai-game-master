@@ -21,18 +21,19 @@ import {
   testoUltimoSegno,
   type CasellaOrologio,
 } from './orologi';
+import { t } from '../lingua';
 
 export function SezioneOrologi({ stato }: { stato: StatoMaster }) {
   const dovuti = stato.orologi.filter((o) => o.dovuto).length;
   return (
     <Riquadro
-      titolo="Orologi"
-      conteggio={dovuti > 0 ? `${stato.orologi.length} · ${dovuti} dovuto` : stato.orologi.length}
+      titolo={t('master.orologi.titolo')}
+      conteggio={dovuti > 0 ? t('master.orologi.conteggio', { n: stato.orologi.length, dovuti }) : stato.orologi.length}
       zona="orologi"
       data-testid="master-orologi"
     >
       {stato.orologi.length === 0 ? (
-        <Vuoto>Questa scena non ha orologi.</Vuoto>
+        <Vuoto>{t('master.orologi.nessuno')}</Vuoto>
       ) : (
         <ul className="flex flex-col gap-2">
           {stato.orologi.map((o, i) => (
@@ -53,7 +54,7 @@ function Orologio({ orologio, indice }: { orologio: OrologioMaster; indice: numb
   const caselle = caselleOrologio(orologio);
   const completo = orologioCompleto(orologio);
   const passo = (verso: 1 | -1) =>
-    void inviaComando({ tipo: 'orologio', id: orologio.id, passo: verso }, `Orologio «${nome}» ${verso > 0 ? '+1' : '−1'}`);
+    void inviaComando({ tipo: 'orologio', id: orologio.id, passo: verso }, t('master.orologi.descr', { nome, passo: verso > 0 ? '+1' : '−1' }));
 
   return (
     <div
@@ -71,17 +72,17 @@ function Orologio({ orologio, indice }: { orologio: OrologioMaster; indice: numb
           {nome}
         </p>
         <span data-testid={`master-orologio-${orologio.id}-segni`} className="font-semibold tabular-nums text-pergamena-2">
-          {senzaSpoiler ? `segni ${frazioneOrologio(orologio)}` : frazioneOrologio(orologio)}
+          {senzaSpoiler ? t('master.orologi.segni', { frazione: frazioneOrologio(orologio) }) : frazioneOrologio(orologio)}
         </span>
         {orologio.dovuto && (
-          <Chip tono="brace" titolo="Il ritmo minimo impone di mostrare il prossimo segno nella prossima risposta">
-            dovuto
+          <Chip tono="brace" titolo={t('master.orologi.dovuto_titolo')}>
+            {t('master.orologi.dovuto')}
           </Chip>
         )}
-        {completo && <Chip tono="sangue">completo</Chip>}
+        {completo && <Chip tono="sangue">{t('master.orologi.completo')}</Chip>}
         {!orologio.partito && (
-          <Chip titolo="Aspetta una battuta o un indizio (parte_dopo): +1 lo fa partire a mano" testid={`master-orologio-${orologio.id}-fermo`}>
-            non ancora partito
+          <Chip titolo={t('master.orologi.non_partito_titolo')} testid={`master-orologio-${orologio.id}-fermo`}>
+            {t('master.orologi.non_partito')}
           </Chip>
         )}
         <button
@@ -89,7 +90,7 @@ function Orologio({ orologio, indice }: { orologio: OrologioMaster; indice: numb
           data-testid={`master-orologio-${orologio.id}-indietro`}
           disabled={!puoArretrare(orologio) || inCorso}
           onClick={() => passo(-1)}
-          aria-label={`${nome}: indietro di un segno`}
+          aria-label={t('master.orologi.indietro', { nome })}
           className={classePulsante('normale', 'piccolo', 'w-10 tabular-nums')}
         >
           −1
@@ -99,14 +100,14 @@ function Orologio({ orologio, indice }: { orologio: OrologioMaster; indice: numb
           data-testid={`master-orologio-${orologio.id}-avanti`}
           disabled={!puoAvanzare(orologio) || inCorso}
           onClick={() => passo(1)}
-          aria-label={`${nome}: avanti di un segno`}
+          aria-label={t('master.orologi.avanti', { nome })}
           className={classePulsante('normale', 'piccolo', 'w-10 tabular-nums')}
         >
           +1
         </button>
       </div>
 
-      <ol className="mt-1.5 flex flex-wrap gap-1" aria-label="Segmenti">
+      <ol className="mt-1.5 flex flex-wrap gap-1" aria-label={t('master.orologi.segmenti')}>
         {caselle.map((c) => (
           <li
             key={c.indice}
@@ -128,7 +129,7 @@ function Orologio({ orologio, indice }: { orologio: OrologioMaster; indice: numb
         {orologio.al_completo && !senzaSpoiler && (
           <>
             {' · '}
-            <span className={completo ? 'font-semibold text-sangue' : 'text-pergamena-2'}>a orologio completo: {orologio.al_completo}</span>
+            <span className={completo ? 'font-semibold text-sangue' : 'text-pergamena-2'}>{t('master.orologi.al_completo', { testo: orologio.al_completo ?? '' })}</span>
           </>
         )}
       </p>
@@ -152,7 +153,7 @@ function Segni({ caselle }: { caselle: CasellaOrologio[] }) {
       {futuri.length > 0 && (
         <details className="mt-0.5">
           <summary className="cursor-pointer text-xs text-cenere select-none">
-            {futuri.length === 1 ? 'un altro segno' : `altri ${futuri.length} segni`}
+            {futuri.length === 1 ? t('master.orologi.un_altro') : t('master.orologi.altri', { n: futuri.length })}
           </summary>
           <ol className="mt-0.5 flex flex-col gap-0.5">
             {futuri.map((c) => (
@@ -178,9 +179,9 @@ function RigaSegno({ casella }: { casella: CasellaOrologio }) {
     >
       <span className="w-5 shrink-0 text-right tabular-nums">{casella.indice + 1}.</span>
       <span className="min-w-0 flex-1">
-        {casella.stato === 'prossimo' && <strong className="mr-1 font-semibold text-candela">prossimo:</strong>}
+        {casella.stato === 'prossimo' && <strong className="mr-1 font-semibold text-candela">{t('master.orologi.prossimo')}</strong>}
         {casella.segno}
-        {casella.stato === 'pieno' && <span aria-label="già mostrato"> ✓</span>}
+        {casella.stato === 'pieno' && <span aria-label={t('master.orologi.gia_mostrato')}> ✓</span>}
       </span>
     </li>
   );

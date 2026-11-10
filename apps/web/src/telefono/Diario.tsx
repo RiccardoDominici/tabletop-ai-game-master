@@ -8,6 +8,7 @@
  *
  * Stesso schema di Regole.tsx: copre la pagina, si chiude con «Chiudi» o con Esc.
  */
+import { t } from '../lingua';
 import { useEffect } from 'react';
 import type { DiarioPubblico } from '@cantastorie/shared';
 import { useTelefono } from '../store/telefono';
@@ -44,9 +45,9 @@ export function Diario({ aperta, diario, onChiudi }: PropsDiario) {
     >
       <header className="sicuro-lati flex items-center gap-3 border-b border-bordo py-3">
         <div className="min-w-0 flex-1">
-          <p className="text-xs tracking-[0.18em] text-cenere uppercase">Diario</p>
+          <p className="text-xs tracking-[0.18em] text-cenere uppercase">{t('telefono.tavolo.diario')}</p>
           <h2 id="titolo-diario" className="font-titolo text-xl leading-tight font-semibold text-pergamena">
-            La campagna finora
+            {t('telefono.diario.titolo')}
           </h2>
         </div>
         <button
@@ -55,14 +56,14 @@ export function Diario({ aperta, diario, onChiudi }: PropsDiario) {
           data-testid="chiudi-diario"
           className="min-h-12 min-w-12 shrink-0 rounded-full border border-bordo-chiaro px-4 text-[0.95rem] text-pergamena-2 active:bg-notte-3"
         >
-          Chiudi
+          {t('telefono.chiudi')}
         </button>
       </header>
 
       <div className="sicuro-lati sicuro-basso min-h-0 flex-1 overflow-y-auto py-4">
         <div className="mx-auto flex max-w-2xl flex-col gap-5">
           <section className="flex flex-col gap-2">
-            <h3 className="font-titolo text-base font-semibold text-candela">Finora stasera</h3>
+            <h3 className="font-titolo text-base font-semibold text-candela">{t('telefono.diario.stasera')}</h3>
             {stasera.length > 0 ? (
               <ul className="flex flex-col gap-1.5 text-[0.98rem] text-pergamena">
                 {stasera.map((riga, i) => (
@@ -70,7 +71,7 @@ export function Diario({ aperta, diario, onChiudi }: PropsDiario) {
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-cenere">Ancora niente da raccontare: la serata è appena cominciata.</p>
+              <p className="text-sm text-cenere">{t('telefono.diario.stasera_vuota')}</p>
             )}
           </section>
 
@@ -79,20 +80,20 @@ export function Diario({ aperta, diario, onChiudi }: PropsDiario) {
           ))}
 
           <section className="flex flex-col gap-2 border-t border-bordo pt-4" data-testid="diario-privati">
-            <h3 className="font-titolo text-base font-semibold text-candela">I tuoi esiti privati</h3>
+            <h3 className="font-titolo text-base font-semibold text-candela">{t('telefono.diario.privati')}</h3>
             {privati.length > 0 ? (
               <ul className="flex flex-col gap-2 text-[0.98rem] text-pergamena-2">
                 {privati.map((esito) => (
                   <li key={esito.id}>
                     <span className="text-xs tracking-wide text-cenere uppercase">
-                      Turno {esito.turno} · {esito.nome}
+                      {t('telefono.turno', { n: esito.turno })} · {esito.nome}
                     </span>
                     <p className="text-pergamena">{esito.testo}</p>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-cenere">Qui compaiono gli esiti delle tue azioni private. Si vedono solo su questo telefono.</p>
+              <p className="text-sm text-cenere">{t('telefono.diario.privati_vuoti')}</p>
             )}
           </section>
         </div>

@@ -34,6 +34,7 @@ import { BarraIniziativa } from './BarraIniziativa';
 import { CreditiAudio, PannelloAudio, PulsanteAudio, useTastiAudio } from './audio/PannelloAudio';
 import { TiriSchermo, useVistaTiri } from './TiriSchermo';
 import { provaCarteRichiesta } from '../debug/richiesta';
+import { t } from '../lingua';
 
 // DEBUG: banco di prova delle carte dei tiri (/schermo?carte=prova), senza server; si carica a parte.
 const ProvaCarteSchermo = lazy(() => import('../debug/ProvaCarte').then((m) => ({ default: m.ProvaCarteSchermo })));
@@ -53,7 +54,7 @@ export function PaginaSchermo() {
 function PaginaSchermoVera() {
   useEffect(() => {
     esponiDebugSchermo();
-    document.title = 'Tabletop AI Game Master · Schermo';
+    document.title = t('schermo.titolo_pagina');
   }, []);
   useEffect(() => avviaSchermo(), []);
   useSchermoAcceso(true);
@@ -106,7 +107,7 @@ export function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | 
       <main className="relative z-10 grid h-dvh grid-rows-[auto_1fr_auto] gap-[2vh] px-[3.5vw] pt-[4vh] pb-[4vh]">
         <header className="max-w-[70vw]">
           <p className="text-[1.1vw] tracking-[0.35em] text-candela/90 uppercase drop-shadow-[0_2px_6px_rgb(0_0_0/0.9)]">
-            Tabletop AI Game Master
+            {t('schermo.marchio')}
           </p>
           <h1
             data-testid="titolo-scena"
@@ -148,7 +149,7 @@ export function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | 
           {info && (
             <div className="flex shrink-0 items-end gap-[1vw]">
               <p className="pb-[0.4vh] text-right text-[1.05vw] leading-snug whitespace-nowrap text-pergamena-2 drop-shadow-[0_2px_6px_rgb(0_0_0/0.9)]">
-                Unisciti col telefono
+                {t('schermo.unisciti')}
                 <br />
                 <span className="font-mono text-candela-2">{info.url_telefono}</span>
               </p>
@@ -173,10 +174,10 @@ function PulsanteHud() {
       type="button"
       data-testid="apri-hud"
       onClick={alternaHud}
-      title="Latenza (tasto L)"
+      title={t('schermo.hud.apri_titolo')}
       className="fixed top-4 right-4 z-30 rounded-lg border border-bordo/60 bg-notte/80 px-3 py-1.5 font-mono text-sm text-cenere opacity-60 transition hover:opacity-100"
     >
-      L · latenza
+      {t('schermo.hud.apri')}
     </button>
   );
 }

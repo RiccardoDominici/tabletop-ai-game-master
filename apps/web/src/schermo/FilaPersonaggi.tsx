@@ -10,12 +10,13 @@ import { useState } from 'react';
 import clsx from 'clsx';
 import type { PersonaggioScena } from '@cantastorie/shared';
 import { primoNome } from './etichettaFase';
+import { t } from '../lingua';
 
 export function FilaPersonaggi({ personaggi, parlante }: { personaggi: readonly PersonaggioScena[] | undefined; parlante: string | null }) {
   const presenti = (personaggi ?? []).filter((p) => p.presente);
   if (presenti.length === 0) return null;
   return (
-    <ul data-testid="fila-personaggi" aria-label="Chi c'è in scena" className="flex flex-wrap items-start gap-[2vw]">
+    <ul data-testid="fila-personaggi" aria-label={t('schermo.fila.aria')} className="flex flex-wrap items-start gap-[2vw]">
       {presenti.map((p) => (
         <li key={p.id} data-testid={`personaggio-${p.id}`} data-parla={String(p.id === parlante)} className="flex w-[max(9vw,11rem)] flex-col items-center gap-[3.2vh]">
           <Ritratto personaggio={p} parla={p.id === parlante} />
@@ -49,7 +50,7 @@ function Ritratto({ personaggio, parla }: { personaggio: PersonaggioScena; parla
       {mostra ? (
         <img
           src={personaggio.ritratto!}
-          alt={`Ritratto di ${personaggio.nome}`}
+          alt={t('schermo.ritratto_alt', { nome: personaggio.nome })}
           draggable={false}
           onError={() => setRotto(true)}
           className="size-full object-cover"

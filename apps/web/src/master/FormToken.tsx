@@ -7,6 +7,7 @@ import { useId, useState, type FormEvent } from 'react';
 import { useMaster } from '../store/master';
 import { usaToken } from './sessione';
 import { classePulsante } from './stili';
+import { t } from '../lingua';
 
 export function FormToken() {
   const [testo, setTesto] = useState('');
@@ -30,24 +31,22 @@ export function FormToken() {
         className="flex w-full max-w-lg flex-col gap-4 rounded-carta border border-bordo bg-notte-2/90 p-6 shadow-profonda"
       >
         <div>
-          <p className="text-xs tracking-[0.3em] text-candela/90 uppercase">Tabletop AI Game Master</p>
-          <h1 className="font-titolo text-2xl font-semibold">Pannello del master</h1>
+          <p className="text-xs tracking-[0.3em] text-candela/90 uppercase">{t('master.marchio')}</p>
+          <h1 className="font-titolo text-2xl font-semibold">{t('master.token.titolo')}</h1>
         </div>
         <p className="text-pergamena-2">
-          Serve il <strong className="text-pergamena">token del master</strong>: il server lo stampa nel suo log
-          all’avvio, insieme al link <code className="rounded bg-notte px-1 text-candela-2">/master?token=…</code>. Apri
-          quel link, oppure incolla qui il token (va bene anche il link intero).
+          {t('master.token.serve')} <strong className="text-pergamena">{t('master.token.tipo')}</strong>{t('master.token.serve_2')} <code className="rounded bg-notte px-1 text-candela-2">/master?token=…</code>{t('master.token.serve_3')}
         </p>
         {entrata === 'rifiutato' && erroreEntrata && (
           <p role="alert" data-testid="master-token-errore" className="rounded-lg border border-sangue/60 bg-sangue/10 px-3 py-2 text-sangue">
-            Token rifiutato: {erroreEntrata}
+            {t('master.token.rifiutato', { errore: erroreEntrata })}
             <span className="mt-1 block text-sm text-pergamena-2">
-              Se il server è stato riavviato, il token è cambiato: prendi quello nuovo dal log.
+              {t('master.token.riavviato')}
             </span>
           </p>
         )}
         <label htmlFor={idCampo} className="sr-only">
-          Token del master
+          {t('master.token.campo')}
         </label>
         <div className="flex gap-2">
           <input
@@ -62,16 +61,16 @@ export function FormToken() {
               setTesto(e.target.value);
               setVuoto(false);
             }}
-            placeholder="Token dal log del server"
+            placeholder={t('master.token.placeholder')}
             className="min-w-0 flex-1 rounded-lg border border-bordo-chiaro bg-notte px-3 py-2 font-mono text-pergamena placeholder:font-sans placeholder:text-cenere/70 focus:border-candela"
           />
           <button type="submit" data-testid="master-token-invia" className={classePulsante('primario', 'grande')}>
-            Entra
+            {t('master.token.entra')}
           </button>
         </div>
-        {vuoto && <p className="text-sm text-sangue">Incolla il token prima di entrare.</p>}
+        {vuoto && <p className="text-sm text-sangue">{t('master.token.vuoto')}</p>}
         <p className="text-xs text-cenere">
-          Il token resta salvato solo in questo browser. Il pannello non è collegato dai telefoni né dal QR.
+          {t('master.token.nota')}
         </p>
       </form>
     </main>

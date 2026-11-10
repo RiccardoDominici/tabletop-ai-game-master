@@ -5,6 +5,9 @@
  * Logica pura, testata in comandi.test.ts.
  */
 import type { ComandoMaster, TipoComandoMaster } from '@cantastorie/shared';
+import { t } from '../lingua';
+import { turni } from './etichette';
+import { tabella } from './tabella';
 
 /** Zona del pannello in cui si mostra l'esito di un comando. */
 export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio' | 'sessione' | 'combattimento';
@@ -39,34 +42,34 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
-export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = {
-  pausa: 'Pausa',
-  riprendi: 'Riprendi',
-  ferma_narrazione: 'Ferma la narrazione',
-  luogo: 'Cambio di luogo',
-  scena: 'Cambio di scena',
-  situazione: 'Immagine di situazione',
-  orologio: 'Orologio',
-  chiudi_finestra: 'Risolvi ora',
-  ritmo: 'Ritmo',
-  salta_azione: 'Salta azione',
-  nota: 'Nota di regia',
-  togli_nota: 'Togli nota',
-  umore: 'Umore della musica',
-  effetto: 'Effetto sonoro',
-  nuova_sessione: 'Nuova sessione',
-  fine_sessione: 'Fine sessione',
-  chiudi_sessione: 'Chiudi la sessione',
-  durata_sessione: 'Durata della serata',
-  prossima_sessione: 'Prossima sessione',
-  dispositivo: 'PG di un telefono',
-  presenza: 'Presenza di un PNG',
-  rivela: 'Rivelazione di un PNG',
-  combattimento_inizia: 'Inizia combattimento',
-  combattimento_termina: 'Termina combattimento',
-  pf: 'Punti ferita',
-  condizione: 'Condizione',
-};
+export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = tabella({
+  pausa: 'master.cmd.pausa',
+  riprendi: 'master.cmd.riprendi',
+  ferma_narrazione: 'master.cmd.ferma_narrazione',
+  luogo: 'master.cmd.luogo',
+  scena: 'master.cmd.scena',
+  situazione: 'master.cmd.situazione',
+  orologio: 'master.cmd.orologio',
+  chiudi_finestra: 'master.cmd.chiudi_finestra',
+  ritmo: 'master.cmd.ritmo',
+  salta_azione: 'master.cmd.salta_azione',
+  nota: 'master.cmd.nota',
+  togli_nota: 'master.cmd.togli_nota',
+  umore: 'master.cmd.umore',
+  effetto: 'master.cmd.effetto',
+  nuova_sessione: 'master.cmd.nuova_sessione',
+  fine_sessione: 'master.cmd.fine_sessione',
+  chiudi_sessione: 'master.cmd.chiudi_sessione',
+  durata_sessione: 'master.cmd.durata_sessione',
+  prossima_sessione: 'master.cmd.prossima_sessione',
+  dispositivo: 'master.cmd.dispositivo',
+  presenza: 'master.cmd.presenza',
+  rivela: 'master.cmd.rivela',
+  combattimento_inizia: 'master.cmd.combattimento_inizia',
+  combattimento_termina: 'master.cmd.combattimento_termina',
+  pf: 'master.cmd.pf',
+  condizione: 'master.cmd.condizione',
+});
 
 /**
  * Etichetta di un tipo di comando arrivato dal server (registro degli eventi). Un tipo che il client
@@ -121,29 +124,29 @@ export function descriviComando(comando: ComandoMaster): string {
     case 'scena':
       return `${nome}: ${comando.scena}`;
     case 'presenza':
-      return `${nome}: ${comando.id_png} ${comando.presente === null ? 'automatica' : comando.presente ? 'in scena' : 'altrove'}`;
+      return `${nome}: ${comando.id_png} ${comando.presente === null ? t('master.presenza.automatica') : comando.presente ? t('master.presenza.in_scena') : t('master.presenza.altrove')}`;
     case 'rivela':
-      return `${nome}: ${comando.id_png} rivelato`;
+      return `${nome}: ${comando.id_png} ${t('master.presenza.rivelato')}`;
     case 'situazione':
-      return comando.id === null ? 'Togli l’immagine di situazione' : `${nome}: ${comando.id}`;
+      return comando.id === null ? t('master.situazioni.togli_immagine') : `${nome}: ${comando.id}`;
     case 'orologio':
       return `${nome} ${comando.id} ${comando.passo > 0 ? '+1' : '−1'}`;
     case 'salta_azione':
       return `${nome} ${comando.id_azione}`;
     case 'nota':
-      return `${nome} (${comando.turni} ${comando.turni === 1 ? 'turno' : 'turni'})`;
+      return `${nome} (${turni(comando.turni)})`;
     case 'togli_nota':
       return `${nome} ${comando.id}`;
     case 'umore':
-      return `${nome}: ${comando.umore ?? 'auto'}`;
+      return `${nome}: ${comando.umore ?? t('master.umore.auto')}`;
     case 'ritmo':
       return `${nome}: ${comando.ritmo}`;
     case 'effetto':
       return `${nome}: ${comando.id}`;
     case 'pf':
-      return `${comando.id}: PF ${comando.valore}`;
+      return `${comando.id}: ${t('master.pf')} ${comando.valore}`;
     case 'condizione':
-      return `${nome} ${comando.id}: ${comando.condizione} ${comando.attiva ? 'messa' : 'tolta'}`;
+      return `${nome} ${comando.id}: ${comando.condizione} ${t(comando.attiva ? 'master.esito.messa' : 'master.esito.tolta')}`;
     default:
       return nome;
   }

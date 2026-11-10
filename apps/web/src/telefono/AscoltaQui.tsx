@@ -4,6 +4,7 @@
  * spento ha l'altoparlante barrato, acceso è color candela e pulsa mentre qualcuno parla. L'esito di
  * un'azione privata di questo PG si sente solo qui, mai dal proiettore.
  */
+import { t } from '../lingua';
 import { useEffect } from 'react';
 import { accendiAscolto, riattivaAlPrimoTocco, spegniAscolto, useAscolto } from './ascolto';
 
@@ -33,11 +34,11 @@ export function AscoltaQui() {
 
   const descrizione = attivo
     ? inOnda
-      ? `Ascolti qui: parla ${inOnda}. Tocca per spegnere`
-      : 'Ascolti qui. Tocca per spegnere la voce su questo telefono'
+      ? t('telefono.ascolta.parla', { voce: inOnda })
+      : t('telefono.ascolta.acceso')
     : daRiattivare
-      ? 'Tocca per riascoltare la voce su questo telefono'
-      : 'Ascolta qui: la voce del gioco anche su questo telefono';
+      ? t('telefono.ascolta.riascolta')
+      : t('telefono.ascolta.spento');
   return (
     <button
       type="button"

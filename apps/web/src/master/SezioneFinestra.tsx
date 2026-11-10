@@ -16,6 +16,7 @@ import { Chip } from './Chip';
 import { classePulsante } from './stili';
 import { righeInvitati } from './finestra';
 import { puoChiudereFinestra } from './permessi';
+import { t } from '../lingua';
 
 export function SezioneFinestra({ stato }: { stato: StatoMaster }) {
   const { finestra, ritmo } = stato.tavolo;
@@ -31,8 +32,8 @@ export function SezioneFinestra({ stato }: { stato: StatoMaster }) {
 
   return (
     <Riquadro
-      titolo="Finestra"
-      conteggio={`turno ${finestra.turno}`}
+      titolo={t('master.finestra.titolo')}
+      conteggio={t('master.turno.numero', { n: finestra.turno })}
       zona="finestra"
       data-testid="master-finestra"
       data-aperta={String(finestra.aperta)}
@@ -43,42 +44,42 @@ export function SezioneFinestra({ stato }: { stato: StatoMaster }) {
             data-testid="master-ritmo"
             data-ritmo={ritmo}
             disabled={ritmoInCorso}
-            onClick={() => void inviaComando({ tipo: 'ritmo', ritmo: altroRitmo }, `Ritmo ${altroRitmo}`)}
+            onClick={() => void inviaComando({ tipo: 'ritmo', ritmo: altroRitmo }, t('master.finestra.descr_ritmo', { ritmo: t(altroRitmo === 'calmo' ? 'master.ritmo.calmo' : 'master.ritmo.concitato') }))}
             title={
               ritmo === 'concitato'
-                ? 'Torna al ritmo calmo: nessuna scadenza, si aspetta che scrivano tutti.'
-                : 'Ritmo concitato: la finestra ha un conto alla rovescia (combattimenti, inseguimenti, pericolo).'
+                ? t('master.finestra.ritmo_torna_titolo')
+                : t('master.finestra.ritmo_concitato_titolo')
             }
             className={classePulsante('normale', 'medio')}
           >
-            {ritmo === 'concitato' ? 'Ritmo calmo' : 'Ritmo concitato'}
+            {ritmo === 'concitato' ? t('master.finestra.ritmo_calmo') : t('master.finestra.ritmo_concitato')}
           </button>
           <button
             type="button"
             data-testid="master-chiudi-finestra"
             disabled={!puoChiudereFinestra(stato) || inCorso}
-            onClick={() => void inviaComando({ tipo: 'chiudi_finestra' }, 'Risolvi ora')}
-            title="Il narratore risponde subito alle azioni già inviate, senza aspettare chi manca."
+            onClick={() => void inviaComando({ tipo: 'chiudi_finestra' }, t('master.cmd.chiudi_finestra'))}
+            title={t('master.finestra.risolvi_titolo')}
             className={classePulsante('primario', 'medio')}
           >
-            Risolvi ora
+            {t('master.cmd.chiudi_finestra')}
           </button>
         </div>
       }
     >
       <div className="flex flex-wrap items-center gap-2 text-sm">
-        {finestra.aperta ? <Chip tono="muschio">aperta</Chip> : <Chip tono="cenere">chiusa</Chip>}
+        {finestra.aperta ? <Chip tono="muschio">{t('master.finestra.aperta')}</Chip> : <Chip tono="cenere">{t('master.finestra.chiusa')}</Chip>}
         <span data-testid="master-ritmo-stato">
-          {ritmo === 'concitato' ? <Chip tono="brace">ritmo concitato</Chip> : <Chip tono="lago">ritmo calmo</Chip>}
+          {ritmo === 'concitato' ? <Chip tono="brace">{t('master.finestra.chip_concitato')}</Chip> : <Chip tono="lago">{t('master.finestra.chip_calmo')}</Chip>}
         </span>
         {secondi !== null ? (
           <span data-testid="master-finestra-conto" className="rounded-full bg-candela px-2.5 py-px font-bold text-notte tabular-nums">
-            si risolve da sola tra {secondi} s
+            {t('master.finestra.conto', { secondi })}
           </span>
         ) : (
-          finestra.aperta && !stato.pausa.attiva && <span className="text-cenere">nessuna scadenza: parte quando hanno inviato tutti</span>
+          finestra.aperta && !stato.pausa.attiva && <span className="text-cenere">{t('master.finestra.nessuna_scadenza')}</span>
         )}
-        {stato.pausa.attiva && <span className="text-candela">tavolo in pausa: la finestra non si chiude</span>}
+        {stato.pausa.attiva && <span className="text-candela">{t('master.finestra.in_pausa')}</span>}
       </div>
       {attesa && (
         <p data-testid="master-aspettiamo" className="text-sm text-pergamena-2">
@@ -87,7 +88,7 @@ export function SezioneFinestra({ stato }: { stato: StatoMaster }) {
       )}
 
       {righe.length === 0 ? (
-        <Vuoto>{finestra.aperta ? 'Nessun invitato.' : 'Nessuna finestra aperta.'}</Vuoto>
+        <Vuoto>{finestra.aperta ? t('master.finestra.nessun_invitato') : t('master.finestra.nessuna_aperta')}</Vuoto>
       ) : (
         <ul className="flex flex-wrap gap-1.5">
           {righe.map((r) => (
@@ -100,11 +101,11 @@ export function SezioneFinestra({ stato }: { stato: StatoMaster }) {
                 r.scritta ? 'border-muschio/70 bg-muschio/15 text-muschio' : 'border-bordo-chiaro bg-notte-3 text-pergamena',
                 !r.invitato && 'border-dashed',
               )}
-              title={r.invitato ? 'Invitato' : 'Non invitato: la sua azione entra, ma il turno non lo aspetta'}
+              title={r.invitato ? t('master.finestra.invitato') : t('master.finestra.non_invitato_titolo')}
             >
               <span className="font-semibold">{r.nome}</span>
-              <span className="opacity-90">{r.scritta ? '✓ ha scritto' : 'pensa…'}</span>
-              {!r.invitato && <span className="text-xs text-cenere">non invitato</span>}
+              <span className="opacity-90">{r.scritta ? t('master.finestra.ha_scritto') : t('master.finestra.pensa')}</span>
+              {!r.invitato && <span className="text-xs text-cenere">{t('master.finestra.non_invitato')}</span>}
             </li>
           ))}
         </ul>

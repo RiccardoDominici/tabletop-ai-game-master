@@ -2,6 +2,7 @@
  * Una serata chiusa nel diario del telefono: etichetta, data leggibile, il testo del riassunto e i
  * fili aperti («Fili aperti»: le domande che la serata lascia). Solo fatti pubblici.
  */
+import { t } from '../lingua';
 import type { RiassuntoSerata } from '@cantastorie/shared';
 import { dataLeggibile } from '../lib/serata';
 
@@ -16,7 +17,7 @@ export function DiarioSerata({ serata }: { serata: RiassuntoSerata }) {
       <p className="font-racconto text-[1.05rem] leading-snug text-pergamena">{serata.testo}</p>
       {serata.fili.length > 0 && (
         <section className="flex flex-col gap-1 border-t border-bordo pt-2">
-          <h4 className="text-xs tracking-[0.14em] text-cenere uppercase">Fili aperti</h4>
+          <h4 className="text-xs tracking-[0.14em] text-cenere uppercase">{t('telefono.diario.fili')}</h4>
           <ul className="flex list-disc flex-col gap-1 pl-5 text-[0.95rem] text-pergamena-2">
             {serata.fili.map((filo, i) => (
               <li key={i}>{filo}</li>
