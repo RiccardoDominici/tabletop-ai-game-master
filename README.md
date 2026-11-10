@@ -143,7 +143,6 @@ The first time, read it in this order.
 - The microphone: today you play by typing on the phone.
 - Full combat (initiative, turns, conditions): see `docs/prove.md`, section «Aperto» (Open).
 - The code license: the repo does not have a license file yet (to be verified).
-- Choosing the play language at setup: Italian is the only play language today; choosing it at setup is coming.
 
 ## Legacy names
 

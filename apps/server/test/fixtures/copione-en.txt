@@ -1,0 +1,17 @@
+# Fake narrator script for the English e2e (apps/web/e2e/lingua-en.spec.ts), campaign en-mini, mode improvvisa.
+# One block per turn, separated by «---»; the last one also applies to the turns after.
+[narratore] Mara steps up to the counter. Hale wipes a mug and does not look up.
+[png_keeper] Rooms are two silver a night. Pay first, travellers.
+[narratore] Tobin, what do you do?
+[invito] tutti
+---
+[narratore] Thunder rolls somewhere beyond the hills.
+[orologio] o_storm
+[png_guard] Nobody leaves before the rain stops.
+[narratore] What do you do?
+[invito] tutti
+---
+[narratore] The fire burns low and the room goes quiet. Hale finally looks at you.
+[png_keeper] Ask your question, then. I have nothing to hide.
+[narratore] What do you do?
+[invito] tutti

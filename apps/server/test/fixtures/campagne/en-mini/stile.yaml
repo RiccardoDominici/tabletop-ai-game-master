@@ -1,0 +1,5 @@
+# Smallest English campaign for the tests (placeholders, not real game content).
+id: en-mini
+titolo: "The Test Inn"
+tono: "Dry."
+stile_immagini: "english image prompt that must not reach the narrator"

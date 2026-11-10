@@ -3,7 +3,7 @@
 On this page: one game from start to finish, with `scripts/partita.sh`, the projector, the phones and the turns.
 Read first: [Installation](installation.md) (at least steps 1 to 4).
 
-> Note: for now, all on-screen text and all voices are in Italian, so the labels quoted in this guide appear in Italian, as they do on screen. Choosing the play language during setup is coming.
+> Note: the game plays in Italian or English (`lingua` in the configuration and in the campaign, see [Create a campaign](create-a-campaign.md#play-language)). The labels quoted in this guide may still be the Italian ones; with an English configuration the screens show their English versions.
 
 ## Before the game night
 

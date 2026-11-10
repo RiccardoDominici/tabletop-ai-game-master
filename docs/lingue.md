@@ -24,7 +24,7 @@ lingue/<codice>/testi*.yaml      frasi fisse del Motore, a chiavi, con {segnapos
 lingue/<codice>/motore.yaml      regole linguistiche del Motore (annuncio, collegamenti tra azioni, frasi, guardie, nomi)
 lingue/<codice>/prove.yaml       parole chiave dell'arbitro dei dadi (SRD 5.2) e nomi di caratteristiche e abilità
 lingue/<codice>/prosa.yaml       regole di prosa del validatore (frasi, cliché, numeri in lettere, voce e tono)
-lingue/<codice>/preparatore.md   gli esempi del Preparatore in quella lingua
+lingue/<codice>/preparatore/     gli esempi del Preparatore in quella lingua (skill.md, riferimenti.md)
 apps/web/src/lingua/<codice>/    dizionari dell'interfaccia (TypeScript: le chiavi le controlla il compilatore)
 assets/voci/voci.yaml            voci per lingua (Fish e Qwen)
 ```
@@ -78,5 +78,6 @@ assets/voci/voci.yaml            voci per lingua (Fish e Qwen)
 - Test del server e del web come prima, più: le chiavi e i segnaposto dei pacchetti, i prompt di ogni lingua presenti,
   le regole linguistiche inglesi sui loro esempi (annuncio in terza persona, «me too» come dipendenza, frasi inglesi,
   abilità SRD dalle parole inglesi).
-- E2E su una porta di prova con una campagna inglese piccola (fixture), voce finta: tre turni in inglese, interfaccia
-  inglese su telefono, proiettore e pannello.
+- Partita inglese col server intero: `apps/server/test/partita-en.test.ts` (campagna `test/fixtures/campagne/en-mini`,
+  copione `test/fixtures/copione-en.txt`). E2E: `apps/web/e2e/lingua-en.spec.ts` (il comando di avvio è in testa al file),
+  tre turni in inglese, interfaccia inglese su telefono, proiettore e pannello, voce finta.

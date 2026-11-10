@@ -1,0 +1,16 @@
+id: scena_inn
+nome: "The Test Inn"
+apertura: "The inn is full of smoke. Mr. Hale, the innkeeper, looks at you: what do you do?"
+png_presenti: [png_keeper, png_guard]
+orologi_attivi: [o_storm]
+musica: {tag: taverna_calda}
+intensita: 2
+mossa_morbida_pronta: "A log collapses in the fireplace."
+immagine: {prompt_luogo: "smoky tavern"}
+descrizione: "A smoky room with a fireplace and a barrel."
+domanda_drammatica: "Will the innkeeper confess?"
+elementi_interattivi:
+  - {cosa: "the barrel", azioni: "it can be opened"}
+indizi:
+  - {id: i_jug, conclusione: r_keeper, come_si_trova: "Whoever looks behind the counter sees the jug."}
+taglio: "It ends when the innkeeper confesses."

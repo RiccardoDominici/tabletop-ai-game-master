@@ -27,7 +27,7 @@ scripts/partita.sh nozze-neve --voce finta
 
 The narrator, by contrast, is always real Haiku, whatever voice is chosen.
 
-For now the game is only in Italian, so the voices speak Italian. Choosing the play language at setup is coming.
+Each voice has an Italian and an English public Fish voice (`fish: {it, en}` in `assets/voci/voci.yaml`): the game uses the one of the campaign's language. The local Qwen voices clone an Italian reference clip and speak English from it too.
 
 ### drama-3: what happens when it does not answer
 

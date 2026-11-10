@@ -1,0 +1,18 @@
+# Smallest English campaign, for the language tests and the English e2e (docs/lingue.md). Not real game content.
+id: en-mini
+lingua: en
+canone:
+  - {id: f_rain, noto_ai_pg: true, testo: "It has rained for three days."}
+  - {id: f_keeper_thief, noto_ai_pg: false, testo: "The innkeeper waters down the wine."}
+orologi:
+  - id: o_storm
+    nome: "The storm is coming"
+    segmenti: 2
+    segno_almeno_ogni: 2
+    pieni_all_inizio: 0
+    segni: ["Distant thunder.", "The door slams."]
+    al_completo: "The river floods."
+sessione:
+  riassunto_iniziale: "It has rained for three days on the valley."
+preparazione:
+  segreto_del_cattivo: "THE_VILLAIN_IS_THE_INNKEEPER"

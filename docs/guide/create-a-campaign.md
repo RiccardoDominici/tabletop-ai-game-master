@@ -18,7 +18,17 @@ The costs of the model calls (Preparer, image checks) are explained in [voice an
 The Preparer is a strong model that writes, **before** the session, everything the fast narrator (Claude
 Haiku) will use live. The narrator improvises little; the campaign gives it the substance already written.
 
-The game is in Italian for now, the only play language today. Choosing the play language at setup is coming.
+## Play language
+
+The game plays in Italian or English.
+
+- The campaign has a language: `lingua: en` (or `it`) in the brief. The Preparer writes the whole campaign in that
+  language and puts `lingua` into `campagna.yaml`. That language wins for everything the Engine says: the narrator's
+  prompt, the turn message, its fixed phrases, the dice keywords, the voices and the validator's prose rules.
+- The interface (phones, projector, master panel) follows the configuration language: `lingua: en` in
+  `config/locale.yaml` (setup asks for it), or `CANTASTORIE_LINGUA=en` for one start. A campaign without `lingua` is
+  played in the configuration language.
+- What depends on the language lives in `lingue/<code>/` and `prompts/<code>/` (design in `docs/lingue.md`).
 
 The skill lives in `.claude/skills/preparatore/`:
 

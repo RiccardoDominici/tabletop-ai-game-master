@@ -1,0 +1,13 @@
+situazione_comune: "You are travelling together."
+personaggi:
+  - id: pg_mara
+    nome: "Mara Quill"
+    specie: human
+    classe: fighter
+    aspetto: "Short hair."
+    conoscenze_private:
+      - {testo: "MARA_SECRET"}
+  - id: pg_tobin
+    nome: "Tobin Ash"
+    specie: dwarf
+    classe: cleric

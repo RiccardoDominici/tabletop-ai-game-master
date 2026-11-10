@@ -1,0 +1,9 @@
+id: png_keeper
+nome: "Hale the Innkeeper"
+sa: [f_rain, f_keeper_thief]
+voce:
+  tts: {voce_id: vincent}
+  registro: "formal"
+aspetto:
+  lettura: "A big man in an apron."
+  prompt_immagine: "fat innkeeper"
