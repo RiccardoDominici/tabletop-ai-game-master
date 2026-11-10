@@ -95,6 +95,8 @@ async function principale(): Promise<void> {
   if (MODELLO) fs.writeFileSync(path.join(VUOTA, 'locale.yaml'), `backend:\n  locale:\n    modello: ${MODELLO}\n`);
   const env: NodeJS.ProcessEnv = { ...process.env, CANTASTORIE_PORTA: String(PORTA), CANTASTORIE_CAMPAGNA: CAMPAGNA, CANTASTORIE_MODO: MODO, CANTASTORIE_MASTER_TOKEN: token, CANTASTORIE_CONFIG: VUOTA, ANTHROPIC_KEY_FILE: '/nessun/file', CANTASTORIE_CHIAVE_OPENROUTER: '/nessun/file' };
   for (const k of ['ANTHROPIC_API_KEY', 'OPENROUTER_API_KEY', 'CANTASTORIE_VOCE', 'CANTASTORIE_TTS', 'CANTASTORIE_LLM']) delete env[k];
+  // Lo sceneggiatore usa `claude -p` (l'abbonamento di Riccardo): spento, salvo --sceneggiatore.
+  if (!process.argv.includes('--sceneggiatore')) env['CANTASTORIE_SCENEGGIATORE'] = 'no';
   if (VOCE_FISH) {
     // Solo la voce in rete: la chiave OpenRouter dal suo file; il resto resta locale e senza chiavi.
     env['CANTASTORIE_VOCE'] = 'fish';

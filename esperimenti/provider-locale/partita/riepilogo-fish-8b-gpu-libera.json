@@ -1,0 +1,118 @@
+{
+ "porta": 4730,
+ "campagna": "prova-f0",
+ "modo": "repertorio",
+ "turni_narrati": 3,
+ "frasi_proiettore": 33,
+ "frasi_telefono_in_ascolto": 33,
+ "stesse_frasi": true,
+ "segmenti_fish": 0,
+ "primo_byte_ms": {
+  "minimo": null,
+  "mediana": null,
+  "p90": null,
+  "massimo": null
+ },
+ "voce_usd": 0.00392,
+ "llm_usd": 0,
+ "voce_byte": 1960,
+ "secondi_voce": 123,
+ "errori_voce": [],
+ "markup_corretto": [],
+ "provider": [
+  "lettore         → locale (minimo) mlx-community/Qwen3-8B-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "arbitro_azioni  → regole — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "arbitro_prove   → regole (completo) — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "riassunto       → locale mlx-community/Qwen3-8B-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "regole          → locale mlx-community/Qwen3-8B-4bit — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "voce            → openrouter — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)",
+  "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurato (esperimenti/provider-locale/partita/config-solo-predefinita/predefinita.yaml)"
+ ],
+ "lettore_minimo": [
+  {
+   "turno": 1,
+   "scelte": [
+    "pg_ginestra:bal_borsa_no",
+    "pg_assenzio:ott_forestiero",
+    "pg_teodora:nessuna"
+   ],
+   "chiamate": 1
+  },
+  {
+   "turno": 2,
+   "scelte": [
+    "pg_teodora:ott_malati"
+   ],
+   "chiamate": 1
+  },
+  {
+   "turno": 3,
+   "scelte": [
+    "pg_ginestra:ott_brucia_sacchi",
+    "pg_assenzio:ott_accusa",
+    "pg_teodora:nar_preghiera"
+   ],
+   "chiamate": 1
+  }
+ ],
+ "strutturato_non_valido": 0,
+ "chiamate_api": 0,
+ "llm_ms": [
+  13805,
+  8594,
+  13783
+ ],
+ "sentito": [
+  {
+   "turno": 1,
+   "primo_audio_ms": 1557,
+   "prima_battuta_ms": 13819,
+   "annunci_prima": 3
+  },
+  {
+   "turno": 2,
+   "primo_audio_ms": 453,
+   "prima_battuta_ms": 8604,
+   "annunci_prima": 2
+  },
+  {
+   "turno": 3,
+   "primo_audio_ms": 826,
+   "prima_battuta_ms": 13797,
+   "annunci_prima": 3
+  }
+ ],
+ "turni": [
+  {
+   "turno": 1,
+   "voce": "fish",
+   "llm_fine": 13805,
+   "voce_richiesta": 366,
+   "voce_primo_audio": 1555,
+   "schermo_inizio_audio": 1706,
+   "audio_fine": null,
+   "buchi": null
+  },
+  {
+   "turno": 2,
+   "voce": "fish",
+   "llm_fine": 8594,
+   "voce_richiesta": 34,
+   "voce_primo_audio": 450,
+   "schermo_inizio_audio": 1031,
+   "audio_fine": null,
+   "buchi": null
+  },
+  {
+   "turno": 3,
+   "voce": "fish",
+   "llm_fine": 13783,
+   "voce_richiesta": 31,
+   "voce_primo_audio": 825,
+   "schermo_inizio_audio": 977,
+   "audio_fine": null,
+   "buchi": null
+  }
+ ],
+ "buchi_proiettore": 6
+}
