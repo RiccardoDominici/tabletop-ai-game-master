@@ -2,6 +2,7 @@
 # Avvia il server locale dei modelli di linguaggio: mlx-lm (`mlx_lm.server`, API compatibile OpenAI) su
 # 127.0.0.1:4613, col modello di config (backend.locale.modello). Serve al lettore e agli arbitri in locale
 # (docs/provider.md). Se risponde già, non fa niente. Riusa il KV del prefisso fisso (--prompt-cache-size).
+# Qwen3 «ragiona» per default (<think>): enable_thinking false, il classificatore risponde solo l'id.
 # Una richiesta per volta e prefill a passi corti: con la GPU condivisa con la voce, comandi Metal lunghi
 # venivano uccisi da macOS («Impacting Interactivity») e il server restava appeso.
 # Altri sistemi: llama.cpp (`llama-server --port 4613`) o Ollama con backend.locale.url e avvio: no.
@@ -10,7 +11,7 @@ set -euo pipefail
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
 PORTA="${LETTORE_PORTA:-4613}"
 case "$PORTA" in 4610|4611|4612) echo "porta $PORTA riservata" >&2; exit 2 ;; esac
-MODELLO="${1:-${MODELLO_LOCALE:-mlx-community/Qwen3-4B-Instruct-2507-4bit}}"
+MODELLO="${1:-${MODELLO_LOCALE:-mlx-community/Qwen3-8B-4bit}}"
 BIN="$RADICE/services/lettore/.venv/bin/mlx_lm.server"
 DIR_LOG="$RADICE/logs"
 URL="http://127.0.0.1:$PORTA/v1/models"
@@ -42,7 +43,7 @@ if [[ ! -x "$BIN" ]]; then
   exit 1
 fi
 echo "=== avvio $(date '+%Y-%m-%d %H:%M:%S') $MODELLO ===" >> "$DIR_LOG/lettore.out"
-nohup "$BIN" --model "$MODELLO" --host 127.0.0.1 --port "$PORTA" --prompt-cache-size 4 --prompt-concurrency 1 --decode-concurrency 1 --prefill-step-size 256 --log-level WARNING >> "$DIR_LOG/lettore.out" 2>&1 &
+nohup "$BIN" --model "$MODELLO" --host 127.0.0.1 --port "$PORTA" --chat-template-args '{"enable_thinking":false}' --prompt-cache-size 4 --prompt-concurrency 1 --decode-concurrency 1 --prefill-step-size 256 --log-level WARNING >> "$DIR_LOG/lettore.out" 2>&1 &
 PID=$!
 echo "$PID" > "$DIR_LOG/lettore.pid"
 echo "lettore locale: avviato (pid $PID, $MODELLO), attendo che risponda…"

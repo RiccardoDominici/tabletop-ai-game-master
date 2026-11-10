@@ -20,8 +20,11 @@
 backend:
   locale:
     url: http://127.0.0.1:4613/v1
-    # Il modello locale consigliato da esperimenti/lettore-locale (Qwen3 4B, 4 bit, ~3,6 GB di RAM).
-    modello: mlx-community/Qwen3-4B-Instruct-2507-4bit
+    # Il modello consigliato da «lettore» (esperimenti/lettore-locale/risultati.md, 10/11/2026): Qwen3 8B a
+    # 4 bit, ~4,6 GB. Come classificatore: accordo con Haiku 43% (75% sul raggiungibile), 0 id fuori catalogo,
+    # 0 risposte invalide. Il 4B (mlx-community/Qwen3-4B-Instruct-2507-4bit, ~3,6 GB) era al 19%: va bene
+    # su un computer con meno memoria. Il «thinking» di Qwen3 è spento dagli script (enable_thinking: false).
+    modello: mlx-community/Qwen3-8B-4bit
     # mlx: lo accendono gli script (scripts/lettore-avvio.sh, porta 4613); no: lo accendi tu (llama.cpp, Ollama…).
     avvio: mlx
     # I server locali non garantiscono l'uscita strutturata: validazione severa + un ritentativo + ripiego.
