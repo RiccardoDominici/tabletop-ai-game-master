@@ -309,13 +309,6 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     ...(narratoreRiassunto !== undefined ? { narratoreRiassunto } : {}),
     // Il lettore minimo sceglie anche le battute d'attesa (riempitivi) quando nessuna battuta risponde.
     attesaNelCatalogo: narratore.nome === 'minimo',
-    // Lo sceneggiatore (docs/sceneggiatore.md) scrive con Claude Code ciò che il lettore minimo non trova:
-    // le richieste partono solo se il suo processo gira (scripts/sceneggiatore.sh). Spento nei server di
-    // prova (narratore sostituito) e con CANTASTORIE_SCENEGGIATORE=no.
-    sceneggiatore:
-      narratore.nome === 'minimo' && !chiuso && process.env['CANTASTORIE_SCENEGGIATORE'] !== 'no'
-        ? { radice: path.join(config.cartellaLog, 'sceneggiatore'), tettoMs: Number(process.env['CANTASTORIE_SCENEGGIATORE_TETTO_S'] ?? 90) * 1000 }
-        : null,
     voce,
     uscitaAudio: uscite.audio,
     orologio: sost.orologio ?? orologioDiSistema,
