@@ -8,6 +8,7 @@ import path from 'node:path';
 import { PORTA_SERVER, PORTA_VOCE } from '@cantastorie/shared';
 import { CARTELLA_LOG, CARTELLA_WEB_DIST, RADICE_REPO } from './percorsi';
 import { tokenDaConfig } from './master/token';
+import { caricaConfigProvider, type ConfigProvider } from './provider/config';
 
 /**
  * Quale motore vocale usare: drama-3 via OpenRouter (fish), il servizio locale (qwen), il finto
@@ -23,6 +24,8 @@ export type ModoNarratore = 'improvvisa' | 'repertorio';
 
 export interface ConfigServer {
   porta: number;
+  /** Provider di ogni componente (config/*.yaml + variabili, docs/provider.md), letti dallo STESSO ambiente. */
+  provider: ConfigProvider;
   host: string;
   livelloLog: string;
   cartellaLog: string;
@@ -170,6 +173,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
   const sessioni = testo(env['CANTASTORIE_SESSIONI']);
   return {
     porta: numero(env['PORT'], PORTA_SERVER),
+    provider: caricaConfigProvider(env),
     host: testo(env['HOST']) ?? '0.0.0.0',
     livelloLog: testo(env['LOG_LEVEL']) ?? 'info',
     cartellaLog,

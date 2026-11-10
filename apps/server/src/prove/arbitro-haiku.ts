@@ -11,9 +11,10 @@
  * Una chiamata può classificare più azioni insieme (alla chiusura, quelle rimaste senza giudizio);
  * di solito ne classifica una, appena inviata, così alla chiusura la decisione è già pronta.
  */
-import type Anthropic from '@anthropic-ai/sdk';
 import type { Logger } from '../logger';
-import { calcolaCosto, type Costo, type UsoToken } from '../llm/costi';
+import { sommaCosti, type Costo } from '../llm/costi';
+import type { ModelloLinguaggio, RispostaModello } from '../llm/modello';
+import { chiediStrutturato } from '../llm/strutturato';
 import { ABILITA, CARATTERISTICHE, DIFFICOLTA, type Abilita, type Caratteristica, type Difficolta } from '../campagna/regole-srd';
 import type { ArbitroProve, AzioneDaClassificare, DecisioneProva, IngressoArbitroProve, TipoDecisione } from './tipi';
 
@@ -149,31 +150,29 @@ export interface MisuraProve {
 
 export class ArbitroProveHaiku implements ArbitroProve {
   constructor(
-    private readonly client: () => Anthropic,
+    private readonly modello: () => ModelloLinguaggio,
     private readonly o: { modello: string; log: Logger; onMisura?: (m: MisuraProve) => void; maxTokens?: number },
   ) {}
 
   async classifica(i: IngressoArbitroProve): Promise<Record<string, DecisioneProva>> {
     const t0 = performance.now();
-    const risposta = await this.client().messages.create({
-      model: this.o.modello,
-      // ~110 token per decisione; margine per qualche azione insieme.
-      max_tokens: this.o.maxTokens ?? 300 + 160 * i.azioni.length,
-      thinking: { type: 'disabled' },
-      output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA_PROVE as unknown as Record<string, unknown> } },
-      system: [
-        { type: 'text', text: PROMPT_ARBITRO_PROVE },
-        { type: 'text', text: `Scena (parte pubblica):\n${i.scena}`, cache_control: { type: 'ephemeral' } },
-      ],
-      messages: [{ role: 'user', content: messaggioProve(i) }],
-    });
+    const risposte: RispostaModello[] = [];
+    let r: { decisioni: DecisioneGrezza[] };
+    try {
+      r = await chiediStrutturato<{ decisioni: DecisioneGrezza[] }>(
+        this.modello(),
+        {
+          sistema: [{ testo: PROMPT_ARBITRO_PROVE }, { testo: `Scena (parte pubblica):\n${i.scena}`, cache: true }],
+          messaggi: [{ ruolo: 'user', testo: messaggioProve(i) }],
+          // ~110 token per decisione; margine per qualche azione insieme.
+          maxTokens: this.o.maxTokens ?? 300 + 160 * i.azioni.length,
+        },
+        { schema: SCHEMA_PROVE as unknown as Record<string, unknown>, cosa: 'arbitro delle prove', log: this.o.log, onRisposta: (x) => risposte.push(x) },
+      );
+    } finally {
+      if (risposte.length) this.o.onMisura?.({ ms: Math.round(performance.now() - t0), azioni: i.azioni.length, costo: risposte.map((x) => x.costo).reduce(sommaCosti) });
+    }
     const ms = Math.round(performance.now() - t0);
-    const costo = calcolaCosto(this.o.modello, risposta.usage as unknown as UsoToken);
-    this.o.onMisura?.({ ms, azioni: i.azioni.length, costo });
-    if (risposta.stop_reason !== 'end_turn') throw new Error(`arbitro delle prove: stop_reason ${String(risposta.stop_reason)}`);
-    const testo = risposta.content.find((b) => b.type === 'text');
-    if (!testo || testo.type !== 'text') throw new Error('arbitro delle prove: risposta senza testo');
-    const r = JSON.parse(testo.text) as { decisioni: DecisioneGrezza[] };
     const ids = new Set(i.azioni.map((a) => a.id));
     const out: Record<string, DecisioneProva> = {};
     for (const g of r.decisioni ?? []) if (ids.has(g.id)) out[g.id] = daGrezza(g);

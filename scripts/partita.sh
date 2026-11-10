@@ -7,7 +7,8 @@
 #
 #   <campagna>   cartella in campagne/ (es. prova-f0, ponte-lanterne)
 #   --modo B     (predefinito) repertorio: battute pre-scritte scelte da Haiku; A: improvvisa tutto
-#   --voce fish  (predefinito) la voce del gioco: drama-3 via OpenRouter, espressiva (la chiave è la
+#   --voce       senza: la sceglie la configurazione (config/locale.yaml, scripts/configura.sh; di base qwen)
+#   --voce fish  la voce espressiva: drama-3 via OpenRouter (la chiave è la
 #                OPENROUTER_API_KEY dell'ambiente, o la riga nel .env alla radice, o il file di ripiego
 #                di configurazione; vedi apps/server/src/llm/chiavi.ts). Se OpenRouter non risponde, per quella frase
 #                usa Qwen locale se è già acceso, altrimenti la frase resta testo sullo schermo.
@@ -40,7 +41,7 @@ uso() {
 
 [[ $# -ge 1 ]] || uso
 CAMPAGNA="$1"; shift
-MODO="B"; VOCE="fish"; NUOVA=0; SESSIONE=""
+MODO="B"; VOCE=""; NUOVA=0; SESSIONE=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --modo) MODO="${2:-}"; shift 2 || uso ;;
@@ -52,6 +53,13 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 case "$MODO" in A|a) MODO_SERVER="improvvisa"; MODO="A" ;; B|b) MODO_SERVER="repertorio"; MODO="B" ;; *) echo "--modo vuole A o B"; uso ;; esac
+# Senza --voce decide la configurazione (config/*.yaml, docs/provider.md): di base Qwen locale.
+if [[ -z "$VOCE" ]]; then
+  eval "$("$RADICE/node_modules/.bin/tsx" "$RADICE/apps/server/src/strumenti/provider.ts" --shell 2>/dev/null | grep '^VOCE=' || echo VOCE=locale)"
+  case "$VOCE" in openrouter) VOCE=fish ;; finto|nessuno) VOCE=finta ;; *) VOCE=qwen ;; esac
+  # Su una porta di prova la voce locale della partita vera (4611) non si tocca.
+  [[ "$PORTA" != "4610" && "$VOCE" == "qwen" ]] && VOCE=finta
+fi
 case "$VOCE" in fish|finta|qwen) ;; *) echo "--voce vuole fish, qwen o finta"; uso ;; esac
 if [[ "$PORTA" != "4610" && "$VOCE" == "qwen" ]]; then
   echo "Su una porta di prova la voce è drama-3 (--voce fish) o finta: il servizio voce (4611) è della partita vera."

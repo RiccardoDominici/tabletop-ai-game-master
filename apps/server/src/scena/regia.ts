@@ -130,6 +130,13 @@ export interface OpzioniRegia {
   /** Modalità repertorio: battute, parole segrete (controllo dei contesti), audio pre-generato. */
   repertorio?: Repertorio;
   paroleSegrete?: ParolaSegreta[];
+  /**
+   * Lettore minimo (llm/minimo.ts): nel messaggio anche le battute d'attesa (riempitivi), per le azioni
+   * a cui nessuna battuta del catalogo risponde. Il selettore completo non le riceve.
+   */
+  attesaNelCatalogo?: boolean;
+  /** «La volta scorsa»: un narratore a parte (il lettore minimo non scrive prosa); null = riserva dai segni. */
+  narratoreRiassunto?: Narratore | null;
   cacheAudio?: CacheAudio;
   /** Esperimenti: la finestra si apre sempre per tutti i PG al tavolo (l'invito resta nel log). */
   finestraATutti?: boolean;
@@ -459,7 +466,7 @@ export class Regia {
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');
-    this.serata = new SerataGuidata({ campagna: opzioni.campagna, narratore: opzioni.narratore, log: opzioni.log, parole: () => this.o.paroleSegrete ?? [], pubblico: () => this.statoPubblico() });
+    this.serata = new SerataGuidata({ campagna: opzioni.campagna, narratore: opzioni.narratoreRiassunto !== undefined ? opzioni.narratoreRiassunto : opzioni.narratore, log: opzioni.log, parole: () => this.o.paroleSegrete ?? [], pubblico: () => this.statoPubblico() });
     if (!opzioni.ripresa) this.serata.preparaPerPacchetto();
     if (opzioni.ripresa) this.ripristina(opzioni.ripresa);
     else if (opzioni.dispositiviEreditati) {
@@ -2383,7 +2390,7 @@ export class Regia {
    * rispondere (le pubbliche; le private solo per le battute con `richiede.privata`, e `da_pg` solo
    * per quei PG), il segno se è dovuto, le battute per stato dell'orologio, i riempitivi allo stallo.
    */
-  private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; indicate: string[]; battuteDisponibili: string; stallo: boolean; menzogne: string[] } {
+  private elencoRepertorio(r: RiepilogoChiusura): { fattiScoperti: string[]; indicate: string[]; battuteDisponibili: string; stallo: boolean; menzogne: string[]; attesa: string } {
     const s = this.statoRepertorio!;
     // «Stallo»: una finestra chiusa senza nessuna azione (scadenza concitata o Risolvi ora a mani vuote).
     const stallo = r.azioni.length === 0;
@@ -2400,6 +2407,12 @@ export class Regia {
     const indicate = new Map(perAzione.flatMap((x) => x.ids.map((id) => [id, x.autore] as const)));
     const battute = [...catalogo.filter((b) => indicate.has(b.id)), ...catalogo.filter((b) => !indicate.has(b.id))];
     this.elencoTurno = new Set(battute.map((b) => b.id));
+    // Lettore minimo: le battute d'attesa (riempitivi, di solito solo allo stallo) per le azioni senza battuta.
+    const attesa =
+      this.o.attesaNelCatalogo && !stallo
+        ? s.catalogo({ turno: r.turno, azioni, stallo: true, dovuti, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] }).battute.filter((b) => b.riempitivo && !this.elencoTurno.has(b.id))
+        : [];
+    for (const b of attesa) this.elencoTurno.add(b.id);
     this.turnoB = {
       azioni: new Map(r.azioni.map((a) => [a.autore, { id: a.id, privata: a.privata, testo: a.testo, prove: this.riuscitePerAzione.get(a.id) ?? [] }])),
       stallo,
@@ -2411,6 +2424,7 @@ export class Regia {
       fattiScoperti: s.fattiScoperti.map((id) => `${id} — ${this.testoFatto(id)}`),
       indicate: perAzione.map((x) => `- ${x.autore} (${this.nomePg(x.autore)}): ${x.ids.map((id) => `[usa] ${id} > ${x.autore}`).join(' oppure ')}`),
       battuteDisponibili: s.elencoDisponibili(battute),
+      attesa: s.elencoDisponibili(attesa),
       stallo,
       menzogne: righeMenzogneDette(s.menzogneDette, this.campagna, this.o.paroleSegrete ?? [], this.statoPubblico()),
     };

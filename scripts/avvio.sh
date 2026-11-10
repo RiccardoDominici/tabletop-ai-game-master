@@ -51,7 +51,16 @@ mkdir -p "$DIR_LOG"
 cd "$RADICE"
 
 # 1. Istanze precedenti: server e Vite sempre; la voce solo se la riavviamo. (In prova: solo la sua porta.)
-CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" --lascia-voce
+CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" --lascia-voce --lascia-lettore
+
+# Chi fa cosa (config/*.yaml + variabili, docs/provider.md): VOCE, SERVE_LOCALE, MODELLO_LOCALE…
+TSX="$RADICE/node_modules/.bin/tsx"
+PROVIDER="$("$TSX" "$RADICE/apps/server/src/strumenti/provider.ts" --shell 2>/dev/null || true)"
+eval "$PROVIDER"
+# Senza opzioni esplicite la voce la decide la configurazione.
+if [[ "$FISH" == "0" && "$MOCK" == "0" ]]; then
+  case "${VOCE:-locale}" in openrouter) FISH=1 ;; finto|nessuno) MOCK=1 ;; esac
+fi
 
 # 2. Servizio voce. drama-3 non ha servizi locali da avviare. In prova mai Qwen: la voce su 4611 è
 #    della partita vera (con drama-3 la riserva Qwen è spenta, CANTASTORIE_VOCE_RISERVA=no).
@@ -63,6 +72,10 @@ if [[ "$FISH" == "1" ]]; then
   else
     echo "voce: drama-3 via OpenRouter (riserva: Qwen locale se è già pronto)"
   fi
+elif [[ "$PROVA" == "1" && "$MOCK" == "0" && -n "${CANTASTORIE_VOCE_URL:-}" && "${CANTASTORIE_VOCE_URL}" != *":4611"* ]]; then
+  # Prova con la voce locale: un servizio Qwen a parte (mai il 4611 della partita vera), acceso da chi prova.
+  export CANTASTORIE_VOCE=qwen
+  echo "voce: Qwen locale su $CANTASTORIE_VOCE_URL (istanza di prova su :$PORTA)"
 elif [[ "$PROVA" == "1" ]]; then
   unset CANTASTORIE_VOCE
   export CANTASTORIE_TTS=mock
@@ -79,6 +92,11 @@ elif [[ -x "$RADICE/scripts/voce-avvio.sh" ]]; then
   fi
 else
   echo "voce: scripts/voce-avvio.sh assente, il server userà la voce finta (modo auto)"
+fi
+
+# 2b. Server locale dei modelli (lettore, arbitri in locale): mlx-lm su 127.0.0.1:4613, condiviso dalle istanze.
+if [[ "${SERVE_LOCALE:-0}" == "1" && "${AVVIO_LOCALE:-no}" == "mlx" && "$FINTO" == "0" ]]; then
+  LETTORE_PORTA="${PORTA_LOCALE:-4613}" "$RADICE/scripts/lettore-avvio.sh" "${MODELLO_LOCALE:-}" || echo "lettore locale: non partito, i componenti locali useranno le loro riserve (vedi logs/lettore.out)"
 fi
 
 # 3. Pagine web.

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Ferma Cantastorie: server (4610), Vite dev (4612) e, salvo --lascia-voce, il servizio voce (4611).
+# Ferma Cantastorie: server (4610), Vite dev (4612) e, salvo --lascia-voce e --lascia-lettore, il servizio
+# voce (4611) e il server locale dei modelli (4613).
 # Prima SIGTERM (il server chiude con garbo socket e scena), poi SIGKILL dopo ~5 s.
 #
 # Istanza di prova: CANTASTORIE_PORTA=<porta> ferma SOLO il server su quella porta (pid in
@@ -8,10 +9,11 @@ set -uo pipefail
 
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
 PORTA="${CANTASTORIE_PORTA:-4610}"
-LASCIA_VOCE=0
+LASCIA_VOCE=0; LASCIA_LETTORE=0
 for a in "$@"; do
   case "$a" in
     --lascia-voce) LASCIA_VOCE=1 ;;
+    --lascia-lettore) LASCIA_LETTORE=1 ;;
     *) echo "opzione sconosciuta: $a" >&2; exit 2 ;;
   esac
 done
@@ -56,4 +58,8 @@ ferma_porta "server" 4610 "$RADICE/logs/server.pid"
 ferma_porta "vite" 4612 ""
 if [[ "$LASCIA_VOCE" == "0" && -x "$RADICE/scripts/voce-arresto.sh" ]]; then
   "$RADICE/scripts/voce-arresto.sh"
+fi
+# Il server locale dei modelli (4613), se l'hanno acceso gli script; --lascia-lettore lo tiene caldo.
+if [[ "$LASCIA_LETTORE" == "0" && -x "$RADICE/scripts/lettore-arresto.sh" ]]; then
+  "$RADICE/scripts/lettore-arresto.sh"
 fi

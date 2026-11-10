@@ -42,6 +42,8 @@ export interface DatiMessaggioTurno {
     menzogne?: string[];
     /** Preselezione del Motore: una riga per azione, con le battute i cui temi quell'azione tocca. */
     indicate?: string[];
+    /** Solo per il lettore minimo: battute d'attesa (riempitivi) per le azioni senza battuta. */
+    attesa?: string;
   };
   /** Massimo di voci di trascrizione da includere (le più recenti). */
   maxTrascrizione?: number;
@@ -159,6 +161,7 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
       );
     }
     parti.push('## Catalogo: battute pertinenti a questo turno (id · chi · tipo · quando)', d.repertorio.battuteDisponibili || '(nessuna)');
+    if (d.repertorio.attesa) parti.push('## Battute d’attesa (riempitivi, solo se nessuna battuta risponde)', d.repertorio.attesa);
     if (d.repertorio.stallo) parti.push(TESTO_STALLO_REPERTORIO);
   }
 

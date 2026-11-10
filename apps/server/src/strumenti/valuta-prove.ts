@@ -15,6 +15,7 @@ import { caricaCampagna } from '../campagna/caricatore';
 import { caricaSchede } from '../campagna/schede';
 import { caricaConfig } from '../config';
 import { creaClientAnthropic } from '../llm/haiku';
+import { ModelloAnthropic } from '../llm/anthropic';
 import { creaLogger } from '../logger';
 import { RADICE_REPO } from '../percorsi';
 import { riassuntoPubblico } from '../azioni/contesto';
@@ -54,7 +55,7 @@ async function main(): Promise<void> {
   const schede = caricaSchede(campagna);
   const { casi, narrazione } = YAML.parse(fs.readFileSync(FILE_CASI, 'utf8')) as { casi: Caso[]; narrazione: string };
   const misure: MisuraProve[] = [];
-  const arbitro = new ArbitroProveHaiku(() => creaClientAnthropic(config.llm.fileChiave, log), { modello: config.llm.modello, log, onMisura: (m) => misure.push(m) });
+  const arbitro = new ArbitroProveHaiku(() => new ModelloAnthropic(() => creaClientAnthropic(config.llm.fileChiave, log), config.llm.modello), { modello: config.llm.modello, log, onMisura: (m) => misure.push(m) });
   const nome = (id: string): string => campagna.pg.find((p) => p.id === id)?.nome ?? campagna.png.find((p) => p.id === id)?.nome ?? id;
   const contesto: ContestoProve = { campagna, scenaPubblica: riassuntoPubblico(campagna, []), narrazione, versione: 1, pgAlTavolo: campagna.pg.map((p) => p.id), nome };
   // Il motore costruisce l'ingresso dell'arbitro come in partita (personaggi, prove della scena).

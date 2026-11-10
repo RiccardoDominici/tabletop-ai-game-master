@@ -8,9 +8,10 @@
  * Gli stati e gli avvisi li decide il Motore (azioni/tavolo.ts), che filtra anche i suggerimenti
  * non ammessi (es. dipendere da un'azione privata altrui).
  */
-import type Anthropic from '@anthropic-ai/sdk';
 import type { Logger } from '../logger';
-import { calcolaCosto, type Costo, type UsoToken } from '../llm/costi';
+import { sommaCosti, type Costo } from '../llm/costi';
+import type { ModelloLinguaggio, RispostaModello } from '../llm/modello';
+import { chiediStrutturato } from '../llm/strutturato';
 import type { Arbitro, AzioneArbitro, ContestoArbitro, EsitoRelazioni, Giudizio } from './tipi';
 
 export const PROMPT_ARBITRO = `Sei l'arbitro delle azioni di una partita di D&D dal vivo, in italiano. Più giocatori scrivono sul telefono, nello stesso momento, cosa fanno i loro personaggi (PG). Tu non narri: dici al programma come le azioni si collegano tra loro e con la narrazione. Rispondi solo con il JSON richiesto.
@@ -96,30 +97,28 @@ export interface MisuraChiamata {
 
 export class ArbitroHaiku implements Arbitro {
   constructor(
-    private readonly client: () => Anthropic,
+    /** Il modello (llm/modello.ts): Anthropic come prima, o un provider locale/compatibile OpenAI. */
+    private readonly modello: () => ModelloLinguaggio,
     private readonly o: { modello: string; log: Logger; onMisura?: (m: MisuraChiamata) => void; maxTokens?: number },
   ) {}
 
   private async chiedi<T>(tipo: MisuraChiamata['tipo'], ctx: ContestoArbitro, schema: Record<string, unknown>, messaggio: string): Promise<T> {
     const t0 = performance.now();
-    const risposta = await this.client().messages.create({
-      model: this.o.modello,
-      max_tokens: this.o.maxTokens ?? 600,
-      thinking: { type: 'disabled' },
-      output_config: { effort: 'low', format: { type: 'json_schema', schema } },
-      system: [
-        { type: 'text', text: PROMPT_ARBITRO },
-        { type: 'text', text: `Scena (parte pubblica):\n${ctx.scena}`, cache_control: { type: 'ephemeral' } },
-      ],
-      messages: [{ role: 'user', content: messaggio }],
-    });
-    const ms = Math.round(performance.now() - t0);
-    const costo = calcolaCosto(this.o.modello, risposta.usage as unknown as UsoToken);
-    this.o.onMisura?.({ tipo, ms, costo });
-    if (risposta.stop_reason !== 'end_turn') throw new Error(`arbitro: stop_reason ${String(risposta.stop_reason)}`);
-    const testo = risposta.content.find((b) => b.type === 'text');
-    if (!testo || testo.type !== 'text') throw new Error('arbitro: risposta senza testo');
-    return JSON.parse(testo.text) as T;
+    const risposte: RispostaModello[] = [];
+    try {
+      return await chiediStrutturato<T>(
+        this.modello(),
+        {
+          sistema: [{ testo: PROMPT_ARBITRO }, { testo: `Scena (parte pubblica):\n${ctx.scena}`, cache: true }],
+          messaggi: [{ ruolo: 'user', testo: messaggio }],
+          maxTokens: this.o.maxTokens ?? 600,
+        },
+        { schema, cosa: `arbitro ${tipo}`, log: this.o.log, onRisposta: (r) => risposte.push(r) },
+      );
+    } finally {
+      // Una misura per chiamata del gioco, anche quando un provider locale ha ritentato.
+      if (risposte.length) this.o.onMisura?.({ tipo, ms: Math.round(performance.now() - t0), costo: risposte.map((r) => r.costo).reduce(sommaCosti) });
+    }
   }
 
   async relazioni(i: ContestoArbitro & { nuova: AzioneArbitro; coda: AzioneArbitro[] }): Promise<EsitoRelazioni> {

@@ -1,0 +1,52 @@
+# Chi fa cosa nel gioco: i provider dei modelli (docs/provider.md).
+#
+# Questo file è tracciato e vale per tutti: di base TUTTO IN LOCALE, zero centesimi, nessuna chiave.
+# Le scelte di questo computer vanno in config/locale.yaml (non tracciato: lo scrive scripts/configura.sh,
+# stessa forma, si scrive solo ciò che cambia). Le variabili d'ambiente vincono su tutti e due:
+#   CANTASTORIE_<COMPONENTE>=<provider>   es. CANTASTORIE_LETTORE=anthropic, CANTASTORIE_VOCE=fish
+#
+# Provider:
+#   locale      il server compatibile OpenAI su questo computer (backend.locale: mlx-lm sul Mac;
+#               llama.cpp o Ollama altrove: cambia solo l'URL)
+#   anthropic   API Anthropic (chiave ANTHROPIC_API_KEY)
+#   openrouter  API OpenRouter (chiave OPENROUTER_API_KEY)
+#   openai      un altro server compatibile OpenAI: `url`, `modello` e, se serve, `chiave` (nome della variabile)
+#   regole      niente modello: la riserva deterministica del componente (arbitri a regole, riassunto dai segni…)
+#   finto       per le prove: narratore a copione, voce a tono
+#   nessuno     il componente è spento (immagini: si usa lo sfondo d'atmosfera)
+# `riserve`: se il provider scelto non è disponibile all'avvio (chiave mancante, server locale giù),
+# si prova il seguente; il server stampa all'avvio chi fa cosa e perché.
+
+backend:
+  locale:
+    url: http://127.0.0.1:4613/v1
+    # Il modello locale consigliato da esperimenti/lettore-locale (Qwen3 4B, 4 bit, ~3,6 GB di RAM).
+    modello: mlx-community/Qwen3-4B-Instruct-2507-4bit
+    # mlx: lo accendono gli script (scripts/lettore-avvio.sh, porta 4613); no: lo accendi tu (llama.cpp, Ollama…).
+    avvio: mlx
+    # I server locali non garantiscono l'uscita strutturata: validazione severa + un ritentativo + ripiego.
+    strutturato: false
+    timeout_ms: 120000
+  openrouter:
+    url: https://openrouter.ai/api/v1
+    strutturato: true
+  anthropic:
+    modello: claude-haiku-5-5
+
+componenti:
+  # Chi legge il turno. modo minimo: classificatore (una battuta del catalogo preselezionato dal Motore,
+  # o «nessuna») + al più l'annuncio in terza persona; tutta la prosa viene dal repertorio. modo completo:
+  # il narratore di sempre, che scrive le righe. auto = minimo in locale, completo con un'API.
+  lettore:        {provider: locale, modo: auto, riserve: [finto]}
+  # Arbitro delle azioni simultanee (dipendenze, conflitti): riserva a regole.
+  arbitro_azioni: {provider: locale, riserve: [regole]}
+  # Arbitro delle prove e dei tiri (SRD 5.2): riserva a regole.
+  arbitro_prove:  {provider: locale, riserve: [regole]}
+  # «La volta scorsa…»: riserva = il riassunto deterministico dai segni.
+  riassunto:      {provider: locale, riserve: [regole]}
+  # «Chiedi una regola» dal telefono: riserva = la ricerca nelle regole, senza modello.
+  regole:         {provider: locale, riserve: [regole]}
+  # Voce: locale = Qwen3-TTS (services/voce, Mac); openrouter = drama-3 (docs/ricerca-voce-drama3.md).
+  voce:           {provider: locale, riserve: [finto]}
+  # Immagini (solo nella preparazione, strumenti/immagini): nessuno = sfondo d'atmosfera.
+  immagini:       {provider: nessuno}

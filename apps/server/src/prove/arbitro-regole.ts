@@ -5,9 +5,10 @@
  * nel messaggio solo i passi del manuale pertinenti alle azioni (ricerca per parole chiave, pochi
  * righi), così il contesto di Haiku resta piccolo.
  */
-import type Anthropic from '@anthropic-ai/sdk';
 import type { Logger } from '../logger';
-import { calcolaCosto, type UsoToken } from '../llm/costi';
+import { sommaCosti } from '../llm/costi';
+import type { ModelloLinguaggio, RispostaModello } from '../llm/modello';
+import { chiediStrutturato } from '../llm/strutturato';
 import { cercaEstratti, testoEstratto } from '../regole/estratti';
 import type { RegoleCampagna } from '../regole/tipi';
 import { messaggioProve, type MisuraProve } from './arbitro-haiku';
@@ -110,7 +111,7 @@ export class ArbitroRegoleHaiku implements ArbitroProve<DecisioneRegole> {
   private readonly schema: Record<string, unknown>;
   constructor(
     private readonly regole: RegoleCampagna,
-    private readonly client: () => Anthropic,
+    private readonly modello: () => ModelloLinguaggio,
     private readonly o: { modello: string; log: Logger; onMisura?: (m: MisuraProve) => void },
   ) {
     this.sistema = promptArbitroRegole(regole);
@@ -121,25 +122,25 @@ export class ArbitroRegoleHaiku implements ArbitroProve<DecisioneRegole> {
     const t0 = performance.now();
     const passi = passiPerAzioni(this.regole, i.azioni.map((a) => a.testo));
     const messaggio = `${passi ? `Passi del manuale pertinenti:\n${passi}\n\n` : ''}${messaggioProve(i)}`;
-    const risposta = await this.client().messages.create({
-      model: this.o.modello,
-      max_tokens: 300 + 160 * i.azioni.length,
-      thinking: { type: 'disabled' },
-      output_config: { effort: 'low', format: { type: 'json_schema', schema: this.schema } },
-      system: [
-        { type: 'text', text: this.sistema },
-        { type: 'text', text: `Scena (parte pubblica):\n${i.scena}`, cache_control: { type: 'ephemeral' } },
-      ],
-      messages: [{ role: 'user', content: messaggio }],
-    });
+    const risposte: RispostaModello[] = [];
+    let r: { decisioni: Grezza[] };
+    try {
+      r = await chiediStrutturato<{ decisioni: Grezza[] }>(
+        this.modello(),
+        {
+          sistema: [{ testo: this.sistema }, { testo: `Scena (parte pubblica):\n${i.scena}`, cache: true }],
+          messaggi: [{ ruolo: 'user', testo: messaggio }],
+          maxTokens: 300 + 160 * i.azioni.length,
+        },
+        { schema: this.schema, cosa: 'arbitro delle regole', log: this.o.log, onRisposta: (x) => risposte.push(x) },
+      );
+    } finally {
+      if (risposte.length) this.o.onMisura?.({ ms: Math.round(performance.now() - t0), azioni: i.azioni.length, costo: risposte.map((x) => x.costo).reduce(sommaCosti) });
+    }
     const ms = Math.round(performance.now() - t0);
-    this.o.onMisura?.({ ms, azioni: i.azioni.length, costo: calcolaCosto(this.o.modello, risposta.usage as unknown as UsoToken) });
-    if (risposta.stop_reason !== 'end_turn') throw new Error(`arbitro delle regole: stop_reason ${String(risposta.stop_reason)}`);
-    const testo = risposta.content.find((b) => b.type === 'text');
-    if (!testo || testo.type !== 'text') throw new Error('arbitro delle regole: risposta senza testo');
     const ids = new Set(i.azioni.map((a) => a.id));
     const out: Record<string, DecisioneRegole> = {};
-    for (const g of (JSON.parse(testo.text) as { decisioni: Grezza[] }).decisioni ?? []) if (ids.has(g.id)) out[g.id] = daGrezzaRegole(g, this.regole);
+    for (const g of r.decisioni ?? []) if (ids.has(g.id)) out[g.id] = daGrezzaRegole(g, this.regole);
     this.o.log.debug({ ms, passi: passi.length, decisioni: out }, 'prove: decisioni dell’arbitro (set del manuale)');
     return out;
   }

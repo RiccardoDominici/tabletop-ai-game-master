@@ -22,8 +22,11 @@ export interface EsitoNarrazione {
   idMessaggio: string | null;
 }
 
+/** Chi narra: Haiku (Anthropic), un modello compatibile OpenAI (locale o in rete), il lettore minimo, il copione finto. */
+export type NomeNarratore = 'haiku' | 'anthropic' | 'locale' | 'openrouter' | 'openai' | 'minimo' | 'finto';
+
 export interface Narratore {
-  readonly nome: 'haiku' | 'finto';
+  readonly nome: NomeNarratore;
   readonly modello: string;
   /**
    * Narra in streaming: `onTesto` riceve ogni delta di testo appena arriva.

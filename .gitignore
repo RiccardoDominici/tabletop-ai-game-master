@@ -22,3 +22,6 @@ manifest.json.lock
 # Si ignora il contenuto, non la cartella: il README spiega cosa mettere e resta tracciato.
 manuali/*
 !manuali/README.md
+
+# Scelte dei provider di questo computer (scripts/configura.sh, docs/provider.md)
+config/locale.yaml

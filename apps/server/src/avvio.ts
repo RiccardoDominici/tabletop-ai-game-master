@@ -11,7 +11,7 @@ import { caricaCampagna, idCampagna } from './campagna/caricatore';
 import { elencoPacchetti } from './campagna/pacchetti';
 import { compilaContestoCampagna } from './campagna/contesto';
 import { conScena, type Campagna } from './campagna/tipi';
-import type { ConfigServer } from './config';
+import type { ConfigServer, ModoVoce } from './config';
 import type { Logger } from './logger';
 import { copioneDaFile, NarratoreFinto } from './llm/finto';
 import { NarratoreHaiku } from './llm/haiku';
@@ -55,6 +55,8 @@ import { orologioDiSistema, type Orologio } from './turni/orologio';
 import { MotoreVoceHttp } from './voce/http';
 import { MotoreVoceMock } from './voce/mock';
 import { SelettoreVoce } from './voce/selettore';
+import { descriviScelte, risolvi, type NomeComponente } from './provider/config';
+import { FabbricaModelli } from './provider/fabbrica';
 import { MotoreVoceFish } from './voce/fish';
 import { caricaRegistroVoci } from './voce/registro-voci';
 
@@ -187,62 +189,74 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     `NARRATORE IN MODALITÀ: ${config.modo}`,
   );
 
-  const narratore: Narratore =
-    sost.narratore ??
-    (config.llm.modo === 'finto'
-      ? new NarratoreFinto({
-          idPng: campagna.png.map((p) => p.id),
-          idPg: campagna.pg.map((p) => p.id),
-          ...(config.llm.copioneFinto ? { copione: copioneDaFile(config.llm.copioneFinto) } : {}),
-        })
-      : new NarratoreHaiku({ modello: config.llm.modello, maxTokens: config.llm.maxTokens, fileChiave: config.llm.fileChiave, log: log.child({ modulo: 'llm' }) }));
-  log.info({ narratore: narratore.nome, modello: narratore.modello }, `NARRATORE IN USO: ${narratore.nome}`);
+  // Provider di ogni componente (config/predefinita.yaml + config/locale.yaml + variabili, docs/provider.md):
+  // di base tutto in locale; chi fa cosa e perché si stampa qui sotto.
+  const cfgProvider = config.provider;
+  const scelte = risolvi(cfgProvider, { anthropic: config.llm.fileChiave, openrouter: config.voce.fish.fileChiave });
+  const fabbrica = new FabbricaModelli(cfgProvider, scelte, { fileChiaveAnthropic: config.llm.fileChiave, fileChiaveOpenRouter: config.voce.fish.fileChiave, maxTokens: config.llm.maxTokens, log: log.child({ modulo: 'llm' }) });
+  for (const riga of descriviScelte(scelte)) log.info({ provider: riga }, `PROVIDER: ${riga}`);
+  const etichettaModello = (c: NomeComponente): string => fabbrica.modello(c)?.modello ?? scelte[c].provider;
 
-  // Arbitro delle azioni simultanee: regole subito, Haiku (uscita strutturata) per il resto.
+  const narratoreFinto = (): Narratore =>
+    new NarratoreFinto({
+      idPng: campagna.png.map((p) => p.id),
+      idPg: campagna.pg.map((p) => p.id),
+      ...(config.llm.copioneFinto ? { copione: copioneDaFile(config.llm.copioneFinto) } : {}),
+    });
+  // Il lettore minimo vuole il repertorio (sceglie battute già scritte): in modalità A si legge completo.
+  const modoLettore = scelte.lettore.modo === 'minimo' && config.modo !== 'repertorio' ? 'completo' : scelte.lettore.modo;
+  if (modoLettore !== scelte.lettore.modo) log.warn({ modo: config.modo }, 'lettore: modo minimo senza repertorio (modalità A): si legge in modo completo, più lento in locale');
+  const narratore: Narratore = sost.narratore ?? fabbrica.narratore('lettore', modoLettore) ?? narratoreFinto();
+  log.info({ narratore: narratore.nome, modello: narratore.modello }, `NARRATORE IN USO: ${narratore.nome}`);
+  // «La volta scorsa»: un narratore completo a parte (il lettore minimo non scrive prosa); null = riserva dai segni.
+  // Con un narratore sostituito (prove) il riassunto lo scrive lui, come prima.
+  const narratoreRiassunto: Narratore | null | undefined = sost.narratore ? undefined : fabbrica.narratore('riassunto', 'completo');
+
+  // Arbitro delle azioni simultanee: regole subito, il modello (uscita strutturata) per il resto.
   const registroCosti = new RegistroJsonl(path.join(config.cartellaLog, 'costi.jsonl'));
-  let clientArbitro: ReturnType<typeof creaClientAnthropic> | null = null;
   const arbitro: Arbitro | null =
     sost.arbitro !== undefined
       ? sost.arbitro
-      : config.arbitro === 'haiku'
-        ? new ArbitroHaiku(() => (clientArbitro ??= creaClientAnthropic(config.llm.fileChiave, log.child({ modulo: 'arbitro' }))), {
-            modello: config.llm.modello,
+      : fabbrica.usaModello('arbitro_azioni')
+        ? new ArbitroHaiku(() => fabbrica.modello('arbitro_azioni')!, {
+            modello: etichettaModello('arbitro_azioni'),
             log: log.child({ modulo: 'arbitro' }),
-            onMisura: (m) => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: `arbitro_${m.tipo}`, modello: config.llm.modello, ms: m.ms, ...m.costo }),
+            onMisura: (m) => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: `arbitro_${m.tipo}`, modello: etichettaModello('arbitro_azioni'), ms: m.ms, ...m.costo }),
           })
         : null;
-  log.info({ arbitro: arbitro ? 'regole + haiku' : 'solo regole' }, 'ARBITRO DELLE AZIONI');
+  log.info({ arbitro: arbitro ? `regole + ${scelte.arbitro_azioni.provider}` : 'solo regole' }, 'ARBITRO DELLE AZIONI');
 
-  // Prove e dadi (docs/prove.md): schede numeriche dalla campagna, il Motore tira, Haiku decide
-  // soltanto che cosa si tira (stesso client e stesso modello dell'arbitro delle azioni).
-  // Il set di regole (docs/regole.md): quello della campagna (regole/regole.yaml), o l'SRD 5.2.
+  // Prove e dadi (docs/prove.md): schede numeriche dalla campagna, il Motore tira, il modello decide
+  // soltanto che cosa si tira. Il set di regole (docs/regole.md): quello della campagna, o l'SRD 5.2.
   const regole = caricaRegole(config.cartellaCampagna, log.child({ modulo: 'regole' }));
   const generico = !regole.sistema.srd;
   const avvisaScheda = (m: string): void => void log.warn({ modulo: 'prove' }, m);
   const schede = generico ? new Map() : caricaSchede(campagna, avvisaScheda);
   const schedeRegole = generico ? caricaSchedeGeneriche(regole.sistema, campagna, avvisaScheda) : null;
   const dadi = schedeRegole ? dadiAttiviRegole(campagna, schedeRegole, regole.sistema.nome) : dadiAttivi(campagna, schede);
-  const clientCondiviso = (): ReturnType<typeof creaClientAnthropic> => (clientArbitro ??= creaClientAnthropic(config.llm.fileChiave, log.child({ modulo: 'arbitro' })));
-  const misuraProve = (m: { ms: number; azioni: number; costo: object }): void => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'arbitro_prove', modello: config.llm.modello, ms: m.ms, azioni: m.azioni, ...m.costo });
+  const modelloProve = (): ReturnType<typeof fabbrica.modello> & object => fabbrica.modello('arbitro_prove')!;
+  const misuraProve = (m: { ms: number; azioni: number; costo: object }): void => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'arbitro_prove', modello: etichettaModello('arbitro_prove'), ms: m.ms, azioni: m.azioni, ...m.costo });
   const arbitroProve: ArbitroProve<DecisioneProva> | ArbitroProve<DecisioneRegole> | null =
     sost.arbitroProve !== undefined
       ? sost.arbitroProve
-      : dadi.attivo && config.arbitro === 'haiku'
+      : dadi.attivo && fabbrica.usaModello('arbitro_prove')
         ? generico
-          ? new ArbitroRegoleHaiku(regole, clientCondiviso, { modello: config.llm.modello, log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
-          : new ArbitroProveHaiku(clientCondiviso, { modello: config.llm.modello, log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
+          ? new ArbitroRegoleHaiku(regole, modelloProve, { modello: etichettaModello('arbitro_prove'), log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
+          : new ArbitroProveHaiku(modelloProve, { modello: etichettaModello('arbitro_prove'), log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
         : null;
-  log.info({ dadi: dadi.attivo, motivo: dadi.motivo, regole: regole.sistema.id, risoluzione: regole.sistema.risoluzione.tipo, arbitro: arbitroProve ? 'haiku' : 'nessuno', seme_fisso: !!config.semeDadi }, 'PROVE E DADI');
-  // «Chiedi una regola» dal telefono: Haiku sui soli testi del set (mai la campagna).
-  const risponditore = new RisponditoreRegole(regole, config.arbitro === 'haiku' ? clientCondiviso : null, {
-    modello: config.llm.modello,
+  log.info({ dadi: dadi.attivo, motivo: dadi.motivo, regole: regole.sistema.id, risoluzione: regole.sistema.risoluzione.tipo, arbitro: arbitroProve ? scelte.arbitro_prove.provider : 'nessuno', seme_fisso: !!config.semeDadi }, 'PROVE E DADI');
+  // «Chiedi una regola» dal telefono: il modello sui soli testi del set (mai la campagna).
+  const risponditore = new RisponditoreRegole(regole, fabbrica.usaModello('regole') ? () => fabbrica.modello('regole')! : null, {
+    modello: etichettaModello('regole'),
     log: log.child({ modulo: 'regole' }),
-    onCosto: (ms, costo) => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'regole_domanda', modello: config.llm.modello, ms, ...costo }),
+    onCosto: (ms, costo) => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'regole_domanda', modello: etichettaModello('regole'), ms, ...costo }),
   });
 
   // drama-3 via OpenRouter (CANTASTORIE_VOCE=fish): voci dal registro, chiave letta al primo uso.
+  const modoVoce: ModoVoce =
+    scelte.voce.provider === 'openrouter' ? 'fish' : scelte.voce.provider === 'finto' || scelte.voce.provider === 'nessuno' ? 'mock' : config.voce.modo === 'qwen' ? 'qwen' : 'auto';
   const fish =
-    config.voce.modo === 'fish'
+    modoVoce === 'fish'
       ? {
           motore: new MotoreVoceFish({
             fileChiave: config.voce.fish.fileChiave,
@@ -254,7 +268,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
         }
       : undefined;
   const voce = new SelettoreVoce(
-    config.voce.modo,
+    modoVoce,
     new MotoreVoceHttp(config.voce.url, log.child({ modulo: 'voce-http' })),
     new MotoreVoceMock({ scalaTempo: config.voce.scalaTempoMock }),
     log.child({ modulo: 'voce' }),
@@ -273,6 +287,9 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     campagna,
     sistema,
     narratore,
+    ...(narratoreRiassunto !== undefined ? { narratoreRiassunto } : {}),
+    // Il lettore minimo sceglie anche le battute d'attesa (riempitivi) quando nessuna battuta risponde.
+    attesaNelCatalogo: narratore.nome === 'minimo',
     voce,
     uscitaAudio: uscite.audio,
     orologio: sost.orologio ?? orologioDiSistema,

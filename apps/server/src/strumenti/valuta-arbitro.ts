@@ -18,6 +18,7 @@ import YAML from 'yaml';
 import { caricaCampagna } from '../campagna/caricatore';
 import { caricaConfig } from '../config';
 import { creaClientAnthropic } from '../llm/haiku';
+import { ModelloAnthropic } from '../llm/anthropic';
 import { creaLogger } from '../logger';
 import { RADICE_REPO } from '../percorsi';
 import { caricaParoleSegreteCampagna } from '../repertorio/segreti';
@@ -82,8 +83,8 @@ async function main(): Promise<void> {
   for (const [alias, id] of Object.entries(campagna.alias)) if (campagna.pg.some((p) => p.id === id)) nomi.set(alias, id);
 
   const misure: MisuraChiamata[] = [];
-  let client: ReturnType<typeof creaClientAnthropic> | null = null;
-  const arbitro = new ArbitroHaiku(() => (client ??= creaClientAnthropic(config.llm.fileChiave, log)), { modello: config.llm.modello, log, onMisura: (m) => misure.push(m) });
+  let modello: ModelloAnthropic | null = null;
+  const arbitro = new ArbitroHaiku(() => (modello ??= new ModelloAnthropic(() => creaClientAnthropic(config.llm.fileChiave, log), config.llm.modello)), { modello: config.llm.modello, log, onMisura: (m) => misure.push(m) });
 
   const tutti = (YAML.parse(fs.readFileSync(path.join(RADICE_REPO, 'apps', 'server', 'test', 'arbitro', 'casi.yaml'), 'utf8')) as { casi: Caso[] }).casi;
   const casi = tutti.filter((c) => insieme === 'tutti' || c.insieme === insieme);

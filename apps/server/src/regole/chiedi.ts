@@ -4,10 +4,10 @@
  * parole chiave). Niente della campagna entra nel contesto: né scene né PNG né segreti. La risposta
  * va solo al telefono che ha chiesto (ack dell'evento, trasporto/regole.ts).
  */
-import type Anthropic from '@anthropic-ai/sdk';
+import type { ModelloLinguaggio } from '../llm/modello';
 import type { RispostaRegola } from '@cantastorie/shared';
 import type { Logger } from '../logger';
-import { calcolaCosto, type Costo, type UsoToken } from '../llm/costi';
+import type { Costo } from '../llm/costi';
 import { cercaEstratti, testoEstratto } from './estratti';
 import type { RegoleCampagna } from './tipi';
 
@@ -30,7 +30,8 @@ export class RisponditoreRegole {
 
   constructor(
     private readonly regole: RegoleCampagna,
-    private readonly client: (() => Anthropic) | null,
+    /** Il modello (llm/modello.ts); null = domande sulle regole spente. */
+    private readonly client: (() => ModelloLinguaggio) | null,
     private readonly o: { modello: string; log: Logger; onCosto?: (ms: number, c: Costo) => void; intervalloMs?: number },
   ) {}
 
@@ -50,20 +51,16 @@ export class RisponditoreRegole {
     const passi = cercaEstratti(this.regole.estratti, d, 3);
     const t0 = performance.now();
     try {
-      const r = await this.client!().messages.create({
-        model: this.o.modello,
-        max_tokens: 400,
-        thinking: { type: 'disabled' },
-        output_config: { effort: 'low' },
-        system: [{ type: 'text', text: promptRisponditore(this.regole), cache_control: { type: 'ephemeral' } }],
-        messages: [{ role: 'user', content: `${passi.length ? `Passi del manuale:\n${passi.map((e) => testoEstratto(e, 12)).join('\n\n')}\n\n` : 'Nessun passo del manuale trovato per questa domanda.\n\n'}Domanda: ${d}` }],
+      const r = await this.client!().chiedi({
+        sistema: [{ testo: promptRisponditore(this.regole), cache: true }],
+        messaggi: [{ ruolo: 'user', testo: `${passi.length ? `Passi del manuale:\n${passi.map((e) => testoEstratto(e, 12)).join('\n\n')}\n\n` : 'Nessun passo del manuale trovato per questa domanda.\n\n'}Domanda: ${d}` }],
+        maxTokens: 400,
       });
       const ms = Math.round(performance.now() - t0);
-      this.o.onCosto?.(ms, calcolaCosto(this.o.modello, r.usage as unknown as UsoToken));
-      const testo = r.content.find((b) => b.type === 'text');
-      if (!testo || testo.type !== 'text' || !testo.text.trim()) return { ok: false, errore: 'Nessuna risposta: riprova.' };
+      this.o.onCosto?.(ms, r.costo);
+      if (!r.testo.trim()) return { ok: false, errore: 'Nessuna risposta: riprova.' };
       this.o.log.info({ chi, ms, passi: passi.map((p) => p.id), caratteri: d.length }, 'regole: domanda di un giocatore');
-      return { ok: true, testo: testo.text.trim(), fonti: passi.map((p) => p.titolo) };
+      return { ok: true, testo: r.testo.trim(), fonti: passi.map((p) => p.titolo) };
     } catch (err) {
       this.o.log.error({ chi, err: (err as Error).message }, 'regole: domanda fallita');
       return { ok: false, errore: 'Non riesco a rispondere adesso: riprova tra poco.' };

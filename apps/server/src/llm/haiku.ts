@@ -13,8 +13,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { Logger } from '../logger';
 import { cercaChiave, descriviChiave, type SorgentiChiave } from './chiavi';
-import { calcolaCosto, type UsoToken } from './costi';
-import type { EsitoNarrazione, Narratore, RichiestaNarrazione } from './tipi';
+import { ModelloAnthropic } from './anthropic';
+import { NarratoreModello } from './narratore';
 
 const URL_API = 'https://api.anthropic.com';
 
@@ -48,80 +48,13 @@ export interface OpzioniHaiku {
   log: Logger;
 }
 
-export class NarratoreHaiku implements Narratore {
-  readonly nome = 'haiku' as const;
-  readonly modello: string;
-  private client: Anthropic | null = null;
-
-  constructor(private readonly o: OpzioniHaiku) {
-    this.modello = o.modello;
-  }
-
-  /** Client creato al primo uso: la chiave si legge solo quando serve davvero. */
-  private cliente(): Anthropic {
-    if (this.client) return this.client;
-    this.client = creaClientAnthropic(this.o.fileChiave, this.o.log);
-    return this.client;
-  }
-
-  private parametri(sistema: string[]) {
-    return {
-      model: this.modello,
-      thinking: { type: 'disabled' as const },
-      output_config: { effort: 'low' as const },
-      system: sistema.map((text) => ({ type: 'text' as const, text, cache_control: { type: 'ephemeral' as const } })),
-    };
-  }
-
-  async narra(r: RichiestaNarrazione, onTesto: (delta: string) => void): Promise<EsitoNarrazione> {
-    const client = this.cliente();
-    const stream = client.messages.stream(
-      {
-        ...this.parametri(r.sistema),
-        max_tokens: this.o.maxTokens,
-        messages: [{ role: 'user', content: r.messaggio }],
-      },
-      { signal: r.signal },
-    );
-    let testo = '';
-    for await (const evento of stream) {
-      if (evento.type === 'content_block_delta' && evento.delta.type === 'text_delta') {
-        testo += evento.delta.text;
-        onTesto(evento.delta.text);
-      }
-    }
-    const finale = await stream.finalMessage();
-    const uso = finale.usage as unknown as UsoToken;
-    return {
-      testo,
-      modello: finale.model,
-      stopReason: finale.stop_reason ?? null,
-      uso,
-      costo: calcolaCosto(this.modello, uso),
-      idMessaggio: finale.id,
-    };
-  }
-
-  /**
-   * Pre-riscaldamento della cache (prompt-caching.md, «Pre-warming»): una richiesta con
-   * max_tokens 0, NON in streaming (combinazione rifiutata), con gli stessi parametri dei turni,
-   * scrive in cache i blocchi di sistema; il primo turno vero li legge invece di scriverli.
-   */
-  async preriscalda(sistema: string[]): Promise<EsitoNarrazione | null> {
-    const client = this.cliente();
-    const risposta = await client.messages.create({
-      ...this.parametri(sistema),
-      max_tokens: 0,
-      messages: [{ role: 'user', content: 'Preriscaldamento della cache: non rispondere.' }],
-    });
-    const uso = risposta.usage as unknown as UsoToken;
-    return {
-      testo: '',
-      modello: risposta.model,
-      stopReason: risposta.stop_reason ?? null,
-      uso,
-      costo: calcolaCosto(this.modello, uso),
-      idMessaggio: risposta.id,
-    };
+/**
+ * Il narratore di sempre su Haiku: ora è il narratore generico (llm/narratore.ts) sul provider
+ * Anthropic (llm/anthropic.ts), con le stesse richieste di prima. Il client si crea al primo uso.
+ */
+export class NarratoreHaiku extends NarratoreModello {
+  constructor(o: OpzioniHaiku) {
+    let client: Anthropic | null = null;
+    super('haiku', new ModelloAnthropic(() => (client ??= creaClientAnthropic(o.fileChiave, o.log)), o.modello), o.maxTokens);
   }
 }
