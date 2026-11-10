@@ -1,51 +1,52 @@
-# Una serata di gioco
+# A game night
 
-In questa pagina: una partita dall'inizio alla fine, con `scripts/partita.sh`, il proiettore, i telefoni e il turno.
-Prima leggi: [Installazione](installation.md) (almeno i passi da 1 a 4).
+On this page: one game from start to finish, with `scripts/partita.sh`, the projector, the phones and the turns.
+Read first: [Installation](installation.md) (at least steps 1 to 4).
 
-## Prima della serata
+> Note: for now, all on-screen text and all voices are in Italian, so the labels quoted in this guide appear in Italian, as they do on screen. Choosing the play language during setup is coming.
 
-Controlla queste cose, una per una.
+## Before the game night
 
-1. Il Mac è collegato al proiettore e alla cassa.
-2. Il Mac e i telefoni sono sulla stessa rete Wi-Fi, e non sulla rete per gli ospiti.
-   Se un telefono non entra, vedi [Collegare i telefoni](phones.md).
-3. Le chiavi sono nel file `.env` (vedi [Installazione](installation.md), passo 4).
-4. Se usi la voce drama-3, il credito di OpenRouter non è finito. Quando finisce, OpenRouter risponde con
-   l'errore 402 (`docs/ricerca-voce-drama3.md`).
-5. La campagna è pronta. Le tre di esempio (`prova-f0`, `ponte-lanterne`, `nozze-neve`) lo sono già.
-   Per una campagna nuova, vedi [Creare una campagna](create-a-campaign.md).
+Check these things, one by one.
 
-## Passo 1. Fai partire la partita
+1. The Mac is connected to the projector and the speakers.
+2. The Mac and the phones are on the same Wi-Fi network, not the guest network.
+   If a phone cannot join, see [Connecting the phones](phones.md).
+3. The keys are in the `.env` file (see [Installation](installation.md), step 4).
+4. If you use the drama-3 voice, make sure your OpenRouter credit has not run out. When it runs out, OpenRouter replies with error 402 (`docs/ricerca-voce-drama3.md`).
+5. The campaign is ready. The three example campaigns (`prova-f0`, `ponte-lanterne`, `nozze-neve`) already are.
+   For a new campaign, see [Creating a campaign](create-a-campaign.md).
 
-Sul Mac, dalla radice del repo:
+## Step 1. Start the game
+
+On the Mac, from the root of the repo:
 
 ```bash
 scripts/partita.sh nozze-neve
 ```
 
-Avvia la campagna `nozze-neve` con le scelte predefinite: modo B e voce drama-3.
+This starts the `nozze-neve` campaign with the default choices: mode B and the drama-3 voice.
 
-La forma completa del comando è questa (la stessa che stampa lo script se sbagli):
+The full form of the command is this (the same one the script prints if you get it wrong):
 
 ```bash
 scripts/partita.sh <campagna> [--modo A|B] [--voce fish|qwen|finta] [--nuova] [--sessione N]
 ```
 
-| Opzione | Cosa fa |
+| Option | What it does |
 |---|---|
-| `<campagna>` | il nome di una cartella in `campagne/`, per esempio `prova-f0` o `ponte-lanterne`. È obbligatorio. |
-| `--modo B` | predefinito. Il narratore usa il «repertorio»: battute scritte prima, che Haiku sceglie al momento giusto. Improvvisa solo ciò che non è previsto. |
-| `--modo A` | il narratore improvvisa tutto. Serve per le campagne senza cartella `repertorio/`. |
-| `--voce fish` | predefinita. La voce del gioco è drama-3, via OpenRouter: espressiva, a pagamento. Se OpenRouter non risponde, per quella frase usa la voce locale Qwen, se è già accesa; altrimenti la frase resta scritta sullo schermo. |
-| `--voce qwen` | la voce locale Qwen3-TTS, sul Mac, senza rete. Serve il passo 5 dell'installazione. Lo script la avvisa così: «fino a 7 GB di RAM, qualche minuto la prima volta». |
-| `--voce finta` | un tono al posto della voce: niente rete, niente servizi. Utile per provare. |
-| `--nuova` | ricomincia la campagna da capo. Senza, se c'è una partita salvata di questa campagna, la riprende. |
-| `--sessione N` | solo per le campagne a più sessioni: gioca la sessione numero N. Vedi [Campagne a più sessioni](multi-session-campaigns.md). |
+| `<campagna>` | the name of a folder in `campagne/`, for example `prova-f0` or `ponte-lanterne`. Required. |
+| `--modo B` | default. The narrator uses the «repertorio» (repertoire): lines written in advance, which Haiku picks at the right moment. It improvises only what was not foreseen. |
+| `--modo A` | the narrator improvises everything. Use it for campaigns that have no `repertorio/` folder. |
+| `--voce fish` | default. The game voice is drama-3, via OpenRouter: expressive, paid. If OpenRouter does not respond, it uses the local Qwen voice for that line, if it is already running; otherwise the line stays as text on the screen. |
+| `--voce qwen` | the local Qwen3-TTS voice, on the Mac, without network. It needs step 5 of the installation. The script warns you with «fino a 7 GB di RAM, qualche minuto la prima volta» (meaning: up to 7 GB of RAM, a few minutes the first time). |
+| `--voce finta` | a tone instead of a voice: no network, no services. Useful for testing. |
+| `--nuova` | starts the campaign from the beginning. Without it, if there is a saved game of this campaign, it resumes that game. |
+| `--sessione N` | only for multi-session campaigns: plays session number N. See [Multi-session campaigns](multi-session-campaigns.md). |
 
-Il narratore è sempre Haiku vero: serve la chiave Anthropic.
+The narrator is always the real Haiku: it needs an Anthropic key.
 
-Altri esempi:
+More examples:
 
 ```bash
 scripts/partita.sh prova-f0 --voce finta
@@ -53,243 +54,200 @@ scripts/partita.sh ponte-lanterne --voce qwen
 scripts/partita.sh nozze-neve --nuova
 ```
 
-- Il primo gioca `prova-f0` con la voce finta.
-- Il secondo gioca `ponte-lanterne` con la voce locale.
-- Il terzo ricomincia `nozze-neve` da capo, anche se c'era una partita salvata.
+- The first plays `prova-f0` with the fake voice.
+- The second plays `ponte-lanterne` with the local voice.
+- The third starts `nozze-neve` from the beginning, even if there was a saved game.
 
-### Cosa fa lo script, in quattro passi
+### What the script does, in four steps
 
-Lo script stampa ogni passo mentre lo fa:
+The script prints each step as it goes:
 
-1. **«1/4 Controllo la campagna»**: lancia il validatore. Se la campagna ha errori, la partita non parte e
-   lo script te li mostra.
-2. **«2/4»**: prepara la voce. Con drama-3 non c'è niente da avviare; con Qwen avvia il servizio locale; con la
-   voce finta ferma l'eventuale servizio vecchio.
-3. **«3/4 Fermo le istanze vecchie, compilo le pagine e avvio il server»**: puoi quindi rilanciare lo script
-   quando vuoi, ferma da solo quello che c'era prima.
-4. **«4/4 Pronto»**: stampa un riquadro con la campagna, il modo, la voce in uso, e se la partita è nuova o
-   ripresa («Riprende la partita salvata dal turno N»). Sotto, i tre indirizzi.
+1. **«1/4 Controllo la campagna»** (meaning: checking the campaign): runs the validator. If the campaign has errors, the game does not start and the script shows them to you.
+2. **«2/4»**: prepares the voice. With drama-3 there is nothing to start; with Qwen it starts the local service; with the fake voice it stops any old service that is still running.
+3. **«3/4 Fermo le istanze vecchie, compilo le pagine e avvio il server»** (meaning: stopping old instances, building the pages and starting the server): so you can run the script again whenever you like; it stops by itself whatever was running before.
+4. **«4/4 Pronto»** (meaning: ready): prints a box with the campaign, the mode, the voice in use, and whether the game is new or resumed («Riprende la partita salvata dal turno N», meaning: resumes the game saved at turn N). Below it, the three addresses.
 
-### I tre indirizzi
+### The three addresses
 
-| Per chi | Indirizzo | Dove si apre |
+| For whom | Address | Where it opens |
 |---|---|---|
-| Proiettore | `http://localhost:4610/schermo` | sul Mac collegato al proiettore e alla cassa |
-| Telefoni | `http://<IP del Mac>:4610/telefono` (lo script stampa quello vero) | sul telefono di ogni giocatore |
-| Pannello del master | `http://localhost:4610/master?token=…` (lo script stampa quello vero) | solo sul Mac. Non darlo ai giocatori. |
+| Projector | `http://localhost:4610/schermo` | on the Mac connected to the projector and the speakers |
+| Phones | `http://<IP del Mac>:4610/telefono` (the script prints the real one) | on each player's phone |
+| Game Master panel | `http://localhost:4610/master?token=…` (the script prints the real one) | only on the Mac. Do not give it to the players. |
 
-Il token del pannello cambia a ogni avvio. Se lo script non trova il link, ti dice di cercare la riga
-`PANNELLO MASTER` in `logs/server.out`. Vedi [Il pannello del master](master-panel.md).
+The panel token changes every time the game starts. If the script cannot find the link, it tells you to look for the line `PANNELLO MASTER` in `logs/server.out`. See [The Game Master panel](master-panel.md).
 
-## Passo 2. Il proiettore
+## Step 2. The projector
 
-1. Sul Mac apri `http://localhost:4610/schermo` nel browser e mettilo a tutto schermo sul proiettore.
-2. Compare la schermata d'inizio: il titolo, il codice QR, la scritta «Inquadra il codice col telefono»,
-   l'indirizzo per i telefoni e chi si è già collegato.
-3. Quando i giocatori sono pronti, clicca «Inizia sessione». Serve proprio quel clic: senza, il browser non fa
-   partire l'audio.
+1. On the Mac, open `http://localhost:4610/schermo` in the browser and make it full screen on the projector.
+2. The opening screen appears: the title, the QR code, the words «Inquadra il codice col telefono» (meaning: scan the code with your phone), the address for the phones, and who has already connected.
+3. When the players are ready, click «Inizia sessione» (meaning: start session). That click is needed: without it, the browser does not play the audio.
 
-Dopo il clic il proiettore mostra:
-- l'immagine del luogo, con un lento movimento della camera (senza immagine, uno sfondo d'atmosfera);
-- il titolo della scena e, sotto, i ritratti dei PNG presenti: chi parla ha un anello dorato ed è più grande;
-- al centro il ritratto e il nome di chi parla, con il sottotitolo di quello che dice;
-- in basso a sinistra lo stato del turno: chi è chiamato, chi ha già inviato, «Aspettiamo: …»;
-- in basso a destra il QR, per chi arriva dopo;
-- a destra le carte dei tiri dei dadi, quando ci sono (vedi [Dadi e schede](dice-and-sheets.md)).
+After the click, the projector shows:
+- the image of the place, with a slow camera movement (without an image, an atmospheric background);
+- the title of the scene and, below it, the portraits of the NPCs present: whoever is speaking has a golden ring and is larger;
+- in the centre, the portrait and name of whoever is speaking, with the subtitle of what they say;
+- bottom left, the turn status: who is called, who has already sent, and «Aspettiamo: …» (meaning: waiting for: …);
+- bottom right, the QR code, for those who arrive later;
+- on the right, the dice roll cards, when there are any (see [Dice and sheets](dice-and-sheets.md)).
 
-Sotto c'è sempre la musica, con i suoni d'ambiente del luogo. La musica si abbassa quando parla la voce.
+The music always plays underneath, with the place's ambient sounds. The music lowers when the voice speaks.
 
-Tre tasti sulla tastiera del Mac, sulla pagina del proiettore:
-- **A** apre i volumi dell'audio (voce, musica, ambienti, temi, effetti), che il browser ricorda;
-- **C** mostra i crediti dei brani;
-- **L** apre il pannellino delle latenze (serve a chi misura).
+Three keys on the Mac keyboard, on the projector page:
+- **A** opens the audio volumes (voice, music, ambience, themes, effects), which the browser remembers;
+- **C** shows the credits of the tracks;
+- **L** opens the small latency panel (for those who measure).
 
-## Passo 3. I telefoni
+## Step 3. The phones
 
-1. Ogni giocatore inquadra il QR sul proiettore, oppure scrive nel browser l'indirizzo dei telefoni.
-   Basta il browser: non si installa niente.
-2. Ognuno sceglie il suo personaggio toccando la sua carta. Un'etichetta dice se un altro telefono l'ha già preso.
-3. Il telefono ricorda il personaggio: se si ricollega, lo ritrova.
+1. Each player scans the QR code on the projector, or types the phones address into their browser.
+   A browser is enough: nothing needs to be installed.
+2. Each player chooses their character by tapping its card. A label says if another phone has already taken it.
+3. The phone remembers the character: if it reconnects, it finds it again.
 
-Come collegarli e cosa fare se non entrano: [Collegare i telefoni](phones.md).
+How to connect them and what to do if they do not get in: [Connecting the phones](phones.md).
 
-Cosa vede il giocatore sul telefono, dall'alto in basso:
-- **«Giochi come»** e il nome del personaggio, con i punti ferita sotto il nome quando la campagna usa le schede;
-- in alto, il pulsante tondo con l'altoparlante (**«Ascolta qui»**, vedi sotto), **«Regole»** (il riassunto delle
-  regole della campagna e la casella «Chiedi una regola»), **«Scheda»** (la scheda del personaggio) e **«Cambia»**
-  (per scegliere un altro personaggio);
-- una striscia che dice cosa succede: «Tocca a te: cosa fai?», «Azione inviata», «Stavolta non sei chiamato»,
-  «Il narratore sta preparando…», «Il narratore sta raccontando…», «Tavolo in pausa»;
-- **«Al tavolo»**: le azioni pubbliche degli altri, ancora in attesa, così vi coordinate come al tavolo vero
-  («anch'io»). Lì ci sono anche i ritratti dei PNG presenti, da toccare per rivolgersi a loro, e quelli già
-  incontrati che sono «Altrove»;
-- **«Tiri del turno»**: le carte dei dadi pubbliche dell'ultimo turno;
-- la trascrizione di quello che si è detto;
-- in fondo, la casella dell'azione, con l'interruttore **«Privata»** e i due pulsanti **«Ritira»** e **«Invia»**.
+What the player sees on the phone, from top to bottom:
+- **«Giochi come»** (meaning: you play as) and the character's name, with the hit points under the name when the campaign uses sheets;
+- at the top, the round button with the speaker (**«Ascolta qui»**, see below), **«Regole»** (meaning: rules: the summary of the campaign's rules and the box «Chiedi una regola»), **«Scheda»** (meaning: sheet: the character sheet) and **«Cambia»** (meaning: change: to choose another character);
+- a strip that says what is happening: «Tocca a te: cosa fai?» (meaning: your turn: what do you do?), «Azione inviata» (action sent), «Stavolta non sei chiamato» (you are not called this time), «Il narratore sta preparando…» (the narrator is preparing…), «Il narratore sta raccontando…» (the narrator is telling the story…), «Tavolo in pausa» (table paused);
+- **«Al tavolo»** (meaning: at the table): the public actions of the other players that are still waiting, so you can coordinate as at a real table («anch'io», meaning: me too). Here are also the portraits of the NPCs present, which you can tap to speak to them, and those already met who are «Altrove» (meaning: elsewhere);
+- **«Tiri del turno»** (meaning: turn rolls): the public dice cards of the last turn;
+- the transcript of what has been said;
+- at the bottom, the action box, with the **«Privata»** (meaning: private) switch and the two buttons **«Ritira»** (meaning: withdraw) and **«Invia»** (meaning: send).
 
-Nella scheda («La tua scheda») c'è chi è il personaggio e, in evidenza, **«Solo tu lo sai»**: le cose che sa solo
-lui. Decide il giocatore se e quando raccontarle agli altri.
+In the sheet («La tua scheda», meaning: your sheet) there is who the character is and, highlighted, **«Solo tu lo sai»** (meaning: only you know): the things that only the character knows. The player decides whether and when to tell them to the others.
 
-In «Regole» il giocatore può fare una domanda sulle regole («Chiedi una regola»): la risposta si vede solo sul
-suo telefono e viene solo dai testi delle regole, mai dalla campagna (`docs/regole.md`, §5).
+In «Regole» the player can ask a question about the rules («Chiedi una regola», meaning: ask a rule). The answer is seen only on their phone and comes only from the texts of the rules, never from the campaign (`docs/regole.md`, §5).
 
-## Passo 4. Il pannello del master
+## Step 4. The Game Master panel
 
-Apri sul Mac il link del pannello stampato dallo script. Parte in modalità «senza spoiler», così chi fa da
-master può anche giocare. Tutte le sezioni e i comandi: [Il pannello del master](master-panel.md).
-Un PNG segnato come nascosto compare al tavolo quando lo riveli dal pannello con **Rivela** (vedi [Creare una campagna](create-a-campaign.md#png-nascosti)).
+On the Mac, open the panel link printed by the script. It starts in «senza spoiler» (meaning: no spoilers) mode, so the Game Master can also play. All sections and commands: [The Game Master panel](master-panel.md).
+A hidden NPC appears at the table when you reveal it from the panel with **Rivela** (meaning: reveal) (see [Creating a campaign](create-a-campaign.md#png-nascosti)).
 
-## Come va un turno
+## How a turn works
 
-1. Il narratore legge l'apertura della scena e apre la «finestra delle azioni» per tutti.
-2. Chi è chiamato vede «Tocca a te: cosa fai?». Chi non è chiamato può scrivere lo stesso: la sua azione entra,
-   ma il turno non lo aspetta.
-3. Scrivi cosa fa il tuo personaggio e premi **Invia**. Inviare vuol dire «ho finito»: non c'è un altro pulsante
-   da premere dopo. Se non vuoi fare niente, scrivi «Aspetto».
-4. Finché la finestra è aperta puoi cambiare idea. Correggi il testo e premi di nuovo: il pulsante ora si chiama
-   **Aggiorna**. Oppure premi **Ritira** per togliere l'azione.
-5. Quando hanno inviato tutti i chiamati, il turno parte da solo dopo un attimo: 2,5 secondi, per lasciare spazio
-   a un «anch'io» o a una correzione. Sul telefono compare «Hanno scritto tutti: si parte…». Ogni invio o ritiro fa
-   ripartire l'attesa, e chi sta scrivendo la allunga, al massimo di 8 secondi. Un telefono scollegato non si aspetta.
-6. Il narratore risponde. Sul telefono compare «Il narratore sta preparando…», poi «sta raccontando…».
-   Intanto puoi già scrivere: la tua azione entra nel turno dopo.
-7. Il narratore finisce chiamando uno o più personaggi, e si apre la finestra successiva.
+1. The narrator reads the opening of the scene and opens the «finestra delle azioni» (meaning: action window) for everyone.
+2. Whoever is called sees «Tocca a te: cosa fai?». Whoever is not called can still write: their action goes in, but the turn does not wait for them.
+3. Write what your character does and press **Invia** (meaning: send). Sending means «I'm done»: there is no other button to press afterwards. If you do not want to do anything, write «Aspetto» (meaning: I wait).
+4. As long as the window is open, you can change your mind. Correct the text and press again: the button now says **Aggiorna** (meaning: update). Or press **Ritira** to withdraw the action.
+5. When everyone who was called has sent, the turn starts by itself after a moment: 2.5 seconds, to leave room for an «anch'io» or a correction. The phone shows «Hanno scritto tutti: si parte…» (meaning: everyone has written: we're starting…). Every send or withdrawal restarts the wait, and whoever is still writing extends it, up to a maximum of 8 seconds. A disconnected phone is not waited for.
+6. The narrator responds. The phone shows «Il narratore sta preparando…», then «sta raccontando…». Meanwhile you can already write: your action enters the next turn.
+7. The narrator ends by calling one or more characters, and the next window opens.
 
-Se nessuno scrive, il gioco aspetta: al ritmo normale non c'è nessuna scadenza. Il master, se vuole, ha
-«Risolvi ora». Sul telefono puoi inviare anche con Ctrl+Invio o Cmd+Invio; un'azione è lunga al massimo
-500 caratteri.
+If nobody writes, the game waits: at the calm pace there is no deadline. The Game Master, if they want, has **Risolvi ora** (meaning: resolve now). On the phone you can also send with Ctrl+Invio or Cmd+Invio (Ctrl+Enter or Cmd+Enter); an action can be at most 500 characters long.
 
-### Quando la tua azione è «da decidere»
+### When your action is «da decidere»
 
-A volte qualcosa tocca la tua azione mentre aspetta. Per esempio:
-- un'azione da cui dipendeva la tua è stata ritirata («Ginestra ha ritirato "vado avanti"…»);
-- qualcuno è arrivato prima di te sulla stessa cosa («Corrado ha già scritto di prendere la chiave…»);
-- nel frattempo la scena è cambiata («Nel frattempo la porta si è chiusa…»).
+Sometimes something touches your action while it is waiting. For example:
+- an action your own depended on has been withdrawn («Ginestra ha ritirato "vado avanti"…», meaning: Ginestra withdrew "I go ahead"…);
+- someone got there before you on the same thing («Corrado ha già scritto di prendere la chiave…», meaning: Corrado has already written to take the key…);
+- in the meantime the scene has changed («Nel frattempo la porta si è chiusa…», meaning: meanwhile the door has closed…).
 
-Il telefono mostra un avviso a tutto schermo, con tre pulsanti:
-- **Confermo** (o **Tengo**): la tua azione resta com'è;
-- **Cambio**: il testo torna nella casella, da correggere;
-- **Ritiro**: togli l'azione.
+The phone shows a full-screen notice, with three buttons:
+- **Confermo** (or **Tengo**, meaning: keep): your action stays as it is;
+- **Cambio** (meaning: change): the text goes back into the box, so you can correct it;
+- **Ritiro** (meaning: withdrawal): removes the action.
 
-Al ritmo concitato l'avviso ha un conto alla rovescia: se scade, l'azione resta fuori dal turno.
-Gli esempi vengono da `docs/azioni-concorrenti.md`.
+At the frantic pace the notice has a countdown: if it runs out, the action stays out of the turn.
+The examples come from `docs/azioni-concorrenti.md`.
 
-### Gli stati della tua azione
+### The states of your action
 
-| Cosa dice il telefono | Cosa vuol dire |
+| What the phone says | What it means |
 |---|---|
-| in coda | inviata: aspetta che la finestra si chiuda. Puoi ancora cambiarla. |
-| da decidere | qualcosa l'ha toccata: scegli Confermo, Cambio o Ritiro. |
-| il narratore sta rispondendo | è entrata nel turno che il narratore sta risolvendo. Non si cambia più. |
-| risolta | il narratore l'ha risolta. |
-| ritirata | l'hai ritirata tu. |
-| non è andata | non è stata eseguita: la scena o un'altra azione l'hanno resa impossibile. Il testo torna nella casella: premi **Invia di nuovo** o riscrivila. |
-| rimasta fuori | era «da decidere» e il turno è partito senza di lei. Il testo torna nella casella. |
+| «in coda» (meaning: in the queue) | sent: waiting for the window to close. You can still change it. |
+| «da decidere» (meaning: to be decided) | something has touched it: choose Confermo, Cambio or Ritiro. |
+| «il narratore sta rispondendo» (meaning: the narrator is responding) | it has entered the turn that the narrator is resolving. It can no longer be changed. |
+| «risolta» (meaning: resolved) | the narrator has resolved it. |
+| «ritirata» (meaning: withdrawn) | you withdrew it. |
+| «non è andata» (meaning: did not go through) | it was not carried out: the scene or another action made it impossible. The text goes back into the box: press **Invia di nuovo** (meaning: send again) or rewrite it. |
+| «rimasta fuori» (meaning: left out) | it was «da decidere» and the turn started without it. The text goes back into the box. |
 
-## Il ritmo
+## The pace
 
-Il tavolo ha due ritmi.
+The table has two paces.
 
-- **Calmo** (quello normale): nessuna scadenza. Il gioco aspetta che abbiano inviato tutti i chiamati.
-  Potete parlarvi, pianificare, discutere quanto volete.
-- **Concitato** (combattimenti, inseguimenti, pericolo imminente): la finestra si chiude da sola 25 secondi
-  dopo l'apertura. Non si chiude mentre qualcuno sta scrivendo o deve ancora decidere: allora si allunga, al
-  massimo di 8 secondi. Telefoni e proiettore mostrano il conto alla rovescia solo in questo ritmo.
+- **Calmo** (meaning: calm; the normal one): no deadline. The game waits until everyone who was called has sent. You can talk, plan and discuss as much as you like.
+- **Concitato** (meaning: frantic; combat, chases, imminent danger): the window closes by itself 25 seconds after it opens. It does not close while someone is writing or still has to decide: in that case it extends, up to a maximum of 8 seconds. The phones and the projector show the countdown only at this pace.
 
-Chi decide il ritmo:
-- il narratore, quando la storia lo chiede (scrive una riga di servizio che nessuno sente);
-- la scena, se nei suoi dati c'è `ritmo: concitato`;
-- il master, con il pulsante del pannello.
+Who sets the pace:
+- the narrator, when the story requires it (it writes a service line that nobody hears);
+- the scene, if its data contains `ritmo: concitato`;
+- the Game Master, with the button on the panel.
 
-Un'azione in coda non fa mai partire un conto alla rovescia: se un giocatore ha già scritto, gli altri non
-devono affrettarsi. I tempi vengono da `docs/f0-contratti.md`, «Turno».
+An action in the queue never starts a countdown: if a player has already written, the others do not need to hurry. The timings come from `docs/f0-contratti.md`, «Turno».
 
-## I dadi
+## The dice
 
-Quando la campagna ha le schede dei personaggi, i dadi li tira il programma, non il narratore. Prima un arbitro
-decide cosa si tira (per esempio Persuasione, o un tiro per colpire), poi il codice tira, somma e confronta.
-Il proiettore mostra una carta per ogni tiro; il telefono mostra la carta della tua azione. Il narratore riceve
-l'esito come un fatto e lo racconta.
+When the campaign has character sheets, the program rolls the dice, not the narrator. First a referee decides what is rolled (for example Persuasion, or an attack roll); then the code rolls, adds up and compares. The projector shows one card for each roll; the phone shows the card of your action. The narrator receives the outcome as a fact and narrates it.
 
-Tutto il funzionamento: [Dadi e schede](dice-and-sheets.md).
+Everything about how it works: [Dice and sheets](dice-and-sheets.md).
 
-## Le azioni private
+## Private actions
 
-Accendi l'interruttore **«Privata»** sotto la casella prima di inviare. Accanto c'è scritto «solo il master la vede».
+Turn on the **«Privata»** (meaning: private) switch under the box before sending. Next to it is written «solo il master la vede» (meaning: only the Game Master sees it).
 
-- Gli altri telefoni non la vedono, nemmeno in «Al tavolo».
-- Nel pannello del master compare segnata come «privata». In modalità «senza spoiler» il pannello ne nasconde il
-  testo e mostra solo chi l'ha scritta e il suo stato.
-- Il narratore non la annuncia al tavolo: a voce dice solo ciò che gli altri possono vedere o sentire.
-- L'esito arriva solo sul tuo telefono, come testo. Anche la carta di un tiro privato compare solo lì.
-- La voce dell'esito va solo al tuo telefono, e solo se hai acceso «Ascolta qui». Mai al proiettore. Se nessuno
-  ascolta su quel telefono, la frase resta solo scritta. Se puoi, usa le cuffie: un telefono che parla al tavolo
-  farebbe sentire il segreto ai vicini.
+- The other phones do not see it, not even in «Al tavolo».
+- In the Game Master panel it appears marked as «privata» (private). In «senza spoiler» mode the panel hides its text and shows only who wrote it and its status.
+- The narrator does not announce it at the table: aloud, it says only what the others can see or hear.
+- The outcome arrives only on your phone, as text. The card of a private roll also appears only there.
+- The voice of the outcome goes only to your phone, and only if you have turned on «Ascolta qui». Never to the projector. If nobody is listening on that phone, the line stays only written. If you can, use headphones: a phone that speaks at the table would let the neighbours hear the secret.
 
-Nelle prove del 9 novembre 2026 il narratore a volte ha raccontato ad alta voce un'azione privata
-(`docs/prove.md`, «Aperto»). Le regole del narratore ora lo vietano. Se succede, il master può scrivere una
-nota di regia.
+In the tests of 9 November 2026, the narrator sometimes narrated a private action aloud (`docs/prove.md`, section «Aperto», meaning: open). The narrator's rules now forbid this. If it happens, the Game Master can write a stage note.
 
-## «Ascolta qui»
+## «Ascolta qui» (meaning: listen here)
 
-Sul telefono, in alto, c'è un pulsante tondo con l'altoparlante. È l'interruttore «Ascolta qui».
+On the phone, at the top, there is a round button with a speaker. It is the **«Ascolta qui»** switch.
 
-- Spento, l'altoparlante è barrato: il telefono resta muto.
-- Toccalo una volta: il telefono fa sentire la voce del gioco anche lui, oltre al proiettore.
-- Acceso, è del colore della candela e pulsa mentre qualcuno parla.
-- Toccalo di nuovo per spegnerlo.
+- Off, the speaker is crossed out: the phone stays silent.
+- Tap it once: the phone plays the game voice too, besides the projector.
+- On, it has the colour of a candle and pulses while someone is speaking.
+- Tap it again to turn it off.
 
-Serve un tocco perché il browser del telefono non suona niente da solo. Se l'avevi acceso e ricarichi la pagina,
-serve di nuovo un tocco: il pulsante lo dice («Tocca per riascoltare la voce su questo telefono»).
+One tap is needed because the phone's browser does not play anything by itself. If you had it on and reload the page, one tap is needed again: the button says so («Tocca per riascoltare la voce su questo telefono», meaning: tap to hear the voice again on this phone).
 
-## Se qualcosa va storto durante il gioco
+## If something goes wrong during the game
 
-Dal pannello del master:
-- **Pausa** ferma il tavolo, lasciando finire la frase in corso; **Riprendi** lo fa ripartire;
-- **Ferma la narrazione** zittisce subito narratore e voce e mette il tavolo in pausa.
+From the Game Master panel:
+- **Pausa** (meaning: pause) stops the table, letting the sentence in progress finish; **Riprendi** (meaning: resume) starts it again;
+- **Ferma la narrazione** (meaning: stop the narration) immediately silences the narrator and the voice and puts the table on pause.
 
-Se il narratore o la voce restano bloccati senza segni di vita per 60 secondi, un «sorvegliante» riapre da solo
-la finestra delle azioni (`docs/f0-contratti.md`, «Turno»). Il gioco non resta mai fermo per sempre: la pausa
-la mette e la toglie solo il master.
+If the narrator or the voice stays stuck with no signs of life for 60 seconds, a «sorvegliante» (meaning: watchdog) reopens the action window by itself (`docs/f0-contratti.md`, «Turno»). The game never stays stuck forever: only the Game Master puts the pause on and takes it off.
 
-Altri casi: [Il pannello del master](master-panel.md), «Quando un'azione non va», e
-[Problemi comuni](common-problems.md).
+Other cases: [The Game Master panel](master-panel.md), section «Quando un'azione non va» (meaning: when an action does not go through), and [Common problems](common-problems.md).
 
-## A fine serata
+## At the end of the evening
 
-1. Se la campagna ha più sessioni, nel pannello premi «Fine sessione»: scrive il registro di quello che è
-   successo, la base per preparare la sessione dopo. Vedi [Campagne a più sessioni](multi-session-campaigns.md).
-2. Ferma tutto:
+1. If the campaign has several sessions, in the panel press «Fine sessione» (meaning: end session): it writes the log of what happened, which is the basis for preparing the next session. See [Multi-session campaigns](multi-session-campaigns.md).
+2. Stop everything:
 
    ```bash
    scripts/arresto.sh
    ```
 
-   Ferma il server (porta 4610), l'eventuale server di sviluppo delle pagine (4612) e il servizio voce (4611).
+   Stops the server (port 4610), the page development server if it is running (4612), and the voice service (4611).
 
-3. Se vuoi, guarda quanto hai speso:
+3. If you like, check how much you have spent:
 
    ```bash
    scripts/costi.sh
    ```
 
-   Mostra il costo delle ultime 10 sessioni, Haiku e voce separati. Vedi [Voce e costi](voice-and-costs.md).
+   Shows the cost of the last 10 sessions, with Haiku and the voice shown separately. See [Voice and costs](voice-and-costs.md).
 
-La partita si salva da sola, a ogni turno. Per riprenderla un'altra sera, rilancia lo stesso comando senza
-`--nuova` (per esempio `scripts/partita.sh nozze-neve`). Lo script dice «Riprende la partita salvata dal turno N»;
-sul proiettore premi di nuovo «Inizia sessione», e i telefoni ritrovano il loro personaggio.
+The game saves itself at every turn. To resume another evening, run the same command again without `--nuova` (for example `scripts/partita.sh nozze-neve`). The script says «Riprende la partita salvata dal turno N» (meaning: resumes the game saved at turn N). On the projector, press «Inizia sessione» again, and the phones find their character again.
 
-## Dove sono i log
+## Where the logs are
 
-Lo script li elenca in testa:
-- `logs/partita.out`: questo avvio;
-- `logs/server.out`: il log del server, leggibile;
-- `logs/server.jsonl`: lo stesso log, strutturato;
-- `logs/voce.out`: il servizio voce locale.
+The script lists them at the top:
+- `logs/partita.out`: this start;
+- `logs/server.out`: the server log, readable;
+- `logs/server.jsonl`: the same log, structured;
+- `logs/voce.out`: the local voice service.
 
-Vuoi provare qualcosa mentre una partita è in corso, senza toccarla? C'è l'istanza di prova su un'altra porta:
-vedi [Sviluppo](development.md).
+Do you want to try something while a game is running, without touching it? There is a test instance on another port: see [Development](development.md).
 
-## Problemi?
+## Problems?
 
-Vai a [Problemi comuni](common-problems.md).
+Go to [Common problems](common-problems.md).

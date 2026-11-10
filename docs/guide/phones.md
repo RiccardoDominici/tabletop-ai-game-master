@@ -1,46 +1,51 @@
-# Collegare i telefoni in rete locale
+# Connecting the phones on the local network
 
-Il server gira sul Mac del master e ascolta su tutte le interfacce (`0.0.0.0`, porta **4610**). I
-telefoni dei giocatori si collegano a lui dalla rete Wi-Fi di casa, senza internet.
+The server runs on the Game Master's Mac and listens on all interfaces (`0.0.0.0`, port **4610**).
+The players' phones connect to it over the home Wi-Fi, without internet.
 
-## Come collegarli
+## How to connect them
 
-1. Mac e telefoni sulla **stessa rete Wi-Fi** (non la rete degli ospiti, vedi sotto).
-2. Avvia il server con `scripts/avvio.sh`: stampa gli indirizzi per telefoni e proiettore.
-3. Sul proiettore (`/schermo`) compare un **codice QR**: ogni giocatore lo inquadra con la fotocamera
-   del telefono ed entra nella pagina `/telefono`.
-4. Se il QR non va, scrivi l'indirizzo a mano nel browser del telefono. È della forma
-   `http://<IP del Mac>:4610/telefono`. L'IP del Mac si legge con `ipconfig getifaddr en0` (ora è
-   `192.168.1.4`, ma può cambiare: rileggilo a ogni sessione).
-5. Ogni telefono sceglie il suo personaggio. Il telefono ricorda il personaggio: se si ricollega,
-   ritrova il suo PG.
+1. Mac and phones on the **same Wi-Fi network** (not the guest network, see below).
+2. Start the server with `scripts/avvio.sh`: it prints the addresses for the phones and the
+   projector.
+3. On the projector (`/schermo`) a **QR code** appears: each player scans it with the phone camera
+   and opens the `/telefono` page.
+4. If the QR code does not work, type the address by hand in the phone's browser. It has the form
+   `http://<IP del Mac>:4610/telefono`, where `<IP del Mac>` is the Mac's IP address. Read the Mac's
+   IP with `ipconfig getifaddr en0` (it is `192.168.1.4` now, but it can change: read it again at
+   every session).
+5. Each phone chooses its character. The phone remembers the character: if it reconnects, it finds
+   its player character (PG) again.
 
-Il pannello del master è su `/master`, sul Mac o su un altro dispositivo della stessa rete.
+The Game Master panel is at `/master`, on the Mac or on another device on the same network.
 
-## Se i telefoni non si collegano
+## If the phones do not connect
 
-Controlla in quest'ordine.
+Check in this order.
 
-- **Firewall del Mac.** Il firewall di macOS può bloccare le connessioni in entrata. Verifica con
-  `/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate` (oggi è spento). Se lo accendi,
-  consenti in entrata «node» (Impostazioni di Sistema → Rete → Firewall → Opzioni). Non è nella lista
-  delle app ammesse, quindi senza questo passo il server risulta irraggiungibile.
-- **Rete per gli ospiti o «isolamento client».** Molti router, con la rete ospiti attiva, impediscono ai
-  dispositivi di vedersi tra loro. Il telefono naviga ma non raggiunge il Mac. Usa la rete principale.
-- **VPN.** Una VPN attiva sul Mac o sul telefono può instradare il traffico fuori dalla rete locale.
-  Disattivala per la sessione, sul Mac e sui telefoni.
-- **Verifica dal Mac.** `lsof -nP -iTCP:4610 -sTCP:LISTEN` deve mostrare `*:4610`, e
-  `curl -s -o /dev/null -w '%{http_code}' http://<IP del Mac>:4610/telefono` deve dare `200`. Se il
-  Mac risponde ma il telefono no, il problema è la rete (ospiti, isolamento, VPN), non il server.
+- **Mac firewall.** The macOS firewall can block incoming connections. Check it with
+  `/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate` (it is off today). If you turn
+  it on, allow incoming connections for «node» (in Italian macOS: «Impostazioni di Sistema → Rete →
+  Firewall → Opzioni»; in English: System Settings → Network → Firewall → Options). `node` is not in
+  the list of allowed apps, so without this step the server cannot be reached.
+- **Guest network or "client isolation".** Many routers, with the guest network on, stop devices
+  from seeing each other. The phone browses the web but cannot reach the Mac. Use the main network.
+- **VPN.** An active VPN on the Mac or on the phone can route traffic outside the local network.
+  Turn it off for the session, on the Mac and on the phones.
+- **Check from the Mac.** `lsof -nP -iTCP:4610 -sTCP:LISTEN` must show `*:4610`, and
+  `curl -s -o /dev/null -w '%{http_code}' http://<IP del Mac>:4610/telefono` must return `200`. If
+  the Mac responds but the phone does not, the problem is the network (guest network, isolation,
+  VPN), not the server.
 
-## L'audio sul telefono
+## Audio on the phone
 
-La voce del gioco non parte da sola sul telefono: serve un tocco. Nell'intestazione del telefono c'è
-l'interruttore **«Ascolta qui»**: toccalo una volta per sentire la voce del gioco anche su quel
-telefono. Senza quel tocco il telefono resta muto (lo chiede il browser, per regola).
+The game voice does not start on its own on the phone: it needs one tap. In the phone's header
+there is the switch **«Ascolta qui»** (the exact button label in the app; in English, "Listen
+here"). Tap it once to hear the game voice on that phone too. Without that tap the phone stays
+silent, because the browser requires it.
 
-## Più avanti (non ora)
+## Later (not now)
 
-Il sito gira in HTTP. Il **microfono** del telefono e il **mantenere lo schermo acceso** richiedono una
-connessione sicura (HTTPS). Non è previsto adesso: quando serviranno, si aggiunge un certificato locale
-al server.
+The site runs over HTTP. The phone's **microphone** and **keeping the screen on** require a secure
+connection (HTTPS). This is not planned now: when they are needed, a local certificate will be
+added to the server.

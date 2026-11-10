@@ -1,44 +1,48 @@
-# Manuali di regole
+# Rules manuals
 
-Qui metti il manuale di regole che vuoi usare per una campagna. Il file resta sul tuo computer: la
-cartella è nel `.gitignore` e il contenuto non entra mai nel repository, perché i manuali sono spesso
-sotto copyright. Questo file è l'unico tracciato da git.
+Put here the rules manual you want to use for a campaign. The file stays on your computer: the
+folder is in the `.gitignore` and its content never enters the repository, because manuals are
+often under copyright. This file is the only one tracked by git.
 
-## Formati accettati
+## Accepted formats
 
-- **PDF con testo selezionabile** (il caso più comune: un PDF esportato dal programma di scrittura o
-  scaricato dall'editore). Un PDF fotografato o scansionato non ha testo: va prima passato da un OCR,
-  oppure serve una versione testuale del manuale.
-- **Markdown** (`.md`), con i titoli in `#`, `##`.
-- **Testo semplice** (`.txt`), con i titoli su una riga da soli o con la forma «Capitolo 3 …».
+- **PDF with selectable text** (the most common case: a PDF exported from your word processor or
+  downloaded from the publisher). A photographed or scanned PDF has no text: it must first go
+  through an OCR, or you need a text version of the manual.
+- **Markdown** (`.md`), with titles marked `#`, `##`.
+- **Plain text** (`.txt`), with titles on a line by themselves or in the form «Capitolo 3 …»
+  (Italian for "Chapter 3 …").
 
-Il PDF va bene così com'è: il programma usa l'indice dei segnalibri, quando c'è, per trovare i capitoli
-e la pagina di ciascuno.
+The PDF works as it is: when there is one, the program uses the bookmark index to find the
+chapters and the page of each.
 
-## Come si usa
+## How to use it
 
-1. Copia il file in questa cartella, per esempio `manuali/mondo-a-2d6.pdf`.
-2. Nel brief della campagna (`.claude/skills/preparatore/modelli/brief.yaml`) scrivi il campo
+1. Copy the file into this folder, for example `manuali/mondo-a-2d6.pdf`.
+2. In the campaign brief (`.claude/skills/preparatore/modelli/brief.yaml`) write the field
    `manuale: manuali/mondo-a-2d6.pdf`.
-3. Chiedi di preparare la campagna. Il Preparatore legge il manuale, scrive il set di regole in
-   `campagne/<id>/regole/` e lo usa per le schede e per la partita.
+3. Ask to prepare the campaign. The Preparatore (the agent that prepares the campaign) reads the
+   manual, writes the rule set in `campagne/<id>/regole/` and uses it for the character sheets and
+   for the play session.
 
-Senza il campo `manuale`, la campagna gioca con l'SRD 5.2, che è già nel codice e sotto licenza libera.
+Without the `manuale` field, the campaign plays with the SRD 5.2, which is already in the code and
+under a free license.
 
-## Verifica del testo estratto
+## Checking the extracted text
 
-Per vedere come il programma legge il manuale, prima di preparare una campagna:
+To see how the program reads the manual, before preparing a campaign, run:
 
     strumenti/regole/.venv/bin/python strumenti/regole/estrai.py manuali/mondo-a-2d6.pdf
 
-Stampa il testo diviso in sezioni, con la pagina di ciascuna. Se una sezione manca o è spezzata male, il
-manuale è probabilmente scansionato o ha un indice sbagliato.
+It prints the text split into sections, with the page of each one. If a section is missing or is
+split badly, the manual is probably scanned or has a wrong index.
 
-## Licenza
+## License
 
-Il set che il programma ricava da un manuale porta la licenza che dichiari in `regole.yaml`. Se il
-manuale non è libero (`libera: false`), il set resta solo sul tuo computer, con un `.gitignore` suo, e
-gli estratti che finiscono in una campagna sono citazioni brevi, per uso personale. Non pubblicarli.
+The rule set that the program builds from a manual carries the license you declare in
+`regole.yaml`. If the manual is not free (`libera: false`), the set stays only on your computer,
+with its own `.gitignore`, and the excerpts that end up in a campaign are short quotations, for
+personal use. Do not publish them.
 
-Per la struttura del set e il resto, vedi `docs/regole.md`; per il percorso passo per passo,
+For the structure of the set and the rest, see `docs/regole.md`; for the step-by-step path, see
 `docs/guide/your-rules-manual.md`.

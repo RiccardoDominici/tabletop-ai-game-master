@@ -1,303 +1,257 @@
-# Problemi comuni
+# Common problems
 
-Cosa trovi qui: i guasti più frequenti, ognuno con il sintomo, la causa probabile, che cosa fare e dove guardare nei log.
-Leggi prima: [una serata](one-evening.md) per il giro normale, e per i telefoni [la guida ai telefoni](phones.md).
+What you find here: the most frequent failures, each with the symptom, the likely cause, what to do, and where to look in the logs.
+Read first: [a game night](one-evening.md) for the normal routine, and for the phones [the phone guide](phones.md).
 
-## Dove stanno i log
+## Where the logs are
 
-Tutti i log stanno in `logs/`, fuori da git. Contengono le azioni dei giocatori, anche quelle private: **non
-pubblicarli e non allegarli a una segnalazione** senza averli letti.
+All the logs are in `logs/`, outside git. They contain the players' actions, including the private ones: **do not publish them or attach them to a report** without having read them first.
 
-| File | Che cosa c'è dentro |
+| File | What is inside |
 |---|---|
-| `logs/partita.out` | l'ultimo avvio fatto da `scripts/partita.sh` |
-| `logs/server.out` | l'uscita del server, avvio dopo avvio |
-| `logs/server.jsonl` | il log del server, una riga JSON per evento |
-| `logs/build.out` | la compilazione delle pagine web |
-| `logs/voce.out`, `logs/voce.jsonl` | il servizio voce locale (Qwen) |
-| `logs/turni.jsonl` | i tempi di ogni turno |
-| `logs/costi.jsonl` | il costo di ogni chiamata (narratore e voce) |
-| `logs/narrazioni.jsonl` | che cosa ha scritto il narratore, turno per turno, e gli interventi del sorvegliante |
-| `logs/master.jsonl` | i comandi dati dal pannello del master |
-| `logs/sessioni.sqlite` | l'archivio delle sessioni: da qui il gioco riprende dopo un riavvio |
-| `logs/prepara-<id>.log` | ogni giro di `scripts/prepara.sh` per quella campagna |
-| `logs/tra-sessioni-<id>.log` | ogni giro di `scripts/tra-sessioni.sh` |
-| `logs/porta-<porta>/` | gli stessi file per un'istanza di prova su un'altra porta |
+| `logs/partita.out` | the last start made by `scripts/partita.sh` |
+| `logs/server.out` | the server output, start after start |
+| `logs/server.jsonl` | the server log, one JSON line per event |
+| `logs/build.out` | the build of the web pages |
+| `logs/voce.out`, `logs/voce.jsonl` | the local voice service (Qwen) |
+| `logs/turni.jsonl` | the timings of each turn |
+| `logs/costi.jsonl` | the cost of each call (narrator and voice) |
+| `logs/narrazioni.jsonl` | what the narrator wrote, turn by turn, and the watchdog's interventions |
+| `logs/master.jsonl` | the commands given from the Game Master panel |
+| `logs/sessioni.sqlite` | the archive of sessions: this is where the game resumes after a restart |
+| `logs/prepara-<id>.log` | each run of `scripts/prepara.sh` for that campaign |
+| `logs/tra-sessioni-<id>.log` | each run of `scripts/tra-sessioni.sh` |
+| `logs/porta-<porta>/` | the same files for a test instance on another port |
 
-Per cercare un messaggio, usa `grep`. Per esempio:
+To search for a message, use `grep`. For example:
 
 ```
 grep "voce fish" logs/server.out | tail -n 20
 ```
 
-Mostra le ultime venti righe del server che parlano della voce drama-3.
+This shows the last twenty lines of the server log that mention the drama-3 voice.
 
 ---
 
-## Il Mac è a batteria mentre fai le immagini
+## The Mac is on battery while making images
 
-**Sintomo.** `scripts/prepara.sh` dice «ATTENZIONE: il Mac è a batteria» e non genera le immagini. Oppure la
-generazione si ferma con «Mac a batteria al N%: collega l'alimentatore prima di generare immagini.», o con
-«mflux (codice 0) non ha scritto <file>».
+**Symptom.** `scripts/prepara.sh` says «ATTENZIONE: il Mac è a batteria» (meaning: WARNING: the Mac is on battery) and does not generate the images. Or the generation stops with «Mac a batteria al N%: collega l'alimentatore prima di generare immagini.» (meaning: Mac on battery at N%: plug in the power adapter before generating images), or with «mflux (codice 0) non ha scritto <file>» (meaning: mflux (code 0) did not write <file>).
 
-**Causa probabile.** Le immagini usano la GPU a pieno carico per 15–40 minuti. Per questo:
+**Likely cause.** The images use the GPU at full load for 15–40 minutes. For this reason:
 
-- `prepara.sh` non genera a batteria, se non glielo chiedi;
-- il generatore si rifiuta di partire a batteria sotto il 20%;
-- mflux si ferma da solo quando la carica scende al 20%, ed esce senza scrivere l'immagine
-  (`strumenti/immagini/motore.py`).
+- `prepara.sh` does not generate on battery, unless you ask it to;
+- the generator refuses to start on battery below 20%;
+- mflux stops by itself when the charge drops to 20%, and exits without writing the image (`strumenti/immagini/motore.py`).
 
-**Cosa fare.**
+**What to do.**
 
-1. Collega l'alimentatore.
-2. Rilancia `scripts/prepara.sh campagne/<id>`: riparte da dove era.
-3. Solo se non puoi fare altrimenti, aggiungi `--anche-a-batteria`. È sconsigliato.
-4. Non chiudere il coperchio mentre genera (lo chiede `prepara.sh`, che intanto tiene sveglio il Mac con `caffeinate`).
+1. Plug in the power adapter.
+2. Run `scripts/prepara.sh campagne/<id>` again: it resumes from where it stopped.
+3. Only if you cannot do otherwise, add `--anche-a-batteria` (meaning: also on battery). It is not recommended.
+4. Do not close the lid while it generates (`prepara.sh` asks for this, and meanwhile keeps the Mac awake with `caffeinate`).
 
-**Dove guardare.** `logs/prepara-<id>.log`.
+**Where to look.** `logs/prepara-<id>.log`.
 
-## Il Mac è lento o si blocca durante le immagini
+## The Mac is slow or freezes during the images
 
-**Sintomo.** Il Mac diventa lentissimo, oppure nel log compare «errore transitorio della GPU (Metal «Impacting
-Interactivity»)», oppure «solo N GB liberi su disco (minimo 8.0 GB)».
+**Symptom.** The Mac becomes very slow, or the log shows «errore transitorio della GPU (Metal «Impacting Interactivity»)» (meaning: temporary GPU error (Metal "Impacting Interactivity")), or «solo N GB liberi su disco (minimo 8.0 GB)» (meaning: only N GB free on disk (minimum 8.0 GB)).
 
-**Causa probabile.**
+**Likely cause.**
 
-- La GPU è occupata dalle immagini: il resto del Mac aspetta.
-- macOS ferma un calcolo che tiene la GPU troppo a lungo mentre lo schermo ne ha bisogno. Il generatore riprova
-  da solo una volta.
-- Il disco è quasi pieno: il sistema usa il disco per la memoria in più, e sotto 8 GB liberi il generatore non parte.
+- The GPU is busy with the images: the rest of the Mac waits.
+- macOS stops a computation that holds the GPU for too long while the screen needs it. The generator retries once by itself.
+- The disk is almost full: the system uses the disk as extra memory, and below 8 GB free the generator does not start.
 
-**Cosa fare.**
+**What to do.**
 
-1. **Non generare immagini mentre giochi**: la GPU rallenta il Mac, e con lui la serata. Se vuoi solo l'audio, usa
-   `scripts/prepara.sh campagne/<id> --senza-immagini`.
-2. Chiudi le app pesanti mentre generi.
-3. Se il disco è pieno, libera spazio e rilancia.
-4. Per andare più veloce, puoi generare luoghi più piccoli con `--dim-luogo 1280x720` (vedi
-   [creare una campagna](create-a-campaign.md)).
+1. **Do not generate images while you play**: the GPU slows down the Mac, and with it the evening. If you only want the audio, use `scripts/prepara.sh campagne/<id> --senza-immagini` (meaning: without images).
+2. Close the heavy apps while you generate.
+3. If the disk is full, free up space and run it again.
+4. To go faster, you can generate smaller places with `--dim-luogo 1280x720` (see [creating a campaign](create-a-campaign.md)).
 
-**Dove guardare.** `logs/prepara-<id>.log`.
+**Where to look.** `logs/prepara-<id>.log`.
 
-## Batteria e calore con la voce locale (Qwen)
+## Battery and heat with the local voice (Qwen)
 
-**Sintomo.** Con `--voce qwen` la voce rallenta, si interrompe, o resta indietro rispetto al testo.
+**Symptom.** With `--voce qwen` the voice slows down, cuts out, or falls behind the text.
 
-**Causa probabile.** La voce locale gira sul Mac, e il suo margine sul tempo reale è sottile: con la macchina carica
-(altre app, browser, Docker) la sintesi diventa più lenta del parlato (`services/voce/README.md`, «Problemi aperti»).
-Che cosa succeda a batteria o con il Mac caldo **non è scritto nel repository: da verificare**.
+**Likely cause.** The local voice runs on the Mac, and its margin on real time is thin: with the machine loaded (other apps, browser, Docker) the synthesis becomes slower than speech (`services/voce/README.md`, «Problemi aperti», meaning: open problems). What happens on battery or with a hot Mac **is not written in the repository: to be verified**.
 
-**Cosa fare.**
+**What to do.**
 
-1. Gioca con l'alimentatore collegato.
-2. Chiudi le altre app pesanti, e non generare immagini nello stesso momento.
-3. Se la voce locale non regge, usa la voce predefinita, drama-3, che non usa la GPU del Mac:
-   `scripts/partita.sh <campagna>` (vedi [voce e costi](voice-and-costs.md)).
+1. Play with the power adapter plugged in.
+2. Close the other heavy apps, and do not generate images at the same time.
+3. If the local voice cannot keep up, use the default voice, drama-3, which does not use the Mac's GPU: `scripts/partita.sh <campagna>` (see [voice and costs](voice-and-costs.md)).
 
-**Dove guardare.** `logs/voce.jsonl`: ogni frase ha `rtf` (tempo di generazione diviso per la durata dell'audio).
-Sopra 1 la voce è più lenta del parlato.
+**Where to look.** `logs/voce.jsonl`: each line has `rtf` (generation time divided by the duration of the audio). Above 1, the voice is slower than speech.
 
 ---
 
-## I telefoni non si collegano
+## The phones do not connect
 
-**Sintomo.** Il telefono non apre la pagina, o la pagina resta in attesa del collegamento.
+**Symptom.** The phone does not open the page, or the page stays waiting for the connection.
 
-**Causa probabile.** Quasi sempre è la rete, non il server:
+**Likely cause.** Almost always the network, not the server:
 
-- il telefono non è sulla stessa rete Wi-Fi del Mac;
-- è la rete per gli ospiti, che impedisce ai dispositivi di vedersi tra loro;
-- c'è una VPN attiva sul Mac o sul telefono;
-- il firewall del Mac blocca le connessioni in entrata;
-- l'indirizzo nel QR è sbagliato (il Mac ha più reti attive).
+- the phone is not on the same Wi-Fi network as the Mac;
+- it is the guest network, which stops the devices from seeing each other;
+- a VPN is active on the Mac or on the phone;
+- the Mac's firewall blocks incoming connections;
+- the address in the QR is wrong (the Mac has more than one active network).
 
-**Cosa fare.**
+**What to do.**
 
-1. Usa l'indirizzo che `scripts/partita.sh` stampa alla fine, alla voce **TELEFONI**. Ha la forma
-   `http://<indirizzo del Mac>:4610/telefono`. Lo stesso indirizzo è nel QR sul proiettore.
-2. Metti Mac e telefoni sulla stessa rete Wi-Fi, quella principale.
-3. Spegni le VPN, sul Mac e sui telefoni, per la serata.
-4. Se l'indirizzo nel QR non è quello giusto, puoi fissarlo tu prima di avviare:
+1. Use the address that `scripts/partita.sh` prints at the end, on the line **TELEFONI** (meaning: PHONES). It has the form `http://<indirizzo del Mac>:4610/telefono`. The same address is in the QR code on the projector.
+2. Put the Mac and the phones on the same Wi-Fi network, the main one.
+3. Turn off the VPNs, on the Mac and on the phones, for the evening.
+4. If the address in the QR code is not the right one, you can set it yourself before starting:
 
    ```
    CANTASTORIE_IP=<indirizzo del Mac> scripts/partita.sh <campagna>
    ```
 
-   Avvia la partita con quell'indirizzo nel QR e nella riga TELEFONI.
-5. Segui i controlli passo passo della [guida ai telefoni](phones.md): firewall, rete ospiti, VPN e la
-   prova dal Mac.
+   This starts the game with that address in the QR code and on the TELEFONI line.
+5. Follow the step-by-step checks in the [phone guide](phones.md): firewall, guest network, VPN, and the test from the Mac.
 
-**Dove guardare.** `logs/partita.out` (gli indirizzi stampati) e `logs/server.out`, dove il server scrive a ogni
-avvio la riga «Cantastorie: in ascolto» con l'indirizzo dei telefoni.
+**Where to look.** `logs/partita.out` (the addresses printed) and `logs/server.out`, where the server writes at each start the line «Cantastorie: in ascolto» (meaning: Cantastorie: listening) with the phones' address.
 
-## Il gioco sembra fermo
+## The game seems stuck
 
-**Sintomo.** Nessuno parla, la finestra delle azioni non si chiude, i telefoni non cambiano.
+**Symptom.** Nobody speaks, the action window does not close, the phones do not change.
 
-**Causa probabile.** Una di queste, dalla più comune:
+**Likely cause.** One of these, starting from the most common:
 
-1. **Si aspetta qualcuno.** Al ritmo calmo non c'è nessuna scadenza: il turno parte solo quando tutti i PG invitati
-   hanno inviato la loro azione. Il proiettore, i telefoni e il pannello dicono chi manca: «Aspettiamo: …».
-   Un telefono scollegato non si aspetta.
-2. **Nessun telefono è collegato.** Il gioco aspetta il tavolo.
-3. **Il master ha messo la pausa.** La pausa la mette e la toglie solo il master. Se l'ha chiesta mentre il
-   narratore parlava, il pulsante dice «Pausa chiesta», e la pausa parte quando la narrazione finisce. Anche
-   «Ferma la narrazione» lascia il tavolo in pausa.
-4. **La scena è finita.** Quando il Motore chiude la scena con il finale, il tavolo non va in pausa: la finestra si
-   riapre e il master riceve un avviso per scegliere come andare avanti.
-5. **Il narratore o la voce si sono bloccati.** Se per 60 secondi non arriva nessun segno di vita, il
-   **sorvegliante** registra la causa, ferma narratore e voce e riapre la finestra per tutti.
-6. **Il proiettore non ha ancora premuto «Inizia sessione».** La sessione parte, o riprende, solo da lì.
+1. **It is waiting for someone.** At the calm pace there is no deadline: the turn starts only when all the invited PCs (player characters) have sent their action. The projector, the phones and the panel say who is missing: «Aspettiamo: …» (meaning: waiting for: …). A disconnected phone is not waited for.
+2. **No phone is connected.** The game waits for the table.
+3. **The Game Master has paused the game.** Only the Game Master puts the pause on and takes it off. If they asked while the narrator was speaking, the button says «Pausa chiesta» (meaning: pause requested), and the pause starts when the narration ends. «Ferma la narrazione» (stop the narration) also leaves the table paused.
+4. **The scene is over.** When the Engine («Motore») closes the scene with its ending, the table does not pause: the window reopens and the Game Master receives a notice to choose how to go on.
+5. **The narrator or the voice has stalled.** If no sign of life arrives for 60 seconds, the **watchdog** («sorvegliante») records the cause, stops the narrator and the voice, and reopens the window for everyone.
+6. **The projector has not pressed «Inizia sessione»** (meaning: start session). The session starts, or resumes, only from there.
 
-**Cosa fare.**
+**What to do.**
 
-1. Leggi la riga «Aspettiamo: …». Chi non vuole fare niente scrive «Aspetto» e invia.
-2. Se qualcuno non risponde, il master preme **Risolvi ora** nel pannello: il turno parte con le azioni che ci sono.
-3. Se il pannello mostra **Riprendi**, il tavolo è in pausa: premilo. In pausa i telefoni possono scrivere, e le
-   azioni entrano alla ripresa. «Risolvi ora» in pausa non funziona: il pannello chiede di riprendere prima.
-4. Se la scena è finita, scegli dal pannello come andare avanti (vedi [il pannello del master](master-panel.md)).
-5. Se il proiettore mostra ancora la schermata iniziale, clicca **Inizia sessione**.
+1. Read the line «Aspettiamo: …». Whoever does not want to do anything writes «Aspetto» and sends.
+2. If someone does not answer, the Game Master presses **Risolvi ora** in the panel: the turn starts with the actions that are there.
+3. If the panel shows **Riprendi**, the table is paused: press it. While paused, the phones can write, and the actions enter when the game resumes. «Risolvi ora» does not work while paused: the panel asks you to resume first.
+4. If the scene is over, choose from the panel how to go on (see [the Game Master panel](master-panel.md)).
+5. If the projector still shows the opening screen, click **Inizia sessione**.
 
-**Dove guardare.**
+**Where to look.**
 
-- `logs/server.out`: righe che cominciano con «finestra:» (per esempio «finestra: sospesa dal master», «finestra:
-  ripresa dal master», «finestra: nessun invitato collegato, si aspetta il tavolo»);
-- `logs/server.out`: «sorvegliante: nessun segno di vita, si interviene»;
-- `logs/narrazioni.jsonl`: le righe di tipo `sorvegliante`, con la causa;
-- `logs/master.jsonl`: i comandi del master (pausa, ripresa, Risolvi ora).
+- `logs/server.out`: lines that start with «finestra:» (meaning: window:), for example «finestra: sospesa dal master» (window: paused by the Game Master), «finestra: ripresa dal master» (window: resumed by the Game Master), «finestra: nessun invitato collegato, si aspetta il tavolo» (window: no invited player is connected, waiting for the table);
+- `logs/server.out`: «sorvegliante: nessun segno di vita, si interviene» (watchdog: no sign of life, intervening);
+- `logs/narrazioni.jsonl`: the lines of type `sorvegliante`, with the cause;
+- `logs/master.jsonl`: the Game Master's commands (pause, resume, Risolvi ora).
 
 ---
 
-## La voce non suona
+## The voice does not play
 
-Prima di tutto: **che cosa non suona?** Il proiettore, un telefono, o solo alcune frasi?
+First of all: **what does not play?** The projector, a phone, or only some lines?
 
-### Il proiettore è muto
+### The projector is silent
 
-**Sintomo.** Sul proiettore compare il testo, ma non si sente niente: né voce né musica.
+**Symptom.** The text appears on the projector, but nothing is heard: neither voice nor music.
 
-**Causa probabile.**
+**Likely cause.**
 
-- Non hai cliccato **Inizia sessione**: il browser non suona niente senza un gesto.
-- Un bus audio è a zero o muto. Il proiettore ha un pannello dei volumi (tasto **A**): volume e muto per voce,
-  musica, ambienti, temi ed effetti. Il browser li ricorda: un muto messo una volta resta.
-- La cassa non è collegata al Mac, o il volume del Mac è a zero.
+- You have not clicked **Inizia sessione**: the browser does not play anything without a user action.
+- An audio bus is at zero or muted. The projector has a volume panel (key **A**): volume and mute for voice, music, ambience, themes and effects. The browser remembers them: a mute set once stays set.
+- The speakers are not connected to the Mac, or the Mac's volume is at zero.
 
-**Cosa fare.** Clicca «Inizia sessione»; premi **A** sul proiettore e controlla volumi e muti; controlla cassa e
-volume del Mac.
+**What to do.** Click «Inizia sessione»; press **A** on the projector and check the volumes and mutes; check the speakers and the Mac's volume.
 
-### drama-3 non parla: chiave o credito
+### drama-3 does not speak: key or credit
 
-**Sintomo.** Il testo compare sul proiettore e resta lì per il tempo della lettura, ma la voce non arriva. Il turno
-va avanti lo stesso.
+**Symptom.** The text appears on the projector and stays there for the time it takes to read it, but the voice does not arrive. The turn goes on anyway.
 
-**Causa probabile.** La voce predefinita è drama-3 via OpenRouter. Se la richiesta fallisce, il server riprova una
-volta; poi passa alla riserva Qwen, se c'è; altrimenti la frase resta testo. Le cause più comuni:
+**Likely cause.** The default voice is drama-3 via OpenRouter. If the request fails, the server retries once; then it switches to the Qwen backup, if there is one; otherwise the line stays as text. The most common causes:
 
-- **manca la chiave** `OPENROUTER_API_KEY`. Il server la cerca nell'ambiente, poi nel file `.env` alla radice, poi
-  nel file di ripiego (`CANTASTORIE_CHIAVE_OPENROUTER`);
-- **il credito è finito**: OpenRouter risponde 402. Un 401 o un 403 di solito vuol dire chiave sbagliata.
-  Questi errori non si ritentano;
-- **la rete non va**, o OpenRouter non manda audio entro 6 secondi (`CANTASTORIE_FISH_PRIMO_MS`).
+- **the key `OPENROUTER_API_KEY` is missing**. The server looks for it in the environment, then in the `.env` file at the root, then in the fallback file (`CANTASTORIE_CHIAVE_OPENROUTER`);
+- **the credit has run out**: OpenRouter replies 402. A 401 or 403 usually means the key is wrong. These errors are not retried;
+- **the network is down**, or OpenRouter does not send audio within 6 seconds (`CANTASTORIE_FISH_PRIMO_MS`).
 
-**Cosa fare.**
+**What to do.**
 
-1. Controlla che la chiave ci sia (vedi [installazione](installation.md)). Non incollarla mai in chat, nei log o
-   nei commit.
-2. Controlla e ricarica il credito su OpenRouter (vedi [voce e costi](voice-and-costs.md)).
-3. Per avere una **riserva** durante la serata, accendi la voce locale prima della partita:
+1. Check that the key is there (see [installation](installation.md)). Never paste it into a chat, a log or a commit.
+2. Check and top up the credit on OpenRouter (see [voice and costs](voice-and-costs.md)).
+3. To have a **backup** during the evening, turn on the local voice before the game:
 
    ```
    scripts/voce-avvio.sh
    scripts/partita.sh <campagna>
    ```
 
-   La prima riga avvia la voce Qwen sul Mac e aspetta che sia pronta; la seconda avvia la partita con drama-3,
-   che usa Qwen solo per le frasi che non riesce a dire. `partita.sh` lo conferma: «riserva: la voce locale, già
-   pronta». La riserva vale solo per la partita vera, sulla porta 4610: le istanze di prova non usano mai Qwen.
-4. Se drama-3 non va per tutta la serata, gioca con la voce locale: `scripts/partita.sh <campagna> --voce qwen`.
+   The first line starts the Qwen voice on the Mac and waits until it is ready; the second starts the game with drama-3, which uses Qwen only for the lines it cannot say. `partita.sh` confirms it with «riserva: la voce locale, già pronta» (meaning: backup: the local voice, already ready). The backup applies only to the real game, on port 4610: test instances never use Qwen.
+4. If drama-3 fails for the whole evening, play with the local voice: `scripts/partita.sh <campagna> --voce qwen`.
 
-**Dove guardare.** In `logs/server.out`:
+**Where to look.** In `logs/server.out`:
 
-- «voce fish: richiesta fallita», con lo `stato` (402, 401, …) e se è passato alla riserva;
-- «OPENROUTER_API_KEY non trovata», se la chiave manca del tutto;
-- «voce: frase senza voce, resta il testo».
+- «voce fish: richiesta fallita» (meaning: fish voice: request failed), with the `stato` (status: 402, 401, …) and whether it switched to the backup;
+- «OPENROUTER_API_KEY non trovata» (meaning: OPENROUTER_API_KEY not found), if the key is missing altogether;
+- «voce: frase senza voce, resta il testo» (meaning: voice: line without voice, the text stays).
 
-Per sapere quale voce sta usando la partita, guarda la riga in alto che stampa `partita.sh`: «voce: drama-3
-(OpenRouter)», «Qwen locale» o «finta».
+To know which voice the game is using, look at the top line printed by `partita.sh`: «voce: drama-3 (OpenRouter)», «Qwen locale» (local Qwen) or «finta» (fake).
 
-### La voce locale (Qwen) non parte
+### The local voice (Qwen) does not start
 
-**Sintomo.** `partita.sh --voce qwen` dice «La voce locale non è partita (vedi logs/voce.out)», oppure
-`voce-avvio.sh` dice «manca il venv del servizio voce» o «non pronto dopo 300 s».
+**Symptom.** `partita.sh --voce qwen` says «La voce locale non è partita (vedi logs/voce.out)» (meaning: the local voice did not start (see logs/voce.out)), or `voce-avvio.sh` says «manca il venv del servizio voce» (meaning: the voice service venv is missing) or «non pronto dopo 300 s» (meaning: not ready after 300 s).
 
-**Causa probabile.**
+**Likely cause.**
 
-- l'ambiente Python del servizio voce non c'è (`services/voce/.venv`);
-- il modello non è già sul disco: il servizio parte senza rete (`HF_HUB_OFFLINE=1`) e non scarica nulla
-  (`services/voce/README.md`);
-- il Mac è troppo carico: la prima volta il caricamento può volerci qualche minuto.
+- the Python environment of the voice service is not there (`services/voce/.venv`);
+- the model is not already on disk: the service starts without network (`HF_HUB_OFFLINE=1`) and downloads nothing (`services/voce/README.md`);
+- the Mac is too loaded: the first time, loading can take a few minutes.
 
-**Cosa fare.** Segui i comandi che `voce-avvio.sh` stampa per creare l'ambiente, e il passo 5 di
-[installazione](installation.md) (la voce locale Qwen, con il modello da mettere nella cache). Intanto puoi giocare
-con drama-3: `scripts/partita.sh <campagna>`.
+**What to do.** Follow the commands that `voce-avvio.sh` prints to create the environment, and step 5 of the [installation](installation.md) (the local Qwen voice, with the model to put in the cache). Meanwhile you can play with drama-3: `scripts/partita.sh <campagna>`.
 
-**Dove guardare.** `logs/voce.out` (leggibile) e `logs/voce.jsonl` (eventi `avvio`, `pronto`, `errore_avvio`).
+**Where to look.** `logs/voce.out` (readable) and `logs/voce.jsonl` (events `avvio`, `pronto`, `errore_avvio`).
 
-### Un telefono non sente la voce
+### A phone does not hear the voice
 
-**Sintomo.** Il proiettore parla, il telefono no. Oppure il risultato di un'azione privata compare sul telefono solo
-come testo.
+**Symptom.** The projector speaks, the phone does not. Or the outcome of a private action appears on the phone only as text.
 
-**Causa probabile.** Il telefono non suona finché non lo tocchi: lo chiede il browser. In più, la voce di un esito
-**privato** va solo ai telefoni di quel PG con **Ascolta qui** acceso, mai al proiettore. Se nessuno lo ha acceso,
-quella frase non si sintetizza: resta solo il testo sul telefono.
+**Likely cause.** The phone does not play sound until you tap it: the browser requires it. Also, the voice of a **private** outcome goes only to the phones of that PC with **Ascolta qui** turned on, never to the projector. If nobody has turned it on, that line is not synthesized: the text stays on the phone only.
 
-**Cosa fare.**
+**What to do.**
 
-1. Nell'intestazione del telefono tocca il tondo con l'altoparlante, **Ascolta qui**. Spento ha l'altoparlante
-   barrato; acceso è color candela.
-2. Se ricarichi la pagina, il telefono si ricorda di «Ascolta qui», ma ricomincia a suonare solo al primo tocco
-   sullo schermo.
-3. Per i segreti, meglio le cuffie: chi ascolta dal telefono fa sentire la frase ai vicini.
+1. In the phone's header, tap the round speaker button, **Ascolta qui**. Off, it has a crossed-out speaker; on, it has the colour of a candle.
+2. If you reload the page, the phone remembers «Ascolta qui», but it starts playing again only after the first tap on the screen.
+3. For secrets, headphones are better: whoever listens on the phone lets the neighbours hear the line.
 
-**Dove guardare.** `logs/server.out`: «voce: frase privata senza ascolto, solo testo al telefono».
+**Where to look.** `logs/server.out`: «voce: frase privata senza ascolto, solo testo al telefono» (meaning: voice: private line with no listener, text only on the phone).
 
 ---
 
-## La partita non parte
+## The game does not start
 
-| Che cosa dice `partita.sh` | Causa probabile | Cosa fare | Dove guardare |
+| What `partita.sh` says | Likely cause | What to do | Where to look |
 |---|---|---|---|
-| «La campagna ha errori: la partita non parte.» | il validatore ha trovato errori | correggili (vedi [creare una campagna](create-a-campaign.md), «Come leggere i messaggi») | le righe `ERRORE` sopra il messaggio |
-| «La campagna … non ha un repertorio …: usa --modo A.» | la campagna non ha `repertorio/`, e il modo B lo vuole | `scripts/partita.sh <campagna> --modo A` | — |
-| «Non so quale sessione giocare (vedi sopra).» | campagna a più sessioni: il server non trova un pacchetto giocabile | leggi il motivo stampato sopra; vedi [campagne a più sessioni](multi-session-campaigns.md) | l'uscita di `partita.sh` |
-| «Il server non è partito. Ultime righe: …» | il server si è fermato all'avvio | leggi le ultime righe | `logs/partita.out`, `logs/server.out` |
-| «web: compilazione fallita» | le pagine web non si compilano | leggi l'errore | `logs/build.out` |
+| «La campagna ha errori: la partita non parte.» (meaning: the campaign has errors: the game does not start.) | the validator found errors | fix them (see [creating a campaign](create-a-campaign.md), «Come leggere i messaggi», meaning: how to read the messages) | the `ERRORE` lines above the message |
+| «La campagna … non ha un repertorio …: usa --modo A.» (meaning: the campaign … has no repertoire …: use --modo A.) | the campaign has no `repertorio/`, and mode B needs it | `scripts/partita.sh <campagna> --modo A` | — |
+| «Non so quale sessione giocare (vedi sopra).» (meaning: I don't know which session to play (see above).) | multi-session campaign: the server finds no package that can be played | read the reason printed above; see [multi-session campaigns](multi-session-campaigns.md) | the output of `partita.sh` |
+| «Il server non è partito. Ultime righe: …» (meaning: the server did not start. Last lines: …) | the server stopped at startup | read the last lines | `logs/partita.out`, `logs/server.out` |
+| «web: compilazione fallita» (meaning: web: build failed) | the web pages do not build | read the error | `logs/build.out` |
 
-## Il narratore non risponde
+## The narrator does not respond
 
-**Sintomo.** Dopo un turno il narratore non dice niente, e resta solo una riga di riserva sullo schermo.
+**Symptom.** After a turn the narrator says nothing, and only a backup line stays on the screen.
 
-**Causa probabile.** Manca la chiave `ANTHROPIC_API_KEY`, il credito è finito, o la rete non va. Un errore nel flusso
-della narrazione fa ripartire subito il gioco; un'attesa senza segni di vita lo fa ripartire dopo 60 secondi.
+**Likely cause.** The key `ANTHROPIC_API_KEY` is missing, the credit has run out, or the network is down. An error in the narration flow restarts the game at once; a wait with no sign of life restarts it after 60 seconds.
 
-**Cosa fare.** Controlla la chiave (vedi [installazione](installation.md)) e il credito (vedi
-[voce e costi](voice-and-costs.md)). Le azioni del turno che il narratore non ha raccontato tornano ai giocatori.
+**What to do.** Check the key (see [installation](installation.md)) and the credit (see [voice and costs](voice-and-costs.md)). The actions of the turn that the narrator did not narrate go back to the players.
 
-**Dove guardare.** `logs/server.out`: un messaggio con «ANTHROPIC_API_KEY non trovata» se la chiave manca;
-`logs/narrazioni.jsonl` per le righe del sorvegliante.
+**Where to look.** `logs/server.out`: a message with «ANTHROPIC_API_KEY non trovata» (meaning: ANTHROPIC_API_KEY not found) if the key is missing; `logs/narrazioni.jsonl` for the watchdog's lines.
 
-## `prepara.sh` si ferma
+## `prepara.sh` stops
 
-| Messaggio | Causa probabile | Cosa fare |
+| Message | Likely cause | What to do |
 |---|---|---|
-| «La campagna ha errori: niente immagini né audio.» | il validatore rigoroso ha trovato errori | correggili e rilancia |
-| «manca l'ambiente delle immagini (strumenti/immagini/.venv …)» | l'ambiente Python delle immagini non c'è | crealo (vedi [creare una campagna](create-a-campaign.md), «Le immagini») |
-| «manca l'ambiente dell'audio: lancia una volta strumenti/audio/setup.sh.» | l'ambiente dell'audio non c'è | lancia `strumenti/audio/setup.sh` |
-| «manca ffmpeg» (da `setup.sh`) | ffmpeg non è installato | installalo (vedi [installazione](installation.md)) |
-| «immagini: la generazione si è fermata …» | batteria, disco, GPU (vedi sopra) | rilancia: riparte da dove era |
-| «Non ancora pronta da giocare. Manca: …» | mancano immagini o audio obbligatori | leggi l'elenco; le immagini «da controllare a mano» le guardi tu |
+| «La campagna ha errori: niente immagini né audio.» (meaning: the campaign has errors: no images or audio.) | the strict validator found errors | fix them and run it again |
+| «manca l'ambiente delle immagini (strumenti/immagini/.venv …)» (meaning: the images environment is missing) | the Python environment for the images is not there | create it (see [creating a campaign](create-a-campaign.md), «Le immagini», meaning: the images) |
+| «manca l'ambiente dell'audio: lancia una volta strumenti/audio/setup.sh.» (meaning: the audio environment is missing: run strumenti/audio/setup.sh once.) | the audio environment is not there | run `strumenti/audio/setup.sh` |
+| «manca ffmpeg» (meaning: ffmpeg is missing) (from `setup.sh`) | ffmpeg is not installed | install it (see [installation](installation.md)) |
+| «immagini: la generazione si è fermata …» (meaning: images: generation stopped …) | battery, disk, GPU (see above) | run it again: it resumes from where it stopped |
+| «Non ancora pronta da giocare. Manca: …» (meaning: not ready to play yet. Missing: …) | required images or audio are missing | read the list; the images marked «da controllare a mano» (meaning: to check by hand) are for you to look at |
 
-Codice d'uscita di `prepara.sh`: `0` pronta; `1` errori nella campagna; `2` argomenti sbagliati; `3` un passo è fallito
-o saltato. Il log completo è in `logs/prepara-<id>.log`.
+Exit code of `prepara.sh`: `0` ready; `1` errors in the campaign; `2` wrong arguments; `3` a step failed or was skipped. The full log is in `logs/prepara-<id>.log`.

@@ -1,141 +1,142 @@
-# Cantastorie
+# Tabletop AI Game Master
 
-In questa pagina: che cos'è Cantastorie, cosa ti serve e come fai partire la prima partita.
-Prima di leggere: niente. Questa è la pagina da cui cominciare.
+On this page: what Tabletop AI Game Master is, what you need, and how to start your first game.
+Before you read: nothing. This is the page to start from.
 
-## Che cos'è
+## What it is
 
-Cantastorie è un framework per giocare a Dungeons & Dragons di persona, attorno a un tavolo, con un narratore IA.
-Il narratore è Claude Haiku: racconta la scena, fa parlare i personaggi non giocanti (PNG) e risponde alle azioni dei giocatori.
-Il proiettore mostra il luogo, i ritratti di chi è in scena e i tiri dei dadi; una cassa porta la voce e la musica.
-Ogni giocatore usa il proprio telefono, con il browser: sceglie il suo personaggio e scrive cosa fa.
-Chi fa da master ha un pannello sul Mac per correggere o fermare il narratore in ogni momento.
-Non è una campagna sola: è un sistema che genera campagne sempre nuove (storia, immagini, musica), da una serata o da molte sessioni.
+Tabletop AI Game Master is a framework for playing Dungeons & Dragons in person, around a table, with an AI narrator.
+The narrator is Claude Haiku: it describes the scene, speaks for the non-player characters (NPCs) and responds to the players' actions.
+The projector shows the place, the portraits of the characters in the scene and the dice rolls; a speaker plays the voice and the music.
+Each player uses their own phone, in the browser: they pick their character and write what they do.
+Whoever acts as Game Master has a panel on the Mac to correct or stop the narrator at any moment.
+It is not a single campaign: it is a system that generates new campaigns every time (story, images, music), for one evening or for many sessions.
 
-Regole, dadi e segreti li tiene il codice, non il modello: il narratore racconta gli esiti, non li decide.
+The code keeps the rules, the dice and the secrets, not the model: the narrator tells the outcomes, it does not decide them.
 
-## Cosa serve
+## What you need
 
-- **Un Mac con chip Apple** (M1 o più recente). Serve per le immagini generate in locale e per la voce locale Qwen,
-  che usano le librerie MLX. Il progetto è dimensionato per 16 GB di RAM (vedi [architettura](docs/architettura.md)).
-  Su un computer senza chip Apple il resto (server, narratore, voce drama-3) non è stato provato: da verificare.
-- **Node 22 o più recente** (campo `engines` di `package.json`).
-- **Python 3 con PyYAML**: lo usa il validatore delle campagne.
-- **uv e ffmpeg**, solo se vuoi generare immagini e audio o usare la voce locale. Vedi la
-  [guida all'installazione](docs/guide/installation.md).
-- **Le chiavi API**:
+- **A Mac with Apple silicon** (M1 or newer). It is needed for the images generated locally and for the local Qwen voice,
+  which use the MLX libraries. The project is sized for 16 GB of RAM (see [architecture](docs/architettura.md)).
+  On a computer without Apple silicon, the rest (server, narrator, drama-3 voice) has not been tested: to be verified.
+- **Node 22 or newer** (the `engines` field in `package.json`).
+- **Python 3 with PyYAML**: the campaign validator uses it.
+- **uv and ffmpeg**, only if you want to generate images and audio or use the local voice. See the
+  [installation guide](docs/guide/installation.md).
+- **The API keys**:
 
-| Chiave | A cosa serve | Serve per forza? |
+| Key | What it is for | Required? |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | il narratore Haiku, l'arbitro dei dadi, il controllo delle immagini | sì, per giocare col narratore vero |
-| `OPENROUTER_API_KEY` | la voce del gioco (drama-3 di Fish Audio, via OpenRouter) | no: senza, usi la voce locale Qwen o la voce finta |
-| `FREESOUND_API_KEY` | suoni d'ambiente CC0 da Freesound | no (la chiave è gratuita) |
+| `ANTHROPIC_API_KEY` | the Haiku narrator, the dice referee, the image check | yes, to play with the real narrator |
+| `OPENROUTER_API_KEY` | the game voice (drama-3 by Fish Audio, via OpenRouter) | no: without it, you use the local Qwen voice or the fake voice |
+| `FREESOUND_API_KEY` | CC0 ambient sounds from Freesound | no (the key is free) |
 
-**Quanto costa.** Anthropic e OpenRouter si pagano a consumo. L'unica misura completa nel repo è del 9 novembre 2026:
-una sessione di 45 turni costa circa 0,25 $ (circa 0,16 $ di voce drama-3 e 0,08 $ di Haiku), finché drama-3
-resta alla tariffa di lancio. Tutte le cifre, con la fonte e la data: [Voce e costi](docs/guide/voice-and-costs.md).
+**What it costs.** You pay Anthropic and OpenRouter for what you use. The only complete measurement in the repo is from 9 November 2026:
+a 45-turn session costs about $0.25 (about $0.16 for the drama-3 voice and $0.08 for Haiku), as long as drama-3
+stays at its launch price. All the figures, with source and date: [Voice and costs](docs/guide/voice-and-costs.md).
 
-## Avvio rapido
+## Quick start
 
-Questi passi fanno partire la campagna di prova `prova-f0` (una scena, 20–30 minuti, 3 o 4 giocatori).
+These steps start the test campaign `prova-f0` (one scene, 20–30 minutes, 3 or 4 players).
 
-1. Scarica il repository e entra nella cartella.
+1. Download the repository and go into the folder.
 
    ```bash
    git clone <indirizzo-del-repository> cantastorie
    cd cantastorie
    ```
 
-   L'indirizzo pubblico del repository: da verificare (il repo non ha ancora un remoto).
+   The repository is at `https://github.com/RiccardoDominici/tabletop-ai-game-master`. Replace `<indirizzo-del-repository>` with that address.
 
-2. Installa le dipendenze di Node (server, pagine web e pacchetto condiviso, tutto in un colpo).
+2. Install the Node dependencies (server, web pages and shared package, all in one go).
 
    ```bash
    npm install
    ```
 
-3. Crea il file delle chiavi copiando il modello.
+3. Create the keys file by copying the template.
 
    ```bash
    cp .env.example .env
    ```
 
-   Poi apri `.env` con un editor di testo e incolla le tue chiavi dopo il segno `=`. Per esempio:
+   Then open `.env` with a text editor and paste your keys after the `=` sign. For example:
 
    ```bash
    ANTHROPIC_API_KEY=la-tua-chiave-anthropic
    OPENROUTER_API_KEY=la-tua-chiave-openrouter
    ```
 
-   Sono segnaposto: al loro posto va la tua chiave vera. Il file `.env` è fuori da git e non va mai condiviso.
-   Il codice cerca ogni chiave in quest'ordine: prima la variabile d'ambiente con lo stesso nome, poi la riga del
-   file `.env` alla radice del repo, e per ultimo un file di ripiego facoltativo (vedi `apps/server/src/llm/chiavi.ts`).
-   I dettagli sono nella [guida all'installazione](docs/guide/installation.md).
+   These are placeholders: put your real key in their place. The `.env` file is outside git and must never be shared.
+   The code looks for each key in this order: first the environment variable with the same name, then the line in the
+   `.env` file at the root of the repo, and last an optional fallback file (see `apps/server/src/llm/chiavi.ts`).
+   The details are in the [installation guide](docs/guide/installation.md).
 
-4. Fai partire la partita.
+4. Start the game.
 
    ```bash
    scripts/partita.sh prova-f0
    ```
 
-   Lo script controlla la campagna, compila le pagine, avvia il server e alla fine stampa tre indirizzi:
-   il proiettore, i telefoni e il pannello del master.
+   The script checks the campaign, builds the pages, starts the server and at the end prints three addresses:
+   the projector, the phones and the Game Master panel.
 
-5. Sul Mac collegato al proiettore apri `http://localhost:4610/schermo` e clicca «Inizia sessione».
-   I giocatori inquadrano il QR sul proiettore con il telefono. Tu apri il link del pannello del master
-   che lo script ha stampato.
+5. On the Mac connected to the projector, open `http://localhost:4610/schermo` and click «Inizia sessione» (Start session).
+   The players scan the QR code on the projector with their phone. You open the Game Master panel link
+   that the script printed.
 
-6. A fine serata ferma tutto.
+6. At the end of the evening, stop everything.
 
    ```bash
    scripts/arresto.sh
    ```
 
-Senza chiave OpenRouter, fai partire la partita con la voce finta (un tono al posto della voce):
+Without an OpenRouter key, start the game with the fake voice (a tone instead of the voice):
 
 ```bash
 scripts/partita.sh prova-f0 --voce finta
 ```
 
-Le altre campagne di esempio sono `ponte-lanterne` (quattro scene, da due ore a due ore e mezza) e
-`nozze-neve` (tre scene, circa due ore). Tutte le opzioni sono in [Una serata di gioco](docs/guide/one-evening.md).
+The other example campaigns are `ponte-lanterne` (four scenes, two to two and a half hours) and
+`nozze-neve` (three scenes, about two hours). All the options are in [One game night](docs/guide/one-evening.md).
 
-## La guida
+## The guide
 
-Leggila in quest'ordine la prima volta.
+The first time, read it in this order.
 
-1. [Installazione](docs/guide/installation.md): dipendenze, chiavi, cosa si scarica e quanto pesa.
-2. [Una serata di gioco](docs/guide/one-evening.md): una partita dall'inizio alla fine.
-3. [Collegare i telefoni](docs/guide/phones.md): la rete, il QR, cosa fare se un telefono non entra.
-4. [Il pannello del master](docs/guide/master-panel.md): ogni sezione e ogni comando.
-5. [Dadi e schede](docs/guide/dice-and-sheets.md): come funzionano le prove e le schede dei personaggi.
-6. [Voce e costi](docs/guide/voice-and-costs.md): le tre voci, il registro delle voci, quanto si spende.
-7. [Creare una campagna](docs/guide/create-a-campaign.md): dal brief alla campagna pronta da giocare, con PNG nascosti e battute pronte.
-8. [Campagne a più sessioni](docs/guide/multi-session-campaigns.md): fine sessione, registro, sessione dopo.
-9. [Il tuo manuale di regole](docs/guide/your-rules-manual.md): giocare con le regole di un manuale tuo invece dell'SRD 5.2.
-10. [Problemi comuni](docs/guide/common-problems.md): cosa fare quando qualcosa non va.
-11. [Sviluppo](docs/guide/development.md): test, istanze di prova, come è fatto il codice.
+1. [Installation](docs/guide/installation.md): dependencies, keys, what gets downloaded and how much space it takes.
+2. [One game night](docs/guide/one-evening.md): a game from start to finish.
+3. [Connecting the phones](docs/guide/phones.md): the network, the QR code, what to do if a phone cannot join.
+4. [The Game Master panel](docs/guide/master-panel.md): every section and every command.
+5. [Dice and character sheets](docs/guide/dice-and-sheets.md): how checks and character sheets work.
+6. [Voice and costs](docs/guide/voice-and-costs.md): the three voices, the voice registry, how much you spend.
+7. [Creating a campaign](docs/guide/create-a-campaign.md): from the brief to a campaign ready to play, with hidden NPCs and prepared lines.
+8. [Multi-session campaigns](docs/guide/multi-session-campaigns.md): end of session, the session log, the next session.
+9. [Your rules manual](docs/guide/your-rules-manual.md): playing with the rules of your own manual instead of the SRD 5.2.
+10. [Common problems](docs/guide/common-problems.md): what to do when something goes wrong.
+11. [Development](docs/guide/development.md): tests, test instances, how the code is organized.
 
-## Per chi vuole capire come è fatto
+## For those who want to understand how it is built
 
-- `docs/architettura.md`: i moduli, le interfacce, le prove fatte.
-- `docs/manuale-master.md`: le regole di mestiere del master, imposte dal codice.
-- `docs/prove.md`: prove e dadi (ricerca, schema delle schede, misure).
-- `docs/strati.md`: campagne da una sessione o da molte.
-- `docs/da-fare.md`: le cose ancora aperte.
+- `docs/architettura.md`: the modules, the interfaces, the experiments done.
+- `docs/manuale-master.md`: the Game Master's craft rules, enforced by the code.
+- `docs/prove.md`: checks and dice (research, character sheet schema, measurements).
+- `docs/strati.md`: campaigns for one session or for many.
+- `docs/da-fare.md`: the things still open.
 
-## Cosa non c'è ancora
+## What is not there yet
 
-- Il microfono: oggi si gioca scrivendo sul telefono.
-- Il combattimento completo (iniziativa, turni, condizioni): vedi `docs/prove.md`, «Aperto».
-- La licenza del codice: il repo non ha ancora un file di licenza (da verificare).
+- The microphone: today you play by typing on the phone.
+- Full combat (initiative, turns, conditions): see `docs/prove.md`, section «Aperto» (Open).
+- The code license: the repo does not have a license file yet (to be verified).
+- Choosing the play language at setup: Italian is the only play language today; choosing it at setup is coming.
 
-## Crediti
+## Credits
 
-Questo lavoro include materiale dal System Reference Document 5.2 («SRD 5.2») di Wizards of the Coast LLC,
-https://www.dndbeyond.com/srd, con licenza Creative Commons Attribution 4.0 International.
-I crediti di musica, suoni, voci e immagini sono in `CREDITS.md`.
+This work includes material from the System Reference Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC,
+https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License.
+The credits for music, sounds, voices and images are in `CREDITS.md`.
 
-## Problemi?
+## Problems?
 
-Vai a [Problemi comuni](docs/guide/common-problems.md).
+Go to [Common problems](docs/guide/common-problems.md).

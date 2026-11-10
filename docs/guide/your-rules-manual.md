@@ -1,97 +1,77 @@
-# Il tuo manuale di regole
+# Your rules manual
 
-Cosa trovi qui: come far giocare una campagna con le regole di un manuale tuo, invece che con l'SRD 5.2
-del repository. Leggi prima: [creare una campagna](create-a-campaign.md) (il Preparatore e il validatore) e
-[una serata](one-evening.md) (come si gioca). La specifica tecnica è in [docs/regole.md](../regole.md).
+What you'll find here: how to play a campaign with the rules of a manual of your own, instead of the SRD 5.2 in the repository.
+Read first: [creating a campaign](create-a-campaign.md) (the Preparer and the validator) and [one evening](one-evening.md) (how play works). The technical specification is in [docs/regole.md](../regole.md).
 
-## In breve
+## In brief
 
-1. Metti il manuale in `manuali/` (PDF con testo, `.md` o `.txt`).
-2. Nel brief della campagna scrivi `manuale: manuali/<file>`.
-3. Il Preparatore legge il manuale, scrive il set di regole in `campagne/<id>/regole/` e lo usa per tiri,
-   schede e narratore.
-4. Ai giocatori compaiono il pulsante **«Regole»** e la casella **«Chiedi una regola»**.
+1. Put the manual in `manuali/` (a PDF with text, `.md`, or `.txt`).
+2. In the campaign brief, write `manuale: manuali/<file>`.
+3. The Preparer reads the manual, writes the rule set into `campagne/<id>/regole/`, and uses it for rolls, sheets, and the narrator.
+4. Players see the **«Regole»** (Rules) button and the **«Chiedi una regola»** (Ask a rule) box.
 
-Senza il campo `manuale:`, la campagna gioca con l'SRD 5.2, come oggi.
+Without the `manuale:` field, the campaign plays with the SRD 5.2, as it does today.
 
-## 1. Dove sta il manuale
+## 1. Where the manual goes
 
-La cartella `manuali/` è nel `.gitignore`: quello che ci metti resta sul tuo computer e non entra mai nel
-repository. I manuali sono spesso sotto copyright, quindi questa è la regola. Il file `manuali/README.md` è
-l'unico tracciato da git, e spiega le stesse cose in breve.
+The `manuali/` folder is in `.gitignore`: what you put there stays on your computer and never enters the repository. Manuals are often under copyright, which is why this rule exists. The file `manuali/README.md` is the only one tracked by git, and it explains the same things briefly.
 
-## 2. Formati
+## 2. Formats
 
-| Formato | Come si riconosce un capitolo |
+| Format | How a chapter is recognized |
 |---|---|
-| **PDF con testo selezionabile** | l'indice dei segnalibri del PDF, se c'è; altrimenti i titoli riconoscibili («Capitolo 3», «2.1 Il combattimento») |
-| **Markdown** (`.md`) | i titoli con `#` |
-| **Testo semplice** (`.txt`) | i titoli su una riga da soli, o con la forma «Capitolo 3 …» |
+| **PDF with selectable text** | the PDF's bookmark index, if there is one; otherwise recognizable headings («Capitolo 3», «2.1 Il combattimento», i.e. "Chapter 3", "2.1 Combat") |
+| **Markdown** (`.md`) | headings marked with `#` |
+| **Plain text** (`.txt`) | headings on a line by themselves, or in the form «Capitolo 3 …» |
 
-Un PDF fotografato o scansionato non ha testo: il programma non lo legge. Serve prima un OCR, oppure una
-versione testuale del manuale (spesso l'editore ne ha una). Per vedere come il programma legge il tuo file:
+A photographed or scanned PDF has no text, and the program cannot read it. You need an OCR first, or a text version of the manual (the publisher often has one). To see how the program reads your file:
 
     strumenti/regole/.venv/bin/python strumenti/regole/estrai.py manuali/<file>
 
-Stampa il testo diviso in sezioni, ognuna con la sua pagina. Se una sezione manca o è spezzata male, correggi
-il file (o il suo indice) prima di preparare la campagna.
+It prints the text divided into sections, each with its page. If a section is missing or split badly, fix the file (or its index) before preparing the campaign.
 
-## 3. Come lo dici nel brief
+## 3. How to say it in the brief
 
-Il brief è `campagne/<id>/brief.yaml`, copiato dal modello della skill. Il campo è facoltativo:
+The brief is `campagne/<id>/brief.yaml`, copied from the skill's template. The field is optional:
 
 ```yaml
 manuale: manuali/mondo-a-2d6.pdf
 ```
 
-Puoi anche scriverlo a parole nella richiesta al Preparatore («usa il manuale in manuali/mondo-a-2d6.pdf»):
-la skill lo mette nel brief da sola.
+You can also state it in words in your request to the Preparer (for example, "use the manual in manuali/mondo-a-2d6.pdf"): the skill puts it into the brief by itself.
 
-## 4. Che cosa viene creato
+## 4. What gets created
 
-Il Preparatore scrive in `campagne/<id>/regole/`:
+The Preparer writes into `campagne/<id>/regole/`:
 
-| File | Che cosa contiene |
+| File | What it contains |
 |---|---|
-| `regole.yaml` | la struttura del set: come si tira, le caratteristiche, le abilità, le difficoltà, le mosse, la fonte e la licenza |
-| `riassunto.md` | un riassunto in italiano semplice, per i giocatori (al massimo 400 parole) |
-| `estratti/*.md` | i passi del manuale da consultare, uno per regola, con le parole con cui si trovano |
+| `regole.yaml` | the structure of the set: how rolls work, the abilities, the skills, the difficulties, the moves, the source, and the license |
+| `riassunto.md` | a summary in plain Italian, for the players (at most 400 words) |
+| `estratti/*.md` | the manual's passages to consult, one per rule, with the words used to find them |
 
-Le schede dei PG e dei PNG usano le caratteristiche del tuo manuale, non quelle di D&D. Il validatore controlla
-il set con la classe `REGOLE`:
+The PG (player character) and PNG (non-player character) sheets use the characteristics of your manual, not D&D's. The validator checks the set with the `REGOLE` class:
 
     python3 -I strumenti/valida_campagna.py campagne/<id> --solo REGOLE
 
-Deve uscire senza errori. Lo stesso controllo è dentro il controllo completo della campagna.
+It must finish with no errors. The same check is part of the full campaign check.
 
-**Licenza.** Il set porta la licenza che il Preparatore dichiara in `regole.yaml`. Se il manuale non è libero,
-il set va dichiarato con `libera: false`: la cartella `regole/` ha allora un proprio `.gitignore` e il set resta
-fuori dal repository. Se hai dubbi sulla licenza, chiedilo al Preparatore prima di fare commit.
+**License.** The set carries the license that the Preparer declares in `regole.yaml`. If the manual is not free, the set must be declared with `libera: false`: the `regole/` folder then gets its own `.gitignore`, and the set stays out of the repository. If you are unsure about the license, ask the Preparer before you commit.
 
-## 5. Che cosa vedono i giocatori
+## 5. What the players see
 
-- Il pulsante **«Regole»**, in alto sul telefono, apre il riassunto del set, con il nome del manuale, la licenza
-  e l'attribuzione se il set ne ha una.
-- In fondo, la casella **«Chiedi una regola»**. Il giocatore scrive una domanda; risponde un modello veloce, in
-  al massimo ottanta parole, usando solo il riassunto e i passi del manuale trovati per la domanda. La risposta
-  si vede solo sul telefono che l'ha chiesta. Una domanda alla volta per telefono, con qualche secondo di pausa tra
-  una e l'altra.
-- La risposta non contiene niente della storia: niente scene, PNG o segreti. Se la regola non c'è nel testo,
-  lo dice e consiglia di chiedere al master.
+- The **«Regole»** (Rules) button, at the top of the phone, opens the set's summary, with the manual's name, the license, and the attribution if the set has one.
+- At the bottom, the **«Chiedi una regola»** (Ask a rule) box. A player writes a question; a fast model answers, in at most eighty words, using only the summary and the manual passages found for the question. The answer is seen only on the phone that asked. One question at a time per phone, with a few seconds' pause between them.
+- The answer contains nothing from the story: no scenes, NPCs, or secrets. If the rule is not in the text, it says so and advises asking the Game Master.
 
-Il regolamento completo della casella e del pannello è in [docs/regole.md](../regole.md), §5.
+The full rules for the box and the panel are in [docs/regole.md](../regole.md), §5.
 
-## 6. Se qualcosa non va
+## 6. If something goes wrong
 
-- **La campagna gioca con l'SRD 5.2 e non con il tuo manuale.** Il set non è valido, e il server lo scrive nel log
-  («set non valido, si gioca con l'SRD 5.2»). Rilancia il validatore con `--solo REGOLE` per vedere quale campo non
-  torna.
-- **Il Preparatore dice che il manuale è vuoto.** Il file è una scansione senza testo: vedi la sezione 2.
-- **«Chiedi una regola» non risponde.** Verifica che la campagna usi un modello (senza modello la casella non
-  c'è), e che il set abbia dei passi o un riassunto.
+- **The campaign plays with the SRD 5.2, not with your manual.** The set is not valid, and the server writes this to the log: «set non valido, si gioca con l'SRD 5.2» (set not valid, playing with the SRD 5.2). Run the validator again with `--solo REGOLE` to see which field does not check out.
+- **The Preparer says the manual is empty.** The file is a scan with no text: see section 2.
+- **«Chiedi una regola» does not answer.** Check that the campaign uses a model (without a model the box is not there), and that the set has passages or a summary.
 
 ## 7. Copyright
 
-Il manuale è tuo: lo usi per giocare, a casa, con il tuo gruppo. Non va messo nel repository né pubblicato. Gli
-estratti che finiscono in una campagna sono citazioni brevi, per uso personale: non pubblicarli, né in un sito
-né in un canale pubblico. Il repository contiene solo l'SRD 5.2, che è sotto licenza CC-BY-4.0 (vedi `CREDITS.md`).
+The manual is yours: you use it to play, at home, with your group. It must not be put in the repository or published. The excerpts that end up in a campaign are short quotations for personal use: do not publish them, neither on a website nor in a public channel. The repository contains only the SRD 5.2, which is under the CC-BY-4.0 license (see `CREDITS.md`).

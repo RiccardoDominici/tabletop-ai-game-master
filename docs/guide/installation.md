@@ -1,72 +1,72 @@
-# Installazione
+# Installation
 
-In questa pagina: cosa installare, dove mettere le chiavi, cosa si scarica la prima volta e quanto pesa.
-Prima leggi: il [README](../../README.md), per sapere che cos'è Cantastorie.
+On this page: what to install, where to put the keys, what gets downloaded the first time and how much space it takes.
+Read this first: the [README](../../README.md), to learn what Cantastorie (Tabletop AI Game Master) is.
 
-I passi da 1 a 4 bastano per giocare con le tre campagne di esempio. I passi da 5 a 7 sono facoltativi:
-servono per la voce locale, per generare immagini e per generare l'audio di una campagna nuova.
+Steps 1 to 4 are enough to play the three example campaigns. Steps 5 to 7 are optional:
+they are needed for the local voice, to generate images, and to generate the audio of a new campaign.
 
-## Cosa ti serve
+## What you need
 
-| Cosa | Perché | Serve per forza? |
+| What | Why | Required? |
 |---|---|---|
-| Un Mac con chip Apple | immagini e voce locale usano MLX, che gira solo sui chip Apple | sì per immagini e voce Qwen; per il resto da verificare |
-| Node 22 o più recente | server e pagine web (`package.json`, campo `engines`) | sì |
-| Python 3 con PyYAML | il validatore delle campagne (`strumenti/valida_campagna.py`) | sì |
-| uv | crea gli ambienti Python di voce, immagini e audio | solo per i passi 5, 6 e 7 |
-| ffmpeg | controlla e codifica l'audio (`strumenti/audio/setup.sh`) | solo per il passo 7 |
+| A Mac with an Apple chip | images and the local voice use MLX, which only runs on Apple chips | yes for images and the Qwen voice; for the rest, to be verified |
+| Node 22 or newer | server and web pages (`package.json`, `engines` field) | yes |
+| Python 3 with PyYAML | the campaign validator (`strumenti/valida_campagna.py`) | yes |
+| uv | creates the Python environments for voice, images and audio | only for steps 5, 6 and 7 |
+| ffmpeg | checks and encodes the audio (`strumenti/audio/setup.sh`) | only for step 7 |
 
-Sul Mac di sviluppo gira Node 25 (lo nomina `apps/server/src/sessione/archivio.ts`, per l'archivio SQLite).
-Una prova completa con Node 22, il minimo scritto in `package.json`: da verificare.
+The development Mac runs Node 25 (it is named in `apps/server/src/sessione/archivio.ts`, for the SQLite archive).
+A full test with Node 22, the minimum stated in `package.json`: to be verified.
 
-## Passo 1. Scarica il repository
+## Step 1. Download the repository
 
 ```bash
 git clone <indirizzo-del-repository> cantastorie
 cd cantastorie
 ```
 
-- La prima riga copia il repository nella cartella `cantastorie`. L'indirizzo pubblico: da verificare.
-- La seconda riga entra nella cartella. Tutti i comandi di questa guida partono da qui, la radice del repo.
+- The first line copies the repository into the `cantastorie` folder. The public address: to be verified.
+- The second line enters the folder. All commands in this guide start from here, the root of the repo.
 
-## Passo 2. Le dipendenze di Node
+## Step 2. Node dependencies
 
 ```bash
 npm install
 ```
 
-Installa in un colpo solo il server (`apps/server`), le pagine web (`apps/web`) e il pacchetto condiviso
-(`packages/shared`): sono i «workspaces» di `package.json` alla radice.
+Installs in one go the server (`apps/server`), the web pages (`apps/web`) and the shared package
+(`packages/shared`): they are the "workspaces" in `package.json` at the root.
 
-La cartella `node_modules/` che ne esce pesava 235 MB sul Mac di sviluppo (misura del 9 novembre 2026).
+The `node_modules/` folder that results weighed 235 MB on the development Mac (measured on 9 November 2026).
 
-## Passo 3. Python 3 e PyYAML
+## Step 3. Python 3 and PyYAML
 
-Il validatore delle campagne gira con il `python3` del sistema e ha bisogno di PyYAML
-(lo scrive in testa `strumenti/valida_campagna.py`). Controlla che ci sia:
+The campaign validator runs with the system `python3` and needs PyYAML
+(it is declared at the top of `strumenti/valida_campagna.py`). Check that it is there:
 
 ```bash
 python3 -I -c "import yaml"
 ```
 
-- Se non stampa niente, va bene.
-- Se stampa `ModuleNotFoundError`, devi installare PyYAML nel tuo Python.
+- If nothing is printed, it's fine.
+- If it prints `ModuleNotFoundError`, you need to install PyYAML in your Python.
 
-Gli script chiamano il validatore con `python3 -I`: in questo modo Python ignora i pacchetti installati solo
-per il tuo utente. PyYAML deve quindi stare nel Python che usi, non in un'installazione «per utente».
-Il comando giusto per installarlo dipende da come hai installato Python: da verificare sul tuo Mac.
+The scripts call the validator with `python3 -I`: this way Python ignores packages installed only for your user.
+PyYAML must therefore be in the Python you use, not in a "per-user" installation.
+The right command to install it depends on how you installed Python: to be verified on your Mac.
 
-## Passo 4. Le chiavi
+## Step 4. The keys
 
-1. Copia il modello del file delle chiavi.
+1. Copy the key file template.
 
    ```bash
    cp .env.example .env
    ```
 
-   Il file `.env` sta alla radice del repo ed è fuori da git (vedi `.gitignore`): non va mai committato.
+   The `.env` file sits at the root of the repo and is outside git (see `.gitignore`): it must never be committed.
 
-2. Apri `.env` con un editor di testo. Incolla ogni chiave dopo il suo `=`, sulla sua riga:
+2. Open `.env` with a text editor. Paste each key after its `=`, on its own line:
 
    ```bash
    ANTHROPIC_API_KEY=la-tua-chiave-anthropic
@@ -74,197 +74,195 @@ Il comando giusto per installarlo dipende da come hai installato Python: da veri
    FREESOUND_API_KEY=
    ```
 
-   Sono segnaposto: al loro posto va la tua chiave vera. Lascia vuota la riga di ciò che non usi.
+   They are placeholders: replace them with your real key. Leave empty the line of anything you do not use.
 
-3. Dove si prendono le chiavi (gli indirizzi sono scritti in `.env.example`):
-   - `ANTHROPIC_API_KEY`: https://console.anthropic.com/settings/keys (a pagamento, a consumo). Obbligatoria per
-     giocare con il narratore vero.
-   - `OPENROUTER_API_KEY`: https://openrouter.ai/keys (a consumo: ricarica il credito). Serve per la voce drama-3.
-   - `FREESOUND_API_KEY`: https://freesound.org/apiv2/apply/ (gratuita). Facoltativa: serve solo a generare
-     l'audio di una campagna nuova.
+3. Where to get the keys (the addresses are written in `.env.example`):
+   - `ANTHROPIC_API_KEY`: https://console.anthropic.com/settings/keys (paid, pay per use). Required to play with the real narrator.
+   - `OPENROUTER_API_KEY`: https://openrouter.ai/keys (pay per use: top up the credit). Needed for the drama-3 voice.
+   - `FREESOUND_API_KEY`: https://freesound.org/apiv2/apply/ (free). Optional: only needed to generate the audio of a new campaign.
 
-### In che ordine il codice cerca le chiavi
+### In what order the code looks for keys
 
-L'ordine è lo stesso in tutto il repo: nel server (`apps/server/src/llm/chiavi.ts`) e negli strumenti Python
-(`strumenti/chiavi.py`).
+The order is the same across the whole repo: in the server (`apps/server/src/llm/chiavi.ts`) and in the Python tools (`strumenti/chiavi.py`).
 
-1. La variabile d'ambiente con lo stesso nome (per esempio `ANTHROPIC_API_KEY`).
-2. La riga `NOME=` del file `.env` alla radice del repo.
-3. Un file di ripiego, se lo indichi tu. Serve a chi tiene le chiavi nel `.env` di un altro progetto:
-   - `ANTHROPIC_KEY_FILE=<percorso>` per la chiave Anthropic;
-   - `CANTASTORIE_CHIAVE_OPENROUTER=<percorso>` per la chiave OpenRouter.
+1. The environment variable with the same name (for example `ANTHROPIC_API_KEY`).
+2. The `NOME=` line of the `.env` file at the root of the repo.
+3. A fallback file, if you specify it. It is for people who keep their keys in the `.env` of another project:
+   - `ANTHROPIC_KEY_FILE=<percorso>` for the Anthropic key;
+   - `CANTASTORIE_CHIAVE_OPENROUTER=<percorso>` for the OpenRouter key.
 
-   Se non lo indichi, il codice prova un percorso del Mac di sviluppo (`apps/server/src/config.ts`): sul tuo Mac
-   non esiste, e allora si salta.
+   If you do not specify it, the code tries a path on the development Mac (`apps/server/src/config.ts`): on your Mac
+   it does not exist, so it is skipped.
 
-Regole di sicurezza del codice:
-- dal file si legge solo la riga che comincia con `NOME=`; le altre righe non si leggono;
-- se la stessa riga compare due volte, è un errore;
-- una riga vuota vale come «chiave non impostata», e si passa al passo dopo;
-- il valore non si stampa mai: il log dice solo da dove viene la chiave e quanti caratteri ha.
+Safety rules of the code:
+- only the line starting with `NOME=` is read from the file; the other lines are not read;
+- if the same line appears twice, it is an error;
+- an empty line counts as "key not set", and the next step is tried;
+- the value is never printed: the log only says where the key comes from and how many characters it has.
 
-### Come controlli che la chiave è stata trovata
+### How to check that the key was found
 
-Dopo il primo avvio (vedi [Una serata di gioco](one-evening.md)) cerca questa riga nel log del server:
+After the first start (see [One evening of play](one-evening.md)), look for this line in the server log:
 
 ```bash
 grep 'client Anthropic pronto' logs/server.out
 ```
 
-La riga dice `origine` (`ambiente`, `env-radice` o `file-precedente`) e la lunghezza della chiave, mai la chiave.
+The line shows `origine` (origin: `ambiente`, `env-radice` or `file-precedente`) and the length of the key, never the key itself.
 
-## Fin qui basta per giocare
+## This is enough to play
 
-Con i passi da 1 a 4 puoi giocare le tre campagne di esempio (`prova-f0`, `ponte-lanterne`, `nozze-neve`):
-le loro immagini e il loro audio sono già nel repo. Puoi usare la voce drama-3 (con la chiave OpenRouter)
-oppure la voce finta. Prosegui con [Una serata di gioco](one-evening.md).
+With steps 1 to 4 you can play the three example campaigns (`prova-f0`, `ponte-lanterne`, `nozze-neve`):
+their images and audio are already in the repo. You can use the drama-3 voice (with the OpenRouter key)
+or the fake voice. Continue with [One evening of play](one-evening.md).
 
-## Passo 5 (facoltativo). La voce locale Qwen
+## Step 5 (optional). The local Qwen voice
 
-La voce Qwen gira sul Mac, senza rete. Fa da riserva quando drama-3 non risponde, oppure da voce principale
-con `--voce qwen`. Vedi [Voce e costi](voice-and-costs.md).
+The Qwen voice runs on the Mac, without network. It acts as a fallback when drama-3 does not respond,
+or as the main voice with `--voce qwen`. See [Voice and costs](voice-and-costs.md).
 
-1. Crea l'ambiente Python del servizio voce, con Python 3.12.
+1. Create the Python environment for the voice service, with Python 3.12.
 
    ```bash
    uv venv --python 3.12 services/voce/.venv
    ```
 
-2. Installa le librerie, con le versioni bloccate e misurate.
+2. Install the libraries, with the locked and measured versions.
 
    ```bash
    uv pip install --python services/voce/.venv/bin/python -r services/voce/requirements.lock
    ```
 
-   Non aggiornare `mlx` e `mlx-audio` per conto tuo: il servizio usa dettagli interni di mlx-audio 0.6.3
-   (lo scrive `services/voce/requirements.txt`).
+   Do not update `mlx` and `mlx-audio` on your own: the service uses internal details of mlx-audio 0.6.3
+   (written in `services/voce/requirements.txt`).
 
-3. Il modello. È `mlx-community/Qwen3-TTS-12Hz-0.6B-Base-8bit` (`services/voce/voce/config.py`) e pesa 1,99 GB
-   (`research/local-tts.md`). Deve essere già nella cache di Hugging Face (`~/.cache/huggingface/hub`):
-   il servizio parte con `HF_HUB_OFFLINE=1` e non scarica niente da solo (`services/voce/README.md`).
+3. The model. It is `mlx-community/Qwen3-TTS-12Hz-0.6B-Base-8bit` (`services/voce/voce/config.py`) and weighs 1.99 GB
+   (`research/local-tts.md`). It must already be in the Hugging Face cache (`~/.cache/huggingface/hub`):
+   the service starts with `HF_HUB_OFFLINE=1` and does not download anything by itself (`services/voce/README.md`).
 
-   Come scaricarlo la prima volta: il repo non lo scrive, **da verificare**. Una strada possibile, non provata,
-   usa la libreria `huggingface_hub` che l'ambiente del passo 2 contiene già:
+   How to download it the first time: the repo does not say, **to be verified**. One possible way, not yet tested,
+   uses the `huggingface_hub` library that the step 2 environment already contains:
 
    ```bash
    services/voce/.venv/bin/python -c "from huggingface_hub import snapshot_download; snapshot_download('mlx-community/Qwen3-TTS-12Hz-0.6B-Base-8bit')"
    ```
 
-4. Prova il servizio.
+4. Test the service.
 
    ```bash
    scripts/voce-avvio.sh
    scripts/voce-arresto.sh
    ```
 
-   - Il primo comando avvia la voce su `127.0.0.1:4611` e aspetta che sia pronta. Sul Mac di riferimento ci
-     metteva 20–22 secondi (misura del 2 novembre 2026). Aspetta al massimo 300 secondi.
-   - Il secondo comando la ferma.
-   - Il log è in `logs/voce.out`.
+   - The first command starts the voice on `127.0.0.1:4611` and waits until it is ready. On the reference Mac it took
+     20–22 seconds (measured on 2 November 2026). It waits at most 300 seconds.
+   - The second command stops it.
+   - The log is in `logs/voce.out`.
 
-Memoria: il processo della voce stava a 2,2 GB a riposo con un picco di 3,5 GB (misura del 2 novembre 2026,
-`services/voce/README.md`). `scripts/partita.sh` avvisa «fino a 7 GB di RAM». L'ambiente pesava 474 MB.
+Memory: the voice process was at 2.2 GB at rest, with a peak of 3.5 GB (measured on 2 November 2026,
+`services/voce/README.md`). `scripts/partita.sh` prints the warning "fino a 7 GB di RAM" ("up to 7 GB of RAM").
+The environment weighed 474 MB.
 
-## Passo 6 (facoltativo). Le immagini
+## Step 6 (optional). The images
 
-Ti serve solo per generare le immagini di una campagna nuova (luoghi, ritratti dei PNG, situazioni).
+You only need this to generate the images of a new campaign (places, PNG portraits, situations).
 
-1. Crea l'ambiente Python delle immagini.
+1. Create the Python environment for images.
 
    ```bash
    uv venv --python 3.12 strumenti/immagini/.venv
    ```
 
-2. Installa le librerie: `mflux` (il generatore), `pyyaml` e `anthropic`.
+2. Install the libraries: `mflux` (the generator), `pyyaml` and `anthropic`.
 
    ```bash
    uv pip install --python strumenti/immagini/.venv/bin/python -r strumenti/immagini/requirements.txt
    ```
 
-   `anthropic` serve al controllo visivo: Claude Haiku guarda ogni immagine generata. Usa la tua
-   `ANTHROPIC_API_KEY` e quindi costa (poco: vedi [Voce e costi](voice-and-costs.md)).
+   `anthropic` is used for the visual check: Claude Haiku looks at every generated image. It uses your
+   `ANTHROPIC_API_KEY` and so it costs money (a little: see [Voice and costs](voice-and-costs.md)).
 
-3. Il modello è `mflux-community/flux2-klein-4b-mflux-q4` e pesa 4,62 GB (`strumenti/immagini/motore.py`).
-   Se si scarica da solo alla prima generazione: **da verificare** (il repo non lo scrive). Sul Mac di sviluppo
-   sta nella cache di Hugging Face, `~/.cache/huggingface/hub`.
+3. The model is `mflux-community/flux2-klein-4b-mflux-q4` and weighs 4.62 GB (`strumenti/immagini/motore.py`).
+   If it downloads by itself at the first generation: **to be verified** (the repo does not say).
+   On the development Mac it is in the Hugging Face cache, `~/.cache/huggingface/hub`.
 
-4. Prova senza generare niente: questo comando dice cosa genererebbe, con quale prompt, senza caricare il modello.
+4. Test without generating anything: this command says what it would generate, with which prompt, without loading the model.
 
    ```bash
    strumenti/immagini/.venv/bin/python strumenti/immagini/genera.py campagne/prova-f0 --dry-run
    ```
 
-Cose da sapere prima di generare:
-- servono almeno 8 GB liberi sul disco, altrimenti il generatore non parte (`strumenti/immagini/motore.py`);
-- tieni il Mac attaccato all'alimentatore: una campagna intera vuol dire 15–40 minuti di GPU
-  (`scripts/prepara.sh`), e a batteria sotto il 20% il generatore si rifiuta di partire;
-- l'ambiente pesava 1,2 GB sul Mac di sviluppo.
+Things to know before generating:
+- at least 8 GB free on disk are needed, otherwise the generator will not start (`strumenti/immagini/motore.py`);
+- keep the Mac plugged into the power adapter: a whole campaign means 15–40 minutes of GPU
+  (`scripts/prepara.sh`), and on battery below 20% the generator refuses to start;
+- the environment weighed 1.2 GB on the development Mac.
 
-Di solito non lanci `genera.py` a mano: lo lancia `scripts/prepara.sh`. Vedi
-[Creare una campagna](create-a-campaign.md).
+Usually you do not run `genera.py` by hand: `scripts/prepara.sh` runs it. See
+[Creating a campaign](create-a-campaign.md).
 
-## Passo 7 (facoltativo). L'audio
+## Step 7 (optional). The audio
 
-Ti serve solo per generare la musica, i temi dei PNG e i suoni d'ambiente di una campagna nuova.
+You only need this to generate the music, the PNG themes and the ambient sounds of a new campaign.
 
-1. Installa ffmpeg, se non ce l'hai. Lo script usa quello del sistema: lo cerca nel `PATH` o in
+1. Install ffmpeg, if you do not have it. The script uses the system one: it looks for it in the `PATH` or in
    `/opt/homebrew/bin/ffmpeg`.
 
-2. Prepara lo strumento audio.
+2. Prepare the audio tool.
 
    ```bash
    strumenti/audio/setup.sh
    ```
 
-   Cosa fa, in ordine:
-   - crea l'ambiente Python `strumenti/audio/.venv` con uv e Python 3.12;
-   - installa `strumenti/audio/requirements.txt` (numpy, pyyaml, tinysoundfont);
-   - scarica una volta il SoundFont GeneralUser GS (32 MB) in `cache/audio/soundfont/` e ne controlla l'impronta sha256;
-   - controlla che ci sia ffmpeg.
+   What it does, in order:
+   - creates the Python environment `strumenti/audio/.venv` with uv and Python 3.12;
+   - installs `strumenti/audio/requirements.txt` (numpy, pyyaml, tinysoundfont);
+   - downloads once the GeneralUser GS SoundFont (32 MB) into `cache/audio/soundfont/` and checks its sha256 fingerprint;
+   - checks that ffmpeg is there.
 
-   Puoi lanciarlo più volte: salta ciò che c'è già.
+   You can run it many times: it skips what is already there.
 
-3. Prova senza generare niente.
+3. Test without generating anything.
 
    ```bash
    strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py campagne/prova-f0 --dry-run
    ```
 
-Durante la generazione si scaricano solo i file che servono:
-- il catalogo di Incompetech e i brani scelti, in `cache/audio/incompetech/`;
-- i suoni d'ambiente CC0 dell'Internet Archive, in `cache/audio/pool/`;
-- i suoni di Freesound, solo se c'è `FREESOUND_API_KEY`.
+While generating, only the files that are needed are downloaded:
+- the Incompetech catalogue and the chosen tracks, in `cache/audio/incompetech/`;
+- the CC0 ambient sounds from the Internet Archive, in `cache/audio/pool/`;
+- Freesound sounds, only if `FREESOUND_API_KEY` is set.
 
-Le fonti e le licenze sono in `docs/audio.md`. Anche l'audio lo lancia di solito `scripts/prepara.sh`.
+The sources and licenses are in `docs/audio.md`. The audio is also usually run by `scripts/prepara.sh`.
 
-## Cosa finisce dove
+## What ends up where
 
-Pesi misurati sul Mac di sviluppo il 9 novembre 2026, dopo le tre campagne di esempio. Niente di questo è in git.
+Weights measured on the development Mac on 9 November 2026, after the three example campaigns. None of this is in git.
 
-| Cosa | Dove | Peso |
+| What | Where | Size |
 |---|---|---|
-| Dipendenze di Node | `node_modules/` | 235 MB |
-| Ambiente della voce | `services/voce/.venv/` | 474 MB |
-| Ambiente delle immagini | `strumenti/immagini/.venv/` | 1,2 GB |
-| Ambiente dell'audio | `strumenti/audio/.venv/` | 26 MB |
-| Modello della voce Qwen | `~/.cache/huggingface/hub/` | 1,99 GB (scritto in `research/local-tts.md`) |
-| Modello delle immagini | `~/.cache/huggingface/hub/` | 4,62 GB (scritto in `strumenti/immagini/motore.py`) |
-| SoundFont, brani, suoni, battute pre-registrate con Qwen | `cache/audio/` | 289 MB in tutto |
-| Battute già dette da drama-3 | `cache/audio-fish/` | 6,4 MB |
-| Log, costi, archivio delle partite | `logs/` | cresce a ogni partita |
+| Node dependencies | `node_modules/` | 235 MB |
+| Voice environment | `services/voce/.venv/` | 474 MB |
+| Image environment | `strumenti/immagini/.venv/` | 1.2 GB |
+| Audio environment | `strumenti/audio/.venv/` | 26 MB |
+| Qwen voice model | `~/.cache/huggingface/hub/` | 1.99 GB (written in `research/local-tts.md`) |
+| Image model | `~/.cache/huggingface/hub/` | 4.62 GB (written in `strumenti/immagini/motore.py`) |
+| SoundFont, tracks, sounds, lines pre-recorded with Qwen | `cache/audio/` | 289 MB in total |
+| Lines already spoken by drama-3 | `cache/audio-fish/` | 6.4 MB |
+| Logs, costs, game archive | `logs/` | grows with every game |
 
-## Controllo finale
+## Final check
 
 ```bash
 python3 -I strumenti/valida_campagna.py campagne/prova-f0
 ```
 
-Controlla la campagna di prova. Se finisce senza errori, l'installazione di base è a posto (gli avvisi non contano).
-Per un controllo del modo B il validatore usa anche Node: senza Node, quel controllo diventa un avviso
-(lo scrive `strumenti/valida_campagna.py`).
+It checks the test campaign. If it ends without errors, the basic installation is fine (warnings do not count).
+For a check of mode B, the validator also uses Node: without Node, that check becomes a warning
+(written in `strumenti/valida_campagna.py`).
 
-Ora puoi giocare: [Una serata di gioco](one-evening.md).
+Now you can play: [One evening of play](one-evening.md).
 
-## Problemi?
+## Troubleshooting
 
-Vai a [Problemi comuni](common-problems.md).
+Go to [Common problems](common-problems.md).

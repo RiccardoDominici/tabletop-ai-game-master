@@ -1,533 +1,541 @@
-# Creare una campagna
+# Creating a campaign
 
-Cosa trovi qui: come nasce una campagna nuova, dal brief alla cartella pronta da giocare, con immagini e audio.
-Leggi prima: [installazione](installation.md) (strumenti, ambienti Python e chiavi) e [una serata](one-evening.md) (come si gioca).
+What you will find here: how a new campaign is born, from the brief to a folder ready to play, with images and audio.
+Read first: [installation](installation.md) (tools, Python environments and keys) and [one evening](one-evening.md) (how to play).
 
-## In breve
+## In short
 
-1. Chiedi una campagna al **Preparatore**, la skill di Claude Code che sta nel repository.
-2. Il Preparatore scrive il **brief** e poi tutti i file della campagna in `campagne/<id>/`.
-3. Il **validatore** controlla la campagna, finché non ci sono più errori.
-4. `scripts/prepara.sh` genera le **immagini** e l'**audio**.
-5. Giochi con `scripts/partita.sh <id>` (vedi [una serata](one-evening.md)).
+1. Ask the **Preparer** for a campaign. The Preparer is the Claude Code skill that lives in the repository.
+2. The Preparer writes the **brief** and then all the campaign files in `campagne/<id>/`.
+3. The **validator** checks the campaign until there are no more errors.
+4. `scripts/prepara.sh` generates the **images** and the **audio**.
+5. You play with `scripts/partita.sh <id>` (see [one evening](one-evening.md)).
 
-I costi delle chiamate ai modelli (Preparatore, controllo delle immagini) sono spiegati in [voce e costi](voice-and-costs.md).
+The costs of the model calls (Preparer, image checks) are explained in [voice and costs](voice-and-costs.md).
 
-## 1. Il Preparatore
+## 1. The Preparer
 
-Il Preparatore è un modello forte che scrive **prima** della serata tutto ciò che il narratore veloce (Claude
-Haiku) userà dal vivo. Il narratore improvvisa poco; la campagna gli dà la sostanza già scritta.
+The Preparer is a strong model that writes, **before** the session, everything the fast narrator (Claude
+Haiku) will use live. The narrator improvises little; the campaign gives it the substance already written.
 
-La skill sta in `.claude/skills/preparatore/`:
+The game is in Italian for now, the only play language today. Choosing the play language at setup is coming.
 
-| File | A cosa serve |
+The skill lives in `.claude/skills/preparatore/`:
+
+| File | What it is for |
 |---|---|
-| `SKILL.md` | l'ordine del lavoro, in 16 passi, e le regole che non si discutono |
-| `modelli/brief.yaml` | il modello del brief da riempire |
-| `riferimenti/*.md` | la forma di ogni file (`schema.md`) e il mestiere (`mestiere.md`, `repertorio.md`, `immagini.md`, `motore.md`, `arco.md`, `tra-le-sessioni.md`) |
-| `revisione.md` | il testo per il revisore indipendente (un secondo agente che attacca la campagna) |
+| `SKILL.md` | the order of work, in 16 steps, and the rules that are not up for debate |
+| `modelli/brief.yaml` | the brief template to fill in |
+| `riferimenti/*.md` | the shape of each file (`schema.md`) and the craft (`mestiere.md`, `repertorio.md`, `immagini.md`, `motore.md`, `arco.md`, `tra-le-sessioni.md`) |
+| `revisione.md` | the text for the independent reviewer (a second agent that attacks the campaign) |
 
-La specifica di tutto è il manuale del master: [docs/manuale-master.md](../manuale-master.md).
+The spec for everything is the Game Master manual: [docs/manuale-master.md](../manuale-master.md).
 
-### Come lo chiami
+### How you call it
 
-1. Apri Claude Code nella cartella del repository (la radice, dove c'è `package.json`).
-2. Scrivi `/preparatore` seguito dalla tua richiesta, in parole tue. Per esempio:
+1. Open Claude Code in the repository folder (the root, where `package.json` is).
+2. Type `/preparatore` followed by your request, in your own words. For example (the request below asks for
+   a one-shot in a mountain village, in winter: a wedding interrupted by snow; mystery, no horror; 3-4 players,
+   a two-and-a-half-hour evening):
 
    ```
    /preparatore Una one-shot in un paese di montagna, d'inverno: un matrimonio interrotto dalla neve.
    Mistero, niente orrore. 3-4 giocatori, una serata di due ore e mezza.
    ```
 
-3. Puoi anche non scrivere `/preparatore`: se chiedi di «preparare una campagna», «scrivere un'avventura»
-   o «aggiungere scene e PNG a una campagna esistente», Claude Code usa la skill da solo (lo dice la sua
-   descrizione in `SKILL.md`).
+3. You can also leave out `/preparatore`: if you ask to "prepare a campaign" («preparare una campagna»),
+   "write an adventure" («scrivere un'avventura») or "add scenes and NPCs to an existing campaign"
+   («aggiungere scene e PNG a una campagna esistente»), Claude Code uses the skill on its own (its description
+   in `SKILL.md` says so).
 
-### Che cosa ti chiede
+### What it asks you
 
-Il Preparatore decide da solo quasi tutto, e scrive ogni scelta nel brief, nel campo `decisioni`, con il motivo.
-Ti fa domande solo su ciò che non può decidere al posto tuo:
+The Preparer decides almost everything on its own, and writes every choice in the brief, in the `decisioni`
+field, with the reason. It only asks you about what it cannot decide for you:
 
-- i **temi da evitare** (le linee e i veli: vedi sotto);
-- il **numero dei giocatori**;
-- la **durata**.
+- the **themes to avoid** (lines and veils: see below);
+- the **number of players**;
+- the **length**.
 
-### Quanto dura: oggi solo la one-shot
+### How long: today only the one-shot
 
-Il numero di sessioni decide quanto si prepara. Oggi il framework prepara e gioca solo la **one-shot**
-(`sessioni: 1`). Se chiedi più sessioni, il Preparatore te lo dice e ti propone una one-shot o la prima
-sessione di un arco. Il motivo e lo stato dei lavori sono in [campagne a più sessioni](multi-session-campaigns.md).
+The number of sessions decides how much is prepared. Today the framework prepares and plays only the **one-shot**
+(`sessioni: 1`). If you ask for more sessions, the Preparer tells you and proposes a one-shot or the first session
+of an arc. The reason and the status of the work are in [multi-session campaigns](multi-session-campaigns.md).
 
-### Che cosa produce e dove lo salva
+### What it produces and where it saves it
 
-Tutto va in `campagne/<id>/`. L'`id` è in ascii minuscolo con trattini, per esempio `il-ponte-dei-sospiri`.
+Everything goes into `campagne/<id>/`. The `id` is lowercase ASCII with hyphens, for example `il-ponte-dei-sospiri`.
 
-| File | Che cosa contiene | Chi lo vede al tavolo |
+| File | What it contains | Who sees it at the table |
 |---|---|---|
-| `brief.yaml` | il brief e le decisioni | nessuno: lo legge solo chi prepara |
-| `stile.yaml` | carta di stile: premessa, tono, regole di prosa, stile delle immagini, musica, linee e veli | il narratore |
-| `campagna.yaml` | canone dei fatti, fronti e orologi, indizi, nodi, la sessione; in `preparazione` i segreti, che non arrivano mai al narratore | il narratore, senza `preparazione` |
-| `scena.yaml` | la prima scena | il narratore |
-| `scene/<id_scena>.yaml` | le altre scene, se ce ne sono | il narratore |
-| `png/png_<nome>.yaml` | una scheda per ogni personaggio non giocante (PNG) | il narratore; ritratto e nome sul proiettore |
-| `pg.yaml` | la situazione comune e i personaggi giocanti (PG) pregenerati | ogni giocatore il suo, sul telefono |
-| `repertorio/*.yaml` | le battute già scritte, che il narratore sceglie in modo B | il narratore |
-| `repertorio/parole_segrete.yaml` | le parole che non devono uscire prima del tempo | il server (filtro) |
-| `README.md`, `autovalutazione.md` | riassunto per il master e voti della campagna | il master |
-| `immagini/` | luoghi, ritratti, situazioni, con `manifest.json` | il proiettore |
-| `audio/` | musica, temi, ambienti, effetti, con `manifest.json` e `crediti.md` | il proiettore |
+| `brief.yaml` | the brief and the decisions | nobody: only the person preparing reads it |
+| `stile.yaml` | style sheet: premise, tone, prose rules, image style, music, lines and veils | the narrator |
+| `campagna.yaml` | fact canon, fronts and clocks, clues, nodes, the session; in `preparazione` the secrets, which never reach the narrator | the narrator, without `preparazione` |
+| `scena.yaml` | the first scene | the narrator |
+| `scene/<id_scena>.yaml` | the other scenes, if there are any | the narrator |
+| `png/png_<nome>.yaml` | a character sheet for each NPC | the narrator; portrait and name on the projector |
+| `pg.yaml` | the common situation and the pregenerated PCs (player characters) | each player their own, on the phone |
+| `repertorio/*.yaml` | the prepared lines already written, which the narrator chooses in mode B | the narrator |
+| `repertorio/parole_segrete.yaml` | the words that must not come out too early | the server (filter) |
+| `README.md`, `autovalutazione.md` | summary for the Game Master and the campaign's self-assessment grades | the Game Master |
+| `immagini/` | places, portraits, situations, with `manifest.json` | the projector |
+| `audio/` | music, themes, ambiences, effects, with `manifest.json` and `crediti.md` | the projector |
 
-Fuori dalla cartella della campagna il Preparatore scrive anche:
+Outside the campaign folder the Preparer also writes:
 
-- `esperimenti/copioni/<id>/`: due copioni di azioni scritti «alla cieca» da un altro agente, per provare la campagna
-  (la forma è in `esperimenti/copioni/README.md`);
-- `esperimenti/audio/controlli_<id>.md`: i controlli dell'audio.
+- `esperimenti/copioni/<id>/`: two action scripts written "blind" by another agent, to test the campaign
+  (the format is in `esperimenti/copioni/README.md`);
+- `esperimenti/audio/controlli_<id>.md`: the audio checks.
 
-Il Preparatore fa un commit con git dopo i passi principali. Il messaggio è in italiano e spiega il perché.
+The Preparer makes a git commit after the main steps. The commit message is in Italian and explains the why.
 
-### Quando ha finito davvero
+### When it is really finished
 
-Il lavoro è finito solo quando:
+The work is finished only when:
 
-1. il validatore in modo rigoroso dà **0 errori** (con node installato);
-2. la revisione indipendente è fatta e i suoi problemi gravi sono corretti;
-3. `README.md` e `autovalutazione.md` della campagna sono scritti e tutto è nel commit;
-4. `scripts/prepara.sh` ha fatto immagini e audio: esistono `immagini/manifest.json` e `audio/manifest.json`.
+1. the validator, in strict mode, gives **0 errors** (with node installed);
+2. the independent review is done and its serious problems are fixed;
+3. the campaign's `README.md` and `autovalutazione.md` are written and everything is in the commit;
+4. `scripts/prepara.sh` has made the images and the audio: `immagini/manifest.json` and `audio/manifest.json` exist.
 
-Solo allora la campagna è **pronta da giocare**.
+Only then is the campaign **ready to play**.
 
-### I 16 passi, in una riga ciascuno
+### The 16 steps, one line each
 
-Li trovi per intero in `SKILL.md`. Ognuno finisce con un controllo, e non si passa al successivo finché il
-controllo non va.
+You find them in full in `SKILL.md`. Each step ends with a check, and you do not move to the next one until the
+check passes.
 
-| Passo | Che cosa si scrive | Controllo |
+| Step | What is written | Check |
 |---|---|---|
-| 1 | la situazione, in `brief.yaml → decisioni.situazione` | le domande del passo |
-| 2 | `stile.yaml` | validatore `--solo STILE` |
-| 3 | canone, fronti, orologi, cattivo, sessione, cronologia | `--solo STILE,CANONE,FRONTI,SESSIONE,MONDO` |
-| 4 | rivelazioni, indizi, nodi, colli di bottiglia | la prova dei due indizi mancanti |
-| 5 | le schede delle scene | `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO` |
+| 1 | the situation, in `brief.yaml → decisioni.situazione` | the questions of the step |
+| 2 | `stile.yaml` | validator `--solo STILE` |
+| 3 | canon, fronts, clocks, villain, session, history | `--solo STILE,CANONE,FRONTI,SESSIONE,MONDO` |
+| 4 | revelations, clues, nodes, bottlenecks | the check of the two missing clues |
+| 5 | the scene sheets | `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO` |
 | 6 | `pg.yaml` | `--solo PG,FRONTI` |
-| 7 | le schede dei PNG | le domande del passo |
-| 8 | primo giro del validatore | zero errori in modo normale |
-| 9 | il repertorio e gli esiti delle scene | `--solo REPERTORIO,COPERTURA,PROSA,SCENA` |
-| 10 | le parole segrete | nessun errore `SEGRETI` |
-| 11 | i prompt delle immagini e la lettura dell'audio | `--dry-run` delle due pipeline |
-| 12 | validatore rigoroso e copioni | zero errori |
-| 13 | lettura ad alta voce | la lista del passo |
-| 14 | revisione indipendente | problemi gravi corretti |
-| 15 | `README.md` e `autovalutazione.md` | commit |
-| 16 | immagini e audio con `scripts/prepara.sh` | «pronta da giocare» |
+| 7 | the NPC character sheets | the questions of the step |
+| 8 | first validator run | zero errors in normal mode |
+| 9 | the repertoire and the outcomes of the scenes | `--solo REPERTORIO,COPERTURA,PROSA,SCENA` |
+| 10 | the secret words | no `SEGRETI` error |
+| 11 | the image prompts and the audio reading | `--dry-run` of the two pipelines |
+| 12 | strict validator and action scripts | zero errors |
+| 13 | reading aloud | the list of the step |
+| 14 | independent review | serious problems fixed |
+| 15 | `README.md` and `autovalutazione.md` | commit |
+| 16 | images and audio with `scripts/prepara.sh` | "ready to play" |
 
-## 2. Il brief
+## 2. The brief
 
-Il brief è un file breve: dice che cosa vuoi. Il Preparatore copia il modello e lo riempie. Se vuoi
-scriverlo tu prima di chiamarlo, fai così:
+The brief is a short file: it says what you want. The Preparer copies the template and fills it in. If you want
+to write it yourself before calling the Preparer, do this:
 
 ```
 mkdir -p campagne/il-mio-id
 cp .claude/skills/preparatore/modelli/brief.yaml campagne/il-mio-id/brief.yaml
 ```
 
-La prima riga crea la cartella della campagna; la seconda copia il modello del brief dentro.
+The first line creates the campaign folder; the second copies the brief template into it.
 
-Un esempio vero e completo è `campagne/ponte-lanterne/brief.yaml`.
+A real, complete example is `campagne/ponte-lanterne/brief.yaml`.
 
-### Campo per campo
+### Field by field
 
-| Campo | Che cosa scrivi | Esempio (da `ponte-lanterne`) |
+| Field | What you write | Example (from `ponte-lanterne`) |
 |---|---|---|
-| `id` | il nome della cartella: ascii minuscolo con trattini | `"ponte-lanterne"` |
-| `titolo` | il titolo | `"Il ponte delle lanterne"` |
-| `richiesta` | la tua richiesta, con le tue parole | il testo che hai dato al Preparatore |
-| `tono` | il tono, in una frase | `"Mistero di paese sotto la pioggia, caldo e umano…"` |
-| `sessioni` | **obbligatorio**: quante sessioni dura, oppure `"aperta"` | `1` |
-| `ore_per_sessione` | facoltativo, predefinito `2.5`: sotto un'ora la one-shot ha una scena sola, altrimenti da 3 a 5 | (assente: vale 2,5) |
-| `livello` | facoltativo: forza un livello diverso da quello delle sessioni, solo con il motivo in `decisioni.altre` | (assente) |
-| `durata` | una nota a parole per te; il numero vero sta in `sessioni` | `"una sessione serale, da due ore a due ore e mezza, in quattro scene"` |
-| `giocatori` | quanti giocano, un numero o un intervallo come `"3-4"` | `4` |
-| `dadi` | `true` per default: schede e prove. `false` solo se vuoi una campagna senza dadi | (assente) |
-| `temi` | i temi della storia | `[debiti e lealtà, …]` |
-| `linee` | ciò che non entra **mai** in gioco | `"contenuti sessuali"` |
-| `veli` | ciò che succede solo fuori scena, raccontato a cose fatte | `"annegamento: solo fuori scena"` |
-| `ambientazione` | facoltativo: luogo, epoca, sapore (fantasy compatibile con l'SRD) | `"Vadolungo, paese di fiume…"` |
-| `vincoli` | regole tue per questa storia | `"niente combattimento necessario"` |
-| `decisioni.scene` | gli id delle scene; la prima è `scena.yaml` | `[scena_ponte_imbrunire, …]` |
-| `decisioni.pg` | gli id dei PG pregenerati | `[pg_dalia, …]` |
-| `decisioni.png` | quale voce va a quale PNG | `"png_tullio → vincent (…)"` |
-| `decisioni.situazione` | quattro frasi: chi vuole cosa; cosa succede se i PG non fanno niente; la verità nascosta; la scelta che costa | |
-| `decisioni.strade` | le strade della scelta finale, ognuna con `strada`, `prezzo` e `pesa_su` | |
-| `decisioni.altre` | ogni altra scelta, con il motivo | |
+| `id` | the folder name: lowercase ASCII with hyphens | `"ponte-lanterne"` |
+| `titolo` | the title | `"Il ponte delle lanterne"` |
+| `richiesta` | your request, in your own words | the text you gave the Preparer |
+| `tono` | the tone, in one sentence | `"Mistero di paese sotto la pioggia, caldo e umano…"` |
+| `sessioni` | **required**: how many sessions it lasts, or `"aperta"` (open-ended) | `1` |
+| `ore_per_sessione` | optional, default `2.5`: under one hour the one-shot has a single scene, otherwise 3 to 5 | (absent: 2.5) |
+| `livello` | optional: forces a level different from the one given by the sessions, only with the reason in `decisioni.altre` | (absent) |
+| `durata` | a note in words for you; the real number is in `sessioni` | `"una sessione serale, da due ore a due ore e mezza, in quattro scene"` |
+| `giocatori` | how many play, a number or a range like `"3-4"` | `4` |
+| `dadi` | `true` by default: sheets and checks. `false` only if you want a campaign without dice | (absent) |
+| `temi` | the themes of the story | `[debiti e lealtà, …]` |
+| `linee` | what **never** enters the game | `"contenuti sessuali"` |
+| `veli` | what happens only off-scene, told after the fact | `"annegamento: solo fuori scena"` |
+| `ambientazione` | optional: place, era, flavour (fantasy compatible with the SRD) | `"Vadolungo, paese di fiume…"` |
+| `vincoli` | your own rules for this story | `"niente combattimento necessario"` |
+| `decisioni.scene` | the scene ids; the first is `scena.yaml` | `[scena_ponte_imbrunire, …]` |
+| `decisioni.pg` | the ids of the pregenerated PCs | `[pg_dalia, …]` |
+| `decisioni.png` | which voice goes to which NPC | `"png_tullio → vincent (…)"` |
+| `decisioni.situazione` | four sentences: who wants what; what happens if the PCs do nothing; the hidden truth; the choice that costs | |
+| `decisioni.strade` | the paths of the final choice, each with `strada`, `prezzo` and `pesa_su` | |
+| `decisioni.altre` | every other choice, with the reason | |
 
-Alcune regole che conviene sapere:
+Some rules worth knowing:
 
-- **Più PG che giocatori.** I PG pregenerati sono uno più del massimo dei giocatori: per «3-4 giocatori», cinque.
-  Così la storia regge con qualunque gruppo. Se ne mancano, il validatore lo segnala (`PG.numero`).
-- **Il prezzo pesa su chi non lo vuole.** Ogni strada della scelta finale ha un prezzo. Se il prezzo somiglia a
-  ciò che un PNG desidera, è un premio travestito, e il validatore lo segnala (`SCELTA.premio`). Servono almeno
-  due strade (`SCELTA.forma`).
-- **Dadi.** Il campo `dadi` del brief serve al Preparatore. L'interruttore vero sta in `campagna.yaml`:
-  `regole: {dadi: false}` toglie l'obbligo delle schede. Dettagli in [dadi e schede](dice-and-sheets.md).
-- **Voci.** Le voci registrate sono in `assets/voci/voci.yaml`. Due voci uguali o simili non stanno mai nella
-  stessa scena, e al massimo quattro PNG con voce stanno in una scena.
+- **More PCs than players.** The pregenerated PCs are one more than the maximum number of players: for "3-4 players",
+  five. This way the story works with any group. If there are too few, the validator reports it (`PG.numero`).
+- **The price falls on whoever does not want it.** Each path of the final choice has a price. If the price looks like
+  something an NPC wants, it is a reward in disguise, and the validator reports it (`SCELTA.premio`). At least
+  two paths are required (`SCELTA.forma`).
+- **Dice.** The `dadi` field of the brief is for the Preparer. The real switch is in `campagna.yaml`:
+  `regole: {dadi: false}` removes the requirement for sheets. Details in [dice and sheets](dice-and-sheets.md).
+- **Voices.** The recorded voices are in `assets/voci/voci.yaml`. Two identical or similar voices never share the
+  same scene, and at most four NPCs with a voice can be in one scene.
 
-Per vedere che livello dà il tuo brief:
+To see what level your brief gives:
 
 ```
 python3 strumenti/strati.py campagne/il-mio-id
 ```
 
-Stampa il livello (one-shot, arco, campagna, saga), che cosa comporta e quante scene ti aspetti per sessione.
+It prints the level (one-shot, arc, campaign, saga), what that involves, and how many scenes you should expect per session.
 
-## 3. Le sessioni e le scene
+## 3. Sessions and scenes
 
-- Una **sessione** è una serata di gioco. In una one-shot la sessione è una sola e sta in `campagna.yaml`, chiave
-  `sessione`: il riassunto da leggere all'inizio, le cinque stanze, le scene possibili, la chiusura con una
-  scelta aperta.
-- All'avvio il narratore legge il **riassunto iniziale** (`campagna.yaml → sessione.riassunto_iniziale`) e poi
-  l'apertura della prima scena.
-- Una **scena** è un luogo in un momento. Per una sessione di 20–40 minuti basta una scena; per 2–3 ore, da 3 a 5.
-  La prima è `scena.yaml`, le altre `scene/<id>.yaml`. Lo stesso luogo può tornare in due momenti diversi.
-- Il master passa da una scena all'altra dal pannello (vedi [il pannello del master](master-panel.md)).
+- A **session** is one evening of play. In a one-shot the session is just one and it sits in `campagna.yaml`, under
+  the key `sessione`: the summary to read at the start, the five rooms, the possible scenes, and the closing with an open choice.
+- At the start, the narrator reads the **opening summary** (`campagna.yaml → sessione.riassunto_iniziale`) and then
+  the opening of the first scene.
+- A **scene** is a place at a moment. For a session of 20–40 minutes one scene is enough; for 2–3 hours, 3 to 5.
+  The first is `scena.yaml`, the others `scene/<id>.yaml`. The same place can come back at two different moments.
+- The Game Master moves from one scene to another from the panel (see [the Game Master panel](master-panel.md)).
 
-## 4. Il validatore
+## 4. The validator
 
-Il validatore controlla una campagna contro il manuale del master. Non chiama la rete e non scrive nulla
-nella campagna. Serve Python 3 con PyYAML; per il controllo completo serve anche node.
+The validator checks a campaign against the Game Master manual. It does not call the network and it writes nothing
+into the campaign. It needs Python 3 with PyYAML; for the full check it also needs node.
 
 ```
 python3 -I strumenti/valida_campagna.py campagne/<id>
 ```
 
-Controlla la campagna in modo normale e stampa gli errori.
+It checks the campaign in normal mode and prints the errors.
 
 ```
 python3 -I strumenti/valida_campagna.py campagne/<id> --rigoroso --avvisi
 ```
 
-Controlla con le regole piene per le campagne nuove, e mostra anche gli avvisi.
+It checks with the full rules for new campaigns, and it also shows the warnings.
 
-### Le opzioni
+### The options
 
-| Opzione | Che cosa fa |
+| Option | What it does |
 |---|---|
-| `--rigoroso` | regole piene per le campagne nuove: alcuni avvisi diventano errori (confessioni senza cancello, menzogne senza id, indizi senza `modi`, PNG senza `alias`, temi generici, tratti nascosti nei prompt delle immagini) |
-| `--avvisi` | mostra anche gli avvisi (senza, ne stampa solo il numero) |
-| `--solo CLASSI` | mostra e conta solo alcune classi o codici, separati da virgole, per esempio `--solo STILE,CANONE` o `--solo SCENA.voci` |
-| `--classi` | elenca le classi di errore ed esce |
-| `--copioni <cartella>` | misura il catalogo per azione con i copioni, per esempio `esperimenti/copioni/<id>` |
-| `--senza-node` | non compila il contesto vero del modo B: quel controllo resta un avviso |
-| `--sessione N` | valida il pacchetto `sessioni/<nn>/` unito alla campagna (campagne a più sessioni) |
-| `--voci <file>` | un altro registro delle voci (predefinito: `assets/voci/voci.yaml`) |
+| `--rigoroso` | full rules for new campaigns: some warnings become errors (confessions without a gate, lies without an id, clues without `modi`, NPCs without `alias`, generic themes, hidden traits in the image prompts) |
+| `--avvisi` | also shows the warnings (without it, it only prints how many there are) |
+| `--solo CLASSI` | shows and counts only some classes or codes, separated by commas, for example `--solo STILE,CANONE` or `--solo SCENA.voci` |
+| `--classi` | lists the error classes and exits |
+| `--copioni <cartella>` | measures the catalog per action using the action scripts, for example `esperimenti/copioni/<id>` |
+| `--senza-node` | does not compile the real context of mode B: that check stays a warning |
+| `--sessione N` | validates the package `sessioni/<nn>/` together with the campaign (multi-session campaigns) |
+| `--voci <file>` | another voice register (default: `assets/voci/voci.yaml`) |
 
-Codice d'uscita: `0` nessun errore (gli avvisi non contano), `1` almeno un errore, `2` argomenti sbagliati.
+Exit code: `0` no errors (warnings do not count), `1` at least one error, `2` wrong arguments.
 
-Chi lo usa da solo:
+For those who use it on their own:
 
-- `scripts/partita.sh` lo lancia in modo normale prima di ogni partita: con errori la partita non parte;
-- `scripts/prepara.sh` lo lancia in modo rigoroso: con errori non genera né immagini né audio.
+- `scripts/partita.sh` runs it in normal mode before every game: with errors, the game does not start;
+- `scripts/prepara.sh` runs it in strict mode: with errors, it generates neither images nor audio.
 
-### Che cosa controlla
+### What it checks
 
-Ogni regola appartiene a una **classe**. L'elenco esatto lo stampa `--classi`:
+Each rule belongs to a **class**. The exact list is printed by `--classi`:
 
-| Classe | Che cosa controlla |
+| Class | What it checks |
 |---|---|
-| `STRUTTURA` | file mancanti, YAML illeggibile, campi obbligatori assenti |
-| `STILE` | carta di stile: premessa, tono, linee e veli, stile delle immagini, musica |
-| `CANONE` | registro dei fatti: id unici, riferimenti esistenti |
-| `PNG` | scheda PNG obbligatoria e controlli incrociati |
-| `SCENA` | scheda scena o luogo |
-| `INDIZI` | regola dei tre indizi e colli di bottiglia |
-| `FRONTI` | fronti, pericoli, orologi, cattivo, segreti, archi |
-| `GRAFO` | nodi e collegamenti senza vicoli ciechi |
-| `SESSIONE` | inizio forte, cinque stanze, scene potenziali, chiusura |
-| `PG` | personaggi giocanti e conoscenze private |
-| `SCHEDA` | schede numeriche e prove (caratteristiche, CA, PF, attacchi, prove della scena) |
-| `PROSA` | scrittura per l'ascolto |
-| `REPERTORIO` | forma delle battute e riferimenti |
-| `COPERTURA` | copertura minima del repertorio: indizi, menzogne, confessioni, segni, finali, voce |
-| `SEGRETI` | niente di nascosto nei campi pubblici o nel catalogo del selettore |
-| `IMMAGINI` | prompt delle immagini |
-| `MONDO` | cronologia e logistica: eventi in ordine, date dei documenti, tempi e capienze |
-| `STATO`, `CONTINUITÀ`, `ARCO` | campagne a più sessioni (vedi [campagne a più sessioni](multi-session-campaigns.md)) |
-| `SCELTA` | la scelta finale del brief: prezzi che pesano su chi non li vuole |
-| `VINCOLI` | ciò che chiunque percepisce di un indizio, e che la scena non contraddice |
-| `LIVELLO` | durata in sessioni e livello della campagna |
-| `AUDIO` | campi espliciti dell'audio |
-| `VOCE` | voce espressiva: direzioni brevi, tag conosciuti e chiusi nella riga |
+| `STRUTTURA` | missing files, unreadable YAML, missing required fields |
+| `STILE` | style sheet: premise, tone, lines and veils, image style, music |
+| `CANONE` | fact register: unique ids, existing references |
+| `PNG` | mandatory NPC sheet and cross-checks |
+| `SCENA` | scene or place sheet |
+| `INDIZI` | the three-clue rule and bottlenecks |
+| `FRONTI` | fronts, dangers, clocks, villain, secrets, arcs |
+| `GRAFO` | nodes and links without dead ends |
+| `SESSIONE` | strong opening, five rooms, potential scenes, closing |
+| `PG` | player characters and private knowledge |
+| `SCHEDA` | numeric sheets and checks (attributes, AC, HP, attacks, scene checks) |
+| `PROSA` | writing for listening |
+| `REPERTORIO` | shape of the prepared lines and references |
+| `COPERTURA` | minimum coverage of the repertoire: clues, lies, confessions, signs, endings, voice |
+| `SEGRETI` | nothing hidden in public fields or in the selector catalog |
+| `IMMAGINI` | image prompts |
+| `MONDO` | history and logistics: events in order, document dates, times and capacities |
+| `STATO`, `CONTINUITÀ`, `ARCO` | multi-session campaigns (see [multi-session campaigns](multi-session-campaigns.md)) |
+| `SCELTA` | the final choice in the brief: prices that fall on whoever does not want them |
+| `VINCOLI` | what anyone perceives of a clue, and that the scene does not contradict it |
+| `LIVELLO` | length in sessions and the level of the campaign |
+| `AUDIO` | explicit audio fields |
+| `VOCE` | expressive voice: short directions, known tags closed within the line |
 
-### Come leggere i messaggi
+### How to read the messages
 
-Ogni riga ha questa forma:
+Each line has this form:
 
 ```
 ERRORE  [CLASSE.regola] dove: messaggio
 AVVISO  [CLASSE.regola] dove: messaggio
 ```
 
-- `ERRORE` va corretto; `AVVISO` va letto, e corretto o giustificato in `autovalutazione.md`.
-- `CLASSE.regola` dice quale parte del manuale è violata (la classe) e quale controllo preciso (la regola).
-- `dove` dice il file e il campo, o l'id dell'elemento.
-- Il messaggio dice che cosa non va, spesso con il motivo.
+The validator prints in Italian: `ERRORE` means error and `AVVISO` means warning.
 
-Due righe vere, dal validatore su `campagne/ponte-lanterne` e su una cartella di prova:
+- An `ERRORE` must be fixed; an `AVVISO` must be read, and either fixed or justified in `autovalutazione.md`.
+- `CLASSE.regola` says which part of the manual is violated (the class) and which precise check (the rule).
+- `dove` says the file and the field, or the id of the element.
+- The message says what is wrong, often with the reason.
+
+Two real lines, from the validator run on `campagne/ponte-lanterne` and on a test folder:
 
 ```
 AVVISO  [IMMAGINI.nodo] campagna.yaml nodo n_passo: un'uscita di scena.yaml porta qui, ma il luogo non ha immagine (né scheda né immagine.prompt_luogo): sul proiettore resterebbe il luogo di prima
 ERRORE  [SEGRETI.campo_pubblico] pg.yaml pg_anna.nome: campo sempre pubblico con «IL_CATTIVO_E_IL_LOCANDIERE»
 ```
 
-L'ultima riga riassume tutto: il numero di errori per classe, gli avvisi, il modo, quante scene, PNG e battute:
+The last line sums everything up: the number of errors per class, the warnings, the mode, and how many scenes, NPCs
+and prepared lines there are:
 
 ```
 campagne/ponte-lanterne: 0 errori (nessuno), 9 avvisi — modo rigoroso, 4 scene, 4 PNG, 135 battute
 ```
 
-Come procedere:
+How to proceed:
 
-1. Leggi l'ultima riga: dice quali classi hanno errori.
-2. Comincia dagli errori `STRUTTURA`: un file che manca o uno YAML illeggibile impedisce di controllare ciò che contiene.
-3. Correggi un errore alla volta e rilancia il validatore.
-4. Se scrivi la campagna a pezzi, usa `--solo` con le classi del pezzo che hai scritto.
-5. Prima di dire «finito», passa in modo rigoroso con `--avvisi`.
+1. Read the last line: it says which classes have errors.
+2. Start with the `STRUTTURA` errors: a missing file or an unreadable YAML prevents checking what it contains.
+3. Fix one error at a time and run the validator again.
+4. If you write the campaign in pieces, use `--solo` with the classes of the piece you wrote.
+5. Before saying "finished", run strict mode with `--avvisi`.
 
-Le regole precise dei dadi e delle schede (classe `SCHEDA`) sono in [docs/prove.md](../prove.md), §2; la forma di
-ogni file in `.claude/skills/preparatore/riferimenti/schema.md`.
+The precise rules for dice and sheets (class `SCHEDA`) are in [docs/prove.md](../prove.md), §2; the shape of
+each file is in `.claude/skills/preparatore/riferimenti/schema.md`.
 
-## 5. Pronta da giocare: `scripts/prepara.sh`
+## 5. Ready to play: `scripts/prepara.sh`
 
 ```
 scripts/prepara.sh campagne/<id>
 ```
 
-Porta una campagna valida a pronta da giocare, in quattro passi:
+It brings a valid campaign to ready-to-play, in four steps:
 
-1. **validatore rigoroso**: con errori si ferma, e non genera niente;
-2. **immagini**: genera quelle che mancano, con la GPU del Mac;
-3. **audio**: musica, temi, ambienti, effetti;
-4. **rapporto**: che cosa c'è, che cosa manca, quanto pesa, e il comando per giocare.
+1. **strict validator**: it stops if there are errors, and generates nothing;
+2. **images**: it generates the missing ones, using the Mac's GPU;
+3. **audio**: music, themes, ambiences, effects;
+4. **report**: what is there, what is missing, how much it weighs, and the command to play.
 
-La campagna si può indicare come `campagne/<id>`, come `<id>` o con il percorso intero.
+The campaign can be given as `campagne/<id>`, as `<id>`, or with the full path.
 
-| Opzione | Che cosa fa |
+| Option | What it does |
 |---|---|
-| `--senza-immagini` | non genera le immagini: dice solo quante mancano e quanti minuti servirebbero |
-| `--senza-audio` | non lancia l'audio |
-| `--anche-a-batteria` | genera le immagini anche senza alimentatore (sconsigliato) |
-| `--riprova-audio` | rilancia l'audio anche se è già completo, per cercare gli strati che le fonti non avevano |
+| `--senza-immagini` | does not generate the images: it only says how many are missing and how many minutes they would take |
+| `--senza-audio` | does not run the audio |
+| `--anche-a-batteria` | generates the images even on battery (not recommended) |
+| `--riprova-audio` | reruns the audio even if it is already complete, to look for the layers the sources did not have |
 
-Cose da sapere:
+Things to know:
 
-- È **idempotente**: se lo rilanci, salta ciò che c'è già. Le immagini rifanno solo le mancanti e quelle «vecchie»
-  (il file c'è, ma le schede sono cambiate).
-- **A batteria le immagini non partono.** Collega l'alimentatore e rilancia. Vedi [problemi comuni](common-problems.md).
-- Non avvia il server e non tocca le porte della partita (4610 e 4611). Però **non generare immagini mentre giochi**:
-  la GPU rallenta il Mac.
-- Uno strato d'audio che le fonti non hanno (per esempio una catena) resta fuori: il rapporto lo dice, e la
-  campagna è pronta lo stesso.
-- Il log è in `logs/prepara-<id>.log`.
+- It is **idempotent**: if you run it again, it skips what is already there. The images redo only the missing ones
+  and the "old" ones (the file exists, but the sheets have changed).
+- **On battery, the images do not start.** Plug in the power adapter and run it again. See [common problems](common-problems.md).
+- It does not start the server and does not touch the game's ports (4610 and 4611). But **do not generate images while
+  you are playing**: the GPU slows the Mac down.
+- An audio layer that the sources do not have (for example a chain) stays out: the report says so, and the
+  campaign is ready anyway.
+- The log is in `logs/prepara-<id>.log`.
 
-Codice d'uscita: `0` pronta da giocare; `1` la campagna ha errori; `2` argomenti sbagliati; `3` un passo è fallito
-o è stato saltato, e la campagna non è pronta.
+Exit code: `0` ready to play; `1` the campaign has errors; `2` wrong arguments; `3` a step failed or was skipped,
+and the campaign is not ready.
 
-Per vedere lo stato senza generare niente:
+To see the status without generating anything:
 
 ```
 python3 strumenti/stato_preparazione.py campagne/<id>
 ```
 
-Stampa quali immagini e suoni ci sono, quali mancano, quanto pesano, e se la campagna è pronta.
+It prints which images and sounds are there, which are missing, how much they weigh, and whether the campaign is ready.
 
-### PNG nascosti
+### Hidden NPCs
 
-Un PNG può entrare in scena senza essere mostrato subito. Nel suo file `campagne/<id>/png/<id>.yaml` scrivi:
+An NPC can enter the scene without being shown right away. In its file `campagne/<id>/png/<id>.yaml` you write:
 
 ```yaml
 nascosto: true
 ```
 
-Il narratore lo conosce e può farlo parlare, ma il proiettore e i telefoni non lo mostrano finché non ha parlato
-o finché il master non preme **Rivela** nel pannello (vedi [il pannello del master](master-panel.md)).
-Assente, o `false`, vuol dire visibile dall'inizio.
+The narrator knows them and can make them speak, but the projector and the phones do not show them until they
+have spoken, or until the Game Master presses **Rivela** (the button's label in the app, meaning "Reveal") on the
+panel (see [the Game Master panel](master-panel.md)). Absent, or `false`, means visible from the start.
 
-### Battute pronte
+### Prepared lines
 
-Le battute del repertorio con la voce Qwen si possono registrare prima della serata, così partono subito. Il
-comando, e cosa costa con drama-3, è in [Voce e costi](voice-and-costs.md#le-battute-già-pronte). `prepara.sh`
-non ha un'opzione per questo.
+The prepared lines of the repertoire with the Qwen voice can be recorded before the evening, so they play right
+away. The command, and what it costs with drama-3, is in [voice and costs](voice-and-costs.md#le-battute-già-pronte).
+`prepara.sh` has no option for this.
 
-## 6. Le immagini
+## 6. Images
 
-Le immagini si generano **in locale**, sul Mac con chip Apple, con FLUX.2 klein 4B attraverso mflux. Il codice è
-in `strumenti/immagini/`. Ci sono tre tipi:
+Images are generated **locally**, on a Mac with an Apple chip, with FLUX.2 klein 4B through mflux. The code is in
+`strumenti/immagini/`. There are three types:
 
-- **luoghi** (16:9): uno per scena e per nodo-luogo;
-- **ritratti** dei PNG (3:4);
-- **situazioni** (16:9): lo stesso PNG in un altro momento, con il ritratto come riferimento. Quelle dichiarate
-  nelle schede (`aspetto.situazioni`) compaiono da sole quando esce la loro rivelazione.
+- **places** (16:9): one per scene and per place-node;
+- **portraits** of the NPCs (3:4);
+- **situations** (16:9): the same NPC at another moment, with the portrait as reference. Those declared in the
+  sheets (`aspetto.situazioni`) appear on their own when their reveal comes out.
 
-### Prima volta: l'ambiente
+### First time: the environment
 
 ```
 uv venv --python 3.12 strumenti/immagini/.venv
 uv pip install --python strumenti/immagini/.venv/bin/python -r strumenti/immagini/requirements.txt
 ```
 
-La prima riga crea l'ambiente Python delle immagini; la seconda installa mflux, PyYAML e l'SDK di Anthropic
-(per il controllo visivo). I pesi del modello pesano circa 4,6 GB (`strumenti/immagini/motore.py`); come
-arrivano sul disco la prima volta è **da verificare** (vedi [installazione](installation.md), passo 6).
+The first line creates the Python environment for the images; the second installs mflux, PyYAML and the Anthropic
+SDK (for the visual check). The model weights weigh about 4.6 GB (`strumenti/immagini/motore.py`); how they reach
+the disk the first time is **to be verified** (see [installation](installation.md), step 6).
 
-### Leggere i prompt senza generare
+### Reading the prompts without generating
 
 ```
 strumenti/immagini/.venv/bin/python strumenti/immagini/genera.py campagne/<id> --dry-run
 ```
 
-Stampa il piano e il prompt finale di ogni immagine, senza caricare il modello e senza scrivere niente. Va bene
-anche il `python3` di sistema, se ha PyYAML, numpy e Pillow (i controlli a pixel li importano all'avvio). Leggilo:
-nessun prompt deve mostrare qualcosa che i giocatori non devono ancora sapere.
+It prints the plan and the final prompt of each image, without loading the model and without writing anything.
+The system `python3` is fine too, if it has PyYAML, numpy and Pillow (the pixel checks import them at startup).
+Read it: no prompt must show anything the players do not yet know.
 
-### Generare
+### Generating
 
-Di solito ci pensa `scripts/prepara.sh`. A mano:
+Usually `scripts/prepara.sh` takes care of it. By hand:
 
 ```
 strumenti/immagini/.venv/bin/python strumenti/immagini/genera.py campagne/<id>
 ```
 
-Genera le immagini mancanti e vecchie della campagna e aggiorna `campagne/<id>/immagini/manifest.json` dopo ognuna.
-Se si interrompe, rilancialo: riparte da dove era.
+It generates the missing and old images of the campaign and updates `campagne/<id>/immagini/manifest.json` after each one.
+If it is interrupted, run it again: it resumes from where it stopped.
 
-| Opzione | Che cosa fa |
+| Option | What it does |
 |---|---|
-| `--dry-run` | stampa il piano senza caricare il modello né scrivere |
-| `--solo luogo` / `ritratto` / `situazione` | solo quel tipo (si può ripetere) |
-| `--id <id>` | solo quell'immagine (si può ripetere), per esempio `--id ritratto_png_ottavia` |
-| `--rifai` | rigenera anche se il file c'è già |
-| `--seme N` | un altro seme, solo con un `--id` |
-| `--no-fp16` | calcolo in bfloat16 (il default float16 è circa il 20% più veloce su M1) |
-| `--dim-luogo LxA` | dimensioni di luoghi e situazioni per questa corsa, per esempio `1280x720` |
-| `--controlla` | non genera: controlla le immagini già fatte e mai controllate |
-| `--senza-visione` | niente controllo visivo con Claude: restano i controlli a pixel |
-| `--rifila-esistenti` | non genera: rifila l'orlo di carta dei luoghi già fatti |
+| `--dry-run` | prints the plan without loading the model or writing |
+| `--solo luogo` / `ritratto` / `situazione` | only that type (can be repeated) |
+| `--id <id>` | only that image (can be repeated), for example `--id ritratto_png_ottavia` |
+| `--rifai` | regenerates even if the file already exists |
+| `--seme N` | another seed, only together with an `--id` |
+| `--no-fp16` | computes in bfloat16 (the default float16 is about 20% faster on M1) |
+| `--dim-luogo LxA` | dimensions of places and situations for this run, for example `1280x720` |
+| `--controlla` | does not generate: checks the images already made that were never checked |
+| `--senza-visione` | no visual check with Claude: only the pixel checks remain |
+| `--rifila-esistenti` | does not generate: trims the paper border of the places already made |
 
-### Quanto tempo
+### How long
 
-- Per una campagna intera, **da 15 a 40 minuti** di GPU (`scripts/prepara.sh`).
-- `prepara.sh` stampa la stima prima di partire («circa N minuti»). Senza misure precedenti la stima usa circa
-  6 minuti per un luogo o una situazione e 2 minuti per un ritratto (`strumenti/stato_preparazione.py`).
-- Il Mac resta usabile ma lento. Non chiudere il coperchio: `prepara.sh` lo tiene sveglio con `caffeinate`.
+- For a whole campaign, **15 to 40 minutes** of GPU (`scripts/prepara.sh`).
+- `prepara.sh` prints the estimate before starting ("about N minutes"). Without earlier measurements, the estimate
+  uses about 6 minutes per place or situation and 2 minutes per portrait (`strumenti/stato_preparazione.py`).
+- The Mac stays usable but slow. Do not close the lid: `prepara.sh` keeps it awake with `caffeinate`.
 
-### Che cosa controlla da solo
+### What it checks by itself
 
-Prima di ogni immagine:
+Before each image:
 
-- **alimentazione**: a batteria sotto il 20% non parte, e mflux si ferma da solo se la carica scende lì;
-- **disco**: servono almeno 8 GB liberi.
+- **power**: on battery below 20% it does not start, and mflux stops by itself if the charge drops there;
+- **disk**: at least 8 GB free are needed.
 
-Dopo ogni immagine, due controlli:
+After each image, two checks:
 
-1. **a pixel** (gratis, senza modello): dimensioni giuste, orlo di carta che si vede ancora, immagine quasi vuota;
-2. **visivo**: Claude Haiku guarda l'immagine intera e i quattro angoli. Cerca firme finte e scritte, orli, un
-   soggetto diverso dal prompt, anatomia sbagliata, cose fuori posto (pioggia dentro una casa), e un tratto nascosto
-   che si vede prima della rivelazione. Usa la chiave `ANTHROPIC_API_KEY`; senza chiave restano i controlli a pixel.
+1. **pixel** (free, no model): correct size, paper border still visible, image almost empty;
+2. **visual**: Claude Haiku looks at the whole image and the four corners. It looks for fake signatures and writing,
+   borders, a subject different from the prompt, wrong anatomy, things out of place (rain inside a house), and a
+   hidden trait that shows before the reveal. It uses the key `ANTHROPIC_API_KEY`; without a key, the pixel checks remain.
 
-Un'immagine con un problema grave è «difettosa» e si rigenera con un seme nuovo, fino a tre immagini in tutto.
-Se anche l'ultima è difettosa, si tiene la migliore e si segna **da controllare a mano**: il rapporto di
-`prepara.sh` la elenca, e la guardi tu.
+An image with a serious problem is marked **defective** (`difettosa`) and is regenerated with a new seed, up to three
+images in all. If even the last one is defective, the best one is kept and marked **to check by hand** («da controllare a mano»):
+the `prepara.sh` report lists it, and you look at it yourself.
 
-### Immagini vecchie e orfane
+### Old and orphan images
 
-- Se cambi una scheda, l'immagine diventa «vecchia» e il giro dopo la rifà.
-- Se togli un luogo o un PNG, l'immagine diventa «orfana»: esce dal manifest e il file va in
+- If you change a sheet, the image becomes "old" and the next run redoes it.
+- If you remove a place or an NPC, the image becomes "orphan": it leaves the manifest and the file goes to
   `immagini/cache/orfane/`.
 
-## 7. L'audio
+## 7. Audio
 
-L'audio si ricava dai dati pubblici della campagna, senza scegliere brani a mano. Il codice è in `strumenti/audio/`,
-la spiegazione completa in [docs/audio.md](../audio.md). Ci sono quattro strati:
+The audio is derived from the campaign's public data, without choosing tracks by hand. The code is in
+`strumenti/audio/`, the full explanation in [docs/audio.md](../audio.md). There are four layers:
 
-| Strato | Da dove viene |
+| Layer | Where it comes from |
 |---|---|
-| musica di luogo e d'umore | Incompetech (Kevin MacLeod, licenza CC BY 4.0), scelta automatica |
-| temi dei PNG | composti dal codice e suonati con un SoundFont libero |
-| ambienti (pioggia, folla, fiume…) | fondo locale CC0 o pubblico dominio dall'Internet Archive, oppure sintesi |
-| effetti (campana, porta, catena…) | come gli ambienti |
+| place and mood music | Incompetech (Kevin MacLeod, CC BY 4.0 licence), chosen automatically |
+| NPC themes | composed by the code and played with a free SoundFont |
+| ambiences (rain, crowd, river…) | local background CC0 or public domain from the Internet Archive, or synthesis |
+| effects (bell, door, chain…) | as for the ambiences |
 
-Se c'è `FREESOUND_API_KEY` (gratuita, facoltativa), si cercano anche suoni CC0 su Freesound.
+If `FREESOUND_API_KEY` is set (free, optional), CC0 sounds on Freesound are searched too.
 
-### Prima volta: `setup.sh`
+### First time: `setup.sh`
 
 ```
 strumenti/audio/setup.sh
 ```
 
-Crea l'ambiente Python dell'audio (con `uv`) e scarica una volta il SoundFont GeneralUser GS (32 MB) in
-`cache/audio/soundfont/`, controllandone l'impronta. Alla fine controlla che ci sia `ffmpeg`. Si può rilanciare:
-salta ciò che c'è già.
+It creates the Python environment for the audio (with `uv`) and downloads the GeneralUser GS SoundFont (32 MB) once,
+into `cache/audio/soundfont/`, checking its fingerprint. At the end it checks that `ffmpeg` is there. It can be run
+again: it skips what is already there.
 
-### Leggere la deduzione senza scaricare
+### Reading the deduction without downloading
 
 ```
 strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py campagne/<id> --dry-run
 ```
 
-Stampa che cosa la pipeline ha capito di ogni luogo e PNG (umore, energia, ora, meteo, strumenti) e che cosa
-sceglierebbe, senza scaricare né scrivere. Se sbaglia, si corregge nelle schede con i campi `audio` e `tema`.
+It prints what the pipeline understood of each place and NPC (mood, energy, time, weather, instruments) and what it
+would choose, without downloading or writing anything. If it gets something wrong, fix it in the sheets with the
+`audio` and `tema` fields.
 
-### Generare
+### Generating
 
-Di solito ci pensa `scripts/prepara.sh`. A mano:
+Usually `scripts/prepara.sh` takes care of it. By hand:
 
 ```
 strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py campagne/<id>
 ```
 
-Scarica e prepara l'audio della campagna in `campagne/<id>/audio/`. Serve la rete (Incompetech, Internet Archive).
+It downloads and prepares the campaign's audio in `campagne/<id>/audio/`. It needs the network (Incompetech, Internet Archive).
 
-| Opzione | Che cosa fa |
+| Option | What it does |
 |---|---|
-| `--dry-run` | stampa descrittori e scelte, senza scaricare né scrivere |
-| `--solo musica` / `temi` / `ambienti` | solo quello strato (si può ripetere) |
-| `--rifai` | rifà anche ciò che ha già il suo file |
-| `--senza-rete` | usa solo la cache: niente download |
-| `--aggiorna-catalogo` | riscarica il catalogo di Incompetech |
+| `--dry-run` | prints descriptors and choices, without downloading or writing |
+| `--solo musica` / `temi` / `ambienti` | only that layer (can be repeated) |
+| `--rifai` | redoes even what already has its file |
+| `--senza-rete` | uses only the cache: no download |
+| `--aggiorna-catalogo` | downloads the Incompetech catalog again |
 
-### Il manifest e i crediti
+### The manifest and the credits
 
-In `campagne/<id>/audio/` trovi:
+In `campagne/<id>/audio/` you find:
 
-- `manifest.json`: l'elenco di ogni file con tipo, luogo, volume, loop e misure. È il contratto con il proiettore.
-  Ha anche la lista `crediti`;
-- `crediti.md`: i crediti in chiaro, generati dalla pipeline;
-- `descrittori.json`: che cosa la pipeline ha dedotto, con le prove.
+- `manifest.json`: the list of every file with type, place, volume, loop and measurements. It is the contract with
+  the projector. It also has the `crediti` list;
+- `crediti.md`: the credits in plain text, generated by the pipeline;
+- `descrittori.json`: what the pipeline deduced, with the evidence.
 
-La musica di Incompetech è CC BY 4.0: chi la usa deve citare l'autore. Il proiettore mostra i crediti con il tasto
-**C**. Se pubblichi una campagna con il suo audio, tieni `crediti.md` insieme ai file.
+Incompetech's music is CC BY 4.0: whoever uses it must credit the author. The projector shows the credits with the
+**C** key. If you publish a campaign with its audio, keep `crediti.md` together with the files.
 
-Per ascoltare tutto in fretta:
+To listen to everything quickly:
 
 ```
 strumenti/audio/.venv/bin/python strumenti/audio/provino.py campagne/<id>
 ```
 
-Scrive in `esperimenti/audio/` un provino di pochi secondi per file (`provino_<id>.wav`, fuori da git) e la tabella
-dei controlli (`controlli_<id>.md`).
+It writes into `esperimenti/audio/` a short preview of a few seconds for each file (`provino_<id>.wav`, outside git)
+and the table of checks (`controlli_<id>.md`).
 
-## 8. E adesso si gioca
+## 8. And now you play
 
-Quando il rapporto di `prepara.sh` dice «Pronta da giocare»:
+When the `prepara.sh` report says «Pronta da giocare» (ready to play):
 
 ```
 scripts/partita.sh <id>
 ```
 
-Controlla la campagna, avvia il server e stampa gli indirizzi per proiettore, telefoni e pannello del master.
-La voce predefinita è drama-3 via OpenRouter: le alternative e i costi sono in [voce e costi](voice-and-costs.md),
-il resto della serata in [una serata](one-evening.md).
+It checks the campaign, starts the server and prints the addresses for the projector, the phones and the Game Master
+panel. The default voice is drama-3 via OpenRouter: the alternatives and the costs are in [voice and costs](voice-and-costs.md),
+and the rest of the evening in [one evening](one-evening.md).
 
-## Problemi?
+## Problems?
 
-Vedi [problemi comuni](common-problems.md).
+See [common problems](common-problems.md).
