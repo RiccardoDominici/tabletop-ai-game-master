@@ -2,3 +2,61 @@
 varie:
   # Name of the narrator in the transcript (phones, projector, panel).
   nome_narratore: "Narrator"
+
+# Audio cues asked for by the narrator (apps/server/src/audio/cue.ts, turni/narrazione.ts, scena/regia.ts): why an
+# [umore] or [effetto] line does not count (event list of the panel) and the «Audio» context block for narrator
+# and selector. The [umore] and [effetto] labels and the tags stay as they are in every language.
+audio:
+  # Origin of a cue asked for by the narrator ({origine} in the regia.audio.* lines).
+  origine_narratore: "narrator"
+  # Narrator line discarded ({tipo}: umore or effetto, the protocol label; {tag}: what was written).
+  ignorato: "automatic ({origine}): [{tipo}] {tag} ignored: {motivo}"
+  motivi:
+    umore_fuori_vocabolario: "mood «{umore}» is not in the vocabulary ({umori}, auto)"
+    umore_senza_brano: "no track for the mood «{umore}» in the campaign catalogue"
+    effetto_vuoto: "empty effect"
+    effetto_assente: "effect «{effetto}» is not in the campaign catalogue"
+    effetto_sconosciuto: "unknown effect «{effetto}»"
+  # Context block for narrator and selector (bloccoAudioContesto): which moods and effects the campaign has.
+  contesto:
+    titolo: "## Audio: [umore] and [effetto] lines"
+    umori: "- Moods: {umori}, auto (back to the music of the place)."
+    nessun_umore: "- Moods: none (do not write [umore])."
+    effetti: "- Effects: {effetti}."
+    nessun_effetto: "- Effects: none (do not write [effetto])."
+
+# Transport errors (apps/server/src/trasporto/master.ts, trasporto/regole.ts).
+trasporto:
+  token_non_valido: "Invalid Game Master token: copy it from the server log."
+  entra_prima: "Enter the Game Master panel with the token first."
+  errore_server: "Server error."
+
+# Panel notice when the package after an «End session» does not load (apps/server/src/avvio.ts).
+# {motivo} is the loader's error, for campaign authors (it stays in Italian).
+avvio:
+  pacchetto_non_si_carica: "Session {numero} does not load ({motivo}): staying on session {riserva}."
+
+# Why a structured answer is not valid, told to the model on the retry (apps/server/src/llm/strutturato.ts,
+# llm/minimo.ts): it ends up in the {motivo} of modelli.json.correzione. {dove} is the field path ($.risposte[0]).
+strutturato:
+  nessun_json: "no JSON object in the answer"
+  fuori_elenco: "{dove}: value {valore} is not one of {elenco}"
+  tipo: "{dove}: expected {atteso}, found {trovato}"
+  manca: "{dove}: missing"
+  non_previsto: "{dove}: unexpected field"
+  troppi: "{dove}: more than {n} items"
+  troppo_lungo: "{dove}: longer than {n} characters"
+  # Checks of the minimal reader beyond the schema.
+  pg_senza_azione: "{pg} has no action in this turn"
+  non_candidata: "{battuta} is not among the candidates of {pg}"
+
+# Numeric sheets (apps/server/src/campagna/schede.ts): how the AC was worked out, read when it is used.
+schede:
+  senza_armatura: "no armor"
+  con_scudo: "{armatura} + shield"
+  ca_scritta: "written in the sheet"
+
+# Campaign loader (apps/server/src/campagna/caricatore.ts), in the campaign language.
+campagna:
+  # Title of a sessioni/<nn>/ package when sessione.yaml does not give one.
+  titolo_sessione: "Session {etichetta}"

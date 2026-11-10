@@ -3,7 +3,7 @@
  * Separata da index.ts così i test d'integrazione costruiscono lo stesso server con le parti
  * finte (narratore a copione, voce finta veloce, porta casuale).
  */
-import { impostaLingua, percorsoPrompt, type Lingua } from './lingua';
+import { impostaLingua, percorsoPrompt, testo, type Lingua } from './lingua';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { InfoServer } from '@cantastorie/shared';
@@ -123,7 +123,8 @@ interface CampagnaPronta {
  * contesto del selettore. La usa anche «Prossima sessione» per sapere se il pacchetto dopo si carica.
  */
 function preparaCampagna(config: ConfigServer, numero: number | null, log: Logger): CampagnaPronta {
-  const campagna = caricaCampagna(config.cartellaCampagna, log.child({ modulo: 'campagna' }), { pacchetto: numero });
+  // La lingua della configurazione serve già al caricamento (frasi dell'apertura) se campagna.yaml non la scrive.
+  const campagna = caricaCampagna(config.cartellaCampagna, log.child({ modulo: 'campagna' }), { pacchetto: numero, linguaConfigurazione: config.lingua });
   // Lingua dei contenuti: quella della campagna vince sulla configurazione (prompt, frasi fisse, regole).
   const lingua = campagna.lingua ?? config.lingua;
   impostaLingua(lingua);
@@ -185,9 +186,19 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   } catch (err) {
     // Il pacchetto dopo una «Fine sessione» è preparato a metà: si resta su quello appena finito.
     if (scelta.riserva === undefined) throw err;
-    const motivo = (err as Error).message.split('\n')[0];
+    const motivo = (err as Error).message.split('\n')[0] ?? '';
     log.error({ campagna: id, pacchetto: scelta.numero, riserva: scelta.riserva, err: motivo }, 'sessioni: il pacchetto dopo non si carica, si resta su quello finito');
-    scelta = { numero: scelta.riserva, motivo: 'ultima giocata', avviso: `La sessione ${scelta.numero} non si carica (${motivo}): si resta sulla ${scelta.riserva}.` };
+    const fallita = scelta.numero ?? '';
+    const riserva = scelta.riserva;
+    scelta = {
+      numero: riserva,
+      motivo: 'ultima giocata',
+      // Getter, come in sessione/scelta-pacchetto.ts: la frase si compone quando la si legge (log e
+      // pannello), cioè dopo che il caricamento della riserva ha impostato la lingua dei contenuti.
+      get avviso(): string {
+        return testo('avvio.pacchetto_non_si_carica', { numero: fallita, motivo, riserva });
+      },
+    };
     pronta = preparaCampagna(config, scelta.numero, log);
   }
   if (scelta.numero !== null) log.info({ campagna: id, pacchetto: scelta.numero, motivo: scelta.motivo, avviso: scelta.avviso }, `CAMPAGNA A PIÙ SESSIONI: si gioca la sessione ${scelta.numero}`);

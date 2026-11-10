@@ -6,7 +6,12 @@
  *
  * Il vocabolario è lo stesso della pipeline (strumenti/audio/vocabolario.py, UMORI ed EFFETTI):
  * cue.test.ts controlla che le due copie non divergano.
+ *
+ * I motivi di un rifiuto (pannello del master) e il blocco di contesto (narratore e selettore) sono
+ * nella lingua dei contenuti: lingue/<codice>/testi-varie.yaml, sezione `audio`. I tag e le etichette
+ * [umore] ed [effetto] restano uguali in ogni lingua.
  */
+import { testo } from '../lingua';
 import type { CatalogoAudio } from './catalogo';
 
 /** Umori della musica (vocabolario chiuso, docs/audio.md). */
@@ -38,19 +43,19 @@ function pulisci(grezzo: string): string {
 export function risolviUmore(grezzo: string, cat?: CatalogoAudio): Risolto<string | null> {
   const t = pulisci(grezzo).replace(/^umore_/, '');
   if (t === UMORE_AUTO) return { ok: true, valore: null };
-  if (!(UMORI as readonly string[]).includes(t)) return { ok: false, motivo: `umore «${t}» fuori dal vocabolario (${UMORI.join(', ')}, auto)` };
-  if (cat && !cat.umore(t)) return { ok: false, motivo: `nessun brano per l'umore «${t}» nel catalogo della campagna` };
+  if (!(UMORI as readonly string[]).includes(t)) return { ok: false, motivo: testo('audio.motivi.umore_fuori_vocabolario', { umore: t, umori: UMORI.join(', ') }) };
+  if (cat && !cat.umore(t)) return { ok: false, motivo: testo('audio.motivi.umore_senza_brano', { umore: t }) };
   return { ok: true, valore: t };
 }
 
 /** `[effetto] <tag>`: solo un effetto presente nel catalogo della campagna (→ id sfx_<tag>). */
 export function risolviEffetto(grezzo: string, cat?: CatalogoAudio): Risolto<string> {
   const t = pulisci(grezzo).replace(/^sfx_/, '');
-  if (!t) return { ok: false, motivo: 'effetto vuoto' };
+  if (!t) return { ok: false, motivo: testo('audio.motivi.effetto_vuoto') };
   const id = `sfx_${t}`;
   if (!cat?.effetti().includes(id)) {
     const noto = (EFFETTI as readonly string[]).includes(t);
-    return { ok: false, motivo: noto ? `effetto «${t}» non presente nel catalogo della campagna` : `effetto «${t}» sconosciuto` };
+    return { ok: false, motivo: testo(noto ? 'audio.motivi.effetto_assente' : 'audio.motivi.effetto_sconosciuto', { effetto: t }) };
   }
   return { ok: true, valore: id };
 }
@@ -99,8 +104,8 @@ export function bloccoAudioContesto(cat: CatalogoAudio): string {
   const effetti = cat.effetti().map((id) => id.replace(/^sfx_/, ''));
   if (!umori.length && !effetti.length) return '';
   return [
-    '## Audio: righe [umore] ed [effetto]',
-    `- Umori: ${umori.length ? `${umori.join(', ')}, auto (torna alla musica del luogo)` : 'nessuno (non scrivere [umore])'}.`,
-    `- Effetti: ${effetti.length ? effetti.join(', ') : 'nessuno (non scrivere [effetto])'}.`,
+    testo('audio.contesto.titolo'),
+    umori.length ? testo('audio.contesto.umori', { umori: umori.join(', ') }) : testo('audio.contesto.nessun_umore'),
+    effetti.length ? testo('audio.contesto.effetti', { effetti: effetti.join(', ') }) : testo('audio.contesto.nessun_effetto'),
   ].join('\n');
 }

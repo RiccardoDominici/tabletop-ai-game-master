@@ -812,7 +812,7 @@ export class Regia {
     return {
       ...(audio ? { audio } : {}),
       cueRifiutato: (tipo, tag, motivo) => {
-        this.suCue?.({ comando: tipo, ok: false, dettagli: `automatico (narratore): [${tipo}] ${tag} ignorato: ${motivo}` });
+        this.suCue?.({ comando: tipo, ok: false, dettagli: testoFisso('audio.ignorato', { origine: testoFisso('audio.origine_narratore'), tipo, tag, motivo }) });
         this.notifica();
       },
       cueSenzaFrase: (c) => this.applicaCue(c),

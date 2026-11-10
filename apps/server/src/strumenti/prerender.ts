@@ -20,6 +20,7 @@ import path from 'node:path';
 import { setTimeout as attendi } from 'node:timers/promises';
 import { caricaCampagna } from '../campagna/caricatore';
 import { caricaConfig } from '../config';
+import { impostaLingua } from '../lingua';
 import { creaLogger } from '../logger';
 import { caricaRepertorio } from '../repertorio/caricatore';
 import { voceDi } from '../turni/narrazione';
@@ -147,7 +148,11 @@ async function main(): Promise<void> {
   const cartella = positionals[0] ? path.resolve(positionals[0]) : undefined;
   const config = caricaConfig(cartella ? { ...process.env, CANTASTORIE_CARTELLA_CAMPAGNA: cartella } : process.env);
   const log = creaLogger({ livello: 'info', cartellaLog: config.cartellaLog, nomeFile: 'prerender.jsonl' });
-  const campagna = caricaCampagna(config.cartellaCampagna, log);
+  const campagna = caricaCampagna(config.cartellaCampagna, log, { linguaConfigurazione: config.lingua });
+  // Lingua dei contenuti come la imposta il server (avvio.ts): quella della campagna, se no della
+  // configurazione. Ne dipendono le voci (voce/registro-voci.ts sceglie quella della lingua) e quindi la
+  // chiave in cache, che deve essere la stessa che calcola il server in partita.
+  impostaLingua(campagna.lingua ?? config.lingua);
   const repertorio = caricaRepertorio(campagna, log);
 
   if (motore === 'fish') return preGeneraFish(campagna, repertorio, config, log, values['dry-run'], values.json);

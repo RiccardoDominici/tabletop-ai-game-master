@@ -13,37 +13,40 @@ import type { ModelloLinguaggio, RichiestaModello, RispostaModello } from './mod
 
 type Schema = Record<string, unknown>;
 
-/** Errori di un valore rispetto allo schema (sottoinsieme di JSON Schema usato nel gioco). Vuoto = valido. */
+/**
+ * Errori di un valore rispetto allo schema (sottoinsieme di JSON Schema usato nel gioco). Vuoto = valido.
+ * Vanno al modello nel ritentativo: sono nella lingua dei contenuti (testi-varie.yaml, `strutturato`).
+ */
 export function erroriSchema(schema: Schema, v: unknown, dove = '$'): string[] {
   const tipo = schema['type'];
   const err: string[] = [];
-  if (Array.isArray(schema['enum']) && !(schema['enum'] as unknown[]).includes(v)) return [`${dove}: valore ${JSON.stringify(v)} fuori da ${JSON.stringify(schema['enum'])}`];
+  if (Array.isArray(schema['enum']) && !(schema['enum'] as unknown[]).includes(v)) return [testo('strutturato.fuori_elenco', { dove, valore: JSON.stringify(v), elenco: JSON.stringify(schema['enum']) })];
   const tipi = Array.isArray(tipo) ? (tipo as string[]) : typeof tipo === 'string' ? [tipo] : [];
   const tipoDi = (x: unknown): string => (x === null ? 'null' : Array.isArray(x) ? 'array' : Number.isInteger(x) ? 'integer' : typeof x);
-  if (tipi.length && !tipi.some((t) => t === tipoDi(v) || (t === 'number' && tipoDi(v) === 'integer'))) return [`${dove}: atteso ${tipi.join('|')}, trovato ${tipoDi(v)}`];
+  if (tipi.length && !tipi.some((t) => t === tipoDi(v) || (t === 'number' && tipoDi(v) === 'integer'))) return [testo('strutturato.tipo', { dove, atteso: tipi.join('|'), trovato: tipoDi(v) })];
   if (tipoDi(v) === 'object') {
     const o = v as Record<string, unknown>;
     const props = (schema['properties'] ?? {}) as Record<string, Schema>;
-    for (const r of (schema['required'] ?? []) as string[]) if (!(r in o)) err.push(`${dove}.${r}: manca`);
+    for (const r of (schema['required'] ?? []) as string[]) if (!(r in o)) err.push(testo('strutturato.manca', { dove: `${dove}.${r}` }));
     for (const [k, x] of Object.entries(o)) {
       if (props[k]) err.push(...erroriSchema(props[k]!, x, `${dove}.${k}`));
-      else if (schema['additionalProperties'] === false) err.push(`${dove}.${k}: campo non previsto`);
+      else if (schema['additionalProperties'] === false) err.push(testo('strutturato.non_previsto', { dove: `${dove}.${k}` }));
     }
   } else if (tipoDi(v) === 'array' && schema['items']) {
     (v as unknown[]).forEach((x, i) => err.push(...erroriSchema(schema['items'] as Schema, x, `${dove}[${i}]`)));
-    if (typeof schema['maxItems'] === 'number' && (v as unknown[]).length > (schema['maxItems'] as number)) err.push(`${dove}: più di ${schema['maxItems']} elementi`);
+    if (typeof schema['maxItems'] === 'number' && (v as unknown[]).length > (schema['maxItems'] as number)) err.push(testo('strutturato.troppi', { dove, n: schema['maxItems'] as number }));
   } else if (tipoDi(v) === 'string' && typeof schema['maxLength'] === 'number' && (v as string).length > (schema['maxLength'] as number)) {
-    err.push(`${dove}: più lungo di ${schema['maxLength']} caratteri`);
+    err.push(testo('strutturato.troppo_lungo', { dove, n: schema['maxLength'] as number }));
   }
   return err;
 }
 
 /** Il primo oggetto JSON nel testo (tollera ```json … ``` e testo attorno). */
-export function estraiJson(testo: string): unknown {
-  const t = testo.replace(/```(?:json)?/gi, '');
+export function estraiJson(grezzo: string): unknown {
+  const t = grezzo.replace(/```(?:json)?/gi, '');
   const inizio = t.indexOf('{');
   const fine = t.lastIndexOf('}');
-  if (inizio < 0 || fine <= inizio) throw new Error('nessun oggetto JSON nella risposta');
+  if (inizio < 0 || fine <= inizio) throw new Error(testo('strutturato.nessun_json'));
   return JSON.parse(t.slice(inizio, fine + 1));
 }
 

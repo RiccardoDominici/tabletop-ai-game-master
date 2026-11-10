@@ -42,6 +42,12 @@ assets/voci/voci.yaml            voci per lingua (Fish e Qwen)
   ciclo delle sessioni cambia pacchetto). Il pacchetto attivo è uno per processo: un server gioca una campagna sola.
   Le funzioni del Motore chiedono `testo('chiave', { nome })` e `pacco().motore…`; senza una lingua impostata vale
   l'italiano, così test e strumenti che non la impostano si comportano come prima.
+- Ciò che si legge prima che la lingua sia impostata usa la lingua della campagna: il caricatore divide le frasi
+  di aperture e riassunti con `lingua` di `campagna.yaml`, se no con quella della configurazione
+  (`linguaConfigurazione`, che passano `avvio.ts` e `strumenti/prerender.ts`). Ciò che si compone al caricamento
+  e si mostra dopo si compone quando lo si legge (getter): la descrizione della CA delle schede (`ca_da`),
+  l'avviso del pannello sul pacchetto che non si carica. Gli strumenti che caricano una campagna fuori dal
+  server (`prerender.ts`) impostano la lingua come lui, così la chiave dell'audio in cache è la stessa.
 - Prompt: `prompts/<lingua>/<nome>.md`. Le variabili `CANTASTORIE_PROMPT_*` forzano ancora un file preciso.
 - Regole linguistiche (`lingua/motore.ts`): ogni modulo chiede la sua sezione di `motore.yaml` con
   `regole('sezione', compila)`; le espressioni sono testi, compilati alla prima richiesta e tenuti in cache

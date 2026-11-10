@@ -24,6 +24,7 @@ import { ParserNarratore, type EventoNarratore } from '../narrazione/parser';
 import type { FraseDaDire, PipelineVoce } from '../voce/pipeline';
 import { EspressioneTurno } from '../voce/espressione';
 import type { CueAudio, Risolto } from '../audio/cue';
+import { testo as testoFisso } from '../lingua';
 import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 
 export interface FraseNarrata {
@@ -219,7 +220,8 @@ export async function narraTurno(
       p.cueRifiutato?.(tipo, tag, r.motivo);
       return;
     }
-    const base: CueAudio = cuePendente ?? { origine: 'narratore' };
+    // L'origine si mostra nel pannello del master: nella lingua dei contenuti.
+    const base: CueAudio = cuePendente ?? { origine: testoFisso('audio.origine_narratore') };
     cuePendente = tipo === 'umore' ? { ...base, umore: r.valore as string | null } : { ...base, effetto: r.valore as string };
     log.info({ turno: p.turno, tipo, tag, valore: r.valore }, `audio: [${tipo}] per la prossima frase`);
   };

@@ -2,3 +2,61 @@
 varie:
   # Nome del narratore nella trascrizione (telefoni, proiettore, pannello).
   nome_narratore: "Narratore"
+
+# Segnali audio chiesti dal narratore (apps/server/src/audio/cue.ts, turni/narrazione.ts, scena/regia.ts): perché
+# una riga [umore] o [effetto] non vale (elenco degli eventi del pannello) e il blocco di contesto «Audio» per
+# narratore e selettore. Le etichette [umore] ed [effetto] e i tag restano come sono in ogni lingua.
+audio:
+  # Origine di un segnale chiesto dal narratore ({origine} nelle righe regia.audio.*).
+  origine_narratore: "narratore"
+  # Riga del narratore scartata ({tipo}: umore o effetto, l'etichetta del protocollo; {tag}: quello scritto).
+  ignorato: "automatico ({origine}): [{tipo}] {tag} ignorato: {motivo}"
+  motivi:
+    umore_fuori_vocabolario: "umore «{umore}» fuori dal vocabolario ({umori}, auto)"
+    umore_senza_brano: "nessun brano per l'umore «{umore}» nel catalogo della campagna"
+    effetto_vuoto: "effetto vuoto"
+    effetto_assente: "effetto «{effetto}» non presente nel catalogo della campagna"
+    effetto_sconosciuto: "effetto «{effetto}» sconosciuto"
+  # Blocco di contesto per narratore e selettore (bloccoAudioContesto): quali umori ed effetti ha la campagna.
+  contesto:
+    titolo: "## Audio: righe [umore] ed [effetto]"
+    umori: "- Umori: {umori}, auto (torna alla musica del luogo)."
+    nessun_umore: "- Umori: nessuno (non scrivere [umore])."
+    effetti: "- Effetti: {effetti}."
+    nessun_effetto: "- Effetti: nessuno (non scrivere [effetto])."
+
+# Errori dei trasporti (apps/server/src/trasporto/master.ts, trasporto/regole.ts).
+trasporto:
+  token_non_valido: "Token del master non valido: copialo dal log del server."
+  entra_prima: "Prima entra nel pannello del master col token."
+  errore_server: "Errore del server."
+
+# Avviso del pannello quando il pacchetto dopo una «Fine sessione» non si carica (apps/server/src/avvio.ts).
+# {motivo} è l'errore del caricatore, per chi scrive la campagna (resta in italiano).
+avvio:
+  pacchetto_non_si_carica: "La sessione {numero} non si carica ({motivo}): si resta sulla {riserva}."
+
+# Perché una risposta strutturata non va, detto al modello nel ritentativo (apps/server/src/llm/strutturato.ts,
+# llm/minimo.ts): finisce nel {motivo} di modelli.json.correzione. {dove} è il percorso del campo ($.risposte[0]).
+strutturato:
+  nessun_json: "nessun oggetto JSON nella risposta"
+  fuori_elenco: "{dove}: valore {valore} fuori da {elenco}"
+  tipo: "{dove}: atteso {atteso}, trovato {trovato}"
+  manca: "{dove}: manca"
+  non_previsto: "{dove}: campo non previsto"
+  troppi: "{dove}: più di {n} elementi"
+  troppo_lungo: "{dove}: più lungo di {n} caratteri"
+  # Controlli del lettore minimo oltre lo schema.
+  pg_senza_azione: "pg {pg} non ha un'azione in questo turno"
+  non_candidata: "{battuta} non è fra i candidati di {pg}"
+
+# Schede numeriche (apps/server/src/campagna/schede.ts): come è stata ricavata la CA, letto al momento dell'uso.
+schede:
+  senza_armatura: "senza armatura"
+  con_scudo: "{armatura} + scudo"
+  ca_scritta: "scritta nella scheda"
+
+# Caricatore della campagna (apps/server/src/campagna/caricatore.ts), nella lingua della campagna.
+campagna:
+  # Titolo di un pacchetto sessioni/<nn>/ quando sessione.yaml non lo scrive.
+  titolo_sessione: "Sessione {etichetta}"

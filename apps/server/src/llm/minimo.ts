@@ -330,8 +330,9 @@ export class NarratoreMinimo implements Narratore {
         // Solo PG del turno e battute fra i candidati di QUELL'azione (o «nessuna»).
         controlla: (v) => {
           for (const x of v.risposte) {
-            if (!per.has(x.pg)) return `pg ${x.pg} non ha un'azione in questo turno`;
-            if (x.battuta !== 'nessuna' && !per.get(x.pg)!.includes(x.battuta)) return `${x.battuta} non è fra i candidati di ${x.pg}`;
+            // Il motivo va al modello nel ritentativo: nella lingua dei contenuti.
+            if (!per.has(x.pg)) return testo('strutturato.pg_senza_azione', { pg: x.pg });
+            if (x.battuta !== 'nessuna' && !per.get(x.pg)!.includes(x.battuta)) return testo('strutturato.non_candidata', { battuta: x.battuta, pg: x.pg });
           }
           return null;
         },

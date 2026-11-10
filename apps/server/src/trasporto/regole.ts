@@ -4,6 +4,7 @@
  * chiesto, nell'ack). Separati da trasporto/socket.ts: non toccano la regia né lo stato del tavolo.
  */
 import type { RegolePubbliche } from '@cantastorie/shared';
+import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import type { RisponditoreRegole } from '../regole/chiedi';
 import type { RegoleCampagna } from '../regole/tipi';
@@ -35,7 +36,7 @@ export function collegaRegole(io: ServerIo, regole: RegoleCampagna, risponditore
         .then(cb)
         .catch((err: unknown) => {
           log.error({ err: (err as Error).message }, 'regole: errore nella risposta');
-          cb({ ok: false, errore: 'Errore del server.' });
+          cb({ ok: false, errore: testo('trasporto.errore_server') });
         });
     });
   });

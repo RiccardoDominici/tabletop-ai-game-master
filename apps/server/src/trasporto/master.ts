@@ -8,6 +8,7 @@ import type { Socket } from 'socket.io';
 import type { EsitoEntrataMaster, Esito, EventiClientVersoServer, EventiServerVersoClient } from '@cantastorie/shared';
 import type { Logger } from '../logger';
 import type { ControlliMaster } from '../master/comandi';
+import { testo } from '../lingua';
 import { tokenValido } from '../master/token';
 import type { Regia } from '../scena/regia';
 import type { ServerIo } from './socket';
@@ -49,7 +50,7 @@ export function collegaMaster(io: ServerIo, regia: Regia, controlli: ControlliMa
       if (!tokenValido(token, dati?.token)) {
         sbagliati += 1;
         log.warn({ socket: socket.id, indirizzo: socket.handshake.address, tentativi: sbagliati }, 'master: token sbagliato');
-        rispondi({ ok: false, errore: 'Token del master non valido: copialo dal log del server.' });
+        rispondi({ ok: false, errore: testo('trasporto.token_non_valido') });
         if (sbagliati >= TENTATIVI_MAX) socket.disconnect(true);
         return;
       }
@@ -64,7 +65,7 @@ export function collegaMaster(io: ServerIo, regia: Regia, controlli: ControlliMa
       const rispondi = ack<Esito>(cb);
       if (!pannelli.has(socket.id)) {
         log.warn({ socket: socket.id, indirizzo: socket.handshake.address }, 'master: comando senza token, rifiutato');
-        return rispondi({ ok: false, errore: 'Prima entra nel pannello del master col token.' });
+        return rispondi({ ok: false, errore: testo('trasporto.entra_prima') });
       }
       const esito = controlli.esegui(comando, socket.id);
       rispondi(esito);

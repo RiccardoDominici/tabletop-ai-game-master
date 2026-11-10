@@ -30,6 +30,7 @@ import {
   type Caratteristica,
   type FormulaDadi,
 } from './regole-srd';
+import { testo } from '../lingua';
 import type { Campagna, DatiYaml } from './tipi';
 
 export interface AttaccoScheda {
@@ -61,8 +62,11 @@ export interface SchedaNumerica {
   maestrie: Abilita[];
   tiri_salvezza: Caratteristica[];
   ca: number;
-  /** Come è stata ricavata la CA, per il pannello e i log («Cotta di maglia + scudo»). */
-  ca_da: string;
+  /**
+   * Come è stata ricavata la CA, per il pannello e i log («Cotta di maglia + scudo»): si compone quando
+   * la si legge, nella lingua dei contenuti (le schede si caricano prima che il server la imposti).
+   */
+  readonly ca_da: string;
   pf_massimi: number;
   attacchi: AttaccoScheda[];
   /** PNG: CD dell'azione Influenzare (SRD 5.2: 15 o il punteggio di Intelligenza, il più alto) se la scheda la fissa. */
@@ -211,21 +215,44 @@ export function leggiScheda(id: string, nome: string, di_png: boolean, grezza: u
   const scudo = arm?.['scudo'] === true || s['scudo'] === true;
   const caScritta = interoPositivo(s['ca']);
   let ca: number;
-  let ca_da: string;
+  // La descrizione della CA (ca_da) si compone a ogni lettura: il nome dell'armatura e le parole
+  // «senza armatura», «+ scudo» sono della lingua dei contenuti, che al caricamento può non essere
+  // ancora quella giusta.
+  let descriviCa: () => string;
   if (armatura || scudo || caScritta === null) {
     ca = classeArmatura(modDes, armatura, scudo);
-    ca_da = `${armatura ? armatura.nome : 'senza armatura'}${scudo ? ' + scudo' : ''}`;
+    descriviCa = () => {
+      const base = armatura ? armatura.nome : testo('schede.senza_armatura');
+      return scudo ? testo('schede.con_scudo', { armatura: base }) : base;
+    };
     if (caScritta !== null && caScritta !== ca) avvisi.push(`${dove}: ca ${caScritta} diversa da quella calcolata dall'armatura (${ca}): vale la calcolata`);
   } else {
     ca = caScritta;
-    ca_da = 'scritta nella scheda';
+    descriviCa = () => testo('schede.ca_scritta');
   }
   const pf = interoPositivo(s['pf']) ?? interoPositivo(s['pf_massimi']);
   if (pf === null) avvisi.push(`${dove}: mancano i punti ferita (pf), uso 1`);
   const attacchi = (Array.isArray(s['attacchi']) ? s['attacchi'] : []).map((a, i) => leggiAttacco(a, `${dove}.attacchi[${i + 1}]`, avvisi)).filter((a): a is AttaccoScheda => a !== null);
   const influenza = oggetto(s['influenza']);
   const cd_influenza = interoPositivo(influenza?.['cd']) ?? interoPositivo(s['cd_influenza']);
-  return { id, nome, di_png, livello, punteggi, competenze, maestrie, tiri_salvezza, ca, ca_da, pf_massimi: pf ?? 1, attacchi, cd_influenza, avvisi };
+  return {
+    id,
+    nome,
+    di_png,
+    livello,
+    punteggi,
+    competenze,
+    maestrie,
+    tiri_salvezza,
+    ca,
+    get ca_da(): string {
+      return descriviCa();
+    },
+    pf_massimi: pf ?? 1,
+    attacchi,
+    cd_influenza,
+    avvisi,
+  };
 }
 
 /** Le schede della campagna (PG e PNG che ne hanno una), id → scheda. Gli avvisi vanno a `avvisa`. */

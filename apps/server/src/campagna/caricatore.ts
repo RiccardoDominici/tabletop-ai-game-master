@@ -12,7 +12,7 @@
  * apertura stringa o lista), ma severo su ciò che rompe il gioco: senza scena, senza apertura
  * o senza PG la sessione non parte. Le incoerenze minori diventano `avvisi` (e righe di log).
  */
-import { comeLingua } from '../lingua';
+import { comeLingua, linguaAttiva, testo, type Lingua } from '../lingua';
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
@@ -59,10 +59,13 @@ function oggetto(v: unknown): DatiYaml | null {
   return v !== null && typeof v === 'object' && !Array.isArray(v) ? (v as DatiYaml) : null;
 }
 
-/** Testo o lista di testi → frasi. */
-function frasiDa(v: unknown): string[] {
-  if (typeof v === 'string') return dividiTesto(v);
-  if (Array.isArray(v)) return v.flatMap((x) => (typeof x === 'string' ? dividiTesto(x) : []));
+/**
+ * Testo o lista di testi → frasi, con le abbreviazioni della lingua della campagna (lingue/<codice>/
+ * motore.yaml, sezione `frasi`): il caricamento viene prima che il server imposti la lingua attiva.
+ */
+function frasiDa(v: unknown, lingua: Lingua): string[] {
+  if (typeof v === 'string') return dividiTesto(v, { lingua });
+  if (Array.isArray(v)) return v.flatMap((x) => (typeof x === 'string' ? dividiTesto(x, { lingua }) : []));
   return [];
 }
 
@@ -72,6 +75,11 @@ export interface OpzioniCaricamento {
    * Ignorato in una one-shot (che non ha sessioni/).
    */
   pacchetto?: number | null;
+  /**
+   * Lingua della configurazione: vale per i testi della campagna (divisore di frasi, titoli di riserva)
+   * se campagna.yaml non scrive `lingua` (docs/lingue.md). Assente = la lingua attiva del processo.
+   */
+  linguaConfigurazione?: Lingua;
 }
 
 /** Id della campagna senza caricarla tutta (serve per l'archivio prima di scegliere il pacchetto). */
@@ -130,6 +138,10 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
   const sessioneGrezza = scelto ? leggiYaml(path.join(scelto.cartella, FILE_SESSIONE), true) : null;
 
   const id = stringa(campagnaGrezza['id']) ?? stringa(stile['id']) ?? path.basename(cartella);
+  // Lingua della campagna (null = non scritta) e lingua in cui leggerne i testi: la sua, se no quella
+  // della configurazione (la stessa regola di avvio.ts, che imposta la lingua solo dopo il caricamento).
+  const linguaCampagna = comeLingua(campagnaGrezza['lingua'], `${path.basename(cartella)}/campagna.yaml`);
+  const lingua: Lingua = linguaCampagna ?? opzioni.linguaConfigurazione ?? linguaAttiva();
 
   // campagna.yaml: tutto tranne `preparazione` (destini, cronologia del cattivo, archi: E2). Con un
   // pacchetto si aggiunge la parte di sessione di sessione.yaml; `sessione` di campagna.yaml non vale.
@@ -189,11 +201,11 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
 
   // --- Scene: la prima apre la sessione col riassunto iniziale; le altre si leggono quando il master
   // ci passa (pannello), ciascuna con la sua apertura.
-  const scene = scelto ? sceneDelPacchetto(cartella, scelto, sessioneGrezza!, png, stile, id, avvisa) : sceneOneShot(cartella, campagnaGrezza, png, stile, id, avvisa);
+  const scene = scelto ? sceneDelPacchetto(cartella, scelto, sessioneGrezza!, png, stile, id, lingua, avvisa) : sceneOneShot(cartella, campagnaGrezza, png, stile, id, lingua, avvisa);
   const scena = scene[0]!;
 
   const pacchetto: PacchettoCaricato | null = scelto
-    ? { numero: scelto.numero, etichetta: scelto.etichetta, cartella: scelto.cartella, titolo: stringa(sessioneGrezza!['titolo']) ?? `Sessione ${scelto.etichetta}` }
+    ? { numero: scelto.numero, etichetta: scelto.etichetta, cartella: scelto.cartella, titolo: stringa(sessioneGrezza!['titolo']) ?? testo('campagna.titolo_sessione', { etichetta: scelto.etichetta }, lingua) }
     : null;
   const repertorioCampagna = path.join(cartella, 'repertorio');
   const cartellaRepertorio = scelto ? path.join(scelto.cartella, 'repertorio') : repertorioCampagna;
@@ -204,7 +216,7 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
   const campagna: Campagna = {
     id,
     cartella,
-    lingua: comeLingua(campagnaGrezza['lingua'], `${path.basename(cartella)}/campagna.yaml`),
+    lingua: linguaCampagna,
     titolo: stringa(stile['titolo']) ?? scena.titolo,
     stile,
     campagnaNarratore,
@@ -238,15 +250,15 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
 }
 
 /** One-shot: scena.yaml (col riassunto di campagna.yaml → sessione), poi scena_*.yaml e scene/*.yaml. */
-function sceneOneShot(cartella: string, campagnaGrezza: DatiYaml, png: PngCaricato[], stile: DatiYaml, id: string, avvisa: (msg: string) => void): ScenaCaricata[] {
+function sceneOneShot(cartella: string, campagnaGrezza: DatiYaml, png: PngCaricato[], stile: DatiYaml, id: string, lingua: Lingua, avvisa: (msg: string) => void): ScenaCaricata[] {
   const scenaGrezza = leggiYaml(path.join(cartella, 'scena.yaml'), true);
   const sessione = oggetto(campagnaGrezza['sessione']);
-  const scena = leggiScena(scenaGrezza, 'scena.yaml', frasiDa(sessione?.['riassunto_iniziale']), png, stile, id, avvisa);
+  const scena = leggiScena(scenaGrezza, 'scena.yaml', frasiDa(sessione?.['riassunto_iniziale'], lingua), png, stile, id, lingua, avvisa);
   if (scena.apertura.length === 0) throw new ErroreCampagna('scena.yaml: manca il testo d’apertura (apertura)');
   const scene = [scena];
   for (const file of fileAltreScene(cartella)) {
     const rel = path.relative(cartella, file);
-    const altra = leggiScena(leggiYaml(file, true), rel, [], png, stile, id, avvisa);
+    const altra = leggiScena(leggiYaml(file, true), rel, [], png, stile, id, lingua, avvisa);
     if (scene.some((s) => s.id === altra.id)) throw new ErroreCampagna(`${rel}: id di scena ripetuto «${altra.id}»`);
     if (altra.apertura.length === 0) avvisa(`${rel}: manca l'apertura: al passaggio di scena il narratore non la leggerà`);
     scene.push(altra);
@@ -265,6 +277,7 @@ function sceneDelPacchetto(
   png: PngCaricato[],
   stile: DatiYaml,
   id: string,
+  lingua: Lingua,
   avvisa: (msg: string) => void,
 ): ScenaCaricata[] {
   const rel = `${CARTELLA_SESSIONI}/${p.etichetta}`;
@@ -277,7 +290,7 @@ function sceneDelPacchetto(
   const lette: ScenaCaricata[] = [];
   for (const f of file) {
     const r = `${rel}/scene/${f}`;
-    const s = leggiScena(leggiYaml(path.join(sotto, f), true), r, [], png, stile, id, avvisa);
+    const s = leggiScena(leggiYaml(path.join(sotto, f), true), r, [], png, stile, id, lingua, avvisa);
     if (lette.some((x) => x.id === s.id)) throw new ErroreCampagna(`${r}: id di scena ripetuto «${s.id}»`);
     lette.push(s);
   }
@@ -287,7 +300,7 @@ function sceneDelPacchetto(
   } catch (err) {
     throw new ErroreCampagna((err as Error).message);
   }
-  const riassunto = frasiDa(sessione['riassunto_iniziale']);
+  const riassunto = frasiDa(sessione['riassunto_iniziale'], lingua);
   if (riassunto.length === 0) avvisa(`${rel}/${FILE_SESSIONE}: manca riassunto_iniziale (la sessione comincia senza «nella puntata precedente»)`);
   const prima = scene[0]!;
   if (prima.apertura.length === 0) throw new ErroreCampagna(`${rel}: la prima scena «${prima.id}» non ha l'apertura`);
@@ -310,11 +323,11 @@ const ID_BATTUTA = /^[a-z][a-z0-9]*_[a-z0-9_]+$/;
  * Cosa si legge tornando nella scena: la battuta o il testo di `rientro`; senza, la prima frase
  * dell'apertura della scena (senza il riassunto di sessione), che di solito nomina il luogo.
  */
-function rientroDa(dati: DatiYaml, apertura: string[]): ScenaCaricata['rientro'] {
+function rientroDa(dati: DatiYaml, apertura: string[], lingua: Lingua): ScenaCaricata['rientro'] {
   const grezzo = dati['rientro'];
   const riserva = apertura.slice(0, 1);
   if (typeof grezzo === 'string' && ID_BATTUTA.test(grezzo.trim())) return { battuta: grezzo.trim(), frasi: riserva };
-  const frasi = frasiDa(grezzo);
+  const frasi = frasiDa(grezzo, lingua);
   return { battuta: null, frasi: frasi.length ? frasi : riserva };
 }
 
@@ -326,6 +339,7 @@ function leggiScena(
   png: PngCaricato[],
   stile: DatiYaml,
   idCampagna: string,
+  lingua: Lingua,
   avvisa: (msg: string) => void,
 ): ScenaCaricata {
   const musica = oggetto(dati['musica']);
@@ -333,7 +347,7 @@ function leggiScena(
     ? (dati['png_presenti'] as unknown[]).filter((x): x is string => typeof x === 'string')
     : png.map((p) => p.id);
   for (const p of presenti) if (!png.some((x) => x.id === p)) avvisa(`${file}: png_presenti cita ${p}, che non ha una scheda in png/`);
-  const apertura = frasiDa(dati['apertura']);
+  const apertura = frasiDa(dati['apertura'], lingua);
   return {
     id: stringa(dati['id']) ?? path.basename(file, '.yaml'),
     titolo: stringa(dati['titolo']) ?? stringa(dati['nome']) ?? stringa(stile['titolo']) ?? idCampagna,
@@ -341,7 +355,7 @@ function leggiScena(
     umore: stringa(musica?.['tag']) ?? stringa(dati['umore']) ?? 'esplorazione_tesa',
     intensita: typeof dati['intensita'] === 'number' ? (dati['intensita'] as number) : null,
     png_presenti: presenti,
-    rientro: rientroDa(dati, apertura),
+    rientro: rientroDa(dati, apertura, lingua),
     dati,
   };
 }
