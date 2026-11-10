@@ -33,6 +33,11 @@ export interface RichiestaSceneggiatore {
   stato: { indizi_rivelati: string[]; fatti_noti: string[]; battute_usate: string[]; orologi: Record<string, string> };
   /** Prefisso degli id da usare (unici nella partita). */
   prefisso: string;
+  /**
+   * Da non ripetere (sceneggiatore/ripetizioni.ts): attacchi e immagini degli ultimi turni, e i tic dei PNG
+   * usciti nelle loro ultime righe (id → tic).
+   */
+  gia_usati?: { attacchi: string[]; immagini: string[]; tic: Record<string, string[]> };
   /** Quante battute scrivere. */
   quante: number;
 }

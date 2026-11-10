@@ -60,6 +60,9 @@ import { descriviScelte, risolvi, type NomeComponente } from './provider/config'
 import { FabbricaModelli } from './provider/fabbrica';
 import { MotoreVoceFish } from './voce/fish';
 import { caricaRegistroVoci } from './voce/registro-voci';
+import { codaAudioFish } from './sceneggiatore/audio';
+import { creaPronunciatore } from './voce/pronuncia';
+import type { Battuta } from './repertorio/tipi';
 
 export interface ServerCantastorie {
   app: App;
@@ -87,6 +90,8 @@ export interface Sostituzioni {
   arbitroProve?: ArbitroProve<DecisioneProva> | ArbitroProve<DecisioneRegole> | null;
   /** Lo sceneggiatore (test: la sua cartella sorvegliata; null = spento; assente = dalla configurazione). */
   sceneggiatore?: { radice: string; tettoMs?: number } | null;
+  /** Coda dell'audio delle battute dello sceneggiatore (test: una finta; assente = drama-3 se la voce è fish). */
+  preGeneraAudio?: ((battute: readonly Battuta[]) => unknown) | null;
   /** Dadi delle prove (test: a copione). */
   dadi?: FonteDadi;
   orologio?: Orologio;
@@ -280,6 +285,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   // drama-3 via OpenRouter (CANTASTORIE_VOCE=fish): voci dal registro, chiave letta al primo uso.
   const modoVoce: ModoVoce =
     scelte.voce.provider === 'openrouter' ? 'fish' : scelte.voce.provider === 'finto' || scelte.voce.provider === 'nessuno' ? 'mock' : config.voce.modo === 'qwen' ? 'qwen' : 'auto';
+  const cacheAudio = new CacheAudio(config.cacheAudio, config.voce.fish.cacheAudio);
   const fish =
     modoVoce === 'fish'
       ? {
@@ -340,7 +346,14 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     modo: config.modo,
     ...(repertorio ? { repertorio } : {}),
     paroleSegrete,
-    cacheAudio: new CacheAudio(config.cacheAudio, config.voce.fish.cacheAudio),
+    cacheAudio,
+    // Le battute delle «prossime» dello sceneggiatore: con drama-3 la loro voce va in cache in sottofondo.
+    preGeneraAudio:
+      sost.preGeneraAudio !== undefined
+        ? sost.preGeneraAudio
+        : fish && cacheAudio.fish
+          ? codaAudioFish({ campagna, pronuncia: creaPronunciatore(campagna), cache: cacheAudio.fish, motore: fish.motore, voci: caricaRegistroVoci(config.voce.fish.registro), log: log.child({ modulo: 'sceneggiatore-audio' }) })
+          : null,
     finestraATutti: config.turni.finestraATutti,
     arbitro,
     prove: {

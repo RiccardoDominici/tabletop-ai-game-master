@@ -55,9 +55,15 @@ Le stesse regole del repertorio preparato, più quelle di chi scrive al volo:
 - **tipi**: mai indizi, confessioni, menzogne, segni, finali, transizioni, chiusure;
 - **segreti**: nessuna parola ancora segreta che il tavolo non abbia sentito (la stessa regola della guardia,
   `narrazione/guardia-segreti.ts`);
-- **i PG sono dei giocatori**: una riga del narratore che ha un PG per soggetto («Gunda apre il pugno», «Poi Remo si
-  alza») decide al posto di un giocatore, e la battuta esce (`pgCheAgisce`). Il vocativo («Gunda, …»), il
-  complemento e il genitivo vanno bene;
+- **i PG sono dei giocatori**: una riga del narratore che ha per soggetto un PG («Gunda apre il pugno», «Poi Remo si
+  alza») o una parte del suo corpo («Il pugno di Gunda resta chiuso», «le mani di Remo tremano») decide al posto di
+  un giocatore, e la battuta esce (`pgCheAgisce`). Il vocativo («Gunda, …»), il complemento e il genitivo di una
+  cosa («il boccale di Remo») vanno bene. Il prompt va oltre: mai il corpo, i gesti, lo sguardo o le reazioni di un
+  PG, solo il mondo e i PNG;
+- **ripetizioni e tic** (`sceneggiatore/ripetizioni.ts`): la richiesta porta gli attacchi (le prime parole di ogni
+  frase) e le immagini (la prima proposizione) degli ultimi 4 turni, con la regola di non ripeterli. Porta anche i
+  tic usciti nelle ultime due righe di ogni PNG: una battuta che ripete un tic troppo presto esce, perché vale la
+  regola del narratore, un tic al massimo ogni tre righe;
 - **voce**: al massimo 4 righe da 240 caratteri.
 
 Le battute che passano entrano **a caldo** nel repertorio vivo, e da lì nel catalogo dei turni dopo, coi loro
@@ -72,6 +78,13 @@ Le battute che passano entrano **a caldo** nel repertorio vivo, e da lì nel cat
 3. Oltre il tetto, o se il tavolo è andato avanti: non si dice. Resta nel repertorio, dove il lettore la può
    scegliere al turno dopo. Se lo sceneggiatore non risponde, è la **riserva**: è valsa la battuta d'attesa.
 
+## Audio
+Quando una battuta delle `prossime` entra nel repertorio, con la voce drama-3 la sua sintesi va in coda in
+sottofondo (`sceneggiatore/audio.ts`). Usa la stessa cache e la stessa chiave della pre-generazione
+(`strumenti/prerender-fish.ts`), così, quando il lettore la sceglie, la voce parte dalla cache. Va una sintesi
+alla volta, e un errore si registra senza fermare le altre. Le battute `subito` si dicono appena arrivano: per
+quelle la voce resta dal vivo.
+
 ## Processi e file
 - `scripts/sceneggiatore.sh avvia|ferma|stato`. Lo avvia `scripts/avvio.sh`, quindi anche `partita.sh` e l'harness,
   se `claude` è installato e il narratore non è finto (`CANTASTORIE_SCENEGGIATORE=no` lo spegne). Lo ferma
@@ -85,5 +98,4 @@ Le battute che passano entrano **a caldo** nel repertorio vivo, e da lì nel cat
   in `narrazioni.jsonl`, righe `tipo: sceneggiatore`: tempi, accettate, scartate col motivo, consegnata.
 
 ## Limiti di oggi
-- Le battute scritte al volo non hanno l'audio pre-generato: la voce le sintetizza dal vivo.
 - Se lo sceneggiatore è lento, la sua battuta può arrivare a turno già chiuso: allora resta nel repertorio.

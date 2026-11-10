@@ -11,6 +11,11 @@ import { caricaCampagna } from '../src/campagna/caricatore';
 import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
 import { cartelle, leggiJson, scriviJson, type RichiestaSceneggiatore } from '../src/sceneggiatore/protocollo';
 import { estraiYaml, nomiDeiPg, pgCheAgisce, validaBattute } from '../src/sceneggiatore/valida';
+import { giaUsati, ticBloccati } from '../src/sceneggiatore/ripetizioni';
+import { codaAudioFish } from '../src/sceneggiatore/audio';
+import { CacheAudio } from '../src/voce/cache-audio';
+import { loggerMuto } from '../src/logger';
+import os from 'node:os';
 import { RADICE_REPO } from '../src/percorsi';
 import type { EsitoPrivato } from '@cantastorie/shared';
 import { agisci, attendi, FIXTURE, inizia, Prova, turno } from './aiuti/partita';
@@ -52,15 +57,57 @@ describe('controllo delle battute dello sceneggiatore', () => {
   });
 });
 
+describe('ripetizioni e tic, corpo dei PG, audio delle battute nuove', () => {
+  const nozze = caricaCampagna(path.join(RADICE_REPO, 'campagne', 'nozze-neve'));
+  const v = (turno: number, tipo: 'narrazione' | 'battuta', chi: string, testo: string) => ({ id: Math.random(), turno, tipo, chi, nome: chi, testo }) as never;
+
+  it('«il pugno di Gunda resta chiuso» decide per lei; la bottiglia di Remo no', () => {
+    const nomi = nomiDeiPg(nozze);
+    expect(pgCheAgisce("Il pugno di Gunda è grosso come una forma piccola, e non si apre.", nomi)).not.toBeNull();
+    expect(pgCheAgisce('Nella sala nessuno parla, e le mani di Remo tremano.', nomi)).not.toBeNull();
+    expect(pgCheAgisce('La bottiglia di Remo è vuota da un pezzo.', nomi)).toBeNull();
+  });
+
+  it('attacchi e immagini degli ultimi turni; il tic uscito nelle ultime due righe di un PNG è bloccato', () => {
+    const voci = [
+      v(1, 'narrazione', 'narratore', 'Sulla tavolata dei Morlacchi qualcuno batte i boccali, a tempo.'),
+      v(3, 'battuta', 'png_ettore', "Eh? Parla dall'orecchio buono, eh."),
+      v(4, 'narrazione', 'narratore', 'Ettore batte il bastone due volte, e la sala si volta.'),
+    ];
+    const g = giaUsati(voci, 4);
+    expect(g.attacchi).toEqual(expect.arrayContaining(['Sulla tavolata dei Morlacchi', 'Ettore batte il bastone']));
+    expect(g.immagini).toEqual(expect.arrayContaining(['Sulla tavolata dei Morlacchi qualcuno batte i boccali']));
+    const bloccati = ticBloccati(voci, nozze.png);
+    expect([...bloccati.keys()]).toEqual(['png_ettore']);
+    const ctx = { campagna: nozze, scena: 'scena_casera', presenti: new Set(['png_ettore']), esistenti: new Map(), prefisso: 'sc_t_', parole: [], pubblico: null, detto: '', ticBloccati: bloccati };
+    const tic = { id: 'sc_t_1', chi: 'png_ettore', tipo: 'reazione', quando: 'un PG parla a Ettore', temi: ['ettore'], testo: ["[png_ettore] Parla dall'orecchio buono, eh. La neve è neve."] };
+    expect(validaBattute(JSON.stringify({ battute: [tic] }), ctx).scartate[0]!.motivo).toMatch(/tic di png_ettore troppo vicino/);
+  });
+
+  it('le battute nuove: la voce drama-3 va in cache in sottofondo, una volta sola', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sceneggiatore-audio-'));
+    const cache = new CacheAudio(dir);
+    let sintesi = 0;
+    const motore = { sintetizza: async () => (sintesi++, { sampleRate: 24000, pezzi: (async function* () { yield new Uint8Array(4800); })() }) } as never;
+    const coda = codaAudioFish({ campagna: nozze, pronuncia: (t) => t, cache, motore, voci: new Map(), log: loggerMuto(), attesaMs: 1 });
+    const b = { id: 'sc_a_1', chi: 'narratore', tipo: 'reazione', quando: 'x', temi: ['x'], testo: [{ etichetta: 'narratore', testo: 'La neve batte sui vetri.' }], varianti: [] } as never;
+    await coda([b]);
+    expect(sintesi).toBe(1);
+    await coda([b]);
+    expect(sintesi).toBe(1); // già in cache
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
 describe('i PG sono dei giocatori: niente righe che decidono per loro', () => {
   const nozze = caricaCampagna(path.join(RADICE_REPO, 'campagne', 'nozze-neve'));
   const nomi = nomiDeiPg(nozze);
-  it('un PG soggetto di un verbo è una decisione al suo posto; vocativo, complemento e genitivo no', () => {
+  it('un PG soggetto di un verbo è una decisione al suo posto; vocativo, complemento e genitivo di una cosa no', () => {
     expect(pgCheAgisce('Gunda apre il pugno con calma, davanti a tutta la tavolata.', nomi)).toBe('Gunda apre il pugno con calma, davanti a tutta la tavolata.');
     expect(pgCheAgisce('La fisarmonica tace. Poi Remo si alza dal tavolo.', nomi)).toBe('Poi Remo si alza dal tavolo.');
     expect(pgCheAgisce('Gunda, la tavolata aspetta il tuo pugno.', nomi)).toBeNull();
     expect(pgCheAgisce('La sala guarda Gunda, e nessuno ride.', nomi)).toBeNull();
-    expect(pgCheAgisce('Il pugno di Gunda resta chiuso sul tavolo.', nomi)).toBeNull();
+    expect(pgCheAgisce('Il boccale di Gunda resta sul tavolo.', nomi)).toBeNull();
   });
 
   it('l’esempio del playtest esce dal controllo; con un’azione privata la battuta risponde solo in privato', () => {

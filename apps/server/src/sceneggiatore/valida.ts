@@ -25,6 +25,7 @@ import { segretiNascosti } from '../narrazione/guardia-segreti';
 import { caricaRepertorio, ErroreRepertorio } from '../repertorio/caricatore';
 import type { ParolaSegreta, StatoPubblico } from '../repertorio/segreti';
 import type { Battuta, TipoBattuta } from '../repertorio/tipi';
+import { normalizzaFrase } from './ripetizioni';
 
 const FILE = 'sceneggiatore.yaml';
 export const TIPI_SCENEGGIATORE: ReadonlySet<TipoBattuta> = new Set<TipoBattuta>(['reazione', 'momento', 'richiesta', 'rifiuto', 'saluto']);
@@ -45,6 +46,8 @@ export interface ContestoValidazione {
   detto: string;
   /** La battuta risponde a un'azione privata (va al telefono di quel PG). */
   privata?: boolean;
+  /** Tic usciti nelle ultime righe di un PNG (sceneggiatore/ripetizioni.ts): id → tic normalizzati. */
+  ticBloccati?: ReadonlyMap<string, string[]>;
 }
 
 export interface EsitoValidazione {
@@ -103,10 +106,19 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     if (segreti.length) return void scartate.push({ id: b.id, motivo: `parole segrete: ${segreti.join(', ')}` }), false;
     const agisce = b.testo.filter((r) => r.etichetta === ID_NARRATORE).map((r) => pgCheAgisce(r.testo, nomi)).find((x) => x !== null);
     if (agisce) return void scartate.push({ id: b.id, motivo: `decide per un PG: «${agisce}»` }), false;
+    const tic = b.testo.map((r) => ({ r, t: (ctx.ticBloccati?.get(r.etichetta) ?? []).find((x) => normalizzaFrase(r.testo).includes(x)) })).find((x) => x.t);
+    if (tic) return void scartate.push({ id: b.id, motivo: `tic di ${tic.r.etichetta} troppo vicino all'ultimo: «${tic.t}»` }), false;
     return true;
   });
   return { accettate: battute, scartate };
 }
+
+/** Parti del corpo e modi di stare: «il pugno di Gunda» come soggetto decide per Gunda. */
+const PARTI_DEL_CORPO = [
+  'mano', 'mani', 'pugno', 'pugni', 'dito', 'dita', 'braccio', 'braccia', 'spalla', 'spalle', 'schiena', 'testa', 'viso', 'faccia', 'volto',
+  'occhio', 'occhi', 'sguardo', 'bocca', 'labbra', 'voce', 'sorriso', 'fiato', 'respiro', 'cuore', 'gamba', 'gambe', 'piede', 'piedi', 'passo',
+  'passi', 'ginocchia', 'fronte', 'guance', 'mento', 'collo', 'pelle', 'corpo',
+].join('|');
 
 /** I nomi con cui una riga può indicare un PG: nome intero, primo nome, alias della campagna. */
 export function nomiDeiPg(c: Campagna): string[] {
@@ -122,14 +134,17 @@ export function nomiDeiPg(c: Campagna): string[] {
 
 /**
  * Una frase che ha un PG per soggetto, cioè il nome all'inizio della frase (o dopo una virgola) seguito
- * da un verbo: «Gunda apre il pugno», «Poi Remo si alza», «Remo e Vanda ridono». Restituisce la frase, o
- * null. Non contano il vocativo («Gunda, la sala aspetta»), il complemento («guarda Gunda») e il
- * genitivo («il pugno di Gunda»).
+ * da un verbo: «Gunda apre il pugno», «Poi Remo si alza», «Remo e Vanda ridono»; oppure una parte del suo
+ * corpo («Il pugno di Gunda resta chiuso», «Le mani di Remo tremano»): anche così si decide per lui.
+ * Restituisce la frase, o null. Non contano il vocativo («Gunda, la sala aspetta»), il complemento
+ * («guarda Gunda») e il genitivo di una cosa che non è il corpo («la bottiglia di Remo»).
  */
 export function pgCheAgisce(testo: string, nomi: readonly string[]): string | null {
   for (const frase of testo.split(/(?<=[.!?…;:])\s+/)) {
     for (const n of nomi) {
       const nome = n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const corpo = new RegExp(`(?:^|[,]\\s+|\\b(?:e|ed|poi|allora|ma|quando|mentre)\\s+)(?:il|lo|la|l'|i|gli|le)\\s*(?:${PARTI_DEL_CORPO})\\s+(?:di|del|della)\\s+${nome}(?![\\p{L}\\p{N}])`, 'iu');
+      if (corpo.test(frase.trim())) return frase.trim();
       const soggetto = new RegExp(`(?:^|[,]\\s+|\\b(?:e|ed|poi|allora|ma|quando|mentre)\\s+)${nome}(?![\\p{L}\\p{N}])(?!\\s*,)\\s+(?:e\\s+\\p{Lu}\\p{L}*\\s+)?(?:non\\s+)?(?:(?:si|ci|ne|lo|la|li|le|gli|vi|mi|ti)\\s+)?\\p{Ll}`, 'iu');
       if (soggetto.test(frase.trim())) return frase.trim();
     }

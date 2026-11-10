@@ -65,6 +65,7 @@ import { segretiNascosti, type EsitoGuardiaSegreti } from '../narrazione/guardia
 import { CanaleSceneggiatore } from '../sceneggiatore/canale';
 import type { RichiestaSceneggiatore, RispostaSceneggiatore } from '../sceneggiatore/protocollo';
 import { validaBattute } from '../sceneggiatore/valida';
+import { giaUsati, ticBloccati } from '../sceneggiatore/ripetizioni';
 
 /** Oltre questo tempo la battuta chiesta «subito» allo sceneggiatore non si dice più (resta nel repertorio). */
 export const TETTO_SCENEGGIATORE_MS = 90_000;
@@ -149,6 +150,8 @@ export interface OpzioniRegia {
    * mentre si gioca, e il tetto oltre cui la battuta scritta su richiesta non si dice più. null = spento.
    */
   sceneggiatore?: { radice: string; tettoMs?: number } | null;
+  /** Le battute delle «prossime» appena entrate nel repertorio: la loro voce va in cache in sottofondo (drama-3). */
+  preGeneraAudio?: ((battute: readonly Battuta[]) => unknown) | null;
   cacheAudio?: CacheAudio;
   /** Esperimenti: la finestra si apre sempre per tutti i PG al tavolo (l'invito resta nel log). */
   finestraATutti?: boolean;
@@ -1188,6 +1191,7 @@ export class Regia {
       stato: { indizi_rivelati: [...s.indiziRivelati], fatti_noti: [...s.fattiNoti], battute_usate: [...s.usi.keys()], orologi: this.orologi.riepilogo() },
       prefisso: `sc_${id.replace(/[^a-z0-9]+/gi, '_').toLowerCase()}_`,
       quante,
+      gia_usati: { ...giaUsati(this.trascrizione, turno), tic: Object.fromEntries(ticBloccati(this.trascrizione, this.campagna.png)) },
     };
   }
 
@@ -1217,12 +1221,15 @@ export class Regia {
       pubblico: this.statoPubblicoAlTavolo(),
       detto: this.trascrizione.filter((x) => x.tipo !== 'sistema').map((x) => x.testo).join('\n'),
       privata: subito?.privata === true,
+      ticBloccati: ticBloccati(this.trascrizione, this.campagna.png),
     });
     for (const b of v.accettate) {
       s.repertorio.battute.push(b);
       s.repertorio.perId.set(b.id, b);
     }
     this.o.log.info({ richiesta: rq.id, tipo: rq.tipo, accettate: v.accettate.map((b) => b.id), scartate: v.scartate, ms }, 'sceneggiatore: battute nel repertorio');
+    // Le «prossime» si diranno più avanti: la loro voce si prepara adesso, in sottofondo.
+    if (rq.tipo === 'prossime' && v.accettate.length) this.o.preGeneraAudio?.(v.accettate);
     const tetto = this.o.sceneggiatore?.tettoMs ?? TETTO_SCENEGGIATORE_MS;
     const prima = v.accettate[0];
     let consegnata = false;
