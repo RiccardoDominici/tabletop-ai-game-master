@@ -37,8 +37,8 @@ indizi:
     nodo: n_torre
     essenziale: true
     tiro: "nessuno"
-    modi: 2
-    come_si_trova: "Arriva da solo, con la mossa morbida: quando Zirrà schiocca le dita, Tonio si alza, lascia cadere la corda e le porta il piccone senza che nessuno lo spinga. Oppure chi guarda da vicino la corda vede che non c'è nodo. Il narratore non dice mai che il ragazzo è d'accordo con i goblin: lo concludono i PG."
+    modi: 3
+    come_si_trova: "Arriva da solo, con la mossa morbida: quando Zirrà schiocca le dita, Tonio si alza, lascia cadere la corda e le porta il piccone senza che nessuno lo spinga. Oppure chi guarda da vicino la corda vede che non c'è nodo. Oppure quando un PG mostra la chiave a Zirrà, lei chiama il ragazzo e lui si alza da solo, e la corda gli scivola dai polsi. Il narratore non dice mai che il ragazzo è d'accordo con i goblin: lo concludono i PG."
     vincolo_pubblico: "Tonio ha una corda avvolta ai polsi."
   - id: i_mappa
     conclusione: r_tonio

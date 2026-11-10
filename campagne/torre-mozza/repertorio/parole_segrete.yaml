@@ -5,7 +5,7 @@ parole:
   - parola: "Tonio è salito da solo, d'accordo con i goblin"
     regex: "\\bvenut[oa] da sol[oa]\\b|\\bdi sua volontà\\b|\\bfinto il rapimento\\b|\\bha portato lui\\b|\\bd'accordo con i goblin\\b|\\bsaliva da solo\\b|\\bsalire da solo\\b|\\bcon le sue gambe\\b"
     fatti: [f_tonio_complice]
-    pubblica_dopo: [i_tonio_libero, nar_corda, nar_piccone, i_impronte, nar_impronte, i_ugo_racconta, ugo_sentiero_privato, ugo_sentiero_impronte, i_grosso, gro_cibo, zir_corda, zir_carbonaio, nar_tonio_parla]
+    pubblica_dopo: [i_tonio_libero, nar_corda, nar_piccone, zir_chiave_prima, i_impronte, nar_impronte, i_ugo_racconta, ugo_sentiero_privato, ugo_sentiero_impronte, i_grosso, gro_cibo, zir_corda, zir_carbonaio, nar_tonio_parla]
     nota: "La verità della campagna. La dicono Zirrà, Grosso e Ugo quando cedono, e il narratore quando Tonio parla; la mostrano la corda senza nodo e le impronte."
   - parola: "la lavagna l'ha scritta Tonio"
     regex: "\\b(scritt[ao]|scrive|ha scritto)\\b[^.]{0,30}\\b(tonio|il ragazzo)\\b|\\b(tonio|il ragazzo)\\b[^.]{0,30}\\b(ha scritto|l'ha scritta)\\b"
@@ -80,7 +80,7 @@ parole:
   - parola: "la corda senza nodo"
     regex: "\\bnon c'è (nessun )?nodo\\b|\\bsenza nodo\\b|\\bnon ha nodo\\b|\\bsolo avvolta\\b|\\baiuta (i goblin )?a scavare\\b"
     fatti: [f_tonio_libero]
-    pubblica_dopo: [i_tonio_libero, nar_corda, nar_piccone, zir_corda]
+    pubblica_dopo: [i_tonio_libero, nar_corda, nar_piccone, zir_chiave_prima, zir_corda]
     nota: "Il ragazzo non è legato davvero."
   - parola: "Tonio al mercato chiede dell'argento"
     regex: "\\bmercato di valdirame\\b[^.]{0,60}\\bargento\\b|\\bquanto vale\\b[^.]{0,40}\\bargento\\b"

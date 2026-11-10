@@ -52,7 +52,7 @@ battute:
     chi: png_berta
     tipo: indizio
     quando: "un PG chiede a Berta che cosa manca del figlio"
-    temi: [manca, mancano, stivali, mantello, roba]
+    temi: [manca, mancano, stivali, mantello, roba, ultima, portato]
     testo:
       - "[png_berta] Gli stivali buoni e il mantello. E il pane della settimana, tutto."
     effetti: {rivela_indizi: [i_giaciglio], fatti_noti: [f_tonio_stivali]}

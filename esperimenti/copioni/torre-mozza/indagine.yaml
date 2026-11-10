@@ -1,0 +1,44 @@
+# Tavolo indagine: prima guardano, chiedono e confrontano le versioni. Nessuno si butta nella torre finché non ha capito qualcosa.
+# Parlano a bassa voce quando possono, e tengono per sé le cose che sanno da soli: le dicono solo quando servono.
+# Confine rispettato: letto solo materiale_giocatori.md.
+# Segni di scena aggiunti dall'autore della campagna dopo la scrittura cieca (le azioni non sono cambiate): servono alla misura
+# del validatore. Il bosco sotto la torre è la scena della carbonaia; la torre a mezzanotte è scena_torre.
+scena: scena_ovile
+pg: [pg_livia, pg_fulco, pg_eliandro]
+turni:
+  # luogo: l'ovile dei Benni, all'imbrunire
+  - - {pg: pg_livia, azione: "Berta, quando hai visto Tonio per l'ultima volta? E chi sapeva della chiave, oltre a te?"}
+  - - {pg: pg_eliandro, azione: "Copio sul quaderno la scritta della lavagna, lettera per lettera."}
+    - {pg: pg_fulco, azione: "Guardo la chiave che Berta stringe: è ferro vecchio, o lavoro di nano?"}
+    - {pg: pg_livia, azione: "Anch'io guardo la lavagna, con lo scudo appoggiato al muro per leggere meglio."}
+  - - {pg: pg_fulco, azione: "Chiedo a Ugo, al cancello, se ha visto luci o gente salire verso la torre."}
+    - {pg: pg_livia, azione: "Mi avvicino a Berta, a bassa voce: «Sei in arretrato con la decima del balivo di Valdirame?»", privata: true}
+  - - {pg: pg_eliandro, azione: "Chiedo a Berta, sottovoce, chi a Spinalba sapeva che la chiave era ancora in casa.", privata: true}
+    - {pg: pg_fulco, azione: "Conto le pecore nel recinto mentre aspetto. Sono tutte."}
+  - - {pg: pg_eliandro, azione: "Dico agli altri: i goblin non sanno fare lettere con il carbone. Chi ha scritto questa lavagna sa scrivere, e non è un goblin."}
+    - {pg: pg_livia, azione: "Ugo, tu che sei del posto: chi qui sa scrivere così bene?"}
+  - - {pg: pg_livia, azione: "Berta, dammi la chiave: ti riporto Tonio prima di mezzanotte. Ti do la mia parola di soldato."}
+    - {pg: pg_fulco, azione: "Ugo, a parte, a bassa voce: «Dove passa la strada per la torre, e chi sale di notte?»", privata: true}
+  # luogo: il bosco sotto la torre
+  - - {scena: scena_carbonaia}
+    - {pg: pg_fulco, azione: "Dico agli altri: sotto ogni torre dei nani c'è una postierla, un passaggio basso verso il bosco. Di solito sbuca in cantina."}
+  - - {pg: pg_eliandro, azione: "Cerco segni incisi sul legno lungo il sentiero, senza farmi sentire.", privata: true}
+    - {pg: pg_livia, azione: "Scendo per prima, scudo avanti, e controllo che il sentiero sia libero."}
+  - - {pg: pg_fulco, azione: "Porto a Ugo il pane del tempio e gli chiedo la strada: «Dimmi dove passano i goblin, e la benedizione è tua.»"}
+  - - {pg: pg_livia, azione: "Mi arrampico sul muretto di pietra del bosco per vedere la torre dall'alto."}
+    - {pg: pg_eliandro, azione: "Anch'io salgo, tengo il quaderno sotto il mantello e mi aggrappo al ramo."}
+  # luogo: la Torre Mozza, a mezzanotte
+  - - {scena: scena_torre}
+    - {pg: pg_livia, azione: "Vedo i goblin davanti alla porta della torre. Sguaino la spada e carico."}
+    - {pg: pg_fulco, azione: "Tiro con la fionda al goblin più vicino."}
+    - {pg: pg_eliandro, azione: "Lancio il dardo incantato contro il goblin che sta arrivando."}
+  - - {pg: pg_livia, azione: "Colpisco il goblin con la spada lunga, scudo davanti."}
+    - {pg: pg_fulco, azione: "Con la mazza sfondo la testa al goblin che si rialza."}
+    - {pg: pg_eliandro, azione: "Mi tengo dietro la pietra e tiro il pugnale al primo che scappa."}
+  - - {pg: pg_eliandro, azione: "Mentre gli altri combattono, cerco nella pietra nuova una porta segreta.", privata: true}
+    - {pg: pg_fulco, azione: "Tiro ancora con la fionda al goblin che scappa verso la cantina."}
+  - - {pg: pg_livia, azione: "Blocco un goblin ferito contro il muro: «Dov'è il ragazzo? Parla, o ti lascio qui.»"}
+  - - {pg: pg_eliandro, azione: "Anch'io gli stringo la spalla e chiedo: «Chi vi ha dato le lettere per scrivere?»"}
+    - {pg: pg_fulco, azione: "Cerco sul muro la pietra nuova che suona vuota, dove può esserci la postierla."}
+  - - {pg: pg_fulco, azione: "Entro per la postierla con la mazza pronta, e chiamo Livia piano."}
+    - {pg: pg_livia, azione: "Scendo dietro di lui, scudo in avanti, nel passaggio stretto."}

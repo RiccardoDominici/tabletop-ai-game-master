@@ -1,0 +1,46 @@
+# Tavolo pressione: vogliono la chiave e la strada adesso, non fra un'ora. Spingono, minacciano e attaccano appena vedono un goblin.
+# Battute secche, qualche errore di battitura, e tanti punti esclamativi quando la mezzanotte si avvicina.
+# Confine rispettato: letto solo materiale_giocatori.md.
+# Segni di scena aggiunti dall'autore della campagna dopo la scrittura cieca (le azioni non sono cambiate): servono alla misura
+# del validatore. La «sentinella goblin» del turno 9 si vede dalla roccia sopra il bosco, ai piedi della torre: lì la campagna
+# ha i goblin con la scheda (Zirrà e Grosso), quindi da quel turno si gioca nella scena della torre.
+scena: scena_ovile
+pg: [pg_livia, pg_nespola, pg_eliandro]
+turni:
+  # luogo: l'ovile dei Benni, all'imbrunire
+  - - {pg: pg_livia, azione: "Berta, dammi la chiave e dimmi dov'è Tonio. Adesso, non domani!"}
+  - - {pg: pg_nespola, azione: "Ugo! Mi devi tre argenti. Dimmi la strada per la torre o te li riscuoto davanti a tutti."}
+    - {pg: pg_eliandro, azione: "Copio la lavagna in fretta. Lettere comuni, non le fanno i goblin: qui ci gioca qualcuno."}
+  - - {pg: pg_livia, azione: "Anch'io, Ugo: parla, o la milizia ti trova in fretta."}
+  - - {pg: pg_nespola, azione: "Berta, piano: Tonio aveva monete vecchie con una torre sopra? Non dirlo a nessuno.", privata: true}
+    - {pg: pg_eliandro, azione: "Mi metto davanti alla porta, voglio vedere chi passa."}
+  - - {pg: pg_livia, azione: "Mi avvicino a Berta: «Il balivo ti prende l'ovile alla prima neve, lo sai?» A bassa voce, così ha paura.", privata: true}
+    - {pg: pg_nespola, azione: "Vado a controllare il sentiero dietro l'ovile, subito."}
+  - - {pg: pg_eliandro, azione: "Berta, qualcuno a Spinalba parla con i goblin?", privata: true}
+    - {pg: pg_livia, azione: "Berta, dammi la chiave: ti riporto tuo figlio prima di mezzanotte, parola di soldato."}
+  # luogo: il bosco sotto la torre
+  - - {scena: scena_carbonaia}
+    - {pg: pg_nespola, azione: "Corro avanti sul sentiero di Ugo, muovendomi piano tra le radici."}
+    - {pg: pg_livia, azione: "Dietro di lei, spada in mano, guardo i rami sopra la testa."}
+    - {pg: pg_eliandro, azione: "Seguo con la lanterna e cerco segni incisi sugli alberi.", privata: true}
+  - - {pg: pg_nespola, azione: "Mi arrampico sulla roccia per vedere la torre prima degli altri."}
+    - {pg: pg_livia, azione: "Anch'io salgo dietro di lei, scudo legato alla schiena."}
+  - - {scena: scena_torre}
+    - {pg: pg_livia, azione: "Vedo una sentinella goblin! Tiro con l'arco corto."}
+    - {pg: pg_eliandro, azione: "Lancio il dardo incantato sulla sentinella, subito!"}
+    - {pg: pg_nespola, azione: "Scendo dalla roccia e colpisco alle spalle la sentinella con la spada corta."}
+  - - {pg: pg_nespola, azione: "Ne arriva un altro: lo colpisco di nuovo, poi gli passo alle spalle."}
+    - {pg: pg_livia, azione: "Carico il goblin con lo scudo, spada in avanti!"}
+  # luogo: la Torre Mozza, a mezzanotte
+  - - {pg: pg_livia, azione: "Forzo la porta bassa della torre con la spalla. È quasi mezzanotte!"}
+    - {pg: pg_nespola, azione: "Cerco una finestra e mi infilo dentro, prima degli altri."}
+    - {pg: pg_eliandro, azione: "Guardo dentro la porta: tre o quattro goblin. Tiro il dardo al più vicino!"}
+  - - {pg: pg_nespola, azione: "Colpisco il goblin alle spalle con la spada corta, e lo tengo fermo."}
+    - {pg: pg_livia, azione: "Scudo contro scudo, tiro la spada su quello in fondo."}
+    - {pg: pg_eliandro, azione: "Tiro il pugnale al goblin che scappa verso le scale."}
+  - - {pg: pg_livia, azione: "Ne tengo uno contro il muro: «Dov'è il ragazzo? Parla!»"}
+  - - {pg: pg_eliandro, azione: "Anch'io lo stringo e chiedo: «Chi vi ha dato le lettere per scrivere?»"}
+  - - {pg: pg_nespola, azione: "Dico al goblin piano: «Il ragazzo, Tonio. Dov'è?»", privata: true}
+  - - {pg: pg_livia, azione: "Vado giù per la scala della cantina, spada in mano."}
+    - {pg: pg_nespola, azione: "Anch'io scendo dietro di lei, scassino la porta in fondo."}
+    - {pg: pg_eliandro, azione: "Leggo le scritte antiche sulla pietra della cantina, in fretta.", privata: true}

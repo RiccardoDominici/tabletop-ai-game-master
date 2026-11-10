@@ -7,7 +7,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG fruga il giaciglio di Tonio nel fienile"
-    temi: [giaciglio, paglia, letto, frugo, frugare]
+    temi: [giaciglio, paglia, letto, frugo, frugare, fienile]
     scena: scena_ovile
     # Anche in privato: un'azione privata riceve solo battute con il cancello privato.
     richiede: {oppure: [{privata: true}, {indizi_non_rivelati: [i_giaciglio]}]}
@@ -82,7 +82,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG sposta il mantello appeso dietro la porta di casa"
-    temi: [mantello, avviso, foglio, sigillo]
+    temi: [mantello, avviso, foglio, sigillo, perquisisco, perquisire, battente]
     scena: scena_ovile
     richiede: {oppure: [{privata: true}, {indizi_non_rivelati: [i_avviso]}]}
     testo:
@@ -131,8 +131,9 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG guarda le impronte sul sentiero dei goblin"
-    temi: [impronte, orme, tracce, fango]
+    temi: [impronte, orme, tracce, fango, sentiero, segni]
     scena: scena_carbonaia
+    richiede: {oppure: [{privata: true}, {indizi_non_rivelati: [i_impronte]}]}
     testo:
       - "[narratore] Nel fango ci sono impronte piccole, di piedi nudi con le unghie lunghe."
       - "[narratore] Accanto ci sono quelle di un paio di stivali da ragazzo, a passo lungo. A tratti gli stivali vanno davanti a tutti."
@@ -228,7 +229,7 @@ battute:
     chi: narratore
     tipo: indizio
     quando: "un PG guarda da vicino la corda ai polsi del ragazzo"
-    temi: [corda, polsi, nodo, legato, slego, slegare]
+    temi: [corda, polsi, nodo, legato, slego, slegare, libero, liberarlo, taglio, tagliare]
     scena: scena_torre
     richiede: {oppure: [{privata: true}, {indizi_non_rivelati: [i_tonio_libero]}]}
     testo:
