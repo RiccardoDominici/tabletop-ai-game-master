@@ -41,7 +41,8 @@ done
 git check-ignore -q manuali/x.pdf || echo "ATTENZIONE: manuali/ non e' nel .gitignore"
 
 # 4. Token del master copiati dai log (compaiono come ?token=… nel log del server)
-for t in $(grep -ohE 'token=[A-Za-z0-9_-]{12,}' logs/*.out logs/*.jsonl logs/*/*.out 2>/dev/null | cut -d= -f2 | sort -u); do git grep -nF -e "$t" && echo "TROVATO: token del master"; done
+for t in $(grep -ohE 'token=[A-Za-z0-9_-]{12,}' logs/*.out logs/*.jsonl logs/*/*.out 2>/dev/null | cut -d= -f2 | sort -u); do git grep -nF -e "$t" -- ':!*.spec.ts' ':!*.test.ts' && echo "TROVATO: token del master"; done
+# (the fixed tokens of test instances live in *.spec.ts / *.test.ts on purpose and also show up in the test logs)
 ```
 
 The script above is kept as it is, with its comments and messages in Italian. In short: check 1 looks for
