@@ -20,7 +20,28 @@
       "rifilato_pct": 5.0,
       "quando": "2026-11-02 20:42:46",
       "firma": "v1:5b439c539ea42f07c2861911",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Un vecchio mulino di pietra con ruota di legno ghiacciata accanto a un torrente gelato in una valle innevata di notte, illuminato da lumi caldi e dalla luna.",
+          "costo_usd": 0.000644,
+          "token": {
+            "ingresso": 4007,
+            "uscita": 486
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000644,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000644
+      }
     },
     {
       "id": "luogo_n_osteria",
@@ -50,7 +71,42 @@
       "rifilato_pct": 3.0,
       "rifilato_dal_jpeg": true,
       "firma": "v1:32aa844cdea94eee9010dbc6",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "finestre di sinistra e di destra degli edifici",
+            "descrizione": "Non tutte le finestre hanno una candela accesa come richiesto: molte restano buie.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "finestre di sinistra e di destra degli edifici",
+              "descrizione": "Non tutte le finestre hanno una candela accesa come richiesto: molte restano buie.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Una piazza acciottolata di un villaggio di montagna di notte, con neve leggera, un pozzo di pietra con struttura di legno al centro, una casa bassa accanto e una piccola cappella in fondo con il portale aperto e luce calda all'interno.",
+          "costo_usd": 0.000731,
+          "token": {
+            "ingresso": 4030,
+            "uscita": 655
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000731,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000731
+      }
     },
     {
       "id": "luogo_scena_forno_vecchio",
@@ -73,7 +129,42 @@
       "nota": "generata alle 19:42 dall'anteprima (stesso prompt e seme che genera.py compone da fa26f11, verificato), rifilata dal PNG originale; preferita ai semi 1000 e 7 per l'orlo di carta più sottile",
       "quando": "2026-11-02 19:42:36",
       "firma": "v1:1b00558f92ac128f39ca283f",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "primo piano a destra",
+            "descrizione": "Il cane nero non è accanto al forno come richiesto, ma vicino alla porta d'ingresso, in primo piano.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "primo piano a destra",
+              "descrizione": "Il cane nero non è accanto al forno come richiesto, ma vicino alla porta d'ingresso, in primo piano.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Interno di una taverna di montagna di notte, con travi annerite, un forno a legna acceso sul fondo, un lungo tavolo coperto da tovaglia bianca con ceste di pane e, a destra, una grande porta di legno che si apre su una piazza di pietra illuminata da candele. Un cane nero giace sul pavimento in primo piano.",
+          "costo_usd": 0.000912,
+          "token": {
+            "ingresso": 4059,
+            "uscita": 1012
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000912,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000912
+      }
     },
     {
       "id": "ritratto_png_baldrin",
@@ -94,7 +185,56 @@
       "kb": 251,
       "quando": "2026-11-02 19:52:05",
       "firma": "v1:90b6c76019a53cdd845625c5",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "difettosa",
+        "versione": 2,
+        "motivi": [
+          "testo_o_firma: Compare una piccola firma o monogramma scarabocchiato vicino al bordo inferiore destro. (angolo in basso a destra)"
+        ],
+        "problemi": [
+          {
+            "tipo": "testo_o_firma",
+            "dove": "angolo in basso a destra",
+            "descrizione": "Compare una piccola firma o monogramma scarabocchiato vicino al bordo inferiore destro.",
+            "grave": true
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "barba e capelli",
+            "descrizione": "Il prompt chiede una barba legata con anelli di ferro, ma la barba è sciolta e gli anelli compaiono solo tra i capelli in cima alla testa.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "testo_o_firma",
+              "dove": "angolo in basso a destra",
+              "descrizione": "Compare una piccola firma o monogramma scarabocchiato vicino al bordo inferiore destro.",
+              "grave": true
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "barba e capelli",
+              "descrizione": "Il prompt chiede una barba legata con anelli di ferro, ma la barba è sciolta e gli anelli compaiono solo tra i capelli in cima alla testa.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Ritratto a mezzo busto di un nano fabbro barbuto dai capelli grigi, con grembiule di cuoio macchiato, chiave di ferro al collo e un martello stretto tra mani annerite, su sfondo blu ardesia scuro.",
+          "costo_usd": 0.000662,
+          "token": {
+            "ingresso": 3266,
+            "uscita": 670
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000662,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000662
+      }
     },
     {
       "id": "ritratto_png_ottavia",
@@ -115,7 +255,28 @@
       "kb": 269,
       "quando": "2026-11-02 19:53:16",
       "firma": "v1:99ecf687ce8398347fa6bedc",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Ritratto a mezzo busto di una donna anziana e robusta con capelli bianchi coperti da un fazzoletto rosso, grembiule di lino chiaro e avambracci infarinati, con le mani intrecciate davanti al corpo, su uno sfondo blu ardesia scuro.",
+          "costo_usd": 0.000517,
+          "token": {
+            "ingresso": 3242,
+            "uscita": 386
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000517,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000517
+      }
     },
     {
       "id": "ritratto_png_sebastiano",
@@ -136,7 +297,297 @@
       "kb": 184,
       "quando": "2026-11-02 20:35:22",
       "firma": "v1:b5b03b125f86a51fc40dad25",
-      "firma_migrata": "2026-11-03"
+      "firma_migrata": "2026-11-03",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "braccio destro, a destra dell'immagine",
+            "descrizione": "Le mani non sono nascoste nelle maniche come richiesto: la mano destra è visibile con le dita distese fuori dalla manica.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "braccio destro, a destra dell'immagine",
+              "descrizione": "Le mani non sono nascoste nelle maniche come richiesto: la mano destra è visibile con le dita distese fuori dalla manica.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Ritratto a mezzo busto di un uomo magro con cappuccio nero calato, barba di tre giorni e braccia conserte, su sfondo blu ardesia scuro a inchiostro e acquerello.",
+          "costo_usd": 0.000779,
+          "token": {
+            "ingresso": 3325,
+            "uscita": 893
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000779,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000779
+      }
+    },
+    {
+      "id": "situazione_png_baldrin_in_scena_forno_vecchio",
+      "file": "situazione_png_baldrin_in_scena_forno_vecchio.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: nano, sembra un uomo sulla cinquantina; barba grigia con anelli di ferro; grembiule di cuoio bruciacchiato; martello da forgia; chiave di ferro al collo, su un laccio di cuoio; mani nere di fuliggine. Now inside the place shown in the second reference image, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering, no signature",
+      "seme": 40802001,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_baldrin",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_baldrin",
+        "luogo_scena_forno_vecchio"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 864.3,
+      "picco_gb": 7.48,
+      "kb": 704,
+      "rifilato_pct": 1.2,
+      "firma": "v1:b265ccacb1bffe49b054bbab",
+      "quando": "2026-11-03 14:11:35",
+      "qualita": {
+        "esito": "difettosa",
+        "versione": 2,
+        "motivi": [
+          "soggetto: Il personaggio ha statura da uomo normale rispetto alla stanza e alla porta, mentre il prompt lo descrive come nano. (figura centrale)"
+        ],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "figura centrale",
+            "descrizione": "Il personaggio ha statura da uomo normale rispetto alla stanza e alla porta, mentre il prompt lo descrive come nano.",
+            "grave": true
+          }
+        ],
+        "visione": {
+          "esito": "difettosa",
+          "motivi": [
+            "soggetto: Il personaggio ha statura da uomo normale rispetto alla stanza e alla porta, mentre il prompt lo descrive come nano. (figura centrale)"
+          ],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "figura centrale",
+              "descrizione": "Il personaggio ha statura da uomo normale rispetto alla stanza e alla porta, mentre il prompt lo descrive come nano.",
+              "grave": true
+            }
+          ],
+          "descrizione": "Un uomo anziano con barba bianca, grembiule di cuoio macchiato e chiave di ferro al collo tiene un martello in una stanza rustica con cesti di pane, una porta aperta su un cortile notturno e un cane nero sdraiato. La scena corrisponde nel complesso al prompt.",
+          "costo_usd": 0.000934,
+          "token": {
+            "ingresso": 4084,
+            "uscita": 1051
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000934,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000934
+      }
+    },
+    {
+      "id": "situazione_png_ottavia_in_scena_forno_vecchio",
+      "file": "situazione_png_ottavia_in_scena_forno_vecchio.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: 61 anni; bassa e larga; capelli bianchi raccolti in un fazzoletto rosso; braccia infarinate fino ai gomiti; grembiule di lino pulito; occhi arrossati. Now inside the place shown in the second reference image, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering, no signature",
+      "seme": 995908387,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_ottavia",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_ottavia",
+        "luogo_scena_forno_vecchio"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 587.3,
+      "picco_gb": 7.91,
+      "kb": 741,
+      "rifilato_pct": 1.2,
+      "firma": "v1:043fbed55bfb744916e89ba9",
+      "quando": "2026-11-03 13:57:10",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Una donna anziana con fazzoletto rosso, capelli bianchi, grembiule di lino e braccia infarinate sta in una panetteria rustica accanto a un tavolo con cesti di pane. Alla sua destra un cane nero è sdraiato davanti a una porta aperta che dà su un cortile illuminato da candele.",
+          "costo_usd": 0.000657,
+          "token": {
+            "ingresso": 4065,
+            "uscita": 502
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000657,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000657
+      }
+    },
+    {
+      "id": "situazione_png_sebastiano_in_scena_forno_vecchio",
+      "file": "situazione_png_sebastiano_in_scena_forno_vecchio.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: circa 40 anni; alto e magro; mantello nero col cappuccio calato sugli occhi, logoro; barba di tre giorni. Now inside the place shown in the second reference image, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering, no signature",
+      "seme": 492235375,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_sebastiano",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_sebastiano",
+        "luogo_scena_forno_vecchio"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 1053.0,
+      "picco_gb": 7.95,
+      "kb": 696,
+      "rifilato_pct": 1.2,
+      "firma": "v1:6235328b9c26b11d51cd3dc5",
+      "quando": "2026-11-03 14:29:09",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Un uomo incappucciato in un mantello nero, con barba incolta, si trova in una cucina rustica con tavolo apparecchiato e pani, mentre un grande cane nero giace a terra; dalla porta aperta si vede un cortile illuminato da candele.",
+          "costo_usd": 0.000724,
+          "token": {
+            "ingresso": 4132,
+            "uscita": 622
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000724,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000724
+      }
+    },
+    {
+      "id": "situazione_png_sebastiano_senza_cappuccio",
+      "file": "situazione_png_sebastiano_senza_cappuccio.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the reference image, same face, hair and clothes: tratti fissi: circa 40 anni; alto e magro; mantello nero col cappuccio calato sugli occhi, logoro; barba di tre giorni. Now his hood pushed back onto his shoulders, brow and eyes uncovered, face fully lit by a candle, a thin white scar splits his left eyebrow, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering, no signature",
+      "seme": 102194477,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_sebastiano",
+      "dopo": [
+        "i_cicatrice"
+      ],
+      "automatica": false,
+      "riferimenti": [
+        "ritratto_png_sebastiano"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 400.9,
+      "picco_gb": 6.08,
+      "kb": 515,
+      "rifilato_pct": 1.2,
+      "firma": "v1:3db802daf3ddbd7963ec670e",
+      "quando": "2026-11-03 13:47:22",
+      "qualita": {
+        "esito": "difettosa",
+        "versione": 2,
+        "motivi": [
+          "margine: Ai bordi compare una cornice di carta grigio chiaro con margini irregolari e strappati, quindi l'immagine non riempie tutto il fotogramma. (bordi sinistro, destro e angoli superiori)",
+          "soggetto: Il cappuccio è ancora calato sulla fronte e sugli occhi invece di essere tirato indietro sulle spalle come richiesto. (testa e fronte del personaggio)"
+        ],
+        "problemi": [
+          {
+            "tipo": "margine",
+            "dove": "bordi sinistro, destro e angoli superiori",
+            "descrizione": "Ai bordi compare una cornice di carta grigio chiaro con margini irregolari e strappati, quindi l'immagine non riempie tutto il fotogramma.",
+            "grave": true
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "testa e fronte del personaggio",
+            "descrizione": "Il cappuccio è ancora calato sulla fronte e sugli occhi invece di essere tirato indietro sulle spalle come richiesto.",
+            "grave": true
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "sopracciglio sinistro",
+            "descrizione": "La cicatrice bianca non divide il sopracciglio sinistro ma compare come una croce bianca sulla guancia sotto l'occhio.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "difettosa",
+          "motivi": [
+            "margine: Ai bordi compare una cornice di carta grigio chiaro con margini irregolari e strappati, quindi l'immagine non riempie tutto il fotogramma. (bordi sinistro, destro e angoli superiori)",
+            "soggetto: Il cappuccio è ancora calato sulla fronte e sugli occhi invece di essere tirato indietro sulle spalle come richiesto. (testa e fronte del personaggio)"
+          ],
+          "problemi": [
+            {
+              "tipo": "margine",
+              "dove": "bordi sinistro, destro e angoli superiori",
+              "descrizione": "Ai bordi compare una cornice di carta grigio chiaro con margini irregolari e strappati, quindi l'immagine non riempie tutto il fotogramma.",
+              "grave": true
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "testa e fronte del personaggio",
+              "descrizione": "Il cappuccio è ancora calato sulla fronte e sugli occhi invece di essere tirato indietro sulle spalle come richiesto.",
+              "grave": true
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "sopracciglio sinistro",
+              "descrizione": "La cicatrice bianca non divide il sopracciglio sinistro ma compare come una croce bianca sulla guancia sotto l'occhio.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Ritratto a mezzo busto di un uomo maturo e magro con barba corta, mantello scuro col cappuccio alzato e sfondo grigio-blu notturno con una luna pallida. Il volto è illuminato da una luce calda sul lato sinistro.",
+          "costo_usd": 0.000852,
+          "token": {
+            "ingresso": 4079,
+            "uscita": 888
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000852,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000852
+      }
     }
   ]
 }
