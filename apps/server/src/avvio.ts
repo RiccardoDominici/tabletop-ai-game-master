@@ -324,6 +324,8 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       ...(schedeRegole ? { regole: { regole, schede: schedeRegole } } : {}),
       ...(config.semeDadi ? { seme: config.semeDadi } : {}),
       ...(sost.dadi ? { dadi: sost.dadi } : {}),
+      // Un modello locale impiega 3–10 s a chiamata: alla chiusura lo si aspetta di più (poi la riserva a regole).
+      ...(scelte.arbitro_prove.provider === 'locale' ? { attesaMaxMs: 10_000 } : {}),
     },
     scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),
     sistemaPer,

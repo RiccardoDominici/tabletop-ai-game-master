@@ -189,9 +189,9 @@ Coerenze consigliate (avvisi):
    - Se l'azione cambia, si rifà.
    - Alla fine di una narrazione si rifanno insieme le azioni in coda, ormai vecchie.
 2. **Chiusura della finestra** (Regia.finestraChiusa, ora asincrona). `MotoreProve.risolvi` prende le decisioni.
-   - Quelle in volo le aspetta al massimo 4 s.
+   - Quelle in volo le aspetta al massimo 4 s (10 s se `arbitro_prove` è un modello locale, che impiega 3–10 s a chiamata).
    - Quelle mancanti le chiede in una chiamata sola.
-   - Allo scadere, un'azione resta senza tiro. Il fatto lo dice, e non si resta mai bloccati.
+   - Allo scadere, o senza modello (riserva `regole`), decide il classificatore a regole (prove/classificatore-regole.ts): verbo d'attacco + PNG nominato → attacco; il `quando` di una prova della scena → quella prova; convincere/mentire/minacciare + PNG → prova sociale (o la mossa del set); nascondersi, arrampicarsi, scassinare, cercare → l'abilità; il resto → nessun tiro. Più grezzo del modello (niente vantaggi né «impossibile»), ma il dado si tira lo stesso, e non si resta mai bloccati.
 3. **Tiri** (prove/risolutore.ts).
    - Prima si raccolgono gli «aiuto», che danno vantaggio all'azione aiutata.
    - Poi ogni azione tira, nell'ordine di risoluzione del tavolo.

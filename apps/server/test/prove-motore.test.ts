@@ -201,10 +201,11 @@ describe('un turno di tiri', () => {
     expect(r.fatti[0]).toMatch(/manca la scheda: nessun tiro, risolvi con un «sì, ma»/);
   });
 
-  it('senza arbitro (narratore a copione): nessun tiro, e lo dice il fatto', async () => {
-    const r = await motore({ arbitro: null, dadi: [10] }).risolvi(1, [azione('a1', 'pg_ida', 'Convinco Bertoldo')]);
-    expect(r.tiri).toEqual([]);
-    expect(r.fatti[0]).toMatch(/arbitro non disponibile/);
+  it('senza arbitro (narratore a copione): la riserva a regole decide, e il dado si tira lo stesso', async () => {
+    const r = await motore({ arbitro: null, dadi: [4] }).risolvi(1, [azione('a1', 'pg_ida', 'Convinco Bertoldo'), azione('a2', 'pg_corrado', 'Tiro un dardo di balestra a Ruggero'), azione('a3', 'pg_teo', 'Mi guardo intorno')]);
+    expect(r.tiri.map((t) => [t.chi, t.etichetta])).toEqual(expect.arrayContaining([['pg_ida', 'Persuasione (Carisma)'], ['pg_corrado', 'Balestra leggera']]));
+    expect(r.fatti.find((f) => f.includes('Teo'))).toMatch(/nessun tiro/);
+    expect(r.fatti.join(' ')).not.toMatch(/arbitro non disponibile/);
   });
 });
 
@@ -235,7 +236,7 @@ describe('decisioni preparate all\'invio', () => {
     expect(r.tardive).toEqual(['a1']);
   });
 
-  it('arbitro troppo lento: allo scadere l\'azione va senza tiro (mai bloccati)', async () => {
+  it('arbitro troppo lento: allo scadere decide la riserva a regole (mai bloccati)', async () => {
     const orologio = new OrologioFinto();
     let sblocca!: () => void;
     const arbitro = new ArbitroFinto({ 'Convinco Bertoldo': { tipo: 'prova', abilita: 'persuasione' } }, new Promise<void>((r) => (sblocca = r)));
@@ -244,8 +245,8 @@ describe('decisioni preparate all\'invio', () => {
     await Promise.resolve();
     orologio.avanza(4000);
     const r = await p;
-    expect(r.tiri).toEqual([]);
-    expect(r.fatti[0]).toMatch(/arbitro non disponibile/);
+    // Allo scadere decide la riserva a regole: «convinco» + Bertoldo → Persuasione.
+    expect(r.tiri.map((t) => t.etichetta)).toEqual(['Persuasione (Carisma)']);
     sblocca();
   });
 

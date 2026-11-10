@@ -27,6 +27,7 @@ import { proveScenaRegole, risolviTurnoRegole } from './risolutore-regole';
 import { regolePerNarratore } from '../regole/narratore';
 import { REGOLA_ESITI } from './testi';
 import { GestoreCombattimento } from './combattimento';
+import { classificaARegole, type IngressoClassificatore } from './classificatore-regole';
 import { combattimentoSrd, type Combattimento, type Fase } from '../regole/combattimento';
 import { strumentiRegole } from './risolutore-regole';
 import { attaccoPngSrd } from './risolutore';
@@ -73,8 +74,10 @@ export interface OpzioniMotoreProve {
   dadi?: FonteDadi;
   /** Seme fissato (CANTASTORIE_SEME_DADI): riproduce una partita. */
   seme?: string;
-  /** Quanto aspettare alla chiusura le decisioni in volo o tardive (default 4 s). */
+  /** Quanto aspettare alla chiusura le decisioni in volo o tardive (default 4 s; di più con un modello locale). */
   attesaMaxMs?: number;
+  /** Riserva a regole per le azioni senza decisione del modello (default sì). */
+  riserva?: boolean;
 }
 
 interface VoceCache {
@@ -298,6 +301,14 @@ export class MotoreProve {
         decisioni.set(a.id, pronta);
       }
       if (scaduto) this.o.log.warn({ turno, senza: azioni.filter((a) => !decisioni.get(a.id)).map((a) => a.id), limite_ms: limite }, 'prove: arbitro troppo lento alla chiusura');
+      // Riserva a regole (senza modello): le azioni rimaste senza decisione (modello assente, lento o
+      // fallito) si classificano col testo, così il dado si tira lo stesso (prove/classificatore-regole.ts).
+      const senza = azioni.filter((a) => !decisioni.get(a.id));
+      if (senza.length && this.o.riserva !== false) {
+        const ing = this.ingressoClassificatore(c);
+        for (const a of senza) decisioni.set(a.id, classificaARegole(a, ing));
+        this.o.log.info({ turno, azioni: senza.map((a) => ({ id: a.id, tipo: decisioni.get(a.id)?.tipo, abilita: decisioni.get(a.id)?.abilita })) }, 'prove: decisioni a regole (riserva senza modello)');
+      }
     }
     const attesa_ms = Math.round(this.o.orologio.ora() - t0);
     if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], attesa_ms, tardive, combattimento: null };
@@ -410,6 +421,18 @@ export class MotoreProve {
         return pf ? [{ id, nome: c.nome(id), di_png: id.startsWith('png_'), pf }] : [];
       }),
       condizioni: this.regoleCombattimento().condizioni.map((x) => ({ id: x.id, nome: x.nome, icona: x.icona, testo: x.testo })),
+    };
+  }
+
+  /** Ciò che serve al classificatore a regole (prove/classificatore-regole.ts). */
+  private ingressoClassificatore(c: ContestoProve): IngressoClassificatore {
+    const g = this.generico;
+    return {
+      campagna: c.campagna,
+      sistema: g ? g.regole.sistema : null,
+      armi: (id) => (g ? g.schede.get(id)?.attacchi : this.o.schede.get(id)?.attacchi)?.map((a) => a.id) ?? [],
+      haScheda: (id) => (g ? g.schede.has(id) : this.o.schede.has(id)),
+      proveScena: g ? proveScenaRegole(g.regole.sistema, c.campagna).map((p) => ({ id: p.id, quando: p.quando })) : this.proveScena(c.campagna).map((p) => ({ id: p.id, quando: p.quando })),
     };
   }
 
