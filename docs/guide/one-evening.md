@@ -123,7 +123,7 @@ In «Regole» the player can ask a question about the rules («Chiedi una regola
 ## Step 4. The Game Master panel
 
 On the Mac, open the panel link printed by the script. It starts in «senza spoiler» (meaning: no spoilers) mode, so the Game Master can also play. All sections and commands: [The Game Master panel](master-panel.md).
-A hidden NPC appears at the table when you reveal it from the panel with **Rivela** (meaning: reveal) (see [Creating a campaign](create-a-campaign.md#png-nascosti)).
+A hidden NPC appears at the table when you reveal it from the panel with **Rivela** (meaning: reveal) (see [Creating a campaign](create-a-campaign.md#hidden-npcs)).
 
 ## How a turn works
 

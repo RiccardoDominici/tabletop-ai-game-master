@@ -362,7 +362,7 @@ panel (see [the Game Master panel](master-panel.md)). Absent, or `false`, means 
 ### Prepared lines
 
 The prepared lines of the repertoire with the Qwen voice can be recorded before the evening, so they play right
-away. The command, and what it costs with drama-3, is in [voice and costs](voice-and-costs.md#le-battute-già-pronte).
+away. The command, and what it costs with drama-3, is in [voice and costs](voice-and-costs.md#lines-prepared-in-advance).
 `prepara.sh` has no option for this.
 
 ## 6. Images
