@@ -1,0 +1,548 @@
+# Battute del narratore: indizi, segni dell'orologio, momenti, finali, transizioni, attese.
+# Le battute degli indizi legati a un luogo hanno `scena` (non si fruga il fienile dalla torre); i segni
+# dell'orologio di sessione non ce l'hanno, perché si sentono da tutte e tre le scene.
+battute:
+  # ------------------------------------------------------------------ scena 1: l'ovile
+  - id: nar_giaciglio
+    chi: narratore
+    tipo: indizio
+    quando: "un PG fruga il giaciglio di Tonio nel fienile"
+    temi: [giaciglio, paglia, letto, frugo, frugare]
+    scena: scena_ovile
+    # Anche in privato: un'azione privata riceve solo battute con il cancello privato.
+    richiede: {oppure: [{privata: true}, {indizi_non_rivelati: [i_giaciglio]}]}
+    testo:
+      - "[narratore] La paglia è ancora schiacciata nella forma di un corpo."
+      - "[narratore] Il chiodo degli stivali è vuoto, e così quello del mantello. Nella cassetta del pane restano solo briciole."
+    effetti: {rivela_indizi: [i_giaciglio], fatti_noti: [f_tonio_stivali]}
+    max_usi: 1
+
+  - id: nar_cani
+    chi: narratore
+    tipo: indizio
+    quando: "un PG fa uscire i cani dal fienile"
+    temi: [cani, cane, liberare, libero, seguo, seguire]
+    scena: scena_ovile
+    testo:
+      - "[narratore] I cani schizzano fuori e corrono dritti al sentiero del bosco."
+      - "[narratore] Scodinzolano e non ringhiano. Al limite degli alberi si fermano ad aspettare."
+    effetti: {rivela_indizi: [i_cani]}
+    max_usi: 1
+
+  - id: nar_cani_scappano
+    chi: narratore
+    tipo: indizio
+    riempitivo: true
+    quando: "i PG indugiano nel cortile dell'ovile"
+    temi: [attesa]
+    scena: scena_ovile
+    testo:
+      - "[narratore] Un cane spalanca con il muso la porta del fienile e corre al sentiero, scodinzolando."
+      - "[narratore] Al limite degli alberi si ferma, si volta e aspetta."
+    effetti: {rivela_indizi: [i_cani]}
+    max_usi: 1
+
+  - id: nar_lavagna
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda da vicino la lavagna appesa alla porta"
+    temi: [lavagna, scritta, lettere, leggo, biglietto]
+    scena: scena_ovile
+    testo:
+      - "[narratore] Le lettere sono grandi e tonde, tracciate piano con il carbone."
+      - "[narratore] Ogni erre è rovesciata, con la pancia dalla parte sbagliata."
+    effetti: {rivela_indizi: [i_lavagna]}
+    max_usi: 1
+
+  - id: nar_pali
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda i nomi incisi sui pali del cancello"
+    temi: [pali, palo, nomi, incisi, inciso, incisioni]
+    scena: scena_ovile
+    testo:
+      - "[narratore] Sui pali ci sono nomi di pecore incisi col coltello: Brina, Rosella, Moretta."
+      - "[narratore] Le erre sono rovesciate, tutte quante."
+    effetti: {rivela_indizi: [i_pali]}
+    max_usi: 1
+
+  - id: nar_recinto
+    chi: narratore
+    tipo: indizio
+    quando: "un PG esamina il cancello dello stazzo"
+    temi: [cancello, chiavistello, stazzo, recinto, pecore]
+    scena: scena_ovile
+    testo:
+      - "[narratore] Il chiavistello è di legno, alzato e riabbassato con cura."
+      - "[narratore] Sul cancello non c'è un graffio. Dentro, le pecore ci sono tutte, e ruminano."
+    effetti: {rivela_indizi: [i_recinto], fatti_noti: [f_nessuna_pecora]}
+    max_usi: 1
+
+  - id: nar_avviso
+    chi: narratore
+    tipo: indizio
+    quando: "un PG sposta il mantello appeso dietro la porta di casa"
+    temi: [mantello, avviso, foglio, sigillo]
+    scena: scena_ovile
+    richiede: {oppure: [{privata: true}, {indizi_non_rivelati: [i_avviso]}]}
+    testo:
+      - "[narratore] Sotto il mantello c'è un foglio inchiodato, con un sigillo di cera rossa."
+      - "[narratore] Dice che la decima dei Benni non è pagata. Alla prima neve, l'ovile passa al signore."
+    effetti: {rivela_indizi: [i_avviso], fatti_noti: [f_debito]}
+    max_usi: 1
+
+  - id: nar_attesa_ovile
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    quando: "i PG restano fermi nel cortile senza fare niente"
+    temi: [attesa]
+    scena: scena_ovile
+    testo:
+      - "[narratore] Nello stazzo una pecora bela, e un'altra le risponde. Dal paese arriva odore di minestra e di fumo."
+    max_usi: 1
+
+  - id: fin_ovile_chiave
+    chi: narratore
+    tipo: finale
+    quando: "i PG partono per il bosco con la chiave di Berta"
+    temi: [partiamo, andiamo, bosco, carbonaia, sentiero]
+    scena: scena_ovile
+    richiede: {battute_usate: [ber_chiave]}
+    testo:
+      - "[narratore] Il sentiero entra nel bosco subito dietro il fienile."
+      - "[narratore] La chiave è fredda e pesante, e Berta resta sotto il portico a guardarvi andare. Tra i faggi, il mulo di Ugo è già un'ombra."
+    max_usi: 1
+
+  - id: fin_ovile_senza
+    chi: narratore
+    tipo: finale
+    quando: "i PG partono per il bosco senza la chiave di Berta"
+    temi: [partiamo, andiamo, bosco, carbonaia, sentiero]
+    scena: scena_ovile
+    richiede: {battute_non_usate: [ber_chiave]}
+    testo:
+      - "[narratore] Il sentiero entra nel bosco subito dietro il fienile."
+      - "[narratore] Berta resta sotto il portico, con la chiave stretta nel pugno. Tra i faggi, il mulo di Ugo è già un'ombra."
+    max_usi: 1
+
+  # ------------------------------------------------------------------ scena 2: la carbonaia
+  - id: nar_impronte
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda le impronte sul sentiero dei goblin"
+    temi: [impronte, orme, tracce, fango]
+    scena: scena_carbonaia
+    testo:
+      - "[narratore] Nel fango ci sono impronte piccole, di piedi nudi con le unghie lunghe."
+      - "[narratore] Accanto ci sono quelle di un paio di stivali da ragazzo, a passo lungo. A tratti gli stivali vanno davanti a tutti."
+    effetti: {rivela_indizi: [i_impronte]}
+    max_usi: 1
+
+  - id: nar_rovi
+    chi: narratore
+    tipo: indizio
+    quando: "un PG scosta i rovi dietro la carbonaia"
+    temi: [rovi, rovo, scosto, scostare, sterpi]
+    scena: scena_carbonaia
+    testo:
+      - "[narratore] Il fumo della carbonaia si piega e sparisce tra i rovi."
+      - "[narratore] Dietro, contro la roccia, c'è un arco basso di pietre squadrate. Ne esce un'aria fredda che sa di cantina."
+    effetti: {rivela_indizi: [i_rovi]}
+    max_usi: 1
+
+  - id: nar_cervo
+    chi: narratore
+    tipo: indizio
+    quando: "un PG entra nella capanna di Ugo"
+    temi: [capanna, trave, baracca]
+    scena: scena_carbonaia
+    richiede: {oppure: [{privata: true}, {indizi_non_rivelati: [i_cervo]}]}
+    testo:
+      - "[narratore] La capanna sa di sangue e di fumo."
+      - "[narratore] Da una trave pende un cervo ucciso da poco. Al collo ha un laccio di filo di ferro."
+    effetti: {rivela_indizi: [i_cervo]}
+    max_usi: 1
+
+  - id: nar_frasche
+    chi: narratore
+    tipo: momento
+    quando: "un PG trova qualcosa sotto le frasche a metà salita"
+    temi: [frasche, trappola, trappole, fossa, buca]
+    scena: scena_carbonaia
+    richiede: {oppure: [{prova: p_fossa_cercare}, {prova: trappole}, {prova: cercare}, {prova: pietra}]}
+    testo:
+      - "[narratore] Sotto le frasche c'è il vuoto. È una fossa profonda come un uomo, con il fondo di sassi."
+      - "[narratore] Le impronte la scavalcano, tutte, con un salto lungo."
+    effetti: {fatti_noti: [f_fossa]}
+    max_usi: 1
+
+  - id: nar_attesa_carbonaia
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    quando: "i PG restano fermi nella radura"
+    temi: [attesa]
+    scena: scena_carbonaia
+    testo:
+      - "[narratore] Un ciocco crolla dentro la carbonaia, e la terra si crepa. Un filo di fumo bianco sale dritto tra i faggi."
+    max_usi: 1
+
+  - id: nar_carbonaia_sbuffa
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    quando: "i PG indugiano accanto alla carbonaia"
+    temi: [attesa]
+    scena: scena_carbonaia
+    testo:
+      - "[narratore] La carbonaia sbuffa, e da una crepa esce una lingua di fuoco."
+      - "[narratore] Ugo corre con la pala e impreca: da solo non ce la fa."
+    max_usi: 1
+
+  - id: fin_carbonaia_cunicolo
+    chi: narratore
+    tipo: finale
+    quando: "i PG entrano nel passaggio sotto i rovi"
+    temi: [postierla, cunicolo, carponi, strisciamo, entriamo]
+    scena: scena_carbonaia
+    richiede: {oppure: [{indizi_rivelati: [i_rovi]}, {indizi_rivelati: [i_ugo_postierla]}]}
+    testo:
+      - "[narratore] Il cunicolo è basso, e si va carponi sulle pietre bagnate."
+      - "[narratore] Il fumo della carbonaia vi segue per un tratto, poi resta indietro. In fondo al buio trema una luce rossa."
+    max_usi: 1
+
+  - id: fin_carbonaia_sentiero
+    chi: narratore
+    tipo: finale
+    quando: "i PG salgono alla torre per il sentiero dei goblin"
+    temi: [saliamo, salita, partiamo, cima]
+    scena: scena_carbonaia
+    testo:
+      - "[narratore] Il sentiero sale ripido tra i faggi. A ogni passo il tamburo si fa più forte."
+      - "[narratore] In cima al crinale la torre è nera contro la luna."
+    max_usi: 1
+
+  # ------------------------------------------------------------------ scena 3: la torre
+  - id: nar_corda
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda da vicino la corda ai polsi del ragazzo"
+    temi: [corda, polsi, nodo, legato, slego, slegare]
+    scena: scena_torre
+    richiede: {oppure: [{privata: true}, {indizi_non_rivelati: [i_tonio_libero]}]}
+    testo:
+      - "[narratore] La corda fa tre giri intorno ai polsi, e i capi pendono liberi."
+      - "[narratore] Non c'è nessun nodo. Sulla pelle non c'è un segno."
+    effetti: {rivela_indizi: [i_tonio_libero]}
+    max_usi: 1
+
+  - id: nar_piccone
+    chi: narratore
+    tipo: indizio
+    riempitivo: true
+    quando: "i PG indugiano dentro la torre"
+    temi: [attesa]
+    scena: scena_torre
+    testo:
+      - "[narratore] Zirrà schiocca le dita."
+      - "[narratore] Il ragazzo si alza e lascia cadere la corda dai polsi. Poi le porta un piccone, senza che nessuno lo spinga."
+    effetti: {rivela_indizi: [i_tonio_libero], fatti_noti: [f_tonio_libero]}
+    max_usi: 1
+
+  - id: nar_mappa
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda da vicino i segni a carbone sul muro"
+    temi: [segni, disegno, disegni, mappa, muro]
+    scena: scena_torre
+    testo:
+      - "[narratore] Col carbone qualcuno ha disegnato la torre vista dall'alto, con una freccia che scende in cantina."
+      - "[narratore] Accanto c'è scritto cripta, con le erre rovesciate."
+    effetti: {rivela_indizi: [i_mappa]}
+    max_usi: 1
+
+  - id: nar_conto
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda il muro accanto alla porta di ferro"
+    temi: [tacche, conto, conti, cantina, annerito]
+    scena: scena_torre
+    testo:
+      - "[narratore] Accanto alla porta di ferro ci sono tacche a carbone, a gruppi di cinque."
+      - "[narratore] Sotto c'è una scritta storta: decima, quaranta d'argento."
+    effetti: {rivela_indizi: [i_conto]}
+    max_usi: 1
+
+  - id: nar_iscrizione
+    chi: narratore
+    tipo: momento
+    quando: "un PG cerca iscrizioni antiche sui muri della torre"
+    temi: [iscrizione, iscrizioni, stemma, antica, antiche]
+    scena: scena_torre
+    testo:
+      - "[narratore] Sopra la porta di ferro c'è uno stemma consumato: una torre e una chiave."
+      - "[narratore] Le lettere antiche dicono soltanto: paga della guarnigione, sotto la custodia del castellano."
+    effetti: {fatti_noti: [f_cripta_leggenda]}
+    max_usi: 1
+
+  - id: nar_cripta
+    chi: narratore
+    tipo: momento
+    quando: "un PG apre la porta di ferro con la chiave dei Benni"
+    temi: [chiave, serratura, cripta]
+    scena: scena_torre
+    richiede: {battute_usate: [ber_chiave]}
+    testo:
+      - "[narratore] La chiave gira nella serratura con un rumore di ferro vecchio."
+      - "[narratore] La porta si apre su un buco che sa di muffa. In fondo c'è una cassa cerchiata di ferro, e dal coperchio socchiuso luccicano monete."
+    effetti: {fatti_noti: [f_argento]}
+    audio: {effetto: chiave}
+    max_usi: 1
+
+  - id: nar_porta_colpi
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    quando: "la porta di ferro è ancora chiusa e i PG indugiano"
+    temi: [attesa]
+    scena: scena_torre
+    richiede: {battute_non_usate: [nar_cripta]}
+    testo:
+      - "[narratore] Grosso prende a mazzate la porta di ferro della cripta. Il ferro rimbomba, ma la porta tiene."
+    max_usi: 1
+
+  - id: nar_tonio_zitto
+    chi: narratore
+    tipo: reazione
+    quando: "un PG parla con il ragazzo davanti ai goblin"
+    temi: [ragazzo, tonio]
+    scena: scena_torre
+    richiede: {indizi_non_rivelati: [i_tonio_libero, i_impronte, i_ugo_racconta, i_grosso]}
+    testo:
+      - "[narratore] Il ragazzo guarda Zirrà prima di rispondere."
+      - "[narratore] Dice soltanto che sta bene, e che dovete portare la chiave."
+    max_usi: 1
+
+  - id: nar_tonio_parla
+    chi: narratore
+    tipo: momento
+    quando: "un PG chiede al ragazzo perché è salito alla torre"
+    temi: [ragazzo, tonio, salito, motivo]
+    scena: scena_torre
+    richiede:
+      oppure:
+        - {indizi_rivelati: [i_tonio_libero]}
+        - {indizi_rivelati: [i_impronte]}
+        - {indizi_rivelati: [i_ugo_racconta]}
+        - {indizi_rivelati: [i_grosso]}
+    testo:
+      - "[narratore] Il ragazzo tiene gli occhi bassi e parla piano."
+      - "[narratore] Dice che la decima non è pagata. Alla prima neve, dice, il balivo si prende l'ovile."
+      - "[narratore] Dice che l'argento della cripta era l'unico modo, e che sua madre non doveva saperlo."
+    effetti: {fatti_noti: [f_tonio_motivo, f_tonio_complice, f_debito]}
+    max_usi: 1
+
+  - id: nar_tonio_sottovoce
+    chi: narratore
+    tipo: momento
+    quando: "in cantina, sottovoce, un PG avverte il ragazzo di Zirrà"
+    temi: [tradirà, tradire, tradimento, ingannare, avverto, attento]
+    scena: scena_torre
+    richiede: {privata: true}
+    testo:
+      - "[narratore] Il ragazzo guarda in su, verso il fuoco, e si morde il labbro."
+      - "[narratore] Poi annuisce piano: quando sarà il momento, scenderà con voi."
+    max_usi: 1
+
+  - id: nar_attesa_torre
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    quando: "i PG restano fermi sulla soglia della torre"
+    temi: [attesa]
+    scena: scena_torre
+    testo:
+      - "[narratore] Il vento fischia nei buchi del muro, e il fuoco si abbassa. In alto, da qualche parte, cade un sasso."
+    max_usi: 1
+
+  # Finali della torre. Il primo è la rete di sicurezza: a orologio pieno il Motore dice il primo finale
+  # disponibile senza cancello sull'azione, e i tre finali della scelta non devono uscire da soli, al posto dei
+  # giocatori. Quelli li sceglie il selettore, quando un giocatore dice che cosa racconterà a Spinalba.
+  - id: fin_alba_brace
+    chi: narratore
+    tipo: finale
+    quando: "è passata la mezzanotte e la notte finisce"
+    temi: [orologio]
+    scena: scena_torre
+    richiede: {orologio: {id: o_mezzanotte, min: 8, max: 8}}
+    testo:
+      - "[narratore] Il tamburo tace, e il fuoco della torre diventa brace."
+      - "[narratore] Giù a Spinalba si accende una finestra sola, quella dei Benni. La strada per scendere è lunga."
+    max_usi: 1
+
+  - id: fin_alba_fontana
+    chi: narratore
+    tipo: finale
+    quando: "un PG dice che a Spinalba racconteranno chi ha aperto l'ovile ai goblin"
+    temi: [racconteremo, raccontiamo, diremo, diciamo, sapere]
+    scena: scena_torre
+    richiede:
+      oppure:
+        - {indizi_rivelati: [i_tonio_libero]}
+        - {indizi_rivelati: [i_impronte]}
+        - {indizi_rivelati: [i_ugo_racconta]}
+        - {indizi_rivelati: [i_grosso]}
+    testo:
+      - "[narratore] All'alba, davanti alla fontana di Spinalba, la storia del ragazzo è detta tutta."
+      - "[narratore] Il paese tace a lungo. Poi il più vecchio ricorda l'usanza: sette inverni lontano dalla valle."
+      - "[narratore] Berta stringe il figlio, e davanti a nessuno piange."
+    max_usi: 1
+
+  - id: fin_alba_silenzio
+    chi: narratore
+    tipo: finale
+    quando: "un PG dice che a Spinalba il ragazzo sarà soltanto un prigioniero liberato"
+    temi: [prigioniero, liberato, taceremo, tacere, silenzio]
+    scena: scena_torre
+    richiede:
+      oppure:
+        - {indizi_rivelati: [i_tonio_libero]}
+        - {indizi_rivelati: [i_impronte]}
+        - {indizi_rivelati: [i_ugo_racconta]}
+        - {indizi_rivelati: [i_grosso]}
+    testo:
+      - "[narratore] All'alba il ragazzo torna a casa, e a Spinalba nessuno fa domande."
+      - "[narratore] Il paese ha già il suo colpevole. Prima di sera, dal bosco sale il fumo di una carbonaia spenta a secchiate."
+    max_usi: 1
+
+  - id: fin_alba_riserva
+    chi: narratore
+    tipo: finale
+    quando: "un PG dice che scagioneranno Ugo raccontando della sua caccia nella riserva"
+    temi: [scagionare, scagioniamo, caccia, cervo, riserva]
+    scena: scena_torre
+    richiede:
+      oppure:
+        - {indizi_rivelati: [i_cervo]}
+        - {indizi_rivelati: [i_ugo_frodo]}
+    testo:
+      - "[narratore] All'alba il ragazzo torna a casa, e del sentiero della torre non parla nessuno."
+      - "[narratore] Per Ugo basta la sua caccia: stanotte era nella riserva, non con i goblin. Il paese gli rende il saluto, e il balivo gli prende il bosco."
+    max_usi: 1
+
+  # La chiusura (C13): la dice il Motore dopo il finale, a orologio pieno. La scelta resta aperta.
+  - id: nar_chiusura
+    chi: narratore
+    tipo: momento
+    quando: "la notte è finita e resta da dire che cosa si racconta"
+    temi: [orologio]
+    scena: scena_torre
+    richiede: {orologio: {id: o_mezzanotte, min: 8, max: 8}}
+    testo:
+      - "[narratore] A Spinalba aspettano una storia, e tocca a voi raccontarla. Che cosa direte, all'alba?"
+    max_usi: 1
+
+  # ------------------------------------------------------------------ segni dell'orologio di sessione
+  - id: nar_segno_1
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del primo segno della notte"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 0, max: 0}}
+    testo: ["[narratore] Dal crinale scende un corno di capra, lungo e stonato."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+
+  - id: nar_segno_2
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del secondo segno della notte"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 1, max: 1}}
+    testo: ["[narratore] In cima alla Torre Mozza si accende un fuoco, piccolo come una stella."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+
+  - id: nar_segno_3
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del terzo segno della notte"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 2, max: 2}}
+    testo: ["[narratore] I cani di Spinalba abbaiano tutti insieme, poi tacciono di colpo."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+
+  - id: nar_segno_4
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del quarto segno della notte"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 3, max: 3}}
+    testo: ["[narratore] La luna esce dalle nuvole e fa bianca la torre sul crinale."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+
+  - id: nar_segno_5
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del quinto segno della notte"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 4, max: 4}}
+    testo: ["[narratore] Due colpi di corno, corti e vicini: i goblin chiamano."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+
+  - id: nar_segno_6
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del sesto segno della notte"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 5, max: 5}}
+    testo: ["[narratore] Lassù comincia a battere un tamburo, lento, e non smette più."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+
+  - id: nar_segno_7
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del settimo segno della notte"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 6, max: 6}}
+    testo: ["[narratore] Il fuoco sulla torre si alza alto, e il tamburo accelera."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+
+  - id: nar_segno_8
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento dell'ultimo segno della notte"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 7, max: 7}}
+    testo: ["[narratore] Tre colpi di corno: è mezzanotte, e la torre aspetta la chiave."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+
+  # ------------------------------------------------------------------ transizioni
+  - id: tr_bosco
+    chi: narratore
+    tipo: transizione
+    quando: "i PG entrano nel bosco dall'ovile"
+    temi: [bosco, faggi, alberi]
+    scena: [scena_ovile, scena_carbonaia]
+    testo:
+      - "[narratore] Sotto i faggi il buio arriva di colpo."
+      - "[narratore] L'odore di fumo cresce a ogni passo, e da lontano si sente sbuffare una carbonaia."
+    max_usi: 1
+
+  - id: tr_crinale
+    chi: narratore
+    tipo: transizione
+    quando: "i PG escono dal bosco in vista della torre"
+    temi: [crinale, radura, uscire]
+    scena: [scena_carbonaia, scena_torre]
+    testo:
+      - "[narratore] Il bosco finisce, e il crinale è nudo e bianco di luna."
+      - "[narratore] La torre vi guarda dall'alto, con il fuoco acceso in cima."
+    max_usi: 1

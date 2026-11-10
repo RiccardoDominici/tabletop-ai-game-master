@@ -1,0 +1,172 @@
+# Battute di Berta (voce nadine). Solo nella scena dell'ovile: il Motore non elenca le battute di chi non è in scena.
+battute:
+  # Esempi di voce: non escono, guidano l'improvvisazione.
+  - {id: ber_saluto, chi: png_berta, tipo: saluto, solo_esempio: true, quando: "i PG salutano Berta", temi: [saluto], max_usi: 1,
+     testo: ["[narratore] Berta vi viene incontro asciugandosi le mani nel grembiule.", "[png_berta] Allora siete arrivati. Entrate nel cortile, presto."]}
+  - {id: ber_domanda_gentile, chi: png_berta, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Berta come sta", temi: [gentile], max_usi: 1,
+     testo: ["[png_berta] Ho un figlio lassù. Chiedimelo domani."]}
+  - {id: ber_accusa, chi: png_berta, tipo: reazione, solo_esempio: true, quando: "un PG accusa Berta di non dire tutto", temi: [accuso], max_usi: 1,
+     testo: ["[png_berta] Stanotte ho perso un figlio. Guarda il carbonaio, non me."]}
+  - {id: ber_minaccia, chi: png_berta, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Berta", temi: [minaccia], max_usi: 1,
+     testo: ["[png_berta] Fuori dal mio cortile. Le pecore hanno più giudizio."]}
+  - {id: ber_offerta, chi: png_berta, tipo: reazione, solo_esempio: true, quando: "un PG offre denaro a Berta", temi: [offerta], max_usi: 1,
+     testo: ["[png_berta] Tieni i tuoi soldi. Riportami mio figlio."]}
+  - {id: ber_aiuto, chi: png_berta, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Berta nello stazzo", temi: [aiuto], max_usi: 1,
+     testo: ["[png_berta] Grazie. Ma il latte non mi riporta il figlio."]}
+  - {id: ber_rifiuto, chi: png_berta, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Berta di cose che non sa", temi: [domanda], max_usi: 1,
+     testo: ["[png_berta] Questo non lo so. Io so di pecore e di figli."]}
+
+  # In attesa: la usa il lettore locale quando non trova una risposta.
+  - id: ber_attesa
+    chi: png_berta
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG indugiano nel cortile senza parlare con Berta"
+    temi: [attesa]
+    testo: ["[png_berta] Allora? Le pecore non aspettano, e quelli lassù nemmeno."]
+    max_usi: 1
+
+  - id: ber_salgo_io
+    chi: png_berta
+    tipo: momento
+    riempitivo: true
+    quando: "nessuno dei PG si offre di salire alla torre"
+    temi: [attesa]
+    testo:
+      - "[narratore] Berta stringe la chiave nel pugno e si alza dalla panca."
+      - "[png_berta] Se non sale nessuno, salgo io. A mezzanotte, con la chiave."
+    max_usi: 1
+
+  # Risposte a domande precise.
+  - id: ber_cani
+    chi: png_berta
+    tipo: reazione
+    quando: "un PG chiede a Berta dei cani"
+    temi: [cani, abbaiato, abbaiare, abbaiano]
+    testo:
+      - "[png_berta] Stanotte non hanno fatto un verso. Stamattina erano nel fienile, con la sbarra calata da fuori."
+    effetti: {fatti_noti: [f_cani_fienile]}
+    max_usi: 1
+
+  - id: ber_cose_tonio
+    chi: png_berta
+    tipo: indizio
+    quando: "un PG chiede a Berta che cosa manca del figlio"
+    temi: [manca, mancano, stivali, mantello, roba]
+    testo:
+      - "[png_berta] Gli stivali buoni e il mantello. E il pane della settimana, tutto."
+    effetti: {rivela_indizi: [i_giaciglio], fatti_noti: [f_tonio_stivali]}
+    max_usi: 1
+
+  - id: ber_nomi_pali
+    chi: png_berta
+    tipo: indizio
+    quando: "un PG chiede a Berta dei nomi incisi sui pali"
+    temi: [pali, palo, nomi, incisi, inciso]
+    testo:
+      - "[png_berta] Li ha incisi Tonio, da piccolo. Le erre le fa al contrario, da sempre."
+    effetti: {rivela_indizi: [i_pali], fatti_noti: [f_pali_tonio, f_lettere_tonio]}
+    max_usi: 1
+
+  - id: ber_rapitore
+    chi: png_berta
+    tipo: momento
+    quando: "un PG chiede a Berta chi ha preso suo figlio"
+    temi: [rapito, rapitore, sospetti, sospetto, sospetti]
+    testo:
+      - "[narratore] Berta indica il cancello con il mento, dove aspetta il mulo carico di carbone."
+      - "[png_berta] Lui. Ha venduto ai goblin il sentiero, per vendetta."
+    max_usi: 1
+
+  - id: ber_soldata
+    chi: png_berta
+    tipo: reazione
+    quando: "la soldata della milizia ricorda a Berta l'inverno passato nel suo fienile"
+    temi: [ricordi, ricordo, milizia, inverno]
+    richiede: {da_pg: [pg_livia]}
+    testo:
+      - "[png_berta] Ti ricordo, soldata. Dormivi con le pecore, senza lamenti."
+    max_usi: 1
+
+  - id: ber_benedizione
+    chi: png_berta
+    tipo: reazione
+    quando: "il chierico offre a Berta la benedizione dell'ovile"
+    temi: [benedico, benedire, benedizione, preghiera, prego]
+    richiede: {da_pg: [pg_fulco]}
+    testo:
+      - "[png_berta] Benedici lui, non le pecore. Lui è lassù."
+    max_usi: 1
+
+  # La chiave: Berta la affida a chi la convince, o a chi ha saputo della decima e ha taciuto.
+  - id: ber_chiave
+    chi: png_berta
+    tipo: momento
+    quando: "un PG chiede a Berta di affidargli la chiave per salire alla torre"
+    temi: [chiave, affidi, affidare, consegnare, prometto, giuro]
+    richiede:
+      oppure:
+        - {prova: p_berta_chiave}
+        - {prova: carisma}
+        - {battute_usate: [ber_conti_fienile]}
+        - {battute_usate: [ber_conti_foglio]}
+    testo:
+      - "[narratore] Berta si sfila il laccio dal collo e vi mette in mano la chiave."
+      - "[png_berta] È fredda, la chiave. Riportami lui, non l'argento."
+    max_usi: 1
+
+  # La menzogna sulla decima, con il segnale in ogni versione.
+  - id: ber_debiti_domanda
+    chi: png_berta
+    tipo: menzogna
+    quando: "un PG chiede a Berta di debiti o di soldi"
+    temi: [debiti, debito, soldi, decima, balivo, pagare]
+    testo:
+      - "[narratore] Berta si tira lo scialle sulle spalle e guarda la porta di casa."
+      - "[png_berta] Noi Benni non dobbiamo niente a nessuno. Mai dovuto."
+    varianti:
+      - ["[narratore] Berta si tira lo scialle sulle spalle e guarda la porta di casa.", "[png_berta] Te l'ho detto. Niente a nessuno."]
+    effetti: {menzogna_detta: ber_conti}
+    max_usi: 2
+
+  # Le due confessioni, una per condizione del cede_se, che si escludono a vicenda.
+  - id: ber_conti_fienile
+    chi: png_berta
+    tipo: confessione
+    quando: "nel fienile, in privato, un PG chiede a Berta dei soldi dell'ovile"
+    temi: [debiti, debito, soldi, decima, balivo, pagare]
+    richiede: {privata: true, battute_non_usate: [ber_conti_foglio]}
+    testo:
+      - "[narratore] Berta si siede sulla paglia e abbassa la voce."
+      - "[png_berta] La decima. Non l'ho pagata. Alla prima neve il balivo si prende l'ovile. Tonio lo sa."
+    effetti: {rivela_indizi: [i_berta_debito], fatti_noti: [f_debito]}
+    max_usi: 1
+
+  - id: ber_conti_foglio
+    chi: png_berta
+    tipo: confessione
+    quando: "un PG mostra a Berta il foglio con il sigillo rosso"
+    temi: [avviso, foglio, sigillo, mostro]
+    richiede: {indizi_rivelati: [i_avviso], battute_non_usate: [ber_conti_fienile]}
+    testo:
+      - "[narratore] Berta guarda il sigillo rosso e smette di stringere la chiave."
+      - "[png_berta] Sì, la decima. Non l'ho pagata. Alla prima neve si prendono tutto. Tonio lo sa."
+    effetti: {rivela_indizi: [i_berta_debito], fatti_noti: [f_debito]}
+    max_usi: 1
+
+  # Quando le dicono che il figlio è d'accordo con i goblin (serve una prova già trovata).
+  - id: ber_non_ci_crede
+    chi: png_berta
+    tipo: momento
+    quando: "un PG dice a Berta che il figlio non è un prigioniero dei goblin"
+    temi: [volontà, accordo, d'accordo, complice, apposta]
+    richiede:
+      oppure:
+        - {indizi_rivelati: [i_impronte]}
+        - {indizi_rivelati: [i_ugo_racconta]}
+        - {indizi_rivelati: [i_tonio_libero]}
+        - {indizi_rivelati: [i_grosso]}
+    testo:
+      - "[narratore] Berta diventa bianca e stringe la chiave fino a farsi male."
+      - "[png_berta] Mio figlio? Con quelle bestie? Voglio sentirlo dire da lui."
+    max_usi: 1

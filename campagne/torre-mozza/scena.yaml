@@ -44,7 +44,7 @@ indizi:
     nodo: n_ovile
     essenziale: false
     tiro: "nessuno"
-    modi: 1
+    modi: 2
     come_si_trova: "Chi fa uscire i cani li vede correre al sentiero del bosco scodinzolando, senza ringhiare, come dietro a uno di casa. Arriva anche da solo, con la mossa morbida."
     vincolo_pubblico: "I cani dei Benni sono chiusi nel fienile e guaiscono; quando escono non ringhiano."
   - id: i_lavagna
@@ -103,7 +103,15 @@ musica: {tag: esplorazione_tesa, transizione: "resta esplorazione_tesa; verso in
 immagine:
   invarianti: ["cortile di terra battuta", "recinto di pietra a secco con cancello di legno tra due pali scolpiti", "fienile con la porta socchiusa", "casa di pietra con portico e lavagna appesa alla porta", "torre mozza sul crinale, in lontananza"]
   prompt_luogo: "mountain sheepfold yard at dusk, a dry-stone sheep pen with a wooden gate between two carved posts, a barn with a half-open door, a small stone house with a porch and a slate hanging on the door, a mule loaded with sacks of charcoal by the yard gate, a ruined broken-topped watchtower on the ridge in the far background, woodland path behind the barn"
+audio:
+  musica: [borgo, imbrunire, vento]
+  ambiente: [vento, {tag: stalla, volume: 0.5}]
+  interno: false
+  umore_iniziale: esplorazione_tesa
 taglio: "La scena si chiude quando i PG partono per il bosco o per la torre, con la chiave o senza. Ugo torna comunque alla carbonaia prima di loro, perché una carbonaia accesa non si lascia sola: se i PG lo accusano, il paese lo lascia andare lo stesso, a male parole. Se Berta non affida la chiave, la tiene al collo e resta all'ovile ad aspettare. Se i PG esitano, il corno della torre e i cani che scappano verso il sentiero li spingono a partire."
+esiti:
+  - {id: es_ovile_chiave, descrizione: "I PG partono per il bosco con la chiave di Berta.", finale: fin_ovile_chiave}
+  - {id: es_ovile_senza, descrizione: "I PG partono per il bosco senza la chiave: Berta la tiene al collo.", finale: fin_ovile_senza}
 prove:
   - {id: p_berta_chiave, quando: "un PG chiede a Berta di affidargli la chiave", caratteristica: carisma, difficolta: normale, se_fallisce: "Berta stringe la chiave e dice che a mezzanotte salirà lei, da sola", parole: [chiave, affidare, consegnare]}
   - {id: p_cani, quando: "un PG calma i cani e li segue fino al bosco", caratteristica: saggezza, difficolta: facile, indizio: i_cani, se_fallisce: "i cani scappano tra gli alberi e non tornano: il PG resta solo sul sentiero buio", parole: [cani, seguo, fiuto]}

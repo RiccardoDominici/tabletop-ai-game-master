@@ -88,7 +88,15 @@ musica: {tag: esplorazione_tesa, transizione: "resta esplorazione_tesa; verso in
 immagine:
   invarianti: ["radura nel bosco di faggi", "carbonaia fumante a cupola di terra", "capanna di frasche con un mulo legato", "muro di rovi contro la roccia", "torre mozza nera sul cielo, sopra gli alberi"]
   prompt_luogo: "forest clearing at night among tall beech trees, a smoking dome-shaped charcoal kiln covered in earth, a small hut of branches with a mule tied outside, a thick wall of brambles against a rock face behind the kiln, a muddy path climbing into the trees, a ruined watchtower black against the moonlit sky above the treetops"
-taglio: "La scena si chiude quando i PG salgono alla torre, dal sentiero o dalla postierla. Se aiutano Ugo con la carbonaia, lui indica la postierla; se lo accusano, tace e torna alla pala. Ugo resta comunque alla carbonaia. Se i PG esitano, il tamburo della torre e la carbonaia che sbuffa li spingono a decidere."
+audio:
+  musica: [bosco, notte]
+  ambiente: [bosco, {tag: fuoco, volume: 0.4}]
+  interno: false
+  umore_iniziale: esplorazione_tesa
+taglio: "La scena si chiude quando i PG salgono alla torre, per il sentiero o per un'altra via. Se aiutano Ugo con la carbonaia, lui li ripaga con un consiglio; se lo accusano, tace e torna alla pala. Ugo resta comunque alla carbonaia. Se i PG esitano, il tamburo della torre e la carbonaia che sbuffa li spingono a decidere."
+esiti:
+  - {id: es_postierla, descrizione: "I PG entrano nella torre dalla postierla sotto i rovi.", finale: fin_carbonaia_cunicolo}
+  - {id: es_sentiero, descrizione: "I PG salgono alla torre per il sentiero dei goblin.", finale: fin_carbonaia_sentiero}
 prove:
   - {id: p_fossa_cercare, quando: "un PG cerca trappole sul sentiero dei goblin", abilita: trappole, difficolta: normale, se_fallisce: "non vede niente: le frasche restano frasche", parole: [trappola, trappole, frasche]}
   - {id: p_fossa_salvezza, quando: "un PG mette il piede sulle frasche a metà salita", abilita: ts_morte, difficolta: normale, se_fallisce: "cade nella fossa: si fa male alle gambe, e il tonfo arriva fino alla torre", parole: [salto, aggrappo, fossa]}

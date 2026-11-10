@@ -19,6 +19,11 @@ aspetto:
   lettura: "Un vecchio curvo e nero di fuliggine, con la barba bruciacchiata e un cappello di feltro sfondato. Ha le mani grandi come pale e un'accetta alla cintura."
   invarianti: ["vecchio curvo", "viso nero di fuliggine", "barba grigia bruciacchiata", "cappello di feltro sfondato", "accetta alla cintura"]
   prompt_immagine: "hunched old charcoal burner, face blackened with soot, singed grey beard, battered felt hat, huge rough hands, a hatchet at his belt, woodsmoke behind him, [STILE]"
+  # La caccia di frodo si vede solo dopo che è venuta fuori.
+  situazioni:
+    - id: col_cervo
+      dopo: [i_cervo, ugo_notte_cervo, ugo_notte_promessa]
+      prompt: "the old charcoal burner stands in his branch hut beside a freshly killed deer hanging from a beam, a wire snare around its neck, holding his felt hat in his hands"
 personalita:
   superficie: ["burbero, risponde a monosillabi", "sputa per terra quando sente nominare il paese"]
   sotto_pressione: ["smette di brontolare e diventa gentile in modo goffo, offre da bere"]
@@ -37,7 +42,7 @@ voce:
   gesto: "batte la pala per terra due volte"
   mai_dice: ["il nome di Tonio, finché non ha ceduto", "la parola «cervo»", "grazie"]
   battuta_campione: "Lei cosa vuole? Il carbone costa."
-sa: [f_ugo_carbonaio, f_carbonaia_fuoco, f_riserva, f_lite_vecchia, f_ugo_sospettato, f_ugo_frodo, f_ugo_visto, f_postierla, f_goblin_torre, f_torre_rovina, f_balivo_lontano]
+sa: [f_ugo_carbonaio, f_carbonaia_fuoco, f_riserva, f_lite_vecchia, f_ugo_sospettato, f_ugo_frodo, f_ugo_visto, f_postierla, f_goblin_torre, f_torre_rovina, f_balivo_lontano, f_fossa]
 non_sa: [f_tonio_complice, f_tonio_motivo, f_debito, f_zirra_inganno, f_argento, f_tonio_lavagna]
 crede_a_torto:
   - {testo: "Il ragazzo va lassù a rubare ai goblin, come un ladruncolo.", contraddice: f_tonio_motivo}
@@ -45,7 +50,7 @@ mente_su:
   - id: ugo_notte
     argomento: "dove era stanotte"
     verita: f_ugo_frodo
-    versione: "Stanotte? Ero qui. La carbonaia non si lascia."
+    versione: "Stanotte? Alla carbonaia, il fuoco non si lascia."
     perche: "La caccia nella riserva gli costa il bosco e la multa del balivo."
     segnale: "si toglie il cappello e se lo rigira tra le mani"
     cede_se: "Dice la verità quando un PG gli mostra il cervo trovato nella capanna. Oppure in privato, se un PG gli promette di non dirlo al balivo."
@@ -54,7 +59,7 @@ mente_su:
     verita: f_ugo_visto
     versione: "Io non vedo niente. Guardo il fuoco, io."
     perche: "Nessuno in paese gli crederebbe, e per dirlo dovrebbe spiegare che cosa ci faceva sotto la torre."
-    segnale: "guarda il sentiero della torre e poi sputa nel fuoco"
+    segnale: "guarda verso la torre e sputa per terra"
     cede_se: "Racconta ciò che ha visto in privato, sottovoce, dove nessuno del paese lo sente. Oppure quando un PG gli descrive le impronte del ragazzo sul sentiero."
 atteggiamento_pg:
   pg_livia: {stato: indifferente, perche: "una soldata con la croce della milizia: per lui è gente del balivo", vuole: "che non metta il naso nella sua capanna"}

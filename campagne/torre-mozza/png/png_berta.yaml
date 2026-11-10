@@ -35,7 +35,7 @@ voce:
   gesto: "stringe nel pugno la chiave che ha al collo"
   mai_dice: ["la parola «decima», finché non ha ceduto", "una parola buona per Ugo", "che ha paura"]
   battuta_campione: "Mio figlio è lassù. Tu sali, o no?"
-sa: [f_tonio_sparito, f_lavagna, f_chiave_castellano, f_berta_vedova, f_lite_vecchia, f_usanza, f_debito, f_tonio_stivali, f_nessuna_pecora, f_cani_fienile, f_pali_tonio, f_goblin_torre, f_spinalba]
+sa: [f_tonio_sparito, f_lavagna, f_chiave_castellano, f_berta_vedova, f_lite_vecchia, f_usanza, f_debito, f_tonio_stivali, f_nessuna_pecora, f_cani_fienile, f_pali_tonio, f_lettere_tonio, f_goblin_torre, f_spinalba]
 non_sa: [f_tonio_complice, f_tonio_lavagna, f_cani_chiusi, f_tonio_motivo, f_ugo_frodo, f_ugo_visto, f_zirra_inganno, f_postierla]
 crede_a_torto:
   - {testo: "Ugo ha venduto ai goblin il sentiero, per vendicarsi di suo marito.", contraddice: f_tonio_complice}

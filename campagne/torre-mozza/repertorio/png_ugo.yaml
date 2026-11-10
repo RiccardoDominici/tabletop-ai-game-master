@@ -1,0 +1,138 @@
+# Battute di Ugo (voce vincent): all'ovile e alla carbonaia.
+battute:
+  - {id: ugo_saluto, chi: png_ugo, tipo: saluto, solo_esempio: true, quando: "i PG salutano Ugo", temi: [saluto], max_usi: 1,
+     testo: ["[narratore] Ugo vi guarda da sotto il cappello e non si alza.", "[png_ugo] Lei chi è? Carbone, o domande?"]}
+  - {id: ugo_domanda_gentile, chi: png_ugo, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Ugo come sta", temi: [gentile], max_usi: 1,
+     testo: ["[png_ugo] Vecchio, sto. E solo, per fortuna."]}
+  - {id: ugo_accusa, chi: png_ugo, tipo: reazione, solo_esempio: true, quando: "un PG accusa Ugo di aver chiamato i goblin", temi: [accuso], max_usi: 1,
+     testo: ["[png_ugo] Io, coi goblin? Mi rubano la legna, quelli."]}
+  - {id: ugo_minaccia, chi: png_ugo, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Ugo", temi: [minaccia], max_usi: 1,
+     testo: ["[narratore] Ugo stringe il manico dell'accetta.", "[png_ugo] Lei se ne vada. Adesso."]}
+  - {id: ugo_offerta, chi: png_ugo, tipo: reazione, solo_esempio: true, quando: "un PG offre soldi a Ugo", temi: [offerta], max_usi: 1,
+     testo: ["[png_ugo] Soldi? Comprano carbone, non parole."]}
+  - {id: ugo_aiuto, chi: png_ugo, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Ugo con la pala", temi: [aiuto], max_usi: 1,
+     testo: ["[png_ugo] Ecco, così si tappa. Tu sai lavorare."]}
+  - {id: ugo_rifiuto, chi: png_ugo, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Ugo di cose che non sa", temi: [domanda], max_usi: 1,
+     testo: ["[png_ugo] Non lo so. Chieda al paese, che sa tutto."]}
+
+  - id: ugo_attesa
+    chi: png_ugo
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG indugiano accanto a Ugo senza dire niente"
+    temi: [attesa]
+    testo:
+      - "[narratore] Ugo batte la pala per terra due volte."
+      - "[png_ugo] Paese. Sempre domande, mai carbone."
+    max_usi: 1
+
+  # Risposte a domande precise.
+  - id: ugo_tre_monete
+    chi: png_ugo
+    tipo: reazione
+    quando: "la halfling chiede a Ugo le tre monete della partita a dadi"
+    temi: [monete, dadi, partita]
+    richiede: {da_pg: [pg_nespola]}
+    testo:
+      - "[png_ugo] Tre monete? Dopo, adesso c'è il ragazzo."
+    max_usi: 1
+
+  - id: ugo_salita
+    chi: png_ugo
+    tipo: reazione
+    quando: "un PG chiede a Ugo com'è il sentiero dei goblin"
+    temi: [sentiero, salita, frasche, trappola]
+    testo:
+      - "[png_ugo] Occhio alle frasche, a metà salita. Sotto c'è il buco."
+    effetti: {fatti_noti: [f_fossa]}
+    max_usi: 1
+
+  # La postierla: Ugo la indica a chi lo aiuta o glielo chiede (non mente su questo).
+  - id: ugo_consiglio
+    chi: png_ugo
+    tipo: indizio
+    quando: "un PG aiuta Ugo a tappare la carbonaia, o gli chiede un consiglio sulla torre"
+    temi: [pala, tappare, tappo, entrare, passaggio, postierla]
+    scena: scena_carbonaia
+    testo:
+      - "[narratore] Ugo pianta la pala nella terra e indica i rovi con il mento."
+      - "[png_ugo] Lì sotto c'è il buco dei soldati. Porta in cantina, tu."
+    effetti: {rivela_indizi: [i_ugo_postierla], fatti_noti: [f_postierla]}
+    max_usi: 1
+
+  # Le due menzogne, con il segnale in ogni versione.
+  - id: ugo_stanotte
+    chi: png_ugo
+    tipo: menzogna
+    quando: "un PG chiede a Ugo dove era stanotte"
+    temi: [stanotte, dormito, dormivi, ieri]
+    testo:
+      - "[narratore] Ugo si toglie il cappello e se lo rigira tra le mani."
+      - "[png_ugo] Stanotte? Alla carbonaia, il fuoco non si lascia."
+    varianti:
+      - ["[narratore] Ugo si toglie il cappello e se lo rigira tra le mani.", "[png_ugo] L'ho già detto. Alla carbonaia."]
+    effetti: {menzogna_detta: ugo_notte}
+    max_usi: 2
+
+  - id: ugo_niente_visto
+    chi: png_ugo
+    tipo: menzogna
+    quando: "un PG chiede a Ugo se ha visto qualcuno sul sentiero della torre"
+    temi: [visto, vedere, passare, passato, qualcuno]
+    testo:
+      - "[narratore] Ugo guarda verso la torre e sputa per terra."
+      - "[png_ugo] Io non vedo niente. Guardo il fuoco, io."
+    varianti:
+      - ["[narratore] Ugo guarda verso la torre e sputa per terra.", "[png_ugo] Niente. Il fuoco, guardo."]
+    effetti: {menzogna_detta: ugo_sentiero}
+    max_usi: 2
+
+  # Confessioni sulla notte: davanti al cervo, oppure in privato con la promessa.
+  - id: ugo_notte_cervo
+    chi: png_ugo
+    tipo: confessione
+    quando: "un PG mostra a Ugo il cervo appeso nella capanna"
+    temi: [cervo, laccio, riserva, caccia]
+    richiede: {indizi_rivelati: [i_cervo], battute_non_usate: [ugo_notte_promessa]}
+    testo:
+      - "[narratore] Ugo guarda il cervo e si rimette il cappello."
+      - "[png_ugo] Va bene. Ero nella riserva, a caccia. Il balivo non deve saperlo."
+    effetti: {rivela_indizi: [i_ugo_frodo], fatti_noti: [f_ugo_frodo]}
+    max_usi: 1
+
+  - id: ugo_notte_promessa
+    chi: png_ugo
+    tipo: confessione
+    quando: "in privato, un PG promette a Ugo di non parlare al balivo"
+    temi: [prometto, giuro, balivo, parola]
+    richiede: {privata: true, battute_non_usate: [ugo_notte_cervo]}
+    testo:
+      - "[narratore] Ugo vi guarda a lungo, poi abbassa la voce."
+      - "[png_ugo] Stanotte ero nella riserva. A caccia. Tu non hai sentito niente."
+    effetti: {rivela_indizi: [i_ugo_frodo], fatti_noti: [f_ugo_frodo]}
+    max_usi: 1
+
+  # Confessioni su ciò che ha visto: in privato, oppure davanti alle impronte.
+  - id: ugo_sentiero_privato
+    chi: png_ugo
+    tipo: confessione
+    quando: "in privato, un PG chiede a Ugo chi passa sul sentiero della torre"
+    temi: [visto, passare, sentiero, ragazzo, tonio]
+    richiede: {privata: true, battute_non_usate: [ugo_sentiero_impronte]}
+    testo:
+      - "[narratore] Ugo abbassa la voce e guarda verso il bosco."
+      - "[png_ugo] Il ragazzo dei Benni. Saliva da solo, col pane sotto il braccio. Due volte l'ho visto."
+    effetti: {rivela_indizi: [i_ugo_racconta], fatti_noti: [f_ugo_visto]}
+    max_usi: 1
+
+  - id: ugo_sentiero_impronte
+    chi: png_ugo
+    tipo: confessione
+    quando: "un PG descrive a Ugo le impronte degli stivali sul sentiero"
+    temi: [impronte, orme, stivali, fango]
+    richiede: {indizi_rivelati: [i_impronte], battute_non_usate: [ugo_sentiero_privato]}
+    testo:
+      - "[narratore] Ugo smette di spalare e si appoggia al manico."
+      - "[png_ugo] Sì. Il ragazzo dei Benni. Saliva da solo, col pane. Nessuno lo spingeva."
+    effetti: {rivela_indizi: [i_ugo_racconta], fatti_noti: [f_ugo_visto]}
+    max_usi: 1

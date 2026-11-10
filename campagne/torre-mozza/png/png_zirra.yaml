@@ -23,6 +23,11 @@ aspetto:
   lettura: "Una goblin piccola come un bambino, con la pelle grigioverde e gli occhi gialli. Porta uno scudo dipinto di rosso e una spada corta troppo grande per lei."
   invarianti: ["goblin piccola", "pelle grigioverde", "occhi gialli", "scudo rotondo dipinto di rosso", "spada corta", "giubba di cuoio con le borchie"]
   prompt_immagine: "small female goblin warrior the size of a child, grey-green skin, bright yellow eyes, sharp grin, studded leather jerkin, a round shield painted red, a short sword too big for her, firelight in a ruined stone tower, [STILE]"
+  # Dopo il tradimento (la cripta aperta): un momento, non un tratto nascosto del ritratto.
+  situazioni:
+    - id: tiene_il_ragazzo
+      dopo: [zir_cassa]
+      prompt: "the small goblin warrior pulls a teenage shepherd boy behind her red shield by his collar, an open iron-bound chest glinting with coins at her feet, inside a dark stone crypt"
 personalita:
   superficie: ["sfacciata e allegra, ride delle minacce", "parla svelta e dà un soprannome a tutti"]
   sotto_pressione: ["diventa seria e lenta, e conta le monete sulle dita"]
@@ -41,7 +46,7 @@ voce:
   gesto: "batte la spada corta sullo scudo"
   mai_dice: ["che il ragazzo è venuto con le sue gambe, finché non ha ceduto", "il nome della sua tribù", "per favore"]
   battuta_campione: "La chiave l'avete? Niente chiave, niente ragazzo."
-sa: [f_goblin_torre, f_tonio_complice, f_tonio_pane, f_tonio_libero, f_zirra_inganno, f_argento, f_cripta_leggenda, f_chiave_castellano, f_goblin_scrittura, f_tonio_lavagna, f_tonio_motivo, f_debito]
+sa: [f_goblin_torre, f_tonio_complice, f_tonio_pane, f_tonio_libero, f_zirra_inganno, f_argento, f_cripta_leggenda, f_chiave_castellano, f_goblin_scrittura, f_tonio_lavagna, f_tonio_motivo, f_debito, f_fossa]
 non_sa: [f_postierla, f_ugo_frodo, f_ugo_visto, f_grosso_fame, f_lite_vecchia]
 crede_a_torto:
   - {testo: "Grosso farà sempre quello che gli dice lei, finché c'è carne.", contraddice: f_grosso_fame}
@@ -49,7 +54,7 @@ mente_su:
   - id: zir_ragazzo
     argomento: "il ragazzo"
     verita: f_tonio_complice
-    versione: "Il ragazzo? Mio. L'ho preso nel fienile, mentre dormiva."
+    versione: "Il ragazzo è mio. L'ho preso nel fienile, mentre dormiva."
     perche: "Se il paese sa che il ragazzo l'ha portata lui, non paga niente."
     segnale: "si gratta l'orecchio con la punta della spada e sorride storto"
     cede_se: "Ride e ammette quando un PG le fa notare che la corda del ragazzo non ha nodo. Oppure quando un PG le ripete che cosa ha visto il carbonaio sul sentiero."
@@ -72,4 +77,6 @@ evoluzione:
   - {se: "i PG le offrono una parte dell'argento", allora: "tratta, e mantiene il patto finché ha la cassa sotto gli occhi"}
   - {se: "la feriscono mentre Grosso è in piedi", allora: "attacca il più piccolo e minaccia il ragazzo"}
 statistiche: "Goblin, guerriera (manuale p. 104): Classe d'Armatura 14, dadi vita 3-3 (bonus d'attacco +3), spada corta 1d6, morale 7, salva come guerriero di livello 3."
+# Tema dalla persona pubblica: sfacciata, svelta, allegra.
+tema: {carattere: [gioviale, nervoso], strumento: flauto, modo: misolidio, registro: alto}
 registro_attivita: []

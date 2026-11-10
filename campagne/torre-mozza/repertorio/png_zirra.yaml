@@ -1,0 +1,113 @@
+# Battute di Zirrà (voce tabitha): solo alla torre.
+battute:
+  - {id: zir_saluto, chi: png_zirra, tipo: saluto, solo_esempio: true, quando: "i PG salutano Zirrà", temi: [saluto], max_usi: 1,
+     testo: ["[narratore] Zirrà batte la spada corta sullo scudo.", "[png_zirra] Ospiti! Avete portato qualcosa che luccica?"]}
+  - {id: zir_domanda_gentile, chi: png_zirra, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Zirrà da dove viene", temi: [gentile], max_usi: 1,
+     testo: ["[png_zirra] Da lontano, e ci torno ricca. Le domande sono gratis, oggi."]}
+  - {id: zir_accusa, chi: png_zirra, tipo: reazione, solo_esempio: true, quando: "un PG accusa Zirrà", temi: [accuso], max_usi: 1,
+     testo: ["[png_zirra] Ladri voi, ladri noi. Solo che io rido di più."]}
+  - {id: zir_minaccia, chi: png_zirra, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Zirrà", temi: [minaccia], max_usi: 1,
+     testo: ["[png_zirra] Minacce, a me? Un passo avanti e Grosso si sveglia."]}
+  - {id: zir_offerta, chi: png_zirra, tipo: reazione, solo_esempio: true, quando: "un PG offre monete a Zirrà", temi: [offerta], max_usi: 1,
+     testo: ["[png_zirra] Monete? Io voglio la paga della guarnigione, tutta."]}
+  - {id: zir_aiuto, chi: png_zirra, tipo: reazione, solo_esempio: true, quando: "un PG offre aiuto a Zirrà", temi: [aiuto], max_usi: 1,
+     testo: ["[png_zirra] [laugh] Che gentilezza. Gentilezza da scemi."]}
+  - {id: zir_rifiuto, chi: png_zirra, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Zirrà di cose che non sa", temi: [domanda], max_usi: 1,
+     testo: ["[png_zirra] Non so, non m'importa. Parliamo di prezzo."]}
+
+  - id: zir_attesa
+    chi: png_zirra
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG restano fermi davanti a Zirrà senza rispondere"
+    temi: [attesa]
+    testo:
+      - "[narratore] Zirrà dà un calcio al fuoco, e le scintille volano verso di voi."
+      - "[png_zirra] Allora? Io aspetto, la luna no."
+    max_usi: 1
+
+  # La chiave e il patto.
+  - id: zir_chiave_prima
+    chi: png_zirra
+    tipo: momento
+    quando: "un PG mostra la chiave a Zirrà o propone uno scambio"
+    temi: [chiave, scambio, scambiare, consegno, consegnare]
+    testo:
+      - "[narratore] Zirrà allunga la mano libera, a palmo in su."
+      - "[png_zirra] Prima la chiave, poi il ragazzo. Buttala qui, ai miei piedi."
+    max_usi: 1
+
+  - id: zir_patto
+    chi: png_zirra
+    tipo: momento
+    quando: "Zirrà accetta un accordo sul prezzo del ragazzo"
+    temi: [patto, accordo, prezzo, metà, parte]
+    richiede: {oppure: [{prova: p_zirra_patto}, {prova: carisma}]}
+    testo:
+      - "[narratore] Zirrà conta sulle dita, poi abbassa la spada."
+      - "[png_zirra] Metà della paga, e il ragazzo è vostro. Poi sparisco, parola di goblin."
+    max_usi: 1
+
+  - id: zir_resa
+    chi: png_zirra
+    tipo: momento
+    quando: "un PG intima a Zirrà di arrendersi"
+    temi: [arrenditi, arrendersi, resa, basta, getta]
+    richiede: {prova: carisma}
+    testo:
+      - "[narratore] Zirrà lascia cadere la spada corta, e lo scudo rosso le scivola dal braccio."
+      - "[png_zirra] Va bene, va bene. Il ragazzo è vostro. Io me ne vado dal crollo, a mani vuote."
+    max_usi: 1
+
+  # Quando la cripta è aperta: il tradimento (se non c'è un patto).
+  - id: zir_cassa
+    chi: png_zirra
+    tipo: momento
+    quando: "la cripta è aperta e un PG si avvicina alla cassa"
+    temi: [cassa, argento, monete, forziere]
+    richiede: {battute_usate: [nar_cripta], battute_non_usate: [zir_patto]}
+    testo:
+      - "[narratore] Zirrà afferra il ragazzo per il colletto e lo tira dietro lo scudo."
+      - "[png_zirra] Mia la cassa, e mio il ragazzo. Fuori, tutti quanti."
+    effetti: {fatti_noti: [f_zirra_inganno]}
+    audio: {umore: combattimento_epico}
+    max_usi: 1
+
+  # La menzogna sul ragazzo, con il segnale in ogni versione.
+  - id: zir_ragazzo_mio
+    chi: png_zirra
+    tipo: menzogna
+    quando: "un PG chiede a Zirrà di lasciare andare il ragazzo"
+    temi: [ragazzo, prigioniero, liberalo, lascialo, liberare]
+    testo:
+      - "[narratore] Zirrà si gratta l'orecchio con la punta della spada e sorride storto."
+      - "[png_zirra] Il ragazzo è mio. L'ho preso nel fienile, mentre dormiva."
+    varianti:
+      - ["[narratore] Zirrà si gratta l'orecchio con la punta della spada e sorride storto.", "[png_zirra] Mio, ho detto. Preso nel fienile."]
+    effetti: {menzogna_detta: zir_ragazzo}
+    max_usi: 2
+
+  # Le confessioni, una per condizione del cede_se.
+  - id: zir_corda
+    chi: png_zirra
+    tipo: confessione
+    quando: "un PG fa notare a Zirrà che la corda del ragazzo non ha nodo"
+    temi: [corda, nodo, polsi]
+    richiede: {indizi_rivelati: [i_tonio_libero], battute_non_usate: [zir_carbonaio]}
+    testo:
+      - "[narratore] Zirrà guarda la corda e scoppia a ridere."
+      - "[png_zirra] Nodo? Quale nodo. Il ragazzo è venuto da solo. Mi porta il pane da tre notti."
+    effetti: {fatti_noti: [f_tonio_complice, f_tonio_pane]}
+    max_usi: 1
+
+  - id: zir_carbonaio
+    chi: png_zirra
+    tipo: confessione
+    quando: "un PG dice a Zirrà che cosa ha visto il carbonaio sul sentiero"
+    temi: [carbonaio, visto, pane, sentiero]
+    richiede: {indizi_rivelati: [i_ugo_racconta], battute_non_usate: [zir_corda]}
+    testo:
+      - "[narratore] Zirrà smette di sorridere, poi alza le spalle."
+      - "[png_zirra] E va bene. Il ragazzo è venuto da solo. Mi porta il pane da tre notti."
+    effetti: {fatti_noti: [f_tonio_complice, f_tonio_pane]}
+    max_usi: 1

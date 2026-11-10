@@ -1,0 +1,31 @@
+# Battute di Grosso (voce lucian): solo alla torre. Parla pochissimo.
+battute:
+  - {id: gro_saluto, chi: png_grosso, tipo: saluto, solo_esempio: true, quando: "i PG salutano Grosso", temi: [saluto], max_usi: 1,
+     testo: ["[narratore] Grosso alza gli occhi dall'osso.", "[png_grosso] Chi sei? Hai carne?"]}
+  - {id: gro_minaccia, chi: png_grosso, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Grosso", temi: [minaccia], max_usi: 1,
+     testo: ["[narratore] Grosso si alza piano, con la mazza in mano.", "[png_grosso] Indietro. Mazza pesante."]}
+  - {id: gro_rifiuto, chi: png_grosso, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Grosso di cose che non sa", temi: [domanda], max_usi: 1,
+     testo: ["[png_grosso] Non so. Chiedi a lei."]}
+
+  - id: gro_attesa
+    chi: png_grosso
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG restano fermi vicino al fuoco"
+    temi: [attesa]
+    testo:
+      - "[narratore] Grosso succhia l'osso, con un rumore lungo."
+      - "[png_grosso] Fame. Sempre fame."
+    max_usi: 1
+
+  # Con il cibo Grosso parla del ragazzo (indizio di tipo png: una sola strada).
+  - id: gro_cibo
+    chi: png_grosso
+    tipo: indizio
+    quando: "un PG dà da mangiare a Grosso"
+    temi: [carne, cibo, mangiare, pane, salame, formaggio]
+    testo:
+      - "[narratore] Grosso prende il cibo, lo annusa e lo inghiotte in due morsi."
+      - "[png_grosso] Ragazzo venuto da solo. Porta pane."
+    effetti: {rivela_indizi: [i_grosso], fatti_noti: [f_tonio_pane]}
+    max_usi: 1

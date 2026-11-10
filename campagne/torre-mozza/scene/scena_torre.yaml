@@ -3,7 +3,7 @@
 id: scena_torre
 nodo: n_torre
 nome: "La Torre Mozza, a mezzanotte"
-descrizione: "Il piano terra della torre, senza tetto: un cerchio di muri alti e il cielo sopra. In mezzo arde un fuoco, e Grosso ci sta accanto con un osso di montone; Zirrà sta sui gradini della scala rotta, che sale fino al muro crollato. In un angolo una scala scende alla cantina e alla porta di ferro della cripta; nella cantina si apre il buco della postierla. Tonio è seduto sui gradini della cantina, con una corda avvolta ai polsi. Chi sente che cosa: intorno al fuoco si sente tutto. Giù in cantina, davanti alla porta di ferro, chi parla sottovoce non è sentito da chi sta al fuoco."
+descrizione: "Il piano terra della torre, senza tetto: un cerchio di muri alti e il cielo sopra. In mezzo arde un fuoco, e Grosso ci sta accanto con un osso di montone; Zirrà sta sui gradini della scala rotta, che sale fino al muro crollato. In un angolo una scala scende alla cantina e alla porta di ferro della cripta; nella cantina, dietro la scala, un buco nel muro soffia aria fredda. Tonio è seduto sui gradini della cantina, con una corda avvolta ai polsi. Chi sente che cosa: intorno al fuoco si sente tutto. Giù in cantina, davanti alla porta di ferro, chi parla sottovoce non è sentito da chi sta al fuoco."
 scopo: {tipo: mettere_alla_prova, rif: cb_tonio}
 domanda_drammatica: "Tonio uscirà vivo dalla torre?"
 posta:
@@ -72,13 +72,23 @@ vincoli_pubblici:
 uscite:
   - {verso: n_ovile, segnalata_da: [i_tonio_libero, i_conto]}
 climax: true
-mossa_morbida_pronta: "Zirrà dà un calcio al fuoco, e le scintille volano verso di voi. Grosso si alza piano, con la mazza in mano."
+mossa_morbida_pronta: "Zirrà schiocca le dita. Il ragazzo si alza e lascia cadere la corda dai polsi. Poi le porta un piccone, senza che nessuno lo spinga."
 apertura: "La torre non ha più il tetto, e un fuoco illumina il cerchio dei muri. Sulla scala rotta una goblin svelta si volta verso di voi, e al fuoco un hobgoblin rosicchia un osso. Sui gradini della cantina un ragazzo con una corda ai polsi alza la testa: che cosa fate?"
 musica: {tag: esplorazione_tesa, transizione: "verso combattimento_epico al primo colpo; torna esplorazione_tesa quando lo scontro finisce"}
 immagine:
   invarianti: ["torre rotonda senza tetto, cielo di notte sopra", "fuoco in mezzo al pavimento di pietra", "scala rotta lungo il muro fino a un crollo", "scala che scende a una porta di ferro", "segni a carbone sui muri"]
   prompt_luogo: "interior of a roofless ruined round stone watchtower at midnight, moon and night sky above the broken walls, a campfire in the middle of the stone floor, a broken stone stair climbing the wall to a collapsed gap, a narrow stair going down to a rusty iron door, charcoal scribbles on the walls"
+audio:
+  musica: [castello, notte, vento]
+  ambiente: [{tag: fuoco, volume: 0.5}, {tag: vento, volume: 0.5}]
+  interno: false
+  umore_iniziale: esplorazione_tesa
 taglio: "La scena si chiude quando la sorte di Tonio è decisa: i goblin battuti, fuggiti o arresi; un patto con Zirrà; oppure Zirrà che scappa dal crollo. Se i PG esitano, Zirrà minaccia il ragazzo e Grosso si alza con la mazza. Poi i PG dicono che cosa racconteranno a Spinalba, e la sessione si chiude su quella scelta."
+esiti:
+  - {id: es_alba, descrizione: "Passa la mezzanotte e la notte finisce: la scelta su che cosa raccontare resta aperta.", finale: fin_alba_brace}
+  - {id: es_fontana, descrizione: "A Spinalba si racconta che Tonio ha aperto l'ovile ai goblin.", finale: fin_alba_fontana}
+  - {id: es_silenzio, descrizione: "A Spinalba Tonio è soltanto un prigioniero liberato, e la colpa resta su Ugo.", finale: fin_alba_silenzio}
+  - {id: es_riserva, descrizione: "I PG scagionano Ugo con la sua caccia nella riserva, e tacciono sul ragazzo.", finale: fin_alba_riserva}
 prove:
   - {id: p_zirra_patto, quando: "un PG tratta con Zirrà il prezzo del ragazzo", caratteristica: carisma, difficolta: difficile, se_fallisce: "Zirrà ride e alza il prezzo: adesso vuole tutta la cassa", parole: [tratto, patto, prezzo, argento]}
   - {id: p_grosso_cibo, quando: "un PG offre da mangiare a Grosso perché si faccia da parte", caratteristica: carisma, difficolta: facile, indizio: i_grosso, se_fallisce: "Grosso prende il cibo e resta dov'è, masticando", parole: [cibo, mangiare, carne, pane]}
