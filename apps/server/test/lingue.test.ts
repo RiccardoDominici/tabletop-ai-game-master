@@ -48,5 +48,9 @@ describe('pacchetti delle lingue', () => {
     expect(percorsoPrompt('narratore')).toBe(path.join(RADICE_REPO, 'prompts', 'it', 'narratore.md'));
     expect(fs.existsSync(percorsoPrompt('narratore', 'it'))).toBe(true);
     expect(fs.existsSync(percorsoPrompt('selettore', 'it'))).toBe(true);
+    // Ogni lingua ha gli stessi prompt dell'italiano, e quelli inglesi parlano di una partita in inglese.
+    const nomi = (l: string) => fs.readdirSync(path.join(RADICE_REPO, 'prompts', l)).filter((f) => f.endsWith('.md')).sort();
+    for (const l of LINGUE) expect(nomi(l), l).toEqual(nomi('it'));
+    for (const f of ['narratore', 'selettore']) expect(fs.readFileSync(percorsoPrompt(f, 'en'), 'utf8')).toMatch(/in English/);
   });
 });
