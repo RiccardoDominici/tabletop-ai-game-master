@@ -154,8 +154,8 @@ export function risolvi(cfg: ConfigProvider, chiavi: FontiChiavi = {}): Record<N
         saltati.push(`${p}: ${motivoNo}`);
         continue;
       }
-      const modello = p === 'locale' && c === 'voce' ? 'qwen3-tts (services/voce)' : p === 'locale' ? (v.provider === 'locale' ? v.modello : undefined) ?? cfg.backend.locale.modello ?? null : p === 'anthropic' ? (v.provider === p ? v.modello : undefined) ?? cfg.backend.anthropic.modello ?? 'claude-haiku-5-5' : p === 'openrouter' || p === 'openai' ? v.modello ?? cfg.backend[p]?.modello ?? null : null;
-      const url = p === 'locale' && c === 'voce' ? null : p === 'locale' ? cfg.backend.locale.url ?? null : p === 'openrouter' ? cfg.backend.openrouter.url ?? 'https://openrouter.ai/api/v1' : p === 'openai' ? v.url ?? cfg.backend['openai']?.url ?? null : null;
+      const modello = p === 'locale' && c === 'voce' ? 'qwen3-tts (services/voce)' : p === 'locale' && c === 'immagini' ? 'flux2-klein-4b (mflux, strumenti/immagini)' : p === 'locale' ? (v.provider === 'locale' ? v.modello : undefined) ?? cfg.backend.locale.modello ?? null : p === 'anthropic' ? (v.provider === p ? v.modello : undefined) ?? cfg.backend.anthropic.modello ?? 'claude-haiku-5-5' : p === 'openrouter' || p === 'openai' ? v.modello ?? cfg.backend[p]?.modello ?? null : null;
+      const url = p === 'locale' && (c === 'voce' || c === 'immagini') ? null : p === 'locale' ? cfg.backend.locale.url ?? null : p === 'openrouter' ? cfg.backend.openrouter.url ?? 'https://openrouter.ai/api/v1' : p === 'openai' ? v.url ?? cfg.backend['openai']?.url ?? null : null;
       scelta = {
         componente: c,
         provider: p,
@@ -189,8 +189,7 @@ function nonDisponibile(cfg: ConfigProvider, c: NomeComponente, v: VoceComponent
       return nome && !chiaveDisponibile(nome, undefined, chiavi.ambiente) ? `chiave ${nome} mancante` : null;
     }
     case 'locale':
-      if (c === 'immagini') return 'nessun generatore di immagini locale';
-      return c === 'voce' || cfg.backend.locale.url ? null : 'backend.locale.url mancante';
+      return c === 'voce' || c === 'immagini' || cfg.backend.locale.url ? null : 'backend.locale.url mancante';
     case 'regole':
       return c === 'lettore' || c === 'voce' ? 'non ha una riserva a regole' : null;
     default:

@@ -48,5 +48,7 @@ componenti:
   regole:         {provider: locale, riserve: [regole]}
   # Voce: locale = Qwen3-TTS (services/voce, Mac); openrouter = drama-3 (docs/ricerca-voce-drama3.md).
   voce:           {provider: locale, riserve: [finto]}
-  # Immagini (solo nella preparazione, strumenti/immagini): nessuno = sfondo d'atmosfera.
-  immagini:       {provider: nessuno}
+  # Immagini (solo nella preparazione, strumenti/immagini): locale = flux2-klein-4b con mflux sul Mac;
+  # nessuno = niente immagini, lo schermo usa lo sfondo d'atmosfera. Il controllo visivo con Claude
+  # (strumenti/immagini/visione.py) gira solo se c'è la chiave.
+  immagini:       {provider: locale, riserve: [nessuno]}

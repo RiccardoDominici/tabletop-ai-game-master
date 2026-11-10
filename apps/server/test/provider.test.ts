@@ -128,7 +128,7 @@ describe('scelta dei provider', () => {
     const base = risolvi(caricaConfigProvider({}), { ambiente: {}, anthropic: '/inesistente', openrouter: '/inesistente' });
     expect(base.lettore).toMatchObject({ provider: 'locale', modo: 'minimo' });
     expect(base.voce.provider).toBe('locale');
-    expect(base.immagini.provider).toBe('nessuno');
+    expect(base.immagini.provider).toBe('locale');
     const finto = risolvi(caricaConfigProvider({ CANTASTORIE_LLM: 'finto', CANTASTORIE_TTS: 'mock' }));
     expect([finto.lettore.provider, finto.arbitro_prove.provider, finto.voce.provider]).toEqual(['finto', 'regole', 'finto']);
     const cfg = caricaConfigProvider({ CANTASTORIE_LETTORE: 'anthropic', CANTASTORIE_VOCE: 'fish' });

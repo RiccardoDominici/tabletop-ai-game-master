@@ -54,6 +54,12 @@ per chi vuole smanettare. Servono:
   **Fatto**: le decisioni vanno nella fotografia della sessione e tornano alla ripresa; il cambio di scena le azzera (a4e360d).
 
 ## Dopo
+- **Voce locale fuori dal Mac.** Qwen3-TTS gira con MLX solo su Apple Silicon. Su Linux o Windows serve
+  un'alternativa leggera con la stessa API del servizio voce (docs/f0-contratti.md, «Servizio voce»:
+  POST /tts, PCM s16le in streaming). Da valutare: Piper (onnx, voci italiane, CPU) e Kokoro (82M, CPU o GPU).
+  Qualità italiana: da verificare.
+- **Limiti noti della modalità locale.** L'arbitro delle prove alla chiusura ha 4 s: in locale non ce la fa,
+  nessun tiro. Gli arbitri cedono il server al lettore: in coda aspettano al massimo 8 s, poi ripiegano sulle regole.
 - **Skill Preparatore: la voce espressiva di drama-3** (9 novembre 2026; da girare a chi aggiorna la skill, nessuno ha
   risposto). La voce del gioco è drama-3 (docs/ricerca-voce-drama3.md). Le righe del repertorio possono avere una
   direzione breve a inizio riga (`[png_ettore] [offeso, ma a voce bassa] Non venni.`), suoni (`[sigh]`, `[laugh]`,
