@@ -1,7 +1,7 @@
 # Voce e costi
 
 In questa pagina: le tre voci del gioco, il registro delle voci `assets/voci/voci.yaml`, e quanto costa giocare, con cifre e date.
-Prima leggi: [Una serata di gioco](una-serata.md), almeno la parte su `scripts/partita.sh`.
+Prima leggi: [Una serata di gioco](one-evening.md), almeno la parte su `scripts/partita.sh`.
 
 ## Le tre voci
 
@@ -10,7 +10,7 @@ Scegli la voce con l'opzione `--voce` di `scripts/partita.sh`.
 | Opzione | Che voce è | Cosa serve | Costo |
 |---|---|---|---|
 | `--voce fish` (predefinita) | drama-3 di Fish Audio, attraverso OpenRouter. Espressiva: segue le indicazioni di tono del narratore. | la chiave `OPENROUTER_API_KEY` con credito | a consumo (vedi sotto) |
-| `--voce qwen` | Qwen3-TTS 0.6B, sul Mac, senza rete. Clona le voci da una clip di circa 8 secondi. | Mac con chip Apple e il passo 5 dell'[installazione](installazione.md) | gratis |
+| `--voce qwen` | Qwen3-TTS 0.6B, sul Mac, senza rete. Clona le voci da una clip di circa 8 secondi. | Mac con chip Apple e il passo 5 dell'[installazione](installation.md) | gratis |
 | `--voce finta` | un tono al posto della voce | niente | gratis |
 
 Esempi:
@@ -82,7 +82,7 @@ Senza direzione vale quella predefinita:
 
 Ogni telefono può far sentire la voce del gioco anche su di sé, con il pulsante tondo «Ascolta qui» in alto.
 La voce dell'esito di un'azione privata va solo ai telefoni di quel personaggio con «Ascolta qui» acceso, mai al
-proiettore. Come si usa: [Una serata di gioco](una-serata.md), «Ascolta qui».
+proiettore. Come si usa: [Una serata di gioco](one-evening.md), «Ascolta qui».
 
 ## Il registro delle voci: `assets/voci/voci.yaml`
 
@@ -201,4 +201,4 @@ raccolte per giorno (`apps/server/src/strumenti/costi.ts`).
 
 ## Problemi?
 
-Vai a [Problemi comuni](problemi-comuni.md).
+Vai a [Problemi comuni](common-problems.md).

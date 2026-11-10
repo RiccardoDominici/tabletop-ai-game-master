@@ -4,7 +4,7 @@
 id: ""                 # ascii minuscolo con trattini, es. il-ponte-dei-sospiri
 titolo: ""
 richiesta: ""          # le parole di Riccardo, così come le ha scritte
-manuale: ""            # facoltativo: manuali/<file>.pdf|.md|.txt (vedi manuali/LEGGIMI.md). Vuoto = SRD 5.2.
+manuale: ""            # facoltativo: manuali/<file>.pdf|.md|.txt (vedi manuali/README.md). Vuoto = SRD 5.2.
                        # Con un manuale si scrive il set di regole in campagne/<id>/regole/ (SKILL, passo 1b).
 
 tono: ""               # es. «fiaba di paese, cupa ma calda»

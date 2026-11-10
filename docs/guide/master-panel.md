@@ -1,7 +1,7 @@
 # Il pannello del master
 
 In questa pagina: come entri nel pannello, il token del master, ogni sezione e ogni comando, cosa fare quando un'azione non va.
-Prima leggi: [Una serata di gioco](una-serata.md).
+Prima leggi: [Una serata di gioco](one-evening.md).
 
 Il pannello serve a una persona, sul Mac, per correggere o fermare il narratore IA. Non è un di più: un umano deve
 sempre poter intervenire (`docs/architettura.md`, «Pannello master»). Chi fa da master può anche giocare: il pannello
@@ -154,7 +154,7 @@ La finestra delle azioni del turno: «aperta» o «chiusa», e il ritmo («ritmo
 - «Aspettiamo: …» dice chi manca.
 - Al ritmo calmo: «nessuna scadenza: parte quando hanno inviato tutti». Al ritmo concitato: «si risolve da sola tra N s».
 - **Ritmo calmo** / **Ritmo concitato**: cambia il ritmo del tavolo. Concitato vuol dire conto alla rovescia
-  (vedi [Una serata di gioco](una-serata.md), «Il ritmo»).
+  (vedi [Una serata di gioco](one-evening.md), «Il ritmo»).
 - **Risolvi ora**: il narratore risponde subito alle azioni già inviate, senza aspettare chi manca. Le azioni ancora
   «da decidere» restano fuori dal turno. Funziona solo a finestra aperta e tavolo non in pausa.
 
@@ -206,7 +206,7 @@ La partita si salva da sola. Qui vedi quando è iniziata, quanti salvataggi ci s
 - **Fine sessione**: ferma il gioco, chiude la sessione e fa scrivere al server il registro (`registro.yaml`).
   Per una campagna di una sessione sola il registro va in `logs/registri/<campagna>/<id>/` (`docs/strati.md`).
 - **Prossima sessione** (solo campagne a più sessioni): passa alla sessione dopo, se è pronta. Pannello, proiettore e
-  telefoni si ricollegano da soli. Vedi [Campagne a più sessioni](campagne-a-piu-sessioni.md).
+  telefoni si ricollegano da soli. Vedi [Campagne a più sessioni](multi-session-campaigns.md).
 - **Nuova sessione**: ricomincia da capo la stessa campagna. La partita in corso si perde.
 
 Questi tre comandi non si annullano. Per questo chiedono un secondo clic: il pulsante diventa rosso e chiede
@@ -254,8 +254,8 @@ devi proprio vedere tutto.
 | Un comando non fa niente | Leggi la riga rossa sotto i comandi: dice il motivo del rifiuto. Il registro lo conserva. |
 | Un telefono ha il personaggio sbagliato | Il giocatore preme «Cambia» sul telefono. Oppure lo cambi tu da «Telefoni ricordati», nella sezione «Sessione»: vale dal prossimo collegamento del telefono. |
 
-Per tutto il resto: [Problemi comuni](problemi-comuni.md).
+Per tutto il resto: [Problemi comuni](common-problems.md).
 
 ## Problemi?
 
-Vai a [Problemi comuni](problemi-comuni.md).
+Vai a [Problemi comuni](common-problems.md).

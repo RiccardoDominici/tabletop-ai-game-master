@@ -1,7 +1,7 @@
 # Sviluppo
 
 Cosa trovi qui: com'è fatto il repository, come si lanciano i test, come si prova su un'altra porta senza toccare la partita vera, e come contribuire.
-Leggi prima: [installazione](installazione.md), e `CLAUDE.md` alla radice del repository, che fissa le regole per chi ci lavora.
+Leggi prima: [installazione](installation.md), e `CLAUDE.md` alla radice del repository, che fissa le regole per chi ci lavora.
 
 ## Struttura del repository
 
@@ -19,7 +19,7 @@ Leggi prima: [installazione](installazione.md), e `CLAUDE.md` alla radice del re
 | `prompts/` | i prompt del narratore (`narratore.md`) e del selettore (`selettore.md`), letti dal server |
 | `assets/voci/` | le clip delle voci e il registro `voci.yaml` |
 | `.claude/skills/preparatore/` | la skill del Preparatore per Claude Code |
-| `docs/` | progetto, contratti, ricerche, e questa guida (`docs/guida/`) |
+| `docs/` | progetto, contratti, ricerche, e questa guida (`docs/guide/`) |
 | `esperimenti/` | prove e misure: copioni ciechi, giudizi, risultati delle immagini, dell'audio e della voce |
 | `research/` | le prime ricerche e prove sui modelli, la voce e la musica |
 | `cache/` | audio scaricato e voce già sintetizzata; fuori da git |
@@ -165,7 +165,7 @@ CANTASTORIE_PORTA=4710 scripts/partita.sh ponte-lanterne --voce finta
 ```
 
 Una partita di prova completa, con il controllo della campagna. Attenzione: `partita.sh` usa sempre il narratore
-Haiku vero, quindi costa (vedi [voce e costi](voce-e-costi.md)).
+Haiku vero, quindi costa (vedi [voce e costi](voice-and-costs.md)).
 
 ```
 CANTASTORIE_PORTA=4710 scripts/arresto.sh
@@ -227,4 +227,4 @@ Le regole complete stanno in `CLAUDE.md`, alla radice del repository. In breve:
 
 ## Problemi?
 
-Vedi [problemi comuni](problemi-comuni.md).
+Vedi [problemi comuni](common-problems.md).

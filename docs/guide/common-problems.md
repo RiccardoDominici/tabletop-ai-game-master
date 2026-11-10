@@ -1,7 +1,7 @@
 # Problemi comuni
 
 Cosa trovi qui: i guasti più frequenti, ognuno con il sintomo, la causa probabile, che cosa fare e dove guardare nei log.
-Leggi prima: [una serata](una-serata.md) per il giro normale, e per i telefoni [la guida ai telefoni](../guida-telefoni.md).
+Leggi prima: [una serata](one-evening.md) per il giro normale, e per i telefoni [la guida ai telefoni](phones.md).
 
 ## Dove stanno i log
 
@@ -75,7 +75,7 @@ Interactivity»)», oppure «solo N GB liberi su disco (minimo 8.0 GB)».
 2. Chiudi le app pesanti mentre generi.
 3. Se il disco è pieno, libera spazio e rilancia.
 4. Per andare più veloce, puoi generare luoghi più piccoli con `--dim-luogo 1280x720` (vedi
-   [creare una campagna](creare-una-campagna.md)).
+   [creare una campagna](create-a-campaign.md)).
 
 **Dove guardare.** `logs/prepara-<id>.log`.
 
@@ -92,7 +92,7 @@ Che cosa succeda a batteria o con il Mac caldo **non è scritto nel repository: 
 1. Gioca con l'alimentatore collegato.
 2. Chiudi le altre app pesanti, e non generare immagini nello stesso momento.
 3. Se la voce locale non regge, usa la voce predefinita, drama-3, che non usa la GPU del Mac:
-   `scripts/partita.sh <campagna>` (vedi [voce e costi](voce-e-costi.md)).
+   `scripts/partita.sh <campagna>` (vedi [voce e costi](voice-and-costs.md)).
 
 **Dove guardare.** `logs/voce.jsonl`: ogni frase ha `rtf` (tempo di generazione diviso per la durata dell'audio).
 Sopra 1 la voce è più lenta del parlato.
@@ -124,7 +124,7 @@ Sopra 1 la voce è più lenta del parlato.
    ```
 
    Avvia la partita con quell'indirizzo nel QR e nella riga TELEFONI.
-5. Segui i controlli passo passo della [guida ai telefoni](../guida-telefoni.md): firewall, rete ospiti, VPN e la
+5. Segui i controlli passo passo della [guida ai telefoni](phones.md): firewall, rete ospiti, VPN e la
    prova dal Mac.
 
 **Dove guardare.** `logs/partita.out` (gli indirizzi stampati) e `logs/server.out`, dove il server scrive a ogni
@@ -155,7 +155,7 @@ avvio la riga «Cantastorie: in ascolto» con l'indirizzo dei telefoni.
 2. Se qualcuno non risponde, il master preme **Risolvi ora** nel pannello: il turno parte con le azioni che ci sono.
 3. Se il pannello mostra **Riprendi**, il tavolo è in pausa: premilo. In pausa i telefoni possono scrivere, e le
    azioni entrano alla ripresa. «Risolvi ora» in pausa non funziona: il pannello chiede di riprendere prima.
-4. Se la scena è finita, scegli dal pannello come andare avanti (vedi [il pannello del master](il-pannello-del-master.md)).
+4. Se la scena è finita, scegli dal pannello come andare avanti (vedi [il pannello del master](master-panel.md)).
 5. Se il proiettore mostra ancora la schermata iniziale, clicca **Inizia sessione**.
 
 **Dove guardare.**
@@ -202,9 +202,9 @@ volta; poi passa alla riserva Qwen, se c'è; altrimenti la frase resta testo. Le
 
 **Cosa fare.**
 
-1. Controlla che la chiave ci sia (vedi [installazione](installazione.md)). Non incollarla mai in chat, nei log o
+1. Controlla che la chiave ci sia (vedi [installazione](installation.md)). Non incollarla mai in chat, nei log o
    nei commit.
-2. Controlla e ricarica il credito su OpenRouter (vedi [voce e costi](voce-e-costi.md)).
+2. Controlla e ricarica il credito su OpenRouter (vedi [voce e costi](voice-and-costs.md)).
 3. Per avere una **riserva** durante la serata, accendi la voce locale prima della partita:
 
    ```
@@ -239,7 +239,7 @@ Per sapere quale voce sta usando la partita, guarda la riga in alto che stampa `
 - il Mac è troppo carico: la prima volta il caricamento può volerci qualche minuto.
 
 **Cosa fare.** Segui i comandi che `voce-avvio.sh` stampa per creare l'ambiente, e il passo 5 di
-[installazione](installazione.md) (la voce locale Qwen, con il modello da mettere nella cache). Intanto puoi giocare
+[installazione](installation.md) (la voce locale Qwen, con il modello da mettere nella cache). Intanto puoi giocare
 con drama-3: `scripts/partita.sh <campagna>`.
 
 **Dove guardare.** `logs/voce.out` (leggibile) e `logs/voce.jsonl` (eventi `avvio`, `pronto`, `errore_avvio`).
@@ -269,9 +269,9 @@ quella frase non si sintetizza: resta solo il testo sul telefono.
 
 | Che cosa dice `partita.sh` | Causa probabile | Cosa fare | Dove guardare |
 |---|---|---|---|
-| «La campagna ha errori: la partita non parte.» | il validatore ha trovato errori | correggili (vedi [creare una campagna](creare-una-campagna.md), «Come leggere i messaggi») | le righe `ERRORE` sopra il messaggio |
+| «La campagna ha errori: la partita non parte.» | il validatore ha trovato errori | correggili (vedi [creare una campagna](create-a-campaign.md), «Come leggere i messaggi») | le righe `ERRORE` sopra il messaggio |
 | «La campagna … non ha un repertorio …: usa --modo A.» | la campagna non ha `repertorio/`, e il modo B lo vuole | `scripts/partita.sh <campagna> --modo A` | — |
-| «Non so quale sessione giocare (vedi sopra).» | campagna a più sessioni: il server non trova un pacchetto giocabile | leggi il motivo stampato sopra; vedi [campagne a più sessioni](campagne-a-piu-sessioni.md) | l'uscita di `partita.sh` |
+| «Non so quale sessione giocare (vedi sopra).» | campagna a più sessioni: il server non trova un pacchetto giocabile | leggi il motivo stampato sopra; vedi [campagne a più sessioni](multi-session-campaigns.md) | l'uscita di `partita.sh` |
 | «Il server non è partito. Ultime righe: …» | il server si è fermato all'avvio | leggi le ultime righe | `logs/partita.out`, `logs/server.out` |
 | «web: compilazione fallita» | le pagine web non si compilano | leggi l'errore | `logs/build.out` |
 
@@ -282,8 +282,8 @@ quella frase non si sintetizza: resta solo il testo sul telefono.
 **Causa probabile.** Manca la chiave `ANTHROPIC_API_KEY`, il credito è finito, o la rete non va. Un errore nel flusso
 della narrazione fa ripartire subito il gioco; un'attesa senza segni di vita lo fa ripartire dopo 60 secondi.
 
-**Cosa fare.** Controlla la chiave (vedi [installazione](installazione.md)) e il credito (vedi
-[voce e costi](voce-e-costi.md)). Le azioni del turno che il narratore non ha raccontato tornano ai giocatori.
+**Cosa fare.** Controlla la chiave (vedi [installazione](installation.md)) e il credito (vedi
+[voce e costi](voice-and-costs.md)). Le azioni del turno che il narratore non ha raccontato tornano ai giocatori.
 
 **Dove guardare.** `logs/server.out`: un messaggio con «ANTHROPIC_API_KEY non trovata» se la chiave manca;
 `logs/narrazioni.jsonl` per le righe del sorvegliante.
@@ -293,9 +293,9 @@ della narrazione fa ripartire subito il gioco; un'attesa senza segni di vita lo 
 | Messaggio | Causa probabile | Cosa fare |
 |---|---|---|
 | «La campagna ha errori: niente immagini né audio.» | il validatore rigoroso ha trovato errori | correggili e rilancia |
-| «manca l'ambiente delle immagini (strumenti/immagini/.venv …)» | l'ambiente Python delle immagini non c'è | crealo (vedi [creare una campagna](creare-una-campagna.md), «Le immagini») |
+| «manca l'ambiente delle immagini (strumenti/immagini/.venv …)» | l'ambiente Python delle immagini non c'è | crealo (vedi [creare una campagna](create-a-campaign.md), «Le immagini») |
 | «manca l'ambiente dell'audio: lancia una volta strumenti/audio/setup.sh.» | l'ambiente dell'audio non c'è | lancia `strumenti/audio/setup.sh` |
-| «manca ffmpeg» (da `setup.sh`) | ffmpeg non è installato | installalo (vedi [installazione](installazione.md)) |
+| «manca ffmpeg» (da `setup.sh`) | ffmpeg non è installato | installalo (vedi [installazione](installation.md)) |
 | «immagini: la generazione si è fermata …» | batteria, disco, GPU (vedi sopra) | rilancia: riparte da dove era |
 | «Non ancora pronta da giocare. Manca: …» | mancano immagini o audio obbligatori | leggi l'elenco; le immagini «da controllare a mano» le guardi tu |
 

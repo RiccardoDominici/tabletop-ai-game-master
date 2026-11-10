@@ -1,7 +1,7 @@
 # Dadi e schede
 
 In questa pagina: come funzionano le prove e i dadi, cosa vedi sul proiettore e sul telefono, e come si scrivono le schede dei personaggi.
-Prima leggi: [Una serata di gioco](una-serata.md). La fonte di tutto è `docs/prove.md`: qui c'è la versione semplice.
+Prima leggi: [Una serata di gioco](one-evening.md). La fonte di tutto è `docs/prove.md`: qui c'è la versione semplice.
 
 ## In breve
 
@@ -247,7 +247,7 @@ Una campagna può avere un suo set di regole, ricavato dal tuo manuale (`docs/re
 - sul telefono, «Regole» mostra il riassunto e permette di chiedere una regola.
 
 Senza `regole/regole.yaml` vale l'SRD 5.2 di questa pagina. Un `regole.yaml` rotto non ferma la partita: si torna
-all'SRD e il log lo dice. Come si fa, passo per passo: [Il tuo manuale di regole](il-tuo-manuale.md). Lo schema
+all'SRD e il log lo dice. Come si fa, passo per passo: [Il tuo manuale di regole](your-rules-manual.md). Lo schema
 completo, e le regole sulla licenza dei manuali, sono in `docs/regole.md`.
 
 ## Crediti
@@ -257,4 +257,4 @@ https://www.dndbeyond.com/srd, con licenza Creative Commons Attribution 4.0 Inte
 
 ## Problemi?
 
-Vai a [Problemi comuni](problemi-comuni.md).
+Vai a [Problemi comuni](common-problems.md).

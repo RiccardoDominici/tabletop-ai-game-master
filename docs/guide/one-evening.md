@@ -1,7 +1,7 @@
 # Una serata di gioco
 
 In questa pagina: una partita dall'inizio alla fine, con `scripts/partita.sh`, il proiettore, i telefoni e il turno.
-Prima leggi: [Installazione](installazione.md) (almeno i passi da 1 a 4).
+Prima leggi: [Installazione](installation.md) (almeno i passi da 1 a 4).
 
 ## Prima della serata
 
@@ -9,12 +9,12 @@ Controlla queste cose, una per una.
 
 1. Il Mac è collegato al proiettore e alla cassa.
 2. Il Mac e i telefoni sono sulla stessa rete Wi-Fi, e non sulla rete per gli ospiti.
-   Se un telefono non entra, vedi [Collegare i telefoni](../guida-telefoni.md).
-3. Le chiavi sono nel file `.env` (vedi [Installazione](installazione.md), passo 4).
+   Se un telefono non entra, vedi [Collegare i telefoni](phones.md).
+3. Le chiavi sono nel file `.env` (vedi [Installazione](installation.md), passo 4).
 4. Se usi la voce drama-3, il credito di OpenRouter non è finito. Quando finisce, OpenRouter risponde con
    l'errore 402 (`docs/ricerca-voce-drama3.md`).
 5. La campagna è pronta. Le tre di esempio (`prova-f0`, `ponte-lanterne`, `nozze-neve`) lo sono già.
-   Per una campagna nuova, vedi [Creare una campagna](creare-una-campagna.md).
+   Per una campagna nuova, vedi [Creare una campagna](create-a-campaign.md).
 
 ## Passo 1. Fai partire la partita
 
@@ -41,7 +41,7 @@ scripts/partita.sh <campagna> [--modo A|B] [--voce fish|qwen|finta] [--nuova] [-
 | `--voce qwen` | la voce locale Qwen3-TTS, sul Mac, senza rete. Serve il passo 5 dell'installazione. Lo script la avvisa così: «fino a 7 GB di RAM, qualche minuto la prima volta». |
 | `--voce finta` | un tono al posto della voce: niente rete, niente servizi. Utile per provare. |
 | `--nuova` | ricomincia la campagna da capo. Senza, se c'è una partita salvata di questa campagna, la riprende. |
-| `--sessione N` | solo per le campagne a più sessioni: gioca la sessione numero N. Vedi [Campagne a più sessioni](campagne-a-piu-sessioni.md). |
+| `--sessione N` | solo per le campagne a più sessioni: gioca la sessione numero N. Vedi [Campagne a più sessioni](multi-session-campaigns.md). |
 
 Il narratore è sempre Haiku vero: serve la chiave Anthropic.
 
@@ -79,7 +79,7 @@ Lo script stampa ogni passo mentre lo fa:
 | Pannello del master | `http://localhost:4610/master?token=…` (lo script stampa quello vero) | solo sul Mac. Non darlo ai giocatori. |
 
 Il token del pannello cambia a ogni avvio. Se lo script non trova il link, ti dice di cercare la riga
-`PANNELLO MASTER` in `logs/server.out`. Vedi [Il pannello del master](il-pannello-del-master.md).
+`PANNELLO MASTER` in `logs/server.out`. Vedi [Il pannello del master](master-panel.md).
 
 ## Passo 2. Il proiettore
 
@@ -95,7 +95,7 @@ Dopo il clic il proiettore mostra:
 - al centro il ritratto e il nome di chi parla, con il sottotitolo di quello che dice;
 - in basso a sinistra lo stato del turno: chi è chiamato, chi ha già inviato, «Aspettiamo: …»;
 - in basso a destra il QR, per chi arriva dopo;
-- a destra le carte dei tiri dei dadi, quando ci sono (vedi [Dadi e schede](dadi-e-schede.md)).
+- a destra le carte dei tiri dei dadi, quando ci sono (vedi [Dadi e schede](dice-and-sheets.md)).
 
 Sotto c'è sempre la musica, con i suoni d'ambiente del luogo. La musica si abbassa quando parla la voce.
 
@@ -111,7 +111,7 @@ Tre tasti sulla tastiera del Mac, sulla pagina del proiettore:
 2. Ognuno sceglie il suo personaggio toccando la sua carta. Un'etichetta dice se un altro telefono l'ha già preso.
 3. Il telefono ricorda il personaggio: se si ricollega, lo ritrova.
 
-Come collegarli e cosa fare se non entrano: [Collegare i telefoni](../guida-telefoni.md).
+Come collegarli e cosa fare se non entrano: [Collegare i telefoni](phones.md).
 
 Cosa vede il giocatore sul telefono, dall'alto in basso:
 - **«Giochi come»** e il nome del personaggio, con i punti ferita sotto il nome quando la campagna usa le schede;
@@ -136,8 +136,8 @@ suo telefono e viene solo dai testi delle regole, mai dalla campagna (`docs/rego
 ## Passo 4. Il pannello del master
 
 Apri sul Mac il link del pannello stampato dallo script. Parte in modalità «senza spoiler», così chi fa da
-master può anche giocare. Tutte le sezioni e i comandi: [Il pannello del master](il-pannello-del-master.md).
-Un PNG segnato come nascosto compare al tavolo quando lo riveli dal pannello con **Rivela** (vedi [Creare una campagna](creare-una-campagna.md#png-nascosti)).
+master può anche giocare. Tutte le sezioni e i comandi: [Il pannello del master](master-panel.md).
+Un PNG segnato come nascosto compare al tavolo quando lo riveli dal pannello con **Rivela** (vedi [Creare una campagna](create-a-campaign.md#png-nascosti)).
 
 ## Come va un turno
 
@@ -211,7 +211,7 @@ decide cosa si tira (per esempio Persuasione, o un tiro per colpire), poi il cod
 Il proiettore mostra una carta per ogni tiro; il telefono mostra la carta della tua azione. Il narratore riceve
 l'esito come un fatto e lo racconta.
 
-Tutto il funzionamento: [Dadi e schede](dadi-e-schede.md).
+Tutto il funzionamento: [Dadi e schede](dice-and-sheets.md).
 
 ## Le azioni private
 
@@ -252,13 +252,13 @@ Se il narratore o la voce restano bloccati senza segni di vita per 60 secondi, u
 la finestra delle azioni (`docs/f0-contratti.md`, «Turno»). Il gioco non resta mai fermo per sempre: la pausa
 la mette e la toglie solo il master.
 
-Altri casi: [Il pannello del master](il-pannello-del-master.md), «Quando un'azione non va», e
-[Problemi comuni](problemi-comuni.md).
+Altri casi: [Il pannello del master](master-panel.md), «Quando un'azione non va», e
+[Problemi comuni](common-problems.md).
 
 ## A fine serata
 
 1. Se la campagna ha più sessioni, nel pannello premi «Fine sessione»: scrive il registro di quello che è
-   successo, la base per preparare la sessione dopo. Vedi [Campagne a più sessioni](campagne-a-piu-sessioni.md).
+   successo, la base per preparare la sessione dopo. Vedi [Campagne a più sessioni](multi-session-campaigns.md).
 2. Ferma tutto:
 
    ```bash
@@ -273,7 +273,7 @@ Altri casi: [Il pannello del master](il-pannello-del-master.md), «Quando un'azi
    scripts/costi.sh
    ```
 
-   Mostra il costo delle ultime 10 sessioni, Haiku e voce separati. Vedi [Voce e costi](voce-e-costi.md).
+   Mostra il costo delle ultime 10 sessioni, Haiku e voce separati. Vedi [Voce e costi](voice-and-costs.md).
 
 La partita si salva da sola, a ogni turno. Per riprenderla un'altra sera, rilancia lo stesso comando senza
 `--nuova` (per esempio `scripts/partita.sh nozze-neve`). Lo script dice «Riprende la partita salvata dal turno N»;
@@ -288,8 +288,8 @@ Lo script li elenca in testa:
 - `logs/voce.out`: il servizio voce locale.
 
 Vuoi provare qualcosa mentre una partita è in corso, senza toccarla? C'è l'istanza di prova su un'altra porta:
-vedi [Sviluppo](sviluppo.md).
+vedi [Sviluppo](development.md).
 
 ## Problemi?
 
-Vai a [Problemi comuni](problemi-comuni.md).
+Vai a [Problemi comuni](common-problems.md).

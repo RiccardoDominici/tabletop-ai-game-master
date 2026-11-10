@@ -22,7 +22,7 @@ Regole, dadi e segreti li tiene il codice, non il modello: il narratore racconta
 - **Node 22 o più recente** (campo `engines` di `package.json`).
 - **Python 3 con PyYAML**: lo usa il validatore delle campagne.
 - **uv e ffmpeg**, solo se vuoi generare immagini e audio o usare la voce locale. Vedi la
-  [guida all'installazione](docs/guida/installazione.md).
+  [guida all'installazione](docs/guide/installation.md).
 - **Le chiavi API**:
 
 | Chiave | A cosa serve | Serve per forza? |
@@ -33,7 +33,7 @@ Regole, dadi e segreti li tiene il codice, non il modello: il narratore racconta
 
 **Quanto costa.** Anthropic e OpenRouter si pagano a consumo. L'unica misura completa nel repo è del 9 novembre 2026:
 una sessione di 45 turni costa circa 0,25 $ (circa 0,16 $ di voce drama-3 e 0,08 $ di Haiku), finché drama-3
-resta alla tariffa di lancio. Tutte le cifre, con la fonte e la data: [Voce e costi](docs/guida/voce-e-costi.md).
+resta alla tariffa di lancio. Tutte le cifre, con la fonte e la data: [Voce e costi](docs/guide/voice-and-costs.md).
 
 ## Avvio rapido
 
@@ -70,7 +70,7 @@ Questi passi fanno partire la campagna di prova `prova-f0` (una scena, 20–30 m
    Sono segnaposto: al loro posto va la tua chiave vera. Il file `.env` è fuori da git e non va mai condiviso.
    Il codice cerca ogni chiave in quest'ordine: prima la variabile d'ambiente con lo stesso nome, poi la riga del
    file `.env` alla radice del repo, e per ultimo un file di ripiego facoltativo (vedi `apps/server/src/llm/chiavi.ts`).
-   I dettagli sono nella [guida all'installazione](docs/guida/installazione.md).
+   I dettagli sono nella [guida all'installazione](docs/guide/installation.md).
 
 4. Fai partire la partita.
 
@@ -98,23 +98,23 @@ scripts/partita.sh prova-f0 --voce finta
 ```
 
 Le altre campagne di esempio sono `ponte-lanterne` (quattro scene, da due ore a due ore e mezza) e
-`nozze-neve` (tre scene, circa due ore). Tutte le opzioni sono in [Una serata di gioco](docs/guida/una-serata.md).
+`nozze-neve` (tre scene, circa due ore). Tutte le opzioni sono in [Una serata di gioco](docs/guide/one-evening.md).
 
 ## La guida
 
 Leggila in quest'ordine la prima volta.
 
-1. [Installazione](docs/guida/installazione.md): dipendenze, chiavi, cosa si scarica e quanto pesa.
-2. [Una serata di gioco](docs/guida/una-serata.md): una partita dall'inizio alla fine.
-3. [Collegare i telefoni](docs/guida-telefoni.md): la rete, il QR, cosa fare se un telefono non entra.
-4. [Il pannello del master](docs/guida/il-pannello-del-master.md): ogni sezione e ogni comando.
-5. [Dadi e schede](docs/guida/dadi-e-schede.md): come funzionano le prove e le schede dei personaggi.
-6. [Voce e costi](docs/guida/voce-e-costi.md): le tre voci, il registro delle voci, quanto si spende.
-7. [Creare una campagna](docs/guida/creare-una-campagna.md): dal brief alla campagna pronta da giocare, con PNG nascosti e battute pronte.
-8. [Campagne a più sessioni](docs/guida/campagne-a-piu-sessioni.md): fine sessione, registro, sessione dopo.
-9. [Il tuo manuale di regole](docs/guida/il-tuo-manuale.md): giocare con le regole di un manuale tuo invece dell'SRD 5.2.
-10. [Problemi comuni](docs/guida/problemi-comuni.md): cosa fare quando qualcosa non va.
-11. [Sviluppo](docs/guida/sviluppo.md): test, istanze di prova, come è fatto il codice.
+1. [Installazione](docs/guide/installation.md): dipendenze, chiavi, cosa si scarica e quanto pesa.
+2. [Una serata di gioco](docs/guide/one-evening.md): una partita dall'inizio alla fine.
+3. [Collegare i telefoni](docs/guide/phones.md): la rete, il QR, cosa fare se un telefono non entra.
+4. [Il pannello del master](docs/guide/master-panel.md): ogni sezione e ogni comando.
+5. [Dadi e schede](docs/guide/dice-and-sheets.md): come funzionano le prove e le schede dei personaggi.
+6. [Voce e costi](docs/guide/voice-and-costs.md): le tre voci, il registro delle voci, quanto si spende.
+7. [Creare una campagna](docs/guide/create-a-campaign.md): dal brief alla campagna pronta da giocare, con PNG nascosti e battute pronte.
+8. [Campagne a più sessioni](docs/guide/multi-session-campaigns.md): fine sessione, registro, sessione dopo.
+9. [Il tuo manuale di regole](docs/guide/your-rules-manual.md): giocare con le regole di un manuale tuo invece dell'SRD 5.2.
+10. [Problemi comuni](docs/guide/common-problems.md): cosa fare quando qualcosa non va.
+11. [Sviluppo](docs/guide/development.md): test, istanze di prova, come è fatto il codice.
 
 ## Per chi vuole capire come è fatto
 
@@ -134,8 +134,8 @@ Leggila in quest'ordine la prima volta.
 
 Questo lavoro include materiale dal System Reference Document 5.2 («SRD 5.2») di Wizards of the Coast LLC,
 https://www.dndbeyond.com/srd, con licenza Creative Commons Attribution 4.0 International.
-I crediti di musica, suoni, voci e immagini sono in `CREDITI.md`.
+I crediti di musica, suoni, voci e immagini sono in `CREDITS.md`.
 
 ## Problemi?
 
-Vai a [Problemi comuni](docs/guida/problemi-comuni.md).
+Vai a [Problemi comuni](docs/guide/common-problems.md).

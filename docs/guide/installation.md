@@ -105,7 +105,7 @@ Regole di sicurezza del codice:
 
 ### Come controlli che la chiave è stata trovata
 
-Dopo il primo avvio (vedi [Una serata di gioco](una-serata.md)) cerca questa riga nel log del server:
+Dopo il primo avvio (vedi [Una serata di gioco](one-evening.md)) cerca questa riga nel log del server:
 
 ```bash
 grep 'client Anthropic pronto' logs/server.out
@@ -117,12 +117,12 @@ La riga dice `origine` (`ambiente`, `env-radice` o `file-precedente`) e la lungh
 
 Con i passi da 1 a 4 puoi giocare le tre campagne di esempio (`prova-f0`, `ponte-lanterne`, `nozze-neve`):
 le loro immagini e il loro audio sono già nel repo. Puoi usare la voce drama-3 (con la chiave OpenRouter)
-oppure la voce finta. Prosegui con [Una serata di gioco](una-serata.md).
+oppure la voce finta. Prosegui con [Una serata di gioco](one-evening.md).
 
 ## Passo 5 (facoltativo). La voce locale Qwen
 
 La voce Qwen gira sul Mac, senza rete. Fa da riserva quando drama-3 non risponde, oppure da voce principale
-con `--voce qwen`. Vedi [Voce e costi](voce-e-costi.md).
+con `--voce qwen`. Vedi [Voce e costi](voice-and-costs.md).
 
 1. Crea l'ambiente Python del servizio voce, con Python 3.12.
 
@@ -182,7 +182,7 @@ Ti serve solo per generare le immagini di una campagna nuova (luoghi, ritratti d
    ```
 
    `anthropic` serve al controllo visivo: Claude Haiku guarda ogni immagine generata. Usa la tua
-   `ANTHROPIC_API_KEY` e quindi costa (poco: vedi [Voce e costi](voce-e-costi.md)).
+   `ANTHROPIC_API_KEY` e quindi costa (poco: vedi [Voce e costi](voice-and-costs.md)).
 
 3. Il modello è `mflux-community/flux2-klein-4b-mflux-q4` e pesa 4,62 GB (`strumenti/immagini/motore.py`).
    Se si scarica da solo alla prima generazione: **da verificare** (il repo non lo scrive). Sul Mac di sviluppo
@@ -201,7 +201,7 @@ Cose da sapere prima di generare:
 - l'ambiente pesava 1,2 GB sul Mac di sviluppo.
 
 Di solito non lanci `genera.py` a mano: lo lancia `scripts/prepara.sh`. Vedi
-[Creare una campagna](creare-una-campagna.md).
+[Creare una campagna](create-a-campaign.md).
 
 ## Passo 7 (facoltativo). L'audio
 
@@ -263,8 +263,8 @@ Controlla la campagna di prova. Se finisce senza errori, l'installazione di base
 Per un controllo del modo B il validatore usa anche Node: senza Node, quel controllo diventa un avviso
 (lo scrive `strumenti/valida_campagna.py`).
 
-Ora puoi giocare: [Una serata di gioco](una-serata.md).
+Ora puoi giocare: [Una serata di gioco](one-evening.md).
 
 ## Problemi?
 
-Vai a [Problemi comuni](problemi-comuni.md).
+Vai a [Problemi comuni](common-problems.md).

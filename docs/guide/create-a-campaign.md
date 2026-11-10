@@ -1,7 +1,7 @@
 # Creare una campagna
 
 Cosa trovi qui: come nasce una campagna nuova, dal brief alla cartella pronta da giocare, con immagini e audio.
-Leggi prima: [installazione](installazione.md) (strumenti, ambienti Python e chiavi) e [una serata](una-serata.md) (come si gioca).
+Leggi prima: [installazione](installation.md) (strumenti, ambienti Python e chiavi) e [una serata](one-evening.md) (come si gioca).
 
 ## In breve
 
@@ -9,9 +9,9 @@ Leggi prima: [installazione](installazione.md) (strumenti, ambienti Python e chi
 2. Il Preparatore scrive il **brief** e poi tutti i file della campagna in `campagne/<id>/`.
 3. Il **validatore** controlla la campagna, finché non ci sono più errori.
 4. `scripts/prepara.sh` genera le **immagini** e l'**audio**.
-5. Giochi con `scripts/partita.sh <id>` (vedi [una serata](una-serata.md)).
+5. Giochi con `scripts/partita.sh <id>` (vedi [una serata](one-evening.md)).
 
-I costi delle chiamate ai modelli (Preparatore, controllo delle immagini) sono spiegati in [voce e costi](voce-e-costi.md).
+I costi delle chiamate ai modelli (Preparatore, controllo delle immagini) sono spiegati in [voce e costi](voice-and-costs.md).
 
 ## 1. Il Preparatore
 
@@ -56,7 +56,7 @@ Ti fa domande solo su ciò che non può decidere al posto tuo:
 
 Il numero di sessioni decide quanto si prepara. Oggi il framework prepara e gioca solo la **one-shot**
 (`sessioni: 1`). Se chiedi più sessioni, il Preparatore te lo dice e ti propone una one-shot o la prima
-sessione di un arco. Il motivo e lo stato dei lavori sono in [campagne a più sessioni](campagne-a-piu-sessioni.md).
+sessione di un arco. Il motivo e lo stato dei lavori sono in [campagne a più sessioni](multi-session-campaigns.md).
 
 ### Che cosa produce e dove lo salva
 
@@ -168,7 +168,7 @@ Alcune regole che conviene sapere:
   ciò che un PNG desidera, è un premio travestito, e il validatore lo segnala (`SCELTA.premio`). Servono almeno
   due strade (`SCELTA.forma`).
 - **Dadi.** Il campo `dadi` del brief serve al Preparatore. L'interruttore vero sta in `campagna.yaml`:
-  `regole: {dadi: false}` toglie l'obbligo delle schede. Dettagli in [dadi e schede](dadi-e-schede.md).
+  `regole: {dadi: false}` toglie l'obbligo delle schede. Dettagli in [dadi e schede](dice-and-sheets.md).
 - **Voci.** Le voci registrate sono in `assets/voci/voci.yaml`. Due voci uguali o simili non stanno mai nella
   stessa scena, e al massimo quattro PNG con voce stanno in una scena.
 
@@ -189,7 +189,7 @@ Stampa il livello (one-shot, arco, campagna, saga), che cosa comporta e quante s
   l'apertura della prima scena.
 - Una **scena** è un luogo in un momento. Per una sessione di 20–40 minuti basta una scena; per 2–3 ore, da 3 a 5.
   La prima è `scena.yaml`, le altre `scene/<id>.yaml`. Lo stesso luogo può tornare in due momenti diversi.
-- Il master passa da una scena all'altra dal pannello (vedi [il pannello del master](il-pannello-del-master.md)).
+- Il master passa da una scena all'altra dal pannello (vedi [il pannello del master](master-panel.md)).
 
 ## 4. Il validatore
 
@@ -251,7 +251,7 @@ Ogni regola appartiene a una **classe**. L'elenco esatto lo stampa `--classi`:
 | `SEGRETI` | niente di nascosto nei campi pubblici o nel catalogo del selettore |
 | `IMMAGINI` | prompt delle immagini |
 | `MONDO` | cronologia e logistica: eventi in ordine, date dei documenti, tempi e capienze |
-| `STATO`, `CONTINUITÀ`, `ARCO` | campagne a più sessioni (vedi [campagne a più sessioni](campagne-a-piu-sessioni.md)) |
+| `STATO`, `CONTINUITÀ`, `ARCO` | campagne a più sessioni (vedi [campagne a più sessioni](multi-session-campaigns.md)) |
 | `SCELTA` | la scelta finale del brief: prezzi che pesano su chi non li vuole |
 | `VINCOLI` | ciò che chiunque percepisce di un indizio, e che la scena non contraddice |
 | `LIVELLO` | durata in sessioni e livello della campagna |
@@ -322,7 +322,7 @@ Cose da sapere:
 
 - È **idempotente**: se lo rilanci, salta ciò che c'è già. Le immagini rifanno solo le mancanti e quelle «vecchie»
   (il file c'è, ma le schede sono cambiate).
-- **A batteria le immagini non partono.** Collega l'alimentatore e rilancia. Vedi [problemi comuni](problemi-comuni.md).
+- **A batteria le immagini non partono.** Collega l'alimentatore e rilancia. Vedi [problemi comuni](common-problems.md).
 - Non avvia il server e non tocca le porte della partita (4610 e 4611). Però **non generare immagini mentre giochi**:
   la GPU rallenta il Mac.
 - Uno strato d'audio che le fonti non hanno (per esempio una catena) resta fuori: il rapporto lo dice, e la
@@ -349,13 +349,13 @@ nascosto: true
 ```
 
 Il narratore lo conosce e può farlo parlare, ma il proiettore e i telefoni non lo mostrano finché non ha parlato
-o finché il master non preme **Rivela** nel pannello (vedi [il pannello del master](il-pannello-del-master.md)).
+o finché il master non preme **Rivela** nel pannello (vedi [il pannello del master](master-panel.md)).
 Assente, o `false`, vuol dire visibile dall'inizio.
 
 ### Battute pronte
 
 Le battute del repertorio con la voce Qwen si possono registrare prima della serata, così partono subito. Il
-comando, e cosa costa con drama-3, è in [Voce e costi](voce-e-costi.md#le-battute-già-pronte). `prepara.sh`
+comando, e cosa costa con drama-3, è in [Voce e costi](voice-and-costs.md#le-battute-già-pronte). `prepara.sh`
 non ha un'opzione per questo.
 
 ## 6. Le immagini
@@ -377,7 +377,7 @@ uv pip install --python strumenti/immagini/.venv/bin/python -r strumenti/immagin
 
 La prima riga crea l'ambiente Python delle immagini; la seconda installa mflux, PyYAML e l'SDK di Anthropic
 (per il controllo visivo). I pesi del modello pesano circa 4,6 GB (`strumenti/immagini/motore.py`); come
-arrivano sul disco la prima volta è **da verificare** (vedi [installazione](installazione.md), passo 6).
+arrivano sul disco la prima volta è **da verificare** (vedi [installazione](installation.md), passo 6).
 
 ### Leggere i prompt senza generare
 
@@ -525,9 +525,9 @@ scripts/partita.sh <id>
 ```
 
 Controlla la campagna, avvia il server e stampa gli indirizzi per proiettore, telefoni e pannello del master.
-La voce predefinita è drama-3 via OpenRouter: le alternative e i costi sono in [voce e costi](voce-e-costi.md),
-il resto della serata in [una serata](una-serata.md).
+La voce predefinita è drama-3 via OpenRouter: le alternative e i costi sono in [voce e costi](voice-and-costs.md),
+il resto della serata in [una serata](one-evening.md).
 
 ## Problemi?
 
-Vedi [problemi comuni](problemi-comuni.md).
+Vedi [problemi comuni](common-problems.md).

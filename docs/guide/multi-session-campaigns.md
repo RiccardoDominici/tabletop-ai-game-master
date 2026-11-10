@@ -1,7 +1,7 @@
 # Campagne a più sessioni
 
 Cosa trovi qui: come una campagna dura più serate. Il modello a strati, come si chiude una sessione, come si apre la successiva e che cosa si fa tra le due.
-Leggi prima: [creare una campagna](creare-una-campagna.md) e [il pannello del master](il-pannello-del-master.md).
+Leggi prima: [creare una campagna](create-a-campaign.md) e [il pannello del master](master-panel.md).
 
 ## A che punto siamo
 
@@ -252,4 +252,4 @@ descritto in questa pagina.
 
 ## Problemi?
 
-Vedi [problemi comuni](problemi-comuni.md).
+Vedi [problemi comuni](common-problems.md).

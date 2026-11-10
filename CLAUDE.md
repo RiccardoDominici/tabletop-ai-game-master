@@ -12,7 +12,7 @@ che la ispira? Se serve un caso speciale per una sola campagna, va cercata la re
 ## Documentazione: va aggiornata con il codice
 
 - Ogni modifica aggiorna nello stesso commit la documentazione che tocca: `README.md`, le pagine di
-  `docs/guida/` (la guida d'uso, in italiano, passo passo) e i `docs/*.md` di progetto che descrivono il
+  `docs/guide/` (la guida d'uso, in italiano, passo passo) e i `docs/*.md` di progetto che descrivono il
   comportamento cambiato (`docs/prove.md`, `docs/strati.md`, `docs/audio.md`, `docs/architettura.md`, …).
 - Una funzione o un'opzione nuova non è finita finché non compare nella guida, con il comando vero.
   Non si scrivono comandi o flag senza averli controllati nel codice o negli script.

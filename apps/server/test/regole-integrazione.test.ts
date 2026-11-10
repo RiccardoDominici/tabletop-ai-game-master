@@ -53,9 +53,9 @@ describe('set di regole col server intero', () => {
       const d = YAML.parse(fs.readFileSync(path.join(RADICE_REPO, f), 'utf8')) as { licenza?: { libera?: boolean } };
       expect(d.licenza?.libera, `${f}: licenza.libera`).toBe(true);
     }
-    // manuali/* (il contenuto) con l'eccezione del LEGGIMI: la cartella resta tracciata, i manuali no.
+    // manuali/* (il contenuto) con l'eccezione del README: la cartella resta tracciata, i manuali no.
     const gi = fs.readFileSync(path.join(RADICE_REPO, '.gitignore'), 'utf8');
     expect(gi).toMatch(/^\/?manuali\/(\*|\*\*)?$/m);
-    expect(gi).toMatch(/^!manuali\/LEGGIMI\.md$/m);
+    expect(gi).toMatch(/^!manuali\/README\.md$/m);
   });
 });

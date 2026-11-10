@@ -19,6 +19,6 @@ esperimenti/audio/*.wav
 manifest.json.lock
 
 # Manuali di regole dell'utente (docs/regole.md): spesso sotto copyright, mai nel repository.
-# Si ignora il contenuto, non la cartella: il LEGGIMI spiega cosa mettere e resta tracciato.
+# Si ignora il contenuto, non la cartella: il README spiega cosa mettere e resta tracciato.
 manuali/*
-!manuali/LEGGIMI.md
+!manuali/README.md

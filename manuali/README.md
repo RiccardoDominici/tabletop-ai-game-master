@@ -41,4 +41,4 @@ manuale non è libero (`libera: false`), il set resta solo sul tuo computer, con
 gli estratti che finiscono in una campagna sono citazioni brevi, per uso personale. Non pubblicarli.
 
 Per la struttura del set e il resto, vedi `docs/regole.md`; per il percorso passo per passo,
-`docs/guida/il-tuo-manuale.md`.
+`docs/guide/your-rules-manual.md`.

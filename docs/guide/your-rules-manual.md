@@ -1,8 +1,8 @@
 # Il tuo manuale di regole
 
 Cosa trovi qui: come far giocare una campagna con le regole di un manuale tuo, invece che con l'SRD 5.2
-del repository. Leggi prima: [creare una campagna](creare-una-campagna.md) (il Preparatore e il validatore) e
-[una serata](una-serata.md) (come si gioca). La specifica tecnica è in [docs/regole.md](../regole.md).
+del repository. Leggi prima: [creare una campagna](create-a-campaign.md) (il Preparatore e il validatore) e
+[una serata](one-evening.md) (come si gioca). La specifica tecnica è in [docs/regole.md](../regole.md).
 
 ## In breve
 
@@ -17,7 +17,7 @@ Senza il campo `manuale:`, la campagna gioca con l'SRD 5.2, come oggi.
 ## 1. Dove sta il manuale
 
 La cartella `manuali/` è nel `.gitignore`: quello che ci metti resta sul tuo computer e non entra mai nel
-repository. I manuali sono spesso sotto copyright, quindi questa è la regola. Il file `manuali/LEGGIMI.md` è
+repository. I manuali sono spesso sotto copyright, quindi questa è la regola. Il file `manuali/README.md` è
 l'unico tracciato da git, e spiega le stesse cose in breve.
 
 ## 2. Formati
@@ -94,4 +94,4 @@ Il regolamento completo della casella e del pannello è in [docs/regole.md](../r
 
 Il manuale è tuo: lo usi per giocare, a casa, con il tuo gruppo. Non va messo nel repository né pubblicato. Gli
 estratti che finiscono in una campagna sono citazioni brevi, per uso personale: non pubblicarli, né in un sito
-né in un canale pubblico. Il repository contiene solo l'SRD 5.2, che è sotto licenza CC-BY-4.0 (vedi `CREDITI.md`).
+né in un canale pubblico. Il repository contiene solo l'SRD 5.2, che è sotto licenza CC-BY-4.0 (vedi `CREDITS.md`).
