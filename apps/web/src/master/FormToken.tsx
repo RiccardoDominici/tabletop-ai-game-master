@@ -30,7 +30,7 @@ export function FormToken() {
         className="flex w-full max-w-lg flex-col gap-4 rounded-carta border border-bordo bg-notte-2/90 p-6 shadow-profonda"
       >
         <div>
-          <p className="text-xs tracking-[0.3em] text-candela/90 uppercase">Cantastorie</p>
+          <p className="text-xs tracking-[0.3em] text-candela/90 uppercase">Tabletop AI Game Master</p>
           <h1 className="font-titolo text-2xl font-semibold">Pannello del master</h1>
         </div>
         <p className="text-pergamena-2">

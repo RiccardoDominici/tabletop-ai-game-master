@@ -2,7 +2,7 @@
   "name": "@cantastorie/server",
   "version": "0.0.1",
   "private": true,
-  "description": "Server di Cantastorie: Fastify + Socket.IO, turni, narratore Haiku, pipeline voce",
+  "description": "Server of Tabletop AI Game Master: Fastify + Socket.IO, turns, Haiku narrator, voice pipeline",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",

@@ -129,7 +129,7 @@ for _ in $(seq 1 10); do
   sleep 0.3
 done
 echo
-echo "Cantastorie pronto (pid $PID) — $salute"
+echo "Tabletop AI Game Master ready (pid $PID) — $salute"
 echo "  Telefoni:   $telefono"
 echo "  Proiettore: http://localhost:$PORTA/schermo   (premi «Inizia sessione»)"
 echo "  Master:     ${master:-vedi la riga PANNELLO MASTER in logs/server.out}   (solo su questo Mac)"

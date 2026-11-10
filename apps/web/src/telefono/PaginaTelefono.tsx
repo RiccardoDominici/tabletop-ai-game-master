@@ -49,7 +49,7 @@ function PaginaTelefonoVera() {
   useSchermoAcceso(true);
 
   useEffect(() => {
-    document.title = 'Cantastorie · Telefono';
+    document.title = 'Tabletop AI Game Master · Telefono';
   }, []);
 
   const stato = useTavolo((s) => s.stato);
@@ -79,7 +79,7 @@ function PaginaTelefonoVera() {
 function Attesa() {
   return (
     <main className="sicuro-lati flex h-full flex-col items-center justify-center gap-4 text-center">
-      <p className="font-titolo text-3xl font-semibold text-candela">Cantastorie</p>
+      <p className="font-titolo text-3xl font-semibold text-candela">Tabletop AI Game Master</p>
       <p className="text-pergamena-2">Mi collego al tavolo…</p>
     </main>
   );

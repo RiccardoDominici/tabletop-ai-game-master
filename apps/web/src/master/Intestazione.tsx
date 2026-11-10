@@ -24,7 +24,7 @@ export function Intestazione({ stato }: { stato: StatoMaster }) {
     <header className="shrink-0 border-b border-bordo bg-notte-2/95 px-4 py-2.5">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div className="min-w-0 max-w-[28rem]">
-          <p className="text-[0.7rem] tracking-[0.3em] text-candela/90 uppercase">Cantastorie · Pannello master</p>
+          <p className="text-[0.7rem] tracking-[0.3em] text-candela/90 uppercase">Tabletop AI Game Master · Pannello master</p>
           <h1 data-testid="master-titolo" className="truncate font-titolo text-xl leading-tight font-semibold" title={tavolo.scena.titolo}>
             {tavolo.scena.titolo}
           </h1>

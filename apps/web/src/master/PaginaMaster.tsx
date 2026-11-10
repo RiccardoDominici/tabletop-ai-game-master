@@ -19,7 +19,7 @@ import { Cruscotto } from './Cruscotto';
 export function PaginaMaster() {
   useEffect(() => avviaMaster(), []);
   useEffect(() => {
-    document.title = 'Cantastorie · Master';
+    document.title = 'Tabletop AI Game Master · Master';
   }, []);
 
   const stato = useMaster((s) => s.stato);

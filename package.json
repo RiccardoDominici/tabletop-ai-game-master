@@ -2,7 +2,7 @@
   "name": "cantastorie",
   "private": true,
   "version": "0.0.1",
-  "description": "Cantastorie — master IA per D&D in presenza (F0: prova end-to-end)",
+  "description": "Tabletop AI Game Master: AI game master for in-person D&D (F0: end-to-end trial)",
   "type": "module",
   "workspaces": [
     "packages/*",

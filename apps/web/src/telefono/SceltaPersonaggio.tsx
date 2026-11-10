@@ -19,7 +19,7 @@ export function SceltaPersonaggio({ stato }: { stato: StatoTavolo }) {
   return (
     <main className="sicuro-basso sicuro-lati mx-auto flex min-h-full max-w-lg flex-col gap-5 pt-3">
       <header className="pt-2">
-        <p className="text-sm tracking-[0.2em] text-candela uppercase">Cantastorie</p>
+        <p className="text-sm tracking-[0.2em] text-candela uppercase">Tabletop AI Game Master</p>
         <h1 className="mt-1 font-titolo text-[1.75rem] leading-tight font-semibold">Scegli il tuo personaggio</h1>
         <p className="mt-2 text-pergamena-2">
           Scena: <span className="font-racconto italic">{stato.scena.titolo}</span>

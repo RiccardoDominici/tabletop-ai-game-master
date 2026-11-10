@@ -131,6 +131,15 @@ The first time, read it in this order.
 - The code license: the repo does not have a license file yet (to be verified).
 - Choosing the play language at setup: Italian is the only play language today; choosing it at setup is coming.
 
+## Legacy names
+
+The project was called **Cantastorie** until it was renamed Tabletop AI Game Master. Only the name shown to people
+has changed. These names are still the old ones, and they stay until a later phase renames them:
+
+- environment variables `CANTASTORIE_*` (for example `CANTASTORIE_PORTA`, `CANTASTORIE_CAMPAGNA`);
+- npm packages `@cantastorie/server`, `@cantastorie/web`, `@cantastorie/shared`;
+- the folder name `cantastorie` in the clone command above.
+
 ## Credits
 
 This work includes material from the System Reference Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC,

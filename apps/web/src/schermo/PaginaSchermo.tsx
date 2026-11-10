@@ -51,7 +51,7 @@ export function PaginaSchermo() {
 function PaginaSchermoVera() {
   useEffect(() => {
     esponiDebugSchermo();
-    document.title = 'Cantastorie · Schermo';
+    document.title = 'Tabletop AI Game Master · Schermo';
   }, []);
   useEffect(() => avviaSchermo(), []);
   useSchermoAcceso(true);
@@ -104,7 +104,7 @@ export function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | 
       <main className="relative z-10 grid h-dvh grid-rows-[auto_1fr_auto] gap-[2vh] px-[3.5vw] pt-[4vh] pb-[4vh]">
         <header className="max-w-[70vw]">
           <p className="text-[1.1vw] tracking-[0.35em] text-candela/90 uppercase drop-shadow-[0_2px_6px_rgb(0_0_0/0.9)]">
-            Cantastorie
+            Tabletop AI Game Master
           </p>
           <h1
             data-testid="titolo-scena"

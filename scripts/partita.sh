@@ -161,7 +161,7 @@ ripresa="$(printf '%s' "$salute" | node -e 'let s="";process.stdin.on("data",d=>
 cat <<FINE
 
 ==================================================================
-  Cantastorie — partita pronta
+  Tabletop AI Game Master — game ready
   Campagna: $CAMPAGNA   ·   modo $MODO ($MODO_SERVER)   ·   voce: $voce_in_uso
   $( [[ -n "$PACCHETTO" ]] && echo "Sessione $PACCHETTO (a fine serata: «Fine sessione» nel pannello del master)" || echo "One-shot" )
   $ripresa

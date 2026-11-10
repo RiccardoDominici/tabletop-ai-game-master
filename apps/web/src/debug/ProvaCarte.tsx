@@ -78,7 +78,7 @@ function useRilancio(): [number, () => void] {
 
 export function ProvaCarteSchermo() {
   useEffect(() => {
-    document.title = 'Cantastorie · Schermo · DEBUG carte';
+    document.title = 'Tabletop AI Game Master · Schermo · DEBUG carte';
     log.warn('Banco di prova delle carte dei tiri (debug): nessun server, dati finti');
   }, []);
   return provaCarteRichiesta() === 'galleria' ? <Galleria /> : <ScenaProva />;
@@ -198,7 +198,7 @@ export function ProvaCarteTelefono() {
   }, [giro, fase, pfParam]);
 
   useEffect(() => {
-    document.title = 'Cantastorie · Telefono · DEBUG carte';
+    document.title = 'Tabletop AI Game Master · Telefono · DEBUG carte';
     log.warn('Banco di prova delle carte dei tiri (debug): nessun server, dati finti');
     useTelefono.setState({ idPg: 'arianna', confermato: true, miaAzione: azione });
   }, [azione]);
