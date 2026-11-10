@@ -75,7 +75,7 @@ source and the length. Never add a `console.log` or a `print` of a key or token 
   short; the body explains the *why* (the problem, the choice, what was rejected and why).
 - One commit = one verified unit. Before committing, the relevant tests pass (`npm test`,
   `python3 -m pytest -q <file>`).
-- Messages in Italian, like the rest of the repo history.
+- Commit messages in English from now on (the project is language-independent; older history is in Italian).
 
 ## Framework principle
 
