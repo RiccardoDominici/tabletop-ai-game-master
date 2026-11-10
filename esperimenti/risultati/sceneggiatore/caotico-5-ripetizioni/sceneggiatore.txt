@@ -1,0 +1,34 @@
+{
+ "turni": 3,
+ "azioni_pubbliche": 9,
+ "nessuna_richieste_subito": 4,
+ "subito_consegnate": 4,
+ "copertura": "4/4",
+ "subito_esiti": {
+  "ok": 4,
+  "errore": 0,
+  "saltata": 0
+ },
+ "ms_totale_subito": {
+  "mediana": 10512.0,
+  "max": 18015,
+  "min": 7006
+ },
+ "ms_claude": {
+  "mediana": 7883.5,
+  "max": 39482
+ },
+ "prossime": 2,
+ "battute_accettate": 16,
+ "battute_scartate": 0,
+ "motivi_scarto": [],
+ "usate_dal_lettore_dopo": []
+}
+--- 3 pg_nando | suoniamo la marcia dei muli, Gigia balla anche lei | consegnata True 8012 ms
+    [narratore] Il primo soffio del mantice rimbalza sugli scaffali, forma dopo forma. / [narratore] Dal lato dei Morlacchi due mulattieri battono il tempo con gli stivali. / [narratore] Sulla sinistra una comare si volta a metà, poi finge di guardare il camino.
+--- 3 pg_remo | vanda scommetto un formaggio che il vento non c'entra niente, ahah | consegnata True 18015 ms
+    [narratore] A sentir parlare di formaggio, due Bonfanti della tavolata di sinistra alzano la testa. / [png_gaspare] Una scommessa in forme? Da noi si segna tutto, con rispetto parlando. / [narratore] La matita corre sul margine di un foglio, accanto alle colonne dei bicchieri.
+--- 4 pg_vanda | remo ferma, scendo io, la cantina la conosco dai muli | consegnata True 7006 ms
+    [narratore] Il bastone di nocciolo batte due colpi sul pavimento, e la tavolata dei Morlacchi si volta. / [png_ettore] Mulattiera, la cantina è dei Bonfanti. I muli, no. / [narratore] Dietro il tavolo alto, i tre gradini aspettano nel buio fresco.
+--- 4 pg_remo | scendo in cantina a controllare le forme, la scaletta e mia | consegnata True 13012 ms
+    [narratore] Dietro il tavolo alto i tre gradini portano giù, nel fresco. / [narratore] Lì sotto la musica arriva appena, e la sala non sente. / [narratore] Le forme stanno in file sugli assi, con il loro odore di crosta.

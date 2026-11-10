@@ -1,0 +1,310 @@
+{
+  "copione": "nozze-neve/caotico",
+  "campagna": "nozze-neve",
+  "modo": "repertorio",
+  "porta": 4740,
+  "narratore_finto": false,
+  "sessione": "2026-11-10T15:49:01.806Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "164b449d5f0d70b8e6d3968cc8258022e83ac4e5",
+    "modificati": [],
+    "radice": "/private/tmp/claude-501/-Users-riccardo-Developer/161e877b-0d39-415a-be00-32dd6f15c6cf/scratchpad/wt-motore"
+  },
+  "turni": 3,
+  "turni_copione": 5,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 3,
+        "stato": {
+          "o_tramonto": "0/8",
+          "o_lite": "1/6"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_tramonto": "0/8",
+          "o_lite": "1/6"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_tramonto": "0/8",
+          "o_lite": "1/6"
+        }
+      }
+    ],
+    "massimo": {
+      "o_tramonto": "0/8",
+      "o_lite": "1/6"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 0,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 30020,
+      "peggiore": 30482,
+      "n": 3
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 70,
+      "peggiore": 575,
+      "n": 3
+    },
+    "llm_prima_frase": {
+      "mediana": 70,
+      "peggiore": 579,
+      "n": 3
+    },
+    "voce_richiesta": {
+      "mediana": 1965,
+      "peggiore": 1983,
+      "n": 3
+    },
+    "voce_primo_audio": {
+      "mediana": 2617,
+      "peggiore": 2634,
+      "n": 3
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1429,
+      "peggiore": 1429,
+      "n": 1
+    },
+    "llm_fine": {
+      "mediana": 73,
+      "peggiore": 37430,
+      "n": 3
+    },
+    "audio_fine": {
+      "mediana": 46737,
+      "peggiore": 74788,
+      "n": 3
+    }
+  },
+  "buchi": {
+    "totale": 5,
+    "in_frase": 1,
+    "tra_frasi": 4,
+    "silenzio_ms": 24166,
+    "per_turno": [
+      5,
+      0,
+      0
+    ]
+  },
+  "righe_prescritte": 17,
+  "righe_improvvisate": 9,
+  "quota_prescritte": 0.6538461538461539,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 9,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 2,
+  "battute_indicate_usate": 2,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {},
+  "fughe": {
+    "nota": "Fuga = riga del narratore o di un PNG con una parola segreta prima che sia uscito un id di pubblica_dopo (battuta o indizio rivelato da una battuta) e prima che un giocatore l’abbia scritta.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 12,
+  "battute_mai_usate": [
+    "nar_sole_1",
+    "nar_sole_2",
+    "nar_sole_3",
+    "nar_sole_4",
+    "nar_sole_5",
+    "nar_sole_6",
+    "nar_sole_7",
+    "nar_sole_8",
+    "nar_lite_2",
+    "nar_lite_3",
+    "nar_lite_4",
+    "nar_lite_5",
+    "nar_lite_6",
+    "nar_zio_1",
+    "nar_zio_2",
+    "nar_zio_3",
+    "nar_zio_4",
+    "nar_impronte",
+    "nar_bastiano",
+    "nar_libro_spose",
+    "nar_libro_pagina",
+    "nar_tilde",
+    "nar_caldaio",
+    "nar_giacca_tasca",
+    "nar_giacca_tasca_privato",
+    "nar_sigillo_dato",
+    "nar_sigillo_preso",
+    "nar_stalla_entrata",
+    "nar_stalla_guardo",
+    "nar_stalla_guardo_privato",
+    "nar_processione_duchessa",
+    "nar_duchessa_dopo",
+    "nar_quaderno",
+    "nar_quaderno_privato",
+    "nar_sposa_mima",
+    "nar_cassapanca",
+    "nar_cassapanca_privato",
+    "nar_anello_vicino",
+    "nar_anello_vicino_privato",
+    "nar_campanella",
+    "nar_campanella_privato",
+    "nar_scrittoio_cassetto",
+    "nar_scrittoio_cassetto_privato",
+    "nar_borsa_garzone",
+    "nar_borsa_garzone_privato",
+    "nar_iniziali_mano",
+    "nar_tonio",
+    "nar_tonio_tasca",
+    "nar_bastiano_sala",
+    "nar_panche_dentro",
+    "nar_custode_regole",
+    "fin_sasso_a",
+    "fin_sasso_b",
+    "fin_sasso_c",
+    "fin_tramonto",
+    "nar_chiusura",
+    "nar_stalla_muggito",
+    "nar_duchessa_sasso",
+    "nar_ettore_sasso",
+    "nar_iniziali_custode",
+    "nar_sasso_mano",
+    "tr_vicolo",
+    "tr_casera",
+    "tr_salita",
+    "tr_soffitta",
+    "tr_stalla",
+    "ade_saluto",
+    "ade_rifiuto",
+    "ade_domanda_gentile",
+    "ade_accusa",
+    "ade_minaccia",
+    "ade_offerta",
+    "ade_aiuto",
+    "ade_da_dove",
+    "ade_quel_giorno",
+    "ade_anello_lettere",
+    "ade_anello_ferro",
+    "ade_neve_lettera",
+    "ade_neve_giacca",
+    "ade_neve_tilde",
+    "ade_scatolina",
+    "ade_anello_reso",
+    "ade_sasso_a",
+    "ade_sasso_b",
+    "ade_sasso_c",
+    "ett_saluto",
+    "ett_rifiuto",
+    "ett_domanda_gentile",
+    "ett_accusa",
+    "ett_minaccia",
+    "ett_offerta",
+    "ett_aiuto",
+    "ett_di_chi",
+    "ett_quel_giorno",
+    "ett_anello_lettere",
+    "ett_anello_ferro",
+    "ett_neve_libro",
+    "ett_neve_tilde",
+    "ett_lettera_data",
+    "ett_giacca_appesa",
+    "ett_bastiano",
+    "ett_sasso_a",
+    "ett_sasso_b",
+    "gas_saluto",
+    "gas_rifiuto",
+    "gas_domanda_gentile",
+    "gas_accusa",
+    "gas_minaccia",
+    "gas_offerta",
+    "gas_aiuto",
+    "gas_chi_cera",
+    "gas_dote",
+    "gas_alibi_sorella",
+    "gas_macchia_sorella",
+    "gas_prato_contratto",
+    "gas_contratto_sorella",
+    "gas_colto",
+    "gas_silenzio",
+    "gas_campanella",
+    "gas_rimandare",
+    "gas_occhiali",
+    "zel_saluto",
+    "zel_rifiuto",
+    "zel_domanda_gentile",
+    "zel_accusa",
+    "zel_minaccia",
+    "zel_offerta",
+    "zel_aiuto",
+    "zel_dove_eri",
+    "zel_macchia_privato",
+    "zel_promessa_cugina",
+    "zel_promessa_lettere",
+    "zel_motivo",
+    "zel_velo",
+    "zel_attesa"
+  ],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 167,
+      "secondi": 32.933333333333266,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 3,
+      "frasi": 11,
+      "pezzi": 251,
+      "secondi": 49.20000000000017,
+      "buchi": 5,
+      "buchi_in_frase": 1,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 24166
+    },
+    {
+      "turno": 4,
+      "frasi": 16,
+      "pezzi": 344,
+      "secondi": 67.80000000000044,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 5,
+      "frasi": 11,
+      "pezzi": 209,
+      "secondi": 41.200000000000045,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}

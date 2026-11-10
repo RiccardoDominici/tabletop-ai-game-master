@@ -90,3 +90,17 @@ Stesso copione caotico (6 turni, 35 s), più 3 turni del copione privato:
 - **Ripetizioni**: in 11 battute, «sulla tavolata dei Morlacchi qualcuno batte i boccali» torna quattro volte, ed
   Ettore apre quasi sempre con «Eh?» e il bastone. Lo sceneggiatore vede la trascrizione ma non varia. Da fare: un
   controllo sulle immagini già usate, o le sue ultime battute nel prompt come cose da non ripetere.
+
+## Dopo ripetizioni, corpo dei PG e audio (commit 164b449)
+
+Copione caotico, 5 turni con 30 s di chiacchiera (`caotico-5-ripetizioni`): 4 «nessuna», **4 su 4** dette a finestra
+aperta, mediana 10,5 s (7–18 s), nessuna battuta scartata.
+- **Attacchi**: nessuno ripetuto. Prima «Sulla tavolata dei Morlacchi» tornava quattro volte in undici battute.
+- **Ettore**: nessuna riga apre con «Eh?» e nessuna ha il tic. Il bastone c'è, ma detto in un altro modo («Il bastone
+  di nocciolo batte due colpi»).
+- **PG**: nessuna riga descrive un PG; rispondono la sala, Gaspare, Ettore e la cantina.
+- **Resta**: «Dietro il tavolo alto, i tre gradini…» torna in due risposte dello stesso turno. La seconda richiesta
+  era partita prima che arrivasse la prima risposta, quindi i «già usati» non la contenevano. Da fare: aggiungere ai
+  «già usati» le battute dello sceneggiatore ancora in volo.
+- **Audio**: con la voce finta della prova la coda drama-3 non parte. È provata a parte (una sintesi per battuta
+  nuova, nessuna se è già in cache).
