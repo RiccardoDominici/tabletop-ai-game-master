@@ -1,0 +1,12 @@
+[nozze-neve-caotico-B] campagna nozze-neve, porta 4740, modalità repertorio: riavvio del server di prova…
+[nozze-neve-caotico-B] server: {"ok":true,"fase":"attesa","turno":0,"versione_scena":0,"voce":"mock","schermo":false,"narratore":"haiku","modello":"claude-haiku-5-5","campagna":"nozze-neve","immagini":22,"audio":31,"sessione":"","modo":"repertorio","ripresa":null,"pacchetto":null}
+[nozze-neve-caotico-B] turno 1/7 fatto (server 1)
+[nozze-neve-caotico-B] turno 2/7 fatto (server 2)
+[nozze-neve-caotico-B] turno 3/7 fatto (server 3)
+[nozze-neve-caotico-B] turno 4/7 fatto (server 4)
+[nozze-neve-caotico-B] turno 5/7 fatto (server 5)
+[nozze-neve-caotico-B] turno 6/7 fatto (server 6)
+[nozze-neve-caotico-B] turno 7 (server 7): scena → scena_casa_bonfanti
+[nozze-neve-caotico-B] turno 7/7 fatto (server 8)
+[nozze-neve-caotico-B] fatto → esperimenti/risultati/correzioni-motore/annuncia-segreti/caotico-7 (costo $0.01649)
+exit 0

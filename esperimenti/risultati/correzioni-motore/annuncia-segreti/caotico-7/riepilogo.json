@@ -1,0 +1,395 @@
+{
+  "copione": "nozze-neve/caotico",
+  "campagna": "nozze-neve",
+  "modo": "repertorio",
+  "porta": 4740,
+  "narratore_finto": false,
+  "sessione": "2026-11-10T11:51:52.136Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "8bf11258bddb2ef3b24df2aab7c3fd1eacdee371",
+    "modificati": [],
+    "radice": "/private/tmp/claude-501/-Users-riccardo-Developer/161e877b-0d39-415a-be00-32dd6f15c6cf/scratchpad/wt-motore"
+  },
+  "turni": 7,
+  "turni_copione": 7,
+  "cambi_di_scena": [
+    {
+      "turno_copione": 7,
+      "turno_server": 7,
+      "a": "scena_casa_bonfanti"
+    }
+  ],
+  "fine_prima_del_copione": null,
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_tramonto": "0/8",
+          "o_lite": "0/6"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_tramonto": "0/8",
+          "o_lite": "0/6"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_tramonto": "0/8",
+          "o_lite": "1/6"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_tramonto": "0/8",
+          "o_lite": "1/6"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_tramonto": "0/8",
+          "o_lite": "1/6"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_tramonto": "1/8",
+          "o_lite": "2/6"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_tramonto": "1/8",
+          "o_zio": "0/4"
+        }
+      }
+    ],
+    "massimo": {
+      "o_tramonto": "1/8",
+      "o_lite": "2/6",
+      "o_zio": "0/4"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 0,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 1222,
+      "peggiore": 1284,
+      "n": 7
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 1925,
+      "peggiore": 2278,
+      "n": 7
+    },
+    "llm_prima_frase": {
+      "mediana": 2182,
+      "peggiore": 2551,
+      "n": 7
+    },
+    "voce_richiesta": {
+      "mediana": 2183,
+      "peggiore": 2551,
+      "n": 7
+    },
+    "voce_primo_audio": {
+      "mediana": 2835,
+      "peggiore": 3203,
+      "n": 7
+    },
+    "schermo_inizio_audio": {
+      "mediana": 2987,
+      "peggiore": 3356,
+      "n": 7
+    },
+    "llm_fine": {
+      "mediana": 3513,
+      "peggiore": 4894,
+      "n": 7
+    },
+    "audio_fine": {
+      "mediana": 50067,
+      "peggiore": 62103,
+      "n": 7
+    }
+  },
+  "buchi": {
+    "totale": 7,
+    "in_frase": 0,
+    "tra_frasi": 7,
+    "silenzio_ms": 1843,
+    "per_turno": [
+      0,
+      0,
+      4,
+      0,
+      1,
+      0,
+      2
+    ]
+  },
+  "righe_prescritte": 18,
+  "righe_improvvisate": 40,
+  "quota_prescritte": 0.3103448275862069,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 21,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 6,
+  "battute_indicate_usate": 4,
+  "righe_png_assenti": 3,
+  "usa_rifiutati_per_motivo": {},
+  "fughe": {
+    "nota": "Fuga = riga del narratore o di un PNG con una parola segreta prima che sia uscito un id di pubblica_dopo (battuta o indizio rivelato da una battuta) e prima che un giocatore l’abbia scritta.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 8,
+  "battute_mai_usate": [
+    "nar_sole_2",
+    "nar_sole_3",
+    "nar_sole_4",
+    "nar_sole_5",
+    "nar_sole_6",
+    "nar_sole_7",
+    "nar_sole_8",
+    "nar_lite_3",
+    "nar_lite_4",
+    "nar_lite_5",
+    "nar_lite_6",
+    "nar_zio_1",
+    "nar_zio_2",
+    "nar_zio_3",
+    "nar_zio_4",
+    "nar_impronte",
+    "nar_bastiano",
+    "nar_libro_spose",
+    "nar_libro_pagina",
+    "nar_tilde",
+    "nar_caldaio",
+    "nar_giacca_tasca",
+    "nar_giacca_tasca_privato",
+    "nar_sigillo_dato",
+    "nar_sigillo_preso",
+    "nar_stalla_entrata",
+    "nar_stalla_guardo",
+    "nar_stalla_guardo_privato",
+    "nar_processione_duchessa",
+    "nar_duchessa_dopo",
+    "nar_quaderno",
+    "nar_quaderno_privato",
+    "nar_cassapanca",
+    "nar_cassapanca_privato",
+    "nar_anello_vicino",
+    "nar_anello_vicino_privato",
+    "nar_campanella",
+    "nar_campanella_privato",
+    "nar_scrittoio_cassetto",
+    "nar_scrittoio_cassetto_privato",
+    "nar_borsa_garzone",
+    "nar_borsa_garzone_privato",
+    "nar_iniziali_mano",
+    "nar_tonio",
+    "nar_tonio_tasca",
+    "nar_bastiano_sala",
+    "nar_panche_dentro",
+    "nar_custode_regole",
+    "fin_sasso_a",
+    "fin_sasso_b",
+    "fin_sasso_c",
+    "fin_tramonto",
+    "nar_chiusura",
+    "nar_comari",
+    "nar_tilde_dorme",
+    "nar_stalla_muggito",
+    "nar_duchessa_sasso",
+    "nar_ettore_sasso",
+    "nar_iniziali_custode",
+    "nar_sasso_mano",
+    "tr_vicolo",
+    "tr_casera",
+    "tr_salita",
+    "tr_soffitta",
+    "tr_stalla",
+    "ade_saluto",
+    "ade_rifiuto",
+    "ade_domanda_gentile",
+    "ade_accusa",
+    "ade_minaccia",
+    "ade_offerta",
+    "ade_aiuto",
+    "ade_da_dove",
+    "ade_quel_giorno",
+    "ade_anello_lettere",
+    "ade_anello_ferro",
+    "ade_neve_lettera",
+    "ade_neve_giacca",
+    "ade_neve_tilde",
+    "ade_scatolina",
+    "ade_anello_reso",
+    "ade_sasso_a",
+    "ade_sasso_b",
+    "ade_sasso_c",
+    "ett_saluto",
+    "ett_rifiuto",
+    "ett_domanda_gentile",
+    "ett_accusa",
+    "ett_minaccia",
+    "ett_offerta",
+    "ett_aiuto",
+    "ett_di_chi",
+    "ett_quel_giorno",
+    "ett_anello_lettere",
+    "ett_anello_ferro",
+    "ett_neve_libro",
+    "ett_neve_tilde",
+    "ett_lettera_data",
+    "ett_bastiano",
+    "ett_sasso_a",
+    "ett_sasso_b",
+    "gas_saluto",
+    "gas_rifiuto",
+    "gas_domanda_gentile",
+    "gas_accusa",
+    "gas_minaccia",
+    "gas_offerta",
+    "gas_aiuto",
+    "gas_chi_cera",
+    "gas_alibi_sorella",
+    "gas_macchia_sorella",
+    "gas_prato_contratto",
+    "gas_contratto_sorella",
+    "gas_colto",
+    "gas_silenzio",
+    "gas_campanella",
+    "gas_rimandare",
+    "gas_occhiali",
+    "zel_saluto",
+    "zel_rifiuto",
+    "zel_domanda_gentile",
+    "zel_accusa",
+    "zel_minaccia",
+    "zel_offerta",
+    "zel_aiuto",
+    "zel_dove_eri",
+    "zel_macchia_privato",
+    "zel_promessa_cugina",
+    "zel_promessa_lettere",
+    "zel_motivo",
+    "zel_velo"
+  ],
+  "costo_totale_usd": 0.016487919999999996,
+  "costo_mediana_turno_usd": 0.00064295,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 167,
+      "secondi": 32.933333333333266,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 1,
+      "frasi": 11,
+      "pezzi": 243,
+      "secondi": 47.533333333333466,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 2,
+      "frasi": 9,
+      "pezzi": 216,
+      "secondi": 42.7333333333334,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 3,
+      "frasi": 13,
+      "pezzi": 250,
+      "secondi": 49.066666666666826,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 842
+    },
+    {
+      "turno": 4,
+      "frasi": 6,
+      "pezzi": 181,
+      "secondi": 35.7333333333333,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 5,
+      "frasi": 8,
+      "pezzi": 175,
+      "secondi": 34.53333333333328,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 375
+    },
+    {
+      "turno": 6,
+      "frasi": 14,
+      "pezzi": 304,
+      "secondi": 59.93333333333366,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 7,
+      "frasi": 3,
+      "pezzi": 86,
+      "secondi": 16.933333333333305,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 13,
+      "pezzi": 256,
+      "secondi": 50.33333333333351,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 626
+    }
+  ]
+}

@@ -76,3 +76,23 @@ Il copione `privato` (6 azioni private, tre PG, 12 turni) era il test che il giu
 **Un po' meglio di «così così», ma non ancora buona.** La media della rubrica passa da 2,9 e 2,6 a 3,1 e 2,7, e la partita con azioni private arriva a 3,4. Il finale arriva in una partita su tre, il tramonto non corre più al triplo, e il narratore non rifiuta più i [usa]. Restano il finale fragile, il caotico che ripete «annuncia», la quota di pre-scritte che esce ancora bassa, e le risposte private che escono ad alta voce.
 
 Se si rigioca, la prima cosa da correggere è la risposta privata pubblica, perché è l'unico problema nuovo emerso oggi e rompe la promessa del copione privato.
+
+## Dopo le correzioni del 10 novembre (commit 8bf1125)
+
+- **Finale in una partita su tre: è la lunghezza dei copioni, non un difetto.** Al Sasso il tramonto sale a sei
+  entrando, poi corre a un segno ogni due risposte (`orologi_in_scena`): servono quattro risposte dopo
+  l'ingresso per arrivare a 8/8. Il caotico entra al T12 e il finale esce al T16. L'indagine entra al T15 e
+  finisce al T17, il privato entra al T12 e finisce al T14: due risposte al Sasso, quindi 7/8 e nessun finale.
+  Per giudicare il climax, i copioni devono dare almeno quattro turni al Sasso, oppure la scena deve correre
+  a un segno per risposta.
+- **Le due «fughe» di Gaspare non erano parole segrete mancanti.** Ogni fatto nascosto di nozze-neve ha le sue
+  parole (il validatore lo controlla, `SEGRETI.fatto_scoperto`), e le parole del contratto erano già pubbliche
+  al T9, perché `nar_scrittoio_cassetto` era uscito al tavolo al T6. Il garzone del T13 è la bugia pubblica di
+  Gaspare. Il vero difetto erano le risposte ad azioni private dette ad alta voce. In più la misura delle fughe
+  contava come pubbliche le parole di un'azione privata. Ora una guardia agisce sulle righe improvvisate: un
+  segreto ancora nascosto va al telefono di chi ha agito in privato, se il turno ha solo la sua azione, oppure
+  il PNG dice la sua battuta di rifiuto. Battute e indizi usciti solo in privato restano privati, e la misura
+  ignora il materiale privato.
+- **«annuncia» veniva dal prompt**, che chiamava così la riga dell'azione. Ora è «la riga dell'azione». Prova
+  breve sul caotico (7 turni, `correzioni-motore/annuncia-segreti/caotico-7`): «annuncia» è a 0 (nella B3 era a
+  4 negli stessi turni), nessuna riga fermata dalla guardia (nessun falso positivo), 0 fughe, costo $0,016.
