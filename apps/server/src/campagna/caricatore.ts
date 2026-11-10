@@ -12,6 +12,7 @@
  * apertura stringa o lista), ma severo su ciò che rompe il gioco: senza scena, senza apertura
  * o senza PG la sessione non parte. Le incoerenze minori diventano `avvisi` (e righe di log).
  */
+import { comeLingua } from '../lingua';
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
@@ -203,6 +204,7 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
   const campagna: Campagna = {
     id,
     cartella,
+    lingua: comeLingua(campagnaGrezza['lingua'], `${path.basename(cartella)}/campagna.yaml`),
     titolo: stringa(stile['titolo']) ?? scena.titolo,
     stile,
     campagnaNarratore,

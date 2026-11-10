@@ -1,0 +1,3 @@
+# Frasi fisse del Motore in italiano (docs/lingue.md): la lingua di riferimento. Chiavi «sezione.voce», segnaposto {nome}.
+# Ogni altra lingua (lingue/<codice>/testi.yaml) ha esattamente queste chiavi, con gli stessi segnaposto.
+{}

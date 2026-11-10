@@ -3,6 +3,7 @@
  * Separata da index.ts così i test d'integrazione costruiscono lo stesso server con le parti
  * finte (narratore a copione, voce finta veloce, porta casuale).
  */
+import { impostaLingua, percorsoPrompt, type Lingua } from './lingua';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { InfoServer } from '@cantastorie/shared';
@@ -112,6 +113,8 @@ interface CampagnaPronta {
   immagini: CatalogoImmagini;
   contestoPer: (c: Campagna) => string;
   filePrompt: string;
+  /** Lingua dei contenuti: quella della campagna, o della configurazione (docs/lingue.md). */
+  lingua: Lingua;
 }
 
 /**
@@ -121,15 +124,18 @@ interface CampagnaPronta {
  */
 function preparaCampagna(config: ConfigServer, numero: number | null, log: Logger): CampagnaPronta {
   const campagna = caricaCampagna(config.cartellaCampagna, log.child({ modulo: 'campagna' }), { pacchetto: numero });
+  // Lingua dei contenuti: quella della campagna vince sulla configurazione (prompt, frasi fisse, regole).
+  const lingua = campagna.lingua ?? config.lingua;
+  impostaLingua(lingua);
   // Modalità A (improvvisa): prompt del narratore + contesto completo della campagna.
   // Modalità B (repertorio): prompt del selettore + contesto per allowlist (niente segreti) e
   // repertorio di battute pre-scritte con il loro audio pre-generato.
   let repertorio: Repertorio | undefined;
   const paroleSegrete = caricaParoleSegreteCampagna(campagna);
-  let filePrompt = config.filePromptNarratore;
+  let filePrompt = config.filePromptNarratore ?? percorsoPrompt('narratore', lingua);
   if (config.modo === 'repertorio') {
     repertorio = caricaRepertorio(campagna, log.child({ modulo: 'repertorio' }));
-    filePrompt = config.filePromptSelettore;
+    filePrompt = config.filePromptSelettore ?? percorsoPrompt('selettore', lingua);
   }
   const rep = repertorio;
   // Risorse: quelle della campagna, più quelle nuove del pacchetto (che sostituiscono a parità di id).
@@ -151,7 +157,7 @@ function preparaCampagna(config: ConfigServer, numero: number | null, log: Logge
       if (fughe.length) throw new Error(`contesto del selettore (scena ${sc.id}) con parole segrete: ${fughe.map((p) => p.parola).join(', ')}`);
     }
   }
-  return { campagna, repertorio, paroleSegrete, audio, immagini, contestoPer, filePrompt };
+  return { campagna, repertorio, paroleSegrete, audio, immagini, contestoPer, filePrompt, lingua };
 }
 
 /** «Prossima sessione»: il pacchetto si carica come all'avvio? (motivo null = sì). */
@@ -312,6 +318,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   // Registro delle sessioni: se c'è una sessione in corso di questa campagna (e modalità), si riprende.
   const { memoria, ripresa, dispositiviEreditati } = apriSessioni(archivio, config, campagna, log.child({ modulo: 'sessioni' }));
   const regia = new Regia({
+    lingue: { interfaccia: config.lingua, contenuti: pronta.lingua },
     memoria,
     ripresa,
     dispositiviEreditati,
@@ -401,7 +408,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   collegaMaster(app.io, regia, controlliMaster, tokenMaster, log.child({ modulo: 'master' }));
   // Segnali audio automatici (narratore, battute) nel registro del pannello.
   regia.suCueAudio((e) => controlliMaster.registraAutomatico(e));
-  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, audio: audio.numero, ...regia.infoSessione, ripresa: regia.infoRegistro.inAttesaDiRipresa, pacchetto: campagna.pacchetto?.etichetta ?? null }), immagini, audio);
+  registraRotte(app, regia, () => info, () => ({ narratore: narratore.nome, modello: narratore.modello, campagna: campagna.id, immagini: immagini.numero, audio: audio.numero, ...regia.infoSessione, ripresa: regia.infoRegistro.inAttesaDiRipresa, pacchetto: campagna.pacchetto?.etichetta ?? null, lingua: config.lingua, lingua_contenuti: pronta.lingua }), immagini, audio);
 
   return {
     app,

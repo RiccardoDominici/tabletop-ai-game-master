@@ -4,6 +4,7 @@
  * il motore usa davvero (voci, nomi, apertura, atmosfera).
  */
 
+import type { Lingua } from '../lingua';
 export type DatiYaml = Record<string, unknown>;
 
 export interface PngCaricato {
@@ -54,6 +55,11 @@ export interface Campagna {
   id: string;
   cartella: string;
   titolo: string;
+  /**
+   * Lingua dei contenuti (docs/lingue.md): `lingua` di campagna.yaml. null = quella della
+   * configurazione (la sceglie l'avvio del server).
+   */
+  lingua: Lingua | null;
   stile: DatiYaml;
   /** campagna.yaml senza `preparazione` (che non va al narratore). */
   campagnaNarratore: DatiYaml;

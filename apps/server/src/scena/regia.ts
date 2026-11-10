@@ -23,6 +23,7 @@
  * Ogni flusso asincrono controlla `epoca`: ferma/ricomincia la incrementano e i flussi vecchi,
  * al risveglio da un await, si accorgono di essere superati ed escono senza toccare lo stato.
  */
+import { LINGUA_PREDEFINITA, linguaAttiva, type Lingua } from '../lingua';
 import type {
   AzionePrivata,
   Esito,
@@ -113,6 +114,8 @@ function segnoDovutoDi(b: Battuta, dovuti: ReadonlySet<string> | undefined): boo
 
 export interface OpzioniRegia {
   campagna: Campagna;
+  /** Lingue della partita (docs/lingue.md); assente = la configurazione e i contenuti nella lingua attiva. */
+  lingue?: { interfaccia: Lingua; contenuti: Lingua };
   /** Blocchi di sistema stabili: [prompt del narratore, contesto della campagna]. */
   sistema: string[];
   narratore: Narratore;
@@ -1438,6 +1441,7 @@ export class Regia {
       schermo_connesso: this.schermi.size > 0,
       ritmo: this.ritmo,
       ora_server_ms: this.o.orologio.adesso(),
+      lingua: this.o.lingue ?? { interfaccia: LINGUA_PREDEFINITA, contenuti: linguaAttiva() },
       ...(this.prove?.attivo ? { dadi: true, tiri: this.prove.tiriPubblici() } : {}),
       ...(this.prove?.inCombattimento ? { combattimento: this.prove.vistaCombattimento() } : {}),
       ...this.serata.pubblico(this.finoraStasera()),

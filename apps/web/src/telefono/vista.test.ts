@@ -40,6 +40,7 @@ function stato(parziale: Partial<StatoTavolo> = {}): StatoTavolo {
     voce_motore: 'mock',
     schermo_connesso: true,
     ritmo: 'calmo',
+    lingua: { interfaccia: 'it', contenuti: 'it' },
     ora_server_ms: 1_700_000_000_000,
     al_tavolo: [],
     ...parziale,

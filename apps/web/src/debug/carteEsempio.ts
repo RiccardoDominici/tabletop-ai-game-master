@@ -307,6 +307,7 @@ export function statoEsempio(opzioni: {
     voce_motore: 'mock',
     schermo_connesso: true,
     ritmo: 'calmo',
+    lingua: { interfaccia: 'it', contenuti: 'it' },
     ora_server_ms: Date.now(),
     dadi: true,
     tiri: opzioni.tiri,

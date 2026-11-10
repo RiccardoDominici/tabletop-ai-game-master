@@ -6,7 +6,8 @@
  * /master non è collegata da nessuna parte e si carica a parte (lazy): i telefoni non scaricano il
  * codice del pannello.
  */
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect, useReducer } from 'react';
+import { alCambioLingua } from './lingua';
 import { Redirect, Route, Switch } from 'wouter';
 import { PaginaTelefono } from './telefono/PaginaTelefono';
 import { PaginaSchermo } from './schermo/PaginaSchermo';
@@ -14,6 +15,9 @@ import { PaginaSchermo } from './schermo/PaginaSchermo';
 const PaginaMaster = lazy(() => import('./master/PaginaMaster').then((m) => ({ default: m.PaginaMaster })));
 
 export function App() {
+  // La lingua dell'interfaccia può arrivare dopo il primo disegno (StatoTavolo.lingua): si ridisegna tutto.
+  const [, ridisegna] = useReducer((x: number) => x + 1, 0);
+  useEffect(() => alCambioLingua(() => ridisegna()), []);
   return (
     <Switch>
       <Route path="/telefono" component={PaginaTelefono} />

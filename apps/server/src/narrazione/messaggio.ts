@@ -1,7 +1,7 @@
 /**
  * Messaggio utente di un turno di narrazione: la parte VARIABILE del prompt
  * (trascrizione pubblica + azioni del turno + chi è al tavolo). Sta fuori dalla cache, dopo i
- * blocchi di sistema stabili (prompts/narratore.md e contesto della campagna).
+ * blocchi di sistema stabili (prompts/<lingua>/narratore.md e contesto della campagna).
  */
 import type { VoceTrascrizione } from '@cantastorie/shared';
 

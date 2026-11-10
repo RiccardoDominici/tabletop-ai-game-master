@@ -11,6 +11,7 @@
  * - Gli eventi con ack passano da `conEsito`/`chiedi`: timeout esplicito e niente invii «in coda»
  *   mentre si è disconnessi (un'azione bufferizzata e spedita minuti dopo sarebbe sbagliata).
  */
+import { impostaLinguaInterfaccia } from '../lingua';
 import { io, type Socket } from 'socket.io-client';
 import type { Esito, EventiClientVersoServer, EventiServerVersoClient } from '@cantastorie/shared';
 import { creaLog } from './log';
@@ -69,6 +70,10 @@ export function prendiSocket(): SocketTavolo {
     useConnessione.getState().imposta('persa', tentativo);
     log.debug('Tentativo di riconnessione', { tentativo });
   });
+
+  // Lingua dell'interfaccia: la dice il server a ogni stato (docs/lingue.md).
+  s.on('stato', (st) => impostaLinguaInterfaccia(st.lingua?.interfaccia));
+  s.on('master:stato', (st) => impostaLinguaInterfaccia(st.tavolo.lingua?.interfaccia));
 
   socket = s;
   s.connect();

@@ -5,6 +5,7 @@
  *
  * Uso: npx tsx apps/server/src/strumenti/conta-token.ts   (stesse variabili d'ambiente del server)
  */
+import { percorsoPrompt } from '../lingua';
 import fs from 'node:fs';
 import YAML from 'yaml';
 import { caricaCampagna } from '../campagna/caricatore';
@@ -28,7 +29,7 @@ async function main(): Promise<void> {
   // CANTASTORIE_MODO=repertorio: prompt del selettore e contesto per allowlist (modalità B).
   const b = config.modo === 'repertorio';
   const parole = caricaParoleSegreteCampagna(campagna);
-  const filePrompt = b ? config.filePromptSelettore : config.filePromptNarratore;
+  const filePrompt = (b ? config.filePromptSelettore : config.filePromptNarratore) ?? percorsoPrompt(b ? 'selettore' : 'narratore', campagna.lingua ?? config.lingua);
   const prompt = fs.readFileSync(filePrompt, 'utf8');
   const contesto = b ? compilaContestoRepertorio(campagna, parole) : compilaContestoCampagna(campagna);
   const sezioni = b ? sezioniContestoRepertorio(campagna, parole) : sezioniContestoCampagna(campagna);

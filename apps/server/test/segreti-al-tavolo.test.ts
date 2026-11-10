@@ -87,6 +87,6 @@ describe('la guardia dei segreti agisce', () => {
 
 describe('«annuncia» non arriva più al tavolo', () => {
   it('i prompt del narratore e del selettore non usano la parola (il modello la ripeteva: «Remo annuncia la scommessa»)', () => {
-    for (const f of ['narratore.md', 'selettore.md']) expect(fs.readFileSync(path.join(RADICE_REPO, 'prompts', f), 'utf8')).not.toMatch(/annunc/i);
+    for (const f of ['narratore.md', 'selettore.md']) expect(fs.readFileSync(path.join(RADICE_REPO, 'prompts', 'it', f), 'utf8')).not.toMatch(/annunc/i);
   });
 });

@@ -91,6 +91,9 @@ export interface AzionePubblica {
  */
 export type Ritmo = 'calmo' | 'concitato';
 
+/** Lingue di gioco (docs/lingue.md): codici ISO 639-1. */
+export type CodiceLingua = 'it' | 'en';
+
 /** Scelta chiesta al giocatore quando la sua azione passa a «da confermare». */
 export interface RichiestaScelta {
   tipo: 'dipendenza' | 'conflitto' | 'vecchia';
@@ -319,6 +322,11 @@ export interface StatoTavolo {
    * su un telefono con l'ora sbagliata.
    */
   ora_server_ms: number;
+  /**
+   * Lingue della partita (docs/lingue.md): `interfaccia` per i testi fissi di telefono, proiettore e
+   * pannello (dalla configurazione); `contenuti` per ciò che dice il Motore (dalla campagna).
+   */
+  lingua: { interfaccia: CodiceLingua; contenuti: CodiceLingua };
   /** La campagna gioca coi dadi del Motore (schede numeriche presenti, docs/prove.md). */
   dadi?: boolean;
   /**

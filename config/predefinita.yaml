@@ -17,6 +17,10 @@
 # `riserve`: se il provider scelto non è disponibile all'avvio (chiave mancante, server locale giù),
 # si prova il seguente; il server stampa all'avvio chi fa cosa e perché.
 
+# Lingua (docs/lingue.md): dell'interfaccia (telefono, proiettore, pannello) e dei contenuti quando la campagna non
+# dichiara la sua (`lingua` in campagna.yaml). it | en. CANTASTORIE_LINGUA vince.
+lingua: it
+
 backend:
   locale:
     url: http://127.0.0.1:4613/v1

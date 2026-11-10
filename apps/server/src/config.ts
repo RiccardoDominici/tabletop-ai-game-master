@@ -4,6 +4,7 @@
  * Sicurezza: la chiave Anthropic NON sta qui. Qui c'è solo il percorso del file da cui
  * `llm/chiavi.ts` cerca la chiave al momento dell'uso: ambiente, poi .env alla radice, poi il file di ripiego.
  */
+import type { Lingua } from './lingua';
 import path from 'node:path';
 import { PORTA_SERVER, PORTA_VOCE } from '@cantastorie/shared';
 import { CARTELLA_LOG, CARTELLA_WEB_DIST, RADICE_REPO } from './percorsi';
@@ -31,14 +32,16 @@ export interface ConfigServer {
   cartellaLog: string;
   /** Cartella della campagna (campagne/<id>). */
   cartellaCampagna: string;
-  /** Prompt di sistema del narratore (prompts/narratore.md). */
-  filePromptNarratore: string;
+  /** Lingua della configurazione (interfaccia; contenuti se la campagna non ne dichiara una). */
+  lingua: Lingua;
+  /** Prompt di sistema del narratore; null = prompts/<lingua dei contenuti>/narratore.md. */
+  filePromptNarratore: string | null;
   /** Override dell'IP LAN mostrato nel QR. */
   ipLan?: string;
   /** Modalità del narratore per la sessione (CANTASTORIE_MODO). */
   modo: ModoNarratore;
-  /** Prompt di sistema del selettore (modalità repertorio). */
-  filePromptSelettore: string;
+  /** Prompt di sistema del selettore (modalità repertorio); null = prompts/<lingua>/selettore.md. */
+  filePromptSelettore: string | null;
   /** Cartella dell'audio pre-generato del repertorio. */
   cacheAudio: string;
   /** Immagini della campagna (manifest.json + file); default campagne/<id>/immagini. */
@@ -165,6 +168,7 @@ function modoVoce(env: NodeJS.ProcessEnv): ModoVoce {
 }
 
 export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer {
+  const provider = caricaConfigProvider(env);
   const campagna = testo(env['CANTASTORIE_CAMPAGNA']) ?? 'prova-f0';
   const cartellaCampagna = testo(env['CANTASTORIE_CARTELLA_CAMPAGNA']) ?? path.join(RADICE_REPO, 'campagne', campagna);
   const ipLan = testo(env['CANTASTORIE_IP']);
@@ -173,13 +177,13 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
   const sessioni = testo(env['CANTASTORIE_SESSIONI']);
   return {
     porta: numero(env['PORT'], PORTA_SERVER),
-    provider: caricaConfigProvider(env),
+    provider,
+    lingua: provider.lingua,
     host: testo(env['HOST']) ?? '0.0.0.0',
     livelloLog: testo(env['LOG_LEVEL']) ?? 'info',
     cartellaLog,
     cartellaCampagna,
-    filePromptNarratore:
-      testo(env['CANTASTORIE_PROMPT_NARRATORE']) ?? path.join(RADICE_REPO, 'prompts', 'narratore.md'),
+    filePromptNarratore: testo(env['CANTASTORIE_PROMPT_NARRATORE']) ?? null,
     ...(ipLan ? { ipLan } : {}),
     ...(tokenMaster ? { tokenMaster } : {}),
     fileSessioni: sessioni === 'off' ? null : path.resolve(RADICE_REPO, sessioni ?? path.join(cartellaLog, 'sessioni.sqlite')),
@@ -189,7 +193,7 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     // Con il narratore a copione (test, prove senza spesa) l'arbitro usa solo le regole.
     arbitro: scelta(env['CANTASTORIE_ARBITRO'], ['haiku', 'regole'] as const, env['CANTASTORIE_LLM'] === 'finto' ? 'regole' : 'haiku'),
     semeDadi: /^[0-9a-f]{8,128}$/i.test(testo(env['CANTASTORIE_SEME_DADI']) ?? '') ? testo(env['CANTASTORIE_SEME_DADI'])! : null,
-    filePromptSelettore: testo(env['CANTASTORIE_PROMPT_SELETTORE']) ?? path.join(RADICE_REPO, 'prompts', 'selettore.md'),
+    filePromptSelettore: testo(env['CANTASTORIE_PROMPT_SELETTORE']) ?? null,
     cacheAudio: testo(env['CANTASTORIE_CACHE_AUDIO']) ?? path.join(RADICE_REPO, 'cache', 'audio'),
     // I percorsi relativi valgono dalla radice del repo (il server gira in apps/server).
     cartellaImmagini: path.resolve(RADICE_REPO, testo(env['CANTASTORIE_IMMAGINI']) ?? path.join(cartellaCampagna, 'immagini')),

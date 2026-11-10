@@ -25,7 +25,7 @@ describe('numeri delle regole tolti dalla voce', () => {
 
   it('i prompt vietano i numeri a voce e chiedono una frase per il colpo di un PNG', () => {
     for (const f of ['narratore.md', 'selettore.md']) {
-      const p = fs.readFileSync(path.join(RADICE_REPO, 'prompts', f), 'utf8');
+      const p = fs.readFileSync(path.join(RADICE_REPO, 'prompts', 'it', f), 'utf8');
       expect(p, f).toMatch(/A voce niente numeri, dadi, punti ferita, CA o CD/);
       expect(p, f).toMatch(/«Ruggero colpisce Corrado: 6 danni», «Ruggero manca Corrado»\) si racconta sempre con una frase sua/);
     }

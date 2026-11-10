@@ -219,7 +219,7 @@ Coerenze consigliate (avvisi):
    - Ogni autore riceve la sua `azione:mia` con `tiri`, anche privati.
    - Il proiettore anima le carte mentre il narratore genera.
 5. **Narratore**. La sezione «Esiti dei tiri» sta subito dopo le azioni (narrazione/messaggio.ts), con le regole in
-   prompts/narratore.md §6 e prompts/selettore.md §2.
+   prompts/it/narratore.md §6 e prompts/it/selettore.md §2.
    - In modalità B le prove riuscite aprono le battute con `richiede.prova` (repertorio/condizioni.ts).
 6. **Stato e ripresa**.
    - `FotografiaSessione.prove` contiene PF, seme e contatore dei dadi e le ultime carte: un riavvio riprende gli

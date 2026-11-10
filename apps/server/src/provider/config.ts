@@ -10,6 +10,7 @@
  * (chiave trovata, URL dato) e dice perché; non apre connessioni (il server locale lo controlla l'avvio).
  * Sotto vitest config/locale.yaml non si legge: le prove non dipendono dalla macchina.
  */
+import { comeLingua, LINGUA_PREDEFINITA, type Lingua } from '../lingua';
 import fs from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
@@ -42,6 +43,11 @@ export interface VoceComponente {
 }
 
 export interface ConfigProvider {
+  /**
+   * Lingua della configurazione (docs/lingue.md): dell'interfaccia, e dei contenuti se la campagna non
+   * ne dichiara una. `lingua` in predefinita.yaml / locale.yaml, o CANTASTORIE_LINGUA (vince).
+   */
+  lingua: Lingua;
   backend: { locale: Backend; openrouter: Backend; anthropic: Backend; [altro: string]: Backend };
   componenti: Record<NomeComponente, VoceComponente>;
   /** File letti, per il log. */
@@ -120,7 +126,8 @@ export function caricaConfigProvider(env: NodeJS.ProcessEnv = process.env, carte
     finale[c] = forzato ? { ...base, provider: forzato, riserve: (base.riserve ?? []).filter((r) => r === 'regole' || r === 'finto') } : base;
   }
   const backend = (d['backend'] ?? {}) as ConfigProvider['backend'];
-  return { backend: { ...backend, locale: backend.locale ?? {}, openrouter: backend.openrouter ?? {}, anthropic: backend.anthropic ?? {} }, componenti: finale, file: letti };
+  const lingua = comeLingua(env['CANTASTORIE_LINGUA']?.trim() || d['lingua'], 'configurazione (lingua)') ?? LINGUA_PREDEFINITA;
+  return { lingua, backend: { ...backend, locale: backend.locale ?? {}, openrouter: backend.openrouter ?? {}, anthropic: backend.anthropic ?? {} }, componenti: finale, file: letti };
 }
 
 export interface FontiChiavi {
