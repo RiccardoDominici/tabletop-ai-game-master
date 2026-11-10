@@ -1,0 +1,24 @@
+# Tavolo con azioni private: tre PG, tanti sussurri al narratore, qualche tiro rischioso e un «anch'io».
+# Scritto alla cieca dal telefono: frasi corte, minuscole, domande dirette agli NPC per nome.
+# Usa solo ciò che i giocatori conoscono: le conoscenze_private di Vanda, Livia e Remo (campagne/nozze-neve/pg.yaml),
+# l'apertura di scena.yaml e il formato di esperimenti/copioni/README.md.
+# Segni di scena (scena_casera, scena_casa_bonfanti, scena_sasso) aggiunti dopo la scrittura: non cambiano le azioni.
+scena: scena_casera
+pg: [pg_vanda, pg_livia, pg_remo]
+turni:
+  - - {pg: pg_vanda, azione: "guardo la sala: chi si avvicina alla riga delle forme, e chi resta lontano dalla scatolina?"}
+    - {pg: pg_livia, azione: "adelina, si sta bene così con la scatolina vuota in mano?"}
+  - - {pg: pg_remo, azione: "gaspare, a voce bassa: i venti fiorini della caparra per il prato alto li hai ancora in tasca?", privata: true}
+  - - {pg: pg_vanda, azione: "ettore, stamattina sei salito al sasso da solo con la lanterna? ti hanno visto tornare con gli occhi rossi: dimmi perché", privata: true}
+  - - {scena: scena_casa_bonfanti}
+    - {pg: pg_livia, azione: "zelia, portami in soffitta: voglio vedere le lettere che la nonna ha ricevuto, quelle firmate con la E", privata: true}
+  - - {pg: pg_remo, azione: "sfilo la chiave del cassetto dalla tasca di gaspare mentre tutti guardano la festa"}
+  - - {pg: pg_vanda, azione: "anch'io: controllo le tasche di gaspare insieme a remo, senza farmi vedere"}
+  - - {pg: pg_livia, azione: "zelia, chi è la E che scriveva alla nonna? se me lo dici ti copro io davanti a tutti", privata: true}
+  - - {pg: pg_remo, azione: "porto le carte a gaspare e gli chiedo di firmare adesso: il padrone ha detto solo se le nozze saltano", privata: true}
+  - - {pg: pg_vanda, azione: "mi metto tra ettore e lo zio gaspare e tengo fermo il bastone di ettore con tutta la forza"}
+  - - {pg: pg_livia, azione: "ad alta voce: chi ha visto la porta di dietro della cantina aperta a mezzogiorno?"}
+  - - {scena: scena_sasso}
+    - {pg: pg_vanda, azione: "bastiano, sei qui al sasso con me: a mezzogiorno eri nella stalla a ferrare la mula gigia, vero?", privata: true}
+  - - {pg: pg_remo, azione: "sul sasso, prima del tramonto, porto le carte a gaspare e gli chiedo di firmare davanti al paese"}
+    - {pg: pg_livia, azione: "adelina, l'anello: lo dici tu al paese, o lo dico io?"}
