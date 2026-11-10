@@ -212,12 +212,20 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   // Con un narratore sostituito (prove) il riassunto lo scrive lui, come prima.
   const narratoreRiassunto: Narratore | null | undefined = sost.narratore ? undefined : fabbrica.narratore('riassunto', 'completo');
 
+  // Server di prova (narratore sostituito: test, prove a copione): gli arbitri che il Motore chiama da sé
+  // a ogni azione non usano un modello vero, salvo una sostituzione esplicita. Un modello vero, anche
+  // locale, rende le prove lente e dipendenti dalla macchina: scene.test.ts scadeva perché l'arbitro
+  // delle prove chiamava il modello locale acceso sulla 4613 (prima ancora chiamava Anthropic).
+  // «Chiedi una regola» resta: parte solo quando un telefono chiede.
+  const chiuso = sost.narratore !== undefined;
+  const usaModello = (c: NomeComponente): boolean => !chiuso && fabbrica.usaModello(c);
+
   // Arbitro delle azioni simultanee: regole subito, il modello (uscita strutturata) per il resto.
   const registroCosti = new RegistroJsonl(path.join(config.cartellaLog, 'costi.jsonl'));
   const arbitro: Arbitro | null =
     sost.arbitro !== undefined
       ? sost.arbitro
-      : fabbrica.usaModello('arbitro_azioni')
+      : usaModello('arbitro_azioni')
         ? new ArbitroHaiku(() => fabbrica.modello('arbitro_azioni')!, {
             modello: etichettaModello('arbitro_azioni'),
             log: log.child({ modulo: 'arbitro' }),
@@ -239,7 +247,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   const arbitroProve: ArbitroProve<DecisioneProva> | ArbitroProve<DecisioneRegole> | null =
     sost.arbitroProve !== undefined
       ? sost.arbitroProve
-      : dadi.attivo && fabbrica.usaModello('arbitro_prove')
+      : dadi.attivo && usaModello('arbitro_prove')
         ? generico
           ? new ArbitroRegoleHaiku(regole, modelloProve, { modello: etichettaModello('arbitro_prove'), log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
           : new ArbitroProveHaiku(modelloProve, { modello: etichettaModello('arbitro_prove'), log: log.child({ modulo: 'prove' }), onMisura: misuraProve })
