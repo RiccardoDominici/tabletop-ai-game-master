@@ -1,0 +1,92 @@
+[
+ {
+  "modello": "haiku",
+  "secondi": 8.29,
+  "testo": "La fisarmonica tiratela pure, ma la mezza paga non si tocca: il formaggio buono vuole tempo.",
+  "errore": "",
+  "turno": "t01",
+  "png": "Adelina",
+  "azione": "ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso"
+ },
+ {
+  "modello": "sonnet",
+  "secondi": 4.3,
+  "testo": "Sentì, Nando: la mezza paga si dà a festa finita. Intanto suona. Il formaggio buono vuole tempo.",
+  "errore": "",
+  "turno": "t01",
+  "png": "Adelina",
+  "azione": "ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso"
+ },
+ {
+  "modello": "haiku",
+  "secondi": 6.48,
+  "testo": "Il formaggio buono vuole tempo, e tu scommetti in fretta. Il vento c'entra eccome.",
+  "errore": "",
+  "turno": "t02",
+  "png": "Adelina",
+  "azione": "vanda scommetto un formaggio che il vento non c'entra niente, ahah"
+ },
+ {
+  "modello": "sonnet",
+  "secondi": 3.87,
+  "testo": "Ahah! Scommetti pure, ragazzo. Il vento non porta via gli anelli: le mani sì.",
+  "errore": "",
+  "turno": "t02",
+  "png": "Adelina",
+  "azione": "vanda scommetto un formaggio che il vento non c'entra niente, ahah"
+ },
+ {
+  "modello": "haiku",
+  "secondi": 7.19,
+  "testo": "Curioso sei, tu. Il pugno resta chiuso: il formaggio buono vuole tempo.",
+  "errore": "",
+  "turno": "t03",
+  "png": "Adelina",
+  "azione": "gunda il pugno chiuso fammelo vedere, sono curioso ahah"
+ },
+ {
+  "modello": "sonnet",
+  "secondi": 3.85,
+  "testo": "Il pugno chiuso lo apro io, caro, quando il latte è cagliato. Prima si siede e mangia.",
+  "errore": "",
+  "turno": "t03",
+  "png": "Adelina",
+  "azione": "gunda il pugno chiuso fammelo vedere, sono curioso ahah"
+ },
+ {
+  "modello": "haiku",
+  "secondi": 7.93,
+  "testo": "Bella musica, davvero. Facciamo due conti: quanti scalini ha contato ciascuno di voi?",
+  "errore": "",
+  "turno": "t04",
+  "png": "Gaspare Bonfanti",
+  "azione": "le scale scricchiolano, faccio la scala musicale: do re mi scricchiolo"
+ },
+ {
+  "modello": "sonnet",
+  "secondi": 3.92,
+  "testo": "Facciamo due conti: quella scala ha tredici gradini, e ne ho sentiti scricchiolare almeno quattro. Chi sale, per favore?",
+  "errore": "",
+  "turno": "t04",
+  "png": "Gaspare Bonfanti",
+  "azione": "le scale scricchiolano, faccio la scala musicale: do re mi scricchiolo"
+ },
+ {
+  "modello": "haiku",
+  "secondi": 7.35,
+  "testo": "Facciamo due conti, con calma. Lei non ha vinto niente: i cassetti sono miei.",
+  "errore": "",
+  "turno": "t05",
+  "png": "Gaspare Bonfanti",
+  "azione": "scommessa: chi apre per primo i cassetti del gaspare ha vinto. zio gaspare, io apro il tuo"
+ },
+ {
+  "modello": "sonnet",
+  "secondi": 4.23,
+  "testo": "Facciamo due conti: aprire il cassetto di un uomo senza permesso non è una vittoria, è un ammanco. Lo lasci stare, la prego.",
+  "errore": "",
+  "turno": "t05",
+  "png": "Gaspare Bonfanti",
+  "azione": "scommessa: chi apre per primo i cassetti del gaspare ha vinto. zio gaspare, io apro il tuo"
+ }
+]

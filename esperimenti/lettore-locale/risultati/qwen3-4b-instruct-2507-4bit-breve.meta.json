@@ -1,0 +1,20 @@
+{
+  "modello": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+  "caricamento_s": 1.96,
+  "prefissi": {
+    "scena_casera": {
+      "tokens": 1871,
+      "secondi": 12.667663041967899
+    },
+    "scena_casa_bonfanti": {
+      "tokens": 1551,
+      "secondi": 10.432371041039005
+    },
+    "scena_sasso": {
+      "tokens": 1801,
+      "secondi": 12.10615725000389
+    }
+  },
+  "ram_mlx_picco_gb": 3.64,
+  "variante": "breve"
+}

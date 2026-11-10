@@ -1,0 +1,1123 @@
+{
+ "riepilogo": {
+  "modello": "mlx-community/gemma-3-4b-it-qat-4bit",
+  "classificatore": {
+   "azioni": 85,
+   "azioni_con_scelta_haiku": 21,
+   "tetto_raggiungibile": 0.5714285714285714,
+   "accordo_con_haiku": 0.38095238095238093,
+   "accordo_sul_raggiungibile": 0.6666666666666666,
+   "nessuna_quando_haiku_sceglie": 0.38095238095238093,
+   "id_fuori_catalogo": 0,
+   "invalide_dopo_recupero": 0,
+   "risposte_al_primo_tentativo": 1.0,
+   "secondi_mediani": 1.28
+  }
+ },
+ "classificatore": [
+  {
+   "pg": "pg_nando",
+   "grezza": "nar_polka",
+   "scelta": "nar_polka",
+   "tentativi": 1,
+   "candidate": [
+    "nar_polka"
+   ],
+   "secondi": 3.11,
+   "turno": "t01",
+   "nome": "Nando",
+   "testo": "ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso",
+   "haiku": "gas_dote"
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "ade_scatolina",
+   "scelta": "ade_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "ade_scatolina",
+    "nar_scatolina"
+   ],
+   "secondi": 1.46,
+   "turno": "t01",
+   "nome": "Remo",
+   "testo": "adelina la scatolina vuota la peso a occhio, varra due fiorini",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.05,
+   "turno": "t01",
+   "nome": "Gunda",
+   "testo": "ferma tutti, mani dove si vedono, io sorrido e basta",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.1,
+   "turno": "t02",
+   "nome": "Remo",
+   "testo": "vanda scommetto un formaggio che il vento non c'entra niente, ahah",
+   "haiku": "nar_scatolina"
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nar_scatolina",
+   "scelta": "nar_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "nar_scatolina"
+   ],
+   "secondi": 1.36,
+   "turno": "t02",
+   "nome": "Gunda",
+   "testo": "ettore ha l'aria di uno che ha perso la scatola e la dignita, lo dico a voce alta",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.04,
+   "turno": "t02",
+   "nome": "Nando",
+   "testo": "suoniamo la marcia dei muli, Gigia balla anche lei",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.03,
+   "turno": "t03",
+   "nome": "Remo",
+   "testo": "gunda il pugno chiuso fammelo vedere, sono curioso ahah",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.17,
+   "turno": "t03",
+   "nome": "Gunda",
+   "testo": "ferma nando, la prendo io per il braccio, piano, tipo sacco di farina",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nar_polka",
+   "scelta": "nar_polka",
+   "tentativi": 1,
+   "candidate": [
+    "nar_polka"
+   ],
+   "secondi": 1.3,
+   "turno": "t03",
+   "nome": "Nando",
+   "testo": "treccia rossa! esci fuori, ti canto la canzone della treccia a squarciagola",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.19,
+   "turno": "t04",
+   "nome": "Nando",
+   "testo": "le scale scricchiolano, faccio la scala musicale: do re mi scricchiolo",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.06,
+   "turno": "t04",
+   "nome": "Vanda",
+   "testo": "ferma! io salgo, le mule sulle scale non ci vanno",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nar_sposa_mima",
+   "scelta": "nar_sposa_mima",
+   "tentativi": 1,
+   "candidate": [
+    "nar_sposa_mima"
+   ],
+   "secondi": 1.39,
+   "turno": "t04",
+   "nome": "Remo",
+   "testo": "sposa bella, mi fai un sorriso? lo porto a valle come pegno",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nar_scrittoio_cassetto",
+   "scelta": "nar_scrittoio_cassetto",
+   "tentativi": 1,
+   "candidate": [
+    "nar_scrittoio_cassetto"
+   ],
+   "secondi": 1.47,
+   "turno": "t05",
+   "nome": "Remo",
+   "testo": "scommessa: chi apre per primo i cassetti del gaspare ha vinto. zio gaspare, io apro il tuo",
+   "haiku": "nar_scrittoio_cassetto"
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.11,
+   "turno": "t05",
+   "nome": "Gunda",
+   "testo": "cassetti no. ok basta, vado a vedere cosa c'e sotto la scala",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.09,
+   "turno": "t05",
+   "nome": "Vanda",
+   "testo": "remo aspetta, li apro io, ho le mani piu grosse",
+   "haiku": "gas_campanella"
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.2,
+   "turno": "t06",
+   "nome": "Remo",
+   "testo": "agnese se non parli dimmi solo si o no con la testa, come una contrattazione ahah",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.07,
+   "turno": "t06",
+   "nome": "Gunda",
+   "testo": "rifacciamo il ballo al sasso: tutti in fila, la carica dei nani!",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.06,
+   "turno": "t06",
+   "nome": "Nando",
+   "testo": "il sole sta sotto il passo: ballo finale, tutti in trenino!",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nar_custode_regole",
+   "scelta": "nar_custode_regole",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole",
+    "nar_libro_pagina"
+   ],
+   "secondi": 1.54,
+   "turno": "t07",
+   "nome": "Vanda",
+   "testo": "sessant'anni fa? custode, la neve era la stessa di oggi?",
+   "haiku": "nar_libro_pagina"
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nar_borsa_garzone",
+   "scelta": "nar_borsa_garzone",
+   "tentativi": 1,
+   "candidate": [
+    "nar_borsa_garzone"
+   ],
+   "secondi": 1.38,
+   "turno": "t07",
+   "nome": "Remo",
+   "testo": "gunda dillo piu piano, cosi ci scrivo sopra il contratto ahah",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nar_libro_spose",
+   "scelta": "nar_libro_spose",
+   "tentativi": 1,
+   "candidate": [
+    "nar_libro_spose"
+   ],
+   "secondi": 1.39,
+   "turno": "t07",
+   "nome": "Gunda",
+   "testo": "ehi tutti, il custode ha un libro con roba di quei due, sessant'anni fa! ah ops",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.05,
+   "turno": "t08",
+   "nome": "Gunda",
+   "testo": "ok, nessuno tira il vestito della sposa, lo dico adesso",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.18,
+   "turno": "t08",
+   "nome": "Nando",
+   "testo": "tutti in trenino a cercare l'anello sotto la neve! uno-due-tre, sotto!",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.05,
+   "turno": "t08",
+   "nome": "Vanda",
+   "testo": "chi ha l'anello? tutti in fila e ci guardiamo le mani",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.07,
+   "turno": "t09",
+   "nome": "Vanda",
+   "testo": "ahah remo non rubare alla festa, ti metto a fare il palo",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.19,
+   "turno": "t09",
+   "nome": "Gunda",
+   "testo": "quei due si guardano storto, mi metto in mezzo facendo la faccia della colomba",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nar_polka",
+   "scelta": "nar_polka",
+   "tentativi": 1,
+   "candidate": [
+    "nar_polka"
+   ],
+   "secondi": 1.38,
+   "turno": "t09",
+   "nome": "Nando",
+   "testo": "ettore col bastone, canzone per te: il vecchio batte il legno, ta ta ta, ballate!",
+   "haiku": "nar_polka"
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nar_polka",
+   "scelta": "nar_polka",
+   "tentativi": 1,
+   "candidate": [
+    "nar_polka"
+   ],
+   "secondi": 1.28,
+   "turno": "t10",
+   "nome": "Nando",
+   "testo": "io seguo la fisarmonica. chi scappa dietro i sacchi lo facciamo ballare",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t10",
+   "nome": "Vanda",
+   "testo": "remo ferma, scendo io, la cantina la conosco dai muli",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.46,
+   "turno": "t10",
+   "nome": "Remo",
+   "testo": "scendo in cantina a controllare le forme, la scaletta e mia",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.24,
+   "turno": "t11",
+   "nome": "Gunda",
+   "testo": "vanda braccio di ferro io contro te, chi perde paga il vino",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.25,
+   "turno": "t11",
+   "nome": "Vanda",
+   "testo": "va bene, ma se perdi giuro che ti appoggio un basto sulla testa",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "gas_dote",
+   "scelta": "gas_dote",
+   "tentativi": 1,
+   "candidate": [
+    "gas_dote",
+    "nar_borsa_garzone"
+   ],
+   "secondi": 1.54,
+   "turno": "t11",
+   "nome": "Remo",
+   "testo": "gaspare il contratto del prato alto lo firmi dopo il tramonto se le nozze saltano? la penna e mia",
+   "haiku": "gas_dote"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.28,
+   "turno": "t12",
+   "nome": "Vanda",
+   "testo": "bastiano! dov'eri a mezzogiorno? fammi vedere le mani, subito",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nar_stalla_entrata",
+   "scelta": "nar_stalla_entrata",
+   "tentativi": 1,
+   "candidate": [
+    "nar_stalla_entrata"
+   ],
+   "secondi": 1.81,
+   "turno": "t12",
+   "nome": "Gunda",
+   "testo": "stalla! odore di fieno, mi nascondo sotto la mangiatoia e aspetto",
+   "haiku": "nar_stalla_entrata"
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nar_sposa_mima",
+   "scelta": "nar_sposa_mima",
+   "tentativi": 1,
+   "candidate": [
+    "nar_sposa_mima"
+   ],
+   "secondi": 1.67,
+   "turno": "t12",
+   "nome": "Nando",
+   "testo": "sposa, ti canto una canzone muta: fai cenno se ti piace, anche solo con gli occhi",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nar_scrittoio_cassetto",
+   "scelta": "nar_scrittoio_cassetto",
+   "tentativi": 1,
+   "candidate": [
+    "nar_scrittoio_cassetto"
+   ],
+   "secondi": 1.84,
+   "turno": "t13",
+   "nome": "Nando",
+   "testo": "zio gaspare, pagami la mezza paga e ti canto la canzone del cassetto",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.79,
+   "turno": "t13",
+   "nome": "Vanda",
+   "testo": "bastiano ti tiro un calcio di mula se mi menti ahah. ferma la mano!",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.63,
+   "turno": "t13",
+   "nome": "Remo",
+   "testo": "gaspare sei sicuro di non voler firmare il patto ora? ti presto la penna",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nar_libro_spose",
+   "scelta": "nar_libro_spose",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole",
+    "nar_libro_spose"
+   ],
+   "secondi": 1.61,
+   "turno": "t14",
+   "nome": "Gunda",
+   "testo": "braccio di ferro col custode per il libro! chi vince sfoglia la pagina",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.06,
+   "turno": "t14",
+   "nome": "Nando",
+   "testo": "custode, ti canto la canzone del libro, la sai? facciamo il coro",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.02,
+   "turno": "t14",
+   "nome": "Vanda",
+   "testo": "ettore, il vento: era vento o hai pianto? lo dico in faccia a tutto il paese",
+   "haiku": "ett_quel_giorno"
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nar_borsa_garzone",
+   "scelta": "nar_borsa_garzone",
+   "tentativi": 1,
+   "candidate": [
+    "nar_borsa_garzone"
+   ],
+   "secondi": 1.43,
+   "turno": "t15",
+   "nome": "Remo",
+   "testo": "sole a una spanna dal passo, ultima chiamata: firmo il contratto con la penna in mano",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.05,
+   "turno": "t15",
+   "nome": "Gunda",
+   "testo": "anch'io ballo, ma con lo scudo sopra la testa e la colomba storta",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.08,
+   "turno": "t15",
+   "nome": "Nando",
+   "testo": "lanterne, dondolate! ballo finale con la fisarmonica sulla schiena",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "ade_scatolina",
+   "scelta": "ade_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "ade_scatolina",
+    "nar_scatolina"
+   ],
+   "secondi": 1.52,
+   "turno": "t16",
+   "nome": "Ida",
+   "testo": "adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla",
+   "haiku": "nar_scatolina"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.06,
+   "turno": "t16",
+   "nome": "Vanda",
+   "testo": "ettore, sei salito al sasso stamattina? dillo senza scappare",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.27,
+   "turno": "t16",
+   "nome": "Livia",
+   "testo": "zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nar_custode_regole",
+   "scelta": "nar_custode_regole",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.58,
+   "turno": "t17",
+   "nome": "Livia",
+   "testo": "zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.18,
+   "turno": "t17",
+   "nome": "Ida",
+   "testo": "adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.2,
+   "turno": "t17",
+   "nome": "Vanda",
+   "testo": "ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nar_bastiano",
+   "scelta": "nar_bastiano",
+   "tentativi": 1,
+   "candidate": [
+    "nar_bastiano"
+   ],
+   "secondi": 1.3,
+   "turno": "t18",
+   "nome": "Vanda",
+   "testo": "bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.06,
+   "turno": "t18",
+   "nome": "Livia",
+   "testo": "ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.2,
+   "turno": "t18",
+   "nome": "Ida",
+   "testo": "tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.19,
+   "turno": "t19",
+   "nome": "Ida",
+   "testo": "adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "gas_chi_cera",
+   "scelta": "gas_chi_cera",
+   "tentativi": 1,
+   "candidate": [
+    "gas_chi_cera"
+   ],
+   "secondi": 1.43,
+   "turno": "t19",
+   "nome": "Vanda",
+   "testo": "bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nar_sposa_mima",
+   "scelta": "nar_sposa_mima",
+   "tentativi": 1,
+   "candidate": [
+    "nar_sposa_mima"
+   ],
+   "secondi": 1.57,
+   "turno": "t19",
+   "nome": "Livia",
+   "testo": "agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.26,
+   "turno": "t20",
+   "nome": "Livia",
+   "testo": "agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente",
+   "haiku": "ade_da_dove"
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nar_custode_regole",
+   "scelta": "nar_custode_regole",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.45,
+   "turno": "t20",
+   "nome": "Ida",
+   "testo": "custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?",
+   "haiku": "nar_custode_regole"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.22,
+   "turno": "t20",
+   "nome": "Vanda",
+   "testo": "tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?",
+   "haiku": "nar_tonio"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.31,
+   "turno": "t21",
+   "nome": "Vanda",
+   "testo": "ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nar_giacca_tasca",
+   "scelta": "nar_giacca_tasca",
+   "tentativi": 1,
+   "candidate": [
+    "nar_giacca_tasca"
+   ],
+   "secondi": 1.5,
+   "turno": "t21",
+   "nome": "Livia",
+   "testo": "ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nar_tonio_tasca",
+   "scelta": "nar_tonio_tasca",
+   "tentativi": 1,
+   "candidate": [
+    "nar_tonio",
+    "nar_tonio_tasca"
+   ],
+   "secondi": 1.67,
+   "turno": "t21",
+   "nome": "Ida",
+   "testo": "tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "ade_scatolina",
+   "scelta": "ade_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "ade_scatolina",
+    "nar_scatolina"
+   ],
+   "secondi": 1.65,
+   "turno": "t22",
+   "nome": "Ida",
+   "testo": "adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla",
+   "haiku": "nar_scatolina"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.22,
+   "turno": "t22",
+   "nome": "Vanda",
+   "testo": "ettore, sei salito al sasso stamattina? dillo senza scappare",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.26,
+   "turno": "t22",
+   "nome": "Livia",
+   "testo": "zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nar_custode_regole",
+   "scelta": "nar_custode_regole",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.53,
+   "turno": "t23",
+   "nome": "Livia",
+   "testo": "zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione",
+   "haiku": "nar_custode_regole"
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.27,
+   "turno": "t23",
+   "nome": "Ida",
+   "testo": "adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.29,
+   "turno": "t23",
+   "nome": "Vanda",
+   "testo": "ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nar_bastiano",
+   "scelta": "nar_bastiano",
+   "tentativi": 1,
+   "candidate": [
+    "nar_bastiano"
+   ],
+   "secondi": 1.73,
+   "turno": "t24",
+   "nome": "Vanda",
+   "testo": "bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.28,
+   "turno": "t24",
+   "nome": "Livia",
+   "testo": "ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.23,
+   "turno": "t24",
+   "nome": "Ida",
+   "testo": "tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?",
+   "haiku": "nar_tonio"
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.2,
+   "turno": "t25",
+   "nome": "Ida",
+   "testo": "adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "gas_chi_cera",
+   "scelta": "gas_chi_cera",
+   "tentativi": 1,
+   "candidate": [
+    "gas_chi_cera"
+   ],
+   "secondi": 1.39,
+   "turno": "t25",
+   "nome": "Vanda",
+   "testo": "bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nar_sposa_mima",
+   "scelta": "nar_sposa_mima",
+   "tentativi": 1,
+   "candidate": [
+    "nar_sposa_mima"
+   ],
+   "secondi": 1.62,
+   "turno": "t25",
+   "nome": "Livia",
+   "testo": "agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.26,
+   "turno": "t26",
+   "nome": "Livia",
+   "testo": "agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nar_custode_regole",
+   "scelta": "nar_custode_regole",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.47,
+   "turno": "t26",
+   "nome": "Ida",
+   "testo": "custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.23,
+   "turno": "t26",
+   "nome": "Vanda",
+   "testo": "tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.29,
+   "turno": "t27",
+   "nome": "Vanda",
+   "testo": "ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode",
+   "haiku": "ett_quel_giorno"
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nar_giacca_tasca",
+   "scelta": "nar_giacca_tasca",
+   "tentativi": 1,
+   "candidate": [
+    "nar_giacca_tasca"
+   ],
+   "secondi": 1.5,
+   "turno": "t27",
+   "nome": "Livia",
+   "testo": "ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nar_tonio_tasca",
+   "scelta": "nar_tonio_tasca",
+   "tentativi": 1,
+   "candidate": [
+    "nar_tonio",
+    "nar_tonio_tasca"
+   ],
+   "secondi": 1.67,
+   "turno": "t27",
+   "nome": "Ida",
+   "testo": "tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?",
+   "haiku": "nar_tonio"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nar_scatolina",
+   "scelta": "nar_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "nar_scatolina"
+   ],
+   "secondi": 1.4,
+   "turno": "t28",
+   "nome": "Vanda",
+   "testo": "guardo la sala: chi si avvicina alla riga delle forme, e chi resta lontano dalla scatolina?",
+   "haiku": "nar_scatolina"
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "ade_scatolina",
+   "scelta": "ade_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "ade_scatolina"
+   ],
+   "secondi": 1.44,
+   "turno": "t28",
+   "nome": "Livia",
+   "testo": "adelina, si sta bene così con la scatolina vuota in mano?",
+   "haiku": "ade_scatolina"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.33,
+   "turno": "t29",
+   "nome": "Vanda",
+   "testo": "anch'io: controllo le tasche di gaspare insieme a remo, senza farmi vedere",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.26,
+   "turno": "t30",
+   "nome": "Livia",
+   "testo": "ad alta voce: chi ha visto la porta di dietro della cantina aperta a mezzogiorno?",
+   "haiku": "gas_chi_cera"
+  }
+ ],
+ "annuncio": [],
+ "deterministico": []
+}

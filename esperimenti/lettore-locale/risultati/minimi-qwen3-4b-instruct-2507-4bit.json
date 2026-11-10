@@ -1,0 +1,3134 @@
+{
+ "riepilogo": {
+  "modello": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+  "classificatore": {
+   "azioni": 85,
+   "azioni_con_scelta_haiku": 21,
+   "tetto_raggiungibile": 0.5714285714285714,
+   "accordo_con_haiku": 0.19047619047619047,
+   "accordo_sul_raggiungibile": 0.3333333333333333,
+   "nessuna_quando_haiku_sceglie": 0.5238095238095238,
+   "id_fuori_catalogo": 0,
+   "invalide_dopo_recupero": 1,
+   "risposte_al_primo_tentativo": 0.9764705882352941,
+   "secondi_mediani": 1.16
+  },
+  "annuncio": {
+   "azioni": 85,
+   "nome_presente": 1.0,
+   "entro_12_parole": 0.4588235294117647,
+   "con_parole_nuove": 0.6588235294117647,
+   "parole_nuove_totali": 67,
+   "lingua_ok": 1.0
+  },
+  "deterministico": {
+   "azioni": 85,
+   "nome_presente": 1.0,
+   "entro_12_parole": 0.25882352941176473,
+   "con_parole_nuove": 0.0,
+   "parole_nuove_totali": 0,
+   "lingua_ok": 1.0
+  }
+ },
+ "classificatore": [
+  {
+   "pg": "pg_nando",
+   "grezza": "nar_polka",
+   "scelta": "nar_polka",
+   "tentativi": 1,
+   "candidate": [
+    "nar_polka"
+   ],
+   "secondi": 1.76,
+   "turno": "t01",
+   "nome": "Nando",
+   "testo": "ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso",
+   "haiku": "gas_dote"
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "ade_scatolina",
+   "scelta": "ade_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "ade_scatolina",
+    "nar_scatolina"
+   ],
+   "secondi": 1.39,
+   "turno": "t01",
+   "nome": "Remo",
+   "testo": "adelina la scatolina vuota la peso a occhio, varra due fiorini",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t01",
+   "nome": "Gunda",
+   "testo": "ferma tutti, mani dove si vedono, io sorrido e basta",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.14,
+   "turno": "t02",
+   "nome": "Remo",
+   "testo": "vanda scommetto un formaggio che il vento non c'entra niente, ahah",
+   "haiku": "nar_scatolina"
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_scatolina"
+   ],
+   "secondi": 1.31,
+   "turno": "t02",
+   "nome": "Gunda",
+   "testo": "ettore ha l'aria di uno che ha perso la scatola e la dignita, lo dico a voce alta",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.13,
+   "turno": "t02",
+   "nome": "Nando",
+   "testo": "suoniamo la marcia dei muli, Gigia balla anche lei",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.12,
+   "turno": "t03",
+   "nome": "Remo",
+   "testo": "gunda il pugno chiuso fammelo vedere, sono curioso ahah",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.16,
+   "turno": "t03",
+   "nome": "Gunda",
+   "testo": "ferma nando, la prendo io per il braccio, piano, tipo sacco di farina",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_polka"
+   ],
+   "secondi": 1.29,
+   "turno": "t03",
+   "nome": "Nando",
+   "testo": "treccia rossa! esci fuori, ti canto la canzone della treccia a squarciagola",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t04",
+   "nome": "Nando",
+   "testo": "le scale scricchiolano, faccio la scala musicale: do re mi scricchiolo",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.2,
+   "turno": "t04",
+   "nome": "Vanda",
+   "testo": "ferma! io salgo, le mule sulle scale non ci vanno",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_sposa_mima"
+   ],
+   "secondi": 1.31,
+   "turno": "t04",
+   "nome": "Remo",
+   "testo": "sposa bella, mi fai un sorriso? lo porto a valle come pegno",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nar_scrittoio_cassetto",
+   "scelta": "nar_scrittoio_cassetto",
+   "tentativi": 1,
+   "candidate": [
+    "nar_scrittoio_cassetto"
+   ],
+   "secondi": 1.53,
+   "turno": "t05",
+   "nome": "Remo",
+   "testo": "scommessa: chi apre per primo i cassetti del gaspare ha vinto. zio gaspare, io apro il tuo",
+   "haiku": "nar_scrittoio_cassetto"
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.13,
+   "turno": "t05",
+   "nome": "Gunda",
+   "testo": "cassetti no. ok basta, vado a vedere cosa c'e sotto la scala",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t05",
+   "nome": "Vanda",
+   "testo": "remo aspetta, li apro io, ho le mani piu grosse",
+   "haiku": "gas_campanella"
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.14,
+   "turno": "t06",
+   "nome": "Remo",
+   "testo": "agnese se non parli dimmi solo si o no con la testa, come una contrattazione ahah",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.14,
+   "turno": "t06",
+   "nome": "Gunda",
+   "testo": "rifacciamo il ballo al sasso: tutti in fila, la carica dei nani!",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.14,
+   "turno": "t06",
+   "nome": "Nando",
+   "testo": "il sole sta sotto il passo: ballo finale, tutti in trenino!",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nar_custode_regole",
+   "scelta": "nar_custode_regole",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole",
+    "nar_libro_pagina"
+   ],
+   "secondi": 1.59,
+   "turno": "t07",
+   "nome": "Vanda",
+   "testo": "sessant'anni fa? custode, la neve era la stessa di oggi?",
+   "haiku": "nar_libro_pagina"
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_borsa_garzone"
+   ],
+   "secondi": 1.36,
+   "turno": "t07",
+   "nome": "Remo",
+   "testo": "gunda dillo piu piano, cosi ci scrivo sopra il contratto ahah",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nar_libro_spose",
+   "scelta": "nar_libro_spose",
+   "tentativi": 1,
+   "candidate": [
+    "nar_libro_spose"
+   ],
+   "secondi": 1.43,
+   "turno": "t07",
+   "nome": "Gunda",
+   "testo": "ehi tutti, il custode ha un libro con roba di quei due, sessant'anni fa! ah ops",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.16,
+   "turno": "t08",
+   "nome": "Gunda",
+   "testo": "ok, nessuno tira il vestito della sposa, lo dico adesso",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t08",
+   "nome": "Nando",
+   "testo": "tutti in trenino a cercare l'anello sotto la neve! uno-due-tre, sotto!",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.13,
+   "turno": "t08",
+   "nome": "Vanda",
+   "testo": "chi ha l'anello? tutti in fila e ci guardiamo le mani",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.14,
+   "turno": "t09",
+   "nome": "Vanda",
+   "testo": "ahah remo non rubare alla festa, ti metto a fare il palo",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t09",
+   "nome": "Gunda",
+   "testo": "quei due si guardano storto, mi metto in mezzo facendo la faccia della colomba",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_polka"
+   ],
+   "secondi": 1.33,
+   "turno": "t09",
+   "nome": "Nando",
+   "testo": "ettore col bastone, canzone per te: il vecchio batte il legno, ta ta ta, ballate!",
+   "haiku": "nar_polka"
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nar_polka",
+   "scelta": "nar_polka",
+   "tentativi": 1,
+   "candidate": [
+    "nar_polka"
+   ],
+   "secondi": 1.36,
+   "turno": "t10",
+   "nome": "Nando",
+   "testo": "io seguo la fisarmonica. chi scappa dietro i sacchi lo facciamo ballare",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t10",
+   "nome": "Vanda",
+   "testo": "remo ferma, scendo io, la cantina la conosco dai muli",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.14,
+   "turno": "t10",
+   "nome": "Remo",
+   "testo": "scendo in cantina a controllare le forme, la scaletta e mia",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t11",
+   "nome": "Gunda",
+   "testo": "vanda braccio di ferro io contro te, chi perde paga il vino",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t11",
+   "nome": "Vanda",
+   "testo": "va bene, ma se perdi giuro che ti appoggio un basto sulla testa",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "gas_dote",
+   "scelta": "gas_dote",
+   "tentativi": 1,
+   "candidate": [
+    "gas_dote",
+    "nar_borsa_garzone"
+   ],
+   "secondi": 1.53,
+   "turno": "t11",
+   "nome": "Remo",
+   "testo": "gaspare il contratto del prato alto lo firmi dopo il tramonto se le nozze saltano? la penna e mia",
+   "haiku": "gas_dote"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t12",
+   "nome": "Vanda",
+   "testo": "bastiano! dov'eri a mezzogiorno? fammi vedere le mani, subito",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "stalla_odore_fieno | stalla_odore_fieno",
+   "scelta": "INVALIDA",
+   "tentativi": 2,
+   "candidate": [
+    "nar_stalla_entrata"
+   ],
+   "secondi": 1.5,
+   "turno": "t12",
+   "nome": "Gunda",
+   "testo": "stalla! odore di fieno, mi nascondo sotto la mangiatoia e aspetto",
+   "haiku": "nar_stalla_entrata"
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_sposa_mima"
+   ],
+   "secondi": 1.32,
+   "turno": "t12",
+   "nome": "Nando",
+   "testo": "sposa, ti canto una canzone muta: fai cenno se ti piace, anche solo con gli occhi",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nar_scrittoio_cassetto",
+   "scelta": "nar_scrittoio_cassetto",
+   "tentativi": 1,
+   "candidate": [
+    "nar_scrittoio_cassetto"
+   ],
+   "secondi": 1.54,
+   "turno": "t13",
+   "nome": "Nando",
+   "testo": "zio gaspare, pagami la mezza paga e ti canto la canzone del cassetto",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.16,
+   "turno": "t13",
+   "nome": "Vanda",
+   "testo": "bastiano ti tiro un calcio di mula se mi menti ahah. ferma la mano!",
+   "haiku": null
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.14,
+   "turno": "t13",
+   "nome": "Remo",
+   "testo": "gaspare sei sicuro di non voler firmare il patto ora? ti presto la penna",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "braccio_di_ferro_col_custode_per_il_lib | nessuna",
+   "scelta": "nessuna",
+   "tentativi": 2,
+   "candidate": [
+    "nar_custode_regole",
+    "nar_libro_spose"
+   ],
+   "secondi": 1.92,
+   "turno": "t14",
+   "nome": "Gunda",
+   "testo": "braccio di ferro col custode per il libro! chi vince sfoglia la pagina",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t14",
+   "nome": "Nando",
+   "testo": "custode, ti canto la canzone del libro, la sai? facciamo il coro",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t14",
+   "nome": "Vanda",
+   "testo": "ettore, il vento: era vento o hai pianto? lo dico in faccia a tutto il paese",
+   "haiku": "ett_quel_giorno"
+  },
+  {
+   "pg": "pg_remo",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_borsa_garzone"
+   ],
+   "secondi": 1.37,
+   "turno": "t15",
+   "nome": "Remo",
+   "testo": "sole a una spanna dal passo, ultima chiamata: firmo il contratto con la penna in mano",
+   "haiku": null
+  },
+  {
+   "pg": "pg_gunda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.19,
+   "turno": "t15",
+   "nome": "Gunda",
+   "testo": "anch'io ballo, ma con lo scudo sopra la testa e la colomba storta",
+   "haiku": null
+  },
+  {
+   "pg": "pg_nando",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.13,
+   "turno": "t15",
+   "nome": "Nando",
+   "testo": "lanterne, dondolate! ballo finale con la fisarmonica sulla schiena",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "ade_scatolina",
+   "scelta": "ade_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "ade_scatolina",
+    "nar_scatolina"
+   ],
+   "secondi": 1.56,
+   "turno": "t16",
+   "nome": "Ida",
+   "testo": "adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla",
+   "haiku": "nar_scatolina"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.16,
+   "turno": "t16",
+   "nome": "Vanda",
+   "testo": "ettore, sei salito al sasso stamattina? dillo senza scappare",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.16,
+   "turno": "t16",
+   "nome": "Livia",
+   "testo": "zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.32,
+   "turno": "t17",
+   "nome": "Livia",
+   "testo": "zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t17",
+   "nome": "Ida",
+   "testo": "adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.16,
+   "turno": "t17",
+   "nome": "Vanda",
+   "testo": "ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nar_bastiano",
+   "scelta": "nar_bastiano",
+   "tentativi": 1,
+   "candidate": [
+    "nar_bastiano"
+   ],
+   "secondi": 1.39,
+   "turno": "t18",
+   "nome": "Vanda",
+   "testo": "bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.16,
+   "turno": "t18",
+   "nome": "Livia",
+   "testo": "ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t18",
+   "nome": "Ida",
+   "testo": "tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.14,
+   "turno": "t19",
+   "nome": "Ida",
+   "testo": "adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "gas_chi_cera"
+   ],
+   "secondi": 1.34,
+   "turno": "t19",
+   "nome": "Vanda",
+   "testo": "bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_sposa_mima"
+   ],
+   "secondi": 1.37,
+   "turno": "t19",
+   "nome": "Livia",
+   "testo": "agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t20",
+   "nome": "Livia",
+   "testo": "agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente",
+   "haiku": "ade_da_dove"
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.32,
+   "turno": "t20",
+   "nome": "Ida",
+   "testo": "custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?",
+   "haiku": "nar_custode_regole"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.21,
+   "turno": "t20",
+   "nome": "Vanda",
+   "testo": "tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?",
+   "haiku": "nar_tonio"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.32,
+   "turno": "t21",
+   "nome": "Vanda",
+   "testo": "ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_giacca_tasca"
+   ],
+   "secondi": 1.33,
+   "turno": "t21",
+   "nome": "Livia",
+   "testo": "ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nar_tonio_tasca",
+   "scelta": "nar_tonio_tasca",
+   "tentativi": 1,
+   "candidate": [
+    "nar_tonio",
+    "nar_tonio_tasca"
+   ],
+   "secondi": 1.61,
+   "turno": "t21",
+   "nome": "Ida",
+   "testo": "tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "ade_scatolina",
+   "scelta": "ade_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "ade_scatolina",
+    "nar_scatolina"
+   ],
+   "secondi": 1.57,
+   "turno": "t22",
+   "nome": "Ida",
+   "testo": "adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla",
+   "haiku": "nar_scatolina"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.16,
+   "turno": "t22",
+   "nome": "Vanda",
+   "testo": "ettore, sei salito al sasso stamattina? dillo senza scappare",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t22",
+   "nome": "Livia",
+   "testo": "zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.32,
+   "turno": "t23",
+   "nome": "Livia",
+   "testo": "zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione",
+   "haiku": "nar_custode_regole"
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.16,
+   "turno": "t23",
+   "nome": "Ida",
+   "testo": "adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t23",
+   "nome": "Vanda",
+   "testo": "ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nar_bastiano",
+   "scelta": "nar_bastiano",
+   "tentativi": 1,
+   "candidate": [
+    "nar_bastiano"
+   ],
+   "secondi": 1.4,
+   "turno": "t24",
+   "nome": "Vanda",
+   "testo": "bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t24",
+   "nome": "Livia",
+   "testo": "ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t24",
+   "nome": "Ida",
+   "testo": "tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?",
+   "haiku": "nar_tonio"
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.12,
+   "turno": "t25",
+   "nome": "Ida",
+   "testo": "adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "gas_chi_cera"
+   ],
+   "secondi": 1.31,
+   "turno": "t25",
+   "nome": "Vanda",
+   "testo": "bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_sposa_mima"
+   ],
+   "secondi": 1.34,
+   "turno": "t25",
+   "nome": "Livia",
+   "testo": "agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.36,
+   "turno": "t26",
+   "nome": "Livia",
+   "testo": "agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.39,
+   "turno": "t26",
+   "nome": "Ida",
+   "testo": "custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.17,
+   "turno": "t26",
+   "nome": "Vanda",
+   "testo": "tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_custode_regole"
+   ],
+   "secondi": 1.97,
+   "turno": "t27",
+   "nome": "Vanda",
+   "testo": "ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode",
+   "haiku": "ett_quel_giorno"
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [
+    "nar_giacca_tasca"
+   ],
+   "secondi": 1.4,
+   "turno": "t27",
+   "nome": "Livia",
+   "testo": "ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?",
+   "haiku": null
+  },
+  {
+   "pg": "pg_ida",
+   "grezza": "nar_tonio_tasca",
+   "scelta": "nar_tonio_tasca",
+   "tentativi": 1,
+   "candidate": [
+    "nar_tonio",
+    "nar_tonio_tasca"
+   ],
+   "secondi": 1.65,
+   "turno": "t27",
+   "nome": "Ida",
+   "testo": "tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?",
+   "haiku": "nar_tonio"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nar_scatolina",
+   "scelta": "nar_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "nar_scatolina"
+   ],
+   "secondi": 1.42,
+   "turno": "t28",
+   "nome": "Vanda",
+   "testo": "guardo la sala: chi si avvicina alla riga delle forme, e chi resta lontano dalla scatolina?",
+   "haiku": "nar_scatolina"
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "ade_scatolina",
+   "scelta": "ade_scatolina",
+   "tentativi": 1,
+   "candidate": [
+    "ade_scatolina"
+   ],
+   "secondi": 1.44,
+   "turno": "t28",
+   "nome": "Livia",
+   "testo": "adelina, si sta bene così con la scatolina vuota in mano?",
+   "haiku": "ade_scatolina"
+  },
+  {
+   "pg": "pg_vanda",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.15,
+   "turno": "t29",
+   "nome": "Vanda",
+   "testo": "anch'io: controllo le tasche di gaspare insieme a remo, senza farmi vedere",
+   "haiku": null
+  },
+  {
+   "pg": "pg_livia",
+   "grezza": "nessuna",
+   "scelta": "nessuna",
+   "tentativi": 1,
+   "candidate": [],
+   "secondi": 1.16,
+   "turno": "t30",
+   "nome": "Livia",
+   "testo": "ad alta voce: chi ha visto la porta di dietro della cantina aperta a mezzogiorno?",
+   "haiku": "gas_chi_cera"
+  }
+ ],
+ "annuncio": [
+  {
+   "frase": "Nando tira fuori la fisarmonica e si balla.",
+   "nome_presente": true,
+   "parole": 8,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "tira"
+   ],
+   "lingua": [],
+   "turno": "t01",
+   "nome": "Nando",
+   "testo": "ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso"
+  },
+  {
+   "frase": "Remo pesa a occhio la scatolina vuota e dice due fiorini.",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "pesa",
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t01",
+   "nome": "Remo",
+   "testo": "adelina la scatolina vuota la peso a occhio, varra due fiorini"
+  },
+  {
+   "frase": "Gunda ferma tutti, mani dove si vedono, io sorrido e basta.",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t01",
+   "nome": "Gunda",
+   "testo": "ferma tutti, mani dove si vedono, io sorrido e basta"
+  },
+  {
+   "frase": "Remo dice che vanda scommetto un formaggio che il vento non c'entra niente, ahah.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t02",
+   "nome": "Remo",
+   "testo": "vanda scommetto un formaggio che il vento non c'entra niente, ahah"
+  },
+  {
+   "frase": "Gunda dice a voce alta che Ettore ha l'aria di uno che ha perso la scatola e la dignità.",
+   "nome_presente": true,
+   "parole": 19,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t02",
+   "nome": "Gunda",
+   "testo": "ettore ha l'aria di uno che ha perso la scatola e la dignita, lo dico a voce alta"
+  },
+  {
+   "frase": "Nando suona la marcia dei muli, Gigia balla anche lei.",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t02",
+   "nome": "Nando",
+   "testo": "suoniamo la marcia dei muli, Gigia balla anche lei"
+  },
+  {
+   "frase": "Remo gunda il pugno chiuso e glielo fa vedere.",
+   "nome_presente": true,
+   "parole": 9,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "glielo"
+   ],
+   "lingua": [],
+   "turno": "t03",
+   "nome": "Remo",
+   "testo": "gunda il pugno chiuso fammelo vedere, sono curioso ahah"
+  },
+  {
+   "frase": "Gunda ferma Nando, la prende io per il braccio, piano, tipo sacco di farina.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t03",
+   "nome": "Gunda",
+   "testo": "ferma nando, la prendo io per il braccio, piano, tipo sacco di farina"
+  },
+  {
+   "frase": "Nando trecca rossa! esci fuori, ti canto la canzone della treccia a squarciagola.",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t03",
+   "nome": "Nando",
+   "testo": "treccia rossa! esci fuori, ti canto la canzone della treccia a squarciagola"
+  },
+  {
+   "frase": "Nando le scale scricchiolano, fa la scala musicale: do re mi scricchiolano.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t04",
+   "nome": "Nando",
+   "testo": "le scale scricchiolano, faccio la scala musicale: do re mi scricchiolo"
+  },
+  {
+   "frase": "Vanda ferma! Io salgo, le mule sulle scale non ci vanno.",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t04",
+   "nome": "Vanda",
+   "testo": "ferma! io salgo, le mule sulle scale non ci vanno"
+  },
+  {
+   "frase": "Remo sposa bella, le fa un sorriso e lo porta a valle come pegno.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t04",
+   "nome": "Remo",
+   "testo": "sposa bella, mi fai un sorriso? lo porto a valle come pegno"
+  },
+  {
+   "frase": "Remo scommette: chi apre per primo i cassetti del gaspare ha vinto. Zio Gaspare, io apro il tuo.",
+   "nome_presente": true,
+   "parole": 18,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t05",
+   "nome": "Remo",
+   "testo": "scommessa: chi apre per primo i cassetti del gaspare ha vinto. zio gaspare, io apro il tuo"
+  },
+  {
+   "frase": "Gunda va a vedere cosa c'è sotto la scala.",
+   "nome_presente": true,
+   "parole": 9,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t05",
+   "nome": "Gunda",
+   "testo": "cassetti no. ok basta, vado a vedere cosa c'e sotto la scala"
+  },
+  {
+   "frase": "Vanda rema, aspetta, li apre io, ho le mani più grosse.",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "rema",
+    "apre"
+   ],
+   "lingua": [],
+   "turno": "t05",
+   "nome": "Vanda",
+   "testo": "remo aspetta, li apro io, ho le mani piu grosse"
+  },
+  {
+   "frase": "Remo chiede a Agnese se non parla dimmi solo sì o no con la testa.",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t06",
+   "nome": "Remo",
+   "testo": "agnese se non parli dimmi solo si o no con la testa, come una contrattazione ahah"
+  },
+  {
+   "frase": "Gunda rifà il ballo al sasso: tutti in fila, la carica dei nani.",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "rifà"
+   ],
+   "lingua": [],
+   "turno": "t06",
+   "nome": "Gunda",
+   "testo": "rifacciamo il ballo al sasso: tutti in fila, la carica dei nani!"
+  },
+  {
+   "frase": "Nando vede il sole sotto il passo: ballo finale, tutti in trenino.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "vede"
+   ],
+   "lingua": [],
+   "turno": "t06",
+   "nome": "Nando",
+   "testo": "il sole sta sotto il passo: ballo finale, tutti in trenino!"
+  },
+  {
+   "frase": "Vanda chiede se sessant'anni fa il custode vedeva la neve uguale.",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "chiede",
+    "vedeva",
+    "uguale"
+   ],
+   "lingua": [],
+   "turno": "t07",
+   "nome": "Vanda",
+   "testo": "sessant'anni fa? custode, la neve era la stessa di oggi?"
+  },
+  {
+   "frase": "Remo gunda dillo più piano, così ci scrivo sopra il contratto ahah.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "così"
+   ],
+   "lingua": [],
+   "turno": "t07",
+   "nome": "Remo",
+   "testo": "gunda dillo piu piano, cosi ci scrivo sopra il contratto ahah"
+  },
+  {
+   "frase": "Gunda dice a tutti che il custode ha un libro con roba di quei due, sessant'anni fa.",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t07",
+   "nome": "Gunda",
+   "testo": "ehi tutti, il custode ha un libro con roba di quei due, sessant'anni fa! ah ops"
+  },
+  {
+   "frase": "Gunda dice adesso che nessuno tira il vestito della sposa.",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t08",
+   "nome": "Gunda",
+   "testo": "ok, nessuno tira il vestito della sposa, lo dico adesso"
+  },
+  {
+   "frase": "Nando tutti in trenino a cercare l'anello sotto la neve! uno-due-tre, sotto!",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t08",
+   "nome": "Nando",
+   "testo": "tutti in trenino a cercare l'anello sotto la neve! uno-due-tre, sotto!"
+  },
+  {
+   "frase": "Vanda chi ha l'anello? Tutti in fila e ci guardiamo le mani.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t08",
+   "nome": "Vanda",
+   "testo": "chi ha l'anello? tutti in fila e ci guardiamo le mani"
+  },
+  {
+   "frase": "Vanda dice a Remo non rubare alla festa, ti metto a fare il palo.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t09",
+   "nome": "Vanda",
+   "testo": "ahah remo non rubare alla festa, ti metto a fare il palo"
+  },
+  {
+   "frase": "Gunda si mette in mezzo facendo la faccia della colomba.",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t09",
+   "nome": "Gunda",
+   "testo": "quei due si guardano storto, mi metto in mezzo facendo la faccia della colomba"
+  },
+  {
+   "frase": "Nando dice: \"Ettore col bastone, canzone per te: il vecchio batte il legno, ta ta ta, ballate!\".",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t09",
+   "nome": "Nando",
+   "testo": "ettore col bastone, canzone per te: il vecchio batte il legno, ta ta ta, ballate!"
+  },
+  {
+   "frase": "Nando segue la fisarmonica. Chi scappa dietro i sacchi lo fa ballare.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t10",
+   "nome": "Nando",
+   "testo": "io seguo la fisarmonica. chi scappa dietro i sacchi lo facciamo ballare"
+  },
+  {
+   "frase": "Vanda rema ferma, scende io, la cantina la conosce dai muli.",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "rema"
+   ],
+   "lingua": [],
+   "turno": "t10",
+   "nome": "Vanda",
+   "testo": "remo ferma, scendo io, la cantina la conosco dai muli"
+  },
+  {
+   "frase": "Remo scende in cantina a controllare le forme, la scaletta e mia.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t10",
+   "nome": "Remo",
+   "testo": "scendo in cantina a controllare le forme, la scaletta e mia"
+  },
+  {
+   "frase": "Gunda fa braccio di ferro con me, chi perde paga il vino.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t11",
+   "nome": "Gunda",
+   "testo": "vanda braccio di ferro io contro te, chi perde paga il vino"
+  },
+  {
+   "frase": "Vanda dice che va bene, ma se perdi giuro che ti appoggio un basto sulla testa.",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t11",
+   "nome": "Vanda",
+   "testo": "va bene, ma se perdi giuro che ti appoggio un basto sulla testa"
+  },
+  {
+   "frase": "Remo gaspare il contratto del prato alto lo firmi dopo il tramonto.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t11",
+   "nome": "Remo",
+   "testo": "gaspare il contratto del prato alto lo firmi dopo il tramonto se le nozze saltano? la penna e mia"
+  },
+  {
+   "frase": "Vanda dice a Bastiano dove era a mezzogiorno e gli chiede di mostrare le mani.",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice",
+    "chiede",
+    "mostrare"
+   ],
+   "lingua": [],
+   "turno": "t12",
+   "nome": "Vanda",
+   "testo": "bastiano! dov'eri a mezzogiorno? fammi vedere le mani, subito"
+  },
+  {
+   "frase": "Gunda stalla, odore di fieno, si nasconde sotto la mangiatoia e aspetta.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t12",
+   "nome": "Gunda",
+   "testo": "stalla! odore di fieno, mi nascondo sotto la mangiatoia e aspetto"
+  },
+  {
+   "frase": "Nando sposa, ti canto una canzone muta: fai cenno se ti piace, anche solo con gli occhi.",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t12",
+   "nome": "Nando",
+   "testo": "sposa, ti canto una canzone muta: fai cenno se ti piace, anche solo con gli occhi"
+  },
+  {
+   "frase": "Nando zio Gaspare, pagami la mezza paga e ti canto la canzone del cassetto.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t13",
+   "nome": "Nando",
+   "testo": "zio gaspare, pagami la mezza paga e ti canto la canzone del cassetto"
+  },
+  {
+   "frase": "Vanda dice a Bastiano di tirargli un calcio se mi menti.",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "dice",
+    "tirargli"
+   ],
+   "lingua": [],
+   "turno": "t13",
+   "nome": "Vanda",
+   "testo": "bastiano ti tiro un calcio di mula se mi menti ahah. ferma la mano!"
+  },
+  {
+   "frase": "Remo chiede a Gaspare se è sicuro di non voler firmare il patto ora.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t13",
+   "nome": "Remo",
+   "testo": "gaspare sei sicuro di non voler firmare il patto ora? ti presto la penna"
+  },
+  {
+   "frase": "Gunda fa braccio di ferro col custode per il libro.",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t14",
+   "nome": "Gunda",
+   "testo": "braccio di ferro col custode per il libro! chi vince sfoglia la pagina"
+  },
+  {
+   "frase": "Nando custode, ti canto la canzone del libro, la sai? facciamo il coro.",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t14",
+   "nome": "Nando",
+   "testo": "custode, ti canto la canzone del libro, la sai? facciamo il coro"
+  },
+  {
+   "frase": "Vanda dice a Ettore: \"Il vento o hai pianto?\" in faccia a tutto il paese.",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t14",
+   "nome": "Vanda",
+   "testo": "ettore, il vento: era vento o hai pianto? lo dico in faccia a tutto il paese"
+  },
+  {
+   "frase": "Remo sente il sole a una spanna dal passo e firma il contratto.",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "sente"
+   ],
+   "lingua": [],
+   "turno": "t15",
+   "nome": "Remo",
+   "testo": "sole a una spanna dal passo, ultima chiamata: firmo il contratto con la penna in mano"
+  },
+  {
+   "frase": "Gunda ballo con lo scudo sopra la testa e la colomba storta.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t15",
+   "nome": "Gunda",
+   "testo": "anch'io ballo, ma con lo scudo sopra la testa e la colomba storta"
+  },
+  {
+   "frase": "Nando lanterne dondolate! ballo finale con la fisarmonica sulla schiena.",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t15",
+   "nome": "Nando",
+   "testo": "lanterne, dondolate! ballo finale con la fisarmonica sulla schiena"
+  },
+  {
+   "frase": "Ida guarda da vicino la scatolina vuota senza toccarla.",
+   "nome_presente": true,
+   "parole": 9,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t16",
+   "nome": "Ida",
+   "testo": "adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla"
+  },
+  {
+   "frase": "Vanda chiede a Ettore se è salito al sasso stamattina.",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t16",
+   "nome": "Vanda",
+   "testo": "ettore, sei salito al sasso stamattina? dillo senza scappare"
+  },
+  {
+   "frase": "Livia zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi.",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t16",
+   "nome": "Livia",
+   "testo": "zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi"
+  },
+  {
+   "frase": "Livia chiede a Zelia se in soffitta ci sono ancora le tue cose.",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t17",
+   "nome": "Livia",
+   "testo": "zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione"
+  },
+  {
+   "frase": "Ida chiede a Adelina se l'anello di casa lo tiene sempre qualcuno.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t17",
+   "nome": "Ida",
+   "testo": "adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?"
+  },
+  {
+   "frase": "Vanda chiede a Ettore se il vento di stamattina era vento o se si era messo a piangere al sasso.",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t17",
+   "nome": "Vanda",
+   "testo": "ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?"
+  },
+  {
+   "frase": "Vanda dice a Bastiano di coprirla davanti al paese se gli dice la verità.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice",
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t18",
+   "nome": "Vanda",
+   "testo": "bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?"
+  },
+  {
+   "frase": "Livia chiede a Ettore se le lettere della nonna erano firmate E.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t18",
+   "nome": "Livia",
+   "testo": "ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?"
+  },
+  {
+   "frase": "Ida dice a Tonio di restargli accanto al sasso come promesso.",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t18",
+   "nome": "Ida",
+   "testo": "tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?"
+  },
+  {
+   "frase": "Ida chiede a Adelina se il nonno Ettore e la lettera chiusa con la ceralacca le dica qualcosa.",
+   "nome_presente": true,
+   "parole": 18,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede",
+    "dica"
+   ],
+   "lingua": [],
+   "turno": "t19",
+   "nome": "Ida",
+   "testo": "adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?"
+  },
+  {
+   "frase": "Vanda chiede a Bastiano cosa ha fatto tra le undici e mezzogiorno.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t19",
+   "nome": "Vanda",
+   "testo": "bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?"
+  },
+  {
+   "frase": "Livia chiede a Agnese se la nonna ha l'anello al dito o nella tasca.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t19",
+   "nome": "Livia",
+   "testo": "agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no"
+  },
+  {
+   "frase": "Livia dice a Agnese se tu o la nonna sapete chi ha preso l'anello.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t20",
+   "nome": "Livia",
+   "testo": "agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente"
+  },
+  {
+   "frase": "Ida è custode e chiede come si fa a benedire una prima neve senza anello.",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t20",
+   "nome": "Ida",
+   "testo": "custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?"
+  },
+  {
+   "frase": "Vanda chiede a Tonio se Bastiano ha detto che lei ha toccato la lettera del nonno.",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t20",
+   "nome": "Vanda",
+   "testo": "tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?"
+  },
+  {
+   "frase": "Vanda chiede a Ettore se la lanterna era per l'anello o per qualcun altro.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t21",
+   "nome": "Vanda",
+   "testo": "ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode"
+  },
+  {
+   "frase": "Livia chiede a Ettore se aprire la lettera davanti al paese o con le lettere della soffitta.",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t21",
+   "nome": "Livia",
+   "testo": "ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?"
+  },
+  {
+   "frase": "Ida dice a Tonio che se il nonno ha la lettera e l'anello è sparito, non è una coincidenza.",
+   "nome_presente": true,
+   "parole": 19,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t21",
+   "nome": "Ida",
+   "testo": "tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?"
+  },
+  {
+   "frase": "Ida guarda da vicino la scatolina vuota senza toccarla.",
+   "nome_presente": true,
+   "parole": 9,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t22",
+   "nome": "Ida",
+   "testo": "adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla"
+  },
+  {
+   "frase": "Vanda chiede a Ettore se è salito al sasso stamattina.",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t22",
+   "nome": "Vanda",
+   "testo": "ettore, sei salito al sasso stamattina? dillo senza scappare"
+  },
+  {
+   "frase": "Livia zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi.",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t22",
+   "nome": "Livia",
+   "testo": "zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi"
+  },
+  {
+   "frase": "Livia chiede a Zelia se in soffitta ci sono ancora le tue cose.",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t23",
+   "nome": "Livia",
+   "testo": "zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione"
+  },
+  {
+   "frase": "Ida chiede a Adelina se l'anello di casa lo tiene sempre qualcuno.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t23",
+   "nome": "Ida",
+   "testo": "adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?"
+  },
+  {
+   "frase": "Vanda chiede a Ettore se il vento di stamattina era vento o se si era messo a piangere al sasso.",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t23",
+   "nome": "Vanda",
+   "testo": "ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?"
+  },
+  {
+   "frase": "Vanda dice a Bastiano di coprirla davanti al paese se gli dice la verità.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice",
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t24",
+   "nome": "Vanda",
+   "testo": "bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?"
+  },
+  {
+   "frase": "Livia chiede a Ettore se le lettere della nonna erano firmate E.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t24",
+   "nome": "Livia",
+   "testo": "ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?"
+  },
+  {
+   "frase": "Ida dice a Tonio di restargli accanto al sasso come promesso.",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t24",
+   "nome": "Ida",
+   "testo": "tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?"
+  },
+  {
+   "frase": "Ida chiede a Adelina se il nonno Ettore e la lettera chiusa con la ceralacca le dica qualcosa.",
+   "nome_presente": true,
+   "parole": 18,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede",
+    "dica"
+   ],
+   "lingua": [],
+   "turno": "t25",
+   "nome": "Ida",
+   "testo": "adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?"
+  },
+  {
+   "frase": "Vanda chiede a Bastiano cosa ha fatto tra le undici e mezzogiorno.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t25",
+   "nome": "Vanda",
+   "testo": "bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?"
+  },
+  {
+   "frase": "Livia chiede a Agnese se la nonna ha l'anello al dito o nella tasca.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t25",
+   "nome": "Livia",
+   "testo": "agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no"
+  },
+  {
+   "frase": "Livia dice a Agnese se tu o la nonna sapete chi ha preso l'anello.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t26",
+   "nome": "Livia",
+   "testo": "agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente"
+  },
+  {
+   "frase": "Ida è custode e chiede come si fa a benedire una prima neve senza anello.",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t26",
+   "nome": "Ida",
+   "testo": "custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?"
+  },
+  {
+   "frase": "Vanda chiede a Tonio se Bastiano ha detto che lei ha toccato la lettera del nonno.",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t26",
+   "nome": "Vanda",
+   "testo": "tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?"
+  },
+  {
+   "frase": "Vanda chiede a Ettore se la lanterna era per l'anello o per qualcun altro.",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t27",
+   "nome": "Vanda",
+   "testo": "ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode"
+  },
+  {
+   "frase": "Livia chiede a Ettore se aprire la lettera davanti al paese o con le lettere della soffitta.",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t27",
+   "nome": "Livia",
+   "testo": "ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?"
+  },
+  {
+   "frase": "Ida dice a Tonio che se il nonno ha la lettera e l'anello è sparito, non è una coincidenza.",
+   "nome_presente": true,
+   "parole": 19,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "dice"
+   ],
+   "lingua": [],
+   "turno": "t27",
+   "nome": "Ida",
+   "testo": "tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?"
+  },
+  {
+   "frase": "Vanda guarda la sala: chi si avvicina alla riga delle forme, e chi resta lontano dalla scatolina.",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t28",
+   "nome": "Vanda",
+   "testo": "guardo la sala: chi si avvicina alla riga delle forme, e chi resta lontano dalla scatolina?"
+  },
+  {
+   "frase": "Livia chiede a Adelina se si sta bene così con la scatolina vuota in mano.",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t28",
+   "nome": "Livia",
+   "testo": "adelina, si sta bene così con la scatolina vuota in mano?"
+  },
+  {
+   "frase": "Vanda controlla le tasche di Gaspare insieme a Remo, senza farmi vedere.",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t29",
+   "nome": "Vanda",
+   "testo": "anch'io: controllo le tasche di gaspare insieme a remo, senza farmi vedere"
+  },
+  {
+   "frase": "Livia ad alta voce chiede chi ha visto la porta di dietro della cantina aperta a mezzogiorno.",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [
+    "chiede"
+   ],
+   "lingua": [],
+   "turno": "t30",
+   "nome": "Livia",
+   "testo": "ad alta voce: chi ha visto la porta di dietro della cantina aperta a mezzogiorno?"
+  }
+ ],
+ "deterministico": [
+  {
+   "frase": "Nando: «ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t01",
+   "nome": "Nando",
+   "testo": "ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso"
+  },
+  {
+   "frase": "Remo: «adelina la scatolina vuota la peso a occhio, varra due fiorini»",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t01",
+   "nome": "Remo",
+   "testo": "adelina la scatolina vuota la peso a occhio, varra due fiorini"
+  },
+  {
+   "frase": "Gunda: «ferma tutti, mani dove si vedono, io sorrido e basta»",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t01",
+   "nome": "Gunda",
+   "testo": "ferma tutti, mani dove si vedono, io sorrido e basta"
+  },
+  {
+   "frase": "Remo: «vanda scommetto un formaggio che il vento non c'entra niente, ahah»",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t02",
+   "nome": "Remo",
+   "testo": "vanda scommetto un formaggio che il vento non c'entra niente, ahah"
+  },
+  {
+   "frase": "Gunda: «ettore ha l'aria di uno che ha perso la scatola e la dignita, lo dico a voce alta»",
+   "nome_presente": true,
+   "parole": 19,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t02",
+   "nome": "Gunda",
+   "testo": "ettore ha l'aria di uno che ha perso la scatola e la dignita, lo dico a voce alta"
+  },
+  {
+   "frase": "Nando: «suoniamo la marcia dei muli, Gigia balla anche lei»",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t02",
+   "nome": "Nando",
+   "testo": "suoniamo la marcia dei muli, Gigia balla anche lei"
+  },
+  {
+   "frase": "Remo: «gunda il pugno chiuso fammelo vedere, sono curioso ahah»",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t03",
+   "nome": "Remo",
+   "testo": "gunda il pugno chiuso fammelo vedere, sono curioso ahah"
+  },
+  {
+   "frase": "Gunda: «ferma nando, la prendo io per il braccio, piano, tipo sacco di farina»",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t03",
+   "nome": "Gunda",
+   "testo": "ferma nando, la prendo io per il braccio, piano, tipo sacco di farina"
+  },
+  {
+   "frase": "Nando: «treccia rossa! esci fuori, ti canto la canzone della treccia a squarciagola»",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t03",
+   "nome": "Nando",
+   "testo": "treccia rossa! esci fuori, ti canto la canzone della treccia a squarciagola"
+  },
+  {
+   "frase": "Nando: «le scale scricchiolano, faccio la scala musicale: do re mi scricchiolo»",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t04",
+   "nome": "Nando",
+   "testo": "le scale scricchiolano, faccio la scala musicale: do re mi scricchiolo"
+  },
+  {
+   "frase": "Vanda: «ferma! io salgo, le mule sulle scale non ci vanno»",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t04",
+   "nome": "Vanda",
+   "testo": "ferma! io salgo, le mule sulle scale non ci vanno"
+  },
+  {
+   "frase": "Remo: «sposa bella, mi fai un sorriso? lo porto a valle come pegno»",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t04",
+   "nome": "Remo",
+   "testo": "sposa bella, mi fai un sorriso? lo porto a valle come pegno"
+  },
+  {
+   "frase": "Remo: «scommessa: chi apre per primo i cassetti del gaspare ha vinto. zio gaspare, io apro il tuo»",
+   "nome_presente": true,
+   "parole": 18,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t05",
+   "nome": "Remo",
+   "testo": "scommessa: chi apre per primo i cassetti del gaspare ha vinto. zio gaspare, io apro il tuo"
+  },
+  {
+   "frase": "Gunda: «cassetti no. ok basta, vado a vedere cosa c'e sotto la scala»",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t05",
+   "nome": "Gunda",
+   "testo": "cassetti no. ok basta, vado a vedere cosa c'e sotto la scala"
+  },
+  {
+   "frase": "Vanda: «remo aspetta, li apro io, ho le mani piu grosse»",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t05",
+   "nome": "Vanda",
+   "testo": "remo aspetta, li apro io, ho le mani piu grosse"
+  },
+  {
+   "frase": "Remo: «agnese se non parli dimmi solo si o no con la testa, come una contrattazione ahah»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t06",
+   "nome": "Remo",
+   "testo": "agnese se non parli dimmi solo si o no con la testa, come una contrattazione ahah"
+  },
+  {
+   "frase": "Gunda: «rifacciamo il ballo al sasso: tutti in fila, la carica dei nani!»",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t06",
+   "nome": "Gunda",
+   "testo": "rifacciamo il ballo al sasso: tutti in fila, la carica dei nani!"
+  },
+  {
+   "frase": "Nando: «il sole sta sotto il passo: ballo finale, tutti in trenino!»",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t06",
+   "nome": "Nando",
+   "testo": "il sole sta sotto il passo: ballo finale, tutti in trenino!"
+  },
+  {
+   "frase": "Vanda: «sessant'anni fa? custode, la neve era la stessa di oggi?»",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t07",
+   "nome": "Vanda",
+   "testo": "sessant'anni fa? custode, la neve era la stessa di oggi?"
+  },
+  {
+   "frase": "Remo: «gunda dillo piu piano, cosi ci scrivo sopra il contratto ahah»",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t07",
+   "nome": "Remo",
+   "testo": "gunda dillo piu piano, cosi ci scrivo sopra il contratto ahah"
+  },
+  {
+   "frase": "Gunda: «ehi tutti, il custode ha un libro con roba di quei due, sessant'anni fa! ah ops»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t07",
+   "nome": "Gunda",
+   "testo": "ehi tutti, il custode ha un libro con roba di quei due, sessant'anni fa! ah ops"
+  },
+  {
+   "frase": "Gunda: «ok, nessuno tira il vestito della sposa, lo dico adesso»",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t08",
+   "nome": "Gunda",
+   "testo": "ok, nessuno tira il vestito della sposa, lo dico adesso"
+  },
+  {
+   "frase": "Nando: «tutti in trenino a cercare l'anello sotto la neve! uno-due-tre, sotto!»",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t08",
+   "nome": "Nando",
+   "testo": "tutti in trenino a cercare l'anello sotto la neve! uno-due-tre, sotto!"
+  },
+  {
+   "frase": "Vanda: «chi ha l'anello? tutti in fila e ci guardiamo le mani»",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t08",
+   "nome": "Vanda",
+   "testo": "chi ha l'anello? tutti in fila e ci guardiamo le mani"
+  },
+  {
+   "frase": "Vanda: «ahah remo non rubare alla festa, ti metto a fare il palo»",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t09",
+   "nome": "Vanda",
+   "testo": "ahah remo non rubare alla festa, ti metto a fare il palo"
+  },
+  {
+   "frase": "Gunda: «quei due si guardano storto, mi metto in mezzo facendo la faccia della colomba»",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t09",
+   "nome": "Gunda",
+   "testo": "quei due si guardano storto, mi metto in mezzo facendo la faccia della colomba"
+  },
+  {
+   "frase": "Nando: «ettore col bastone, canzone per te: il vecchio batte il legno, ta ta ta, ballate!»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t09",
+   "nome": "Nando",
+   "testo": "ettore col bastone, canzone per te: il vecchio batte il legno, ta ta ta, ballate!"
+  },
+  {
+   "frase": "Nando: «io seguo la fisarmonica. chi scappa dietro i sacchi lo facciamo ballare»",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t10",
+   "nome": "Nando",
+   "testo": "io seguo la fisarmonica. chi scappa dietro i sacchi lo facciamo ballare"
+  },
+  {
+   "frase": "Vanda: «remo ferma, scendo io, la cantina la conosco dai muli»",
+   "nome_presente": true,
+   "parole": 11,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t10",
+   "nome": "Vanda",
+   "testo": "remo ferma, scendo io, la cantina la conosco dai muli"
+  },
+  {
+   "frase": "Remo: «scendo in cantina a controllare le forme, la scaletta e mia»",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t10",
+   "nome": "Remo",
+   "testo": "scendo in cantina a controllare le forme, la scaletta e mia"
+  },
+  {
+   "frase": "Gunda: «vanda braccio di ferro io contro te, chi perde paga il vino»",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t11",
+   "nome": "Gunda",
+   "testo": "vanda braccio di ferro io contro te, chi perde paga il vino"
+  },
+  {
+   "frase": "Vanda: «va bene, ma se perdi giuro che ti appoggio un basto sulla testa»",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t11",
+   "nome": "Vanda",
+   "testo": "va bene, ma se perdi giuro che ti appoggio un basto sulla testa"
+  },
+  {
+   "frase": "Remo: «gaspare il contratto del prato alto lo firmi dopo il tramonto se le nozze saltano? la penna e mia»",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t11",
+   "nome": "Remo",
+   "testo": "gaspare il contratto del prato alto lo firmi dopo il tramonto se le nozze saltano? la penna e mia"
+  },
+  {
+   "frase": "Vanda: «bastiano! dov'eri a mezzogiorno? fammi vedere le mani, subito»",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t12",
+   "nome": "Vanda",
+   "testo": "bastiano! dov'eri a mezzogiorno? fammi vedere le mani, subito"
+  },
+  {
+   "frase": "Gunda: «stalla! odore di fieno, mi nascondo sotto la mangiatoia e aspetto»",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t12",
+   "nome": "Gunda",
+   "testo": "stalla! odore di fieno, mi nascondo sotto la mangiatoia e aspetto"
+  },
+  {
+   "frase": "Nando: «sposa, ti canto una canzone muta: fai cenno se ti piace, anche solo con gli occhi»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t12",
+   "nome": "Nando",
+   "testo": "sposa, ti canto una canzone muta: fai cenno se ti piace, anche solo con gli occhi"
+  },
+  {
+   "frase": "Nando: «zio gaspare, pagami la mezza paga e ti canto la canzone del cassetto»",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t13",
+   "nome": "Nando",
+   "testo": "zio gaspare, pagami la mezza paga e ti canto la canzone del cassetto"
+  },
+  {
+   "frase": "Vanda: «bastiano ti tiro un calcio di mula se mi menti ahah. ferma la mano!»",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t13",
+   "nome": "Vanda",
+   "testo": "bastiano ti tiro un calcio di mula se mi menti ahah. ferma la mano!"
+  },
+  {
+   "frase": "Remo: «gaspare sei sicuro di non voler firmare il patto ora? ti presto la penna»",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t13",
+   "nome": "Remo",
+   "testo": "gaspare sei sicuro di non voler firmare il patto ora? ti presto la penna"
+  },
+  {
+   "frase": "Gunda: «braccio di ferro col custode per il libro! chi vince sfoglia la pagina»",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t14",
+   "nome": "Gunda",
+   "testo": "braccio di ferro col custode per il libro! chi vince sfoglia la pagina"
+  },
+  {
+   "frase": "Nando: «custode, ti canto la canzone del libro, la sai? facciamo il coro»",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t14",
+   "nome": "Nando",
+   "testo": "custode, ti canto la canzone del libro, la sai? facciamo il coro"
+  },
+  {
+   "frase": "Vanda: «ettore, il vento: era vento o hai pianto? lo dico in faccia a tutto il paese»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t14",
+   "nome": "Vanda",
+   "testo": "ettore, il vento: era vento o hai pianto? lo dico in faccia a tutto il paese"
+  },
+  {
+   "frase": "Remo: «sole a una spanna dal passo, ultima chiamata: firmo il contratto con la penna in mano»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t15",
+   "nome": "Remo",
+   "testo": "sole a una spanna dal passo, ultima chiamata: firmo il contratto con la penna in mano"
+  },
+  {
+   "frase": "Gunda: «anch'io ballo, ma con lo scudo sopra la testa e la colomba storta»",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t15",
+   "nome": "Gunda",
+   "testo": "anch'io ballo, ma con lo scudo sopra la testa e la colomba storta"
+  },
+  {
+   "frase": "Nando: «lanterne, dondolate! ballo finale con la fisarmonica sulla schiena»",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t15",
+   "nome": "Nando",
+   "testo": "lanterne, dondolate! ballo finale con la fisarmonica sulla schiena"
+  },
+  {
+   "frase": "Ida: «adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t16",
+   "nome": "Ida",
+   "testo": "adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla"
+  },
+  {
+   "frase": "Vanda: «ettore, sei salito al sasso stamattina? dillo senza scappare»",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t16",
+   "nome": "Vanda",
+   "testo": "ettore, sei salito al sasso stamattina? dillo senza scappare"
+  },
+  {
+   "frase": "Livia: «zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi»",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t16",
+   "nome": "Livia",
+   "testo": "zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi"
+  },
+  {
+   "frase": "Livia: «zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t17",
+   "nome": "Livia",
+   "testo": "zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione"
+  },
+  {
+   "frase": "Ida: «adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t17",
+   "nome": "Ida",
+   "testo": "adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?"
+  },
+  {
+   "frase": "Vanda: «ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t17",
+   "nome": "Vanda",
+   "testo": "ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?"
+  },
+  {
+   "frase": "Vanda: «bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t18",
+   "nome": "Vanda",
+   "testo": "bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?"
+  },
+  {
+   "frase": "Livia: «ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?»",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t18",
+   "nome": "Livia",
+   "testo": "ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?"
+  },
+  {
+   "frase": "Ida: «tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?»",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t18",
+   "nome": "Ida",
+   "testo": "tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?"
+  },
+  {
+   "frase": "Ida: «adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?»",
+   "nome_presente": true,
+   "parole": 18,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t19",
+   "nome": "Ida",
+   "testo": "adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?"
+  },
+  {
+   "frase": "Vanda: «bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?»",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t19",
+   "nome": "Vanda",
+   "testo": "bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?"
+  },
+  {
+   "frase": "Livia: «agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no»",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t19",
+   "nome": "Livia",
+   "testo": "agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no"
+  },
+  {
+   "frase": "Livia: «agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente»",
+   "nome_presente": true,
+   "parole": 18,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t20",
+   "nome": "Livia",
+   "testo": "agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente"
+  },
+  {
+   "frase": "Ida: «custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?»",
+   "nome_presente": true,
+   "parole": 18,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t20",
+   "nome": "Ida",
+   "testo": "custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?"
+  },
+  {
+   "frase": "Vanda: «tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t20",
+   "nome": "Vanda",
+   "testo": "tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?"
+  },
+  {
+   "frase": "Vanda: «ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t21",
+   "nome": "Vanda",
+   "testo": "ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode"
+  },
+  {
+   "frase": "Livia: «ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?»",
+   "nome_presente": true,
+   "parole": 21,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t21",
+   "nome": "Livia",
+   "testo": "ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?"
+  },
+  {
+   "frase": "Ida: «tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?»",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t21",
+   "nome": "Ida",
+   "testo": "tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?"
+  },
+  {
+   "frase": "Ida: «adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t22",
+   "nome": "Ida",
+   "testo": "adelina, la scatolina vuota: chi l'ha toccata prima di mezzogiorno? la guardo da vicino senza toccarla"
+  },
+  {
+   "frase": "Vanda: «ettore, sei salito al sasso stamattina? dillo senza scappare»",
+   "nome_presente": true,
+   "parole": 10,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t22",
+   "nome": "Vanda",
+   "testo": "ettore, sei salito al sasso stamattina? dillo senza scappare"
+  },
+  {
+   "frase": "Livia: «zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi»",
+   "nome_presente": true,
+   "parole": 15,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t22",
+   "nome": "Livia",
+   "testo": "zelia, dove sei stata tra le undici e mezzogiorno? guardami in faccia mentre rispondi"
+  },
+  {
+   "frase": "Livia: «zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t23",
+   "nome": "Livia",
+   "testo": "zelia, in soffitta ci sono ancora le tue cose? portami a vederle adesso, prima della benedizione"
+  },
+  {
+   "frase": "Ida: «adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t23",
+   "nome": "Ida",
+   "testo": "adelina, l'anello di casa lo tiene sempre qualcuno? la nonna l'ha mai lasciato in giro?"
+  },
+  {
+   "frase": "Vanda: «ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t23",
+   "nome": "Vanda",
+   "testo": "ettore, il vento di stamattina: era vento o ti sei messo a piangere al sasso?"
+  },
+  {
+   "frase": "Vanda: «bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t24",
+   "nome": "Vanda",
+   "testo": "bastiano, ti copro io davanti al paese se mi dici la verità. dov'eri a mezzogiorno?"
+  },
+  {
+   "frase": "Livia: «ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?»",
+   "nome_presente": true,
+   "parole": 14,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t24",
+   "nome": "Livia",
+   "testo": "ettore, le lettere della nonna erano firmate E. ti dice qualcosa questa E?"
+  },
+  {
+   "frase": "Ida: «tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?»",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t24",
+   "nome": "Ida",
+   "testo": "tonio, ti resto accanto al sasso come promesso. se il nonno ha una lettera in giacca, la guardiamo insieme?"
+  },
+  {
+   "frase": "Ida: «adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?»",
+   "nome_presente": true,
+   "parole": 18,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t25",
+   "nome": "Ida",
+   "testo": "adelina, il nonno Ettore e la lettera chiusa con la ceralacca: lei sa qualcosa di quella lettera?"
+  },
+  {
+   "frase": "Vanda: «bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?»",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t25",
+   "nome": "Vanda",
+   "testo": "bastiano, lo zio ti accusa del furto. io non ci credo: cosa hai fatto tra le undici e mezzogiorno?"
+  },
+  {
+   "frase": "Livia: «agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no»",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t25",
+   "nome": "Livia",
+   "testo": "agnese, la nonna ha l'anello al dito o nella tasca? me lo dici con la testa, sì o no"
+  },
+  {
+   "frase": "Livia: «agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente»",
+   "nome_presente": true,
+   "parole": 18,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t26",
+   "nome": "Livia",
+   "testo": "agnese, se tu o la nonna sapete chi ha preso l'anello, un cenno basta, nessuno ti sente"
+  },
+  {
+   "frase": "Ida: «custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?»",
+   "nome_presente": true,
+   "parole": 18,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t26",
+   "nome": "Ida",
+   "testo": "custode, quando si benedice una prima neve senza anello, come si fa? c'è una formula per questo?"
+  },
+  {
+   "frase": "Vanda: «tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t26",
+   "nome": "Vanda",
+   "testo": "tonio, mi ha detto bastiano che tu avevi toccato la lettera del nonno. è vero?"
+  },
+  {
+   "frase": "Vanda: «ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t27",
+   "nome": "Vanda",
+   "testo": "ettore, la lanterna era per l'anello o per qualcun altro? rispondi a me, non al custode"
+  },
+  {
+   "frase": "Livia: «ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?»",
+   "nome_presente": true,
+   "parole": 21,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t27",
+   "nome": "Livia",
+   "testo": "ettore, la lettera in giacca: la apri tu davanti al paese o la apro io con le lettere della soffitta?"
+  },
+  {
+   "frase": "Ida: «tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?»",
+   "nome_presente": true,
+   "parole": 20,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t27",
+   "nome": "Ida",
+   "testo": "tonio, se il nonno ha la lettera e l'anello è sparito, non è una coincidenza. lo sai anche tu?"
+  },
+  {
+   "frase": "Vanda: «guardo la sala: chi si avvicina alla riga delle forme, e chi resta lontano dalla scatolina?»",
+   "nome_presente": true,
+   "parole": 17,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t28",
+   "nome": "Vanda",
+   "testo": "guardo la sala: chi si avvicina alla riga delle forme, e chi resta lontano dalla scatolina?"
+  },
+  {
+   "frase": "Livia: «adelina, si sta bene così con la scatolina vuota in mano?»",
+   "nome_presente": true,
+   "parole": 12,
+   "lunghezza_ok": true,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t28",
+   "nome": "Livia",
+   "testo": "adelina, si sta bene così con la scatolina vuota in mano?"
+  },
+  {
+   "frase": "Vanda: «anch'io: controllo le tasche di gaspare insieme a remo, senza farmi vedere»",
+   "nome_presente": true,
+   "parole": 13,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t29",
+   "nome": "Vanda",
+   "testo": "anch'io: controllo le tasche di gaspare insieme a remo, senza farmi vedere"
+  },
+  {
+   "frase": "Livia: «ad alta voce: chi ha visto la porta di dietro della cantina aperta a mezzogiorno?»",
+   "nome_presente": true,
+   "parole": 16,
+   "lunghezza_ok": false,
+   "parole_nuove": [],
+   "lingua": [],
+   "turno": "t30",
+   "nome": "Livia",
+   "testo": "ad alta voce: chi ha visto la porta di dietro della cantina aperta a mezzogiorno?"
+  }
+ ]
+}

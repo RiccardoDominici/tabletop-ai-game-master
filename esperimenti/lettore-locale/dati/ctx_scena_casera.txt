@@ -1,0 +1,653 @@
+
+==================== scena scena_casera (dopo la rete di sicurezza, come lo manda il server) ====================
+
+# Campagna «Le nozze di neve» (parte pubblica)
+
+## Carta di stile
+
+id: nozze-neve
+titolo: Le nozze di neve
+premessa: Il giorno della prima neve, a Fontanive, la nonna della sposa deve mettere l'anello di casa al dito di Agnese prima del tramonto, ma durante la festa l'anello è sparito.
+tono: "Commedia di paese, calda e affettuosa, con una tensione vera sotto. Si ride delle persone perché si vuole loro bene. Il pericolo non sono i mostri: sono l'orgoglio di due vecchi, una festa che può finire a spintoni e un sole che non aspetta."
+tema: L'orgoglio; una vecchia promessa tra due famiglie; la riconciliazione; chi ha il diritto di raccontare la storia di famiglia.
+registro_narratore: "Voce di veglia d'inverno: calda, svelta, con un sorriso negli occhi. Racconta le persone dai gesti. Sulla tensione si fa asciutta e precisa, mai solenne."
+regole_prosa:
+  - "Lessico di casera e di mulattiera: forme, caglio, siero, stagionatura, scaffali, basto, finimenti, ferri, campanacci, larice, neve fresca. Niente arcaismi finti."
+  - "Le immagini ricorrenti sono la neve e il formaggio: usale, ma mai la stessa immagine due volte di seguito."
+  - "Il narratore descrive gesti, oggetti e impronte, e non dice mai che cosa vogliono dire: le conclusioni le tirano i PG."
+  - "Il tempo si sente da fuori: il corno del Custode dal Sasso a ogni mezz'ora, la neve che cresce, le ombre dei larici, la luce che cambia. Mai detto come ansia."
+  - La sposa, per usanza, non parla fino al sì. Risponde con gesti e smorfie, e il narratore li descrive senza tradurli.
+  - "La lite resta a parole, spintoni e palle di neve: nessuno si fa male in scena, né le persone né le bestie."
+  - "Il sorriso sta nelle cose e nelle persone: la riga di forme che divide la sala, un vecchio sordo da un orecchio, uno zio che conta i bicchieri. Mai una battuta del narratore su chi soffre."
+  - Le monete si chiamano fiorini e soldi.
+stile_immagini: watercolor and gouache illustration in the manner of an old Alpine storybook, first snow on a high mountain village, warm hearth light against blue-grey snow, palette of cream, pine green, ochre and cold slate, soft visible brush strokes, gentle and affectionate faces, no text, no lettering
+tavolozza_musicale:
+  tag:
+    - taverna_calda
+    - esplorazione_tesa
+    - rito_sacro
+    - lutto
+  strumenti: fisarmonica, violino da festa, contrabbasso pizzicato, campanacci lontani; per il Sasso un corno e un coro a bocca chiusa. Niente percussioni da battaglia.
+linee:
+  - violenza sugli animali mostrata in scena
+  - contenuti sessuali
+  - "feriti nella lite tra le famiglie: si arriva agli spintoni, mai al sangue"
+veli:
+  - "i lutti delle due famiglie, il marito di Adelina e la moglie di Ettore: si nominano, non si raccontano"
+
+## Campagna: fatti noti a tutti, luoghi, orologi
+
+fatti_noti_ai_pg:
+  - f_prima_neve — Stamattina all'alba è caduta su Fontanive la prima neve dell'anno.
+  - f_usanza_nozze — Per usanza, chi si sposa il giorno della prima neve si benedice al Sasso delle Promesse, sopra il paese, prima che il sole tocchi il passo.
+  - f_usanza_anello — Alla benedizione la donna più anziana della casa della sposa mette al dito della sposa l'anello di casa, e ne racconta la storia davanti al paese.
+  - f_regola_seconda — Se la donna più anziana della casa della sposa non mette l'anello, lo può mettere la seconda più anziana; nessun altro.
+  - f_regola_ripete — Ciò che si racconta al Sasso, il paese lo ripete per sempre.
+  - "f_regola_voce — Se una casa ha raccontato al Sasso una storia falsa, perde la voce del Sasso: da allora la sua storia la racconta la casa che aveva detto il vero."
+  - f_senza_anello — Senza anello il Custode non benedice, e le nozze di neve aspettano la primavera.
+  - f_custode — Il Custode del Sasso, Ilario, tiene il Libro del Sasso, dove sono scritte tutte le nozze di neve da cent'anni, con la storia raccontata.
+  - f_corno — Il giorno delle nozze di neve il nipote del Custode suona il corno dal Sasso a ogni mezz'ora, fino al tramonto.
+  - f_partenza_alba — Domattina all'alba i Morlacchi scendono a valle con i muli per l'inverno, e lo sposo con loro.
+  - f_famiglie — I Bonfanti fanno il formaggio nella casera in cima al paese; i Morlacchi portano merci oltre il passo con i muli.
+  - f_faida — Bonfanti e Morlacchi sono rivali da tre generazioni.
+  - f_sposi — Oggi si sposano Agnese Bonfanti e Tonio Morlacchi, cresciuti tirandosi palle di neve da una riva all'altra del torrente.
+  - f_sposa_muta — Per usanza la sposa non parla da quando si sveglia fino al sì.
+  - f_focolare — Durante la benedizione la più giovane della casa della sposa resta a casa a tenere acceso il fuoco del focolare.
+  - f_adelina_nonna — Adelina Bonfanti, la nonna della sposa, ha settantotto anni ed è la donna più anziana di casa Bonfanti.
+  - f_marta — Marta, la madre della sposa, è la seconda donna più anziana di casa Bonfanti.
+  - f_ettore_nonno — Ettore Morlacchi, il nonno dello sposo, ha ottant'anni ed è il capo dei mulattieri.
+  - f_gaspare_zio — Gaspare Bonfanti, il fratello minore di Adelina, tiene i conti della casera.
+  - f_gaspare_bambino — Da bambino Gaspare fu malato di una febbre forte, e guarì.
+  - f_zelia_sorella — Zelia, quindici anni, è la sorella della sposa, e scrive tutto in un quaderno.
+  - "f_leggenda_bonfanti — La storia dei Bonfanti: l'anello era della bisnonna Bonfanti, e sessant'anni fa un Morlacchi provò a portarlo via e scappò a valle con la neve."
+  - "f_storia_morlacchi — La storia dei Morlacchi: l'anello è loro, e la ragazza Bonfanti se lo tenne e non lo rese mai."
+  - f_adelina_racconta — Da ventotto anni Adelina racconta al Sasso la storia dell'anello a ogni nozze di casa Bonfanti.
+  - f_dote_prato — Adelina ha promesso agli sposi come dote il Prato Alto, il pascolo migliore dei Bonfanti, se le nozze sono benedette oggi; il prato lo amministra Gaspare.
+  - f_dono_morlacchi — Il dono dei Morlacchi agli sposi è la casetta del lavatoio, per passare l'inverno in paese.
+  - f_festa_casera — La festa si fa nella casera dei Bonfanti, la sala più grande del paese.
+  - f_anello_sparito — A mezzogiorno, durante il brindisi, l'anello è sparito dalla scatolina di noce sul tavolo alto.
+  - f_accusa_bastiano — Gaspare dice di aver visto Bastiano, il garzone dei Morlacchi, girare intorno al tavolo alto a mezzogiorno.
+  - f_duchessa — La Duchessa, la vacca più vecchia dei Bonfanti, sta nella stalla sotto casa e apre la processione della sposa fino al Sasso.
+  - "f_ferro_morlacchi — I Morlacchi segnano le loro cose con un ferro di cavallo: i finimenti, le porte, la fibbia di Ettore."
+  - f_tilde — Tilde, la levatrice, ha novant'anni, ci sente poco e parla forte; ha fatto nascere mezzo paese.
+luoghi:
+  - id: n_casera
+    nome: La casera dei Bonfanti, durante la festa
+  - id: n_casa_bonfanti
+    nome: Casa Bonfanti, con la stalla sotto
+  - id: e_tramonto
+    nome: Il tramonto al Sasso delle Promesse
+  - id: n_sasso
+    nome: Il Sasso delle Promesse
+    abbozzo: Una grande pietra piatta sotto un larice, sopra il paese, a venti minuti di salita nella neve. Accanto c'è il casotto di legno del Custode, con il corno appeso alla porta. Nel pomeriggio il nipote del Custode spazza la neve, prepara le lanterne e suona il corno a ogni mezz'ora.
+  - id: n_valle
+    nome: Pontebruno, in fondo alla valle
+    abbozzo: Il paese grande della valle, dove i Morlacchi passano l'inverno con i muli e Sior Bortolo compra il formaggio. Un giorno di mulattiera.
+orologi:
+  - id: o_tramonto
+    nome: Il sole scende verso il passo
+  - id: o_lite
+    nome: La festa si spacca in due
+  - id: o_zio
+    nome: Lo zio cerca l'anello
+riassunto_iniziale: Stamattina su Fontanive è caduta la prima neve dell'anno. Per usanza Agnese Bonfanti e Tonio Morlacchi si sposano oggi al Sasso, prima del tramonto. A mezzogiorno, durante la festa, è sparito l'anello della nonna della sposa.
+
+## Scena corrente: La casera dei Bonfanti, durante la festa
+
+nome: La casera dei Bonfanti, durante la festa
+descrizione: "La sala grande della casera, in cima al paese, con gli scaffali delle forme fino al soffitto e un camino acceso. Due tavolate lunghe: a sinistra i Bonfanti, a destra i Morlacchi, e in mezzo, per terra, una riga di forme di formaggio messa come un confine. In fondo c'è il tavolo alto degli anziani, con la scatolina di noce aperta e vuota, il Custode Ilario con la sua borsa. La vecchia Tilde sonnecchia su una sedia imbottita accanto al camino. Bastiano, il garzone dei Morlacchi, siede imbronciato in fondo alla sua tavolata. Dietro il tavolo alto tre gradini scendono nella cantina delle forme, fresca e buia, che ha una porta di dietro sul vicolo. Chi sente cosa: ciò che si dice al tavolo alto lo sente tutta la sala; a una tavolata lo sente solo quella tavolata, sotto la musica; al camino, tra la musica e lo scoppiettio, sente solo chi sta al camino; nella cantina delle forme e fuori nel vicolo non sente nessuno della sala. La sposa e sua sorella sono a casa Bonfanti, dall'altra parte del vicolo."
+domanda_drammatica: Le due case resteranno alla stessa festa fino al tramonto?
+intensita: 3
+sensi:
+  - Odore di siero caldo, di crosta di formaggio e di lana bagnata.
+  - Il violino del paese che zoppica, e sopra le voci delle due tavolate.
+  - Il freddo che entra dalla porta a ogni ospite, con un soffio di neve.
+elementi_interattivi:
+  - cosa: la scatolina di noce
+    dove: sul tavolo alto
+    azioni: è aperta e vuota; si prende in mano, si guarda il velluto rosso dentro
+  - cosa: la riga di forme
+    dove: per terra, in mezzo alla sala
+    azioni: si scavalca, si sposta, si fa rotolare una forma
+  - cosa: la borsa del Custode
+    dove: al tavolo alto, sulle ginocchia di Ilario
+    azioni: dentro c'è il Libro del Sasso; il Custode lo apre a chi glielo chiede con garbo, o a chi gli porta un bicchiere
+  - cosa: la cantina delle forme
+    dove: dietro il tavolo alto, tre gradini più giù
+    azioni: è fresca e buia, e ci si parla senza essere sentiti; in fondo c'è la porta di dietro, sul vicolo
+  - cosa: il caldaio di rame
+    dove: nell'angolo del camino
+    azioni: è nuovo e lucido; la casara ne parla volentieri
+  - cosa: la vecchia Tilde
+    dove: su una sedia imbottita accanto al camino
+    azioni: ci sente poco e parla forte; ricorda tutte le nascite e tutte le nevi del paese
+  - cosa: Bastiano
+    dove: in fondo alla tavolata dei Morlacchi
+    azioni: ha le mani nere fino ai polsi e non vuole parlare con nessuno dei Bonfanti
+png_presenti:
+  - png_adelina
+  - png_ettore
+  - png_gaspare
+taglio: "La scena si chiude quando i PG lasciano la casera per casa Bonfanti o per il Sasso, con una pista o senza. Oppure al sesto segno della lite, quando i Morlacchi portano fuori le panche: la festa è finita, e la sala si svuota. Se i PG esitano, il Custode si alza, guarda il cielo e dice che lui sale al Sasso a preparare le lanterne: chi ha qualcosa da dire, lo dica lassù."
+
+## PNG (parte pubblica: aspetto, carattere, voce, cosa sanno di pubblico)
+
+### Adelina — etichetta [png_adelina], presente in scena
+
+nome: Adelina
+pronuncia: Adelìna
+aspetto: Una donna minuta di settantotto anni, dritta come un fuso, con uno scialle nero frangiato. Porta il grembiule della casera anche alla festa, e un mazzo di chiavi alla cintura.
+personalita:
+  superficie:
+    - lingua tagliente e battuta pronta
+    - comanda la casera e la famiglia con un'occhiata
+    - fiera dei Bonfanti fino al ridicolo
+  sotto_pressione:
+    - diventa cortese e formale, e dà del lei anche ai nipoti
+    - se la fanno ridere quando non vuole, si arrabbia con chi l'ha fatta ridere
+voce:
+  registro: Dà del tu a tutti, ai forestieri e al Custode compresi. Passa al lei, gelido, quando si offende. Al gruppo dà del voi.
+  stile: "Frasi di tre-nove parole. Proverbi di casera: latte, caglio, crosta, stagionatura. Chiude spesso con una sentenza."
+  tic:
+    - «Il formaggio buono vuole tempo.»
+  gesto: fa tintinnare le chiavi alla cintura
+  battuta_campione: "Il formaggio buono vuole tempo. Gli anelli no: o tornano, o li vado a prendere."
+atteggiamento_pg:
+  pg_nando: indifferente
+  pg_ida: indifferente
+  pg_vanda: ostile
+  pg_remo: amichevole
+  pg_livia: amichevole
+  pg_gunda: indifferente
+sa_pubblico:
+  - "f_leggenda_bonfanti — La storia dei Bonfanti: l'anello era della bisnonna Bonfanti, e sessant'anni fa un Morlacchi provò a portarlo via e scappò a valle con la neve."
+  - f_adelina_racconta — Da ventotto anni Adelina racconta al Sasso la storia dell'anello a ogni nozze di casa Bonfanti.
+  - f_adelina_nonna — Adelina Bonfanti, la nonna della sposa, ha settantotto anni ed è la donna più anziana di casa Bonfanti.
+  - f_usanza_anello — Alla benedizione la donna più anziana della casa della sposa mette al dito della sposa l'anello di casa, e ne racconta la storia davanti al paese.
+  - f_regola_seconda — Se la donna più anziana della casa della sposa non mette l'anello, lo può mettere la seconda più anziana; nessun altro.
+  - f_regola_ripete — Ciò che si racconta al Sasso, il paese lo ripete per sempre.
+  - "f_regola_voce — Se una casa ha raccontato al Sasso una storia falsa, perde la voce del Sasso: da allora la sua storia la racconta la casa che aveva detto il vero."
+  - f_dote_prato — Adelina ha promesso agli sposi come dote il Prato Alto, il pascolo migliore dei Bonfanti, se le nozze sono benedette oggi; il prato lo amministra Gaspare.
+  - f_anello_sparito — A mezzogiorno, durante il brindisi, l'anello è sparito dalla scatolina di noce sul tavolo alto.
+  - f_gaspare_bambino — Da bambino Gaspare fu malato di una febbre forte, e guarì.
+  - f_marta — Marta, la madre della sposa, è la seconda donna più anziana di casa Bonfanti.
+  - f_sposa_muta — Per usanza la sposa non parla da quando si sveglia fino al sì.
+  - f_tilde — Tilde, la levatrice, ha novant'anni, ci sente poco e parla forte; ha fatto nascere mezzo paese.
+
+### Ettore Morlacchi — etichetta [png_ettore], presente in scena
+
+nome: Ettore Morlacchi
+pronuncia: Èttore Morlàcchi
+aspetto: Un uomo grosso e un po' curvo, di ottant'anni, con la barba bianca da caprone. Porta un cappello di feltro con la piuma, un bastone di nocciolo e la fibbia a ferro di cavallo.
+personalita:
+  superficie:
+    - burbero e rumoroso, batte il bastone per farsi sentire
+    - fa finta di non sentire ciò che non gli piace
+    - generoso con le bestie, di poche parole con le persone
+  sotto_pressione:
+    - diventa zitto e immobile, con le mani sul bastone
+    - se lo commuovono, si arrabbia con il cappello e lo strapazza
+voce:
+  registro: "Dà del tu a tutti e chiama la gente con il mestiere: musicante, guardia, garzone, chierica, quando sa con chi parla. Al gruppo dà del voi. Ai Bonfanti non si rivolge: parla di loro, a voce alta."
+  stile: "Frasi di due-sei parole. Lessico di mulattiera: basto, passo, ferri, zoccoli, salita. Risponde spesso con un «Eh?»."
+  tic:
+    - «Parla dall'orecchio buono, eh.»
+  gesto: batte il bastone per terra, due colpi
+  battuta_campione: Parla dall'orecchio buono, eh. Con l'altro sento solo i Bonfanti.
+atteggiamento_pg:
+  pg_nando: indifferente
+  pg_ida: amichevole
+  pg_vanda: amichevole
+  pg_remo: ostile
+  pg_livia: indifferente
+  pg_gunda: indifferente
+sa_pubblico:
+  - "f_ferro_morlacchi — I Morlacchi segnano le loro cose con un ferro di cavallo: i finimenti, le porte, la fibbia di Ettore."
+  - "f_storia_morlacchi — La storia dei Morlacchi: l'anello è loro, e la ragazza Bonfanti se lo tenne e non lo rese mai."
+  - f_partenza_alba — Domattina all'alba i Morlacchi scendono a valle con i muli per l'inverno, e lo sposo con loro.
+  - f_dono_morlacchi — Il dono dei Morlacchi agli sposi è la casetta del lavatoio, per passare l'inverno in paese.
+  - f_ettore_nonno — Ettore Morlacchi, il nonno dello sposo, ha ottant'anni ed è il capo dei mulattieri.
+  - f_faida — Bonfanti e Morlacchi sono rivali da tre generazioni.
+
+### Gaspare Bonfanti — etichetta [png_gaspare], presente in scena
+
+nome: Gaspare Bonfanti
+pronuncia: Gàspare Bonfànti
+aspetto: Un uomo magro e calvo, sulla sessantina, in un panciotto di velluto verde. Ha gli occhiali sulla punta del naso e una matita dietro l'orecchio.
+personalita:
+  superficie:
+    - gentile e misurato, parla piano
+    - "conta tutto: forme, ospiti, bicchieri"
+    - dà ragione a tutti, poi fa a modo suo
+  sotto_pressione:
+    - diventa precisissimo e lento, e cita cifre e date
+    - se lo smascherano, si offende come un bambino e chiama la sorella
+voce:
+  registro: Dà del lei a tutti, perfino alla sorella quando c'è gente. Al gruppo dà del voi. Non alza mai la voce.
+  stile: "Frasi di sei-dodici parole, ordinate. Lessico di conti: cifre, colonne, saldo, interesse, con rispetto parlando."
+  tic:
+    - «Facciamo due conti.»
+  gesto: si toglie la matita da dietro l'orecchio e annota qualcosa
+  battuta_campione: Facciamo due conti, con calma. Un anello sparito vale più di una festa intera.
+atteggiamento_pg:
+  pg_nando: amichevole
+  pg_ida: indifferente
+  pg_vanda: ostile
+  pg_remo: amichevole
+  pg_livia: indifferente
+  pg_gunda: amichevole
+sa_pubblico:
+  - f_accusa_bastiano — Gaspare dice di aver visto Bastiano, il garzone dei Morlacchi, girare intorno al tavolo alto a mezzogiorno.
+  - "f_leggenda_bonfanti — La storia dei Bonfanti: l'anello era della bisnonna Bonfanti, e sessant'anni fa un Morlacchi provò a portarlo via e scappò a valle con la neve."
+  - f_dote_prato — Adelina ha promesso agli sposi come dote il Prato Alto, il pascolo migliore dei Bonfanti, se le nozze sono benedette oggi; il prato lo amministra Gaspare.
+  - f_gaspare_bambino — Da bambino Gaspare fu malato di una febbre forte, e guarì.
+  - f_gaspare_zio — Gaspare Bonfanti, il fratello minore di Adelina, tiene i conti della casera.
+  - f_anello_sparito — A mezzogiorno, durante il brindisi, l'anello è sparito dalla scatolina di noce sul tavolo alto.
+  - f_festa_casera — La festa si fa nella casera dei Bonfanti, la sala più grande del paese.
+
+### Zelia — etichetta [png_zelia], non in scena
+
+nome: Zelia
+pronuncia: Zèlia
+aspetto: Una ragazza lentigginosa di quindici anni, con una treccia rossa e le dita sporche d'inchiostro. Ha un quaderno legato alla cintura con lo spago.
+personalita:
+  superficie:
+    - sfacciata e veloce di lingua
+    - scrive tutto nel quaderno, anche mentre parla
+    - adora la sorella e la tormenta
+  sotto_pressione:
+    - "diventa formale come un notaio: dà del lei e parla per punti"
+    - se la fanno ridere, dimentica di negare
+voce:
+  registro: Dà del tu a tutti, forestieri compresi. Al gruppo dà del voi. Quando ha paura passa al lei, come un notaio.
+  stile: "Frasi di quattro-dieci parole, veloci. Lessico da libro e da tribunale: capitolo, verbale, testimone, agli atti."
+  tic:
+    - «Questo lo scrivo.»
+  gesto: scrive nel quaderno senza guardare
+  battuta_campione: "Questo lo scrivo. Capitolo secondo: arrivano i forestieri, e fanno domande."
+atteggiamento_pg:
+  pg_nando: amichevole
+  pg_ida: amichevole
+  pg_vanda: indifferente
+  pg_remo: indifferente
+  pg_livia: amichevole
+  pg_gunda: indifferente
+sa_pubblico:
+  - "f_leggenda_bonfanti — La storia dei Bonfanti: l'anello era della bisnonna Bonfanti, e sessant'anni fa un Morlacchi provò a portarlo via e scappò a valle con la neve."
+  - f_focolare — Durante la benedizione la più giovane della casa della sposa resta a casa a tenere acceso il fuoco del focolare.
+  - f_sposa_muta — Per usanza la sposa non parla da quando si sveglia fino al sì.
+  - f_zelia_sorella — Zelia, quindici anni, è la sorella della sposa, e scrive tutto in un quaderno.
+  - f_duchessa — La Duchessa, la vacca più vecchia dei Bonfanti, sta nella stalla sotto casa e apre la processione della sposa fino al Sasso.
+  - f_adelina_racconta — Da ventotto anni Adelina racconta al Sasso la storia dell'anello a ogni nozze di casa Bonfanti.
+  - "f_regola_voce — Se una casa ha raccontato al Sasso una storia falsa, perde la voce del Sasso: da allora la sua storia la racconta la casa che aveva detto il vero."
+
+## Esempi di voce dei PNG (prendine il tono, non le frasi: non sono battute da usare)
+
+### Adelina [png_adelina]
+- i PG salutano Adelina → Forestieri a una festa di casa. Mangiate, che il formaggio non aspetta.
+- un PG chiede ad Adelina di cose che non sa o non dice → Di questo non parlo. Il formaggio buono vuole tempo, e le domande anche.
+- un PG chiede ad Adelina come sta → Settantotto anni, e una scatolina vuota. Come vuoi che stia?
+- un PG accusa Adelina di qualcosa → Lei è a casa mia. Badi a come parla.
+- un PG minaccia Adelina o alza la voce con lei → Fuori dalla mia casera. Le porte le conosco io.
+- un PG offre denaro ad Adelina → Soldi? Qui si paga in forme, e le forme le faccio io.
+
+### Ettore Morlacchi [png_ettore]
+- i PG salutano Ettore → Forestieri. Sedete di qua, che di là morde.
+- un PG chiede a Ettore di cose che non sa o non dice → Eh, non ho sentito. E non sento.
+- un PG chiede a Ettore dei suoi muli → Dodici muli, tutti buoni. Meglio dei Bonfanti.
+- un PG accusa Ettore o i Morlacchi → Ripetilo. Dall'orecchio buono.
+- un PG minaccia Ettore → Bastone di nocciolo, ottant'anni. Prova pure.
+- un PG offre a Ettore denaro o un patto → Soldi ne ho. Mi manca altro.
+
+### Gaspare Bonfanti [png_gaspare]
+- i PG salutano Gaspare → Benvenuti, benvenuti. Lo chiedo per i bicchieri: quanti siete, di preciso?
+- un PG chiede a Gaspare di cose che non sa o non dice → Con rispetto parlando, di questo non tengo i conti. Chieda altrove, prego.
+- un PG chiede a Gaspare della festa → Centoventi ospiti, trecento bicchieri e un anello di meno. Facciamo due conti.
+- un PG accusa Gaspare → Io tengo i conti di questa casa da quarant'anni. Con rispetto parlando.
+- un PG minaccia Gaspare → Abbassi la voce, prego. Mia sorella ha le chiavi, e una memoria lunghissima.
+- un PG offre a Gaspare denaro o un patto → Un patto si scrive, e si firma con calma. Non stasera, magari.
+
+### Zelia [png_zelia]
+- i PG salutano Zelia → Forestieri, questo lo scrivo. Come vi chiamate, in ordine?
+- un PG chiede a Zelia di cose che non sa o non dice → Non è un capitolo che conosco. Chiedete allo zio, lui conta tutto.
+- un PG chiede a Zelia della sposa → Agnese è muta fino al sì. È il giorno più bello della mia vita.
+- un PG accusa Zelia → Lei mi accusa senza prove. Lo metto agli atti.
+- un PG minaccia Zelia → Se mi tocchi, grido. E la sposa non parla, ma vede tutto.
+- un PG offre qualcosa a Zelia → Non voglio soldi. Voglio storie vere, e un pennino nuovo.
+
+## Personaggi giocanti
+
+Situazione comune: Siete a Fontanive, paese di casari e mulattieri sotto il passo, per le nozze di Agnese Bonfanti e Tonio Morlacchi. Le due case sono rivali da tre generazioni. Stamattina è caduta la prima neve: per usanza gli sposi si benedicono oggi al Sasso delle Promesse, prima che il sole tocchi il passo. Lì la nonna della sposa mette l'anello di casa al dito di Agnese, e ne racconta la storia davanti al paese; senza anello, niente benedizione fino a primavera. La sposa, per usanza, non parla fino al sì. Domattina i Morlacchi scendono a valle con i muli, e lo sposo con loro. A mezzogiorno, durante la festa nella casera dei Bonfanti, l'anello è sparito.
+
+### Nando Tremolino — id pg_nando
+
+id: pg_nando
+nome: Nando Tremolino
+pronuncia: Nàndo Tremolìno
+pronomi: lui
+specie: gnomo delle rocce
+classe: bardo
+livello: 1
+aspetto: Gnomo dalla barba castana a punta, gilè a scacchi rossi e una fisarmonica più grande di lui, legata sulla schiena con due cinghie.
+concetto: "Musicista di feste, di valle in valle: suona per chi paga e non prende mai le parti di nessuno. Conosce una canzone per ogni paese, e una presa in giro per ogni famiglia."
+aggancio: Gaspare Bonfanti ti ha pagato metà per suonare alla festa; l'altra metà, ha detto, dopo la benedizione.
+cosa_sai_fare:
+  - suoni la fisarmonica e fai ballare anche chi non vuole
+  - inventi una canzone su chiunque, in un minuto
+  - ti ricordi le facce di tutti quelli che hai visto ballare
+scheda:
+  caratteristiche:
+    forza: 8
+    destrezza: 13
+    costituzione: 12
+    intelligenza: 10
+    saggezza: 10
+    carisma: 16
+  competenze:
+    - intrattenere
+    - persuasione
+    - inganno
+    - storia
+  tiri_salvezza:
+    - destrezza
+    - carisma
+  armatura:
+    tipo: armatura di cuoio
+  pf: 8
+  attacchi:
+    - nome: Stocco
+      caratteristica: destrezza
+      danno: 1d8
+      tipo_danno: perforante
+
+### Ida Fiocchi — id pg_ida
+
+id: pg_ida
+nome: Ida Fiocchi
+pronuncia: Ìda Fiòcchi
+pronomi: lei
+specie: umana
+classe: chierica
+livello: 1
+aspetto: Umana di venticinque anni, guance rosse di freddo, mantello di lana grigia e al collo un ciondolo di ferro a forma di fiamma.
+concetto: Chierica della Madre del Focolare, che custodisce i fuochi di casa e le promesse fatte davanti a loro. È cresciuta a valle, alla scuola dove andava anche Tonio.
+aggancio: "Tonio Morlacchi è il tuo amico d'infanzia: ti ha chiesto di stargli accanto al Sasso, perché da solo gli tremano le gambe."
+cosa_sai_fare:
+  - curi le ferite e scaldi chi ha freddo con la magia della tua dea
+  - sai le parole delle promesse e delle benedizioni di montagna
+  - fai sedere allo stesso tavolo chi non si parla
+scheda:
+  caratteristiche:
+    forza: 10
+    destrezza: 10
+    costituzione: 12
+    intelligenza: 12
+    saggezza: 15
+    carisma: 13
+  competenze:
+    - religione
+    - intuizione
+    - persuasione
+    - medicina
+  tiri_salvezza:
+    - saggezza
+    - carisma
+  armatura: nessuna
+  pf: 8
+  attacchi:
+    - nome: Mazza
+      caratteristica: forza
+      danno: 1d6
+      tipo_danno: contundente
+
+### Vanda Brughiera — id pg_vanda
+
+id: pg_vanda
+nome: Vanda Brughiera
+pronuncia: Vànda Brughièra
+pronomi: lei
+specie: mezzorca
+classe: barbara
+livello: 1
+aspetto: Mezzorca alta e larga, trecce nere legate con lo spago da basto, giaccone di pelle di capra e un ferro di cavallo appeso alla cintura.
+concetto: "Mulattiera dei Morlacchi da sei inverni: porta i muli oltre il passo con qualunque tempo. Parla poco, e quando parla di solito ha ragione."
+aggancio: Lavori per Ettore Morlacchi, che ti tratta come una nipote brontolona. Domattina porti i muli a valle. Bastiano, il ragazzo che lo zio Gaspare accusa del furto, è il tuo garzone.
+cosa_sai_fare:
+  - sollevi un basto carico da sola
+  - capisci il tempo dal cielo e la neve dalle impronte
+  - calmi un mulo, e quasi sempre anche un mulattiere
+scheda:
+  caratteristiche:
+    forza: 16
+    destrezza: 12
+    costituzione: 14
+    intelligenza: 8
+    saggezza: 12
+    carisma: 8
+  competenze:
+    - atletica
+    - sopravvivenza
+    - intimidire
+    - addestrare_animali
+  tiri_salvezza:
+    - forza
+    - costituzione
+  armatura: nessuna
+  pf: 13
+  attacchi:
+    - nome: Ascia bipenne
+      caratteristica: forza
+      danno: 1d12
+      tipo_danno: tagliente
+
+### Remo Ciuffo — id pg_remo
+
+id: pg_remo
+nome: Remo Ciuffo
+pronuncia: Rèmo Ciùffo
+pronomi: lui
+specie: halfling piedelesto
+classe: ladro
+livello: 1
+aspetto: Halfling dai ricci biondi, cappello a punta troppo grande, una borsa di cuoio a tracolla piena di carte e un lapis dietro l'orecchio.
+concetto: "Garzone di Sior Bortolo, il mercante di formaggi di Pontebruno: fa i conti, porta le carte e assaggia le forme. Ha le dita svelte e una faccia a cui nessuno dice di no."
+aggancio: Sior Bortolo ti ha mandato alle nozze con una borsa di carte da consegnare, e ti ha detto di non tornare a valle senza una firma.
+cosa_sai_fare:
+  - sfili un oggetto da una tasca senza che il padrone se ne accorga
+  - leggi un contratto al volo e trovi la clausola che conta
+  - riconosci a naso l'età di un formaggio
+scheda:
+  caratteristiche:
+    forza: 8
+    destrezza: 16
+    costituzione: 12
+    intelligenza: 13
+    saggezza: 10
+    carisma: 13
+  competenze:
+    - rapidita_di_mano
+    - furtivita
+    - percezione
+    - inganno
+  maestrie:
+    - rapidita_di_mano
+    - furtivita
+  tiri_salvezza:
+    - destrezza
+    - intelligenza
+  armatura:
+    tipo: armatura di cuoio
+  pf: 8
+  attacchi:
+    - nome: Pugnale
+      caratteristica: destrezza
+      danno: 1d4
+      tipo_danno: perforante
+
+### Livia Saltari — id pg_livia
+
+id: pg_livia
+nome: Livia Saltari
+pronuncia: Lìvia Saltàri
+pronomi: lei
+specie: mezzelfa
+classe: ranger
+livello: 1
+aspetto: Mezzelfa di ventidue anni, capelli castani raccolti sotto un berretto di lana, arco corto in spalla e scarponi da cacciatrice.
+concetto: "Cugina della sposa: sua madre è una Bonfanti che si è sposata a valle. A Fontanive viene solo per le feste, e tutti la chiamano ancora «quella di giù»."
+aggancio: "Zelia, la sorella della sposa, ti ha scritto la settimana scorsa di venire alle nozze: ha bisogno di te."
+cosa_sai_fare:
+  - segui una pista nella neve fresca
+  - ti muovi senza fare rumore in una casa che non è tua
+  - conosci le cugine Bonfanti e i loro nascondigli di bambine
+scheda:
+  caratteristiche:
+    forza: 10
+    destrezza: 16
+    costituzione: 12
+    intelligenza: 10
+    saggezza: 14
+    carisma: 12
+  competenze:
+    - sopravvivenza
+    - natura
+    - percezione
+    - furtivita
+  tiri_salvezza:
+    - forza
+    - destrezza
+  armatura:
+    tipo: armatura di pelle
+  pf: 10
+  attacchi:
+    - nome: Arco corto
+      caratteristica: destrezza
+      danno: 1d6
+      tipo_danno: perforante
+      distanza: true
+    - nome: Pugnale
+      caratteristica: destrezza
+      danno: 1d4
+      tipo_danno: perforante
+
+### Gunda Rocciarossa — id pg_gunda
+
+id: pg_gunda
+nome: Gunda Rocciarossa
+pronuncia: Gùnda Rocciaróssa
+pronomi: lei
+specie: nana delle colline
+classe: guerriera
+livello: 1
+aspetto: Nana dalle trecce color stoppa intrecciate di filo di ferro, corazza di cuoio lucidata per la festa e uno scudo rotondo dipinto con una colomba un po' storta.
+concetto: "Guardia a pagamento, specializzata in matrimoni difficili: sta in mezzo, sorride e tiene le mani dove si vedono. Non ha mai perso una sposa, e nemmeno uno sposo."
+aggancio: "Il Custode del Sasso ti paga per tenere la pace alla festa: dice che ogni nozze tra queste due case finisce a pugni."
+cosa_sai_fare:
+  - ti metti tra due che litigano, e non ti sposta nessuno
+  - fai a braccio di ferro con chiunque, e sai quando perdere
+  - capisci chi soffia sul fuoco in una sala piena
+scheda:
+  caratteristiche:
+    forza: 16
+    destrezza: 12
+    costituzione: 16
+    intelligenza: 10
+    saggezza: 12
+    carisma: 10
+  competenze:
+    - atletica
+    - intimidire
+    - percezione
+    - intuizione
+  tiri_salvezza:
+    - forza
+    - costituzione
+  armatura:
+    tipo: armatura di cuoio borchiato
+  pf: 12
+  attacchi:
+    - nome: Martello da guerra
+      caratteristica: forza
+      danno: 1d8
+      tipo_danno: contundente
+
+## Etichette valide in questa scena
+
+- [usa] seguito dall’id di una battuta disponibile
+- [narratore]
+- [png_adelina] Adelina
+- [png_ettore] Ettore Morlacchi
+- [png_gaspare] Gaspare Bonfanti
+- [png_zelia] Zelia
+- [invito] seguito da id di PG separati da virgola (pg_nando, pg_ida, pg_vanda, pg_remo, pg_livia, pg_gunda) oppure tutti
+
+---------- catalogo della scena scena_casera: 69 battute selezionabili ----------
+- nar_sole_1 · narratore · segno_orologio · è il momento del primo segno del tramonto   [chiusa: o_tramonto 0–0]
+- nar_sole_2 · narratore · segno_orologio · è il momento del secondo segno del tramonto   [chiusa: o_tramonto 1–1]
+- nar_sole_3 · narratore · segno_orologio · è il momento del terzo segno del tramonto   [chiusa: o_tramonto 2–2]
+- nar_sole_4 · narratore · segno_orologio · è il momento del quarto segno del tramonto   [chiusa: o_tramonto 3–3]
+- nar_sole_5 · narratore · segno_orologio · è il momento del quinto segno del tramonto   [chiusa: o_tramonto 4–4]
+- nar_sole_6 · narratore · segno_orologio · è il momento del sesto segno del tramonto   [chiusa: o_tramonto 5–5]
+- nar_sole_7 · narratore · segno_orologio · è il momento del settimo segno del tramonto   [chiusa: o_tramonto 6–6]
+- nar_sole_8 · narratore · segno_orologio · è il momento dell'ultimo segno del tramonto   [chiusa: o_tramonto 7–7]
+- nar_lite_1 · narratore · segno_orologio · è il momento del primo segno della lite   [chiusa: o_lite 0–0]
+- nar_lite_2 · narratore · segno_orologio · è il momento del secondo segno della lite   [chiusa: o_lite 1–1]
+- nar_lite_3 · narratore · segno_orologio · è il momento del terzo segno della lite   [chiusa: o_lite 2–2]
+- nar_lite_4 · narratore · segno_orologio · è il momento del quarto segno della lite   [chiusa: o_lite 3–3]
+- nar_lite_5 · narratore · segno_orologio · è il momento del quinto segno della lite   [chiusa: o_lite 4–4]
+- nar_lite_6 · narratore · segno_orologio · è il momento dell'ultimo segno della lite   [chiusa: o_lite 5–5]
+- nar_scatolina · narratore · indizio · un PG guarda dentro la scatolina di noce
+- nar_impronte · narratore · indizio · un PG esce dalla porta di dietro della cantina, sul vicolo
+- nar_bastiano · narratore · indizio · un PG guarda Bastiano o gli chiede dov'era a mezzogiorno
+- nar_libro_spose · narratore · indizio · un PG sfoglia il Libro del Sasso con il permesso del Custode
+- nar_libro_pagina · narratore · indizio · un PG cerca nel Libro del Sasso la prima neve di sessant'anni fa
+- nar_tilde · narratore · indizio · accanto al camino, un PG chiede a Tilde della febbre di Gaspare bambino
+- nar_caldaio · narratore · indizio · un PG guarda il caldaio di rame o ne chiede alla casara
+- nar_giacca_tasca · narratore · momento · un PG fruga nella giacca di Ettore, appesa o addosso
+- nar_giacca_tasca_privato · narratore · momento · in privato, un PG fruga nella giacca di Ettore   [chiusa: privata]
+- nar_sigillo_dato · narratore · indizio · un PG rompe la ceralacca della lettera avuta da Ettore e la legge   [chiusa: dopo ett_lettera_data]
+- nar_sigillo_preso · narratore · indizio · un PG rompe la ceralacca della lettera presa dalla giacca di Ettore e la legge   [chiusa: dopo nar_giacca_tasca]
+- nar_duchessa_dopo · narratore · momento · un PG guarda dentro il campanaccio della Duchessa   [chiusa: dopo nar_zio_4]
+- nar_anello_vicino · narratore · indizio · un PG esamina da vicino l'anello ritrovato
+- nar_anello_vicino_privato · narratore · indizio · in privato, un PG esamina da vicino l'anello ritrovato   [chiusa: privata]
+- nar_borsa_garzone · narratore · indizio · il garzone tira fuori le carte della sua borsa   [chiusa: da pg_remo]
+- nar_borsa_garzone_privato · narratore · indizio · in privato, il garzone tira fuori le carte della sua borsa   [chiusa: privata, da pg_remo]
+- nar_tonio · narratore · momento · un PG parla con Tonio, lo sposo
+- nar_tonio_tasca · narratore · momento · l'amica d'infanzia di Tonio gli chiede che cosa tiene il nonno nella giacca   [chiusa: da pg_ida]
+- nar_polka · narratore · momento · un PG suona, canta o fa ballare insieme le due case
+- nar_bastiano_sala · narratore · momento · davanti alla sala, un PG mostra che Bastiano a mezzogiorno ferrava un mulo   [chiusa: dopo i_alibi, o_lite 0–5]
+- nar_panche_dentro · narratore · momento · a panche uscite, un PG mostra a tutti che Bastiano ferrava un mulo   [chiusa: dopo i_alibi, o_lite 6–6]
+- nar_custode_regole · narratore · momento · un PG chiede al Custode come funziona la benedizione
+- nar_chiusura · narratore · momento · dopo il tramonto, il paese scende dal Sasso   [chiusa: o_tramonto 8–8]
+- nar_comari · narratore · momento · alla casera nessuno decide niente
+- nar_tilde_dorme · narratore · momento · alla casera la festa ristagna
+- tr_vicolo · narratore · transizione · i PG attraversano il vicolo tra la casera e casa Bonfanti
+- tr_casera · narratore · transizione · i PG tornano dentro la casera
+- tr_salita · narratore · transizione · i PG salgono verso il Sasso delle Promesse
+- ade_da_dove · png_adelina · risposta · un PG chiede ad Adelina da dove viene l'anello
+- ade_quel_giorno · png_adelina · risposta · un PG chiede ad Adelina della prima neve di sessant'anni fa
+- ade_anello_lettere · png_adelina · risposta · in privato, un PG mostra ad Adelina le lettere della soffitta   [chiusa: dopo i_lettere, privata]
+- ade_anello_ferro · png_adelina · risposta · in privato, un PG mostra ad Adelina il ferro di cavallo inciso nell'anello   [chiusa: dopo i_ferro_inciso, privata]
+- ade_neve_lettera · png_adelina · risposta · in privato, un PG dà ad Adelina la lettera che Ettore gli ha consegnato   [chiusa: dopo ett_lettera_data, privata]
+- ade_neve_giacca · png_adelina · risposta · in privato, un PG dà ad Adelina la lettera presa dalla giacca di Ettore   [chiusa: dopo nar_giacca_tasca, privata]
+- ade_neve_tilde · png_adelina · risposta · in privato, un PG ripete ad Adelina ciò che ha detto Tilde al camino   [chiusa: dopo i_tilde, privata]
+- ade_scatolina · png_adelina · momento · un PG prende in mano la scatolina di noce
+- ade_anello_reso · png_adelina · momento · prima del Sasso, un PG restituisce l'anello ritrovato ad Adelina
+- ett_di_chi · png_ettore · risposta · un PG chiede a Ettore di chi è l'anello
+- ett_quel_giorno · png_ettore · risposta · un PG chiede a Ettore della prima neve di sessant'anni fa
+- ett_anello_lettere · png_ettore · risposta · in privato, un PG mostra a Ettore le lettere della soffitta   [chiusa: dopo i_lettere, privata]
+- ett_anello_ferro · png_ettore · risposta · in privato, un PG mostra a Ettore il ferro di cavallo inciso nell'anello   [chiusa: dopo i_ferro_inciso, privata]
+- ett_neve_libro · png_ettore · risposta · in privato, un PG legge a Ettore la riga del Libro di sessant'anni fa   [chiusa: dopo i_libro_notte, privata]
+- ett_neve_tilde · png_ettore · risposta · in privato, un PG ripete a Ettore ciò che ha detto Tilde al camino   [chiusa: dopo i_tilde, privata]
+- ett_lettera_data · png_ettore · momento · dopo il racconto di Ettore, un PG gli chiede la lettera   [chiusa: dopo i_ettore_neve]
+- ett_giacca_appesa · png_ettore · momento · un PG sfida Ettore a braccio di ferro o lo invita a ballare
+- ett_bastiano · png_ettore · indizio · un PG chiede a Ettore di Bastiano o dell'accusa dello zio
+- gas_chi_cera · png_gaspare · risposta · un PG chiede a Gaspare chi era vicino alla scatolina a mezzogiorno
+- gas_dote · png_gaspare · risposta · un PG chiede a Gaspare del Prato Alto o della dote
+- gas_alibi_sorella · png_gaspare · risposta · davanti ad Adelina, un PG dimostra a Gaspare che Bastiano a mezzogiorno ferrava un mulo   [chiusa: dopo i_alibi]
+- gas_macchia_sorella · png_gaspare · risposta · davanti ad Adelina, un PG mostra a Gaspare il capello rosso e la macchia d'inchiostro   [chiusa: dopo i_macchia]
+- gas_prato_contratto · png_gaspare · risposta · in privato, un PG mostra a Gaspare il contratto di Sior Bortolo   [chiusa: dopo i_contratto, privata]
+- gas_contratto_sorella · png_gaspare · momento · un PG mostra a Gaspare il contratto di Bortolo e gli chiede l'anello   [chiusa: dopo i_contratto, o_zio 4–4]
+- gas_colto · png_gaspare · momento · un PG coglie Gaspare con le dita nel taschino, o lo fruga davanti ad altri   [chiusa: o_zio 4–4]
+- gas_silenzio · png_gaspare · momento · in privato, un PG propone a Gaspare un patto di silenzio   [chiusa: o_zio 4–4, privata]
+- gas_occhiali · png_gaspare · momento · un PG racconta a Gaspare ciò che ha detto Ettore   [chiusa: dopo i_ettore_neve]
