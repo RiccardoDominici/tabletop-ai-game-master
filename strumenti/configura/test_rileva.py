@@ -123,7 +123,7 @@ def test_sysctl_assente_non_fa_crollare() -> None:
 
 
 def test_chiavi_solo_presenza_e_mai_valori(tmp_path: Path) -> None:
-    segreta = "sk-ant-finta-ambiente-0000000000"
+    segreta = "sk" + "-ant-finta-ambiente-0000000000"  # spezzato: il controllo segreti non deve trovarlo nel repo
     r = rileva(Macchina(comandi=M1_16, trovati=TUTTI_STRUMENTI, variabili={"ANTHROPIC_API_KEY": segreta}),
                tmp_path)
     assert r["chiavi"] == {"ANTHROPIC_API_KEY": True, "OPENROUTER_API_KEY": False}

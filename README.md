@@ -37,6 +37,20 @@ stays at its launch price. All the figures, with source and date: [Voice and cos
 
 ## Quick start
 
+Paste this link into Claude Code and ask: "set up this project"
+
+```
+https://github.com/RiccardoDominici/tabletop-ai-game-master
+```
+
+Claude Code reads the setup skill in `.claude/skills/setup/` and does the rest: it installs, detects your computer,
+proposes the local choices and their cost, downloads only what they need, runs a smoke test and shows how to start a game.
+On an Apple silicon Mac no API key is required. Optional keys make the narrator and the voice better, and it asks about them once.
+On other computers the local narrator and voice are not supported yet, so a real game needs an Anthropic key.
+The steps are in the [installation guide](docs/guide/installation.md).
+
+### By hand
+
 These steps start the test campaign `prova-f0` (one scene, 20–30 minutes, 3 or 4 players).
 
 1. Download the repository and go into the folder.

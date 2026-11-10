@@ -54,6 +54,11 @@ per chi vuole smanettare. Servono:
   **Fatto**: le decisioni vanno nella fotografia della sessione e tornano alla ripresa; il cambio di scena le azzera (a4e360d).
 
 ## Dopo
+- **Setup su computer non Apple** (docs/profili.md, profilo `altro`). Il setup guidato da Claude Code (`.claude/skills/setup`)
+  dice che lettore locale, voce locale e immagini locali non sono ancora supportati fuori dall'Apple silicon. Senza chiave
+  Anthropic il narratore è quello a copione (prova, non partita vera). Da fare: un lettore locale su Linux/Windows (llama.cpp
+  o Ollama con lo stesso protocollo), una voce locale (vedi sotto) e la generazione immagini (oggi solo mflux, Apple).
+  Finché non c'è, il setup dice all'utente di scegliere la chiave Anthropic o il gioco a solo testo.
 - **Voce locale fuori dal Mac.** Qwen3-TTS gira con MLX solo su Apple Silicon. Su Linux o Windows serve
   un'alternativa leggera con la stessa API del servizio voce (docs/f0-contratti.md, «Servizio voce»:
   POST /tts, PCM s16le in streaming). Da valutare: Piper (onnx, voci italiane, CPU) e Kokoro (82M, CPU o GPU).

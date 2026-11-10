@@ -6,6 +6,27 @@ Read this first: the [README](../../README.md), to learn what Cantastorie (Table
 Steps 1 to 4 are enough to play the three example campaigns. Steps 5 to 7 are optional:
 they are needed for the local voice, to generate images, and to generate the audio of a new campaign.
 
+## The short way: let Claude Code do it
+
+Paste the repository link into Claude Code and ask: "set up this project"
+
+```
+https://github.com/RiccardoDominici/tabletop-ai-game-master
+```
+
+Claude Code follows the setup skill (`.claude/skills/setup/SKILL.md`). In order, it:
+
+1. clones the repository (if you are not in it yet) and runs `npm install`;
+2. detects your computer (chip, RAM, free disk, tools) with `python3 -I strumenti/configura/configura.py`;
+3. explains the proposed local profile and its cost in plain words (the table is in [profiles](../profili.md));
+4. asks only two things: whether you want to add optional API keys, and the play language;
+5. writes `config/locale.yaml` (not in git) and shows the sizes before downloading the models;
+6. runs a smoke test on the test port 4790 (`scripts/fumo.sh`), which never touches the real game;
+7. shows how to start a game (`scripts/partita.sh prova-f0`) and how to create a campaign (`/preparatore`).
+
+The keys are never pasted into the chat: you put them in `.env` yourself (step 4 below explains how).
+The steps below are what the skill does, written out for anyone who prefers to do them by hand.
+
 ## What you need
 
 | What | Why | Required? |
