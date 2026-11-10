@@ -211,6 +211,10 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   if (modoLettore !== scelte.lettore.modo) log.warn({ modo: config.modo }, 'lettore: modo minimo senza repertorio (modalità A): si legge in modo completo, più lento in locale');
   const narratore: Narratore = sost.narratore ?? fabbrica.narratore('lettore', modoLettore) ?? narratoreFinto();
   log.info({ narratore: narratore.nome, modello: narratore.modello }, `NARRATORE IN USO: ${narratore.nome}`);
+  if (narratore.nome === 'minimo') {
+    const anticipo = fabbrica.annunciInAnticipo();
+    log.info({ annunci_in_anticipo: anticipo, voce: scelte.voce.provider }, anticipo === 'primo' ? 'LETTORE MINIMO: solo il primo annuncio in anticipo (voce e lettore locali sulla stessa GPU)' : 'LETTORE MINIMO: tutti gli annunci in anticipo, mentre il classificatore lavora');
+  }
   // «La volta scorsa»: un narratore completo a parte (il lettore minimo non scrive prosa); null = riserva dai segni.
   // Con un narratore sostituito (prove) il riassunto lo scrive lui, come prima.
   const narratoreRiassunto: Narratore | null | undefined = sost.narratore ? undefined : fabbrica.narratore('riassunto', 'completo');

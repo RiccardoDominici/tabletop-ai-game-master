@@ -84,6 +84,11 @@ export class FabbricaModelli {
     return m;
   }
 
+  /** Voce e lettore entrambi locali (stessa GPU): solo il primo annuncio in anticipo. */
+  annunciInAnticipo(c: NomeComponente = 'lettore'): 'tutti' | 'primo' {
+    return this.scelte[c].provider === 'locale' && this.scelte.voce.provider === 'locale' ? 'primo' : 'tutti';
+  }
+
   /**
    * Il lettore (narratore o selettore) di un componente: completo (scrive le righe) o minimo
    * (classificatore + annuncio). Con Anthropic in modo completo è il NarratoreHaiku di sempre.
@@ -92,7 +97,7 @@ export class FabbricaModelli {
   narratore(c: NomeComponente, modo: 'minimo' | 'completo' = this.scelte[c].modo ?? 'completo'): Narratore | null {
     const s = this.scelte[c];
     if (!this.usaModello(c)) return null;
-    if (modo === 'minimo') return new NarratoreMinimo(this.modello(c)!, { log: this.o.log.child({ modulo: 'lettore-minimo' }) });
+    if (modo === 'minimo') return new NarratoreMinimo(this.modello(c)!, { log: this.o.log.child({ modulo: 'lettore-minimo' }), annunciInAnticipo: this.annunciInAnticipo(c) });
     if (s.provider === 'anthropic') {
       return new NarratoreHaiku({ modello: s.modello ?? 'claude-haiku-5-5', maxTokens: this.o.maxTokens, fileChiave: this.o.fileChiaveAnthropic, log: this.o.log });
     }

@@ -192,6 +192,23 @@ describe('lettore minimo', () => {
     expect(chiamate).toBe(1);
   });
 
+  it('voce e lettore locali: solo il primo annuncio in anticipo, il secondo dopo il classificatore', async () => {
+    const msg = messaggio.replace('(azione PRIVATA: a voce narra solo ciò che gli altri possono percepire)', '');
+    const lento = (async () => {
+      await new Promise((r) => setTimeout(r, 3500));
+      return new Response(JSON.stringify({ choices: [{ message: { content: '{"risposte":[{"pg":"pg_ida","battuta":"nar_scatolina"},{"pg":"pg_livia","battuta":"nar_impronte"}]}' }, finish_reason: 'stop' }] }), { status: 200 });
+    }) as unknown as typeof fetch;
+    const prova = async (anticipo: 'tutti' | 'primo') => {
+      const n = new NarratoreMinimo(new ModelloOpenAI({ url: 'http://lento/v1', modello: 'm', fetch: lento }), { log: loggerMuto(), annunciInAnticipo: anticipo });
+      const delta: string[] = [];
+      await n.narra({ turno: 3, sistema: [], messaggio: msg, signal: new AbortController().signal }, (d) => delta.push(d));
+      return delta;
+    };
+    // Con 'tutti' il secondo annuncio esce da solo prima delle battute; con 'primo' arriva insieme a esse.
+    expect((await prova('tutti'))[1]).toBe('[narratore] Livia: «Seguo le impronte».\n');
+    expect((await prova('primo'))[1]).toMatch(/^\[usa\] nar_scatolina > pg_ida\n\[narratore\] Livia/);
+  }, 15_000);
+
   it('risposte non valide due volte → ripiego: la prima battuta indicata', async () => {
     coda.push('{"risposte":[{"pg":"pg_ida","battuta":"inventata"}]}', 'non è JSON');
     const n = new NarratoreMinimo(locale(), { log: loggerMuto() });

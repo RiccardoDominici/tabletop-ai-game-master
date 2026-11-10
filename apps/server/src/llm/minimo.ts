@@ -154,6 +154,13 @@ function attesa(ms: number, signal: AbortSignal): Promise<void> {
 
 export interface OpzioniMinimo {
   log: Logger;
+  /**
+   * Quanti annunci dire mentre il classificatore lavora. 'tutti' con la voce remota (drama-3): l'attesa
+   * si copre gratis. 'primo' quando voce e lettore sono locali sulla stessa GPU: la voce che genera gli
+   * annunci rallentava il classificatore di 1,5–2 volte (misura del 10/11/2026), quindi solo il primo
+   * esce subito e gli altri dopo il lettore.
+   */
+  annunciInAnticipo?: 'tutti' | 'primo';
   maxTokens?: number;
 }
 
@@ -208,7 +215,7 @@ export class NarratoreMinimo implements Narratore {
       finito = true;
     });
     // Gli annunci seguenti mentre il classificatore lavora, al ritmo stimato della voce.
-    while (!finito && prossimo < pubbliche.length) {
+    while (!finito && prossimo < pubbliche.length && this.o.annunciInAnticipo !== 'primo') {
       const precedente = annunci.get(pubbliche[prossimo - 1]!.id_pg) ?? '';
       await Promise.race([scelta.catch(() => undefined), attesa(durataStimata(precedente), r.signal)]);
       if (!finito && !r.signal.aborted) annuncia(pubbliche[prossimo++]!);
