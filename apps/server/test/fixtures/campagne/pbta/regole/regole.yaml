@@ -92,3 +92,15 @@ combattimento:
     a_zero:
       pg: fuori_gioco
       png: fuori_gioco
+parole_chiave:
+  leggere_la_situazione:
+  - osservo
+  - studio
+  - capire
+  - scruto
+  - esamino
+  agire_sotto_pressione:
+  - corro
+  - scappo
+  - salto
+  - mi arrampico

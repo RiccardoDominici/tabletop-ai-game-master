@@ -45,6 +45,7 @@ export function leggiEstratto(file: string, avvisa: (m: string) => void = () => 
     parole,
     pagina: testa['pagina'] !== undefined && testa['pagina'] !== null ? String(testa['pagina']) : null,
     testo,
+    per: typeof testa['per'] === 'string' ? testa['per'] : null,
   };
 }
 

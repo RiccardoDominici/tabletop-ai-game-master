@@ -1,4 +1,5 @@
 ---
+per: convincere
 titolo: Convincere qualcuno
 parole:
 - convincere

@@ -28,6 +28,7 @@ export interface ProvaScenaRegole {
   mossa: string | null;
   difficolta: string | null;
   se_fallisce: string | null;
+  parole: string[];
 }
 
 /** Le prove della scena per un set non SRD: id del set, difficoltà per id (non la CD dell'SRD). */
@@ -38,7 +39,7 @@ export function proveScenaRegole(s: SistemaRegole, c: Campagna): ProvaScenaRegol
     const d = g as DatiYaml;
     if (typeof d?.['id'] !== 'string') return [];
     const pick = (k: string, ammessi: Array<{ id: string }>): string | null => (typeof d[k] === 'string' && ammessi.some((x) => x.id === d[k]) ? (d[k] as string) : null);
-    return [{ id: d['id'], quando: typeof d['quando'] === 'string' ? d['quando'] : '', caratteristica: pick('caratteristica', s.caratteristiche), abilita: pick('abilita', s.abilita), mossa: pick('mossa', s.mosse), difficolta: pick('difficolta', s.difficolta), se_fallisce: typeof d['se_fallisce'] === 'string' ? d['se_fallisce'] : null }];
+    return [{ id: d['id'], quando: typeof d['quando'] === 'string' ? d['quando'] : '', caratteristica: pick('caratteristica', s.caratteristiche), abilita: pick('abilita', s.abilita), mossa: pick('mossa', s.mosse), difficolta: pick('difficolta', s.difficolta), se_fallisce: typeof d['se_fallisce'] === 'string' ? d['se_fallisce'] : null, parole: Array.isArray(d['parole']) ? (d['parole'] as unknown[]).filter((p): p is string => typeof p === 'string') : [] }];
   });
 }
 

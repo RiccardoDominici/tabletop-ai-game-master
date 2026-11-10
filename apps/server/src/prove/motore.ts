@@ -305,7 +305,7 @@ export class MotoreProve {
       // fallito) si classificano col testo, così il dado si tira lo stesso (prove/classificatore-regole.ts).
       const senza = azioni.filter((a) => !decisioni.get(a.id));
       if (senza.length && this.o.riserva !== false) {
-        const ing = this.ingressoClassificatore(c);
+        const ing = this.ingressoClassificatore(c, azioni);
         for (const a of senza) decisioni.set(a.id, classificaARegole(a, ing));
         this.o.log.info({ turno, azioni: senza.map((a) => ({ id: a.id, tipo: decisioni.get(a.id)?.tipo, abilita: decisioni.get(a.id)?.abilita })) }, 'prove: decisioni a regole (riserva senza modello)');
       }
@@ -425,14 +425,17 @@ export class MotoreProve {
   }
 
   /** Ciò che serve al classificatore a regole (prove/classificatore-regole.ts). */
-  private ingressoClassificatore(c: ContestoProve): IngressoClassificatore {
+  private ingressoClassificatore(c: ContestoProve, altre: AzioneRisolvibile[] = []): IngressoClassificatore {
     const g = this.generico;
     return {
       campagna: c.campagna,
-      sistema: g ? g.regole.sistema : null,
+      regole: g ? g.regole : null,
       armi: (id) => (g ? g.schede.get(id)?.attacchi : this.o.schede.get(id)?.attacchi)?.map((a) => a.id) ?? [],
       haScheda: (id) => (g ? g.schede.has(id) : this.o.schede.has(id)),
-      proveScena: g ? proveScenaRegole(g.regole.sistema, c.campagna).map((p) => ({ id: p.id, quando: p.quando })) : this.proveScena(c.campagna).map((p) => ({ id: p.id, quando: p.quando })),
+      proveScena: g
+        ? proveScenaRegole(g.regole.sistema, c.campagna).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole }))
+        : this.proveScena(c.campagna).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole })),
+      altre: altre.map((a) => ({ id: a.id, autore: a.autore })),
     };
   }
 

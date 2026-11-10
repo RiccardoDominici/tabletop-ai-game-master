@@ -40,6 +40,8 @@ export function sistemaSrd(): SistemaRegole {
     mosse: [],
     sottosistemi: [],
     combattimento: combattimentoSrd(),
+    // L'SRD ha la sua tabella nel codice (prove/classificatore-regole.ts, PAROLE_SRD).
+    paroleChiave: {},
   };
 }
 

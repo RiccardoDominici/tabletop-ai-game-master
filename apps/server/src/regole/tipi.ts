@@ -83,6 +83,8 @@ export interface SistemaRegole {
   sottosistemi: Array<Voce & { testo: string }>;
   /** Come si combatte nel set (docs/combattimento.md). */
   combattimento: Combattimento;
+  /** Arbitro a regole: id di abilità, mossa o caratteristica → parole che lo chiamano (regole.yaml → parole_chiave). */
+  paroleChiave: Record<string, string[]>;
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
@@ -92,6 +94,8 @@ export interface Estratto {
   parole: string[];
   pagina: string | null;
   testo: string;
+  /** L'abilità, mossa o caratteristica del set a cui il passo si riferisce (`per:`), per l'arbitro a regole. */
+  per: string | null;
 }
 
 /** Il set caricato, con i testi per i giocatori. */

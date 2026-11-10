@@ -94,6 +94,8 @@ mosse:                                      # facoltative (giochi alla PbtA)
     caratteristica: fascino                 # [V] esistente
     esiti: {successo: "…", parziale: "…", fallimento: "…"}   # [V] successo e fallimento obbligatori
 sottosistemi: [{id, nome, testo}]           # altro (magia, sanità…): solo testo, per ora
+parole_chiave:                              # facoltativo, per l'arbitro a regole (profilo locale): id → parole
+  convincere: [convinco, persuado, prometto]  # [V] id di un'abilità, mossa o caratteristica del set
 combattimento:                              # facoltativo: senza, SRD completo per l'SRD e un default per gli altri tipi
   iniziativa:
     tipo: individuale | per_schieramento | nessuna   # [V]
@@ -133,7 +135,8 @@ scheda:
 Con l'SRD 5.2 le schede restano quelle di docs/prove.md §2 (punteggi, competenze, CA calcolata).
 
 **Prove della scena** con un set non SRD, in `scena.yaml → prove`:
-`{id: p_…, quando, mossa | abilita | caratteristica (id del set), difficolta (id del set), se_fallisce}`.
+`{id: p_…, quando, mossa | abilita | caratteristica (id del set), difficolta (id del set), se_fallisce, parole}`.
+`parole` (facoltativo, anche con l'SRD) sono le parole che chiamano la prova per l'arbitro a regole, oltre al `quando`.
 
 **Repertorio.** `richiede.prova` con un set non SRD accetta anche gli id del set (mosse, abilità, caratteristiche):
 `richiede: {prova: convincere}` apre la battuta solo dopo una riuscita della mossa Convincere. Il caricatore legge il
@@ -149,6 +152,7 @@ set della campagna; un id che non è del set né dell'SRD è un errore.
   titolo: "Convincere qualcuno"
   parole: [convincere, persuadere, promettere, minacciare]   # [V] almeno una: è così che lo si trova
   pagina: 34                                                  # facoltativa
+  per: convincere                                             # facoltativo: l'abilità o mossa del set (arbitro a regole)
   ---
   Quando cerchi di convincere un PNG, tira 2d6+Fascino. Con 10+ …
   ```

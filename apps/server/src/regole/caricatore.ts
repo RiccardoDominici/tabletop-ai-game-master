@@ -171,7 +171,21 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
       return o && sid ? [{ id: sid, nome: str(o['nome']) ?? sid, testo: str(o['testo']) ?? '' }] : [];
     }),
     combattimento: leggiCombattimento(d['combattimento'], combattimentoPredefinito(tipo, false, [...idCar]), idCar, errori),
+    paroleChiave: leggiParoleChiave(d['parole_chiave'], new Set([...idCar, ...abilita.map((a) => a.id), ...mosse.map((m) => m.id)]), errori),
   };
+}
+
+/** `parole_chiave: {id: [parole]}`: gli id devono essere abilità, mosse o caratteristiche del set. */
+function leggiParoleChiave(v: unknown, ids: ReadonlySet<string>, errori: string[]): Record<string, string[]> {
+  const o = ogg(v);
+  if (!o) return {};
+  const out: Record<string, string[]> = {};
+  for (const [id, parole] of Object.entries(o)) {
+    if (!ids.has(id)) errori.push(`parole_chiave.${id}: non è un'abilità, una mossa o una caratteristica del set`);
+    else if (!Array.isArray(parole) || !parole.every((p) => typeof p === 'string')) errori.push(`parole_chiave.${id}: una lista di parole`);
+    else out[id] = parole as string[];
+  }
+  return out;
 }
 
 /** Il set della campagna (o l'SRD), con riassunto e passi. Non lancia: torna all'SRD con un errore nel log. */

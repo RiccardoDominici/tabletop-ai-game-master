@@ -1,4 +1,5 @@
 ---
+per: agire_sotto_pressione
 titolo: Agire sotto pressione
 parole:
 - rischio

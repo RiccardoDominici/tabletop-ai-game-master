@@ -191,7 +191,17 @@ Coerenze consigliate (avvisi):
 2. **Chiusura della finestra** (Regia.finestraChiusa, ora asincrona). `MotoreProve.risolvi` prende le decisioni.
    - Quelle in volo le aspetta al massimo 4 s (10 s se `arbitro_prove` è un modello locale, che impiega 3–10 s a chiamata).
    - Quelle mancanti le chiede in una chiamata sola.
-   - Allo scadere, o senza modello (riserva `regole`), decide il classificatore a regole (prove/classificatore-regole.ts): verbo d'attacco + PNG nominato → attacco; il `quando` di una prova della scena → quella prova; convincere/mentire/minacciare + PNG → prova sociale (o la mossa del set); nascondersi, arrampicarsi, scassinare, cercare → l'abilità; il resto → nessun tiro. Più grezzo del modello (niente vantaggi né «impossibile»), ma il dado si tira lo stesso, e non si resta mai bloccati.
+   - Allo scadere, o senza modello, decide l'**arbitro a regole** (prove/classificatore-regole.ts). È il default del profilo tutto locale (`arbitro_prove: {provider: regole}`): il modello piccolo ha meno responsabilità possibile. In ordine:
+     1. attacco: verbo d'attacco o un'arma della scheda dell'autore, contro un bersaglio nominato con la scheda;
+     2. aiuto: «aiuto / do una mano a / copro» + un PG che agisce nello stesso turno;
+     3. prova della scena: il suo `quando` ha almeno due radici in comune con l'azione (i nomi non contano), o una delle sue `parole`;
+     4. abilità per parole chiave: la tabella SRD `PAROLE_SRD`; per un set non SRD `parole_chiave` di regole.yaml, le `parole` dei passi con `per:` e il `quando` delle mosse. Furtività e Rapidità di mano verso un PNG sono contrapposte, le sociali senza un PNG non tirano;
+     5. il resto, senza parole chiave: nessun tiro.
+     - La CD la decide il Motore, come sempre. Niente vantaggi né «impossibile», ma il dado si tira lo stesso e non si resta mai bloccati.
+     - Accordo con Haiku (strumenti/confronta-arbitri.ts, 10 novembre):
+       - 16 casi scritti a mano: si tira sì/no uguale 15/16, stesso tipo 14/16;
+       - 95 azioni dei turni B3 di nozze-neve: sì/no uguale 71/95 (75%), stessa prova 6/11.
+       - Molti disaccordi sono domande ai PNG che Haiku tira a volte sì e a volte no («Intimidire» per «ettore, sei salito al sasso?»).
 3. **Tiri** (prove/risolutore.ts).
    - Prima si raccolgono gli «aiuto», che danno vantaggio all'azione aiutata.
    - Poi ogni azione tira, nell'ordine di risoluzione del tavolo.

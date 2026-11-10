@@ -35,6 +35,8 @@ export interface ProvaScena {
   /** L'indizio è essenziale: il fallimento non lo nega (lo dà con un prezzo). */
   essenziale: boolean;
   se_fallisce: string | null;
+  /** Parole che la chiamano (arbitro a regole), oltre al `quando`. */
+  parole: string[];
 }
 
 function leggiProva(d: DatiYaml, scena: string, essenziali: Set<string>, avvisa: (m: string) => void): ProvaScena | null {
@@ -72,6 +74,7 @@ function leggiProva(d: DatiYaml, scena: string, essenziali: Set<string>, avvisa:
     indizio,
     essenziale,
     se_fallisce: typeof d['se_fallisce'] === 'string' ? d['se_fallisce'] : null,
+    parole: Array.isArray(d['parole']) ? d['parole'].filter((p): p is string => typeof p === 'string') : [],
   };
 }
 

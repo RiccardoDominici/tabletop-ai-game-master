@@ -1,4 +1,5 @@
 ---
+per: menare_le_mani
 titolo: Menare le mani
 parole:
 - attaccare
