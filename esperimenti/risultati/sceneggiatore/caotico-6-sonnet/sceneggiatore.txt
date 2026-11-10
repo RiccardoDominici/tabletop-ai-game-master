@@ -1,0 +1,53 @@
+{
+ "turni": 6,
+ "azioni_pubbliche": 18,
+ "nessuna_richieste_subito": 11,
+ "subito_consegnate": 11,
+ "copertura": "11/11",
+ "subito_esiti": {
+  "ok": 11,
+  "errore": 0,
+  "saltata": 0
+ },
+ "ms_totale_subito": {
+  "mediana": 12015,
+  "max": 19034,
+  "min": 6007
+ },
+ "ms_claude": {
+  "mediana": 6196.0,
+  "max": 45900
+ },
+ "prossime": 5,
+ "battute_accettate": 40,
+ "battute_scartate": 1,
+ "motivi_scarto": [
+  "png_zelia non è nella scena"
+ ],
+ "usate_dal_lettore_dopo": [
+  "sc_prossime_t1_mwaumr6t_2_3",
+  "sc_prossime_t1_mwaumr6t_2_6"
+ ]
+}
+--- 1 pg_gunda | ferma tutti, mani dove si vedono, io sorrido e basta | consegnata True 7017 ms
+    [narratore] La musica si smorza, e le due tavolate si voltano insieme. / [narratore] Ettore smette di battere il bastone e tiene le mani sul nocciolo. / [narratore] Un bicchiere resta a mezz'aria, e nessuno osa posarlo.
+--- 2 pg_vanda | ahah remo non rubare alla festa, ti metto a fare il palo | consegnata True 6013 ms
+    [narratore] Due comari dei Bonfanti si voltano a guardare chi ha parlato. / [narratore] Un Morlacchi ride forte, poi si accorge degli sguardi e tace. / [narratore] Al tavolo alto Gaspare si toglie la matita da dietro l'orecchio.
+--- 2 pg_gunda | quei due si guardano storto, mi metto in mezzo facendo la faccia della colomba | consegnata True 12023 ms
+    [narratore] Qualcuno ridacchia a sinistra, qualcuno a destra, e le due tavolate si guardano meno storto. / [narratore] Un Morlacchi sposta il boccale, una comare dei Bonfanti si aggiusta lo scialle. / [narratore] Il violino riprende, zoppicando, dalla parte della riga di forme.
+--- 2 pg_nando | ettore col bastone, canzone per te: il vecchio batte il legno, ta ta ta, ballate! | consegnata True 19034 ms
+    [narratore] Ettore batte il bastone due volte, e stavolta cade a tempo. / [png_ettore] Eh? Musicante, la canzone è buona. Ma il bastone è mio. / [narratore] Sulla tavolata dei Morlacchi qualcuno batte i boccali, e la musica riparte.
+--- 3 pg_remo | vanda scommetto un formaggio che il vento non c'entra niente, ahah | consegnata True 7010 ms
+    [narratore] Ettore batte il bastone due volte e si volta verso la scommessa. / [png_ettore] Eh? Un formaggio? Dei Bonfanti non lo voglio. / [png_ettore] Il vento porta la neve. Il resto lo porta la gente.
+--- 3 pg_gunda | ettore ha l'aria di uno che ha perso la scatola e la dignita, lo dico a voce alta | consegnata True 12015 ms
+    [narratore] Ettore batte il bastone due volte, e la sala si volta. / [png_ettore] Eh? Dignità, ne ho. Dall'orecchio buono, eh. / [narratore] Sulla tavolata dei Morlacchi qualcuno tossisce, e due comari dei Bonfanti sorridono nel bicchiere.
+--- 3 pg_nando | suoniamo la marcia dei muli, Gigia balla anche lei | consegnata True 17020 ms
+    [narratore] Ettore batte il bastone per terra, due colpi, e alza la testa. / [png_ettore] Eh? Muli. Dodici, tutti buoni. Suona, musicante. / [narratore] Sulla tavolata dei Morlacchi qualcuno batte i boccali, a tempo di passo.
+--- 4 pg_nando | io seguo la fisarmonica. chi scappa dietro i sacchi lo facciamo ballare | consegnata True 7008 ms
+    [narratore] La fisarmonica attacca, e il violino zoppo le corre dietro. / [narratore] Sulla tavolata dei Morlacchi qualcuno batte i boccali, a tempo. / [narratore] Due comari dei Bonfanti spostano i piedi, senza volerlo, sotto il tavolo.
+--- 4 pg_remo | scendo in cantina a controllare le forme, la scaletta e mia | consegnata True 13012 ms
+    [narratore] Dietro il tavolo alto, tre gradini di legno scendono nel buio fresco. / [narratore] Il rumore della sala si spegne, come chiudendo una porta. / [narratore] Giù c'è odore di crosta e di siero, e un filo di neve dalla porta di dietro.
+--- 5 pg_remo | gunda il pugno chiuso fammelo vedere, sono curioso ahah | consegnata True 6007 ms
+    [narratore] Nella sala la musica copre ogni parola: nessuno alza la testa. / [narratore] Il pugno di Gunda è grosso come una forma piccola, e non si apre. / [narratore] Il suo sorriso resta fermo, e le mani restano dove si vedono.
+--- 5 pg_nando | treccia rossa! esci fuori, ti canto la canzone della treccia a squarciagola | consegnata True 13011 ms
+    [narratore] Il canto rimbalza sulle forme e sugli scaffali, e dall'alto nessuno risponde. / [narratore] Sopra, la sala non sente: la musica copre ogni voce. / [narratore] In fondo alla cantina, dietro le forme, qualcosa di piccolo si ferma.

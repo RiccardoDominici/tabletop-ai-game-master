@@ -67,3 +67,26 @@ dell'effetto. Dopo questa prova il prompt dello sceneggiatore ha la regola espli
 Claude Code ha messo un PG come chi parla. Il caricatore del repertorio rifiuta l'etichetta, e nessuna delle tre
 battute di quella risposta è entrata. Il tavolo ha sentito solo la battuta d'attesa. Nessuna battuta, in tutte e
 due le run, è stata scartata per parole segrete.
+
+## Dopo le correzioni (commit 2945ef1): sonnet per le «subito», guardia sui PG, azioni private
+
+Stesso copione caotico (6 turni, 35 s), più 3 turni del copione privato:
+
+| | caotico, prima (haiku) | caotico, dopo (sonnet per le «subito») | privato, 3 turni |
+|---|---|---|---|
+| «nessuna» del lettore | 8 | 11 | 1 privata |
+| dette a finestra aperta | 6 (75%) | **11 (100%)** | 1, al telefono |
+| dalla richiesta alla battuta, mediana (min–max) | 15,5 s (8–41) | **12 s (6–19)** | 8 s |
+| `claude -p` per una «subito» | — | 5,9 s (5,3–6,3) | |
+| scartate | 1 (PG come chi parla) | 1 (PNG non in scena) | 0 |
+
+- **Il pugno di Gunda, rifatto.** «Nella sala la musica copre ogni parola: nessuno alza la testa. / Il pugno di
+  Gunda è grosso come una forma piccola, e non si apre.» Gunda non fa più niente come soggetto. Però «non si apre»
+  decide ancora per lei attraverso il suo pugno, e la guardia lascia passare il genitivo. Resta da affinare nel
+  prompt.
+- **Privata, al telefono di Remo** (8 s): «Gaspare si toglie la matita da dietro l'orecchio, senza fretta. /
+  Con rispetto parlando, questi sono conti di casa. Non si fanno sottovoce, a una festa.» Al tavolo non arriva:
+  non c'è né in `tavolo.md` né nella trascrizione pubblica.
+- **Ripetizioni**: in 11 battute, «sulla tavolata dei Morlacchi qualcuno batte i boccali» torna quattro volte, ed
+  Ettore apre quasi sempre con «Eh?» e il bastone. Lo sceneggiatore vede la trascrizione ma non varia. Da fare: un
+  controllo sulle immagini già usate, o le sue ultime battute nel prompt come cose da non ripetere.

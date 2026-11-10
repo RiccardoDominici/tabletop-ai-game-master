@@ -1,0 +1,28 @@
+{
+ "turni": 3,
+ "azioni_pubbliche": 2,
+ "nessuna_richieste_subito": 1,
+ "subito_consegnate": 1,
+ "copertura": "1/1",
+ "subito_esiti": {
+  "ok": 1,
+  "errore": 0,
+  "saltata": 0
+ },
+ "ms_totale_subito": {
+  "mediana": 8024,
+  "max": 8024,
+  "min": 8024
+ },
+ "ms_claude": {
+  "mediana": 18251.0,
+  "max": 29687
+ },
+ "prossime": 1,
+ "battute_accettate": 7,
+ "battute_scartate": 0,
+ "motivi_scarto": [],
+ "usate_dal_lettore_dopo": []
+}
+--- 2 pg_remo | gaspare, a voce bassa: i venti fiorini della caparra per il prato alto li hai ancora in tasca? | consegnata True 8024 ms
+    [narratore] Gaspare si toglie la matita da dietro l'orecchio, senza fretta. / [png_gaspare] Con rispetto parlando, questi sono conti di casa. Non si fanno sottovoce, a una festa. / [png_gaspare] Chieda a mia sorella del prato. Io tengo i registri, non le promesse.
