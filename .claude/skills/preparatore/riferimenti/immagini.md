@@ -1,43 +1,43 @@
-# Prompt delle immagini
+# Image prompts
 
-Le immagini le genera `strumenti/immagini/genera.py` (FLUX.2 klein in locale). Le compone
-`strumenti/immagini/campagna.py`, che legge **solo** questi campi:
+`strumenti/immagini/genera.py` generates the images (FLUX.2 klein, locally). `strumenti/immagini/campagna.py` composes
+them, and it reads **only** these fields:
 
-| File | Campo | Uso |
+| File | Field | Use |
 |---|---|---|
-| stile.yaml | `stile_immagini` | il frammento `[STILE]`, accodato a ogni prompt; in inglese |
-| scena*.yaml, scene/*.yaml | `immagine.prompt_luogo`, `immagine.invarianti`, `png_presenti` | immagine del luogo, 16:9 |
-| png/*.yaml | `aspetto.prompt_immagine` (o `aspetto.prompt_ritratto`), `aspetto.invarianti` | ritratto 3:4; le invarianti finiscono nel prompt come «Tratti fissi: …» |
-| png/*.yaml | `aspetto.prompt_ritratto` | facoltativo: se c'è, il ritratto usa questo invece di `prompt_immagine` |
-| png/*.yaml | `aspetto.situazioni: [{id, prompt, dopo}]` | lo stesso PNG in un'altra situazione, 16:9, con il ritratto come riferimento |
-| campagna.yaml | `nodi[].immagine.prompt_luogo` | un luogo senza scheda scena (il server lo mostra per i luoghi collegati) |
+| stile.yaml | `stile_immagini` | the `[STILE]` fragment, appended to every prompt; in English |
+| scena*.yaml, scene/*.yaml | `immagine.prompt_luogo`, `immagine.invarianti`, `png_presenti` | image of the place, 16:9 |
+| png/*.yaml | `aspetto.prompt_immagine` (or `aspetto.prompt_ritratto`), `aspetto.invarianti` | portrait 3:4; the invariants end up in the prompt as "Fixed traits: …" |
+| png/*.yaml | `aspetto.prompt_ritratto` | optional: if present, the portrait uses it instead of `prompt_immagine` |
+| png/*.yaml | `aspetto.situazioni: [{id, prompt, dopo}]` | the same NPC in another situation, 16:9, with the portrait as reference |
+| campagna.yaml | `nodi[].immagine.prompt_luogo` | a place without a scene sheet (the server shows it for linked places) |
 
-Per ogni scena in cui un PNG è presente, si genera in automatico anche la sua immagine nel luogo.
+For every scene in which an NPC is present, its image in the place is also generated automatically.
 
-## Regole
-1. **In inglese** `prompt_luogo`, `prompt_immagine`, `prompt_ritratto` e `situazioni[].prompt` (il
-   generatore li capisce meglio) [V avviso]. Le invarianti in italiano vanno bene.
-2. **`[STILE]`** compare in `prompt_immagine` e in `prompt_ritratto` come segnaposto, una volta sola [V]. `stile_immagini` è il
-   suo contenuto: tecnica, tavolozza, luce. Il formato del proiettore (full-bleed, niente margini, firme,
-   testo o lettere) lo accoda lo strumento a ogni prompt (`strumenti/immagini/formato.py`): non scriverlo qui.
-3. **Tratti fissi**: età, corporatura, capelli, un capo d'abbigliamento riconoscibile, un oggetto.
-   Le invarianti sono almeno tre [V] e devono essere **visibili a prima vista**.
-4. **Niente segreti**. Le immagini vanno sul proiettore dal primo turno:
-   - una cicatrice sotto il cappuccio, un tatuaggio nascosto, l'oggetto rubato in tasca non stanno nel
-     ritratto né nelle invarianti [R];
-   - mettili in una `situazione` (per esempio `{id: senza_cappuccio, dopo: [i_cicatrice], prompt: "hood
-     lowered, a thin white scar splits his left eyebrow"}`), da mostrare dopo la rivelazione;
-   - `dopo` dice quale indizio o battuta la fa comparire sul proiettore [R]: senza, il Motore la cerca per
-     somiglianza tra l'id della situazione e gli indizi del PNG, e può non trovarla (in ponte-lanterne non
-     trovava `studio_cassa` di Vischi);
-   - la situazione compare al **primo** id di `dopo` che esce, quindi ognuno deve rivelare il tratto. Il
-     validatore ricava il tratto dal lessico dei segreti: sono i fatti nascosti che quell'id rende pubblici
-     (le parole segrete che lo elencano in `pubblica_dopo`, i `fatti_noti` della battuta). Errore se un id
-     di `dopo` è un esempio di voce o un riempitivo, o non rivela il tratto che gli altri rivelano, o se
-     un'altra situazione del PNG, visibile prima, mostra lo stesso tratto [V]. Una situazione che non
-     mostra niente di nascosto (Tullio alla catena) segue un momento: un segno, un momento chiave, un finale;
-   - il validatore cerca le parole segrete in prompt e invarianti [R], ma le regex sono in italiano e i
-     prompt in inglese: la lettura con `--dry-run` resta tua.
-5. **Il luogo** descrive ciò che si vede entrando, con gli elementi interattivi principali, senza persone
-   (le aggiungono le situazioni).
-6. Controlla con `--dry-run`: stampa ogni prompt composto, senza caricare il modello.
+## Rules
+1. **English** for `prompt_luogo`, `prompt_immagine`, `prompt_ritratto` and `situazioni[].prompt` (the generator
+   understands them better) [V warning]. The invariants may be in the campaign language.
+2. **`[STILE]`** appears in `prompt_immagine` and in `prompt_ritratto` as a placeholder, once only [V]. `stile_immagini`
+   is its content: technique, palette, light. The projector format (full-bleed, no margins, signatures, text or letters)
+   is appended to every prompt by the tool (`strumenti/immagini/formato.py`): do not write it here.
+3. **Fixed traits**: age, build, hair, one recognisable garment, one object. The invariants are at least three [V] and
+   must be **visible at first glance**.
+4. **No secrets.** Images go to the projector from the first turn:
+   - a scar under the hood, a hidden tattoo, the object stolen in a pocket do not belong in the portrait or in the
+     invariants [R];
+   - put them in a `situazione` (for example `{id: senza_cappuccio, dopo: [i_cicatrice], prompt: "hood
+     lowered, a thin white scar splits his left eyebrow"}`), to be shown after the reveal;
+   - `dopo` says which clue or line makes it appear on the projector [R]: without it, the Engine looks for it by
+     similarity between the situation's id and the NPC's clues, and may not find it (in ponte-lanterne it did not find
+     Vischi's `studio_cassa`; see «lingue/<lingua>/preparatore/riferimenti.md», immagini.md §1);
+   - the situation appears at the **first** id of `dopo` that comes out, so each of them must reveal the trait. The
+     validator derives the trait from the secrets lexicon: these are the hidden facts that the id makes public (the
+     secret words that list it in `pubblica_dopo`, the `fatti_noti` of the line). Error if an id of `dopo` is a voice
+     example or a filler, or does not reveal the trait the others reveal, or if another situation of the NPC, visible
+     earlier, shows the same trait [V]. A situation that shows nothing hidden (a jailer at the chain) follows a moment: a
+     sign, a key moment, an ending;
+   - the validator searches for the secret words in prompts and invariants [R], but its regexes are in the campaign's
+     language and the prompts are in English: the reading with `--dry-run` stays your job.
+5. **The place** describes what is seen on entering, with the main interactive elements, without people (the
+   situations add them).
+6. Check with `--dry-run`: it prints every composed prompt, without loading the model.

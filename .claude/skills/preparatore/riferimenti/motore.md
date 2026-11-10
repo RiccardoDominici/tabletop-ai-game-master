@@ -1,61 +1,58 @@
-# Che cosa il Motore non fa (ancora)
+# What the Engine does not do (yet)
 
-Il Motore (il server) applica solo ciò che è scritto in forma che sa leggere. Tutto il resto lo deve fare la
-campagna, con battute e cancelli, o non succede. Nella prova di «Le nozze di neve» tre dei cinque problemi
-gravi della revisione venivano da qui. Ogni voce di questa pagina è verificata sul codice del server da
-`strumenti/motore_limiti.ts` (test `strumenti/test_motore_limiti.py`): se il Motore comincia a farlo, il test
-diventa rosso e la pagina va aggiornata. Le voci da implementare nel Motore sono in `docs/da-fare.md`.
+The Engine (the server) applies only what is written in a form it can read. Everything else the campaign must do, with
+lines and gates, or it does not happen. In the test of the campaign `campagne/nozze-neve`, three of the five serious
+problems of the review came from here (its quoted lines: «lingue/<lingua>/preparatore/riferimenti.md», motore.md §0). Every entry on this page is verified on the server code by
+`strumenti/motore_limiti.ts` (test `strumenti/test_motore_limiti.py`): if the Engine starts doing it, the test turns red
+and this page must be updated. The items to implement in the Engine are in `docs/da-fare.md`.
 
 <!-- limite: azioni_private -->
-## Le azioni private hanno risposta solo dalle battute con il cancello
-Una battuta senza `richiede.privata: true` risponde solo alle azioni pubbliche. A un'azione privata (scritta
-dal telefono come privata) rispondono solo le battute con `privata: true`, e per il resto improvvisa il
-narratore.
-- **Che cosa fare**: per ogni cosa che un PG farà probabilmente in privato (parlare a un PNG da solo, frugare
-  di nascosto, leggere una lettera) scrivi una battuta con `privata: true`; un'informazione importante che può
-  arrivare sia in pubblico sia in privato ha due battute, o una con `oppure` (repertorio.md §4).
+## Private actions are answered only by lines with the gate
+A line without `richiede.privata: true` answers only public actions. A private action (written from the phone as private)
+is answered only by lines with `privata: true`, and for the rest the narrator improvises.
+- **What to do**: for each thing a PC will probably do in private (speak to an NPC alone, search secretly, read a
+  letter), write a line with `privata: true`; an important piece of information that can arrive both in public and in
+  private has two lines, or one with `oppure` (repertorio.md §4).
 
 <!-- limite: avanza_quando -->
-## `avanza_quando` non lo applica nessuno
-Il Motore carica `avanza_quando` e non lo usa. Un orologio avanza solo per `segno_almeno_ogni` (il Motore
-impone il segno quando è dovuto) e quando il narratore o il selettore sceglie una battuta di segno.
-- **Che cosa fare**: ciò che deve far avanzare l'orologio va scritto come battuta: un segno con i `temi` delle
-  azioni che lo fanno correre, o un momento con `effetti.avanza_orologio`. `avanza_quando` resta una nota per
-  chi legge.
+## `avanza_quando` is applied by nobody
+The Engine loads `avanza_quando` and does not use it. A clock advances only through `segno_almeno_ogni` (the Engine
+imposes the tick when it is due) and when the narrator or the selector chooses a tick line.
+- **What to do**: what must make the clock advance must be written as a line: a tick with the `temi` of the actions that
+  make it run, or a moment with `effetti.avanza_orologio`. `avanza_quando` remains a note for whoever reads.
 
 <!-- limite: cambio_scena -->
-## Al cambio di scena gli orologi saltano solo se la scena lo dice
-Cambiare scena cambia quali orologi sono attivi: i segni restano quelli che erano, e nessun orologio avanza da
-solo (niente «+1 a ogni cambio di scena»). Il ritmo minimo conta solo i turni in cui l'orologio è attivo, e quelli
-delle visite precedenti si sommano: entrare in una scena non rende subito dovuto un segno.
-- **Che cosa fare**: se una scena deve cominciare con l'orologio più avanti («al Sasso il tramonto è almeno a
-  sei»), scrivilo nella scheda della scena: `orologi_in_scena: {o_…: {pieni_almeno: 6}}`; lì l'orologio può anche
-  correre a un altro ritmo (`segno_almeno_ogni: 2` dentro la stessa voce). Tra una sessione e l'altra resta
-  `pieni_all_inizio` del pacchetto.
+## At a scene change the clocks jump only if the scene says so
+Changing scene changes which clocks are active: the ticks stay as they were, and no clock advances on its own (no "+1 at
+every scene change"). The minimum rhythm counts only the turns in which the clock is active, and those of previous visits
+add up: entering a scene does not immediately make a tick due.
+- **What to do**: if a scene must start with the clock further along ("at the Sasso the sunset is at least at six"),
+  write it in the scene sheet: `orologi_in_scena: {o_…: {pieni_almeno: 6}}`; there the clock can also run at another pace
+  (`segno_almeno_ogni: 2` inside the same entry). Between sessions, `pieni_all_inizio` of the package still applies.
 
 <!-- limite: finali -->
-## I finali escono da soli solo a orologio pieno
-Il Motore non sa quando «la domanda drammatica ha risposta». Una battuta entra nel catalogo per stato solo se
-il suo `richiede.orologio` chiede l'orologio pieno e l'orologio è pieno; altrimenti entra, come tutte, solo se
-un'azione ne tocca i `temi` o nomina chi parla.
-- **Che cosa fare**: i finali che chiudono la scena prima dell'orologio pieno hanno temi distintivi e i cancelli
-  dell'esito (`battute_usate`, `indizi_rivelati`); quelli del climax hanno `richiede.orologio` a orologio pieno.
+## Endings come out on their own only at a full clock
+The Engine does not know when "the dramatic question has an answer". A line enters the catalogue by state only if its
+`richiede.orologio` asks for a full clock and the clock is full; otherwise it enters, like all others, only if an action
+touches its `temi` or names the speaker.
+- **What to do**: the endings that close the scene before the clock is full have distinctive themes and the gates of the
+  outcome (`battute_usate`, `indizi_rivelati`); those of the climax have `richiede.orologio` at a full clock.
 
 <!-- limite: senza_azione -->
-## Una battuta esce solo legata a un'azione, salvo segni dovuti, riempitivi e finali
-Il selettore usa una battuta legandola all'azione di un PG (`[usa] id > pg`); se lo dimentica o sbaglia PG, il
-Motore lo deduce quando una sola azione del turno può essere quella giusta. Senza un'azione il Motore accetta solo
-il segno dovuto DEL SUO orologio, i riempitivi allo stallo e i finali. A orologio pieno il finale lo dice il Motore
-da sé: il primo `tipo: finale` disponibile nell'ordine del repertorio e senza cancelli sull'azione, poi la chiusura
-(un `momento` che chiede l'orologio pieno), e il tavolo va in pausa. Ogni altra battuta che entra nel catalogo «per
-stato» (la folla, un momento a orologio pieno) esce solo legata a un'azione pubblica del turno.
-- **Che cosa fare**: metti i finali nell'ordine in cui devono vincere (il più specifico prima, con i cancelli
-  dell'esito: `battute_usate`, `indizi_rivelati`), senza `privata` né `da_pg`, e chiudi con un finale senza
-  cancelli d'esito come rete. Una reazione della folla a orologio pieno va legata a un'azione (i suoi `temi`).
+## A line comes out only tied to an action, except for due ticks, fillers and endings
+The selector uses a line by tying it to a PC's action (`[usa] id > pg`); if it forgets or gets the PC wrong, the Engine
+deduces it when only one action of the turn can be the right one. Without an action the Engine accepts only the due tick
+of ITS clock, the fillers at a stall, and the endings. At a full clock the Engine itself says the ending: the first
+`tipo: finale` available in the order of the repertoire and without gates on the action, then the closing (a `momento`
+that asks for a full clock), and the table goes into pause. Every other line that enters the catalogue "by state" (the
+crowd, a moment at a full clock) comes out only tied to a public action of the turn.
+- **What to do**: put the endings in the order in which they must win (the most specific first, with the outcome gates:
+  `battute_usate`, `indizi_rivelati`), without `privata` or `da_pg`, and close with an ending without outcome gates as a
+  safety net. A crowd reaction at a full clock must be tied to an action (its `temi`).
 
 <!-- limite: oggetti -->
-## Gli oggetti non hanno uno stato
-Il Motore non tiene chi ha che cosa: un oggetto preso, perso o rotto esiste solo nella trascrizione.
-- **Che cosa fare**: se un oggetto cambia mano e conta dopo, il cambio passa da una battuta che rivela un indizio
-  (`effetti.rivela_indizi`), e le battute che lo presuppongono lo chiedono (`richiede.indizi_rivelati`). Tra una
-  sessione e l'altra lo tiene lo stato (`effetti.oggetti`, tra-le-sessioni.md).
+## Objects have no state
+The Engine does not keep track of who has what: an object taken, lost or broken exists only in the transcript.
+- **What to do**: if an object changes hands and matters later, the change goes through a line that reveals a clue
+  (`effetti.rivela_indizi`), and the lines that presuppose it ask for it (`richiede.indizi_rivelati`). Between one session
+  and the next, the state keeps it (`effetti.oggetti`, tra-le-sessioni.md).

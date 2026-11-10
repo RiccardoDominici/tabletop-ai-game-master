@@ -1,402 +1,400 @@
-# Schema dei file di una campagna
+# Schema of a campaign's files
 
-Forma che il validatore (`strumenti/valida_campagna.py`) e il server si aspettano. Tra parentesi, la
-regola del manuale (docs/manuale-master.md) o del repertorio (docs/repertorio.md). Il validatore
-controlla tutto ciò che qui è marcato **[V]**; con `--rigoroso` anche ciò che è marcato **[R]**.
+The shape that the validator (`strumenti/valida_campagna.py`) and the server expect. In brackets, the rule of the manual
+(docs/manuale-master.md) or of the repertoire (docs/repertorio.md). The validator checks everything marked **[V]**; with
+`--rigoroso` also what is marked **[R]**.
 
 ```
 campagne/<id>/
-  brief.yaml                 il brief e le decisioni (lo legge solo chi prepara)
-  stile.yaml                 carta di stile e C1
-  campagna.yaml              canone, orologi, rivelazioni, colli di bottiglia, nodi, sessione, preparazione
-  scena.yaml                 la prima scena: è quella che il server di F0 gioca
-  scene/<id_scena>.yaml      le altre scene (facoltative)
-  png/png_<nome>.yaml        una scheda per PNG; il nome del file è l'id
-  pg.yaml                    situazione comune e personaggi pregenerati
-  repertorio/narrazione.yaml battute del narratore
-  repertorio/png_<nome>.yaml battute di ogni PNG
+  brief.yaml                 the brief and the decisions (read only by whoever prepares)
+  stile.yaml                 style sheet and C1
+  campagna.yaml              canon, clocks, revelations, bottlenecks, nodes, session, preparazione
+  scena.yaml                 the first scene: it is the one the server of F0 plays
+  scene/<id_scena>.yaml      the other scenes (optional)
+  png/png_<nome>.yaml        one sheet per NPC; the file name is the id
+  pg.yaml                    common situation and pregenerated characters
+  repertorio/narrazione.yaml the narrator's lines
+  repertorio/png_<nome>.yaml the lines of each NPC
   repertorio/parole_segrete.yaml
   README.md, autovalutazione.md
 ```
 
+## Campaign language (`lingua`)
+- `campagna.yaml → lingua`: optional, `it` or `en`, default the language of the configuration (`lingua` in
+  `config/predefinita.yaml`). It is the language of the content: the narrator, the lines, the fixed phrases of the Engine,
+  the speech rules and the voices (docs/lingue.md). The Preparatore writes the campaign in the language of the brief's
+  `lingua`, and writes it into `campagna.yaml` too. The field is read by the server at start (an unknown language stops the
+  start) and by the validator, which takes the prose rules from `lingue/<lingua>/prosa.yaml`.
+- The fields with a fixed vocabulary (tags, types, ids of the validator) do not change with the language: only the text does.
+- The examples of each language are in «lingue/<lingua>/preparatore/riferimenti.md».
+
 ## stile.yaml (C1, E14)
-| Campo | Vincolo |
+| Field | Constraint |
 |---|---|
 | `id`, `titolo` | |
-| `premessa` | una frase [V] |
-| `tono`, `tema`, `registro_narratore` | presenti [V] |
-| `regole_prosa` | lista; va per intero al selettore del modo B: nessun segreto, nemmeno come divieto [V contesto B]. Il divieto della parola-soluzione sta nel `come_si_trova` dell'indizio |
-| `stile_immagini` | il contenuto di `[STILE]`, in inglese; non contiene `[STILE]` [V] |
-| `tavolozza_musicale` | `{tag: [...], strumenti: "..."}`; tag solo da `esplorazione_tesa, taverna_calda, rito_sacro, inseguimento, combattimento_epico, lutto` [V] |
-| `linee`, `veli` | liste; `linee` non vuota [V], `veli` vuota solo se il brief non ne vuole (avviso) |
-| `audio` | facoltativo: `{tonalita, modo, tempo, strumenti, umore_base, epoca, motivo}`, vedi «Audio» sotto [V] |
+| `premessa` | one sentence [V] |
+| `tono`, `tema`, `registro_narratore` | present [V] |
+| `regole_prosa` | list; it goes in full to the selector of mode B: no secrets, not even as a ban [V mode B context]. The ban on the solution-word lives in the `come_si_trova` of the clue |
+| `stile_immagini` | the content of `[STILE]`, in English; does not contain `[STILE]` [V] |
+| `tavolozza_musicale` | `{tag: [...], strumenti: "..."}`; tags only from `esplorazione_tesa, taverna_calda, rito_sacro, inseguimento, combattimento_epico, lutto` [V] |
+| `linee`, `veli` | lists; `linee` not empty [V]; `veli` empty only if the brief does not want any (warning) |
+| `audio` | optional: `{tonalita, modo, tempo, strumenti, umore_base, epoca, motivo}`, see "Audio" below [V] |
 
 ## campagna.yaml
-Chiavi di primo livello: `id`, `canone`, `orologi`, `rivelazioni`, `colli_di_bottiglia`,
-`colli_di_bottiglia_nota`, `nodi`, `sessione`, `preparazione`. Il server toglie `preparazione` dal
-contesto del narratore (E2): lì vanno destini, cronologia del cattivo, segreti astratti e archi.
+Top-level keys: `id`, `lingua`, `canone`, `orologi`, `rivelazioni`, `colli_di_bottiglia`, `colli_di_bottiglia_nota`, `nodi`,
+`sessione`, `preparazione`. The server removes `preparazione` from the narrator's context (E2): destinies, the villain's
+chronology, abstract secrets and arcs go there.
 
 **canone** (E10): `- {id: f_<nome>, noto_ai_pg: true|false, stato: confermato, entita: [...], testo: "..."}`.
-- Gli id sono unici e nella forma `f_…` [V].
-- Ogni `f_…` citato in un altro punto esiste [V]; ogni fatto è citato almeno una volta (avviso).
-- Un fatto è un'affermazione sola. Le schede lo citano per id, non lo riscrivono.
+- Ids are unique and in the form `f_…` [V].
+- Every `f_…` cited somewhere else exists [V]; every fact is cited at least once (warning).
+- A fact is a single assertion. Sheets cite it by id, they do not rewrite it.
 
-**orologi**: gli orologi che il narratore vede (uno per pericolo attivo in una scena).
+**orologi**: the clocks the narrator sees (one per danger active in a scene).
 ```yaml
 - id: o_<nome>
-  nome: "Il paese vuole un colpevole"     # l'ostacolo, non l'azione (C2)
+  nome: "…"                                # the obstacle, not the action (C2)
   pericolo: p_<nome>
-  segmenti: 6                              # 4, 6 o 8 [V]
+  segmenti: 6                              # 4, 6 or 8 [V]
   pieni_all_inizio: 0
-  segno_almeno_ogni: 2                     # il Motore scrive «mostralo in questa risposta» [V intero >= 1]
-  segno_al_massimo_ogni: 2                 # facoltativo: non più di un segno ogni N turni (predefinito 2; 1 = anche di fila)
-  parte_dopo: [<id battuta o indizio>]     # facoltativo, proposta: l'orologio parte quando ne esce uno [V esistono]
-  segni: ["…", "…", …]                     # uno per segmento, in ordine [V]
-  avanza_quando: ["…"]                     # [V presente]
-  al_completo: "…"                         # cosa vuole il pericolo e cosa costa ogni risposta
+  segno_almeno_ogni: 2                     # the Engine writes "show it in this response" [V integer >= 1]
+  segno_al_massimo_ogni: 2                 # optional: no more than one tick every N turns (default 2; 1 = also in a row)
+  parte_dopo: [<id of a line or clue>]     # optional, proposal: the clock starts when one of them comes out [V they exist]
+  segni: ["…", "…", …]                     # one per segment, in order [V]
+  avanza_quando: ["…"]                     # [V present]
+  al_completo: "…"                         # what the danger wants and what each answer costs
 ```
 
 **rivelazioni** (C4): `- {id: r_<nome>, chiave: true, conclusione: "…", indizi: [i_…]}`.
-- Una conclusione chiave ha almeno 3 indizi, in almeno 2 nodi, di almeno 2 tipi [V].
-- Ogni indizio sostiene una conclusione sola, ed è elencato nella sua [V].
+- A key conclusion has at least 3 clues, in at least 2 nodes, of at least 2 types [V].
+- Each clue supports one conclusion only, and is listed in its own [V].
 
-**colli_di_bottiglia** (C4): `- {id: cb_<nome>, ostacolo: "…", soluzioni: [≥3]}` [V]. Una soluzione che
-richiede una conoscenza privata lo dice: «Solo se la propone chi la conosce».
+**colli_di_bottiglia** (C4): `- {id: cb_<nome>, ostacolo: "…", soluzioni: [≥3]}` [V]. A solution that requires private knowledge
+says so ("Only if the one who knows it proposes it").
 
 **nodi** (C5): `- {id, tipo: luogo|png|evento, nome, scheda | abbozzo, collegamenti: [...], indizi: [...]}`.
-- Facoltativi: `noto_ai_pg: true` (un luogo che i PG conoscono dall'inizio: non chiede tre indizi in
-  entrata), `immagine: {prompt_luogo}` (un luogo senza scheda che ha un'immagine; vedi immagini.md) e
-  `audio` (come nelle scene, vedi «Audio» sotto).
-- `nome` e `abbozzo` vanno al selettore del modo B: niente segreti [V contesto B].
-- Un luogo dove il master può portare il tavolo (un'uscita ci porta) ha un'immagine: una `scheda` di scena
-  (stessa immagine) o `immagine.prompt_luogo`; se una scena si svolge lì, è un errore in rigoroso [V IMMAGINI.nodo].
-- Ogni collegamento esiste [V].
-- Tutto è raggiungibile dal nodo della scena iniziale [V].
-- Nessun vicolo cieco, salvo `prossima_sessione: true` [V].
-- Gli indizi dei nodi senza scheda hanno la stessa forma di quelli delle scene.
+- Optional: `noto_ai_pg: true` (a place the PCs know from the start: it does not ask for three clues to enter), `immagine: {prompt_luogo}`
+  (a place without a sheet that has an image; see immagini.md) and `audio` (as in the scenes, see "Audio" below).
+- `nome` and `abbozzo` go to the selector of mode B: no secrets [V mode B context].
+- A place where the GM can take the table (an exit leads there) has an image: a scene `scheda` (same image) or `immagine.prompt_luogo`;
+  if a scene takes place there, it is an error in strict mode [V IMMAGINI.nodo].
+- Every link exists [V].
+- Everything is reachable from the node of the opening scene [V].
+- No dead ends, except with `prossima_sessione: true` [V].
+- The clues of the nodes without a sheet have the same shape as those of the scenes.
 
 **sessione** (C9–C13):
-- `riassunto_iniziale`: al massimo 4 frasi; insieme all'apertura della scena iniziale al massimo 6 frasi,
-  con una media tra 8 e 14 parole per frase [V];
-- `cinque_stanze`: le chiavi `ingresso_o_guardiano`, `enigma_o_sfida_sociale`,
-  `trucco_o_battuta_d_arresto`, `climax`, `ricompensa_o_colpo_di_scena` [V];
-- `scene_potenziali`: id di scene con scheda (da 3 a 6: con meno, solo avviso);
+- `riassunto_iniziale`: at most 4 sentences; together with the opening of the first scene at most 6 sentences, with an average between
+  8 and 14 words per sentence [V];
+- `cinque_stanze`: the keys `ingresso_o_guardiano`, `enigma_o_sfida_sociale`, `trucco_o_battuta_d_arresto`, `climax`,
+  `ricompensa_o_colpo_di_scena` [V];
+- `scene_potenziali`: ids of scenes with a sheet (from 3 to 6: with fewer, only a warning);
 - `chiusura` [V].
 
 **preparazione**:
 - `fronti` (C2):
-  - un fronte `livello: campagna`, con 3–5 presagi in tutto il fronte [V];
-  - uno o due fronti `livello: avventura`, con 1–3 presagi in tutto il fronte [V];
-  - per ogni fronte, 2–3 pericoli e 1–3 `domande_di_posta` [V];
-  - ogni pericolo ha `tipo`, `impulso` (un verbo solo), `destino_incombente`, `presagi: [{testo, segno_visibile}]` (almeno uno), `mosse`, `cast`, `orologio` [V];
-  - gli orologi dei pericoli che non sono in scena vanno in `fronti[].orologi_extra: [{id, nome, segmenti}]`.
-- `cattivo` (C3): `obiettivo`, `cronologia_se_i_pg_non_intervengono`, `risorse: [{cosa, a_cosa_serve}]`,
-  `reazioni: [{intrusione, reazione}]`, `stato_di_quiete`, `chiamata_all_azione` [V].
-- `segreti_astratti` (C6): circa 10, di una o due frasi ciascuno [V], senza luogo fisso.
-- `archi` (C8): `campagna_tre_atti: [3]` e `pg: {pg_<nome>: {tu, bisogno, vai, cerca, trova, paga, ritorna, cambia}}` per ogni PG [V].
-- `cronologia` e `logistica`: i conti del mondo, vedi sotto [R].
+  - one front `livello: campagna`, with 3–5 omens in the whole front [V];
+  - one or two fronts `livello: avventura`, with 1–3 omens in the whole front [V];
+  - for each front, 2–3 dangers and 1–3 `domande_di_posta` [V];
+  - each danger has `tipo`, `impulso` (one verb only), `destino_incombente`, `presagi: [{testo, segno_visibile}]` (at least one), `mosse`,
+    `cast`, `orologio` [V];
+  - the clocks of the dangers that are not on stage go in `fronti[].orologi_extra: [{id, nome, segmenti}]`.
+- `cattivo` (C3): `obiettivo`, `cronologia_se_i_pg_non_intervengono`, `risorse: [{cosa, a_cosa_serve}]`, `reazioni: [{intrusione, reazione}]`,
+  `stato_di_quiete`, `chiamata_all_azione` [V].
+- `segreti_astratti` (C6): about ten, of one or two sentences each [V], without a fixed place.
+- `archi` (C8): `campagna_tre_atti: [3]` and `pg: {pg_<nome>: {tu, bisogno, vai, cerca, trova, paga, ritorna, cambia}}` for each PC [V].
+- `cronologia` and `logistica`: the accounts of the world, see below [R].
 
-### Cronologia e logistica (preparazione)
-I conti che il validatore rifà (classe `MONDO`). Stanno in `preparazione`, quindi il narratore non li
-vede in nessun modo: possono contenere segreti.
+### Chronology and logistics (preparazione)
+The accounts the validator redoes (class `MONDO`). They sit in `preparazione`, so the narrator never sees them in any way: they may
+contain secrets.
 ```yaml
 cronologia:
-  eventi:                                  # in ordine di tempo [V MONDO.ordine]; almeno 3 [R]
+  eventi:                                  # in time order [V MONDO.ordine]; at least 3 [R]
     - id: t_<nome>
-      quando: {anni_fa: 40}                # oppure {giorni_fa: 3, ora: "21:00"}, {ora: "18:00"}, {giorno: 1, ora: "01:30"}
-      cosa: "una frase"
-      fatti: [f_…]                         # i fatti che l'evento fonda [V esistono]
-      segno: {orologio: o_…, n: 3}         # facoltativo: a che segno è l'orologio in quel momento [V crescono col tempo]
-  documenti:                               # ogni indizio di tipo documento ha la sua voce [R]
-    - {id: doc_<nome>, cosa: "la riga del registro", indizio: i_…, datato: {…come quando…}, prova: [t_…]}
-      # indizio: il legame si aggiunge quando l'indizio esiste (passo 5); al passo 3 il documento non lo ha
+      quando: {anni_fa: 40}                # or {giorni_fa: 3, ora: "21:00"}, {ora: "18:00"}, {giorno: 1, ora: "01:30"}
+      cosa: "…"                            # one sentence
+      fatti: [f_…]                         # the facts the event founds [V exist]
+      segno: {orologio: o_…, n: 3}         # optional: at what tick the clock stands at that moment [V grows over time]
+  documenti:                               # every clue of type document has its entry [R]
+    - {id: doc_<nome>, cosa: "…", indizio: i_…, datato: {…as in quando…}, prova: [t_…]}
+      # indizio: the link is added when the clue exists (step 5); at step 3 the document does not have it
 logistica:
   durate:   [{id: d_<nome>, cosa: "…", minuti: 75, fatti: [f_…]}]
-  capienze: [{id: c_<nome>, cosa: "la barca", posti: 20}]
-  gruppi:   [{id: g_<nome>, cosa: "i vecchi del Ricovero", persone: 8}]
-  verifiche:                               # ogni affermazione di tempo o di posti della storia [V]
-    - {tra: [t_a, t_b], ci_sta: [d_x], perche: "…"}             # somma delle durate ≤ intervallo
-    - {tra: [t_a, t_b], non_ci_sta: [d_x, d_x], perche: "…"}    # somma > intervallo
-    - {capienza: c_x, porta: [g_a], perche: "…"}                 # somma delle persone ≤ posti
-    - {capienza: c_x, non_porta: [g_a, g_b], perche: "…"}        # somma > posti
+  capienze: [{id: c_<nome>, cosa: "…", posti: 20}]
+  gruppi:   [{id: g_<nome>, cosa: "…", persone: 8}]
+  verifiche:                               # every claim of time or seats in the story [V]
+    - {tra: [t_a, t_b], ci_sta: [d_x], perche: "…"}             # sum of the durations ≤ interval
+    - {tra: [t_a, t_b], non_ci_sta: [d_x, d_x], perche: "…"}    # sum > interval
+    - {capienza: c_x, porta: [g_a], perche: "…"}                 # sum of the people ≤ seats
+    - {capienza: c_x, non_porta: [g_a, g_b], perche: "…"}        # sum > seats
 ```
-- `quando` si legge dal giorno della sessione: `giorno: 0` è oggi (predefinito), `giorno: 1` è
-  domani, `giorni_fa` e `anni_fa` vanno indietro; `ora` va da `"00:00"` a `"24:00"`. Senza ora, due
-  eventi dello stesso giorno non si confrontano; una verifica di tempo vuole due eventi con l'ora.
-- La data di un documento non precede gli eventi che prova [V MONDO.documento].
+- `quando` is read from the day of the session: `giorno: 0` is today (default), `giorno: 1` is tomorrow, `giorni_fa` and `anni_fa` go
+  back; `ora` goes from `"00:00"` to `"24:00"`. Without an hour, two events on the same day are not compared; a time check needs two events
+  with the hour.
+- The date of a document does not precede the events it proves [V MONDO.documento].
 
-## Scheda scena (§4): scena.yaml, scene/*.yaml
+## Scene sheet (§4): scena.yaml, scene/*.yaml
 ```yaml
 id: scena_<nome>
-nodo: n_<nome>                 # esiste in campagna.nodi [V]
+nodo: n_<nome>                 # exists in campagna.nodi [V]
 nome: "…"
-descrizione: "pianta del luogo + CHI SENTE COSA"   # rende verificabile «in privato»; va al selettore: niente segreti
-scopo: {tipo: rivelare_indizio, rif: i_…}           # tipo da: rivelare_indizio, far_avanzare_fronte,
-                                                    #   mettere_alla_prova, sviluppare_rapporto, dare_la_scena, decompressione [V]
-domanda_drammatica: "…?"       # da sì o no [V]
-posta: {si_guadagna: {cosa, per_chi: [...]}, si_perde: {cosa, per_chi: [...]}}   # tocca PG o PNG [V]
+descrizione: "plan of the place + WHO HEARS WHAT"   # makes "in private" checkable; goes to the selector: no secrets
+scopo: {tipo: rivelare_indizio, rif: i_…}           # tipo from: rivelare_indizio, far_avanzare_fronte, mettere_alla_prova,
+                                                    #   sviluppare_rapporto, dare_la_scena, decompressione [V]
+domanda_drammatica: "…?"       # yes-or-no [V]
+posta: {si_guadagna: {cosa, per_chi: [...]}, si_perde: {cosa, per_chi: [...]}}   # touches PCs or NPCs [V]
 intensita: 1-5                 # [V]
-sensi: [3 dettagli]            # esattamente 3, almeno 2 non visivi [V sul numero]
-elementi_interattivi: [{cosa, dove, azioni}]        # almeno 3 [V]; una cosa nascosta lo scrive in azioni: «NASCOSTA: …»
-png_presenti: [png_…]          # esistono [V]; voci diverse e non simili [V]; iniziali diverse [V]
-orologi_attivi: [o_…]          # esistono [V]
-orologi_in_scena:              # facoltativo: regole del Motore per questa scena
-  o_…: {pieni_almeno: 6, segno_almeno_ogni: 2}   # entrando l'orologio sale ad almeno 6; qui corre a 1 segno ogni 2
-indizi:                        # [V forma; vedi sotto]
+sensi: [3 details]             # exactly 3, at least 2 not visual [V on the number]
+elementi_interattivi: [{cosa, dove, azioni}]        # at least 3 [V]; a hidden thing says so in azioni: "HIDDEN: …"
+png_presenti: [png_…]          # exist [V]; voices different and not similar [V]; different initials [V]
+orologi_attivi: [o_…]          # exist [V]
+orologi_in_scena:              # optional: the Engine's rules for this scene
+  o_…: {pieni_almeno: 6, segno_almeno_ogni: 2}   # on entering, the clock rises to at least 6; here it runs at 1 tick every 2
+indizi:                        # [V shape; see below]
   - {id: i_…, conclusione: r_…, tipo: png|oggetto|luogo|evento|documento|visione, nodo: n_…|png_…,
      essenziale: true|false, tiro: "nessuno", modi: 1, come_si_trova: "…",
-     vincolo_pubblico: "ciò che chiunque percepisce, senza il perché"}   # indizi fisici [R], niente segreti [V]
-vincoli_pubblici: ["…"]        # facoltativi: altri fatti percepibili che l'improvvisazione tende a contraddire
-uscite: [{verso: n_…, segnalata_da: [i_…, …]}]      # almeno 2 (salvo climax: true) [V]; 3 indizi per nodo (avviso)
-mossa_morbida_pronta: "…"      # prosa §5 [V]
-apertura: "…?"                 # al massimo 3 frasi, chiude con un invito [V]
-rientro: tr_…                  # facoltativo: tornando in una scena già visitata il Motore non rilegge l'apertura;
-                               # dice questa battuta (o questo testo), poi la prima frase dell'apertura
-musica: {tag: …, transizione: "…"}                  # tag e tag citati nella transizione dal vocabolario [V]
-immagine: {invarianti: [...], prompt_luogo: "… in inglese"}   # [V]
-taglio: "…"                    # tutti gli esiti, anche «se i PG esitano»; va al selettore: niente segreti
-esiti: [{id, descrizione, finale: <id battuta>}]    # si scrive con i finali (passo 9); ogni finale esiste [V]
-climax: true                   # facoltativo: ammette meno di due uscite
-audio: {musica: [...], ambiente: [...], umore_iniziale: …}   # facoltativo, vedi «Audio» sotto [V]
+     vincolo_pubblico: "what anyone perceives, without the why"}   # physical clues [R], no secrets [V]
+vincoli_pubblici: ["…"]        # optional: other perceivable facts that improvisation tends to contradict
+uscite: [{verso: n_…, segnalata_da: [i_…, …]}]      # at least 2 (except climax: true) [V]; 3 clues per node (warning)
+mossa_morbida_pronta: "…"      # prose §5 [V]
+apertura: "…?"                 # at most 3 sentences, closes with an invitation [V]
+rientro: tr_…                  # optional: when returning to an already visited scene the Engine does not reread the opening;
+                               # it says this line (or this text), then the first sentence of the opening
+musica: {tag: …, transizione: "…"}                  # tag and tags cited in the transition from the vocabulary [V]
+immagine: {invarianti: [...], prompt_luogo: "… in English"}   # [V]
+taglio: "…"                    # all the outcomes, including "if the PCs hesitate"; goes to the selector: no secrets
+esiti: [{id, descrizione, finale: <id of line>}]    # written with the endings (step 9); every ending exists [V]
+climax: true                   # optional: allows fewer than two exits
+audio: {musica: [...], ambiente: [...], umore_iniziale: …}   # optional, see "Audio" below [V]
 ```
-Il contesto del modo B prende da ogni scheda scena nome, descrizione, domanda, intensità, sensi,
-elementi senza «NASCOSTA», PNG presenti e taglio: il validatore ci cerca le regex segrete
-(`SEGRETI.contesto_b`). Due schede con lo stesso `nodo` sono un avviso: lo stesso luogo in un altro
-momento è un nodo `evento` (mestiere.md §9).
+The mode B context takes from each scene sheet the name, description, question, intensity, senses, elements without "HIDDEN", the
+NPCs present and the taglio: the validator searches there for the secret regexes (`SEGRETI.contesto_b`). Two sheets with the same
+`nodo` are a warning: the same place at another moment is an event node (mestiere.md §9).
 
-Indizi: un essenziale ha `tiro: "nessuno"` (F3) [V]. `modi` è il numero di modi distinti scritti in
-`come_si_trova`: il repertorio deve avere una battuta di rivelazione per ognuno [V]. Se manca, conta
-come 1 [R avvisa].
+Clues: an essential one has `tiro: "nessuno"` (F3) [V]. `modi` is the number of distinct ways written in `come_si_trova`: the repertoire
+must have a revealing line for each [V]. If missing, it counts as 1 [R warns].
 
-## Scheda PNG (§3): png/png_<nome>.yaml
+## NPC sheet (§3): png/png_<nome>.yaml
 ```yaml
-id: png_<nome>                 # = nome del file, ascii minuscolo [V]; diventa l'etichetta [png_<nome>]
-nome: "…"                      # iniziale diversa dagli altri PNG della scena [V]
-pronuncia: "…"                 # con l'accento: la usa il TTS
-nascosto: true|false           # facoltativo [V booleano]: presente per il Motore, ma non si mostra a proiettore e telefono finché non parla o il master lo rivela
-alias: [soprannomi]            # come lo chiameranno i giocatori: nano, ostessa, forestiero [R]; mai generici
-                               #   (vecchio, ragazza) [R], mai lo stesso di un altro PNG [V]
-livello: comparsa|supporto|principale               # supporto e principale: obblighi pieni [V]
+id: png_<nome>                 # = file name, lowercase ASCII [V]; becomes the label [png_<nome>]
+nome: "…"                      # initial different from the other NPCs of the scene [V]
+pronuncia: "…"                 # with the accent: the TTS uses it
+nascosto: true|false           # optional [V boolean]: present for the Engine, but not shown to the projector and phone until it speaks or the GM reveals it
+alias: [nicknames]             # how the players will call them: a dwarf, the innkeeper, the stranger [R]; never generic
+                               #   (old man, girl) [R], never the same as another NPC [V]
+livello: comparsa|supporto|principale               # supporto and principale: full obligations [V]
 ruolo: "…"
-fronte: fronte_…               # esiste [V]
+fronte: fronte_…               # exists [V]
 aspetto:
-  lettura: "1-2 frasi, max 35 parole, da leggere a voce" [V]
-  invarianti: [≥3 tratti fissi, in italiano, VISIBILI a prima vista] [V]
-  prompt_immagine: "… in inglese …, [STILE]"        # [V]; [STILE] una volta sola
-  prompt_ritratto: "…, [STILE]" # facoltativo: se c'è, il ritratto usa questo; stesse regole [V]
-  situazioni: [{id, prompt, dopo: [i_… | id battuta]}]   # i tratti che si vedono solo più tardi; dopo [R]
-                               #   dopo: la compare il primo id che esce; ognuno rende pubblico il tratto [V]
-personalita: {superficie: [≥2], sotto_pressione: [≥1, diversi], contraddizione: "…"}   # [V]
-desiderio: "verbo + oggetto, in tensione con un altro PNG o un fronte"
+  lettura: "1-2 sentences, max 35 words, to be read aloud" [V]
+  invarianti: [≥3 fixed traits, in the campaign language, VISIBLE at first glance] [V]
+  prompt_immagine: "… in English …, [STILE]"        # [V]; [STILE] once only
+  prompt_ritratto: "…, [STILE]" # optional: if present, the portrait uses it; same rules [V]
+  situazioni: [{id, prompt, dopo: [i_… | id of line]}]   # traits that are seen only later; dopo [R]
+                               #   dopo: it appears at the first id that comes out; each one makes the trait public [V]
+personalita: {superficie: [≥2], sotto_pressione: [≥1, different], contraddizione: "…"}   # [V]
+desiderio: "verb + object, in tension with another NPC or a front"
 paura: "…"
 segreto: {testo, chi_altro_sa: [...], se_rivelato}   # [V]
 voce:
-  tts: {voce_id: <da assets/voci/voci.yaml, non «narratore»>, eta_apparente, altezza, velocita, timbro}   # [V]
-  registro: "tu | voi | lei, e con chi cambia"        # [V]
-  stile: "Frasi di N-M parole …"   # numeri da uno a venti: il validatore ne ricava il tetto per frase (avviso se non li trova)
-  tic: [al massimo 2]          # [V]
-  gesto: "…"                   # diverso da ogni segnale [V]
+  tts: {voce_id: <from assets/voci/voci.yaml, not "narratore">, eta_apparente, altezza, velocita, timbro}   # [V]
+  registro: "tu | voi | lei, and with whom it changes"   # [V] (the forms are those of the campaign language)
+  stile: "…"                   # a sentence-length phrase with a word range; the number words from one to twenty are read from the
+                               #   campaign language and give the sentence ceiling (warning if not found)
+  tic: [at most 2]             # [V]
+  gesto: "…"                   # different from every signal [V]
   mai_dice: [...]
-  battuta_campione: "al massimo 2 frasi"   # [V]
-sa: [f_…]                      # ≥3 per supporto e principale [V]
-non_sa: [f_…]                  # ≥3, uno che i PG chiederanno; disgiunto da sa [V]
-crede_a_torto: [{testo: "…", contraddice: f_…}]    # il fatto contraddetto NON è in sa [V]; senza contraddice [R]
+  battuta_campione: "at most 2 sentences"   # [V]
+sa: [f_…]                      # ≥3 for supporto and principale [V]
+non_sa: [f_…]                  # ≥3, one that the PCs will ask about; disjoint from sa [V]
+crede_a_torto: [{testo: "…", contraddice: f_…}]    # the contradicted fact is NOT in sa [V]; without contraddice [R]
 mente_su:
-  - id: <prefisso>_<argomento>  # [R]; è il valore di menzogna_detta nel repertorio
+  - id: <prefix>_<subject>     # [R]; it is the value of menzogna_detta in the repertoire
     argomento: "…"
     verita: f_…                # in sa [V]
-    versione: "…"              # la bugia, sempre la stessa
+    versione: "…"              # the lie, always the same
     perche: "…"
-    segnale: "gesto fisico breve"   # diverso dal gesto abituale [V]
-    cede_se: "condizione osservabile. Oppure condizione osservabile."
-atteggiamento_pg: {pg_<nome>: {stato: ostile|indifferente|amichevole, perche, vuole}}   # per OGNI PG [V]
+    segnale: "short physical gesture"   # different from the habitual gesture [V]
+    cede_se: "observable condition. <or> observable condition."   # <or>: the Engine's fixed word for "or"
+atteggiamento_pg: {pg_<nome>: {stato: ostile|indifferente|amichevole, perche, vuole}}   # for EVERY PC [V]
 relazioni: {...}
-info_chiave: [i_…]             # esistono [V]
-iniziative: ["Se …, allora fa …"]
+info_chiave: [i_…]             # exist [V]
+iniziative: ["If …, then does …"]
 evoluzione: [{se, allora}]     # [V]
 statistiche: "…"
 registro_attivita: []          # [V]
-tema: {carattere, strumento, modo, registro}   # facoltativo: il motivo del PNG, vedi «Audio» sotto [V]
+tema: {carattere, strumento, modo, registro}   # optional: the NPC's motif, see "Audio" below [V]
 ```
+The shape of `cede_se` and `oppure` is the same as in the repertoire (repertorio.md §4). In the field `tts` the voice is referred to by its id, not by the name
+of the narrator's voice.
 
 ## pg.yaml
 ```yaml
-situazione_comune: "…"         # non nomina nessun PG [V presente]
+situazione_comune: "…"         # names no PC [V present]
 personaggi:
-  - id: pg_<nome>              # [V forma]
+  - id: pg_<nome>              # [V shape]
     nome, pronuncia, pronomi, specie, classe, livello: 1
     aspetto: "…"
-    concetto: "due frasi"      # [V]
-    aggancio: "…"              # pubblico, come nome e aspetto: niente segreti [V]
+    concetto: "two sentences"  # [V]
+    aggancio: "…"              # public, like name and appearance: no secrets [V]
     cosa_sai_fare: [...]
-    conoscenze_private: [{testo: "…", fatti: [f_…]}]   # solo al telefono del giocatore (T9) [V riferimenti]
-    scheda: {…}                # le schede numeriche: vedi «Schede e prove» sotto
+    conoscenze_private: [{testo: "…", fatti: [f_…]}]   # only on the player's phone (T9) [V references]
+    scheda: {…}                # the numeric sheets: see "Sheets and checks" below
 ```
-Nome diverso dal nome di ogni PNG [V].
+A name different from the name of every NPC [V].
 
-## Schede e prove (docs/prove.md §2)
-La forma completa e le regole stanno in `docs/prove.md` §2. Qui solo dove va ogni chiave, e che cosa controlla il
-validatore (classe `SCHEDA`, codice in `strumenti/valida/regole_schede.py`, tabelle in `srd.py`).
-- `campagna.yaml` → `regole: {dadi: true|false}`. Predefinito: true. Con false le schede non sono obbligatorie.
-- `pg.yaml` → `personaggi[].scheda`: caratteristiche, competenze, maestrie, tiri_salvezza, armatura o ca, pf, attacchi.
-  Il livello è `personaggi[].livello`.
-- `png/<id>.yaml` → `scheda`: gs, caratteristiche, armatura o ca, pf, attacchi, facoltativo `influenza: {cd}`.
-- `scena.yaml` e `scene/*.yaml` → `prove`: una lista di `{id: p_…, quando, abilita | caratteristica | salvezza, cd,
-  indizio?, se_fallisce?}`.
-- Repertorio → `richiede.prova`: un'abilità, una caratteristica, un id `p_…` di scena, il nome di un attacco, oppure
-  `prova`, `salvezza`, `attacco`, `contrapposta`.
+## Sheets and checks (docs/prove.md §2)
+The full shape and the rules are in `docs/prove.md` §2. Here only where each key goes, and what the validator checks (class `SCHEDA`,
+code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
+- `campagna.yaml` → `regole: {dadi: true|false}`. Default: true. With false the sheets are not mandatory.
+- `pg.yaml` → `personaggi[].scheda`: characteristics, skills, mastery, saving throws, armour or AC, hit points, attacks.
+  The level is `personaggi[].livello`.
+- `png/<id>.yaml` → `scheda`: CR, characteristics, armour or AC, hit points, attacks, optional `influenza: {cd}`.
+- `scena.yaml` and `scene/*.yaml` → `prove`: a list of `{id: p_…, quando, abilita | caratteristica | salvezza, cd, indizio?, se_fallisce?}`.
+- Repertoire → `richiede.prova`: a skill, a characteristic, a scene's `p_…` id, the name of an attack, or `prova`, `salvezza`, `attacco`,
+  `contrapposta`.
 
-Il validatore controlla: schede mancanti (solo con dadi); punteggi e campi; modificatori scritti a mano; CA che non
-viene dall'armatura; PF oltre il dado vita di classe; PNG fuori dalla fascia del GS; CD 5–30; indizio esistente e
-non essenziale; `richiede.prova` che nomina una prova esistente.
+The validator checks: missing sheets (only with dice); scores and fields; modifiers written by hand; AC that does not come from the armour;
+hit points above the class hit die; NPCs outside the CR band; DC 5–30; an existing clue that is not essential; `richiede.prova` naming an
+existing check.
 
-## Repertorio: vedi riferimenti/repertorio.md
-Campi della battuta: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi,
-solo_esempio, riempitivo, scena, audio` [V]. Nient'altro [V]. `audio: {umore, effetto}` è un segnale
-automatico (vedi «Audio» sotto e repertorio.md §6). `richiede.oppure` è applicato dal Motore
-(repertorio.md §4); `scena` è un id o una lista di id.
-Ogni scena ha almeno una battuta d'attesa del narratore (`chi: narratore`, `riempitivo: true`, senza `scena` o con
-quella scena); ogni PNG presente in una scena ha una sua battuta d'attesa (`chi: <png>`, `riempitivo: true`) e una
-deviazione (`tipo: rifiuto`, anche `solo_esempio: true`) [V]. Il lettore locale le usa quando non trova una risposta:
-il tavolo non resta mai in silenzio, mentre lo sceneggiatore scrive la risposta vera. Codici `COPERTURA.attesa_scena`,
-`COPERTURA.attesa_png`, `COPERTURA.deviazione_png`.
+## Repertoire: see riferimenti/repertorio.md
+Fields of a line: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi, solo_esempio, riempitivo, scena, audio` [V].
+Nothing else [V]. `audio: {umore, effetto}` is an automatic signal (see "Audio" below and repertorio.md §6). `richiede.oppure` is applied
+by the Engine (repertorio.md §4); `scena` is an id or a list of ids.
+Every scene has at least one narrator waiting line (`chi: narratore`, `riempitivo: true`, without `scena` or with that scene); every NPC present
+in a scene has its own waiting line (`chi: <png>`, `riempitivo: true`) and a deviation (`tipo: rifiuto`, also `solo_esempio: true`) [V]. The local
+reader uses them when it finds no answer: the table never falls silent, while the scriptwriter writes the real answer. Codes
+`COPERTURA.attesa_scena`, `COPERTURA.attesa_png`, `COPERTURA.deviazione_png`.
 
-## Audio (facoltativo): stile.audio, scene e nodi audio, png.tema
-La pipeline dell'audio (`strumenti/audio/`, contratto in `docs/audio.md`) ricava musica, ambienti, effetti
-e temi dai campi pubblici. Questi campi servono solo dove la deduzione sbaglia: controllala con
-`strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py campagne/<id> --dry-run`. I valori sono
-quelli di `strumenti/audio/vocabolario.py`; il validatore rifiuta tutto il resto (classe `AUDIO`), perché
-la pipeline lo ignorerebbe in silenzio. Nessuna parola segreta in questi campi [V].
+## Audio (optional): stile.audio, scene and node audio, png.tema
+The audio pipeline (`strumenti/audio/`, contract in `docs/audio.md`) derives music, environments, effects and themes from the public fields.
+These fields serve only where the deduction is wrong: check it with `strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py
+campagne/<id> --dry-run`. The values are those of `strumenti/audio/vocabolario.py`; the validator rejects everything else (class `AUDIO`),
+because the pipeline would ignore it in silence. No secret words in these fields [V].
 
 ```yaml
 # stile.yaml
 audio:
-  tonalita: "re dorico"          # una nota (do…si, C…B) e, se vuoi, un modo
-  modo: dorico                   # ionio, dorico, frigio, lidio, misolidio, eolio (o maggiore, minore)
-  tempo: 88                      # battiti al minuto, da 40 a 200
-  strumenti: [fisarmonica, clarinetto]   # o un testo; «niente percussioni» le vieta
-  umore_base: esplorazione_tesa  # uno dei sei tag di musica
+  tonalita: "D dorian"           # a note (do…si, C…B) and, if you want, a mode
+  modo: dorico                   # ionio, dorico, frigio, lidio, misolidio, eolio (or maggiore, minore) [vocabulary values]
+  tempo: 88                      # beats per minute, from 40 to 200
+  strumenti: [fisarmonica, clarinetto]   # or a text; "no percussion" forbids them
+  umore_base: esplorazione_tesa  # one of the six music tags
   epoca: antica                  # antica, moderna, futura
-  motivo: {metro: 4, note: [[0, 1], [2, 1], [4, 2], [2, 1], [1, 1], [0, 2]]}   # gradi e durate [V come la pipeline]
+  motivo: {metro: 4, note: [[0, 1], [2, 1], [4, 2], [2, 1], [1, 1], [0, 2]]}   # degrees and durations [V as in the pipeline]
 
-# scena (o nodo di campagna.yaml)
+# scene (or node of campagna.yaml)
 audio:
-  musica: [notte, pioggia, ponte]   # umore, energia (bassa, media, alta), ora (alba, giorno, imbrunire,
-                                    #   notte), meteo, ambientazione, o parole inglesi libere
-  ambiente: [pioggia, {tag: fiume, volume: 0.6}]   # strati in loop; volume tra 0 e 1
-  interno: false                    # facoltativo: al chiuso (true) o all'aperto (false), se la deduzione sbaglia
+  musica: [notte, pioggia, ponte]   # mood, energy (bassa, media, alta), hour (alba, giorno, imbrunire, notte), weather, setting,
+                                    #   or free English words
+  ambiente: [pioggia, {tag: fiume, volume: 0.6}]   # layers in loop; volume between 0 and 1
+  interno: false                    # optional: indoors (true) or outdoors (false), if the deduction is wrong
   umore_iniziale: esplorazione_tesa
 
 # png
 tema: {carattere: [burbero], strumento: fagotto, modo: dorico, registro: basso}
 
-# battuta del repertorio: segnale automatico quando esce (docs/audio.md, «Segnali automatici»)
-audio: {effetto: campana, umore: lutto}   # uno o tutti e due; nient'altro (errore di caricamento) [V]
+# repertoire line: automatic signal when it comes out (docs/audio.md, "Automatic signals")
+audio: {effetto: campana, umore: lutto}   # one or both; nothing else (loading error) [V]
 ```
-- **Segnali delle battute**: `umore` è uno dei sei tag di musica, o `auto` (torna alla musica del luogo);
-  `effetto` è un tag di EFFETTI: campana, porta, catena, tuono, monete, chiave (`sfx_campana` vale lo
-  stesso). Il segnale parte con la **prima frase** della battuta, che deve nominare quel suono [V avviso];
-  l'effetto suona solo se il catalogo della campagna lo ha (`audio/manifest.json`) [V avviso]. Il Motore
-  applica al massimo un cambio d'umore automatico al minuto per scena.
-- **`umore_iniziale`** di una scena è l'umore con cui la scena comincia: uno dei sei tag, mai `auto` [V].
-- **Ambienti**: pioggia, temporale, fiume, acqua, vento, neve, fuoco, folla, taverna, campane, canto, notte,
-  stalla, gocce, mare, bosco, mulino.
-- **Ambientazioni** (per `musica`): taverna, chiesa, ponte, fiume, borgo, piazza, mulino, montagna, casa,
-  bosco, strada, sotterraneo, castello, mare, mercato, palazzo. **Meteo**: sereno, pioggia, temporale, neve,
-  vento, nebbia, gelo.
-- **Caratteri** (per `tema`): caldo, gioviale, burbero, solenne, nervoso, freddo, malinconico, fiero,
-  pacato, timido. **Registri**: basso, medio, alto. **Strumenti da motivo**: quelli melodici di
-  `STRUMENTI_TEMA` (flauto, clarinetto, fisarmonica, violino, violoncello, arpa, liuto, organo…).
-- Il tema viene dalla persona pubblica, mai da ciò che il PNG nasconde: un carattere che la lettura, la
-  personalità e la voce non giustificano è un avviso, il modo frigio su un PNG che mente un avviso
-  rigoroso (mestiere.md §10).
+- **Signals of the lines**: `umore` is one of the six music tags, or `auto` (back to the music of the place); `effetto` is a tag of EFFECTS:
+  campana (bell), porta (door), catena (chain), tuono (thunder), monete (coins), chiave (key) (`sfx_campana` is the same). The signal starts
+  with the **first sentence** of the line, which must name that sound [V warning]; the effect plays only if the campaign's catalogue has it
+  (`audio/manifest.json`) [V warning]. The Engine applies at most one automatic mood change per minute per scene.
+- **`umore_iniziale`** of a scene is the mood the scene starts with: one of the six tags, never `auto` [V].
+- **Environments**: pioggia (rain), temporale (storm), fiume (river), acqua (water), vento (wind), neve (snow), fuoco (fire), folla (crowd),
+  taverna (tavern), campane (bells), canto (singing), notte (night), stalla (stable), gocce (drops), mare (sea), bosco (wood), mulino (mill).
+- **Settings** (for `musica`): taverna, chiesa, ponte, fiume, borgo, piazza, mulino, montagna, casa, bosco, strada, sotterraneo, castello,
+  mare, mercato, palazzo. **Weather**: sereno, pioggia, temporale, neve, vento, nebbia, gelo.
+- **Characters** (for `tema`): caldo, gioviale, burbero, solenne, nervoso, freddo, malinconico, fiero, pacato, timido. **Registers**: basso,
+  medio, alto. **Instruments for the motif**: the melodic ones of `STRUMENTI_TEMA` (flauto, clarinetto, fisarmonica, violino, violoncello,
+  arpa, liuto, organo…).
+  The vocabulary values above are code identifiers (`strumenti/audio/vocabolario.py`): they are used as written, in any campaign language.
+- The NPC's theme comes from the public persona, never from what the NPC hides: a character that the reading, the personality and the voice
+  do not justify is a warning; the Phrygian mode on an NPC who lies is a strict warning (mestiere.md §10).
 
-## Tra le sessioni (dal livello arco): stato, registro, pacchetto
-La procedura è in `tra-le-sessioni.md`; il livello arco preparato prima in `arco.md`
-(`preparazione.arco`). Le classi del validatore: `STATO`, `CONTINUITÀ`, `ARCO`.
+## Between sessions (from the arc level): state, log, package
+The procedure is in `tra-le-sessioni.md`; the arc level prepared beforehand is in `arco.md` (`preparazione.arco`). The validator's classes:
+`STATO`, `CONTINUITÀ`, `ARCO`.
 
 ### stato/stato.yaml
 ```yaml
 versione: 1
-dopo_sessione: 1                     # l'ultima sessione che lo stato riflette (i suoi registri esistono) [V]
+dopo_sessione: 1                     # the last session the state reflects (its logs exist) [V]
 
-fatti:                               # ciò che è successo in gioco, in ordine; mai cancellati, solo superati
-  - id: g_irma_promette              # g_<nome> [V]
-    testo: "Irma ha giurato a Tobia che pagherà il tetto senza il mercante."
-    fonte: {sessione: 1, turno: 6, citazione: "Ti giuro che pagherò il tetto"}   # sottostringa ESATTA del turno [V]
-    # fonte: {sessione: 1, turno: 5, evento: {indizio: i_botte}}   # un evento del turno: battuta, indizio,
-    #                                                              # fatto, menzogna, orologio [V]
-    # fonte: {tra_sessioni: 1, motivo: "o_mercante avanza: il pegno non è arrivato"}   # fuori scena: il motivo
-    #                                                              # nomina l'orologio o la regola, che esiste [V]
-    noto_ai_pg: true                 # i PG lo sanno (lo hanno visto o sentito)
-    rende_noti: [f_bruno_visto]      # fatti del canone che i PG ora sanno [V esistono]
-    supera: [f_…]                    # fatti del canone che il gioco ha cambiato [V esistono]
-    superato_da: g_…                 # facoltativo: il fatto più recente che lo supera [V viene dopo]
-    effetti:                         # facoltativi: che cosa cambia nello stato derivato
-      png: {png_bruno: {vivo: false, dove: "la chiesa", atteggiamento: {pg_lia: amichevole}, sa: [f_…, g_…]}}
-      oggetti: {ogg_lanterna: {nome: "lanterna d'argento", chi: pg_tobia, stato: preso}}   # preso, perso, distrutto…
-      promesse: {pr_irma_tetto: {chi: png_irma, a: pg_tobia, cosa: "…", stato: aperta}}  # aperta, mantenuta, tradita, sciolta
-      fili: {filo_mercante: aperto}  # aperto o chiuso
+fatti:                               # what happened in play, in order; never deleted, only overridden
+  - id: g_<nome>                     # g_<nome> [V]
+    testo: "…"
+    fonte: {sessione: 1, turno: 6, citazione: "…"}   # EXACT substring of the turn [V]
+    # fonte: {sessione: 1, turno: 5, evento: {indizio: i_…}}   # an event of the turn: line, clue,
+    #                                                          # fact, lie, clock [V]
+    # fonte: {tra_sessioni: 1, motivo: "o_… advances: …"}   # off-screen: the reason names the clock or the rule, which exists [V]
+    noto_ai_pg: true                 # the PCs know it (they have seen or heard it)
+    rende_noti: [f_…]                # facts of the canon that the PCs now know [V exist]
+    supera: [f_…]                    # facts of the canon that play has changed [V exist]
+    superato_da: g_…                 # optional: the more recent fact that overrides it [V comes later]
+    effetti:                         # optional: what changes in the derived state
+      png: {png_<nome>: {vivo: false, dove: "…", atteggiamento: {pg_<nome>: amichevole}, sa: [f_…, g_…]}}
+      oggetti: {ogg_<nome>: {nome: "…", chi: pg_<nome>, stato: preso}}   # preso (taken), perso (lost), distrutto (destroyed)…
+      promesse: {pr_<nome>: {chi: png_<nome>, a: pg_<nome>, cosa: "…", stato: aperta}}  # aperta, mantenuta, tradita, sciolta
+      fili: {filo_<nome>: aperto}  # aperto (open) or chiuso (closed)
 
-orologi:                             # ogni orologio a fine sessione, e dopo gli avanzamenti fuori scena
-  o_processione: {pieni: 4, fonte: {sessione: 1}}          # = lo stato finale del registro [V]
-  o_mercante: {pieni: 1, fonte: {tra_sessioni: 1, motivo: "o_mercante: il pegno non è arrivato all'alba"}}
+orologi:                             # each clock at the end of the session, and after the off-screen advances
+  o_<nome>: {pieni: 4, fonte: {sessione: 1}}          # = the final state of the log [V]
+  o_<nome>: {pieni: 1, fonte: {tra_sessioni: 1, motivo: "o_…: …"}}
 
-pg:                                  # la crescita dei PG
-  pg_tobia: {livello: 1, fonte: {tra_sessioni: 1, motivo: "una sessione sola: niente crescita"}}
+pg:                                  # the growth of the PCs
+  pg_<nome>: {livello: 1, fonte: {tra_sessioni: 1, motivo: "one session only: no growth"}}
 ```
-Lo **stato derivato** (PNG vivi o morti, dove sono, verso chi sono amichevoli, che cosa sanno; oggetti; promesse;
-fili; ciò che i PG sanno) si ricava applicando gli `effetti` dei fatti non superati nell'ordine delle loro fonti.
-Non si scrive a parte: così ogni cambiamento ha la sua prova.
+The **derived state** (NPCs alive or dead, where they are, toward whom they are friendly, what they know; objects; promises; threads; what the PCs
+know) is obtained by applying the `effetti` of the facts not overridden, in the order of their sources. It is not written separately: so every
+change has its proof.
 
-### sessioni/<nn>/registro.yaml e trascrizione.yaml (li scrive il server)
-La forma è quella di `apps/server/src/sessione/registro.ts` (`RegistroSessione`, formato 1). Il validatore legge:
-- `sessione` (= la cartella `sessioni/<nn>`), `campagna`, `formato`, `archivio.ultimo_turno` (i turni giocati);
-- `indizi`, `battute`, `menzogne`, `fatti_noti`: voci `{id, turno, …}`, gli eventi che un fatto può citare;
-- `orologi[]`: `pieni_alla_fine` (lo stato a fine sessione) e `segni[].turno` (l'evento «orologio»);
-- i testi di un turno, alla lettera, per le citazioni: `trascrizione.yaml → voci[]` di quel turno,
-  `momenti[].righe` di quel turno, `pg[].azioni_pubbliche` e `azioni_private` di quel turno.
+### sessioni/<nn>/registro.yaml and trascrizione.yaml (written by the server)
+The shape is that of `apps/server/src/sessione/registro.ts` (`RegistroSessione`, format 1). The validator reads:
+- `sessione` (= the folder `sessioni/<nn>`), `campagna`, `formato`, `archivio.ultimo_turno` (the turns played);
+- `indizi`, `battute`, `menzogne`, `fatti_noti`: entries `{id, turno, …}`, the events a fact can cite;
+- `orologi[]`: `pieni_alla_fine` (the state at the end of the session) and `segni[].turno` (the "clock" event);
+- the texts of a turn, verbatim, for the quotations: `trascrizione.yaml → voci[]` of that turn, `momenti[].righe` of that turn,
+  `pg[].azioni_pubbliche` and `azioni_private` of that turn.
 
-Il registro contiene le azioni private: è materiale del master. Non si ritocca: si rigenera dall'archivio
-(`scripts/tra-sessioni.sh` controlla che i file nella campagna siano quelli che l'archivio darebbe).
+The log contains the private actions: it is the GM's material. It is not touched: it is regenerated from the archive
+(`scripts/tra-sessioni.sh` checks that the files in the campaign are those the archive would give).
 
-### sessioni/<nn>/ (il pacchetto, forma di apps/server/src/campagna/pacchetti.ts)
-`sessione.yaml` con `riassunto_iniziale`, `scene` (in ordine), `pieni_all_inizio: {o_…: segni}` (sostituisce
-quello degli orologi della campagna), eventuali orologi, canone e nodi della sessione (si uniscono a
-campagna.yaml), e `preparazione.fili: [{id, come: ripreso|rimandato}]`, che sta in `preparazione` perché non
-arrivi al narratore. Più `scene/`, `png/` (i PNG di questa sessione e le schede aggiornate dei ricorrenti, che
-sostituiscono quelle della campagna), `repertorio/` con le sue `parole_segrete.yaml` (sostituiscono quelle
-della campagna).
+### sessioni/<nn>/ (the package, shape of apps/server/src/campagna/pacchetti.ts)
+`sessione.yaml` with `riassunto_iniziale`, `scene` (in order), `pieni_all_inizio: {o_…: ticks}` (replaces that of the campaign's clocks),
+any clocks, and the canon and nodes of the session (they are merged into campagna.yaml), and `preparazione.fili: [{id, come: ripreso|rimandato}]`,
+which sits in `preparazione` so that it does not reach the narrator. Plus `scene/`, `png/` (the NPCs of this session and the updated sheets of the
+recurring ones, which replace those of the campaign), `repertorio/` with its `parole_segrete.yaml` (they replace those of the campaign).
 
-## Letture del manuale adottate
-Dove il manuale è ambiguo, il validatore e questa skill leggono così.
+## Readings of the manual adopted
+Where the manual is ambiguous, the validator and this skill read it as follows.
 
-1. **Presagi (C2).** «1–3» e «3–5» si contano sul totale del fronte, e ogni pericolo ne ha almeno uno.
-2. **Orologi (C2).** Ogni pericolo ha il suo orologio. Quelli in scena stanno in `orologi`, gli altri in `fronti[].orologi_extra`.
-3. **Apertura (C9, §4, N2).** `apertura` ha al massimo 3 frasi; `riassunto_iniziale` al massimo 4; insieme al massimo 6.
-4. **Musica.** Solo i sei tag del §4. Il vocabolario di architettura.md non è ancora riconciliato.
-5. **Scopo (C12).** `{tipo, rif}`, con tipo in snake_case dall'elenco chiuso.
-6. **Fatti.** `sa`, `non_sa` e `mente_su.verita` sono id del canone. `crede_a_torto` ha la forma `{testo, contraddice}`.
-7. **Indizi.** Un indizio ha una sola conclusione. `nodo` può essere un PNG, perché i PNG sono nodi (C5).
-8. **Uscite.** `segnalata_da` è una lista.
-9. **Segnale.** È un gesto fisico, diverso dal gesto abituale (D6).
-10. **Senza dadi** (F0): `cede_se` si scrive solo con condizioni di finzione, e `tiro: "nessuno"`.
-11. **Scene.** La prima è `scena.yaml`, e il server F0 gioca solo quella. Le altre sono `scene/*.yaml`.
-12. **Riferimenti liberi.** `relazioni` e `chi_altro_sa` possono citare entità senza scheda.
-13. **Confessioni** (dopo il giudizio A/B n. 2):
-    - `richiede.privata: true` vuol dire che l'azione dev'essere segnata privata dal telefono;
-    - `richiede.da_pg: [...]` vuol dire che l'azione dev'essere di quel PG.
+1. **Omens (C2).** "1–3" and "3–5" are counted on the total of the front, and every danger has at least one.
+2. **Clocks (C2).** Every danger has its own clock. Those on stage are in `orologi`, the others in `fronti[].orologi_extra`.
+3. **Opening (C9, §4, N2).** `apertura` has at most 3 sentences; `riassunto_iniziale` at most 4; together at most 6.
+4. **Music.** Only the six tags of §4. The vocabulary of architettura.md is not yet reconciled.
+5. **Purpose (C12).** `{tipo, rif}`, with tipo in snake_case from the closed list.
+6. **Facts.** `sa`, `non_sa` and `mente_su.verita` are canon ids. `crede_a_torto` has the shape `{testo, contraddice}`.
+7. **Clues.** A clue has only one conclusion. `nodo` can be an NPC, because NPCs are nodes (C5).
+8. **Exits.** `segnalata_da` is a list.
+9. **Signal.** It is a physical gesture, different from the habitual gesture (D6).
+10. **Without dice** (F0): `cede_se` is written only with fictional conditions, and `tiro: "nessuno"`.
+11. **Scenes.** The first is `scena.yaml`, and the F0 server plays only that one. The others are `scene/*.yaml`.
+12. **Free references.** `relazioni` and `chi_altro_sa` may cite entities without a sheet.
+13. **Confessions** (after the A/B judgement no. 2):
+    - `richiede.privata: true` means the action must be marked private from the phone;
+    - `richiede.da_pg: [...]` means the action must be by that PC.
 
-    Il server deve ancora applicarli; il validatore li esige [R].
-14. **Alias** dei PNG: il server li usa per capire a chi parlano le azioni (repertorio, pertinenza).
-15. **Menzogne.** `mente_su[].id` è il valore di `effetti.menzogna_detta`.
-16. **Più scene.** Una battuta valida solo in alcune scene ha `scena: <id>` o `scena: [<id>, …]`.
-17. **Eccezioni al catalogo.** `parole_segrete[].ammessa_nel_catalogo` vale solo per una battuta che
-    il Motore elenca soltanto dopo che un giocatore ha scritto la parola segreta. Va motivata nella nota.
-18. **Contesto del modo B.** Vale ciò che il compilatore del server manda davvero
-    (`strumenti/contesto_modo_b.ts`), non una lista scritta a mano: `da_togliere_dal_contesto` non serve
-    più, e il validatore lo ignora.
-19. **Voci simili.** `simile_a` in `assets/voci/voci.yaml` è simmetrico; due voci simili contano come due
-    voci uguali.
-20. **Tempo della cronologia.** Il giorno della sessione è il giorno zero; un evento senza ora non si
-    ordina con gli altri dello stesso giorno.
+    The server must still apply them; the validator requires them [R].
+14. **Aliases** of NPCs: the server uses them to understand whom the actions speak to (repertoire, relevance).
+15. **Lies.** `mente_su[].id` is the value of `effetti.menzogna_detta`.
+16. **Several scenes.** A line valid only in some scenes has `scena: <id>` or `scena: [<id>, …]`.
+17. **Exceptions to the catalogue.** `parole_segrete[].ammessa_nel_catalogo` applies only to a line that the Engine lists only after a player
+    has written the secret word. It must be justified in the note.
+18. **Context of mode B.** What the server's compiler actually sends counts (`strumenti/contesto_modo_b.ts`), not a hand-written list:
+    `da_togliere_dal_contesto` is no longer needed, and the validator ignores it.
+19. **Similar voices.** `simile_a` in `assets/voci/voci.yaml` is symmetric; two similar voices count as two identical ones.
+20. **Time of the chronology.** The day of the session is day zero; an event without an hour is not ordered against the others of the same day.

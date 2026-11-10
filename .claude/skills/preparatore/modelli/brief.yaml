@@ -4,6 +4,9 @@
 id: ""                 # ascii minuscolo con trattini, es. il-ponte-dei-sospiri
 titolo: ""
 richiesta: ""          # le parole di Riccardo, così come le ha scritte
+lingua: it             # it | en. Lingua di tutti i contenuti della campagna (righe, descrizioni, testi per i giocatori).
+                       # Predefinito it. I nomi di campi, id e file restano come sono. Il Preparatore scrive
+                       # `lingua: <codice>` in campagna.yaml. Regole di prosa: lingue/<lingua>/prosa.yaml.
 manuale: ""            # facoltativo: manuali/<file>.pdf|.md|.txt (vedi manuali/README.md). Vuoto = SRD 5.2.
                        # Con un manuale si scrive il set di regole in campagne/<id>/regole/ (SKILL, passo 1b).
 

@@ -1,188 +1,183 @@
-# Repertorio: le battute scritte prima (versione 2)
+# Repertoire: the lines written in advance (version 2)
 
-Leggi prima `docs/repertorio.md`. Qui c'è come scriverle bene, e la copertura che il validatore pretende.
+Read `docs/repertorio.md` first. Here is how to write them well, and the coverage the validator demands.
 
-## 1. A cosa serve
-Haiku in modalità repertorio (modo B) **non conosce i segreti**. Riceve:
-- il contesto pubblico della campagna e della scena (l'elenco esatto è nella regola 1 della skill; lo
-  stampa `npx tsx strumenti/contesto_modo_b.ts campagne/<id>`);
-- il catalogo delle battute pertinenti alle azioni del turno, nella forma `id · chi · tipo · quando`
-  (menzogne, verità e confessioni vi compaiono come «risposta»);
-- gli esempi di voce dei PNG.
+## 1. What it is for
+Haiku in repertoire mode (mode B) **does not know the secrets**. It receives:
+- the public context of the campaign and of the scene (the exact list is in rule 1 of the skill; it is printed by
+  `npx tsx strumenti/contesto_modo_b.ts campagne/<id>`);
+- the catalogue of the lines relevant to the turn's actions, in the form `id · who · type · when` (lies, truths and
+  confessions appear there as "response");
+- the voice examples of the NPCs.
 
-Lega ogni battuta all'azione a cui risponde (`[usa] id > pg_x`) e improvvisa solo i raccordi: l'annuncio di
-ogni azione pubblica (il nome del PG e ciò che ha scritto, manuale N15) e i passaggi tra una battuta e l'altra. Le battute
-servono a quattro cose:
-- **qualità**: le scrivi tu, con calma;
-- **latenza**: l'audio si genera prima;
-- **segreti**: il testo segreto esce solo quando le condizioni sono vere;
-- **regia**: segni d'orologio, momenti e finali arrivano nel momento giusto.
+It ties each line to the action it answers (`[usa] id > pg_x`) and improvises only the joints: the announcement of each
+public action (the PC's name and what they wrote, manual N15) and the passages between one line and the next. The lines
+serve four things:
+- **quality**: you write them, calmly;
+- **latency**: the audio is generated beforehand;
+- **secrets**: the secret text comes out only when the conditions are true;
+- **direction**: clock ticks, moments and endings arrive at the right time.
 
-## 2. Tre classi di battute
-| Classe | Cosa | Come si marca |
+## 2. Three classes of lines
+| Class | What | How it is marked |
 |---|---|---|
-| selezionabile | menzogne, confessioni, indizi, segni d'orologio, momenti chiave, finali, risposte a domande precise | (nessun flag) |
-| esempio di voce | saluto, domanda gentile, accusa, minaccia, offerta e aiuto generici, rifiuto | `solo_esempio: true` |
-| riempitivo | mosse che non rispondono a niente, usate solo allo stallo: il cane si alza, il tempo passa, un PNG che ricorda il rito | `riempitivo: true` |
+| selectable | lies, confessions, clues, clock ticks, key moments, endings, answers to precise questions | (no flag) |
+| voice example | greeting, kind question, accusation, threat, generic offer and help, refusal | `solo_esempio: true` |
+| filler | moves that answer nothing, used only at a stall: the dog gets up, time passes, an NPC recalls the rite | `riempitivo: true` |
 
-Un esempio di voce non può mentire, rivelare, confessare o far avanzare l'orologio [V]. Un riempitivo è
-solo di tipo momento, indizio, transizione o richiesta [V].
+A voice example cannot lie, reveal, confess or advance the clock [V]. A filler is only of type moment, clue, transition or
+request [V].
 
-## 3. id, quando, temi: i tre campi che decidono tutto
-- **id**: `<prefisso>_<argomento neutro>`. Prefissi: `nar_` per il narratore, `fin_` per i finali,
-  `tr_` per le transizioni, tre lettere del PNG (`ott_`, `bal_`) per i PNG.
-  - **Niente segreti nell'id**: `nar_volto_candela`, non `seb_cicatrice_candela`; `bal_chi_malato`, non `bal_carbonai`.
-  - **L'id si legge come una frase.** Il selettore vede «ott segale domanda» e ne deduce ciò che dice: un id
-    che nomina la natura della battuta (`_versione`, `_verita`, `_confessa`) dice chi mente, uno che nomina
-    l'esito (`zel_presa_macchia`: «Zelia presa») dice chi è stato. Usa l'argomento e la situazione:
-    `ott_segale_domanda`, `zel_macchia_privato`. Le parole che lo tradiscono sono un errore in rigoroso
-    (`REPERTORIO.id_rivelatore`); le altre le trovi solo leggendo il catalogo (`--catalogo`, passo 10).
-  - Per le reazioni generiche l'id finisce con la categoria: `ott_saluto`, `ott_domanda_gentile`,
-    `ott_accusa`, `ott_minaccia`, `ott_offerta`, `ott_aiuto`, `ott_rifiuto`.
-- **quando**: al massimo 15 parole. Descrive **un fatto osservabile** nella finzione o nell'azione. Si legge
-  come una frase anche lui: «un PG chiede a Ettore perché non salì al Sasso» dice che doveva salirci.
-  - Niente verità: «un PG mostra a Ottavia un chicco nero, dove Baldrin non sente», non «Ottavia confessa».
-  - Niente parole che dicono chi mente: mente, bugia, menzogna, confessa, segreto, nasconde, verità [V].
-  - Se serve citare un segreto (il PG ha trovato i chicchi neri), la battuta deve richiedere l'indizio
-    che lo rende pubblico (`richiede.indizi_rivelati`).
-- **temi**: le parole con cui un giocatore scriverebbe l'azione, nelle forme vere: spezzo, spezzare, pezzo, pagnotta.
-  - Il Motore le confronta con l'azione come parole intere; un tema di almeno cinque lettere vale anche
-    come inizio di parola («pagnott» prende pagnotta e pagnotte, ma «ponte» prende anche «pontieri»).
-  - Niente parole generiche (porta, chi, notte, pane, guardo, apro, uomo, dentro…) [R].
-  - Niente parole con due sensi che il prefiltro non distingue: «tocco» è il rintocco e «io tocco».
-    Scegli la forma che ha un senso solo («rintocco», «campana»).
-  - Una battuta entra nel catalogo anche quando l'azione nomina il PNG che parla (nome o `alias`).
-  - Segni d'orologio hanno temi neutri (`[orologio]`), perché li porta lo stato, non le parole. Un finale con
-    temi neutri arriva anche lui per stato, ma il Motore lo accetta solo legato a un'azione pubblica del turno
-    (riferimenti/motore.md): almeno un finale per scena ha i temi dell'azione decisiva.
-  - Prova i temi sui copioni ciechi della tua campagna: `--copioni esperimenti/copioni/<id>` (passo 12).
-    Il catalogo medio per temi deve stare sotto 4 battute per azione.
-- **max_usi**: al massimo 1 più il numero di varianti, anche per gli esempi di voce [V]: oltre,
-  ripeterebbe lo stesso testo.
+## 3. id, quando, temi: the three fields that decide everything
+- **id**: `<prefix>_<neutral subject>`. Prefixes: `nar_` for the narrator, `fin_` for endings, `tr_` for transitions, three
+  letters of the NPC for NPCs (`ott_`, `bal_`).
+  - **No secrets in the id**: a neutral subject, not the secret's name. The id must not give away the secret or the
+    culprit (examples: «lingue/<lingua>/preparatore/riferimenti.md», repertorio.md §3).
+  - **The id reads like a sentence.** The selector sees the id together with its NPC and deduces what it says: an id that
+    names the nature of the line (`_versione`, `_verita`, `_confessa`, "version", "truth", "confess") tells who lies; one that
+    names the outcome ("the PC was caught") tells who was caught. Use the subject and the situation. The words that give it
+    away are an error in strict mode (`REPERTORIO.id_rivelatore`); the others you find only by reading the catalogue
+    (`--catalogo`, step 10).
+  - For generic reactions the id ends with the category: `ott_saluto` (greeting), `ott_domanda_gentile` (kind question),
+    `ott_accusa` (accusation), `ott_minaccia` (threat), `ott_offerta` (offer), `ott_aiuto` (help), `ott_rifiuto` (refusal).
+- **quando**: at most 15 words. It describes **an observable fact** in the fiction or in the action. It too reads like a
+  sentence: a line saying "a PC asks the NPC why they did not climb to the high place" says that they should have climbed.
+  - No truths: "a PC shows the other a black grain, where the third NPC does not hear", not "the other confesses".
+  - No words that say who lies: lie, falsehood, confess, secret, hide, truth, and their equivalents in the campaign language
+    (the list is in «lingue/<lingua>/preparatore/riferimenti.md», repertorio.md §3) [V].
+  - If it is needed to cite a secret (the PC has found the black grains), the line must require the clue that makes it public
+    (`richiede.indizi_rivelati`).
+- **temi**: the words with which a player would write the action, in their real forms: the inflected forms and the
+  singular/plural, as they are typed.
+  - The Engine compares them with the action as whole words; a theme of at least five letters also works as the beginning of a
+    word (a stem takes its derived forms, but a short word takes unrelated ones too: see the examples in
+    «lingue/<lingua>/preparatore/riferimenti.md», repertorio.md §3).
+  - No generic words (door, who, night, bread, look, open, man, inside…) [R].
+  - No words with two meanings that the prefilter cannot tell apart (for example one word that is both a sound and a verb
+    form). Choose the form that has one meaning only ("bell" rather than "strike").
+  - A line enters the catalogue also when the action names the NPC who speaks (name or `alias`).
+  - Clock ticks have neutral themes (`[orologio]`), because the state carries them, not the words. An ending with neutral themes
+    arrives also by state, but the Engine accepts it only tied to a public action of the turn (motore.md): at least one ending
+    per scene has the themes of the decisive action.
+  - Test the themes on the blind scripts of your campaign: `--copioni esperimenti/copioni/<id>` (step 12). The average catalogue
+    by themes must stay under 4 lines per action.
+- **max_usi**: at most 1 plus the number of variants, also for voice examples [V]: beyond that, the same text would repeat.
 
-## 4. Confessioni con un cancello vero
-Ogni condizione di `cede_se` è una battuta di tipo `confessione`. Il suo `richiede` traduce la
-condizione in qualcosa che il Motore può controllare:
+## 4. Confessions with a real gate
+Each condition of `cede_se` is a line of type `confessione`. Its `richiede` translates the condition into something the Engine
+can check:
 
-| Condizione in cede_se | richiede |
+| Condition in cede_se | richiede |
 |---|---|
-| «in privato», «dove X non sente» | `privata: true` |
-| «quando Assenzio le chiede…» | `da_pg: [pg_assenzio]` |
-| «quando un PG le mostra il chicco nero» | `indizi_rivelati: [i_speroni_neri]` |
-| «dopo aver detto la sua versione» | `battute_usate: [<id della menzogna>]` |
-| «al terzo rintocco» | `orologio: {id, min, max}` |
+| "in private", "where X does not hear" | `privata: true` |
+| "when Assenzio asks her…" | `da_pg: [pg_assenzio]` |
+| "when a PC shows her the black grain" | `indizi_rivelati: [i_speroni_neri]` |
+| "after having told her version" | `battute_usate: [<id of the lie>]` |
+| "at the third stroke" | `orologio: {id, min, max}` |
 
-Una confessione senza nessuno di questi cancelli è un avviso, e un errore in modo rigoroso.
+A confession without any of these gates is a warning, and an error in strict mode.
 
-Poi:
-- `effetti.fatti_noti` contiene la verità (`mente_su.verita`): è così che il validatore lega la
-  confessione alla menzogna;
-- due confessioni alternative della stessa verità si escludono a vicenda con `battute_non_usate`.
+Then:
+- `effetti.fatti_noti` contains the truth (`mente_su.verita`): this is how the validator ties the confession to the lie;
+- two alternative confessions of the same truth exclude each other with `battute_non_usate`.
 
-**Cancelli con «oppure».** `richiede` vuole tutte le sue condizioni vere. Per «una qualunque di queste
-prove» si scrive `richiede.oppure: [{indizi_rivelati: [i_a]}, {indizi_rivelati: [i_b]}]`: le condizioni di
-base, più almeno una alternativa. Il Motore lo applica (`repertorio/condizioni.ts`), e il validatore lo
-controlla: una confessione è chiusa solo se ogni alternativa ha un cancello. Per i cancelli sull'azione vale
-l'alternativa scelta (`{privata: true}` oppure `{indizi_rivelati: [i_x]}`).
-- **L'indizio cerniera.** Quando tante battute dipendono da «una qualunque di più strade» (la lettera
-  arriva in due modi, la nonna cede in tre), fai rivelare a tutte le strade lo stesso indizio, e chiudi le
-  battute che vengono dopo con quel solo indizio (`indizi_rivelati`): niente catene di `oppure` da rileggere.
+**Gates with "oppure".** `richiede` wants all its conditions true. For "any one of these proofs" write
+`richiede.oppure: [{indizi_rivelati: [i_a]}, {indizi_rivelati: [i_b]}]`: the base conditions, plus at least one alternative. The
+Engine applies it (`repertorio/condizioni.ts`), and the validator checks it: a confession is closed only if every alternative has a
+gate. For the gates on the action, the chosen alternative applies (`{privata: true}` or `{indizi_rivelati: [i_x]}`).
+- **The hinge clue.** When many lines depend on "one of several roads" (the letter arrives in two ways, the grandmother gives way in
+  three), make all the roads reveal the same clue, and close the lines that come later with that single clue (`indizi_rivelati`):
+  no chains of `oppure` to reread.
 
-## 5. Menzogne
-- Una battuta di tipo `menzogna` per ogni `mente_su`, con `effetti.menzogna_detta: <mente_su.id>`.
-- **Il segnale in ogni versione** (testo e varianti), in una riga `[narratore]`, con le parole di `segnale` [V].
-- Il testo del PNG ricalca la `versione` della scheda. Una variante può accorciarla («Ve l'ho già detto.
-  Il mulino del paese»), ma non cambiarne il contenuto.
+## 5. Lies
+- One line of type `menzogna` for each `mente_su`, with `effetti.menzogna_detta: <mente_su.id>`.
+- **The signal in every version** (text and variants), in a `[narratore]` line, with the words of `segnale` [V].
+- The NPC's text follows the `versione` of the sheet. A variant may shorten it ("I already told you. The village mill"), but not
+  change its content.
 
-## 6. Le altre battute
-- **Indizi**: una battuta per ogni modo (`modi`) di trovarli [V]. Un indizio di tipo `png` ha tanti modi
-  quante sono le condizioni del `cede_se` che lo rivela: indizi e menzogne si progettano insieme.
-  - Descrivi, non concludere.
-  - `effetti.rivela_indizi`, più `fatti_noti` solo se il fatto viene detto per intero.
-- **Segni d'orologio**: solo gesti e suoni che si vedono e si sentono; un PNG che parla, parla nelle sue
-  battute (una riga `[png_…]` in un segno è un avviso, e il narratore che riassume un PNG è contro D1).
-  Una battuta per segmento, con `richiede.orologio: {id, min: k-1, max: k-1}` ed
-  `effetti.avanza_orologio` [V]. Il testo ricalca il segno di campagna.yaml. Si può aggiungere un dettaglio,
-  per un massimo di quattro frasi.
-- **Momenti chiave**: le iniziative e le evoluzioni dei PNG (Ottavia brucia i sacchi, Baldrin avvolge la
-  mollica per la figlia), il climax, le svolte.
-- **Segnali audio** (`audio: {effetto, umore}`, schema.md «Audio»): pochi, e solo dove il testo li chiama.
-  - `effetto` sulle battute la cui **prima frase** nomina il suono: il segno «la campana batte il terzo
-    tocco» porta `effetto: campana`; una porta sfondata, `porta`. Mai un effetto che la battuta non dice:
-    il tavolo sentirebbe un rumore senza causa.
-  - `umore` sulle svolte che la `musica.transizione` della scena già prevede: il segno che fa partire la
-    corsa (`inseguimento`), il finale in cui qualcuno resta indietro (`lutto`), la veglia che finisce
-    (`rito_sacro`). Al massimo due cambi d'umore per scena fuori dai finali; `auto` riporta la musica del luogo.
-  - Niente segnali sugli esempi di voce, sui riempitivi o sulle battute che possono uscire in ogni momento.
-- **Finali**: uno per ogni esito del `taglio` [V almeno uno], con `richiede.orologio` a orologio completo
-  se arrivano solo al climax. Se la scena ha `esiti`, ogni esito cita il suo finale [V].
-- **Esempi di voce**: per ogni PNG di supporto o principale, almeno tre, con un saluto e un rifiuto [V].
-  Coprono le categorie domanda gentile, accusa, minaccia, offerta e aiuto (avviso se mancano). Il loro
-  testo entra nel contesto del selettore, quindi **nessuna parola segreta** [V].
-- **Riempitivi**: almeno uno [V]; di solito la mossa morbida della scena e qualche iniziativa dei PNG.
-- **Nessuna battuta presuppone un'altra battuta facoltativa.** «Il mulo, no.» non va, se il mulo compare
-  solo in un riempitivo che può non essere uscito. Se il legame serve, scrivilo: `richiede.battute_usate`.
-- **Più scene**: `scena: <id>` (o una lista di id) lega una battuta a quelle scene. Il Motore non elenca le
-  battute in cui parla un PNG assente dalla scena in corso. I segni di un orologio attivo in più
-  scene e le battute degli indizi trovabili in più momenti non hanno `scena` (mestiere.md §9).
-- **Transizioni**: almeno due (avviso), per entrare e uscire dai luoghi vicini.
+## 6. The other lines
+- **Clues**: one line for each way of finding them (`modi`) [V]. A clue of type `png` has as many ways as there are conditions
+  of the `cede_se` that reveals it: clues and lies are designed together.
+  - Describe, do not conclude.
+  - `effetti.rivela_indizi`, plus `fatti_noti` only if the fact is said in full.
+- **Clock ticks**: only gestures and sounds that are seen and heard; an NPC who speaks, speaks in its own lines (a `[png_…]` line
+  inside a tick is a warning, and a narrator that summarises an NPC goes against D1). One line per segment, with
+  `richiede.orologio: {id, min: k-1, max: k-1}` and `effetti.avanza_orologio` [V]. The text follows the tick of campagna.yaml. A
+  detail may be added, up to four sentences.
+- **Key moments**: the NPCs' initiatives and evolutions (one burns the sacks, another wraps the crumb for a daughter), the climax, the
+  turning points.
+- **Audio signals** (`audio: {effetto, umore}`, schema.md "Audio"): few, and only where the text calls for them.
+  - `effetto` on lines whose **first sentence** names the sound: the tick "the bell strikes the third stroke" carries `effetto: campana`;
+    a smashed door, `porta`. Never an effect that the line does not name: the table would hear a noise without a cause.
+  - `umore` on the turns that the scene's `musica.transizione` already foresees: the tick that starts the chase, the ending in which
+    someone is left behind, the vigil that ends. At most two mood changes per scene outside the endings; `auto` returns to the music of
+    the place.
+  - No signals on voice examples, fillers, or lines that can come out at any moment.
+- **Endings**: one for each outcome of the `taglio` [V at least one], with `richiede.orologio` at a full clock if they arrive only at the
+  climax. If the scene has `esiti`, each outcome cites its ending [V].
+- **Voice examples**: for every supporting or main NPC, at least three, with a greeting and a refusal [V]. They cover the categories kind
+  question, accusation, threat, offer and help (warning if missing). Their text enters the selector's context, so **no secret words** [V].
+- **Fillers**: at least one [V]; usually the scene's soft move and a few NPC initiatives.
+- **No line presupposes another optional line.** A line like "The mule, no." does not work if the mule appears only in a filler that may not
+  have come out. If the link is needed, write it: `richiede.battute_usate`.
+- **Several scenes**: `scena: <id>` (or a list of ids) ties a line to those scenes. The Engine does not list the lines in which an NPC absent
+  from the current scene speaks. Ticks of a clock active in several scenes, and the lines of clues findable at several moments, have no `scena`
+  (mestiere.md §9).
+- **Transitions**: at least two (warning), to enter and leave the nearby places.
 
-## 7. Parole segrete (repertorio/parole_segrete.yaml)
+## 7. Secret words (repertorio/parole_segrete.yaml)
 ```yaml
 parole:
-  - parola: "la lanterna in cantina"            # forma leggibile
-    regex: "lanterna[^.]{0,40}(cantina|botte)"  # Python, sul testo in minuscolo
-    fatti: [f_lanterna_cantina]                  # i fatti nascosti che rivela
-    pubblica_dopo: [irma_lanterna_cera]          # id di battute o indizi che la rendono pubblica
+  - parola: "…"                                  # readable form, in the campaign language
+    regex: "…"                                   # Python, on the lower-cased text
+    fatti: [f_…]                                 # the hidden facts it reveals
+    pubblica_dopo: [<id of a line or clue that makes it public>]
     nota: "…"
-    ammessa_nel_catalogo: []                     # rarissimo, va motivato (schema.md, lettura 17)
+    ammessa_nel_catalogo: []                     # very rare, must be justified (schema.md, reading 17)
 ```
-- **Una regex cerca il legame, non la parola.** «cerusico» compare anche nell'aggancio pubblico di un
-  PG («il suo cerusico disertore»): quello che va cercato è «il forestiero è un cerusico».
-- **I prompt delle immagini sono in inglese.** Per un segreto che un'immagine potrebbe mostrare (la cicatrice,
-  la lanterna nascosta) aggiungi `regex_en` alla voce: il validatore la cerca nei prompt (`IMMAGINI.segreto`).
-- **Confini di parola.** Una regex scatta anche a metà di una parola più lunga: «sa del leone» trovava
-  «Rosa del leone», «tetto» trovava «tettoia». Comincia con `\b` (avviso `SEGRETI.regex_dentro_parola`).
-- **Anche i nomi propri portano segreti.** La gilda dei «Pontieri dell'Onda», nell'aggancio di un PG,
-  conteneva la parola segreta «onda». Cerca le regex nei nomi di gilde, luoghi e soprannomi.
-- **Ogni fatto nascosto** ha almeno una voce (avviso `SEGRETI.fatto_scoperto`).
-- **Il catalogo, i campi pubblici** (apertura, riassunto, situazione comune, schede pubbliche dei PG,
-  lettura d'aspetto, battuta campione, segni degli orologi attivi), **il contesto del modo B** (compilato
-  dal server, scena per scena: `SEGRETI.contesto_b`) **e gli esempi di voce** non contengono nessuna regex
-  ancora segreta [V]. Il contesto si compila con node; senza node resta un avviso, e il lavoro non è finito.
-- **Ogni battuta che dice una parola segreta** o è in `pubblica_dopo`, o viene dopo un id che vi
-  appartiene, o è di un PNG che ha il fatto nel suo `sa` [V]. Se la rende pubblica, è in `pubblica_dopo` [V].
-- **`da_togliere_dal_contesto` non serve più.** Era un elenco dichiarato che nessuno applicava: il
-  compilatore del server lavora per allowlist, e il validatore guarda ciò che manda davvero. Se c'è, si
-  ignora. Ciò che non deve arrivare al selettore va scritto altrove: `come_si_trova`, elementi NASCOSTA,
-  `mai_dice`, `preparazione`.
+- **A regex looks for the link, not the word.** A word may appear also in a PC's public hook (their own profession, a public bond):
+  what must be searched is the secret fact ("the stranger is a surgeon"), not the word alone.
+- **Word boundaries.** A regex also fires in the middle of a longer word: a short fragment matched inside other words and names. Start with
+  `\b` (warning `SEGRETI.regex_dentro_parola`).
+- **Proper names carry secrets too.** A guild name, in a PC's hook, may contain a secret word. Search the regexes in the names of guilds,
+  places and nicknames.
+- **Every hidden fact** has at least one entry (warning `SEGRETI.fatto_scoperto`).
+- **The catalogue, the public fields** (opening, summary, common situation, public sheets of the PCs, appearance reading, sample line,
+  signs of the active clocks), **the context of mode B** (compiled by the server, scene by scene: `SEGRETI.contesto_b`) **and the voice
+  examples** do not contain any secret regex yet [V]. The context is compiled with node; without node it remains a warning, and the work is
+  not finished.
+- **Every line that says a secret word** is either in `pubblica_dopo`, or comes after an id that belongs to it, or belongs to an NPC who has
+  the fact in its `sa` [V]. If it makes it public, it is in `pubblica_dopo` [V].
+- **`da_togliere_dal_contesto` is no longer needed.** It was a declared list that nobody applied: the server's compiler works by allowlist,
+  and the validator checks what it actually sends. If it is there, it is ignored. What must not reach the selector must be written
+  elsewhere: `come_si_trova`, elements marked HIDDEN, `mai_dice`, `preparazione`.
 
-## 8. Tabella di copertura (spuntala prima di scrivere il testo)
-- [ ] per ogni indizio: `modi` battute di rivelazione
-- [ ] per ogni `mente_su`: una menzogna, con il segnale in ogni versione
-- [ ] per ogni condizione di `cede_se`: una confessione con il suo cancello
-- [ ] per ogni orologio attivo: un segno per segmento
-- [ ] per ogni esito del taglio: un finale; più la chiusura con la scelta aperta (C13)
-- [ ] per ogni PNG: saluto, domanda gentile, accusa, minaccia, offerta, aiuto, rifiuto (esempi o selezionabili)
-- [ ] per ogni comparsa nominata in un aggancio o nella situazione comune (lo sposo, la sposa): almeno una
-  battuta del narratore, perché i giocatori la cercheranno
-- [ ] per ogni voce di `riferimenti/motore.md`: la sua risposta (battute private, segni, finali, oggetti)
-- [ ] per ogni domanda probabile dei copioni: una risposta selezionabile, o un esempio di voce che guidi l'improvvisazione
-- [ ] nessuna battuta cita ciò che solo un'altra battuta facoltativa ha introdotto
-- [ ] almeno un riempitivo e due transizioni
-- [ ] per ogni battuta: niente nomi di PG, niente segreti in id e quando, temi distintivi
+## 8. Coverage table (tick it before writing the text)
+- [ ] for each clue: `modi` revealing lines
+- [ ] for each `mente_su`: a lie, with the signal in every version
+- [ ] for each condition of `cede_se`: a confession with its gate
+- [ ] for each active clock: one tick per segment
+- [ ] for each outcome of the taglio: an ending; plus the closing with the choice left open (C13)
+- [ ] for each NPC: greeting, kind question, accusation, threat, offer, help, refusal (examples or selectable)
+- [ ] for each extra named in a hook or in the common situation (the groom, the bride): at least one narrator line, because the players
+  will look for them
+- [ ] for each entry of `riferimenti/motore.md`: its answer (private lines, ticks, endings, objects)
+- [ ] for each probable question of the scripts: a selectable answer, or a voice example that guides the improvisation
+- [ ] no line cites what only another optional line introduced
+- [ ] at least one filler and two transitions
+- [ ] for each line: no PC names, no secrets in id and quando, distinctive themes
 
-## 9. Prosa delle battute [V]
-- **Narratore**:
-  - frasi di 16 parole al massimo, con una media tra 8 e 14 su tutto il repertorio;
-  - al massimo 4 frasi per versione e 70 parole in tutto;
-  - nessuna frase in terza persona su un PG: «ti», «vi», o niente. Il PG in terza persona c'è solo
-    nell'annuncio della sua azione (manuale N15), che il narratore improvvisa prima della battuta;
-  - la battuta parte dall'esito e non ripete l'azione: «Dentro la mollica ci sono chicchi neri», non
-    «Spezzi la pagnotta: dentro…», che dopo l'annuncio «Ginestra spezza una pagnotta» suonerebbe due volte.
-- **PNG**:
-  - al massimo 2 frasi per riga, 4 nelle confessioni, nei momenti e nei finali;
-  - frasi entro il tetto dello `stile` («Frasi di due-sei parole» → 9 al massimo).
-- Niente nomi di PG, cifre, parentesi, puntini di sospensione o espressioni del §5.
-- Rivolgersi a un PG ignoto senza accordi di genere: «Giù le mani dalle ceste!», non «Fermo!». Un
-  vocativo di mestiere («sorella», «soldato») va bene solo se il `quando` dice a chi si parla.
+## 9. Prose of the lines [V]
+- **Narrator**:
+  - sentences of 16 words at most, with an average between 8 and 14 across the whole repertoire;
+  - at most 4 sentences per version and 70 words in all;
+  - no sentence in the third person about a PC: the second person, or nothing. The PC in the third person appears only in the
+    announcement of its action (manual N15), which the narrator improvises before the line;
+  - the line starts from the outcome and does not repeat the action: "Black grains are inside the crumb", not "You break the
+    loaf: inside…", which after the announcement "Ginestra breaks a loaf" would sound twice.
+- **NPCs**:
+  - at most 2 sentences per line, 4 in confessions, moments and endings;
+  - sentences within the ceiling of the `stile` (a range of two to six words → 9 at most).
+- No PC names, figures, brackets, ellipses or the expressions of §5.
+- Address an unknown PC without gender agreement, where the language has it: an imperative, not a gendered term. A vocative of trade
+  ("sister", "soldier") is fine only if the `quando` says whom one speaks to.

@@ -1,171 +1,165 @@
-# Mestiere: come si progetta una campagna che regge dal vivo
+# Craft: how to design a campaign that holds up live
 
-Queste pagine raccolgono ciò che il manuale non dice e le prove hanno insegnato: la scena di prova
-«Il pane dei lumi» (campagne/prova-f0), una revisione indipendente, due esperimenti A/B con giudice
-cieco (esperimenti/giudizio-ab-1 e -2), e la prova cieca della skill con «Il ponte delle lanterne»
-(campagne/ponte-lanterne, quattro scene, con le sue NOTE_SULLA_SKILL.md).
+These pages collect what the manual does not say and what the tests have taught: the test scene (campagne/prova-f0), an
+independent review, two A/B experiments with a blind judge (esperimenti/giudizio-ab-1 and -2), and the blind test of the
+skill with the campaign campagne/ponte-lanterne (four scenes, with its NOTE_SULLA_SKILL.md). Titles and sample lines of
+those campaigns are in «lingue/<lingua>/preparatore/riferimenti.md», mestiere.md.
 
-## 1. Situazione, non trama (A3, C3)
-- Parti da **chi vuole cosa**. Il cattivo ha un piano che va avanti anche se i PG stanno fermi. Scrivi
-  la cronologia «se i PG non intervengono»: è ciò che fa avanzare l'orologio.
-- **Una verità nascosta, semplice da dire in una frase** («la febbre viene dal pane»), e difficile da
-  provare davanti agli altri. Le prove sono oggetti, comportamenti, racconti: mai la parola di un solo PNG.
-- **Un PNG sa la verità e non è creduto**: tensione buona. Deve però avere un motivo per non dirla tutta
-  (paura, vergogna, un'altra colpa), altrimenti la scena si risolve al primo turno.
-- **Il pericolo si sente da fuori**: voci, passi, campane. Un pericolo che si vede solo nei dialoghi non preme.
-- **I conti del mondo tornano.** Nella prova cieca i quattro difetti più gravi erano conti: due viaggi che
-  ci stavano tra due tocchi mentre la storia diceva «uno solo», una barca troppo piccola per i gruppi, una
-  riga del libro datata prima del fatto che provava, una catena che funzionava al contrario. Scrivi la
-  cronologia con le ore e la logistica con minuti e posti (schema.md), e fai rifare i conti al validatore.
-- **La scelta resta difficile a verità scoperta.** Con tutte le prove in mano, la risposta non deve
-  diventare ovvia: se una promessa o un PNG cancella il prezzo di una strada, la scelta è finta.
+## 1. Situation, not plot (A3, C3)
+- Start from **who wants what**. The villain has a plan that goes on even if the PCs stand still. Write the chronology
+  "if the PCs do not intervene": it is what makes the clock advance.
+- **A hidden truth, simple enough to say in one sentence**, and hard to prove in front of others. The proofs are objects,
+  behaviours, stories: never the word of a single NPC.
+- **An NPC knows the truth and is not believed**: good tension. But they must have a reason not to tell all of it (fear,
+  shame, another guilt), otherwise the scene resolves at the first turn.
+- **The danger can be heard from outside**: voices, footsteps, bells. A danger that is seen only in dialogue does not press.
+- **The world's accounts add up.** In the blind test the four most serious defects were accounts: two trips that fit between
+  two strokes while the story said "only one"; a boat too small for the groups; a line in a book dated before the fact it
+  proved; a chain that worked in reverse. Write the chronology with the hours and the logistics with minutes and seats
+  (schema.md), and have the validator redo the accounts.
+- **The choice stays hard when the truth is out.** With all the proofs in hand, the answer must not become obvious: if a
+  promise or an NPC cancels the price of a road, the choice is fake.
 
-## 2. PNG ben delineati (§3, §6)
-- **Tre registri diversi** tra i PNG di una scena: tu e i nomi di mestiere; tu e un lei freddo; lei a
-  tutti. Più tre lessici (forgia, cucina, medicina) e tre lunghezze di frase. Prova: leggi le battute
-  campione senza nomi e indovina chi parla.
-- **Il «voi» singolare non va usato.** A voce sembra un plurale.
-- **Voci registrate poche.** Due voci uguali o simili (`simile_a` in voci.yaml) non stanno mai nella
-  stessa scena: decidilo al brief, perché decide chi può incontrare chi (§9, «Voci tra le scene»).
-- **Ogni PNG vuole qualcosa in questa scena**, che lo mette contro un altro PNG o un fronte. Il desiderio si
-  vede nelle battute: chiede, contratta, pone condizioni (D7). Non regala informazioni.
-- **`sotto_pressione` cambia comportamento**, non intensità: «diventa calmo e lentissimo», non «si arrabbia di più».
-- **Non dare a un PNG il potere di chiudere il climax** (D8). Al massimo tiene la folla sulla soglia
-  «per il tempo di una risposta»: la prova la portano i PG.
-- **`mai_dice`** contiene la parola chiave del suo segreto. Quando una regola vale solo fino a un certo
-  momento, scrivi il momento: «il nome di X, finché non ha confessato».
+## 2. Well-drawn NPCs (§3, §6)
+- **Three different registers** among the NPCs of a scene: you and the trade names; you and a cold formal form; the formal
+  form to everyone. Plus three lexicons (forge, kitchen, medicine) and three sentence lengths. Test: read the sample lines
+  without names and guess who speaks.
+- **The singular formal pronoun is not used** where the language has one: it sounds like a plural when spoken. (Pronoun
+  and register forms are specific to each language: «lingue/<lingua>/preparatore/riferimenti.md», mestiere.md §2.)
+- **Few registered voices.** Two identical or similar voices (`simile_a` in voci.yaml) never stand in the same scene: decide
+  it in the brief, because it decides who can meet whom (§9, "Voices between scenes").
+- **Every NPC wants something in this scene**, which sets it against another NPC or a front. The desire shows in the
+  lines: it asks, bargains, sets conditions (D7). It does not hand out information.
+- **`sotto_pressione` changes behaviour, not intensity**: "becomes calm and very slow", not "gets angrier".
+- **Do not give an NPC the power to close the climax** (D8). At most it holds the crowd on the threshold "for the time of an
+  answer": the PCs carry the proof.
+- **`mai_dice`** contains the keyword of its secret. When a rule holds only up to a certain moment, write the moment: "X's
+  name, until they have confessed".
 
-## 3. Menzogne, segnali, cede_se (D6)
-- La `versione` è breve, concreta, ripetibile, e sempre uguale.
-- Il `segnale` è **un gesto fisico** visibile («si sistema il fazzoletto rosso e guarda le ceste»), diverso
-  dal gesto abituale. Non deve contraddire l'aspetto: chi ha le braccia infarinate non «si pulisce le mani pulite».
-- **`cede_se` è osservabile in una trascrizione.** «Un PG le mette in mano un chicco nero dei suoi sacchi»
-  si vede; «quando si fida» no.
-  - Più condizioni si uniscono con «Oppure».
-  - La privatezza si definisce nella scena («chi sente cosa»). Poi va nella confessione come
-    `richiede.privata: true`.
-- **Una confessione per ogni condizione**, ognuna con il suo cancello strutturale (vedi repertorio.md §4).
-  Il giudizio A/B n. 2 ha trovato confessioni uscite in pubblico: il `quando` da solo non le ferma.
-- Una menzogna che cede quando qualcuno chiede «i nomi dei tre testimoni» deve davvero non avere nomi.
-  Se il canone gliene dà uno, la condizione non scatta mai.
+## 3. Lies, signals, cede_se (D6)
+- The `versione` is short, concrete, repeatable, and always the same.
+- The `segnale` is **a visible physical gesture** ("straightens the red scarf and looks at the baskets"), different from the
+  habitual gesture. It must not contradict the appearance: someone with floury arms does not "wipe their clean hands".
+- **`cede_se` is observable in a transcript.** "A PC puts one black grain from her sacks in her hand" can be seen; "when she
+  trusts" cannot.
+  - Several conditions are joined with the Engine's fixed word for "or" (the campaign language's word; see
+    «lingue/<lingua>/preparatore/riferimenti.md», mestiere.md §3).
+  - Privacy is defined in the scene ("who hears what"). Then it goes into the confession as `richiede.privata: true`.
+- **One confession for each condition**, each with its structural gate (see repertorio.md §4). The A/B judgement no. 2 found
+  confessions that came out in public: `quando` alone does not stop them.
+- A lie that gives way when someone asks "the names of the three witnesses" must really have no names. If the canon gives it
+  one, the condition never triggers.
 
-## 4. Indizi (C4, F3, A9)
-- Per ogni conclusione chiave:
-  - **almeno sette indizi** è un buon numero per la principale;
-  - **almeno uno proattivo**: arriva da solo con la mossa morbida, per esempio il cane che trema;
-  - **almeno uno per un PG specifico**: una preghiera, un incantesimo, una conoscenza privata.
-- Un indizio si **descrive, non si conclude**: «sa di bruciato e tinge le dita, come la polvere di un
-  braciere spento». La parola «carbone» la dicono i giocatori.
-- Scrivi `come_si_trova` con i modi distinti (aprire un sacco; spezzare una pagnotta) e mettili in `modi`.
-- **Ogni indizio fisico ha il suo vincolo pubblico** (`vincolo_pubblico`): che cosa percepisce chiunque, in
-  una frase, senza il perché. Nel giudizio cieco di nozze-neve il campanaccio della Duchessa «suonava forte»:
-  l'indizio era proprio che è muto, ma nessuno l'aveva detto al narratore, e i sensi della scena facevano
-  suonare tutti i campanacci. Il vincolo («il campanaccio grande della Duchessa non suona») va al narratore e
-  al selettore; il perché (dentro c'è l'anello) resta nel `come_si_trova`. Se anche il percepito è segreto,
-  il vincolo dice che lo descrive solo la battuta («la pietra intorno al leone la descrive la battuta»). La
-  scena non deve dire il contrario: sensi, descrizione ed elementi lo rispettano («tutti tranne quello grande»).
-  Per gli altri fatti che l'improvvisazione tende a contraddire (chi ha la lettera, quanti fratelli ha la
-  nonna) ci sono i `vincoli_pubblici` della scena, con le stesse regole.
-- Due indizi nello stesso oggetto (il marchio sul sacco e i chicchi dentro) rendono la soluzione troppo
-  rapida. Va bene se il climax regge lo stesso; altrimenti separali.
+## 4. Clues (C4, F3, A9)
+- For every key conclusion:
+  - **at least seven clues** is a good number for the main one;
+  - **at least one proactive**: it arrives by itself with the soft move, for example the dog that trembles;
+  - **at least one for a specific PC**: a prayer, a spell, private knowledge.
+- A clue is **described, not concluded**: "it smells of burning and stains the fingers, like the dust of a dead brazier". The
+  word for the conclusion is said by the players.
+- Write `come_si_trova` with the distinct ways (opening a sack; breaking a loaf) and put them in `modi`.
+- **Every physical clue has its public constraint** (`vincolo_pubblico`): what anyone perceives, in one sentence, without the
+  why. In the blind judgement of the snow wedding, the Duchess's bell "rang loudly": the clue was precisely that it is mute,
+  but nobody had told the narrator, and the scene's senses made every bell ring. The constraint ("the Duchess's big bell does
+  not ring") goes to the narrator and the selector; the why (the ring is inside) stays in `come_si_trova`. If the perceived
+  thing is also secret, the constraint says that only the line describes it ("the stone around the lion is described by the
+  line"). The scene must not say the opposite: senses, description and elements respect it ("all except the big one").
+  For the other facts that improvisation tends to contradict (who has the letter, how many brothers the grandmother has)
+  there are the scene's `vincoli_pubblici`, with the same rules.
+- Two clues on the same object (the mark on the sack and the grains inside) make the solution too quick. It is fine if the
+  climax holds anyway; otherwise, separate them.
 
-## 5. Orologio e ritmo (C2, T4, R10, R11)
-- Sei segni per una scena di 20–30 minuti, con `segno_almeno_ogni: 2`.
-- Ogni segno è una frase udibile o visibile e **aggiunge pressione**: il canto si interrompe, un sasso,
-  un rintocco, le lanterne, la maniglia, i tre rintocchi.
-- Un segno può aprire un'occasione: il nano va alla finestra e la grata resta senza orecchie per un momento (M9).
-- Il climax converge: il pericolo, la verità e la scelta arrivano nello stesso momento.
+## 5. Clock and pace (C2, T4, R10, R11)
+- Six ticks for a scene of 20–30 minutes, with `segno_almeno_ogni: 2`.
+- Every tick is an audible or visible phrase and **adds pressure**: the singing stops, a stone, a toll, the lanterns, the
+  handle, the three strokes.
+- A tick can open an opportunity: the dwarf goes to the window and the grate is unwatched for a moment (M9).
+- The climax converges: the danger, the truth and the choice arrive at the same moment.
 
-## 6. La scelta che costa (R10, A4)
-- La verità detta a tutti deve **costare qualcosa a qualcuno a cui i PG tengono**. Il silenzio deve
-  costare altro. Esempio: la verità salva il forestiero, ma sposta la rabbia del paese sull'ostessa.
-- Prevedi la «terza via», che i giocatori cercheranno sempre, e falle pagare un prezzo.
-- **`al_completo` dell'orologio** dice che cosa vuole il pericolo e come reagisce a ogni risposta.
+## 6. The choice that costs (R10, A4)
+- The truth told to everyone must **cost something to someone the PCs care about**. Silence must cost something else. Example:
+  the truth saves the stranger, but moves the village's anger onto the innkeeper.
+- Foresee the "third way", which the players will always look for, and make it cost a price.
+- **The clock's `al_completo`** says what the danger wants and how it reacts to each answer.
 
-## 7. Scrivere per l'orecchio (§5)
-- Testi letti: frasi di 8–14 parole in media, 16 al massimo, una idea per frase.
-- Ogni luogo coinvolge un senso oltre la vista.
-- Le parole forti vanno in fondo alla frase. Niente cifre, sigle, parentesi o puntini di sospensione.
-- Attenzione a ciò che il validatore non sente:
-  - un pronome ambiguo («dietro, qualcuno tossisce»);
-  - un verbo che si legge in due modi («si alza dal forno» suona come «esce dal forno»);
-  - due frasi di fila con lo stesso attacco.
-- Le frasi brevissime una dopo l'altra rendono il ritmo piatto: alterna, e unisci i gesti in una frase.
-- Dal vivo ogni azione pubblica arriva annunciata («Brann solleva il coperchio.», manuale N15): l'annuncio
-  lo improvvisa il narratore, con il nome del PG e solo ciò che il giocatore ha scritto. Le battute scritte
-  prima quindi non nominano i PG e partono dall'esito; il budget di parole del turno include gli annunci,
-  e anche per questo le battute restano brevi.
+## 7. Writing for the ear (§5)
+- Read texts: sentences of 8–14 words on average, 16 at most, one idea per sentence.
+- Every place involves a sense beyond sight.
+- Strong words go at the end of the sentence. No figures, acronyms, brackets or ellipses.
+- Watch what the validator cannot hear:
+  - an ambiguous pronoun ("behind, someone coughs");
+  - a verb that reads in two ways ("comes out of the oven" sounds like "leaves the oven");
+  - two sentences in a row with the same opening.
+- Very short sentences one after another flatten the rhythm: alternate, and join gestures into one sentence.
+- Live, every public action arrives announced ("Brann lifts the lid.", manual N15): the announcement is improvised by the
+  narrator, with the PC's name and only what the player wrote. The lines written beforehand therefore do not name the PCs and
+  start from the outcome; the word budget of the turn includes the announcements, and that too is why lines stay short.
 
-## 8. Lezioni delle prove, in breve
-| Errore trovato | Regola |
+## 8. Lessons from the tests, in brief
+| Error found | Rule |
 |---|---|
-| Il narratore conclude al posto dei PG («non è veleno, è carbone») | gli indizi descrivono; le regole di prosa vietano la parola-soluzione |
-| Battute dei PNG riferite dal narratore | ogni parola di un PNG con scheda nella sua riga |
-| Il selettore riempie i turni con battute disponibili (A/B 1) | solo ciò che conta è selezionabile; esempi e riempitivi; temi distintivi |
-| Il cane e la borsa ripetuti tre volte | riempitivi solo allo stallo; anti-ripetizione |
-| PNG muti davanti a una domanda | esempi di voce per ogni PNG, così l'improvvisazione ha un modello |
-| Orologio fermo per cinque turni | segni come battute, `segno_almeno_ogni`, Motore che li impone |
-| Confessione in pubblico di un segreto «in privato» (A/B 2) | `richiede.privata`, `da_pg`, indizi: cancelli strutturali |
-| Id `seb_cicatrice_…` e `quando` con «botola» | il selettore legge id e quando: nessun segreto lì |
-| La cicatrice nel ritratto: sul proiettore dal primo turno | tratti nascosti solo in `aspetto.situazioni` |
-| La scena non regge senza un PG preciso | situazione comune senza nomi, ruoli di riserva (se manca la chierica benedice il massaro) |
-| Un PNG «sa la soluzione» e la grida al primo turno | baratta: chiede acqua, una promessa, la porta aperta |
-| Canone contraddetto tra due testi | un fatto, un id, citato ovunque |
-| Due viaggi ci stavano tra due tocchi; barca piccola per i gruppi; riga datata prima del fatto (prova cieca) | cronologia e logistica, rifatte dal validatore (`MONDO`) |
-| La regola «il narratore non dice mai che il leone è stato calato» era il segreto, nel contesto del selettore | regole di prosa generiche; il divieto preciso nel `come_si_trova` |
-| Pianta, taglio e abbozzi con segreti, non controllati; `da_togliere_dal_contesto` solo dichiarato | il validatore compila il contesto vero del modo B |
-| Bice (tabitha) portata nel Borgo di Rosa (nadine) da desiderio, soluzione, battuta e taglio | voci simili come dato, cercate in ogni testo che sposta un PNG |
-| «Tullio, il custode, grida»: il narratore sembra chiamare Tullio | niente nome con la virgola a inizio frase |
-| «sa del leone» trovava «Rosa del leone» | regex con `\b` |
+| The narrator concludes in place of the PCs ("it is not poison, it is charcoal") | clues describe; the prose rules forbid the solution-word |
+| NPC lines reported by the narrator | every word of an NPC with a sheet in its own line |
+| The selector fills the turns with available lines (A/B 1) | only what matters is selectable; examples and fillers; distinctive themes |
+| The dog and the bag repeated three times | fillers only at a stall; anti-repetition |
+| Mute NPCs in front of a question | voice examples for every NPC, so improvisation has a model |
+| Clock stuck for five turns | ticks as lines, `segno_almeno_ogni`, Engine that imposes them |
+| Confession in public of a secret "in private" (A/B 2) | `richiede.privata`, `da_pg`, clues: structural gates |
+| Id `seb_cicatrice_…` and a `quando` with "trapdoor" | the selector reads id and quando: no secret there |
+| The scar in the portrait: on the projector from the first turn | hidden traits only in `aspetto.situazioni` |
+| The scene does not hold without a specific PC | common situation without names, backup roles (if the acolyte is missing, the steward blesses) |
+| An NPC "knows the solution" and shouts it at the first turn | it bargains: asks for water, a promise, the door opened |
+| Canon contradicted between two texts | one fact, one id, quoted everywhere |
+| Two trips fit between two strokes; boat too small for the groups; dated line before the fact (blind test) | chronology and logistics, redone by the validator (`MONDO`) |
+| The rule "the narrator never says the lion has been lowered" was the secret, in the selector's context | generic prose rules; the precise ban in `come_si_trova` |
+| Map, cut and sketches with secrets, unchecked; `da_togliere_dal_contesto` only declared | the validator compiles the real context of mode B |
+| A similar-voiced NPC brought into another's town, by desire, solution, line and cut | similar voices as data, searched in every text that moves an NPC |
+| "The custodian shouts": the narrator seems to call the custodian by name | no name with a comma at the start of the sentence |
+| "sa del leone" matched "Rosa del leone" | regex with `\b` |
 
-## 9. Più scene (sessioni di due o tre ore)
-Il server gioca una scena alla volta; il master passa alla successiva dal pannello. Ogni scena ha il suo
-contesto, i suoi PNG presenti e i suoi orologi attivi; lo stato (indizi, battute uscite, orologi) resta.
+## 9. More scenes (sessions of two or three hours)
+The server plays one scene at a time; the GM moves to the next from the panel. Each scene has its own context, its NPCs
+present and its active clocks; the state (clues, lines used, clocks) remains.
 
-- **Orologio di sessione.** Un pericolo che preme per tutta la sessione ha un orologio da otto segni,
-  attivo in tutte le scene in cui si sente. Un turno dura un paio di minuti (sei segni ogni due turni
-  riempiono mezz'ora), quindi `segno_almeno_ogni` ≈ minuti della sessione ÷ (2 × segmenti): per due ore
-  e mezza e otto segni, circa nove; meno se anche i cambi di scena portano un segno. Con 2 l'orologio si
-  riempirebbe nella prima mezz'ora. Una scena breve dentro la sessione può avere un orologio suo, da sei
-  segni con `segno_almeno_ogni: 2`.
-- **Segni che si sentono ovunque.** Un segno di un orologio attivo in più scene esce in qualunque di esse,
-  quindi si sente da tutte: la campana, la voce del fiume, le grida dal ponte. «La rampa bassa va
-  sott'acqua» non si vede dal Borgo. La battuta del segno non ha `scena` [V].
-- **Lo stesso luogo in due momenti.** Il ponte all'imbrunire e il ponte a mezzanotte sono due schede.
-  La seconda ha come nodo un evento («Il terzo tocco»), con un suo indizio proattivo. Un indizio si
-  definisce in una scheda sola; le sue battute non hanno `scena`, così restano trovabili anche dopo.
-- **Orologi che partono da una scelta.** Un orologio che deve correre solo dopo una scelta («il ponte
-  resta aperto dopo il tocco») dichiara `parte_dopo: [<id della battuta della scelta>]`. Il server non
-  lo applica ancora: fino ad allora scrivi la condizione anche in `avanza_quando` e chiudi il primo segno
-  con `richiede.battute_usate`, e metti l'orologio solo tra gli `orologi_attivi` della scena in cui la
-  scelta si fa, così il ritmo minimo non chiede segni prima del tempo.
-- **Cancelli con «oppure».** Una battuta che vale «se i PG hanno una qualunque delle tre prove» ha
-  `richiede.oppure` (repertorio.md §4), o un indizio cerniera che tutte le prove rivelano. Un finale con
-  più cancelli è fragile: rileggilo per ogni via.
-- **Voci tra le scene.** Il Motore non elenca le battute di un PNG assente dalla scena in corso. Restano i
-  testi che lo spostano: desiderio, iniziative, evoluzione, soluzioni dei colli di bottiglia, taglio, esiti.
-  Se due PNG hanno voci simili, cercali: il validatore avvisa di ciò che trova; i casi voluti si
-  giustificano in autovalutazione.
-- **I nodi noti.** Un luogo che i PG conoscono dall'inizio (la chiesa del paese) ha `noto_ai_pg: true`:
-  non serve scoprirlo con tre indizi.
+- **Session clock.** A danger that presses for the whole session has an eight-tick clock, active in every scene where it can be
+  heard. A turn lasts a couple of minutes (six ticks every two turns fill half an hour), so `segno_almeno_ogni` ≈ session
+  minutes ÷ (2 × segments): for two and a half hours and eight ticks, about nine; fewer if scene changes also bring a tick.
+  With 2 the clock would fill in the first half hour. A short scene inside the session may have its own clock, of six ticks
+  with `segno_almeno_ogni: 2`.
+- **Ticks heard everywhere.** A tick of a clock active in several scenes comes out in any of them, so it is heard from all:
+  the bell, the river's voice, the shouts from the bridge. "The low ramp goes under water" is not seen from the village. The
+  tick line has no `scena` [V].
+- **The same place at two moments.** The bridge at dusk and the bridge at midnight are two sheets. The second has as its node
+  an event ("The third stroke"), with its own proactive clue. A clue is defined in one sheet only; its lines have no `scena`,
+  so they remain findable later too.
+- **Clocks that start from a choice.** A clock that must run only after a choice ("the bridge stays open after the stroke")
+  declares `parte_dopo: [<id of the choice line>]`. The server does not apply it yet: until then, write the condition also in
+  `avanza_quando` and close the first tick with `richiede.battute_usate`, and put the clock only among the `orologi_attivi` of
+  the scene where the choice is made, so that the minimum rhythm does not ask for ticks before time.
+- **Gates with "oppure".** A line that is valid for "if the PCs have any of the three proofs" has `richiede.oppure`
+  (repertorio.md §4), or a hinge clue that all the proofs reveal. An ending with several gates is fragile: reread it for every
+  path.
+- **Voices between scenes.** The Engine does not list the lines of an NPC absent from the current scene. What remains are the
+  texts that move it: desire, initiatives, evolution, bottleneck solutions, cut, outcomes. If two NPCs have similar voices,
+  search for them: the validator warns about what it finds; deliberate cases are justified in the self-assessment.
+- **Known places.** A place the PCs know from the start (the village church) has `noto_ai_pg: true`: it need not be discovered
+  with three clues.
 
-## 10. Musica, ambienti e temi (docs/audio.md)
-La pipeline dell'audio ricava tutto dai campi pubblici: di solito non serve scrivere niente. Guarda la sua
-deduzione con `genera_audio.py --dry-run` e correggi con i campi di schema.md («Audio») solo ciò che non va.
+## 10. Music, environments and themes (docs/audio.md)
+The audio pipeline derives everything from the public fields: usually nothing needs writing. Look at its deduction with
+`genera_audio.py --dry-run` and correct with the fields of schema.md ("Audio") only what is wrong.
 
-- **L'umore viene dalla domanda della scena, non dall'arredo.** `musica.tag` (e `audio.umore_iniziale`)
-  dice che cosa sente il tavolo: un'osteria dove si cerca un colpevole è `esplorazione_tesa`, non
-  `taverna_calda`. Un solo cambio d'umore a scena, nel punto di svolta della `transizione`.
-- **Gli ambienti sono ciò che si sente da fuori**, gli stessi suoni dei `sensi` e dei segni dell'orologio:
-  la pioggia, il fiume in piena, la folla alla porta. Due o tre strati per luogo, quello che porta il
-  pericolo più forte. Niente che contraddica la scena: niente acqua che scorre dove è ghiacciata, niente
-  grilli d'inverno, niente folla in una stanza chiusa a chiave.
-- **Gli effetti sono colpi che il narratore nomina**: il rintocco, la porta, la catena. Se un oggetto conta
-  per il climax, nominalo nei sensi o negli elementi, così la pipeline lo trova.
-- **Il tema di un PNG nasce dalla sua persona pubblica**: lettura d'aspetto, personalità di superficie e
-  sotto pressione, voce, timbro. Mai dalla menzogna, dal segreto, dal ruolo nella trama: un tema
-  «sinistro» per il PNG che mente dice al tavolo chi cercare prima che lo scopra. Il bugiardo cordiale
-  suona cordiale; il modo frigio non va a chi mente.
-- **I temi della campagna si somigliano**: sono variazioni di un solo motivo (`stile.audio.motivo`, o
-  quello generato). Scrivi il motivo solo se ne hai uno migliore: da quattro a dodici note, per gradi
-  vicini, che chiude lungo sulla tonica o sulla quinta.
+- **The mood comes from the scene's question, not from the furniture.** `musica.tag` (and `audio.umore_iniziale`) says what the
+  table feels: an inn where a culprit is sought is `esplorazione_tesa`, not `taverna_calda`. One mood change per scene at most,
+  at the turning point of the `transizione`.
+- **Environments are what is heard from outside**, the same sounds as the `sensi` and the clock ticks: the rain, the river in
+  spate, the crowd at the door. Two or three layers per place, the one that carries the strongest danger. Nothing that
+  contradicts the scene: no water running where it is frozen, no crickets in winter, no crowd in a room locked from inside.
+- **Effects are blows the narrator names**: the toll, the door, the chain. If an object matters for the climax, name it in the
+  senses or the elements, so the pipeline finds it.
+- **An NPC's theme comes from its public persona**: reading of appearance, surface and under-pressure personality, voice, timbre.
+  Never from the lie, the secret, the role in the plot: an "ominous" theme for the NPC who lies tells the table whom to look for
+  before they discover it. The affable liar sounds affable; the Phrygian mode does not go to someone who lies.
+- **The campaign's themes resemble each other**: they are variations of one motif (`stile.audio.motivo`, or the generated one).
+  Write the motif only if you have a better one: from four to twelve notes, by close degrees, closing long on the tonic or the
+  fifth.

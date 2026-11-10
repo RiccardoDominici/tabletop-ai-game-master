@@ -1,86 +1,84 @@
-# Tra le sessioni (bozza della fase D3)
+# Between sessions (draft of phase D3)
 
-Che cosa fa il Preparatore tra una sessione e l'altra di una campagna sopra la one-shot (docs/strati.md,
-«Il ciclo tra le sessioni»). Oggi il validatore rifiuta i livelli sopra la one-shot (`LIVELLO.non_supportato`):
-questa procedura entra in uso con la fase D2, quando il server gioca i pacchetti `sessioni/<nn>/` e scrive i
-registri. Le classi `STATO` e `CONTINUITÀ` del validatore sono già pronte, e la seguono.
+What the Preparatore does between one session and the next of a campaign above the one-shot (docs/strati.md, "The
+cycle between sessions"). Today the validator rejects the levels above the one-shot (`LIVELLO.non_supportato`): this
+procedure goes into use with phase D2, when the server plays the packages `sessioni/<nn>/` and writes the logs. The
+`STATO` and `CONTINUITÀ` classes of the validator are already ready, and they follow it.
 
-## Il principio: il registro è la prova, lo stato è la sua lettura
-- **Il registro** (`sessioni/<nn>/registro.yaml`) lo scrive il server a fine sessione, in modo deterministico,
-  dall'archivio (`sessioni.sqlite`). Nessun modello lo scrive o lo ritocca: se ha una `firma`, il validatore
-  controlla che il contenuto torni (`STATO.registro`).
-- **Lo stato** (`stato/stato.yaml`) lo scrive il modello forte. È la lettura del registro: che cosa è successo
-  davvero, che cosa è cambiato per i PNG, che cosa resta aperto. Ogni fatto cita la sua prova, e il
-  validatore la cerca nel registro (`STATO.fonte`). Così un fatto inventato, o letto male, non arriva alla
-  sessione dopo.
-- **Il canone preparato non si tocca; il gioco aggiunge** (docs/strati.md, principio 5). `campagna.yaml →
-  canone` resta come il Preparatore l'ha scritto (i fatti `f_`): è una regola del framework, che gira da solo.
-  I fatti di gioco sono `g_` e stanno nello stato; quando il gioco cambia un fatto preparato, il fatto `g_` lo
-  dichiara con `supera: [f_…]`. Un fatto di gioco non si cancella: si supera con uno più recente (`superato_da`).
-- **Ciò che i PG hanno scoperto smette di essere segreto** (principio 6). Il pacchetto porta le sue parole
-  segrete e le schede aggiornate dei PNG ricorrenti, che per quella sessione sostituiscono quelle della campagna.
+## The principle: the log is the proof, the state is its reading
+- **The log** (`sessioni/<nn>/registro.yaml`) is written by the server at the end of the session, deterministically, from
+  the archive (`sessioni.sqlite`). No model writes or touches it: if it has a `firma`, the validator checks that the
+  content matches (`STATO.registro`).
+- **The state** (`stato/stato.yaml`) is written by the strong model. It is the reading of the log: what really happened,
+  what changed for the NPCs, what remains open. Every fact cites its proof, and the validator looks for it in the log
+  (`STATO.fonte`). So an invented fact, or one read wrongly, does not reach the next session.
+- **The prepared canon is not touched; the game adds** (docs/strati.md, principle 5). `campagna.yaml → canone` stays as the
+  Preparatore wrote it (the `f_` facts): it is a rule of the framework, which runs on its own. Game facts are `g_` and live
+  in the state; when play changes a prepared fact, the `g_` fact declares it with `supera: [f_…]`. A game fact is never
+  deleted: it is overridden by a more recent one (`superato_da`).
+- **What the PCs have discovered stops being secret** (principle 6). The package carries its secret words and the updated
+  sheets of the recurring NPCs, which for that session replace those of the campaign.
 
-## I sei passi, in pratica
-Il lavoro tra le sessioni lo fa un agente con questa skill, come la preparazione di una campagna.
-`scripts/tra-sessioni.sh` fa le parti deterministiche, e si ferma ogni volta dove deve scrivere l'agente.
+## The six steps, in practice
+The work between sessions is done by an agent with this skill, like the preparation of a campaign.
+`scripts/tra-sessioni.sh` does the deterministic parts, and it stops every time where the agent must write.
 
-1. **Fine sessione** (il master, dal pannello). Il server scrive `sessioni/<nn>/registro.yaml` e
-   `trascrizione.yaml`. Non si toccano.
-2. **Registro e mossa del mondo**, deterministici:
+1. **End of session** (the GM, from the panel). The server writes `sessioni/<nn>/registro.yaml` and
+   `trascrizione.yaml`. Do not touch them.
+2. **Log and move of the world**, deterministic:
    ```
    scripts/tra-sessioni.sh campagne/<id> <n>
    ```
-   Controlla che il registro ci sia (e, se `scripts/registro.sh` lo sa fare, che sia quello dell'archivio),
-   stampa che cosa è successo, turno per turno, e la mossa che le regole fisse dell'arco danno da sole:
-   l'orologio d'arco più `ritmo.per_sessione`, e le condizioni di `accelera` e `rallenta` da giudicare.
-3. **Stato** (l'agente). Aggiorna `stato/stato.yaml` fino a `dopo_sessione: <n>`:
-   - un fatto per ogni cosa successa che conta dopo: chi ha saputo che cosa, chi è morto o ferito, dove sono
-     andati i PNG, che cosa hanno promesso i PG e a chi, quali fili restano aperti;
-   - ogni fatto con la sua `fonte`: il turno e una citazione esatta di ciò che si è detto o scritto, oppure un
-     evento del turno (una battuta uscita, un indizio rivelato, un fatto reso noto, un segno d'orologio);
-   - niente riassunti a memoria: se una cosa non è nel registro, non è successa;
-   - **il mondo si muove**: gli orologi dei fronti (e, dal livello campagna, delle fazioni) avanzano con le
-     loro regole; ciò che cambia fuori scena è un fatto con `fonte: {tra_sessioni: <n>, motivo}`, e il motivo
-     nomina l'orologio, il pericolo o il fronte che lo produce (`o_…`, `p_…`, `fronte_…`). I PG non lo sanno
-     (`noto_ai_pg: false`) finché non lo vedono in gioco.
-4. **Scheletro del pacchetto**, deterministico:
+   It checks that the log is there (and, if `scripts/registro.sh` can do it, that it is the one from the archive), prints
+   what happened, turn by turn, and the move that the fixed rules of the arc give by themselves: the arc clock plus
+   `ritmo.per_sessione`, and the conditions of `accelera` and `rallenta` to be judged.
+3. **State** (the agent). Update `stato/stato.yaml` up to `dopo_sessione: <n>`:
+   - one fact for each thing that happened that matters later: who knew what, who died or was wounded, where the NPCs
+     went, what the PCs promised and to whom, which threads remain open;
+   - each fact with its `fonte`: the turn and an exact quotation of what was said or written, or an event of the turn
+     (a line that came out, a clue revealed, a fact made known, a clock tick);
+   - no summaries from memory: if a thing is not in the log, it did not happen;
+   - **the world moves**: the clocks of the fronts (and, from the campaign level, of the factions) advance under their rules;
+     what changes off-screen is a fact with `fonte: {tra_sessioni: <n>, motivo}`, and the reason names the clock, the danger
+     or the front that produces it (`o_…`, `p_…`, `fronte_…`). The PCs do not know it (`noto_ai_pg: false`) until they see
+     it in play.
+4. **Package skeleton**, deterministic:
    ```
    scripts/tra-sessioni.sh campagne/<id> <n> --pacchetto
    ```
-   Si ferma se lo stato ha errori (`STATO`). Poi scrive, senza mai sovrascrivere, lo scheletro di
-   `sessioni/<n+1>/`: `sessione.yaml` con `pieni_all_inizio` dallo stato e i fili aperti da decidere; le schede
-   intere dei PNG ricorrenti cambiati in gioco, con `sa`, `non_sa` e atteggiamento presi dallo stato; le parole
-   segrete in uso, senza quelle dei fatti che i PG ormai sanno.
-5. **Sessione dopo** (l'agente). Gli stessi passi della skill per una one-shot, a partire da stato e arco:
-   - il riassunto da leggere all'apertura (tre-cinque frasi, dai fatti dello stato), le scene, il repertorio;
-   - per ogni filo, `come: ripreso` o `rimandato`; nelle schede copiate, `perche` e `vuole` riscritti;
-   - le parole segrete dei segreti nuovi: una per ogni fatto ancora segreto che entra nella sessione;
-   - la scheda della campagna non si tocca: resta la versione iniziale.
-6. **Verifica e risorse**:
+   It stops if the state has errors (`STATO`). Then it writes, never overwriting, the skeleton of `sessioni/<n+1>/`:
+   `sessione.yaml` with `pieni_all_inizio` from the state and the open threads to be decided; the whole sheets of the
+   recurring NPCs changed in play, with `sa`, `non_sa` and attitude taken from the state; the secret words in use, without
+   those of the facts the PCs now know.
+5. **Session after** (the agent). The same steps the skill uses for a one-shot, starting from state and arc:
+   - the summary to read at the opening (three to five sentences, from the facts of the state), the scenes, the repertoire;
+   - for each thread, `come: ripreso` or `rimandato`; in the copied sheets, `perche` and `vuole` rewritten;
+   - the secret words of the new secrets: one for each fact still secret that enters the session;
+   - the campaign sheet is not touched: it stays the initial version.
+6. **Verification and resources**:
    ```
    scripts/tra-sessioni.sh campagne/<id> <n> --verifica
    ```
-   Controlla che il pacchetto sia scritto (riassunto, scene con la scheda, repertorio, fili decisi), lancia il
-   validatore sulla sessione `<n+1>` (`valida_campagna.py --rigoroso --sessione <n+1>`; finché non c'è,
-   `--solo STATO,CONTINUITÀ,ARCO`), poi `scripts/prepara.sh` sul pacchetto, quando saprà farlo (fase D2).
+   It checks that the package is written (summary, scenes with the sheet, repertoire, threads decided), runs the validator on
+   session `<n+1>` (`valida_campagna.py --rigoroso --sessione <n+1>`; until it exists, `--solo STATO,CONTINUITÀ,ARCO`), then
+   `scripts/prepara.sh` on the package, when it is able to do so (phase D2).
 
-## Le forme dei file
-Stato, registro e pacchetto sono descritti in `schema.md`, sezione «Tra le sessioni». Qui sotto, che cosa ne
-controlla il validatore.
+## The file shapes
+State, log and package are described in `schema.md`, section "Between sessions". Below, what the validator checks of them.
 
-## Che cosa controlla il validatore
-| Codice | Controllo |
+## What the validator checks
+| Code | Check |
 |---|---|
-| `STATO.registro` | i registri fino a `dopo_sessione` esistono; il numero torna con la cartella; la firma torna |
-| `STATO.fonte` | il turno citato esiste; la citazione è nel turno, alla lettera; l'evento è nel turno; un fatto fuori scena ha il motivo, che nomina un orologio, un pericolo o un fronte esistente |
-| `STATO.superato` | un fatto è superato solo da uno che viene dopo |
-| `STATO.orologio` | a fine sessione l'orologio ha i segni del registro |
-| `STATO.forma`, `STATO.riferimento` | id `g_`, testo, PNG, PG, fatti, orologi esistenti; stati di promesse e fili |
-| `CONTINUITÀ.morto` | un PNG morto non è tra i presenti, non parla e non ha una scheda nel pacchetto |
-| `CONTINUITÀ.scheda` | un PNG cambiato in gioco che torna in scena ha la scheda aggiornata nel pacchetto, con l'atteggiamento dello stato |
-| `CONTINUITÀ.saputo` | ciò che un PNG ha saputo è nel `sa` della sua scheda e non nel `non_sa`; nessuna parola segreta per ciò che i PG sanno già |
-| `CONTINUITÀ.segreto` | il pacchetto con un repertorio ha le sue parole segrete, e ogni fatto ancora segreto che entra nella sessione (schede dei PNG in scena, battute) ha la sua parola |
-| `CONTINUITÀ.orologio` | gli orologi della sessione ripartono dai segni dello stato |
-| `CONTINUITÀ.promessa` | promesse e fili aperti sono in `preparazione.fili` della sessione, ripresi o rimandati (avviso) |
-| `CONTINUITÀ.oggetto` | un oggetto perso o distrutto non torna tra gli elementi delle scene (avviso) |
-| `CONTINUITÀ.pg` | un PG non torna indietro di livello |
+| `STATO.registro` | the logs up to `dopo_sessione` exist; the number matches the folder; the signature matches |
+| `STATO.fonte` | the cited turn exists; the quotation is in the turn, verbatim; the event is in the turn; an off-screen fact has a reason, which names an existing clock, danger or front |
+| `STATO.superato` | a fact is overridden only by one that comes later |
+| `STATO.orologio` | at the end of the session the clock has the ticks of the log |
+| `STATO.forma`, `STATO.riferimento` | ids `g_`, text, NPCs, PCs, facts, existing clocks; states of promises and threads |
+| `CONTINUITÀ.morto` | a dead NPC is not among those present, does not speak, and has no sheet in the package |
+| `CONTINUITÀ.scheda` | an NPC changed in play who returns to the scene has the updated sheet in the package, with the attitude from the state |
+| `CONTINUITÀ.saputo` | what an NPC has learned is in the `sa` of its sheet and not in the `non_sa`; no secret word for what the PCs already know |
+| `CONTINUITÀ.segreto` | the package with a repertoire has its secret words, and every fact still secret that enters the session (sheets of the NPCs on stage, lines) has its word |
+| `CONTINUITÀ.orologio` | the clocks of the session restart from the ticks of the state |
+| `CONTINUITÀ.promessa` | promises and open threads are in `preparazione.fili` of the session, taken up or deferred (warning) |
+| `CONTINUITÀ.oggetto` | a lost or destroyed object does not come back among the elements of the scenes (warning) |
+| `CONTINUITÀ.pg` | a PC does not go back a level |

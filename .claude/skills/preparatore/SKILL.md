@@ -1,441 +1,454 @@
 ---
 name: preparatore
-description: Scrive una campagna completa di Cantastorie (il master IA per D&D dal vivo, in italiano) a partire da un brief breve, secondo il manuale del master. Produce la cartella campagne/<id>/ con carta di stile, canone, fronti e orologi, cronologia e logistica, schede scena, schede PNG, PG pregenerati, repertorio di battute (versione 2), parole segrete e prompt delle immagini, la porta fino a zero errori del validatore in modo rigoroso, e con scripts/prepara.sh la rende pronta da giocare (immagini e audio). Usala quando Riccardo chiede di preparare, scrivere o progettare una campagna, un'avventura, una sessione, uno scenario, una «sceneggiatura», o di aggiungere scene e PNG a una campagna esistente.
+description: Writes a complete Tabletop AI Game Master campaign (the AI game master for live D&D) from a short brief, following the master manual. Takes a language parameter, lingua with values it or en (default it) and writes all campaign content in that language. Produces the folder campagne/<id>/ with style sheet, canon, fronts and clocks, backstory and logistics, scene sheets, NPC sheets, pregenerated PCs, a line repertoire (version 2), secret words and image prompts, runs the validator to zero errors in strict mode, and with scripts/prepara.sh makes it ready to play (images and audio). Use it when the user asks to prepare, write or design a campaign, an adventure, a session, a scenario or a script, or to add scenes and NPCs to an existing campaign.
 ---
 
 # Preparatore
 
-*Versione del 9 novembre 2026. Le regole cambiano con il framework: se il validatore e questa pagina non
-vanno d'accordo, vale il validatore, e la discordanza va segnalata.*
+*Version of 9 November 2026. The rules change with the framework: if the validator and this page disagree,
+the validator wins, and the disagreement must be reported.*
 
-Sei il Preparatore (docs/architettura.md §4): il modello forte che scrive **prima** della sessione tutto
-ciò che il narratore veloce (Haiku) userà dal vivo. Il narratore improvvisa poco e male; il Motore
-impone la struttura; tu scrivi la sostanza. Una campagna fatta bene è giocabile da un modello piccolo
-che non conosce i segreti, letta ad alta voce da una sintesi vocale, davanti a un tavolo vero.
+You are the Preparatore (docs/architettura.md §4): the strong model that writes **before** the session
+everything the fast narrator (Haiku) will use live. The narrator improvises poorly; the Motore imposes the
+structure; you write the substance. A well-made campaign can be played by a small model that does not know
+the secrets, read aloud by a speech synthesiser, in front of a real table.
 
-Il tuo lavoro finisce solo quando:
-1. `python3 -I strumenti/valida_campagna.py campagne/<id> --rigoroso` esce con **0 errori**, con node
-   installato (senza node il controllo del contesto del modo B resta un avviso, e non basta);
-2. la revisione indipendente (passo 14) è stata fatta e i suoi problemi gravi sono risolti;
-3. `README.md` e `autovalutazione.md` della campagna sono scritti e tutto è committato;
-4. `scripts/prepara.sh campagne/<id>` ha fatto immagini e audio (passo 16). La campagna è **pronta da
-   giocare** solo quando esistono `immagini/manifest.json` e `audio/manifest.json`.
+Your work is finished only when:
+1. `python3 -I strumenti/valida_campagna.py campagne/<id> --rigoroso` exits with **0 errors**, with node
+   installed (without node the context check of mode B stays a warning, and that is not enough);
+2. the independent review (step 14) has been done and its serious problems are fixed;
+3. `README.md` and `autovalutazione.md` of the campaign are written and everything is committed;
+4. `scripts/prepara.sh campagne/<id>` has made images and audio (step 16). The campaign is **ready to play**
+   only when `immagini/manifest.json` and `audio/manifest.json` exist.
 
-Non dichiarare finito nulla che il validatore non ha visto passare. Non scrivere a memoria regole che
-sono nei riferimenti: aprili. Ogni regola sta in un posto solo: qui l'ordine del lavoro e le regole che
-non si discutono; in `riferimenti/` la forma dei file e il mestiere.
+Do not declare finished anything the validator has not seen pass. Do not write from memory rules that are in
+the references: open them. Every rule lives in one place only: here the order of work and the rules that are
+not up for discussion; in `riferimenti/` the form of the files and the craft.
 
-## Passo 0: cosa leggere prima di scrivere una riga
+## Step 0: what to read before writing a single line
 
-Leggi per intero, nell'ordine:
-1. `docs/manuale-master.md`: è la specifica. Ogni campo che scrivi viene da lì.
-2. `riferimenti/schema.md`: la forma esatta di ogni file e le letture del manuale adottate dove il
-   testo è ambiguo. Il validatore segue queste letture.
-3. `riferimenti/mestiere.md`: come si progetta una situazione che regge dal vivo, con le lezioni delle
-   prove (§8), la sessione a più scene (§9) e l'audio (§10).
-4. `riferimenti/repertorio.md` e `docs/repertorio.md`: come si scrivono le battute pre-scritte, e
-   `riferimenti/motore.md`: che cosa il Motore non fa (ancora), e quindi deve fare la campagna.
-5. `riferimenti/immagini.md`: i prompt per le immagini (strumenti/immagini/).
-6. `docs/f0-contratti.md`, sezione «File della campagna»: cosa carica il server oggi.
-7. `docs/regole.md`, solo se il brief ha `manuale:` (il set di regole, passo 1b).
+Read in full, in this order:
+1. `docs/manuale-master.md`: it is the specification. Every field you write comes from there.
+2. `riferimenti/schema.md`: the exact form of every file, and the readings of the manual adopted where the
+   text is ambiguous. The validator follows these readings.
+3. `riferimenti/mestiere.md`: how to design a situation that holds up live, with the lessons of the trials (§8),
+   the multi-scene session (§9) and the audio (§10).
+4. `riferimenti/repertorio.md` and `docs/repertorio.md`: how to write the pre-scripted lines, and
+   `riferimenti/motore.md`: what the Motore does not do (yet), and therefore what the campaign must do.
+5. `riferimenti/immagini.md`: the image prompts (strumenti/immagini/).
+6. `docs/f0-contratti.md`, section «File della campagna» (File of the campaign): what the server loads today.
+7. `docs/regole.md`, only if the brief has `manuale:` (the rule set, step 1b).
 
-Poi guarda gli esempi, **senza copiarne il contenuto**:
-- `strumenti/test_valida_fixtures/mini/`: la campagna più piccola che passa in modo rigoroso, con un
-  esempio minimo di cronologia e logistica;
-- `campagne/prova-f0/`: una scena sola di mezz'ora; scritta prima delle regole rigorose e poi portata a
-  zero errori in rigoroso (confessioni con il loro cancello, la cicatrice spostata in una situazione);
-- `campagne/ponte-lanterne/`: quattro scene per due ore e mezza, scritta alla cieca con questa skill:
-  orologio di sessione, lo stesso luogo in due momenti, due voci simili tenute separate. Le sue
-  `NOTE_SULLA_SKILL.md` dicono dove la skill di allora non bastava.
+Then look at the examples, **without copying their content**:
+- `strumenti/test_valida_fixtures/mini/`: the smallest campaign that passes in strict mode, with a minimal
+  example of backstory and logistics;
+- `campagne/prova-f0/`: a single scene of half an hour; written before the strict rules and then brought to
+  zero errors in strict mode (confessions with their gate, the scar moved into a situation);
+- `campagne/ponte-lanterne/`: four scenes for two and a half hours, written blind with this skill: session
+  clock, the same place at two moments, two similar voices kept apart. Its `NOTE_SULLA_SKILL.md` says where
+  the skill of that time was not enough.
 
-Controllo del passo 0: sai rispondere, senza riaprire i file, a queste domande. Cos'è `cede_se` e come
-diventa un cancello. Perché un `quando` non può contenere un segreto. Quali campi riceve il selettore
-in modo B. Quanti segni ha un orologio da sei. Cosa vuol dire `solo_esempio`. Se esiti su una, rileggi.
+Checkpoint of step 0: you must be able to answer, without reopening the files, these questions. What is
+`cede_se` and how does it become a gate. Why a `quando` cannot contain a secret. Which fields the selector
+receives in mode B. How many segments a clock of six has. What `solo_esempio` means. If you hesitate on one,
+read again.
 
-## Il brief
+## The brief
 
-Riccardo dà un brief breve. Copia `modelli/brief.yaml` in `campagne/<id>/brief.yaml` e riempilo. Se
-qualcosa manca, decidi tu e scrivi la scelta nel campo `decisioni`. Fai domande solo per ciò che non
-puoi decidere da solo: i temi da evitare, il numero dei giocatori, la durata.
+The user gives a short brief. Copy `modelli/brief.yaml` to `campagne/<id>/brief.yaml` and fill it in. If
+something is missing, decide yourself and write the choice in the field `decisioni`. Ask questions only for
+what you cannot decide alone: the themes to avoid, the number of players, the duration.
 
-Dal brief ricavi:
-- **id**: ascii minuscolo con trattini, per esempio `il-ponte-dei-sospiri`;
-- **sessioni**: quante sessioni dura, il numero che decide il livello (vedi «Strati» sotto);
-- **scene**: per una sessione di 20–40 minuti, una scena; per 2–3 ore, da 3 a 5 scene (C11). La prima è
-  `scena.yaml`, le altre `scene/<id>.yaml`; il master passa di scena dal pannello;
-- **PG pregenerati**: uno più del massimo dei giocatori (per «3–4 giocatori», cinque), perché la scena
-  deve reggere con qualunque sottoinsieme;
-- **linee e veli**: quelli del brief, più quelli che la storia rende necessari;
-- **manuale**: se Riccardo ha un manuale di regole, `manuale: manuali/<file>` (vedi passo 1b). Vuoto = SRD 5.2.
-- **voci**: quale voce di `assets/voci/voci.yaml` va a quale PNG, e quali PNG non possono mai stare
-  insieme (regola 9). Con quattro voci registrate questa scelta decide la storia: falla adesso. Un
-  personaggio che conta ma non può avere una voce è una comparsa senza scheda: parla per bocca del
-  narratore, in discorso indiretto, e la storia gli dà un motivo per parlare poco (un'usanza, un lutto).
+From the brief you derive:
+- **id**: ASCII lowercase with hyphens, for example, see «the examples in lingue/<lingua>/preparatore/skill.md»;
+- **sessioni**: how many sessions it lasts, the number that decides the level (see «Layers» below);
+- **scene**: for a session of 20–40 minutes, one scene; for 2–3 hours, from 3 to 5 scenes (C11). The first is
+  `scena.yaml`, the others `scene/<id>.yaml`; the master changes scene from the panel;
+- **pregenerated PCs**: one more than the maximum number of players (for "3–4 players", five), because the scene
+  must hold with any subset;
+- **lines and veils**: those of the brief, plus those the story makes necessary;
+- **manuale**: if the user has a rulebook, `manuale: manuali/<file>` (see step 1b). Empty = SRD 5.2.
+- **voci**: which voice of `assets/voci/voci.yaml` goes to which PNG, and which PNGs can never be in the same
+  scene (rule 9). With four registered voices this choice decides the story: make it now. A character who
+  matters but cannot have a voice is an extra without a sheet: they speak through the narrator, in indirect
+  speech, and the story gives them a reason to speak little (a custom, a mourning).
 
-## Strati: quanto si prepara
+## Language of the campaign
 
-Il brief dice quante sessioni dura la campagna (`sessioni`, o `aperta`). Il numero decide il livello, e il
-livello quali strati si preparano prima del gioco e quali tra una sessione e l'altra. La tabella è una sola,
-in `strumenti/strati.py` (`python3 strumenti/strati.py --tabella`); qui c'è il riassunto.
+The brief has a field `lingua` (`it` or `en`; if it is missing the campaign is `it`). It is the language of
+**all the campaign content**: the lines of the repertoire, the descriptions and the texts the players read or
+hear, the clue texts, the summary and the opening, the sensory descriptions, the voice styles, the NPC
+speech and the names of places when they are natural in that language. Campaign files are written in that
+language, and the campaign's `campagna.yaml` gets the top-level field `lingua: <code>` (the same code as the
+brief).
 
-| Sessioni | Livello | Prima del gioco | Oggi |
+What stays as it is, whatever the language: the YAML field names, the ids, the file names, the paths, the
+commands, the validator codes, and the image prompts (`prompt_luogo`, `prompt_immagine`, the invariants and
+`[STILE]`), which are always in English. The style sheet's `[STILE]` tag is in English too, as before.
+
+The prose rules of the language come from `lingue/<lingua>/prosa.yaml`: read that file before writing a
+line, and the validator reads the same file. The examples of style (sample lines, phrasings, what to avoid,
+punctuation) are in `lingue/<lingua>/preparatore/skill.md`. If that file or `prosa.yaml` for the chosen language
+does not exist, stop and tell the user: do not write a campaign in a language whose rules are missing.
+
+## Layers: how much to prepare
+
+The brief says how many sessions the campaign lasts (`sessioni`, or `aperta`). The number decides the level,
+and the level decides which layers are prepared before play and which between sessions. The table is one, in
+`strumenti/strati.py` (`python3 strumenti/strati.py --tabella`); here is the summary.
+
+| Sessions | Level | Before play | Today |
 |---|---|---|---|
-| 1 | one-shot | la sessione intera: tutti i passi di questa skill | si prepara e si gioca |
-| 2–6 | arco | la sessione 1 completa, più il fronte d'arco con le tappe, gli atti, i finali, i PNG ricorrenti; le altre sessioni in una riga (`riferimenti/arco.md`) | non ancora (fasi D2–D4) |
-| 7–20 | campagna | in più regioni, fazioni con orologio, tre conflitti, la fine dichiarata; il primo arco completo | non ancora (D5) |
-| 21+ o aperta | saga | in più il mondo: una zona piena, le altre abbozzo, le fasi di gioco | non ancora (D5) |
+| 1 | one-shot | the whole session: all the steps of this skill | prepared and played |
+| 2–6 | arc | session 1 complete, plus the arc front with the stages, the acts, the endings, the recurring NPCs; the other sessions in one line (`riferimenti/arco.md`) | not yet (phases D2–D4) |
+| 7–20 | campaign | several regions, factions with clocks, three conflicts, the declared end; the first arc complete | not yet (D5) |
+| 21+ or open | saga | in addition the world: one full zone, the others sketched, the play phases | not yet (D5) |
 
-- Il validatore legge il livello (classe `LIVELLO`): sopra la one-shot dà un errore chiaro, perché il
-  framework non sa ancora giocare gli strati esterni. Se Riccardo chiede più sessioni, diglielo, e proponi
-  una one-shot o la prima sessione di un arco.
-- Un livello diverso da quello delle sessioni si forza con `livello:` solo col motivo in `decisioni.altre`.
-- `ore_per_sessione` (predefinito 2,5) decide le scene della one-shot: sotto un'ora una scena, sennò 3–5.
-- Tra una sessione e l'altra (dal livello arco): `riferimenti/tra-le-sessioni.md` e `scripts/tra-sessioni.sh`.
+- The validator reads the level (class `LIVELLO`): above one-shot it gives a clear error, because the framework
+  cannot yet play the outer layers. If the user asks for more sessions, say so, and propose a one-shot or the
+  first session of an arc.
+- A level different from the one given by the sessions is forced with `livello:` only with the reason in
+  `decisioni.altre`.
+- `ore_per_sessione` (default 2.5) decides the scenes of the one-shot: under an hour one scene, otherwise 3–5.
+- Between sessions (from the arc level): `riferimenti/tra-le-sessioni.md` and `scripts/tra-sessioni.sh`.
 
-## Schede e prove
+## Sheets and checks
 
-Le schede dicono al Motore con quali numeri tirare. La specifica è in `docs/prove.md` §2: qui solo il lavoro del
-Preparatore, e la forma dei campi è in `riferimenti/schema.md`.
+The sheets tell the Motore with which numbers to roll. The specification is in `docs/prove.md` §2: here only
+the work of the Preparatore, and the form of the fields is in `riferimenti/schema.md`.
 
-- **Dadi per default.** `brief.yaml` ha `dadi: true`. Solo se Riccardo chiede una campagna senza dadi, scrivi
-  `regole: {dadi: false}` in `campagna.yaml`: allora le schede non sono obbligatorie.
-- **PG**: `scheda` in `pg.yaml`, a livello 1 o 2. Caratteristiche, competenze, tiri salvezza, armatura, PF e attacchi
-  che stanno nel personaggio. I modificatori non si scrivono: li calcola il codice.
-- **PNG**: `scheda` in `png/*.yaml`, con un GS basso (sono comparse del paese): CA, PF e attacchi coerenti con il GS.
-- **Scena**: per ogni ostacolo o indizio non essenziale che il testo descrive, 2–4 `prove`, con CD 10 (facile), 15
-  (media) o 20 (difficile). Un indizio essenziale non sta mai dietro un tiro.
-- **Repertorio**: `richiede: {prova: …}` solo sulle battute che devono uscire dopo una prova riuscita.
+- **Dice by default.** `brief.yaml` has `dadi: true`. Only if the user asks for a campaign without dice, write
+  `regole: {dadi: false}` in `campagna.yaml`: then the sheets are not mandatory.
+- **PG**: `scheda` in `pg.yaml`, at level 1 or 2. Characteristics, skills, saving throws, armour, HP and attacks
+  that belong to the character. Modifiers are not written: the code calculates them.
+- **PNG**: `scheda` in `png/*.yaml`, with a low CR (they are the extras of the place): AC, HP and attacks
+  consistent with the CR.
+- **Scene**: for every obstacle or non-essential clue that the text describes, 2–4 `prove`, with DC 10 (easy),
+  15 (medium) or 20 (hard). An essential clue never sits behind a roll.
+- **Repertoire**: `richiede: {prova: …}` only on the lines that must come out after a successful check.
 
-- **Set non SRD** (con `manuale:`): le caratteristiche, le abilità, le mosse e le difficoltà delle schede e delle prove
-  sono quelle del set, non le sei di D&D. La forma è in `docs/regole.md` §2 («Schede di PG e PNG per un set non SRD»).
+- **Non-SRD set** (with `manuale:`): the characteristics, skills, moves and difficulties of the sheets and of the
+  checks are those of the set, not the six of D&D. The form is in `docs/regole.md` §2 («Schede di PG e PNG per un
+  set non SRD» — sheets of PCs and NPCs for a non-SRD set).
 
-**Controllo**: `--solo SCHEDA` senza errori (con un set non SRD, `--solo REGOLE`). Le schede non si scrivono a memoria: il validatore le rifà.
+**Check**: `--solo SCHEDA` with no errors (with a non-SRD set, `--solo REGOLE`). Sheets are not written from
+memory: the validator redoes them.
 
-## Ordine di lavoro
+## Order of work
 
-Ogni passo finisce con un **controllo**. Non passare al successivo finché il controllo non è
-soddisfatto: ogni controllo è soddisfacibile con i file scritti fino a quel passo. `--solo` mostra solo
-le classi già scrivibili; gli altri errori arrivano quando scrivi i file che li riguardano.
+Each step ends with a **check**. Do not move to the next step until the check is satisfied: every check can be
+satisfied with the files written up to that step. `--solo` shows only the classes that can already be written;
+the other errors arrive when you write the files that concern them.
 
-| Passo | Scrivi | Controllo |
+| Step | Write | Check |
 |---|---|---|
-| 1 | `brief.yaml → decisioni.situazione` | le domande del passo |
-| 1b | `regole/` (solo con `manuale:`) | `--solo REGOLE` senza errori, poi commit se la licenza è libera |
+| 1 | `brief.yaml → decisioni.situazione` | the questions of the step |
+| 1b | `regole/` (only with `manuale:`) | `--solo REGOLE` with no errors, then commit if the licence is free |
 | 2 | `stile.yaml` | `--solo STILE` |
-| 3 | `campagna.yaml`: canone, fronti, orologi, cattivo, sessione, cronologia e logistica | `--solo STILE,CANONE,FRONTI,SESSIONE,MONDO` |
-| 4 | `campagna.yaml`: rivelazioni, colli di bottiglia, nodi (gli indizi li progetti qui) | la prova dei due indizi mancanti |
-| 5 | `scena.yaml`, `scene/*.yaml` senza `esiti` | `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO`, poi commit |
-| 6 | `pg.yaml` | `--solo PG,FRONTI` e la prova del PG tolto |
-| 7 | `png/*.yaml` | le domande del passo |
-| 8 | primo giro del validatore | modo normale, **zero errori**, poi commit |
-| 9 | `repertorio/*.yaml` ed `esiti` delle scene | `--solo REPERTORIO,COPERTURA,PROSA,SCENA` e la tabella di copertura |
-| 10 | `repertorio/parole_segrete.yaml` | nessun errore `SEGRETI` |
-| 11 | situazioni delle immagini, lettura dei prompt | `--dry-run` letto, poi commit |
-| 12 | validatore rigoroso e copioni | zero errori, avvisi giustificati, poi commit |
-| 13 | lettura ad alta voce | la lista del passo |
-| 14 | revisione indipendente | i problemi gravi corretti |
+| 3 | `campagna.yaml`: canon, fronts, clocks, villain, session, backstory and logistics | `--solo STILE,CANONE,FRONTI,SESSIONE,MONDO` |
+| 4 | `campagna.yaml`: revelations, bottlenecks, nodes (the clues are designed here) | the two-missing-clues test |
+| 5 | `scena.yaml`, `scene/*.yaml` without `esiti` | `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO`, then commit |
+| 6 | `pg.yaml` | `--solo PG,FRONTI` and the test of the removed PC |
+| 7 | `png/*.yaml` | the questions of the step |
+| 8 | first run of the validator | normal mode, **zero errors**, then commit |
+| 9 | `repertorio/*.yaml` and `esiti` of the scenes | `--solo REPERTORIO,COPERTURA,PROSA,SCENA` and the coverage table |
+| 10 | `repertorio/parole_segrete.yaml` | no `SEGRETI` error |
+| 11 | image situations, reading of the prompts | `--dry-run` read, then commit |
+| 12 | strict validator and scripts | zero errors, justified warnings, then commit |
+| 13 | reading aloud | the list of the step |
+| 14 | independent review | the serious problems fixed |
 | 15 | `README.md`, `autovalutazione.md` | commit |
-| 16 | immagini e audio con `scripts/prepara.sh` | «pronta da giocare», poi commit degli asset |
+| 16 | images and audio with `scripts/prepara.sh` | "ready to play", then commit of the assets |
 
-Il comando del validatore è sempre `python3 -I strumenti/valida_campagna.py campagne/<id>` più le opzioni
-della tabella.
+The validator command is always `python3 -I strumenti/valida_campagna.py campagne/<id>` plus the options of
+the table.
 
-### 1. Situazione, non trama
-Scrivi in quattro frasi, una per voce, dentro `brief.yaml → decisioni.situazione`:
-- chi vuole cosa (il cattivo, C3);
-- cosa succede se i PG non fanno niente;
-- qual è la verità nascosta;
-- quale scelta costerà qualcosa ai PG.
+### 1. Situation, not plot
+Write in four sentences, one per line, inside `brief.yaml → decisioni.situazione`:
+- who wants what (the villain, C3);
+- what happens if the PCs do nothing;
+- what the hidden truth is;
+- which choice will cost something to the PCs.
 
-Leggi `riferimenti/mestiere.md` §1 e §6.
+Read `riferimenti/mestiere.md` §1 and §6.
 
-Poi scrivi in `decisioni.strade` ogni strada della scelta finale, la terza via compresa, con il prezzo e su
-chi pesa (`pesa_su`).
+Then write in `decisioni.strade` every road of the final choice, the third way included, with the price and on
+whom it weighs (`pesa_su`).
 
-**Controllo**:
-- la scelta finale ha almeno due esiti accettabili, e ognuno ha un prezzo;
-- **il prezzo pesa su qualcuno che non lo vuole**: se un PNG o un PG lo desidera, è un premio travestito
-  (nella prova di nozze-neve «Adelina perde la voce, che passa a Zelia» era ciò che Zelia voleva). Il
-  validatore confronta i prezzi con i desideri dei PNG (`SCELTA.premio`);
-- **quando i PG hanno scoperto tutto, la scelta è ancora difficile**: nessuna prova, promessa o PNG
-  cancella il prezzo di una delle strade;
-- nessun PNG può risolverla al posto dei PG (D8);
-- la verità si scopre in almeno tre modi.
+**Check**:
+- the final choice has at least two acceptable outcomes, and each has a price;
+- **the price weighs on someone who does not want it**: if an NPC or a PC desires it, it is a reward in disguise
+  (the snow-wedding trial has the example: a price that the NPC wants is a reward in disguise; see «the examples in lingue/<lingua>/preparatore/skill.md»). The validator compares the prices with the desires of the NPCs (`SCELTA.premio`);
+- **when the PCs have discovered everything, the choice is still hard**: no check, promise or NPC cancels the
+  price of one of the roads;
+- no NPC can resolve it in place of the PCs (D8);
+- the truth is discovered in at least three ways.
 
-### 1b. Regole (solo con `manuale:`)
-Senza `manuale:` non scrivi nulla in `regole/`: vale l'SRD 5.2. Con `manuale: manuali/<file>` il set di regole è
-la base di schede e prove, quindi si scrive prima dei passi 6 e 7. La forma è in `docs/regole.md` §2: qui solo l'ordine.
+### 1b. Rules (only with `manuale:`)
+Without `manuale:` you write nothing in `regole/`: the SRD 5.2 applies. With `manuale: manuali/<file>` the rule
+set is the basis of sheets and checks, so it is written before steps 6 and 7. The form is in `docs/regole.md` §2:
+here only the order.
 
-1. Estrai il testo con `strumenti/regole/.venv/bin/python strumenti/regole/estrai.py manuali/<file>` (sezioni con
-   pagina). Se esce vuoto, il manuale è una scansione: fermati e chiedi a Riccardo una versione testuale.
-2. Leggi il testo per intero, almeno risoluzione, caratteristiche, combattimento, mosse e prove sociali. Il set
-   non copia il manuale: ne ricava la struttura.
-   - **Combattimento**: iniziativa (individuale, per schieramento o nessuna, con dado e caratteristica), fasi del round
-     in ordine, economia del turno, cosa succede a 0 PF (per PG e per PNG), condizioni, morale. Le condizioni hanno
-     effetti solo dall'elenco chiuso di `docs/combattimento.md` §2: un effetto che il manuale descrive a parole va
-     scelto tra quelli, o scritto come testo senza effetto. Un manuale senza turni (PbtA) ha `iniziativa: {tipo: nessuna}`.
-3. Scrivi `campagne/<id>/regole/`: `regole.yaml` (con `fonte.titolo`, `licenza` e la sezione `combattimento:`, forma in
-   `docs/regole.md` §2), `riassunto.md` (per i giocatori,
-   breve) ed `estratti/<id>.md` (un passo per regola, con `parole` e `pagina`). Se non sai la licenza del manuale,
-   dichiara `libera: false` e dillo a Riccardo: il set resta fuori dal repository, e `regole/.gitignore` deve
-   contenere una riga `*` (il validatore lo controlla).
-4. Il set si controlla da solo con `python3 -I strumenti/valida_campagna.py campagne/<id> --solo REGOLE`.
+1. Extract the text with `strumenti/regole/.venv/bin/python strumenti/regole/estrai.py manuali/<file>` (sections
+   with page). If it comes out empty, the manual is a scan: stop and ask the user for a text version.
+2. Read the text in full, at least resolution, characteristics, combat, moves and social checks. The set does not
+   copy the manual: it derives its structure from it.
+   - **Combat**: initiative (individual, by side or none, with die and characteristic), the phases of the round in
+     order, the economy of the turn, what happens at 0 HP (for PCs and for NPCs), conditions, morale. The conditions
+     have effects only from the closed list of `docs/combattimento.md` §2: an effect that the manual describes in
+     words must be chosen among those, or written as text without effect. A manual without turns (PbtA) has
+     `iniziativa: {tipo: nessuna}`.
+3. Write `campagne/<id>/regole/`: `regole.yaml` (with `fonte.titolo`, `licenza` and the section `combattimento:`,
+   form in `docs/regole.md` §2), `riassunto.md` (for the players, short) and `estratti/<id>.md` (one passage per rule,
+   with `parole` and `pagina`). If you do not know the licence of the manual, declare `libera: false` and tell the
+   user: the set stays outside the repository, and `regole/.gitignore` must contain a line `*` (the validator checks it).
+4. The set checks itself with `python3 -I strumenti/valida_campagna.py campagne/<id> --solo REGOLE`.
 
-**Controllo**: `--solo REGOLE` senza errori. Poi commit di `regole/` solo se `licenza.libera` è `true`: un set non
-libero resta su questo computer, con il suo `.gitignore`.
+**Check**: `--solo REGOLE` with no errors. Then commit `regole/` only if `licenza.libera` is `true`: a non-free set
+stays on this computer, with its `.gitignore`.
 
-### 2. Carta di stile → `stile.yaml`
-Premessa in una frase, tono, tema, registro del narratore e regole di prosa della campagna. Poi `[STILE]`
-in inglese, la tavolozza musicale (solo i tag del vocabolario chiuso), linee e veli.
+### 2. Style sheet → `stile.yaml`
+A premise in one sentence, tone, theme, register of the narrator and prose rules of the campaign. Then `[STILE]`
+in English, the musical palette (only the tags of the closed vocabulary), lines and veils.
 
-`stile.yaml` va **per intero** al selettore del modo B, che non conosce i segreti (regola 1). Quindi le
-regole di prosa non contengono la soluzione, nemmeno come divieto: «il narratore descrive ciò che si
-vede e non dice mai la causa: la conclusione la tirano i PG». Il divieto preciso («il narratore non
-chiama mai veleno il pane») va nel `come_si_trova` dell'indizio principale, che vede solo il narratore
-del modo A. Anche il lessico delle regole è pubblico: niente parole segrete in un elenco di parole.
+`stile.yaml` goes **in full** to the selector of mode B, which does not know the secrets (rule 1). So the prose
+rules do not contain the solution, not even as a prohibition (see «the examples in lingue/<lingua>/preparatore/skill.md»). The precise prohibition, with its example, goes into the `come_si_trova` of the main clue, which only the narrator of mode A sees. The vocabulary of
+the rules is also public: no secret words in a list of words.
 
-**Controllo**: `--solo STILE`; la premessa sta in una frase.
+**Check**: `--solo STILE`; the premise fits in one sentence.
 
-### 3. Canone, fronti, orologi, cattivo, sessione, cronologia → `campagna.yaml`
-- **Canone**: fatti atomici, uno per riga, con `noto_ai_pg`. Ogni verità nascosta è un fatto. Ogni cosa
-  che un PNG sa, o su cui mente, è un fatto. Lo stesso fatto non si scrive mai due volte con parole diverse.
-- **Fronti** (C2): uno di campagna, uno o due d'avventura, con due o tre pericoli per fronte. Ogni
-  pericolo ha il suo orologio.
-- **Orologi** (sotto la chiave `orologi`, fuori da `preparazione`): quelli che il narratore deve vedere,
-  con un segno per segmento e `segno_almeno_ogni`. Per una sessione lunga, un orologio di sessione
-  (mestiere.md §9).
-- **Cattivo** con agenda (C3), segreti astratti (C6) e archi dei PG (C8): tutto sotto `preparazione`.
-- **Sessione** (C9–C13): riassunto iniziale, cinque stanze, scene potenziali, chiusura con una scelta
-  aperta, e `colli_di_bottiglia_nota`.
-- **Cronologia e logistica** (sotto `preparazione`, forma in schema.md): il passato che fonda ogni segreto,
-  la notte della sessione con le ore, i documenti con la loro data (il legame `indizio` lo aggiungi al
-  passo 5, quando l'indizio esiste). Ogni affermazione della storia su
-  tempi, distanze, posti o date diventa una verifica che il validatore rifà: «la barca fa in tempo a un
-  viaggio solo» è un `ci_sta` più un `non_ci_sta`. Il meccanismo del climax si scrive in una riga per
-  stato («catena alzata: il ponte è chiuso»), e ogni testo che lo nomina si rilegge contro quella riga.
+### 3. Canon, fronts, clocks, villain, session, backstory → `campagna.yaml`
+- **Canon**: atomic facts, one per line, with `noto_ai_pg`. Every hidden truth is a fact. Every thing an NPC knows,
+  or lies about, is a fact. The same fact is never written twice in different words.
+- **Fronts** (C2): one campaign front, one or two adventure fronts, with two or three dangers per front. Every
+  danger has its clock.
+- **Clocks** (under the key `orologi`, outside `preparazione`): those the narrator must see, with a sign per
+  segment and `segno_almeno_ogni`. For a long session, a session clock (mestiere.md §9).
+- **Villain** with agenda (C3), abstract secrets (C6) and PC arcs (C8): all under `preparazione`.
+- **Session** (C9–C13): opening summary, five rooms, potential scenes, a closing with an open choice, and
+  `colli_di_bottiglia_nota`.
+- **Backstory and logistics** (under `preparazione`, form in schema.md): the past that founds every secret, the
+  night of the session with its hours, the documents with their date (the `indizio` link you add at step 5, when
+  the clue exists). Every claim of the story about times, distances, places or dates becomes a verification that
+  the validator redoes: a claim that a trip fits in the time is a `ci_sta` plus a `non_ci_sta` (example in «the examples in lingue/<lingua>/preparatore/skill.md»). The
+  mechanism of the climax is written in one line per state (example in «the examples in lingue/<lingua>/preparatore/skill.md»), and every text
+  that names it is reread against that line.
 
-**Controllo**: `--solo STILE,CANONE,FRONTI,SESSIONE,MONDO` con zero errori, e:
-- ogni segno d'orologio è una frase sola, di 14 parole al massimo, che si vede o si sente, in ordine
-  crescente di pericolo; l'ultimo porta il momento decisivo;
-- `al_completo` dice che cosa vuole il pericolo e che cosa costa ogni risposta;
-- ogni documento della storia ha una data, e la data non precede ciò che prova.
+**Check**: `--solo STILE,CANONE,FRONTI,SESSIONE,MONDO` with zero errors, and:
+- every clock sign is a single sentence, of 14 words at most, that can be seen or heard, in increasing order of
+  danger; the last carries the decisive moment;
+- `al_completo` says what the danger wants and what each answer costs;
+- every document of the story has a date, and the date does not precede what it proves.
 
-### 4. Rivelazioni, indizi, nodi, colli di bottiglia → `campagna.yaml`
-Per ogni conclusione chiave servono almeno tre indizi, in almeno due nodi, di almeno due tipi (C4). Ogni
-indizio ha `modi`: quanti modi distinti di trovarlo sono scritti in `come_si_trova`. Un indizio
-essenziale non sta mai dietro un tiro. Ogni collo di bottiglia ha almeno tre soluzioni. I nodi formano
-un grafo senza vicoli ciechi; un luogo che i PG conoscono dall'inizio ha `noto_ai_pg: true` e non va
-scoperto con tre indizi. Gli indizi delle scene li scrivi nelle schede al passo 5.
+### 4. Revelations, clues, nodes, bottlenecks → `campagna.yaml`
+For every key conclusion you need at least three clues, in at least two nodes, of at least two types (C4). Every
+clue has `modi`: how many distinct ways of finding it are written in `come_si_trova`. An essential clue never sits
+behind a roll. Every bottleneck has at least three solutions. The nodes form a graph with no dead ends; a place
+the PCs know from the start has `noto_ai_pg: true` and is not to be discovered with three clues. The clues of the
+scenes are written in the sheets at step 5.
 
-**Controllo**: per ogni conclusione, immagina un tavolo che non trova due dei tre indizi. Arriva lo
-stesso alla verità? Se no, aggiungi un indizio proattivo, cioè qualcosa che arriva da solo.
+**Check**: for every conclusion, imagine a table that does not find two of the three clues. Does it still reach the
+truth? If not, add a proactive clue, something that arrives by itself.
 
-### 5. Schede scena → `scena.yaml` (+ `scene/*.yaml`)
-Tutti i campi del manuale §4 (vedi `riferimenti/schema.md`), compresa `immagine` (`prompt_luogo` in
-inglese e invarianti, `riferimenti/immagini.md`), tranne `esiti`, che scrivi al passo 9 insieme ai finali.
-- In `descrizione` metti la pianta e la regola **chi sente cosa**: «in privato» deve voler dire qualcosa
-  di verificabile.
-- `descrizione`, `taglio`, `sensi` ed elementi non NASCOSTI vanno al selettore del modo B (regola 1):
-  scrivili come li può leggere chi non sa la soluzione. Ciò che svela va in un elemento con «NASCOSTA:»
-  nelle azioni, o nel `come_si_trova` di un indizio.
-- L'apertura ha tre frasi al massimo, e con il riassunto della sessione non supera sei frasi, con una
-  media tra 8 e 14 parole per frase.
-- Il `taglio` copre tutti gli esiti, compreso il caso in cui i PG esitano.
-- Ogni indizio fisico ha il suo `vincolo_pubblico`: ciò che chiunque percepisce, senza il perché, perché
-  l'improvvisazione non lo contraddica (mestiere.md §4). La scena non dice il contrario.
-- Più scene: lo stesso luogo in due momenti, gli orologi condivisi e quelli che partono da una scelta
-  sono in mestiere.md §9.
+### 5. Scene sheets → `scena.yaml` (+ `scene/*.yaml`)
+All the fields of the manual §4 (see `riferimenti/schema.md`), including `immagine` (`prompt_luogo` in English and
+invariants, `riferimenti/immagini.md`), except `esiti`, which you write at step 9 together with the endings.
+- In `descrizione` put the layout and the rule **who hears what**: a privacy condition must mean something verifiable.
+- `descrizione`, `taglio`, `sensi` and the elements that are not HIDDEN go to the selector of mode B (rule 1): write
+  them as they can be read by someone who does not know the solution. What reveals goes into an element marked
+  "NASCOSTA:" (HIDDEN) in the actions, or into the `come_si_trova` of a clue.
+- The opening has three sentences at most, and with the session summary it does not exceed six sentences, with an
+  average between 8 and 14 words per sentence.
+- The `taglio` covers all the outcomes, including the case in which the PCs hesitate.
+- Every physical clue has its `vincolo_pubblico`: what anyone perceives, without the why, so that improvisation does
+  not contradict it (mestiere.md §4). The scene does not say the opposite.
+- More scenes: the same place at two moments, the shared clocks and those that start from a choice are in
+  mestiere.md §9.
 
-**Controllo**: `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO` con zero errori. Gli errori `SCENA` che citano
-PNG e PG si chiudono ai passi 6 e 7.
+**Check**: `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO` with zero errors. The `SCENA` errors that cite NPCs and PCs are
+closed at steps 6 and 7.
 
-### 6. PG → `pg.yaml`
-Ogni PG ha:
-- un aggancio legato a un PNG o al fronte;
-- una o due conoscenze private che aprono una strada (C7, T9);
-- un arco sul cerchio di Harmon (in `preparazione.archi`).
+### 6. PCs → `pg.yaml`
+Every PC has:
+- a hook tied to an NPC or to the front;
+- one or two private knowledges that open a road (C7, T9);
+- an arc on the Harmon circle (in `preparazione.archi`).
 
-La scheda di un PG, tranne le conoscenze private, è pubblica: va al telefono del giocatore e al
-selettore. Niente segreti nei nomi, negli agganci, nell'aspetto (la gilda «dell'Onda» svelava l'onda
-scolpita). La `situazione_comune` non nomina nessun PG: deve valere con qualunque gruppo.
+The sheet of a PC, except the private knowledges, is public: it goes to the player's phone and to the selector.
+No secrets in the names, in the hooks, in the appearance (a guild name that reveals a carved detail is the kind of
+mistake to avoid; see «the examples in lingue/<lingua>/preparatore/skill.md»). The `situazione_comune` names no PC: it must hold with any group.
 
-**Controllo**: `--solo PG,FRONTI` con zero errori. Togli un PG qualsiasi: la scena regge ancora? Ogni
-collo di bottiglia ha ancora una soluzione che non dipende da quel PG?
+**Check**: `--solo PG,FRONTI` with zero errors. Remove any PC: does the scene still hold? Does every bottleneck still
+have a solution that does not depend on that PC?
 
-### 7. Schede PNG → `png/png_<nome>.yaml`
-Tutti i campi del manuale §3, più `alias` (i soprannomi che useranno i giocatori, mai parole generiche
-come «vecchio» o «ragazza») e un `id` per ogni menzogna. Leggi `riferimenti/mestiere.md` §2–§3.
-- **aspetto**: la lettura ad alta voce, le invarianti e `prompt_immagine` in inglese con `[STILE]`
-  (`riferimenti/immagini.md`); i tratti nascosti li metti al passo 11.
-- **voce_id**: preso da `assets/voci/voci.yaml`, adatto a sesso ed età, nel rispetto della regola 9.
-- **voce.stile** comincia con la misura delle frasi («Frasi di tre-otto parole»): il validatore ne ricava
-  il tetto per le battute del PNG.
-- **cede_se**: ogni condizione è un fatto osservabile in una trascrizione, e le condizioni sono unite da
-  «Oppure». La privatezza è una condizione esplicita: «in privato», oppure «dove X non sente», come la
-  definisce la scena.
-- **Chi si muove**: cerca ogni testo che porta un PNG fuori dalle sue scene (desiderio, iniziative,
-  evoluzione, soluzioni dei colli di bottiglia, taglio ed esiti, battute con `scena`). Ognuno deve
-  rispettare la regola 9 nella scena in cui lo porta.
+### 7. NPC sheets → `png/png_<nome>.yaml`
+All the fields of the manual §3, plus `alias` (the nicknames the players will use, never generic words such as
+those listed in «the examples in lingue/<lingua>/preparatore/skill.md») and an `id` for every lie. Read `riferimenti/mestiere.md`
+§2–§3.
+- **aspetto**: the reading aloud, the invariants and `prompt_immagine` in English with `[STILE]`
+  (`riferimenti/immagini.md`); the hidden traits go in at step 11.
+- **voce_id**: taken from `assets/voci/voci.yaml`, suited to sex and age, respecting rule 9.
+- **voce.stile** begins with the measure of the sentences (the form is in «the examples in lingue/<lingua>/preparatore/skill.md»): the validator derives
+  from it the ceiling for the NPC's lines.
+- **cede_se**: every condition is a fact observable in a transcript, and the conditions are joined by the connector
+  for "or" (see «the examples in lingue/<lingua>/preparatore/skill.md»). Privacy is an explicit condition, written as the scene defines it (see «the examples in lingue/<lingua>/preparatore/skill.md»).
+- **Who moves**: search every text that takes an NPC out of their scenes (desire, initiatives, evolution, solutions
+  of the bottlenecks, `taglio` and endings, lines with `scena`). Each must respect rule 9 in the scene where it takes
+  them.
 
-**Controllo**:
-- leggi le tre battute campione una dopo l'altra, senza nomi: devi riconoscere chi parla;
-- ogni PNG vuole qualcosa che lo mette contro un altro PNG o contro un fronte;
-- nessun PNG regala la soluzione nel primo turno.
+**Check**:
+- read the three sample lines one after the other, without names: you must recognise who speaks;
+- every NPC wants something that sets them against another NPC or against a front;
+- no NPC gives away the solution in the first turn.
 
-### 8. Primo giro del validatore
+### 8. First run of the validator
 ```
 python3 -I strumenti/valida_campagna.py campagne/<id>
 ```
-Correggi **tutti** gli errori, poi rilancia. Con le schede scena, PG e PNG scritte, e la sessione del
-passo 3, lo zero è raggiungibile: non andare avanti con errori aperti.
+Fix **all** the errors, then run again. With the scene, PC and NPC sheets written, and the session of step 3, zero is
+reachable: do not go on with open errors.
 
-### 9. Repertorio → `repertorio/*.yaml`, ed `esiti` nelle scene
-Leggi `riferimenti/repertorio.md` per intero. Prima l'elenco, poi il testo:
-1. l'elenco delle battute necessarie (la copertura minima, §8);
-2. per ognuna id, `quando`, `temi`, `richiede`, `effetti` e, se serve, `scena`;
-3. solo alla fine il testo.
+### 9. Repertoire → `repertorio/*.yaml`, and `esiti` in the scenes
+Read `riferimenti/repertorio.md` in full. First the list, then the text:
+1. the list of the necessary lines (the minimum coverage, §8);
+2. for each, id, `quando`, `temi`, `richiede`, `effetti` and, if needed, `scena`;
+3. only at the end the text.
 
-Voce nelle righe: la direzione va dopo l'etichetta, tra quadre e breve, per esempio `[png_bruno] [offesa, a bassa voce] Non toccare quella porta.`; un sussurro si chiude nella stessa riga: `<whisper>…</whisper>`. Sintassi in `docs/f0-contratti.md`, «Voce espressiva»; il validatore (classe `VOCE`) controlla che i tag siano chiusi.
+Voice in the lines: the direction goes after the label, in square brackets and brief, for example the format in «the examples in lingue/<lingua>/preparatore/skill.md»; a whisper is closed in the same line: `<whisper>…</whisper>`. Syntax in `docs/f0-contratti.md`,
+«Voce espressiva» (expressive voice); the validator (class `VOCE`) checks that the tags are closed.
 
-Ordine: segni d'orologio, indizi, menzogne, confessioni, momenti, finali, esempi di voce, riempitivi,
-transizioni. Quando scrivi i finali, aggiungi a ogni scena i suoi `esiti`.
+Order: clock signs, clues, lies, confessions, moments, endings, voice examples, filler, transitions. When you write the
+endings, add each scene's `esiti`.
 
-**Battute d'attesa e deviazioni (sempre)**: per ogni scena una battuta d'attesa del narratore (`chi: narratore`,
-`riempitivo: true`, senza `scena` o con quella scena); per ogni PNG presente in una scena una sua battuta d'attesa
-(`chi: <png>`, `riempitivo: true`) e una deviazione (`tipo: rifiuto`, anche `solo_esempio: true`). Servono perché,
-quando il lettore locale non trova una risposta, usa proprio quelle: il tavolo sente qualcosa di preparato, mai il
-silenzio. Lo sceneggiatore scrive la risposta vera mentre il tavolo aspetta. Codici `COPERTURA.attesa_scena`,
-`COPERTURA.attesa_png`, `COPERTURA.deviazione_png` (avvisi in modo normale, errori in modo rigoroso).
+**Waiting lines and deviations (always)**: for every scene one waiting line of the narrator (`chi: narratore`,
+`riempitivo: true`, without `scena` or with that scene); for every NPC present in a scene, one of their waiting lines
+(`chi: <png>`, `riempitivo: true`) and one deviation (`tipo: rifiuto`, also `solo_esempio: true`). They are needed
+because, when the local reader finds no answer, it uses exactly those: the table hears something prepared, never
+silence. The scriptwriter writes the true answer while the table waits. Codes `COPERTURA.attesa_scena`,
+`COPERTURA.attesa_png`, `COPERTURA.deviazione_png` (warnings in normal mode, errors in strict mode).
 
-**Controllo**: `--solo REPERTORIO,COPERTURA,PROSA,SCENA` con zero errori (gli errori `SEGRETI` si chiudono
-al passo 10), e:
-- la tabella di copertura di `riferimenti/repertorio.md` §8 è tutta spuntata, e ogni voce di
-  `riferimenti/motore.md` ha la sua risposta nella campagna (azioni private, orologi, finali, oggetti);
-- nessun `id` e nessun `quando` contiene un segreto;
-- ogni confessione ha il suo cancello (§4).
+**Check**: `--solo REPERTORIO,COPERTURA,PROSA,SCENA` with zero errors (the `SEGRETI` errors are closed at step 10),
+and:
+- the coverage table of `riferimenti/repertorio.md` §8 is all ticked, and every entry of `riferimenti/motore.md` has its
+  answer in the campaign (private actions, clocks, endings, objects);
+- no `id` and no `quando` contains a secret;
+- every confession has its gate (§4).
 
-### 10. Parole segrete → `repertorio/parole_segrete.yaml`
-Per ogni fatto nascosto scrivi una o più regex strette (repertorio.md §7). Compila `fatti`,
-`pubblica_dopo` (tutte le battute e gli indizi che la rendono pubblica) e `nota`. Poi leggi il contesto
-che il selettore riceverà, scena per scena, come lo leggerebbe lui:
+### 10. Secret words → `repertorio/parole_segrete.yaml`
+For every hidden fact write one or more narrow regular expressions (repertorio.md §7). Fill in `fatti`,
+`pubblica_dopo` (all the lines and clues that make it public) and `nota`. Then read the context the selector will
+receive, scene by scene, as it would read it:
 ```
 npx tsx strumenti/contesto_modo_b.ts campagne/<id> --catalogo
 ```
-Il validatore ci cerca ogni regex; tu cerca ciò che una regex non prende. Leggi ogni riga del catalogo come una
-frase, id compreso: «zel presa macchia» dice chi è stato. Le righe con `[chiusa: …]` il selettore le vede solo
-dopo quei cancelli; le altre fin dal primo turno.
+The validator searches it for every regex; you search for what a regex does not catch. Read every line of the catalogue
+as a sentence, id included: a line id can say who was responsible (see «the examples in lingue/<lingua>/preparatore/skill.md»). The lines marked `[chiusa: …]` (closed: …) the
+selector sees only after those gates; the others from the first turn.
 
-**Controllo**: nessun errore `SEGRETI.*` e nessun avviso `SEGRETI.fatto_scoperto`.
+**Check**: no `SEGRETI.*` error and no `SEGRETI.fatto_scoperto` warning.
 
-### 11. Immagini e audio: situazioni, prompt e deduzioni
-I prompt dei luoghi e dei ritratti li hai scritti con le schede. Ora i tratti nascosti: vanno solo in
-`aspetto.situazioni`, ognuna con `dopo`, l'indizio o la battuta dopo cui mostrarla
-(`riferimenti/immagini.md`). Un luogo senza scheda che ha un'immagine sta in `nodi[].immagine`.
+### 11. Images and audio: situations, prompts and deductions
+You wrote the prompts of the places and the portraits with the sheets. Now the hidden traits: they go only into
+`aspetto.situazioni`, each with `dopo`, the clue or the line after which to show it (`riferimenti/immagini.md`). A place
+without a sheet that has an image sits in `nodi[].immagine`.
 
-L'audio lo deduce la pipeline dalle schede pubbliche. Leggi la sua deduzione con
-`strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py campagne/<id> --dry-run` e correggi,
-solo dove sbaglia, con i campi `audio` e `tema` (schema.md, «Audio»; mestiere.md §10).
+The audio is deduced by the pipeline from the public sheets. Read its deduction with
+`strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py campagne/<id> --dry-run` and correct, only where it is
+wrong, with the fields `audio` and `tema` (schema.md, «Audio»; mestiere.md §10).
 
-**Controllo**: `python3 strumenti/immagini/genera.py campagne/<id> --dry-run` stampa i prompt composti
-senza caricare il modello (basta PyYAML); leggili. Nessun prompt mostra qualcosa che i giocatori non
-devono ancora sapere: le regex sono in italiano e i prompt in inglese, quindi qui decide la tua lettura.
-Nessun tema tradisce chi mente. Le immagini e l'audio veri si fanno al passo 16, a campagna finita.
+**Check**: `python3 strumenti/immagini/genera.py campagne/<id> --dry-run` prints the composed prompts without loading the
+model (PyYAML alone is enough); read them. No prompt shows something the players must not yet know: the regexes are in
+the campaign's language and the prompts in English, so here your own reading decides. No theme betrays who is lying.
+The real images and audio are made at step 16, once the campaign is finished.
 
-### 12. Validatore rigoroso e copioni
-Fai scrivere a un subagente, alla cieca, due copioni di azioni per la tua campagna in
-`esperimenti/copioni/<id>/`: vede solo ciò che vedono i giocatori (riassunto, apertura, situazione
-comune, schede dei PG senza le conoscenze degli altri), con la forma di `esperimenti/copioni/README.md`.
-Scrivili a campagna ferma, o rigenerali se cambi nomi o luoghi. Poi:
+### 12. Strict validator and scripts
+Have a subagent, blind, write two scripts of actions for your campaign in `esperimenti/copioni/<id>/`: it sees only what
+the players see (summary, opening, common situation, PC sheets without the other players' knowledge), in the form of
+`esperimenti/copioni/README.md`. Write them with the campaign stopped, or regenerate them if you change names or places.
+Then:
 ```
 python3 -I strumenti/valida_campagna.py campagne/<id> --rigoroso --avvisi
 python3 -I strumenti/valida_campagna.py campagne/<id> --rigoroso --copioni esperimenti/copioni/<id>
 ```
-Zero errori. Leggi anche gli avvisi: ognuno o si corregge o si giustifica in `autovalutazione.md`. Il
-catalogo per azione (temi) deve stare in media sotto 4: se è più largo, i `temi` sono troppo generici.
+Zero errors. Read the warnings too: each is either corrected or justified in `autovalutazione.md`. The catalogue per action
+(themes) must average under 4: if it is wider, the `temi` are too generic.
 
-### 13. Lettura ad alta voce
-Leggi a mezza voce, nell'ordine: riassunto e apertura; le letture d'aspetto; le battute campione; i
-segni d'orologio; tutte le battute del repertorio. Il validatore conta le parole, ma non sente il
-ritmo. Cerca:
-- pronomi ambigui all'orecchio («dietro, qualcuno tossisce»);
-- un nome seguito da una virgola a inizio frase, che suona come il narratore che chiama qualcuno
-  («Tullio, il custode, grida» → «Dal casello il custode, Tullio, grida»);
-- un «voi» singolare che sembra plurale;
-- calchi dall'inglese, la stessa immagine ripetuta, accordi di genere verso un PG ignoto («sei pronto»);
-- una battuta che cita ciò che solo un'altra battuta facoltativa ha introdotto («Il mulo, no.»);
-- lettere, diari e canzoni letti dal narratore: in discorso indiretto, mai in prima o seconda persona
-  («tuo fratello…» suona rivolto a un PG; il validatore avvisa, `PROSA.citazione`);
-- il meccanismo del climax letto al contrario: ogni testo dice la stessa cosa della riga del passo 3.
+### 13. Reading aloud
+Read at half voice, in order: summary and opening; the appearance readings; the sample lines; the clock signs; all the
+lines of the repertoire. The validator counts the words, but does not hear the rhythm. Look for:
+- pronouns that are ambiguous to the ear (see «the examples in lingue/<lingua>/preparatore/skill.md»);
+- a name followed by a comma at the start of a sentence, which sounds like the narrator calling someone (see «the examples in lingue/<lingua>/preparatore/skill.md»);
+- a singular "you" that sounds plural;
+- calques from another language, the same image repeated, gender agreement towards an unknown PC (see «the examples in lingue/<lingua>/preparatore/skill.md»);
+- a line that cites what only another optional line introduced (see «the examples in lingue/<lingua>/preparatore/skill.md»);
+- letters, diaries and songs read by the narrator: in indirect speech, never in first or second person (a second-person
+  address sounds addressed to a PC (see «the examples in lingue/<lingua>/preparatore/skill.md»); the validator warns, `PROSA.citazione`);
+- the mechanism of the climax read backwards: every text says the same thing as the line of step 3.
 
-### 14. Revisione indipendente
-Lancia un subagente (Agent, `model: "opus"`) con il testo di `revisione.md`, sostituendo l'id della
-campagna. Non gli dare le tue conclusioni: deve leggere il manuale e la campagna, e attaccarla.
-Correggi ogni problema grave che trova, rilancia il passo 12, e scrivi in `autovalutazione.md` cosa hai
-corretto e cosa no, con il motivo.
+### 14. Independent review
+Launch a subagent (Agent, `model: "opus"`) with the text of `revisione.md`, replacing the id of the campaign. Do not give it
+your conclusions: it must read the manual and the campaign, and attack them. Fix every serious problem it finds, run step 12
+again, and write in `autovalutazione.md` what you corrected and what you did not, with the reason.
 
-### 15. README e autovalutazione
-- `README.md`: la scena in poche righe, i PNG (voce, desiderio, menzogna, segnale), come funzionano
-  indizi, orologio e scelta, chi vede quale file.
-- `autovalutazione.md`: i voti R1–R12 del manuale §9 come progettata, con una riga di prova ciascuno;
-  l'esito del validatore; gli avvisi giustificati; i tre rischi principali per un narratore piccolo e veloce.
+### 15. README and self-assessment
+- `README.md`: the scene in a few lines, the PNGs (voice, desire, lie, signal), how clues, clock and choice work, who sees
+  which file.
+- `autovalutazione.md`: the grades R1–R12 of the manual §9 as designed, with one line of evidence each; the outcome of the
+  validator; the justified warnings; the three main risks for a small, fast narrator.
 
-### 16. Immagini e audio: pronta da giocare
+### 16. Images and audio: ready to play
 ```
 scripts/prepara.sh campagne/<id>
 ```
-Valida in modo rigoroso (con errori si ferma), genera le immagini mancanti con la GPU locale (15–40
-minuti per una campagna intera), fa l'audio e stampa il rapporto: asset per tipo, ciò che manca, i pesi,
-e il comando esatto di `scripts/partita.sh`. È idempotente: rilanciarlo salta ciò che c'è già.
-- A batteria le immagini non partono: dillo a Riccardo, o rilancia con l'alimentatore. Non usare
-  `--anche-a-batteria` di tua iniziativa.
-- Se Riccardo sta giocando (server sulla porta 4610), chiedigli prima: la GPU rallenta il Mac.
-  `--senza-immagini` fa solo l'audio e riporta le immagini che mancano.
-- Uno strato d'audio che le fonti non hanno (per esempio una catena) resta fuori: il rapporto lo dice, e
-  il proiettore lo salta. La campagna è pronta lo stesso.
+It validates in strict mode (with errors it stops), generates the missing images with the local GPU (15–40 minutes for a whole
+campaign), makes the audio and prints the report: assets per type, what is missing, the weights, and the exact command of
+`scripts/partita.sh`. It is idempotent: running it again skips what is already there.
+- On battery the images do not start: tell the user, or run again with the power adapter. Do not use `--anche-a-batteria`
+  on your own initiative.
+- If the user is playing (server on port 4610), ask them first: the GPU slows the Mac. `--senza-immagini` makes only the audio
+  and reports the missing images.
+- A layer of audio that the sources do not have (for example a chain) stays out: the report says so, and the projector skips
+  it. The campaign is ready all the same.
 
-**Controllo**: il rapporto dice «pronta da giocare» (esistono `immagini/manifest.json` e
-`audio/manifest.json`). Committa `campagne/<id>/immagini` e `campagne/<id>/audio`, e scrivi nel
-`README.md` della campagna ciò che manca ancora.
+**Check**: the report says "ready to play" (`immagini/manifest.json` and `audio/manifest.json` exist). Commit
+`campagne/<id>/immagini` and `campagne/<id>/audio`, and write in the campaign's `README.md` what is still missing.
 
-## Regole che non si discutono
+## Rules that are not up for discussion
 
-Ognuna nasce da un errore vero, trovato in una prova, da un giudice cieco o da un revisore (dettagli in
-`riferimenti/mestiere.md` §8).
+Each one comes from a real error, found in a trial, by a blind judge or by a reviewer (details in `riferimenti/mestiere.md`
+§8).
 
-1. **Il selettore non conosce i segreti.** In modo B riceve il contesto compilato dal server: la carta di
-   stile intera, i fatti pubblici, nome e abbozzo dei luoghi, il riassunto; della scena in corso nome,
-   descrizione, domanda, sensi, elementi non NASCOSTI e taglio; dei PNG aspetto, carattere e voce (senza
-   `mai_dice`); le schede dei PG senza conoscenze private; gli esempi di voce; e per ogni turno le righe
-   `id · chi · tipo · quando` del catalogo. Nessuno di questi campi contiene un segreto: il validatore lo
-   controlla sul contesto vero (`SEGRETI.contesto_b`). Il `quando` descrive un fatto osservabile («un PG
-   mostra a Irma la cera trovata sui gradini»), mai una verità, e non usa parole come mente, nasconde,
-   confessa, verità.
-2. **Ogni confessione ha un cancello strutturale** in `richiede`: `privata: true` se la condizione è in
-   privato; `da_pg: [...]` se tocca a un PG preciso; `indizi_rivelati: [...]` se serve una prova. Il solo
-   `quando` non basta: nel secondo esperimento una confessione «in privato» è uscita in pubblico.
-3. **Le battute rispondono alle azioni.** Sono selezionabili solo menzogne, confessioni, indizi, segni,
-   momenti chiave e finali. Le reazioni generiche sono `solo_esempio: true`; le mosse che non rispondono
-   a niente sono `riempitivo: true`.
-4. **I `temi` sono pochi e distintivi**, nelle forme che i giocatori scrivono davvero (repertorio.md §3).
-5. **I segni d'orologio** sono battute, una per segmento, con `richiede.orologio` min = max = il segno di prima.
-6. **Nessun nome di PG nelle battute, e nessuna battuta ripete l'azione.** Prima di una battuta il narratore
-   improvvisa l'annuncio dell'azione, col nome del PG in terza persona («Brann solleva il coperchio.», manuale
-   N15); la battuta parte dall'esito.
-7. **Un PNG dice solo ciò che sta nel suo `sa`.** I `fatti_noti` di una sua battuta devono essere nel suo `sa`.
-8. **Scrivi per l'orecchio**: le misure sono in repertorio.md §9 e mestiere.md §7; niente cifre,
-   parentesi, puntini di sospensione o cliché del §5.
-9. **Due voci uguali o simili non stanno mai nella stessa scena.** Simili sono le voci con `simile_a` in
-   `assets/voci/voci.yaml` (oggi nadine e tabitha). Vale per i `png_presenti` e per ogni testo che porta
-   un PNG in una scena. Al massimo quattro PNG con voce per scena: tante sono le voci registrate.
-10. **Le immagini sono pubbliche dal primo turno.** Niente tratti nascosti nel ritratto né nelle invarianti.
-11. **Un canone solo, e i conti tornano.** Ogni scheda cita i fatti per id; una contraddizione tra due
-    testi è un errore da correggere subito. Ore, distanze, posti e date stanno nella cronologia e nella
-    logistica, e il validatore li rifà.
+1. **The selector does not know the secrets.** In mode B it receives the context compiled by the server: the whole style sheet,
+   the public facts, the name and sketch of the places, the summary; of the current scene the name, description, question,
+   senses, elements not HIDDEN and `taglio`; of the NPCs appearance, character and voice (without `mai_dice`); the PC sheets
+   without private knowledge; the voice examples; and for each turn the lines `id · chi · tipo · quando` of the catalogue.
+   None of these fields contains a secret: the validator checks it on the real context (`SEGRETI.contesto_b`). The `quando`
+   describes an observable fact (see «the examples in lingue/<lingua>/preparatore/skill.md»), never a truth, and does not use words that
+   say who lies, hides, confesses or what is true. The list of forbidden words is in «the examples in lingue/<lingua>/preparatore/skill.md» and in
+   `strumenti/valida/costanti.py`.
+2. **Every confession has a structural gate** in `richiede`: `privata: true` if the condition is in private; `da_pg: [...]` if it
+   concerns a specific PC; `indizi_rivelati: [...]` if a proof is needed. The `quando` alone is not enough: in the second
+   experiment a confession marked as private came out in public.
+3. **The lines answer the actions.** Only lies, confessions, clues, signs, key moments and endings are selectable. Generic
+   reactions are `solo_esempio: true`; moves that answer nothing are `riempitivo: true`.
+4. **The `temi` are few and distinctive**, in the forms the players really write (repertorio.md §3).
+5. **The clock signs** are lines, one per segment, with `richiede.orologio` min = max = the sign before.
+6. **No PC name in the lines, and no line repeats the action.** Before a line the narrator improvises the announcement of the
+   action, with the PC's name in the third person (manuale N15; see «the examples in lingue/<lingua>/preparatore/skill.md»); the line starts from the outcome.
+7. **An NPC says only what is in their `sa`.** The `fatti_noti` of one of their lines must be in their `sa`.
+8. **Write for the ear**: the measures are in repertorio.md §9 and mestiere.md §7; no figures, brackets, ellipses or the
+   clichés of §5.
+9. **Two identical or similar voices are never in the same scene.** Similar are the voices with `simile_a` in
+   `assets/voci/voci.yaml` (today nadine and tabitha). It holds for the `png_presenti` and for every text that brings a PNG into
+   a scene. At most four PNGs with voice per scene: that is how many voices are registered.
+10. **The images are public from the first turn.** No hidden traits in the portrait or in the invariants.
+11. **One canon, and the numbers add up.** Every sheet cites the facts by id; a contradiction between two texts is an error to
+    correct at once. Hours, distances, places and dates are in the backstory and the logistics, and the validator redoes them.
 
 ## Commit
 
-- **Quando**: dopo i passi 5, 8, 11, 12 e 15, e dopo il passo 16 per gli asset.
-- **Cosa**: aggiungi solo `campagne/<id>` (ed `esperimenti/copioni/<id>`, e i controlli dell'audio in
-  `esperimenti/audio/controlli_<id>.md`), con un messaggio in italiano che spiega il perché.
-- **Firma**: chiudi il messaggio con la riga di attribuzione indicata nella conversazione.
-- **Mai**: committare con errori del validatore senza dirlo nel messaggio.
+- **When**: after steps 5, 8, 11, 12 and 15, and after step 16 for the assets.
+- **What**: add only `campagne/<id>` (and `esperimenti/copioni/<id>`, and the audio checks in
+  `esperimenti/audio/controlli_<id>.md`), with a commit message in English that explains the why.
+- **Signature**: close the message with the attribution line given in the conversation.
+- **Never**: commit with validator errors without saying so in the message.

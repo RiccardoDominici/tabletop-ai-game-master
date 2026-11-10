@@ -1,86 +1,86 @@
-# Il livello «arco»: che cosa si prepara prima della sessione 1 (bozza, fasi D2–D4)
+# The "arc" level: what is prepared before session 1 (draft, phases D2–D4)
 
-Un arco è una campagna di 2–6 sessioni (`brief.yaml → sessioni`, tabella in `strumenti/strati.py`). Oggi il
-validatore lo rifiuta ancora (`LIVELLO.non_supportato`): il controllo si toglie dopo la prova vera della fase D4.
-Questo file dice che cosa scrive il Preparatore prima del gioco; tra una sessione e l'altra vale
-`tra-le-sessioni.md`.
+An arc is a campaign of 2–6 sessions (`brief.yaml → sessioni`, table in `strumenti/strati.py`). Today the validator
+still rejects it (`LIVELLO.non_supportato`): that check comes off after the real test of phase D4. This file says what
+the Preparatore writes before play; between sessions, `tra-le-sessioni.md` applies.
 
-## L'idea: una spina dorsale, non una trama
-Un arco ha bisogno di qualcosa che lo tenga insieme da una sessione all'altra, ma non di un copione: ciò che
-succede dopo la prima sessione dipende da ciò che i PG fanno nella prima. Quindi prima del gioco si scrivono:
-- la **premessa** e la **domanda drammatica** dell'arco (una sola, da sì o no: la risposta la dà il gioco);
-- il **fronte d'arco**: un orologio con le sue **tappe**, che avanza tra le sessioni con regole fisse;
-- gli **atti** (2–3) e i **finali possibili**, che dipendono da dove sta l'orologio e non da una scelta precisa;
-- i **PNG ricorrenti** (4–6) e i **fili** che torneranno;
-- la **sessione 1 completa**, come una one-shot (tutti i passi della skill);
-- le **sessioni dopo** in una riga ciascuna.
+## The idea: a backbone, not a plot
+An arc needs something that holds it together from one session to the next, but not a script: what happens after
+session 1 depends on what the PCs do in session 1. So before play, write:
+- the **premise** and the **dramatic question** of the arc (just one, yes-or-no: play gives the answer);
+- the **arc front**: a clock with its **milestones**, which advances between sessions under fixed rules;
+- the **acts** (2–3) and the **possible endings**, which depend on where the clock stands, not on a specific choice;
+- the **recurring NPCs** (4–6) and the **threads** that will come back;
+- **session 1 complete**, like a one-shot (all the skill's steps);
+- the **later sessions**, one line each.
 
-## Dove sta: campagna.yaml → preparazione.arco
-`preparazione` non arriva mai al narratore (il server la toglie in ogni modo): l'arco contiene finali e tappe,
-cioè il futuro, quindi sta lì. La sessione 1 è il pacchetto `sessioni/01/` (forma in `tra-le-sessioni.md`).
+## Where it lives: campagna.yaml → preparazione.arco
+`preparazione` never reaches the narrator (the server strips it in any case): the arc contains endings and milestones,
+that is, the future, so it lives there. Session 1 is the package `sessioni/01/` (its shape is in `tra-le-sessioni.md`).
+The example block is in «lingue/<lingua>/preparatore/riferimenti.md», arco.md §1. Structure, with field names and ids:
 ```yaml
 preparazione:
   arco:
-    premessa: "Una frase: che cosa succede in questa storia."
-    domanda: "Il Borgo Basso sarà ancora del paese alla fine dell'inverno?"   # da sì o no [V]
-    fronte: fronte_debiti            # il fronte di campagna (preparazione.fronti, livello: campagna) [V]
-    orologio: o_mercante             # l'orologio d'arco, tra gli orologi_extra del fronte [V]
-    tappe:                           # 3–6, in ordine: ciò che il fronte ottiene se nessuno lo ferma [V]
-      - {id: tp_lettere, segno: 1, cosa: "Il mercante compra i debiti del Borgo.", segno_visibile: "Lettere con il sigillo nero sulle porte.", entro_sessione: 1}
-      - {id: tp_sfratti, segno: 2, cosa: "…", segno_visibile: "…", entro_sessione: 2}
-      - {id: tp_darsena, segno: 4, cosa: "Il Borgo diventa una darsena.", segno_visibile: "…", entro_sessione: 3}
-    ritmo:                           # come avanza tra le sessioni (il «mondo si muove», passo 3) [V]
-      per_sessione: 1                # segni a fine sessione, se i PG non lo ostacolano
-      accelera: ["un PG firma un foglio del mercante"]     # condizioni osservabili nel registro o nello stato
-      rallenta: ["i PG mostrano il registro al consiglio"]
-    atti:                            # 2–3, sessioni consecutive dalla prima all'ultima [V]
-      - {id: atto_1, sessioni: [1], domanda: "I PG scopriranno chi compra i debiti?"}
-      - {id: atto_2, sessioni: [2, 3], domanda: "Il Borgo resisterà al mercante?"}
-    finali:                          # 2–4: ogni stato dell'orologio d'arco ha almeno un finale [V]
-      - {id: fn_salvo, orologio: {min: 0, max: 2}, quando: "il mercante non arriva alla darsena", esito: "…"}
-      - {id: fn_diviso, orologio: {min: 3, max: 3}, quando: "…", esito: "…"}
-      - {id: fn_perso, orologio: {min: 4, max: 4}, quando: "la darsena si fa", esito: "…"}
-    png_ricorrenti: [png_irma, png_bruno, png_mercante, png_console]   # 4–6, con la scheda in png/ [V]
-    fili:                            # promesse, debiti, misteri: ognuno torna da qualche parte [V]
-      - {id: filo_tetto, cosa: "Il tetto di Irma", torna_in: [2]}
-    sessioni:                        # una riga per ogni sessione dopo la prima [V]
-      - {numero: 2, abbozzo: "Il consiglio vota sugli sfratti, e il mercante compra i voti.", tappe: [tp_sfratti], png: [png_console], fili: [filo_tetto]}
-      - {numero: 3, abbozzo: "La notte della darsena.", tappe: [tp_darsena], png: [png_mercante]}
+    premessa: "…"                    # one sentence: what happens in this story
+    domanda: "…"                     # yes-or-no [V]
+    fronte: fronte_…                 # the campaign front (preparazione.fronti, livello: campagna) [V]
+    orologio: o_…                    # the arc clock, among the fronte's orologi_extra [V]
+    tappe:                           # 3–6, in order: what the front gets if nobody stops it [V]
+      - {id: tp_…, segno: 1, cosa: "…", segno_visibile: "…", entro_sessione: 1}
+      - {id: tp_…, segno: 2, cosa: "…", segno_visibile: "…", entro_sessione: 2}
+      - {id: tp_…, segno: 4, cosa: "…", segno_visibile: "…", entro_sessione: 3}
+    ritmo:                           # how it advances between sessions (the "world moves" step, step 3) [V]
+      per_sessione: 1                # ticks at the end of a session, if the PCs don't get in the way
+      accelera: ["…"]               # observable conditions in the log or the state
+      rallenta: ["…"]
+    atti:                            # 2–3, consecutive sessions from the first to the last [V]
+      - {id: atto_1, sessioni: [1], domanda: "…"}
+      - {id: atto_2, sessioni: [2, 3], domanda: "…"}
+    finali:                          # 2–4: every state of the arc clock has at least one ending [V]
+      - {id: fn_…, orologio: {min: 0, max: 2}, quando: "…", esito: "…"}
+      - {id: fn_…, orologio: {min: 3, max: 3}, quando: "…", esito: "…"}
+      - {id: fn_…, orologio: {min: 4, max: 4}, quando: "…", esito: "…"}
+    png_ricorrenti: [png_…, png_…, png_…, png_…]   # 4–6, each with its sheet in png/ [V]
+    fili:                            # promises, debts, mysteries: each one comes back somewhere [V]
+      - {id: filo_…, cosa: "…", torna_in: [2]}
+    sessioni:                        # one line for each session after the first [V]
+      - {numero: 2, abbozzo: "…", tappe: [tp_…], png: [png_…], fili: [filo_…]}
+      - {numero: 3, abbozzo: "…", tappe: [tp_…], png: [png_…]}
 ```
 
-## Il mestiere
-- **Il finale non è una trama.** Un finale dice in che stato finisce il mondo, non che cosa fanno i PG per
-  arrivarci: è legato all'orologio d'arco (`orologio: {min, max}`), e ogni stato possibile dell'orologio, da
-  zero a pieno, ha almeno un finale. C'è sempre un finale per chi non ferma il fronte, e uno per chi lo ferma.
-  Nessun finale nomina un PG: al tavolo può mancare chiunque.
-- **Il fronte avanza da solo, con regole fisse.** Tra una sessione e l'altra l'orologio d'arco prende
-  `per_sessione` segni, più o meno secondo `accelera` e `rallenta`, che sono fatti osservabili (Blades in the
-  Dark fa avanzare le fazioni nel downtime, non a capriccio del master). Senza ostacoli arriva al destino entro
-  l'ultima sessione, mai nella prima: `per_sessione × sessioni ≥ segmenti`, e una tappa non arriva prima di
-  quanto il ritmo permette (`entro_sessione`).
-- **Ogni tappa si vede.** Come i presagi (C2), ogni tappa ha un segno visibile: i PG devono poter capire che il
-  fronte è andato avanti mentre loro erano altrove.
-- **La fine è dichiarata.** Un arco ha un numero di sessioni e una domanda; le campagne senza fine tendono a
-  sgonfiarsi (dato debole, docs/ricerca-durata.md §3). La domanda dell'arco si chiude nell'ultimo atto.
-- **Piantare presto ciò che torna.** I fili che serviranno al finale compaiono nella sessione 1 o in un
-  abbozzo, e ognuno ha una sessione in cui torna (`torna_in`). Un PNG ricorrente compare nella sessione 1 o in
-  un abbozzo, o non è ricorrente.
-- **Prepara solo la sessione 1.** Le altre sono una riga: ciò che i PG fanno nella prima le cambierà. Il
-  dettaglio arriva tra le sessioni, dallo stato (`tra-le-sessioni.md`). È la preparazione «a rotolo» di Sly
-  Flourish e dell'Alexandrian (docs/ricerca-durata.md §2).
-- **Ogni sessione regge con qualunque gruppo.** I PG pregenerati restano uno più del massimo; ogni sessione
-  comincia con un riassunto di tre-cinque frasi scritto dai fatti dello stato, non a memoria.
-- **Atti con una domanda ciascuno.** 2–3 atti (C8: tre atti per la campagna); ogni atto ha la sua domanda,
-  e l'ultimo risponde a quella dell'arco.
+## The craft
+- **The ending is not a plot.** An ending says what state the world is left in, not what the PCs do to get there. It is
+  tied to the arc clock (`orologio: {min, max}`), and every possible state of the clock, from empty to full, has at least
+  one ending. There is always an ending for those who do not stop the front, and one for those who do. No ending names a
+  PC: at the table, anyone may be missing.
+- **The front advances on its own, under fixed rules.** Between one session and the next, the arc clock takes
+  `per_sessione` ticks, more or less according to `accelera` and `rallenta`, which are observable facts (Blades in the
+  Dark advances factions in downtime, not at the whim of the GM). With no obstacles it reaches its destiny by the last
+  session, never in the first: `per_sessione × sessioni ≥ segmenti`, and a milestone does not arrive before the pace
+  allows (`entro_sessione`).
+- **Every milestone is visible.** Like the omens (C2), each milestone has a visible sign: the PCs must be able to tell
+  that the front moved on while they were elsewhere.
+- **The end is declared.** An arc has a number of sessions and a question; campaigns with no end tend to deflate
+  (weak data, docs/ricerca-durata.md §3). The arc's question is closed in the last act.
+- **Plant early what comes back.** The threads that the ending will need appear in session 1 or in a sketch, and each
+  has a session where it returns (`torna_in`). A recurring NPC appears in session 1 or in a sketch, or it is not
+  recurring.
+- **Prepare only session 1.** The others are one line: what the PCs do in the first will change them. The detail comes
+  between sessions, from the state (`tra-le-sessioni.md`). This is the "rolling" preparation of Sly Flourish and
+  Alexandrian (docs/ricerca-durata.md §2).
+- **Every session works with any group.** Pregenerated PCs stay one more than the maximum; every session starts with a
+  summary of three to five sentences written from the facts of the state, not from memory.
+- **Acts, each with a question.** 2–3 acts (C8: three acts for the campaign); each act has its own question, and the last
+  one answers the arc's question.
 
-## Che cosa controlla il validatore (classe ARCO)
-| Codice | Controllo |
+## What the validator checks (class ARCO)
+| Code | Check |
 |---|---|
-| `ARCO.forma` | premessa, domanda da sì o no, fronte di campagna e orologio esistenti, ritmo con le sue liste |
-| `ARCO.tappe` | tappe con segni crescenti fino all'ultimo segmento; `entro_sessione` coerente con il ritmo e con le sessioni del brief; il fronte arriva al destino entro l'ultima sessione e non nella prima |
-| `ARCO.atti` | 2–3 atti che coprono le sessioni da 1 all'ultima, senza buchi né sovrapposizioni |
-| `ARCO.finali` | 2–4 finali; ogni stato dell'orologio d'arco ha un finale; uno a orologio pieno e uno prima; nessun nome di PG |
-| `ARCO.png` | ogni PNG ricorrente ha la scheda e compare nella sessione 1 o in un abbozzo |
-| `ARCO.fili` | ogni filo torna in una sessione dell'arco (in `torna_in` o in un abbozzo) |
-| `ARCO.sessioni` | un abbozzo di una frase per ogni sessione dalla 2 all'ultima |
-| `ARCO.misure` | le misure di `strumenti/strati.py` (tappe, atti, PNG ricorrenti): avviso se fuori |
+| `ARCO.forma` | premise, yes-or-no question, campaign front and clock exist, pace with its lists |
+| `ARCO.tappe` | milestones with increasing ticks up to the last segment; `entro_sessione` consistent with the pace and with the brief's sessions; the front reaches its destiny by the last session and not in the first |
+| `ARCO.atti` | 2–3 acts covering sessions 1 to the last, with no gaps or overlaps |
+| `ARCO.finali` | 2–4 endings; every state of the arc clock has an ending; one at a full clock and one before; no PC name |
+| `ARCO.png` | every recurring NPC has its sheet and appears in session 1 or in a sketch |
+| `ARCO.fili` | every thread returns in a session of the arc (in `torna_in` or in a sketch) |
+| `ARCO.sessioni` | a one-sentence sketch for every session from 2 to the last |
+| `ARCO.misure` | the measures of `strumenti/strati.py` (milestones, acts, recurring NPCs): warning if out of range |
