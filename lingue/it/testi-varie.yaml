@@ -1,0 +1,4 @@
+# Frasi fisse varie del Motore (docs/lingue.md).
+varie:
+  # Nome del narratore nella trascrizione (telefoni, proiettore, pannello).
+  nome_narratore: "Narratore"

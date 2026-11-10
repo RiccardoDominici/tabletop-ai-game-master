@@ -41,7 +41,7 @@ import type {
 } from '@cantastorie/shared';
 import { schedaPg } from '../campagna/scheda';
 import type { Campagna, ScenaCaricata } from '../campagna/tipi';
-import { ID_NARRATORE, NOME_NARRATORE, conScena } from '../campagna/tipi';
+import { ID_NARRATORE, nomeNarratore, conScena } from '../campagna/tipi';
 import { nomeBreve } from '../campagna/nomi';
 import { fuoriDallaFinzione } from '../narrazione/finzione';
 import { MOTIVO_FINE_SESSIONE } from '../sessione/archivio';
@@ -1955,14 +1955,14 @@ export class Regia {
       this.fineNarrazione('tutti');
       return;
     }
-    this.aggiungiTrascrizione({ turno, tipo: 'narrazione', chi: ID_NARRATORE, nome: NOME_NARRATORE, testo: frasi.join(' ') });
+    this.aggiungiTrascrizione({ turno, tipo: 'narrazione', chi: ID_NARRATORE, nome: nomeNarratore(), testo: frasi.join(' ') });
     frasi.forEach((testo, indice) =>
       this.pipeline.accoda({
         id_frase: `t${turno}-f${indice}`,
         turno,
         indice,
         parlante: ID_NARRATORE,
-        nome: NOME_NARRATORE,
+        nome: nomeNarratore(),
         voce_id: ID_NARRATORE,
         testo,
         testo_voce: this.pronuncia(testo),
@@ -2599,7 +2599,7 @@ export class Regia {
     this.interrompiFlussi('sorvegliante');
     this.primoAudioInviato.delete(turno);
     const annullate = fase === 'narrazione' && !detto ? this.tavolo.annullaChiuse(turno, testoFisso('regia.motivi.blocco')) : [];
-    if (!detto && fase === 'narrazione') this.trascriviFrase(turno, ID_NARRATORE, NOME_NARRATORE, testoFisso('regia.narratore.riserva_blocco'), 998);
+    if (!detto && fase === 'narrazione') this.trascriviFrase(turno, ID_NARRATORE, nomeNarratore(), testoFisso('regia.narratore.riserva_blocco'), 998);
     const riga = testoFisso('regia.righe.blocco');
     this.rigaDiSistema(turno, riga);
     this.o.log.error({ turno, fase, causa, ultimo: b.ultimo, fermo_ms: b.fermo_ms, durata_ms: b.durata_ms, voce_in_coda: inCodaVoce, detto, azioni_annullate: annullate }, 'sorvegliante: attesa bloccata, il gioco riparte');
@@ -2835,13 +2835,13 @@ export class Regia {
   private parlaRiserva(turno: number): void {
     const mossa = this.campagna.scena.dati['mossa_morbida_pronta'];
     const testo = typeof mossa === 'string' && mossa.trim() ? mossa.trim() : testoFisso('regia.narratore.riserva_turno');
-    this.trascriviFrase(turno, ID_NARRATORE, NOME_NARRATORE, testo, 999);
+    this.trascriviFrase(turno, ID_NARRATORE, nomeNarratore(), testo, 999);
     this.pipeline.accoda({
       id_frase: `t${turno}-riserva`,
       turno,
       indice: 0,
       parlante: ID_NARRATORE,
-      nome: NOME_NARRATORE,
+      nome: nomeNarratore(),
       voce_id: ID_NARRATORE,
       testo,
       testo_voce: this.pronuncia(testo),

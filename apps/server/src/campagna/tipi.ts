@@ -4,7 +4,7 @@
  * il motore usa davvero (voci, nomi, apertura, atmosfera).
  */
 
-import type { Lingua } from '../lingua';
+import { testo, type Lingua } from '../lingua';
 export type DatiYaml = Record<string, unknown>;
 
 export interface PngCaricato {
@@ -104,7 +104,10 @@ export interface PacchettoCaricato {
 }
 
 export const ID_NARRATORE = 'narratore';
-export const NOME_NARRATORE = 'Narratore';
+/** Nome del narratore nella trascrizione, nella lingua dei contenuti (lingue/<codice>/testi-varie.yaml). */
+export function nomeNarratore(): string {
+  return testo('varie.nome_narratore');
+}
 
 /** La stessa campagna con un'altra scena corrente (copia superficiale: il resto è condiviso). */
 export function conScena(c: Campagna, idScena: string): Campagna {

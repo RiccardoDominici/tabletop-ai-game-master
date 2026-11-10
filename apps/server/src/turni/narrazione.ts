@@ -16,7 +16,7 @@
  */
 import { togliNumeriRegole } from '../narrazione/numeri-regole';
 import type { Campagna } from '../campagna/tipi';
-import { ID_NARRATORE, NOME_NARRATORE } from '../campagna/tipi';
+import { ID_NARRATORE, nomeNarratore } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import type { DatiTurnoLettore, EsitoNarrazione, Narratore } from '../llm/tipi';
 import type { MisuratoreTurno } from '../metriche/misure';
@@ -156,9 +156,9 @@ export interface ParametriTurno {
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
 export function voceDi(campagna: Campagna, etichetta: string): { voce_id: string; nome: string } {
-  if (etichetta === ID_NARRATORE) return { voce_id: ID_NARRATORE, nome: NOME_NARRATORE };
+  if (etichetta === ID_NARRATORE) return { voce_id: ID_NARRATORE, nome: nomeNarratore() };
   const png = campagna.png.find((p) => p.id === etichetta);
-  return png ? { voce_id: png.voce_id, nome: png.nome } : { voce_id: ID_NARRATORE, nome: NOME_NARRATORE };
+  return png ? { voce_id: png.voce_id, nome: png.nome } : { voce_id: ID_NARRATORE, nome: nomeNarratore() };
 }
 
 /** I segmenti delle battute stanno in un intervallo a parte, per non unirsi alle righe improvvisate. */
