@@ -2,6 +2,19 @@
 
 Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei documenti di progetto.
 
+## Obiettivo finale (Riccardo, 10 novembre 2026)
+**Chiunque incolla il link del repository nel proprio Claude Code e gioca, senza chiavi.** Niente deve essere
+obbligatorio: di base tutto gira in locale o su Claude Code (abbonamento di chi lo usa); le chiavi esterne
+(Anthropic per un lettore migliore, OpenRouter per la voce drama-3, Freesound per i suoni…) sono un di più
+per chi vuole smanettare. Servono:
+- una fase di **configurazione guidata da Claude Code** (una skill nel repo, letta da chi incolla il link):
+  riconosce il computer (sistema, chip, RAM, GPU, disco) e sceglie da solo il lettore veloce, il modello delle
+  immagini e la voce adatti; scarica ciò che serve, propone le chiavi facoltative, scrive una configurazione
+  locale fuori da git e chiude con una prova automatica;
+- **ogni pezzo modulare** dietro una scelta di configurazione con riserve: lettore (locale | Haiku | altri),
+  voce (locale | drama-3 | finta), immagini (locale | nessuna | API), suoni (fonti libere | Freesound);
+- la documentazione online aggiornata quando tutto funziona.
+
 ## In corso
 - **Durata in sessioni e strati di gioco** (richiesta di Riccardo, 3 novembre 2026): nel brief si indica la durata
   stimata in *numero di sessioni*, e da quella dipende quanti strati genera il framework. Una one-shot ha poche cose
