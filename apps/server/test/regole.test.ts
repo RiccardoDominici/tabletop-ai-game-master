@@ -21,7 +21,7 @@ import type { RegoleCampagna } from '../src/regole/tipi';
 import { orologioDiSistema } from '../src/turni/orologio';
 import { caricaRepertorio } from '../src/repertorio/caricatore';
 import { rispondeA } from '../src/repertorio/stato';
-import { REGOLA_ESITI } from '../src/prove/testi';
+import { regolaEsiti } from '../src/prove/testi';
 
 const FIX = path.join(import.meta.dirname, 'fixtures', 'campagne');
 
@@ -181,7 +181,7 @@ describe('coerenza col set: narratore e repertorio', () => {
   it('il narratore riceve come si tira e che cosa vuol dire ogni fascia (un 7–9 non è un successo pieno)', () => {
     const { m } = motore('pbta', [1], new ArbitroFinto({}));
     const r = m.regolaEsiti();
-    expect(r.startsWith(REGOLA_ESITI)).toBe(true);
+    expect(r.startsWith(regolaEsiti())).toBe(true);
     expect(r).toContain('Regole del manuale «Mondo a 2d6 (set di prova)»: Si tirano 2d6 più la statistica');
     expect(r).toContain('- 7–9 «Successo con un costo»: riesce, ma devi dare un costo, una scelta difficile o una complicazione');
     expect(r).toContain('- 6- «Fallimento»: non riesce, e la situazione peggiora');

@@ -187,12 +187,3 @@ export function titoloEsiti(): string {
 export function regolaEsiti(): string {
   return testo('prove.esiti.regola');
 }
-
-/**
- * Gli stessi testi in italiano, per chi li importa ancora come costanti (scena/regia.ts, test): non
- * seguono la lingua dei contenuti, quindi vanno sostituiti con titoloEsiti() e regolaEsiti().
- * @deprecated usare titoloEsiti() e regolaEsiti()
- */
-export const TITOLO_ESITI = testo('prove.esiti.titolo', {}, 'it');
-/** @deprecated usare regolaEsiti() */
-export const REGOLA_ESITI = testo('prove.esiti.regola', {}, 'it');

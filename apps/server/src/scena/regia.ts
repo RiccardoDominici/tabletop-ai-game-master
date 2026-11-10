@@ -53,7 +53,7 @@ import type { Logger } from '../logger';
 import type { Narratore } from '../llm/tipi';
 import { MisuratoreTurno } from '../metriche/misure';
 import type { RegistroJsonl } from '../metriche/jsonl';
-import { compilaMessaggioTurno } from '../narrazione/messaggio';
+import { compilaMessaggioTurno, type DatiMessaggioTurno } from '../narrazione/messaggio';
 import type { Orologio } from '../turni/orologio';
 import { azioniPerNarratore } from '../azioni/narratore';
 import type { CatalogoImmagini } from '../campagna/immagini';
@@ -99,7 +99,7 @@ import type { ArbitroProve, DecisioneProva, DecisioneRegole, EsitoTurnoProve } f
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
 import type { CombattimentoMaster } from '@cantastorie/shared';
 import type { FonteDadi } from '../prove/dadi';
-import { REGOLA_ESITI, TITOLO_ESITI } from '../prove/testi';
+import { regolaEsiti, titoloEsiti } from '../prove/testi';
 import { guardiaPrivate } from '../narrazione/privato';
 import type { SchedaNumerica } from '../campagna/schede';
 
@@ -2286,7 +2286,8 @@ export class Regia {
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r) : null;
     if (epoca !== this.epoca) return;
-    const messaggioBase = compilaMessaggioTurno({
+    // Gli stessi dati vanno al lettore minimo, che non legge il testo (llm/minimo.ts, turnoDaDati).
+    const datiTurno: DatiMessaggioTurno = {
       turno: r.turno,
       trascrizione: this.trascrizione,
       privati: this.privati,
@@ -2299,8 +2300,9 @@ export class Regia {
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
       noteRegia: this.note.testi,
       tempoSerata: this.consiglioSerata(r.turno),
-      ...(tiri?.fatti.length ? { esitiTiri: { titolo: TITOLO_ESITI, regola: this.prove?.regolaEsiti() ?? REGOLA_ESITI, righe: tiri.fatti } } : {}),
-    });
+      ...(tiri?.fatti.length ? { esitiTiri: { titolo: titoloEsiti(), regola: this.prove?.regolaEsiti() ?? regolaEsiti(), righe: tiri.fatti } } : {}),
+    };
+    const messaggioBase = compilaMessaggioTurno(datiTurno);
     // Ritmo concitato: il narratore sa che vale ancora, e quando dire `[ritmo] calmo`.
     const ritmo = sezioneRitmo(this.ritmo);
     const messaggio = ritmo ? `${messaggioBase}\n\n${ritmo}` : messaggioBase;
@@ -2328,7 +2330,7 @@ export class Regia {
     ];
     // Mossa del mondo (nessuna azione): la narrazione resta nella finzione (narrazione/finzione.ts).
     const mossaDelMondo = r.azioni.length === 0;
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo).catch((err: unknown) =>
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno).catch((err: unknown) =>
       this.dopoEccezione(epoca, r.turno, 'narrazione', err),
     );
   }
@@ -2341,6 +2343,7 @@ export class Regia {
     chiusura: RiepilogoChiusura['motivo'],
     noteRegia: string[] = [],
     mossaDelMondo = false,
+    dati?: DatiMessaggioTurno,
   ): Promise<void> {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
@@ -2357,6 +2360,7 @@ export class Regia {
         turno,
         sistema: this.sistema,
         messaggio,
+        ...(dati ? { dati } : {}),
         signal: controllo.signal,
         misuratore,
         ora: () => this.o.orologio.ora(),
@@ -2395,6 +2399,7 @@ export class Regia {
           turno,
           sistema: this.sistema,
           messaggio: messaggioRiparazione(messaggio, esito.esito.testo, senzaRisposta.map((id) => ({ id, nome: this.nomePg(id), testo: pubbliche.get(id)! }))),
+          ...(dati ? { dati: { ...dati, riparazione: true } } : {}),
           signal: controllo.signal,
           misuratore,
           ora: () => this.o.orologio.ora(),
