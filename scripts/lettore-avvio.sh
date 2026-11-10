@@ -18,6 +18,13 @@ mkdir -p "$DIR_LOG"
 
 # Già attivo? Non basta /v1/models: si chiede un token (un server col generatore morto risponde ai modelli e
 # poi resta appeso sulle richieste vere). Appeso → si ferma e si riavvia.
+if curl -s --max-time 2 "$URL" | grep -q '"data"' && ! curl -s --max-time 2 "$URL" | grep -q "\"$MODELLO\""; then
+  # Risponde, ma con un altro modello caricato: si riavvia con quello chiesto.
+  echo "lettore locale: su :$PORTA c'è un altro modello, riavvio con $MODELLO"
+  "$RADICE/scripts/lettore-arresto.sh"
+  lsof -nP -ti "tcp:$PORTA" -sTCP:LISTEN | xargs kill -TERM 2>/dev/null || true
+  sleep 2
+fi
 if curl -s --max-time 2 "$URL" | grep -q '"data"'; then
   if curl -s --max-time 30 "http://127.0.0.1:$PORTA/v1/chat/completions" -H 'content-type: application/json' \
       -d "{\"model\":\"$MODELLO\",\"messages\":[{\"role\":\"user\",\"content\":\"ok\"}],\"max_tokens\":1}" | grep -q '"choices"'; then

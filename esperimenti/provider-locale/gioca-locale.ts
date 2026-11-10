@@ -31,6 +31,11 @@ if ([4610, 4611, 4612].includes(PORTA)) throw new Error(`porta ${PORTA} vietata:
 const TURNI = Number(opzione('--turni', '3'));
 const CAMPAGNA = opzione('--campagna', 'prova-f0');
 const MODO = opzione('--modo', 'B') === 'A' ? 'improvvisa' : 'repertorio';
+/** --voce fish: drama-3 via OpenRouter (l'unica chiave ammessa, per separare il peso della voce sulla GPU). */
+const VOCE_FISH = opzione('--voce', '') === 'fish';
+const ETICHETTA = opzione('--etichetta', '');
+/** --modello <id mlx>: un altro modello locale per il lettore (scritto in un locale.yaml di prova). */
+const MODELLO = opzione('--modello', '');
 const URL = `http://127.0.0.1:${PORTA}`;
 const LOG = path.join(RADICE, 'logs', `porta-${PORTA}`);
 
@@ -86,8 +91,16 @@ async function principale(): Promise<void> {
   // Nessuna chiave: niente variabili, file di ripiego inesistenti, solo config/predefinita.yaml (niente locale.yaml).
   fs.mkdirSync(VUOTA, { recursive: true });
   fs.copyFileSync(path.join(RADICE, 'config', 'predefinita.yaml'), path.join(VUOTA, 'predefinita.yaml'));
+  fs.rmSync(path.join(VUOTA, 'locale.yaml'), { force: true });
+  if (MODELLO) fs.writeFileSync(path.join(VUOTA, 'locale.yaml'), `backend:\n  locale:\n    modello: ${MODELLO}\n`);
   const env: NodeJS.ProcessEnv = { ...process.env, CANTASTORIE_PORTA: String(PORTA), CANTASTORIE_CAMPAGNA: CAMPAGNA, CANTASTORIE_MODO: MODO, CANTASTORIE_MASTER_TOKEN: token, CANTASTORIE_CONFIG: VUOTA, ANTHROPIC_KEY_FILE: '/nessun/file', CANTASTORIE_CHIAVE_OPENROUTER: '/nessun/file' };
   for (const k of ['ANTHROPIC_API_KEY', 'OPENROUTER_API_KEY', 'CANTASTORIE_VOCE', 'CANTASTORIE_TTS', 'CANTASTORIE_LLM']) delete env[k];
+  if (VOCE_FISH) {
+    // Solo la voce in rete: la chiave OpenRouter dal suo file; il resto resta locale e senza chiavi.
+    env['CANTASTORIE_VOCE'] = 'fish';
+    delete env['CANTASTORIE_CHIAVE_OPENROUTER'];
+    delete env['CANTASTORIE_VOCE_URL'];
+  }
   console.log(`porta ${PORTA}: avvio del server di prova (${CAMPAGNA}, ${MODO}, tutto in locale, voce ${env['CANTASTORIE_VOCE_URL'] ?? 'finta'})…`);
   const avvio = spawnSync(path.join(RADICE, 'scripts', 'avvio.sh'), [], { env, encoding: 'utf8' });
   if (avvio.status !== 0) throw new Error(`avvio fallito:\n${avvio.stdout.replaceAll(token, '***')}\n${avvio.stderr.replaceAll(token, '***')}`);
@@ -198,9 +211,13 @@ async function principale(): Promise<void> {
     strutturato_non_valido: server.filter((r) => /^llm: (risposta strutturata non valida|si usa il ripiego)/.test(String(r['msg']))).length,
     chiamate_api: server.filter((r) => /client Anthropic pronto/.test(String(r['msg']))).length,
     llm_ms: leggiJsonl(path.join(LOG, 'turni.jsonl')).filter((r) => String(r['ts']) >= inizio).map((r) => r['llm_fine'] ?? null),
+    // Per turno, in ms dalla chiusura della finestra: lettore (fine), voce (primo audio), proiettore (inizio, fine).
+    turni: leggiJsonl(path.join(LOG, 'turni.jsonl'))
+      .filter((r) => String(r['ts']) >= inizio)
+      .map((r) => ({ turno: r['turno'], voce: r['voce_motore'], llm_fine: r['llm_fine'], voce_richiesta: r['voce_richiesta'], voce_primo_audio: r['voce_primo_audio'], schermo_inizio_audio: r['schermo_inizio_audio'], audio_fine: r['audio_fine'], buchi: r['buchi'] })),
     buchi_proiettore: proiettore.finiti.reduce((a, t) => a + t.buchi, 0),
   };
-  fs.writeFileSync(path.join(USCITA, 'riepilogo.json'), JSON.stringify(riepilogo, null, 1) + '\n');
+  fs.writeFileSync(path.join(USCITA, `riepilogo${ETICHETTA ? `-${ETICHETTA}` : ''}.json`), JSON.stringify(riepilogo, null, 1) + '\n');
   console.log(JSON.stringify(riepilogo, null, 1));
   spawnSync(path.join(RADICE, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, CANTASTORIE_PORTA: String(PORTA) }, encoding: 'utf8' });
   process.exit(0);
