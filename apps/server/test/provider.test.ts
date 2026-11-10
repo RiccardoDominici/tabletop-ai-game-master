@@ -175,6 +175,23 @@ describe('lettore minimo', () => {
     expect(delta.join('')).toBe(e.testo);
   });
 
+  it('il primo annuncio esce SUBITO, prima che il classificatore risponda (una chiamata per turno)', async () => {
+    let chiamate = 0;
+    let risposto = false;
+    const lento = (async () => {
+      chiamate += 1;
+      await new Promise((r) => setTimeout(r, 200));
+      risposto = true;
+      return new Response(JSON.stringify({ choices: [{ message: { content: '{"risposte":[{"pg":"pg_ida","battuta":"nar_scatolina"},{"pg":"pg_livia","battuta":"nessuna"}]}' }, finish_reason: 'stop' }] }), { status: 200 });
+    }) as unknown as typeof fetch;
+    const n = new NarratoreMinimo(new ModelloOpenAI({ url: 'http://lento/v1', modello: 'm', fetch: lento }), { log: loggerMuto() });
+    const delta: Array<{ testo: string; risposto: boolean }> = [];
+    await n.narra({ turno: 3, sistema: [], messaggio, signal: new AbortController().signal }, (d) => delta.push({ testo: d, risposto }));
+    expect(delta[0]).toEqual({ testo: '[narratore] Ida: «Guardo la scatolina da vicino».\n', risposto: false });
+    expect(delta.slice(1).every((d) => d.risposto)).toBe(true);
+    expect(chiamate).toBe(1);
+  });
+
   it('risposte non valide due volte → ripiego: la prima battuta indicata', async () => {
     coda.push('{"risposte":[{"pg":"pg_ida","battuta":"inventata"}]}', 'non è JSON');
     const n = new NarratoreMinimo(locale(), { log: loggerMuto() });

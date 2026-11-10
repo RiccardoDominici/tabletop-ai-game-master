@@ -126,7 +126,13 @@ async function principale(): Promise<void> {
   // Il primo telefono accende «Ascolta qui» e registra.
   const ascolta = telefoni.get(copione.pg[0]!)!;
   const registrate = new Map<string, FraseRegistrata>();
-  ascolta.on('audio:frase', (m) => registrate.set(m.id_frase, { meta: m, pezzi: [], secondi: 0 }));
+  // Tempi visti dal telefono in ascolto, dalla chiusura della finestra: ogni frase quando arriva il suo audio.
+  let chiusaAlle = 0;
+  const arrivi: Array<{ turno: number; ms: number; annuncio: boolean; testo: string }> = [];
+  ascolta.on('audio:frase', (m) => {
+    registrate.set(m.id_frase, { meta: m, pezzi: [], secondi: 0 });
+    if (chiusaAlle && m.turno >= 1) arrivi.push({ turno: m.turno, ms: Date.now() - chiusaAlle, annuncio: /^[^:«]{1,40}: «/.test(m.testo), testo: m.testo.slice(0, 60) });
+  });
   ascolta.on('audio:pezzo', (p) => {
     const f = registrate.get(p.id_frase);
     if (!f) return;
@@ -156,6 +162,7 @@ async function principale(): Promise<void> {
     const corrente = s.turno;
     const dopo = attendiStato(schermo, (x) => (x.turno > corrente && x.fase === 'finestra') || x.fase === 'pausa', 300_000, `fine del turno ${n + 1}`);
     await new Promise((r) => setTimeout(r, 500));
+    chiusaAlle = Date.now();
     const chiusa = await master.comando({ tipo: 'chiudi_finestra' });
     if (!chiusa.ok) console.log(`  (Risolvi ora: ${chiusa.errore})`);
     const fine = await dopo;
@@ -211,6 +218,11 @@ async function principale(): Promise<void> {
     strutturato_non_valido: server.filter((r) => /^llm: (risposta strutturata non valida|si usa il ripiego)/.test(String(r['msg']))).length,
     chiamate_api: server.filter((r) => /client Anthropic pronto/.test(String(r['msg']))).length,
     llm_ms: leggiJsonl(path.join(LOG, 'turni.jsonl')).filter((r) => String(r['ts']) >= inizio).map((r) => r['llm_fine'] ?? null),
+    // Dal telefono in ascolto, per turno: primo audio sentito (di solito l'annuncio) e prima battuta scelta.
+    sentito: [...new Set(arrivi.map((x) => x.turno))].map((turno) => {
+      const mie = arrivi.filter((x) => x.turno === turno);
+      return { turno, primo_audio_ms: mie[0]?.ms ?? null, prima_battuta_ms: mie.find((x) => !x.annuncio)?.ms ?? null, annunci_prima: mie.findIndex((x) => !x.annuncio) };
+    }),
     // Per turno, in ms dalla chiusura della finestra: lettore (fine), voce (primo audio), proiettore (inizio, fine).
     turni: leggiJsonl(path.join(LOG, 'turni.jsonl'))
       .filter((r) => String(r['ts']) >= inizio)

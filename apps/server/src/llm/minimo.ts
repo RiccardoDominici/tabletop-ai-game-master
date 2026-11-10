@@ -140,6 +140,18 @@ function rigaBreve(t: TurnoLetto, id: string): string {
   return parti.length >= 4 ? `${parti[0]}: ${parti.slice(3).join(' · ')}` : riga;
 }
 
+/** Quanto dura a voce una frase breve (≈ 2,6 parole al secondo, più l'attacco della voce). */
+export function durataStimata(frase: string): number {
+  return 600 + 380 * frase.split(/\s+/).filter(Boolean).length;
+}
+
+function attesa(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((risolvi) => {
+    const t = setTimeout(risolvi, ms);
+    signal.addEventListener('abort', () => (clearTimeout(t), risolvi()), { once: true });
+  });
+}
+
 export interface OpzioniMinimo {
   log: Logger;
   maxTokens?: number;
@@ -156,56 +168,98 @@ export class NarratoreMinimo implements Narratore {
     this.modello = m.modello;
   }
 
+  /**
+   * Il turno, in streaming, per nascondere l'attesa del classificatore:
+   * 1. il primo annuncio (deterministico) parte SUBITO, alla chiusura della finestra: il tavolo sente
+   *    qualcosa entro un secondo;
+   * 2. mentre il classificatore lavora (una chiamata sola per tutte le azioni del turno), gli annunci
+   *    seguenti escono al ritmo stimato della voce;
+   * 3. poi le battute scelte, nell'ordine delle azioni (con l'annuncio davanti per chi non l'ha avuto).
+   */
   async narra(r: RichiestaNarrazione, onTesto: (delta: string) => void): Promise<EsitoNarrazione> {
-    const t = leggiTurno(r.messaggio);
     const risposte: RispostaModello[] = [];
-    let scelte: Risposte['risposte'] = [];
-    if (t.azioni.length) {
-      const per = new Map(t.azioni.map((a) => [a.id_pg, candidati(t, a.id_pg, a.testo)]));
-      const elenco = t.azioni
-        .map((a, i) => {
-          const c = per.get(a.id_pg)!;
-          const righe = c.map((id) => `   - ${rigaBreve(t, id)}`).join('\n') || '   (nessun candidato: battuta "nessuna")';
-          return `${i + 1}. ${a.nome} (${a.id_pg})${a.privata ? ' [PRIVATA]' : ''}: ${a.testo}\n   Candidati (id: quando):\n${righe}`;
-        })
-        .join('\n');
-      const ripiego = (): Risposte => ({ risposte: t.azioni.map((a) => ({ pg: a.id_pg, battuta: t.indicate.get(a.id_pg)?.[0] ?? 'nessuna' })) });
-      const risposta = await chiediStrutturato<Risposte>(
-        this.m,
-        { sistema: [{ testo: PROMPT, cache: true }], messaggi: [{ ruolo: 'user', testo: `Azioni del turno:\n${elenco}` }], maxTokens: this.o.maxTokens ?? 40 + 50 * t.azioni.length, signal: r.signal },
-        {
-          schema: SCHEMA,
-          cosa: 'lettore minimo',
-          log: this.o.log,
-          onRisposta: (x) => risposte.push(x),
-          ripiego,
-          // Solo PG del turno e battute fra i candidati di QUELL'azione (o «nessuna»).
-          controlla: (v) => {
-            for (const x of v.risposte) {
-              if (!per.has(x.pg)) return `pg ${x.pg} non ha un'azione in questo turno`;
-              if (x.battuta !== 'nessuna' && !per.get(x.pg)!.includes(x.battuta)) return `${x.battuta} non è fra i candidati di ${x.pg}`;
-            }
-            return null;
-          },
-        },
-      );
-      scelte = risposta.risposte;
+    let testo = '';
+    const emetti = (x: string): void => {
+      testo += x;
+      onTesto(x);
+    };
+    const esito = (): EsitoNarrazione => {
+      const uso = risposte.reduce((a, x) => ({ input_tokens: a.input_tokens + x.uso.input_tokens, output_tokens: a.output_tokens + x.uso.output_tokens, cache_read_input_tokens: (a.cache_read_input_tokens ?? 0) + (x.uso.cache_read_input_tokens ?? 0) }), { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0 });
+      return { testo, modello: this.modello, stopReason: 'end_turn', uso, costo: risposte.reduce((a, x) => (x.costo.costo_usd ? { ...a, costo_usd: a.costo_usd + x.costo.costo_usd } : a), costoZero(uso)), idMessaggio: null };
+    };
+    // Chiamata di riparazione (azioni rimaste senza risposta): il lettore minimo non improvvisa niente.
+    if (/^## Azioni rimaste senza risposta/m.test(r.messaggio)) {
+      emetti('[invito] tutti\n');
+      return esito();
     }
-    const testo = this.protocollo(t, scelte);
-    onTesto(testo);
-    const uso = risposte.reduce((a, x) => ({ input_tokens: a.input_tokens + x.uso.input_tokens, output_tokens: a.output_tokens + x.uso.output_tokens, cache_read_input_tokens: (a.cache_read_input_tokens ?? 0) + (x.uso.cache_read_input_tokens ?? 0) }), { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0 });
-    this.o.log.info({ turno: r.turno, azioni: t.azioni.length, scelte: scelte.map((s) => `${s.pg}:${s.battuta}`), chiamate: risposte.length }, 'lettore minimo: scelte del turno');
-    return { testo, modello: this.modello, stopReason: 'end_turn', uso, costo: risposte.reduce((a, x) => (x.costo.costo_usd ? { ...a, costo_usd: a.costo_usd + x.costo.costo_usd } : a), costoZero(uso)), idMessaggio: null };
+    const t = leggiTurno(r.messaggio);
+    const pubbliche = t.azioni.filter((a) => !a.privata);
+    const annunci = new Map(pubbliche.map((a) => [a.id_pg, annuncioBreve(a.nome, a.testo)]));
+    const detti = new Set<string>();
+    const annuncia = (a: AzioneLetta): void => {
+      detti.add(a.id_pg);
+      const x = annunci.get(a.id_pg);
+      if (x) emetti(`[narratore] ${x}\n`);
+    };
+    let prossimo = 0;
+    if (pubbliche.length) annuncia(pubbliche[prossimo++]!);
+    let finito = false;
+    const scelta = (t.azioni.length ? this.classifica(t, r.signal, risposte) : Promise.resolve([] as Risposte['risposte'])).finally(() => {
+      finito = true;
+    });
+    // Gli annunci seguenti mentre il classificatore lavora, al ritmo stimato della voce.
+    while (!finito && prossimo < pubbliche.length) {
+      const precedente = annunci.get(pubbliche[prossimo - 1]!.id_pg) ?? '';
+      await Promise.race([scelta.catch(() => undefined), attesa(durataStimata(precedente), r.signal)]);
+      if (!finito && !r.signal.aborted) annuncia(pubbliche[prossimo++]!);
+    }
+    const scelte = await scelta;
+    emetti(this.protocollo(t, scelte, detti));
+    this.o.log.info({ turno: r.turno, azioni: t.azioni.length, annunci_subito: detti.size, scelte: scelte.map((s) => `${s.pg}:${s.battuta}`), chiamate: risposte.length }, 'lettore minimo: scelte del turno');
+    return esito();
   }
 
-  /** Le righe del protocollo: per ogni azione annuncio (se valido) e battuta; poi l'invito. */
-  protocollo(t: TurnoLetto, scelte: Risposte['risposte']): string {
+  /** Una chiamata sola per tutte le azioni del turno: per ognuna un id del catalogo o «nessuna». */
+  private async classifica(t: TurnoLetto, signal: AbortSignal, risposte: RispostaModello[]): Promise<Risposte['risposte']> {
+    const per = new Map(t.azioni.map((a) => [a.id_pg, candidati(t, a.id_pg, a.testo)]));
+    const elenco = t.azioni
+      .map((a, i) => {
+        const c = per.get(a.id_pg)!;
+        const righe = c.map((id) => `   - ${rigaBreve(t, id)}`).join('\n') || '   (nessun candidato: battuta "nessuna")';
+        return `${i + 1}. ${a.nome} (${a.id_pg})${a.privata ? ' [PRIVATA]' : ''}: ${a.testo}\n   Candidati (id: quando):\n${righe}`;
+      })
+      .join('\n');
+    const ripiego = (): Risposte => ({ risposte: t.azioni.map((a) => ({ pg: a.id_pg, battuta: t.indicate.get(a.id_pg)?.[0] ?? 'nessuna' })) });
+    const r = await chiediStrutturato<Risposte>(
+      this.m,
+      { sistema: [{ testo: PROMPT, cache: true }], messaggi: [{ ruolo: 'user', testo: `Azioni del turno:\n${elenco}` }], maxTokens: this.o.maxTokens ?? 40 + 30 * t.azioni.length, signal },
+      {
+        schema: SCHEMA,
+        cosa: 'lettore minimo',
+        log: this.o.log,
+        onRisposta: (x) => risposte.push(x),
+        ripiego,
+        // Solo PG del turno e battute fra i candidati di QUELL'azione (o «nessuna»).
+        controlla: (v) => {
+          for (const x of v.risposte) {
+            if (!per.has(x.pg)) return `pg ${x.pg} non ha un'azione in questo turno`;
+            if (x.battuta !== 'nessuna' && !per.get(x.pg)!.includes(x.battuta)) return `${x.battuta} non è fra i candidati di ${x.pg}`;
+          }
+          return null;
+        },
+      },
+    );
+    return r.risposte;
+  }
+
+  /** Le righe del protocollo: per ogni azione l'annuncio (se non già detto) e la battuta; poi l'invito. */
+  protocollo(t: TurnoLetto, scelte: Risposte['risposte'], giaAnnunciati: ReadonlySet<string> = new Set()): string {
     const righe: string[] = [];
     const attesa = [...t.attesa];
     const usate = new Set<string>();
     for (const a of t.azioni) {
       const s = scelte.find((x) => x.pg === a.id_pg);
-      const annuncio = a.privata ? null : annuncioBreve(a.nome, a.testo);
+      const annuncio = a.privata || giaAnnunciati.has(a.id_pg) ? null : annuncioBreve(a.nome, a.testo);
       if (annuncio) righe.push(`[narratore] ${annuncio}`);
       let id = s?.battuta && s.battuta !== 'nessuna' && !usate.has(s.battuta) ? s.battuta : null;
       // «nessuna»: una battuta d'attesa del repertorio, mai per un'azione privata (si sentirebbe al tavolo).
