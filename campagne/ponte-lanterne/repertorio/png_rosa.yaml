@@ -175,3 +175,15 @@ battute:
       - "[png_rosa] Ma i bambini sono sul tetto, creatura. Decidi tu, adesso."
     effetti: {rivela_indizi: [i_rosa_ernesto], fatti_noti: [f_ernesto_febbre, f_legna_bagnata]}
     max_usi: 1
+  - id: ros_attesa
+    chi: png_rosa
+    tipo: momento
+    riempitivo: true
+    quando: "mentre il tavolo decide, Rosa aspetta col lume in mano"
+    temi: [lisciva]
+    testo:
+      - "[narratore] Rosa si stringe lo scialle grigio sulle spalle, e guarda la finestra."
+      - "[png_rosa] Eh, l'acqua va e viene. Aspettiamo che vada."
+    varianti:
+      - ["[narratore] Rosa si asciuga le mani rosse sul grembiule, e guarda la scala.", "[png_rosa] Creatura, siediti. Il bucato aspetta, e aspetto anch'io."]
+    max_usi: 2

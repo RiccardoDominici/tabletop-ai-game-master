@@ -207,3 +207,15 @@ battute:
       - "[narratore] Gaspare resta fermo, con la matita a mezz'aria."
       - "[png_gaspare] Il mulo dei Morlacchi. E io ho accusato il loro garzone."
     max_usi: 1
+  - id: gas_attesa
+    chi: png_gaspare
+    tipo: momento
+    riempitivo: true
+    quando: "mentre il tavolo decide, Gaspare aspetta con il libretto aperto"
+    temi: [saldo]
+    testo:
+      - "[narratore] Gaspare si toglie la matita da dietro l'orecchio, e annota qualcosa."
+      - "[png_gaspare] Con calma, eh. Un conto alla volta, e tutti fermi."
+    varianti:
+      - ["[narratore] Gaspare chiude il libretto con un colpo secco, e lo riapre subito.", "[png_gaspare] Un minuto in più non cambia il saldo. Attendiamo."]
+    max_usi: 2

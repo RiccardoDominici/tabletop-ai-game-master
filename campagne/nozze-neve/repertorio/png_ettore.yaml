@@ -210,3 +210,15 @@ battute:
       - "[png_ettore] Lei mi ha aspettato qui fino al buio. Io ero sul passo, col medico per suo fratello."
     effetti: {fatti_noti: [f_anello_promessa, f_ettore_medico]}
     max_usi: 1
+  - id: ett_attesa
+    chi: png_ettore
+    tipo: momento
+    riempitivo: true
+    quando: "mentre il tavolo decide, Ettore aspetta col bastone in mano"
+    temi: [nocciolo]
+    testo:
+      - "[narratore] Ettore batte il bastone per terra, due colpi, e guarda la neve."
+      - "[png_ettore] Eh? Parlate dall'orecchio buono, eh."
+    varianti:
+      - ["[narratore] Ettore appoggia il bastone al muro, e si siede sulla panca.", "[png_ettore] Aspetto io, eh. Non ho fretta di niente."]
+    max_usi: 2

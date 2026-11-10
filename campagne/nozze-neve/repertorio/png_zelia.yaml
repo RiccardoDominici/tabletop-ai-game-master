@@ -159,3 +159,15 @@ battute:
     testo:
       - "[png_zelia] Ehi, aspetta! Mi serve una mano con il velo. Subito, è un'emergenza."
     max_usi: 1
+  - id: zel_attesa
+    chi: png_zelia
+    tipo: momento
+    riempitivo: true
+    quando: "in casa Bonfanti, mentre il tavolo decide, Zelia aspetta col quaderno sulle ginocchia"
+    temi: [verbale]
+    testo:
+      - "[narratore] Zelia scrive nel quaderno senza guardare la pagina."
+      - "[png_zelia] Questo lo scrivo. Pausa, agli atti."
+    varianti:
+      - ["[narratore] Zelia alza la matita, la guarda, e la riabbassa sul foglio.", "[png_zelia] Non guardatemi così, lo scrivo e basta."]
+    max_usi: 2

@@ -359,3 +359,15 @@ battute:
       rivela_indizi: [i_cicatrice]
       fatti_noti: [f_cicatrice]
     max_usi: 1
+  - id: seb_attesa
+    chi: png_sebastiano
+    tipo: momento
+    riempitivo: true
+    quando: "mentre il tavolo decide, il forestiero aspetta dietro la grata"
+    temi: [cappuccio]
+    testo:
+      - "[narratore] Il forestiero si stringe il cappuccio sotto il mento, e tace."
+      - "[png_sebastiano] Mi permetta una domanda: chi ha fretta, qui dentro?"
+    varianti:
+      - ["[narratore] Il forestiero alza appena il cappuccio, e lo riabbassa.", "[png_sebastiano] Mi permetta, la prego: la pazienza è una medicina."]
+    max_usi: 2

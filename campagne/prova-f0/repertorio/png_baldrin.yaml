@@ -355,3 +355,15 @@ battute:
       - "[png_baldrin] Fermi. Prima si ascolta, poi si decide."
       - "[narratore] Le lanterne si fermano sotto il portico. Nessuno fa un passo avanti."
     max_usi: 1
+  - id: bal_attesa
+    chi: png_baldrin
+    tipo: momento
+    riempitivo: true
+    quando: "mentre il tavolo decide, Baldrin aspetta con il martello sulle ginocchia"
+    temi: [incudine]
+    testo:
+      - "[narratore] Baldrin si rigira il martello nel palmo, senza dire niente."
+      - "[png_baldrin] Ferro è ferro. Qui si aspetta, e basta."
+    varianti:
+      - ["[narratore] Baldrin si alza, guarda la porta, e si rimette a sedere.", "[png_baldrin] Il tempo non è affar mio. La porta sì."]
+    max_usi: 2

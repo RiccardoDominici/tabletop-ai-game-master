@@ -207,3 +207,15 @@ battute:
       - "[narratore] Vischi passa accanto alla catena senza fermarsi."
       - "[png_vischi] Signor Bellora, l'alba arriva per tutti. Anche per i tetti nuovi."
     max_usi: 1
+  - id: vis_attesa
+    chi: png_vischi
+    tipo: momento
+    riempitivo: true
+    quando: "mentre il tavolo decide, Vischi aspetta e sorride, senza fretta"
+    temi: [guanto]
+    testo:
+      - "[narratore] Vischi si sfila un guanto di pelle, dito per dito, e lo rinfila con cura."
+      - "[png_vischi] Con tutto il rispetto, il tempo è una garanzia. Attendiamo."
+    varianti:
+      - ["[narratore] Vischi intreccia le dita guantate, e sorride al console.", "[png_vischi] Chi ha pazienza, qui, ottiene condizioni migliori."]
+    max_usi: 2

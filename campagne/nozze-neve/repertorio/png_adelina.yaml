@@ -229,3 +229,15 @@ battute:
       - "[png_adelina] E il Prato Alto, finché campo, lo tengo io."
       - "[narratore] Marta mette l'anello al dito della figlia, e Agnese dice sì. Adelina scende verso il paese da sola."
     max_usi: 1
+  - id: ade_attesa
+    chi: png_adelina
+    tipo: momento
+    riempitivo: true
+    quando: "mentre il tavolo decide, Adelina aspetta sulla soglia della casera"
+    temi: [tintinnio]
+    testo:
+      - "[narratore] Adelina fa tintinnare le chiavi alla cintura, e non si siede."
+      - "[png_adelina] Il formaggio buono vuole tempo. Voi di fretta non ne avete."
+    varianti:
+      - ["[narratore] Adelina si aggiusta lo scialle sulle spalle, e aspetta in piedi.", "[png_adelina] Chi tace, qui, non sbaglia. Si aspetta."]
+    max_usi: 2
