@@ -170,7 +170,12 @@ la base di schede e prove, quindi si scrive prima dei passi 6 e 7. La forma è i
    pagina). Se esce vuoto, il manuale è una scansione: fermati e chiedi a Riccardo una versione testuale.
 2. Leggi il testo per intero, almeno risoluzione, caratteristiche, combattimento, mosse e prove sociali. Il set
    non copia il manuale: ne ricava la struttura.
-3. Scrivi `campagne/<id>/regole/`: `regole.yaml` (con `fonte.titolo` e `licenza`), `riassunto.md` (per i giocatori,
+   - **Combattimento**: iniziativa (individuale, per schieramento o nessuna, con dado e caratteristica), fasi del round
+     in ordine, economia del turno, cosa succede a 0 PF (per PG e per PNG), condizioni, morale. Le condizioni hanno
+     effetti solo dall'elenco chiuso di `docs/combattimento.md` §2: un effetto che il manuale descrive a parole va
+     scelto tra quelli, o scritto come testo senza effetto. Un manuale senza turni (PbtA) ha `iniziativa: {tipo: nessuna}`.
+3. Scrivi `campagne/<id>/regole/`: `regole.yaml` (con `fonte.titolo`, `licenza` e la sezione `combattimento:`, forma in
+   `docs/regole.md` §2), `riassunto.md` (per i giocatori,
    breve) ed `estratti/<id>.md` (un passo per regola, con `parole` e `pagina`). Se non sai la licenza del manuale,
    dichiara `libera: false` e dillo a Riccardo: il set resta fuori dal repository, e `regole/.gitignore` deve
    contenere una riga `*` (il validatore lo controlla).
