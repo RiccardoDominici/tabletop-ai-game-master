@@ -65,6 +65,10 @@ Anthropic key now?" Ask that once, then continue.
 
 - `python3 -I strumenti/configura/configura.py --scarica` prints the sizes and the free disk, then asks.
 - Show the sizes to the user and get a yes. Then run `python3 -I strumenti/configura/configura.py --scarica --si`.
+- The "already on disk" lines only count the model cache named in the first line of the plan. On a new computer that
+  cache is empty, so the plan is the whole table: about 6.6 GB for the 16 GB Apple profile (reader 4.6 GB, voice 2 GB).
+  Say this to the user before they confirm.
+- If the plan prints `NOT READY` (a Python environment is missing), finish step 2 for that component first.
 - If it says NOT ENOUGH DISK, nothing is downloaded: tell the user to free space, then run again.
 - Nothing is deleted by these commands.
 

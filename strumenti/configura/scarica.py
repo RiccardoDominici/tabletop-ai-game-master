@@ -93,12 +93,16 @@ def piano(
         "disco_minimo_gb": minimo,
         "spazio_ok": spazio_ok,
         "mancano_ambienti": sorted({v["componente"] for v in da_scaricare if not v["ambiente_pronto"]}),
+        "cache": rilevamento.get("cache_hf"),
     }
 
 
 def descrivi(p: dict[str, Any]) -> list[str]:
     """Le righe da mostrare prima di chiedere conferma: dimensioni, disco, ambienti."""
     righe = ["Models for the chosen profile:"]
+    if p.get("cache"):
+        # Le voci «già su disco» contano solo questa cache. Su un computer nuovo è vuota: vale la tabella intera.
+        righe.append(f"  (counted in the model cache: {p['cache']})")
     for v in p["voci"]:
         stato = "already on disk" if v["in_cache"] else f"to download, about {v['gb']} GB" + (" (estimate)" if v["stima"] else "")
         righe.append(f"  {v['componente']:<9} {v['repo']}: {stato}")

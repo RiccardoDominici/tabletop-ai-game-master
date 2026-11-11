@@ -44,6 +44,8 @@ def riepilogo(rilevamento: dict, profilo: dict) -> list[str]:
     for offerta in profilo["chiavi_offerte"]:
         stato = "applied" if profilo["chiavi_applicate"] else "available, not applied (add --con-chiavi)"
         righe.append(f"Optional upgrade: {offerta['chiave']} for {offerta['sblocca']} ({offerta['nota']}): {stato}.")
+    for c in profilo.get("ambienti_mancanti", []):
+        righe.append(f"NOT READY: the '{c}' environment is missing. Setup step 2 creates it.")
     for avviso in profilo["avvisi"] + rilevamento["avvisi"]:
         righe.append(f"Note: {avviso}")
     return righe

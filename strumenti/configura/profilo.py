@@ -82,6 +82,9 @@ def scegli(rilevamento: dict[str, Any], applica_chiavi: bool = False, lingua: st
 
     avvisi: list[str] = []
     apple = bool(rilevamento["cpu"]["apple_silicon"])
+    # Un ambiente Python mancante rende inutile la scelta locale: lo si dice, non lo si nasconde.
+    # (Chiave assente = non misurata: nessun avviso.)
+    ambienti = rilevamento.get("ambienti", {})
     if apple:
         ram = rilevamento.get("ram_gb") or 0
         if ram >= RAM_APPLE_GB:
@@ -131,6 +134,12 @@ def scegli(rilevamento: dict[str, Any], applica_chiavi: bool = False, lingua: st
         voce = _componente("openrouter", ["locale" if apple else "finto"], motivo=(
             "drama-3 voice, because a key was found and you asked for it. The fallback is the local voice."))
 
+    locali = [c for c in ("lettore", "voce", "immagini") if componenti_locali(c, lettore, voce, immagini)]
+    ambienti_mancanti = [c for c in locali if ambienti.get(c) is False]
+    for c in ambienti_mancanti:
+        avvisi.append(f"Python environment for '{c}' is missing: run setup step 2 (see docs/guide/installation.md) "
+                      "before this local choice works. Until then the server falls back to its reserve.")
+
     componenti = {
         "lettore": lettore,
         "arbitro_azioni": _componente("regole", motivo="Simultaneous actions are decided by rules; a small model is too slow for it."),
@@ -152,8 +161,15 @@ def scegli(rilevamento: dict[str, Any], applica_chiavi: bool = False, lingua: st
         "da_scaricare": modelli_da_scaricare,
         "chiavi_offerte": offerte,
         "chiavi_applicate": applica_chiavi and bool(offerte),
+        "ambienti_mancanti": ambienti_mancanti,
         "avvisi": avvisi,
     }
+
+
+def componenti_locali(nome: str, lettore: dict, voce: dict, immagini: dict) -> bool:
+    """Vero se il componente è locale nella scelta (il suo ambiente Python serve)."""
+    scelta = {"lettore": lettore, "voce": voce, "immagini": immagini}[nome]
+    return scelta["provider"] == "locale"
 
 
 def testo_locale(profilo: dict[str, Any], quando: str | None = None) -> str:

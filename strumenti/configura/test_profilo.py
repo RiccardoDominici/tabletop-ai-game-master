@@ -184,3 +184,21 @@ def test_lingua_scritta_in_cima_e_validata() -> None:
     assert "\nlingua: it\n" in profilo.testo_locale(scegli(rilevamento()), quando="x")
     with pytest.raises(ValueError):
         scegli(rilevamento(), lingua="fr")
+
+
+def test_ambiente_mancante_e_segnalato() -> None:
+    r = rilevamento(ram=16.0, disco=50.0)
+    r["ambienti"] = {"lettore": False, "voce": True, "immagini": True}
+    p = scegli(r)
+    assert p["ambienti_mancanti"] == ["lettore"]
+    assert any("'lettore'" in a and "missing" in a for a in p["avvisi"])
+
+
+def test_ambiente_presente_nessun_avviso() -> None:
+    r = rilevamento(ram=16.0, disco=50.0)
+    r["ambienti"] = {"lettore": True, "voce": True, "immagini": True}
+    assert scegli(r)["ambienti_mancanti"] == []
+
+
+def test_ambienti_non_misurati_nessun_avviso() -> None:
+    assert scegli(rilevamento(ram=16.0, disco=50.0))["ambienti_mancanti"] == []

@@ -207,6 +207,7 @@ def rileva(amb: Ambiente | None = None, radice: Path = RADICE) -> dict[str, Any]
         "strumenti": strumenti,
         "ambienti": rileva_ambienti(amb, radice),
         "modelli_in_cache": {repo: modello_in_cache(amb, repo) for repo in MODELLI_NOTI},
+        "cache_hf": str(amb.cache_hf()),
         "chiavi": rileva_chiavi(amb, radice),
         "avvisi": avvisi,
     }

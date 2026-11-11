@@ -65,6 +65,10 @@ python3 -m pytest -q strumenti/configura/
 
 `strumenti/configura/scarica.py` downloads only the models the profile needs and that are not in the cache.
 
+- "Already on disk" counts only the model cache of this user (`HF_HUB_CACHE`, default `~/.cache/huggingface/hub`), and
+  the plan prints which cache it counted. A new computer starts empty, so the plan is the whole table.
+- A component whose Python environment is missing is reported as `NOT READY` by the setup, and the profile carries it in
+  `ambienti_mancanti`. Its local choice does not work until setup step 2 creates the environment.
 - Sizes come from the Hugging Face API. If the network is down, the approximate sizes in `profilo.py` are used and
   marked as estimates.
 - It refuses to start when the free disk after the download would drop below 2 GB, or below 8 GB when the
