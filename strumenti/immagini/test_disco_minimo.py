@@ -33,6 +33,14 @@ def test_valore_non_valido_cade_sul_predefinito(valore: str, caplog: pytest.LogC
         assert "TAGM_DISCO_MINIMO_GB non valida" in caplog.text
 
 
+def test_nome_vecchio_e_letto_come_ripiego() -> None:
+    assert motore.disco_minimo_da_ambiente({"CANTASTORIE_DISCO_MINIMO_GB": "5"}) == 5.0
+
+
+def test_nome_nuovo_vince_sul_vecchio() -> None:
+    assert motore.disco_minimo_da_ambiente({"TAGM_DISCO_MINIMO_GB": "3", "CANTASTORIE_DISCO_MINIMO_GB": "9"}) == 3.0
+
+
 def test_verifica_disco_usa_la_soglia_passata(tmp_path: Path) -> None:
     """Con soglia 0.5 e un disco che ha più spazio, non solleva; con soglia enorme, solleva."""
     motore.verifica_disco(tmp_path, minimo_gb=0.5)

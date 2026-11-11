@@ -50,7 +50,9 @@ def disco_minimo_da_ambiente(ambiente: dict[str, str] | None = None) -> float:
     """Soglia del disco da TAGM_DISCO_MINIMO_GB. Valore assente, non numerico o non positivo → predefinito, con avviso."""
     import os
 
-    grezzo = (os.environ if ambiente is None else ambiente).get("TAGM_DISCO_MINIMO_GB")
+    env = os.environ if ambiente is None else ambiente
+    # Nome vecchio CANTASTORIE_DISCO_MINIMO_GB letto per compatibilità (come strumenti/audio/temi/motivo.py).
+    grezzo = env.get("TAGM_DISCO_MINIMO_GB") or env.get("CANTASTORIE_DISCO_MINIMO_GB")
     if grezzo is None or not grezzo.strip():
         return DISCO_MINIMO_PREDEFINITO_GB
     try:
