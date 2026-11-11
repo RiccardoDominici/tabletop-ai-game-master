@@ -77,6 +77,7 @@ source and the length. Never add a `console.log` or a `print` of a key or token 
 - One commit = one verified unit. Before committing, the relevant tests pass (`npm test`,
   `python3 -m pytest -q <file>`).
 - Commit messages in English from now on (the project is language-independent; older history is in Italian).
+- New code comments and log messages in English. Existing Italian identifiers, comments and log lines stay until the planned code-translation phase (Riccardo's choice); don't mix languages inside one function.
 
 ## Framework principle
 
