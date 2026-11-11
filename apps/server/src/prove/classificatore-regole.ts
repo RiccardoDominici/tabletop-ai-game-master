@@ -83,6 +83,20 @@ function unico<T>(xs: ReadonlyArray<{ x: T; n: number }>): T | null {
   return xs.length > 1 && xs[1]!.n === xs[0]!.n ? null : xs[0]!.x;
 }
 
+/**
+ * Solo il passo 1 (attacco): un gesto d'attacco o un'arma della scheda USATA, contro un PNG con la scheda
+ * nominato in ciò che il PG fa. Deterministico: il Motore lo applica prima di QUALSIASI arbitro (anche Haiku),
+ * perché nella seconda passata della e2e finale Haiku diede «nessun tiro» a «Lancio il dardo incantato contro il
+ * goblin che sta arrivando», e il narratore uccise il goblin senza danni. null = non è un attacco così chiaro.
+ */
+export function attaccoDiRegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | null {
+  const fatti = senzaParlato(az.testo);
+  const bersaglio = [...pngNominati(fatti, nomiDeiPng(i.campagna))].find((id) => id !== az.autore && i.haScheda(id)) ?? null;
+  if (!bersaglio) return null;
+  const arma = i.armi(az.autore).find((a) => armaUsata(fatti, [a])) ?? null;
+  return paroleProve().attacco.test(normalizza(fatti)) || arma ? ({ ...vuota(az.id), tipo: 'attacco', bersaglio, arma } as DecisioneProva) : null;
+}
+
 export function classificaARegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | DecisioneRegole {
   const d = vuota(az.id);
   // Ciò che il PG fa, senza il parlato; il testo intero vale solo per le prove sociali.
@@ -100,10 +114,9 @@ export function classificaARegole(az: { id: string; testo: string; autore: strin
   const s = i.regole?.sistema ?? null;
 
   // 1. Attacco: un verbo d'attacco o un'arma usata, contro chi ha una scheda ed è nominato in ciò che fa.
-  const armi = i.armi(az.autore);
-  const arma = armi.find((a) => armaUsata(fatti, [a])) ?? null;
+  const attacco = attaccoDiRegole(az, i);
+  if (attacco) return attacco;
   const parole = paroleProve();
-  if (bersaglio && (parole.attacco.test(t) || arma)) return { ...d, tipo: 'attacco', bersaglio, arma } as DecisioneProva;
   // 2. Aiuto a un altro PG del turno (prima della prova della scena: chi aiuta non tira).
   if (parole.aiuto.test(t)) {
     for (const o of i.altre) {

@@ -122,6 +122,21 @@ describe('un turno di tiri', () => {
     expect(r.tardive).toEqual(['a1']);
   });
 
+  /*
+   * Seconda passata della e2e finale: Haiku diede «nessun tiro» a «Lancio il dardo incantato contro il goblin che
+   * sta arrivando», e il narratore uccise il goblin senza danni. Un'arma della scheda usata contro un PNG con la
+   * scheda è un attacco prima di qualsiasi arbitro.
+   */
+  it('un attacco chiaro è un attacco anche se l’arbitro dice «nessun tiro»', async () => {
+    const testoAttacco = 'Tiro con la balestra leggera allo sgherro che arriva';
+    const arbitro = new ArbitroFinto({ [testoAttacco]: { tipo: 'nessuna' } });
+    const r = await motore({ arbitro, dadi: [15, 4] }).risolvi(3, [azione('a1', 'pg_corrado', testoAttacco)]);
+    expect(r.tiri[0]).toMatchObject({ tipo: 'attacco', chi: 'pg_corrado', bersaglio: { id: 'png_ruggero' } });
+    // Un'azione che non è un attacco resta com'è decisa.
+    const quieta = await motore({ arbitro: new ArbitroFinto({ 'Guardo lo sgherro, la balestra in mano': { tipo: 'nessuna' } }), dadi: [15] }).risolvi(3, [azione('a1', 'pg_corrado', 'Guardo lo sgherro, la balestra in mano')]);
+    expect(quieta.tiri).toEqual([]);
+  });
+
   it('una prova PRIVATA fallita: il suo esito sta a parte e non ripete il testo dell’azione', async () => {
     const testoPrivato = 'Di nascosto attraverso il guado con la corda';
     const arbitro = new ArbitroFinto({ [testoPrivato]: { tipo: 'prova', abilita: 'atletica', difficolta: 'difficile' } });

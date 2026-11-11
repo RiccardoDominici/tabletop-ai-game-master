@@ -29,7 +29,7 @@ import { proveScenaRegole, risolviTurnoRegole } from './risolutore-regole';
 import { regolePerNarratore } from '../regole/narratore';
 import { regolaEsiti } from './testi';
 import { GestoreCombattimento } from './combattimento';
-import { classificaARegole, provaSocialeSrd, type IngressoClassificatore } from './classificatore-regole';
+import { attaccoDiRegole, classificaARegole, provaSocialeSrd, type IngressoClassificatore } from './classificatore-regole';
 import { combattimentoSrd, type Combattimento, type Fase } from '../regole/combattimento';
 import { strumentiRegole } from './risolutore-regole';
 import { attaccoPngSrd } from './risolutore';
@@ -319,6 +319,19 @@ export class MotoreProve {
         const ing = this.ingressoClassificatore(c, azioni);
         for (const a of senza) decisioni.set(a.id, classificaARegole(a, ing));
         this.o.log.info({ turno, azioni: senza.map((a) => ({ id: a.id, tipo: decisioni.get(a.id)?.tipo, abilita: decisioni.get(a.id)?.abilita })) }, 'prove: decisioni a regole (riserva senza modello)');
+      }
+    }
+    // Un attacco chiaro (un'arma della scheda usata, o un gesto d'attacco, contro un PNG con la scheda) è un attacco,
+    // qualunque cosa abbia detto l'arbitro: passo deterministico prima di tutti gli arbitri.
+    if (this.attivo) {
+      const ing = this.ingressoClassificatore(c, azioni);
+      for (const a of azioni) {
+        const d = decisioni.get(a.id);
+        if (d?.tipo === 'attacco') continue;
+        const att = attaccoDiRegole(a, ing);
+        if (!att) continue;
+        decisioni.set(a.id, { ...att, ...(this.generico ? { mossa: null } : {}) } as Decisione);
+        this.o.log.warn({ turno, azione: a.id, arbitro: d?.tipo ?? null, bersaglio: att.bersaglio, arma: att.arma }, "prove: attacco chiaro, deciso a regole al posto dell'arbitro");
       }
     }
     const attesa_ms = Math.round(this.o.orologio.ora() - t0);

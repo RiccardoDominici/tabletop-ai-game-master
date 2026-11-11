@@ -192,6 +192,10 @@ Recommended consistency checks (warnings):
 2. **Window closed** (Regia.finestraChiusa, now async). `MotoreProve.risolvi` collects the decisions.
    - Those in flight it waits for at most 4 s (with the rules arbiter there is nothing to wait for).
    - Those missing it requests in a single call.
+   - A clear attack is an attack whatever the arbiter said (`attaccoDiRegole`, applied to every arbiter, Haiku included): a
+     weapon of the PC's sheet used («tiro con la balestra», «lancio il dardo incantato contro…») or an attack gesture,
+     against an NPC with a sheet named in what the PC does. In the second pass of the final e2e Haiku gave «no roll» to the
+     magic missile, and the narrator killed the goblin with no damage.
    - On timeout, or with no model, the **rules arbiter** decides (prove/classificatore-regole.ts). It is the default of the
      fully local profile (`arbitro_prove: {provider: regole}`): the small model has as little responsibility as possible.
      In order:
