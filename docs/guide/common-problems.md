@@ -56,13 +56,13 @@ This shows the last twenty lines of the server log that mention the drama-3 voic
 
 ## The Mac is slow or freezes during the images
 
-**Symptom.** The Mac becomes very slow, or the log shows «errore transitorio della GPU (Metal «Impacting Interactivity»)» (meaning: temporary GPU error (Metal "Impacting Interactivity")), or «solo N GB liberi su disco (minimo 8.0 GB)» (meaning: only N GB free on disk (minimum 8.0 GB)).
+**Symptom.** The Mac becomes very slow, or the log shows «errore transitorio della GPU (Metal «Impacting Interactivity»)» (meaning: temporary GPU error (Metal "Impacting Interactivity")), or «solo N GB liberi su disco (minimo 6.0 GB)» (meaning: only N GB free on disk (minimum 6.0 GB)).
 
 **Likely cause.**
 
 - The GPU is busy with the images: the rest of the Mac waits.
 - macOS stops a computation that holds the GPU for too long while the screen needs it. The generator retries once by itself.
-- The disk is almost full: the system uses the disk as extra memory, and below 8 GB free the generator does not start.
+- The disk is almost full: the system uses the disk as extra memory, and below 6 GB free the generator does not start. The threshold is 6 GB by default; set `TAGM_DISCO_MINIMO_GB` to change it (for example `TAGM_DISCO_MINIMO_GB=3` for one risky run). Lowering it leaves less room for the swap, so do it only when you are watching the Mac.
 
 **What to do.**
 

@@ -285,7 +285,7 @@ You only need this to generate the images of a new campaign (places, PNG portrai
    ```
 
 Things to know before generating:
-- at least 8 GB free on disk are needed, otherwise the generator will not start (`strumenti/immagini/motore.py`);
+- at least 6 GB free on disk are needed, otherwise the generator will not start (`strumenti/immagini/motore.py`; set `TAGM_DISCO_MINIMO_GB` to change it);
 - keep the Mac plugged into the power adapter: a whole campaign means 15–40 minutes of GPU
   (`scripts/prepara.sh`), and on battery below 20% the generator refuses to start;
 - the environment weighed 1.2 GB on the development Mac.

@@ -459,7 +459,7 @@ If it is interrupted, run it again: it resumes from where it stopped.
 Before each image:
 
 - **power**: on battery below 20% it does not start, and mflux stops by itself if the charge drops there;
-- **disk**: at least 8 GB free are needed.
+- **disk**: at least 6 GB free are needed (`TAGM_DISCO_MINIMO_GB` changes it).
 
 After each image, two checks:
 

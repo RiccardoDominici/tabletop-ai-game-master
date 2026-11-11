@@ -19,8 +19,8 @@ Rules are checked in order; the first one that matches wins.
 Notes on the rules:
 - **RAM** is read as GiB and rounded to one decimal. A 16 GB Mac reports 16.0.
 - **Under 8 GB** on Apple silicon the profile still picks the 4B reader, with a warning: it may be slow.
-- **Disk for images** uses the same 8 GB minimum as the generator (`strumenti/immagini/motore.py`, `DISCO_MINIMO_GB`).
-  The check happens after the image model's download, so a model already in the cache still needs 8 GB free to generate.
+- **Disk for images** uses the same minimum as the generator (`strumenti/immagini/motore.py`, `DISCO_MINIMO_GB`: 6 GB by default, set with `TAGM_DISCO_MINIMO_GB`).
+  The check happens after the image model's download, so a model already in the cache still needs that much free space to generate.
 - **Not Apple silicon** has no local reader, voice or images yet. Those are the open items in
   [da-fare](da-fare.md). The reader is then the scripted narrator, which is for trials and not a real game.
   An Anthropic key makes the reader real (see below).

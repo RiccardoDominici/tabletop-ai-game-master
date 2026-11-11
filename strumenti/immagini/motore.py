@@ -41,7 +41,29 @@ PASSI_DEFAULT = 4
 # Sotto questa carica, a batteria, ci si rifiuta di partire: una generazione lunga può spegnere il Mac.
 BATTERIA_MINIMA = 20
 # Sotto questo spazio libero non si parte: lo swap del sistema vive sullo stesso disco.
-DISCO_MINIMO_GB = 8.0
+# Predefinito 6 GB (era 8): con il lettore locale spento, mflux da solo fa crescere lo swap di poco, e 8 GB
+# bloccavano il giro anche con disco sano. Si cambia con TAGM_DISCO_MINIMO_GB (es. 3 per una prova rischiosa).
+DISCO_MINIMO_PREDEFINITO_GB = 6.0
+
+
+def disco_minimo_da_ambiente(ambiente: dict[str, str] | None = None) -> float:
+    """Soglia del disco da TAGM_DISCO_MINIMO_GB. Valore assente, non numerico o non positivo → predefinito, con avviso."""
+    import os
+
+    grezzo = (os.environ if ambiente is None else ambiente).get("TAGM_DISCO_MINIMO_GB")
+    if grezzo is None or not grezzo.strip():
+        return DISCO_MINIMO_PREDEFINITO_GB
+    try:
+        valore = float(grezzo)
+    except ValueError:
+        valore = -1.0
+    if valore <= 0:
+        log.warning("TAGM_DISCO_MINIMO_GB non valida (%r): uso il predefinito %s GB", grezzo, DISCO_MINIMO_PREDEFINITO_GB)
+        return DISCO_MINIMO_PREDEFINITO_GB
+    return valore
+
+
+DISCO_MINIMO_GB = disco_minimo_da_ambiente()
 # Nuovi tentativi quando il watchdog della GPU uccide il calcolo (successo il 3/11 su una situazione a
 # 1920 con riferimento: «[METAL] Command buffer execution failed: Impacting Interactivity»).
 TENTATIVI_GPU = 1
