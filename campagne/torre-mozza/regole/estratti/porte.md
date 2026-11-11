@@ -1,6 +1,6 @@
 ---
 titolo: "Porte e ascoltare"
-parole: [porta, forzo, sfondo, spallata, bloccata, chiusa, ascolto, origlio]
+parole: [porta bloccata, forzo, sfondo, spallata, bloccata, chiusa, ascolto, origlio]
 pagina: 43
 per: forzare
 ---

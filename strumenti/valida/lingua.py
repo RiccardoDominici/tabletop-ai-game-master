@@ -60,6 +60,31 @@ def marcatore_nascosto() -> re.Pattern:
     return re.compile(r"\b(" + "|".join(re.escape(v) for v in dict.fromkeys(voci)) + ")", re.IGNORECASE)
 
 
+@lru_cache(maxsize=None)
+def parole_generiche(codice: str) -> frozenset[str]:
+    """Le parole generiche dell'arbitro a regole nella lingua (lingue/<codice>/prove.yaml, `parole.generiche`): luoghi,
+    corpo e oggetti comuni che da sole non dicono quale prova. L'arbitro le ignora (prove/parole-testo.ts): in una lista
+    di parole chiave sono parole perse, o peggio una prova assurda con un arbitro meno attento."""
+    f = LINGUE_DIR / codice / "prove.yaml"
+    if not f.exists():
+        return frozenset()
+    m = re.search(r"^\s*generiche:\s*(\[.*?\])\s*$", f.read_text(encoding="utf-8"), re.M)
+    voci = yaml.safe_load(m.group(1)) if m else []
+    return frozenset(normalizza_parola(str(v)) for v in voci or [])
+
+
+def normalizza_parola(t: str) -> str:
+    """Minuscole e senza accenti (come normalizza del server)."""
+    import unicodedata
+    return "".join(ch for ch in unicodedata.normalize("NFD", t.lower().strip()) if unicodedata.category(ch) != "Mn")
+
+
+def generiche_in(voci: object, codice: str) -> list[str]:
+    """Le voci di una lista di parole chiave che sono una parola generica sola (le voci di più parole valgono)."""
+    gen = parole_generiche(codice)
+    return [str(v) for v in (voci if isinstance(voci, list) else []) if isinstance(v, str) and " " not in v.strip() and normalizza_parola(v) in gen]
+
+
 def nascosto(x: object) -> bool:
     """Il dato (un elemento interattivo, un testo) porta un marcatore di elemento nascosto."""
     return bool(marcatore_nascosto().search(x if isinstance(x, str) else repr(x)))

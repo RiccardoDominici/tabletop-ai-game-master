@@ -364,3 +364,14 @@ def test_effetti_come_il_motore() -> None:
     blocco = _re.search(r"export const EFFETTI = \[(.*?)\] as const", testo, _re.S).group(1)
     motore = tuple(_re.findall(r"'([a-z_]+)'", blocco))
     assert tuple(EFFETTI) == motore
+
+
+def test_parole_chiave_generiche_rifiutate_in_modo_rigoroso(tmp_path: Path) -> None:
+    """Parole generiche (porta, passaggio, spalla…) in parole_chiave e nelle parole delle prove della scena: da sole non
+    dicono quale prova (e2e finale, D1). L'arbitro a regole le ignora, il validatore le segnala (rigoroso: errore)."""
+    dest = copia(BX, tmp_path)
+    modifica(dest, "regole/regole.yaml", lambda d: d.update(parole_chiave={"forza": ["sfondo", "porta", "porta bloccata"]}))
+    esito = Esito(rigoroso=True)
+    regole_set.controlla(carica(dest, esito), esito)
+    trovate = [v.messaggio for v in esito.errori if v.codice == "REGOLE.parole_generiche"]
+    assert len(trovate) == 1 and "«porta»" in trovate[0] and "bloccata" not in trovate[0], trovate

@@ -110,7 +110,11 @@ mosse:                                      # facoltative (giochi alla PbtA)
     esiti: {successo: "…", parziale: "…", fallimento: "…"}   # [V] successo e fallimento obbligatori
 sottosistemi: [{id, nome, testo}]           # altro (magia, sanità…): solo testo, per ora
 parole_chiave:                              # facoltativo, per l'arbitro a regole (profilo locale): id → parole
-  convincere: [convinco, persuado, prometto]  # [V] id di un'abilità, mossa o caratteristica del set
+  convincere: [convinco, persuado, prometto]  # [V] id di un'abilità, mossa o caratteristica del set; [V] niente parole
+                                              #   generiche da sole (lingue/<codice>/prove.yaml, parole.generiche: porta,
+                                              #   passaggio, spalla…): l'arbitro le ignora, il validatore le segnala
+                                              #   (rigoroso: errore), anche nelle `parole` delle prove della scena e dei
+                                              #   passi con `per:`; una voce di più parole («passaggio segreto») va bene
 combattimento:                              # facoltativo: senza, SRD completo per l'SRD e un default per gli altri tipi
   iniziativa:
     tipo: individuale | per_schieramento | nessuna   # [V]

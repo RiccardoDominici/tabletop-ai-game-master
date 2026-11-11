@@ -1,6 +1,6 @@
 ---
 titolo: "Porte segrete e trappole"
-parole: [cerco, cercare, frugo, passaggio, porta segreta, trappola, botola, nascosto]
+parole: [cerco, cercare, frugo, passaggio segreto, porta segreta, trappola, botola, nascosto]
 pagina: 44
 per: cercare
 ---

@@ -39,6 +39,24 @@ def blocchi_richiede(r: dict) -> list[dict]:
     return [base, *alternative]
 
 
+def _prova_aggirabile(c: Campagna, e: Esito) -> None:
+    """Una battuta che una strada di `oppure` lega a una prova e un'altra apre senza tiro (e2e finale, D2: Berta
+    consegnava la chiave dopo «Carisma, fallita» per la strada dei conti). Dopo un tiro fallito il Motore la chiude
+    (repertorio/condizioni.ts, provaFallita); senza tiro esce lo stesso. Può essere voluto (un'altra strada per la
+    stessa cosa): è un avviso, perché chi scrive lo decida."""
+    for b in c.battute:
+        base, *alternative = blocchi_richiede(b.get("richiede") or {})
+        if base.get("prova") or not alternative:
+            continue
+        con = [a["prova"] for a in alternative if a.get("prova")]
+        senza = [a for a in alternative if not a.get("prova")]
+        if con and senza:
+            e.avviso("REPERTORIO.prova_aggirabile", f"{b.get('_file', '?')} {b.get('id', '?')}",
+                     f"una strada di oppure chiede la prova {', '.join(sorted(set(map(str, con))))}, un'altra apre la battuta senza tiro: "
+                     "chi non tira la ottiene lo stesso (dopo un tiro fallito il Motore la chiude). Se non è voluto, metti la prova "
+                     "nella base, o in ogni strada")
+
+
 def ha_cancello(r: dict, chiavi=GATE) -> bool:
     """Cancello strutturale: nella base, oppure in OGNI alternativa di `oppure` (se una ne è senza, passa di lì)."""
     base, *alternative = blocchi_richiede(r)
@@ -72,6 +90,7 @@ def controlla(c: Campagna, e: Esito) -> None:
         e.avviso("REPERTORIO.assente", "repertorio/", "nessuna battuta: la campagna si gioca solo in modalità A", rigoroso=True)
         return
     _schema(c, e)
+    _prova_aggirabile(c, e)
     _riferimenti(c, e)
     _copertura(c, e)
     _menzogne_e_confessioni(c, e)

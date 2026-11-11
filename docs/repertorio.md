@@ -111,6 +111,9 @@ Erano proposte del validatore e della skill del Preparatore; il server le applic
   oppure `{indizi_rivelati: [i_x]}` vuol dire «un'azione privata, o un'azione pubblica dopo l'indizio».
   Le liste di base e alternativa si sommano; `da_pg` è l'intersezione se entrambe lo dicono. Il caricatore
   rifiuta ogni chiave di `richiede` che non conosce: ignorata, aprirebbe il cancello.
+  Una strada con `prova` e un'altra senza (e2e finale, D2): dopo un tiro fallito il Motore chiude la battuta
+  (docs/prove.md, «La carta e la storia d'accordo»), ma chi non tira la ottiene per l'altra strada. Il validatore
+  lo segnala con un avviso (`REPERTORIO.prova_aggirabile`): se non è voluto, la prova va nella base o in ogni strada.
 - **`orologi[].parte_dopo: [<id battuta o indizio>]`**: l'orologio comincia a correre quando esce una di
   quelle battute o si rivela uno di quegli indizi. Prima non avanza, non conta per `segno_almeno_ogni` (il
   ritmo conta dalla partenza), i suoi segni non entrano nel catalogo e il narratore lo vede fermo. In

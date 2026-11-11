@@ -19,6 +19,7 @@ from .carica import Campagna
 from .esito import Esito
 from . import regole_combattimento
 from .regole_repertorio import blocchi_richiede
+from .lingua import generiche_in
 from .regole_schede import TIPI_PROVA_RICHIEDE, _id_attacchi, _prove_della_campagna, dadi_attivi
 from .testo import n_parole
 
@@ -168,6 +169,13 @@ def _modificatore(r: dict, tipo: str | None, e: Esito, dove: str) -> None:
             _err(e, "modificatore", dove, "modificatore.tabella: «da» cresce riga dopo riga")
 
 
+def _generiche(e: Esito, dove: str, campo: str, gen: list[str]) -> None:
+    """Parole generiche in una lista che sceglie la prova (lingue/<codice>/prove.yaml, `parole.generiche`)."""
+    e.avviso("REGOLE.parole_generiche", dove, f"{campo}: «{', '.join(gen)}»: parole generiche (luoghi, corpo, oggetti "
+             "comuni) che da sole non dicono quale prova: l'arbitro a regole le ignora; scrivi parole specifiche, o una voce di più parole («passaggio segreto»)",
+             rigoroso=True)
+
+
 def tabella_modificatori(r: dict) -> list[tuple[int, int]] | None:
     """Le righe (da, mod) della tabella del set, o None se il set non usa `tabella`."""
     mod = _ogg(r.get("modificatore")) or {}
@@ -273,6 +281,8 @@ def _file_del_set(c: Campagna, e: Esito, dove_base: Path) -> None:
         parole = meta.get("parole")
         if not isinstance(parole, list) or not any(_testo(x) for x in parole):
             _err(e, "parole", dove, "parole: un elenco con almeno una parola (è così che l'estratto si trova)")
+        elif meta.get("per") and (gen := generiche_in(parole, c.lingua)):
+            _generiche(e, dove, "parole", gen)
         if "pagina" in meta and not _intero(meta["pagina"]):
             _err(e, "estratto", dove, "pagina: un numero intero")
         corpo = m.group(2).strip()
@@ -365,6 +375,8 @@ def _prove_di_scena(c: Campagna, e: Esito, car: set[str], abi: set[str], mosse: 
         for i, p in enumerate(s.get("prove") or [], start=1):
             o = _ogg(p) or {}
             dove = f"{nome} prove[{i}]"
+            if gen := generiche_in(o.get("parole"), c.lingua):
+                _generiche(e, dove, "parole", gen)
             if o.get("mossa") is not None and o["mossa"] not in mosse:
                 _err(e, "prove", dove, f"mossa «{o['mossa']}» non è una mossa del set")
             if o.get("abilita") is not None and o["abilita"] not in abi:
@@ -399,6 +411,9 @@ def controlla(c: Campagna, e: Esito) -> None:
     _schema_sociale_attacchi(r, car, abi, e, dove)
     mosse = _mosse(r, car, e, dove)
     regole_combattimento.controlla(r, car, e, dove)
+    for k, voci in (_ogg(r.get("parole_chiave")) or {}).items():
+        if gen := generiche_in(voci, c.lingua):
+            _generiche(e, dove, f"parole_chiave.{k}", gen)
     _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r))
     _prove_di_scena(c, e, car, abi, mosse, diff)
     _richiede_prova_set(c, e, car, abi, mosse)

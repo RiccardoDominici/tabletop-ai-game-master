@@ -1666,3 +1666,15 @@ def test_vincoli_un_elemento_hidden_non_e_pubblico(camp):
     modifica(camp, "scena.yaml", lambda d: d["elementi_interattivi"].append({"cosa": "la botte grande", "dove": "in fondo",
                                                                               "azioni": "HIDDEN: la botte grande in fondo suona cupa a ogni colpo"}))
     assert "VINCOLI.contraddetto" not in avvisi(camp)
+
+
+def test_prova_aggirabile_per_un_altra_strada_di_oppure(camp):
+    """Una strada di `oppure` lega la battuta a una prova, un'altra la apre senza tiro (e2e finale, D2): avviso."""
+    def lega(d):
+        b = d["battute"][0]
+        b["richiede"] = {"oppure": [{"prova": "persuasione"}, {"battute_usate": [d["battute"][1]["id"]]}]}
+    modifica(camp, "repertorio/png_bruno.yaml", lega)
+    assert "REPERTORIO.prova_aggirabile" in avvisi(camp)
+    # Con la prova in ogni strada, niente avviso.
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: d["battute"][0]["richiede"]["oppure"][1].update(prova="persuasione"))
+    assert "REPERTORIO.prova_aggirabile" not in avvisi(camp)

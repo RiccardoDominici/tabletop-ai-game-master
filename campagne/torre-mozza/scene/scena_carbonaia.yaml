@@ -93,4 +93,4 @@ esiti:
 prove:
   - {id: p_fossa_cercare, quando: "un PG cerca trappole sul sentiero dei goblin", abilita: trappole, difficolta: normale, se_fallisce: "non vede niente, e chi va in testa mette il piede sulle frasche: tocca a lui il salvezza", parole: [trappola, trappole, frasche]}
   - {id: p_fossa_salvezza, quando: "un PG mette il piede sulle frasche a metà salita", abilita: ts_morte_destrezza, difficolta: normale, se_fallisce: "cade nella fossa: si fa male alle gambe, e il tonfo arriva fino alla torre", parole: [salto, aggrappo, fossa]}
-  - {id: p_rovi, quando: "un PG cerca un passaggio dietro i rovi", abilita: cercare, difficolta: facile, indizio: i_rovi, se_fallisce: "si graffia mani e faccia, e intanto la carbonaia sbuffa fuoco: Ugo chiama aiuto", parole: [rovi, passaggio, scosto]}
+  - {id: p_rovi, quando: "un PG cerca un passaggio dietro i rovi", abilita: cercare, difficolta: facile, indizio: i_rovi, se_fallisce: "si graffia mani e faccia, e intanto la carbonaia sbuffa fuoco: Ugo chiama aiuto", parole: [rovi, passaggio nascosto, scosto]}

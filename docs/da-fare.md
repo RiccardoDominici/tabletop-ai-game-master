@@ -54,10 +54,11 @@ per chi vuole smanettare. Servono:
   **Fatto**: le decisioni vanno nella fotografia della sessione e tornano alla ripresa; il cambio di scena le azzera (a4e360d).
 
 ## Dopo
-- **Lacune del set Basic Fantasy dalla e2e finale** (docs/e2e-finale.md §2 e §7, «dadi»; i bug di coerenza C1, C3, D1, A1,
-  D2 sono chiusi, 11 novembre 2026):
-  - validatore: rifiutare `parole_chiave` generiche (l'arbitro a regole le ignora già, `parole.generiche`) e
-    segnalare una battuta che dà ciò che una prova chiude per un'altra strada di `oppure` (D2).
+- **Lacune del set Basic Fantasy dalla e2e finale** (docs/e2e-finale.md §2 e §7, «dadi»): chiuse l'11 novembre 2026
+  (marcatore HIDDEN/NASCOSTA in ogni lingua, tiri contro la morte e naturali del d20 dal set, modificatori a tabella,
+  `ogni_round` individuale, percentuali e «x su 6», armi automatiche, i due controlli del validatore). Restano: i pari
+  d'iniziativa simultanei, i naturali del d20 solo per attacchi E tiri salvezza (oggi `critici: attacchi | tutti`),
+  sorpresa con 1d6, gittata, carica e attacco alle spalle come modificatori del set.
 - **Setup su computer non Apple** (docs/profili.md, profilo `altro`). Il setup guidato da Claude Code (`.claude/skills/setup`)
   dice che lettore locale, voce locale e immagini locali non sono ancora supportati fuori dall'Apple silicon. Senza chiave
   Anthropic il narratore è quello a copione (prova, non partita vera). Da fare: un lettore locale su Linux/Windows (llama.cpp

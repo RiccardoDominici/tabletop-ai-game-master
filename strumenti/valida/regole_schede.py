@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import re
 
+from .lingua import generiche_in
 from . import srd
 from .carica import Campagna
 from .esito import Esito
@@ -309,6 +310,9 @@ def _prove_scena(c: Campagna, e: Esito, nome: str, s: dict, doppie: set[str]) ->
         if not isinstance(p, dict):
             e.errore("SCHEDA.prove", nome, f"prove[{i}] è un oggetto")
             continue
+        if gen := generiche_in(p.get("parole"), c.lingua):
+            e.avviso("REGOLE.parole_generiche", f"{nome} prove[{i}]", f"parole: «{', '.join(gen)}»: parole generiche (luoghi, corpo, "
+                     "oggetti comuni) che da sole non dicono quale prova: l'arbitro a regole le ignora; scrivi parole specifiche", rigoroso=True)
         pid = p.get("id")
         dove = f"{nome} {pid or f'prove[{i}]'}"
         for k in p:
