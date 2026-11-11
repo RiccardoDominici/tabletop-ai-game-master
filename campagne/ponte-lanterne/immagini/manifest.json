@@ -85,75 +85,51 @@
       ],
       "riferimenti": [],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 212.3,
-      "picco_gb": 5.24,
+      "secondi": 250.5,
+      "picco_gb": 5.29,
       "kb": 584,
       "rifilato_pct": 1.2,
       "firma": "v1:881b91888af0467299428647",
       "qualita": {
-        "esito": "difettosa",
+        "esito": "da_controllare",
         "versione": 2,
         "motivi": [
-          "incongruenza: Strisce di pioggia cadono all'interno della sala chiusa, cosa che non dovrebbe accadere in un magazzino coperto. (soffitto e intera sala, con gocce verticali sospese sotto le travi)"
+          "incongruenza: Linee verticali simili a pioggia cadono dal soffitto all'interno della sala chiusa. (soffitto e parte alta della scena, sopra il tavolo e la porta)"
         ],
         "problemi": [
           {
             "tipo": "incongruenza",
-            "dove": "soffitto e intera sala, con gocce verticali sospese sotto le travi",
-            "descrizione": "Strisce di pioggia cadono all'interno della sala chiusa, cosa che non dovrebbe accadere in un magazzino coperto.",
+            "dove": "soffitto e parte alta della scena, sopra il tavolo e la porta",
+            "descrizione": "Linee verticali simili a pioggia cadono dal soffitto all'interno della sala chiusa.",
             "grave": true
-          },
-          {
-            "tipo": "soggetto",
-            "dove": "pareti laterali, sacchi di sale",
-            "descrizione": "I sacchi non arrivano fino alle travi del tetto come richiesto, ma si fermano a circa due terzi dell'altezza.",
-            "grave": false
-          },
-          {
-            "tipo": "soggetto",
-            "dove": "tavola al centro",
-            "descrizione": "Il calamaio richiesto non è riconoscibile sul tavolo.",
-            "grave": false
           }
         ],
         "visione": {
           "esito": "difettosa",
           "motivi": [
-            "incongruenza: Strisce di pioggia cadono all'interno della sala chiusa, cosa che non dovrebbe accadere in un magazzino coperto. (soffitto e intera sala, con gocce verticali sospese sotto le travi)"
+            "incongruenza: Linee verticali simili a pioggia cadono dal soffitto all'interno della sala chiusa. (soffitto e parte alta della scena, sopra il tavolo e la porta)"
           ],
           "problemi": [
             {
               "tipo": "incongruenza",
-              "dove": "soffitto e intera sala, con gocce verticali sospese sotto le travi",
-              "descrizione": "Strisce di pioggia cadono all'interno della sala chiusa, cosa che non dovrebbe accadere in un magazzino coperto.",
+              "dove": "soffitto e parte alta della scena, sopra il tavolo e la porta",
+              "descrizione": "Linee verticali simili a pioggia cadono dal soffitto all'interno della sala chiusa.",
               "grave": true
-            },
-            {
-              "tipo": "soggetto",
-              "dove": "pareti laterali, sacchi di sale",
-              "descrizione": "I sacchi non arrivano fino alle travi del tetto come richiesto, ma si fermano a circa due terzi dell'altezza.",
-              "grave": false
-            },
-            {
-              "tipo": "soggetto",
-              "dove": "tavola al centro",
-              "descrizione": "Il calamaio richiesto non è riconoscibile sul tavolo.",
-              "grave": false
             }
           ],
-          "descrizione": "Una sala di pietra con sacchi di sale impilati lungo le pareti, un camino acceso a sinistra, una lunga tavola di legno con carte, tazze di rame e una lanterna, una porta di quercia chiusa in fondo e mantelli bagnati appesi a destra.",
-          "costo_usd": 0.000891,
+          "descrizione": "Una sala in pietra con sacchi bianchi impilati, un camino acceso, un lungo tavolo di legno con carte, boccali di rame e una lanterna, una porta di quercia in fondo e mantelli bagnati appesi a destra. Dal soffitto cadono strisce di pioggia.",
+          "costo_usd": 0.000678,
           "token": {
             "ingresso": 4008,
-            "uscita": 980
+            "uscita": 555
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000891,
-        "tentativi": 1,
-        "costo_totale_usd": 0.000891
+        "costo_usd": 0.000678,
+        "tentativi": 3,
+        "costo_totale_usd": 0.001561
       },
-      "quando": "2026-11-10 12:26:22"
+      "quando": "2026-11-11 22:48:39"
     },
     {
       "id": "luogo_scena_ponte_imbrunire",
@@ -376,63 +352,51 @@
       ],
       "riferimenti": [],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 92.6,
+      "secondi": 93.7,
       "picco_gb": 4.29,
       "kb": 277,
       "rifilato_pct": 5.0,
       "firma": "v1:bfd386cc2fddbd68b7e4993e",
       "qualita": {
-        "esito": "difettosa",
+        "esito": "da_controllare",
         "versione": 2,
         "motivi": [
-          "incongruenza: Fitte linee di pioggia cadono anche all'interno della stanza, come se piovesse dentro la casa. (su tutta la scena, in particolare nella stanza interna e davanti alla finestra)"
+          "incongruenza: Righe di pioggia cadono dentro la stanza di pietra, come se il soffitto fosse aperto. (su tutta la scena, in particolare nell'interno della stanza)"
         ],
         "problemi": [
           {
             "tipo": "incongruenza",
-            "dove": "su tutta la scena, in particolare nella stanza interna e davanti alla finestra",
-            "descrizione": "Fitte linee di pioggia cadono anche all'interno della stanza, come se piovesse dentro la casa.",
+            "dove": "su tutta la scena, in particolare nell'interno della stanza",
+            "descrizione": "Righe di pioggia cadono dentro la stanza di pietra, come se il soffitto fosse aperto.",
             "grave": true
-          },
-          {
-            "tipo": "soggetto",
-            "dove": "mani della donna al centro",
-            "descrizione": "Le mani sono coperte da guanti rossi, mentre il prompt chiede mani rosse e screpolate da lavandaia a vista.",
-            "grave": false
           }
         ],
         "visione": {
           "esito": "difettosa",
           "motivi": [
-            "incongruenza: Fitte linee di pioggia cadono anche all'interno della stanza, come se piovesse dentro la casa. (su tutta la scena, in particolare nella stanza interna e davanti alla finestra)"
+            "incongruenza: Righe di pioggia cadono dentro la stanza di pietra, come se il soffitto fosse aperto. (su tutta la scena, in particolare nell'interno della stanza)"
           ],
           "problemi": [
             {
               "tipo": "incongruenza",
-              "dove": "su tutta la scena, in particolare nella stanza interna e davanti alla finestra",
-              "descrizione": "Fitte linee di pioggia cadono anche all'interno della stanza, come se piovesse dentro la casa.",
+              "dove": "su tutta la scena, in particolare nell'interno della stanza",
+              "descrizione": "Righe di pioggia cadono dentro la stanza di pietra, come se il soffitto fosse aperto.",
               "grave": true
-            },
-            {
-              "tipo": "soggetto",
-              "dove": "mani della donna al centro",
-              "descrizione": "Le mani sono coperte da guanti rossi, mentre il prompt chiede mani rosse e screpolate da lavandaia a vista.",
-              "grave": false
             }
           ],
-          "descrizione": "Un'anziana minuta con occhiali tondi, scialle grigio e guanti rossi sta in una stanza in pietra con una candela accesa, accanto a un'oca bianca, mentre fuori dalla finestra piove.",
-          "costo_usd": 0.000732,
+          "descrizione": "Ritratto di un'anziana minuta con scialle grigio, occhiali tondi e guanti rossi, accanto a un'oca bianca in una stanza di pietra illuminata da una candela. La pioggia cade anche all'interno della stanza.",
+          "costo_usd": 0.000655,
           "token": {
             "ingresso": 3154,
-            "uscita": 833
+            "uscita": 679
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000732,
-        "tentativi": 1,
-        "costo_totale_usd": 0.000732
+        "costo_usd": 0.000655,
+        "tentativi": 3,
+        "costo_totale_usd": 0.001447
       },
-      "quando": "2026-11-10 12:29:35"
+      "quando": "2026-11-11 22:52:11"
     },
     {
       "id": "ritratto_png_tullio",
