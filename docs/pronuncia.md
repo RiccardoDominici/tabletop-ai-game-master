@@ -92,13 +92,18 @@ For each name:
    (`strumenti/pronuncia/punteggio.ts`: «dz»=«z», «ch»=«k», «ee»=«i», English silent e, double letters single; average
    of the similarity of the whole key and of its consonants). Whisper writing back the exact written name counts as
    understood; merely resembling it does not (the naive «Nee-am» resembles «Niamh»).
-4. **Choice**: the best average over the voices (and over `--ripetizioni` listenings: the same text does not always
-   come out the same, drama-3 once said «Libia» for «Livia»); within 0.1 (smaller differences are noise) the Preparer's `grafia` wins, then a
-   respelling that only adds accent marks (Whisper does not hear the stress, and a stress mark costs nothing when the
-   ear is even), then the name as written, and a different spelling last (equal by ear is no evidence that it helps).
-   A candidate is scored as each engine would really say it (Qwen hears `stileQwen` of it), and every candidate is
-   also tried in Qwen's style. Then per engine: if another respelling beats the form that engine would get by more than
-   0.1, it becomes the engine's own form in `motori`; engines not tried keep theirs.
+4. **Choice: the model interprets, the score only vetoes** (`strumenti/pronuncia/scelta.ts`). The score is rough
+   (a phonetic key on a Whisper transcription: once «ZEER-eye» scored 0.93 against the intended «ZEER-ay» 0.81), so
+   it does not choose between respellings that are heard right. The intended respelling (the Preparer's `grafia`,
+   else the proposer's first candidate, which it gives best first, else the name as written) is kept when it is within
+   0.05 of the best or scores at least 0.8 (the wrong readings measured so far score 0.3–0.75). Only when it comes back
+   clearly wrong, below 0.8 and more than 0.05 under the best, does the score choose: among those within 0.05 of the
+   best, one that only adds accent marks to the name (Whisper does not hear the stress), then the name as written, then
+   the order given. Scores are averaged over `--ripetizioni` listenings (the same text does not always come out the
+   same: drama-3 once said «Libia» for «Livia») and over the voices, each candidate scored as each engine would really
+   say it (Qwen hears `stileQwen` of it; every candidate is also tried in Qwen's style). Then the same rule per engine:
+   the form an engine gets from the choice stays unless it comes back clearly wrong there, and then that engine's best
+   becomes its own form in `motori`; engines not tried keep theirs.
    The tool writes `grafia`, `suono`, `motori` and `verificata` into the lexicon (comments kept), the table to
    `logs/pronuncia-<id>.md` and one line per listening to `logs/pronuncia.jsonl` (`TAGM_LOG` moves both).
 
@@ -119,8 +124,8 @@ respellings help clearly (en-nomi fixture, drama-3 / Qwen, two listenings each):
 «KAD-oo-gan» 1.00 / 0.97, «Dubhghall» 0.87 / 0.76 → «DOOG-al» 1.00 / 1.00, «Niamh» on Qwen 0.75 → «NEEV» 1.00. Qwen
 spells out syllables in capitals as if they were acronyms. Per engine, three listenings each: «ee-VAWN» drama-3 0.90,
 Qwen 0.42 («Eval WN»); its Qwen style «Ee-vawn» Qwen 0.90 («Yvonne»), so the lexicon keeps «ee-VAWN» and Qwen gets
-«Ee-vawn». «KAD-oo-gan» Qwen 0.91 against «Kad-oo-gan» 0.82: Qwen reads «KAD» as a word, and the gap is under the
-noise margin, so no own form (the default style costs a little there and saves a lot on «ee-VAWN»). Phonetic keys are rough: two
+«Ee-vawn». «KAD-oo-gan» Qwen 0.91 against «Kad-oo-gan» 0.82: Qwen reads «KAD» as a word, but «Kad-oo-gan» is not
+clearly wrong (0.82), so no own form (the default style costs a little there and saves a lot on «ee-VAWN»). Phonetic keys are rough: two
 respellings a few hundredths apart are equal, and the ear test can move the stress, which it cannot hear.
 Whisper also «corrects» towards ordinary words («Faggioli» → «fagioli»), which caps some scores.
 

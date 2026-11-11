@@ -5,9 +5,9 @@
  *      file's `candidate`s and, if there are fewer than two, those proposed by Claude Code (`claude -p`, one call for all names);
  *   2. each spelling, inside the language's carrier sentence (lingue/<l>/testi-varie.yaml, pronuncia.frase_prova),
  *      is synthesised with the game's voices (drama-3 and/or local Qwen) and transcribed with Whisper;
- *   3. the transcript is compared with the intended sound (strumenti/pronuncia/punteggio.ts); the highest average
- *      across voices wins, and on a tie (within 0.1) the Preparer's spelling, then one that only adds accent marks, then
- *      the written name, then any other spelling;
+ *   3. the transcript is compared with the intended sound (strumenti/pronuncia/punteggio.ts); the model's intended
+ *      respelling (the Preparer's, else the proposer's first) is kept unless it comes back clearly wrong, and only
+ *      then the score chooses (strumenti/pronuncia/scelta.ts); the same per voice engine;
  *   4. in the lexicon: `grafia` = the winner, `suono`, and `verificata: {data, voci, punteggio, base}`.
  *
  *   npx tsx strumenti/pronuncia/prova.ts campagne/<id> [--voci fish,qwen] [--url-qwen URL] [--voce narratore]
@@ -49,6 +49,7 @@ import type { MotoreVoce } from '../../apps/server/src/voce/tipi';
 import { DOLLARI_PER_MINUTO_WHISPER, sintetizza, WhisperOpenRouter, type Trascrittore } from './audio';
 import { chiediProposte, maiuscolaComeIlNome, type Proposta, type RichiestaProposta } from './proposte';
 import { valuta, type Ascolto } from './punteggio';
+import { scegliGrafia } from './scelta';
 
 const { values: o, positionals } = parseArgs({
   allowPositionals: true,
@@ -69,9 +70,6 @@ const { values: o, positionals } = parseArgs({
   },
 });
 
-/** Score differences below this are noise (Whisper and the voices vary from one listening to the next). */
-const PARI = 0.1;
-const senzaAccenti = (s: string): string => s.normalize('NFD').replace(/\p{M}/gu, '');
 const cartella = path.resolve(positionals[0] ?? '');
 if (!positionals[0] || !fs.existsSync(cartella)) {
   console.error('usage: npx tsx strumenti/pronuncia/prova.ts campagne/<id> [options] (see the header of the file)');
@@ -296,7 +294,9 @@ async function main(): Promise<void> {
     // Each respelling also in Qwen's default style (capitalised syllables lowercase), so the test measures that too.
     const grafie = [...new Set([...base, ...base.map(stileQwen)])].filter((x) => x.toLowerCase() !== v.nome.toLowerCase());
     // The intended sound: the one written in the lexicon, or the Preparer's spelling, and only for a new name the model's.
-    return { v, p, suono: v.suono ?? v.grafia ?? p?.suono ?? v.nome, prove: [v.nome, ...grafie] };
+    // The model's intended respelling: the Preparer's, else the proposer's first (it gives the best first).
+    const intesa = v.grafia ?? p?.candidate[0] ?? v.candidate[0] ?? v.nome;
+    return { v, p, suono: v.suono ?? v.grafia ?? p?.suono ?? v.nome, intesa, prove: [...new Set([v.nome, ...grafie, intesa])] };
   });
 
   if (!piano.length) {
@@ -357,29 +357,23 @@ async function main(): Promise<void> {
         return [g, p.length ? p.reduce((a, b) => a + b, 0) / p.length : -1] as const;
       }),
     );
-    const migliore = Math.max(...media.values());
-    // Ties (within PARI): the Preparer's respelling, then one that only adds accent marks (Whisper does not hear the
-    // stress, and a stress mark costs nothing when the ear is even), then the name as written, and a different
-    // spelling last (equal by ear means no evidence that it helps).
-    const pari = x.prove.filter((g) => (media.get(g) ?? -1) >= migliore - PARI);
-    const soloAccenti = (g: string): boolean => g !== x.v.nome && senzaAccenti(g).toLowerCase() === senzaAccenti(x.v.nome).toLowerCase();
-    const scelta = (x.v.grafia && pari.includes(x.v.grafia) ? x.v.grafia : null) ?? pari.find(soloAccenti) ?? (pari.includes(x.v.nome) ? x.v.nome : pari[0]!);
-    // Per engine: its default (Qwen: stileQwen(scelta)) unless another respelling beats it on that engine by more
-    // than PARI; then that one becomes the engine's own form in `motori`. Engines not tried keep what they had.
+    // The model interprets: its intended respelling stays unless it comes back clearly wrong (strumenti/pronuncia/scelta.ts).
+    const { scelta, motivo } = scegliGrafia({ intesa: x.intesa, nome: x.v.nome, candidati: x.prove, punti: (g) => (media.get(g) ?? -1) >= 0 ? media.get(g) : undefined });
+    // Per engine the same rule: the form it gets from `scelta` (Qwen: stileQwen of it) stays unless that comes back
+    // clearly wrong on that engine; then the best there becomes its own form in `motori`. Engines not tried keep theirs.
     const motoriNuovi: MotoriGrafia = { ...(x.v.motori ?? {}) };
     const perMotore = new Map<string, string>();
     for (const m of ms) {
-      const qui = (g: string): number => punti(m.nome, g) ?? -1;
       const predefinita = grafiaPer({ grafia: scelta }, m.chiave);
-      const migliore = x.prove.reduce((a, g) => (qui(g) > qui(a) ? g : a), predefinita);
-      if (qui(migliore) > qui(predefinita) + PARI) motoriNuovi[m.chiave] = migliore;
+      const forma = scegliGrafia({ intesa: predefinita, nome: x.v.nome, candidati: x.prove, punti: (g) => punti(m.nome, g) }).scelta;
+      if (forma !== predefinita) motoriNuovi[m.chiave] = forma;
       else delete motoriNuovi[m.chiave];
       perMotore.set(m.chiave, motoriNuovi[m.chiave] ?? predefinita);
     }
     const finali = ms.map((m) => punti(m.nome, perMotore.get(m.chiave)!)).filter((v): v is number => v !== undefined);
     const punteggio = finali.length ? finali.reduce((a, b) => a + b, 0) / finali.length : 0;
     esiti.push({ voce: x.v, suono: x.suono, ascolti, media, scelta, perMotore, motoriNuovi, punteggio });
-    const proprie = Object.entries(motoriNuovi).map(([m, g]) => `${m}: «${g}»`).join(', ');
+    const proprie = [motivo === 'punteggio' ? `«${x.intesa}» came back wrong` : '', ...Object.entries(motoriNuovi).map(([m, g]) => `${m}: «${g}»`)].filter(Boolean).join(', ');
     console.log(`  ${x.v.nome}: ${[...media].map(([g, s]) => `«${g}» ${s.toFixed(2)}`).join(', ')} → «${scelta}»${proprie ? ` (${proprie})` : ''}`);
   });
 

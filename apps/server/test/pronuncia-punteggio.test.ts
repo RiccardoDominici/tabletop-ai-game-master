@@ -5,6 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { chiaveFonetica, estraiNome, somiglianza, valuta } from '../../../strumenti/pronuncia/punteggio';
 import { leggiProposte, maiuscolaComeIlNome } from '../../../strumenti/pronuncia/proposte';
+import { scegliGrafia } from '../../../strumenti/pronuncia/scelta';
 
 describe('pronunciation scoring', () => {
   it('phonetic keys join spellings of the same sound', () => {
@@ -49,5 +50,28 @@ describe('reading the model answer', () => {
       { nome: 'Ilde', suono: 'ilde', candidate: ['Ìlde'] },
       { nome: 'Signora', suono: '', candidate: [], nonNome: true },
     ]);
+  });
+});
+
+describe('choice of the respelling: the model interprets, the score only vetoes', () => {
+  const punti = (t: Record<string, number>) => (g: string): number | undefined => t[g];
+
+  it('keeps the intended «ZEER-ay» even when the rough score prefers «ZEER-eye»', () => {
+    // The scores the ear test really gave (en-nomi, drama-3 + Qwen): 0.81 against 0.93.
+    const r = scegliGrafia({ intesa: 'ZEER-ay', nome: 'Xyrrhae', candidati: ['Xyrrhae', 'ZEER-ay', 'ZIR-ay', 'ZEER-eye'], punti: punti({ Xyrrhae: 0.8, 'ZEER-ay': 0.81, 'ZIR-ay': 0.84, 'ZEER-eye': 0.93 }) });
+    expect(r).toEqual({ scelta: 'ZEER-ay', motivo: 'intesa' });
+  });
+
+  it('within 0.05 the intended wins over the plain name and an accent-only respelling, even below 0.8', () => {
+    const r = scegliGrafia({ intesa: 'Dzirrà', nome: 'Zirrà', candidati: ['Zirrà', 'Zìrrà', 'Dzirrà'], punti: punti({ Zirrà: 0.78, 'Zìrrà': 0.78, Dzirrà: 0.74 }) });
+    expect(r).toEqual({ scelta: 'Dzirrà', motivo: 'intesa' });
+  });
+
+  it('a clearly wrong intended respelling (heard wrong and well under the best) gives way to the score', () => {
+    // «ee-VAWN» on Qwen: heard «Eval WN», 0.42; its lowercase form 0.90.
+    const r = scegliGrafia({ intesa: 'ee-VAWN', nome: 'Aoibheann', candidati: ['Aoibheann', 'ee-VAWN', 'Ee-vawn'], punti: punti({ Aoibheann: 0.27, 'ee-VAWN': 0.42, 'Ee-vawn': 0.9 }) });
+    expect(r).toEqual({ scelta: 'Ee-vawn', motivo: 'punteggio' });
+    // Not heard at all (the listening failed): the score decides among the others.
+    expect(scegliGrafia({ intesa: 'Fùlco', nome: 'Fulco', candidati: ['Fulco', 'Fùlco'], punti: punti({ Fulco: 1 }) }).scelta).toBe('Fulco');
   });
 });
