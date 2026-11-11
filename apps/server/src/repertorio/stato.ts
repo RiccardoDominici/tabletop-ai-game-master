@@ -12,7 +12,7 @@ import type { StatoOrologi } from '../scena/orologi';
 import { pngNominati, temaPresente } from './pertinenza';
 import { segretiNelTesto, type ParolaSegreta } from './segreti';
 import type { Battuta, CondizioniStato, Repertorio, RigaBattuta, TipoBattuta } from './tipi';
-import { accetta, blocchi, bloccoConCancello, type AzioneAlCancello, type Blocco } from './condizioni';
+import { accetta, blocchi, bloccoConCancello, provaFallita, type AzioneAlCancello, type Blocco } from './condizioni';
 import type { StatoRepertorioSalvato } from '../sessione/tipi';
 
 /**
@@ -38,6 +38,8 @@ export interface AzioneCatalogo {
   privata: boolean;
   /** Prove riuscite di questa azione nel turno (cancello `richiede.prova`, docs/prove.md). */
   prove?: readonly string[];
+  /** Prove fallite di questa azione nel turno: chiudono le battute legate a quelle prove. */
+  fallite?: readonly string[];
 }
 
 /**
@@ -47,7 +49,7 @@ export interface AzioneCatalogo {
  * c'è StatoRepertorio.rispondeA, che guarda solo i blocchi aperti.
  */
 export function rispondeA(b: Battuta, a: AzioneAlCancello): boolean {
-  return blocchi(b).some((bl) => accetta(bl, a));
+  return !provaFallita(b, a) && blocchi(b).some((bl) => accetta(bl, a));
 }
 
 /** PNG che parlano in una battuta: `chi` e le etichette delle righe (testo e varianti), senza il narratore. */
@@ -176,7 +178,7 @@ export class StatoRepertorio {
 
   /** La battuta può rispondere a quest'azione ADESSO (un blocco aperto ne accetta i cancelli)? */
   rispondeA(b: Battuta, a: AzioneAlCancello): boolean {
-    return this.blocchiAperti(b).some((bl) => accetta(bl, a));
+    return !provaFallita(b, a) && this.blocchiAperti(b).some((bl) => accetta(bl, a));
   }
 
   /** Adesso la battuta esce solo con `> pg` (ogni blocco aperto ha un cancello sull'azione). */

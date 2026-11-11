@@ -9,6 +9,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { caricaRepertorio, ErroreRepertorio } from '../src/repertorio/caricatore';
+import { provaFallita } from '../src/repertorio/condizioni';
 import { nomiDeiPng } from '../src/repertorio/pertinenza';
 import { StatoRepertorio, haCancelloAzione, rispondeA, type AzioneCatalogo } from '../src/repertorio/stato';
 import { StatoOrologi } from '../src/scena/orologi';
@@ -39,6 +40,24 @@ describe('richiede.prova', () => {
     expect(cat([{ autore: 'pg_ida', testo, privata: false, prove: ['prova', 'persuasione'] }])).toContain('bertoldo_confessa');
     expect(cat([{ autore: 'pg_ida', testo, privata: false, prove: [] }])).not.toContain('bertoldo_confessa');
     expect(cat([{ autore: 'pg_ida', testo, privata: false }])).not.toContain('bertoldo_confessa');
+  });
+
+  /*
+   * La carta e la storia d'accordo (e2e finale, D2): «Carisma, fallita», poi la battuta che consegna la
+   * chiave usciva lo stesso per un'altra strada di `oppure`. Una battuta legata a una prova che l'azione ha
+   * fallito in questo turno non le risponde, qualunque blocco la aprirebbe.
+   */
+  it('dopo la prova fallita la battuta legata a quella prova non risponde, nemmeno per un’altra strada di oppure', () => {
+    const { oppure: _senza, ...base } = confessa.richiede;
+    void _senza;
+    const cede = { ...confessa, id: 'bertoldo_cede', richiede: { ...confessa.richiede, prova: null, oppure: [{ ...base, prova: 'persuasione' }, { ...base, prova: null }] } } as typeof confessa;
+    // Senza tiro la strada senza prova la apre; dopo la Persuasione fallita no; dopo la riuscita sì.
+    expect(rispondeA(cede, { autore: 'pg_ida', privata: false })).toBe(true);
+    expect(rispondeA(cede, { autore: 'pg_ida', privata: false, prove: [], fallite: ['prova', 'persuasione'] })).toBe(false);
+    expect(rispondeA(cede, { autore: 'pg_ida', privata: false, prove: ['prova', 'persuasione'] })).toBe(true);
+    expect(provaFallita(cede, { autore: 'pg_ida', privata: false, fallite: ['prova', 'persuasione'] })).toBe('persuasione');
+    // Un'altra prova fallita (non legata alla battuta) non la chiude.
+    expect(rispondeA(cede, { autore: 'pg_ida', privata: false, fallite: ['prova', 'atletica'] })).toBe(true);
   });
 
   it('un valore che non si capisce è un errore (ignorato aprirebbe il cancello)', () => {

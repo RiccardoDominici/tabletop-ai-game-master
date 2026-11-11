@@ -227,6 +227,12 @@ Coerenze consigliate (avvisi):
 5. **Narratore**. La sezione «Esiti dei tiri» sta subito dopo le azioni (narrazione/messaggio.ts), con le regole in
    prompts/it/narratore.md §6 e prompts/it/selettore.md §2.
    - In modalità B le prove riuscite aprono le battute con `richiede.prova` (repertorio/condizioni.ts).
+   - La carta e la storia d'accordo (e2e finale, D2: «Carisma, fallita», poi Berta consegnava la chiave). Una prova
+     fallita dice al narratore che cosa NON succede («Ciò che voleva NON succede («…»): non raccontarlo come
+     riuscito»: la prova della scena, o il testo dell'azione; non per un indizio essenziale). E una battuta legata
+     con `richiede.prova` a una prova che l'azione ha fallito in questo turno non le risponde, nemmeno se un'altra
+     strada di `oppure` la aprirebbe: il `[usa]` si rifiuta («legata alla prova …, che … ha fallito»), e la battuta
+     esce dal catalogo per quell'azione (`EsitoAzioneProve.fallite`, `provaFallita`).
 6. **Stato e ripresa**.
    - `FotografiaSessione.prove` contiene PF, seme e contatore dei dadi e le ultime carte: un riavvio riprende gli
      stessi PF.

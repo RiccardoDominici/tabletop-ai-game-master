@@ -41,6 +41,18 @@ export interface AzioneAlCancello {
   privata: boolean;
   /** Prove riuscite dell'azione (abilità, caratteristica, id della prova della scena, tipo): docs/prove.md. */
   prove?: readonly string[];
+  /** Prove fallite dell'azione in questo turno (stessi id). */
+  fallite?: readonly string[];
+}
+
+/**
+ * La prova legata alla battuta (`richiede.prova` di un suo blocco) che quest'azione ha FALLITO nel
+ * turno, o null. Una battuta così non risponde all'azione, nemmeno per un'altra strada di `oppure`:
+ * dopo «Carisma, fallita» Berta non consegna la chiave (e2e finale, D2).
+ */
+export function provaFallita(b: Battuta, a: AzioneAlCancello): string | null {
+  if (!a.fallite?.length) return null;
+  return blocchi(b).map((bl) => bl.prova).find((p): p is string => p !== null && a.fallite!.includes(p)) ?? null;
 }
 
 /** Il blocco accetta quest'azione (privata o pubblica, del PG giusto, con la prova superata)? */

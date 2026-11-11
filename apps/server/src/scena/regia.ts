@@ -81,6 +81,7 @@ import { personaggiScena, pngIncontrati, presenzaEffettiva, presenzeMaster } fro
 import { sommaCosti } from '../llm/costi';
 import type { Battuta, Repertorio } from '../repertorio/tipi';
 import { StatoRepertorio } from '../repertorio/stato';
+import { provaFallita } from '../repertorio/condizioni';
 import { righeMenzogneDette } from '../repertorio/menzogne';
 import { segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
 import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
@@ -372,6 +373,8 @@ export class Regia {
   private readonly prove: MotoreProve | null;
   /** Prove riuscite per azione nel turno che si sta narrando (cancello `richiede.prova` del repertorio). */
   private riuscitePerAzione = new Map<string, readonly string[]>();
+  /** Prove fallite per azione nello stesso turno: chiudono le battute legate a quelle prove (D2). */
+  private fallitePerAzione = new Map<string, readonly string[]>();
   private controlloLlm: AbortController | null = null;
   private misuratore: MisuratoreTurno | null = null;
   /** Primo pezzo d'audio inviato nel turno corrente (stima della fine se lo schermo tace). */
@@ -1330,6 +1333,8 @@ export class Regia {
   private motivoPer(b: Battuta, per: string): string | null {
     const azione = this.turnoB?.azioni.get(per);
     if (!azione) return `${per} non ha un'azione in questo turno`;
+    const fallita = provaFallita(b, { autore: per, ...azione });
+    if (fallita) return `${b.id} è legata alla prova ${fallita}, che ${per} ha fallito in questo turno`;
     if (!this.statoRepertorio!.rispondeA(b, { autore: per, ...azione })) {
       return `${b.id} non risponde all'azione ${azione.privata ? 'privata' : 'pubblica'} di ${per} (cancelli privata/da_pg delle condizioni aperte)`;
     }
@@ -2235,6 +2240,7 @@ export class Regia {
   private async tiriDelTurno(r: RiepilogoChiusura): Promise<EsitoTurnoProve> {
     const esito = await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
     this.riuscitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.riuscite]));
+    this.fallitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.fallite]));
     this.o.log.info(
       {
         turno: r.turno,
@@ -2337,6 +2343,7 @@ export class Regia {
     // Tiri del turno (docs/prove.md): il Motore tira PRIMA del narratore, che riceve gli esiti come
     // fatti. Le decisioni dell'arbitro di solito sono già pronte (prese all'invio): nessuna attesa.
     this.riuscitePerAzione = new Map();
+    this.fallitePerAzione = new Map();
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r) : null;
     if (epoca !== this.epoca) return;
@@ -2693,7 +2700,7 @@ export class Regia {
     // Il segno dovuto è di un orologio preciso: in catalogo entrano solo i segni degli orologi dovuti.
     const dovuti = new Set(this.orologi.dovuti(r.turno).map((o) => o.id));
     // Le prove riuscite dell'azione aprono le battute col cancello `richiede.prova`.
-    const azioni = r.azioni.map((a) => ({ autore: a.autore, testo: a.testo, privata: a.privata, prove: this.riuscitePerAzione.get(a.id) ?? [] }));
+    const azioni = r.azioni.map((a) => ({ autore: a.autore, testo: a.testo, privata: a.privata, prove: this.riuscitePerAzione.get(a.id) ?? [], fallite: this.fallitePerAzione.get(a.id) ?? [] }));
     const { battute: catalogoPieno, trattenute, perche } = s.catalogo({ turno: r.turno, azioni, stallo, dovuti, nomiPng: this.nomiPng, parole: this.o.paroleSegrete ?? [] });
     // Preselezione deterministica: per ogni azione le battute i cui temi QUELL'azione tocca; vanno in
     // testa al catalogo e in una sezione loro, con il «> pg» già scritto.
@@ -2710,7 +2717,7 @@ export class Regia {
         : [];
     for (const b of attesa) this.elencoTurno.add(b.id);
     this.turnoB = {
-      azioni: new Map(r.azioni.map((a) => [a.autore, { id: a.id, privata: a.privata, testo: a.testo, prove: this.riuscitePerAzione.get(a.id) ?? [] }])),
+      azioni: new Map(r.azioni.map((a) => [a.autore, { id: a.id, privata: a.privata, testo: a.testo, prove: this.riuscitePerAzione.get(a.id) ?? [], fallite: this.fallitePerAzione.get(a.id) ?? [] }])),
       stallo,
       dovuti,
       indicate,

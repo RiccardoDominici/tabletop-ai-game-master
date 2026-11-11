@@ -68,6 +68,7 @@ prove:
     perde_turno: "is {condizione}: loses the turn, no roll."
     fallisce_da_solo: " It fails automatically: the character is {condizione}."
     prezzo: " Price of failure: {prezzo}."
+    non_ottiene: " What they wanted does NOT happen («{cosa}»): do not tell it as a success, and no line grants it anyway."
     essenziale: " What they were looking for is essential: they find it anyway, but at a price."
     trova_indizio: " They find what they were looking for (clue {indizio})."
     non_trova: " They do not find what they were looking for, for now."

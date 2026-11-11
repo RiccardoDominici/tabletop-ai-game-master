@@ -39,6 +39,7 @@ import {
   fattoAttaccoSenzaScheda,
   fattoFuggito,
   fattoGiaATerra,
+  fattoNonOttiene,
   fattoImpossibile,
   fattoNessunTiro,
   fattoSenzaArbitro,
@@ -174,7 +175,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     const d = grezza ? normalizzaDecisione(grezza, o.proveScena) : null;
     if (grezza && d && (d.tipo !== grezza.tipo || d.abilita !== grezza.abilita)) o.log.info({ azione: a.id, da: [grezza.tipo, grezza.abilita], a: [d.tipo, d.abilita] }, 'prove: decisione ritoccata dal Motore');
     const prefisso = prefissoFatto(i + 1, nomePg(a.autore), a.autore, a.privata);
-    const esito: EsitoAzioneProve = { id_azione: a.id, autore: a.autore, decisione: d, tiri: [], fatto: '', riuscite: [], riuscita: null };
+    const esito: EsitoAzioneProve = { id_azione: a.id, autore: a.autore, decisione: d, tiri: [], fatto: '', riuscite: [], fallite: [], riuscita: null };
     const aggiungi = (t: TiroMostrato): void => {
       esito.tiri.push(t);
       tiri.push(t);
@@ -300,10 +301,13 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     });
     aggiungi(t);
     esito.riuscita = e.riuscita;
-    if (e.riuscita) esito.riuscite.push(...[salvezza ? 'salvezza' : 'prova', abil, car, ps?.id].filter((x): x is string => !!x));
+    (e.riuscita ? esito.riuscite : esito.fallite).push(...[salvezza ? 'salvezza' : 'prova', abil, car, ps?.id].filter((x): x is string => !!x));
     let f = fattoTiro(t, null);
     if (autoFallita) f += testo('prove.fatto.fallisce_da_solo', { condizione: autoFallita.toLowerCase() });
     if (ps?.se_fallisce && !e.riuscita) f += testo('prove.fatto.prezzo', { prezzo: ps.se_fallisce });
+    // Che cosa NON succede: la prova della scena, o l'azione stessa (la carta e la storia d'accordo, D2).
+    // Non per un indizio essenziale: lo trova comunque, con un prezzo.
+    if (!e.riuscita && !ps?.essenziale) f += fattoNonOttiene(ps?.quando ?? a.testo);
     if (ps?.essenziale && !e.riuscita) f += testo('prove.fatto.essenziale');
     if (ps?.indizio && e.riuscita && o.conIndizi && !ps.essenziale) f += testo('prove.fatto.trova_indizio', { indizio: ps.indizio });
     if (ps?.indizio && !e.riuscita && !ps.essenziale) f += testo('prove.fatto.non_trova');
@@ -336,7 +340,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     const { t, saluteTesto } = cartaAttacco(o, a.autore, id, arma, e, v ? motivo : null, a.privata);
     aggiungi(t);
     esito.riuscita = e.riuscita;
-    if (e.riuscita) esito.riuscite.push('attacco', arma.id);
+    (e.riuscita ? esito.riuscite : esito.fallite).push('attacco', arma.id);
     return fattoTiro(t, saluteTesto);
   }
 
@@ -388,7 +392,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
       });
       aggiungi(t);
       esito.riuscita = c.vince === 'a';
-      if (esito.riuscita) esito.riuscite.push('prova', 'contrapposta', ...(abil ? [abil] : []), car);
+      (esito.riuscita ? esito.riuscite : esito.fallite).push('prova', 'contrapposta', ...(abil ? [abil] : []), car);
       return fattoTiro(t, null);
     }
     // Contro un PNG: il suo punteggio passivo (10 + modificatore) fa da CD.

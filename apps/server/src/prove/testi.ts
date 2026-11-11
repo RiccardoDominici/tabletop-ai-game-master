@@ -160,6 +160,15 @@ export function fattoGiaATerra(nome: string): string {
   return testo('prove.fatto.gia_a_terra', { nome });
 }
 
+/**
+ * Dopo una prova fallita, che cosa NON succede: la prova della scena o l'azione (troncata). Nella e2e
+ * finale la carta diceva «fallita» e Berta consegnava la chiave lo stesso.
+ */
+export function fattoNonOttiene(cosa: string): string {
+  const breve = cosa.trim().replace(/\s+/g, ' ');
+  return testo('prove.fatto.non_ottiene', { cosa: breve.length > 120 ? `${breve.slice(0, 117)}…` : breve });
+}
+
 /** Il bersaglio è fuggito dalla scena: non è più qui, nessun tiro. */
 export function fattoFuggito(nome: string): string {
   return testo('prove.fatto.fuggito', { nome });

@@ -73,6 +73,7 @@ prove:
     perde_turno: "è {condizione}: perde il turno, nessun tiro."
     fallisce_da_solo: " Fallisce da solo: è {condizione}."
     prezzo: " Prezzo del fallimento: {prezzo}."
+    non_ottiene: " Ciò che voleva NON succede («{cosa}»): non raccontarlo come riuscito, e nessuna battuta lo dà lo stesso."
     essenziale: " Ciò che cercava è essenziale: lo trova comunque, ma con un prezzo."
     trova_indizio: " Trova ciò che cercava (indizio {indizio})."
     non_trova: " Non trova ciò che cercava, per ora."

@@ -27,6 +27,7 @@ import {
   fattoAttaccoSenzaScheda,
   fattoFuggito,
   fattoGiaATerra,
+  fattoNonOttiene,
   fattoImpossibile,
   fattoNessunTiro,
   fattoSenzaArbitro,
@@ -114,7 +115,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
   o.azioni.forEach((a, i) => {
     const d = o.decisioni.get(a.id) ?? null;
     const prefisso = prefissoFatto(i + 1, o.nome(a.autore), a.autore, a.privata);
-    const esito: EsitoAzioneProve = { id_azione: a.id, autore: a.autore, decisione: null, tiri: [], fatto: '', riuscite: [], riuscita: null };
+    const esito: EsitoAzioneProve = { id_azione: a.id, autore: a.autore, decisione: null, tiri: [], fatto: '', riuscite: [], fallite: [], riuscita: null };
     const aggiungi = (t: TiroMostrato): void => {
       esito.tiri.push(t);
       tiri.push(t);
@@ -142,7 +143,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         const r = attacca(a.autore, b, d.arma, fonti, a.privata)!;
         aggiungi(r.t);
         esito.riuscita = r.esito?.riuscita ?? null;
-        if (r.esito?.riuscita) esito.riuscite.push('attacco', r.t.etichetta);
+        if (r.esito) (r.esito.riuscita ? esito.riuscite : esito.fallite).push('attacco', r.t.etichetta);
         fatto = r.testo;
         // 2d6: con un successo parziale anche il bersaglio colpisce (lo scambio del manuale).
         if (r.esito?.grado?.id === 'parziale' && s.attacchi.parzialeScambio && !d.reazione) {
@@ -170,13 +171,15 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         aggiungi(cartaDa(e, a.autore, 'prova', cosa.etichetta, b, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, a.privata));
         esito.riuscita = e.riuscita;
         // Prove riuscite per il cancello `richiede.prova`: anche gli id del set (mossa, abilità, caratteristica).
-        if (e.riuscita) esito.riuscite.push(...new Set(['prova', ...[d.abilita, d.caratteristica, d.mossa, ps?.id, ps?.mossa, ps?.abilita, ps?.caratteristica, cosa.mossa?.id, cosa.mossa?.caratteristica].filter((x): x is string => !!x)]));
+        (e.riuscita ? esito.riuscite : esito.fallite).push(...new Set(['prova', ...[d.abilita, d.caratteristica, d.mossa, ps?.id, ps?.mossa, ps?.abilita, ps?.caratteristica, cosa.mossa?.id, cosa.mossa?.caratteristica].filter((x): x is string => !!x)]));
         fatto = testo('prove.fatto.prova_set', { regola: e.regola, vantaggio: conVantaggio(e.vantaggio), valore: s.risoluzione.tipo === 'sotto_soglia' ? e.dado : e.totale, esito: esitoInParole(e) });
         if (cosa.mossa) {
           const esitoMossa = e.grado?.id === 'parziale' ? (cosa.mossa.esiti.parziale ?? cosa.mossa.esiti.successo) : e.riuscita ? cosa.mossa.esiti.successo : cosa.mossa.esiti.fallimento;
           fatto += testo('prove.fatto.esito_mossa', { mossa: cosa.mossa.nome, esito: esitoMossa });
         }
         if (!e.riuscita && ps?.se_fallisce) fatto += testo('prove.fatto.prezzo', { prezzo: ps.se_fallisce });
+        // Che cosa NON succede (la carta e la storia d'accordo, D2); una mossa ha già il suo esito scritto.
+        if (!e.riuscita && !cosa.mossa) fatto += fattoNonOttiene(ps?.quando ?? a.testo);
       }
     }
     // Reazione del PNG: dopo l'azione, se la condizione vale.

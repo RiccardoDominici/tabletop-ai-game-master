@@ -96,6 +96,11 @@ export interface EsitoAzioneProve {
   fatto: string;
   /** Prove riuscite di questa azione, come le cerca il cancello `richiede.prova` del repertorio. */
   riuscite: string[];
+  /**
+   * Prove FALLITE di questa azione (stessi id): una battuta legata a una di queste con `richiede.prova`
+   * non risponde all'azione, nemmeno per un'altra strada di `oppure` (e2e finale, D2).
+   */
+  fallite: string[];
   /** Esito complessivo dell'azione dell'autore: null = nessun tiro. */
   riuscita: boolean | null;
 }

@@ -127,6 +127,9 @@ describe('un turno di tiri', () => {
     const r = await motore({ arbitro, dadi: [5] }).risolvi(2, [azione('a1', 'pg_corrado', 'Attraverso il guado con la corda')]);
     expect(r.tiri[0]).toMatchObject({ contro: { valore: 12 }, modificatore: 5, totale: 10, riuscita: false });
     expect(r.fatti[0]).toMatch(/10 contro CD 12 → FALLITA\. Prezzo del fallimento: la corrente lo trascina/);
+    // Che cosa NON succede, detto al narratore (D2), e la prova fallita per il cancello del repertorio.
+    expect(r.fatti[0]).toMatch(/Ciò che voleva NON succede \(«[^»]+»\): non raccontarlo come riuscito/);
+    expect(r.perAzione.get('a1')?.fallite).toContain('p_guado');
   });
 
   it('attacco con la balestra: danno, PF del PNG, a terra; il secondo attacco lo trova a terra', async () => {
