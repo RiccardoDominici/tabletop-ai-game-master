@@ -45,6 +45,7 @@ export function sistemaSrd(): SistemaRegole {
     caratteristiche: CARATTERISTICHE.map((c) => ({ id: c, nome: nomeCaratteristica(c) })),
     abilita: ABILITA.map((a) => ({ id: a, nome: nomeAbilita(a), caratteristica: CARATTERISTICA_DI[a] })),
     modificatore: 'srd',
+    tabellaModificatori: null,
     difficolta: Object.entries(DIFFICOLTA).map(([id, valore]) => ({ id, nome: nomeDifficolta(id as Difficolta), valore, divisore: null, modificatore: null })),
     difficoltaPredefinita: 'media',
     vantaggio: { tipo: 'due_dadi', valore: 0 },

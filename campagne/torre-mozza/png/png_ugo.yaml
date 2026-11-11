@@ -9,7 +9,8 @@ ruolo: "carbonaio del bosco sotto la torre; il sospettato del paese; testimone r
 fronte: fronte_torre
 scheda:
   # Gente comune (Normal Man, p. 53), forte di braccia: bonus d'attacco +0, accetta con la Forza.
-  caratteristiche: {forza: 1, intelligenza: 0, saggezza: 1, destrezza: 0, costituzione: 1, carisma: -1}
+  # Punteggi scelti per il bonus che il PNG deve avere: la tabella del set (regole/regole.yaml) lo ricava.
+  caratteristiche: {forza: 13, intelligenza: 10, saggezza: 13, destrezza: 10, costituzione: 13, carisma: 7}
   abilita: {mischia: 0}
   pf: 4
   difesa: 11

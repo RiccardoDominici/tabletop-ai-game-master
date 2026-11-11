@@ -122,6 +122,28 @@ def test_critici_e_danni_del_set_d20(tmp_path: Path, rompi, codice: str) -> None
     assert tiene(dest, codice), regole_di(dest)
 
 
+TABELLA_BF = [{"da": 3, "mod": -3}, {"da": 4, "mod": -2}, {"da": 6, "mod": -1}, {"da": 9, "mod": 0},
+              {"da": 13, "mod": 1}, {"da": 16, "mod": 2}, {"da": 18, "mod": 3}]
+
+
+@pytest.mark.parametrize("tabella", [[], [{"da": 3}], [{"da": 9, "mod": 0}, {"da": 4, "mod": -2}]], ids=["vuota", "senza-mod", "non-cresce"])
+def test_modificatore_tabella_rotta(tmp_path: Path, tabella) -> None:
+    dest = copia(BX, tmp_path)
+    modifica(dest, "regole/regole.yaml", lambda d: d.update(modificatore={"tipo": "tabella", "tabella": tabella}))
+    assert tiene(dest, "REGOLE.modificatore"), regole_di(dest)
+
+
+def test_modificatore_tabella_e_schede_coi_punteggi(tmp_path: Path) -> None:
+    """Con la tabella la scheda scrive il punteggio: valori sotto la prima riga sono bonus scritti per sbaglio (avviso)."""
+    dest = copia(BX, tmp_path)
+    modifica(dest, "regole/regole.yaml", lambda d: d.update(modificatore={"tipo": "tabella", "tabella": TABELLA_BF}))
+    assert not tiene(dest, "REGOLE.modificatore"), regole_di(dest)
+    modifica(dest, "pg.yaml", lambda d: d["personaggi"][0]["scheda"]["caratteristiche"].update(forza=1))
+    esito = Esito(rigoroso=True)
+    regole_set.controlla(carica(dest, esito), esito)
+    assert any(v.codice == "REGOLE.scheda" and "sotto la tabella" in v.messaggio for v in esito.errori)
+
+
 def test_critici_validi_e_null(tmp_path: Path) -> None:
     dest = copia(BX, tmp_path)
     modifica(dest, "regole/regole.yaml", lambda d: d["risoluzione"].update(critico=None, disastro=None, critici="tutti")

@@ -24,7 +24,7 @@ from .testo import n_parole
 
 ID_SRD = "srd-5.2"
 TIPI = ("d20_cd", "2d6_fasce", "sotto_soglia")
-MODIFICATORI = ("srd", "diretto", "soglia")
+MODIFICATORI = ("srd", "diretto", "soglia", "tabella")
 VANTAGGI = ("due_dadi", "dado_bonus", "bonus", "nessuno")
 ESITI_FASCIA = ("successo", "parziale", "fallimento")
 ATTACCHI = ("prova", "automatico")
@@ -156,9 +156,24 @@ def _modificatore(r: dict, tipo: str | None, e: Esito, dove: str) -> None:
     if t is None:
         return
     if t not in MODIFICATORI:
-        _err(e, "modificatore", dove, "modificatore.tipo: srd, diretto o soglia")
+        _err(e, "modificatore", dove, "modificatore.tipo: srd, diretto, soglia o tabella")
     elif (t == "soglia") != (tipo == "sotto_soglia"):
         _err(e, "modificatore", dove, "modificatore.tipo «soglia» va (solo) con risoluzione sotto_soglia")
+    if t == "tabella":
+        righe = mod.get("tabella")
+        ok = isinstance(righe, list) and righe and all(_ogg(x) and _intero(_ogg(x).get("da")) and _intero(_ogg(x).get("mod")) for x in righe)
+        if not ok:
+            _err(e, "modificatore", dove, "modificatore.tabella: righe {da, mod} con numeri interi, almeno una")
+        elif any(righe[i]["da"] <= righe[i - 1]["da"] for i in range(1, len(righe))):
+            _err(e, "modificatore", dove, "modificatore.tabella: «da» cresce riga dopo riga")
+
+
+def tabella_modificatori(r: dict) -> list[tuple[int, int]] | None:
+    """Le righe (da, mod) della tabella del set, o None se il set non usa `tabella`."""
+    mod = _ogg(r.get("modificatore")) or {}
+    if mod.get("tipo") != "tabella" or not isinstance(mod.get("tabella"), list):
+        return None
+    return [(x["da"], x["mod"]) for x in mod["tabella"] if _ogg(x) and _intero(x.get("da")) and _intero(x.get("mod"))]
 
 
 def _vantaggio(r: dict, dado: int | None, e: Esito, dove: str) -> None:
@@ -251,7 +266,7 @@ def _file_del_set(c: Campagna, e: Esito, dove_base: Path) -> None:
             e.avviso("REGOLE.estratto", dove, f"{len(corpo.splitlines())} righe: il massimo è {ESTRATTO_MAX_RIGHE}")
 
 
-def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool) -> None:
+def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tabella: list[tuple[int, int]] | None = None) -> None:
     """Le schede di PG e PNG seguono il set: caratteristiche tutte e sole quelle del set, abilità, PF, attacchi."""
     da_controllare = [(f"pg.yaml {p.get('id', '?')}", p) for p in c.personaggi if "scheda" in p]
     da_controllare += [(nome, d) for _, (nome, d) in c.png.items() if "scheda" in d]
@@ -273,6 +288,10 @@ def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool) -> 
             for k, v in cars.items():
                 if not _intero(v):
                     _err(e, "scheda", dove, f"caratteristiche.{k}: un numero intero")
+                elif tabella and v < tabella[0][0]:
+                    # Con la tabella la scheda scrive il punteggio: un valore sotto la prima riga è un bonus scritto per sbaglio.
+                    e.avviso("REGOLE.scheda", dove, f"caratteristiche.{k} = {v}: sotto la tabella del set (da {tabella[0][0]}); "
+                             "con modificatore «tabella» la scheda scrive il punteggio, non il bonus", rigoroso=True)
         for k, v in (_ogg(s.get("abilita")) or {}).items():
             if k not in abi:
                 _err(e, "scheda", dove, f"abilita.{k}: non è un'abilità del set")
@@ -358,7 +377,7 @@ def controlla(c: Campagna, e: Esito) -> None:
     _schema_sociale_attacchi(r, car, abi, e, dove)
     mosse = _mosse(r, car, e, dove)
     regole_combattimento.controlla(r, car, e, dove)
-    _schede(c, e, car, abi, dadi_attivi(c))
+    _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r))
     _prove_di_scena(c, e, car, abi, mosse, diff)
     _richiede_prova_set(c, e, car, abi, mosse)
     _file_del_set(c, e, c.cartella / "regole")

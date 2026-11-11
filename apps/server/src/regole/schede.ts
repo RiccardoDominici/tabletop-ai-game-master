@@ -4,7 +4,7 @@
  * pg.yaml → personaggi[].scheda, png/<id>.yaml → scheda.
  *
  *   scheda:
- *     caratteristiche: {fascino: 2, duro: 1, …}   # tutte quelle del set: bonus (srd/diretto) o soglia
+ *     caratteristiche: {fascino: 2, duro: 1, …}   # tutte quelle del set: punteggio (srd, tabella), bonus (diretto) o soglia
  *     abilita: {persuasione: 45}                   # facoltative: bonus, o soglia per sotto_soglia
  *     pf: 10
  *     difesa: 13                                   # d20_cd: la CA
@@ -27,8 +27,8 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
   const car = ogg(o['caratteristiche']) ?? {};
   for (const c of s.caratteristiche) {
     const v = intero(car[c.id]);
-    if (v === null) avvisi.push(`${dove}.caratteristiche: manca ${c.id} (vale ${s.modificatore === 'srd' ? 10 : 0})`);
-    caratteristiche[c.id] = v ?? (s.modificatore === 'srd' ? 10 : 0);
+    if (v === null) avvisi.push(`${dove}.caratteristiche: manca ${c.id} (vale ${caratteristicaPredefinita(s)})`);
+    caratteristiche[c.id] = v ?? caratteristicaPredefinita(s);
   }
   for (const k of Object.keys(car)) if (!s.caratteristiche.some((c) => c.id === k)) avvisi.push(`${dove}.caratteristiche: «${k}» non è del set ${s.id}`);
   const abilita: Record<string, number> = {};
@@ -69,8 +69,24 @@ export function caricaSchedeGeneriche(s: SistemaRegole, c: Pick<Campagna, 'pg' |
   return out;
 }
 
-/** Il numero che una caratteristica porta al tiro: modificatore SRD, valore diretto, o soglia. */
+/** Il valore di una caratteristica che manca dalla scheda: quello che dà +0 (10 nell'SRD, la riga +0 della tabella). */
+export function caratteristicaPredefinita(s: SistemaRegole): number {
+  if (s.modificatore === 'srd') return 10;
+  if (s.modificatore === 'tabella') return s.tabellaModificatori?.find((r) => r.mod === 0)?.da ?? s.tabellaModificatori?.[0]?.da ?? 0;
+  return 0;
+}
+
+/** Il bonus della tabella del manuale per un punteggio: la riga più alta con `da` ≤ punteggio (sotto la prima, la prima). */
+export function bonusDaTabella(tabella: ReadonlyArray<{ da: number; mod: number }>, punteggio: number): number {
+  let mod = tabella[0]?.mod ?? 0;
+  for (const r of tabella) if (punteggio >= r.da) mod = r.mod;
+  return mod;
+}
+
+/** Il numero che una caratteristica porta al tiro: modificatore SRD, valore diretto, soglia, o bonus dalla tabella. */
 export function valoreCaratteristica(s: SistemaRegole, scheda: SchedaGenerica, id: string): number {
-  const v = scheda.caratteristiche[id] ?? (s.modificatore === 'srd' ? 10 : 0);
-  return s.modificatore === 'srd' ? modificatore(v) : v;
+  const v = scheda.caratteristiche[id] ?? caratteristicaPredefinita(s);
+  if (s.modificatore === 'srd') return modificatore(v);
+  if (s.modificatore === 'tabella') return bonusDaTabella(s.tabellaModificatori ?? [], v);
+  return v;
 }

@@ -9,7 +9,8 @@ fronte: fronte_torre
 scheda:
   # Hobgoblin (p. 113): Classe d'Armatura 14 (pelli e scudo di legno), un dado vita, quindi bonus d'attacco +1 e
   # 1d8 punti ferita (qui 7). Un'arma 1d8. Salva come guerriero di livello 1 (12, 13, 14, 15, 17). Morale 8.
-  caratteristiche: {forza: 0, intelligenza: 0, saggezza: 0, destrezza: 0, costituzione: 0, carisma: 0}
+  # Punteggi scelti per il bonus che il PNG deve avere: la tabella del set (regole/regole.yaml) lo ricava.
+  caratteristiche: {forza: 10, intelligenza: 10, saggezza: 10, destrezza: 10, costituzione: 10, carisma: 10}
   abilita: {mischia: 1, distanza: 1, ts_morte: 5, ts_bacchette: 4, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 0}
   pf: 7
   difesa: 14

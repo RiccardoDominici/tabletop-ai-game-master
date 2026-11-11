@@ -1,8 +1,8 @@
 # Personaggi pregenerati: tre giocatori più uno. Tutto è pubblico (telefono del giocatore e selettore), tranne
 # `conoscenze_private`, che va solo sul telefono di quel giocatore (T9).
 #
-# Schede nel set di Basic Fantasy (regole/regole.yaml): ogni caratteristica vale il suo bonus del manuale (il
-# punteggio è nel commento); i tiri salvezza, le abilità del ladro e le possibilità «su 1d6» sono bonus sul d20
+# Schede nel set di Basic Fantasy (regole/regole.yaml): ogni caratteristica scrive il suo punteggio da 3 a 18, e
+# il bonus lo dà la tabella del set (13–15 = +1…, p. 4); i tiri salvezza, le abilità del ladro e le possibilità «su 1d6» sono bonus sul d20
 # contro 17 (bonus = 17 − numero della tabella; percentuale / 5 − 4). Bonus d'attacco +1 a tutti al primo livello.
 # Punti ferita: dado vita al massimo più la Costituzione (decisione nel brief).
 situazione_comune: "Siete arrivati a Spinalba all'imbrunire, ognuno per la sua strada, e la pastora Berta Benni vi ha chiamati al suo ovile. In paese dicono che la notte scorsa i goblin della Torre Mozza le hanno preso il figlio, e che vogliono la chiave di famiglia entro mezzanotte."
@@ -25,8 +25,8 @@ personaggi:
       - testo: "Hai servito con il balivo di Valdirame: sai che quest'anno i Benni sono sulla sua lista della decima non pagata, e che alla prima neve il balivo si prende l'ovile."
         fatti: [f_debito]
     scheda:
-      # Forza 16, Intelligenza 10, Saggezza 9, Destrezza 13, Costituzione 15, Carisma 11.
-      caratteristiche: {forza: 2, intelligenza: 0, saggezza: 0, destrezza: 1, costituzione: 1, carisma: 0}
+      # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
+      caratteristiche: {forza: 16, intelligenza: 10, saggezza: 9, destrezza: 13, costituzione: 15, carisma: 11}
       # Guerriera di primo livello: salvezza 12, 13, 14, 15, 17. Porte bloccate: 3 su 6 con la Forza.
       abilita: {mischia: 1, distanza: 1, ts_morte: 5, ts_morte_destrezza: 5, ts_bacchette: 4, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 0, forzare: 6}
       pf: 9                      # 1d8 al massimo, più 1 di Costituzione
@@ -54,8 +54,8 @@ personaggi:
       - testo: "I nani che costruirono le torri di confine lasciavano sempre, sotto ogni torre, una postierla: un passaggio basso verso il bosco, per le sortite. Di solito sbuca in cantina."
         fatti: [f_postierle_torri]
     scheda:
-      # Forza 13, Intelligenza 9, Saggezza 15, Destrezza 8, Costituzione 14, Carisma 10.
-      caratteristiche: {forza: 1, intelligenza: 0, saggezza: 1, destrezza: -1, costituzione: 1, carisma: 0}
+      # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
+      caratteristiche: {forza: 13, intelligenza: 9, saggezza: 15, destrezza: 8, costituzione: 14, carisma: 10}
       # Chierico di primo livello (11, 12, 14, 16, 15) con il bonus dei nani (+4, e +3 al soffio).
       # Occhio per la pietra: 2 su 6. Porte bloccate: 2 su 6 con la Forza.
       abilita: {mischia: 1, distanza: 1, ts_morte: 10, ts_morte_destrezza: 10, ts_bacchette: 9, ts_paralisi: 7, ts_soffio: 4, ts_incantesimi: 6, forzare: 3, pietra: 3}
@@ -85,8 +85,8 @@ personaggi:
       - testo: "Una settimana fa, al mercato di Valdirame, un ragazzo di Spinalba ti ha chiesto quanto vale una moneta d'argento vecchia con una torre coniata sopra, e dove si cambia senza domande. Diceva di chiamarsi Tonio."
         fatti: [f_tonio_mercato]
     scheda:
-      # Forza 9, Intelligenza 12, Saggezza 10, Destrezza 17, Costituzione 13, Carisma 13.
-      caratteristiche: {forza: 0, intelligenza: 0, saggezza: 0, destrezza: 2, costituzione: 1, carisma: 1}
+      # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
+      caratteristiche: {forza: 9, intelligenza: 12, saggezza: 10, destrezza: 17, costituzione: 13, carisma: 13}
       # Ladra di primo livello (13, 14, 13, 16, 15) con il bonus degli halfling (+4, e +3 al soffio).
       # Abilità del ladro 25, 20, 30, 25, 80, 30 per cento; nascondersi al chiuso come halfling (70%).
       # Distanza: +1 degli halfling. Attacco furtivo: +4. Il +1 degli halfling all'iniziativa lo schema non lo porta
@@ -119,8 +119,8 @@ personaggi:
       - testo: "I goblin non scrivono la lingua comune: incidono segni sul legno, e non sanno fare lettere con un carbone. Un messaggio in lettere comuni lo scrive un umano, un nano o un elfo."
         fatti: [f_goblin_scrittura]
     scheda:
-      # Forza 10, Intelligenza 16, Saggezza 12, Destrezza 14, Costituzione 12, Carisma 9.
-      caratteristiche: {forza: 0, intelligenza: 2, saggezza: 0, destrezza: 1, costituzione: 0, carisma: 0}
+      # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
+      caratteristiche: {forza: 10, intelligenza: 16, saggezza: 12, destrezza: 14, costituzione: 12, carisma: 9}
       # Mago di primo livello (13, 14, 13, 16, 15) con il bonus degli elfi (+2 bacchette e incantesimi, +1 paralisi).
       # Porte segrete: 3 su 6 (elfo con Intelligenza 15 o più). Dardo incantato: colpisce sempre (+20).
       abilita: {mischia: 1, distanza: 1, dardo_incantato: 20, ts_morte: 4, ts_morte_destrezza: 4, ts_bacchette: 5, ts_paralisi: 5, ts_soffio: 1, ts_incantesimi: 4, cercare: 6}

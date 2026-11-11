@@ -5,9 +5,9 @@
 # - Risoluzione d20_cd: il manuale tira quasi tutto con il d20 contro un numero (attacchi contro la Classe
 #   d'Armatura, tiri salvezza contro la tabella della classe, prove di caratteristica contro il «Target» della
 #   regola facoltativa Ability Rolls, p. 189). Il «Target» al primo livello è 17: è la difficoltà normale.
-# - Modificatore «diretto»: il manuale non usa (punteggio − 10) / 2 ma una tabella (3: −3; 4–5: −2; 6–8: −1;
-#   9–12: 0; 13–15: +1; 16–17: +2; 18: +3, p. 4). Lo schema non ha un tipo «tabella», quindi nelle schede ogni
-#   caratteristica vale il suo bonus del manuale; il punteggio da 3 a 18 resta nel commento della scheda.
+# - Modificatore «tabella»: il manuale non usa (punteggio − 10) / 2 ma una tabella (3: −3; 4–5: −2; 6–8: −1;
+#   9–12: 0; 13–15: +1; 16–17: +2; 18: +3, p. 4). Le schede scrivono il punteggio da 3 a 18, il Motore ne ricava
+#   il bonus.
 # - Percentuali (abilità del ladro, p. 9) e possibilità «x su 1d6» (porte, trappole, porte segrete, p. 43–44):
 #   lo schema ha un solo tipo di risoluzione, quindi diventano bonus sul d20 contro 17. La conversione è
 #   esatta a passi del 5%: riuscire con il p% = d20 + (p/5 − 4) ≥ 17. Esempi: 25% = +1, 80% = +12, 10% = −2.
@@ -41,7 +41,7 @@ risoluzione:
   disastro: 1
   critici: attacchi
 
-# Le sei caratteristiche del manuale (p. 4). Nelle schede vale il bonus della tabella, da −3 a +3.
+# Le sei caratteristiche del manuale (p. 4). Nelle schede il punteggio da 3 a 18; il bonus da −3 a +3 lo dà la tabella.
 caratteristiche:
   - {id: forza, nome: "Forza"}
   - {id: intelligenza, nome: "Intelligenza"}
@@ -51,7 +51,16 @@ caratteristiche:
   - {id: carisma, nome: "Carisma"}
 
 modificatore:
-  tipo: diretto
+  tipo: tabella
+  # Punteggio → bonus (p. 4): ogni riga vale dal suo «da» in su.
+  tabella:
+    - {da: 3, mod: -3}
+    - {da: 4, mod: -2}
+    - {da: 6, mod: -1}
+    - {da: 9, mod: 0}
+    - {da: 13, mod: 1}
+    - {da: 16, mod: 2}
+    - {da: 18, mod: 3}
 
 abilita:
   # Bonus d'attacco della tabella (p. 53): Forza in mischia, Destrezza con le armi da lancio e da tiro.

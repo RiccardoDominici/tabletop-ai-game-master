@@ -8,7 +8,8 @@ ruolo: "pastora, madre di Tonio, custode della chiave del castellano; testimone 
 fronte: fronte_torre
 scheda:
   # Gente comune (Normal Man, p. 53): bonus d'attacco +0, 1d4 punti ferita. Non combatte.
-  caratteristiche: {forza: 0, intelligenza: 0, saggezza: 1, destrezza: 0, costituzione: 1, carisma: 0}
+  # Punteggi scelti per il bonus che il PNG deve avere: la tabella del set (regole/regole.yaml) lo ricava.
+  caratteristiche: {forza: 10, intelligenza: 10, saggezza: 13, destrezza: 10, costituzione: 13, carisma: 10}
   abilita: {mischia: 0}
   pf: 3
   difesa: 11

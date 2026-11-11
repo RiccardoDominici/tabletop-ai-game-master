@@ -71,7 +71,11 @@ caratteristiche:              # [V] almeno una; id snake_case senza accenti, uni
 abilita:                      # facoltative; caratteristica = id esistente [V]
   - {id: persuadere, nome: "Persuadere", caratteristica: potere}
 modificatore:
-  tipo: srd | diretto | soglia # [V] srd = (p−10)/2; diretto = il valore è il bonus; soglia = solo con sotto_soglia [V]
+  tipo: srd | diretto | soglia | tabella # [V] srd = (p−10)/2; diretto = il valore è il bonus; soglia = solo con sotto_soglia [V];
+                                         #   tabella = la scheda scrive il punteggio, il bonus viene dalla tabella del manuale
+  tabella:                    # solo con tabella [V]: righe dal punteggio più basso, ognuna vale dal suo «da» in su
+    - {da: 3, mod: -3}        #   (Basic Fantasy: 3 −3; 4–5 −2; 6–8 −1; 9–12 0; 13–15 +1; 16–17 +2; 18 +3). Sotto la
+    - {da: 13, mod: 1}        #   prima riga vale la prima; il validatore avvisa (rigoroso: errore) per un punteggio sotto
 difficolta:                   # [V] d20_cd: valore (la CD) obbligatorio; sotto_soglia: divisore (1 = normale);
   - {id: normale, nome: "Normale", modificatore: 0}          #     2d6_fasce: modificatore al tiro (0 se manca)
   - {id: rischiosa, nome: "Rischiosa", modificatore: -1}

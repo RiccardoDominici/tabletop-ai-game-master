@@ -77,7 +77,14 @@ export interface SistemaRegole {
   caratteristiche: Voce[];
   abilita: Array<Voce & { caratteristica: string | null }>;
   /** Come il valore di una caratteristica entra nel tiro. */
-  modificatore: 'srd' | 'diretto' | 'soglia';
+  /**
+   * Come una caratteristica diventa il numero del tiro: `srd` (punteggio − 10) / 2; `diretto` (la scheda
+   * scrive già il bonus); `soglia` (sotto_soglia: il valore è la soglia); `tabella` (la scheda scrive il
+   * punteggio, il bonus viene dalla tabella del manuale: Basic Fantasy 13–15 = +1, `tabellaModificatori`).
+   */
+  modificatore: 'srd' | 'diretto' | 'soglia' | 'tabella';
+  /** Con `tabella`: righe dal punteggio più basso, `da` incluso («da 13: +1»); null altrimenti. */
+  tabellaModificatori: Array<{ da: number; mod: number }> | null;
   difficolta: Difficolta[];
   difficoltaPredefinita: string;
   vantaggio: { tipo: 'due_dadi' | 'dado_bonus' | 'bonus' | 'nessuno'; valore: number };

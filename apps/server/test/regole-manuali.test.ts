@@ -16,7 +16,7 @@ import { StatoProve } from '../src/prove/stato';
 import { leggiSistema } from '../src/regole/caricatore';
 import { combattimentoSrd, leggiCombattimento } from '../src/regole/combattimento';
 import { tiraCol } from '../src/regole/risoluzione';
-import { caricaSchedeGeneriche } from '../src/regole/schede';
+import { bonusDaTabella, caratteristicaPredefinita, caricaSchedeGeneriche, valoreCaratteristica } from '../src/regole/schede';
 import type { SistemaRegole } from '../src/regole/tipi';
 
 const BX = path.join(import.meta.dirname, 'fixtures', 'campagne', 'bx');
@@ -98,5 +98,38 @@ describe('critici del d20: del set, l’SRD se il set tace', () => {
     const bf = setBx((d) => Object.assign((d['attacchi'] ??= {}) as object, { danno_critico: 'normale', danno_minimo: 1 }));
     expect(colpo(bf, [20, 3]).danno?.dadi).toHaveLength(1);
     expect(bf.attacchi).toMatchObject({ dannoCritico: 'normale', dannoMinimo: 1 });
+  });
+});
+
+describe('modificatore a tabella (Basic Fantasy: 13–15 = +1)', () => {
+  const BF = [
+    { da: 3, mod: -3 },
+    { da: 4, mod: -2 },
+    { da: 6, mod: -1 },
+    { da: 9, mod: 0 },
+    { da: 13, mod: 1 },
+    { da: 16, mod: 2 },
+    { da: 18, mod: 3 },
+  ];
+
+  it('la scheda scrive il punteggio, il Motore ne ricava il bonus dalla tabella del set', () => {
+    const s = setBx((d) => (d['modificatore'] = { tipo: 'tabella', tabella: BF }));
+    expect(s.modificatore).toBe('tabella');
+    expect(s.tabellaModificatori).toEqual(BF);
+    const scheda = (forza: number) => ({ id: 'x', nome: 'x', di_png: false, caratteristiche: { forza }, abilita: {}, pf_massimi: 1, difesa: 10, armatura: 0, attacchi: [], avvisi: [] }) as unknown as Parameters<typeof valoreCaratteristica>[1];
+    expect([3, 5, 8, 12, 13, 15, 16, 18, 2, 20].map((v) => valoreCaratteristica(s, scheda(v), 'forza'))).toEqual([-3, -2, -1, 0, 1, 1, 2, 3, -3, 3]);
+    expect(bonusDaTabella(BF, 14)).toBe(1);
+    // Una caratteristica che manca vale il punteggio che dà +0.
+    expect(caratteristicaPredefinita(s)).toBe(9);
+  });
+
+  it('righe sbagliate: errori del caricatore', () => {
+    for (const tabella of [[], [{ da: 3 }], [{ da: 9, mod: 0 }, { da: 4, mod: -2 }]]) {
+      const errori: string[] = [];
+      const d = grezzo();
+      d['modificatore'] = { tipo: 'tabella', tabella };
+      leggiSistema(d, errori, []);
+      expect(errori.join(' ')).toMatch(/modificatore\.tabella/);
+    }
   });
 });

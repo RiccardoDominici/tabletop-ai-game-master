@@ -68,7 +68,20 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     return [{ ...v, caratteristica: car }];
   });
   const modTipo = (ogg(d['modificatore'])?.['tipo'] ?? (tipo === 'sotto_soglia' ? 'soglia' : tipo === '2d6_fasce' ? 'diretto' : 'srd')) as SistemaRegole['modificatore'];
-  if (!['srd', 'diretto', 'soglia'].includes(modTipo)) errori.push('modificatore.tipo: srd, diretto o soglia');
+  if (!['srd', 'diretto', 'soglia', 'tabella'].includes(modTipo)) errori.push('modificatore.tipo: srd, diretto, soglia o tabella');
+  // Tabella del manuale: punteggio → bonus, righe dal più basso («da 13: +1»).
+  let tabellaModificatori: SistemaRegole['tabellaModificatori'] = null;
+  if (modTipo === 'tabella') {
+    const righe = ogg(d['modificatore'])?.['tabella'];
+    tabellaModificatori = (Array.isArray(righe) ? righe : []).flatMap((x) => {
+      const o = ogg(x);
+      const da = o ? num(o['da']) : null;
+      const mod = o ? num(o['mod']) : null;
+      return da !== null && mod !== null && Number.isInteger(da) && Number.isInteger(mod) ? [{ da, mod }] : [];
+    });
+    if (!tabellaModificatori.length || tabellaModificatori.length !== (Array.isArray(righe) ? righe.length : 0)) errori.push('modificatore.tabella: righe {da, mod} con numeri interi, almeno una');
+    if (tabellaModificatori.some((r, i) => i > 0 && r.da <= tabellaModificatori![i - 1]!.da)) errori.push('modificatore.tabella: «da» cresce riga dopo riga');
+  }
   if ((modTipo === 'soglia') !== (tipo === 'sotto_soglia')) errori.push('modificatore.tipo «soglia» va (solo) con risoluzione sotto_soglia');
 
   // Risoluzione: dadi, fasce, gradi.
@@ -164,6 +177,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     caratteristiche,
     abilita,
     modificatore: modTipo,
+    tabellaModificatori,
     difficolta,
     difficoltaPredefinita: predefinita,
     vantaggio: { tipo: tipoV, valore: num(v['valore']) ?? 1 },
