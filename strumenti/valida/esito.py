@@ -23,7 +23,7 @@ CLASSI = {
     "SCHEDA": "schede numeriche e prove (docs/prove.md §2): caratteristiche, CA, PF, attacchi, prove della scena, richiede.prova",
     "PROSA": "scrittura per l'ascolto (§5, §6: N1, N2, N5, N11, D3)",
     "REPERTORIO": "schema delle battute e riferimenti (docs/repertorio.md)",
-    "COPERTURA": "copertura minima del repertorio: indizi, menzogne, confessioni, segni, finali, voce",
+    "COPERTURA": "copertura minima del repertorio: indizi, menzogne, confessioni, segni, finali, chiusure della serata, voce",
     "SEGRETI": "parole segrete: nulla di nascosto nei campi pubblici o nel catalogo del selettore",
     "IMMAGINI": "prompt delle immagini (strumenti/immagini): [STILE], luoghi, tratti visibili",
     "MONDO": "cronologia e logistica (preparazione): eventi in ordine, date dei documenti, tempi e capienze",

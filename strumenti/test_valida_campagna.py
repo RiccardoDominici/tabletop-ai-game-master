@@ -1678,3 +1678,23 @@ def test_prova_aggirabile_per_un_altra_strada_di_oppure(camp):
     # Con la prova in ogni strada, niente avviso.
     modifica(camp, "repertorio/png_bruno.yaml", lambda d: d["battute"][0]["richiede"]["oppure"][1].update(prova="persuasione"))
     assert "REPERTORIO.prova_aggirabile" not in avvisi(camp)
+
+
+# Chiusura della serata (`tipo: chiusura`): una per scena, del narratore, senza effetti.
+
+def test_chiusura_mancante_avviso_ed_errore_rigoroso(camp):
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: d["battute"].remove(battuta(d, "nar_chiusura_volpe")))
+    assert dove_di(camp, "COPERTURA.chiusura") == {"scena_volpe"}
+    assert "COPERTURA.chiusura" not in errori(camp)
+    assert "COPERTURA.chiusura" in errori(camp, rigoroso=True)
+
+
+def test_chiusura_senza_scena_basta_se_la_scena_e_una(camp):
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_chiusura_volpe").pop("scena"))
+    assert "COPERTURA.chiusura" not in errori(camp, rigoroso=True)
+    assert "REPERTORIO.chiusura" not in errori(camp, rigoroso=True)
+
+
+def test_chiusura_di_un_png_o_con_effetti_e_un_errore(camp):
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_chiusura_volpe").update(effetti={"fatti_noti": ["f_impronte_cera"]}))
+    assert "REPERTORIO.chiusura" in errori(camp)

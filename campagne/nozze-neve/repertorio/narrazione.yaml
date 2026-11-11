@@ -851,3 +851,35 @@ battute:
     testo:
       - "[narratore] La scala della botola scende nel caldo della stalla, tra fieno e fiato di vacca."
     max_usi: 1
+
+  # --- chiusura della serata: una per scena, a «Chiudi la sessione» (tipo: chiusura) ----------------------
+  - id: nar_chiusura_casera
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata nella casera dei Bonfanti"
+    temi: [casera]
+    scena: scena_casera
+    testo:
+      - "[narratore] La musica si ferma a metà di una nota. Nella sala resta solo il crepitio del camino."
+      - "[narratore] Il sole scende verso il passo, e la benedizione aspetta ancora."
+    max_usi: 1
+  - id: nar_chiusura_casa
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata in casa Bonfanti"
+    temi: [stalla]
+    scena: scena_casa_bonfanti
+    testo:
+      - "[narratore] Dalla stalla salgono i campanacci, poi tutto torna quieto. Lo specchio riflette solo il velo della sposa."
+      - "[narratore] Il sole scende sul passo, e al Sasso delle Promesse il paese aspetta la benedizione."
+    max_usi: 1
+  - id: nar_chiusura_sasso
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata al Sasso delle Promesse"
+    temi: [sasso]
+    scena: scena_sasso
+    testo:
+      - "[narratore] Le due lanterne fumano nel freddo, e il Custode tiene il Libro aperto."
+      - "[narratore] Il sole tocca il passo: la benedizione, stasera, resta sospesa."
+    max_usi: 1

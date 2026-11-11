@@ -781,3 +781,45 @@ battute:
       - "[narratore] All'alba ci saranno le barche del Passo Vecchio, e i conti da fare con Vischi."
       - "[narratore] Che cosa pensate di fare, quando sarà giorno?"
     max_usi: 1
+
+  # --- chiusura della serata: una per scena (Chiudi la sessione) ------------------------------
+  - id: nar_chiusura_ponte
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata sul ponte, sotto la pioggia"
+    temi: [ponte, parapetto]
+    scena: scena_ponte_imbrunire
+    testo:
+      - "[narratore] Il fiume batte contro le arcate, e le sei lanterne tremano sul parapetto."
+      - "[narratore] Nel Borgo una lanterna dondola e l'altra resta ferma, e la barca è una sola."
+    max_usi: 1
+  - id: nar_chiusura_borgo
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata nel Borgo Basso, con l'acqua alla vita"
+    temi: [borgo, vicoli]
+    scena: scena_borgo_basso
+    testo:
+      - "[narratore] L'acqua sale piano tra i muri del Borgo, e la pertica gocciola sul fondo della barca."
+      - "[narratore] A monte brilla la finestra del Ricovero. Chi aspetta ancora la barca?"
+    max_usi: 1
+  - id: nar_chiusura_sale
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata alla Casa del Sale, durante il consiglio"
+    temi: [sale, consiglio]
+    scena: scena_casa_del_sale
+    testo:
+      - "[narratore] Il fuoco si abbassa nel camino, e il sale scricchiola ancora sotto gli stivali."
+      - "[narratore] Al tavolo lungo il console aspetta, e lo scrivano tiene la penna sospesa sul foglio."
+    max_usi: 1
+  - id: nar_chiusura_tocco
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata sul ponte, a mezzanotte"
+    temi: [manovella, catena]
+    scena: scena_terzo_tocco
+    testo:
+      - "[narratore] La pioggia batte sulla manovella, e l'acqua lecca la rampa bassa."
+      - "[narratore] Dal Borgo una lanterna chiama ancora: chi risponde?"
+    max_usi: 1

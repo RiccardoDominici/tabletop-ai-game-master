@@ -328,7 +328,7 @@ Read `riferimenti/repertorio.md` in full. First the list, then the text:
 Voice in the lines: the direction goes after the label, in square brackets and brief, for example the format in «the examples in lingue/<lingua>/preparatore/skill.md»; a whisper is closed in the same line: `<whisper>…</whisper>`. Syntax in `docs/f0-contratti.md`,
 «Voce espressiva» (expressive voice); the validator (class `VOCE`) checks that the tags are closed.
 
-Order: clock signs, clues, lies, confessions, moments, endings, voice examples, filler, transitions. When you write the
+Order: clock signs, clues, lies, confessions, moments, endings, closings of the evening, voice examples, filler, transitions. When you write the
 endings, add each scene's `esiti`.
 
 **Waiting lines and deviations (always)**: for every scene one waiting line of the narrator (`chi: narratore`,

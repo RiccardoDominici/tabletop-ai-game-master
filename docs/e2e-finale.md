@@ -244,8 +244,9 @@ TAGM_RIASSUNTO=locale TAGM_REGOLE=locale npx tsx apps/server/src/esperimenti/ese
 | summary | **fallback**: the local model timed out at 20 s, so the summary was «Siete passati da: …», with no threads. The same request to Qwen3 8B 4-bit took 101 s (2460 prompt tokens) and gave a good summary with three open threads |
 
 Both problems are fixed by «Guided closing: the Engine speaks when nobody writes a closing». With no closing line and no
-prose, the Engine says `regia.righe.chiusura_riserva`, and a summary from the local model gets 3 minutes. Still open: the
-Preparer should write `chiusura` lines (docs/da-fare.md).
+prose, the Engine says `regia.righe.chiusura_riserva`, and a summary from the local model gets 3 minutes. Then, the same day, the
+Preparer started writing `chiusura` lines: one per scene, checked by the validator (`COPERTURA.chiusura`, an error in
+strict mode), and the four campaigns have them. Without one that fits, the sceneggiatore writes the closing at the table.
 
 ## 9. Reproduce
 

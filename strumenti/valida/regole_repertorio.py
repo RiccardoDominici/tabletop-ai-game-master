@@ -94,6 +94,7 @@ def controlla(c: Campagna, e: Esito) -> None:
     _riferimenti(c, e)
     _copertura(c, e)
     _menzogne_e_confessioni(c, e)
+    _chiusure(c, e)
     _prosa(c, e)
 
 
@@ -294,13 +295,41 @@ def _copertura(c: Campagna, e: Esito) -> None:
         for cat in K.CATEGORIE_REAZIONE:
             if not [b for b in mie if str(b.get("id", "")).endswith(cat)]:
                 e.avviso("COPERTURA.reazione", pid, f"nessuna battuta *_{cat} (esempio o selezionabile)")
-    # Temi generici: allargano il catalogo e fanno uscire battute non pertinenti.
+    # Temi generici: allargano il catalogo e fanno uscire battute non pertinenti (le chiusure della serata non sono
+    # mai nel catalogo: le dice il Motore a «Chiudi la sessione»).
     for b in c.battute:
-        if not _selezionabile(b) or b.get("tipo") in ("segno_orologio", "finale"):
+        if not _selezionabile(b) or b.get("tipo") in ("segno_orologio", "finale", "chiusura"):
             continue
         generici = sorted(set(b.get("temi") or []) & c.prosa.temi_generici)
         if generici:
             e.avviso("COPERTURA.temi", f"{b['_file']} {b.get('id')}", f"temi troppo generici {generici}", rigoroso=True)
+
+
+def _chiusure(c: Campagna, e: Esito) -> None:
+    """Chiusura della serata (`tipo: chiusura`): una per scena, del narratore, senza effetti (skill, repertorio.md §6).
+
+    A «Chiudi la sessione» il Motore dice la chiusura della scena in corso che vale adesso; se non c'è, la scrive lo
+    sceneggiatore (se è acceso) o il Motore legge una frase fissa. Una chiusura senza `scena` vale in tutte le scene:
+    basta solo se la scena è una.
+    """
+    chiusure = [b for b in c.battute if b.get("tipo") == "chiusura" and _selezionabile(b)]
+    scene = [s.get("id") for _, s in c.scene if s.get("id")]
+    for b in chiusure:
+        dove = f"{b['_file']} {b.get('id')}"
+        if b.get("chi") != "narratore":
+            e.errore("REPERTORIO.chiusura", dove, "la chiusura della serata la dice il narratore")
+        eff = b.get("effetti") or {}
+        if any(eff.get(k) for k in ("rivela_indizi", "fatti_noti", "menzogna_detta", "avanza_orologio")):
+            e.errore("REPERTORIO.chiusura", dove, "una chiusura non rivela, non mente e non fa avanzare gli orologi: finisce la serata, non la storia")
+        if len(scene) > 1 and not _scene_battuta(b):
+            e.avviso("REPERTORIO.chiusura", dove, "chiusura senza `scena` in una campagna con più scene: legala alla scena di cui "
+                                                  "chiude il momento", rigoroso=True)
+    senza_scena = any(not _scene_battuta(b) for b in chiusure)
+    for sid in scene:
+        if any(sid in _scene_battuta(b) for b in chiusure) or (len(scene) == 1 and senza_scena):
+            continue
+        e.avviso("COPERTURA.chiusura", sid, "nessuna battuta `tipo: chiusura` per questa scena: a «Chiudi la sessione» la scrive "
+                                           "lo sceneggiatore, se è acceso, o il Motore legge una frase fissa", rigoroso=True)
 
 
 def _mappa_menzogne(c: Campagna, e: Esito) -> dict[tuple[str, str], dict]:

@@ -579,3 +579,15 @@ battute:
       - "[narratore] La notte è ancora lunga. Valsecca è a un giorno di cammino, giù a valle."
       - "[narratore] In paese nove malati aspettano l'alba. Cosa pensate di fare, adesso?"
     max_usi: 1
+
+  # --- chiusura della serata: il master preme «Chiudi la sessione» in questa scena ----------
+  - id: nar_chiusura_forno
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata nell'osteria del forno"
+    temi: [forno]
+    scena: scena_forno_vecchio
+    testo:
+      - "[narratore] Il paiolo smette di sobbollire. Dalla cappella, oltre la piazza, il canto della veglia arriva a ondate."
+      - "[narratore] Il forestiero tossisce ancora, e la notte della veglia è ancora lunga."
+    max_usi: 1

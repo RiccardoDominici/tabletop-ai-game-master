@@ -115,6 +115,19 @@ gate. For the gates on the action, the chosen alternative applies (`{privata: tr
   - No signals on voice examples, fillers, or lines that can come out at any moment.
 - **Endings**: one for each outcome of the `taglio` [V at least one], with `richiede.orologio` at a full clock if they arrive only at the
   climax. If the scene has `esiti`, each outcome cites its ending [V].
+- **Closing of the evening** (`tipo: chiusura`): one for each scene, with `scena: <id>` [V; an error in strict mode]. The Engine
+  says it when the Game Master presses «Chiudi la sessione» in that scene; the selector never sees it. It is `chi: narratore`, with
+  two to four `[narratore]` rows in the campaign's language:
+  - the moment where the table stops, then a closing image (a sound, a light, a gesture of the place);
+  - a hook for next time on something the players already know that is still open (a question, a clock that runs). Never a new
+    mystery, never a secret word;
+  - nothing that a PC does: the players have not said it.
+  The closing can come at ANY moment of the scene, so the hook says only what stays true there: what the players know on arriving,
+  a question still open, the clock. A hook that names something the scene can change (the NPC who still holds the key) has a gate:
+  `richiede.battute_non_usate` with the line that changes it, or `indizi_non_rivelati`. Keep one closing per scene without such
+  gates. No `effetti` [V]. The Engine takes the closing tied to the scene with the most conditions met. `quando` says the moment («il master chiude la serata in cantina»),
+  `temi` one or two words of the place. If no closing fits, the sceneggiatore writes one at the table, or the Engine reads a fixed
+  line: both are fallbacks, not the plan.
 - **Voice examples**: for every supporting or main NPC, at least three, with a greeting and a refusal [V]. They cover the categories kind
   question, accusation, threat, offer and help (warning if missing). Their text enters the selector's context, so **no secret words** [V].
 - **Fillers**: at least one [V]; usually the scene's soft move and a few NPC initiatives.
@@ -158,6 +171,7 @@ parole:
 - [ ] for each condition of `cede_se`: a confession with its gate
 - [ ] for each active clock: one tick per segment
 - [ ] for each outcome of the taglio: an ending; plus the closing with the choice left open (C13)
+- [ ] for each scene: a closing of the evening (`tipo: chiusura`, `scena: <id>`): a closing image and a hook for next time
 - [ ] for each NPC: greeting, kind question, accusation, threat, offer, help, refusal (examples or selectable)
 - [ ] for each extra named in a hook or in the common situation (the groom, the bride): at least one narrator line, because the players
   will look for them

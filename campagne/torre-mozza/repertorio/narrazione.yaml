@@ -575,3 +575,51 @@ battute:
       - "[narratore] Il bosco finisce, e il crinale è nudo e bianco di luna."
       - "[narratore] La torre vi guarda dall'alto, con le sue mura spezzate."
     max_usi: 1
+
+  # ------------------------------------------------------------------ chiusure della serata (una per scena)
+  - id: nar_chiusura_ovile
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata all'ovile dei Benni"
+    temi: [ovile, cortile]
+    scena: scena_ovile
+    testo:
+      - "[narratore] Le voci nel cortile si spengono una alla volta. Dal crinale scende il vento, con odore di fumo."
+      - "[narratore] Lassù la torre aspetta la chiave entro mezzanotte, e il ragazzo aspetta voi."
+    max_usi: 1
+
+  # Finché Berta non ha dato la chiave (ber_chiave), la chiusura lo dice: il Motore preferisce quella con più condizioni.
+  - id: nar_chiusura_ovile_chiave
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata all'ovile, con la chiave ancora a Berta"
+    temi: [ovile, chiave]
+    scena: scena_ovile
+    richiede:
+      battute_non_usate: [ber_chiave]
+    testo:
+      - "[narratore] Le voci nel cortile si spengono una alla volta. Dal crinale scende il vento, con odore di fumo."
+      - "[narratore] Berta stringe ancora la chiave di ferro, e la torre la aspetta entro mezzanotte."
+    max_usi: 1
+
+  - id: nar_chiusura_carbonaia
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata alla carbonaia di Ugo"
+    temi: [carbonaia, radura]
+    scena: scena_carbonaia
+    testo:
+      - "[narratore] La carbonaia sibila piano, e il fumo sale dritto tra i faggi. Il mulo sbuffa nel buio, poi tace."
+      - "[narratore] Sopra gli alberi la torre resta nera sul cielo, e mezzanotte si avvicina."
+    max_usi: 1
+
+  - id: nar_chiusura_torre
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata sotto la Torre Mozza"
+    temi: [torre, fuoco]
+    scena: scena_torre
+    testo:
+      - "[narratore] La torre tace. Il fuoco si abbassa, e il vento fischia nei buchi dei muri."
+      - "[narratore] È notte fonda, e quello che si decide su questi gradini si decide stanotte."
+    max_usi: 1

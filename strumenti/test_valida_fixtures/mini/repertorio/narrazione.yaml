@@ -105,3 +105,14 @@ battute:
     temi: [torno, risalgo, sala]
     testo: ["[narratore] Nella sala il camino scoppietta, e Bruno alza gli occhi dalla pipa."]
     max_usi: 1
+
+  - id: nar_chiusura_volpe
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata nella locanda"
+    temi: [sera, camino]
+    scena: scena_volpe
+    testo:
+      - "[narratore] Il fuoco del camino si abbassa, e la sala resta in penombra."
+      - "[narratore] La porta della cantina è ancora lì, in fondo al bancone: domani qualcuno dovrà scendere."
+    max_usi: 1
