@@ -58,6 +58,8 @@ export interface ContestoValidazione {
 export interface EsitoValidazione {
   accettate: Battuta[];
   scartate: Array<{ id: string; motivo: string }>;
+  /** Correzioni di forma fatte dal Motore (es. il tipo mancante dedotto da chi parla), per il log. */
+  corrette?: Array<{ id: string; nota: string }>;
 }
 
 /** Estrae il blocco YAML dal testo di Claude Code (anche dentro un recinto ```yaml). */
@@ -68,6 +70,7 @@ export function estraiYaml(testo: string): string {
 
 export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoValidazione {
   const scartate: EsitoValidazione['scartate'] = [];
+  const corrette: NonNullable<EsitoValidazione['corrette']> = [];
   let grezzo: unknown;
   try {
     grezzo = YAML.parse(estraiYaml(testo));
@@ -87,8 +90,15 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     if (!id.startsWith(ctx.prefisso) || ctx.esistenti.has(id) || visti.has(id)) id = `${ctx.prefisso}${k + 1}`;
     if (ctx.esistenti.has(id) || visti.has(id)) return void scartate.push({ id, motivo: 'id ripetuto' });
     visti.add(id);
-    const tipo = b['tipo'] as TipoBattuta;
-    if (!(ctx.chiusura ? TIPI_CHIUSURA : TIPI_SCENEGGIATORE).has(tipo)) return void scartate.push({ id, motivo: `tipo non ammesso per lo sceneggiatore: ${String(tipo)}` });
+    // Il tipo manca spesso (E2E, secondo giro, N5: 42 battute scartate per «undefined»): si deduce da chi parla e
+    // dalla richiesta, e il log lo dice. Un tipo dato ma non ammesso (un indizio, una confessione) resta un rifiuto.
+    const ammessi = ctx.chiusura ? TIPI_CHIUSURA : TIPI_SCENEGGIATORE;
+    const dato = typeof (b['tipo'] ?? b['type']) === 'string' ? String(b['tipo'] ?? b['type']).trim().toLowerCase() : '';
+    const tipo = (dato || (ctx.chiusura ? 'chiusura' : b['chi'] === 'narratore' ? 'momento' : 'reazione')) as TipoBattuta;
+    if (!dato) corrette.push({ id, nota: `tipo mancante: ${tipo}, dedotto da chi parla` });
+    delete b['type'];
+    b['tipo'] = tipo;
+    if (!ammessi.has(tipo)) return void scartate.push({ id, motivo: `tipo «${tipo}» non ammesso per lo sceneggiatore (ammessi: ${[...ammessi].join(', ')})` });
     if (ctx.chiusura && b['chi'] !== 'narratore') return void scartate.push({ id, motivo: 'la chiusura della serata la dice il narratore' });
     if (b['richiede'] !== undefined || b['effetti'] !== undefined) return void scartate.push({ id, motivo: 'richiede/effetti non ammessi: le rivelazioni restano quelle preparate' });
     delete b['varianti'];
@@ -116,7 +126,7 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     if (tic) return void scartate.push({ id: b.id, motivo: `tic di ${tic.r.etichetta} troppo vicino all'ultimo: «${tic.t}»` }), false;
     return true;
   });
-  return { accettate: battute, scartate };
+  return { accettate: battute, scartate, ...(corrette.length ? { corrette } : {}) };
 }
 
 /** I nomi con cui una riga può indicare un PG: nome intero, primo nome, alias della campagna. */

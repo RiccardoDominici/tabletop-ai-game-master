@@ -130,7 +130,8 @@ one stays on the finished one, with the warning in the panel); the last one play
   the local model: in the final E2E an 8B model in 4 bits took 101 s, and with 20 s the fallback was always read. It never uses private actions, `[privato]` lines or facts with
   `noto_ai_pg: false`. Then a deterministic guard: a word from `parole_segrete.yaml` that is still secret and was never
   said at the table makes the text be discarded, and the fallback is read (places crossed and the last signs of the
-  clocks, spoken aloud).
+  clocks, spoken aloud). Only finished sentences count: a trailing sentence without a full stop was cut (the model
+  stopped, the stream dropped) and is removed, and a recap under 20 characters goes to the fallback; so does a cut thread.
 - **«La volta scorsa…» (Last time…)** (`apps/server/src/scena/serata.ts`), read before the opening or the resume and
   shown by the projector until the first window closes: a package after one without `riassunto_iniziale` uses the last
   `riassunto.yaml` of the previous package (or has it written from its `trascrizione.yaml`); a closed evening resumes

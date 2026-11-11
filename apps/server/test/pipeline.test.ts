@@ -169,3 +169,29 @@ describe('PipelineVoce.accodaPrima', () => {
     expect(ordine).toEqual(['Il vento soffia.', 'Un tuono lontano.', 'Anna, cosa fai?', 'Dopo tutto.']);
   });
 });
+
+// E2E, secondo giro (L2): «audio pre-generato mancante» 30 volte a partita con la voce finta, dove non c'è mai.
+describe('audio pre-generato mancante: il livello del log', () => {
+  const spia = () => {
+    const righe: Array<[string, string]> = [];
+    const log = { debug: (_o: unknown, m: string) => righe.push(['debug', m]), info: (_o: unknown, m: string) => righe.push(['info', m]), warn: (_o: unknown, m: string) => righe.push(['warn', m]), error: (_o: unknown, m: string) => righe.push(['error', m]) };
+    return { righe, log: { ...log, child: () => log } as never };
+  };
+  it('voce finta: debug; voce vera: avviso', async () => {
+    const { chiaveAudio, CacheAudio } = await import('../src/voce/cache-audio');
+    const fs = await import('node:fs');
+    const os = await import('node:os');
+    const path = await import('node:path');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cache-audio-'));
+    for (const nome of ['mock', 'qwen'] as const) {
+      const { righe, log } = spia();
+      const m = new MotoreVoceMock({ scalaTempo: 0.01 });
+      const motore: MotoreVoce = { nome, salute: () => m.salute(), sintetizza: (r, s) => m.sintetizza(r, s) };
+      const p = new PipelineVoce({ motore: () => motore, uscita: registratore().uscita, log, cache: new CacheAudio(dir) });
+      p.accoda({ ...frase(1, 0, 'Riga senza cache.', 'nadine'), chiave_cache: chiaveAudio('nadine', 'Riga senza cache.') });
+      await p.chiudiTurno(1);
+      expect(righe.filter(([, msg]) => msg.includes('pre-generato mancante')).map(([lv]) => lv)).toEqual([nome === 'mock' ? 'debug' : 'warn']);
+    }
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});

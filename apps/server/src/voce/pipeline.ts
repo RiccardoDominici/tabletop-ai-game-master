@@ -332,7 +332,9 @@ export class PipelineVoce {
       const dove = this.cachePer(this.opzioni.motore(), frase);
       const pronto = dove?.cache.leggi(dove.chiave);
       if (pronto) return this.diciDaCache(frase, pronto.pcm, pronto.sampleRate);
-      this.opzioni.log.warn(
+      // Con la voce finta l'audio pre-generato non c'è mai (E2E, secondo giro, L2: 30 avvisi a partita): debug.
+      const livello = this.opzioni.motore().nome === 'mock' ? 'debug' : 'warn';
+      this.opzioni.log[livello](
         { id_frase: frase.id_frase, chiave: (dove?.chiave ?? frase.chiave_cache).slice(0, 16), testo: frase.testo },
         'voce: audio pre-generato mancante, sintesi dal vivo',
       );

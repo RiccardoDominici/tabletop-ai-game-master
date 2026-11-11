@@ -69,7 +69,7 @@ import { segretiNascosti, type EsitoGuardiaSegreti } from '../narrazione/guardia
 import { CanaleSceneggiatore } from '../sceneggiatore/canale';
 import type { RichiestaSceneggiatore, RispostaSceneggiatore } from '../sceneggiatore/protocollo';
 import { validaBattute } from '../sceneggiatore/valida';
-import { èRilascio, motivoFuoriContesto } from '../repertorio/rilascio';
+import { èRilascio, interlocutore, motivoFuoriContesto } from '../repertorio/rilascio';
 import { giaUsati, ticBloccati } from '../sceneggiatore/ripetizioni';
 
 /** Oltre questo tempo la battuta chiesta «subito» allo sceneggiatore non si dice più (resta nel repertorio). */
@@ -86,7 +86,7 @@ import type { Battuta, Repertorio } from '../repertorio/tipi';
 import { StatoRepertorio } from '../repertorio/stato';
 import { provaFallita } from '../repertorio/condizioni';
 import { righeMenzogneDette } from '../repertorio/menzogne';
-import { segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
+import { segretiNelTesto, senzaTesti, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
 import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
 import { voceDi } from '../turni/narrazione';
 import { PipelineVoce, type UscitaAudio } from '../voce/pipeline';
@@ -1378,7 +1378,7 @@ export class Regia {
       const ammessi = [...(rq.nomi_senza_pronuncia ?? []), ...v.accettate.flatMap((b) => b.testo.map((r) => r.testo))].join('\n');
       this.lessico.aggiungi(proposte, { ammessi, turno: rq.turno, fonte: 'sceneggiatore' });
     }
-    this.o.log.info({ richiesta: rq.id, tipo: rq.tipo, accettate: v.accettate.map((b) => b.id), scartate: v.scartate, ms }, 'sceneggiatore: battute nel repertorio');
+    this.o.log.info({ richiesta: rq.id, tipo: rq.tipo, accettate: v.accettate.map((b) => b.id), scartate: v.scartate, ...(v.corrette ? { corrette: v.corrette } : {}), ms }, 'sceneggiatore: battute nel repertorio');
     if (rq.tipo === 'chiusura') {
       const inTempo = this.rispostaChiusura(rq.id, v.accettate[0] ?? null);
       this.o.registroNarrazioni.scrivi({ ...riga, accettate: v.accettate.map((b) => ({ id: b.id, tipo: b.tipo, testo: b.testo })), scartate: v.scartate, consegnata: inTempo && v.accettate.length > 0 });
@@ -1543,8 +1543,11 @@ export class Regia {
       const fuori = motivoFuoriContesto(b, azione?.testo ?? '', this.nomiPng);
       if (fuori) {
         this.rilasciFuoriContesto += 1;
-        this.o.log.warn({ turno, battuta: id, per, motivo: fuori }, 'repertorio: rilascio fuori contesto, al suo posto la deviazione');
-        const sostituto = b.chi !== ID_NARRATORE ? this.deviazioneDi(b.chi) : [];
+        // La deviazione la dice chi è interpellato dall'azione (presente in scena); se l'azione non parla a nessuno,
+        // il narratore: la riga si toglie, e nessun PNG risponde a chi non gli ha parlato.
+        const chiDevia = interlocutore(b, azione?.testo ?? '', this.nomiPng, this.pngInScena());
+        this.o.log.warn({ turno, battuta: id, per, motivo: fuori, deviazione: chiDevia }, 'repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato');
+        const sostituto = this.deviazioneDi(chiDevia ?? ID_NARRATORE);
         return { ok: false, motivo: `fuori contesto: ${fuori}`, ...(sostituto.length ? { sostituto } : {}), ...(azione?.privata ? { privato: per } : {}) };
       }
     }
@@ -2540,7 +2543,10 @@ export class Regia {
     }
     // Rete di sicurezza: nel messaggio del selettore non deve esserci nessuna parola ancora segreta.
     if (this.statoRepertorio && this.o.paroleSegrete?.length) {
-      const trovate = segretiNelTesto(messaggio, this.o.paroleSegrete, this.statoPubblico());
+      // Le parole dei giocatori (azioni di adesso e di prima, nella trascrizione) non contano: le hanno scritte loro
+      // (E2E, secondo giro, L1: 12 ERROR a partita per questo). Resta un errore ciò che ci ha messo il Motore.
+      const deiGiocatori = [...r.azioni.map((a) => a.testo ?? ''), ...this.trascrizione.filter((v) => v.tipo === 'azione').map((v) => v.testo)];
+      const trovate = segretiNelTesto(senzaTesti(messaggio, deiGiocatori), this.o.paroleSegrete, this.statoPubblico());
       if (trovate.length) this.o.log.error({ turno: r.turno, parole: trovate.map((p) => p.parola) }, 'repertorio: parola segreta nel messaggio del selettore');
     }
     this.notifica();

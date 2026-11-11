@@ -4,7 +4,7 @@ Format (a list called «battute»; field names and values stay exactly as shown)
 battute:
   - id: <the given prefix, then a number>
     chi: narratore | <exact id of an NPC who is present>
-    tipo: reazione | momento | richiesta | rifiuto | saluto | chiusura (only when the task asks for it)
+    tipo: reazione | momento | richiesta | rifiuto | saluto | chiusura (only when the task asks for it)   # always: it is required
     quando: "<the players' action it answers, in the third person: «a PC asks Gaspard about the drawer»>"
     temi: [<3-6 words a player would type, lowercase>]
     testo:

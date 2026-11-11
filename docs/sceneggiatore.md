@@ -56,7 +56,10 @@ and for a new name of its own lines: the Engine checks them and adds them to `pr
 ## The check (`sceneggiatore/valida.ts`)
 The same rules as the prepared repertoire, plus those for whoever writes on the fly:
 - **form**: the repertoire loader reads the lines like any file (fields, types, labels, NPCs with a sheet). The Engine
-  enforces `scena` = the one in progress and `max_usi: 1`, and corrects an `id` without prefix or one that is repeated;
+  enforces `scena` = the one in progress and `max_usi: 1`, and corrects an `id` without prefix or one that is repeated.
+  A missing `tipo` is deduced from who speaks (an NPC `reazione`, the narrator `momento`; `chiusura` for a closing request)
+  and logged as a correction (`corrette`); a type that is given but not allowed (a clue, a confession) is refused, and
+  the log names the allowed ones;
 - **voices**: only the narrator or a present NPC speaks;
 - **gates and state**: no `richiede` or `effetti`. A line written on the fly does not reveal clues or change facts or
   clocks: the revelations remain the prepared ones, checked by the validator;

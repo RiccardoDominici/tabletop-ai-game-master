@@ -86,6 +86,11 @@ export function èPubblica(p: ParolaSegreta, s: StatoPubblico | null): boolean {
 }
 
 /** Parole ancora segrete che compaiono nel testo. */
+/** Il testo senza questi pezzi (le parole dei giocatori dentro un messaggio del Motore). */
+export function senzaTesti(testo: string, pezzi: readonly string[]): string {
+  return pezzi.filter((p) => p.trim().length > 0).reduce((t, p) => t.split(p).join(' '), testo);
+}
+
 export function segretiNelTesto(testo: string, parole: ParolaSegreta[], s: StatoPubblico | null = null): ParolaSegreta[] {
   const minuscolo = testo.toLowerCase();
   return parole.filter((p) => !èPubblica(p, s) && p.regex.test(minuscolo));

@@ -13,7 +13,7 @@ import type { EsitoPrivato } from '@tabletop-ai-gm/shared';
 import { misuraFughe } from '../src/esperimenti/fughe';
 import { segretiNascosti } from '../src/narrazione/guardia-segreti';
 import { RADICE_REPO } from '../src/percorsi';
-import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
+import { regexDaPython, segretiNelTesto, senzaTesti, type ParolaSegreta } from '../src/repertorio/segreti';
 import { agisci, attendi, inizia, Prova, turno } from './aiuti/partita';
 
 const vino: ParolaSegreta = { parola: 'il vino annacquato', sorgente: '\\bannacquat', regex: regexDaPython('\\bannacquat'), pubblica_dopo: ['nar_brocca'], fatti: [] };
@@ -88,5 +88,17 @@ describe('la guardia dei segreti agisce', () => {
 describe('«annuncia» non arriva più al tavolo', () => {
   it('i prompt del narratore e del selettore non usano la parola (il modello la ripeteva: «Remo annuncia la scommessa»)', () => {
     for (const f of ['narratore.md', 'selettore.md']) expect(fs.readFileSync(path.join(RADICE_REPO, 'prompts', 'it', f), 'utf8')).not.toMatch(/annunc/i);
+  });
+});
+
+// E2E, secondo giro (L1): ERROR «parola segreta nel messaggio del selettore» 12 volte a partita, per le parole dei giocatori.
+describe('la rete di sicurezza del messaggio del selettore', () => {
+  it('le parole scritte dai giocatori non contano; quelle messe dal Motore sì', () => {
+    const azione = 'Assaggio il vino: è annacquato?';
+    const messaggio = `## Azioni\n- Anna: ${azione}\n## Catalogo\n- oste_vino: l'oste versa da bere`;
+    expect(segretiNelTesto(messaggio, [vino]).map((p) => p.parola)).toEqual(['il vino annacquato']);
+    expect(segretiNelTesto(senzaTesti(messaggio, [azione, '']), [vino])).toEqual([]);
+    const fuga = `${messaggio}\n- oste_acqua: il vino annacquato dell'oste`;
+    expect(segretiNelTesto(senzaTesti(fuga, [azione]), [vino]).map((p) => p.parola)).toEqual(['il vino annacquato']);
   });
 });

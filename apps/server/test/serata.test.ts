@@ -12,7 +12,7 @@ import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
 import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
 import { climaxInCorso, consiglioDiChiusura, DurataSerata, MINUTI_PREAVVISO } from '../src/sessione/durata';
-import { analizzaRiassunto, ATTESA_MODELLO_LOCALE_MS, ATTESA_MODELLO_MS, attesaRiassunto, frasiLaVoltaScorsa, leggiRiassunti, materialePubblico, paroleScappate, riservaDa, scriviRiassunto } from '../src/sessione/riassunto';
+import { analizzaRiassunto, soloFrasiFinite, ATTESA_MODELLO_LOCALE_MS, ATTESA_MODELLO_MS, attesaRiassunto, frasiLaVoltaScorsa, leggiRiassunti, materialePubblico, paroleScappate, riservaDa, scriviRiassunto } from '../src/sessione/riassunto';
 import type { Narratore } from '../src/llm/tipi';
 import { testo } from '../src/lingua';
 import { attendi, emetti, inizia, Prova, turno } from './aiuti/partita';
@@ -176,5 +176,24 @@ describe('chiusura senza prosa del narratore', () => {
     expect(attesaRiassunto({ nome: 'locale' } as Narratore)).toBe(ATTESA_MODELLO_LOCALE_MS);
     expect(attesaRiassunto({ nome: 'haiku' } as Narratore)).toBe(ATTESA_MODELLO_MS);
     expect(ATTESA_MODELLO_LOCALE_MS).toBeGreaterThan(101_000);
+  });
+});
+
+// E2E, secondo giro (N7): il riassunto del modello locale troncato a 39 caratteri e accettato lo stesso.
+describe('riassunto troncato', () => {
+  const finto = (testoModello: string, stopReason: string | null = 'end_turn') =>
+    ({ nome: 'locale', modello: 'prova', narra: async () => ({ testo: testoModello, stopReason, costo: { usd: 0 } }) }) as unknown as Narratore;
+  const chiedi = (n: Narratore) =>
+    scriviRiassunto({ narratore: n, log: loggerMuto() }, { materiale: 'Livia: Berta, dov’è Tonio?', parole: [], pubblico: null, riserva: 'Siete passati da: l’ovile.', turno: 9, attesaMs: 1000 });
+
+  it('il caso vero: «Livia ha chiesto a Berta dove fosse Ton» va alla riserva', async () => {
+    expect(await chiedi(finto('Livia ha chiesto a Berta dove fosse Ton', null))).toMatchObject({ origine: 'riserva', testo: 'Siete passati da: l’ovile.', motivo: expect.stringMatching(/troncato/) });
+  });
+
+  it('una frase troncata in coda si toglie, le frasi finite restano; un filo troncato si toglie', async () => {
+    const e = await chiedi(finto('Livia ha chiesto a Berta dove fosse il ragazzo. Berta ha stretto la chiave e ha taciuto. Poi Ugo ha\nFILO: Dove si nasconde Tonio?\nFILO: Chi ha scritto la lava', 'max_tokens'));
+    expect(e).toMatchObject({ origine: 'modello', testo: 'Livia ha chiesto a Berta dove fosse il ragazzo. Berta ha stretto la chiave e ha taciuto.', fili: ['Dove si nasconde Tonio?'] });
+    expect(soloFrasiFinite('Troppo corto.')).toBeNull();
+    expect(soloFrasiFinite('Anna ha ascoltato il temporale sulla locanda.')).toBe('Anna ha ascoltato il temporale sulla locanda.');
   });
 });

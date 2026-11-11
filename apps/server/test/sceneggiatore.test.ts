@@ -50,13 +50,39 @@ describe('controllo delle battute dello sceneggiatore', () => {
     );
     expect(r.accettate.map((b) => b.id)).toEqual(['sc_x_5']);
     expect(r.scartate.map((s) => s.motivo)).toEqual([
-      expect.stringMatching(/tipo non ammesso/),
+      expect.stringMatching(/tipo «confessione» non ammesso/),
       expect.stringMatching(/richiede\/effetti non ammessi/),
       expect.stringMatching(/png_guardia non è nella scena/),
       expect.stringMatching(/parole segrete: il vino annacquato/),
     ]);
     expect(validaBattute('battute: [', ctx).scartate[0]!.motivo).toMatch(/YAML non valido/);
     expect(estraiYaml('Ecco:\n```yaml\nbattute: []\n```\nfine')).toBe('battute: []');
+  });
+
+  // E2E, secondo giro (N5): 42 battute scartate con «tipo non ammesso per lo sceneggiatore: undefined».
+  it('tipo mancante: dedotto da chi parla (PNG reazione, narratore momento), e il log lo dice; un tipo che rivela resta fuori', () => {
+    const senzaTipo = (o: Record<string, unknown>) => {
+      const b: Record<string, unknown> = battuta(o);
+      delete b['tipo'];
+      return b;
+    };
+    const r = validaBattute(
+      yaml([
+        senzaTipo({ id: 'sc_x_1' }),
+        senzaTipo({ id: 'sc_x_2', chi: 'narratore', testo: ['[narratore] La pioggia batte sulle imposte.'] }),
+        battuta({ id: 'sc_x_3', tipo: 'indizio' }),
+      ]),
+      ctx,
+    );
+    expect(r.accettate.map((b) => [b.id, b.tipo])).toEqual([['sc_x_1', 'reazione'], ['sc_x_2', 'momento']]);
+    expect(r.corrette).toEqual([
+      { id: 'sc_x_1', nota: 'tipo mancante: reazione, dedotto da chi parla' },
+      { id: 'sc_x_2', nota: 'tipo mancante: momento, dedotto da chi parla' },
+    ]);
+    expect(r.scartate).toEqual([{ id: 'sc_x_3', motivo: expect.stringMatching(/tipo «indizio» non ammesso per lo sceneggiatore \(ammessi: reazione, momento/) }]);
+    // Per la chiusura della serata, il tipo mancante è la chiusura.
+    const ch = validaBattute(yaml([senzaTipo({ id: 'sc_x_9', chi: 'narratore', testo: ['[narratore] La locanda si fa silenziosa.'] })]), { ...ctx, chiusura: true });
+    expect(ch.accettate.map((b) => b.tipo)).toEqual(['chiusura']);
   });
 });
 

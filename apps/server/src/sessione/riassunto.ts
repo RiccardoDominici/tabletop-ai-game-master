@@ -45,6 +45,21 @@ export const ATTESA_MODELLO_LOCALE_MS = 180_000;
 /** Quanto aspettare il riassunto da questo modello prima della riserva. */
 export const attesaRiassunto = (narratore: Narratore): number => (narratore.nome === 'locale' ? ATTESA_MODELLO_LOCALE_MS : ATTESA_MODELLO_MS);
 
+/** Sotto questi caratteri (dopo aver tolto la frase troncata in coda) il riassunto non dice abbastanza: riserva. */
+export const MIN_CARATTERI_RIASSUNTO = 20;
+
+/**
+ * Solo le frasi finite (E2E, secondo giro, N7: «Livia ha chiesto a Berta dove fosse Ton», 39 caratteri, accettato):
+ * una frase in coda senza punto è troncata (modello fermato a metà, flusso caduto) e si toglie. null = non resta
+ * abbastanza da leggere.
+ */
+export function soloFrasiFinite(testo: string): string | null {
+  const frasi = testo.split(/(?<=[.!?…])\s+/).map((f) => f.trim()).filter(Boolean);
+  if (frasi.length && !/[.!?…][»"”’)]*$/.test(frasi.at(-1)!)) frasi.pop();
+  const finite = frasi.join(' ');
+  return finite.length >= MIN_CARATTERI_RIASSUNTO ? finite : null;
+}
+
 /** Il prompt del riassunto nella lingua dei contenuti: prompts/<codice>/riassunto.md. */
 export const promptRiassunto = (): string => prompt('riassunto');
 
@@ -125,8 +140,12 @@ export async function scriviRiassunto(
       { turno: r.turno, sistema: [promptRiassunto()], messaggio, signal: controllo.signal },
       () => undefined,
     );
-    const { testo, fili } = analizzaRiassunto(esito.testo);
-    if (!testo) return riserva('testo vuoto');
+    const analizzato = analizzaRiassunto(esito.testo);
+    if (!analizzato.testo) return riserva('testo vuoto');
+    const testo = soloFrasiFinite(analizzato.testo);
+    if (!testo) return riserva(`testo troncato o troppo breve (${analizzato.testo.length} caratteri, fine: ${esito.stopReason ?? 'nessuna'})`);
+    // Un filo è una domanda intera: uno troncato si toglie.
+    const fili = analizzato.fili.filter((f) => /[.!?…][»"”’)]*$/.test(f));
     const scappate = paroleScappate([testo, ...fili].join(' '), r.materiale, r.parole, r.pubblico);
     if (scappate.length) return riserva(`parole segrete non dette al tavolo: ${scappate.join(', ')}`);
     o.log.info({ caratteri: testo.length, fili: fili.length, costo: esito.costo }, 'riassunto: scritto dal modello');

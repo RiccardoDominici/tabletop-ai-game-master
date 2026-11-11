@@ -13,6 +13,7 @@
  * [usa], e la misura dell'harness (esperimenti/fughe.ts, «rivelazioni fuori contesto»).
  */
 import { radici } from '../narrazione/privato';
+import { pngInterpellati } from '../prove/parole-testo';
 import { pngNominati, temaPresente } from './pertinenza';
 import type { Battuta, TipoBattuta } from './tipi';
 
@@ -24,6 +25,16 @@ export const MIN_RADICI_RILASCIO = 2;
 /** La battuta rilascia qualcosa (per tipo, o perché rivela indizi o fatti)? */
 export function èRilascio(b: Battuta): boolean {
   return TIPI_RILASCIO.has(b.tipo) || b.effetti.rivela_indizi.length > 0 || b.effetti.fatti_noti.length > 0;
+}
+
+/**
+ * Chi dice la deviazione al posto di un rilascio rifiutato (E2E, secondo giro, N4): il PNG a cui l'azione
+ * parla, fra i presenti; quello della battuta se è fra loro. null = l'azione non parla a nessuno («corro avanti
+ * sul sentiero di Ugo», «vedo i goblin e carico»): allora la deviazione è del narratore, cioè niente.
+ */
+export function interlocutore(b: Battuta, azione: string, nomiPng: Map<string, string[]>, presenti: ReadonlySet<string>): string | null {
+  const parlati = [...pngInterpellati(azione, nomiPng)].filter((id) => presenti.has(id));
+  return parlati.includes(b.chi) ? b.chi : (parlati[0] ?? null);
 }
 
 /** Perché quest'azione non è pertinente al rilascio di `b` (null = lo è). */
