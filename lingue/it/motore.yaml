@@ -189,3 +189,9 @@ guardia_esiti:
   sconfitta: [morto, morta, muore, muoiono, morendo, uccis, ammazz, esanim, cadaver, stramazz, accasci, crolla, crollo, cade, cadd, cadut, rantol, giace, sconfitt, abbattut, senza vita, a terra, non si rialza, fuori combattimento]
   mancato: [manca, mancat, a vuoto, schiv, parat, para il, para la, para lo, devia, sfior, sbagli, evit, rimbalz, non raggiung, passa sopra, passa accanto, di un soffio]
   negazioni: [non, senza, mai]
+  # Verbs that tell a hit landed (not weapon nouns: «tira il pugnale» announces an attack, it does not tell it).
+  colpito: [colpisc, colpit, va a segno, a segno, affond, ferisc, centr, trafigg, trafitt, squarci, incass, lo prende, la prende, raggiung, spacc, mord]
+  # Verbs of receiving: their subject is the target («Fulco incassa il colpo di Zirrà»).
+  subisce: [incass, ricev, subisc, viene colpit, è colpit, colpito da, colpita da]
+  # A near-hit the armour absorbs: it fits a miss and a hit with no damage, so it is never a contradiction.
+  assorbito: [di striscio, regge, senza ferir, senza danni, senza fargli, senza farle, si ferma sull, non passa, non buca]

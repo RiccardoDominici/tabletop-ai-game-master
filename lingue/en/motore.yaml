@@ -197,3 +197,9 @@ guardia_esiti:
   sconfitta: [die, dead, killed, slain, lifeless, corpse, collaps, crumpl, slump, falls dead, drops dead, goes down, falls to the ground, does not get up, out cold, unconscious, defeated, lies still]
   mancato: [miss, goes wide, dodg, parr, block, deflect, glanc, falls short, whiff, sidestep, comes up empty]
   negazioni: [not, no, never, without, doesn, didn, fails]
+  # Verbs that tell a hit landed (not weapon nouns: «throws the dagger» announces an attack, it does not tell it).
+  colpito: [hits, hit, strikes, struck, wounds, stabs, slashes, cuts, pierces, connects, lands, finds its mark, catches, bites, smashes, impales, takes a blow, takes the blow, takes a hit]
+  # Verbs of receiving: their subject is the target («Fulco takes Zirrà's blow»).
+  subisce: [takes, is hit, is struck, gets hit, hit by, struck by, suffers]
+  # A near-hit the armour absorbs: it fits a miss and a hit with no damage, so it is never a contradiction.
+  assorbito: [glancing, grazes, graze, armor holds, armour holds, glances off, bounces off, without wounding, harmlessly, no harm]

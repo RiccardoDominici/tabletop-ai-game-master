@@ -115,9 +115,14 @@ combattimento:
 8. **The narrator cannot contradict the cards** (narrazione/guardia-esiti.ts), the other side of the required facts. In
    the second pass of the final e2e the narrator had a standing goblin «cade sui gradini con un rantolo» and Grosso
    «colpisce Livia» on a card that said miss. Before the voice, a narrator sentence is replaced by the Engine's line when:
-   - it names the attacker and the target of one of the turn's attacks and tells the opposite of the card (hit words of
-     `fatti_dovuti.colpito` against the miss words of `guardia_esiti.mancato`; a negation right before a hit word counts
-     as a miss): «Grosso manca Livia.» / «Grosso colpisce Livia.»;
+   - it tells the OUTCOME of one of the turn's attacks and the opposite of the card: it has an outcome word (a verb of
+     hitting, `guardia_esiti.colpito`, or of missing, `mancato`; a negation right before a hit counts as a miss) and names
+     the card's attacker before it and the target after it (the other way round with a verb of receiving, `subisce`:
+     «Fulco incassa il colpo di Zirrà»): «Grosso manca Livia.» / «Grosso colpisce Livia.», with the names written on the
+     card, never the line's speaker. An announced action («tira il pugnale al goblin») has no outcome word and is left
+     alone, and so is a near-hit absorbed by armour (`assorbito`: «di striscio, ma la cotta regge»), which fits a miss and
+     a hit with no damage. Pass 2b of the final e2e: the first version took the attacker from the speaker («Narratore manca
+     Zirrà.»), ignored the direction, counted «pugnale» as a hit and replaced an announcement;
    - it has a defeat word (`guardia_esiti.sconfitta`: «muore», «cade», «crolla», «a terra»…) and names an NPC with a
      sheet who is not out of play, and no NPC in the sentence really is: «Zirrà incassa il colpo, ma resta in piedi.»
      (hit), «Eliandro manca Zirrà.» (miss) or «Zirrà è ancora in piedi.» (no card); two such NPCs: «Nessuno cade: lo

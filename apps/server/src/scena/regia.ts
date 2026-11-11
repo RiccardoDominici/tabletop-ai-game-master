@@ -2332,7 +2332,8 @@ export class Regia {
       nomi,
       conScheda: (id) => prove.stato.puntiFerita(id) !== null,
       fuori: (id) => prove.stato.fuoriGioco(id) !== null,
-      nome: (id) => voceDi(c, id).nome,
+      // PCs too: voceDi knows only NPCs and the narrator (pass 2b: «Narratore manca Zirrà.»).
+      nome: (id) => c.pg.find((p) => p.id === id)?.nome ?? voceDi(c, id).nome,
     });
   }
 

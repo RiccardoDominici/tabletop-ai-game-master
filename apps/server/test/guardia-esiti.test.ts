@@ -9,8 +9,6 @@ import { impostaLingua } from '../src/lingua';
 import { guardiaEsiti } from '../src/narrazione/guardia-esiti';
 import { fattiMancanti } from '../src/prove/fatti-dovuti';
 
-const attacco = (chi: string, bersaglio: string, riuscita: boolean): TiroMostrato => ({ id: 't', tipo: 'attacco', chi, nome: chi, bersaglio: { id: bersaglio, nome: bersaglio }, riuscita, privata: false }) as TiroMostrato;
-
 const NOMI = new Map<string, string[]>([
   ['pg_ida', ['Ida Ferraro', 'Ida']],
   ['pg_corrado', ['Corrado Lanzi', 'Corrado']],
@@ -18,6 +16,10 @@ const NOMI = new Map<string, string[]>([
   ['png_bertoldo', ['bertoldo', 'gabelliere']],
 ]);
 const NOME: Record<string, string> = { pg_ida: 'Ida Ferraro', pg_corrado: 'Corrado Lanzi', png_ruggero: 'Ruggero lo sgherro', png_bertoldo: 'Bertoldo' };
+
+/** A public attack card, with the display names the Engine writes on it. */
+const attacco = (chi: string, bersaglio: string, riuscita: boolean, danno = riuscita ? 5 : 0): TiroMostrato =>
+  ({ id: 't', tipo: 'attacco', chi, nome: NOME[chi] ?? chi, bersaglio: { id: bersaglio, nome: NOME[bersaglio] ?? bersaglio }, riuscita, danno: riuscita ? { totale: danno } : null, privata: false }) as TiroMostrato;
 
 function guardia(tiri: TiroMostrato[], fuori: string[] = []) {
   return guardiaEsiti({ tiri, nomi: NOMI, conScheda: (id) => id === 'png_ruggero' || id.startsWith('pg_'), fuori: (id) => fuori.includes(id), nome: (id) => NOME[id] ?? id });
@@ -53,6 +55,36 @@ describe('guardia degli esiti (italiano)', () => {
   });
 });
 
+/*
+ * Pass 2b of the final run (torre-mozza-indagine-B-pass2b), rebuilt on fixture names:
+ * - T13: «Zirrà colpisce Fulco di striscio, ma la cotta di maglia regge» for a miss became «Narratore manca Zirrà.»:
+ *   the attacker came from the speaker, and the reverse pair (Fulco's sling on Zirrà, also a miss) was taken;
+ * - T14: the announcement «Eliandro … tira il pugnale al primo goblin che scappa» was replaced: «pugnale» counted as
+ *   a hit and the sentence tells no outcome.
+ */
+describe('pass 2b: names from the card, direction, announcements, near-hits', () => {
+  const duelloMancato = [attacco('pg_corrado', 'png_ruggero', false), attacco('png_ruggero', 'pg_corrado', false)];
+
+  it('the attacker and the target come from the card, in the right direction, never «Narratore»', () => {
+    expect(guardia(duelloMancato)('Ruggero colpisce Corrado al fianco.')).toEqual({ testo: 'Ruggero manca Corrado.', motivo: 'colpo_contrario' });
+    expect(guardia(duelloMancato)('Il sasso di Corrado colpisce Ruggero alla spalla.')).toEqual({ testo: 'Corrado manca Ruggero.', motivo: 'colpo_contrario' });
+    // With a verb of receiving the target comes first.
+    expect(guardia(duelloMancato)('Corrado incassa il colpo di Ruggero.')).toEqual({ testo: 'Ruggero manca Corrado.', motivo: 'colpo_contrario' });
+  });
+
+  it('a near-hit absorbed by armour fits a miss, and a hit with no damage: not replaced', () => {
+    expect(guardia(duelloMancato)('Ruggero colpisce Corrado di striscio, ma la cotta di maglia regge e il nano barcolla appena.')).toBeNull();
+    expect(guardia([attacco('png_ruggero', 'pg_corrado', true, 0)])('Ruggero colpisce Corrado di striscio, ma l’armatura regge.')).toBeNull();
+  });
+
+  it('an action announced is not an outcome: only a sentence that tells the result is judged', () => {
+    const g = guardia([attacco('pg_corrado', 'png_ruggero', false)]);
+    expect(g('Corrado si tiene dietro la pietra e tira il pugnale al primo sgherro che scappa.')).toBeNull();
+    expect(g('Corrado carica Ruggero per colpirlo.')).toBeNull();
+    expect(g('Corrado tira il pugnale e colpisce Ruggero alla spalla.')).toEqual({ testo: 'Corrado manca Ruggero.', motivo: 'colpo_contrario' });
+  });
+});
+
 describe('guardia degli esiti (inglese)', () => {
   beforeAll(() => impostaLingua('en'));
   afterAll(() => impostaLingua('it'));
@@ -61,5 +93,13 @@ describe('guardia degli esiti (inglese)', () => {
     const g = guardia([attacco('png_ruggero', 'pg_ida', false)]);
     expect(g('Ruggero swings his club and strikes Ida on the shoulder.')).toEqual({ testo: 'Ruggero misses Ida.', motivo: 'colpo_contrario' });
     expect(guardia([attacco('pg_corrado', 'png_ruggero', true)])('Corrado’s bolt hits Ruggero, who collapses on the steps.')).toEqual({ testo: 'Ruggero takes the blow but stays on their feet.', motivo: 'caduta_senza_fatto' });
+  });
+
+  it('pass 2b in English: card names and direction, announcements and near-hits are left alone', () => {
+    const duello = [attacco('pg_corrado', 'png_ruggero', false), attacco('png_ruggero', 'pg_corrado', false)];
+    expect(guardia(duello)('Ruggero strikes Corrado in the side.')).toEqual({ testo: 'Ruggero misses Corrado.', motivo: 'colpo_contrario' });
+    expect(guardia(duello)('Corrado takes a blow from Ruggero.')).toEqual({ testo: 'Ruggero misses Corrado.', motivo: 'colpo_contrario' });
+    expect(guardia(duello)('Ruggero’s blade grazes Corrado, but the armour holds.')).toBeNull();
+    expect(guardia(duello)('Corrado ducks behind the stone and throws the dagger at the first guard who runs.')).toBeNull();
   });
 });
