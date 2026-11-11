@@ -327,6 +327,10 @@ Esempi di fatti nel messaggio (veri, dalla partita sulla 4720):
     pubblica del turno è rivolta a quel PNG e un'azione privata lo nomina (per nome o soprannome), oppure quando il turno
     ha solo le azioni private di un PG. Più PG che parlano in privato allo stesso PNG: va a chi ha più parole in comune
     con la riga. In ogni lingua (i nomi bastano). Test: test/privato-guardia.test.ts, test/lingue-regole-en.test.ts.
+  - Rimasta dopo (pressione-B2 T6): una domanda privata e un'azione pubblica allo stesso PNG nello stesso turno; la
+    risposta alla domanda privata si sentiva perché anche l'azione pubblica era rivolta a lui. Ora la riga va al
+    telefono se riprende più parole dell'azione privata che di ogni azione pubblica rivolta al PNG, oppure, a pari
+    merito, se segue una riga già spostata a quel PG.
 - **Combattimento vero**:
   - iniziativa e ordine dei turni;
   - attacchi dei PNG non provocati (una riga `[attacco]`, da concordare con il parser di «voce»);

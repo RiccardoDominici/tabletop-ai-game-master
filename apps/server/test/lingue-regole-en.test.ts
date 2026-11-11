@@ -136,6 +136,14 @@ describe('guardie in inglese', () => {
     expect(g('The path runs behind the charcoal pit. At night only the goblins take it.', 1, 'png_keeper')?.id_pg).toBe('pg_mara');
     expect(g('I give you nothing, soldier.', 2, 'png_guard')).toBeNull();
     expect(g('Tobin holds out his hand to Wren.', 3, 'narratore')).toBeNull();
+    // A private question and a public action to the same NPC: the reply goes where its words come from.
+    const stesso = [
+      { id_pg: 'pg_mara', testo: 'Hob, quietly: does anyone in the village talk to the goblins?', privata: true },
+      { id_pg: 'pg_tobin', testo: 'Hob, give me the key: I will bring the boy back.', privata: false },
+    ];
+    const g2 = guardiaPrivate(stesso, (id) => (id === 'pg_mara' ? ['Mara Quill', 'Mara'] : ['Tobin Ash', 'Tobin']), new Set(['mara quill', 'tobin ash', 'hob the keeper']), nomiPng)!;
+    expect(g2('Here we talk to everyone. Not to the goblins.', 4, 'png_keeper')?.id_pg).toBe('pg_mara');
+    expect(g2('The key stays with me until you bring the boy back.', 5, 'png_keeper')).toBeNull();
   });
 
   it('nomi brevi: titoli inglesi saltati', () => {

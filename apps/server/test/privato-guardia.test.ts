@@ -63,9 +63,11 @@ describe('risposte dei PNG alle azioni private', () => {
     expect(rispostaPrivataPng(RISPOSTA, 'png_bertoldo', perAlias, NOMI_PNG)).toBe('pg_teo');
   });
 
-  it('un’azione pubblica rivolta allo stesso PNG tiene la riga al tavolo', () => {
+  it('con un’azione pubblica rivolta allo stesso PNG decide ciò che la riga riprende', () => {
     const anchePubblica = [...CASO, { id_pg: 'pg_corrado', testo: 'Bertoldo, apri il cancello!', privata: false }];
-    expect(rispostaPrivataPng(RISPOSTA, 'png_bertoldo', anchePubblica, NOMI_PNG)).toBeNull();
+    // La strada di notte è la domanda privata di Teo; il cancello è l'azione pubblica di Corrado.
+    expect(rispostaPrivataPng(RISPOSTA, 'png_bertoldo', anchePubblica, NOMI_PNG)).toBe('pg_teo');
+    expect(rispostaPrivataPng('Il cancello resta chiuso, signori.', 'png_bertoldo', anchePubblica, NOMI_PNG)).toBeNull();
     // Un’azione pubblica rinviata (combattimento a turni) non riceve risposta: non conta.
     const rinviata = [...CASO, { id_pg: 'pg_corrado', testo: 'Bertoldo, apri il cancello!', sospesa: true }];
     expect(rispostaPrivataPng(RISPOSTA, 'png_bertoldo', rinviata, NOMI_PNG)).toBe('pg_teo');
@@ -98,6 +100,34 @@ describe('risposte dei PNG alle azioni private', () => {
     expect(g('Non ti do niente, ragazza.', 4, 'png_ruggero')).toBeNull();
     // Senza i nomi dei PNG (chiamata vecchia) la risposta resta al tavolo come prima.
     expect(guardiaPrivate(CASO, () => ['Teo'], NOMI)!(RISPOSTA, 1, 'png_bertoldo')).toBeNull();
+  });
+});
+
+/*
+ * La fuga rimasta dopo 16fe790 (e2e finale, pressione-B2 T6): una domanda privata e un'azione pubblica
+ * allo stesso PNG nello stesso turno. La riga del narratore sulla domanda andava al telefono, la risposta
+ * del PNG si sentiva al tavolo perché anche l'azione pubblica era rivolta a lui. Stesso caso, nomi della fixture.
+ */
+describe('una domanda privata e un’azione pubblica allo stesso PNG', () => {
+  const STESSO = [
+    { id_pg: 'pg_teo', testo: 'Bertoldo, qualcuno al ponte parla con lo sgherro?', privata: true },
+    { id_pg: 'pg_ida', testo: 'Bertoldo, dammi la chiave: ti riporto il ragazzo prima di mezzanotte, parola di soldato.', privata: false },
+  ];
+  const nomiDi = (id: string) => (id === 'pg_teo' ? ['Teo'] : ['Ida Ferraro', 'Ida']);
+
+  it('la risposta dopo la riga spostata va al telefono di chi ha chiesto in privato', () => {
+    const g = guardiaPrivate(STESSO, nomiDi, NOMI, NOMI_PNG)!;
+    expect(g('Teo chiede a Bertoldo se qualcuno al ponte parla con lo sgherro.', 0, 'narratore')?.id_pg).toBe('pg_teo');
+    expect(g('Qui si parla con tutti. Con lo sgherro no.', 1, 'png_bertoldo')?.id_pg).toBe('pg_teo');
+    expect(g('Ida tende la mano verso il laccio al collo di Bertoldo.', 2, 'narratore')).toBeNull();
+    expect(g('Tu prometti in fretta, soldata.', 3, 'png_bertoldo')).toBeNull();
+  });
+
+  it('senza la riga prima: decide quale azione la riga riprende di più', () => {
+    expect(rispostaPrivataPng('Qui si parla con tutti, ma con lo sgherro no.', 'png_bertoldo', STESSO, NOMI_PNG, NOMI)).toBe('pg_teo');
+    expect(rispostaPrivataPng('È fredda, la chiave. Riportami il ragazzo.', 'png_bertoldo', STESSO, NOMI_PNG, NOMI)).toBeNull();
+    // Niente in comune con nessuna delle due: resta al tavolo (nel dubbio la sente chi ha parlato in pubblico).
+    expect(rispostaPrivataPng('Hm.', 'png_bertoldo', STESSO, NOMI_PNG, NOMI)).toBeNull();
   });
 });
 

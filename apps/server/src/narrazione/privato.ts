@@ -88,10 +88,14 @@ export interface AzioneTurnoGuardia {
 
 /**
  * Il PG al cui telefono va una riga `[png_x]` perché risponde alla sua azione privata, o null se la
- * riga resta al tavolo. Nessuna azione pubblica del turno deve essere rivolta a quel PNG (una riga del
- * PNG può allora rispondere a quella). Poi: l'unico PG che in privato nomina il PNG; più PG che lo
- * nominano in privato → quello con più radici in comune con la riga (a pari merito il primo); nessuno
- * lo nomina → il PG che ha nel turno solo azioni private, se non ci sono azioni pubbliche.
+ * riga resta al tavolo. Senza azioni pubbliche rivolte a quel PNG: l'unico PG che in privato nomina il
+ * PNG; più PG che lo nominano in privato → quello con più radici in comune con la riga (a pari merito il
+ * primo); nessuno lo nomina → il PG che ha nel turno solo azioni private, se non ci sono azioni pubbliche.
+ * Con un'azione pubblica E una privata rivolte allo stesso PNG (e2e finale, pressione-B2 T6: Berta
+ * rispondeva a voce alla domanda privata di Eliandro mentre Livia le parlava in pubblico), la riga va al
+ * telefono se ha più radici in comune con la sua azione privata che con ogni azione pubblica rivolta al
+ * PNG (almeno una), oppure se segue una riga già spostata a quel PG (`dopoSpostata`) e non riprende
+ * l'azione pubblica più di quella privata.
  */
 export function rispostaPrivataPng(
   riga: string,
@@ -99,23 +103,30 @@ export function rispostaPrivataPng(
   azioni: readonly AzioneTurnoGuardia[],
   nomiPng: Map<string, string[]>,
   nomiPersonaggi: ReadonlySet<string> = new Set(),
+  dopoSpostata: string | null = null,
 ): string | null {
   if (!nomiPng.has(etichetta)) return null;
   const solo = new Map([[etichetta, nomiPng.get(etichetta)!]]);
   const verso = (a: AzioneTurnoGuardia): boolean => !!a.testo && pngNominati(a.testo, solo).has(etichetta);
   const vive = azioni.filter((a) => a.testo && !a.sospesa);
   const pubbliche = vive.filter((a) => !a.privata);
-  if (pubbliche.some(verso)) return null;
   const private_ = vive.filter((a) => a.privata === true);
   const autoriVerso = [...new Set(private_.filter(verso).map((a) => a.id_pg))];
-  if (autoriVerso.length === 1) return autoriVerso[0]!;
-  if (autoriVerso.length > 1) {
-    const nomiParole = new Set([...nomiPersonaggi].flatMap((n) => normalizza(n).split(/\s+/)));
-    const daRiga = radici(riga, nomiParole);
-    const punti = (id: string): number =>
-      Math.max(...private_.filter((a) => a.id_pg === id && verso(a)).map((a) => [...radici(a.testo!, nomiParole)].filter((r) => daRiga.has(r)).length));
-    return autoriVerso.reduce((migliore, id) => (punti(id) > punti(migliore) ? id : migliore));
+  const nomiParole = new Set([...nomiPersonaggi].flatMap((n) => normalizza(n).split(/\s+/)));
+  const daRiga = radici(riga, nomiParole);
+  const comuni = (a: AzioneTurnoGuardia): number => [...radici(a.testo!, nomiParole)].filter((r) => daRiga.has(r)).length;
+  const punti = (id: string): number => Math.max(...private_.filter((a) => a.id_pg === id && verso(a)).map(comuni));
+  const pubblicheVerso = pubbliche.filter(verso);
+  if (pubblicheVerso.length) {
+    if (!autoriVerso.length) return null;
+    const pubblico = Math.max(...pubblicheVerso.map(comuni));
+    // Dopo una riga già spostata a quel PG, a meno che non riprenda di più l'azione pubblica.
+    if (dopoSpostata && autoriVerso.includes(dopoSpostata) && punti(dopoSpostata) >= pubblico) return dopoSpostata;
+    const migliore = autoriVerso.reduce((m, id) => (punti(id) > punti(m) ? id : m));
+    return punti(migliore) >= 1 && punti(migliore) > pubblico ? migliore : null;
   }
+  if (autoriVerso.length === 1) return autoriVerso[0]!;
+  if (autoriVerso.length > 1) return autoriVerso.reduce((m, id) => (punti(id) > punti(m) ? id : m));
   const autori = new Set(private_.map((a) => a.id_pg));
   return pubbliche.length === 0 && autori.size === 1 ? [...autori][0]! : null;
 }
@@ -144,7 +155,7 @@ export function guardiaPrivate(
     const gia = spostati.get(segmento);
     if (gia) return { id_pg: gia, comuni: [] };
     // Prima la risposta di un PNG all'azione privata; poi, per ogni riga, il racconto dell'azione.
-    const id = conRispostePng && etichetta && nomiPng!.has(etichetta) ? rispostaPrivataPng(testo, etichetta, azioni, nomiPng!, nomiPersonaggi) : null;
+    const id = conRispostePng && etichetta && nomiPng!.has(etichetta) ? rispostaPrivataPng(testo, etichetta, azioni, nomiPng!, nomiPersonaggi, spostati.get(segmento - 1) ?? null) : null;
     const d = id ? { id_pg: id, comuni: [] } : private_.length ? destinatarioPrivato(testo, private_, nomiPersonaggi) : null;
     if (d) spostati.set(segmento, d.id_pg);
     return d;
