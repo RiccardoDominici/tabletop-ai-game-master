@@ -270,6 +270,7 @@ lessico:
       grafia: Dzirrà             # what the voice reads instead of the name; plain text, no [ ] < > { } [V]
       suono: dzirra              # optional: the intended sound as a listener would write it (the ear test scores against it)
       candidate: [Dzirrà, Dzìrra]  # optional: respellings for the ear test to choose from
+      motori: {qwen: Dzirrà}     # optional: a form for one voice engine (fish, qwen); the ear test writes it
       forme: {Zirrani: Dzirràni} # optional: inflected forms with their own respelling
       nota: "voiced z, stress on the last syllable"
 non_nomi: [Signora]              # capitalised words that are not names
@@ -277,7 +278,8 @@ non_nomi: [Signora]              # capitalised words that are not names
 Every proper noun of the texts has an entry [V rigoroso: `PRONUNCIA.nome_senza_voce`]: the words of NPC and PC names, and
 every capitalised word in mid-sentence that never appears in lowercase. Respellings: in Italian the accent on the
 stressed vowel when it is not obvious (Nèspola, Eliàndro), «dz» for a voiced z; in English syllables split by hyphens and
-the stressed one in capitals (ee-VAWN, KOOM-tyth). The ear test writes `grafia`, `suono` and `verificata`; entries without
+the stressed one in capitals (ee-VAWN, KOOM-tyth): the server lowercases them for Qwen, which spells capitals out
+(«Ee-vawn»). The ear test writes `grafia`, `suono`, `motori` and `verificata`; entries without
 `verificata` are a warning (`PRONUNCIA.non_verificata`). Names met during play land in `pronunce-gioco.yaml` (same shape,
 with `origine`): review them between sessions.
 

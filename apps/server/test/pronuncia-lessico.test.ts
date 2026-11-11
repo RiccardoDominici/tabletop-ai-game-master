@@ -11,7 +11,8 @@ import { caricaCampagna } from '../src/campagna/caricatore';
 import { loggerMuto } from '../src/logger';
 import { testoPerVoce } from '../src/voce/cache-audio';
 import { candidatiNomi, estraiPronunce, LessicoVivo } from '../src/voce/lessico-vivo';
-import { creaPronunciatore, FILE_LESSICO, FILE_LESSICO_GIOCO, pronunciatoreDa, vociDellaCampagna } from '../src/voce/pronuncia';
+import { creaPronunciatore, FILE_LESSICO, FILE_LESSICO_GIOCO, pronunciatoreDa, stileQwen, vociDellaCampagna } from '../src/voce/pronuncia';
+import type { NomeMotoreVoce } from '../src/voce/tipi';
 
 const FIXTURE = path.join(import.meta.dirname, 'fixtures', 'campagne');
 const cartelle: string[] = [];
@@ -82,6 +83,42 @@ describe('pronunciation lexicon', () => {
 
   it('an empty lexicon is the identity', () => {
     expect(pronunciatoreDa([], 'it')('Zirrà')).toBe('Zirrà');
+  });
+});
+
+describe('respelling per voice engine', () => {
+  // As measured by the ear test (docs/pronuncia.md): Qwen spells «VAWN» out like an acronym, «KAD» it reads.
+  const LESSICO_EN = [
+    { nome: 'Aoibheann', tipo: 'pg', en: { grafia: 'ee-VAWN' } },
+    { nome: 'Cadwgan', tipo: 'pg', en: { grafia: 'KAD-oo-gan', motori: { qwen: 'KAD-oo-gan' } } },
+    { nome: 'Niamh', tipo: 'png', en: { grafia: 'NEEV', motori: { fish: 'NEE-uv' } } },
+  ];
+
+  it('Qwen default style: capitalised syllables of a hyphenated respelling become lowercase', () => {
+    expect(stileQwen('ee-VAWN')).toBe('Ee-vawn');
+    expect(stileQwen('KAD-oo-gan')).toBe('Kad-oo-gan');
+    expect(stileQwen('NEEV')).toBe('NEEV');
+    expect(stileQwen('Tòrre Mòzza')).toBe('Tòrre Mòzza');
+  });
+
+  it('each engine gets its own form: explicit `motori` first, then the Qwen style, else `grafia`', () => {
+    const c = caricaCampagna(conLessico('en-mini', LESSICO_EN));
+    const frase = 'Aoibheann and Cadwgan meet Niamh.';
+    expect(creaPronunciatore(c, 'fish')(frase)).toBe('ee-VAWN and KAD-oo-gan meet NEE-uv.');
+    expect(creaPronunciatore(c, 'qwen')(frase)).toBe('Ee-vawn and KAD-oo-gan meet NEEV.');
+    expect(creaPronunciatore(c, 'mock')(frase)).toBe('ee-VAWN and KAD-oo-gan meet NEEV.');
+    expect(creaPronunciatore(c)(frase)).toBe('ee-VAWN and KAD-oo-gan meet NEEV.');
+  });
+
+  it('the live lexicon follows the engine in use, and the screen text never changes', () => {
+    let motore: NomeMotoreVoce = 'fish';
+    const lessico = new LessicoVivo({ campagna: caricaCampagna(conLessico('en-mini', LESSICO_EN)), log: loggerMuto(), motore: () => motore });
+    expect(lessico.pronuncia('Aoibheann waits.')).toBe('ee-VAWN waits.');
+    motore = 'qwen'; // e.g. the selector fell back from drama-3 to the local voice
+    expect(lessico.pronuncia('Aoibheann waits.')).toBe('Ee-vawn waits.');
+    expect(lessico.per('fish')('Aoibheann waits.')).toBe('ee-VAWN waits.'); // audio prepared for drama-3
+    const { mostrato, voce } = testoPerVoce('narratore', 'Aoibheann waits.', lessico.pronuncia);
+    expect([mostrato, voce]).toEqual(['Aoibheann waits.', 'Ee-vawn waits.']);
   });
 });
 

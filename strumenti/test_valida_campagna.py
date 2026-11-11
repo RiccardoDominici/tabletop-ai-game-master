@@ -1734,9 +1734,10 @@ def test_pronuncia_schema(camp):
         d["lessico"].append({"nome": "Bruno", "it": {"grafia": "Bruno"}})               # repeated
         d["lessico"].append({"nome": "Valdorsa", "en": {"grafia": "Val-DOR-sa"}})        # Italian spelling missing
         d["lessico"].append({"nome": "Pieve", "it": {"grafia": "[whisper] PièVe"}})     # voice markup
+        d["lessico"].append({"nome": "Valsecca", "it": {"grafia": "Valsécca", "motori": {"piper": "x"}}})  # unknown engine
     modifica(camp, "pronunce.yaml", rompi)
     esito, _ = valida(camp, contesto_b=False)
-    assert sum(v.codice == "PRONUNCIA.schema" for v in esito.errori) == 3
+    assert sum(v.codice == "PRONUNCIA.schema" for v in esito.errori) == 4
 
 
 def test_pronuncia_parola_comune_e_non_verificata(camp):

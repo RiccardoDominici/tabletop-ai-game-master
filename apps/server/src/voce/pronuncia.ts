@@ -19,17 +19,24 @@
  *         grafia: Dzirrà
  *         nota: "z sonora, accento sull'ultima"
  *         forme: {Zirrani: Dzirràni, zirrana: dzirràna}   # inflected forms, each with its own spelling
- *       en: {grafia: Dzeer-RAH}
+ *       en:
+ *         grafia: Dzeer-RAH
+ *         motori: {qwen: Dzeer-rah}  # a form for one voice engine, when the ear test found it better there
  *
  * Application: whole words (also multi-word: «Torre Mozza»), the `forme`, the form without accents, the
  * English possessive («'s»), and the lowercase forms players type («eliandro») unless `solo_maiuscolo`. Longer
  * entries win; a spelling already applied is not rewritten.
+ *
+ * Per voice engine: the respelling can depend on the engine in use. An entry's `motori` form for that engine wins;
+ * without one, Qwen gets `stileQwen(grafia)`, because it reads a capitalised syllable as an acronym («ee-VAWN» heard
+ * as «E-Valve UN»), and drama-3 and the fake voice get `grafia` as it is.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import { LINGUA_PREDEFINITA, type Lingua } from '../lingua';
+import type { NomeMotoreVoce } from './tipi';
 
 export type Pronunciatore = (testo: string) => string;
 
@@ -47,6 +54,30 @@ export interface GrafiaLingua {
   nota?: string;
   /** Inflected forms with their own pronunciation (written form → spelling): «Zirrani» → «Dzirràni». */
   forme?: Record<string, string>;
+  /** A respelling for one voice engine, when it differs from `grafia` (chosen by the ear test). */
+  motori?: MotoriGrafia;
+}
+
+/** The engines that can have their own respelling (the fake voice reads nothing). */
+export const MOTORI_GRAFIA = ['fish', 'qwen'] as const;
+export type MotoriGrafia = Partial<Record<(typeof MOTORI_GRAFIA)[number], string>>;
+
+/**
+ * The default respelling for Qwen: in a hyphenated respelling, syllables in capitals become lowercase (and the
+ * first letter a capital), because Qwen spells a capitalised syllable out like an acronym. «ee-VAWN» → «Ee-vawn»,
+ * «KAD-oo-gan» → «Kad-oo-gan»; words without a hyphen («NEEV», «Dzirrà») stay as they are.
+ */
+export function stileQwen(grafia: string): string {
+  return grafia
+    .split(/(\s+)/)
+    .map((t) => (t.includes('-') && /\p{Lu}{2}/u.test(t) ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : t))
+    .join('');
+}
+
+/** The respelling an entry has for an engine (none = the engine is unknown: `grafia`). */
+export function grafiaPer(v: { grafia: string; motori?: MotoriGrafia | undefined }, motore?: NomeMotoreVoce | null): string {
+  if (motore !== 'fish' && motore !== 'qwen') return v.grafia;
+  return v.motori?.[motore] ?? (motore === 'qwen' ? stileQwen(v.grafia) : v.grafia);
 }
 
 /** The prepared lexicon, in the campaign folder. */
@@ -80,10 +111,13 @@ export function grafiaDi(v: VoceLessico, lingua: Lingua): GrafiaLingua | null {
     const g = stringa(r['grafia']);
     if (!g) return null;
     const nota = stringa(r['nota']);
+    const motori = r['motori'] && typeof r['motori'] === 'object' && !Array.isArray(r['motori'])
+      ? (Object.fromEntries(MOTORI_GRAFIA.flatMap((m) => (stringa((r['motori'] as Record<string, unknown>)[m]) ? [[m, stringa((r['motori'] as Record<string, unknown>)[m])!]] : []))) as MotoriGrafia)
+      : {};
     const forme = r['forme'] && typeof r['forme'] === 'object' && !Array.isArray(r['forme'])
       ? Object.fromEntries(Object.entries(r['forme'] as Record<string, unknown>).filter((e): e is [string, string] => !!e[0].trim() && !!stringa(e[1])).map(([k, v]) => [k.trim(), v.trim()]))
       : {};
-    return { grafia: g, ...(nota ? { nota } : {}), ...(Object.keys(forme).length ? { forme } : {}) };
+    return { grafia: g, ...(nota ? { nota } : {}), ...(Object.keys(forme).length ? { forme } : {}), ...(Object.keys(motori).length ? { motori } : {}) };
   }
   return null;
 }
@@ -119,14 +153,15 @@ interface Regola {
  * The pronouncer of a lexicon: entries (name, forms) → spelling, whole words, longest first. Proper names
  * are also recognised when written in lowercase (players write that way), unless `solo_maiuscolo`.
  */
-export function pronunciatoreDa(voci: ReadonlyArray<Pick<VocePronta, 'forme' | 'grafia' | 'soloMaiuscolo'>>, lingua: Lingua): Pronunciatore {
+export function pronunciatoreDa(voci: ReadonlyArray<Pick<VocePronta, 'forme' | 'grafia' | 'soloMaiuscolo' | 'motori'>>, lingua: Lingua, motore?: NomeMotoreVoce | null): Pronunciatore {
   const suffisso = SUFFISSI[lingua] ?? '';
   const regole: Array<Regola & { lunghezza: number }> = [];
   for (const v of voci) {
+    const grafia = grafiaPer(v, motore);
     for (const forma of new Set(v.forme.filter(Boolean))) {
-      if (forma === v.grafia) continue;
+      if (forma === grafia) continue;
       const corpo = forma.split(/\s+/).map(escapeRegex).join('\\s+');
-      regole.push({ re: new RegExp(`(?<![\\p{L}\\p{N}])${corpo}(?=${suffisso}(?![\\p{L}\\p{N}]))`, v.soloMaiuscolo ? 'gu' : 'giu'), grafia: v.grafia, lunghezza: forma.length });
+      regole.push({ re: new RegExp(`(?<![\\p{L}\\p{N}])${corpo}(?=${suffisso}(?![\\p{L}\\p{N}]))`, v.soloMaiuscolo ? 'gu' : 'giu'), grafia, lunghezza: forma.length });
     }
   }
   if (!regole.length) return (t) => t;
@@ -146,6 +181,8 @@ export interface VocePronta {
   forme: string[];
   grafia: string;
   soloMaiuscolo: boolean;
+  /** Respellings for one engine (only the main entry, not its inflected forms). */
+  motori?: MotoriGrafia;
   /** Where it comes from: the prepared lexicon, additions made in play, or the sheet. */
   fonte: 'lessico' | 'gioco' | 'scheda';
 }
@@ -176,7 +213,7 @@ export function vociDellaCampagna(campagna: Campagna): VocePronta[] {
       if (!g || viste.has(chiave)) continue;
       viste.add(chiave);
       const soloMaiuscolo = v.solo_maiuscolo === true;
-      out.push({ nome: v.nome.trim(), forme: formeDi(v), grafia: g.grafia, soloMaiuscolo, fonte });
+      out.push({ nome: v.nome.trim(), forme: formeDi(v), grafia: g.grafia, soloMaiuscolo, fonte, ...(g.motori ? { motori: g.motori } : {}) });
       for (const [forma, grafia] of Object.entries(g.forme ?? {})) out.push({ nome: forma, forme: formeDi({ nome: forma }), grafia, soloMaiuscolo, fonte });
     }
   }
@@ -186,7 +223,10 @@ export function vociDellaCampagna(campagna: Campagna): VocePronta[] {
   return out;
 }
 
-/** The campaign's pronouncer, read from the files right now (for a lexicon that grows in play: voce/lessico-vivo.ts). */
-export function creaPronunciatore(campagna: Campagna): Pronunciatore {
-  return pronunciatoreDa(vociDellaCampagna(campagna), campagna.lingua ?? LINGUA_PREDEFINITA);
+/**
+ * The campaign's pronouncer for a voice engine, read from the files right now (for a lexicon that grows in play:
+ * voce/lessico-vivo.ts). Without an engine: the `grafia` of every entry.
+ */
+export function creaPronunciatore(campagna: Campagna, motore?: NomeMotoreVoce | null): Pronunciatore {
+  return pronunciatoreDa(vociDellaCampagna(campagna), campagna.lingua ?? LINGUA_PREDEFINITA, motore);
 }

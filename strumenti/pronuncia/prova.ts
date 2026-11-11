@@ -43,7 +43,7 @@ import { creaLogger } from '../../apps/server/src/logger';
 import { RADICE_REPO } from '../../apps/server/src/percorsi';
 import { costoFish, MotoreVoceFish } from '../../apps/server/src/voce/fish';
 import { MotoreVoceHttp } from '../../apps/server/src/voce/http';
-import { FILE_LESSICO, FILE_LESSICO_GIOCO } from '../../apps/server/src/voce/pronuncia';
+import { FILE_LESSICO, FILE_LESSICO_GIOCO, grafiaPer, stileQwen, type MotoriGrafia } from '../../apps/server/src/voce/pronuncia';
 import { caricaRegistroVoci } from '../../apps/server/src/voce/registro-voci';
 import type { MotoreVoce } from '../../apps/server/src/voce/tipi';
 import { DOLLARI_PER_MINUTO_WHISPER, sintetizza, WhisperOpenRouter, type Trascrittore } from './audio';
@@ -97,6 +97,8 @@ interface Voce {
   grafia: string | null;
   suono: string | null;
   candidate: string[];
+  /** The engine forms already in the lexicon (fish, qwen). */
+  motori: MotoriGrafia;
   verificata: boolean;
 }
 
@@ -119,6 +121,7 @@ function vociDi(doc: Document, file: string): Voce[] {
       grafia: typeof b['grafia'] === 'string' ? b['grafia'] : null,
       suono: typeof b['suono'] === 'string' ? b['suono'] : null,
       candidate: Array.isArray(b['candidate']) ? b['candidate'].filter((c): c is string => typeof c === 'string') : [],
+      motori: b['motori'] && typeof b['motori'] === 'object' ? (Object.fromEntries(Object.entries(b['motori'] as Record<string, unknown>).filter((e): e is [string, string] => (e[0] === 'fish' || e[0] === 'qwen') && typeof e[1] === 'string')) as MotoriGrafia) : {},
       verificata: !!nodo.get('verificata'),
     };
   }).filter((v) => v.nome);
@@ -182,13 +185,14 @@ function paroleDelleSchede(): Map<string, string> {
 
 // ------------------------------------------------------------------ the game's voices
 
-async function motori(): Promise<Array<{ nome: string; motore: MotoreVoce }>> {
+/** The voices to try: `nome` for the table, `chiave` for the lexicon's `motori` (apps/server/src/voce/pronuncia.ts). */
+async function motori(): Promise<Array<{ nome: string; chiave: 'fish' | 'qwen'; motore: MotoreVoce }>> {
   const voluti = o.voci ? o.voci.split(',').map((x) => x.trim()) : ['fish', 'qwen'];
-  const out: Array<{ nome: string; motore: MotoreVoce }> = [];
+  const out: Array<{ nome: string; chiave: 'fish' | 'qwen'; motore: MotoreVoce }> = [];
   if (voluti.includes('fish')) {
     try {
       cercaChiave('OPENROUTER_API_KEY', { filePrecedente: config.voce.fish.fileChiave });
-      out.push({ nome: 'drama-3', motore: new MotoreVoceFish({ fileChiave: config.voce.fish.fileChiave, voci: caricaRegistroVoci(config.voce.fish.registro), primoByteMs: 20_000, log: log.child({ modulo: 'voce-fish' }) }) });
+      out.push({ nome: 'drama-3', chiave: 'fish', motore: new MotoreVoceFish({ fileChiave: config.voce.fish.fileChiave, voci: caricaRegistroVoci(config.voce.fish.registro), primoByteMs: 20_000, log: log.child({ modulo: 'voce-fish' }) }) });
     } catch {
       console.log('drama-3: no OpenRouter key, skipping');
     }
@@ -197,7 +201,7 @@ async function motori(): Promise<Array<{ nome: string; motore: MotoreVoce }>> {
     const url = o['url-qwen'] ?? config.voce.url;
     const m = new MotoreVoceHttp(url, log.child({ modulo: 'voce-qwen' }));
     const salute = await m.salute().catch(() => null);
-    if (salute?.pronto) out.push({ nome: 'qwen', motore: m });
+    if (salute?.pronto) out.push({ nome: 'qwen', chiave: 'qwen', motore: m });
     else console.log(`qwen: service not ready at ${url}, skipping`);
   }
   return out;
@@ -212,6 +216,12 @@ interface Esito {
   ascolti: Map<string, Map<string, Ascolto>>;
   media: Map<string, number>;
   scelta: string;
+  /** Per engine (`chiave`): the respelling that engine gets (its own form, or the default from `scelta`). */
+  perMotore: Map<string, string>;
+  /** The lexicon's `motori` after this test (only the engines whose best form beats their default). */
+  motoriNuovi: MotoriGrafia;
+  /** Mean score, over the engines, of the form each one gets. */
+  punteggio: number;
 }
 
 async function inParallelo<T>(lista: readonly T[], n: number, fai: (x: T) => Promise<void>): Promise<void> {
@@ -248,7 +258,7 @@ async function main(): Promise<void> {
   if (!voci.length) return void console.log('no names to test');
 
   // 1. Model proposals for whoever has fewer than two spellings different from the name.
-  const grafieDi = (v: Voce): string[] => [...new Set([v.grafia, ...v.candidate].filter((x): x is string => !!x && x !== v.nome))];
+  const grafieDi = (v: Voce): string[] => [...new Set([v.grafia, ...v.candidate, ...Object.values(v.motori)].filter((x): x is string => !!x && x !== v.nome))];
   const daProporre = voci.filter((v) => grafieDi(v).length < 2);
   const proposte = new Map<string, Proposta>();
   if (daProporre.length && !o['senza-modello'] && !o['dry-run']) {
@@ -282,7 +292,9 @@ async function main(): Promise<void> {
   const piano = voci.filter((v) => !nonNomi.includes(v)).map((v) => {
     const p = proposte.get(v.nome.toLowerCase());
     // Case-only duplicates removed: for the voice they are the same spelling (and the written name is already the first try).
-    const grafie = maiuscolaComeIlNome(v.nome, [...grafieDi(v), ...(p?.candidate ?? [])]).filter((x) => x.toLowerCase() !== v.nome.toLowerCase());
+    const base = maiuscolaComeIlNome(v.nome, [...grafieDi(v), ...(p?.candidate ?? [])]);
+    // Each respelling also in Qwen's default style (capitalised syllables lowercase), so the test measures that too.
+    const grafie = [...new Set([...base, ...base.map(stileQwen)])].filter((x) => x.toLowerCase() !== v.nome.toLowerCase());
     // The intended sound: the one written in the lexicon, or the Preparer's spelling, and only for a new name the model's.
     return { v, p, suono: v.suono ?? v.grafia ?? p?.suono ?? v.nome, prove: [v.nome, ...grafie] };
   });
@@ -336,7 +348,15 @@ async function main(): Promise<void> {
       }
       ascolti.set(g, perVoce);
     }
-    const media = new Map([...ascolti].map(([g, pv]) => [g, pv.size ? [...pv.values()].reduce((s, a) => s + a.punteggio, 0) / pv.size : -1]));
+    // A respelling in the lexicon is said differently by each engine (Qwen gets stileQwen of it): its score is the
+    // mean, over the engines, of the form each engine would really get.
+    const punti = (nv: string, g: string): number | undefined => ascolti.get(g)?.get(nv)?.punteggio;
+    const media = new Map(
+      x.prove.map((g) => {
+        const p = ms.map((m) => punti(m.nome, grafiaPer({ grafia: g }, m.chiave))).filter((v): v is number => v !== undefined);
+        return [g, p.length ? p.reduce((a, b) => a + b, 0) / p.length : -1] as const;
+      }),
+    );
     const migliore = Math.max(...media.values());
     // Ties (within PARI): the Preparer's respelling, then one that only adds accent marks (Whisper does not hear the
     // stress, and a stress mark costs nothing when the ear is even), then the name as written, and a different
@@ -344,8 +364,23 @@ async function main(): Promise<void> {
     const pari = x.prove.filter((g) => (media.get(g) ?? -1) >= migliore - PARI);
     const soloAccenti = (g: string): boolean => g !== x.v.nome && senzaAccenti(g).toLowerCase() === senzaAccenti(x.v.nome).toLowerCase();
     const scelta = (x.v.grafia && pari.includes(x.v.grafia) ? x.v.grafia : null) ?? pari.find(soloAccenti) ?? (pari.includes(x.v.nome) ? x.v.nome : pari[0]!);
-    esiti.push({ voce: x.v, suono: x.suono, ascolti, media, scelta });
-    console.log(`  ${x.v.nome}: ${[...media].map(([g, s]) => `«${g}» ${s.toFixed(2)}`).join(', ')} → «${scelta}»`);
+    // Per engine: its default (Qwen: stileQwen(scelta)) unless another respelling beats it on that engine by more
+    // than PARI; then that one becomes the engine's own form in `motori`. Engines not tried keep what they had.
+    const motoriNuovi: MotoriGrafia = { ...(x.v.motori ?? {}) };
+    const perMotore = new Map<string, string>();
+    for (const m of ms) {
+      const qui = (g: string): number => punti(m.nome, g) ?? -1;
+      const predefinita = grafiaPer({ grafia: scelta }, m.chiave);
+      const migliore = x.prove.reduce((a, g) => (qui(g) > qui(a) ? g : a), predefinita);
+      if (qui(migliore) > qui(predefinita) + PARI) motoriNuovi[m.chiave] = migliore;
+      else delete motoriNuovi[m.chiave];
+      perMotore.set(m.chiave, motoriNuovi[m.chiave] ?? predefinita);
+    }
+    const finali = ms.map((m) => punti(m.nome, perMotore.get(m.chiave)!)).filter((v): v is number => v !== undefined);
+    const punteggio = finali.length ? finali.reduce((a, b) => a + b, 0) / finali.length : 0;
+    esiti.push({ voce: x.v, suono: x.suono, ascolti, media, scelta, perMotore, motoriNuovi, punteggio });
+    const proprie = Object.entries(motoriNuovi).map(([m, g]) => `${m}: «${g}»`).join(', ');
+    console.log(`  ${x.v.nome}: ${[...media].map(([g, s]) => `«${g}» ${s.toFixed(2)}`).join(', ')} → «${scelta}»${proprie ? ` (${proprie})` : ''}`);
   });
 
   // 4. Lessico aggiornato.
@@ -358,12 +393,14 @@ async function main(): Promise<void> {
     const blocco = nodo.get(lingua, true);
     // The intended sound is written only when it is not just the Preparer's respelling (a new name: the model's).
     const suonoNuovo = !e.voce.suono && !e.voce.grafia && p?.suono ? { suono: p.suono } : {};
-    const nuovo = { ...(isMap(blocco) ? (blocco.toJSON() as Record<string, unknown>) : {}), grafia: e.scelta, ...suonoNuovo, ...(p?.nota && !isMap(blocco) ? { nota: p.nota } : {}) };
-    delete (nuovo as Record<string, unknown>)['candidate'];
+    const nuovo: Record<string, unknown> = { ...(isMap(blocco) ? (blocco.toJSON() as Record<string, unknown>) : {}), grafia: e.scelta, ...suonoNuovo, ...(p?.nota && !isMap(blocco) ? { nota: p.nota } : {}) };
+    delete nuovo['candidate'];
+    if (Object.keys(e.motoriNuovi).length) nuovo['motori'] = e.motoriNuovi;
+    else delete nuovo['motori'];
     nodo.set(lingua, d.createNode(nuovo, { flow: true }));
     // `tipo` right after `nome`, where the Preparer writes it.
     if (p?.tipo && !nodo.get('tipo')) nodo.items.splice(1, 0, d.createPair('tipo', p.tipo) as (typeof nodo.items)[number]);
-    nodo.set('verificata', d.createNode({ data: oggi, voci: nomiVoci, punteggio: Math.round((e.media.get(e.scelta) ?? 0) * 100) / 100, base: Math.round((e.media.get(e.voce.nome) ?? 0) * 100) / 100 }, { flow: true }));
+    nodo.set('verificata', d.createNode({ data: oggi, voci: nomiVoci, punteggio: Math.round(e.punteggio * 100) / 100, base: Math.round((e.media.get(e.voce.nome) ?? 0) * 100) / 100 }, { flow: true }));
   }
   if (!o['non-scrivere']) {
     fs.writeFileSync(fileLessico, doc.toString({ lineWidth: 0 }));
@@ -385,12 +422,14 @@ async function main(): Promise<void> {
   }
 
   // Table: name, default voice → transcript, chosen spelling → transcript, score.
-  const righe = ['| name | voice | default TTS → heard | chosen respelling → heard | score (default → chosen) |', '|---|---|---|---|---|'];
+  const righe = ['| name | voice | default TTS → heard | respelling for this voice → heard | score (default → chosen) |', '|---|---|---|---|---|'];
   for (const e of esiti.sort((a, b) => a.voce.nome.localeCompare(b.voce.nome))) {
-    for (const nv of nomiVoci) {
-      const base = e.ascolti.get(e.voce.nome)?.get(nv);
-      const scelta = e.ascolti.get(e.scelta)?.get(nv);
-      righe.push(`| ${e.voce.nome} | ${nv} | «${base?.sentito || base?.trascrizione || '—'}» | ${e.scelta === e.voce.nome ? '(kept as written)' : `«${e.scelta}»`} → «${scelta?.sentito || scelta?.trascrizione || '—'}» | ${base?.punteggio.toFixed(2) ?? '—'} → ${scelta?.punteggio.toFixed(2) ?? '—'} |`);
+    for (const m of ms) {
+      const forma = e.perMotore.get(m.chiave) ?? e.scelta;
+      const base = e.ascolti.get(e.voce.nome)?.get(m.nome);
+      const scelta = e.ascolti.get(forma)?.get(m.nome);
+      const quale = forma === e.voce.nome ? '(kept as written)' : `«${forma}»${e.motoriNuovi[m.chiave] ? ' (own form)' : ''}`;
+      righe.push(`| ${e.voce.nome} | ${m.nome} | «${base?.sentito || base?.trascrizione || '—'}» | ${quale} → «${scelta?.sentito || scelta?.trascrizione || '—'}» | ${base?.punteggio.toFixed(2) ?? '—'} → ${scelta?.punteggio.toFixed(2) ?? '—'} |`);
     }
   }
   const tabella = righe.join('\n');

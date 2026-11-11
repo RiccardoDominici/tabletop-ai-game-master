@@ -34,7 +34,7 @@ import { ErroreVoce } from '../voce/tipi';
 import { daGenerare, generaFish, pianoFish, riassuntoFish, vociSenzaFish } from './prerender-fish';
 
 async function preGeneraQwen(campagna: ReturnType<typeof caricaCampagna>, repertorio: ReturnType<typeof caricaRepertorio>, config: ReturnType<typeof caricaConfig>, log: ReturnType<typeof creaLogger>, soloConta: boolean): Promise<void> {
-  const pronuncia = creaPronunciatore(campagna);
+  const pronuncia = creaPronunciatore(campagna, 'qwen');
   const cache = new CacheAudio(config.cacheAudio);
   const motore = new MotoreVoceHttp(config.voce.url, log);
 
@@ -99,7 +99,7 @@ async function preGeneraQwen(campagna: ReturnType<typeof caricaCampagna>, repert
 }
 
 async function preGeneraFish(campagna: ReturnType<typeof caricaCampagna>, repertorio: ReturnType<typeof caricaRepertorio>, config: ReturnType<typeof caricaConfig>, log: ReturnType<typeof creaLogger>, dryRun: boolean, json: boolean): Promise<void> {
-  const pronuncia = creaPronunciatore(campagna);
+  const pronuncia = creaPronunciatore(campagna, 'fish');
   const piano = pianoFish(campagna, repertorio, pronuncia);
   const cache = new CacheAudio(config.cacheAudio, config.voce.fish.cacheAudio);
   const fishCache = cache.fish!;

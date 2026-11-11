@@ -331,7 +331,8 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   const { memoria, ripresa, dispositiviEreditati } = apriSessioni(archivio, config, campagna, log.child({ modulo: 'sessioni' }));
   // Lessico di pronuncia (docs/pronuncia.md): uno solo per la voce dal vivo e per l'audio pre-generato
   // dello sceneggiatore, così un nome aggiunto in gioco vale subito per tutti e due.
-  const lessico = new LessicoVivo({ campagna, log: log.child({ modulo: 'pronuncia' }) });
+  // Le grafie seguono il motore della voce in uso (Qwen e drama-3 non leggono allo stesso modo le maiuscole).
+  const lessico = new LessicoVivo({ campagna, log: log.child({ modulo: 'pronuncia' }), motore: () => voce.nome });
   const regia = new Regia({
     lingue: { interfaccia: config.lingua, contenuti: pronta.lingua },
     lessico,
@@ -375,7 +376,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       sost.preGeneraAudio !== undefined
         ? sost.preGeneraAudio
         : fish && cacheAudio.fish
-          ? codaAudioFish({ campagna, pronuncia: lessico.pronuncia, cache: cacheAudio.fish, motore: fish.motore, voci: caricaRegistroVoci(config.voce.fish.registro), log: log.child({ modulo: 'sceneggiatore-audio' }) })
+          ? codaAudioFish({ campagna, pronuncia: (t) => lessico.per('fish')(t), cache: cacheAudio.fish, motore: fish.motore, voci: caricaRegistroVoci(config.voce.fish.registro), log: log.child({ modulo: 'sceneggiatore-audio' }) })
           : null,
     finestraATutti: config.turni.finestraATutti,
     arbitro,

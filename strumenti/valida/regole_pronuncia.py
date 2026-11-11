@@ -6,7 +6,8 @@ lexicon exists, is well formed and covers the names:
 
 - PRONUNCIA.lessico_mancante (strict): no pronunce.yaml;
 - PRONUNCIA.schema: `lessico` is not a list, an entry without `nome` or without the spelling in the campaign's
-  language, a repeated name, voice markup in the spelling (square brackets, tags), `forme` that is not a map;
+  language, a repeated name, voice markup in the spelling (square brackets, tags), `forme` that is not a map,
+  `motori` that is not a map of voice engines (fish, qwen) to plain-text respellings;
 - PRONUNCIA.nome_senza_voce (strict): a word that looks like a proper name (the words of PNG and PG names; a
   mid-sentence capitalised word, not an acronym, that never appears in lowercase in the texts) with no voice in the
   lexicon, nor in the `pronuncia` field of the sheet, nor in `non_nomi`;
@@ -32,6 +33,8 @@ from .esito import Esito
 FILE = "pronunce.yaml"
 FILE_GIOCO = "pronunce-gioco.yaml"
 TIPI = {"png", "pg", "luogo", "oggetto", "fazione", "dio", "termine", "altro"}
+# Voice engines that can have their own respelling (apps/server/src/voce/pronuncia.ts, MOTORI_GRAFIA).
+MOTORI = {"fish", "qwen"}
 MARKUP = re.compile(r"[\[\]<>{}]")
 # Keys that are not spoken or narrated text.
 CHIAVI_TECNICHE = {"id", "tag", "voce_id", "file", "prompt_immagine", "prompt_luogo", "stile_immagini", "prompt", "registro_voce",
@@ -146,6 +149,9 @@ def _voci(d: dict, lingua: str, dove: str, e: Esito) -> tuple[set[str], list[dic
             e.errore("PRONUNCIA.schema", qui, "the spelling must be plain text: no square brackets, tags or curly braces")
         if v.get("tipo") is not None and v.get("tipo") not in TIPI:
             e.avviso("PRONUNCIA.schema", qui, f"`tipo` «{v.get('tipo')}» not in the vocabulary ({', '.join(sorted(TIPI))})")
+        motori = blocco.get("motori") if isinstance(blocco, dict) else None
+        if motori is not None and (not isinstance(motori, dict) or any(k not in MOTORI or not isinstance(x, str) or not x.strip() or MARKUP.search(x) for k, x in motori.items())):
+            e.errore("PRONUNCIA.schema", qui, f"`{lingua}.motori` maps a voice engine ({', '.join(sorted(MOTORI))}) to a plain-text respelling")
         forme_lingua = blocco.get("forme") if isinstance(blocco, dict) else None
         if forme_lingua is not None and not isinstance(forme_lingua, dict):
             e.errore("PRONUNCIA.schema", qui, f"`{lingua}.forme` must be a map: form → spelling")

@@ -19,7 +19,9 @@ lessico:
       candidate: [Dzirrà, Dzìrra]  # optional respellings for the ear test to choose from
       forme: {Zirrani: Dzirràni} # inflected forms with their own respelling
       nota: "voiced z, stress on the last syllable"
-    en: {grafia: DZEER-rah}
+    en:
+      grafia: DZEER-rah
+      motori: {qwen: DZEER-rah}  # a form for one voice engine (fish, qwen), written by the ear test when it is better there
     verificata: {data: 2026-11-11, voci: [drama-3, qwen], punteggio: 0.92, base: 0.55}   # written by the ear test
 non_nomi: [Signora]              # capitalised words that are not names (for the validator)
 ```
@@ -41,6 +43,18 @@ scriptwriter's lines). The `testo` of a phrase (projector, phones, transcript, s
 - Lowercase spellings are matched (players type «eliandro»), unless `solo_maiuscolo: true`; the unaccented form is
   added automatically («Zirra»); Italian elision works («dell'Eliandro»); English keeps the possessive («Zirrà's»).
 - Inflected forms with a different sound go in the language block's `forme`.
+
+### Per voice engine
+
+The engines do not read a respelling the same way: drama-3 takes the English stress convention («ee-VAWN»), Qwen
+spells a capitalised syllable out like an acronym («ee-VAWN» heard as «E-Valve UN»). So the respelling depends on the
+engine in use (`grafiaPer` in `voce/pronuncia.ts`): the entry's `motori` form for that engine if there is one; for
+Qwen otherwise `stileQwen(grafia)`, which lowercases the capitalised syllables of a hyphenated respelling
+(«ee-VAWN» → «Ee-vawn», «KAD-oo-gan» → «Kad-oo-gan»; «NEEV» and Italian respellings stay as they are); for drama-3 and
+the fake voice the `grafia`. The server's pronouncer (`voce/lessico-vivo.ts`) asks the voice selector which engine is
+playing at each phrase; the audio prepared for drama-3 (`prerender.ts --motore fish`, the scriptwriter's lines) always
+uses the drama-3 forms, `prerender.ts` for Qwen the Qwen ones, so the cache keys match what is said. Not covered: when
+drama-3 fails on one phrase and the reserve Qwen says it (voce/riserva.ts), that phrase keeps the drama-3 form.
 
 ## The validator: class `PRONUNCIA` (`strumenti/valida/regole_pronuncia.py`)
 
@@ -82,7 +96,10 @@ For each name:
    come out the same, drama-3 once said «Libia» for «Livia»); within 0.1 (smaller differences are noise) the Preparer's `grafia` wins, then a
    respelling that only adds accent marks (Whisper does not hear the stress, and a stress mark costs nothing when the
    ear is even), then the name as written, and a different spelling last (equal by ear is no evidence that it helps).
-   The tool writes `grafia`, `suono` and `verificata` into the lexicon (comments kept), the table to
+   A candidate is scored as each engine would really say it (Qwen hears `stileQwen` of it), and every candidate is
+   also tried in Qwen's style. Then per engine: if another respelling beats the form that engine would get by more than
+   0.1, it becomes the engine's own form in `motori`; engines not tried keep theirs.
+   The tool writes `grafia`, `suono`, `motori` and `verificata` into the lexicon (comments kept), the table to
    `logs/pronuncia-<id>.md` and one line per listening to `logs/pronuncia.jsonl` (`TAGM_LOG` moves both).
 
 `--aggiungi` first imports the sheets' `pronuncia` fields and the names the validator reports as `nome_senza_voce`: this
@@ -100,8 +117,10 @@ right already (score 1.00 without the lexicon); the misses are the stress (not v
 slip («Libia» for «Livia», «tombi» for «Tondi» in one listening out of two). On names that are hard for English the
 respellings help clearly (en-nomi fixture, drama-3 / Qwen, two listenings each): «Cadwgan» 0.68 / 0.63 →
 «KAD-oo-gan» 1.00 / 0.97, «Dubhghall» 0.87 / 0.76 → «DOOG-al» 1.00 / 1.00, «Niamh» on Qwen 0.75 → «NEEV» 1.00. Qwen
-spells out syllables in capitals as if they were acronyms («ee-VAWN» heard as «E-Valve UN»), so on Qwen the English
-stress convention can hurt; the ear test then prefers a respelling with fewer capitals. Phonetic keys are rough: two
+spells out syllables in capitals as if they were acronyms. Per engine, three listenings each: «ee-VAWN» drama-3 0.90,
+Qwen 0.42 («Eval WN»); its Qwen style «Ee-vawn» Qwen 0.90 («Yvonne»), so the lexicon keeps «ee-VAWN» and Qwen gets
+«Ee-vawn». «KAD-oo-gan» Qwen 0.91 against «Kad-oo-gan» 0.82: Qwen reads «KAD» as a word, and the gap is under the
+noise margin, so no own form (the default style costs a little there and saves a lot on «ee-VAWN»). Phonetic keys are rough: two
 respellings a few hundredths apart are equal, and the ear test can move the stress, which it cannot hear.
 Whisper also «corrects» towards ordinary words («Faggioli» → «fagioli»), which caps some scores.
 

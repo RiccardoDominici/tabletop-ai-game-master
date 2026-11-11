@@ -414,7 +414,7 @@ export class Regia {
     this.scenaPubblica = opzioni.scenaPubblica ?? '';
     this.situazioni = opzioni.immagini ? collegaSituazioni(opzioni.campagna, opzioni.immagini.situazioni(opzioni.campagna.png.map((p) => p.id))) : [];
     if (this.situazioni.length) opzioni.log.info({ situazioni: this.situazioni.map((x) => ({ id: x.id, dopo: x.dopo })) }, 'immagini: situazioni e rivelazioni');
-    this.lessico = opzioni.lessico ?? new LessicoVivo({ campagna: opzioni.campagna, log: opzioni.log.child({ modulo: 'pronuncia' }) });
+    this.lessico = opzioni.lessico ?? new LessicoVivo({ campagna: opzioni.campagna, log: opzioni.log.child({ modulo: 'pronuncia' }), motore: () => opzioni.voce.nome });
     this.pronuncia = this.lessico.pronuncia;
     this.orologi = new StatoOrologi(opzioni.campagna);
     this.nomiPng = nomiDeiPng(opzioni.campagna);

@@ -21,6 +21,7 @@ import type { Logger } from '../logger';
 import { LINGUA_PREDEFINITA } from '../lingua';
 import { creaPronunciatore, FILE_LESSICO_GIOCO, leggiLessico, vociDellaCampagna, type Pronunciatore, type VoceLessico } from './pronuncia';
 import { estraiYaml } from '../sceneggiatore/valida';
+import type { NomeMotoreVoce } from './tipi';
 
 /** Maximum names asked per request, and how many times the same name is requested without an answer. */
 export const MAX_NOMI_PER_RICHIESTA = 8;
@@ -83,18 +84,29 @@ export function candidatiNomi(testi: readonly string[], noti: ReadonlySet<string
 }
 
 export class LessicoVivo {
-  private attuale: Pronunciatore;
+  /** One compiled pronouncer per voice engine, rebuilt when the lexicon grows. */
+  private readonly compilati = new Map<NomeMotoreVoce | null, Pronunciatore>();
   private readonly file: string;
   /** Names asked of the scriptwriter → how many times (without an answer it stops after MAX_RICHIESTE_PER_NOME). */
   private readonly chiesti = new Map<string, number>();
-  /** The pronouncer to use everywhere: always reads the most recent lexicon. */
-  readonly pronuncia: Pronunciatore = (t) => this.attuale(t);
+  /** The pronouncer to use everywhere: the most recent lexicon, with the respellings of the engine in use. */
+  readonly pronuncia: Pronunciatore = (t) => this.per(this.o.motore?.() ?? null)(t);
 
-  constructor(private readonly o: { campagna: Campagna; log: Logger }) {
+  /** `motore`: the voice engine in use right now (the selector's), whose respellings the voice gets. */
+  constructor(private readonly o: { campagna: Campagna; log: Logger; motore?: () => NomeMotoreVoce | null }) {
     this.file = path.join(o.campagna.cartella, FILE_LESSICO_GIOCO);
-    this.attuale = creaPronunciatore(o.campagna);
     const voci = vociDellaCampagna(o.campagna);
     o.log.info({ voci: voci.length, lessico: voci.filter((v) => v.fonte === 'lessico').length, gioco: voci.filter((v) => v.fonte === 'gioco').length, schede: voci.filter((v) => v.fonte === 'scheda').length }, 'pronunciation: lexicon loaded');
+  }
+
+  /** The pronouncer of one engine (fish for the audio prepared for drama-3, whatever voice is playing now). */
+  per(motore: NomeMotoreVoce | null): Pronunciatore {
+    let p = this.compilati.get(motore);
+    if (!p) {
+      p = creaPronunciatore(this.o.campagna, motore);
+      this.compilati.set(motore, p);
+    }
+    return p;
   }
 
   /** The forms already known (names, forms, words of the PNG and PG names), in lowercase. */
@@ -140,7 +152,7 @@ export class LessicoVivo {
     const esistenti = fs.existsSync(this.file) ? ((YAML.parse(fs.readFileSync(this.file, 'utf8')) as { lessico?: unknown[] } | null)?.lessico ?? []) : [];
     const intestazione = '# Names met during play (apps/server/src/voce/lessico-vivo.ts). Written by the Engine; reviewed by the Preparer between sessions.\n';
     fs.writeFileSync(this.file, intestazione + YAML.stringify({ lessico: [...esistenti, ...nuove] }));
-    this.attuale = creaPronunciatore(this.o.campagna);
+    this.compilati.clear();
     const nomi = nuove.map((v) => v.nome);
     this.o.log.info({ nomi, turno: o.turno, fonte: o.fonte }, 'pronunciation: new names added to the lexicon');
     return nomi;

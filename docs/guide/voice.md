@@ -164,6 +164,8 @@ Without the folder, the campaign is the one of `TAGM_CARTELLA_CAMPAGNA`, or `TAG
 
 Invented names («Zirrà», «Aoibheann») are read badly by any voice. Each campaign has `pronunce.yaml`: for every proper noun,
 the respelling the voice reads instead («Dzirrà», «ee-VAWN»). The screen, the phones and the transcript keep the written name.
+The respelling follows the voice in use: Qwen reads syllables in capitals as acronyms, so it gets «Ee-vawn» where drama-3
+gets «ee-VAWN», unless the ear test found a better form for it (`motori` in the entry).
 The Preparer writes it; the validator checks that no name is missing (class `PRONUNCIA`); `scripts/prepara.sh` tries the new
 entries by ear. To try them yourself, or to make the lexicon of a campaign that does not have one:
 
