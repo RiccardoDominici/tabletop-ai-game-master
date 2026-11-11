@@ -1,256 +1,256 @@
-# Architettura v1 — "Cantastorie" (nome di lavoro)
+# Architecture v1 — "Tabletop AI Game Master" (working name)
 
-Un master IA per giocare a D&D in presenza. Ogni giocatore usa il proprio telefono, il proiettore mostra la scena, una cassa porta la voce del narratore e dei personaggi, e sotto c'è sempre musica. Scritta il 1° novembre 2026, dopo i test misurati (vedi «Prove fatte»).
+An AI master for playing D&D in person. Each player uses their own phone, the projector shows the scene, a speaker carries the voice of the narrator and the characters, and music is always playing underneath. Written on November 1, 2026, after the measured tests (see «Prove fatte» (Tests done)).
 
-## Idea in una frase
+## The idea in one sentence
 
-Il **software possiede il gioco**: stato, regole, dadi, segreti e canone li gestisce il codice, non il modello. Ci sono poi due modelli:
-- un **narratore veloce**, che scrive ciò che si sente;
-- un **regista lento**, che studia in sottofondo e migliora tutto.
+The **software owns the game**: state, rules, dice, secrets and canon are handled by the code, not the model. There are then two models:
+- a **fast narrator**, which writes what is heard;
+- a **slow director**, which studies in the background and improves everything.
 
-Il mestiere del master non è affidato al prompt: è imposto dalla struttura (vedi «Manuale del master», regole E1–E15).
+The Game Master's craft is not left to the prompt: it is imposed by the structure (see «Manuale del master» (Game Master manual), rules E1–E15).
 
-## Prove fatte (1° novembre 2026, numeri misurati)
+## Tests done (November 1, 2026, measured figures)
 
-**Testo**
-- **LFM 2.5 2.6B** (OpenRouter e locale): scartato.
-  - Italiano sgrammaticato.
-  - Rivela l'azione privata in 5 prove su 5, in locale.
-  - In modalità ragionamento, che è quella predefinita, il testo visibile arriva dopo 5 s (OpenRouter) e dopo 49 s (in locale).
-  - La versione gratuita va spesso in limite di richieste.
-- **Claude Haiku 5.5**, con ragionamento spento ed effort basso: promosso.
-  - Prima parola in 0,55 s, prima frase completa in 0,93 s, totale 1,7 s.
-  - 0 fughe di azioni private e 0 contraddizioni, su 30 narrazioni.
-  - Parsing delle azioni: JSON valido 10 volte su 10, interpretazione corretta 9 su 10.
-  - Dialogo diviso per voce: valido 5 volte su 5.
-  - Strumento dadi usato bene 3 volte su 3.
-  - Costo: 85 chiamate per $0,018.
-  - Difetti: frasi lunghe (19 parole di media) e qualche dettaglio inventato. Il Motore li corregge (E4, E10).
+**Text**
+- **LFM 2.5 2.6B** (OpenRouter and local): discarded.
+  - Ungrammatical Italian.
+  - Reveals the private action in 5 checks out of 5, locally.
+  - In reasoning mode, which is the default, the visible text arrives after 5 s (OpenRouter) and after 49 s (locally).
+  - The free version often hits the request limit.
+- **Claude Haiku 5.5**, with reasoning off and low effort: passed.
+  - First word in 0.55 s, first complete sentence in 0.93 s, total 1.7 s.
+  - 0 leaks of private actions and 0 contradictions, across 30 narrations.
+  - Parsing of actions: valid JSON 10 times out of 10, correct interpretation 9 out of 10.
+  - Dialogue split by voice: valid 5 times out of 5.
+  - Dice tool used correctly 3 times out of 3.
+  - Cost: 85 calls for $0.018.
+  - Flaws: long sentences (19 words on average) and some invented detail. The Engine corrects them (E4, E10).
 
-**Voce**
+**Voice**
 - **HeyGen voice-1-turbo** (OpenRouter):
-  - primo audio in 0,8 s; 30 s di audio in 2,7 s;
-  - 10 voci, clonazione possibile;
-  - italiano intelligibile (Whisper sbaglia il 2,8% delle parole).
-  - Versione gratuita fino al 30/11/2026. In pausa finché non si ricarica OpenRouter.
-- **Qwen3-TTS 0.6B in locale** (MLX):
-  - primo audio in 0,67 s in streaming;
-  - genera appena più veloce di quanto si ascolta (0,82–0,87 s per ogni secondo di audio): margine sottile;
-  - clona una voce da 8 s di esempio;
-  - fino a 7 GB di RAM.
-  - È il motore vocale di ora.
-- Scartati: Chatterbox (11 s al primo audio) e MOSS-Nano (italiano poco comprensibile). Kokoro non è stato testato: serve `espeak-ng`.
+  - first audio in 0.8 s; 30 s of audio in 2.7 s;
+  - 10 voices, cloning possible;
+  - intelligible Italian (Whisper gets 2.8% of the words wrong).
+  - Free version until November 30, 2026. On hold until OpenRouter is topped up.
+- **Qwen3-TTS 0.6B locally** (MLX):
+  - first audio in 0.67 s, streaming;
+  - it generates only slightly faster than it plays (0.82–0.87 s for each second of audio): thin margin;
+  - clones a voice from an 8 s sample;
+  - up to 7 GB of RAM.
+  - It is the current voice engine.
+- Discarded: Chatterbox (11 s to first audio) and MOSS-Nano (poorly intelligible Italian). Kokoro was not tested: it needs `espeak-ng`.
 
-**Trascrizione della voce dei giocatori**
-- **Whisper large-v3-turbo in locale**: 1,6 s per una frase di 5 s, 2,8% di parole sbagliate su audio pulito. Gli errori sono sui nomi («Kara» diventa «Cara») e si correggono passando a Whisper l'elenco dei nomi della campagna.
+**Transcription of the players' voices**
+- **Whisper large-v3-turbo locally**: 1.6 s for a 5 s sentence, 2.8% of words wrong on clean audio. The errors fall on names (the name «Kara» is heard as «Cara», the Italian word for "dear"), and they are fixed by passing Whisper the list of the campaign's names.
 
-**Musica**
-- Da generare in locale: Stable Audio 3 Small (MLX, licenza community) oppure ACE-Step 1.5 (MIT).
-- Da biblioteca: OpenGameArt / Freesound / Pixabay, CC0 o CC-BY.
-- Lyria via OpenRouter come extra: $0,04 per clip.
-- Niente ancora ascoltato. Va fatta una prova di generazione.
+**Music**
+- To be generated locally: Stable Audio 3 Small (MLX, community license) or ACE-Step 1.5 (MIT).
+- From a library: OpenGameArt / Freesound / Pixabay, CC0 or CC-BY.
+- Lyria via OpenRouter as an extra: $0.04 for each clip.
+- Nothing listened to yet. A generation test must still be run.
 
-## I sei moduli
+## The six modules
 
-### 1. Motore (deterministico, unica fonte di verità)
-È un server sul Mac e gestisce:
-- **lo stato a eventi**: un log append-only in SQLite, da cui si ricava lo stato. Permette annullamenti, riavvii e il ritiro immediato richiesto dalla X-card;
-  oggi (apps/server/src/sessione/): `node:sqlite` in `<cartella dei log>/sessioni.sqlite`, eventi `inizio`, `fotografia`
-  (scena, luogo, umore, situazione, orologi, repertorio, note, pausa, turno), `trascrizione_turno`, `tavolo` (azioni e
-  finestra) e `dispositivo` (telefono → PG), scritti a ogni turno chiuso, a ogni comando del master e a ogni cambiamento
-  delle azioni. All'avvio una sessione in corso della stessa campagna si ricostruisce e aspetta il proiettore: riparte
-  senza rileggere l'apertura; se il narratore stava rispondendo, le azioni di quel turno tornano ai giocatori e il turno
-  si rigioca. «Nuova sessione» nel pannello, `partita.sh --nuova` o Ricomincia ne cominciano un'altra;
-  campagne a più sessioni (docs/strati.md, D2): il Motore gioca il livello di campagna più un pacchetto
-  `sessioni/<nn>/`, scelto dall'archivio (colonna `pacchetto`); «Fine sessione» chiude la sessione e scrive il
-  registro deterministico (`registro.yaml` + `trascrizione.yaml`) dagli eventi, «Prossima sessione» ricostruisce il
-  server sul pacchetto dopo (apps/server/src/ciclo-server.ts) e i telefoni ritrovano il loro PG;
-- **le regole SRD 5.2** (CC-BY-4.0, dati estratti dal PDF ufficiale, attribuzione obbligatoria nei crediti): dadi, prove, CD, iniziativa, PF. Il dado lo tira sempre il server: la narrazione non può cambiare un esito;
-- **gli orologi delle minacce**, gli atteggiamenti dei PNG, gli indizi rivelati, le menzogne già dette, i contatori dello spotlight;
-- **il canone**: fatti `proposto` e `confermato`, con il flag `noto_ai_pg`;
-- **la cassaforte**: segreti, entità non note, messaggi privati.
+### 1. Engine (deterministic, single source of truth)
+It is a server on the Mac and manages:
+- **event-based state**: an append-only log in SQLite, from which the state is derived. It allows undos, restarts and the immediate withdrawal requested by the X-card;
+  today (apps/server/src/sessione/): `node:sqlite` in `<log folder>/sessioni.sqlite`, events `inizio`, `fotografia`
+  (scene, place, mood, situation, clocks, repertoire, notes, pause, turn), `trascrizione_turno`, `tavolo` (actions and
+  window) and `dispositivo` (phone → PC), written at each closed turn, at each master command and at each change
+  of actions. On startup, a session in progress for the same campaign is rebuilt and waits for the projector: it resumes
+  without re-reading the opening; if the narrator was responding, that turn's actions return to the players and the turn
+  is replayed. «Nuova sessione» (New session) in the panel, `partita.sh --nuova` or «Ricomincia» (Restart) start another;
+  multi-session campaigns (docs/strati.md, D2): the Engine plays the campaign level plus one package
+  `sessioni/<nn>/`, chosen from the archive (column `pacchetto`); «Fine sessione» (End session) closes the session and writes the
+  deterministic log (`registro.yaml` + `trascrizione.yaml`) from the events, «Prossima sessione» (Next session) rebuilds the
+  server on the following package (apps/server/src/ciclo-server.ts) and the phones find their PC again;
+- **the SRD 5.2 rules** (CC-BY-4.0, data extracted from the official PDF, attribution required in the credits): dice, checks, CD, initiative, HP. The server always rolls the die: the narration cannot change an outcome;
+- **the threat clocks**, the NPCs' attitudes, the clues revealed, the lies already told, the spotlight counters;
+- **the canon**: facts `proposto` and `confermato`, with the flag `noto_ai_pg`;
+- **the vault**: secrets, unknown entities, private messages.
 
-Il modello **propone** modifiche tramite strumenti (`tick_clock`, `reveal_clue`, `set_attitude`, `roll`). Il Motore controlla le precondizioni e accetta o rifiuta.
+The model **proposes** changes through tools (`tick_clock`, `reveal_clue`, `set_attitude`, `roll`). The Engine checks the preconditions and accepts or rejects.
 
-Fa anche da **compilatore di contesto** (E2): costruisce per ogni chiamata il minimo che il modello deve sapere.
+It also acts as the **context compiler** (E2): for each call it builds the minimum the model must know.
 
-### 2. Narratore (corsia veloce, sul percorso critico)
-- Modello: **Haiku 5.5**, ragionamento spento, effort basso, streaming. Il prompt stabile va in cache: Carta di stile, regole di scrittura, scheda della scena.
-- Scrive **segmenti strutturati**: `{tipo, voce, testo, destinatario_pg, mossa, indizi_rivelati, fatti_nuovi, tick, musica}`.
-- **Ogni PNG importante parla tramite una chiamata separata.** Quella chiamata vede solo la scheda di quel PNG (`sa`, `crede_a_torto`, `mente_su`, menzogne già dette) e la trascrizione pubblica. Quello che non sa, non lo può dire.
-- **Filtri prima della voce** (E4–E6, meno di 10 ms per frase):
-  - lunghezza della frase;
-  - lista di frasi fatte vietate;
-  - guardia dell'agency: il narratore non decide al posto dei personaggi giocanti;
-  - guardia anti-fuga contro la cassaforte.
-- Il narratore lavora con **una frase di anticipo**, così il filtro può trattenere una frase senza buchi nell'audio.
+### 2. Narrator (fast lane, on the critical path)
+- Model: **Haiku 5.5**, reasoning off, low effort, streaming. The stable prompt is cached: Style card, writing rules, scene sheet.
+- Writes **structured segments**: `{tipo, voce, testo, destinatario_pg, mossa, indizi_rivelati, fatti_nuovi, tick, musica}`.
+- **Every important NPC speaks through a separate call.** That call sees only that NPC's sheet (`sa`, `crede_a_torto`, `mente_su`, lies already told) and the public transcript. What it does not know, it cannot say.
+- **Filters before the voice** (E4–E6, under 10 ms for each sentence):
+  - sentence length;
+  - list of banned stock phrases;
+  - agency guard: the narrator does not decide on behalf of the player characters;
+  - anti-leak guard against the vault.
+- The narrator works **one sentence ahead**, so the filter can hold back a sentence without gaps in the audio.
 
-### 3. Regista e Critico (corsia lenta, in sottofondo, mai sul percorso critico)
-Durante la sessione usa un modello forte via API (Opus 5.5, effort alto, chiamate asincrone; stima circa $1 a sessione). Fa cinque cose:
-- **critico di scena** (E11): voti su 12 criteri a fine scena; massimo 3 *note di regia* che restano nel prompt del narratore per 15 turni;
-- **estrattore di canone** (E10): trova i fatti inventati dal narratore e non dichiarati, controlla le contraddizioni, le ripara nella finzione;
-- **decisioni importanti**: quando i giocatori escono dal copione, quando una minaccia avanza, quando un PNG cambia campo, quando un indizio essenziale rischia di perdersi. Il narratore improvvisa una **mossa morbida** subito, il regista decide con calma e il narratore applica la decisione al turno dopo;
-- **pre-generazione speculativa**: prepara in anticipo i luoghi e i PNG verso cui il gruppo si sta muovendo (scheda, immagine, scelta della musica);
-- **completa le schede** dei PNG improvvisati che ricompaiono.
+### 3. Director and Critic (slow lane, in the background, never on the critical path)
+During the session it uses a strong model via API (Opus 5.5, high effort, asynchronous calls; estimated about $1 for each session). It does five things:
+- **scene critic** (E11): scores on 12 criteria at the end of the scene; at most 3 *director's notes* that stay in the narrator's prompt for 15 turns;
+- **canon extractor** (E10): finds facts the narrator invented and did not declare, checks for contradictions, repairs them within the fiction;
+- **important decisions**: when the players leave the script, when a threat advances, when an NPC changes sides, when an essential clue risks being lost. The narrator improvises a **soft move** right away, the director decides calmly and the narrator applies the decision on the next turn;
+- **speculative pre-generation**: prepares in advance the places and NPCs the group is heading toward (sheet, image, music choice);
+- **completes the sheets** of improvised NPCs that reappear.
 
-Tra una sessione e l'altra usa **Claude Code** (abbonamento): riassunto della sessione, avanzamento delle minacce, preparazione della sessione dopo, revisione della qualità. È lo «studio» di fondo.
+Between sessions it uses **Claude Code** (subscription): session summary, threat progression, preparation of the next session, quality review. It is the background «studio» (study).
 
-### 4. Preparatore (prima della campagna, offline)
-È Claude Code con una skill dedicata, che usa il «Manuale del master» come specifica, più un validatore da riga di comando del Motore (E1). Genera una cartella di campagna in YAML, versionata con git:
-- **Carta di stile**: tono, registro del narratore, regole di prosa, `[STILE]` per le immagini, tavolozza musicale, linee e veli;
-- **fronti**: minacce con orologi e cronologia del cattivo, e cosa succede se i personaggi giocanti non fanno niente;
-- **nodi e scene** (scheda obbligatoria), con indizi secondo la regola dei 3 indizi (≥3 indizi, in ≥2 luoghi, di ≥2 tipi);
-- **PNG** (scheda obbligatoria: personalità a 2 livelli, sa / non sa / crede a torto / mente su, voce, atteggiamento verso ogni personaggio giocante, evoluzione);
-- **asset**: immagini dei luoghi e ritratti, brani per ogni tag d'atmosfera, una voce per ogni PNG (clip di riferimento).
+### 4. Preparer (before the campaign, offline)
+It is Claude Code with a dedicated skill, which uses the «Manuale del master» (Game Master manual) as its specification, plus a command-line validator of the Engine (E1). It generates a campaign folder in YAML, versioned with git:
+- **Style card**: tone, the narrator's style of speech, prose rules, `[STILE]` for images, musical palette, lines and veils;
+- **fronts**: threats with clocks and the villain's timeline, and what happens if the player characters do nothing;
+- **nodes and scenes** (sheet required), with clues following the 3-clue rule (≥3 clues, in ≥2 places, of ≥2 types);
+- **NPCs** (sheet required: two-layer personality, knows / does not know / wrongly believes / lies about, voice, attitude toward each player character, evolution);
+- **assets**: images of places and portraits, tracks for each mood tag, one voice for each NPC (reference clip).
 
-**Se le schede non sono valide, la sessione non parte.** Prima di ogni campagna gira la **serie di test di attacco** (E15): con anche una sola fuga, la campagna non parte.
+**If the sheets are not valid, the session does not start.** Before each campaign the **attack test series** runs (E15): with even a single leak, the campaign does not start.
 
-### 5. Voce e ascolto
-- **Sintesi vocale** dietro un'interfaccia `TtsProvider`, per poter cambiare motore senza toccare il resto:
-  - **drama-3 di Fish Audio via OpenRouter**: la voce del gioco dal 9 novembre 2026 (`CANTASTORIE_VOCE=fish`,
-    predefinita in scripts/partita.sh). PCM a 44,1 kHz in streaming, con direzioni espressive: il narratore
-    scrive `[offesa, a voce bassa]`, i suoni (`[sigh]`) e i tag (`<whisper>…</whisper>`), e la voce li interpreta
-    senza leggerli. Proiettore, telefoni e trascrizione mostrano solo le parole. Fonti e misure in
+### 5. Voice and listening
+- **Speech synthesis** behind a `TtsProvider` interface, so the engine can be changed without touching the rest:
+  - **Fish Audio's drama-3 via OpenRouter**: the game's voice from November 9, 2026 (`TAGM_VOCE=fish`,
+    default in scripts/partita.sh). PCM at 44.1 kHz streaming, with expressive directions: the narrator
+    writes `[offesa, a voce bassa]` ("[offended, in a low voice]"), sounds (`[sigh]`) and tags (`<whisper>…</whisper>`), and the voice performs them
+    without reading them aloud. The projector, phones and transcript show only the words. Sources and measurements in
     docs/ricerca-voce-drama3.md;
-  - `QwenLocal`: la riserva. Se drama-3 non risponde (dopo un ritentativo) si usa Qwen, se è acceso;
-    altrimenti la frase resta testo sullo schermo e il turno va avanti.
-- **«Ascolta qui»**: ogni telefono può accendere la voce del gioco anche su di sé. La voce dell'esito di
-  un'azione privata va solo al telefono di quel PG, mai al proiettore (`solo_pg`).
-- **Costi**: a fine turno una riga `tipo: voce` in logs/costi.jsonl, accanto a quella dell'LLM;
-  scripts/costi.sh fa la somma per sessione.
-- **Registro voci**:
-  - il narratore ha una voce fissa;
-  - ogni PNG ha un `voce_id` e una clip di riferimento. Il validatore vieta voci uguali nella stessa scena e controlla la distanza di tono tra le voci.
-- **Coda per frase**:
-  - il narratore genera, il filtro controlla, la sintesi parla;
-  - le battute fisse (frase campione di un PNG, introduzioni, saluti) sono **pre-registrate**;
-  - con Qwen in locale, la prima frase di una battuta clonata si fa in anticipo, così la voce non si interrompe.
-- **Ascolto**: tieni-premuto-per-parlare dal telefono; l'audio va al Mac, dove Whisper turbo lo trascrive in locale. Gli si passano in anticipo i nomi della campagna.
+  - `QwenLocal`: the fallback. If drama-3 does not respond (after a retry) Qwen is used, if it is on;
+    otherwise the sentence stays as text on screen and the turn moves on.
+- **«Ascolta qui»** (Listen here): each phone can turn on the game's voice for itself too. The voice of the outcome of
+  a private action goes only to that PC's phone, never to the projector (`solo_pg`).
+- **Costs**: at the end of the turn a `tipo: voce` line in logs/costi.jsonl, next to the LLM's;
+  scripts/costi.sh sums it for each session.
+- **Voice log**:
+  - the narrator has a fixed voice;
+  - each NPC has a `voce_id` and a reference clip. The validator forbids identical voices in the same scene and checks the pitch distance between voices.
+- **Queue, sentence by sentence**:
+  - the narrator generates, the filter checks, the synthesis speaks;
+  - fixed lines (a sample sentence of an NPC, introductions, greetings) are **pre-recorded**;
+  - with Qwen locally, the first sentence of a cloned line is produced in advance, so the voice does not break off.
+- **Listening**: hold-to-talk from the phone; the audio goes to the Mac, where Whisper turbo transcribes it locally. The campaign's names are passed to it in advance.
 
-### 6. Musica, ambiente, immagini
-- **Musica**: un vocabolario chiuso di tag (esplorazione, taverna, tensione, mistero, battaglia, boss, pathos, vittoria, riposo, orrore…), con 2–3 brani per tag e per campagna, tutti nello stesso stile.
-  - Il narratore propone il tag; il Motore applica una isteresi: almeno 60–90 s prima di cambiare, salvo l'inizio di un combattimento.
-  - Dissolvenze incrociate tra i brani; la musica si abbassa sotto la voce (Web Audio).
-  - Uno strato di ambiente per luogo (pioggia, folla, gocce).
-- **Immagini**: pre-generate per luoghi e PNG, unendo gli invarianti e `[STILE]`, così volti e luoghi restano coerenti (E14).
-  - Se manca un'immagine, resta quella più vicina o un'immagine d'atmosfera finché la nuova non è pronta.
-  - Il generatore è ancora da scegliere: OpenRouter quando torna, oppure in locale.
+### 6. Music, ambience, images
+- **Music**: a closed vocabulary of tags (exploration, tavern, tension, mystery, battle, boss, pathos, victory, rest, horror…), with 2–3 tracks for each tag and each campaign, all in the same style.
+  - The narrator proposes the tag; the Engine applies hysteresis: at least 60–90 s before changing, except at the start of a fight.
+  - Crossfades between tracks; the music ducks under the voice (Web Audio).
+  - One ambience layer for each place (rain, crowd, drips).
+- **Images**: pre-generated for places and NPCs, combining the invariants and `[STILE]`, so faces and places stay consistent (E14).
+  - If an image is missing, the closest one stays or an atmosphere image until the new one is ready.
+  - The generator is still to be chosen: OpenRouter when it is back, or locally.
 
-## Interfacce
+## Interfaces
 
-**Telefono** (web app, ingresso con QR o codice stanza):
-- scheda del personaggio;
-- tieni-premuto-per-parlare e testo;
-- interruttore **privato**;
-- casella dei messaggi privati;
-- tiro dei dadi con un tocco;
-- stato dell'azione: *in coda / superata / risolta*;
-- pulsante **Annulla**;
-- X-card anonima.
+**Phone** (web app, entry via QR or room code):
+- character sheet;
+- hold-to-talk and text;
+- **private** switch;
+- private messages box;
+- dice roll with one tap;
+- action status: *queued / superseded / resolved*;
+- **Annulla** (Undo) button;
+- anonymous X-card.
 
-**Schermo/proiettore**:
-- immagine della scena con un lento movimento della camera;
-- ritratto e nome di chi parla;
-- ordine di iniziativa in combattimento;
-- tutto l'audio: voce, musica, ambiente.
+**Screen/projector**:
+- scene image with a slow camera movement;
+- portrait and name of the speaker;
+- initiative order in combat;
+- all the audio: voice, music, ambience.
 
-**Pannello master** (sul Mac): stato, orologi, canone, note di regia, pulsanti d'emergenza. È importante, non un di più: i progetti esistenti (CALYPSO, Friends & Fables) insegnano che un umano deve poter correggere o fermare il master IA.
+**Master panel** (on the Mac): state, clocks, canon, director's notes, emergency buttons. It is important, not an extra: existing projects (CALYPSO, Friends & Fables) teach that a human must be able to correct or stop the AI master.
 
-Com'è fatto oggi (`/master`, contratto in `packages/shared/src/master.ts`):
-- **Accesso**: il server stampa nel log all'avvio la riga `PANNELLO MASTER` con il link `http://localhost:4610/master?token=…`
-  (anche `scripts/avvio.sh` lo mostra). Il token cambia a ogni avvio (o si fissa con `CANTASTORIE_MASTER_TOKEN`), apre la
-  stanza Socket.IO `master` e non è mai nel QR: i telefoni non possono entrare (cinque tentativi sbagliati chiudono il socket).
-- **Vede**: scena e luogo sul proiettore, orologi con i segni mostrati e il prossimo, finestra delle azioni, azioni in sospeso
-  con stato e legami (anche le private, segnate), trascrizione pubblica, note di regia, battute del repertorio (modalità B)
-  e il registro dei comandi.
-- **Comanda**:
-  - **Pausa / Riprendi**: nessuna nuova finestra. A finestra aperta la finestra resta aperta ma non si chiude da sola
-    (il conto alla rovescia del ritmo concitato si ferma, e alla ripresa riparte da capo); durante una narrazione la si
-    lascia finire e poi il tavolo si ferma (fase `pausa`). I telefoni possono scrivere: l'azione entra alla ripresa. La
-    pausa la mette e la toglie solo il master: il Motore non si ferma mai da solo.
-  - **Ferma la narrazione**: interrompe subito LLM e voce, lo schermo tace e il tavolo va in pausa. Le azioni di quel turno
-    non sono state risolte: tornano ai giocatori come «non è andata», da rimandare.
-  - **Cambia luogo** (dissolvenza sul proiettore), **orologio ±1 segno**, **Risolvi ora** (chiude la finestra: il narratore risponde alle
-    azioni inviate, senza aspettare chi manca), **ritmo calmo / concitato**, **salta l'azione** di
-    un giocatore (torna nella sua casella, chi ne dipendeva deve decidere).
-  - **Cambia scena** (campagne con `scene/*.yaml`): contesto del narratore e orologi attivi della scena nuova (gli orologi
-    tengono lo stato tra le scene), luogo sul proiettore, battute della scena; le azioni in sospeso tornano ai giocatori,
-    il narratore legge l'apertura e si apre la finestra per tutti.
-  - **Immagini di situazione** (`situazione_<png>_<id>`, mai usate come ritratto o luogo): il master le mette e le toglie;
-    in modalità B il Motore le mostra da solo a fine narrazione quando esce la rivelazione collegata
-    (`aspetto.situazioni[].dopo`, oppure l'indizio del PNG il cui `come_si_trova` nomina la situazione), e torna il luogo
-    quando parte la narrazione successiva.
-  - **Note di regia**: al massimo 3, da 1 a 15 turni; entrano nel messaggio del narratore (parte variabile, fuori cache) dal
-    turno successivo, e ogni turno narrato ne consuma uno. Si azzerano quando la scena ricomincia.
-- **Registro**: ogni comando, riuscito o rifiutato, è una riga di `logs/master.jsonl` e del log del server (`evento: master`).
-- **Senza spoiler** (attiva per default, interruttore in alto, scelta salvata nel browser): chi fa da master spesso gioca
-  anche. Il pannello nasconde nome, segni e «a orologio completo» degli orologi («Orologio 1 · segni 1/6 · dovuto»), il
-  contenuto delle azioni private (restano autore e stato), le battute non ancora uscite (solo quante, per chi parla) e il
-  tipo vero di quelle uscite, le situazioni non in onda. Comandi, stati, conteggi, trascrizione, registro e note restano.
+How it works today (`/master`, contract in `packages/shared/src/master.ts`):
+- **Access**: on startup the server prints the line `PANNELLO MASTER` in the log with the link `http://localhost:4610/master?token=…`
+  (`scripts/avvio.sh` also shows it). The token changes at every startup (or is fixed with `TAGM_MASTER_TOKEN`), opens the
+  Socket.IO room `master` and is never in the QR: the phones cannot enter (five failed attempts close the socket).
+- **Sees**: scene and place on the projector, clocks with the marks shown and the next one, action window, pending actions
+  with status and links (private ones too, marked), public transcript, director's notes, repertoire lines (mode B)
+  and the command log.
+- **Commands**:
+  - **Pausa / Riprendi** (Pause / Resume): no new window. With a window open, it stays open but does not close on its own
+    (the countdown of the frantic pace stops, and on resume it starts again from the beginning); during a narration it is
+    let finish and then the table stops (phase `pausa`). Phones can write: the action enters on resume. The
+    pause is set and lifted only by the master: the Engine never stops on its own.
+  - **Ferma la narrazione** (Stop the narration): immediately interrupts the LLM and voice, the screen goes silent and the table pauses. That turn's actions
+    were not resolved: they return to the players as «non è andata» («it didn't go through»), to be resubmitted.
+  - **Cambia luogo** (Change place) (fade on the projector), **orologio ±1 segno** (clock ±1 mark), **Risolvi ora** (Resolve now) (closes the window: the narrator responds to the
+    actions sent, without waiting for whoever is missing), **ritmo calmo / concitato** (calm / frantic pace), **salta l'azione** (skip the action) of
+    a player (it returns to their box; whoever depended on it must decide).
+  - **Cambia scena** (Change scene) (campaigns with `scene/*.yaml`): the narrator's context and the active clocks of the new scene (the clocks
+    keep their state across scenes), place on the projector, scene lines; pending actions return to the players,
+    the narrator reads the opening and the window opens for everyone.
+  - **Situation images** (`situazione_<png>_<id>`, never used as portrait or place): the master puts them up and takes them down;
+    in mode B the Engine shows them by itself at the end of the narration when the linked revelation comes out
+    (`aspetto.situazioni[].dopo`, or the NPC clue whose `come_si_trova` names the situation), and the place returns
+    when the next narration starts.
+  - **Director's notes**: at most 3, from 1 to 15 turns; they enter the narrator's message (variable part, outside the cache) from the
+    next turn, and each narrated turn uses up one. They reset when the scene restarts.
+- **Log**: every command, successful or rejected, is a line in `logs/master.jsonl` and in the server log (`evento: master`).
+- **No spoilers** (on by default, switch at the top, choice saved in the browser): whoever acts as master often also plays
+  too. The panel hides the name, marks and «a orologio completo» (clock fully filled) of the clocks («Orologio 1 · segni 1/6 · dovuto» (Clock 1 · marks 1/6 · due)), the
+  content of private actions (author and status remain), the lines not yet delivered (only the count, for the one who speaks) and the
+  true type of those delivered, and the situations not on air. Commands, states, counts, transcript, log and notes remain visible.
 
-**Connessione e vincoli dei telefoni** (dalla ricerca):
-- **Socket.IO v4**, con una stanza per il tavolo e una `player:<id>` per ogni canale privato. Alla riconnessione si risincronizza in base al numero di versione dello stato. Le clip audio si inviano con una POST HTTP.
-- **Serve HTTPS anche in rete locale**, altrimenti il microfono non si apre: `http://192.168.x.x` non è un contesto sicuro. Ci sono tre strade, da provare su telefoni veri in F2:
-  - un tunnel HTTPS, per esempio Cloudflare: si entra col QR e non si installa niente;
-  - mkcert, che però richiede di installare il certificato su ogni telefono;
-  - Tailscale, che richiede l'app.
-- **Formati audio**: si registra con MediaRecorder, nel formato che il telefono supporta (Safari mp4/AAC, Chrome webm/opus). Il server converte con ffmpeg.
-- **Schermo**: un clic su «Inizia sessione» sblocca l'audio, perché i browser bloccano la riproduzione automatica. Sui telefoni si usa Wake Lock, così lo schermo non si spegne.
+**Connection and constraints of the phones** (from the research):
+- **Socket.IO v4**, with one room for the table and a `player:<id>` for each private channel. On reconnection it resyncs based on the state's version number. Audio clips are sent via an HTTP POST.
+- **HTTPS is required even on the local network**, otherwise the microphone does not open: `http://192.168.x.x` is not a secure context. There are three routes, to try on real phones in F2:
+  - an HTTPS tunnel, for example Cloudflare: you enter via QR and install nothing;
+  - mkcert, which however requires installing the certificate on every phone;
+  - Tailscale, which requires the app.
+- **Audio formats**: recording uses MediaRecorder, in the format the phone supports (Safari mp4/AAC, Chrome webm/opus). The server converts with ffmpeg.
+- **Screen**: a click on «Inizia sessione» (Start session) unlocks the audio, because browsers block automatic playback. On phones Wake Lock is used, so the screen does not turn off.
 
-## Turni e azioni annullabili
+## Turns and undoable actions
 
-Ogni scena ha un **numero di versione**. Ogni azione inviata porta con sé la versione in cui è stata scritta.
+Every scene has a **version number**. Every action sent carries the version it was written against.
 
-**Esplorazione e dialogo: finestre.** Quando la narrazione finisce con un invito a un personaggio giocante, si apre una finestra.
-- La finestra si chiude in uno di tre casi (docs/f0-contratti.md, «Turno»):
-  - hanno inviato tutti i giocatori invitati (inviare = pronto), dopo 2,5 s di assestamento;
-  - al ritmo concitato (lo chiede la narrazione), alla scadenza: 25 s dall'apertura;
-  - il master preme «Risolvi ora».
-- Al ritmo calmo non c'è nessuna scadenza né mossa contro lo stallo: se nessuno scrive, il gioco aspetta. Un sorvegliante
-  riprende il gioco se il Motore resta fermo (modello, voce) senza segni di vita.
-- Finché la finestra è aperta, ogni azione si può modificare o annullare.
-- Alla risoluzione, le azioni scritte su una versione vecchia diventano **superate**. Il telefono chiede: «La scena è cambiata: confermi o riscrivi?».
-- Esempio: «faccio un passo avanti» mentre il narratore parla. Se il compagno ti anticipa, la tua azione viene segnata come superata invece che eseguita alla cieca.
+**Exploration and dialogue: windows.** When the narration ends with an invitation to a player character, a window opens.
+- The window closes in one of three cases (docs/f0-contratti.md, «Turno» (Turn)):
+  - all invited players have sent (sending = ready), after 2.5 s of settling;
+  - at the frantic pace (requested by the narration), at the deadline: 25 s after opening;
+  - the master presses «Risolvi ora» (Resolve now).
+- At the calm pace there is no deadline nor any move against stalling: if nobody writes, the game waits. A watchdog
+  resumes the game if the Engine stays stuck (model, voice) with no signs of life.
+- While the window is open, every action can be edited or undone.
+- On resolution, actions written against an old version become **superseded**. The phone asks: «La scena è cambiata: confermi o riscrivi?» («The scene has changed: confirm or rewrite?»).
+- Example: «faccio un passo avanti» («I take a step forward») while the narrator is speaking. If your companion gets there first, your action is marked as superseded instead of being carried out blindly.
 
-**Combattimento: iniziativa rigida.** Un turno alla volta, con un timer morbido; il problema dell'annullamento non si pone.
+**Combat: rigid initiative.** One turn at a time, with a soft timer; the undo problem does not arise.
 
-**Azioni private**: risolte dal Motore. L'esito va solo sul telefono di chi le ha fatte. Nella narrazione pubblica finisce solo ciò che gli altri possono percepire, e la cassaforte lo controlla.
+**Private actions**: resolved by the Engine. The outcome goes only to the phone of whoever made them. Only what the others can perceive ends up in the public narration, and the vault checks it.
 
-## Latenza attesa (stima dai numeri misurati)
+## Expected latency (estimate from the measured figures)
 
-Dal momento in cui il giocatore rilascia il pulsante:
-- trascrizione Whisper: circa 1,6 s;
-- chiusura della finestra: variabile;
-- prima frase di Haiku: circa 0,9 s;
-- filtro: meno di 0,01 s;
-- primo audio di Qwen: circa 0,7 s.
+From the moment the player releases the button:
+- Whisper transcription: about 1.6 s;
+- closing of the window: variable;
+- first Haiku sentence: about 0.9 s;
+- filter: under 0.01 s;
+- first Qwen audio: about 0.7 s.
 
-Totale: **circa 3,5 s, più l'attesa della finestra.** Per farla sentire meno, intanto:
-- sullo schermo compare subito «Kara si avvicina…» con un suono di conferma;
-- la musica non si ferma mai.
+Total: **about 3.5 s, plus the wait for the window.** To make it feel shorter, meanwhile:
+- on screen «Kara si avvicina…» («Kara is approaching…») appears immediately, with a confirmation sound;
+- the music never stops.
 
-## Tecnologia
+## Technology
 
-- **Server e client** in TypeScript su Node, riusando l'impianto di Agorà: server unico, Vite, stanze, interfaccia fumettistica. SDK Anthropic ufficiale, con `baseURL` fissato su api.anthropic.com e non sul proxy :4000.
-- **Componente ML** in Python per MLX (mlx-whisper, mlx-audio con Qwen3-TTS). È un servizio HTTP locale, separato perché le librerie MLX sono in Python.
-- **Dati**: la campagna in YAML con git; la sessione in SQLite a eventi; gli asset su file.
-- **Opzionale: server MCP** perché Claude Code possa leggere lo stato e scrivere note di regia durante la sessione. È l'idea originale, che resta come strumento del regista, non come motore.
-- **Codice modulare**: un modulo per responsabilità (motore, contesto, narratore, PNG, filtri, canone, regista, voce, musica, trasporto). Log strutturato di ogni chiamata, con latenze e costi.
+- **Server and client** in TypeScript on Node, reusing Agorà's setup: single server, Vite, rooms, comic-style interface. Official Anthropic SDK, with `baseURL` fixed to api.anthropic.com and not to the :4000 proxy.
+- **ML component** in Python, for MLX (mlx-whisper, mlx-audio with Qwen3-TTS). It is a local HTTP service, separate because the MLX libraries are in Python.
+- **Data**: the campaign in YAML with git; the session in event-based SQLite; the assets as files.
+- **Optional: MCP server** so Claude Code can read the state and write director's notes during the session. It is the original idea, which remains as a tool of the director, not as the engine.
+- **Modular code**: one module for each responsibility (engine, context, narrator, NPCs, filters, canon, director, voice, music, transport). Structured log of each call, with latencies and costs.
 
-## Piano di lavoro (ogni fase verificata prima della successiva)
+## Work plan (each phase verified before the next)
 
-1. **F0. Prova completa**: una scena, telefono in solo testo, Haiku, Qwen, schermo. Si misura la latenza reale in stanza.
-2. **F1. Motore**: schema della campagna, validatore, compilatore di contesto, chiamate separate dei PNG, filtri E4–E6, canone.
-3. **F2. Telefoni e schermo**: tieni-premuto-per-parlare con Whisper, azioni private, annullamento e versioni, musica con abbassamento sotto la voce.
-4. **F3. Preparatore**: skill di Claude Code e una prima avventura breve (3–5 luoghi, 4–6 PNG), voci assegnate, musica di biblioteca.
-5. **F4. Regista e critico** in sottofondo, serie di test di attacco, rubrica.
-6. **F5. Asset generati**: musica (Stable Audio 3 / ACE-Step), immagini, passaggio a HeyGen dopo la ricarica.
-7. **F6. Combattimento** completo: iniziativa, schede dei mostri SRD 5.2.
+1. **F0. Full test**: one scene, phone in text-only, Haiku, Qwen, screen. Real latency is measured in the room.
+2. **F1. Engine**: campaign schema, validator, context compiler, separate NPC calls, filters E4–E6, canon.
+3. **F2. Phones and screen**: hold-to-talk with Whisper, private actions, undo and versions, music ducking under the voice.
+4. **F3. Preparer**: Claude Code skill and a first short adventure (3–5 places, 4–6 NPCs), assigned voices, library music.
+5. **F4. Director and critic** in the background, attack test series, rubric.
+6. **F5. Generated assets**: music (Stable Audio 3 / ACE-Step), images, switch to HeyGen after the top-up.
+7. **F6. Full combat**: initiative, SRD 5.2 monster sheets.
 
-## Rischi principali
+## Main risks
 
-- **Qwen in locale ha un margine sottile**: genera appena più veloce di quanto si ascolta, e meno ancora con le voci clonate. Contromisure: battute pre-registrate e una frase di anticipo. Poi HeyGen.
-- **Audio vero nella stanza**: rumore e voci sovrapposte faranno sbagliare Whisper più che nei test. Contromisure: telefono vicino alla bocca e nomi della campagna passati a Whisper. Il testo resta sempre disponibile.
-- **RAM a 16 GB**: Whisper (circa 2,5 GB) e Qwen (fino a 7 GB) insieme ci stanno. Musica e immagini vanno generate prima, mai durante la sessione.
-- **Disco**: circa 16 GB liberi. I modelli si scaricano uno alla volta.
-- **Haiku inventa dettagli**: li cattura l'estrattore di canone. Le contraddizioni si riparano nella finzione.
+- **Qwen locally has a thin margin**: it generates only slightly faster than it plays, and even less with cloned voices. Countermeasures: pre-recorded lines and a sentence of lookahead. Then HeyGen.
+- **Real audio in the room**: noise and overlapping voices will make Whisper err more than in the tests. Countermeasures: phone close to the mouth and campaign names passed to Whisper. Text always remains available.
+- **16 GB of RAM**: Whisper (about 2.5 GB) and Qwen (up to 7 GB) together fit. Music and images must be generated beforehand, never during the session.
+- **Disk**: about 16 GB free. Models are downloaded one at a time.
+- **Haiku invents details**: the canon extractor catches them. Contradictions are repaired within the fiction.

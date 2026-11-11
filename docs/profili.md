@@ -29,7 +29,7 @@ Notes on the rules:
 
 If a key is found in the environment or in `.env`, the profile lists it as an **optional upgrade**:
 
-| Key | Upgrade | Riserva |
+| Key | Upgrade | Fallback |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | reader: Haiku (better prose, pay per use) | local reader, then the scripted one |
 | `OPENROUTER_API_KEY` | voice: drama-3 (pay per use) | local voice, then the tone |
