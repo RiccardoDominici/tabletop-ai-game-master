@@ -13,8 +13,8 @@ inspired it? If a special case seems needed for a single campaign, look for the 
 
 - Every change updates, in the same commit, the documentation it affects: `README.md`, the pages of
   `docs/guide/` (the step-by-step user guide) and the project `docs/*.md` files that describe the changed
-  behaviour (`docs/prove.md`, `docs/strati.md`, `docs/audio.md`, `docs/architettura.md`, …). These
-  older internal design documents under `docs/` (not `docs/guide/`) are still in Italian and get translated later; new documents are written in English.
+  behaviour (`docs/prove.md`, `docs/strati.md`, `docs/audio.md`, `docs/architettura.md`, …). The
+  internal design documents under `docs/` (not `docs/guide/`) are written in English, like the rest of the documentation.
 - A new feature or option is not finished until it appears in the guide, with the real command.
   Do not write commands or flags without checking them in the code or in the scripts.
 - A change that makes a guide page false is a bug, even if the code works.
@@ -63,10 +63,10 @@ source and the length. Never add a `console.log` or a `print` of a key or token 
 ## Ports: 4610 and 4611 belong to the real game
 
 - `4610` is the server of the real game; `4611` is the local Qwen voice service.
-- Trial runs, tests and development instances use `CANTASTORIE_PORTA` with another port (e.g. `4710`),
+- Trial runs, tests and development instances use `TAGM_PORTA` with another port (e.g. `4710`),
   and logs in `logs/porta-<porta>/`. Do not start, stop or restart anything on 4610 or 4611 for a trial run.
 - Automated tests must never open 4610 or 4611. A test that needs a server uses a free port
-  chosen by the test, or `CANTASTORIE_PORTA`.
+  chosen by the test, or `TAGM_PORTA`.
 - `scripts/arresto.sh` and `scripts/avvio.sh` stop and start only the port you ask for: do not use them on
   a game in progress unless Riccardo has asked for it.
 
@@ -93,5 +93,4 @@ source and the length. Never add a `console.log` or a `print` of a key or token 
 
 - No monolithic files: small modules with clear responsibilities.
 - Adequate logging: important decisions and errors yes, personal data or secrets no.
-- Before a non-trivial change, read `docs/architettura.md` and the `docs/*.md` files of the subsystem
-  (these design documents are still in Italian).
+- Before a non-trivial change, read `docs/architettura.md` and the `docs/*.md` files of the subsystem.
