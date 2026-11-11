@@ -207,6 +207,521 @@
         "costo_totale_usd": 0.000599
       },
       "quando": "2026-11-11 11:28:03"
+    },
+    {
+      "id": "ritratto_png_grosso",
+      "file": "ritratto_png_grosso.jpg",
+      "tipo": "ritratto",
+      "prompt": "a tall, broad, heavy humanoid the size of a man, mud-brown skin, flat snout with two small tusks, half of the left ear cut off, a bear pelt over the shoulders, a round wooden shield and a spiked iron club, gnawing a mutton bone by a campfire inside a ruined tower. Tratti fissi: alto come un uomo e largo di spalle; pelle color fango; muso piatto con due zanne corte; mezzo orecchio sinistro mozzato; pelle d'orso sulle spalle; mazza ferrata; scudo di legno, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 304401329,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 69.7,
+      "picco_gb": 4.34,
+      "kb": 259,
+      "rifilato_pct": 1.2,
+      "firma": "v1:649afb566222b69f3227e9e6",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "lato sinistro della testa, entrambe le orecchie",
+            "descrizione": "Il prompt chiede un orecchio sinistro mozzato, ma entrambe le orecchie appaiono integre.",
+            "grave": false
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "mano destra del personaggio, mazza",
+            "descrizione": "La mazza è di legno con puntale di ferro, senza le punte di ferro previste dal prompt.",
+            "grave": false
+          },
+          {
+            "tipo": "incongruenza",
+            "dove": "lato destro del corpo, scudo",
+            "descrizione": "Lo scudo sembra sospeso accanto al corpo senza una mano visibile che lo regga.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "lato sinistro della testa, entrambe le orecchie",
+              "descrizione": "Il prompt chiede un orecchio sinistro mozzato, ma entrambe le orecchie appaiono integre.",
+              "grave": false
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "mano destra del personaggio, mazza",
+              "descrizione": "La mazza è di legno con puntale di ferro, senza le punte di ferro previste dal prompt.",
+              "grave": false
+            },
+            {
+              "tipo": "incongruenza",
+              "dove": "lato destro del corpo, scudo",
+              "descrizione": "Lo scudo sembra sospeso accanto al corpo senza una mano visibile che lo regga.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Un grosso uomo-orso in pelliccia bruna, con mantello di pelo sulle spalle, stringe una mazza con puntale di ferro e uno scudo rotondo di legno mentre rosicchia un osso davanti a due fuochi in una torre in rovina.",
+          "costo_usd": 0.000901,
+          "token": {
+            "ingresso": 3192,
+            "uscita": 1164
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000901,
+        "tentativi": 2,
+        "costo_totale_usd": 0.001851
+      },
+      "quando": "2026-11-11 18:19:52"
+    },
+    {
+      "id": "ritratto_png_ugo",
+      "file": "ritratto_png_ugo.jpg",
+      "tipo": "ritratto",
+      "prompt": "hunched old charcoal burner, face blackened with soot, singed grey beard, battered felt hat, huge rough hands, a hatchet at his belt, woodsmoke behind him. Tratti fissi: vecchio curvo; viso nero di fuliggine; barba grigia bruciacchiata; cappello di feltro sfondato; accetta alla cintura, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 732890723,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 73.1,
+      "picco_gb": 4.33,
+      "kb": 249,
+      "rifilato_pct": 1.2,
+      "firma": "v1:431800440392853678ba13df",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Ritratto di un vecchio carbonaio curvo, con viso annerito, barba grigia, cappello di feltro sfondato e mani grandi, davanti a fumo e fuochi sullo sfondo.",
+          "costo_usd": 0.000631,
+          "token": {
+            "ingresso": 3217,
+            "uscita": 619
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000631,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000631
+      },
+      "quando": "2026-11-11 18:21:10"
+    },
+    {
+      "id": "ritratto_png_zirra",
+      "file": "ritratto_png_zirra.jpg",
+      "tipo": "ritratto",
+      "prompt": "a small female humanoid warrior the size of a child, grey-green skin, pointed ears, bright yellow eyes, sharp grin, studded leather jerkin, a round shield painted red, a short sword too big for her, firelight in a ruined stone tower. Tratti fissi: piccola come un bambino; pelle grigioverde; orecchie a punta; occhi gialli; scudo rotondo dipinto di rosso; spada corta; giubba di cuoio con le borchie, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 625387389,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 77.9,
+      "picco_gb": 4.32,
+      "kb": 255,
+      "rifilato_pct": 1.2,
+      "firma": "v1:359e1b3945db7b4f1f739e3f",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Una piccola creatura grigioverde con orecchie a punta e occhi gialli sorride sghignazzando, con giubba di cuoio borchiata, scudo rotondo rosso e una spada corta, davanti a un muro di pietra in rovina illuminato dal fuoco.",
+          "costo_usd": 0.000642,
+          "token": {
+            "ingresso": 3269,
+            "uscita": 630
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000642,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000642
+      },
+      "quando": "2026-11-11 18:22:33"
+    },
+    {
+      "id": "situazione_png_berta_in_scena_ovile",
+      "file": "situazione_png_berta_in_scena_ovile.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: cinquant'anni; robusta; scialle nero da vedova; chiave di ferro al collo su un laccio di cuoio; mani screpolate. Now inside the place shown in the second reference image, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 361693084,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_berta",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_berta",
+        "luogo_scena_ovile"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 575.0,
+      "picco_gb": 7.28,
+      "kb": 591,
+      "rifilato_pct": 1.2,
+      "firma": "v1:499abbb1a4aa5289b8cc042f",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "volto della donna, al centro",
+            "descrizione": "La donna appare più anziana dei cinquant'anni indicati nel prompt.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "volto della donna, al centro",
+              "descrizione": "La donna appare più anziana dei cinquant'anni indicati nel prompt.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Una donna anziana con velo nero e mantello scuro tiene una chiave di ferro su un laccio di cuoio, davanti a una fattoria di pietra con un cavallo e un recinto di pecore in una notte fredda.",
+          "costo_usd": 0.000814,
+          "token": {
+            "ingresso": 3989,
+            "uscita": 830
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000814,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000814
+      },
+      "quando": "2026-11-11 18:32:14"
+    },
+    {
+      "id": "situazione_png_grosso_in_scena_torre",
+      "file": "situazione_png_grosso_in_scena_torre.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: alto come un uomo e largo di spalle; pelle color fango; muso piatto con due zanne corte; mezzo orecchio sinistro mozzato; pelle d'orso sulle spalle; mazza ferrata; scudo di legno. Now inside the place shown in the second reference image, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 319964614,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_grosso",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_grosso",
+        "luogo_scena_torre"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 633.4,
+      "picco_gb": 6.87,
+      "kb": 603,
+      "rifilato_pct": 1.2,
+      "firma": "v1:a28ac3ab40dad4df615451e5",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "testo_o_firma",
+            "dove": "muri di pietra a sinistra e a destra, in particolare il segno a cappio in basso a destra",
+            "descrizione": "Sulle pietre dei muri ci sono scarabocchi scuri che assomigliano a graffiti o firme scritte, anche se non leggibili.",
+            "grave": false
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "mano destra dell'orso",
+            "descrizione": "L'arma è una clava d'osso invece della mazza ferrata richiesta dal prompt.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "testo_o_firma",
+              "dove": "muri di pietra a sinistra e a destra, in particolare il segno a cappio in basso a destra",
+              "descrizione": "Sulle pietre dei muri ci sono scarabocchi scuri che assomigliano a graffiti o firme scritte, anche se non leggibili.",
+              "grave": false
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "mano destra dell'orso",
+              "descrizione": "L'arma è una clava d'osso invece della mazza ferrata richiesta dal prompt.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Un orso antropomorfo muscoloso con mantello di pelliccia, scudo di legno e una clava d'osso si erge davanti a un fuoco in un cortile di pietra circondato da mura, sotto una luna piena.",
+          "costo_usd": 0.000989,
+          "token": {
+            "ingresso": 4020,
+            "uscita": 1175
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000989,
+        "tentativi": 2,
+        "costo_totale_usd": 0.001904
+      },
+      "quando": "2026-11-11 18:52:13"
+    },
+    {
+      "id": "situazione_png_ugo_col_cervo",
+      "file": "situazione_png_ugo_col_cervo.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the reference image, same face, hair and clothes: tratti fissi: vecchio curvo; viso nero di fuliggine; barba grigia bruciacchiata; cappello di feltro sfondato; accetta alla cintura. Now the old charcoal burner stands in his branch hut beside a freshly killed deer hanging from a beam, a wire snare around its neck, holding his felt hat in his hands, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 676484068,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_ugo",
+      "dopo": [
+        "i_cervo",
+        "ugo_notte_cervo",
+        "ugo_notte_promessa"
+      ],
+      "automatica": false,
+      "riferimenti": [
+        "ritratto_png_ugo"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 442.6,
+      "picco_gb": 6.08,
+      "kb": 666,
+      "rifilato_pct": 1.2,
+      "firma": "v1:752b1c4812f64ca4b8d2f917",
+      "qualita": {
+        "esito": "da_controllare",
+        "versione": 2,
+        "motivi": [
+          "soggetto: Il cervo è vivo e in piedi sul terreno, mentre il prompt chiede un cervo appena ucciso appeso a una trave. (centro-destra, il cervo)"
+        ],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "centro-destra, il cervo",
+            "descrizione": "Il cervo è vivo e in piedi sul terreno, mentre il prompt chiede un cervo appena ucciso appeso a una trave.",
+            "grave": true
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "centro-destra",
+            "descrizione": "Non si vede un laccio di filo metallico stretto al collo del cervo; il cerchio di filo appeso al palo non è al collo dell'animale.",
+            "grave": false
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "cintura dell'uomo",
+            "descrizione": "Non si vede l'accetta alla cintura richiesta dal prompt, solo una sacca.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "difettosa",
+          "motivi": [
+            "soggetto: Il cervo è vivo e in piedi sul terreno, mentre il prompt chiede un cervo appena ucciso appeso a una trave. (centro-destra, il cervo)"
+          ],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "centro-destra, il cervo",
+              "descrizione": "Il cervo è vivo e in piedi sul terreno, mentre il prompt chiede un cervo appena ucciso appeso a una trave.",
+              "grave": true
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "centro-destra",
+              "descrizione": "Non si vede un laccio di filo metallico stretto al collo del cervo; il cerchio di filo appeso al palo non è al collo dell'animale.",
+              "grave": false
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "cintura dell'uomo",
+              "descrizione": "Non si vede l'accetta alla cintura richiesta dal prompt, solo una sacca.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Un vecchio carbonaio con barba grigia e cappello di feltro tiene il cappello tra le mani in una capanna di rami, con una lampada accesa a sinistra. A destra, fuori dalla capanna, un cervo vivo sta in piedi sul terreno invece di essere appeso a una trave.",
+          "costo_usd": 0.000938,
+          "token": {
+            "ingresso": 4034,
+            "uscita": 1070
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000938,
+        "tentativi": 3,
+        "costo_totale_usd": 0.002985
+      },
+      "quando": "2026-11-11 19:14:14"
+    },
+    {
+      "id": "situazione_png_ugo_in_scena_carbonaia",
+      "file": "situazione_png_ugo_in_scena_carbonaia.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: vecchio curvo; viso nero di fuliggine; barba grigia bruciacchiata; cappello di feltro sfondato; accetta alla cintura. Now inside the place shown in the second reference image, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 412261885,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_ugo",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_ugo",
+        "luogo_scena_carbonaia"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 653.5,
+      "picco_gb": 7.28,
+      "kb": 611,
+      "rifilato_pct": 1.2,
+      "firma": "v1:81012e9a736148982e8ffc66",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Un vecchio carbonaio curvo, con cappello di feltro, barba grigia e viso scuro, si trova nel bosco notturno davanti a una capanna di rami e a una torre di pietra, con una nuvola di fumo e la luna piena sullo sfondo.",
+          "costo_usd": 0.000754,
+          "token": {
+            "ingresso": 4087,
+            "uscita": 690
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000754,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000754
+      },
+      "quando": "2026-11-11 19:35:51"
+    },
+    {
+      "id": "situazione_png_ugo_in_scena_ovile",
+      "file": "situazione_png_ugo_in_scena_ovile.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: vecchio curvo; viso nero di fuliggine; barba grigia bruciacchiata; cappello di feltro sfondato; accetta alla cintura. Now inside the place shown in the second reference image, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 378139439,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_ugo",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_ugo",
+        "luogo_scena_ovile"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 632.0,
+      "picco_gb": 7.28,
+      "kb": 614,
+      "rifilato_pct": 1.2,
+      "firma": "v1:69042b4a2b8456616e074543",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "cintura del vecchio, lato destro",
+            "descrizione": "Non si vede l'accetta alla cintura richiesta dal prompt, solo la fibbia.",
+            "grave": false
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "viso del vecchio",
+            "descrizione": "Il viso appare grigio-bruno e non nero di fuliggine, e la barba non sembra bruciacchiata come richiesto.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "cintura del vecchio, lato destro",
+              "descrizione": "Non si vede l'accetta alla cintura richiesta dal prompt, solo la fibbia.",
+              "grave": false
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "viso del vecchio",
+              "descrizione": "Il viso appare grigio-bruno e non nero di fuliggine, e la barba non sembra bruciacchiata come richiesto.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Un vecchio curvo con cappello di feltro e lunga barba grigia si ferma davanti a un recinto di legno, con una casetta di pietra illuminata e un cavallo bardato alle spalle, in un paesaggio montano notturno con una torre in lontananza.",
+          "costo_usd": 0.000877,
+          "token": {
+            "ingresso": 4087,
+            "uscita": 937
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000877,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000877
+      },
+      "quando": "2026-11-11 19:24:53"
     }
   ]
 }
