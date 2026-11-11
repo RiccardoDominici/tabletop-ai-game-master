@@ -1,3 +1,4 @@
+import path from 'node:path';
 /**
  * Regole linguistiche del Motore in inglese (lingue/en/motore.yaml, docs/lingue.md): collegamenti tra azioni,
  * divisore di frasi, annuncio in terza persona, guardia della finzione, guardia dei numeri, nomi brevi,
@@ -17,6 +18,9 @@ import { dividiTesto } from '../src/narrazione/frasi';
 import { compilaMessaggioTurno, type DatiMessaggioTurno } from '../src/narrazione/messaggio';
 import { togliNumeriRegole } from '../src/narrazione/numeri-regole';
 import { destinatarioPrivato, guardiaPrivate } from '../src/narrazione/privato';
+import { paroleDiMestiere } from '../src/campagna/nomi';
+import { caricaCampagna } from '../src/campagna/caricatore';
+import { nomiDeiPng } from '../src/repertorio/pertinenza';
 
 beforeAll(() => impostaLingua('en'));
 afterAll(() => impostaLingua('it'));
@@ -144,6 +148,27 @@ describe('guardie in inglese', () => {
     const g2 = guardiaPrivate(stesso, (id) => (id === 'pg_mara' ? ['Mara Quill', 'Mara'] : ['Tobin Ash', 'Tobin']), new Set(['mara quill', 'tobin ash', 'hob the keeper']), nomiPng)!;
     expect(g2('Here we talk to everyone. Not to the goblins.', 4, 'png_keeper')?.id_pg).toBe('pg_mara');
     expect(g2('The key stays with me until you bring the boy back.', 5, 'png_keeper')).toBeNull();
+  });
+
+  /*
+   * Seconda passata della e2e finale (en-mini T3): «I ask the innkeeper quietly what he is hiding» non trovava
+   * «Hale the Innkeeper», e la sua risposta all'azione privata si sentiva al tavolo, con la riga del narratore.
+   */
+  it('il mestiere nel nome e nel ruolo vale come nome del PNG; la risposta all’innkeeper in privato va al telefono', () => {
+    expect(paroleDiMestiere('Hale the Innkeeper', null)).toEqual(['innkeeper']);
+    expect(paroleDiMestiere('Wren', 'the guard of the north gate')).toEqual(['guard']);
+    const c = caricaCampagna(path.join(import.meta.dirname, 'fixtures', 'campagne', 'en-mini'));
+    const nomiPng = nomiDeiPng(c);
+    expect(nomiPng.get('png_keeper')).toContain('innkeeper');
+    const azioni = [
+      { id_pg: 'pg_mara', testo: 'I lean over the counter and look behind it.', privata: false },
+      { id_pg: 'pg_tobin', testo: 'I ask the innkeeper quietly what he is hiding.', privata: true },
+    ];
+    const tutti = new Set([...c.pg, ...c.png].map((p) => p.nome.toLowerCase()));
+    const g = guardiaPrivate(azioni, (id) => (id === 'pg_tobin' ? ['Tobin Ash', 'Tobin'] : ['Mara Quill', 'Mara']), tutti, nomiPng)!;
+    expect(g('Mara Quill leans over the counter and looks behind it.', 0, 'narratore')).toBeNull();
+    expect(g('Tobin Ash asks the innkeeper quietly what he is hiding.', 1, 'narratore')?.id_pg).toBe('pg_tobin');
+    expect(g('Nothing you would want to pay for, friend.', 2, 'png_keeper')?.id_pg).toBe('pg_tobin');
   });
 
   it('nomi brevi: titoli inglesi saltati', () => {

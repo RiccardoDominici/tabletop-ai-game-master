@@ -153,6 +153,10 @@ privato:
 # Short names of PCs and NPCs (apps/server/src/campagna/nomi.ts): titles skipped («Sister Teodora» → «Teodora»).
 nomi:
   titoli: [sister, brother, father, mother, sir, lady, lord, dame, master, mistress, friar, mr, mrs, ms, miss, dr, doctor, captain, sergeant, uncle, aunt, old, young, saint, st]
+  # The trade in the name («Hale the Innkeeper», «Wren the Guard»): the word after one of these counts as a name of the
+  # NPC (apps/server/src/repertorio/pertinenza.ts, nomiDeiPng); and the first word of the sheet's `ruolo`, without article.
+  connettori: [the, called]
+  articoli: [the, a, an]
 
 # Scriptwriter guard (apps/server/src/sceneggiatore/valida.ts, pgCheAgisce): a narrator line whose subject is a PC
 # («Gunda opens her fist», «Then Remo stands up», «Remo and Vanda laugh») or a part of their body («Gunda's fist stays

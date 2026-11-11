@@ -4,6 +4,7 @@
  */
 import type { Campagna } from '../campagna/tipi';
 import { normalizza } from '../azioni/regole';
+import { paroleDiMestiere } from '../campagna/nomi';
 
 /** Soprannomi della scheda del PNG (`alias: [nano, fabbro…]`, schema della skill): come lo chiamano i giocatori. */
 export function aliasDellaScheda(dati: Record<string, unknown>): string[] {
@@ -12,13 +13,14 @@ export function aliasDellaScheda(dati: Record<string, unknown>): string[] {
 
 /**
  * Parole e soprannomi con cui le azioni si riferiscono a ogni PNG (minuscole, senza accenti):
- * nome, primo nome e i soprannomi della scheda. Niente elenchi scritti nel codice: una campagna
+ * nome, primo nome, i soprannomi della scheda e il mestiere (nel nome o nel `ruolo`, campagna/nomi.ts). Niente elenchi scritti nel codice: una campagna
  * senza `alias` si riconosce solo per nome (il validatore rigoroso lo segnala).
  */
 export function nomiDeiPng(c: Campagna): Map<string, string[]> {
   const out = new Map<string, string[]>();
   for (const p of c.png) {
-    const parole = [p.nome, p.nome.split(/\s+/)[0] ?? '', ...aliasDellaScheda(p.dati)];
+    const ruolo = typeof p.dati['ruolo'] === 'string' ? p.dati['ruolo'] : null;
+    const parole = [p.nome, p.nome.split(/\s+/)[0] ?? '', ...aliasDellaScheda(p.dati), ...paroleDiMestiere(p.nome, ruolo)];
     out.set(p.id, [...new Set(parole.map(normalizza).filter((x) => x.length > 2))]);
   }
   return out;

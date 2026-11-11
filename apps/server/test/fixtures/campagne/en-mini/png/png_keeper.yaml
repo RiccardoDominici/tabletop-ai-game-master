@@ -1,5 +1,6 @@
 id: png_keeper
 nome: "Hale the Innkeeper"
+alias: [innkeeper, host]
 sa: [f_rain, f_keeper_thief]
 voce:
   tts: {voce_id: vincent}

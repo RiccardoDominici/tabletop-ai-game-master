@@ -145,6 +145,10 @@ privato:
 # Nomi brevi di PG e PNG (apps/server/src/campagna/nomi.ts): titoli da saltare («Sorella Teodora» → «Teodora»).
 nomi:
   titoli: [sorella, fratello, padre, madre, ser, messer, donna, dama, mastro, frate, suor]
+  # Il mestiere nel nome («Ruggero lo sgherro», «Ugo il carbonaio»): la parola dopo una di queste vale come nome del
+  # PNG (apps/server/src/repertorio/pertinenza.ts, nomiDeiPng); e la prima parola del `ruolo` della scheda, senza articolo.
+  connettori: [il, lo, la, l, i, gli, le, detto, detta]
+  articoli: [il, lo, la, l, un, uno, una, i, gli, le]
 
 # Guardia dello sceneggiatore (apps/server/src/sceneggiatore/valida.ts, pgCheAgisce): una riga del narratore che ha per
 # soggetto un PG («Gunda apre il pugno», «Poi Remo si alza», «Remo e Vanda ridono») o una parte del suo corpo

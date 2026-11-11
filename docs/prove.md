@@ -385,6 +385,12 @@ Examples of facts in the message (real, from the game on 4720):
   - Outcomes of private actions are no longer among the table's facts: in the narrator message they have their own
     section («Esiti delle azioni PRIVATE», `EsitoTurnoProve.fattiPrivati`), and the «NON succede» clause of a private
     action does not quote the action: it only says to tell it in the `[privato pg_x]` line.
+  - An NPC is recognised also by its trade (repertorio/pertinenza.ts, `nomiDeiPng`; campagna/nomi.ts,
+    `paroleDiMestiere`): the word after a connector of the name («Hale the Innkeeper» → innkeeper, «Ruggero lo sgherro» →
+    sgherro) and the first word of the sheet's `ruolo` without its article; connectors and articles are in
+    `lingue/<code>/motore.yaml`, section `nomi`. In the second pass «I ask the innkeeper…» did not find Hale, so his reply
+    to a private action was heard at the table. This holds everywhere NPC names are matched (private guard, rules arbiter,
+    line relevance).
 - **Real combat**:
   - initiative and turn order;
   - unprovoked NPC attacks (an `[attacco]` line, to be agreed with the «voce» parser);

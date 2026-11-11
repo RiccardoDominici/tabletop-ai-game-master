@@ -7,6 +7,10 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import type { EsitoPrivato, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { destinatarioPrivato, guardiaPrivate, radici, rispostaPrivataPng } from '../src/narrazione/privato';
+import path from 'node:path';
+import { caricaCampagna } from '../src/campagna/caricatore';
+import { paroleDiMestiere } from '../src/campagna/nomi';
+import { nomiDeiPng, pngNominati } from '../src/repertorio/pertinenza';
 import { Prova, agisci, attendi, inizia } from './aiuti/partita';
 
 const TEO = { id_pg: 'pg_teo', nomi: ['Teo'], testo: 'Mentre Bertoldo guarda Ida, apro di nascosto il lucchetto della cassetta del pedaggio' };
@@ -160,6 +164,16 @@ describe('privacy per riga, non per frase', () => {
     expect(g('Teo si china verso Bertoldo e gli parla della chiave.', 0, 'narratore')?.id_pg).toBe('pg_teo');
     // Senza il PNG nella riga ne servono due.
     expect(guardiaPrivate(DOMANDA, nomiDi, NOMI, NOMI_PNG)!('Teo pensa alla chiave.', 0, 'narratore')).toBeNull();
+  });
+});
+
+describe('il mestiere vale come nome del PNG', () => {
+  it('dopo un connettore del nome e la prima parola del ruolo, parole intere', () => {
+    expect(paroleDiMestiere('Ruggero lo sgherro', null)).toEqual(['sgherro']);
+    expect(paroleDiMestiere('Bertoldo', 'gabelliere del ponte')).toEqual(['gabelliere']);
+    expect(paroleDiMestiere('Ugo il carbonaio', 'il carbonaio del bosco')).toEqual(['carbonaio']);
+    const c = caricaCampagna(path.join(import.meta.dirname, 'fixtures', 'campagne', 'prove'));
+    expect(pngNominati('Chiedo allo sgherro dove va', nomiDeiPng(c)).has('png_ruggero')).toBe(true);
   });
 });
 
