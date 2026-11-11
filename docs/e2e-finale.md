@@ -65,7 +65,7 @@ It is a careful and honest translation: every approximation is commented in the 
 |---|---|---|
 | ability bonus by table | `diretto`: the phone shows «Forza 1», not «Forza 13 (+1)» | fixed: `modificatore: {tipo: tabella, tabella: [{da, mod}]}`, the sheets write the score (torre-mozza converted) |
 | percentile thief skills, x-in-6 chances | converted to d20 bonuses with the same odds | schema: one `risoluzione.tipo` per set |
-| initiative re-rolled every round, ties simultaneous | ✓ `ogni_round` is ignored for individual initiative (only side initiative re-rolls, `prove/combattimento.ts:231`); ties broken by a fixed order | Engine |
+| initiative re-rolled every round, ties simultaneous | ✓ `ogni_round` is ignored for individual initiative (only side initiative re-rolls, `prove/combattimento.ts:231`); ties broken by a fixed order | fixed: individual initiative re-rolls each round with `ogni_round` («Round 2, iniziativa ritirata: …»); ties still in a fixed order |
 | save vs. death once, 2d10 rounds to bind wounds | 1 success / 1 failure; ✓ the Engine adds the SRD rules «natural 20 = up with 1 HP, natural 1 = two failures» to every set (`prove/combattimento.ts:338`), seen in play («venti naturale: torna in sé con 1 punto ferita») | fixed: `tiri_morte.venti_rialza`, `uno_doppio` (SRD default), off in torre-mozza |
 | magic missile always hits | a +20 skill bonus; with the Haiku arbiter one cast became «nessun tiro» and did no damage (indagine-B T13) | schema: no per-attack `automatico` |
 | natural 20 hits / natural 1 misses, minimum 1 damage | not applied (d20_cd has no criticals; damage floors at 0) | fixed: `risoluzione.critico`, `disastro`, `critici`; `attacchi.danno_critico`, `danno_minimo` (set in torre-mozza) |

@@ -59,7 +59,6 @@ per chi vuole smanettare. Servono:
   - percentuali e «x su 6» per abilità: oggi convertite in bonus d20 con le stesse probabilità (un solo
     `risoluzione.tipo` per set);
   - attacco che colpisce sempre (dardo incantato): oggi un bonus +20; serve un `automatico` per attacco;
-  - `ogni_round` ignorato con l'iniziativa individuale (si ritira solo per schieramento, prove/combattimento.ts `avanza`);
   - validatore: rifiutare `parole_chiave` generiche (l'arbitro a regole le ignora già, `parole.generiche`) e
     segnalare una battuta che dà ciò che una prova chiude per un'altra strada di `oppure` (D2).
 - **Setup su computer non Apple** (docs/profili.md, profilo `altro`). Il setup guidato da Claude Code (`.claude/skills/setup`)

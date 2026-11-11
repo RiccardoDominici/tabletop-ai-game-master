@@ -164,6 +164,7 @@ prove:
     senza_iniziativa: "Senza iniziativa: si agisce seguendo la storia."
     finisce: "{nome}: {condizioni} finisce."
     round: "Round {round}: iniziativa PG {pg}, PNG {png}; {primo}."
+    round_individuale: "Round {round}, iniziativa ritirata: {ordine}."
     prima_pg: "prima i PG"
     prima_png: "prima i PNG"
     png_non_agisce: "Turno di {nome}: è {condizione}, non agisce."

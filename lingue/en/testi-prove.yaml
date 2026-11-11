@@ -151,6 +151,7 @@ prove:
     senza_iniziativa: "No initiative: everyone acts following the story."
     finisce: "{nome}: {condizioni} ends."
     round: "Round {round}: initiative PCs {pg}, NPCs {png}; {primo}."
+    round_individuale: "Round {round}, initiative rolled again: {ordine}."
     prima_pg: "PCs first"
     prima_png: "NPCs first"
     png_non_agisce: "{nome}'s turn: is {condizione}, does not act."

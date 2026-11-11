@@ -133,3 +133,30 @@ describe('modificatore a tabella (Basic Fantasy: 13–15 = +1)', () => {
     }
   });
 });
+
+describe('iniziativa individuale ritirata a ogni round (ogni_round)', () => {
+  it('Basic Fantasy: 1d6 + Destrezza a ogni round, per ciascuno; il nuovo ordine vale dal round dopo', () => {
+    const regole = combattimentoSrd();
+    regole.iniziativa = { tipo: 'individuale', dado: 6, caratteristica: 'destrezza', ogniRound: true };
+    const stato = new StatoProve(new Map(['pg_a', 'pg_b', 'png_x'].map((id) => [id, { id, pf_massimi: 30 }])));
+    // Round 1: a 5, b 3, x 1 → a, b, x. Round 2: a 1, b 2, x 6 → x, b, a.
+    const dadi = new DadiACopione([5, 3, 1, 1, 2, 6]);
+    const attacchi: string[] = [];
+    const g = new GestoreCombattimento({ regole, stato, dadi: () => dadi, nome: (id) => id.replace(/^(pg|png)_/, ''), attacca: (png, pg) => (attacchi.push(`${png}>${pg}`), null), morale: () => null, nuovoIdTiro: () => 't', log: loggerMuto() });
+    const cand = ['pg_a', 'pg_b', 'png_x'].map((id) => ({ id, lato: (id.startsWith('pg_') ? 'pg' : 'png') as 'pg' | 'png', mod: 0 }));
+    const r1 = g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
+    expect(r1.fatti[0]).toBe('Inizia il combattimento. Iniziativa: a 5, b 3, x 1.');
+    expect(r1.invitati).toEqual(['pg_a']);
+    g.dopoAzioni({ turno: 2, attacchi: [], autori: ['pg_a'], candidati: () => cand });
+    // Dopo b tocca a x, poi il round 2 col nuovo ordine: prima x (attacca), poi b.
+    const r3 = g.dopoAzioni({ turno: 3, attacchi: [], autori: ['pg_b'], candidati: () => cand });
+    expect(r3.fatti).toContain('Round 2, iniziativa ritirata: x 6, b 2, a 1.');
+    expect(r3.invitati).toEqual(['pg_b']);
+    expect(g.vista(() => null)!.combattenti.map((c) => c.id)).toEqual(['png_x', 'pg_b', 'pg_a']);
+  });
+
+  it('senza ogni_round (SRD) l’ordine resta quello del primo round', () => {
+    const regole = combattimentoSrd();
+    expect(regole.iniziativa.ogniRound).toBe(false);
+  });
+});

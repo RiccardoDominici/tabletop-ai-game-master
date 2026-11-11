@@ -111,7 +111,8 @@ combattimento:                              # facoltativo: senza, SRD completo p
     tipo: individuale | per_schieramento | nessuna   # [V]
     dado: 20                                # [V] 4, 6, 8, 10, 12 o 20
     caratteristica: destrezza               # [V] esistente, o null
-    ogni_round: false                       # booleano: si ritira a ogni round (B/X)
+    ogni_round: false                       # booleano: si ritira a ogni round (B/X per schieramento, Basic Fantasy
+                                            #   individuale: 1d6 + Destrezza per ciascuno, ordine nuovo dal round dopo)
   fasi:                                     # [V] almeno una; id snake_case
     - {id: mischia, nome: "Mischia", png: attacco_mischia}   # [V] png: attacco | attacco_distanza | attacco_mischia | null
   azioni: [{id, nome, quante}]              # economia del turno (testo)

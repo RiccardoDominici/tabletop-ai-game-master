@@ -185,10 +185,7 @@ export class GestoreCombattimento {
       esito: 'in_gioco',
       aggressore: null,
     }));
-    if (r.iniziativa.tipo === 'individuale') {
-      // Dal più alto; pari: modificatore più alto, poi i PG, poi l'id (deterministico).
-      partecipanti.sort((a, b) => b.iniziativa! - a.iniziativa! || b.mod - a.mod || (a.lato === b.lato ? 0 : a.lato === 'pg' ? -1 : 1) || a.id.localeCompare(b.id));
-    }
+    if (r.iniziativa.tipo === 'individuale') GestoreCombattimento.ordina(partecipanti);
     this.s = { round: 1, indice: 0, partecipanti, primo: 'pg', passi: [], moraleControllato: [], ultimoPg: null };
     const lati = this.tiraLati();
     this.s.passi = this.costruisciPassi();
@@ -203,6 +200,25 @@ export class GestoreCombattimento {
           : testo('prove.combattimento.senza_iniziativa');
     this.d.log.info({ partecipanti: partecipanti.map((p) => ({ id: p.id, lato: p.lato, iniziativa: p.iniziativa })), primo: this.s.primo }, 'combattimento: inizia');
     return testo('prove.combattimento.inizia', { ordine });
+  }
+
+  /** Iniziativa individuale: dal più alto; pari: modificatore più alto, poi i PG, poi l'id (deterministico). */
+  private static ordina(partecipanti: Partecipante[]): void {
+    partecipanti.sort((a, b) => b.iniziativa! - a.iniziativa! || b.mod - a.mod || (a.lato === b.lato ? 0 : a.lato === 'pg' ? -1 : 1) || a.id.localeCompare(b.id));
+  }
+
+  /**
+   * Iniziativa individuale ritirata a ogni round (`ogni_round`, Basic Fantasy: 1d6 + Destrezza a ogni round):
+   * prima si tirava una volta sola, e `ogni_round` valeva solo per schieramento. Morti e fuggiti non tirano.
+   */
+  private ritiraIndividuale(): string {
+    const s = this.s!;
+    const dadi = this.d.dadi();
+    for (const p of s.partecipanti) p.iniziativa = p.esito === 'morto' || p.esito === 'fuggito' ? p.iniziativa : dadi.tira(this.d.regole.iniziativa.dado) + p.mod;
+    GestoreCombattimento.ordina(s.partecipanti);
+    const vivi = s.partecipanti.filter((p) => p.esito !== 'morto' && p.esito !== 'fuggito');
+    this.d.log.info({ round: s.round, ordine: vivi.map((p) => ({ id: p.id, iniziativa: p.iniziativa })) }, 'combattimento: iniziativa ritirata');
+    return testo('prove.combattimento.round_individuale', { round: s.round, ordine: vivi.map((p) => `${p.nome} ${p.iniziativa}`).join(', ') });
   }
 
   /** Per schieramento: un dado per parte, pari si ritira (al quinto pari, prima i PG). */
@@ -252,7 +268,8 @@ export class GestoreCombattimento {
       if (scadute.length) fatti.push(testo('prove.combattimento.finisce', { nome: p.nome, condizioni: scadute.map((c) => this.cond(c.id)?.nome ?? c.id).join(', ') }));
       p.condizioni = p.condizioni.filter((c) => !scadute.includes(c));
     }
-    if (this.d.regole.iniziativa.ogniRound) {
+    if (this.d.regole.iniziativa.ogniRound && this.d.regole.iniziativa.tipo === 'individuale') fatti.push(this.ritiraIndividuale());
+    else if (this.d.regole.iniziativa.ogniRound) {
       const lati = this.tiraLati();
       if (lati) fatti.push(testo('prove.combattimento.round', { round: s.round, pg: lati.pg, png: lati.png, primo: testo(s.primo === 'pg' ? 'prove.combattimento.prima_pg' : 'prove.combattimento.prima_png') }));
     }

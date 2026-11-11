@@ -168,8 +168,8 @@ parole_chiave:
 
 combattimento:
   # Iniziativa (p. 51): ogni round 1d6 più la Destrezza, per ogni personaggio e mostro; chi fa di più agisce prima,
-  # i pari agiscono insieme. Il Motore tira l'iniziativa individuale una volta sola e rompe i pari con un ordine fisso:
-  # `ogni_round` resta quello del manuale.
+  # i pari agiscono insieme. Il Motore la ritira a ogni round (`ogni_round`) e rompe i pari con un ordine fisso
+  # (modificatore più alto, poi i PG): i pari simultanei non ci sono.
   iniziativa: {tipo: individuale, dado: 6, caratteristica: destrezza, ogni_round: true}
   # Il round del manuale non ha fasi: al suo numero d'iniziativa ognuno si muove e poi attacca (p. 51).
   fasi:
