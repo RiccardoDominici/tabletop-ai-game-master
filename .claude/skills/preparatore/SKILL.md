@@ -198,6 +198,15 @@ here only the order.
      have effects only from the closed list of `docs/combattimento.md` §2: an effect that the manual describes in
      words must be chosen among those, or written as text without effect. A manual without turns (PbtA) has
      `iniziativa: {tipo: nessuna}`.
+   - **Numbers as the manual has them** (`docs/regole.md` §2), instead of converting them: a score → bonus table
+     (`modificatore: {tipo: tabella, tabella: [{da, mod}]}`, the sheets write the score); percentile or «x in 6»
+     skills (`abilita[].soglia: {dado: 100 | 6, predefinita}`, the sheet writes the percentage or the x); a weapon that
+     always hits (`attacchi[].automatico: true` on the sheet); natural 20/1 on a d20 (`risoluzione.critico`,
+     `disastro`, `critici`), critical and minimum damage (`attacchi.danno_critico`, `danno_minimo`); the death-save
+     extras of the SRD only if the manual has them (`tiri_morte.venti_rialza`, `uno_doppio`); initiative re-rolled
+     every round (`ogni_round`). The SRD values apply where the set says nothing.
+   - **Keywords** (`parole_chiave`, the `parole` of scene checks and of excerpts with `per:`): specific words, not
+     places, body parts or common objects («porta», «passaggio», «spalla»), which the validator refuses.
 3. Write `campagne/<id>/regole/`: `regole.yaml` (with `fonte.titolo`, `licenza` and the section `combattimento:`,
    form in `docs/regole.md` §2), `riassunto.md` (for the players, short) and `estratti/<id>.md` (one passage per rule,
    with `parole` and `pagina`). If you do not know the licence of the manual, declare `libera: false` and tell the

@@ -50,7 +50,15 @@ The Preparer writes into `campagne/<id>/regole/`:
 | `riassunto.md` | a summary in plain Italian, for the players (at most 400 words) |
 | `estratti/*.md` | the manual's passages to consult, one per rule, with the words used to find them |
 
-The words in `parole_chiave` (and the `parole` of the passages and of the scene checks) should be specific to the check: «grimaldello» (lockpick), «arrampico» (I climb). Common words of places, the body and objects (door, passage, stairs, shoulder, shadow…) are ignored by the local rules arbiter, because alone they do not say which check: the list is in `lingue/<code>/prove.yaml`, `parole.generiche`.
+The set can keep the manual's numbers as they are, instead of converting them (the full schema is in [docs/regole.md](../regole.md), §2):
+- a table from ability score to bonus (`modificatore: {tipo: tabella, …}`), with the score on the sheet;
+- skills rolled as a percentage or as «x in 6» (`soglia` on the skill), with the percentage or the x on the sheet;
+- a weapon that always hits (`automatico: true` on the sheet's weapon);
+- what a natural 20 or 1 does on a d20, critical and minimum damage, the extras of a death save, and initiative rolled again every round.
+
+Where the set says nothing, the SRD 5.2 values apply.
+
+The words in `parole_chiave` (and the `parole` of the passages and of the scene checks) should be specific to the check: «grimaldello» (lockpick), «arrampico» (I climb). Common words of places, the body and objects (door, passage, stairs, shoulder, shadow…) are ignored by the local rules arbiter, because alone they do not say which check, and the validator flags them (an error with `--rigoroso`): the list is in `lingue/<code>/prove.yaml`, `parole.generiche`. A keyword of several words («passaggio segreto», secret passage) is fine.
 
 The PG (player character) and PNG (non-player character) sheets use the characteristics of your manual, not D&D's. The validator checks the set with the `REGOLE` class:
 
