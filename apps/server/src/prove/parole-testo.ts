@@ -164,9 +164,9 @@ export function pngRivolti(t: string, nomi: Map<string, string[]>): Set<string> 
 }
 
 /**
- * I PNG a cui un'azione parla: quelli a cui si rivolge (pngRivolti) e quelli nominati subito dopo un verbo
- * del dire o del chiedere («I ask the innkeeper…», «chiedo il nome al carbonaio»). Nominarli in un'altra
- * frase («Mentre Bertoldo guarda Ida, …») non basta.
+ * The NPCs an action speaks to: those it addresses (pngRivolti) and those named right after a verb of saying or
+ * asking («I ask the innkeeper…», «chiedo il nome al carbonaio»). Naming them elsewhere in the sentence («Mentre
+ * Bertoldo guarda Ida, …») is not enough.
  */
 export function pngInterpellati(t: string, nomi: Map<string, string[]>): Set<string> {
   const out = pngRivolti(t, nomi);

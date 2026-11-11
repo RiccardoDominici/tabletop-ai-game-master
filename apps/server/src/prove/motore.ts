@@ -331,7 +331,7 @@ export class MotoreProve {
         const att = attaccoDiRegole(a, ing);
         if (!att) continue;
         decisioni.set(a.id, { ...att, ...(this.generico ? { mossa: null } : {}) } as Decisione);
-        this.o.log.warn({ turno, azione: a.id, arbitro: d?.tipo ?? null, bersaglio: att.bersaglio, arma: att.arma }, "prove: attacco chiaro, deciso a regole al posto dell'arbitro");
+        this.o.log.warn({ turno, azione: a.id, arbitro: d?.tipo ?? null, bersaglio: att.bersaglio, arma: att.arma }, 'prove: clear attack, decided by the rules instead of the arbiter');
       }
     }
     const attesa_ms = Math.round(this.o.orologio.ora() - t0);

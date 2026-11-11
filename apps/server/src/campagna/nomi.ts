@@ -14,10 +14,10 @@ const comeTitolo = (parola: string): string => parola.toLowerCase().replace(/\.$
 
 
 /**
- * Le parole di mestiere con cui i giocatori chiamano un PNG: quella dopo un connettore del nome («Hale the
- * Innkeeper» → innkeeper, «Ruggero lo sgherro» → sgherro) e la prima parola del `ruolo` della scheda senza
- * articolo («gabelliere del ponte» → gabelliere). Minuscole; parole intere. Nella seconda passata della e2e
- * finale «I ask the innkeeper…» non trovava Hale, e la sua risposta a un'azione privata si sentiva al tavolo.
+ * The trade words players use for an NPC: the word after a connector of the name («Hale the Innkeeper» →
+ * innkeeper, «Ruggero lo sgherro» → sgherro) and the first word of the sheet's `ruolo` without its article
+ * («gabelliere del ponte» → gabelliere). Lowercase, whole words. In the second pass of the final end-to-end run
+ * «I ask the innkeeper…» did not find Hale, and his reply to a private action was heard at the table.
  */
 export function paroleDiMestiere(nome: string, ruoloScheda: string | null | undefined): string[] {
   const r = sezione();

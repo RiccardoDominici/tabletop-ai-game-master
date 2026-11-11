@@ -84,10 +84,10 @@ function unico<T>(xs: ReadonlyArray<{ x: T; n: number }>): T | null {
 }
 
 /**
- * Solo il passo 1 (attacco): un gesto d'attacco o un'arma della scheda USATA, contro un PNG con la scheda
- * nominato in ciò che il PG fa. Deterministico: il Motore lo applica prima di QUALSIASI arbitro (anche Haiku),
- * perché nella seconda passata della e2e finale Haiku diede «nessun tiro» a «Lancio il dardo incantato contro il
- * goblin che sta arrivando», e il narratore uccise il goblin senza danni. null = non è un attacco così chiaro.
+ * Step 1 alone (attack): an attack gesture or a weapon of the sheet that is USED, against an NPC with a sheet named in
+ * what the PC does. Deterministic: the Engine applies it after ANY arbiter (Haiku included), because in the second
+ * pass of the final end-to-end run Haiku gave «no roll» to «Lancio il dardo incantato contro il goblin che sta
+ * arrivando», and the narrator killed the goblin with no damage. null = not such a clear attack.
  */
 export function attaccoDiRegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | null {
   const fatti = senzaParlato(az.testo);
