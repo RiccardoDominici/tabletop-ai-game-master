@@ -25,8 +25,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 # Log: logs/partita.out (questo avvio), logs/server.out, logs/server.jsonl, logs/voce.out.
 #
 # Prova mentre si gioca: TAGM_PORTA=4710 scripts/partita.sh ponte-lanterne avvia una partita di
-# prova su quella porta (log e pagine in logs/porta-4710/, voce drama-3 senza riserva o finta) senza
-# toccare la partita vera su 4610 né la voce su 4611 (vedi scripts/avvio.sh).
+# prova su quella porta (log e pagine in logs/porta-4710/). Su una porta di prova la voce è drama-3
+# (--voce fish, senza riserva) o finta: la voce locale Qwen della partita vera (4611) non si tocca,
+# quindi --voce qwen (anche quello della configurazione) diventa finta. Vedi scripts/avvio.sh.
 set -euo pipefail
 
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"

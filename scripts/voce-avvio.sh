@@ -11,6 +11,8 @@ PY="$RADICE/services/voce/.venv/bin/python"
 DIR_LOG="$RADICE/logs"
 ATTESA_MAX_S="${VOCE_ATTESA_MAX_S:-300}"
 URL="http://127.0.0.1:$PORTA/salute"
+# Il pid sta in un file per porta: un'istanza di prova non deve poter fermare quello della partita vera.
+if [[ "$PORTA" == "4611" ]]; then FILE_PID="$RADICE/logs/voce.pid"; else FILE_PID="$RADICE/logs/voce-$PORTA.pid"; fi
 
 if [[ ! -x "$PY" ]]; then
   echo "manca il venv del servizio voce. Crealo con:"
@@ -20,14 +22,14 @@ if [[ ! -x "$PY" ]]; then
 fi
 mkdir -p "$DIR_LOG"
 
-"$RADICE/scripts/voce-arresto.sh"
+VOCE_PORTA="$PORTA" "$RADICE/scripts/voce-arresto.sh"
 
 cd "$RADICE/services/voce"
 echo "=== avvio $(date '+%Y-%m-%d %H:%M:%S') ===" >> "$DIR_LOG/voce.out"
 # PYTHONUNBUFFERED: le righe di log arrivano subito in voce.out
 VOCE_PORTA="$PORTA" PYTHONUNBUFFERED=1 nohup "$PY" -m voce >> "$DIR_LOG/voce.out" 2>&1 &
 PID=$!
-echo "$PID" > "$DIR_LOG/voce.pid"
+echo "$PID" > "$FILE_PID"
 echo "servizio voce: avviato (pid $PID), attendo caricamento e riscaldamento (max ${ATTESA_MAX_S} s)..."
 
 inizio=$SECONDS

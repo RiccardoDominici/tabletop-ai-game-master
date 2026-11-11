@@ -85,7 +85,7 @@ def test_non_apple_senza_chiavi_non_inventa_il_locale() -> None:
     p = scegli(rilevamento(apple=False, ram=32.0))
     assert p["id"] == "altro"
     assert p["componenti"]["lettore"]["provider"] == "finto"
-    assert p["componenti"]["voce"]["provider"] == "finta"
+    assert p["componenti"]["voce"]["provider"] == "finto"
     assert p["componenti"]["immagini"]["provider"] == "nessuno"
     assert p["modelli"] == []
     assert any("not supported here yet" in a for a in p["avvisi"])

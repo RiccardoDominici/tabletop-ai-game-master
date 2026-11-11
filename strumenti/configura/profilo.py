@@ -6,7 +6,7 @@ Tabella, in ordine (la prima regola che vale vince):
   2. Apple silicon, RAM sotto 15,5 GiB:               lettore Qwen3 4B 4 bit, voce locale, immagini nessuna.
   3. Altro sistema (non Apple silicon):               nessun modello locale ancora (docs/da-fare.md).
      Il lettore è «finto» (narratore a copione, non una partita vera) finché non c'è una chiave Anthropic;
-     la voce è «finta» (un tono). Le chiavi sono sempre un'opzione, mai un requisito.
+     la voce è «finto» (un tono). Le chiavi sono sempre un'opzione, mai un requisito.
 
 Le chiavi trovate (ANTHROPIC_API_KEY, OPENROUTER_API_KEY) sono solo offerte: compaiono in `chiavi_offerte`
 e diventano scelte solo con `applica_chiavi=True` (`--con-chiavi` in configura.py).
@@ -121,14 +121,14 @@ def scegli(rilevamento: dict[str, Any], applica_chiavi: bool = False, lingua: st
         lettore = _componente("finto", motivo=(
             "No local reader here yet. Without a key the narrator is the scripted one: not a real game. "
             "An Anthropic key makes the narrator real."))
-        voce = _componente("finta", motivo="No local voice here yet: a tone stands in for the voice.")
+        voce = _componente("finto", motivo="No local voice here yet: a tone stands in for the voice.")
         modelli = []
 
     if applica_chiavi and anthropic:
         lettore = _componente("anthropic", ["locale", "finto"], motivo=(
             "Haiku as narrator, because a key was found and you asked for it. Local is the fallback."))
     if applica_chiavi and openrouter:
-        voce = _componente("openrouter", ["locale" if apple else "finta"], motivo=(
+        voce = _componente("openrouter", ["locale" if apple else "finto"], motivo=(
             "drama-3 voice, because a key was found and you asked for it. The fallback is the local voice."))
 
     componenti = {

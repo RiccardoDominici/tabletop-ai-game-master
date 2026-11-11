@@ -157,8 +157,8 @@ for p in "${PROBLEMI[@]+"${PROBLEMI[@]}"}"; do echo "     da sistemare: $p"; don
 echo
 if [[ "$PRONTA" == "True" ]]; then
   echo "Pronta da giocare. Per giocare:"
-  echo "    scripts/partita.sh $ID$MODO              (voce finta)"
-  echo "    scripts/partita.sh $ID$MODO --voce qwen  (voce locale)"
+  echo "    scripts/partita.sh $ID$MODO              (voce della configurazione: di base Qwen locale)"
+  echo "    scripts/partita.sh $ID$MODO --voce finta (un tono al posto della voce, senza rete)"
 else
   echo "Non ancora pronta da giocare. Manca:"
   campo '"\n".join("    - " + m for m in d["non_pronta"])'

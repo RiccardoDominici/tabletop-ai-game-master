@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Ferma il servizio voce: il processo in ascolto sulla porta (default 4611) e
-# quello registrato in logs/voce.pid (che potrebbe essere ancora in avvio).
+# quello registrato nel file pid della sua porta (logs/voce.pid per 4611, logs/voce-<porta>.pid altrove).
+# Una porta di prova non ferma mai il servizio della partita vera.
 # Prima SIGTERM (uvicorn chiude con garbo, max ~3 s), poi SIGKILL.
 set -uo pipefail
 
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
 PORTA="${VOCE_PORTA:-4611}"
-FILE_PID="$RADICE/logs/voce.pid"
+# Un file per porta: il pid della partita vera (4611) non è quello di un'istanza di prova.
+if [[ "$PORTA" == "4611" ]]; then FILE_PID="$RADICE/logs/voce.pid"; else FILE_PID="$RADICE/logs/voce-$PORTA.pid"; fi
 
 pids="$(lsof -nP -ti "tcp:$PORTA" -sTCP:LISTEN 2>/dev/null || true)"
 if [[ -f "$FILE_PID" ]]; then
