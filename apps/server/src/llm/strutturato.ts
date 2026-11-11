@@ -93,6 +93,8 @@ export async function chiediStrutturato<T>(m: ModelloLinguaggio, r: Omit<Richies
     } catch (err) {
       if (r.signal?.aborted) throw err;
       motivo = (err as Error).message.slice(0, 200);
+      // The local server is down (provider/sentinella-locale.ts): no retry, straight to the fallback.
+      if ((err as Error).name === 'ServerFermo') break;
       o.log?.warn({ cosa: o.cosa, modello: m.descrizione, tentativo, motivo }, 'llm: risposta strutturata non valida');
     }
   }

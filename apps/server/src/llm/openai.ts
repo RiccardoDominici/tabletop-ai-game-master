@@ -13,6 +13,7 @@
  */
 import { calcolaCosto, TARIFFE, type UsoToken } from './costi';
 import { costoZero, type ModelloLinguaggio, type RichiestaModello, type RispostaModello } from './modello';
+import type { SentinellaModello } from '../provider/sentinella-locale';
 
 export interface OpzioniOpenAI {
   /** Base dell'API, fino a /v1 compreso (es. http://127.0.0.1:4613/v1). */
@@ -35,6 +36,11 @@ export interface OpzioniOpenAI {
    * priorità bassa che aspetta in coda più di `attesaMaxMs` rinuncia senza partire.
    */
   coda?: { concorrenza: number; priorita: 'alta' | 'bassa'; attesaMaxMs?: number };
+  /**
+   * Watchdog of a local server (provider/sentinella-locale.ts): while it says the server is down the request is
+   * refused at once (the caller's fallback runs without waiting for a timeout); every outcome is reported to it.
+   */
+  sentinella?: SentinellaModello;
   /** Per i test: fetch finto. */
   fetch?: typeof fetch;
 }
@@ -100,6 +106,11 @@ interface RispostaChat {
   usage?: { prompt_tokens?: number; completion_tokens?: number; prompt_tokens_details?: { cached_tokens?: number } };
 }
 
+/** A request refused because the watchdog says the local server is down: no point in retrying it now. */
+export class ErroreServerFermo extends Error {
+  override name = 'ServerFermo';
+}
+
 export class ModelloOpenAI implements ModelloLinguaggio {
   readonly provider = 'openai' as const;
   readonly capacita: { strutturato: boolean; preriscalda: boolean };
@@ -139,10 +150,13 @@ export class ModelloOpenAI implements ModelloLinguaggio {
       });
     } catch (err) {
       if (r.signal?.aborted) throw err;
+      this.o.sentinella?.segnala(false, (err as Error).message);
       throw new Error(`${this.descrizione}: irraggiungibile (${(err as Error).message})`);
     }
     if (!risposta.ok) {
       const testo = await risposta.text().catch(() => '');
+      // A 5xx is the server's fault (a 4xx is ours: a bad request does not mean the server is down).
+      if (risposta.status >= 500) this.o.sentinella?.segnala(false, `HTTP ${risposta.status}`);
       throw new Error(`${this.descrizione}: HTTP ${risposta.status} ${testo.slice(0, 200)}`);
     }
     return risposta;
@@ -162,11 +176,27 @@ export class ModelloOpenAI implements ModelloLinguaggio {
   }
 
   chiedi(r: RichiestaModello): Promise<RispostaModello> {
-    return this.inCoda(() => this.chiediOra(r), r.signal);
+    return this.sorvegliato(r, () => this.inCoda(() => this.chiediOra(r), r.signal));
   }
 
   flusso(r: RichiestaModello, onDelta: (delta: string) => void): Promise<RispostaModello> {
-    return this.inCoda(() => this.flussoOra(r, onDelta), r.signal);
+    return this.sorvegliato(r, () => this.inCoda(() => this.flussoOra(r, onDelta), r.signal));
+  }
+
+  /** With a watchdog: refused at once while the server is down; a full answer counts as a success. */
+  private async sorvegliato(r: RichiestaModello, lavoro: () => Promise<RispostaModello>): Promise<RispostaModello> {
+    const s = this.o.sentinella;
+    if (!s) return lavoro();
+    if (!s.disponibile()) throw new ErroreServerFermo(`${this.descrizione}: server down (restart in progress), the fallback answers`);
+    try {
+      const esito = await lavoro();
+      s.segnala(true);
+      return esito;
+    } catch (err) {
+      // A timeout in the middle of a streamed answer is the server's too; the caller giving up is not.
+      if (!r.signal?.aborted && (err as Error).name === 'TimeoutError') s.segnala(false, 'timeout');
+      throw err;
+    }
   }
 
   private async chiediOra(r: RichiestaModello): Promise<RispostaModello> {

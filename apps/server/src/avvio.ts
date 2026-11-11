@@ -64,6 +64,7 @@ import { MotoreVoceFish } from './voce/fish';
 import { caricaRegistroVoci } from './voce/registro-voci';
 import { codaAudioFish } from './sceneggiatore/audio';
 import { LessicoVivo } from './voce/lessico-vivo';
+import { riavviaConScript, SentinellaLocale, type EsitoRiavvio } from './provider/sentinella-locale';
 import type { Battuta } from './repertorio/tipi';
 
 export interface ServerTagm {
@@ -94,6 +95,8 @@ export interface Sostituzioni {
   sceneggiatore?: { radice: string; tettoMs?: number; tettoChiusuraMs?: number } | null;
   /** Coda dell'audio delle battute dello sceneggiatore (test: una finta; assente = drama-3 se la voce è fish). */
   preGeneraAudio?: ((battute: readonly Battuta[]) => unknown) | null;
+  /** Restart of the local model server (test: a fake one; null = never; absent = scripts/lettore-avvio.sh). */
+  riavviaLocale?: (() => Promise<EsitoRiavvio>) | null;
   /** Dadi delle prove (test: a copione). */
   dadi?: FonteDadi;
   orologio?: Orologio;
@@ -219,7 +222,14 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   // di base tutto in locale; chi fa cosa e perché si stampa qui sotto.
   const cfgProvider = config.provider;
   const scelte = risolvi(cfgProvider, { anthropic: config.llm.fileChiave, openrouter: config.voce.fish.fileChiave });
-  const fabbrica = new FabbricaModelli(cfgProvider, scelte, { fileChiaveAnthropic: config.llm.fileChiave, fileChiaveOpenRouter: config.voce.fish.fileChiave, maxTokens: config.llm.maxTokens, log: log.child({ modulo: 'llm' }) });
+  // Il server locale dei modelli ha una sentinella (provider/sentinella-locale.ts): se smette di rispondere lo
+  // si dice, i componenti passano subito alle loro riserve, e lo si riavvia (con avvio: mlx, mai nelle prove).
+  const sentinellaLocale = (url: string, modello: string): SentinellaLocale => {
+    const riavvia = sost.riavviaLocale !== undefined ? sost.riavviaLocale : process.env['VITEST'] || cfgProvider.backend.locale.avvio === 'no' ? null : riavviaConScript(url, modello);
+    log.info({ url, riavvio: riavvia ? 'automatic' : 'by hand' }, 'local model server: watchdog on');
+    return new SentinellaLocale({ url, log: log.child({ modulo: 'sentinella-locale' }), riavvia });
+  };
+  const fabbrica = new FabbricaModelli(cfgProvider, scelte, { fileChiaveAnthropic: config.llm.fileChiave, fileChiaveOpenRouter: config.voce.fish.fileChiave, maxTokens: config.llm.maxTokens, log: log.child({ modulo: 'llm' }), sentinellaLocale });
   for (const riga of descriviScelte(scelte)) log.info({ provider: riga }, `PROVIDER: ${riga}`);
   const etichettaModello = (c: NomeComponente): string => fabbrica.modello(c)?.modello ?? scelte[c].provider;
 
@@ -454,6 +464,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     },
     async chiudi() {
       voce.ferma();
+      fabbrica.chiudi();
       // Lo spegnimento non è un evento di gioco: il registro resta all'ultimo stato giocato.
       memoria?.sospendi();
       regia.spegni();

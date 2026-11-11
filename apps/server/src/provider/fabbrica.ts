@@ -14,6 +14,7 @@ import { NarratoreModello } from '../llm/narratore';
 import { ModelloOpenAI } from '../llm/openai';
 import type { Narratore } from '../llm/tipi';
 import type { ConfigProvider, NomeComponente, Scelta } from './config';
+import type { SentinellaLocale } from './sentinella-locale';
 
 /** Provider che sono un modello di linguaggio (gli altri: regole, finto, nessuno). */
 export const PROVIDER_LLM = new Set(['locale', 'anthropic', 'openrouter', 'openai']);
@@ -24,11 +25,17 @@ export interface OpzioniFabbrica {
   fileChiaveOpenRouter: string;
   maxTokens: number;
   log: Logger;
+  /**
+   * The watchdog of a local server (provider/sentinella-locale.ts), one per URL, created with the first local model;
+   * absent or null = no watchdog (the models just fail and their callers fall back, as before).
+   */
+  sentinellaLocale?: (url: string, modello: string) => SentinellaLocale | null;
 }
 
 export class FabbricaModelli {
   private readonly modelli = new Map<string, ModelloLinguaggio>();
   private clientAnthropic: Anthropic | null = null;
+  private readonly sentinelle = new Map<string, SentinellaLocale | null>();
 
   constructor(
     readonly cfg: ConfigProvider,
@@ -54,8 +61,10 @@ export class FabbricaModelli {
       case 'anthropic':
         m = new ModelloAnthropic(() => (this.clientAnthropic ??= creaClientAnthropic(this.o.fileChiaveAnthropic, this.o.log)), s.modello ?? 'claude-haiku-5-5');
         break;
-      case 'locale':
+      case 'locale': {
+        const sentinella = this.sentinellaDi(s.url!, s.modello ?? loc.modello ?? 'locale');
         m = new ModelloOpenAI({
+          ...(sentinella ? { sentinella } : {}),
           url: s.url!,
           modello: s.modello ?? loc.modello ?? 'locale',
           strutturato: loc.strutturato === true,
@@ -65,6 +74,7 @@ export class FabbricaModelli {
           coda: { concorrenza: 1, priorita: c === 'lettore' ? 'alta' : 'bassa', attesaMaxMs: 8000 },
         });
         break;
+      }
       case 'openrouter':
         m = new ModelloOpenAI({
           url: s.url!,
@@ -82,6 +92,17 @@ export class FabbricaModelli {
     }
     this.modelli.set(chiave, m);
     return m;
+  }
+
+  /** The watchdog of a local server URL (shared by all the components that use it). */
+  sentinellaDi(url: string, modello: string): SentinellaLocale | null {
+    if (!this.sentinelle.has(url)) this.sentinelle.set(url, this.o.sentinellaLocale?.(url, modello) ?? null);
+    return this.sentinelle.get(url)!;
+  }
+
+  /** Stops the watchdogs (server shutdown). */
+  chiudi(): void {
+    for (const s of this.sentinelle.values()) s?.ferma();
   }
 
   /** Voce e lettore entrambi locali (stessa GPU): solo il primo annuncio in anticipo. */

@@ -61,6 +61,24 @@ The reader has a mode. `auto` means minimal locally and full with an API.
 - Other systems: llama.cpp (`llama-server --port 4613`) or Ollama. It is enough to change
   `backend.locale.url` and set `avvio: no`. `scripts/configura.sh --url-locale <url>` does it automatically.
 
+### When the local server stops (watchdog, `provider/sentinella-locale.ts`)
+
+In the second e2e pass the server died halfway through a game (N6, docs/e2e-finale.md §9) and nothing noticed. Now
+every local server URL has a watchdog, started by the first request of a local model:
+- **Health.** A GET `{url}/models` every 10 s (2 s timeout). Every request of the local models also reports its
+  outcome: two failures in a row (connection refused, timeout, HTTP 5xx; not a 4xx, not the caller giving up) and
+  the server counts as down.
+- **While it is down** the local models refuse at once (`ErroreServerFermo`, no retry in `llm/strutturato.ts`): the
+  reader goes straight to its deterministic fallback (the line the Engine's rules indicated, else a waiting line),
+  the arbiters to their rules. The turn goes on; nothing waits for a 120 s timeout.
+- **Restart.** With `avvio: mlx`: `scripts/lettore-avvio.sh` with the URL's port (it also restarts a server that
+  answers `/models` but no longer generates). At most one attempt a minute and three in 15 minutes, then it gives up
+  and says how to restart by hand. With `avvio: no` it never restarts; it says so. Never under the tests (vitest),
+  unless a test passes its own restart (`Sostituzioni.riavviaLocale`).
+- **Log** (`modulo: sentinella-locale`): «local model server DOWN» (why), «restarting», «restarted» (seconds, the last
+  lines of the script), «restart did not bring it back», «restart given up», «local model server UP again» (seconds
+  down, how many requests went to the fallbacks).
+
 ## Minimal reader
 
 - For each action it chooses a line among the candidates (the ones indicated by the Engine and at most 6 from

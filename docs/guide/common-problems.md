@@ -241,6 +241,10 @@ To know which voice the game is using, look at the top line printed by `partita.
 
 **Likely cause.** It depends on who reads the turn. The server writes it at every start in `logs/server.out`, on the `PROVIDER:` lines and the line «NARRATORE IN USO» (narrator in use).
 
+- **The local reader stopped in the middle of the game**: `logs/server.out` says «local model server DOWN»; the server
+  restarts it by itself and says «UP again» when it is back (see [local and API](local-and-api.md#the-local-reader)).
+  If it says «restart given up», run `scripts/lettore-avvio.sh` and read why it does not start (often: too little
+  free memory, with images or a second game running).
 - **The local reader** (the default): the model server on port 4613 is not running. `scripts/partita.sh` starts it by itself; if it fails, `logs/partita.out` says «lettore locale: non partito, i componenti locali useranno le loro riserve (vedi logs/lettore.out)» (meaning: local reader: not started, the local components will use their fallbacks). The usual reasons: its Python environment is missing («lettore locale: manca mlx-lm», meaning: local reader: mlx-lm is missing), the model is not on disk yet, or the Mac has too little free memory.
 - **Haiku** (when the configuration chooses `anthropic`): the key `ANTHROPIC_API_KEY` is missing, the credit has run out, or the network is down. If the key is missing at start, the server uses the next provider of the chain and says so on the `PROVIDER:` lines.
 

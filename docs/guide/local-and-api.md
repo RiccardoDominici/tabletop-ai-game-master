@@ -102,6 +102,13 @@ python3 -I strumenti/configura/configura.py --scarica
 
 The log is `logs/lettore.out`. A test instance on another port uses the same server on 4613.
 
+**If it stops during a game.** The server notices within about 10 seconds (or at the second failed request), says so
+in `logs/server.out` («local model server DOWN»), and restarts it with `scripts/lettore-avvio.sh`. While it is down,
+the turns go on: the reader uses the line the Engine's rules point to, or a waiting line, and the arbiters their rules.
+When it answers again the log says «local model server UP again», with how long it was down. It tries at most three
+times in 15 minutes; then run `scripts/lettore-avvio.sh` yourself. With `avvio: no` (a server you start yourself:
+llama.cpp, Ollama) it only tells you.
+
 ## The rules arbiter
 
 When a campaign has sheets, the Engine rolls the dice. Someone must first decide *what* is rolled. By default this is code, not a model: the classifier in `apps/server/src/prove/classificatore-regole.ts` reads the action and the scene's checks. It looks at what the character does, not at what they say. When in doubt, it does not roll. How it works for the players: [Dice and sheets](dice-and-sheets.md).
