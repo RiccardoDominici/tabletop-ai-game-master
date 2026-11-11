@@ -200,3 +200,24 @@ quando_vietate:
 
 # Indizi di privatezza o di un PG preciso dentro `cede_se`: la confessione deve avere il cancello strutturale.
 cede_privato: 'privat|non (può|puo) sentire|non sente|da solo a solo|sottovoce|lontano da(lle orecchie)?|senza testimoni'
+
+# Nomi di mostri e di razze di gioco (manuale Basic Fantasy e simili): nei prompt delle immagini il generatore
+# non li conosce e disegna altro (un hobgoblin diventa un orso). Un prompt descrive l'aspetto, non il nome.
+# Avviso, non errore: «goblin» può comparire in un testo che non va al generatore.
+mostri_di_gioco:
+  - goblin
+  - hobgoblin
+  - bugbear
+  - owlbear
+  - kobold
+  - gnoll
+  - orc
+  - ogre
+  - troll
+  - ghoul
+  - wight
+  - wraith
+  - gargoyle
+  - basilisk
+  - manticora
+  - medusa

@@ -61,6 +61,19 @@ def _prompt(e: Esito, dove: str, campo: str, testo: str, con_stile: bool) -> Non
         e.avviso("IMMAGINI.lingua", dove, f"{campo} in inglese: il generatore lo capisce meglio")
 
 
+def _mostri(e: Esito, c: Campagna, dove: str, campo: str, testo: str) -> None:
+    """Un nome di mostro o di razza di gioco nel prompt: il generatore non lo conosce e disegna altro (un
+    hobgoblin diventa un orso). Il prompt descrive l'aspetto. Avviso, non errore: la lista è in lingue/<codice>/prosa.yaml."""
+    nomi = c.prosa.mostri_di_gioco
+    if not nomi or not testo:
+        return
+    rx = re.compile(r"\b(" + "|".join(re.escape(n) for n in sorted(nomi, key=len, reverse=True)) + r")\b", re.IGNORECASE)
+    trovati = sorted({m.group(1).lower() for m in rx.finditer(testo)})
+    if trovati:
+        e.avviso("IMMAGINI.mostro", dove, f"{campo}: il nome di gioco «{', '.join(trovati)}» nel prompt: il generatore "
+                                          "non lo conosce e disegna altro; descrivi l'aspetto (pelle, muso, zanne, statura)")
+
+
 # Battute che contano come momento della storia anche senza rivelare un fatto: una situazione può
 # comparire dopo di loro (Tullio alla catena dopo il terzo tocco).
 TIPI_MOMENTO = {"momento", "segno_orologio", "finale", "confessione"}
@@ -184,8 +197,9 @@ def controlla(c: Campagna, e: Esito) -> None:
             _prompt(e, nome, "prompt_luogo", img["prompt_luogo"], con_stile=False)
         if not img.get("invarianti"):
             e.errore("IMMAGINI.luogo", nome, "mancano immagine.invarianti")
-        _segreti(e, nome, " ".join([str(img.get("prompt_luogo") or ""), *map(str, img.get("invarianti") or [])]), regex,
-                 "il luogo")
+        testo_luogo = " ".join([str(img.get("prompt_luogo") or ""), *map(str, img.get("invarianti") or [])])
+        _segreti(e, nome, testo_luogo, regex, "il luogo")
+        _mostri(e, c, nome, "luogo e invarianti", testo_luogo)
     _nodi_senza_immagine(c, e)
     for nid, n in c.nodi.items():
         img = n.get("immagine") or {}
@@ -193,6 +207,7 @@ def controlla(c: Campagna, e: Esito) -> None:
             dove = f"campagna.yaml nodo {nid}"
             _prompt(e, dove, "immagine.prompt_luogo", img["prompt_luogo"], con_stile=False)
             _segreti(e, dove, img["prompt_luogo"], regex, "il luogo")
+            _mostri(e, c, dove, "immagine.prompt_luogo", img["prompt_luogo"])
     # Ritratti e situazioni dei PNG.
     for pid, (nome, d) in c.png.items():
         asp = d.get("aspetto") or {}
@@ -207,6 +222,7 @@ def controlla(c: Campagna, e: Esito) -> None:
             _prompt(e, nome, "prompt_ritratto", asp["prompt_ritratto"], con_stile=True)
             visibile.append(asp["prompt_ritratto"])
         _segreti(e, nome, " ".join(visibile), regex, "il ritratto o le invarianti")
+        _mostri(e, c, nome, "ritratto e invarianti", " ".join(visibile))
         for sit in asp.get("situazioni") or []:
             if not (isinstance(sit, dict) and sit.get("id") and sit.get("prompt")):
                 e.errore("IMMAGINI.situazione", nome, "ogni situazione ha id e prompt")
@@ -224,3 +240,4 @@ def controlla(c: Campagna, e: Esito) -> None:
                 _situazione_dopo(c, e, nome, pid, asp, sit, dopo)
             if not _sembra_inglese(sit["prompt"]):
                 e.avviso("IMMAGINI.lingua", nome, f"situazione {sit['id']}: prompt in inglese")
+            _mostri(e, c, nome, f"situazione {sit['id']}", str(sit["prompt"]))

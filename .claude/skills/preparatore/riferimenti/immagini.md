@@ -41,3 +41,10 @@ For every scene in which an NPC is present, its image in the place is also gener
 5. **The place** describes what is seen on entering, with the main interactive elements, without people (the
    situations add them).
 6. Check with `--dry-run`: it prints every composed prompt, without loading the model.
+7. **Creatures by their look, never by the game's name.** The generator (FLUX) does not know the names of the game's
+   monsters and peoples: «hobgoblin» came out as a bear twice in torre-mozza. In every prompt and invariant
+   (`prompt_luogo`, `prompt_immagine`, `prompt_ritratto`, `situazioni[].prompt`, `invarianti`) write the body: height,
+   build, skin, snout, teeth, ears, eyes, clothes, weapon (for example «a tall, broad humanoid with mud-brown skin, a flat
+   snout with two small tusks»). The name stays in the card's text, in the lore and in the lines of the master. The
+   validator warns with `IMMAGINI.mostro` when a name from the list in `lingue/<codice>/prosa.yaml`
+   (`mostri_di_gioco`) appears in a prompt: a warning, not an error, but treat it as one.

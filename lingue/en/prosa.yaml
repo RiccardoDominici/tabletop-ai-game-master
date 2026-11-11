@@ -194,3 +194,24 @@ quando_vietate:
 
 # Hints of privacy, or of one PG in particular, inside `cede_se`: the confession needs the structural gate.
 cede_privato: "private|can(not|'t) hear|does(n't| not) hear|not hear|alone with|one[- ]on[- ]one|whisper|out of earshot|without witnesses"
+
+# Monster and race names of the game (Basic Fantasy and similar): the image generator does not know them and
+# draws something else (a hobgoblin becomes a bear). A prompt describes the look, not the name.
+# A warning, not an error: «goblin» may appear in a text that does not go to the generator.
+mostri_di_gioco:
+  - goblin
+  - hobgoblin
+  - bugbear
+  - owlbear
+  - kobold
+  - gnoll
+  - orc
+  - ogre
+  - troll
+  - ghoul
+  - wight
+  - wraith
+  - gargoyle
+  - basilisk
+  - manticore
+  - medusa
