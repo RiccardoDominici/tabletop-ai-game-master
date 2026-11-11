@@ -20,10 +20,22 @@ annuncio:
   intercalari: '^(ok(ay)?|ah+|ahah\w*|eh|ehi|allora|bene|dai|uff|mah|beh|ecco|si|sì|no)\b[\s,!.]*'
   # Virgolette ai due capi del testo, da togliere (flag g).
   virgolette: '^["«]|["»]$'
-  # Se la frase si taglia a metà: ci si ferma prima di una congiunzione finale (flag i).
-  congiunzione_finale: '\s+(e|ma|poi|però|mentre|che|perché|se)(\s+\S+)?$'
   # Parole al massimo, nome compreso (almeno tre parole di frase restano sempre).
   max_parole: 12
+  # Annuncio quando non resta niente da citare (solo intercalari, risate, una parola vuota): mai vuoto.
+  vuoto: '{nome} agisce.'
+  # Parole di contenuto che una frase deve avere almeno (se la prima frase ne ha meno, si unisce la seguente).
+  min_contenuto: 3
+  # Parole che non contano come contenuto: articoli, preposizioni, pronomi, congiunzioni (flag i, parola intera).
+  # Anche i nomi propri a metà frase non contano: dicono a chi, non che cosa.
+  non_contenuto: '^(il|lo|la|i|gli|le|l|un|uno|una|di|a|da|in|con|su|per|tra|fra|del|dello|della|dei|degli|delle|dell|al|allo|alla|ai|agli|alle|all|dal|dallo|dalla|dai|dagli|dalle|dall|nel|nello|nella|nei|negli|nelle|nell|col|sul|sullo|sulla|sui|sugli|sulle|sull|e|ed|o|od|ma|poi|però|mentre|che|perché|se|quando|come|dove|chi|cui|anche|né|io|tu|lui|lei|noi|voi|loro|mi|ti|ci|vi|si|ne|me|te|sé|mio|mia|tuo|tua|suo|sua|non|qui|qua|lì|là|altri|altro|altra|altre|anch|anch''io|così|già|più|prima|dopo|verso|sopra|sotto|dietro|davanti|vicino|lontano|contro|senza|oltre|dentro|fuori)$'
+  # Parole su cui l'annuncio non si chiude: articoli, preposizioni (anche articolate), congiunzioni, relativi,
+  # pronomi atoni e le parole che reggono sempre un complemento («verso», «contro», «con») (flag i, parola intera).
+  non_finali: '^(il|lo|la|i|gli|le|l|un|uno|una|di|a|da|in|con|su|per|tra|fra|del|dello|della|dei|degli|delle|dell|al|allo|alla|ai|agli|alle|all|dal|dallo|dalla|dai|dagli|dalle|dall|nel|nello|nella|nei|negli|nelle|nell|col|sul|sullo|sulla|sui|sugli|sulle|sull|e|ed|o|od|ma|poi|però|mentre|che|perché|se|quando|come|dove|chi|cui|né|mi|ti|ci|vi|si|ne|verso|contro|senza|oltre|presso|tipo|molto|più|meno|così|c''è|è|sono|ancora)$'
+  # Congiunzioni: in testa si tolgono; se la frase si taglia, ci si ferma prima di una delle ultime tre parole (flag i).
+  congiunzioni: '^(e|ed|o|od|ma|poi|però|mentre|perché|oppure|quindi|allora)$'
+  # Abbreviazioni col punto che non chiudono la frase (minuscole, senza punto).
+  abbreviazioni: [sig, sigg, dott, prof, avv, ing, sr, sra]
   # Prima persona → terza (solo le lingue che la sanno voltare con regole semplici; in italiano vuoto).
   # Ogni regola si applica senza badare alle maiuscole, a parole intere.
   prima_persona:

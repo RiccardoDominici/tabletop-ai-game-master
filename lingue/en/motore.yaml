@@ -17,10 +17,22 @@ annuncio:
   intercalari: '^(ok(ay)?|ah+|oh+|uh+|um+|hm+|haha\w*|ahah\w*|eh|hey|so|well|alright|yeah|yep|yes|no(?! one)|nope)\b[\s,!.]*'
   # Quotes at both ends of the text, removed (flag g).
   virgolette: '^["«“]|["»”]$'
-  # When the sentence is cut in the middle: stop before a trailing conjunction (flag i).
-  congiunzione_finale: '\s+(and|but|then|or|while|that|because|if|so|as)(\s+\S+)?$'
   # Words at most, name included (at least three words of the sentence always stay).
   max_parole: 12
+  # Announcement when nothing is left to quote (only fillers, laughter, one empty word): never empty.
+  vuoto: '{nome} acts.'
+  # Content words a sentence needs at least (if the first clause has fewer, the next one is joined).
+  min_contenuto: 3
+  # Words that don't count as content: articles, prepositions, pronouns, conjunctions (flag i, whole word).
+  # Proper names in the middle of a clause don't count either: they say to whom, not what.
+  non_contenuto: '^(the|a|an|to|at|in|on|of|for|with|from|by|into|onto|over|under|up|down|off|out|about|and|or|but|so|then|that|which|who|if|when|while|as|because|i|me|my|myself|you|your|he|him|his|she|her|it|its|we|us|our|they|them|their|this|these|those|there|here|not|too|also|just|very|me|others|other|towards|toward|through|across|around|near|behind|beside|before|after|against|without)$'
+  # Words the announcement never ends on: articles, prepositions, conjunctions, relatives, object pronouns
+  # and adverbs that take a complement ("towards", "with", "before the") (flag i, whole word).
+  non_finali: '^(the|a|an|to|at|in|on|of|for|with|from|by|into|onto|over|under|towards|toward|across|against|without|and|or|but|so|then|that|which|who|whom|if|when|while|as|because|my|your|his|her|its|our|their|this|these|those|very|more|less)$'
+  # Conjunctions: removed at the start; if the sentence is cut, it stops before one of the last three words (flag i).
+  congiunzioni: '^(and|or|but|so|then|because|while)$'
+  # Abbreviations with a full stop that don't end the sentence (lowercase, no stop).
+  abbreviazioni: [mr, mrs, ms, dr, st, mt, sr, jr]
   # First person → third person. Every rule ignores case and works on whole words.
   prima_persona:
     # Subject and verb fused at the start, replaced by the third-person form ([from, to]).

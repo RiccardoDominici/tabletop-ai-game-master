@@ -30,10 +30,16 @@ export interface PrimaPersona {
 interface RegoleAnnuncio {
   citazione: string;
   terza: string;
+  /** Mai un annuncio vuoto: «{nome} agisce.». */
+  vuoto: string;
+  minContenuto: number;
+  nonContenuto: RegExp | null;
+  nonFinali: RegExp | null;
+  congiunzioni: RegExp | null;
+  abbreviazioni: ReadonlySet<string>;
   risate: RegExp | null;
   intercalari: RegExp | null;
   virgolette: RegExp | null;
-  congiunzione: RegExp | null;
   maxParole: number;
   /** null = la lingua non volta la prima persona: sempre la citazione. */
   prima: PrimaPersona | null;
@@ -66,10 +72,15 @@ function compila(s: Sezione): RegoleAnnuncio {
   return {
     citazione: campoTesto(s, 'citazione'),
     terza,
+    vuoto: campoTesto(s, 'vuoto'),
+    minContenuto: campoNumero(s, 'min_contenuto'),
+    nonContenuto: campoRegex(s, 'non_contenuto', 'i'),
+    nonFinali: campoRegex(s, 'non_finali', 'i'),
+    congiunzioni: campoRegex(s, 'congiunzioni', 'i'),
+    abbreviazioni: new Set(campoElenco(s, 'abbreviazioni').map((a) => a.toLowerCase())),
     risate: campoRegex(s, 'risate', 'gi'),
     intercalari: campoRegex(s, 'intercalari', 'i'),
     virgolette: campoRegex(s, 'virgolette', 'g'),
-    congiunzione: campoRegex(s, 'congiunzione_finale', 'i'),
     maxParole: campoNumero(s, 'max_parole'),
     prima: compilaPrima(prima as Sezione, terza),
   };
@@ -149,27 +160,117 @@ export function inTerzaPersona(frase: string, p: PrimaPersona | null = regoleAnn
   return out || null;
 }
 
+/** La parola senza punteggiatura attorno, per i confronti con le liste del pacchetto. */
+const nuda = (w: string): string => w.replace(/^[«"“(]+|[»"”).,;:!?…]+$/g, '').replace(/’/g, "'");
+
+/** Le parole di contenuto: non nelle liste del pacchetto, e non nomi propri a metà frase («Chiedo a Ugo»). */
+function contenuto(frase: string, r: RegoleAnnuncio): number {
+  return frase
+    .split(' ')
+    .filter(Boolean)
+    .filter((w, i) => {
+      const n = nuda(w);
+      if (!/\p{L}/u.test(n) || r.nonContenuto?.test(n)) return false;
+      return !(i > 0 && /^\p{Lu}/u.test(n));
+    }).length;
+}
+
 /**
- * L'annuncio deterministico: in italiano «Nome: «prima frase».», con la prima frase di ciò che il
- * giocatore ha scritto tagliata alla prima virgola o pausa (e prima di una congiunzione se va oltre), al
- * massimo `max_parole` parole col nome; in inglese la stessa frase in terza persona quando si può.
- * Niente parole che il giocatore non ha scritto. null se non resta niente.
+ * Le frasi del testo (fino a . ! ? …), senza spezzare sul punto di un'abbreviazione («Mr. Hale»).
+ * `compiuta`: finisce con ! o ? (un'esclamazione o una domanda è già un'azione intera: non si unisce alla dopo).
  */
-export function annuncioBreve(nome: string, testo: string): string | null {
+function frasi(t: string, r: RegoleAnnuncio): string[] & { compiuta?: boolean[] } {
+  const out: string[] & { compiuta?: boolean[] } = [];
+  out.compiuta = [];
+  let corrente = '';
+  for (const pezzo of t.split(/(?<=[.!?…]["»”]?)\s+/)) {
+    corrente = corrente ? `${corrente} ${pezzo}` : pezzo;
+    const ultima = nuda(pezzo.split(' ').at(-1) ?? '').toLowerCase();
+    if (/\.$/.test(pezzo) && r.abbreviazioni.has(ultima)) continue;
+    out.compiuta.push(/[!?]["»”]?$/.test(corrente));
+    out.push(corrente.replace(/[.!?…]+["»”]?$/, '').trim());
+    corrente = '';
+  }
+  if (corrente.trim()) {
+    out.compiuta.push(false);
+    out.push(corrente.replace(/[.!?…]+["»”]?$/, '').trim());
+  }
+  return out;
+}
+
+/** Un inciso che non dice niente in testa: un vocativo («Berta,», «Ugo!»), «Anch'io,», «Me too,». */
+function incisoVuoto(inciso: string, r: RegoleAnnuncio): boolean {
+  const parole = inciso.split(' ').filter(Boolean);
+  if (!parole.length || contenuto(inciso, r) === 0) return true;
+  return parole.length === 1 && /^\p{Lu}/u.test(nuda(parole[0]!)) && !/^[^,;:]*[.!?]$/.test(inciso);
+}
+
+/**
+ * La frase da annunciare (docs/e2e-finale.md, D4: annunci vuoti o tagliati a metà):
+ * - la prima frase del giocatore, senza gli incisi vuoti in testa (vocativi, «Anch'io», «Me too») e senza
+ *   una congiunzione iniziale; se ha meno di `min_contenuto` parole di contenuto si unisce la seguente;
+ * - se sta in `max` parole resta intera; se no si taglia all'ultimo confine di inciso (, ; :) prima di `max`
+ *   che lasci almeno `min_contenuto` parole di contenuto, altrimenti a `max` parole, fermandosi prima di
+ *   una congiunzione fra le ultime tre;
+ * - mai una chiusa su articolo, preposizione, congiunzione o avverbio che regge («…prima degli», «…con»).
+ */
+export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = regoleAnnuncio()): string {
+  const tutte = frasi(testo, r);
+  let k = 0;
+  let frase = '';
+  while (k < tutte.length && !frase) {
+    const incisi = tutte[k]!.split(/(?<=[,;:])\s+|\s+-\s+/);
+    while (incisi.length && incisoVuoto(incisi[0]!.replace(/[,;:]$/, ''), r)) incisi.shift();
+    frase = incisi.join(' ').trim();
+    k++;
+  }
+  // Una frase sola fatta di un inciso «vuoto» per forma ma che dice qualcosa («Parla!»): resta com'è.
+  if (!frase && tutte.length && contenuto(tutte[0]!, r) > 0) {
+    frase = tutte[0]!;
+    k = 1;
+  }
+  // Troppo poco contenuto: si unisce la frase seguente, se c'è spazio.
+  while (frase && !tutte.compiuta?.[k - 1] && contenuto(frase, r) < r.minContenuto && k < tutte.length && frase.split(' ').length < max) frase = `${frase}. ${tutte[k++]}`;
+  let parole = frase.split(' ').filter(Boolean);
+  while (parole.length > 1 && r.congiunzioni?.test(nuda(parole[0]!))) parole.shift();
+  if (parole.length > max) {
+    // L'ultimo confine di inciso prima del limite che dice ancora abbastanza.
+    let taglio = -1;
+    for (let b = Math.min(max, parole.length) - 1; b >= 0; b--) {
+      if (/[,;:]$/.test(parole[b]!) && contenuto(parole.slice(0, b + 1).join(' '), r) >= r.minContenuto) {
+        taglio = b + 1;
+        break;
+      }
+    }
+    if (taglio > 0) parole = parole.slice(0, taglio);
+    else {
+      parole = parole.slice(0, max);
+      for (let c = parole.length - 1; c >= Math.max(1, parole.length - 3); c--) {
+        if (r.congiunzioni?.test(nuda(parole[c]!))) {
+          parole = parole.slice(0, c);
+          break;
+        }
+      }
+    }
+  }
+  while (parole.length > 1 && (r.nonFinali?.test(nuda(parole.at(-1)!)) || !/\p{L}|\p{N}/u.test(nuda(parole.at(-1)!)))) parole.pop();
+  return parole.join(' ').replace(/[\s,;:'’-]+$/, '').trim();
+}
+
+/**
+ * L'annuncio deterministico: in italiano «Nome: «prima frase».», con la frase di `fraseAnnuncio`, al
+ * massimo `max_parole` parole col nome; in inglese la stessa frase in terza persona quando si può.
+ * Niente parole che il giocatore non ha scritto. Mai vuoto: senza niente da dire, «Nome agisce.».
+ */
+export function annuncioBreve(nome: string, testo: string): string {
   const r = regoleAnnuncio();
   let t = r.risate ? testo.replace(r.risate, ' ') : testo;
   t = t.replace(/[^\p{L}\p{N}\s'’,;:.!?…«»"-]/gu, ' ').replace(/\s+/g, ' ').trim();
   for (let i = 0; i < 3 && r.intercalari?.test(t); i++) t = t.replace(r.intercalari, '').trim();
   if (r.virgolette) t = t.replace(r.virgolette, '').trim();
-  const pezzi = t.split(/\s*[,;:.!?…]+\s*|\s+-\s+/).filter(Boolean);
-  const prima = pezzi.find((x) => x.split(' ').length >= 2) ?? pezzi[0] ?? '';
   const max = Math.max(3, r.maxParole - nome.split(/\s+/).length);
-  const parole = prima.split(' ').filter(Boolean);
-  let frase = parole.slice(0, max).join(' ');
-  // Se si taglia a metà, meglio fermarsi prima di una congiunzione («e», «ma», «poi»…; «and», «but»…).
-  if (parole.length > max && r.congiunzione) frase = frase.replace(r.congiunzione, '');
-  frase = frase.replace(/[\s'’-]+$/, '').trim();
-  if (!frase) return null;
+  const frase = fraseAnnuncio(t, max, r);
+  if (!frase || contenuto(frase, r) === 0) return riempi(r.vuoto, { nome });
   const terza = inTerzaPersona(frase, r.prima);
   if (terza) return riempi(r.terza, { nome, frase: terza });
   return riempi(r.citazione, { nome, frase: `${frase.charAt(0).toUpperCase()}${frase.slice(1)}` });

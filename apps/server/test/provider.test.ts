@@ -241,10 +241,10 @@ describe('lettore minimo', () => {
   });
 
   it('annuncio deterministico: nome + prima frase, senza intercalari, al massimo 12 parole', () => {
-    expect(annuncioBreve('Nando', 'ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso')).toBe('Nando: «La fisarmonica la tiro fuori io».');
-    expect(annuncioBreve('Remo', 'adelina la scatolina vuota la peso a occhio, varra due fiorini')).toBe('Remo: «Adelina la scatolina vuota la peso a occhio».');
+    expect(annuncioBreve('Nando', 'ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso')).toBe('Nando: «La fisarmonica la tiro fuori io, si balla».');
+    expect(annuncioBreve('Remo', 'adelina la scatolina vuota la peso a occhio, varra due fiorini')).toBe('Remo: «Adelina la scatolina vuota la peso a occhio, varra due fiorini».');
     expect(annuncioBreve('Sorella Teodora', 'mi avvicino alle ceste del pane dei lumi e dico la preghiera della sera per tutti')).toBe('Sorella Teodora: «Mi avvicino alle ceste del pane dei lumi».');
-    expect(annuncioBreve('Ida', 'ahah ok!!')).toBeNull();
+    expect(annuncioBreve('Ida', 'ahah ok!!')).toBe('Ida agisce.');
     const n = annuncioBreve('Ida', 'guardo la porta del ripostiglio con calma senza farmi vedere da nessuno della sala grande')!;
     expect(n.split(' ').length).toBeLessThanOrEqual(12);
   });

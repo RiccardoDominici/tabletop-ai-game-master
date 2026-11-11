@@ -66,7 +66,7 @@ describe('frasi inglesi per la voce', () => {
 describe('annuncio in terza persona', () => {
   it('«I open the door» → «Ginestra opens the door.»', () => {
     expect(annuncioBreve('Ginestra', 'I open the door')).toBe('Ginestra opens the door.');
-    expect(annuncioBreve('Ginestra', 'ok so I try to pick the lock, quietly')).toBe('Ginestra tries to pick the lock.');
+    expect(annuncioBreve('Ginestra', 'ok so I try to pick the lock, quietly')).toBe('Ginestra tries to pick the lock, quietly.');
     expect(annuncioBreve('Corrado', 'I search the room for my dagger')).toBe('Corrado searches the room for their dagger.');
     expect(annuncioBreve('Ida', "I'm going down the stairs")).toBe('Ida is going down the stairs.');
     expect(annuncioBreve('Ida', 'I’ll wait by the fire')).toBe('Ida will wait by the fire.');
@@ -81,12 +81,12 @@ describe('annuncio in terza persona', () => {
   });
 
   it('quando non si può voltare con certezza si cita il giocatore; al massimo 12 parole', () => {
-    expect(annuncioBreve('Ginestra', 'the door, I kick it open')).toBe('Ginestra: “The door.”');
+    expect(annuncioBreve('Ginestra', 'the door, I kick it open')).toBe('Ginestra: “The door, I kick it open.”');
     expect(annuncioBreve('Ginestra', 'Quietly towards the stairs')).toBe('Ginestra: “Quietly towards the stairs.”');
     // Le parole tra virgolette restano del giocatore: si volta solo ciò che viene prima.
     expect(annuncioBreve('Ginestra', 'I tell the innkeeper "I need a room"')).toBe('Ginestra tells the innkeeper "I need a room".');
     expect(annuncioBreve('Ginestra', '"Open up!" I shout')).toBe('Ginestra: “Open up.”');
-    expect(annuncioBreve('Ida', 'haha ok!!')).toBeNull();
+    expect(annuncioBreve('Ida', 'haha ok!!')).toBe('Ida acts.');
     const lungo = annuncioBreve('Ida', 'I walk slowly along the wall of the great hall towards the kitchen door without being seen')!;
     expect(lungo.split(' ').length).toBeLessThanOrEqual(12);
     expect(lungo).toMatch(/^Ida walks slowly along the wall/);
