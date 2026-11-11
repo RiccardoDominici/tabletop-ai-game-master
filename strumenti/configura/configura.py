@@ -21,7 +21,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))  # `python3 -I` leaves the script folder out of sys.path: add it back.
 
-from profilo import scegli, scrivi_locale  # noqa: E402
+from profilo import alternative_leggere, fabbisogno_testo, scegli, scrivi_locale  # noqa: E402
 from rileva import RADICE, rileva  # noqa: E402
 import scarica  # noqa: E402
 
@@ -44,8 +44,12 @@ def riepilogo(rilevamento: dict, profilo: dict) -> list[str]:
     for offerta in profilo["chiavi_offerte"]:
         stato = "applied" if profilo["chiavi_applicate"] else "available, not applied (add --con-chiavi)"
         righe.append(f"Optional upgrade: {offerta['chiave']} for {offerta['sblocca']} ({offerta['nota']}): {stato}.")
+    righe.append(f"Disk needed: {fabbisogno_testo(profilo['id'])}.")
+    if rilevamento["disco_libero_gb"] is not None:
+        righe.append(f"Free disk now: {rilevamento['disco_libero_gb']} GB.")
     for c in profilo.get("ambienti_mancanti", []):
-        righe.append(f"NOT READY: the '{c}' environment is missing. Setup step 2 creates it.")
+        righe.append(f"NOT READY: the '{c}' environment is missing, so that choice falls back to its reserve "
+                     "until setup step 2 creates it.")
     for avviso in profilo["avvisi"] + rilevamento["avvisi"]:
         righe.append(f"Note: {avviso}")
     return righe
@@ -82,6 +86,9 @@ def main(argv: list[str] | None = None) -> int:
             print("Nothing to download: everything is already on disk.")
             return 0
         if not p["spazio_ok"]:
+            print("Lighter options that fit this disk (choose one, then run setup step 5 with its profile):")
+            for alternativa in alternative_leggere():
+                print(f"  - {alternativa}")
             return 3
         if not args.si:
             if not sys.stdin.isatty():

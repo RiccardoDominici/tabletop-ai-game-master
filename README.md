@@ -68,6 +68,10 @@ Before you read: nothing. This is the page to start from.
 
 ## What you need
 
+- **Disk.** On an Apple silicon Mac with 16 GB, the local setup needs about **9 GB free** (6.6 GB of models, 2.1 GB of
+  Python environments; the image model adds 4.6 GB). A smaller Mac needs about 8 GB. Without local models (text-only,
+  with an API key) it needs about 0.2 GB. The setup says this before it downloads anything.
+
 - **A Mac with Apple silicon** (M1 or newer) for the local models: the reader (mlx-lm), the voice (Qwen3-TTS) and
   the images (mflux) all use MLX. The project is sized for 16 GB of RAM; with less, the setup picks a smaller reader
   and turns the images off. On other computers the local reader, voice and images are not supported yet, and the

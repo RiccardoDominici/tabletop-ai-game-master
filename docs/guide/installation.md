@@ -34,6 +34,7 @@ The steps below are what the skill does, written out for anyone who prefers to d
 
 | What | Why | Required? |
 |---|---|---|
+| About 9 GB free on disk (Apple silicon, 16 GB) | the models (6.6 GB) and the Python environments (2.1 GB); the image model adds 4.6 GB | only for the local profile; text-only needs about 0.2 GB |
 | A Mac with an Apple chip | the local reader, the local voice and the images use MLX, which only runs on Apple chips | yes, for the default all-local game. On another computer a real narrator needs an Anthropic key or another local model server (see [Local and API](local-and-api.md#other-local-servers)) |
 | Node 22 or newer | server and web pages (`package.json`, `engines` field) | yes |
 | Python 3 with PyYAML | the campaign validator (`strumenti/valida_campagna.py`) | yes |

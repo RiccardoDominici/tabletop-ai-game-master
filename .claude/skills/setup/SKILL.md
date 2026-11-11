@@ -18,6 +18,13 @@ Run every command from the repository root. Use `python3 -I` for the Python tool
 
 ## 2. Install
 
+**Disk first.** Before installing anything, check the free space (`df -h .`) and tell the user how much each choice
+needs on a new computer:
+- Apple silicon, 16 GB profile (local reader, voice and images): about **9 GB** (8.9 GB; the image model adds 4.6 GB).
+- Apple silicon under 16 GB (smaller local reader): about **8 GB** (7.9 GB).
+- Anything else, text-only with an API key: about **0.2 GB**.
+If the free space is below the chosen profile's figure, offer the lighter choice before going on.
+
 - Node 22 or newer is required (`node -v`). If missing, tell the user to install Node 22+ and stop.
 - `npm install`
 - Python 3 is required (`python3 -V`). The campaign validator uses it.

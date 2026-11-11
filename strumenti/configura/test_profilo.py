@@ -191,7 +191,7 @@ def test_ambiente_mancante_e_segnalato() -> None:
     r["ambienti"] = {"lettore": False, "voce": True, "immagini": True}
     p = scegli(r)
     assert p["ambienti_mancanti"] == ["lettore"]
-    assert any("'lettore'" in a and "missing" in a for a in p["avvisi"])
+    assert not any("missing" in a for a in p["avvisi"])  # una sola segnalazione: NOT READY nel riepilogo
 
 
 def test_ambiente_presente_nessun_avviso() -> None:
@@ -202,3 +202,14 @@ def test_ambiente_presente_nessun_avviso() -> None:
 
 def test_ambienti_non_misurati_nessun_avviso() -> None:
     assert scegli(rilevamento(ram=16.0, disco=50.0))["ambienti_mancanti"] == []
+
+
+def test_fabbisogno_apple_16_e_circa_nove_gb() -> None:
+    assert profilo.fabbisogno_gb("apple-16") == 8.9  # 6,6 modelli + 2,1 ambienti + 0,2 npm
+    assert "6.6 GB models" in profilo.fabbisogno_testo("apple-16")
+    assert "image model" in profilo.fabbisogno_testo("apple-16")
+
+
+def test_alternative_leggeri_sono_piu_piccoli_di_apple_16() -> None:
+    assert profilo.fabbisogno_gb("altro") < profilo.fabbisogno_gb("apple-piccolo") < profilo.fabbisogno_gb("apple-16")
+    assert len(profilo.alternative_leggere()) == 2

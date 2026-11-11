@@ -34,6 +34,47 @@ DIMENSIONI_APPROSSIMATE_GB = {
     MODELLO_VOCE: 2.0,
     MODELLO_IMMAGINI: 4.6,
 }
+# Cartelle .venv misurate sul Mac di sviluppo (10 nov 2026, docs/guide/installation.md, tabella «What gets written»).
+AMBIENTE_GB = {"lettore": 0.45, "voce": 0.47, "immagini": 1.2}
+# Spazio che un computer nuovo deve avere libero per ciascun profilo: modelli + ambienti + npm. Su Apple silicon
+# la skill (passo 2) crea i tre ambienti Python, quindi sono sempre contati. Il modello delle immagini è a parte.
+FABBISOGNO_GB = {
+    "apple-16": {"modelli": DIMENSIONI_APPROSSIMATE_GB[MODELLO_LETTORE_GRANDE] + DIMENSIONI_APPROSSIMATE_GB[MODELLO_VOCE],
+                 "ambienti": sum(AMBIENTE_GB.values()),
+                 "immagini": DIMENSIONI_APPROSSIMATE_GB[MODELLO_IMMAGINI]},
+    "apple-piccolo": {"modelli": DIMENSIONI_APPROSSIMATE_GB[MODELLO_LETTORE_PICCOLO] + DIMENSIONI_APPROSSIMATE_GB[MODELLO_VOCE],
+                      "ambienti": sum(AMBIENTE_GB.values()),
+                      "immagini": 0.0},
+    # Senza modelli locali: solo i pacchetti npm del repository (node_modules, misurati a 201 MB).
+    "altro": {"modelli": 0.0, "ambienti": 0.0, "immagini": 0.0},
+}
+NPM_GB = 0.2
+
+
+def fabbisogno_gb(profilo_id: str) -> float:
+    """Gigabyte che il profilo richiede su un computer nuovo, senza il modello delle immagini (vedi FABBISOGNO_GB)."""
+    f = FABBISOGNO_GB[profilo_id]
+    return round(f["modelli"] + f["ambienti"] + NPM_GB, 1)
+
+
+def fabbisogno_testo(profilo_id: str) -> str:
+    """La frase che si legge prima di qualsiasi download."""
+    f = FABBISOGNO_GB[profilo_id]
+    testo = (f"about {fabbisogno_gb(profilo_id)} GB on a new computer ({f['modelli']:.1f} GB models + "
+             f"{f['ambienti']:.1f} GB Python environments + {NPM_GB} GB npm packages)")
+    if f["immagini"]:
+        testo += f"; +{f['immagini']:.1f} GB more if you also want the image model"
+    return testo
+
+
+def alternative_leggere() -> list[str]:
+    """Le scelte più leggere, da proporre quando il disco non basta per il profilo scelto."""
+    return [
+        f"apple-piccolo (Apple silicon under 16 GB, 4B reader): {fabbisogno_testo('apple-piccolo')}",
+        f"text-only with an Anthropic or OpenRouter key (no local models): {fabbisogno_testo('altro')}",
+    ]
+
+
 # Quale ambiente Python del progetto serve a quale modello (strumenti/configura/scarica.py lo usa).
 AMBIENTE_PER_COMPONENTE = {"lettore": "lettore", "voce": "voce", "immagini": "immagini"}
 
@@ -136,9 +177,6 @@ def scegli(rilevamento: dict[str, Any], applica_chiavi: bool = False, lingua: st
 
     locali = [c for c in ("lettore", "voce", "immagini") if componenti_locali(c, lettore, voce, immagini)]
     ambienti_mancanti = [c for c in locali if ambienti.get(c) is False]
-    for c in ambienti_mancanti:
-        avvisi.append(f"Python environment for '{c}' is missing: run setup step 2 (see docs/guide/installation.md) "
-                      "before this local choice works. Until then the server falls back to its reserve.")
 
     componenti = {
         "lettore": lettore,
