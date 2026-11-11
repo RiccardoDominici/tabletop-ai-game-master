@@ -1,0 +1,288 @@
+{
+ "etichetta": "torre-mozza-pressione-B-pass2",
+ "turni": {
+  "giocati": 16,
+  "copione": 16,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [
+   "scena_carbonaia",
+   "scena_torre"
+  ],
+  "orologi_max": {
+   "o_mezzanotte": "1/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": [
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ],
+   [
+    "la decima non pagata"
+   ]
+  ]
+ },
+ "private": {
+  "azioni_private": 6,
+  "righe_privato": 2,
+  "esiti_privati_log": 9,
+  "righe_al_tavolo_sospette": 9,
+  "sospette": [
+   {
+    "turno": 4,
+    "pg": "pg_nespola",
+    "riga": "[narratore] Nespola si china verso Berta e sussurra qualcosa, ma le sue parole non arrivano al resto del cortile."
+   },
+   {
+    "turno": 5,
+    "pg": "pg_livia",
+    "riga": "[narratore] Livia si china verso Berta e le parla piano, del balivo e dell'ovile alla prima neve. Berta non abbassa lo sguardo dalla chiave."
+   },
+   {
+    "turno": 5,
+    "pg": "pg_livia",
+    "riga": "[narratore] Berta stringe il laccio di cuoio tra le dita. Resta sulla soglia e non fa un passo verso Livia."
+   },
+   {
+    "turno": 6,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Eliandro si china sulla lavagna e cerca di leggere con la poca luce. Nessun goblin si vede, né parla dal cancello."
+   },
+   {
+    "turno": 8,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Livia si ferma dietro Nespola, la spada in mano, e alza gli occhi sui rami. Eliandro stringe la lanterna e passa la luce sul tronco più vicino."
+   },
+   {
+    "turno": 8,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Eliandro abbassa la lanterna sul tronco e vede incisioni fresche, tre tacche una sull'altra, sotto la corteccia."
+   },
+   {
+    "turno": 17,
+    "pg": "pg_nespola",
+    "riga": "[narratore] Nespola si china verso il goblin rimasto e gli parla piano, quasi all'orecchio. Il goblin sbatte gli occhi gialli, poi fa un cenno verso la cantina."
+   },
+   {
+    "turno": 17,
+    "pg": "pg_nespola",
+    "riga": "[narratore] Sui gradini, Tonio alza di nuovo la testa e guarda Nespola."
+   },
+   {
+    "turno": 18,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Eliandro resta sulla scala, la lanterna bassa, a studiare le incisioni sulla pietra."
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 27,
+  "con_tiro": 21,
+  "tipi": {
+   "prova": 16,
+   "nessuna": 5,
+   "attacco": 6
+  },
+  "dadi": {
+   "d20": 15,
+   "d10": 8,
+   "d6": 15
+  },
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 3,
+   "Carisma: dNN contro CD N (difficile)": 3,
+   "Cercare porte segrete e trappole N: dN serve N o meno": 2,
+   "Attacco automatico: Dardo incantato NdN": 2,
+   "Intelligenza: dNN contro CD N (facile)": 1,
+   "Ascoltare N%: dN serve N o meno": 1,
+   "Saggezza: dNN contro CD N (normale)": 1,
+   "Muoversi in silenzio N%: dN serve N o meno": 1,
+   "Scalare pareti N%: dN serve N o meno": 1,
+   "Scalare pareti: dNN contro CD N (normale)": 1,
+   "Spada corta, Attacco in mischia (Forza): dNN contro CD N (difesa di eliandro)": 1,
+   "Arco corto, Attacco a distanza (Destrezza): dNN contro CD N (difesa di zirrà)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "anthropic completo (set generico)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: inizia": 1,
+   "azioni: rinviate al turno del loro PG (combattimento)": 3,
+   "combattimento: risolve solo chi è di turno": 3,
+   "combattimento: esce dallo scontro": 2,
+   "combattimento: finito": 1
+  },
+  "fatti_morale_terra": 8,
+  "esempi": [
+   "combattimento: esce dallo scontro: {\"level\": 30, \"time\": \"2026-11-11T11:24:10.360Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"combattimento\", \"id\": \"png_zirra\", \"esito\": \"morto\", \"msg\": \"combattimento: esce dallo scontro\"}",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-11T11:24:10.361Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 13, \"attesa_ms\": 170, \"tardive\": [], \"tiri\": [\"Eliandro: Dardo incantato 7 contro soglia 0, riuscita\"], \"fatti\": [\"[1",
+   "narratore: testo del turno: {\"level\": 30, \"time\": \"2026-11-11T11:24:12.077Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 13, \"testo\": \"[narratore] Eliandro lancia il dardo incantato contro il goblin più vicino, nella porta. Il colpo lo ce",
+   "combattimento: esce dallo scontro: {\"level\": 30, \"time\": \"2026-11-11T11:24:55.157Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"combattimento\", \"id\": \"png_grosso\", \"esito\": \"morto\", \"msg\": \"combattimento: esce dallo scontro\"}",
+   "combattimento: finito: {\"level\": 30, \"time\": \"2026-11-11T11:24:55.158Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"combattimento\", \"motivo\": \"i nemici sono a terra\", \"round\": 1, \"msg\": \"combattimento: finito\"}",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-11T11:24:55.158Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 14, \"attesa_ms\": 291, \"tardive\": [], \"tiri\": [\"Nespola Tondi: Spada corta alle spalle 15 contro CD 14, riuscita\"], \"f",
+   "arbitro: azioni vecchie: {\"level\": 30, \"time\": \"2026-11-11T11:25:12.468Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"azioni\", \"turno\": 14, \"giudizi\": {\"a21\": {\"giudizio\": \"impossibile\", \"motivo\": \"Grosso è crollato a terra davanti al fuoco e non c'è p",
+   "narratore: testo del turno: {\"level\": 30, \"time\": \"2026-11-11T11:26:23.178Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 16, \"testo\": \"[narratore] Eliandro stringe il quaderno e chiede chi ha dato alla torre le lettere per scrivere.\\n[nar"
+  ],
+  "fatti_morale": [
+   "Morale dei nemici: 3 contro 8 → tengono."
+  ],
+  "fatti_a_terra": [
+   "[1] Eliandro: attacco con Dardo incantato a Zirrà (Attacco automatico: Dardo incantato 1d6) → COLPISCE, 7 danni; Zirrà è A TERRA (0 punti ferita): fuori combatt",
+   "[1] Nespola Tondi: attacco con Spada corta alle spalle a Grosso: Spada corta alle spalle, Attacco furtivo (Forza): d20+5 contro CD 14 (difesa di grosso) → COLPI",
+   "Il combattimento è finito: i nemici sono a terra."
+  ],
+  "fuori_gioco_log": {
+   "prove: PNG fuori gioco nel messaggio del narratore": 6
+  }
+ },
+ "lettore": {
+  "scelte": 0,
+  "nessuna": 0,
+  "ms_classifica_med": null,
+  "ms_classifica_peggiore": null
+ },
+ "sceneggiatore": {
+  "richieste": {},
+  "consegnate": 0,
+  "dette_a_finestra_aperta": 0,
+  "accettate": 0,
+  "scartate": {},
+  "ms_claude_med": null,
+  "ms_totale_med_subito": null,
+  "processo": {}
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 21073,
+   "peggiore": 21292,
+   "n": 16
+  },
+  "llm_prima_frase": {
+   "mediana": 1550,
+   "peggiore": 2572,
+   "n": 16
+  },
+  "voce_primo_audio": {
+   "mediana": 1831,
+   "peggiore": 2782,
+   "n": 16
+  },
+  "schermo_inizio_audio": {
+   "mediana": 1983.5,
+   "peggiore": 2935,
+   "n": 16
+  },
+  "llm_fine": {
+   "mediana": 2630,
+   "peggiore": 3661,
+   "n": 16
+  },
+  "audio_fine": {
+   "mediana": 23363.5,
+   "peggiore": 41027,
+   "n": 16
+  },
+  "s_tra_turni_med": 45,
+  "s_tra_turni_peggiore": 66.696
+ },
+ "voce": {
+  "motore": "fish",
+  "buchi": {
+   "totale": 0,
+   "in_frase": 0,
+   "tra_frasi": 0,
+   "silenzio_ms": 0,
+   "per_turno": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "proiettore_secondi": 400,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 15,
+  "avvisi": 11,
+  "per_messaggio": [
+   "50 ×12 repertorio: parola segreta nel messaggio del selettore",
+   "40 ×5 narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono",
+   "40 ×3 repertorio: rilascio fuori contesto, al suo posto la deviazione",
+   "50 ×3 repertorio: [usa] rifiutato",
+   "40 ×2 narratore: riga di un PNG assente dalla scena, scartata",
+   "40 ×1 prove: fatti dello scontro non detti dalla narrazione, li dice il Motore"
+  ],
+  "provider": [
+   "lettore         → anthropic (completo) claude-haiku-5-5 — configurato (config/pr",
+   "arbitro_azioni  → anthropic claude-haiku-5-5 — configurato (config/predefinita.y",
+   "arbitro_prove   → anthropic (completo) claude-haiku-5-5 — configurato (config/pr",
+   "riassunto       → anthropic claude-haiku-5-5 — configurato (config/predefinita.y",
+   "regole          → anthropic claude-haiku-5-5 — configurato (config/predefinita.y",
+   "voce            → openrouter — configurato (config/predefinita.yaml)",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0.059134879999999994,
+ "righe": {
+  "prescritte": 4,
+  "improvvisate": 67,
+  "usa_rifiutati": 3,
+  "azioni_pubbliche": 21,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0
+ }
+}
