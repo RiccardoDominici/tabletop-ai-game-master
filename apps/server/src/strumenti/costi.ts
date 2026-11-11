@@ -130,8 +130,8 @@ export function leggiSessioni(file: string): SessioneArchivio[] {
 
 function principale(argv: string[]): void {
   const i = argv.indexOf('--log');
-  const porta = process.env['CANTASTORIE_PORTA'] ?? '4610';
-  const cartella = i >= 0 ? path.resolve(argv[i + 1] ?? '.') : (process.env['CANTASTORIE_LOG'] ?? (porta === '4610' ? CARTELLA_LOG : path.join(CARTELLA_LOG, `porta-${porta}`)));
+  const porta = process.env['TAGM_PORTA'] ?? '4610';
+  const cartella = i >= 0 ? path.resolve(argv[i + 1] ?? '.') : (process.env['TAGM_LOG'] ?? (porta === '4610' ? CARTELLA_LOG : path.join(CARTELLA_LOG, `porta-${porta}`)));
   const somme = sommaPerSessione(leggiRighe(path.join(cartella, 'costi.jsonl')), leggiSessioni(path.join(cartella, 'sessioni.sqlite')));
   const scelte = argv.includes('--tutte') ? somme : somme.slice(-10);
   if (argv.includes('--json')) {

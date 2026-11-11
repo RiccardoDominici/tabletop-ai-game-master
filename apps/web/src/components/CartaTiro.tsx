@@ -19,7 +19,7 @@
  */
 import { t } from '../lingua';
 import clsx from 'clsx';
-import type { TiroMostrato } from '@cantastorie/shared';
+import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import {
   conSegno,
   contoTiro,

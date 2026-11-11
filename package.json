@@ -1,5 +1,5 @@
 {
-  "name": "cantastorie",
+  "name": "tabletop-ai-game-master",
   "private": true,
   "version": "0.0.1",
   "description": "Tabletop AI Game Master: AI game master for in-person D&D (F0: end-to-end trial)",
@@ -12,12 +12,12 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "concurrently -k -n server,web -c blue,magenta \"npm run dev -w @cantastorie/server\" \"npm run dev -w @cantastorie/web\"",
-    "build": "npm run build -w @cantastorie/web",
-    "start": "npm run start -w @cantastorie/server",
+    "dev": "concurrently -k -n server,web -c blue,magenta \"npm run dev -w @tabletop-ai-gm/server\" \"npm run dev -w @tabletop-ai-gm/web\"",
+    "build": "npm run build -w @tabletop-ai-gm/web",
+    "start": "npm run start -w @tabletop-ai-gm/server",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "e2e": "npm run e2e -w @cantastorie/web",
+    "e2e": "npm run e2e -w @tabletop-ai-gm/web",
     "check": "npm run typecheck && npm run test"
   },
   "devDependencies": {

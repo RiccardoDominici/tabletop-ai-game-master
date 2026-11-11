@@ -7,12 +7,12 @@
  * prendono dal registro delle narrazioni e si scrivono marcate come private, dove sono avvenute.
  * Niente id, niente `[usa]`, niente note pre-scritto/improvvisato: quelle restano in trascrizione.md.
  *
- * Lo stato porta solo le ultime N voci (CANTASTORIE_TRASCRIZIONE_MAX) e il Motore può spostare
+ * Lo stato porta solo le ultime N voci (TAGM_TRASCRIZIONE_MAX) e il Motore può spostare
  * righe dentro il turno in corso (il segno d'orologio prima dell'invito): l'osservatore tiene
  * quindi, per ogni turno, l'ordine dell'ultima istantanea che lo conteneva tutto.
  */
 import type { Socket } from 'socket.io-client';
-import type { EventiClientVersoServer, EventiServerVersoClient, StatoTavolo, VoceTrascrizione } from '@cantastorie/shared';
+import type { EventiClientVersoServer, EventiServerVersoClient, StatoTavolo, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 

@@ -2,7 +2,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import type { PresenzaMaster, StatoMaster } from '@cantastorie/shared';
+import type { PresenzaMaster, StatoMaster } from '@tabletop-ai-gm/shared';
 import { SezionePresenze } from './SezionePresenze';
 
 const PRESENZE: PresenzaMaster[] = [

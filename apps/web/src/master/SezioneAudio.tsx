@@ -5,7 +5,7 @@
  * l'isteresi della musica. Nomi di umori ed effetti non sono spoiler: si mostrano sempre.
  */
 import clsx from 'clsx';
-import type { AudioMaster, StatoMaster } from '@cantastorie/shared';
+import type { AudioMaster, StatoMaster } from '@tabletop-ai-gm/shared';
 import { useInCorso } from '../store/master';
 import { nomeEffetto, nomeTraccia, nomeUmore } from './audio';
 import { inviaComando } from './sessione';

@@ -7,21 +7,21 @@
  * Se il pacchetto nuovo non parte (il controllo prima del cambio dovrebbe impedirlo), si torna al
  * pacchetto di prima: meglio la serata di prima che un server spento.
  */
-import { costruisciServer, type ServerCantastorie, type Sostituzioni } from './avvio';
+import { costruisciServer, type ServerTagm, type Sostituzioni } from './avvio';
 import type { ConfigServer } from './config';
 import type { Logger } from './logger';
 import { nuovoToken } from './master/token';
 
 export class ServerConCiclo {
-  private server: ServerCantastorie;
-  private readonly osservatori: Array<(s: ServerCantastorie) => void> = [];
+  private server: ServerTagm;
+  private readonly osservatori: Array<(s: ServerTagm) => void> = [];
   private cambio: Promise<void> | null = null;
 
   private constructor(
     private config: ConfigServer,
     private readonly log: Logger,
     private readonly sost: Sostituzioni,
-    primo: ServerCantastorie,
+    primo: ServerTagm,
   ) {
     this.server = primo;
   }
@@ -38,12 +38,12 @@ export class ServerConCiclo {
   }
 
   /** Il server attivo adesso (cambia a ogni «Prossima sessione»). */
-  get corrente(): ServerCantastorie {
+  get corrente(): ServerTagm {
     return this.server;
   }
 
   /** Avvisa a ogni server nuovo (index.ts stampa di nuovo gli indirizzi). */
-  alCambio(f: (s: ServerCantastorie) => void): void {
+  alCambio(f: (s: ServerTagm) => void): void {
     this.osservatori.push(f);
   }
 
@@ -65,7 +65,7 @@ export class ServerConCiclo {
     this.log.info({ da: prima, a: numero }, 'sessioni: il server si ricostruisce sul pacchetto dopo');
     await this.server.chiudi();
     // La sessione nuova non è una ripresa, e --nuova valeva solo per il primo avvio.
-    const tenta = async (n: number | null): Promise<ServerCantastorie> => {
+    const tenta = async (n: number | null): Promise<ServerTagm> => {
       const s = await costruisciServer({ ...this.config, sessione: n, nuovaSessione: false }, this.log, this.sost);
       await s.avvia();
       return s;

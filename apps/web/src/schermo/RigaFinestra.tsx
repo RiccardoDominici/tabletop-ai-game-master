@@ -4,7 +4,7 @@
  * concitato. A finestra chiusa dice cosa succede, con il nome di chi parla davvero (etichettaFase).
  */
 import clsx from 'clsx';
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { testoAttesa } from '../lib/attesa';
 import { secondiRimasti } from '../lib/formato';
 import { useOra } from '../lib/useOra';

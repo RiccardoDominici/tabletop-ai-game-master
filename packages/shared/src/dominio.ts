@@ -1,5 +1,5 @@
 /**
- * @cantastorie/shared — tipi di dominio condivisi tra server, telefono e schermo (F0).
+ * @tabletop-ai-gm/shared — tipi di dominio condivisi tra server, telefono e schermo (F0).
  *
  * Tutto ciò che viaggia su Socket.IO è descritto qui. Il server è l'unica fonte di verità:
  * telefono e schermo ricevono istantanee (`StatoTavolo`) con un numero di versione e si

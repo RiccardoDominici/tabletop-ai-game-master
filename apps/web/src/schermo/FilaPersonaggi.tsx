@@ -8,7 +8,7 @@
  */
 import { useState } from 'react';
 import clsx from 'clsx';
-import type { PersonaggioScena } from '@cantastorie/shared';
+import type { PersonaggioScena } from '@tabletop-ai-gm/shared';
 import { primoNome } from './etichettaFase';
 import { t } from '../lingua';
 

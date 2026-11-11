@@ -5,7 +5,7 @@
  * aperta e tavolo non in pausa: il narratore risponde subito, senza aspettare chi manca).
  */
 import clsx from 'clsx';
-import type { StatoMaster } from '@cantastorie/shared';
+import type { StatoMaster } from '@tabletop-ai-gm/shared';
 import { testoAttesa } from '../lib/attesa';
 import { secondiRimasti } from '../lib/formato';
 import { useOra } from '../lib/useOra';

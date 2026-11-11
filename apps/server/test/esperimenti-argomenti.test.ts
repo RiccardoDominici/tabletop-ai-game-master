@@ -10,7 +10,7 @@ import { ErroreArgomenti, leggiOpzioni } from '../src/esperimenti/argomenti';
 
 const copione = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'copione-')), 'breve.yaml');
 fs.writeFileSync(copione, 'pg: [pg_a]\nturni: []\n');
-const env = { CANTASTORIE_PORTA: '4799' };
+const env = { TAGM_PORTA: '4799' };
 
 describe('opzioni --ore e --chiudi', () => {
   it('di base: durata del brief, nessuna chiusura', () => {

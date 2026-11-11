@@ -3,7 +3,7 @@
  * fili aperti («Fili aperti»: le domande che la serata lascia). Solo fatti pubblici.
  */
 import { t } from '../lingua';
-import type { RiassuntoSerata } from '@cantastorie/shared';
+import type { RiassuntoSerata } from '@tabletop-ai-gm/shared';
 import { dataLeggibile } from '../lib/serata';
 
 export function DiarioSerata({ serata }: { serata: RiassuntoSerata }) {

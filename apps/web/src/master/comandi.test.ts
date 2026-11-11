@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ComandoMaster, TipoComandoMaster } from '@cantastorie/shared';
+import type { ComandoMaster, TipoComandoMaster } from '@tabletop-ai-gm/shared';
 import { chiaveComando, descriviComando, ETICHETTA_COMANDO, etichettaComando, ZONA_COMANDO } from './comandi';
 
 /** Un comando per tipo: se il contratto ne aggiunge uno, TypeScript chiede di completare qui. */

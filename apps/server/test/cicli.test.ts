@@ -14,8 +14,8 @@ import path from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import YAML from 'yaml';
 import { io as connetti, type Socket } from 'socket.io-client';
-import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoMaster, StatoTavolo } from '@cantastorie/shared';
-import type { ServerCantastorie } from '../src/avvio';
+import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoMaster, StatoTavolo } from '@tabletop-ai-gm/shared';
+import type { ServerTagm } from '../src/avvio';
 import { ServerConCiclo } from '../src/ciclo-server';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
@@ -28,7 +28,7 @@ const FIXTURE = path.join(import.meta.dirname, 'fixtures', 'campagne');
 const TOKEN = 'token_di_prova_cicli';
 const D_ANNA = 'tel-anna-0123456789';
 
-const radice = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-cicli-'));
+const radice = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-cicli-'));
 const ARCO = path.join(radice, 'arco');
 fs.cpSync(path.join(FIXTURE, 'arco'), ARCO, { recursive: true });
 const client: Client[] = [];
@@ -81,17 +81,17 @@ function configPer(cartellaCampagna: string, log: string) {
   return caricaConfig({
     PORT: '0',
     HOST: '127.0.0.1',
-    CANTASTORIE_LOG: log,
-    CANTASTORIE_CARTELLA_CAMPAGNA: cartellaCampagna,
-    CANTASTORIE_MODO: 'repertorio',
-    CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-    CANTASTORIE_CACHE_AUDIO: path.join(log, 'cache'),
-    CANTASTORIE_TTS: 'mock',
-    CANTASTORIE_ASSESTAMENTO_MS: '20',
-    CANTASTORIE_MOCK_SCALA: '0.02',
-    CANTASTORIE_MARGINE_AUDIO_MS: '50',
-    CANTASTORIE_PRERISCALDA: '0',
-    CANTASTORIE_MASTER_TOKEN: TOKEN,
+    TAGM_LOG: log,
+    TAGM_CARTELLA_CAMPAGNA: cartellaCampagna,
+    TAGM_MODO: 'repertorio',
+    TAGM_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+    TAGM_CACHE_AUDIO: path.join(log, 'cache'),
+    TAGM_TTS: 'mock',
+    TAGM_ASSESTAMENTO_MS: '20',
+    TAGM_MOCK_SCALA: '0.02',
+    TAGM_MARGINE_AUDIO_MS: '50',
+    TAGM_PRERISCALDA: '0',
+    TAGM_MASTER_TOKEN: TOKEN,
   } as NodeJS.ProcessEnv);
 }
 
@@ -101,7 +101,7 @@ async function avvia(cartellaCampagna = ARCO, log = path.join(radice, 'log')): P
   return c;
 }
 
-const url = (s: ServerCantastorie): string => `http://127.0.0.1:${(s.app.http.server.address() as { port: number }).port}`;
+const url = (s: ServerTagm): string => `http://127.0.0.1:${(s.app.http.server.address() as { port: number }).port}`;
 function nuovo(u: string): Client {
   const c: Client = connetti(u, { transports: ['websocket'], forceNew: true, reconnection: false });
   client.push(c);
@@ -109,7 +109,7 @@ function nuovo(u: string): Client {
 }
 
 /** Pannello, proiettore e il telefono di Anna (col token del dispositivo) su un server. */
-async function tavolo(s: ServerCantastorie, scegli: boolean) {
+async function tavolo(s: ServerTagm, scegli: boolean) {
   const u = url(s);
   const master = nuovo(u);
   const entrata = await emetti<EsitoEntrataMaster>((cb) => master.emit('master:entra', { token: TOKEN }, cb));

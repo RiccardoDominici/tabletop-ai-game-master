@@ -5,7 +5,7 @@
  * entrare né ricevere `master:stato` (che porta le azioni private e i segni degli orologi).
  */
 import type { Socket } from 'socket.io';
-import type { EsitoEntrataMaster, Esito, EventiClientVersoServer, EventiServerVersoClient } from '@cantastorie/shared';
+import type { EsitoEntrataMaster, Esito, EventiClientVersoServer, EventiServerVersoClient } from '@tabletop-ai-gm/shared';
 import type { Logger } from '../logger';
 import type { ControlliMaster } from '../master/comandi';
 import { testo } from '../lingua';

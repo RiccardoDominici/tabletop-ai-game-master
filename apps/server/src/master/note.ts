@@ -7,7 +7,7 @@
  * dalla chiamata successiva senza riscrivere la cache del prompt. Ogni turno narrato consuma un
  * turno di ogni nota; a zero la nota esce.
  */
-import { NOTA_REGIA_MAX_CARATTERI, NOTE_REGIA_MAX, NOTE_REGIA_TURNI_MAX, type NotaRegia } from '@cantastorie/shared';
+import { NOTA_REGIA_MAX_CARATTERI, NOTE_REGIA_MAX, NOTE_REGIA_TURNI_MAX, type NotaRegia } from '@tabletop-ai-gm/shared';
 import { testo } from '../lingua';
 
 export type EsitoNota = { ok: true; nota: NotaRegia } | { ok: false; errore: string };

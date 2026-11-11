@@ -16,7 +16,7 @@
  * La ricostruzione è un fold puro (ricostruisci): l'ultima fotografia, l'ultima versione di ogni
  * turno della trascrizione, l'ultimo stato del tavolo, l'ultimo PG di ogni dispositivo.
  */
-import type { EsitoPrivato, FaseScena, NotaRegia, RiassuntoSerata, VoceTrascrizione } from '@cantastorie/shared';
+import type { EsitoPrivato, FaseScena, NotaRegia, RiassuntoSerata, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import type { UmoreScelto } from '../audio/scena';
 import type { Azione } from '../azioni/tipi';
 import type { StatoProveSalvato } from '../prove/stato';

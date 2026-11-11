@@ -1,9 +1,9 @@
 /**
- * Logger del browser con livelli, per @cantastorie/web.
+ * Logger del browser con livelli, per @tabletop-ai-gm/web.
  *
  * - Livello minimo predefinito: `info` in sviluppo, `warn` nella build.
  * - Si cambia senza ricompilare: `?log=debug` nell'URL oppure localStorage
- *   `cantastorie:log` = 'debug' | 'info' | 'warn' | 'error' | 'silenzio'.
+ *   `tabletop-ai-gm:log` = 'debug' | 'info' | 'warn' | 'error' | 'silenzio'.
  * - `error` è riservato ai guasti veri: l'e2e fallisce su qualunque errore in console, quindi
  *   situazioni previste (server giù, ack scaduto, pezzo audio orfano) vanno a `warn`.
  * Il resto dell'app non chiama mai `console.*` direttamente: passa da `log`.
@@ -19,7 +19,7 @@ const ORDINE: Record<LivelloLog | 'silenzio', number> = {
   silenzio: 100,
 };
 
-const CHIAVE_MEMORIA = 'cantastorie:log';
+const CHIAVE_MEMORIA = 'tabletop-ai-gm:log';
 
 function livelloValido(valore: string | null | undefined): valore is LivelloLog | 'silenzio' {
   return valore != null && valore in ORDINE;
@@ -45,7 +45,7 @@ let soglia = ORDINE[livelloIniziale()];
 
 function scrivi(livello: LivelloLog, ambito: string, messaggio: string, contesto?: unknown): void {
   if (ORDINE[livello] < soglia) return;
-  const testa = `[cantastorie:${ambito}] ${messaggio}`;
+  const testa = `[tabletop-ai-gm:${ambito}] ${messaggio}`;
   const metodo = livello === 'debug' ? 'debug' : livello;
   if (contesto === undefined) console[metodo](testa);
   else console[metodo](testa, contesto);

@@ -3,7 +3,7 @@
  * attive diventano fonti di vantaggio o svantaggio, critici, tiri salvezza falliti, turni persi.
  * Logica pura: le condizioni attive le tiene lo scontro (prove/scontro.ts).
  */
-import type { Vantaggio } from '@cantastorie/shared';
+import type { Vantaggio } from '@tabletop-ai-gm/shared';
 import { testo } from '../lingua';
 import type { Effetto } from '../regole/combattimento';
 

@@ -13,7 +13,7 @@
  * - prossimi: musica e ambienti dei luoghi vicini (gli stessi delle immagini: collegamenti del nodo
  *   della scena, scene d'uscita), poi i temi dei PNG presenti.
  */
-import type { AudioScena } from '@cantastorie/shared';
+import type { AudioScena } from '@tabletop-ai-gm/shared';
 import type { Campagna } from '../campagna/tipi';
 import type { CatalogoAudio } from './catalogo';
 import { umoreIniziale } from './cue';

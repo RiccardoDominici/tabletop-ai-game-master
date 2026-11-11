@@ -26,7 +26,7 @@ async function main(): Promise<void> {
     (await client.messages.countTokens({ model: modello, messages: [{ role: 'user', content: testo }] })).input_tokens;
 
   const campagna = caricaCampagna(config.cartellaCampagna);
-  // CANTASTORIE_MODO=repertorio: prompt del selettore e contesto per allowlist (modalità B).
+  // TAGM_MODO=repertorio: prompt del selettore e contesto per allowlist (modalità B).
   const b = config.modo === 'repertorio';
   const parole = caricaParoleSegreteCampagna(campagna);
   const filePrompt = (b ? config.filePromptSelettore : config.filePromptNarratore) ?? percorsoPrompt(b ? 'selettore' : 'narratore', campagna.lingua ?? config.lingua);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AudioFrase } from '@cantastorie/shared';
+import type { AudioFrase } from '@tabletop-ai-gm/shared';
 import { Programmatore, type Segno } from './programmatore';
 
 const SR = 24000;

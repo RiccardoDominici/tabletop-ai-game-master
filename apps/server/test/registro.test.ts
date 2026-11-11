@@ -15,8 +15,8 @@ import path from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import YAML from 'yaml';
 import { io as connetti, type Socket } from 'socket.io-client';
-import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie } from '../src/avvio';
+import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@tabletop-ai-gm/shared';
+import { costruisciServer, type ServerTagm } from '../src/avvio';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
@@ -29,9 +29,9 @@ type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 const MINI = path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini');
 const TOKEN = 'token_di_prova_registro';
 
-const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-registro-'));
+const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-registro-'));
 const client: Client[] = [];
-const server: ServerCantastorie[] = [];
+const server: ServerTagm[] = [];
 
 afterAll(async () => {
   for (const c of client) c.disconnect();
@@ -63,21 +63,21 @@ const COPIONE: Record<number, string> = {
   4: '[usa] oste_confessa > pg_anna\n[invito] tutti',
 };
 
-async function avvia(): Promise<{ s: ServerCantastorie; url: string }> {
+async function avvia(): Promise<{ s: ServerTagm; url: string }> {
   const config = caricaConfig({
     PORT: '0',
     HOST: '127.0.0.1',
-    CANTASTORIE_LOG: cartella,
-    CANTASTORIE_CARTELLA_CAMPAGNA: MINI,
-    CANTASTORIE_MODO: 'repertorio',
-    CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-    CANTASTORIE_CACHE_AUDIO: path.join(cartella, 'cache'),
-    CANTASTORIE_TTS: 'mock',
-    CANTASTORIE_ASSESTAMENTO_MS: '20',
-    CANTASTORIE_MOCK_SCALA: '0.02',
-    CANTASTORIE_MARGINE_AUDIO_MS: '50',
-    CANTASTORIE_PRERISCALDA: '0',
-    CANTASTORIE_MASTER_TOKEN: TOKEN,
+    TAGM_LOG: cartella,
+    TAGM_CARTELLA_CAMPAGNA: MINI,
+    TAGM_MODO: 'repertorio',
+    TAGM_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+    TAGM_CACHE_AUDIO: path.join(cartella, 'cache'),
+    TAGM_TTS: 'mock',
+    TAGM_ASSESTAMENTO_MS: '20',
+    TAGM_MOCK_SCALA: '0.02',
+    TAGM_MARGINE_AUDIO_MS: '50',
+    TAGM_PRERISCALDA: '0',
+    TAGM_MASTER_TOKEN: TOKEN,
   } as NodeJS.ProcessEnv);
   const narratore = new NarratoreFinto({
     idPng: [],

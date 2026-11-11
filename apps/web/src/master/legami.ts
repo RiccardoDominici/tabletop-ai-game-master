@@ -6,7 +6,7 @@
  * Nei conflitti NON esclusivi il narratore risolve le due azioni insieme: non c'è chi vince, quindi
  * «vince/perde» si scrive solo per gli esclusivi.
  */
-import type { AzioneMaster, LegameAzione } from '@cantastorie/shared';
+import type { AzioneMaster, LegameAzione } from '@tabletop-ai-gm/shared';
 import { elencoNomi } from '../lib/formato';
 import { t } from '../lingua';
 

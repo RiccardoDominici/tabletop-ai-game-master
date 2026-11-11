@@ -1,5 +1,5 @@
 /**
- * @cantastorie/shared — il set di regole della campagna come lo vedono i telefoni (docs/regole.md).
+ * @tabletop-ai-gm/shared — il set di regole della campagna come lo vedono i telefoni (docs/regole.md).
  *
  * Ogni campagna gioca con un set di regole: quello ricavato dal manuale dell'utente (manuali/, mai nel
  * repository) oppure, senza manuale, l'SRD 5.2. Il telefono mostra il riassunto nella scheda «Regole»

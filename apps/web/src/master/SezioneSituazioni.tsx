@@ -5,7 +5,7 @@
  * Senza spoiler una situazione non in onda non mostra nome, miniatura né rivelazione collegata.
  */
 import clsx from 'clsx';
-import type { SituazioneMaster, StatoMaster } from '@cantastorie/shared';
+import type { SituazioneMaster, StatoMaster } from '@tabletop-ai-gm/shared';
 import { useInCorso, useSenzaSpoiler } from '../store/master';
 import { inviaComando } from './sessione';
 import { Riquadro } from './Riquadro';

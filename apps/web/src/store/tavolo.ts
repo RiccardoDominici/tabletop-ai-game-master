@@ -3,7 +3,7 @@
  * rete per il QR e l'ultima misura di latenza. Condiviso da telefono e schermo.
  */
 import { create } from 'zustand';
-import type { InfoServer, MisureTurno, StatoTavolo } from '@cantastorie/shared';
+import type { InfoServer, MisureTurno, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { creaLog } from '../lib/log';
 import { aggiornaScarto } from '../lib/orologioServer';
 

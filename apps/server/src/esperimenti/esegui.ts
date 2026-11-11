@@ -2,7 +2,7 @@
  * Esperimento (docs/repertorio.md): esegue un copione fisso di azioni dei giocatori contro il
  * server VERO, in modalità A (improvvisa) o B (repertorio), con Haiku vero, su una campagna qualsiasi.
  *
- *   CANTASTORIE_PORTA=4710 npx tsx apps/server/src/esperimenti/esegui.ts <copione> <A|B|B2> \
+ *   TAGM_PORTA=4710 npx tsx apps/server/src/esperimenti/esegui.ts <copione> <A|B|B2> \
  *     [--campagna <id>] [--finto] [--lascia-server]
  *
  * Esempi: `esegui.ts indagine B` (prova-f0, come le prime prove);
@@ -12,8 +12,8 @@
  * azioni private).
  *
  * 1. Controlla il copione contro la campagna, poi riavvia il server di prova da zero
- *    (CANTASTORIE_PORTA=<porta> scripts/avvio.sh) con CANTASTORIE_CAMPAGNA, CANTASTORIE_MODO,
- *    CANTASTORIE_FINESTRA_TUTTI=1 (la finestra si apre per tutti, così il copione si dà identico ai
+ *    (TAGM_PORTA=<porta> scripts/avvio.sh) con TAGM_CAMPAGNA, TAGM_MODO,
+ *    TAGM_FINESTRA_TUTTI=1 (la finestra si apre per tutti, così il copione si dà identico ai
  *    due narratori; l'invito resta nel registro) e un token del master fissato qui.
  * 2. Collega un proiettore virtuale (proiettore.ts), un pannello del master headless (master.ts)
  *    e un telefono headless per ogni PG.
@@ -30,7 +30,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { io as connetti, type Socket } from 'socket.io-client';
-import type { Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@cantastorie/shared';
+import type { Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { caricaCampagna } from '../campagna/caricatore';
 import type { Campagna } from '../campagna/tipi';
 import { nuovoToken } from '../master/token';
@@ -94,13 +94,13 @@ function avviaServer(o: OpzioniEsperimento, token: string): void {
   const avvio = spawnSync(path.join(RADICE_REPO, 'scripts', 'avvio.sh'), argomenti, {
     env: {
       ...process.env,
-      CANTASTORIE_PORTA: String(o.porta),
-      CANTASTORIE_CAMPAGNA: o.campagna,
-      CANTASTORIE_MODO: o.modo,
-      CANTASTORIE_FINESTRA_TUTTI: '1',
+      TAGM_PORTA: String(o.porta),
+      TAGM_CAMPAGNA: o.campagna,
+      TAGM_MODO: o.modo,
+      TAGM_FINESTRA_TUTTI: '1',
       // Ogni chiamata dello sceneggiatore usa l'abbonamento di Riccardo: solo se la prova lo chiede.
-      CANTASTORIE_SCENEGGIATORE: o.sceneggiatore ? 'si' : 'no',
-      CANTASTORIE_MASTER_TOKEN: token,
+      TAGM_SCENEGGIATORE: o.sceneggiatore ? 'si' : 'no',
+      TAGM_MASTER_TOKEN: token,
     },
     encoding: 'utf8',
   });
@@ -108,7 +108,7 @@ function avviaServer(o: OpzioniEsperimento, token: string): void {
 }
 
 function arrestaServer(o: OpzioniEsperimento): void {
-  spawnSync(path.join(RADICE_REPO, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, CANTASTORIE_PORTA: String(o.porta) }, encoding: 'utf8' });
+  spawnSync(path.join(RADICE_REPO, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, TAGM_PORTA: String(o.porta) }, encoding: 'utf8' });
 }
 
 /** Come è finita la partita prima della fine del copione: il finale ha chiuso la scena, o il tavolo si è fermato. */

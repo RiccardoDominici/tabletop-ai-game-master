@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AzionePrivata } from '@cantastorie/shared';
+import type { AzionePrivata } from '@tabletop-ai-gm/shared';
 import { INTERVALLO_SCRIVO_MS, riconciliaBozza, TracciaScrittura } from './bozza';
 
 function azione(parziale: Partial<AzionePrivata> = {}): AzionePrivata {

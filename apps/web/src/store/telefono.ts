@@ -3,7 +3,7 @@
  * comando. Lo stato del tavolo (pubblico) sta in `store/tavolo.ts`.
  */
 import { create } from 'zustand';
-import type { AzionePrivata, EsitoPrivato, SchedaPg } from '@cantastorie/shared';
+import type { AzionePrivata, EsitoPrivato, SchedaPg } from '@tabletop-ai-gm/shared';
 import { CHIAVI, cancellaMemoria, leggiMemoria, scriviMemoria } from '../lib/memoria';
 
 interface StoreTelefono {

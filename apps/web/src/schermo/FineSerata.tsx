@@ -4,7 +4,7 @@
  * e massimi (quando la campagna ha le schede numeriche). Se il riassunto è la riserva del Motore
  * (il modello non ha risposto), una nota piccola lo dice.
  */
-import type { FineSerata as FineSerataStato, PgPubblico } from '@cantastorie/shared';
+import type { FineSerata as FineSerataStato, PgPubblico } from '@tabletop-ai-gm/shared';
 import { testoPf } from '../lib/tiri';
 import { dataLeggibile } from '../lib/serata';
 import { t } from '../lingua';

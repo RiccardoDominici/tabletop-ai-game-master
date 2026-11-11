@@ -3,7 +3,7 @@
  * isteresi, strati d'ambiente, tema una volta per PNG per scena, ducking sotto la voce, memoria.
  */
 import { describe, expect, it } from 'vitest';
-import type { AudioScena, CatalogoAudioPubblico, TracciaAudio } from '@cantastorie/shared';
+import type { AudioScena, CatalogoAudioPubblico, TracciaAudio } from '@tabletop-ai-gm/shared';
 import { BancaAudio } from './banca';
 import { ContestoFinto } from './contestoFinto';
 import { IMPOSTAZIONI_PREDEFINITE } from './impostazioni';

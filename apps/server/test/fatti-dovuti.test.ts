@@ -5,7 +5,7 @@
  * riga breve del pacchetto della lingua. In italiano e in inglese, poi col server intero.
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
-import type { StatoTavolo, TiroMostrato } from '@cantastorie/shared';
+import type { StatoTavolo, TiroMostrato } from '@tabletop-ai-gm/shared';
 import { impostaLingua } from '../src/lingua';
 import { diceFatto, fattiDovuti, fattiMancanti, rigaDovuta, TIPI_FATTO_DOVUTO, type FattoDovuto } from '../src/prove/fatti-dovuti';
 import { DadiACopione } from '../src/prove/dadi';

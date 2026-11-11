@@ -8,8 +8,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { io as connetti, type Socket } from 'socket.io-client';
-import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, StatoMaster } from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie } from '../src/avvio';
+import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, StatoMaster } from '@tabletop-ai-gm/shared';
+import { costruisciServer, type ServerTagm } from '../src/avvio';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
@@ -19,7 +19,7 @@ const TOKEN = 'token_di_prova_audio_master_1';
 const FIXTURE = path.join(import.meta.dirname, 'fixtures', 'audio');
 
 let cartella: string;
-let server: ServerCantastorie;
+let server: ServerTagm;
 let url: string;
 const client: Client[] = [];
 
@@ -38,18 +38,18 @@ async function entraMaster(): Promise<{ master: Client; stato: StatoMaster }> {
 }
 
 beforeAll(async () => {
-  cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-audio-master-'));
+  cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-audio-master-'));
   const config = caricaConfig({
     PORT: '0',
     HOST: '127.0.0.1',
-    CANTASTORIE_LOG: cartella,
-    CANTASTORIE_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
-    CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-    CANTASTORIE_TTS: 'mock',
-    CANTASTORIE_ASSESTAMENTO_MS: '20',
-    CANTASTORIE_MOCK_SCALA: '0.02',
-    CANTASTORIE_MASTER_TOKEN: TOKEN,
-    CANTASTORIE_AUDIO: FIXTURE,
+    TAGM_LOG: cartella,
+    TAGM_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
+    TAGM_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+    TAGM_TTS: 'mock',
+    TAGM_ASSESTAMENTO_MS: '20',
+    TAGM_MOCK_SCALA: '0.02',
+    TAGM_MASTER_TOKEN: TOKEN,
+    TAGM_AUDIO: FIXTURE,
   } as NodeJS.ProcessEnv);
   server = await costruisciServer(config, loggerMuto(), {
     narratore: new NarratoreFinto({ idPng: [], idPg: [], primoTokenMs: 5, msPerPezzo: 1, copione: () => '[narratore] La pioggia batte.\n[invito] tutti' }),

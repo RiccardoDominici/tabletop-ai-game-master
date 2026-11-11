@@ -5,7 +5,7 @@
  * Poi lo stesso caso col server intero: trascrizione pubblica pulita, esito privato sul telefono.
  */
 import { afterEach, describe, expect, it } from 'vitest';
-import type { EsitoPrivato, StatoTavolo } from '@cantastorie/shared';
+import type { EsitoPrivato, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { destinatarioPrivato, guardiaPrivate, radici, rispostaPrivataPng } from '../src/narrazione/privato';
 import { Prova, agisci, attendi, inizia } from './aiuti/partita';
 

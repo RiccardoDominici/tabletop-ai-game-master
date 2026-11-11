@@ -6,7 +6,7 @@
  * Le frasi stanno nel pacchetto della lingua dei contenuti (lingue/<codice>/testi-prove.yaml, chiavi
  * «prove.…») e i nomi in prove.yaml: qui solo come si compongono. Si leggono al momento dell'uso.
  */
-import type { DannoMostrato, TiroMostrato } from '@cantastorie/shared';
+import type { DannoMostrato, TiroMostrato } from '@tabletop-ai-gm/shared';
 import { CARATTERISTICA_DI, nomeAbilita, nomeCaratteristica, type Abilita, type Caratteristica } from '../campagna/regole-srd';
 import { testo } from '../lingua';
 import { datiProve, nomeOppure } from './lingua';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { attesaFinestra, testoAttesa } from './attesa';
 
 function stato(parziale: Partial<StatoTavolo> = {}, aspettiamo: string[] = ['pg_paolo', 'pg_giulia']): StatoTavolo {

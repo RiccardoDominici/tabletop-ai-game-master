@@ -1,9 +1,9 @@
 /**
  * Prova e2e TUTTO IN LOCALE (docs/provider.md) su un'istanza di prova (mai 4610/4611): lettore locale
- * (mlx-lm su 4613), voce Qwen locale su un servizio a parte (CANTASTORIE_VOCE_URL, mai il 4611), nessuna
+ * (mlx-lm su 4613), voce Qwen locale su un servizio a parte (TAGM_VOCE_URL, mai il 4611), nessuna
  * chiave nell'ambiente né nei file. Qualche turno del copione di prova-f0, registrato da un telefono in ascolto.
  *
- *   CANTASTORIE_PORTA=4730 CANTASTORIE_VOCE_URL=http://127.0.0.1:4741 npx tsx esperimenti/provider-locale/gioca-locale.ts [--turni 3]
+ *   TAGM_PORTA=4730 TAGM_VOCE_URL=http://127.0.0.1:4741 npx tsx esperimenti/provider-locale/gioca-locale.ts [--turni 3]
  * Risultati in esperimenti/provider-locale/partita/.
  */
 import { spawnSync } from 'node:child_process';
@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { io as connetti, type Socket } from 'socket.io-client';
 import { parse } from 'yaml';
-import type { AudioFrase, Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@cantastorie/shared';
+import type { AudioFrase, Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { MasterHeadless } from '../../apps/server/src/esperimenti/master';
 import { ProiettoreVirtuale } from '../../apps/server/src/esperimenti/proiettore';
 import { nuovoToken } from '../../apps/server/src/master/token';
@@ -26,7 +26,7 @@ function opzione(nome: string, predefinito: string): string {
   const i = process.argv.indexOf(nome);
   return i >= 0 && process.argv[i + 1] ? process.argv[i + 1]! : predefinito;
 }
-const PORTA = Number(process.env['CANTASTORIE_PORTA'] ?? '4730');
+const PORTA = Number(process.env['TAGM_PORTA'] ?? '4730');
 if ([4610, 4611, 4612].includes(PORTA)) throw new Error(`porta ${PORTA} vietata: è della partita vera`);
 const TURNI = Number(opzione('--turni', '3'));
 const CAMPAGNA = opzione('--campagna', 'prova-f0');
@@ -95,17 +95,17 @@ async function principale(): Promise<void> {
   fs.copyFileSync(path.join(RADICE, 'config', 'predefinita.yaml'), path.join(VUOTA, 'predefinita.yaml'));
   fs.rmSync(path.join(VUOTA, 'locale.yaml'), { force: true });
   if (MODELLO) fs.writeFileSync(path.join(VUOTA, 'locale.yaml'), `backend:\n  locale:\n    modello: ${MODELLO}\n`);
-  const env: NodeJS.ProcessEnv = { ...process.env, CANTASTORIE_PORTA: String(PORTA), CANTASTORIE_CAMPAGNA: CAMPAGNA, CANTASTORIE_MODO: MODO, CANTASTORIE_MASTER_TOKEN: token, CANTASTORIE_CONFIG: VUOTA, ANTHROPIC_KEY_FILE: '/nessun/file', CANTASTORIE_CHIAVE_OPENROUTER: '/nessun/file' };
-  for (const k of ['ANTHROPIC_API_KEY', 'OPENROUTER_API_KEY', 'CANTASTORIE_VOCE', 'CANTASTORIE_TTS', 'CANTASTORIE_LLM']) delete env[k];
+  const env: NodeJS.ProcessEnv = { ...process.env, TAGM_PORTA: String(PORTA), TAGM_CAMPAGNA: CAMPAGNA, TAGM_MODO: MODO, TAGM_MASTER_TOKEN: token, TAGM_CONFIG: VUOTA, ANTHROPIC_KEY_FILE: '/nessun/file', TAGM_CHIAVE_OPENROUTER: '/nessun/file' };
+  for (const k of ['ANTHROPIC_API_KEY', 'OPENROUTER_API_KEY', 'TAGM_VOCE', 'TAGM_TTS', 'TAGM_LLM']) delete env[k];
   // Lo sceneggiatore usa `claude -p` (l'abbonamento di Riccardo): spento, salvo --sceneggiatore.
-  if (!process.argv.includes('--sceneggiatore')) env['CANTASTORIE_SCENEGGIATORE'] = 'no';
+  if (!process.argv.includes('--sceneggiatore')) env['TAGM_SCENEGGIATORE'] = 'no';
   if (VOCE_FISH) {
     // Solo la voce in rete: la chiave OpenRouter dal suo file; il resto resta locale e senza chiavi.
-    env['CANTASTORIE_VOCE'] = 'fish';
-    delete env['CANTASTORIE_CHIAVE_OPENROUTER'];
-    delete env['CANTASTORIE_VOCE_URL'];
+    env['TAGM_VOCE'] = 'fish';
+    delete env['TAGM_CHIAVE_OPENROUTER'];
+    delete env['TAGM_VOCE_URL'];
   }
-  console.log(`porta ${PORTA}: avvio del server di prova (${CAMPAGNA}, ${MODO}, tutto in locale, voce ${env['CANTASTORIE_VOCE_URL'] ?? 'finta'})…`);
+  console.log(`porta ${PORTA}: avvio del server di prova (${CAMPAGNA}, ${MODO}, tutto in locale, voce ${env['TAGM_VOCE_URL'] ?? 'finta'})…`);
   const avvio = spawnSync(path.join(RADICE, 'scripts', 'avvio.sh'), [], { env, encoding: 'utf8' });
   if (avvio.status !== 0) throw new Error(`avvio fallito:\n${avvio.stdout.replaceAll(token, '***')}\n${avvio.stderr.replaceAll(token, '***')}`);
   const salute = (await (await fetch(`${URL}/api/salute`)).json()) as Record<string, unknown>;
@@ -243,12 +243,12 @@ async function principale(): Promise<void> {
   };
   fs.writeFileSync(path.join(USCITA, `riepilogo${ETICHETTA ? `-${ETICHETTA}` : ''}.json`), JSON.stringify(riepilogo, null, 1) + '\n');
   console.log(JSON.stringify(riepilogo, null, 1));
-  spawnSync(path.join(RADICE, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, CANTASTORIE_PORTA: String(PORTA) }, encoding: 'utf8' });
+  spawnSync(path.join(RADICE, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, TAGM_PORTA: String(PORTA) }, encoding: 'utf8' });
   process.exit(0);
 }
 
 principale().catch((err: unknown) => {
   console.error(err);
-  spawnSync(path.join(RADICE, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, CANTASTORIE_PORTA: String(PORTA) }, encoding: 'utf8' });
+  spawnSync(path.join(RADICE, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, TAGM_PORTA: String(PORTA) }, encoding: 'utf8' });
   process.exit(1);
 });

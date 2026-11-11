@@ -3,7 +3,7 @@
  * note.test.ts. I limiti veri sono del server (`limiti_note`); il numero di caratteri viene dal
  * contratto condiviso (NOTA_REGIA_MAX_CARATTERI).
  */
-import { NOTA_REGIA_MAX_CARATTERI, type NotaRegia } from '@cantastorie/shared';
+import { NOTA_REGIA_MAX_CARATTERI, type NotaRegia } from '@tabletop-ai-gm/shared';
 import { t } from '../lingua';
 import { turni } from './etichette';
 

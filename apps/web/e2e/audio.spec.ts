@@ -2,14 +2,14 @@
  * E2E dell'audio sul proiettore (musica, ambienti, temi dei PNG, ducking, pannello, crediti) con
  * l'audio di prova. Gira su un server SUO, mai su quello della partita (4610):
  *
- *   PORT=4620 CANTASTORIE_LLM=finto CANTASTORIE_TTS=mock CANTASTORIE_LOG=/tmp/cantastorie-e2e-audio \
- *     CANTASTORIE_AUDIO=apps/server/test/fixtures/audio CANTASTORIE_IMMAGINI=apps/server/test/fixtures/immagini \
- *     npm run start -w @cantastorie/server
- *   (pagine: vite build --outDir <cartella>; CANTASTORIE_SERVER=http://127.0.0.1:4620 vite preview --outDir <cartella> --port 4622)
+ *   PORT=4620 TAGM_LLM=finto TAGM_TTS=mock TAGM_LOG=/tmp/tabletop-ai-gm-e2e-audio \
+ *     TAGM_AUDIO=apps/server/test/fixtures/audio TAGM_IMMAGINI=apps/server/test/fixtures/immagini \
+ *     npm run start -w @tabletop-ai-gm/server
+ *   (pagine: vite build --outDir <cartella>; TAGM_SERVER=http://127.0.0.1:4620 vite preview --outDir <cartella> --port 4622)
  *   E2E_URL=http://localhost:4622 npx playwright test e2e/audio.spec.ts
  *
  * Il pannello del master (seconda prova) vuole il token del server di prova in E2E_MASTER_TOKEN
- * (CANTASTORIE_MASTER_TOKEN all'avvio). Senza il catalogo di prova (server normale, anche prova-f0 con l'audio vero) si saltano. Lo schermo usa
+ * (TAGM_MASTER_TOKEN all'avvio). Senza il catalogo di prova (server normale, anche prova-f0 con l'audio vero) si saltano. Lo schermo usa
  * `?isteresi_audio_s=12`: le regole sono quelle vere, con un intervallo corto.
  * Screenshot 1920x1080 in logs/screenshots/audio-*.png; nessun errore in console.
  */
@@ -73,7 +73,7 @@ test('proiettore: musica con dissolvenza e isteresi, ambienti, tema del PNG una 
   const schermo = await (await browser.newContext({ viewport: { width: 1920, height: 1080 } })).newPage();
   schermo.on('console', (m) => m.type() === 'error' && errori.push(m.text()));
   schermo.on('pageerror', (e) => errori.push(e.message));
-  test.skip(!(await catalogoDiProva(schermo)), 'serve il server con CANTASTORIE_AUDIO=apps/server/test/fixtures/audio');
+  test.skip(!(await catalogoDiProva(schermo)), 'serve il server con TAGM_AUDIO=apps/server/test/fixtures/audio');
 
   if ((await salute(schermo)).fase !== 'attesa') await schermo.request.post('/api/scena/ricomincia');
   await luogo(schermo, 'scena_forno_vecchio');
@@ -172,7 +172,7 @@ test('proiettore: musica con dissolvenza e isteresi, ambienti, tema del PNG una 
   await schermo.getByTestId('volume-ambiente').focus();
   for (let i = 0; i < 6; i += 1) await schermo.keyboard.press('ArrowLeft');
   await expect.poll(async () => (await guadagni(schermo))['bus_ambiente'], { timeout: 2_000 }).toBeCloseTo(0.3, 2);
-  const salvate = await schermo.evaluate(() => JSON.parse(localStorage.getItem('cantastorie:mixer') ?? '{}') as Record<string, { volume: number; muto: boolean }>);
+  const salvate = await schermo.evaluate(() => JSON.parse(localStorage.getItem('tabletop-ai-gm:mixer') ?? '{}') as Record<string, { volume: number; muto: boolean }>);
   expect(salvate['ambiente']).toEqual({ volume: 0.3, muto: false });
   expect(salvate['musica']?.muto).toBe(false);
   await schermo.screenshot({ path: path.join(SCREENSHOT, 'audio-pannello.png') });
@@ -183,7 +183,7 @@ test('proiettore: musica con dissolvenza e isteresi, ambienti, tema del PNG una 
   await schermo.screenshot({ path: path.join(SCREENSHOT, 'audio-crediti.png') });
   await schermo.keyboard.press('c');
   await expect(schermo.getByTestId('crediti')).toHaveCount(0);
-  await schermo.evaluate(() => localStorage.removeItem('cantastorie:mixer'));
+  await schermo.evaluate(() => localStorage.removeItem('tabletop-ai-gm:mixer'));
 
   await luogo(schermo, 'scena_forno_vecchio');
   expect(errori, errori.join('\n')).toEqual([]);

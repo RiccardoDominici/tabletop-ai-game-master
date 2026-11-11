@@ -3,7 +3,7 @@
  * incrociata (copie sovrapposte programmate col timer), uscita senza scatti a metà entrata.
  */
 import { describe, expect, it } from 'vitest';
-import type { TracciaAudio } from '@cantastorie/shared';
+import type { TracciaAudio } from '@tabletop-ai-gm/shared';
 import { bufferFinto, ContestoFinto } from './contestoFinto';
 import { TracciaInRiproduzione } from './traccia';
 

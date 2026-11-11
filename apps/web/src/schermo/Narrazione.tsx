@@ -11,7 +11,7 @@
  */
 import { useState } from 'react';
 import clsx from 'clsx';
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { elencoNomi, virgolettato } from '../lib/formato';
 import { creaLog } from '../lib/log';
 import { useSchermo, type FraseInOnda } from '../store/schermo';

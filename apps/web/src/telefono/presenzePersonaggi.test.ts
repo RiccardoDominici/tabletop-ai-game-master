@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { PersonaggioScena } from '@cantastorie/shared';
+import type { PersonaggioScena } from '@tabletop-ai-gm/shared';
 import { altrove, apriConNome, presentiQui } from './presenzePersonaggi';
 
 const VISTA: PersonaggioScena[] = [

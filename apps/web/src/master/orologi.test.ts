@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { OrologioMaster } from '@cantastorie/shared';
+import type { OrologioMaster } from '@tabletop-ai-gm/shared';
 import {
   caselleOrologio,
   frazioneOrologio,

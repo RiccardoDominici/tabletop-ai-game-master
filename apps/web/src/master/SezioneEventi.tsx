@@ -3,7 +3,7 @@
  * si mostra il più recente IN ALTO, così l'ultimo comando si legge senza scorrere.
  */
 import clsx from 'clsx';
-import type { EventoMaster } from '@cantastorie/shared';
+import type { EventoMaster } from '@tabletop-ai-gm/shared';
 import { Riquadro, Vuoto } from './Riquadro';
 import { Chip } from './Chip';
 import { etichettaComando } from './comandi';

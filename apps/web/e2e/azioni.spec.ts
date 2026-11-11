@@ -2,8 +2,8 @@
  * E2E delle azioni simultanee (docs/azioni-concorrenti.md, «Verifica»): proiettore + tre
  * telefoni sul server vero, avviato con narratore a copione, arbitro vero (regole + Haiku) e
  * voce finta:
- *   CANTASTORIE_PORTA=4710 CANTASTORIE_LLM=finto CANTASTORIE_ARBITRO=haiku CANTASTORIE_MOCK_SCALA=0.25 \
- *     CANTASTORIE_CONCITATO_MS=10000 scripts/avvio.sh --mock
+ *   TAGM_PORTA=4710 TAGM_LLM=finto TAGM_ARBITRO=haiku TAGM_MOCK_SCALA=0.25 \
+ *     TAGM_CONCITATO_MS=10000 scripts/avvio.sh --mock
  *   npx playwright test -c apps/web/playwright.config.ts azioni
  *
  * Scenari: dipendenza («anch'io») + ritiro → avviso a tutto schermo; conflitto esclusivo (Haiku)

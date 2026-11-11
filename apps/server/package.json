@@ -1,5 +1,5 @@
 {
-  "name": "@cantastorie/server",
+  "name": "@tabletop-ai-gm/server",
   "version": "0.0.1",
   "private": true,
   "description": "Server of Tabletop AI Game Master: Fastify + Socket.IO, turns, Haiku narrator, voice pipeline",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
-    "@cantastorie/shared": "*",
+    "@tabletop-ai-gm/shared": "*",
     "@fastify/static": "^10.1.8",
     "fastify": "^5.12.7",
     "pino": "^10.4.0",

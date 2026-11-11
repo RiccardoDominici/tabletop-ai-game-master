@@ -11,7 +11,7 @@
  * rientra nella stanza player:<id_pg> e riceve di nuovo `azione:mia`.
  */
 import { t } from '../lingua';
-import type { AzionePrivata, Esito, EsitoPrivato, SchedaPg, StatoTavolo } from '@cantastorie/shared';
+import type { AzionePrivata, Esito, EsitoPrivato, SchedaPg, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { alRientro, chiedi, conEsito, esitoErrore, prendiSocket } from '../lib/socket';
 import { creaLog } from '../lib/log';
 import { tokenDispositivo } from '../lib/memoria';

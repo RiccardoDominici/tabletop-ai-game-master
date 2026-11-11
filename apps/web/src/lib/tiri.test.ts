@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { TiroMostrato } from '@cantastorie/shared';
+import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import {
   DURATA_CODA_MS,
   MASSIMO_CARTE_GRANDI,

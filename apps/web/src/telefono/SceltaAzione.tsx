@@ -14,7 +14,7 @@ import { t } from '../lingua';
 import { ordinePulsanti, type Scelta } from './scelta';
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
-import type { AzionePrivata } from '@cantastorie/shared';
+import type { AzionePrivata } from '@tabletop-ai-gm/shared';
 import { secondiRimasti } from '../lib/formato';
 import { useOra } from '../lib/useOra';
 import { creaLog } from '../lib/log';

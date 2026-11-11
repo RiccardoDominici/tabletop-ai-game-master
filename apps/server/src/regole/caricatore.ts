@@ -13,7 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
-import type { TipoRisoluzione } from '@cantastorie/shared';
+import type { TipoRisoluzione } from '@tabletop-ai-gm/shared';
 import { chiave } from '../campagna/regole-srd';
 import { testo } from '../lingua';
 import type { Logger } from '../logger';

@@ -2,8 +2,8 @@
  * E2E del combattimento (docs/combattimento.md) sul server vero con Haiku vero, sulla campagna di prova
  * con le schede (apps/server/test/fixtures/campagne/prove), SRD 5.2:
  *
- *   CANTASTORIE_PORTA=4720 CANTASTORIE_MASTER_TOKEN=prova_combattimento_4720 \
- *     CANTASTORIE_CARTELLA_CAMPAGNA=<copia di prove> scripts/avvio.sh
+ *   TAGM_PORTA=4720 TAGM_MASTER_TOKEN=prova_combattimento_4720 \
+ *     TAGM_CARTELLA_CAMPAGNA=<copia di prove> scripts/avvio.sh
  *   E2E_PORTA=4720 npx playwright test -c playwright.config.ts e2e/combattimento.spec.ts
  *
  * Corrado tira a Ruggero: si entra in combattimento. Barra dell'iniziativa sul proiettore, «È il tuo

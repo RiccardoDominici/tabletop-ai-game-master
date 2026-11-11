@@ -4,7 +4,7 @@
  * pubblica; restano nel contesto del narratore e nell'archivio.
  */
 import { afterEach, describe, expect, it } from 'vitest';
-import type { AudioFrase, EsitoPrivato } from '@cantastorie/shared';
+import type { AudioFrase, EsitoPrivato } from '@tabletop-ai-gm/shared';
 import { ParserNarratore } from '../src/narrazione/parser';
 import { agisci, emetti, inizia, Prova, turno } from './aiuti/partita';
 

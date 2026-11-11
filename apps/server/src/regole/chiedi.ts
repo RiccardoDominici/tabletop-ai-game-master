@@ -8,7 +8,7 @@
  * contenuti (docs/lingue.md): testi-prove.yaml, chiavi «regole.domanda.…».
  */
 import type { ModelloLinguaggio } from '../llm/modello';
-import type { RispostaRegola } from '@cantastorie/shared';
+import type { RispostaRegola } from '@tabletop-ai-gm/shared';
 import type { Logger } from '../logger';
 import type { Costo } from '../llm/costi';
 import { testo } from '../lingua';

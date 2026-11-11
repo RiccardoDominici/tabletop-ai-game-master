@@ -12,14 +12,14 @@
  * Restano tutti i comandi, gli stati, i conteggi, la trascrizione pubblica, il registro e le note.
  * Logica pura qui (testata in spoiler.test.ts); i componenti la usano tramite lo store.
  */
-import type { BattutaMaster } from '@cantastorie/shared';
+import type { BattutaMaster } from '@tabletop-ai-gm/shared';
 import { archivioDelBrowser, type Archivio } from './token';
 import { creaLog } from '../lib/log';
 import { t } from '../lingua';
 
 const log = creaLog('master');
 
-export const CHIAVE_SENZA_SPOILER = 'cantastorie:master:senza-spoiler';
+export const CHIAVE_SENZA_SPOILER = 'tabletop-ai-gm:master:senza-spoiler';
 
 /** La scelta salvata; senza scelta (o archivio illeggibile) la modalità è ATTIVA. */
 export function leggiSenzaSpoiler(archivio: Archivio | null = archivioDelBrowser()): boolean {

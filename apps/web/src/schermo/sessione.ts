@@ -5,7 +5,7 @@
  * riavviato) e, se l'audio era già stato sbloccato, di nuovo `schermo:inizia` per rientrare nella
  * stanza "schermo" e ricevere l'audio.
  */
-import type { InfoServer, MisureTurno, StatoTavolo } from '@cantastorie/shared';
+import type { InfoServer, MisureTurno, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { alRientro, chiedi, conEsito, prendiSocket } from '../lib/socket';
 import { creaLog } from '../lib/log';
 import { useTavolo } from '../store/tavolo';

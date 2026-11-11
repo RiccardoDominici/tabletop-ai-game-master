@@ -7,7 +7,7 @@ variazione riconoscibile dello STESSO motivo della campagna (la campagna «suona
 
 Da dove viene il motivo, in ordine:
   1. stile.audio.motivo, scritto dal Preparatore (o proposto da un LLM e incollato lì);
-  2. un gancio esterno: la variabile d'ambiente CANTASTORIE_MOTIVO_GANCIO="modulo:funzione", una
+  2. un gancio esterno: la variabile d'ambiente TAGM_MOTIVO_GANCIO="modulo:funzione", una
      funzione che riceve il profilo della campagna e ritorna un dict {metro, note: [[grado, durata], ...]};
   3. il generatore deterministico qui sotto, seminato con l'id della campagna.
 Tutto ciò che non viene dal generatore passa da `valida`: un modello scrive musica valida solo a
@@ -148,7 +148,8 @@ def motivo_campagna(id_campagna: str, esplicito: dict | None, profilo=None) -> M
         m = da_dati(esplicito, "stile.audio.motivo")
         if m:
             return m
-    gancio = os.environ.get("CANTASTORIE_MOTIVO_GANCIO")
+    # Nome vecchio CANTASTORIE_MOTIVO_GANCIO letto per compatibilità.
+    gancio = os.environ.get("TAGM_MOTIVO_GANCIO") or os.environ.get("CANTASTORIE_MOTIVO_GANCIO")
     if gancio:
         modulo, _, funzione = gancio.partition(":")
         try:

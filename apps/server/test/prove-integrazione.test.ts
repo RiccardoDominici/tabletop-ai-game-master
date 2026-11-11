@@ -6,7 +6,7 @@
  * telefono), un attacco con la reazione del PNG (PF del PG nello stato), e i PF dopo un riavvio.
  */
 import { afterEach, describe, expect, it } from 'vitest';
-import type { AzionePrivata, StatoTavolo } from '@cantastorie/shared';
+import type { AzionePrivata, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { DadiACopione } from '../src/prove/dadi';
 import type { ArbitroProve, DecisioneProva, IngressoArbitroProve } from '../src/prove/tipi';
 import { Prova, agisci, attendi, emetti, inizia, type Client } from './aiuti/partita';
@@ -86,7 +86,7 @@ describe('prove e dadi col server intero', () => {
     prova = new Prova();
     const cartella = prova.campagna('prove');
     // Corrado: 10 + 5 = 15 ≥ CA 13, spada 1d8 = 3 + 3 = 6 (Ruggero 11 → 5). Ruggero: 15 + 4 = 19 ≥ CA 15, mazza 4 + 2 = 6 (Corrado 12 → 6).
-    const env = { CANTASTORIE_SESSIONI: `${prova.cartella}/sessioni.sqlite` };
+    const env = { TAGM_SESSIONI: `${prova.cartella}/sessioni.sqlite` };
     const { url, s } = await prova.avvia(cartella, COPIONE, env, { arbitroProve: new ArbitroParole(), dadi: new DadiACopione([10, 3, 15, 4]) });
     const schermo = await prova.proiettore(url);
     const corrado = await prova.telefono(url, 'pg_corrado');

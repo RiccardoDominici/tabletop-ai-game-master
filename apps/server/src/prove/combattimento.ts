@@ -14,7 +14,7 @@
  * Tutto deterministico data la FonteDadi; lo stato si salva nella fotografia della sessione.
  */
 import type { EsitoMorte } from './fatti-dovuti';
-import type { CombattimentoPubblico, TiroMostrato } from '@cantastorie/shared';
+import type { CombattimentoPubblico, TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { Logger } from '../logger';
 import type { Combattimento, Condizione, Effetto, Fase } from '../regole/combattimento';
 import type { FonteDadi } from './dadi';

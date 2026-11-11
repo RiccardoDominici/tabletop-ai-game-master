@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
 import { afterEach, describe, expect, it } from 'vitest';
-import type { RegolePubbliche, StatoTavolo } from '@cantastorie/shared';
+import type { RegolePubbliche, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { DadiACopione } from '../src/prove/dadi';
 import type { ArbitroProve, DecisioneRegole, IngressoArbitroProve } from '../src/prove/tipi';
 import { RADICE_REPO } from '../src/percorsi';

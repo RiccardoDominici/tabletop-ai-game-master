@@ -28,7 +28,7 @@ test.afterEach(async ({ browser }) => {
 function avviaServerDiProva(env: Record<string, string>): void {
   execFileSync(path.join(RADICE, 'scripts', 'avvio.sh'), ['--mock'], {
     cwd: RADICE,
-    env: { ...process.env, CANTASTORIE_PORTA: PORTA, CANTASTORIE_LLM: 'finto', ...env },
+    env: { ...process.env, TAGM_PORTA: PORTA, TAGM_LLM: 'finto', ...env },
     stdio: 'pipe',
     timeout: 240_000,
   });
@@ -37,7 +37,7 @@ function avviaServerDiProva(env: Record<string, string>): void {
 test.afterAll(() => {
   if (PORTA === '4610') return;
   // Le altre prove si aspettano l'istanza di prova com'è di solito.
-  avviaServerDiProva({ CANTASTORIE_NUOVA_SESSIONE: '1' });
+  avviaServerDiProva({ TAGM_NUOVA_SESSIONE: '1' });
 });
 
 function linkMaster(): string {
@@ -55,13 +55,13 @@ async function conferma(p: Page, testId: string): Promise<void> {
 }
 
 test('due sessioni: fine sessione col registro, prossima sessione dal riassunto, il telefono tiene il PG', async ({ browser }) => {
-  test.skip(PORTA === '4610', 'mai riavviare la partita vera: usa un server di prova (CANTASTORIE_PORTA=4710)');
+  test.skip(PORTA === '4610', 'mai riavviare la partita vera: usa un server di prova (TAGM_PORTA=4710)');
   test.setTimeout(480_000);
   fs.mkdirSync(SCREENSHOT, { recursive: true });
   fs.rmSync(COPIA, { recursive: true, force: true });
   for (const f of [ARCHIVIO, `${ARCHIVIO}-wal`, `${ARCHIVIO}-shm`]) fs.rmSync(f, { force: true });
   fs.cpSync(path.join(RADICE, 'apps', 'server', 'test', 'fixtures', 'campagne', 'arco'), COPIA, { recursive: true });
-  avviaServerDiProva({ CANTASTORIE_CARTELLA_CAMPAGNA: COPIA, CANTASTORIE_SESSIONI: ARCHIVIO, CANTASTORIE_MODO: 'improvvisa', CANTASTORIE_NUOVA_SESSIONE: '1' });
+  avviaServerDiProva({ TAGM_CARTELLA_CAMPAGNA: COPIA, TAGM_SESSIONI: ARCHIVIO, TAGM_MODO: 'improvvisa', TAGM_NUOVA_SESSIONE: '1' });
 
   const errori: string[] = [];
   const foto = (p: Page, nome: string) => p.screenshot({ path: path.join(SCREENSHOT, `pacchetti-${nome}.png`), fullPage: nome.startsWith('master') });

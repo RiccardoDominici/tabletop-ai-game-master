@@ -16,7 +16,7 @@
  * In modalità A (improvvisa) il Motore non tiene indizi né battute: quelle sezioni sono null e lo
  * dice un avviso, invece di inventarle.
  */
-import type { NotaRegia, VoceTrascrizione } from '@cantastorie/shared';
+import type { NotaRegia, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import type { Azione } from '../azioni/tipi';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { Repertorio } from '../repertorio/tipi';

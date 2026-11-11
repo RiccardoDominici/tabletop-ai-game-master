@@ -3,7 +3,7 @@
  * «Prossima sessione» si può premere e perché no, e come mostrare un telefono ricordato.
  * Logica pura, testata in pacchetti.test.ts.
  */
-import type { PacchettiMaster } from '@cantastorie/shared';
+import type { PacchettiMaster } from '@tabletop-ai-gm/shared';
 import { t } from '../lingua';
 
 /** «Sessione 02 di 3 · Il guado». */

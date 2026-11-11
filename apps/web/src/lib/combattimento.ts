@@ -5,7 +5,7 @@
  * (chi è morto o fuggito) e come si colorano e si scrivono i dati.
  */
 import { elenco, t } from '../lingua';
-import type { CombattentePubblico, CombattimentoPubblico } from '@cantastorie/shared';
+import type { CombattentePubblico, CombattimentoPubblico } from '@tabletop-ai-gm/shared';
 
 /** Tono della barra dei PF: verde sopra il 50%, giallo fino al 50%, rosso a 0. */
 export type TonoPf = 'verde' | 'giallo' | 'rosso';

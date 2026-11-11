@@ -6,7 +6,7 @@
  */
 import { t } from '../lingua';
 import clsx from 'clsx';
-import type { PersonaggioScena, StatoTavolo } from '@cantastorie/shared';
+import type { PersonaggioScena, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { useBozza } from '../store/bozza';
 import { cambiaBozza } from './sessione';
 import { altrove, apriConNome, presentiQui } from './presenzePersonaggi';

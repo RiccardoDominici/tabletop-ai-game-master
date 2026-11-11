@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const qui = path.dirname(fileURLToPath(import.meta.url));
 
-/** Radice del repository cantastorie. */
+/** Radice del repository tabletop-ai-game-master. */
 export const RADICE_REPO = path.resolve(qui, '..', '..', '..');
 
 /** Cartella dei log JSONL (fuori da git). */

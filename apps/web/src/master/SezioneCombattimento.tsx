@@ -7,7 +7,7 @@
  * La sezione non compare se lo stato non ha il blocco `combattimento` (niente dadi, niente scheda).
  */
 import { useState } from 'react';
-import type { CombattentePubblico, CombattimentoMaster, CombattimentoPubblico, StatoMaster } from '@cantastorie/shared';
+import type { CombattentePubblico, CombattimentoMaster, CombattimentoPubblico, StatoMaster } from '@tabletop-ai-gm/shared';
 import { useInCorso } from '../store/master';
 import { inviaComando } from './sessione';
 import { useConferma } from './useConferma';

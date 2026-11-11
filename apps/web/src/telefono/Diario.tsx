@@ -10,7 +10,7 @@
  */
 import { t } from '../lingua';
 import { useEffect } from 'react';
-import type { DiarioPubblico } from '@cantastorie/shared';
+import type { DiarioPubblico } from '@tabletop-ai-gm/shared';
 import { useTelefono } from '../store/telefono';
 import { DiarioSerata } from './DiarioSerata';
 

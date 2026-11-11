@@ -7,7 +7,7 @@
  * - destra: note di regia, repertorio (solo modalità B), sessione salvata, registro dei comandi.
  * Sotto i 1280 px le colonne diventano due e la pagina scorre intera.
  */
-import type { StatoMaster } from '@cantastorie/shared';
+import type { StatoMaster } from '@tabletop-ai-gm/shared';
 import { SezioneScena } from './SezioneScena';
 import { SezioneSituazioni } from './SezioneSituazioni';
 import { SezionePresenze } from './SezionePresenze';

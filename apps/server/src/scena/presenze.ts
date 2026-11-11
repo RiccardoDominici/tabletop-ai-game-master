@@ -11,7 +11,7 @@
  *
  * Funzioni pure: il Regia le chiama con i suoi dati (vedi `Regia.personaggiScena`).
  */
-import type { PersonaggioScena, PresenzaMaster, VoceTrascrizione } from '@cantastorie/shared';
+import type { PersonaggioScena, PresenzaMaster, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import type { PngCaricato } from '../campagna/tipi';
 
 /** Presenza effettiva: la scena, corretta dalle decisioni manuali del master (true = in scena). */

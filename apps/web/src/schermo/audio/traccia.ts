@@ -10,7 +10,7 @@
  * Entrata e uscita con dissolvenza a potenza costante (curvaPotenzaCostante); un'uscita a metà di
  * un'entrata riparte dal valore corrente (fermaAutomazione), senza scatti.
  */
-import type { TracciaAudio } from '@cantastorie/shared';
+import type { TracciaAudio } from '@tabletop-ai-gm/shared';
 import { creaLog } from '../../lib/log';
 import { fermaAutomazione, type BufferAudio, type ContestoAudio, type NodoAudio, type NodoGuadagno, type SorgenteBuffer } from './contesto';
 import { curvaPotenzaCostante, giroIncrociato, puntiDiLoop } from './regole';

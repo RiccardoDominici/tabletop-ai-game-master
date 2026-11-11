@@ -12,7 +12,7 @@
  */
 import { lazy, Suspense, useEffect } from 'react';
 import clsx from 'clsx';
-import type { InfoServer, StatoTavolo } from '@cantastorie/shared';
+import type { InfoServer, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { BannerConnessione } from '../components/BannerConnessione';
 import { Avvisi } from '../components/Avvisi';
 import { Qr } from '../components/Qr';

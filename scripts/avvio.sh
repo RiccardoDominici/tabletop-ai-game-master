@@ -1,43 +1,44 @@
 #!/usr/bin/env bash
-# Avvia Cantastorie (F0): ferma le istanze precedenti, avvia il servizio voce, compila le pagine,
+source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
+# Avvia Tabletop AI Game Master (F0): ferma le istanze precedenti, avvia il servizio voce, compila le pagine,
 # avvia il server su 0.0.0.0:4610 in background e stampa gli indirizzi per telefoni e proiettore.
 #
 # Opzioni:
-#   --fish        voce drama-3 via OpenRouter (CANTASTORIE_VOCE=fish): il servizio voce locale non si
+#   --fish        voce drama-3 via OpenRouter (TAGM_VOCE=fish): il servizio voce locale non si
 #                 avvia né si ferma; se è già pronto fa da riserva (solo sulla 4610)
-#   --mock        voce finta (CANTASTORIE_TTS=mock): il servizio voce non si tocca
+#   --mock        voce finta (TAGM_TTS=mock): il servizio voce non si tocca
 #   --tieni-voce  se il servizio voce è già pronto non lo riavvia (risparmia il caricamento)
-#   --finto       narratore a copione (CANTASTORIE_LLM=finto): nessuna chiamata ad Anthropic
-# Le altre variabili CANTASTORIE_* dell'ambiente passano al server (vedi apps/server/src/config.ts).
+#   --finto       narratore a copione (TAGM_LLM=finto): nessuna chiamata ad Anthropic
+# Le altre variabili TAGM_* dell'ambiente passano al server (vedi apps/server/src/config.ts).
 #
-# Istanza di prova (e2e mentre si gioca): CANTASTORIE_PORTA=4710 scripts/avvio.sh --finto
+# Istanza di prova (e2e mentre si gioca): TAGM_PORTA=4710 scripts/avvio.sh --finto
 #   - server su quella porta, log in logs/porta-<porta>/, pagine compilate in logs/porta-<porta>/web
 #     (apps/web/dist, che serve la partita vera, non si ricompila);
-#   - voce finta, oppure drama-3 con --fish (o CANTASTORIE_VOCE=fish), mai Qwen: il servizio voce su
+#   - voce finta, oppure drama-3 con --fish (o TAGM_VOCE=fish), mai Qwen: il servizio voce su
 #     4611 e il server su 4610 non si toccano;
-#   - si ferma con: CANTASTORIE_PORTA=4710 scripts/arresto.sh
+#   - si ferma con: TAGM_PORTA=4710 scripts/arresto.sh
 #
 # Log: logs/server.out (leggibile), logs/server.jsonl (strutturato), logs/turni.jsonl, logs/costi.jsonl
 set -euo pipefail
 
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
-PORTA="${CANTASTORIE_PORTA:-4610}"
+PORTA="${TAGM_PORTA:-4610}"
 PROVA=0
 if [[ "$PORTA" != "4610" ]]; then
   case "$PORTA" in 4611|4612) echo "porta $PORTA riservata (voce, Vite): scegline un'altra" >&2; exit 2 ;; esac
   PROVA=1
   DIR_LOG="$RADICE/logs/porta-$PORTA"
-  export CANTASTORIE_LOG="$DIR_LOG"
-  export CANTASTORIE_WEB="$DIR_LOG/web"
-  # Un'istanza di prova parte da capo, salvo chi chiede di riprendere (CANTASTORIE_NUOVA_SESSIONE=0).
-  export CANTASTORIE_NUOVA_SESSIONE="${CANTASTORIE_NUOVA_SESSIONE:-1}"
-  [[ "$CANTASTORIE_NUOVA_SESSIONE" == "0" ]] && unset CANTASTORIE_NUOVA_SESSIONE
+  export TAGM_LOG="$DIR_LOG"
+  export TAGM_WEB="$DIR_LOG/web"
+  # Un'istanza di prova parte da capo, salvo chi chiede di riprendere (TAGM_NUOVA_SESSIONE=0).
+  export TAGM_NUOVA_SESSIONE="${TAGM_NUOVA_SESSIONE:-1}"
+  [[ "$TAGM_NUOVA_SESSIONE" == "0" ]] && unset TAGM_NUOVA_SESSIONE
 else
   DIR_LOG="$RADICE/logs"
 fi
 export PORT="$PORTA"
 MOCK=0; TIENI_VOCE=0; FINTO=0; FISH=0
-[[ "${CANTASTORIE_VOCE:-}" == "fish" ]] && FISH=1
+[[ "${TAGM_VOCE:-}" == "fish" ]] && FISH=1
 for a in "$@"; do
   case "$a" in
     --fish) FISH=1 ;;
@@ -51,7 +52,7 @@ mkdir -p "$DIR_LOG"
 cd "$RADICE"
 
 # 1. Istanze precedenti: server e Vite sempre; la voce solo se la riavviamo. (In prova: solo la sua porta.)
-CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" --lascia-voce --lascia-lettore
+TAGM_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" --lascia-voce --lascia-lettore
 
 # Chi fa cosa (config/*.yaml + variabili, docs/provider.md): VOCE, SERVE_LOCALE, MODELLO_LOCALE…
 TSX="$RADICE/node_modules/.bin/tsx"
@@ -63,26 +64,26 @@ if [[ "$FISH" == "0" && "$MOCK" == "0" ]]; then
 fi
 
 # 2. Servizio voce. drama-3 non ha servizi locali da avviare. In prova mai Qwen: la voce su 4611 è
-#    della partita vera (con drama-3 la riserva Qwen è spenta, CANTASTORIE_VOCE_RISERVA=no).
+#    della partita vera (con drama-3 la riserva Qwen è spenta, TAGM_VOCE_RISERVA=no).
 if [[ "$FISH" == "1" ]]; then
-  export CANTASTORIE_VOCE=fish
+  export TAGM_VOCE=fish
   if [[ "$PROVA" == "1" ]]; then
-    export CANTASTORIE_VOCE_RISERVA=no
+    export TAGM_VOCE_RISERVA=no
     echo "voce: drama-3 via OpenRouter (istanza di prova su :$PORTA, nessuna riserva Qwen)"
   else
     echo "voce: drama-3 via OpenRouter (riserva: Qwen locale se è già pronto)"
   fi
-elif [[ "$PROVA" == "1" && "$MOCK" == "0" && -n "${CANTASTORIE_VOCE_URL:-}" && "${CANTASTORIE_VOCE_URL}" != *":4611"* ]]; then
+elif [[ "$PROVA" == "1" && "$MOCK" == "0" && -n "${TAGM_VOCE_URL:-}" && "${TAGM_VOCE_URL}" != *":4611"* ]]; then
   # Prova con la voce locale: un servizio Qwen a parte (mai il 4611 della partita vera), acceso da chi prova.
-  export CANTASTORIE_VOCE=qwen
-  echo "voce: Qwen locale su $CANTASTORIE_VOCE_URL (istanza di prova su :$PORTA)"
+  export TAGM_VOCE=qwen
+  echo "voce: Qwen locale su $TAGM_VOCE_URL (istanza di prova su :$PORTA)"
 elif [[ "$PROVA" == "1" ]]; then
-  unset CANTASTORIE_VOCE
-  export CANTASTORIE_TTS=mock
+  unset TAGM_VOCE
+  export TAGM_TTS=mock
   echo "voce: finta (istanza di prova su :$PORTA)"
 elif [[ "$MOCK" == "1" ]]; then
-  unset CANTASTORIE_VOCE
-  export CANTASTORIE_TTS=mock
+  unset TAGM_VOCE
+  export TAGM_TTS=mock
   echo "voce: finta (--mock)"
 elif [[ -x "$RADICE/scripts/voce-avvio.sh" ]]; then
   if [[ "$TIENI_VOCE" == "1" ]] && curl -s --max-time 2 http://127.0.0.1:4611/salute | grep -q '"pronto":true'; then
@@ -103,7 +104,7 @@ fi
 echo "web: compilo le pagine…"
 if [[ "$PROVA" == "1" ]]; then
   # Build a parte: apps/web/dist serve la partita vera e non va toccata.
-  npm run build --silent -w @cantastorie/web -- --outDir "$CANTASTORIE_WEB" --emptyOutDir >> "$DIR_LOG/build.out" 2>&1 \
+  npm run build --silent -w @tabletop-ai-gm/web -- --outDir "$TAGM_WEB" --emptyOutDir >> "$DIR_LOG/build.out" 2>&1 \
     || { echo "web: compilazione fallita, vedi $DIR_LOG/build.out"; tail -n 20 "$DIR_LOG/build.out"; exit 1; }
 else
   npm run build --silent >> "$DIR_LOG/build.out" 2>&1 || { echo "web: compilazione fallita, vedi logs/build.out"; tail -n 20 "$DIR_LOG/build.out"; exit 1; }
@@ -112,7 +113,7 @@ fi
 # 4. Server. Le variabili ANTHROPIC_BASE_URL, ANTHROPIC_CUSTOM_HEADERS e ANTHROPIC_AUTH_TOKEN della shell
 #    puntano a un proxy locale: non devono arrivare al server (che fissa comunque baseURL).
 #    ANTHROPIC_API_KEY invece NON si toglie: se è nell'ambiente è la prima fonte della chiave (llm/chiavi.ts).
-[[ "$FINTO" == "1" ]] && export CANTASTORIE_LLM=finto
+[[ "$FINTO" == "1" ]] && export TAGM_LLM=finto
 echo "=== avvio $(date '+%Y-%m-%d %H:%M:%S') ===" >> "$DIR_LOG/server.out"
 env -u ANTHROPIC_BASE_URL -u ANTHROPIC_CUSTOM_HEADERS -u ANTHROPIC_AUTH_TOKEN \
   nohup npm run start --silent >> "$DIR_LOG/server.out" 2>&1 &
@@ -132,11 +133,11 @@ for _ in $(seq 1 60); do
 done
 # 5. Lo sceneggiatore (docs/sceneggiatore.md): Claude Code scrive ciò che il lettore locale non trova.
 #    Ogni `claude -p` consuma l'abbonamento di chi gioca: parte da sé solo sulla partita vera (4610) e se
-#    `claude` è installato. Sulle istanze di prova (harness, e2e) solo con CANTASTORIE_SCENEGGIATORE=si;
-#    CANTASTORIE_SCENEGGIATORE=no lo spegne ovunque. Col narratore finto mai.
-SCENEGGIATORE="${CANTASTORIE_SCENEGGIATORE:-auto}"
+#    `claude` è installato. Sulle istanze di prova (harness, e2e) solo con TAGM_SCENEGGIATORE=si;
+#    TAGM_SCENEGGIATORE=no lo spegne ovunque. Col narratore finto mai.
+SCENEGGIATORE="${TAGM_SCENEGGIATORE:-auto}"
 if [[ "$FINTO" != "1" && "$SCENEGGIATORE" != "no" && ( "$PROVA" != "1" || "$SCENEGGIATORE" == "si" ) ]]; then
-  CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/sceneggiatore.sh" avvia || echo "sceneggiatore: non partito (vedi il suo log)"
+  TAGM_PORTA="$PORTA" "$RADICE/scripts/sceneggiatore.sh" avvia || echo "sceneggiatore: non partito (vedi il suo log)"
 fi
 salute="$(curl -s --max-time 2 "http://127.0.0.1:$PORTA/api/salute" || true)"
 info="$(curl -s --max-time 2 "http://127.0.0.1:$PORTA/api/info" || true)"
@@ -159,4 +160,4 @@ echo "Tabletop AI Game Master ready (pid $PID) — $salute"
 echo "  Telefoni:   $telefono"
 echo "  Proiettore: http://localhost:$PORTA/schermo   (premi «Inizia sessione»)"
 echo "  Master:     ${master:-vedi la riga PANNELLO MASTER in logs/server.out}   (solo su questo Mac)"
-if [[ "$PROVA" == "1" ]]; then echo "  Arresto:    CANTASTORIE_PORTA=$PORTA scripts/arresto.sh   (istanza di prova)"; else echo "  Arresto:    scripts/arresto.sh"; fi
+if [[ "$PROVA" == "1" ]]; then echo "  Arresto:    TAGM_PORTA=$PORTA scripts/arresto.sh   (istanza di prova)"; else echo "  Arresto:    scripts/arresto.sh"; fi

@@ -10,7 +10,7 @@
  */
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import type { TiroMostrato } from '@cantastorie/shared';
+import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { caricaSchede } from '../src/campagna/schede';
 import { loggerMuto } from '../src/logger';

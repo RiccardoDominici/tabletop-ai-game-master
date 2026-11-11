@@ -32,7 +32,7 @@ afterEach(() => {
 });
 /** Copia di «arco» da guastare in un punto. */
 function copia(): string {
-  const d = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-arco-')), 'arco');
+  const d = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-arco-')), 'arco');
   fs.cpSync(ARCO, d, { recursive: true });
   cartelle.push(path.dirname(d));
   return d;
@@ -169,7 +169,7 @@ describe('risorse dai due livelli', () => {
   });
 
   it('audio: idem, e un nome di file già usato da un\'altra cartella si scarta', () => {
-    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-audio-'));
+    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-audio-'));
     cartelle.push(base);
     const a = path.join(base, 'campagna');
     const b = path.join(base, 'pacchetto');

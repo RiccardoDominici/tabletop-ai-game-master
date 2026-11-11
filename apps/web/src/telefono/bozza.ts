@@ -7,7 +7,7 @@
  * - `riconciliaBozza`: cosa fare della casella quando arriva una nuova `azione:mia`.
  *   Regola d'oro: mai perdere testo scritto e non inviato.
  */
-import type { AzionePrivata } from '@cantastorie/shared';
+import type { AzionePrivata } from '@tabletop-ai-gm/shared';
 
 /** Intervallo minimo tra due `azione:scrivo` mentre si scrive. */
 export const INTERVALLO_SCRIVO_MS = 1000;

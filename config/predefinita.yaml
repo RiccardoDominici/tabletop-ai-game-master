@@ -3,7 +3,7 @@
 # Questo file è tracciato e vale per tutti: di base TUTTO IN LOCALE, zero centesimi, nessuna chiave.
 # Le scelte di questo computer vanno in config/locale.yaml (non tracciato: lo scrive scripts/configura.sh,
 # stessa forma, si scrive solo ciò che cambia). Le variabili d'ambiente vincono su tutti e due:
-#   CANTASTORIE_<COMPONENTE>=<provider>   es. CANTASTORIE_LETTORE=anthropic, CANTASTORIE_VOCE=fish
+#   TAGM_<COMPONENTE>=<provider>   es. TAGM_LETTORE=anthropic, TAGM_VOCE=fish
 #
 # Provider:
 #   locale      il server compatibile OpenAI su questo computer (backend.locale: mlx-lm sul Mac;
@@ -18,7 +18,7 @@
 # si prova il seguente; il server stampa all'avvio chi fa cosa e perché.
 
 # Lingua (docs/lingue.md): dell'interfaccia (telefono, proiettore, pannello) e dei contenuti quando la campagna non
-# dichiara la sua (`lingua` in campagna.yaml). it | en. CANTASTORIE_LINGUA vince.
+# dichiara la sua (`lingua` in campagna.yaml). it | en. TAGM_LINGUA vince.
 lingua: it
 
 backend:

@@ -11,7 +11,7 @@
 import { t } from '../lingua';
 import { useEffect, useState, type FormEvent } from 'react';
 import clsx from 'clsx';
-import type { RegolePubbliche, RispostaRegola } from '@cantastorie/shared';
+import type { RegolePubbliche, RispostaRegola } from '@tabletop-ai-gm/shared';
 import { chiedi } from '../lib/socket';
 import { creaLog } from '../lib/log';
 import { leggiMarkdown, type BloccoMarkdown, type Frammento } from '../lib/markdown';

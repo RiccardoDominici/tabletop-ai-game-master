@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 # Scrive config/locale.yaml: le scelte dei provider di QUESTO computer (docs/provider.md). Il file non è
 # tracciato; config/predefinita.yaml (tutto in locale, zero centesimi) vale per ciò che qui non si scrive.
 #
@@ -28,9 +29,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Cosa c'è su questo computer (mai i valori delle chiavi).
-# Stesse fonti del server: ambiente, .env alla radice, i file di ripiego (ANTHROPIC_KEY_FILE, CANTASTORIE_CHIAVE_OPENROUTER).
+# Stesse fonti del server: ambiente, .env alla radice, i file di ripiego (ANTHROPIC_KEY_FILE, TAGM_CHIAVE_OPENROUTER).
 trova() {
-  local ripiego; [[ $1 == ANTHROPIC_API_KEY ]] && ripiego="${ANTHROPIC_KEY_FILE:-/Users/riccardo/Developer/godExperiment/backend/.env}" || ripiego="${CANTASTORIE_CHIAVE_OPENROUTER:-/Users/riccardo/Developer/agora/.env}"
+  local ripiego; [[ $1 == ANTHROPIC_API_KEY ]] && ripiego="${ANTHROPIC_KEY_FILE:-/Users/riccardo/Developer/godExperiment/backend/.env}" || ripiego="${TAGM_CHIAVE_OPENROUTER:-/Users/riccardo/Developer/agora/.env}"
   [[ -n "${!1:-}" ]] || grep -q "^$1=" "$RADICE/.env" 2>/dev/null || grep -q "^$1=" "$ripiego" 2>/dev/null
 }
 echo "Questo computer:"

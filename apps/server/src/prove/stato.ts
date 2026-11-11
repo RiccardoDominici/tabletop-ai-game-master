@@ -3,7 +3,7 @@
  * terra, il seme e il contatore dei dadi, le carte recenti. Si salva nella fotografia della
  * sessione (sessione/tipi.ts → FotografiaSessione.prove) e si riprende dopo un riavvio.
  */
-import type { PuntiFerita, TiroMostrato } from '@cantastorie/shared';
+import type { PuntiFerita, TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { SchedaNumerica } from '../campagna/schede';
 import type { StatoCombattimentoSalvato } from './combattimento';
 

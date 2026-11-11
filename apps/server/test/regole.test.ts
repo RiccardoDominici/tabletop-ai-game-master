@@ -53,14 +53,14 @@ describe('caricatore del set di regole', () => {
     expect(e2.join(' ')).toMatch(/snake_case/);
     expect(e2.join(' ')).toMatch(/serve valore/);
     expect(e2.join(' ')).toMatch(/licenza\.libera/);
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-regole-'));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-regole-'));
     fs.mkdirSync(path.join(dir, 'regole'));
     fs.writeFileSync(path.join(dir, 'regole', 'regole.yaml'), 'id: rotto\nrisoluzione: {tipo: boh}\n');
     expect(caricaRegole(dir).sistema.srd).toBe(true);
   });
 
   it('licenza non libera: il caricatore scrive regole/.gitignore e il set resta fuori dal repository', () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-regole-'));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-regole-'));
     fs.cpSync(path.join(FIX, 'pbta', 'regole'), path.join(dir, 'regole'), { recursive: true });
     const f = path.join(dir, 'regole', 'regole.yaml');
     fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace(/libera: true/, 'libera: false'));

@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import type { Esito, StatoTavolo } from '@cantastorie/shared';
+import type { Esito, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { impostaLingua, linguaAttiva } from '../src/lingua';
 import { emetti, inizia, Prova, turno } from './aiuti/partita';
 
@@ -27,9 +27,9 @@ describe('an English game', () => {
     prova = new Prova();
     const cartella = prova.campagna('en-mini');
     const { url, messaggi } = await prova.avvia(cartella, (t) => COPIONE[Math.min(t, COPIONE.length) - 1]!, {
-      CANTASTORIE_MODO: 'improvvisa',
-      CANTASTORIE_PROMPT_SELETTORE: '',
-      CANTASTORIE_LINGUA: 'en',
+      TAGM_MODO: 'improvvisa',
+      TAGM_PROMPT_SELETTORE: '',
+      TAGM_LINGUA: 'en',
     });
     expect(linguaAttiva()).toBe('en');
     const schermo = await prova.proiettore(url);

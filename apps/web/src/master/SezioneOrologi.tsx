@@ -5,7 +5,7 @@
  * Senza spoiler: «Orologio N · segni 1/6 · dovuto», senza nome, segni né «a orologio completo».
  */
 import clsx from 'clsx';
-import type { OrologioMaster, StatoMaster } from '@cantastorie/shared';
+import type { OrologioMaster, StatoMaster } from '@tabletop-ai-gm/shared';
 import { useInCorso, useSenzaSpoiler } from '../store/master';
 import { nomeOrologio } from './spoiler';
 import { inviaComando } from './sessione';

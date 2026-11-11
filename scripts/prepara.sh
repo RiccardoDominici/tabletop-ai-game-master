@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 # Da campagna valida a campagna pronta da giocare, in un comando: valida in modo rigoroso, genera le
 # immagini (GPU locale) e l'audio, e stampa il rapporto con il comando per giocare.
 #
@@ -53,8 +54,8 @@ fi
 [[ -f "$CARTELLA/stile.yaml" ]] || { echo "$CARTELLA non è la cartella di una campagna (manca stile.yaml)."; exit 2; }
 ID="$(basename "$CARTELLA")"
 cd "$RADICE"
-# Cartella dei log: CANTASTORIE_LOG se c'è (le prove la mettono in una cartella temporanea), altrimenti logs/.
-DIR_LOG="${CANTASTORIE_LOG:-$RADICE/logs}"
+# Cartella dei log: TAGM_LOG se c'è (le prove la mettono in una cartella temporanea), altrimenti logs/.
+DIR_LOG="${TAGM_LOG:-$RADICE/logs}"
 mkdir -p "$DIR_LOG"
 LOG="$DIR_LOG/prepara-$ID.log"
 exec > >(tee -a "$LOG") 2>&1

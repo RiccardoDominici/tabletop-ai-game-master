@@ -17,7 +17,7 @@ import { creaLog } from '../lib/log';
 const log = creaLog('master');
 
 /** Chiave di localStorage del token (separata da quelle del telefono). */
-export const CHIAVE_TOKEN = 'cantastorie:master:token';
+export const CHIAVE_TOKEN = 'tabletop-ai-gm:master:token';
 /** Parametro dell'URL che porta il token (`/master?token=…`). */
 export const PARAMETRO_TOKEN = 'token';
 

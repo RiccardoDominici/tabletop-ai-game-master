@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /*
- * Cantastorie — token di design. Direzione artistica: «tavolo da gioco di notte».
+ * Tabletop AI Game Master — token di design. Direzione artistica: «tavolo da gioco di notte».
  * Fondo inchiostro-viola quasi nero, testo color pergamena, accento caldo di candela.
  * Tailwind v4 li trasforma in utility: bg-notte, text-pergamena, border-bordo, text-candela,
  * font-titolo, font-racconto, ... Si estendono liberamente; non si rinominano.

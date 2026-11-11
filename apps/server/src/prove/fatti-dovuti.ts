@@ -12,7 +12,7 @@
  * breve del pacchetto della lingua (testi-prove.yaml, «prove.dovuti.<tipo>»): «Corrado cade a terra.».
  * Logica pura: la regia passa le carte del turno e le righe dette, e riceve le righe da aggiungere.
  */
-import type { TiroMostrato } from '@cantastorie/shared';
+import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import { normalizza } from '../azioni/regole';
 import { nomeBreve } from '../campagna/nomi';
 import { testo } from '../lingua';

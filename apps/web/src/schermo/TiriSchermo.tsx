@@ -15,7 +15,7 @@
  */
 import { useEffect, useReducer, useState } from 'react';
 import clsx from 'clsx';
-import type { StatoTavolo, TiroMostrato } from '@cantastorie/shared';
+import type { StatoTavolo, TiroMostrato } from '@tabletop-ai-gm/shared';
 import { CartaTiro } from '../components/CartaTiro';
 import { creaLog } from '../lib/log';
 import { useSchermo } from '../store/schermo';

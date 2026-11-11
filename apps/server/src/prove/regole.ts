@@ -9,7 +9,7 @@
  * - Vantaggio e svantaggio: due d20, il più alto o il più basso; non si sommano, e se ci sono
  *   entrambi si annullano (un d20 solo).
  */
-import type { Vantaggio } from '@cantastorie/shared';
+import type { Vantaggio } from '@tabletop-ai-gm/shared';
 import type { FormulaDadi } from '../campagna/regole-srd';
 import { scriviFormula } from '../campagna/regole-srd';
 import type { FonteDadi } from './dadi';

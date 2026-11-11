@@ -5,7 +5,7 @@
  * una volta ogni tre righe di quel PNG, come vuole la regola del narratore. Il tic troppo vicino lo
  * controlla anche il Motore (sceneggiatore/valida.ts). Funzioni pure sulla trascrizione pubblica.
  */
-import type { VoceTrascrizione } from '@cantastorie/shared';
+import type { VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import type { PngCaricato } from '../campagna/tipi';
 
 /** Turni da guardare per attacchi e immagini. */

@@ -5,7 +5,7 @@
  */
 import { t } from '../lingua';
 import clsx from 'clsx';
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 
 export function PresenzeFinestra({ stato, idPg }: { stato: StatoTavolo; idPg: string | null }) {
   const { finestra } = stato;

@@ -2,7 +2,7 @@
  * E2E di un set di regole non D&D (docs/regole.md) sul server vero, con Haiku vero: la campagna a
  * 2d6 (apps/server/test/fixtures/campagne/pbta) su un'istanza di prova.
  *
- *   CANTASTORIE_PORTA=4720 CANTASTORIE_CARTELLA_CAMPAGNA=<copia di pbta> scripts/avvio.sh
+ *   TAGM_PORTA=4720 TAGM_CARTELLA_CAMPAGNA=<copia di pbta> scripts/avvio.sh
  *   E2E_PORTA=4720 npx playwright test -c playwright.config.ts e2e/regole.spec.ts
  *
  * Un turno: Ida convince Bertoldo (mossa Convincere), Corrado guada con la corda (prova della scena).

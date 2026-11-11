@@ -1,6 +1,6 @@
 /**
  * E2E delle campagne con più scene (campagne/ponte-lanterne) dal pannello del master: server con
- *   CANTASTORIE_PORTA=4710 CANTASTORIE_CAMPAGNA=ponte-lanterne CANTASTORIE_MODO=repertorio CANTASTORIE_LLM=finto scripts/avvio.sh --mock
+ *   TAGM_PORTA=4710 TAGM_CAMPAGNA=ponte-lanterne TAGM_MODO=repertorio TAGM_LLM=finto scripts/avvio.sh --mock
  *   npx playwright test -c apps/web/playwright.config.ts scene
  *
  * Il master passa dal ponte al Borgo Basso e poi alla Casa del Sale: il proiettore cambia titolo e

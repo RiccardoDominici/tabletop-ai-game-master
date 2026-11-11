@@ -15,7 +15,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import { io as connetti, type Socket } from 'socket.io-client';
-import type { AzionePrivata, Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@cantastorie/shared';
+import type { AzionePrivata, Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { costruisciServer } from '../src/avvio';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
@@ -51,22 +51,22 @@ const FUORI_FINZIONE = '[narratore] Il silenzio sul ponte pesa, e nessuno dei PG
 const NORMALE = '[narratore] La pioggia batte sui vetri. Anna, cosa fai?\n[invito] tutti';
 
 async function avvia(copione: (turno: number) => string, env: Record<string, string> = {}, modo: 'improvvisa' | 'repertorio' = 'improvvisa') {
-  const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-ritmo-'));
+  const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-ritmo-'));
   const config = caricaConfig({
     PORT: '0',
     HOST: '127.0.0.1',
-    CANTASTORIE_LOG: cartella,
-    CANTASTORIE_CARTELLA_CAMPAGNA: MINI,
-    CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-    CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-    CANTASTORIE_CACHE_AUDIO: path.join(cartella, 'cache'),
-    CANTASTORIE_MODO: modo,
-    CANTASTORIE_TTS: 'mock',
-    CANTASTORIE_MOCK_SCALA: '0.02',
-    CANTASTORIE_ASSESTAMENTO_MS: '30',
-    CANTASTORIE_CONCITATO_MS: '400',
-    CANTASTORIE_SESSIONI: 'off',
-    CANTASTORIE_MASTER_TOKEN: TOKEN,
+    TAGM_LOG: cartella,
+    TAGM_CARTELLA_CAMPAGNA: MINI,
+    TAGM_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+    TAGM_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+    TAGM_CACHE_AUDIO: path.join(cartella, 'cache'),
+    TAGM_MODO: modo,
+    TAGM_TTS: 'mock',
+    TAGM_MOCK_SCALA: '0.02',
+    TAGM_ASSESTAMENTO_MS: '30',
+    TAGM_CONCITATO_MS: '400',
+    TAGM_SESSIONI: 'off',
+    TAGM_MASTER_TOKEN: TOKEN,
     ...env,
   } as NodeJS.ProcessEnv);
   const messaggi: string[] = [];
@@ -195,7 +195,7 @@ describe('turno senza scadenza', () => {
 
 describe('sorvegliante', () => {
   it('narratore appeso: dopo il silenzio massimo il gioco riparte, l’azione torna ad Anna, la causa nel registro', async () => {
-    const { tel, s1, mie, avvisi, leggiNarrazioni, invia } = await avvia((t) => (t === 1 ? COPIONE_BLOCCA : NORMALE), { CANTASTORIE_SORVEGLIANTE_MS: '500' });
+    const { tel, s1, mie, avvisi, leggiNarrazioni, invia } = await avvia((t) => (t === 1 ? COPIONE_BLOCCA : NORMALE), { TAGM_SORVEGLIANTE_MS: '500' });
     const narrando = attendiStato(tel, (x) => x.fase === 'narrazione' && x.turno === 1);
     const ripresa = attendiStato(tel, (x) => x.fase === 'finestra' && x.turno === 2, 8000);
     await invia('Apro la botola.', s1.versione_scena);

@@ -16,7 +16,7 @@
  *
  * Niente rAF né canvas: solo automazioni sull'orologio audio e qualche timer.
  */
-import type { AudioScena, CatalogoAudioPubblico, TracciaAudio } from '@cantastorie/shared';
+import type { AudioScena, CatalogoAudioPubblico, TracciaAudio } from '@tabletop-ai-gm/shared';
 import { creaLog } from '../../lib/log';
 import type { BancaAudio, StatisticheBanca } from './banca';
 import type { ContestoAudio } from './contesto';

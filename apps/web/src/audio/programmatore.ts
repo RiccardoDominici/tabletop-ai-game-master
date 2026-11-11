@@ -11,7 +11,7 @@
  *
  * Niente Web Audio qui dentro: tutto è testabile in Node con un orologio finto.
  */
-import type { AudioFineFrase, AudioFineTurno, AudioFrase } from '@cantastorie/shared';
+import type { AudioFineFrase, AudioFineTurno, AudioFrase } from '@tabletop-ai-gm/shared';
 import { int16leAFloat32, RiportoByte } from './pcm';
 import { JITTER_S, Pianificatore } from './pianificatore';
 

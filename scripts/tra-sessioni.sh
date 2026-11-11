@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 # Tra una sessione e l'altra: le parti deterministiche del ciclo (riferimenti/tra-le-sessioni.md), in tre
 # tempi. Si ferma ogni volta dove deve scrivere l'agente con la skill del Preparatore, e dice che cosa.
 #
@@ -27,8 +28,8 @@ fi
 ID="$(basename "$CARTELLA")"
 NN="$(printf '%02d' "$N")"; DOPO="$(printf '%02d' $((N + 1)))"
 cd "$RADICE"
-# Cartella dei log: CANTASTORIE_LOG se c'è (le prove la mettono in una cartella temporanea), altrimenti logs/.
-DIR_LOG="${CANTASTORIE_LOG:-$RADICE/logs}"
+# Cartella dei log: TAGM_LOG se c'è (le prove la mettono in una cartella temporanea), altrimenti logs/.
+DIR_LOG="${TAGM_LOG:-$RADICE/logs}"
 mkdir -p "$DIR_LOG"
 exec > >(tee -a "$DIR_LOG/tra-sessioni-$ID.log") 2>&1
 echo "== tra-sessioni $ID, sessione $N, fase ${FASE#--} — $(date '+%Y-%m-%d %H:%M:%S') =="

@@ -7,7 +7,7 @@
  * Se il mio PG è a terra con i tiri contro la morte, si vedono anche quelli (in entrambi i casi).
  * Senza combattimento non c'è niente: il tavolo è quello di sempre.
  */
-import type { CombattentePubblico, CombattimentoPubblico } from '@cantastorie/shared';
+import type { CombattentePubblico, CombattimentoPubblico } from '@tabletop-ai-gm/shared';
 import { combattenteDi, etichettaTiriMorte, nomiDiTurno, testoPf } from '../lib/combattimento';
 import { elenco, t } from '../lingua';
 

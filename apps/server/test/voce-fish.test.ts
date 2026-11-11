@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import type { AudioFrase } from '@cantastorie/shared';
+import type { AudioFrase } from '@tabletop-ai-gm/shared';
 import { loggerMuto } from '../src/logger';
 import { CacheAudio } from '../src/voce/cache-audio';
 import { costoFish, MotoreVoceFish, sampleRateDa } from '../src/voce/fish';

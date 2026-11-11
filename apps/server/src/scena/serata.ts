@@ -15,7 +15,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
-import type { DiarioPubblico, FineSerata, RiassuntoSerata, SerataMaster, VoceTrascrizione } from '@cantastorie/shared';
+import type { DiarioPubblico, FineSerata, RiassuntoSerata, SerataMaster, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import type { Campagna } from '../campagna/tipi';
 import { FILE_SESSIONE } from '../campagna/pacchetti';
 import type { Narratore } from '../llm/tipi';

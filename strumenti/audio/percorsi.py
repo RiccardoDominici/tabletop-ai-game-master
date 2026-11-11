@@ -31,7 +31,7 @@ SR = 48_000
 CANALI = 2
 
 # Chi siamo, per i siti da cui si scarica (etichetta onesta, niente finti browser).
-USER_AGENT = "Cantastorie-audio-pipeline/0.1 (progetto personale, uso non commerciale; scarica una volta e tiene in cache)"
+USER_AGENT = "tabletop-ai-gm-audio-pipeline/0.1 (progetto personale, uso non commerciale; scarica una volta e tiene in cache)"
 
 # Pausa minima tra due richieste allo stesso sito (secondi): al massimo una richiesta al secondo.
 PAUSA_RICHIESTE_S = 1.1

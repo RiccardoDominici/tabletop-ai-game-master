@@ -1,6 +1,6 @@
 /**
  * E2E della partita salvata (persistenza della sessione) su un'istanza di PROVA:
- *   CANTASTORIE_PORTA=4710 CANTASTORIE_LLM=finto scripts/avvio.sh --mock
+ *   TAGM_PORTA=4710 TAGM_LLM=finto scripts/avvio.sh --mock
  *   npx playwright test -c apps/web/playwright.config.ts ripresa
  *
  * Due turni giocati da proiettore, telefono e pannello; poi la prova RIAVVIA il server di prova
@@ -31,7 +31,7 @@ function linkMaster(): string {
 function riavviaServerDiProva(): void {
   execFileSync(path.join(RADICE, 'scripts', 'avvio.sh'), ['--mock'], {
     cwd: RADICE,
-    env: { ...process.env, CANTASTORIE_PORTA: PORTA, CANTASTORIE_LLM: 'finto', CANTASTORIE_NUOVA_SESSIONE: '0' },
+    env: { ...process.env, TAGM_PORTA: PORTA, TAGM_LLM: 'finto', TAGM_NUOVA_SESSIONE: '0' },
     stdio: 'pipe',
     timeout: 240_000,
   });
@@ -43,7 +43,7 @@ async function agisci(p: Page, testo: string): Promise<void> {
 }
 
 test('partita salvata: due turni, riavvio del server, il telefono tiene il PG, il turno 3 continua', async ({ browser }) => {
-  test.skip(PORTA === '4610', 'mai riavviare la partita vera: usa un server di prova (CANTASTORIE_PORTA=4710)');
+  test.skip(PORTA === '4610', 'mai riavviare la partita vera: usa un server di prova (TAGM_PORTA=4710)');
   test.setTimeout(420_000);
   fs.mkdirSync(SCREENSHOT, { recursive: true });
   const errori: string[] = [];
@@ -57,7 +57,7 @@ test('partita salvata: due turni, riavvio del server, il telefono tiene il PG, i
   const schermo = await (await browser.newContext({ viewport: { width: 1920, height: 1080 } })).newPage();
   osserva(schermo, 'schermo');
   const salute = (await (await schermo.request.get('/api/salute')).json()) as { fase: string; narratore: string };
-  test.skip(salute.narratore !== 'finto', 'avvia il server di prova col narratore a copione (CANTASTORIE_LLM=finto)');
+  test.skip(salute.narratore !== 'finto', 'avvia il server di prova col narratore a copione (TAGM_LLM=finto)');
   if (salute.fase !== 'attesa') await schermo.request.post('/api/scena/ricomincia');
   await schermo.goto('/schermo');
   const tel = await (await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 })).newPage();

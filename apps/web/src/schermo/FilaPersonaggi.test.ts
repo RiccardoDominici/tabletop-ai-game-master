@@ -2,7 +2,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import type { PersonaggioScena } from '@cantastorie/shared';
+import type { PersonaggioScena } from '@tabletop-ai-gm/shared';
 import { FilaPersonaggi } from './FilaPersonaggi';
 
 const PERSONAGGI: PersonaggioScena[] = [

@@ -1,9 +1,9 @@
 /**
  * E2E del turno senza scadenza (richieste di Riccardo del 9 novembre, punti 1, 3, 5 e 7). Server
  * avviato con il narratore a copione e tempi accorciati:
- *   CANTASTORIE_PORTA=4710 CANTASTORIE_LLM=finto \
- *     CANTASTORIE_COPIONE_FINTO=$PWD/apps/server/test/fixtures/copione-ritmo.txt \
- *     CANTASTORIE_CONCITATO_MS=8000 CANTASTORIE_SORVEGLIANTE_MS=6000 scripts/avvio.sh --mock
+ *   TAGM_PORTA=4710 TAGM_LLM=finto \
+ *     TAGM_COPIONE_FINTO=$PWD/apps/server/test/fixtures/copione-ritmo.txt \
+ *     TAGM_CONCITATO_MS=8000 TAGM_SORVEGLIANTE_MS=6000 scripts/avvio.sh --mock
  * Proiettore, due telefoni (Ginestra, Corrado) e il pannello del master:
  * 1. ritmo calmo: nessun timer, nemmeno dopo un'azione (oltre i vecchi 10 s); solo «Invia» e «Ritira»;
  *    proiettore e telefoni dicono «Aspettiamo: …»; quando hanno inviato tutti il turno parte da solo;

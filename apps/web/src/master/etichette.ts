@@ -6,7 +6,7 @@
  * gratuiti. Lo stato delle azioni segue lo stile di ETICHETTA_STATO_AZIONE del telefono
  * (telefono/vista.ts), ma qui si dice anche cosa sta facendo il motore («in narrazione»).
  */
-import type { FaseScena, StatoAzione, StatoMaster, StatoTavolo } from '@cantastorie/shared';
+import type { FaseScena, StatoAzione, StatoMaster, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { t } from '../lingua';
 import type { Tono } from './stili';
 import { tabella } from './tabella';

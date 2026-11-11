@@ -13,7 +13,7 @@
 import { t } from '../lingua';
 import { useEffect, useRef, type FormEvent, type KeyboardEvent } from 'react';
 import clsx from 'clsx';
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { useTelefono } from '../store/telefono';
 import { useBozza } from '../store/bozza';
 import {

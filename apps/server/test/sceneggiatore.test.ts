@@ -20,7 +20,7 @@ import { CacheAudio } from '../src/voce/cache-audio';
 import { loggerMuto } from '../src/logger';
 import os from 'node:os';
 import { RADICE_REPO } from '../src/percorsi';
-import type { EsitoPrivato } from '@cantastorie/shared';
+import type { EsitoPrivato } from '@tabletop-ai-gm/shared';
 import { agisci, attendi, FIXTURE, inizia, Prova, turno } from './aiuti/partita';
 
 const vino: ParolaSegreta = { parola: 'il vino annacquato', sorgente: '\\bannacquat', regex: regexDaPython('\\bannacquat'), pubblica_dopo: [], fatti: [] };

@@ -1,5 +1,5 @@
 /**
- * @cantastorie/shared — pannello del master (docs/architettura.md, «Pannello master»).
+ * @tabletop-ai-gm/shared — pannello del master (docs/architettura.md, «Pannello master»).
  *
  * Un umano sul Mac deve poter correggere o fermare il master IA. Il pannello entra nella stanza
  * Socket.IO "master" con un token stampato nel log del server all'avvio: i telefoni non lo

@@ -3,7 +3,7 @@
  */
 import os from 'node:os';
 import QRCode from 'qrcode';
-import type { InfoServer } from '@cantastorie/shared';
+import type { InfoServer } from '@tabletop-ai-gm/shared';
 
 /** Primo IPv4 non interno, preferendo le interfacce Wi-Fi/Ethernet del Mac (en0, en1…). */
 export function ipLan(): string {

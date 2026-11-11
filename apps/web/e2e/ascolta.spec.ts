@@ -2,7 +2,7 @@
  * E2E di «Ascolta qui» (telefono/ascolto.ts): un telefono accende la voce del gioco e riceve le
  * stesse frasi del proiettore; spento, non riceve più niente. Server di prova con narratore a
  * copione e voce finta (nessuna spesa):
- *   CANTASTORIE_PORTA=4730 CANTASTORIE_CAMPAGNA=prova-f0 CANTASTORIE_MOCK_SCALA=0.3 scripts/avvio.sh --finto --mock
+ *   TAGM_PORTA=4730 TAGM_CAMPAGNA=prova-f0 TAGM_MOCK_SCALA=0.3 scripts/avvio.sh --finto --mock
  *   E2E_PORTA=4730 npx playwright test -c apps/web/playwright.config.ts ascolta
  * Screenshot in logs/screenshots/ascolta-*.png; nessun errore in console.
  */

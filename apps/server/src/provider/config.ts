@@ -3,8 +3,8 @@
  *
  *   config/predefinita.yaml   tracciato, di base tutto in locale (zero centesimi, nessuna chiave)
  *   config/locale.yaml        non tracciato, le scelte di questo computer (scripts/configura.sh)
- *   CANTASTORIE_<COMPONENTE>  variabili d'ambiente, vincono su tutto (e i nomi vecchi: CANTASTORIE_LLM,
- *                             CANTASTORIE_ARBITRO, CANTASTORIE_VOCE/TTS, con lo stesso significato di prima)
+ *   TAGM_<COMPONENTE>  variabili d'ambiente, vincono su tutto (e i nomi vecchi: TAGM_LLM,
+ *                             TAGM_ARBITRO, TAGM_VOCE/TTS, con lo stesso significato di prima)
  *
  * `risolvi` sceglie per ogni componente il primo provider DISPONIBILE della catena [provider, ...riserve]
  * (chiave trovata, URL dato) e dice perché; non apre connessioni (il server locale lo controlla l'avvio).
@@ -45,7 +45,7 @@ export interface VoceComponente {
 export interface ConfigProvider {
   /**
    * Lingua della configurazione (docs/lingue.md): dell'interfaccia, e dei contenuti se la campagna non
-   * ne dichiara una. `lingua` in predefinita.yaml / locale.yaml, o CANTASTORIE_LINGUA (vince).
+   * ne dichiara una. `lingua` in predefinita.yaml / locale.yaml, o TAGM_LINGUA (vince).
    */
   lingua: Lingua;
   backend: { locale: Backend; openrouter: Backend; anthropic: Backend; [altro: string]: Backend };
@@ -86,22 +86,22 @@ function unisci(a: Record<string, unknown>, b: Record<string, unknown>): Record<
 /** I nomi vecchi delle variabili, con il significato di prima. */
 function daVariabiliVecchie(env: NodeJS.ProcessEnv): Partial<Record<NomeComponente, NomeProviderConfig>> {
   const out: Partial<Record<NomeComponente, NomeProviderConfig>> = {};
-  const llm = env['CANTASTORIE_LLM']?.trim();
+  const llm = env['TAGM_LLM']?.trim();
   if (llm === 'finto') Object.assign(out, { lettore: 'finto', arbitro_azioni: 'regole', arbitro_prove: 'regole', riassunto: 'regole', regole: 'regole' });
   if (llm === 'haiku') Object.assign(out, { lettore: 'anthropic' });
-  const arbitro = env['CANTASTORIE_ARBITRO']?.trim();
+  const arbitro = env['TAGM_ARBITRO']?.trim();
   if (arbitro === 'regole') Object.assign(out, { arbitro_azioni: 'regole', arbitro_prove: 'regole', regole: 'regole' });
   if (arbitro === 'haiku') Object.assign(out, { arbitro_azioni: 'anthropic', arbitro_prove: 'anthropic', regole: 'anthropic' });
-  const voce = (env['CANTASTORIE_VOCE'] ?? env['CANTASTORIE_TTS'])?.trim();
+  const voce = (env['TAGM_VOCE'] ?? env['TAGM_TTS'])?.trim();
   if (voce === 'fish') out.voce = 'openrouter';
   else if (voce === 'qwen') out.voce = 'locale';
   else if (voce === 'finta' || voce === 'mock') out.voce = 'finto';
   return out;
 }
 
-export function caricaConfigProvider(env: NodeJS.ProcessEnv = process.env, cartella = env['CANTASTORIE_CONFIG']?.trim() || CARTELLA): ConfigProvider {
+export function caricaConfigProvider(env: NodeJS.ProcessEnv = process.env, cartella = env['TAGM_CONFIG']?.trim() || CARTELLA): ConfigProvider {
   const file = [path.join(cartella, 'predefinita.yaml')];
-  if (!process.env['VITEST'] || env['CANTASTORIE_CONFIG']) file.push(path.join(cartella, 'locale.yaml'));
+  if (!process.env['VITEST'] || env['TAGM_CONFIG']) file.push(path.join(cartella, 'locale.yaml'));
   let d: Record<string, unknown> = {};
   const letti: string[] = [];
   for (const f of file) {
@@ -112,10 +112,10 @@ export function caricaConfigProvider(env: NodeJS.ProcessEnv = process.env, carte
     }
   }
   const componenti = (d['componenti'] ?? {}) as Record<string, VoceComponente>;
-  // Variabili: prima i nomi vecchi, poi CANTASTORIE_<COMPONENTE> (vince).
+  // Variabili: prima i nomi vecchi, poi TAGM_<COMPONENTE> (vince).
   const sovrascritti: Partial<Record<NomeComponente, NomeProviderConfig>> = daVariabiliVecchie(env);
   for (const c of COMPONENTI) {
-    const v = env[`CANTASTORIE_${c.toUpperCase()}`]?.trim() as NomeProviderConfig | undefined;
+    const v = env[`TAGM_${c.toUpperCase()}`]?.trim() as NomeProviderConfig | undefined;
     if (v && (PROVIDER as readonly string[]).includes(v)) sovrascritti[c] = v;
   }
   const finale = {} as Record<NomeComponente, VoceComponente>;
@@ -126,7 +126,7 @@ export function caricaConfigProvider(env: NodeJS.ProcessEnv = process.env, carte
     finale[c] = forzato ? { ...base, provider: forzato, riserve: (base.riserve ?? []).filter((r) => r === 'regole' || r === 'finto') } : base;
   }
   const backend = (d['backend'] ?? {}) as ConfigProvider['backend'];
-  const lingua = comeLingua(env['CANTASTORIE_LINGUA']?.trim() || d['lingua'], 'configurazione (lingua)') ?? LINGUA_PREDEFINITA;
+  const lingua = comeLingua(env['TAGM_LINGUA']?.trim() || d['lingua'], 'configurazione (lingua)') ?? LINGUA_PREDEFINITA;
   return { lingua, backend: { ...backend, locale: backend.locale ?? {}, openrouter: backend.openrouter ?? {}, anthropic: backend.anthropic ?? {} }, componenti: finale, file: letti };
 }
 

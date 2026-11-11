@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
+source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 # Costo per sessione di gioco: LLM (Haiku) e voce (drama-3) da logs/costi.jsonl, divisi per le sessioni
 # dell'archivio (apps/server/src/strumenti/costi.ts). Sola lettura: si usa anche mentre si gioca.
 #
 #   scripts/costi.sh                    le ultime 10 sessioni della partita vera (logs/)
-#   CANTASTORIE_PORTA=4730 scripts/costi.sh   quelle di un'istanza di prova (logs/porta-4730/)
+#   TAGM_PORTA=4730 scripts/costi.sh   quelle di un'istanza di prova (logs/porta-4730/)
 #   scripts/costi.sh --tutte | --json | --log <cartella>
 set -euo pipefail
 RADICE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

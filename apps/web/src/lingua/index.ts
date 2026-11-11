@@ -8,7 +8,7 @@
  * a ogni stato. Finché non arriva vale l'italiano. Ciò che dice il Motore (narrazione, avvisi, motivi)
  * arriva già nella lingua dei contenuti e non passa da qui.
  */
-import type { CodiceLingua } from '@cantastorie/shared';
+import type { CodiceLingua } from '@tabletop-ai-gm/shared';
 import { comune as comuneIt } from './it/comune';
 import { telefono as telefonoIt } from './it/telefono';
 import { schermo as schermoIt } from './it/schermo';

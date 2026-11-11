@@ -2,7 +2,7 @@
  * Prima di «Inizia sessione»: titolo della scena, QR + link per i telefoni e il pulsante enorme
  * che sblocca l'audio (i browser non suonano nulla senza un gesto dell'utente).
  */
-import type { InfoServer, StatoTavolo } from '@cantastorie/shared';
+import type { InfoServer, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { Qr } from '../components/Qr';
 import { elencoNomi } from '../lib/formato';
 import { useSchermo } from '../store/schermo';

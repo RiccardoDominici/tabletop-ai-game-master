@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-# Ferma Cantastorie: server (4610), Vite dev (4612) e, salvo --lascia-voce e --lascia-lettore, il servizio
+source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
+# Ferma Tabletop AI Game Master: server (4610), Vite dev (4612) e, salvo --lascia-voce e --lascia-lettore, il servizio
 # voce (4611) e il server locale dei modelli (4613).
 # Prima SIGTERM (il server chiude con garbo socket e scena), poi SIGKILL dopo ~5 s.
 #
-# Istanza di prova: CANTASTORIE_PORTA=<porta> ferma SOLO il server su quella porta (pid in
+# Istanza di prova: TAGM_PORTA=<porta> ferma SOLO il server su quella porta (pid in
 # logs/porta-<porta>/server.pid). Vite, voce e la partita vera su 4610 non si toccano.
 set -uo pipefail
 
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
-PORTA="${CANTASTORIE_PORTA:-4610}"
+PORTA="${TAGM_PORTA:-4610}"
 LASCIA_VOCE=0; LASCIA_LETTORE=0
 for a in "$@"; do
   case "$a" in
@@ -52,11 +53,11 @@ ferma_porta() {
 if [[ "$PORTA" != "4610" ]]; then
   case "$PORTA" in 4611|4612) echo "porta $PORTA riservata (voce, Vite): non è un server di prova" >&2; exit 2 ;; esac
   ferma_porta "server di prova" "$PORTA" "$RADICE/logs/porta-$PORTA/server.pid"
-  CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/sceneggiatore.sh" ferma >/dev/null
+  TAGM_PORTA="$PORTA" "$RADICE/scripts/sceneggiatore.sh" ferma >/dev/null
   exit 0
 fi
 ferma_porta "server" 4610 "$RADICE/logs/server.pid"
-CANTASTORIE_PORTA=4610 "$RADICE/scripts/sceneggiatore.sh" ferma >/dev/null
+TAGM_PORTA=4610 "$RADICE/scripts/sceneggiatore.sh" ferma >/dev/null
 ferma_porta "vite" 4612 ""
 if [[ "$LASCIA_VOCE" == "0" && -x "$RADICE/scripts/voce-arresto.sh" ]]; then
   "$RADICE/scripts/voce-arresto.sh"

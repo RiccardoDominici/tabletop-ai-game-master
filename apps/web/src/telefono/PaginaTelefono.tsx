@@ -9,7 +9,7 @@
  */
 import { t } from '../lingua';
 import { lazy, Suspense, useEffect, useState } from 'react';
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { BannerConnessione } from '../components/BannerConnessione';
 import { Avvisi } from '../components/Avvisi';
 import { useSchermoAcceso } from '../lib/schermoAcceso';

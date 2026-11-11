@@ -2,7 +2,7 @@
  * Azioni dei giocatori come le vede il master: le vive (in coda, da decidere) e quelle dell'ultimo
  * turno, PRIVATE COMPRESE (segnate). Una riga per azione (RigaAzione), in ordine di turno e d'invio.
  */
-import type { StatoMaster } from '@cantastorie/shared';
+import type { StatoMaster } from '@tabletop-ai-gm/shared';
 import { Riquadro, Vuoto } from './Riquadro';
 import { RigaAzione } from './RigaAzione';
 import { azioniInOrdine } from './permessi';

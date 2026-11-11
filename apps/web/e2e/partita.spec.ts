@@ -1,6 +1,6 @@
 /**
  * Prova «come un utente» della serata: server avviato con lo script della partita
- *   CANTASTORIE_PORTA=4710 scripts/partita.sh ponte-lanterne            (modo B, voce finta, Haiku VERO)
+ *   TAGM_PORTA=4710 scripts/partita.sh ponte-lanterne            (modo B, voce finta, Haiku VERO)
  *   npx playwright test -c apps/web/playwright.config.ts partita
  *
  * Proiettore + due telefoni (390x844) + pannello del master, aperti con gli indirizzi che lo script

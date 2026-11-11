@@ -2,7 +2,7 @@
  * E2E delle prove e dei dadi (docs/prove.md) sul server vero, con Haiku vero, sulla campagna di
  * prova con le schede (apps/server/test/fixtures/campagne/prove):
  *
- *   CANTASTORIE_PORTA=4720 CANTASTORIE_CARTELLA_CAMPAGNA=<copia della campagna> scripts/avvio.sh
+ *   TAGM_PORTA=4720 TAGM_CARTELLA_CAMPAGNA=<copia della campagna> scripts/avvio.sh
  *   E2E_PORTA=4720 npx playwright test -c playwright.config.ts e2e/prove.spec.ts
  *
  * Proiettore + tre telefoni. Un turno con una Persuasione (Ida verso Bertoldo), un attacco di

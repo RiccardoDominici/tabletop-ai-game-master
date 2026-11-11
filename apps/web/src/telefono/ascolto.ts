@@ -11,14 +11,14 @@
  */
 import { t } from '../lingua';
 import { create } from 'zustand';
-import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@cantastorie/shared';
+import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@tabletop-ai-gm/shared';
 import { LettorePcm } from '../audio/lettore';
 import { creaLog } from '../lib/log';
 import { leggiMemoria, scriviMemoria } from '../lib/memoria';
 import { alRientro, conEsito, prendiSocket } from '../lib/socket';
 
 const log = creaLog('ascolto');
-const CHIAVE = 'cantastorie:ascolta-qui';
+const CHIAVE = 'tabletop-ai-gm:ascolta-qui';
 
 interface StoreAscolto {
   /** Voce attiva su questo telefono. */

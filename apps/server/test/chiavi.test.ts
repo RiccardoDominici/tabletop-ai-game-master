@@ -7,7 +7,7 @@ import path from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import { ErroreChiave, descriviChiave, leggiChiaveAnthropic } from '../src/llm/chiavi';
 
-const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-chiave-'));
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-chiave-'));
 function file(nome: string, contenuto: string): string {
   const p = path.join(dir, nome);
   fs.writeFileSync(p, contenuto);

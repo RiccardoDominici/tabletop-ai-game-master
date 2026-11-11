@@ -3,7 +3,7 @@
  * «Ferma la narrazione» (rosso, un clic, nessuna conferma: deve fermare subito LLM e voce).
  * Sotto, l'ultimo errore di un comando qualsiasi (master-errore).
  */
-import type { StatoMaster } from '@cantastorie/shared';
+import type { StatoMaster } from '@tabletop-ai-gm/shared';
 import { useInCorso, useMaster } from '../store/master';
 import { inviaComando } from './sessione';
 import { puoFermareNarrazione, puoMettereInPausa, puoRiprendere } from './permessi';

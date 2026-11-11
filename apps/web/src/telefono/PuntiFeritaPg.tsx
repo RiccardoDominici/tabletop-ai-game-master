@@ -7,7 +7,7 @@
  */
 import { t } from '../lingua';
 import clsx from 'clsx';
-import type { PuntiFerita } from '@cantastorie/shared';
+import type { PuntiFerita } from '@tabletop-ai-gm/shared';
 import { livelloPf, testoPf, type LivelloPf } from '../lib/tiri';
 
 const STILE: Record<LivelloPf, string> = {

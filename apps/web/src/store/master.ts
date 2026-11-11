@@ -6,7 +6,7 @@
  * lo salva e lo legge master/token.ts (localStorage protetto).
  */
 import { create } from 'zustand';
-import type { StatoMaster, TipoComandoMaster } from '@cantastorie/shared';
+import type { StatoMaster, TipoComandoMaster } from '@tabletop-ai-gm/shared';
 import { creaLog } from '../lib/log';
 import { aggiornaScarto } from '../lib/orologioServer';
 import type { ZonaComando } from '../master/comandi';

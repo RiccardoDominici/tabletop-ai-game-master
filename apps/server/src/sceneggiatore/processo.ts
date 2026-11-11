@@ -8,7 +8,7 @@
  *
  * Modelli: `subito` con sonnet (misurato da «lettore»: una battuta in ~4 s, contro ~7,5 s con haiku, e
  * scritta meglio), le `prossime` in sottofondo con haiku (costano meno quota e nessuno le aspetta).
- * CANTASTORIE_SCENEGGIATORE_MODELLO_SUBITO / _PROSSIME li cambiano; CANTASTORIE_SCENEGGIATORE_MODELLO
+ * TAGM_SCENEGGIATORE_MODELLO_SUBITO / _PROSSIME li cambiano; TAGM_SCENEGGIATORE_MODELLO
  * vale per tutti e due.
  *
  * - Una richiesta alla volta: prima le `subito` (un'azione rimasta senza battuta, la più vecchia), poi la
@@ -60,11 +60,11 @@ const arg = (nome: string, predefinito: string): string => {
 };
 const RADICE = path.resolve(arg('--radice', path.join(RADICE_REPO, 'logs', 'sceneggiatore')));
 const MODELLI: Record<RichiestaSceneggiatore['tipo'], string> = {
-  subito: process.env['CANTASTORIE_SCENEGGIATORE_MODELLO_SUBITO'] ?? process.env['CANTASTORIE_SCENEGGIATORE_MODELLO'] ?? 'sonnet',
-  prossime: process.env['CANTASTORIE_SCENEGGIATORE_MODELLO_PROSSIME'] ?? process.env['CANTASTORIE_SCENEGGIATORE_MODELLO'] ?? 'haiku',
+  subito: process.env['TAGM_SCENEGGIATORE_MODELLO_SUBITO'] ?? process.env['TAGM_SCENEGGIATORE_MODELLO'] ?? 'sonnet',
+  prossime: process.env['TAGM_SCENEGGIATORE_MODELLO_PROSSIME'] ?? process.env['TAGM_SCENEGGIATORE_MODELLO'] ?? 'haiku',
 };
 const ATTESA_MS = Number(arg('--attesa-s', '180')) * 1000;
-const CLAUDE = process.env['CANTASTORIE_CLAUDE'] ?? 'claude';
+const CLAUDE = process.env['TAGM_CLAUDE'] ?? 'claude';
 const c = cartelle(RADICE);
 
 function registra(riga: Record<string, unknown>): void {

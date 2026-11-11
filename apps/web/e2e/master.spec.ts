@@ -1,7 +1,7 @@
 /**
  * E2E del pannello del master (docs/architettura.md, «Pannello master»): pannello + proiettore +
  * due telefoni sul server vero. Server avviato con le immagini della campagna e voce finta:
- *   CANTASTORIE_PORTA=4710 CANTASTORIE_LLM=finto scripts/avvio.sh --mock          (oppure col narratore Haiku vero)
+ *   TAGM_PORTA=4710 TAGM_LLM=finto scripts/avvio.sh --mock          (oppure col narratore Haiku vero)
  *   npx playwright test -c apps/web/playwright.config.ts master
  *
  * Il token si legge dal log del server (riga «PANNELLO MASTER» dell'ultimo avvio), come farebbe il

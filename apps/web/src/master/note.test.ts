@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { NOTA_REGIA_MAX_CARATTERI } from '@cantastorie/shared';
+import { NOTA_REGIA_MAX_CARATTERI } from '@tabletop-ai-gm/shared';
 import { controllaNota, testoNoteAlCompleto, testoTurniNota } from './note';
 
 describe('controllaNota', () => {

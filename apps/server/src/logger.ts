@@ -28,7 +28,7 @@ export function creaLogger(opzioni: { livello: string; cartellaLog: string; nome
   return pino(
     {
       level: 'debug',
-      base: { app: 'cantastorie' },
+      base: { app: 'tabletop-ai-gm' },
       timestamp: pino.stdTimeFunctions.isoTime,
       // Difesa in profondità: se per errore un oggetto con questi campi finisce in un log.
       redact: { paths: ['apiKey', '*.apiKey', 'chiave', '*.chiave', 'headers["x-api-key"]'], censor: '[omessa]' },

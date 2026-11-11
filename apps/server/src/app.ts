@@ -14,7 +14,7 @@ import path from 'node:path';
 import Fastify, { type FastifyInstance } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import { Server } from 'socket.io';
-import type { InfoServer } from '@cantastorie/shared';
+import type { InfoServer } from '@tabletop-ai-gm/shared';
 import { testo } from './lingua';
 import type { Logger } from './logger';
 import type { Regia } from './scena/regia';

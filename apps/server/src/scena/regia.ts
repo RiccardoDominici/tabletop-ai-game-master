@@ -38,7 +38,7 @@ import type {
   SchermoAudioIniziato,
   StatoTavolo,
   VoceTrascrizione,
-} from '@cantastorie/shared';
+} from '@tabletop-ai-gm/shared';
 import { schedaPg } from '../campagna/scheda';
 import type { Campagna, ScenaCaricata } from '../campagna/tipi';
 import { ID_NARRATORE, nomeNarratore, conScena } from '../campagna/tipi';
@@ -47,7 +47,7 @@ import { fuoriDallaFinzione } from '../narrazione/finzione';
 import { MOTIVO_FINE_SESSIONE } from '../sessione/archivio';
 import type { MemoriaSessione } from '../sessione/memoria';
 import type { FotografiaSessione, StatoRicostruito, StatoTavoloSalvato } from '../sessione/tipi';
-import type { RiassuntoSerata, SerataMaster } from '@cantastorie/shared';
+import type { RiassuntoSerata, SerataMaster } from '@tabletop-ai-gm/shared';
 import { collegaSituazioni, type SituazioneCollegata } from '../campagna/situazioni';
 import type { Logger } from '../logger';
 import type { Narratore } from '../llm/tipi';
@@ -99,7 +99,7 @@ import { sezioneNoteRegia } from '../narrazione/messaggio';
 import { MotoreProve, type AzionePerProve } from '../prove/motore';
 import type { ArbitroProve, DecisioneProva, DecisioneRegole, EsitoTurnoProve } from '../prove/tipi';
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
-import type { CombattimentoMaster } from '@cantastorie/shared';
+import type { CombattimentoMaster } from '@tabletop-ai-gm/shared';
 import type { FonteDadi } from '../prove/dadi';
 import { regolaEsiti, titoloEsiti } from '../prove/testi';
 import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dovuti';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AzioneMaster, FaseScena, StatoMaster } from '@cantastorie/shared';
+import type { AzioneMaster, FaseScena, StatoMaster } from '@tabletop-ai-gm/shared';
 import {
   azioniInOrdine,
   puoChiudereFinestra,

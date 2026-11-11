@@ -5,7 +5,7 @@
  * scena. Vale finché non cambia scena: il server lo ricorda nello stato.
  */
 import clsx from 'clsx';
-import type { PresenzaMaster, StatoMaster } from '@cantastorie/shared';
+import type { PresenzaMaster, StatoMaster } from '@tabletop-ai-gm/shared';
 import { Riquadro } from './Riquadro';
 import { Chip } from './Chip';
 import { classePulsante } from './stili';

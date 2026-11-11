@@ -129,9 +129,9 @@ describe('scelta dei provider', () => {
     expect(base.lettore).toMatchObject({ provider: 'locale', modo: 'minimo' });
     expect(base.voce.provider).toBe('locale');
     expect(base.immagini.provider).toBe('locale');
-    const finto = risolvi(caricaConfigProvider({ CANTASTORIE_LLM: 'finto', CANTASTORIE_TTS: 'mock' }));
+    const finto = risolvi(caricaConfigProvider({ TAGM_LLM: 'finto', TAGM_TTS: 'mock' }));
     expect([finto.lettore.provider, finto.arbitro_prove.provider, finto.voce.provider]).toEqual(['finto', 'regole', 'finto']);
-    const cfg = caricaConfigProvider({ CANTASTORIE_LETTORE: 'anthropic', CANTASTORIE_VOCE: 'fish' });
+    const cfg = caricaConfigProvider({ TAGM_LETTORE: 'anthropic', TAGM_VOCE: 'fish' });
     const senzaChiavi = risolvi(cfg, { ambiente: {}, anthropic: '/inesistente', openrouter: '/inesistente' });
     expect(senzaChiavi.lettore.provider).toBe('finto');
     expect(senzaChiavi.lettore.perche).toMatch(/ANTHROPIC_API_KEY mancante/);

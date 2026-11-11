@@ -9,8 +9,8 @@ import path from 'node:path';
 import { expect } from 'vitest';
 import YAML from 'yaml';
 import { io as connetti, type Socket } from 'socket.io-client';
-import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoMaster, StatoTavolo } from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie, type Sostituzioni } from '../../src/avvio';
+import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoMaster, StatoTavolo } from '@tabletop-ai-gm/shared';
+import { costruisciServer, type ServerTagm, type Sostituzioni } from '../../src/avvio';
 import { caricaConfig } from '../../src/config';
 import { loggerMuto } from '../../src/logger';
 import { NarratoreFinto } from '../../src/llm/finto';
@@ -21,9 +21,9 @@ const TOKEN = 'token_di_prova_motore';
 
 /** Una partita di prova: tutto ciò che va chiuso alla fine sta qui. */
 export class Prova {
-  readonly cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-motore-'));
+  readonly cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-motore-'));
   private readonly client: Client[] = [];
-  private readonly server: ServerCantastorie[] = [];
+  private readonly server: ServerTagm[] = [];
   /** Righe JSON di logs/narrazioni.jsonl e turni.jsonl del server (per le misure del Motore). */
   narrazioni(): Array<Record<string, unknown>> {
     return leggiJsonl(path.join(this.cartella, 'log', 'narrazioni.jsonl'));
@@ -57,21 +57,21 @@ export class Prova {
     env: Record<string, string> = {},
     /** Sostituzioni in più (es. l'arbitro delle prove e i dadi a copione). */
     altre: Omit<Sostituzioni, 'narratore'> = {},
-  ): Promise<{ s: ServerCantastorie; url: string; messaggi: string[] }> {
+  ): Promise<{ s: ServerTagm; url: string; messaggi: string[] }> {
     const config = caricaConfig({
       PORT: '0',
       HOST: '127.0.0.1',
-      CANTASTORIE_LOG: path.join(this.cartella, 'log'),
-      CANTASTORIE_CARTELLA_CAMPAGNA: cartellaCampagna,
-      CANTASTORIE_MODO: 'repertorio',
-      CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, '..', 'fixtures', 'prompt-prova.md'),
-      CANTASTORIE_CACHE_AUDIO: path.join(this.cartella, 'cache'),
-      CANTASTORIE_TTS: 'mock',
-      CANTASTORIE_ASSESTAMENTO_MS: '20',
-      CANTASTORIE_MOCK_SCALA: '0.02',
-      CANTASTORIE_MARGINE_AUDIO_MS: '50',
-      CANTASTORIE_PRERISCALDA: '0',
-      CANTASTORIE_MASTER_TOKEN: TOKEN,
+      TAGM_LOG: path.join(this.cartella, 'log'),
+      TAGM_CARTELLA_CAMPAGNA: cartellaCampagna,
+      TAGM_MODO: 'repertorio',
+      TAGM_PROMPT_SELETTORE: path.join(import.meta.dirname, '..', 'fixtures', 'prompt-prova.md'),
+      TAGM_CACHE_AUDIO: path.join(this.cartella, 'cache'),
+      TAGM_TTS: 'mock',
+      TAGM_ASSESTAMENTO_MS: '20',
+      TAGM_MOCK_SCALA: '0.02',
+      TAGM_MARGINE_AUDIO_MS: '50',
+      TAGM_PRERISCALDA: '0',
+      TAGM_MASTER_TOKEN: TOKEN,
       ...env,
     } as NodeJS.ProcessEnv);
     const messaggi: string[] = [];

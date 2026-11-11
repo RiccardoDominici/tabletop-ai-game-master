@@ -24,8 +24,8 @@ import type {
   InfoServer,
   StatoMaster,
   StatoTavolo,
-} from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie } from '../src/avvio';
+} from '@tabletop-ai-gm/shared';
+import { costruisciServer, type ServerTagm } from '../src/avvio';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
@@ -54,7 +54,7 @@ function attendi<T>(c: Client, evento: 'master:stato', cond: (s: T) => boolean, 
 }
 
 interface Banco {
-  server: ServerCantastorie;
+  server: ServerTagm;
   master: Client;
   frasi: AudioFrase[];
   fineTurni: AudioFineTurno[];
@@ -64,22 +64,22 @@ interface Banco {
 }
 
 async function banco(modo: 'improvvisa' | 'repertorio', copione: (turno: number) => string): Promise<Banco> {
-  const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-audio-auto-'));
+  const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-audio-auto-'));
   const config = caricaConfig({
     PORT: '0',
     HOST: '127.0.0.1',
-    CANTASTORIE_LOG: cartella,
-    CANTASTORIE_CARTELLA_CAMPAGNA: CAMPAGNA,
-    CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-    CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-    CANTASTORIE_CACHE_AUDIO: path.join(cartella, 'cache'),
-    CANTASTORIE_MODO: modo,
-    CANTASTORIE_TTS: 'mock',
-    CANTASTORIE_ASSESTAMENTO_MS: '20',
-    CANTASTORIE_MOCK_SCALA: '0.02',
-    CANTASTORIE_MARGINE_AUDIO_MS: '50',
-    CANTASTORIE_MASTER_TOKEN: TOKEN,
-    CANTASTORIE_AUDIO: AUDIO,
+    TAGM_LOG: cartella,
+    TAGM_CARTELLA_CAMPAGNA: CAMPAGNA,
+    TAGM_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+    TAGM_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+    TAGM_CACHE_AUDIO: path.join(cartella, 'cache'),
+    TAGM_MODO: modo,
+    TAGM_TTS: 'mock',
+    TAGM_ASSESTAMENTO_MS: '20',
+    TAGM_MOCK_SCALA: '0.02',
+    TAGM_MARGINE_AUDIO_MS: '50',
+    TAGM_MASTER_TOKEN: TOKEN,
+    TAGM_AUDIO: AUDIO,
   } as NodeJS.ProcessEnv);
   const narratore = new NarratoreFinto({ idPng: ['png_oste'], idPg: ['pg_anna', 'pg_bruno'], primoTokenMs: 5, msPerPezzo: 1, copione });
   const server = await costruisciServer(config, loggerMuto(), { narratore, arbitro: null });

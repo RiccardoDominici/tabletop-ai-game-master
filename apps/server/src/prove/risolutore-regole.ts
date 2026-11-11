@@ -4,7 +4,7 @@
  * vocabolario e la risoluzione del manuale: d20 contro CD, 2d6 a fasce con le mosse, sotto soglia.
  * L'SRD 5.2 resta su prove/risolutore.ts, identico.
  */
-import type { TiroMostrato, Vantaggio } from '@cantastorie/shared';
+import type { TiroMostrato, Vantaggio } from '@tabletop-ai-gm/shared';
 import { chiave, conSegno } from '../campagna/regole-srd';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { Logger } from '../logger';

@@ -2,7 +2,7 @@
  * Dove gira il server delle prove e dove scrive i log.
  *
  * Le prove NON usano la partita vera (porta 4610): per default puntano a un'istanza di prova su 4710,
- * avviata con `CANTASTORIE_PORTA=4710 scripts/avvio.sh …` (log e pagine in logs/porta-4710/).
+ * avviata con `TAGM_PORTA=4710 scripts/avvio.sh …` (log e pagine in logs/porta-4710/).
  * Altre porte: E2E_PORTA=4720, oppure E2E_URL=http://host:porta. I log si leggono dalla cartella
  * dell'istanza (E2E_LOG la forza).
  */

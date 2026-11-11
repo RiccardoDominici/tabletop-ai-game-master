@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { RADICE_REPO } from '../src/percorsi';
 import { attendi, inizia, Prova, turno } from './aiuti/partita';
 

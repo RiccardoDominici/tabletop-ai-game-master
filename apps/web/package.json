@@ -1,5 +1,5 @@
 {
-  "name": "@cantastorie/web",
+  "name": "@tabletop-ai-gm/web",
   "version": "0.0.1",
   "private": true,
   "description": "Web pages of Tabletop AI Game Master: /telefono (players) and /schermo (projector)",
@@ -12,7 +12,7 @@
     "e2e": "playwright test -c playwright.config.ts"
   },
   "dependencies": {
-    "@cantastorie/shared": "*",
+    "@tabletop-ai-gm/shared": "*",
     "@fontsource-variable/alegreya": "^5.3.0",
     "@fontsource-variable/cinzel": "^5.3.0",
     "@fontsource/alegreya-sans": "^5.3.0",

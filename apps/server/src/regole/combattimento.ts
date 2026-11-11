@@ -7,7 +7,7 @@
  * I nomi del codice (condizioni, fasi, azioni dell'SRD) sono nella lingua dei contenuti, letti quando
  * si costruisce il combattimento (prove.yaml, nomi.condizioni e nomi.combattimento).
  */
-import type { TipoRisoluzione } from '@cantastorie/shared';
+import type { TipoRisoluzione } from '@tabletop-ai-gm/shared';
 import { datiProve } from '../prove/lingua';
 
 /** Effetti meccanici che il Motore sa applicare (le condizioni li combinano). */

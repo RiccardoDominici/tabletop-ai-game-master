@@ -83,7 +83,7 @@ describe('caricatore: frasi nella lingua della campagna', () => {
 
   /** La campagna mini con un'apertura inglese che ha un'abbreviazione solo inglese («Sgt.»). */
   function copia(lingua: string | null): string {
-    const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-lingua-'));
+    const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-lingua-'));
     copie.push(cartella);
     fs.cpSync(MINI, cartella, { recursive: true });
     const scena = path.join(cartella, 'scena.yaml');

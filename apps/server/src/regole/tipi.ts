@@ -6,7 +6,7 @@
  * attacchi, danni); l'arbitro per decidere che cosa si tira col vocabolario del manuale; il telefono
  * per far capire le regole (riassunto.md, «Chiedi una regola» sui passi in estratti/).
  */
-import type { TipoRisoluzione } from '@cantastorie/shared';
+import type { TipoRisoluzione } from '@tabletop-ai-gm/shared';
 import type { FormulaDadi } from '../campagna/regole-srd';
 import type { Combattimento } from './combattimento';
 

@@ -4,7 +4,7 @@
  * diventa «altrove» quando esce di scena, il master decide a mano; un PNG mai incontrato non compare.
  */
 import { describe, expect, it, afterEach } from 'vitest';
-import type { VoceTrascrizione } from '@cantastorie/shared';
+import type { VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import { personaggiScena, pngIncontrati, presenzaEffettiva, presenzeMaster } from '../src/scena/presenze';
 import { Prova, inizia, turno } from './aiuti/partita';
 

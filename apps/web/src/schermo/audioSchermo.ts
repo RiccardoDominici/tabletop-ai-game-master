@@ -7,7 +7,7 @@
  * Gli avvisi al server partono solo se si è connessi: un avviso bufferizzato e spedito alla
  * riconnessione porterebbe un `ritardo_ms` falso e sporcherebbe le misure di latenza.
  */
-import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@cantastorie/shared';
+import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@tabletop-ai-gm/shared';
 import { LettorePcm, type StatisticheLettore } from '../audio/lettore';
 import { creaLog } from '../lib/log';
 import { prendiSocket } from '../lib/socket';

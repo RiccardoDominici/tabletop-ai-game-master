@@ -8,8 +8,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { io as connetti, type Socket } from 'socket.io-client';
-import type { Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie } from '../src/avvio';
+import type { Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@tabletop-ai-gm/shared';
+import { costruisciServer, type ServerTagm } from '../src/avvio';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
@@ -17,9 +17,9 @@ import { CacheAudio, chiaveAudio } from '../src/voce/cache-audio';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 const MINI = path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini');
-const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-rep-'));
+const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-rep-'));
 const cartellaCache = path.join(cartella, 'cache');
-let server: ServerCantastorie;
+let server: ServerTagm;
 let url: string;
 const client: Client[] = [];
 const messaggi: string[] = [];
@@ -49,15 +49,15 @@ beforeAll(async () => {
   const config = caricaConfig({
     PORT: '0',
     HOST: '127.0.0.1',
-    CANTASTORIE_LOG: cartella,
-    CANTASTORIE_CARTELLA_CAMPAGNA: MINI,
-    CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-    CANTASTORIE_MODO: 'repertorio',
-    CANTASTORIE_CACHE_AUDIO: cartellaCache,
-    CANTASTORIE_TTS: 'mock',
-    CANTASTORIE_ASSESTAMENTO_MS: '20',
-    CANTASTORIE_MOCK_SCALA: '0.02',
-    CANTASTORIE_FINESTRA_TUTTI: '1',
+    TAGM_LOG: cartella,
+    TAGM_CARTELLA_CAMPAGNA: MINI,
+    TAGM_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+    TAGM_MODO: 'repertorio',
+    TAGM_CACHE_AUDIO: cartellaCache,
+    TAGM_TTS: 'mock',
+    TAGM_ASSESTAMENTO_MS: '20',
+    TAGM_MOCK_SCALA: '0.02',
+    TAGM_FINESTRA_TUTTI: '1',
   } as NodeJS.ProcessEnv);
   // Selettore a copione (protocollo B2). Le richieste di riparazione hanno un copione a parte.
   const copione = (turno: number) =>

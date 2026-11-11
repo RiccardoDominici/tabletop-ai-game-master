@@ -4,7 +4,7 @@
  * hanno stili diversi; tra un turno e l'altro c'è un separatore.
  */
 import clsx from 'clsx';
-import type { VoceTrascrizione } from '@cantastorie/shared';
+import type { VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import { virgolettato } from '../lib/formato';
 import { Riquadro } from './Riquadro';
 import { useSegueFondo } from './useSegueFondo';

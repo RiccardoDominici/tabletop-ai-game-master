@@ -1,6 +1,6 @@
 /**
  * Token del pannello del master: chi lo conosce entra nella stanza Socket.IO "master" e comanda
- * il tavolo. Si genera a ogni avvio (o si fissa con CANTASTORIE_MASTER_TOKEN) e si stampa nel log
+ * il tavolo. Si genera a ogni avvio (o si fissa con TAGM_MASTER_TOKEN) e si stampa nel log
  * del server: sta sul Mac, i telefoni non lo vedono mai (non è nel QR né in nessuno stato).
  */
 import { randomBytes, timingSafeEqual } from 'node:crypto';

@@ -4,7 +4,7 @@
  * I contatori del lettore si leggono 4 volte al secondo solo mentre l'HUD è aperto.
  */
 import { useEffect, useState, type ReactNode } from 'react';
-import type { MisureTurno } from '@cantastorie/shared';
+import type { MisureTurno } from '@tabletop-ai-gm/shared';
 import { formattaCosto, formattaMs } from '../lib/formato';
 import { useTavolo } from '../store/tavolo';
 import { useSchermo } from '../store/schermo';

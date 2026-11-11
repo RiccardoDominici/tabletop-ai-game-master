@@ -2,8 +2,8 @@
  * Controllo dell'audio VERO di una campagna (qualunque: legge il catalogo del server), in Chromium.
  * Gira su un server di prova, mai su quello della partita (4610), per esempio:
  *
- *   PORT=4620 CANTASTORIE_CAMPAGNA=ponte-lanterne CANTASTORIE_LLM=finto CANTASTORIE_TTS=mock \
- *     CANTASTORIE_LOG=/tmp/cantastorie-prova npm run start -w @cantastorie/server
+ *   PORT=4620 TAGM_CAMPAGNA=ponte-lanterne TAGM_LLM=finto TAGM_TTS=mock \
+ *     TAGM_LOG=/tmp/tabletop-ai-gm-prova npm run start -w @tabletop-ai-gm/server
  *   (pagine come in audio.spec.ts: vite build in una cartella a parte + vite preview --port 4622)
  *   E2E_AUDIO_CAMPAGNA=1 E2E_URL=http://localhost:4622 npx playwright test e2e/audio-campagna.spec.ts
  *

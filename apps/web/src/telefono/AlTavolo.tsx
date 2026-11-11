@@ -8,7 +8,7 @@
  */
 import { useState } from 'react';
 import clsx from 'clsx';
-import type { AzioneAlTavolo, StatoTavolo } from '@cantastorie/shared';
+import type { AzioneAlTavolo, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { altriAlTavolo, conChi, etichettaStatoAzione } from './vista';
 import { t } from '../lingua';
 import { QuiConVoi } from './QuiConVoi';

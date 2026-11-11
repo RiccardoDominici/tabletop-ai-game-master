@@ -21,7 +21,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import type { CatalogoAudioPubblico, TipoTracciaAudio, TracciaAudio } from '@cantastorie/shared';
+import type { CatalogoAudioPubblico, TipoTracciaAudio, TracciaAudio } from '@tabletop-ai-gm/shared';
 import type { Logger } from '../logger';
 
 export const PREFISSO_URL_AUDIO = '/api/audio/';

@@ -8,7 +8,7 @@
  *   dado delle decine in più del d100).
  * Le parole della regola applicata e dei gradi sono nella lingua dei contenuti (testi-prove.yaml, «regole.…»).
  */
-import type { Vantaggio } from '@cantastorie/shared';
+import type { Vantaggio } from '@tabletop-ai-gm/shared';
 import { conSegno } from '../campagna/regole-srd';
 import { testo } from '../lingua';
 import type { FonteDadi } from '../prove/dadi';

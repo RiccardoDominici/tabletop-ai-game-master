@@ -1,4 +1,4 @@
-"""Validatore delle campagne di Cantastorie (manuale del master, E1). Punto d'ingresso: valida()."""
+"""Validatore delle campagne di Tabletop AI Game Master (manuale del master, E1). Punto d'ingresso: valida()."""
 
 from __future__ import annotations
 

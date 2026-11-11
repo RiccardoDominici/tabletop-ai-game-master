@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BattutaMaster } from '@cantastorie/shared';
+import type { BattutaMaster } from '@tabletop-ai-gm/shared';
 import { CHIAVE_SENZA_SPOILER, contaPerParlante, leggiSenzaSpoiler, nomeOrologio, salvaSenzaSpoiler, tipoBattuta } from './spoiler';
 import type { Archivio } from './token';
 

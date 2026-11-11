@@ -19,8 +19,8 @@ import type {
   InfoServer,
   StatoMaster,
   StatoTavolo,
-} from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie } from '../src/avvio';
+} from '@tabletop-ai-gm/shared';
+import { costruisciServer, type ServerTagm } from '../src/avvio';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
@@ -34,7 +34,7 @@ const presente = fs.existsSync(path.join(PONTE, 'scene'));
 const TOKEN = 'token_di_prova_scene_123';
 
 let cartella: string;
-let server: ServerCantastorie;
+let server: ServerTagm;
 let url: string;
 const sistemi: string[][] = [];
 const client: Client[] = [];
@@ -61,22 +61,22 @@ const comanda = (m: Client, c: ComandoMaster): Promise<Esito> => emetti<Esito>((
 
 describe.skipIf(!presente)('campagne con più scene (ponte-lanterne)', () => {
   beforeAll(async () => {
-    cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-scene-'));
+    cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-scene-'));
     const config = caricaConfig({
       PORT: '0',
       HOST: '127.0.0.1',
-      CANTASTORIE_LOG: cartella,
-      CANTASTORIE_CARTELLA_CAMPAGNA: PONTE,
-      CANTASTORIE_MODO: 'repertorio',
-      CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-      CANTASTORIE_CACHE_AUDIO: path.join(cartella, 'cache'),
-      CANTASTORIE_TTS: 'mock',
+      TAGM_LOG: cartella,
+      TAGM_CARTELLA_CAMPAGNA: PONTE,
+      TAGM_MODO: 'repertorio',
+      TAGM_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+      TAGM_CACHE_AUDIO: path.join(cartella, 'cache'),
+      TAGM_TTS: 'mock',
       // Assestamento lungo: l'azione di Dalia deve restare in coda mentre il master cambia scena.
-      CANTASTORIE_ASSESTAMENTO_MS: '3000',
-      CANTASTORIE_MOCK_SCALA: '0.02',
-      CANTASTORIE_MARGINE_AUDIO_MS: '50',
-      CANTASTORIE_PRERISCALDA: '0',
-      CANTASTORIE_MASTER_TOKEN: TOKEN,
+      TAGM_ASSESTAMENTO_MS: '3000',
+      TAGM_MOCK_SCALA: '0.02',
+      TAGM_MARGINE_AUDIO_MS: '50',
+      TAGM_PRERISCALDA: '0',
+      TAGM_MASTER_TOKEN: TOKEN,
     } as NodeJS.ProcessEnv);
     const narratore = new NarratoreFinto({ idPng: [], idPg: [], primoTokenMs: 5, msPerPezzo: 1, copione: () => '[narratore] La pioggia batte.\n[invito] tutti' });
     const narra = narratore.narra.bind(narratore);

@@ -15,7 +15,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
-import type { RiassuntoSerata, VoceTrascrizione } from '@cantastorie/shared';
+import type { RiassuntoSerata, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import { elencoPacchetti } from '../campagna/pacchetti';
 import type { Campagna } from '../campagna/tipi';
 import type { Narratore } from '../llm/tipi';

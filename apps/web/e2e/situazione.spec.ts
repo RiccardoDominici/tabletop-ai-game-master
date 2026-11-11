@@ -1,6 +1,6 @@
 /**
  * E2E dell'immagine di situazione dopo la rivelazione, col selettore Haiku VERO (modalità B):
- *   CANTASTORIE_PORTA=4710 CANTASTORIE_MODO=repertorio CANTASTORIE_ARBITRO=regole CANTASTORIE_IMMAGINI=<cartella con
+ *   TAGM_PORTA=4710 TAGM_MODO=repertorio TAGM_ARBITRO=regole TAGM_IMMAGINI=<cartella con
  *   situazione_png_sebastiano_senza_cappuccio> scripts/avvio.sh --mock
  *   npx playwright test -c apps/web/playwright.config.ts situazione
  *

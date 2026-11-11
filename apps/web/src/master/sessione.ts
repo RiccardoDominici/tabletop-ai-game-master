@@ -12,7 +12,7 @@
  *
  * Log: ingresso e comandi (tipo, esito); MAI il token.
  */
-import type { ComandoMaster, Esito, EsitoEntrataMaster, StatoMaster } from '@cantastorie/shared';
+import type { ComandoMaster, Esito, EsitoEntrataMaster, StatoMaster } from '@tabletop-ai-gm/shared';
 import { alRientro, chiedi, conEsito, esitoErrore, prendiSocket } from '../lib/socket';
 import { creaLog } from '../lib/log';
 import { useMaster } from '../store/master';

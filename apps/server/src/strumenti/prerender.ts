@@ -8,7 +8,7 @@
  * Uso:
  *   npx tsx apps/server/src/strumenti/prerender.ts [cartella] [--motore fish] [--dry-run] [--json] [--solo-conta]
  *
- *   cartella     campagna da usare (predefinita: CANTASTORIE_CARTELLA_CAMPAGNA o prova-f0)
+ *   cartella     campagna da usare (predefinita: TAGM_CARTELLA_CAMPAGNA o prova-f0)
  *   --dry-run    solo conteggio: righe, voci uniche, già in cache, byte e costo stimato. Non spende e non scrive.
  *   --json       con --dry-run, stampa il riassunto come una riga JSON (per strumenti/stato_preparazione.py)
  *   --solo-conta (Qwen) solo conteggio
@@ -146,7 +146,7 @@ async function main(): Promise<void> {
   if (motore !== 'qwen' && motore !== 'fish') throw new Error(`motore sconosciuto: ${motore} (qwen o fish)`);
 
   const cartella = positionals[0] ? path.resolve(positionals[0]) : undefined;
-  const config = caricaConfig(cartella ? { ...process.env, CANTASTORIE_CARTELLA_CAMPAGNA: cartella } : process.env);
+  const config = caricaConfig(cartella ? { ...process.env, TAGM_CARTELLA_CAMPAGNA: cartella } : process.env);
   const log = creaLogger({ livello: 'info', cartellaLog: config.cartellaLog, nomeFile: 'prerender.jsonl' });
   const campagna = caricaCampagna(config.cartellaCampagna, log, { linguaConfigurazione: config.lingua });
   // Lingua dei contenuti come la imposta il server (avvio.ts): quella della campagna, se no della

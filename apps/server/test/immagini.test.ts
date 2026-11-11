@@ -6,8 +6,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import type { StatoTavolo } from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie } from '../src/avvio';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
+import { costruisciServer, type ServerTagm } from '../src/avvio';
 import { CatalogoImmagini } from '../src/campagna/immagini';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
@@ -34,19 +34,19 @@ describe('CatalogoImmagini', () => {
 });
 
 describe('rotte delle immagini e cambio di luogo', () => {
-  const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-img-'));
-  let server: ServerCantastorie;
+  const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-img-'));
+  let server: ServerTagm;
   let url: string;
   beforeAll(async () => {
     const config = caricaConfig({
       PORT: '0',
       HOST: '127.0.0.1',
-      CANTASTORIE_LOG: cartella,
-      CANTASTORIE_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
-      CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-      CANTASTORIE_TTS: 'mock',
-      CANTASTORIE_ASSESTAMENTO_MS: '20',
-      CANTASTORIE_IMMAGINI: FIXTURE,
+      TAGM_LOG: cartella,
+      TAGM_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
+      TAGM_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+      TAGM_TTS: 'mock',
+      TAGM_ASSESTAMENTO_MS: '20',
+      TAGM_IMMAGINI: FIXTURE,
     } as NodeJS.ProcessEnv);
     server = await costruisciServer(config, loggerMuto(), { narratore: new NarratoreFinto({ idPng: [], idPg: [] }), arbitro: null });
     await server.avvia();

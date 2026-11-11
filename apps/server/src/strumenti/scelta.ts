@@ -5,7 +5,7 @@
  *
  * Uso: npx tsx apps/server/src/strumenti/scelta.ts <cartella> [--modo improvvisa|repertorio] [--sessione N] [--nuova]
  * Stampa una riga JSON: {"numero": 2 | null, "motivo": "...", "avviso": "..." | null}. L'archivio è quello
- * dell'istanza (CANTASTORIE_SESSIONI o <CANTASTORIE_LOG>/sessioni.sqlite); non scrive niente, e un
+ * dell'istanza (TAGM_SESSIONI o <TAGM_LOG>/sessioni.sqlite); non scrive niente, e un
  * archivio che non c'è vale «nessuna sessione».
  * Uscita: 0; 2 argomenti sbagliati; 3 la sessione chiesta non c'è o il pacchetto non si carica.
  */

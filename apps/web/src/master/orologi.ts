@@ -5,7 +5,7 @@
  * Il server è la fonte di verità, ma i numeri si difendono comunque: `pieni` fuori da 0…segmenti
  * non deve rompere la riga di caselle, e `segni` può avere meno testi dei segmenti.
  */
-import type { OrologioMaster } from '@cantastorie/shared';
+import type { OrologioMaster } from '@tabletop-ai-gm/shared';
 import { t } from '../lingua';
 
 export type StatoCasella = 'pieno' | 'prossimo' | 'vuoto';

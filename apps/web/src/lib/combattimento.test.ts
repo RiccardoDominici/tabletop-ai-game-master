@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { CombattentePubblico, CombattimentoPubblico } from '@cantastorie/shared';
+import type { CombattentePubblico, CombattimentoPubblico } from '@tabletop-ai-gm/shared';
 import {
   combattenteDi,
   elencoItaliano,

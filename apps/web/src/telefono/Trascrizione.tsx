@@ -8,7 +8,7 @@
 import { t } from '../lingua';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import type { EsitoPrivato, VoceTrascrizione } from '@cantastorie/shared';
+import type { EsitoPrivato, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import { virgolettato } from '../lib/formato';
 import { useTelefono } from '../store/telefono';
 

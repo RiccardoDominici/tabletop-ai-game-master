@@ -1,5 +1,5 @@
 /**
- * @cantastorie/shared — eventi Socket.IO tipizzati (F0).
+ * @tabletop-ai-gm/shared — eventi Socket.IO tipizzati (F0).
  *
  * Stanze lato server:
  * - "tavolo": tutti i telefoni e lo schermo (stato, trascrizione, metriche);

@@ -9,7 +9,7 @@ import path from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import { ErroreChiave, cercaChiave } from '../src/llm/chiavi';
 
-const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-ordine-'));
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-ordine-'));
 let n = 0;
 function file(contenuto: string): string {
   const p = path.join(dir, `f${n++}.env`);

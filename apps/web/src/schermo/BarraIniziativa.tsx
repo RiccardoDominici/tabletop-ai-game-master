@@ -13,7 +13,7 @@
  * evidenzia nessuno: si vedono solo le schede.
  */
 import clsx from 'clsx';
-import type { CombattentePubblico, CombattimentoPubblico } from '@cantastorie/shared';
+import type { CombattentePubblico, CombattimentoPubblico } from '@tabletop-ai-gm/shared';
 import {
   CLASSE_TONO_PF,
   etichettaRound,

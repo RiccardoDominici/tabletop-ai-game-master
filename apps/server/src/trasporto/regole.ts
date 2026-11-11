@@ -3,7 +3,7 @@
  * licenza per la scheda «Regole») e `regole:chiedi` (una domanda; la risposta torna solo a chi ha
  * chiesto, nell'ack). Separati da trasporto/socket.ts: non toccano la regia né lo stato del tavolo.
  */
-import type { RegolePubbliche } from '@cantastorie/shared';
+import type { RegolePubbliche } from '@tabletop-ai-gm/shared';
 import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import type { RisponditoreRegole } from '../regole/chiedi';

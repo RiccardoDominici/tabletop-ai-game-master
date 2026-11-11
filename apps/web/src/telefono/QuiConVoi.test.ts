@@ -2,7 +2,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { QuiConVoi } from './QuiConVoi';
 
 const stato = (personaggi?: StatoTavolo['scena']['personaggi']) => ({ scena: { personaggi } }) as unknown as StatoTavolo;

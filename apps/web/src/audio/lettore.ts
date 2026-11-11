@@ -11,7 +11,7 @@
  *   non a programmare l'audio). Il ritardo misurato al momento dello scatto viene passato a chi
  *   ascolta, che lo manda al server (`ritardo_ms`).
  */
-import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@cantastorie/shared';
+import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@tabletop-ai-gm/shared';
 import { creaLog } from '../lib/log';
 import { comeByte } from './pcm';
 import { JITTER_S } from './pianificatore';

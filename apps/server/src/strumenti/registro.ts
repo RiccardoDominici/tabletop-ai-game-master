@@ -10,8 +10,8 @@
  *   --archivio id         quella sessione dell'archivio;
  *   --uscita dir          scrive lì invece che in sessioni/<nn>/ (one-shot: logs/registri/…);
  *   --controlla           non scrive: confronta coi file che ci sono già.
- * L'archivio è quello dell'istanza: CANTASTORIE_SESSIONI, oppure <CANTASTORIE_LOG>/sessioni.sqlite
- * (scripts/registro.sh mette CANTASTORIE_LOG come avvio.sh, secondo CANTASTORIE_PORTA).
+ * L'archivio è quello dell'istanza: TAGM_SESSIONI, oppure <TAGM_LOG>/sessioni.sqlite
+ * (scripts/registro.sh mette TAGM_LOG come avvio.sh, secondo TAGM_PORTA).
  *
  * Uscita: 0 fatto (o uguale, con --controlla); 1 diverso (--controlla); 2 argomenti sbagliati;
  * 3 campagna o archivio che non si caricano; 4 nessuna sessione da registrare.
@@ -97,7 +97,7 @@ function main(): number {
   }
   const config = caricaConfig();
   if (!config.fileSessioni || !fs.existsSync(config.fileSessioni)) {
-    console.error(`registro: nessun archivio delle sessioni (${config.fileSessioni ?? 'CANTASTORIE_SESSIONI=off'})`);
+    console.error(`registro: nessun archivio delle sessioni (${config.fileSessioni ?? 'TAGM_SESSIONI=off'})`);
     return 4;
   }
   let archivio: ArchivioSessioni;

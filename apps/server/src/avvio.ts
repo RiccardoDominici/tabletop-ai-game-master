@@ -6,7 +6,7 @@
 import { impostaLingua, percorsoPrompt, testo, type Lingua } from './lingua';
 import fs from 'node:fs';
 import path from 'node:path';
-import type { InfoServer } from '@cantastorie/shared';
+import type { InfoServer } from '@tabletop-ai-gm/shared';
 import { creaApp, registraRotte, type App } from './app';
 import { caricaCampagna, idCampagna } from './campagna/caricatore';
 import { elencoPacchetti } from './campagna/pacchetti';
@@ -65,7 +65,7 @@ import { codaAudioFish } from './sceneggiatore/audio';
 import { creaPronunciatore } from './voce/pronuncia';
 import type { Battuta } from './repertorio/tipi';
 
-export interface ServerCantastorie {
+export interface ServerTagm {
   app: App;
   regia: Regia;
   campagna: Campagna;
@@ -171,7 +171,7 @@ function verificaPacchetto(config: ConfigServer, numero: number): { motivo: stri
   }
 }
 
-export async function costruisciServer(config: ConfigServer, log: Logger, sost: Sostituzioni = {}): Promise<ServerCantastorie> {
+export async function costruisciServer(config: ConfigServer, log: Logger, sost: Sostituzioni = {}): Promise<ServerTagm> {
   // Archivio prima della campagna: in una campagna a più sessioni è lui a dire quale pacchetto si gioca.
   const archivio = config.fileSessioni ? new ArchivioSessioni(config.fileSessioni, log.child({ modulo: 'sessioni' })) : null;
   const id = idCampagna(config.cartellaCampagna);
@@ -299,7 +299,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     onCosto: (ms, costo) => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'regole_domanda', modello: etichettaModello('regole'), ms, ...costo }),
   });
 
-  // drama-3 via OpenRouter (CANTASTORIE_VOCE=fish): voci dal registro, chiave letta al primo uso.
+  // drama-3 via OpenRouter (TAGM_VOCE=fish): voci dal registro, chiave letta al primo uso.
   const modoVoce: ModoVoce =
     scelte.voce.provider === 'openrouter' ? 'fish' : scelte.voce.provider === 'finto' || scelte.voce.provider === 'nessuno' ? 'mock' : config.voce.modo === 'qwen' ? 'qwen' : 'auto';
   const cacheAudio = new CacheAudio(config.cacheAudio, config.voce.fish.cacheAudio);
@@ -341,12 +341,12 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     attesaNelCatalogo: narratore.nome === 'minimo',
     // Lo sceneggiatore (docs/sceneggiatore.md) scrive con Claude Code ciò che il lettore minimo non trova:
     // le richieste partono solo se il suo processo gira (scripts/sceneggiatore.sh). Spento nei server di
-    // prova (narratore sostituito) e con CANTASTORIE_SCENEGGIATORE=no.
+    // prova (narratore sostituito) e con TAGM_SCENEGGIATORE=no.
     sceneggiatore:
       sost.sceneggiatore !== undefined
         ? sost.sceneggiatore
-        : narratore.nome === 'minimo' && !chiuso && process.env['CANTASTORIE_SCENEGGIATORE'] !== 'no'
-        ? { radice: path.join(config.cartellaLog, 'sceneggiatore'), tettoMs: Number(process.env['CANTASTORIE_SCENEGGIATORE_TETTO_S'] ?? 90) * 1000 }
+        : narratore.nome === 'minimo' && !chiuso && process.env['TAGM_SCENEGGIATORE'] !== 'no'
+        ? { radice: path.join(config.cartellaLog, 'sceneggiatore'), tettoMs: Number(process.env['TAGM_SCENEGGIATORE_TETTO_S'] ?? 90) * 1000 }
         : null,
     voce,
     uscitaAudio: uscite.audio,
@@ -461,7 +461,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
 /**
  * Cerca la sessione da riprendere: l'ultima in corso della stessa campagna e modalità (e, in una
  * campagna a pacchetti, dello stesso pacchetto), con almeno una fotografia. --nuova ha già chiuso
- * quelle in corso (costruisciServer). Senza registro (CANTASTORIE_SESSIONI=off) non si salva niente.
+ * quelle in corso (costruisciServer). Senza registro (TAGM_SESSIONI=off) non si salva niente.
  *
  * Campagna a pacchetti senza ripresa: i telefoni della sessione prima ritrovano il loro PG
  * (i PG durano tra le sessioni).
@@ -473,7 +473,7 @@ function apriSessioni(
   log: Logger,
 ): { memoria: MemoriaSessione | null; ripresa: StatoRicostruito | null; dispositiviEreditati: Map<string, string> | null } {
   if (!archivio) {
-    log.info('sessioni: registro spento (CANTASTORIE_SESSIONI=off)');
+    log.info('sessioni: registro spento (TAGM_SESSIONI=off)');
     return { memoria: null, ripresa: null, dispositiviEreditati: null };
   }
   const pacchetto = campagna.pacchetto?.numero ?? null;

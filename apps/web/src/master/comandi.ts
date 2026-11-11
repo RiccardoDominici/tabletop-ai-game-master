@@ -4,7 +4,7 @@
  * (si blocca il doppio clic sullo stesso pulsante, non sugli altri) e le etichette italiane.
  * Logica pura, testata in comandi.test.ts.
  */
-import type { ComandoMaster, TipoComandoMaster } from '@cantastorie/shared';
+import type { ComandoMaster, TipoComandoMaster } from '@tabletop-ai-gm/shared';
 import { t } from '../lingua';
 import { turni } from './etichette';
 import { tabella } from './tabella';

@@ -16,7 +16,7 @@ import type {
   FinestraPubblica,
   StatoAzione,
   StatoTavolo,
-} from '@cantastorie/shared';
+} from '@tabletop-ai-gm/shared';
 import { elenco, t } from '../lingua';
 
 /** Il narratore può invitare `tutti` (il server normalmente espande l'elenco, ma per sicurezza). */

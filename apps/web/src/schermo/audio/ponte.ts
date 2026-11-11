@@ -11,7 +11,7 @@
  *
  * `?isteresi_audio_s=8` nell'URL accorcia l'isteresi della musica (prove e e2e; predefinito 60 s).
  */
-import type { AudioFrase, CatalogoAudioPubblico } from '@cantastorie/shared';
+import type { AudioFrase, CatalogoAudioPubblico } from '@tabletop-ai-gm/shared';
 import { creaLog } from '../../lib/log';
 import { alRientro, prendiSocket } from '../../lib/socket';
 import { useTavolo } from '../../store/tavolo';

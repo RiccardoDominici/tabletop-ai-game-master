@@ -2,7 +2,7 @@
  * Note di regia: entrano nel messaggio del narratore per i prossimi N turni (al massimo
  * `limiti_note.max` insieme). Lista con turni rimasti e «Togli», poi il modulo (FormNota).
  */
-import type { NotaRegia, StatoMaster } from '@cantastorie/shared';
+import type { NotaRegia, StatoMaster } from '@tabletop-ai-gm/shared';
 import { useInCorso } from '../store/master';
 import { inviaComando } from './sessione';
 import { Riquadro, Vuoto } from './Riquadro';

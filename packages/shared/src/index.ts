@@ -1,4 +1,4 @@
-/** @cantastorie/shared — punto d'ingresso: tipi di dominio ed eventi Socket.IO. */
+/** @tabletop-ai-gm/shared — punto d'ingresso: tipi di dominio ed eventi Socket.IO. */
 export * from './dominio';
 export * from './eventi';
 export * from './master';

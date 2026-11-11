@@ -2,7 +2,7 @@
  * Prova e2e della voce drama-3 su un'istanza di prova (MAI la 4610 né la 4611): qualche turno vero di
  * una campagna, con Haiku vero e drama-3 vero, registrato da un telefono con «Ascolta qui» acceso.
  *
- *   CANTASTORIE_PORTA=4730 npx tsx esperimenti/voce-drama3/gioca.ts [--turni 3] [--campagna nozze-neve] [--modo B]
+ *   TAGM_PORTA=4730 npx tsx esperimenti/voce-drama3/gioca.ts [--turni 3] [--campagna nozze-neve] [--modo B]
  *
  * 1. Riavvia il server di prova (scripts/avvio.sh --fish: nessuna riserva Qwen).
  * 2. Proiettore virtuale, master headless, un telefono per PG del copione nozze-neve/indagine; uno dei
@@ -17,7 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { io as connetti, type Socket } from 'socket.io-client';
 import { parse } from 'yaml';
-import type { AudioFrase, Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@cantastorie/shared';
+import type { AudioFrase, Esito, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { MasterHeadless } from '../../apps/server/src/esperimenti/master';
 import { ProiettoreVirtuale } from '../../apps/server/src/esperimenti/proiettore';
 import { nuovoToken } from '../../apps/server/src/master/token';
@@ -31,7 +31,7 @@ function opzione(nome: string, predefinito: string): string {
   const i = process.argv.indexOf(nome);
   return i >= 0 && process.argv[i + 1] ? process.argv[i + 1]! : predefinito;
 }
-const PORTA = Number(process.env['CANTASTORIE_PORTA'] ?? '4730');
+const PORTA = Number(process.env['TAGM_PORTA'] ?? '4730');
 if ([4610, 4611, 4612].includes(PORTA)) throw new Error(`porta ${PORTA} vietata: è della partita vera`);
 const TURNI = Number(opzione('--turni', '3'));
 const CAMPAGNA = opzione('--campagna', 'nozze-neve');
@@ -90,7 +90,7 @@ async function principale(): Promise<void> {
   const token = nuovoToken();
   console.log(`porta ${PORTA}: avvio del server di prova (${CAMPAGNA}, ${MODO}, voce fish)…`);
   const avvio = spawnSync(path.join(RADICE, 'scripts', 'avvio.sh'), ['--fish'], {
-    env: { ...process.env, CANTASTORIE_PORTA: String(PORTA), CANTASTORIE_CAMPAGNA: CAMPAGNA, CANTASTORIE_MODO: MODO, CANTASTORIE_MASTER_TOKEN: token, CANTASTORIE_VOCE: 'fish' },
+    env: { ...process.env, TAGM_PORTA: String(PORTA), TAGM_CAMPAGNA: CAMPAGNA, TAGM_MODO: MODO, TAGM_MASTER_TOKEN: token, TAGM_VOCE: 'fish' },
     encoding: 'utf8',
   });
   if (avvio.status !== 0) throw new Error(`avvio fallito:\n${avvio.stdout.replaceAll(token, '***')}\n${avvio.stderr.replaceAll(token, '***')}`);
@@ -236,12 +236,12 @@ async function principale(): Promise<void> {
   };
   fs.writeFileSync(path.join(USCITA, 'riepilogo.json'), JSON.stringify(riepilogo, null, 1) + '\n');
   console.log(JSON.stringify(riepilogo, null, 1));
-  spawnSync(path.join(RADICE, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, CANTASTORIE_PORTA: String(PORTA) }, encoding: 'utf8' });
+  spawnSync(path.join(RADICE, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, TAGM_PORTA: String(PORTA) }, encoding: 'utf8' });
   process.exit(0);
 }
 
 principale().catch((err: unknown) => {
   console.error(err);
-  spawnSync(path.join(RADICE, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, CANTASTORIE_PORTA: String(PORTA) }, encoding: 'utf8' });
+  spawnSync(path.join(RADICE, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, TAGM_PORTA: String(PORTA) }, encoding: 'utf8' });
   process.exit(1);
 });

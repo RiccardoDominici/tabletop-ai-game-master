@@ -4,7 +4,7 @@
  * (dipendenze, conflitti) e «Salta» quando il server dice che si può.
  */
 import clsx from 'clsx';
-import type { AzioneMaster } from '@cantastorie/shared';
+import type { AzioneMaster } from '@tabletop-ai-gm/shared';
 import { useInCorso, useSenzaSpoiler } from '../store/master';
 import { testoPrivataNascosta } from './spoiler';
 import { inviaComando } from './sessione';

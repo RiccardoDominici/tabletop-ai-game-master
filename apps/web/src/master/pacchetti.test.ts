@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { PacchettiMaster } from '@cantastorie/shared';
+import type { PacchettiMaster } from '@tabletop-ai-gm/shared';
 import { abbreviaDispositivo, rigaPacchetto, statoProssima } from './pacchetti';
 
 const base: PacchettiMaster = {

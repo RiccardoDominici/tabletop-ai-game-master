@@ -12,7 +12,7 @@ import YAML from 'yaml';
 import { RADICE_REPO } from '../src/percorsi';
 import { ArchivioSessioni } from '../src/sessione/archivio';
 
-const radice = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-registro-cli-'));
+const radice = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-registro-cli-'));
 const ARCO = path.join(radice, 'arco');
 fs.cpSync(path.join(import.meta.dirname, 'fixtures', 'campagne', 'arco'), ARCO, { recursive: true });
 const FILE = path.join(radice, 'sessioni.sqlite');
@@ -39,7 +39,7 @@ a.chiudi();
 
 function registro(...argomenti: string[]): { codice: number; uscita: string; errori: string } {
   const r = spawnSync('bash', [path.join(RADICE_REPO, 'scripts', 'registro.sh'), ...argomenti], {
-    env: { ...process.env, CANTASTORIE_SESSIONI: FILE, CANTASTORIE_LOG: path.join(radice, 'log'), CANTASTORIE_PORTA: '4710' },
+    env: { ...process.env, TAGM_SESSIONI: FILE, TAGM_LOG: path.join(radice, 'log'), TAGM_PORTA: '4710' },
     encoding: 'utf8',
   });
   return { codice: r.status ?? -1, uscita: r.stdout, errori: r.stderr };

@@ -1,4 +1,4 @@
-"""Motore immagini locale per Cantastorie: FLUX.2 klein 4B a 4 bit, via la CLI di mflux (MLX), su Apple Silicon.
+"""Motore immagini locale per Tabletop AI Game Master: FLUX.2 klein 4B a 4 bit, via la CLI di mflux (MLX), su Apple Silicon.
 
 Perché un processo per immagine
 -------------------------------

@@ -5,7 +5,7 @@
  * Senza spoiler: delle disponibili solo quante per chi parla; delle uscite niente id e tipo neutro.
  */
 import type { ReactNode } from 'react';
-import type { BattutaMaster, RepertorioMaster } from '@cantastorie/shared';
+import type { BattutaMaster, RepertorioMaster } from '@tabletop-ai-gm/shared';
 import { Riquadro, Vuoto } from './Riquadro';
 import { useSenzaSpoiler } from '../store/master';
 import { contaPerParlante, tipoBattuta } from './spoiler';

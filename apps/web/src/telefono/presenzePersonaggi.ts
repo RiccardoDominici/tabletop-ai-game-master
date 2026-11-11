@@ -2,7 +2,7 @@
  * Logica pura della fascia «Qui con voi» sul telefono (richiesta 2 del 9 novembre): cosa mostrare e
  * che testo mettere nella casella quando si tocca un PNG presente. Testata in presenzePersonaggi.test.ts.
  */
-import type { PersonaggioScena } from '@cantastorie/shared';
+import type { PersonaggioScena } from '@tabletop-ai-gm/shared';
 import { primoNome } from '../schermo/etichettaFase';
 
 /** I PNG presenti (in scena, con chi si può parlare), nell'ordine del server. */

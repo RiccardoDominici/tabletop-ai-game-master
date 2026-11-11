@@ -8,7 +8,7 @@
  * solo al ritmo concitato, chi si scollega non si aspetta, «Risolvi ora» del master.
  */
 import { describe, expect, it } from 'vitest';
-import type { AzionePrivata } from '@cantastorie/shared';
+import type { AzionePrivata } from '@tabletop-ai-gm/shared';
 import { TavoloAzioni, type RiepilogoChiusura } from '../src/azioni/tavolo';
 import type { Arbitro, AzioneArbitro, EsitoRelazioni, Giudizio } from '../src/azioni/tipi';
 import { loggerMuto } from '../src/logger';

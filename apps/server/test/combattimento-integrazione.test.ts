@@ -5,7 +5,7 @@
  * la barra dell'iniziativa e il pannello del master può terminare lo scontro.
  */
 import { afterEach, describe, expect, it } from 'vitest';
-import type { AzionePrivata, StatoTavolo } from '@cantastorie/shared';
+import type { AzionePrivata, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { DadiACopione } from '../src/prove/dadi';
 import type { ArbitroProve, DecisioneProva, IngressoArbitroProve } from '../src/prove/tipi';
 import { Prova, agisci, attendi, inizia } from './aiuti/partita';

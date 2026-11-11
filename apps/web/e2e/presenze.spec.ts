@@ -1,6 +1,6 @@
 /**
  * E2E dei personaggi in scena (richiesta 2 del 9 novembre) su un’istanza di prova:
- *   CANTASTORIE_PORTA=4750 scripts/avvio.sh --finto --mock     (E2E_PORTA=4750 per la prova)
+ *   TAGM_PORTA=4750 scripts/avvio.sh --finto --mock     (E2E_PORTA=4750 per la prova)
  * Proiettore: la fila dei ritratti dei PNG presenti, da 120 px in su, con il nome sotto; chi parla si
  * illumina. Telefono: «Qui con voi» (toccare mette «Nome, » nella casella vuota) e «Altrove» per chi
  * è già stato incontrato. Il master mette Ottavia altrove: sparisce dal proiettore e compare, attenuata,

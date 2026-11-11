@@ -3,7 +3,7 @@
  * fidato): qui si spengono solo i pulsanti che di sicuro non avrebbero effetto, per non far
  * cliccare a vuoto il master. Logica pura, testata in permessi.test.ts.
  */
-import type { AzioneMaster, StatoMaster } from '@cantastorie/shared';
+import type { AzioneMaster, StatoMaster } from '@tabletop-ai-gm/shared';
 
 type Pausa = Pick<StatoMaster, 'pausa'>;
 

@@ -4,7 +4,7 @@
  * perso), «Confermo» quando probabilmente vale ancora (azione vecchia ma dubbia). «Ritiro» non è
  * mai in evidenza.
  */
-import type { RichiestaScelta } from '@cantastorie/shared';
+import type { RichiestaScelta } from '@tabletop-ai-gm/shared';
 
 export type Scelta = 'conferma' | 'cambio' | 'ritiro';
 

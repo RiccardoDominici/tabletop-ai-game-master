@@ -3,7 +3,7 @@
  * Tutti i tempi in ms dall'istante in cui la finestra si chiude (t0), su orologio monotono;
  * in più la durata della finestra e i token/costo della chiamata.
  */
-import type { MisureTurno } from '@cantastorie/shared';
+import type { MisureTurno } from '@tabletop-ai-gm/shared';
 import type { Costo } from '../llm/costi';
 
 export type CampoTempo =

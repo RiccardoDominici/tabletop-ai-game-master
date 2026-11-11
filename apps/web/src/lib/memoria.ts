@@ -34,9 +34,9 @@ export function cancellaMemoria(chiave: string): void {
 /** Chiavi usate dall'app (un solo posto, niente stringhe sparse). */
 export const CHIAVI = {
   /** Id del PG scelto su questo telefono. */
-  pg: 'cantastorie:pg',
+  pg: 'tabletop-ai-gm:pg',
   /** Token di questo telefono: il server lo lega al PG e lo riconosce anche dopo un riavvio. */
-  dispositivo: 'cantastorie:dispositivo',
+  dispositivo: 'tabletop-ai-gm:dispositivo',
 } as const;
 
 /** Token del dispositivo, creato la prima volta (casuale, senza dati personali). */

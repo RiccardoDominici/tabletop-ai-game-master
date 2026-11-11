@@ -19,8 +19,8 @@ import type {
   InfoServer,
   StatoMaster,
   StatoTavolo,
-} from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie } from '../src/avvio';
+} from '@tabletop-ai-gm/shared';
+import { costruisciServer, type ServerTagm } from '../src/avvio';
 import { caricaConfig } from '../src/config';
 import { creaLogger, loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
@@ -31,7 +31,7 @@ const TOKEN = 'token_di_prova_master_123';
 const MINI = path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini');
 
 let cartella: string;
-let server: ServerCantastorie;
+let server: ServerTagm;
 let url: string;
 const messaggi: string[] = [];
 const client: Client[] = [];
@@ -63,7 +63,7 @@ const comanda = (m: Client, c: ComandoMaster): Promise<Esito> => emetti<Esito>((
 
 beforeAll(async () => {
   // Copia della campagna mini con due nodi-luogo in più (per il cambio di luogo).
-  cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-master-'));
+  cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-master-'));
   const campagna = path.join(cartella, 'mini');
   fs.cpSync(MINI, campagna, { recursive: true });
   fs.appendFileSync(
@@ -73,15 +73,15 @@ beforeAll(async () => {
   const config = caricaConfig({
     PORT: '0',
     HOST: '127.0.0.1',
-    CANTASTORIE_LOG: cartella,
-    CANTASTORIE_CARTELLA_CAMPAGNA: campagna,
-    CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-    CANTASTORIE_TTS: 'mock',
+    TAGM_LOG: cartella,
+    TAGM_CARTELLA_CAMPAGNA: campagna,
+    TAGM_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+    TAGM_TTS: 'mock',
     // Assestamento lungo: qui il master chiude e mette in pausa a mano subito dopo un invio.
-    CANTASTORIE_ASSESTAMENTO_MS: '1500',
-    CANTASTORIE_MOCK_SCALA: '0.02',
-    CANTASTORIE_MARGINE_AUDIO_MS: '50',
-    CANTASTORIE_MASTER_TOKEN: TOKEN,
+    TAGM_ASSESTAMENTO_MS: '1500',
+    TAGM_MOCK_SCALA: '0.02',
+    TAGM_MARGINE_AUDIO_MS: '50',
+    TAGM_MASTER_TOKEN: TOKEN,
   } as NodeJS.ProcessEnv);
   const narratore = new NarratoreFinto({
     idPng: ['png_oste'],

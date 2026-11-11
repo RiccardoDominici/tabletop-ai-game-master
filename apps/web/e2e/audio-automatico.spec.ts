@@ -4,11 +4,11 @@
  * limite di un umore automatico al minuto, registro del master col chip «auto».
  * Server di prova suo (mai la partita sulla 4610), campagna mini-audio in modalità repertorio:
  *
- *   PORT=4620 CANTASTORIE_CARTELLA_CAMPAGNA=apps/server/test/fixtures/campagne/mini-audio \
- *     CANTASTORIE_MODO=repertorio CANTASTORIE_LLM=finto CANTASTORIE_TTS=mock \
- *     CANTASTORIE_COPIONE_FINTO=apps/server/test/fixtures/copione-audio.txt \
- *     CANTASTORIE_AUDIO=apps/server/test/fixtures/audio CANTASTORIE_MASTER_TOKEN=<token> \
- *     CANTASTORIE_LOG=<cartella di prova> CANTASTORIE_CACHE_AUDIO=<cartella di prova> npm run start -w @cantastorie/server
+ *   PORT=4620 TAGM_CARTELLA_CAMPAGNA=apps/server/test/fixtures/campagne/mini-audio \
+ *     TAGM_MODO=repertorio TAGM_LLM=finto TAGM_TTS=mock \
+ *     TAGM_COPIONE_FINTO=apps/server/test/fixtures/copione-audio.txt \
+ *     TAGM_AUDIO=apps/server/test/fixtures/audio TAGM_MASTER_TOKEN=<token> \
+ *     TAGM_LOG=<cartella di prova> TAGM_CACHE_AUDIO=<cartella di prova> npm run start -w @tabletop-ai-gm/server
  *   (pagine come in audio.spec.ts: vite build in una cartella a parte + vite preview --port 4622)
  *   E2E_URL=http://localhost:4622 E2E_MASTER_TOKEN=<token> npx playwright test e2e/audio-automatico.spec.ts
  *

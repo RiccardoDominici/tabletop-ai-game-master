@@ -14,7 +14,7 @@
 import { t } from '../lingua';
 import { impostaLinguaInterfaccia } from '../lingua';
 import { io, type Socket } from 'socket.io-client';
-import type { Esito, EventiClientVersoServer, EventiServerVersoClient } from '@cantastorie/shared';
+import type { Esito, EventiClientVersoServer, EventiServerVersoClient } from '@tabletop-ai-gm/shared';
 import { creaLog } from './log';
 import { useConnessione } from '../store/connessione';
 

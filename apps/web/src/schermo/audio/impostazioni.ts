@@ -1,5 +1,5 @@
 /**
- * Volumi e muti dei bus del proiettore, ricordati in localStorage (`cantastorie:mixer`) per il
+ * Volumi e muti dei bus del proiettore, ricordati in localStorage (`tabletop-ai-gm:mixer`) per il
  * prossimo avvio sullo stesso Mac. La memoria del browser può mancare o rifiutare (finestra
  * privata, quota): si lavora comunque coi valori predefiniti, senza errori.
  */
@@ -46,7 +46,7 @@ export const IMPOSTAZIONI_PREDEFINITE: ImpostazioniMixer = {
   effetti: { volume: 0.8, muto: false },
 };
 
-const CHIAVE = 'cantastorie:mixer';
+const CHIAVE = 'tabletop-ai-gm:mixer';
 
 function limita(v: unknown, predefinito: number): number {
   return typeof v === 'number' && Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : predefinito;

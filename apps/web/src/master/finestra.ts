@@ -2,7 +2,7 @@
  * Finestra delle azioni vista dal master: una riga per invitato (nome, ha inviato o no: inviare =
  * ha finito) più chi ha scritto senza essere invitato. Logica pura, testata in finestra.test.ts.
  */
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 
 /** Il narratore può invitare `tutti` (il server di solito espande l'elenco, ma per sicurezza). */
 const TUTTI = 'tutti';

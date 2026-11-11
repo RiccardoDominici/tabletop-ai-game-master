@@ -22,7 +22,7 @@
  *   impossibile); chi aveva perso un conflitto esclusivo e ha tenuto l'azione può risultare
  *   «superata».
  */
-import type { AzioneAlTavolo, AzionePrivata, AzionePubblica, Esito, FinestraPubblica, RichiestaScelta } from '@cantastorie/shared';
+import type { AzioneAlTavolo, AzionePrivata, AzionePubblica, Esito, FinestraPubblica, RichiestaScelta } from '@tabletop-ai-gm/shared';
 import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import type { Orologio } from '../turni/orologio';

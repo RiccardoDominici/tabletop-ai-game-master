@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AzionePrivata, StatoTavolo } from '@cantastorie/shared';
+import type { AzionePrivata, StatoTavolo } from '@tabletop-ai-gm/shared';
 import {
   altriAlTavolo,
   azioneDellaFinestra,

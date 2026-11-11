@@ -10,7 +10,7 @@
  * - Animazione: la linea del tempo di una carta (d20 che gira, poi modificatore, totale, esito).
  */
 import { t } from '../lingua';
-import type { DannoMostrato, FaseScena, PuntiFerita, TiroMostrato } from '@cantastorie/shared';
+import type { DannoMostrato, FaseScena, PuntiFerita, TiroMostrato } from '@tabletop-ai-gm/shared';
 
 /** Segno meno tipografico (U+2212): più leggibile del trattino da lontano. */
 export const MENO = '−';

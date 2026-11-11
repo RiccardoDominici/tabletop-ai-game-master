@@ -4,7 +4,7 @@
  */
 import type { ReactNode } from 'react';
 import clsx from 'clsx';
-import type { StatoMaster } from '@cantastorie/shared';
+import type { StatoMaster } from '@tabletop-ai-gm/shared';
 import { t } from '../lingua';
 import { Chip } from './Chip';
 import { ComandiPrincipali, UltimoErrore } from './ComandiPrincipali';

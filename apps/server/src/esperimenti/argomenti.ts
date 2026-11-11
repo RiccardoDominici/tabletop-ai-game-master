@@ -8,7 +8,7 @@
  * preavviso di fine arriva dopo 10 minuti, così una prova breve vede il consiglio di chiusura. --chiudi, a
  * copione finito, dà «Chiudi la sessione» e aspetta la chiusura guidata e il riassunto della serata.
  *
- * Porta: CANTASTORIE_PORTA (default 4710, istanza di prova di scripts/avvio.sh: log e pagine in
+ * Porta: TAGM_PORTA (default 4710, istanza di prova di scripts/avvio.sh: log e pagine in
  * logs/porta-<porta>/, voce sempre finta). La 4610 è la partita vera: si usa solo con
  * --partita-vera, perché l'esperimento riavvia il server da zero. E2E_URL, se c'è, deve puntare
  * alla stessa porta (altrimenti l'esperimento parlerebbe con un server e leggerebbe i log di un altro).
@@ -97,12 +97,12 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
     throw new ErroreArgomenti(`campagna inesistente: campagne/${campagna}`);
   }
 
-  const porta = Number(env['CANTASTORIE_PORTA'] ?? PORTA_ESPERIMENTI);
-  if (!Number.isInteger(porta) || porta <= 0 || porta > 65535) throw new ErroreArgomenti(`CANTASTORIE_PORTA non valida: ${String(env['CANTASTORIE_PORTA'])}`);
+  const porta = Number(env['TAGM_PORTA'] ?? PORTA_ESPERIMENTI);
+  if (!Number.isInteger(porta) || porta <= 0 || porta > 65535) throw new ErroreArgomenti(`TAGM_PORTA non valida: ${String(env['TAGM_PORTA'])}`);
   if (PORTE_RISERVATE.has(porta)) throw new ErroreArgomenti(`porta ${porta} riservata (voce, Vite): scegline un'altra`);
   const partitaVera = argv.includes('--partita-vera');
   if (porta === PORTA_PARTITA && !partitaVera) {
-    throw new ErroreArgomenti('la 4610 è la partita vera: l’esperimento riavvierebbe quel server. Usa un’altra CANTASTORIE_PORTA, o --partita-vera se è proprio quello che vuoi.');
+    throw new ErroreArgomenti('la 4610 è la partita vera: l’esperimento riavvierebbe quel server. Usa un’altra TAGM_PORTA, o --partita-vera se è proprio quello che vuoi.');
   }
   const voceVera = argv.includes('--voce-vera');
   // avvio.sh su una porta di prova forza la voce finta: una «voce vera» lì sarebbe una bugia nel riepilogo.
@@ -110,7 +110,7 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
 
   const url = env['E2E_URL'] ?? `http://127.0.0.1:${porta}`;
   const portaUrl = Number(new URL(url).port || 80);
-  if (portaUrl !== porta) throw new ErroreArgomenti(`E2E_URL (${url}) non è sulla porta ${porta} di CANTASTORIE_PORTA`);
+  if (portaUrl !== porta) throw new ErroreArgomenti(`E2E_URL (${url}) non è sulla porta ${porta} di TAGM_PORTA`);
 
   // Un copione fuori da esperimenti/copioni (es. una prova a secco dell'harness) si dà col suo percorso.
   const daFile = copione.endsWith('.yaml');

@@ -3,11 +3,11 @@
  * gli stessi comandi del pannello web (apps/web/src/master → evento `master:comando`). Serve ai
  * cambi di scena dei copioni (`- {scena: <id>}`).
  *
- * Il token lo fissa l'esperimento all'avvio (CANTASTORIE_MASTER_TOKEN, apps/server/src/config.ts):
+ * Il token lo fissa l'esperimento all'avvio (TAGM_MASTER_TOKEN, apps/server/src/config.ts):
  * così non si legge dal log del server e non finisce mai sulla console.
  */
 import type { Socket } from 'socket.io-client';
-import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, StatoMaster } from '@cantastorie/shared';
+import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, StatoMaster } from '@tabletop-ai-gm/shared';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 

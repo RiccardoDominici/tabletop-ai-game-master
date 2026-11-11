@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { FinestraPubblica, PgPubblico } from '@cantastorie/shared';
+import type { FinestraPubblica, PgPubblico } from '@tabletop-ai-gm/shared';
 import { righeInvitati } from './finestra';
 
 const pg: PgPubblico[] = [

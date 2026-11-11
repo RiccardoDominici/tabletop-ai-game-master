@@ -2,7 +2,7 @@
  * Scheda del PG per il telefono del suo giocatore (pg.yaml): sezioni leggibili e conoscenze
  * private. Le conoscenze private escono SOLO verso la stanza player:<id_pg> (T9).
  */
-import type { SchedaPg } from '@cantastorie/shared';
+import type { SchedaPg } from '@tabletop-ai-gm/shared';
 import type { Campagna } from './tipi';
 
 /** Campi di pg.yaml mostrati sul telefono, con il titolo della sezione, in quest'ordine. */

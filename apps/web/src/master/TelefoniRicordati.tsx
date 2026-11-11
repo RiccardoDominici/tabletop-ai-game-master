@@ -4,7 +4,7 @@
  * entra). Il cambio vale dal prossimo collegamento di quel telefono; «Dimentica» gli fa scegliere di
  * nuovo il PG.
  */
-import type { PgPubblico, SessioneMaster } from '@cantastorie/shared';
+import type { PgPubblico, SessioneMaster } from '@tabletop-ai-gm/shared';
 import { useInCorso } from '../store/master';
 import { abbreviaDispositivo } from './pacchetti';
 import { inviaComando } from './sessione';

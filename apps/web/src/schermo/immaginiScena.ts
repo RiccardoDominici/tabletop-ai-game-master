@@ -4,7 +4,7 @@
  * che cambiano. Oggetti Image fuori dal DOM, senza doppioni (vedi precarica.ts).
  */
 import { useEffect } from 'react';
-import type { ScenaPubblica } from '@cantastorie/shared';
+import type { ScenaPubblica } from '@tabletop-ai-gm/shared';
 import { creaLog } from '../lib/log';
 import { Precaricatore, urlDaPrecaricare } from './precarica';
 

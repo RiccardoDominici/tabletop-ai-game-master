@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import type { EsitoPrivato } from '@cantastorie/shared';
+import type { EsitoPrivato } from '@tabletop-ai-gm/shared';
 import { misuraFughe } from '../src/esperimenti/fughe';
 import { segretiNascosti } from '../src/narrazione/guardia-segreti';
 import { RADICE_REPO } from '../src/percorsi';

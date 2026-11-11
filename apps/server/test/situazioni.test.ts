@@ -9,8 +9,8 @@ import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import YAML from 'yaml';
 import { io as connetti, type Socket } from 'socket.io-client';
-import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoMaster, StatoTavolo } from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie } from '../src/avvio';
+import type { ComandoMaster, Esito, EsitoEntrataMaster, EventiClientVersoServer, EventiServerVersoClient, InfoServer, StatoMaster, StatoTavolo } from '@tabletop-ai-gm/shared';
+import { costruisciServer, type ServerTagm } from '../src/avvio';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { CatalogoImmagini } from '../src/campagna/immagini';
 import { collegaSituazioni } from '../src/campagna/situazioni';
@@ -26,7 +26,7 @@ const TOKEN = 'token_di_prova_situazioni';
 
 /** Cartella d'immagini: luogo, ritratto, una situazione dell'oste e un «ritratto» che in realtà è una situazione. */
 function cartellaImmagini(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-sit-img-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-sit-img-'));
   const jpg = fs.readFileSync(path.join(FIXTURE_IMG, 'luogo_n_piazza.jpg'));
   for (const f of ['luogo_scena_locanda.jpg', 'ritratto_png_oste.jpg', 'situazione_png_oste_brindisi.jpg', 'ritratto_png_guardia.jpg']) fs.writeFileSync(path.join(dir, f), jpg);
   fs.writeFileSync(
@@ -62,7 +62,7 @@ describe('catalogo e collegamenti', () => {
   });
 
   it('il manifest può portare png e dopo (strumenti/immagini li copia dalla scheda)', () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-sit-man-'));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-sit-man-'));
     try {
       fs.writeFileSync(path.join(dir, 'a.jpg'), fs.readFileSync(path.join(FIXTURE_IMG, 'luogo_n_piazza.jpg')));
       fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify({ immagini: [{ id: 'situazione_png_oste_x', file: 'a.jpg', tipo: 'situazione', png: 'png_oste', dopo: ['i_brocca'] }] }));
@@ -87,7 +87,7 @@ describe('catalogo e collegamenti', () => {
 describe('sul proiettore dopo la rivelazione, e dal master', () => {
   let cartella: string;
   let immagini: string;
-  let server: ServerCantastorie;
+  let server: ServerTagm;
   let url: string;
   const client: Client[] = [];
   const emetti = <T>(fn: (cb: (x: T) => void) => void): Promise<T> => new Promise((r) => fn(r));
@@ -111,7 +111,7 @@ describe('sul proiettore dopo la rivelazione, e dal master', () => {
   const comanda = (m: Client, c: ComandoMaster): Promise<Esito> => emetti<Esito>((cb) => m.emit('master:comando', c, cb));
 
   beforeAll(async () => {
-    cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-sit-'));
+    cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-sit-'));
     immagini = cartellaImmagini();
     // Copia della campagna mini: la situazione «brindisi» dell'oste compare dopo la battuta oste_saluto.
     const campagna = path.join(cartella, 'mini');
@@ -123,17 +123,17 @@ describe('sul proiettore dopo la rivelazione, e dal master', () => {
     const config = caricaConfig({
       PORT: '0',
       HOST: '127.0.0.1',
-      CANTASTORIE_LOG: cartella,
-      CANTASTORIE_CARTELLA_CAMPAGNA: campagna,
-      CANTASTORIE_MODO: 'repertorio',
-      CANTASTORIE_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-      CANTASTORIE_CACHE_AUDIO: path.join(cartella, 'cache'),
-      CANTASTORIE_IMMAGINI: immagini,
-      CANTASTORIE_TTS: 'mock',
-      CANTASTORIE_ASSESTAMENTO_MS: '20',
-      CANTASTORIE_MOCK_SCALA: '0.02',
-      CANTASTORIE_MARGINE_AUDIO_MS: '50',
-      CANTASTORIE_MASTER_TOKEN: TOKEN,
+      TAGM_LOG: cartella,
+      TAGM_CARTELLA_CAMPAGNA: campagna,
+      TAGM_MODO: 'repertorio',
+      TAGM_PROMPT_SELETTORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+      TAGM_CACHE_AUDIO: path.join(cartella, 'cache'),
+      TAGM_IMMAGINI: immagini,
+      TAGM_TTS: 'mock',
+      TAGM_ASSESTAMENTO_MS: '20',
+      TAGM_MOCK_SCALA: '0.02',
+      TAGM_MARGINE_AUDIO_MS: '50',
+      TAGM_MASTER_TOKEN: TOKEN,
     } as NodeJS.ProcessEnv);
     const narratore = new NarratoreFinto({
       idPng: [],

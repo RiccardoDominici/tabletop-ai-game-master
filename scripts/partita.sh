@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 # Una partita vera in un comando: controlla la campagna, ferma le istanze vecchie, avvia la voce
 # (solo se richiesta), compila le pagine, avvia il server e stampa i tre indirizzi da aprire:
 # proiettore, telefoni, pannello del master (col suo token).
@@ -20,17 +21,17 @@
 #                «Fine sessione» (docs/strati.md); la validazione controlla proprio quello.
 #
 # Il narratore è sempre Haiku vero (la chiave la cerca apps/server/src/llm/chiavi.ts: ambiente, poi .env alla radice).
-# Server: variabili CANTASTORIE_CAMPAGNA e CANTASTORIE_MODO (vedi apps/server/src/config.ts).
+# Server: variabili TAGM_CAMPAGNA e TAGM_MODO (vedi apps/server/src/config.ts).
 # Log: logs/partita.out (questo avvio), logs/server.out, logs/server.jsonl, logs/voce.out.
 #
-# Prova mentre si gioca: CANTASTORIE_PORTA=4710 scripts/partita.sh ponte-lanterne avvia una partita di
+# Prova mentre si gioca: TAGM_PORTA=4710 scripts/partita.sh ponte-lanterne avvia una partita di
 # prova su quella porta (log e pagine in logs/porta-4710/, voce drama-3 senza riserva o finta) senza
 # toccare la partita vera su 4610 né la voce su 4611 (vedi scripts/avvio.sh).
 set -euo pipefail
 
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
-PORTA="${CANTASTORIE_PORTA:-4610}"
-export CANTASTORIE_PORTA="$PORTA"
+PORTA="${TAGM_PORTA:-4610}"
+export TAGM_PORTA="$PORTA"
 if [[ "$PORTA" == "4610" ]]; then DIR_LOG="$RADICE/logs"; else DIR_LOG="$RADICE/logs/porta-$PORTA"; fi
 
 uso() {
@@ -79,7 +80,7 @@ cd "$RADICE"
 PACCHETTO=""
 VALIDA=(python3 strumenti/valida_campagna.py "$CARTELLA")
 if [[ -d "$CARTELLA/sessioni" ]]; then
-  [[ "$PORTA" != "4610" ]] && export CANTASTORIE_LOG="${CANTASTORIE_LOG:-$DIR_LOG}"
+  [[ "$PORTA" != "4610" ]] && export TAGM_LOG="${TAGM_LOG:-$DIR_LOG}"
   ARGS_SCELTA=("$CARTELLA" --modo "$MODO_SERVER")
   [[ -n "$SESSIONE" ]] && ARGS_SCELTA+=(--sessione "$SESSIONE")
   [[ "$NUOVA" == "1" ]] && ARGS_SCELTA+=(--nuova)
@@ -91,7 +92,7 @@ if [[ -d "$CARTELLA/sessioni" ]]; then
   avviso="$(printf '%s' "$scelta" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).avviso??""))')"
   echo "     Campagna a più sessioni: si gioca la sessione $PACCHETTO."
   [[ -n "$avviso" ]] && echo "     $avviso"
-  export CANTASTORIE_SESSIONE="$PACCHETTO"
+  export TAGM_SESSIONE="$PACCHETTO"
   if python3 strumenti/valida_campagna.py --help 2>/dev/null | grep -q -- '--sessione'; then
     VALIDA=(python3 strumenti/valida_campagna.py "$CARTELLA" --sessione "$PACCHETTO")
   else
@@ -100,7 +101,7 @@ if [[ -d "$CARTELLA/sessioni" ]]; then
   fi
   REPERTORIO="$(printf '%s/sessioni/%s' "$CARTELLA" "$(ls "$CARTELLA/sessioni" | awk -v n="$PACCHETTO" '$0 ~ /^[0-9]+$/ && $0+0 == n {print; exit}')")/repertorio"
 else
-  unset CANTASTORIE_SESSIONE
+  unset TAGM_SESSIONE
   REPERTORIO="$CARTELLA/repertorio"
 fi
 if [[ "$MODO" == "B" && ! -d "$REPERTORIO" ]]; then
@@ -145,11 +146,11 @@ fi
 
 # 3. Istanze vecchie, pagine web e server (scripts/avvio.sh fa tutte e tre le cose).
 echo "3/4  Fermo le istanze vecchie, compilo le pagine e avvio il server…"
-export CANTASTORIE_CAMPAGNA="$CAMPAGNA"
-export CANTASTORIE_MODO="$MODO_SERVER"
-unset CANTASTORIE_LLM CANTASTORIE_IMMAGINI CANTASTORIE_CARTELLA_CAMPAGNA CANTASTORIE_NUOVA_SESSIONE
+export TAGM_CAMPAGNA="$CAMPAGNA"
+export TAGM_MODO="$MODO_SERVER"
+unset TAGM_LLM TAGM_IMMAGINI TAGM_CARTELLA_CAMPAGNA TAGM_NUOVA_SESSIONE
 # La partita si salva da sola: senza --nuova riprende quella in corso (dopo un riavvio, un crash…).
-[[ "$NUOVA" == "1" ]] && export CANTASTORIE_NUOVA_SESSIONE=1
+[[ "$NUOVA" == "1" ]] && export TAGM_NUOVA_SESSIONE=1
 if ! "$RADICE/scripts/avvio.sh" "${OPZIONI_AVVIO[@]}" > "$DIR_LOG/partita.out" 2>&1; then
   echo
   echo "Il server non è partito. Ultime righe:"
@@ -186,5 +187,5 @@ cat <<FINE
   PANNELLO DEL MASTER (solo su questo Mac, non darlo ai giocatori):
       ${master:-vedi la riga PANNELLO MASTER in logs/server.out}
 
-  Per finire:  $( [[ "$PORTA" == "4610" ]] && echo "scripts/arresto.sh" || echo "CANTASTORIE_PORTA=$PORTA scripts/arresto.sh" )
+  Per finire:  $( [[ "$PORTA" == "4610" ]] && echo "scripts/arresto.sh" || echo "TAGM_PORTA=$PORTA scripts/arresto.sh" )
 FINE

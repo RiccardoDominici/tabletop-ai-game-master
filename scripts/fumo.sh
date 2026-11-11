@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
+source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 # Smoke test of a fresh setup: a short scripted game on a test port, with the scripted narrator and the fake voice.
 # No API call, no model load. It proves that server, pages, turns and logs work on this computer.
 #
 #   scripts/fumo.sh                 port 4790 (default)
-#   CANTASTORIE_PORTA=4800 scripts/fumo.sh
+#   TAGM_PORTA=4800 scripts/fumo.sh
 #
 # Never uses 4610 (the real game) or 4611/4612 (voice, Vite). Result: logs/porta-<porta>/fumo-riepilogo.json.
 # Prints FUMO OK, or FUMO FALLITO with the place to look.
 set -uo pipefail
 
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
-PORTA="${CANTASTORIE_PORTA:-4790}"
+PORTA="${TAGM_PORTA:-4790}"
 case "$PORTA" in
   4610|4611|4612) echo "FUMO FALLITO: porta $PORTA riservata (partita vera, voce, Vite): scegline un'altra" >&2; exit 2 ;;
 esac
@@ -24,12 +25,12 @@ cd "$RADICE" || exit 2
 
 # Copione «indagine» della campagna di prova (esperimenti/copioni/indagine.yaml), narratore finto, voce finta.
 # esegui.ts avvia da sé il server sulla porta indicata (scripts/avvio.sh --finto --mock).
-CANTASTORIE_PORTA="$PORTA" "$RADICE/node_modules/.bin/tsx" apps/server/src/esperimenti/esegui.ts \
+TAGM_PORTA="$PORTA" "$RADICE/node_modules/.bin/tsx" apps/server/src/esperimenti/esegui.ts \
   indagine B --finto --uscita "$USCITA" > "$DIR_LOG/fumo.out" 2>&1
 ESITO=$?
 
 # Il server di questa porta si ferma comunque: solo lui, mai le altre istanze.
-CANTASTORIE_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" >> "$DIR_LOG/fumo.out" 2>&1 || true
+TAGM_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" >> "$DIR_LOG/fumo.out" 2>&1 || true
 
 RIEPILOGO="$RISULTATI/riepilogo.json"
 if [[ $ESITO -eq 0 && -f "$RIEPILOGO" ]] && python3 -I -c "import json,sys; json.load(open(sys.argv[1]))" "$RIEPILOGO" 2>/dev/null; then

@@ -2,7 +2,7 @@
  * Tipi del modulo prove (docs/prove.md): la decisione dell'arbitro per un'azione, l'ingresso
  * dell'arbitro e l'esito di un turno di tiri.
  */
-import type { TiroMostrato } from '@cantastorie/shared';
+import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { Abilita, Caratteristica, Difficolta } from '../campagna/regole-srd';
 import type { EsitoCombattimento } from './combattimento';
 

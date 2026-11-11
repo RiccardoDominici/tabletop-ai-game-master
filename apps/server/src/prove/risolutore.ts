@@ -10,7 +10,7 @@
  * Il Motore decide i numeri (CD, CA, modificatori); dell'arbitro si tiene solo ciò che torna con i
  * dati (un id inesistente, un'arma che il PG non ha, una prova della scena sconosciuta si scartano).
  */
-import type { TiroMostrato, Vantaggio } from '@cantastorie/shared';
+import type { TiroMostrato, Vantaggio } from '@tabletop-ai-gm/shared';
 import type { Logger } from '../logger';
 import {
   ABILITA_INFLUENZA,

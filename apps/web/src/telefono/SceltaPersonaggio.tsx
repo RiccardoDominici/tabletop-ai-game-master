@@ -5,7 +5,7 @@
  */
 import { t } from '../lingua';
 import clsx from 'clsx';
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { useTelefono } from '../store/telefono';
 import { scegliPg } from './sessione';
 

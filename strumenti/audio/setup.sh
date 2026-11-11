@@ -20,7 +20,7 @@ uv pip install --python "$QUI/.venv/bin/python" -r "$QUI/requirements.txt"
 mkdir -p "$SF_DIR"
 if [ ! -f "$SF" ]; then
   echo "scarico il SoundFont (32 MB)…"
-  curl -fsSL -A "Cantastorie-audio-pipeline/0.1" -o "$SF.parziale" "$SF_URL"
+  curl -fsSL -A "tabletop-ai-gm-audio-pipeline/0.1" -o "$SF.parziale" "$SF_URL"
   mv "$SF.parziale" "$SF"
 fi
 echo "$SF_SHA  $SF" | shasum -a 256 -c -

@@ -38,7 +38,7 @@ from valida.pacchetto import valida_pacchetto  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="Valida una campagna di Cantastorie.")
+    ap = argparse.ArgumentParser(description="Valida una campagna di Tabletop AI Game Master.")
     ap.add_argument("cartella", nargs="?", help="cartella della campagna, es. campagne/prova-f0")
     ap.add_argument("--rigoroso", action="store_true", help="regole piene per le campagne nuove")
     ap.add_argument("--voci", type=Path, help="registro delle voci (predefinito: assets/voci/voci.yaml risalendo)")

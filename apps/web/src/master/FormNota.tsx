@@ -4,7 +4,7 @@
  * riuscito il testo si svuota (i turni restano, spesso si riusano). Cmd/Ctrl+Invio invia.
  */
 import { useId, useState, type FormEvent } from 'react';
-import { NOTA_REGIA_MAX_CARATTERI } from '@cantastorie/shared';
+import { NOTA_REGIA_MAX_CARATTERI } from '@tabletop-ai-gm/shared';
 import { useInCorso } from '../store/master';
 import { inviaComando } from './sessione';
 import { classePulsante } from './stili';

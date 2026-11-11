@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { FaseScena, StatoAzione } from '@cantastorie/shared';
+import type { FaseScena, StatoAzione } from '@tabletop-ai-gm/shared';
 import {
   ETICHETTA_FASE_MASTER,
   ETICHETTA_STATO_AZIONE_MASTER,

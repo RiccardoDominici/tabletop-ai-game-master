@@ -11,7 +11,7 @@
  * ServerConCiclo) e i client si ricollegano come dopo un riavvio (strada già provata dalla ripresa).
  */
 import path from 'node:path';
-import type { PacchettiMaster, RiassuntoSerata, SessioneMaster } from '@cantastorie/shared';
+import type { PacchettiMaster, RiassuntoSerata, SessioneMaster } from '@tabletop-ai-gm/shared';
 import { scriviRiassuntoSerata } from './riassunto';
 import { elencoPacchetti, pacchettoDopo, type Pacchetto } from '../campagna/pacchetti';
 import type { Campagna } from '../campagna/tipi';

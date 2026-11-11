@@ -13,7 +13,7 @@
 import { t } from '../lingua';
 import { useState } from 'react';
 import clsx from 'clsx';
-import type { StatoTavolo, TiroMostrato } from '@cantastorie/shared';
+import type { StatoTavolo, TiroMostrato } from '@tabletop-ai-gm/shared';
 import { CartaTiro } from '../components/CartaTiro';
 import { tiriPubbliciSenzaMiei, tiriRecenti, turnoInNarrazione } from '../lib/tiri';
 import { useTelefono } from '../store/telefono';

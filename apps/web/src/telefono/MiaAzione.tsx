@@ -11,7 +11,7 @@
  */
 import { t } from '../lingua';
 import clsx from 'clsx';
-import type { AzionePrivata, StatoAzione, StatoTavolo } from '@cantastorie/shared';
+import type { AzionePrivata, StatoAzione, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { useBozza } from '../store/bozza';
 import { useTelefono } from '../store/telefono';
 import { riapriScelta } from './sessione';

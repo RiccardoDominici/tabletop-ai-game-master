@@ -4,7 +4,7 @@
  * preparato la 02, `scripts/partita.sh <campagna>` parte dalla 02 da solo.
  *
  * In ordine:
- * 1. il numero chiesto (CANTASTORIE_SESSIONE / partita.sh --sessione N);
+ * 1. il numero chiesto (TAGM_SESSIONE / partita.sh --sessione N);
  * 2. il pacchetto della sessione in corso di questa modalità (ripresa dopo un riavvio);
  * 3. dopo l'ultima sessione chiusa con «Fine sessione»: il pacchetto seguente (se non c'è ancora,
  *    di nuovo quello, con l'avviso);

@@ -63,7 +63,7 @@ describe('richiede.prova', () => {
   it('un valore che non si capisce è un errore (ignorato aprirebbe il cancello)', () => {
     const rotta: Campagna = { ...c };
     // Una battuta con un cancello sbagliato, in un repertorio temporaneo.
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-prova-'));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-prova-'));
     fs.writeFileSync(path.join(dir, 'x.yaml'), 'battute:\n  - id: x_rotta\n    chi: narratore\n    tipo: momento\n    quando: "un PG fa qualcosa"\n    richiede: {prova: volare}\n    testo: ["[narratore] Niente."]\n');
     expect(() => caricaRepertorio({ ...rotta, cartellaRepertorio: dir })).toThrow(ErroreRepertorio);
     try {

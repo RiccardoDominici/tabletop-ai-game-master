@@ -10,7 +10,7 @@
  *   «animo o no» è presa una volta al montaggio, quindi il secondo giro riparte senza saltare.
  */
 import { useEffect, useState } from 'react';
-import type { TiroMostrato } from '@cantastorie/shared';
+import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import { creaLog } from '../lib/log';
 import { facciaCasuale, passoAnimazione, TEMPI_ANIMAZIONE, type PassoAnimazione } from '../lib/tiri';
 

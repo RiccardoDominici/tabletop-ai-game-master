@@ -1,5 +1,5 @@
 {
-  "name": "@cantastorie/shared",
+  "name": "@tabletop-ai-gm/shared",
   "version": "0.0.1",
   "private": true,
   "description": "Contratto condiviso: tipi degli eventi Socket.IO e dei messaggi tra telefono, server e schermo",

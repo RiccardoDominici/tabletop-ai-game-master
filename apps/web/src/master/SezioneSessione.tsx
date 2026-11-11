@@ -9,7 +9,7 @@
  * - «Nuova sessione»: ricomincia da capo la stessa (la partita in corso si perde).
  * I tre comandi non si annullano: si confermano col secondo clic (useConferma).
  */
-import type { StatoMaster } from '@cantastorie/shared';
+import type { StatoMaster } from '@tabletop-ai-gm/shared';
 import { useInCorso } from '../store/master';
 import { inviaComando } from './sessione';
 import { Riquadro } from './Riquadro';

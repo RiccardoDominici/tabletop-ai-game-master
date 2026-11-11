@@ -7,7 +7,7 @@
  * l'ultimo finisce, proprio come lo schermo vero.
  */
 import type { Socket } from 'socket.io-client';
-import type { AudioFrase, EventiClientVersoServer, EventiServerVersoClient } from '@cantastorie/shared';
+import type { AudioFrase, EventiClientVersoServer, EventiServerVersoClient } from '@tabletop-ai-gm/shared';
 
 const JITTER_S = 0.15;
 

@@ -182,7 +182,7 @@ def esegui(cartella: Path, da_fare: list[Richiesta], man: Manifest, fp16: bool, 
     dest = cartella / "immagini"
     dest.mkdir(parents=True, exist_ok=True)  # una campagna nuova non ha ancora la cartella
     motore = Motore(fp16=fp16)
-    with tempfile.TemporaryDirectory(prefix="cantastorie-img-") as tmp:
+    with tempfile.TemporaryDirectory(prefix="tabletop-ai-gm-img-") as tmp:
         for i, r in enumerate(da_fare, 1):
             r = rileggi(cartella, r)
             if r is None:

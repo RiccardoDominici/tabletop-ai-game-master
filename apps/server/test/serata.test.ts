@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import type { StatoTavolo, VoceTrascrizione } from '@cantastorie/shared';
+import type { StatoTavolo, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
 import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';

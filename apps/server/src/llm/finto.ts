@@ -20,7 +20,7 @@ export interface OpzioniFinto {
 }
 
 /**
- * Copione da un file (CANTASTORIE_COPIONE_FINTO): un blocco di righe del protocollo per turno,
+ * Copione da un file (TAGM_COPIONE_FINTO): un blocco di righe del protocollo per turno,
  * separati da una riga «---»; il blocco k vale per il turno k+1, l'ultimo per tutti i turni dopo.
  * Le righe che cominciano con «#» sono commenti.
  */

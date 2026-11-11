@@ -7,10 +7,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import type { CatalogoAudioPubblico } from '@cantastorie/shared';
+import type { CatalogoAudioPubblico } from '@tabletop-ai-gm/shared';
 import { CatalogoAudio, guadagnoTraccia } from '../src/audio/catalogo';
 import { audioDellaScena, luoghiNoti, luoghiVicini, luogoEquivalente } from '../src/audio/scena';
-import { costruisciServer, type ServerCantastorie } from '../src/avvio';
+import { costruisciServer, type ServerTagm } from '../src/avvio';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { conScena } from '../src/campagna/tipi';
 import { caricaConfig } from '../src/config';
@@ -73,7 +73,7 @@ describe('CatalogoAudio', () => {
   });
 
   it('alias_di e stesso file: il nome canonico è uno solo (il proiettore non dissolve un brano in sé)', () => {
-    const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-audio-'));
+    const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-audio-'));
     fs.writeFileSync(path.join(cartella, 'borgo.m4a'), 'x');
     fs.writeFileSync(path.join(cartella, 'pioggia.m4a'), 'x');
     // Come nel manifest vero di ponte-lanterne: l'alias viene prima della voce che richiama.
@@ -101,7 +101,7 @@ describe('CatalogoAudio', () => {
 
   it('senza manifest, o con un manifest rotto: catalogo vuoto, nessun errore', () => {
     expect(new CatalogoAudio(os.tmpdir()).numero).toBe(0);
-    const rotta = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-audio-'));
+    const rotta = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-audio-'));
     fs.writeFileSync(path.join(rotta, 'manifest.json'), '{ non json');
     expect(new CatalogoAudio(rotta).pubblico()).toEqual({ tracce: {}, crediti: [] });
     fs.rmSync(rotta, { recursive: true, force: true });
@@ -143,19 +143,19 @@ describe.skipIf(!fs.existsSync(path.join(PROVA_F0, 'scena.yaml')))('audio della 
 });
 
 describe('rotte dell’audio e cambio d’umore', () => {
-  const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-audio-'));
-  let server: ServerCantastorie;
+  const cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-audio-'));
+  let server: ServerTagm;
   let url: string;
   beforeAll(async () => {
     const config = caricaConfig({
       PORT: '0',
       HOST: '127.0.0.1',
-      CANTASTORIE_LOG: cartella,
-      CANTASTORIE_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
-      CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-      CANTASTORIE_TTS: 'mock',
-      CANTASTORIE_ASSESTAMENTO_MS: '20',
-      CANTASTORIE_AUDIO: FIXTURE,
+      TAGM_LOG: cartella,
+      TAGM_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
+      TAGM_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+      TAGM_TTS: 'mock',
+      TAGM_ASSESTAMENTO_MS: '20',
+      TAGM_AUDIO: FIXTURE,
     } as NodeJS.ProcessEnv);
     server = await costruisciServer(config, loggerMuto(), { narratore: new NarratoreFinto({ idPng: [], idPg: [] }), arbitro: null });
     await server.avvia();

@@ -15,7 +15,7 @@ import type {
   StatoTavolo,
   TiroMostrato,
   VoceTrascrizione,
-} from '@cantastorie/shared';
+} from '@tabletop-ai-gm/shared';
 
 export const TURNO_ESEMPIO = 3;
 

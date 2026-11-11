@@ -1,5 +1,5 @@
 /**
- * @cantastorie/shared — prove e tiri di dado (docs/prove.md).
+ * @tabletop-ai-gm/shared — prove e tiri di dado (docs/prove.md).
  *
  * Il Motore tira i dadi (mai il modello) e manda a proiettore e telefoni una «carta» per ogni
  * tiro: chi tira, cosa (abilità, caratteristica, arma), i d20 con la faccia che conta, il

@@ -5,7 +5,7 @@
  * «Chiudi la sessione» si conferma col secondo clic, come «Fine sessione».
  */
 import { useEffect, useState } from 'react';
-import type { SerataMaster } from '@cantastorie/shared';
+import type { SerataMaster } from '@tabletop-ai-gm/shared';
 import { avvisoFineVicina, MAX_ORE_SERATA, MIN_ORE_SERATA, oreValide, PASSO_ORE_SERATA, testoMinuti, testoOre } from '../lib/serata';
 import { useInCorso } from '../store/master';
 import { inviaComando } from './sessione';

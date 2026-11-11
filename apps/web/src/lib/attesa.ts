@@ -5,7 +5,7 @@
  * «Aspettiamo: Paolo e Giulia», oppure, quando hanno inviato tutti, «Hanno scritto tutti: si parte…».
  * Funzioni pure, testate in attesa.test.ts.
  */
-import type { StatoTavolo } from '@cantastorie/shared';
+import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { elenco, t } from '../lingua';
 
 export interface Attesa {

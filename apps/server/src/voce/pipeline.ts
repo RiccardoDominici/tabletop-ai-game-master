@@ -16,7 +16,7 @@
  *
  * Costi: a fine turno una riga `tipo: 'voce'` (byte, frasi, dollari stimati) per `registraCosto`.
  */
-import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@cantastorie/shared';
+import type { AudioFineFrase, AudioFineTurno, AudioFrase, AudioPezzo } from '@tabletop-ai-gm/shared';
 import type { Logger } from '../logger';
 import type { CacheAudio } from './cache-audio';
 import type { CueAudio } from '../audio/cue';

@@ -3,7 +3,7 @@
  * fine turno, voce di riserva, interruzione.
  */
 import { describe, expect, it } from 'vitest';
-import type { AudioFineFrase, AudioFrase, AudioPezzo } from '@cantastorie/shared';
+import type { AudioFineFrase, AudioFrase, AudioPezzo } from '@tabletop-ai-gm/shared';
 import { loggerMuto } from '../src/logger';
 import { MotoreVoceMock } from '../src/voce/mock';
 import { PipelineVoce, type FraseDaDire, type UscitaAudio } from '../src/voce/pipeline';

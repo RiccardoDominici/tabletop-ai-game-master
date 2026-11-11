@@ -4,7 +4,7 @@
  * Mentre suona una frase di un PNG la riga dice chi parla davvero («Ottavia sta parlando»):
  * prima diceva sempre «Il narratore sta parlando», anche sopra il ritratto di un PNG.
  */
-import type { FaseScena } from '@cantastorie/shared';
+import type { FaseScena } from '@tabletop-ai-gm/shared';
 import type { FraseInOnda } from '../store/schermo';
 import { t, type Chiave } from '../lingua';
 

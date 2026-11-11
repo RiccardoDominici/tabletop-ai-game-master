@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import type { AzionePrivata, VoceTrascrizione } from '@cantastorie/shared';
+import type { AzionePrivata, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import { TavoloAzioni } from '../src/azioni/tavolo';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import type { DatiYaml } from '../src/campagna/tipi';
@@ -27,7 +27,7 @@ afterEach(() => {
   for (const c of cartelle.splice(0)) fs.rmSync(c, { recursive: true, force: true });
 });
 const tmp = (): string => {
-  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-sess-'));
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-sess-'));
   cartelle.push(d);
   return d;
 };

@@ -11,7 +11,7 @@
  * tiro; il narratore risolve come prima («sì, ma»). Con le schede ma senza arbitro (narratore a
  * copione, test) le azioni restano senza decisione e lo dice il log.
  */
-import type { TiroMostrato } from '@cantastorie/shared';
+import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import type { Orologio } from '../turni/orologio';
@@ -36,7 +36,7 @@ import { attaccoPngSrd } from './risolutore';
 import { valoreCaratteristica } from '../regole/schede';
 import { comeCaratteristica } from '../campagna/regole-srd';
 import { modCaratteristica } from '../campagna/schede';
-import type { CombattimentoMaster, CombattimentoPubblico } from '@cantastorie/shared';
+import type { CombattimentoMaster, CombattimentoPubblico } from '@tabletop-ai-gm/shared';
 
 /** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
 type Decisione = DecisioneProva | DecisioneRegole;
@@ -76,7 +76,7 @@ export interface OpzioniMotoreProve {
   contesto: () => ContestoProve;
   /** Dadi iniettati (test): altrimenti crittografici con un seme nuovo. */
   dadi?: FonteDadi;
-  /** Seme fissato (CANTASTORIE_SEME_DADI): riproduce una partita. */
+  /** Seme fissato (TAGM_SEME_DADI): riproduce una partita. */
   seme?: string;
   /** Quanto aspettare alla chiusura le decisioni in volo o tardive (default 4 s; di più con un modello locale). */
   attesaMaxMs?: number;

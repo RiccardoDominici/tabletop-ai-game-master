@@ -1,5 +1,5 @@
 /**
- * Ingresso di @cantastorie/web. I font sono pacchetti locali (@fontsource): il proiettore deve
+ * Ingresso di @tabletop-ai-gm/web. I font sono pacchetti locali (@fontsource): il proiettore deve
  * funzionare anche senza internet, solo in LAN.
  */
 import { impostaLinguaInterfaccia } from './lingua';

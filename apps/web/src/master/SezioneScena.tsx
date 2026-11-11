@@ -4,7 +4,7 @@
  * Un clic = un comando; il luogo/la scena corrente sono evidenziati e non si ri-mandano.
  */
 import clsx from 'clsx';
-import type { LuogoMaster, ScenaMaster, StatoMaster } from '@cantastorie/shared';
+import type { LuogoMaster, ScenaMaster, StatoMaster } from '@tabletop-ai-gm/shared';
 import { useInCorso } from '../store/master';
 import { inviaComando } from './sessione';
 import { Riquadro, Sottotitolo, Vuoto } from './Riquadro';

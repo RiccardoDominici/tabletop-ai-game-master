@@ -1,8 +1,8 @@
 /**
  * E2E della serata (chiusura guidata e diario) su un'istanza di PROVA con il narratore finto:
- *   CANTASTORIE_PORTA=4740 scripts/avvio.sh --finto --mock        (dalla radice della worktree)
+ *   TAGM_PORTA=4740 scripts/avvio.sh --finto --mock        (dalla radice della worktree)
  *   cd apps/web && E2E_PORTA=4740 npx playwright test -c playwright.config.ts e2e/serata.spec.ts
- *   CANTASTORIE_PORTA=4740 scripts/arresto.sh
+ *   TAGM_PORTA=4740 scripts/arresto.sh
  *
  * Proiettore, un telefono (Ginestra) e il pannello del master. Un turno con un'azione; il master
  * imposta la durata, preme «Chiudi la sessione» e conferma: il proiettore mostra «Cosa è successo
@@ -36,7 +36,7 @@ async function agisci(p: Page, testo: string): Promise<void> {
 }
 
 test('serata: durata, chiusura guidata, diario sul telefono, ripresa con «La volta scorsa»', async ({ browser }) => {
-  test.skip(PORTA === '4610', 'mai toccare la partita vera: usa un server di prova (CANTASTORIE_PORTA=4740)');
+  test.skip(PORTA === '4610', 'mai toccare la partita vera: usa un server di prova (TAGM_PORTA=4740)');
   test.setTimeout(420_000);
   fs.mkdirSync(SCREENSHOT, { recursive: true });
   const errori: string[] = [];

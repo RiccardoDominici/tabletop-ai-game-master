@@ -18,16 +18,16 @@ import type {
   MisureTurno,
   SchedaPg,
   StatoTavolo,
-} from '@cantastorie/shared';
-import { costruisciServer, type ServerCantastorie } from '../src/avvio';
+} from '@tabletop-ai-gm/shared';
+import { costruisciServer, type ServerTagm } from '../src/avvio';
 import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 
-const cartellaLog = fs.mkdtempSync(path.join(os.tmpdir(), 'cantastorie-int-'));
-let server: ServerCantastorie;
+const cartellaLog = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-int-'));
+let server: ServerTagm;
 let url: string;
 const client: Client[] = [];
 
@@ -61,15 +61,15 @@ beforeAll(async () => {
   const env = {
     PORT: '0',
     HOST: '127.0.0.1',
-    CANTASTORIE_LOG: cartellaLog,
-    CANTASTORIE_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
-    CANTASTORIE_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
-    CANTASTORIE_TTS: 'mock',
-    CANTASTORIE_ASSESTAMENTO_MS: '20',
-    CANTASTORIE_MOCK_SCALA: '0.02',
-    CANTASTORIE_LLM: 'finto',
-    CANTASTORIE_MASTER_TOKEN: 'token_integrazione_master_42',
-    CANTASTORIE_IP: '192.168.1.50',
+    TAGM_LOG: cartellaLog,
+    TAGM_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
+    TAGM_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
+    TAGM_TTS: 'mock',
+    TAGM_ASSESTAMENTO_MS: '20',
+    TAGM_MOCK_SCALA: '0.02',
+    TAGM_LLM: 'finto',
+    TAGM_MASTER_TOKEN: 'token_integrazione_master_42',
+    TAGM_IP: '192.168.1.50',
   };
   const config = caricaConfig(env as NodeJS.ProcessEnv);
   const narratore = new NarratoreFinto({

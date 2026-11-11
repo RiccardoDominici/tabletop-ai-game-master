@@ -14,7 +14,7 @@ import type {
   EventiClientVersoServer,
   EventiServerVersoClient,
   InfoServer,
-} from '@cantastorie/shared';
+} from '@tabletop-ai-gm/shared';
 import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import type { Regia, UscitaRegia } from '../scena/regia';

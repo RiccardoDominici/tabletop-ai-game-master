@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
+source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 # Lo sceneggiatore (docs/sceneggiatore.md): Claude Code scrive, mentre si gioca, le battute che il
 # lettore locale non trova. È un processo a parte che legge le richieste del server dalla cartella
 # sorvegliata <log>/sceneggiatore/ e risponde accanto; usa `claude -p` (l'abbonamento di chi gioca,
 # mai l'API diretta) e non tocca credenziali né ~/.claude.
 #
-#   scripts/sceneggiatore.sh avvia|ferma|stato        (CANTASTORIE_PORTA sceglie l'istanza, come avvio.sh)
+#   scripts/sceneggiatore.sh avvia|ferma|stato        (TAGM_PORTA sceglie l'istanza, come avvio.sh)
 #
-#   CANTASTORIE_SCENEGGIATORE=no                spento (avvio.sh: sulle istanze di prova parte solo con =si)
+#   TAGM_SCENEGGIATORE=no                spento (avvio.sh: sulle istanze di prova parte solo con =si)
 #   modelli: le battute «subito» con sonnet (una battuta in ~4 s), le «prossime» in sottofondo con haiku;
-#   CANTASTORIE_SCENEGGIATORE_MODELLO_SUBITO / _PROSSIME li cambiano, CANTASTORIE_SCENEGGIATORE_MODELLO tutti e due
+#   TAGM_SCENEGGIATORE_MODELLO_SUBITO / _PROSSIME li cambiano, TAGM_SCENEGGIATORE_MODELLO tutti e due
 # Log: <log>/sceneggiatore/sceneggiatore.out e sceneggiatore.jsonl (una riga per richiesta).
 set -uo pipefail
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
-PORTA="${CANTASTORIE_PORTA:-4610}"
+PORTA="${TAGM_PORTA:-4610}"
 if [[ "$PORTA" == "4610" ]]; then DIR_LOG="$RADICE/logs"; else DIR_LOG="$RADICE/logs/porta-$PORTA"; fi
 DIR="$DIR_LOG/sceneggiatore"
 FILE_PID="$DIR/sceneggiatore.pid"
@@ -39,7 +40,7 @@ case "$COMANDO" in
   *) echo "uso: scripts/sceneggiatore.sh avvia|ferma|stato"; exit 2 ;;
 esac
 
-if [[ "${CANTASTORIE_SCENEGGIATORE:-auto}" == "no" ]]; then echo "sceneggiatore: spento (CANTASTORIE_SCENEGGIATORE=no)"; exit 0; fi
+if [[ "${TAGM_SCENEGGIATORE:-auto}" == "no" ]]; then echo "sceneggiatore: spento (TAGM_SCENEGGIATORE=no)"; exit 0; fi
 # Claude Code installato? (il binario, non una funzione della shell)
 if ! command -v claude >/dev/null 2>&1; then echo "sceneggiatore: claude non è installato, il tavolo userà solo le battute d'attesa"; exit 0; fi
 ferma >/dev/null

@@ -17,7 +17,7 @@ import {
   type SessioneMaster,
   type SituazioneMaster,
   type StatoMaster,
-} from '@cantastorie/shared';
+} from '@tabletop-ai-gm/shared';
 import type { Azione } from '../azioni/tipi';
 import { STATI_VIVI } from '../azioni/tipi';
 import type { CatalogoImmagini } from '../campagna/immagini';

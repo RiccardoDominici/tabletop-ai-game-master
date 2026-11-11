@@ -1,7 +1,7 @@
 /**
  * Azioni simultanee dei giocatori (docs/azioni-concorrenti.md): modello lato server.
  */
-import type { RichiestaScelta, Ritmo, StatoAzione } from '@cantastorie/shared';
+import type { RichiestaScelta, Ritmo, StatoAzione } from '@tabletop-ai-gm/shared';
 
 export type { Ritmo };
 

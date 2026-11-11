@@ -3,7 +3,7 @@
  * (trascrizione pubblica + azioni del turno + chi è al tavolo). Sta fuori dalla cache, dopo i
  * blocchi di sistema stabili (prompts/<lingua>/narratore.md e contesto della campagna).
  */
-import type { VoceTrascrizione } from '@cantastorie/shared';
+import type { VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import { testo } from '../lingua';
 
 /*

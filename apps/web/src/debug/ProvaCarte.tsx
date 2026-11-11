@@ -24,7 +24,7 @@
  */
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import clsx from 'clsx';
-import type { TiroMostrato } from '@cantastorie/shared';
+import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import { CartaTiro } from '../components/CartaTiro';
 import { dimenticaAnimazioni } from '../components/useAnimazioneTiro';
 import { creaLog } from '../lib/log';

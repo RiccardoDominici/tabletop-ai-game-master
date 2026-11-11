@@ -5,7 +5,7 @@
  *   - una riga nel log strutturato del server (`evento: 'master'`);
  *   - una voce negli ultimi eventi mostrati dal pannello.
  */
-import type { ComandoMaster, Esito, EventoMaster, StatoMaster, TipoComandoMaster } from '@cantastorie/shared';
+import type { ComandoMaster, Esito, EventoMaster, StatoMaster, TipoComandoMaster } from '@tabletop-ai-gm/shared';
 import type { CatalogoImmagini } from '../campagna/immagini';
 import type { CatalogoAudio } from '../audio/catalogo';
 import type { Campagna } from '../campagna/tipi';
