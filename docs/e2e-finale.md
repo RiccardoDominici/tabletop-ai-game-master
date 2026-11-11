@@ -370,7 +370,40 @@ invented minions (C5). Profile B is now the better game (judge 3/3/3 against A's
 Profile A is $0 and quiet about errors, but it reads as a list of quoted actions. Fix N2 first: one line of code
 and the game loses its worst sentence. Then N4 and N5.
 
-## 10. Reproduce
+## 10. Third pass: confirming the fixes of the second pass (11 November)
+
+Short confirmation runs on `4a06d3a`, from a git worktree pinned to that commit (removed at the end):
+- first the lexicon-aligned audio: `apps/server/src/strumenti/prerender.ts campagne/torre-mozza --motore fish`, 35 new lines,
+  $0.011;
+- then profile B (Haiku + drama-3) with the indagine script only;
+- then profile A (all local, sceneggiatore, `--ore 0.5 --chiudi`). After script turn 7 the local reader was killed on
+  purpose (`kill -9`, `esperimenti/e2e-finale/uccidi-lettore.sh`).
+
+One extra profile-B run on `a97d081` (= `d73808b`, before the other fixes), `torre-mozza-indagine-B-pass2c`, isolates the
+outcome-guard fix. Results: `esperimenti/risultati/e2e-finale-2/torre-mozza-indagine-{B-pass2c,B-pass3,A-pass3}/`.
+
+| # | Fix | Verdict | Evidence |
+|---|---|---|---|
+| N2 | `d73808b` outcome guard | **confirmed** | no «Narratore manca …» in `B-pass2c` or `B-pass3`; T13 now matches its cards («il sasso la prende alla spalla» for «Fionda 19 contro CD 14, riuscita», «Il colpo passa a un palmo dal naso di Fulco» for Zirrà's miss); T14's announcement «tira al primo goblin che scappa» is left alone |
+| N3 | `cf39acd` idioms are not a fall | **confirmed** | on `d73808b` alone it still fired twice («la terra cade sul fuoco» → «Ugo è ancora in piedi.»); on `4a06d3a` its only replacement was a real one («il goblin cade in ginocchio sui gradini» → «Zirrà incassa il colpo, ma resta in piedi.»). Berta's «sguardo cade» did not occur in this run |
+| D2 | `3406550` NPC refuses after a failed social check | **confirmed** | T10: «Carisma 8 contro CD 13, fallita», then Ugo «Non lo so. Chieda al paese, che sa tutto.» and «Non risponde alla domanda» (pass 2: he pointed the path). Log: «NPC gives in after a failed social check, replaced by its refusal» ×2 |
+| D6 | `989d8fb` a whispered question is speech | **confirmed** | 0 «Ascoltare» cards (pass 2: 1–2 per B game); log «speech is not a check, social check or no roll» ×4 |
+| A1/A2 | privacy | **confirmed** | 4 private actions, 0 content heard (5 lines moved); the only public trace is content-free («Eliandro si china verso Berta, a voce bassissima.») |
+| — | `4a06d3a` cache tied to pronunciation | **confirmed** | Whisper on the 29 lines rendered with the lexicon (`ascolta-nomi-torre-mozza-pass3.txt`): **34 of 34** names right, Benni 6/6. The pass-2 miss «Venni» came from pre-lexicon audio that the game no longer plays |
+| N6 | `28a7bd6` local reader watchdog | **confirmed** | killed at 18:08:06; «local model server DOWN» after 12 s, «restarting (scripts/lettore-avvio.sh)», «restarted» in 6.2 s, «UP again», 0 requests sent to the fallbacks; the run went on to 16/16 turns and the closing |
+| N4 | `9d06809` deflection from the addressee | **confirmed** | both refused releases were replaced by the deflection of the NPC Fulco spoke to («rilascio fuori contesto, al suo posto la deviazione di chi è interpellato», Ugo) |
+| N5 | `9d06809` sceneggiatore type | **confirmed** | 0 «tipo non ammesso» (pass 2: 6 and 12); the only refusals were 15 lines for Zirrà after her death («png_zirra non è nella scena»), which is right |
+| C1 | dead NPC in a late narrator line | **confirmed** (not seen) | after «png_zirra morto» no line has her act |
+| N7 | `9d06809` cut summaries | **confirmed** (indirectly) | no cut summary. The local model's summary was refused for a secret never said at the table («la lavagna l'ha scritta Tonio»), and the fallback «Siete passati da: …» was used. That is safe, but the evening ends without its threads |
+| L2 | `9d06809` fake-voice warnings | **confirmed** | 0 «audio pre-generato mancante» warnings (pass 2: 30–31); now debug |
+| L1 | `9d06809` secret words of the players | **not confirmed** | still 12 (A) and 11 (B) ERRORs «parola segreta nel messaggio del selettore» («i goblin non scrivono», «le postierle delle torri»): the words now come from the narrator's echo of a player's action in the recent lines, not from the action itself |
+
+Numbers: profile B 16/16 turns, $0.057, first audio 2.2 s median (worst 9.5 s, one slow Haiku turn), 0 underruns;
+profile A 16/16 turns plus the closing, $0, reader 9.1 s median at send, sceneggiatore 28 requests, 93 lines accepted.
+**Verdict of the third pass:** 12 of the 13 checked fixes hold in play. The one left is L1, which is log noise, not
+something the table hears. None of the replacement lines the table heard was wrong.
+
+## 11. Reproduce
 
 Commands are in §4; the measures are recomputed with
 `python3 -I esperimenti/e2e-finale/misure.py esperimenti/risultati/e2e-finale/<run> <logs of that run>` and

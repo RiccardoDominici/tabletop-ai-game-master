@@ -1,0 +1,253 @@
+{
+ "etichetta": "torre-mozza-indagine-B-pass3",
+ "turni": {
+  "giocati": 16,
+  "copione": 16,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [
+   "scena_carbonaia",
+   "scena_torre"
+  ],
+  "orologi_max": {
+   "o_mezzanotte": "1/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": [
+   [
+    "i goblin non scrivono"
+   ],
+   [
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri"
+   ]
+  ]
+ },
+ "private": {
+  "azioni_private": 4,
+  "righe_privato": 5,
+  "esiti_privati_log": 15,
+  "righe_al_tavolo_sospette": 4,
+  "sospette": [
+   {
+    "turno": 3,
+    "pg": "pg_livia",
+    "riga": "[narratore] Livia si avvicina a Berta e le parla a bassa voce, sulla decima del balivo."
+   },
+   {
+    "turno": 4,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Eliandro si china verso Berta, a voce bassissima. La pastora non alza gli occhi dalla chiave."
+   },
+   {
+    "turno": 6,
+    "pg": "pg_fulco",
+    "riga": "[narratore] Fulco si accosta a Ugo, a voce bassa, e gli chiede dove passa la strada per la torre e chi la sale di notte."
+   },
+   {
+    "turno": 9,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Eliandro cerca segni sul legno lungo il sentiero, senza farsi sentire."
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 24,
+  "con_tiro": 13,
+  "tipi": {
+   "nessuna": 10,
+   "prova": 9,
+   "attacco": 5
+  },
+  "dadi": {
+   "d20": 17,
+   "d6": 12,
+   "d4": 2,
+   "d8": 1
+  },
+  "regole_tipo": {
+   "Scalare pareti: dNN contro CD N (normale)": 2,
+   "Fionda, Attacco a distanza (Destrezza): dNN contro CD N (difesa di zirrà)": 2,
+   "Intelligenza: dNN contro CD N (facile)": 1,
+   "Carisma: dNN contro CD N (difficile)": 1,
+   "Carisma: dNN contro CD N (normale)": 1,
+   "Cercare porte segrete e trappole N: dN serve N o meno": 1,
+   "Trovare e togliere trappole: dNN contro CD N (normale)": 1,
+   "Carisma: dNN contro CD N (facile)": 1,
+   "Spada corta, Attacco in mischia (Forza): dNN contro CD N (difesa di fulco granito)": 1,
+   "Attacco automatico: Dardo incantato NdN": 1,
+   "Spada lunga, Attacco in mischia (Forza): dNN contro CD N (difesa di grosso)": 1,
+   "Mazza ferrata, Attacco in mischia (Forza): dNN contro CD N (difesa di livia sarti)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "anthropic completo (set generico)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: inizia": 1,
+   "azioni: rinviate al turno del loro PG (combattimento)": 4,
+   "combattimento: risolve solo chi è di turno": 4,
+   "combattimento: iniziativa ritirata": 1
+  },
+  "fatti_morale_terra": 0,
+  "esempi": [],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 0,
+  "nessuna": 0,
+  "ms_classifica_med": null,
+  "ms_classifica_peggiore": null
+ },
+ "sceneggiatore": {
+  "richieste": {},
+  "consegnate": 0,
+  "dette_a_finestra_aperta": 0,
+  "accettate": 0,
+  "scartate": {},
+  "ms_claude_med": null,
+  "ms_totale_med_subito": null,
+  "processo": {}
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 21088.5,
+   "peggiore": 21239,
+   "n": 16
+  },
+  "llm_prima_frase": {
+   "mediana": 1869.5,
+   "peggiore": 9128,
+   "n": 16
+  },
+  "voce_primo_audio": {
+   "mediana": 2156,
+   "peggiore": 9470,
+   "n": 16
+  },
+  "schermo_inizio_audio": {
+   "mediana": 2307.5,
+   "peggiore": 9624,
+   "n": 16
+  },
+  "llm_fine": {
+   "mediana": 2814.5,
+   "peggiore": 10178,
+   "n": 16
+  },
+  "audio_fine": {
+   "mediana": 24881,
+   "peggiore": 39903,
+   "n": 16
+  },
+  "s_tra_turni_med": 46,
+  "s_tra_turni_peggiore": 65.778
+ },
+ "voce": {
+  "motore": "fish",
+  "buchi": {
+   "totale": 0,
+   "in_frase": 0,
+   "tra_frasi": 0,
+   "silenzio_ms": 0,
+   "per_turno": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "proiettore_secondi": 394,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 11,
+  "avvisi": 17,
+  "per_messaggio": [
+   "50 ×11 repertorio: parola segreta nel messaggio del selettore",
+   "40 ×5 narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono",
+   "40 ×4 prove: speech is not a check, social check or no roll",
+   "40 ×2 narrator: NPC gives in after a failed social check, replaced by its refusal",
+   "40 ×2 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×2 repertorio: [usa] rifiutato",
+   "40 ×1 prove: clear attack, decided by the rules instead of the arbiter",
+   "40 ×1 narrator: sentence contradicts the Engine, replaced by its line"
+  ],
+  "provider": [
+   "lettore         → anthropic (completo) claude-haiku-5-5 — configurato (config/pr",
+   "arbitro_azioni  → anthropic claude-haiku-5-5 — configurato (config/predefinita.y",
+   "arbitro_prove   → anthropic (completo) claude-haiku-5-5 — configurato (config/pr",
+   "riassunto       → anthropic claude-haiku-5-5 — configurato (config/predefinita.y",
+   "regole          → anthropic claude-haiku-5-5 — configurato (config/predefinita.y",
+   "voce            → openrouter — configurato (config/predefinita.yaml)",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0.05659068,
+ "righe": {
+  "prescritte": 8,
+  "improvvisate": 69,
+  "usa_rifiutati": 2,
+  "azioni_pubbliche": 20,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0
+ }
+}

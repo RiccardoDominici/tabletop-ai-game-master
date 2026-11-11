@@ -1,0 +1,272 @@
+{
+ "etichetta": "torre-mozza-indagine-A-pass3",
+ "turni": {
+  "giocati": 16,
+  "copione": 16,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [
+   "scena_carbonaia",
+   "scena_torre"
+  ],
+  "orologi_max": {
+   "o_mezzanotte": "1/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": [
+   [
+    "Tonio è salito da solo, d'accordo con i goblin"
+   ],
+   [
+    "i goblin non scrivono"
+   ],
+   [
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri",
+    "i goblin non scrivono"
+   ],
+   [
+    "le postierle delle torri"
+   ]
+  ]
+ },
+ "private": {
+  "azioni_private": 4,
+  "righe_privato": 0,
+  "esiti_privati_log": 8,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": []
+ },
+ "prove": {
+  "azioni_risolte": 26,
+  "con_tiro": 8,
+  "tipi": {
+   "nessuna": 16,
+   "prova": 5,
+   "attacco": 5
+  },
+  "dadi": {
+   "d20": 8,
+   "d6": 13,
+   "d8": 1
+  },
+  "regole_tipo": {
+   "Intelligenza: dNN contro CD N (facile)": 1,
+   "Carisma: dNN contro CD N (normale)": 1,
+   "Cercare porte segrete e trappole N: dN serve N o meno": 1,
+   "Scalare pareti: dNN contro CD N (normale)": 1,
+   "Tiro salvezza contro raggio della morte, con la Destrezza (Destrezza): dNN contro CD N (no": 1,
+   "Fionda, Attacco a distanza (Destrezza): dNN contro CD N (difesa di zirrà)": 1,
+   "Attacco automatico: Dardo incantato NdN": 1,
+   "Spada lunga, Attacco in mischia (Forza): dNN contro CD N (difesa di zirrà)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: esce dallo scontro": 1,
+   "combattimento: inizia": 1,
+   "azioni: rinviate al turno del loro PG (combattimento)": 5,
+   "combattimento: risolve solo chi è di turno": 5,
+   "combattimento: iniziativa ritirata": 1
+  },
+  "fatti_morale_terra": 5,
+  "esempi": [
+   "voce: audio pre-generato mancante, sintesi dal vivo: {\"level\": 20, \"time\": \"2026-11-11T17:08:36.861Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"voce\", \"id_frase\": \"t9-f3\", \"chiave\": \"[omessa]\", \"testo\": \"Un ciocco crolla dentro la carbonaia, e la terra si crepa. Un filo di fumo",
+   "combattimento: esce dallo scontro: {\"level\": 30, \"time\": \"2026-11-11T17:10:40.239Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"combattimento\", \"id\": \"png_zirra\", \"esito\": \"morto\", \"msg\": \"combattimento: esce dallo scontro\"}",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-11T17:10:40.241Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 13, \"attesa_ms\": 2, \"tardive\": [\"a20\", \"a21\", \"a19\"], \"tiri\": [\"Fulco Granito: Fionda 4 contro CD 14, fallita\", \"Elia",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-11T17:12:07.644Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 15, \"attesa_ms\": 4, \"tardive\": [\"a22\"], \"tiri\": [], \"fatti\": [\"[1] Livia Sarti: Zirrà è già a terra: nessun tiro, l’a",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-11T17:12:33.063Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 16, \"attesa_ms\": 3, \"tardive\": [\"a23\"], \"tiri\": [\"Grosso: Mazza ferrata 7 contro CD 15, fallita\"], \"fatti\": [\"[1] Ful"
+  ],
+  "fatti_morale": [
+   "Morale dei nemici: 4 contro 8 → tengono."
+  ],
+  "fatti_a_terra": [
+   "[3] Livia Sarti: attacco con Spada lunga a Zirrà: Spada lunga, Attacco in mischia (Forza): d20+3 contro CD 14 (difesa di zirrà) → SUCCESSO CRITICO, 10 danni; Zi",
+   "[1] Livia Sarti: Zirrà è già a terra: nessun tiro, l’azione riesce.",
+   "[1] Fulco Granito: Zirrà è già a terra: nessun tiro, l’azione riesce."
+  ],
+  "fuori_gioco_log": {
+   "prove: PNG fuori gioco nel messaggio del narratore": 6
+  }
+ },
+ "lettore": {
+  "scelte": 26,
+  "nessuna": 8,
+  "ms_classifica_med": 9126,
+  "ms_classifica_peggiore": 17627
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "prossime:ok": 16,
+   "subito:ok": 12
+  },
+  "consegnate": 5,
+  "dette_a_finestra_aperta": 5,
+  "accettate": 93,
+  "scartate": {
+   "png_zirra non è nella scena": 15
+  },
+  "ms_claude_med": 7588,
+  "ms_totale_med_subito": 8018,
+  "processo": {
+   "avvio": 1,
+   "ok": 28,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20047,
+   "peggiore": 20216,
+   "n": 16
+  },
+  "llm_prima_frase": {
+   "mediana": 16.5,
+   "peggiore": 43,
+   "n": 16
+  },
+  "voce_primo_audio": {
+   "mediana": 672,
+   "peggiore": 4101,
+   "n": 16
+  },
+  "schermo_inizio_audio": {
+   "mediana": 822.5,
+   "peggiore": 848,
+   "n": 12
+  },
+  "llm_fine": {
+   "mediana": 10464.5,
+   "peggiore": 17609,
+   "n": 16
+  },
+  "audio_fine": {
+   "mediana": 18352,
+   "peggiore": 41673,
+   "n": 16
+  },
+  "s_tra_turni_med": 39,
+  "s_tra_turni_peggiore": 61.802
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 17,
+   "in_frase": 0,
+   "tra_frasi": 17,
+   "silenzio_ms": 56413,
+   "per_turno": [
+    1,
+    3,
+    2,
+    1,
+    2,
+    1,
+    2,
+    1,
+    1,
+    1,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "proiettore_secondi": 338,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 13,
+  "avvisi": 6,
+  "per_messaggio": [
+   "50 ×12 repertorio: parola segreta nel messaggio del selettore",
+   "40 ×2 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×2 repertorio: [usa] rifiutato",
+   "50 ×1 local model server DOWN: the reader uses its rules fallback and the waiting lines, the arbiters thei",
+   "40 ×1 local model server: restarting (scripts/lettore-avvio.sh)",
+   "40 ×1 riassunto: si usa la riserva"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-8B-4bit — configurato (con",
+   "arbitro_azioni  → regole — configurato (config/predefinita.yaml)",
+   "arbitro_prove   → regole (completo) — configurato (config/predefinita.yaml)",
+   "riassunto       → locale mlx-community/Qwen3-8B-4bit — configurato (config/prede",
+   "regole          → locale mlx-community/Qwen3-8B-4bit — configurato (config/prede",
+   "voce            → finto — configurato (config/predefinita.yaml)",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": 0.5,
+  "consiglio_ai_turni": [],
+  "chiusura": {
+   "turno": 19,
+   "righe": [
+    {
+     "chi": "narratore",
+     "testo": "La torre tace. Il fuoco si abbassa, e il vento fischia nei buchi dei muri."
+    },
+    {
+     "chi": "narratore",
+     "testo": "È notte fonda, e quello che si decide su questi gradini si decide stanotte."
+    }
+   ],
+   "riassunto": {
+    "etichetta": "Serata 1",
+    "quando": "2026-11-11T17:14:29.743Z",
+    "testo": "Siete passati da: L'ovile dei Benni, all'imbrunire, La carbonaia di Ugo, a notte, La Torre Mozza, a mezzanotte.",
+    "fili": []
+   },
+   "di_riserva": true,
+   "ms": 46727
+  }
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 34,
+  "improvvisate": 24,
+  "usa_rifiutati": 2,
+  "azioni_pubbliche": 22,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0
+ }
+}

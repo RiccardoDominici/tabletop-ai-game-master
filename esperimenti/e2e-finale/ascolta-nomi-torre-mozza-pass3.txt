@@ -1,0 +1,79 @@
+righe conservate dopo 2026-11-11T16:43:43 con un nome del lessico: 29
+OK  Moretta    1.00 | voce narratore | sent: «Sui pali ci sono nomi di pecore incisi col coltello: Brina, Rosèlla, Morètta.» | heard: «Sui pali ci sono nomi di pecore incisi col coltello. Brina, Rosella, Moretta.»
+OK  Rosella    1.00 | voce narratore | sent: «Sui pali ci sono nomi di pecore incisi col coltello: Brina, Rosèlla, Morètta.» | heard: «Sui pali ci sono nomi di pecore incisi col coltello. Brina, Rosella, Moretta.»
+OK  Benni      1.00 | voce narratore | sent: «Dice che la decima dei Benni non è pagata. Alla prima neve, l'ovile passa al signore.» | heard: «Dice che la decima dei beni non è pagata. Alla prima neve, l'ovile passa al Signore.»
+OK  Spinalba   1.00 | voce narratore | sent: «Spinàlba spegne le lanterne a una a una.» | heard: «Spinalba spegne le lanterne a una a una.»
+OK  Berta      1.00 | voce narratore | sent: «La chiave è fredda e pesante. Dal portico Bèrta vi guarda andare. Tra i faggi, il mulo di » | heard: «La chiave è fredda e pesante, dal portico Berta vi guarda andare, tra i faggi il mulo di U»
+OK  Ugo        1.00 | voce narratore | sent: «La chiave è fredda e pesante. Dal portico Bèrta vi guarda andare. Tra i faggi, il mulo di » | heard: «La chiave è fredda e pesante, dal portico Berta vi guarda andare, tra i faggi il mulo di U»
+OK  Berta      1.00 | voce narratore | sent: «Bèrta resta sotto il portico, con la chiave stretta nel pugno. Tra i faggi, il mulo di Ugo» | heard: «Berta resta sotto il portico, con la chiave stretta nel pugno. Tra i faggi, il mulo di Ugo»
+OK  Ugo        1.00 | voce narratore | sent: «Bèrta resta sotto il portico, con la chiave stretta nel pugno. Tra i faggi, il mulo di Ugo» | heard: «Berta resta sotto il portico, con la chiave stretta nel pugno. Tra i faggi, il mulo di Ugo»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo corre con la pala e impreca: da solo non ce la fa.» | heard: «Ugo corre con la pala e impreca, da solo non ce la fa.»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo si toglie il cappello e guarda il crinale, senza dire niente.» | heard: «Ugo si toglie il cappello e guarda il crinale, senza dire niente.»
+OK  Spinalba   1.00 | voce narratore | sent: «All'alba, davanti alla fontana di Spinàlba, la storia del ragazzo è detta tutta.» | heard: «All'alba, davanti alla fontana di Spinalba, la storia del ragazzo è detta tutta.»
+OK  Spinalba   1.00 | voce narratore | sent: «All'alba il ragazzo torna a casa, e a Spinàlba nessuno fa domande.» | heard: «All'alba il ragazzo torna a casa e a Spinalba nessuno fa domande.»
+OK  Benni      1.00 | voce narratore | sent: «Per Ugo basta la sua caccia: quella notte era nella riserva, non con i goblin. Il paese gl» | heard: «Per Ugo basta la sua caccia. Quella notte era nella riserva, non con i goblin. Il paese gl»
+OK  Ugo        1.00 | voce narratore | sent: «Per Ugo basta la sua caccia: quella notte era nella riserva, non con i goblin. Il paese gl» | heard: «Per Ugo basta la sua caccia. Quella notte era nella riserva, non con i goblin. Il paese gl»
+OK  Benni      1.00 | voce narratore | sent: «Giù a Spinàlba si accende una finestra sola, quella dei Benni. All'alba vi chiederanno che» | heard: «Giù a Spinalba si accende una finestra sola, quella dei Benny. All'alba vi chiederanno che»
+OK  Spinalba   1.00 | voce narratore | sent: «Giù a Spinàlba si accende una finestra sola, quella dei Benni. All'alba vi chiederanno che» | heard: «Giù a Spinalba si accende una finestra sola, quella dei Benny. All'alba vi chiederanno che»
+OK  Mozza      1.00 | voce narratore | sent: «Nella Torre Mòzza si accende un fuoco, e i muri rotti si arrossano.» | heard: «Nella torre Mozza si accende un fuoco e i muri rotti si arrossano.»
+OK  Spinalba   1.00 | voce narratore | sent: «I cani di Spinàlba abbaiano tutti insieme, poi tacciono di colpo.» | heard: «I cani di spinalba abbaiano tutti insieme, poi tacciano di colpo.»
+OK  Berta      1.00 | voce narratore | sent: «Bèrta stringe ancora la chiave di ferro, e la torre la aspetta entro mezzanotte.» | heard: «Bertha stringe ancora la chiave di ferro e la torre la aspetta entro mezzanotte.»
+OK  Tonio      1.00 | voce nadine | sent: «Li ha incisi Tònio, da piccolo. Le erre le fa al contrario, da sempre.» | heard: «li ha incisi Tonio, da piccolo, le R le fa al contrario, da sempre.»
+OK  Benni      1.00 | voce nadine | sent: «Noi Benni non dobbiamo niente a nessuno. Mai dovuto.» | heard: «Noi benni non dobbiamo niente a nessuno, mai dovuto!»
+OK  Tonio      1.00 | voce nadine | sent: «La decima. Non l'ho pagata. Alla prima neve il balivo si prende l'ovile. Tònio lo sa.» | heard: «la decima. Non l'ho pagata. Alla prima neve il balivo si prende l'ovile. Tonio lo sa.»
+OK  Tonio      1.00 | voce nadine | sent: «Sì, la decima. Non l'ho pagata. Alla prima neve si prendono tutto. Tònio lo sa.» | heard: «Sì, la decima. Non l'ho pagata. Alla prima neve si prendono tutto. Tonio lo sa.»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo vi guarda da sotto il cappello e non si alza.» | heard: «Ugo vi guarda da sotto il cappello e non si alza.»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo stringe il manico dell'accetta.» | heard: «Ugo stringe il manico dell'accetta.»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo batte la pala per terra due volte.» | heard: «Ugo batte la pala per terra due volte.»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo pianta la pala nella terra e indica i rovi con il mento.» | heard: «Ugo pianta la pala nella terra e indica i rovi con il mento.»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo si toglie il cappello e se lo rigira tra le mani.» | heard: «Ugo si toglie il cappello e se lo rigira tra le mani.»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo guarda il cervo e si rimette il cappello.» | heard: «Ugo guarda il cervo e si rimette il cappello.»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo ti guarda a lungo, poi abbassa la voce.» | heard: «Ugo ti guarda a lungo, poi abbassa la voce.»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo abbassa la voce e guarda verso il bosco.» | heard: «Ugo abbassa la voce e guarda verso il bosco.»
+OK  Benni      1.00 | voce vincent | sent: «Il ragazzo dei Benni. Saliva da solo, col pane sotto il braccio. Due volte l'ho visto.» | heard: «Il ragazzo dei benni saliva da solo col pane sotto il braccio, due volte l'ho visto.»
+OK  Ugo        1.00 | voce narratore | sent: «Ugo smette di spalare e si appoggia al manico.» | heard: «Ugo smette di stalare e si appoggia al manico.»
+OK  Benni      1.00 | voce vincent | sent: «Sì. Il ragazzo dei Benni. Saliva da solo, col pane. Nessuno lo spingeva.» | heard: «Sì, il ragazzo dei Benny saliva da solo col pane, nessuno lo spingeva.»
+
+per nome: {
+ "Moretta": {
+  "ok": 1,
+  "tot": 1,
+  "esempi": []
+ },
+ "Rosella": {
+  "ok": 1,
+  "tot": 1,
+  "esempi": []
+ },
+ "Benni": {
+  "ok": 6,
+  "tot": 6,
+  "esempi": []
+ },
+ "Spinalba": {
+  "ok": 5,
+  "tot": 5,
+  "esempi": []
+ },
+ "Berta": {
+  "ok": 3,
+  "tot": 3,
+  "esempi": []
+ },
+ "Ugo": {
+  "ok": 14,
+  "tot": 14,
+  "esempi": []
+ },
+ "Mozza": {
+  "ok": 1,
+  "tot": 1,
+  "esempi": []
+ },
+ "Tonio": {
+  "ok": 3,
+  "tot": 3,
+  "esempi": []
+ }
+}
+costo whisper: $0.0131
