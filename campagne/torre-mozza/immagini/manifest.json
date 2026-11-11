@@ -165,6 +165,48 @@
         "costo_totale_usd": 0.000903
       },
       "quando": "2026-11-11 00:53:48"
+    },
+    {
+      "id": "ritratto_png_berta",
+      "file": "ritratto_png_berta.jpg",
+      "tipo": "ritratto",
+      "prompt": "sturdy shepherd woman in her fifties, black widow's shawl over her shoulders, chapped red hands, a large old iron key hanging from a leather cord around her neck, grey hair under a kerchief, standing by a dry-stone sheep pen at dusk. Tratti fissi: cinquant'anni; robusta; scialle nero da vedova; chiave di ferro al collo su un laccio di cuoio; mani screpolate, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 483798272,
+      "larghezza": 768,
+      "altezza": 1024,
+      "generata": [
+        768,
+        1024
+      ],
+      "riferimenti": [],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 178.9,
+      "picco_gb": 4.35,
+      "kb": 228,
+      "rifilato_pct": 5.0,
+      "firma": "v1:5c09584e1ae1ad91c7585842",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Ritratto a mezzo busto di una donna anziana di montagna con scialle nero, capelli grigi raccolti sotto un velo scuro, una grande chiave di ferro appesa al collo con un laccio di cuoio e mani arrossate. Sullo sfondo ci sono montagne innevate, un recinto di pietra con pecore e un cielo cupo al tramonto.",
+          "costo_usd": 0.000599,
+          "token": {
+            "ingresso": 3146,
+            "uscita": 569
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000599,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000599
+      },
+      "quando": "2026-11-11 11:28:03"
     }
   ]
 }
