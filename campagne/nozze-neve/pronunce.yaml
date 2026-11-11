@@ -1,0 +1,33 @@
+lessico:
+  - { nome: Adelina, tipo: png, it: { grafia: Adelìna }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 0.99, base: 1 } }
+  - { nome: Ettore, tipo: pg, it: { grafia: Èttore }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Morlacchi, tipo: fazione, it: { grafia: Morlàcchi }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Gaspare, tipo: png, it: { grafia: Gàspare }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Bonfanti, tipo: fazione, it: { grafia: Bonfànti }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Zelia, tipo: pg, it: { grafia: Zèlia }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Nando, tipo: pg, it: { grafia: Nàndo }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Tremolino, tipo: png, it: { grafia: Tremolìno }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Ida, tipo: pg, it: { grafia: Ida }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Fiocchi, tipo: png, it: { grafia: Fiòcchi }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 }, solo_maiuscolo: true }
+  - { nome: Vanda, tipo: pg, it: { grafia: Vànda }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Brughiera, tipo: png, it: { grafia: Brughièra }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Remo, tipo: png, it: { grafia: Rèmo }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Ciuffo, tipo: png, it: { grafia: Ciùffo }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Livia, tipo: pg, it: { grafia: Lìvia }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Saltari, tipo: png, it: { grafia: Saltàri }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Gunda, tipo: png, it: { grafia: Gùnda }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Rocciarossa, tipo: png, it: { grafia: Rocciaróssa }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Agnese, tipo: png, it: { grafia: Agnèse, suono: agnese, nota: "gn = ɲ; stress su 'gne' (a-GNE-se), naturale." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 0.96, base: 1 } }
+  - { nome: Bastiano, tipo: png, it: { grafia: Bastiàno, suono: bastiano, nota: "Stress penultimo su 'stia' (ba-STIA-no), naturale." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Bortolo, tipo: png, it: { grafia: Bòrtolo, suono: bortolo, nota: "Nome veneto: stress sulla prima (BÒR-tolo). Scritto senza accento la voce legge bor-TO-lo." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Duchessa, tipo: altro, it: { grafia: Duchéssa, suono: duchessa, nota: Probabilmente un animale (campanaccio di una mucca); stress penultimo naturale. Il nome va letto come italiano. }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Fontanive, tipo: luogo, it: { grafia: Fontanìve, suono: fontanive, nota: "Toponimo; stress sulla penultima, 'ni' (fon-ta-NI-ve), naturale." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Gigia, tipo: altro, it: { grafia: Gìgia, suono: gigia, nota: "Mula; g dolce (dʒ), stress su 'GI' iniziale." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Ilario, tipo: png, it: { grafia: Ilàrio, suono: ilario, nota: "Stress penultimo su 'la' (i-LA-rio), naturale." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Marta, tipo: png, it: { grafia: Màrta, suono: marta, nota: "Stress su 'mar' (MAR-ta), naturale." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 0.89 } }
+  - { nome: Pietro, tipo: png, it: { grafia: Piètro, suono: pietro, nota: "Stress su 'pie' (PIE-tro), naturale; la è aperta." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Pontebruno, tipo: luogo, it: { grafia: Pontebrùno, suono: pontebruno, nota: "Toponimo; stress penultimo su 'bru' (pon-te-BRU-no), naturale." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Sasso, tipo: luogo, it: { grafia: Sàsso, suono: sasso, nota: "Il Sasso, luogo sacro del paese; ss doppia, sorda. Già letto bene come scritto." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Sior, tipo: termine, it: { grafia: Siòr, suono: sior, nota: "Titolo veneto (signore), una sola sillaba; l'accento su 'siòr' evita che la voce legga sì-or." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 0.94 } }
+  - { nome: Tonio, tipo: png, it: { grafia: Tònio, suono: tonio, nota: "Vezzeggiativo di Antonio; stress su 'to' (TO-nio), naturale." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+non_nomi: [ Matriarca ]

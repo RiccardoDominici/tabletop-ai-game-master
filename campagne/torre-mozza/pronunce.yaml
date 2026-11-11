@@ -1,0 +1,20 @@
+lessico:
+  - { nome: Berta, tipo: png, it: { grafia: Bèrta }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Benni, tipo: fazione, it: { grafia: Benni }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Grosso, tipo: png, it: { grafia: Gròsso }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Ugo, tipo: png, it: { grafia: Ugo }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Faggioli, tipo: png, it: { grafia: Faggiòli }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 0.81, base: 0.81 } }
+  - { nome: Zirrà, tipo: png, it: { grafia: Zirrà }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Livia, tipo: png, it: { grafia: Lìvia }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Sarti, tipo: png, it: { grafia: Sàrti }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Fulco, tipo: png, it: { grafia: Fùlco }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Granito, tipo: png, it: { grafia: Granìto }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Nespola, tipo: png, it: { grafia: Nèspola }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Tondi, tipo: png, it: { grafia: Tóndi }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Eliandro, tipo: png, it: { grafia: Eliàndro }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Moretta, tipo: altro, it: { grafia: Morètta, suono: moretta, nota: "Nome di pecora, parola italiana letta come scritta; accento sulla penultima (mo-RÈT-ta)." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Mozza, tipo: luogo, it: { grafia: Mòzza, suono: mozza, nota: "Parola italiana (tagliata) nel nome della torre. zz si legge ts, accento sulla prima sillaba." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Rosella, tipo: altro, it: { grafia: Rosèlla, suono: rosella, nota: "Nome di pecora, italiano, accento sulla penultima (ro-SÈL-la)." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Spinalba, tipo: luogo, it: { grafia: Spinàlba, suono: spinalba, nota: Composto di 'spina' e 'alba'. Accento sulla penultima (spi-NÀL-ba) come da regola italiana. }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Tonio, tipo: png, it: { grafia: Tònio, suono: tonio, nota: "Diminutivo di Antonio, accento sulla prima sillaba (TÒ-nio)." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }
+  - { nome: Valdirame, tipo: luogo, it: { grafia: Valdiràme, suono: valdirame, nota: "Composto 'Val di Rame'. Accento sulla sillaba 'ra' (val-di-RÀ-me): 'di' è una particella atona." }, verificata: { data: 2026-11-11, voci: [ drama-3, qwen ], punteggio: 1, base: 1 } }

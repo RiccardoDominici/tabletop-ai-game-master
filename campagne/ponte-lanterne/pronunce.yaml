@@ -1,0 +1,39 @@
+lessico:
+  - { nome: Bice, tipo: png, it: { grafia: Bice }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Bellora, tipo: png, it: { grafia: Bellòra }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Rosa, tipo: png, it: { grafia: Ròsa }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Galli, tipo: png, it: { grafia: Gàlli }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Tullio, tipo: png, it: { grafia: Tùllio }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Leandro, tipo: png, it: { grafia: Leàndro }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Vischi, tipo: png, it: { grafia: Vìschi }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Dalia, tipo: png, it: { grafia: Dàlia }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 0.58 } }
+  - { nome: Fontana, tipo: png, it: { grafia: Fontàna }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Quirino, tipo: png, it: { grafia: Quirìno }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Malta, tipo: png, it: { grafia: Màlta }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 }, solo_maiuscolo: true }
+  - { nome: Nives, tipo: png, it: { grafia: Nìves }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Scotti, tipo: png, it: { grafia: Scòtti }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Arrigo, tipo: png, it: { grafia: Arrìgo }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Tasca, tipo: png, it: { grafia: Tàsca }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Ghita, tipo: png, it: { grafia: Ghìta }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Orsi, tipo: png, it: { grafia: Òrsi }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Bigia, tipo: oggetto, it: { grafia: Bìgia, suono: bigia, nota: "nome della chiatta. Accento sulla prima sillaba, gi si legge dʒ. Usare bìgia per chiarezza." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 0.55, base: 0.55 } }
+  - { nome: Borgo, tipo: luogo, it: { grafia: Bòrgo, suono: borgo, nota: "nome del quartiere (il Borgo, Borgo Basso). Si legge bene come scritto." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Clemente, tipo: luogo, it: { grafia: Clemènte, suono: clemente, nota: "nome del santo, usato per la chiesa di San Clemente. Accento sulla penultima, letta bene come scritta." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Contessa, tipo: altro, it: { grafia: Contèssa, suono: contessa, nota: nome dell'oca del Ricovero. Si legge bene come scritto. }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Corrado, tipo: png, it: { grafia: Corràdo, suono: corrado, nota: "accento sulla penultima (ra), letta bene come scritta." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Ernesto, tipo: png, it: { grafia: Ernèsto, suono: ernesto, nota: accento su nes (er-NES-to). Si legge bene come scritto. }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Gemma, tipo: png, it: { grafia: Gèmma, suono: gemma, nota: "g davanti a e si legge dʒ. Accento sulla prima sillaba, si legge bene come scritto." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 0.88 } }
+  - { nome: Lenta, tipo: luogo, it: { grafia: Lènta, suono: lenta, nota: "nome del fiume. Accento sulla e, come nella parola lenta." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Lunghe, tipo: luogo, it: { grafia: Lùnghe, suono: lunghe, nota: nome delle Case Lunghe. Si legge bene come scritto. }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Nerio, tipo: png, it: { grafia: Nerrio, suono: nerio, nota: "accento sulla prima sillaba, letta bene come scritta." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 0.9 } }
+  - { nome: Ottone, tipo: png, it: { grafia: Òttone, suono: ottone, nota: "accento sulla o iniziale, come nel metallo ottone. Si legge bene come scritto." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Pece, tipo: png, it: { grafia: Pece, suono: pece, nota: accento sulla e iniziale. ce davanti a e si legge tʃ. Il nome si legge bene come scritto. }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Pieve, tipo: luogo, it: { grafia: Pieve, suono: pieve, nota: "nome del paese del prestatore. Accento sulla i di pie, come nella parola pieve." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Pontieri, tipo: fazione, it: { grafia: Pontièri, suono: pontieri, nota: "nome della confraternita dei costruttori. Accento sulla penultima (tie), letto bene come scritto." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Pradella, tipo: png, it: { grafia: Pradèlla, suono: pradella, nota: "accento sulla penultima (del), letta bene come scritta." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Quiete, tipo: dio, it: { grafia: Quiete, suono: quiete, nota: "epiteto della Signora delle Acque Quiete. Si legge bene come scritto, con accento sull'e centrale." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Riva, tipo: luogo, it: { grafia: Rìva, suono: riva, nota: "nome della Riva Alta. Accento sulla prima sillaba, letta bene come scritta." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Ugolino, tipo: png, it: { grafia: Ugolìno, suono: ugolino, nota: "accento sulla penultima (li), letta bene come scritta." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Vadolungo, tipo: luogo, it: { grafia: Vadolùngo, suono: vadolungo, nota: "nome del paese. Accento sulla penultima (lun), letto bene come scritto." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Ricovero, tipo: luogo, it: { grafia: Ricòvero, suono: ricovero, nota: "Parola italiana comune usata come nome di luogo («il Ricovero»). Si legge correttamente come scritta. È sdrucciola: l'accento cade sulla terza sillaba da fine, ri-CÒ-ve-ro, quindi la seconda candidata lo segna esplicitamente." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+non_nomi: [ Acque, San, Signora ]

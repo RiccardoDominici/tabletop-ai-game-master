@@ -1,0 +1,22 @@
+lessico:
+  - { nome: Baldrin, tipo: png, it: { grafia: Bàldrin }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Pietrafitta, tipo: png, it: { grafia: Pietrafìtta }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Ottavia, tipo: png, it: { grafia: Ottàvia }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Ferlini, tipo: png, it: { grafia: Ferlìni }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Sebastiano, tipo: png, it: { grafia: Sebastiàno }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Ginestra, tipo: png, it: { grafia: Ginèstra }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Fondovalle, tipo: png, it: { grafia: Fondovàlle }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Corrado, tipo: png, it: { grafia: Corràdo }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Lanzi, tipo: png, it: { grafia: Lànzi }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Assenzio, tipo: png, it: { grafia: Assènzio }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Fontescura, tipo: luogo, it: { grafia: Fontescùra, suono: fontescura, nota: "Da «fonte oscura»; accento piano su «scu», la u si legge come in «scuro»." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Grifo, tipo: fazione, it: { grafia: Grìfo, suono: grifo, nota: "Nome della Compagnia del Grifo; accento su «gri», i chiusa." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Gualtiero, tipo: png, it: { grafia: Gualtièro, suono: gualtiero, nota: "Nome italiano comune, accento su «tie» (gual-tiè-ro)." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Ilde, tipo: png, it: { grafia: Ìlde, suono: ilde, nota: "Nome di origine germanica, accento sulla prima sillaba." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Moro, tipo: png, it: { grafia: Mòro, suono: moro, nota: Nome del cane; o aperta sulla sillaba accentata. }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Pievebassa, tipo: luogo, it: { grafia: Pievebassa, suono: pievebassa, nota: "Accento su «bas» (pie-ve-BÀS-sa), doppia s dolce." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Roccalba, tipo: luogo, it: { grafia: Roccàlba, suono: roccalba, nota: Accento su «cal» (roc-CÀL-ba). }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Tecla, tipo: png, it: { grafia: Tècla, suono: tecla, nota: "Accento sulla prima sillaba, c dura." }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Teodora, tipo: png, it: { grafia: Teodòra, suono: teodora, nota: Accento sulla penultima (te-o-DÒ-ra). }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+  - { nome: Valsecca, tipo: luogo, it: { grafia: Valsècca, suono: valsecca, nota: Accento su «sec» (val-SÈC-ca); doppia c dura. }, verificata: { data: 2026-11-11, voci: [ drama-3 ], punteggio: 1, base: 1 } }
+non_nomi: [ Compagnia, Signora, Sorella ]
