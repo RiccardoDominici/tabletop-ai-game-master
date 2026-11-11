@@ -19,8 +19,9 @@ scheda:
     - {nome: "Mazza ferrata", danno: "1d8", abilita: mischia}
 aspetto:
   lettura: "Un hobgoblin alto come un uomo, con il muso color fango e mezzo orecchio mozzato. Porta una pelle d'orso sulle spalle e una mazza ferrata."
-  invarianti: ["hobgoblin alto come un uomo", "pelle color fango", "mezzo orecchio sinistro mozzato", "pelle d'orso sulle spalle", "mazza ferrata", "scudo di legno"]
-  prompt_immagine: "big hobgoblin the size of a man, mud-brown skin, half of the left ear cut off, a bear pelt over the shoulders, a wooden shield and a spiked club, gnawing a mutton bone by a campfire inside a ruined tower, [STILE]"
+  invarianti: ["alto come un uomo e largo di spalle", "pelle color fango", "muso piatto con due zanne corte", "mezzo orecchio sinistro mozzato", "pelle d'orso sulle spalle", "mazza ferrata", "scudo di legno"]
+  # Il prompt descrive solo l'aspetto: il generatore di immagini non conosce i nomi dei mostri di gioco.
+  prompt_immagine: "a tall, broad, heavy humanoid the size of a man, mud-brown skin, flat snout with two small tusks, half of the left ear cut off, a bear pelt over the shoulders, a round wooden shield and a spiked iron club, gnawing a mutton bone by a campfire inside a ruined tower, [STILE]"
 personalita:
   superficie: ["lento e taciturno, mastica sempre qualcosa", "fissa gli elfi senza battere le palpebre"]
   sotto_pressione: ["si siede per terra e chiede da mangiare, come un bambino offeso"]

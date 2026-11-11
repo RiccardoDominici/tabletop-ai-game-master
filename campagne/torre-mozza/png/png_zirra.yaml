@@ -22,13 +22,14 @@ scheda:
     - {nome: "Coltello lanciato", danno: "1d4", abilita: distanza, distanza: true}
 aspetto:
   lettura: "Una goblin piccola come un bambino, con la pelle grigioverde e gli occhi gialli. Porta uno scudo dipinto di rosso e una spada corta troppo grande per lei."
-  invarianti: ["goblin piccola", "pelle grigioverde", "occhi gialli", "scudo rotondo dipinto di rosso", "spada corta", "giubba di cuoio con le borchie"]
-  prompt_immagine: "small female goblin warrior the size of a child, grey-green skin, bright yellow eyes, sharp grin, studded leather jerkin, a round shield painted red, a short sword too big for her, firelight in a ruined stone tower, [STILE]"
+  invarianti: ["piccola come un bambino", "pelle grigioverde", "orecchie a punta", "occhi gialli", "scudo rotondo dipinto di rosso", "spada corta", "giubba di cuoio con le borchie"]
+  # Il prompt descrive solo l'aspetto: il generatore di immagini non conosce i nomi dei mostri di gioco.
+  prompt_immagine: "a small female humanoid warrior the size of a child, grey-green skin, pointed ears, bright yellow eyes, sharp grin, studded leather jerkin, a round shield painted red, a short sword too big for her, firelight in a ruined stone tower, [STILE]"
   # Dopo il tradimento (la cripta aperta): un momento, non un tratto nascosto del ritratto.
   situazioni:
     - id: tiene_il_ragazzo
       dopo: [zir_cassa]
-      prompt: "the small goblin warrior pulls a teenage shepherd boy behind her red shield by his collar, an open iron-bound chest glinting with coins at her feet, inside a dark stone crypt"
+      prompt: "the small humanoid warrior with pointed ears pulls a teenage shepherd boy behind her red shield by his collar, an open iron-bound chest glinting with coins at her feet, inside a dark stone crypt"
 personalita:
   superficie: ["sfacciata e allegra, ride delle minacce", "parla svelta e dà un soprannome a tutti"]
   sotto_pressione: ["diventa seria e lenta, e conta le monete sulle dita"]
