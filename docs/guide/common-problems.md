@@ -14,6 +14,8 @@ All the logs are in `logs/`, outside git. They contain the players' actions, inc
 | `logs/server.jsonl` | the server log, one JSON line per event |
 | `logs/build.out` | the build of the web pages |
 | `logs/voce.out`, `logs/voce.jsonl` | the local voice service (Qwen) |
+| `logs/lettore.out` | the local reader, the model server on port 4613 |
+| `logs/sceneggiatore/` | the scriptwriter (`sceneggiatore.out`, `sceneggiatore.jsonl`) |
 | `logs/turni.jsonl` | the timings of each turn |
 | `logs/costi.jsonl` | the cost of each call (narrator and voice) |
 | `logs/narrazioni.jsonl` | what the narrator wrote, turn by turn, and the watchdog's interventions |
@@ -73,15 +75,15 @@ This shows the last twenty lines of the server log that mention the drama-3 voic
 
 ## Battery and heat with the local voice (Qwen)
 
-**Symptom.** With `--voce qwen` the voice slows down, cuts out, or falls behind the text.
+**Symptom.** With the local voice (the default, or `--voce qwen`) the voice slows down, cuts out, or falls behind the text.
 
-**Likely cause.** The local voice runs on the Mac, and its margin on real time is thin: with the machine loaded (other apps, browser, Docker) the synthesis becomes slower than speech (`services/voce/README.md`, «Problemi aperti», meaning: open problems). What happens on battery or with a hot Mac **is not written in the repository: to be verified**.
+**Likely cause.** The local voice runs on the Mac, and its margin on real time is thin: with the machine loaded (other apps, browser, Docker, and the local reader sharing the same GPU) the synthesis becomes slower than speech (`services/voce/README.md`, «Problemi aperti», meaning: open problems). What happens on battery or with a hot Mac **is not written in the repository: to be verified**.
 
 **What to do.**
 
 1. Play with the power adapter plugged in.
 2. Close the other heavy apps, and do not generate images at the same time.
-3. If the local voice cannot keep up, use the default voice, drama-3, which does not use the Mac's GPU: `scripts/partita.sh <campagna>` (see [voice and costs](voice-and-costs.md)).
+3. If the local voice cannot keep up, use drama-3, which does not use the Mac's GPU: `scripts/partita.sh <campagna> --voce fish`. It needs the OpenRouter key and costs money (see [the voice](voice.md)).
 
 **Where to look.** `logs/voce.jsonl`: each line has `rtf` (generation time divided by the duration of the audio). Above 1, the voice is slower than speech.
 
@@ -107,13 +109,13 @@ This shows the last twenty lines of the server log that mention the drama-3 voic
 4. If the address in the QR code is not the right one, you can set it yourself before starting:
 
    ```
-   CANTASTORIE_IP=<indirizzo del Mac> scripts/partita.sh <campagna>
+   TAGM_IP=<indirizzo del Mac> scripts/partita.sh <campagna>
    ```
 
    This starts the game with that address in the QR code and on the TELEFONI line.
 5. Follow the step-by-step checks in the [phone guide](phones.md): firewall, guest network, VPN, and the test from the Mac.
 
-**Where to look.** `logs/partita.out` (the addresses printed) and `logs/server.out`, where the server writes at each start the line «Cantastorie: in ascolto» (meaning: Cantastorie: listening) with the phones' address.
+**Where to look.** `logs/partita.out` (the addresses printed) and `logs/server.out`, where the server writes at each start the line «Tabletop AI Game Master: in ascolto» (meaning: listening) with the phones' address.
 
 ## The game seems stuck
 
@@ -121,7 +123,7 @@ This shows the last twenty lines of the server log that mention the drama-3 voic
 
 **Likely cause.** One of these, starting from the most common:
 
-1. **It is waiting for someone.** At the calm pace there is no deadline: the turn starts only when all the invited PCs (player characters) have sent their action. The projector, the phones and the panel say who is missing: «Aspettiamo: …» (meaning: waiting for: …). A disconnected phone is not waited for.
+1. **It is waiting for someone.** At the calm pace there is no deadline: the turn starts only when all the invited PCs (player characters) have sent their action. The projector, the phones and the panel say who is missing: «Aspettiamo: …» (meaning: waiting for: …). A disconnected phone is not waited for (see [pace and turns](pace-and-turns.md#when-the-turn-starts)).
 2. **No phone is connected.** The game waits for the table.
 3. **The Game Master has paused the game.** Only the Game Master puts the pause on and takes it off. If they asked while the narrator was speaking, the button says «Pausa chiesta» (meaning: pause requested), and the pause starts when the narration ends. «Ferma la narrazione» (stop the narration) also leaves the table paused.
 4. **The scene is over.** When the Engine («Motore») closes the scene with its ending, the table does not pause: the window reopens and the Game Master receives a notice to choose how to go on.
@@ -165,25 +167,25 @@ First of all: **what does not play?** The projector, a phone, or only some lines
 
 **Symptom.** The text appears on the projector and stays there for the time it takes to read it, but the voice does not arrive. The turn goes on anyway.
 
-**Likely cause.** The default voice is drama-3 via OpenRouter. If the request fails, the server retries once; then it switches to the Qwen backup, if there is one; otherwise the line stays as text. The most common causes:
+**Likely cause.** This is for the drama-3 voice (`--voce fish`, or `openrouter` in the configuration). If the request fails, the server retries once; then it switches to the Qwen backup, if there is one; otherwise the line stays as text. The most common causes:
 
-- **the key `OPENROUTER_API_KEY` is missing**. The server looks for it in the environment, then in the `.env` file at the root, then in the fallback file (`CANTASTORIE_CHIAVE_OPENROUTER`);
+- **the key `OPENROUTER_API_KEY` is missing**. The server looks for it in the environment, then in the `.env` file at the root, then in the fallback file (`TAGM_CHIAVE_OPENROUTER`);
 - **the credit has run out**: OpenRouter replies 402. A 401 or 403 usually means the key is wrong. These errors are not retried;
-- **the network is down**, or OpenRouter does not send audio within 6 seconds (`CANTASTORIE_FISH_PRIMO_MS`).
+- **the network is down**, or OpenRouter does not send audio within 6 seconds (`TAGM_FISH_PRIMO_MS`).
 
 **What to do.**
 
 1. Check that the key is there (see [installation](installation.md)). Never paste it into a chat, a log or a commit.
-2. Check and top up the credit on OpenRouter (see [voice and costs](voice-and-costs.md)).
+2. Check and top up the credit on OpenRouter (see [the voice](voice.md#drama-3)).
 3. To have a **backup** during the evening, turn on the local voice before the game:
 
    ```
    scripts/voce-avvio.sh
-   scripts/partita.sh <campagna>
+   scripts/partita.sh <campagna> --voce fish
    ```
 
-   The first line starts the Qwen voice on the Mac and waits until it is ready; the second starts the game with drama-3, which uses Qwen only for the lines it cannot say. `partita.sh` confirms it with «riserva: la voce locale, già pronta» (meaning: backup: the local voice, already ready). The backup applies only to the real game, on port 4610: test instances never use Qwen.
-4. If drama-3 fails for the whole evening, play with the local voice: `scripts/partita.sh <campagna> --voce qwen`.
+   The first line starts the Qwen voice on the Mac and waits until it is ready; the second starts the game with drama-3, which uses Qwen only for the lines it cannot say. `partita.sh` confirms it with «riserva: la voce locale, già pronta» (meaning: backup: the local voice, already ready). The backup applies only to the real game, on port 4610: test instances never use the voice service on 4611.
+4. If drama-3 fails for the whole evening, play with the local voice: `scripts/partita.sh <campagna> --voce qwen`. If the configuration chooses drama-3, `scripts/configura.sh --voce locale` makes the local voice the default again.
 
 **Where to look.** In `logs/server.out`:
 
@@ -195,15 +197,15 @@ To know which voice the game is using, look at the top line printed by `partita.
 
 ### The local voice (Qwen) does not start
 
-**Symptom.** `partita.sh --voce qwen` says «La voce locale non è partita (vedi logs/voce.out)» (meaning: the local voice did not start (see logs/voce.out)), or `voce-avvio.sh` says «manca il venv del servizio voce» (meaning: the voice service venv is missing) or «non pronto dopo 300 s» (meaning: not ready after 300 s).
+**Symptom.** `partita.sh` (with the local voice, the default, or `--voce qwen`) says «La voce locale non è partita (vedi logs/voce.out)» (meaning: the local voice did not start (see logs/voce.out)) and the game does not start, or `voce-avvio.sh` says «manca il venv del servizio voce» (meaning: the voice service venv is missing) or «non pronto dopo 300 s» (meaning: not ready after 300 s).
 
 **Likely cause.**
 
 - the Python environment of the voice service is not there (`services/voce/.venv`);
-- the model is not already on disk: the service starts without network (`HF_HUB_OFFLINE=1`) and downloads nothing (`services/voce/README.md`);
+- the model is not already on disk: the service starts without network (`HF_HUB_OFFLINE=1`) and downloads nothing (`services/voce/README.md`). `python3 -I strumenti/configura/configura.py --scarica` downloads it;
 - the Mac is too loaded: the first time, loading can take a few minutes.
 
-**What to do.** Follow the commands that `voce-avvio.sh` prints to create the environment, and step 5 of the [installation](installation.md) (the local Qwen voice, with the model to put in the cache). Meanwhile you can play with drama-3: `scripts/partita.sh <campagna>`.
+**What to do.** Follow the commands that `voce-avvio.sh` prints to create the environment, then steps 6 and 7 of the [installation](installation.md) (the local voice and the models). Meanwhile you can play with the fake voice, `scripts/partita.sh <campagna> --voce finta`, or with drama-3 if you have the OpenRouter key, `--voce fish`.
 
 **Where to look.** `logs/voce.out` (readable) and `logs/voce.jsonl` (events `avvio`, `pronto`, `errore_avvio`).
 
@@ -235,13 +237,33 @@ To know which voice the game is using, look at the top line printed by `partita.
 
 ## The narrator does not respond
 
-**Symptom.** After a turn the narrator says nothing, and only a backup line stays on the screen.
+**Symptom.** After a turn the narrator says nothing, or says only the short announcement and a waiting line, every time.
 
-**Likely cause.** The key `ANTHROPIC_API_KEY` is missing, the credit has run out, or the network is down. An error in the narration flow restarts the game at once; a wait with no sign of life restarts it after 60 seconds.
+**Likely cause.** It depends on who reads the turn. The server writes it at every start in `logs/server.out`, on the `PROVIDER:` lines and the line «NARRATORE IN USO» (narrator in use).
 
-**What to do.** Check the key (see [installation](installation.md)) and the credit (see [voice and costs](voice-and-costs.md)). The actions of the turn that the narrator did not narrate go back to the players.
+- **The local reader** (the default): the model server on port 4613 is not running. `scripts/partita.sh` starts it by itself; if it fails, `logs/partita.out` says «lettore locale: non partito, i componenti locali useranno le loro riserve (vedi logs/lettore.out)» (meaning: local reader: not started, the local components will use their fallbacks). The usual reasons: its Python environment is missing («lettore locale: manca mlx-lm», meaning: local reader: mlx-lm is missing), the model is not on disk yet, or the Mac has too little free memory.
+- **Haiku** (when the configuration chooses `anthropic`): the key `ANTHROPIC_API_KEY` is missing, the credit has run out, or the network is down. If the key is missing at start, the server uses the next provider of the chain and says so on the `PROVIDER:` lines.
 
-**Where to look.** `logs/server.out`: a message with «ANTHROPIC_API_KEY non trovata» (meaning: ANTHROPIC_API_KEY not found) if the key is missing; `logs/narrazioni.jsonl` for the watchdog's lines.
+An error in the narration flow restarts the game at once; a wait with no sign of life restarts it after 60 seconds. The actions of the turn that the narrator did not narrate go back to the players.
+
+With the local reader, a prepared line is not found for about one action in two. Then the table hears only the announcement and, if there is one, a waiting line. The scriptwriter fills those gaps, if Claude Code is installed (see [local and API](local-and-api.md#the-scriptwriter)): `scripts/sceneggiatore.sh stato` says whether it is running.
+
+**What to do.**
+
+1. Local reader: run `scripts/lettore-avvio.sh` and read what it says. To create the environment and download the model, see [installation](installation.md), steps 5 and 7.
+2. Haiku: check the key (see [installation](installation.md#step-4-optional-the-keys)) and the credit (see [voice and costs](voice-and-costs.md)).
+
+**Where to look.** `logs/lettore.out` for the local reader; in `logs/server.out`, «ANTHROPIC_API_KEY non trovata» (meaning: ANTHROPIC_API_KEY not found) if the key is missing; `logs/narrazioni.jsonl` for the watchdog's lines; `logs/sceneggiatore/sceneggiatore.out` for the scriptwriter.
+
+## The server does not start after an update
+
+**Symptom.** After `git pull`, `scripts/partita.sh` says «Il server non è partito» (meaning: the server did not start), and the logs say that a package `@tabletop-ai-gm/…` cannot be found (for example `Cannot find package '@tabletop-ai-gm/shared'`).
+
+**Likely cause.** The Node packages of the repo have new names, and the `node_modules/` folder still has the old ones.
+
+**What to do.** Run `npm install` again at the root of the repo, then start the game again.
+
+**Where to look.** `logs/partita.out`, `logs/build.out` and `logs/server.out`.
 
 ## `prepara.sh` stops
 

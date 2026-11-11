@@ -1,19 +1,23 @@
 # Connecting the phones on the local network
 
+On this page: how the phones reach the Mac, what to check when they do not connect, the audio on the phone and the combat line.
+Read first: [One evening of play](one-evening.md).
+
 The server runs on the Game Master's Mac and listens on all interfaces (`0.0.0.0`, port **4610**).
 The players' phones connect to it over the home Wi-Fi, without internet.
 
 ## How to connect them
 
 1. Mac and phones on the **same Wi-Fi network** (not the guest network, see below).
-2. Start the server with `scripts/avvio.sh`: it prints the addresses for the phones and the
-   projector.
+2. Start the game with `scripts/partita.sh <campagna>`: it checks the campaign, starts the server and
+   prints the addresses for the projector, the phones and the Game Master panel.
 3. On the projector (`/schermo`) a **QR code** appears: each player scans it with the phone camera
    and opens the `/telefono` page.
 4. If the QR code does not work, type the address by hand in the phone's browser. It has the form
-   `http://<IP del Mac>:4610/telefono`, where `<IP del Mac>` is the Mac's IP address. Read the Mac's
-   IP with `ipconfig getifaddr en0` (it is `192.168.1.4` now, but it can change: read it again at
-   every session).
+   `http://<IP del Mac>:4610/telefono`, where `<IP del Mac>` is the Mac's IP address. The script prints
+   the right one. You can also read it with `ipconfig getifaddr en0` (`en0` is usually the Wi-Fi). The address can change
+   from one evening to the next: read it again each time. If the QR code shows the wrong address, start
+   with `TAGM_IP=<IP del Mac> scripts/partita.sh <campagna>`.
 5. Each phone chooses its character. The phone remembers the character: if it reconnects, it finds
    its player character (PG) again.
 
@@ -24,10 +28,9 @@ The Game Master panel is at `/master`, on the Mac or on another device on the sa
 Check in this order.
 
 - **Mac firewall.** The macOS firewall can block incoming connections. Check it with
-  `/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate` (it is off today). If you turn
-  it on, allow incoming connections for «node» (in Italian macOS: «Impostazioni di Sistema → Rete →
-  Firewall → Opzioni»; in English: System Settings → Network → Firewall → Options). `node` is not in
-  the list of allowed apps, so without this step the server cannot be reached.
+  `/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate`. If it is on, allow incoming connections for «node» (in Italian macOS: «Impostazioni di Sistema → Rete →
+  Firewall → Opzioni»; in English: System Settings → Network → Firewall → Options). If `node` is not in
+  the list of allowed apps, the server cannot be reached.
 - **Guest network or "client isolation".** Many routers, with the guest network on, stop devices
   from seeing each other. The phone browses the web but cannot reach the Mac. Use the main network.
 - **VPN.** An active VPN on the Mac or on the phone can route traffic outside the local network.
@@ -42,7 +45,8 @@ Check in this order.
 The game voice does not start on its own on the phone: it needs one tap. In the phone's header
 there is the switch **«Ascolta qui»** (the exact button label in the app; in English, "Listen
 here"). Tap it once to hear the game voice on that phone too. Without that tap the phone stays
-silent, because the browser requires it.
+silent, because the browser requires it. The voice of a private outcome plays only on that player's
+phone, and only with «Ascolta qui» on (see [The voice](voice.md#the-voice-on-the-phones)).
 
 ## Combat
 

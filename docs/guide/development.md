@@ -7,16 +7,19 @@ Read first: [installation](installation.md), and `CLAUDE.md` at the root of the 
 
 | Folder | What it contains |
 |---|---|
-| `apps/server/` | the server: Node and TypeScript, Fastify and Socket.IO. Turns, Haiku narrator, voice, Game Master panel (`src/`), tests with vitest (`test/`) |
+| `apps/server/` | the server: Node and TypeScript, Fastify and Socket.IO. Turns, the narrator and its providers (`src/provider/`), voice, scriptwriter (`src/sceneggiatore/`), Game Master panel (`src/`), tests with vitest (`test/`) |
 | `apps/web/` | the web pages in React and Vite: `/telefono` (players), `/schermo` (projector), `/master` (Game Master panel). End-to-end tests with Playwright in `e2e/` |
 | `packages/shared/` | the shared contract: the types of the events and messages between phone, server and screen |
 | `services/voce/` | the local voice service in Python (Qwen3-TTS on MLX), with its environment in `services/voce/.venv` |
+| `services/lettore/` | only the environment of the local model server (`services/lettore/.venv`, with mlx-lm), started by `scripts/lettore-avvio.sh` |
+| `config/` | who does what: `predefinita.yaml` (in git, all local) and `locale.yaml` (not in git, the choices of this computer). See [local and API](local-and-api.md) |
 | `strumenti/` | the Python and TypeScript tools: the validator (`valida_campagna.py` and `valida/`), the layers (`strati.py`), the work across sessions (`tra_sessioni.py`), the state of the assets (`stato_preparazione.py`) |
 | `strumenti/immagini/` | the image pipeline (mflux, FLUX.2 klein), with its environment |
 | `strumenti/audio/` | the audio pipeline (music, themes, environments, effects), with its environment |
-| `scripts/` | the everyday commands: `partita.sh`, `prepara.sh`, `tra-sessioni.sh`, `avvio.sh`, `arresto.sh`, `costi.sh`, `registro.sh`, `voce-avvio.sh`, `voce-arresto.sh`, `trascrizione.mjs` |
-| `campagne/` | the campaigns: `prova-f0`, `ponte-lanterne`, `nozze-neve` |
-| `prompts/` | the narrator's prompts (`narratore.md`) and the selector's (`selettore.md`), read by the server |
+| `scripts/` | the everyday commands: `partita.sh`, `prepara.sh`, `tra-sessioni.sh`, `avvio.sh`, `arresto.sh`, `configura.sh`, `costi.sh`, `registro.sh`, `voce-avvio.sh`, `voce-arresto.sh`, `lettore-avvio.sh`, `lettore-arresto.sh`, `sceneggiatore.sh`, `fumo.sh`, `trascrizione.mjs` |
+| `campagne/` | the campaigns: `prova-f0`, `ponte-lanterne`, `nozze-neve`, `torre-mozza` |
+| `prompts/` | the prompts read by the server, one folder per language: `prompts/<lingua>/` (`narratore.md`, `selettore.md`, `lettore-minimo.md`, the arbiters, `riassunto.md`, `risponditore-regole.md`, `sceneggiatore.md`) |
+| `lingue/` | what depends on the language: fixed phrases, keywords, the Preparer's examples (`lingue/<lingua>/`) |
 | `assets/voci/` | the voice clips and the `voci.yaml` register |
 | `.claude/skills/preparatore/` | the Preparatore skill for Claude Code |
 | `docs/` | project docs, contracts, research, and this guide (`docs/guide/`) |
@@ -42,10 +45,10 @@ npm test
 Runs the tests of all the packages that have them: `apps/server` and `apps/web` (with vitest).
 
 ```
-npm run test -w @cantastorie/server
+npm run test -w @tabletop-ai-gm/server
 ```
 
-Runs only the server tests (with `-w @cantastorie/web`, only the page tests).
+Runs only the server tests (with `-w @tabletop-ai-gm/web`, only the page tests).
 
 ```
 npm run typecheck
@@ -102,9 +105,9 @@ The end-to-end tests drive a real browser against a server that is already runni
 by default they point to a test instance on port 4710 (`apps/web/e2e/percorsi.ts`).
 
 ```
-CANTASTORIE_PORTA=4710 scripts/avvio.sh --finto --mock
+TAGM_PORTA=4710 scripts/avvio.sh --finto --mock
 npm run e2e
-CANTASTORIE_PORTA=4710 scripts/arresto.sh
+TAGM_PORTA=4710 scripts/arresto.sh
 ```
 
 The first line starts a test server on 4710 with the scripted narrator and the fake voice (no cost); the second
@@ -112,7 +115,7 @@ runs the tests; the third stops only that server.
 
 - Many tests want a server running in a specific way (a campaign, a mode, variables): the right command is at the
   top of each file in `apps/web/e2e/*.spec.ts`.
-- Some use the real narrator, and so they cost money (for example `partita.spec.ts`): read the header before running them.
+- Some use a real narrator: `partita.spec.ts`, for example, is written for Haiku and costs money. Read the header before running them.
 - For another port: `E2E_PORTA=4720` (or `E2E_URL`). Screenshots go to `logs/screenshots/`.
 
 ## Trials on another port
@@ -124,55 +127,61 @@ The real game uses fixed ports. The trials use others, so you can test while som
 | 4610 | server of the real game (pages, API, Socket.IO), open to the local network | `scripts/partita.sh`, `scripts/avvio.sh` with no variables |
 | 4611 | local voice service (Qwen), only on `127.0.0.1` | `scripts/voce-avvio.sh` |
 | 4612 | Vite in development, forwards to the server on 4610 | `npm run dev` |
-| 4710, 4720, 4730… | test instances | `CANTASTORIE_PORTA=<porta>` |
+| 4613 | local model server (mlx-lm), only on `127.0.0.1`, shared by the real game and the test instances | `scripts/lettore-avvio.sh` (started by `scripts/avvio.sh` when a component uses it) |
+| 4710, 4720, 4730… | test instances | `TAGM_PORTA=<porta>`; 4710 is the default of the end-to-end tests |
+| 4790 | the smoke test of a fresh setup | `scripts/fumo.sh` |
 
 **Do not touch 4610 and 4611 during trials.** The scripts refuse 4611 and 4612 as test ports.
 
-### How `CANTASTORIE_PORTA` works
+### How `TAGM_PORTA` works
 
-`CANTASTORIE_PORTA` is read by the scripts, not by the server. `scripts/avvio.sh` translates it into the `PORT` variable,
+`TAGM_PORTA` is read by the scripts, not by the server. `scripts/avvio.sh` translates it into the `PORT` variable,
 which the server reads in `apps/server/src/config.ts` (without `PORT` it is 4610, the constant `PORTA_SERVER` in
 `packages/shared/src/eventi.ts`). With a port other than 4610, the scripts:
 
 - write logs and the session archive to `logs/porta-<porta>/`, and build the pages in
   `logs/porta-<porta>/web` (`apps/web/dist`, which serves the real game, is not touched);
-- use the fake voice, or drama-3 with `--fish`, **never Qwen**: the service on 4611 belongs to the real game, and the
-  Qwen fallback is switched off;
+- use the fake voice, or drama-3 with `--fish`, **never the Qwen service on 4611**: it belongs to the real game, and the
+  Qwen fallback of drama-3 is switched off. A separate Qwen service that you start yourself, on another port, is
+  allowed: give its address with `TAGM_VOCE_URL=http://127.0.0.1:<porta>`;
+- share the local model server on 4613 with the real game;
+- do not start the scriptwriter, unless you set `TAGM_SCENEGGIATORE=si`;
 - always start from a new session. To resume the saved one, start with
-  `CANTASTORIE_NUOVA_SESSIONE=0 CANTASTORIE_PORTA=<porta> scripts/avvio.sh` (with `partita.sh` on a test port you always
+  `TAGM_NUOVA_SESSIONE=0 TAGM_PORTA=<porta> scripts/avvio.sh` (with `partita.sh` on a test port you always
   start again from scratch);
-- stop only with the same `CANTASTORIE_PORTA`.
+- stop only with the same `TAGM_PORTA`.
 
 ### Examples
 
 ```
-CANTASTORIE_PORTA=4710 scripts/avvio.sh --finto --mock
+TAGM_PORTA=4710 scripts/avvio.sh --finto --mock
 ```
 
 Starts a test server with the scripted narrator (`--finto`: no call to Anthropic) and the fake voice (`--mock`).
 
 ```
-CANTASTORIE_PORTA=4710 CANTASTORIE_CAMPAGNA=ponte-lanterne CANTASTORIE_MODO=repertorio scripts/avvio.sh --finto --mock
+TAGM_PORTA=4710 TAGM_CAMPAGNA=ponte-lanterne TAGM_MODO=repertorio scripts/avvio.sh --finto --mock
 ```
 
 The same, with a campaign and mode B (`repertorio`) of your choice.
 
 ```
-CANTASTORIE_PORTA=4710 scripts/partita.sh ponte-lanterne --voce finta
+TAGM_PORTA=4710 scripts/partita.sh ponte-lanterne --voce finta
 ```
 
-A complete test game, with the campaign check. Warning: `partita.sh` always uses the real Haiku narrator, so it
-costs money (see [voice and costs](voice-and-costs.md)).
+A complete test game, with the campaign check. `partita.sh` uses the narrator of the configuration: by default the
+local reader, which is free. If `config/locale.yaml` chooses Haiku, the test game costs money (see
+[voice and costs](voice-and-costs.md)).
 
 ```
-CANTASTORIE_PORTA=4710 scripts/arresto.sh
+TAGM_PORTA=4710 scripts/arresto.sh
 ```
 
 Stops only the test server on 4710. Without the variable, `scripts/arresto.sh` stops the real game.
 
 ```
-CANTASTORIE_PORTA=4710 scripts/costi.sh
-CANTASTORIE_PORTA=4710 scripts/registro.sh ponte-lanterne
+TAGM_PORTA=4710 scripts/costi.sh
+TAGM_PORTA=4710 scripts/registro.sh ponte-lanterne
 ```
 
 Costs and log of the test instance: they read `logs/porta-4710/`.
@@ -183,16 +192,21 @@ All the server variables are in `apps/server/src/config.ts`. These are the ones 
 
 | Variable | What it does |
 |---|---|
-| `CANTASTORIE_LLM=finto` | scripted narrator, no call to Anthropic (the same as `--finto`) |
-| `CANTASTORIE_COPIONE_FINTO=<file>` | the script of the fake narrator |
-| `CANTASTORIE_TTS=mock` | fake voice (the same as `--mock`) |
-| `CANTASTORIE_CAMPAGNA=<id>` | which campaign in `campagne/` |
-| `CANTASTORIE_CARTELLA_CAMPAGNA=<cartella>` | a campaign outside `campagne/`, for example a copy |
-| `CANTASTORIE_MODO=improvvisa` / `repertorio` | mode A or mode B |
-| `CANTASTORIE_SESSIONE=<n>` | which package of a multi-session campaign |
-| `CANTASTORIE_SEME_DADI=<esadecimale>` | repeats the same dice sequence |
-| `CANTASTORIE_MASTER_TOKEN=<token>` | a fixed token for the Game Master panel |
-| `CANTASTORIE_SESSIONI=<file>` or `off` | where to save the session archive, or whether not to save it |
+| `TAGM_<COMPONENTE>=<provider>` | the provider of one component for this start, for example `TAGM_LETTORE=anthropic` or `TAGM_VOCE=openrouter`. The components are `LETTORE`, `ARBITRO_AZIONI`, `ARBITRO_PROVE`, `RIASSUNTO`, `REGOLE`, `VOCE`, `IMMAGINI` (see [local and API](local-and-api.md)) |
+| `TAGM_LINGUA=it` / `en` | the interface language, instead of `lingua` in `config/` |
+| `TAGM_SCENEGGIATORE=si` / `no` | `si` starts the scriptwriter on a test port too; `no` switches it off everywhere |
+| `TAGM_LLM=finto` | scripted narrator, no model call (the same as `--finto`) |
+| `TAGM_COPIONE_FINTO=<file>` | the script of the fake narrator |
+| `TAGM_TTS=mock` | fake voice (the same as `--mock`) |
+| `TAGM_CAMPAGNA=<id>` | which campaign in `campagne/` |
+| `TAGM_CARTELLA_CAMPAGNA=<cartella>` | a campaign outside `campagne/`, for example a copy |
+| `TAGM_MODO=improvvisa` / `repertorio` | mode A or mode B |
+| `TAGM_SESSIONE=<n>` | which package of a multi-session campaign |
+| `TAGM_SEME_DADI=<esadecimale>` | repeats the same dice sequence |
+| `TAGM_MASTER_TOKEN=<token>` | a fixed token for the Game Master panel |
+| `TAGM_SESSIONI=<file>` or `off` | where to save the session archive, or whether not to save it |
+| `TAGM_IP=<indirizzo>` | the Mac's address in the QR code and on the phones line |
+| `TAGM_VOCE_URL=<url>` | the address of the Qwen voice service (for a separate one on a test port) |
 
 **Careful with `npm run dev`.** It starts the server in development mode without a test port, so on 4610, and Vite
 on 4612. Do not use it while someone is playing.
@@ -211,8 +225,8 @@ The full rules are in `CLAUDE.md`, at the root of the repository. In short:
 
 2. **One step at a time, and verified.** Before moving to the next one, run the tests that touch what you changed.
    If you touch a campaign, run it through the validator.
-3. **Small, frequent commits that explain the why**, not just the what. The repository history is in Italian:
-   write the commit messages in Italian.
+3. **Small, frequent commits that explain the why**, not just the what. Write the commit messages in English
+   (the older history is in Italian; see `CLAUDE.md`).
 4. **Documents and code go together.** If you change a behavior, update the document that describes it (in `docs/`
    or in the skill). `strumenti/test_documenti.py` checks the sentences that once went out of step.
 5. **No secrets in the repository.** Before every commit and every push:

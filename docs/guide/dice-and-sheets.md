@@ -5,7 +5,7 @@ Read first: [One evening of play](one-evening.md). The source for everything is 
 
 ## In brief
 
-- **The program rolls, the model does not.** A fast referee (Haiku) decides only *what* gets rolled: for example a Persuasion check, or an attack roll with the crossbow. The code works out everything else from the sheets and the rules: difficulty, modifiers, dice, outcome.
+- **The program rolls, the model does not.** A referee decides only *what* gets rolled: for example a Persuasion check, or an attack roll with the crossbow. By default the referee is code, with no model (see [local and API](local-and-api.md#the-rules-arbiter)); a local model or Haiku can do it if you choose them. The code works out everything else from the sheets and the rules: difficulty, modifiers, dice, outcome.
 - **The narrator receives the outcome as a fact.** For example: «Ida Ferraro: Persuasione (Carisma) verso Bertoldo: 18 contro CD 15 → RIUSCITA.» (Ida Ferraro: Persuasion (Charisma) toward Bertoldo: 18 against DC 15 → SUCCESS.) The narrator tells the consequence and cannot change it.
 - **Every roll has its own card**, on the projector and on the phone. A private roll appears only on the phone of its player.
 
@@ -25,7 +25,7 @@ You roll only when the outcome is uncertain and interesting: when failing is pos
 
 Without numeric character sheets, nothing is ever rolled: the narrator resolves things with «sì, ma…» (roughly "yes, but…"; see "A campaign without dice" below).
 
-In the all-local profile no model decides the rolls: the Engine reads the action (`apps/server/src/prove/classificatore-regole.ts`). It looks at what your character DOES, not at what they say: words in quotes, or after «dico agli altri:» (meaning: I tell the others:), count only for social checks. Asking a question never rolls. A social check needs an NPC you speak to («Berta, …», «chiedo a Berta…»), not just one you mention. Words are compared whole, so «spalla» (shoulder) does not trigger «spallata» (a shoulder charge), and common words such as «porta» (door) or «passaggio» (passage) say nothing alone. When in doubt, it does not roll: a roll fewer is better than an absurd one.
+By default no model decides the rolls: the Engine reads the action (`apps/server/src/prove/classificatore-regole.ts`). It looks at what your character DOES, not at what they say: words in quotes, or after «dico agli altri:» (meaning: I tell the others:), count only for social checks. Asking a question never rolls. A social check needs an NPC you speak to («Berta, …», «chiedo a Berta…»), not just one you mention. Words are compared whole, so «spalla» (shoulder) does not trigger «spallata» (a shoulder charge), and common words such as «porta» (door) or «passaggio» (passage) say nothing alone. When in doubt, it does not roll: a roll fewer is better than an absurd one.
 
 After a failed check, what you wanted does not happen. The narrator is told so, and a prepared line that would grant it anyway (for example, the NPC handing over the key) is refused.
 
@@ -122,7 +122,7 @@ Everything comes from `docs/prove.md`, §1, which cites the SRD 5.2.
 
 ## Character sheets
 
-Sheets are optional: a campaign without sheets plays without dice. The three example campaigns (`prova-f0`, `ponte-lanterne`, `nozze-neve`) have sheets for their characters and NPCs, and checks for their scenes.
+Sheets are optional: a campaign without sheets plays without dice. The four example campaigns (`prova-f0`, `ponte-lanterne`, `nozze-neve`, `torre-mozza`) have sheets for their characters and NPCs, and checks for their scenes. `torre-mozza` uses the Basic Fantasy rules (see [Your rules manual](your-rules-manual.md#8-an-example-basic-fantasy)).
 
 ### A player character's sheet
 
@@ -228,7 +228,7 @@ This checks the `nozze-neve` campaign. It finishes with no errors if everything 
 - The dice come from a cryptographic generator, with a new seed each session, saved in the game's archive.
 - Every die rolled and every action resolved ends up in the server log, with dice, modifier, total, DC, and outcome.
 - After a restart, the game resumes with the same HP. Starting again from scratch restores full HP, with a new seed.
-- To replay the same sequence of dice (for example in a check), there is `CANTASTORIE_SEME_DADI=<hexadecimal>`.
+- To replay the same sequence of dice (for example in a check), there is `TAGM_SEME_DADI=<hexadecimal>`.
 
 ## What is not there yet
 

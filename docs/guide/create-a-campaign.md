@@ -15,8 +15,9 @@ The costs of the model calls (Preparer, image checks) are explained in [voice an
 
 ## 1. The Preparer
 
-The Preparer is a strong model that writes, **before** the session, everything the fast narrator (Claude
-Haiku) will use live. The narrator improvises little; the campaign gives it the substance already written.
+The Preparer is a strong model that writes, **before** the session, everything the narrator will use live. By
+default the narrator's reader is a small local model that only picks the prepared lines (see
+[local and API](local-and-api.md#the-local-reader)): the campaign gives it the substance already written.
 
 ## Play language
 
@@ -26,7 +27,7 @@ The game plays in Italian or English.
   language and puts `lingua` into `campagna.yaml`. That language wins for everything the Engine says: the narrator's
   prompt, the turn message, its fixed phrases, the dice keywords, the voices and the validator's prose rules.
 - The interface (phones, projector, master panel) follows the configuration language: `lingua: en` in
-  `config/locale.yaml` (setup asks for it), or `CANTASTORIE_LINGUA=en` for one start. A campaign without `lingua` is
+  `config/locale.yaml` (setup asks for it), or `TAGM_LINGUA=en` for one start. A campaign without `lingua` is
   played in the configuration language.
 - What depends on the language lives in `lingue/<code>/` and `prompts/<code>/` (design in `docs/lingue.md`).
 
@@ -98,7 +99,7 @@ Outside the campaign folder the Preparer also writes:
   (the format is in `esperimenti/copioni/README.md`);
 - `esperimenti/audio/controlli_<id>.md`: the audio checks.
 
-The Preparer makes a git commit after the main steps. The commit message is in Italian and explains the why.
+The Preparer makes a git commit after the main steps. The commit message is in English and explains the why.
 
 ### When it is really finished
 
@@ -334,6 +335,7 @@ The campaign can be given as `campagne/<id>`, as `<id>`, or with the full path.
 | `--senza-audio` | does not run the audio |
 | `--anche-a-batteria` | generates the images even on battery (not recommended) |
 | `--riprova-audio` | reruns the audio even if it is already complete, to look for the layers the sources did not have |
+| `--voce` | also pre-records the repertoire lines with drama-3 (OpenRouter). It costs money; see [lines prepared in advance](#lines-prepared-in-advance) |
 
 Things to know:
 
@@ -369,11 +371,19 @@ The narrator knows them and can make them speak, but the projector and the phone
 have spoken, or until the Game Master presses **Rivela** (the button's label in the app, meaning "Reveal") on the
 panel (see [the Game Master panel](master-panel.md)). Absent, or `false`, means visible from the start.
 
-### Prepared lines
+### Lines prepared in advance
 
-The prepared lines of the repertoire with the Qwen voice can be recorded before the evening, so they play right
-away. The command, and what it costs with drama-3, is in [voice and costs](voice-and-costs.md#lines-prepared-in-advance).
-`prepara.sh` has no option for this.
+The prepared lines of the repertoire can be voiced before the evening, so they play right away.
+
+```
+scripts/prepara.sh campagne/<id> --voce
+```
+
+This runs the usual steps and, as step «3b», records the repertoire lines with drama-3 into `cache/audio-fish`. It
+needs the OpenRouter key and costs about 2 $ per million bytes of text; the lines already in the cache are not paid
+again. Without `--voce` the step is skipped, and the game voices the lines live. With the local Qwen voice, the lines
+are recorded with `apps/server/src/strumenti/prerender.ts`, for free. Both commands, and how to estimate the cost
+first, are in [the voice](voice.md#lines-prepared-in-advance).
 
 ## 6. Images
 
@@ -393,8 +403,9 @@ uv pip install --python strumenti/immagini/.venv/bin/python -r strumenti/immagin
 ```
 
 The first line creates the Python environment for the images; the second installs mflux, PyYAML and the Anthropic
-SDK (for the visual check). The model weights weigh about 4.6 GB (`strumenti/immagini/motore.py`); how they reach
-the disk the first time is **to be verified** (see [installation](installation.md), step 6).
+SDK (for the visual check). The model weights weigh about 4.6 GB (`strumenti/immagini/motore.py`).
+`python3 -I strumenti/configura/configura.py --scarica` downloads them when your profile uses local images (see
+[installation](installation.md), step 7).
 
 ### Reading the prompts without generating
 
@@ -543,8 +554,9 @@ scripts/partita.sh <id>
 ```
 
 It checks the campaign, starts the server and prints the addresses for the projector, the phones and the Game Master
-panel. The default voice is drama-3 via OpenRouter: the alternatives and the costs are in [voice and costs](voice-and-costs.md),
-and the rest of the evening in [one evening](one-evening.md).
+panel. The voice is the one of your configuration, by default the local Qwen voice: the alternatives are in
+[the voice](voice.md), the costs in [voice and costs](voice-and-costs.md), and the rest of the evening in
+[one evening](one-evening.md).
 
 ## Problems?
 

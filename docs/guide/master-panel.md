@@ -31,7 +31,7 @@ The token is the key to the panel: whoever knows it controls the table.
 - **A fixed token.** If you prefer a token that does not change, set it before starting:
 
   ```bash
-  CANTASTORIE_MASTER_TOKEN=<un-token-tuo> scripts/partita.sh prova-f0
+  TAGM_MASTER_TOKEN=<un-token-tuo> scripts/partita.sh prova-f0
   ```
 
   This starts the game with your token. It must be 12 to 128 characters long, with only letters, digits, `_` and `-`; otherwise the server ignores it and creates a random one.
@@ -66,7 +66,7 @@ Below 1280 pixels of width, the columns become two and the page scrolls as a who
 | Mode (Modalità) | "A · improvvisa" (A · improvised) or "B · repertorio" (B · repertoire) |
 | Spoilers (Spoiler) | the switch "senza spoiler" (no spoilers) / "spoiler visibili" (spoilers visible) |
 
-Be careful with the "Voce" (Voice) field: today it only knows "Qwen (locale)" (Qwen, local) and "finta (mock)" (fake, mock). With drama-3 it shows "finta (mock)" even when the voice works (`apps/web/src/master/etichette.ts`). Trust the "voce:" line in the box printed by `scripts/partita.sh` instead.
+The "Voce" (Voice) field shows "drama-3 (Fish)", "Qwen (locale)" (Qwen, local) or "finta (mock)" (fake, mock) (`apps/web/src/master/etichette.ts`). With the local voice it shows "finta (mock)" while the Qwen service is not ready yet: the server plays a tone until it is (see [The voice](voice.md#when-a-voice-fails)).
 
 ### The main commands
 
@@ -143,7 +143,7 @@ The action window of the turn: "aperta" (open) or "chiusa" (closed), and the pac
 - One label per player: "✓ ha scritto" (has written) or "pensa…" (thinking…). A player who was not invited has a dashed border and the words "non invitato" (not invited). Their action goes in, but the turn does not wait for them.
 - "Aspettiamo: …" (We are waiting for: …) says who is missing.
 - At calm pace: "nessuna scadenza: parte quando hanno inviato tutti" (no deadline: it starts when everyone has sent). At urgent pace: "si risolve da sola tra N s" (it resolves by itself in N s).
-- **Ritmo calmo** (Calm pace) / **Ritmo concitato** (Urgent pace): changes the pace of the table. Urgent means a countdown (see [One evening of play](one-evening.md), "Il ritmo" (The pace)).
+- **Ritmo calmo** (Calm pace) / **Ritmo concitato** (Urgent pace): changes the pace of the table. Urgent means a countdown (see [Pace and turns](pace-and-turns.md#the-pace)).
 - **Risolvi ora** (Resolve now): the narrator replies at once to the actions already sent, without waiting for those who are missing. Actions still "da decidere" (to be decided) stay out of the turn. It works only with the window open and the table not paused.
 
 ### Actions
@@ -187,7 +187,7 @@ In no-spoilers mode you see only how many lines there are, per speaker, not thei
 
 The game saves itself. Here you see when it started, how many saves there are, whether it was resumed (and from which turn), and the log file, if there is one.
 
-- **Fine sessione** (End session): stops the game, closes the session, and has the server write the log (`registro.yaml`). For a campaign of a single session, the log goes to `logs/registri/<campagna>/<id>/` (`docs/strati.md`).
+- **Fine sessione** (End session): the emergency exit. It stops the game at once, with no narration, closes the session, and has the server write the log (`registro.yaml`). For a campaign of a single session, the log goes to `logs/registri/<campagna>/<id>/` (`docs/strati.md`). For the normal end of an evening, use **Chiudi la sessione** in the Serata box below.
 - **Prossima sessione** (Next session) (multi-session campaigns only): moves to the next session, if it is ready. The panel, the projector and the phones reconnect by themselves. See [Multi-session campaigns](multi-session-campaigns.md).
 - **Nuova sessione** (New session): starts the same campaign over from the beginning. The game in progress is lost.
 
@@ -195,7 +195,7 @@ These three commands cannot be undone. For this reason they ask for a second cli
 
 **Telefoni ricordati** (Remembered phones) (when there are any): each phone with its character. You can choose another character from the list, or press **Dimentica** (Forget) so that the phone chooses again. The change applies from the phone's next connection.
 
-**Serata** (Evening): how long the evening should last (**durata** (length): `ore_per_sessione` from the brief, or 2.5 hours if the brief has none), how many minutes have passed (**passati** (elapsed)) and how many are left (**rimasti** (remaining)). To change the length, type the hours (from 0.5 to 8) and press **Imposta durata** (Set length). Twenty minutes before the end the box warns you, and the narrator is told to steer towards a natural pause. This never happens during a climax: a scene with `climax: true`, or a clock that is one mark from full.
+**Serata** (Evening) (the whole evening loop is in [Evenings](evenings.md)): how long the evening should last (**durata** (length): `ore_per_sessione` from the brief, or 2.5 hours if the brief has none), how many minutes have passed (**passati** (elapsed)) and how many are left (**rimasti** (remaining)). To change the length, type the hours (from 0.5 to 8) and press **Imposta durata** (Set length). Twenty minutes before the end the box warns you, and the narrator is told to steer towards a natural pause. This never happens during a climax: a scene with `climax: true`, or a clock that is one mark from full.
 
 - **Chiudi la sessione** (Close the session): the guided close of the evening. It also asks for a second click: "Confermi la chiusura della serata?" (Confirm closing the evening?).
   - The actions still in the window go back to the players, and the narrator closes the moment.

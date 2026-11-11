@@ -24,11 +24,20 @@ The `manuali/` folder is in `.gitignore`: what you put there stays on your compu
 | **Markdown** (`.md`) | headings marked with `#` |
 | **Plain text** (`.txt`) | headings on a line by themselves, or in the form «Capitolo 3 …» |
 
-A photographed or scanned PDF has no text, and the program cannot read it. You need an OCR first, or a text version of the manual (the publisher often has one). To see how the program reads your file:
+A photographed or scanned PDF has no text, and the program cannot read it. You need an OCR first, or a text version of the manual (the publisher often has one).
+
+To read a PDF, the extractor needs the `pypdf` library, in its own Python environment. No script creates it: make it once, by hand.
+
+    uv venv --python 3.12 strumenti/regole/.venv
+    uv pip install --python strumenti/regole/.venv/bin/python pypdf
+
+The first line creates the environment; the second installs `pypdf`. A `.md` or `.txt` manual does not need it: the system `python3` is enough (`python3 -I strumenti/regole/estrai.py manuali/<file>`).
+
+To see how the program reads your file:
 
     strumenti/regole/.venv/bin/python strumenti/regole/estrai.py manuali/<file>
 
-It prints the text divided into sections, each with its page. If a section is missing or split badly, fix the file (or its index) before preparing the campaign.
+It prints the text divided into sections, each with its page (`--json` prints it as JSON). For a PDF it looks for the chapters in this order: the bookmark index, then the headings recognized by their font, and, if neither works, one section every two pages. If a section is missing or split badly, fix the file (or its index) before preparing the campaign. The Preparer runs this same command.
 
 ## 3. How to say it in the brief
 
@@ -47,7 +56,7 @@ The Preparer writes into `campagne/<id>/regole/`:
 | File | What it contains |
 |---|---|
 | `regole.yaml` | the structure of the set: how rolls work, the abilities, the skills, the difficulties, the moves, the source, and the license |
-| `riassunto.md` | a summary in plain Italian, for the players (at most 400 words) |
+| `riassunto.md` | a summary in plain words, in the campaign's language, for the players (at most 400 words) |
 | `estratti/*.md` | the manual's passages to consult, one per rule, with the words used to find them |
 
 The set can keep the manual's numbers as they are, instead of converting them (the full schema is in [docs/regole.md](../regole.md), §2):
@@ -75,7 +84,7 @@ If the manual describes how a fight works, the Preparer writes it into an option
 ## 6. What the players see
 
 - The **«Regole»** (Rules) button, at the top of the phone, opens the set's summary, with the manual's name, the license, and the attribution if the set has one.
-- At the bottom, the **«Chiedi una regola»** (Ask a rule) box. A player writes a question; a fast model answers, in at most eighty words, using only the summary and the manual passages found for the question. The answer is seen only on the phone that asked. One question at a time per phone, with a few seconds' pause between them.
+- At the bottom, the **«Chiedi una regola»** (Ask a rule) box. A player writes a question; the model of the `regole` component answers, in at most eighty words, using only the summary and the manual passages found for the question. By default it is the local model on this computer; it can be Haiku (see [local and API](local-and-api.md#the-seven-components)). The answer is seen only on the phone that asked. One question at a time per phone, with a few seconds' pause between them.
 - The answer contains nothing from the story: no scenes, NPCs, or secrets. If the rule is not in the text, it says so and advises asking the Game Master.
 
 The full rules for the box and the panel are in [docs/regole.md](../regole.md), §5.
@@ -84,8 +93,19 @@ The full rules for the box and the panel are in [docs/regole.md](../regole.md), 
 
 - **The campaign plays with the SRD 5.2, not with your manual.** The set is not valid, and the server writes this to the log: «set non valido, si gioca con l'SRD 5.2» (set not valid, playing with the SRD 5.2). Run the validator again with `--solo REGOLE` to see which field does not check out.
 - **The Preparer says the manual is empty.** The file is a scan with no text: see section 2.
-- **«Chiedi una regola» does not answer.** Check that the campaign uses a model (without a model the box is not there), and that the set has passages or a summary.
+- **«Chiedi una regola» does not answer, or is not there.** The box appears only when the `regole` component has a model (`locale`, `anthropic`…) and the set has passages or a summary. With `regole` as its provider, or on a computer without a local model and without a key, the box is not shown. With the local model, check that the model server on port 4613 is running (`logs/lettore.out`).
 
-## 8. Copyright
+## 8. An example: Basic Fantasy
+
+The campaign `campagne/torre-mozza` («La chiave della Torre Mozza», a one-shot of about two hours, three scenes) plays with a rule set taken from *Basic Fantasy Role-Playing Game*, 4th edition, release 142. That manual is free (CC BY-SA 4.0), so its set is in the repository, with `libera: true`, and its images and audio too:
+
+- `campagne/torre-mozza/regole/regole.yaml`: the structure, with comments on how each rule of the manual was translated (the ability table, percentile and «x in 6» rolls, natural 20 and 1 on attacks);
+- `campagne/torre-mozza/regole/riassunto.md` and `estratti/`: what the players read and the passages for «Chiedi una regola».
+
+The manual itself is not in the repository: it would go in `manuali/basic-fantasy-rpg-r142.pdf`. To play the campaign you do not need it:
+
+    scripts/partita.sh torre-mozza
+
+## 9. Copyright
 
 The manual is yours: you use it to play, at home, with your group. It must not be put in the repository or published. The excerpts that end up in a campaign are short quotations for personal use: do not publish them, neither on a website nor in a public channel. The repository contains only the SRD 5.2, which is under the CC-BY-4.0 license (see `CREDITS.md`).
