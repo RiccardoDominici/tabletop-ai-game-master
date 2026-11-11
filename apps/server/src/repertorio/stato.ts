@@ -92,6 +92,11 @@ export class StatoRepertorio {
   scena: string | null = null;
   /** PNG presenti nella scena in corso: solo loro (e il narratore) hanno battute in catalogo. null = tutti. */
   presenti: ReadonlySet<string> | null = null;
+  /**
+   * Chi può parlare adesso, se lo decide qualcun altro (la regia: presenze a mano, PNG a terra, morti o
+   * fuggiti per il Motore delle prove). Vale al posto di `presenti`.
+   */
+  presenza: (() => ReadonlySet<string>) | null = null;
   /** Indizi della campagna con i loro `modi`. */
   private readonly indizi: Map<string, IndizioCampagna>;
 
@@ -134,9 +139,10 @@ export class StatoRepertorio {
     const usi = this.usi.get(b.id) ?? 0;
     if (usi >= b.max_usi) return `già usata ${usi} volte (max_usi ${b.max_usi})`;
     if (b.scene.length && this.scena && !b.scene.includes(this.scena)) return `battuta della scena ${b.scene.join(', ')}`;
-    if (this.presenti) {
-      // Chi parla nella battuta (chi, e ogni [png] delle righe e delle varianti) dev'essere in scena.
-      const assente = parlantiDi(b).find((p) => !this.presenti!.has(p));
+    const presenti = this.presenza?.() ?? this.presenti;
+    if (presenti) {
+      // Chi parla nella battuta (chi, e ogni [png] delle righe e delle varianti) dev'essere in scena e poter parlare.
+      const assente = parlantiDi(b).find((p) => !presenti.has(p));
       if (assente) return `${assente} non è in questa scena`;
     }
     if (this.stradaGiàPercorsa(b)) return `indizio già trovato in un altro modo (${b.effetti.rivela_indizi.join(', ')})`;

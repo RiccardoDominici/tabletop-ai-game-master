@@ -56,6 +56,7 @@ prove:
     aiuta: "helps {aiutato}: no roll, the other has advantage."
     aiuta_niente: "helps, but there is no action to help this turn: no roll."
     gia_a_terra: "{nome} is already down: no roll, the action succeeds."
+    fuggito: "{nome} has fled and is no longer here: no roll, the action finds nobody."
     png_manca: "{nome} misses {bersaglio} (tell it in a sentence of its own)."
     png_colpisce: "{nome} hits {bersaglio}: {danni}{a_terra} (tell it in a sentence of its own)."
     png_a_terra: ", and {bersaglio} goes down"
@@ -111,6 +112,7 @@ prove:
     nessuna_arma: "none"
     senza_scheda: " · no sheet"
     a_terra: " · DOWN"
+    morto: " · DEAD"
     png_in_scena: "NPCs on stage:"
     verso_i_pg: " · toward the PCs: {atteggiamenti}"
     altri_png: "Other NPCs (not on stage): {png}"
@@ -176,6 +178,12 @@ prove:
     intestazione_tocca: " Now it is the turn of: {chi}: close by inviting only {pronome}, it is their turn."
     loro: "them"
     lui_o_lei: "him or her"
+  # NPCs in the scene out of play (scena/regia.ts, righeFuoriGioco): in the narrator's and selector's message.
+  fuori:
+    titolo: "## NPCs out of play (the Engine says so: they do not speak or act, no lines or [png_…] lines for them)"
+    a_terra: "{nome} lies unconscious on the ground: does not speak or act."
+    morto: "{nome} is no longer alive: does not speak or act."
+    fuggito: "{nome} has fled and is no longer here: does not speak or act."
   # Short Engine lines for a combat fact the narration left out (prove/fatti-dovuti.ts).
   dovuti:
     colpito: "{nome} takes the blow."
@@ -184,6 +192,7 @@ prove:
     stabile: "{nome} is still breathing, but does not move."
     rialzato: "{nome}'s eyes open again."
     morto: "{nome} dies."
+    fuggito: "{nome} flees."
 
 regole:
   domanda:

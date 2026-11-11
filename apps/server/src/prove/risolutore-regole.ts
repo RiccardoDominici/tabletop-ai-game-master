@@ -25,6 +25,7 @@ import {
   etichettaComposta,
   fattoAiuto,
   fattoAttaccoSenzaScheda,
+  fattoFuggito,
   fattoGiaATerra,
   fattoImpossibile,
   fattoNessunTiro,
@@ -135,6 +136,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
     } else if (d.tipo === 'attacco') {
       const b = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
       if (!b || !o.schede.get(b)) fatto = fattoAttaccoSenzaScheda(b ? o.nome(b) : null);
+      else if (o.stato.fuoriGioco(b) === 'fuggito') fatto = fattoFuggito(o.nome(b));
       else if (o.stato.aTerra(b)) fatto = fattoGiaATerra(o.nome(b));
       else {
         const r = attacca(a.autore, b, d.arma, fonti, a.privata)!;

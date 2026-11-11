@@ -166,3 +166,4 @@ fatti_dovuti:
   stabile: [breath, stabl, aliv, pulse, unconscious, motionless]
   rialzato: [eye, wak, rise, rose, stir, conscious, gasp, reviv]
   morto: [dead, die, death, lifeless, kill, corpse, perish]
+  fuggito: [flee, fled, run, ran, bolt, escap, retreat, scatter, vanish, away]

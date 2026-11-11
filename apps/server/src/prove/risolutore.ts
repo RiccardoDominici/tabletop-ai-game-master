@@ -37,6 +37,7 @@ import {
   etichettaSalvezza,
   fattoAiuto,
   fattoAttaccoSenzaScheda,
+  fattoFuggito,
   fattoGiaATerra,
   fattoImpossibile,
   fattoNessunTiro,
@@ -325,6 +326,8 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
       log.warn({ bersaglio: d.bersaglio }, 'prove: attacco a un bersaglio senza scheda («sì, ma»)');
       return fattoAttaccoSenzaScheda(id ? o.nome(id) : null);
     }
+    // Chi è fuggito non è più qui: niente tiro, e niente secondo scontro (e2e finale, bug C3).
+    if (o.stato.fuoriGioco(id) === 'fuggito') return fattoFuggito(o.nome(id));
     if (o.stato.aTerra(id)) return fattoGiaATerra(o.nome(id));
     const arma = scegliArma(s, d.arma);
     if (d.arma && arma.id !== chiave(d.arma)) log.info({ arma: d.arma, usata: arma.id }, 'prove: arma dell\'arbitro ricondotta alla scheda');

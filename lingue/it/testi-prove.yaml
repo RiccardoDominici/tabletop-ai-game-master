@@ -61,6 +61,7 @@ prove:
     aiuta: "aiuta {aiutato}: nessun tiro, l'altro ha vantaggio."
     aiuta_niente: "aiuta, ma non c’è un’azione da aiutare in questo turno: nessun tiro."
     gia_a_terra: "{nome} è già a terra: nessun tiro, l’azione riesce."
+    fuggito: "{nome} ha preso la fuga e non è più qui: nessun tiro, l’azione va a vuoto."
     png_manca: "{nome} manca {bersaglio} (raccontalo in una frase sua)."
     png_colpisce: "{nome} colpisce {bersaglio}: {danni}{a_terra} (raccontalo in una frase sua)."
     png_a_terra: ", e {bersaglio} va a terra"
@@ -121,6 +122,7 @@ prove:
     nessuna_arma: "nessuna"
     senza_scheda: " · senza scheda"
     a_terra: " · A TERRA"
+    morto: " · MORTO"
     png_in_scena: "PNG in scena:"
     verso_i_pg: " · verso i PG: {atteggiamenti}"
     altri_png: "Altri PNG (non in scena): {png}"
@@ -189,6 +191,12 @@ prove:
     intestazione_tocca: " Tocca ora a: {chi}: chiudi invitando solo {pronome}, è il suo turno."
     loro: "loro"
     lui_o_lei: "lui o lei"
+  # PNG in scena fuori gioco (scena/regia.ts, righeFuoriGioco): nel messaggio del narratore e del selettore.
+  fuori:
+    titolo: "## PNG fuori gioco (lo dice il Motore: non parlano né agiscono, niente battute né righe [png_…] per loro)"
+    a_terra: "{nome} giace a terra senza sensi: non parla né agisce."
+    morto: "{nome} non è più in vita: non parla né agisce."
+    fuggito: "{nome} ha preso la fuga e non è più qui: non parla né agisce."
   # Righe brevi del Motore per un fatto dello scontro che la narrazione non ha detto (prove/fatti-dovuti.ts).
   dovuti:
     colpito: "{nome} incassa il colpo."
@@ -197,6 +205,7 @@ prove:
     stabile: "{nome} respira ancora, ma non si muove."
     rialzato: "{nome} riapre gli occhi."
     morto: "{nome} muore."
+    fuggito: "{nome} fugge."
 
 regole:
   # «Chiedi una regola» (regole/chiedi.ts): il prompt di sistema è prompts/<lingua>/risponditore-regole.md.

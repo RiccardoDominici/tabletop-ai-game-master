@@ -61,6 +61,8 @@ export interface DatiMessaggioTurno {
    * delle azioni. Assente o vuoto: nessuna sezione (campagna senza dadi).
    */
   esitiTiri?: { titolo: string; regola: string; righe: string[] };
+  /** PNG in scena fuori gioco per il Motore (a terra, morti, fuggiti): non parlano né agiscono. */
+  fuoriGioco?: { titolo: string; righe: string[] };
   /** Fine della serata vicina (sessione/durata.ts, consiglioDiChiusura): un consiglio, non un ordine. */
   tempoSerata?: string | null;
 }
@@ -154,6 +156,7 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
     if (d.esitiTiri?.righe.length) parti.push(d.esitiTiri.titolo, d.esitiTiri.regola, d.esitiTiri.righe.map((r) => `- ${r}`).join('\n'));
   }
 
+  if (d.fuoriGioco?.righe.length) parti.push(d.fuoriGioco.titolo, d.fuoriGioco.righe.map((r) => `- ${r}`).join('\n'));
   if (d.orologi) parti.push(testo('messaggio.titolo_orologi'), d.orologi);
   if (d.stallo && !d.repertorio) parti.push(testoStallo(d.stallo));
   if (d.repertorio) {

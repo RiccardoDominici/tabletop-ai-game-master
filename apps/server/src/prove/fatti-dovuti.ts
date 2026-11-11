@@ -20,8 +20,8 @@ import { campoElenco, regole } from '../lingua/motore';
 
 /** L'esito di un tiro contro la morte (prove/combattimento.ts). */
 export type EsitoMorte = 'morto' | 'stabile' | 'rialzato' | 'morente';
-export type TipoFattoDovuto = 'colpito' | 'a_terra' | EsitoMorte;
-export const TIPI_FATTO_DOVUTO: readonly TipoFattoDovuto[] = ['morto', 'rialzato', 'stabile', 'morente', 'a_terra', 'colpito'];
+export type TipoFattoDovuto = 'colpito' | 'a_terra' | 'fuggito' | EsitoMorte;
+export const TIPI_FATTO_DOVUTO: readonly TipoFattoDovuto[] = ['morto', 'fuggito', 'rialzato', 'stabile', 'morente', 'a_terra', 'colpito'];
 
 export interface FattoDovuto {
   tipo: TipoFattoDovuto;
@@ -36,11 +36,16 @@ export interface FattoDovuto {
 }
 
 /**
- * I fatti dovuti del turno, uno per creatura (il più grave: morto, rialzato, stabile, morente, a terra,
- * colpito), nell'ordine in cui compaiono. Contano solo le carte pubbliche: l'esito di un'azione privata
- * non si dice al tavolo. `morte`: gli esiti dei tiri contro la morte del turno.
+ * I fatti dovuti del turno, uno per creatura (il più grave: morto, fuggito, rialzato, stabile, morente,
+ * a terra, colpito), nell'ordine in cui compaiono. Contano solo le carte pubbliche: l'esito di un'azione
+ * privata non si dice al tavolo. `morte`: gli esiti dei tiri contro la morte del turno; `fuggiti`: chi
+ * il morale ha fatto fuggire.
  */
-export function fattiDovuti(tiri: readonly TiroMostrato[], morte: ReadonlyArray<{ id: string; nome: string; esito: EsitoMorte }> = []): FattoDovuto[] {
+export function fattiDovuti(
+  tiri: readonly TiroMostrato[],
+  morte: ReadonlyArray<{ id: string; nome: string; esito: EsitoMorte }> = [],
+  fuggiti: ReadonlyArray<{ id: string; nome: string }> = [],
+): FattoDovuto[] {
   const per = new Map<string, FattoDovuto>();
   const grado = (t: TipoFattoDovuto): number => TIPI_FATTO_DOVUTO.indexOf(t);
   const metti = (f: FattoDovuto): void => {
@@ -58,6 +63,7 @@ export function fattiDovuti(tiri: readonly TiroMostrato[], morte: ReadonlyArray<
     else metti({ tipo: 'colpito', id: b.id, nome: b.nome, da: [{ id: t.chi, nome: t.nome }] });
   }
   for (const m of morte) metti({ tipo: m.esito, id: m.id, nome: m.nome });
+  for (const f of fuggiti) metti({ tipo: 'fuggito', id: f.id, nome: f.nome });
   // `da` serve solo quando la creatura colpita ha anche colpito qualcuno in questo turno.
   return [...per.values()].map((f) => (f.tipo === 'colpito' && attaccanti.has(f.id) ? f : { tipo: f.tipo, id: f.id, nome: f.nome }));
 }

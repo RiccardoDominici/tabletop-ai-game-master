@@ -81,14 +81,18 @@ export interface EsitoCombattimento {
   finito: string | null;
   /** Gli esiti dei tiri contro la morte del turno: fatti che il tavolo deve sentire (prove/fatti-dovuti.ts). */
   morte: Array<{ id: string; nome: string; esito: EsitoMorte }>;
+  /** Chi è fuggito in questo turno (morale): lascia la scena, e il tavolo lo deve sentire. */
+  fuggiti: Array<{ id: string; nome: string }>;
 }
 
-const VUOTO: EsitoCombattimento = { fatti: [], tiri: [], intestazione: null, invitati: null, finito: null, morte: [] };
+const VUOTO: EsitoCombattimento = { fatti: [], tiri: [], intestazione: null, invitati: null, finito: null, morte: [], fuggiti: [] };
 
 export class GestoreCombattimento {
   private s: StatoCombattimentoSalvato | null = null;
   /** Esiti dei tiri contro la morte di questa chiamata di dopoAzioni (vanno nell'esito). */
   private morte: EsitoCombattimento['morte'] = [];
+  /** Fughe di questa chiamata di dopoAzioni (vanno nell'esito). */
+  private fuggiti: EsitoCombattimento['fuggiti'] = [];
 
   constructor(private readonly d: DipendenzeCombattimento) {}
 
@@ -152,8 +156,22 @@ export class GestoreCombattimento {
 
   // ------------------------------------------------------------------ inizio, ordine, passi
 
-  /** Comincia lo scontro: tira l'iniziativa del set. Restituisce il fatto per il narratore. */
-  inizia(candidati: Array<{ id: string; lato: Lato; mod: number }>): string {
+  /**
+   * Il combattente esce: morto o fuggito, anche per lo stato delle prove (presenza, catalogo,
+   * narratore: prove/stato.ts, fuoriGioco), che resta dopo la fine dello scontro.
+   */
+  private esce(p: Partecipante, esito: 'morto' | 'fuggito'): void {
+    p.esito = esito;
+    this.d.stato.segnaUscito(p.id, esito);
+    if (esito === 'fuggito') this.fuggiti.push({ id: p.id, nome: p.nome });
+    this.d.log.info({ id: p.id, esito }, 'combattimento: esce dallo scontro');
+  }
+
+  /**
+   * Comincia lo scontro: tira l'iniziativa del set. Restituisce il fatto per il narratore; `dopo`
+   * riceve i fatti di chi è già a 0 (l'attacco che ha aperto lo scontro): il morale (B/X).
+   */
+  inizia(candidati: Array<{ id: string; lato: Lato; mod: number }>, dopo: string[] = []): string {
     const r = this.d.regole;
     const dadi = this.d.dadi();
     const partecipanti: Partecipante[] = candidati.map((c) => ({
@@ -175,7 +193,8 @@ export class GestoreCombattimento {
     const lati = this.tiraLati();
     this.s.passi = this.costruisciPassi();
     // Chi va a 0 prima di cominciare (l'attacco che ha aperto lo scontro) ha già le sue condizioni.
-    for (const p of partecipanti) this.controllaZero(p);
+    // La e2e finale: qui il morale si tirava senza i fatti, «CEDONO» si perdeva e chi fuggiva restava.
+    for (const p of partecipanti) this.controllaZero(p, dopo);
     const ordine =
       r.iniziativa.tipo === 'individuale'
         ? testo('prove.combattimento.iniziativa', { ordine: partecipanti.map((p) => `${p.nome} ${p.iniziativa}`).join(', ') })
@@ -258,10 +277,12 @@ export class GestoreCombattimento {
     const fatti: string[] = [];
     const tiri: TiroMostrato[] = [];
     this.morte = [];
+    this.fuggiti = [];
     let appenaIniziato = false;
     if (!this.s) {
-      if (!o.attacchi.length) return { ...VUOTO, morte: [] };
-      fatti.push(this.inizia(o.candidati()));
+      if (!o.attacchi.length) return { ...VUOTO, morte: [], fuggiti: [] };
+      const dopo: string[] = [];
+      fatti.push(this.inizia(o.candidati(), dopo), ...dopo);
       appenaIniziato = true;
     }
     const s = this.s!;
@@ -300,10 +321,10 @@ export class GestoreCombattimento {
 
   private chiudi(turno: number, fatti: string[], tiri: TiroMostrato[]): EsitoCombattimento {
     void turno;
-    const morte = this.morte;
-    if (!this.s) return { fatti, tiri, intestazione: null, invitati: null, finito: fatti.at(-1) ?? testo('prove.combattimento.fine'), morte };
+    const { morte, fuggiti } = this;
+    if (!this.s) return { fatti, tiri, intestazione: null, invitati: null, finito: fatti.at(-1) ?? testo('prove.combattimento.fine'), morte, fuggiti };
     const invitati = this.turnoDi();
-    return { fatti, tiri, intestazione: this.intestazione(), invitati: invitati && invitati.length ? invitati : null, finito: null, morte };
+    return { fatti, tiri, intestazione: this.intestazione(), invitati: invitati && invitati.length ? invitati : null, finito: null, morte, fuggiti };
   }
 
   /** Il PNG agisce da solo nella sua fase: attacca (se la fase lo prevede) il bersaglio scelto. */
@@ -356,7 +377,7 @@ export class GestoreCombattimento {
         esito = testo('prove.combattimento.morte_venti');
         comeVa = 'rialzato';
       } else if (p.tiriMorte && p.tiriMorte.fallimenti >= tm.fallimenti) {
-        p.esito = 'morto';
+        this.esce(p, 'morto');
         esito = testo('prove.combattimento.morte_morto');
         comeVa = 'morto';
       } else if (p.tiriMorte && p.tiriMorte.successi >= tm.successi) {
@@ -408,10 +429,10 @@ export class GestoreCombattimento {
     if (cz && !p.condizioni.some((c) => c.id === cz)) p.condizioni.push({ id: cz, fino: null });
     if (p.lato === 'pg') {
       if (r.danni.pgAZero === 'tiri_morte' && !p.tiriMorte) p.tiriMorte = { successi: 0, fallimenti: 0 };
-      if (r.danni.pgAZero === 'morte') p.esito = 'morto';
+      if (r.danni.pgAZero === 'morte') this.esce(p, 'morto');
     } else {
       // Fuori gioco: resta nello scontro a 0 (si vede «a terra»), non agisce più.
-      if (r.danni.pngAZero === 'morte') p.esito = 'morto';
+      if (r.danni.pngAZero === 'morte') this.esce(p, 'morto');
       this.controllaMorale(fatti ?? []);
     }
   }
@@ -430,7 +451,7 @@ export class GestoreCombattimento {
     const dadi = this.d.dadi();
     const tiro = dadi.tira(6) + dadi.tira(6);
     if (tiro > morale) {
-      for (const p of vivi) p.esito = 'fuggito';
+      for (const p of vivi) this.esce(p, 'fuggito');
       fatti.push(testo('prove.combattimento.morale_cedono', { tiro, morale, nomi: vivi.map((p) => p.nome).join(', ') }));
     } else fatti.push(testo('prove.combattimento.morale_tengono', { tiro, morale }));
   }

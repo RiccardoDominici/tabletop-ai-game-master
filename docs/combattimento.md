@@ -70,15 +70,26 @@ combattimento:
    - SRD: i tiri contro la morte all'inizio del suo turno, poi stabile, morto, o in piedi con un 20;
    - altrimenti fuori gioco o morto.
    - Il master può ridare PF: chi torna sopra 0 si rialza.
+   - **Fuori gioco** (prove/stato.ts, `fuoriGioco`): a terra (0 PF), morto o fuggito. Morti e fuggiti restano segnati
+     anche a scontro finito e si salvano con la sessione; la fuga si dimentica al cambio di scena (chi è fuggito può
+     ricomparire altrove), la morte no (il master che ridà PF lo riporta in gioco; rimettere in scena a mano un fuggito
+     lo fa rientrare). Chi è fuori gioco non parla né agisce, ovunque: esce dai PNG in scena della regia
+     (`pngInScena`), quindi dal catalogo e dalla preselezione delle battute, dalle righe `[png_x]` improvvisate (la
+     guardia dei PNG assenti le scarta), dallo sceneggiatore e dai presenti del proiettore; il messaggio del narratore e
+     del selettore ha la sezione «PNG fuori gioco» («Ruggero giace a terra senza sensi: non parla né agisce»). L'arbitro
+     vede i corpi («· A TERRA», «· MORTO»), non i fuggiti; un attacco a un fuggito non tira e non apre un altro
+     scontro. Nella e2e finale un PNG a 0 PF ha trattato per cinque turni (bug C1).
 4. **Condizioni**: le mette il Motore (a 0) o il master; scadono a inizio round, se hanno una durata. I loro effetti
    entrano nei tiri: vantaggio o svantaggio col motivo sulla carta, critico, TS falliti, turno perso.
 5. **Fine**: nemici a terra o fuggiti, PG tutti a terra, morale fallito (B/X), oppure «Termina combattimento».
+   Il morale si tira anche quando il colpo d'apertura butta giù un PNG: prima il suo fatto si perdeva e chi «fuggiva»
+   restava in scena (bug C3). Chi fugge è un fatto dovuto («Grosso fugge.», §3.7).
 6. **Narratore**: ogni attacco di un PNG arriva come frase esplicita prima dei dettagli («Ruggero lo sgherro colpisce Corrado Lanzi: 6 danni», «… manca …»), e il prompt chiede di raccontarlo in una frase sua, mai per accenni. La sezione «Esiti dei tiri» porta «Combattimento, round N, fase X. Ordine … Tocca ora a: …». Il
    narratore chiude invitando solo chi è di turno e non inventa attacchi o danni.
 7. **Fatti dovuti** (prove/fatti-dovuti.ts): nella e2e finale del 10 novembre (narratore Haiku, set Basic Fantasy) il
    narratore saltava fatti del Motore anche con «raccontalo»: un PG a 0 col suo tiro contro la morte, i danni inflitti.
    Responsabilità minima: il Motore non chiede un'altra chiamata, controlla.
-   - Fatti del turno, uno per creatura, il più grave: `morto`, `rialzato` (20 naturale), `stabile`, `morente` (tiro
+   - Fatti del turno, uno per creatura, il più grave: `morto`, `fuggito` (morale), `rialzato` (20 naturale), `stabile`, `morente` (tiro
      contro la morte senza esito finale), `a_terra` (un colpo la porta a 0), `colpito` (un colpo con danni). Solo dalle
      carte pubbliche: l'esito di un'azione privata non si dice al tavolo.
    - Dopo la narrazione (e la sua riparazione), un fatto è detto se una riga al tavolo nomina la creatura (nome, nome
@@ -112,6 +123,8 @@ combattimento:
   - lo schema e i suoi errori.
 - **test/combattimento-integrazione.test.ts**, col server intero: la finestra si apre solo per chi è di turno,
   l'azione fuori turno resta in coda, il PNG agisce da solo, il master termina.
+- **test/fuori-gioco.test.ts**: morti e fuggiti nello stato, il morale all'inizio dello scontro, l'attacco a un
+  fuggito, e col server intero un PNG a 0 PF che non parla più, esce dal catalogo e dal proiettore.
 - **test/fatti-dovuti.test.ts**: fatti dalle carte e dai tiri contro la morte, il controllo nome + parola in italiano e
   in inglese, i colpi a vicenda, e col server intero il colpo saltato che il Motore dice prima dell'invito.
 - **E2E** sulla 4720 con Haiku vero: apps/web/e2e/combattimento.spec.ts.

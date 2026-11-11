@@ -160,6 +160,11 @@ export function fattoGiaATerra(nome: string): string {
   return testo('prove.fatto.gia_a_terra', { nome });
 }
 
+/** Il bersaglio è fuggito dalla scena: non è più qui, nessun tiro. */
+export function fattoFuggito(nome: string): string {
+  return testo('prove.fatto.fuggito', { nome });
+}
+
 /** Un attacco a un bersaglio senza scheda (o senza bersaglio): nessun tiro, «sì, ma». */
 export function fattoAttaccoSenzaScheda(bersaglio: string | null): string {
   return testo('prove.fatto.attacco_senza_scheda', { bersaglio: bersaglio ?? testo('prove.fatto.qualcuno') });

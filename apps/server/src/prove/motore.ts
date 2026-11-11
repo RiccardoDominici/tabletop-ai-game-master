@@ -54,6 +54,8 @@ export interface ContestoProve {
   /** Versione della scena (cresce a ogni narrazione): una decisione presa prima è vecchia. */
   versione: number;
   pgAlTavolo: string[];
+  /** PNG che sono nella scena (presenze a mano, senza i fuggiti); assente = `png_presenti` della scena. */
+  presenti?: ReadonlySet<string>;
   nome: (id: string) => string;
 }
 
@@ -183,14 +185,17 @@ export class MotoreProve {
    * «- id = nome · …» è fissa in ogni lingua (la legge anche prove/arbitro-minimo.ts, pngInScena).
    */
   righePersonaggi(c: ContestoProve): string {
-    const aTerra = (id: string): string => (this.stato.aTerra(id) ? testo('prove.arbitro.a_terra') : '');
+    const aTerra = (id: string): string => {
+      const f = this.stato.fuoriGioco(id);
+      return f === 'morto' ? testo('prove.arbitro.morto') : f ? testo('prove.arbitro.a_terra') : '';
+    };
     const righe: string[] = [testo('prove.arbitro.pg_al_tavolo')];
     for (const id of c.pgAlTavolo) {
       const a = this.armi(id);
       const armi = a?.join(', ');
       righe.push(`- ${id} = ${c.nome(id)}${a ? testo('prove.arbitro.armi', { armi: armi || testo('prove.arbitro.mani_nude') }) : testo('prove.arbitro.senza_scheda')}${aTerra(id)}`);
     }
-    const presenti = new Set(c.campagna.scena.png_presenti);
+    const presenti = c.presenti ?? new Set(c.campagna.scena.png_presenti);
     const inScena = c.campagna.png.filter((p) => presenti.has(p.id));
     righe.push(testo('prove.arbitro.png_in_scena'));
     for (const p of inScena) {
@@ -392,7 +397,7 @@ export class MotoreProve {
       return sch && k ? modCaratteristica(sch, k) : 0;
     };
     const coinvolti = new Set(attacchi.flatMap((a) => [a.chi, a.bersaglio]));
-    const presenti = new Set(c.campagna.scena.png_presenti);
+    const presenti = c.presenti ?? new Set(c.campagna.scena.png_presenti);
     const pg = c.pgAlTavolo.filter(ha).map((id) => ({ id, lato: 'pg' as const, mod: mod(id) }));
     const png = c.campagna.png
       .filter((p) => ha(p.id) && !this.stato.aTerra(p.id) && (coinvolti.has(p.id) || (presenti.has(p.id) && c.pgAlTavolo.some((x) => this.atteggiamento(c.campagna, p.id, x) === 'ostile'))))
@@ -462,9 +467,10 @@ export class MotoreProve {
   iniziaCombattimento(): string | null {
     if (!this.attivo || this.combattimento.attivo) return null;
     const c = this.o.contesto();
-    const fatto = this.combattimento.inizia(this.candidati(c, []));
+    const dopo: string[] = [];
+    const fatto = this.combattimento.inizia(this.candidati(c, []), dopo);
     this.intestazione = null;
-    return fatto;
+    return [fatto, ...dopo].join(' ');
   }
 
   terminaCombattimento(motivo = testo('prove.combattimento.motivo_master')): boolean {

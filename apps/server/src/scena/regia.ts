@@ -477,6 +477,7 @@ export class Regia {
             narrazione: this.ultimaNarrazione(),
             versione: this.versioneScena,
             pgAlTavolo: this.pgAlTavolo(),
+            presenti: this.pngPresentiFisici(),
             nome: (id) => this.campagna.pg.find((p) => p.id === id)?.nome ?? this.campagna.png.find((p) => p.id === id)?.nome ?? id,
           }),
           ...(po.seme ? { seme: po.seme } : {}),
@@ -945,11 +946,34 @@ export class Regia {
   }
 
   /**
-   * PNG che sono nella scena in corso: solo loro parlano (le battute in catalogo e le righe improvvisate).
-   * È `png_presenti` della scheda, corretta dal master a mano (`presenzeManuali`): unico punto della regia.
+   * PNG che sono nella scena in corso e possono parlare: solo loro parlano (le battute in catalogo, le
+   * righe improvvisate, lo sceneggiatore) e si vedono presenti sul proiettore. È `png_presenti` della
+   * scheda, corretta dal master a mano (`presenzeManuali`), senza chi è fuori gioco per il Motore delle
+   * prove (a terra, morto, fuggito: prove/stato.ts, fuoriGioco). Unico punto della regia.
    */
   private pngInScena(): ReadonlySet<string> {
-    return presenzaEffettiva(this.campagna.scena.png_presenti, this.presenzeManuali);
+    const p = this.pngPresentiFisici();
+    for (const id of this.prove?.attivo ? this.prove.stato.tuttiFuori().keys() : []) p.delete(id);
+    return p;
+  }
+
+  /** PNG che sono nella scena anche se non parlano (a terra, morti: il corpo c'è); non chi è fuggito. */
+  private pngPresentiFisici(): Set<string> {
+    const p = presenzaEffettiva(this.campagna.scena.png_presenti, this.presenzeManuali);
+    for (const [id, f] of this.prove?.attivo ? this.prove.stato.tuttiFuori() : []) if (f === 'fuggito') p.delete(id);
+    return p;
+  }
+
+  /**
+   * Per il narratore e il selettore: chi in scena è fuori gioco e perché («Zirrà giace a terra senza
+   * sensi: non parla né agisce»). Nella e2e finale un PNG a 0 PF ha trattato per cinque turni.
+   */
+  private righeFuoriGioco(): string[] {
+    if (!this.prove?.attivo) return [];
+    const inScena = presenzaEffettiva(this.campagna.scena.png_presenti, this.presenzeManuali);
+    return [...this.prove.stato.tuttiFuori()]
+      .filter(([id]) => inScena.has(id) && id.startsWith('png_'))
+      .map(([id, f]) => testoFisso(`prove.fuori.${f}`, { nome: voceDi(this.campagna, id).nome }));
   }
 
   /** PNG della campagna visti dal tavolo: presenti in scena e già incontrati (vedi presenze.ts). */
@@ -969,6 +993,8 @@ export class Regia {
     if (!this.campagna.png.some((p) => p.id === id_png)) return { ok: false, errore: testoFisso('regia.errori.personaggio_sconosciuto') };
     if (presente === null) this.presenzeManuali.delete(id_png);
     else this.presenzeManuali.set(id_png, presente);
+    // Il master rimette in scena chi era fuggito: è tornato.
+    if (presente && this.prove?.stato.rientra(id_png)) this.o.log.info({ png: id_png }, 'scena: PNG fuggito rimesso in scena dal master');
     this.o.log.info({ png: id_png, presente, scena: this.campagna.scena.id }, 'scena: presenza di un PNG decisa dal master');
     this.notifica();
     return { ok: true };
@@ -1294,7 +1320,10 @@ export class Regia {
   private nuovoStatoRepertorio(): StatoRepertorio | null {
     if (this.o.modo !== 'repertorio') return null;
     if (!this.o.repertorio) throw new Error('modalità repertorio senza repertorio caricato');
-    return new StatoRepertorio(this.o.repertorio, this.campagna, this.orologi);
+    const s = new StatoRepertorio(this.o.repertorio, this.campagna, this.orologi);
+    // Chi parla nelle battute: i PNG in scena che possono parlare, decisi qui (anche a mano e dopo un colpo).
+    s.presenza = () => this.pngInScena();
+    return s;
   }
 
   /** Perché la battuta non può rispondere all'azione di `per` in questo turno (null = può). */
@@ -1761,7 +1790,9 @@ export class Regia {
     // A finestra aperta il suo turno non è stato narrato: l'apertura lo prende; altrimenti il successivo.
     const turno = !inGioco ? this.turno : this.tavolo.aperta ? this.turno : this.turno + 1;
     this.impostaScena(nuova.id, turno);
-    this.o.log.info({ da, a: nuova.id, fase: this.fase, immagine: this.o.immagini?.luogo(nuova.id) ?? null }, 'scena: cambio di scena');
+    // Chi era fuggito dalla scena di prima può ricomparire in questa (i morti restano morti).
+    const tornati = this.prove?.stato.dimenticaFughe() ?? [];
+    this.o.log.info({ da, a: nuova.id, fase: this.fase, immagine: this.o.immagini?.luogo(nuova.id) ?? null, ...(tornati.length ? { fughe_dimenticate: tornati } : {}) }, 'scena: cambio di scena');
     if (!inGioco) {
       this.notifica();
       return { ok: true };
@@ -2309,6 +2340,9 @@ export class Regia {
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r) : null;
     if (epoca !== this.epoca) return;
+    // Dopo i tiri: chi è a terra, morto o fuggito non parla (presenza, catalogo, narratore).
+    const fuori = this.righeFuoriGioco();
+    if (fuori.length) this.o.log.info({ turno: r.turno, fuori }, 'prove: PNG fuori gioco nel messaggio del narratore');
     // Gli stessi dati vanno al lettore minimo, che non legge il testo (llm/minimo.ts, turnoDaDati).
     const datiTurno: DatiMessaggioTurno = {
       turno: r.turno,
@@ -2324,6 +2358,7 @@ export class Regia {
       noteRegia: this.note.testi,
       tempoSerata: this.consiglioSerata(r.turno),
       ...(tiri?.fatti.length ? { esitiTiri: { titolo: titoloEsiti(), regola: this.prove?.regolaEsiti() ?? regolaEsiti(), righe: tiri.fatti } } : {}),
+      ...(fuori.length ? { fuoriGioco: { titolo: testoFisso('prove.fuori.titolo'), righe: fuori } } : {}),
     };
     const messaggioBase = compilaMessaggioTurno(datiTurno);
     // Ritmo concitato: il narratore sa che vale ancora, e quando dire `[ritmo] calmo`.
@@ -2354,7 +2389,7 @@ export class Regia {
     // Mossa del mondo (nessuna azione): la narrazione resta nella finzione (narrazione/finzione.ts).
     const mossaDelMondo = r.azioni.length === 0;
     // Colpi, cadute e tiri contro la morte del turno: il Motore controlla che il tavolo li senta.
-    const dovuti = tiri ? fattiDovuti(tiri.tiri, tiri.combattimento?.morte ?? []) : [];
+    const dovuti = tiri ? fattiDovuti(tiri.tiri, tiri.combattimento?.morte ?? [], tiri.combattimento?.fuggiti ?? []) : [];
     void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti).catch((err: unknown) =>
       this.dopoEccezione(epoca, r.turno, 'narrazione', err),
     );
