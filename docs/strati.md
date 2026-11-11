@@ -128,9 +128,11 @@ one stays on the finished one, with the warning in the panel); the last one play
 - **The recap** (`apps/server/src/sessione/riassunto.ts`): written by Haiku (the same client as the narrator, a
   different prompt) or by the local model, from the public transcript alone. The Engine waits 20 s, or 3 minutes for
   the local model: in the final E2E an 8B model in 4 bits took 101 s, and with 20 s the fallback was always read. It never uses private actions, `[privato]` lines or facts with
-  `noto_ai_pg: false`. Then a deterministic guard: a word from `parole_segrete.yaml` that is still secret and was never
-  said at the table makes the text be discarded, and the fallback is read (places crossed and the last signs of the
-  clocks, spoken aloud). Only finished sentences count: a trailing sentence without a full stop was cut (the model
+  `noto_ai_pg: false`. Then a deterministic guard: a sentence (or a thread) with a word from `parole_segrete.yaml` that
+  is still secret and was never said at the table is removed, and the rest of the recap stays. Only when too little is
+  left does the fallback get read (places crossed and the last signs of the clocks, spoken aloud). A word is no longer
+  secret once its `pubblica_dopo` is met (a clue revealed, a line said in public), or once the PCs know its `fatti`:
+  the canon's `noto_ai_pg` facts, from a session package too, and the `fatti_noti` of lines said in public. Only finished sentences count: a trailing sentence without a full stop was cut (the model
   stopped, the stream dropped) and is removed, and a recap under 20 characters goes to the fallback; so does a cut thread.
 - **«La volta scorsa…» (Last time…)** (`apps/server/src/scena/serata.ts`), read before the opening or the resume and
   shown by the projector until the first window closes: a package after one without `riassunto_iniziale` uses the last

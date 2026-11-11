@@ -146,10 +146,17 @@ export async function scriviRiassunto(
     if (!testo) return riserva(`testo troncato o troppo breve (${analizzato.testo.length} caratteri, fine: ${esito.stopReason ?? 'nessuna'})`);
     // Un filo è una domanda intera: uno troncato si toglie.
     const fili = analizzato.fili.filter((f) => /[.!?…][»"”’)]*$/.test(f));
-    const scappate = paroleScappate([testo, ...fili].join(' '), r.materiale, r.parole, r.pubblico);
-    if (scappate.length) return riserva(`parole segrete non dette al tavolo: ${scappate.join(', ')}`);
-    o.log.info({ caratteri: testo.length, fili: fili.length, costo: esito.costo }, 'riassunto: scritto dal modello');
-    return { testo, fili, origine: 'modello' };
+    // Una frase (o un filo) con una parola ancora segreta e mai detta al tavolo si toglie, non tutto il riassunto
+    // (E2E, terzo giro: «la lavagna l'ha scritta Tonio» faceva chiudere la serata con la riserva, senza fili).
+    const scappaIn = (t: string): string[] => paroleScappate(t, r.materiale, r.parole, r.pubblico);
+    const frasi = testo.split(/(?<=[.!?…])\s+/).filter(Boolean);
+    const tolte = [...frasi, ...fili].flatMap(scappaIn);
+    const pulito = frasi.filter((f) => !scappaIn(f).length).join(' ');
+    const filiPuliti = fili.filter((f) => !scappaIn(f).length);
+    if (tolte.length && pulito.length < MIN_CARATTERI_RIASSUNTO) return riserva(`parole segrete non dette al tavolo: ${[...new Set(tolte)].join(', ')}`);
+    if (tolte.length) o.log.info({ parole: [...new Set(tolte)], frasi_tolte: frasi.length - pulito.split(/(?<=[.!?…])\s+/).filter(Boolean).length, fili_tolti: fili.length - filiPuliti.length }, 'riassunto: tolte le frasi con una parola segreta');
+    o.log.info({ caratteri: pulito.length, fili: filiPuliti.length, costo: esito.costo }, 'riassunto: scritto dal modello');
+    return { testo: pulito, fili: filiPuliti, origine: 'modello' };
   } catch (err) {
     return riserva(`modello: ${(err as Error).message}`);
   } finally {

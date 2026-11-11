@@ -403,6 +403,15 @@ profile A 16/16 turns plus the closing, $0, reader 9.1 s median at send, scenegg
 **Verdict of the third pass:** 12 of the 13 checked fixes hold in play. The one left is L1, which is log noise, not
 something the table hears. None of the replacement lines the table heard was wrong.
 
+**After the third pass** (commit «Selector check and recap guard: what the table heard is not a secret»):
+- **L1**: the selector's secret check now also leaves out everything in the public transcript, the narrator's
+  echo of an action included. Only a secret the Engine itself put in the message is an ERROR.
+- **The recap guard**: «la lavagna l'ha scritta Tonio» had **not** come out at the table. Its `pubblica_dopo` is
+  empty, and the players only said «chi ha scritto questa lavagna sa scrivere, e non è un goblin». So the guard was
+  right, but it threw away the whole model recap. Now only the sentence, and the thread, that says it is removed, and
+  the rest of the recap and its threads stay. A word also stops being secret when the PCs know its facts (canon
+  `noto_ai_pg`, a session package, `fatti_noti` of lines said in public).
+
 ## 11. Reproduce
 
 Commands are in §4; the measures are recomputed with

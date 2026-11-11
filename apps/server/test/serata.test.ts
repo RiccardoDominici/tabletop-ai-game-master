@@ -9,8 +9,9 @@ import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { StatoTavolo, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import { loggerMuto } from '../src/logger';
+import { RADICE_REPO } from '../src/percorsi';
 import { NarratoreFinto } from '../src/llm/finto';
-import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
+import { caricaParoleSegrete, regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
 import { climaxInCorso, consiglioDiChiusura, DurataSerata, MINUTI_PREAVVISO } from '../src/sessione/durata';
 import { analizzaRiassunto, soloFrasiFinite, ATTESA_MODELLO_LOCALE_MS, ATTESA_MODELLO_MS, attesaRiassunto, frasiLaVoltaScorsa, leggiRiassunti, materialePubblico, paroleScappate, riservaDa, scriviRiassunto } from '../src/sessione/riassunto';
 import type { Narratore } from '../src/llm/tipi';
@@ -195,5 +196,28 @@ describe('riassunto troncato', () => {
     expect(e).toMatchObject({ origine: 'modello', testo: 'Livia ha chiesto a Berta dove fosse il ragazzo. Berta ha stretto la chiave e ha taciuto.', fili: ['Dove si nasconde Tonio?'] });
     expect(soloFrasiFinite('Troppo corto.')).toBeNull();
     expect(soloFrasiFinite('Anna ha ascoltato il temporale sulla locanda.')).toBe('Anna ha ascoltato il temporale sulla locanda.');
+  });
+});
+
+// E2E, terzo giro: il riassunto del modello rifiutato tutto per una frase con un segreto mai detto al tavolo
+// («la lavagna l'ha scritta Tonio»: nella partita nessuno l'ha detto, la guardia aveva ragione; si toglie la frase).
+describe('riassunto con una frase segreta (torre-mozza, il caso vero)', () => {
+  const parole = caricaParoleSegrete(path.join(RADICE_REPO, 'campagne', 'torre-mozza', 'repertorio'));
+  const materiale = 'Eliandro: Copio sul quaderno la scritta della lavagna, lettera per lettera.\nEliandro: Chi ha scritto questa lavagna sa scrivere, e non è un goblin.';
+  const modello = 'Eliandro ha copiato la lavagna lettera per lettera. La lavagna l’ha scritta Tonio. Berta ha stretto la chiave e ha taciuto.\nFILO: Chi ha scritto la lavagna?\nFILO: Perché Tonio ha scritto la lavagna?';
+  const narratore = new NarratoreFinto({ idPng: [], idPg: [], primoTokenMs: 1, msPerPezzo: 0, copione: () => modello });
+  const chiedi = (fatti: string[]) =>
+    scriviRiassunto({ narratore, log: loggerMuto() }, { materiale, parole, pubblico: { indiziRivelati: new Set(), battuteUsate: () => false, fattiNoti: new Set(fatti) }, riserva: 'RISERVA', turno: 19 });
+
+  it('non è uscito al tavolo: si toglie solo la frase (e il filo) col segreto, il resto del riassunto resta', async () => {
+    expect(await chiedi([])).toEqual({
+      origine: 'modello',
+      testo: 'Eliandro ha copiato la lavagna lettera per lettera. Berta ha stretto la chiave e ha taciuto.',
+      fili: ['Chi ha scritto la lavagna?'],
+    });
+  });
+
+  it('se i PG lo sanno (fatto noto, come in un pacchetto di sessione), la frase resta', async () => {
+    expect((await chiedi(['f_tonio_lavagna'])).testo).toContain('La lavagna l’ha scritta Tonio');
   });
 });

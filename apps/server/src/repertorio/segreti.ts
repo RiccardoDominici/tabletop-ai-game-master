@@ -78,10 +78,16 @@ export function caricaParoleSegreteCampagna(c: { cartelleSegreti: readonly strin
 export interface StatoPubblico {
   indiziRivelati: ReadonlySet<string>;
   battuteUsate: (id: string) => boolean;
+  /**
+   * Fatti che i PG sanno (canone `noto_ai_pg`, anche da un pacchetto di sessione, ed effetti `fatti_noti` delle
+   * battute dette): la parola di un fatto noto non è più un segreto.
+   */
+  fattiNoti?: ReadonlySet<string>;
 }
 
 export function èPubblica(p: ParolaSegreta, s: StatoPubblico | null): boolean {
   if (!s) return false;
+  if (p.fatti.length && s.fattiNoti && p.fatti.every((f) => s.fattiNoti!.has(f))) return true;
   return p.pubblica_dopo.some((id) => s.indiziRivelati.has(id) || s.battuteUsate(id));
 }
 
@@ -89,6 +95,14 @@ export function èPubblica(p: ParolaSegreta, s: StatoPubblico | null): boolean {
 /** Il testo senza questi pezzi (le parole dei giocatori dentro un messaggio del Motore). */
 export function senzaTesti(testo: string, pezzi: readonly string[]): string {
   return pezzi.filter((p) => p.trim().length > 0).reduce((t, p) => t.split(p).join(' '), testo);
+}
+
+/**
+ * Le parole segrete che il MOTORE ha messo in un messaggio: si tolgono prima i testi già sentiti al tavolo (le azioni
+ * dei giocatori e la trascrizione pubblica, eco del narratore compresa), che per definizione non sono più segreti.
+ */
+export function segretiDelMotore(messaggio: string, giaDetti: readonly string[], parole: ParolaSegreta[], s: StatoPubblico | null): ParolaSegreta[] {
+  return segretiNelTesto(senzaTesti(messaggio, giaDetti), parole, s);
 }
 
 export function segretiNelTesto(testo: string, parole: ParolaSegreta[], s: StatoPubblico | null = null): ParolaSegreta[] {

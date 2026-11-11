@@ -13,7 +13,7 @@ import type { EsitoPrivato } from '@tabletop-ai-gm/shared';
 import { misuraFughe } from '../src/esperimenti/fughe';
 import { segretiNascosti } from '../src/narrazione/guardia-segreti';
 import { RADICE_REPO } from '../src/percorsi';
-import { regexDaPython, segretiNelTesto, senzaTesti, type ParolaSegreta } from '../src/repertorio/segreti';
+import { caricaParoleSegrete, èPubblica, regexDaPython, segretiDelMotore, segretiNelTesto, senzaTesti, type ParolaSegreta } from '../src/repertorio/segreti';
 import { agisci, attendi, inizia, Prova, turno } from './aiuti/partita';
 
 const vino: ParolaSegreta = { parola: 'il vino annacquato', sorgente: '\\bannacquat', regex: regexDaPython('\\bannacquat'), pubblica_dopo: ['nar_brocca'], fatti: [] };
@@ -100,5 +100,30 @@ describe('la rete di sicurezza del messaggio del selettore', () => {
     expect(segretiNelTesto(senzaTesti(messaggio, [azione, '']), [vino])).toEqual([]);
     const fuga = `${messaggio}\n- oste_acqua: il vino annacquato dell'oste`;
     expect(segretiNelTesto(senzaTesti(fuga, [azione]), [vino]).map((p) => p.parola)).toEqual(['il vino annacquato']);
+  });
+});
+
+// E2E, terzo giro (L1): le parole tornavano dall'eco del narratore nella trascrizione, non dall'azione.
+describe('la rete di sicurezza: ciò che il tavolo ha già sentito (torre-mozza, il caso vero)', () => {
+  const parole = caricaParoleSegrete(path.join(RADICE_REPO, 'campagne', 'torre-mozza', 'repertorio'));
+  const azione = 'Dico agli altri: i goblin non sanno fare lettere con il carbone. Chi ha scritto questa lavagna sa scrivere, e non è un goblin.';
+  const eco = 'Eliandro: «Dico agli altri: i goblin non sanno fare lettere con il carbone».';
+  const messaggio = `## Trascrizione recente\n${eco}\n## Azioni\n- Livia: Guardo la porta di ferro.\n## Catalogo\n- nar_lavagna: un PG guarda la lavagna`;
+
+  it('l’eco del narratore nella trascrizione non è una fuga del Motore', () => {
+    expect(segretiNelTesto(messaggio, parole).map((p) => p.parola)).toEqual(['i goblin non scrivono']);
+    expect(segretiDelMotore(messaggio, [azione, eco, 'Guardo la porta di ferro.'], parole, null)).toEqual([]);
+  });
+
+  it('una parola messa dal Motore (nel catalogo) resta una fuga', () => {
+    const fuga = `${messaggio}\n- ugo_scrittura: i goblin non scrivono, lo sa anche il mulo`;
+    expect(segretiDelMotore(fuga, [azione, eco], parole, null).map((p) => p.parola)).toEqual(['i goblin non scrivono']);
+  });
+
+  it('il fatto che i PG sanno (canone, pacchetto, battuta detta) toglie il segreto', () => {
+    const lavagna = parole.find((p) => p.parola === "la lavagna l'ha scritta Tonio")!;
+    const stato = (fatti: string[]) => ({ indiziRivelati: new Set<string>(), battuteUsate: () => false, fattiNoti: new Set(fatti) });
+    expect(èPubblica(lavagna, stato([]))).toBe(false);
+    expect(èPubblica(lavagna, stato(['f_tonio_lavagna']))).toBe(true);
   });
 });

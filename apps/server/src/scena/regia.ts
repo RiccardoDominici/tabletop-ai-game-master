@@ -86,7 +86,7 @@ import type { Battuta, Repertorio } from '../repertorio/tipi';
 import { StatoRepertorio } from '../repertorio/stato';
 import { provaFallita } from '../repertorio/condizioni';
 import { righeMenzogneDette } from '../repertorio/menzogne';
-import { segretiNelTesto, senzaTesti, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
+import { segretiDelMotore, segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
 import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
 import { voceDi } from '../turni/narrazione';
 import { PipelineVoce, type UscitaAudio } from '../voce/pipeline';
@@ -298,6 +298,10 @@ export class Regia {
   private rilasciFuoriContesto = 0;
   /** Ultimo turno il cui messaggio aveva il consiglio di fine vicina (va nel registro delle narrazioni). */
   private consiglioAlTurno = -1;
+  /** Fatti del canone che i PG sanno dall'inizio (`noto_ai_pg: true`, anche da un pacchetto di sessione). */
+  private get fattiDelCanone(): string[] {
+    return ((this.campagna.campagnaNarratore['canone'] as Array<Record<string, unknown>> | undefined) ?? []).filter((f) => f?.['noto_ai_pg'] === true && typeof f['id'] === 'string').map((f) => f['id'] as string);
+  }
   /** Nomi dei PNG e soprannomi, per la pertinenza del catalogo. */
   private readonly nomiPng: Map<string, string[]>;
   /** Luogo corrente (id della scena o del nodo): sceglie l'immagine del proiettore. */
@@ -507,7 +511,7 @@ export class Regia {
     this.sceneggiatore = opzioni.sceneggiatore
       ? new CanaleSceneggiatore({ radice: opzioni.sceneggiatore.radice, log: opzioni.log.child({ modulo: 'sceneggiatore' }), adesso: () => this.o.orologio.adesso(), onRisposta: (rq, rs) => this.dalloSceneggiatore(rq, rs) })
       : null;
-    this.serata = new SerataGuidata({ campagna: opzioni.campagna, narratore: opzioni.narratoreRiassunto !== undefined ? opzioni.narratoreRiassunto : opzioni.narratore, log: opzioni.log, parole: () => this.o.paroleSegrete ?? [], pubblico: () => this.statoPubblico() });
+    this.serata = new SerataGuidata({ campagna: opzioni.campagna, narratore: opzioni.narratoreRiassunto !== undefined ? opzioni.narratoreRiassunto : opzioni.narratore, log: opzioni.log, parole: () => this.o.paroleSegrete ?? [], pubblico: () => this.statoPubblicoAlTavolo() });
     if (!opzioni.ripresa) this.serata.preparaPerPacchetto();
     if (opzioni.ripresa) this.ripristina(opzioni.ripresa);
     else if (opzioni.dispositiviEreditati) {
@@ -1426,7 +1430,11 @@ export class Regia {
   /** Lo stato pubblico al tavolo (battute e indizi usciti solo in privato non contano), come la guardia dei segreti. */
   private statoPubblicoAlTavolo(): StatoPubblico | null {
     const s = this.statoRepertorio;
-    return s ? { indiziRivelati: new Set([...s.indiziRivelati].filter((i) => !this.indiziPrivati.has(i))), battuteUsate: (id) => s.usata(id) && !this.battutePrivate.has(id) } : null;
+    if (!s) return null;
+    // Fatti noti al tavolo: quelli del canone (`noto_ai_pg`) e quelli delle battute dette in pubblico.
+    const fattiNoti = new Set(this.fattiDelCanone);
+    for (const id of s.usi.keys()) if (!this.battutePrivate.has(id)) for (const f of s.repertorio.perId.get(id)?.effetti.fatti_noti ?? []) fattiNoti.add(f);
+    return { indiziRivelati: new Set([...s.indiziRivelati].filter((i) => !this.indiziPrivati.has(i))), battuteUsate: (id) => s.usata(id) && !this.battutePrivate.has(id), fattiNoti };
   }
 
   /** Testo dell'ultima narrazione pubblica (per l'arbitro). */
@@ -1490,7 +1498,7 @@ export class Regia {
   /** Stato pubblico per le parole segrete: indizi rivelati e battute uscite. */
   private statoPubblico(): StatoPubblico | null {
     const s = this.statoRepertorio;
-    return s ? { indiziRivelati: s.indiziRivelati, battuteUsate: (id) => s.usata(id) } : null;
+    return s ? { indiziRivelati: s.indiziRivelati, battuteUsate: (id) => s.usata(id), fattiNoti: s.fattiNoti } : null;
   }
 
   /**
@@ -2570,10 +2578,11 @@ export class Regia {
     }
     // Rete di sicurezza: nel messaggio del selettore non deve esserci nessuna parola ancora segreta.
     if (this.statoRepertorio && this.o.paroleSegrete?.length) {
-      // Le parole dei giocatori (azioni di adesso e di prima, nella trascrizione) non contano: le hanno scritte loro
-      // (E2E, secondo giro, L1: 12 ERROR a partita per questo). Resta un errore ciò che ci ha messo il Motore.
-      const deiGiocatori = [...r.azioni.map((a) => a.testo ?? ''), ...this.trascrizione.filter((v) => v.tipo === 'azione').map((v) => v.testo)];
-      const trovate = segretiNelTesto(senzaTesti(messaggio, deiGiocatori), this.o.paroleSegrete, this.statoPubblico());
+      // Ciò che il tavolo ha già sentito non conta: le azioni dei giocatori e la trascrizione pubblica, eco del
+      // narratore compresa (E2E, L1: 11–12 ERROR a partita per le parole dei giocatori ripetute dal narratore).
+      // Resta un errore solo ciò che ci ha messo il Motore.
+      const giaDetti = [...r.azioni.map((a) => a.testo ?? ''), ...this.trascrizione.filter((v) => v.tipo !== 'sistema').map((v) => v.testo)];
+      const trovate = segretiDelMotore(messaggio, giaDetti, this.o.paroleSegrete, this.statoPubblico());
       if (trovate.length) this.o.log.error({ turno: r.turno, parole: trovate.map((p) => p.parola) }, 'repertorio: parola segreta nel messaggio del selettore');
     }
     this.notifica();
