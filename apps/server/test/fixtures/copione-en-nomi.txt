@@ -1,0 +1,13 @@
+# Fake narrator script for the pronunciation e2e (apps/server/test/pronuncia-e2e.test.ts), campaign en-nomi.
+# One block per turn, separated by «---»; the last one also applies to the turns after.
+[narratore] Aoibheann steps up to the counter. Niamh Dubhghall wipes a mug and does not look up.
+[png_keeper] Rooms in Cwmtaith are two silver a night. Pay first.
+[narratore] Cadwgan, what do you do?
+[invito] tutti
+---
+[narratore] Thunder rolls over Cwmtaith. Xyrrhae bars the door.
+[png_guard] By Ysgarth, nobody leaves before the rain stops.
+[invito] tutti
+---
+[narratore] Niamh lowers her voice. Nobody has prayed to Brychan since the flood.
+[invito] tutti

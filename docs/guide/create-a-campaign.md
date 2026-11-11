@@ -130,6 +130,7 @@ check passes.
 | 9 | the repertoire and the outcomes of the scenes | `--solo REPERTORIO,COPERTURA,PROSA,SCENA` |
 | 10 | the secret words | no `SEGRETI` error |
 | 11 | the image prompts and the audio reading | `--dry-run` of the two pipelines |
+| 11b | `pronunce.yaml`: how the voice must say every proper noun | `--solo PRONUNCIA --rigoroso` |
 | 12 | strict validator and action scripts | zero errors |
 | 13 | reading aloud | the list of the step |
 | 14 | independent review | serious problems fixed |
@@ -272,6 +273,7 @@ Each rule belongs to a **class**. The exact list is printed by `--classi`:
 | `LIVELLO` | length in sessions and the level of the campaign |
 | `AUDIO` | explicit audio fields |
 | `VOCE` | expressive voice: short directions, known tags closed within the line |
+| `PRONUNCIA` | pronunciation lexicon: every proper noun of the texts has a respelling for the voice ([pronunciation](../pronuncia.md)) |
 
 ### How to read the messages
 
@@ -320,9 +322,12 @@ each file is in `.claude/skills/preparatore/riferimenti/schema.md`.
 scripts/prepara.sh campagne/<id>
 ```
 
-It brings a valid campaign to ready-to-play, in four steps:
+It brings a valid campaign to ready-to-play, in four steps (plus 1b):
 
 1. **strict validator**: it stops if there are errors, and generates nothing;
+   - **1b, names by ear**: the entries of `pronunce.yaml` not yet verified are said by the drama-3 voice, transcribed by
+     Whisper, and the respelling that is understood best is kept (`strumenti/pronuncia/prova.ts`, a few cents; it needs
+     the OpenRouter key, without it the step is skipped and says so);
 2. **images**: it generates the missing ones, using the Mac's GPU;
 3. **audio**: music, themes, ambiences, effects;
 4. **report**: what is there, what is missing, how much it weighs, and the command to play.
@@ -336,6 +341,7 @@ The campaign can be given as `campagne/<id>`, as `<id>`, or with the full path.
 | `--anche-a-batteria` | generates the images even on battery (not recommended) |
 | `--riprova-audio` | reruns the audio even if it is already complete, to look for the layers the sources did not have |
 | `--voce` | also pre-records the repertoire lines with drama-3 (OpenRouter). It costs money; see [lines prepared in advance](#lines-prepared-in-advance) |
+| `--senza-pronuncia` | skips step 1b, the ear test of the names (`TAGM_PRONUNCIA_QWEN=http://127.0.0.1:<port>` adds a local Qwen service to it: never the one of a game in progress) |
 
 Things to know:
 

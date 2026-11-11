@@ -1,0 +1,17 @@
+# English campaign with names that are hard for an English voice, for the pronunciation tests
+# (docs/pronuncia.md, apps/server/test/pronuncia-e2e.test.ts). Invented placeholders, not real game content.
+id: en-nomi
+lingua: en
+canone:
+  - {id: f_rain, noto_ai_pg: true, testo: "It has rained on Cwmtaith for three days."}
+  - {id: f_shrine, noto_ai_pg: false, testo: "The shrine of Ysgarth is empty."}
+orologi:
+  - id: o_storm
+    nome: "The storm is coming"
+    segmenti: 2
+    segno_almeno_ogni: 2
+    pieni_all_inizio: 0
+    segni: ["Distant thunder over Cwmtaith.", "The door slams."]
+    al_completo: "The river floods."
+sessione:
+  riassunto_iniziale: "It has rained for three days on the valley of Cwmtaith."

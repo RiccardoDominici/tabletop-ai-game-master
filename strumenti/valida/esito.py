@@ -35,6 +35,7 @@ CLASSI = {
     "LIVELLO": "durata in sessioni e livello della campagna (brief.yaml, strumenti/strati.py, docs/strati.md)",
     "AUDIO": "campi espliciti dell'audio (docs/audio.md): vocabolario chiuso, motivo, niente segreti nei temi",
     "REGOLE": "set di regole della campagna (docs/regole.md §2): schema, schede e prove nel vocabolario del set, estratti, licenza",
+    "PRONUNCIA": "lessico di pronuncia dei nomi (docs/pronuncia.md): ogni nome proprio dei testi ha la sua grafia per la voce",
     "VOCE": "voce espressiva drama-3 (docs/ricerca-voce-drama3.md): direzioni brevi, tag conosciuti e chiusi nella riga",
 }
 

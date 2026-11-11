@@ -131,8 +131,9 @@ into sentences and sends each sentence to the right voice.
   the log, never in public. In mode B, a `[usa] id > pg` line towards a private action goes in the same way, and
   only to that PC. Private rolls (dice) use this channel too.
 - Lines without a label: they are appended to the previous segment (tolerance), with an error in the log.
-- Names to pronounce: before synthesis the server replaces the NPCs' names with the spelling in their `pronuncia`
-  field (e.g. «Bàldrin»), only in the text sent to the voice, not in the text shown.
+- Names to pronounce: before synthesis the server replaces every name of the pronunciation lexicon
+  (`pronunce.yaml`, names added in play, and the `pronuncia` field of the sheets, e.g. «Bàldrin») with its respelling,
+  only in the text sent to the voice, not in the text shown (docs/pronuncia.md).
 
 ## Campaign files (F0)
 

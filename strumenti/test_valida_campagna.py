@@ -1698,3 +1698,51 @@ def test_chiusura_senza_scena_basta_se_la_scena_e_una(camp):
 def test_chiusura_di_un_png_o_con_effetti_e_un_errore(camp):
     modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_chiusura_volpe").update(effetti={"fatti_noti": ["f_impronte_cera"]}))
     assert "REPERTORIO.chiusura" in errori(camp)
+
+
+# --- PRONUNCIA: lessico di pronuncia dei nomi (docs/pronuncia.md) --------------------------------------
+
+def test_pronuncia_lessico_mancante_solo_in_rigoroso(camp):
+    (camp / "pronunce.yaml").unlink()
+    assert "PRONUNCIA.lessico_mancante" in avvisi(camp)
+    assert "PRONUNCIA.lessico_mancante" in errori(camp, rigoroso=True)
+
+
+def test_pronuncia_nome_senza_voce(camp):
+    # A PNG with no voice in the lexicon (nor a `pronuncia` in its sheet), and a new place with a mid-sentence capital.
+    modifica(camp, "pronunce.yaml", lambda d: d["lessico"].pop(0))
+    assert "PRONUNCIA.nome_senza_voce" not in errori(camp, rigoroso=True)  # the `pronuncia` field of the sheet covers Bruno
+    modifica(camp, "png/png_bruno.yaml", lambda d: d.pop("pronuncia"))
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: d["battute"][0]["testo"].append("[narratore] Il vento arriva da Valdorsa."))
+    esito, _ = valida(camp, rigoroso=True, contesto_b=False)
+    mancanti = {v.messaggio.split("»")[0].lstrip("«") for v in esito.errori if v.codice == "PRONUNCIA.nome_senza_voce"}
+    assert mancanti == {"Bruno", "Valdorsa"}
+
+
+def test_pronuncia_non_nomi_e_forme_coprono(camp):
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: d["battute"][0]["testo"].append("[narratore] I Valdorsani e la Badessa aspettano."))
+    assert "PRONUNCIA.nome_senza_voce" in errori(camp, rigoroso=True)
+    def copri(d):
+        d["non_nomi"] = ["Badessa"]
+        d["lessico"].append({"nome": "Valdorsa", "tipo": "luogo", "it": {"grafia": "Valdòrsa", "forme": {"Valdorsani": "Valdorsàni"}}, "verificata": True})
+    modifica(camp, "pronunce.yaml", copri)
+    assert "PRONUNCIA.nome_senza_voce" not in errori(camp, rigoroso=True)
+
+
+def test_pronuncia_schema(camp):
+    def rompi(d):
+        d["lessico"].append({"nome": "Bruno", "it": {"grafia": "Bruno"}})               # repeated
+        d["lessico"].append({"nome": "Valdorsa", "en": {"grafia": "Val-DOR-sa"}})        # Italian spelling missing
+        d["lessico"].append({"nome": "Pieve", "it": {"grafia": "[whisper] PièVe"}})     # voice markup
+    modifica(camp, "pronunce.yaml", rompi)
+    esito, _ = valida(camp, contesto_b=False)
+    assert sum(v.codice == "PRONUNCIA.schema" for v in esito.errori) == 3
+
+
+def test_pronuncia_parola_comune_e_non_verificata(camp):
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: d["battute"][0]["testo"].append("[png_bruno] Ho un mantello bruno."))
+    modifica(camp, "pronunce.yaml", lambda d: d["lessico"][0].pop("verificata"))
+    assert {"PRONUNCIA.parola_comune", "PRONUNCIA.non_verificata"} <= avvisi(camp)
+    modifica(camp, "pronunce.yaml", lambda d: d["lessico"][0].update(solo_maiuscolo=True))
+    assert "PRONUNCIA.parola_comune" not in avvisi(camp)
+

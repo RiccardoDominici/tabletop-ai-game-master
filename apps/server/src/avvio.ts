@@ -63,7 +63,7 @@ import { FabbricaModelli } from './provider/fabbrica';
 import { MotoreVoceFish } from './voce/fish';
 import { caricaRegistroVoci } from './voce/registro-voci';
 import { codaAudioFish } from './sceneggiatore/audio';
-import { creaPronunciatore } from './voce/pronuncia';
+import { LessicoVivo } from './voce/lessico-vivo';
 import type { Battuta } from './repertorio/tipi';
 
 export interface ServerTagm {
@@ -329,8 +329,12 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   const uscite = creaUscite(app.io);
   // Registro delle sessioni: se c'è una sessione in corso di questa campagna (e modalità), si riprende.
   const { memoria, ripresa, dispositiviEreditati } = apriSessioni(archivio, config, campagna, log.child({ modulo: 'sessioni' }));
+  // Lessico di pronuncia (docs/pronuncia.md): uno solo per la voce dal vivo e per l'audio pre-generato
+  // dello sceneggiatore, così un nome aggiunto in gioco vale subito per tutti e due.
+  const lessico = new LessicoVivo({ campagna, log: log.child({ modulo: 'pronuncia' }) });
   const regia = new Regia({
     lingue: { interfaccia: config.lingua, contenuti: pronta.lingua },
+    lessico,
     memoria,
     ripresa,
     dispositiviEreditati,
@@ -371,7 +375,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       sost.preGeneraAudio !== undefined
         ? sost.preGeneraAudio
         : fish && cacheAudio.fish
-          ? codaAudioFish({ campagna, pronuncia: creaPronunciatore(campagna), cache: cacheAudio.fish, motore: fish.motore, voci: caricaRegistroVoci(config.voce.fish.registro), log: log.child({ modulo: 'sceneggiatore-audio' }) })
+          ? codaAudioFish({ campagna, pronuncia: lessico.pronuncia, cache: cacheAudio.fish, motore: fish.motore, voci: caricaRegistroVoci(config.voce.fish.registro), log: log.child({ modulo: 'sceneggiatore-audio' }) })
           : null,
     finestraATutti: config.turni.finestraATutti,
     arbitro,

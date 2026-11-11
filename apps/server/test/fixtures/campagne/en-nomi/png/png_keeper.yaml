@@ -1,0 +1,9 @@
+id: png_keeper
+nome: "Niamh Dubhghall"
+sa: [f_rain, f_shrine]
+voce:
+  tts: {voce_id: vincent}
+  registro: "formal"
+aspetto:
+  lettura: "A tall woman in an apron."
+  prompt_immagine: "innkeeper"

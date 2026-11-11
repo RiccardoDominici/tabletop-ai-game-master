@@ -396,6 +396,8 @@ export class PipelineVoce {
     let annunciata = false;
     // Parole per Qwen e il finto; testo con direzioni e tag (passato dalla guardia) per drama-3.
     const testo = soloParole(frase.testo_voce ?? frase.testo);
+    // Il testo che la voce legge davvero, quando non è quello mostrato (pronuncia dei nomi, docs/pronuncia.md).
+    if (frase.testo_voce !== undefined && frase.testo_voce !== frase.testo) log.debug({ id_frase: frase.id_frase, parlante: frase.parlante, testo_voce: testo }, 'voce: testo per la sintesi');
     const espressivo = motore.espressivo ? this.testoEspressivo(frase) : undefined;
     const richiesta = (v: string) => ({ id: frase.id_frase, voce: v, testo, ...(espressivo ? { espressivo } : {}) });
     try {

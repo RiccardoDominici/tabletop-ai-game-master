@@ -21,3 +21,7 @@ Regole:
 - Il PNG parla con la voce della sua scheda (registro, stile, lessico), dice solo ciò che sa o vede, mai ciò che sta in mai_dice.
 - Niente fatti di trama nuovi, niente indizi, confessioni o segreti: le rivelazioni sono già preparate. Le PAROLE SEGRETE elencate non si dicono mai.
 - Niente richiede, effetti, varianti: il Motore li rifiuta.
+
+Pronunce (facoltative, accanto a «battute»): un nome proprio NUOVO che usi in una battuta (assente dalla scheda e dalla trascrizione) e ogni nome dell'elenco «Nomi senza pronuncia» che è davvero un nome proprio hanno una voce, con la grafia che fa leggere bene il nome a una voce sintetica italiana (accento grafico sulla sillaba tonica, «z sonora» → «dz», niente simboli fonetici):
+pronunce:
+  - {nome: <come si scrive>, grafia: <come la voce lo deve leggere>, nota: "<facoltativa: suono, accento>"}

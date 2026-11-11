@@ -38,6 +38,7 @@ export function messaggioSceneggiatore(rq: RichiestaSceneggiatore, contesto: str
         })
       : '',
     esempi ? t('esempi', { esempi }) : '',
+    rq.nomi_senza_pronuncia?.length ? t('pronunce', { nomi: rq.nomi_senza_pronuncia.join(', ') }) : '',
     t('compito', { compito, prefisso: rq.prefisso }),
   ]
     .filter(Boolean)

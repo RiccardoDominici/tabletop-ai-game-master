@@ -46,6 +46,7 @@ modelli:
     trascrizione: "## Ultime righe sentite al tavolo\n{righe}"
     gia_usati: "## Già usati negli ultimi turni (NON ripeterli)\nattacchi: {attacchi}\nimmagini: {immagini}\ntic usciti di recente: {tic}"
     esempi: "## Esempi di battute di questa campagna\n{esempi}"
+    pronunce: "## Nomi senza pronuncia\nQueste parole sentite al tavolo non sono nel lessico di pronuncia: {nomi}. Per ognuna che è un nome proprio (persona, luogo, oggetto, fazione, dio) aggiungi una voce in «pronunce»; ignora le parole comuni."
     compito: "## Compito\n{compito}\nPrefisso degli id: {prefisso}. Rispondi solo con il blocco YAML."
     subito: "Scrivi UNA battuta che risponde a questa azione, adesso (il giocatore sta aspettando): {nome} ({id_pg}): «{testo}». Se l'azione si rivolge a un PNG presente, risponde lui; altrimenti il narratore dice l'effetto.{privata}"
     privata: " È un'azione PRIVATA: la risposta la sente solo quel giocatore, sul suo telefono. Il PNG parla a bassa voce, o il narratore dice ciò che solo quel PG vede o sente; nessun altro al tavolo se ne accorge."

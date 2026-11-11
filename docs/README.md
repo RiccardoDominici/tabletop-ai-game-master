@@ -13,6 +13,7 @@ and open items. They are written in English. The user guide is in [guide/](guide
 | [e2e-finale.md](e2e-finale.md) | Final end-to-end test (11 November 2026): Basic Fantasy RPG manual → rule set → campaign → games in the local and API profiles, measures, judge, bugs and verdict. |
 | [f0-contratti.md](f0-contratti.md) | Phase 0 (one complete scene): contracts between the phone, server, projector and voice. |
 | [manuale-master.md](manuale-master.md) | The narrator's craft rules for D&D played live, enforced by the code. |
+| [pronuncia.md](pronuncia.md) | Pronunciation of invented names: the per-campaign lexicon, the TTS → Whisper ear test, names added during play. |
 | [prove.md](prove.md) | Checks and dice: which roll applies to which action, and the character sheet schema. |
 | [regole.md](regole.md) | Rule sets for campaigns: how a user's rules manual becomes a set, and the SRD 5.2 default. |
 | [repertorio.md](repertorio.md) | Pre-written lines chosen at runtime: the strong model writes them before play, the fast model picks them. |

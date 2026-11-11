@@ -5,7 +5,8 @@
  * (docs/strati.md, «Regole di unione»: due implementazioni finirebbero per divergere).
  *
  * Cosa scrive in <uscita>/:
- *   stile.yaml, pg.yaml, brief.yaml            copiati dal livello di campagna;
+ *   stile.yaml, pg.yaml, brief.yaml,           copiati dal livello di campagna (il lessico di pronuncia
+ *   pronunce.yaml, pronunce-gioco.yaml         vale per tutte le sessioni, docs/pronuncia.md);
  *   campagna.yaml                              campagna.yaml + la parte di sessione di sessione.yaml,
  *                                              con sessione.riassunto_iniziale e le due `preparazione`;
  *   scena.yaml, scene/NN_<id>.yaml             le scene del pacchetto nell'ordine di sessione.yaml
@@ -111,7 +112,7 @@ function main(): number {
   };
 
   // Livello di campagna copiato com'è.
-  for (const f of ['stile.yaml', 'pg.yaml', 'brief.yaml']) if (fs.existsSync(path.join(o.cartella, f))) scrivi(f, fs.readFileSync(path.join(o.cartella, f), 'utf8'), [f]);
+  for (const f of ['stile.yaml', 'pg.yaml', 'brief.yaml', 'pronunce.yaml', 'pronunce-gioco.yaml']) if (fs.existsSync(path.join(o.cartella, f))) scrivi(f, fs.readFileSync(path.join(o.cartella, f), 'utf8'), [f]);
 
   // campagna.yaml: la vista del narratore (già unita dal caricatore) + riassunto e preparazione.
   const sessione = leggiYaml(path.join(p.cartella, FILE_SESSIONE));

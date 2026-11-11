@@ -35,7 +35,9 @@ The request (`apps/server/src/sceneggiatore/protocollo.ts`) carries:
 - the scene and the NPCs present;
 - the action to resolve (`subito`);
 - the last 30 lines the table has heard;
-- the state: revealed clues, known facts, lines already used, clocks.
+- the state: revealed clues, known facts, lines already used, clocks;
+- in the background requests (`prossime`), `nomi_senza_pronuncia`: capitalised words heard at the table that the
+  pronunciation lexicon does not know (docs/pronuncia.md, «During play»).
 
 The process adds, from the campaign files:
 - the narrator's context of mode B (public NPC sheets with voice, register, `mai_dice`, scene; no secrets,
@@ -48,7 +50,8 @@ The rule set is not needed: the scriptwriter decides no outcomes or rolls, becau
 ## What it writes
 Lines in the repertoire's format (docs/repertorio.md): `id` with the given prefix, `chi`, `tipo`, `quando`, `temi`,
 `testo`. Only `reazione`, `momento`, `richiesta`, `rifiuto`, `saluto`, from one to three lines, short sentences for the
-voice.
+voice. Next to the lines, optionally, `pronunce: [{nome, grafia, nota}]` for the proper nouns among `nomi_senza_pronuncia`
+and for a new name of its own lines: the Engine checks them and adds them to `pronunce-gioco.yaml` (voce/lessico-vivo.ts).
 
 ## The check (`sceneggiatore/valida.ts`)
 The same rules as the prepared repertoire, plus those for whoever writes on the fly:

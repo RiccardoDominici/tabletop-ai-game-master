@@ -154,6 +154,7 @@ the other errors arrive when you write the files that concern them.
 | 9 | `repertorio/*.yaml` and `esiti` of the scenes | `--solo REPERTORIO,COPERTURA,PROSA,SCENA` and the coverage table |
 | 10 | `repertorio/parole_segrete.yaml` | no `SEGRETI` error |
 | 11 | image situations, reading of the prompts | `--dry-run` read, then commit |
+| 11b | `pronunce.yaml`: the pronunciation lexicon of every proper noun | `--solo PRONUNCIA --rigoroso` with no errors |
 | 12 | strict validator and scripts | zero errors, justified warnings, then commit |
 | 13 | reading aloud | the list of the step |
 | 14 | independent review | the serious problems fixed |
@@ -371,6 +372,19 @@ wrong, with the fields `audio` and `tema` (schema.md, «Audio»; mestiere.md §1
 model (PyYAML alone is enough); read them. No prompt shows something the players must not yet know: the regexes are in
 the campaign's language and the prompts in English, so here your own reading decides. No theme betrays who is lying.
 The real images and audio are made at step 16, once the campaign is finished.
+
+### 11b. Pronunciation lexicon → `pronunce.yaml`
+The synthetic voice reads invented names badly («Zirrà», «Eliandro», «Aoibheann»). The server sends the voice a
+respelling of every name, never the screen (docs/pronuncia.md). Write one entry per proper noun of the texts (NPCs, PCs,
+places, objects, factions, gods, terms of the manual) in the campaign's language, with how it must sound: the shape is in
+`riferimenti/schema.md`, «Pronunciation lexicon». Think of each name as the voice will meet it: stress, a z that is voiced
+or not, a letter that is silent; give two or three `candidate` when you are not sure, the ear test picks one. A name that
+is also an ordinary word («Sasso», «Ash») gets `solo_maiuscolo: true`; capitalised words that are not names («Signora»,
+a title) go in `non_nomi`. The `pronuncia` field of a sheet still works, but the lexicon is the place for every name.
+
+**Check**: `--solo PRONUNCIA --rigoroso` with zero errors (every name the validator finds has its entry). The ear test
+(`npx tsx strumenti/pronuncia/prova.ts campagne/<id> --nuovi`: drama-3 and Whisper, a few cents per name) runs in step 16
+with `scripts/prepara.sh`; run it now if a name worries you, and read its table.
 
 ### 12. Strict validator and scripts
 Have a subagent, blind, write two scripts of actions for your campaign in `esperimenti/copioni/<id>/`: it sees only what

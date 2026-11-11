@@ -11,6 +11,7 @@ You pay only when `config/locale.yaml`, a `TAGM_<COMPONENTE>` variable or a flag
 
 - **Anthropic (Haiku)**: the reader, the arbiters, the summary or the rule answers, when they are set to `anthropic` (for example with `scripts/configura.sh --api`). The visual check of the generated images also uses Haiku, whenever the key is there.
 - **OpenRouter (drama-3)**: the voice, with `--voce fish` or with `voce` set to `openrouter`, and the lines pre-generated with `scripts/prepara.sh --voce`.
+- **OpenRouter (drama-3 and Whisper)**: the ear test of the names in `scripts/prepara.sh` (step 1b, about half a cent per name; skipped without the key; see [The voice](voice.md#names-the-pronunciation-lexicon)).
 
 The scriptwriter (see [Local and API](local-and-api.md#the-scriptwriter)) uses your Claude Code subscription, not an API key: it does not appear in `scripts/costi.sh`.
 

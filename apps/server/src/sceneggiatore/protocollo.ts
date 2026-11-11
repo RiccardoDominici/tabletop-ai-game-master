@@ -39,6 +39,11 @@ export interface RichiestaSceneggiatore {
    * usciti nelle loro ultime righe (id → tic).
    */
   gia_usati?: { attacchi: string[]; immagini: string[]; tic: Record<string, string[]> };
+  /**
+   * Parole con la maiuscola sentite al tavolo che il lessico di pronuncia non conosce (voce/lessico-vivo.ts):
+   * per quelle che sono nomi propri lo sceneggiatore risponde anche con `pronunce:` (docs/pronuncia.md).
+   */
+  nomi_senza_pronuncia?: string[];
   /** Quante battute scrivere. */
   quante: number;
 }

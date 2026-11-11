@@ -179,7 +179,7 @@ must have a revealing line for each [V]. If missing, it counts as 1 [R warns].
 ```yaml
 id: png_<nome>                 # = file name, lowercase ASCII [V]; becomes the label [png_<nome>]
 nome: "…"                      # initial different from the other NPCs of the scene [V]
-pronuncia: "…"                 # with the accent: the TTS uses it
+pronuncia: "…"                 # optional, with the accent: the TTS uses it (better: an entry in pronunce.yaml)
 nascosto: true|false           # optional [V boolean]: present for the Engine, but not shown to the projector and phone until it speaks or the GM reveals it
 alias: [nicknames]             # how the players will call them: a dwarf, the innkeeper, the stranger [R]; never generic
                                #   (old man, girl) [R], never the same as another NPC [V]
@@ -258,6 +258,28 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
 The validator checks: missing sheets (only with dice); scores and fields; modifiers written by hand; AC that does not come from the armour;
 hit points above the class hit die; NPCs outside the CR band; DC 5–30; an existing clue that is not essential; `richiede.prova` naming an
 existing check.
+
+## Pronunciation lexicon: pronunce.yaml (docs/pronuncia.md)
+```yaml
+lessico:
+  - nome: Zirrà                  # as written in the texts [V: unique]
+    tipo: png                    # png, pg, luogo, oggetto, fazione, dio, termine, altro [V warns]
+    forme: [Zirra]               # other spellings with the SAME sound (optional)
+    solo_maiuscolo: false        # true when the name is also an ordinary word [V warns when it is]
+    it:                          # the campaign's language [V: required, with grafia]
+      grafia: Dzirrà             # what the voice reads instead of the name; plain text, no [ ] < > { } [V]
+      suono: dzirra              # optional: the intended sound as a listener would write it (the ear test scores against it)
+      candidate: [Dzirrà, Dzìrra]  # optional: respellings for the ear test to choose from
+      forme: {Zirrani: Dzirràni} # optional: inflected forms with their own respelling
+      nota: "voiced z, stress on the last syllable"
+non_nomi: [Signora]              # capitalised words that are not names
+```
+Every proper noun of the texts has an entry [V rigoroso: `PRONUNCIA.nome_senza_voce`]: the words of NPC and PC names, and
+every capitalised word in mid-sentence that never appears in lowercase. Respellings: in Italian the accent on the
+stressed vowel when it is not obvious (Nèspola, Eliàndro), «dz» for a voiced z; in English syllables split by hyphens and
+the stressed one in capitals (ee-VAWN, KOOM-tyth). The ear test writes `grafia`, `suono` and `verificata`; entries without
+`verificata` are a warning (`PRONUNCIA.non_verificata`). Names met during play land in `pronunce-gioco.yaml` (same shape,
+with `origine`): review them between sessions.
 
 ## Repertoire: see riferimenti/repertorio.md
 Fields of a line: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi, solo_esempio, riempitivo, scena, audio` [V].

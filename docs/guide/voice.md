@@ -160,6 +160,23 @@ Without the folder, the campaign is the one of `TAGM_CARTELLA_CAMPAGNA`, or `TAG
 
 `scripts/prepara.sh campagne/<id> --voce` runs the drama-3 command for you, as step «3b». Without `--voce` that step is skipped: the game voices the lines live. See [Creating a campaign](create-a-campaign.md#lines-prepared-in-advance).
 
+## Names: the pronunciation lexicon
+
+Invented names («Zirrà», «Aoibheann») are read badly by any voice. Each campaign has `pronunce.yaml`: for every proper noun,
+the respelling the voice reads instead («Dzirrà», «ee-VAWN»). The screen, the phones and the transcript keep the written name.
+The Preparer writes it; the validator checks that no name is missing (class `PRONUNCIA`); `scripts/prepara.sh` tries the new
+entries by ear. To try them yourself, or to make the lexicon of a campaign that does not have one:
+
+```bash
+npx tsx strumenti/pronuncia/prova.ts campagne/<id> --dry-run     # what it would try, and the cost
+npx tsx strumenti/pronuncia/prova.ts campagne/<id> --aggiungi    # adds the missing names, tries them, writes the lexicon
+```
+
+It prints a table (name, how the voice says it without the lexicon and what Whisper hears, the chosen respelling and what
+Whisper hears, the score) and saves it in `logs/pronuncia-<id>.md`. It costs about half a cent per name. Names the players or the
+scriptwriter bring in during play are added by the Engine to `pronunce-gioco.yaml` and are said right from then on.
+Details: [pronunciation](../pronuncia.md). The cost is on [Voice and costs](voice-and-costs.md).
+
 ## The voice registry
 
 `assets/voci/voci.yaml` is the list of voices the game knows. The server (for drama-3) and the voice service (for Qwen) both read it. Today there are five voices: `narratore` (the narrator's fixed voice), `vincent`, `nadine`, `lucian`, `tabitha`.

@@ -1,0 +1,14 @@
+id: scena_inn
+nome: "The Cwmtaith Inn"
+apertura: "The inn of Cwmtaith is full of smoke. Niamh Dubhghall, the innkeeper, looks at you: what do you do?"
+png_presenti: [png_keeper, png_guard]
+orologi_attivi: [o_storm]
+musica: {tag: taverna_calda}
+intensita: 2
+mossa_morbida_pronta: "A log collapses in the fireplace of the Cwmtaith inn."
+immagine: {prompt_luogo: "smoky tavern"}
+descrizione: "A smoky room with a fireplace and a small shrine to Ysgarth."
+domanda_drammatica: "Will Niamh speak about the shrine?"
+elementi_interattivi:
+  - {cosa: "the shrine", azioni: "it can be searched"}
+taglio: "It ends when Niamh speaks about the shrine."

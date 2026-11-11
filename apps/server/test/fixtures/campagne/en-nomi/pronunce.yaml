@@ -1,0 +1,12 @@
+# Pronunciation lexicon (docs/pronuncia.md): every proper noun of the campaign, respelled for the voice.
+lessico:
+  - {nome: Cwmtaith, tipo: luogo, en: {grafia: KOOM-tyth, nota: "Welsh-like: w = oo, th as in thin"}}
+  - {nome: Niamh, tipo: png, en: {grafia: NEEV, nota: "mh = v"}}
+  - {nome: Dubhghall, tipo: png, en: {grafia: DOO-gal, nota: "bhgh silent"}}
+  - {nome: Xyrrhae, tipo: png, en: {grafia: ZEER-ay}}
+  - {nome: Aoibheann, tipo: pg, en: {grafia: ee-VAWN, nota: "aoi = ee, bh = v"}}
+  - {nome: Cadwgan, tipo: pg, en: {grafia: KAD-oo-gan}}
+  - {nome: Quill, tipo: pg, en: {grafia: Quill}}
+  - {nome: Ash, tipo: pg, solo_maiuscolo: true, en: {grafia: Ash}}
+  - {nome: Ysgarth, tipo: dio, en: {grafia: ISS-garth}}
+non_nomi: [Guard]   # a title, not a name

@@ -46,6 +46,7 @@ modelli:
     trascrizione: "## Last lines heard at the table\n{righe}"
     gia_usati: "## Already used in the last turns (do NOT repeat them)\nopenings: {attacchi}\nimages: {immagini}\ntics heard recently: {tic}"
     esempi: "## Example lines from this campaign\n{esempi}"
+    pronunce: "## Names without a pronunciation\nThese words heard at the table are not in the pronunciation lexicon: {nomi}. For each one that is a proper noun (person, place, object, faction, god) add an entry to «pronunce»; ignore ordinary words."
     compito: "## Task\n{compito}\nId prefix: {prefisso}. Answer only with the YAML block."
     subito: "Write ONE line that answers this action, now (the player is waiting): {nome} ({id_pg}): «{testo}». If the action is aimed at an NPC who is present, that NPC answers; otherwise the narrator tells the effect.{privata}"
     privata: " It is a PRIVATE action: only that player hears the answer, on their phone. The NPC speaks under their breath, or the narrator tells what only that PC sees or hears; nobody else at the table notices."

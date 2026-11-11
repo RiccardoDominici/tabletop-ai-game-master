@@ -1,0 +1,11 @@
+situazione_comune: "You are travelling together."
+personaggi:
+  - id: pg_aoibheann
+    nome: "Aoibheann Quill"
+    specie: human
+    classe: fighter
+    aspetto: "Short hair."
+  - id: pg_cadwgan
+    nome: "Cadwgan Ash"
+    specie: dwarf
+    classe: cleric

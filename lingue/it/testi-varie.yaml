@@ -60,3 +60,8 @@ schede:
 campagna:
   # Titolo di un pacchetto sessioni/<nn>/ quando sessione.yaml non lo scrive.
   titolo_sessione: "Sessione {etichetta}"
+
+# Prova a orecchio dei nomi (strumenti/pronuncia/prova.ts, docs/pronuncia.md): la frase portante in cui la voce
+# dice il nome; Whisper la trascrive e il nome si ritrova al posto di {nome}.
+pronuncia:
+  frase_prova: "Stasera parliamo di {nome}, poi andiamo a dormire."

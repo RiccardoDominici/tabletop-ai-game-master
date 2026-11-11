@@ -55,6 +55,9 @@ The work between sessions is done by an agent with this skill, like the preparat
    - for each thread, `come: ripreso` or `rimandato`; in the copied sheets, `perche` and `vuole` rewritten;
    - the secret words of the new secrets: one for each fact still secret that enters the session;
    - the campaign sheet is not touched: it stays the initial version.
+   - the names met during play (`pronunce-gioco.yaml`, written by the Engine from the scriptwriter's proposals): check
+     each one, move the good ones into `pronunce.yaml` with a respelling of your own if needed, and add an entry for every new
+     name of the package (`--solo PRONUNCIA --rigoroso`); `scripts/prepara.sh` tests the new ones by ear.
 6. **Verification and resources**:
    ```
    scripts/tra-sessioni.sh campagne/<id> <n> --verifica

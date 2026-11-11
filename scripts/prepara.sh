@@ -4,6 +4,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 # immagini (GPU locale) e l'audio, e stampa il rapporto con il comando per giocare.
 #
 #   scripts/prepara.sh campagne/<id> [--senza-immagini] [--senza-audio] [--anche-a-batteria] [--riprova-audio] [--voce]
+#                                    [--senza-pronuncia]
 #
 #   --senza-immagini    non lancia la generazione delle immagini (riporta solo cosa manca)
 #   --senza-audio       non lancia la pipeline dell'audio
@@ -13,6 +14,10 @@ source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 #   --voce              pre-genera le battute del repertorio con drama-3 (OpenRouter): COSTA, circa
 #                       $2 per milione di byte; le righe già in cache non si pagano. Opzionale: senza,
 #                       il gioco le sintetizza dal vivo. Lo stato le segnala come avviso, non blocca «pronta».
+#   --senza-pronuncia   salta la prova a orecchio dei nomi nuovi del lessico (strumenti/pronuncia/prova.ts,
+#                       docs/pronuncia.md): drama-3 + Whisper via OpenRouter, qualche centesimo per nome. Qwen
+#                       si usa solo se TAGM_PRONUNCIA_QWEN dà l'indirizzo di un servizio (mai quello della
+#                       partita in corso). Senza voci il passo si salta e lo dice.
 #
 # Idempotente: le pipeline saltano ciò che ha già il suo file, e l'audio non si rilancia se i descrittori
 # delle schede sono quelli del suo ultimo giro (strumenti/stato_preparazione.py). Non avvia server e non
@@ -25,14 +30,14 @@ set -uo pipefail
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
 
 uso() {
-  echo "uso: scripts/prepara.sh campagne/<id> [--senza-immagini] [--senza-audio] [--anche-a-batteria] [--riprova-audio] [--voce]"
+  echo "uso: scripts/prepara.sh campagne/<id> [--senza-immagini] [--senza-audio] [--anche-a-batteria] [--riprova-audio] [--voce] [--senza-pronuncia]"
   echo "campagne disponibili: $(ls "$RADICE/campagne" | tr '\n' ' ')"
   exit 2
 }
 
 [[ $# -ge 1 ]] || uso
 ARG="$1"; shift
-IMMAGINI=1; AUDIO=1; A_BATTERIA=0; RIPROVA_AUDIO=0; VOCE=0
+IMMAGINI=1; AUDIO=1; A_BATTERIA=0; RIPROVA_AUDIO=0; VOCE=0; PRONUNCIA=1
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --senza-immagini) IMMAGINI=0 ;;
@@ -40,6 +45,7 @@ while [[ $# -gt 0 ]]; do
     --anche-a-batteria) A_BATTERIA=1 ;;
     --riprova-audio) RIPROVA_AUDIO=1 ;;
     --voce) VOCE=1 ;;
+    --senza-pronuncia) PRONUNCIA=0 ;;
     -h|--help) uso ;;
     *) echo "opzione sconosciuta: $1"; uso ;;
   esac
@@ -77,6 +83,26 @@ if ! python3 -I strumenti/valida_campagna.py "$CARTELLA" --rigoroso; then
   echo
   echo "La campagna ha errori: niente immagini né audio. Correggili (vedi sopra) e rilancia."
   exit 1
+fi
+
+# 1b. Pronuncia dei nomi: le voci nuove del lessico si provano a orecchio (sintesi + Whisper) e si tiene la
+# grafia che si capisce meglio (docs/pronuncia.md). Il lessico lo scrive il Preparatore; qui si verifica.
+echo
+echo "1b   Pronuncia dei nomi…"
+if [[ "$PRONUNCIA" == "0" ]]; then
+  echo "     saltata su richiesta (--senza-pronuncia)."
+elif [[ ! -x "$RADICE/node_modules/.bin/tsx" ]]; then
+  echo "     manca tsx (npm install nella radice del repo)."
+  PROBLEMI+=("pronuncia: tsx assente")
+else
+  VOCI_PRON=(--voci fish)
+  [[ -n "${TAGM_PRONUNCIA_QWEN:-}" ]] && VOCI_PRON=(--voci fish,qwen --url-qwen "$TAGM_PRONUNCIA_QWEN")
+  "$RADICE/node_modules/.bin/tsx" strumenti/pronuncia/prova.ts "$CARTELLA" --nuovi "${VOCI_PRON[@]}"
+  case $? in
+    0) ;;
+    3) echo "     nessuna voce per la prova (né chiave OpenRouter né TAGM_PRONUNCIA_QWEN): il lessico resta da provare." ;;
+    *) PROBLEMI+=("pronuncia: la prova si è fermata (vedi sopra; rilancia: prova solo le voci non verificate)") ;;
+  esac
 fi
 
 # 2. Immagini: FLUX.2 in locale, 15–40 minuti di GPU per una campagna intera.

@@ -1,0 +1,9 @@
+battute:
+  - id: keeper_greeting
+    chi: png_keeper
+    tipo: saluto
+    quando: "the PCs greet the innkeeper"
+    temi: [greet, hello]
+    testo:
+      - "[png_keeper] Welcome to Cwmtaith, travellers. Ysgarth keeps this house."
+    max_usi: 3

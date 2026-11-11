@@ -60,3 +60,8 @@ schede:
 campagna:
   # Title of a sessioni/<nn>/ package when sessione.yaml does not give one.
   titolo_sessione: "Session {etichetta}"
+
+# Ear test of the names (strumenti/pronuncia/prova.ts, docs/pronuncia.md): the carrier sentence in which the voice
+# says the name; Whisper transcribes it and the name is found where {nome} was.
+pronuncia:
+  frase_prova: "Tonight we talk about {nome}, then we go to sleep."

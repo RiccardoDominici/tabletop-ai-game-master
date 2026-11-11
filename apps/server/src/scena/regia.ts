@@ -90,7 +90,8 @@ import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
 import { voceDi } from '../turni/narrazione';
 import { PipelineVoce, type UscitaAudio } from '../voce/pipeline';
 import { direzionePredefinita } from '../voce/espressione';
-import { creaPronunciatore, type Pronunciatore } from '../voce/pronuncia';
+import type { Pronunciatore } from '../voce/pronuncia';
+import { estraiPronunce, LessicoVivo } from '../voce/lessico-vivo';
 import type { SelettoreVoce } from '../voce/selettore';
 import { StatoOrologi, type EsitoAvanzamento, type Orologio as OrologioMinaccia } from './orologi';
 import { NoteRegia } from '../master/note';
@@ -121,6 +122,8 @@ function segnoDovutoDi(b: Battuta, dovuti: ReadonlySet<string> | undefined): boo
 
 export interface OpzioniRegia {
   campagna: Campagna;
+  /** Lessico di pronuncia condiviso (voce/lessico-vivo.ts); assente = uno della campagna, solo per questa regia. */
+  lessico?: LessicoVivo;
   /** Lingue della partita (docs/lingue.md); assente = la configurazione e i contenuti nella lingua attiva. */
   lingue?: { interfaccia: Lingua; contenuti: Lingua };
   /** Blocchi di sistema stabili: [prompt del narratore, contesto della campagna]. */
@@ -245,6 +248,7 @@ export class Regia {
   private readonly o: OpzioniRegia;
   private readonly pipeline: PipelineVoce;
   private readonly pronuncia: Pronunciatore;
+  private readonly lessico: LessicoVivo;
   private orologi: StatoOrologi;
   /** Stato del repertorio (solo in modalità repertorio). */
   private statoRepertorio: StatoRepertorio | null = null;
@@ -408,7 +412,8 @@ export class Regia {
     this.scenaPubblica = opzioni.scenaPubblica ?? '';
     this.situazioni = opzioni.immagini ? collegaSituazioni(opzioni.campagna, opzioni.immagini.situazioni(opzioni.campagna.png.map((p) => p.id))) : [];
     if (this.situazioni.length) opzioni.log.info({ situazioni: this.situazioni.map((x) => ({ id: x.id, dopo: x.dopo })) }, 'immagini: situazioni e rivelazioni');
-    this.pronuncia = creaPronunciatore(opzioni.campagna);
+    this.lessico = opzioni.lessico ?? new LessicoVivo({ campagna: opzioni.campagna, log: opzioni.log.child({ modulo: 'pronuncia' }) });
+    this.pronuncia = this.lessico.pronuncia;
     this.orologi = new StatoOrologi(opzioni.campagna);
     this.nomiPng = nomiDeiPng(opzioni.campagna);
     this.luogo = opzioni.campagna.scena.id;
@@ -1309,6 +1314,11 @@ export class Regia {
   private richiestaSceneggiatore(id: string, tipo: RichiestaSceneggiatore['tipo'], turno: number, quante: number, azione?: RichiestaSceneggiatore['azione']): RichiestaSceneggiatore {
     const s = this.statoRepertorio!;
     const sc = this.campagna.scena;
+    // Per la chiusura serve la serata, non solo il momento: più righe.
+    const trascrizione = this.trascrizione.filter((v) => v.tipo !== 'sistema').slice(tipo === 'chiusura' ? -80 : -30).map((v) => `${v.nome}: ${v.testo}`);
+    // Nomi nuovi sentiti al tavolo (azioni dei giocatori, battute scritte al volo): lo sceneggiatore ne propone la
+    // pronuncia nelle «prossime», in sottofondo (una «subito» la aspetta un giocatore: niente compiti in più).
+    const nomi = tipo === 'prossime' ? this.lessico.daChiedere(trascrizione.slice(-12)) : [];
     return {
       id,
       tipo,
@@ -1317,8 +1327,8 @@ export class Regia {
       campagna: this.o.campagna.cartella,
       scena: { id: sc.id, titolo: sc.titolo, png_presenti: [...this.pngInScena()] },
       ...(azione ? { azione } : {}),
-      // Per la chiusura serve la serata, non solo il momento: più righe.
-      trascrizione: this.trascrizione.filter((v) => v.tipo !== 'sistema').slice(tipo === 'chiusura' ? -80 : -30).map((v) => `${v.nome}: ${v.testo}`),
+      trascrizione,
+      ...(nomi.length ? { nomi_senza_pronuncia: nomi } : {}),
       stato: { indizi_rivelati: [...s.indiziRivelati], fatti_noti: [...s.fattiNoti], battute_usate: [...s.usi.keys()], orologi: this.orologi.riepilogo() },
       prefisso: `sc_${id.replace(/[^a-z0-9]+/gi, '_').toLowerCase()}_`,
       quante,
@@ -1359,6 +1369,12 @@ export class Regia {
     for (const b of v.accettate) {
       s.repertorio.battute.push(b);
       s.repertorio.perId.set(b.id, b);
+    }
+    // Pronunce proposte accanto alle battute (docs/pronuncia.md, «During play»): prima di dire le battute, così valgono già.
+    const proposte = estraiPronunce(rs.yaml);
+    if (proposte.length) {
+      const ammessi = [...(rq.nomi_senza_pronuncia ?? []), ...v.accettate.flatMap((b) => b.testo.map((r) => r.testo))].join('\n');
+      this.lessico.aggiungi(proposte, { ammessi, turno: rq.turno, fonte: 'sceneggiatore' });
     }
     this.o.log.info({ richiesta: rq.id, tipo: rq.tipo, accettate: v.accettate.map((b) => b.id), scartate: v.scartate, ms }, 'sceneggiatore: battute nel repertorio');
     if (rq.tipo === 'chiusura') {

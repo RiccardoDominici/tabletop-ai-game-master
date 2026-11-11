@@ -265,6 +265,18 @@ With the local reader, a prepared line is not found for about one action in two.
 
 **Where to look.** `logs/partita.out`, `logs/build.out` and `logs/server.out`.
 
+## A name is read wrong
+
+The voice reads the respelling of `campagne/<id>/pronunce.yaml` (see [the voice](voice.md#names-the-pronunciation-lexicon)).
+
+- The name is not in the lexicon: `python3 -I strumenti/valida_campagna.py campagne/<id> --solo PRONUNCIA --avvisi` lists the
+  missing ones; `npx tsx strumenti/pronuncia/prova.ts campagne/<id> --aggiungi` adds them and tries them.
+- The respelling is wrong: change `grafia` (or add `candidate`) in the entry and run
+  `npx tsx strumenti/pronuncia/prova.ts campagne/<id> --solo <Name>`. Whisper does not hear the stress: an accent mark you
+  are sure of stays when the ear test is even.
+- An ordinary word changes too («a brown coat» said like the name «Brown»): add `solo_maiuscolo: true` to the entry.
+- A name invented during play: the Engine adds it by itself when the scriptwriter is on (`pronunce-gioco.yaml`).
+
 ## `prepara.sh` stops
 
 | Message | Likely cause | What to do |
@@ -274,6 +286,7 @@ With the local reader, a prepared line is not found for about one action in two.
 | «manca l'ambiente dell'audio: lancia una volta strumenti/audio/setup.sh.» (meaning: the audio environment is missing: run strumenti/audio/setup.sh once.) | the audio environment is not there | run `strumenti/audio/setup.sh` |
 | «manca ffmpeg» (meaning: ffmpeg is missing) (from `setup.sh`) | ffmpeg is not installed | install it (see [installation](installation.md)) |
 | «immagini: la generazione si è fermata …» (meaning: images: generation stopped …) | battery, disk, GPU (see above) | run it again: it resumes from where it stopped |
+| «pronuncia: la prova si è fermata …» (meaning: pronunciation: the test stopped …) | network, OpenRouter key or credit | run it again: it tries only the entries not yet verified; or `--senza-pronuncia` |
 | «Non ancora pronta da giocare. Manca: …» (meaning: not ready to play yet. Missing: …) | required images or audio are missing | read the list; the images marked «da controllare a mano» (meaning: to check by hand) are for you to look at |
 
 Exit code of `prepara.sh`: `0` ready; `1` errors in the campaign; `2` wrong arguments; `3` a step failed or was skipped. The full log is in `logs/prepara-<id>.log`.

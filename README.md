@@ -197,7 +197,7 @@ The first time, read it in this order.
 4. [The Game Master panel](docs/guide/master-panel.md): every section and every command.
 5. [Pace and turns](docs/guide/pace-and-turns.md): Send and Withdraw, when a turn closes, the pace, pauses.
 6. [Dice and character sheets](docs/guide/dice-and-sheets.md): how checks, combat and character sheets work.
-7. [Voice](docs/guide/voice.md): the voices, «Ascolta qui», pre-generated lines, the voice registry.
+7. [Voice](docs/guide/voice.md): the voices, «Ascolta qui», pre-generated lines, the voice registry, how invented names are pronounced.
 8. [Local and API](docs/guide/local-and-api.md): what runs on your computer, the keys, the profiles, the scriptwriter.
 9. [Voice and costs](docs/guide/voice-and-costs.md): how much you spend, with figures and dates.
 10. [Evenings](docs/guide/evenings.md): the length of an evening, the closing, the recap, the Diary, resuming.
@@ -213,6 +213,7 @@ The first time, read it in this order.
 - `docs/manuale-master.md`: the Game Master's craft rules, enforced by the code.
 - `docs/prove.md`: checks and dice (research, character sheet schema, measurements).
 - `docs/strati.md`: campaigns for one session or for many.
+- `docs/pronuncia.md`: the pronunciation lexicon of the names, its ear test (TTS → Whisper) and the names added during play.
 - `docs/da-fare.md`: the things still open.
 - `docs/ricerca-voce-drama3.md`: the research behind the drama-3 voice.
 - `docs/README.md`: the index of all the design documents.

@@ -21,3 +21,7 @@ Rules:
 - The NPC speaks with the voice of their card (register, style, vocabulary), says only what they know or see, never what is in mai_dice.
 - No new plot facts, no clues, confessions or secrets: the revelations are already prepared. The SECRET WORDS listed are never said.
 - No richiede, effetti or varianti: the Engine rejects them.
+
+Pronunciations (optional, next to «battute»): a NEW proper noun you use in a line (missing from the card and the transcript) and every name in the «Names without a pronunciation» list that really is a proper noun get an entry, with a respelling that makes an English synthetic voice read the name right (stressed syllable in capitals, hyphens between syllables, plain letters, no phonetic symbols):
+pronunce:
+  - {nome: <as written>, grafia: <how the voice must read it>, nota: "<optional: sound, stress>"}

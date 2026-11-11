@@ -1,0 +1,7 @@
+# Lessico di pronuncia della fixture (docs/pronuncia.md): ogni nome proprio dei testi, con la grafia per la voce.
+lessico:
+  - {nome: Bruno, tipo: png, it: {grafia: Brùno}, verificata: {voce: prova, punteggio: 1.0}}
+  - {nome: Irma, tipo: png, it: {grafia: Ìrma}, verificata: {voce: prova, punteggio: 1.0}}
+  - {nome: Lia Ventura, tipo: pg, it: {grafia: Lìa Ventùra}, verificata: {voce: prova, punteggio: 1.0}}
+  - {nome: Tobia Ferro, tipo: pg, it: {grafia: Tobìa Fèrro}, verificata: {voce: prova, punteggio: 1.0}}
+  - {nome: Volpe, tipo: luogo, solo_maiuscolo: true, it: {grafia: Vólpe}, verificata: {voce: prova, punteggio: 1.0}}
