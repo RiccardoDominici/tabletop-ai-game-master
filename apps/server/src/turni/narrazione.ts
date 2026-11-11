@@ -335,7 +335,8 @@ export async function narraTurno(
         if (!esito.ok) {
           usaRifiutati += 1;
           uscita.push({ tipo: 'usa_rifiutato', id: e.id, per: e.per, motivo: esito.motivo });
-          log.error({ turno: p.turno, battuta: e.id, per: e.per, motivo: esito.motivo }, 'repertorio: [usa] rifiutato');
+          // Comportamento atteso (il Motore controlla il selettore), non un errore: avviso, col motivo.
+          log.warn({ turno: p.turno, battuta: e.id, per: e.per, motivo: esito.motivo }, 'repertorio: [usa] rifiutato');
           // Un rilascio fuori contesto: al suo posto la deviazione del PNG (al telefono, se l'azione era privata).
           for (const r of esito.sostituto ?? []) {
             const v = voceDi(campagna, r.etichetta);
