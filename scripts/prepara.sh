@@ -53,8 +53,10 @@ fi
 [[ -f "$CARTELLA/stile.yaml" ]] || { echo "$CARTELLA non è la cartella di una campagna (manca stile.yaml)."; exit 2; }
 ID="$(basename "$CARTELLA")"
 cd "$RADICE"
-mkdir -p logs
-LOG="$RADICE/logs/prepara-$ID.log"
+# Cartella dei log: CANTASTORIE_LOG se c'è (le prove la mettono in una cartella temporanea), altrimenti logs/.
+DIR_LOG="${CANTASTORIE_LOG:-$RADICE/logs}"
+mkdir -p "$DIR_LOG"
+LOG="$DIR_LOG/prepara-$ID.log"
 exec > >(tee -a "$LOG") 2>&1
 echo "== prepara $ID — $(date '+%Y-%m-%d %H:%M:%S') =="
 

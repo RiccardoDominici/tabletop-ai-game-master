@@ -5,6 +5,7 @@
  * - le menzogne già dette entrano nel messaggio del turno con la versione, mai con la verità.
  */
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
@@ -68,7 +69,8 @@ describe('copertura dei modi e id delle menzogne: avvisi del caricatore', () => 
     const c = caricaCampagna(path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'));
     const scena = { ...c.scena, dati: { ...c.scena.dati, indizi: [{ id: 'i_brocca', modi: 2 }, { id: 'i_vino_annacquato' }] } };
     const conModi = { ...c, scena, scene: [scena], png: c.png.map((p) => (p.id === 'png_oste' ? { ...p, dati: { ...p.dati, mente_su: [{ id: 'oste_altro' }] } } : p)) };
-    const tmp = fs.mkdtempSync(path.join(RADICE_REPO, 'logs', 'rep-'));
+    // Cartella temporanea di sistema: logs/ è ignorata da git e in un clone nuovo non c'è.
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'rep-'));
     try {
       fs.writeFileSync(
         path.join(tmp, 'png_oste.yaml'),

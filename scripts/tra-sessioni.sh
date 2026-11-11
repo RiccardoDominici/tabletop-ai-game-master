@@ -27,8 +27,10 @@ fi
 ID="$(basename "$CARTELLA")"
 NN="$(printf '%02d' "$N")"; DOPO="$(printf '%02d' $((N + 1)))"
 cd "$RADICE"
-mkdir -p logs
-exec > >(tee -a "$RADICE/logs/tra-sessioni-$ID.log") 2>&1
+# Cartella dei log: CANTASTORIE_LOG se c'è (le prove la mettono in una cartella temporanea), altrimenti logs/.
+DIR_LOG="${CANTASTORIE_LOG:-$RADICE/logs}"
+mkdir -p "$DIR_LOG"
+exec > >(tee -a "$DIR_LOG/tra-sessioni-$ID.log") 2>&1
 echo "== tra-sessioni $ID, sessione $N, fase ${FASE#--} — $(date '+%Y-%m-%d %H:%M:%S') =="
 VALIDA=(python3 -I strumenti/valida_campagna.py "$CARTELLA")
 
