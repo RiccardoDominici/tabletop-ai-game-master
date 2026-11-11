@@ -1,105 +1,106 @@
-# Lo sceneggiatore
+# The scriptwriter
 
-Con il profilo tutto locale il lettore è un modello piccolo che **non scrive prosa**. Per ogni azione sceglie una
-battuta del repertorio, oppure risponde «nessuna» (`apps/server/src/llm/minimo.ts`). Prima, a «nessuna» il tavolo
-sentiva solo l'annuncio e, se c'era, una battuta d'attesa. Lo sceneggiatore chiude il buco: **Claude Code dice
-esattamente cosa dire, il modello piccolo legge**. Usa l'abbonamento di chi gioca, attraverso Claude Code in
-modalità non interattiva (`claude -p`), nel progetto dell'utente: mai l'API diretta, mai un token OAuth usato per
-chiamate dirette.
+With the fully local profile, the reader is a small model that **does not write prose**. For each action it chooses a
+line from the repertoire, or answers «nessuna» (none) (`apps/server/src/llm/minimo.ts`). Before, when the answer was
+«nessuna» (none), the table heard only the announcement and, if there was one, a waiting line. The scriptwriter closes
+the gap: **Claude Code says exactly what to say, the small model reads it**. It uses the subscription of whoever plays,
+through Claude Code in non-interactive mode (`claude -p`), in the user's project: never the direct API, never an OAuth
+token used for direct calls.
 
-## Quando lavora
-- **Dopo ogni turno, in sottofondo**, mentre i giocatori parlano. Il turno non ha scadenza, quindi il tempo c'è.
-  Il server scrive due tipi di richiesta:
-  - `subito`: per ogni azione pubblica a cui il lettore non ha dato una battuta. Vale come «nessuna» anche una
-    risposta fatta di sola battuta d'attesa (riempitivo). La risposta è UNA battuta, quella che il tavolo aspetta;
-  - `prossime`: 6 battute per le azioni più probabili del turno dopo, una per ogni PNG presente.
-- **Una richiesta alla volta**: prima le `subito`, la più vecchia; poi la `prossime` più recente. Quelle più vecchie
-  si saltano, perché la scena è già andata avanti.
-- **Modelli**: le `subito` con sonnet. «lettore» ha misurato `claude -p`: una battuta in ~4 s con sonnet, ~7,5 s con
-  haiku, e sonnet la scrive anche meglio; il tavolo la sta aspettando. Le `prossime` vanno con haiku, perché nessuno
-  le aspetta e consumano meno quota. Le variabili `CANTASTORIE_SCENEGGIATORE_MODELLO_SUBITO` e `_PROSSIME` li
-  cambiano. Il lettore locale dice «nessuna» circa una volta su due, quindi lo sceneggiatore è la fonte principale
-  della prosa. Per questo le `subito` passano sempre davanti, e ogni PNG ha la sua battuta d'attesa.
-- **Azioni private**: anche loro. La risposta va al telefono di quel PG (esito privato, voce `solo_pg`), mai in
-  trascrizione. Se arriva tardi, resta nel repertorio col cancello `privata: true`: risponderà solo a un'azione
-  privata.
-- Solo quando il lettore è il minimo e il processo dello sceneggiatore gira (`vivo.json` recente). Il server non
-  aspetta mai lo sceneggiatore per andare avanti.
+## When it works
+- **After each turn, in the background**, while the players talk. The turn has no deadline, so there is time. The server
+  writes two kinds of request:
+  - `subito`: for each public action to which the reader has not given a line. A reply consisting only of a waiting line
+    (filler) also counts as «nessuna» (none). The answer is ONE line, the one the table is waiting for;
+  - `prossime`: 6 lines for the most likely actions of the next turn, one for each NPC present.
+- **One request at a time**: first the `subito`, the oldest; then the most recent `prossime`. The older ones are skipped,
+  because the scene has already moved on.
+- **Models**: the `subito` with sonnet. «lettore» (reader) measured `claude -p`: a line in about 4 s with sonnet, about
+  7.5 s with haiku, and sonnet writes it even better; the table is waiting for it. The `prossime` go with haiku, because
+  nobody is waiting for them and they use less quota. The variables `TAGM_SCENEGGIATORE_MODELLO_SUBITO` and
+  `_PROSSIME` change them. The local reader says «nessuna» (none) about once in two, so the scriptwriter is the main
+  source of prose. For this reason the `subito` always go first, and each NPC has its own waiting line.
+- **Private actions**: them too. The reply goes to that PC's phone (private outcome, voice `solo_pg`), never to the
+  transcript. If it arrives late, it stays in the repertoire with the gate `privata: true`: it will answer only a
+  private action.
+- Only when the reader is the minimal profile and the scriptwriter process is running (recent `vivo.json`). The server
+  never waits for the scriptwriter before moving on.
 
-## Che cosa legge
-La richiesta (`apps/server/src/sceneggiatore/protocollo.ts`) porta:
-- la scena e i PNG presenti;
-- l'azione da risolvere (`subito`);
-- le ultime 30 righe che il tavolo ha sentito;
-- lo stato: indizi rivelati, fatti noti, battute già uscite, orologi.
+## What it reads
+The request (`apps/server/src/sceneggiatore/protocollo.ts`) carries:
+- the scene and the NPCs present;
+- the action to resolve (`subito`);
+- the last 30 lines the table has heard;
+- the state: revealed clues, known facts, lines already used, clocks.
 
-Il processo aggiunge dai file della campagna:
-- il contesto del narratore del modo B (schede pubbliche dei PNG con voce, registro, `mai_dice`, scena; niente
-  segreti, `repertorio/contesto.ts`);
-- l'elenco delle parole segrete, da non dire;
-- tre battute della scena, come esempio del formato.
+The process adds, from the campaign files:
+- the narrator's context of mode B (public NPC sheets with voice, register, `mai_dice`, scene; no secrets,
+  `repertorio/contesto.ts`);
+- the list of secret words, not to be said;
+- three lines of the scene, as an example of the format.
 
-Il set di regole non serve: lo sceneggiatore non decide esiti né tiri, perché quelli li fa il Motore delle prove.
+The rule set is not needed: the scriptwriter decides no outcomes or rolls, because those are made by the checks Engine.
 
-## Che cosa scrive
-Battute nel formato del repertorio (docs/repertorio.md): `id` col prefisso dato, `chi`, `tipo`, `quando`, `temi`,
-`testo`. Solo `reazione`, `momento`, `richiesta`, `rifiuto`, `saluto`, da una a tre righe, frasi brevi per la voce.
+## What it writes
+Lines in the repertoire's format (docs/repertorio.md): `id` with the given prefix, `chi`, `tipo`, `quando`, `temi`,
+`testo`. Only `reazione`, `momento`, `richiesta`, `rifiuto`, `saluto`, from one to three lines, short sentences for the
+voice.
 
-## Il controllo (`sceneggiatore/valida.ts`)
-Le stesse regole del repertorio preparato, più quelle di chi scrive al volo:
-- **forma**: il caricatore del repertorio legge le battute come un file qualsiasi (campi, tipi, etichette, PNG con
-  scheda). Il Motore impone `scena` = quella in corso e `max_usi: 1`, e corregge un `id` senza prefisso o ripetuto;
-- **voci**: parla solo il narratore o un PNG presente;
-- **cancelli e stato**: niente `richiede` né `effetti`. Una battuta scritta al volo non rivela indizi e non cambia
-  fatti né orologi: le rivelazioni restano quelle preparate e controllate dal validatore;
-- **tipi**: mai indizi, confessioni, menzogne, segni, finali, transizioni, chiusure;
-- **segreti**: nessuna parola ancora segreta che il tavolo non abbia sentito (la stessa regola della guardia,
+## The check (`sceneggiatore/valida.ts`)
+The same rules as the prepared repertoire, plus those for whoever writes on the fly:
+- **form**: the repertoire loader reads the lines like any file (fields, types, labels, NPCs with a sheet). The Engine
+  enforces `scena` = the one in progress and `max_usi: 1`, and corrects an `id` without prefix or one that is repeated;
+- **voices**: only the narrator or a present NPC speaks;
+- **gates and state**: no `richiede` or `effetti`. A line written on the fly does not reveal clues or change facts or
+  clocks: the revelations remain the prepared ones, checked by the validator;
+- **types**: never clues, confessions, lies, signs, endings, transitions, closings;
+- **secrets**: no word still secret that the table has not heard (the same rule as the guard,
   `narrazione/guardia-segreti.ts`);
-- **i PG sono dei giocatori**: una riga del narratore che ha per soggetto un PG («Gunda apre il pugno», «Poi Remo si
-  alza») o una parte del suo corpo («Il pugno di Gunda resta chiuso», «le mani di Remo tremano») decide al posto di
-  un giocatore, e la battuta esce (`pgCheAgisce`). Il vocativo («Gunda, …»), il complemento e il genitivo di una
-  cosa («il boccale di Remo») vanno bene. Il prompt va oltre: mai il corpo, i gesti, lo sguardo o le reazioni di un
-  PG, solo il mondo e i PNG;
-- **ripetizioni e tic** (`sceneggiatore/ripetizioni.ts`): la richiesta porta gli attacchi (le prime parole di ogni
-  frase) e le immagini (la prima proposizione) degli ultimi 4 turni, con la regola di non ripeterli. Il processo
-  aggiunge le righe che ha scritto da poco (le ultime 6 risposte, 10 minuti), che il tavolo può non aver ancora
-  sentito: due risposte dello stesso turno partono insieme, e la seconda sa che cosa ha scritto la prima. Porta anche i
-  tic usciti nelle ultime due righe di ogni PNG: una battuta che ripete un tic troppo presto esce, perché vale la
-  regola del narratore, un tic al massimo ogni tre righe;
-- **voce**: al massimo 4 righe da 240 caratteri.
+- **PCs are players**: a narrator line whose subject is a PC («Gunda apre il pugno» (Gunda opens her fist), «Poi Remo si
+  alza» (Then Remo stands up)) or a part of their body («Il pugno di Gunda resta chiuso» (Gunda's fist stays closed), «le
+  mani di Remo tremano» (Remo's hands tremble)) decides on behalf of a player, and the line is rejected (`pgCheAgisce`).
+  The vocative («Gunda, …»), complements, and the genitive of a thing («il boccale di Remo» (Remo's mug)) are fine. The
+  prompt goes further: never the body, gestures, gaze or reactions of a PC, only the world and the NPCs;
+- **repetitions and tics** (`sceneggiatore/ripetizioni.ts`): the request carries the openings (the first words of each
+  sentence) and the images (the first clause) of the last 4 turns, with the rule not to repeat them. The process adds the
+  lines it has written recently (the last 6 replies, 10 minutes), which the table may not yet have heard: two replies of
+  the same turn go out together, and the second knows what the first one wrote. It also carries the tics that came out in
+  the last two lines of each NPC: a line that repeats a tic too soon is rejected, because the narrator's rule applies, at
+  most one tic every three lines;
+- **voice**: at most 4 lines of 240 characters.
 
-Le battute che passano entrano **a caldo** nel repertorio vivo, e da lì nel catalogo dei turni dopo, coi loro
-`temi`. Quelle che non passano restano nel log col motivo.
+The lines that pass enter the live repertoire **immediately**, and from there into the catalog of the following turns,
+with their `temi`. Those that do not pass stay in the log with the reason.
 
-## Che cosa sente il tavolo mentre aspetta
-1. Subito, al turno: l'annuncio e la battuta d'attesa della scena o del PNG. La skill la scrive sempre e il
-   validatore la chiede (`COPERTURA.attesa_scena`, `attesa_png`, `deviazione_png`).
-2. Quando arriva la battuta scritta su richiesta, se il tavolo è ancora in finestra nella stessa scena e il
-   **tetto** non è passato (90 s, `CANTASTORIE_SCENEGGIATORE_TETTO_S`): la voce la dice subito, a finestra aperta,
-   e la trascrizione la mostra.
-3. Oltre il tetto, o se il tavolo è andato avanti: non si dice. Resta nel repertorio, dove il lettore la può
-   scegliere al turno dopo. Se lo sceneggiatore non risponde, è la **riserva**: è valsa la battuta d'attesa.
+## What the table hears while it waits
+1. Immediately, at the turn: the announcement and the waiting line of the scene or of the NPC. The skill always writes it,
+   and the validator asks for it (`COPERTURA.attesa_scena`, `attesa_png`, `deviazione_png`).
+2. When the line written on request arrives, if the table is still in the window in the same scene and the **ceiling**
+   has not passed (90 s, `TAGM_SCENEGGIATORE_TETTO_S`): the voice says it right away, with the window still open, and the
+   transcript shows it.
+3. Beyond the ceiling, or if the table has moved on: it is not said. It stays in the repertoire, where the reader can
+   choose it on the next turn. If the scriptwriter does not answer, the waiting line is the **backup**: it did the job.
 
 ## Audio
-Quando una battuta delle `prossime` entra nel repertorio, con la voce drama-3 la sua sintesi va in coda in
-sottofondo (`sceneggiatore/audio.ts`). Usa la stessa cache e la stessa chiave della pre-generazione
-(`strumenti/prerender-fish.ts`), così, quando il lettore la sceglie, la voce parte dalla cache. Va una sintesi
-alla volta, e un errore si registra senza fermare le altre. Le battute `subito` si dicono appena arrivano: per
-quelle la voce resta dal vivo.
+When a line from the `prossime` enters the repertoire, with the drama-3 voice its synthesis goes into the background
+queue (`sceneggiatore/audio.ts`). It uses the same cache and the same key as the pre-generation
+(`strumenti/prerender-fish.ts`), so that when the reader chooses it, the voice plays from the cache. One synthesis at a
+time, and an error is logged without stopping the others. The `subito` lines are said as soon as they arrive: for those,
+the voice stays live.
 
-## Processi e file
-- `scripts/sceneggiatore.sh avvia|ferma|stato`. Lo avvia `scripts/avvio.sh`, quindi anche `partita.sh`, ma da sé
-  solo sulla partita vera (4610), se `claude` è installato e il narratore non è finto: ogni `claude -p` usa
-  l'abbonamento di chi gioca. Sulle istanze di prova (harness, e2e) parte solo con `CANTASTORIE_SCENEGGIATORE=si`,
-  e l'harness lo accende con `--sceneggiatore`. `CANTASTORIE_SCENEGGIATORE=no` lo spegne ovunque. Lo ferma
-  `scripts/arresto.sh`.
-- Il processo è `apps/server/src/sceneggiatore/processo.ts`. Lancia `claude -p --model <sonnet|haiku> --output-format
-  json --no-session-persistence --tools ""`: nessuno strumento, il prompt ha tutto. Non legge né stampa credenziali e
-  non apre `~/.claude`. Le chiamate contano sullo stesso limite dell'account di chi gioca.
-- La cartella è `<log>/sceneggiatore/`: `richieste/`, `risposte/`, `vivo.json` (battito ogni 5 s),
-  `sceneggiatore.jsonl` (una riga per richiesta: tempi in coda e di Claude Code, esito), `sceneggiatore.out`.
-- Il server (`sceneggiatore/canale.ts`) scrive le richieste e raccoglie le risposte ogni secondo. Le misure finiscono
-  in `narrazioni.jsonl`, righe `tipo: sceneggiatore`: tempi, accettate, scartate col motivo, consegnata.
+## Processes and files
+- `scripts/sceneggiatore.sh avvia|ferma|stato`. `scripts/avvio.sh` starts it, and so does `partita.sh`, but on its own it
+  starts only on the real game (4610), if `claude` is installed and the narrator is not a mock: every `claude -p` uses the
+  subscription of whoever plays. On trial instances (harness, e2e) it starts only with `TAGM_SCENEGGIATORE=si`, and the
+  harness turns it on with `--sceneggiatore`. `TAGM_SCENEGGIATORE=no` turns it off everywhere. `scripts/arresto.sh` stops
+  it.
+- The process is `apps/server/src/sceneggiatore/processo.ts`. It launches `claude -p --model <sonnet|haiku> --output-format
+  json --no-session-persistence --tools ""`: no tools, the prompt has everything. It does not read or print credentials,
+  and it does not open `~/.claude`. The calls count against the same limit as the account of whoever plays.
+- The folder is `<log>/sceneggiatore/`: `richieste/`, `risposte/`, `vivo.json` (heartbeat every 5 s),
+  `sceneggiatore.jsonl` (one line per request: queue times and Claude Code times, outcome), `sceneggiatore.out`.
+- The server (`sceneggiatore/canale.ts`) writes the requests and collects the replies every second. The measurements end up
+  in `narrazioni.jsonl`, lines `tipo: sceneggiatore`: times, accepted, discarded with the reason, delivered.
 
-## Limiti di oggi
-- Se lo sceneggiatore è lento, la sua battuta può arrivare a turno già chiuso: allora resta nel repertorio.
+## Current limits
+- If the scriptwriter is slow, its line may arrive after the turn has already closed: then it stays in the repertoire.

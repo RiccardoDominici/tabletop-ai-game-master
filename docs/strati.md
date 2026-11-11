@@ -1,174 +1,177 @@
-# Strati: la durata della campagna decide quanto si prepara (progetto, 3 novembre 2026)
+# Layers: the campaign's length decides how much is prepared (project, 3 November 2026)
 
-Richiesta di Riccardo: nella personalizzazione della campagna si indica la durata stimata in **numero di
-sessioni**; da quella dipende quanti «strati» di gioco genera il framework. Una one-shot ha poche cose; una
-campagna di anni ha più fasi e un mondo completo. Ricerca: `docs/ricerca-durata.md`.
+Request from Riccardo: when personalising the campaign, the estimated duration is stated as a **number of
+sessions**; the number of game layers («strati») the framework generates depends on it. A one-shot has few
+things; a campaign lasting years has more phases and a complete world. Research: `docs/ricerca-durata.md`.
 
-## Principi
-1. **Un solo framework, strati che si accendono.** La one-shot di oggi è lo strato più interno. Le campagne
-   lunghe non sono un altro programma: aggiungono strati esterni (arco, campagna, mondo) sopra lo stesso
-   pacchetto di sessione che il Motore sa già giocare.
-2. **Risoluzione progressiva.** Ciò che è lontano nel tempo o nello spazio è un abbozzo; diventa dettaglio
-   quando si avvicina. Anni di gioco non si scrivono in anticipo: si scrive lo scheletro, poi una sessione
-   alla volta.
-3. **Tra una sessione e l'altra lavora il modello forte**, dal registro di ciò che è successo davvero. Dal
-   vivo Haiku vede solo il pacchetto della sessione corrente, mai la bibbia o lo stato interi.
-4. **Il registro non lo scrive un modello.** I fatti di gioco (indizi rivelati, battute uscite, orologi,
-   scelte, PNG incontrati, azioni) si estraggono in modo deterministico dall'archivio delle sessioni
-   (`sessioni.sqlite`). Il modello forte li interpreta, ma ogni fatto nuovo dello stato cita il turno da cui
-   viene, e il validatore lo controlla. È la risposta al rischio principale della ricerca (log scritto male →
-   sessione dopo sbagliata). I fatti nati fuori scena, quando il mondo si muove tra le sessioni, hanno una
-   fonte loro: `fonte: {tra_sessioni: <n>, motivo}`, e il motivo nomina l'orologio o la regola che li produce.
-5. **Il canone preparato non si tocca; il gioco aggiunge.** I fatti preparati (`f_…`, in `campagna.yaml`)
-   restano come sono. I fatti di gioco (`g_…`, in `stato/stato.yaml`) si aggiungono e, quando cambiano un
-   fatto preparato, lo dichiarano (`supera: [f_…]`); un fatto di gioco non si cancella, si supera con uno più
-   nuovo (`superato_da`). Un PNG morto resta morto in ogni pacchetto successivo (controllo del validatore).
-6. **Ciò che i PG hanno scoperto smette di essere segreto.** Ogni pacchetto porta il suo
-   `repertorio/parole_segrete.yaml`, che sostituisce quello della campagna; il validatore controlla che non
-   nasconda fatti già noti ai PG. Un PNG ricorrente che ha imparato qualcosa ha nel pacchetto la sua scheda
-   aggiornata (`png/png_<nome>.yaml`, scheda intera con lo stesso id), che per quella sessione sostituisce
-   quella della campagna; la scheda della campagna resta la versione iniziale.
+## Principles
+1. **One framework, layers that switch on.** Today's one-shot is the innermost layer. Long campaigns are not
+   another program: they add outer layers (arc, campaign, world) on top of the same session package the Engine
+   already knows how to play.
+2. **Progressive resolution.** What is far away in time or space is a sketch; it becomes detail when it gets
+   close. Years of play are not written in advance: the skeleton is written, then one session at a time.
+3. **Between one session and the next, the strong model works**, from the log of what really happened. During
+   live play Haiku sees only the current session's package, never the whole bible or state.
+4. **The log is not written by a model.** The game facts (clues revealed, lines spoken, clocks, choices, NPCs met,
+   actions) are extracted deterministically from the session archive (`sessioni.sqlite`). The strong model
+   interprets them, but every new fact in the state cites the turn it comes from, and the validator checks it.
+   This is the answer to the research's main risk (log written badly → wrong next session). Facts born off-scene,
+   when the world moves between sessions, have their own source: `fonte: {tra_sessioni: <n>, motivo}`, and the
+   reason names the clock or rule that produces them.
+5. **The prepared canon is not touched; the game adds.** The prepared facts (`f_…`, in `campagna.yaml`) stay as they
+   are. The game facts (`g_…`, in `stato/stato.yaml`) are added and, when they change a prepared fact, declare it
+   (`supera: [f_…]`); a game fact is never deleted, it is superseded by a newer one (`superato_da`). A dead NPC stays
+   dead in every later package (validator check).
+6. **What the PCs have discovered stops being secret.** Each package carries its own `repertorio/parole_segrete.yaml`,
+   which replaces the campaign's; the validator checks that it does not hide facts already known to the PCs. A
+   recurring NPC who has learned something has, in the package, its updated sheet (`png/png_<nome>.yaml`, whole sheet
+   with the same id), which for that session replaces the campaign's one; the campaign's sheet remains the initial
+   version.
 
-## Il brief
+## The brief
 ```yaml
-sessioni: 1              # numero stimato di sessioni (obbligatorio); "aperta" per una campagna senza fine
-ore_per_sessione: 2.5    # facoltativo, predefinito 2.5
-durata: ""               # resta come nota a parole
+sessioni: 1              # estimated number of sessions (required); "aperta" (open) for a campaign with no end
+ore_per_sessione: 2.5    # optional, default 2.5
+durata: ""               # stays as a note in words
 ```
-Il livello si ricava dal numero con una tabella sola nel codice (`strumenti/strati.py`), letta dal
-validatore e citata dalla skill. Il brief può forzare un livello diverso (`livello:`) solo con il motivo in
-`decisioni.altre`.
+The level is derived from the number with a single table in the code (`strumenti/strati.py`), read by the validator
+and cited by the skill. The brief can force a different level (`livello:`) only with the reason in `decisioni.altre`.
 
-## Livelli e strati
-| Sessioni | Livello | Strati preparati prima | Preparati tra le sessioni |
+## Levels and layers
+| Sessions | Level | Layers prepared up front | Prepared between sessions |
 |---|---|---|---|
-| 1 | **one-shot** | sessione (situazione, 1–5 scene, PNG, PG, canone, indizi, repertorio): la skill di oggi | — |
-| 2–6 | **arco** | + arco: premessa, fronte d'arco con 3–6 tappe che avanzano tra le sessioni, 2–3 atti, domanda drammatica e finali possibili, PNG ricorrenti, fili aperti; sessione 1 completa, le altre come abbozzo di una riga | sessione N+1 completa |
-| 7–20 | **campagna** | + campagna: 2–4 regioni, 3–5 fazioni con obiettivo e orologio, tre conflitti maggiori, fine dichiarata, crescita dei PG a tappe; archi abbozzati, solo il primo completo | stato, turno delle fazioni, arco successivo quando il corrente chiude, sessione N+1 |
-| 21+ o aperta | **saga** | + mondo: storia, geografia, culture, credenze, cronologia lunga; una zona piena, le altre abbozzo; fasi (tier di gioco) | come «campagna», più il dettaglio di una zona quando i PG ci arrivano |
+| 1 | **one-shot** | session (situation, 1–5 scenes, NPCs, PCs, canon, clues, repertoire): today's skill | — |
+| 2–6 | **arco** (arc) | + arc: premise, arc front with 3–6 stages that advance between sessions, 2–3 acts, dramatic question and possible endings, recurring NPCs, open threads; session 1 complete, the others as a one-line sketch | session N+1 complete |
+| 7–20 | **campagna** (campaign) | + campaign: 2–4 regions, 3–5 factions with a goal and a clock, three major conflicts, declared end, PC growth in stages; arcs sketched, only the first complete | state, the factions' turn, next arc when the current one closes, session N+1 |
+| 21+ or open | **saga** (saga) | + world: history, geography, cultures, beliefs, long chronology; one area full, the others sketched; phases (game tiers) | like «campagna» (campaign), plus the detail of an area when the PCs reach it |
 
-Le soglie sono una prima scelta (la ricerca non dà numeri); si correggono dopo le prove.
+The thresholds are a first choice (the research gives no numbers); they will be corrected after the trial runs.
 
-## File
-Una campagna one-shot resta com'è oggi (compatibilità piena). Con più sessioni:
+## Files
+A one-shot campaign stays as it is today (full compatibility). With several sessions:
 ```
 campagne/<id>/
-  brief.yaml  stile.yaml  campagna.yaml      # campagna.yaml: canone, fronti di campagna, archi, regole del mondo
-  mondo/      regioni.yaml fazioni.yaml storia.yaml          # solo dai livelli «campagna» e «saga»
-  png/        schede dei PNG ricorrenti (le comparse di una sola sessione stanno nella sessione)
-  pg.yaml     personaggi, con crescita
-  stato/      stato.yaml                                     # registro canonico del gioco: cresce dopo ogni sessione
-  sessioni/<nn>/                                             # il pacchetto: ciò che il Motore gioca
-    sessione.yaml (titolo, riassunto_iniziale, scene in ordine, pieni_all_inizio, e la parte di sessione
-                   di campagna.yaml: orologi, canone, rivelazioni, nodi, colli_di_bottiglia; preparazione)
-    scene/*.yaml  png/ (PNG solo di questa sessione, o scheda aggiornata di un ricorrente)
-    repertorio/ (battute e parole_segrete.yaml della sessione)  immagini/ audio/ (solo il nuovo)
-    registro.yaml  trascrizione.yaml                         # scritti a fine sessione dall'archivio, deterministici
+  brief.yaml  stile.yaml  campagna.yaml      # campagna.yaml: canon, campaign fronts, arcs, world rules
+  mondo/      regioni.yaml fazioni.yaml storia.yaml          # only from the «campagna» and «saga» levels (campaign and saga)
+  png/        sheets of recurring NPCs (a single session's extras live in the session)
+  pg.yaml     PCs, with growth
+  stato/      stato.yaml                                     # canonical game log: grows after every session
+  sessioni/<nn>/                                             # the package: what the Engine plays
+    sessione.yaml (title, riassunto_iniziale, scenes in order, pieni_all_inizio, and the session part of
+                   campagna.yaml: clocks, canon, revelations, nodes, colli_di_bottiglia; preparazione)
+    scene/*.yaml  png/ (NPCs of this session only, or an updated sheet of a recurring NPC)
+    repertorio/ (lines and parole_segrete.yaml of the session)  immagini/ audio/ (new only)
+    registro.yaml  trascrizione.yaml                         # written at session end from the archive, deterministically
 ```
-`<nn>` è un nome di sole cifre (due, per l'ordine: `01`, `02`…) con dentro `sessione.yaml`; le altre cartelle
-in `sessioni/` non contano. Una campagna con `sessioni/` non usa `scena.yaml` e `scene/` della radice.
-Le risorse che durano (ritratti dei PNG ricorrenti, luoghi che tornano, temi musicali) stanno a livello di
-campagna e si riusano; ogni sessione genera solo le immagini e i suoni nuovi.
-L'arco preparato prima (premessa, tappe, atti, finali, PNG ricorrenti, fili) sta in `campagna.yaml →
-preparazione.arco`: contiene il futuro, e `preparazione` non arriva mai al narratore (riferimenti/arco.md).
+`<nn>` is a name made only of digits (two, for the order: `01`, `02`…) containing `sessione.yaml`; the other folders
+in `sessioni/` do not count. A campaign with `sessioni/` does not use the root's `scena.yaml` and `scene/`.
+Assets that last (portraits of recurring NPCs, places that come back, musical themes) live at campaign level and are
+reused; each session generates only the new images and sounds.
+The arc prepared up front (premise, stages, acts, endings, recurring NPCs, threads) lives in
+`campagna.yaml → preparazione.arco`: it contains the future, and `preparazione` never reaches the narrator
+(riferimenti/arco.md).
 
-### Regole di unione (il contratto del compilatore: apps/server/src/campagna/pacchetti.ts e caricatore.ts)
-Il Motore gioca il livello di campagna PIÙ un pacchetto. Le regole, in un posto solo (il validatore le usa
-attraverso `strumenti/unisci_pacchetto.ts`, che scrive la vista unita come una one-shot col codice del server:
-non esiste una seconda copia):
-- **campagna.yaml + sessione.yaml**: le chiavi di `sessione.yaml` si uniscono a quelle di `campagna.yaml`; le
-  liste si accodano (prima la campagna) e un id ripetuto tra le due è un **errore** che nomina i due file; per
-  le altre chiavi vale la sessione, con un avviso. `sessione` di campagna.yaml non vale (il riassunto sta nel
-  pacchetto). Non arrivano al narratore: `riassunto_iniziale`, `scene`, `titolo`, `pieni_all_inizio`,
-  `preparazione` (della campagna e della sessione: per esempio `preparazione.fili`).
-- **pieni_all_inizio** `{id_orologio: n}`: i segni già pieni di un orologio della campagna all'inizio di questa
-  sessione (scritti tra le sessioni dal registro e dal mondo che si muove). Un id che non c'è è un errore; un
-  orologio non citato riparte dal valore di campagna.yaml.
-- **Scene**: solo `scene/*.yaml` del pacchetto, nell'ordine di `sessione.yaml → scene`; la prima legge prima
-  `riassunto_iniziale`. Un id elencato senza file è un errore; un file non elencato va in fondo con un avviso.
-- **PNG**: png/ della campagna più png/ del pacchetto, in ordine di id; una scheda del pacchetto con l'id di un
-  ricorrente lo **sostituisce intera** per quella sessione (non è il caso «id ripetuto = errore», che vale per
-  le liste).
-- **Repertorio**: le battute vengono **solo** dal pacchetto (quelle della sessione prima che valgono ancora le
-  ricopia la preparazione). `parole_segrete.yaml` del pacchetto **sostituisce** quello della campagna (ciò che i
-  PG hanno scoperto smette di essere segreto); senza file nel pacchetto vale quello della campagna.
-- **Immagini e audio**: i manifest di campagna e pacchetto insieme; a parità di id vince il pacchetto (un
-  ritratto invecchiato); un nome di file già usato da un'altra voce dell'altra cartella si scarta.
-- **PG**: `pg.yaml` della campagna, in ogni sessione; i telefoni ritrovano il PG della sessione prima (il master
-  lo cambia o lo dimentica dal pannello, «Telefoni ricordati»).
+### Merge rules (the compiler's contract: apps/server/src/campagna/pacchetti.ts and caricatore.ts)
+The Engine plays the campaign level PLUS one package. The rules, in one place only (the validator uses them through
+`strumenti/unisci_pacchetto.ts`, which writes the merged view as a one-shot with the server's code: a second copy
+does not exist):
+- **campagna.yaml + sessione.yaml**: the keys of `sessione.yaml` are merged with those of `campagna.yaml`; lists are
+  appended (campaign first), and an id repeated across the two is an **error** that names the two files; for the
+  other keys the session applies, with a warning. The `sessione` block of campagna.yaml has no effect (the recap is
+  in the package). They do not reach the narrator: `riassunto_iniziale`, `scene`, `titolo`, `pieni_all_inizio`,
+  `preparazione` (of the campaign and of the session: for example `preparazione.fili`).
+- **pieni_all_inizio** `{id_orologio: n}`: the signs already filled on a campaign clock at the start of this session
+  (written between sessions from the log and from the world that moves). An id that does not exist is an error; a
+  clock not mentioned restarts from the value in campagna.yaml.
+- **Scenes**: only `scene/*.yaml` of the package, in the order of `sessione.yaml → scene`; the first one reads
+  `riassunto_iniziale` before it. An id listed without a file is an error; a file not listed goes at the end, with
+  a warning.
+- **NPCs**: png/ of the campaign plus png/ of the package, in id order; a package sheet with the id of a recurring NPC
+  **replaces it whole** for that session (this is not the «id ripetuto = errore» case, which applies to lists).
+- **Repertoire**: the lines come **only** from the package (those of the session that still apply are copied in from
+  the preparation). The package's `parole_segrete.yaml` **replaces** the campaign's (what the PCs have discovered stops
+  being secret); without a file in the package, the campaign's applies.
+- **Images and audio**: the campaign and package manifests together; on an equal id the package wins (an aged
+  portrait); a file name already used by an entry from the other folder is discarded.
+- **PCs**: `pg.yaml` of the campaign, in every session; the phones find again the PC of the previous session (the
+  master changes or forgets it from the panel, «Telefoni ricordati» (Remembered phones)).
 
-### Quale sessione si gioca
-La tiene l'archivio (`sessioni.sqlite`, colonna `pacchetto` di ogni sessione giocata; apps/server/src/sessione/
-scelta-pacchetto.ts). All'avvio, in ordine: `--sessione N` (`CANTASTORIE_SESSIONE`); la sessione in corso
-(ripresa); il pacchetto dopo l'ultima sessione chiusa con «Fine sessione» (se è preparato a metà e non si carica,
-si resta su quella finita, con l'avviso nel pannello); l'ultima giocata; la prima. `scripts/partita.sh` chiede la
-stessa scelta al server e valida proprio quel pacchetto.
+### Which session is played
+The archive keeps it (`sessioni.sqlite`, `pacchetto` column of every session played; apps/server/src/sessione/
+scelta-pacchetto.ts). At startup, in order: `--sessione N` (`TAGM_SESSIONE`); the session in progress (resume); the
+package after the last session closed with «Fine sessione» (End session) (if it is half-prepared and does not load,
+one stays on the finished one, with the warning in the panel); the last one played; the first one.
+`scripts/partita.sh` asks the server for the same choice and validates exactly that package.
 
-### Fine sessione e Prossima sessione (pannello del master)
-- **Fine sessione**: il gioco si ferma, la sessione dell'archivio si chiude (`motivo_chiusura: fine sessione`) e il
-  server scrive `registro.yaml` e `trascrizione.yaml` nel pacchetto giocato (una one-shot nei log:
-  `logs/registri/<campagna>/<id>/`). `scripts/registro.sh <campagna> [--sessione nn] [--controlla]` rifà o
-  controlla gli stessi file dall'archivio.
-- **Prossima sessione**: acceso solo se `sessioni/<nn+1>/` c'è e si carica come all'avvio (campagna, repertorio,
-  parole segrete); se la sessione è ancora in corso fa prima Fine sessione. Il server si ricostruisce sullo stesso
-  indirizzo col pacchetto dopo e lo stesso token del master: pannello, proiettore e telefoni si ricollegano come
-  dopo un riavvio, e la sessione nuova comincia dal suo `riassunto_iniziale`.
+### End session and Next session (master's panel)
+- **Fine sessione**: the game stops, the archive's session closes (`motivo_chiusura: fine sessione`), and the server
+  writes `registro.yaml` and `trascrizione.yaml` into the package played (a one-shot, in the logs:
+  `logs/registri/<campagna>/<id>/`). `scripts/registro.sh <campagna> [--sessione nn] [--controlla]` redoes or checks the
+  same files from the archive.
+- **Prossima sessione** (Next session): on only if `sessioni/<nn+1>/` exists and it loads as at startup (campaign,
+  repertoire, secret words); if the session is still in progress, Fine sessione is done first. The server rebuilds
+  itself on the same address with the next package and the same master token: panel, projector and phones reconnect
+  as after a restart, and the new session starts from its `riassunto_iniziale`.
 
-### Riassunto e chiusura della serata (richieste del 9 novembre, §9)
-- **Chiudi la sessione** (pannello): chiusura guidata. Le azioni in coda tornano ai giocatori; il narratore chiude
-  la serata (da tre a cinque righe: il momento in corso, un'immagine finale, un aggancio; niente misteri nuovi; in
-  modalità B improvvisata, oppure una battuta `tipo: chiusura` del repertorio se c'è, detta dal Motore); poi il
-  proiettore mostra «Cosa è successo stasera» (riassunto, fili aperti, PF dei PG) e il server scrive il registro
-  e, accanto, `riassunto.yaml` (una voce per serata: `etichetta`, `quando`, `testo`, `fili`). La sessione
-  dell'archivio resta APERTA: una one-shot riprende la sera dopo (Riprendi, o riavvio del server); in una campagna
-  a pacchetti la chiude «Prossima sessione». **Fine sessione** resta, subito e senza narrazione, per le emergenze.
-- **Il riassunto** (`apps/server/src/sessione/riassunto.ts`): lo scrive Haiku (lo stesso client del narratore, un
-  altro prompt) dalla sola trascrizione pubblica; mai azioni private, righe `[privato]` o fatti `noto_ai_pg: false`.
-  Poi una guardia deterministica: una parola di `parole_segrete.yaml` ancora segreta e mai detta al tavolo fa
-  scartare il testo, e si legge la riserva (luoghi attraversati e ultimi segni degli orologi, detti a voce).
-- **La volta scorsa…** (`apps/server/src/scena/serata.ts`), letta prima dell'apertura o della ripresa e mostrata dal
-  proiettore fino alla prima finestra chiusa: il pacchetto dopo senza `riassunto_iniziale` usa l'ultimo
-  `riassunto.yaml` del pacchetto prima (o lo fa scrivere dalla sua `trascrizione.yaml`); una serata chiusa riprende
-  dal suo riassunto; una sessione lasciata aperta e ripresa dopo tre ore lo fa scrivere dalla trascrizione ripresa.
-  Il modello lavora in sottofondo dall'avvio; se all'«Inizia» non ha finito, si legge la riserva.
-- **Durata**: `ore_per_sessione` del brief (predefinito 2,5; il master la cambia dal pannello). A venti minuti dalla
-  fine il pannello lo segnala e il messaggio del turno porta un consiglio («avvicinati a una pausa naturale»), mai
-  durante un climax (scena con `climax: true`, o un orologio attivo a un segno dalla fine).
-- **Diario** (telefono): i riassunti delle serate chiuse (pacchetti prima compresi) e «finora stasera» (luoghi,
-  segni del tempo), pubblici; gli esiti privati restano solo sul telefono del loro PG.
+### Recap and closing of the evening (requests of 9 November, §9)
+- **Chiudi la sessione** (Close the session) (panel): guided closing. The queued actions go back to the players; the
+  narrator closes the evening (three to five lines: the moment in progress, a closing image, a hook; no new mysteries;
+  in improvised mode B, or a `tipo: chiusura` line from the repertoire if there is one, spoken by the Engine). Then the
+  projector shows «Cosa è successo stasera» (What happened tonight) (recap, open threads, the PCs' PF, i.e. hit points),
+  and the server writes the log and, next to it, `riassunto.yaml` (one entry per evening: `etichetta`, `quando`,
+  `testo`, `fili`). The archive's session stays OPEN: a one-shot resumes the next evening (Riprendi, or server
+  restart); in a package-based campaign it is closed by «Prossima sessione». **Fine sessione** stays, immediately and
+  without narration, for emergencies.
+- **The recap** (`apps/server/src/sessione/riassunto.ts`): written by Haiku (the same client as the narrator, a
+  different prompt) from the public transcript alone; never private actions, `[privato]` lines or facts with
+  `noto_ai_pg: false`. Then a deterministic guard: a word from `parole_segrete.yaml` that is still secret and was never
+  said at the table makes the text be discarded, and the fallback is read (places crossed and the last signs of the
+  clocks, spoken aloud).
+- **«La volta scorsa…» (Last time…)** (`apps/server/src/scena/serata.ts`), read before the opening or the resume and
+  shown by the projector until the first window closes: a package after one without `riassunto_iniziale` uses the last
+  `riassunto.yaml` of the previous package (or has it written from its `trascrizione.yaml`); a closed evening resumes
+  from its recap; a session left open and resumed after three hours has its recap written from the resumed transcript.
+  The model works in the background from startup; if at «Inizia» (Start) it has not finished, the fallback is read.
+- **Durata** (Duration): `ore_per_sessione` of the brief (default 2.5; the Game Master changes it from the panel).
+  Twenty minutes before the end, the panel flags it and the turn's message carries advice («avvicinati a una pausa
+  naturale» (move towards a natural break)); never during a climax (a scene with `climax: true`, or an active clock one
+  sign from the end).
+- **Diario** (Diary) (phone): the recaps of the closed evenings (earlier packages included) and «finora stasera» (so
+  far tonight) (places, time signs), public; private outcomes stay only on the phone of their PC.
 
-### Il registro (registro.yaml, formato 1; apps/server/src/sessione/registro.ts)
-Estratto dagli eventi dell'archivio senza modelli; stesso archivio → stessi byte. Contiene le azioni private: è
-per il master e il Preparatore, mai per i giocatori. Sezioni, ognuna col suo turno: `archivio` (id, modo, inizio,
-ultimo evento, stato e motivo di chiusura, turni), `giocatori`, `scene` (dal turno, al turno), `luoghi`,
-`situazioni`, `orologi` (pieni all'inizio e alla fine, ogni segno col turno e la causa: narrazione o master, segni
-tolti, partenza), `indizi`, `battute`, `menzogne`, `fatti_noti` (con la battuta che li porta), `png_incontrati`
-(chi ha parlato, primo e ultimo turno), `pg` (azioni pubbliche e private separate, testo esatto ed esito),
-`momenti` (i turni in cui il Motore ha registrato un cambiamento, con le righe dette e le azioni), `note_del_master`,
-`avvisi`. `trascrizione.yaml` accanto: le voci pubbliche turno per turno, testo esatto. In modalità A il Motore non
-tiene indizi, battute, menzogne e fatti: quelle sezioni sono `null` e un avviso lo dice.
+### The log (registro.yaml, format 1; apps/server/src/sessione/registro.ts)
+Extracted from the archive's events without models; same archive → same bytes. It contains the private actions: it is
+for the master and the Preparer, never for the players. Sections, each with its own turn: `archivio` (id, mode, start,
+last event, status and reason for closing, turns), `giocatori` (players), `scene` (from the turn, to the turn),
+`luoghi` (places), `situazioni` (situations), `orologi` (clocks) (filled at the start and at the end, each sign with
+its turn and cause: narration or master, signs removed, departure), `indizi` (clues), `battute` (lines), `menzogne`
+(lies), `fatti_noti` (known facts) (with the line that brings them), `png_incontrati` (NPCs met) (who spoke, first and
+last turn), `pg` (PCs) (public and private actions kept separate, exact text and outcome), `momenti` (moments) (the turns
+in which the Engine recorded a change, with the lines said and the actions), `note_del_master` (the Game Master's notes),
+`avvisi` (warnings). `trascrizione.yaml` sits next to it: the public entries turn by turn, exact text. In mode A the
+Engine does not keep clues, lines, lies and facts: those sections are `null` and a warning says so.
 
-## Il ciclo tra le sessioni
-1. **Fine sessione** (pannello del master): il server scrive `sessioni/<nn>/registro.yaml` dall'archivio.
-2. **Stato**: il modello forte aggiorna `stato/stato.yaml` dal registro e dalla trascrizione; ogni fatto cita
-   `sessione` e `turno`; i fili aperti e le promesse dei PG restano finché non si chiudono.
-3. **Il mondo si muove**: gli orologi dei fronti e delle fazioni avanzano con regole fisse (quanti segni per
-   sessione, cosa li fa correre o rallentare); il modello forte scrive cosa è cambiato fuori scena.
-4. **Sessione N+1**: gli stessi passi della skill di oggi, a partire da stato e arco: situazione della sessione,
-   scene, PNG, repertorio, il riassunto da leggere all'apertura (dai fatti del registro, non a memoria).
-5. **Validatore**: le classi di oggi sul pacchetto, più STATO (ogni fatto ha una fonte) e CONTINUITÀ (niente
-   contraddice lo stato: morti, oggetti, promesse, chi sa cosa).
-6. **Risorse**: `prepara.sh` sul pacchetto, solo per ciò che manca.
+## The cycle between sessions
+1. **Fine sessione** (master's panel): the server writes `sessioni/<nn>/registro.yaml` from the archive.
+2. **State**: the strong model updates `stato/stato.yaml` from the log and the transcript; every fact cites `sessione`
+   and `turno`; open threads and the PCs' promises remain until they are closed.
+3. **The world moves**: the clocks of the fronts and factions advance with fixed rules (how many signs per session,
+   what makes them run or slow down); the strong model writes what changed off-scene.
+4. **Session N+1**: the same steps as today's skill, starting from state and arc: session situation, scenes, NPCs,
+   repertoire, and the recap to be read at the opening (from the facts in the log, not from memory).
+5. **Validator**: today's classes on the package, plus STATE (every fact has a source) and CONTINUITY (nothing
+   contradicts the state: deaths, objects, promises, who knows what).
+6. **Resources**: `prepara.sh` on the package, only for what is missing.
 
-## Fasi di lavoro
-- **D1** livello nel brief: `sessioni`, `strumenti/strati.py`, controllo nel validatore, sezione «Strati» della
-  skill. Una one-shot non cambia.
-- **D2** server (fatto il 3 novembre): pacchetti `sessioni/<nn>/` (una campagna senza `sessioni/` è una
-  one-shot), PG che durano, «Fine sessione» che scrive il registro, «Prossima sessione», `scripts/registro.sh`,
-  `strumenti/unisci_pacchetto.ts`, `partita.sh --sessione`. Prove: apps/server/test/pacchetti, cicli, registro,
-  registro-cli; e2e apps/web/e2e/pacchetti.spec.ts (fixture a due sessioni `apps/server/test/fixtures/campagne/arco`).
-- **D3** skill «tra le sessioni» e classi STATO e CONTINUITÀ del validatore.
-- **D4** prova vera: un arco di tre sessioni generato da un brief nuovo, giocato in automatico sessione per
-  sessione (i copioni ciechi vedono solo la trascrizione pubblica e il riassunto, come i giocatori), ciclo tra
-  le sessioni, giudice cieco su continuità e qualità.
-- **D5** livelli «campagna» e «saga»: bibbia del mondo, fazioni, archi a blocchi; prova con un mondo generato.
+## Work phases
+- **D1** level in the brief: `sessioni`, `strumenti/strati.py`, check in the validator, «Strati» (Layers) section of the
+  skill. A one-shot does not change.
+- **D2** server (done 3 November): packages `sessioni/<nn>/` (a campaign without `sessioni/` is a one-shot), PCs that
+  persist, «Fine sessione» that writes the log, «Prossima sessione», `scripts/registro.sh`,
+  `strumenti/unisci_pacchetto.ts`, `partita.sh --sessione`. Tests: apps/server/test/pacchetti, cicli, registro,
+  registro-cli; e2e apps/web/e2e/pacchetti.spec.ts (two-session fixture `apps/server/test/fixtures/campagne/arco`).
+- **D3** skill «tra le sessioni» (between sessions) and the STATE and CONTINUITÀ classes of the validator.
+- **D4** real test: an arc of three sessions generated from a new brief, played automatically session by session (the
+  blind scripts see only the public transcript and the recap, like the players), the cycle between sessions, a blind
+  judge on continuity and quality.
+- **D5** levels «campagna» (campaign) and «saga» (saga): world bible, factions, arcs in blocks; test with a generated world.

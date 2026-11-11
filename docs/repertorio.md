@@ -1,184 +1,187 @@
-# Repertorio: battute scritte prima, scelte al momento
+# Repertoire: lines written in advance, chosen in the moment
 
-Proposta di Riccardo (2 novembre 2026): i dialoghi e i momenti importanti li scrive **prima** un modello forte;
-durante il gioco il modello veloce **sceglie** quale battuta far partire; improvvisa solo ciò che non è previsto.
+Riccardo's proposal (2 November 2026): a strong model writes the dialogues and the important moments **beforehand**;
+during play the fast model **chooses** which line to start; it improvises only what has not been foreseen.
 
-È l'idea dei *beat* di Façade e degli *storylet* (narrativa a qualità): pezzi scritti a mano, ciascuno con
-**condizioni** per poter uscire ed **effetti** sullo stato. Qui il «gestore» che li sceglie è Haiku, e Haiku
-riempie i vuoti con brevi frasi improvvisate.
+It is the idea of the *beats* of Façade and of *storylets* (quality-based narrative): hand-written pieces, each with
+**conditions** to be eligible and **effects** on the state. Here the «gestore» (manager) that picks them is Haiku, and
+Haiku fills the gaps with short improvised sentences.
 
-## Perché conviene (tre guadagni in uno)
+## Why it pays off (three gains in one)
 
-1. **Qualità.** Le battute che contano (bugie, confessioni, indizi, segni della minaccia, momenti chiave) le scrive
-   Opus con calma, rispettando il manuale; si possono rileggere e correggere prima della sessione.
-2. **Latenza.** Il testo è noto prima: l'audio si **genera prima** con la voce clonata del PNG. In gioco parte subito,
-   senza aspettare la sintesi e senza il rischio del margine sottile di Qwen (RTF 0,9–1,0).
-3. **Segreti.** Le battute che toccano un segreto sono già scritte: il modello veloce non ha più bisogno di conoscere
-   il segreto. Vede solo l'id e una descrizione senza segreti («Ottavia cede sulla segale»). Non può rivelare ciò che
-   non sa (E2 portato all'estremo).
+1. **Quality.** The lines that matter (lies, confessions, clues, signs of the threat, key moments) are written by Opus
+   calmly, following the manual; they can be re-read and corrected before the session.
+2. **Latency.** The text is known in advance: the audio is **generated beforehand** with the cloned voice of the NPC.
+   In play it starts right away, without waiting for synthesis and without the risk of Qwen's thin margin (RTF 0.9–1.0).
+3. **Secrets.** The lines that touch a secret are already written: the fast model no longer needs to know the secret.
+   It sees only the id and a description without secrets (e.g. "Ottavia gives in on the rye"). It cannot reveal what it
+   does not know (E2 taken to the extreme).
 
-Il prezzo: la copertura. Se i giocatori fanno qualcosa di non previsto, si improvvisa (come oggi). In seguito il
-Regista in sottofondo scriverà nuove battute per gli argomenti che emergono (lo «studio» di fondo), così la
-copertura cresce durante la sessione.
+The price: coverage. If the players do something unforeseen, it is improvised (as today). Later, the Director in the
+background will write new lines for the topics that emerge (the background «studio» (study)), so coverage grows during
+the session.
 
 ## File: `campagne/<id>/repertorio/*.yaml`
 
-Un file per PNG (`png_<nome>.yaml`) più `narrazione.yaml` (indizi, segni degli orologi, momenti, transizioni).
+One file per NPC (`png_<nome>.yaml`) plus `narrazione.yaml` (clues, clock signs, moments, transitions).
 
 ```yaml
 battute:
-  - id: ott_segale_domanda          # unico nella campagna, minuscolo ascii
-    chi: png_ottavia                  # oppure narratore
+  - id: ott_segale_domanda          # unique in the campaign, lowercase ascii
+    chi: png_ottavia                  # or narratore (narrator)
     tipo: menzogna                    # menzogna | verita | confessione | reazione | rifiuto | richiesta |
                                       # saluto | indizio | segno_orologio | momento | transizione | finale
-    quando: "un PG chiede da dove viene la segale"   # ≤ 15 parole, SENZA segreti: è ciò che vede il selettore
-    temi: [segale, mugnaio, pane]     # parole chiave per il prefiltro del Motore
-    richiede:                         # condizioni verificate dal Motore, tutte vere (campi facoltativi)
-      indizi_rivelati: []             # id di indizi già rivelati
+    quando: "un PG chiede da dove viene la segale"   # ≤ 15 words, WITHOUT secrets: this is what the selector sees
+    temi: [segale, mugnaio, pane]     # keywords for the Engine's prefilter
+    richiede:                         # conditions checked by the Engine, all true (optional fields)
+      indizi_rivelati: []             # ids of clues already revealed
       indizi_non_rivelati: []
-      battute_usate: []               # id di battute già uscite
+      battute_usate: []               # ids of lines already used
       battute_non_usate: []
-      orologio: {id: o_colpevole, min: 0, max: 3}   # segni già mostrati, estremi inclusi
-      privata: true                   # risponde solo a un'azione segnata privata dal telefono
-      da_pg: [pg_assenzio]            # risponde solo alle azioni di questi PG
-      oppure: []                      # alternative: base E almeno una (vedi «Dalla prova cieca di ponte-lanterne»)
-    testo:                            # righe nel protocollo del narratore, in ordine
+      orologio: {id: o_colpevole, min: 0, max: 3}   # signs already shown, bounds included
+      privata: true                   # responds only to an action marked private from the phone
+      da_pg: [pg_assenzio]            # responds only to actions by these PCs
+      oppure: []                      # alternatives: base AND at least one (see «Dalla prova cieca di ponte-lanterne», i.e. "From the blind check of ponte-lanterne")
+    testo:                            # lines in the narrator's protocol, in order
       - "[narratore] Ottavia si sistema il fazzoletto rosso."
       - "[png_ottavia] La segale è di Gualtiero, come ogni anno. Buona."
-    varianti:                         # 0–2 altre versioni dello stesso contenuto, per non ripetersi
+    varianti:                         # 0–2 other versions of the same content, to avoid repeating
       - ["[narratore] …", "[png_ottavia] …"]
-    effetti:                          # applicati dal Motore quando la battuta esce
+    effetti:                          # applied by the Engine when the line comes out
       rivela_indizi: []
-      menzogna_detta: ott_segale      # registra la menzogna (versione fissa, segnale mostrato)
-      fatti_noti: []                  # fatti del canone che ora i PG conoscono
-      avanza_orologio: null           # id dell'orologio se è un segno
-    max_usi: 1                        # le varianti contano come usi della stessa battuta
+      menzogna_detta: ott_segale      # records the lie (fixed version, signal shown)
+      fatti_noti: []                  # canon facts that the PCs now know
+      avanza_orologio: null           # id of the clock if it is a sign
+    max_usi: 1                        # variants count as uses of the same line
 ```
 
-Regole per chi scrive le battute:
-- testo con le regole del manuale §5 e §6 (frasi brevi, voce del PNG, segnale quando mente, niente PG decisi);
-- **niente nomi di PG** nelle battute: rivolgersi al gruppo con il voi o al singolo senza nome; il nome e l'invito
-  li aggiunge l'improvvisazione;
-- ogni PNG parla solo di ciò che sta nel suo `sa`, come oggi;
-- copertura minima: ogni indizio ha la sua battuta di rivelazione (una per ogni modo in `come_si_trova`), ogni
-  menzogna la sua versione con segnale, ogni `cede_se` la sua confessione, ogni segno di orologio la sua battuta,
-  ogni finale la sua chiusura; per ogni PNG reazioni a domanda gentile, accusa, minaccia, offerta, aiuto, saluto e
-  un rifiuto educato per gli argomenti fuori dal suo `sa`.
+Rules for whoever writes the lines:
+- text following the rules of the manual §5 and §6 (short sentences, the NPC's voice, a signal when lying, no PC
+  decisions made for them);
+- **no PC names** in the lines: address the group in the plural (*voi*) or the single person without a name; the name
+  and the invitation are added by the improvisation;
+- each NPC speaks only about what is in its `sa`, as today;
+- minimum coverage: each clue has its revelation line (one for each way in `come_si_trova`), each lie its version with a
+  signal, each `cede_se` its confession, each clock sign its line, each ending its closing; for each NPC, reactions to a
+  kind question, an accusation, a threat, an offer, help, a greeting, and a polite refusal for topics outside its `sa`.
 
-## Protocollo del selettore (Haiku)
+## Selector protocol (Haiku)
 
-Righe come oggi, più una nuova:
+Lines as today, plus a new one:
 
 ```
-[usa] <id_battuta>          la battuta pre-scritta esce qui, in quest'ordine (non si riscrive)
-[narratore] …               raccordo improvvisato, breve (esito minore, nome del PG, invito)
-[png_<nome>] …              solo se nessuna battuta va bene; il Motore lo conta come improvvisazione
-[invito] pg_…               come oggi, sempre ultima
+[usa] <id_battuta>          the pre-written line comes out here, in this order (not rewritten)
+[narratore] …               brief improvised bridge (minor outcome, PC name, invitation)
+[png_<nome>] …              only if no line fits; the Engine counts it as improvisation
+[invito] pg_…              as today, always last
 ```
 
-- Il Motore mette nel contesto di ogni turno l'**elenco delle battute disponibili** (condizioni vere, usi rimasti):
-  `id · chi · tipo · quando`. Mai il testo delle battute non ancora uscite. Il tipo è **neutro**: `menzogna`,
-  `verita` e `confessione` diventano `risposta` (direbbero al selettore chi mente); il tipo vero resta nei log e nel
-  pannello del master.
-- `[usa]` con un id non disponibile: scartato e registrato.
-- **Più scene**: una battuta con `scena: <id>` entra in catalogo solo in quella scena; senza `scena` vale ovunque.
-- **Rientro**: tornando in una scena già visitata il Motore non rilegge l'apertura (né, per la prima scena, il
-  riassunto di sessione): dice la battuta di `rientro` della scheda (`rientro: tr_casera`, se è ancora disponibile;
-  esce e conta come usata), oppure il testo di `rientro`, oppure la prima frase dell'apertura.
-- **Modi degli indizi**: le battute di rivelazione di un indizio con `modi` ≥ 2 sono strade alternative. Trovato per una
-  strada, le altre (solo rivelazione, fatti già noti) escono dal catalogo. All'avvio il Motore avvisa se un indizio ha
-  meno battute di rivelazione dei suoi modi.
-- **Menzogne già dette**: `effetti.menzogna_detta` è l'id di una `mente_su` del PNG. Dopo che è uscita, il messaggio del
-  turno porta «Menzogne già dette» con la versione (già pubblica), così il PNG che improvvisa non si contraddice; la
-  verità non entra mai.
-- **Cancelli sull'azione** (`richiede.privata`, `richiede.da_pg`): il Motore mette in catalogo una battuta solo se nel
-  turno c'è un'azione a cui può rispondere (privata per `privata: true`, dei PG elencati per `da_pg`), e accetta
-  `[usa] <id> > <pg>` solo verso quell'azione. Le battute senza cancello rispondono solo alle azioni pubbliche:
-  un'azione privata non riceve battute qualsiasi.
-- Gli effetti li applica il Motore; non serve più la riga `[orologio]` per i segni scritti nel repertorio.
-- Nella trascrizione pubblica entra il testo della battuta uscita (ormai è pubblico).
-- **Contesto del selettore**: in modalità repertorio i segreti escono dal contesto di Haiku (verità delle menzogne,
-  `segreto`, fatti del canone con `noto_ai_pg: false` non ancora rivelati). Restano il pubblico, il carattere dei PNG,
-  e il loro `sa` pubblico.
+- The Engine puts in the context of each turn the **list of available lines** (true conditions, uses left):
+  `id · chi · tipo · quando`. Never the text of lines not yet come out. The type is **neutral**: `menzogna`, `verita`
+  and `confessione` become `risposta` (they would tell the selector who is lying); the real type stays in the logs and
+  in the Game Master's panel.
+- `[usa]` with an id that is not available: discarded and recorded.
+- **Multiple scenes**: a line with `scena: <id>` enters the catalog only in that scene; without `scena` it applies
+  everywhere.
+- **Return**: returning to a scene already visited, the Engine does not reread the opening (nor, for the first scene,
+  the session recap): it says the sheet's `rientro` line (`rientro: tr_casera`, if still available; it comes out and
+  counts as used), or the text of `rientro`, or the first sentence of the opening.
+- **Clue modes**: the revelation lines of a clue with `modi` ≥ 2 are alternative routes. Once found by one route, the
+  others (revelation only, facts already known) leave the catalog. At startup the Engine warns if a clue has fewer
+  revelation lines than its modes.
+- **Lies already told**: `effetti.menzogna_detta` is the id of a `mente_su` of the NPC. After it has come out, the turn's
+  message carries «Menzogne già dette» (Lies already told) with the version (already public), so the improvising NPC
+  does not contradict itself; the truth never enters.
+- **Gates on the action** (`richiede.privata`, `richiede.da_pg`): the Engine puts a line in the catalog only if the turn
+  contains an action it can answer (private for `privata: true`, from the listed PCs for `da_pg`), and accepts
+  `[usa] <id> > <pg>` only toward that action. Lines without a gate answer only public actions: a private action
+  receives no generic lines.
+- The effects are applied by the Engine; the `[orologio]` line is no longer needed for signs written in the repertoire.
+- In the public transcript goes the text of the line that came out (it is public by now).
+- **Selector context**: in repertoire mode the secrets leave Haiku's context (truth of the lies, `segreto`, canon facts
+  with `noto_ai_pg: false` not yet revealed). What remains is the public information, the NPCs' character, and their
+  public `sa`.
 
-## Dalla prova cieca di ponte-lanterne (applicate dal Motore)
+## From the blind check of ponte-lanterne (applied by the Engine)
 
-Erano proposte del validatore e della skill del Preparatore; il server le applica dal 2 novembre sera.
+These were proposals from the validator and from the Preparer's skill; the server has applied them since the evening of
+2 November.
 
-- **`richiede.oppure: [{…}, {…}]`**: la battuta è disponibile se valgono le condizioni di base **e**
-  almeno una delle alternative. Ogni alternativa è un blocco con le stesse chiavi di `richiede` (niente
-  `oppure` annidati, almeno due blocchi). Per i cancelli sull'azione vale l'alternativa aperta: `{privata: true}`
-  oppure `{indizi_rivelati: [i_x]}` vuol dire «un'azione privata, o un'azione pubblica dopo l'indizio».
-  Le liste di base e alternativa si sommano; `da_pg` è l'intersezione se entrambe lo dicono. Il caricatore
-  rifiuta ogni chiave di `richiede` che non conosce: ignorata, aprirebbe il cancello.
-  Una strada con `prova` e un'altra senza (e2e finale, D2): dopo un tiro fallito il Motore chiude la battuta
-  (docs/prove.md, «La carta e la storia d'accordo»), ma chi non tira la ottiene per l'altra strada. Il validatore
-  lo segnala con un avviso (`REPERTORIO.prova_aggirabile`): se non è voluto, la prova va nella base o in ogni strada.
-- **`orologi[].parte_dopo: [<id battuta o indizio>]`**: l'orologio comincia a correre quando esce una di
-  quelle battute o si rivela uno di quegli indizi. Prima non avanza, non conta per `segno_almeno_ogni` (il
-  ritmo conta dalla partenza), i suoi segni non entrano nel catalogo e il narratore lo vede fermo. In
-  modalità A le battute non hanno id: lo fa partire il master col +1 del pannello.
-- **PNG presenti**: in catalogo entrano solo battute in cui parla chi è in scena: `chi` e ogni `[png_…]`
-  delle righe e delle varianti devono essere tra i `png_presenti` della scena in corso (il narratore sempre).
-  `scena` accetta anche una lista (`scena: [scena_ponte_imbrunire, scena_terzo_tocco]`). La misura dei
-  copioni del validatore segue le stesse regole.
+- **`richiede.oppure: [{…}, {…}]`**: the line is available if the base conditions hold **and** at least one of the
+  alternatives. Each alternative is a block with the same keys as `richiede` (no nested `oppure`, at least two blocks).
+  For action gates the open alternative applies: `{privata: true}` or `{indizi_rivelati: [i_x]}` means "a private
+  action, or a public action after the clue". The base and alternative lists are combined; `da_pg` is the intersection
+  if both state it. The loader rejects every `richiede` key it does not know: an ignored key would open the gate.
+  A route with `prova` and another without (final e2e, D2): after a failed roll the Engine closes the line (docs/prove.md,
+  «La carta e la storia d'accordo» (The card and the story in agreement)), but whoever does not roll gets it by the
+  other route. The validator flags this with a warning (`REPERTORIO.prova_aggirabile`): if it is not intended, the check
+  goes into the base or into every route.
+- **`orologi[].parte_dopo: [<id battuta o indizio>]`**: the clock starts running when one of those lines comes out or one
+  of those clues is revealed. Before that it does not advance, does not count for `segno_almeno_ogni` (the pace counts
+  from the start), its signs do not enter the catalog, and the narrator sees it as stopped. In mode A the lines have no
+  ids: the Game Master starts it with the +1 of the panel.
+- **NPCs present**: only lines where the speaker is on stage enter the catalog: `chi` and every `[png_…]` in the lines and
+  variants must be among the `png_presenti` of the scene in progress (the narrator always). `scena` also accepts a list
+  (`scena: [scena_ponte_imbrunire, scena_terzo_tocco]`). The validator's measure of the scripts follows the same rules.
 
-## Versione 2 (dopo l'esperimento A/B n. 1)
+## Version 2 (after experiment A/B no. 1)
 
-Il giudizio cieco (`esperimenti/giudizio-ab-1/conclusioni.md`) ha mostrato che il selettore riempie i turni con
-battute *disponibili* invece di rispondere alle azioni. Cambia così:
+The blind judgment (`esperimenti/giudizio-ab-1/conclusioni.md`) showed that the selector fills the turns with *available*
+lines instead of answering the actions. It therefore changes as follows:
 
-- **Legame con l'azione**: `[usa] <id> > <pg_id>` dice a quale azione risponde la battuta. Una battuta senza `> pg`
-  è ammessa solo se è il segno dovuto del suo orologio, un finale o una mossa contro lo stallo. Il Motore rifiuta l'uscita se
-  un'azione dichiarata resta senza risposta (né battuta né riga improvvisata rivolta a quel PG).
-- **Solo ciò che conta esce pre-scritto**: bugie, confessioni, indizi, segni d'orologio, momenti, finali. Le reazioni
-  generiche hanno `solo_esempio: true`: non entrano nel catalogo, ma vanno nel contesto come **esempi della voce** del PNG
-  per l'improvvisazione.
-- **Catalogo pertinente**: il Motore mostra le battute i cui `temi` o PNG compaiono nelle azioni del turno, più il
-  segno d'orologio dovuto; le battute `riempitivo: true` (il cane, la borsa…) solo allo stallo, cioè una finestra chiusa senza
-  azioni (scadenza del ritmo concitato, o «Risolvi ora» a mani vuote).
-- **Anti-ripetizione**: una battuta e le sue varianti non tornano entro 3 turni.
-- **Il Motore aiuta il selettore** (playtest di nozze-neve: 115 battute su 139 mai uscite, indizi chiesti e non
-  arrivati, battute giuste rifiutate per il «> pg» dimenticato):
-  - *preselezione*: per ogni azione pubblica, le battute del catalogo i cui `temi` compaiono in quell'azione, che
-    rispondono a quel PG e parlano con la voce giusta (il narratore o un PNG che l'azione nomina); niente segni,
-    transizioni, finali né riempitivi; al massimo due per azione. Vanno in testa al catalogo e nella sezione
-    «Battute indicate dal Motore», col `[usa] id > pg` già scritto;
-  - *«> pg» dedotto*: senza `> pg` (o con un `> pg` sbagliato) il Motore lo deduce se una sola azione del turno può
-    essere quella giusta (i cancelli, poi i temi, poi il PNG nominato), e lo registra (`pg_dedotti`); se resta
-    ambiguo il `[usa]` è rifiutato come prima.
-- **Orologio**: anche in modalità B il Motore scrive «mostralo in questa risposta» quando il segno è dovuto.
-- **Ritmo per orologio** (playtest di nozze-neve: il tramonto correva al triplo e affamava la lite e lo zio):
-  - il segno dovuto è di UN orologio: in catalogo entrano solo i segni degli orologi dovuti, e se il selettore non
-    li usa il Motore li dice da sé, uno per orologio;
-  - `segno_almeno_ogni` conta i turni in cui l'orologio è attivo (le visite precedenti si sommano, l'ingresso in
-    una scena non lo rende dovuto); `segno_al_massimo_ogni` (predefinito 2) vieta segni di fila, salvo quelli
-    legati all'azione di un PG (i temi del segno) e il master;
-  - al massimo un segno per orologio e due orologi per risposta;
-  - `orologi_in_scena` nella scheda scena: entrando, l'orologio sale ad almeno `pieni_almeno`, e lì può avere un
-    suo `segno_almeno_ogni` (nozze-neve: al Sasso il tramonto è almeno a sei e corre a un segno ogni due).
-- **Elencate per stato, non per temi**: finali, battute della folla e chiusura escono in base allo stato dell'orologio
-  (a orologio completo), perché non hanno parole dei giocatori nei `temi`.
-- **Alias dei PNG** per la pertinenza: nano → Baldrin; ostessa/oste → Ottavia; forestiero/prigioniero/«quello là
-  dentro» → Sebastiano. Il Motore li legge dal campo `alias` della scheda PNG (nessun elenco nel codice).
-- **Valutazione onesta**: i `temi` della v2 sono stati tarati sui copioni del primo esperimento; il confronto B2 si
-  fa su copioni nuovi scritti alla cieca (`esperimenti/copioni/prova2/`).
+- **Link to the action**: `[usa] <id> > <pg_id>` says which action the line answers. A line without `> pg` is admitted
+  only if it is the due sign of its clock, an ending, or a move against a stall. The Engine rejects the output if a
+  declared action remains without an answer (neither a line nor an improvised line addressed to that PC).
+- **Only what matters comes out pre-written**: lies, confessions, clues, clock signs, moments, endings. Generic reactions
+  have `solo_esempio: true`: they do not enter the catalog, but they go into the context as **examples of the voice** of
+  the NPC for the improvisation.
+- **Relevant catalog**: the Engine shows the lines whose `temi` or NPCs appear in the actions of the turn, plus the due
+  clock sign; lines with `riempitivo: true` (the dog, the bag…) only at a stall, that is a closed window with no actions
+  (timeout of the fast-paced phase, or «Risolvi ora» (Resolve now) with empty hands).
+- **Anti-repetition**: a line and its variants do not return within 3 turns.
+- **The Engine helps the selector** (nozze-neve playtest: 115 lines out of 139 never came out, clues asked for and not
+  arriving, correct lines rejected because of a forgotten "> pg"):
+  - *preselection*: for each public action, the catalog lines whose `temi` appear in that action, that answer that PC and
+    speak with the right voice (the narrator, or an NPC the action names); no signs, transitions, endings or fillers; at
+    most two per action. They go to the head of the catalog and into the section «Battute indicate dal Motore» (Lines
+    suggested by the Engine), with the `[usa] id > pg` already written;
+  - *inferred "> pg"*: without `> pg` (or with a wrong `> pg`) the Engine infers it if only one action of the turn can be
+    the right one (the gates first, then the themes, then the NPC named), and records it (`pg_dedotti`); if it remains
+    ambiguous, the `[usa]` is rejected as before.
+- **Clock**: even in mode B the Engine writes «mostralo in questa risposta» (show it in this reply) when the sign is due.
+- **Pace per clock** (nozze-neve playtest: the sunset ran at triple speed and starved the quarrel and the uncle):
+  - the due sign belongs to ONE clock: the catalog admits only the signs of the due clocks, and if the selector does not
+    use them the Engine states them itself, one per clock;
+  - `segno_almeno_ogni` counts the turns in which the clock is active (earlier visits add up; entering a scene does not
+    make it due); `segno_al_massimo_ogni` (default 2) forbids consecutive signs, except those tied to a PC's action (the
+    sign's themes) and the Game Master;
+  - at most one sign per clock and two clocks per reply;
+  - `orologi_in_scena` in the scene sheet: on entering, the clock rises to at least `pieni_almeno`, and there it may have
+    its own `segno_almeno_ogni` (nozze-neve: at the Sasso the sunset is at least six and runs at one sign every two).
+- **Listed by state, not by themes**: endings, crowd lines and the closing come out based on the state of the clock (at
+  full clock), because they have no players' words in their `temi`.
+- **NPC aliases** for relevance: nano (dwarf) → Baldrin; ostessa/oste (innkeeper) → Ottavia; forestiero (stranger)/
+  prigioniero (prisoner)/«quello là dentro» (that one in there) → Sebastiano. The Engine reads them from the `alias`
+  field of the NPC sheet (no list in the code).
+- **Honest evaluation**: the v2 `temi` were tuned on the scripts of the first experiment; the B2 comparison will be done on
+  new scripts written blind (`esperimenti/copioni/prova2/`).
 
-## Audio pre-generato
+## Pre-generated audio
 
-- Uno script genera l'audio di ogni riga di ogni battuta (e variante) con il servizio voce, e lo salva in
-  `cache/audio/<hash di voce+testo>.pcm` (fuori da git, si rigenera).
-- In gioco la riga pre-generata entra nella stessa coda delle frasi improvvisate, nello stesso ordine, ma è pronta subito.
+- A script generates the audio of each line of each line (and variant) with the voice service, and saves it to
+  `cache/audio/<hash di voce+testo>.pcm` (not in git; it is regenerated).
+- During play the pre-generated line enters the same queue as the improvised sentences, in the same order, but it is
+  ready right away.
 
-## Esperimento: A (solo improvvisazione, oggi) contro B (repertorio)
+## Experiment: A (improvisation only, today) versus B (repertoire)
 
-- **Copioni fissi** di azioni dei giocatori, scritti da un agente che vede solo ciò che vedono i giocatori
-  (`situazione_comune`, apertura, schede dei PG) e non il repertorio: uno «indagine», uno «pressione», ciascuno
-  di circa 8 turni con 3 PG, con 2–3 azioni fuori dal previsto per mettere alla prova l'improvvisazione.
-- Stessa scena, stesso Haiku, stessa voce, copioni uguali per A e B.
-- **Misure**: latenza (primo audio dalla chiusura della finestra, mediana e peggiore), costo, quota di righe
-  pre-scritte e improvvisate.
-- **Giudizio cieco**: un agente Opus riceve le trascrizioni etichettate X/Y a caso e le valuta con la rubrica
-  R1–R12 del manuale, contando anche fughe di segreti, decisioni prese al posto dei PG, fatti inventati, PG in
-  terza persona fuori dall'annuncio della loro azione (N15), battute nella voce sbagliata.
-- Campioni audio delle due versioni da ascoltare.
+- **Fixed scripts** of player actions, written by an agent that sees only what the players see (`situazione_comune`,
+  opening, PC sheets) and not the repertoire: one «indagine» (investigation), one «pressione» (pressure), each of about
+  8 turns with 3 PCs, with 2–3 actions outside the foreseen, to test the improvisation.
+- Same scene, same Haiku, same voice, same scripts for A and B.
+- **Measures**: latency (first audio from the close of the window: median and worst), cost, share of pre-written and
+  improvised lines.
+- **Blind judgment**: an Opus agent receives the transcripts labelled X/Y at random and evaluates them with the manual's
+  rubric R1–R12, also counting secret leaks, decisions taken in place of the PCs, invented facts, PCs in the third person
+  outside the announcement of their action (N15), lines in the wrong voice.
+- Audio samples of the two versions to listen to.

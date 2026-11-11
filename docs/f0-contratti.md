@@ -1,204 +1,218 @@
-# F0 — contratti tra i pezzi
+# F0 — contracts between the parts
 
-Fase 0: una scena completa. Il giocatore scrive l'azione sul telefono, Haiku narra in streaming,
-la voce locale (Qwen3-TTS) parla, lo schermo/proiettore suona l'audio e mostra chi parla.
-Obiettivo: misurare la latenza vera e sentire la qualità. Questo file fissa le interfacce, così
-i pezzi si possono costruire in parallelo. Chi cambia un contratto aggiorna questo file.
+Phase 0: one complete scene. The player writes the action on the phone, Haiku narrates in streaming,
+the local voice (Qwen3-TTS) speaks, the screen/projector plays the audio and shows who is speaking.
+Goal: measure the real latency and hear the quality. This file fixes the interfaces, so that the parts
+can be built in parallel. Whoever changes a contract updates this file.
 
-## Struttura del repository
+## Repository structure
 
 ```
-apps/server        @cantastorie/server   Node + TypeScript (Fastify + Socket.IO v4)
-apps/web           @cantastorie/web      React + Vite: pagine /telefono e /schermo
-packages/shared    @cantastorie/shared   tipi degli eventi Socket.IO e dei messaggi
-services/voce      servizio Python MLX (Qwen3-TTS), venv proprio in services/voce/.venv
-assets/voci        clip di riferimento delle voci + voci.yaml (registro)
-campagne/prova-f0  contenuto della scena di prova (YAML, schema del manuale)
-prompts            testi dei prompt dei modelli (markdown, caricati dal server)
-scripts            avvio/arresto di tutto
-logs               log JSONL (fuori da git)
+apps/server        @tabletop-ai-gm/server   Node + TypeScript (Fastify + Socket.IO v4)
+apps/web           @tabletop-ai-gm/web      React + Vite: pages /telefono and /schermo
+packages/shared    @tabletop-ai-gm/shared   types of the Socket.IO events and messages
+services/voce      Python MLX service (Qwen3-TTS), its own venv in services/voce/.venv
+assets/voci        reference clips of the voices + voci.yaml (registry)
+campagne/prova-f0  content of the test scene (YAML, schema from the manual)
+prompts            model prompt texts (markdown, loaded by the server)
+scripts            start/stop of everything
+logs               JSONL logs (outside git)
 ```
 
-## Porte (tutte locali)
+## Ports (all local)
 
-| Servizio | Porta | Bind |
+| Service | Port | Bind |
 |---|---|---|
-| server (API + Socket.IO + pagine web compilate) | 4610 | 0.0.0.0 (i telefoni arrivano dalla LAN) |
-| servizio voce | 4611 | 127.0.0.1 (solo il server lo chiama) |
-| Vite dev (solo sviluppo, proxy verso 4610) | 4612 | 0.0.0.0 |
-| istanza di prova (e2e mentre si gioca): `CANTASTORIE_PORTA=4710 scripts/avvio.sh` | 4710 (o altra) | 0.0.0.0 |
+| server (API + Socket.IO + compiled web pages) | 4610 | 0.0.0.0 (phones connect from the LAN) |
+| voice service | 4611 | 127.0.0.1 (only the server calls it) |
+| Vite dev (development only, proxy to 4610) | 4612 | 0.0.0.0 |
+| test instance (e2e while a game is running): `TAGM_PORTA=4710 scripts/avvio.sh` | 4710 (or other) | 0.0.0.0 |
 
-Un'istanza di prova non tocca la partita vera: log e pagine compilate in `logs/porta-<porta>/` (apps/web/dist
-non si ricompila), voce sempre finta (il servizio su 4611 resta della partita), arresto con
-`CANTASTORIE_PORTA=<porta> scripts/arresto.sh` (ferma solo quella porta). Le prove Playwright puntano per
-default alla 4710 (`apps/web/e2e/percorsi.ts`; altre porte con `E2E_PORTA`).
+A test instance does not touch the real game: logs and compiled pages go to `logs/porta-<porta>/`
+(apps/web/dist is not rebuilt), the voice is always fake (the service on 4611 stays with the real game),
+stop it with `TAGM_PORTA=<porta> scripts/arresto.sh` (stops only that port). The Playwright tests point
+to 4710 by default (`apps/web/e2e/percorsi.ts`; other ports with `E2E_PORTA`).
 
-## Servizio voce (HTTP, 127.0.0.1:4611)
+## Voice service (HTTP, 127.0.0.1:4611)
 
 - `GET /salute` → `{"pronto": bool, "modello": str, "sample_rate": int, "formato": "pcm_s16le", "voci": [str]}`.
-  `pronto` è vero solo dopo il caricamento del modello e il riscaldamento.
-- `POST /tts`, corpo JSON `{"id": str, "voce": str, "testo": str}`.
-  - Risposta `200`, `Content-Type: application/octet-stream`, intestazioni `X-Sample-Rate` e
-    `X-Formato: pcm_s16le`. Corpo: PCM mono 16 bit little-endian **in streaming** (chunked), un pezzo
-    appena il modello lo produce.
-  - `404` con JSON `{"errore": ...}` se la voce non esiste; `400` se il testo è vuoto.
-  - Le richieste si mettono in coda e si generano **una alla volta** (MLX su un solo thread), in ordine di arrivo.
-  - Se il client chiude la connessione, la generazione si ferma subito (serve per interrompere la narrazione).
-- `POST /annulla`, corpo `{"id": str}` → ferma la generazione o la toglie dalla coda. Risponde `{"annullata": bool}`.
-- `POST /sveglia` (aggiunto dopo le misure): non blocca; se il worker è libero fa ~0,8 s di generazione a vuoto,
-  interrotta al primo pezzo appena arriva una richiesta vera. Dopo una pausa di 20 s il primo audio sale da ~0,37 s
-  a 0,5–0,9 s; con la sveglia torna a ~0,39 s. **Il server la chiama nel momento in cui chiude la finestra delle
-  azioni**: la prima frase dell'LLM arriva dopo ~0,9 s, la sveglia ci sta dentro.
-- Log JSONL `logs/voce.jsonl`: id, voce, caratteri, attesa in coda, primo audio, totale, secondi di audio, RTF, annullata.
+  `pronto` is true only after the model has loaded and warmed up.
+- `POST /tts`, JSON body `{"id": str, "voce": str, "testo": str}`.
+  - Response `200`, `Content-Type: application/octet-stream`, headers `X-Sample-Rate` and
+    `X-Formato: pcm_s16le`. Body: 16-bit little-endian mono PCM **streamed** (chunked), one chunk as soon
+    as the model produces it.
+  - `404` with JSON `{"errore": ...}` if the voice does not exist; `400` if the text is empty.
+  - Requests are queued and generated **one at a time** (MLX on a single thread), in arrival order.
+  - If the client closes the connection, generation stops at once (needed to interrupt the narration).
+- `POST /annulla`, body `{"id": str}` → stops the generation or removes it from the queue. Responds
+  `{"annullata": bool}`.
+- `POST /sveglia` (added after the measurements): does not block; if the worker is free it runs ~0.8 s of
+  empty generation, interrupted as soon as a real request's first chunk arrives. After a 20 s pause the
+  first audio rises from ~0.37 s to 0.5–0.9 s; with the wake-up call it goes back to ~0.39 s. **The server
+  calls it at the moment it closes the actions window**: the LLM's first sentence arrives after ~0.9 s, and
+  the wake-up call fits inside that.
+- JSONL log `logs/voce.jsonl`: id, voce, caratteri, attesa in coda, primo audio, totale, secondi di audio,
+  RTF, annullata.
 
-Voci di F0 (registro `assets/voci/voci.yaml`, id → clip + testo della clip):
-`narratore` (voce fissa del narratore), `vincent`, `nadine`, `lucian`, `tabitha` (voci per i PNG).
+F0 voices (registry `assets/voci/voci.yaml`, id → clip + clip text): `narratore` (the narrator's fixed
+voice), `vincent`, `nadine`, `lucian`, `tabitha` (voices for the NPCs).
 
-## Voce del gioco: drama-3 via OpenRouter (dal 9 novembre 2026)
+## Game voice: drama-3 via OpenRouter (from 9 November 2026)
 
 - Server → `POST https://openrouter.ai/api/v1/audio/speech` `{model: 'fish-audio/drama-3', input, voice: <fish>,
-  response_format: 'pcm'}` → PCM s16le mono a **44,1 kHz** (dal `Content-Type`), in streaming. `fish` è il
-  reference_id della voce pubblica scritto per ogni voce_id in `assets/voci/voci.yaml`. Chiave: `OPENROUTER_API_KEY`
-  dell'ambiente, poi la riga nel `.env` alla radice, poi (ripiego) il file `CANTASTORIE_CHIAVE_OPENROUTER` (predefinito
-  ../agora/.env); la ricerca sta in `apps/server/src/llm/chiavi.ts`. Mai nei log.
-- Una frase per richiesta. La richiesta è riuscita solo al primo pezzo di audio (entro 6 s); poi un ritentativo,
-  poi Qwen se è permesso e pronto (mai sulle istanze di prova), poi solo testo: la frase si annuncia con un
-  silenzio lungo quanto la lettura e il turno non si ferma (apps/server/src/voce/riserva.ts, pipeline.ts).
-- `audio:frase.sample_rate` cambia per frase (44100 con drama-3, 24000 con Qwen e per le frasi senza voce).
-- `audio:frase.solo_pg` (facoltativo): la frase è privata e va solo alla stanza `ascolto:<id_pg>` (telefoni di
-  quel PG con «Ascolta qui»). Evento `telefono:ascolta {attivo}` → stanze `ascolto` e `ascolto:<id_pg>`.
+  response_format: 'pcm'}` → PCM s16le mono at **44.1 kHz** (from the `Content-Type`), streamed. `fish` is the
+  reference_id of the public voice written for each voice_id in `assets/voci/voci.yaml`. Key:
+  `OPENROUTER_API_KEY` from the environment, then the line in the `.env` at the root, then (fallback) the file
+  `TAGM_CHIAVE_OPENROUTER` (default ../agora/.env); the lookup lives in `apps/server/src/llm/chiavi.ts`.
+  Never in the logs.
+- One sentence per request. The request succeeds only if the first audio chunk arrives (within 6 s); then one
+  retry, then Qwen if allowed and ready (never on test instances), then text only: the sentence is announced
+  with a silence as long as its reading, and the turn does not stop (apps/server/src/voce/riserva.ts, pipeline.ts).
+- `audio:frase.sample_rate` changes per sentence (44100 with drama-3, 24000 with Qwen and for sentences without a voice).
+- `audio:frase.solo_pg` (optional): the sentence is private and goes only to the room `ascolto:<id_pg>` (phones of
+  that PC with «Ascolta qui» (Listen here) on). Event `telefono:ascolta {attivo}` → rooms `ascolto` and `ascolto:<id_pg>`.
 
-## Voce espressiva nelle righe del protocollo
+## Expressive voice in the protocol lines
 
-Dentro il testo di `[narratore]` e `[<id_png>]` (e nelle righe del repertorio):
-- `[direzione]` a inizio riga, breve, in italiano, senza punti: vale per tutta la riga (il server la riporta sulle
-  frasi seguenti, perché ogni frase è una richiesta a sé). Senza direzione vale quella predefinita: scheda del PNG
-  (`voce.tts.direzione`, altrimenti carattere, timbro, età, velocità) o carta di stile (`direzione_voce`,
-  altrimenti la prima frase di `registro_narratore`).
-- Suoni: `[sigh] [laugh] [breath] [pause]` (e simili), dove cadono.
-- Tag accoppiati, chiusi nella stessa frase: `<whisper> <emphasis> <soft> <fast> <slow> <stress> <forceful>`.
-- Il server toglie tutto questo da ciò che si mostra, dalla trascrizione e dalla cronologia per Haiku, e lo manda
-  solo a drama-3, dopo una guardia: tag sconosciuti, chiusure senza apertura e direzioni oltre 80 caratteri si
-  tolgono e si registrano nel log; un tag ancora aperto a fine frase si chiude lì e si riapre nella frase dopo
-  della stessa riga. Qwen riceve solo le parole.
+Inside the text of `[narratore]` and `[<id_png>]` (and in the repertoire lines):
+- `[direzione]` at the start of a line, short, in Italian, no full stops: it applies to the whole line (the server
+  carries it over to the following sentences, because each sentence is a request of its own). Without a direction
+  the default applies: NPC sheet (`voce.tts.direzione`, otherwise character, timbre, age, speed) or style card
+  (`direzione_voce`, otherwise the first sentence of `registro_narratore`).
+- Sounds: `[sigh] [laugh] [breath] [pause]` (and similar), where they fall.
+- Paired tags, closed in the same sentence: `<whisper> <emphasis> <soft> <fast> <slow> <stress> <forceful>`.
+- The server removes all this from what is shown, from the transcript and from the history given to Haiku, and
+  sends it only to drama-3, after a guard: unknown tags, closings without an opening and directions over 80
+  characters are removed and logged; a tag still open at the end of a sentence is closed there and reopened in
+  the next sentence of the same line. Qwen receives only the words.
 
-## Protocollo di uscita del narratore (Haiku, testo in streaming)
+## Narrator's exit protocol (Haiku, streamed text)
 
-Il narratore scrive **solo righe etichettate**, una per segmento. Il server le legge mentre arrivano,
-le divide in frasi e manda ogni frase alla voce giusta.
+The narrator writes **only labelled lines**, one per segment. The server reads them as they arrive, splits them
+into sentences and sends each sentence to the right voice.
 
 ```
-[narratore] Testo narrato, al presente, rivolto al gruppo.
-[<id_png>] Battuta detta dal PNG, senza virgolette e senza «disse».
+[narratore] Narrated text, in the present tense, addressed to the group.
+[<id_png>] Line spoken by the NPC, without quotation marks and without «disse» (said).
 [invito] <id_pg>,<id_pg>
 ```
 
-- `[narratore]`: voce del narratore.
-- `[<id_png>]`: l'id è quello del file `campagne/<campagna>/png/<id_png>.yaml`; il server usa il suo `voce.tts.voce_id`.
-  Un'etichetta sconosciuta viene letta con la voce del narratore e finisce nel log come errore.
-- `[invito]`: **ultima riga, obbligatoria**. Elenco degli id dei personaggi giocanti invitati ad agire
-  (oppure `tutti`). Non viene letta ad alta voce: apre la finestra delle azioni per quei giocatori.
-  Se manca, il server invita tutti e registra l'errore.
-- `[orologio] <id_orologio>`: facoltativa, subito prima di `[invito]`, solo nella risposta in cui il narratore ha
-  mostrato il **prossimo segno** di quell'orologio. Non viene letta. È la versione leggera di `tick_clock`: il Motore
-  controlla che l'orologio esista, sia attivo e non sia completo, poi avanza l'indice; altrimenti rifiuta e registra.
-  Il Motore tiene lo stato degli orologi e mette nel contesto di ogni turno «orologio X: segni mostrati N di M,
-  prossimo segno: …», così il narratore non deve ricostruirlo dalla trascrizione.
-- `[ritmo] concitato` / `[ritmo] calmo`: facoltativa e rara, subito prima di `[invito]`, non letta (anche nel protocollo
-  del selettore). `concitato` quando la narrazione diventa frenetica (combattimento, inseguimento, pericolo imminente): la
-  finestra che si apre dopo ha un conto alla rovescia. `calmo` quando la situazione si calma. Vale l'ultima riga della
-  risposta; un valore sconosciuto si ignora (anomalia `ritmo_sconosciuto`). Il ritmo viene anche dalla scena
-  (`ritmo: concitato` in scena.yaml, all'ingresso nella scena) e lo cambia il master dal pannello; cambiando scena torna
-  quello della scena. Finché vale `concitato`, il messaggio del turno ha la sezione «## Ritmo», che ricorda al narratore
-  come tornare al calmo.
-- `[umore] <tag>` e `[effetto] <tag>`: facoltative, rare, non lette (anche nel protocollo del selettore). Valgono per la
-  frase che segue; il vocabolario, il limite di un umore al minuto e i tempi sono in docs/audio.md («Segnali automatici»).
-- `[privato pg_id] testo`: l'esito di un'azione PRIVATA, solo per quel PG (anche `[privata …]`, e con l'id, l'alias
-  o il nome del PG). Voce del narratore, una o due frasi. Non va al proiettore né nella trascrizione pubblica: il server
-  la manda al telefono di quel PG (`privato:esiti`, l'elenco completo, anche quando il PG viene scelto o dopo una
-  ripresa) e la scrive nell'archivio (`privati_turno`). Nel registro sta sotto l'azione privata (`risposta_privata`);
-  nel contesto del narratore va in «Esiti privati già dati». La voce va solo ai telefoni di quel PG con «Ascolta qui»
-  acceso (`solo_pg`); se nessuno ascolta, la frase non si sintetizza. Il motivo: il browser non suona niente senza un
-  tocco, e un telefono che parla da solo al tavolo farebbe sentire il segreto ai vicini. Con l'altoparlante acceso
-  è il giocatore a scegliere di ascoltare, magari con le cuffie. Un PG non riconosciuto: riga scartata e errore nel
-  log, mai in pubblico. In modo B una battuta `[usa] id > pg` verso un'azione privata va allo stesso modo solo a quel
-  PG. Anche i tiri privati (dadi) usano questo canale.
-- Righe senza etichetta: si accodano al segmento precedente (tolleranza), con errore nel log.
-- Nomi da pronunciare: prima della sintesi il server sostituisce i nomi dei PNG con la grafia del loro campo
-  `pronuncia` (es. «Bàldrin»), solo nel testo mandato alla voce, non in quello mostrato.
+- `[narratore]`: the narrator's voice.
+- `[<id_png>]`: the id is that of the file `campagne/<campagna>/png/<id_png>.yaml`; the server uses its
+  `voce.tts.voce_id`. An unknown label is read with the narrator's voice and ends up in the log as an error.
+- `[invito]`: **last line, mandatory**. List of the ids of the player characters invited to act (or `tutti`).
+  It is not read aloud: it opens the actions window for those players. If it is missing, the server invites
+  everyone and logs the error.
+- `[orologio] <id_orologio>`: optional, immediately before `[invito]`, only in the response where the narrator
+  has shown the **next sign** of that clock. It is not read. It is the light version of `tick_clock`: the Engine
+  checks that the clock exists, is active and not complete, then advances the index; otherwise it refuses and
+  logs. The Engine keeps the state of the clocks and puts into the context of every turn «orologio X: segni
+  mostrati N di M, prossimo segno: …» (clock X: signs shown N of M, next sign: …), so the narrator does not have
+  to reconstruct it from the transcript.
+- `[ritmo] concitato` / `[ritmo] calmo`: optional and rare, immediately before `[invito]`, not read (also in the
+  selector's protocol). `concitato` (frantic) when the narration becomes frantic (combat, chase, imminent danger):
+  the window that opens next has a countdown. `calmo` (calm) when the situation calms down. The last line of the
+  response counts; an unknown value is ignored (anomaly `ritmo_sconosciuto`). The pace also comes from the scene
+  (`ritmo: concitato` in scena.yaml, on entering the scene), and the master changes it from the panel; changing
+  scene restores the scene's pace. While `concitato` holds, the turn's message has the section «## Ritmo» (Pace),
+  which reminds the narrator how to return to calm.
+- `[umore] <tag>` and `[effetto] <tag>`: optional, rare, not read (also in the selector's protocol). They apply to
+  the sentence that follows; the vocabulary, the limit of one mood per minute and the timings are in
+  docs/audio.md («Segnali automatici» (Automatic cues)).
+- `[privato pg_id] testo`: the outcome of a PRIVATE action, only for that PC (also `[privata …]`, and with the
+  PC's id, alias or name). Narrator's voice, one or two sentences. It does not go to the projector nor to the
+  public transcript: the server sends it to that PC's phone (`privato:esiti`, the full list, also when the PC is
+  chosen or after a resume) and writes it to the archive (`privati_turno`). In the log it sits under the private
+  action (`risposta_privata`); in the narrator's context it goes into «Esiti privati già dati» (Private outcomes
+  already given). The voice goes only to the phones of that PC with «Ascolta qui» on (`solo_pg`); if nobody is
+  listening, the sentence is not synthesized. The reason: the browser plays nothing without a tap, and a phone
+  that speaks by itself at the table would let the secret be heard by the neighbours. With the speaker on, it is
+  the player who chooses to listen, perhaps with headphones. A PC not recognised: line discarded and an error in
+  the log, never in public. In mode B, a `[usa] id > pg` line towards a private action goes in the same way, and
+  only to that PC. Private rolls (dice) use this channel too.
+- Lines without a label: they are appended to the previous segment (tolerance), with an error in the log.
+- Names to pronounce: before synthesis the server replaces the NPCs' names with the spelling in their `pronuncia`
+  field (e.g. «Bàldrin»), only in the text sent to the voice, not in the text shown.
 
-## File della campagna (F0)
+## Campaign files (F0)
 
-`campagne/<id>/`: `stile.yaml`, `campagna.yaml` (fronti e orologi con segni visibili in ordine, grafo degli indizi,
-agenda del cattivo, segreti, registro del canone `canone: [{id, testo, noto_ai_pg}]`), `scena.yaml`,
-`png/png_<nome>.yaml`, `pg.yaml` (`situazione_comune` + `personaggi: [...]`).
-- I campi dei PNG `sa`, `non_sa`, `mente_su.verita` contengono id di fatti del canone; il compilatore li risolve nel testo.
-- Ordine del contesto per il narratore in F0: stile, campagna, scena, png (in ordine), pg. In F1 diventa «solo ciò che serve» (E2).
-- Id: PNG `png_<nome>` (anche l'etichetta del protocollo), PG `pg_<nome>`. Il server accetta l'etichetta anche senza
-  `png_` e senza badare a maiuscole, con un avviso nel log.
-- `conoscenze_private` di ogni PG vanno **solo** al telefono di quel giocatore, mai al tavolo o allo schermo.
-- Campagne a più sessioni: `sessioni/<nn>/` (sessione.yaml, scene/, png/, repertorio/, immagini/, audio/) si unisce
-  al livello di campagna con le regole di docs/strati.md («Regole di unione»); una campagna senza `sessioni/` si
-  carica come sopra. A fine sessione il server scrive nel pacchetto `registro.yaml` e `trascrizione.yaml`.
+`campagne/<id>/`: `stile.yaml`, `campagna.yaml` (fronts and clocks with visible signs in order, clue graph,
+villain's agenda, secrets, canon log `canone: [{id, testo, noto_ai_pg}]`), `scena.yaml`, `png/png_<nome>.yaml`,
+`pg.yaml` (`situazione_comune` + `personaggi: [...]`).
+- The NPC fields `sa`, `non_sa`, `mente_su.verita` contain ids of canon facts; the compiler resolves them into text.
+- Context order for the narrator in F0: stile, campagna, scena, png (in order), pg. In F1 it becomes «solo ciò che
+  serve» (only what is needed) (E2).
+- Ids: NPC `png_<nome>` (also the protocol label), PC `pg_<nome>`. The server accepts the label even without
+  `png_` and regardless of case, with a warning in the log.
+- `conoscenze_private` of each PC go **only** to that player's phone, never to the table or the screen.
+- Multi-session campaigns: `sessioni/<nn>/` (sessione.yaml, scene/, png/, repertorio/, immagini/, audio/) merges
+  into the campaign level with the rules of docs/strati.md («Regole di unione» (Merge rules)); a campaign without
+  `sessioni/` loads as above. At the end of a session the server writes `registro.yaml` and `trascrizione.yaml`
+  into the package.
 
-## Turno
+## Turn
 
-Rivisto dopo le richieste di Riccardo del 9 novembre (docs/richieste-2026-11-09.md, punti 1, 3, 5 e 7): nessuna scadenza
-in condizioni normali, inviare = pronto, il conto alla rovescia solo quando la narrazione lo chiede, mai una pausa senza fine.
+Revised after Riccardo's requests of 9 November (docs/richieste-2026-11-09.md, points 1, 3, 5 and 7): no deadline
+under normal conditions, sending = ready, the countdown only when the narration asks for it, never a pause
+without an end.
 
-1. All'avvio della scena il server fa leggere `campagna.yaml → sessione.riassunto_iniziale` (se c'è; in una
-   campagna a più sessioni `sessioni/<nn>/sessione.yaml → riassunto_iniziale`) e poi l'apertura della prima
-   scena, con la voce `narratore`, e apre la finestra per tutti.
-2. Finestra aperta: ogni giocatore invitato scrive un'azione, la può modificare o ritirare. Sul telefono ci sono solo
-   «Invia» e «Ritira»: inviare vuol dire «ho finito», non c'è un «Pronto» da premere dopo (chi non vuole fare niente
-   scrive «Aspetto»). Si può scrivere anche a finestra chiusa, mentre il narratore prepara o parla: l'azione entra nella
-   finestra dopo.
-3. La finestra si chiude:
-   - quando **hanno inviato tutti gli invitati** (con `tutti`: tutti i PG con un telefono collegato) e nessuna azione è da
-     confermare, dopo un **assestamento** di 2,5 s (`CANTASTORIE_ASSESTAMENTO_MS`) per un «anch'io» o una correzione:
-     ogni invio, ritiro o conferma lo fa ripartire, e chi sta scrivendo lo allunga, al massimo di 8 s. Un telefono
-     scollegato non si aspetta; se rientra, lo si aspetta di nuovo;
-   - al **ritmo concitato**, alla scadenza: `CANTASTORIE_CONCITATO_MS` (25 s) dall'apertura della finestra. Allo scadere
-     si allunga al massimo di 8 s per chi scrive o deve confermare, poi le «da confermare» diventano «sospese» e si risolve
-     con quello che c'è (anche niente: allora il mondo fa una mossa);
-   - con **«Risolvi ora»** del master (comando `chiudi_finestra`).
+1. When the scene starts, the server has `campagna.yaml → sessione.riassunto_iniziale` read aloud (if there is
+   one; in a multi-session campaign, `sessioni/<nn>/sessione.yaml → riassunto_iniziale`), then the opening of the
+   first scene, with the `narratore` voice, and opens the window for everyone.
+2. Window open: each invited player writes an action, which they can edit or withdraw. On the phone there are
+   only «Invia» (Send) and «Ritira» (Withdraw): sending means "I'm done", there is no «Pronto» (Ready) to press
+   afterwards (whoever wants to do nothing writes «Aspetto» (I'm waiting)). You can also write while the window is
+   closed, while the narrator prepares or speaks: the action enters the window afterwards.
+3. The window closes:
+   - when **all the invited have sent** (with `tutti`: all PCs with a connected phone) and no action is waiting to
+     be confirmed, after a **settling** period of 2.5 s (`TAGM_ASSESTAMENTO_MS`) for an «anch'io» (me too) or a
+     correction: every send, withdrawal or confirmation restarts it, and whoever is typing extends it, up to a
+     maximum of 8 s. A disconnected phone is not waited for; if it rejoins, it is waited for again;
+   - at the **frantic pace** (`concitato`), at the deadline: `TAGM_CONCITATO_MS` (25 s) from the opening of the
+     window. At expiry it is extended by at most 8 s for whoever is writing or must confirm; then the «da
+     confermare» (to be confirmed) become «sospese» (suspended), and it is resolved with what there is (even
+     nothing: then the world makes a move);
+   - with the master's **«Risolvi ora»** (Resolve now) (command `chiudi_finestra`).
 
-   Al ritmo calmo non c'è nessuna scadenza: se nessuno scrive, il gioco aspetta (niente mosse contro lo stallo, niente
-   pausa per inattività). Un'azione in coda non fa mai partire un conto alla rovescia. `finestra.aspettiamo` dice chi
-   manca («Aspettiamo: Paolo e Giulia» su proiettore, telefoni e pannello); `finestra.chiusura_prevista_ms` c'è solo al
-   ritmo concitato; `StatoTavolo.ritmo` dice il ritmo.
-4. Il server compila il contesto (stile + scena + PNG + PG + trascrizione pubblica + azioni), chiama Haiku in streaming,
-   legge le righe, manda le frasi alla voce, inoltra l'audio allo schermo. Intanto i telefoni dicono «Il narratore sta
-   preparando…» (poi «sta raccontando…»).
-5. Quando arriva `[invito]`, a narrazione finita, si apre da sola la finestra successiva, con il ritmo chiesto da
-   `[ritmo]`, se c'era.
-6. **Pausa**: la mettono e la tolgono solo il master (Pausa / Riprendi, Ferma la narrazione). Nemmeno il finale di una
-   scena mette in pausa: la finestra si riapre e il master riceve l'avviso per scegliere come andare avanti. In pausa i
-   telefoni scrivono, e le azioni entrano alla ripresa.
-7. **Sorvegliante** (`apps/server/src/scena/sorvegliante.ts`): in apertura e in narrazione ogni segno di vita (frase
-   dell'LLM, richiesta e pezzi d'audio della voce, audio che parte sul proiettore, durata prevista dell'audio) sposta una
-   scadenza (`CANTASTORIE_SORVEGLIANTE_MS`, 60 s; 0 = spento). Se passa senza segni di vita, il Motore registra la causa
-   (log e `narrazioni.jsonl`, riga di tipo `sorvegliante`: «il modello non risponde», «la voce non ha finito le frasi del
-   turno», un'eccezione), ferma LLM e voce e riapre la finestra per tutti. Se il narratore non aveva ancora detto niente,
-   le azioni del turno tornano ai giocatori («non è andata», da rimandare) e resta una riga di riserva del narratore,
-   solo testo. Anche un'eccezione in un flusso della narrazione fa ripartire subito il gioco.
+   At the calm pace there is no deadline: if nobody writes, the game waits (no moves to break the stall, no
+   pause for inactivity). A queued action never starts a countdown. `finestra.aspettiamo` says who is missing
+   («Aspettiamo: Paolo e Giulia» (We're waiting for Paolo and Giulia) on the projector, phones and panel);
+   `finestra.chiusura_prevista_ms` exists only at the frantic pace; `StatoTavolo.ritmo` gives the pace.
+4. The server compiles the context (style + scene + NPCs + PCs + public transcript + actions), calls Haiku in
+   streaming, reads the lines, sends the sentences to the voice and forwards the audio to the screen. Meanwhile
+   the phones show «Il narratore sta preparando…» (The narrator is preparing…), then «sta raccontando…» (is
+   narrating…).
+5. When `[invito]` arrives, at the end of the narration, the next window opens by itself, with the pace requested
+   by `[ritmo]`, if there was one.
+6. **Pause**: only the master sets and removes it (**Pausa** (Pause) / **Riprendi** (Resume), **Ferma la narrazione**
+   (Stop the narration)). Not even the end of a scene pauses: the window reopens and the master receives the notice
+   to choose how to go on. While paused, the phones can write, and the actions enter on resume.
+7. **Watchdog** (`apps/server/src/scena/sorvegliante.ts`): at the opening and during the narration, every sign of
+   life (LLM sentence, request and voice audio chunks, audio starting on the projector, expected audio duration)
+   moves a deadline (`TAGM_SORVEGLIANTE_MS`, 60 s; 0 = off). If it passes with no signs of life, the Engine records
+   the cause (log and `narrazioni.jsonl`, a line of type `sorvegliante`: «il modello non risponde» (the model is not
+   responding), «la voce non ha finito le frasi del turno» (the voice has not finished the turn's sentences), an
+   exception), stops the LLM and the voice, and reopens the window for everyone. If the narrator had not yet said
+   anything, the turn's actions go back to the players («non è andata» (it didn't work), to be resubmitted) and a
+   fallback line from the narrator remains, text only. Even an exception in a narration flow restarts the game at once.
 
-## Serata: riassunto, durata, chiusura guidata (docs/strati.md, «Riassunto e chiusura della serata»)
-- **StatoTavolo**: `la_volta_scorsa` (testo letto all'inizio della serata, finché non si chiude la prima finestra),
-  `fine_serata` (`{riassunto: {etichetta, quando, testo, fili}, di_riserva}` dopo «Chiudi la sessione», finché il
-  gioco non riprende), `diario` (`{serate, stasera}`: pubblico, uguale per tutti; gli esiti privati restano
-  nell'evento `privato:esiti` della stanza del PG).
-- **Master**: comandi `{tipo: 'chiudi_sessione'}` e `{tipo: 'durata_sessione', ore}` (0,5–8);
+## Evening: recap, duration, guided closing (docs/strati.md, «Riassunto e chiusura della serata» (Recap and closing of the evening))
+- **StatoTavolo**: `la_volta_scorsa` (text read at the start of the evening, until the first window is closed),
+  `fine_serata` (`{riassunto: {etichetta, quando, testo, fili}, di_riserva}` after «Chiudi la sessione» (Close the
+  session), until the game resumes), `diario` (`{serate, stasera}`: public, the same for everyone; private outcomes
+  stay in the `privato:esiti` event of the PC's room).
+- **Master**: commands `{tipo: 'chiudi_sessione'}` and `{tipo: 'durata_sessione', ore}` (0.5–8);
   `StatoMaster.sessione.serata` = `{ore, origine_ore, minuti_passati, minuti_rimasti, fine_vicina, climax,
   chiudibile, chiusura_in_corso, chiusa}`.
-- **Narratore**: sezione «## Tempo della serata» nel messaggio del turno quando la fine è vicina (consiglio);
-  messaggio di chiusura con «## Chiusura della serata» (niente azioni, niente `[usa]`, ultima riga `[invito] tutti`).
-- **Registro**: `narrazioni.jsonl` ha una riga `tipo: chiusura_serata` (origine del riassunto, motivo della riserva,
-  testo, fili); la fotografia della sessione porta `serata` (`riassunti`, `chiusa`, `oreMaster`).
+- **Narrator**: section «## Tempo della serata» (Evening's time) in the turn's message when the end is near
+  (advice); closing message with «## Chiusura della serata» (Closing of the evening) (no actions, no `[usa]`, last
+  line `[invito] tutti`).
+- **Log**: `narrazioni.jsonl` has a line `tipo: chiusura_serata` (origin of the recap, reason for the fallback, text,
+  threads); the session snapshot carries `serata` (`riassunti`, `chiusa`, `oreMaster`).
 
-## Misure di latenza (per ogni turno, in `logs/turni.jsonl`)
+## Latency measurements (for each turn, in `logs/turni.jsonl`)
 
-Tutti i tempi in ms dal momento in cui la finestra si chiude (`t0`), più la durata della finestra stessa:
+All times in ms from the moment the window closes (`t0`), plus the duration of the window itself:
 `finestra_ms`, `llm_primo_token`, `llm_prima_frase`, `voce_richiesta`, `voce_primo_audio`, `schermo_inizio_audio`
-(lo schermo avvisa il server quando il primo pezzo comincia davvero a suonare), `llm_fine`, `audio_fine`,
-token in ingresso/uscita/cache e costo in dollari.
+(the screen tells the server when the first chunk really starts to play), `llm_fine`, `audio_fine`,
+input/output/cache tokens and cost in dollars.

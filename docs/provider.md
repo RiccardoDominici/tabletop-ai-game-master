@@ -1,104 +1,105 @@
-# Provider dei modelli
+# Model providers
 
-## In breve
+## In brief
 
-- Di base tutto gira in locale. Zero centesimi, nessuna chiave.
-- Un'API (Anthropic, OpenRouter) è un'opzione. Si sceglie componente per componente.
-- Servono due ambienti Python (`services/lettore/.venv`, `services/voce/.venv`) e il modello locale.
-  `scripts/configura.sh` dice cosa manca.
+- By default everything runs locally. Zero cents, no key.
+- An API (Anthropic, OpenRouter) is an option. You choose it component by component.
+- Two Python environments are needed (`services/lettore/.venv`, `services/voce/.venv`) and the local model.
+  `scripts/configura.sh` says what is missing.
 
-## I file
+## The files
 
-- `config/predefinita.yaml`: tracciato, vale per tutti. È la base.
-- `config/locale.yaml`: non tracciato. Lo scrive `scripts/configura.sh`, solo con ciò che cambia qui.
-- Le variabili d'ambiente vincono su tutto. Il nome è `CANTASTORIE_<COMPONENTE>`, per esempio
-  `CANTASTORIE_LETTORE=anthropic`.
-- I nomi vecchi funzionano ancora, con lo stesso significato:
-  - `CANTASTORIE_LLM`: `finto` (lettore finto, arbitri a regole) oppure `haiku` (lettore Anthropic).
-  - `CANTASTORIE_ARBITRO`: `regole` oppure `haiku`.
-  - `CANTASTORIE_VOCE` o `CANTASTORIE_TTS`: `fish` (openrouter), `qwen` (locale), `finta` o `mock` (finto).
-- Un provider forzato da variabile non ha altre riserve. Restano solo la riserva a regole o `finto`.
+- `config/predefinita.yaml`: tracked, applies to everyone. It is the base.
+- `config/locale.yaml`: untracked. Written by `scripts/configura.sh`, only with what changes here.
+- Environment variables override everything. The name is `TAGM_<COMPONENTE>`, for example
+  `TAGM_LETTORE=anthropic`.
+- The old names still work, with the same meaning:
+  - `TAGM_LLM`: `finto` (fake reader, rule-based arbiters) or `haiku` (Anthropic reader).
+  - `TAGM_ARBITRO`: `regole` or `haiku`.
+  - `TAGM_VOCE` or `TAGM_TTS`: `fish` (openrouter), `qwen` (local), `finta` or `mock` (fake).
+- A provider forced by a variable has no other fallback. Only the rule-based fallback or `finto` remain.
 
-## Componenti
+## Components
 
-| Componente | Chi è | Provider di base | Riserva |
+| Component | What it is | Base provider | Fallback |
 |---|---|---|---|
-| `lettore` | legge il turno e sceglie le battute | locale (modo minimo) | finto |
-| `arbitro_azioni` | azioni simultanee: dipendenze e conflitti | regole (un 4B ci metteva 15–30 s) | — |
-| `arbitro_prove` | prove e tiri (SRD 5.2) | regole (classificatore del Motore); a mano `locale, modo: minimo` | regole |
-| `riassunto` | «La volta scorsa…» | locale | regole (riassunto dai segni) |
-| `regole` | «Chiedi una regola» dal telefono | locale | regole (ricerca nelle regole) |
-| `voce` | voce del narratore e dei PG | locale (Qwen3-TTS) | finto |
-| `immagini` | solo nella preparazione (`strumenti/immagini`) | locale (flux2-klein-4b con mflux) | nessuno |
+| `lettore` | reads the turn and chooses the lines | local (minimal mode) | finto |
+| `arbitro_azioni` | simultaneous actions: dependencies and conflicts | rules (a 4B took 15–30 s) | — |
+| `arbitro_prove` | checks and rolls (SRD 5.2) | rules (Engine's classifier); by hand `locale, modo: minimo` | rules |
+| `riassunto` | «La volta scorsa…» (Last time…) | local | rules (summary from the marks) |
+| `regole` | «Chiedi una regola» (Ask for a rule) from the phone | local | rules (search in the rules) |
+| `voce` | voice of the narrator and PCs | local (Qwen3-TTS) | finto |
+| `immagini` | only in preparation (`strumenti/immagini`) | local (flux2-klein-4b with mflux) | none |
 
-## Provider
+## Providers
 
-- `locale`: il server compatibile OpenAI su questo computer. Per il lettore e gli arbitri usa
-  `backend.locale`. Per la voce e le immagini usa il loro servizio.
-- `anthropic`: API Anthropic. Chiave `ANTHROPIC_API_KEY`. Modello di base `claude-haiku-5-5`.
-- `openrouter`: API OpenRouter. Chiave `OPENROUTER_API_KEY`. Fa anche la voce (drama-3).
-- `openai`: un altro server compatibile OpenAI. Servono `url`, `modello` e, se serve, `chiave`
-  (il nome della variabile).
-- `regole`: nessun modello. È la riserva deterministica del componente. Lettore e voce non ce l'hanno.
-- `finto`: per le prove. Narratore a copione, voce a tono.
-- `nessuno`: il componente è spento. Per le immagini si usa lo sfondo d'atmosfera.
+- `locale`: the OpenAI-compatible server on this computer. For the reader and the arbiters it uses
+  `backend.locale`. For voice and images it uses their service.
+- `anthropic`: Anthropic API. Key `ANTHROPIC_API_KEY`. Base model `claude-haiku-5-5`.
+- `openrouter`: OpenRouter API. Key `OPENROUTER_API_KEY`. It also does the voice (drama-3).
+- `openai`: another OpenAI-compatible server. It needs `url`, `modello` and, if needed, `chiave`
+  (the name of the variable).
+- `regole`: no model. It is the deterministic fallback of the component. Reader and voice do not have it.
+- `finto`: for testing. Scripted narrator, voice that plays a tone.
+- `nessuno`: the component is off. For images, the atmospheric background is used.
 
-Se il provider scelto non è disponibile all'avvio (chiave mancante, URL mancante), il server prova la
-riserva successiva. Il controllo non apre connessioni: il server locale si verifica all'avvio.
+If the chosen provider is not available at startup (missing key, missing URL), the server tries the next
+fallback. The check opens no connections: the local server is verified at startup.
 
-Il lettore ha un modo. `auto` vuol dire minimo in locale e completo con un'API.
+The reader has a mode. `auto` means minimal locally and full with an API.
 
-## Il server locale
+## The local server
 
-- Su questo Mac: mlx-lm (`mlx_lm.server`) su `127.0.0.1:4613`.
-- Modello: `mlx-community/Qwen3-4B-Instruct-2507-4bit`, circa 3,6 GB di RAM.
-- Avvio: `scripts/lettore-avvio.sh [modello]`. Se risponde già, non fa niente. Se non genera più, lo
-  riavvia. Log in `logs/lettore.out`. Le porte 4610, 4611 e 4612 non le usa.
-- Coda: una richiesta alla volta per URL. Il lettore ha priorità alta e passa avanti. Gli altri
-  componenti, se aspettano più di 8 s, rinunciano e usano la riserva a regole.
-- Perché: la GPU è condivisa con la voce. Richieste parallele facevano uccidere il comando Metal
-  da macOS e il server restava appeso.
-- Altri sistemi: llama.cpp (`llama-server --port 4613`) o Ollama. Basta cambiare
-  `backend.locale.url` e mettere `avvio: no`. `scripts/configura.sh --url-locale <url>` lo fa da solo.
+- On this Mac: mlx-lm (`mlx_lm.server`) on `127.0.0.1:4613`.
+- Model: `mlx-community/Qwen3-4B-Instruct-2507-4bit`, about 3.6 GB of RAM.
+- Start: `scripts/lettore-avvio.sh [modello]`. If it already responds, it does nothing. If it no longer
+  generates, it restarts it. Log in `logs/lettore.out`. It does not use ports 4610, 4611 or 4612.
+- Queue: one request at a time per URL. The reader has high priority and jumps ahead. The other components,
+  if they wait more than 8 s, give up and use the rule-based fallback.
+- Why: the GPU is shared with the voice. Parallel requests made macOS kill the Metal command, and the server
+  stayed hung.
+- Other systems: llama.cpp (`llama-server --port 4613`) or Ollama. It is enough to change
+  `backend.locale.url` and set `avvio: no`. `scripts/configura.sh --url-locale <url>` does it automatically.
 
-## Lettore minimo
+## Minimal reader
 
-- Per ogni azione sceglie una battuta fra i candidati (le indicate dal Motore e al più 6 del catalogo
-  che condividono parole con l'azione), oppure «nessuna».
-- L'annuncio non lo scrive il modello: lo compone il Motore (`llm/annuncio.ts`), col nome del PG e la prima
-  frase breve del giocatore, al massimo 12 parole. In italiano le sue parole si citano («Ida: «Guardo la
-  scatolina».»); in inglese la prima persona si volta in terza («Ginestra opens the door.») e, se non si può
-  con certezza, si cita. Le regole sono in `lingue/<codice>/motore.yaml` (`annuncio`). Le azioni private non
-  si annunciano mai.
-- Il turno gli arriva come dati (`RichiestaNarrazione.dati`, lo stesso oggetto da cui
-  `narrazione/messaggio.ts` compila il testo), non dal testo del messaggio: così non dipende dalla lingua dei
-  titoli. Prompt in `prompts/<codice>/lettore-minimo.md`.
-- «Nessuna» vuol dire una battuta d'attesa del repertorio. Non nasce mai prosa nuova.
-- Perché: un modello piccolo non scrive prosa buona. La prosa viene dal repertorio. Il protocollo
-  (`[narratore]`, `[usa]`, `[invito]`) resta quello di sempre.
+- For each action it chooses a line among the candidates (the ones indicated by the Engine and at most 6 from
+  the catalogue that share words with the action), or «nessuna» (none).
+- The announcement is not written by the model: it is composed by the Engine (`llm/annuncio.ts`), with the PC's
+  name and the player's first short sentence, at most 12 words. In Italian its words are quoted
+  («Ida: «Guardo la scatolina».») (Ida: "I look at the little box."); in English the first person is turned into the
+  third («Ginestra opens the door.») and, if this cannot be done with certainty, it is quoted. The rules are in
+  `lingue/<codice>/motore.yaml` (`annuncio`). Private actions are never announced.
+- The turn reaches it as data (`RichiestaNarrazione.dati`, the same object from which `narrazione/messaggio.ts`
+  builds the text), not from the message text: so it does not depend on the language of the titles. Prompt in
+  `prompts/<codice>/lettore-minimo.md`.
+- «Nessuna» means a waiting line from the repertoire. New prose is never produced.
+- Why: a small model does not write good prose. The prose comes from the repertoire. The protocol
+  (`[narratore]`, `[usa]`, `[invito]`) stays the same as always.
 
-## Uscita strutturata
+## Structured output
 
-- Il provider dice se la sa fare: `capacita.strutturato`.
-- Anthropic e OpenRouter la fanno: lo schema va nella richiesta.
-- I modelli locali no (`strutturato: false`). Allora: l'istruzione «rispondi solo JSON» va nel messaggio,
-  il JSON si estrae e si valida in modo severo contro lo schema. Se non va, si ritenta una volta dicendo
-  l'errore. Se fallisce ancora, si usa il ripiego deterministico, se c'è. Altrimenti l'errore va a chi chiama.
+- The provider says whether it can do it: `capacita.strutturato`.
+- Anthropic and OpenRouter can: the schema goes in the request.
+- Local models cannot (`strutturato: false`). So: the instruction «rispondi solo JSON» (reply only with JSON)
+  goes in the message, the JSON is extracted and strictly validated against the schema. If it fails, it is retried
+  once, stating the error. If it still fails, the deterministic fallback is used, if there is one. Otherwise the
+  error goes back to the caller.
 
-## All'avvio
+## At startup
 
-- Il server stampa una riga per componente, nel log, con il prefisso `PROVIDER:`.
-  Ogni riga dice: componente, provider, modo, modello e perché.
-- `scripts/configura.sh` senza argomenti mostra le scelte e cosa c'è su questo computer: chiavi
-  trovate (mai i valori), RAM, ambienti Python. Non scrive niente.
-- Per cambiare: `--api`, `--tutto-locale`, oppure un componente alla volta (`--lettore`, `--arbitri`,
+- The server prints one line per component, in the log, with the prefix `PROVIDER:`.
+  Each line says: component, provider, mode, model and why.
+- `scripts/configura.sh` without arguments shows the choices and what is on this computer: keys found (never the
+  values), RAM, Python environments. It writes nothing.
+- To change: `--api`, `--tutto-locale` (all local), or one component at a time (`--lettore`, `--arbitri`,
   `--voce`, `--immagini`, `--riassunto`, `--regole`).
 
-## Misure
+## Measurements
 
-Prova `prova-f0`, porta 4730, tutto locale (`esperimenti/provider-locale/partita/riepilogo.json`, commit `ab8ee2d`):
+Trial `prova-f0`, port 4730, all local (`esperimenti/provider-locale/partita/riepilogo.json`, commit `ab8ee2d`):
 
-- 3 turni giocati fino in fondo: 32 frasi, 143 secondi di voce Qwen, 4 buchi nel proiettore.
-- Zero chiamate API. Costo: 0 USD.
-- Un turno costa circa 30 s di modello (33,6, 31,7, 36,0 s) su un Mac da 16 GB con la memoria piena.
-- 22 risposte strutturate non valide, contate dal riepilogo.
+- 3 turns played to the end: 32 sentences, 143 seconds of Qwen voice, 4 gaps on the projector.
+- Zero API calls. Cost: $0.
+- One turn costs about 30 s of model time (33.6, 31.7, 36.0 s) on a 16 GB Mac with memory full.
+- 22 structured responses not valid, counted from the summary.

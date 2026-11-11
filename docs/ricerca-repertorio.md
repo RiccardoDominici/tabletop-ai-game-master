@@ -1,43 +1,42 @@
-# Ricerca: repertorio pre-scritto con selezione a runtime
+# Research: pre-written repertoire with runtime selection
 
-Raccolta il 2 novembre 2026 da un agente di ricerca (solo lettura). Legenda: [OPENED] = pagina letta;
-[SNIPPET] = solo da risultato di ricerca o riassunto di terzi.
+Collected on 2 November 2026 by a research agent (read-only). Key: [OPENED] = page read;
+[SNIPPET] = only from a search result or a third-party summary.
 
-## 1. Precedenti classici
+## 1. Classic precedents
 
-- **Façade (Mateas & Stern).** Il drama manager sceglie il beat successivo tra quelli non ancora usati, per seguire un arco di tensione. Un beat contiene 10–100 JDB; i beat sono 27, circa 15 per partita. Gli autori hanno consegnato circa il 30% della visione iniziale. https://www.gamedeveloper.com/design/the-story-of-facade-the-ai-powered-interactive-drama [OPENED, fonte secondaria]. I paper primari (https://sites.cc.gatech.edu/fac/Charles.Isbell/classes/reading/papers/MateasSternGDC03.pdf) non erano leggibili [SNIPPET].
-- **Qualità vs salienza (Emily Short).** In QBN (Failbetter) le storylet si sbloccano con qualità numeriche e nessun manager sceglie: decide il giocatore. Il costo è alto, perché ogni beat richiede qualità di "disponibile" e "completato". In SBN il sistema sceglie la regola più specifica applicabile, con pareggi casuali. Rischio: esiti di trama arbitrari, mitigabili con variabili di arco drammatico. I pesi si tarano per tentativi, con migliaia di partite simulate. https://emshort.blog/2016/04/12/beyond-branching-quality-based-and-salience-based-narrative-structures/ [OPENED]
-- **Valve / Ruskin, GDC 2012.** Regole a specificità decrescente con fallback generici. Requisito: gli scrittori devono poter produrre molto contenuto con strumenti semplici. Le battute devono interrompersi con naturalezza. https://emshort.blog/2012/03/16/gdc-2012-talk-on-dynamic-dialogue/ [OPENED]; talk: https://www.gdcvault.com/play/1015528 [SNIPPET]
-- **Kreminski & Wardrip-Fruin (ICIDS 2018).** Quattro dimensioni del design space: precondizioni, ripetibilità, tipo di contenuto, architettura di selezione. https://emshort.blog/2019/01/06/kreminski-on-storylets/ [OPENED, riassunto]; paper: https://link.springer.com/chapter/10.1007/978-3-030-04028-4_14 [SNIPPET]
-- **Ink (inkle).** Scelte usa-e-getta di default, `+` per quelle ripetibili. Varianti `once`, `shuffle`, `stopping` contro la ripetizione. Le condizioni non annullano il comportamento once-only. https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md [OPENED]
+- **Façade (Mateas & Stern).** The drama manager chooses the next beat among those not yet used, to follow a tension arc. A beat contains 10–100 JDB; there are 27 beats, about 15 per playthrough. The authors delivered about 30% of the initial vision. https://www.gamedeveloper.com/design/the-story-of-facade-the-ai-powered-interactive-drama [OPENED, secondary source]. The primary papers (https://sites.cc.gatech.edu/fac/Charles.Isbell/classes/reading/papers/MateasSternGDC03.pdf) were not readable [SNIPPET].
+- **Quality vs salience (Emily Short).** In QBN (Failbetter) storylets unlock with numeric qualities and no manager chooses: the player decides. The cost is high, because every beat requires "available" and "completed" qualities. In SBN the system chooses the most specific applicable rule, with random ties. Risk: arbitrary plot outcomes, mitigable with dramatic-arc variables. Weights are tuned by trial and error, with thousands of simulated playthroughs. https://emshort.blog/2016/04/12/beyond-branching-quality-based-and-salience-based-narrative-structures/ [OPENED]
+- **Valve / Ruskin, GDC 2012.** Rules with decreasing specificity and generic fallbacks. Requirement: writers must be able to produce a lot of content with simple tools. Lines must break off naturally. https://emshort.blog/2012/03/16/gdc-2012-talk-on-dynamic-dialogue/ [OPENED]; talk: https://www.gdcvault.com/play/1015528 [SNIPPET]
+- **Kreminski & Wardrip-Fruin (ICIDS 2018).** Four dimensions of the design space: preconditions, repeatability, content type, selection architecture. https://emshort.blog/2019/01/06/kreminski-on-storylets/ [OPENED, summary]; paper: https://link.springer.com/chapter/10.1007/978-3-030-04028-4_14 [SNIPPET]
+- **Ink (inkle).** Single-use choices by default, `+` for repeatable ones. The `once`, `shuffle`, `stopping` variants guard against repetition. Conditions do not override the once-only behaviour. https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md [OPENED]
 
-## 2. LLM e contenuto pre-scritto (2023–2026)
+## 2. LLMs and pre-written content (2023–2026)
 
-- **Drama Llama (arXiv 2501.09099).** Trigger definiti in linguaggio naturale; studio preliminare con sei autori. Il meccanismo (un LLM giudica la condizione, si attiva il primo trigger soddisfatto) e il limite dei "cliché" vengono da snippet, non dal testo. https://arxiv.org/abs/2501.09099 [OPENED, solo abstract]
-- **Dramamancer (arXiv 2601.18785).** Storylet = condizione booleana sullo stato + esito. A runtime, due chiamate LLM: una restituisce le condizioni soddisfatte dopo ogni input, l'altra scrive la battuta successiva. Nessun numero su latenza o coerenza, nessun failure mode riportato. https://arxiv.org/html/2601.18785 [OPENED]
-- **Ploug et al., IEEE CoG 2025 (pilota, 64 partecipanti).** Quattro condizioni: controllo statico, riformulazione di linee pre-scritte, ibrido, open-ended. L'open-ended ha dato conversazioni più lunghe e più engagement, soprattutto nei casual. L'ibrido ha mostrato "inconsistenze tecniche" [SNIPPET]. https://portal.findresearcher.sdu.dk/en/publications/open-ended-npc-dialogue-favors-casual-players-a-pilot-comparison-/ [OPENED]; https://doi.org/10.1145/3815598.3815622 [SNIPPET]
-- **arXiv 2604.10107 (N=130, in revisione).** NPC LLM con input libero vs opzioni predefinite: carico cognitivo più alto (p<.001), nessun miglioramento significativo dell'esperienza (p=.195), usabilità e fiducia in calo. Il confronto cambia insieme input e risposta, quindi non separa gli effetti. https://arxiv.org/abs/2604.10107 [OPENED]
-- **Coerenza nel lungo periodo.** NCP-Bench: il modello migliore (GPT-5.2) mantiene il 42% dei vincoli dopo 20 turni. https://arxiv.org/html/2608.08160 [SNIPPET]
-- **Modelli piccoli (Munk et al., FDG '26, arXiv 2601.23206).** Llama 3.2 1B con LoRA: 78% di output superati in 4-bit, contro il 98% di GPT-4o. Latenza mediana 2,1–4,8 s con retry su RTX 3070. Come giudici, GPT-4o è "sistematicamente indulgente" e Claude Haiku 4.5 supera solo il 22% sull'allineamento, contro il 95% dei valutatori umani. È generazione, non selezione. https://arxiv.org/html/2601.23206 [OPENED]
-- **Lacuna.** Non ho trovato confronti misurati tra selezione di linee pre-scritte da un LLM piccolo e generazione libera, con latenza. Wevelsiep et al. (IWSDS 2025, LLM che mappa l'input su opzioni predefinite, 14 partecipanti) è rilevante, ma il PDF non era leggibile: https://aclanthology.org/2025.iwsds-1.4.pdf [SNIPPET]
+- **Drama Llama (arXiv 2501.09099).** Triggers defined in natural language; preliminary study with six authors. The mechanism (an LLM judges the condition, the first satisfied trigger fires) and the limitation of "clichés" come from snippets, not from the text. https://arxiv.org/abs/2501.09099 [OPENED, abstract only]
+- **Dramamancer (arXiv 2601.18785).** Storylet = boolean condition on the state + outcome. At runtime, two LLM calls: one returns the conditions satisfied after each input, the other writes the next line. No numbers on latency or consistency, no failure modes reported. https://arxiv.org/html/2601.18785 [OPENED]
+- **Ploug et al., IEEE CoG 2025 (pilot, 64 participants).** Four conditions: static control, rewording of pre-written lines, hybrid, open-ended. The open-ended condition produced longer conversations and more engagement, especially among casual players. The hybrid showed "technical inconsistencies" [SNIPPET]. https://portal.findresearcher.sdu.dk/en/publications/open-ended-npc-dialogue-favors-casual-players-a-pilot-comparison-/ [OPENED]; https://doi.org/10.1145/3815598.3815622 [SNIPPET]
+- **arXiv 2604.10107 (N=130, under review).** LLM NPC with free input vs predefined options: higher cognitive load (p<.001), no significant improvement in experience (p=.195), usability and trust declining. The comparison changes input and response together, so it does not separate the effects. https://arxiv.org/abs/2604.10107 [OPENED]
+- **Long-term consistency.** NCP-Bench: the best model (GPT-5.2) keeps 42% of the constraints after 20 turns. https://arxiv.org/html/2608.08160 [SNIPPET]
+- **Small models (Munk et al., FDG '26, arXiv 2601.23206).** Llama 3.2 1B with LoRA: 78% of outputs passed in 4-bit, versus 98% for GPT-4o. Median latency 2.1–4.8 s with retries on an RTX 3070. As judges, GPT-4o is "systematically lenient" and Claude Haiku 4.5 passes only 22% on alignment, versus 95% for human raters. This is generation, not selection. https://arxiv.org/html/2601.23206 [OPENED]
+- **Gap.** I found no measured comparison between selecting pre-written lines with a small LLM and free generation, with latency. Wevelsiep et al. (IWSDS 2025, an LLM mapping input to predefined options, 14 participants) is relevant, but the PDF was not readable: https://aclanthology.org/2025.iwsds-1.4.pdf [SNIPPET]
 
-## 3. Lezioni pratiche
+## 3. Practical lessons
 
-- **Descrizione dei beat.** Dramamancer e Drama Llama usano condizioni brevi e verificabili, non testo completo. Non ho trovato confronti misurati tra le due forme.
-- **Precondizioni.** Qualità numeriche (Short), regole con specificità e fallback (Ruskin), variabili e contatori di visita (Ink).
-- **Ripetizione.** Once-only di default e varianti shuffle/stopping (Ink). La ripetibilità è una dimensione esplicita (Kreminski).
-- **Copertura.** Partire da default generici e aggiungere regole specifiche. Non serve copertura uniforme (Short, 2016).
-- **Beat per personaggio.** Nessun numero per personaggio trovato. Façade: 27 beat per l'intero sistema.
-- **Test.** Simulare migliaia di partite per trovare contenuti che non si attivano mai o si attivano troppo (Short, 2016).
-- **Failure mode riportati.** Trame arbitrarie (SBN). Falsi positivi accettati e parser fragile (Façade). Fallimenti su nomi rari e output ripetitivo (Munk et al.). Giudici LLM indulgenti. Carico cognitivo con input libero (2604.10107).
+- **Beat description.** Dramamancer and Drama Llama use short, verifiable conditions, not full text. I found no measured comparison between the two forms.
+- **Preconditions.** Numeric qualities (Short), rules with specificity and fallback (Ruskin), variables and visit counters (Ink).
+- **Repetition.** Once-only by default, with shuffle/stopping variants (Ink). Repeatability is an explicit dimension (Kreminski).
+- **Coverage.** Start from generic defaults and add specific rules. Uniform coverage is not needed (Short, 2016).
+- **Beats per character.** No per-character number found. Façade: 27 beats for the whole system.
+- **Testing.** Simulate thousands of games to find content that never fires, or fires too often (Short, 2016).
+- **Reported failure modes.** Arbitrary plots (SBN). Accepted false positives and a fragile parser (Façade). Failures on rare names and repetitive output (Munk et al.). Lenient LLM judges. Cognitive load with free input (2604.10107).
 
-Fonti non raggiunte: il write-up di Ruskin (assemblyrequired.crashworks.org, errore DNS) e il blog Radiator (connessione rifiutata).
+Sources not reached: Ruskin's write-up (assemblyrequired.crashworks.org, DNS error) and the Radiator blog (connection refused).
 
-## Cosa ne prendiamo (nota dell'orchestratore)
+## What we take from it (orchestrator's note)
 
-- Il confronto misurato che manca in letteratura è proprio il nostro esperimento A/B: vale la pena farlo bene.
-- Il rischio dell'ibrido sono le **cuciture** tra battute scritte e improvvisate: il giudice deve guardarle apposta.
-- **Giudici LLM indulgenti**: il giudice cieco usa Opus, deve citare la riga di trascrizione per ogni punteggio, e
-  le misure meccaniche (lunghezza frasi, fughe, PG in terza persona) le conta uno script, non il giudice.
-- Registrare quante volte esce ogni battuta: quelle mai usate o usate troppo dicono dove manca o abbonda il repertorio.
-- Battute usa-e-getta di default, varianti per quelle che tornano (come Ink).
+- The measured comparison missing from the literature is exactly our A/B experiment: worth doing well.
+- The risk of the hybrid is the **seams** between written and improvised lines: the judge must look at them specifically.
+- **Lenient LLM judges**: the blind judge uses Opus, must cite the transcript line for every score, and the mechanical measures (sentence length, knowledge leaks, PCs in third person) are counted by a script, not by the judge.
+- Log how many times each line comes out: lines never used, or used too often, show where the repertoire is lacking or excessive.
+- Single-use lines by default, with variants for those that come back (as in Ink).

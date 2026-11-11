@@ -1,32 +1,32 @@
-# Ricerca tecnica — sintesi (1° novembre 2026)
+# Technical research — summary (1 November 2026)
 
-Legenda: [V] = pagina aperta, [S] = visto solo nei risultati di ricerca o in una fonte secondaria.
+Legend: [V] = page opened, [S] = seen only in search results or in a secondary source.
 
-## Audio dal telefono
-- Registrazione con MediaRecorder. Il formato si sceglie con `isTypeSupported()` e insieme alla clip si invia `recorder.mimeType`.
-  - Safari ha prodotto storicamente mp4/AAC: https://webkit.org/blog/11353/mediarecorder-api [V]. Che produca webm/opus da iOS 18.4 è [S].
-  - Chrome produce webm/opus [S].
-  - Il server converte sempre con ffmpeg.
-- **Serve HTTPS anche in rete locale.** `http://192.168.x.x` non è un contesto sicuro, quindi getUserMedia fallisce: https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts [V].
-  - Opzioni: mkcert, con il certificato radice installato su ogni telefono; certificati HTTPS di Tailscale, che richiede l'app sul telefono; un tunnel HTTPS [S].
-  - Da provare su dispositivi veri.
-- Pagina del proiettore: serve un clic su «Inizia sessione» per creare o riprendere l'AudioContext: https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay [V].
-- Wake Lock: su iOS Safari da 16.4, da richiedere di nuovo a ogni `visibilitychange` [S].
+## Audio from the phone
+- Recording with MediaRecorder. The format is chosen with `isTypeSupported()`, and `recorder.mimeType` is sent together with the clip.
+  - Safari has historically produced mp4/AAC: https://webkit.org/blog/11353/mediarecorder-api [V]. That it produces webm/opus from iOS 18.4 is [S].
+  - Chrome produces webm/opus [S].
+  - The server always converts with ffmpeg.
+- **HTTPS is required even on a local network.** `http://192.168.x.x` is not a secure context, so getUserMedia fails: https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts [V].
+  - Options: mkcert, with the root certificate installed on every phone; Tailscale HTTPS certificates, which require the app on the phone; an HTTPS tunnel [S].
+  - To be tested on real devices.
+- Projector page: a click on «Inizia sessione» (Start session) is needed to create or resume the AudioContext: https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay [V].
+- Wake Lock: on iOS Safari from 16.4, to be requested again on every `visibilitychange` [S].
 
-## Comunicazione tra telefoni e server: Socket.IO v4
-- Stanze incluse: una per il tavolo, più una `player:<id>` per ogni canale privato: https://socket.io/docs/v4/rooms/ [V].
-- Il recupero dello stato alla riconnessione non riesce sempre. Serve una risincronizzazione basata sul numero di versione dello stato: https://socket.io/docs/v4/connection-state-recovery/ [V].
-- Le clip audio si inviano con una POST HTTP.
+## Communication between phones and server: Socket.IO v4
+- Rooms included: one for the table, plus a `player:<id>` for each private channel: https://socket.io/docs/v4/rooms/ [V].
+- State recovery on reconnection does not always succeed. A resynchronisation based on the state's version number is needed: https://socket.io/docs/v4/connection-state-recovery/ [V].
+- Audio clips are sent with an HTTP POST.
 
-## Licenza delle regole
-- SRD 5.2, licenza CC-BY-4.0. Attribuzione obbligatoria, verificata sul PDF ufficiale: «This work includes material from the System Reference Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.» Fonte: https://media.dndbeyond.com/compendium-images/srd/5.2/SRD_CC_v5.2.pdf [V].
-- 5e-database: dati sotto OGL 1.0a, repository archiviato: https://github.com/5e-bits/5e-database [V]. Licenza dei dati di Open5e non dichiarata [V]. Meglio estrarre dal PDF SRD 5.2.
+## Rules license
+- SRD 5.2, CC-BY-4.0 license. Attribution required, verified on the official PDF: «This work includes material from the System Reference Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.» Source: https://media.dndbeyond.com/compendium-images/srd/5.2/SRD_CC_v5.2.pdf [V].
+- 5e-database: data under OGL 1.0a, archived repository: https://github.com/5e-bits/5e-database [V]. The license of Open5e's data is not declared [V]. Better to extract from the SRD 5.2 PDF.
 
-## Lezioni dai progetti esistenti
-1. Lo stato del mondo lo possiede il server; il modello lo cambia solo con strumenti validati: https://github.com/paolofrancioso/open-dungeon-master [V], https://arxiv.org/abs/2409.06949 [V, solo abstract].
-2. Dadi e regole li calcola il server; la narrazione non può cambiare gli esiti: open-dungeon-master [V].
-3. Alla narrazione si passa uno stato strutturato (FIREBALL): https://arxiv.org/abs/2305.01528 [S].
-4. Memoria a strati, con istantanee e possibilità di tornare indietro: open-dungeon-master [V]; https://github.com/Sagesheep/NarrativeEngine-P [S].
-5. Un solo scrittore dello stato, più una coda dei turni: open-dungeon-master [V].
-6. Il master umano deve poter intervenire (CALYPSO): https://arxiv.org/abs/2308.07540 [S].
-7. Friends & Fables: tiene lo stato in automatico, usa la voce solo in uscita e dice di non sostituire un master umano: https://fables.gg/blog/why-ai-dungeon-is-not-the-ai-dungeon-master-youre-looking-for [S].
+## Lessons from existing projects
+1. The world state is owned by the server; the model changes it only through validated tools: https://github.com/paolofrancioso/open-dungeon-master [V], https://arxiv.org/abs/2409.06949 [V, abstract only].
+2. Dice and rules are computed by the server; the narration cannot change outcomes: open-dungeon-master [V].
+3. The narration receives a structured state (FIREBALL): https://arxiv.org/abs/2305.01528 [S].
+4. Layered memory, with snapshots and the ability to go back: open-dungeon-master [V]; https://github.com/Sagesheep/NarrativeEngine-P [S].
+5. One single writer of the state, plus a queue of turns: open-dungeon-master [V].
+6. The human Game Master must be able to intervene (CALYPSO): https://arxiv.org/abs/2308.07540 [S].
+7. Friends & Fables: keeps the state automatically, uses voice only for output, and says it does not replace a human Game Master: https://fables.gg/blog/why-ai-dungeon-is-not-the-ai-dungeon-master-youre-looking-for [S].

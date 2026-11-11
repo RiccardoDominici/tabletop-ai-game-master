@@ -1,142 +1,149 @@
-# Combattimento
+# Combat
 
-Il combattimento è guidato dal set di regole della campagna (docs/regole.md). L'SRD 5.2 è il default: iniziativa
-individuale, Azione / Azione bonus / Movimento / Reazione, tiri contro la morte e le 15 condizioni. Un manuale con
-altre fasi o altre caratteristiche lo cambia da solo, con la sezione `combattimento:` di `regole.yaml`.
+Combat is driven by the rule set of the campaign (docs/regole.md). The SRD 5.2 is the default: individual initiative,
+Action / Bonus action / Movement / Reaction, death saving throws and the 15 conditions. A manual with other phases or
+other characteristics changes it by itself, with the `combattimento:` section of `regole.yaml`.
 
-## 1. Ricerca
+## 1. Research
 
-| Sistema | Iniziativa | Round | A 0 | Fine | Fonte |
+| System | Initiative | Round | At 0 | End | Source |
 |---|---|---|---|---|---|
-| **SRD 5.2** | prova di Destrezza; ordine fisso; sorpresa = svantaggio | ognuno il suo turno: movimento + un'azione; azione bonus solo da un privilegio; una reazione per round | PG: privo di sensi e TS contro la morte. CD 10; 3 successi = stabile, 3 fallimenti = morto. 1 = due fallimenti, 20 = 1 PF; danno a 0 = un fallimento. Mostri: morti | i nemici a terra (o la storia) | [OPENED] SRD_CC_v5.2.pdf, IT 5.2.1 |
-| **B/X (Moldvay)** | 1d6 per schieramento, ogni round; pari si ritira | fasi: morale, movimento, proiettili, magia, mischia; prima uno schieramento, poi l'altro | morte (regola base) | morale 2d6 ≤ punteggio, dopo il primo caduto e a metà caduti; altrimenti fuga o resa | [OPENED] epicsavingthrow.com (riassunto B/X); [SNIPPET] giantitp/enworld; basicfantasy.org non raggiunto (403) |
-| **PbtA (Dungeon World)** | nessuna | segue la finzione; il master fa una mossa sul 6- o quando lo guardano | «Ultimo respiro» (2d6) | quando la storia lo dice | [OPENED] dungeonworldsrd.com/moves (Hack and Slash: 7–9 colpisci e vieni colpito) |
-| **Ironsworn** | chi è «in controllo» | mosse: Enter the Fray, Strike, Clash, End the Fight; traccia di progresso | danni e stress, momentum | mossa di progresso | [OPENED, parziale] Ironsworn SRD (CC-BY-4.0) |
+| **SRD 5.2** | Dexterity check; fixed order; surprise = disadvantage | each takes their own turn: movement + one action; bonus action only from a feature; one reaction per round | PCs: unconscious and death saving throws. DC 10; 3 successes = stable, 3 failures = dead. A natural 1 = two failures, a natural 20 = 1 HP; damage at 0 = one failure. Monsters: dead | enemies on the ground (or the story) | [OPENED] SRD_CC_v5.2.pdf, IT 5.2.1 |
+| **B/X (Moldvay)** | 1d6 per side, every round; an even result withdraws | phases: morale, movement, missiles, magic, melee; first one side, then the other | death (base rule) | morale 2d6 ≤ score, after the first fallen and when half have fallen; otherwise flight or surrender | [OPENED] epicsavingthrow.com (B/X summary); [SNIPPET] giantitp/enworld; basicfantasy.org not reached (403) |
+| **PbtA (Dungeon World)** | none | follows the fiction; the Game Master makes a move on a 6- or when they look at it | «Ultimo respiro» (Last breath) (2d6) | when the story says so | [OPENED] dungeonworldsrd.com/moves (Hack and Slash: 7–9 you hit and get hit) |
+| **Ironsworn** | whoever is «in controllo» (in control) | moves: Enter the Fray, Strike, Clash, End the Fight; progress track | damage and stress, momentum | progress move | [OPENED, partial] Ironsworn SRD (CC-BY-4.0) |
 
-Le condizioni dell'SRD 5.2 con i loro effetti sono in apps/server/src/regole/combattimento.ts (`CONDIZIONI_SRD`).
+The SRD 5.2 conditions with their effects are in apps/server/src/regole/combattimento.ts (`CONDIZIONI_SRD`).
 
-**Che cosa serve a una sezione generica** (dalla ricerca):
-- iniziativa individuale fissa, per schieramento a ogni round, o nessuna;
-- fasi ordinate;
-- economia del turno;
-- esiti a livelli: un 7–9 con lo scambio dei colpi;
-- a 0 col ramo giusto: morte, fuori gioco, tiri contro la morte;
-- condizioni con effetti meccanici;
+**What a generic section needs** (from the research):
+- individual fixed initiative, per side each round, or none;
+- ordered phases;
+- turn economy;
+- tiered outcomes: a 7–9 with the exchange of blows;
+- at 0 with the right branch: death, out of play, death saving throws;
+- conditions with mechanical effects;
 - morale.
 
-L'Ironsworn «in controllo» si approssima con `nessuna` (vedi §6).
+Ironsworn's «in controllo» (in control) is approximated with `nessuna` (see §6).
 
-## 2. La sezione `combattimento:` (lo schema è in docs/regole.md §2)
+## 2. The `combattimento:` section (the schema is in docs/regole.md §2)
 
 ```yaml
 combattimento:
   iniziativa: {tipo: individuale | per_schieramento | nessuna, dado: 20, caratteristica: destrezza, ogni_round: false}
-  fasi:                         # in ordine; png = che cosa fanno da soli i PNG in quella fase
+  fasi:                         # in order; png = what the NPCs do on their own in that phase
     - {id: movimento, nome: "Movimento", png: null}
     - {id: proiettili, nome: "Proiettili", png: attacco_distanza}
     - {id: mischia, nome: "Mischia", png: attacco_mischia}
-  azioni: [{id: azione, nome: "Azione", quante: "una"}]           # economia del turno, per telefono e narratore
+  azioni: [{id: azione, nome: "Azione", quante: "una"}]           # turn economy, for the phone and the narrator
   danni: {modello: pf | ferite | stress, a_zero: {pg: tiri_morte | fuori_gioco | morte, png: morte | fuori_gioco},
           tiri_morte: {cd: 10, successi: 3, fallimenti: 3}}
   condizioni: [{id: prono, nome: "Prono", icona: "⬇", effetti: [svantaggio_attacchi, attacchi_contro_vantaggio], testo: "…"}]
   condizione_a_zero: privo_di_sensi
-  fine: {morale: true}          # B/X: 2d6 contro `scheda.morale` del PNG (7 se manca)
+  fine: {morale: true}          # B/X: 2d6 against the NPC's `scheda.morale` (7 if missing)
 ```
 
-- **Effetti** (elenco chiuso, li applica il Motore ai tiri): `svantaggio_attacchi`, `vantaggio_attacchi`,
+- **Effects** (closed list, the Engine applies them to the rolls): `svantaggio_attacchi`, `vantaggio_attacchi`,
   `svantaggio_prove`, `svantaggio_salvezze`, `attacchi_contro_vantaggio`, `attacchi_contro_svantaggio`,
   `critico_contro`, `fallisce_salvezze_forza_destrezza`, `perde_turno`, `non_si_muove`.
-- **Valori predefiniti senza la sezione**:
-  - SRD: tutto quello dell'SRD 5.2, cioè le 15 condizioni più «In guardia» (Schivata).
+- **Default values without the section**:
+  - SRD: everything in the SRD 5.2, that is the 15 conditions plus «In guardia» (On guard; the Schivata condition).
   - 2d6: `iniziativa: nessuna`.
-  - Gli altri tipi: individuale, con d20 o d10 e la Destrezza se il set ce l'ha, e a 0 «fuori gioco».
+  - The other types: individual, with d20 or d10 and Dexterity if the set has it, and at 0 «fuori gioco» (out of play).
 
-## 3. Flusso (Motore: prove/combattimento.ts, prove/motore.ts)
+## 3. Flow (Engine: prove/combattimento.ts, prove/motore.ts)
 
-1. **Si entra in combattimento** quando un tiro d'attacco tocca un personaggio con la scheda: un PG attacca un PNG, o un
-   PNG reagisce. Oppure col pannello del master, «Inizia combattimento».
-   - **Partecipanti**: i PG al tavolo con la scheda, i PNG coinvolti e i PNG in scena con la scheda e ostili a un PG.
-   - L'iniziativa è quella del set. L'azione che ha aperto lo scontro conta come «di sorpresa».
-2. **Passi**: un round è fasi × ordine (individuale), oppure fasi × schieramenti (per schieramento).
-   - **Passo di PG**: la finestra si apre **solo per lui**, o per tutto il suo schieramento. Il Motore ignora l'invito
-     del narratore. Gli altri possono scrivere, ma la loro azione resta in coda (`TavoloAzioni.rinvia`) e si risolve al
-     loro turno. Nessun timer: il ritmo concitato vale solo se la scena lo chiede.
-   - **Passo di PNG**: lo risolve il Motore, senza chiamate in più. Attacca un PG in piedi, nella fase giusta. Il
-     bersaglio, deterministico, è il PG che lo ha colpito; se no quello che ha agito per ultimo; se no il primo in
-     piedi.
-   - I passi di PNG di fila si risolvono insieme. Il narratore li racconta nella stessa risposta, dopo l'azione del PG.
-3. **A 0**:
-   - la condizione del set (Privo di sensi);
-   - SRD: i tiri contro la morte all'inizio del suo turno, poi stabile, morto, o in piedi con un 20; il 20 che
-     rimette in piedi e l'1 che vale due fallimenti sono del set (`tiri_morte.venti_rialza`, `uno_doppio`), con
-     l'SRD come predefinito: prima valevano per ogni set (e2e finale, §2);
-   - altrimenti fuori gioco o morto.
-   - Il master può ridare PF: chi torna sopra 0 si rialza.
-   - **Fuori gioco** (prove/stato.ts, `fuoriGioco`): a terra (0 PF), morto o fuggito. Morti e fuggiti restano segnati
-     anche a scontro finito e si salvano con la sessione; la fuga si dimentica al cambio di scena (chi è fuggito può
-     ricomparire altrove), la morte no (il master che ridà PF lo riporta in gioco; rimettere in scena a mano un fuggito
-     lo fa rientrare). Chi è fuori gioco non parla né agisce, ovunque: esce dai PNG in scena della regia
-     (`pngInScena`), quindi dal catalogo e dalla preselezione delle battute, dalle righe `[png_x]` improvvisate (la
-     guardia dei PNG assenti le scarta), dallo sceneggiatore e dai presenti del proiettore; il messaggio del narratore e
-     del selettore ha la sezione «PNG fuori gioco» («Ruggero giace a terra senza sensi: non parla né agisce»). L'arbitro
-     vede i corpi («· A TERRA», «· MORTO»), non i fuggiti; un attacco a un fuggito non tira e non apre un altro
-     scontro. Nella e2e finale un PNG a 0 PF ha trattato per cinque turni (bug C1).
-4. **Condizioni**: le mette il Motore (a 0) o il master; scadono a inizio round, se hanno una durata. I loro effetti
-   entrano nei tiri: vantaggio o svantaggio col motivo sulla carta, critico, TS falliti, turno perso.
-5. **Fine**: nemici a terra o fuggiti, PG tutti a terra, morale fallito (B/X), oppure «Termina combattimento».
-   Il morale si tira anche quando il colpo d'apertura butta giù un PNG: prima il suo fatto si perdeva e chi «fuggiva»
-   restava in scena (bug C3). Chi fugge è un fatto dovuto («Grosso fugge.», §3.7).
-6. **Narratore**: ogni attacco di un PNG arriva come frase esplicita prima dei dettagli («Ruggero lo sgherro colpisce Corrado Lanzi: 6 danni», «… manca …»), e il prompt chiede di raccontarlo in una frase sua, mai per accenni. La sezione «Esiti dei tiri» porta «Combattimento, round N, fase X. Ordine … Tocca ora a: …». Il
-   narratore chiude invitando solo chi è di turno e non inventa attacchi o danni.
-7. **Fatti dovuti** (prove/fatti-dovuti.ts): nella e2e finale del 10 novembre (narratore Haiku, set Basic Fantasy) il
-   narratore saltava fatti del Motore anche con «raccontalo»: un PG a 0 col suo tiro contro la morte, i danni inflitti.
-   Responsabilità minima: il Motore non chiede un'altra chiamata, controlla.
-   - Fatti del turno, uno per creatura, il più grave: `morto`, `fuggito` (morale), `rialzato` (20 naturale), `stabile`, `morente` (tiro
-     contro la morte senza esito finale), `a_terra` (un colpo la porta a 0), `colpito` (un colpo con danni). Solo dalle
-     carte pubbliche: l'esito di un'azione privata non si dice al tavolo.
-   - Dopo la narrazione (e la sua riparazione), un fatto è detto se una riga al tavolo nomina la creatura (nome, nome
-     breve, soprannome) e ha una parola che comincia con una delle radici del tipo (lingue/<codice>/motore.yaml,
-     `fatti_dovuti`). Le righe private non contano.
-   - Colpi a vicenda nello stesso turno: «Corrado colpisce Ruggero» nomina tutti e due ma racconta un colpo solo. Allora
-     ogni colpo vuole una frase sua che nomini anche chi ha colpito.
-   - Un fatto non detto: il Motore aggiunge una riga breve del narratore dal pacchetto della lingua (testi-prove.yaml,
-     `prove.dovuti.<tipo>`: «Corrado cade a terra.», «Ruggero incassa il colpo.»), prima della domanda d'invito se la sua
-     voce non è ancora partita. Vale per il narratore e per il selettore. Nel registro dei turni: `fatti_aggiunti`
-     («tipo:id»); nel log del server: «prove: fatti dello scontro non detti dalla narrazione, li dice il Motore».
-   - Limiti: una negazione («il colpo non lo raggiunge») conta come detta; un pronome senza nome («il nano barcolla») no,
-     e il Motore aggiunge la sua riga anche se il fatto si capiva.
+1. **Combat starts** when an attack roll touches a character with a sheet: a PC attacks an NPC, or an NPC reacts. Or with
+   the Game Master's panel, «Inizia combattimento» (Start combat).
+   - **Participants**: the PCs at the table with a sheet, the NPCs involved, and the NPCs on stage with a sheet and hostile
+     to a PC.
+   - The initiative is the set's. The action that opened the clash counts as «di sorpresa» (surprise).
+2. **Steps**: a round is phases × order (individual), or phases × sides (per side).
+   - **PC step**: the window opens **only for that PC**, or for their whole side. The Engine ignores the narrator's
+     invitation. The others may write, but their action stays queued (`TavoloAzioni.rinvia`) and is resolved on their
+     turn. No timer: the fast pace applies only if the scene asks for it.
+   - **NPC step**: resolved by the Engine, with no extra calls. It attacks a standing PC, in the right phase. The target,
+     deterministic, is the PC who hit it; otherwise the one who acted last; otherwise the first one standing.
+   - Consecutive NPC steps are resolved together. The narrator narrates them in the same reply, after the PC's action.
+3. **At 0**:
+   - the set's condition «Privo di sensi» (Unconscious);
+   - SRD: death saving throws at the start of its turn, then stable, dead, or standing with a 20; the 20 that gets it back
+     up and the 1 that counts as two failures belong to the set (`tiri_morte.venti_rialza`, `uno_doppio`), with the SRD as
+     default: before, they applied to every set (final e2e, §2);
+   - otherwise out of play or dead.
+   - The Game Master may restore HP: whoever goes back above 0 gets up.
+   - **Out of play** (prove/stato.ts, `fuoriGioco`): on the ground (0 HP), dead, or fled. The dead and the fled stay marked
+     even when the clash is over, and they are saved with the session; flight is forgotten at a scene change (whoever
+     fled may reappear elsewhere), death is not (the Game Master who restores HP brings them back into play; putting a
+     fled character back on stage by hand brings them back). Whoever is out of play does not speak or act, anywhere: they
+     leave the NPCs on stage of the director (`pngInScena`), hence the catalog and the preselection of lines, the
+     improvised `[png_x]` lines (the guard for absent NPCs discards them), the scriptwriter and the projector's present
+     ones. The narrator's and the selector's message has the section «PNG fuori gioco» (NPCs out of play) («Ruggero giace a
+     terra senza sensi: non parla né agisce» (Ruggero lies on the ground, unconscious: he neither speaks nor acts)). The
+     arbiter sees the bodies («· A TERRA» (· ON THE GROUND), «· MORTO» (· DEAD)), not the fled; an attack on a fled
+     character does not roll and does not open another clash. In the final e2e an NPC at 0 HP negotiated for five turns
+     (bug C1).
+4. **Conditions**: set by the Engine (at 0) or by the Game Master; they expire at the start of the round, if they have a
+   duration. Their effects enter the rolls: advantage or disadvantage with the reason on the sheet, critical, failed saves,
+   lost turn.
+5. **End**: enemies on the ground or fled, all PCs on the ground, failed morale (B/X), or «Termina combattimento» (End
+   combat). Morale is also rolled when the opening blow knocks down an NPC: before, its fact was lost and whoever fled
+   stayed on stage (bug C3). Whoever flees is a required fact («Grosso fugge.» (Grosso flees.), §3.7).
+6. **Narrator**: every NPC attack arrives as an explicit sentence before the details («Ruggero lo sgherro colpisce Corrado
+   Lanzi: 6 danni» (Ruggero the thug hits Corrado Lanzi: 6 damage), «… manca …» (… misses …)), and the prompt asks to
+   narrate it in its own sentence, never by hints. The section «Esiti dei tiri» (Roll outcomes) carries «Combattimento,
+   round N, fase X. Ordine … Tocca ora a: …» (Combat, round N, phase X. Order … Now up: …). The narrator closes by
+   inviting only whoever is on turn, and does not invent attacks or damage.
+7. **Required facts** (prove/fatti-dovuti.ts): in the final e2e of 10 November (narrator Haiku, Basic Fantasy set) the
+   narrator skipped Engine facts even with «raccontalo» (narrate it): a PC at 0 with their death save, the damage dealt.
+   Minimal responsibility: the Engine does not ask for another call, it checks.
+   - Facts of the turn, one per creature, the most serious: `morto`, `fuggito` (morale), `rialzato` (natural 20), `stabile`,
+     `morente` (death save without a final outcome), `a_terra` (a blow brings it to 0), `colpito` (a blow with damage). Only
+     from the public cards: the outcome of a private action is not said at the table.
+   - After the narration (and its repair), a fact counts as said if a line at the table names the creature (name, short
+     name, nickname) and has a word that begins with one of the roots of the type (lingue/<codice>/motore.yaml,
+     `fatti_dovuti`). Private lines do not count.
+   - Blows exchanged in the same turn: «Corrado colpisce Ruggero» (Corrado hits Ruggero) names both but narrates only one
+     blow. So each blow needs a sentence of its own that also names whoever struck.
+   - A fact not said: the Engine adds a short narrator line from the language package (testi-prove.yaml,
+     `prove.dovuti.<tipo>`: «Corrado cade a terra.» (Corrado falls to the ground.), «Ruggero incassa il colpo.» (Ruggero
+     takes the blow)), before the invitation question if its voice has not yet started. It applies to the narrator and to
+     the selector. In the turn log: `fatti_aggiunti` ("type:id"); in the server log: «prove: fatti dello scontro non detti
+     dalla narrazione, li dice il Motore» (prove: clash facts not said by the narration, the Engine says them).
+   - Limits: a negation («il colpo non lo raggiunge» (the blow does not reach him)) counts as said; a pronoun without a name
+     («il nano barcolla» (the dwarf staggers)) does not, and the Engine adds its line even if the fact was understood.
 
-## 4. Schermi
-- **Proiettore**: la barra dell'iniziativa in alto (al posto della fila dei ritratti durante lo scontro). Mostra round e
-  fase, i combattenti in ordine con chi è di turno in evidenza, la barra dei PF (dei PNG solo la barra), le icone delle
-  condizioni, «a terra / morto / fuggito» e i tiri contro la morte (schermo/BarraIniziativa.tsx).
-- **Telefono**: «È il tuo turno» con PF, condizioni e azioni disponibili; altrimenti «tocca a …»
-  (telefono/TurnoCombattimento.tsx).
-- **Pannello del master**: «Inizia / Termina combattimento», PF di tutte le schede correggibili, condizioni da mettere e
-  togliere (master/SezioneCombattimento.tsx). Comandi `combattimento_inizia`, `combattimento_termina`, `pf` e
+## 4. Screens
+- **Projector**: the initiative bar at the top (in place of the row of portraits during the clash). It shows the round and
+  phase, the combatants in order with whoever is on turn highlighted, the HP bar (for NPCs only the bar), the condition
+  icons, «a terra / morto / fuggito» (on the ground / dead / fled), and death saves (schermo/BarraIniziativa.tsx).
+- **Phone**: «È il tuo turno» (It is your turn) with HP, conditions and available actions; otherwise «tocca a …» (it is
+  up to …) (telefono/TurnoCombattimento.tsx).
+- **Game Master panel**: «Inizia / Termina combattimento» (Start / End combat), HP of all editable sheets, conditions to
+  add and remove (master/SezioneCombattimento.tsx). Commands `combattimento_inizia`, `combattimento_termina`, `pf`, and
   `condizione`.
 
-## 5. Verifica
+## 5. Verification
 - **test/combattimento.test.ts**:
-  - SRD: iniziativa, turno del PNG, 0 PF, tiri contro la morte (1 e 20), condizione che fa perdere il turno e
-    scade, vantaggio da «prono»;
-  - B/X: schieramenti, fasi, morale;
-  - PbtA: niente turni;
-  - lo schema e i suoi errori.
-- **test/combattimento-integrazione.test.ts**, col server intero: la finestra si apre solo per chi è di turno,
-  l'azione fuori turno resta in coda, il PNG agisce da solo, il master termina.
-- **test/fuori-gioco.test.ts**: morti e fuggiti nello stato, il morale all'inizio dello scontro, l'attacco a un
-  fuggito, e col server intero un PNG a 0 PF che non parla più, esce dal catalogo e dal proiettore.
-- **test/fatti-dovuti.test.ts**: fatti dalle carte e dai tiri contro la morte, il controllo nome + parola in italiano e
-  in inglese, i colpi a vicenda, e col server intero il colpo saltato che il Motore dice prima dell'invito.
-- **E2E** sulla 4720 con Haiku vero: apps/web/e2e/combattimento.spec.ts.
+  - SRD: initiative, the NPC's turn, 0 HP, death saves (1 and 20), a condition that makes you lose the turn and expires,
+    advantage from «prono» (prone);
+  - B/X: sides, phases, morale;
+  - PbtA: no turns;
+  - the schema and its errors.
+- **test/combattimento-integrazione.test.ts**, with the whole server: the window opens only for whoever is on turn, the
+  out-of-turn action stays queued, the NPC acts on its own, the Game Master ends it.
+- **test/fuori-gioco.test.ts**: dead and fled in the state, morale at the start of the clash, an attack on a fled
+  character, and with the whole server an NPC at 0 HP that no longer speaks, leaves the catalog and the projector.
+- **test/fatti-dovuti.test.ts**: facts from the cards and from death saves, the name + word check in Italian and in English,
+  the mutual blows, and with the whole server the skipped blow that the Engine says before the invitation.
+- **E2E** on port 4720 with real Haiku: apps/web/e2e/combattimento.spec.ts.
 
-## 6. Aperto
-- **Iniziativa «in controllo» (Ironsworn)** e mosse di combattimento con traccia di progresso: oggi si gioca come
+## 6. Open
+- **Initiative «in controllo» (in control) (Ironsworn)** and combat moves with a progress track: today it is played as
   `nessuna`.
-- **Movimento e distanze**: non sono tenuti; il bersaglio del PNG non è «il più vicino». Mancano anche gli attacchi di
-  opportunità.
-- **Turno del PG**: un'azione sola. Azione bonus, attacchi multipli e incantesimi sono solo descrittivi.
-- **Condizioni dall'arbitro**: per esempio «lo butto a terra» diventa prono, «mi metto in guardia» diventa Schivata.
-  Oggi le mettono solo il Motore (a 0) e il master.
-- **Danno massiccio e stabilizzare con Medicina** (SRD).
+- **Movement and distances**: not tracked; the NPC's target is not «il più vicino» (the nearest one). Opportunity attacks
+  are missing too.
+- **PC's turn**: one action only. Bonus action, multiple attacks and spells are only descriptive.
+- **Conditions from the arbiter**: for example «lo butto a terra» (I throw him to the ground) becomes prone, «mi metto in
+  guardia» (I get on guard) becomes Schivata. Today they are set only by the Engine (at 0) and by the Game Master.
+- **Massive damage and stabilizing with Medicine** (SRD).

@@ -1,38 +1,39 @@
-# Ricerca: musica, ambienti ed effetti per un framework di campagne (2 novembre 2026)
+# Research: music, ambience and effects for a campaign framework (2 November 2026)
 
-Due ricerche in sola lettura (raccolte riutilizzabili; generazione). [OPENED] = pagina letta; [SNIPPET] = solo risultato
-di ricerca. Prima di costruire, verificare gli endpoint dal vivo.
+Two read-only research passes (reusable collections; generation). [OPENED] = page read; [SNIPPET] = search result only.
+Before building, verify the endpoints live.
 
-## Raccolte, ordinate per scelta automatica
-1. **Incompetech (Kevin MacLeod)**: catalogo leggibile da script dalla «Agent Section» (per brano: titolo, durata, genere,
-   bpm, descrizione, `feel`), file in una cartella statica, nessuna chiave. Circa 2.000 brani. CC BY 4.0: una riga di
-   crediti per brano («Titolo, Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0»).
+## Collections, ordered by automatic choice
+1. **Incompetech (Kevin MacLeod)**: catalogue readable by script from the «Agent Section» (per track: title, duration, genre,
+   bpm, description, `feel`), files in a static folder, no key. About 2,000 tracks. CC BY 4.0: one credits line per track
+   («Titolo, Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0» (Title, Kevin MacLeod
+   (incompetech.com), Licensed under Creative Commons: By Attribution 4.0)).
    [SNIPPET] https://incompetech.com/agent-section/
-2. **Freesound**: ricerca per tag, durata, licenza (`Creative Commons 0`, `Attribution`…), analisi audio per suono
-   (Essentia: volume, brillantezza, tonalità). 60 richieste/min, 2.000/giorno; gli originali richiedono OAuth2, le
-   anteprime mp3 no. Serve una chiave API (gratuita). [OPENED] https://freesound.org/docs/api/resources_apiv2.html
-3. **Jamendo**: tag per umore, strumento, velocità, solo strumentale; API con client id gratuito. [SNIPPET] https://developer.jamendo.com/v3.0/tracks
-4. **Sonniss GDC 2026**: ~7,5 GB di effetti professionali, uso libero senza crediti, modificabili; download manuale, vietato
-   ridistribuire e addestrare modelli. [OPENED] https://sonniss.com/gdc-bundle-license/
-5. **OpenGameArt / Kenney**: CC0 (Kenney) e licenze miste (OGA), niente API, buoni per un piccolo fondo CC0 iniziale.
-- **Non adatti**: Pixabay (niente API audio, vietato lo scaricamento in massa), Tabletop Audio (CC BY-NC-ND: vietati
-  tagli e loop), Zapsplat gratuito (crediti obbligatori, limiti), BBC Sound Effects (solo uso personale/educativo).
-- Lezioni: un vocabolario nostro di tag (tipo di luogo, ora, tempo, umore, energia, strumenti) in cui tradurre i tag delle
-  fonti; etichettatura automatica del fondo locale con i modelli d'umore di Essentia; cache locale con licenza e crediti.
-  I temi dei personaggi non si trovano in nessuna raccolta: vanno composti.
+2. **Freesound**: search by tag, duration, license (`Creative Commons 0`, `Attribution`…), audio analysis by sound
+   (Essentia: loudness, brightness, tonality). 60 requests/min, 2,000/day; originals require OAuth2, mp3 previews do not.
+   An API key is required (free). [OPENED] https://freesound.org/docs/api/resources_apiv2.html
+3. **Jamendo**: tags by mood, instrument, tempo, instrumental-only; API with a free client id. [SNIPPET] https://developer.jamendo.com/v3.0/tracks
+4. **Sonniss GDC 2026**: ~7.5 GB of professional effects, free use without credits, editable; manual download, redistribution
+   and model training forbidden. [OPENED] https://sonniss.com/gdc-bundle-license/
+5. **OpenGameArt / Kenney**: CC0 (Kenney) and mixed licenses (OGA), no API, good for a small initial CC0 pool.
+- **Not suitable**: Pixabay (no audio API, mass downloading forbidden), Tabletop Audio (CC BY-NC-ND: cuts and loops
+  forbidden), Zapsplat free (mandatory credits, limits), BBC Sound Effects (personal/educational use only).
+- Lessons: our own tag vocabulary (type of place, time, tempo, mood, energy, instruments) into which the sources' tags are
+  translated; automatic labelling of the local pool with Essentia's mood models; local cache with license and credits.
+  Character themes are not found in any collection: they must be composed.
 
-## Generazione (Mac M1 16 GB)
-- **Temi dei personaggi**: la strada consigliata è deterministica. Il modello propone solo il motivo (poche battute, come
-  dati), il codice lo valida e ne ricava le variazioni (trasposizione, inversione, aumentazione), un SoundFont libero lo
-  suona. I modelli scrivono ABC valido solo nel ~50% dei casi: mai fidarsi senza validazione. Strumenti esistenti:
-  sirruf/music-gen-skill (mido + FluidSynth + FluidR3_GM), linxule/mcp-music-studio. [SNIPPET]
-- **Musica di luogo e ambienti**: Stable Audio 3 Small (Music/SFX), via MLX ufficiale, max 120 s, inpainting per riparare
-  le giunte; pesi con Stability Community License, su Hugging Face con accesso da accettare. [OPENED] https://github.com/Stability-AI/stable-audio-3
-- **Brani d'umore**: ACE-Step 1.5 (MIT), il più comodo da script (`instrumental=True`, `use_random_seed=False, seeds=[…]`),
-  ma su 16 GB rischia di finire la memoria. [OPENED] https://github.com/ace-step/ACE-Step-1.5
-- **MusicGen-melody** (mlx-audiogen): condizionato da una melodia (cromagramma), pesi CC-BY-NC: solo uso non commerciale.
-- **Tempi**: nessun dato misurato su chip Apple per nessun modello; stima 30–60 min per 25 brani su M1. Da misurare.
-- **API per dopo**: ElevenLabs Music ($0,15/min) ed effetti; Lyria ($0,04 per clip da 30 s); Stable Audio API ($0,20 a
-  brano); Suno/Udio senza API pubblica ufficiale.
-- **Controlli automatici**: ffmpeg `loudnorm` a due passate (`linear=true`), `silencedetect`, `astats` per il clipping,
-  confronto di inizio e fine per la giunta dei loop; in Web Audio rampe di guadagno per dissolvenze e abbassamento sotto la voce.
+## Generation (Mac M1 16 GB)
+- **Character themes**: the recommended route is deterministic. The model only proposes the motif (a few bars, as data),
+  the code validates it and derives the variations (transposition, inversion, augmentation), a free SoundFont plays it.
+  Models write valid ABC only ~50% of the time: never trust without validation. Existing tools: sirruf/music-gen-skill
+  (mido + FluidSynth + FluidR3_GM), linxule/mcp-music-studio. [SNIPPET]
+- **Place music and ambience**: Stable Audio 3 Small (Music/SFX), via the official MLX, max 120 s, inpainting to repair the
+  joins; weights under the Stability Community License, on Hugging Face with access to accept. [OPENED] https://github.com/Stability-AI/stable-audio-3
+- **Mood tracks**: ACE-Step 1.5 (MIT), the most convenient from a script (`instrumental=True`, `use_random_seed=False, seeds=[…]`),
+  but on 16 GB it risks running out of memory. [OPENED] https://github.com/ace-step/ACE-Step-1.5
+- **MusicGen-melody** (mlx-audiogen): conditioned on a melody (chromagram), CC-BY-NC weights: non-commercial use only.
+- **Timings**: no measured data on Apple chips for any model; estimate 30–60 min for 25 tracks on M1. To be measured.
+- **APIs for later**: ElevenLabs Music ($0.15/min) and effects; Lyria ($0.04 per 30 s clip); Stable Audio API ($0.20 per
+  track); Suno/Udio have no official public API.
+- **Automatic checks**: ffmpeg `loudnorm` in two passes (`linear=true`), `silencedetect`, `astats` for clipping,
+  start-and-end comparison for loop joins; in Web Audio, gain ramps for fades and ducking under the voice.

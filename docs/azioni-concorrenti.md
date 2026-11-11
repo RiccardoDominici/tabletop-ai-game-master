@@ -1,127 +1,92 @@
-# Azioni simultanee: come si parlano tra loro e con la narrazione
+# Simultaneous actions: how they talk to each other and to the narration
 
-Richiesta di Riccardo (2 novembre 2026): «se scrivo "vado avanti" e Paolo scrive "anch'io vado avanti", e poi la
-mia azione cambia o non va avanti, Paolo deve saperlo e poter annullare». In generale: le azioni dei giocatori nascono
-in parallelo, mentre la narrazione continua ad arrivare; il sistema deve capire come si collegano e avvisare chi è
-toccato, senza far aspettare tutti e senza riempire i telefoni di avvisi.
+Request from Riccardo (2 November 2026): "if I write 'I'm going ahead' and Paolo writes 'me too, I'm going ahead', and then my action changes or doesn't go ahead, Paolo must know it and be able to cancel". In general: players' actions are born in parallel while the narration keeps arriving; the system must understand how they connect and warn whoever is affected, without making everyone wait and without filling the phones with notices.
 
-## Principi
+## Principles
 
-1. **Si può scrivere sempre**, anche mentre il narratore parla. L'invito dà la priorità a chi è chiamato, ma non
-   blocca gli altri. Quello che arriva durante una narrazione va nella finestra successiva.
-2. **Il tavolo vede le intenzioni.** Le azioni pubbliche in coda si vedono sui telefoni degli altri, con autore e
-   testo: così si coordinano («anch'io»), come al tavolo vero. Le azioni private non si vedono.
-3. **Il Motore decide, il modello consiglia.** I collegamenti tra azioni li propone un piccolo classificatore
-   (regole + Haiku), ma stati, ordini e avvisi li gestisce il Motore.
-4. **Prima scrive, prima arriva.** Nei conflitti esclusivi (la stessa chiave, la stessa porta) vince chi ha inviato
-   prima; l'altro lo sa **prima** della risoluzione, finché può ancora cambiare idea.
-5. **Pochi avvisi, solo quando servono.** Si avvisa solo se l'azione di qualcuno è davvero toccata: dipendenza rotta,
-   conflitto perso, scena cambiata in un modo che la rende dubbia o impossibile.
+1. **You can always write**, even while the narrator is speaking. The invitation gives priority to whoever is called, but does not block the others. What arrives during a narration goes into the next window.
+2. **The table sees the intentions.** Public actions in the queue are visible on the other phones, with author and text: this way people coordinate ("me too"), as at a real table. Private actions are not visible.
+3. **The Engine decides, the model advises.** The connections between actions are proposed by a small classifier (rules + Haiku), but the Engine manages states, order and notices.
+4. **First written, first arrives.** In exclusive conflicts (the same key, the same door) whoever sent first wins; the other one knows **before** the resolution, while they can still change their mind.
+5. **Few notices, only when needed.** A notice is sent only if someone's action is really affected: broken dependency, lost conflict, scene changed in a way that makes it doubtful or impossible.
 
-## L'azione
+## The action
 
-Campi: `id`, `autore`, `testo`, `privata`, `inviata_alle`, `versione_vista` (ultima narrazione che il giocatore aveva
-ricevuto quando ha **cominciato** a scrivere: il telefono la fissa al primo tasto), `dipende_da`, `in_conflitto_con`,
-`stato`, `motivo` (frase breve per il giocatore quando lo stato cambia per cause esterne).
+Fields: `id`, `autore`, `testo`, `privata`, `inviata_alle`, `versione_vista` (the last narration the player had received when they **started** writing: the phone fixes it at the first keystroke), `dipende_da`, `in_conflitto_con`, `stato`, `motivo` (short sentence for the player when the state changes for external causes).
 
-Stati:
+States:
 
-| Stato | Significato | Modificabile |
+| State | Meaning | Editable |
 |---|---|---|
-| `in_coda` | inviata, aspetta la chiusura della finestra | sì |
-| `da_confermare` | qualcosa l'ha toccata: il giocatore sceglie Confermo / Cambio / Ritiro | sì |
-| `ritirata` | ritirata dall'autore | — |
-| `chiusa` | entrata nel gruppo che il narratore sta risolvendo | no |
-| `risolta` | il narratore l'ha risolta | — |
-| `superata` | non eseguita: la scena o un'altra azione l'hanno resa impossibile (con `motivo`) | si riscrive |
-| `sospesa` | era `da_confermare` e il tempo è scaduto (ritmo concitato) o il master ha risolto: esclusa dal turno, il giocatore lo sa | si riscrive |
+| `in_coda` | sent, waiting for the window to close | yes |
+| `da_confermare` | something has affected it: the player chooses «Confermo» (Confirm) / «Cambio» (Change) / «Ritiro» (Withdraw) | yes |
+| `ritirata` | withdrawn by its author | — |
+| `chiusa` | entered the group the narrator is resolving | no |
+| `risolta` | the narrator has resolved it | — |
+| `superata` | not executed: the scene or another action has made it impossible (with `motivo`) | can be rewritten |
+| `sospesa` | was `da_confermare` and the time ran out (frantic pace), or the Game Master resolved: excluded from the turn, the player knows it | can be rewritten |
 
-## I tre casi
+## The three cases
 
-**1. Dipendenze** («anch'io», «lo seguo», «lo aiuto», «copro Corrado»)
-- All'invio, il classificatore collega l'azione a quelle in coda a cui si riferisce (`dipende_da`).
-- Se un'azione da cui altre dipendono viene **ritirata, cambiata, superata o sospesa**, ogni azione dipendente passa a
-  `da_confermare` con un avviso al suo autore:
-  «Ginestra ha ritirato "vado avanti". La tua "anch'io vado avanti" dipendeva da quella: confermi, cambi o ritiri?»
-- Se il cambiamento non tocca il senso della dipendente (il classificatore lo dice), nessun avviso.
-- La propagazione segue la catena (A → B → C), una volta sola per catena.
+**1. Dependencies** («anch'io» (me too), «lo seguo» (I follow him/her), «lo aiuto» (I help him/her), «copro Corrado» (I cover for Corrado))
+- At sending, the classifier links the action to those in the queue it refers to (`dipende_da`).
+- If an action that other actions depend on is **withdrawn, changed, overridden or suspended**, every dependent action goes to `da_confermare` with a notice to its author:
+  «Ginestra ha ritirato "vado avanti". La tua "anch'io vado avanti" dipendeva da quella: confermi, cambi o ritiri?» (English: "Ginestra withdrew "I'm going ahead". Your "me too, I'm going ahead" depended on it: do you confirm, change or withdraw?")
+- If the change does not affect the meaning of the dependent action (the classifier says so), no notice.
+- Propagation follows the chain (A → B → C), once only per chain.
 
-**2. Conflitti esclusivi** (due prendono la stessa cosa, due vanno in direzioni che si escludono)
-- Il classificatore segnala `in_conflitto_con` e se è **esclusivo**.
-- Vince chi ha inviato prima. Se la finestra è ancora aperta, il secondo riceve subito:
-  «Corrado ha già scritto di prendere la chiave: vuoi cambiare azione?» (Tengo / Cambio / Ritiro).
-- Se il secondo tiene l'azione, il narratore riceve l'ordine e risolve il primo per primo; al secondo arriva
-  l'esito (anche `superata` con il motivo, se non c'era più niente da prendere).
-- Conflitti **non esclusivi** (due attaccano lo stesso nemico, due parlano allo stesso PNG): nessun avviso, il
-  narratore li risolve insieme.
+**2. Exclusive conflicts** (two take the same thing, two go in directions that exclude each other)
+- The classifier flags `in_conflitto_con` and whether it is **exclusive**.
+- Whoever sent first wins. If the window is still open, the second one immediately receives:
+  «Corrado ha già scritto di prendere la chiave: vuoi cambiare azione?» (English: "Corrado has already written to take the key: do you want to change action?") («Tengo» (Keep) / «Cambio» (Change) / «Ritiro» (Withdraw)).
+- If the second one keeps the action, the narrator receives the order and resolves the first one first; the second one gets the outcome (also `superata` with the reason, if there was nothing left to take).
+- **Non-exclusive** conflicts (two attack the same enemy, two speak to the same NPC): no notice, the narrator resolves them together.
 
-**3. Azioni rese vecchie dalla narrazione**
-- Un'azione è *vecchia* se `versione_vista` è precedente a una narrazione che è arrivata dopo (durante la scrittura
-  o mentre aspettava in coda).
-- Finita ogni narrazione, il classificatore riesamina le azioni vecchie contro ciò che è appena successo:
-  - **ancora valida** → resta `in_coda`, nessun avviso;
-  - **dubbia** → `da_confermare`: «Nel frattempo la porta si è chiusa. Confermi "entro nella stanza"?»;
-  - **impossibile** → `superata` con il motivo, e invito a riscrivere.
+**3. Actions made stale by the narration**
+- An action is *stale* if `versione_vista` is earlier than a narration that arrived after it (during writing, or while waiting in the queue).
+- When each narration ends, the classifier re-examines the stale actions against what has just happened:
+  - **still valid** → stays `in_coda`, no notice;
+  - **doubtful** → `da_confermare`: «Nel frattempo la porta si è chiusa. Confermi "entro nella stanza"?» (English: "Meanwhile the door has closed. Do you confirm "I enter the room"?");
+  - **impossible** → `superata` with the reason, and an invitation to rewrite.
 
-## La finestra
+## The window
 
-Rivista dopo le richieste del 9 novembre (docs/richieste-2026-11-09.md; dettagli in docs/f0-contratti.md, «Turno»).
+Reviewed after the requests of 9 November (docs/richieste-2026-11-09.md; details in docs/f0-contratti.md, «Turno» (Turn)).
 
-- Si apre dopo l'invito. Inviare vuol dire «ho finito» (non c'è «Pronto»): si chiude quando tutti gli invitati hanno
-  un'azione viva e nessuna è `da_confermare`, dopo 2,5 s di assestamento per un «anch'io» o una correzione (ogni invio,
-  ritiro o conferma lo fa ripartire, e chi sta scrivendo lo allunga, al massimo di 8 s). Un telefono scollegato non si
-  aspetta.
-- **Ritmo calmo** (normale): nessuna scadenza. Una scelta `da_confermare` aspetta chi la deve fare; il master ha
-  «Risolvi ora», e allora le `da_confermare` diventano `sospese`.
-- **Ritmo concitato** (lo chiede la narrazione con `[ritmo] concitato`, oppure la scena o il master): la finestra si
-  chiude da sola 25 s dopo l'apertura. **Non si chiude** mentre ci sono azioni `da_confermare` o un invitato sta
-  scrivendo (indicatore negli ultimi 3 s): si allunga di poco, al massimo di 8 s. Allo scadere le `da_confermare`
-  diventano `sospese` (escluse, con avviso), così nessuno blocca il tavolo.
-- Un'azione in coda non fa mai partire un conto alla rovescia.
-- Il narratore riceve le azioni chiuse **in ordine di invio**, con i collegamenti: chi dipende da chi, chi ha vinto
-  quale conflitto.
+- It opens after the invitation. Sending means "I'm done" (there is no "Ready"): it closes when all the invitees have a live action and none is `da_confermare`, after 2.5 s of settling for an "anch'io" or a correction (every send, withdrawal or confirmation restarts it, and whoever is typing extends it, up to a maximum of 8 s). A disconnected phone is not waited for.
+- **Calm pace** (normal): no deadline. A `da_confermare` choice waits for the person who must make it; the Game Master has «Risolvi ora» (Resolve now), and then the `da_confermare` become `sospese`.
+- **Frantic pace** (requested by the narration with `[ritmo] concitato`, or by the scene or the Game Master): the window closes by itself 25 s after opening. It **does not close** while there are `da_confermare` actions or an invitee is writing (indicator in the last 3 s): it extends briefly, up to a maximum of 8 s. When the time runs out, the `da_confermare` become `sospese` (excluded, with a notice), so nobody holds up the table.
+- A queued action never starts a countdown.
+- The narrator receives the closed actions **in order of sending**, with the connections: who depends on whom, who won which conflict.
 
-## Il classificatore («arbitro»)
+## The classifier («arbitro» (arbiter))
 
-- **Regole prima** (istantanee): nomi di altri PG, «anch'io», «lo/la seguo», «insieme a», «aiuto…», «copro…» con una
-  sola azione candidata → dipendenza certa, senza modello.
-- **Poi Haiku**, chiamata breve con uscita strutturata (JSON con schema), asincrona: non blocca l'invio. Riceve le
-  azioni pubbliche in coda, l'azione nuova o cambiata, l'ultima narrazione e il riassunto pubblico della scena.
-  Restituisce: `dipende_da`, `conflitti [{con, esclusivo, chi_vince}]`, e per le azioni vecchie
-  `valida | dubbia | impossibile` con un motivo di una frase, scritto per il giocatore.
-- **Le azioni private** entrano nel classificatore solo per il loro autore e per i conflitti esclusivi, e gli avvisi
-  agli altri non ne rivelano il contenuto: «qualcun altro ci è arrivato prima».
-- Misura: un insieme di 30–40 casi scritti a mano (dipendenze, conflitti, azioni vecchie, falsi allarmi) con
-  la risposta giusta, per misurare precisione e richiamo prima di metterlo in gioco.
+- **Rules first** (instant): names of other PCs, "anch'io", "lo/la seguo", "insieme a" (together with), "aiuto…" (help…), "copro…" (I cover…) with only one candidate action → certain dependency, no model.
+- **Then Haiku**: a short call with structured output (JSON with a schema), asynchronous: it does not block sending. It receives the public actions in the queue, the new or changed action, the latest narration and the public summary of the scene. It returns: `dipende_da`, `conflitti [{con, esclusivo, chi_vince}]`, and for the stale actions `valida | dubbia | impossibile` with a one-sentence reason, written for the player.
+- **Private actions** enter the classifier only for their author and for exclusive conflicts, and the notices to the others do not reveal their content: "someone else got there first".
+- Measurement: a set of 30–40 hand-written cases (dependencies, conflicts, stale actions, false alarms) with the right answer, to measure precision and recall before putting it into play.
 
-## Telefono
+## Phone
 
-- Sezione «Al tavolo»: le azioni pubbliche in coda degli altri, con stato.
-- La propria azione: stato, `motivo` quando cambia per cause esterne.
-- Avviso a tutto schermo per `da_confermare`, con tre pulsanti (e un conto alla rovescia solo al ritmo concitato);
-  vibrazione dove esiste.
-- Solo «Invia» e «Ritira»: chi ha inviato vede «Azione inviata» e, sotto, «Aspettiamo: …».
-- Esiti per chi è stato superato: privati, brevi, con il pulsante «Riscrivi».
+- «Al tavolo» (At the table) section: the other players' public actions in the queue, with their state.
+- Your own action: state, and `motivo` when it changes for external causes.
+- Full-screen notice for `da_confermare`, with three buttons (and a countdown only at frantic pace); vibration where available.
+- Only «Invia» (Send) and «Ritira» (Withdraw): whoever has sent sees «Azione inviata» (Action sent) and, below it, «Aspettiamo: …» (Waiting for: …).
+- Outcomes for those who were overridden: private, brief, with a «Riscrivi» (Rewrite) button.
 
-## Scelte dopo la ricerca (`docs/ricerca-azioni.md`)
+## Choices after the research (`docs/ricerca-azioni.md`)
 
-- **Le intenzioni restano visibili**, a differenza dei giochi WEGO dove gli ordini sono ciechi: al tavolo vero ci si
-  parla, e «anch'io» presuppone di sapere cosa ha scritto l'altro. Le azioni private restano nascoste.
-- **Un'azione per giocatore per finestra**: un nuovo invio la sostituisce (modifica), non se ne accumulano.
-- **Ricontrollo al momento della risoluzione**: il narratore risolve in ordine di invio; un'azione che a quel punto
-  non è più possibile «si spegne» (`superata`, con il motivo), non si annullano entrambe.
-- **Pareggi veri** (invii entro 1 s): l'ordine ruota tra i giocatori, così nessun posto vince sempre.
-- **Chi non scrive, aspetta**: il narratore non inventa mai l'azione di un PG.
-- **Chiusura atomica**: chiusura della finestra e passaggio a `chiusa` in un solo passo sotto lucchetto (ci sono bug
-  noti quando gli ultimi due inviano nello stesso istante).
-- **Mai perdere il testo scritto**: un'azione `superata` o `sospesa` torna nella casella, pronta da modificare.
-- **Parole degli avvisi**: niente «Conflitto!»; si dice cosa è successo e cosa si può fare. «In attesa» e «da decidere»
-  restano distinti: solo il secondo chiede una scelta.
+- **Intentions stay visible**, unlike WEGO games where orders are blind: at a real table people talk, and "anch'io" presupposes knowing what the other one wrote. Private actions stay hidden.
+- **One action per player per window**: a new send replaces it (edit); they do not accumulate.
+- **Recheck at resolution time**: the narrator resolves in order of sending; an action that is no longer possible at that point "switches off" (`superata`, with the reason); both are not cancelled.
+- **True ties** (sends within 1 s): the order rotates among the players, so no seat always wins.
+- **Whoever does not write, waits**: the narrator never invents a PC's action.
+- **Atomic closing**: closing the window and moving to `chiusa` in a single step under lock (there are known bugs when the last two send at the same instant).
+- **Never lose written text**: an action `superata` or `sospesa` returns to the input box, ready to edit.
+- **Words of notices**: no «Conflitto!» (Conflict!); say what happened and what can be done. «In attesa» (Waiting) and «da decidere» (to be decided) stay distinct: only the second one asks for a choice.
 
-## Verifica
+## Verification
 
-- Test deterministici sugli scenari (classificatore finto): dipendenza e ritiro, catena A→B→C, conflitto esclusivo
-  con il secondo che cambia, azione vecchia valida/dubbia/impossibile, scadenza concitata → sospesa, azione privata;
-  turno senza scadenza (calmo), assestamento, invitato scollegato, «Risolvi ora».
-- Insieme di casi per il classificatore vero (Haiku), con precisione e richiamo.
-- Prova end-to-end con tre telefoni (Playwright) sugli stessi scenari, con screenshot degli avvisi.
+- Deterministic tests on the scenarios (fake classifier): dependency and withdrawal, chain A→B→C, exclusive conflict with the second one changing, stale action valid/doubtful/impossible, frantic deadline → `sospesa`, private action; turn without deadline (calm), settling, disconnected invitee, «Risolvi ora» (Resolve now).
+- Set of cases for the real classifier (Haiku), with precision and recall.
+- End-to-end test with three phones (Playwright) on the same scenarios, with screenshots of the notices.

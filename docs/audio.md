@@ -1,39 +1,36 @@
-# Audio: musica, temi dei personaggi, ambienti (framework)
+# Audio: music, character themes, ambiences (framework)
 
-Richiesta di Riccardo (2 novembre 2026): musica sempre sotto; ogni ambientazione la sua musica, ogni personaggio la sua;
-rumori d'ambiente (folla, pioggia…); prima riusare raccolte esistenti, poi eventualmente generare. Vale il principio
-guida: **una pipeline che produce l'audio di qualsiasi campagna dai suoi dati**, mai brani scelti a mano.
-Ricerche: `docs/ricerca-audio.md`.
+Request from Riccardo (2 November 2026): music always underneath; each setting its own music, each character its own; ambient sounds (crowd, rain…); first reuse existing collections, then possibly generate. The guiding principle applies: **a pipeline that produces the audio of any campaign from its data**, never hand-picked tracks.
+Research: `docs/ricerca-audio.md`.
 
-## Quattro strati
+## Four layers
 
-| Strato | Cosa | Da dove (ora) | Da dove (dopo) |
+| Layer | What | From where (now) | From where (later) |
 |---|---|---|---|
-| **Musica di luogo e d'umore** | un brano in loop per luogo; un brano per ciascuno dei sei umori del vocabolario chiuso (`esplorazione_tesa`, `taverna_calda`, `rito_sacro`, `inseguimento`, `combattimento_epico`, `lutto`) | raccolta Incompetech (CC BY 4.0, catalogo leggibile da script), scelta automatica per descrittori | generazione locale (Stable Audio 3 Small, ACE-Step 1.5) o API |
-| **Temi dei personaggi** | un motivo breve per PNG, variazioni di un unico motivo della campagna | composti: motivo come note (dati), variazioni in codice, resi con un SoundFont libero | stesso |
-| **Ambienti** | strati in loop per luogo: folla, pioggia, fiume, vento, fuoco, campane… | fondo locale CC0 / pubblico dominio dall'Internet Archive, etichettato e misurato; sintesi per i rumori che mancano | Freesound API (basta la chiave, già innestata) |
-| **Effetti** | colpi singoli: rintocco, porta, catena | come gli ambienti | come gli ambienti |
+| **Location and mood music** | one looping track per location; one track for each of the six moods in the closed vocabulary (`esplorazione_tesa`, `taverna_calda`, `rito_sacro`, `inseguimento`, `combattimento_epico`, `lutto`) | Incompetech collection (CC BY 4.0, catalogue readable by script), automatic choice by descriptors | local generation (Stable Audio 3 Small, ACE-Step 1.5) or API |
+| **Character themes** | a short motif per NPC, variations of a single motif of the campaign | composed: motif as notes (data), variations in code, rendered with a free SoundFont | same |
+| **Ambiences** | looping layers per location: crowd, rain, river, wind, fire, bells… | local CC0 / public domain background from the Internet Archive, labelled and measured; synthesis for the missing noises | Freesound API (only the key is needed, already wired in) |
+| **Effects** | single hits: bell toll, door, chain | as for ambiences | as for ambiences |
 
-## Dati nella campagna (li scrive il Preparatore)
+## Data in the campaign (written by the Preparer)
 
-Tutti facoltativi: se mancano, la pipeline li deduce dai testi pubblici con le regole di `strumenti/audio/vocabolario.py`.
-I valori ammessi sono quelli del vocabolario (un valore sconosciuto si ignora con un avviso).
+All optional: if they are missing, the pipeline infers them from the public texts with the rules of `strumenti/audio/vocabolario.py`.
+The allowed values are those of the vocabulary (an unknown value is ignored with a warning).
 - `stile.yaml → audio`: `{tonalita: "re dorico", modo, tempo: 88, strumenti: [..] o "testo", umore_base: <umore>,
-  epoca: antica|moderna|futura, motivo: {metro: 4, note: [[grado, durata], ...]}}`. `motivo` è il gancio per un LLM
-  (o per il Preparatore): note in gradi della scala (0 = tonica) e durate in movimenti; si valida, e se non va si usa
-  il generatore deterministico. Senza `audio`: modo dal tono, tonica dall'id, strumenti da `tavolozza_musicale.strumenti`
-  (con le negazioni: «Niente percussioni» le vieta).
-- ogni scena/nodo → `audio: {musica: [descrittori], ambiente: [tag | {tag, volume}], umore_iniziale}`. I descrittori
-  di `musica` sono parole del vocabolario (umore, energia, ora, meteo, ambientazione) o parole libere cercate nelle
-  descrizioni dei brani.
-- ogni PNG → `tema: {carattere, strumento, modo, registro}`: niente segreti (il tema non deve tradire chi mente).
-- Il validatore delle campagne controlla questi campi contro lo stesso vocabolario (classe `AUDIO`: valori,
-  motivo, parole segrete, temi che tradirebbero chi mente); la guida per il Preparatore è in
-  `.claude/skills/preparatore/riferimenti/schema.md` («Audio») e `mestiere.md` §10.
-  Senza `tema`, il carattere viene SOLO dalla persona pubblica (lettura, personalità di superficie e sotto pressione,
-  voce senza `mai_dice`, timbro della voce); nessuna regola dedotta produce il modo frigio.
+  epoca: antica|moderna|futura, motivo: {metro: 4, note: [[grado, durata], ...]}}`. `motivo` is the hook for an LLM
+  (or for the Preparer): notes as scale degrees (0 = tonic) and durations in beats; it is validated, and if it fails
+  the deterministic generator is used. Without `audio`: mode from the tone, tonic from the id, instruments from
+  `tavolozza_musicale.strumenti` (with the negations: «Niente percussioni» (No percussion) forbids them).
+- each scene/node → `audio: {musica: [descrittori], ambiente: [tag | {tag, volume}], umore_iniziale}`. The descriptors of
+  `musica` are vocabulary words (mood, energy, time, weather, setting) or free words searched in the descriptions of the tracks.
+- each PNG → `tema: {carattere, strumento, modo, registro}`: no secrets (the theme must not betray who is lying).
+- The campaign validator checks these fields against the same vocabulary (class `AUDIO`: values, motif, secret words,
+  themes that would betray a liar); the guide for the Preparer is in
+  `.claude/skills/preparatore/riferimenti/schema.md` («Audio») (Audio) and `mestiere.md` §10.
+  Without `tema`, the character comes ONLY from the public persona (reading, surface and under-pressure personality,
+  voice without `mai_dice`, voice timbre); no inferred rule produces the Phrygian mode.
 
-## Manifest (contratto tra pipeline e proiettore)
+## Manifest (contract between pipeline and projector)
 
 `campagne/<id>/audio/manifest.json`:
 ```json
@@ -49,121 +46,118 @@ I valori ammessi sono quelli del vocabolario (un valore sconosciuto si ignora co
  "effetti": [{"id": "sfx_<tag>", "tag": "campana", "file": "sfx_campana_<sorgente>.m4a", "loop": false, "volume": 1.259, "lufs": -21.0}],
  "crediti": ["\"Titolo\" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/", "..."]}
 ```
-- File: AAC-LC `.m4a`, 48 kHz stereo, nomi semplici direttamente in `audio/` (Safari e Chrome li decodificano entrambi).
-  Musica 128 kbps, ambienti, temi ed effetti 96 kbps.
-- Loop (brani, umori, ambienti): il file è [0,5 s di coda del loop] + loop + [0,5 s di testa del loop], e la voce porta
-  `loop_inizio_s` (≈ 0,5) e `loop_fine_s` sul file decodificato: il proiettore usa `loopStart`/`loopEnd` con questi
-  valori e parte da 0. Perché: misurato il 3 novembre 2026, ripetere l'intero buffer AAC dà un clic al giro (i primi
-  e gli ultimi frame del codificatore non combaciano: salti di campione 20–47 volte la variazione tipica). Con i
-  margini il contenuto è circolare, quindi anche se il decoder sposta l'inizio di qualche decina di millisecondi
-  (riempimento AAC non tolto) la ripetizione resta senza giunta. Il controllo confronta le due copie della testa.
-- `durata_s` è la durata del contenuto del file (margini compresi); il riempimento AAC in coda non conta.
-- Dentro il loop la giunta è cucita: la coda sfuma (3 s per la musica, 2 s per gli ambienti) nel tratto che precede
-  l'inizio, quindi niente `giunta_s`.
-- `lufs` è la loudness MISURATA del file (musica ≈ −23, ambienti ≈ −30, temi ≈ −20, effetti ≈ −21); il livello voluto
-  rispetto alla musica sta in `volume` = guadagno dello strato × 10^((bersaglio + 23)/20), perché il proiettore riporta
-  ogni file a −23 col campo `lufs`.
-- Un file può servire più voci (la stessa pioggia per quattro luoghi, con volumi diversi). Ogni voce porta anche le
-  misure (`controllo`: loudness, true peak, LRA, giunta, silenzi) e, per la musica, il perché della scelta (`scelta`).
-- Accanto al manifest: `crediti.md` (generato) e `descrittori.json` (i descrittori di ogni luogo e PNG con le prove).
-Volumi normalizzati (loudnorm a due passate, `linear=true`), loop controllati (giunta, silenzi, clipping) prima di
-entrare nel manifest.
+- File: AAC-LC `.m4a`, 48 kHz stereo, simple names placed directly in `audio/` (Safari and Chrome both decode them).
+  Music at 128 kbps; ambiences, themes and effects at 96 kbps.
+- Loops (tracks, moods, ambiences): the file is [0.5 s tail of the loop] + loop + [0.5 s head of the loop], and the voice carries
+  `loop_inizio_s` (≈ 0.5) and `loop_fine_s` on the decoded file: the projector uses `loopStart`/`loopEnd` with these values
+  and starts from 0. Why: measured on 3 November 2026, repeating the whole AAC buffer gives a click at every cycle (the first
+  and last frames of the encoder do not match: sample jumps 20–47 times the typical variation). With the margins the content
+  is circular, so even if the decoder shifts the start by a few tens of milliseconds (AAC padding not removed) the repetition
+  has no seam. The check compares the two copies of the head.
+- `durata_s` is the duration of the file's content (margins included); the AAC padding at the end does not count.
+- Inside the loop the seam is sewn: the tail fades (3 s for music, 2 s for ambiences) into the stretch that precedes
+  the start, so there is no `giunta_s`.
+- `lufs` is the MEASURED loudness of the file (music ≈ −23, ambiences ≈ −30, themes ≈ −20, effects ≈ −21); the wanted level
+  relative to the music is in `volume` = gain of the layer × 10^((target + 23)/20), because the projector brings every file
+  to −23 with the `lufs` field.
+- A file can serve several voices (the same rain for four locations, with different volumes). Each voice also carries the
+  measurements (`controllo`: loudness, true peak, LRA, seam, silences) and, for music, the reason for the choice (`scelta`).
+- Next to the manifest: `crediti.md` (generated) and `descrittori.json` (the descriptors of each location and NPC, with the tests).
+Volumes are normalized (two-pass loudnorm, `linear=true`), and loops are checked (seam, silences, clipping) before entering the manifest.
 
 ## Pipeline (`strumenti/audio/`)
 
 ```
-strumenti/audio/setup.sh                                   # una volta: ambiente (uv) e SoundFont in cache/audio/soundfont/
+strumenti/audio/setup.sh                                   # once: environment (uv) and SoundFont in cache/audio/soundfont/
 strumenti/audio/.venv/bin/python strumenti/audio/genera_audio.py campagne/<id> [--dry-run] [--solo musica|temi|ambienti] [--rifai] [--senza-rete]
-strumenti/audio/.venv/bin/python strumenti/audio/provino.py campagne/<id>   # esperimenti/audio/provino_<id>.wav e controlli_<id>.md
+strumenti/audio/.venv/bin/python strumenti/audio/provino.py campagne/<id>   # preview: esperimenti/audio/provino_<id>.wav and controlli_<id>.md
 ```
-- `scripts/prepara.sh campagne/<id>` la lancia dopo il validatore e le immagini, solo se l'audio non è già
-  completo per le schede di oggi (`strumenti/stato_preparazione.py` confronta i descrittori con
-  `audio/descrittori.json`).
-- `campagna_audio.py` legge solo i campi pubblici; `descrittori.py` li traduce nel vocabolario (`vocabolario.py`);
-  `fonti/incompetech.py` sceglie e scarica la musica; `temi/` compone e suona i temi; `pool.py` e `ambienti.py`
-  fanno gli strati e gli effetti; `qualita.py` taglia i loop, normalizza, codifica e controlla; `manifest_audio.py`
-  scrive manifest e crediti. Idempotente: ciò che ha il suo file si salta.
-- Fonti verificate il 2–3 novembre 2026:
-  - **Incompetech** (Kevin MacLeod, CC BY 4.0): `https://incompetech.com/music/royalty-free/pieces.json` (catalogo,
-    ~1.440 brani con feel, genere, bpm, strumenti, descrizione) e `.../mp3-royaltyfree/<filename>`; la «Agent Section»
-    li documenta per gli agenti. Catalogo in `cache/audio/incompetech/`, si scaricano solo i brani scelti.
-  - **Internet Archive** (CC0 1.0 e Public Domain Mark 1.0, licenza dichiarata da chi carica, registrata con la pagina):
-    advancedsearch e metadata; il robots.txt lo permette. Ogni file si misura (piattezza spettrale, LRA, silenzi)
-    prima di entrare nel fondo `cache/audio/pool/`.
-  - **Non usati, per i loro robots.txt**: OpenGameArt (vieta gli agenti Claude), Kenney (vieta /assets/, /downloads/,
-    /files/ a tutti), l'API di Wikimedia Commons (/w/ vietato a tutti). Pixabay escluso dai suoi termini.
-  - **Freesound**: innestato, si attiva con `FREESOUND_API_KEY` nell'ambiente o in `.env` (chiave gratuita da
-    https://freesound.org/apiv2/apply/); usa solo suoni CC0 e le anteprime (niente OAuth).
-  - **SoundFont**: GeneralUser GS 2.0.3 (S. Christian Collins), licenza d'uso libera anche commerciale e dentro
-    software; `setup.sh` lo scarica una volta (32 MB, sha256 verificato), fuori da git.
-  - **Sintesi** (`fonti/sintesi.py`): pioggia, vento, neve, fiume, fuoco, acqua, mare come rumore modellato e periodico,
-    quando il fondo non ha una registrazione buona.
-  - **Ripieghi**, in quest'ordine quando il fondo non ha niente di buono: sintesi per i rumori; SoundFont per
-    `campane` (rintocchi radi) e `canto` (coro lontano nel modo della campagna); un tag vicino (`taverna` → `folla`,
-    `mulino` → `fiume`, `temporale` → `pioggia`, `gocce` → `acqua`, con `ripiego_di` nella voce); per l'effetto
-    `campana`, un rintocco di campana tubolare dal SoundFont. Altrimenti lo strato manca (avviso nel log).
-- Memoria dei controlli: un brano scartato per silenzi o giunta finisce in `cache/audio/incompetech/scartati.json` e
-  non si riprova in nessuna campagna; le regole sui titoli del fondo valgono anche per i file già in cache.
-- Controlli per campagna: `esperimenti/audio/controlli_<id>.md` (in git) e il provino `provino_<id>.wav` (fuori da git).
+- `scripts/prepara.sh campagne/<id>` runs it after the validator and the images, only if the audio is not already complete for
+  today's sheets (`strumenti/stato_preparazione.py` compares the descriptors with `audio/descrittori.json`).
+- `campagna_audio.py` reads only the public fields; `descrittori.py` translates them into the vocabulary (`vocabolario.py`);
+  `fonti/incompetech.py` chooses and downloads the music; `temi/` composes and plays the themes; `pool.py` and `ambienti.py`
+  build the layers and the effects; `qualita.py` cuts the loops, normalizes, encodes and checks; `manifest_audio.py`
+  writes the manifest and the credits. Idempotent: whatever already has its file is skipped.
+- Sources verified on 2–3 November 2026:
+  - **Incompetech** (Kevin MacLeod, CC BY 4.0): `https://incompetech.com/music/royalty-free/pieces.json` (catalogue,
+    ~1,440 tracks with feel, genre, bpm, instruments, description) and `.../mp3-royaltyfree/<filename>`; the «Agent Section» (Agent Section)
+    documents them for agents. Catalogue in `cache/audio/incompetech/`; only the chosen tracks are downloaded.
+  - **Internet Archive** (CC0 1.0 and Public Domain Mark 1.0, licence declared by the uploader, recorded with the page):
+    advancedsearch and metadata; the robots.txt allows it. Each file is measured (spectral flatness, LRA, silences)
+    before entering the background pool `cache/audio/pool/`.
+  - **Not used, because of their robots.txt**: OpenGameArt (bans Claude agents), Kenney (bans /assets/, /downloads/,
+    /files/ for everyone), the Wikimedia Commons API (/w/ banned for everyone). Pixabay excluded under its terms.
+  - **Freesound**: wired in, activated with `FREESOUND_API_KEY` in the environment or in `.env` (free key from
+    https://freesound.org/apiv2/apply/); it uses only CC0 sounds and the previews (no OAuth).
+  - **SoundFont**: GeneralUser GS 2.0.3 (S. Christian Collins), free licence even for commercial use and inside software;
+    `setup.sh` downloads it once (32 MB, sha256 verified), outside git.
+  - **Synthesis** (`fonti/sintesi.py`): rain, wind, snow, river, fire, water, sea as modelled and periodic noise,
+    when the background has no good recording.
+  - **Fallbacks**, in this order when the background has nothing good: synthesis for the noises; SoundFont for
+    `campane` (sparse bell tolls) and `canto` (distant choir in the mode of the campaign); a nearby tag (`taverna` → `folla`,
+    `mulino` → `fiume`, `temporale` → `pioggia`, `gocce` → `acqua`, with `ripiego_di` in the voice); for the effect
+    `campana`, a tubular bell toll from the SoundFont. Otherwise the layer is missing (warning in the log).
+- Memory of the checks: a track discarded for silences or seam ends up in `cache/audio/incompetech/scartati.json` and is
+  not retried in any campaign; the title rules for the background also apply to files already in cache.
+- Checks per campaign: `esperimenti/audio/controlli_<id>.md` (in git) and the preview `provino_<id>.wav` (outside git).
 
-**Cosa legge il proiettore** (`apps/server/src/audio/catalogo.ts`, 3 novembre 2026):
-- `file`: nome semplice nella cartella `audio/` (niente sottocartelle), `^[a-z0-9][a-z0-9_.-]*\.(ogg|opus|mp3|m4a|wav|flac|webm)$`;
-  consigliato Ogg Opus (o MP3), 48 kHz, stereo per la musica. Una voce col file mancante si salta senza errori.
-- `id`: `^[a-z0-9][a-z0-9_]*$`. Luoghi: `luogo_<id scena o nodo>`, come le immagini (`luogo_scena_forno_vecchio`,
-  `luogo_n_piazza`); la scena e il suo nodo valgono come lo stesso posto, quindi basta uno dei due.
-- Ambienti: `amb_<luogo>_<tag>` (vince il luogo noto più lungo), oppure un campo esplicito `"luogo": "<id>"`.
-- Campi facoltativi: `loop` (predefinito vero per brani, umori e ambienti, falso per temi ed effetti), `volume` (0–2,
-  predefinito 1), `lufs` (se diverso da −23 il proiettore corregge, ±12 dB al massimo), `durata_s`,
-  `loop_inizio_s`/`loop_fine_s` (punti di loop sul file decodificato, se il loop non è il file intero),
-  `giunta_s` (> 0: il file non si chiude bene e si ripete con due copie sovrapposte in dissolvenza per tanti secondi).
-- Ripieghi della musica di un luogo: `luogo_<luogo>` → luogo equivalente (scena ↔ nodo) → `umore_<musica.tag della scena>`
-  → silenzio. Un umore scelto (`POST /api/scena/umore {"umore": "tensione"}`, o `null`) vince sul luogo.
-- Fixture di prova: `apps/server/test/fixtures/audio/` (generata da `genera.sh`); `CANTASTORIE_AUDIO=<cartella>` per
-  provare un'altra cartella.
+**What the projector reads** (`apps/server/src/audio/catalogo.ts`, 3 November 2026):
+- `file`: simple name in the `audio/` folder (no subfolders), `^[a-z0-9][a-z0-9_.-]*\.(ogg|opus|mp3|m4a|wav|flac|webm)$`;
+  Ogg Opus (or MP3) recommended, 48 kHz, stereo for music. A voice whose file is missing is skipped without errors.
+- `id`: `^[a-z0-9][a-z0-9_]*$`. Locations: `luogo_<scene or node id>`, as for the images (`luogo_scena_forno_vecchio`,
+  `luogo_n_piazza`); the scene and its node count as the same place, so one of the two is enough.
+- Ambiences: `amb_<luogo>_<tag>` (the longest known location wins), or an explicit field `"luogo": "<id>"`.
+- Optional fields: `loop` (default true for tracks, moods and ambiences, false for themes and effects), `volume` (0–2,
+  default 1), `lufs` (if different from −23 the projector corrects it, ±12 dB at most), `durata_s`,
+  `loop_inizio_s`/`loop_fine_s` (loop points on the decoded file, if the loop is not the whole file),
+  `giunta_s` (> 0: the file does not close cleanly and is repeated with two overlapping copies in fade for that many seconds).
+- Fallbacks for the music of a location: `luogo_<luogo>` → equivalent location (scene ↔ node) → `umore_<musica.tag of the scene>`
+  → silence. A mood chosen (`POST /api/scena/umore {"umore": "tensione"}`, or `null`) wins over the location.
+- Test fixture: `apps/server/test/fixtures/audio/` (generated by `genera.sh`); `TAGM_AUDIO=<folder>` to test another folder.
 
-## Segnali automatici (Motore, 3 novembre 2026)
+## Automatic signals (Engine, 3 November 2026)
 
-Umori ed effetti partono da soli, per qualunque campagna, senza nessuno al pannello. Tre fonti:
+Moods and effects start by themselves, for any campaign, with nobody at the panel. Three sources:
 
-| Fonte | Dove | Campi esatti |
+| Source | Where | Exact fields |
 |---|---|---|
-| Narratore o selettore | righe di servizio, non lette | `[umore] <tag>` · `[effetto] <tag>` |
-| Battuta del repertorio | `repertorio/*.yaml`, nella battuta | `audio: {umore: <tag>, effetto: <tag>}` (uno o tutti e due) |
-| Scena | `scena.yaml` / `scene/*.yaml` | `audio: {umore_iniziale: <tag>}` (con `musica` e `ambiente`) |
+| Narrator or selector | service lines, not read aloud | `[umore] <tag>` · `[effetto] <tag>` |
+| Repertoire line | `repertorio/*.yaml`, in the line | `audio: {umore: <tag>, effetto: <tag>}` (one or both) |
+| Scene | `scena.yaml` / `scene/*.yaml` | `audio: {umore_iniziale: <tag>}` (with `musica` and `ambiente`) |
 
-- Umori (vocabolario chiuso, `strumenti/audio/vocabolario.py` UMORI): `esplorazione_tesa`, `taverna_calda`,
-  `rito_sacro`, `inseguimento`, `combattimento_epico`, `lutto`; in più `auto` = torna alla musica del luogo
-  (non vale per `umore_iniziale`). Effetti: i tag di EFFETTI (`campana`, `porta`, `catena`, `tuono`, `monete`, `chiave`),
-  e in gioco solo quelli presenti nel catalogo della campagna (`sfx_<tag>`); si scrive il tag, `sfx_` è tollerato.
-- Tempi: il segnale vale per la frase che segue la riga (per una battuta, la sua prima riga). L'effetto parte sul
-  proiettore nello stesso istante della frase; l'umore cambia quando la frase comincia. Un `[effetto]` dopo l'ultima
-  frase suona a voce del turno finita; un `[umore]` dopo l'ultima frase vale subito.
-- Limite: al massimo un umore automatico al minuto per scena (anche una scelta del master fa partire il minuto); il
-  cambio di scena (e «Ricomincia») rimette `umore_iniziale` e azzera il conto. I pulsanti del master passano sempre.
-- Scarti: un tag fuori vocabolario o assente dal catalogo si ignora; in battute e scene è un errore di caricamento
-  (vocabolario), in gioco finisce nel log e nel registro del master. Ogni segnale automatico, applicato o scartato,
-  compare nel registro del pannello col chip «auto».
-- Il narratore e il selettore ricevono nel contesto la sezione «Audio» con gli umori e gli effetti di questa campagna;
-  le regole d'uso (rari, solo per suoni nominati) sono nei prompt.
+- Moods (closed vocabulary, `strumenti/audio/vocabolario.py` UMORI): `esplorazione_tesa`, `taverna_calda`,
+  `rito_sacro`, `inseguimento`, `combattimento_epico`, `lutto`; plus `auto` = return to the music of the location
+  (not valid for `umore_iniziale`). Effects: the tags of EFFETTI (`campana`, `porta`, `catena`, `tuono`, `monete`, `chiave`),
+  and in play only those present in the catalogue of the campaign (`sfx_<tag>`); you write the tag, `sfx_` is tolerated.
+- Timing: the signal applies to the sentence that follows the line (for a line, its first line). The effect starts on the
+  projector at the same moment as the sentence; the mood changes when the sentence begins. An `[effetto]` after the last
+  sentence plays once the turn's voice is finished; an `[umore]` after the last sentence applies at once.
+- Limit: at most one automatic mood per minute per scene (even a choice by the master starts the minute); the scene change
+  (and «Ricomincia» (Start over)) resets `umore_iniziale` and clears the count. The master's buttons always go through.
+- Rejects: a tag outside the vocabulary or absent from the catalogue is ignored; in lines and scenes it is a loading error
+  (vocabulary), in play it goes to the log and to the Game Master's register. Every automatic signal, applied or rejected,
+  appears in the panel's register with the «auto» (auto) chip.
+- The narrator and the selector receive in their context the «Audio» (Audio) section with the moods and effects of this
+  campaign; the rules of use (rare, only for named sounds) are in the prompts.
 
-## In gioco (proiettore, Web Audio)
+## In play (projector, Web Audio)
 
-- Bus musica: dissolvenza incrociata al cambio di luogo o d'umore, con isteresi (non cambia più di una volta ogni
-  60–90 s, salvo inizio combattimento). Bus ambiente: più strati in loop per luogo. Temi: il motivo del PNG suona,
-  breve, la prima volta che parla in una scena (non a ogni battuta). Tutto si abbassa sotto la voce (ducking).
-- Il pannello del master ha volume e muto per ciascun bus.
-- I crediti (CC BY) si mostrano a fine sessione e in una pagina dei crediti.
+- Music bus: crossfade on a change of location or mood, with hysteresis (it changes no more than once every
+  60–90 s, except at the start of combat). Ambience bus: several looping layers per location. Themes: the NPC's motif
+  plays, briefly, the first time they speak in a scene (not at every line). Everything lowers under the voice (ducking).
+- The master's panel has volume and mute for each bus.
+- Credits (CC BY) are shown at the end of the session and on a credits page.
 
-**Com'è fatto adesso** (`apps/web/src/schermo/audio/`, 3 novembre 2026). Parte solo dopo «Inizia sessione», sullo
-stesso AudioContext della voce. Bus: voce, musica, ambienti, temi, effetti; musica e ambienti passano dal ducking.
-- Musica: dissolvenza incrociata a potenza costante di 3,5 s; isteresi di 60 s (dal silenzio parte subito; non
-  aspettano l'umore scelto dal master o dal Motore, il cambio di scena e il cambio d'umore della scena).
-  `?isteresi_audio_s=12` nell'URL dello schermo la accorcia per le prove.
-- Ambienti: gli strati del luogo entrano ed escono in dissolvenza (3 s) appena il luogo cambia, senza isteresi.
-- Temi: alla prima battuta di un PNG nella scena il motivo parte 0,6 s prima della voce (appena la battuta è
-  programmata sull'orologio audio), una volta sola; una scena nuova o ricominciata li riarma.
-- Ducking: −9 dB poco prima della voce, risalita dopo 1,4 s di silenzio (niente pompaggio tra le frasi).
-- Memoria: si scaricano i byte dei luoghi vicini; si decodifica solo ciò che suona; i buffer usciti si liberano.
-- Pannello sullo schermo (tasto A): volume e muto per bus, ricordati nel browser. Crediti: tasto C.
-- Prove: `apps/web/src/schermo/audio/*.test.ts` (AudioContext finto) ed `apps/web/e2e/audio.spec.ts` (Chrome vero, su
-  un server suo: istruzioni in testa al file).
+**How it is now** (`apps/web/src/schermo/audio/`, 3 November 2026). It starts only after «Inizia sessione» (Start session), on the
+same AudioContext as the voice. Buses: voice, music, ambiences, themes, effects; music and ambiences go through the ducking.
+- Music: constant-power crossfade of 3.5 s; hysteresis of 60 s (from silence it starts at once; they do not wait for the mood
+  chosen by the master or by the Engine, the scene change and the scene's mood change).
+  `?isteresi_audio_s=12` in the screen's URL shortens it for tests.
+- Ambiences: the layers of the location fade in and out (3 s) as soon as the location changes, without hysteresis.
+- Themes: at the first line of a PNG in the scene the motif starts 0.6 s before the voice (just as the line is scheduled on the
+  audio clock), once only; a new or restarted scene re-arms them.
+- Ducking: −9 dB just before the voice, rise back after 1.4 s of silence (no pumping between sentences).
+- Memory: the bytes of the nearby locations are downloaded; only what plays is decoded; used buffers are freed.
+- Screen panel (A key): volume and mute for each bus, remembered in the browser. Credits: C key.
+- Tests: `apps/web/src/schermo/audio/*.test.ts` (fake AudioContext) and `apps/web/e2e/audio.spec.ts` (real Chrome, on a server
+  of its own: instructions at the top of the file).

@@ -1,127 +1,55 @@
-# Da fare (aggiornato il 2 novembre 2026, sera)
+# To do (updated 2 November 2026, evening)
 
-Lista viva delle cose aperte, con chi le ha in mano. Le decisioni prese sono nei documenti di progetto.
+Living list of open items, with who is handling each one. The decisions taken are in the project documents.
 
-## Obiettivo finale (Riccardo, 10 novembre 2026)
-**Chiunque incolla il link del repository nel proprio Claude Code e gioca, senza chiavi.** Niente deve essere
-obbligatorio: di base tutto gira in locale o su Claude Code (abbonamento di chi lo usa); le chiavi esterne
-(Anthropic per un lettore migliore, OpenRouter per la voce drama-3, Freesound per i suoni…) sono un di più
-per chi vuole smanettare. Servono:
-- una fase di **configurazione guidata da Claude Code** (una skill nel repo, letta da chi incolla il link):
-  riconosce il computer (sistema, chip, RAM, GPU, disco) e sceglie da solo il lettore veloce, il modello delle
-  immagini e la voce adatti; scarica ciò che serve, propone le chiavi facoltative, scrive una configurazione
-  locale fuori da git e chiude con una prova automatica;
-- **ogni pezzo modulare** dietro una scelta di configurazione con riserve: lettore (locale | Haiku | altri),
-  voce (locale | drama-3 | finta), immagini (locale | nessuna | API), suoni (fonti libere | Freesound);
-- la documentazione online aggiornata quando tutto funziona.
+## Final goal (Riccardo, 10 November 2026)
+**Anyone who pastes the repository link into their own Claude Code can play, without keys.** Nothing may be mandatory: by default everything runs locally or on Claude Code (the subscription of whoever uses it); external keys (Anthropic for a better reader, OpenRouter for the drama-3 voice, Freesound for sounds…) are a bonus for those who want to tinker. What is needed:
+- a **guided setup phase run by Claude Code** (a skill in the repo, read by whoever pastes the link): it recognizes the computer (system, chip, RAM, GPU, disk) and chooses by itself the fast reader, the image model and the voice that suit it; it downloads what is needed, proposes the optional keys, writes a local configuration outside git, and closes with an automatic check;
+- **every module** behind a configuration choice with reservations: reader (local | Haiku | others), voice (local | drama-3 | fake), images (local | none | API), sounds (free sources | Freesound);
+- the online documentation updated once everything works.
 
-## In corso
-- **Durata in sessioni e strati di gioco** (richiesta di Riccardo, 3 novembre 2026): nel brief si indica la durata
-  stimata in *numero di sessioni*, e da quella dipende quanti strati genera il framework. Una one-shot ha poche cose
-  (situazione, poche scene e PNG: è ciò che fa oggi la skill); una campagna di anni ha più fasi o archi e un mondo
-  completo, e il materiale della sessione successiva si prepara tra una sessione e l'altra a partire da ciò che è
-  successo davvero. Ricerca in corso (`docs/ricerca-durata.md`), poi progetto degli strati, poi skill, validatore e server.
-- **Prova alla cieca della skill Preparatore**: un agente nuovo scrive `campagne/ponte-lanterne` seguendo solo la skill.
-- **Immagini** (prova-f0, ponte-lanterne, nozze-neve: fatte il 2-3 novembre; pipeline in `strumenti/immagini`,
-  misure in `esperimenti/immagini/risultati.md`). Restano:
-  - **nodi-luogo senza immagine**: un nodo `tipo: luogo` senza `scheda` di scena né `immagine.prompt_luogo` non ha
-    immagine e nessuno lo dice (oggi `n_valle` di nozze-neve, `n_chiesa` e `n_passo_vecchio` di ponte-lanterne;
-    `n_sasso` era il caso più grave, la scena del Sasso stava su un nodo evento: sistemato in d252dd1). La regola
-    del validatore passa alla skill v2: ogni nodo-luogo che il master può raggiungere ha una scheda o un prompt;
-  - **la carta di stile non deve imporre il tempo atmosferico a tutto**: «rain-soaked» in ponte-lanterne fa piovere
-    dentro il magazzino e nella stanza di Rosa; il controllo visivo lo trova, ma un seme nuovo non basta. Meglio
-    il tempo nel prompt dei luoghi all'aperto che nello stile;
-  - **mani di Sebastiano** (prova-f0) e **grata dell'osteria**: il prompt non basta, va cambiato nella scheda
-    («hands hidden inside wide sleeves», inquadratura più stretta);
-  - **il controllo visivo non vede tutto**: nella prova del 3 novembre ha mancato le macchie di fuliggine sul viso
-    di Bice e lo scialle ancora addosso ad Adelina «senza scialle»; i casi da guardare restano in
-    `stato_preparazione` («da controllare a mano»).
-- **Server** (fatto il 2 novembre sera): riga «X sta parlando» sul proiettore, pannello del master (`/master`),
-  `richiede.privata`/`da_pg`, `alias` dalle schede, `modi` e `mente_su[].id`, campagne con più scene, immagini di
-  situazione dopo la rivelazione. Restano aperti:
-  - Motore, proposte della prova cieca (descritte in `docs/repertorio.md`, «Proposte per il Motore»; il validatore e la
-    skill sono pronti): `richiede.oppure`, `orologi[].parte_dopo`, battute solo dei PNG presenti nella scena;
-  - in modalità A (improvvisa) gli indizi non hanno id: le situazioni escono solo a comando del master; e con le
-    campagne a più sessioni è più urgente, perché il registro di fine sessione in modalità A non ha indizi,
-    battute, menzogne né fatti noti (sezioni null, docs/strati.md): la sessione dopo si prepara solo da orologi,
-    scene, azioni e trascrizione. Serve un modo di tracciare gli indizi anche in A (per esempio una riga
-    `[indizio] <id>` del narratore, controllata dal Motore come `[orologio]`);
-- ~~**Personaggi nascosti in scena** (richiesta 2 del 9 novembre): serve un campo `nascosto: true` sulla scheda del PNG
-  per i presenti che non si mostrano sul proiettore né sul telefono finché non vengono rivelati (come le situazioni `dopo`).~~
-  **Fatto**: `nascosto: true` sulla scheda, comando «rivela» dal pannello, validatore e schema (d59f7e2).
-- ~~**Presenza decisa a mano dal master** (comando `presenza`): non sopravvive a un riavvio del server (si perde con lo stato
-  in memoria); da salvare nel registro della sessione se serve. Si azzera anche al cambio di scena.~~
-  **Fatto**: le decisioni vanno nella fotografia della sessione e tornano alla ripresa; il cambio di scena le azzera (a4e360d).
+## In progress
+- **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened. Research in progress (`docs/ricerca-durata.md`), then design of the layers, then skill, validator and server.
+- **Blind test of the Preparer skill**: a new agent writes `campagne/ponte-lanterne` following only the skill.
+- **Images** (prova-f0, ponte-lanterne, nozze-neve: done 2–3 November; pipeline in `strumenti/immagini`, measurements in `esperimenti/immagini/risultati.md`). Still open:
+  - **location nodes without an image**: a node `tipo: luogo` without a `scheda` of scene nor `immagine.prompt_luogo` has no image, and nobody says so (today `n_valle` of nozze-neve, `n_chiesa` and `n_passo_vecchio` of ponte-lanterne; `n_sasso` was the most serious case, the Sasso scene sat on an event node: fixed in d252dd1). The validator rule moves to skill v2: every location node the Game Master can reach has a sheet or a prompt;
+  - **the style sheet must not impose the weather on everything**: "rain-soaked" in ponte-lanterne makes it rain inside the warehouse and in Rosa's room; the visual check finds it, but a new seed is not enough. Better the weather in the prompt of the outdoor locations than in the style;
+  - **Sebastiano's hands** (prova-f0) and **the tavern's trellis**: the prompt is not enough, it must be changed in the sheet («hands hidden inside wide sleeves», tighter framing);
+  - **the visual check does not see everything**: in the 3 November trial it missed the soot smudges on Bice's face and the shawl still on Adelina «senza scialle» (without shawl); the cases to look at remain in `stato_preparazione` («da controllare a mano» (check by hand)).
+- **Server** (done 2 November evening): line «X sta parlando» («X is speaking») on the projector, the Game Master panel (`/master`), `richiede.privata`/`da_pg`, `alias` from the sheets, `modi` and `mente_su[].id`, campaigns with several scenes, situation images after the reveal. Still open:
+  - Engine, proposals from the trial run (described in `docs/repertorio.md`, «Proposte per il Motore» (Proposals for the Engine); the validator and the skill are ready): `richiede.oppure`, `orologi[].parte_dopo`, lines only from the NPCs present in the scene;
+  - in mode A (improvised) the clues have no ids: the situations come out only on command from the Game Master; and with campaigns over several sessions this is more urgent, because the end-of-session log in mode A has no clues, lines, lies or known facts (null sections, docs/strati.md): the next session is prepared only from clocks, scenes, actions and transcript. A way of tracking clues in A too is needed (for example a line `[indizio] <id>` from the narrator, checked by the Engine like `[orologio]`);
+- ~~**Hidden characters in the scene** (request 2 of 9 November): a field `nascosto: true` on the NPC sheet is needed, for those present who are not shown on the projector nor on the phone until they are revealed (like the `dopo` situations).~~
+  **Done**: `nascosto: true` on the sheet, the «rivela» (reveal) command from the panel, validator and schema (d59f7e2).
+- ~~**Presence decided by hand by the Game Master** (command `presenza`): it does not survive a server restart (it is lost with the in-memory state); to be saved in the session log if needed. It is also reset at scene change.~~
+  **Done**: decisions go into the session snapshot and come back on resume; the scene change resets them (a4e360d).
 
-## Dopo
-- **Lacune del set Basic Fantasy dalla e2e finale** (docs/e2e-finale.md §2 e §7, «dadi»): chiuse l'11 novembre 2026
-  (marcatore HIDDEN/NASCOSTA in ogni lingua, tiri contro la morte e naturali del d20 dal set, modificatori a tabella,
-  `ogni_round` individuale, percentuali e «x su 6», armi automatiche, i due controlli del validatore). Restano: i pari
-  d'iniziativa simultanei, i naturali del d20 solo per attacchi E tiri salvezza (oggi `critici: attacchi | tutti`),
-  sorpresa con 1d6, gittata, carica e attacco alle spalle come modificatori del set.
-- **Setup su computer non Apple** (docs/profili.md, profilo `altro`). Il setup guidato da Claude Code (`.claude/skills/setup`)
-  dice che lettore locale, voce locale e immagini locali non sono ancora supportati fuori dall'Apple silicon. Senza chiave
-  Anthropic il narratore è quello a copione (prova, non partita vera). Da fare: un lettore locale su Linux/Windows (llama.cpp
-  o Ollama con lo stesso protocollo), una voce locale (vedi sotto) e la generazione immagini (oggi solo mflux, Apple).
-  Finché non c'è, il setup dice all'utente di scegliere la chiave Anthropic o il gioco a solo testo.
+## Later
+- **Gaps in the Basic Fantasy set from the final e2e** (docs/e2e-finale.md §2 and §7, «dadi» (dice)): closed 11 November 2026 (HIDDEN/NASCOSTA marker in every language, death and natural d20 checks from the set, table-based modifiers, individual `ogni_round`, percentages and "x on 6", automatic weapons, the two validator checks). Still open: simultaneous initiative ties, natural d20s for attacks AND saving throws only (today `critici: attacchi | tutti`), surprise with 1d6, range, charge and attack from behind as modifiers of the set.
+- **Setup on non-Apple computers** (docs/profili.md, profile `altro` (other)). The guided setup run by Claude Code (`.claude/skills/setup`) says that local reader, local voice and local images are not yet supported outside Apple silicon. Without an Anthropic key the narrator is the scripted one (a trial, not a real game). To do: a local reader on Linux/Windows (llama.cpp or Ollama with the same protocol), a local voice (see below) and image generation (today only mflux, Apple). Until then, the setup tells the user to choose the Anthropic key or text-only play.
   **TODO (decided by the lead, setup):** a local LLM through Ollama or llama.cpp, on the same OpenAI-compatible API
   as the Mac reader (port 4613, `backend.locale.url`), and a light voice (Piper or Kokoro). Claude Code installs them
   only with the user's explicit permission, and the setup skill (`.claude/skills/setup/SKILL.md`) is where that step lives.
-- **Voce locale fuori dal Mac.** Qwen3-TTS gira con MLX solo su Apple Silicon. Su Linux o Windows serve
-  un'alternativa leggera con la stessa API del servizio voce (docs/f0-contratti.md, «Servizio voce»:
-  POST /tts, PCM s16le in streaming). Da valutare: Piper (onnx, voci italiane, CPU) e Kokoro (82M, CPU o GPU).
-  Qualità italiana: da verificare.
-- **Limiti noti della modalità locale.** L'arbitro delle prove alla chiusura ha 4 s: in locale non ce la fa,
-  nessun tiro. Gli arbitri cedono il server al lettore: in coda aspettano al massimo 8 s, poi ripiegano sulle regole.
-- **Skill Preparatore: la voce espressiva di drama-3** (9 novembre 2026; da girare a chi aggiorna la skill, nessuno ha
-  risposto). La voce del gioco è drama-3 (docs/ricerca-voce-drama3.md). Le righe del repertorio possono avere una
-  direzione breve a inizio riga (`[png_ettore] [offeso, ma a voce bassa] Non venni.`), suoni (`[sigh]`, `[laugh]`,
-  `[breath]`, `[pause]`) e tag chiusi nella stessa riga (`<whisper>…</whisper>`, `<emphasis>`, `<soft>`, `<fast>`,
-  `<slow>`, `<stress>`, `<forceful>`); il validatore li controlla (classe `VOCE`: tag conosciuti e chiusi, direzioni
-  sotto le otto parole e senza punti, al massimo tre segni per riga) e la prosa conta solo le parole. Le schede dei
-  PNG possono fissare la direzione predefinita in `voce.tts.direzione`; la carta di stile quella del narratore in
-  `direzione_voce`; senza, il server la compone da `personalita.superficie`, `voce.tts.timbro`, `eta_apparente` e
-  `velocita`. Da aggiungere alla skill (SKILL.md, passo delle schede PNG e del repertorio): quando usare una
-  direzione (cambi di tono veri: menzogne col loro segnale, confessioni, minacce), non in ogni riga, e mai per dire
-  cosa provano i PG. Il `pronuncia` dei nomi resta com'è.
 
-- **Motore: i limiti che oggi la campagna deve aggirare** (dalla prova di nozze-neve; la pagina
-  `.claude/skills/preparatore/riferimenti/motore.md` li descrive ed è verificata sul codice da
-  `strumenti/motore_limiti.ts`: quando uno cade, il test diventa rosso e la pagina si aggiorna). Da implementare:
-  - **azioni private**: oggi rispondono solo le battute con `privata: true`; un'azione privata senza battute adatte
-    dovrebbe avere almeno una risposta discreta sul telefono, non il silenzio o una risposta ad alta voce;
-  - **`avanza_quando`**: il Motore lo carica e non lo usa; servirebbe in forma strutturata (cancelli come
-    `richiede`: battute uscite, indizi rivelati → un segno), così l'orologio avanza per i fatti e non solo per il ritmo;
-  - ~~salti d'orologio al cambio di scena~~: fatto il 9 novembre (`orologi_in_scena` della scheda scena:
-    `pieni_almeno` e ritmo di scena); resta il «+1 a ogni cambio di scena», che oggi fa il master;
-  - **finali per stato**: un modo di dire al Motore «la domanda drammatica ha risposta» (esiti della scena con i
-    loro cancelli), invece di affidare i finali prima dell'orologio pieno ai temi;
-  - **stato degli oggetti**: chi ha che cosa, almeno per gli oggetti con un id nella scena (`elementi_interattivi`);
-  - ~~battute «per stato» senza `> pg`~~ per i finali: fatto il 3 novembre (a orologio pieno il finale e la chiusura
-    li dice il Motore); il validatore non avvisa più (`COPERTURA.finale_senza_azione` è tolto: il Motore dice il finale da sé);
-- **Selettore che non trova le battute** (playtest di nozze-neve, conclusioni §4; 115 battute su 139 mai uscite).
-  Nel codice dal 9 novembre (commit 2597566, con prove unitarie): preselezione per `temi` dell'azione (con la voce
-  giusta, al massimo due per azione, sezione «Battute indicate» nel messaggio) e «> pg» dedotto o corretto quando
-  una sola azione può essere quella giusta. Da fare:
-  - la misura prima/dopo con l'harness sugli stessi copioni (`esegui.ts nozze-neve/<copione> B --campagna nozze-neve
-    --uscita correzioni-motore/<cartella>`, porta 4740), rimandata per il budget di token: confrontare quota
-    pre-scritta, battute usate, `usa_rifiutati_per_motivo`, `battute_indicate_usate`, `pg_dedotti`;
-  - decidere se il Motore deve far dire da sé un indizio indicato e ignorato: rigiocando i cataloghi il filtro per
-    temi indica anche battute sbagliate (le regole del Custode per «prima della benedizione»), quindi oggi non lo fa;
-  - la riparazione con una seconda chiamata per i [usa] rifiutati per altri motivi (fuori catalogo, ritmo).
-- **Skill e validatore** (fatto il 2 novembre sera, dalle 26 note di `NOTE_SULLA_SKILL.md`): contesto vero del modo B
-  compilato col server, cronologia e logistica (`MONDO`), voci simili (`simile_a`), passi riordinati con `--solo`,
-  più scene, copioni con `scena` e `richiede`, immagini (`prompt_ritratto`, `nodi[].immagine`, `situazioni[].dopo`).
-  Resta da provare: una seconda prova alla cieca con la skill nuova.
-- **Custode dei segreti** (`esperimenti/giudizio-ab-2/conclusioni.md`): controllo sì/no per le battute che rivelano
-  un segreto, quando si riprende la qualità della narrazione.
-- **Filtri F1** (agency, battute riferite, lunghezza, canone, chiusura con invito): quando si riprende la narrazione,
-  con le API definitive.
-- **Voce**: in pausa fino alla fase finale, con un'API strutturata che permetta di regolare l'intonazione.
-  Il codice del pre-render delle battute è pronto (`apps/server/src/strumenti/prerender.ts`).
-- **Musica** (F5): prova di generazione locale (ACE-Step o Stable Audio 3 con login Hugging Face) o biblioteca CC0/CC-BY;
-  allineare il vocabolario dei tag tra manuale §4 e architettura.
-- **Telefoni veri in stanza**: HTTPS per il microfono (tunnel, mkcert o Tailscale), trascrizione con Whisper.
-- **Set di regole: condizioni e sottosistemi** (docs/regole.md §6): oggi sono solo testo in regole.yaml (`condizioni`,
-  `sottosistemi`). Il Motore non li applica: niente stato «prono», «spaventato», sanità o magia con i loro effetti sui
-  tiri. Prima di farlo serve un set vero che li usi.
+- **Local voice outside the Mac.** Qwen3-TTS runs with MLX only on Apple Silicon. On Linux or Windows a light alternative is needed, with the same API as the voice service (docs/f0-contratti.md, «Servizio voce» (Voice service): POST /tts, PCM s16le streaming). To evaluate: Piper (onnx, Italian voices, CPU) and Kokoro (82M, CPU or GPU). Italian quality: to be verified.
+- **Known limits of local mode.** The check arbiter at closing has 4 s: locally it cannot make it, so there is no roll. The arbiters yield the server to the reader: while queued they wait at most 8 s, then fall back on the rules.
+- **Preparer skill: drama-3's expressive voice** (9 November 2026; to be handed to whoever updates the skill; nobody has replied). The game's voice is drama-3 (docs/ricerca-voce-drama3.md). Repertoire lines can have a short direction at the start of the line (`[png_ettore] [offeso, ma a voce bassa] Non venni.`, in the example: "[offended, but in a low voice] I didn't come."), sounds (`[sigh]`, `[laugh]`, `[breath]`, `[pause]`) and closed tags within the same line (`<whisper>…</whisper>`, `<emphasis>`, `<soft>`, `<fast>`, `<slow>`, `<stress>`, `<forceful>`); the validator checks them (class `VOCE`: known and closed tags, directions under eight words and without periods, at most three marks per line), and the prose counts only the words. The NPC sheets can fix the default direction in `voce.tts.direzione`; the style sheet, that of the narrator in `direzione_voce`; without them the server composes it from `personalita.superficie`, `voce.tts.timbro`, `eta_apparente` and `velocita`. To add to the skill (SKILL.md, the step for NPC sheets and the repertoire): when to use a direction (real tone changes: lies with their giveaway sign, confessions, threats), not in every line, and never to say what the PCs feel. The `pronuncia` of names stays as it is.
+
+- **Engine: the limits the campaign has to work around today** (from the nozze-neve trial; the page `.claude/skills/preparatore/riferimenti/motore.md` describes them and is checked against the code by `strumenti/motore_limiti.ts`: when one of them falls, the test turns red and the page is updated). To implement:
+  - **private actions**: today only lines with `privata: true` answer; a private action without suitable lines should have at least one discreet answer on the phone, not silence or an answer out loud;
+  - **`avanza_quando`**: the Engine loads it and does not use it; it would be needed in structured form (gates like `richiede`: lines spoken, clues revealed → a mark), so the clock advances for facts and not only for pace;
+  - ~~**clock jumps at scene change**~~: done 9 November (`orologi_in_scena` of the scene sheet: `pieni_almeno` and scene pace); the "+1 at every scene change", which the Game Master does today, remains;
+  - **endings per state**: a way to tell the Engine that "the dramatic question has an answer" (outcomes of the scene with their gates), instead of entrusting the endings before the full clock to the themes;
+  - **object state**: who has what, at least for the objects with an id in the scene (`elementi_interattivi`);
+  - ~~**lines "per state" without `> pg`**~~ for the endings: done 3 November (at full clock, the ending and the closing are stated by the Engine); the validator no longer warns (`COPERTURA.finale_senza_azione` is removed: the Engine states the ending by itself);
+- **Line selector that does not find the lines** (trial run of nozze-neve, conclusions §4; 115 lines out of 139 never came out). In the code since 9 November (commit 2597566, with unit tests): preselection by the action's `temi` (with the right voice, at most two per action, a section «Battute indicate» (Indicated lines) in the message) and "> pg" deduced or corrected when only one action can be the right one. To do:
+  - the before/after measurement with the harness on the same scripts (`esegui.ts nozze-neve/<copione> B --campagna nozze-neve --uscita correzioni-motore/<cartella>`, port 4740), postponed for the token budget: compare the pre-written quota, the lines used, `usa_rifiutati_per_motivo`, `battute_indicate_usate`, `pg_dedotti`;
+  - decide whether the Engine must have a clue that was indicated and ignored say it by itself: replaying the catalogues, the filter by themes also indicates wrong lines (the Custode's rules for «prima della benedizione» (before the blessing)), so today it does not;
+  - the repair with a second call for the [usa] rejected for other reasons (off-catalogue, pace).
+- **Skill and validator** (done 2 November evening, from the 26 notes in `NOTE_SULLA_SKILL.md`): the real context of mode B compiled with the server, chronology and logistics (`MONDO`), similar voices (`simile_a`), steps reordered with `--solo`, several scenes, scripts with `scena` and `richiede`, images (`prompt_ritratto`, `nodi[].immagine`, `situazioni[].dopo`). Still to test: a second blind trial with the new skill.
+- **Secret keeper** (Custode dei segreti) (`esperimenti/giudizio-ab-2/conclusioni.md`): a yes/no check for the lines that reveal a secret, to be taken up when the quality of the narration is resumed.
+- **F1 filters** (agency, referred lines, length, canon, closing with an invitation): when the narration is resumed, with the definitive APIs.
+- **Voice**: paused until the final phase, with a structured API that allows adjusting the intonation. The pre-render code for the lines is ready (`apps/server/src/strumenti/prerender.ts`).
+- **Music** (F5): local generation test (ACE-Step or Stable Audio 3 with Hugging Face login) or a CC0/CC-BY library; align the tag vocabulary between manual §4 and the architecture.
+- **Real phones in the room**: HTTPS for the microphone (tunnel, mkcert or Tailscale), transcription with Whisper.
+- **Rule set: conditions and subsystems** (docs/regole.md §6): today they are only text in regole.yaml (`condizioni`, `sottosistemi`). The Engine does not apply them: no «prono» (prone), «spaventato» (frightened), sanity or magic state, with their effects on the rolls. Before doing so, a real set that uses them is needed.
