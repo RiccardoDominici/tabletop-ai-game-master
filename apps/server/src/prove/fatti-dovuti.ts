@@ -69,7 +69,13 @@ export function fattiDovuti(
 }
 
 /** Radici delle parole di ogni tipo di fatto, nella lingua dei contenuti (già minuscole e senza accenti). */
-const parole = (): Readonly<Record<TipoFattoDovuto, readonly string[]>> =>
+const parole = (): Readonly<Record<TipoFattoDovuto, readonly string[]>> => paroleDovute();
+
+/**
+ * The stems of each fact type, compiled once per language. Exported so other guards share this one compilation:
+ * `regole()` caches one compiled value per section name, so a second compile of `fatti_dovuti` would clash.
+ */
+export const paroleDovute = (): Readonly<Record<TipoFattoDovuto, readonly string[]>> =>
   regole('fatti_dovuti', (s) => Object.fromEntries(TIPI_FATTO_DOVUTO.map((t) => [t, campoElenco(s, t).map(normalizza)])) as Record<TipoFattoDovuto, string[]>);
 
 /** Parole di una riga: minuscole, senza accenti né punteggiatura. */

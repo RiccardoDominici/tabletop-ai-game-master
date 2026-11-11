@@ -210,6 +210,13 @@ prove:
     rialzato: "{nome} riapre gli occhi."
     morto: "{nome} muore."
     fuggito: "{nome} fugge."
+  # Engine lines that replace a narrator sentence contradicting the cards (narrazione/guardia-esiti.ts).
+  guardia:
+    manca: "{chi} manca {bersaglio}."
+    colpisce: "{chi} colpisce {bersaglio}."
+    regge: "{nome} incassa il colpo, ma resta in piedi."
+    in_piedi: "{nome} è ancora in piedi."
+    nessuno_cade: "Nessuno cade: lo scontro continua."
 
 regole:
   # «Chiedi una regola» (regole/chiedi.ts): il prompt di sistema è prompts/<lingua>/risponditore-regole.md.

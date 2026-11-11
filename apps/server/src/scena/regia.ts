@@ -38,6 +38,7 @@ import type {
   SchermoAudioIniziato,
   StatoTavolo,
   VoceTrascrizione,
+  TiroMostrato,
 } from '@tabletop-ai-gm/shared';
 import { schedaPg } from '../campagna/scheda';
 import type { Campagna, ScenaCaricata } from '../campagna/tipi';
@@ -105,6 +106,7 @@ import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
 import type { CombattimentoMaster } from '@tabletop-ai-gm/shared';
 import type { FonteDadi } from '../prove/dadi';
 import { regolaEsiti, titoloEsiti } from '../prove/testi';
+import { guardiaEsiti, type CorrezioneEsito } from '../narrazione/guardia-esiti';
 import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dovuti';
 import { guardiaPrivate } from '../narrazione/privato';
 import type { SchedaNumerica } from '../campagna/schede';
@@ -2314,6 +2316,26 @@ export class Regia {
     return g ? { spostaPrivata: g } : {};
   }
 
+  /**
+   * The turn's combat outcome guard (narrazione/guardia-esiti.ts): the cards just rolled, who is out of play now, and
+   * how the narration names PCs and NPCs.
+   */
+  private guardiaDegliEsiti(tiri: readonly TiroMostrato[]): (testo: string) => CorrezioneEsito {
+    const c = this.campagna;
+    const prove = this.prove!;
+    const nomi = new Map<string, string[]>([
+      ...c.pg.map((p) => [p.id, [p.nome, nomeBreve(p.nome), ...Object.entries(c.alias).filter(([, x]) => x === p.id).map(([a]) => a)]] as [string, string[]]),
+      ...[...this.nomiPng].map(([id, v]) => [id, v] as [string, string[]]),
+    ]);
+    return guardiaEsiti({
+      tiri,
+      nomi,
+      conScheda: (id) => prove.stato.puntiFerita(id) !== null,
+      fuori: (id) => prove.stato.fuoriGioco(id) !== null,
+      nome: (id) => voceDi(c, id).nome,
+    });
+  }
+
   /** Per il pannello del master: schede coi PF e condizioni del set (null senza dadi). */
   get combattimentoMaster(): CombattimentoMaster | null {
     return this.prove?.attivo ? this.prove.combattimentoMaster() : null;
@@ -2530,7 +2552,8 @@ export class Regia {
     const mossaDelMondo = r.azioni.length === 0;
     // Colpi, cadute e tiri contro la morte del turno: il Motore controlla che il tavolo li senta.
     const dovuti = tiri ? fattiDovuti(tiri.tiri, tiri.combattimento?.morte ?? [], tiri.combattimento?.fuggiti ?? []) : [];
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti).catch((err: unknown) =>
+    const correggiEsito = tiri && this.prove?.attivo ? this.guardiaDegliEsiti(tiri.tiri) : null;
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito).catch((err: unknown) =>
       this.dopoEccezione(epoca, r.turno, 'narrazione', err),
     );
   }
@@ -2546,6 +2569,8 @@ export class Regia {
     dati?: DatiMessaggioTurno,
     /** Fatti dello scontro che il tavolo deve sentire (prove/fatti-dovuti.ts). */
     dovuti: readonly FattoDovuto[] = [],
+    /** Combat outcome guard of the turn (narrazione/guardia-esiti.ts), or null. */
+    correggiEsito: ((testo: string) => CorrezioneEsito) | null = null,
   ): Promise<void> {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
@@ -2572,6 +2597,7 @@ export class Regia {
         ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
         ...this.guardiaPrivate(azioni),
         ...this.guardiaSegreti(azioni),
+        ...(correggiEsito ? { correggiEsito } : {}),
         presenti: this.pngInScena(),
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segniInRisposta) : null,
         onFrase: (f) => {
@@ -2611,6 +2637,7 @@ export class Regia {
           ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
           ...this.guardiaPrivate(azioni),
           ...this.guardiaSegreti(azioni),
+          ...(correggiEsito ? { correggiEsito } : {}),
           presenti: this.pngInScena(),
           usa: (id, per) => this.usaBattuta(id, per, turno, segniInRisposta),
           prefissoFrasi: 'r',

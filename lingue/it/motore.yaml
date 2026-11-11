@@ -181,3 +181,11 @@ fatti_dovuti:
 # o no) non va mai nei contesti pubblici. Valgono i marcatori di TUTTE le lingue, in ogni campagna.
 nascosto:
   marcatori: [NASCOST]
+
+# Combat outcome guard (apps/server/src/narrazione/guardia-esiti.ts): a narrator sentence that names a standing NPC with
+# a defeat word, or tells a hit/miss against the turn's card, is replaced by the Engine's line. Stems: a word counts if it
+# starts like this; entries of several words are phrases. Hit words are those of `fatti_dovuti.colpito`.
+guardia_esiti:
+  sconfitta: [morto, morta, muore, muoiono, morendo, uccis, ammazz, esanim, cadaver, stramazz, accasci, crolla, crollo, cade, cadd, cadut, rantol, giace, sconfitt, abbattut, senza vita, a terra, non si rialza, fuori combattimento]
+  mancato: [manca, mancat, a vuoto, schiv, parat, para il, para la, para lo, devia, sfior, sbagli, evit, rimbalz, non raggiung, passa sopra, passa accanto, di un soffio]
+  negazioni: [non, senza, mai]

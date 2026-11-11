@@ -197,6 +197,13 @@ prove:
     rialzato: "{nome}'s eyes open again."
     morto: "{nome} dies."
     fuggito: "{nome} flees."
+  # Engine lines that replace a narrator sentence contradicting the cards (narrazione/guardia-esiti.ts).
+  guardia:
+    manca: "{chi} misses {bersaglio}."
+    colpisce: "{chi} hits {bersaglio}."
+    regge: "{nome} takes the blow but stays on their feet."
+    in_piedi: "{nome} is still on their feet."
+    nessuno_cade: "Nobody falls: the fight goes on."
 
 regole:
   domanda:

@@ -189,3 +189,11 @@ fatti_dovuti:
 # never goes into the public contexts. The markers of ALL languages hold in every campaign.
 nascosto:
   marcatori: [HIDDEN]
+
+# Combat outcome guard (apps/server/src/narrazione/guardia-esiti.ts): a narrator sentence that names a standing NPC with
+# a defeat word, or tells a hit/miss against the turn's card, is replaced by the Engine's line. Stems: a word counts if it
+# starts like this; entries of several words are phrases. Hit words are those of `fatti_dovuti.colpito`.
+guardia_esiti:
+  sconfitta: [die, dead, killed, slain, lifeless, corpse, collaps, crumpl, slump, falls dead, drops dead, goes down, falls to the ground, does not get up, out cold, unconscious, defeated, lies still]
+  mancato: [miss, goes wide, dodg, parr, block, deflect, glanc, falls short, whiff, sidestep, comes up empty]
+  negazioni: [not, no, never, without, doesn, didn, fails]

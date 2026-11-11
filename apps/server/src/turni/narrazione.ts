@@ -14,6 +14,7 @@
  * Un effetto rimasto dopo l'ultima frase suona a voce del turno finita; un umore rimasto si applica
  * subito (`cueSenzaFrase`). Vocabolario e catalogo li controlla la regia (`audio`).
  */
+import type { CorrezioneEsito } from '../narrazione/guardia-esiti';
 import { togliNumeriRegole } from '../narrazione/numeri-regole';
 import type { Campagna } from '../campagna/tipi';
 import { ID_NARRATORE, nomeNarratore } from '../campagna/tipi';
@@ -161,6 +162,11 @@ export interface ParametriTurno {
    * fare se direbbe un segreto ancora nascosto (null = la frase va). La decide la regia.
    */
   guardiaSegreti?: (etichetta: string, testo: string) => EsitoGuardiaSegreti | null;
+  /**
+   * Combat outcome guard (narrazione/guardia-esiti.ts): a narrator sentence that contradicts the turn's cards
+   * (a standing NPC falls, a miss told as a hit) is replaced by the Engine's line before the voice.
+   */
+  correggiEsito?: (testo: string) => CorrezioneEsito;
 }
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
@@ -252,6 +258,14 @@ export async function narraTurno(
           log.warn({ turno: p.turno, etichetta: e.etichetta, tolti: senzaNumeri.tolti, testo: e.testo }, 'narratore: numeri delle regole a voce, tolti');
           e.testo = senzaNumeri.testo;
           e.voce = togliNumeriRegole(e.voce).testo;
+        }
+        // Combat outcome guard: the Engine's line replaces a narrator sentence that contradicts the cards.
+        const correzione = e.etichetta === ID_NARRATORE ? (p.correggiEsito?.(e.testo) ?? null) : null;
+        if (correzione) {
+          anomalie.push({ codice: correzione.motivo, dettaglio: `«${e.testo.slice(0, 120)}» → «${correzione.testo}»` });
+          log.warn({ turno: p.turno, motivo: correzione.motivo, testo: e.testo, sostituto: correzione.testo }, 'narrator: sentence contradicts the Engine, replaced by its line');
+          e.testo = correzione.testo;
+          e.voce = correzione.testo;
         }
         // Un PNG che non è nella scena non parla (playtest di nozze-neve: Zelia e Adelina rispondevano da
         // scene dove non stanno, e le loro voci erano state scelte per non trovarsi mai insieme).

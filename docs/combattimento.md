@@ -112,6 +112,19 @@ combattimento:
      dalla narrazione, li dice il Motore» (prove: clash facts not said by the narration, the Engine says them).
    - Limits: a negation («il colpo non lo raggiunge» (the blow does not reach him)) counts as said; a pronoun without a name
      («il nano barcolla» (the dwarf staggers)) does not, and the Engine adds its line even if the fact was understood.
+8. **The narrator cannot contradict the cards** (narrazione/guardia-esiti.ts), the other side of the required facts. In
+   the second pass of the final e2e the narrator had a standing goblin «cade sui gradini con un rantolo» and Grosso
+   «colpisce Livia» on a card that said miss. Before the voice, a narrator sentence is replaced by the Engine's line when:
+   - it names the attacker and the target of one of the turn's attacks and tells the opposite of the card (hit words of
+     `fatti_dovuti.colpito` against the miss words of `guardia_esiti.mancato`; a negation right before a hit word counts
+     as a miss): «Grosso manca Livia.» / «Grosso colpisce Livia.»;
+   - it has a defeat word (`guardia_esiti.sconfitta`: «muore», «cade», «crolla», «a terra»…) and names an NPC with a
+     sheet who is not out of play, and no NPC in the sentence really is: «Zirrà incassa il colpo, ma resta in piedi.»
+     (hit), «Eliandro manca Zirrà.» (miss) or «Zirrà è ancora in piedi.» (no card); two such NPCs: «Nessuno cade: lo
+     scontro continua.».
+   - The words are in `lingue/<code>/motore.yaml` (`guardia_esiti`), the lines in testi-prove.yaml (`prove.guardia`). The
+     anomaly goes to the narration log (`colpo_contrario`, `caduta_senza_fatto`). Limits: a sentence that tells both a
+     hit and a miss is left alone; an NPC without a sheet can fall in the story.
 
 ## 4. Screens
 - **Projector**: the initiative bar at the top (in place of the row of portraits during the clash). It shows the round and
