@@ -54,6 +54,20 @@ per chi vuole smanettare. Servono:
   **Fatto**: le decisioni vanno nella fotografia della sessione e tornano alla ripresa; il cambio di scena le azzera (a4e360d).
 
 ## Dopo
+- **Lacune del set Basic Fantasy dalla e2e finale** (docs/e2e-finale.md §2 e §7, «dadi»; i bug di coerenza C1, C3, D1, A1,
+  D2 sono chiusi, 11 novembre 2026):
+  - modificatori a tabella (13–15 = +1…): oggi `modificatore: diretto` e il telefono mostra «Forza 1»;
+  - percentuali e «x su 6» per abilità: oggi convertite in bonus d20 con le stesse probabilità (un solo
+    `risoluzione.tipo` per set);
+  - attacco che colpisce sempre (dardo incantato): oggi un bonus +20; serve un `automatico` per attacco;
+  - `ogni_round` ignorato con l'iniziativa individuale (si ritira solo per schieramento, prove/combattimento.ts `avanza`);
+  - le regole SRD del tiro contro la morte (20 naturale = in piedi con 1 PF, 1 = due fallimenti) valgono per ogni set
+    (`inizioTurnoPg`): vanno messe nel set (`tiri_morte`) e spente di base fuori dall'SRD;
+  - critici d20 (20 colpisce, 1 manca) e danno minimo 1, non applicati con `d20_cd`;
+  - «HIDDEN:» delle campagne inglesi contro «NASCOST» del contesto B e del validatore (A4: repertorio/contesto.ts,
+    strumenti/valida/regole_vincoli.py): un marcatore per lingua;
+  - validatore: rifiutare `parole_chiave` generiche (l'arbitro a regole le ignora già, `parole.generiche`) e
+    segnalare una battuta che dà ciò che una prova chiude per un'altra strada di `oppure` (D2).
 - **Setup su computer non Apple** (docs/profili.md, profilo `altro`). Il setup guidato da Claude Code (`.claude/skills/setup`)
   dice che lettore locale, voce locale e immagini locali non sono ancora supportati fuori dall'Apple silicon. Senza chiave
   Anthropic il narratore è quello a copione (prova, non partita vera). Da fare: un lettore locale su Linux/Windows (llama.cpp
