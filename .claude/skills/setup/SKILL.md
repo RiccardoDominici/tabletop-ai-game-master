@@ -6,14 +6,14 @@ description: Sets up Tabletop AI Game Master on a fresh computer when the user p
 # Setup
 
 Goal: a person who pastes the repository link can play, with no key required. Keys are optional upgrades.
-Work in English with the user; the game itself is in Italian today.
+Work in English with the user. The game can be played in Italian or in English: the user chooses in step 4.
 
 Run every command from the repository root. Use `python3 -I` for the Python tools (they are stdlib only).
 
 ## 1. Get the repository
 
-- If the current folder is not the repo (no `package.json` with `"name": "cantastorie"`), clone it and enter it:
-  `git clone https://github.com/RiccardoDominici/tabletop-ai-game-master cantastorie && cd cantastorie`
+- If the current folder is not the repo (no `package.json` with `"name": "tabletop-ai-game-master"`), clone it and
+  enter it: `git clone https://github.com/RiccardoDominici/tabletop-ai-game-master && cd tabletop-ai-game-master`
 - If it is already there, run `git pull --ff-only` only if the user asks. Do not discard local changes.
 
 ## 2. Install
@@ -44,11 +44,11 @@ Run every command from the repository root. Use `python3 -I` for the Python tool
    - If yes: tell them to copy `.env.example` to `.env` and paste the key after `=` in their own editor. Do NOT ask
      them to paste the key in this chat. Then run step 5 with `--con-chiavi`.
    - If no: continue without `--con-chiavi`.
-2. **Play language.** Say: "Which language do you want to play in? Italian is complete today. English is being prepared;
-   if the repository does not support the language they choose yet, say so and play in Italian."
+2. **Play language.** Say: "Which language do you want to play in: Italian or English?"
    Remember the answer as `it` or `en`. Write it in step 5 with `--lingua <it|en>`: the key `lingua` goes into
-   `config/locale.yaml` now. Until the server reads it, the game is in Italian whatever the choice; if the user picked
-   `en` and it is not ready yet (check `docs/lingue.md`), say so once and continue in Italian.
+   `config/locale.yaml`. It is the language of the phones, the projector and the Game Master panel, and of a campaign
+   that does not declare its own (`docs/lingue.md`). If the user picked `en`, say once that the example campaigns in
+   `campagne/` are written in Italian, and that the Preparer can write a new campaign in English.
 
 If the computer is not Apple silicon, say plainly: "On this computer the local reader and voice are not supported
 yet. Without an Anthropic key the narrator is a scripted test narrator, not a real game. Do you want to add an
@@ -72,8 +72,8 @@ Anthropic key now?" Ask that once, then continue.
 
 - Run `scripts/fumo.sh`. It starts a test server on port 4790 with the scripted narrator and the fake voice,
   plays a short scripted game, and stops the server. It never touches ports 4610 or 4611.
-- It prints `FUMO OK` on success. If it prints `FUMO FALLITO`, show the last lines it prints and the log path
-  (`logs/porta-4790/server.out`), and stop. Do not guess a fix; ask the user.
+- It prints `FUMO OK` on success. If it prints `FUMO FALLITO`, show the last lines it prints and the log paths
+  (`logs/porta-4790/fumo.out` and `logs/porta-4790/server.out`), and stop. Do not guess a fix; ask the user.
 
 ## 8. Finish
 
@@ -81,8 +81,9 @@ Tell the user, in this order:
 1. How to start a real game: `scripts/partita.sh prova-f0` (one scene, 20–30 minutes, 3–4 players). It prints the
    three addresses: projector, phones and the Game Master panel. The Game Master panel is for whoever runs the game.
 2. How to create a new campaign: in Claude Code, type `/preparatore` followed by a request in their own words.
-   The Preparer writes the campaign in Italian and checks it with the validator. Then `scripts/prepara.sh campagne/<id>`
-   generates images and audio.
+   The Preparer writes the campaign in the language of its brief (`lingua: it` or `en`; `it` if missing, so say
+   "in English" in the request for an English campaign) and checks it with the validator. Then
+   `scripts/prepara.sh campagne/<id>` generates images and audio.
 3. Where the choices live: `config/locale.yaml` (not in git), and `docs/profili.md` for what each profile means.
 
 Keep the closing message short. Do not repeat the detection output.

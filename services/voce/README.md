@@ -1,6 +1,6 @@
 # Servizio voce (F0)
 
-Sintesi vocale locale per Cantastorie: **Qwen3-TTS 0.6B Base, 8 bit, MLX** (mlx-audio 0.6.3),
+Local speech synthesis for Tabletop AI Game Master: **Qwen3-TTS 0.6B Base, 8 bit, MLX** (mlx-audio 0.6.3),
 voci clonate da clip di ~8 s, servite in streaming PCM al server Node su `127.0.0.1:4611`.
 Contratto: `docs/f0-contratti.md`, sezione «Servizio voce».
 

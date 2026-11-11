@@ -98,14 +98,14 @@ Its bug notes are folded into §6.
 | `torre-mozza-indagine-B2`, `-pressione-B2` | B, re-run after the two fixes | `cdb076f` | indagine, pressione |
 | `en-mini-A` | Haiku narrator mode A, English fixture `en-mini`, fake voice | `335b27b` | 3 English turns |
 
-- **Profile A, all local, $0**: `CANTASTORIE_PORTA=4800 CANTASTORIE_LETTORE=locale CANTASTORIE_ARBITRO_PROVE=regole
-  CANTASTORIE_ARBITRO_AZIONI=regole CANTASTORIE_RIASSUNTO=locale CANTASTORIE_REGOLE=locale npx tsx
+- **Profile A, all local, $0**: `TAGM_PORTA=4800 TAGM_LETTORE=locale TAGM_ARBITRO_PROVE=regole
+  TAGM_ARBITRO_AZIONI=regole TAGM_RIASSUNTO=locale TAGM_REGOLE=locale npx tsx
   apps/server/src/esperimenti/esegui.ts torre-mozza/indagine B --campagna torre-mozza --uscita e2e-finale/torre-mozza-indagine-A
   --pausa-s 20 --sceneggiatore`. Reader Qwen3 8B 4-bit on 127.0.0.1:4613 (minimal mode), keyword dice arbiter, fake voice
   (the harness passes `--mock`; a local Qwen voice on a test port would need its own service), sceneggiatore on
   (Claude Code on Riccardo's subscription, only in these two runs).
-- **Profile B, API**: `CANTASTORIE_PORTA=4810 CANTASTORIE_LETTORE=anthropic CANTASTORIE_ARBITRO_PROVE=anthropic
-  CANTASTORIE_ARBITRO_AZIONI=anthropic CANTASTORIE_RIASSUNTO=anthropic CANTASTORIE_REGOLE=anthropic CANTASTORIE_VOCE=fish npx tsx
+- **Profile B, API**: `TAGM_PORTA=4810 TAGM_LETTORE=anthropic TAGM_ARBITRO_PROVE=anthropic
+  TAGM_ARBITRO_AZIONI=anthropic TAGM_RIASSUNTO=anthropic TAGM_REGOLE=anthropic TAGM_VOCE=fish npx tsx
   apps/server/src/esperimenti/esegui.ts torre-mozza/indagine B --campagna torre-mozza --uscita e2e-finale/torre-mozza-indagine-B
   --pausa-s 20`. Haiku narrator (full mode) and arbiters, drama-3 voice through OpenRouter, sceneggiatore off.
 - Two commits landed **during** the test from my first findings (`16fe790` «Keep NPC replies to a private action off
@@ -231,8 +231,8 @@ cosmetic). Cause: data/skill, validator, Engine, prompt/model, script/harness, p
 No game reached the final choice in 16 turns: the clock stood at 1/8, which is right for an evening of 2.5 hours. So
 the end-of-evening hint and «Chiudi la sessione» had never run on a real campaign. One short run checked them: profile A
 ($0), fake voice, sceneggiatore off, port 4740, with the new harness options `--ore` and `--chiudi`:
-`CANTASTORIE_PORTA=4740 CANTASTORIE_LETTORE=locale CANTASTORIE_ARBITRO_PROVE=regole CANTASTORIE_ARBITRO_AZIONI=regole
-CANTASTORIE_RIASSUNTO=locale CANTASTORIE_REGOLE=locale npx tsx apps/server/src/esperimenti/esegui.ts torre-mozza/pressione B
+`TAGM_PORTA=4740 TAGM_LETTORE=locale TAGM_ARBITRO_PROVE=regole TAGM_ARBITRO_AZIONI=regole
+TAGM_RIASSUNTO=locale TAGM_REGOLE=locale npx tsx apps/server/src/esperimenti/esegui.ts torre-mozza/pressione B
 --campagna torre-mozza --uscita e2e-finale/torre-mozza-chiusura-A --turni 12 --pausa-s 40 --ore 0.5 --chiudi`.
 
 | What | Result |

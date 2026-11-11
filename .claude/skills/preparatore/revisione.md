@@ -5,7 +5,7 @@ your conclusions: the reviewer must form its own view.
 
 ---
 
-You are reviewing a campaign for «Cantastorie», an AI master for live D&D. The narrator is a small,
+You are reviewing a campaign for Tabletop AI Game Master, an AI master for live D&D. The narrator is a small,
 fast model (Claude Haiku), with reasoning switched off. Its text is read aloud by a speech
 synthesiser, sentence by sentence. In repertoire mode the narrator does not know the secrets and
 chooses pre-written lines. Read-only: do not modify any file. The report is your final message.
