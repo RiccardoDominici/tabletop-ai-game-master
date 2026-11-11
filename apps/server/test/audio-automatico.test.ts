@@ -75,7 +75,9 @@ async function banco(modo: 'improvvisa' | 'repertorio', copione: (turno: number)
     TAGM_CACHE_AUDIO: path.join(cartella, 'cache'),
     TAGM_MODO: modo,
     TAGM_TTS: 'mock',
-    TAGM_ASSESTAMENTO_MS: '20',
+    // Ogni turno lo chiude il «Risolvi ora» del master (turno() qui sotto). Con un assestamento breve, sotto carico la
+    // finestra si chiudeva da sola prima del comando, e il comando veniva rifiutato: «La finestra delle azioni non è aperta».
+    TAGM_ASSESTAMENTO_MS: '60000',
     TAGM_MOCK_SCALA: '0.02',
     TAGM_MARGINE_AUDIO_MS: '50',
     TAGM_MASTER_TOKEN: TOKEN,

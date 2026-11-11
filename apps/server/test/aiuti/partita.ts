@@ -147,6 +147,25 @@ export function attendi(c: Client, cond: (s: StatoTavolo) => boolean, ms = 8000)
   });
 }
 
+/**
+ * Il primo evento `evento` che soddisfa `cond`, su QUESTO client. Va chiamata prima del gesto che lo provoca:
+ * eventi di socket diversi non hanno un ordine fra loro, quindi uno stato arrivato al proiettore non dice che
+ * l'evento per il telefono sia già arrivato (sotto carico arriva dopo).
+ */
+export function attendiEvento<T>(c: Client, evento: string, cond: (x: T) => boolean, ms = 8000): Promise<T> {
+  return new Promise((ok, ko) => {
+    const t = setTimeout(() => ko(new Error(`${evento} atteso non arrivato`)), ms);
+    const f = (x: T): void => {
+      if (cond(x)) {
+        clearTimeout(t);
+        c.off(evento as never, f as never);
+        ok(x);
+      }
+    };
+    c.on(evento as never, f as never);
+  });
+}
+
 /** Un'azione inviata (inviare = pronto: con l'ultimo invitato il turno parte dopo l'assestamento). */
 export async function agisci(t: Client, id_pg: string, testo: string, versione: number, privata = false): Promise<void> {
   expect(await emetti<Esito>((cb) => t.emit('azione:invia', { id_pg, testo, versione_vista: versione, privata }, cb))).toEqual({ ok: true });

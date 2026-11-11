@@ -8,7 +8,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { AzionePrivata, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { DadiACopione } from '../src/prove/dadi';
 import type { ArbitroProve, DecisioneProva, IngressoArbitroProve } from '../src/prove/tipi';
-import { Prova, agisci, attendi, inizia } from './aiuti/partita';
+import { Prova, agisci, attendi, attendiEvento, inizia } from './aiuti/partita';
 
 const base = (id: string): DecisioneProva => ({ id, tipo: 'nessuna', caratteristica: null, abilita: null, bersaglio: null, arma: null, prova_scena: null, difficolta: null, abilita_bersaglio: null, vantaggio: null, motivo: '', aiuta: null, reazione: null });
 class Arbitro implements ArbitroProve {
@@ -31,8 +31,6 @@ describe('combattimento col server intero', () => {
     const schermo = await prova.proiettore(url);
     const ida = await prova.telefono(url, 'pg_ida');
     const corrado = await prova.telefono(url, 'pg_corrado');
-    const mieCorrado: AzionePrivata[] = [];
-    corrado.on('azione:mia', (a) => a && mieCorrado.push(a));
     const s1 = await inizia(schermo, ida);
     await agisci(corrado, 'pg_corrado', 'Colpisco Ruggero con la spada', s1.versione_scena);
     await agisci(ida, 'pg_ida', 'Guardo il fiume', s1.versione_scena);
@@ -44,17 +42,24 @@ describe('combattimento col server intero', () => {
     expect(messaggi.at(-1)).toMatch(/Inizia il combattimento\. Iniziativa: Ida Ferraro 17, Ruggero lo sgherro 11, Corrado Lanzi 7\./);
     expect(messaggi.at(-1)).toMatch(/Tocca ora a: Ida Ferraro \(pg_ida\)/);
 
-    // Corrado scrive fuori turno: la sua azione non si risolve adesso, resta in coda per il suo turno.
+    // Corrado scrive fuori turno: la sua azione non si risolve adesso, resta in coda per il suo turno. L'esito arriva
+    // sul socket di Corrado, senza ordine rispetto agli stati di Ida: lo si aspetta lì, registrato prima.
+    const inCoda = attendiEvento<AzionePrivata | null>(corrado, 'azione:mia', (a) => a?.testo === 'Colpisco ancora Ruggero' && a.stato === 'in_coda' && a.turno === 3);
     await agisci(corrado, 'pg_corrado', 'Colpisco ancora Ruggero', s2.versione_scena);
     await agisci(ida, 'pg_ida', 'Mi tengo pronta dietro Corrado', s2.versione_scena);
     const s3: StatoTavolo = await attendi(ida, (x) => x.fase === 'finestra' && x.turno === 3);
     expect(s3.combattimento?.turno_di).toEqual(['pg_corrado']);
     expect(s3.finestra.invitati).toEqual(['pg_corrado']);
-    // Il colpo del PNG detto chiaro, poi i dettagli: il narratore lo racconta in una frase sua.
-    expect(messaggi.at(-1)).toMatch(/Turno di Ruggero lo sgherro: Ruggero lo sgherro colpisce Corrado Lanzi: 6 danni \(raccontalo in una frase sua\)\. Dettagli: attacco con Mazza ferrata a Corrado Lanzi: 19 contro CA 15 → COLPITO, 6 danni contundenti/);
-    expect(messaggi.at(-1)).not.toMatch(/Colpisco ancora Ruggero/);
+    // Il colpo del PNG detto chiaro, poi i dettagli: il narratore lo racconta in una frase sua. Si cerca il messaggio
+    // del turno 2, non l'ultimo: il turno 3 di Corrado può già essere partito (la sua azione era in coda).
+    const turno2 = messaggi.find((m) => m.includes('Turno di Ruggero lo sgherro'));
+    expect(turno2).toMatch(/Turno di Ruggero lo sgherro: Ruggero lo sgherro colpisce Corrado Lanzi: 6 danni \(raccontalo in una frase sua\)\. Dettagli: attacco con Mazza ferrata a Corrado Lanzi: 19 contro CA 15 → COLPITO, 6 danni contundenti/);
+    expect(turno2).not.toMatch(/Colpisco ancora Ruggero/);
     expect(s3.pg.find((p) => p.id === 'pg_corrado')?.pf).toEqual({ attuali: 6, massimi: 12 });
-    expect(mieCorrado.some((a) => a.testo === 'Colpisco ancora Ruggero' && a.stato === 'in_coda' && a.turno === 3)).toBe(true);
+    await inCoda;
+    // Il turno 3 parte da solo (l'azione di Corrado era in coda): si chiude lo scontro dopo, non mentre si risolve,
+    // se no l'attacco di Corrado ne aprirebbe uno nuovo e l'esito dipenderebbe da chi arriva prima.
+    await attendi(ida, (x) => x.fase === 'finestra' && x.turno === 4, 15_000);
 
     // Il master chiude lo scontro.
     const master = await prova.master(url);
@@ -63,5 +68,5 @@ describe('combattimento col server intero', () => {
     expect(st.tavolo.combattimento ?? null).toBeNull();
     expect(st.combattimento?.attivo).toBe(false);
     expect(st.combattimento?.condizioni.map((c) => c.id)).toContain('prono');
-  });
+  }, 30_000);
 });

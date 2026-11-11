@@ -65,7 +65,9 @@ beforeAll(async () => {
     TAGM_CARTELLA_CAMPAGNA: path.join(import.meta.dirname, 'fixtures', 'campagne', 'mini'),
     TAGM_PROMPT_NARRATORE: path.join(import.meta.dirname, 'fixtures', 'prompt-prova.md'),
     TAGM_TTS: 'mock',
-    TAGM_ASSESTAMENTO_MS: '20',
+    // Qui ogni finestra la chiude il master («Risolvi ora»). Bruno manda un'azione pubblica e la ritira: con un assestamento
+    // di 20 ms, sotto carico la finestra (tutti pronti) si chiudeva prima che arrivasse il ritiro.
+    TAGM_ASSESTAMENTO_MS: '60000',
     TAGM_MOCK_SCALA: '0.02',
     TAGM_LLM: 'finto',
     TAGM_MASTER_TOKEN: 'token_integrazione_master_42',

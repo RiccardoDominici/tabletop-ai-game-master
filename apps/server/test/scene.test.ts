@@ -44,7 +44,7 @@ const nuovoClient = (): Client => {
   client.push(c);
   return c;
 };
-function attendi<T>(c: Client, evento: 'stato' | 'master:stato', cond: (s: T) => boolean, ms = 8000): Promise<T> {
+function attendi<T>(c: Client, evento: 'stato' | 'master:stato' | 'azione:mia', cond: (s: T) => boolean, ms = 8000): Promise<T> {
   return new Promise((risolvi, rifiuta) => {
     const t = setTimeout(() => rifiuta(new Error(`${evento} atteso non arrivato`)), ms);
     const f = (s: T): void => {
@@ -137,13 +137,15 @@ describe.skipIf(!presente)('campagne con più scene (ponte-lanterne)', () => {
 
     const apertura = attendi<StatoMaster>(master, 'master:stato', (s) => s.tavolo.fase === 'apertura' && s.tavolo.scena.luogo === 'scena_borgo_basso');
     const nuovaFinestra = attendi<StatoMaster>(master, 'master:stato', (s) => s.tavolo.fase === 'finestra' && s.tavolo.scena.luogo === 'scena_borgo_basso', 10_000);
+    // L'azione superata arriva al telefono sul SUO socket: si aspetta lì (sotto carico arriva dopo lo stato del master).
+    const superata = attendi<AzionePrivata | null>(tel, 'azione:mia', (x) => x?.stato === 'superata');
     expect(await comanda(master, { tipo: 'scena', scena: 'scena_borgo_basso' })).toEqual({ ok: true });
     const a = await apertura;
     expect(a.tavolo.scena.titolo).toBe('Il Borgo Basso sott\'acqua');
     expect(a.scene.find((s) => s.corrente)?.id).toBe('scena_borgo_basso');
     expect(a.tavolo.trascrizione.some((v) => v.tipo === 'sistema' && v.testo.startsWith('Nuova scena: Il Borgo Basso'))).toBe(true);
     // L'azione scritta per il ponte torna al giocatore.
-    expect(mie.at(-1)).toMatchObject({ stato: 'superata', motivo: testo('regia.motivi.cambio_scena'), testo: 'Tiro la catena.' });
+    expect(await superata).toMatchObject({ stato: 'superata', motivo: testo('regia.motivi.cambio_scena'), testo: 'Tiro la catena.' });
 
     const s = await nuovaFinestra;
     expect(s.orologi.map((o) => o.id)).toEqual(['o_piena']);
