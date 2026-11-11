@@ -195,7 +195,15 @@ These three commands cannot be undone. For this reason they ask for a second cli
 
 **Telefoni ricordati** (Remembered phones) (when there are any): each phone with its character. You can choose another character from the list, or press **Dimentica** (Forget) so that the phone chooses again. The change applies from the phone's next connection.
 
-Coming, to be checked: a guided close of the evening ("Chiudi la sessione" (Close the session)), described in the requests of 9 November 2026 (`docs/richieste-2026-11-09.md`, point 9). When this page was written, the panel did not have that button yet.
+**Serata** (Evening): how long the evening should last (**durata** (length): `ore_per_sessione` from the brief, or 2.5 hours if the brief has none), how many minutes have passed (**passati** (elapsed)) and how many are left (**rimasti** (remaining)). To change the length, type the hours (from 0.5 to 8) and press **Imposta durata** (Set length). Twenty minutes before the end the box warns you, and the narrator is told to steer towards a natural pause. This never happens during a climax: a scene with `climax: true`, or a clock that is one mark from full.
+
+- **Chiudi la sessione** (Close the session): the guided close of the evening. It also asks for a second click: "Confermi la chiusura della serata?" (Confirm closing the evening?).
+  - The actions still in the window go back to the players, and the narrator closes the moment.
+  - The projector then shows «Cosa è successo stasera» (What happened tonight): the summary, the open threads and the characters' hit points.
+  - The server writes the log and, next to it, `riassunto.yaml`.
+  - The session stays saved. **Riprendi** (Resume) reopens it on the next evening, which starts with «La volta scorsa…» (Last time…).
+- Where the closing comes from: the repertoire line of type `chiusura`, if the campaign has one; otherwise the narrator writes it. The local reader in minimal mode writes no prose. So with that reader and no `chiusura` line, the Engine says one fixed line: «Per stasera la storia si ferma qui. Riprende da questo punto, la prossima volta.»
+- How long the summary takes: with Haiku the Engine waits 20 seconds. With the local model it waits up to 3 minutes, because the summary of an evening took about 100 seconds there. While it waits, the panel says «Chiusura in corso: il narratore scrive il riassunto.» (Closing in progress: the narrator is writing the summary.) When the wait runs out, the Engine uses its own summary: the places visited and the last clock marks, with no open threads.
 
 ### Log
 

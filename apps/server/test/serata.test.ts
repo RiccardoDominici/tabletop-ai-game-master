@@ -12,7 +12,8 @@ import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
 import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
 import { climaxInCorso, consiglioDiChiusura, DurataSerata, MINUTI_PREAVVISO } from '../src/sessione/durata';
-import { analizzaRiassunto, frasiLaVoltaScorsa, leggiRiassunti, materialePubblico, paroleScappate, riservaDa, scriviRiassunto } from '../src/sessione/riassunto';
+import { analizzaRiassunto, ATTESA_MODELLO_LOCALE_MS, ATTESA_MODELLO_MS, attesaRiassunto, frasiLaVoltaScorsa, leggiRiassunti, materialePubblico, paroleScappate, riservaDa, scriviRiassunto } from '../src/sessione/riassunto';
+import type { Narratore } from '../src/llm/tipi';
 import { testo } from '../src/lingua';
 import { attendi, emetti, inizia, Prova, turno } from './aiuti/partita';
 
@@ -150,5 +151,30 @@ describe('pacchetto dopo senza riassunto_iniziale', () => {
     const conRiassunto = new SerataGuidata({ campagna: caricaCampagna(prova.campagna('arco'), undefined, { pacchetto: 2 }), narratore: null, log: loggerMuto(), parole: () => [], pubblico: () => null });
     conRiassunto.preparaPerPacchetto();
     expect(conRiassunto.prendiLaVoltaScorsa()).toEqual([]);
+  });
+});
+
+// E2E finale, profilo A (torre-mozza): col lettore minimo la chiusura era muta e il riassunto locale scadeva.
+describe('chiusura senza prosa del narratore', () => {
+  it('nessuna battuta di chiusura e nessuna frase dal narratore: la chiusura la dice il Motore', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mini');
+    const muto = (t: number, messaggio: string): string => (messaggio.includes(testo('messaggio.titolo_chiusura')) ? '[invito] tutti' : copione(t, messaggio));
+    const { url } = await prova.avvia(cartella, muto);
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const m = await prova.master(url);
+    const s2 = await turno(tel, 'pg_anna', await inizia(schermo, tel), 'Ascolto il temporale.');
+    const chiusa = attendi(tel, (x) => !!x.fine_serata, 15_000);
+    expect(await m.comanda({ tipo: 'chiudi_sessione' })).toEqual({ ok: true });
+    const fine = await chiusa;
+    expect(fine.trascrizione.filter((v) => v.turno === s2.turno && v.tipo === 'narrazione').map((v) => v.testo)).toEqual([testo('regia.righe.chiusura_riserva')]);
+    expect(fine.fine_serata).toMatchObject({ di_riserva: false });
+  }, 30_000);
+
+  it('il riassunto da un modello locale si aspetta più a lungo', () => {
+    expect(attesaRiassunto({ nome: 'locale' } as Narratore)).toBe(ATTESA_MODELLO_LOCALE_MS);
+    expect(attesaRiassunto({ nome: 'haiku' } as Narratore)).toBe(ATTESA_MODELLO_MS);
+    expect(ATTESA_MODELLO_LOCALE_MS).toBeGreaterThan(101_000);
   });
 });

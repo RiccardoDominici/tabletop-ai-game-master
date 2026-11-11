@@ -21,6 +21,8 @@ regia:
     blocco: "The narrator got stuck: starting again."
     fine_sessione: "End of the session."
     serata_chiusa: "The evening is over: see you next time."
+    # Guided closing with no closing line and no narrator prose (minimal reader): the Engine says this.
+    chiusura_riserva: "This is where the story stops for tonight. It picks up from this very moment next time."
     ripresa: "The session picks up where it left off."
     scena_fermata: "Scene stopped."
     narrazione_interrotta: "The Game Master stopped the narration."

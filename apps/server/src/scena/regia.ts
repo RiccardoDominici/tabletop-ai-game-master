@@ -1114,6 +1114,18 @@ export class Regia {
     return { ok: true };
   }
 
+  /**
+   * La chiusura detta dal Motore quando né il repertorio (nessuna battuta `chiusura`) né il narratore hanno
+   * righe: nell'E2E finale, profilo A, «Chiudi la sessione» su torre-mozza chiudeva in silenzio.
+   */
+  private chiusuraDiRiserva(turno: number, log: Logger): void {
+    const frase = testoFisso('regia.righe.chiusura_riserva');
+    const { voce_id, nome } = voceDi(this.campagna, ID_NARRATORE);
+    this.aggiungiTrascrizione({ turno, tipo: 'narrazione', chi: ID_NARRATORE, nome, testo: frase });
+    this.pipeline.accoda({ id_frase: `t${turno}-c0`, turno, indice: 0, parlante: ID_NARRATORE, nome, voce_id, testo: frase, testo_voce: this.pronuncia(frase) });
+    log.info({}, 'serata: nessuna riga per la chiusura, la dice il Motore');
+  }
+
   private async eseguiChiusura(turno: number, alFinire?: (r: RiassuntoSerata) => void): Promise<void> {
     const epoca = ++this.epoca;
     this.fase = 'narrazione';
@@ -1162,6 +1174,8 @@ export class Regia {
       if (epoca !== this.epoca) return;
       if (esito.esito) this.o.registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'chiusura', turno, modello: esito.esito.modello, ...esito.esito.costo });
       log.info({ frasi: esito.frasi, errore: esito.errore }, 'serata: chiusura narrata');
+      // Nessuna frase (il lettore minimo non scrive prosa, o il modello è caduto): la chiusura la dice il Motore.
+      if (!esito.frasi) this.chiusuraDiRiserva(turno, log);
     }
     // Il riassunto si scrive mentre la voce legge la chiusura.
     const riassunto = this.serata.riassumi(this.trascrizione, this.titoliScene([...this.sceneVisitate]), this.segniMostrati(), turno);

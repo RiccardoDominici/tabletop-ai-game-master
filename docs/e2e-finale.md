@@ -171,8 +171,8 @@ cosmetic). Cause: data/skill, validator, Engine, prompt/model, script/harness, p
 
 | # | Sev | What happened | Likely cause | Status |
 |---|---|---|---|---|
-| B1 | M | The selector picks lines whose `quando` is not met: the confession `zir_corda` («Il ragazzo è venuto da solo») for Nespola climbing through a window (pressione-B T13); the clue `nar_conto` for Fulco's sling shot while Eliandro searched in private (indagine-B2 T15); `ber_cose_tonio` for a question about the key (indagine-A T2); `nar_tonio_parla` for «Dov'è il ragazzo?» (pressione-A T16) | prompt/model (Haiku selector, Qwen reader); data: `oppure` gates and loose `temi` | open |
-| B2 | M | The leak detector reports 0 everywhere, but a release line used for the wrong action is a leak it cannot see (B1 is counted as legitimate because `zir_corda` is in `pubblica_dopo`) | harness (`esperimenti/fughe.ts`) | open |
+| B1 | M | The selector picks lines whose `quando` is not met: the confession `zir_corda` («Il ragazzo è venuto da solo») for Nespola climbing through a window (pressione-B T13); the clue `nar_conto` for Fulco's sling shot while Eliandro searched in private (indagine-B2 T15); `ber_cose_tonio` for a question about the key (indagine-A T2); `nar_tonio_parla` for «Dov'è il ragazzo?» (pressione-A T16) | prompt/model (Haiku selector, Qwen reader); data: `oppure` gates and loose `temi` | fixed by `57c8ce7`: a release line (clue, confession, truth, ending, or one that reveals) goes out only if the action is pertinent: its `temi` are in that action, it shares at least two roots with `quando` + `temi`, and the NPC named is the one who speaks. Otherwise the `[usa]` is refused and the NPC's `rifiuto` line is said instead. The four cases above are refused in `test/rilascio.test.ts`. Still open on the data side: `oppure` gates and loose `temi`. |
+| B2 | M | The leak detector reports 0 everywhere, but a release line used for the wrong action is a leak it cannot see (B1 is counted as legitimate because `zir_corda` is in `pubblica_dopo`) | harness (`esperimenti/fughe.ts`) | fixed by `57c8ce7`: `rivelazioni_fuori_contesto` in `riepilogo.json` (`esperimenti/fughe.ts`). On pressione-A it flags `fin_ovile_senza` (T5) and `nar_tonio_parla` (T16). The harness now keeps `narrazioni.jsonl`, because the server log is overwritten. |
 | B3 | L | Verbal tics repeated within minutes: Zirrà «ride corto», «mezza misura», «la luna no» | data + selector; the tic rule exists only for the sceneggiatore | open |
 
 ### C. Combat coherence
@@ -191,7 +191,7 @@ cosmetic). Cause: data/skill, validator, Engine, prompt/model, script/harness, p
 |---|---|---|---|---|
 | D1 | H | The keyword dice arbiter rolls absurd checks: «Forzare una porta bloccata» for «gli stringo la spalla» (`spalla` hits `spallata` by the 5-letter root), «Cercare porte segrete» for «nel passaggio stretto» and for «mi metto davanti alla porta», a melee attack for «guardo i rami… spada in mano», Charisma for «Guardo la chiave che Berta stringe» (an NPC named ⇒ social) | Engine (`prove/classificatore-regole.ts`, root matching); data: generic words in `parole_chiave` (`passaggio`, `ombra`, `orecchio`, `tasca`, `parete`) that the validator does not check | fixed in the classifier: whole words with the language's endings, generic words, speech is not a deed, questions are free, social checks need an addressed NPC, attack skills alone do not roll, ties roll nothing; the same 51 actions now give 18 cards instead of 35, one debatable (docs/prove.md §3); the validator check on `parole_chiave` is still open |
 | D2 | M | A card and the story disagree: «Carisma 13 contro CD 17, fallita», then Berta hands over the key (pressione-A T6); in pressione-B2 T6, after «Carisma 8 contro CD 17, fallita», Berta gives the key and two lines later «Il pugno sulla chiave non si apre» | data: `ber_chiave` has an `oppure` gate that lets it out without the roll; validator could flag a line that gives what a check gates | fixed in the Engine: a failed check tells the narrator what does not happen, and a line tied by `richiede.prova` to a check the action failed this turn is refused even through another `oppure` path; the validator check is still open |
-| D3 | M | A scene ending fired at turn 5 («La scena è finita: il master sceglie come andare avanti», `fin_ovile_senza`, «senza la chiave») and the next turn Berta gave the key | reader picked an ending line; data gate too loose | open |
+| D3 | M | A scene ending fired at turn 5 («La scena è finita: il master sceglie come andare avanti», `fin_ovile_senza`, «senza la chiave») and the next turn Berta gave the key | reader picked an ending line; data gate too loose | fixed by `57c8ce7`: the same check refuses an ending that the reader picks for an unrelated action. «Vado a controllare il sentiero…» shares only one root with the ending's `quando`. Endings the Engine says on a full clock are exempt. |
 | D4 | M | Engine announcements in minimal mode quote the first words and say nothing («Eliandro: «Dico agli altri».», «Livia Sarti: «Tu che sei del posto».») or stop mid-phrase («…colpisco alle spalle la sentinella con».») | Engine (`llm/annuncio.ts`: first short phrase, 12-word cap) | open |
 | D5 | L | Cards say «contro CD 14» for an attack against the Armour Class, and repeat the label («Dardo incantato, Dardo incantato») | Engine wording | open |
 | D6 | M | The Haiku arbiter (profile B) is mostly right but rolls «Ascoltare» for a whispered question (pressione-B T4, indagine-B2 T4 and T6) and asks an Intelligence roll for telling the party a deduction, whose failure price made Ugo leave (indagine-B T5) | prompt/model (arbiter with the set); the manual's ability roll is for actions «that seem to have no rule», not for talking | open |
@@ -218,7 +218,7 @@ cosmetic). Cause: data/skill, validator, Engine, prompt/model, script/harness, p
    scene any more.
 2. **D1**: the keyword arbiter needs whole-word matching (or a stop-list of body and place words) and the validator
    should refuse generic `parole_chiave`: in profile A 14 of 35 cards were absurd or had no target.
-3. **B1 + B2**: refuse an `[usa]` whose line has an `indizio` or `confessione` type when the action shares no `tema`
+3. **B1 + B2** (done, `57c8ce7`): refuse an `[usa]` whose line has an `indizio` or `confessione` type when the action shares no `tema`
    with it, and count such a release as a leak in `fughe.ts`.
 4. **A2 + A4**: extend the private guard to outcome lines in a turn where the only actor of that place acted in
    private; make «HIDDEN:» and «NASCOST» the same marker per language.
@@ -226,7 +226,28 @@ cosmetic). Cause: data/skill, validator, Engine, prompt/model, script/harness, p
 6. **D4**: an announcement that says nothing is worse than none.
 7. **E1**: finish the images when the disk has room.
 
-## 8. Reproduce
+## 8. Follow-up: the guided closing on torre-mozza (11 November)
+
+No game reached the final choice in 16 turns: the clock stood at 1/8, which is right for an evening of 2.5 hours. So
+the end-of-evening hint and «Chiudi la sessione» had never run on a real campaign. One short run checked them: profile A
+($0), fake voice, sceneggiatore off, port 4740, with the new harness options `--ore` and `--chiudi`:
+`CANTASTORIE_PORTA=4740 CANTASTORIE_LETTORE=locale CANTASTORIE_ARBITRO_PROVE=regole CANTASTORIE_ARBITRO_AZIONI=regole
+CANTASTORIE_RIASSUNTO=locale CANTASTORIE_REGOLE=locale npx tsx apps/server/src/esperimenti/esegui.ts torre-mozza/pressione B
+--campagna torre-mozza --uscita e2e-finale/torre-mozza-chiusura-A --turni 12 --pausa-s 40 --ore 0.5 --chiudi`.
+
+| What | Result |
+|---|---|
+| turns | 12/12 of the script (server turn 14), 0 releases out of context, clock `o_mezzanotte` 1/8 |
+| end-of-evening hint | never in the message, and that is correct. It was due from minute 10, but from minute 8 (server turn 10) the party was in `scena_torre`, which has `climax: true`. In minimal mode the reader does not read it anyway: the panel's warning is what counts there |
+| «Chiudi la sessione» | accepted at turn 15. The 2 live actions went back to the players, the projector summary appeared and `riassunto.yaml` was written, after 20 s |
+| closing lines | **0**: no campaign has a `chiusura` line, and the minimal reader writes no prose. The closing was silent |
+| summary | **fallback**: the local model timed out at 20 s, so the summary was «Siete passati da: …», with no threads. The same request to Qwen3 8B 4-bit took 101 s (2460 prompt tokens) and gave a good summary with three open threads |
+
+Both problems are fixed by «Guided closing: the Engine speaks when nobody writes a closing». With no closing line and no
+prose, the Engine says `regia.righe.chiusura_riserva`, and a summary from the local model gets 3 minutes. Still open: the
+Preparer should write `chiusura` lines (docs/da-fare.md).
+
+## 9. Reproduce
 
 Commands are in §4; the measures are recomputed with
 `python3 -I esperimenti/e2e-finale/misure.py esperimenti/risultati/e2e-finale/<run> <logs of that run>` and

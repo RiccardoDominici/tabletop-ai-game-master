@@ -35,6 +35,15 @@ export const MAX_FRASI = 5;
 export const MAX_FILI = 3;
 /** Attesa massima del modello per un riassunto, poi la riserva. */
 export const ATTESA_MODELLO_MS = 20_000;
+/**
+ * La stessa attesa con un modello locale. Nell'E2E finale (torre-mozza, profilo A) un 8B in 4 bit ha letto la
+ * trascrizione di una serata (2460 token) in 101 s: con 20 s la chiusura usava sempre la riserva, senza fili
+ * aperti. A fine serata due o tre minuti si aspettano: il tavolo ha già sentito la chiusura.
+ */
+export const ATTESA_MODELLO_LOCALE_MS = 180_000;
+
+/** Quanto aspettare il riassunto da questo modello prima della riserva. */
+export const attesaRiassunto = (narratore: Narratore): number => (narratore.nome === 'locale' ? ATTESA_MODELLO_LOCALE_MS : ATTESA_MODELLO_MS);
 
 /** Il prompt del riassunto nella lingua dei contenuti: prompts/<codice>/riassunto.md. */
 export const promptRiassunto = (): string => prompt('riassunto');
@@ -110,7 +119,7 @@ export async function scriviRiassunto(
   // Il messaggio fuori dal try: lì dentro `testo` è il testo del riassunto, non la funzione delle frasi fisse.
   const messaggio = testo('modelli.riassunto.messaggio', { materiale: r.materiale });
   const controllo = new AbortController();
-  const timer = setTimeout(() => controllo.abort(new Error('tempo scaduto')), r.attesaMs ?? ATTESA_MODELLO_MS);
+  const timer = setTimeout(() => controllo.abort(new Error('tempo scaduto')), r.attesaMs ?? attesaRiassunto(o.narratore));
   try {
     const esito = await o.narratore.narra(
       { turno: r.turno, sistema: [promptRiassunto()], messaggio, signal: controllo.signal },

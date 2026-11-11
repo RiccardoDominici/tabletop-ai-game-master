@@ -25,6 +25,9 @@ Living list of open items, with who is handling each one. The decisions taken ar
   **Done**: decisions go into the session snapshot and come back on resume; the scene change resets them (a4e360d).
 
 ## Later
+- **Closing lines from the Preparer** (follow-up of the final e2e, 11 November 2026, docs/e2e-finale.md §8): no campaign
+  has `tipo: chiusura` lines, so in minimal mode the guided closing is only the Engine's fixed line. The skill should
+  write one per scene (the moment, a closing image, a public hook), and the validator should flag when they are missing.
 - **Gaps in the Basic Fantasy set from the final e2e** (docs/e2e-finale.md §2 and §7, «dadi» (dice)): closed 11 November 2026 (HIDDEN/NASCOSTA marker in every language, death and natural d20 checks from the set, table-based modifiers, individual `ogni_round`, percentages and "x on 6", automatic weapons, the two validator checks). Still open: simultaneous initiative ties, natural d20s for attacks AND saving throws only (today `critici: attacchi | tutti`), surprise with 1d6, range, charge and attack from behind as modifiers of the set.
 - **Setup on non-Apple computers** (docs/profili.md, profile `altro` (other)). The guided setup run by Claude Code (`.claude/skills/setup`) says that local reader, local voice and local images are not yet supported outside Apple silicon. Without an Anthropic key the narrator is the scripted one (a trial, not a real game). To do: a local reader on Linux/Windows (llama.cpp or Ollama with the same protocol), a local voice (see below) and image generation (today only mflux, Apple). Until then, the setup tells the user to choose the Anthropic key or text-only play.
   **TODO (decided by the lead, setup):** a local LLM through Ollama or llama.cpp, on the same OpenAI-compatible API

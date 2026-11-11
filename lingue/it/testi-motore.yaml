@@ -22,6 +22,8 @@ regia:
     blocco: "Il narratore si era bloccato: si riparte."
     fine_sessione: "Fine della sessione."
     serata_chiusa: "La serata è chiusa: alla prossima."
+    # Chiusura guidata senza una battuta di chiusura né prosa del narratore (lettore minimo): la dice il Motore.
+    chiusura_riserva: "Per stasera la storia si ferma qui. Riprende da questo punto, la prossima volta."
     ripresa: "La sessione riprende da dove si era fermata."
     scena_fermata: "Scena fermata."
     narrazione_interrotta: "Il master ha interrotto la narrazione."

@@ -211,11 +211,20 @@ Exit code of the script: `0` done (or stopped where the agent is needed); `1` so
 | `CONTINUITÀ` | the next session does not contradict the state: a dead NPC does not come back, whoever knew something still knows it, the clocks restart from the right ticks, promises and threads are taken up or postponed, and a PC does not drop a level |
 | `ARCO` | the arc prepared beforehand: stages, pace, acts, endings, recurring NPCs, threads |
 
-## In progress
+## Closing an evening
 
-**Coming:** the end-of-evening summary and the guided close of the session (work in progress on the Engine). Until then, use "Fine sessione" as described above.
+At the end of an evening, press **Chiudi la sessione** (Close the session) in the panel, in the **Serata** (Evening) box (see [The Game Master panel](master-panel.md#session)).
 
-The requests of 9 November ([docs/richieste-2026-11-09.md](../richieste-2026-11-09.md), §9) ask for a guided close of the evening ("Chiudi la sessione" (Close the session)), a "La volta scorsa…" (Last time…) at the opening, a warning when the evening is about to end, and a Diary on the phone. The design is in [docs/strati.md](../strati.md), "Riassunto e chiusura della serata" (Summary and close of the evening): there, "Fine sessione" stays, immediately and without narration, for emergencies. The work is in progress and the button is not yet in the Game Master panel: **to be checked** when it arrives, because it will change how an evening is closed, as described on this page.
+- The narrator closes the moment.
+- The projector shows «Cosa è successo stasera» (What happened tonight).
+- The server writes the log and `riassunto.yaml`, with one entry per evening.
+
+The session stays open:
+
+- In a one-shot, **Riprendi** (Resume) or a server restart picks it up on the next evening, which starts with «La volta scorsa…» (Last time…).
+- In a multi-session campaign, **Prossima sessione** (Next session) closes it and moves on.
+
+**Fine sessione** (End session) stays for emergencies: it closes at once, with no narration. The design is in [docs/strati.md](../strati.md), section "Riassunto e chiusura della serata" (Summary and close of the evening).
 
 ## Problems?
 

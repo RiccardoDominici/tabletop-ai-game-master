@@ -116,14 +116,17 @@ one stays on the finished one, with the warning in the panel); the last one play
 ### Recap and closing of the evening (requests of 9 November, §9)
 - **Chiudi la sessione** (Close the session) (panel): guided closing. The queued actions go back to the players; the
   narrator closes the evening (three to five lines: the moment in progress, a closing image, a hook; no new mysteries;
-  in improvised mode B, or a `tipo: chiusura` line from the repertoire if there is one, spoken by the Engine). Then the
+  in improvised mode B, or a `tipo: chiusura` line from the repertoire if there is one, spoken by the Engine; if there is
+  none and the narrator writes no prose, as with the minimal reader, the Engine says the language pack's fixed line
+  `regia.righe.chiusura_riserva`). Then the
   projector shows «Cosa è successo stasera» (What happened tonight) (recap, open threads, the PCs' PF, i.e. hit points),
   and the server writes the log and, next to it, `riassunto.yaml` (one entry per evening: `etichetta`, `quando`,
   `testo`, `fili`). The archive's session stays OPEN: a one-shot resumes the next evening (Riprendi, or server
   restart); in a package-based campaign it is closed by «Prossima sessione». **Fine sessione** stays, immediately and
   without narration, for emergencies.
 - **The recap** (`apps/server/src/sessione/riassunto.ts`): written by Haiku (the same client as the narrator, a
-  different prompt) from the public transcript alone; never private actions, `[privato]` lines or facts with
+  different prompt) or by the local model, from the public transcript alone. The Engine waits 20 s, or 3 minutes for
+  the local model: in the final E2E an 8B model in 4 bits took 101 s, and with 20 s the fallback was always read. It never uses private actions, `[privato]` lines or facts with
   `noto_ai_pg: false`. Then a deterministic guard: a word from `parole_segrete.yaml` that is still secret and was never
   said at the table makes the text be discarded, and the fallback is read (places crossed and the last signs of the
   clocks, spoken aloud).
