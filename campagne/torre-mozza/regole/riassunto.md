@@ -5,8 +5,8 @@ Regole ricavate da Basic Fantasy RPG, quarta edizione (Chris Gonnerman, CC BY-SA
 ## Come si tira
 
 - Si tira **un d20** e si somma un bonus. Il risultato deve arrivare a un numero: **17** per le prove normali al primo livello, 13 se il master la dice facile, 19 o 21 se è difficile o ardua.
-- Le **caratteristiche** hanno un bonus da −3 a +3: è quello scritto sulla tua scheda.
-- Le **abilità del ladro** e le possibilità «su un dado da sei» del manuale (forzare una porta, trovare un passaggio segreto) sono già convertite in un bonus sul d20.
+- Le **caratteristiche** vanno da 3 a 18; il bonus da −3 a +3 viene dalla tabella del manuale (13–15 = +1, 16–17 = +2, 18 = +3).
+- Le **abilità del ladro** si tirano con un d100 sotto la percentuale della scheda; le possibilità «su un dado da sei» (forzare una porta, trovare un passaggio segreto) con un d6 sotto il numero della scheda (1 su 6 per chi non ha di più).
 - I **tiri salvezza** sono cinque: raggio della morte o veleno, bacchette, paralisi, soffio del drago, incantesimi. Si tirano contro 17 con il bonus della scheda.
 
 ## Combattere

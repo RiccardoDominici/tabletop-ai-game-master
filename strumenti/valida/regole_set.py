@@ -220,7 +220,23 @@ def _abilita(r: dict, car: set[str], e: Esito, dove: str) -> set[str]:
         ids.add(o["id"])
         if o.get("caratteristica") is not None and o["caratteristica"] not in car:
             _err(e, "abilita", dove, f"abilita.{o['id']}: caratteristica inesistente «{o['caratteristica']}»")
+        # Abilità tirata a parte sotto la soglia della scheda: percentuale (d100) o «x su 6» (d6).
+        if "soglia" in o:
+            so = _ogg(o["soglia"])
+            pred = so.get("predefinita") if so else None
+            if not so or so.get("dado") not in (6, 20, 100) or (pred is not None and not (_intero(pred) and 0 <= pred <= so["dado"])):
+                _err(e, "abilita", dove, f"abilita.{o['id']}.soglia: {{dado: 6 | 20 | 100, predefinita: da 0 al dado o vuota}}")
     return ids
+
+
+def soglie_abilita(r: dict) -> dict[str, int]:
+    """Le abilità tirate sotto soglia, con il dado (per controllare i valori delle schede)."""
+    out = {}
+    for x in r.get("abilita") or []:
+        o, so = _ogg(x), _ogg((_ogg(x) or {}).get("soglia"))
+        if o and so and so.get("dado") in (6, 20, 100) and isinstance(o.get("id"), str):
+            out[o["id"]] = so["dado"]
+    return out
 
 
 def _file_del_set(c: Campagna, e: Esito, dove_base: Path) -> None:
@@ -266,8 +282,10 @@ def _file_del_set(c: Campagna, e: Esito, dove_base: Path) -> None:
             e.avviso("REGOLE.estratto", dove, f"{len(corpo.splitlines())} righe: il massimo è {ESTRATTO_MAX_RIGHE}")
 
 
-def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tabella: list[tuple[int, int]] | None = None) -> None:
+def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tabella: list[tuple[int, int]] | None = None,
+            soglie: dict[str, int] | None = None) -> None:
     """Le schede di PG e PNG seguono il set: caratteristiche tutte e sole quelle del set, abilità, PF, attacchi."""
+    soglie = soglie or {}
     da_controllare = [(f"pg.yaml {p.get('id', '?')}", p) for p in c.personaggi if "scheda" in p]
     da_controllare += [(nome, d) for _, (nome, d) in c.png.items() if "scheda" in d]
     for p in c.personaggi:
@@ -297,6 +315,8 @@ def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tab
                 _err(e, "scheda", dove, f"abilita.{k}: non è un'abilità del set")
             elif not _intero(v):
                 _err(e, "scheda", dove, f"abilita.{k}: un numero intero")
+            elif k in soglie and not 0 <= v <= soglie[k]:
+                _err(e, "scheda", dove, f"abilita.{k} = {v}: è una soglia sul d{soglie[k]}, da 0 a {soglie[k]}")
         if not (_intero(s.get("pf")) and s["pf"] > 0):
             _err(e, "scheda", dove, "pf: un numero intero maggiore di zero")
         for campo in ("difesa", "armatura"):
@@ -308,6 +328,8 @@ def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tab
             o = _ogg(at) or {}
             if "distanza" in o and not isinstance(o["distanza"], bool):
                 _err(e, "scheda", dove, f"attacchi[{i}].distanza: true o false")
+            if "automatico" in o and not isinstance(o["automatico"], bool):
+                _err(e, "scheda", dove, f"attacchi[{i}].automatico: true o false (true = colpisce sempre, si tira il danno)")
             if not _testo(o.get("nome")):
                 _err(e, "scheda", dove, f"attacchi[{i}]: manca nome")
             if "caratteristica" in o and o["caratteristica"] not in car:
@@ -377,7 +399,7 @@ def controlla(c: Campagna, e: Esito) -> None:
     _schema_sociale_attacchi(r, car, abi, e, dove)
     mosse = _mosse(r, car, e, dove)
     regole_combattimento.controlla(r, car, e, dove)
-    _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r))
+    _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r))
     _prove_di_scena(c, e, car, abi, mosse, diff)
     _richiede_prova_set(c, e, car, abi, mosse)
     _file_del_set(c, e, c.cartella / "regole")

@@ -144,6 +144,21 @@ def test_modificatore_tabella_e_schede_coi_punteggi(tmp_path: Path) -> None:
     assert any(v.codice == "REGOLE.scheda" and "sotto la tabella" in v.messaggio for v in esito.errori)
 
 
+def test_abilita_sotto_soglia_e_attacco_automatico(tmp_path: Path) -> None:
+    """Percentuali e «x su 6» come soglia della scheda; l'arma che colpisce sempre."""
+    dest = copia(BX, tmp_path)
+    modifica(dest, "regole/regole.yaml", lambda d: d.setdefault("abilita", []).extend([
+        {"id": "scalare", "nome": "Scalare", "soglia": {"dado": 100}}, {"id": "porte", "nome": "Porte", "soglia": {"dado": 6, "predefinita": 1}}]))
+    modifica(dest, "pg.yaml", lambda d: d["personaggi"][0]["scheda"].update(abilita={"scalare": 80, "porte": 2})
+             or d["personaggi"][0]["scheda"]["attacchi"][0].update(automatico=True))
+    assert not any(r.startswith(("REGOLE.abilita", "REGOLE.scheda")) for r in regole_di(dest)), regole_di(dest)
+    modifica(dest, "pg.yaml", lambda d: d["personaggi"][0]["scheda"].update(abilita={"scalare": 80, "porte": 9})
+             or d["personaggi"][0]["scheda"]["attacchi"][0].update(automatico="sì"))
+    assert any("porte = 9" in r for r in regole_di(dest)) and any("automatico" in r for r in regole_di(dest)), regole_di(dest)
+    modifica(dest, "regole/regole.yaml", lambda d: d["abilita"].append({"id": "x", "nome": "X", "soglia": {"dado": 8}}))
+    assert any("abilita.x.soglia" in r for r in regole_di(dest)), regole_di(dest)
+
+
 def test_critici_validi_e_null(tmp_path: Path) -> None:
     dest = copia(BX, tmp_path)
     modifica(dest, "regole/regole.yaml", lambda d: d["risoluzione"].update(critico=None, disastro=None, critici="tutti")

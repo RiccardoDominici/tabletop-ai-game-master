@@ -70,6 +70,11 @@ caratteristiche:              # [V] almeno una; id snake_case senza accenti, uni
   - {id: fascino, nome: "Fascino"}
 abilita:                      # facoltative; caratteristica = id esistente [V]
   - {id: persuadere, nome: "Persuadere", caratteristica: potere}
+  - {id: scalare, nome: "Scalare pareti", caratteristica: null, soglia: {dado: 100}}               # facoltativa [V]:
+  - {id: porte, nome: "Porte segrete", caratteristica: null, soglia: {dado: 6, predefinita: 1}}   #   tirata a parte
+    # sotto la soglia della scheda, come nel manuale: d100 per le percentuali (scalare: 80 = 80%), d6 per «x su 6»
+    # (porte: 2 = 2 su 6), d20. `predefinita`: la soglia di chi non ha il valore («1 su 6» per tutti); senza, chi non
+    # lo ha tira come una prova qualunque del set. Il validatore controlla che il valore stia fra 0 e il dado.
 modificatore:
   tipo: srd | diretto | soglia | tabella # [V] srd = (p−10)/2; diretto = il valore è il bonus; soglia = solo con sotto_soglia [V];
                                          #   tabella = la scheda scrive il punteggio, il bonus viene dalla tabella del manuale
@@ -144,6 +149,7 @@ scheda:
   difesa: 13                                    # d20_cd: la CA del bersaglio; senza, CD della difficoltà predefinita
   armatura: 1                                   # con armatura_riduce: si toglie dal danno subito
   attacchi: [{nome: "Spada", danno: "1d8", caratteristica: vigore}]   # oppure abilita: combattere
+                                                # automatico: true = l'arma colpisce sempre (il dardo incantato), solo il danno
 ```
 
 Con l'SRD 5.2 le schede restano quelle di docs/prove.md §2 (punteggi, competenze, CA calcolata).

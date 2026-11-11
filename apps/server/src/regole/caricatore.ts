@@ -65,7 +65,16 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     if (!v) return [];
     const car = str(ogg(x)?.['caratteristica']);
     if (car && !idCar.has(car)) errori.push(`abilita.${v.id}: caratteristica inesistente «${car}»`);
-    return [{ ...v, caratteristica: car }];
+    // Un'abilità che il manuale tira a parte: percentuale (d100) o «x su 6» (d6), sotto la soglia della scheda.
+    const so = ogg(ogg(x)?.['soglia']);
+    if (ogg(x)?.['soglia'] === undefined) return [{ ...v, caratteristica: car }];
+    const dado = num(so?.['dado']);
+    const predefinita = so && Object.hasOwn(so, 'predefinita') ? num(so['predefinita']) : null;
+    if (!so || (dado !== 6 && dado !== 20 && dado !== 100)) {
+      errori.push(`abilita.${v.id}.soglia: {dado: 6 | 20 | 100, predefinita: …}`);
+      return [{ ...v, caratteristica: car }];
+    }
+    return [{ ...v, caratteristica: car, soglia: { dado: dado as 6 | 20 | 100, predefinita } }];
   });
   const modTipo = (ogg(d['modificatore'])?.['tipo'] ?? (tipo === 'sotto_soglia' ? 'soglia' : tipo === '2d6_fasce' ? 'diretto' : 'srd')) as SistemaRegole['modificatore'];
   if (!['srd', 'diretto', 'soglia', 'tabella'].includes(modTipo)) errori.push('modificatore.tipo: srd, diretto, soglia o tabella');

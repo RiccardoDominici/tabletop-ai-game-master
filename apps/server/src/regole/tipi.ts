@@ -75,7 +75,12 @@ export interface SistemaRegole {
     critici: 'attacchi' | 'tutti';
   };
   caratteristiche: Voce[];
-  abilita: Array<Voce & { caratteristica: string | null }>;
+  /**
+   * `soglia`: l'abilità si tira a parte, sotto una soglia (percentuali del ladro: d100; «x su 6»: d6), col
+   * valore della scheda come soglia (25 = 25%, 2 = 2 su 6). `predefinita`: la soglia di chi non ha il valore
+   * nella scheda («1 su 6» per tutti); null = chi non ce l'ha tira come una prova qualunque del set.
+   */
+  abilita: Array<Voce & { caratteristica: string | null; soglia?: { dado: 6 | 20 | 100; predefinita: number | null } | null }>;
   /** Come il valore di una caratteristica entra nel tiro. */
   /**
    * Come una caratteristica diventa il numero del tiro: `srd` (punteggio − 10) / 2; `diretto` (la scheda
@@ -139,6 +144,7 @@ export interface SchedaGenerica {
   difesa: number | null;
   /** Attacchi automatici: riduce il danno subito. */
   armatura: number;
-  attacchi: Array<{ id: string; nome: string; danno: FormulaDadi; caratteristica: string | null; abilita: string | null; tipo_danno: string | null; distanza: boolean }>;
+  /** `automatico`: quest'arma colpisce sempre, si tira solo il danno (il dardo incantato). */
+  attacchi: Array<{ id: string; nome: string; danno: FormulaDadi; caratteristica: string | null; abilita: string | null; tipo_danno: string | null; distanza: boolean; automatico?: boolean }>;
   avvisi: string[];
 }

@@ -11,7 +11,7 @@ import { caricaCampagna } from '../src/campagna/caricatore';
 import { loggerMuto } from '../src/logger';
 import { GestoreCombattimento } from '../src/prove/combattimento';
 import { DadiACopione } from '../src/prove/dadi';
-import { strumentiRegole } from '../src/prove/risolutore-regole';
+import { risolviTurnoRegole, strumentiRegole } from '../src/prove/risolutore-regole';
 import { StatoProve } from '../src/prove/stato';
 import { leggiSistema } from '../src/regole/caricatore';
 import { combattimentoSrd, leggiCombattimento } from '../src/regole/combattimento';
@@ -158,5 +158,60 @@ describe('iniziativa individuale ritirata a ogni round (ogni_round)', () => {
   it('senza ogni_round (SRD) l’ordine resta quello del primo round', () => {
     const regole = combattimentoSrd();
     expect(regole.iniziativa.ogniRound).toBe(false);
+  });
+});
+
+describe('abilità sotto soglia (percentuali, «x su 6») e attacchi che colpiscono sempre', () => {
+  const conSoglie = () =>
+    setBx((d) => {
+      const ab = (d['abilita'] as Array<Record<string, unknown>> | undefined) ?? [];
+      ab.push({ id: 'scalare', nome: 'Scalare pareti', caratteristica: null, soglia: { dado: 100 } });
+      ab.push({ id: 'porte', nome: 'Porte segrete', caratteristica: null, soglia: { dado: 6, predefinita: 1 } });
+      d['abilita'] = ab;
+    });
+
+  it('il caricatore legge la soglia; un dado che non c’è è un errore', () => {
+    const s = conSoglie();
+    expect(s.abilita.find((a) => a.id === 'scalare')?.soglia).toEqual({ dado: 100, predefinita: null });
+    expect(s.abilita.find((a) => a.id === 'porte')?.soglia).toEqual({ dado: 6, predefinita: 1 });
+    const errori: string[] = [];
+    const d = grezzo();
+    d['abilita'] = [{ id: 'x', nome: 'X', soglia: { dado: 8 } }];
+    leggiSistema(d, errori, []);
+    expect(errori.join(' ')).toMatch(/abilita\.x\.soglia/);
+  });
+
+  it('d100 sotto la percentuale della scheda, d6 sotto il numero; senza valore: la predefinita o la prova normale', () => {
+    const s = conSoglie();
+    const c = caricaCampagna(BX);
+    const prova = (sch: Record<string, number>, abilita: string, dadi: number[]) => {
+      const schede = caricaSchedeGeneriche(s, c);
+      const ida = schede.get('pg_ida')!;
+      schede.set('pg_ida', { ...ida, abilita: sch });
+      const o = { turno: 1, sistema: s, schede, stato: new StatoProve(schede), dadi: new DadiACopione(dadi), proveScena: [], nome: (id: string) => id, esiste: () => true, log: loggerMuto() };
+      return risolviTurnoRegole({ ...o, azioni: [{ id: 'a1', autore: 'pg_ida', testo: 'x', privata: false }], decisioni: new Map([['a1', { id: 'a1', tipo: 'prova', abilita, caratteristica: null, mossa: null, bersaglio: null, arma: null, prova_scena: null, difficolta: null, vantaggio: null, motivo: '', aiuta: null, reazione: null, reazione_png: null, reazione_quando: 'nessuna' } as never]]) }).tiri[0]!;
+    };
+    // 80%: d100 = decine 7, unità 3 → 74 ≤ 80, riesce; decine 8, unità 5 → 86, no.
+    expect(prova({ scalare: 80 }, 'scalare', [4, 8])).toMatchObject({ risoluzione: 'sotto_soglia', facce: 100, riuscita: true, contro: { tipo: 'soglia', valore: 80 } });
+    expect(prova({ scalare: 80 }, 'scalare', [6, 9])).toMatchObject({ riuscita: false });
+    // «2 su 6»: un 2 riesce, un 3 no; senza valore vale «1 su 6».
+    expect(prova({ porte: 2 }, 'porte', [2])).toMatchObject({ facce: 6, riuscita: true });
+    expect(prova({ porte: 2 }, 'porte', [3])).toMatchObject({ riuscita: false });
+    expect(prova({}, 'porte', [1])).toMatchObject({ facce: 6, riuscita: true, contro: { valore: 1 } });
+    // Una percentuale che la scheda non ha (chi non è ladro): la prova normale del set, d20 contro la CD.
+    expect(prova({}, 'scalare', [15])).toMatchObject({ risoluzione: 'd20_cd', facce: 20 });
+  });
+
+  it('un’arma «automatico» colpisce sempre: niente tiro per colpire, solo il danno', () => {
+    const s = setBx();
+    const c = caricaCampagna(BX);
+    const schede = caricaSchedeGeneriche(s, c);
+    const corrado = schede.get('pg_corrado')!;
+    schede.set('pg_corrado', { ...corrado, attacchi: [{ ...corrado.attacchi[0]!, id: 'dardo', nome: 'Dardo incantato', automatico: true }] });
+    const o = { turno: 1, sistema: s, schede, stato: new StatoProve(schede), dadi: new DadiACopione([4]), proveScena: [], nome: (id: string) => id, esiste: () => true, log: loggerMuto() };
+    const r = strumentiRegole(o).attacca('pg_corrado', 'png_ruggero', 'dardo', [], false)!;
+    expect(r.t).toMatchObject({ riuscita: true, contro: { descrizione: 'colpisce sempre' } });
+    expect(r.t.danno?.totale).toBeGreaterThan(0);
+    expect(r.testo).toMatch(/COLPISCE/);
   });
 });

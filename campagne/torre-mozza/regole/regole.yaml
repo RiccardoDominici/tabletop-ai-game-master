@@ -8,10 +8,8 @@
 # - Modificatore «tabella»: il manuale non usa (punteggio − 10) / 2 ma una tabella (3: −3; 4–5: −2; 6–8: −1;
 #   9–12: 0; 13–15: +1; 16–17: +2; 18: +3, p. 4). Le schede scrivono il punteggio da 3 a 18, il Motore ne ricava
 #   il bonus.
-# - Percentuali (abilità del ladro, p. 9) e possibilità «x su 1d6» (porte, trappole, porte segrete, p. 43–44):
-#   lo schema ha un solo tipo di risoluzione, quindi diventano bonus sul d20 contro 17. La conversione è
-#   esatta a passi del 5%: riuscire con il p% = d20 + (p/5 − 4) ≥ 17. Esempi: 25% = +1, 80% = +12, 10% = −2.
-#   «1 su 6» (16,7%) diventa +0 (20%); «2 su 6» +3 (35%); «3 su 6» +6 (50%).
+# - Percentuali (abilità del ladro, p. 9) e possibilità «x su 1d6» (porte, porte segrete, pietra, p. 43–44): si
+#   tirano a parte (`soglia` dell'abilità), d100 o d6 sotto il valore della scheda, come nel manuale.
 # - Tiri salvezza (p. 60–61): d20 ≥ numero della tabella. Con la difficoltà normale (17) il bonus è 17 − numero,
 #   più il bonus di razza (nani e halfling +4, elfi +1/+2): è esatto. Il 20 naturale che colpisce sempre e l'1 che
 #   manca sempre valgono negli attacchi (`critico`, `disastro`, p. 53), senza raddoppiare il danno; nei tiri
@@ -69,8 +67,8 @@ abilita:
   # Attacco furtivo del ladro (p. 9): +4 al tiro e danno doppio. Il +4 è nel bonus della scheda, il danno doppio
   # nella formula dell'arma (due dadi invece di uno: stessa media, distribuzione un po' diversa).
   - {id: alle_spalle, nome: "Attacco furtivo", caratteristica: forza}
-  # Dardo incantato colpisce sempre (incantesimo del mago di primo livello): un bonus così alto che nessuna
-  # Classe d'Armatura della campagna lo ferma. Una volta al giorno: il Motore non lo conta, lo dice la scheda.
+  # Dardo incantato (incantesimo del mago di primo livello): colpisce sempre, l'arma della scheda è «automatico».
+  # Una volta al giorno: il Motore non lo conta, lo dice la scheda.
   - {id: dardo_incantato, nome: "Dardo incantato", caratteristica: null}
   # I cinque tiri salvezza (p. 60–61): bonus = 17 − numero della tabella della classe, più la razza.
   - {id: ts_morte, nome: "Tiro salvezza contro raggio della morte o veleno", caratteristica: null}
@@ -81,18 +79,20 @@ abilita:
   - {id: ts_paralisi, nome: "Tiro salvezza contro paralisi o pietrificazione", caratteristica: null}
   - {id: ts_soffio, nome: "Tiro salvezza contro soffio del drago", caratteristica: null}
   - {id: ts_incantesimi, nome: "Tiro salvezza contro incantesimi", caratteristica: null}
-  # Abilità del ladro (p. 9), in percentuale nel manuale: bonus = percentuale / 5 − 4.
-  - {id: scassinare, nome: "Scassinare serrature", caratteristica: null}
-  - {id: trappole, nome: "Trovare e togliere trappole", caratteristica: null}
-  - {id: borseggiare, nome: "Borseggiare", caratteristica: null}
-  - {id: muoversi_in_silenzio, nome: "Muoversi in silenzio", caratteristica: null}
-  - {id: scalare, nome: "Scalare pareti", caratteristica: null}
-  - {id: nascondersi, nome: "Nascondersi", caratteristica: null}
-  - {id: ascoltare, nome: "Ascoltare", caratteristica: null}
-  # Possibilità «su 1d6» di tutti (p. 43–44). Senza valore nella scheda vale +0, cioè «1 su 6».
-  - {id: cercare, nome: "Cercare porte segrete e trappole", caratteristica: null}
-  - {id: forzare, nome: "Forzare una porta bloccata", caratteristica: null}
-  - {id: pietra, nome: "Occhio per la pietra (nani)", caratteristica: null}
+  # Abilità del ladro (p. 9), in percentuale come nel manuale: d100 sotto il valore della scheda. Chi non ce l'ha
+  # nella scheda tira come una prova qualunque (d20 contro la difficoltà).
+  - {id: scassinare, nome: "Scassinare serrature", caratteristica: null, soglia: {dado: 100}}
+  - {id: trappole, nome: "Trovare e togliere trappole", caratteristica: null, soglia: {dado: 100}}
+  - {id: borseggiare, nome: "Borseggiare", caratteristica: null, soglia: {dado: 100}}
+  - {id: muoversi_in_silenzio, nome: "Muoversi in silenzio", caratteristica: null, soglia: {dado: 100}}
+  - {id: scalare, nome: "Scalare pareti", caratteristica: null, soglia: {dado: 100}}
+  - {id: nascondersi, nome: "Nascondersi", caratteristica: null, soglia: {dado: 100}}
+  - {id: ascoltare, nome: "Ascoltare", caratteristica: null, soglia: {dado: 100}}
+  # Possibilità «x su 6» (p. 43–44): d6 sotto il valore della scheda. Porte segrete e porte bloccate valgono
+  # «1 su 6» per chi non ha di più; l'occhio per la pietra è solo dei nani.
+  - {id: cercare, nome: "Cercare porte segrete e trappole", caratteristica: null, soglia: {dado: 6, predefinita: 1}}
+  - {id: forzare, nome: "Forzare una porta bloccata", caratteristica: null, soglia: {dado: 6, predefinita: 1}}
+  - {id: pietra, nome: "Occhio per la pietra (nani)", caratteristica: null, soglia: {dado: 6}}
 
 # Difficoltà: il «Target» delle prove di caratteristica al primo livello è 17 (p. 189); il master può dare un
 # bonus o una penalità. Facile = +4, difficile = −2, ardua = −4 (gli aggiustamenti che il manuale usa più spesso:

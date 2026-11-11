@@ -64,10 +64,10 @@ It is a careful and honest translation: every approximation is commented in the 
 | Basic Fantasy | What the set had to do | Where the gap is |
 |---|---|---|
 | ability bonus by table | `diretto`: the phone shows «Forza 1», not «Forza 13 (+1)» | fixed: `modificatore: {tipo: tabella, tabella: [{da, mod}]}`, the sheets write the score (torre-mozza converted) |
-| percentile thief skills, x-in-6 chances | converted to d20 bonuses with the same odds | schema: one `risoluzione.tipo` per set |
+| percentile thief skills, x-in-6 chances | converted to d20 bonuses with the same odds | fixed: `abilita[].soglia: {dado: 100 | 6 | 20, predefinita}`, the sheet writes the percentage or the x (torre-mozza converted) |
 | initiative re-rolled every round, ties simultaneous | ✓ `ogni_round` is ignored for individual initiative (only side initiative re-rolls, `prove/combattimento.ts:231`); ties broken by a fixed order | fixed: individual initiative re-rolls each round with `ogni_round` («Round 2, iniziativa ritirata: …»); ties still in a fixed order |
 | save vs. death once, 2d10 rounds to bind wounds | 1 success / 1 failure; ✓ the Engine adds the SRD rules «natural 20 = up with 1 HP, natural 1 = two failures» to every set (`prove/combattimento.ts:338`), seen in play («venti naturale: torna in sé con 1 punto ferita») | fixed: `tiri_morte.venti_rialza`, `uno_doppio` (SRD default), off in torre-mozza |
-| magic missile always hits | a +20 skill bonus; with the Haiku arbiter one cast became «nessun tiro» and did no damage (indagine-B T13) | schema: no per-attack `automatico` |
+| magic missile always hits | a +20 skill bonus; with the Haiku arbiter one cast became «nessun tiro» and did no damage (indagine-B T13) | fixed: `attacchi[].automatico: true` on the sheet's weapon |
 | natural 20 hits / natural 1 misses, minimum 1 damage | not applied (d20_cd has no criticals; damage floors at 0) | fixed: `risoluzione.critico`, `disastro`, `critici`; `attacchi.danno_critico`, `danno_minimo` (set in torre-mozza) |
 | morale at first contact and at half strength | checked at the first NPC down and at half; ✓ at the start of a fight its result is thrown away (bug C3) | Engine |
 | surprise 1d6 per side, range and rear modifiers, charge | only «the opening attack counts as surprise»; the rest is text | Engine (open in docs/combattimento.md §6) |

@@ -70,8 +70,10 @@ scrivono (Eliandro). Ogni strada ha anche un indizio che non dipende da quel PG.
 
 Il set sta in `regole/` ed è ricavato dal manuale (CC BY-SA 4.0, quindi sta nel repository con la stessa licenza):
 d20 contro un numero (17 per le prove al primo livello, la Classe d'Armatura per gli attacchi), caratteristiche con
-il bonus della tabella del manuale, tiri salvezza e abilità del ladro convertiti in bonus sul d20, iniziativa 1d6
-più Destrezza, morale, e la regola facoltativa del tiro salvezza contro la morte per i PG. Ogni scelta e ogni
+il punteggio e il bonus della tabella del manuale, tiri salvezza convertiti in bonus sul d20, abilità del ladro in
+percentuale e possibilità «x su 6» tirate come nel manuale, il dardo incantato che colpisce sempre, 20 naturale che
+colpisce e 1 che manca, iniziativa 1d6 più Destrezza a ogni round, morale, e la regola facoltativa del tiro salvezza
+contro la morte per i PG. Ogni scelta e ogni
 approssimazione è commentata in `regole/regole.yaml`; il riassunto per i giocatori è `regole/riassunto.md`.
 
 ## Chi vede che cosa

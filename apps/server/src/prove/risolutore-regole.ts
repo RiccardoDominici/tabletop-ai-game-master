@@ -166,9 +166,10 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         const condSv = conEffetto(o.condizioni, a.autore, 'svantaggio_prove');
         if (condSv) fonti.push({ v: 'svantaggio', motivo: condSv.toLowerCase() });
         const v = combinaVantaggi(fonti.map((f) => f.v));
-        const e = tiraCol(s, o.dadi, cosa.valore, ps?.difficolta ?? d.difficolta, v, cosa.etichetta);
+        const sistTiro = cosa.soglia ? sistemaSoglia(s, cosa.soglia) : s;
+        const e = tiraCol(sistTiro, o.dadi, cosa.valore, cosa.soglia ? null : (ps?.difficolta ?? d.difficolta), v, cosa.etichetta);
         const b = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
-        aggiungi(cartaDa(e, a.autore, 'prova', cosa.etichetta, b, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, a.privata));
+        aggiungi(cartaDa(e, a.autore, 'prova', cosa.etichetta, b, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, a.privata, sistTiro));
         esito.riuscita = e.riuscita;
         // Prove riuscite per il cancello `richiede.prova`: anche gli id del set (mossa, abilità, caratteristica).
         (e.riuscita ? esito.riuscite : esito.fallite).push(...new Set(['prova', ...[d.abilita, d.caratteristica, d.mossa, ps?.id, ps?.mossa, ps?.abilita, ps?.caratteristica, cosa.mossa?.id, cosa.mossa?.caratteristica].filter((x): x is string => !!x)]));
@@ -205,13 +206,28 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
  * Gli strumenti di un turno col set: che cosa si tira, le carte, il danno, gli attacchi. Esportati
  * anche per il combattimento (i turni dei PNG li tira il Motore con gli stessi attacchi).
  */
+/**
+ * Il set visto da un'abilità tirata a parte sotto soglia (`abilita[].soglia`): un d100 per le percentuali del
+ * ladro, un d6 per le possibilità «x su 6», contro il valore della scheda, senza difficoltà né vantaggi del set.
+ */
+export function sistemaSoglia(s: SistemaRegole, dado: 6 | 20 | 100): SistemaRegole {
+  return {
+    ...s,
+    risoluzione: { tipo: 'sotto_soglia', facce: dado, numero: 1, fasce: [], gradi: [], critico: null, disastro: null, critici: 'attacchi' },
+    modificatore: 'soglia',
+    difficolta: [{ id: '_soglia', nome: testo('regole.predefiniti.normale'), valore: null, divisore: 1, modificatore: null }],
+    difficoltaPredefinita: '_soglia',
+    vantaggio: { tipo: 'nessuno', valore: 0 },
+  };
+}
+
 export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'decisioni'>) {
   const s = o.sistema;
   const nomeCar = (id: string): string => s.caratteristiche.find((c) => c.id === id)?.nome ?? id;
   const nomeAbil = (id: string): string => s.abilita.find((x) => x.id === id)?.nome ?? id;
 
   /** Il numero da tirare (modificatore o soglia) e come si chiama, da mossa, abilità o caratteristica. */
-  function cheCosa(sch: SchedaGenerica, d: { caratteristica: string | null; abilita: string | null; mossa: string | null }, sociale: boolean): { valore: number; etichetta: string; mossa: SistemaRegole['mosse'][number] | null } | null {
+  function cheCosa(sch: SchedaGenerica, d: { caratteristica: string | null; abilita: string | null; mossa: string | null }, sociale: boolean): { valore: number; etichetta: string; mossa: SistemaRegole['mosse'][number] | null; soglia?: 6 | 20 | 100 } | null {
     const mossa = d.mossa ? (s.mosse.find((m) => m.id === d.mossa) ?? null) : null;
     if (mossa) return { valore: valoreCaratteristica(s, sch, mossa.caratteristica), etichetta: `${nomeCar(mossa.caratteristica)}, ${mossa.nome}`, mossa };
     let abil = d.abilita && s.abilita.some((x) => x.id === d.abilita) ? d.abilita : null;
@@ -222,6 +238,10 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     }
     if (abil) {
       const carAbil = s.abilita.find((x) => x.id === abil)?.caratteristica ?? null;
+      // Abilità tirata a parte sotto la soglia della scheda (percentuale, «x su 6»), se la scheda o il set la dà.
+      const so = s.abilita.find((x) => x.id === abil)?.soglia ?? null;
+      const valoreSoglia = so ? (sch.abilita[abil] ?? so.predefinita) : null;
+      if (so && valoreSoglia !== null) return { valore: valoreSoglia, etichetta: nomeAbil(abil), mossa: null, soglia: so.dado };
       if (s.modificatore === 'soglia') {
         const v = sch.abilita[abil] ?? (carAbil ? sch.caratteristiche[carAbil] : undefined) ?? 0;
         return { valore: v, etichetta: nomeAbil(abil), mossa: null };
@@ -234,7 +254,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
   }
 
   const carta = (base: Omit<TiroMostrato, 'id' | 'turno'>): TiroMostrato => ({ id: o.stato.nuovoIdTiro(), turno: o.turno, ...base });
-  const cartaDa = (e: EsitoTiroGenerico, chi: string, tipo: TiroMostrato['tipo'], etichetta: string, bersaglio: string | null, motivo: string | null, privata: boolean): TiroMostrato =>
+  const cartaDa = (e: EsitoTiroGenerico, chi: string, tipo: TiroMostrato['tipo'], etichetta: string, bersaglio: string | null, motivo: string | null, privata: boolean, sist: SistemaRegole = s): TiroMostrato =>
     carta({
       chi,
       nome: o.nome(chi),
@@ -256,7 +276,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
       a_terra: false,
       privata,
       avversario: null,
-      risoluzione: s.risoluzione.tipo,
+      risoluzione: sist.risoluzione.tipo,
       facce: e.facce,
       grado: e.grado,
       regola: e.regola,
@@ -284,7 +304,8 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const sb = o.schede.get(bersaglio);
     if (!sa || !sb) return null;
     const a = arma(sa, idArma);
-    if (s.attacchi.tipo === 'automatico') {
+    // Automatico per il set, o per quest'arma (il dardo incantato colpisce sempre).
+    if (s.attacchi.tipo === 'automatico' || a.automatico) {
       const regola = testo('prove.regola.automatico', { arma: a.nome, dadi: `${a.danno.numero}d${a.danno.facce}`, armatura: s.attacchi.armaturaRiduce ? testo('prove.regola.meno_armatura') : '' });
       const e: EsitoTiroGenerico = { dadi: [], facce: a.danno.facce || 6, dado: 0, modificatore: 0, totale: 0, contro: { tipo: 'soglia', valore: 0, descrizione: testo('prove.cd.colpisce_sempre') }, riuscita: true, grado: { id: 'successo', nome: testo('prove.regola.colpisce') }, vantaggio: null, regola };
       const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, null, privata);

@@ -56,9 +56,6 @@ per chi vuole smanettare. Servono:
 ## Dopo
 - **Lacune del set Basic Fantasy dalla e2e finale** (docs/e2e-finale.md §2 e §7, «dadi»; i bug di coerenza C1, C3, D1, A1,
   D2 sono chiusi, 11 novembre 2026):
-  - percentuali e «x su 6» per abilità: oggi convertite in bonus d20 con le stesse probabilità (un solo
-    `risoluzione.tipo` per set);
-  - attacco che colpisce sempre (dardo incantato): oggi un bonus +20; serve un `automatico` per attacco;
   - validatore: rifiutare `parole_chiave` generiche (l'arbitro a regole le ignora già, `parole.generiche`) e
     segnalare una battuta che dà ciò che una prova chiude per un'altra strada di `oppure` (D2).
 - **Setup su computer non Apple** (docs/profili.md, profilo `altro`). Il setup guidato da Claude Code (`.claude/skills/setup`)
