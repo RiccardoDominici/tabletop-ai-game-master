@@ -5,28 +5,28 @@
       "file": "luogo_scena_sasso.jpg",
       "tipo": "luogo",
       "alias_di": "luogo_scena_sasso",
-      "quando": "2026-11-09 20:15:54"
+      "quando": "2026-11-10 16:48:26"
     },
     {
       "id": "luogo_n_casa_bonfanti",
       "file": "luogo_scena_casa_bonfanti.jpg",
       "tipo": "luogo",
       "alias_di": "luogo_scena_casa_bonfanti",
-      "quando": "2026-11-09 20:15:54"
+      "quando": "2026-11-10 16:48:26"
     },
     {
       "id": "luogo_n_casera",
       "file": "luogo_scena_casera.jpg",
       "tipo": "luogo",
       "alias_di": "luogo_scena_casera",
-      "quando": "2026-11-09 20:15:54"
+      "quando": "2026-11-10 16:48:26"
     },
     {
       "id": "luogo_n_sasso",
       "file": "luogo_scena_sasso.jpg",
       "tipo": "luogo",
       "alias_di": "luogo_scena_sasso",
-      "quando": "2026-11-09 20:15:54"
+      "quando": "2026-11-10 16:48:26"
     },
     {
       "id": "luogo_scena_casa_bonfanti",
@@ -48,39 +48,55 @@
       "rifilato_pct": 5.0,
       "firma": "v1:f1636d83b540c9ee6a88c0a7",
       "qualita": {
-        "esito": "ok",
+        "esito": "difettosa",
         "versione": 2,
-        "motivi": [],
+        "motivi": [
+          "soggetto: Manca la botola aperta con la scala che scende alla stalla con le mucche: la scala a pioli è appoggiata alla parete e non porta a nessuna stalla visibile. (centro-sinistra dell'immagine)"
+        ],
         "problemi": [
           {
             "tipo": "soggetto",
-            "dove": "centro-sinistra, accanto alla scala",
-            "descrizione": "Manca la botola aperta nel pavimento e la stalla con le mucche sotto: c'è solo una scala appoggiata alla parete, senza alcun accesso visibile a un piano inferiore.",
+            "dove": "centro-sinistra dell'immagine",
+            "descrizione": "Manca la botola aperta con la scala che scende alla stalla con le mucche: la scala a pioli è appoggiata alla parete e non porta a nessuna stalla visibile.",
+            "grave": true
+          },
+          {
+            "tipo": "incongruenza",
+            "dove": "base della scala, pavimento al centro-basso",
+            "descrizione": "Alcuni puntini bianchi simili a fiocchi di neve appaiono sul pavimento interno vicino alla scala.",
             "grave": false
           }
         ],
         "visione": {
-          "esito": "ok",
-          "motivi": [],
+          "esito": "difettosa",
+          "motivi": [
+            "soggetto: Manca la botola aperta con la scala che scende alla stalla con le mucche: la scala a pioli è appoggiata alla parete e non porta a nessuna stalla visibile. (centro-sinistra dell'immagine)"
+          ],
           "problemi": [
             {
               "tipo": "soggetto",
-              "dove": "centro-sinistra, accanto alla scala",
-              "descrizione": "Manca la botola aperta nel pavimento e la stalla con le mucche sotto: c'è solo una scala appoggiata alla parete, senza alcun accesso visibile a un piano inferiore.",
+              "dove": "centro-sinistra dell'immagine",
+              "descrizione": "Manca la botola aperta con la scala che scende alla stalla con le mucche: la scala a pioli è appoggiata alla parete e non porta a nessuna stalla visibile.",
+              "grave": true
+            },
+            {
+              "tipo": "incongruenza",
+              "dove": "base della scala, pavimento al centro-basso",
+              "descrizione": "Alcuni puntini bianchi simili a fiocchi di neve appaiono sul pavimento interno vicino alla scala.",
               "grave": false
             }
           ],
-          "descrizione": "Interno di una cucina alpina in pietra con camino acceso, scala di legno che sale e una scrivania con un libro aperto sotto una finestra innevata che mostra montagne e un chalet coperto di neve.",
-          "costo_usd": 0.000855,
+          "descrizione": "Interno di una cucina alpina in pietra con camino acceso, scala di legno ripida che sale, una scala a pioli appoggiata alla parete, una scrivania con un libro aperto sotto una finestra che dà su un paesaggio innevato.",
+          "costo_usd": 0.000898,
           "token": {
             "ingresso": 4008,
-            "uscita": 908
+            "uscita": 994
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000855,
-        "tentativi": 2,
-        "costo_totale_usd": 0.000855
+        "costo_usd": 0.000898,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000898
       },
       "quando": "2026-11-03 14:45:46"
     },
@@ -112,8 +128,8 @@
         "problemi": [
           {
             "tipo": "soggetto",
-            "dove": "centro-sinistra, lungo la parete di fondo",
-            "descrizione": "Il prompt chiede un tavolo alto in fondo alla sala con una piccola cassetta di noce aperta; nell'immagine la cassetta è sul tavolo di sinistra e non c'è un tavolo alto in fondo.",
+            "dove": "tavolo di sinistra, al centro dell'immagine",
+            "descrizione": "La piccola scatola di noce aperta si trova su una tavola laterale e non su un tavolo alto in fondo alla sala come richiesto.",
             "grave": false
           }
         ],
@@ -123,22 +139,22 @@
           "problemi": [
             {
               "tipo": "soggetto",
-              "dove": "centro-sinistra, lungo la parete di fondo",
-              "descrizione": "Il prompt chiede un tavolo alto in fondo alla sala con una piccola cassetta di noce aperta; nell'immagine la cassetta è sul tavolo di sinistra e non c'è un tavolo alto in fondo.",
+              "dove": "tavolo di sinistra, al centro dell'immagine",
+              "descrizione": "La piccola scatola di noce aperta si trova su una tavola laterale e non su un tavolo alto in fondo alla sala come richiesto.",
               "grave": false
             }
           ],
-          "descrizione": "Un caseificio in pietra con scaffali di forme di formaggio, un camino acceso, due lunghe tavole apparecchiate con tovaglie bianche, una fila di forme sul pavimento e finestre con neve e montagne. In primo piano c'è un grande paiolo di rame.",
-          "costo_usd": 0.000839,
+          "descrizione": "Una sala in pietra per la lavorazione del latte in un villaggio di montagna, con scaffali di forme di formaggio, un camino acceso, due lunghe tavole apparecchiate, una fila di forme sul pavimento, ghirlande di pino e finestre con neve.",
+          "costo_usd": 0.000748,
           "token": {
             "ingresso": 4040,
-            "uscita": 871
+            "uscita": 688
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000839,
+        "costo_usd": 0.000748,
         "tentativi": 1,
-        "costo_totale_usd": 0.000839
+        "costo_totale_usd": 0.000748
       }
     },
     {
@@ -161,7 +177,7 @@
       "rifilato_pct": 5.0,
       "firma": "v1:74c0b992ed64832232abf588",
       "qualita": {
-        "esito": "da_controllare",
+        "esito": "difettosa",
         "versione": 2,
         "motivi": [
           "margine: orlo di carta visibile: 89% della fascia esterna è carta (bordo giu)"
@@ -175,8 +191,8 @@
           },
           {
             "tipo": "soggetto",
-            "dove": "parete della baita, lato sinistro della porta",
-            "descrizione": "Manca la seconda lanterna accesa prevista dal prompt: ne compare solo una, a destra della porta.",
+            "dove": "lato destro, parete della baita",
+            "descrizione": "Il prompt chiede due lanterne accese ai lati, ma se ne vede una sola.",
             "grave": false
           }
         ],
@@ -186,22 +202,22 @@
           "problemi": [
             {
               "tipo": "soggetto",
-              "dove": "parete della baita, lato sinistro della porta",
-              "descrizione": "Manca la seconda lanterna accesa prevista dal prompt: ne compare solo una, a destra della porta.",
+              "dove": "lato destro, parete della baita",
+              "descrizione": "Il prompt chiede due lanterne accese ai lati, ma se ne vede una sola.",
               "grave": false
             }
           ],
-          "descrizione": "Una pietra grande coperta di neve sotto alberi innevati, con una piccola baita di legno illuminata da una lanterna sulla destra, un sole rosso dietro le montagne al tramonto e molte impronte nella neve.",
-          "costo_usd": 0.000821,
+          "descrizione": "Una baita di legno con porta illuminata e una lanterna accanto, sotto un albero innevato, con un grande masso coperto di neve in primo piano e il sole rosso dietro le montagne al tramonto. Sulla neve ci sono molte impronte.",
+          "costo_usd": 0.00078,
           "token": {
             "ingresso": 4019,
-            "uscita": 838
+            "uscita": 757
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000821,
-        "tentativi": 3,
-        "costo_totale_usd": 0.001682
+        "costo_usd": 0.00078,
+        "tentativi": 1,
+        "costo_totale_usd": 0.00078
       },
       "quando": "2026-11-03 14:53:32"
     },
@@ -235,17 +251,17 @@
           "esito": "ok",
           "motivi": [],
           "problemi": [],
-          "descrizione": "Ritratto di un'anziana donna con capelli bianchi raccolti a crocchia, scialle nero con frange, grembiule bianco e mazzo di chiavi alla cintura, davanti a un arco di pietra con un fuoco acceso e una tavola con due ciotole.",
-          "costo_usd": 0.000634,
+          "descrizione": "Ritratto acquerellato di un'anziana donna con crocchia di capelli bianchi, scialle nero frangiato, grembiule bianco e un mazzo di chiavi di ferro alla cintura, davanti a un arco di pietra con un focolare acceso e qualche traccia di neve.",
+          "costo_usd": 0.000588,
           "token": {
             "ingresso": 3294,
-            "uscita": 609
+            "uscita": 518
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000634,
+        "costo_usd": 0.000588,
         "tentativi": 1,
-        "costo_totale_usd": 0.000634
+        "costo_totale_usd": 0.000588
       }
     },
     {
@@ -278,17 +294,17 @@
           "esito": "ok",
           "motivi": [],
           "problemi": [],
-          "descrizione": "Ritratto acquarellato di un anziano conducente di muli con lunga barba bianca, cappello di feltro con piuma, giubbotto verde e bastone, davanti a un villaggio innevato con muli e una baita illuminata.",
-          "costo_usd": 0.000752,
+          "descrizione": "Ritratto a figura intera di un anziano conduttore di muli con barba bianca lunga, cappello di feltro con piuma, giaccone verde e bastone di legno, davanti a un villaggio innevato con muli e una casa illuminata.",
+          "costo_usd": 0.000691,
           "token": {
             "ingresso": 3291,
-            "uscita": 846
+            "uscita": 724
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000752,
+        "costo_usd": 0.000691,
         "tentativi": 1,
-        "costo_totale_usd": 0.000752
+        "costo_totale_usd": 0.000691
       }
     },
     {
@@ -321,17 +337,17 @@
           "esito": "ok",
           "motivi": [],
           "problemi": [],
-          "descrizione": "Ritratto acquerellato di un uomo anziano calvo con occhiali tondi, panciotto di velluto verde e matita dietro l'orecchio, che tiene un piccolo libro di cuoio davanti a una cucina di montagna con camino acceso e finestra su paesaggio innevato.",
-          "costo_usd": 0.000646,
+          "descrizione": "Ritratto di un uomo anziano calvo con occhiali tondi, panciotto di velluto verde e matita dietro l'orecchio, che tiene un piccolo libro di conti di cuoio davanti a una cucina alpina calda con finestra su montagne innevate.",
+          "costo_usd": 0.000725,
           "token": {
             "ingresso": 3271,
-            "uscita": 638
+            "uscita": 796
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000646,
+        "costo_usd": 0.000725,
         "tentativi": 1,
-        "costo_totale_usd": 0.000646
+        "costo_totale_usd": 0.000725
       }
     },
     {
@@ -361,8 +377,8 @@
         "problemi": [
           {
             "tipo": "incongruenza",
-            "dove": "sedia a destra, bordo del camino e pavimento in basso a sinistra",
-            "descrizione": "Macchie di neve compaiono all'interno della stanza, sul cuscino della sedia e sul bordo del camino, dove non dovrebbero essere.",
+            "dove": "sedia a destra, pavimento vicino alla finestra e mensola del camino",
+            "descrizione": "Macchie bianche simili a neve appaiono dentro la stanza sulla seduta della sedia, sul pavimento e sul bordo del camino, come se nevicasse all'interno.",
             "grave": false
           }
         ],
@@ -372,22 +388,22 @@
           "problemi": [
             {
               "tipo": "incongruenza",
-              "dove": "sedia a destra, bordo del camino e pavimento in basso a sinistra",
-              "descrizione": "Macchie di neve compaiono all'interno della stanza, sul cuscino della sedia e sul bordo del camino, dove non dovrebbero essere.",
+              "dove": "sedia a destra, pavimento vicino alla finestra e mensola del camino",
+              "descrizione": "Macchie bianche simili a neve appaiono dentro la stanza sulla seduta della sedia, sul pavimento e sul bordo del camino, come se nevicasse all'interno.",
               "grave": false
             }
           ],
-          "descrizione": "Una ragazza sorridente con lentiggini e due trecce rosse indossa un vestito verde e bianco davanti a un camino acceso, con una finestra su una montagna innevata e un velo bianco su una sedia.",
-          "costo_usd": 0.000743,
+          "descrizione": "Ritratto di una ragazza lentigginosa con due trecce rosse, abito verde con grembiule bianco e cintura di cuoio, davanti a un camino acceso; sullo sfondo una finestra con montagne innevate e un velo bianco appeso a una sedia.",
+          "costo_usd": 0.000815,
           "token": {
             "ingresso": 3193,
-            "uscita": 847
+            "uscita": 991
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000743,
+        "costo_usd": 0.000815,
         "tentativi": 1,
-        "costo_totale_usd": 0.000743
+        "costo_totale_usd": 0.000815
       }
     },
     {
@@ -425,17 +441,17 @@
           "esito": "ok",
           "motivi": [],
           "problemi": [],
-          "descrizione": "Una donna anziana dai capelli bianchi raccolti, con scialle nero a frange, grembiule bianco e mazzo di chiavi alla cintura, sta in una casera di pietra e legno con forme di formaggio sugli scaffali, tavoli apparecchiati, un paiolo di rame e finestre con paesaggio innevato.",
-          "costo_usd": 0.000658,
+          "descrizione": "Una donna anziana dai capelli bianchi raccolti a crocchia, con scialle nero con frange, grembiule bianco e mazzo di chiavi alla cintura, sta in una casera di pietra e legno piena di forme di formaggio, con tavoli apparecchiati, una pentola di rame e finestre che mostrano montagne innevate.",
+          "costo_usd": 0.000732,
           "token": {
             "ingresso": 4138,
-            "uscita": 488
+            "uscita": 636
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000658,
+        "costo_usd": 0.000732,
         "tentativi": 1,
-        "costo_totale_usd": 0.000658
+        "costo_totale_usd": 0.000732
       }
     },
     {
@@ -464,17 +480,25 @@
       "rifilato_pct": 5.0,
       "firma": "v1:06dcfeb6406898de3f98c657",
       "qualita": {
-        "esito": "non_verificata",
+        "esito": "ok",
         "versione": 2,
         "motivi": [],
         "problemi": [],
         "visione": {
-          "esito": "non_verificata",
-          "errore": "AuthenticationError"
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Una donna anziana con crocchia bianca, scialle nero con frange e grembiule bianco, con un mazzo di chiavi alla cintura, sta davanti a una baita di legno con la porta socchiusa e il fuoco acceso, sotto un grande masso innevato e un tramonto rosso in mezzo alle montagne.",
+          "costo_usd": 0.000779,
+          "token": {
+            "ingresso": 4138,
+            "uscita": 731
+          },
+          "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.0,
-        "tentativi": 3,
-        "costo_totale_usd": 0
+        "costo_usd": 0.000779,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000779
       },
       "quando": "2026-11-09 19:41:20"
     },
@@ -506,15 +530,23 @@
       "firma": "v1:77992892809438b4fbb266bd",
       "quando": "2026-11-03 11:13:41",
       "qualita": {
-        "esito": "ok",
+        "esito": "difettosa",
         "versione": 2,
-        "motivi": [],
+        "motivi": [
+          "testo_o_firma: Un piccolo segno scarabocchiato sulla neve, dall'aspetto di una firma o di un monogramma, è visibile vicino allo spigolo in basso a destra. (angolo in basso a destra, accanto alla pietra)"
+        ],
         "problemi": [
           {
             "tipo": "soggetto",
-            "dove": "busto e spalle della donna",
-            "descrizione": "Il prompt chiede la donna senza lo scialle, ma lei indossa lo scialle nero con le frange.",
+            "dove": "figura centrale",
+            "descrizione": "La donna indossa ancora lo scialle nero con frange, mentre il prompt chiedeva la scena senza scialle.",
             "grave": false
+          },
+          {
+            "tipo": "testo_o_firma",
+            "dove": "angolo in basso a destra, accanto alla pietra",
+            "descrizione": "Un piccolo segno scarabocchiato sulla neve, dall'aspetto di una firma o di un monogramma, è visibile vicino allo spigolo in basso a destra.",
+            "grave": true
           }
         ],
         "visione": {
@@ -523,22 +555,28 @@
           "problemi": [
             {
               "tipo": "soggetto",
-              "dove": "busto e spalle della donna",
-              "descrizione": "Il prompt chiede la donna senza lo scialle, ma lei indossa lo scialle nero con le frange.",
+              "dove": "figura centrale",
+              "descrizione": "La donna indossa ancora lo scialle nero con frange, mentre il prompt chiedeva la scena senza scialle.",
               "grave": false
+            },
+            {
+              "tipo": "testo_o_firma",
+              "dove": "angolo in basso a destra, accanto alla pietra",
+              "descrizione": "Un piccolo segno scarabocchiato sulla neve, dall'aspetto di una firma o di un monogramma, è visibile vicino allo spigolo in basso a destra.",
+              "grave": true
             }
           ],
-          "descrizione": "Una anziana dai capelli bianchi raccolti a crocchia, con grembiule bianco e mazzo di chiavi alla cintura, tiene un anello rosso-oro davanti a una grande pietra piatta nella neve, con montagne innevate e una baita sullo sfondo al tramonto.",
-          "costo_usd": 0.000829,
+          "descrizione": "Una donna anziana con capelli bianchi raccolti, scialle nero con frange, grembiule bianco e chiavi alla cintura tiene un anello rosso-oro davanti a una grande pietra piatta innevata, con montagne e una baita sullo sfondo al tramonto.",
+          "costo_usd": 0.000953,
           "token": {
             "ingresso": 4085,
-            "uscita": 842
+            "uscita": 1089
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000829,
+        "costo_usd": 0.000953,
         "tentativi": 1,
-        "costo_totale_usd": 0.000829
+        "costo_totale_usd": 0.000953
       }
     },
     {
@@ -574,8 +612,8 @@
         "problemi": [
           {
             "tipo": "soggetto",
-            "dove": "testa del personaggio",
-            "descrizione": "Il cappello non ha la piuma di gallo richiesta dal prompt.",
+            "dove": "testa del personaggio, cappello",
+            "descrizione": "Manca la piuma di gallo sul cappello, tratto fisso richiesto dal prompt.",
             "grave": false
           }
         ],
@@ -585,22 +623,22 @@
           "problemi": [
             {
               "tipo": "soggetto",
-              "dove": "testa del personaggio",
-              "descrizione": "Il cappello non ha la piuma di gallo richiesta dal prompt.",
+              "dove": "testa del personaggio, cappello",
+              "descrizione": "Manca la piuma di gallo sul cappello, tratto fisso richiesto dal prompt.",
               "grave": false
             }
           ],
-          "descrizione": "Un anziano barbuto con cappello di feltro e giacca verde sta in una baita di pietra con scaffali di formaggi, un camino acceso, tavoli apparecchiati, una pentola di rame e una finestra su montagne innevate.",
-          "costo_usd": 0.000734,
+          "descrizione": "Un vecchio barbuto con cappotto verde e cappello a falda larga cammina con un bastone in una stanza di pietra e legno piena di forme di formaggio, con un caminetto acceso, una tavola apparecchiata, un paiolo di rame e finestre che mostrano montagne innevate.",
+          "costo_usd": 0.000779,
           "token": {
             "ingresso": 4125,
-            "uscita": 643
+            "uscita": 733
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000734,
+        "costo_usd": 0.000779,
         "tentativi": 1,
-        "costo_totale_usd": 0.000734
+        "costo_totale_usd": 0.000779
       }
     },
     {
@@ -635,8 +673,14 @@
         "problemi": [
           {
             "tipo": "incongruenza",
-            "dove": "angolo superiore sinistro, nel cielo",
-            "descrizione": "Una piccola forma bianca a cuore con un puntino accanto ricorda un fumetto o un balloon, un elemento da fumetto moderno poco adatto all'illustrazione.",
+            "dove": "angolo in alto a sinistra, nel cielo",
+            "descrizione": "Compare una nuvoletta o bolla a forma di cuore, che sembra un oggetto fluttuante fuori posto.",
+            "grave": false
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "mani del vecchio, in basso al centro-sinistra",
+            "descrizione": "Il vecchio stringe due bastoni, uno per mano, mentre il prompt descrive un solo bastone di nocciolo.",
             "grave": false
           }
         ],
@@ -646,22 +690,28 @@
           "problemi": [
             {
               "tipo": "incongruenza",
-              "dove": "angolo superiore sinistro, nel cielo",
-              "descrizione": "Una piccola forma bianca a cuore con un puntino accanto ricorda un fumetto o un balloon, un elemento da fumetto moderno poco adatto all'illustrazione.",
+              "dove": "angolo in alto a sinistra, nel cielo",
+              "descrizione": "Compare una nuvoletta o bolla a forma di cuore, che sembra un oggetto fluttuante fuori posto.",
+              "grave": false
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "mani del vecchio, in basso al centro-sinistra",
+              "descrizione": "Il vecchio stringe due bastoni, uno per mano, mentre il prompt descrive un solo bastone di nocciolo.",
               "grave": false
             }
           ],
-          "descrizione": "Un anziano con cappello di feltro piumato, barba bianca e mantello verde si appoggia a due bastoni nella neve, davanti a una baita di legno con una lanterna accesa e un fuoco nell'uscio, sotto un tramonto tra le montagne innevate.",
-          "costo_usd": 0.000914,
+          "descrizione": "Un vecchio barbuto con cappello di feltro e piuma, cappotto verde e cintura con fibbia a ferro di cavallo, appoggiato a due bastoni nella neve davanti a una baita con focolare acceso, sotto un tramonto con sole rosso e montagne innevate.",
+          "costo_usd": 0.000937,
           "token": {
             "ingresso": 4125,
-            "uscita": 1002
+            "uscita": 1049
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000914,
-        "tentativi": 2,
-        "costo_totale_usd": 0.000914
+        "costo_usd": 0.000937,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000937
       },
       "quando": "2026-11-03 15:03:08"
     },
@@ -694,39 +744,43 @@
       "firma": "v1:6d5b49f1643d3162a5376b54",
       "quando": "2026-11-03 11:19:42",
       "qualita": {
-        "esito": "ok",
+        "esito": "difettosa",
         "versione": 2,
-        "motivi": [],
+        "motivi": [
+          "soggetto: La mano destra è infilata nella tasca esterna dei pantaloni o della giacca all'altezza del fianco, invece di premere sulla tasca interna della giacca come richiesto dal prompt. (lato destro del corpo, all'altezza del fianco)"
+        ],
         "problemi": [
           {
             "tipo": "soggetto",
-            "dove": "centro, mano destra del personaggio all'altezza del fianco",
-            "descrizione": "La mano è infilata nella tasca laterale dei pantaloni o della giacca, mentre il prompt chiedeva una mano premuta sulla tasca interna della giacca, sul petto.",
-            "grave": false
+            "dove": "lato destro del corpo, all'altezza del fianco",
+            "descrizione": "La mano destra è infilata nella tasca esterna dei pantaloni o della giacca all'altezza del fianco, invece di premere sulla tasca interna della giacca come richiesto dal prompt.",
+            "grave": true
           }
         ],
         "visione": {
-          "esito": "ok",
-          "motivi": [],
+          "esito": "difettosa",
+          "motivi": [
+            "soggetto: La mano destra è infilata nella tasca esterna dei pantaloni o della giacca all'altezza del fianco, invece di premere sulla tasca interna della giacca come richiesto dal prompt. (lato destro del corpo, all'altezza del fianco)"
+          ],
           "problemi": [
             {
               "tipo": "soggetto",
-              "dove": "centro, mano destra del personaggio all'altezza del fianco",
-              "descrizione": "La mano è infilata nella tasca laterale dei pantaloni o della giacca, mentre il prompt chiedeva una mano premuta sulla tasca interna della giacca, sul petto.",
-              "grave": false
+              "dove": "lato destro del corpo, all'altezza del fianco",
+              "descrizione": "La mano destra è infilata nella tasca esterna dei pantaloni o della giacca all'altezza del fianco, invece di premere sulla tasca interna della giacca come richiesto dal prompt.",
+              "grave": true
             }
           ],
-          "descrizione": "Un anziano robusto con barba bianca lunga, cappello di feltro con piuma e giacca verde sta nella neve di un villaggio di montagna, con un camino acceso e case innevate sullo sfondo. Tiene il cappello e un bastone in una mano e l'altra mano è infilata nella tasca laterale della giacca.",
-          "costo_usd": 0.001007,
+          "descrizione": "Un vecchio grosso e curvo con barba bianca lunga, cappello di feltro con piuma e cintura con fibbia, appoggiato a un bastone davanti a un villaggio alpino innevato con un focolare acceso.",
+          "costo_usd": 0.001049,
           "token": {
             "ingresso": 4072,
-            "uscita": 1200
+            "uscita": 1284
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.001007,
+        "costo_usd": 0.001049,
         "tentativi": 1,
-        "costo_totale_usd": 0.001007
+        "costo_totale_usd": 0.001049
       }
     },
     {
@@ -757,51 +811,55 @@
       "firma": "v1:ac82473371c89165b1547211",
       "quando": "2026-11-03 11:25:51",
       "qualita": {
-        "esito": "ok",
+        "esito": "difettosa",
         "versione": 2,
-        "motivi": [],
+        "motivi": [
+          "incongruenza: Compare un oggetto simile a una seconda matita che sembra spuntare dalla testa, duplicando la matita dietro l'orecchio. (sopra la tempia sinistra, vicino ai capelli)"
+        ],
         "problemi": [
           {
             "tipo": "incongruenza",
-            "dove": "parte superiore della testa, lato sinistro",
-            "descrizione": "Sulla sommità della testa compare un secondo frammento di matita, che sembra conficcato nel cranio oltre a quella dietro l'orecchio.",
-            "grave": false
+            "dove": "sopra la tempia sinistra, vicino ai capelli",
+            "descrizione": "Compare un oggetto simile a una seconda matita che sembra spuntare dalla testa, duplicando la matita dietro l'orecchio.",
+            "grave": true
           },
           {
-            "tipo": "incongruenza",
-            "dove": "muro di pietra a sinistra, vicino al bordo superiore",
-            "descrizione": "Alcuni fiocchi di neve sembrano cadere anche all'interno della stanza, sulla parete di pietra.",
+            "tipo": "soggetto",
+            "dove": "sfondo e postura del personaggio",
+            "descrizione": "La scena è un'uscita da una porta di casa e non da una stalla buia, e l'uomo non si volta a guardare alle sue spalle come richiesto.",
             "grave": false
           }
         ],
         "visione": {
-          "esito": "ok",
-          "motivi": [],
+          "esito": "difettosa",
+          "motivi": [
+            "incongruenza: Compare un oggetto simile a una seconda matita che sembra spuntare dalla testa, duplicando la matita dietro l'orecchio. (sopra la tempia sinistra, vicino ai capelli)"
+          ],
           "problemi": [
             {
               "tipo": "incongruenza",
-              "dove": "parte superiore della testa, lato sinistro",
-              "descrizione": "Sulla sommità della testa compare un secondo frammento di matita, che sembra conficcato nel cranio oltre a quella dietro l'orecchio.",
-              "grave": false
+              "dove": "sopra la tempia sinistra, vicino ai capelli",
+              "descrizione": "Compare un oggetto simile a una seconda matita che sembra spuntare dalla testa, duplicando la matita dietro l'orecchio.",
+              "grave": true
             },
             {
-              "tipo": "incongruenza",
-              "dove": "muro di pietra a sinistra, vicino al bordo superiore",
-              "descrizione": "Alcuni fiocchi di neve sembrano cadere anche all'interno della stanza, sulla parete di pietra.",
+              "tipo": "soggetto",
+              "dove": "sfondo e postura del personaggio",
+              "descrizione": "La scena è un'uscita da una porta di casa e non da una stalla buia, e l'uomo non si volta a guardare alle sue spalle come richiesto.",
               "grave": false
             }
           ],
-          "descrizione": "Un uomo anziano, calvo e con occhiali tondi, panciotto di velluto verde e una matita dietro l'orecchio, tiene un libretto e un fazzoletto bianco davanti a una porta di legno che si affaccia su un focolare di pietra e su un villaggio innevato tra le montagne.",
-          "costo_usd": 0.000935,
+          "descrizione": "Un anziano calvo con occhiali tondi, panciotto di velluto verde e matita dietro l'orecchio tiene un piccolo libro e un fazzoletto bianco, sulla soglia di una porta di legno aperta su un villaggio innevato di montagna, con un focolare di pietra acceso a sinistra.",
+          "costo_usd": 0.000987,
           "token": {
             "ingresso": 4066,
-            "uscita": 1056
+            "uscita": 1160
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000935,
+        "costo_usd": 0.000987,
         "tentativi": 1,
-        "costo_totale_usd": 0.000935
+        "costo_totale_usd": 0.000987
       }
     },
     {
@@ -830,17 +888,39 @@
       "rifilato_pct": 1.2,
       "firma": "v1:f4f4f08a9f20511dde314565",
       "qualita": {
-        "esito": "non_verificata",
+        "esito": "ok",
         "versione": 2,
         "motivi": [],
-        "problemi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "viso dell'uomo",
+            "descrizione": "Gli occhiali sono posati a metà del naso, non sulla punta come richiesto dal prompt.",
+            "grave": false
+          }
+        ],
         "visione": {
-          "esito": "non_verificata",
-          "errore": "AuthenticationError"
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "viso dell'uomo",
+              "descrizione": "Gli occhiali sono posati a metà del naso, non sulla punta come richiesto dal prompt.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Un uomo anziano, calvo e magro, con panciotto di velluto verde e occhiali tondi, tiene un piccolo libro dei conti in una stanza di pietra e legno con un camino acceso, una scrivania con un libro aperto e una finestra su un villaggio alpino innevato.",
+          "costo_usd": 0.000811,
+          "token": {
+            "ingresso": 4119,
+            "uscita": 798
+          },
+          "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.0,
+        "costo_usd": 0.000811,
         "tentativi": 1,
-        "costo_totale_usd": 0
+        "costo_totale_usd": 0.000811
       },
       "quando": "2026-11-09 19:50:46"
     },
@@ -876,8 +956,8 @@
         "problemi": [
           {
             "tipo": "soggetto",
-            "dove": "sopra la testa, ai lati del capo",
-            "descrizione": "Compaiono due matite, una a sinistra e una a destra sopra la testa, mentre il prompt ne chiede una sola dietro l'orecchio.",
+            "dove": "ai lati della testa dell'uomo",
+            "descrizione": "Compaiono due matite, una per lato, mentre il prompt ne indicava una sola dietro l'orecchio.",
             "grave": false
           }
         ],
@@ -887,22 +967,22 @@
           "problemi": [
             {
               "tipo": "soggetto",
-              "dove": "sopra la testa, ai lati del capo",
-              "descrizione": "Compaiono due matite, una a sinistra e una a destra sopra la testa, mentre il prompt ne chiede una sola dietro l'orecchio.",
+              "dove": "ai lati della testa dell'uomo",
+              "descrizione": "Compaiono due matite, una per lato, mentre il prompt ne indicava una sola dietro l'orecchio.",
               "grave": false
             }
           ],
-          "descrizione": "Un uomo calvo con occhiali tondi, panciotto di velluto verde e camicia bianca, sorride tenendo un piccolo libro rilegato in una cantina di formaggi in pietra con tavoli apparecchiati e un paiolo di rame. Dalle finestre si vedono montagne innevate.",
-          "costo_usd": 0.000843,
+          "descrizione": "Un uomo calvo con occhiali tondi e panciotto di velluto verde, con un piccolo libro in mano, sorride in una casa di montagna con formaggi sugli scaffali, tavoli apparecchiati, un paiolo di rame e finestre che mostrano montagne innevate.",
+          "costo_usd": 0.00072,
           "token": {
             "ingresso": 4119,
-            "uscita": 862
+            "uscita": 617
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000843,
-        "tentativi": 2,
-        "costo_totale_usd": 0.000843
+        "costo_usd": 0.00072,
+        "tentativi": 1,
+        "costo_totale_usd": 0.00072
       },
       "quando": "2026-11-03 15:13:26"
     },
@@ -932,17 +1012,25 @@
       "rifilato_pct": 5.0,
       "firma": "v1:d1dda48d476493ca7f1f9822",
       "qualita": {
-        "esito": "non_verificata",
+        "esito": "ok",
         "versione": 2,
         "motivi": [],
         "problemi": [],
         "visione": {
-          "esito": "non_verificata",
-          "errore": "AuthenticationError"
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Un uomo anziano, calvo e con occhiali tondi, in panciotto di velluto verde e con una matita dietro l'orecchio, tiene un piccolo libro davanti a una baita di legno innevata con una luce calda all'interno, sotto un cielo al tramonto e montagne coperte di neve.",
+          "costo_usd": 0.000782,
+          "token": {
+            "ingresso": 4119,
+            "uscita": 741
+          },
+          "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.0,
+        "costo_usd": 0.000782,
         "tentativi": 1,
-        "costo_totale_usd": 0
+        "costo_totale_usd": 0.000782
       },
       "quando": "2026-11-09 20:03:51"
     },
@@ -972,17 +1060,39 @@
       "rifilato_pct": 1.2,
       "firma": "v1:b9b10016f0cdd4d0d24d6b81",
       "qualita": {
-        "esito": "non_verificata",
+        "esito": "ok",
         "versione": 2,
         "motivi": [],
-        "problemi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "vita della ragazza, cintura di cuoio",
+            "descrizione": "Il quaderno legato alla cintura con lo spago non si vede: dalla cintura pendono solo cordicelle, senza alcun quaderno.",
+            "grave": false
+          }
+        ],
         "visione": {
-          "esito": "non_verificata",
-          "errore": "AuthenticationError"
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "vita della ragazza, cintura di cuoio",
+              "descrizione": "Il quaderno legato alla cintura con lo spago non si vede: dalla cintura pendono solo cordicelle, senza alcun quaderno.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Una ragazza rossa di capelli con due trecce e lentiggini sorride davanti a un camino di pietra acceso, in una stanza di legno e pietra con una finestra innevata su un villaggio di montagna.",
+          "costo_usd": 0.000818,
+          "token": {
+            "ingresso": 4039,
+            "uscita": 828
+          },
+          "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.0,
+        "costo_usd": 0.000818,
         "tentativi": 1,
-        "costo_totale_usd": 0
+        "costo_totale_usd": 0.000818
       },
       "quando": "2026-11-09 20:15:54"
     }
