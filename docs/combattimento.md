@@ -123,8 +123,11 @@ combattimento:
      alone, and so is a near-hit absorbed by armour (`assorbito`: «di striscio, ma la cotta regge»), which fits a miss and
      a hit with no damage. Pass 2b of the final e2e: the first version took the attacker from the speaker («Narratore manca
      Zirrà.»), ignored the direction, counted «pugnale» as a hit and replaced an announcement;
-   - it has a defeat word (`guardia_esiti.sconfitta`: «muore», «cade», «crolla», «a terra»…) and names an NPC with a
-     sheet who is not out of play, and no NPC in the sentence really is: «Zirrà incassa il colpo, ma resta in piedi.»
+   - it has a defeat word (`guardia_esiti.sconfitta`: «muore», «cade», «crolla», «a terra»…) whose subject is an NPC
+     with a sheet who is not out of play (named before the word in the same clause, or through a pronoun, «…, e quello
+     crolla»), and no NPC the sentence has fall really is. An idiom or another subject (`figurati`: «lo sguardo cade»,
+     «cade il silenzio», «lascia cadere la mazza») is not a fall: in the second pass «il suo sguardo cade un attimo sul
+     cancello» became «Berta è ancora in piedi.» (N3); «Zirrà incassa il colpo, ma resta in piedi.»
      (hit), «Eliandro manca Zirrà.» (miss) or «Zirrà è ancora in piedi.» (no card); two such NPCs: «Nessuno cade: lo
      scontro continua.».
    - The words are in `lingue/<code>/motore.yaml` (`guardia_esiti`), the lines in testi-prove.yaml (`prove.guardia`). The

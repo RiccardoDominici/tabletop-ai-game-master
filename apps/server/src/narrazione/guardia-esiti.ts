@@ -32,6 +32,8 @@ interface Parole {
   colpito: string[][];
   subisce: string[][];
   assorbito: string[][];
+  figurati: string[][];
+  pronomi: ReadonlySet<string>;
   negazioni: ReadonlySet<string>;
 }
 
@@ -47,7 +49,35 @@ const parole = (): Parole =>
     colpito: comeVoci(campoElenco(s, 'colpito')),
     subisce: comeVoci(campoElenco(s, 'subisce')),
     assorbito: comeVoci(campoElenco(s, 'assorbito')),
+    figurati: comeVoci(campoElenco(s, 'figurati')),
+    pronomi: new Set(campoElenco(s, 'pronomi').map(normalizza)),
   }));
+
+/**
+ * The creatures a sentence has fall: per clause (between punctuation), a defeat word whose subject is the creature
+ * itself, named before it in the clause, or a subject pronoun (or nothing) before it with the creature named earlier
+ * in the sentence. A clause with an idiom or a non-creature subject (`figurati`: «lo sguardo cade», «cade il silenzio»,
+ * «lascia cadere la mazza») is not a fall. Pass 2 of the final run: «il suo sguardo cade un attimo sul cancello»
+ * became «Berta è ancora in piedi.».
+ */
+function chiCade(frase: string, p: Parole, candidati: readonly string[], nomi: ReadonlyMap<string, readonly string[]>): string[] {
+  const out: string[] = [];
+  let ultimo: string | null = null;
+  for (const pezzo of frase.split(/[,.;:!?—–()«»"]+/)) {
+    const w = paroleDi(pezzo);
+    if (!w.length) continue;
+    const dove = p.sconfitta.map((v) => posizione(w, v)).filter((i) => i >= 0);
+    const k = dove.length ? Math.min(...dove) : -1;
+    const nominati = candidati.map((id) => ({ id, i: doveNomina(w, nomi.get(id) ?? []) })).filter((x) => x.i >= 0).sort((a, b) => a.i - b.i);
+    if (k >= 0 && !ha(w, p.figurati)) {
+      const prima = nominati.filter((x) => x.i < k).at(-1);
+      if (prima) out.push(prima.id);
+      else if (ultimo && w.slice(0, k).every((x) => p.pronomi.has(x) || x.length <= 2 || ['poi', 'e', 'ed', 'ma', 'then', 'and', 'but'].includes(x))) out.push(ultimo);
+    }
+    if (nominati.length) ultimo = nominati.at(-1)!.id;
+  }
+  return [...new Set(out)];
+}
 
 function paroleDi(t: string): string[] {
   return normalizza(t)
@@ -156,9 +186,10 @@ export function guardiaEsiti(d: DatiGuardiaEsiti): (frase: string) => Correzione
         break;
       }
     }
-    // 2. A fall with no fact: a defeat word and a standing NPC, no NPC in the sentence really down.
+    // 2. A fall with no fact: a standing NPC with a sheet is the subject of a defeat word (not an idiom), and no NPC
+    // the sentence has fall is really down.
     if (!ha(w, p.sconfitta)) return null;
-    const nominati = png.filter((id) => nomina(w, d.nomi.get(id) ?? []));
+    const nominati = chiCade(frase, p, png, d.nomi);
     if (!nominati.length || nominati.some((id) => d.fuori(id))) return null;
     if (nominati.length > 1) return { testo: testo('prove.guardia.nessuno_cade'), motivo: 'caduta_senza_fatto' };
     const id = nominati[0]!;

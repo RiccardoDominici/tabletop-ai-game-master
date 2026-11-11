@@ -195,3 +195,7 @@ guardia_esiti:
   subisce: [incass, ricev, subisc, viene colpit, è colpit, colpito da, colpita da]
   # A near-hit the armour absorbs: it fits a miss and a hit with no damage, so it is never a contradiction.
   assorbito: [di striscio, regge, senza ferir, senza danni, senza fargli, senza farle, si ferma sull, non passa, non buca]
+  # Not a creature falling: idioms and other subjects of «cade» («lo sguardo cade», «cade il silenzio», «lascia cadere»).
+  figurati: [sguardo, occhi, occhio, la voce, silenzio, la sera, la notte, il buio, la neve, la pioggia, lascia cadere, fa cadere, lasciar cadere, di mano, dalle mani, gli cade, le cade, lo scudo, la spada, la lama, l'arma, la mazza, il cappuccio, la chiave, il mantello, la testa, le braccia, le spalle]
+  # Subject and relative pronouns: «… e quello cade», «…, che crolla» have the creature named before as subject.
+  pronomi: [quello, quella, lui, lei, costui, costei, che, quale, si]

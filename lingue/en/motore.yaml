@@ -203,3 +203,7 @@ guardia_esiti:
   subisce: [takes, is hit, is struck, gets hit, hit by, struck by, suffers]
   # A near-hit the armour absorbs: it fits a miss and a hit with no damage, so it is never a contradiction.
   assorbito: [glancing, grazes, graze, armor holds, armour holds, glances off, bounces off, without wounding, harmlessly, no harm]
+  # Not a creature falling: idioms and other subjects («her gaze falls», «silence falls», «lets the club drop»).
+  figurati: [gaze, eyes, eye, voice, silence, night, dusk, darkness, snow, rain, lets fall, lets the, drops the, drops her, drops his, from her hand, from his hand, shield, sword, blade, weapon, club, hood, key, cloak, head, shoulders, arms]
+  # Subject and relative pronouns: «… and he collapses», «…, who collapses» have the creature named before as subject.
+  pronomi: [he, she, it, they, who, which, that]

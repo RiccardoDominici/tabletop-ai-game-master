@@ -85,6 +85,24 @@ describe('pass 2b: names from the card, direction, announcements, near-hits', ()
   });
 });
 
+/*
+ * N3, second pass (pressione-B pass2b T6): «Berta non risponde: il suo sguardo cade un attimo sul cancello» became
+ * «Berta è ancora in piedi.». A fall needs the creature as the subject of a physical defeat verb, not an idiom.
+ */
+describe('N3: idioms and other subjects are not a fall', () => {
+  const g = guardia([]);
+  it('«lo sguardo cade», «cade il silenzio», «lascia cadere la mazza» are left alone', () => {
+    expect(g('Ruggero non risponde: il suo sguardo cade un attimo sul cancello, poi torna al bosco.')).toBeNull();
+    expect(g('Cade il silenzio, e Ruggero guarda il fiume.')).toBeNull();
+    expect(g('Ruggero lascia cadere la mazza a terra.')).toBeNull();
+    expect(g('Cala la sera su Ruggero, che resta sul ponte.')).toBeNull();
+  });
+  it('the creature itself falling is still corrected, also through a pronoun', () => {
+    expect(g('Ruggero cade sui gradini con un rantolo.')).toEqual({ testo: 'Ruggero è ancora in piedi.', motivo: 'caduta_senza_fatto' });
+    expect(g('Corrado spinge lo sgherro, e quello crolla nel fango.')).toEqual({ testo: 'Ruggero è ancora in piedi.', motivo: 'caduta_senza_fatto' });
+  });
+});
+
 describe('guardia degli esiti (inglese)', () => {
   beforeAll(() => impostaLingua('en'));
   afterAll(() => impostaLingua('it'));
@@ -101,5 +119,12 @@ describe('guardia degli esiti (inglese)', () => {
     expect(guardia(duello)('Corrado takes a blow from Ruggero.')).toEqual({ testo: 'Ruggero misses Corrado.', motivo: 'colpo_contrario' });
     expect(guardia(duello)('Ruggero’s blade grazes Corrado, but the armour holds.')).toBeNull();
     expect(guardia(duello)('Corrado ducks behind the stone and throws the dagger at the first guard who runs.')).toBeNull();
+  });
+
+  it('N3 in English: «her gaze falls», «silence falls» are not a fall; «he collapses» is', () => {
+    const g = guardia([]);
+    expect(g('Ruggero says nothing; his gaze falls on the gate for a moment.')).toBeNull();
+    expect(g('Silence falls, and Ruggero looks at the river.')).toBeNull();
+    expect(g('Ruggero staggers and collapses on the steps.')).toEqual({ testo: 'Ruggero is still on their feet.', motivo: 'caduta_senza_fatto' });
   });
 });
