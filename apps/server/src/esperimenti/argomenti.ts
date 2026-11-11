@@ -2,8 +2,11 @@
  * Argomenti e ambiente di un esperimento (esegui.ts): copione, modalità, campagna, porta.
  *
  *   esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore]
- *             [--voce-vera] [--finto] [--lascia-server] [--partita-vera]
+ *             [--ore h] [--chiudi] [--voce-vera] [--finto] [--lascia-server] [--partita-vera]
  * --sceneggiatore accende lo sceneggiatore (Claude Code: ogni chiamata usa l'abbonamento); di base è spento.
+ * --ore h dà al server la durata della serata (0,5–8 ore, come il pannello) prima dell'«Inizia»: con 0,5 il
+ * preavviso di fine arriva dopo 10 minuti, così una prova breve vede il consiglio di chiusura. --chiudi, a
+ * copione finito, dà «Chiudi la sessione» e aspetta la chiusura guidata e il riassunto della serata.
  *
  * Porta: CANTASTORIE_PORTA (default 4710, istanza di prova di scripts/avvio.sh: log e pagine in
  * logs/porta-<porta>/, voce sempre finta). La 4610 è la partita vera: si usa solo con
@@ -13,6 +16,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { CARTELLA_LOG, RADICE_REPO } from '../percorsi';
+import { ORE_MAX, ORE_MIN } from '../sessione/durata';
 
 export type ModoEsperimento = 'improvvisa' | 'repertorio';
 
@@ -44,6 +48,10 @@ export interface OpzioniEsperimento {
   pausaMs: number;
   /** `--sceneggiatore`: accende lo sceneggiatore (Claude Code, l'abbonamento di Riccardo); di base spento. */
   sceneggiatore: boolean;
+  /** `--ore <h>`: durata della serata data al server prima dell'«Inizia» (null = quella del brief). */
+  ore: number | null;
+  /** `--chiudi`: a copione finito, «Chiudi la sessione» (chiusura guidata, riassunto della serata). */
+  chiudi: boolean;
 }
 
 export const PORTA_ESPERIMENTI = 4710;
@@ -63,7 +71,7 @@ function valoreOpzione(argv: string[], nome: string): string | null {
 }
 
 export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsperimento {
-  const conValore = new Set(['--campagna', '--uscita', '--turni', '--pausa-s']);
+  const conValore = new Set(['--campagna', '--uscita', '--turni', '--pausa-s', '--ore']);
   const posizionali: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
@@ -73,7 +81,7 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
   const [copione, etichettaModo] = posizionali;
   // «B2» è il repertorio con le regole della versione 2 (è la modalità repertorio di oggi).
   const modo: ModoEsperimento | null = etichettaModo === 'B' || etichettaModo === 'B2' ? 'repertorio' : etichettaModo === 'A' ? 'improvvisa' : null;
-  if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore] [--voce-vera] [--finto] [--lascia-server]');
+  if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore] [--ore h] [--chiudi] [--voce-vera] [--finto] [--lascia-server]');
 
   const campagna = valoreOpzione(argv, '--campagna') ?? CAMPAGNA_DEFAULT;
   const uscita = valoreOpzione(argv, '--uscita');
@@ -81,6 +89,9 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
   const turniMax = turni === null ? null : Number(turni);
   const pausaMs = Math.max(0, Number(valoreOpzione(argv, '--pausa-s') ?? 0) * 1000) || 0;
   if (turniMax !== null && (!Number.isInteger(turniMax) || turniMax < 1)) throw new ErroreArgomenti('--turni vuole un intero ≥ 1');
+  const oreTesto = valoreOpzione(argv, '--ore');
+  const ore = oreTesto === null ? null : Number(oreTesto.replace(',', '.'));
+  if (ore !== null && !(ore >= ORE_MIN && ore <= ORE_MAX)) throw new ErroreArgomenti(`--ore vuole un numero tra ${ORE_MIN} e ${ORE_MAX}`);
   if (uscita !== null && (path.isAbsolute(uscita) || uscita.split(/[\\/]/).includes('..'))) throw new ErroreArgomenti('--uscita è una cartella dentro esperimenti/risultati');
   if (!/^[a-z0-9][a-z0-9_-]*$/i.test(campagna) || !fs.existsSync(path.join(RADICE_REPO, 'campagne', campagna))) {
     throw new ErroreArgomenti(`campagna inesistente: campagne/${campagna}`);
@@ -126,5 +137,7 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
     turniMax,
     pausaMs,
     sceneggiatore: argv.includes('--sceneggiatore'),
+    ore,
+    chiudi: argv.includes('--chiudi'),
   };
 }

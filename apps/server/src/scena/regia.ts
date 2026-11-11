@@ -284,6 +284,8 @@ export class Regia {
   private pgDedotti = 0;
   /** Rilasci di questa risposta rifiutati perché fuori contesto (repertorio/rilascio.ts). */
   private rilasciFuoriContesto = 0;
+  /** Ultimo turno il cui messaggio aveva il consiglio di fine vicina (va nel registro delle narrazioni). */
+  private consiglioAlTurno = -1;
   /** Nomi dei PNG e soprannomi, per la pertinenza del catalogo. */
   private readonly nomiPng: Map<string, string[]>;
   /** Luogo corrente (id della scena o del nodo): sceglie l'immagine del proiettore. */
@@ -1021,7 +1023,10 @@ export class Regia {
   private consiglioSerata(turno: number): string | null {
     this.serata.togliLaVoltaScorsa();
     const c = this.serata.consiglio(this.o.orologio.adesso(), this.climax());
-    if (c) this.o.log.info({ turno }, 'serata: fine vicina, consiglio di pausa naturale nel contesto');
+    if (c) {
+      this.o.log.info({ turno }, 'serata: fine vicina, consiglio di pausa naturale nel contesto');
+      this.consiglioAlTurno = turno;
+    }
     return c;
   }
 
@@ -2573,6 +2578,7 @@ export class Regia {
       tipo: 'turno',
       chiusura,
       ...conteggi,
+      ...(this.consiglioAlTurno === turno ? { tempo_serata: true } : {}),
       uscita: esito.uscita,
       ...(this.statoRepertorio ? { stato_repertorio: this.statoRepertorio.riepilogo() } : {}),
       voce: record.voce_motore,

@@ -23,6 +23,8 @@
  * 4. Scrive esperimenti/risultati/<etichetta>/: trascrizione.md (verbatim, [usa] espansi e marcati),
  *    tavolo.md (solo ciò che il tavolo ha sentito e visto, per il giudice cieco), turni.jsonl,
  *    costo.json, riepilogo.json (latenze, fughe di segreti, quota pre-scritta, costo).
+ * 5. Con --chiudi, «Chiudi la sessione» a copione finito: in riepilogo.json (`serata`) le righe della chiusura,
+ *    il riassunto e i turni in cui il narratore ha avuto il consiglio di fine vicina (--ore lo fa arrivare presto).
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -187,6 +189,32 @@ async function giocaCopione(
   return { cambi, fine: null };
 }
 
+/** Esito della chiusura guidata, per il riepilogo. */
+interface EsitoChiusura {
+  turno: number;
+  /** Righe dette nel turno della chiusura (narratore e PNG), nell'ordine. */
+  righe: Array<{ chi: string; testo: string }>;
+  riassunto: unknown;
+  di_riserva: boolean;
+  ms: number;
+}
+
+/**
+ * «Chiudi la sessione» come dal pannello: le azioni in corso tornano ai giocatori, il narratore chiude il
+ * momento, poi il proiettore mostra il riassunto della serata (`fine_serata` nello stato del tavolo).
+ */
+async function chiudiSerata(etichetta: string, schermo: Client, master: MasterHeadless): Promise<EsitoChiusura> {
+  const t0 = Date.now();
+  const fatto = attendiStato(schermo, (s) => s.fase === 'pausa' && !!s.fine_serata, 300_000, 'fine della serata dopo «Chiudi la sessione»');
+  const e = await master.comando({ tipo: 'chiudi_sessione' });
+  if (!e.ok) throw new Error(`«Chiudi la sessione» rifiutato: ${e.errore}`);
+  const s = await fatto;
+  const fine = s.fine_serata!;
+  const righe = s.trascrizione.filter((v) => v.turno === s.turno && (v.tipo === 'narrazione' || v.tipo === 'battuta')).map((v) => ({ chi: v.chi, testo: v.testo }));
+  console.log(`[${etichetta}] serata chiusa al turno ${s.turno}: ${righe.length} righe, riassunto${fine.di_riserva ? ' di riserva' : ''}`);
+  return { turno: s.turno, righe, riassunto: fine.riassunto, di_riserva: fine.di_riserva, ms: Date.now() - t0 };
+}
+
 /**
  * Gli orologi turno per turno (stato_orologi del registro delle narrazioni: solo quelli attivi nella
  * scena), il turno in cui ciascuno si è riempito e quanti segni ha avuto in tutto.
@@ -270,10 +298,17 @@ async function main(): Promise<void> {
     if (!e.ok) throw new Error(`scena di partenza ${copione.scena} rifiutata: ${e.errore}`);
     console.log(`[${etichetta}] scena di partenza → ${copione.scena}`);
   }
+  // Durata della serata (--ore): come dal pannello, prima dell'«Inizia».
+  if (o.ore !== null) {
+    const e = await master.comando({ tipo: 'durata_sessione', ore: o.ore });
+    if (!e.ok) throw new Error(`durata della serata rifiutata: ${e.errore}`);
+    console.log(`[${etichetta}] durata della serata → ${o.ore} ore`);
+  }
   const primo = attendiStato(schermo, (s) => s.fase === 'finestra' && s.turno === 1, 180_000, 'prima finestra');
   await emetti<Esito>((cb) => schermo.emit('schermo:inizia', cb));
   await primo;
   const { cambi: cambiScena, fine } = await giocaCopione(etichetta, copione, schermo, master, telefoni, osservatore, o.pausaMs);
+  const chiusura = o.chiudi ? await chiudiSerata(etichetta, schermo, master) : null;
 
   // 4. Raccolta dai registri del server di prova (solo questa sessione).
   const salute = (await (await fetch(`${o.url}/api/salute`)).json()) as Record<string, unknown>;
@@ -353,6 +388,8 @@ async function main(): Promise<void> {
     righe_png_assenti: somma('righe_png_assenti'),
     usa_rifiutati_per_motivo: motiviRifiuto(narrati),
     rivelazioni_fuori_contesto: { totale: fuoriContesto.length, elenco: fuoriContesto },
+    // La serata (--ore, --chiudi): i turni col consiglio di fine vicina nel contesto, e la chiusura guidata.
+    serata: { ore: o.ore, consiglio_ai_turni: narrati.filter((r) => r['tempo_serata'] === true).map((r) => r['turno']), chiusura },
     fughe: {
       nota:
         modo === 'repertorio'
