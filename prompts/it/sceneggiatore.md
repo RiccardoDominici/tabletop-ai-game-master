@@ -4,7 +4,7 @@ Formato (una lista «battute»):
 battute:
   - id: <il prefisso dato, poi un numero>
     chi: narratore | <id esatto di un PNG presente>
-    tipo: reazione | momento | richiesta | rifiuto | saluto
+    tipo: reazione | momento | richiesta | rifiuto | saluto | chiusura (solo se il compito la chiede)
     quando: "<l'azione dei giocatori a cui risponde, in terza persona: «un PG chiede a Gaspare del cassetto»>"
     temi: [<3-6 parole che un giocatore scriverebbe, minuscole>]
     testo:

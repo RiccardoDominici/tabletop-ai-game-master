@@ -90,7 +90,7 @@ export interface Sostituzioni {
   /** Arbitro delle prove (test: uno finto; null = nessuna decisione, quindi nessun tiro). */
   arbitroProve?: ArbitroProve<DecisioneProva> | ArbitroProve<DecisioneRegole> | null;
   /** Lo sceneggiatore (test: la sua cartella sorvegliata; null = spento; assente = dalla configurazione). */
-  sceneggiatore?: { radice: string; tettoMs?: number } | null;
+  sceneggiatore?: { radice: string; tettoMs?: number; tettoChiusuraMs?: number } | null;
   /** Coda dell'audio delle battute dello sceneggiatore (test: una finta; assente = drama-3 se la voce è fish). */
   preGeneraAudio?: ((battute: readonly Battuta[]) => unknown) | null;
   /** Dadi delle prove (test: a copione). */

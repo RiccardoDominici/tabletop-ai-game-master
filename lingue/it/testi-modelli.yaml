@@ -50,6 +50,7 @@ modelli:
     subito: "Scrivi UNA battuta che risponde a questa azione, adesso (il giocatore sta aspettando): {nome} ({id_pg}): «{testo}». Se l'azione si rivolge a un PNG presente, risponde lui; altrimenti il narratore dice l'effetto.{privata}"
     privata: " È un'azione PRIVATA: la risposta la sente solo quel giocatore, sul suo telefono. Il PNG parla a bassa voce, o il narratore dice ciò che solo quel PG vede o sente; nessun altro al tavolo se ne accorge."
     prossime: "Scrivi {quante} battute per le azioni più probabili del prossimo turno, diverse fra loro: chi parla con chi, cosa toccano, cosa chiedono. Almeno una per ogni PNG presente."
+    chiusura: "Il master chiude la serata. Scrivi UNA battuta con `tipo: chiusura` e `chi: narratore`, da due a quattro righe [narratore]: il momento in cui il tavolo si ferma, un'immagine finale, un aggancio per la prossima volta su un filo rimasto aperto nella trascrizione (una domanda senza risposta, un orologio che corre). Solo ciò che il tavolo ha visto e sentito: niente misteri nuovi, niente parole segrete, e i PG non fanno niente che i giocatori non abbiano detto."
     nessuno: "nessuno"
     nessuna: "(nessuna)"
     trattino: "—"

@@ -12,7 +12,7 @@ import { regexDaPython, type ParolaSegreta } from '../src/repertorio/segreti';
 import { cartelle, leggiJson, scriviJson, type RichiestaSceneggiatore } from '../src/sceneggiatore/protocollo';
 import { estraiYaml, nomiDeiPg, pgCheAgisce, validaBattute } from '../src/sceneggiatore/valida';
 import { messaggioSceneggiatore, promptSceneggiatore } from '../src/sceneggiatore/prompt';
-import { impostaLingua } from '../src/lingua';
+import { impostaLingua, testo } from '../src/lingua';
 import { giaUsati, righeDellaRisposta, ticBloccati, unisciGiaUsati } from '../src/sceneggiatore/ripetizioni';
 import YAML from 'yaml';
 import { codaAudioFish } from '../src/sceneggiatore/audio';
@@ -232,5 +232,90 @@ describe('lo sceneggiatore al tavolo', () => {
     const stato = await new Promise<{ trascrizione: Array<{ testo: string }> }>((r) => tel.emit('stato:richiedi', r as never));
     expect(stato.trascrizione.map((v) => v.testo).join(' ')).not.toContain('riempita io');
     expect(prova.narrazioni().find((r) => r['tipo'] === 'sceneggiatore' && r['tipo_richiesta'] === 'subito')).toMatchObject({ consegnata: true, privata: true });
+  }, 30_000);
+});
+
+// «Chiudi la sessione» senza una chiusura preparata che valga adesso: la scrive lo sceneggiatore, il tavolo aspetta.
+describe('la chiusura della serata dallo sceneggiatore', () => {
+  /** La richiesta di quel tipo, appena compare nella cartella sorvegliata. */
+  const richiestaDi = async (c: ReturnType<typeof cartelle>, tipo: string): Promise<RichiestaSceneggiatore> => {
+    const fine = Date.now() + 8000;
+    for (;;) {
+      const r = fs.existsSync(c.richieste) ? fs.readdirSync(c.richieste).map((f) => leggiJson<RichiestaSceneggiatore>(path.join(c.richieste, f))!).find((x) => x?.tipo === tipo) : undefined;
+      if (r) return r;
+      if (Date.now() > fine) throw new Error(`nessuna richiesta ${tipo}`);
+      await new Promise((ok) => setTimeout(ok, 50));
+    }
+  };
+  const pioggia = { id: 'nar_pioggia', chi: 'narratore', tipo: 'momento', quando: 'il tempo passa nella locanda', temi: ['pioggia'], testo: ['[narratore] La pioggia batte sulle imposte.'], max_usi: 1, riempitivo: true };
+  const muto = (_t: number, messaggio: string): string => (messaggio.includes(testo('messaggio.titolo_chiusura')) ? '[invito] tutti' : '[narratore] Anna ascolta.\n[invito] tutti');
+
+  it('arriva in tempo: prima un riempitivo del narratore come attesa, poi la chiusura scritta', async () => {
+    prova = new Prova();
+    const radice = path.join(prova.cartella, 'sceneggiatore');
+    const c = cartelle(radice);
+    scriviJson(c.vivo, { ts: Date.now(), pid: 0, modello: 'prova' });
+    const { url } = await prova.avvia(prova.campagna('mini', { battute: { 'narrazione.yaml': [pioggia] } }), muto, {}, { sceneggiatore: { radice, tettoMs: 30_000, tettoChiusuraMs: 10_000 } });
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const m = await prova.master(url);
+    const s2 = await turno(tel, 'pg_anna', await inizia(schermo, tel), 'Ascolto il temporale.');
+    const chiusa = attendi(tel, (x) => !!x.fine_serata, 15_000);
+    expect(await m.comanda({ tipo: 'chiudi_sessione' })).toEqual({ ok: true });
+    const rq = await richiestaDi(c, 'chiusura');
+    expect(rq).toMatchObject({ turno: s2.turno, quante: 1, scena: { id: 'scena_locanda' } });
+    expect(rq.trascrizione.join(' ')).toContain('Anna ascolta.');
+    scriviJson(path.join(c.risposte, `${rq.id}.json`), {
+      id: rq.id,
+      esito: 'ok',
+      ms: 800,
+      yaml: `battute:\n  - id: ${rq.prefisso}1\n    chi: narratore\n    tipo: chiusura\n    quando: "il master chiude la serata"\n    temi: [sera]\n    testo:\n      - "[narratore] La locanda si fa silenziosa, e il temporale si allontana."\n      - "[narratore] Domani qualcuno chiederà di quel vino."\n`,
+    });
+    const fine = await chiusa;
+    expect(fine.trascrizione.filter((v) => v.turno === s2.turno && v.tipo === 'narrazione').map((v) => v.testo)).toEqual([
+      'La pioggia batte sulle imposte.',
+      'La locanda si fa silenziosa, e il temporale si allontana.',
+      'Domani qualcuno chiederà di quel vino.',
+    ]);
+    expect(prova.narrazioni().find((r) => r['tipo'] === 'sceneggiatore' && r['tipo_richiesta'] === 'chiusura')).toMatchObject({ consegnata: true, esito: 'ok' });
+  }, 30_000);
+
+  it('non risponde in tempo: dopo l’attesa della lingua, il narratore, e senza prosa la frase fissa del Motore', async () => {
+    prova = new Prova();
+    const radice = path.join(prova.cartella, 'sceneggiatore');
+    const c = cartelle(radice);
+    scriviJson(c.vivo, { ts: Date.now(), pid: 0, modello: 'prova' });
+    const { url } = await prova.avvia(prova.campagna('mini'), muto, {}, { sceneggiatore: { radice, tettoMs: 30_000, tettoChiusuraMs: 300 } });
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const m = await prova.master(url);
+    const s2 = await turno(tel, 'pg_anna', await inizia(schermo, tel), 'Ascolto il temporale.');
+    const chiusa = attendi(tel, (x) => !!x.fine_serata, 15_000);
+    expect(await m.comanda({ tipo: 'chiudi_sessione' })).toEqual({ ok: true });
+    await richiestaDi(c, 'chiusura');
+    const fine = await chiusa;
+    expect(fine.trascrizione.filter((v) => v.turno === s2.turno && v.tipo === 'narrazione').map((v) => v.testo)).toEqual([
+      testo('regia.righe.attesa_chiusura'),
+      testo('regia.righe.chiusura_riserva'),
+    ]);
+  }, 30_000);
+
+  it('una chiusura preparata che vale adesso: niente richiesta, e vince quella legata alla scena', async () => {
+    prova = new Prova();
+    const radice = path.join(prova.cartella, 'sceneggiatore');
+    const c = cartelle(radice);
+    scriviJson(c.vivo, { ts: Date.now(), pid: 0, modello: 'prova' });
+    const chiusura = (id: string, riga: string, extra: Record<string, unknown> = {}) => ({ id, chi: 'narratore', tipo: 'chiusura', quando: 'il master chiude la serata', temi: ['sera'], testo: [`[narratore] ${riga}`], max_usi: 1, ...extra });
+    const cartella = prova.campagna('mini', { battute: { 'narrazione.yaml': [chiusura('nar_chiusura_ovunque', 'La notte scende su tutto.'), chiusura('nar_chiusura_locanda', 'Il camino della locanda si spegne.', { scena: 'scena_locanda' })] } });
+    const { url } = await prova.avvia(cartella, muto, {}, { sceneggiatore: { radice, tettoMs: 30_000 } });
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const m = await prova.master(url);
+    const s2 = await turno(tel, 'pg_anna', await inizia(schermo, tel), 'Ascolto il temporale.');
+    const chiusa = attendi(tel, (x) => !!x.fine_serata, 15_000);
+    expect(await m.comanda({ tipo: 'chiudi_sessione' })).toEqual({ ok: true });
+    const fine = await chiusa;
+    expect(fine.trascrizione.filter((v) => v.turno === s2.turno && v.tipo === 'narrazione').map((v) => v.testo)).toEqual(['Il camino della locanda si spegne.']);
+    expect(fs.readdirSync(c.richieste).map((f) => leggiJson<RichiestaSceneggiatore>(path.join(c.richieste, f))?.tipo)).not.toContain('chiusura');
   }, 30_000);
 });

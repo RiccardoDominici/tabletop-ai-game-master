@@ -14,7 +14,8 @@ export const FILE_REGISTRO_SCENEGGIATORE = 'sceneggiatore.jsonl';
 /** Oltre questo silenzio lo sceneggiatore non c'è più: il server smette di chiedere. */
 export const VIVO_ENTRO_MS = 20_000;
 
-export type TipoRichiesta = 'prossime' | 'subito';
+/** `chiusura`: «Chiudi la sessione» senza una battuta di chiusura che valga adesso; il tavolo aspetta. */
+export type TipoRichiesta = 'prossime' | 'subito' | 'chiusura';
 
 /** Ciò che lo sceneggiatore riceve: la scena così com'è al tavolo, e che cosa scrivere. */
 export interface RichiestaSceneggiatore {

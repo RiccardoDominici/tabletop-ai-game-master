@@ -23,6 +23,8 @@ regia:
     serata_chiusa: "The evening is over: see you next time."
     # Guided closing with no closing line and no narrator prose (minimal reader): the Engine says this.
     chiusura_riserva: "This is where the story stops for tonight. It picks up from this very moment next time."
+    # While the sceneggiatore writes the closing and there is no narrator filler to say.
+    attesa_chiusura: "The scene hangs still for a moment."
     ripresa: "The session picks up where it left off."
     scena_fermata: "Scene stopped."
     narrazione_interrotta: "The Game Master stopped the narration."

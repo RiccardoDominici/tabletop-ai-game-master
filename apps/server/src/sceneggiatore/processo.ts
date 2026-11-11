@@ -61,6 +61,8 @@ const arg = (nome: string, predefinito: string): string => {
 const RADICE = path.resolve(arg('--radice', path.join(RADICE_REPO, 'logs', 'sceneggiatore')));
 const MODELLI: Record<RichiestaSceneggiatore['tipo'], string> = {
   subito: process.env['TAGM_SCENEGGIATORE_MODELLO_SUBITO'] ?? process.env['TAGM_SCENEGGIATORE_MODELLO'] ?? 'sonnet',
+  // La chiusura della serata la aspetta tutto il tavolo, come una «subito».
+  chiusura: process.env['TAGM_SCENEGGIATORE_MODELLO_SUBITO'] ?? process.env['TAGM_SCENEGGIATORE_MODELLO'] ?? 'sonnet',
   prossime: process.env['TAGM_SCENEGGIATORE_MODELLO_PROSSIME'] ?? process.env['TAGM_SCENEGGIATORE_MODELLO'] ?? 'haiku',
 };
 const ATTESA_MS = Number(arg('--attesa-s', '180')) * 1000;
@@ -112,14 +114,18 @@ function contestoDi(rq: RichiestaSceneggiatore): { contesto: string; segrete: st
   const parole = caricaParoleSegreteCampagna(campagna);
   const rep = caricaRepertorio(campagna);
   const esempi = rep.battute
-    .filter((b) => !b.solo_esempio && (b.scene.length === 0 || b.scene.includes(rq.scena.id)) && ['reazione', 'momento', 'rifiuto'].includes(b.tipo))
+    // Per la chiusura gli esempi sono le chiusure preparate, anche di altre scene: danno il tono della campagna.
+    .filter((b) => !b.solo_esempio && (rq.tipo === 'chiusura' ? b.tipo === 'chiusura' : (b.scene.length === 0 || b.scene.includes(rq.scena.id)) && ['reazione', 'momento', 'rifiuto'].includes(b.tipo)))
     .slice(0, 3)
     .map((b) => `- id: ${b.id}\n  chi: ${b.chi}\n  tipo: ${b.tipo}\n  quando: "${b.quando}"\n  temi: [${b.temi.join(', ')}]\n  testo:\n${b.testo.map((r) => `    - "[${r.etichetta}] ${r.testo}"`).join('\n')}`)
     .join('\n');
   return { contesto: compilaContestoRepertorio(campagna, parole, rep), segrete: parole.map((p) => p.parola), esempi };
 }
 
-/** La prossima richiesta da fare: la `subito` più vecchia, se no la `prossime` più recente (le altre si saltano). */
+/**
+ * La prossima richiesta da fare: la `chiusura` (a fine serata le `prossime` non servono più e si saltano), se no
+ * la `subito` più vecchia, se no la `prossime` più recente (le altre si saltano).
+ */
 function prossimaRichiesta(): RichiestaSceneggiatore | null {
   if (!fs.existsSync(c.richieste)) return null;
   const tutte = fs
@@ -128,14 +134,15 @@ function prossimaRichiesta(): RichiestaSceneggiatore | null {
     .map((f) => leggiJson<RichiestaSceneggiatore>(path.join(c.richieste, f)))
     .filter((r): r is RichiestaSceneggiatore => !!r)
     .sort((a, b) => a.creata.localeCompare(b.creata));
-  const subito = tutte.find((r) => r.tipo === 'subito');
-  if (subito) return subito;
   const prossime = tutte.filter((r) => r.tipo === 'prossime');
-  for (const vecchia of prossime.slice(0, -1)) {
+  const chiusura = tutte.find((r) => r.tipo === 'chiusura');
+  const subito = tutte.find((r) => r.tipo === 'subito');
+  if (subito && !chiusura) return subito;
+  for (const vecchia of chiusura ? prossime : prossime.slice(0, -1)) {
     rispondi(vecchia, { id: vecchia.id, esito: 'saltata', ms: 0 });
     registra({ id: vecchia.id, tipo: vecchia.tipo, turno: vecchia.turno, esito: 'saltata' });
   }
-  return prossime.at(-1) ?? null;
+  return chiusura ?? prossime.at(-1) ?? null;
 }
 
 function rispondi(rq: RichiestaSceneggiatore, r: RispostaSceneggiatore): void {

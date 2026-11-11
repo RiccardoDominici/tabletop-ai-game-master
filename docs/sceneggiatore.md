@@ -12,10 +12,14 @@ token used for direct calls.
   writes two kinds of request:
   - `subito`: for each public action to which the reader has not given a line. A reply consisting only of a waiting line
     (filler) also counts as «nessuna» (none). The answer is ONE line, the one the table is waiting for;
-  - `prossime`: 6 lines for the most likely actions of the next turn, one for each NPC present.
-- **One request at a time**: first the `subito`, the oldest; then the most recent `prossime`. The older ones are skipped,
-  because the scene has already moved on.
-- **Models**: the `subito` with sonnet. «lettore» (reader) measured `claude -p`: a line in about 4 s with sonnet, about
+  - `prossime`: 6 lines for the most likely actions of the next turn, one for each NPC present;
+  - `chiusura`: at «Chiudi la sessione», when no `tipo: chiusura` line of the repertoire fits the current scene and
+    state. The answer is ONE narrator line of type `chiusura`, written from the evening's public transcript (the last 80
+    lines) and the public state: the moment where the table stops, a closing image, a hook on a thread left open.
+- **One request at a time**: first the `chiusura`, and then every waiting `prossime` is skipped, because the evening is over;
+  then the `subito`, the oldest; then the most recent `prossime`. The older ones are skipped, because the scene has
+  already moved on.
+- **Models**: the `subito` and the `chiusura` with sonnet. «lettore» (reader) measured `claude -p`: a line in about 4 s with sonnet, about
   7.5 s with haiku, and sonnet writes it even better; the table is waiting for it. The `prossime` go with haiku, because
   nobody is waiting for them and they use less quota. The variables `TAGM_SCENEGGIATORE_MODELLO_SUBITO` and
   `_PROSSIME` change them. The local reader says «nessuna» (none) about once in two, so the scriptwriter is the main
@@ -80,6 +84,11 @@ with their `temi`. Those that do not pass stay in the log with the reason.
    transcript shows it.
 3. Beyond the ceiling, or if the table has moved on: it is not said. It stays in the repertoire, where the reader can
    choose it on the next turn. If the scriptwriter does not answer, the waiting line is the **backup**: it did the job.
+4. At «Chiudi la sessione», while the `chiusura` is being written: a narrator filler without effects, or the language
+   pack's `regia.righe.attesa_chiusura`. The Engine waits up to 30 s (`TETTO_CHIUSURA_MS` in `scena/regia.ts`) and
+   accepts only a narrator line of type `chiusura`. Beyond that the narrator closes, and if it writes no prose (the
+   minimal reader) the Engine says `regia.righe.chiusura_riserva`. A closing that arrives late stays in the repertoire
+   for that scene.
 
 ## Audio
 When a line from the `prossime` enters the repertoire, with the drama-3 voice its synthesis goes into the background

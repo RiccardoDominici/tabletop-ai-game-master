@@ -202,7 +202,11 @@ These three commands cannot be undone. For this reason they ask for a second cli
   - The projector then shows «Cosa è successo stasera» (What happened tonight): the summary, the open threads and the characters' hit points.
   - The server writes the log and, next to it, `riassunto.yaml`.
   - The session stays saved. **Riprendi** (Resume) reopens it on the next evening, which starts with «La volta scorsa…» (Last time…).
-- Where the closing comes from: the repertoire line of type `chiusura`, if the campaign has one; otherwise the narrator writes it. The local reader in minimal mode writes no prose. So with that reader and no `chiusura` line, the Engine says one fixed line: «Per stasera la storia si ferma qui. Riprende da questo punto, la prossima volta.»
+- Where the closing comes from, in this order:
+  1. The campaign's closing line (type `chiusura`) for the current scene. The Preparer writes one per scene. A variant with conditions (for example "while Berta still holds the key") wins when its conditions hold.
+  2. If none fits, the sceneggiatore writes one from what the table heard tonight, when it is on. Meanwhile the table hears a short waiting line, for up to 30 seconds.
+  3. Then the narrator. The local reader in minimal mode writes no prose, so with that reader this step says nothing.
+  4. Only if nobody wrote anything, the Engine says one fixed line: «Per stasera la storia si ferma qui. Riprende da questo punto, la prossima volta.»
 - How long the summary takes: with Haiku the Engine waits 20 seconds. With the local model it waits up to 3 minutes, because the summary of an evening took about 100 seconds there. While it waits, the panel says «Chiusura in corso: il narratore scrive il riassunto.» (Closing in progress: the narrator is writing the summary.) When the wait runs out, the Engine uses its own summary: the places visited and the last clock marks, with no open threads.
 
 ### Log

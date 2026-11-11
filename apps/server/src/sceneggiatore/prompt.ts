@@ -15,9 +15,11 @@ export const promptSceneggiatore = (): string => prompt('sceneggiatore');
 export function messaggioSceneggiatore(rq: RichiestaSceneggiatore, contesto: string, paroleSegrete: string[], esempi: string): string {
   const t = (k: string, v: Record<string, string | number> = {}): string => testo(`modelli.sceneggiatore.${k}`, v);
   const compito =
-    rq.tipo === 'subito' && rq.azione
-      ? t('subito', { nome: rq.azione.nome, id_pg: rq.azione.id_pg, testo: rq.azione.testo, privata: rq.azione.privata ? t('privata') : '' })
-      : t('prossime', { quante: rq.quante });
+    rq.tipo === 'chiusura'
+      ? t('chiusura')
+      : rq.tipo === 'subito' && rq.azione
+        ? t('subito', { nome: rq.azione.nome, id_pg: rq.azione.id_pg, testo: rq.azione.testo, privata: rq.azione.privata ? t('privata') : '' })
+        : t('prossime', { quante: rq.quante });
   return [
     t('contesto', { contesto }),
     t('scena', { titolo: rq.scena.titolo, id: rq.scena.id, presenti: rq.scena.png_presenti.join(', ') || t('nessuno') }),

@@ -50,6 +50,7 @@ modelli:
     subito: "Write ONE line that answers this action, now (the player is waiting): {nome} ({id_pg}): «{testo}». If the action is aimed at an NPC who is present, that NPC answers; otherwise the narrator tells the effect.{privata}"
     privata: " It is a PRIVATE action: only that player hears the answer, on their phone. The NPC speaks under their breath, or the narrator tells what only that PC sees or hears; nobody else at the table notices."
     prossime: "Write {quante} lines for the most likely actions of the next turn, different from each other: who talks to whom, what they touch, what they ask. At least one for every NPC present."
+    chiusura: "The Game Master is closing the evening. Write ONE line with `tipo: chiusura` and `chi: narratore`, two to four [narratore] rows: the moment where the table stops, a closing image, and a hook for next time on a thread left open in the transcript (a question with no answer yet, a clock that is running). Only what the table has seen and heard: no new mysteries, no secret words, and the PCs do nothing their players have not said."
     nessuno: "none"
     nessuna: "(none)"
     trattino: "—"

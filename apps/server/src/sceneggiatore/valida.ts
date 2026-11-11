@@ -30,6 +30,8 @@ import { campoElenco, campoTesto, regole } from '../lingua/motore';
 
 const FILE = 'sceneggiatore.yaml';
 export const TIPI_SCENEGGIATORE: ReadonlySet<TipoBattuta> = new Set<TipoBattuta>(['reazione', 'momento', 'richiesta', 'rifiuto', 'saluto']);
+/** In risposta a una richiesta `chiusura` (fine serata), solo questo tipo. */
+export const TIPI_CHIUSURA: ReadonlySet<TipoBattuta> = new Set<TipoBattuta>(['chiusura']);
 /** Righe al massimo per battuta, e caratteri per riga: si leggono a voce. */
 export const MAX_RIGHE = 4;
 export const MAX_CARATTERI_RIGA = 240;
@@ -49,6 +51,8 @@ export interface ContestoValidazione {
   privata?: boolean;
   /** Tic usciti nelle ultime righe di un PNG (sceneggiatore/ripetizioni.ts): id → tic normalizzati. */
   ticBloccati?: ReadonlyMap<string, string[]>;
+  /** Risposta a una richiesta `chiusura`: si accetta solo una battuta `chiusura` del narratore. */
+  chiusura?: boolean;
 }
 
 export interface EsitoValidazione {
@@ -84,7 +88,8 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     if (ctx.esistenti.has(id) || visti.has(id)) return void scartate.push({ id, motivo: 'id ripetuto' });
     visti.add(id);
     const tipo = b['tipo'] as TipoBattuta;
-    if (!TIPI_SCENEGGIATORE.has(tipo)) return void scartate.push({ id, motivo: `tipo non ammesso per lo sceneggiatore: ${String(tipo)}` });
+    if (!(ctx.chiusura ? TIPI_CHIUSURA : TIPI_SCENEGGIATORE).has(tipo)) return void scartate.push({ id, motivo: `tipo non ammesso per lo sceneggiatore: ${String(tipo)}` });
+    if (ctx.chiusura && b['chi'] !== 'narratore') return void scartate.push({ id, motivo: 'la chiusura della serata la dice il narratore' });
     if (b['richiede'] !== undefined || b['effetti'] !== undefined) return void scartate.push({ id, motivo: 'richiede/effetti non ammessi: le rivelazioni restano quelle preparate' });
     delete b['varianti'];
     delete b['solo_esempio'];

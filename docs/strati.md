@@ -116,9 +116,10 @@ one stays on the finished one, with the warning in the panel); the last one play
 ### Recap and closing of the evening (requests of 9 November, §9)
 - **Chiudi la sessione** (Close the session) (panel): guided closing. The queued actions go back to the players; the
   narrator closes the evening (three to five lines: the moment in progress, a closing image, a hook; no new mysteries;
-  in improvised mode B, or a `tipo: chiusura` line from the repertoire if there is one, spoken by the Engine; if there is
-  none and the narrator writes no prose, as with the minimal reader, the Engine says the language pack's fixed line
-  `regia.righe.chiusura_riserva`). Then the
+  in improvised mode B). Who closes, in order: the `tipo: chiusura` line of the repertoire that fits now (tied to the
+  scene, gates met; the one with most conditions wins), spoken by the Engine; otherwise the sceneggiatore writes it on
+  request while the table hears a waiting line (up to 30 s, docs/sceneggiatore.md); otherwise the narrator; and if it
+  writes no prose, as the minimal reader, the language pack's fixed line `regia.righe.chiusura_riserva`. Then the
   projector shows «Cosa è successo stasera» (What happened tonight) (recap, open threads, the PCs' PF, i.e. hit points),
   and the server writes the log and, next to it, `riassunto.yaml` (one entry per evening: `etichetta`, `quando`,
   `testo`, `fili`). The archive's session stays OPEN: a one-shot resumes the next evening (Riprendi, or server

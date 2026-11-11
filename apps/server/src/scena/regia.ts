@@ -73,6 +73,8 @@ import { giaUsati, ticBloccati } from '../sceneggiatore/ripetizioni';
 
 /** Oltre questo tempo la battuta chiesta «subito» allo sceneggiatore non si dice più (resta nel repertorio). */
 export const TETTO_SCENEGGIATORE_MS = 90_000;
+/** Quanto il tavolo aspetta la chiusura scritta dallo sceneggiatore (una «subito» con sonnet: pochi secondi). */
+export const TETTO_CHIUSURA_MS = 30_000;
 import { SerataGuidata } from './serata';
 import { climaxInCorso } from '../sessione/durata';
 import { normalizza } from '../azioni/regole';
@@ -157,7 +159,7 @@ export interface OpzioniRegia {
    * Lo sceneggiatore (docs/sceneggiatore.md): la cartella sorvegliata dove chiedere battute a Claude Code
    * mentre si gioca, e il tetto oltre cui la battuta scritta su richiesta non si dice più. null = spento.
    */
-  sceneggiatore?: { radice: string; tettoMs?: number } | null;
+  sceneggiatore?: { radice: string; tettoMs?: number; tettoChiusuraMs?: number } | null;
   /** Le battute delle «prossime» appena entrate nel repertorio: la loro voce va in cache in sottofondo (drama-3). */
   preGeneraAudio?: ((battute: readonly Battuta[]) => unknown) | null;
   cacheAudio?: CacheAudio;
@@ -270,6 +272,8 @@ export class Regia {
   private readonly attesaSubito = new Map<string, { pg: string; turno: number; privata: boolean }>();
   /** Progressivo delle frasi dette dallo sceneggiatore (id delle frasi della voce). */
   private frasiSceneggiatore = 0;
+  /** La chiusura chiesta allo sceneggiatore, che il tavolo sta aspettando. */
+  private attesaChiusura: { id: string; risolvi: (b: Battuta | null) => void } | null = null;
   /** La serata: «La volta scorsa…», Diario, durata e chiusura guidata (scena/serata.ts). */
   private readonly serata: SerataGuidata;
   /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
@@ -1118,12 +1122,89 @@ export class Regia {
    * La chiusura detta dal Motore quando né il repertorio (nessuna battuta `chiusura`) né il narratore hanno
    * righe: nell'E2E finale, profilo A, «Chiudi la sessione» su torre-mozza chiudeva in silenzio.
    */
-  private chiusuraDiRiserva(turno: number, log: Logger): void {
-    const frase = testoFisso('regia.righe.chiusura_riserva');
-    const { voce_id, nome } = voceDi(this.campagna, ID_NARRATORE);
-    this.aggiungiTrascrizione({ turno, tipo: 'narrazione', chi: ID_NARRATORE, nome, testo: frase });
-    this.pipeline.accoda({ id_frase: `t${turno}-c0`, turno, indice: 0, parlante: ID_NARRATORE, nome, voce_id, testo: frase, testo_voce: this.pronuncia(frase) });
+  private chiusuraDiRiserva(turno: number, log: Logger, indice = 0): void {
+    this.diciRigheChiusura(turno, [{ etichetta: ID_NARRATORE, testo: testoFisso('regia.righe.chiusura_riserva') }], indice, 'c');
     log.info({}, 'serata: nessuna riga per la chiusura, la dice il Motore');
+  }
+
+  /** Righe della chiusura (o della sua attesa): in trascrizione e alla voce, da `da` in poi. */
+  private diciRigheChiusura(turno: number, righe: ReadonlyArray<{ etichetta: string; testo: string }>, da: number, prefisso: string): number {
+    righe.forEach((r, k) => {
+      const { voce_id, nome } = voceDi(this.campagna, r.etichetta);
+      this.aggiungiTrascrizione({ turno, tipo: r.etichetta === ID_NARRATORE ? 'narrazione' : 'battuta', chi: r.etichetta, nome, testo: r.testo });
+      this.pipeline.accoda({ id_frase: `t${turno}-${prefisso}${da + k}`, turno, indice: da + k, parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: this.pronuncia(r.testo) });
+    });
+    return righe.length;
+  }
+
+  /** La battuta `chiusura` che vale adesso: prima quelle legate alla scena, poi quelle con più condizioni. */
+  private chiusuraDalRepertorio(turno: number): Battuta | null {
+    const s = this.statoRepertorio;
+    if (!s) return null;
+    const condizioni = (b: Battuta): number => Object.values(b.richiede).filter((v) => (Array.isArray(v) ? v.length > 0 : v !== null && v !== undefined && v !== false)).length;
+    const peso = (b: Battuta): number => (b.scene.length ? 100 : 0) + condizioni(b);
+    return s.disponibili(turno).filter((b) => b.tipo === 'chiusura').sort((a, b) => peso(b) - peso(a))[0] ?? null;
+  }
+
+  /** Dice una battuta di chiusura (preparata o dello sceneggiatore): quante righe (0 = non usabile). */
+  private diciChiusura(turno: number, b: Battuta, da: number): number {
+    const uso = this.statoRepertorio!.usa(b.id, turno, { inRisposta: new Set() });
+    if (!uso.ok) {
+      this.o.log.warn({ battuta: b.id, motivo: uso.motivo }, 'serata: battuta di chiusura non usabile');
+      return 0;
+    }
+    return this.diciRigheChiusura(turno, uso.righe, da, 'c');
+  }
+
+  /**
+   * Nessuna chiusura preparata vale adesso: la chiede allo sceneggiatore (Claude Code) dalla trascrizione
+   * pubblica e dallo stato, e intanto il tavolo sente un'attesa. Oltre il tetto, o se lo sceneggiatore è
+   * spento, null (poi il narratore, poi la frase fissa). `indice`: le righe d'attesa già dette.
+   */
+  private async chiusuraDalloSceneggiatore(turno: number, log: Logger): Promise<{ battuta: Battuta | null; indice: number }> {
+    const canale = this.sceneggiatore;
+    if (!canale || !this.statoRepertorio || this.spento || !canale.vivo) return { battuta: null, indice: 0 };
+    const id = canale.nuovoId('chiusura', turno);
+    if (!canale.chiedi(this.richiestaSceneggiatore(id, 'chiusura', turno, 1))) return { battuta: null, indice: 0 };
+    const indice = this.diciAttesaChiusura(turno);
+    const tetto = this.o.sceneggiatore?.tettoChiusuraMs ?? TETTO_CHIUSURA_MS;
+    log.info({ richiesta: id, tetto }, 'serata: chiusura chiesta allo sceneggiatore');
+    const battuta = await new Promise<Battuta | null>((risolvi) => {
+      const timer = setTimeout(() => {
+        if (this.attesaChiusura?.id !== id) return;
+        this.attesaChiusura = null;
+        log.warn({ richiesta: id, tetto }, 'serata: lo sceneggiatore non ha scritto la chiusura in tempo');
+        risolvi(null);
+      }, tetto);
+      this.attesaChiusura = {
+        id,
+        risolvi: (b) => {
+          clearTimeout(timer);
+          this.attesaChiusura = null;
+          risolvi(b);
+        },
+      };
+    });
+    return { battuta, indice };
+  }
+
+  /** Mentre lo sceneggiatore scrive: un riempitivo del narratore senza effetti, o la frase d'attesa della lingua. */
+  private diciAttesaChiusura(turno: number): number {
+    const s = this.statoRepertorio!;
+    const quieto = (b: Battuta): boolean =>
+      b.riempitivo && b.chi === ID_NARRATORE && !b.effetti.avanza_orologio && !b.effetti.menzogna_detta && !b.effetti.rivela_indizi.length && !b.effetti.fatti_noti.length;
+    const b = s.disponibili(turno).find(quieto);
+    const uso = b ? s.usa(b.id, turno, { inRisposta: new Set() }) : null;
+    this.o.log.info({ turno, battuta: uso?.ok ? b!.id : null }, 'serata: attesa della chiusura');
+    return this.diciRigheChiusura(turno, uso?.ok ? uso.righe : [{ etichetta: ID_NARRATORE, testo: testoFisso('regia.righe.attesa_chiusura') }], 0, 'a');
+  }
+
+  /** La risposta dello sceneggiatore alla chiusura in attesa: true = arrivata in tempo. */
+  private rispostaChiusura(id: string, b: Battuta | null): boolean {
+    const a = this.attesaChiusura;
+    if (!a || a.id !== id) return false;
+    a.risolvi(b);
+    return true;
   }
 
   private async eseguiChiusura(turno: number, alFinire?: (r: RiassuntoSerata) => void): Promise<void> {
@@ -1133,16 +1214,20 @@ export class Regia {
     this.sorvegliante.inizia(turno, 'narrazione', 'chiusura della serata');
     this.notifica();
     const log = this.o.log.child({ turno, chiusura: true });
-    const battuta = this.statoRepertorio?.disponibili(turno).find((b) => b.tipo === 'chiusura') ?? null;
-    const uso = battuta ? this.statoRepertorio!.usa(battuta.id, turno, { inRisposta: new Set() }) : null;
-    if (uso?.ok) {
-      log.info({ battuta: uso.battuta.id }, 'serata: chiusura dal repertorio');
-      uso.righe.forEach((r, k) => {
-        const { voce_id, nome } = voceDi(this.campagna, r.etichetta);
-        this.aggiungiTrascrizione({ turno, tipo: r.etichetta === ID_NARRATORE ? 'narrazione' : 'battuta', chi: r.etichetta, nome, testo: r.testo });
-        this.pipeline.accoda({ id_frase: `t${turno}-c${k}`, turno, indice: k, parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: this.pronuncia(r.testo) });
-      });
-    } else {
+    // Chi chiude: 1. una battuta `chiusura` del repertorio che vale adesso (scena, cancelli); 2. lo sceneggiatore,
+    // che la scrive su richiesta mentre il tavolo sente un'attesa; 3. il narratore; 4. la frase fissa del Motore.
+    const preparata = this.chiusuraDalRepertorio(turno);
+    let detta = preparata ? this.diciChiusura(turno, preparata, 0) > 0 : false;
+    if (detta) log.info({ battuta: preparata!.id }, 'serata: chiusura dal repertorio');
+    let indice = 0;
+    if (!detta) {
+      const scritta = await this.chiusuraDalloSceneggiatore(turno, log);
+      if (epoca !== this.epoca) return;
+      indice = scritta.indice;
+      detta = scritta.battuta ? this.diciChiusura(turno, scritta.battuta, indice) > 0 : false;
+      if (detta) log.info({ battuta: scritta.battuta!.id }, 'serata: chiusura scritta dallo sceneggiatore');
+    }
+    if (!detta) {
       const controllo = new AbortController();
       this.controlloLlm = controllo;
       const messaggio = messaggioChiusura({
@@ -1175,7 +1260,7 @@ export class Regia {
       if (esito.esito) this.o.registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'chiusura', turno, modello: esito.esito.modello, ...esito.esito.costo });
       log.info({ frasi: esito.frasi, errore: esito.errore }, 'serata: chiusura narrata');
       // Nessuna frase (il lettore minimo non scrive prosa, o il modello è caduto): la chiusura la dice il Motore.
-      if (!esito.frasi) this.chiusuraDiRiserva(turno, log);
+      if (!esito.frasi) this.chiusuraDiRiserva(turno, log, indice);
     }
     // Il riassunto si scrive mentre la voce legge la chiusura.
     const riassunto = this.serata.riassumi(this.trascrizione, this.titoliScene([...this.sceneVisitate]), this.segniMostrati(), turno);
@@ -1232,7 +1317,8 @@ export class Regia {
       campagna: this.o.campagna.cartella,
       scena: { id: sc.id, titolo: sc.titolo, png_presenti: [...this.pngInScena()] },
       ...(azione ? { azione } : {}),
-      trascrizione: this.trascrizione.filter((v) => v.tipo !== 'sistema').slice(-30).map((v) => `${v.nome}: ${v.testo}`),
+      // Per la chiusura serve la serata, non solo il momento: più righe.
+      trascrizione: this.trascrizione.filter((v) => v.tipo !== 'sistema').slice(tipo === 'chiusura' ? -80 : -30).map((v) => `${v.nome}: ${v.testo}`),
       stato: { indizi_rivelati: [...s.indiziRivelati], fatti_noti: [...s.fattiNoti], battute_usate: [...s.usi.keys()], orologi: this.orologi.riepilogo() },
       prefisso: `sc_${id.replace(/[^a-z0-9]+/gi, '_').toLowerCase()}_`,
       quante,
@@ -1253,6 +1339,7 @@ export class Regia {
     const ms = this.o.orologio.adesso() - Date.parse(rq.creata);
     const riga = { sessione: this.sessione, turno: this.turno, tipo: 'sceneggiatore', richiesta: rq.id, tipo_richiesta: rq.tipo, per_turno: rq.turno, esito: rs.esito, ms_claude: rs.ms, ms_totale: ms } as Record<string, unknown>;
     if (!s || rs.esito !== 'ok' || !rs.yaml || this.spento) {
+      if (rq.tipo === 'chiusura') this.rispostaChiusura(rq.id, null);
       this.o.registroNarrazioni.scrivi({ ...riga, accettate: [], scartate: [], consegnata: false, ...(rs.errore ? { errore: rs.errore } : {}) });
       return;
     }
@@ -1267,12 +1354,18 @@ export class Regia {
       detto: this.trascrizione.filter((x) => x.tipo !== 'sistema').map((x) => x.testo).join('\n'),
       privata: subito?.privata === true,
       ticBloccati: ticBloccati(this.trascrizione, this.campagna.png),
+      chiusura: rq.tipo === 'chiusura',
     });
     for (const b of v.accettate) {
       s.repertorio.battute.push(b);
       s.repertorio.perId.set(b.id, b);
     }
     this.o.log.info({ richiesta: rq.id, tipo: rq.tipo, accettate: v.accettate.map((b) => b.id), scartate: v.scartate, ms }, 'sceneggiatore: battute nel repertorio');
+    if (rq.tipo === 'chiusura') {
+      const inTempo = this.rispostaChiusura(rq.id, v.accettate[0] ?? null);
+      this.o.registroNarrazioni.scrivi({ ...riga, accettate: v.accettate.map((b) => ({ id: b.id, tipo: b.tipo, testo: b.testo })), scartate: v.scartate, consegnata: inTempo && v.accettate.length > 0 });
+      return;
+    }
     // Le «prossime» si diranno più avanti: la loro voce si prepara adesso, in sottofondo.
     if (rq.tipo === 'prossime' && v.accettate.length) this.o.preGeneraAudio?.(v.accettate);
     const tetto = this.o.sceneggiatore?.tettoMs ?? TETTO_SCENEGGIATORE_MS;
