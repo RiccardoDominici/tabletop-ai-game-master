@@ -147,3 +147,14 @@ sceneggiatore:
   genitivo: [di, del, della]
   possessivo: ''
   parti_del_corpo: [mano, mani, pugno, pugni, dito, dita, braccio, braccia, spalla, spalle, schiena, testa, viso, faccia, volto, occhio, occhi, sguardo, bocca, labbra, voce, sorriso, fiato, respiro, cuore, gamba, gambe, piede, piedi, passo, passi, ginocchia, fronte, guance, mento, collo, pelle, corpo]
+
+# Fatti dello scontro che il tavolo deve sentire (apps/server/src/prove/fatti-dovuti.ts): una riga detta li racconta
+# se nomina la creatura e contiene una parola che comincia con una di queste radici (minuscole, senza accenti).
+# Senza, il Motore aggiunge la riga breve di testi-prove.yaml («prove.dovuti.<tipo>»).
+fatti_dovuti:
+  colpito: [colp, feri, sangu, tagli, affond, incass, centr, trafigg, trafitt, trapass, squarc, mord, morso, graff, spacc, schiacc, lacer, pugnal, ustion, bruci, barcoll, ammacc, sfregi]
+  a_terra: [terra, cade, cadd, cadon, cadut, crolla, svien, svenn, svenut, sensi, accasci, stramazz, abbatt, suolo, pavimento]
+  morente: [terra, mort, sensi, immobil, respir, vita, svenut, agonia, rantol, sangu]
+  stabile: [respir, stabil, vivo, viva, vivi, sensi, polso, immobil]
+  rialzato: [occhi, rialz, alza, sensi, torna, sveglia, risveglia, riprend, rinvien, rinven]
+  morto: [mort, muor, morir, spir, esanim, cadaver, uccis, defunt]

@@ -176,6 +176,14 @@ prove:
     intestazione_tocca: " Now it is the turn of: {chi}: close by inviting only {pronome}, it is their turn."
     loro: "them"
     lui_o_lei: "him or her"
+  # Short Engine lines for a combat fact the narration left out (prove/fatti-dovuti.ts).
+  dovuti:
+    colpito: "{nome} takes the blow."
+    a_terra: "{nome} falls to the ground."
+    morente: "{nome} lies on the ground, between life and death."
+    stabile: "{nome} is still breathing, but does not move."
+    rialzato: "{nome}'s eyes open again."
+    morto: "{nome} dies."
 
 regole:
   domanda:

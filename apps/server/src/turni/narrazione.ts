@@ -75,7 +75,8 @@ export type VoceUscita =
     }
   | { tipo: 'usa_rifiutato'; id: string; per: string | null; motivo: string }
   /** `frasi`: id delle frasi mandate alla voce; `segmento`: la riga della trascrizione. */
-  | { tipo: 'improvvisata'; etichetta: string; testo: string; frasi?: string[]; segmento?: number; privato?: string };
+  /** `motore`: righe dette dal Motore (fatti dello scontro che la narrazione non aveva detto), non dal modello. */
+  | { tipo: 'improvvisata'; etichetta: string; testo: string; frasi?: string[]; segmento?: number; privato?: string; motore?: boolean };
 
 export interface EsitoTurnoNarrato {
   invito: string[] | 'tutti' | null;

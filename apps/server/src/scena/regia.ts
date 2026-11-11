@@ -100,6 +100,7 @@ import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
 import type { CombattimentoMaster } from '@cantastorie/shared';
 import type { FonteDadi } from '../prove/dadi';
 import { regolaEsiti, titoloEsiti } from '../prove/testi';
+import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dovuti';
 import { guardiaPrivate } from '../narrazione/privato';
 import type { SchedaNumerica } from '../campagna/schede';
 
@@ -2331,7 +2332,9 @@ export class Regia {
     ];
     // Mossa del mondo (nessuna azione): la narrazione resta nella finzione (narrazione/finzione.ts).
     const mossaDelMondo = r.azioni.length === 0;
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno).catch((err: unknown) =>
+    // Colpi, cadute e tiri contro la morte del turno: il Motore controlla che il tavolo li senta.
+    const dovuti = tiri ? fattiDovuti(tiri.tiri, tiri.combattimento?.morte ?? []) : [];
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti).catch((err: unknown) =>
       this.dopoEccezione(epoca, r.turno, 'narrazione', err),
     );
   }
@@ -2345,6 +2348,8 @@ export class Regia {
     noteRegia: string[] = [],
     mossaDelMondo = false,
     dati?: DatiMessaggioTurno,
+    /** Fatti dello scontro che il tavolo deve sentire (prove/fatti-dovuti.ts). */
+    dovuti: readonly FattoDovuto[] = [],
   ): Promise<void> {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
@@ -2443,6 +2448,11 @@ export class Regia {
       log.warn({ senza_risposta: prima, dopo_riparazione: senzaRisposta }, 'repertorio: azioni senza risposta, riparazione');
     }
 
+    // Fatti dello scontro (prove/fatti-dovuti.ts): un colpo, una caduta o un tiro contro la morte che la
+    // narrazione non ha detto (nome + parola chiave) li dice il Motore, con una riga breve del pacchetto
+    // della lingua prima dell'invito. Vale per il narratore e per il selettore.
+    const fattiAggiunti = dovuti.length && !controllo.signal.aborted ? this.aggiungiFattiDovuti(turno, esito, dovuti, log) : [];
+
     // B2: il segno di un orologio era dovuto ma il selettore non l'ha usato → lo mette il Motore,
     // orologio per orologio (al massimo due), dopo le risposte e prima della frase d'invito
     // (deterministico, nessun token in più).
@@ -2534,6 +2544,8 @@ export class Regia {
       // Il primo segno aggiunto dal Motore (come prima) e tutti quelli del turno (uno per orologio dovuto).
       segno_aggiunto: segniAggiunti[0] ?? null,
       segni_aggiunti: segniAggiunti,
+      // Fatti dello scontro che la narrazione non aveva detto, aggiunti dal Motore («tipo:id»).
+      fatti_aggiunti: fattiAggiunti,
       finale,
     };
     this.o.registroTurni.scrivi({ ...record, ...conteggi, sessione: this.sessione });
@@ -2745,16 +2757,38 @@ export class Regia {
       log.error({ turno, battuta: b.id, motivo: uso.motivo }, 'repertorio: battuta del Motore non applicabile');
       return null;
     }
+    // Uscita del turno: la battuta, marcata come aggiunta dal Motore, prima dell'invito.
+    const voce: VoceUscita = { tipo: 'usa', id: b.id, per: null, versione: uso.versione, righe: uso.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })), motore: true };
+    const primaDellInvito = this.righeDelMotore(turno, esito, uso.righe, voce, inFondo, 'm');
+    log.info({ turno, battuta: b.id, tipo: b.tipo, prima_dell_invito: primaDellInvito }, 'repertorio: battuta aggiunta dal Motore');
+    this.notifica();
+    return { id: b.id, righe: uso.righe.length };
+  }
+
+  /**
+   * Righe dette dal Motore dentro il turno (battute, fatti dovuti): voce, trascrizione e uscita PRIMA
+   * dell'invito finale del narratore, se l'ultima riga improvvisata è una domanda e la sua voce non è
+   * ancora partita; altrimenti in fondo (`inFondo`: sempre in fondo). `prefisso` tiene distinti gli id
+   * delle frasi di chi le aggiunge. true = sono entrate prima dell'invito.
+   */
+  private righeDelMotore(
+    turno: number,
+    esito: { uscita: VoceUscita[] },
+    righe: ReadonlyArray<{ etichetta: string; testo: string; testo_voce?: string; chiave_cache?: string }>,
+    voce: VoceUscita,
+    inFondo: boolean,
+    prefisso: string,
+  ): boolean {
     const ultima = esito.uscita.at(-1);
     const invito = !inFondo && ultima?.tipo === 'improvvisata' && ultima.etichetta === ID_NARRATORE && ultima.testo.includes('?') ? ultima : null;
     // Voce: prima della prima frase dell'invito, se è ancora in coda.
-    const frasi = uso.righe.map((r, k) => {
+    const frasi = righe.map((r, k) => {
       const { voce_id, nome } = voceDi(this.campagna, r.etichetta);
-      return { id_frase: `t${turno}-m${k}`, turno, indice: 900 + k, parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: r.testo_voce, chiave_cache: r.chiave_cache };
+      return { id_frase: `t${turno}-${prefisso}${k}`, turno, indice: 900 + k, parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: r.testo_voce, chiave_cache: r.chiave_cache };
     });
     const primaDellInvito = this.pipeline.accodaPrima(frasi, invito?.frasi?.[0] ?? '');
-    // Trascrizione: le righe del segno prima della voce dell'invito.
-    const nuove = uso.righe.map((r) =>
+    // Trascrizione: le righe prima della voce dell'invito.
+    const nuove = righe.map((r) =>
       this.aggiungiTrascrizione({ turno, tipo: r.etichetta === ID_NARRATORE ? 'narrazione' : 'battuta', chi: r.etichetta, nome: voceDi(this.campagna, r.etichetta).nome, testo: r.testo }),
     );
     const vocInvito = invito?.segmento !== undefined ? this.segmentiAperti.get(`${turno}:${invito.segmento}`) : undefined;
@@ -2762,13 +2796,35 @@ export class Regia {
       this.trascrizione.splice(this.trascrizione.length - nuove.length, nuove.length);
       this.trascrizione.splice(this.trascrizione.indexOf(vocInvito), 0, ...nuove);
     }
-    // Uscita del turno: la battuta, marcata come aggiunta dal Motore, prima dell'invito.
-    const voce: VoceUscita = { tipo: 'usa', id: b.id, per: null, versione: uso.versione, righe: uso.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })), motore: true };
     if (invito) esito.uscita.splice(esito.uscita.length - 1, 0, voce);
     else esito.uscita.push(voce);
-    log.info({ turno, battuta: b.id, tipo: b.tipo, prima_dell_invito: !!invito && primaDellInvito }, 'repertorio: battuta aggiunta dal Motore');
+    return !!invito && primaDellInvito;
+  }
+
+  /**
+   * I fatti dovuti dello scontro che le righe dette al tavolo non raccontano (prove/fatti-dovuti.ts):
+   * il Motore li fa dire, una riga breve del narratore per fatto, prima dell'invito. Le righe private
+   * non contano (il tavolo non le sente). Restituisce «tipo:id» dei fatti aggiunti.
+   */
+  private aggiungiFattiDovuti(turno: number, esito: { uscita: VoceUscita[] }, dovuti: readonly FattoDovuto[], log: Logger): string[] {
+    const dette = esito.uscita.flatMap((u) => (u.tipo === 'improvvisata' ? (u.privato ? [] : [u.testo]) : u.tipo === 'usa' ? u.righe.map((r) => r.testo) : []));
+    const c = this.campagna;
+    const altri = (id: string): string[] => [...(this.nomiPng.get(id) ?? []), ...Object.entries(c.alias).filter(([, x]) => x === id).map(([a]) => a)];
+    const mancanti = fattiMancanti(dovuti, dette, altri);
+    if (!mancanti.length) {
+      log.info({ turno, dovuti: dovuti.map((f) => `${f.tipo}:${f.id}`) }, 'prove: fatti dello scontro tutti nella narrazione');
+      return [];
+    }
+    const righe = mancanti.map((f) => ({ etichetta: ID_NARRATORE, testo: f.riga, testo_voce: this.pronuncia(f.riga) }));
+    const ids = righe.map((_, k) => `t${turno}-d${k}`);
+    const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: righe.map((r) => r.testo).join(' '), frasi: ids, motore: true };
+    const primaDellInvito = this.righeDelMotore(turno, esito, righe, voce, false, 'd');
+    log.warn(
+      { turno, mancanti: mancanti.map((f) => ({ tipo: f.tipo, id: f.id, riga: f.riga })), dovuti: dovuti.length, prima_dell_invito: primaDellInvito },
+      'prove: fatti dello scontro non detti dalla narrazione, li dice il Motore',
+    );
     this.notifica();
-    return { id: b.id, righe: uso.righe.length };
+    return mancanti.map((f) => `${f.tipo}:${f.id}`);
   }
 
   /**

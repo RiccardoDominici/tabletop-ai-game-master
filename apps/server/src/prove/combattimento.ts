@@ -13,6 +13,7 @@
  *
  * Tutto deterministico data la FonteDadi; lo stato si salva nella fotografia della sessione.
  */
+import type { EsitoMorte } from './fatti-dovuti';
 import type { CombattimentoPubblico, TiroMostrato } from '@cantastorie/shared';
 import type { Logger } from '../logger';
 import type { Combattimento, Condizione, Effetto, Fase } from '../regole/combattimento';
@@ -78,12 +79,16 @@ export interface EsitoCombattimento {
   invitati: string[] | null;
   /** Il combattimento è finito in questo turno (motivo), o null. */
   finito: string | null;
+  /** Gli esiti dei tiri contro la morte del turno: fatti che il tavolo deve sentire (prove/fatti-dovuti.ts). */
+  morte: Array<{ id: string; nome: string; esito: EsitoMorte }>;
 }
 
-const VUOTO: EsitoCombattimento = { fatti: [], tiri: [], intestazione: null, invitati: null, finito: null };
+const VUOTO: EsitoCombattimento = { fatti: [], tiri: [], intestazione: null, invitati: null, finito: null, morte: [] };
 
 export class GestoreCombattimento {
   private s: StatoCombattimentoSalvato | null = null;
+  /** Esiti dei tiri contro la morte di questa chiamata di dopoAzioni (vanno nell'esito). */
+  private morte: EsitoCombattimento['morte'] = [];
 
   constructor(private readonly d: DipendenzeCombattimento) {}
 
@@ -252,9 +257,10 @@ export class GestoreCombattimento {
   }): EsitoCombattimento {
     const fatti: string[] = [];
     const tiri: TiroMostrato[] = [];
+    this.morte = [];
     let appenaIniziato = false;
     if (!this.s) {
-      if (!o.attacchi.length) return VUOTO;
+      if (!o.attacchi.length) return { ...VUOTO, morte: [] };
       fatti.push(this.inizia(o.candidati()));
       appenaIniziato = true;
     }
@@ -294,9 +300,10 @@ export class GestoreCombattimento {
 
   private chiudi(turno: number, fatti: string[], tiri: TiroMostrato[]): EsitoCombattimento {
     void turno;
-    if (!this.s) return { fatti, tiri, intestazione: null, invitati: null, finito: fatti.at(-1) ?? testo('prove.combattimento.fine') };
+    const morte = this.morte;
+    if (!this.s) return { fatti, tiri, intestazione: null, invitati: null, finito: fatti.at(-1) ?? testo('prove.combattimento.fine'), morte };
     const invitati = this.turnoDi();
-    return { fatti, tiri, intestazione: this.intestazione(), invitati: invitati && invitati.length ? invitati : null, finito: null };
+    return { fatti, tiri, intestazione: this.intestazione(), invitati: invitati && invitati.length ? invitati : null, finito: null, morte };
   }
 
   /** Il PNG agisce da solo nella sua fase: attacca (se la fase lo prevede) il bersaglio scelto. */
@@ -344,16 +351,22 @@ export class GestoreCombattimento {
       else p.tiriMorte.fallimenti += 1;
       tiri.push(this.cartaMorte(p, dado, riuscita, turno, tm.cd));
       let esito: string;
-      if (dado === 20) esito = testo('prove.combattimento.morte_venti');
-      else if (p.tiriMorte && p.tiriMorte.fallimenti >= tm.fallimenti) {
+      let comeVa: EsitoMorte = 'morente';
+      if (dado === 20) {
+        esito = testo('prove.combattimento.morte_venti');
+        comeVa = 'rialzato';
+      } else if (p.tiriMorte && p.tiriMorte.fallimenti >= tm.fallimenti) {
         p.esito = 'morto';
         esito = testo('prove.combattimento.morte_morto');
+        comeVa = 'morto';
       } else if (p.tiriMorte && p.tiriMorte.successi >= tm.successi) {
         p.esito = 'stabile';
         p.tiriMorte = null;
         esito = testo('prove.combattimento.morte_stabile');
+        comeVa = 'stabile';
       } else esito = testo('prove.combattimento.morte_parziale', { esito: testo(riuscita ? 'prove.combattimento.morte_riuscito' : 'prove.combattimento.morte_fallito'), successi: p.tiriMorte!.successi, fallimenti: p.tiriMorte!.fallimenti });
       fatti.push(testo('prove.combattimento.tiro_morte', { nome: p.nome, dado, cd: tm.cd, esito }));
+      this.morte.push({ id: p.id, nome: p.nome, esito: comeVa });
       return;
     }
     const perde = this.haEffetto(id, 'perde_turno');

@@ -99,6 +99,7 @@ Everything comes from `docs/prove.md`, §1, which cites the SRD 5.2.
 - A round is a series of phases (movement, ranged attacks, melee, as the set defines them). In each phase the combatants act in initiative order.
 - When it is a player's character's turn, only that character is invited to act. The other players can still write, but their action waits in line and is resolved on their own turn.
 - NPCs act on their own turn, without input. In their phase they attack a standing player's character: first the one that hit them, otherwise the one who acted last, otherwise the first one standing. The narrator describes their actions in the same reply.
+- The table always hears the hits, the falls and the death saves. If the narration leaves one out (the Engine looks for the character's name and a word for that fact), the Engine adds a short narrator line, such as «Corrado cade a terra.» (Corrado falls to the ground.) or «Ruggero incassa il colpo.» (Ruggero takes the blow.). The lines come from the language pack (`lingue/<code>/testi-prove.yaml`, `prove.dovuti`), and the server log says «prove: fatti dello scontro non detti dalla narrazione, li dice il Motore».
 - A player's character has one action per turn. Bonus actions, multiple attacks and spells are described, not resolved.
 
 **At 0 HP.**

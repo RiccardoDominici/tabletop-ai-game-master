@@ -55,7 +55,8 @@ assets/voci/voci.yaml            voci per lingua (Fish e Qwen)
   giocatore, in inglese si volta in terza persona), `collegamenti` (azioni/regole.ts: «anch'io», «me too»,
   «I follow Corrado»), `frasi` (abbreviazioni del divisore), `finzione` e `numeri_regole` (le due guardie
   della voce), `privato` (parole vuote della guardia delle azioni private), `nomi` (titoli saltati nei nomi
-  brevi). I prompt che stavano nel codice (`arbitro-azioni`, `lettore-minimo`, `riassunto`) si leggono con
+  brevi), `fatti_dovuti` (prove/fatti-dovuti.ts: radici delle parole che raccontano un colpo, una caduta, un tiro
+  contro la morte; le righe di riserva sono in testi-prove.yaml, `prove.dovuti`). I prompt che stavano nel codice (`arbitro-azioni`, `lettore-minimo`, `riassunto`) si leggono con
   `prompt(nome)`; i campi JSON e le etichette del protocollo restano uguali in ogni lingua.
 - Il lettore minimo riceve il turno come dati (`RichiestaNarrazione.dati`), non dal testo del messaggio.
 - Web: `apps/web/src/lingua/` (`t('chiave', { … })`), nessuna dipendenza nuova. La lingua dell'interfaccia arriva dal

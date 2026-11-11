@@ -75,6 +75,23 @@ combattimento:
 5. **Fine**: nemici a terra o fuggiti, PG tutti a terra, morale fallito (B/X), oppure «Termina combattimento».
 6. **Narratore**: ogni attacco di un PNG arriva come frase esplicita prima dei dettagli («Ruggero lo sgherro colpisce Corrado Lanzi: 6 danni», «… manca …»), e il prompt chiede di raccontarlo in una frase sua, mai per accenni. La sezione «Esiti dei tiri» porta «Combattimento, round N, fase X. Ordine … Tocca ora a: …». Il
    narratore chiude invitando solo chi è di turno e non inventa attacchi o danni.
+7. **Fatti dovuti** (prove/fatti-dovuti.ts): nella e2e finale del 10 novembre (narratore Haiku, set Basic Fantasy) il
+   narratore saltava fatti del Motore anche con «raccontalo»: un PG a 0 col suo tiro contro la morte, i danni inflitti.
+   Responsabilità minima: il Motore non chiede un'altra chiamata, controlla.
+   - Fatti del turno, uno per creatura, il più grave: `morto`, `rialzato` (20 naturale), `stabile`, `morente` (tiro
+     contro la morte senza esito finale), `a_terra` (un colpo la porta a 0), `colpito` (un colpo con danni). Solo dalle
+     carte pubbliche: l'esito di un'azione privata non si dice al tavolo.
+   - Dopo la narrazione (e la sua riparazione), un fatto è detto se una riga al tavolo nomina la creatura (nome, nome
+     breve, soprannome) e ha una parola che comincia con una delle radici del tipo (lingue/<codice>/motore.yaml,
+     `fatti_dovuti`). Le righe private non contano.
+   - Colpi a vicenda nello stesso turno: «Corrado colpisce Ruggero» nomina tutti e due ma racconta un colpo solo. Allora
+     ogni colpo vuole una frase sua che nomini anche chi ha colpito.
+   - Un fatto non detto: il Motore aggiunge una riga breve del narratore dal pacchetto della lingua (testi-prove.yaml,
+     `prove.dovuti.<tipo>`: «Corrado cade a terra.», «Ruggero incassa il colpo.»), prima della domanda d'invito se la sua
+     voce non è ancora partita. Vale per il narratore e per il selettore. Nel registro dei turni: `fatti_aggiunti`
+     («tipo:id»); nel log del server: «prove: fatti dello scontro non detti dalla narrazione, li dice il Motore».
+   - Limiti: una negazione («il colpo non lo raggiunge») conta come detta; un pronome senza nome («il nano barcolla») no,
+     e il Motore aggiunge la sua riga anche se il fatto si capiva.
 
 ## 4. Schermi
 - **Proiettore**: la barra dell'iniziativa in alto (al posto della fila dei ritratti durante lo scontro). Mostra round e
@@ -95,6 +112,8 @@ combattimento:
   - lo schema e i suoi errori.
 - **test/combattimento-integrazione.test.ts**, col server intero: la finestra si apre solo per chi è di turno,
   l'azione fuori turno resta in coda, il PNG agisce da solo, il master termina.
+- **test/fatti-dovuti.test.ts**: fatti dalle carte e dai tiri contro la morte, il controllo nome + parola in italiano e
+  in inglese, i colpi a vicenda, e col server intero il colpo saltato che il Motore dice prima dell'invito.
 - **E2E** sulla 4720 con Haiku vero: apps/web/e2e/combattimento.spec.ts.
 
 ## 6. Aperto

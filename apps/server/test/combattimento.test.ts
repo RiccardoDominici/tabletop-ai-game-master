@@ -62,6 +62,8 @@ describe('combattimento SRD 5.2', () => {
     expect(stato.aTerra('pg_a')).toBe(true);
     // Il turno di a: tiro contro la morte 1 → due fallimenti; poi tocca a b.
     expect(r.fatti.join(' ')).toMatch(/a è a terra: tiro salvezza contro la morte 1 contro CD 10 → fallito \(successi 0, fallimenti 2\)/);
+    // L'esito del tiro è un fatto che il tavolo deve sentire (prove/fatti-dovuti.ts): resta a terra.
+    expect(r.morte).toEqual([{ id: 'pg_a', nome: 'a', esito: 'morente' }]);
     expect(r.invitati).toEqual(['pg_b']);
     expect(r.intestazione).toMatch(/round 1\. Ordine: x, a, b\. Tocca ora a: b \(pg_b\)/);
     const v = g.vista((id) => stato.puntiFerita(id))!;
@@ -76,6 +78,7 @@ describe('combattimento SRD 5.2', () => {
     const r = g.dopoAzioni({ turno: 2, attacchi: [], autori: ['pg_b'], candidati: () => cand });
     expect(attacchi.at(-1)).toEqual({ png: 'png_x', pg: 'pg_b', fase: 'turno' });
     expect(r.fatti.join(' ')).toMatch(/tiro salvezza contro la morte 20 contro CD 10 → venti naturale: torna in sé con 1 punto ferita/);
+    expect(r.morte).toEqual([{ id: 'pg_a', nome: 'a', esito: 'rialzato' }]);
     expect(stato.puntiFerita('pg_a')).toEqual({ attuali: 1, massimi: 10 });
     expect(r.invitati).toEqual(['pg_a']);
     expect(g.vista(() => null)!.combattenti.find((c) => c.id === 'pg_a')!.condizioni).toEqual([]);

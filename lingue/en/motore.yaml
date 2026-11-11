@@ -155,3 +155,14 @@ sceneggiatore:
   genitivo: [of]
   possessivo: "'s"
   parti_del_corpo: [hand, hands, fist, fists, finger, fingers, arm, arms, shoulder, shoulders, back, head, face, eye, eyes, gaze, mouth, lips, voice, smile, breath, breathing, heart, leg, legs, foot, feet, step, steps, knee, knees, forehead, cheeks, chin, neck, skin, body, jaw, brow]
+
+# Combat facts the table must hear (apps/server/src/prove/fatti-dovuti.ts): a spoken line tells one if it names the
+# creature and has a word starting with one of these stems (lowercase, no accents). Without one, the Engine adds the
+# short line of testi-prove.yaml («prove.dovuti.<type>»).
+fatti_dovuti:
+  colpito: [hit, strik, struck, blow, wound, slash, stab, pierc, bleed, blood, bit, smash, crush, slam, punch, gash, graz, burn, sear, stagger, reel, cut, impal, lacerat, batter, bruis]
+  a_terra: [fall, fell, ground, floor, collaps, drop, crumpl, slump, faint, unconscious, senseless, down, knock, toppl]
+  morente: [ground, floor, death, dying, die, life, breath, unconscious, motionless, bleed, blood]
+  stabile: [breath, stabl, aliv, pulse, unconscious, motionless]
+  rialzato: [eye, wak, rise, rose, stir, conscious, gasp, reviv]
+  morto: [dead, die, death, lifeless, kill, corpse, perish]

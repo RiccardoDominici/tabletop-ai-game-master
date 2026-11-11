@@ -189,6 +189,14 @@ prove:
     intestazione_tocca: " Tocca ora a: {chi}: chiudi invitando solo {pronome}, è il suo turno."
     loro: "loro"
     lui_o_lei: "lui o lei"
+  # Righe brevi del Motore per un fatto dello scontro che la narrazione non ha detto (prove/fatti-dovuti.ts).
+  dovuti:
+    colpito: "{nome} incassa il colpo."
+    a_terra: "{nome} cade a terra."
+    morente: "{nome} resta a terra, tra la vita e la morte."
+    stabile: "{nome} respira ancora, ma non si muove."
+    rialzato: "{nome} riapre gli occhi."
+    morto: "{nome} muore."
 
 regole:
   # «Chiedi una regola» (regole/chiedi.ts): il prompt di sistema è prompts/<lingua>/risponditore-regole.md.
