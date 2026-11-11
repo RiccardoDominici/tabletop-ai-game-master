@@ -67,7 +67,9 @@ combattimento:
    - I passi di PNG di fila si risolvono insieme. Il narratore li racconta nella stessa risposta, dopo l'azione del PG.
 3. **A 0**:
    - la condizione del set (Privo di sensi);
-   - SRD: i tiri contro la morte all'inizio del suo turno, poi stabile, morto, o in piedi con un 20;
+   - SRD: i tiri contro la morte all'inizio del suo turno, poi stabile, morto, o in piedi con un 20; il 20 che
+     rimette in piedi e l'1 che vale due fallimenti sono del set (`tiri_morte.venti_rialza`, `uno_doppio`), con
+     l'SRD come predefinito: prima valevano per ogni set (e2e finale, §2);
    - altrimenti fuori gioco o morto.
    - Il master può ridare PF: chi torna sopra 0 si rialza.
    - **Fuori gioco** (prove/stato.ts, `fuoriGioco`): a terra (0 PF), morto o fuggito. Morti e fuggiti restano segnati

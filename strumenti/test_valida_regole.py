@@ -104,6 +104,31 @@ def test_schema_del_set(tmp_path: Path, rompi, codice: str) -> None:
     assert tiene(dest, codice), regole_di(dest)
 
 
+@pytest.mark.parametrize(
+    "rompi, codice",
+    [
+        (lambda d: d["risoluzione"].update(critico=30), "REGOLE.critico"),
+        (lambda d: d["risoluzione"].update(disastro=20), "REGOLE.disastro"),
+        (lambda d: d["risoluzione"].update(critici="prove"), "REGOLE.critici"),
+        (lambda d: d.setdefault("attacchi", {}).update(danno_critico="triplo"), "REGOLE.attacchi"),
+        (lambda d: d.setdefault("attacchi", {}).update(danno_minimo=-1), "REGOLE.attacchi"),
+    ],
+    ids=["critico", "disastro", "critici", "danno-critico", "danno-minimo"],
+)
+def test_critici_e_danni_del_set_d20(tmp_path: Path, rompi, codice: str) -> None:
+    """I naturali del d20 e il danno del critico sono del set (prima il Motore applicava l'SRD a tutti)."""
+    dest = copia(BX, tmp_path)
+    modifica(dest, "regole/regole.yaml", rompi)
+    assert tiene(dest, codice), regole_di(dest)
+
+
+def test_critici_validi_e_null(tmp_path: Path) -> None:
+    dest = copia(BX, tmp_path)
+    modifica(dest, "regole/regole.yaml", lambda d: d["risoluzione"].update(critico=None, disastro=None, critici="tutti")
+             or d.setdefault("attacchi", {}).update(danno_critico="normale", danno_minimo=1))
+    assert not any(r.startswith("REGOLE.") for r in regole_di(dest) if any(k in r for k in ("critic", "disastro", "attacchi"))), regole_di(dest)
+
+
 def test_sotto_soglia_richiede_dado_20_o_100_e_divisore(tmp_path: Path) -> None:
     dest = copia(SOGLIA, tmp_path)
     modifica(dest, "regole/regole.yaml", lambda d: d["risoluzione"].update(dado=50))
@@ -252,13 +277,14 @@ def _combattimento(cartella: Path, rompi) -> None:
         (lambda c: c["danni"]["a_zero"].update(pg="fuga"), "danni.a_zero.pg"),
         (lambda c: c["danni"]["a_zero"].update(png="svenuto"), "danni.a_zero.png"),
         (lambda c: c["danni"].update(tiri_morte={"cd": 0, "successi": 3, "fallimenti": 3}), "danni.tiri_morte"),
+        (lambda c: c["danni"].update(tiri_morte={"cd": 10, "successi": 3, "fallimenti": 3, "venti_rialza": "sì"}), "tiri_morte.venti_rialza"),
         (lambda c: c["condizioni"][0]["effetti"].append("volare"), "effetto «volare»"),
         (lambda c: c["condizioni"].append(dict(c["condizioni"][0])), "id ripetuto"),
         (lambda c: c.update(condizione_a_zero="inesistente"), "condizione_a_zero"),
         (lambda c: c.update(fine={"morale": "sì"}), "fine.morale"),
     ],
     ids=["tipo", "dado", "caratteristica", "ogni-round", "fasi-vuote", "fase-id", "fase-png", "modello",
-         "a-zero-pg", "a-zero-png", "tiri-morte", "effetto-chiuso", "condizione-doppia", "a-zero-condizione", "morale"],
+         "a-zero-pg", "a-zero-png", "tiri-morte", "tiri-morte-venti", "effetto-chiuso", "condizione-doppia", "a-zero-condizione", "morale"],
 )
 def test_combattimento_del_set_bx(tmp_path: Path, rompi, dettaglio: str) -> None:
     dest = copia(BX, tmp_path)

@@ -13,12 +13,13 @@
 #   esatta a passi del 5%: riuscire con il p% = d20 + (p/5 − 4) ≥ 17. Esempi: 25% = +1, 80% = +12, 10% = −2.
 #   «1 su 6» (16,7%) diventa +0 (20%); «2 su 6» +3 (35%); «3 su 6» +6 (50%).
 # - Tiri salvezza (p. 60–61): d20 ≥ numero della tabella. Con la difficoltà normale (17) il bonus è 17 − numero,
-#   più il bonus di razza (nani e halfling +4, elfi +1/+2): è esatto. Il 20 naturale che riesce sempre e l'1 che
-#   fallisce sempre, negli attacchi e nei tiri salvezza, il Motore non li applica (d20_cd non ha critici).
+#   più il bonus di razza (nani e halfling +4, elfi +1/+2): è esatto. Il 20 naturale che colpisce sempre e l'1 che
+#   manca sempre valgono negli attacchi (`critico`, `disastro`, p. 53), senza raddoppiare il danno; nei tiri
+#   salvezza il manuale li vuole uguali, ma lo schema li dà solo agli attacchi o a tutti i tiri (anche alle prove).
 # - Bonus d'attacco (p. 53): un'abilità «mischia» (con la Forza) e una «distanza» (con la Destrezza); nella
 #   scheda vale il bonus della tabella (+1 per tutte le classi al primo livello; per i mostri i dadi vita).
 #   Il bonus di Forza al danno in mischia (p. 55) è scritto nella formula del danno dell'arma («1d8+2»).
-# - Il Motore non tiene conto di: danno minimo di un punto, gittata (+1, −2), attacco alle spalle (+2) e
+# - Il Motore non tiene conto di: gittata (+1, −2), attacco alle spalle (+2) e
 #   carica, rateo di fuoco delle balestre, sorpresa con 1d6, numero di incantesimi al giorno.
 id: basic-fantasy-r142
 nome: "Basic Fantasy (4ª edizione)"
@@ -35,6 +36,10 @@ licenza:
 risoluzione:
   tipo: d20_cd
   dado: 20
+  # Negli attacchi il 20 naturale colpisce sempre, l'1 manca sempre (p. 53).
+  critico: 20
+  disastro: 1
+  critici: attacchi
 
 # Le sei caratteristiche del manuale (p. 4). Nelle schede vale il bonus della tabella, da −3 a +3.
 caratteristiche:
@@ -99,6 +104,9 @@ vantaggio:
 attacchi:
   tipo: prova
   armatura_riduce: false
+  # Il 20 naturale colpisce ma non raddoppia il danno; un colpo fa sempre almeno un punto (p. 55).
+  danno_critico: normale
+  danno_minimo: 1
 
 danni:
   nome: "Punti ferita"
@@ -166,9 +174,9 @@ combattimento:
     # un tiro salvezza contro raggio della morte; riuscito, si resta vivi e svenuti. Lo schema ha i tiri contro la
     # morte dell'SRD: con un successo e un fallimento basta un tiro solo. Il numero da fare cambia con la classe e la
     # razza (da 7 a 13 tra i PG di questa campagna); qui è uno per tutti, 10. Il 20 che rimette in piedi con un punto
-    # e l'1 che conta doppio sono del Motore, non del manuale.
+    # e l'1 che conta doppio sono dell'SRD, non del manuale: spenti.
     a_zero: {pg: tiri_morte, png: morte}
-    tiri_morte: {cd: 10, successi: 1, fallimenti: 1}
+    tiri_morte: {cd: 10, successi: 1, fallimenti: 1, venti_rialza: false, uno_doppio: false}
   condizioni:
     - {id: sorpreso, nome: "Sorpreso", icona: "SO", effetti: [perde_turno, non_si_muove], testo: "Per un round non si muove e non attacca, ma si difende."}
     # −4 del manuale ai tiri e alla Classe d'Armatura: gli effetti del Motore valgono ±2 (il vantaggio del set).

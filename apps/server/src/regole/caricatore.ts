@@ -123,6 +123,15 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
   if (tipoV === 'dado_bonus' && facce !== 100) errori.push('vantaggio.tipo dado_bonus solo con d100');
   const a = ogg(d['attacchi']) ?? {};
   const tipoA = a['tipo'] === 'automatico' ? 'automatico' : 'prova';
+  if (a['danno_critico'] !== undefined && a['danno_critico'] !== 'doppio' && a['danno_critico'] !== 'normale') errori.push('attacchi.danno_critico: doppio o normale');
+  if (a['danno_minimo'] !== undefined && !(typeof a['danno_minimo'] === 'number' && Number.isInteger(a['danno_minimo']) && a['danno_minimo'] >= 0)) errori.push('attacchi.danno_minimo: un intero da 0 in su');
+  // Critico e disastro: nel d20_cd i naturali dell'SRD (20 e 1) se il set non li scrive; `null` li toglie.
+  const naturale = (k: 'critico' | 'disastro', predefinito: number | null): number | null => (Object.hasOwn(r, k) ? num(r[k]) : predefinito);
+  const critico = naturale('critico', tipo === 'd20_cd' ? 20 : null);
+  const disastro = naturale('disastro', tipo === 'd20_cd' ? 1 : null);
+  if (tipo === 'd20_cd' && critico !== null && (critico < 2 || critico > 20)) errori.push('risoluzione.critico: nel d20_cd un dado naturale da 2 a 20, o null');
+  if (tipo === 'd20_cd' && disastro !== null && (disastro < 1 || disastro > 19)) errori.push('risoluzione.disastro: nel d20_cd un dado naturale da 1 a 19, o null');
+  if (r['critici'] !== undefined && r['critici'] !== 'attacchi' && r['critici'] !== 'tutti') errori.push('risoluzione.critici: attacchi o tutti');
   const danni = ogg(d['danni']) ?? {};
   const soc = ogg(d['sociale']) ?? {};
   const socCar = str(soc['caratteristica']);
@@ -151,14 +160,20 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     perNarratore: str(d['per_il_narratore']),
     fonte: { titolo: str(fonte['titolo']) ?? testo('regole.predefiniti.fonte'), autore: str(fonte['autore']), file: str(fonte['file']) },
     licenza: { nome: str(lic['nome']) ?? 'non dichiarata', libera: lic['libera'] === true, attribuzione: str(lic['attribuzione']) },
-    risoluzione: { tipo, facce, numero: tipo === '2d6_fasce' ? (num(r['dadi']) ?? 2) : 1, fasce, gradi, critico: num(r['critico']), disastro: num(r['disastro']) },
+    risoluzione: { tipo, facce, numero: tipo === '2d6_fasce' ? (num(r['dadi']) ?? 2) : 1, fasce, gradi, critico, disastro, critici: r['critici'] === 'tutti' ? 'tutti' : 'attacchi' },
     caratteristiche,
     abilita,
     modificatore: modTipo,
     difficolta,
     difficoltaPredefinita: predefinita,
     vantaggio: { tipo: tipoV, valore: num(v['valore']) ?? 1 },
-    attacchi: { tipo: tipoA, armaturaRiduce: a['armatura_riduce'] === true, parzialeScambio: a['parziale'] === 'scambio' },
+    attacchi: {
+      tipo: tipoA,
+      armaturaRiduce: a['armatura_riduce'] === true,
+      parzialeScambio: a['parziale'] === 'scambio',
+      dannoCritico: a['danno_critico'] === 'normale' ? 'normale' : 'doppio',
+      dannoMinimo: Math.max(0, num(a['danno_minimo']) ?? 0),
+    },
     danni: { nome: str(danni['nome']) ?? testo('regole.predefiniti.danni'), aZero: str(danni['a_zero']) ?? testo('regole.predefiniti.a_zero') },
     condizioni: (Array.isArray(d['condizioni']) ? d['condizioni'] : []).flatMap((x) => {
       const o = ogg(x);

@@ -37,7 +37,7 @@ export function intervalloFascia(fasce: readonly Fascia[], i: number): string {
   return sopra - 1 === f.min ? `${f.min}` : `${f.min}–${sopra - 1}`;
 }
 
-function d20Cd(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta, v: Vantaggio | null, etichetta: string): EsitoTiroGenerico {
+function d20Cd(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta, v: Vantaggio | null, etichetta: string, attacco: boolean): EsitoTiroGenerico {
   const cd = diff.valore ?? 15;
   let tiri = [dadi.tira(20)];
   let bonus = 0;
@@ -45,6 +45,18 @@ function d20Cd(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta,
   if (v && s.vantaggio.tipo === 'bonus') bonus = v === 'vantaggio' ? s.vantaggio.valore : -s.vantaggio.valore;
   const dado = tiri.length > 1 ? (v === 'vantaggio' ? Math.max(...tiri) : Math.min(...tiri)) : tiri[0]!;
   const totale = dado + mod + bonus;
+  // Naturali del set (SRD: negli attacchi il 20 colpisce sempre, l'1 manca sempre).
+  const { critico, disastro, critici } = s.risoluzione;
+  const naturali = attacco || critici === 'tutti';
+  let riuscita = totale >= cd;
+  let grado: EsitoTiroGenerico['grado'] = null;
+  if (naturali && critico !== null && dado >= critico) {
+    riuscita = true;
+    grado = { id: 'critico', nome: testo('regole.esito.critico') };
+  } else if (naturali && disastro !== null && dado <= disastro) {
+    riuscita = false;
+    grado = { id: 'disastro', nome: testo('regole.esito.disastro') };
+  }
   return {
     dadi: tiri,
     facce: 20,
@@ -52,8 +64,8 @@ function d20Cd(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta,
     modificatore: mod + bonus,
     totale,
     contro: { tipo: 'CD', valore: cd, descrizione: diff.nome },
-    riuscita: totale >= cd,
-    grado: null,
+    riuscita,
+    grado,
     vantaggio: v && s.vantaggio.tipo !== 'nessuno' ? v : null,
     regola: testo('regole.regola.d20', { etichetta, mod: conSegno(mod), cd, difficolta: diff.nome.toLowerCase() }),
   };
@@ -148,11 +160,11 @@ function sottoSoglia(s: SistemaRegole, dadi: FonteDadi, soglia: number, diff: Di
  * Un tiro col set. `valore`: il modificatore (d20_cd, 2d6_fasce) o la soglia (sotto_soglia);
  * `etichetta`: che cosa si tira, col nome del manuale («Fascino», «Persuasione»).
  */
-export function tiraCol(s: SistemaRegole, dadi: FonteDadi, valore: number, idDifficolta: string | null, v: Vantaggio | null, etichetta: string): EsitoTiroGenerico {
+export function tiraCol(s: SistemaRegole, dadi: FonteDadi, valore: number, idDifficolta: string | null, v: Vantaggio | null, etichetta: string, attacco = false): EsitoTiroGenerico {
   const diff = s.difficolta.find((d) => d.id === idDifficolta) ?? s.difficolta.find((d) => d.id === s.difficoltaPredefinita) ?? s.difficolta[0]!;
   switch (s.risoluzione.tipo) {
     case 'd20_cd':
-      return d20Cd(s, dadi, valore, diff, v, etichetta);
+      return d20Cd(s, dadi, valore, diff, v, etichetta, attacco);
     case '2d6_fasce':
       return dueD6(s, dadi, valore, diff, v, etichetta);
     case 'sotto_soglia':

@@ -80,6 +80,10 @@ def _danni(d: dict, e: Esito, dove: str) -> None:
         valori = [_ogg(tm).get(k) if _ogg(tm) else None for k in ("cd", "successi", "fallimenti")]
         if not all(_intero(v) and v > 0 for v in valori):
             _err(e, dove, "danni.tiri_morte: cd, successi e fallimenti sono numeri interi positivi")
+        # Le regole dell'SRD sul 20 e sull'1 naturali: del set (assenti = SRD).
+        for k in ("venti_rialza", "uno_doppio"):
+            if _ogg(tm) and k in _ogg(tm) and not isinstance(_ogg(tm)[k], bool):
+                _err(e, dove, f"danni.tiri_morte.{k}: true o false")
 
 
 def _condizioni(cond, e: Esito, dove: str) -> set[str]:

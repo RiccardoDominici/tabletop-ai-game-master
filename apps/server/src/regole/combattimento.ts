@@ -64,7 +64,12 @@ export interface Combattimento {
     /** A 0 un PG: tiri contro la morte (SRD), fuori gioco, o morto. */
     pgAZero: 'tiri_morte' | 'fuori_gioco' | 'morte';
     pngAZero: 'morte' | 'fuori_gioco';
-    tiriMorte: { cd: number; successi: number; fallimenti: number } | null;
+    /**
+     * Tiri contro la morte. `ventiRialza`: un 20 naturale rimette in piedi con 1 PF; `unoDoppio`: un 1 naturale
+     * conta due fallimenti. Sono regole dell'SRD 5.2: valgono se il set non dice altro (`venti_rialza`,
+     * `uno_doppio` di `tiri_morte`); prima valevano per ogni set, anche dove il manuale non le ha.
+     */
+    tiriMorte: { cd: number; successi: number; fallimenti: number; ventiRialza: boolean; unoDoppio: boolean } | null;
   };
   condizioni: Condizione[];
   /** Condizione data a chi va a 0 (Privo di sensi nell'SRD); null = nessuna. */
@@ -116,7 +121,7 @@ export function combattimentoSrd(): Combattimento {
     iniziativa: { tipo: 'individuale', dado: 20, caratteristica: 'destrezza', ogniRound: false },
     fasi: [{ id: 'turno', nome: n.turno, png: 'attacco' }],
     azioni: [azione('movimento'), azione('azione'), azione('bonus'), azione('reazione')],
-    danni: { modello: 'pf', pgAZero: 'tiri_morte', pngAZero: 'morte', tiriMorte: { cd: 10, successi: 3, fallimenti: 3 } },
+    danni: { modello: 'pf', pgAZero: 'tiri_morte', pngAZero: 'morte', tiriMorte: { cd: 10, successi: 3, fallimenti: 3, ventiRialza: true, unoDoppio: true } },
     condizioni: condizioniSrd(),
     condizioneAZero: 'privo_di_sensi',
     fine: { morale: false },
@@ -194,8 +199,21 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
       else errori.push('combattimento.danni.a_zero.png: morte o fuori_gioco');
     }
     const tm = ogg(dan['tiri_morte']);
-    if (tm) out.danni.tiriMorte = { cd: typeof tm['cd'] === 'number' ? tm['cd'] : 10, successi: typeof tm['successi'] === 'number' ? tm['successi'] : 3, fallimenti: typeof tm['fallimenti'] === 'number' ? tm['fallimenti'] : 3 };
-    if (out.danni.pgAZero === 'tiri_morte' && !out.danni.tiriMorte) out.danni.tiriMorte = { cd: 10, successi: 3, fallimenti: 3 };
+    if (tm) {
+      const bool = (k: string): boolean => {
+        if (tm[k] === undefined) return true;
+        if (typeof tm[k] !== 'boolean') errori.push(`combattimento.danni.tiri_morte.${k}: true o false`);
+        return tm[k] !== false;
+      };
+      out.danni.tiriMorte = {
+        cd: typeof tm['cd'] === 'number' ? tm['cd'] : 10,
+        successi: typeof tm['successi'] === 'number' ? tm['successi'] : 3,
+        fallimenti: typeof tm['fallimenti'] === 'number' ? tm['fallimenti'] : 3,
+        ventiRialza: bool('venti_rialza'),
+        unoDoppio: bool('uno_doppio'),
+      };
+    }
+    if (out.danni.pgAZero === 'tiri_morte' && !out.danni.tiriMorte) out.danni.tiriMorte = { cd: 10, successi: 3, fallimenti: 3, ventiRialza: true, unoDoppio: true };
   }
   if (Array.isArray(d['condizioni'])) {
     const cond: Condizione[] = [];

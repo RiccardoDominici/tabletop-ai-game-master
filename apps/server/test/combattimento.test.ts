@@ -173,7 +173,7 @@ describe('la sezione combattimento: di regole.yaml', () => {
   it('senza la sezione: SRD completo per l’SRD (15 condizioni + Schivata), nessuna iniziativa per il 2d6', () => {
     const srd = caricaRegole(path.join(FIX, 'prove')).sistema.combattimento;
     expect(srd.condizioni).toHaveLength(16);
-    expect(srd.danni.tiriMorte).toEqual({ cd: 10, successi: 3, fallimenti: 3 });
+    expect(srd.danni.tiriMorte).toEqual({ cd: 10, successi: 3, fallimenti: 3, ventiRialza: true, unoDoppio: true });
   });
 });
 

@@ -363,17 +363,19 @@ export class GestoreCombattimento {
     if (this.d.stato.aTerra(id) && p.tiriMorte && tm) {
       const dado = this.d.dadi().tira(20);
       const riuscita = dado >= tm.cd;
-      if (dado === 20) {
+      // Il 20 e l'1 naturali solo se il set li ha (SRD sì; Basic Fantasy no).
+      const venti = dado === 20 && tm.ventiRialza;
+      if (venti) {
         this.d.stato.cura(id, 1);
         p.tiriMorte = null;
         if (this.d.regole.condizioneAZero) this.togliCondizione(id, this.d.regole.condizioneAZero);
-      } else if (dado === 1) p.tiriMorte.fallimenti += 2;
+      } else if (dado === 1 && tm.unoDoppio) p.tiriMorte.fallimenti += 2;
       else if (riuscita) p.tiriMorte.successi += 1;
       else p.tiriMorte.fallimenti += 1;
-      tiri.push(this.cartaMorte(p, dado, riuscita, turno, tm.cd));
+      tiri.push(this.cartaMorte(p, dado, riuscita, turno, tm));
       let esito: string;
       let comeVa: EsitoMorte = 'morente';
-      if (dado === 20) {
+      if (venti) {
         esito = testo('prove.combattimento.morte_venti');
         comeVa = 'rialzato';
       } else if (p.tiriMorte && p.tiriMorte.fallimenti >= tm.fallimenti) {
@@ -394,7 +396,8 @@ export class GestoreCombattimento {
     if (perde && !this.d.stato.aTerra(id)) fatti.push(testo('prove.combattimento.salta_turno', { nome: p.nome, condizione: perde.toLowerCase() }));
   }
 
-  private cartaMorte(p: Partecipante, dado: number, riuscita: boolean, turno: number, cd: number): TiroMostrato {
+  private cartaMorte(p: Partecipante, dado: number, riuscita: boolean, turno: number, tm: NonNullable<Combattimento['danni']['tiriMorte']>): TiroMostrato {
+    const cd = tm.cd;
     return {
       id: this.d.nuovoIdTiro(),
       turno,
@@ -412,8 +415,9 @@ export class GestoreCombattimento {
       contro: { tipo: 'CD', valore: cd, descrizione: null },
       bersaglio: null,
       riuscita,
-      critico: dado === 20,
-      fallimento_critico: dado === 1,
+      // Sulla carta il 20 e l'1 sono speciali solo se il set dà loro un effetto.
+      critico: dado === 20 && tm.ventiRialza,
+      fallimento_critico: dado === 1 && tm.unoDoppio,
       danno: null,
       a_terra: true,
       privata: false,

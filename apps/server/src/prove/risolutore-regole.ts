@@ -264,8 +264,9 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
 
   /** Danno di un attacco riuscito al bersaglio (armatura se il set la conta): testo per il narratore. */
   function colpisci(t: TiroMostrato, attaccante: Attacco, bersaglio: SchedaGenerica, critico: boolean): string {
-    const d = tiraDanno(o.dadi, attaccante.danno, 0, critico);
-    const ridotto = s.attacchi.armaturaRiduce ? Math.max(0, d.totale - bersaglio.armatura) : d.totale;
+    // Il critico raddoppia i dadi del danno solo se il set lo dice (SRD sì); il danno minimo è del set (Basic Fantasy: 1).
+    const d = tiraDanno(o.dadi, attaccante.danno, 0, critico && s.attacchi.dannoCritico === 'doppio');
+    const ridotto = Math.max(s.attacchi.dannoMinimo, s.attacchi.armaturaRiduce ? Math.max(0, d.totale - bersaglio.armatura) : d.totale);
     const r = o.stato.danneggia(bersaglio.id, ridotto);
     t.danno = dannoMostrato({ formula: d.formula, dadi: d.dadi, bonus: d.bonus, totale: ridotto, tipo: attaccante.tipo_danno });
     const pf = o.stato.puntiFerita(bersaglio.id)!;
@@ -296,7 +297,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const v = combinaVantaggi(fonti.map((f) => f.v));
     // d20 contro la difesa del bersaglio; gli altri tipi con la loro risoluzione (fasce, soglia).
     const sist = s.risoluzione.tipo === 'd20_cd' && sb.difesa !== null ? { ...s, difficolta: [{ id: '_difesa', nome: testo('prove.cd.difesa_di', { nome: o.nome(bersaglio) }), valore: sb.difesa, divisore: null, modificatore: null }] } : s;
-    const e = tiraCol(sist, o.dadi, cosa.valore, sist === s ? null : '_difesa', v, `${a.nome}, ${cosa.etichetta}`);
+    const e = tiraCol(sist, o.dadi, cosa.valore, sist === s ? null : '_difesa', v, `${a.nome}, ${cosa.etichetta}`, true);
     const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, privata);
     if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e };
     const danno = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'));

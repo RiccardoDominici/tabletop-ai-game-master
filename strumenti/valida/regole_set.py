@@ -112,6 +112,12 @@ def _risoluzione(r: dict, e: Esito, dove: str) -> tuple[str | None, int | None]:
         return tipo, dado
     if tipo == "2d6_fasce":
         return tipo, 6
+    # d20_cd: i naturali critico (da 2 a 20) e disastro (da 1 a 19); assenti = SRD (20 e 1), null = nessuno.
+    for k, (da, a) in (("critico", (2, 20)), ("disastro", (1, 19))):
+        if ris.get(k) is not None and not (_intero(ris[k]) and da <= ris[k] <= a):
+            _err(e, k, dove, f"risoluzione.{k}: nel d20_cd un dado naturale da {da} a {a}, o null")
+    if ris.get("critici") is not None and ris["critici"] not in ("attacchi", "tutti"):
+        _err(e, "critici", dove, "risoluzione.critici: attacchi o tutti")
     return tipo, 20
 
 
@@ -175,6 +181,10 @@ def _schema_sociale_attacchi(r: dict, car: set[str], abi: set[str], e: Esito, do
     att = _ogg(r.get("attacchi")) or {}
     if att.get("tipo") is not None and att["tipo"] not in ATTACCHI:
         _err(e, "attacchi", dove, "attacchi.tipo: prova o automatico")
+    if att.get("danno_critico") is not None and att["danno_critico"] not in ("doppio", "normale"):
+        _err(e, "attacchi", dove, "attacchi.danno_critico: doppio o normale")
+    if "danno_minimo" in att and not (_intero(att["danno_minimo"]) and att["danno_minimo"] >= 0):
+        _err(e, "attacchi", dove, "attacchi.danno_minimo: un intero da 0 in su")
 
 
 def _mosse(r: dict, car: set[str], e: Esito, dove: str) -> set[str]:

@@ -64,9 +64,15 @@ export interface SistemaRegole {
     numero: number;
     fasce: Fascia[];
     gradi: Grado[];
-    /** sotto_soglia: questo tiro o meno è un critico; questo o più un disastro. */
+    /**
+     * sotto_soglia: questo tiro o meno è un critico; questo o più un disastro. d20_cd: il dado naturale da
+     * questo in su è un critico (riesce), da `disastro` in giù fallisce comunque. Nel d20_cd, se il set non li
+     * scrive, valgono quelli dell'SRD (20 e 1); `null` scritto li toglie.
+     */
     critico: number | null;
     disastro: number | null;
+    /** d20_cd: critico e disastro valgono solo per gli attacchi (SRD) o per tutti i tiri. */
+    critici: 'attacchi' | 'tutti';
   };
   caratteristiche: Voce[];
   abilita: Array<Voce & { caratteristica: string | null }>;
@@ -75,7 +81,11 @@ export interface SistemaRegole {
   difficolta: Difficolta[];
   difficoltaPredefinita: string;
   vantaggio: { tipo: 'due_dadi' | 'dado_bonus' | 'bonus' | 'nessuno'; valore: number };
-  attacchi: { tipo: 'prova' | 'automatico'; armaturaRiduce: boolean; parzialeScambio: boolean };
+  /**
+   * `dannoCritico`: con un critico i dadi del danno raddoppiano (SRD) o no; `dannoMinimo`: un colpo andato
+   * a segno fa almeno questi danni (Basic Fantasy: 1).
+   */
+  attacchi: { tipo: 'prova' | 'automatico'; armaturaRiduce: boolean; parzialeScambio: boolean; dannoCritico: 'doppio' | 'normale'; dannoMinimo: number };
   danni: { nome: string; aZero: string };
   condizioni: Array<Voce & { effetto: string }>;
   sociale: { caratteristica: string | null; abilita: string | null; nota: string | null };

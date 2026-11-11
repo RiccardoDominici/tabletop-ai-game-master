@@ -58,6 +58,9 @@ risoluzione:
     - {min: 10, esito: successo, nome: "Successo pieno"}
     - {min: 7, esito: parziale, nome: "Successo con un costo", significato: "riesce, ma…"}   # significato facoltativo
     - {min: null, esito: fallimento, nome: "Fallimento"}
+  # d20_cd: facoltativi critico (dado naturale ≥ questo: riesce comunque), disastro (≤ questo: fallisce comunque),
+  #   critici: attacchi | tutti (a quali tiri valgono). Se il set non li scrive valgono quelli dell'SRD: 20 e 1,
+  #   solo negli attacchi; `critico: null`, `disastro: null` li tolgono.
   # sotto_soglia: dado: 20 | 100 [V]; facoltativi critico (≤ questo), disastro (≥ questo), gradi
   dado: 100
   critico: 1
@@ -82,6 +85,8 @@ attacchi:
   tipo: prova | automatico   # prova: si tira con l'abilità/caratteristica dell'arma (d20_cd contro la difesa
   armatura_riduce: true      #   del bersaglio); automatico: colpisce sempre, si tira solo il danno
   parziale: scambio          # 2d6: con un successo parziale anche il bersaglio colpisce
+  danno_critico: doppio      # doppio (SRD, predefinito): col critico si raddoppiano i dadi del danno; normale: no
+  danno_minimo: 0            # un colpo andato a segno fa almeno questi danni (Basic Fantasy: 1; predefinito 0)
 danni: {nome: "Ferite", a_zero: "Fuori gioco: …"}
 condizioni: [{id, nome, effetto}]          # testo per narratore e riassunto
 sociale:                                    # che cosa si tira per convincere un PNG, se l'arbitro non lo dice
@@ -109,7 +114,10 @@ combattimento:                              # facoltativo: senza, SRD completo p
   danni:
     modello: pf | ferite | stress           # [V]
     a_zero: {pg: tiri_morte | fuori_gioco | morte, png: morte | fuori_gioco}   # [V]
-    tiri_morte: {cd: 10, successi: 3, fallimenti: 3}
+    tiri_morte: {cd: 10, successi: 3, fallimenti: 3, venti_rialza: true, uno_doppio: true}
+    # venti_rialza: un 20 naturale rimette in piedi con 1 PF; uno_doppio: un 1 naturale vale due fallimenti.
+    # Sono regole dell'SRD 5.2: valgono se il set non le scrive (prima valevano per ogni set, anche dove il
+    # manuale non le ha, come il «save vs. death» di Basic Fantasy).
   condizioni:                               # [V] id snake_case; effetti dall'elenco chiuso (docs/combattimento.md §2)
     - {id: prono, nome: "Prono", icona: "⬇", effetti: [svantaggio_attacchi, attacchi_contro_vantaggio], testo: "…"}
   condizione_a_zero: privo_di_sensi         # [V] tra le condizioni, o null
@@ -166,6 +174,8 @@ set della campagna; un id che non è del set né dell'SRD è un errore.
 - **Set non SRD**: `MotoreProve` passa a `risolviTurnoRegole`. Le schede sono quelle del set
   (regole/schede.ts) e i tiri escono da regole/risoluzione.ts:
   - `d20_cd`: d20 + modificatore (caratteristica col tipo del set + bonus dell'abilità) contro la CD della difficoltà.
+    I naturali del set (`critico`, `disastro`; SRD: 20 e 1 negli attacchi) riescono o falliscono comunque, con il
+    grado «critico» o «disastro» sulla carta; il danno del critico raddoppia i dadi solo con `danno_critico: doppio`.
   - `2d6_fasce`: 2d6 + statistica della mossa, o della caratteristica o abilità, + la difficoltà, e la fascia
     corrispondente. Con una mossa, il fatto per il narratore porta l'esito scritto nel manuale.
   - `sotto_soglia`: d20 o d100 ≤ soglia ÷ divisore della difficoltà. Il risultato ha un grado (estremo, difficile),
