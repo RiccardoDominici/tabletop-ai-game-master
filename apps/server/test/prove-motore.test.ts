@@ -122,6 +122,15 @@ describe('un turno di tiri', () => {
     expect(r.tardive).toEqual(['a1']);
   });
 
+  it('una prova PRIVATA fallita: il suo esito sta a parte e non ripete il testo dell’azione', async () => {
+    const testoPrivato = 'Di nascosto attraverso il guado con la corda';
+    const arbitro = new ArbitroFinto({ [testoPrivato]: { tipo: 'prova', abilita: 'atletica', difficolta: 'difficile' } });
+    const r = await motore({ arbitro, dadi: [2] }).risolvi(2, [azione('a1', 'pg_corrado', testoPrivato, true)]);
+    expect(r.fatti).toEqual([]);
+    expect(r.fattiPrivati[0]).toMatch(/FALLITA\. Ciò che voleva NON succede: dillo SOLO nella riga \[privato pg_corrado\]/);
+    expect(r.fattiPrivati[0]).not.toContain('guado');
+  });
+
   it('prova della scena: CD dai dati, il prezzo del fallimento va al narratore', async () => {
     const arbitro = new ArbitroFinto({ 'Attraverso il guado con la corda': { tipo: 'prova', abilita: 'atletica', prova_scena: 'p_guado', difficolta: 'difficile' } });
     const r = await motore({ arbitro, dadi: [5] }).risolvi(2, [azione('a1', 'pg_corrado', 'Attraverso il guado con la corda')]);
@@ -172,9 +181,10 @@ describe('un turno di tiri', () => {
     // Teo: Destrezza +3, maestria in Rapidità di mano (2 × 2) = +7.
     expect(r.tiri).toHaveLength(1);
     expect(r.tiri[0]).toMatchObject({ dadi: [9], vantaggio: null, modificatore: 7, totale: 16, riuscita: true, privata: true, contro: { valore: 15 } });
-    expect(r.fatti[0]).toMatch(/^\[1\] Teo \(azione PRIVATA/);
-    expect(r.fatti[0]).toMatch(/Trova ciò che cercava \(indizio i_lettera\)/);
-    expect(r.fatti[1]).toBe("[2] Ida Ferraro: aiuta Teo: nessun tiro, l'altro ha vantaggio.");
+    // L'esito dell'azione privata sta a parte (fattiPrivati), quello pubblico fra i fatti del tavolo.
+    expect(r.fattiPrivati[0]).toMatch(/^\[1\] Teo \(azione PRIVATA/);
+    expect(r.fattiPrivati[0]).toMatch(/Trova ciò che cercava \(indizio i_lettera\)/);
+    expect(r.fatti[0]).toBe("[2] Ida Ferraro: aiuta Teo: nessun tiro, l'altro ha vantaggio.");
     expect(r.perAzione.get('a1')?.riuscite).toContain('p_cassetta');
   });
 

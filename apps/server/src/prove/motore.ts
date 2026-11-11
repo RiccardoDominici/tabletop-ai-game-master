@@ -322,7 +322,7 @@ export class MotoreProve {
       }
     }
     const attesa_ms = Math.round(this.o.orologio.ora() - t0);
-    if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], attesa_ms, tardive, combattimento: null };
+    if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], fattiPrivati: [], attesa_ms, tardive, combattimento: null };
 
     // Nello scontro a turni i PNG agiscono nel loro turno: niente reazioni in più dall'arbitro
     // (la e2e del 10 novembre: Ruggero colpiva due volte per round, di reazione e di turno).

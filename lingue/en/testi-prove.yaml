@@ -69,6 +69,7 @@ prove:
     fallisce_da_solo: " It fails automatically: the character is {condizione}."
     prezzo: " Price of failure: {prezzo}."
     non_ottiene: " What they wanted does NOT happen («{cosa}»): do not tell it as a success, and no line grants it anyway."
+    non_ottiene_privata: " What they wanted does NOT happen: say it ONLY in the [privato {autore}] line, without repeating at the table what they tried."
     essenziale: " What they were looking for is essential: they find it anyway, but at a price."
     trova_indizio: " They find what they were looking for (clue {indizio})."
     non_trova: " They do not find what they were looking for, for now."
@@ -103,6 +104,7 @@ prove:
     colpisce: "Hits"
   esiti:
     titolo: "## Roll outcomes (the Engine rolled them: they are facts, tell them as they are)"
+    titolo_privati: "### Outcomes of PRIVATE actions (only in the [privato pg_x] line of whoever made it: neither the action nor its outcome at the table)"
     regola: "Every outcome is already decided: success, the action succeeds; failure or miss, it does not succeed, but the scene changes (a price, a complication, a piece of information). Never change an outcome, never say numbers, dice or DC aloud, never ask for other rolls."
   arbitro:
     scena: "Scene (public part):\n{scena}"

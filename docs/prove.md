@@ -378,6 +378,13 @@ Examples of facts in the message (real, from the game on 4720):
     private question was heard because the public action was also addressed to him. Now the line goes to the phone if it
     repeats more words of the private action than of each public action addressed to the NPC, or, on a tie, if it follows
     a line already moved to that PC.
+  - Second pass of the final e2e (indagine-B T4): the PC's name in one sentence, the content in the next. A sentence is now
+    judged TOGETHER with what precedes it (the line so far, or the last sentence of the previous line); the sentence itself
+    must carry the name or at least one word in common. One word instead of two is enough when the line also names the NPC
+    the private action speaks to (`pngInterpellati`: addressed, or right after a verb of saying, «I ask the innkeeper…»).
+  - Outcomes of private actions are no longer among the table's facts: in the narrator message they have their own
+    section («Esiti delle azioni PRIVATE», `EsitoTurnoProve.fattiPrivati`), and the «NON succede» clause of a private
+    action does not quote the action: it only says to tell it in the `[privato pg_x]` line.
 - **Real combat**:
   - initiative and turn order;
   - unprovoked NPC attacks (an `[attacco]` line, to be agreed with the «voce» parser);

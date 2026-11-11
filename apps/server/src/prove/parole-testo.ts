@@ -164,6 +164,23 @@ export function pngRivolti(t: string, nomi: Map<string, string[]>): Set<string> 
 }
 
 /**
+ * I PNG a cui un'azione parla: quelli a cui si rivolge (pngRivolti) e quelli nominati subito dopo un verbo
+ * del dire o del chiedere («I ask the innkeeper…», «chiedo il nome al carbonaio»). Nominarli in un'altra
+ * frase («Mentre Bertoldo guarda Ida, …») non basta.
+ */
+export function pngInterpellati(t: string, nomi: Map<string, string[]>): Set<string> {
+  const out = pngRivolti(t, nomi);
+  const verbi = new RegExp(`\\b(${[...new Set([...datiProve().parole.parlato, ...datiProve().parole.chiedere])].join('|')})\\b`, 'i');
+  const parole = paroleDi(t);
+  for (let i = 0; i < parole.length; i++) {
+    if (!verbi.test(parole[i]!)) continue;
+    const dopo = parole.slice(i + 1, i + 5).join(' ');
+    for (const [id, voci] of nomi) if (voci.some((v) => paroleDi(v).length && ` ${dopo} `.includes(` ${paroleDi(v).join(' ')} `))) out.add(id);
+  }
+  return out;
+}
+
+/**
  * L'arma è usata, non solo nominata: una parola del suo nome entro tre parole dopo «con», «tiro»,
  * «lancio»… (`uso_arma`), e non seguita da «in mano», «sguainata»… (`arma_ferma`). «Tiro con la fionda
  * al goblin» sì; «spada in mano, guardo i rami» no.

@@ -164,7 +164,9 @@ export function fattoGiaATerra(nome: string): string {
  * Dopo una prova fallita, che cosa NON succede: la prova della scena o l'azione (troncata). Nella e2e
  * finale la carta diceva «fallita» e Berta consegnava la chiave lo stesso.
  */
-export function fattoNonOttiene(cosa: string): string {
+export function fattoNonOttiene(cosa: string, privataDi: string | null = null): string {
+  // Un'azione privata: niente testo da ripetere, solo dove dirlo (seconda passata della e2e finale).
+  if (privataDi) return testo('prove.fatto.non_ottiene_privata', { autore: privataDi });
   const breve = cosa.trim().replace(/\s+/g, ' ');
   return testo('prove.fatto.non_ottiene', { cosa: breve.length > 120 ? `${breve.slice(0, 117)}…` : breve });
 }

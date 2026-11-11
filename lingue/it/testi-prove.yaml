@@ -74,6 +74,7 @@ prove:
     fallisce_da_solo: " Fallisce da solo: è {condizione}."
     prezzo: " Prezzo del fallimento: {prezzo}."
     non_ottiene: " Ciò che voleva NON succede («{cosa}»): non raccontarlo come riuscito, e nessuna battuta lo dà lo stesso."
+    non_ottiene_privata: " Ciò che voleva NON succede: dillo SOLO nella riga [privato {autore}], senza ripetere al tavolo che cosa ha tentato."
     essenziale: " Ciò che cercava è essenziale: lo trova comunque, ma con un prezzo."
     trova_indizio: " Trova ciò che cercava (indizio {indizio})."
     non_trova: " Non trova ciò che cercava, per ora."
@@ -112,6 +113,7 @@ prove:
   # La sezione «Esiti dei tiri» del messaggio del narratore e del selettore.
   esiti:
     titolo: "## Esiti dei tiri (li ha tirati il Motore: sono fatti, raccontali così)"
+    titolo_privati: "### Esiti delle azioni PRIVATE (solo nella riga [privato pg_x] di chi l’ha fatta: al tavolo né l’azione né il suo esito)"
     regola: "Ogni esito è già deciso: riuscita, l’azione riesce; fallita o mancato, non riesce, ma la scena cambia (un prezzo, una complicazione, un’informazione). Non cambiare mai un esito, non dire numeri, dadi o CD a voce, non chiedere altri tiri."
   # Il messaggio per l'arbitro (prove/arbitro-haiku.ts, prove/motore.ts).
   arbitro:

@@ -60,7 +60,8 @@ export interface DatiMessaggioTurno {
    * Esiti dei tiri del turno (docs/prove.md), righe già pronte dal Motore delle prove, nell'ordine
    * delle azioni. Assente o vuoto: nessuna sezione (campagna senza dadi).
    */
-  esitiTiri?: { titolo: string; regola: string; righe: string[] };
+  /** `privati`: le righe delle azioni private, in una sezione loro (solo nelle righe [privato pg_x]). */
+  esitiTiri?: { titolo: string; regola: string; righe: string[]; privati?: { titolo: string; righe: string[] } };
   /** PNG in scena fuori gioco per il Motore (a terra, morti, fuggiti): non parlano né agiscono. */
   fuoriGioco?: { titolo: string; righe: string[] };
   /** Fine della serata vicina (sessione/durata.ts, consiglioDiChiusura): un consiglio, non un ordine. */
@@ -153,7 +154,12 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
     if (d.azioni.some((a) => a.numero !== undefined)) parti.push(testo('messaggio.ordine_invio'));
     if (d.collegamenti?.length) parti.push(`${testo('messaggio.titolo_collegamenti')}\n${d.collegamenti.map((c) => `- ${c}`).join('\n')}`);
     // Esiti dei tiri: subito dopo le azioni, perché la risoluzione di ognuna parta da lì.
-    if (d.esitiTiri?.righe.length) parti.push(d.esitiTiri.titolo, d.esitiTiri.regola, d.esitiTiri.righe.map((r) => `- ${r}`).join('\n'));
+    if (d.esitiTiri && (d.esitiTiri.righe.length || d.esitiTiri.privati?.righe.length)) {
+      parti.push(d.esitiTiri.titolo, d.esitiTiri.regola);
+      if (d.esitiTiri.righe.length) parti.push(d.esitiTiri.righe.map((r) => `- ${r}`).join('\n'));
+      // Gli esiti delle private a parte: il narratore non li legge fra i fatti del tavolo.
+      if (d.esitiTiri.privati?.righe.length) parti.push(d.esitiTiri.privati.titolo, d.esitiTiri.privati.righe.map((r) => `- ${r}`).join('\n'));
+    }
   }
 
   if (d.fuoriGioco?.righe.length) parti.push(d.fuoriGioco.titolo, d.fuoriGioco.righe.map((r) => `- ${r}`).join('\n'));

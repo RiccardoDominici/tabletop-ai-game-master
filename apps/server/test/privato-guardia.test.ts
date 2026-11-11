@@ -131,6 +131,38 @@ describe('una domanda privata e un’azione pubblica allo stesso PNG', () => {
   });
 });
 
+/*
+ * Seconda passata della e2e finale (indagine-B T4): il nome del PG nella prima frase, il contenuto nella
+ * seconda. Frase per frase nessuna delle due bastava; ora la frase si giudica con ciò che la precede.
+ */
+describe('privacy per riga, non per frase', () => {
+  const DOMANDA = [{ id_pg: 'pg_teo', testo: 'Chiedo a Bertoldo, sottovoce, chi al ponte sapeva che la chiave era ancora nel casotto.', privata: true }, { id_pg: 'pg_ida', testo: 'Conto le pecore nel recinto.', privata: false }];
+  const nomiDi = (id: string) => (id === 'pg_teo' ? ['Teo'] : ['Ida Ferraro', 'Ida']);
+
+  it('il nome nella prima frase e il contenuto nella seconda: la seconda va al telefono', () => {
+    const g = guardiaPrivate(DOMANDA, nomiDi, NOMI, NOMI_PNG)!;
+    expect(g('Teo tace, il quaderno aperto.', 0, 'narratore')).toBeNull();
+    expect(g('Chiedere sottovoce a Bertoldo chi sapeva della chiave non riesce: il vecchio lo guarda come se avesse sentito troppo.', 0, 'narratore')?.id_pg).toBe('pg_teo');
+    // Anche dalla riga prima (l'ultima frase della riga precedente).
+    const g2 = guardiaPrivate(DOMANDA, nomiDi, NOMI, NOMI_PNG)!;
+    expect(g2('Teo tace, il quaderno aperto.', 0, 'narratore')).toBeNull();
+    expect(g2('La domanda sottovoce su chi sapeva della chiave resta senza risposta.', 1, 'narratore')?.id_pg).toBe('pg_teo');
+  });
+
+  it('il contesto da solo non sposta una frase che non c’entra', () => {
+    const g = guardiaPrivate(DOMANDA, nomiDi, NOMI, NOMI_PNG)!;
+    expect(g('Teo chiede a Bertoldo, sottovoce, chi sapeva della chiave nel casotto.', 0, 'narratore')?.id_pg).toBe('pg_teo');
+    expect(g('Ida conta le pecore nel recinto, una per una.', 1, 'narratore')).toBeNull();
+  });
+
+  it('basta una parola in comune se la riga nomina anche il PNG a cui il PG parla in privato', () => {
+    const g = guardiaPrivate(DOMANDA, nomiDi, NOMI, NOMI_PNG)!;
+    expect(g('Teo si china verso Bertoldo e gli parla della chiave.', 0, 'narratore')?.id_pg).toBe('pg_teo');
+    // Senza il PNG nella riga ne servono due.
+    expect(guardiaPrivate(DOMANDA, nomiDi, NOMI, NOMI_PNG)!('Teo pensa alla chiave.', 0, 'narratore')).toBeNull();
+  });
+});
+
 describe('guardia delle azioni private col server intero', () => {
   let prova: Prova;
   afterEach(async () => prova?.chiudi());

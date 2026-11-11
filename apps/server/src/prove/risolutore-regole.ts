@@ -104,6 +104,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
   const perAzione = new Map<string, EsitoAzioneProve>();
   const tiri: TiroMostrato[] = [];
   const fatti: string[] = [];
+  const fattiPrivati: string[] = [];
   const ids = new Set(o.azioni.map((a) => a.id));
   const aiutanti = new Map<string, string[]>();
   for (const a of o.azioni) {
@@ -180,7 +181,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         }
         if (!e.riuscita && ps?.se_fallisce) fatto += testo('prove.fatto.prezzo', { prezzo: ps.se_fallisce });
         // Che cosa NON succede (la carta e la storia d'accordo, D2); una mossa ha già il suo esito scritto.
-        if (!e.riuscita && !cosa.mossa) fatto += fattoNonOttiene(ps?.quando ?? a.testo);
+        if (!e.riuscita && !cosa.mossa) fatto += fattoNonOttiene(ps?.quando ?? a.testo, a.privata ? a.autore : null);
       }
     }
     // Reazione del PNG: dopo l'azione, se la condizione vale.
@@ -194,12 +195,12 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
     }
     esito.decisione = null;
     esito.fatto = prefisso + fatto;
-    fatti.push(esito.fatto);
+    (a.privata ? fattiPrivati : fatti).push(esito.fatto);
     perAzione.set(a.id, esito);
     o.log.info({ azione: a.id, autore: a.autore, tipo: d?.tipo ?? null, mossa: d?.mossa ?? null, tiri: esito.tiri.map((t) => ({ etichetta: t.etichetta, dadi: t.dadi, totale: t.totale, regola: t.regola, grado: t.grado?.nome ?? null })) }, 'prove: azione risolta (set del manuale)');
   });
   void conSegno;
-  return { turno: o.turno, perAzione, tiri, fatti };
+  return { turno: o.turno, perAzione, tiri, fatti, fattiPrivati };
 }
 
 /**

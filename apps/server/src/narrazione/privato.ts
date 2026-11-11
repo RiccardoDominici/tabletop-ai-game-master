@@ -18,6 +18,7 @@
  */
 import { normalizza } from '../azioni/regole';
 import { campoElenco, regole } from '../lingua/motore';
+import { pngInterpellati } from '../prove/parole-testo';
 import { pngNominati } from '../repertorio/pertinenza';
 
 export interface AzionePrivataTurno {
@@ -60,20 +61,35 @@ function nomina(riga: string, nomi: readonly string[]): boolean {
 }
 
 /**
- * Il PG al cui telefono va questa riga pubblica, o null se resta al tavolo. `nomiPersonaggi` sono i
+ * Il PG al cui telefono va questa frase pubblica, o null se resta al tavolo. `nomiPersonaggi` sono i
  * nomi di tutti i PG e PNG (minuscoli): non contano come contenuto in comune.
+ *
+ * Si giudica la frase INSIEME a ciò che la precede (`contesto`: le frasi prima nella stessa riga, o l'ultima
+ * della riga prima). Nella seconda passata della e2e finale (indagine-B T4) il nome stava nella prima frase
+ * («Eliandro tace, il quaderno aperto.») e il contenuto nella seconda («Chiedere sottovoce a Berta chi sapeva
+ * della chiave non riesce…»): frase per frase, nessuna delle due bastava. La frase stessa deve portare il
+ * nome del PG o almeno una radice in comune: il contesto da solo non sposta una frase che non c'entra.
+ * Basta una radice in comune invece di due se il testo nomina anche il PNG a cui l'azione privata parla
+ * (`nomiPng`, pngInterpellati: «Tobin asks the innkeeper quietly what he is hiding»).
  */
 export function destinatarioPrivato(
   riga: string,
   private_: readonly AzionePrivataTurno[],
   nomiPersonaggi: ReadonlySet<string>,
+  contesto = '',
+  nomiPng?: Map<string, string[]>,
 ): { id_pg: string; comuni: string[] } | null {
   const nomiParole = new Set([...nomiPersonaggi].flatMap((n) => normalizza(n).split(/\s+/)));
+  const testo = contesto ? `${contesto} ${riga}` : riga;
+  const daTesto = radici(testo, nomiParole);
   const daRiga = radici(riga, nomiParole);
   for (const a of private_) {
-    if (!nomina(riga, a.nomi)) continue;
-    const comuni = [...radici(a.testo, nomiParole)].filter((r) => daRiga.has(r));
-    if (comuni.length >= MIN_RADICI_COMUNI) return { id_pg: a.id_pg, comuni };
+    if (!nomina(testo, a.nomi)) continue;
+    const comuni = [...radici(a.testo, nomiParole)].filter((r) => daTesto.has(r));
+    if (!nomina(riga, a.nomi) && !comuni.some((r) => daRiga.has(r))) continue;
+    const interpellati = nomiPng?.size ? pngInterpellati(a.testo, nomiPng) : new Set<string>();
+    const nominaInterpellato = [...pngNominati(testo, nomiPng ?? new Map())].some((id) => interpellati.has(id));
+    if (comuni.length >= (nominaInterpellato ? 1 : MIN_RADICI_COMUNI)) return { id_pg: a.id_pg, comuni };
   }
   return null;
 }
@@ -151,12 +167,18 @@ export function guardiaPrivate(
   const conRispostePng = !!nomiPng?.size && azioni.some((a) => a.testo && a.privata === true);
   if (!private_.length && !conRispostePng) return null;
   const spostati = new Map<number, string>();
+  // Ciò che precede ogni frase: la riga finora, o l'ultima frase della riga prima.
+  const righe = new Map<number, string>();
+  let ultima = '';
   return (testo, segmento, etichetta) => {
+    const contesto = righe.get(segmento) ?? ultima;
+    righe.set(segmento, `${righe.get(segmento) ?? ''} ${testo}`.trim());
+    ultima = testo;
     const gia = spostati.get(segmento);
     if (gia) return { id_pg: gia, comuni: [] };
     // Prima la risposta di un PNG all'azione privata; poi, per ogni riga, il racconto dell'azione.
     const id = conRispostePng && etichetta && nomiPng!.has(etichetta) ? rispostaPrivataPng(testo, etichetta, azioni, nomiPng!, nomiPersonaggi, spostati.get(segmento - 1) ?? null) : null;
-    const d = id ? { id_pg: id, comuni: [] } : private_.length ? destinatarioPrivato(testo, private_, nomiPersonaggi) : null;
+    const d = id ? { id_pg: id, comuni: [] } : private_.length ? destinatarioPrivato(testo, private_, nomiPersonaggi, contesto, nomiPng) : null;
     if (d) spostati.set(segmento, d.id_pg);
     return d;
   };

@@ -157,6 +157,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
   const perAzione = new Map<string, EsitoAzioneProve>();
   const tiri: TiroMostrato[] = [];
   const fatti: string[] = [];
+  const fattiPrivati: string[] = [];
   const idAzioni = new Set(o.azioni.map((a) => a.id));
   const nomePg = (id: string): string => o.nome(id);
 
@@ -218,7 +219,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
       if (extra) fatto += ` ${extra}`;
     }
     esito.fatto = prefisso + fatto;
-    fatti.push(esito.fatto);
+    (a.privata ? fattiPrivati : fatti).push(esito.fatto);
     perAzione.set(a.id, esito);
     log.info(
       { tipo: d?.tipo ?? null, tiri: esito.tiri.map((t) => ({ id: t.id, etichetta: t.etichetta, dadi: t.dadi, mod: t.modificatore, totale: t.totale, contro: t.contro.valore, riuscita: t.riuscita, danno: t.danno?.totale ?? null })), riuscita: esito.riuscita },
@@ -307,7 +308,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     if (ps?.se_fallisce && !e.riuscita) f += testo('prove.fatto.prezzo', { prezzo: ps.se_fallisce });
     // Che cosa NON succede: la prova della scena, o l'azione stessa (la carta e la storia d'accordo, D2).
     // Non per un indizio essenziale: lo trova comunque, con un prezzo.
-    if (!e.riuscita && !ps?.essenziale) f += fattoNonOttiene(ps?.quando ?? a.testo);
+    if (!e.riuscita && !ps?.essenziale) f += fattoNonOttiene(ps?.quando ?? a.testo, a.privata ? a.autore : null);
     if (ps?.essenziale && !e.riuscita) f += testo('prove.fatto.essenziale');
     if (ps?.indizio && e.riuscita && o.conIndizi && !ps.essenziale) f += testo('prove.fatto.trova_indizio', { indizio: ps.indizio });
     if (ps?.indizio && !e.riuscita && !ps.essenziale) f += testo('prove.fatto.non_trova');
@@ -414,7 +415,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     return fattoTiro(t, null);
   }
 
-  return { turno: o.turno, perAzione, tiri, fatti };
+  return { turno: o.turno, perAzione, tiri, fatti, fattiPrivati };
 }
 
 /** Una carta nuova col prossimo id del turno. */

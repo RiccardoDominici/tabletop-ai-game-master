@@ -2372,6 +2372,7 @@ export class Regia {
         tiri: esito.tiri.map((t) => `${t.nome}: ${t.etichetta} ${t.totale} contro ${t.contro.tipo} ${t.contro.valore}, ${t.riuscita ? 'riuscita' : 'fallita'}${t.privata ? ' (privata)' : ''}`),
         // Le righe esatte che riceve il narratore: per rivedere dopo la partita se ha raccontato l'esito giusto.
         fatti: esito.fatti,
+        fatti_privati: esito.fattiPrivati,
       },
       'prove: tiri del turno',
     );
@@ -2487,7 +2488,16 @@ export class Regia {
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
       noteRegia: this.note.testi,
       tempoSerata: this.consiglioSerata(r.turno),
-      ...(tiri?.fatti.length ? { esitiTiri: { titolo: titoloEsiti(), regola: this.prove?.regolaEsiti() ?? regolaEsiti(), righe: tiri.fatti } } : {}),
+      ...(tiri && (tiri.fatti.length || tiri.fattiPrivati.length)
+        ? {
+            esitiTiri: {
+              titolo: titoloEsiti(),
+              regola: this.prove?.regolaEsiti() ?? regolaEsiti(),
+              righe: tiri.fatti,
+              ...(tiri.fattiPrivati.length ? { privati: { titolo: testoFisso('prove.esiti.titolo_privati'), righe: tiri.fattiPrivati } } : {}),
+            },
+          }
+        : {}),
       ...(fuori.length ? { fuoriGioco: { titolo: testoFisso('prove.fuori.titolo'), righe: fuori } } : {}),
     };
     const messaggioBase = compilaMessaggioTurno(datiTurno);
