@@ -24,7 +24,7 @@ import { creaLogger } from '../logger';
 import { RADICE_REPO } from '../percorsi';
 import { riassuntoPubblico } from '../azioni/contesto';
 import { ArbitroProveHaiku } from '../prove/arbitro-haiku';
-import { classificaARegole, type IngressoClassificatore } from '../prove/classificatore-regole';
+import { classificaARegole, provaSocialeSrd, type IngressoClassificatore } from '../prove/classificatore-regole';
 import { MotoreProve, type ContestoProve } from '../prove/motore';
 import type { DecisioneProva } from '../prove/tipi';
 import { ABILITA_INFLUENZA, DIFFICOLTA } from '../campagna/regole-srd';
@@ -98,7 +98,7 @@ function ingressoRegole(c: Campagna, schede: ReturnType<typeof caricaSchede>, al
     regole: null,
     armi: (id) => schede.get(id)?.attacchi.map((a) => a.id) ?? [],
     haScheda: (id) => schede.has(id),
-    proveScena: proveDellaScena(c, c.scena).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole })),
+    proveScena: proveDellaScena(c, c.scena).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole, sociale: provaSocialeSrd(p) })),
     altre: altre.map((a) => ({ id: a.id, autore: a.autore })),
   };
 }

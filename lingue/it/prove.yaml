@@ -205,8 +205,26 @@ parole:
     indagare: [cerco, frugo, perquis, esamin, ispezion, indag, rovist]
     percezione: [ascolto, origli, 'tengo d''occhio', scruto, impronte, 'cerco di (vedere|sentire|scorgere)', 'guardo (chi|se|come)']
   # Un verbo d'attacco (con un bersaglio con la scheda nominato, è un tiro per colpire).
-  attacco: [colpisc, attacc, ferisc, accoltell, trafigg, sparo, scocc, 'tiro (un|una|il|la) (dardo|freccia|colpo|pugno|sasso|coltello)', pugno, calcio, 'mi (lancio|getto) (contro|addosso)', affond, fendent, mazzat]
+  attacco: [colpisc, attacc, ferisc, accoltell, trafigg, sparo, scocc, 'tiro (un|una|il|la) (dardo|freccia|colpo|pugno|sasso|coltello)', pugno, calcio, 'mi (lancio|getto|scaglio) (contro|addosso)', affond, fendent, mazzat, 'carico\b', 'carichiamo\b']
   # Aiutare un compagno (con il nome di un PG che agisce nello stesso turno).
   aiuto: ['aiuto\b', 'do una mano a\b', 'copro\b', 'sostengo\b', 'faccio luce a\b']
   # L'arma scelta dall'arbitro (id in snake_case) che vuol dire «a mani nude»: qualsiasi punto dell'id.
   senz_armi: [mani_nude, pugno, senz_armi, calcio]
+  # Parole intere dell'arbitro a regole (prove/parole-testo.ts). Desinenze tolte prima del confronto («trappola» =
+  # «trappole», «cerco» = «cercare», ma «spalla» ≠ «spallata»).
+  finali: [are, ere, ire, a, e, i, o]
+  # Luoghi, corpo e oggetti comuni: da soli non dicono quale prova (nella e2e finale «spalla» dava Forzare una porta,
+  # «passaggio» e «porta» Cercare porte segrete, «scala» Scalare pareti). Non trovano niente, né nel testo né nelle
+  # parole chiave del set; dentro una voce di più parole («porta segreta») sì.
+  generiche: [porta, porte, portone, cancello, passaggio, passaggi, corridoio, ombra, ombre, orecchio, orecchie, tasca, tasche, parete, pareti, muro, muri, muretto, scala, scale, scalino, strada, sentiero, finestra, stanza, cortile, pietra, pietre, terra, aria, luce, buio, fuoco, acqua, spalla, spalle, mano, mani, testa, occhio, occhi, braccio, braccia, gamba, gambe, piede, piedi, schiena, faccia, viso, voce, passo, passi, lato, fondo, dietro, davanti]
+  # Verbi del dire: «Dico agli altri: …», «gli chiedo la strada: …». Ciò che segue i due punti è parlato, non un gesto.
+  parlato: [dico, diciamo, chiedo, chiediamo, domando, grido, urlo, sussurro, mormoro, rispondo, spiego, aggiungo, ripeto, annuncio, dichiaro, racconto]
+  # Domanda indiretta: «chiedo a Ugo se ha visto…», «domando chi sapeva…» (un verbo e, poco dopo, una di queste).
+  chiedere: [chiedo, chiediamo, domando, domandiamo]
+  interrogative: [chi, cosa, dove, quando, come, perche, se, quanto, quanti, quale, quali]
+  # Preposizioni con cui ci si rivolge a qualcuno: «chiedo a Berta», «mi avvicino al carbonaio», «tratto con Zirrà».
+  rivolto: [a, ad, al, allo, alla, ai, agli, alle, all, verso, con, col]
+  # L'arma è usata se una parola del suo nome segue di poco una di queste («tiro con la fionda», «lancio il dardo»)…
+  uso_arma: [con, col, coi, tiro, lancio, scaglio, scocco, sparo, punto, uso, meno]
+  # …e non è ferma: «spada in mano», «arco alla cintura» non sono un attacco (inizio delle parole che seguono l'arma).
+  arma_ferma: ['in mano', 'in pugno', sguainat, alzat, pront, 'al fianco', 'alla cintura', 'sulla spalla', 'sulla schiena', legat]

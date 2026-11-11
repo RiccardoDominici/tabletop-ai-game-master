@@ -37,7 +37,21 @@ export interface NomiProve {
 export interface PacchettoProve {
   nomi: NomiProve;
   srd: { danni: { nome: string; a_zero: string }; sociale: string; attribuzione: string };
-  parole: { abilita: Record<string, string[]>; attacco: string[]; aiuto: string[]; senz_armi: string[] };
+  parole: {
+    abilita: Record<string, string[]>;
+    attacco: string[];
+    aiuto: string[];
+    senz_armi: string[];
+    /** Parole intere dell'arbitro a regole (prove/parole-testo.ts). */
+    finali: string[];
+    generiche: string[];
+    parlato: string[];
+    chiedere: string[];
+    interrogative: string[];
+    rivolto: string[];
+    uso_arma: string[];
+    arma_ferma: string[];
+  };
 }
 
 /** Le sezioni di `nomi:` che sono semplici tabelle id → nome. */

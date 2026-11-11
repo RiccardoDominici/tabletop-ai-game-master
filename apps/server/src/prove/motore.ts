@@ -29,7 +29,7 @@ import { proveScenaRegole, risolviTurnoRegole } from './risolutore-regole';
 import { regolePerNarratore } from '../regole/narratore';
 import { regolaEsiti } from './testi';
 import { GestoreCombattimento } from './combattimento';
-import { classificaARegole, type IngressoClassificatore } from './classificatore-regole';
+import { classificaARegole, provaSocialeSrd, type IngressoClassificatore } from './classificatore-regole';
 import { combattimentoSrd, type Combattimento, type Fase } from '../regole/combattimento';
 import { strumentiRegole } from './risolutore-regole';
 import { attaccoPngSrd } from './risolutore';
@@ -438,14 +438,25 @@ export class MotoreProve {
   /** Ciò che serve al classificatore a regole (prove/classificatore-regole.ts). */
   private ingressoClassificatore(c: ContestoProve, altre: AzioneRisolvibile[] = []): IngressoClassificatore {
     const g = this.generico;
+    // Set del manuale: le abilità con cui si attacca (mischia, distanza…), dalle armi delle schede. Non le
+    // caratteristiche: «Forza» serve anche a spingere un masso.
+    const attacchiPer = new Set(g ? [...g.schede.values()].flatMap((sch) => sch.attacchi.flatMap((a) => (a.abilita ? [a.abilita] : []))) : []);
+    const sociale = g?.regole.sistema.sociale;
     return {
+      ...(g ? { attacchiPer } : {}),
       campagna: c.campagna,
       regole: g ? g.regole : null,
       armi: (id) => (g ? g.schede.get(id)?.attacchi : this.o.schede.get(id)?.attacchi)?.map((a) => a.id) ?? [],
       haScheda: (id) => (g ? g.schede.has(id) : this.o.schede.has(id)),
+      // Sociale: la prova chiede di rivolgersi a un PNG (Carisma del set, persuadere e simili nell'SRD).
       proveScena: g
-        ? proveScenaRegole(g.regole.sistema, c.campagna).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole }))
-        : this.proveScena(c.campagna).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole })),
+        ? proveScenaRegole(g.regole.sistema, c.campagna).map((p) => ({
+            id: p.id,
+            quando: p.quando,
+            parole: p.parole,
+            sociale: (!!p.caratteristica && p.caratteristica === sociale?.caratteristica) || (!!p.abilita && p.abilita === sociale?.abilita),
+          }))
+        : this.proveScena(c.campagna).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole, sociale: provaSocialeSrd(p) })),
       altre: altre.map((a) => ({ id: a.id, autore: a.autore })),
     };
   }

@@ -197,8 +197,25 @@ parole:
     indagare: [search, look for, looking for, rummage, examin, inspect, investigat, frisk, 'go through (his|her|their|the)', 'study (the|his|her|their|it)', scrutin, 'check (the|his|her|their|for)']
     percezione: [listen, eavesdrop, overhear, keep an eye on, keep watch, 'watch (for|out|the|who|over)', 'scan (the|for)', peer, footprint, 'try to (see|hear|spot|make out|notice)', 'look (to see|if|whether|who|at who|how|around for)', spot, notice, scout]
   # An attack verb (with a named target that has a sheet, it is an attack roll).
-  attacco: [attack, 'hit\b', strike, struck, stab, slash, shoot, shot at, 'fire (at|on|my|an|a)\b', 'loose (an|a|my) (arrow|bolt)', 'throw (a|my|the) (dagger|knife|spear|rock|stone|javelin|axe|hammer|punch)', punch, kick, smash, 'swing (at|my)', lunge, thrust, 'cut (him|her|them|at|down)', 'club\b', bludgeon, 'charge (at|into)', '(throw|hurl|fling) myself (at|on)', 'wound\b', skewer, impale, 'run (him|her|them) through', cleave, 'kill\b', 'fight\b']
+  attacco: [attack, 'hit\b', strike, struck, stab, slash, shoot, shot at, 'fire (at|on|my|an|a)\b', 'loose (an|a|my) (arrow|bolt)', 'throw (a|my|the) (dagger|knife|spear|rock|stone|javelin|axe|hammer|punch)', punch, kick, smash, 'swing (at|my)', lunge, thrust, 'cut (him|her|them|at|down)', 'club\b', bludgeon, 'charge\b', '(throw|hurl|fling) myself (at|on)', 'wound\b', skewer, impale, 'run (him|her|them) through', cleave, 'kill\b', 'fight\b']
   # Helping a companion (together with the name of a PC acting in the same turn).
   aiuto: ['help\b', 'helping\b', assist, 'give (\w+ ){1,3}a hand', 'lend (\w+ )?a hand', 'a hand to\b', 'i cover\b', 'back (\w+ ){1,2}up\b', 'support\b', 'steady\b', 'boost\b', 'hold the (light|torch|lantern) for\b']
   # The weapon id chosen by the arbiter (snake_case) that means «bare-handed»: anywhere in the id.
   senz_armi: [mani_nude, pugno, senz_armi, calcio, unarmed, fist, punch, kick, bare_hand, barehand]
+  # Whole words for the rules arbiter (prove/parole-testo.ts). Endings removed before comparing («trap» = «traps»,
+  # «search» = «searching»).
+  finali: [ing, ed, es, s]
+  # Places, body and common objects: alone they do not say which check. They match nothing, neither in the text nor
+  # in the set's keywords; inside a keyword of several words («secret door») they do.
+  generiche: [door, doors, gate, passage, passages, corridor, shadow, shadows, ear, ears, pocket, pockets, wall, walls, stair, stairs, staircase, ladder, road, path, window, room, yard, stone, stones, ground, air, light, dark, fire, water, shoulder, shoulders, hand, hands, head, eye, eyes, arm, arms, leg, legs, foot, feet, back, face, voice, step, steps, side]
+  # Verbs of saying: «I tell the others: …». What follows the colon is speech, not a deed.
+  parlato: [say, says, said, ask, asks, tell, tells, shout, yell, whisper, murmur, answer, reply, explain, add, repeat, announce, call]
+  # Indirect question: «I ask Ugo whether he saw…», «I ask who knew…» (a verb and, shortly after, one of these).
+  chiedere: [ask, asks, wonder]
+  interrogative: [who, what, where, when, how, why, whether, if, which]
+  # Words that address someone: «I turn to Berta», «I whisper to the innkeeper», «I bargain with Zirrà».
+  rivolto: [to, toward, towards, with]
+  # The weapon is used when a word of its name follows one of these closely («I shoot with my bow», «I throw the dagger»)…
+  uso_arma: [with, throw, fire, shoot, loose, hurl, aim, use, swing]
+  # …and is not at rest: «sword in hand», «bow on my back» are not an attack (start of the words after the weapon).
+  arma_ferma: ['in hand', 'in my hand', drawn, raised, ready, 'at my side', 'on my back', sheathed, slung]
