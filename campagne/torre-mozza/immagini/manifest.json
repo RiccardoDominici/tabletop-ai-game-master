@@ -1,6 +1,27 @@
 {
   "immagini": [
     {
+      "id": "luogo_n_carbonaia",
+      "file": "luogo_scena_carbonaia.jpg",
+      "tipo": "luogo",
+      "alias_di": "luogo_scena_carbonaia",
+      "quando": "2026-11-11 20:12:45"
+    },
+    {
+      "id": "luogo_n_ovile",
+      "file": "luogo_scena_ovile.jpg",
+      "tipo": "luogo",
+      "alias_di": "luogo_scena_ovile",
+      "quando": "2026-11-11 20:12:45"
+    },
+    {
+      "id": "luogo_n_torre",
+      "file": "luogo_scena_torre.jpg",
+      "tipo": "luogo",
+      "alias_di": "luogo_scena_torre",
+      "quando": "2026-11-11 20:12:45"
+    },
+    {
       "id": "luogo_scena_carbonaia",
       "file": "luogo_scena_carbonaia.jpg",
       "tipo": "luogo",
@@ -722,6 +743,129 @@
         "costo_totale_usd": 0.000877
       },
       "quando": "2026-11-11 19:24:53"
+    },
+    {
+      "id": "situazione_png_zirra_in_scena_torre",
+      "file": "situazione_png_zirra_in_scena_torre.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: piccola come un bambino; pelle grigioverde; orecchie a punta; occhi gialli; scudo rotondo dipinto di rosso; spada corta; giubba di cuoio con le borchie. Now inside the place shown in the second reference image, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 514149036,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_zirra",
+      "dopo": [],
+      "automatica": true,
+      "riferimenti": [
+        "ritratto_png_zirra",
+        "luogo_scena_torre"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 1274.8,
+      "picco_gb": 7.34,
+      "kb": 587,
+      "rifilato_pct": 1.2,
+      "firma": "v1:d1e904d5338bda9acfab2513",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Una piccola creatura grigioverde con orecchie a punta, scudo rotondo rosso e giubba borchiata sorride davanti a un falò, in un cortile di pietra sotto la luna piena, accanto a una porta di legno.",
+          "costo_usd": 0.000786,
+          "token": {
+            "ingresso": 4116,
+            "uscita": 749
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000786,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000786
+      },
+      "quando": "2026-11-11 20:12:45"
+    },
+    {
+      "id": "situazione_png_zirra_tiene_il_ragazzo",
+      "file": "situazione_png_zirra_tiene_il_ragazzo.jpg",
+      "tipo": "situazione",
+      "prompt": "The same person as in the reference image, same face, hair and clothes: tratti fissi: piccola come un bambino; pelle grigioverde; orecchie a punta; occhi gialli; scudo rotondo dipinto di rosso; spada corta; giubba di cuoio con le borchie. Now the small humanoid warrior with pointed ears pulls a teenage shepherd boy behind her red shield by his collar, an open iron-bound chest glinting with coins at her feet, inside a dark stone crypt, gouache and ink illustration of a mountain folk tale, late autumn night, cold slate-blue shadows and warm ember light, rough paper texture, muted palette of slate, rust and wool white, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature, no text, no lettering",
+      "seme": 176262434,
+      "larghezza": 1920,
+      "altezza": 1080,
+      "generata": [
+        1920,
+        1088
+      ],
+      "png": "png_zirra",
+      "dopo": [
+        "zir_cassa"
+      ],
+      "automatica": false,
+      "riferimenti": [
+        "ritratto_png_zirra"
+      ],
+      "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
+      "secondi": 301.0,
+      "picco_gb": 6.07,
+      "kb": 610,
+      "rifilato_pct": 1.2,
+      "firma": "v1:6320647438c72bb3d609e834",
+      "qualita": {
+        "esito": "ok",
+        "versione": 2,
+        "motivi": [],
+        "problemi": [
+          {
+            "tipo": "soggetto",
+            "dove": "figura a destra",
+            "descrizione": "Il ragazzo sembra un bambino piccolo, non un adolescente pastore.",
+            "grave": false
+          },
+          {
+            "tipo": "soggetto",
+            "dove": "centro, figura con la spada",
+            "descrizione": "La guerriera non tira il ragazzo per il colletto dietro uno scudo rotondo rosso: lui le poggia la mano sulla spalla e lo scudo non è chiaramente visibile.",
+            "grave": false
+          }
+        ],
+        "visione": {
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [
+            {
+              "tipo": "soggetto",
+              "dove": "figura a destra",
+              "descrizione": "Il ragazzo sembra un bambino piccolo, non un adolescente pastore.",
+              "grave": false
+            },
+            {
+              "tipo": "soggetto",
+              "dove": "centro, figura con la spada",
+              "descrizione": "La guerriera non tira il ragazzo per il colletto dietro uno scudo rotondo rosso: lui le poggia la mano sulla spalla e lo scudo non è chiaramente visibile.",
+              "grave": false
+            }
+          ],
+          "descrizione": "Una piccola creatura umanoide grigioverde con orecchie a punta e spada corta tiene per la spalla un bambino davanti a una cassa di legno aperta piena di monete, in una cripta di pietra. Non si vedono testi, firme o margini.",
+          "costo_usd": 0.000936,
+          "token": {
+            "ingresso": 4063,
+            "uscita": 1059
+          },
+          "modello": "claude-haiku-5-5"
+        },
+        "costo_usd": 0.000936,
+        "tentativi": 1,
+        "costo_totale_usd": 0.000936
+      },
+      "quando": "2026-11-11 19:51:24"
     }
   ]
 }
