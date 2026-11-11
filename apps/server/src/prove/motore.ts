@@ -11,6 +11,8 @@
  * tiro; il narratore risolve come prima («sì, ma»). Con le schede ma senza arbitro (narratore a
  * copione, test) le azioni restano senza decisione e lo dice il log.
  */
+import { nomiDeiPng } from '../repertorio/pertinenza';
+import { soloParlato } from './parole-testo';
 import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { Logger } from '../logger';
@@ -333,6 +335,19 @@ export class MotoreProve {
         decisioni.set(a.id, { ...att, ...(this.generico ? { mossa: null } : {}) } as Decisione);
         this.o.log.warn({ turno, azione: a.id, arbitro: d?.tipo ?? null, bersaglio: att.bersaglio, arma: att.arma }, 'prove: clear attack, decided by the rules instead of the arbiter');
       }
+      // Speech is not a perception check (second pass of the final run: «chiedo sottovoce a Berta…» rolled Ascoltare).
+      // A check on an action that is speech only stays if it is social (or reading the person, SRD Insight); otherwise
+      // the rules arbiter's social check if it finds one, or no roll.
+      const nomiPng = nomiDeiPng(c.campagna);
+      for (const a of azioni) {
+        const d = decisioni.get(a.id);
+        if (!d || !['prova', 'contrapposta', 'salvezza'].includes(d.tipo) || this.sociale(d, c) || d.abilita === 'intuizione') continue;
+        if (!soloParlato(a.testo, nomiPng)) continue;
+        const r = classificaARegole(a, ing);
+        const nuova = r.tipo !== 'nessuna' && this.sociale(r as Decisione, c) ? (r as Decisione) : ({ ...r, tipo: 'nessuna' } as Decisione);
+        decisioni.set(a.id, nuova);
+        this.o.log.warn({ turno, azione: a.id, arbitro: { tipo: d.tipo, abilita: d.abilita, caratteristica: d.caratteristica }, ora: nuova.tipo }, 'prove: speech is not a check, social check or no roll');
+      }
     }
     const attesa_ms = Math.round(this.o.orologio.ora() - t0);
     if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], fattiPrivati: [], attesa_ms, tardive, combattimento: null };
@@ -431,6 +446,29 @@ export class MotoreProve {
     if (fase.png !== 'attacco' && !adatte.length) return null;
     if (g) return strumentiRegole(this.opzioniRegole(turno, c, g)).attacca(png, pg, adatte[0]?.id ?? null, [], false);
     return attaccoPngSrd(this.opzioniSrd(turno, c), png, pg, false, adatte[0]?.id ?? null);
+  }
+
+  /**
+   * A decision is a social check: an SRD social skill or Charisma alone, the set's social characteristic or skill
+   * (also through a move), or a social scene check.
+   */
+  sociale(d: { abilita: string | null; caratteristica: string | null; prova_scena: string | null; mossa?: string | null }, c: ContestoProve): boolean {
+    const g = this.generico;
+    if (g) {
+      const s = g.regole.sistema;
+      if (d.prova_scena) {
+        const p = proveScenaRegole(s, c.campagna).find((x) => x.id === d.prova_scena);
+        if (p) return (!!p.caratteristica && p.caratteristica === s.sociale.caratteristica) || (!!p.abilita && p.abilita === s.sociale.abilita);
+      }
+      const mossa = d.mossa ? s.mosse.find((m) => m.id === d.mossa) : undefined;
+      const car = mossa?.caratteristica ?? d.caratteristica;
+      return (!!car && car === s.sociale.caratteristica) || (!!d.abilita && d.abilita === s.sociale.abilita);
+    }
+    if (d.prova_scena) {
+      const p = this.proveScena(c.campagna).find((x) => x.id === d.prova_scena);
+      if (p) return provaSocialeSrd(p);
+    }
+    return provaSocialeSrd({ abilita: d.abilita, caratteristica: d.caratteristica });
   }
 
   /** Per il pannello del master: PF di chi ha una scheda, condizioni del set. */

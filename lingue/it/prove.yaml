@@ -219,6 +219,8 @@ parole:
   generiche: [porta, porte, portone, cancello, passaggio, passaggi, corridoio, ombra, ombre, orecchio, orecchie, tasca, tasche, parete, pareti, muro, muri, muretto, scala, scale, scalino, strada, sentiero, finestra, stanza, cortile, pietra, pietre, terra, aria, luce, buio, fuoco, acqua, spalla, spalle, mano, mani, testa, occhio, occhi, braccio, braccia, gamba, gambe, piede, piedi, schiena, faccia, viso, voce, passo, passi, lato, fondo, dietro, davanti]
   # Verbi del dire: «Dico agli altri: …», «gli chiedo la strada: …». Ciò che segue i due punti è parlato, non un gesto.
   parlato: [dico, diciamo, chiedo, chiediamo, domando, grido, urlo, sussurro, mormoro, rispondo, spiego, aggiungo, ripeto, annuncio, dichiaro, racconto]
+  # Modi di dire una cosa, che non la rendono un gesto: «chiedo sottovoce a Berta» è parlato, non Ascoltare.
+  modi_del_dire: [sottovoce, piano, a bassa voce, in un sussurro, all orecchio, in disparte, a parte, mi avvicino, mi accosto, mi chino, mi giro, mi volto, mi rivolgo, di nascosto, in segreto, intanto]
   # Domanda indiretta: «chiedo a Ugo se ha visto…», «domando chi sapeva…» (un verbo e, poco dopo, una di queste).
   chiedere: [chiedo, chiediamo, domando, domandiamo]
   interrogative: [chi, cosa, dove, quando, come, perche, se, quanto, quanti, quale, quali]

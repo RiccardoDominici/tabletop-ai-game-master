@@ -196,6 +196,11 @@ Recommended consistency checks (warnings):
      weapon of the PC's sheet used («tiro con la balestra», «lancio il dardo incantato contro…») or an attack gesture,
      against an NPC with a sheet named in what the PC does. In the second pass of the final e2e Haiku gave «no roll» to the
      magic missile, and the narrator killed the goblin with no damage.
+   - Speech is not a perception check (`soloParlato`, after every arbiter): an action that is speech only (speech
+     removed, what is left are ways of saying it, `parole.modi_del_dire`: «sottovoce», «a bassa voce», «mi avvicino»,
+     and the names of those spoken to; or it opens with a vocative, or it is only questions) keeps its check only if it
+     is social (or SRD Insight); otherwise it becomes the rules arbiter's social check, if any, or no roll. In the second
+     pass Haiku rolled «Ascoltare» for «chiedo sottovoce a Berta…» (D6).
    - On timeout, or with no model, the **rules arbiter** decides (prove/classificatore-regole.ts). It is the default of the
      fully local profile (`arbitro_prove: {provider: regole}`): the small model has as little responsibility as possible.
      In order:

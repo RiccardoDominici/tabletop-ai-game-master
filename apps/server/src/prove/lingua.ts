@@ -48,6 +48,7 @@ export interface PacchettoProve {
     parlato: string[];
     chiedere: string[];
     interrogative: string[];
+    modi_del_dire: string[];
     rivolto: string[];
     uso_arma: string[];
     arma_ferma: string[];

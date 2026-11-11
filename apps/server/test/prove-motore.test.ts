@@ -137,6 +137,22 @@ describe('un turno di tiri', () => {
     expect(quieta.tiri).toEqual([]);
   });
 
+  /*
+   * Second pass of the final run (D6): the Haiku arbiter rolled «Ascoltare» for «Chiedo a Berta, sottovoce, chi a
+   * Spinalba sapeva che la chiave era ancora in casa.». Speech said in a low voice is speech: a social check or no roll.
+   */
+  it('a whispered question is not a perception check: no roll, or the social check if there is one', async () => {
+    const sussurro = 'Chiedo a Bertoldo, sottovoce, chi al ponte sapeva che la chiave era nel casotto.';
+    const promessa = 'Bertoldo, a bassa voce: ti prometto due monete se mi lasci passare.';
+    const ascolto = 'Mi avvicino piano alla porta del casotto e ascolto chi parla dentro.';
+    const arbitro = new ArbitroFinto({ [sussurro]: { tipo: 'prova', abilita: 'percezione' }, [promessa]: { tipo: 'prova', abilita: 'percezione' }, [ascolto]: { tipo: 'prova', abilita: 'percezione' } });
+    const r = await motore({ arbitro, dadi: [12, 12, 12] }).risolvi(4, [azione('a1', 'pg_ida', sussurro), azione('a2', 'pg_ida', promessa), azione('a3', 'pg_teo', ascolto)]);
+    expect(r.perAzione.get('a1')?.tiri).toEqual([]);
+    expect(r.perAzione.get('a2')?.tiri[0]).toMatchObject({ etichetta: expect.stringMatching(/Persuasione/) });
+    // A real deed said quietly stays the arbiter's check.
+    expect(r.perAzione.get('a3')?.tiri[0]).toMatchObject({ etichetta: expect.stringMatching(/Percezione/) });
+  });
+
   it('una prova PRIVATA fallita: il suo esito sta a parte e non ripete il testo dell’azione', async () => {
     const testoPrivato = 'Di nascosto attraverso il guado con la corda';
     const arbitro = new ArbitroFinto({ [testoPrivato]: { tipo: 'prova', abilita: 'atletica', difficolta: 'difficile' } });

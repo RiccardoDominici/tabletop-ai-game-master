@@ -210,6 +210,8 @@ parole:
   generiche: [door, doors, gate, passage, passages, corridor, shadow, shadows, ear, ears, pocket, pockets, wall, walls, stair, stairs, staircase, ladder, road, path, window, room, yard, stone, stones, ground, air, light, dark, fire, water, shoulder, shoulders, hand, hands, head, eye, eyes, arm, arms, leg, legs, foot, feet, back, face, voice, step, steps, side]
   # Verbs of saying: «I tell the others: …». What follows the colon is speech, not a deed.
   parlato: [say, says, said, ask, asks, tell, tells, shout, yell, whisper, murmur, answer, reply, explain, add, repeat, announce, call]
+  # Ways of saying something that do not make it a deed: «I quietly ask Berta» is speech, not a Listen check.
+  modi_del_dire: [quietly, softly, in a whisper, in a low voice, under my breath, aside, i lean in, i walk up, i step closer, i turn to, i approach, in secret, meanwhile]
   # Indirect question: «I ask Ugo whether he saw…», «I ask who knew…» (a verb and, shortly after, one of these).
   chiedere: [ask, asks, wonder]
   interrogative: [who, what, where, when, how, why, whether, if, which]

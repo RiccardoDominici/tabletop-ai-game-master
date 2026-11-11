@@ -21,6 +21,7 @@ import { destinatarioPrivato, guardiaPrivate } from '../src/narrazione/privato';
 import { paroleDiMestiere } from '../src/campagna/nomi';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { nomiDeiPng } from '../src/repertorio/pertinenza';
+import { soloParlato } from '../src/prove/parole-testo';
 
 beforeAll(() => impostaLingua('en'));
 afterAll(() => impostaLingua('it'));
@@ -169,6 +170,14 @@ describe('guardie in inglese', () => {
     expect(g('Mara Quill leans over the counter and looks behind it.', 0, 'narratore')).toBeNull();
     expect(g('Tobin Ash asks the innkeeper quietly what he is hiding.', 1, 'narratore')?.id_pg).toBe('pg_tobin');
     expect(g('Nothing you would want to pay for, friend.', 2, 'png_keeper')?.id_pg).toBe('pg_tobin');
+  });
+
+  it('speech said quietly is speech, not a perception check (D6, second pass)', () => {
+    const c = caricaCampagna(path.join(import.meta.dirname, 'fixtures', 'campagne', 'en-mini'));
+    const nomiPng = nomiDeiPng(c);
+    expect(soloParlato('I quietly ask the innkeeper what he is hiding.', nomiPng)).toBe(true);
+    expect(soloParlato('Hale, in a low voice: I will pay double for the truth.', nomiPng)).toBe(true);
+    expect(soloParlato('I quietly open the cellar door and listen.', nomiPng)).toBe(false);
   });
 
   it('nomi brevi: titoli inglesi saltati', () => {

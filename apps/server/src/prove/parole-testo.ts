@@ -164,6 +164,24 @@ export function pngRivolti(t: string, nomi: Map<string, string[]>): Set<string> 
 }
 
 /**
+ * The action is speech only: once the speech is removed (senzaParlato), what is left are ways of saying it
+ * («sottovoce», «a bassa voce», «mi avvicino», `parole.modi_del_dire`), the names of those it speaks to, and empty
+ * words. «Chiedo a Berta, sottovoce, chi sapeva della chiave» is speech: a whisper is not a perception check.
+ */
+export function soloParlato(t: string, nomi: Map<string, string[]>): boolean {
+  if (soloDomande(t)) return true;
+  // Opening with a vocative («Bertoldo, a bassa voce: ti prometto…») is speaking to that NPC: what follows is speech.
+  const vocativo = [...nomi.values()].flat().some((n) => paroleDi(n).length && new RegExp(`^[^\\p{L}]*${paroleDi(n).join('\\s+')}\\s*[,!:]`, 'u').test(normalizza(t)));
+  const resto = vocativo ? '' : senzaParlato(t);
+  let w = paroleDi(resto);
+  for (const modo of datiProve().parole.modi_del_dire.map(paroleDi)) {
+    for (let i = 0; i + modo.length <= w.length; i++) if (modo.every((x, k) => w[i + k] === x)) w = [...w.slice(0, i), ...w.slice(i + modo.length)];
+  }
+  const nomiParole = new Set([...nomi.values()].flat().flatMap(paroleDi));
+  return paroleContenuto(w.join(' '), nomiParole).length === 0;
+}
+
+/**
  * The NPCs an action speaks to: those it addresses (pngRivolti) and those named right after a verb of saying or
  * asking («I ask the innkeeper…», «chiedo il nome al carbonaio»). Naming them elsewhere in the sentence («Mentre
  * Bertoldo guarda Ida, …») is not enough.
