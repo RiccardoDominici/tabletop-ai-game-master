@@ -60,7 +60,13 @@ export type EsitoUsaTurno =
       /** La battuta risponde a un'azione PRIVATA di questo PG: le sue righe vanno solo a lui. */
       privato?: string;
     }
-  | { ok: false; motivo: string };
+  | {
+      ok: false;
+      motivo: string;
+      /** Righe da dire al posto della battuta rifiutata (la deviazione del PNG), e a chi se l'azione era privata. */
+      sostituto?: Array<{ etichetta: string; testo: string }>;
+      privato?: string;
+    };
 
 /** Voce dell'uscita del turno, nell'ordine di ascolto. */
 export type VoceUscita =
@@ -330,6 +336,17 @@ export async function narraTurno(
           usaRifiutati += 1;
           uscita.push({ tipo: 'usa_rifiutato', id: e.id, per: e.per, motivo: esito.motivo });
           log.error({ turno: p.turno, battuta: e.id, per: e.per, motivo: esito.motivo }, 'repertorio: [usa] rifiutato');
+          // Un rilascio fuori contesto: al suo posto la deviazione del PNG (al telefono, se l'azione era privata).
+          for (const r of esito.sostituto ?? []) {
+            const v = voceDi(campagna, r.etichetta);
+            const fr = { etichetta: r.etichetta, nome: v.nome, testo: r.testo, segmento: segmentoBattuta++, indice };
+            if (esito.privato) p.onPrivato?.({ ...fr, id_pg: esito.privato });
+            else p.onFrase(fr);
+            const perVoce = p.pronuncia(r.testo);
+            accoda({ parlante: r.etichetta, nome: v.nome, voce_id: v.voce_id, testo: r.testo, ...(perVoce !== r.testo ? { testo_voce: perVoce } : {}), ...(esito.privato ? { solo_pg: esito.privato } : {}) });
+            uscita.push({ tipo: 'improvvisata', etichetta: r.etichetta, testo: r.testo, segmento: fr.segmento, ...(esito.privato ? { privato: esito.privato } : {}) });
+            righeImprovvisate += 1;
+          }
           continue;
         }
         uscita.push({ tipo: 'usa', id: e.id, per: esito.per !== undefined ? esito.per : e.per, versione: esito.versione, righe: esito.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });

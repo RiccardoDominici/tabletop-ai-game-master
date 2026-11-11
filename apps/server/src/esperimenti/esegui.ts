@@ -38,7 +38,8 @@ import { caricaParoleSegrete } from '../repertorio/segreti';
 import type { Repertorio } from '../repertorio/tipi';
 import { ErroreArgomenti, leggiOpzioni, type OpzioniEsperimento } from './argomenti';
 import { caricaCopione, contaPrivate, controllaCopione, type Copione } from './copione';
-import { misuraFughe } from './fughe';
+import { misuraFughe, rivelazioniFuoriContesto } from './fughe';
+import { nomiDeiPng } from '../repertorio/pertinenza';
 import { MasterHeadless } from './master';
 import { ProiettoreVirtuale } from './proiettore';
 import { azioniPrivate, OsservatoreTavolo, testoTavolo } from './tavolo';
@@ -303,6 +304,10 @@ async function main(): Promise<void> {
   // Fughe di parole segrete (definizione di parole_segrete.yaml della campagna), riga per riga.
   const repertorio: Repertorio | null = modo === 'repertorio' ? caricaRepertorio(campagna) : null;
   const fughe = misuraFughe(narrazioni, caricaParoleSegrete(path.join(campagna.cartella, 'repertorio')), repertorio);
+  // Le fughe che misuraFughe non vede: rilasci (indizi, confessioni, finali) usciti per l'azione sbagliata.
+  const fuoriContesto = rivelazioniFuoriContesto(narrazioni, repertorio, nomiDeiPng(campagna));
+  // Il registro grezzo delle narrazioni di questa sessione: le misure si rifanno anche dopo (il log del server si sovrascrive).
+  fs.writeFileSync(path.join(cartellaRisultati, 'narrazioni.jsonl'), narrazioni.map((r) => JSON.stringify(r)).join('\n') + '\n');
   const latenze = Object.fromEntries(
     CAMPI_LATENZA.map((c) => {
       const v = turni.map((r) => r[c]).filter((x): x is number => typeof x === 'number');
@@ -347,6 +352,7 @@ async function main(): Promise<void> {
     battute_indicate_usate: somma('battute_indicate_usate'),
     righe_png_assenti: somma('righe_png_assenti'),
     usa_rifiutati_per_motivo: motiviRifiuto(narrati),
+    rivelazioni_fuori_contesto: { totale: fuoriContesto.length, elenco: fuoriContesto },
     fughe: {
       nota:
         modo === 'repertorio'

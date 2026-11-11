@@ -68,6 +68,7 @@ import { segretiNascosti, type EsitoGuardiaSegreti } from '../narrazione/guardia
 import { CanaleSceneggiatore } from '../sceneggiatore/canale';
 import type { RichiestaSceneggiatore, RispostaSceneggiatore } from '../sceneggiatore/protocollo';
 import { validaBattute } from '../sceneggiatore/valida';
+import { èRilascio, motivoFuoriContesto } from '../repertorio/rilascio';
 import { giaUsati, ticBloccati } from '../sceneggiatore/ripetizioni';
 
 /** Oltre questo tempo la battuta chiesta «subito» allo sceneggiatore non si dice più (resta nel repertorio). */
@@ -281,6 +282,8 @@ export class Regia {
   } | null = null;
   /** [usa] di questa risposta il cui «> pg» il Motore ha dedotto (mancava) o corretto (era sbagliato). */
   private pgDedotti = 0;
+  /** Rilasci di questa risposta rifiutati perché fuori contesto (repertorio/rilascio.ts). */
+  private rilasciFuoriContesto = 0;
   /** Nomi dei PNG e soprannomi, per la pertinenza del catalogo. */
   private readonly nomiPng: Map<string, string[]>;
   /** Luogo corrente (id della scena o del nodo): sceglie l'immagine del proiettore. */
@@ -1368,6 +1371,19 @@ export class Regia {
       }
     }
     if (per !== perDato) this.pgDedotti += 1;
+    // Un rilascio (indizio, confessione, verità, finale, o una battuta che rivela) esce solo per un'azione
+    // che gli è pertinente (repertorio/rilascio.ts); se no al suo posto la deviazione del PNG. Il Motore
+    // (finale a orologio pieno, segni) e le battute d'attesa non passano da qui.
+    if (!motore && per && èRilascio(b) && !b.riempitivo) {
+      const azione = t?.azioni.get(per);
+      const fuori = motivoFuoriContesto(b, azione?.testo ?? '', this.nomiPng);
+      if (fuori) {
+        this.rilasciFuoriContesto += 1;
+        this.o.log.warn({ turno, battuta: id, per, motivo: fuori }, 'repertorio: rilascio fuori contesto, al suo posto la deviazione');
+        const sostituto = b.chi !== ID_NARRATORE ? this.deviazioneDi(b.chi) : [];
+        return { ok: false, motivo: `fuori contesto: ${fuori}`, ...(sostituto.length ? { sostituto } : {}), ...(azione?.privata ? { privato: per } : {}) };
+      }
+    }
     // Ritmo massimo dell'orologio: vale per i segni senza «> pg» (dovuti o del Motore); un segno legato
     // all'azione di un PG lo scavalca. Un segno per orologio, al massimo due orologi per risposta.
     const nuoviIndizi = b.effetti.rivela_indizi.filter((i) => !s.indiziRivelati.has(i));
@@ -2357,6 +2373,7 @@ export class Regia {
     /** Orologi già avanzati in questa risposta: un segno per orologio, al massimo due orologi. */
     const segniInRisposta: SegniInRisposta = { orologi: new Set<string>() };
     this.pgDedotti = 0;
+    this.rilasciFuoriContesto = 0;
     const log = this.o.log.child({ turno });
     log.debug({ caratteri: messaggio.length }, 'narratore: messaggio del turno');
 
@@ -2536,6 +2553,7 @@ export class Regia {
       righe_segrete_fermate: esito.scartate_segreti,
       // Selettore: «> pg» dedotti o corretti dal Motore; battute indicate dalla preselezione e quante sono uscite.
       pg_dedotti: this.pgDedotti,
+      rilasci_fuori_contesto: this.rilasciFuoriContesto,
       battute_indicate: this.turnoB?.indicate.size ?? 0,
       battute_indicate_usate: esito.uscita.filter((u) => u.tipo === 'usa' && !!this.turnoB?.indicate.has(u.id)).length,
       azioni_pubbliche: pubbliche.size,

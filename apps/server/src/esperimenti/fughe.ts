@@ -13,6 +13,7 @@
  */
 import type { ParolaSegreta } from '../repertorio/segreti';
 import type { Repertorio } from '../repertorio/tipi';
+import { èRilascio, motivoFuoriContesto } from '../repertorio/rilascio';
 
 export interface Fuga {
   turno: number;
@@ -60,4 +61,38 @@ export function misuraFughe(narrazioni: Array<Record<string, unknown>>, parole: 
     }
   }
   return fughe;
+}
+
+/** Un rilascio uscito per un'azione che non gli è pertinente (E2E finale, B2). */
+export interface RivelazioneFuoriContesto {
+  turno: number;
+  battuta: string;
+  tipo: string;
+  per: string;
+  azione: string;
+  motivo: string;
+}
+
+/**
+ * Rivelazioni fuori contesto: le fughe che misuraFughe non vede. Una confessione detta per l'azione
+ * sbagliata non ha parole segrete «prima del tempo», perché il suo id è proprio in `pubblica_dopo`, ma ha
+ * svelato a chi non l'aveva chiesto. Conta ogni battuta di rilascio (repertorio/rilascio.ts) uscita con
+ * «> pg» per un'azione che non le è pertinente; le battute del Motore e quelle d'attesa non contano.
+ */
+export function rivelazioniFuoriContesto(narrazioni: Array<Record<string, unknown>>, repertorio: Repertorio | null, nomiPng: Map<string, string[]>): RivelazioneFuoriContesto[] {
+  if (!repertorio) return [];
+  const out: RivelazioneFuoriContesto[] = [];
+  for (const n of narrazioni) {
+    if (n['tipo'] !== 'turno') continue;
+    const azioni = new Map(((n['azioni'] as Array<{ id_pg?: string; testo: string | null }>) ?? []).filter((a) => a.id_pg && a.testo).map((a) => [a.id_pg!, a.testo!]));
+    for (const u of ((n['uscita'] as Array<{ tipo: string; id?: string; per?: string | null; motore?: boolean }>) ?? [])) {
+      if (u.tipo !== 'usa' || !u.id || !u.per || u.motore) continue;
+      const b = repertorio.perId.get(u.id);
+      if (!b || !èRilascio(b) || b.riempitivo) continue;
+      const azione = azioni.get(u.per) ?? '';
+      const motivo = motivoFuoriContesto(b, azione, nomiPng);
+      if (motivo) out.push({ turno: Number(n['turno']), battuta: b.id, tipo: b.tipo, per: u.per, azione, motivo });
+    }
+  }
+  return out;
 }
