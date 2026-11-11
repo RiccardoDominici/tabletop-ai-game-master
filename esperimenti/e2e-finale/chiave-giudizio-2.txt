@@ -1,0 +1,4 @@
+pass 2 (86a3946): partita-1 = torre-mozza-indagine-B-pass2b
+partita-2 = torre-mozza-indagine-A-pass2b
+partita-3 = torre-mozza-pressione-B-pass2b
+partita-4 = torre-mozza-pressione-A-pass2b

@@ -1,0 +1,227 @@
+{
+ "etichetta": "torre-mozza-pressione-A-pass2b",
+ "turni": {
+  "giocati": 16,
+  "copione": 16,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [
+   "scena_carbonaia",
+   "scena_torre"
+  ],
+  "orologi_max": {
+   "o_mezzanotte": "1/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": [
+   [
+    "la decima non pagata"
+   ]
+  ]
+ },
+ "private": {
+  "azioni_private": 4,
+  "righe_privato": 0,
+  "esiti_privati_log": 6,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": []
+ },
+ "prove": {
+  "azioni_risolte": 25,
+  "con_tiro": 11,
+  "tipi": {
+   "prova": 7,
+   "nessuna": 14,
+   "attacco": 4
+  },
+  "dadi": {
+   "d20": 11,
+   "d6": 17,
+   "d10": 4,
+   "d8": 1
+  },
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 2,
+   "Cercare porte segrete e trappole N: dN serve N o meno": 2,
+   "Intelligenza: dNN contro CD N (facile)": 1,
+   "Scalare pareti N%: dN serve N o meno": 1,
+   "Arco corto, Attacco a distanza (Destrezza): dNN contro CD N (difesa di zirrà)": 1,
+   "Spada lunga, Attacco in mischia (Forza): dNN contro CD N (difesa di zirrà)": 1,
+   "Pugnale, Attacco in mischia (Forza): dNN contro CD N (difesa di zirrà)": 1,
+   "Spada corta, Attacco in mischia (Forza): dNN contro CD N (difesa di zirrà)": 1,
+   "Scassinare serrature N%: dN serve N o meno": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: inizia": 1,
+   "azioni: rinviate al turno del loro PG (combattimento)": 7,
+   "combattimento: risolve solo chi è di turno": 7,
+   "combattimento: iniziativa ritirata": 2
+  },
+  "fatti_morale_terra": 1,
+  "esempi": [
+   "voce: audio pre-generato mancante, sintesi dal vivo: {\"level\": 40, \"time\": \"2026-11-11T14:57:16.803Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"voce\", \"id_frase\": \"t8-f2\", \"chiave\": \"[omessa]\", \"testo\": \"Un ciocco crolla dentro la carbonaia, e la terra si crepa. Un filo di fumo"
+  ],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 25,
+  "nessuna": 11,
+  "ms_classifica_med": 8444,
+  "ms_classifica_peggiore": 20098
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "prossime:ok": 16,
+   "subito:ok": 15
+  },
+  "consegnate": 11,
+  "dette_a_finestra_aperta": 11,
+  "accettate": 93,
+  "scartate": {
+   "tipo non ammesso per lo sceneggiatore: undefined": 12,
+   "YAML non valido: Implicit keys need to be on a single line at line 13, column 5:": 1
+  },
+  "ms_claude_med": 10667,
+  "ms_totale_med_subito": 12022,
+  "processo": {
+   "avvio": 1,
+   "ok": 31,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20045,
+   "peggiore": 20153,
+   "n": 16
+  },
+  "llm_prima_frase": {
+   "mediana": 16,
+   "peggiore": 39,
+   "n": 16
+  },
+  "voce_primo_audio": {
+   "mediana": 672,
+   "peggiore": 4068,
+   "n": 16
+  },
+  "schermo_inizio_audio": {
+   "mediana": 822.5,
+   "peggiore": 847,
+   "n": 8
+  },
+  "llm_fine": {
+   "mediana": 10224.5,
+   "peggiore": 19252,
+   "n": 16
+  },
+  "audio_fine": {
+   "mediana": 21856,
+   "peggiore": 34012,
+   "n": 16
+  },
+  "s_tra_turni_med": 40,
+  "s_tra_turni_peggiore": 71.213
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 19,
+   "in_frase": 0,
+   "tra_frasi": 19,
+   "silenzio_ms": 61130,
+   "per_turno": [
+    1,
+    3,
+    1,
+    1,
+    1,
+    0,
+    2,
+    0,
+    2,
+    1,
+    0,
+    2,
+    2,
+    0,
+    0,
+    3
+   ]
+  },
+  "proiettore_secondi": 380,
+  "errori_voce": {
+   "voce: audio pre-generato mancante, sintesi dal vivo": 31
+  }
+ },
+ "log": {
+  "errori": 1,
+  "avvisi": 42,
+  "per_messaggio": [
+   "40 ×31 voce: audio pre-generato mancante, sintesi dal vivo",
+   "40 ×4 repertorio: rilascio fuori contesto, al suo posto la deviazione",
+   "40 ×4 repertorio: [usa] rifiutato",
+   "40 ×2 narrator: sentence contradicts the Engine, replaced by its line",
+   "50 ×1 repertorio: parola segreta nel messaggio del selettore",
+   "40 ×1 prove: fatti dello scontro non detti dalla narrazione, li dice il Motore"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-8B-4bit — configurato (con",
+   "arbitro_azioni  → regole — configurato (config/predefinita.yaml)",
+   "arbitro_prove   → regole (completo) — configurato (config/predefinita.yaml)",
+   "riassunto       → locale mlx-community/Qwen3-8B-4bit — configurato (config/prede",
+   "regole          → locale mlx-community/Qwen3-8B-4bit — configurato (config/prede",
+   "voce            → finto — configurato (config/predefinita.yaml)",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": 0.5,
+  "consiglio_ai_turni": [],
+  "chiusura": {
+   "turno": 19,
+   "righe": [
+    {
+     "chi": "narratore",
+     "testo": "La torre tace. Il fuoco si abbassa, e il vento fischia nei buchi dei muri."
+    },
+    {
+     "chi": "narratore",
+     "testo": "È notte fonda, e quello che si decide su questi gradini si decide stanotte."
+    }
+   ],
+   "riassunto": {
+    "etichetta": "Serata 1",
+    "quando": "2026-11-11T15:04:35.950Z",
+    "testo": "Berta ha dato la chiave a Livia per recuperare Tonio, mentre Eliandro e Nespola cercano indizi sul sentiero. Ugo osserva il fuoco, mentre le lettere strane e le tracce di piedi suggeriscono un'attività nascosta. Zirrà e i goblin si scontrano con i giocatori, e la chiave diventa un elemento chiave per proseguire.",
+    "fili": [
+     "Chi ha scritto quelle lettere strane?",
+     "Dove è finito il ragazzo legato?",
+     "Cosa c'è nella torre e chi è Zirrà?"
+    ]
+   },
+   "di_riserva": false,
+   "ms": 45148
+  }
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 33,
+  "improvvisate": 23,
+  "usa_rifiutati": 4,
+  "azioni_pubbliche": 21,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0
+ }
+}

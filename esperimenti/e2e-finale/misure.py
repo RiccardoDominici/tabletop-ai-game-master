@@ -166,6 +166,16 @@ def main() -> None:
     M["log"] = {"errori": sum(v for (l, _), v in avvisi.items() if l >= 50), "avvisi": sum(v for (l, _), v in avvisi.items() if l == 40),
                 "per_messaggio": [f"{l} ×{v} {m}" for (l, m), v in avvisi.most_common(15)],
                 "provider": [str(x.get("msg"))[10:90] for x in server if str(x.get("msg", "")).startswith("PROVIDER:")]}
+    # --- the evening's closing (--ore, --chiudi) and the second pass's new combat facts
+    serata = r.get("serata") or {}
+    chiusura = serata.get("chiusura") or {}
+    M["serata"] = {"ore": serata.get("ore"), "consiglio_ai_turni": serata.get("consiglio_ai_turni"),
+                   "chiusura": {k: (v if not isinstance(v, (list, str)) or len(str(v)) < 400 else str(v)[:400] + "…") for k, v in chiusura.items()} if isinstance(chiusura, dict) else chiusura}
+    tutti_fatti = [f for x in server if x.get("msg") == "prove: tiri del turno" for f in (x.get("fatti") or [])]
+    M["combattimento"]["fatti_morale"] = [f[:160] for f in tutti_fatti if "orale" in f][:6]
+    M["combattimento"]["fatti_a_terra"] = [f[:160] for f in tutti_fatti if "A TERRA" in f or "a terra" in f][:8]
+    M["combattimento"]["fuori_gioco_log"] = dict(collections.Counter(str(x.get("msg")) for x in server
+                                                 if re.search(r"fuori (gioco|scena|combattimento)|esce dalla scena|non è più in scena", str(x.get("msg")))))
     M["costo_usd"] = r.get("costo_totale_usd")
     M["righe"] = {"prescritte": r.get("righe_prescritte"), "improvvisate": r.get("righe_improvvisate"), "usa_rifiutati": r.get("usa_rifiutati"),
                   "azioni_pubbliche": r.get("azioni_pubbliche"), "azioni_senza_risposta": r.get("azioni_senza_risposta"), "riparazioni": r.get("riparazioni")}

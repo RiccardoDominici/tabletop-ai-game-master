@@ -1,0 +1,548 @@
+{
+  "copione": "torre-mozza/pressione",
+  "campagna": "torre-mozza",
+  "modo": "repertorio",
+  "porta": 4800,
+  "narratore_finto": false,
+  "sessione": "2026-11-11T14:52:09.139Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "86a394636598470083d57c889d5b6207137d9570",
+    "modificati": [],
+    "radice": "/private/tmp/claude-501/-Users-riccardo-Developer/161e877b-0d39-415a-be00-32dd6f15c6cf/scratchpad/wt-e2e3"
+  },
+  "turni": 16,
+  "turni_copione": 16,
+  "cambi_di_scena": [
+    {
+      "turno_copione": 7,
+      "turno_server": 7,
+      "a": "scena_carbonaia"
+    },
+    {
+      "turno_copione": 9,
+      "turno_server": 10,
+      "a": "scena_torre"
+    }
+  ],
+  "fine_prima_del_copione": null,
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 9,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 11,
+        "stato": {}
+      },
+      {
+        "turno": 12,
+        "stato": {}
+      },
+      {
+        "turno": 13,
+        "stato": {}
+      },
+      {
+        "turno": 14,
+        "stato": {}
+      },
+      {
+        "turno": 15,
+        "stato": {}
+      },
+      {
+        "turno": 16,
+        "stato": {}
+      },
+      {
+        "turno": 17,
+        "stato": {}
+      },
+      {
+        "turno": 18,
+        "stato": {}
+      }
+    ],
+    "massimo": {
+      "o_mezzanotte": "1/8"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 6,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 20045,
+      "peggiore": 20153,
+      "n": 16
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 15,
+      "peggiore": 38,
+      "n": 16
+    },
+    "llm_prima_frase": {
+      "mediana": 16,
+      "peggiore": 39,
+      "n": 16
+    },
+    "voce_richiesta": {
+      "mediana": 29.5,
+      "peggiore": 3766,
+      "n": 16
+    },
+    "voce_primo_audio": {
+      "mediana": 672,
+      "peggiore": 4068,
+      "n": 16
+    },
+    "schermo_inizio_audio": {
+      "mediana": 822.5,
+      "peggiore": 847,
+      "n": 8
+    },
+    "llm_fine": {
+      "mediana": 10224.5,
+      "peggiore": 19252,
+      "n": 16
+    },
+    "audio_fine": {
+      "mediana": 21856,
+      "peggiore": 34012,
+      "n": 16
+    }
+  },
+  "buchi": {
+    "totale": 19,
+    "in_frase": 0,
+    "tra_frasi": 19,
+    "silenzio_ms": 61130,
+    "per_turno": [
+      1,
+      3,
+      1,
+      1,
+      1,
+      0,
+      2,
+      0,
+      2,
+      1,
+      0,
+      2,
+      2,
+      0,
+      0,
+      3
+    ]
+  },
+  "righe_prescritte": 33,
+  "righe_improvvisate": 23,
+  "quota_prescritte": 0.5892857142857143,
+  "usa_rifiutati": 4,
+  "azioni_pubbliche": 21,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 10,
+  "battute_indicate_usate": 5,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {
+    "fuori contesto: nessuno dei temi di <id>": 1,
+    "fuori contesto: l'azione ha in comune con «i PG partono per il bosco senza la ch": 1,
+    "fuori contesto: l'azione ha in comune con «un PG chiede a Ugo com'è il sentiero ": 1,
+    "fuori contesto: l'azione ha in comune con «un PG chiede al ragazzo perché è sali": 1
+  },
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": 0.5,
+    "consiglio_ai_turni": [],
+    "chiusura": {
+      "turno": 19,
+      "righe": [
+        {
+          "chi": "narratore",
+          "testo": "La torre tace. Il fuoco si abbassa, e il vento fischia nei buchi dei muri."
+        },
+        {
+          "chi": "narratore",
+          "testo": "È notte fonda, e quello che si decide su questi gradini si decide stanotte."
+        }
+      ],
+      "riassunto": {
+        "etichetta": "Serata 1",
+        "quando": "2026-11-11T15:04:35.950Z",
+        "testo": "Berta ha dato la chiave a Livia per recuperare Tonio, mentre Eliandro e Nespola cercano indizi sul sentiero. Ugo osserva il fuoco, mentre le lettere strane e le tracce di piedi suggeriscono un'attività nascosta. Zirrà e i goblin si scontrano con i giocatori, e la chiave diventa un elemento chiave per proseguire.",
+        "fili": [
+          "Chi ha scritto quelle lettere strane?",
+          "Dove è finito il ragazzo legato?",
+          "Cosa c'è nella torre e chi è Zirrà?"
+        ]
+      },
+      "di_riserva": false,
+      "ms": 45148
+    }
+  },
+  "fughe": {
+    "nota": "Fuga = riga del narratore o di un PNG con una parola segreta prima che sia uscito un id di pubblica_dopo (battuta o indizio rivelato da una battuta) e prima che un giocatore l’abbia scritta.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 28,
+  "battute_mai_usate": [
+    "nar_giaciglio",
+    "nar_cani",
+    "nar_pali",
+    "nar_recinto",
+    "nar_avviso",
+    "nar_attesa_ovile",
+    "fin_ovile_mezzanotte",
+    "nar_chiave_presa",
+    "fin_ovile_chiave",
+    "fin_ovile_senza",
+    "nar_impronte",
+    "nar_rovi",
+    "nar_cervo",
+    "nar_frasche",
+    "fin_carbonaia_mezzanotte",
+    "fin_carbonaia_cunicolo",
+    "fin_carbonaia_sentiero",
+    "nar_corda",
+    "nar_mappa",
+    "nar_conto",
+    "nar_iscrizione",
+    "nar_cripta",
+    "nar_cripta_grimaldello",
+    "nar_tonio_zitto",
+    "nar_tonio_parla",
+    "nar_tonio_sottovoce",
+    "fin_alba_fontana",
+    "fin_alba_silenzio",
+    "fin_alba_riserva",
+    "fin_alba_discesa",
+    "nar_segno_2",
+    "nar_segno_3",
+    "nar_segno_4",
+    "nar_segno_5",
+    "nar_segno_6",
+    "nar_segno_7",
+    "nar_segno_8",
+    "tr_bosco",
+    "tr_crinale",
+    "nar_chiusura_ovile",
+    "nar_chiusura_ovile_chiave",
+    "nar_chiusura_carbonaia",
+    "nar_chiusura_torre",
+    "ber_saluto",
+    "ber_domanda_gentile",
+    "ber_accusa",
+    "ber_minaccia",
+    "ber_offerta",
+    "ber_aiuto",
+    "ber_rifiuto",
+    "ber_attesa",
+    "ber_salgo_io",
+    "ber_cani",
+    "ber_cose_tonio",
+    "ber_nomi_pali",
+    "ber_benedizione",
+    "ber_debiti_domanda",
+    "ber_conti_foglio",
+    "ber_non_ci_crede",
+    "gro_saluto",
+    "gro_minaccia",
+    "gro_rifiuto",
+    "gro_cibo",
+    "ugo_saluto",
+    "ugo_domanda_gentile",
+    "ugo_accusa",
+    "ugo_minaccia",
+    "ugo_offerta",
+    "ugo_aiuto",
+    "ugo_rifiuto",
+    "ugo_attesa",
+    "ugo_tre_monete",
+    "ugo_salita",
+    "ugo_consiglio",
+    "ugo_stanotte",
+    "ugo_notte_cervo",
+    "ugo_notte_promessa",
+    "ugo_sentiero_privato",
+    "ugo_sentiero_impronte",
+    "zir_saluto",
+    "zir_domanda_gentile",
+    "zir_accusa",
+    "zir_minaccia",
+    "zir_offerta",
+    "zir_aiuto",
+    "zir_rifiuto",
+    "zir_chiave_prima",
+    "zir_patto",
+    "zir_resa",
+    "zir_cassa",
+    "zir_ragazzo_mio",
+    "zir_corda",
+    "zir_carbonaio"
+  ],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 146,
+      "secondi": 28.599999999999934,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 165
+    },
+    {
+      "turno": 1,
+      "frasi": 3,
+      "pezzi": 61,
+      "secondi": 12.066666666666656,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 4446
+    },
+    {
+      "turno": 2,
+      "frasi": 6,
+      "pezzi": 99,
+      "secondi": 19.5333333333333,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 5475
+    },
+    {
+      "turno": 3,
+      "frasi": 2,
+      "pezzi": 38,
+      "secondi": 7.46666666666667,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 1615
+    },
+    {
+      "turno": 4,
+      "frasi": 3,
+      "pezzi": 69,
+      "secondi": 13.466666666666653,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 5903
+    },
+    {
+      "turno": 5,
+      "frasi": 3,
+      "pezzi": 56,
+      "secondi": 11.066666666666661,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 6668
+    },
+    {
+      "turno": 6,
+      "frasi": 6,
+      "pezzi": 134,
+      "secondi": 26.266666666666605,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 7,
+      "frasi": 3,
+      "pezzi": 76,
+      "secondi": 15.066666666666645,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 4,
+      "pezzi": 87,
+      "secondi": 17.06666666666664,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 5852
+    },
+    {
+      "turno": 9,
+      "frasi": 12,
+      "pezzi": 234,
+      "secondi": 46.200000000000124,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 10,
+      "frasi": 3,
+      "pezzi": 83,
+      "secondi": 16.26666666666664,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 11,
+      "frasi": 8,
+      "pezzi": 159,
+      "secondi": 31.466666666666587,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 1013
+    },
+    {
+      "turno": 12,
+      "frasi": 10,
+      "pezzi": 177,
+      "secondi": 34.59999999999995,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 380
+    },
+    {
+      "turno": 13,
+      "frasi": 4,
+      "pezzi": 99,
+      "secondi": 19.399999999999967,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 14,
+      "frasi": 5,
+      "pezzi": 95,
+      "secondi": 18.599999999999966,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 21654
+    },
+    {
+      "turno": 15,
+      "frasi": 4,
+      "pezzi": 64,
+      "secondi": 12.333333333333323,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 677
+    },
+    {
+      "turno": 16,
+      "frasi": 1,
+      "pezzi": 23,
+      "secondi": 4.533333333333335,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 17,
+      "frasi": 4,
+      "pezzi": 80,
+      "secondi": 15.799999999999978,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 18,
+      "frasi": 5,
+      "pezzi": 102,
+      "secondi": 19.933333333333298,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 7447
+    },
+    {
+      "turno": 19,
+      "frasi": 2,
+      "pezzi": 50,
+      "secondi": 9.933333333333332,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}

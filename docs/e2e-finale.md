@@ -123,7 +123,7 @@ Its bug notes are folded into §6.
 | secret leaks (detector) | 0 | 0 | 0 | 0 | 0 | 0 |
 | private actions / answered aloud at the table | 4 / 1 | 6 / 4 | 4 / 0 | 5 / 0 | 5 / 0 (a clue line went to another PC, B1) | 4 / 1 (Berta, T6) |
 | dice cards (checks + attacks) | 14 | 21 | 20 | 15 | 22 | 22 |
-| absurd cards (wrong ability, needless roll, or attack without a target) | 1 | 1 | 7 | 7 | 2 | 1 |
+| wrong-ability or target-less cards | 0 (one needless roll, D6) | 1 | 7 | 7 | 2 | 1 |
 | combat: fights / rounds / PCs at 0 | 1 / 3+ (unfinished) / 2 | 2 / 1 each / 0 | 1 / 3+ / 0 | 1 / 3+ / 1 (dies) | 2 / 1 each / 0 | 1 / unfinished / 0 |
 | down NPCs that keep acting | — | Zirrà, Grosso | — | — | Zirrà | — |
 | reader «nessuna» / sceneggiatore lines delivered with the window open | — | — | 8 / 8 | 11 / 8 | — | — |
@@ -248,10 +248,133 @@ prose, the Engine says `regia.righe.chiusura_riserva`, and a summary from the lo
 Preparer started writing `chiusura` lines: one per scene, checked by the validator (`COPERTURA.chiusura`, an error in
 strict mode), and the four campaigns have them. Without one that fits, the sceneggiatore writes the closing at the table.
 
-## 9. Reproduce
+## 9. Second pass on the fixed code (11 November)
+
+Same campaign, same two blind scripts, same English fixture, `--pausa-s 20`, ports 4800/4810, new variable names
+(`TAGM_*`). Every run started from a git worktree pinned to one commit, with its own build, so the numbers do not move
+while other work lands on main. There were two steps. The first is profile B on `aee0467`, the commit the request
+named (rows «B @aee»). Then the Mac ran out of battery for two hours, and six more fixes landed (`eff935c` private
+guard by context, `3a0f1d0` NPCs found by their trade, `1e56dfc`, `e26ee4a` clear attacks, `0ef96ac` narrator vs cards,
+`9f674f8` automatic-hit cards) together with the pronunciation lexicon (`00a19a0`, `92b68f9`). So the second step ran both
+profiles and the English run on `86a3946` (rows «@86a»). Profile A has `--ore 0.5 --chiudi`, to test the end of the
+evening and the guided closing. Its first pressione run lost the local reader halfway (bug N6) and was run again
+alone. Both copies are kept: `torre-mozza-pressione-A-pass2b-lettore-morto` is the broken one. Results are in
+`esperimenti/risultati/e2e-finale-2/<run>/` and `esperimenti/e2e-finale/<run>/`.
+
+| | indagine-B @aee | pressione-B @aee | indagine-B @86a | pressione-B @86a | indagine-A @86a | pressione-A @86a |
+|---|---|---|---|---|---|---|
+| turns played / scripted | 16/16 | 16/16 | 16/16 | 16/16 | 16/16 + closing | 16/16 + closing |
+| secret leaks (detector) | 0 | 0 | 0 (1 secret line stopped by the guard) | 0 | 0 | 0 |
+| private actions / content heard at the table | 4 / 1 (T4) | 6 / 2 (T8, T17) | 4 / 0 | 6 / 0 | 4 / 0 | 4 / 0 |
+| lines the private guard moved to a phone | 4 | 5 | 7 | 10 | — | — |
+| dice cards / wrong-ability or target-less | 17 / 2 | 21 / 1 | 18 / 1 | 21 / 2 | 8 / 0 | 11 / 1 |
+| native cards of the manual (d100, x-in-6, automatic) | 1 | 8 | 2 | 9 | 2 | 4 |
+| combat: initiative re-rolled / outcome | yes / unfinished | yes / Zirrà dead, fight over | yes / Grosso dead, unfinished | yes / Grosso dead, Zirrà flees on morale | yes / Zirrà dead, unfinished | yes / unfinished |
+| down or dead NPCs that keep acting | — | none | none | none | Zirrà (one late sceneggiatore line) | none |
+| Engine lines replacing the narrator (`0ef96ac`) / wrong ones | — | — | 2 / 2 («Narratore manca Zirrà.») | 2 / 1 («Berta è ancora in piedi.») | 0 | 2 / 2 («Narratore manca Zirrà.») |
+| reader «nessuna» / sceneggiatore lines delivered with the window open | — | — | — | — | 9 / 8 | 11 / 11 |
+| sceneggiatore: requests ok / accepted / discarded | — | — | — | — | 29 / 90 / 14 | 31 / 93 / 13 |
+| first audio, median (worst) | 1.8 s (3.4) | 1.8 s (2.8) | 2.6 s (3.7) | 2.3 s (3.4) | 0.7 s fake | 0.7 s fake |
+| reader: line chosen at send / narration done, median (worst) | — | — | — | — | 9.4 s (21.4) / 12.1 s | 8.4 s (20.1) / 10.2 s |
+| time between turns, median (worst) | 49 s (67) | 45 s (67) | 45 s (66) | 49 s (69) | 43 s (63) | 40 s (71) |
+| voice underruns | 0 | 0 | 0 | 0 | 25 gaps (fake voice) | 19 gaps (fake voice) |
+| closing of the evening | — | — | — | — | 2 closing lines; summary by the local model, 39 characters, cut mid-word (N7) | 2 closing lines; full summary by the local model |
+| server errors / warnings | 16 / 8 | 15 / 11 | 12 / 16 | 12 / 25 | 12 / 36 | 1 / 42 |
+| cost | $0.058 | $0.059 | $0.060 | $0.058 | $0 | $0 |
+
+- **English** (`en-mini`, 3 turns): on `aee0467` the private question was still heard. The narrator echoed it, and
+  «Hale the Innkeeper» answered «Nothing you'd want to pay for, friend», because the player wrote «the innkeeper», the
+  fixture has no alias, and the guard matched names only. On `86a3946` nothing of it reached the table: the guard moved 3
+  lines, and the only public trace is «Hale's eyes flick toward the cellar». Cost $0.002 per run, no warnings.
+- **Pronunciation lexicon** (`campagne/torre-mozza/pronunce.yaml`, 19 names): 40 drama-3 lines that profile B played
+  from the pre-generated cache were transcribed with Whisper (`openai/whisper-1` via OpenRouter,
+  `esperimenti/e2e-finale/ascolta-nomi.mts`, $0.016). **44 of 45 name occurrences were heard right**: Berta 13/13, Ugo 10/10,
+  Spinalba 5/5, Grosso 4/4, Zirrà 3/3, Tonio 3/3, Mozza, Moretta, Rosella. The one miss is «Noi Bènni non dobbiamo niente»,
+  heard as «Noi Venni» (voice nadine, a B/V confusion). The cached line still says «Bènni», from the sheet's old
+  `pronuncia` field, while the lexicon now says «Benni». The PCs' names (Livia, Fulco, Eliandro, Nespola) occur only in
+  the live Haiku lines, which the pipeline does not keep, so here only the lexicon's own ear test covers them.
+- **Judge**, same rubric, on the four `@86a` games (`esperimenti/giudizio-e2e-finale/pass2-fase1-giocatore.md`,
+  `pass2-fase2-master.md`). Phase 1, blind, by game (P1 indagine-B, P2 indagine-A, P3 pressione-B, P4 pressione-A):
+  clarity 3/3/4/2, NPCs 3/4/4/4, agency 2/3/4/3, mystery 3/3/3/4, prose 2/2/4/2, rhythm and ending 2/4/3/3, fun 3/3/3/3,
+  **coherence 2/2/3/2, fluidity 2/2/3/2, Basic Fantasy fidelity 3/3/3/3** (first pass: coherence 2/2/2/2, fluidity
+  2/2/3/3, fidelity 3/2/3/3). Phase 2, with the data, by profile: coherence A 2 / B 3, fluidity A 2 / B 3, rules fidelity
+  A 2 / B 3 (first pass: A 2/2/2, B 2/4/3). Its top problems, confirmed against the logs: the wrong replacement line
+  «Narratore manca Zirrà.» (4 times at the table), actions left without a narrated outcome in profile A, a failed check
+  that still gets the result (Ugo points the path after «Carisma 3 contro CD 13, fallita»), broken quotes in the
+  announcements, and a dead Zirrà in one late line of profile A.
+
+### Before / after
+
+Every bug of §6, on the latest code (`86a3946`), with the evidence of the second pass.
+
+| # | Bug of the first pass | Second pass | Evidence |
+|---|---|---|---|
+| A1 | NPC replies to private actions heard at the table | **fixed** | 0 replies heard in 4 Italian games (18 private actions) and in the English run; the guard moved 7 + 10 lines in profile B |
+| A2 | private outcome said without the PC's name | **fixed** | on `aee0467` still 3 times, e.g. «Eliandro tace, il quaderno aperto. Chiedere sottovoce a Berta chi sapeva della chiave non riesce…» (the guard judged one sentence at a time); after `eff935c`, 0 |
+| A3 | content-free lines showing who acted in private | still there (accepted) | «Nespola abbassa la voce, quasi un sussurro, e parla a Berta nel cortile.» |
+| A4 | «HIDDEN:» vs «NASCOST» | **fixed** (`3238277`, by reading; no English campaign played) | markers of all languages hold in every campaign |
+| B1 | release lines on unrelated actions | **fixed** | the Engine refused them: 1–4 per run «rilascio fuori contesto, al suo posto la deviazione», e.g. `nar_conto` for a sling shot. But see N3 |
+| B2 | leak detector blind to such releases | partly | the releases no longer happen; the phase-2 judge still found `nar_piccone` counted as clean |
+| B3 | verbal tics | still there | Zirrà «ride corto» in every B game; «Non so, non m'importa. Parliamo di prezzo.» as a stock deflection |
+| C1 | dead or down NPCs keep acting | **fixed in the Engine**, one leftover | «combattimento: esce dallo scontro», dead NPCs' lines discarded (6 in pressione-B, 8 sceneggiatore lines «png_zirra non è nella scena»); a narrator-voiced sceneggiatore line written before the death still said «Zirrà ride corto e batte la spada sullo scudo» (indagine-A T14) |
+| C2 | narrator omits combat facts | **fixed** | «fatti dello scontro non detti dalla narrazione, li dice il Motore» in 5 of 6 runs; but in indagine-A Zirrà's death was never told (the minimal reader picked filler lines and the repair did not fire) |
+| C3 | morale invisible, fled NPC stays | **fixed** | «Morale dei nemici: 3 contro 8 → tengono»; pressione-B: Grosso killed, then «Zirrà vede il compagno cadere e lascia andare la spada corta… Zirrà fugge.» and she leaves the fight |
+| C4 | harness sends out-of-turn combat actions | still there | 1–7 deferred actions per run (harness) |
+| C5 | attacks on creatures without a sheet; invented goblins | still there | «tre o quattro goblin», goblin attacks resolved «nessun tiro, risolvi con un sì, ma» (pressione-B T11–T14) |
+| D1 | absurd keyword cards (profile A) | **fixed** | 1 wrong card in 19 (a thrown dagger rolled as «Pugnale, Attacco in mischia»; first pass 14 of 35), plus the set's own save for «mi aggrappo al ramo», which the judge counts as absurd; fewer rolls overall (8 and 11 instead of 20 and 15) |
+| D2 | card and story disagree | improved, still there | Berta keeps the key after «Carisma 10 contro CD 17, fallita» and gives it after «Carisma 20… riuscita»; but after «Carisma 3 contro CD 13, fallita» Haiku still has Ugo point the path (indagine-B T10) |
+| D3 | premature scene ending | **not seen** | no scene ending before the scripted change in 4 games |
+| D4 | empty or cut announcements | improved | never empty; still a quote of the player's words, sometimes with broken quotes («Livia Sarti: «Blocco un goblin ferito contro il muro: «Dov'è il ragazzo».») |
+| D5 | «contro CD 14» for the Armour Class | still there | «Spada lunga 20 contro CD 14»; on `aee0467` also «Dardo incantato 7 contro soglia 0», fixed by `9f674f8` on the cards (the phase-1 text still has it from the server log) |
+| D6 | Haiku arbiter: Ascoltare for a whispered question; magic missile without a roll | partly | magic missile is now «Attacco automatico» in every run (`e26ee4a`); «Ascoltare» for a whispered question still 1–2 times per B game |
+| E1 | images 3/14 | improved | 4/14 (Berta's portrait); the images agent is still generating |
+| E2 | `estrai.py` | fixed (first pass) | — |
+| E3 | session clock never threatens; no ending in 16 turns | still there | `o_mezzanotte` 1/8 in every run; the scripted games end in the tower without the final choice; with `--chiudi` the closing works (2 lines and a summary) |
+| L1 | ERROR «parola segreta nel messaggio del selettore» for the players' own words | still there | 12 per run |
+| L2 | «audio pre-generato mancante» with the fake voice | still there | 30–31 per profile-A run |
+| L3 | `PROVIDER:` says «configurato» for an environment override | still there | «voce → openrouter — configurato (config/predefinita.yaml)» with `TAGM_VOCE=fish` |
+| L4 | copioni README without `pg:` | fixed (first pass) | — |
+| L5 | `tavolo.md` without the dice cards | still there | the judge needs `tavolo_con_carte.py` |
+| L7 | id written as a label | not seen | — |
+
+**New in the second pass:**
+
+| # | Sev | What happened | Likely cause | Status |
+|---|---|---|---|---|
+| N1 | M | The harness ignored the old variable names: `CANTASTORIE_PORTA=4810 … esegui.ts` ran on the default 4710 and would have restarted whatever ran there (reproduced with `leggiOpzioni`) | rename: `esegui.ts` did not apply the legacy mapping | fixed by `c1db46a` |
+| N2 | H | The Engine's replacement line has the wrong subject, and it fires on announcements: «Narratore manca Zirrà.» 4 times at the table, for Haiku's «Zirrà colpisce Fulco di striscio» (a miss), for the action line «Eliandro si tiene dietro la pietra e tira il pugnale…», and for the minimal-mode announcements «Eliandro: «Tiro il pugnale al goblin che scappa verso le scale».» and «Nespola Tondi: «Colpisco il goblin alle spalle con la spada corta».» | Engine (`0ef96ac`): the subject comes from the speaker label, and an attack's announcement counts as a contradiction | open, reported |
+| N3 | M | The contradiction guard also fires on metaphors: «Berta non risponde: il suo sguardo cade un attimo sul cancello» became «Berta è ancora in piedi.» (motivo `caduta_senza_fatto`) | Engine (`0ef96ac`), word «cade» | open |
+| N4 | M | The deflection that replaces a refused release can be an NPC answering nobody: «Ugo Faggioli: Non lo so. Chieda al paese, che sa tutto.» while Nespola runs up the path; «Zirrà: Non so, non m'importa. Parliamo di prezzo.» in the middle of a volley | Engine (B1 fix): the deflection is spoken even when no action is addressed to that NPC | open |
+| N5 | M | The sceneggiatore's lines are often refused for their form: «tipo non ammesso per lo sceneggiatore: undefined» 6 and 12 times, one «YAML non valido» | sceneggiatore prompt or parser (`sceneggiatore/valida.ts`) | open |
+| N6 | M | The local reader (Qwen3 8B on 4613) disappeared halfway through the first pressione-A run, with no line in its log and the pid file left behind. The server fell back without a word: 64 «risposta strutturata non valida», 32 «si usa il ripiego deterministico», 18 «nessuna» of 25, and a fallback summary «modello locale … irraggiungibile». Nothing restarted it. Profile B was running at the same time, on a 16 GB Mac with swap full | infra (memory, probably) + Engine: no watchdog for the local model server | open; the run was repeated alone |
+| N7 | M | The closing summary from the local model can be cut and still accepted: «Livia ha chiesto a Berta dove fosse Ton» (39 characters, no threads) | Engine (`riassunto`: no minimum length or end check for a model summary) | open |
+
+### Verdict of the second pass
+
+The fix wave did what it promised where the first pass hurt most:
+- **Privacy:** no private content and no NPC reply reached the table in five games.
+- **Combat:** dead NPCs leave the fight, morale shows and makes a villain flee, and the Engine says the falls the
+  narrator leaves out (in 5 of 6 runs; one death in profile A was never told).
+- **Local rules arbiter:** it no longer rolls absurd checks.
+- **The manual's own numbers:** they reach the cards (d100 thief skills, x-in-6, automatic magic missile, initiative
+  re-rolled each round).
+- **Voice:** the lexicon makes the names come out right (44/45).
+- **Closing:** the guided closing works.
+
+What still keeps «coherent» out of reach is mostly new: the Engine's own replacement line («Narratore manca Zirrà.»,
+N2) is now the most visible nonsense at the table. Two old gaps remain: narration that goes past a failed check (D2) and
+invented minions (C5). Profile B is now the better game (judge 3/3/3 against A's 2/2/2), at $0.06 for 16 turns.
+Profile A is $0 and quiet about errors, but it reads as a list of quoted actions. Fix N2 first: one line of code
+and the game loses its worst sentence. Then N4 and N5.
+
+## 10. Reproduce
 
 Commands are in §4; the measures are recomputed with
 `python3 -I esperimenti/e2e-finale/misure.py esperimenti/risultati/e2e-finale/<run> <logs of that run>` and
 `python3 -I esperimenti/e2e-finale/tavolo_con_carte.py <same two arguments>` (the server logs of a test port live in
 `logs/porta-<port>/` until the next run on that port, and are not in git). The judge prompts are in
 `esperimenti/e2e-finale/giudizio-fase1-prompt.md` and `giudizio-fase2-prompt.md`.
+For the second pass: `giudizio-fase1-prompt-2.md`, `giudizio-fase2-prompt-2.md` and `chiave-giudizio-2.txt`. The name
+check of the lexicon runs from a checkout with `npx tsx esperimenti/e2e-finale/ascolta-nomi.mts <checkout> torre-mozza <ISO time>
+[max lines]`. It transcribes the drama-3 lines of `cache/audio-fish/` created after that time, and its output for this pass is
+`esperimenti/e2e-finale/ascolta-nomi-torre-mozza.txt`.

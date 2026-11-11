@@ -1,0 +1,226 @@
+{
+ "etichetta": "torre-mozza-pressione-A-pass2b",
+ "turni": {
+  "giocati": 16,
+  "copione": 16,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [
+   "scena_carbonaia",
+   "scena_torre"
+  ],
+  "orologi_max": {
+   "o_mezzanotte": "1/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": [
+   [
+    "la decima non pagata"
+   ]
+  ]
+ },
+ "private": {
+  "azioni_private": 4,
+  "righe_privato": 0,
+  "esiti_privati_log": 6,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": []
+ },
+ "prove": {
+  "azioni_risolte": 25,
+  "con_tiro": 10,
+  "tipi": {
+   "prova": 7,
+   "nessuna": 15,
+   "attacco": 3
+  },
+  "dadi": {
+   "d20": 10,
+   "d6": 17,
+   "d10": 4
+  },
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 2,
+   "Intelligenza: dNN contro CD N (facile)": 1,
+   "Cercare porte segrete e trappole N: dN serve N o meno": 1,
+   "Scalare pareti N%: dN serve N o meno": 1,
+   "Arco corto, Attacco a distanza (Destrezza): dNN contro CD N (difesa di zirrà)": 1,
+   "Forzare una porta bloccata N: dN serve N o meno": 1,
+   "Pugnale, Attacco in mischia (Forza): dNN contro CD N (difesa di zirrà)": 1,
+   "Spada corta, Attacco in mischia (Forza): dNN contro CD N (difesa di zirrà)": 1,
+   "Scassinare serrature N%: dN serve N o meno": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: inizia": 1,
+   "azioni: rinviate al turno del loro PG (combattimento)": 7,
+   "combattimento: risolve solo chi è di turno": 7,
+   "combattimento: iniziativa ritirata": 2
+  },
+  "fatti_morale_terra": 1,
+  "esempi": [
+   "voce: audio pre-generato mancante, sintesi dal vivo: {\"level\": 40, \"time\": \"2026-11-11T14:42:10.101Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"voce\", \"id_frase\": \"t8-f1\", \"chiave\": \"[omessa]\", \"testo\": \"Un ciocco crolla dentro la carbonaia, e la terra si crepa. Un filo di fumo"
+  ],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 25,
+  "nessuna": 18,
+  "ms_classifica_med": 22,
+  "ms_classifica_peggiore": 67
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "subito:ok": 19,
+   "prossime:ok": 14,
+   "prossime:saltata": 1
+  },
+  "consegnate": 14,
+  "dette_a_finestra_aperta": 14,
+  "accettate": 78,
+  "scartate": {
+   "tipo non ammesso per lo sceneggiatore: undefined": 24,
+   "tipo non ammesso per lo sceneggiatore: risposta": 1
+  },
+  "ms_claude_med": 11148,
+  "ms_totale_med_subito": 13020,
+  "processo": {
+   "avvio": 1,
+   "ok": 34,
+   "saltata": 1,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20037.5,
+   "peggiore": 20103,
+   "n": 16
+  },
+  "llm_prima_frase": {
+   "mediana": 11.5,
+   "peggiore": 39,
+   "n": 16
+  },
+  "voce_primo_audio": {
+   "mediana": 669,
+   "peggiore": 3209,
+   "n": 16
+  },
+  "schermo_inizio_audio": {
+   "mediana": 816,
+   "peggiore": 843,
+   "n": 7
+  },
+  "llm_fine": {
+   "mediana": 16,
+   "peggiore": 47,
+   "n": 16
+  },
+  "audio_fine": {
+   "mediana": 11194,
+   "peggiore": 35205,
+   "n": 16
+  },
+  "s_tra_turni_med": 33,
+  "s_tra_turni_peggiore": 72.369
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 12,
+   "in_frase": 0,
+   "tra_frasi": 12,
+   "silenzio_ms": 21696,
+   "per_turno": [
+    0,
+    0,
+    1,
+    2,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    3,
+    0,
+    1
+   ]
+  },
+  "proiettore_secondi": 384,
+  "errori_voce": {
+   "voce: audio pre-generato mancante, sintesi dal vivo": 27
+  }
+ },
+ "log": {
+  "errori": 1,
+  "avvisi": 130,
+  "per_messaggio": [
+   "40 ×64 llm: risposta strutturata non valida",
+   "40 ×32 llm: si usa il ripiego deterministico",
+   "40 ×27 voce: audio pre-generato mancante, sintesi dal vivo",
+   "40 ×2 repertorio: rilascio fuori contesto, al suo posto la deviazione",
+   "40 ×2 repertorio: [usa] rifiutato",
+   "40 ×2 narrator: sentence contradicts the Engine, replaced by its line",
+   "50 ×1 repertorio: parola segreta nel messaggio del selettore",
+   "40 ×1 riassunto: si usa la riserva"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-8B-4bit — configurato (con",
+   "arbitro_azioni  → regole — configurato (config/predefinita.yaml)",
+   "arbitro_prove   → regole (completo) — configurato (config/predefinita.yaml)",
+   "riassunto       → locale mlx-community/Qwen3-8B-4bit — configurato (config/prede",
+   "regole          → locale mlx-community/Qwen3-8B-4bit — configurato (config/prede",
+   "voce            → finto — configurato (config/predefinita.yaml)",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": 0.5,
+  "consiglio_ai_turni": [],
+  "chiusura": {
+   "turno": 19,
+   "righe": [
+    {
+     "chi": "narratore",
+     "testo": "La torre tace. Il fuoco si abbassa, e il vento fischia nei buchi dei muri."
+    },
+    {
+     "chi": "narratore",
+     "testo": "È notte fonda, e quello che si decide su questi gradini si decide stanotte."
+    }
+   ],
+   "riassunto": {
+    "etichetta": "Serata 1",
+    "quando": "2026-11-11T14:48:19.342Z",
+    "testo": "Siete passati da: L'ovile dei Benni, all'imbrunire, La carbonaia di Ugo, a notte, La Torre Mozza, a mezzanotte.",
+    "fili": []
+   },
+   "di_riserva": true,
+   "ms": 10749
+  }
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 27,
+  "improvvisate": 21,
+  "usa_rifiutati": 2,
+  "azioni_pubbliche": 21,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0
+ }
+}

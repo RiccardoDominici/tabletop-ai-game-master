@@ -1,0 +1,181 @@
+{
+  "copione": "en-mini-e2e",
+  "campagna": "en-mini",
+  "modo": "improvvisa",
+  "porta": 4810,
+  "narratore_finto": false,
+  "sessione": "2026-11-11T14:52:58.497Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "86a394636598470083d57c889d5b6207137d9570",
+    "modificati": [
+      "?? campagne/en-mini/"
+    ],
+    "radice": "/private/tmp/claude-501/-Users-riccardo-Developer/161e877b-0d39-415a-be00-32dd6f15c6cf/scratchpad/wt-e2e3"
+  },
+  "turni": 3,
+  "turni_copione": 3,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_storm": "0/2"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_storm": "1/2"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_storm": "1/2"
+        }
+      }
+    ],
+    "massimo": {
+      "o_storm": "1/2"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 1,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 6132,
+      "peggiore": 6226,
+      "n": 3
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 761,
+      "peggiore": 837,
+      "n": 3
+    },
+    "llm_prima_frase": {
+      "mediana": 928,
+      "peggiore": 1014,
+      "n": 3
+    },
+    "voce_richiesta": {
+      "mediana": 928,
+      "peggiore": 1014,
+      "n": 3
+    },
+    "voce_primo_audio": {
+      "mediana": 1582,
+      "peggiore": 1667,
+      "n": 3
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1734,
+      "peggiore": 1820,
+      "n": 3
+    },
+    "llm_fine": {
+      "mediana": 1901,
+      "peggiore": 2291,
+      "n": 3
+    },
+    "audio_fine": {
+      "mediana": 28868,
+      "peggiore": 31199,
+      "n": 3
+    }
+  },
+  "buchi": {
+    "totale": 5,
+    "in_frase": 0,
+    "tra_frasi": 5,
+    "silenzio_ms": 1455,
+    "per_turno": [
+      3,
+      2,
+      0
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 17,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 5,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {},
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0.00179766,
+  "costo_mediana_turno_usd": 0.00024053,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 3,
+      "pezzi": 42,
+      "secondi": 8.133333333333338,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 557
+    },
+    {
+      "turno": 1,
+      "frasi": 10,
+      "pezzi": 145,
+      "secondi": 28.533333333333264,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 987
+    },
+    {
+      "turno": 2,
+      "frasi": 8,
+      "pezzi": 135,
+      "secondi": 26.666666666666607,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 468
+    },
+    {
+      "turno": 3,
+      "frasi": 4,
+      "pezzi": 91,
+      "secondi": 17.9333333333333,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}
