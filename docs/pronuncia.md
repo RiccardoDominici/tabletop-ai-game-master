@@ -56,6 +56,17 @@ playing at each phrase; the audio prepared for drama-3 (`prerender.ts --motore f
 uses the drama-3 forms, `prerender.ts` for Qwen the Qwen ones, so the cache keys match what is said. Not covered: when
 drama-3 fails on one phrase and the reserve Qwen says it (voce/riserva.ts), that phrase keeps the drama-3 form.
 
+### Audio prepared in advance
+
+The cache key of a line (`voce/cache-audio.ts`) hashes the voice and the exact text sent to it: for drama-3 the
+expressive text, for Qwen the words, both with the respellings of the engine that says them (`prerender.ts` uses
+`creaPronunciatore(campagna, 'fish' | 'qwen')`, the server the engine in use). So a changed respelling is a new key:
+the line is generated again, the old audio stays in the folder but is never played. The index keeps, next to the
+text said, the text shown (`mostrato`), so `prerender.ts --dry-run` says why a line is missing: new, pronunciation
+changed (same line and voice, other words said; for an entry written before `mostrato`, the same words but for the
+accents) or direction changed (same words). On torre-mozza after the lexicon: 35 to generate, 28 of them for the
+pronunciation (Rosèlla, Morètta, Benni…).
+
 ## The validator: class `PRONUNCIA` (`strumenti/valida/regole_pronuncia.py`)
 
 - `lessico_mancante` (strict): no `pronunce.yaml`. An old campaign gets one with the ear test's `--aggiungi`.

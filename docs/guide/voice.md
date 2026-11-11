@@ -154,6 +154,10 @@ npx tsx apps/server/src/strumenti/prerender.ts campagne/nozze-neve --motore fish
 - The first only counts the lines to record with Qwen.
 - The second records them with Qwen. Start the voice service first (`scripts/voce-avvio.sh`).
 - The third counts the drama-3 lines and estimates the cost, without spending anything. Add `--json` to get it as one JSON line.
+  It also says why lines are missing: «of which: new 7, pronunciation changed 28, direction changed 0», with a few
+  examples. The audio of a line is keyed by the exact text the voice says, names respelled by the lexicon included, for
+  that engine: when `pronunce.yaml` changes a name, its lines get a new key and are generated again (the old audio is
+  never played).
 - The fourth records them with drama-3, and spends. It stops at once on a 401, 402 or 403.
 
 Without the folder, the campaign is the one of `TAGM_CARTELLA_CAMPAGNA`, or `TAGM_CAMPAGNA`, or `prova-f0`. The log is `logs/prerender.jsonl`.

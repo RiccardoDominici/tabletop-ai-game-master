@@ -468,7 +468,7 @@ export class PipelineVoce {
       if (costo) costo.secondi += secondi;
       if (daConservare && conservati && !interrotta && secondi > 0.3) {
         try {
-          daConservare.cache.scrivi(daConservare.chiave, Buffer.concat(conservati), { voce, testo: espressivo ?? testo, sample_rate: flusso.sampleRate });
+          daConservare.cache.scrivi(daConservare.chiave, Buffer.concat(conservati), { voce, testo: espressivo ?? testo, mostrato: frase.testo, sample_rate: flusso.sampleRate });
           log.info({ id_frase: frase.id_frase, chiave: daConservare.chiave.slice(0, 16), secondi: arrotonda(secondi) }, 'voce: battuta conservata nella cache di drama-3');
         } catch (err) {
           log.warn({ id_frase: frase.id_frase, err: (err as Error).message }, 'voce: cache di drama-3 non scritta');

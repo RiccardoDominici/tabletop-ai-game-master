@@ -13,7 +13,7 @@ import type { Campagna } from '../campagna/tipi';
 import type { Repertorio } from '../repertorio/tipi';
 import type { Logger } from '../logger';
 import { voceDi } from '../turni/narrazione';
-import { CacheAudio, chiaveAudioEspressiva, testoPerVoce } from '../voce/cache-audio';
+import { CacheAudio, chiaveAudioEspressiva, testoPerVoce, type MotivoDaGenerare } from '../voce/cache-audio';
 import { direzionePredefinita, soloParole, testoEspressivoDi } from '../voce/espressione';
 import { costoFish, DOLLARI_PER_BYTE, MotoreVoceFish } from '../voce/fish';
 import type { Pronunciatore } from '../voce/pronuncia';
@@ -84,6 +84,22 @@ export interface RiassuntoFish {
   byte_da_generare: number;
   costo_da_generare_usd: number;
   tariffa_usd_per_byte: number;
+  /** Why the lines to generate are missing: never generated, a respelling changed by the lexicon, another direction. */
+  da_generare_per_motivo: Record<MotivoDaGenerare, number>;
+  /** A few lines whose pronunciation changed (shown text), for the report. */
+  esempi_pronuncia: string[];
+}
+
+/** Lines to generate counted by why they are missing (CacheAudio.motivo), with a few lexicon-change examples. */
+export function perMotivo(righe: ReadonlyArray<{ voce: string; mostrato: string; testoVoce: string }>, cache: CacheAudio): { da_generare_per_motivo: Record<MotivoDaGenerare, number>; esempi_pronuncia: string[] } {
+  const conti: Record<MotivoDaGenerare, number> = { nuova: 0, pronuncia: 0, direzione: 0 };
+  const esempi: string[] = [];
+  for (const r of righe) {
+    const m = cache.motivo(r.voce, r.mostrato, r.testoVoce);
+    conti[m] += 1;
+    if (m === 'pronuncia' && esempi.length < 3) esempi.push(r.mostrato.slice(0, 80));
+  }
+  return { da_generare_per_motivo: conti, esempi_pronuncia: esempi };
 }
 
 export function riassuntoFish(piano: PianoFish, cache: CacheAudio): RiassuntoFish {
@@ -99,6 +115,7 @@ export function riassuntoFish(piano: PianoFish, cache: CacheAudio): RiassuntoFis
     byte_da_generare: somma(mancanti, 'byte'),
     costo_da_generare_usd: somma(mancanti, 'usd'),
     tariffa_usd_per_byte: DOLLARI_PER_BYTE,
+    ...perMotivo(mancanti.map((r) => ({ voce: r.voce, mostrato: r.mostrato, testoVoce: r.espressivo })), cache),
   };
 }
 
@@ -142,7 +159,7 @@ export async function generaFish(righe: RigaFish[], opz: OpzioniGenerazioneFish)
         let pcm = Buffer.concat(pezzi);
         if (pcm.length % 2) pcm = pcm.subarray(0, pcm.length - 1);
         if (pcm.length === 0) throw new ErroreVoce('audio vuoto', 502);
-        opz.cache.scrivi(r.chiave, pcm, { voce: r.voce, testo: r.espressivo, sample_rate: flusso.sampleRate });
+        opz.cache.scrivi(r.chiave, pcm, { voce: r.voce, testo: r.espressivo, mostrato: r.mostrato, sample_rate: flusso.sampleRate });
         const secondi = pcm.length / 2 / flusso.sampleRate;
         esito.generate++;
         esito.byte += r.byte;

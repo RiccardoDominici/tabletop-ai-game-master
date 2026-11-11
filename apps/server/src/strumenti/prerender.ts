@@ -31,7 +31,15 @@ import { MotoreVoceHttp } from '../voce/http';
 import { creaPronunciatore } from '../voce/pronuncia';
 import { caricaRegistroVoci } from '../voce/registro-voci';
 import { ErroreVoce } from '../voce/tipi';
-import { daGenerare, generaFish, pianoFish, riassuntoFish, vociSenzaFish } from './prerender-fish';
+import { daGenerare, generaFish, perMotivo, pianoFish, riassuntoFish, vociSenzaFish } from './prerender-fish';
+
+/** Why the lines are to be generated: the lexicon changes show up here (docs/pronuncia.md, «Audio prepared in advance»). */
+function stampaMotivi(m: ReturnType<typeof perMotivo>): void {
+  const c = m.da_generare_per_motivo;
+  if (!c.pronuncia && !c.direzione) return;
+  console.log(`  of which: new ${c.nuova}, pronunciation changed ${c.pronuncia}, direction changed ${c.direzione}`);
+  for (const e of m.esempi_pronuncia) console.log(`    pronunciation changed: «${e}»`);
+}
 
 async function preGeneraQwen(campagna: ReturnType<typeof caricaCampagna>, repertorio: ReturnType<typeof caricaRepertorio>, config: ReturnType<typeof caricaConfig>, log: ReturnType<typeof creaLogger>, soloConta: boolean): Promise<void> {
   const pronuncia = creaPronunciatore(campagna, 'qwen');
@@ -39,21 +47,22 @@ async function preGeneraQwen(campagna: ReturnType<typeof caricaCampagna>, repert
   const motore = new MotoreVoceHttp(config.voce.url, log);
 
   // Tutte le righe, senza doppioni (la stessa riga in due battute è un solo file).
-  const voci = new Map<string, { chiave: string; voce: string; testoVoce: string; dove: string }>();
+  const voci = new Map<string, { chiave: string; voce: string; testoVoce: string; mostrato: string; dove: string }>();
   let righe = 0;
   for (const b of repertorio.battute) {
     [b.testo, ...b.varianti].forEach((versione, v) =>
       versione.forEach((riga, i) => {
         righe++;
         const voce = voceDi(campagna, riga.etichetta).voce_id;
-        const { voce: testoVoce } = testoPerVoce(riga.etichetta, riga.testo, pronuncia);
+        const { mostrato, voce: testoVoce } = testoPerVoce(riga.etichetta, riga.testo, pronuncia);
         const chiave = chiaveAudio(voce, testoVoce);
-        if (!voci.has(chiave)) voci.set(chiave, { chiave, voce, testoVoce, dove: `${b.id}${v ? `/v${v}` : ''}#${i + 1}` });
+        if (!voci.has(chiave)) voci.set(chiave, { chiave, voce, testoVoce, mostrato, dove: `${b.id}${v ? `/v${v}` : ''}#${i + 1}` });
       }),
     );
   }
   const mancanti = [...voci.values()].filter((v) => !cache.ha(v.chiave));
   console.log(`righe ${righe}, voci uniche ${voci.size}, già in cache ${voci.size - mancanti.length}, da generare ${mancanti.length}`);
+  stampaMotivi(perMotivo(mancanti, cache));
   if (soloConta || mancanti.length === 0) return;
 
   const salute = await motore.salute();
@@ -70,7 +79,7 @@ async function preGeneraQwen(campagna: ReturnType<typeof caricaCampagna>, repert
         for await (const p of flusso.pezzi) pezzi.push(Buffer.from(p));
         let pcm = Buffer.concat(pezzi);
         if (pcm.length % 2) pcm = pcm.subarray(0, pcm.length - 1);
-        cache.scrivi(v.chiave, pcm, { voce: v.voce, testo: v.testoVoce, sample_rate: flusso.sampleRate });
+        cache.scrivi(v.chiave, pcm, { voce: v.voce, testo: v.testoVoce, mostrato: v.mostrato, sample_rate: flusso.sampleRate });
         const sec = pcm.length / 2 / flusso.sampleRate;
         secondiAudio += sec;
         fatte++;
@@ -110,6 +119,7 @@ async function preGeneraFish(campagna: ReturnType<typeof caricaCampagna>, repert
       console.log(JSON.stringify(riassunto));
     } else {
       console.log(`righe ${riassunto.righe}, voci uniche ${riassunto.voci}, già in cache ${riassunto.in_cache}, da generare ${riassunto.da_generare}`);
+      stampaMotivi(riassunto);
       console.log(`byte da generare ${riassunto.byte_da_generare} · costo stimato ${riassunto.costo_da_generare_usd.toFixed(4)} $ (tariffa $2 per milione di byte)`);
       console.log(`byte totali ${riassunto.byte_totali} · costo totale stimato ${riassunto.costo_totale_usd.toFixed(4)} $`);
     }

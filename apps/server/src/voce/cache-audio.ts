@@ -16,7 +16,10 @@ import { soloParole } from './espressione';
 
 export interface VoceIndice {
   voce: string;
+  /** The exact text sent to the voice (respellings of the names included: the key is computed from it). */
   testo: string;
+  /** The text shown (no respellings, no markup): the same line said another way is recognised by it. */
+  mostrato?: string;
   sample_rate: number;
   secondi: number;
   byte: number;
@@ -47,8 +50,24 @@ export function chiaveAudioEspressiva(motore: string, voce: string, testoEspress
   return chiaveAudio(`${motore}:${voce}`, testoEspressivo);
 }
 
+/**
+ * Why a line of the plan is not in the cache. The key hashes the exact text sent to the voice, names respelled by the
+ * lexicon included (voce/pronuncia.ts), so a changed respelling is a new key and the line is generated again; here we
+ * only say why: `nuova` (never generated), `pronuncia` (an entry of the same line and voice says the words
+ * differently: a lexicon change), `direzione` (same words, another expressive direction).
+ */
+export type MotivoDaGenerare = 'nuova' | 'pronuncia' | 'direzione';
+
+/** Words for the comparison: no markup, lowercase; `senzaAccenti` for entries written before `mostrato` existed. */
+const parole = (t: string, senzaAccenti = false): string => {
+  const w = soloParole(t).toLowerCase().replace(/\s+/g, ' ').trim();
+  return senzaAccenti ? w.normalize('NFD').replace(/\p{M}/gu, '') : w;
+};
+
 export class CacheAudio {
   private indice: Record<string, VoceIndice> = {};
+  /** Lookup «voce + line» → words said, built on demand (motivo) and reset on every write. */
+  private perRiga: Map<string, string[]> | null = null;
   private readonly fileIndice: string;
   /** Cache di drama-3 (voci diverse da Qwen: cartella a parte), se configurata. */
   readonly fish: CacheAudio | null;
@@ -93,9 +112,28 @@ export class CacheAudio {
     fs.writeFileSync(tmp, pcm);
     fs.renameSync(tmp, this.percorso(chiave));
     this.indice[chiave] = { ...meta, byte: pcm.length, secondi: pcm.length / 2 / meta.sample_rate, creato: new Date().toISOString() };
+    this.perRiga = null;
     const tmpIndice = `${this.fileIndice}.tmp`;
     fs.writeFileSync(tmpIndice, JSON.stringify(this.indice, null, 1));
     fs.renameSync(tmpIndice, this.fileIndice);
+  }
+
+  /**
+   * Why a line is to be generated (call it for a key the cache does not have). The same line is recognised by its
+   * shown text; an entry written before `mostrato` existed by its words without accents (an accent-only respelling,
+   * «Bènni» → «Benni», is a lexicon change; any other respelling of an old entry counts as `nuova`).
+   */
+  motivo(voce: string, mostrato: string, testoVoce: string): MotivoDaGenerare {
+    if (!this.perRiga) {
+      this.perRiga = new Map();
+      for (const e of Object.values(this.indice)) {
+        const k = e.mostrato !== undefined ? `${e.voce}\n=${parole(e.mostrato)}` : `${e.voce}\n~${parole(e.testo, true)}`;
+        this.perRiga.set(k, [...(this.perRiga.get(k) ?? []), parole(e.testo)]);
+      }
+    }
+    const dette = this.perRiga.get(`${voce}\n=${parole(mostrato)}`) ?? this.perRiga.get(`${voce}\n~${parole(testoVoce, true)}`);
+    if (!dette) return 'nuova';
+    return dette.includes(parole(testoVoce)) ? 'direzione' : 'pronuncia';
   }
 
   leggi(chiave: string): { pcm: Buffer; sampleRate: number } | null {
