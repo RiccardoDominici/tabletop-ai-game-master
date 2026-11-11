@@ -3,6 +3,7 @@
  * PG al tavolo. Niente segreti: elementi NASCOSTI esclusi, e le frasi con parole segrete
  * (parole_segrete.yaml) tolte come nel contesto della modalità repertorio.
  */
+import { elementoNascosto } from '../campagna/nascosto';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import { togliFrasiSegrete, type ParolaSegreta } from '../repertorio/segreti';
 
@@ -12,7 +13,7 @@ export function riassuntoPubblico(c: Campagna, parole: ParolaSegreta[]): string 
   const righe: string[] = [`Luogo: ${c.scena.titolo}.`];
   const descrizione = pulisci(s['descrizione']);
   if (descrizione) righe.push(descrizione);
-  const elementi = ((s['elementi_interattivi'] as DatiYaml[] | undefined) ?? []).filter((e) => !/NASCOST/i.test(JSON.stringify(e)));
+  const elementi = ((s['elementi_interattivi'] as DatiYaml[] | undefined) ?? []).filter((e) => !elementoNascosto(e));
   if (elementi.length) {
     righe.push('Cose con cui si può agire:');
     for (const e of elementi) {

@@ -1648,3 +1648,21 @@ def test_set_di_regole_le_schede_seguono_il_set(camp: Path) -> None:
     codici = errori(camp)
     assert "REGOLE.scheda" in codici
     assert "SCHEDA.caratteristiche" not in codici
+
+
+def test_marcatore_nascosto_in_ogni_lingua():
+    """«NASCOSTA:» e «HIDDEN:» valgono in ogni campagna (lingue/*/motore.yaml, `nascosto`): prima il validatore
+    conosceva solo «NASCOST», e un elemento «HIDDEN:» di una campagna inglese contava come pubblico (e2e finale, A4)."""
+    from valida.lingua import nascosto
+    assert nascosto({"cosa": "la botola", "azioni": "NASCOSTA: non nominarla"})
+    assert nascosto({"cosa": "the trapdoor", "azioni": "HIDDEN: do not name it"})
+    assert nascosto("hidden under the rug")
+    assert not nascosto({"cosa": "la botte", "azioni": "è piena di acqua piovana"})
+
+
+def test_vincoli_un_elemento_hidden_non_e_pubblico(camp):
+    """Un elemento segnato «HIDDEN:» non entra nei testi pubblici: non può contraddire un vincolo pubblico."""
+    modifica(camp, "scena.yaml", lambda d: d["indizi"][1].update(vincolo_pubblico="La botte grande in fondo non suona quando la si tocca."))
+    modifica(camp, "scena.yaml", lambda d: d["elementi_interattivi"].append({"cosa": "la botte grande", "dove": "in fondo",
+                                                                              "azioni": "HIDDEN: la botte grande in fondo suona cupa a ogni colpo"}))
+    assert "VINCOLI.contraddetto" not in avvisi(camp)

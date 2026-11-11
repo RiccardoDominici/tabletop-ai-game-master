@@ -256,7 +256,9 @@ invariants, `riferimenti/immagini.md`), except `esiti`, which you write at step 
 - In `descrizione` put the layout and the rule **who hears what**: a privacy condition must mean something verifiable.
 - `descrizione`, `taglio`, `sensi` and the elements that are not HIDDEN go to the selector of mode B (rule 1): write
   them as they can be read by someone who does not know the solution. What reveals goes into an element marked
-  "NASCOSTA:" (HIDDEN) in the actions, or into the `come_si_trova` of a clue.
+  hidden in its `azioni` («NASCOSTA:» in an Italian campaign, «HIDDEN:» in an English one; the Engine and the
+  validator recognize both in every campaign, `lingue/<code>/motore.yaml` → `nascosto`), or into the `come_si_trova`
+  of a clue.
 - The opening has three sentences at most, and with the session summary it does not exceed six sentences, with an
   average between 8 and 14 words per sentence.
 - The `taglio` covers all the outcomes, including the case in which the PCs hesitate.

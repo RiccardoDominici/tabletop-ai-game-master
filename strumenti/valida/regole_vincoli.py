@@ -19,6 +19,7 @@ from __future__ import annotations
 import re
 
 from .carica import Campagna
+from .lingua import nascosto
 from .esito import Esito
 from .testo import frasi
 
@@ -57,7 +58,7 @@ def _testi_pubblici(s: dict) -> list[tuple[str, str]]:
     out += [("sensi", str(x)) for x in s.get("sensi") or []]
     out += [("mossa_morbida_pronta", str(s.get("mossa_morbida_pronta") or "")), ("apertura", str(s.get("apertura") or ""))]
     for el in s.get("elementi_interattivi") or []:
-        if isinstance(el, dict) and "NASCOST" not in str(el.get("azioni", "")):
+        if isinstance(el, dict) and not nascosto(el):
             out.append(("elementi_interattivi", f"{el.get('cosa', '')}: {el.get('azioni', '')}"))
     return out
 

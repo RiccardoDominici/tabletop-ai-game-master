@@ -91,12 +91,27 @@ def _file_scene(cartella: Path) -> list[Path]:
     return sorted(cartella.glob("scena*.yaml")) + sorted((cartella / "scene").glob("*.yaml"))
 
 
+def _marcatore_nascosto() -> re.Pattern:
+    """I marcatori degli elementi nascosti di tutte le lingue (lingue/*/motore.yaml, `nascosto.marcatori`): «NASCOSTA:»
+    e «HIDDEN:» valgono in ogni campagna, come nel server e nel validatore."""
+    voci: list[str] = []
+    for f in sorted((Path(__file__).resolve().parents[2] / "lingue").glob("*/motore.yaml")):
+        # Solo la sezione `nascosto`: il resto di motore.yaml lo legge il server (non tutto è YAML per PyYAML).
+        m = re.search(r"^nascosto:\n(?:[ #].*\n?)*", f.read_text(encoding="utf-8"), re.M)
+        dati = (yaml.safe_load(m.group(0)) or {}) if m else {}
+        voci += [str(v) for v in ((dati.get("nascosto") or {}).get("marcatori") or [])]
+    return re.compile(r"\b(" + "|".join(re.escape(v) for v in dict.fromkeys(voci)) + ")", re.IGNORECASE)
+
+
+_MARCATORE_NASCOSTO = _marcatore_nascosto()
+
+
 def _umori_citati(testo: str) -> list[str]:
     return [u for u in UMORI if u in (testo or "")]
 
 
 def _luogo_da_scena(scena: dict, nome_file: str) -> LuogoTesti:
-    elementi = [e for e in (scena.get("elementi_interattivi") or []) if "NASCOST" not in _testo(e).upper()]
+    elementi = [e for e in (scena.get("elementi_interattivi") or []) if not _MARCATORE_NASCOSTO.search(_testo(e))]
     img = scena.get("immagine") or {}
     musica = scena.get("musica") or {}
     testi = {

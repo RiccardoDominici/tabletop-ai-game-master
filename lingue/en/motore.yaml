@@ -179,3 +179,9 @@ fatti_dovuti:
   rialzato: [eye, wak, rise, rose, stir, conscious, gasp, reviv]
   morto: [dead, die, death, lifeless, kill, corpse, perish]
   fuggito: [flee, fled, run, ran, bolt, escap, retreat, scatter, vanish, away]
+
+# Hidden elements of the scene sheets (apps/server/src/campagna/nascosto.ts, strumenti/valida/lingua.py,
+# strumenti/audio/campagna_audio.py): an interactive element with one of these markers (start of a word, any case)
+# never goes into the public contexts. The markers of ALL languages hold in every campaign.
+nascosto:
+  marcatori: [HIDDEN]

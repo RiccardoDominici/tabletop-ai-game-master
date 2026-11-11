@@ -146,7 +146,7 @@ domanda_drammatica: "…?"       # yes-or-no [V]
 posta: {si_guadagna: {cosa, per_chi: [...]}, si_perde: {cosa, per_chi: [...]}}   # touches PCs or NPCs [V]
 intensita: 1-5                 # [V]
 sensi: [3 details]             # exactly 3, at least 2 not visual [V on the number]
-elementi_interattivi: [{cosa, dove, azioni}]        # at least 3 [V]; a hidden thing says so in azioni: "HIDDEN: …"
+elementi_interattivi: [{cosa, dove, azioni}]        # at least 3 [V]; a hidden thing says so in azioni: "NASCOSTA: …" (it) or "HIDDEN: …" (en)
 png_presenti: [png_…]          # exist [V]; voices different and not similar [V]; different initials [V]
 orologi_attivi: [o_…]          # exist [V]
 orologi_in_scena:              # optional: the Engine's rules for this scene
@@ -168,7 +168,7 @@ esiti: [{id, descrizione, finale: <id of line>}]    # written with the endings (
 climax: true                   # optional: allows fewer than two exits
 audio: {musica: [...], ambiente: [...], umore_iniziale: …}   # optional, see "Audio" below [V]
 ```
-The mode B context takes from each scene sheet the name, description, question, intensity, senses, elements without "HIDDEN", the
+The mode B context takes from each scene sheet the name, description, question, intensity, senses, elements without a hidden marker («NASCOSTA», «HIDDEN»: both hold in every language), the
 NPCs present and the taglio: the validator searches there for the secret regexes (`SEGRETI.contesto_b`). Two sheets with the same
 `nodo` are a warning: the same place at another moment is an event node (mestiere.md §9).
 

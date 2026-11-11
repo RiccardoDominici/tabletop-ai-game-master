@@ -6,7 +6,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { riassuntoPubblico } from '../src/azioni/contesto';
 import { caricaCampagna } from '../src/campagna/caricatore';
+import { elementoNascosto } from '../src/campagna/nascosto';
 import { compilaMessaggioTurno } from '../src/narrazione/messaggio';
 import { RADICE_REPO } from '../src/percorsi';
 import { caricaRepertorio } from '../src/repertorio/caricatore';
@@ -25,6 +27,31 @@ describe('regexDaPython', () => {
     expect(regexDaPython('chicc\\w* ner').test('chicchi neri')).toBe(true);
     expect(regexDaPython('\\bguast').test('pane guasto')).toBe(true);
     expect(regexDaPython('\\bguast').test('sguastato')).toBe(false);
+  });
+});
+
+/*
+ * Il marcatore degli elementi nascosti in ogni lingua (e2e finale, A4): lo schema della skill dice alle
+ * campagne inglesi di scrivere «HIDDEN: …», ma il contesto B conosceva solo «NASCOST». Tutti i marcatori
+ * valgono in ogni campagna (lingue/<codice>/motore.yaml, `nascosto`).
+ */
+describe('elementi nascosti, in ogni lingua', () => {
+  it('«NASCOSTA:» e «HIDDEN:» (anche minuscolo) nascondono; il resto no', () => {
+    expect(elementoNascosto({ cosa: 'la botola', azioni: 'NASCOSTA: non nominarla' })).toBe(true);
+    expect(elementoNascosto({ cosa: 'the trapdoor', azioni: 'HIDDEN: do not name it until a PC goes down' })).toBe(true);
+    expect(elementoNascosto({ cosa: 'the trapdoor', azioni: 'hidden under the rug' })).toBe(true);
+    expect(elementoNascosto({ cosa: 'the barrel', azioni: 'it is full of rainwater' })).toBe(false);
+    expect(elementoNascosto({ cosa: 'la botte', azioni: 'è piena di acqua piovana' })).toBe(false);
+  });
+
+  it('una campagna inglese con «HIDDEN:» non manda l’elemento al selettore né all’arbitro', () => {
+    const c = caricaCampagna(MINI);
+    const elementi = [...((c.scena.dati['elementi_interattivi'] as unknown[]) ?? []), { cosa: 'the secret cellar ledger', dove: 'under the counter', azioni: 'HIDDEN: the innkeeper keeps the stolen accounts here' }];
+    const inglese = { ...c, scena: { ...c.scena, dati: { ...c.scena.dati, elementi_interattivi: elementi } } };
+    const t = compilaContestoRepertorio(inglese, []);
+    expect(t).not.toContain('ledger');
+    expect(t).toContain('la botte');
+    expect(riassuntoPubblico(inglese, [])).not.toContain('ledger');
   });
 });
 

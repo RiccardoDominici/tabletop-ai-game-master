@@ -64,8 +64,6 @@ per chi vuole smanettare. Servono:
   - le regole SRD del tiro contro la morte (20 naturale = in piedi con 1 PF, 1 = due fallimenti) valgono per ogni set
     (`inizioTurnoPg`): vanno messe nel set (`tiri_morte`) e spente di base fuori dall'SRD;
   - critici d20 (20 colpisce, 1 manca) e danno minimo 1, non applicati con `d20_cd`;
-  - «HIDDEN:» delle campagne inglesi contro «NASCOST» del contesto B e del validatore (A4: repertorio/contesto.ts,
-    strumenti/valida/regole_vincoli.py): un marcatore per lingua;
   - validatore: rifiutare `parole_chiave` generiche (l'arbitro a regole le ignora già, `parole.generiche`) e
     segnalare una battuta che dà ciò che una prova chiude per un'altra strada di `oppure` (D2).
 - **Setup su computer non Apple** (docs/profili.md, profilo `altro`). Il setup guidato da Claude Code (`.claude/skills/setup`)

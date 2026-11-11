@@ -46,6 +46,25 @@ class Prosa:
     cede_privato: re.Pattern                # cede_se chiede la privatezza: serve il cancello privata
 
 
+@lru_cache(maxsize=None)
+def marcatore_nascosto() -> re.Pattern:
+    """I marcatori degli elementi nascosti di TUTTE le lingue (lingue/*/motore.yaml, `nascosto.marcatori`), in
+    un'espressione sola: «NASCOSTA:» e «HIDDEN:» valgono in ogni campagna, come nel server
+    (apps/server/src/campagna/nascosto.ts). Prima il validatore conosceva solo «NASCOST»."""
+    voci: list[str] = []
+    for f in sorted(LINGUE_DIR.glob("*/motore.yaml")):
+        # Solo la sezione `nascosto`: il resto di motore.yaml lo legge il server (non tutto è YAML per PyYAML).
+        m = re.search(r"^nascosto:\n(?:[ #].*\n?)*", f.read_text(encoding="utf-8"), re.M)
+        dati = (yaml.safe_load(m.group(0)) or {}) if m else {}
+        voci += [str(v) for v in ((dati.get("nascosto") or {}).get("marcatori") or [])]
+    return re.compile(r"\b(" + "|".join(re.escape(v) for v in dict.fromkeys(voci)) + ")", re.IGNORECASE)
+
+
+def nascosto(x: object) -> bool:
+    """Il dato (un elemento interattivo, un testo) porta un marcatore di elemento nascosto."""
+    return bool(marcatore_nascosto().search(x if isinstance(x, str) else repr(x)))
+
+
 def lingue_disponibili() -> list[str]:
     """I codici con un pacchetto di prosa (cartelle di lingue/ con prosa.yaml)."""
     return sorted(p.parent.name for p in LINGUE_DIR.glob("*/prosa.yaml"))

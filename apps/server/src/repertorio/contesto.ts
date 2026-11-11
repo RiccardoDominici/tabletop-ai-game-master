@@ -22,6 +22,7 @@
  * espressione di una campagna). Variabile per turno (messaggio utente):
  * fatti scoperti, stato degli orologi, battute disponibili (vedi messaggioRepertorio).
  */
+import { elementoNascosto } from '../campagna/nascosto';
 import YAML from 'yaml';
 import type { SezioneContesto } from '../campagna/contesto';
 import { ID_NARRATORE, type Campagna, type DatiYaml } from '../campagna/tipi';
@@ -108,7 +109,7 @@ export function sezioniContestoRepertorio(c: Campagna, parole: ParolaSegreta[], 
 
   // Scena: allowlist, senza gli elementi NASCOSTI.
   const s = c.scena.dati;
-  const elementi = ((s['elementi_interattivi'] as DatiYaml[] | undefined) ?? []).filter((e) => !/NASCOST/i.test(JSON.stringify(e)));
+  const elementi = ((s['elementi_interattivi'] as DatiYaml[] | undefined) ?? []).filter((e) => !elementoNascosto(e));
   aggiungi('scena.yaml', testo('contesto.scena', { titolo: c.scena.titolo }), {
     ...prendi(s, ['nome', 'descrizione', 'domanda_drammatica', 'intensita', 'sensi']),
     elementi_interattivi: elementi,
