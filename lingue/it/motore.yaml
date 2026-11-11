@@ -199,3 +199,10 @@ guardia_esiti:
   figurati: [sguardo, occhi, occhio, la voce, silenzio, la sera, la notte, il buio, la neve, la pioggia, lascia cadere, fa cadere, lasciar cadere, di mano, dalle mani, gli cade, le cade, lo scudo, la spada, la lama, l'arma, la mazza, il cappuccio, la chiave, il mantello, la testa, le braccia, le spalle]
   # Subject and relative pronouns: «… e quello cade», «…, che crolla» have the creature named before as subject.
   pronomi: [quello, quella, lui, lei, costui, costei, che, quale, si]
+
+# Refusal guard (apps/server/src/narrazione/guardia-rifiuti.ts): after a failed social check toward an NPC, its line
+# without a refusal word, or a narrator sentence where it does a giving verb, is replaced by its refusal line.
+guardia_rifiuti:
+  rifiuto: [non, no, niente, nulla, mai, nessuno, nessuna, neanche, nemmeno, basta, vattene]
+  cede: [indica, mostra, consegna, porge, rivela, svela, spiega, accompagna, conduce, guida, confessa, ammette, cede, apre la mano, dice dove, dice chi]
+  negazioni: [non, senza, mai]

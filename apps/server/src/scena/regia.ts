@@ -106,6 +106,7 @@ import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
 import type { CombattimentoMaster } from '@tabletop-ai-gm/shared';
 import type { FonteDadi } from '../prove/dadi';
 import { regolaEsiti, titoloEsiti } from '../prove/testi';
+import { guardiaRifiuti } from '../narrazione/guardia-rifiuti';
 import { guardiaEsiti, type CorrezioneEsito } from '../narrazione/guardia-esiti';
 import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dovuti';
 import { guardiaPrivate } from '../narrazione/privato';
@@ -385,6 +386,8 @@ export class Regia {
   private riuscitePerAzione = new Map<string, readonly string[]>();
   /** Prove fallite per azione nello stesso turno: chiudono le battute legate a quelle prove (D2). */
   private fallitePerAzione = new Map<string, readonly string[]>();
+  /** NPCs who refused in the turn being narrated: a social check toward them failed (prove/motore.ts, `negati`). */
+  private negatiTurno: ReadonlySet<string> = new Set();
   private controlloLlm: AbortController | null = null;
   private misuratore: MisuratoreTurno | null = null;
   /** Primo pezzo d'audio inviato nel turno corrente (stima della fine se lo schermo tace). */
@@ -1451,6 +1454,7 @@ export class Regia {
     const s = new StatoRepertorio(this.o.repertorio, this.campagna, this.orologi);
     // Chi parla nelle battute: i PNG in scena che possono parlare, decisi qui (anche a mano e dopo un colpo).
     s.presenza = () => this.pngInScena();
+    s.negati = () => this.negatiTurno;
     return s;
   }
 
@@ -2320,6 +2324,27 @@ export class Regia {
   }
 
   /**
+   * The refusal guard of the turn (narrazione/guardia-rifiuti.ts): an NPC who refused after a failed social check
+   * says its refusal line (repertoire `rifiuto`, or a neutral narrator line) instead of giving in.
+   */
+  private parametroRifiuti(): { rifiutoDopoProva?: (etichetta: string, testo: string) => Array<{ etichetta: string; testo: string }> | null } {
+    if (!this.negatiTurno.size) return {};
+    const nomi = new Map<string, string[]>([...this.nomiPng].map(([id, v]) => [id, v] as [string, string[]]));
+    const g = guardiaRifiuti(this.negatiTurno, nomi);
+    // The refusal is said once per narration: a second line giving in is just dropped.
+    const detti = new Set<string>();
+    return {
+      rifiutoDopoProva: (etichetta, testo) => {
+        const id = g(etichetta, testo);
+        if (!id) return null;
+        if (detti.has(id)) return [];
+        detti.add(id);
+        return this.deviazioneDi(id);
+      },
+    };
+  }
+
+  /**
    * The turn's combat outcome guard (narrazione/guardia-esiti.ts): the cards just rolled, who is out of play now, and
    * how the narration names PCs and NPCs.
    */
@@ -2390,6 +2415,7 @@ export class Regia {
     const esito = await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
     this.riuscitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.riuscite]));
     this.fallitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.fallite]));
+    this.negatiTurno = new Set(esito.negati.map((n) => n.png));
     this.o.log.info(
       {
         turno: r.turno,
@@ -2494,6 +2520,7 @@ export class Regia {
     // fatti. Le decisioni dell'arbitro di solito sono già pronte (prese all'invio): nessuna attesa.
     this.riuscitePerAzione = new Map();
     this.fallitePerAzione = new Map();
+    this.negatiTurno = new Set();
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r) : null;
     if (epoca !== this.epoca) return;
@@ -2605,6 +2632,7 @@ export class Regia {
         ...this.guardiaPrivate(azioni),
         ...this.guardiaSegreti(azioni),
         ...(correggiEsito ? { correggiEsito } : {}),
+        ...this.parametroRifiuti(),
         presenti: this.pngInScena(),
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segniInRisposta) : null,
         onFrase: (f) => {
@@ -2645,6 +2673,7 @@ export class Regia {
           ...this.guardiaPrivate(azioni),
           ...this.guardiaSegreti(azioni),
           ...(correggiEsito ? { correggiEsito } : {}),
+          ...this.parametroRifiuti(),
           presenti: this.pngInScena(),
           usa: (id, per) => this.usaBattuta(id, per, turno, segniInRisposta),
           prefissoFrasi: 'r',

@@ -99,7 +99,7 @@ function esitoInParole(e: EsitoTiroGenerico, attacco = false): string {
   return attacco ? esitoAttacco(e.riuscita) : esitoProva(e.riuscita);
 }
 
-export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive' | 'combattimento'> {
+export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive' | 'combattimento' | 'negati'> {
   const s = o.sistema;
   const perAzione = new Map<string, EsitoAzioneProve>();
   const tiri: TiroMostrato[] = [];

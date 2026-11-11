@@ -99,6 +99,11 @@ export class StatoRepertorio {
    * fuggiti per il Motore delle prove). Vale al posto di `presenti`.
    */
   presenza: (() => ReadonlySet<string>) | null = null;
+  /**
+   * NPCs who refused this turn after a failed social check (the director decides): only their `rifiuto` lines are
+   * available (second pass of the final run, D2).
+   */
+  negati: (() => ReadonlySet<string>) | null = null;
   /** Indizi della campagna con i loro `modi`. */
   private readonly indizi: Map<string, IndizioCampagna>;
 
@@ -146,6 +151,11 @@ export class StatoRepertorio {
       // Chi parla nella battuta (chi, e ogni [png] delle righe e delle varianti) dev'essere in scena e poter parlare.
       const assente = parlantiDi(b).find((p) => !presenti.has(p));
       if (assente) return `${assente} non è in questa scena`;
+    }
+    const negati = this.negati?.();
+    if (negati?.size && b.tipo !== 'rifiuto') {
+      const chi = parlantiDi(b).find((x) => negati.has(x));
+      if (chi) return `${chi} ha appena rifiutato (prova sociale fallita): solo la sua battuta di rifiuto`;
     }
     if (this.stradaGiàPercorsa(b)) return `indizio già trovato in un altro modo (${b.effetti.rivela_indizi.join(', ')})`;
     // I segni di un orologio che non è ancora partito (parte_dopo) restano fuori dal catalogo.

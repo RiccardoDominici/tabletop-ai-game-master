@@ -207,3 +207,10 @@ guardia_esiti:
   figurati: [gaze, eyes, eye, voice, silence, night, dusk, darkness, snow, rain, lets fall, lets the, drops the, drops her, drops his, from her hand, from his hand, shield, sword, blade, weapon, club, hood, key, cloak, head, shoulders, arms]
   # Subject and relative pronouns: «… and he collapses», «…, who collapses» have the creature named before as subject.
   pronomi: [he, she, it, they, who, which, that]
+
+# Refusal guard (apps/server/src/narrazione/guardia-rifiuti.ts): after a failed social check toward an NPC, its line
+# without a refusal word, or a narrator sentence where it does a giving verb, is replaced by its refusal line.
+guardia_rifiuti:
+  rifiuto: [no, not, never, nothing, nobody, none, cannot, refuse, refuses, leave]
+  cede: [points, shows, hands, gives, reveals, explains, leads, guides, confesses, admits, yields, tells him, tells her, tells them]
+  negazioni: [not, no, never, without, doesn, didn]

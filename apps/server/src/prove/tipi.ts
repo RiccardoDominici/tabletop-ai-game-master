@@ -118,6 +118,11 @@ export interface EsitoTurnoProve {
    * pubblici e lo ripeteva al tavolo parola per parola.
    */
   fattiPrivati: string[];
+  /**
+   * NPCs who refused this turn: a social check toward them FAILED (the decision's target, or the NPC the action spoke
+   * to). During the narration their lines are limited to their refusal (narrazione/guardia-rifiuti.ts, repertoire).
+   */
+  negati: Array<{ png: string; autore: string; privata: boolean }>;
   /** Millisecondi spesi ad aspettare l'arbitro alla chiusura (0 = tutto già pronto). */
   attesa_ms: number;
   /** Azioni classificate solo alla chiusura (l'arbitro all'invio non c'era o era vecchio). */

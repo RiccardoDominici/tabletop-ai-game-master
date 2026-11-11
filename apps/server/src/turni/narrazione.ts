@@ -167,6 +167,11 @@ export interface ParametriTurno {
    * (a standing NPC falls, a miss told as a hit) is replaced by the Engine's line before the voice.
    */
   correggiEsito?: (testo: string) => CorrezioneEsito;
+  /**
+   * Refusal guard (narrazione/guardia-rifiuti.ts): the lines that replace a sentence where an NPC gives in after a
+   * failed social check this turn, or null.
+   */
+  rifiutoDopoProva?: (etichetta: string, testo: string) => Array<{ etichetta: string; testo: string }> | null;
 }
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
@@ -246,6 +251,20 @@ export async function narraTurno(
     indice += 1;
   };
 
+  /** Stops a line and says the replacement lines in its place (secrets guard, refusal guard). */
+  const sostituisci = (segmento: number, righe: ReadonlyArray<{ etichetta: string; testo: string }>): void => {
+    segmentiFermati.add(segmento);
+    rigaAperta = null;
+    for (const r of righe) {
+      const v = voceDi(campagna, r.etichetta);
+      p.onFrase({ etichetta: r.etichetta, nome: v.nome, testo: r.testo, segmento, indice });
+      const perVoceSost = p.pronuncia(r.testo);
+      accoda({ parlante: r.etichetta, nome: v.nome, voce_id: v.voce_id, testo: r.testo, ...(perVoceSost !== r.testo ? { testo_voce: perVoceSost } : {}) });
+      uscita.push({ tipo: 'improvvisata', etichetta: r.etichetta, testo: r.testo, segmento });
+      righeImprovvisate += 1;
+    }
+  };
+
   const gestisci = (grezzi: EventoNarratore[]): void => {
     const eventi = espressione.trasforma(grezzi);
     for (const e of eventi) {
@@ -304,19 +323,19 @@ export async function narraTurno(
             privato = segreto.privato;
             log.warn({ turno: p.turno, etichetta: e.etichetta, parole: segreto.parole, id_pg: privato, testo: e.testo }, 'narratore: segreto in una riga al tavolo, spostata al telefono di chi ha agito in privato');
           } else {
-            segmentiFermati.add(e.segmento);
-            rigaAperta = null;
             log.warn({ turno: p.turno, etichetta: e.etichetta, parole: segreto.parole, testo: e.testo, sostituto: segreto.sostituto?.map((r) => r.testo) ?? null }, 'narratore: segreto in una riga al tavolo, riga fermata');
-            for (const r of segreto.sostituto ?? []) {
-              const v = voceDi(campagna, r.etichetta);
-              p.onFrase({ etichetta: r.etichetta, nome: v.nome, testo: r.testo, segmento: e.segmento, indice });
-              const perVoceSost = p.pronuncia(r.testo);
-              accoda({ parlante: r.etichetta, nome: v.nome, voce_id: v.voce_id, testo: r.testo, ...(perVoceSost !== r.testo ? { testo_voce: perVoceSost } : {}) });
-              uscita.push({ tipo: 'improvvisata', etichetta: r.etichetta, testo: r.testo, segmento: e.segmento });
-              righeImprovvisate += 1;
-            }
+            sostituisci(e.segmento, segreto.sostituto ?? []);
             continue;
           }
+        }
+        // Refusal guard: after a failed social check toward an NPC, that NPC does not give in this turn; its refusal
+        // line replaces the rest of the line (narrazione/guardia-rifiuti.ts).
+        const rifiuto = !privato && p.rifiutoDopoProva ? p.rifiutoDopoProva(e.etichetta, e.testo) : null;
+        if (rifiuto) {
+          anomalie.push({ codice: 'rifiuto_dopo_prova', dettaglio: `${e.etichetta}: «${e.testo.slice(0, 120)}»` });
+          log.warn({ turno: p.turno, etichetta: e.etichetta, testo: e.testo, sostituto: rifiuto.map((r) => r.testo) }, 'narrator: NPC gives in after a failed social check, replaced by its refusal');
+          sostituisci(e.segmento, rifiuto);
+          continue;
         }
         const { voce_id, nome } = voceDi(campagna, e.etichetta);
         // Esito privato: al telefono di quel PG (testo, e voce solo lì); mai nella trascrizione pubblica.

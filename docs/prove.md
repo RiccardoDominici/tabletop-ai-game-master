@@ -281,6 +281,12 @@ Recommended consistency checks (warnings):
      turn does not answer it, even if another route via `oppure` would open it: the `[usa]` is refused («legata alla prova
      …, che … ha fallito» (tied to the check …, which … failed)), and the line leaves the catalogue for that action
      (`EsitoAzioneProve.fallite`, `provaFallita`).
+   - After a FAILED social check toward an NPC, that NPC refuses for the rest of the turn (second pass, indagine-B T10:
+     after «Carisma 3… fallita» Haiku had Ugo say «Il sentiero lo conosco io» and point the path). The Engine marks it
+     (`EsitoTurnoProve.negati`: the decision's target, or the NPC the action speaks to); in the repertoire only its
+     `rifiuto` lines are available; in the narration its `[png_x]` line with no refusal word, or a narrator sentence where
+     it does a giving verb («indica», «consegna», «rivela»), is replaced by its refusal line, once per narration
+     (narrazione/guardia-rifiuti.ts; words in `guardia_rifiuti` of each language pack).
 6. **State and resume**.
    - `FotografiaSessione.prove` holds HP, the seed and the dice counter, and the latest cards: a restart resumes with the
      same HP.

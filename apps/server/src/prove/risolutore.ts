@@ -153,7 +153,7 @@ export function normalizzaDecisione(d: DecisioneProva, prove: readonly ProvaScen
   return d;
 }
 
-export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive' | 'combattimento'> {
+export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive' | 'combattimento' | 'negati'> {
   const perAzione = new Map<string, EsitoAzioneProve>();
   const tiri: TiroMostrato[] = [];
   const fatti: string[] = [];

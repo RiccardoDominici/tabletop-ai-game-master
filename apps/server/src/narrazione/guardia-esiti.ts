@@ -79,7 +79,7 @@ function chiCade(frase: string, p: Parole, candidati: readonly string[], nomi: R
   return [...new Set(out)];
 }
 
-function paroleDi(t: string): string[] {
+export function paroleDi(t: string): string[] {
   return normalizza(t)
     .replace(/[^\p{L}\p{N}' ]/gu, ' ')
     .split(/[\s']+/)
@@ -87,7 +87,7 @@ function paroleDi(t: string): string[] {
 }
 
 /** Where the entry (stems: a word counts if it starts like this) appears in the sentence; -1 if not. */
-function posizione(w: readonly string[], voce: readonly string[]): number {
+export function posizione(w: readonly string[], voce: readonly string[]): number {
   for (let i = 0; i + voce.length <= w.length; i++) if (voce.every((v, k) => w[i + k]!.startsWith(v))) return i;
   return -1;
 }
@@ -118,7 +118,7 @@ function esitoDetto(w: readonly string[], p: Parole): { esito: 'colpito' | 'manc
 }
 
 /** Where the sentence first names one of these names (whole words, phrases of several words); -1 if not. */
-function doveNomina(w: readonly string[], nomi: readonly string[]): number {
+export function doveNomina(w: readonly string[], nomi: readonly string[]): number {
   let primo = -1;
   for (const n of nomi) {
     const k = paroleDi(n);

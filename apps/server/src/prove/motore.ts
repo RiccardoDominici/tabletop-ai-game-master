@@ -12,7 +12,7 @@
  * copione, test) le azioni restano senza decisione e lo dice il log.
  */
 import { nomiDeiPng } from '../repertorio/pertinenza';
-import { soloParlato } from './parole-testo';
+import { pngInterpellati, soloParlato } from './parole-testo';
 import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { Logger } from '../logger';
@@ -350,7 +350,7 @@ export class MotoreProve {
       }
     }
     const attesa_ms = Math.round(this.o.orologio.ora() - t0);
-    if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], fattiPrivati: [], attesa_ms, tardive, combattimento: null };
+    if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], fattiPrivati: [], negati: [], attesa_ms, tardive, combattimento: null };
 
     // Nello scontro a turni i PNG agiscono nel loro turno: niente reazioni in più dall'arbitro
     // (la e2e del 10 novembre: Ruggero colpiva due volte per round, di reazione e di turno).
@@ -368,7 +368,16 @@ export class MotoreProve {
     this.ultimoTurno = { turno, tiri: r.tiri };
     for (const a of azioni) this.cache.delete(a.id);
     this.o.log.info({ turno, attesa_ms, tardive, tiri: r.tiri.length, seme: this.dadi.seme, contatore: this.dadi.contatore }, 'prove: turno risolto');
-    return { ...r, attesa_ms, tardive, combattimento: comb };
+    // A failed social check toward an NPC: that NPC refuses for the rest of the turn (second pass of the final run, D2).
+    const nomiPng = nomiDeiPng(c.campagna);
+    const negati = azioni.flatMap((a) => {
+      const d = decisioni.get(a.id);
+      if (!d || r.perAzione.get(a.id)?.riuscita !== false || !['prova', 'contrapposta'].includes(d.tipo) || !this.sociale(d, c)) return [];
+      const png = d.bersaglio?.startsWith('png_') ? [d.bersaglio] : [...pngInterpellati(a.testo, nomiPng)];
+      return png.map((id) => ({ png: id, autore: a.autore, privata: a.privata }));
+    });
+    if (negati.length) this.o.log.info({ turno, negati }, 'prove: failed social checks, those NPCs refuse this turn');
+    return { ...r, attesa_ms, tardive, combattimento: comb, negati };
   }
 
   // ------------------------------------------------------------------ combattimento (docs/combattimento.md)
