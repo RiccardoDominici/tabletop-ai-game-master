@@ -750,7 +750,7 @@
       "file": "situazione_png_tullio_alla_catena.jpg",
       "tipo": "situazione",
       "prompt": "The same person as in the reference image, same face, hair and clothes: tratti fissi: sessantadue anni; largo di spalle; berretto di lana marrone; barba grigia; grossa chiave di ferro alla cintura; mantello cerato giallo. Now the toll keeper gripping the crank of the bridge chain at midnight, water over the low ramp, crowd with lanterns in the background, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature",
-      "seme": 477100567,
+      "seme": 7,
       "larghezza": 1920,
       "altezza": 1080,
       "generata": [
@@ -766,63 +766,33 @@
         "ritratto_png_tullio"
       ],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 356.8,
-      "picco_gb": 6.08,
-      "kb": 746,
+      "secondi": 291.6,
+      "picco_gb": 6.07,
+      "kb": 727,
       "rifilato_pct": 1.2,
-      "firma": "v1:75313ebd5f98f3e4c1a4895c",
-      "quando": "2026-11-03 12:43:23",
+      "firma": "v1:461726d6a5694819c310d9fb",
       "qualita": {
-        "esito": "difettosa",
+        "esito": "ok",
         "versione": 2,
-        "motivi": [
-          "soggetto: La catena termina con un anello o manetta simile a un ceppo, non con la manovella del ponte levatoio richiesta dal prompt; sembra un prigioniero incatenato. (mano destra del personaggio, al centro-sinistra)"
-        ],
-        "problemi": [
-          {
-            "tipo": "soggetto",
-            "dove": "mano destra del personaggio, al centro-sinistra",
-            "descrizione": "La catena termina con un anello o manetta simile a un ceppo, non con la manovella del ponte levatoio richiesta dal prompt; sembra un prigioniero incatenato.",
-            "grave": true
-          },
-          {
-            "tipo": "soggetto",
-            "dove": "angolo inferiore sinistro e quai al centro",
-            "descrizione": "Non si vede una rampa bassa con acqua che la ricopre: l'acqua sta nel canale sotto il marciapiede, senza rampa sommersa.",
-            "grave": false
-          }
-        ],
+        "motivi": [],
+        "problemi": [],
         "visione": {
-          "esito": "difettosa",
-          "motivi": [
-            "soggetto: La catena termina con un anello o manetta simile a un ceppo, non con la manovella del ponte levatoio richiesta dal prompt; sembra un prigioniero incatenato. (mano destra del personaggio, al centro-sinistra)"
-          ],
-          "problemi": [
-            {
-              "tipo": "soggetto",
-              "dove": "mano destra del personaggio, al centro-sinistra",
-              "descrizione": "La catena termina con un anello o manetta simile a un ceppo, non con la manovella del ponte levatoio richiesta dal prompt; sembra un prigioniero incatenato.",
-              "grave": true
-            },
-            {
-              "tipo": "soggetto",
-              "dove": "angolo inferiore sinistro e quai al centro",
-              "descrizione": "Non si vede una rampa bassa con acqua che la ricopre: l'acqua sta nel canale sotto il marciapiede, senza rampa sommersa.",
-              "grave": false
-            }
-          ],
-          "descrizione": "Un uomo anziano con berretto marrone, barba grigia, mantello cerato giallo e grossa chiave alla cintura tiene una catena pesante su un quai bagnato di pioggia, con un ponte di pietra, lanterne e una folla sullo sfondo.",
-          "costo_usd": 0.00093,
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Un uomo anziano con berretto di lana marrone, barba grigia e cerata gialla tiene una catena da ponte con una mano, mentre una folla con lanterne osserva sotto la pioggia in una cittadina sul fiume.",
+          "costo_usd": 0.000725,
           "token": {
             "ingresso": 4053,
-            "uscita": 1050
+            "uscita": 640
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.00093,
-        "tentativi": 1,
-        "costo_totale_usd": 0.00093
-      }
+        "costo_usd": 0.000725,
+        "tentativi": 2,
+        "costo_totale_usd": 0.000725
+      },
+      "quando": "2026-11-11 23:45:33"
     },
     {
       "id": "situazione_png_tullio_in_scena_ponte_imbrunire",
@@ -1103,7 +1073,7 @@
       "file": "situazione_png_vischi_studio_cassa.jpg",
       "tipo": "situazione",
       "prompt": "The same person as in the reference image, same face, hair and clothes: tratti fissi: cinquantadue anni; alto e magro; capelli grigi pettinati all'indietro; mantello nero ben cucito; guanti di pelle nera; anello d'oro con sigillo. Now the merchant alone in a small study at night, kneeling by an open iron chest full of old ledgers, candle in hand, watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature",
-      "seme": 132817243,
+      "seme": 7,
       "larghezza": 1920,
       "altezza": 1080,
       "generata": [
@@ -1119,51 +1089,51 @@
         "ritratto_png_vischi"
       ],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 415.0,
+      "secondi": 350.5,
       "picco_gb": 6.08,
-      "kb": 509,
+      "kb": 546,
       "rifilato_pct": 1.2,
-      "firma": "v1:0d8033e53ba8c037d8f02fef",
+      "firma": "v1:b0fe5e193fbe1e691a7a325b",
       "qualita": {
-        "esito": "difettosa",
+        "esito": "da_controllare",
         "versione": 2,
         "motivi": [
-          "incongruenza: Linee di pioggia cadono dentro la stanza chiusa, come se piovesse al chiuso. (su tutta l'immagine, soprattutto nella metà superiore e vicino alla libreria e al baule)"
+          "incongruenza: Linee di pioggia cadono anche all'interno della stanza, non solo fuori dalla finestra. (parte centrale e superiore della stanza, sopra la candela e accanto al forziere)"
         ],
         "problemi": [
           {
             "tipo": "incongruenza",
-            "dove": "su tutta l'immagine, soprattutto nella metà superiore e vicino alla libreria e al baule",
-            "descrizione": "Linee di pioggia cadono dentro la stanza chiusa, come se piovesse al chiuso.",
+            "dove": "parte centrale e superiore della stanza, sopra la candela e accanto al forziere",
+            "descrizione": "Linee di pioggia cadono anche all'interno della stanza, non solo fuori dalla finestra.",
             "grave": true
           }
         ],
         "visione": {
           "esito": "difettosa",
           "motivi": [
-            "incongruenza: Linee di pioggia cadono dentro la stanza chiusa, come se piovesse al chiuso. (su tutta l'immagine, soprattutto nella metà superiore e vicino alla libreria e al baule)"
+            "incongruenza: Linee di pioggia cadono anche all'interno della stanza, non solo fuori dalla finestra. (parte centrale e superiore della stanza, sopra la candela e accanto al forziere)"
           ],
           "problemi": [
             {
               "tipo": "incongruenza",
-              "dove": "su tutta l'immagine, soprattutto nella metà superiore e vicino alla libreria e al baule",
-              "descrizione": "Linee di pioggia cadono dentro la stanza chiusa, come se piovesse al chiuso.",
+              "dove": "parte centrale e superiore della stanza, sopra la candela e accanto al forziere",
+              "descrizione": "Linee di pioggia cadono anche all'interno della stanza, non solo fuori dalla finestra.",
               "grave": true
             }
           ],
-          "descrizione": "Un uomo dai capelli grigi raccolti, in mantello nero e guanti, è inginocchiato davanti a un baule di ferro aperto pieno di libri antichi, reggendo una candela in una stanza piccola e buia. Sullo sfondo ci sono una libreria e un muro di pietra umida.",
-          "costo_usd": 0.00087,
+          "descrizione": "Un uomo anziano dai capelli grigi, in mantello nero e guanti, è inginocchiato davanti a un forziere di ferro aperto pieno di fogli, con una candela in mano. Alle spalle una lanterna accesa illumina una piccola stanza di legno, mentre fuori piove.",
+          "costo_usd": 0.000835,
           "token": {
             "ingresso": 4054,
-            "uscita": 929
+            "uscita": 859
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.00087,
-        "tentativi": 1,
-        "costo_totale_usd": 0.00087
+        "costo_usd": 0.000835,
+        "tentativi": 3,
+        "costo_totale_usd": 0.001679
       },
-      "quando": "2026-11-10 12:50:24"
+      "quando": "2026-11-11 23:58:02"
     }
   ]
 }
