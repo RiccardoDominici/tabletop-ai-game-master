@@ -140,9 +140,10 @@ export interface ParametriTurno {
   scartaFrase?: (testo: string) => string | null;
   /**
    * Guardia delle azioni private (narrazione/privato.ts): il PG al cui telefono spostare una frase
-   * pubblica che racconta la sua azione privata (null = la frase resta al tavolo).
+   * pubblica che racconta la sua azione privata, o la riga di un PNG che risponde a quella
+   * (`etichetta` = chi parla; null = la frase resta al tavolo).
    */
-  spostaPrivata?: (testo: string, segmento: number) => { id_pg: string; comuni: string[] } | null;
+  spostaPrivata?: (testo: string, segmento: number, etichetta: string) => { id_pg: string; comuni: string[] } | null;
   /**
    * PNG nella scena in corso (`png_presenti`): una riga improvvisata `[png_x]` di un PNG che non c'è si
    * scarta prima della voce, con una riga di log (assente = nessun filtro).
@@ -264,11 +265,11 @@ export async function narraTurno(
         // Una riga al tavolo che racconta l'azione privata di un PG va al suo telefono, non si scarta.
         let privato = e.privato;
         if (!privato && p.spostaPrivata) {
-          const d = p.spostaPrivata(e.testo, e.segmento);
+          const d = p.spostaPrivata(e.testo, e.segmento, e.etichetta);
           if (d) {
             privato = d.id_pg;
             anomalie.push({ codice: 'privata_al_tavolo', dettaglio: `${d.id_pg}: «${e.testo.slice(0, 120)}»` });
-            log.warn({ turno: p.turno, id_pg: d.id_pg, comuni: d.comuni, testo: e.testo }, "narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono");
+            log.warn({ turno: p.turno, etichetta: e.etichetta, id_pg: d.id_pg, comuni: d.comuni, testo: e.testo }, "narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono");
           }
         }
         // Segreto ancora nascosto in una riga al tavolo: al telefono di chi l'ha chiesto in privato, oppure

@@ -315,6 +315,13 @@ Esempi di fatti nel messaggio (veri, dalla partita sulla 4720):
 - **Azioni private ad alta voce**: in tutte e tre le prove sulla 4720 il narratore ha detto a voce lo scasso privato di
   Teo. Nelle due fallite lo scatto del lucchetto si sentiva davvero, ma il narratore ha nominato Teo lo stesso. Il fatto
   ora lo vieta. Il canale `[privato pg_x]` dell'agente «voce» è la strada giusta, da verificare quando arriva.
+  - Guardia deterministica (narrazione/privato.ts): una riga al tavolo che nomina l'autore e riprende il contenuto
+    dell'azione privata va al suo telefono.
+  - E2E finale del 10 novembre: la riga del narratore andava al telefono, ma la risposta `[png_x]` del PNG a cui il PG
+    parlava in privato si sentiva al tavolo. Ora una riga `[png_x]` va al telefono di chi ha agito quando nessuna azione
+    pubblica del turno è rivolta a quel PNG e un'azione privata lo nomina (per nome o soprannome), oppure quando il turno
+    ha solo le azioni private di un PG. Più PG che parlano in privato allo stesso PNG: va a chi ha più parole in comune
+    con la riga. In ogni lingua (i nomi bastano). Test: test/privato-guardia.test.ts, test/lingue-regole-en.test.ts.
 - **Combattimento vero**:
   - iniziativa e ordine dei turni;
   - attacchi dei PNG non provocati (una riga `[attacco]`, da concordare con il parser di «voce»);

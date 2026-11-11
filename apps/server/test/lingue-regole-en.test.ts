@@ -16,7 +16,7 @@ import { fuoriDallaFinzione } from '../src/narrazione/finzione';
 import { dividiTesto } from '../src/narrazione/frasi';
 import { compilaMessaggioTurno, type DatiMessaggioTurno } from '../src/narrazione/messaggio';
 import { togliNumeriRegole } from '../src/narrazione/numeri-regole';
-import { destinatarioPrivato } from '../src/narrazione/privato';
+import { destinatarioPrivato, guardiaPrivate } from '../src/narrazione/privato';
 
 beforeAll(() => impostaLingua('en'));
 afterAll(() => impostaLingua('it'));
@@ -121,6 +121,21 @@ describe('guardie in inglese', () => {
     const priv = [{ id_pg: 'pg_teo', nomi: ['Teo'], testo: 'I quietly force the padlock of the toll box' }];
     expect(destinatarioPrivato('Teo kneels by the toll box and works at the padlock.', priv, new Set(['teo']))).toMatchObject({ id_pg: 'pg_teo' });
     expect(destinatarioPrivato('Teo looks around quietly, while the others wait.', priv, new Set(['teo']))).toBeNull();
+  });
+
+  it('azioni private: la risposta del PNG a cui si parla in privato va al telefono, anche in inglese', () => {
+    const nomiPng = new Map([
+      ['png_keeper', ['hob the keeper', 'hob', 'keeper']],
+      ['png_guard', ['wren the guard', 'wren', 'guard']],
+    ]);
+    const azioni = [
+      { id_pg: 'pg_mara', testo: 'Hob, aside, quietly: «Which road leads to the tower, and who goes up at night?»', privata: true },
+      { id_pg: 'pg_tobin', testo: 'Wren, give me the key: I will bring the boy back before midnight.', privata: false },
+    ];
+    const g = guardiaPrivate(azioni, (id) => (id === 'pg_mara' ? ['Mara Quill', 'Mara'] : ['Tobin Ash', 'Tobin']), new Set(['mara quill', 'tobin ash', 'hob the keeper', 'wren the guard']), nomiPng)!;
+    expect(g('The path runs behind the charcoal pit. At night only the goblins take it.', 1, 'png_keeper')?.id_pg).toBe('pg_mara');
+    expect(g('I give you nothing, soldier.', 2, 'png_guard')).toBeNull();
+    expect(g('Tobin holds out his hand to Wren.', 3, 'narratore')).toBeNull();
   });
 
   it('nomi brevi: titoli inglesi saltati', () => {

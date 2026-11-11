@@ -194,7 +194,7 @@ Turn on the **«Privata»** (meaning: private) switch under the box before sendi
 - The outcome arrives only on your phone, as text. The card of a private roll also appears only there.
 - The voice of the outcome goes only to your phone, and only if you have turned on «Ascolta qui». Never to the projector. If nobody is listening on that phone, the line stays only written. If you can, use headphones: a phone that speaks at the table would let the neighbours hear the secret.
 
-In the tests of 9 November 2026, the narrator sometimes narrated a private action aloud (`docs/prove.md`, section «Aperto», meaning: open). The narrator's rules now forbid this. If it happens, the Game Master can write a stage note.
+In the tests of 9 November 2026, the narrator sometimes narrated a private action aloud (`docs/prove.md`, section «Aperto», meaning: open). The narrator's rules now forbid this, and the Engine checks it too: a line at the table that tells your private action goes to your phone instead, and so does the reply of the NPC you spoke to in private, when nobody spoke to that NPC in public in the same turn. If something still slips through, the Game Master can write a stage note.
 
 ## «Ascolta qui» (meaning: listen here)
 

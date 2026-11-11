@@ -2125,9 +2125,10 @@ export class Regia {
     };
     const tutti = new Set([...c.pg.map((p) => p.nome), ...c.png.map((p) => p.nome), ...Object.keys(c.alias)].map((n) => n.toLowerCase()));
     const g = guardiaPrivate(
-      azioni.map((a) => ({ id_pg: a.id_pg, testo: a.testo, privata: a['privata'] === true })),
+      azioni.map((a) => ({ id_pg: a.id_pg, testo: a.testo, privata: a['privata'] === true, sospesa: a['sospesa'] === true })),
       nomiDi,
       tutti,
+      this.nomiPng,
     );
     return g ? { spostaPrivata: g } : {};
   }
