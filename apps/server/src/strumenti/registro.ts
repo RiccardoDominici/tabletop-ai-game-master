@@ -16,6 +16,7 @@
  * Uscita: 0 fatto (o uguale, con --controlla); 1 diverso (--controlla); 2 argomenti sbagliati;
  * 3 campagna o archivio che non si caricano; 4 nessuna sessione da registrare.
  */
+import '../variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve precedere le letture dell'ambiente
 import fs from 'node:fs';
 import path from 'node:path';
 import { idCampagna } from '../campagna/caricatore';

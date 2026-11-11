@@ -26,6 +26,7 @@
  * 5. Con --chiudi, «Chiudi la sessione» a copione finito: in riepilogo.json (`serata`) le righe della chiusura,
  *    il riassunto e i turni in cui il narratore ha avuto il consiglio di fine vicina (--ore lo fa arrivare presto).
  */
+import '../variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve precedere le letture dell'ambiente
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';

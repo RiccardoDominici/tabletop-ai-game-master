@@ -10,6 +10,7 @@
  * (chiave trovata, URL dato) e dice perché; non apre connessioni (il server locale lo controlla l'avvio).
  * Sotto vitest config/locale.yaml non si legge: le prove non dipendono dalla macchina.
  */
+import { allineaVariabiliLegacy } from '../variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_: prima delle letture dell'ambiente
 import { comeLingua, LINGUA_PREDEFINITA, type Lingua } from '../lingua';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -100,6 +101,7 @@ function daVariabiliVecchie(env: NodeJS.ProcessEnv): Partial<Record<NomeComponen
 }
 
 export function caricaConfigProvider(env: NodeJS.ProcessEnv = process.env, cartella = env['TAGM_CONFIG']?.trim() || CARTELLA): ConfigProvider {
+  allineaVariabiliLegacy(env);
   const file = [path.join(cartella, 'predefinita.yaml')];
   if (!process.env['VITEST'] || env['TAGM_CONFIG']) file.push(path.join(cartella, 'locale.yaml'));
   let d: Record<string, unknown> = {};

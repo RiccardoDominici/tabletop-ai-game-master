@@ -3,6 +3,7 @@
  * Separata da index.ts così i test d'integrazione costruiscono lo stesso server con le parti
  * finte (narratore a copione, voce finta veloce, porta casuale).
  */
+import './variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve precedere le letture dell'ambiente
 import { impostaLingua, percorsoPrompt, testo, type Lingua } from './lingua';
 import fs from 'node:fs';
 import path from 'node:path';

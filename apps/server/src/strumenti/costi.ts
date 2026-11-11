@@ -11,6 +11,7 @@
  * (+10 minuti). Le righe fuori da ogni sessione (istanze di prova senza archivio, preriscaldamenti
  * prima di «Inizia») si raccolgono per giorno, come «fuori sessione».
  */
+import '../variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve precedere le letture dell'ambiente
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';

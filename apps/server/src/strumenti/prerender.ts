@@ -15,6 +15,7 @@
  *
  * Le voci già presenti in cache si saltano. Log: logs/prerender.jsonl.
  */
+import '../variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve precedere le letture dell'ambiente
 import { parseArgs } from 'node:util';
 import path from 'node:path';
 import { setTimeout as attendi } from 'node:timers/promises';

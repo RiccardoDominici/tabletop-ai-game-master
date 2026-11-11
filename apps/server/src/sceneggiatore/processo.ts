@@ -18,6 +18,7 @@
  *   eredita l'ambiente, non lo stampa, e non apre ~/.claude.
  * - Registro: <radice>/sceneggiatore.jsonl, una riga per richiesta (tempi ed esito).
  */
+import '../variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve precedere le letture dell'ambiente
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';

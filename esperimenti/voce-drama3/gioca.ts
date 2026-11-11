@@ -12,6 +12,7 @@
  *    40–60 s di gioco vero, la trascrizione Whisper dell'mp3 e il controllo che nessuna direzione sia
  *    stata letta; latenze e costi dai log del server.
  */
+import '../../apps/server/src/variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve precedere le letture dell'ambiente
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';

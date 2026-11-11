@@ -13,6 +13,7 @@
  * --partita-vera, perché l'esperimento riavvia il server da zero. E2E_URL, se c'è, deve puntare
  * alla stessa porta (altrimenti l'esperimento parlerebbe con un server e leggerebbe i log di un altro).
  */
+import { allineaVariabiliLegacy } from '../variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_: prima delle letture dell'ambiente
 import fs from 'node:fs';
 import path from 'node:path';
 import { CARTELLA_LOG, RADICE_REPO } from '../percorsi';
@@ -71,6 +72,8 @@ function valoreOpzione(argv: string[], nome: string): string | null {
 }
 
 export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsperimento {
+  // Chi chiama con un ambiente qualsiasi (test, altri strumenti) ottiene lo stesso mapping del server.
+  allineaVariabiliLegacy(env);
   const conValore = new Set(['--campagna', '--uscita', '--turni', '--pausa-s', '--ore']);
   const posizionali: string[] = [];
   for (let i = 0; i < argv.length; i++) {

@@ -6,6 +6,7 @@
  *   TAGM_PORTA=4730 TAGM_VOCE_URL=http://127.0.0.1:4741 npx tsx esperimenti/provider-locale/gioca-locale.ts [--turni 3]
  * Risultati in esperimenti/provider-locale/partita/.
  */
+import '../../apps/server/src/variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve precedere le letture dell'ambiente
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
