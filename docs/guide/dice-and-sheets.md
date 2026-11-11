@@ -25,6 +25,10 @@ You roll only when the outcome is uncertain and interesting: when failing is pos
 
 Without numeric character sheets, nothing is ever rolled: the narrator resolves things with «sì, ma…» (roughly "yes, but…"; see "A campaign without dice" below).
 
+In the all-local profile no model decides the rolls: the Engine reads the action (`apps/server/src/prove/classificatore-regole.ts`). It looks at what your character DOES, not at what they say: words in quotes, or after «dico agli altri:» (meaning: I tell the others:), count only for social checks. Asking a question never rolls. A social check needs an NPC you speak to («Berta, …», «chiedo a Berta…»), not just one you mention. Words are compared whole, so «spalla» (shoulder) does not trigger «spallata» (a shoulder charge), and common words such as «porta» (door) or «passaggio» (passage) say nothing alone. When in doubt, it does not roll: a roll fewer is better than an absurd one.
+
+After a failed check, what you wanted does not happen. The narrator is told so, and a prepared line that would grant it anyway (for example, the NPC handing over the key) is refused.
+
 ## What you see
 
 **On the projector** a column of cards appears on the right, one per roll. Each card shows:

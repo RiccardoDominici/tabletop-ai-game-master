@@ -50,6 +50,8 @@ The Preparer writes into `campagne/<id>/regole/`:
 | `riassunto.md` | a summary in plain Italian, for the players (at most 400 words) |
 | `estratti/*.md` | the manual's passages to consult, one per rule, with the words used to find them |
 
+The words in `parole_chiave` (and the `parole` of the passages and of the scene checks) should be specific to the check: «grimaldello» (lockpick), «arrampico» (I climb). Common words of places, the body and objects (door, passage, stairs, shoulder, shadow…) are ignored by the local rules arbiter, because alone they do not say which check: the list is in `lingue/<code>/prove.yaml`, `parole.generiche`.
+
 The PG (player character) and PNG (non-player character) sheets use the characteristics of your manual, not D&D's. The validator checks the set with the `REGOLE` class:
 
     python3 -I strumenti/valida_campagna.py campagne/<id> --solo REGOLE
