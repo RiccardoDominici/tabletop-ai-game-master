@@ -46,6 +46,8 @@ export const comune = {
   'comune.tiri.tiro': 'roll {dado}',
   'comune.tiri.sotto_soglia': 'roll {dado} ≤ {valore}',
   'comune.tiri.sotto_soglia_domanda': 'roll {dado} ≤ {valore}?',
+  'comune.tiri.automatico': 'automatic: {formula} = {totale} damage',
+  'comune.tiri.automatico_chip': 'automatic',
   'comune.tiri.regola': 'Rule: {regola}',
   'comune.tiri.contro_nome': '{cosa} against {nome}',
   'comune.tiri.vantaggio': 'Advantage',

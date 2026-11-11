@@ -223,12 +223,25 @@ export function contoTiro(tiro: Pick<TiroMostrato, 'dado' | 'modificatore' | 'to
   return `${tiro.dado} ${segno} ${Math.abs(tiro.modificatore)} = ${tiro.totale}`;
 }
 
+/**
+ * An automatic attack (it always hits, only damage is rolled): «automatico: 1d6+1 = 7 danni». Null for any other card.
+ * Before, the card read «Dardo incantato 7 contro soglia 0».
+ */
+export function testoAutomatico(tiro: Pick<TiroMostrato, 'automatico' | 'danno'>): string | null {
+  if (!tiro.automatico || !tiro.danno) return null;
+  return t('comune.tiri.automatico', { formula: tiro.danno.formula, totale: tiro.danno.totale });
+}
+
 /** Una frase intera per i lettori di schermo e i log: «Arianna, Persuasione (Carisma): 17 + 5 = 22 contro CD 15. Riuscita.» */
 export function descriviTiro(tiro: TiroMostrato): string {
   const esito = esitoTiro(tiro);
   const risoluzione = risoluzioneDi(tiro);
   let conto: string;
-  if (risoluzione === 'sotto_soglia') {
+  // An automatic attack: no roll to hit, the damage is the whole count (no separate damage sentence).
+  const automatico = testoAutomatico(tiro);
+  if (automatico) {
+    conto = automatico;
+  } else if (risoluzione === 'sotto_soglia') {
     conto = t('comune.tiri.sotto_soglia', { dado: tiro.dado, valore: tiro.contro.valore });
   } else if (risoluzione === '2d6_fasce') {
     conto = t('comune.tiri.conto_fasce', {
@@ -246,7 +259,7 @@ export function descriviTiro(tiro: TiroMostrato): string {
   const parti = [t('comune.tiri.frase', { nome: tiro.nome, cosa: testoCosa(tiro), conto, esito: esito.testo })];
   const vantaggio = testoVantaggio(tiro);
   if (vantaggio) parti.push(`${vantaggio}.`);
-  if (tiro.danno && tiro.riuscita) parti.push(`${testoDanno(tiro.danno)}.`);
+  if (tiro.danno && tiro.riuscita && !automatico) parti.push(`${testoDanno(tiro.danno)}.`);
   if (tiro.a_terra) {
     const chi = tiro.bersaglio?.nome ?? t('comune.tiri.il_bersaglio');
     parti.push(t('comune.tiri.a_terra_frase', { chi: `${chi.charAt(0).toUpperCase()}${chi.slice(1)}` }));

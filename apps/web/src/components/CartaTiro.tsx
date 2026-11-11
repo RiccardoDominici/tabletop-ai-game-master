@@ -31,6 +31,7 @@ import {
   indiceDadoScartato,
   risoluzioneDi,
   testoBersaglioCarta,
+  testoAutomatico,
   testoContro,
   testoCosa,
   testoDanno,
@@ -187,7 +188,9 @@ function CartaIntera(p: PropsInterne) {
   // Il d20 che conta in alto e grande, quello scartato sotto, piccolo e spento: la carta resta stretta.
   const ordine = scartato === null ? p.facce.map((_, i) => i) : [scartato === 0 ? 1 : 0, scartato];
   const regola = testoRegola(tiro);
-  const note = [!avversario && tiro.contro.descrizione ? tiro.contro.descrizione : null, vantaggio].filter(Boolean);
+  const automatico = testoAutomatico(tiro);
+  // An automatic card has no target number: its «colpisce sempre» is already in the count.
+  const note = [!avversario && !automatico && tiro.contro.descrizione ? tiro.contro.descrizione : null, vantaggio].filter(Boolean);
 
   return (
     <article
@@ -241,7 +244,12 @@ function CartaIntera(p: PropsInterne) {
 
         {/* «+5 = 22  CD 15  ✔ Riuscita»: il conto, il numero da battere (o il totale dell'altro PG), l'esito. */}
         <div className={clsx('flex flex-wrap items-center leading-none', m.riga)}>
-          {risoluzione === 'sotto_soglia' ? (
+          {automatico ? (
+            // An automatic attack: no roll to hit, the damage is the count («automatico: 1d6 = 7 danni»).
+            <span data-testid="carta-automatico" className={clsx('font-bold text-pergamena tabular-nums', m.modificatore, comparsa(p, 'totale'))}>
+              {automatico}
+            </span>
+          ) : risoluzione === 'sotto_soglia' ? (
             // Sotto soglia: il tiro al posto di «+mod = totale», poi la soglia da non superare.
             <>
               <Chip className={clsx(m.chip, 'border-bordo-chiaro text-cenere')}>{`d${facce}`}</Chip>
@@ -262,25 +270,27 @@ function CartaIntera(p: PropsInterne) {
               </span>
             </>
           )}
-          <span
-            data-testid="carta-contro"
-            aria-label={avversario ? `${avversario.nome} ${avversario.totale}` : testoBersaglioCarta(tiro)}
-            className={clsx(
-              'inline-flex shrink-0 items-baseline border border-bordo-chiaro bg-notte-3 font-bold whitespace-nowrap text-pergamena-2 tabular-nums',
-              m.contro,
-              comparsa(p, 'totale'),
-            )}
-          >
-            {risoluzione === '2d6_fasce' ? (
-              // Il 2d6 a fasce: al posto della CD c'è il nome della fascia.
-              <span className="font-semibold text-candela-2">{testoBersaglioCarta(tiro)}</span>
-            ) : (
-              <>
-                <span className={clsx('font-semibold text-cenere', m.controTipo)}>{avversario ? avversario.nome : tiro.contro.tipo}</span>
-                {avversario ? avversario.totale : tiro.contro.valore}
-              </>
-            )}
-          </span>
+          {!automatico && (
+            <span
+              data-testid="carta-contro"
+              aria-label={avversario ? `${avversario.nome} ${avversario.totale}` : testoBersaglioCarta(tiro)}
+              className={clsx(
+                'inline-flex shrink-0 items-baseline border border-bordo-chiaro bg-notte-3 font-bold whitespace-nowrap text-pergamena-2 tabular-nums',
+                m.contro,
+                comparsa(p, 'totale'),
+              )}
+            >
+              {risoluzione === '2d6_fasce' ? (
+                // Il 2d6 a fasce: al posto della CD c'è il nome della fascia.
+                <span className="font-semibold text-candela-2">{testoBersaglioCarta(tiro)}</span>
+              ) : (
+                <>
+                  <span className={clsx('font-semibold text-cenere', m.controTipo)}>{avversario ? avversario.nome : tiro.contro.tipo}</span>
+                  {avversario ? avversario.totale : tiro.contro.valore}
+                </>
+              )}
+            </span>
+          )}
           {/* L'esito in fondo a destra; se non ci sta (es. «Colpo critico») va a capo, sempre a destra. */}
           <BadgeEsito esito={esito} className={clsx('ml-auto', m.badge, comparsa(p, 'esito', 'tiro-esito'))} />
         </div>
@@ -295,7 +305,7 @@ function CartaIntera(p: PropsInterne) {
         {note.length > 0 && (
           // Note piccole: perché quella CD, perché il vantaggio.
           <p data-testid="carta-note" className={clsx('line-clamp-2 leading-snug text-cenere', m.piccolo)}>
-            {!avversario && tiro.contro.descrizione && <span>{tiro.contro.descrizione}</span>}
+            {!avversario && !automatico && tiro.contro.descrizione && <span>{tiro.contro.descrizione}</span>}
             {note.length > 1 && <span> · </span>}
             {vantaggio && (
               <span data-testid="carta-vantaggio" className={tiro.vantaggio === 'vantaggio' ? 'text-muschio/90' : 'text-brace/90'}>
@@ -316,7 +326,7 @@ function CartaIntera(p: PropsInterne) {
         {(colpito || tiro.a_terra) && (
           // Il danno e, se il bersaglio cade, «a terra»: si scoprono con l'esito.
           <p data-testid="carta-danno" className={clsx('flex flex-wrap items-center leading-snug', m.danno, comparsa(p, 'esito'))}>
-            {colpito && tiro.danno && <span className="font-semibold text-pergamena">{testoDanno(tiro.danno)}</span>}
+            {colpito && tiro.danno && !automatico && <span className="font-semibold text-pergamena">{testoDanno(tiro.danno)}</span>}
             {tiro.a_terra && <Chip className={clsx(m.chip, 'border-sangue bg-sangue/20 text-sangue uppercase')}>{t('comune.carta.a_terra')}</Chip>}
           </p>
         )}
@@ -338,7 +348,13 @@ function CartaCompatta(p: PropsInterne) {
 
   // Sul telefono la riga è stretta: niente modificatore (c'è nella carta intera, a un tocco).
   // Sotto soglia il numero è il tiro (la soglia sta dopo il punto); col 2d6 il totale e la fascia.
-  const conto = (
+  const automatico = testoAutomatico(tiro);
+  const conto = automatico ? (
+    // An automatic attack: the damage is the count.
+    <span data-testid="carta-automatico" className={clsx('shrink-0 font-bold whitespace-nowrap text-pergamena tabular-nums', comparsa(p, 'totale'))}>
+      {automatico}
+    </span>
+  ) : (
     <span className={clsx('shrink-0 whitespace-nowrap tabular-nums', comparsa(p, 'totale'))}>
       {proiettore && risoluzione !== 'sotto_soglia' && <span className="text-pergamena-2">{conSegno(tiro.modificatore)} = </span>}
       <strong className={clsx('font-extrabold text-pergamena', m.totale)}>{risoluzione === 'sotto_soglia' ? tiro.dado : tiro.totale}</strong>

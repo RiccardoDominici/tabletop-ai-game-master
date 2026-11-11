@@ -84,6 +84,11 @@ export interface TiroMostrato {
   danno: DannoMostrato | null;
   /** Dopo questo tiro il bersaglio è a 0 punti ferita. */
   a_terra: boolean;
+  /**
+   * An attack that always hits (the set's `attacchi.tipo: automatico`, or a sheet weapon with `automatico: true`):
+   * nothing is rolled to hit, only damage. The card shows «automatico: 1d6 = 7 danni», not «7 contro soglia 0».
+   */
+  automatico?: boolean;
   /** Tiro di un'azione privata: solo sul telefono del suo giocatore. */
   privata: boolean;
   /** Prova contrapposta tra due PG: il tiro dell'altro. */

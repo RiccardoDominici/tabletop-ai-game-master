@@ -19,6 +19,7 @@ import {
   passoAnimazione,
   risoluzioneDi,
   sommaDanno,
+  testoAutomatico,
   testoBersaglioCarta,
   testoContro,
   testoCosa,
@@ -333,3 +334,31 @@ describe('animazione', () => {
     }
   });
 });
+
+/*
+ * Second pass of the final end-to-end run: the magic missile card read «Dardo incantato 7 contro soglia 0». An
+ * automatic attack rolls only damage: «automatico: 1d6+1 = 7 danni», in the card and in the sentence for screen readers.
+ */
+describe('automatic attack card', () => {
+  const dardo = tiro({
+    tipo: 'attacco',
+    etichetta: 'Dardo incantato',
+    dadi: [],
+    dado: 0,
+    modificatore: 0,
+    totale: 7,
+    contro: { tipo: 'soglia', valore: 0, descrizione: 'colpisce sempre' },
+    bersaglio: { id: 'png_x', nome: 'il goblin' },
+    danno: { formula: '1d6+1', dadi: [6], bonus: 1, totale: 7, tipo: null, nome_tipo: null },
+    automatico: true,
+  });
+
+  it('shows the damage formula and total, not «7 contro soglia 0»', () => {
+    expect(testoAutomatico(dardo)).toBe('automatico: 1d6+1 = 7 danni');
+    expect(testoAutomatico({ ...dardo, automatico: false })).toBeNull();
+    const frase = descriviTiro(dardo);
+    expect(frase).toContain('automatico: 1d6+1 = 7 danni');
+    expect(frase).not.toMatch(/soglia 0/);
+  });
+});
+

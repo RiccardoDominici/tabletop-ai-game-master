@@ -310,6 +310,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
       const regola = testo('prove.regola.automatico', { arma: a.nome, dadi: `${a.danno.numero}d${a.danno.facce}`, armatura: s.attacchi.armaturaRiduce ? testo('prove.regola.meno_armatura') : '' });
       const e: EsitoTiroGenerico = { dadi: [], facce: a.danno.facce || 6, dado: 0, modificatore: 0, totale: 0, contro: { tipo: 'soglia', valore: 0, descrizione: testo('prove.cd.colpisce_sempre') }, riuscita: true, grado: { id: 'successo', nome: testo('prove.regola.colpisce') }, vantaggio: null, regola };
       const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, null, privata);
+      t.automatico = true;
       const danno = colpisci(t, a, sb, false);
       t.totale = t.danno?.totale ?? 0;
       return { t, testo: testo('prove.fatto.attacco_automatico', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, danno }), esito: e };

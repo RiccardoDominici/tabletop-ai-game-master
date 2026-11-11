@@ -29,6 +29,8 @@ By default no model decides the rolls: the Engine reads the action (`apps/server
 
 After a failed check, what you wanted does not happen. The narrator is told so, and a prepared line that would grant it anyway (for example, the NPC handing over the key) is refused.
 
+A clear attack is an attack whatever any arbiter says: a weapon from your sheet used against an NPC with a sheet («lancio il dardo incantato contro il goblin», I cast the magic missile at the goblin) always rolls. And the narrator cannot contradict the cards: a sentence that has a standing NPC fall, or tells a hit where the card says miss (or the other way round), is replaced by the Engine's short line («Grosso manca Livia.», Grosso misses Livia).
+
 ## What you see
 
 **On the projector** a column of cards appears on the right, one per roll. Each card shows:
@@ -36,7 +38,8 @@ After a failed check, what you wanted does not happen. The narrator is told so, 
 - the d20 (two d20s with advantage or disadvantage: the discarded one is faded);
 - the modifier and the total;
 - the CD or CA to beat, and the outcome;
-- for attacks, the damage and, if needed, «a terra» (down).
+- for attacks, the damage and, if needed, «a terra» (down);
+- for an attack that always hits (a weapon marked `automatico` in the rule set, such as a magic missile), no d20: the card reads «automatico: 1d6+1 = 7 danni» (automatic: 1d6+1 = 7 damage).
 
 The d20 spins for about 1.2 seconds, then the total and the outcome appear. When the narration is over, the cards close up and disappear.
 

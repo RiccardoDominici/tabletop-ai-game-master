@@ -210,7 +210,7 @@ describe('abilità sotto soglia (percentuali, «x su 6») e attacchi che colpisc
     schede.set('pg_corrado', { ...corrado, attacchi: [{ ...corrado.attacchi[0]!, id: 'dardo', nome: 'Dardo incantato', automatico: true }] });
     const o = { turno: 1, sistema: s, schede, stato: new StatoProve(schede), dadi: new DadiACopione([4]), proveScena: [], nome: (id: string) => id, esiste: () => true, log: loggerMuto() };
     const r = strumentiRegole(o).attacca('pg_corrado', 'png_ruggero', 'dardo', [], false)!;
-    expect(r.t).toMatchObject({ riuscita: true, contro: { descrizione: 'colpisce sempre' } });
+    expect(r.t).toMatchObject({ riuscita: true, automatico: true, contro: { descrizione: 'colpisce sempre' } });
     expect(r.t.danno?.totale).toBeGreaterThan(0);
     expect(r.testo).toMatch(/COLPISCE/);
   });
