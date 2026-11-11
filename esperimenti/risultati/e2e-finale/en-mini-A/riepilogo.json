@@ -1,0 +1,172 @@
+{
+  "copione": "en-mini-e2e",
+  "campagna": "en-mini",
+  "modo": "improvvisa",
+  "porta": 4810,
+  "narratore_finto": false,
+  "sessione": "2026-11-10T23:13:10.751Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "335b27b1d6a2178f2b06f8daa83228c69a172e40",
+    "modificati": [
+      "?? campagne/en-mini/"
+    ],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 3,
+  "turni_copione": 3,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_storm": "0/2"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_storm": "1/2"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_storm": "1/2"
+        }
+      }
+    ],
+    "massimo": {
+      "o_storm": "1/2"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 1,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 5871,
+      "peggiore": 6157,
+      "n": 3
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 596,
+      "peggiore": 617,
+      "n": 3
+    },
+    "llm_prima_frase": {
+      "mediana": 725,
+      "peggiore": 757,
+      "n": 3
+    },
+    "voce_richiesta": {
+      "mediana": 725,
+      "peggiore": 757,
+      "n": 3
+    },
+    "voce_primo_audio": {
+      "mediana": 1377,
+      "peggiore": 1408,
+      "n": 3
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1532,
+      "peggiore": 1560,
+      "n": 3
+    },
+    "llm_fine": {
+      "mediana": 1727,
+      "peggiore": 1987,
+      "n": 3
+    },
+    "audio_fine": {
+      "mediana": 28849,
+      "peggiore": 30447,
+      "n": 3
+    }
+  },
+  "buchi": {
+    "totale": 10,
+    "in_frase": 0,
+    "tra_frasi": 10,
+    "silenzio_ms": 2711,
+    "per_turno": [
+      5,
+      3,
+      2
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 18,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 5,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {},
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0.00181008,
+  "costo_mediana_turno_usd": 0.00023637,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 3,
+      "pezzi": 42,
+      "secondi": 8.133333333333338,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 562
+    },
+    {
+      "turno": 1,
+      "frasi": 9,
+      "pezzi": 130,
+      "secondi": 25.199999999999942,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1505
+    },
+    {
+      "turno": 2,
+      "frasi": 7,
+      "pezzi": 144,
+      "secondi": 28.266666666666598,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 651
+    },
+    {
+      "turno": 3,
+      "frasi": 8,
+      "pezzi": 137,
+      "secondi": 26.799999999999937,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 555
+    }
+  ]
+}

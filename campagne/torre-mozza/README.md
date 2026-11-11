@@ -85,8 +85,11 @@ approssimazione è commentata in `regole/regole.yaml`; il riassunto per i giocat
 
 ## Che cosa manca
 
-Immagini e audio non sono ancora generati: il passo 16 (`scripts/prepara.sh campagne/torre-mozza`) lo lancia chi
-prepara la partita, con l'alimentatore collegato, perché le immagini usano la GPU. La campagna è pronta da giocare
-quando esistono `immagini/manifest.json` e `audio/manifest.json`.
+Il passo 16 è stato lanciato l'11 novembre 2026 con `scripts/prepara.sh campagne/torre-mozza --voce`: l'audio è completo
+(musica, umori, temi, ambienti, effetti; 178 battute pre-generate con drama-3), le immagini sono 3 su 14 (i tre luoghi).
+Mancano i quattro ritratti e le sette situazioni: il disco del Mac aveva meno degli 8 GB liberi che
+`strumenti/immagini` chiede, e la generazione si fermava dopo ogni immagine. Per finirle, con l'alimentatore collegato e
+spazio su disco, basta rilanciare lo stesso comando: riparte da dove era. La partita si gioca lo stesso: le prove
+automatiche di `docs/e2e-finale.md` sono state giocate così.
 
 I copioni ciechi per le prove sono in `esperimenti/copioni/torre-mozza/`.

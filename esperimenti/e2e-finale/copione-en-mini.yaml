@@ -1,0 +1,9 @@
+# Three English turns for the en-mini fixture (final e2e, profile: Haiku reader, fake voice).
+pg: [pg_mara, pg_tobin]
+turni:
+  - - {pg: pg_mara, azione: "I walk up to the counter and ask Mr. Hale for two rooms for the night."}
+    - {pg: pg_tobin, azione: "I sit by the fire and listen to what the guard says."}
+  - - {pg: pg_tobin, azione: "I tell the guard we are only passing through and mean no trouble."}
+    - {pg: pg_mara, azione: "Me too, I nod at the guard and keep my hands away from my sword."}
+  - - {pg: pg_mara, azione: "I lean over the counter and look behind it."}
+    - {pg: pg_tobin, azione: "I ask the innkeeper quietly what he is hiding.", privata: true}

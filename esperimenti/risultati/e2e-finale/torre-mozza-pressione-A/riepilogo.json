@@ -1,0 +1,500 @@
+{
+  "copione": "torre-mozza/pressione",
+  "campagna": "torre-mozza",
+  "modo": "repertorio",
+  "porta": 4800,
+  "narratore_finto": false,
+  "sessione": "2026-11-11T00:17:37.952Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "cdb076fc2abd672e468eae65a1534453cafaf6d5",
+    "modificati": [
+      "?? campagne/torre-mozza/audio/",
+      "?? campagne/torre-mozza/immagini/"
+    ],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 16,
+  "turni_copione": 16,
+  "cambi_di_scena": [
+    {
+      "turno_copione": 7,
+      "turno_server": 7,
+      "a": "scena_carbonaia"
+    },
+    {
+      "turno_copione": 9,
+      "turno_server": 10,
+      "a": "scena_torre"
+    }
+  ],
+  "fine_prima_del_copione": null,
+  "finale": {
+    "turno": 5,
+    "id": "fin_ovile_senza"
+  },
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 9,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 11,
+        "stato": {}
+      },
+      {
+        "turno": 12,
+        "stato": {}
+      },
+      {
+        "turno": 13,
+        "stato": {}
+      },
+      {
+        "turno": 14,
+        "stato": {}
+      },
+      {
+        "turno": 15,
+        "stato": {}
+      },
+      {
+        "turno": 16,
+        "stato": {}
+      },
+      {
+        "turno": 17,
+        "stato": {}
+      },
+      {
+        "turno": 18,
+        "stato": {}
+      }
+    ],
+    "massimo": {
+      "o_mezzanotte": "1/8"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 6,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 20057.5,
+      "peggiore": 20135,
+      "n": 16
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 15,
+      "peggiore": 5114,
+      "n": 16
+    },
+    "llm_prima_frase": {
+      "mediana": 15,
+      "peggiore": 33,
+      "n": 15
+    },
+    "voce_richiesta": {
+      "mediana": 17.5,
+      "peggiore": 5114,
+      "n": 16
+    },
+    "voce_primo_audio": {
+      "mediana": 671,
+      "peggiore": 5767,
+      "n": 16
+    },
+    "schermo_inizio_audio": {
+      "mediana": 823.5,
+      "peggiore": 5919,
+      "n": 12
+    },
+    "llm_fine": {
+      "mediana": 9939,
+      "peggiore": 13816,
+      "n": 16
+    },
+    "audio_fine": {
+      "mediana": 19917.5,
+      "peggiore": 34610,
+      "n": 16
+    }
+  },
+  "buchi": {
+    "totale": 24,
+    "in_frase": 0,
+    "tra_frasi": 24,
+    "silenzio_ms": 74446,
+    "per_turno": [
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      2,
+      4,
+      3,
+      0,
+      2,
+      2,
+      1,
+      1,
+      0,
+      1
+    ]
+  },
+  "righe_prescritte": 38,
+  "righe_improvvisate": 20,
+  "quota_prescritte": 0.6551724137931034,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 20,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 9,
+  "battute_indicate_usate": 5,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {},
+  "fughe": {
+    "nota": "Fuga = riga del narratore o di un PNG con una parola segreta prima che sia uscito un id di pubblica_dopo (battuta o indizio rivelato da una battuta) e prima che un giocatore l’abbia scritta.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 28,
+  "battute_mai_usate": [
+    "nar_giaciglio",
+    "nar_cani",
+    "nar_cani_scappano",
+    "nar_pali",
+    "nar_recinto",
+    "nar_avviso",
+    "nar_attesa_ovile",
+    "fin_ovile_mezzanotte",
+    "nar_chiave_presa",
+    "fin_ovile_chiave",
+    "nar_impronte",
+    "nar_rovi",
+    "nar_cervo",
+    "nar_frasche",
+    "fin_carbonaia_mezzanotte",
+    "fin_carbonaia_cunicolo",
+    "fin_carbonaia_sentiero",
+    "nar_corda",
+    "nar_mappa",
+    "nar_conto",
+    "nar_iscrizione",
+    "nar_cripta",
+    "nar_cripta_grimaldello",
+    "nar_tonio_zitto",
+    "nar_tonio_sottovoce",
+    "fin_alba_fontana",
+    "fin_alba_silenzio",
+    "fin_alba_riserva",
+    "fin_alba_discesa",
+    "nar_segno_2",
+    "nar_segno_3",
+    "nar_segno_4",
+    "nar_segno_5",
+    "nar_segno_6",
+    "nar_segno_7",
+    "nar_segno_8",
+    "tr_bosco",
+    "tr_crinale",
+    "ber_saluto",
+    "ber_domanda_gentile",
+    "ber_accusa",
+    "ber_minaccia",
+    "ber_offerta",
+    "ber_aiuto",
+    "ber_rifiuto",
+    "ber_attesa",
+    "ber_salgo_io",
+    "ber_cani",
+    "ber_cose_tonio",
+    "ber_nomi_pali",
+    "ber_benedizione",
+    "ber_debiti_domanda",
+    "ber_conti_foglio",
+    "ber_non_ci_crede",
+    "gro_saluto",
+    "gro_minaccia",
+    "gro_rifiuto",
+    "gro_cibo",
+    "ugo_saluto",
+    "ugo_domanda_gentile",
+    "ugo_accusa",
+    "ugo_minaccia",
+    "ugo_offerta",
+    "ugo_aiuto",
+    "ugo_rifiuto",
+    "ugo_attesa",
+    "ugo_tre_monete",
+    "ugo_consiglio",
+    "ugo_stanotte",
+    "ugo_notte_cervo",
+    "ugo_notte_promessa",
+    "ugo_sentiero_privato",
+    "ugo_sentiero_impronte",
+    "zir_saluto",
+    "zir_domanda_gentile",
+    "zir_accusa",
+    "zir_minaccia",
+    "zir_offerta",
+    "zir_aiuto",
+    "zir_rifiuto",
+    "zir_chiave_prima",
+    "zir_patto",
+    "zir_resa",
+    "zir_cassa",
+    "zir_ragazzo_mio",
+    "zir_corda",
+    "zir_carbonaio"
+  ],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 146,
+      "secondi": 28.599999999999934,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 212
+    },
+    {
+      "turno": 1,
+      "frasi": 3,
+      "pezzi": 61,
+      "secondi": 12.066666666666656,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 3210
+    },
+    {
+      "turno": 2,
+      "frasi": 6,
+      "pezzi": 99,
+      "secondi": 19.5333333333333,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 5614
+    },
+    {
+      "turno": 3,
+      "frasi": 2,
+      "pezzi": 36,
+      "secondi": 7.0000000000000036,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 2441
+    },
+    {
+      "turno": 4,
+      "frasi": 2,
+      "pezzi": 33,
+      "secondi": 6.333333333333337,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 8212
+    },
+    {
+      "turno": 5,
+      "frasi": 3,
+      "pezzi": 75,
+      "secondi": 14.799999999999981,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 5250
+    },
+    {
+      "turno": 6,
+      "frasi": 3,
+      "pezzi": 50,
+      "secondi": 9.666666666666666,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 8478
+    },
+    {
+      "turno": 7,
+      "frasi": 3,
+      "pezzi": 76,
+      "secondi": 15.066666666666645,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 4,
+      "pezzi": 81,
+      "secondi": 15.93333333333331,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 8523
+    },
+    {
+      "turno": 9,
+      "frasi": 9,
+      "pezzi": 167,
+      "secondi": 32.866666666666596,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 3469
+    },
+    {
+      "turno": 10,
+      "frasi": 3,
+      "pezzi": 83,
+      "secondi": 16.26666666666664,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 11,
+      "frasi": 9,
+      "pezzi": 166,
+      "secondi": 32.73333333333326,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 1054
+    },
+    {
+      "turno": 12,
+      "frasi": 9,
+      "pezzi": 169,
+      "secondi": 33.19999999999994,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 13,
+      "frasi": 6,
+      "pezzi": 95,
+      "secondi": 18.599999999999966,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 5760
+    },
+    {
+      "turno": 14,
+      "frasi": 8,
+      "pezzi": 137,
+      "secondi": 26.866666666666607,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 10168
+    },
+    {
+      "turno": 15,
+      "frasi": 4,
+      "pezzi": 70,
+      "secondi": 13.86666666666665,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 7621
+    },
+    {
+      "turno": 16,
+      "frasi": 4,
+      "pezzi": 88,
+      "secondi": 17.26666666666664,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 189
+    },
+    {
+      "turno": 17,
+      "frasi": 1,
+      "pezzi": 9,
+      "secondi": 1.6666666666666665,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 18,
+      "frasi": 3,
+      "pezzi": 62,
+      "secondi": 12.266666666666655,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 4457
+    }
+  ]
+}

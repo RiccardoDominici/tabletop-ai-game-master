@@ -1,0 +1,4 @@
+partita-1 = torre-mozza-indagine-B
+partita-2 = torre-mozza-indagine-A
+partita-3 = torre-mozza-pressione-B
+partita-4 = torre-mozza-pressione-A

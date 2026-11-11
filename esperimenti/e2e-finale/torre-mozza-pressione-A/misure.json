@@ -1,0 +1,194 @@
+{
+ "etichetta": "torre-mozza-pressione-A",
+ "turni": {
+  "giocati": 16,
+  "copione": 16,
+  "fine_prima": null,
+  "finale": {
+   "turno": 5,
+   "id": "fin_ovile_senza"
+  },
+  "cambi_scena": [
+   "scena_carbonaia",
+   "scena_torre"
+  ],
+  "orologi_max": {
+   "o_mezzanotte": "1/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "private": {
+  "azioni_private": 5,
+  "righe_privato": 0,
+  "esiti_privati_log": 9,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": []
+ },
+ "prove": {
+  "azioni_risolte": 25,
+  "con_tiro": 15,
+  "tipi": {
+   "prova": 12,
+   "nessuna": 10,
+   "attacco": 3
+  },
+  "dadi": {
+   "d20": 22,
+   "d6": 9,
+   "d8": 2
+  },
+  "regole_tipo": {
+   "Attacco in mischia (Forza): dNN contro CD N (normale)": 3,
+   "Carisma: dNN contro CD N (normale)": 2,
+   "Cercare porte segrete e trappole: dNN contro CD N (normale)": 2,
+   "Scalare pareti: dNN contro CD N (normale)": 2,
+   "Intelligenza: dNN contro CD N (facile)": 1,
+   "Dardo incantato: dNN contro CD N (normale)": 1,
+   "Arco corto, Attacco a distanza (Destrezza): dNN contro CD N (difesa di zirrà)": 1,
+   "Attacco furtivo (Forza): dNN contro CD N (normale)": 1,
+   "Dardo incantato, Dardo incantato: dNN contro CD N (difesa di zirrà)": 1,
+   "Spada corta, Attacco in mischia (Forza): dNN contro CD N (difesa di zirrà)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: inizia": 1,
+   "azioni: rinviate al turno del loro PG (combattimento)": 7,
+   "combattimento: risolve solo chi è di turno": 7
+  },
+  "fatti_morale_terra": 5,
+  "esempi": [
+   "voce: audio pre-generato mancante, sintesi dal vivo: {\"level\": 40, \"time\": \"2026-11-11T00:22:45.445Z\", \"app\": \"cantastorie\", \"modulo\": \"voce\", \"id_frase\": \"t8-f2\", \"chiave\": \"[omessa]\", \"testo\": \"Un ciocco crolla dentro la carbonaia, e la terra si crepa. Un filo di fumo bi",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-11T00:26:34.098Z\", \"app\": \"cantastorie\", \"modulo\": \"regia\", \"turno\": 14, \"attesa_ms\": 2, \"tardive\": [\"a20\"], \"tiri\": [\"Livia Sarti: Attacco in mischia (Forza) 7 contro CD 17, fallita\", \"Zir",
+   "prove: fatti dello scontro non detti dalla narrazione, li dice il Motore: {\"level\": 40, \"time\": \"2026-11-11T00:26:46.306Z\", \"app\": \"cantastorie\", \"modulo\": \"regia\", \"turno\": 14, \"mancanti\": [{\"tipo\": \"a_terra\", \"id\": \"pg_eliandro\", \"riga\": \"Eliandro cade a terra.\"}], \"dovuti\": 1, \"prima_dell_i",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-11T00:27:18.959Z\", \"app\": \"cantastorie\", \"modulo\": \"regia\", \"turno\": 15, \"attesa_ms\": 3, \"tardive\": [\"a21\"], \"tiri\": [\"Nespola Tondi: Spada corta 20 contro CD 14, riuscita\", \"Eliandro: Tiro",
+   "prove: fatti dello scontro non detti dalla narrazione, li dice il Motore: {\"level\": 40, \"time\": \"2026-11-11T00:27:31.061Z\", \"app\": \"cantastorie\", \"modulo\": \"regia\", \"turno\": 15, \"mancanti\": [{\"tipo\": \"morto\", \"id\": \"pg_eliandro\", \"riga\": \"Eliandro muore.\"}], \"dovuti\": 2, \"prima_dell_invito\": f"
+  ]
+ },
+ "lettore": {
+  "scelte": 25,
+  "nessuna": 11,
+  "ms_classifica_med": 8320,
+  "ms_classifica_peggiore": 15894
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "prossime:ok": 14,
+   "subito:ok": 11
+  },
+  "consegnate": 8,
+  "dette_a_finestra_aperta": 8,
+  "accettate": 92,
+  "scartate": {
+   "parole segrete: Ugo ha visto il ragazzo salire": 1,
+   "png_zirra non è nella scena": 1,
+   "png_grosso non è nella scena": 1
+  },
+  "ms_claude_med": 10211,
+  "ms_totale_med_subito": 9868,
+  "processo": {
+   "avvio": 1,
+   "ok": 26,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20057.5,
+   "peggiore": 20135,
+   "n": 16
+  },
+  "llm_prima_frase": {
+   "mediana": 15,
+   "peggiore": 33,
+   "n": 15
+  },
+  "voce_primo_audio": {
+   "mediana": 671,
+   "peggiore": 5767,
+   "n": 16
+  },
+  "schermo_inizio_audio": {
+   "mediana": 823.5,
+   "peggiore": 5919,
+   "n": 12
+  },
+  "llm_fine": {
+   "mediana": 9939,
+   "peggiore": 13816,
+   "n": 16
+  },
+  "audio_fine": {
+   "mediana": 19917.5,
+   "peggiore": 34610,
+   "n": 16
+  },
+  "s_tra_turni_med": 41,
+  "s_tra_turni_peggiore": 64.177
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 24,
+   "in_frase": 0,
+   "tra_frasi": 24,
+   "silenzio_ms": 74446,
+   "per_turno": [
+    1,
+    3,
+    1,
+    1,
+    1,
+    1,
+    2,
+    4,
+    3,
+    0,
+    2,
+    2,
+    1,
+    1,
+    0,
+    1
+   ]
+  },
+  "proiettore_secondi": 335,
+  "errori_voce": {
+   "voce: audio pre-generato mancante, sintesi dal vivo": 36
+  }
+ },
+ "log": {
+  "errori": 0,
+  "avvisi": 41,
+  "per_messaggio": [
+   "40 ×36 voce: audio pre-generato mancante, sintesi dal vivo",
+   "40 ×5 prove: fatti dello scontro non detti dalla narrazione, li dice il Motore"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-8B-4bit — configurato (con",
+   "arbitro_azioni  → regole — configurato (config/predefinita.yaml + config/locale.",
+   "arbitro_prove   → regole (completo) — configurato (config/predefinita.yaml + con",
+   "riassunto       → locale mlx-community/Qwen3-8B-4bit — configurato (config/prede",
+   "regole          → locale mlx-community/Qwen3-8B-4bit — configurato (config/prede",
+   "voce            → finto — configurato (config/predefinita.yaml + config/locale.y",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 38,
+  "improvvisate": 20,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 20,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0
+ }
+}

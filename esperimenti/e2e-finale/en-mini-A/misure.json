@@ -1,0 +1,136 @@
+{
+ "etichetta": "en-mini-A",
+ "turni": {
+  "giocati": 3,
+  "copione": 3,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_storm": "1/2"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "private": {
+  "azioni_private": 1,
+  "righe_privato": 1,
+  "esiti_privati_log": 1,
+  "righe_al_tavolo_sospette": 1,
+  "sospette": [
+   {
+    "turno": 3,
+    "pg": "pg_tobin",
+    "riga": "[narratore] Tobin asks the innkeeper, quietly, what he is hiding."
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 0,
+  "con_tiro": 0,
+  "tipi": {},
+  "dadi": {},
+  "regole_tipo": {},
+  "set": null,
+  "arbitro": "nessuno (niente tiri)"
+ },
+ "combattimento": {
+  "eventi": {},
+  "fatti_morale_terra": 0,
+  "esempi": []
+ },
+ "lettore": {
+  "scelte": 0,
+  "nessuna": 0,
+  "ms_classifica_med": null,
+  "ms_classifica_peggiore": null
+ },
+ "sceneggiatore": {
+  "richieste": {},
+  "consegnate": 0,
+  "dette_a_finestra_aperta": 0,
+  "accettate": 0,
+  "scartate": {},
+  "ms_claude_med": null,
+  "ms_totale_med_subito": null,
+  "processo": {}
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 5871,
+   "peggiore": 6157,
+   "n": 3
+  },
+  "llm_prima_frase": {
+   "mediana": 725,
+   "peggiore": 757,
+   "n": 3
+  },
+  "voce_primo_audio": {
+   "mediana": 1377,
+   "peggiore": 1408,
+   "n": 3
+  },
+  "schermo_inizio_audio": {
+   "mediana": 1532,
+   "peggiore": 1560,
+   "n": 3
+  },
+  "llm_fine": {
+   "mediana": 1727,
+   "peggiore": 1987,
+   "n": 3
+  },
+  "audio_fine": {
+   "mediana": 28849,
+   "peggiore": 30447,
+   "n": 3
+  },
+  "s_tra_turni_med": 35,
+  "s_tra_turni_peggiore": 36.32
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 10,
+   "in_frase": 0,
+   "tra_frasi": 10,
+   "silenzio_ms": 2711,
+   "per_turno": [
+    5,
+    3,
+    2
+   ]
+  },
+  "proiettore_secondi": 88,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 0,
+  "avvisi": 0,
+  "per_messaggio": [],
+  "provider": [
+   "lettore         → anthropic (completo) claude-haiku-5-5 — configurato (config/pr",
+   "arbitro_azioni  → anthropic claude-haiku-5-5 — configurato (config/predefinita.y",
+   "arbitro_prove   → anthropic (completo) claude-haiku-5-5 — configurato (config/pr",
+   "riassunto       → anthropic claude-haiku-5-5 — configurato (config/predefinita.y",
+   "regole          → anthropic claude-haiku-5-5 — configurato (config/predefinita.y",
+   "voce            → finto — configurato (config/predefinita.yaml + config/locale.y",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "costo_usd": 0.00181008,
+ "righe": {
+  "prescritte": 0,
+  "improvvisate": 18,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 5,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0
+ }
+}

@@ -11,6 +11,7 @@ The user guide, in English, is in [guide/](guide/) and the project overview is i
 | [azioni-concorrenti.md](azioni-concorrenti.md) | Simultaneous player actions: how they affect each other and the narration, and how they can be cancelled. |
 | [combattimento.md](combattimento.md) | Combat driven by the campaign's rule set: initiative, phases, NPC turns, 0 HP, conditions, end of combat. |
 | [da-fare.md](da-fare.md) | Live list of open items and who holds each one. |
+| [e2e-finale.md](e2e-finale.md) | Final end-to-end test (11 November 2026, in English): Basic Fantasy RPG manual → rule set → campaign → games in the local and API profiles, measures, judge, bugs and verdict. |
 | [f0-contratti.md](f0-contratti.md) | Phase 0 (one complete scene): contracts between the phone, server, projector and voice. |
 | [manuale-master.md](manuale-master.md) | The narrator's craft rules for D&D played live, enforced by the code. |
 | [prove.md](prove.md) | Checks and dice: which roll applies to which action, and the character sheet schema. |

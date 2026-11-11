@@ -3,6 +3,7 @@ Confine rispettato: letti solo `prova-f0/pg.yaml` (ogni PG agisce solo sulle pro
 
 ## Forma per la misura del catalogo (`valida_campagna.py --copioni`, strumenti/valida/copioni.py)
 - in cima, facoltativo: `scena: <id>` (la scena in cui si gioca il copione; senza, la scena iniziale);
+- in cima, obbligatorio per l'harness (`apps/server/src/esperimenti/copione.ts`): `pg: [pg_a, pg_b]`, i PG che giocano;
 - `turni:` una lista di turni, e ogni turno una lista di azioni `{pg, azione}`, con `privata: true` per un'azione
   scritta come privata dal telefono (le battute senza `richiede.privata` non le rispondono);
 - un cambio di scena dentro il copione è un elemento `{scena: <id>}` in un turno: vale da lì in poi.

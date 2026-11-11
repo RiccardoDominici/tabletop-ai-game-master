@@ -1,0 +1,370 @@
+{
+ "profilo": {
+  "id": "torre-mozza",
+  "modo": "dorico",
+  "tonica": 7,
+  "bpm": 88,
+  "strumenti": [
+   "cornamusa",
+   "flauto",
+   "percussioni"
+  ],
+  "vietati": [],
+  "epoca": "antica",
+  "umore_base": "esplorazione_tesa",
+  "motivo": null,
+  "perche": {
+   "modo": [
+    "tono: cupa"
+   ],
+   "tonica": "dall'id della campagna",
+   "strumenti": "zampogna, flauto di canna, tamburo a cornice",
+   "epoca": [
+    "tono: fiaba",
+    "regole_prosa: paese"
+   ]
+  }
+ },
+ "luoghi": [
+  {
+   "id": "luogo_scena_ovile",
+   "nome": "L'ovile dei Benni, all'imbrunire",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "media",
+    "ambientazioni": [
+     "borgo"
+    ],
+    "ora": "imbrunire",
+    "meteo": [
+     "vento"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "vento",
+     0.45
+    ],
+    [
+     "stalla",
+     0.5
+    ]
+   ],
+   "transizioni": [
+    "inseguimento"
+   ],
+   "perche": {
+    "umore": "audio.umore_iniziale",
+    "ambientazioni": "audio.musica",
+    "energia": "intensità 2, umore esplorazione_tesa",
+    "ora": "audio.musica",
+    "meteo": "audio.musica",
+    "interno": "audio.interno",
+    "ambiente": "audio.ambiente"
+   }
+  },
+  {
+   "id": "luogo_scena_carbonaia",
+   "nome": "La carbonaia di Ugo, a notte",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "media",
+    "ambientazioni": [
+     "bosco"
+    ],
+    "ora": "notte",
+    "meteo": [],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "bosco",
+     0.4
+    ],
+    [
+     "fuoco",
+     0.4
+    ]
+   ],
+   "transizioni": [
+    "inseguimento"
+   ],
+   "perche": {
+    "umore": "audio.umore_iniziale",
+    "ambientazioni": "audio.musica",
+    "energia": "intensità 3, umore esplorazione_tesa",
+    "ora": "audio.musica",
+    "meteo": {},
+    "interno": "audio.interno",
+    "ambiente": "audio.ambiente"
+   }
+  },
+  {
+   "id": "luogo_scena_torre",
+   "nome": "La Torre Mozza, a mezzanotte",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "alta",
+    "ambientazioni": [
+     "castello"
+    ],
+    "ora": "notte",
+    "meteo": [
+     "vento"
+    ],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "fuoco",
+     0.5
+    ],
+    [
+     "vento",
+     0.5
+    ]
+   ],
+   "transizioni": [
+    "combattimento_epico"
+   ],
+   "perche": {
+    "umore": "audio.umore_iniziale",
+    "ambientazioni": "audio.musica",
+    "energia": "intensità 5, umore esplorazione_tesa",
+    "ora": "audio.musica",
+    "meteo": "audio.musica",
+    "interno": "audio.interno",
+    "ambiente": "audio.ambiente"
+   }
+  },
+  {
+   "id": "luogo_n_ovile",
+   "nome": "L'ovile dei Benni",
+   "alias_di": "luogo_scena_ovile",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_ovile"
+   }
+  },
+  {
+   "id": "luogo_n_carbonaia",
+   "nome": "La carbonaia di Ugo",
+   "alias_di": "luogo_scena_carbonaia",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_carbonaia"
+   }
+  },
+  {
+   "id": "luogo_n_torre",
+   "nome": "La Torre Mozza",
+   "alias_di": "luogo_scena_torre",
+   "musica": null,
+   "ambiente": [],
+   "transizioni": [],
+   "perche": {
+    "alias_di": "luogo_scena_torre"
+   }
+  },
+  {
+   "id": "luogo_n_valdirame",
+   "nome": "Valdirame",
+   "alias_di": null,
+   "musica": {
+    "umore": "esplorazione_tesa",
+    "energia": "media",
+    "ambientazioni": [
+     "borgo",
+     "montagna",
+     "mercato"
+    ],
+    "ora": "notte",
+    "meteo": [],
+    "interno": false,
+    "parole": []
+   },
+   "ambiente": [
+    [
+     "notte",
+     0.35
+    ]
+   ],
+   "transizioni": [],
+   "perche": {
+    "umore": "umore di base della campagna",
+    "ambientazioni": {
+     "borgo": {
+      "punti": 1.0,
+      "prove": [
+       "abbozzo: borgo"
+      ]
+     },
+     "montagna": {
+      "punti": 1.0,
+      "prove": [
+       "abbozzo: valle"
+      ]
+     },
+     "mercato": {
+      "punti": 1.0,
+      "prove": [
+       "abbozzo: mercat"
+      ]
+     }
+    },
+    "energia": "intensità None, umore esplorazione_tesa",
+    "ora": {
+     "notte": {
+      "punti": 0.35,
+      "prove": [
+       "stile_immagini: night"
+      ]
+     }
+    },
+    "meteo": {},
+    "interno": {
+     "interno": 0,
+     "esterno": 1.0
+    },
+    "ambiente": {
+     "notte": {
+      "punti": 1.0,
+      "prove": [
+       "notte all'aperto senza pioggia né neve"
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "effetti": {
+  "porta": [
+   "luogo_scena_ovile.sensi: la porta",
+   "luogo_scena_ovile.elementi: alla porta",
+   "luogo_scena_ovile.elementi: chiavistell",
+   "luogo_scena_ovile.elementi: la porta"
+  ],
+  "chiave": [
+   "luogo_scena_ovile.apertura: chiave",
+   "luogo_scena_torre.elementi: chiave"
+  ]
+ },
+ "temi": [
+  {
+   "png": "png_berta",
+   "nome": "Berta Benni",
+   "carattere": [
+    "burbero",
+    "fiero"
+   ],
+   "strumento": "cornamusa",
+   "modo": "dorico",
+   "registro": "basso",
+   "trasformazioni": [
+    "accento",
+    "salto"
+   ],
+   "perche": {
+    "carattere": {
+     "burbero": [
+      "superficie: dura",
+      "superficie: sbrigativ"
+     ],
+     "fiero": [
+      "superficie: orgoglios"
+     ]
+    },
+    "modo": "carattere burbero",
+    "registro": "carattere",
+    "strumento": "tavolozza della campagna"
+   }
+  },
+  {
+   "png": "png_grosso",
+   "nome": "Grosso",
+   "carattere": [
+    "pacato"
+   ],
+   "strumento": "arpa",
+   "modo": "dorico",
+   "registro": "basso",
+   "trasformazioni": [
+    "legato"
+   ],
+   "perche": {
+    "carattere": {
+     "pacato": [
+      "superficie: lento",
+      "timbro: lento"
+     ]
+    },
+    "modo": "carattere pacato",
+    "registro": "voce bassa",
+    "strumento": "preferenza del carattere pacato"
+   }
+  },
+  {
+   "png": "png_ugo",
+   "nome": "Ugo Faggioli",
+   "carattere": [
+    "burbero",
+    "freddo"
+   ],
+   "strumento": "fagotto",
+   "modo": "dorico",
+   "registro": "basso",
+   "trasformazioni": [
+    "accento",
+    "inversione"
+   ],
+   "perche": {
+    "carattere": {
+     "burbero": [
+      "superficie: burber",
+      "sotto_pressione: brontol",
+      "timbro: ruvid"
+     ],
+     "freddo": [
+      "voce: fredd"
+     ]
+    },
+    "modo": "carattere burbero",
+    "registro": "voce bassa",
+    "strumento": "preferenza del carattere burbero"
+   }
+  },
+  {
+   "png": "png_zirra",
+   "nome": "Zirrà",
+   "carattere": [
+    "gioviale",
+    "nervoso"
+   ],
+   "strumento": "flauto",
+   "modo": "misolidio",
+   "registro": "alto",
+   "trasformazioni": [
+    "diminuzione",
+    "staccato",
+    "ripetizione"
+   ],
+   "perche": {
+    "carattere": "png.tema",
+    "modo": "png.tema",
+    "registro": "png.tema",
+    "strumento": "png.tema"
+   }
+  }
+ ]
+}
