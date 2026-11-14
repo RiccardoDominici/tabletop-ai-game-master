@@ -159,7 +159,7 @@ on a test port it uses the real local voice only if `TAGM_VOCE_URL` points to a 
 and it refuses to start without that address or with 4611. Without `--voce-vera` the voice is the fake one, as before.
 On 4610 the flag keeps the voice service of the real game on (`--tieni-voce`), as before.
 
-Start the separate service with the same script, on its own port (its log is still `logs/voce.out`):
+Start the separate service with the same script, on its own port (its logs are `logs/voce-<porta>.out` and `logs/voce-<porta>.jsonl`, never the real game's `logs/voce.out`):
 
 ```
 VOCE_PORTA=4856 scripts/voce-avvio.sh
