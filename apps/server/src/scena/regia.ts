@@ -1259,6 +1259,7 @@ export class Regia {
           misuratore: new MisuratoreTurno(turno, this.o.orologio.ora(), 0, this.o.voce.nome, this.o.orologio.adesso()),
           ora: () => this.o.orologio.ora(),
           pronuncia: this.pronuncia,
+          idBattute: this.idBattuteRepertorio(),
           presenti: this.pngInScena(),
           usa: null,
           ignora: new Set(['invito_mancante']),
@@ -1454,6 +1455,11 @@ export class Regia {
   /** Id della scena in corso (ISO dell'avvio, '' prima dell'avvio) e modalità del narratore. */
   get infoSessione(): { sessione: string; modo: 'improvvisa' | 'repertorio' } {
     return { sessione: this.sessione, modo: this.o.modo };
+  }
+
+  /** Gli id delle battute del repertorio: un id scritto tra parentesi nel testo del narratore si toglie (L7). */
+  private idBattuteRepertorio(): ReadonlySet<string> {
+    return new Set(this.o.repertorio?.perId.keys() ?? []);
   }
 
   private nuovoStatoRepertorio(): StatoRepertorio | null {
@@ -2636,6 +2642,7 @@ export class Regia {
         misuratore,
         ora: () => this.o.orologio.ora(),
         pronuncia: this.pronuncia,
+        idBattute: this.idBattuteRepertorio(),
         ...this.parametriAudioTurno(),
         ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
         ...this.guardiaPrivate(azioni),
@@ -2677,6 +2684,7 @@ export class Regia {
           misuratore,
           ora: () => this.o.orologio.ora(),
           pronuncia: this.pronuncia,
+          idBattute: this.idBattuteRepertorio(),
           ...this.parametriAudioTurno(),
           ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
           ...this.guardiaPrivate(azioni),

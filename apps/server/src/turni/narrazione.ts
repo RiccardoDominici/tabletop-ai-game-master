@@ -27,6 +27,7 @@ import { EspressioneTurno } from '../voce/espressione';
 import type { CueAudio, Risolto } from '../audio/cue';
 import { testo as testoFisso } from '../lingua';
 import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
+import { togliIdBattute } from '../narrazione/id-battute';
 
 export interface FraseNarrata {
   etichetta: string;
@@ -113,6 +114,8 @@ export interface EsitoTurnoNarrato {
 
 export interface ParametriTurno {
   turno: number;
+  /** Id delle battute del repertorio: se un id compare tra parentesi nel testo, si toglie (narrazione/id-battute.ts). */
+  idBattute?: ReadonlySet<string>;
   sistema: string[];
   messaggio: string;
   /** Il turno come dati (lo stesso oggetto del messaggio), per il lettore minimo: non legge il testo. */
@@ -265,8 +268,28 @@ export async function narraTurno(
     }
   };
 
+  /** Un id di battuta scritto tra parentesi non arriva alla voce: si toglie, e la frase che resta vuota si scarta. */
+  const togliIdDalTesto = (grezzi: EventoNarratore[]): EventoNarratore[] => {
+    if (!p.idBattute?.size) return grezzi;
+    const out: EventoNarratore[] = [];
+    for (const e of grezzi) {
+      if (e.tipo !== 'frase') {
+        out.push(e);
+        continue;
+      }
+      const r = togliIdBattute(e.testo, p.idBattute);
+      for (const id of r.tolti) {
+        anomalie.push({ codice: 'id_battuta_in_testo', dettaglio: `[${id}] tolto dal testo: non si legge` });
+        log.warn({ turno: p.turno, etichetta: e.etichetta, id }, 'narratore: id di una battuta del repertorio scritto tra parentesi, tolto (non si legge)');
+      }
+      if (r.tolti.length && !r.testo) continue;
+      out.push(r.tolti.length ? { ...e, testo: r.testo } : e);
+    }
+    return out;
+  };
+
   const gestisci = (grezzi: EventoNarratore[]): void => {
-    const eventi = espressione.trasforma(grezzi);
+    const eventi = espressione.trasforma(togliIdDalTesto(grezzi));
     for (const e of eventi) {
       if (p.signal.aborted) return;
       if (e.tipo === 'frase') {
