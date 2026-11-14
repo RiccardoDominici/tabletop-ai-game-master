@@ -144,8 +144,9 @@ which the server reads in `apps/server/src/config.ts` (without `PORT` it is 4610
 - use the fake voice, or drama-3 with `--fish`, **never the Qwen service on 4611**: it belongs to the real game, and the
   Qwen fallback of drama-3 is switched off. A separate Qwen service that you start yourself, on another port, is
   allowed: give its address with `TAGM_VOCE_URL=http://127.0.0.1:<porta>`. With it, `scripts/avvio.sh` uses that
-  service even if the configuration says drama-3 (an explicit address wins over the configuration). Port 4611 is refused;
-  the address must not be the test server's own port;
+  service even if the configuration says drama-3 (an explicit address wins over the configuration). The address must
+  not be port 4611: `scripts/avvio.sh` then uses the fake voice, and the harness (`--voce-vera`) refuses to start;
+  nor the test server's own port;
 - share the local model server on 4613 with the real game: don't run an automatic test while a real game is on;
 - do not start the scriptwriter, unless you set `TAGM_SCENEGGIATORE=si`;
 - always start from a new session. To resume the saved one, start with
