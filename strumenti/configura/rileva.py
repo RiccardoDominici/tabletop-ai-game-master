@@ -29,19 +29,22 @@ sys.path.insert(0, str(RADICE / "strumenti"))
 from chiavi import ErroreChiave, cerca_chiave  # noqa: E402
 
 CHIAVI = ("ANTHROPIC_API_KEY", "OPENROUTER_API_KEY")
-STRUMENTI = ("claude", "node", "python3", "ffmpeg", "uv")
+STRUMENTI = ("claude", "node", "python3", "ffmpeg", "uv", "whisper-server", "mkcert")
 # Ambienti Python del progetto: il file che dimostra che esistono e funzionano.
 AMBIENTI = {
     "lettore": "services/lettore/.venv/bin/mlx_lm.server",
     "voce": "services/voce/.venv/bin/python",
     "immagini": "strumenti/immagini/.venv/bin/python",
 }
-# Modelli che i profili possono usare (repo Hugging Face). La cache è controllata, non scaricata.
+# Local speech-to-text (whisper.cpp): a single file of a repo, written «repo:file».
+MODELLO_ASCOLTO = "ggerganov/whisper.cpp:ggml-large-v3-turbo-q5_0.bin"
+# Modelli che i profili possono usare (repo Hugging Face; «repo:file» = one file of a repo). La cache è controllata, non scaricata.
 MODELLI_NOTI = (
     "mlx-community/Qwen3-8B-4bit",
     "mlx-community/Qwen3-4B-Instruct-2507-4bit",
     "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-8bit",
     "mflux-community/flux2-klein-4b-mflux-q4",
+    MODELLO_ASCOLTO,
 )
 
 
@@ -78,6 +81,10 @@ class Ambiente:
 
     def esiste(self, percorso: Path) -> bool:
         return percorso.exists()
+
+    def snapshot_contiene(self, cartella: Path, nome: str) -> bool:
+        """True if at least one snapshot of the cache (cartella/snapshots/<rev>/) holds the file `nome`."""
+        return any(p.exists() for p in (cartella / "snapshots").glob(f"*/{nome}"))
 
     def leggi(self, percorso: Path) -> str | None:
         try:
@@ -161,9 +168,19 @@ def rileva_ambienti(amb: Ambiente, radice: Path) -> dict[str, bool]:
     return {nome: amb.esiste(radice / percorso) for nome, percorso in AMBIENTI.items()}
 
 
-def modello_in_cache(amb: Ambiente, repo: str) -> bool:
-    """Un modello è in cache se la cartella del repo ha uno snapshot (refs/main o almeno una snapshot)."""
+def separa_modello(modello: str) -> tuple[str, str | None]:
+    """«repo» → («repo», None); «repo:file» → («repo», «file») (one file of a repo)."""
+    repo, _, file = modello.partition(":")
+    return repo, (file or None)
+
+
+def modello_in_cache(amb: Ambiente, modello: str) -> bool:
+    """Un modello è in cache se la cartella del repo ha uno snapshot (refs/main o almeno una snapshot).
+    A «repo:file» is in the cache only when a snapshot holds that file."""
+    repo, file = separa_modello(modello)
     cartella = amb.cache_hf() / ("models--" + repo.replace("/", "--"))
+    if file is not None:
+        return amb.snapshot_contiene(cartella, file)
     return amb.esiste(cartella / "refs" / "main") or amb.esiste(cartella / "snapshots")
 
 

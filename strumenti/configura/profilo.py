@@ -3,10 +3,13 @@
 Tabella, in ordine (la prima regola che vale vince):
   1. Apple silicon, RAM >= 15,5 GiB (16 GB nominali):  lettore Qwen3 8B 4 bit, voce Qwen3-TTS locale,
      immagini FLUX.2 klein q4 (mflux) solo se il disco basta dopo i download, altrimenti nessuna.
+     Ascolto (speech-to-text): local whisper.cpp, model large-v3-turbo q5_0 (0.57 GB).
   2. Apple silicon, RAM sotto 15,5 GiB:               lettore Qwen3 4B 4 bit, voce locale, immagini nessuna.
+     Ascolto: local whisper.cpp, as above.
   3. Altro sistema (non Apple silicon):               nessun modello locale ancora (docs/da-fare.md).
      Il lettore è «finto» (narratore a copione, non una partita vera) finché non c'è una chiave Anthropic;
      la voce è «finto» (un tono). Le chiavi sono sempre un'opzione, mai un requisito.
+     Ascolto: local whisper.cpp only if whisper-server is already installed (otherwise the players type).
 
 Le chiavi trovate (ANTHROPIC_API_KEY, OPENROUTER_API_KEY) sono solo offerte: compaiono in `chiavi_offerte`
 e diventano scelte solo con `applica_chiavi=True` (`--con-chiavi` in configura.py).
@@ -19,6 +22,8 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+from rileva import MODELLO_ASCOLTO
 
 # Soglie e nomi: in un posto solo, così la tabella in docs/profili.md resta leggibile.
 RAM_APPLE_GB = 15.5  # 16 GB nominali, misurati come GiB arrotondati
@@ -33,16 +38,20 @@ DIMENSIONI_APPROSSIMATE_GB = {
     MODELLO_LETTORE_PICCOLO: 3.6,
     MODELLO_VOCE: 2.0,
     MODELLO_IMMAGINI: 4.6,
+    MODELLO_ASCOLTO: 0.57,  # ggml-large-v3-turbo-q5_0.bin, 574 MB (speech-to-text, whisper.cpp)
 }
 # Cartelle .venv misurate sul Mac di sviluppo (10 nov 2026, docs/guide/installation.md, tabella «What gets written»).
 AMBIENTE_GB = {"lettore": 0.45, "voce": 0.47, "immagini": 1.2}
 # Spazio che un computer nuovo deve avere libero per ciascun profilo: modelli + ambienti + npm. Su Apple silicon
 # la skill (passo 2) crea i tre ambienti Python, quindi sono sempre contati. Il modello delle immagini è a parte.
+# On Apple silicon the models include the speech-to-text one (ascolto, whisper.cpp): always local there.
 FABBISOGNO_GB = {
-    "apple-16": {"modelli": DIMENSIONI_APPROSSIMATE_GB[MODELLO_LETTORE_GRANDE] + DIMENSIONI_APPROSSIMATE_GB[MODELLO_VOCE],
+    "apple-16": {"modelli": DIMENSIONI_APPROSSIMATE_GB[MODELLO_LETTORE_GRANDE] + DIMENSIONI_APPROSSIMATE_GB[MODELLO_VOCE]
+                 + DIMENSIONI_APPROSSIMATE_GB[MODELLO_ASCOLTO],
                  "ambienti": sum(AMBIENTE_GB.values()),
                  "immagini": DIMENSIONI_APPROSSIMATE_GB[MODELLO_IMMAGINI]},
-    "apple-piccolo": {"modelli": DIMENSIONI_APPROSSIMATE_GB[MODELLO_LETTORE_PICCOLO] + DIMENSIONI_APPROSSIMATE_GB[MODELLO_VOCE],
+    "apple-piccolo": {"modelli": DIMENSIONI_APPROSSIMATE_GB[MODELLO_LETTORE_PICCOLO] + DIMENSIONI_APPROSSIMATE_GB[MODELLO_VOCE]
+                      + DIMENSIONI_APPROSSIMATE_GB[MODELLO_ASCOLTO],
                       "ambienti": sum(AMBIENTE_GB.values()),
                       "immagini": 0.0},
     # Senza modelli locali: solo i pacchetti npm del repository (node_modules, misurati a 201 MB).
@@ -98,6 +107,20 @@ def _modelli_mancanti(rilevamento: dict[str, Any], modelli: list[str]) -> list[s
 
 def _gb(modelli: list[str]) -> float:
     return round(sum(DIMENSIONI_APPROSSIMATE_GB[m] for m in modelli), 1)
+
+
+def _scegli_ascolto(rilevamento: dict[str, Any], apple: bool) -> dict[str, Any]:
+    """Speech-to-text: local whisper.cpp on Apple silicon or where whisper-server is installed; otherwise the players type."""
+    # .get: an old detection without «strumenti» must not break the choice.
+    trovato = bool(rilevamento.get("strumenti", {}).get("whisper-server"))
+    if apple:
+        return _componente("locale", ["openrouter", "nessuno"], motivo=(
+            "whisper.cpp turns what the players say on their phones into text on this Mac; without it they type."))
+    if trovato:
+        return _componente("locale", ["openrouter", "nessuno"], motivo=(
+            "whisper.cpp was found on this computer; this combination is not tested yet."))
+    return _componente("nessuno", motivo=(
+        "No local speech-to-text set up here: players type their actions (whisper.cpp can be installed by hand, docs/ascolto.md)."))
 
 
 LINGUE = ("it", "en")  # docs/lingue.md: codici ISO 639-1 supportati dalla configurazione
@@ -175,6 +198,18 @@ def scegli(rilevamento: dict[str, Any], applica_chiavi: bool = False, lingua: st
         voce = _componente("openrouter", ["locale" if apple else "finto"], motivo=(
             "drama-3 voice, because a key was found and you asked for it. The fallback is the local voice."))
 
+    ascolto = _scegli_ascolto(rilevamento, apple)
+    strumenti = rilevamento.get("strumenti", {})
+    # Missing key = not measured: no warning (as for the environments).
+    if ascolto["provider"] == "locale" and strumenti.get("whisper-server") is False:
+        avvisi.append("whisper-server not found: install it with `brew install whisper.cpp` (setup step 2), "
+                      "or the phones fall back to typing.")
+    if ascolto["provider"] != "nessuno" and strumenti.get("mkcert") is False:
+        avvisi.append("mkcert not found: install it with `brew install mkcert`, then run scripts/certificato.sh; "
+                      "without HTTPS the phone browsers block the microphone.")
+    if ascolto["provider"] == "locale":
+        modelli = modelli + [MODELLO_ASCOLTO]
+
     locali = [c for c in ("lettore", "voce", "immagini") if componenti_locali(c, lettore, voce, immagini)]
     ambienti_mancanti = [c for c in locali if ambienti.get(c) is False]
 
@@ -185,6 +220,7 @@ def scegli(rilevamento: dict[str, Any], applica_chiavi: bool = False, lingua: st
         "riassunto": _componente("locale" if apple else "regole", ["regole"], motivo="«Last time…» summary from the local reader; the rules summary is the fallback."),
         "regole": _componente("locale" if apple else "regole", ["regole"], motivo="«Ask a rule» from the phone; rule search is the fallback."),
         "voce": voce,
+        "ascolto": ascolto,
         "immagini": immagini,
     }
     modelli_da_scaricare = _modelli_mancanti(rilevamento, modelli)

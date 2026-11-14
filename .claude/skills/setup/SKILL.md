@@ -20,10 +20,10 @@ Run every command from the repository root. Use `python3 -I` for the Python tool
 
 **Disk first.** Before installing anything, check the free space (`df -h .`) and tell the user how much each choice
 needs on a new computer:
-- Apple silicon, 16 GB profile, images on (the default; local reader, voice and images): about **13.5 GB**
-  (models 11.2 GB, Python environments 2.0 GB, npm packages 0.2 GB).
-- Apple silicon, 16 GB profile, images off: about **7.7 GB** (models 6.6 GB, environments 0.8 GB, npm 0.2 GB).
-- Apple silicon under 16 GB (smaller local reader, no images): about **6.6 GB** (an estimate).
+- Apple silicon, 16 GB profile, images on (the default; local reader, voice, speech-to-text and images): about **14.1 GB**
+  (models 11.8 GB, Python environments 2.0 GB, npm packages 0.2 GB).
+- Apple silicon, 16 GB profile, images off: about **8.3 GB** (models 7.2 GB, environments 0.8 GB, npm 0.2 GB).
+- Apple silicon under 16 GB (smaller local reader, no images): about **7.2 GB** (an estimate).
 - Anything else, text-only with an API key: about **0.2 GB**.
 If the free space is below the chosen profile's figure, offer the lighter choice before going on.
 
@@ -38,6 +38,9 @@ If the free space is below the chosen profile's figure, offer the lighter choice
     If step 3 turns the images off, skip this environment.
   - If `uv` is missing, install it first (`curl -LsSf https://astral.sh/uv/install.sh | sh`).
 - Skip any environment whose step fails and say so; the profile will fall back.
+- Speech-to-text (Apple silicon, and any computer where the user wants the microphone): ask once, then
+  `brew install whisper.cpp mkcert` (about 0.05 GB). If Homebrew is missing or the user says no, skip it: the phones fall
+  back to typing.
 
 ## 3. Detect and explain
 
@@ -49,6 +52,7 @@ If the free space is below the chosen profile's figure, offer the lighter choice
     want them, they can be turned off: add `immagini: {provider: nessuno}` under `componenti:` in `config/locale.yaml`
     (step 5), and do not create the images environment. Then the download skips the image model. Say that the
     download plan still lists it;
+  - speech-to-text (`ascolto`) is local whisper.cpp with the 0.57 GB model; without it the players type;
   - "Cost: 0 USD with these local choices" for the default.
 - Do not show internal names or key values. Never print or copy a key.
 
@@ -81,15 +85,26 @@ Anthropic key now?" Ask that once, then continue.
 - `python3 -I strumenti/configura/configura.py --scarica` prints the sizes and the free disk, then asks.
 - Show the sizes to the user and get a yes. Then run `python3 -I strumenti/configura/configura.py --scarica --si`.
 - The "already on disk" lines only count the model cache named in the first line of the plan. On a new computer that
-  cache is empty, so the plan is the whole table. For the 16 GB Apple profile with images on: about 11.2 GB
-  (reader 4.6 GB, voice 2 GB, images 4.6 GB). With images off: about 6.6 GB (reader and voice only). Say this to the
-  user before they confirm.
+  cache is empty, so the plan is the whole table. For the 16 GB Apple profile with images on: about 11.8 GB
+  (reader 4.6 GB, voice 2 GB, images 4.6 GB, speech-to-text 0.6 GB). With images off: about 7.2 GB (reader, voice and
+  speech-to-text). Say this to the user before they confirm.
 - The image model is skipped, not downloaded, when the images environment is missing; the reader and the voice still
   download.
 - If the plan prints `NOT READY` for the reader or the voice (a Python environment is missing), finish step 2 for that
   component first. A missing images environment is expected when the images are off.
 - If it says NOT ENOUGH DISK, nothing is downloaded: tell the user to free space, then run again.
 - Nothing is deleted by these commands.
+
+## 6b. Phones: HTTPS for the microphone
+
+- Run `scripts/certificato.sh` once. It makes a local certificate with mkcert for this computer's addresses. The CA
+  private key stays in mkcert's own folder and is never copied into the repo.
+- Each phone installs that certificate once, from the page `http://<this computer's address>:4610/certificato` (plain
+  http on purpose: it opens before the phone trusts anything; `scripts/partita.sh` prints it next to the phone address):
+  - Android: Settings > Security > Encryption & credentials > Install a certificate > CA certificate.
+  - iPhone: open the page in Safari, allow the profile download, then Settings > General > VPN & Device Management >
+    install the profile, then Settings > General > About > Certificate Trust Settings > turn on full trust for it.
+- This is needed once per phone. Without it the phone can still play by typing.
 
 ## 7. Smoke test
 

@@ -16,6 +16,7 @@ sys.path.insert(0, str(HERE))
 import scarica  # noqa: E402
 import profilo  # noqa: E402
 from profilo import (  # noqa: E402
+    MODELLO_ASCOLTO,
     MODELLO_IMMAGINI,
     MODELLO_LETTORE_GRANDE,
     MODELLO_LETTORE_PICCOLO,
@@ -23,8 +24,10 @@ from profilo import (  # noqa: E402
     scegli,
 )
 
+STRUMENTI_OK = {"whisper-server": True, "mkcert": True}
 
-def rilevamento(apple=True, ram=16.0, disco=50.0, cache=None, chiavi=None) -> dict:
+
+def rilevamento(apple=True, ram=16.0, disco=50.0, cache=None, chiavi=None, strumenti=STRUMENTI_OK) -> dict:
     """Un rilevamento minimo e finto: le stesse chiavi di rileva.py, valori scelti dal test."""
     return {
         "sistema": {"os": "darwin" if apple else "linux"},
@@ -33,9 +36,10 @@ def rilevamento(apple=True, ram=16.0, disco=50.0, cache=None, chiavi=None) -> di
         "disco_libero_gb": disco,
         "modelli_in_cache": cache or {
             MODELLO_LETTORE_GRANDE: False, MODELLO_LETTORE_PICCOLO: False,
-            MODELLO_VOCE: False, MODELLO_IMMAGINI: False,
+            MODELLO_VOCE: False, MODELLO_IMMAGINI: False, MODELLO_ASCOLTO: False,
         },
         "chiavi": chiavi or {"ANTHROPIC_API_KEY": False, "OPENROUTER_API_KEY": False},
+        "strumenti": strumenti,
         "avvisi": [],
     }
 
@@ -60,7 +64,7 @@ def test_apple_16_gb_disco_stretto_toglie_le_immagini() -> None:
 
 def test_immagini_gia_in_cache_servono_comunque_8_gb_liberi() -> None:
     # Generare richiede 8 GB liberi (motore.py) anche se il modello è già scaricato.
-    cache = {MODELLO_IMMAGINI: True, MODELLO_LETTORE_GRANDE: True, MODELLO_VOCE: True}
+    cache = {MODELLO_IMMAGINI: True, MODELLO_LETTORE_GRANDE: True, MODELLO_VOCE: True, MODELLO_ASCOLTO: True}
     poco = scegli(rilevamento(ram=16.0, disco=4.0, cache=cache))
     assert poco["componenti"]["immagini"]["provider"] == "nessuno"
     assert poco["da_scaricare"] == []
@@ -82,7 +86,7 @@ def test_apple_sotto_8_gb_avvisa() -> None:
 
 
 def test_non_apple_senza_chiavi_non_inventa_il_locale() -> None:
-    p = scegli(rilevamento(apple=False, ram=32.0))
+    p = scegli(rilevamento(apple=False, ram=32.0, strumenti={"whisper-server": False, "mkcert": False}))
     assert p["id"] == "altro"
     assert p["componenti"]["lettore"]["provider"] == "finto"
     assert p["componenti"]["voce"]["provider"] == "finto"
@@ -135,7 +139,67 @@ def test_locale_yaml_piccolo_porta_il_modello_del_lettore() -> None:
     assert f"    modello: {MODELLO_LETTORE_PICCOLO}" in testo
 
 
-@pytest.mark.parametrize("repo", [MODELLO_LETTORE_GRANDE, MODELLO_VOCE, MODELLO_IMMAGINI])
+def test_ascolto_su_apple_e_locale_con_le_sue_riserve() -> None:
+    p = scegli(rilevamento(ram=16.0, disco=50.0))
+    assert p["componenti"]["ascolto"]["provider"] == "locale"
+    assert p["componenti"]["ascolto"]["riserve"] == ["openrouter", "nessuno"]
+    assert MODELLO_ASCOLTO in p["modelli"]
+    assert MODELLO_ASCOLTO in p["da_scaricare"]
+    piccolo = scegli(rilevamento(ram=8.0, disco=50.0))
+    assert piccolo["componenti"]["ascolto"]["provider"] == "locale"
+    assert MODELLO_ASCOLTO in piccolo["modelli"]
+
+
+def test_ascolto_ordine_dopo_la_voce() -> None:
+    chiavi = list(scegli(rilevamento())["componenti"])
+    assert chiavi.index("ascolto") == chiavi.index("voce") + 1
+
+
+def test_ascolto_non_apple_con_whisper_trovato() -> None:
+    p = scegli(rilevamento(apple=False, ram=32.0))
+    assert p["componenti"]["ascolto"]["provider"] == "locale"
+    assert "not tested yet" in p["componenti"]["ascolto"]["motivo"]
+    assert MODELLO_ASCOLTO in p["modelli"]
+
+
+def test_ascolto_non_apple_senza_whisper_e_nessuno() -> None:
+    p = scegli(rilevamento(apple=False, ram=32.0, strumenti={"whisper-server": False, "mkcert": False}))
+    assert p["componenti"]["ascolto"]["provider"] == "nessuno"
+    assert "docs/ascolto.md" in p["componenti"]["ascolto"]["motivo"]
+    assert MODELLO_ASCOLTO not in p["modelli"]
+    # Nessun avviso su mkcert quando il microfono non è usato.
+    assert not any("mkcert" in a for a in p["avvisi"])
+
+
+def test_avviso_whisper_mancante_su_apple() -> None:
+    p = scegli(rilevamento(ram=16.0, strumenti={"whisper-server": False, "mkcert": True}))
+    assert any(a.startswith("whisper-server not found") and "brew install whisper.cpp" in a for a in p["avvisi"])
+    assert not any("mkcert not found" in a for a in p["avvisi"])
+
+
+def test_avviso_mkcert_mancante_quando_c_e_ascolto() -> None:
+    p = scegli(rilevamento(ram=16.0, strumenti={"whisper-server": True, "mkcert": False}))
+    assert any(a.startswith("mkcert not found") and "scripts/certificato.sh" in a for a in p["avvisi"])
+    assert not any("whisper-server not found" in a for a in p["avvisi"])
+
+
+def test_rilevamento_senza_chiavi_strumenti_non_crolla() -> None:
+    # Un rilevamento vecchio, senza «strumenti»: nessun errore e nessun avviso sul microfono.
+    vecchio = rilevamento(ram=16.0)
+    del vecchio["strumenti"]
+    p = scegli(vecchio)
+    assert p["componenti"]["ascolto"]["provider"] == "locale"
+    assert not any("not found" in a for a in p["avvisi"])
+    p_altro = scegli(rilevamento(apple=False) | {"strumenti": {}})
+    assert p_altro["componenti"]["ascolto"]["provider"] == "nessuno"
+
+
+def test_locale_yaml_riga_ascolto() -> None:
+    testo = profilo.testo_locale(scegli(rilevamento(ram=16.0)), quando="x")
+    assert "  ascolto: {provider: locale, riserve: [openrouter, nessuno]}" in testo
+
+
+@pytest.mark.parametrize("repo", [MODELLO_LETTORE_GRANDE, MODELLO_VOCE, MODELLO_IMMAGINI, MODELLO_ASCOLTO])
 def test_piano_usa_la_stima_quando_la_rete_manca(repo: str, tmp_path: Path) -> None:
     p = scegli(rilevamento(disco=50.0))
     piano = scarica.piano(p["modelli"], rilevamento(disco=50.0), tmp_path, dimensione=lambda _r: None)
@@ -205,8 +269,8 @@ def test_ambienti_non_misurati_nessun_avviso() -> None:
 
 
 def test_fabbisogno_apple_16_e_circa_nove_gb() -> None:
-    assert profilo.fabbisogno_gb("apple-16") == 8.9  # 6,6 modelli + 2,1 ambienti + 0,2 npm
-    assert "6.6 GB models" in profilo.fabbisogno_testo("apple-16")
+    assert profilo.fabbisogno_gb("apple-16") == 9.5  # 7,2 modelli (incluso ascolto 0,57) + 2,1 ambienti + 0,2 npm
+    assert "7.2 GB models" in profilo.fabbisogno_testo("apple-16")
     assert "image model" in profilo.fabbisogno_testo("apple-16")
 
 

@@ -50,6 +50,10 @@ class Macchina(Ambiente):
     def esiste(self, percorso):
         return str(percorso) in self._esistenti
 
+    def snapshot_contiene(self, cartella, nome):
+        # Come la cache vera: cartella/snapshots/<rev>/<nome>, con un solo livello per la revisione.
+        return any(Path(p).parent.parent == cartella / "snapshots" and Path(p).name == nome for p in self._esistenti)
+
     def leggi(self, percorso):
         return self._file.get(str(percorso))
 
@@ -128,6 +132,34 @@ def test_chiavi_solo_presenza_e_mai_valori(tmp_path: Path) -> None:
                tmp_path)
     assert r["chiavi"] == {"ANTHROPIC_API_KEY": True, "OPENROUTER_API_KEY": False}
     assert segreta not in str(r)
+
+
+def test_whisper_e_mkcert_sono_strumenti_rilevati() -> None:
+    r = rileva(Macchina(comandi=M1_16, trovati=("whisper-server",)), RADICE)
+    assert r["strumenti"]["whisper-server"] is True
+    assert r["strumenti"]["mkcert"] is False
+
+
+def test_repo_file_e_in_cache_solo_con_quel_file() -> None:
+    from rileva import MODELLO_ASCOLTO, modello_in_cache
+
+    snapshot = "/cache/hf/models--ggerganov--whisper.cpp/snapshots/abc123"
+    file_giusto = Macchina(esistenti=[f"{snapshot}/ggml-large-v3-turbo-q5_0.bin"])
+    assert modello_in_cache(file_giusto, MODELLO_ASCOLTO) is True
+    # Il repo c'è (refs/main) ma non il file: per un «repo:file» non basta.
+    solo_repo = Macchina(esistenti=["/cache/hf/models--ggerganov--whisper.cpp/refs/main"])
+    assert modello_in_cache(solo_repo, MODELLO_ASCOLTO) is False
+    # Un altro file dello stesso repo non conta.
+    altro_file = Macchina(esistenti=[f"{snapshot}/ggml-base.bin"])
+    assert modello_in_cache(altro_file, MODELLO_ASCOLTO) is False
+
+
+def test_repo_senza_file_resta_com_era() -> None:
+    from rileva import modello_in_cache
+
+    snapshot_solo = Macchina(esistenti=["/cache/hf/models--mlx-community--Qwen3-8B-4bit/snapshots"])
+    assert modello_in_cache(snapshot_solo, "mlx-community/Qwen3-8B-4bit") is True
+    assert modello_in_cache(Macchina(), "mlx-community/Qwen3-8B-4bit") is False
 
 
 def test_modelli_in_cache_e_ambienti(tmp_path: Path) -> None:

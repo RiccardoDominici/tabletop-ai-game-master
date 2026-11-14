@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from profilo import AMBIENTE_PER_COMPONENTE, DIMENSIONI_APPROSSIMATE_GB, DISCO_IMMAGINI_GB, MODELLO_IMMAGINI
+from rileva import MODELLO_ASCOLTO, separa_modello
 
 log = logging.getLogger("configura.scarica")
 
@@ -30,6 +31,8 @@ PYTHON_PER_COMPONENTE = {
     "lettore": "services/lettore/.venv/bin/python",
     "voce": "services/voce/.venv/bin/python",
     "immagini": "strumenti/immagini/.venv/bin/python",
+    # Speech-to-text uses the voice environment, which has huggingface_hub.
+    "ascolto": "services/voce/.venv/bin/python",
 }
 # Quale componente usa ciascun modello (dal profilo).
 COMPONENTE_PER_MODELLO = {
@@ -37,19 +40,34 @@ COMPONENTE_PER_MODELLO = {
     "mlx-community/Qwen3-4B-Instruct-2507-4bit": "lettore",
     "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-8bit": "voce",
     "mflux-community/flux2-klein-4b-mflux-q4": "immagini",
+    MODELLO_ASCOLTO: "ascolto",
 }
 
 
-def dimensione_hf(repo: str, timeout: float = 8.0) -> float | None:
-    """Dimensione totale del repo in GB dall'API pubblica di Hugging Face. None se la rete non risponde."""
+def dimensione_hf(modello: str, timeout: float = 8.0) -> float | None:
+    """Dimensione totale del repo in GB dall'API pubblica di Hugging Face. None se la rete non risponde.
+    For «repo:file», the size of that file only."""
+    repo, file = separa_modello(modello)
     try:
         with urllib.request.urlopen(API_HF.format(repo=repo), timeout=timeout) as risposta:
             dati = json.loads(risposta.read().decode("utf-8"))
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError) as errore:
-        log.warning("dimensione di %s non letta dalla rete (%s): uso la stima", repo, type(errore).__name__)
+        log.warning("dimensione di %s non letta dalla rete (%s): uso la stima", modello, type(errore).__name__)
         return None
-    byte = sum(int(f.get("size") or 0) for f in dati.get("siblings", []))
+    fratelli = dati.get("siblings", [])
+    if file is not None:
+        fratelli = [f for f in fratelli if f.get("rfilename") == file]
+    byte = sum(int(f.get("size") or 0) for f in fratelli)
     return round(byte / 1000**3, 2) if byte else None
+
+
+def codice_download(modello: str) -> str:
+    """The Python code that downloads the model with its component's environment.
+    «repo:file» downloads that file only (hf_hub_download); «repo» the whole repo (snapshot_download)."""
+    repo, file = separa_modello(modello)
+    if file is not None:
+        return f"from huggingface_hub import hf_hub_download; hf_hub_download({repo!r}, {file!r})"
+    return f"from huggingface_hub import snapshot_download; snapshot_download({repo!r})"
 
 
 def piano(
@@ -129,7 +147,6 @@ def esegui(p: dict[str, Any], radice: Path, esecutore: Callable[[list[str]], int
         if not v["ambiente_pronto"]:
             esiti.append(f"skipped {v['repo']}: environment missing")
             continue
-        codice = f"from huggingface_hub import snapshot_download; snapshot_download({v['repo']!r})"
-        rc = lancia_([v["python"], "-c", codice])
+        rc = lancia_([v["python"], "-c", codice_download(v["repo"])])
         esiti.append(f"{'downloaded' if rc == 0 else 'FAILED'} {v['repo']}")
     return esiti
