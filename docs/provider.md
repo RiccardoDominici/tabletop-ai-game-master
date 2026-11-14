@@ -107,7 +107,9 @@ every local server URL has a watchdog, started by the first request of a local m
 ## At startup
 
 - The server prints one line per component, in the log, with the prefix `PROVIDER:`.
-  Each line says: component, provider, mode, model and why.
+  Each line says: component, provider, mode, model and why. The «why» says where the choice comes from: the
+  configuration file it was read from, or, when an environment variable forced the provider, the name of that
+  variable (for example `variabile d'ambiente TAGM_VOCE`). The value of the variable is never written to the log.
 - `scripts/configura.sh` without arguments shows the choices and what is on this computer: keys found (never the
   values), RAM, Python environments. It writes nothing.
 - To change: `--api`, `--tutto-locale` (all local), or one component at a time (`--lettore`, `--arbitri`,
