@@ -53,6 +53,11 @@ export interface ConfigProvider {
   componenti: Record<NomeComponente, VoceComponente>;
   /** File letti, per il log. */
   file: string[];
+  /**
+   * Da quale variabile d'ambiente viene il provider forzato di ogni componente (solo i forzati). Serve
+   * al log «PROVIDER:»: la scelta è di una variabile, non del file. Il valore della variabile non si registra.
+   */
+  origini: Partial<Record<NomeComponente, string>>;
 }
 
 export interface Scelta {
@@ -84,19 +89,30 @@ function unisci(a: Record<string, unknown>, b: Record<string, unknown>): Record<
   return out;
 }
 
-/** I nomi vecchi delle variabili, con il significato di prima. */
-function daVariabiliVecchie(env: NodeJS.ProcessEnv): Partial<Record<NomeComponente, NomeProviderConfig>> {
-  const out: Partial<Record<NomeComponente, NomeProviderConfig>> = {};
+/** Un provider forzato da una variabile: il componente, il provider e il nome della variabile (per il log). */
+interface ForzaDaVariabile {
+  componente: NomeComponente;
+  provider: NomeProviderConfig;
+  variabile: string;
+}
+
+/** I nomi vecchi delle variabili, con il significato di prima (in ordine: l'ultimo vince). */
+function daVariabiliVecchie(env: NodeJS.ProcessEnv): ForzaDaVariabile[] {
+  const out: ForzaDaVariabile[] = [];
+  const forza = (variabile: string, coppie: Array<[NomeComponente, NomeProviderConfig]>): void => {
+    for (const [componente, provider] of coppie) out.push({ componente, provider, variabile });
+  };
   const llm = env['TAGM_LLM']?.trim();
-  if (llm === 'finto') Object.assign(out, { lettore: 'finto', arbitro_azioni: 'regole', arbitro_prove: 'regole', riassunto: 'regole', regole: 'regole' });
-  if (llm === 'haiku') Object.assign(out, { lettore: 'anthropic' });
+  if (llm === 'finto') forza('TAGM_LLM', [['lettore', 'finto'], ['arbitro_azioni', 'regole'], ['arbitro_prove', 'regole'], ['riassunto', 'regole'], ['regole', 'regole']]);
+  if (llm === 'haiku') forza('TAGM_LLM', [['lettore', 'anthropic']]);
   const arbitro = env['TAGM_ARBITRO']?.trim();
-  if (arbitro === 'regole') Object.assign(out, { arbitro_azioni: 'regole', arbitro_prove: 'regole', regole: 'regole' });
-  if (arbitro === 'haiku') Object.assign(out, { arbitro_azioni: 'anthropic', arbitro_prove: 'anthropic', regole: 'anthropic' });
-  const voce = (env['TAGM_VOCE'] ?? env['TAGM_TTS'])?.trim();
-  if (voce === 'fish') out.voce = 'openrouter';
-  else if (voce === 'qwen') out.voce = 'locale';
-  else if (voce === 'finta' || voce === 'mock') out.voce = 'finto';
+  if (arbitro === 'regole') forza('TAGM_ARBITRO', [['arbitro_azioni', 'regole'], ['arbitro_prove', 'regole'], ['regole', 'regole']]);
+  if (arbitro === 'haiku') forza('TAGM_ARBITRO', [['arbitro_azioni', 'anthropic'], ['arbitro_prove', 'anthropic'], ['regole', 'anthropic']]);
+  const variabileVoce = env['TAGM_VOCE'] !== undefined ? 'TAGM_VOCE' : 'TAGM_TTS';
+  const voce = env[variabileVoce]?.trim();
+  if (voce === 'fish') forza(variabileVoce, [['voce', 'openrouter']]);
+  else if (voce === 'qwen') forza(variabileVoce, [['voce', 'locale']]);
+  else if (voce === 'finta' || voce === 'mock') forza(variabileVoce, [['voce', 'finto']]);
   return out;
 }
 
@@ -114,11 +130,20 @@ export function caricaConfigProvider(env: NodeJS.ProcessEnv = process.env, carte
     }
   }
   const componenti = (d['componenti'] ?? {}) as Record<string, VoceComponente>;
-  // Variabili: prima i nomi vecchi, poi TAGM_<COMPONENTE> (vince).
-  const sovrascritti: Partial<Record<NomeComponente, NomeProviderConfig>> = daVariabiliVecchie(env);
+  // Variabili: prima i nomi vecchi, poi TAGM_<COMPONENTE> (vince). Per ogni componente si tiene anche il nome della variabile.
+  const sovrascritti: Partial<Record<NomeComponente, NomeProviderConfig>> = {};
+  const origini: Partial<Record<NomeComponente, string>> = {};
+  for (const f of daVariabiliVecchie(env)) {
+    sovrascritti[f.componente] = f.provider;
+    origini[f.componente] = f.variabile;
+  }
   for (const c of COMPONENTI) {
-    const v = env[`TAGM_${c.toUpperCase()}`]?.trim() as NomeProviderConfig | undefined;
-    if (v && (PROVIDER as readonly string[]).includes(v)) sovrascritti[c] = v;
+    const nome = `TAGM_${c.toUpperCase()}`;
+    const v = env[nome]?.trim() as NomeProviderConfig | undefined;
+    if (v && (PROVIDER as readonly string[]).includes(v)) {
+      sovrascritti[c] = v;
+      origini[c] = nome;
+    }
   }
   const finale = {} as Record<NomeComponente, VoceComponente>;
   for (const c of COMPONENTI) {
@@ -129,7 +154,7 @@ export function caricaConfigProvider(env: NodeJS.ProcessEnv = process.env, carte
   }
   const backend = (d['backend'] ?? {}) as ConfigProvider['backend'];
   const lingua = comeLingua(env['TAGM_LINGUA']?.trim() || d['lingua'], 'configurazione (lingua)') ?? LINGUA_PREDEFINITA;
-  return { lingua, backend: { ...backend, locale: backend.locale ?? {}, openrouter: backend.openrouter ?? {}, anthropic: backend.anthropic ?? {} }, componenti: finale, file: letti };
+  return { lingua, backend: { ...backend, locale: backend.locale ?? {}, openrouter: backend.openrouter ?? {}, anthropic: backend.anthropic ?? {} }, componenti: finale, file: letti, origini };
 }
 
 export interface FontiChiavi {
@@ -170,7 +195,7 @@ export function risolvi(cfg: ConfigProvider, chiavi: FontiChiavi = {}): Record<N
         provider: p,
         modello,
         url,
-        perche: saltati.length ? `riserva (${saltati.join('; ')})` : p === v.provider ? `configurato (${cfg.file.join(' + ') || 'nessun file'})` : 'riserva',
+        perche: saltati.length ? `riserva (${saltati.join('; ')})` : p === v.provider ? provenienza(cfg, c) : 'riserva',
       };
       break;
     }
@@ -183,6 +208,15 @@ export function risolvi(cfg: ConfigProvider, chiavi: FontiChiavi = {}): Record<N
     out[c] = scelta;
   }
   return out;
+}
+
+/**
+ * Da dove viene il provider scelto: la variabile d'ambiente che lo forza (solo il nome, mai il valore),
+ * oppure i file di configurazione letti.
+ */
+function provenienza(cfg: ConfigProvider, c: NomeComponente): string {
+  const variabile = cfg.origini?.[c];
+  return variabile ? `variabile d'ambiente ${variabile}` : `configurato (${cfg.file.join(' + ') || 'nessun file'})`;
 }
 
 function nonDisponibile(cfg: ConfigProvider, c: NomeComponente, v: VoceComponente, p: NomeProviderConfig, chiavi: FontiChiavi): string | null {

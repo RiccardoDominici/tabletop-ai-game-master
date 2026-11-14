@@ -11,7 +11,7 @@ import { ModelloAnthropic } from '../src/llm/anthropic';
 import { annuncioBreve, leggiTurno, NarratoreMinimo } from '../src/llm/minimo';
 import { ModelloOpenAI } from '../src/llm/openai';
 import { chiediStrutturato, erroriSchema, estraiJson } from '../src/llm/strutturato';
-import { caricaConfigProvider, risolvi } from '../src/provider/config';
+import { caricaConfigProvider, descriviScelte, risolvi } from '../src/provider/config';
 
 /** Server finto compatibile OpenAI: risponde con la prossima risposta della coda (testo o JSON). */
 let server: http.Server;
@@ -139,6 +139,32 @@ describe('scelta dei provider', () => {
     const conChiavi = risolvi(cfg, { ambiente: { ANTHROPIC_API_KEY: 'sk-ant-finta-0000000000000000', OPENROUTER_API_KEY: 'sk-or-finta-0000000000000000' } });
     expect(conChiavi.lettore).toMatchObject({ provider: 'anthropic', modo: 'completo', modello: 'claude-haiku-5-5' });
     expect(conChiavi.voce.provider).toBe('openrouter');
+  });
+});
+
+describe('provenienza della scelta nella riga PROVIDER', () => {
+  const CHIAVE = 'sk-or-finta-segreta-0000000000000000';
+  it('una variabile d’ambiente che forza il provider lo dice per nome, senza mostrare il valore', () => {
+    const scelte = risolvi(caricaConfigProvider({ TAGM_VOCE: 'fish', OPENROUTER_API_KEY: CHIAVE }), { ambiente: { OPENROUTER_API_KEY: CHIAVE } });
+    expect(scelte.voce.perche).toBe("variabile d'ambiente TAGM_VOCE");
+    expect(scelte.voce.perche).not.toMatch(/configurato/);
+    const righe = descriviScelte(scelte).join('\n');
+    expect(righe).toMatch(/voce\s+→ openrouter .*variabile d'ambiente TAGM_VOCE/);
+    expect(righe).not.toContain(CHIAVE);
+  });
+
+  it('la variabile vecchia (TAGM_TTS) si nomina come è stata letta; senza variabili dice il file', () => {
+    expect(risolvi(caricaConfigProvider({ TAGM_TTS: 'mock' })).voce.perche).toBe("variabile d'ambiente TAGM_TTS");
+    const base = risolvi(caricaConfigProvider({}));
+    expect(base.voce.perche).toMatch(/^configurato \(.*predefinita\.yaml/);
+    expect(caricaConfigProvider({ TAGM_VOCE: 'qwen' }).origini).toEqual({ voce: 'TAGM_VOCE' });
+  });
+
+  it('il provider forzato dalla variabile vince sul file, e per l’altro componente resta il file', () => {
+    const cfg = caricaConfigProvider({ TAGM_LETTORE: 'anthropic' });
+    const s = risolvi(cfg, { ambiente: { ANTHROPIC_API_KEY: 'sk-ant-finta-0000000000000000' } });
+    expect(s.lettore.perche).toBe("variabile d'ambiente TAGM_LETTORE");
+    expect(s.arbitro_prove.perche).toMatch(/^configurato/);
   });
 });
 
