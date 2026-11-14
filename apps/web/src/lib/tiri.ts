@@ -28,7 +28,7 @@ export function testoContro(tiro: Pick<TiroMostrato, 'contro'>): string {
 }
 
 /** Sigla del tipo di bersaglio nella lingua dell'interfaccia: CD → DC, CA → AC; il resto com'è. */
-function siglaContro(tipo: string): string {
+export function siglaContro(tipo: string): string {
   if (tipo === 'CD') return t('comune.tiri.cd');
   if (tipo === 'CA') return t('comune.tiri.ca');
   if (tipo === 'soglia') return t('comune.tiri.soglia');

@@ -8,7 +8,7 @@ import type { TiroMostrato, Vantaggio } from '@tabletop-ai-gm/shared';
 import { chiave, conSegno } from '../campagna/regole-srd';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { Logger } from '../logger';
-import { tiraCol, type EsitoTiroGenerico } from '../regole/risoluzione';
+import { ID_DIFESA, tiraCol, type EsitoTiroGenerico } from '../regole/risoluzione';
 import { valoreCaratteristica } from '../regole/schede';
 import type { SchedaGenerica, SistemaRegole } from '../regole/tipi';
 import type { FonteDadi } from './dadi';
@@ -319,8 +319,10 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const fonti = [...fontiDate, ...fontiAttacco(o.condizioni, chi, bersaglio)];
     const v = combinaVantaggi(fonti.map((f) => f.v));
     // d20 contro la difesa del bersaglio; gli altri tipi con la loro risoluzione (fasce, soglia).
-    const sist = s.risoluzione.tipo === 'd20_cd' && sb.difesa !== null ? { ...s, difficolta: [{ id: '_difesa', nome: testo('prove.cd.difesa_di', { nome: o.nome(bersaglio) }), valore: sb.difesa, divisore: null, modificatore: null }] } : s;
-    const e = tiraCol(sist, o.dadi, cosa.valore, sist === s ? null : '_difesa', v, `${a.nome}, ${cosa.etichetta}`, true);
+    const sist = s.risoluzione.tipo === 'd20_cd' && sb.difesa !== null ? { ...s, difficolta: [{ id: ID_DIFESA, nome: testo('prove.cd.difesa_di', { nome: o.nome(bersaglio) }), valore: sb.difesa, divisore: null, modificatore: null }] } : s;
+    // Etichetta una volta sola: senza una mossa né un’abilità la «cosa» è l’arma stessa.
+    const etichetta = cosa.etichetta === a.nome ? a.nome : `${a.nome}, ${cosa.etichetta}`;
+    const e = tiraCol(sist, o.dadi, cosa.valore, sist === s ? null : ID_DIFESA, v, etichetta, true);
     const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, privata);
     if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e };
     const danno = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'));

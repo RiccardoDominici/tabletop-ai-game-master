@@ -30,6 +30,7 @@ import {
   giaVisibile,
   indiceDadoScartato,
   risoluzioneDi,
+  siglaContro,
   testoBersaglioCarta,
   testoAutomatico,
   testoContro,
@@ -285,7 +286,7 @@ function CartaIntera(p: PropsInterne) {
                 <span className="font-semibold text-candela-2">{testoBersaglioCarta(tiro)}</span>
               ) : (
                 <>
-                  <span className={clsx('font-semibold text-cenere', m.controTipo)}>{avversario ? avversario.nome : tiro.contro.tipo}</span>
+                  <span className={clsx('font-semibold text-cenere', m.controTipo)}>{avversario ? avversario.nome : siglaContro(tiro.contro.tipo)}</span>
                   {avversario ? avversario.totale : tiro.contro.valore}
                 </>
               )}

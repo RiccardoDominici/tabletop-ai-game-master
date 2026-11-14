@@ -6,8 +6,9 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
+import { caricaSchede, type SchedaNumerica } from '../src/campagna/schede';
 import { loggerMuto } from '../src/logger';
 import { DadiACopione } from '../src/prove/dadi';
 import { MotoreProve, dadiAttiviRegole, type AzionePerProve } from '../src/prove/motore';
@@ -15,13 +16,14 @@ import { passiPerAzioni, schemaRegole } from '../src/prove/arbitro-regole';
 import type { ArbitroProve, DecisioneRegole, IngressoArbitroProve } from '../src/prove/tipi';
 import { caricaRegole, leggiSistema } from '../src/regole/caricatore';
 import { cercaEstratti } from '../src/regole/estratti';
-import { intervalloFascia, tiraCol } from '../src/regole/risoluzione';
+import { ID_DIFESA, intervalloFascia, tiraCol } from '../src/regole/risoluzione';
 import { caricaSchedeGeneriche } from '../src/regole/schede';
 import type { RegoleCampagna } from '../src/regole/tipi';
 import { orologioDiSistema } from '../src/turni/orologio';
 import { caricaRepertorio } from '../src/repertorio/caricatore';
 import { rispondeA } from '../src/repertorio/stato';
 import { regolaEsiti } from '../src/prove/testi';
+import { impostaLingua } from '../src/lingua';
 
 const FIX = path.join(import.meta.dirname, 'fixtures', 'campagne');
 
@@ -103,6 +105,37 @@ describe('tiri dei set non SRD', () => {
   });
 });
 
+describe('attacco d20 contro la difesa del bersaglio', () => {
+  const d20 = caricaRegole(path.join(FIX, 'prove')).sistema;
+  // La CA del bersaglio fa da difficoltà: un attacco la batte come una CD, ma si chiama CA.
+  const difesa = { ...d20, difficolta: [{ id: ID_DIFESA, nome: 'difesa di Goblin', valore: 14, divisore: null, modificatore: null }] };
+  afterEach(() => impostaLingua('it'));
+
+  it('la carta dice CA (non CD) e la regola la nomina una volta sola', () => {
+    expect(d20.risoluzione.tipo).toBe('d20_cd');
+    const att = tiraCol(difesa, new DadiACopione([12]), 3, ID_DIFESA, null, 'Spada lunga', true);
+    expect(att).toMatchObject({ contro: { tipo: 'CA', valore: 14, descrizione: 'difesa di Goblin' }, totale: 15, riuscita: true });
+    expect(att.regola).toBe('Spada lunga: d20+3 contro CA 14 (difesa di goblin)');
+    // Una prova (non un attacco) contro la stessa difficoltà resta una CD.
+    expect(tiraCol(difesa, new DadiACopione([12]), 3, ID_DIFESA, null, 'Spada lunga', false)).toMatchObject({ contro: { tipo: 'CD' } });
+  });
+
+  it('in inglese la sigla è AC, dal pacchetto della lingua', () => {
+    impostaLingua('en');
+    const att = tiraCol(difesa, new DadiACopione([12]), 3, ID_DIFESA, null, 'Longsword', true);
+    expect(att.regola).toBe('Longsword: d20+3 against AC 14 (difesa di goblin)');
+  });
+
+  it('l’attacco del Motore: CA nella carta, arma e abilità una volta sola nella regola', async () => {
+    // Le schede numeriche (le armi di chi attacca) vanno passate al Motore come in campagna.
+    const { m } = motore('bx', [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], new ArbitroFinto({
+      'Colpisco Ruggero con la spada': { tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'spada' },
+    }), caricaSchede(caricaCampagna(path.join(FIX, 'bx'))));
+    const r = await m.risolvi(1, [az('a1', 'pg_corrado', 'Colpisco Ruggero con la spada')]);
+    expect(r.tiri[0]).toMatchObject({ contro: { tipo: 'CA', valore: 13 }, regola: 'Spada, Forza: d20+1 contro CA 13 (difesa di ruggero lo sgherro)' });
+  });
+});
+
 describe('passi del manuale', () => {
   const r = caricaRegole(path.join(FIX, 'pbta'));
   it('per parole chiave, pochi e deterministici', () => {
@@ -128,7 +161,7 @@ class ArbitroFinto implements ArbitroProve<DecisioneRegole> {
     return Object.fromEntries(i.azioni.map((a) => [a.id, { ...vuota(a.id), ...(this.r[a.testo] ?? {}) }]));
   }
 }
-function motore(cartella: string, dadi: number[], arbitro: ArbitroProve<DecisioneRegole>): { m: MotoreProve; regole: RegoleCampagna } {
+function motore(cartella: string, dadi: number[], arbitro: ArbitroProve<DecisioneRegole>, schedeNumeriche: ReadonlyMap<string, SchedaNumerica> = new Map()): { m: MotoreProve; regole: RegoleCampagna } {
   const c = caricaCampagna(path.join(FIX, cartella));
   const regole = caricaRegole(path.join(FIX, cartella));
   const schede = caricaSchedeGeneriche(regole.sistema, c);
@@ -136,7 +169,7 @@ function motore(cartella: string, dadi: number[], arbitro: ArbitroProve<Decision
   expect(dadiAttiviRegole(c, schede, regole.sistema.nome).attivo).toBe(true);
   const nome = (id: string): string => c.pg.find((p) => p.id === id)?.nome ?? c.png.find((p) => p.id === id)?.nome ?? id;
   const m = new MotoreProve({
-    schede: new Map(),
+    schede: schedeNumeriche,
     regole: { regole, schede },
     arbitro,
     log: loggerMuto(),

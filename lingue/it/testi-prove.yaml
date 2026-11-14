@@ -267,9 +267,13 @@ regole:
     a_zero: "Fuori combattimento."
   fascia:
     sempre: "sempre"
+  # Sigla del numero da battere nella regola d20: CD per le prove, CA (classe armatura) per gli attacchi.
+  sigla:
+    cd: "CD"
+    ca: "CA"
   # La regola applicata, in parole, sulla carta e per il narratore.
   regola:
-    d20: "{etichetta}: d20{mod} contro CD {cd} ({difficolta})"
+    d20: "{etichetta}: d20{mod} contro {sigla} {cd} ({difficolta})"
     dued6: "{n}d6{mod} ({etichetta}){difficolta}: {intervallo}, {fascia}"
     dued6_difficolta: ", {difficolta} {mod}"
     soglia: "{etichetta} {soglia}: d{facce} {difficolta}serve {serve} o meno"

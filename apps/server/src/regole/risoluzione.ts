@@ -14,13 +14,19 @@ import { testo } from '../lingua';
 import type { FonteDadi } from '../prove/dadi';
 import type { Difficolta, Fascia, SistemaRegole } from './tipi';
 
+/**
+ * Id della difficoltà «fittizia» con cui un attacco si risolve contro la difesa del bersaglio (la CA
+ * della scheda): non è una difficoltà del set, la costruisce il Motore delle prove (risolutore-regole.ts).
+ */
+export const ID_DIFESA = '_difesa';
+
 export interface EsitoTiroGenerico {
   dadi: number[];
   facce: number;
   dado: number;
   modificatore: number;
   totale: number;
-  contro: { tipo: 'CD' | 'fasce' | 'soglia'; valore: number; descrizione: string | null };
+  contro: { tipo: 'CD' | 'CA' | 'fasce' | 'soglia'; valore: number; descrizione: string | null };
   riuscita: boolean;
   grado: { id: 'successo' | 'parziale' | 'fallimento' | 'critico' | 'disastro'; nome: string } | null;
   vantaggio: Vantaggio | null;
@@ -39,6 +45,9 @@ export function intervalloFascia(fasce: readonly Fascia[], i: number): string {
 
 function d20Cd(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta, v: Vantaggio | null, etichetta: string, attacco: boolean): EsitoTiroGenerico {
   const cd = diff.valore ?? 15;
+  // Un attacco contro la difesa del bersaglio è contro la sua CA, non contro una CD: il numero da battere
+  // ha la sigla giusta sulla carta e nella regola. Un attacco contro una difficoltà del set resta CD.
+  const contro = attacco && diff.id === ID_DIFESA ? 'CA' : 'CD';
   let tiri = [dadi.tira(20)];
   let bonus = 0;
   if (v && s.vantaggio.tipo === 'due_dadi') tiri = [tiri[0]!, dadi.tira(20)];
@@ -63,11 +72,11 @@ function d20Cd(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta,
     dado,
     modificatore: mod + bonus,
     totale,
-    contro: { tipo: 'CD', valore: cd, descrizione: diff.nome },
+    contro: { tipo: contro, valore: cd, descrizione: diff.nome },
     riuscita,
     grado,
     vantaggio: v && s.vantaggio.tipo !== 'nessuno' ? v : null,
-    regola: testo('regole.regola.d20', { etichetta, mod: conSegno(mod), cd, difficolta: diff.nome.toLowerCase() }),
+    regola: testo('regole.regola.d20', { etichetta, mod: conSegno(mod), sigla: testo(`regole.sigla.${contro.toLowerCase()}`), cd, difficolta: diff.nome.toLowerCase() }),
   };
 }
 

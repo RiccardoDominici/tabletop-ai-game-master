@@ -250,8 +250,12 @@ regole:
     a_zero: "Out of the fight."
   fascia:
     sempre: "always"
+  # Abbreviation of the target number in the d20 rule: DC for checks, AC (armour class) for attacks.
+  sigla:
+    cd: "DC"
+    ca: "AC"
   regola:
-    d20: "{etichetta}: d20{mod} against DC {cd} ({difficolta})"
+    d20: "{etichetta}: d20{mod} against {sigla} {cd} ({difficolta})"
     dued6: "{n}d6{mod} ({etichetta}){difficolta}: {intervallo}, {fascia}"
     dued6_difficolta: ", {difficolta} {mod}"
     soglia: "{etichetta} {soglia}: d{facce} {difficolta}needs {serve} or less"
