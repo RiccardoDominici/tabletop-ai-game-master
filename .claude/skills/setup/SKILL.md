@@ -20,18 +20,22 @@ Run every command from the repository root. Use `python3 -I` for the Python tool
 
 **Disk first.** Before installing anything, check the free space (`df -h .`) and tell the user how much each choice
 needs on a new computer:
-- Apple silicon, 16 GB profile (local reader, voice and images): about **9 GB** (8.9 GB; the image model adds 4.6 GB).
-- Apple silicon under 16 GB (smaller local reader): about **8 GB** (7.9 GB).
+- Apple silicon, 16 GB profile, images on (the default; local reader, voice and images): about **13.5 GB**
+  (models 11.2 GB, Python environments 2.0 GB, npm packages 0.2 GB).
+- Apple silicon, 16 GB profile, images off: about **7.7 GB** (models 6.6 GB, environments 0.8 GB, npm 0.2 GB).
+- Apple silicon under 16 GB (smaller local reader, no images): about **6.6 GB** (an estimate).
 - Anything else, text-only with an API key: about **0.2 GB**.
 If the free space is below the chosen profile's figure, offer the lighter choice before going on.
 
-- Node 22 or newer is required (`node -v`). If missing, tell the user to install Node 22+ and stop.
+- Node 22 or newer is required (`node -v`; tested with Node 25). If missing, tell the user to install Node 22+ and stop.
 - `npm install`
 - Python 3 is required (`python3 -V`). The campaign validator uses it.
 - Local models need the Python environments. Only on Apple silicon (checked in step 3), create them:
   - reader: `uv venv --python 3.12 services/lettore/.venv && uv pip install --python services/lettore/.venv/bin/python mlx-lm`
   - voice: `uv venv --python 3.12 services/voce/.venv && uv pip install --python services/voce/.venv/bin/python -r services/voce/requirements.lock`
-  - images: `uv venv --python 3.12 strumenti/immagini/.venv && uv pip install --python strumenti/immagini/.venv/bin/python -r strumenti/immagini/requirements.txt`
+  - images: only if the images stay on after step 3 (the default on a 16 GB Mac). Then run:
+    `uv venv --python 3.12 strumenti/immagini/.venv && uv pip install --python strumenti/immagini/.venv/bin/python -r strumenti/immagini/requirements.txt`.
+    If step 3 turns the images off, skip this environment.
   - If `uv` is missing, install it first (`curl -LsSf https://astral.sh/uv/install.sh | sh`).
 - Skip any environment whose step fails and say so; the profile will fall back.
 
@@ -41,6 +45,10 @@ If the free space is below the chosen profile's figure, offer the lighter choice
   It writes nothing. Read it and explain to the user, in plain words:
   - which profile this computer gets and why (chip, RAM, free disk);
   - the local choices: reader, voice, images (or why images are off);
+  - images are on by default on a 16 GB Mac, and their model is part of the download (4.6 GB). If the user does not
+    want them, they can be turned off: add `immagini: {provider: nessuno}` under `componenti:` in `config/locale.yaml`
+    (step 5), and do not create the images environment. Then the download skips the image model. Say that the
+    download plan still lists it;
   - "Cost: 0 USD with these local choices" for the default.
 - Do not show internal names or key values. Never print or copy a key.
 
@@ -73,9 +81,13 @@ Anthropic key now?" Ask that once, then continue.
 - `python3 -I strumenti/configura/configura.py --scarica` prints the sizes and the free disk, then asks.
 - Show the sizes to the user and get a yes. Then run `python3 -I strumenti/configura/configura.py --scarica --si`.
 - The "already on disk" lines only count the model cache named in the first line of the plan. On a new computer that
-  cache is empty, so the plan is the whole table: about 6.6 GB for the 16 GB Apple profile (reader 4.6 GB, voice 2 GB).
-  Say this to the user before they confirm.
-- If the plan prints `NOT READY` (a Python environment is missing), finish step 2 for that component first.
+  cache is empty, so the plan is the whole table. For the 16 GB Apple profile with images on: about 11.2 GB
+  (reader 4.6 GB, voice 2 GB, images 4.6 GB). With images off: about 6.6 GB (reader and voice only). Say this to the
+  user before they confirm.
+- The image model is skipped, not downloaded, when the images environment is missing; the reader and the voice still
+  download.
+- If the plan prints `NOT READY` for the reader or the voice (a Python environment is missing), finish step 2 for that
+  component first. A missing images environment is expected when the images are off.
 - If it says NOT ENOUGH DISK, nothing is downloaded: tell the user to free space, then run again.
 - Nothing is deleted by these commands.
 

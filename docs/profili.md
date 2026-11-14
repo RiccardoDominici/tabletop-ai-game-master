@@ -21,6 +21,9 @@ Notes on the rules:
 - **Under 8 GB** on Apple silicon the profile still picks the 4B reader, with a warning: it may be slow.
 - **Disk for images** uses the same minimum as the generator (`strumenti/immagini/motore.py`, `DISCO_MINIMO_GB`: 6 GB by default, set with `TAGM_DISCO_MINIMO_GB`).
   The check happens after the image model's download, so a model already in the cache still needs that much free space to generate.
+- **Sizes on a new computer** (model sizes from Hugging Face, environments from a fresh install on an M1 with 16 GB; see [installation](guide/installation.md#what-ends-up-where)):
+  `apple-16` with the images on, the default, is about 13.5 GB; with the images off it is about 7.7 GB. The images are
+  part of `apple-16` because the profile lists them: turning them off is a choice in `config/locale.yaml`.
 - **Not Apple silicon** has no local reader, voice or images yet. Those are the open items in
   [da-fare](da-fare.md). The reader is then the scripted narrator, which is for trials and not a real game.
   An Anthropic key makes the reader real (see below).

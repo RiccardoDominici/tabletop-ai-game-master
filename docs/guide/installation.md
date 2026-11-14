@@ -6,7 +6,10 @@ Read this first: the [README](../../README.md), to learn what Tabletop AI Game M
 With the default choices everything runs on this computer, for free and with no key: the narrator's reader,
 the voice and the dice (see [Local and API](local-and-api.md)). So a game needs steps 1 to 7: the code, the
 local reader, the local voice and their models. The keys (step 4) are optional on a Mac with an Apple chip.
-Steps 8 and 9 are optional too: they are needed only to generate the images and the audio of a new campaign.
+
+The images are on by default on a 16 GB Mac: their model (4.6 GB) is part of the download, and step 8 creates their
+environment. To play without images, turn them off (see step 7) and skip step 8. Step 9 (the audio) is optional: it is
+needed only to generate the audio of a new campaign.
 
 ## The short way: let Claude Code do it
 
@@ -19,7 +22,7 @@ https://github.com/RiccardoDominici/tabletop-ai-game-master
 Claude Code follows the setup skill (`.claude/skills/setup/SKILL.md`). In order, it:
 
 1. clones the repository (if you are not in it yet) and runs `npm install`;
-2. on a Mac with an Apple chip, creates the Python environments of the reader, the voice and the images;
+2. on a Mac with an Apple chip, creates the Python environments of the reader and the voice, and of the images if they stay on;
 3. detects your computer (chip, RAM, free disk, tools) with `python3 -I strumenti/configura/configura.py`;
 4. explains the proposed local profile and its cost in plain words (see [the profiles](local-and-api.md#the-profiles));
 5. asks only two things: whether you want to add optional API keys, and the play language;
@@ -34,7 +37,7 @@ The steps below are what the skill does, written out for anyone who prefers to d
 
 | What | Why | Required? |
 |---|---|---|
-| About 9 GB free on disk (Apple silicon, 16 GB) | the models (6.6 GB) and the Python environments (2.1 GB); the image model adds 4.6 GB | only for the local profile; text-only needs about 0.2 GB |
+| About 13.5 GB free on disk (Apple silicon, 16 GB, images on: the default) | the models (11.2 GB: reader 4.6, voice 2.0, images 4.6), the Python environments (2.0 GB) and the npm packages (0.2 GB). With the images off: about 7.7 GB (models 6.6 GB, environments 0.8 GB, npm 0.2 GB) | only for the local profile; text-only needs about 0.2 GB |
 | A Mac with an Apple chip | the local reader, the local voice and the images use MLX, which only runs on Apple chips | yes, for the default all-local game. On another computer a real narrator needs an Anthropic key or another local model server (see [Local and API](local-and-api.md#other-local-servers)) |
 | Node 22 or newer | server and web pages (`package.json`, `engines` field) | yes |
 | Python 3 with PyYAML | the campaign validator (`strumenti/valida_campagna.py`) | yes |
@@ -42,8 +45,8 @@ The steps below are what the skill does, written out for anyone who prefers to d
 | ffmpeg | checks and encodes the audio (`strumenti/audio/setup.sh`) | only for step 9 |
 | Claude Code | the Preparer, to create campaigns, and the scriptwriter during the game (see [Local and API](local-and-api.md#the-scriptwriter)) | optional |
 
-The development Mac runs Node 25 (it is named in `apps/server/src/sessione/archivio.ts`, for the SQLite archive).
-A full test with Node 22, the minimum stated in `package.json`: to be verified.
+Node 22 or newer is required (`package.json`). The setup was tested with Node 25 (the development Mac runs it, and a
+fresh install test on an M1 with 16 GB ran Node 25.6). Node 22 is not tested yet.
 
 ## Step 1. Download the repository
 
@@ -163,7 +166,7 @@ uv pip install --python services/lettore/.venv/bin/python mlx-lm
 - The second installs mlx-lm.
 
 If `uv` is missing, install it first (`curl -LsSf https://astral.sh/uv/install.sh | sh`, as the setup skill says).
-The environment weighed 449 MB on the development Mac (measured on 11 November 2026).
+The environment weighed 374 MB in a fresh install test on an M1 with 16 GB (449 MB on the development Mac, 11 November 2026).
 
 ## Step 6. The local voice (Qwen3-TTS)
 
@@ -184,7 +187,7 @@ The Qwen voice runs on the Mac, without network. It is the default voice. See [T
    Do not update `mlx` and `mlx-audio` on your own: the service uses internal details of mlx-audio 0.6.3
    (written in `services/voce/requirements.txt`).
 
-The environment weighed 474 MB.
+The environment weighed 471 MB in the fresh install test (474 MB on the development Mac).
 
 ## Step 7. The configuration and the models
 
@@ -212,9 +215,27 @@ and 6: if one is missing, its model is skipped. The models:
 | `mlx-community/Qwen3-8B-4bit` | the reader, Mac with 16 GB or more | about 4.6 GB |
 | `mlx-community/Qwen3-4B-Instruct-2507-4bit` | the reader, Mac under 16 GB | about 3.6 GB |
 | `mlx-community/Qwen3-TTS-12Hz-0.6B-Base-8bit` | the voice | about 2 GB |
-| `mflux-community/flux2-klein-4b-mflux-q4` | the images, only if the profile uses them (step 8) | about 4.6 GB |
+| `mflux-community/flux2-klein-4b-mflux-q4` | the images, on by default on a 16 GB Mac (step 8) | about 4.6 GB |
 
-(Approximate sizes from `strumenti/configura/profilo.py`; the tool reads the real ones from Hugging Face.)
+(The tool reads the real sizes from Hugging Face; the approximate ones are in `strumenti/configura/profilo.py`.)
+
+Totals on a new computer, Apple silicon with 16 GB: with the images on (the default) 11.2 GB of models; with the images
+off 6.6 GB. The download plan shows the image model in both cases, because it reads the profile, not the line below.
+
+### Images on or off
+
+- **On (the default on a 16 GB Mac).** Step 8 creates the images environment, and `--scarica` downloads the image model.
+- **Off.** Add this to `config/locale.yaml`, under the `componenti:` line (if the file has no `componenti:` line, add
+  it first):
+
+  ```yaml
+  componenti:
+    immagini: {provider: nessuno}
+  ```
+
+  The play then uses the atmosphere background instead of images. Do not create `strumenti/immagini/.venv`: the
+  download skips the image model when its environment is missing, and downloads the reader and the voice.
+  This setting is not yet read by the download plan (it still lists the 4.6 GB image model): a known gap.
 
 Then test the two services:
 
@@ -229,8 +250,9 @@ scripts/voce-arresto.sh
   add its name: `scripts/lettore-avvio.sh mlx-community/Qwen3-4B-Instruct-2507-4bit`. The log is in `logs/lettore.out`.
 - The second stops it.
 - The third starts the voice on `127.0.0.1:4611` and waits until it is ready. On the reference Mac it took
-  20–22 seconds (measured on 2 November 2026). It waits at most 300 seconds. The voice service never downloads
-  anything: the model must already be there. The log is in `logs/voce.out`.
+  20–22 seconds (measured on 2 November 2026). In a fresh install test on an M1 with 16 GB it took 48 seconds, on the
+  first start after a reboot. Expect 20 to 50 seconds; the first start is the slowest. It waits at most 300 seconds.
+  The voice service never downloads anything: the model must already be there. The log is in `logs/voce.out`.
 - The fourth stops it.
 
 You do not need to start them before a game: `scripts/partita.sh` does it.
@@ -254,11 +276,15 @@ It starts a test server on port 4790 with the scripted narrator and the fake voi
 stops. It never touches the real game. It prints `FUMO OK`, or `FUMO FALLITO` with where to look
 (`logs/porta-4790/`).
 
+Test instances (`TAGM_PORTA`, such as 4790 or 4850) share the local reader on port 4613 with the real game: a test
+run can stop the reader while a game is on. Do not run a test while a real game is on.
+
 Continue with [One evening of play](one-evening.md).
 
 ## Step 8 (optional). The images
 
-You only need this to generate the images of a new campaign (places, PNG portraits, situations).
+You need this to generate the images of a new campaign (places, PNG portraits, situations). On a 16 GB Mac the images
+are on by default, so this step is part of the setup; skip it only if you turned the images off (see step 7).
 
 1. Create the Python environment for images.
 
@@ -334,10 +360,10 @@ Weights measured on the development Mac on 9 November 2026, unless the row says 
 
 | What | Where | Size |
 |---|---|---|
-| Node dependencies | `node_modules/` | 235 MB |
-| Reader environment | `services/lettore/.venv/` | 449 MB (11 November 2026) |
-| Voice environment | `services/voce/.venv/` | 474 MB |
-| Image environment | `strumenti/immagini/.venv/` | 1.2 GB |
+| Node dependencies | `node_modules/` | 201 MB (fresh install test; 235 MB on the development Mac) |
+| Reader environment | `services/lettore/.venv/` | 374 MB (fresh install test; 449 MB on the development Mac, 11 November 2026) |
+| Voice environment | `services/voce/.venv/` | 471 MB (fresh install test; 474 MB on the development Mac) |
+| Image environment | `strumenti/immagini/.venv/` | 1.2 GB (fresh install test) |
 | Audio environment | `strumenti/audio/.venv/` | 26 MB |
 | Reader model | `~/.cache/huggingface/hub/` | about 4.6 GB, or 3.6 GB for the smaller one (`strumenti/configura/profilo.py`) |
 | Qwen voice model | `~/.cache/huggingface/hub/` | 1.99 GB (written in `research/local-tts.md`) |

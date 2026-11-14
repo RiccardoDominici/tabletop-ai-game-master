@@ -68,15 +68,18 @@ Before you read: nothing. This is the page to start from.
 
 ## What you need
 
-- **Disk.** On an Apple silicon Mac with 16 GB, the local setup needs about **9 GB free** (6.6 GB of models, 2.1 GB of
-  Python environments; the image model adds 4.6 GB). A smaller Mac needs about 8 GB. Without local models (text-only,
-  with an API key) it needs about 0.2 GB. The setup says this before it downloads anything.
+- **Disk.** On an Apple silicon Mac with 16 GB, the default setup keeps the images on and needs about **13.5 GB free**
+  on a new computer: 11.2 GB of models (reader 4.6 GB, voice 2 GB, images 4.6 GB), 2.0 GB of Python environments and
+  0.2 GB of npm packages. With the images off it needs about **7.7 GB** (6.6 GB of models, 0.8 GB of environments,
+  0.2 GB of npm packages); see [how to turn them off](docs/guide/installation.md#step-7-the-configuration-and-the-models).
+  A Mac under 16 GB, with the smaller reader and no images, needs about 6.6 GB (an estimate). Text-only with an API
+  key needs about 0.2 GB. The setup says the figure before it downloads anything.
 
 - **A Mac with Apple silicon** (M1 or newer) for the local models: the reader (mlx-lm), the voice (Qwen3-TTS) and
   the images (mflux) all use MLX. The project is sized for 16 GB of RAM; with less, the setup picks a smaller reader
   and turns the images off. On other computers the local reader, voice and images are not supported yet, and the
   rest has not been tested.
-- **Node 22 or newer** (the `engines` field in `package.json`).
+- **Node 22 or newer** (the `engines` field in `package.json`). Tested with Node 25.
 - **Python 3 with PyYAML**: the campaign validator uses it.
 - **uv**, to create the Python environments of the local models; **ffmpeg**, only to generate the audio of a new
   campaign. See the [installation guide](docs/guide/installation.md).
@@ -140,8 +143,8 @@ These steps are for an Apple silicon Mac. They start the test campaign `prova-f0
    uv pip install --python services/voce/.venv/bin/python -r services/voce/requirements.lock
    ```
 
-   The environment for generating images (`strumenti/immagini/.venv`) is needed only to create new campaigns:
-   see the [installation guide](docs/guide/installation.md).
+   The environment for the images (`strumenti/immagini/.venv`, 1.2 GB) belongs to the default setup, where the images
+   are on. If you turn the images off, skip it: see the [installation guide](docs/guide/installation.md).
 
 5. Write the choices of this computer and download the models.
 
@@ -155,7 +158,8 @@ These steps are for an Apple silicon Mac. They start the test campaign `prova-f0
      `--lingua` is the interface language, `it` or `en` (the example campaigns are in Italian).
      Add `--con-chiavi` to use the keys of step 3.
    - The second line shows the sizes and the free disk, then asks before downloading: about 4.6 GB for the reader
-     and 2 GB for the voice; on a 16 GB Mac also 4.6 GB for the image model, skipped while its environment is missing.
+     and 2 GB for the voice; on a 16 GB Mac also 4.6 GB for the image model (images are on by default). The image model
+     is skipped if its environment is missing.
    - The third line only checks: keys found, RAM, environments and who does what. It writes nothing.
    - Other choices (Haiku, drama-3, one component at a time): [Local and API](docs/guide/local-and-api.md).
 
