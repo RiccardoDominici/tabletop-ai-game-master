@@ -89,6 +89,11 @@ export class LessicoVivo {
   private readonly file: string;
   /** Names asked of the scriptwriter → how many times (without an answer it stops after MAX_RICHIESTE_PER_NOME). */
   private readonly chiesti = new Map<string, number>();
+  /**
+   * Names the phone dictation learned (dettato/servizio.ts: a player retyped or typed a name nobody knew): asked
+   * first in the next requests, also when they stood at the start of a sentence where `candidatiNomi` cannot see them.
+   */
+  private readonly segnalati = new Map<string, string>();
   /** The pronouncer to use everywhere: the most recent lexicon, with the respellings of the engine in use. */
   readonly pronuncia: Pronunciatore = (t) => this.per(this.o.motore?.() ?? null)(t);
 
@@ -120,9 +125,18 @@ export class LessicoVivo {
     return noti;
   }
 
-  /** The names to ask the scriptwriter in the next request (from the last lines heard at the table). */
+  /** Names learned by the dictation: the next requests ask the scriptwriter their pronunciation (see `daChiedere`). */
+  segnala(nomi: readonly string[]): void {
+    for (const n of nomi) if (n.trim() && n.length <= MAX_NOME && !MARKUP.test(n)) this.segnalati.set(n.trim().toLowerCase(), n.trim());
+    if (nomi.length) this.o.log.info({ nomi }, 'pronunciation: names learned by the dictation, to ask the scriptwriter');
+  }
+
+  /** The names to ask the scriptwriter in the next request (the dictation's first, then the last lines heard at the table). */
   daChiedere(righe: readonly string[]): string[] {
-    const nomi = candidatiNomi(righe, this.noti())
+    const noti = this.noti();
+    const visti = new Set<string>();
+    const nomi = [...[...this.segnalati.values()].filter((n) => !noti.has(n.toLowerCase())), ...candidatiNomi(righe, noti)]
+      .filter((n) => !visti.has(n.toLowerCase()) && (visti.add(n.toLowerCase()), true))
       .filter((n) => (this.chiesti.get(n.toLowerCase()) ?? 0) < MAX_RICHIESTE_PER_NOME)
       .slice(0, MAX_NOMI_PER_RICHIESTA);
     for (const n of nomi) this.chiesti.set(n.toLowerCase(), (this.chiesti.get(n.toLowerCase()) ?? 0) + 1);

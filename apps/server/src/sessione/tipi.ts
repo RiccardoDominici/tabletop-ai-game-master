@@ -12,6 +12,8 @@
  *                        telefoni dei loro PG: tornano a quei telefoni dopo una ripresa;
  * - `dispositivo`        {dispositivo, id_pg}: il telefono di un giocatore e il suo PG (id_pg null:
  *                        il master l'ha dimenticato dal pannello).
+ * - `dettato`            DettatoSalvato: the names the phone dictation learned in this session and the corrections
+ *                        the players undid (dettato/servizio.ts), the whole list at every change.
  *
  * La ricostruzione è un fold puro (ricostruisci): l'ultima fotografia, l'ultima versione di ogni
  * turno della trascrizione, l'ultimo stato del tavolo, l'ultimo PG di ogni dispositivo.
@@ -20,6 +22,7 @@ import type { EsitoPrivato, FaseScena, NotaRegia, RiassuntoSerata, VoceTrascrizi
 import type { UmoreScelto } from '../audio/scena';
 import type { Azione } from '../azioni/tipi';
 import type { StatoProveSalvato } from '../prove/stato';
+import type { DettatoSalvato } from '../dettato/servizio';
 
 export interface StatoOrologioSalvato {
   pieni: number;
@@ -110,6 +113,8 @@ export interface StatoRicostruito {
   dispositivi: Map<string, string>;
   /** Turno dell'ultima fotografia e ora dell'ultimo evento (per il pannello: «ripresa al turno N»). */
   ultimoEvento: string;
+  /** What the dictation learned (the last `dettato` event), if anything. */
+  dettato?: DettatoSalvato;
 }
 
 export interface EventoRegistro {
@@ -128,6 +133,7 @@ export function ricostruisci(sessione: string, eventi: readonly EventoRegistro[]
   const privati = new Map<number, EsitoPrivato[]>();
   let tavolo: StatoTavoloSalvato | null = null;
   const dispositivi = new Map<string, string>();
+  let dettato: DettatoSalvato | null = null;
   let ultimoEvento = '';
   for (const e of eventi) {
     if (e.ts) ultimoEvento = e.ts;
@@ -149,6 +155,9 @@ export function ricostruisci(sessione: string, eventi: readonly EventoRegistro[]
         if (typeof d['dispositivo'] === 'string' && typeof d['id_pg'] === 'string') dispositivi.set(d['dispositivo'], d['id_pg']);
         else if (typeof d['dispositivo'] === 'string' && d['id_pg'] === null) dispositivi.delete(d['dispositivo']);
         break;
+      case 'dettato':
+        if (Array.isArray(d['appresi']) && Array.isArray(d['rifiutate'])) dettato = d as unknown as DettatoSalvato;
+        break;
       default:
         break; // inizio e tipi futuri: niente da applicare
     }
@@ -164,5 +173,5 @@ export function ricostruisci(sessione: string, eventi: readonly EventoRegistro[]
     .filter(([t]) => t <= fotografia!.turno)
     .sort(([a], [b]) => a - b)
     .flatMap(([, v]) => v);
-  return { sessione, fotografia, trascrizione, ...(esitiPrivati.length ? { privati: esitiPrivati } : {}), tavolo, dispositivi, ultimoEvento };
+  return { sessione, fotografia, trascrizione, ...(esitiPrivati.length ? { privati: esitiPrivati } : {}), tavolo, dispositivi, ultimoEvento, ...(dettato ? { dettato } : {}) };
 }

@@ -66,6 +66,10 @@ import { codaAudioFish } from './sceneggiatore/audio';
 import { LessicoVivo } from './voce/lessico-vivo';
 import { riavviaConScript, SentinellaLocale, type EsitoRiavvio } from './provider/sentinella-locale';
 import type { Battuta } from './repertorio/tipi';
+import { creaCatena } from './dettato/catena';
+import { ServizioDettato } from './dettato/servizio';
+import type { Trascrittore } from './dettato/trascrittori';
+import { registraRotteDettato } from './trasporto/dettato';
 
 export interface ServerTagm {
   app: App;
@@ -97,6 +101,8 @@ export interface Sostituzioni {
   preGeneraAudio?: ((battute: readonly Battuta[]) => unknown) | null;
   /** Restart of the local model server (test: a fake one; null = never; absent = scripts/lettore-avvio.sh). */
   riavviaLocale?: (() => Promise<EsitoRiavvio>) | null;
+  /** The dictation's transcribers (test: fake ones; [] = off; absent = from the `ascolto` configuration). */
+  trascrittori?: Trascrittore[];
   /** Dadi delle prove (test: a copione). */
   dadi?: FonteDadi;
   orologio?: Orologio;
@@ -407,7 +413,26 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   regia.collega(uscite.regia);
 
   let info = await creaInfoServer(config.porta, config.ipLan);
-  collegaSocket(app.io, regia, () => info, log.child({ modulo: 'socket' }));
+  // Dictation from the phones (docs/ascolto.md): what a player says becomes the text of the action, campaign names
+  // spelled right; the names it learns go to the voice's lexicon too. Never restarts whisper-server under vitest.
+  const catenaAscolto =
+    sost.trascrittori !== undefined
+      ? { trascrittori: sost.trascrittori, sentinella: null }
+      : creaCatena(cfgProvider, scelte.ascolto, { fileChiaveOpenRouter: config.voce.fish.fileChiave, log: log.child({ modulo: 'dettato' }), ...(process.env['VITEST'] ? { riavvia: null } : {}) });
+  const dettato = new ServizioDettato({
+    lingua: pronta.lingua,
+    catena: catenaAscolto.trascrittori,
+    campagna,
+    ...(repertorio ? { repertorio } : {}),
+    stato: () => regia.stato(),
+    log: log.child({ modulo: 'dettato' }),
+    memoria,
+    ripresa: ripresa?.dettato ?? null,
+    ...(ripresa ? { trascrizioneRipresa: ripresa.trascrizione } : {}),
+    nomiAlLessico: (nomi) => lessico.segnala(nomi),
+  });
+  const { pgDelSocket } = collegaSocket(app.io, regia, () => info, log.child({ modulo: 'socket' }), dettato);
+  registraRotteDettato(app.http, { servizio: dettato, pgDelSocket, log: log.child({ modulo: 'dettato' }) });
   collegaRegole(app.io, regole, risponditore, log.child({ modulo: 'regole' }));
   // Pannello del master: stanza "master" col token (da configurazione, o nuovo a ogni avvio).
   const tokenMaster = config.tokenMaster ?? nuovoToken();
@@ -465,6 +490,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     async chiudi() {
       voce.ferma();
       fabbrica.chiudi();
+      catenaAscolto.sentinella?.ferma();
       // Lo spegnimento non è un evento di gioco: il registro resta all'ultimo stato giocato.
       memoria?.sospendi();
       regia.spegni();

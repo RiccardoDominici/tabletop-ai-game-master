@@ -19,6 +19,7 @@ import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import type { Regia, UscitaRegia } from '../scena/regia';
 import type { UscitaAudio } from '../voce/pipeline';
+import type { ServizioDettato } from '../dettato/servizio';
 
 export type ServerIo = Server<EventiClientVersoServer, EventiServerVersoClient>;
 type SocketIo = Socket<EventiClientVersoServer, EventiServerVersoClient>;
@@ -81,7 +82,11 @@ function ack<T>(cb: unknown): (x: T) => void {
 /** Errore per il telefono: una frase del pacchetto della lingua (sezione `socket`), composta alla richiesta. */
 const errore = (chiave: 'scegli_pg' | 'richiesta_non_valida'): Esito => ({ ok: false, errore: testo(`socket.${chiave}`) });
 
-export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer, log: Logger): void {
+/**
+ * Wires the socket events to the director. Returns who the PC of a connection is (the dictation's HTTP route checks
+ * it: trasporto/dettato.ts). `dettato`: the phone dictation, which learns names from every sent action.
+ */
+export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer, log: Logger, dettato?: ServizioDettato | null): { pgDelSocket: (socketId: string) => string | null } {
   /** socket.id → PG scelto (per controllare che il telefono agisca solo per il suo). */
   const pgDi = new Map<string, string>();
   /** Telefoni con «Ascolta qui» acceso (socket.id). */
@@ -125,8 +130,17 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
       if (!id_pg) return ack<Esito>(cb)(errore('scegli_pg'));
       if (typeof dati.testo !== 'string' || typeof dati.versione_vista !== 'number') return ack<Esito>(cb)(errore('richiesta_non_valida'));
       const esito = regia.inviaAzione(id_pg, dati.testo, dati.versione_vista, dati.privata === true);
-      log.info({ socket: socket.id, id_pg, ok: esito.ok, caratteri: dati.testo.length, privata: dati.privata === true }, 'azione: invio');
+      const trascrizione = typeof dati.trascrizione === 'string' ? dati.trascrizione.slice(0, 2000) : undefined;
+      log.info({ socket: socket.id, id_pg, ok: esito.ok, caratteri: dati.testo.length, privata: dati.privata === true, dettato: trascrizione !== undefined }, 'azione: invio');
       ack<Esito>(cb)(esito);
+      // After the answer: learning names never delays the phone (and never breaks the action).
+      if (esito.ok && dettato) {
+        try {
+          dettato.impara(id_pg, dati.testo, trascrizione, regia.turnoCorrente);
+        } catch (err) {
+          log.error({ id_pg, err: (err as Error).message }, 'dictation: learning failed');
+        }
+      }
     });
 
     socket.on('azione:conferma', (dati, cb) => {
@@ -200,4 +214,5 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
       regia.schermoEsce(socket.id);
     });
   });
+  return { pgDelSocket: (socketId) => pgDi.get(socketId) ?? null };
 }

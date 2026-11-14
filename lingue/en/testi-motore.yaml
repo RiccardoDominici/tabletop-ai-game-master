@@ -311,6 +311,14 @@ api:
   luogo_non_valido: "Invalid place."
   audio_non_trovato: "Audio not found."
   umore_non_valido: "Invalid mood."
+  # Dictation from the phone (trasporto/dettato.ts, docs/ascolto.md).
+  dettato_spento: "The microphone is off at this table: type your action."
+  dettato_vuoto: "Empty recording."
+  dettato_troppo_lungo: "Recording too long: at most {secondi} seconds."
+  dettato_occupato: "Still transcribing your previous recording."
+  dettato_troppe: "Too many recordings in a minute: wait a moment."
+  dettato_formato: "I cannot read this recording."
+  dettato_non_disponibile: "Transcription is not answering: type your action."
 
 # Session cycle seen from the panel and the evening summary (sessione/ciclo.ts, scelta-pacchetto.ts, riassunto.ts).
 sessione:

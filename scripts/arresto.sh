@@ -2,6 +2,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/ambiente.sh"
 # Ferma Tabletop AI Game Master: server (4610), Vite dev (4612) e, salvo --lascia-voce e --lascia-lettore, il servizio
 # voce (4611) e il server locale dei modelli (4613).
+# Unless --lascia-ascolto, also the local speech-to-text server (4614, scripts/ascolto-avvio.sh).
 # Prima SIGTERM (il server chiude con garbo socket e scena), poi SIGKILL dopo ~5 s.
 #
 # Istanza di prova: TAGM_PORTA=<porta> ferma SOLO il server su quella porta (pid in
@@ -10,11 +11,12 @@ set -uo pipefail
 
 RADICE="$(cd "$(dirname "$0")/.." && pwd)"
 PORTA="${TAGM_PORTA:-4610}"
-LASCIA_VOCE=0; LASCIA_LETTORE=0
+LASCIA_VOCE=0; LASCIA_LETTORE=0; LASCIA_ASCOLTO=0
 for a in "$@"; do
   case "$a" in
     --lascia-voce) LASCIA_VOCE=1 ;;
     --lascia-lettore) LASCIA_LETTORE=1 ;;
+    --lascia-ascolto) LASCIA_ASCOLTO=1 ;;
     *) echo "opzione sconosciuta: $a" >&2; exit 2 ;;
   esac
 done
@@ -65,4 +67,8 @@ fi
 # Il server locale dei modelli (4613), se l'hanno acceso gli script; --lascia-lettore lo tiene caldo.
 if [[ "$LASCIA_LETTORE" == "0" && -x "$RADICE/scripts/lettore-arresto.sh" ]]; then
   "$RADICE/scripts/lettore-arresto.sh"
+fi
+# The local speech-to-text server (4614), if the scripts started it; --lascia-ascolto keeps it warm.
+if [[ "$LASCIA_ASCOLTO" == "0" && -x "$RADICE/scripts/ascolto-arresto.sh" ]]; then
+  "$RADICE/scripts/ascolto-arresto.sh"
 fi

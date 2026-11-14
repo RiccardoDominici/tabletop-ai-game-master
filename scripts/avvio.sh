@@ -52,7 +52,7 @@ mkdir -p "$DIR_LOG"
 cd "$RADICE"
 
 # 1. Istanze precedenti: server e Vite sempre; la voce solo se la riavviamo. (In prova: solo la sua porta.)
-TAGM_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" --lascia-voce --lascia-lettore
+TAGM_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" --lascia-voce --lascia-lettore --lascia-ascolto
 
 # Chi fa cosa (config/*.yaml + variabili, docs/provider.md): VOCE, SERVE_LOCALE, MODELLO_LOCALE…
 TSX="$RADICE/node_modules/.bin/tsx"
@@ -100,6 +100,12 @@ fi
 # 2b. Server locale dei modelli (lettore, arbitri in locale): mlx-lm su 127.0.0.1:4613, condiviso dalle istanze.
 if [[ "${SERVE_LOCALE:-0}" == "1" && "${AVVIO_LOCALE:-no}" == "mlx" && "$FINTO" == "0" ]]; then
   LETTORE_PORTA="${PORTA_LOCALE:-4613}" "$RADICE/scripts/lettore-avvio.sh" "${MODELLO_LOCALE:-}" || echo "lettore locale: non partito, i componenti locali useranno le loro riserve (vedi logs/lettore.out)"
+fi
+
+# 2c. Local speech-to-text for the phones' microphone (docs/ascolto.md): whisper-server on 127.0.0.1:4614, shared
+#     by the instances like the reader; not with the scripted narrator (smoke tests). Only a server on this computer.
+if [[ "${ASCOLTO:-nessuno}" == "locale" && "$FINTO" == "0" && "${URL_ASCOLTO:-}" =~ ^http://(127\.0\.0\.1|localhost): ]]; then
+  ASCOLTO_PORTA="${PORTA_ASCOLTO:-4614}" "$RADICE/scripts/ascolto-avvio.sh" || echo "local speech-to-text: not started, the phones use the reserve or the keyboard (see logs/ascolto.out)"
 fi
 
 # 3. Pagine web.

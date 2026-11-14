@@ -17,7 +17,7 @@ import path from 'node:path';
 import { parse } from 'yaml';
 import { cercaChiave, RADICE_REPO } from '../llm/chiavi';
 
-export const COMPONENTI = ['lettore', 'arbitro_azioni', 'arbitro_prove', 'riassunto', 'regole', 'voce', 'immagini'] as const;
+export const COMPONENTI = ['lettore', 'arbitro_azioni', 'arbitro_prove', 'riassunto', 'regole', 'voce', 'ascolto', 'immagini'] as const;
 export type NomeComponente = (typeof COMPONENTI)[number];
 export const PROVIDER = ['locale', 'anthropic', 'openrouter', 'openai', 'regole', 'finto', 'nessuno'] as const;
 export type NomeProviderConfig = (typeof PROVIDER)[number];
@@ -35,7 +35,7 @@ export interface Backend {
 export interface VoceComponente {
   provider: NomeProviderConfig;
   modello?: string;
-  /** Solo provider openai: base dell'API e variabile della chiave. */
+  /** Provider openai: base dell'API e variabile della chiave. Ascolto locale: the whisper-server address. */
   url?: string;
   chiave?: string;
   riserve?: NomeProviderConfig[];
@@ -72,6 +72,14 @@ export interface Scelta {
 }
 
 const CARTELLA = path.join(RADICE_REPO, 'config');
+
+/**
+ * Speech-to-text of the phones (`ascolto`, docs/ascolto.md): whisper.cpp's `whisper-server` on this computer
+ * (scripts/ascolto-avvio.sh) with the large-v3-turbo model quantised to 5 bits, or OpenRouter's transcription API.
+ */
+export const URL_ASCOLTO_LOCALE = 'http://127.0.0.1:4614';
+export const MODELLO_ASCOLTO_LOCALE = 'ggml-large-v3-turbo-q5_0';
+export const MODELLO_ASCOLTO_OPENROUTER = 'openai/whisper-1';
 
 function leggiYaml(file: string): Record<string, unknown> | null {
   if (!fs.existsSync(file)) return null;
@@ -188,8 +196,8 @@ export function risolvi(cfg: ConfigProvider, chiavi: FontiChiavi = {}): Record<N
         saltati.push(`${p}: ${motivoNo}`);
         continue;
       }
-      const modello = p === 'locale' && c === 'voce' ? 'qwen3-tts (services/voce)' : p === 'locale' && c === 'immagini' ? 'flux2-klein-4b (mflux, strumenti/immagini)' : p === 'locale' ? (v.provider === 'locale' ? v.modello : undefined) ?? cfg.backend.locale.modello ?? null : p === 'anthropic' ? (v.provider === p ? v.modello : undefined) ?? cfg.backend.anthropic.modello ?? 'claude-haiku-5-5' : p === 'openrouter' || p === 'openai' ? v.modello ?? cfg.backend[p]?.modello ?? null : null;
-      const url = p === 'locale' && (c === 'voce' || c === 'immagini') ? null : p === 'locale' ? cfg.backend.locale.url ?? null : p === 'openrouter' ? cfg.backend.openrouter.url ?? 'https://openrouter.ai/api/v1' : p === 'openai' ? v.url ?? cfg.backend['openai']?.url ?? null : null;
+      const modello = p === 'locale' && c === 'ascolto' ? v.modello ?? MODELLO_ASCOLTO_LOCALE : p === 'openrouter' && c === 'ascolto' ? v.modello ?? MODELLO_ASCOLTO_OPENROUTER : p === 'locale' && c === 'voce' ? 'qwen3-tts (services/voce)' : p === 'locale' && c === 'immagini' ? 'flux2-klein-4b (mflux, strumenti/immagini)' : p === 'locale' ? (v.provider === 'locale' ? v.modello : undefined) ?? cfg.backend.locale.modello ?? null : p === 'anthropic' ? (v.provider === p ? v.modello : undefined) ?? cfg.backend.anthropic.modello ?? 'claude-haiku-5-5' : p === 'openrouter' || p === 'openai' ? v.modello ?? cfg.backend[p]?.modello ?? null : null;
+      const url = p === 'locale' && c === 'ascolto' ? v.url ?? URL_ASCOLTO_LOCALE : p === 'locale' && (c === 'voce' || c === 'immagini') ? null : p === 'locale' ? cfg.backend.locale.url ?? null : p === 'openrouter' ? cfg.backend.openrouter.url ?? 'https://openrouter.ai/api/v1' : p === 'openai' ? v.url ?? cfg.backend['openai']?.url ?? null : null;
       scelta = {
         componente: c,
         provider: p,
@@ -199,7 +207,7 @@ export function risolvi(cfg: ConfigProvider, chiavi: FontiChiavi = {}): Record<N
       };
       break;
     }
-    scelta ??= { componente: c, provider: c === 'voce' || c === 'lettore' ? 'finto' : 'regole', modello: null, url: null, perche: `nessun provider disponibile (${saltati.join('; ')})` };
+    scelta ??= { componente: c, provider: c === 'ascolto' ? 'nessuno' : c === 'voce' || c === 'lettore' ? 'finto' : 'regole', modello: null, url: null, perche: `nessun provider disponibile (${saltati.join('; ')})` };
     // Lettore e arbitro delle prove: in locale il modo minimo (un modello piccolo non regge il prompt completo).
     if (c === 'lettore' || c === 'arbitro_prove') {
       const modo = v.modo ?? 'auto';
@@ -222,7 +230,7 @@ function provenienza(cfg: ConfigProvider, c: NomeComponente): string {
 function nonDisponibile(cfg: ConfigProvider, c: NomeComponente, v: VoceComponente, p: NomeProviderConfig, chiavi: FontiChiavi): string | null {
   switch (p) {
     case 'anthropic':
-      if (c === 'voce' || c === 'immagini') return 'non fa questo lavoro';
+      if (c === 'voce' || c === 'immagini' || c === 'ascolto') return 'non fa questo lavoro';
       return chiaveDisponibile('ANTHROPIC_API_KEY', chiavi.anthropic, chiavi.ambiente) ? null : 'chiave ANTHROPIC_API_KEY mancante';
     case 'openrouter':
       return chiaveDisponibile('OPENROUTER_API_KEY', chiavi.openrouter, chiavi.ambiente) ? null : 'chiave OPENROUTER_API_KEY mancante';
@@ -233,9 +241,11 @@ function nonDisponibile(cfg: ConfigProvider, c: NomeComponente, v: VoceComponent
       return nome && !chiaveDisponibile(nome, undefined, chiavi.ambiente) ? `chiave ${nome} mancante` : null;
     }
     case 'locale':
-      return c === 'voce' || c === 'immagini' || cfg.backend.locale.url ? null : 'backend.locale.url mancante';
+      return c === 'voce' || c === 'immagini' || c === 'ascolto' || cfg.backend.locale.url ? null : 'backend.locale.url mancante';
     case 'regole':
-      return c === 'lettore' || c === 'voce' ? 'non ha una riserva a regole' : null;
+      return c === 'lettore' || c === 'voce' || c === 'ascolto' ? 'non ha una riserva a regole' : null;
+    case 'finto':
+      return c === 'ascolto' ? 'non fa questo lavoro' : null;
     default:
       return null;
   }

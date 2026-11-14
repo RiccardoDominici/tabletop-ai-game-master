@@ -59,6 +59,11 @@ componenti:
   regole:         {provider: locale, riserve: [regole]}
   # Voce: locale = Qwen3-TTS (services/voce, Mac); openrouter = drama-3 (docs/ricerca-voce-drama3.md).
   voce:           {provider: locale, riserve: [finto]}
+  # Ascolto (docs/ascolto.md): what the players say on their phones becomes the text of their action. locale =
+  # whisper.cpp (whisper-server, scripts/ascolto-avvio.sh, 127.0.0.1:4614, model large-v3-turbo q5_0, 0.57 GB);
+  # openrouter = OpenRouter speech-to-text (whisper-1, $0.006 a minute), used only if the local server does not answer
+  # and the key is there; nessuno = no microphone button, the players type. The language is the campaign's.
+  ascolto:        {provider: locale, riserve: [openrouter, nessuno]}
   # Immagini (solo nella preparazione, strumenti/immagini): locale = flux2-klein-4b con mflux sul Mac;
   # nessuno = niente immagini, lo schermo usa lo sfondo d'atmosfera. Il controllo visivo con Claude
   # (strumenti/immagini/visione.py) gira solo se c'è la chiave.

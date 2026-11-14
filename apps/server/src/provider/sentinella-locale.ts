@@ -49,6 +49,14 @@ export interface OpzioniSentinella {
   finestraMs?: number;
   fetch?: typeof fetch;
   adesso?: () => number;
+  /**
+   * The same watchdog for another local server (the speech-to-text one, dettato/trascrittori.ts): the health path
+   * appended to `url` (default /models), the name and the consequence written in the log, the script that restarts it.
+   */
+  percorsoSalute?: string;
+  nome?: string;
+  conseguenza?: string;
+  script?: string;
 }
 
 export class SentinellaLocale implements SentinellaModello {
@@ -64,6 +72,18 @@ export class SentinellaLocale implements SentinellaModello {
   private ultimoMotivo = '';
 
   constructor(private readonly o: OpzioniSentinella) {}
+
+  private get percorso(): string {
+    return this.o.percorsoSalute ?? '/models';
+  }
+
+  private get nome(): string {
+    return this.o.nome ?? 'local model server';
+  }
+
+  private get script(): string {
+    return this.o.script ?? 'scripts/lettore-avvio.sh';
+  }
 
   get stato(): StatoSentinella {
     return this.statoAttuale;
@@ -107,11 +127,11 @@ export class SentinellaLocale implements SentinellaModello {
 
   private async ping(): Promise<string | null> {
     try {
-      const r = await (this.o.fetch ?? fetch)(`${this.o.url.replace(/\/$/, '')}/models`, { signal: AbortSignal.timeout(this.o.timeoutPingMs ?? 2000) });
+      const r = await (this.o.fetch ?? fetch)(`${this.o.url.replace(/\/$/, '')}${this.percorso}`, { signal: AbortSignal.timeout(this.o.timeoutPingMs ?? 2000) });
       await r.arrayBuffer().catch(() => undefined);
-      return r.ok ? null : `GET /models: HTTP ${r.status}`;
+      return r.ok ? null : `GET ${this.percorso}: HTTP ${r.status}`;
     } catch (err) {
-      return `GET /models: ${(err as Error).message}`;
+      return `GET ${this.percorso}: ${(err as Error).message}`;
     }
   }
 
@@ -140,9 +160,9 @@ export class SentinellaLocale implements SentinellaModello {
     this.rifiutate = 0;
     this.o.log.error(
       { url: this.o.url, motivo, riavvio: this.o.riavvia ? 'automatic' : 'by hand' },
-      'local model server DOWN: the reader uses its rules fallback and the waiting lines, the arbiters their rules',
+      `${this.nome} DOWN: ${this.o.conseguenza ?? 'the reader uses its rules fallback and the waiting lines, the arbiters their rules'}`,
     );
-    if (!this.o.riavvia) this.o.log.warn({ url: this.o.url }, 'local model server: not restarted automatically (backend.locale.avvio: no); restart it with scripts/lettore-avvio.sh');
+    if (!this.o.riavvia) this.o.log.warn({ url: this.o.url }, `${this.nome}: not restarted automatically (backend.locale.avvio: no); restart it with ${this.script}`);
     await this.provaRiavvio();
   }
 
@@ -152,7 +172,7 @@ export class SentinellaLocale implements SentinellaModello {
     this.falliti = 0;
     this.giuDa = null;
     this.arreso = false;
-    this.o.log.info({ url: this.o.url, secondi_giu: secondi, richieste_alle_riserve: this.rifiutate, come }, 'local model server UP again');
+    this.o.log.info({ url: this.o.url, secondi_giu: secondi, richieste_alle_riserve: this.rifiutate, come }, `${this.nome} UP again`);
     this.rifiutate = 0;
   }
 
@@ -163,13 +183,13 @@ export class SentinellaLocale implements SentinellaModello {
     const ultimo = this.tentativi.at(-1);
     if (ultimo !== undefined && adesso - ultimo < (this.o.pausaRiavvioMs ?? 60_000)) return;
     if (this.tentativi.length >= (this.o.maxRiavvii ?? 3)) {
-      if (!this.arreso) this.o.log.error({ url: this.o.url, tentativi: this.tentativi.length }, 'local model server: restart given up; the game goes on with the fallbacks; restart it with scripts/lettore-avvio.sh');
+      if (!this.arreso) this.o.log.error({ url: this.o.url, tentativi: this.tentativi.length }, `${this.nome}: restart given up; the game goes on with the fallbacks; restart it with ${this.script}`);
       this.arreso = true;
       return;
     }
     this.tentativi.push(adesso);
     this.statoAttuale = 'riavvio';
-    this.o.log.warn({ url: this.o.url, tentativo: this.tentativi.length }, 'local model server: restarting (scripts/lettore-avvio.sh)');
+    this.o.log.warn({ url: this.o.url, tentativo: this.tentativi.length }, `${this.nome}: restarting (${this.script})`);
     const t0 = this.adesso();
     let esito: EsitoRiavvio;
     try {
@@ -180,13 +200,13 @@ export class SentinellaLocale implements SentinellaModello {
     const secondi = Math.round((this.adesso() - t0) / 100) / 10;
     const errore = esito.ok ? await this.ping() : 'restart failed';
     if (!errore) {
-      this.o.log.info({ url: this.o.url, secondi, uscita: esito.uscita }, 'local model server: restarted');
+      this.o.log.info({ url: this.o.url, secondi, uscita: esito.uscita }, `${this.nome}: restarted`);
       this.statoAttuale = 'giu'; // su() wants to come from «down»
       this.su('restarted');
       return;
     }
     this.statoAttuale = 'giu';
-    this.o.log.error({ url: this.o.url, secondi, errore, uscita: esito.uscita }, 'local model server: restart did not bring it back');
+    this.o.log.error({ url: this.o.url, secondi, errore, uscita: esito.uscita }, `${this.nome}: restart did not bring it back`);
   }
 }
 
@@ -194,13 +214,13 @@ export class SentinellaLocale implements SentinellaModello {
  * The default restart: scripts/lettore-avvio.sh with the port of the URL (it refuses the game's ports 4610–4612) and
  * the configured model; up to `attesaMs` (the script waits for the model to load). Only for a server on this computer.
  */
-export function riavviaConScript(url: string, modello: string | null, attesaMs = 240_000): (() => Promise<EsitoRiavvio>) | null {
+export function riavviaConScript(url: string, modello: string | null, attesaMs = 240_000, script = { file: 'lettore-avvio.sh', variabilePorta: 'LETTORE_PORTA' }): (() => Promise<EsitoRiavvio>) | null {
   const u = new URL(url);
   if (!['127.0.0.1', 'localhost', '::1', '[::1]'].includes(u.hostname)) return null;
   const porta = u.port || '80';
   return () =>
     new Promise((ok) => {
-      const p = spawn('bash', [`${RADICE_REPO}/scripts/lettore-avvio.sh`, ...(modello ? [modello] : [])], { cwd: RADICE_REPO, env: { ...process.env, LETTORE_PORTA: porta }, stdio: ['ignore', 'pipe', 'pipe'] });
+      const p = spawn('bash', [`${RADICE_REPO}/scripts/${script.file}`, ...(modello ? [modello] : [])], { cwd: RADICE_REPO, env: { ...process.env, [script.variabilePorta]: porta }, stdio: ['ignore', 'pipe', 'pipe'] });
       let uscita = '';
       const timer = setTimeout(() => p.kill('SIGTERM'), attesaMs);
       p.stdout.on('data', (d) => (uscita += String(d)));

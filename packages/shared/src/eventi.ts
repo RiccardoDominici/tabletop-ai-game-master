@@ -164,7 +164,11 @@ export interface EventiClientVersoServer {
    * `versione_vista` è quella fissata dal telefono al primo tasto.
    */
   'azione:invia': (
-    dati: { id_pg: string; testo: string; versione_vista: number; privata?: boolean },
+    /**
+     * `trascrizione`: the text the phone got from its last dictation, when the action started from one (the server
+     * diffs it with `testo` to learn the names the player retyped, docs/ascolto.md).
+     */
+    dati: { id_pg: string; testo: string; versione_vista: number; privata?: boolean; trascrizione?: string },
     ack: (esito: Esito) => void,
   ) => void;
   /** «Confermo» / «Tengo» su un'azione da confermare. */

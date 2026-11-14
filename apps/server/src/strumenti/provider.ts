@@ -6,6 +6,7 @@
  *     LETTORE, VOCE, ARBITRO_AZIONI…   provider scelto di ogni componente
  *     SERVE_LOCALE=1                   qualche componente usa il server locale dei modelli
  *     AVVIO_LOCALE=mlx|no              chi lo accende; URL_LOCALE, MODELLO_LOCALE, PORTA_LOCALE
+ *     URL_ASCOLTO, PORTA_ASCOLTO       the local speech-to-text server (whisper-server), when ASCOLTO=locale
  * Stesse regole del server (stesse variabili d'ambiente, stessi file, stesse chiavi).
  */
 import { caricaConfig } from '../config';
@@ -15,7 +16,9 @@ const config = caricaConfig();
 const scelte = risolvi(config.provider, { anthropic: config.llm.fileChiave, openrouter: config.voce.fish.fileChiave });
 if (process.argv.includes('--shell')) {
   const loc = config.provider.backend.locale;
-  const serve = COMPONENTI.some((c) => c !== 'voce' && scelte[c].provider === 'locale');
+  // Voice and speech-to-text have their own local servers (4611, 4614): they do not need the model server.
+  const serve = COMPONENTI.some((c) => c !== 'voce' && c !== 'ascolto' && scelte[c].provider === 'locale');
+  const urlAscolto = scelte.ascolto.provider === 'locale' ? scelte.ascolto.url ?? '' : '';
   const porta = (() => {
     try {
       return new URL(loc.url ?? '').port || '80';
@@ -31,6 +34,8 @@ if (process.argv.includes('--shell')) {
     `URL_LOCALE=${loc.url ?? ''}`,
     `PORTA_LOCALE=${porta}`,
     `MODELLO_LOCALE=${loc.modello ?? ''}`,
+    `URL_ASCOLTO=${urlAscolto}`,
+    `PORTA_ASCOLTO=${urlAscolto ? new URL(urlAscolto).port || '80' : ''}`,
   ];
   // Valori senza spazi né virgolette: si possono leggere con `eval`.
   console.log(righe.map((r) => r.replace(/[^\w=.:/@-]/g, '')).join('\n'));

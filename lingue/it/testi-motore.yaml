@@ -312,6 +312,14 @@ api:
   luogo_non_valido: "Luogo non valido."
   audio_non_trovato: "Audio non trovato."
   umore_non_valido: "Umore non valido."
+  # Dettato dal telefono (trasporto/dettato.ts, docs/ascolto.md).
+  dettato_spento: "Il microfono è spento su questo tavolo: scrivi l'azione."
+  dettato_vuoto: "Registrazione vuota."
+  dettato_troppo_lungo: "Registrazione troppo lunga: al massimo {secondi} secondi."
+  dettato_occupato: "Sto già trascrivendo la tua registrazione di prima."
+  dettato_troppe: "Troppe registrazioni in un minuto: aspetta un attimo."
+  dettato_formato: "Non riesco a leggere questa registrazione."
+  dettato_non_disponibile: "La trascrizione non risponde: scrivi l'azione."
 
 # Ciclo delle sessioni visto dal pannello e riassunto della serata (sessione/ciclo.ts, scelta-pacchetto.ts, riassunto.ts).
 sessione:
