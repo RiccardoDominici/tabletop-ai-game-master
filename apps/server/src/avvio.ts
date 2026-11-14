@@ -19,7 +19,7 @@ import { copioneDaFile, NarratoreFinto } from './llm/finto';
 import { NarratoreHaiku } from './llm/haiku';
 import type { Narratore } from './llm/tipi';
 import { RegistroJsonl } from './metriche/jsonl';
-import { creaInfoServer } from './rete';
+import { creaInfoServer, ipLan } from './rete';
 import { Regia } from './scena/regia';
 import { caricaRepertorio } from './repertorio/caricatore';
 import { compilaContestoRepertorio } from './repertorio/contesto';
@@ -70,6 +70,7 @@ import { creaCatena } from './dettato/catena';
 import { ServizioDettato } from './dettato/servizio';
 import type { Trascrittore } from './dettato/trascrittori';
 import { registraRotteDettato } from './trasporto/dettato';
+import { attivaPoliglotta, caricaCertificato } from './trasporto/https';
 
 export interface ServerTagm {
   app: App;
@@ -412,7 +413,18 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   });
   regia.collega(uscite.regia);
 
-  let info = await creaInfoServer(config.porta, config.ipLan);
+  // HTTPS for the phones' microphone (trasporto/https.ts): same port, the first byte says http or https.
+  const logHttps = log.child({ modulo: 'https' });
+  const certificato = config.cartellaHttps ? caricaCertificato(config.cartellaHttps, logHttps) : null;
+  if (certificato) {
+    attivaPoliglotta(app.http.server, certificato, logHttps);
+    const ip = config.ipLan ?? ipLan();
+    logHttps.info({ nomi: certificato.nomi, scade: certificato.scade }, 'https: on for the phones (same port as http)');
+    if (!certificato.nomi.includes(ip)) logHttps.warn({ ip, nomi: certificato.nomi }, 'https: the certificate does not cover this LAN address: run scripts/certificato.sh again');
+    // Only the PUBLIC root certificate: what a phone installs once (http works before it trusts anything).
+    app.http.get('/api/certificato.crt', async (_req, reply) => reply.type('application/x-x509-ca-cert').header('content-disposition', 'attachment; filename="tabletop-ai-gm-ca.crt"').send(certificato.ca));
+  }
+  let info = await creaInfoServer(config.porta, config.ipLan, certificato !== null);
   // Dictation from the phones (docs/ascolto.md): what a player says becomes the text of the action, campaign names
   // spelled right; the names it learns go to the voice's lexicon too. Never restarts whisper-server under vitest.
   const catenaAscolto =
@@ -484,7 +496,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       const indirizzo = await app.http.listen({ port: config.porta, host: config.host });
       // Con porta 0 (test) l'indirizzo vero si conosce solo ora.
       const porta = (app.http.server.address() as { port: number }).port;
-      if (porta !== config.porta) info = await creaInfoServer(porta, config.ipLan);
+      if (porta !== config.porta) info = await creaInfoServer(porta, config.ipLan, certificato !== null);
       return indirizzo;
     },
     async chiudi() {

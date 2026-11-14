@@ -164,6 +164,9 @@ echo "4/4  Pronto."
 info="$(curl -s --max-time 3 "http://127.0.0.1:$PORTA/api/info")"
 telefono="$(printf '%s' "$info" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).url_telefono))')"
 master="$(grep '^  Master:' "$DIR_LOG/partita.out" | awk '{print $2}')"
+# HTTPS for the microphone (docs/ascolto.md): the page where each phone installs the local certificate once.
+certificato="$(printf '%s' "$info" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).url_certificato??""))')"
+dettato="$(curl -s --max-time 3 "http://127.0.0.1:$PORTA/api/dettato" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log(JSON.parse(s).attivo?"on":"off")}catch{console.log("off")}})')"
 salute="$(curl -s --max-time 3 "http://127.0.0.1:$PORTA/api/salute")"
 voce_in_uso="$(printf '%s' "$salute" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const v=JSON.parse(s).voce;console.log(v==="fish"?"drama-3 (OpenRouter)":v==="qwen"?"Qwen locale":"finta")})')"
 ripresa="$(printf '%s' "$salute" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const r=JSON.parse(s).ripresa;console.log(r?`Riprende la partita salvata dal turno ${r.turno} (per ricominciare: --nuova)`:"Partita nuova")})')"
@@ -184,6 +187,7 @@ cat <<FINE
   TELEFONI (stessa rete Wi-Fi del Mac, basta il browser):
       $telefono
       Il QR per entrare è anche sul proiettore. Ognuno sceglie il suo personaggio.
+$( if [[ "$dettato" != "on" ]]; then printf '      Microphone: off (ascolto: nessuno), the players type.\n'; elif [[ -n "$certificato" ]]; then printf '      Microphone: each phone installs the certificate once from %s\n' "$certificato"; else printf '      Microphone: needs https: run scripts/certificato.sh once, then restart.\n'; fi )
 
   PANNELLO DEL MASTER (solo su questo Mac, non darlo ai giocatori):
       ${master:-vedi la riga PANNELLO MASTER in logs/server.out}

@@ -119,6 +119,10 @@ export interface InfoServer {
   porta: number;
   /** QR del link per i telefoni, come SVG pronto da inserire. */
   qr_svg: string;
+  /** The phones' address is https (docs/ascolto.md): the microphone works there. */
+  https?: boolean;
+  /** Page (plain http) where a phone installs the local certificate once; null without HTTPS. */
+  url_certificato?: string | null;
 }
 
 export interface EventiServerVersoClient {

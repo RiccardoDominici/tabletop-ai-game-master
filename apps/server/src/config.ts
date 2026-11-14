@@ -39,6 +39,11 @@ export interface ConfigServer {
   filePromptNarratore: string | null;
   /** Override dell'IP LAN mostrato nel QR. */
   ipLan?: string;
+  /**
+   * Folder of the phones' HTTPS certificate (scripts/certificato.sh, trasporto/https.ts): cache/https by default,
+   * TAGM_CERTIFICATI moves it, TAGM_HTTPS=no turns HTTPS off. null = off (also under vitest unless TAGM_HTTPS is set).
+   */
+  cartellaHttps: string | null;
   /** Modalità del narratore per la sessione (TAGM_MODO). */
   modo: ModoNarratore;
   /** Prompt di sistema del selettore (modalità repertorio); null = prompts/<lingua>/selettore.md. */
@@ -187,6 +192,10 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     cartellaCampagna,
     filePromptNarratore: testo(env['TAGM_PROMPT_NARRATORE']) ?? null,
     ...(ipLan ? { ipLan } : {}),
+    cartellaHttps:
+      testo(env['TAGM_HTTPS']) === 'no' || (process.env['VITEST'] && !testo(env['TAGM_HTTPS']))
+        ? null
+        : path.resolve(RADICE_REPO, testo(env['TAGM_CERTIFICATI']) ?? path.join('cache', 'https')),
     ...(tokenMaster ? { tokenMaster } : {}),
     fileSessioni: sessioni === 'off' ? null : path.resolve(RADICE_REPO, sessioni ?? path.join(cartellaLog, 'sessioni.sqlite')),
     nuovaSessione: testo(env['TAGM_NUOVA_SESSIONE']) === '1',
