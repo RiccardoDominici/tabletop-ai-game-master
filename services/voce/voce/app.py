@@ -25,6 +25,7 @@ from starlette.routing import Route
 from .coda import FINE, Coda, ErroreGenerazione, Lavoro
 from .config import Impostazioni
 from .pcm import FORMATO
+from .risorse import rilascia_lock_tqdm
 from .testo import normalizza
 
 log = logging.getLogger("voce.http")
@@ -129,6 +130,9 @@ def crea_app(imp: Impostazioni, coda: Coda) -> Starlette:
         coda.avvia()
         yield
         coda.ferma()
+        # Dopo l'arresto del worker, prima che uvicorn ri-lanci il segnale (da lì in poi nessun codice del
+        # processo gira più). Vedi risorse.py.
+        rilascia_lock_tqdm()
 
     return Starlette(
         routes=[

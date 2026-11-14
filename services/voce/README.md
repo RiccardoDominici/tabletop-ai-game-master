@@ -51,9 +51,10 @@ voce/motore.py     Qwen3-TTS: caricamento, voci precalcolate, generazione in str
 voce/coda.py       coda FIFO + thread worker, annullamento, riga JSONL per richiesta
 voce/app.py        API Starlette
 voce/priorita.py   classe QoS del thread worker (macOS)
+voce/risorse.py    rilascio, alla chiusura, del semaforo che tqdm (usata da mlx-audio) crea
 voce/diario.py     log JSONL + stdout
 prova.py           prova end-to-end contro il servizio in esecuzione (salva i WAV in logs/voce-prova/)
-tests/             pytest: normalizzazione, PCM, registro, coda+API con motore finto
+tests/             pytest: normalizzazione, PCM, registro, coda+API con motore finto, rilascio del lock di tqdm
 banco/             misure: latenza, A/B intercalati, inattività, normalizzazione (Whisper), profilo del passo
 ```
 
