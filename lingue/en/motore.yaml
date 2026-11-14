@@ -214,3 +214,15 @@ guardia_rifiuti:
   rifiuto: [no, not, never, nothing, nobody, none, cannot, refuse, refuses, leave]
   cede: [points, shows, hands, gives, reveals, explains, leads, guides, confesses, admits, yields, tells him, tells her, tells them]
   negazioni: [not, no, never, without, doesn, didn]
+
+# Dictation from the phones (apps/server/src/dettato/, docs/ascolto.md). `prompt`: the sentence that tells Whisper how
+# the campaign's names are spelled ({personaggi} and {nomi} are comma lists; a part with an empty list is left out).
+# `parole_comuni`: ordinary words a name must never replace (the server adds every word written in lowercase in the
+# language pack and in the campaign texts). `allucinazioni`: what Whisper writes on silence or noise; a transcript that
+# is only one of these counts as empty.
+dettato:
+  prompt_inizio: "A player's action in a tabletop role-playing game."
+  prompt_personaggi: "Characters: {personaggi}."
+  prompt_nomi: "Names: {nomi}."
+  parole_comuni: [a, an, the, and, or, but, if, then, so, of, to, in, on, at, by, for, from, with, without, into, onto, over, under, up, down, out, off, about, after, before, behind, near, far, here, there, where, when, why, how, what, who, whom, which, that, this, these, those, i, me, my, mine, you, your, yours, he, him, his, she, her, hers, it, its, we, us, our, they, them, their, is, are, was, were, be, been, being, am, have, has, had, do, does, did, not, no, yes, can, could, will, would, shall, should, may, might, must, all, any, some, every, each, other, another, same, more, most, less, very, too, also, just, only, again, still, now, then, soon, quickly, slowly, quietly, loudly, together, ask, asks, say, says, tell, tells, look, looks, search, searches, take, takes, open, opens, close, closes, go, goes, run, runs, enter, enters, leave, leaves, climb, climbs, attack, attacks, hit, hits, shoot, shoots, throw, throws, try, tries, help, helps, follow, follows, talk, talks, speak, speaks, listen, listens, make, makes, give, gives, show, shows, hide, hides, wait, waits, check, checks, push, pushes, pull, pulls, touch, touches, bring, brings, put, puts, hold, holds, hear, hears, see, sees, want, wants, man, woman, boy, girl, child, old, young, house, door, window, road, path, wood, woods, forest, fire, water, bread, wine, sword, bow, shield, hand, hands, eyes, head, voice, name, key, letter, night, day, evening, morning, tower, bridge, river, mountain, field, dog, dogs, wolf, horse, mule, sheep, big, small, little, great, new, good, bad, first, last, next, mark, rose, will, grace, hope, may, june, august, bill, frank, sky, stone, ash, wolfe]
+  allucinazioni: ["thank you for watching", "thanks for watching", "thank you", "subtitles by the amara.org community", "please subscribe", "music", "applause"]
