@@ -273,5 +273,14 @@ export function annuncioBreve(nome: string, testo: string): string {
   if (!frase || contenuto(frase, r) === 0) return riempi(r.vuoto, { nome });
   const terza = inTerzaPersona(frase, r.prima);
   if (terza) return riempi(r.terza, { nome, frase: terza });
-  return riempi(r.citazione, { nome, frase: `${frase.charAt(0).toUpperCase()}${frase.slice(1)}` });
+  return riempi(r.citazione, { nome, frase: senzaVirgolette(`${frase.charAt(0).toUpperCase()}${frase.slice(1)}`) });
+}
+
+/**
+ * Le virgolette che il giocatore ha scritto dentro la frase vanno tolte: la citazione dell'annuncio ne
+ * ha una sola coppia, e una frase con «…» dentro dà «Livia: «Blocco un goblin: «Dov'è il ragazzo».»»,
+ * illeggibile. Il testo resta, senza le virgolette. Solo per la citazione, non per la terza persona.
+ */
+export function senzaVirgolette(frase: string): string {
+  return frase.replace(/\s*[«»“”"]+\s*/g, ' ').replace(/\s+([.,;:!?…])/g, '$1').replace(/\s+/g, ' ').trim();
 }

@@ -5,7 +5,7 @@
  */
 import { afterAll, describe, expect, it } from 'vitest';
 import { impostaLingua } from '../src/lingua';
-import { annuncioBreve } from '../src/llm/annuncio';
+import { annuncioBreve, senzaVirgolette } from '../src/llm/annuncio';
 
 const NON_FINALI_IT = /\b(il|lo|la|i|gli|le|un|una|di|a|da|in|con|su|per|tra|fra|del|della|dei|degli|delle|al|alla|ai|agli|alle|dal|dalla|nel|nella|sul|sulla|e|o|ma|che|se|verso)»\.$/;
 
@@ -30,6 +30,15 @@ describe('annunci D4, italiano', () => {
     expect(a).toBe(atteso);
     expect(a).not.toMatch(NON_FINALI_IT);
     expect(a.split(' ').length).toBeLessThanOrEqual(12);
+  });
+
+  it('virgolette del giocatore dentro la frase: una sola citazione, chiusa una volta', () => {
+    // Caso vero (e2e-finale, D4): «Blocco un goblin ferito contro il muro: «Dov'è il ragazzo».»
+    const a = annuncioBreve('Livia Sarti', 'Blocco un goblin ferito contro il muro: «Dov’è il ragazzo»?');
+    expect(a).toBe('Livia Sarti: «Blocco un goblin ferito contro il muro: Dov’è il ragazzo».');
+    expect(a.match(/«/g)).toHaveLength(1);
+    expect(a.match(/»/g)).toHaveLength(1);
+    expect(senzaVirgolette('Dico «ciao» e «basta»')).toBe('Dico ciao e basta');
   });
 
   it('mai vuoto: senza niente da dire «Nome agisce.»; un ordine di una parola resta', () => {
