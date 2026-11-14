@@ -1,6 +1,6 @@
 /**
  * Instradamento: /telefono (giocatori), /schermo (proiettore) e /master (pannello del master sul
- * Mac). La radice porta al telefono: è il link che si condivide più spesso (il QR punta comunque a
+ * Mac). /certificato: how a phone installs the table's certificate for the microphone (docs/ascolto.md). La radice porta al telefono: è il link che si condivide più spesso (il QR punta comunque a
  * /telefono). Ogni pagina avvia da sé il suo ruolo sul socket condiviso.
  *
  * /master non è collegata da nessuna parte e si carica a parte (lazy): i telefoni non scaricano il
@@ -12,6 +12,7 @@ import { alCambioLingua } from './lingua';
 import { Redirect, Route, Switch } from 'wouter';
 import { PaginaTelefono } from './telefono/PaginaTelefono';
 import { PaginaSchermo } from './schermo/PaginaSchermo';
+import { PaginaCertificato } from './telefono/PaginaCertificato';
 
 const PaginaMaster = lazy(() => import('./master/PaginaMaster').then((m) => ({ default: m.PaginaMaster })));
 
@@ -23,6 +24,7 @@ export function App() {
     <Switch>
       <Route path="/telefono" component={PaginaTelefono} />
       <Route path="/schermo" component={PaginaSchermo} />
+      <Route path="/certificato" component={PaginaCertificato} />
       <Route path="/master">
         <Suspense fallback={<CaricoMaster />}>
           <PaginaMaster />

@@ -77,7 +77,7 @@ describe.skipIf(!conOpenssl)('https for the phones', () => {
     expect(crt).toBe(ca.toString('utf8'));
     expect(crt).not.toMatch(/PRIVATE KEY/);
 
-    for (const [url, opzioni] of [[`http://127.0.0.1:${porta}`, {}], [`https://127.0.0.1:${porta}`, { ca }]] as const) {
+    for (const [url, opzioni] of [[`http://127.0.0.1:${porta}`, {}], [`https://127.0.0.1:${porta}`, { ca: ca.toString('utf8') }]] as const) {
       const c = connetti(url, { transports: ['websocket'], forceNew: true, reconnection: false, ...opzioni });
       const stato = await new Promise<StatoTavolo>((ok, ko) => {
         c.on('connect_error', ko);

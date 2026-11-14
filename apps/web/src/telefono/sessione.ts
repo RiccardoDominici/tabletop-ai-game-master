@@ -21,6 +21,7 @@ import { useAvvisi } from '../store/avvisi';
 import { useBozza } from '../store/bozza';
 import { riconciliaBozza, TracciaScrittura } from './bozza';
 import { chiaveRichiesta } from './vista';
+import { dimenticaTrascrizione, trascrizionePerInvio } from './dettato';
 
 const log = creaLog('telefono');
 
@@ -202,15 +203,20 @@ export function inviaAzione(): Promise<Esito> {
   const stato = useTavolo.getState().stato;
   if (!stato) return Promise.resolve(esitoErrore(t('telefono.errore.stato_non_arrivato')));
   const versioneVista = traccia.versioneVista ?? stato.versione_scena;
+  // The text the last dictation put in the box: the server diffs it with what is sent to learn retyped names.
+  const trascrizione = trascrizionePerInvio();
   return comando('invia azione', async () => {
     const esito = await conEsito((s, fine) =>
       s.emit(
         'azione:invia',
-        { id_pg: idPg, testo: pulito.slice(0, MASSIMO_CARATTERI_AZIONE), versione_vista: versioneVista, privata },
+        { id_pg: idPg, testo: pulito.slice(0, MASSIMO_CARATTERI_AZIONE), versione_vista: versioneVista, privata, ...(trascrizione !== undefined ? { trascrizione } : {}) },
         fine,
       ),
     );
-    if (esito.ok) traccia.azzera();
+    if (esito.ok) {
+      traccia.azzera();
+      dimenticaTrascrizione();
+    }
     return esito;
   });
 }

@@ -9,6 +9,8 @@
  *   «anch'io» o una correzione); fino ad allora si può cambiare o ritirare.
  * - La bozza sta in `store/bozza.ts`: la sessione la riconcilia con `azione:mia` e l'avviso
  *   «da decidere» ci rimette il testo con «Cambio» (qui si osserva la richiesta di fuoco).
+ * - The microphone (Microfono.tsx, dettato.ts) sits in the box's bottom row: the transcript goes into the box after
+ *   what is there, and is sent only when the player presses Send (unless «Send right after» is on).
  */
 import { t } from '../lingua';
 import { useEffect, useRef, type FormEvent, type KeyboardEvent } from 'react';
@@ -24,6 +26,8 @@ import {
 } from './sessione';
 import { azioneViva, etichettaInvio, finestraAperta, possoScrivere } from './vista';
 import { MiaAzione } from './MiaAzione';
+import { PulsanteMicrofono, StatoMicrofono } from './Microfono';
+import { avviaDettato, suTestoDettato, useDettato } from './dettato';
 
 export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
   const idPg = useTelefono((s) => s.idPg);
@@ -36,6 +40,16 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
   const richiesteFuoco = useBozza((s) => s.richiesteFuoco);
 
   const casella = useRef<HTMLTextAreaElement>(null);
+
+  // Dictation: state from the server, and what to do with a transcript (into the box; sent at once only if asked).
+  useEffect(() => avviaDettato(), []);
+  useEffect(() => {
+    suTestoDettato((testo, primaVuota) => {
+      cambiaBozza(testo);
+      if (primaVuota && useDettato.getState().inviaSubito) void inviaAzione();
+    });
+    return () => suTestoDettato(null);
+  }, []);
 
   // «Cambio» / «Riscrivi»: cursore in fondo al testo della casella.
   useEffect(() => {
@@ -144,8 +158,11 @@ export function CasellaAzione({ stato }: { stato: StatoTavolo }) {
             >
               {bozza.length}/{MASSIMO_CARATTERI_AZIONE}
             </span>
+            <PulsanteMicrofono disabilitato={!scrivibile || occupato} />
           </div>
         </div>
+
+        <StatoMicrofono />
 
         {errore && (
           <p role="alert" data-testid="errore-azione" className="rounded-lg bg-sangue/10 px-3 py-2 text-[0.95rem] text-sangue">
