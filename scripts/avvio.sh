@@ -58,8 +58,10 @@ TAGM_PORTA="$PORTA" "$RADICE/scripts/arresto.sh" --lascia-voce --lascia-lettore
 TSX="$RADICE/node_modules/.bin/tsx"
 PROVIDER="$("$TSX" "$RADICE/apps/server/src/strumenti/provider.ts" --shell 2>/dev/null || true)"
 eval "$PROVIDER"
-# Senza opzioni esplicite la voce la decide la configurazione.
-if [[ "$FISH" == "0" && "$MOCK" == "0" ]]; then
+# Senza opzioni esplicite la voce la decide la configurazione. Su una prova con TAGM_VOCE_URL (Qwen a parte, già
+# chiesto esplicitamente con --voce-vera nell'harness) la configurazione non vince: altrimenti la prova userebbe
+# drama-3 a pagamento invece del servizio che chi prova ha acceso.
+if [[ "$FISH" == "0" && "$MOCK" == "0" ]] && ! { [[ "$PROVA" == "1" ]] && [[ -n "${TAGM_VOCE_URL:-}" ]] && [[ "${TAGM_VOCE_URL}" != *":4611"* ]]; }; then
   case "${VOCE:-locale}" in openrouter) FISH=1 ;; finto|nessuno) MOCK=1 ;; esac
 fi
 

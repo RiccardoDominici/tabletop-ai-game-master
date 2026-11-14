@@ -39,7 +39,7 @@ import { RADICE_REPO } from '../percorsi';
 import { caricaRepertorio } from '../repertorio/caricatore';
 import { caricaParoleSegrete } from '../repertorio/segreti';
 import type { Repertorio } from '../repertorio/tipi';
-import { ErroreArgomenti, leggiOpzioni, type OpzioniEsperimento } from './argomenti';
+import { ErroreArgomenti, leggiOpzioni, PORTA_PARTITA, type OpzioniEsperimento } from './argomenti';
 import { caricaCopione, contaPrivate, controllaCopione, type Copione } from './copione';
 import { misuraFughe, rivelazioniFuoriContesto } from './fughe';
 import { nomiDeiPng } from '../repertorio/pertinenza';
@@ -91,7 +91,10 @@ const senzaToken = (testo: string, token: string): string => testo.split(token).
 
 /** Riavvia il server di prova da zero, sulla porta e con la campagna dell'esperimento. */
 function avviaServer(o: OpzioniEsperimento, token: string): void {
-  const argomenti = [o.voceVera ? '--tieni-voce' : '--mock', ...(o.finto ? ['--finto'] : [])];
+  // Voce: sulla 4610 la voce della partita resta accesa (--tieni-voce) o è finta (--mock). Su una porta di
+  // prova con --voce-vera nessun flag: avvio.sh usa TAGM_VOCE_URL (il Qwen a parte), altrimenti la voce è finta.
+  const voce = o.porta !== PORTA_PARTITA ? (o.voceUrl ? [] : ['--mock']) : [o.voceVera ? '--tieni-voce' : '--mock'];
+  const argomenti = [...voce, ...(o.finto ? ['--finto'] : [])];
   const avvio = spawnSync(path.join(RADICE_REPO, 'scripts', 'avvio.sh'), argomenti, {
     env: {
       ...process.env,
@@ -102,6 +105,8 @@ function avviaServer(o: OpzioniEsperimento, token: string): void {
       // Ogni chiamata dello sceneggiatore usa l'abbonamento di Riccardo: solo se la prova lo chiede.
       TAGM_SCENEGGIATORE: o.sceneggiatore ? 'si' : 'no',
       TAGM_MASTER_TOKEN: token,
+      // Il servizio voce a parte (--voce-vera su una porta di prova): avvio.sh lo usa solo se questa variabile c'è.
+      ...(o.voceUrl ? { TAGM_VOCE_URL: o.voceUrl } : {}),
     },
     encoding: 'utf8',
   });

@@ -3,13 +3,14 @@
  *
  *   esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore]
  *             [--ore h] [--chiudi] [--voce-vera] [--finto] [--lascia-server] [--partita-vera]
+ *             --voce-vera su una porta di prova richiede TAGM_VOCE_URL (un servizio Qwen a parte, mai la 4611)
  * --sceneggiatore accende lo sceneggiatore (Claude Code: ogni chiamata usa l'abbonamento); di base è spento.
  * --ore h dà al server la durata della serata (0,5–8 ore, come il pannello) prima dell'«Inizia»: con 0,5 il
  * preavviso di fine arriva dopo 10 minuti, così una prova breve vede il consiglio di chiusura. --chiudi, a
  * copione finito, dà «Chiudi la sessione» e aspetta la chiusura guidata e il riassunto della serata.
  *
  * Porta: TAGM_PORTA (default 4710, istanza di prova di scripts/avvio.sh: log e pagine in
- * logs/porta-<porta>/, voce sempre finta). La 4610 è la partita vera: si usa solo con
+ * logs/porta-<porta>/, voce finta, o Qwen a parte con --voce-vera e TAGM_VOCE_URL). La 4610 è la partita vera: si usa solo con
  * --partita-vera, perché l'esperimento riavvia il server da zero. E2E_URL, se c'è, deve puntare
  * alla stessa porta (altrimenti l'esperimento parlerebbe con un server e leggerebbe i log di un altro).
  */
@@ -35,7 +36,10 @@ export interface OpzioniEsperimento {
   url: string;
   /** Dove il server di questa porta scrive i suoi JSONL (stessa regola di scripts/avvio.sh). */
   cartellaLog: string;
+  /** `--voce-vera`: sulla 4610 tiene acceso il servizio voce della partita; su una porta di prova usa il servizio a parte in voceUrl. */
   voceVera: boolean;
+  /** Indirizzo del servizio Qwen a parte, solo con `--voce-vera` su una porta di prova (da TAGM_VOCE_URL). */
+  voceUrl: string | null;
   /** Narratore a copione (avvio.sh --finto): prova a secco dell'harness, nessuna chiamata ad Anthropic. */
   finto: boolean;
   lasciaServer: boolean;
@@ -56,8 +60,10 @@ export interface OpzioniEsperimento {
 }
 
 export const PORTA_ESPERIMENTI = 4710;
-const PORTA_PARTITA = 4610;
+export const PORTA_PARTITA = 4610;
 const PORTE_RISERVATE = new Set([4611, 4612]);
+/** Voce Qwen della partita vera: un'istanza di prova non la usa mai, nemmeno con --voce-vera. */
+const PORTA_VOCE_PARTITA = 4611;
 const CAMPAGNA_DEFAULT = 'prova-f0';
 
 export class ErroreArgomenti extends Error {}
@@ -69,6 +75,26 @@ function valoreOpzione(argv: string[], nome: string): string | null {
   const v = argv[i + 1];
   if (!v || v.startsWith('--')) throw new ErroreArgomenti(`${nome} vuole un valore`);
   return v;
+}
+
+/**
+ * Indirizzo del servizio voce Qwen a parte, per `--voce-vera` su una porta di prova. Il servizio lo avvia chi prova
+ * (scripts/voce-avvio.sh con VOCE_PORTA su un'altra porta) e si dà con TAGM_VOCE_URL. Il 4611 è la voce della
+ * partita vera: non si tocca, né si usa, da una prova.
+ */
+export function urlVoceDiProva(porta: number, urlTesto: string | undefined): string {
+  if (!urlTesto) throw new ErroreArgomenti(`--voce-vera su una porta di prova vuole TAGM_VOCE_URL=http://127.0.0.1:<porta> (il servizio Qwen avviato a parte)`);
+  let porte: number;
+  try {
+    porte = Number(new URL(urlTesto).port || 80);
+  } catch {
+    throw new ErroreArgomenti(`TAGM_VOCE_URL non è un indirizzo valido: ${urlTesto}`);
+  }
+  if (porte === PORTA_VOCE_PARTITA || PORTE_RISERVATE.has(porte)) {
+    throw new ErroreArgomenti(`TAGM_VOCE_URL punta alla porta ${porte}, che è della partita vera (voce o Vite): usa un servizio a parte su un’altra porta`);
+  }
+  if (porte === porta) throw new ErroreArgomenti(`TAGM_VOCE_URL (porta ${porte}) è la stessa porta del server di prova`);
+  return urlTesto;
 }
 
 export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsperimento {
@@ -108,8 +134,7 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
     throw new ErroreArgomenti('la 4610 è la partita vera: l’esperimento riavvierebbe quel server. Usa un’altra TAGM_PORTA, o --partita-vera se è proprio quello che vuoi.');
   }
   const voceVera = argv.includes('--voce-vera');
-  // avvio.sh su una porta di prova forza la voce finta: una «voce vera» lì sarebbe una bugia nel riepilogo.
-  if (voceVera && porta !== PORTA_PARTITA) throw new ErroreArgomenti('--voce-vera c’è solo sulla 4610 (le istanze di prova hanno sempre la voce finta)');
+  const voceUrl = voceVera && porta !== PORTA_PARTITA ? urlVoceDiProva(porta, env['TAGM_VOCE_URL']) : null;
 
   const url = env['E2E_URL'] ?? `http://127.0.0.1:${porta}`;
   const portaUrl = Number(new URL(url).port || 80);
@@ -133,6 +158,7 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
     url,
     cartellaLog: porta === PORTA_PARTITA ? CARTELLA_LOG : path.join(CARTELLA_LOG, `porta-${porta}`),
     voceVera,
+    voceUrl,
     finto,
     lasciaServer: argv.includes('--lascia-server'),
     etichetta,

@@ -143,13 +143,28 @@ which the server reads in `apps/server/src/config.ts` (without `PORT` it is 4610
   `logs/porta-<porta>/web` (`apps/web/dist`, which serves the real game, is not touched);
 - use the fake voice, or drama-3 with `--fish`, **never the Qwen service on 4611**: it belongs to the real game, and the
   Qwen fallback of drama-3 is switched off. A separate Qwen service that you start yourself, on another port, is
-  allowed: give its address with `TAGM_VOCE_URL=http://127.0.0.1:<porta>`;
+  allowed: give its address with `TAGM_VOCE_URL=http://127.0.0.1:<porta>`. With it, `scripts/avvio.sh` uses that
+  service even if the configuration says drama-3 (an explicit address wins over the configuration). Port 4611 is refused;
+  the address must not be the test server's own port;
 - share the local model server on 4613 with the real game: don't run an automatic test while a real game is on;
 - do not start the scriptwriter, unless you set `TAGM_SCENEGGIATORE=si`;
 - always start from a new session. To resume the saved one, start with
   `TAGM_NUOVA_SESSIONE=0 TAGM_PORTA=<porta> scripts/avvio.sh` (with `partita.sh` on a test port you always
   start again from scratch);
 - stop only with the same `TAGM_PORTA`.
+
+The automatic harness (`apps/server/src/esperimenti/esegui.ts`) has the same rule with the flag `--voce-vera`:
+on a test port it uses the real local voice only if `TAGM_VOCE_URL` points to a service of yours on another port,
+and it refuses to start without that address or with 4611. Without `--voce-vera` the voice is the fake one, as before.
+On 4610 the flag keeps the voice service of the real game on (`--tieni-voce`), as before.
+
+Start the separate service with the same script, on its own port (its log is still `logs/voce.out`):
+
+```
+VOCE_PORTA=4856 scripts/voce-avvio.sh
+TAGM_PORTA=4855 TAGM_VOCE_URL=http://127.0.0.1:4856 npx tsx apps/server/src/esperimenti/esegui.ts indagine B --voce-vera --turni 2
+VOCE_PORTA=4856 scripts/voce-arresto.sh
+```
 
 ### Examples
 

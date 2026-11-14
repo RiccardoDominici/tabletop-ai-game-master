@@ -423,3 +423,7 @@ For the second pass: `giudizio-fase1-prompt-2.md`, `giudizio-fase2-prompt-2.md` 
 check of the lexicon runs from a checkout with `npx tsx esperimenti/e2e-finale/ascolta-nomi.mts <checkout> torre-mozza <ISO time>
 [max lines]`. It transcribes the drama-3 lines of `cache/audio-fish/` created after that time, and its output for this pass is
 `esperimenti/e2e-finale/ascolta-nomi-torre-mozza.txt`.
+
+Harness voice: the runs in §4 used the fake voice (`--mock`). Since then the harness takes the real local voice on a test
+port with `--voce-vera` and `TAGM_VOCE_URL=http://127.0.0.1:<porta>` (a Qwen service started on that port, never 4611): see
+`docs/guide/development.md`, «Trials on another port». Without `--voce-vera` the runs are unchanged.

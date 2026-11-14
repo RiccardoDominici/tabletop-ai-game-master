@@ -27,3 +27,33 @@ describe('opzioni --ore e --chiudi', () => {
     expect(() => leggiOpzioni([copione, 'B', '--ore', 'tanto'], env)).toThrow(/--ore/);
   });
 });
+
+describe('--voce-vera', () => {
+  const voce = 'http://127.0.0.1:4856';
+
+  it('senza il flag la voce è finta e nessun servizio a parte è usato', () => {
+    expect(leggiOpzioni([copione, 'B'], { ...env, TAGM_VOCE_URL: voce })).toMatchObject({ voceVera: false, voceUrl: null });
+  });
+
+  it('su una porta di prova con TAGM_VOCE_URL di un servizio a parte: la voce vera è quel servizio', () => {
+    expect(leggiOpzioni([copione, 'B', '--voce-vera'], { ...env, TAGM_VOCE_URL: voce })).toMatchObject({ voceVera: true, voceUrl: voce });
+  });
+
+  it('su una porta di prova senza TAGM_VOCE_URL è un errore che lo dice', () => {
+    expect(() => leggiOpzioni([copione, 'B', '--voce-vera'], env)).toThrow(/TAGM_VOCE_URL/);
+  });
+
+  it('non usa mai la 4611 (voce della partita vera), né la 4612, né la stessa porta del server di prova', () => {
+    expect(() => leggiOpzioni([copione, 'B', '--voce-vera'], { ...env, TAGM_VOCE_URL: 'http://127.0.0.1:4611' })).toThrow(/4611/);
+    expect(() => leggiOpzioni([copione, 'B', '--voce-vera'], { ...env, TAGM_VOCE_URL: 'http://localhost:4612' })).toThrow(/4612/);
+    expect(() => leggiOpzioni([copione, 'B', '--voce-vera'], { ...env, TAGM_VOCE_URL: 'http://127.0.0.1:4799' })).toThrow(ErroreArgomenti);
+  });
+
+  it('un indirizzo non valido è un errore', () => {
+    expect(() => leggiOpzioni([copione, 'B', '--voce-vera'], { ...env, TAGM_VOCE_URL: 'non un url' })).toThrow(/TAGM_VOCE_URL/);
+  });
+
+  it('sulla 4610 il flag resta quello di prima: tiene acceso il servizio della partita, nessun URL a parte', () => {
+    expect(leggiOpzioni([copione, 'B', '--voce-vera', '--partita-vera'], { TAGM_PORTA: '4610', TAGM_VOCE_URL: voce })).toMatchObject({ voceVera: true, voceUrl: null });
+  });
+});
