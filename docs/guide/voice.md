@@ -116,7 +116,7 @@ The local Qwen voice reads only the words: it does not receive the directions.
 - It needs its Python environment, `services/voce/.venv`, and the model on disk: `python3 -I strumenti/configura/configura.py --scarica` downloads it. The service starts with no network and downloads nothing by itself. All the commands are in [installation](installation.md), steps 6 and 7.
 - It runs on `127.0.0.1:4611`: only the server calls it, from the Mac itself.
 - `scripts/partita.sh` starts it by itself when the voice is the local one (step «2/4 Avvio la voce locale (Qwen3-TTS): può volerci qualche minuto…», meaning: starting the local voice, it can take a few minutes). By hand: `scripts/voce-avvio.sh` and `scripts/voce-arresto.sh`. The log is `logs/voce.out`.
-- At start it loads the model and warms up every voice: 20–22 seconds on the reference Mac (measured on 2 November 2026, `services/voce/README.md`).
+- At start it loads the model and warms up every voice: 20–50 seconds on the reference Mac. The first start after a reboot is the slowest (48 s measured on 14 November 2026; 20–22 s on 2 November, `services/voce/README.md`).
 - Memory: 2.2 GB at rest and a peak of 3.5 GB in the same measurement. The header of `scripts/partita.sh` says up to 7 GB of RAM.
 - It generates only a little faster than the audio plays. With the Mac busy (browser, Docker, image generation) it can fall behind: close what you do not need. See [common problems](common-problems.md#battery-and-heat-with-the-local-voice-qwen).
 - The Qwen voices clone an Italian reference clip. They speak English from it too, with the accent of the clip.
