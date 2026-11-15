@@ -1,4 +1,4 @@
-# To do (updated 14 November 2026)
+# To do (updated 15 November 2026)
 
 Living list of open items, with who is handling each one. The decisions taken are in the project documents.
 Checked on 14 November 2026 against the commits of 2–12 November (the last commit is 12 November), against
@@ -12,31 +12,32 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 - the online documentation updated once everything works.
 
 ## In progress
-- **Checks and rolls (in progress, 15 November 2026; steps 1–6 below closed the same day, open leftovers marked)**: manual player rolls (default), automatic as an option, checks asked
-  from the panel, the Game Master's background rolls, surprise, the C4 harness fix and the live verification are committed
-  (d14f89c…d2f7ba4; evidence in docs/prove-verifica.md, live runs on both rule sets in manual and automatic mode done).
-  Remaining, in order:
-  1. ~~World dice without sheets~~ **Done**: the world hands its own saved dice to the roll hook with every request, and
-     the Game Master roll path uses them when there are no Engine dice, so a resume replays them and the log, the panel
-     and the voice line stay (mondo/tiri.ts, prove/tiri-master.ts, Regia.nuovoMondo).
-  2. ~~Dictation into the roll card~~ **Done**: end to end with the real Whisper (apps/web/e2e/tiro-dettato.spec.ts,
-     docs/prove-verifica.md §6b).
-  3. ~~World questions and NPCs' own checks out of combat~~ **Done**: `domande` of the scene sheet (odds or an NPC's
-     check with its sheet), rolled once through the Game Master's path, the answer a world line for the narrator;
-     validator `DOMANDE`, skill, guide, example in torre-mozza (mondo/domande.ts, docs/prove.md §9).
-  4. ~~DC choice~~ **Done**, partly: the rules arbiter follows the set's ladder from signals in the action and the scene
-     (prove/difficolta.ts: 17/20 → 20/20, 7/10 → 9/10 on ten new actions); Haiku's prompt says heavy is not impossible
-     (15.3 → 18.0 of 20 over three runs, 10 → 9 of 10). Open: Haiku still answers «impossibile» for lifting a cart, with
-     a reason that contradicts it (docs/prove-verifica.md §5): a reason-first field or a deterministic check.
-  5. ~~v1 limits of manual rolls~~ **Done**: every die of a PC is the player's, asked round after round from dry runs
-     on a copy of the Engine (damage after a hit, initiative, death saves, the contest's other PC); the 2d6 difficulty
-     stays secret (prove/dadi-tavolo.ts, docs/prove.md §8). Left with the Engine: NPC and side rolls, morale, the first
-     initiative of a fight opened from the panel.
-  6. ~~Not seen live: morale, flight~~ **Done** live on torre-mozza with every die manual (docs/prove-verifica.md §6b);
-     initiative by sides still unit tests only (no example set uses it); a duplicate «Zirrà fugge.» line after a
-     narration that told the flight is open. ~~C5 minions without sheets~~ **Done**:
-     `gregari` stat lines by type and per scene, materialised as the Engine's combatants; an attack at nobody with stats
-     tells the narrator not to invent one; validator `SCHEDA.gregari` (campagna/gregari.ts, docs/prove.md §2).
+- **Checks and rolls (15 November 2026)**: manual player rolls (default), automatic as an option, checks asked from the
+  panel, the Game Master's background rolls, surprise, the C4 harness fix and the first live verification
+  (d14f89c…d2f7ba4); then the six remaining steps, closed the same day (evidence in docs/prove-verifica.md):
+  1. ~~World dice without sheets~~ **Done** (4207e54): the world hands its own saved dice to the roll hook, the Game
+     Master path uses them when there are no Engine dice; a resume replays them, the log, panel and voice line stay.
+  2. ~~Manual rolls cover all the player's own rolls~~ **Done** (1556ad5): damage after a hit, initiative, death saves,
+     the contest's other PC, asked round after round from dry runs on a copy of the Engine (prove/dadi-tavolo.ts); the
+     2d6 difficulty stays out of the phone's bonus; a switch to the Engine holds for the turn.
+  3. ~~World questions and NPCs' own checks out of combat~~ **Done** (9155e4c): `domande` of the scene sheet (odds or
+     an NPC's check with its sheet) through the Game Master's path; validator `DOMANDE`, skill, guide, torre-mozza.
+  4. ~~DC choice~~ **Done, partly** (4fce41b): the rules arbiter follows the set's ladder from signals in the action and
+     the scene (17/20 → 20/20, 7/10 → 9/10 on ten new actions); Haiku 15.3 → 18.0 of 20 over three runs, 10 → 9 of 10.
+  5. ~~C5 attacks on creatures without a sheet~~ **Done** (c9298ad): minions (`gregari`) with a stat line by type;
+     an attack at nobody with stats tells the narrator not to invent one; validator `SCHEDA.gregari`.
+  6. ~~Live checks~~ **Done** (df6ffb3): dictation into the roll card end to end with the real Whisper
+     (apps/web/e2e/tiro-dettato.spec.ts); a Basic Fantasy fight on torre-mozza with every die manual, morale failed and
+     the goblin fled (docs/prove-verifica.md §6b).
+  Still open:
+  - Haiku still answers «impossibile» for lifting a cart, with a `motivo` that contradicts the verdict (the verdict
+    field comes before the reason): a reason-first field or a deterministic check (docs/prove-verifica.md §5);
+  - initiative by sides is unit-tested only (no example campaign's set uses it);
+  - the told-facts guard added a duplicate «Zirrà fugge.» after a narration that told the flight («sparisce oltre il
+    crollo»);
+  - a fight opened from the panel rolls the PCs' first initiative with the Engine's dice; side rolls stay the Engine's;
+  - «the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll);
+  - no example campaign uses minions yet; world questions and minions not yet seen in a live run.
 - **Final end-to-end pass on today's code** (not started): blind scripts for combat in turn order, off the rails (ignore the hook, attack the quest-giver, leave), doing nothing (stall), plus one dictated action; profiles A and B. Run it with one model server at a time (the Mac rebooted twice under memory pressure on 14 November).
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.
   Done, by step: research (c0ebcc1), design (96b59e7, 6e2df77), `strumenti/strati.py` (09b3ef4), validator of sessions and STATO/CONTINUITÀ (e02e26c, 8fcfe18), skill (a10a172), session packages and the server side (2d3f2d4, 5bc833b, 7201894).
