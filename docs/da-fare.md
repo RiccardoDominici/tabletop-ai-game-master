@@ -72,6 +72,11 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - **endings per state**: a way to tell the Engine that "the dramatic question has an answer" (outcomes of the scene with their gates), instead of entrusting the endings before the full clock to the themes. Open: 2117940 gives one ending per scene, not the outcomes with gates;
   - **object state**: who has what, at least for the objects with an id in the scene (`elementi_interattivi`). Open;
   - ~~**lines "per state" without `> pg`**~~ for the endings: done 3 November (at full clock, the ending and the closing are stated by the Engine, c98b34b); the validator no longer warns (`COPERTURA.finale_senza_azione` is removed, 82b1d32).
+- **World that moves: still open** (docs/mondo.md, 15 November; live runs in esperimenti/risultati/mondo-live-B/):
+  lines with their own `effetti.atteggiamento`; a dedicated theme-less line for torre-mozza's mark-3 consequence (today
+  `ber_salgo_io`, a filler the reader may use first, so the consequence falls back to `detto`); a live run with Haiku
+  (only the local reader was tried: no key on this machine); the 38 turns/hour default rests on one human evening in
+  the logs; a log line when a social check is not applied because it would make an NPC hostile. Open.
 - **World: Game Master command to set an NPC's attitude by hand** (docs/mondo.md §4). The Engine and the panel's «Mondo» box
   show attitudes changed in play, but the Game Master cannot change one from the panel yet. Postponed on 15 November while
   prove-tiri edits the /master panel. Open.
