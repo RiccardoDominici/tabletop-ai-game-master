@@ -8,7 +8,11 @@ soft move ignored opens a harder one). Code: `apps/server/src/mondo/`. Audit of 
 fronts and omens were read only by the validator and the Preparer, `avanza_quando` was a note, the attitudes were
 static, only S1 existed.
 
-**Status** (updated with each commit): §1–§5 built (`mondo/ritmo.ts`, `mondo/porte.ts`, `mondo/mondo.ts`, `mondo/atteggiamenti.ts`, `mondo/stallo.ts`, `campagna/mondo.ts`), except the Game Master panel's «Mondo» box (next commit).
+**Status**: §1–§5 built (`mondo/ritmo.ts`, `mondo/porte.ts`, `mondo/mondo.ts`, `mondo/atteggiamenti.ts`,
+`mondo/stallo.ts`, `campagna/mondo.ts`; panel: `apps/web/src/master/SezioneMondo.tsx`). Not built: the E12 classifier
+(«two inputs without a new decision»), `[atteggiamento]` in mode B (lines have no `effetti.atteggiamento` yet), a Game
+Master command to set an attitude by hand, and the conversion of the other example campaigns' free-text
+`avanza_quando` into gates.
 
 ## Principles
 1. **The Engine applies only what is written in a form it can read.** Free text stays a note for the narrator and

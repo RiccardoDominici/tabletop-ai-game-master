@@ -1,8 +1,8 @@
 /**
  * Griglia del pannello per lo schermo del Mac (1440–1920 px): tre colonne che scorrono ciascuna
  * per conto suo, così i comandi in alto restano sempre visibili.
- * - sinistra: scena e luogo, audio (musica, umori, effetti), situazioni, orologi (cosa c'è sul
- *   proiettore e cosa incombe);
+ * - sinistra: scena e luogo, audio (musica, umori, effetti), situazioni, orologi, mondo (cosa c'è sul
+ *   proiettore, cosa incombe e cosa è già cambiato nel mondo);
  * - centro: finestra, azioni, trascrizione (cosa succede adesso al tavolo);
  * - destra: note di regia, repertorio (solo modalità B), sessione salvata, registro dei comandi.
  * Sotto i 1280 px le colonne diventano due e la pagina scorre intera.
@@ -13,6 +13,7 @@ import { SezioneSituazioni } from './SezioneSituazioni';
 import { SezionePresenze } from './SezionePresenze';
 import { SezioneAudio } from './SezioneAudio';
 import { SezioneOrologi } from './SezioneOrologi';
+import { SezioneMondo } from './SezioneMondo';
 import { SezioneCombattimento } from './SezioneCombattimento';
 import { SezioneFinestra } from './SezioneFinestra';
 import { SezioneAzioni } from './SezioneAzioni';
@@ -33,6 +34,7 @@ export function Cruscotto({ stato }: { stato: StatoMaster }) {
         <SezioneAudio stato={stato} />
         <SezioneSituazioni stato={stato} />
         <SezioneOrologi stato={stato} />
+        <SezioneMondo stato={stato} />
         {stato.combattimento && <SezioneCombattimento stato={stato} />}
       </div>
 

@@ -235,6 +235,13 @@ the rules is also public: no secret words in a list of words.
 - **Clocks** (under the key `orologi`, outside `preparazione`): those the narrator must see, with a sign per
   segment and `segno_almeno_ogni`. For a long session, a session clock with `segno_almeno_ogni: serata`
   (mestiere.md §9).
+- **The world that moves** (docs/mondo.md; fields in schema.md, «orologi» and «preparazione»): what must move a
+  clock beyond time is a gate of `avanza_quando` (`{quando: lascia_scena, scena: …}`, `azione` with `temi`,
+  `prova_fallita`, `scontro`, a `battuta` or `indizio` that comes out); what a tick changes in the world is a
+  `conseguenza` (`cosa`, the sentence heard `detto`, the `tracce` found later if it happened off-screen, an NPC's
+  attitude or place, a hidden NPC that appears, a clue offered); an omen that must come to pass on its own has
+  `al_segno`. Write `detto` and `tracce` as sentences the narrator's voice reads as they are, with only what a PC
+  could perceive. The fronts' `orologi_extra` move only by gates: their consequences are off-screen and need `tracce`.
 - **Villain** with agenda (C3), abstract secrets (C6) and PC arcs (C8): all under `preparazione`.
 - **Session** (C9–C13): opening summary, five rooms, potential scenes, a closing with an open choice, and
   `colli_di_bottiglia_nota`.

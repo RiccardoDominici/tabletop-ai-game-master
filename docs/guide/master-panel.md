@@ -47,7 +47,7 @@ The token is the key to the panel: whoever knows it controls the table.
 
 At the top is the header with the main commands, always in view. Below, three columns (on the Mac screen):
 
-- **left**: what is on the projector and what is looming: scene and place, characters, audio, situations, clocks;
+- **left**: what is on the projector and what is looming: scene and place, characters, audio, situations, clocks, the world;
 - **centre**: what is happening at the table now: window, actions, transcript;
 - **right**: director's notes, repertoire, session, log.
 
@@ -128,6 +128,20 @@ The threat clocks of the scene: a row of boxes, filled up to the tick already sh
   [docs/mondo.md](../mondo.md) §1).
 - "completo" (full): the clock is full. With spoilers visible, the panel says what happens "a orologio completo" (when the clock is full).
 - "non ancora partito" (not started yet): the clock is waiting for a line or a clue. +1 starts it by hand.
+
+### World
+
+**Mondo** (World): what has changed in the world during the evening ([docs/mondo.md](../mondo.md)).
+
+- **Stalli di fila** (Stalls in a row): how many windows in a row closed without actions, and which move the world makes
+  next (S1 a sign of the danger, S2 a clue that arrives, S3 a summary of the leads).
+- The ticks a clock owes to facts of the game (a gate of `avanza_quando`), also of clocks that are not on stage.
+- **Atteggiamenti cambiati** (Attitudes changed): each NPC whose attitude towards a PC is no longer the one of its sheet,
+  with the turn and the cause (`narratore`, `prova` for a social check, `conseguenza` of a tick).
+- **Cronaca** (Log): the consequences of ticks and omens, newest first, each «visto» (seen: the PCs were there) or
+  «fuori scena» (off-screen), and «emerso al tN» when its traces reached the table.
+
+The changes are saved with the session and written into `registro.yaml` at the end of the session, for the next one.
 
 ### Combat
 
@@ -227,7 +241,8 @@ When it is on, the panel hides:
 - the name, the ticks and the "a orologio completo" (when the clock is full) of the clocks (you only see something like "Orologio 1 · segni 1/6 · dovuto");
 - the text of private actions (who wrote them and their status stay visible);
 - the lines not yet used (only how many there are, per speaker) and the real type of those already used;
-- the situations not on air.
+- the situations not on air;
+- in the **Mondo** box, what happened in the world's log and the names of the clocks that owe ticks.
 
 Commands, statuses, counts, transcript, log and notes remain visible. Turn it off only if you are not playing, or when you really need to see everything.
 

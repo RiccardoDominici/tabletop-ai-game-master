@@ -103,7 +103,7 @@ import { sezioneNoteRegia } from '../narrazione/messaggio';
 import { MotoreProve, type AzionePerProve } from '../prove/motore';
 import type { ArbitroProve, DecisioneProva, DecisioneRegole, EsitoTurnoProve } from '../prove/tipi';
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
-import type { CombattimentoMaster } from '@tabletop-ai-gm/shared';
+import type { CombattimentoMaster, MondoMaster } from '@tabletop-ai-gm/shared';
 import type { FonteDadi } from '../prove/dadi';
 import { regolaEsiti, titoloEsiti } from '../prove/testi';
 import { guardiaRifiuti } from '../narrazione/guardia-rifiuti';
@@ -112,6 +112,7 @@ import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dov
 import { guardiaPrivate } from '../narrazione/privato';
 import type { SchedaNumerica } from '../campagna/schede';
 import { MondoInGioco } from '../mondo/mondo';
+import type { CambioAtteggiamento } from '../mondo/atteggiamenti';
 import type { FattoDelGioco } from '../mondo/porte';
 import { mossaDiStallo, type MossaStallo } from '../mondo/stallo';
 import { indiziCampagna } from '../campagna/indizi';
@@ -1057,6 +1058,23 @@ export class Regia {
     this.o.log.info({ png: id_png, scena: this.campagna.scena.id }, 'scena: PNG nascosto rivelato dal master');
     this.notifica();
     return { ok: true };
+  }
+
+  /** The world for the Game Master panel (docs/mondo.md): attitudes changed, the world's log, owed marks, stalls. */
+  get mondoMaster(): MondoMaster {
+    const att = this.mondo.atteggiamenti;
+    const ultimo = new Map<string, CambioAtteggiamento>();
+    for (const c of att.cambi) ultimo.set(`${c.png}>${c.pg}`, c);
+    return {
+      atteggiamenti: [...ultimo.values()]
+        .filter((c) => att.stato(c.png, c.pg) !== att.base(c.png, c.pg))
+        .map((c) => ({ png: c.png, nome: voceDi(this.campagna, c.png).nome, pg: c.pg, nome_pg: this.nomePg(c.pg), stato: c.a, base: att.base(c.png, c.pg), turno: c.turno, causa: c.causa })),
+      cronaca: this.mondo.cronaca.slice(-20).map((v) => ({ turno: v.turno, id: v.id, tipo: v.tipo, orologio: v.orologio, segno: v.segno, cosa: v.cosa, visto: v.visto, emerso_al_turno: v.emerso_al_turno ?? null })),
+      debiti: Object.entries(this.orologi.esporta())
+        .filter(([, s]) => (s.debito ?? 0) > 0)
+        .map(([id, s]) => ({ orologio: id, nome: this.orologi.trova(id)?.nome ?? id, debito: s.debito ?? 0 })),
+      stallo: this.mondo.stallo.n,
+    };
   }
 
   /** Presenze per il pannello del master (anche i PNG mai incontrati). */

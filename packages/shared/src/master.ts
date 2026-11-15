@@ -185,6 +185,22 @@ export interface StatoMaster {
    * del set. Lo scontro in corso è in `tavolo.combattimento`. Assente senza dadi.
    */
   combattimento?: CombattimentoMaster;
+  /** The world that moves (docs/mondo.md). Absent on servers that do not have it. */
+  mondo?: MondoMaster;
+}
+
+/**
+ * The world that moves (docs/mondo.md), for the panel: attitudes changed in play, the world's log (consequences of
+ * marks, omens, off-screen events), marks owed by facts, the stall counter. `cosa` may be secret: the panel shows it
+ * only with spoilers visible.
+ */
+export interface MondoMaster {
+  atteggiamenti: Array<{ png: string; nome: string; pg: string; nome_pg: string; stato: string; base: string | null; turno: number; causa: string }>;
+  cronaca: Array<{ turno: number; id: string; tipo: string; orologio: string; segno: number; cosa: string; visto: boolean; emerso_al_turno: number | null }>;
+  /** Clocks with marks owed by facts (avanza_quando gates), active or not. */
+  debiti: Array<{ orologio: string; nome: string; debito: number }>;
+  /** Consecutive stalls so far (0 = none). */
+  stallo: number;
 }
 
 export interface CombattimentoMaster {

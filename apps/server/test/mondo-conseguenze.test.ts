@@ -205,5 +205,8 @@ describe('server, mode A: the table hears what the PCs could perceive', () => {
     expect(String(cambio['testo'])).toContain("Sul ponte c'è il mugnaio, coi sacchi buoni.");
     const st = await master.stato();
     expect(st.presenze?.find((p) => p.id === 'png_mugnaio')?.presente).toBe(true);
+    // The Game Master panel's «Mondo»: the log with seen / off-screen / surfaced, and the attitude changed.
+    expect(st.mondo?.cronaca.map((v) => `${v.id}:${v.visto}:${v.emerso_al_turno}`)).toEqual(['o_piena@1:true:null', 'o_piena@2:false:3']);
+    expect(st.mondo?.atteggiamenti).toMatchObject([{ png: 'png_mugnaio', pg: 'pg_anna', stato: 'ostile', base: 'indifferente', causa: 'conseguenza' }]);
   });
 });
