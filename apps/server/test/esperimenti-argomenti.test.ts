@@ -28,6 +28,15 @@ describe('opzioni --ore e --chiudi', () => {
   });
 });
 
+describe('--tiri', () => {
+  it('who rolls the players\' dice on the test server: the campaign by default, or forced', () => {
+    expect(leggiOpzioni([copione, 'B'], env)).toMatchObject({ tiri: null });
+    expect(leggiOpzioni([copione, 'A', '--tiri', 'manuale'], env)).toMatchObject({ tiri: 'manuale', copione: 'breve' });
+    expect(leggiOpzioni([copione, 'A', '--tiri', 'automatico'], env)).toMatchObject({ tiri: 'automatico' });
+    expect(() => leggiOpzioni([copione, 'A', '--tiri', 'a_mano'], env)).toThrow(/--tiri/);
+  });
+});
+
 describe('--voce-vera', () => {
   const voce = 'http://127.0.0.1:4856';
 

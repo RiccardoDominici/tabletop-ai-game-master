@@ -167,6 +167,18 @@ TAGM_PORTA=4855 TAGM_VOCE_URL=http://127.0.0.1:4856 npx tsx apps/server/src/espe
 VOCE_PORTA=4856 scripts/voce-arresto.sh
 ```
 
+Who rolls the players' dice in a harness run: by default what the campaign says (`regole.tiri_giocatori`, players at
+the table unless the campaign chose `automatico`). With manual rolls each headless phone answers its roll requests
+with its own fair dice, a moment later, as a player would; `riepilogo.json` lists them (`tiri_al_tavolo`). To force
+one mode on the test server use `--tiri manuale` or `--tiri automatico`:
+
+```
+TAGM_PORTA=4891 npx tsx apps/server/src/esperimenti/esegui.ts torre-mozza/pressione A --campagna torre-mozza --tiri automatico
+```
+
+In turn-based combat the harness sends only the actions of the PCs on turn; the others wait for their own turn
+(`esperimenti/copioni/README.md`).
+
 ### Examples
 
 ```

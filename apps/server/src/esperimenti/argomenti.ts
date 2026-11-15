@@ -2,12 +2,14 @@
  * Argomenti e ambiente di un esperimento (esegui.ts): copione, modalità, campagna, porta.
  *
  *   esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore]
- *             [--ore h] [--chiudi] [--voce-vera] [--finto] [--lascia-server] [--partita-vera]
+ *             [--ore h] [--chiudi] [--tiri manuale|automatico] [--voce-vera] [--finto] [--lascia-server] [--partita-vera]
  *             --voce-vera su una porta di prova richiede TAGM_VOCE_URL (un servizio Qwen a parte, mai la 4611)
  * --sceneggiatore accende lo sceneggiatore (Claude Code: ogni chiamata usa l'abbonamento); di base è spento.
  * --ore h dà al server la durata della serata (0,5–8 ore, come il pannello) prima dell'«Inizia»: con 0,5 il
  * preavviso di fine arriva dopo 10 minuti, così una prova breve vede il consiglio di chiusura. --chiudi, a
  * copione finito, dà «Chiudi la sessione» e aspetta la chiusura guidata e il riassunto della serata.
+ * --tiri overrides the campaign's `regole.tiri_giocatori` on the test server (TAGM_TIRI_GIOCATORI); with manual rolls
+ * the headless phones answer every roll request with their own dice (esegui.ts), as a player at the table would.
  *
  * Porta: TAGM_PORTA (default 4710, istanza di prova di scripts/avvio.sh: log e pagine in
  * logs/porta-<porta>/, voce finta, o Qwen a parte con --voce-vera e TAGM_VOCE_URL). La 4610 è la partita vera: si usa solo con
@@ -57,6 +59,8 @@ export interface OpzioniEsperimento {
   ore: number | null;
   /** `--chiudi`: a copione finito, «Chiudi la sessione» (chiusura guidata, riassunto della serata). */
   chiudi: boolean;
+  /** `--tiri manuale|automatico`: who rolls the players' dice on the test server (null = the campaign decides). */
+  tiri: 'manuale' | 'automatico' | null;
 }
 
 export const PORTA_ESPERIMENTI = 4710;
@@ -100,7 +104,7 @@ export function urlVoceDiProva(porta: number, urlTesto: string | undefined): str
 export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsperimento {
   // Chi chiama con un ambiente qualsiasi (test, altri strumenti) ottiene lo stesso mapping del server.
   allineaVariabiliLegacy(env);
-  const conValore = new Set(['--campagna', '--uscita', '--turni', '--pausa-s', '--ore']);
+  const conValore = new Set(['--campagna', '--uscita', '--turni', '--pausa-s', '--ore', '--tiri']);
   const posizionali: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
@@ -110,7 +114,7 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
   const [copione, etichettaModo] = posizionali;
   // «B2» è il repertorio con le regole della versione 2 (è la modalità repertorio di oggi).
   const modo: ModoEsperimento | null = etichettaModo === 'B' || etichettaModo === 'B2' ? 'repertorio' : etichettaModo === 'A' ? 'improvvisa' : null;
-  if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore] [--ore h] [--chiudi] [--voce-vera] [--finto] [--lascia-server]');
+  if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore] [--ore h] [--chiudi] [--tiri manuale|automatico] [--voce-vera] [--finto] [--lascia-server]');
 
   const campagna = valoreOpzione(argv, '--campagna') ?? CAMPAGNA_DEFAULT;
   const uscita = valoreOpzione(argv, '--uscita');
@@ -121,6 +125,9 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
   const oreTesto = valoreOpzione(argv, '--ore');
   const ore = oreTesto === null ? null : Number(oreTesto.replace(',', '.'));
   if (ore !== null && !(ore >= ORE_MIN && ore <= ORE_MAX)) throw new ErroreArgomenti(`--ore vuole un numero tra ${ORE_MIN} e ${ORE_MAX}`);
+  const tiriTesto = valoreOpzione(argv, '--tiri');
+  if (tiriTesto !== null && tiriTesto !== 'manuale' && tiriTesto !== 'automatico') throw new ErroreArgomenti('--tiri vuole manuale o automatico');
+  const tiri = tiriTesto as 'manuale' | 'automatico' | null;
   if (uscita !== null && (path.isAbsolute(uscita) || uscita.split(/[\\/]/).includes('..'))) throw new ErroreArgomenti('--uscita è una cartella dentro esperimenti/risultati');
   if (!/^[a-z0-9][a-z0-9_-]*$/i.test(campagna) || !fs.existsSync(path.join(RADICE_REPO, 'campagne', campagna))) {
     throw new ErroreArgomenti(`campagna inesistente: campagne/${campagna}`);
@@ -168,5 +175,6 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
     sceneggiatore: argv.includes('--sceneggiatore'),
     ore,
     chiudi: argv.includes('--chiudi'),
+    tiri,
   };
 }

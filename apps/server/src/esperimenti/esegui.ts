@@ -28,6 +28,7 @@
  */
 import '../variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve precedere le letture dell'ambiente
 import { spawnSync } from 'node:child_process';
+import { randomInt } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { io as connetti, type Socket } from 'socket.io-client';
@@ -106,6 +107,8 @@ function avviaServer(o: OpzioniEsperimento, token: string): void {
       // Ogni chiamata dello sceneggiatore usa l'abbonamento di Riccardo: solo se la prova lo chiede.
       TAGM_SCENEGGIATORE: o.sceneggiatore ? 'si' : 'no',
       TAGM_MASTER_TOKEN: token,
+      // Who rolls the players' dice (--tiri): absent = the campaign's regole.tiri_giocatori (manuale by default).
+      ...(o.tiri ? { TAGM_TIRI_GIOCATORI: o.tiri } : {}),
       // Il servizio voce a parte (--voce-vera su una porta di prova): avvio.sh lo usa solo se questa variabile c'è.
       ...(o.voceUrl ? { TAGM_VOCE_URL: o.voceUrl } : {}),
     },
@@ -116,6 +119,37 @@ function avviaServer(o: OpzioniEsperimento, token: string): void {
 
 function arrestaServer(o: OpzioniEsperimento): void {
   spawnSync(path.join(RADICE_REPO, 'scripts', 'arresto.sh'), ['--lascia-voce'], { env: { ...process.env, TAGM_PORTA: String(o.porta) }, encoding: 'utf8' });
+}
+
+/** A roll a headless player made at the table (manual rolls), for the run summary. */
+interface TiroGiocato {
+  pg: string;
+  id: string;
+  etichetta: string;
+  dadi: string;
+  valori: number[];
+  ok: boolean;
+}
+
+/**
+ * Manual rolls (docs/prove.md §8): a headless phone answers each of its roll requests as a player at the table would,
+ * a moment later, with its own fair dice (node:crypto). The request never carries the DC, so the harness cannot game it.
+ */
+function rispondiAiTiri(etichetta: string, pg: string, t: Client, giocati: TiroGiocato[]): void {
+  const fatti = new Set<string>();
+  t.on('tiri:richiesti', (richieste) => {
+    for (const r of richieste) {
+      if (fatti.has(r.id)) continue;
+      fatti.add(r.id);
+      const valori = Array.from({ length: r.quanti }, () => randomInt(1, r.facce + 1));
+      setTimeout(() => {
+        t.emit('tiro:inserisci', { id_pg: pg, id: r.id, valori }, (e: Esito) => {
+          giocati.push({ pg, id: r.id, etichetta: r.etichetta, dadi: `${r.quanti}d${r.facce}`, valori, ok: e.ok });
+          console.log(`[${etichetta}] ${pg} rolls ${r.etichetta} (${r.quanti}d${r.facce}${r.modificatore ? ` ${r.modificatore > 0 ? '+' : ''}${r.modificatore}` : ''}): ${valori.join(', ')}${e.ok ? '' : ` refused: ${e.errore}`}`);
+        });
+      }, 400);
+    }
+  });
 }
 
 /** Come è finita la partita prima della fine del copione: il finale ha chiuso la scena, o il tavolo si è fermato. */
@@ -303,12 +337,15 @@ async function main(): Promise<void> {
   osservatore.unisci(osservato.stato);
   const master = await MasterHeadless.entra(apri(), token);
   const telefoni = new Map<string, Client>();
+  const tiriGiocati: TiroGiocato[] = [];
   for (const pg of copione.pg) {
     const t = apri();
     await emetti<StatoTavolo>((cb) => t.emit('telefono:entra', cb));
     const e = await emetti<Esito>((cb) => t.emit('telefono:scegli_pg', { id_pg: pg }, cb));
     if (!e.ok) throw new Error(`scelta di ${pg} rifiutata: ${e.errore}`);
     telefoni.set(pg, t);
+    // Manual rolls: the headless player rolls its own dice at the table and enters them (docs/prove.md §8).
+    rispondiAiTiri(etichetta, pg, t, tiriGiocati);
   }
 
   // 3. Scena di partenza del copione (prima dell'inizio il cambio non legge nessuna apertura), poi i turni.
@@ -384,6 +421,8 @@ async function main(): Promise<void> {
     turni_copione: copione.turni.length,
     cambi_di_scena: cambiScena,
     fine_prima_del_copione: fine,
+    // Manual rolls: who rolled what at the table (empty with automatic rolls).
+    tiri_al_tavolo: { modo: o.tiri ?? 'campagna', tiri: tiriGiocati },
     // Combat (bug C4): windows where a PC with a scripted action waited for its own turn, and PCs on turn that passed.
     combattimento_copione: { in_attesa_del_turno: inAttesaDelTurno, passate },
     // Il finale (detto dal Motore o dal selettore) e gli orologi turno per turno: le misure del playtest.
