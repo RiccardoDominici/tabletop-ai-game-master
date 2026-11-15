@@ -24,7 +24,7 @@ aspetto:
   situazioni:
     - id: col_cervo
       dopo: [i_cervo, ugo_notte_cervo, ugo_notte_promessa]
-      prompt: "the old charcoal burner stands in his branch hut beside a freshly killed deer hanging from a beam, a wire snare around its neck, holding his felt hat in his hands"
+      prompt: "the old charcoal burner stands in his branch hut beside a DEAD deer, limp and lifeless, its legs hanging down, hung by its hind legs from a beam, a wire snare around its neck, holding his felt hat in his hands"
 personalita:
   superficie: ["burbero, risponde a monosillabi", "sputa per terra quando sente nominare il paese"]
   sotto_pressione: ["smette di brontolare e diventa gentile in modo goffo, offre da bere"]
