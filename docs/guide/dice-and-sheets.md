@@ -45,6 +45,7 @@ A campaign chooses it when it is created: `regole.tiri_giocatori` in `campagna.y
   - a forgotten roll does not block the table for good: in the panel, **Tiri** (Rolls), the Game Master types the dice the player says, or presses **Tira il Motore** (the Engine rolls) for that roll, or **Tutti al Motore** for all of them. There is no timer: a table waits for its dice.
   - Only the action's own die is the player's. Damage, NPC rolls, initiative, death saves and morale are rolled by the Engine; so is the other PC's die in a contest between two PCs.
 - **`automatico`.** The program rolls for the players, as before: the card shows the DC too.
+- **The Game Master can ask for a check** from the panel («Chiedi una prova», [the Game Master panel](master-panel.md#rolls)): it goes through the same path, rolled by the player or by the program depending on the campaign.
 
 ```yaml
 # campagna.yaml

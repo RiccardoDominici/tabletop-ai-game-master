@@ -60,6 +60,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'pf',
   'condizione',
   'tiro',
+  'chiedi_prova',
 ]);
 
 /** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */
@@ -331,6 +332,17 @@ export class ControlliMaster {
         const e = regia.tiroDalMaster(id, valori);
         if (!e.ok) return rifiutoDi(`tiro_${e.motivo}`);
         return { esito: { ok: true }, dettagli: dettaglio(valori ? 'tiro_inserito' : 'tiro_automatico', { id, valori: valori?.join(', ') ?? '' }), dati: { id, valori } };
+      }
+      case 'chiedi_prova': {
+        // The Game Master asks a PC for a check (docs/prove.md §8): it joins the next closed window.
+        const id_pg = typeof c.id_pg === 'string' && ID_VALIDO.test(c.id_pg) ? c.id_pg : null;
+        const cosa = typeof c.cosa === 'string' && /^[a-z_]+:[A-Za-z0-9_]{1,60}$/.test(c.cosa) ? c.cosa : null;
+        const difficolta = c.difficolta === null || c.difficolta === undefined ? null : typeof c.difficolta === 'string' && ID_VALIDO.test(c.difficolta) ? c.difficolta : undefined;
+        const motivo = typeof c.motivo === 'string' ? c.motivo.trim().slice(0, 120) : '';
+        if (!id_pg || !cosa || difficolta === undefined) return rifiutoDi('prova_non_valida');
+        const esito = regia.chiediProva(id_pg, cosa, difficolta, motivo, c.privata === true);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: dettaglio('prova_chiesta', { id: id_pg, cosa, difficolta: difficolta ?? '-' }), dati: { id_pg, cosa, difficolta, privata: c.privata === true } };
       }
       case 'condizione': {
         const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : null;

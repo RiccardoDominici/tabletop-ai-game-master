@@ -203,6 +203,11 @@ prove:
     altro: "{nome}, tira: {cosa}{vantaggio}."
     con_vantaggio: ", con vantaggio"
     con_svantaggio: ", con svantaggio"
+  # A check the Game Master asked from the panel (scena/tiri-giocatori.ts): the pseudo-action's text, read by the
+  # narrator in the fact («Ciò che voleva NON succede («…»)»).
+  master:
+    azione: "prova chiesta dal master: {cosa}{motivo}"
+    motivo: ", per {motivo}"
   # PNG in scena fuori gioco (scena/regia.ts, righeFuoriGioco): nel messaggio del narratore e del selettore.
   fuori:
     titolo: "## PNG fuori gioco (lo dice il Motore: non parlano né agiscono, niente battute né righe [png_…] per loro)"

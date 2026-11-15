@@ -260,6 +260,7 @@ master:
     pf_non_validi: "Invalid character or HP."
     condizione_non_valida: "Invalid condition."
     tiro_non_valido: "Invalid roll."
+    prova_non_valida: "Invalid check, difficulty or character (it needs a PC with a sheet)."
     tiro_nessuna: "No roll is waiting with this name."
     tiro_gia: "This roll is already in."
     tiro_altro_pg: "This roll belongs to another character."
@@ -312,6 +313,7 @@ master:
     condizione_tolta: "{id}: {condizione} removed"
     tiro_inserito: "{id}: dice {valori} entered by the Game Master"
     tiro_automatico: "{id}: the Engine rolls"
+    prova_chiesta: "{id}: check {cosa} (difficulty {difficolta}) asked by the Game Master"
     effetto: "effect {id} on the projector"
   # Errors of the director's notes written from the panel (master/note.ts).
   note:

@@ -18,7 +18,7 @@ import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { Orologio } from '../turni/orologio';
 import type { SchedaNumerica } from '../campagna/schede';
 import { proveDellaScena, type ProvaScena } from '../campagna/prove-scena';
-import { nomeAbilita, nomeCaratteristica } from '../campagna/regole-srd';
+import { ABILITA, CARATTERISTICA_DI, CARATTERISTICHE, DIFFICOLTA, nomeAbilita, nomeCaratteristica, nomeDifficolta, type Abilita, type Caratteristica, type Difficolta as DifficoltaSrd } from '../campagna/regole-srd';
 import { testo } from '../lingua';
 import { nomeOppure } from './lingua';
 import { DadiCrittografici, type FonteDadi } from './dadi';
@@ -31,7 +31,7 @@ import type { ArbitroProve, AzioneDaClassificare, DecisioneProva, DecisioneRegol
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
 import { proveScenaRegole, risolviTurnoRegole } from './risolutore-regole';
 import { regolePerNarratore } from '../regole/narratore';
-import { regolaEsiti } from './testi';
+import { etichettaProva, etichettaSalvezza, regolaEsiti } from './testi';
 import { GestoreCombattimento } from './combattimento';
 import { attaccoDiRegole, classificaARegole, provaSocialeSrd, type IngressoClassificatore } from './classificatore-regole';
 import { combattimentoSrd, type Combattimento, type Fase } from '../regole/combattimento';
@@ -44,6 +44,15 @@ import type { CombattimentoMaster, CombattimentoPubblico, RichiestaTiroMaster } 
 
 /** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
 type Decisione = DecisioneProva | DecisioneRegole;
+
+/**
+ * A check the Game Master asked from the panel (docs/prove.md §8): a pseudo-action of that PC («m_<n>») with its
+ * decision already taken. It joins the next closed window and goes through the same requests, dice and facts.
+ */
+export interface ProvaDelMaster {
+  azione: AzionePerProve;
+  decisione: Decisione;
+}
 
 /** The decisions of a closed window (`MotoreProve.decidi`), before any die is rolled. */
 export interface DecisioniTurno {
@@ -300,12 +309,15 @@ export class MotoreProve {
    * With manual rolls the director splits it: `decidi`, then `richiesteGiocatori` (what each player must roll), the
    * wait for the dice at the table, then `completa` with the values entered (docs/prove.md §8).
    */
-  async risolvi(turno: number, azioni: AzionePerProve[]): Promise<EsitoTurnoProve> {
-    return this.completa(await this.decidi(turno, azioni));
+  async risolvi(turno: number, azioni: AzionePerProve[], delMaster: readonly ProvaDelMaster[] = []): Promise<EsitoTurnoProve> {
+    return this.completa(await this.decidi(turno, azioni, delMaster));
   }
 
-  /** What each action of the closed window rolls: the arbiter's decisions, then the deterministic rule passes. */
-  async decidi(turno: number, azioni: AzionePerProve[]): Promise<DecisioniTurno> {
+  /**
+   * What each action of the closed window rolls: the arbiter's decisions, then the deterministic rule passes. The checks
+   * the Game Master asked from the panel (`delMaster`) join the turn after the actions, already decided: no arbiter.
+   */
+  async decidi(turno: number, azioni: AzionePerProve[], delMaster: readonly ProvaDelMaster[] = []): Promise<DecisioniTurno> {
     const t0 = this.o.orologio.ora();
     const c = this.o.contesto();
     const decisioni = new Map<string, Decisione | null>();
@@ -374,7 +386,63 @@ export class MotoreProve {
     // Nello scontro a turni i PNG agiscono nel loro turno: niente reazioni in più dall'arbitro
     // (la e2e del 10 novembre: Ruggero colpiva due volte per round, di reazione e di turno).
     if (this.attivo && this.combattimento.aTurni) for (const [id, d] of decisioni) if (d?.reazione) decisioni.set(id, { ...d, reazione: null } as Decisione);
-    return { turno, azioni, decisioni, tardive, attesa_ms };
+    if (!this.attivo || !delMaster.length) return { turno, azioni, decisioni, tardive, attesa_ms };
+    for (const m of delMaster) decisioni.set(m.azione.id, m.decisione);
+    this.o.log.info({ turno, prove: delMaster.map((m) => ({ id: m.azione.id, pg: m.azione.autore, decisione: m.decisione })) }, 'prove: checks asked by the Game Master join the turn');
+    return { turno, azioni: [...azioni, ...delMaster.map((m) => m.azione)], decisioni, tardive, attesa_ms };
+  }
+
+  // ------------------------------------------------------------------ checks asked by the Game Master
+
+  /**
+   * What the Game Master can ask from the panel (docs/prove.md §8): every skill, ability and save of the set, and the
+   * set's difficulties (null value: a 2d6 or roll-under difficulty, not a number).
+   */
+  catalogoDelMaster(): { prove: Array<{ id: string; nome: string }>; difficolta: Array<{ id: string; nome: string; valore: number | null }> } {
+    const g = this.generico;
+    if (g) {
+      const s = g.regole.sistema;
+      return {
+        prove: [...s.abilita.map((a) => ({ id: `abilita:${a.id}`, nome: a.nome })), ...s.caratteristiche.map((c) => ({ id: `caratteristica:${c.id}`, nome: c.nome }))],
+        difficolta: s.difficolta.map((d) => ({ id: d.id, nome: d.nome, valore: d.valore ?? null })),
+      };
+    }
+    return {
+      prove: [
+        ...ABILITA.map((a) => ({ id: `abilita:${a}`, nome: etichettaProva(a, CARATTERISTICA_DI[a]) })),
+        ...CARATTERISTICHE.map((c) => ({ id: `caratteristica:${c}`, nome: etichettaProva(null, c) })),
+        ...CARATTERISTICHE.map((c) => ({ id: `salvezza:${c}`, nome: etichettaSalvezza(c) })),
+      ],
+      difficolta: (Object.keys(DIFFICOLTA) as DifficoltaSrd[]).map((d) => ({ id: d, nome: nomeDifficolta(d), valore: DIFFICOLTA[d] })),
+    };
+  }
+
+  /**
+   * The decision for a check the Game Master asks (`cosa` from `catalogoDelMaster`, difficulty id or null for the set's
+   * default). Null = unknown check or difficulty.
+   */
+  decisioneDelMaster(id: string, cosa: string, difficolta: string | null): Decisione | null {
+    const [tipo, chiaveCosa] = cosa.split(':');
+    if (!chiaveCosa) return null;
+    const base = { id, bersaglio: null, arma: null, prova_scena: null, abilita_bersaglio: null, vantaggio: null, motivo: '', aiuta: null, reazione: null };
+    const g = this.generico;
+    if (g) {
+      const s = g.regole.sistema;
+      if (difficolta !== null && !s.difficolta.some((d) => d.id === difficolta)) return null;
+      if (tipo === 'abilita' && s.abilita.some((a) => a.id === chiaveCosa)) return { ...base, tipo: 'prova', abilita: chiaveCosa, caratteristica: null, mossa: null, difficolta } as Decisione;
+      if (tipo === 'caratteristica' && s.caratteristiche.some((c) => c.id === chiaveCosa)) return { ...base, tipo: 'prova', abilita: null, caratteristica: chiaveCosa, mossa: null, difficolta } as Decisione;
+      return null;
+    }
+    if (difficolta !== null && !(difficolta in DIFFICOLTA)) return null;
+    const diff = difficolta as DifficoltaSrd | null;
+    if (tipo === 'abilita' && (ABILITA as readonly string[]).includes(chiaveCosa)) {
+      const a = chiaveCosa as Abilita;
+      return { ...base, tipo: 'prova', abilita: a, caratteristica: CARATTERISTICA_DI[a], difficolta: diff };
+    }
+    if ((tipo === 'caratteristica' || tipo === 'salvezza') && (CARATTERISTICHE as readonly string[]).includes(chiaveCosa)) {
+      return { ...base, tipo: tipo === 'salvezza' ? 'salvezza' : 'prova', abilita: null, caratteristica: chiaveCosa as Caratteristica, difficolta: diff };
+    }
+    return null;
   }
 
   /** One pass of the set's resolver over the turn's decisions (the real one, or a dry run on a copy of the state). */
@@ -409,7 +477,7 @@ export class MotoreProve {
     const out: RichiestaTiroMaster[] = [];
     for (const a of d.azioni) {
       const t = r.perAzione.get(a.id)?.tiri.find((x) => x.chi === a.autore && !x.di_png && !x.automatico && x.dadi.length > 0);
-      if (t) out.push(richiestaDaCarta(t, a.id, d.turno));
+      if (t) out.push({ ...richiestaDaCarta(t, a.id, d.turno), ...(a.id.startsWith('m_') ? { dal_master: true } : {}) });
     }
     return out;
   }

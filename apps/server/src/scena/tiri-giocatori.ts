@@ -21,7 +21,7 @@ import type { RiepilogoChiusura } from '../azioni/tavolo';
 import { testo } from '../lingua';
 import { AttesaTiri, type EsitoInserimento } from '../prove/attesa-tiri';
 import type { ModalitaTiri } from '../prove/modalita';
-import type { AzionePerProve, DecisioniTurno, MotoreProve } from '../prove/motore';
+import type { AzionePerProve, DecisioniTurno, MotoreProve, ProvaDelMaster } from '../prove/motore';
 import type { TiroInserito } from '../prove/richieste';
 
 /** What the wait gives the director's turn. */
@@ -61,8 +61,21 @@ export interface OpzioniTiriGiocatori {
   versoProve: (a: RiepilogoChiusura['azioni'][number]) => AzionePerProve;
 }
 
+/** A check the Game Master asked, waiting for the next closed window (the panel lists it). */
+export interface ProvaChiesta {
+  id: string;
+  id_pg: string;
+  /** What is rolled, as the catalogue names it («Percezione (Saggezza)»). */
+  nome: string;
+  difficolta: string | null;
+  privata: boolean;
+}
+
 export class TiriGiocatoriRegia {
   readonly attesa: AttesaTiri;
+  /** Checks the Game Master asked from the panel, for the next closed window (docs/prove.md §8). */
+  private delMaster: Array<ProvaDelMaster & { chiesta: ProvaChiesta }> = [];
+  private prossimaDelMaster = 1;
 
   constructor(private readonly o: OpzioniTiriGiocatori) {
     this.attesa = new AttesaTiri({ log: o.log, ora: () => o.orologio.ora(), cambiato: () => o.cambiato() });
@@ -79,11 +92,18 @@ export class TiriGiocatoriRegia {
    */
   async prima(r: RiepilogoChiusura): Promise<TiriGiocati | null> {
     const prove = this.o.prove;
-    if (!prove || !this.manuali || !r.azioni.length) return NESSUNA();
+    if (!prove?.attivo) return NESSUNA();
+    // The Game Master's checks join this turn (all of them: the panel asked them for «now»).
+    const delMaster = this.delMaster;
+    if (!r.azioni.length && !delMaster.length) return NESSUNA();
+    // Automatic rolls with no Game Master check: the director decides and rolls as before.
+    if (!this.manuali && !delMaster.length) return NESSUNA();
+    this.delMaster = [];
     const epoca = this.o.epoca();
     this.o.inizio();
-    const decisioni = await prove.decidi(r.turno, r.azioni.map((a) => this.o.versoProve(a)));
+    const decisioni = await prove.decidi(r.turno, r.azioni.map((a) => this.o.versoProve(a)), delMaster);
     if (epoca !== this.o.epoca()) return null;
+    if (!this.manuali) return { decisioni, inseriti: new Map(), attesa_ms: 0 };
     const richieste = prove.richiesteGiocatori(decisioni);
     if (!richieste.length) return { decisioni, inseriti: new Map(), attesa_ms: 0 };
     const t0 = this.o.orologio.ora();
@@ -96,6 +116,37 @@ export class TiriGiocatoriRegia {
 
   annulla(motivo: string): void {
     this.attesa.annulla(motivo);
+  }
+
+  /**
+   * The Game Master asks a PC for a check (`cosa`: «abilita:percezione», «salvezza:destrezza», «caratteristica:forza»;
+   * `difficolta`: an id of the set's scale, or null for its default). It joins the next closed window: the player rolls
+   * it at the table (manual) or the Engine rolls it, and the narrator gets the outcome as a fact.
+   */
+  chiedi(id_pg: string, nomePg: string, cosa: string, difficolta: string | null, motivo: string, privata: boolean): ProvaChiesta | null {
+    const prove = this.o.prove;
+    if (!prove?.attivo) return null;
+    const id = `m_${this.prossimaDelMaster}`;
+    const decisione = prove.decisioneDelMaster(id, cosa, difficolta);
+    const voce = prove.catalogoDelMaster().prove.find((p) => p.id === cosa);
+    if (!decisione || !voce) return null;
+    this.prossimaDelMaster += 1;
+    const testoAzione = testo('prove.master.azione', { cosa: voce.nome, motivo: motivo ? testo('prove.master.motivo', { motivo }) : '' });
+    const chiesta: ProvaChiesta = { id, id_pg, nome: voce.nome, difficolta, privata };
+    this.delMaster.push({ azione: { id, autore: id_pg, testo: testoAzione, privata, revisione: 0 }, decisione, chiesta });
+    this.o.log.info({ id, id_pg, pg: nomePg, cosa, difficolta, privata, motivo: motivo || null }, 'prove: the Game Master asks a check, it joins the next closed window');
+    this.o.cambiato();
+    return chiesta;
+  }
+
+  /** The Game Master's checks still waiting for a closed window. */
+  chieste(): ProvaChiesta[] {
+    return this.delMaster.map((m) => m.chiesta);
+  }
+
+  /** Restart: the checks asked for the old scene are forgotten. */
+  dimenticaChieste(): void {
+    this.delMaster = [];
   }
 
   /** A phone enters the dice its player rolled (only for its own PC). */

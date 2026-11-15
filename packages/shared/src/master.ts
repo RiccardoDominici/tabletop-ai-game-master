@@ -202,6 +202,12 @@ export interface TiriMaster {
   richieste: RichiestaTiroMaster[];
   /** The last turn's cards, DC and private ones included. */
   carte: TiroMostrato[];
+  /** What the Game Master can ask from the panel: the set's skills, abilities and saves, and its difficulties. */
+  catalogo: { prove: Array<{ id: string; nome: string }>; difficolta: Array<{ id: string; nome: string; valore: number | null }> };
+  /** The PCs with a sheet (who can be asked for a check). */
+  pg: Array<{ id: string; nome: string }>;
+  /** Checks the Game Master asked, waiting for the next closed window. */
+  chieste: Array<{ id: string; id_pg: string; nome_pg: string; nome: string; difficolta: string | null; privata: boolean }>;
 }
 
 /**
@@ -351,6 +357,12 @@ export type ComandoMaster =
    * it to the Engine's dice (`valori: null`); `id: '*'` switches every open request.
    */
   | { tipo: 'tiro'; id: string; valori: number[] | null }
+  /**
+   * The Game Master asks a PC for a check (docs/prove.md §8): `cosa` from `TiriMaster.catalogo.prove`
+   * («abilita:percezione»), `difficolta` an id of `catalogo.difficolta` or null for the set's default, `motivo` a few
+   * words for the narrator. It joins the next closed window.
+   */
+  | { tipo: 'chiedi_prova'; id_pg: string; cosa: string; difficolta: string | null; motivo?: string; privata?: boolean }
   /** Campagna a pacchetti: (fine sessione se serve, poi) si passa al pacchetto dopo, dal suo riassunto iniziale. */
   | { tipo: 'prossima_sessione' }
   /** Cambia (o dimentica, con null) il PG ricordato di un telefono: vale dal suo prossimo collegamento. */

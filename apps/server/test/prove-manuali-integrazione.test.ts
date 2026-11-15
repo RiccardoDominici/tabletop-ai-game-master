@@ -123,6 +123,41 @@ describe('manual rolls with the whole server', () => {
     expect(await emetti<Esito>((cb) => ida.emit('tiro:inserisci', { id_pg: 'pg_ida', id: 'r_x', valori: [3, 3] }, cb))).toMatchObject({ ok: false });
   });
 
+  it('the Game Master asks a check from the panel: it joins the next window, the player rolls it, the narrator gets it', async () => {
+    prova = new Prova();
+    const { url, messaggi } = await prova.avvia(prova.campagna('prove'), COPIONE, MANUALE, { arbitroProve: new ArbitroParole(), dadi: new DadiACopione([1]) });
+    const schermo = await prova.proiettore(url);
+    const ida = await prova.telefono(url, 'pg_ida');
+    const master = await prova.master(url);
+    const s1 = await inizia(schermo, ida);
+    // The panel offers the set's checks and difficulties, and the PCs with a sheet.
+    const sm = await master.stato();
+    expect(sm.tiri?.catalogo.prove).toEqual(expect.arrayContaining([{ id: 'abilita:percezione', nome: 'Percezione (Saggezza)' }, { id: 'salvezza:destrezza', nome: 'Tiro salvezza su Destrezza' }]));
+    expect(sm.tiri?.catalogo.difficolta).toEqual(expect.arrayContaining([{ id: 'difficile', nome: 'difficile', valore: 20 }]));
+    // Refused: an unknown check, a difficulty not of the set, a PC without sheet or unknown.
+    expect(await master.comanda({ tipo: 'chiedi_prova', id_pg: 'pg_ida', cosa: 'abilita:volare', difficolta: null })).toMatchObject({ ok: false });
+    expect(await master.comanda({ tipo: 'chiedi_prova', id_pg: 'pg_ida', cosa: 'abilita:percezione', difficolta: 'impossibilissima' })).toMatchObject({ ok: false });
+    expect(await master.comanda({ tipo: 'chiedi_prova', id_pg: 'pg_nessuno', cosa: 'abilita:percezione', difficolta: null })).toMatchObject({ ok: false });
+    expect(await master.comanda({ tipo: 'chiedi_prova', id_pg: 'pg_ida', cosa: 'abilita:percezione', difficolta: 'difficile', motivo: 'sentire i passi sul ponte' })).toEqual({ ok: true });
+    expect((await master.stato()).tiri?.chieste).toMatchObject([{ id_pg: 'pg_ida', nome: 'Percezione (Saggezza)', difficolta: 'difficile' }]);
+    // Nobody acts: «Risolvi ora» closes the window, the check is asked to Ida.
+    const richiesta = attendiEvento<RichiestaTiro[]>(ida, 'tiri:richiesti', (r) => r.length > 0);
+    expect(await master.comanda({ tipo: 'chiudi_finestra' })).toEqual({ ok: true });
+    const [r] = await richiesta;
+    expect(r).toMatchObject({ chi: 'pg_ida', etichetta: 'Percezione (Saggezza)', dal_master: true, quanti: 1 });
+    const dopo = attendi(ida, (x) => x.fase === 'finestra' && x.turno === 2);
+    expect(await emetti<Esito>((cb) => ida.emit('tiro:inserisci', { id_pg: 'pg_ida', id: r!.id, valori: [17] }, cb))).toEqual({ ok: true });
+    const s2 = await dopo;
+    expect(s2.turno).toBe(s1.turno + 1);
+    // Ida's Perception is +0: 17 against the «difficile» DC 20 the Game Master chose. Not a stall: no world move asked.
+    const m = messaggi.at(-1)!;
+    expect(m).toMatch(/Ida Ferraro: Percezione \(Saggezza\): 17 contro CD 20 → FALLITA/);
+    expect(m).toContain('prova chiesta dal master: Percezione (Saggezza), per sentire i passi sul ponte');
+    expect(m).not.toMatch(/^Stallo/m);
+    expect(s2.tiri![0]).toMatchObject({ chi: 'pg_ida', dadi: [17], totale: 17, contro_nascosto: true });
+    expect((await master.stato()).tiri?.chieste).toEqual([]);
+  });
+
   it('automatic rolls (the campaign or the instance says so): no request, no wait, the card keeps the DC', async () => {
     prova = new Prova();
     const { url } = await prova.avvia(prova.campagna('prove'), COPIONE, { TAGM_TIRI_GIOCATORI: 'automatico' }, { arbitroProve: new ArbitroParole(), dadi: new DadiACopione([4, 13]) });

@@ -103,7 +103,7 @@ import { sezioneNoteRegia } from '../narrazione/messaggio';
 import { MotoreProve, type AzionePerProve } from '../prove/motore';
 import type { ArbitroProve, DecisioneProva, DecisioneRegole, EsitoTurnoProve } from '../prove/tipi';
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
-import type { CombattimentoMaster, MondoMaster, RichiestaTiro, RichiestaTiroMaster } from '@tabletop-ai-gm/shared';
+import type { CombattimentoMaster, MondoMaster, RichiestaTiro, TiriMaster } from '@tabletop-ai-gm/shared';
 import type { FonteDadi } from '../prove/dadi';
 import { regolaEsiti, titoloEsiti } from '../prove/testi';
 import { guardiaRifiuti } from '../narrazione/guardia-rifiuti';
@@ -409,6 +409,8 @@ export class Regia {
   private readonly prove: MotoreProve | null;
   /** Manual rolls (docs/prove.md §8): the wait for the dice rolled at the table, between the window and the narrator. */
   private readonly tiriGiocatori: TiriGiocatoriRegia;
+  /** This turn has no action but a check the Game Master asked: it is not a stall (docs/prove.md §8). */
+  private soloProveDelMaster = false;
   /** Prove riuscite per azione nel turno che si sta narrando (cancello `richiede.prova` del repertorio). */
   private riuscitePerAzione = new Map<string, readonly string[]>();
   /** Prove fallite per azione nello stesso turno: chiudono le battute legate a quelle prove (D2). */
@@ -2141,6 +2143,7 @@ export class Regia {
     this.tavolo.azzera();
     // Punti ferita pieni, dadi con un seme nuovo, nessuna carta.
     this.prove?.azzera();
+    this.tiriGiocatori.dimenticaChieste();
     // Le note di regia contano i turni di questa scena: si riparte senza.
     this.note.azzera();
     this.situazioniMostrate.clear();
@@ -2725,16 +2728,38 @@ export class Regia {
     return this.tiriGiocatori.dalMaster(id, valori);
   }
 
+  /**
+   * The Game Master asks a PC for a check from the panel (docs/prove.md §8): it joins the next closed window. With the
+   * window open, «Risolvi ora» closes it at once.
+   */
+  chiediProva(id_pg: string, cosa: string, difficolta: string | null, motivo: string, privata: boolean): Esito {
+    if (!this.prove?.attivo) return { ok: false, errore: testoFisso('regia.errori.senza_dadi') };
+    const pg = this.campagna.pg.find((p) => p.id === id_pg);
+    if (!pg || !this.prove.stato.puntiFerita(id_pg)) return { ok: false, errore: testoFisso('master.rifiuti.prova_non_valida') };
+    const chiesta = this.tiriGiocatori.chiedi(id_pg, pg.nome, cosa, difficolta, motivo, privata);
+    if (!chiesta) return { ok: false, errore: testoFisso('master.rifiuti.prova_non_valida') };
+    return { ok: true };
+  }
+
   /** A PC's open requests (private ones included): for its phone when it (re)connects. */
   tiriRichiestiDi(id_pg: string): RichiestaTiro[] {
     return this.tiriGiocatori.delPg(id_pg);
   }
 
   /** For the panel: who rolls, the open requests with the DC, and the last turn's cards as rolled (DC included). */
-  get tiriMaster(): { giocatori: 'manuale' | 'automatico'; master: 'nascosti' | 'a_volte' | 'visibili'; richieste: RichiestaTiroMaster[]; carte: TiroMostrato[] } | null {
+  get tiriMaster(): TiriMaster | null {
     if (!this.prove?.attivo) return null;
     const m = this.o.prove?.tiri;
-    return { giocatori: this.tiriGiocatori.manuali ? 'manuale' : 'automatico', master: m?.master ?? 'nascosti', richieste: this.tiriGiocatori.master(), carte: this.prove.tiriDelMaster() };
+    const prove = this.prove;
+    return {
+      giocatori: this.tiriGiocatori.manuali ? 'manuale' : 'automatico',
+      master: m?.master ?? 'nascosti',
+      richieste: this.tiriGiocatori.master(),
+      carte: prove.tiriDelMaster(),
+      catalogo: prove.catalogoDelMaster(),
+      pg: this.campagna.pg.filter((p) => prove.stato.puntiFerita(p.id)).map((p) => ({ id: p.id, nome: p.nome })),
+      chieste: this.tiriGiocatori.chieste().map((c) => ({ ...c, nome_pg: this.nomePg(c.id_pg) })),
+    };
   }
 
   /** Per il pannello del master: schede coi PF e condizioni del set (null senza dadi). */
@@ -2871,6 +2896,7 @@ export class Regia {
     const giocate = await this.tiriGiocatori.prima(r);
     if (!giocate) return; // the wait was cancelled (stop, restart, scene change): the turn is dropped
     if (giocate.attesa_ms) this.primoAudioInviato.delete(r.turno);
+    this.soloProveDelMaster = giocate.decisioni !== null && !r.azioni.length;
     // After a wait for the dice the latencies start when the last die is in, not when the window closed.
     this.misuratore = giocate.attesa_ms
       ? new MisuratoreTurno(r.turno, this.o.orologio.ora(), r.durata_ms, this.o.voce.nome, this.o.orologio.adesso())
@@ -2903,7 +2929,7 @@ export class Regia {
     this.negatiTurno = new Set();
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
     const scontroPrima = this.prove?.inCombattimento ?? false;
-    const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r, giocate) : null;
+    const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento || giocate.decisioni) ? await this.tiriDelTurno(r, giocate) : null;
     if (epoca !== this.epoca) return;
     // The world: the facts of the actions and the checks owe marks in the response that answers them (docs/mondo.md §2).
     this.mondo.fatti(this.fattiDelTurno(r, scontroPrima), r.turno);
@@ -2913,7 +2939,8 @@ export class Regia {
     this.mondo.emergonoInScena(r.turno, this.pngPresentiFisici());
     // A window closed without actions, outside a fight: the stall's move S1 → S2 → S3 (docs/mondo.md §5).
     // E12: the second turn in a row whose actions bring no new decision (only waiting, or the same action again) is a stall too.
-    const chiusura = this.mondo.stallo.classifica(r.azioni);
+    // A turn with only the Game Master's checks (docs/prove.md §8) is not a stall: the check is the turn's decision.
+    const chiusura = this.soloProveDelMaster ? 'decisa' : this.mondo.stallo.classifica(r.azioni);
     const nStallo = this.mondo.stallo.registra(chiusura, scontroPrima || !!this.prove?.inCombattimento);
     if (chiusura === 'indecisa') this.o.log.info({ turno: r.turno, indecisi: this.mondo.stallo.indecisi, stallo: nStallo }, 'world: actions without a new decision (E12)');
     this.mossaStallo = nStallo ? this.scegliMossaDiStallo(nStallo, r.turno) : null;
@@ -3311,7 +3338,7 @@ export class Regia {
     const s = this.statoRepertorio!;
     // «Stallo»: una finestra chiusa senza nessuna azione (scadenza concitata o Risolvi ora a mani vuote), or a second turn
     // of actions without a new decision (E12, docs/mondo.md §5): the fillers enter the catalogue.
-    const stallo = r.azioni.length === 0 || this.mossaStallo !== null;
+    const stallo = (r.azioni.length === 0 && !this.soloProveDelMaster) || this.mossaStallo !== null;
     // Il segno dovuto è di un orologio preciso: in catalogo entrano solo i segni degli orologi dovuti.
     const dovuti = new Set(this.orologi.dovuti(r.turno).map((o) => o.id));
     // Le prove riuscite dell'azione aprono le battute col cancello `richiede.prova`.

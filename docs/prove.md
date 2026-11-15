@@ -491,6 +491,16 @@ Projector: schermo/RichiesteSchermo.tsx takes the cards' column while the table 
 master/SezioneTiri.tsx, the «Tiri» box (the DCs, enter the dice for a player, «Tira il Motore», «Tutti al Motore»,
 the last cards with who entered the dice).
 
+**Checks asked by the Game Master** (master command `chiedi_prova`, panel «Tiri» → «Chiedi una prova»). The Game Master
+picks a PC with a sheet, what to roll from the set's catalogue (`MotoreProve.catalogoDelMaster`: SRD skills, abilities
+and saves; a manual's skills and characteristics), a difficulty of the set's scale or its default, a few words of why,
+and «private». The check becomes a pseudo-action of that PC («m_<n>», text «prova chiesta dal master: Percezione
+(Saggezza), per …») with its decision already taken (`decisioneDelMaster`, no arbiter), queued for the next closed
+window («Risolvi ora» closes the open one). There it goes through the same path as an action: the request (marked
+`dal_master`, «Il master ti chiede un tiro» on the phone) and the wait with manual rolls, the Engine's dice with
+automatic ones, a card and a fact for the narrator. A turn with only the Game Master's checks is not a stall (no world
+move is asked of the narrator). «Ricomincia» forgets the checks not yet rolled.
+
 While the table rolls, the projector's centre line and the other phones' banner say «Si tirano i dadi…» instead of
 «the narrator is preparing».
 

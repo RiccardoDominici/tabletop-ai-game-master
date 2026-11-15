@@ -190,6 +190,11 @@ prove:
     altro: "{nome}, roll: {cosa}{vantaggio}."
     con_vantaggio: ", with advantage"
     con_svantaggio: ", with disadvantage"
+  # A check the Game Master asked from the panel (scena/tiri-giocatori.ts): the pseudo-action's text, read by the
+  # narrator in the fact.
+  master:
+    azione: "check asked by the Game Master: {cosa}{motivo}"
+    motivo: ", to {motivo}"
   # NPCs in the scene out of play (scena/regia.ts, righeFuoriGioco): in the narrator's and selector's message.
   fuori:
     titolo: "## NPCs out of play (the Engine says so: they do not speak or act, no lines or [png_…] lines for them)"

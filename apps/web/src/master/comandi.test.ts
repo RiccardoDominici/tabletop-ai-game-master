@@ -31,6 +31,7 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   pf: { tipo: 'pf', id: 'pg_anna', valore: 4 },
   condizione: { tipo: 'condizione', id: 'pg_anna', condizione: 'avvelenato', attiva: true },
   tiro: { tipo: 'tiro', id: 'r_a3', valori: [14] },
+  chiedi_prova: { tipo: 'chiedi_prova', id_pg: 'pg_anna', cosa: 'abilita:percezione', difficolta: null },
 };
 
 describe('zone ed etichette dei comandi', () => {

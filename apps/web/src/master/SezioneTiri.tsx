@@ -6,6 +6,8 @@
  *   forgotten roll the Game Master types the dice the player says («Inserisci»), or lets the Engine roll it
  *   («Tira il Motore»); «Tutti al Motore» unblocks the whole turn.
  * - The last turn's cards as rolled: dice, total, DC, outcome, who entered the dice.
+ * - «Chiedi una prova»: the Game Master asks a PC for a check (skill, ability or save of the set, a difficulty of its
+ *   scale), with a few words of why; it joins the next closed window («Risolvi ora» closes it at once).
  * Absent without dice (`stato.tiri` missing).
  */
 import { useState } from 'react';
@@ -52,6 +54,14 @@ export function SezioneTiri({ stato }: { stato: StatoMaster }) {
           ))}
         </ul>
       )}
+      {tiri.chieste.length > 0 && (
+        <ul className="flex flex-col gap-1 text-sm text-pergamena-2" data-testid="master-tiri-chieste">
+          {tiri.chieste.map((c) => (
+            <li key={c.id}>{t('master.tiri.chiesta', { nome: c.nome_pg, cosa: c.nome })}</li>
+          ))}
+        </ul>
+      )}
+      <ChiediProva tiri={tiri} />
       {tiri.carte.length === 0 ? (
         tiri.richieste.length === 0 && <Vuoto>{t('master.tiri.nessuno')}</Vuoto>
       ) : (
@@ -64,6 +74,69 @@ export function SezioneTiri({ stato }: { stato: StatoMaster }) {
         </ul>
       )}
     </Riquadro>
+  );
+}
+
+/** The form to ask a PC for a check. */
+function ChiediProva({ tiri }: { tiri: NonNullable<StatoMaster['tiri']> }) {
+  const [pg, setPg] = useState('');
+  const [cosa, setCosa] = useState('');
+  const [difficolta, setDifficolta] = useState('');
+  const [motivo, setMotivo] = useState('');
+  const [privata, setPrivata] = useState(false);
+  const inCorso = useInCorso('chiedi_prova');
+  if (!tiri.pg.length) return null;
+  const chiedi = () => {
+    if (!pg || !cosa) return;
+    void inviaComando({ tipo: 'chiedi_prova', id_pg: pg, cosa, difficolta: difficolta || null, motivo, privata });
+    setMotivo('');
+  };
+  return (
+    <details className="rounded-lg border border-bordo bg-notte-3 p-2 text-sm" data-testid="master-chiedi-prova">
+      <summary className="cursor-pointer font-semibold text-pergamena">{t('master.tiri.chiedi_titolo')}</summary>
+      <div className="mt-2 flex flex-col gap-2">
+        <select data-testid="master-chiedi-pg" value={pg} onChange={(e) => setPg(e.target.value)} className="h-9 rounded border border-bordo-chiaro bg-notte-2 px-2">
+          <option value="">{t('master.tiri.chi')}</option>
+          {tiri.pg.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.nome}
+            </option>
+          ))}
+        </select>
+        <select data-testid="master-chiedi-cosa" value={cosa} onChange={(e) => setCosa(e.target.value)} className="h-9 rounded border border-bordo-chiaro bg-notte-2 px-2">
+          <option value="">{t('master.tiri.cosa')}</option>
+          {tiri.catalogo.prove.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.nome}
+            </option>
+          ))}
+        </select>
+        <select data-testid="master-chiedi-difficolta" value={difficolta} onChange={(e) => setDifficolta(e.target.value)} className="h-9 rounded border border-bordo-chiaro bg-notte-2 px-2">
+          <option value="">{t('master.tiri.difficolta_set')}</option>
+          {tiri.catalogo.difficolta.map((d) => (
+            <option key={d.id} value={d.id}>
+              {d.valore !== null ? `${d.nome} (${d.valore})` : d.nome}
+            </option>
+          ))}
+        </select>
+        <input
+          data-testid="master-chiedi-motivo"
+          value={motivo}
+          maxLength={120}
+          onChange={(e) => setMotivo(e.target.value)}
+          placeholder={t('master.tiri.motivo')}
+          className="h-9 rounded border border-bordo-chiaro bg-notte-2 px-2"
+        />
+        <label className="flex items-center gap-2 text-pergamena-2">
+          <input type="checkbox" data-testid="master-chiedi-privata" checked={privata} onChange={(e) => setPrivata(e.target.checked)} />
+          {t('master.tiri.solo_al_telefono')}
+        </label>
+        <button type="button" data-testid="master-chiedi-invia" disabled={inCorso || !pg || !cosa} onClick={chiedi} className={classePulsante('primario', 'piccolo')}>
+          {t('master.tiri.chiedi')}
+        </button>
+        <p className="text-xs text-cenere">{t('master.tiri.chiedi_nota')}</p>
+      </div>
+    </details>
   );
 }
 

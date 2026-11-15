@@ -261,6 +261,7 @@ master:
     pf_non_validi: "Personaggio o PF non validi."
     condizione_non_valida: "Condizione non valida."
     tiro_non_valido: "Tiro non valido."
+    prova_non_valida: "Prova, difficoltà o personaggio non validi (serve un PG con la scheda)."
     tiro_nessuna: "Nessun tiro in attesa con questo nome."
     tiro_gia: "Questo tiro è già stato inserito."
     tiro_altro_pg: "Questo tiro è di un altro personaggio."
@@ -313,6 +314,7 @@ master:
     condizione_tolta: "{id}: {condizione} tolta"
     tiro_inserito: "{id}: dadi {valori} inseriti dal master"
     tiro_automatico: "{id}: tira il Motore"
+    prova_chiesta: "{id}: prova {cosa} (difficoltà {difficolta}) chiesta dal master"
     effetto: "effetto {id} sul proiettore"
   # Errori delle note di regia scritte dal pannello (master/note.ts).
   note:

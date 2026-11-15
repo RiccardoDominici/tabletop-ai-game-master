@@ -40,6 +40,7 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   pf: 'combattimento',
   condizione: 'combattimento',
   tiro: 'tiri',
+  chiedi_prova: 'tiri',
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
@@ -71,6 +72,7 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = tabella({
   pf: 'master.cmd.pf',
   condizione: 'master.cmd.condizione',
   tiro: 'master.cmd.tiro',
+  chiedi_prova: 'master.cmd.chiedi_prova',
 });
 
 /**
@@ -110,6 +112,8 @@ export function chiaveComando(comando: ComandoMaster): string {
       return `condizione:${comando.id}:${comando.condizione}`;
     case 'tiro':
       return `tiro:${comando.id}`;
+    case 'chiedi_prova':
+      return 'chiedi_prova';
     default:
       // «umore»: una chiave sola, due umori di fila non si accavallano.
       return comando.tipo;
@@ -153,6 +157,8 @@ export function descriviComando(comando: ComandoMaster): string {
       return `${nome} ${comando.id}: ${comando.condizione} ${t(comando.attiva ? 'master.esito.messa' : 'master.esito.tolta')}`;
     case 'tiro':
       return `${nome} ${comando.id === '*' ? t('master.tiri.tutti') : comando.id}: ${comando.valori ? comando.valori.join(', ') : t('master.tiri.motore')}`;
+    case 'chiedi_prova':
+      return `${nome} ${comando.id_pg}: ${comando.cosa}`;
     default:
       return nome;
   }
