@@ -7,6 +7,7 @@
  *   [ritmo] concitato|calmo ← facoltativa, rara: ritmo del tavolo (conto alla rovescia sì/no), non letta
  *   [umore] tag             ← facoltativa, rara: umore della musica (docs/audio.md), non letta
  *   [effetto] tag           ← facoltativa: effetto per la frase che segue, non letta
+ *   [atteggiamento] png_x pg_y stato ← optional, not read aloud: a proposed NPC attitude change (docs/mondo.md §4)
  *   [invito] pg_a,pg_b      ← ultima riga, obbligatoria, non letta a voce
  *
  * Riceve i delta del testo in streaming e produce eventi appena possibile:
@@ -39,6 +40,7 @@ export type CodiceAnomalia =
   | 'usa_vuoto'
   | 'umore_vuoto'
   | 'effetto_vuoto'
+  | 'atteggiamento_illeggibile'
   | 'privato_pg_sconosciuto';
 
 export type EventoNarratore =
@@ -69,6 +71,8 @@ export type EventoNarratore =
   | { tipo: 'umore'; tag: string; grezzo: string }
   /** Riga [effetto] <tag>: effetto sonoro sulla frase che segue (lo valida il Motore). */
   | { tipo: 'effetto'; tag: string; grezzo: string }
+  /** [atteggiamento] png_x pg_y|tutti stato: the narrator proposes an attitude change; the Engine checks it. */
+  | { tipo: 'atteggiamento'; png: string; pg: string; stato: string; grezzo: string }
   | { tipo: 'anomalia'; codice: CodiceAnomalia; dettaglio: string };
 
 export interface OpzioniParser {
@@ -88,10 +92,11 @@ const RITMO = 'ritmo';
 const USA = 'usa';
 const UMORE = 'umore';
 const EFFETTO = 'effetto';
+const ATTEGGIAMENTO = 'atteggiamento';
 /** Oltre questa lunghezza un «[» a inizio riga senza «]» non è un'etichetta. */
 const MAX_ETICHETTA = 48;
 
-type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'ritmo' | 'usa' | 'umore' | 'effetto';
+type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'ritmo' | 'usa' | 'umore' | 'effetto' | 'atteggiamento';
 
 export class ParserNarratore {
   private readonly png: Set<string>;
@@ -170,6 +175,7 @@ export class ParserNarratore {
       case 'usa':
       case 'umore':
       case 'effetto':
+      case 'atteggiamento':
         this.bufferInvito += c;
         return;
       case 'testo':
@@ -251,7 +257,7 @@ export class ParserNarratore {
       this.bufferInvito = resto;
       return;
     }
-    if (risolta.tipo === 'orologio' || risolta.tipo === 'ritmo' || risolta.tipo === 'usa' || risolta.tipo === 'umore' || risolta.tipo === 'effetto') {
+    if (risolta.tipo === 'orologio' || risolta.tipo === 'ritmo' || risolta.tipo === 'usa' || risolta.tipo === 'umore' || risolta.tipo === 'effetto' || risolta.tipo === 'atteggiamento') {
       this.modo = risolta.tipo;
       this.bufferInvito = resto;
       return;
@@ -289,6 +295,7 @@ export class ParserNarratore {
     | { tipo: 'usa' }
     | { tipo: 'umore' }
     | { tipo: 'effetto' }
+    | { tipo: 'atteggiamento' }
     | { tipo: 'parlante'; id: string; alias: boolean }
     | { tipo: 'privato'; pg: string | null }
     | { tipo: 'sconosciuta' } {
@@ -305,6 +312,7 @@ export class ParserNarratore {
     if (t === USA) return { tipo: 'usa' };
     if (t === UMORE) return { tipo: 'umore' };
     if (t === EFFETTO) return { tipo: 'effetto' };
+    if (t === ATTEGGIAMENTO) return { tipo: 'atteggiamento' };
     if (t === NARRATORE) return { tipo: 'parlante', id: NARRATORE, alias: false };
     if (this.png.has(t)) return { tipo: 'parlante', id: t, alias: false };
     const daAlias = this.alias.get(t) ?? this.alias.get(t.replace(/^png_/, ''));
@@ -360,6 +368,9 @@ export class ParserNarratore {
       case 'effetto':
         this.chiudiCue(this.modo);
         break;
+      case 'atteggiamento':
+        this.chiudiAtteggiamento();
+        break;
       case 'inizio_riga': {
         const p = this.prefisso.trim();
         this.prefisso = '';
@@ -389,6 +400,24 @@ export class ParserNarratore {
     const per = bersaglio ? (this.pg.has(bersaglio) ? bersaglio : (this.alias.get(bersaglio) ?? bersaglio)) : null;
     if (this.invitoVisto) this.anomalia('testo_dopo_invito', `[usa] ${id} dopo [invito]`);
     this.eventi.push({ tipo: 'usa', id, per, grezzo });
+  }
+
+  /**
+   * [atteggiamento] png_x pg_y amichevole: three words (NPC, PC or «tutti», state). Names are resolved through the
+   * aliases; the Engine checks the rest (mondo/atteggiamenti.ts). Never read aloud.
+   */
+  private chiudiAtteggiamento(): void {
+    const grezzo = this.bufferInvito.trim();
+    this.bufferInvito = '';
+    const parole = grezzo.replace(/[`"'«»:]/g, ' ').split(/[\s,;>→]+/).map((x) => x.toLowerCase().replace(/[.!?]+$/, '')).filter(Boolean);
+    if (parole.length < 3) {
+      this.anomalia('atteggiamento_illeggibile', `riga [atteggiamento] «${grezzo}»: servono png, pg (o tutti) e stato`);
+      return;
+    }
+    const [chi, verso, stato] = parole as [string, string, string];
+    const png = this.png.has(chi) ? chi : (this.alias.get(chi) ?? this.alias.get(chi.replace(/^png_/, '')) ?? chi);
+    const pg = verso === 'tutti' || this.pg.has(verso) ? verso : (this.alias.get(verso) ?? this.alias.get(verso.replace(/^pg_/, '')) ?? verso);
+    this.eventi.push({ tipo: 'atteggiamento', png, pg, stato, grezzo });
   }
 
   /** [umore] / [effetto]: la prima parola è il tag (il Motore lo controlla col vocabolario e il catalogo). */

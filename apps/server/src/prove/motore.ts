@@ -84,6 +84,8 @@ export interface OpzioniMotoreProve {
   attesaMaxMs?: number;
   /** Riserva a regole per le azioni senza decisione del modello (default sì). */
   riserva?: boolean;
+  /** The NPC's attitude in play (the world: mondo/atteggiamenti.ts); absent = the card's. */
+  atteggiamento?: (png: string, pg: string) => Atteggiamento | null;
 }
 
 interface VoceCache {
@@ -377,7 +379,15 @@ export class MotoreProve {
       return png.map((id) => ({ png: id, autore: a.autore, privata: a.privata }));
     });
     if (negati.length) this.o.log.info({ turno, negati }, 'prove: failed social checks, those NPCs refuse this turn');
-    return { ...r, attesa_ms, tardive, combattimento: comb, negati };
+    // Every social check aimed at an NPC, with its outcome: the world moves the NPC's attitude (docs/mondo.md §4).
+    const sociali = azioni.flatMap((a) => {
+      const d = decisioni.get(a.id);
+      const esito = r.perAzione.get(a.id)?.riuscita;
+      if (!d || typeof esito !== 'boolean' || !['prova', 'contrapposta'].includes(d.tipo) || !this.sociale(d, c)) return [];
+      const png = d.bersaglio?.startsWith('png_') ? [d.bersaglio] : [...pngInterpellati(a.testo, nomiPng)];
+      return png.map((id) => ({ png: id, autore: a.autore, riuscita: esito, privata: a.privata }));
+    });
+    return { ...r, attesa_ms, tardive, combattimento: comb, negati, sociali };
   }
 
   // ------------------------------------------------------------------ combattimento (docs/combattimento.md)
@@ -568,8 +578,12 @@ export class MotoreProve {
     return attiva ? this.combattimento.aggiungiCondizione(id, condizione) : this.combattimento.togliCondizione(id, condizione);
   }
 
-  /** Atteggiamento del PNG verso il PG dalla scheda (atteggiamento_pg.<pg>.stato). */
+  /**
+   * Atteggiamento del PNG verso il PG: the one in play if the director gives it (docs/mondo.md §4), otherwise the
+   * card's (atteggiamento_pg.<pg>.stato).
+   */
   atteggiamento(c: Campagna, png: string, pg: string): Atteggiamento | null {
+    if (this.o.atteggiamento) return this.o.atteggiamento(png, pg);
     const p = c.png.find((x) => x.id === png);
     const a = (p?.dati['atteggiamento_pg'] as DatiYaml | undefined)?.[pg] as DatiYaml | undefined;
     const s = typeof a?.['stato'] === 'string' ? a['stato'].toLowerCase() : null;

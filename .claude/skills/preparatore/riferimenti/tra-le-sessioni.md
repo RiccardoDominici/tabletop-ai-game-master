@@ -36,7 +36,12 @@ The work between sessions is done by an agent with this skill, like the preparat
    - one fact for each thing that happened that matters later: who knew what, who died or was wounded, where the NPCs
      went, what the PCs promised and to whom, which threads remain open;
    - each fact with its `fonte`: the turn and an exact quotation of what was said or written, or an event of the turn
-     (a line that came out, a clue revealed, a fact made known, a clock tick);
+     (a line that came out, a clue revealed, a fact made known, a clock tick, an NPC's attitude changed in play
+     `{atteggiamento: png_…}`, an event of the world's log `{mondo: o_…}`: docs/mondo.md);
+   - the attitudes changed in play (registro.yaml → `atteggiamenti`, by the narrator, a check or a consequence) become a
+     fact with `effetti.png.<png>.atteggiamento`: `scripts/tra-sessioni.sh` prints one ready, with its source, and the
+     package skeleton then writes it into the NPC's card. The world's log (`mondo`) says what happened off-screen in the
+     session (`visto: false`) and whether the PCs found its traces (`emerso_al_turno`);
    - no summaries from memory: if a thing is not in the log, it did not happen;
    - **the world moves**: the clocks of the fronts (and, from the campaign level, of the factions) advance under their rules;
      what changes off-screen is a fact with `fonte: {tra_sessioni: <n>, motivo}`, and the reason names the clock, the danger

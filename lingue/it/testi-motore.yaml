@@ -187,6 +187,7 @@ contesto:
     titolo_png: "## PNG (schede complete; gli id dei fatti sono risolti col testo del canone)"
     conoscenze_private: "conoscenze_private di {id} (SEGRETE: le sa solo questo giocatore. Non dirle mai a voce; diventano pubbliche solo quando il giocatore le usa o le racconta):"
     etichetta_orologio: "- [orologio] seguito dall’id di un orologio attivo, solo quando la risposta ne mostra il prossimo segno"
+    etichetta_atteggiamento: "- [atteggiamento] seguito da id del PNG, id del PG (o tutti) e nuovo stato (ostile, indifferente, amichevole), solo quando un PNG in scena cambia idea su un PG"
   # Contesto del selettore, solo la parte pubblica (apps/server/src/repertorio/contesto.ts).
   repertorio:
     intestazione: "# Campagna «{titolo}» (parte pubblica)"

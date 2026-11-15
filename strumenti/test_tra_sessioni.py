@@ -83,6 +83,23 @@ def test_riassunto_e_cli(giocata):
                           capture_output=True).returncode == 1
 
 
+def test_riassunto_del_mondo_e_degli_atteggiamenti(giocata, capsys):
+    # docs/mondo.md: the world's log and the attitudes changed in play, with a fact ready for stato.yaml.
+    f = giocata / "sessioni" / "01" / "registro.yaml"
+    d = yaml.safe_load(f.read_text(encoding="utf-8"))
+    d["mondo"] = [{"id": "o_processione", "conseguenza": "o_processione@2", "tipo": "conseguenza", "segno": 2, "cosa": "La banda si accorda.",
+                   "visto": False, "scena": "scena_uno", "turno": 4, "emerso_al_turno": 6}]
+    d["atteggiamenti"] = [{"id": "png_bruno", "pg": "pg_lia", "da": "indifferente", "a": "amichevole", "turno": 3, "causa": "narratore", "perche": None}]
+    f.write_text(yaml.safe_dump(d, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    assert T.riassunto(giocata, 1) == 0
+    out = capsys.readouterr().out
+    assert "mondo t4: o_processione@2 (o_processione 2, fuori scena, emerso al t6): La banda si accorda." in out
+    assert "atteggiamento t3: png_bruno verso pg_lia indifferente → amichevole (narratore)" in out
+    fatti = yaml.safe_load(out.split("Da mettere in stato/stato.yaml")[1].split("\n", 1)[1])["fatti"]
+    assert fatti[0]["fonte"] == {"sessione": 1, "turno": 3, "evento": {"atteggiamento": "png_bruno"}}
+    assert fatti[0]["effetti"] == {"png": {"png_bruno": {"atteggiamento": {"pg_lia": "amichevole"}}}}
+
+
 def test_completo_vuole_cio_che_tocca_all_agente(giocata):
     T.pacchetto(giocata, 1)
     assert T.completo(giocata, 1) == 1                       # lo scheletro da solo non basta

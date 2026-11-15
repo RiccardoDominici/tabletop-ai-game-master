@@ -36,7 +36,10 @@ log = logging.getLogger(__name__)
 
 # Gli eventi del registro che un fatto può citare (fonte.evento: {tipo: id}) → la sezione del registro
 # (apps/server/src/sessione/registro.ts, RegistroSessione): ogni voce ha il suo turno.
-EVENTI = {"battuta": "battute", "indizio": "indizi", "fatto": "fatti_noti", "menzogna": "menzogne", "orologio": "orologi"}
+EVENTI = {"battuta": "battute", "indizio": "indizi", "fatto": "fatti_noti", "menzogna": "menzogne", "orologio": "orologi",
+          # The world that moves (docs/mondo.md): an NPC's attitude changed in play (id = the NPC), and an event of
+          # the world's log (id = the clock whose mark caused it).
+          "atteggiamento": "atteggiamenti", "mondo": "mondo"}
 FORMATO_REGISTRO = 1      # registro.ts, FORMATO_REGISTRO
 FILE_TRASCRIZIONE = "trascrizione.yaml"
 STATI_PROMESSA = {"aperta", "mantenuta", "tradita", "sciolta"}

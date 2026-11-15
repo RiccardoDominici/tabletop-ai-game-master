@@ -372,6 +372,8 @@ export class Regia {
   private mondo!: MondoInGioco;
   /** Turn of the opening of the current scene visit (for `resta_in_scena`). */
   private ingressoScena = 0;
+  /** NPCs whose attitude a check already moved in this visit of the scene (docs/mondo.md §4: once per visit). */
+  private cambiatiDaProve = new Set<string>();
   /** Clocks due in the message of the turn being narrated (owed marks are said by the Engine if not shown). */
   private dovutiAlMessaggio: ReadonlySet<string> = new Set();
   private versioneScena = 0;
@@ -514,6 +516,8 @@ export class Regia {
           ...(po.dadi ? { dadi: po.dadi } : {}),
           ...(po.attesaMaxMs !== undefined ? { attesaMaxMs: po.attesaMaxMs } : {}),
           ...(po.regole ? { regole: po.regole } : {}),
+          // Checks see the attitudes as they are now, changed in play (docs/mondo.md §4).
+          atteggiamento: (png, pg) => this.mondo.atteggiamenti.stato(png, pg),
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');
@@ -1077,6 +1081,44 @@ export class Regia {
     return [...righe, ...this.segniMostrati().slice(-3)];
   }
 
+  /**
+   * Social checks aimed at an NPC (docs/mondo.md §4): a success warms the NPC one step towards that PC, a failure
+   * cools it, never down to hostile, once per NPC per visit of the scene, within the Engine's limits.
+   */
+  private atteggiamentiDaProve(turno: number, sociali: ReadonlyArray<{ png: string; autore: string; riuscita: boolean }>): void {
+    const presenti = this.pngInScena();
+    for (const s of sociali) {
+      if (this.cambiatiDaProve.has(s.png)) continue;
+      const nuovo = this.mondo.atteggiamenti.passo(s.png, s.autore, s.riuscita ? 1 : -1);
+      if (!nuovo || nuovo === 'ostile') continue;
+      const e = this.mondo.atteggiamenti.proponi(s.png, s.autore, nuovo, turno, 'prova', { presenti, nonOstile: true, perche: s.riuscita ? 'check succeeded' : 'check failed' });
+      if (e.ok) {
+        this.cambiatiDaProve.add(s.png);
+        for (const c of e.cambi) this.o.log.info({ turno, png: c.png, pg: c.pg, da: c.da, a: c.a, riuscita: s.riuscita }, 'world: attitude changed by a social check');
+      } else this.o.log.info({ turno, png: s.png, pg: s.autore, motivo: e.motivo }, 'world: attitude change from a check not applied');
+    }
+  }
+
+  /** The narrator's [atteggiamento] lines (mode A only: the selector has no free lines). Returns the outcomes, for the log. */
+  private atteggiamentiDalNarratore(turno: number, proposte: ReadonlyArray<{ png: string; pg: string; stato: string }>, log: Logger): Array<Record<string, unknown>> {
+    if (!proposte.length) return [];
+    if (this.statoRepertorio) {
+      log.warn({ proposte }, 'world: [atteggiamento] ignored in mode B');
+      return proposte.map((x) => ({ ...x, ok: false, motivo: 'mode B' }));
+    }
+    const presenti = this.pngInScena();
+    return proposte.map((x) => {
+      if (!['ostile', 'indifferente', 'amichevole'].includes(x.stato)) {
+        log.warn({ ...x }, 'world: [atteggiamento] with an unknown state, rejected');
+        return { ...x, ok: false, motivo: 'unknown state' };
+      }
+      const e = this.mondo.atteggiamenti.proponi(x.png, x.pg, x.stato as 'ostile' | 'indifferente' | 'amichevole', turno, 'narratore', { presenti, perche: 'narrator' });
+      if (e.ok) log.info({ ...x, cambi: e.cambi.map((c) => `${c.png}>${c.pg} ${c.da}→${c.a}`) }, 'world: attitude changed by the narrator');
+      else log.warn({ ...x, motivo: e.motivo }, 'world: attitude change from the narrator rejected');
+      return e.ok ? { ...x, ok: true } : { ...x, ok: false, motivo: e.motivo };
+    });
+  }
+
   /** A new world for this campaign and the current clocks (start, «Ricomincia»). */
   private nuovoMondo(): MondoInGioco {
     return new MondoInGioco({
@@ -1193,6 +1235,15 @@ export class Regia {
     const ora = new Set(this.presentiDiScena());
     for (const id of scheda) if (!ora.has(id)) righe.push(testoFisso('mondo.png_via', { nome: voceDi(this.campagna, id).nome }));
     for (const id of ora) if (!scheda.has(id)) righe.push(testoFisso('mondo.png_arriva', { nome: voceDi(this.campagna, id).nome }));
+    // Attitudes changed in play of the NPCs in the scene: the cached context still shows the cards.
+    const att = this.mondo.atteggiamenti;
+    for (const png of this.pngInScena()) {
+      for (const pg of this.campagna.pg.map((p) => p.id)) {
+        const ora = att.stato(png, pg);
+        const prima = att.base(png, pg);
+        if (ora && ora !== prima) righe.push(testoFisso('mondo.atteggiamento', { png: voceDi(this.campagna, png).nome, pg: this.nomePg(pg), stato: ora, prima: prima ?? '—' }));
+      }
+    }
     if (!this.statoRepertorio) {
       for (const r of this.mondo.prendiRegia()) righe.push(testoFisso('mondo.regia', { testo: r }));
     }
@@ -2344,6 +2395,7 @@ export class Regia {
   private impostaScena(id: string, turno = 0): void {
     this.campagna = conScena(this.o.campagna, id);
     this.ingressoScena = turno;
+    this.cambiatiDaProve.clear();
     this.presenzeManuali.clear();
     this.sistema = this.o.sistemaPer?.(this.campagna) ?? this.sistema;
     this.scenaPubblica = this.o.scenaPubblicaPer?.(this.campagna) ?? this.scenaPubblica;
@@ -2696,6 +2748,8 @@ export class Regia {
     if (epoca !== this.epoca) return;
     // The world: the facts of the actions and the checks owe marks in the response that answers them (docs/mondo.md §2).
     this.mondo.fatti(this.fattiDelTurno(r, scontroPrima), r.turno);
+    // Social checks move the attitude of the NPC they aimed at, before the narrator hears of it (docs/mondo.md §4).
+    if (tiri?.sociali?.length) this.atteggiamentiDaProve(r.turno, tiri.sociali);
     // The evening's pace of the clocks (docs/mondo.md §1), before anything asks which marks are due.
     this.aggiornaRitmoSerata(r.turno);
     // The clocks due in this turn's message: an owed mark among them that the response does not show is said by the Engine.
@@ -2943,6 +2997,8 @@ export class Regia {
         log.error({ orologio: id, motivo: a.motivo }, 'orologio: avanzamento rifiutato');
       }
     }
+    // Attitude changes the narrator proposed (mode A): the Engine checks them (docs/mondo.md §4).
+    const atteggiamenti = this.atteggiamentiDalNarratore(turno, esito.atteggiamenti, log);
     // The world (docs/mondo.md §2): owed marks the response did not show are said by the Engine; the lines said and
     // the clues they revealed are facts for the gates, owed to the next response (or paid off-screen at once).
     const debitiDetti = esito.esito && !controllo.signal.aborted ? this.pagaDebitiInRisposta(turno, esito, segniInRisposta, this.dovutiAlMessaggio, log) : [];
@@ -3016,6 +3072,7 @@ export class Regia {
       errore: esito.errore,
       invito: esito.invito,
       orologi: esitiOrologi,
+      ...(atteggiamenti.length ? { atteggiamenti } : {}),
       stato_orologi: this.orologi.riepilogo(),
       anomalie: esito.anomalie,
       misure: record,

@@ -74,6 +74,25 @@ def riassunto(cartella: Path, n: int) -> int:
         print(f"  orologio {o.get('id')}: da {o.get('pieni_all_inizio')} a {o.get('pieni_alla_fine')} di {o.get('segmenti')}"
               f"{' (completo)' if o.get('completo') else ''}")
     print("  PNG incontrati: " + (", ".join(f"{p['id']} (t{p['primo_turno']}–{p['ultimo_turno']})" for p in d.get("png_incontrati") or []) or "nessuno"))
+    # The world that moves (docs/mondo.md): what happened in the world and the attitudes changed in play.
+    for v in d.get("mondo") or []:
+        visto = "visto" if v.get("visto") else f"fuori scena{', emerso al t' + str(v['emerso_al_turno']) if v.get('emerso_al_turno') else ''}"
+        print(f"  mondo t{v.get('turno')}: {v.get('conseguenza')} ({v.get('id')} {v.get('segno')}, {visto}): {v.get('cosa')}")
+    cambi = d.get("atteggiamenti") or []
+    for a in cambi:
+        print(f"  atteggiamento t{a.get('turno')}: {a.get('id')} verso {a.get('pg')} {a.get('da')} → {a.get('a')} ({a.get('causa')})")
+    ultimi = {}
+    for a in cambi:
+        ultimi[(a.get("id"), a.get("pg"))] = a
+    if ultimi:
+        print("\nDa mettere in stato/stato.yaml (un fatto per PNG; la fonte è l'ultimo cambio, che il registro ha):")
+        perpng: dict = {}
+        for (pid, pg), a in sorted(ultimi.items()):
+            perpng.setdefault(pid, []).append(a)
+        fatti = [{"id": f"g_{pid.removeprefix('png_')}_atteggiamento_s{n}", "testo": "…", "noto_ai_pg": False,
+                  "fonte": {"sessione": n, "turno": max(x["turno"] for x in xs), "evento": {"atteggiamento": pid}},
+                  "effetti": {"png": {pid: {"atteggiamento": {x["pg"]: x["a"] for x in xs}}}}} for pid, xs in perpng.items()]
+        print(yaml.safe_dump({"fatti": fatti}, allow_unicode=True, sort_keys=False).rstrip())
     for pg in d.get("pg") or []:
         print(f"  {pg.get('id')}: {len(pg.get('azioni_pubbliche') or [])} azioni pubbliche, {len(pg.get('azioni_private') or [])} private")
     print(f"  trascrizione: sessioni/{n:02d}/{(d.get('trascrizione') or {}).get('file', 'trascrizione.yaml')} "

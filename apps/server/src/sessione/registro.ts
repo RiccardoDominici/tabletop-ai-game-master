@@ -117,6 +117,16 @@ export interface RegistroSessione {
   /** I turni in cui il Motore ha registrato un cambiamento, con le righe dette e le azioni che c'erano. */
   momenti: Array<{ turno: number; cosa: string[]; azioni: Array<{ id: string; pg: string; privata: boolean }>; righe: Array<{ chi: string; testo: string }> }>;
   note_del_master: Array<{ testo: string; creata_al_turno: number }>;
+  /**
+   * NPC attitudes changed in play (docs/mondo.md §4), in order; `id` is the NPC (a stato.yaml fact cites it as
+   * `evento: {atteggiamento: png_x}`). Absent when nothing changed.
+   */
+  atteggiamenti?: Array<{ id: string; pg: string; da: string | null; a: string; turno: number; causa: string; perche: string | null }>;
+  /**
+   * The world's log (docs/mondo.md §3): consequences of marks, omens, dooms, timeline events; `id` is the clock
+   * (`evento: {mondo: o_x}`), `conseguenza` the consequence. Absent when nothing happened.
+   */
+  mondo?: Array<{ id: string; conseguenza: string; tipo: string; segno: number; cosa: string; visto: boolean; scena: string; turno: number; emerso_al_turno: number | null }>;
   avvisi: string[];
 }
 
@@ -400,6 +410,10 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
 
   const note = ((ultima?.note?.elenco ?? []) as NotaRegia[]).map((n) => ({ testo: n.testo, creata_al_turno: n.creata_al_turno }));
 
+  // --- The world that moves: the last snapshot has the whole log and every attitude change, with their turns.
+  const atteggiamenti = (ultima?.mondo?.atteggiamenti ?? []).map((c) => ({ id: c.png, pg: c.pg, da: c.da, a: c.a, turno: c.turno, causa: c.causa, perche: c.perche ?? null }));
+  const mondo = (ultima?.mondo?.cronaca ?? []).map((v) => ({ id: v.orologio, conseguenza: v.id, tipo: v.tipo, segno: v.segno, cosa: v.cosa, visto: v.visto, scena: v.scena, turno: v.turno, emerso_al_turno: v.emerso_al_turno ?? null }));
+
   const registro: RegistroSessione = {
     formato: FORMATO_REGISTRO,
     campagna: def.campagna,
@@ -432,6 +446,8 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
     pg,
     momenti,
     note_del_master: note,
+    ...(atteggiamenti.length ? { atteggiamenti } : {}),
+    ...(mondo.length ? { mondo } : {}),
     avvisi,
   };
   const trascrizione: TrascrizionePubblica = {

@@ -417,8 +417,9 @@ Live verification of checks, rolls, DCs and turns on a running server, scenario 
   - melee/range distance kept by the Engine.
 - **Game Master panel**: PC and NPC HP with healing, damage and rest by hand, and the latest cards. Today NPC HP are only in
   the logs and the archive.
-- **Attitudes**: the Engine uses the ones from the sheet. When an NPC changes its mind in the story, the advantage does not
-  follow yet (needs `set_attitude`, architettura.md).
+- ~~**Attitudes**: the Engine uses the ones from the sheet.~~ Done (docs/mondo.md §4): the checks use the attitude in play
+  (changed by the narrator's `[atteggiamento]`, by consequences, by social checks), and a social check aimed at an NPC moves
+  it one step towards that PC, up on a success, down on a failure (never down to hostile), once per NPC per visit.
 
 Credits: this work includes material from the System Reference Document 5.2 («SRD 5.2») by Wizards of the Coast LLC,
 https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License.

@@ -123,6 +123,11 @@ export interface EsitoTurnoProve {
    * to). During the narration their lines are limited to their refusal (narrazione/guardia-rifiuti.ts, repertoire).
    */
   negati: Array<{ png: string; autore: string; privata: boolean }>;
+  /**
+   * Social checks aimed at an NPC in this turn, with their outcome (docs/mondo.md §4: a success warms the NPC by
+   * one step towards that PC, a failure cools it, never down to hostile). Same targets as `negati`.
+   */
+  sociali?: Array<{ png: string; autore: string; riuscita: boolean; privata: boolean }>;
   /** Millisecondi spesi ad aspettare l'arbitro alla chiusura (0 = tutto già pronto). */
   attesa_ms: number;
   /** Azioni classificate solo alla chiusura (l'arbitro all'invio non c'era o era vecchio). */

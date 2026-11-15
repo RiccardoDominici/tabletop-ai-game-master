@@ -615,6 +615,17 @@ def test_stato_evento_e_turno_che_non_ci_sono(arco):
     assert "STATO.fonte" in stato_continuita(arco)[0]
 
 
+def test_stato_fonte_da_un_atteggiamento_cambiato_in_gioco(arco):
+    # docs/mondo.md §4: the server writes the attitudes changed in play in registro.yaml (atteggiamenti, id = the NPC);
+    # a fact of the state cites one with evento: {atteggiamento: png_x}, and its effect reaches the next package.
+    modifica(arco, "sessioni/01/registro.yaml", lambda d: d.update(atteggiamenti=[
+        {"id": "png_bruno", "pg": "pg_lia", "da": "indifferente", "a": "amichevole", "turno": 3, "causa": "narratore", "perche": None}]))
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_bruno_parla").update(fonte={"sessione": 1, "turno": 3, "evento": {"atteggiamento": "png_bruno"}}))
+    assert "STATO.fonte" not in stato_continuita(arco)[0]
+    modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_bruno_parla").update(fonte={"sessione": 1, "turno": 4, "evento": {"atteggiamento": "png_bruno"}}))
+    assert "STATO.fonte" in stato_continuita(arco)[0]
+
+
 def test_stato_fuori_scena_senza_motivo(arco):
     modifica(arco, "stato/stato.yaml", lambda d: _fatto(d, "g_mercante_riparte")["fonte"].pop("motivo"))
     assert "STATO.fonte" in stato_continuita(arco)[0]

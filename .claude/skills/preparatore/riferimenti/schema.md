@@ -382,7 +382,7 @@ fatti:                               # what happened in play, in order; never de
     testo: "…"
     fonte: {sessione: 1, turno: 6, citazione: "…"}   # EXACT substring of the turn [V]
     # fonte: {sessione: 1, turno: 5, evento: {indizio: i_…}}   # an event of the turn: line, clue,
-    #                                                          # fact, lie, clock [V]
+    #                                                          # fact, lie, clock, atteggiamento (png_…), mondo (o_…) [V]
     # fonte: {tra_sessioni: 1, motivo: "o_… advances: …"}   # off-screen: the reason names the clock or the rule, which exists [V]
     noto_ai_pg: true                 # the PCs know it (they have seen or heard it)
     rende_noti: [f_…]                # facts of the canon that the PCs now know [V exist]

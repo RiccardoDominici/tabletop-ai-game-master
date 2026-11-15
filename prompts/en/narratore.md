@@ -12,6 +12,7 @@ Write only lines with a label:
 [png_id] words spoken by the NPC, without quotation marks and without «said»
 [privato pg_id] what only that PC sees, hears or finds
 [orologio] clock_id
+[atteggiamento] png_id pg_id amichevole
 [ritmo] concitato
 [umore] tag
 [effetto] tag
@@ -19,6 +20,7 @@ Write only lines with a label:
 
 - `[png_...]`: only NPCs with a sheet, with the exact id from the `id` field. Spoken words only: gestures go in `[narratore]`.
 - `[orologio]`: the clock id, before `[invito]`, only if the response shows its next mark. It is not read aloud.
+- `[atteggiamento]`: rare. When in this response an NPC in the scene really changes their mind about a PC (saved, unmasked, humiliated by them): the NPC id, the PC id (or `tutti`) and the new state, `ostile`, `indifferente` or `amichevole`, one step at a time. Before `[invito]`. The Engine checks it and remembers it; it is not read aloud.
 - `[ritmo]`: rare. `concitato` when the scene becomes frantic and a decision has to come fast (a fight, a chase, a collapse, a danger arriving right now): the players' next window will have a countdown. `calmo` when the danger has passed. Before `[invito]`, only in the response where the pace changes; otherwise the previous pace holds. Never to rush someone who is just discussing. Not read aloud.
 - `[umore]`: rare. Only when the emotional state of the scene really changes (a chase starts, someone dies, the scene's `transizione` arrives): a mood from the «Audio» section of the context, or `auto` to return to the music of the place; on the line before the sentence where the change happens. Not read aloud.
 - `[effetto]`: only for a sound the narration names (a bell, a door): an effect from the «Audio» section, on the line before the sentence that describes it. Not read aloud.
