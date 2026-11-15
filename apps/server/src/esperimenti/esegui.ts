@@ -41,6 +41,7 @@ import { caricaParoleSegrete } from '../repertorio/segreti';
 import type { Repertorio } from '../repertorio/tipi';
 import { ErroreArgomenti, leggiOpzioni, PORTA_PARTITA, type OpzioniEsperimento } from './argomenti';
 import { caricaCopione, contaPrivate, controllaCopione, type Copione } from './copione';
+import { AlimentatoreCopione } from './alimentatore';
 import { misuraFughe, rivelazioniFuoriContesto } from './fughe';
 import { nomiDeiPng } from '../repertorio/pertinenza';
 import { MasterHeadless } from './master';
@@ -136,9 +137,9 @@ export interface CambioScena {
  * tavolo va in pausa a fine turno: dopo il finale del Motore (la riga regia.righe.fine_scena) la scena è chiusa e
  * il copione finisce lì (prima l'harness aspettava la finestra dopo e scadeva).
  *
- * Il turno del copione e quello del server coincidono finché non si cambia scena: l'apertura della
- * nuova scena si prende il turno della finestra aperta (regia.cambiaScena) e la finestra successiva
- * è quella del turno dopo. Per questo si segue il turno del SERVER, letto dallo stato.
+ * Il turno del copione e quello del server coincidono finché non si cambia scena o non comincia uno scontro: per
+ * questo si segue il turno del SERVER, letto dallo stato. In combat the feeder (alimentatore.ts, bug C4) sends only
+ * the actions of the PCs on turn; the others wait for their own turn, so one script turn can take several windows.
  */
 async function giocaCopione(
   etichetta: string,
@@ -149,27 +150,39 @@ async function giocaCopione(
   osservatore: OsservatoreTavolo,
   /** Attesa prima di mandare le azioni di ogni turno: i giocatori che parlano fra loro (--pausa-s). */
   pausaMs = 0,
-): Promise<{ cambi: CambioScena[]; fine: FinePartita | null }> {
+): Promise<{ cambi: CambioScena[]; fine: FinePartita | null; rinviate: number; passate: number }> {
   const cambi: CambioScena[] = [];
+  const alimentatore = new AlimentatoreCopione(copione.turni);
   let turnoServer = 1;
-  for (let n = 1; n <= copione.turni.length; n++) {
+  let rinviate = 0;
+  let passate = 0;
+  // A guard against a combat that never gives the turn back: each script turn may take a few windows, not forever.
+  const maxFinestre = copione.turni.length * 6 + 10;
+  for (let finestre = 0; !alimentatore.finito; finestre++) {
+    if (finestre >= maxFinestre) throw new Error(`more than ${maxFinestre} windows for ${copione.turni.length} script turns: the combat turns never reach the queued PCs`);
     const atteso = turnoServer;
-    let stato = await attendiStato(schermo, (s) => s.fase === 'finestra' && s.turno === atteso && s.finestra.aperta, 240_000, `finestra ${atteso} (turno ${n} del copione)`);
-    for (const p of copione.turni[n - 1]!) {
-      if (p.tipo !== 'scena') continue;
+    let stato = await attendiStato(schermo, (s) => s.fase === 'finestra' && s.turno === atteso && s.finestra.aperta, 240_000, `finestra ${atteso} (turno ${alimentatore.turnoCopione + 1} del copione)`);
+    const diTurno = stato.combattimento?.turno_di?.length ? stato.combattimento.turno_di : null;
+    const passo = alimentatore.prossimo(diTurno);
+    const n = passo.turnoCopione;
+    for (const scena of passo.scene) {
       const v0 = stato.versione_scena;
       const t0 = stato.turno;
-      const e = await master.scena(p.scena);
-      if (!e.ok) throw new Error(`turno ${n}: cambio di scena a ${p.scena} rifiutato: ${e.errore}`);
-      cambi.push({ turno_copione: n, turno_server: t0, a: p.scena });
-      console.log(`[${etichetta}] turno ${n} (server ${t0}): scena → ${p.scena}`);
+      const e = await master.scena(scena);
+      if (!e.ok) throw new Error(`turno ${n}: cambio di scena a ${scena} rifiutato: ${e.errore}`);
+      cambi.push({ turno_copione: n, turno_server: t0, a: scena });
+      console.log(`[${etichetta}] turno ${n} (server ${t0}): scena → ${scena}`);
       // L'apertura della nuova scena alza versione_scena: così non si scambia per buona un'istantanea vecchia.
-      stato = await attendiStato(schermo, (s) => s.fase === 'finestra' && s.finestra.aperta && s.versione_scena > v0 && s.turno >= t0, 240_000, `finestra dopo la scena ${p.scena} (turno ${n} del copione)`);
+      stato = await attendiStato(schermo, (s) => s.fase === 'finestra' && s.finestra.aperta && s.versione_scena > v0 && s.turno >= t0, 240_000, `finestra dopo la scena ${scena} (turno ${n} del copione)`);
     }
     turnoServer = stato.turno;
+    if (diTurno) {
+      rinviate += passo.inAttesa.length;
+      passate += passo.passano.length;
+      console.log(`[${etichetta}] server ${turnoServer}: combat, on turn ${diTurno.join(', ')}${passo.inAttesa.length ? `; waiting for their turn: ${passo.inAttesa.join(', ')}` : ''}${passo.passano.length ? `; nothing left in the script, passing: ${passo.passano.join(', ')}` : ''}`);
+    }
     if (pausaMs > 0) await new Promise((r) => setTimeout(r, pausaMs));
-    for (const p of copione.turni[n - 1]!) {
-      if (p.tipo !== 'azione') continue;
+    for (const p of passo.azioni) {
       const t = telefoni.get(p.pg);
       if (!t) throw new Error(`turno ${n}: ${p.pg} non è al tavolo`);
       const dati = { id_pg: p.pg, testo: p.azione, versione_vista: stato.versione_scena, ...(p.privata ? { privata: true } : {}) };
@@ -187,12 +200,12 @@ async function giocaCopione(
     if (finito.fase === 'pausa') {
       const motivo = finito.trascrizione.at(-1)?.testo === testo('regia.righe.fine_scena') ? 'finale' : 'pausa';
       console.log(`[${etichetta}] turno ${n}/${copione.turni.length} (server ${corrente}): ${motivo === 'finale' ? 'il finale ha chiuso la scena' : 'il tavolo è in pausa'}, il copione finisce qui`);
-      return { cambi, fine: { turno_copione: n, turno_server: corrente, motivo } };
+      return { cambi, fine: { turno_copione: n, turno_server: corrente, motivo }, rinviate, passate };
     }
     turnoServer = corrente + 1;
-    console.log(`[${etichetta}] turno ${n}/${copione.turni.length} fatto (server ${corrente})`);
+    console.log(`[${etichetta}] turno ${n}/${copione.turni.length} fatto (server ${corrente})${alimentatore.inCoda() ? `, ${alimentatore.inCoda()} azioni in attesa del loro turno` : ''}`);
   }
-  return { cambi, fine: null };
+  return { cambi, fine: null, rinviate, passate };
 }
 
 /** Esito della chiusura guidata, per il riepilogo. */
@@ -313,7 +326,7 @@ async function main(): Promise<void> {
   const primo = attendiStato(schermo, (s) => s.fase === 'finestra' && s.turno === 1, 180_000, 'prima finestra');
   await emetti<Esito>((cb) => schermo.emit('schermo:inizia', cb));
   await primo;
-  const { cambi: cambiScena, fine } = await giocaCopione(etichetta, copione, schermo, master, telefoni, osservatore, o.pausaMs);
+  const { cambi: cambiScena, fine, rinviate: inAttesaDelTurno, passate } = await giocaCopione(etichetta, copione, schermo, master, telefoni, osservatore, o.pausaMs);
   const chiusura = o.chiudi ? await chiudiSerata(etichetta, schermo, master) : null;
 
   // 4. Raccolta dai registri del server di prova (solo questa sessione).
@@ -371,6 +384,8 @@ async function main(): Promise<void> {
     turni_copione: copione.turni.length,
     cambi_di_scena: cambiScena,
     fine_prima_del_copione: fine,
+    // Combat (bug C4): windows where a PC with a scripted action waited for its own turn, and PCs on turn that passed.
+    combattimento_copione: { in_attesa_del_turno: inAttesaDelTurno, passate },
     // Il finale (detto dal Motore o dal selettore) e gli orologi turno per turno: le misure del playtest.
     finale: turni.filter((r) => r['finale']).map((r) => ({ turno: r['turno'], id: r['finale'] }))[0] ?? null,
     orologi: misuraOrologi(narrati),

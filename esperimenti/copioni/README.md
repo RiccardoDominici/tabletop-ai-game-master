@@ -7,6 +7,12 @@ Confine rispettato: letti solo `prova-f0/pg.yaml` (ogni PG agisce solo sulle pro
 - `turni:` una lista di turni, e ogni turno una lista di azioni `{pg, azione}`, con `privata: true` per un'azione
   scritta come privata dal telefono (le battute senza `richiede.privata` non le rispondono);
 - un cambio di scena dentro il copione è un elemento `{scena: <id>}` in un turno: vale da lì in poi.
+- In turn-based combat the harness sends only the actions of the PCs on turn (`StatoTavolo.combattimento.turno_di`,
+  `apps/server/src/esperimenti/alimentatore.ts`): the other actions of the same script turn wait for that PC's own
+  turn, in script order, so a script turn can take several windows. When no PC on turn has a queued action the next
+  script turn is loaded; a PC on turn with nothing left passes. `riepilogo.json` counts both
+  (`combattimento_copione`). Before (bug C4 of docs/e2e-finale.md) every action went out and the Engine deferred
+  the ones out of turn, which then went stale.
 I copioni ciechi di una campagna nuova stanno in `esperimenti/copioni/<id>/` (passo 12 della skill). Chi li scrive
 alla cieca non conosce gli id delle scene: i segni di scena li aggiunge l'autore della campagna, con un commento,
 senza toccare le azioni.

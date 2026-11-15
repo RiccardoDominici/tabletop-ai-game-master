@@ -373,6 +373,8 @@ Examples of facts in the message (real, from the game on 4720):
   - Screenshots in logs/screenshots/prove/e2e-*.png.
   - The narrator tells the outcomes as they are: convinced or not, hit or missed, wounded, the lock clicking open.
 
+Live verification of checks, rolls, DCs and turns on a running server, scenario by scenario: docs/prove-verifica.md.
+
 ## 7. Open items
 
 - **Preparer skill**: generate sheets per §2 (pregenerated PCs with abilities consistent with class and level; NPCs with
