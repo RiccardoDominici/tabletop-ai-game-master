@@ -1,0 +1,170 @@
+{
+ "etichetta": "prima-torre-mozza-stallo-B-manuale",
+ "turni": {
+  "giocati": 14,
+  "copione": 14,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_mezzanotte": "2/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "private": {
+  "azioni_private": 2,
+  "righe_privato": 2,
+  "esiti_privati_log": 10,
+  "righe_al_tavolo_sospette": 2,
+  "sospette": [
+   {
+    "turno": 9,
+    "pg": "pg_livia",
+    "riga": "[narratore] Livia Sarti, la domanda la fai a voce bassa, vicino al cancello. Ugo non si gira: continua a caricare il mulo."
+   },
+   {
+    "turno": 13,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Eliandro, chiedi a Berta a bassa voce dove sta la lavagna. Lei stringe la chiave e ti guarda a lungo."
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 15,
+  "con_tiro": 1,
+  "tipi": {
+   "nessuna": 14,
+   "prova": 1
+  },
+  "dadi": {},
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "anthropic completo (set generico)"
+ },
+ "combattimento": {
+  "eventi": {},
+  "fatti_morale_terra": 0,
+  "esempi": [],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 0,
+  "nessuna": 0,
+  "ms_classifica_med": null,
+  "ms_classifica_peggiore": null
+ },
+ "sceneggiatore": {
+  "richieste": {},
+  "consegnate": 0,
+  "dette_a_finestra_aperta": 0,
+  "accettate": 0,
+  "scartate": {},
+  "ms_claude_med": null,
+  "ms_totale_med_subito": null,
+  "processo": {}
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20043,
+   "peggiore": 21114,
+   "n": 14
+  },
+  "llm_prima_frase": {
+   "mediana": 2487.5,
+   "peggiore": 3206,
+   "n": 14
+  },
+  "voce_primo_audio": {
+   "mediana": 2752.5,
+   "peggiore": 3668,
+   "n": 14
+  },
+  "schermo_inizio_audio": {
+   "mediana": 2904,
+   "peggiore": 3822,
+   "n": 14
+  },
+  "llm_fine": {
+   "mediana": 3104,
+   "peggiore": 3760,
+   "n": 14
+  },
+  "audio_fine": {
+   "mediana": 22745.5,
+   "peggiore": 30007,
+   "n": 14
+  },
+  "s_tra_turni_med": 44,
+  "s_tra_turni_peggiore": 51.155
+ },
+ "voce": {
+  "motore": "fish",
+  "buchi": {
+   "totale": 0,
+   "in_frase": 0,
+   "tra_frasi": 0,
+   "silenzio_ms": 0,
+   "per_turno": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "proiettore_secondi": 288,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 0,
+  "avvisi": 8,
+  "per_messaggio": [
+   "40 ×6 narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono",
+   "40 ×1 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×1 repertorio: [usa] rifiutato"
+  ],
+  "provider": [
+   "lettore         → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "arbitro_azioni  → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_ARBITRO",
+   "arbitro_prove   → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "riassunto       → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_RIASSUN",
+   "regole          → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_REGOLE",
+   "voce            → openrouter — variabile d'ambiente TAGM_VOCE",
+   "ascolto         → locale ggml-large-v3-turbo-q5_0 — configurato (config/predefin",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0.032937100000000004,
+ "righe": {
+  "prescritte": 5,
+  "improvvisate": 51,
+  "usa_rifiutati": 1,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0
+ }
+}
