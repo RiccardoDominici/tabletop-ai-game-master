@@ -1,0 +1,29 @@
+# Round trip of the phone dictation on torre-mozza (strumenti/ascolto/giro.ts, docs/ascolto.md «Measured»).
+# The scene is the tower (Zirrà and Grosso present); a typed action first puts Torre Mozza and Spinalba on the table,
+# as a player would. Sentences are what a player would say; `nomi` are the names that must come out written right.
+campagna: torre-mozza
+pg: pg_livia
+scena: scena_torre
+voci: [narratore, nadine, vincent, tabitha]
+preambolo:
+  - "Andiamo verso la Torre Mozza passando da Spinalba."
+frasi:
+  - {testo: "Chiedo a Zirrà dove tiene il ragazzo.", nomi: [Zirrà]}
+  - {testo: "Fulco, tieni d'occhio Grosso mentre parlo con la goblin.", nomi: [Fulco, Grosso]}
+  - {testo: "Livia si avvicina a Berta e le chiede della chiave.", nomi: [Livia, Berta]}
+  - {testo: "Dico a Ugo che il suo mulo è ancora legato all'ovile.", nomi: [Ugo]}
+  - {testo: "Nespola ed Eliandro salgono piano sulla scala rotta.", nomi: [Nespola, Eliandro]}
+  - {testo: "Grido a Zirrà che Berta ha già pagato la decima.", nomi: [Zirrà, Berta]}
+  - {testo: "Fulco Granito alza lo scudo e si mette davanti a Livia Sarti.", nomi: [Fulco Granito, Livia Sarti]}
+  - {testo: "Chiedo a Grosso se conosce Ugo il carbonaio.", nomi: [Grosso, Ugo]}
+  - {testo: "Eliandro lancia un incantesimo sul fuoco in mezzo alla torre.", nomi: [Eliandro]}
+  - {testo: "Nespola Tondi mostra a Zirrà la chiave della Torre Mozza.", nomi: [Nespola Tondi, Zirrà, Torre Mozza]}
+  - {testo: "Chiedo a Zorvak il vecchio dove porta il sentiero di Spinalba.", nomi: [Zorvak, Spinalba], inventato: true}
+  - {testo: "Dico a Zorvak di seguirci fino alla torre.", nomi: [Zorvak]}
+ordinarie:
+  - "Prendo la lanterna e scendo per primo in cantina."
+  - "Mi nascondo dietro il muro e aspetto che il fuoco si spenga."
+  - "Provo a slegare le corde del ragazzo senza fare rumore."
+  - "Guardo i segni a carbone sui muri e cerco di capire cosa dicono."
+  - "Tiro un grosso sasso contro la porta di ferro per vedere chi risponde."
+  - "Chiediamo scusa e torniamo indietro verso il paese prima che faccia buio."
