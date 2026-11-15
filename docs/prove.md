@@ -455,16 +455,16 @@ Live verification of checks, rolls, DCs and turns on a running server, scenario 
     carbonaia.» two turns after (the feed path is the message's «Esiti privati già dati»: the narrator's history has no
     private actions, the outcomes it gave to the phones are there). Now (`precedentePrivato`):
     - the director keeps the private actions of the evening and the private outcomes given (the last 10 turns:
-      `azioniPrivate`, `privati`) with what each PC has said in public since; a narrator line that names that PC and
-      shares two roots with one of them that the PC has not said aloud since goes to their phone, even if the PC acts in
-      public in this turn;
+      `azioniPrivate`, `privati`) with what each PC has said in public since; a narrator line that names that PC, names
+      an NPC of the item (the one whispered to, or who gave the private outcome: `verso`) and shares two roots with it
+      that the PC has not said aloud since goes to their phone, even if the PC acts in public in this turn;
     - a `richiamo` («la tua domanda», «ha chiesto», «sottovoce», «in privato»…, `lingue/<code>/motore.yaml`, section
       `privato_richiami`) lowers the threshold to one root, in the turn of the action too;
     - a turn whose only actions are private (combat T25 on HEAD: «Il goblin alza gli occhi verso di lei… Parla piano, in
       fretta… Dice che il ragazzo è stato portato via», with no name of the PC): a narrator line that names the NPC
       whispered to (not during a fight: there it may be that NPC's attack in its step), or shares two roots with the
       whisper, or one root right after a line already moved, goes to that phone; a world line that names nobody
-      whispered to stays;
+      whispered to stays, and so does a line that names another PC (it is about that PC);
     - with two roots and no richiamo, the words the table has heard aloud since the private turn do not count, so a later
       public outcome («Livia abbassa la spada sul goblin») is not pulled to a phone because of an earlier whisper.
     Not saved with the session: after a resume only the outcomes count. Limit: a paraphrase with no word in common

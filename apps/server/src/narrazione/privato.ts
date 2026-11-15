@@ -131,12 +131,19 @@ export interface PrivatoPrecedente {
    * because a whisper of hers mentioned a sword. A `richiamo` with the PC's name needs only one root, heard or not.
    */
   sentito?: string;
+  /**
+   * The NPCs the private item speaks to or is spoken by (named in its text, or the NPC who said the private outcome).
+   * Without a `richiamo`, a later line must name one of them: a retelling says who was asked («Ugo lo ha detto a voce
+   * bassa»); a line about the PC's own public action does not (rerun after the fixes, T4: «Nespola non riesce a restare
+   * zitta: il sentiero scricchiola…» went to her phone for two words of an earlier private outcome).
+   */
+  verso?: readonly string[];
 }
 
 /**
  * The PC whose phone an earlier private item's retelling goes to, or null. The line (or its context) must name that PC,
- * and the line itself must share with the item two roots (one with a `richiamo`) that the PC has not said in public
- * since. The PC may also act in public in this turn: unlike the turn's own private actions, an earlier one is not
+ * and the line itself must share with the item one root with a `richiamo`, or two roots not heard in public since and
+ * the name of an NPC of the item (`verso`); roots the PC has said in public since never count. The PC may also act in public in this turn: unlike the turn's own private actions, an earlier one is not
  * shadowed by it (fuori-binario T5: Nespola walked to the ford in public while the narrator retold her whisper).
  */
 export function precedentePrivato(
@@ -144,6 +151,7 @@ export function precedentePrivato(
   precedenti: readonly (PrivatoPrecedente & { nomi: readonly string[] })[],
   nomiPersonaggi: ReadonlySet<string>,
   contesto = '',
+  nomiPng?: Map<string, string[]>,
 ): { id_pg: string; comuni: string[] } | null {
   const nomiParole = new Set([...nomiPersonaggi].flatMap((n) => normalizza(n).split(/\s+/)));
   const testo = contesto ? `${contesto} ${riga}` : riga;
@@ -152,8 +160,10 @@ export function precedentePrivato(
   const richiamo = haRichiamo(riga);
   const soglia = richiamo ? 1 : MIN_RADICI_COMUNI;
   let migliore: { id_pg: string; comuni: string[] } | null = null;
+  const pngInRiga = pngNominati(testo, nomiPng ?? new Map());
   for (const p of precedenti) {
     if (!nomina(testo, p.nomi)) continue;
+    if (!richiamo && !(p.verso ?? []).some((id) => pngInRiga.has(id))) continue;
     const giaDette = radici(`${p.pubblico ?? ''} ${richiamo ? '' : (p.sentito ?? '')}`, nomiParole);
     const comuni = [...radici(p.testo, nomiParole)].filter((r) => daTesto.has(r) && !giaDette.has(r));
     if (!comuni.some((r) => daRiga.has(r)) || comuni.length < soglia) continue;
@@ -239,6 +249,8 @@ export function guardiaPrivate(
   // A turn whose only actions are private: every narrator line is an answer to them, or the world.
   const soloPrivate = private_.length > 0 && !azioni.some((a) => a.testo && !a.privata && !a.sospesa);
   const prima = precedenti.map((p) => ({ ...p, nomi: nomiDi(p.id_pg) }));
+  const tuttiPg = [...new Set([...azioni.map((a) => a.id_pg), ...precedenti.map((p) => p.id_pg)])];
+  const altriPg = (id: string): string[][] => tuttiPg.filter((x) => x !== id).map(nomiDi);
   if (!private_.length && !conRispostePng && !prima.length) return null;
   const nomiParole = new Set([...nomiPersonaggi].flatMap((n) => normalizza(n).split(/\s+/)));
   /**
@@ -253,6 +265,9 @@ export function guardiaPrivate(
     const nominati = pngNominati(testo, nomiPng ?? new Map());
     let migliore: { id_pg: string; comuni: string[] } | null = null;
     for (const a of private_) {
+      // A line that names another PC is about that PC (rerun after the fixes, T2: Nespola's earlier whisper retold
+      // went to the phone of Eliandro, who whispered in this turn).
+      if (altriPg(a.id_pg).some((nomi) => nomina(testo, nomi))) continue;
       const comuni = [...radici(a.testo, nomiParole)].filter((r) => daRiga.has(r));
       const verso = nomiPng?.size ? [...pngInterpellati(a.testo, nomiPng)].some((id) => nominati.has(id)) : false;
       // In a fight the PC on turn whispers while the others wait: naming the NPC alone is not enough (its attack).
@@ -277,7 +292,7 @@ export function guardiaPrivate(
     let d = id ? { id_pg: id, comuni: [] } : private_.length ? destinatarioPrivato(testo, private_, nomiPersonaggi, contesto, nomiPng) : null;
     if (!d && !png && soloPrivate) d = rispostaSoloPrivata(testo, spostati.get(segmento - 1) ?? null);
     // Then what was private in an earlier turn, retold now (narrator lines only).
-    if (!d && !png && prima.length) d = precedentePrivato(testo, prima, nomiPersonaggi, contesto);
+    if (!d && !png && prima.length) d = precedentePrivato(testo, prima, nomiPersonaggi, contesto, nomiPng);
     if (d) spostati.set(segmento, d.id_pg);
     return d;
   };

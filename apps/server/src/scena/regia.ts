@@ -2748,9 +2748,11 @@ export class Regia {
     const recente = (t: number): boolean => t < turno && turno - t <= Regia.TURNI_PRIVATI_RICORDATI;
     // What the table heard aloud after that turn (narrator and NPC lines of the public transcript).
     const sentitoDopo = (da: number): string => this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno > da).map((v) => v.testo).join(' ');
+    // The NPCs each item speaks to or is spoken by: a retelling without a richiamo must name one of them.
+    const verso = (testo: string, chi?: string): string[] => [...new Set([...pngNominati(testo, this.nomiPng), ...(chi && this.nomiPng.has(chi) ? [chi] : [])])];
     const precedenti = [
-      ...this.azioniPrivate.filter((p) => recente(p.turno)),
-      ...this.privati.filter((p) => recente(p.turno)).map((p) => ({ turno: p.turno, id_pg: p.id_pg, testo: p.testo })),
+      ...this.azioniPrivate.filter((p) => recente(p.turno)).map((p) => ({ ...p, verso: verso(p.testo) })),
+      ...this.privati.filter((p) => recente(p.turno)).map((p) => ({ turno: p.turno, id_pg: p.id_pg, testo: p.testo, verso: verso(p.testo, p.chi) })),
     ].map((p) => ({ ...p, pubblico: dopo(p.id_pg, p.turno), sentito: sentitoDopo(p.turno) }));
     const g = guardiaPrivate(
       azioni.map((a) => ({ id_pg: a.id_pg, testo: a.testo, privata: a['privata'] === true, sospesa: a['sospesa'] === true })),
