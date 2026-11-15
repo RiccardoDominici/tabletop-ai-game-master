@@ -6,6 +6,10 @@
  *     chiamato una volta per turno con tutte le azioni del turno (com'è alla chiusura).
  *
  *   npx tsx apps/server/src/strumenti/confronta-arbitri.ts [--solo-casi | --solo-b3]
+ *   npx tsx apps/server/src/strumenti/confronta-arbitri.ts --casi apps/server/test/prove/casi-cd.yaml
+ *
+ * `--casi <file>`: the DC each arbiter would get the Engine to use, action by action, against the DC the rule set
+ * calls for (`atteso.cd`, alternatives with |): one row per case, then how many match (docs/prove-verifica.md §5).
  *
  * Misure: si tira sì/no uguale; stesso tipo; stessa abilità o prova della scena quando entrambi tirano
  * una prova; stesso bersaglio negli attacchi. La chiave la legge llm/chiave.ts (mai stampata).
@@ -103,8 +107,42 @@ function ingressoRegole(c: Campagna, schede: ReturnType<typeof caricaSchede>, al
   };
 }
 
+/** One row per case: expected skill and DC, the rules arbiter's, Haiku's (docs/prove-verifica.md §5). */
+async function tabellaCd(
+  file: string,
+  chiedi: (c: Campagna, schede: ReturnType<typeof caricaSchede>, azioni: Azione[], narrazione: string) => Promise<Record<string, DecisioneProva>>,
+): Promise<void> {
+  const cartella = path.join(RADICE_REPO, 'apps', 'server', 'test', 'fixtures', 'campagne', 'prove');
+  const c = caricaCampagna(cartella);
+  const schede = caricaSchede(c);
+  const { casi, narrazione } = YAML.parse(fs.readFileSync(path.resolve(file), 'utf8')) as { casi: Array<Azione & { atteso: { abilita?: string; cd: string | number } }>; narrazione: string };
+  const accetta = (v: string | number | undefined, x: string | number | null | undefined): boolean => v === undefined || String(v).split('|').includes(String(x));
+  let okR = 0;
+  let okH = 0;
+  let abR = 0;
+  let abH = 0;
+  console.log('| # | action | expected skill · DC | rules arbiter | Haiku |');
+  console.log('|---|---|---|---|---|');
+  for (const caso of casi) {
+    const az = { id: caso.id, autore: caso.autore, testo: caso.testo, privata: !!caso.privata };
+    const h = (await chiedi(c, schede, [az], narrazione))[caso.id];
+    const r = classificaARegole(az, ingressoRegole(c, schede, [])) as DecisioneProva;
+    const cdR = cdDi(r, c, schede);
+    const cdH = cdDi(h, c, schede);
+    const cosa = (d: DecisioneProva | undefined): string | null => (d && tira(d) ? (d.abilita ?? d.caratteristica) : null);
+    if (accetta(caso.atteso.cd, cdR)) okR++;
+    if (accetta(caso.atteso.cd, cdH)) okH++;
+    if (accetta(caso.atteso.abilita, cosa(r))) abR++;
+    if (accetta(caso.atteso.abilita, cosa(h))) abH++;
+    const cella = (d: DecisioneProva | undefined, cd: number | null): string => (d && tira(d) ? `${cosa(d) ?? d.prova_scena ?? d.tipo} · ${cd ?? '—'}${d.difficolta ? ` (${d.difficolta})` : ''}` : `no roll (${d?.tipo ?? '—'})`);
+    console.log(`| ${caso.id} | ${caso.testo} | ${caso.atteso.abilita ?? '—'} · ${caso.atteso.cd} | ${cella(r, cdR)}${accetta(caso.atteso.cd, cdR) ? '' : ' ✗'} | ${cella(h, cdH)}${accetta(caso.atteso.cd, cdH) ? '' : ' ✗'} |`);
+  }
+  console.log(`\nDC as the rule set calls for: rules arbiter ${okR}/${casi.length}, Haiku ${okH}/${casi.length}; skill: rules ${abR}/${casi.length}, Haiku ${abH}/${casi.length}`);
+}
+
 async function main(): Promise<void> {
-  const args = new Set(process.argv.slice(2));
+  const argv = process.argv.slice(2);
+  const args = new Set(argv);
   const config = caricaConfig(process.env);
   const log = creaLogger({ livello: 'warn', cartellaLog: path.join(RADICE_REPO, 'logs', 'porta-4720'), nomeFile: 'confronta-arbitri.jsonl' });
   const haiku = new ArbitroProveHaiku(() => new ModelloAnthropic(() => creaClientAnthropic(config.llm.fileChiave, log), config.llm.modello), { modello: config.llm.modello, log });
@@ -139,6 +177,9 @@ async function main(): Promise<void> {
       altre: [],
     });
   }
+
+  const fileCasi = argv.includes('--casi') ? argv[argv.indexOf('--casi') + 1] : null;
+  if (fileCasi) return tabellaCd(fileCasi, chiediHaiku);
 
   if (!args.has('--solo-b3')) {
     const cartella = path.join(RADICE_REPO, 'apps', 'server', 'test', 'fixtures', 'campagne', 'prove');

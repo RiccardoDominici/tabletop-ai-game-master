@@ -9,7 +9,7 @@ The values of the JSON are fixed ids, in Italian: write them exactly as below.
 
 Types (tipo):
 - "nessuna" (no roll): a trivial or safe action: walking, looking around, talking, asking, answering, greeting, eating, taking or giving an object within reach, waiting. Asking an NPC something is also "nessuna": the NPC answers, according to its sheet. So is asking an NPC for what it already wants to do.
-- "impossibile": it cannot succeed as written, not even with a lucky roll: flying without means, lifting a house, convincing someone of something against their strongest desire, acting on someone who is not there or on something that does not exist in the scene. No roll. In "motivo" the reason, one sentence for the player, inside the fiction.
+- "impossibile": it cannot succeed as written, not even with a lucky roll: flying without means, lifting a house, convincing someone of something against their strongest desire, acting on someone who is not there or on something that does not exist in the scene. No roll. Hard is not impossible: lifting a cart, swimming a flooded river, jumping a crevasse are hard checks. In "motivo" the reason, one sentence for the player, inside the fiction.
 - "prova" (ability check): an uncertain and risky attempt: climbing, jumping, forcing, picking a lock, searching for something hidden, following tracks, recalling some lore, treating a wound, calming an animal, convincing, deceiving, intimidating or charming an NPC who hesitates (bersaglio = that NPC). Choose the skill; if no skill fits, only the ability.
 - "salvezza" (saving throw): the PC reacts to a danger that strikes them: a trap, a collapse, a poison, a fall, magic, the cold.
 - "attacco" (attack roll): the PC strikes or shoots at a creature with a weapon or bare-handed. bersaglio = id of the creature; arma = id of a weapon on the PC's sheet, the closest to what they wrote (empty = bare-handed).
@@ -19,7 +19,7 @@ Types (tipo):
 Difficulty, only for "prova" and "salvezza":
 - if the action is one of the "Scene checks", put its id in prova_scena: the program knows the DC;
 - if it is persuasione, inganno, intimidire or intrattenere toward an NPC, leave the difficulty empty: the DC comes from the NPC's sheet;
-- otherwise choose from the scale: molto_facile, facile, media, difficile, molto_difficile, quasi_impossibile. When in doubt, media.
+- otherwise choose from the scale: molto_facile, facile, media, difficile, molto_difficile, quasi_impossibile. "facile" for a routine move with a small risk (jumping a ditch, bandaging a wound, climbing a tree); "media" when the outcome is really in the balance; "difficile" with a serious obstacle written in the action or the narration (a current, rain, darkness, haste, slippery moss). When in doubt, media.
 
 Advantage or disadvantage (vantaggio: "vantaggio" or "svantaggio"): only for a clear circumstance, written in the action or in the narration: a suitable tool, a better position, surprise, darkness, haste, a wound, a target that is prone or tied up, shooting with a ranged weapon while an enemy is already on you in melee (the narration says so). When in doubt, "nessuno". The NPCs' attitude and the companions' help are already counted by the program: do not add them.
 

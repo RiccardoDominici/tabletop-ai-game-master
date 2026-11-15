@@ -37,6 +37,19 @@ describe('arbitro a regole, SRD', () => {
     expect(cl('pg_ida', 'Chiedo a Bertoldo da quanto tempo c’è lo sgherro')).toMatchObject({ tipo: 'nessuna' });
     expect(cl('pg_ida', 'Convinco me stessa a restare calma')).toMatchObject({ tipo: 'nessuna' });
   });
+
+  /*
+   * DC choice on twenty actions (docs/prove-verifica.md §5, 15 November): four ordinary checks found no keyword and
+   * rolled nothing with the rules arbiter.
+   */
+  it('listening, deciphering, pulling a rope, appraising: the checks the keyword table missed', () => {
+    expect(cl('pg_corrado', "Tendo l'orecchio per sentire se qualcuno arriva dalla strada")).toMatchObject({ tipo: 'prova', abilita: 'percezione' });
+    expect(cl('pg_ida', 'Decifro le rune antiche incise sul pilone del ponte')).toMatchObject({ tipo: 'prova', abilita: 'storia' });
+    expect(cl('pg_corrado', 'Tiro la cima per riportare a riva la barca alla deriva')).toMatchObject({ tipo: 'prova', abilita: 'atletica' });
+    expect(cl('pg_teo', "Stimo quanto vale l'anello d'oro che ho trovato")).toMatchObject({ tipo: 'prova', abilita: 'indagare' });
+    // A crossbow bolt is still an attack, not Athletics.
+    expect(cl('pg_corrado', 'Tiro un dardo a Ruggero')).toMatchObject({ tipo: 'attacco' });
+  });
 });
 
 describe('arbitro a regole, set del manuale', () => {

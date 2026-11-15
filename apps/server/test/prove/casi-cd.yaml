@@ -1,0 +1,28 @@
+# DC choice (docs/prove-verifica.md §5): twenty actions on the invented campaign with sheets
+# (apps/server/test/fixtures/campagne/prove) where NO data sets the DC — no scene check, no NPC to influence, no attack —
+# so the arbiter's difficulty is the only source. `atteso` is what SRD 5.2 calls for («Typical Difficulty Classes»:
+# 5 very easy, 10 easy, 15 medium, 20 hard, 25 very hard, 30 nearly impossible), with | for what a human Game Master
+# could equally pick; `null` means no roll is also right (a trivial action).
+#   npx tsx apps/server/src/strumenti/confronta-arbitri.ts --casi apps/server/test/prove/casi-cd.yaml
+narrazione: "[narratore] Il fiume è gonfio, piove. Ruggero sbarra il ponte con la mazza, Bertoldo conta le monete nel casotto. Che fate?"
+casi:
+  - {id: d01, autore: pg_corrado, testo: "Salto il fosso dietro il casotto con la rincorsa", atteso: {abilita: atletica|acrobazia, cd: "10|null"}}
+  - {id: d02, autore: pg_teo, testo: "Mi arrampico sul pilone del ponte, viscido di muschio", atteso: {abilita: atletica, cd: "15|20"}}
+  - {id: d03, autore: pg_teo, testo: "Cerco nel fango della riva le tracce dei carri passati oggi", atteso: {abilita: sopravvivenza|indagare|percezione, cd: "10|15"}}
+  - {id: d04, autore: pg_corrado, testo: "Nuoto controcorrente nel fiume in piena fino alla riva opposta", atteso: {abilita: atletica, cd: "20|25"}}
+  - {id: d05, autore: pg_corrado, testo: "Accendo un fuoco sotto la pioggia per scaldare gli altri", atteso: {abilita: sopravvivenza, cd: "10|15"}}
+  - {id: d06, autore: pg_ida, testo: "Calmo il mulo del carro, spaventato dal rumore della piena", atteso: {abilita: addestrare_animali, cd: "10|15"}}
+  - {id: d07, autore: pg_ida, testo: "Faccio il giocoliere con tre sassi davanti al casotto", atteso: {abilita: intrattenere|rapidita_di_mano, cd: "5|10|null"}}
+  - {id: d08, autore: pg_teo, testo: "Esamino il sigillo sulla lettera del barone per capire se è falso", atteso: {abilita: indagare|intuizione, cd: "15|20"}}
+  - {id: d09, autore: pg_ida, testo: "Fascio la ferita sul braccio di Corrado con bende pulite", atteso: {abilita: medicina, cd: "10|null"}}
+  - {id: d10, autore: pg_teo, testo: "Guardo l'erba scura sulla riva e cerco di capire se è velenosa", atteso: {abilita: natura|medicina|sopravvivenza, cd: "10|15"}}
+  - {id: d11, autore: pg_corrado, testo: "Tendo l'orecchio per sentire se qualcuno arriva dalla strada alle nostre spalle", atteso: {abilita: percezione, cd: "10|15"}}
+  - {id: d12, autore: pg_teo, testo: "Cammino in equilibrio sul parapetto stretto e bagnato del ponte", atteso: {abilita: acrobazia, cd: "15|20"}}
+  - {id: d13, autore: pg_corrado, testo: "Sollevo il carro rovesciato per liberare la ruota incastrata", atteso: {abilita: atletica|forza, cd: "15|20"}}
+  - {id: d14, autore: pg_ida, testo: "Decifro le rune antiche incise sul pilone del ponte", atteso: {abilita: arcano|storia, cd: "15|20"}}
+  - {id: d15, autore: pg_corrado, testo: "Tiro la cima per riportare a riva la barca che va alla deriva", atteso: {abilita: atletica, cd: "10|15"}}
+  - {id: d16, autore: pg_corrado, testo: "Resto sveglio tutta la notte a fare la guardia al carro", atteso: {abilita: costituzione|percezione, cd: "10|15|null"}}
+  - {id: d17, autore: pg_corrado, testo: "Do una spallata alla porta chiusa del casotto vuoto per sfondarla", atteso: {abilita: atletica|forza, cd: "15|20"}}
+  - {id: d18, autore: pg_teo, testo: "Stimo quanto vale l'anello d'oro che ho trovato nel fango", atteso: {abilita: indagare|storia, cd: "10|15"}}
+  - {id: d19, autore: pg_teo, testo: "Salgo sul grande salice per guardare lontano lungo la valle", atteso: {abilita: atletica, cd: "10|null"}}
+  - {id: d20, autore: pg_ida, testo: "Ricordo che cosa si racconta del barone di questa valle e della sua famiglia", atteso: {abilita: storia, cd: "10|15"}}
