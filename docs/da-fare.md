@@ -12,6 +12,21 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 - the online documentation updated once everything works.
 
 ## In progress
+- **Checks and rolls (in progress, 15 November 2026)**: manual player rolls (default), automatic as an option, checks asked
+  from the panel, the Game Master's background rolls, surprise, the C4 harness fix and the live verification are committed
+  (d14f89c…d2f7ba4; evidence in docs/prove-verifica.md, live runs on both rule sets in manual and automatic mode done).
+  Remaining, in order:
+  1. World dice without sheets: when the campaign has no prove engine, the Game Master roll hook should return nothing
+     and let the world use its own saved dice (resume replays them); today the director always passes `tira` and a
+     campaign without sheets gets fresh unsaved dice (prove/tiri-master.ts, Regia.nuovoMondo, mondo/tiri.ts).
+  2. Dictation into the roll card: run it end to end once (only the number parser is tested, telefono/numeriDettati.ts).
+  3. World questions written in a scene («is the guard awake?», with odds) and NPCs' own checks out of combat, through
+     the same roll path and visibility rule (docs/prove.md §9).
+  4. The rules arbiter cannot tell easy from hard (always medium 15 without data); Haiku still calls lifting a cart
+     «impossibile» (docs/prove-verifica.md §5).
+  5. v1 limits of manual rolls: damage, NPC rolls, initiative, death saves and the second PC in a contest are the
+     Engine's dice; on a 2d6 set the bonus shown includes the difficulty modifier.
+  6. Not seen live: morale, flight, initiative by sides (unit tests only); C5 minions without sheets.
 - **Checks and rolls** (Riccardo, 15 November 2026: manual player rolls by default, automatic as an option, Game Master rolls in the background, the AI never decides an uncertain outcome). Built and verified live, evidence in [prove-verifica.md](prove-verifica.md) (commits d14f89c…d2f7ba4). Still open:
   - dictation into the roll card («ho fatto 14»): only its parser is tested, not a live dictated roll;
   - DC choice: the rules arbiter can't tell easy from hard (17/20 right), and Haiku called lifting a cart «impossibile» (16/20);
