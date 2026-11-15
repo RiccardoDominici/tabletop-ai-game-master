@@ -23,6 +23,7 @@ import { testo } from '../lingua';
 import { nomeOppure } from './lingua';
 import { DadiCrittografici, type FonteDadi } from './dadi';
 import { DadiAlTavolo, type DadiDeiPg } from './dadi-tavolo';
+import { frasiDi } from './difficolta';
 import { cartaPerIlTavolo, richiestaDaCarta, richiestaDaGruppo, type TiroInserito } from './richieste';
 import { loggerMuto, type Logger } from '../logger';
 import { risolviTurno, type Atteggiamento, type AzioneRisolvibile } from './risolutore';
@@ -361,7 +362,7 @@ export class MotoreProve {
       if (senza.length && this.o.riserva !== false) {
         const ing = this.ingressoClassificatore(c, azioni);
         for (const a of senza) decisioni.set(a.id, classificaARegole(a, ing));
-        this.o.log.info({ turno, azioni: senza.map((a) => ({ id: a.id, tipo: decisioni.get(a.id)?.tipo, abilita: decisioni.get(a.id)?.abilita })) }, 'prove: decisioni a regole (riserva senza modello)');
+        this.o.log.info({ turno, azioni: senza.map((a) => ({ id: a.id, tipo: decisioni.get(a.id)?.tipo, abilita: decisioni.get(a.id)?.abilita, difficolta: decisioni.get(a.id)?.difficolta ?? null })) }, 'prove: decisioni a regole (riserva senza modello)');
       }
     }
     // Un attacco chiaro (un'arma della scheda usata, o un gesto d'attacco, contro un PNG con la scheda) è un attacco,
@@ -783,6 +784,8 @@ export class MotoreProve {
           }))
         : this.proveScena(c.campagna).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole, sociale: provaSocialeSrd(p) })),
       altre: altre.map((a) => ({ id: a.id, autore: a.autore })),
+      // What the scene says about the conditions (prove/difficolta.ts): the last narration and the scene's description.
+      scena: [...frasiDi(c.narrazione), ...frasiDi(typeof c.campagna.scena.dati['descrizione'] === 'string' ? c.campagna.scena.dati['descrizione'] : '')],
     };
   }
 

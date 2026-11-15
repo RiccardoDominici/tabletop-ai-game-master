@@ -6,7 +6,7 @@
  *     chiamato una volta per turno con tutte le azioni del turno (com'è alla chiusura).
  *
  *   npx tsx apps/server/src/strumenti/confronta-arbitri.ts [--solo-casi | --solo-b3]
- *   npx tsx apps/server/src/strumenti/confronta-arbitri.ts --casi apps/server/test/prove/casi-cd.yaml
+ *   npx tsx apps/server/src/strumenti/confronta-arbitri.ts --casi apps/server/test/prove/casi-cd.yaml [--ripeti 3]
  *
  * `--casi <file>`: the DC each arbiter would get the Engine to use, action by action, against the DC the rule set
  * calls for (`atteso.cd`, alternatives with |): one row per case, then how many match (docs/prove-verifica.md §5).
@@ -14,6 +14,7 @@
  * Misure: si tira sì/no uguale; stesso tipo; stessa abilità o prova della scena quando entrambi tirano
  * una prova; stesso bersaglio negli attacchi. La chiave la legge llm/chiave.ts (mai stampata).
  */
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
@@ -27,9 +28,10 @@ import { ModelloAnthropic } from '../llm/anthropic';
 import { creaLogger } from '../logger';
 import { RADICE_REPO } from '../percorsi';
 import { riassuntoPubblico } from '../azioni/contesto';
-import { ArbitroProveHaiku } from '../prove/arbitro-haiku';
+import { ArbitroProveHaiku, promptArbitroProve } from '../prove/arbitro-haiku';
 import { classificaARegole, provaSocialeSrd, type IngressoClassificatore } from '../prove/classificatore-regole';
 import { MotoreProve, type ContestoProve } from '../prove/motore';
+import { frasiDi } from '../prove/difficolta';
 import type { DecisioneProva } from '../prove/tipi';
 import { ABILITA_INFLUENZA, DIFFICOLTA } from '../campagna/regole-srd';
 import { cdInfluenza, passiva } from '../campagna/schede';
@@ -96,10 +98,13 @@ class Conteggio {
   }
 }
 
-function ingressoRegole(c: Campagna, schede: ReturnType<typeof caricaSchede>, altre: Azione[]): IngressoClassificatore {
+function ingressoRegole(c: Campagna, schede: ReturnType<typeof caricaSchede>, altre: Azione[], narrazione = ''): IngressoClassificatore {
+  const descrizione = typeof c.scena.dati['descrizione'] === 'string' ? c.scena.dati['descrizione'] : '';
   return {
     campagna: c,
     regole: null,
+    // As in play (MotoreProve.ingressoClassificatore): the narration and the scene's description, for the difficulty.
+    scena: [...frasiDi(narrazione), ...frasiDi(descrizione)],
     armi: (id) => schede.get(id)?.attacchi.map((a) => a.id) ?? [],
     haScheda: (id) => schede.has(id),
     proveScena: proveDellaScena(c, c.scena).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole, sociale: provaSocialeSrd(p) })),
@@ -110,7 +115,8 @@ function ingressoRegole(c: Campagna, schede: ReturnType<typeof caricaSchede>, al
 /** One row per case: expected skill and DC, the rules arbiter's, Haiku's (docs/prove-verifica.md §5). */
 async function tabellaCd(
   file: string,
-  chiedi: (c: Campagna, schede: ReturnType<typeof caricaSchede>, azioni: Azione[], narrazione: string) => Promise<Record<string, DecisioneProva>>,
+  chiedi: (c: Campagna, schede: ReturnType<typeof caricaSchede>, azioni: Azione[], narrazione: string, giro?: number) => Promise<Record<string, DecisioneProva>>,
+  ripeti = 1,
 ): Promise<void> {
   const cartella = path.join(RADICE_REPO, 'apps', 'server', 'test', 'fixtures', 'campagne', 'prove');
   const c = caricaCampagna(cartella);
@@ -126,7 +132,7 @@ async function tabellaCd(
   for (const caso of casi) {
     const az = { id: caso.id, autore: caso.autore, testo: caso.testo, privata: !!caso.privata };
     const h = (await chiedi(c, schede, [az], narrazione))[caso.id];
-    const r = classificaARegole(az, ingressoRegole(c, schede, [])) as DecisioneProva;
+    const r = classificaARegole(az, ingressoRegole(c, schede, [], narrazione)) as DecisioneProva;
     const cdR = cdDi(r, c, schede);
     const cdH = cdDi(h, c, schede);
     const cosa = (d: DecisioneProva | undefined): string | null => (d && tira(d) ? (d.abilita ?? d.caratteristica) : null);
@@ -138,6 +144,23 @@ async function tabellaCd(
     console.log(`| ${caso.id} | ${caso.testo} | ${caso.atteso.abilita ?? '—'} · ${caso.atteso.cd} | ${cella(r, cdR)}${accetta(caso.atteso.cd, cdR) ? '' : ' ✗'} | ${cella(h, cdH)}${accetta(caso.atteso.cd, cdH) ? '' : ' ✗'} |`);
   }
   console.log(`\nDC as the rule set calls for: rules arbiter ${okR}/${casi.length}, Haiku ${okH}/${casi.length}; skill: rules ${abR}/${casi.length}, Haiku ${abH}/${casi.length}`);
+  // Haiku is not deterministic (no temperature on these models): the same cases asked again, each run scored apart.
+  if (ripeti > 1) {
+    const giri: number[] = [okH];
+    const sbagli = new Map<string, number>();
+    for (const caso of casi) if (!accetta(caso.atteso.cd, cdDi((await chiedi(c, schede, [{ id: caso.id, autore: caso.autore, testo: caso.testo, privata: !!caso.privata }], narrazione))[caso.id], c, schede))) sbagli.set(caso.id, 1);
+    for (let g = 1; g < ripeti; g++) {
+      let ok = 0;
+      for (const caso of casi) {
+        const h = (await chiedi(c, schede, [{ id: caso.id, autore: caso.autore, testo: caso.testo, privata: !!caso.privata }], narrazione, g))[caso.id];
+        if (accetta(caso.atteso.cd, cdDi(h, c, schede))) ok++;
+        else sbagli.set(caso.id, (sbagli.get(caso.id) ?? 0) + 1);
+      }
+      giri.push(ok);
+    }
+    const media = giri.reduce((x, y) => x + y, 0) / giri.length;
+    console.log(`Haiku over ${ripeti} runs: ${giri.map((x) => `${x}/${casi.length}`).join(', ')} (mean ${media.toFixed(1)}); missed: ${[...sbagli].map(([id, n]) => `${id} ${n}/${ripeti}`).join(', ') || 'none'}`);
+  }
 }
 
 async function main(): Promise<void> {
@@ -154,9 +177,13 @@ async function main(): Promise<void> {
   const cache: Record<string, Record<string, DecisioneProva>> = !args.has('--nuovo') && fs.existsSync(fileCache) ? JSON.parse(fs.readFileSync(fileCache, 'utf8')) : {};
   const salva = (): void => fs.writeFileSync(fileCache, JSON.stringify(cache));
 
+  // The cache key carries the model and a hash of the arbiter's prompt: after a change to the prompt the decisions are
+  // asked again (otherwise «after» would silently replay «before»).
+  const firma = `${config.llm.modello}#${createHash('sha256').update(promptArbitroProve()).digest('hex').slice(0, 12)}`;
+
   /** Haiku su un gruppo di azioni, con l'ingresso costruito come in partita. */
-  async function chiediHaiku(c: Campagna, schede: ReturnType<typeof caricaSchede>, azioni: Azione[], narrazione: string): Promise<Record<string, DecisioneProva>> {
-    const chiave = azioni.map((a) => `${a.id}:${a.testo}`).join('|');
+  async function chiediHaiku(c: Campagna, schede: ReturnType<typeof caricaSchede>, azioni: Azione[], narrazione: string, giro = 0): Promise<Record<string, DecisioneProva>> {
+    const chiave = `${firma}|${narrazione}|${azioni.map((a) => `${a.id}:${a.testo}`).join('|')}${giro ? `#giro${giro}` : ''}`;
     if (cache[chiave]) return cache[chiave]!;
     const r = await chiediHaikuVero(c, schede, azioni, narrazione);
     cache[chiave] = r;
@@ -179,7 +206,8 @@ async function main(): Promise<void> {
   }
 
   const fileCasi = argv.includes('--casi') ? argv[argv.indexOf('--casi') + 1] : null;
-  if (fileCasi) return tabellaCd(fileCasi, chiediHaiku);
+  const ripeti = argv.includes('--ripeti') ? Math.max(1, Number(argv[argv.indexOf('--ripeti') + 1]) || 1) : 1;
+  if (fileCasi) return tabellaCd(fileCasi, chiediHaiku, ripeti);
 
   if (!args.has('--solo-b3')) {
     const cartella = path.join(RADICE_REPO, 'apps', 'server', 'test', 'fixtures', 'campagne', 'prove');

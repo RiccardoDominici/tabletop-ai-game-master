@@ -23,7 +23,8 @@
  * domande: chiedere è gratis. Nella e2e finale del 10 novembre (profilo A) 14 carte su 35 erano assurde:
  * «Forzare una porta» per «gli stringo la spalla», Carisma per «guardo la chiave che Berta stringe».
  * Nel dubbio, niente tiro: meglio un tiro in meno che uno assurdo.
- * La CD la decide il Motore: dati della scena, scheda del PNG (Influenzare), o la scala predefinita.
+ * La CD la decide il Motore: dati della scena, scheda del PNG (Influenzare), o la scala del set, from its default rung
+ * moved by what makes the action easier or harder (prove/difficolta.ts).
  *
  * Le parole (verbi d'attacco, d'aiuto, abilità) sono quelle della lingua dei contenuti:
  * lingue/<codice>/prove.yaml, sezione `parole` (docs/lingue.md).
@@ -37,6 +38,7 @@ import type { DecisioneProva, DecisioneRegole } from './tipi';
 import { paroleProve } from './lingua';
 import { candidatiSrd, punteggiSet } from './parole-chiave';
 import { armaUsata, haVoce, inComune, paroleDi, pngRivolti, senzaParlato, soloDomande } from './parole-testo';
+import { difficoltaDa, scalaDifficolta, segnaliDifficolta } from './difficolta';
 
 /** Le abilità SRD sociali: chiedono un PNG a cui rivolgersi. */
 export const ABILITA_SOCIALI: ReadonlySet<Abilita> = new Set(['persuasione', 'inganno', 'intimidire', 'intrattenere']);
@@ -56,6 +58,11 @@ export interface IngressoClassificatore {
   haScheda: (id: string) => boolean;
   /** Prove della scena: id, `quando`, le sue `parole` facoltative, e se è sociale (Carisma, persuadere…). */
   proveScena: Array<{ id: string; quando: string; parole?: string[]; sociale?: boolean }>;
+  /**
+   * The sentences of the last narration and of the scene's public description: a hard condition there that touches
+   * the action makes a check harder (prove/difficolta.ts). Absent = only the action's own words count.
+   */
+  scena?: readonly string[];
   /** Le altre azioni del turno (per «aiuto»). */
   altre: Array<{ id: string; autore: string }>;
   /**
@@ -148,15 +155,20 @@ export function classificaARegole(az: { id: string; testo: string; autore: strin
   const scelta = unico(ps);
   if (scelta) return { ...d, tipo: 'prova', prova_scena: scelta.p.id, bersaglio: scelta.nominato } as DecisioneProva;
   if (ps.length) return d as DecisioneProva;
-  // 4. Abilità o mossa per parole chiave.
+  // 4. Abilità o mossa per parole chiave. The difficulty, when no data sets it, follows what makes the action easier
+  // or harder, in its own words and in the scene (prove/difficolta.ts), on the set's ladder.
+  const segnali = segnaliDifficolta(fatti, i.scena ?? [], nomi);
+  const difficolta = difficoltaDa(scalaDifficolta(s), segnali.gradini);
   if (!s) {
     // Le abilità sociali dal testo intero (il parlato è il loro gesto), le altre da ciò che fa.
     const sociale = candidatiSrd(az.testo, 5).find((a) => SOCIALI.has(a)) ?? null;
     if (sociale && socialeVerso(png, candidatiSrd(fatti, 5).includes(sociale))) return { ...d, tipo: 'prova', abilita: sociale, bersaglio: png } as DecisioneProva;
-    const abilita = candidatiSrd(fatti, 5).find((a) => !SOCIALI.has(a)) ?? null;
+    // A routine move (climbing onto, running across) rolls only when a signal makes it hard: no chance of meaningful
+    // failure, no roll (SRD 5.2, «When to roll»).
+    const abilita = candidatiSrd(fatti, 5).find((a) => !SOCIALI.has(a)) ?? (segnali.gradini > 0 ? (abilitaSeDifficile(fatti) as Abilita | null) : null);
     if (!abilita) return d as DecisioneProva;
     if (bersaglio && (abilita === 'furtivita' || abilita === 'rapidita_di_mano')) return { ...d, tipo: 'contrapposta', abilita, bersaglio, abilita_bersaglio: 'percezione' } as DecisioneProva;
-    return { ...d, tipo: 'prova', abilita, bersaglio } as DecisioneProva;
+    return { ...d, tipo: 'prova', abilita, bersaglio, difficolta: difficolta as DecisioneProva['difficolta'] } as DecisioneProva;
   }
   const idSociali = new Set([s.sociale.caratteristica, s.sociale.abilita].filter((x): x is string => !!x));
   const nelTesto = punteggiSet(az.testo, i.regole!).filter(([id]) => idSociali.has(id));
@@ -168,7 +180,13 @@ export function classificaARegole(az: { id: string; testo: string; autore: strin
   // L'abilità di un'arma è un attacco, e gli attacchi li decide il passo 1 (un gesto d'attacco o l'arma
   // usata, contro chi ha una scheda): arrivati qui c'è solo la parola («spada in mano»), niente tiro.
   if (i.attacchiPer?.has(id)) return d as DecisioneRegole;
-  return conId(d, s, id, bersaglio);
+  return { ...conId(d, s, id, bersaglio), difficolta };
+}
+
+/** The SRD skill of a routine move that rolls only when something makes it hard (lingue/<code>/prove.yaml). */
+function abilitaSeDifficile(fatti: string): string | null {
+  const t = normalizza(fatti);
+  return paroleProve().seDifficile.find(({ re }) => re.test(t))?.abilita ?? null;
 }
 
 /** La decisione per un id del set: mossa, abilità o caratteristica. */

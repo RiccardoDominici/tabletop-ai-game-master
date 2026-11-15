@@ -196,6 +196,18 @@ parole:
     addestrare_animali: ['calm (the|down the|my)', soothe, 'pet (the|my)\b', 'stroke (the|its|my)', tame, 'ride\b', riding, 'mount (the|my)', gallop, 'spur\b', 'reins\b']
     indagare: [search, look for, looking for, 'how much (is|are) (it|they|this|that|the)', 'worth\b', apprais, rummage, examin, inspect, investigat, frisk, 'go through (his|her|their|the)', 'study (the|his|her|their|it)', scrutin, 'check (the|his|her|their|for)']
     percezione: [listen, eavesdrop, overhear, keep an eye on, keep watch, 'watch (for|out|the|who|over)', 'scan (the|for)', peer, footprint, 'try to (see|hear|spot|make out|notice)', 'look (to see|if|whether|who|at who|how|around for)', spot, notice, scout]
+  # What makes an action easier or harder (prove/difficolta.ts, docs/prove.md §4): stems at the start of a word on the
+  # normalised text. A signal in what the PC does moves a check that no data sets one rung on the set's ladder; when
+  # the action says nothing, a hard signal in a sentence of the narration or the scene that shares a word with it does.
+  # Conditions that bear on the action, not nuisances: rain, cold or mud alone do not make a routine move hard.
+  difficolta:
+    piu_facile: [with a run.up, running start, carefully, 'with (a|the) (rope|ladder|lever)', 'tied to (a|the) rope', 'holding (on to )?(a|the) rope', sheltered, in the dry, 'with (my |the )?tools', 'with (the )?bandages']
+    piu_difficile: [flooded, in flood, in spate, against the current, upstream, slippery, slimy, icy, frozen, 'wet\b', narrow, balancing on, in the dark, in darkness, groping, blindly, in a hurry, at a run, collaps, crumbl, ancient, overturned, 'loaded\b', heavy, huge, swollen, storm, blizzard, sheer, 'broken\b', faded]
+  # Routine moves that need a roll only when something makes them hard (a difficulty signal above): «I climb the
+  # willow» is no roll, «I climb onto the roof of wet broken tiles» is Athletics. SRD only.
+  abilita_se_difficile:
+    atletica: ['climb (up|onto|on|to)', 'go up', 'lower myself', 'climb over', 'run\b', 'cross\b', 'wade across']
+    acrobazia: ['walk (on|along|across)']
   # An attack verb (with a named target that has a sheet, it is an attack roll).
   attacco: [attack, 'hit\b', strike, struck, stab, slash, shoot, shot at, 'fire (at|on|my|an|a)\b', 'loose (an|a|my) (arrow|bolt)', 'throw (a|my|the) (dagger|knife|spear|rock|stone|javelin|axe|hammer|punch)', punch, kick, smash, 'swing (at|my)', lunge, thrust, 'cut (him|her|them|at|down)', 'club\b', bludgeon, 'charge\b', '(throw|hurl|fling) myself (at|on)', 'wound\b', skewer, impale, 'run (him|her|them) through', cleave, 'kill\b', 'fight\b']
   # Helping a companion (together with the name of a PC acting in the same turn).

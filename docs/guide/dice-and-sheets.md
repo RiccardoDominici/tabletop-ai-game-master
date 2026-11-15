@@ -98,6 +98,8 @@ Everything comes from `docs/prove.md`, §1, which cites the SRD 5.2.
 | 25 | very hard |
 | 30 | almost impossible |
 
+Without a model (the default referee), the program starts from medium (or your rule set's default) and moves one step for what the action or the scene says makes it easier or harder: «with a run-up», «with a rope» make it easy; «slippery», «against the current», «in the dark», «a bridge that collapses» make it hard; a sentence of the narration about the place the action touches («the river is in flood» for «I swim across the river») counts when the action itself says nothing. A nuisance alone (rain, cold, mud) does not make a routine move hard, and a routine move (climbing a tree, going up a hill) is rolled only when something makes it hard. The words are in `lingue/<code>/prove.yaml` (`parole.difficolta`, `parole.abilita_se_difficile`). With your own rule set, the steps are its difficulties, from the easiest.
+
 **Advantage and disadvantage.** Two d20s are rolled and the higher (advantage) or the lower (disadvantage) is kept. Several advantages do not add up; one advantage and one disadvantage cancel each other out.
 
 **A natural 20 and a natural 1** count only on attack rolls: a 20 is always a critical hit (the damage dice are rolled twice), and a 1 always misses. In checks and saving throws they do not count.

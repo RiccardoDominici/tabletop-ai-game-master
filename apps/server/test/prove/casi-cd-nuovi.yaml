@@ -1,0 +1,20 @@
+# DC choice, ten more actions (docs/prove-verifica.md §5), written BEFORE the change to the arbiters (15 November 2026)
+# so they measure whether the difficulty rule holds beyond the twenty it was tuned on. Same invented campaign and
+# narration as casi-cd.yaml; `atteso` is the SRD 5.2 ladder (5 very easy, 10 easy, 15 medium, 20 hard, 25 very hard,
+# 30 nearly impossible), with | for what a human Game Master could equally pick; `null` = no roll is right (trivial,
+# or impossible as the fiction stands).
+#   npx tsx apps/server/src/strumenti/confronta-arbitri.ts --casi apps/server/test/prove/casi-cd-nuovi.yaml
+narrazione: "[narratore] Il fiume è gonfio, piove. Ruggero sbarra il ponte con la mazza, Bertoldo conta le monete nel casotto. Che fate?"
+casi:
+  - {id: n01, autore: pg_corrado, testo: "Scavalco la staccionata bassa del recinto dietro il casotto", atteso: {abilita: atletica|acrobazia, cd: "10|null"}}
+  # n02 was meant to have no data, but it is the scene check p_guado (DC 12, the data's: correct by design, as the
+  # twenty's note says); its expected DC is the data's since the first «after» run.
+  - {id: n02, autore: pg_corrado, testo: "Attraverso il guado con l'acqua alla cintura, tenendomi alla corda tesa", atteso: {abilita: atletica, cd: "12"}}
+  - {id: n03, autore: pg_teo, testo: "Salgo sul tetto del casotto, coperto di tegole bagnate e rotte", atteso: {abilita: atletica|acrobazia, cd: "15|20"}}
+  - {id: n04, autore: pg_teo, testo: "Mi nascondo tra i cespugli della riva mentre passa la ronda", atteso: {abilita: furtivita, cd: "10|15"}}
+  - {id: n05, autore: pg_ida, testo: "Cerco a tentoni nel fango la chiave che mi è caduta, al buio", atteso: {abilita: percezione|indagare, cd: "15|20"}}
+  - {id: n06, autore: pg_ida, testo: "Riconosco lo stemma dipinto sulla fiancata del carro", atteso: {abilita: storia, cd: "10|15"}}
+  - {id: n07, autore: pg_corrado, testo: "Spingo da solo il carro carico fuori dalla buca piena di fango", atteso: {abilita: atletica, cd: "15|20"}}
+  - {id: n08, autore: pg_teo, testo: "Rimetto in piedi lo sgabello caduto davanti al casotto", atteso: {cd: "null|5"}}
+  - {id: n09, autore: pg_teo, testo: "Corro sul ponte che crolla sotto i piedi fino all'altra sponda", atteso: {abilita: acrobazia|atletica, cd: "20|25"}}
+  - {id: n10, autore: pg_corrado, testo: "Sollevo con le mani il ponte di pietra per guardarci sotto", atteso: {cd: "null|30"}}

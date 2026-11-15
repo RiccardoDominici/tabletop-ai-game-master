@@ -52,6 +52,10 @@ export interface PacchettoProve {
     rivolto: string[];
     uso_arma: string[];
     arma_ferma: string[];
+    /** What makes a check easier or harder (prove/difficolta.ts). */
+    difficolta?: { piu_facile: string[]; piu_difficile: string[] };
+    /** SRD skills of routine moves that roll only when a difficulty signal makes them hard. */
+    abilita_se_difficile?: Record<string, string[]>;
   };
 }
 
@@ -87,6 +91,8 @@ export interface ParoleCompilate {
   aiuto: RegExp;
   /** Sull'id dell'arma scelta dall'arbitro (snake_case), in qualsiasi punto. */
   senzArmi: RegExp;
+  /** Routine moves (SRD skill) that roll only when something makes them hard. */
+  seDifficile: Array<{ abilita: string; re: RegExp }>;
 }
 
 /** Nessuna parola: un'espressione che non trova mai niente (non `\b()`, che troverebbe tutto). */
@@ -110,6 +116,7 @@ export function paroleProve(): ParoleCompilate {
       attacco: inizioParola(parole.attacco),
       aiuto: inizioParola(parole.aiuto),
       senzArmi: parole.senz_armi.length ? new RegExp(parole.senz_armi.join('|')) : MAI,
+      seDifficile: Object.entries(parole.abilita_se_difficile ?? {}).map(([abilita, voci]) => ({ abilita, re: inizioParola(voci) })),
     };
     compilate.set(p, c);
   }

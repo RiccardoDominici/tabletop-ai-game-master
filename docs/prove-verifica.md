@@ -63,18 +63,43 @@ this page: 4891–4896 and 4893 for the e2e.
 
 ## 5. DC choice on twenty actions where no data sets the DC
 
-`npx tsx apps/server/src/strumenti/confronta-arbitri.ts --casi apps/server/test/prove/casi-cd.yaml` (SRD, the
-invented campaign; the expected DC is the SRD 5.2 scale, with | for what a human Game Master could equally pick).
+`npx tsx apps/server/src/strumenti/confronta-arbitri.ts --casi apps/server/test/prove/casi-cd.yaml [--ripeti 3]` (SRD,
+the invented campaign; the expected DC is the SRD 5.2 scale, with | for what a human Game Master could equally pick).
+First pass (`2269267`):
 
 | Arbiter | before | after | what changed |
 |---|---|---|---|
 | rules (profile R, no model) | 13/20 | 17/20 | it never picks a difficulty (always medium 15); four ordinary checks found no keyword and rolled nothing (listening, deciphering, pulling a rope, appraising): stems added, `2269267` |
 | Haiku (profile A) | 14/20 | 16/20 | called a hard lift «impossibile», gave 15 to routine moves: the prompt now says hard is not impossible and gives one line per level, `2269267`; the 16 hand-written cases stay 16/16 and 33/33 |
 
-Left: the rules arbiter cannot tell easy from hard (d01 jump a ditch 15, d04 swim a flood 15); Haiku still calls
-lifting a cart «impossibile» (d13) and gives 20 to lighting a fire in the rain (d05). With data, the DC is the data's
-(scene checks, Influence from the NPC's sheet, AC): the arbiter's choice does not count there, by design (BF baseline
-T5: arbiter «difficile», card CD 17 from the scene check `p_berta_chiave`: correct).
+Second pass (15 November, this page's step 4): the difficulty follows the set's ladder from signals in the action and
+the scene (docs/prove.md §3, prove/difficolta.ts), and the Haiku prompt says that heavy, tiring or dangerous is not
+impossible. Measured on the same twenty and on **ten new actions** (`apps/server/test/prove/casi-cd-nuovi.yaml`,
+written before the change, same narration). Haiku is not deterministic (no temperature on these models): each set was
+asked three times (`--ripeti 3`, the cache is keyed by model and prompt hash), and the table gives the three runs.
+
+| Arbiter | twenty, before | twenty, after | ten new, before | ten new, after |
+|---|---|---|---|---|
+| rules (no model) | 17/20 (d01 «con la rincorsa» 15, d04 «controcorrente … in piena» 15, d09 «con bende pulite» 15) | **20/20** | 7/10 (n03 wet broken roof tiles and n09 a collapsing bridge: no keyword, no roll; n10 lifting a stone bridge: 15) | **9/10** (n10: hard 20; the rules arbiter never says impossible) |
+| Haiku | 15, 16, 15 (d13 the cart «impossibile» 3/3, d15 3/3, d18 3/3, d05 3/3, d01 2/3) | **18, 18, 18** (d05 a fire in the rain: hard 20, 3/3; d13 still «impossibile» 3/3) | 10, 10, 10 | 9, 9, 9 (n01 a low fence: very easy 5, 3/3) |
+
+- The ten new actions were written before the change; the signal lists were written after seeing both sets' first
+  results, so the ten are not fully blind. n02 («attraverso il guado… tenendomi alla corda») turned out to be the
+  scene's check `p_guado`: its DC is the data's (12), correct by design, and its expected value was set to 12.
+- The 16 hand-written cases stay 16/16 on type and 33/33 fields with the new prompt (`strumenti/valuta-prove.ts
+  --solo-singole`, p50 1.1 s, $0.0025).
+- **The cart is not solved.** With the new sentence Haiku still answers «impossibile» for «sollevo il carro rovesciato»
+  in three runs of three; in two of them its own `motivo` says the opposite («un guerriero forte può tentare: prova di
+  Forza difficile»): the verdict field comes before the reason in the structured output. A reason-first field or a
+  deterministic check is the next step; the rules arbiter rolls it (hard 20).
+- **Prompt variants measured and dropped** (three runs each, twenty / ten): a full rewrite of the ladder, one line per
+  rung (16.0 / 9.0); naming rope and boat examples (13.3 / 10.0); «a detail the player adds that fits the place is
+  there» (14.3 / 10.0). Their new misses were «impossibile» for things absent from the scene's description (the
+  baron's letter, locked in the box; runes on a pier the scene calls wooden; a boat on an empty river): the case where
+  the fiction does make it impossible, so the prompt keeps «acting on what is not in the scene».
+- With data, the DC is the data's (scene checks, Influence from the NPC's sheet, AC): the arbiter's choice does not
+  count there, by design (BF baseline T5: arbiter «difficile», card CD 17 from the scene check `p_berta_chiave`:
+  correct).
 
 ## 6. Live run with manual rolls, Basic Fantasy (profile A)
 
@@ -160,8 +185,8 @@ roll at the scene change hidden by default («nascosto»).
 
 - **Dictation into the roll card**: the number parser is tested; the microphone path with real audio was not run end to
   end (it needs the local speech model).
-- **The rules arbiter cannot tell easy from hard** (always medium when no data sets the DC); Haiku still calls lifting a
-  cart «impossibile» (§5).
+- ~~**The rules arbiter cannot tell easy from hard**~~: it follows the set's ladder from signals (§5: 20/20 and 9/10).
+  Haiku still calls lifting a cart «impossibile» (§5), with a reason that contradicts its own verdict.
 - **Attacks on creatures without a sheet** resolve «sì, ma» (C5): the campaigns' minions need sheets.
 - ~~**v1 limits of manual rolls**~~: closed in the Engine (docs/prove.md §8, «Rounds»): the damage of a hit,
   initiative, death saves and the other PC's die in a contest are the player's, asked round after round; the 2d6

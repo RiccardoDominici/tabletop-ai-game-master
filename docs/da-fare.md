@@ -23,8 +23,10 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   3. ~~World questions and NPCs' own checks out of combat~~ **Done**: `domande` of the scene sheet (odds or an NPC's
      check with its sheet), rolled once through the Game Master's path, the answer a world line for the narrator;
      validator `DOMANDE`, skill, guide, example in torre-mozza (mondo/domande.ts, docs/prove.md §9).
-  4. The rules arbiter cannot tell easy from hard (always medium 15 without data); Haiku still calls lifting a cart
-     «impossibile» (docs/prove-verifica.md §5).
+  4. ~~DC choice~~ **Done**, partly: the rules arbiter follows the set's ladder from signals in the action and the scene
+     (prove/difficolta.ts: 17/20 → 20/20, 7/10 → 9/10 on ten new actions); Haiku's prompt says heavy is not impossible
+     (15.3 → 18.0 of 20 over three runs, 10 → 9 of 10). Open: Haiku still answers «impossibile» for lifting a cart, with
+     a reason that contradicts it (docs/prove-verifica.md §5): a reason-first field or a deterministic check.
   5. ~~v1 limits of manual rolls~~ **Done**: every die of a PC is the player's, asked round after round from dry runs
      on a copy of the Engine (damage after a hit, initiative, death saves, the contest's other PC); the 2d6 difficulty
      stays secret (prove/dadi-tavolo.ts, docs/prove.md §8). Left with the Engine: NPC and side rolls, morale, the first

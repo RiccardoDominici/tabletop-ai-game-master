@@ -229,8 +229,18 @@ Recommended consistency checks (warnings):
        the set's keyword). The lost cards are all of that kind (words said to others, questions, «spada in mano», attacks on
        those with no sheet); kept are Charisma for «Berta, dammi la chiave» (Berta, give me the key), Climb for «mi
        arrampico» (I climb), and attacks on a target.
-     - The DC is set by the Engine, as always. No advantage and no «impossibile» (impossible), but the die is rolled
-       anyway and play is never stuck.
+     - The DC is set by the Engine, as always. With no data (no scene check, no NPC to influence, no defence) the
+       difficulty follows the set's ladder from the default rung (SRD: medium), one rung for what makes the action
+       easier or harder (prove/difficolta.ts; `parole.difficolta` of lingue/<code>/prove.yaml): a signal in what the PC
+       does («con la rincorsa», «con una corda» easier; «viscido», «controcorrente», «al buio», «che crolla» harder),
+       or, when the action says nothing, a hard signal in a sentence of the narration or of the scene's description
+       that shares a content word with the action («il fiume è gonfio» for «nuoto nel fiume»). One rung at most: two
+       hardships in one sentence are a hard check, and the scene does not add to the action's own words (measured: the
+       scene's «ponte stretto sul fiume gonfio» made reading runes on the bridge very hard). A nuisance alone (rain,
+       cold, mud) is not a signal. A routine move (`parole.abilita_se_difficile`: «salgo sul…», «corro», «cammino
+       su…») rolls only with a hard signal: no chance of meaningful failure, no roll. A manual's set moves on its own
+       ladder (d20 by DC, roll-under by divisor, 2d6 by modifier). No advantage and no «impossibile» (impossible): the
+       die is rolled anyway, at worst hard, and play is never stuck. Measured in docs/prove-verifica.md §5.
      - Which arbiter: `regole` is the default of the local profile (no model, no wait at closing, no GPU race with the
        reader); `anthropic` is the default when a key is present; `{provider: locale, modo: minimo}` is an explicit option
        for those with a more powerful machine (prove/arbitro-minimo.ts: the model chooses among the candidates, within 3 s,

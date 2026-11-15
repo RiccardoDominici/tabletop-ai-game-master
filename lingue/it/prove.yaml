@@ -204,6 +204,18 @@ parole:
     addestrare_animali: [calmo il, accarezz, ammans, cavalc]
     indagare: [cerco, frugo, perquis, esamin, ispezion, indag, rovist, 'quanto (vale|valgono)', 'stim(o|iamo)\b']
     percezione: [ascolto, origli, 'tend(o|iamo) l''orecchi', 'tengo d''occhio', scruto, impronte, 'cerco di (vedere|sentire|scorgere)', 'guardo (chi|se|come)']
+  # What makes an action easier or harder (prove/difficolta.ts, docs/prove.md §4): stems at the start of a word on the
+  # normalised text. A signal in what the PC does moves a check that no data sets one rung on the set's ladder; when
+  # the action says nothing, a hard signal in a sentence of the narration or the scene that shares a word with it does.
+  # Conditions that bear on the action, not nuisances: rain, cold or mud alone do not make a routine move hard.
+  difficolta:
+    piu_facile: [con la rincorsa, prendendo la rincorsa, con calma, 'con (una|la) (corda|scala|leva)', 'legat(o|a) (a una|alla) corda', 'tenendomi (a una|alla) corda', al riparo, all asciutto, 'con (gli|i|i miei) attrezzi', 'con (le |delle )?bende']
+    piu_difficile: [in piena, controcorrente, viscid, scivolos, ghiacciat, gelat, bagnat, 'strett(o|a|i|e)\b', in equilibrio su, al buio, nel buio, a tentoni, di corsa, in fretta, crolla, frana, antich, rovesciat, 'caric(o|a)\b', pesant, enorm, gonfi, tempesta, bufera, strapiomb, a picco, 'rott(o|a|i|e)\b', sbiadit]
+  # Routine moves that need a roll only when something makes them hard (a difficulty signal above): «salgo sul salice»
+  # is no roll, «salgo sul tetto di tegole bagnate» is Athletics. SRD only (a manual's set has its own keywords).
+  abilita_se_difficile:
+    atletica: ['salgo (su|sul|sulla|sullo|sui|sulle|in cima)', 'mi calo', scavalc, 'corro\b', attravers]
+    acrobazia: ['cammino (su|sul|sulla|sullo|lungo)']
   # Un verbo d'attacco (con un bersaglio con la scheda nominato, è un tiro per colpire).
   attacco: [colpisc, attacc, ferisc, accoltell, trafigg, sparo, scocc, 'tiro (un|una|il|la) (dardo|freccia|colpo|pugno|sasso|coltello)', pugno, calcio, 'mi (lancio|getto|scaglio) (contro|addosso)', affond, fendent, mazzat, 'carico\b', 'carichiamo\b']
   # Aiutare un compagno (con il nome di un PG che agisce nello stesso turno).
