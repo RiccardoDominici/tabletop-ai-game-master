@@ -15,6 +15,7 @@ Write only lines with a label, in the order in which they are heard:
 [umore] tag
 [effetto] tag
 [ritmo] concitato
+[atteggiamento] png_id pg_id amichevole
 [invito] pg_id,pg_id
 
 - `[usa] id > pg_id`: the line is played as it is and answers that PC's action. Do not rewrite it, do not summarise it.
@@ -25,6 +26,7 @@ Write only lines with a label, in the order in which they are heard:
 - `[ritmo]`: rare. `concitato` when the scene becomes frantic and a decision has to come fast (a fight, a chase, a collapse, a danger arriving right now): the players' next window will have a countdown. `calmo` when the danger has passed. Before `[invito]`, only in the response where the pace changes; otherwise the previous pace holds. Never to rush someone who is just discussing. Not read aloud.
 - `[invito]`: always the last line. Ids of the PCs who must respond, or `tutti`. Not read aloud.
 - `[privato pg_id]`: the outcome of a PRIVATE action by that PC, in one or two short sentences: only what he sees, hears or finds. It goes only to his phone, never to the table: in the other lines do not repeat it or hint at it. Only for PRIVATE actions.
+- `[atteggiamento]`: rare. When in this response an NPC in the scene really changes their mind about a PC (a line or an action really touched them): the NPC id, the PC id (or `tutti`) and the new state, `ostile`, `indifferente` or `amichevole`, one step at a time. Before `[invito]`. The Engine checks it and remembers it; it is not read aloud.
 - Nothing else: no `[orologio]`, titles, markdown, notes.
 
 ## 2. First the actions

@@ -15,6 +15,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 [umore] tag
 [effetto] tag
 [ritmo] concitato
+[atteggiamento] png_id pg_id amichevole
 [invito] pg_id,pg_id
 
 - `[usa] id > pg_id`: la battuta parte così com'è e risponde all'azione di quel PG. Non riscriverla, non riassumerla.
@@ -25,6 +26,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 - `[ritmo]`: rara. `concitato` quando la scena diventa frenetica e bisogna decidere in fretta (un combattimento, un inseguimento, un crollo, un pericolo che arriva adesso): la prossima finestra dei giocatori avrà un conto alla rovescia. `calmo` quando il pericolo è passato. Prima di `[invito]`, solo nella risposta in cui il ritmo cambia; altrimenti vale quello di prima. Mai per mettere fretta a chi sta solo discutendo. Non viene letta.
 - `[invito]`: sempre l'ultima riga. Id dei PG che devono rispondere, oppure `tutti`. Non viene letta.
 - `[privato pg_id]`: l'esito di un'azione PRIVATA di quel PG, in una o due frasi brevi: solo ciò che lui vede, sente o trova. Va solo al suo telefono, mai al tavolo: nelle altre righe non ripeterlo e non accennarlo. Solo per le azioni PRIVATA.
+- `[atteggiamento]`: rara. Quando in questa risposta un PNG in scena cambia davvero idea su un PG (una battuta o un'azione lo ha toccato davvero): id del PNG, id del PG (o `tutti`) e il nuovo stato, `ostile`, `indifferente` o `amichevole`, un passo alla volta. Prima di `[invito]`. Il Motore la controlla e la ricorda; non viene letta.
 - Nient'altro: niente `[orologio]`, titoli, markdown, note.
 
 ## 2. Prima le azioni

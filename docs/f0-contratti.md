@@ -109,7 +109,7 @@ into sentences and sends each sentence to the right voice.
   logs. The Engine keeps the state of the clocks and puts into the context of every turn «orologio X: segni
   mostrati N di M, prossimo segno: …» (clock X: signs shown N of M, next sign: …), so the narrator does not have
   to reconstruct it from the transcript.
-- `[atteggiamento] <png> <pg|tutti> <stato>`: optional and rare (mode A), before `[invito]`, not read: the narrator
+- `[atteggiamento] <png> <pg|tutti> <stato>`: optional and rare (both modes), before `[invito]`, not read: the narrator or the selector
   proposes that an NPC in the scene changes its attitude towards a PC (`ostile`, `indifferente`, `amichevole`). The Engine
   accepts one step at a time, one change per NPC per turn, at most two a turn, and not the same pair again within three
   turns (docs/mondo.md §4); otherwise it refuses and logs.

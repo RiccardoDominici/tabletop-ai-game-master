@@ -108,10 +108,10 @@ keys `conseguenze` and the gates stay out of the narrator's cached context, so n
 
 ## 4. NPCs that change in play
 The attitude of each NPC towards each PC starts from `atteggiamento_pg.<pg>.stato` of the card and changes:
-- **narrator** (mode A): the line `[atteggiamento] png_x pg_y amichevole` (or `tutti` for every PC) proposes a
+- **narrator or selector** (both modes): the line `[atteggiamento] png_x pg_y amichevole` (or `tutti` for every PC) proposes a
   change. The Engine accepts it only if the NPC is in the scene, the change is one step (ostile ↔ indifferente ↔
   amichevole), the NPC has not changed in this turn and that pair not in the last 3 turns, and at most 2 changes a
-  turn. Mode B has no free lines: there the changes come from checks and consequences;
+  turn;
 - **checks** (every rule set: only the outcome counts): a social check aimed at an NPC moves the attitude one step
   towards that PC, up on a success, down on a failure, never down to `ostile` (hostile NPCs join fights and impose
   disadvantage: a bad roll must not spiral), once per NPC per visit of a scene;

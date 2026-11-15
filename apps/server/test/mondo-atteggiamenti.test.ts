@@ -130,3 +130,24 @@ describe('server, mode A: the narrator proposes, the Engine checks, the next mes
     expect(messaggi.at(-1)).toContain('Mugnaio Piero verso Anna: adesso amichevole (prima indifferente).');
   });
 });
+
+describe('server, mode B: the selector proposes too, the Engine checks', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('[atteggiamento] from the selector is accepted with the same limits', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mondo');
+    const copione = (t: number): string =>
+      t === 1 ? '[narratore] Anna, il mugnaio annuisce.\n[atteggiamento] png_mugnaio pg_anna amichevole\n[invito] tutti' : '[narratore] Anna, la ruota gira.\n[invito] tutti';
+    const { url } = await prova.avvia(cartella, copione);
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const master = await prova.master(url);
+    let s = await inizia(schermo, tel);
+    s = await turno(tel, 'pg_anna', s, 'Anna aiuta il mugnaio a spostare un sacco.');
+    expect(prova.narrazioni().find((r) => r['tipo'] === 'turno' && r['turno'] === 1)!['atteggiamenti']).toEqual([{ png: 'png_mugnaio', pg: 'pg_anna', stato: 'amichevole', ok: true }]);
+    expect((await master.stato()).mondo?.atteggiamenti).toMatchObject([{ png: 'png_mugnaio', pg: 'pg_anna', stato: 'amichevole', causa: 'narratore' }]);
+    void s;
+  });
+});

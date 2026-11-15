@@ -1120,13 +1120,9 @@ export class Regia {
     }
   }
 
-  /** The narrator's [atteggiamento] lines (mode A only: the selector has no free lines). Returns the outcomes, for the log. */
+  /** The narrator's or the selector's [atteggiamento] lines (both modes), checked by the Engine. Returns the outcomes, for the log. */
   private atteggiamentiDalNarratore(turno: number, proposte: ReadonlyArray<{ png: string; pg: string; stato: string }>, log: Logger): Array<Record<string, unknown>> {
     if (!proposte.length) return [];
-    if (this.statoRepertorio) {
-      log.warn({ proposte }, 'world: [atteggiamento] ignored in mode B');
-      return proposte.map((x) => ({ ...x, ok: false, motivo: 'mode B' }));
-    }
     const presenti = this.pngInScena();
     return proposte.map((x) => {
       if (!['ostile', 'indifferente', 'amichevole'].includes(x.stato)) {
