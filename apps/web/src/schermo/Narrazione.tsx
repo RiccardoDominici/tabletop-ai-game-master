@@ -113,6 +113,9 @@ function SuggerimentoFase({ stato }: { stato: StatoTavolo }) {
     testo = t('schermo.fase.fermata');
   } else if (stato.fase === 'pausa') {
     testo = t('schermo.fase.pausa');
+  } else if (stato.fase === 'narrazione' && stato.tiri_richiesti?.length) {
+    // Manual rolls: the table is rolling its dice before the narrator starts (docs/prove.md §8).
+    testo = t('schermo.fase.dadi');
   } else if (stato.fase === 'narrazione' || stato.fase === 'apertura' || (stato.fase === 'finestra' && !stato.finestra.aperta)) {
     // Il Motore lavora (LLM, voce): in silenzio si dice che il narratore sta preparando.
     testo = t('schermo.fase.preparando');

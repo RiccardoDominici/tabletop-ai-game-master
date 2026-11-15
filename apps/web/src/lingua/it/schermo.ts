@@ -119,4 +119,5 @@ export const schermo = {
   'schermo.richiesta.vantaggio': 'con vantaggio',
   'schermo.richiesta.svantaggio': 'con svantaggio',
   'schermo.richiesta.attesa': 'Aspetto i dadi…',
+  'schermo.fase.dadi': 'Si tirano i dadi…',
 } as const;

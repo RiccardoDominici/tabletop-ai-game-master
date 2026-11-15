@@ -126,7 +126,7 @@ function Carta({ r, altri }: { r: RichiestaTiro; altri: number }) {
             </p>
           )}
         </div>
-        <p data-testid="tiro-totale" aria-live="polite" className={clsx('font-titolo text-2xl', totale === null ? 'text-cenere' : 'text-candela')}>
+        <p data-testid="tiro-totale" aria-live="polite" className={clsx(totale === null ? 'text-base text-cenere' : 'font-titolo text-2xl text-candela')}>
           {totale === null ? t('telefono.tiro.scrivi_dadi', { facce: r.facce }) : t('telefono.tiro.totale', { totale })}
         </p>
         {dettato && <p className="text-pergamena-2">{dettato}</p>}

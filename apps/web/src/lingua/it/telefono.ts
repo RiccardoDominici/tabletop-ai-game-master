@@ -220,4 +220,5 @@ export const telefono = {
   'telefono.tiro.dettato_non_capito': 'Ho sentito «{testo}», ma non un numero da dado: riprova o scrivilo.',
   'telefono.tiro.altri': 'Dopo questo, ancora {n} da fare.',
   'telefono.tiro.fatto': 'Fatto',
+  'telefono.banner.dadi': 'Si tirano i dadi: {nomi}',
 } as const;

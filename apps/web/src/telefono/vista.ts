@@ -151,6 +151,11 @@ export function bannerTelefono(stato: StatoTavolo, idPg: string | null): Banner 
       };
     case 'apertura':
     case 'narrazione':
+      // Manual rolls: the table is rolling, the narrator has not started yet (docs/prove.md §8).
+      if (stato.tiri_richiesti?.length) {
+        const nomi = [...new Set(stato.tiri_richiesti.map((r) => r.nome.split(' ')[0] ?? r.nome))];
+        return { tipo: 'narratore', titolo: t('telefono.banner.dadi', { nomi: elenco(nomi) }), dettaglio: t('telefono.banner.puoi_scrivere'), scadenzaMs: null };
+      }
       return {
         tipo: 'narratore',
         titolo: narratoreAlLavoro(stato) === 'racconta' ? t('telefono.banner.racconta') : t('telefono.banner.prepara'),

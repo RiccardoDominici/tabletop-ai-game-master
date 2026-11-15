@@ -119,4 +119,5 @@ export const schermo = {
   'schermo.richiesta.vantaggio': 'with advantage',
   'schermo.richiesta.svantaggio': 'with disadvantage',
   'schermo.richiesta.attesa': 'Waiting for the dice…',
+  'schermo.fase.dadi': 'Rolling the dice…',
 } satisfies Record<keyof typeof import('../it/schermo').schermo, string>;

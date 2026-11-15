@@ -491,10 +491,14 @@ Projector: schermo/RichiesteSchermo.tsx takes the cards' column while the table 
 master/SezioneTiri.tsx, the «Tiri» box (the DCs, enter the dice for a player, «Tira il Motore», «Tutti al Motore»,
 the last cards with who entered the dice).
 
+While the table rolls, the projector's centre line and the other phones' banner say «Si tirano i dadi…» instead of
+«the narrator is preparing».
+
 **Verification**: test/prove-manuali.test.ts (Engine, four rule-set shapes), test/prove-manuali-integrazione.test.ts
 (whole server: request without DC on projector and phones, private request only on its phone, voice line, wrong dice
 refused, Game Master enters and switches, stop cancels the wait, automatic unchanged), web
-telefono/numeriDettati.test.ts; live runs in docs/prove-verifica.md.
+telefono/numeriDettati.test.ts, and the real pages in apps/web/e2e/tiri-manuali.spec.ts (fake narrator, rules arbiter,
+no model; screenshots in logs/screenshots/tiri-manuali/); live runs in docs/prove-verifica.md.
 
 Credits: this work includes material from the System Reference Document 5.2 («SRD 5.2») by Wizards of the Coast LLC,
 https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License.

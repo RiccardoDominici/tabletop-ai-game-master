@@ -220,4 +220,5 @@ export const telefono = {
   'telefono.tiro.dettato_non_capito': 'I heard «{testo}», but no die value: try again or type it.',
   'telefono.tiro.altri': 'After this one, {n} more to roll.',
   'telefono.tiro.fatto': 'Done',
+  'telefono.banner.dadi': 'Rolling the dice: {nomi}',
 } satisfies Record<keyof typeof import('../it/telefono').telefono, string>;
