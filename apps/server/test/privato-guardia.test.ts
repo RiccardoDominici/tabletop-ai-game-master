@@ -6,7 +6,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import type { EsitoPrivato, StatoTavolo } from '@tabletop-ai-gm/shared';
-import { destinatarioPrivato, guardiaPrivate, radici, rispostaPrivataPng } from '../src/narrazione/privato';
+import { destinatarioPrivato, guardiaPrivate, haRichiamo, precedentePrivato, radici, rispostaPrivataPng } from '../src/narrazione/privato';
 import path from 'node:path';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { paroleDiMestiere } from '../src/campagna/nomi';
@@ -177,6 +177,50 @@ describe('il mestiere vale come nome del PNG', () => {
   });
 });
 
+/**
+ * Bug 1 of the third e2e pass (docs/e2e-finale-3.md), rebuilt on fixture names: a whisper or its private outcome
+ * retold in public in a LATER turn («Nespola, la tua domanda sul prezzo del carbone è scivolata nel fango.», three
+ * turns after; «Livia ha chiesto a Ugo dove stava la notte, e lui ha detto che guardava il fuoco», two turns after,
+ * while that PC acted in public), and a turn with only a whisper answered in narrator lines without the PC's name.
+ */
+describe('private content of earlier turns, and turns with only private actions', () => {
+  const PEDAGGIO = { id_pg: 'pg_teo', nomi: ['Teo'], turno: 2, testo: 'Bertoldo, a parte: quanto ti paga il barone per il pedaggio? Mi serve sapere chi è onesto.', pubblico: 'Andiamo al mulino.' };
+  const ESITO_IDA = { id_pg: 'pg_ida', nomi: ['Ida Ferraro', 'Ida'], turno: 9, testo: 'Bertoldo dice che di notte guarda il fuoco della fornace, e non vede chi passa.', pubblico: 'Non so, ha detto poco.' };
+
+  it('a richiamo («la tua domanda», «ha chiesto») and one root: an earlier whisper goes back to its phone', () => {
+    expect(haRichiamo('Teo, la tua domanda sul pedaggio è caduta nel vuoto.')).toBe(true);
+    expect(haRichiamo('Teo guarda il fiume.')).toBe(false);
+    expect(precedentePrivato('Teo, la tua domanda sul pedaggio è caduta nel vuoto.', [PEDAGGIO], NOMI)).toMatchObject({ id_pg: 'pg_teo', comuni: ['pedag'] });
+    // The outcome given to Ida's phone two turns before, retold at the table: two roots and her name.
+    expect(precedentePrivato('Ida ha chiesto a Bertoldo dove stava la notte, e lui ha detto che guardava il fuoco della fornace.', [ESITO_IDA], NOMI)?.id_pg).toBe('pg_ida');
+  });
+
+  it('left at the table: no name, words the PC has said in public since, one root without a richiamo', () => {
+    expect(precedentePrivato('La domanda sul pedaggio resta nell’aria.', [PEDAGGIO], NOMI)).toBeNull();
+    expect(precedentePrivato('Teo paga il pedaggio a Bertoldo.', [{ ...PEDAGGIO, pubblico: 'Pago il pedaggio a Bertoldo.' }], NOMI)).toBeNull();
+    expect(precedentePrivato('Teo guarda il pedaggio.', [PEDAGGIO], NOMI)).toBeNull();
+  });
+
+  it('in the turn guard: an earlier whisper is retold while its author acts in public; the public answer stays', () => {
+    const g = guardiaPrivate([{ id_pg: 'pg_teo', testo: 'Andiamo al mulino.', privata: false }], () => ['Teo'], NOMI, undefined, [PEDAGGIO])!;
+    expect(g('Teo, la tua domanda sul pedaggio è caduta nel vuoto.', 1)?.id_pg).toBe('pg_teo');
+    expect(g('Teo prende la strada del mulino.', 2)).toBeNull();
+  });
+
+  it('only a whisper in the turn: the NPC it speaks to, then the lines after, go to that phone; the world stays', () => {
+    const nomiPng = new Map([['png_ruggero', ['ruggero lo sgherro', 'ruggero', 'sgherro']]]);
+    const sussurro = { id_pg: 'pg_ida', testo: 'Piano a Ruggero, con la punta della spada: «Parla, e ti lascio andare. Dov’è il ragazzo?»', privata: true };
+    const g = guardiaPrivate([sussurro], () => ['Ida'], NOMI, nomiPng)!;
+    expect(g('Lo sgherro alza gli occhi verso di lei, poi verso la cantina.', 1)?.id_pg).toBe('pg_ida');
+    expect(g('Parla in fretta, e la voce gli trema.', 2)?.id_pg).toBe('pg_ida');
+    expect(g('Dice che il ragazzo è stato portato via.', 3)?.id_pg).toBe('pg_ida');
+    expect(g('Fuori il corno suona due volte.', 4)).toBeNull();
+    // A public action in the turn: the old rule (the author's name is needed).
+    const conPubblica = guardiaPrivate([sussurro, { id_pg: 'pg_corrado', testo: 'Guardo la porta.', privata: false }], (id) => (id === 'pg_ida' ? ['Ida'] : ['Corrado']), NOMI, nomiPng)!;
+    expect(conPubblica('Lo sgherro alza gli occhi verso la porta.', 1)).toBeNull();
+  });
+});
+
 describe('guardia delle azioni private col server intero', () => {
   let prova: Prova;
   afterEach(async () => prova?.chiudi());
@@ -229,5 +273,36 @@ describe('guardia delle azioni private col server intero', () => {
     expect(pubblico).toContain('Non ti do niente');
     expect(pubblico).not.toMatch(/carbonaia|mulino/);
     expect(privati.at(-1)?.map((e) => e.testo).join(' ')).toContain('carbonaia');
+  });
+
+  it('a whisper of turn 1 retold at turn 3, while Teo acts in public: it goes to his phone, not to the table', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('prove');
+    const copione = (turno: number): string =>
+      turno === 0
+        ? '[narratore] Il fiume rumoreggia.\n[invito] tutti'
+        : turno === 1
+          ? '[privato pg_teo] Bertoldo non ti risponde sul pedaggio.\n[narratore] Il vento porta odore di fango.\n[invito] tutti'
+          : turno === 3
+            ? '[narratore] Teo, la tua domanda sul pedaggio è caduta nel vuoto.\n[narratore] Teo prende la strada del mulino.\n[invito] tutti'
+            : '[narratore] Il fiume scorre.\n[invito] tutti';
+    const { url } = await prova.avvia(cartella, copione);
+    const schermo = await prova.proiettore(url);
+    const teo = await prova.telefono(url, 'pg_teo');
+    const privati: EsitoPrivato[][] = [];
+    teo.on('privato:esiti', (e) => privati.push(e));
+    const s1 = await inizia(schermo, teo);
+    const turno = async (s: StatoTavolo, testo: string, privata: boolean): Promise<StatoTavolo> => {
+      const dopo = attendi(teo, (x) => x.fase === 'finestra' && x.turno === s.turno + 1);
+      await agisci(teo, 'pg_teo', testo, s.versione_scena, privata);
+      return dopo;
+    };
+    const s2 = await turno(s1, 'Bertoldo, a parte: quanto ti paga il barone per il pedaggio?', true);
+    const s3 = await turno(s2, 'Guardo il fiume.', false);
+    const s4 = await turno(s3, 'Andiamo al mulino.', false);
+    const pubblico = s4.trascrizione.map((v) => v.testo).join(' ');
+    expect(pubblico).toContain('Teo prende la strada del mulino.');
+    expect(pubblico).not.toMatch(/pedaggio/);
+    expect(privati.at(-1)?.map((e) => e.testo).join(' ')).toContain('la tua domanda sul pedaggio');
   });
 });

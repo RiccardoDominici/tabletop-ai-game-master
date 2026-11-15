@@ -142,6 +142,12 @@ numeri_regole:
 privato:
   parole_vuote: [mentre, quando, questo, questa, quello, quella, quelli, sono, siete, della, delle, dello, degli, dalla, dalle, dallo, dagli, nella, nelle, nello, negli, sulla, sulle, sullo, sugli, alla, alle, allo, agli, verso, dopo, prima, senza, sotto, sopra, dentro, fuori, anche, ancora, molto, poco, tutto, tutti, tutta, ogni, come, cosa, perche, pero, piano, intanto, subito, appena, proprio, vostro, vostra, nostro, nostra, suoi, sue, loro, altro, altra, altri, qualche, niente, nulla]
 
+# Parole che rimandano a ciò che un PG ha chiesto o sussurrato (apps/server/src/narrazione/privato.ts, haRichiamo): una
+# riga al tavolo con una di queste e il nome del PG basta che abbia una radice in comune con la sua azione privata (o col
+# suo esito privato) per andare al suo telefono. Radici: una parola vale se comincia così; più parole sono una frase.
+privato_richiami:
+  richiami: [la tua domanda, tua domanda, tua richiesta, hai chiesto, ha chiesto, avevi chiesto, aveva chiesto, chiedevi, chiedeva, a bassa voce, sottovoce, in privato, a parte, sussurr, bisbigl, all'orecchio, in disparte]
+
 # Nomi brevi di PG e PNG (apps/server/src/campagna/nomi.ts): titoli da saltare («Sorella Teodora» → «Teodora»).
 nomi:
   titoli: [sorella, fratello, padre, madre, ser, messer, donna, dama, mastro, frate, suor]

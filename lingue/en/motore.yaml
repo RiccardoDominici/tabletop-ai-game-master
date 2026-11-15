@@ -150,6 +150,12 @@ numeri_regole:
 privato:
   parole_vuote: [while, when, then, than, this, that, these, those, there, here, with, without, from, into, onto, upon, over, under, after, before, inside, outside, through, also, still, very, much, more, most, less, little, every, each, some, many, what, which, where, their, them, they, have, been, were, your, yours, ours, just, only, even, again, toward, towards, around, about, other, another, nothing, something, anything, because, though, although, myself, himself, herself, themselves, does, doing, will, would, could, should, might, must, quietly, slowly, quickly, carefully, softly, gently, really, away, down, back, being, both, such, like]
 
+# Words that point back at what a PC asked or whispered (apps/server/src/narrazione/privato.ts, haRichiamo): a public line
+# with one of them and the PC's name needs only one root in common with their private action (or private outcome) to go
+# to their phone. Stems: a word counts if it starts like this; entries of several words are phrases.
+privato_richiami:
+  richiami: [your question, you asked, asked, had asked, in a low voice, under his breath, under her breath, under their breath, whisper, in private, privately, aside]
+
 # Short names of PCs and NPCs (apps/server/src/campagna/nomi.ts): titles skipped («Sister Teodora» → «Teodora»).
 nomi:
   titoli: [sister, brother, father, mother, sir, lady, lord, dame, master, mistress, friar, mr, mrs, ms, miss, dr, doctor, captain, sergeant, uncle, aunt, old, young, saint, st]

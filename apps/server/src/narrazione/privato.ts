@@ -32,6 +32,25 @@ export interface AzionePrivataTurno {
 export const MIN_RADICI_COMUNI = 2;
 
 /**
+ * Words that point back at what a PC asked or whispered («la tua domanda», «ha chiesto», «sottovoce», «in privato»):
+ * lingue/<code>/motore.yaml, section `privato`, `richiami` (stems; entries of several words are phrases). A line with
+ * one of them needs one root in common with the private action instead of two. Third e2e pass: «Nespola, la tua domanda
+ * sul prezzo del carbone è scivolata nel fango.» shared only «carbone» with the whisper three turns before.
+ */
+const richiami = (): readonly string[][] =>
+  regole('privato_richiami', (s) =>
+    campoElenco(s, 'richiami')
+      .map((x) => normalizza(x).replace(/[^a-z0-9' ]/g, ' ').split(/[\s']+/).filter(Boolean))
+      .filter((v) => v.length > 0),
+  );
+
+/** The line points back at a question or a whisper (a `richiamo`, as whole words or stems of several words)? */
+export function haRichiamo(t: string): boolean {
+  const w = normalizza(t).replace(/[^a-z0-9' ]/g, ' ').split(/[\s']+/).filter(Boolean);
+  return richiami().some((v) => w.some((_, i) => v.every((k, j) => w[i + j]?.startsWith(k))));
+}
+
+/**
  * Parole frequenti che non dicono il contenuto di un'azione (≥ 4 lettere, già senza accenti), della lingua
  * dei contenuti: lingue/<codice>/motore.yaml, sezione `privato`.
  */
@@ -89,9 +108,51 @@ export function destinatarioPrivato(
     if (!nomina(riga, a.nomi) && !comuni.some((r) => daRiga.has(r))) continue;
     const interpellati = nomiPng?.size ? pngInterpellati(a.testo, nomiPng) : new Set<string>();
     const nominaInterpellato = [...pngNominati(testo, nomiPng ?? new Map())].some((id) => interpellati.has(id));
-    if (comuni.length >= (nominaInterpellato ? 1 : MIN_RADICI_COMUNI)) return { id_pg: a.id_pg, comuni };
+    if (comuni.length >= (nominaInterpellato || haRichiamo(riga) ? 1 : MIN_RADICI_COMUNI)) return { id_pg: a.id_pg, comuni };
   }
   return null;
+}
+
+/**
+ * Something private of an EARLIER turn that the table has not heard: a PC's private action, or a private outcome the
+ * narrator gave to its phone (`[privato pg_x]`). The narrator's message keeps the outcomes («Esiti privati già dati»),
+ * and in the third e2e pass it retold them in public turns later: «Livia ha chiesto a Ugo dove stava la notte, e lui
+ * ha detto che guardava il fuoco della carbonaia.» (stallo T11, the whisper at T9). `pubblico`: what that PC has said
+ * in public since then (its public actions): those words are the table's now, and do not count as private.
+ */
+export interface PrivatoPrecedente {
+  id_pg: string;
+  turno: number;
+  testo: string;
+  pubblico?: string;
+}
+
+/**
+ * The PC whose phone an earlier private item's retelling goes to, or null. The line (or its context) must name that PC,
+ * and the line itself must share with the item two roots (one with a `richiamo`) that the PC has not said in public
+ * since. The PC may also act in public in this turn: unlike the turn's own private actions, an earlier one is not
+ * shadowed by it (fuori-binario T5: Nespola walked to the ford in public while the narrator retold her whisper).
+ */
+export function precedentePrivato(
+  riga: string,
+  precedenti: readonly (PrivatoPrecedente & { nomi: readonly string[] })[],
+  nomiPersonaggi: ReadonlySet<string>,
+  contesto = '',
+): { id_pg: string; comuni: string[] } | null {
+  const nomiParole = new Set([...nomiPersonaggi].flatMap((n) => normalizza(n).split(/\s+/)));
+  const testo = contesto ? `${contesto} ${riga}` : riga;
+  const daTesto = radici(testo, nomiParole);
+  const daRiga = radici(riga, nomiParole);
+  const soglia = haRichiamo(riga) ? 1 : MIN_RADICI_COMUNI;
+  let migliore: { id_pg: string; comuni: string[] } | null = null;
+  for (const p of precedenti) {
+    if (!nomina(testo, p.nomi)) continue;
+    const giaDette = radici(p.pubblico ?? '', nomiParole);
+    const comuni = [...radici(p.testo, nomiParole)].filter((r) => daTesto.has(r) && !giaDette.has(r));
+    if (!comuni.some((r) => daRiga.has(r)) || comuni.length < soglia) continue;
+    if (!migliore || comuni.length > migliore.comuni.length) migliore = { id_pg: p.id_pg, comuni };
+  }
+  return migliore;
 }
 
 /** Un'azione del turno come la passa la regia (`sospesa`: rinviata, non riceve risposta in questo turno). */
@@ -159,13 +220,37 @@ export function guardiaPrivate(
   nomiDi: (id_pg: string) => string[],
   nomiPersonaggi: ReadonlySet<string>,
   nomiPng?: Map<string, string[]>,
+  precedenti: readonly PrivatoPrecedente[] = [],
 ): ((testo: string, segmento: number, etichetta?: string) => { id_pg: string; comuni: string[] } | null) | null {
   const conPubblica = new Set(azioni.filter((a) => a.testo && !a.privata).map((a) => a.id_pg));
   const private_ = azioni
     .filter((a): a is AzioneTurnoGuardia & { testo: string; privata: true } => !!a.testo && a.privata === true && !conPubblica.has(a.id_pg))
     .map((a) => ({ id_pg: a.id_pg, nomi: nomiDi(a.id_pg), testo: a.testo }));
   const conRispostePng = !!nomiPng?.size && azioni.some((a) => a.testo && a.privata === true);
-  if (!private_.length && !conRispostePng) return null;
+  // A turn whose only actions are private: every narrator line is an answer to them, or the world.
+  const soloPrivate = private_.length > 0 && !azioni.some((a) => a.testo && !a.privata && !a.sospesa);
+  const prima = precedenti.map((p) => ({ ...p, nomi: nomiDi(p.id_pg) }));
+  if (!private_.length && !conRispostePng && !prima.length) return null;
+  const nomiParole = new Set([...nomiPersonaggi].flatMap((n) => normalizza(n).split(/\s+/)));
+  /**
+   * In a turn with only private actions, a narrator line answers one of them even without its author's name (combat
+   * T25 of the third e2e pass: «Il goblin alza gli occhi verso di lei… Parla piano, in fretta… Dice che il ragazzo è
+   * stato portato via», answering Livia's whisper): two roots in common with the action, or the NPC it speaks to named,
+   * or one root right after a line already moved to that PC. With nobody acting in public, a line about the NPC whispered
+   * to is its answer; a world line that names nobody whispered to stays at the table.
+   */
+  const rispostaSoloPrivata = (testo: string, dopo: string | null): { id_pg: string; comuni: string[] } | null => {
+    const daRiga = radici(testo, nomiParole);
+    const nominati = pngNominati(testo, nomiPng ?? new Map());
+    let migliore: { id_pg: string; comuni: string[] } | null = null;
+    for (const a of private_) {
+      const comuni = [...radici(a.testo, nomiParole)].filter((r) => daRiga.has(r));
+      const verso = nomiPng?.size ? [...pngInterpellati(a.testo, nomiPng)].some((id) => nominati.has(id)) : false;
+      const basta = comuni.length >= MIN_RADICI_COMUNI || verso || (comuni.length >= 1 && dopo === a.id_pg);
+      if (basta && (!migliore || comuni.length > migliore.comuni.length)) migliore = { id_pg: a.id_pg, comuni };
+    }
+    return migliore;
+  };
   const spostati = new Map<number, string>();
   // Ciò che precede ogni frase: la riga finora, o l'ultima frase della riga prima.
   const righe = new Map<number, string>();
@@ -177,8 +262,12 @@ export function guardiaPrivate(
     const gia = spostati.get(segmento);
     if (gia) return { id_pg: gia, comuni: [] };
     // Prima la risposta di un PNG all'azione privata; poi, per ogni riga, il racconto dell'azione.
-    const id = conRispostePng && etichetta && nomiPng!.has(etichetta) ? rispostaPrivataPng(testo, etichetta, azioni, nomiPng!, nomiPersonaggi, spostati.get(segmento - 1) ?? null) : null;
-    const d = id ? { id_pg: id, comuni: [] } : private_.length ? destinatarioPrivato(testo, private_, nomiPersonaggi, contesto, nomiPng) : null;
+    const png = !!etichetta && !!nomiPng?.has(etichetta);
+    const id = conRispostePng && png ? rispostaPrivataPng(testo, etichetta!, azioni, nomiPng!, nomiPersonaggi, spostati.get(segmento - 1) ?? null) : null;
+    let d = id ? { id_pg: id, comuni: [] } : private_.length ? destinatarioPrivato(testo, private_, nomiPersonaggi, contesto, nomiPng) : null;
+    if (!d && !png && soloPrivate) d = rispostaSoloPrivata(testo, spostati.get(segmento - 1) ?? null);
+    // Then what was private in an earlier turn, retold now (narrator lines only).
+    if (!d && !png && prima.length) d = precedentePrivato(testo, prima, nomiPersonaggi, contesto);
     if (d) spostati.set(segmento, d.id_pg);
     return d;
   };

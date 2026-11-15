@@ -442,6 +442,30 @@ Live verification of checks, rolls, DCs and turns on a running server, scenario 
     `lingue/<code>/motore.yaml`, section `nomi`. In the second pass «I ask the innkeeper…» did not find Hale, so his reply
     to a private action was heard at the table. This holds everywhere NPC names are matched (private guard, rules arbiter,
     line relevance).
+  - Third e2e pass (docs/e2e-finale-3.md, bug 1): leaks in LATER turns, which the guard (and the leak count) never looked
+    at. «Nespola, la tua domanda sul prezzo del carbone è scivolata nel fango.» three turns after the whisper, while
+    Nespola acted in public; «Livia ha chiesto a Ugo dove stava la notte, e lui ha detto che guardava il fuoco della
+    carbonaia.» two turns after (the feed path is the message's «Esiti privati già dati»: the narrator's history has no
+    private actions, the outcomes it gave to the phones are there). Now (`precedentePrivato`):
+    - the director keeps the private actions of the evening and the private outcomes given (the last 10 turns:
+      `azioniPrivate`, `privati`) with what each PC has said in public since; a narrator line that names that PC and
+      shares two roots with one of them that the PC has not said aloud since goes to their phone, even if the PC acts in
+      public in this turn;
+    - a `richiamo` («la tua domanda», «ha chiesto», «sottovoce», «in privato»…, `lingue/<code>/motore.yaml`, section
+      `privato_richiami`) lowers the threshold to one root, in the turn of the action too;
+    - a turn whose only actions are private (combat T25 on HEAD: «Il goblin alza gli occhi verso di lei… Parla piano, in
+      fretta… Dice che il ragazzo è stato portato via», with no name of the PC): a narrator line that names the NPC
+      whispered to, or shares two roots with the whisper, or one root right after a line already moved, goes to that
+      phone; a world line that names nobody whispered to stays.
+    Not saved with the session: after a resume only the outcomes count. Limit: a paraphrase with no word in common
+    («prezzo» for «pagava») still needs one shared root and a richiamo or two roots.
+  - The detector of the runs was blind to the same cases: the leak count (`fughe`) measures only the campaign's secret
+    words, and misure.py's `sospette` read the raw narration of the same turn and skipped a PC who also acted in public.
+    `esperimenti/e2e-finale/private_al_tavolo.py` reads the table record (what the table heard), up to eight turns after
+    each private action, with its own looser rule (the PC's or the addressed NPC's name and one root; two roots within
+    two turns; one root in a turn with only private actions); misure.py reports it as `private.al_tavolo` with the
+    guard's moves (`spostate_dalla_guardia`). On the third pass's table records it finds both judged leaks (fuori-binario
+    T5, stallo T11). Test: strumenti/test_private_al_tavolo.py.
 - **Real combat**:
   - initiative and turn order;
   - unprovoked NPC attacks (an `[attacco]` line, to be agreed with the «voce» parser);

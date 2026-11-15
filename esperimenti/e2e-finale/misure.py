@@ -9,6 +9,7 @@ the numbers. It never prints keys or tokens (the logs do not contain them: the m
 from __future__ import annotations
 
 import collections
+import importlib.util
 import json
 import re
 import statistics
@@ -98,9 +99,18 @@ def main() -> None:
                     continue
                 if re.search(rf"\b{re.escape(breve)}\b", l.lower()):
                     sospette.append({"turno": n, "pg": pg, "riga": l[:160]})
+    # What the table HEARD that may carry private content, up to eight turns later and also when the PC acted in public
+    # (private_al_tavolo.py; «sospette» above is only the raw narration of the same turn). Loaded by path: `-I` keeps
+    # this script's folder off sys.path.
+    spec = importlib.util.spec_from_file_location("private_al_tavolo", Path(__file__).with_name("private_al_tavolo.py"))
+    pat = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(pat)
+    al_tavolo = pat.candidati((ris / "tavolo.md").read_text(encoding="utf-8"), ris / "narrazioni.jsonl") if (ris / "tavolo.md").exists() else []
     M["private"] = {"azioni_private": private_tot, "righe_privato": privato_righe,
                     "esiti_privati_log": sum(1 for x in server if x.get("msg") == "narratore: esito privato"),
-                    "righe_al_tavolo_sospette": len(sospette), "sospette": sospette[:10]}
+                    "spostate_dalla_guardia": sum(1 for x in server if str(x.get("msg", "")).startswith("narratore: riga al tavolo sull'azione privata")),
+                    "righe_al_tavolo_sospette": len(sospette), "sospette": sospette[:10],
+                    "al_tavolo_candidate": len(al_tavolo), "al_tavolo": al_tavolo[:12]}
 
     # --- dice and rules
     risolte = [x for x in server if str(x.get("msg", "")).startswith("prove: azione risolta")]

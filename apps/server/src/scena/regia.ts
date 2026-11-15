@@ -402,6 +402,12 @@ export class Regia {
    * telefoni di quel PG, nel registro e nel contesto del narratore; mai nella trascrizione pubblica.
    */
   private privati: EsitoPrivato[] = [];
+  /**
+   * The PCs' private actions of the evening (turn, author, text): an earlier whisper retold in public later is a leak
+   * too (narrazione/privato.ts, PrivatoPrecedente; third e2e pass, bug 1). Not saved with the session: after a resume
+   * only the private outcomes (`privati`) count.
+   */
+  private azioniPrivate: Array<{ turno: number; id_pg: string; testo: string }> = [];
   private privatiSalvati = new Map<number, string>();
   /** Riga privata aperta per turno:segmento (le frasi della stessa riga si uniscono). */
   private privatiAperti = new Map<string, EsitoPrivato>();
@@ -2185,6 +2191,7 @@ export class Regia {
     this.tavoloSalvato = '';
     this.trascrizione = [];
     this.privati = [];
+    this.azioniPrivate = [];
     this.privatiSalvati.clear();
     this.privatiAperti.clear();
     this.turno = 0;
@@ -2717,21 +2724,37 @@ export class Regia {
     return versioni[n % versioni.length]!.map((r) => ({ etichetta: r.etichetta, testo: r.testo }));
   }
 
-  private guardiaPrivate(azioni: ReadonlyArray<{ id_pg: string; testo: string | null; [k: string]: unknown }>): { spostaPrivata?: NonNullable<ReturnType<typeof guardiaPrivate>> } {
+  private guardiaPrivate(azioni: ReadonlyArray<{ id_pg: string; testo: string | null; [k: string]: unknown }>, turno: number): { spostaPrivata?: NonNullable<ReturnType<typeof guardiaPrivate>> } {
     const c = this.campagna;
     const nomiDi = (id: string): string[] => {
       const nome = c.pg.find((p) => p.id === id)?.nome ?? id;
       return [nome, nomeBreve(nome), ...Object.entries(c.alias).filter(([, x]) => x === id).map(([a]) => a)];
     };
     const tutti = new Set([...c.pg.map((p) => p.nome), ...c.png.map((p) => p.nome), ...Object.keys(c.alias)].map((n) => n.toLowerCase()));
+    // What was private in the last turns (actions and the outcomes given to the phones), with what each PC has said in
+    // public since: an earlier whisper retold now goes to that phone too (narrazione/privato.ts, precedentePrivato).
+    const dopo = (id_pg: string, da: number): string =>
+      [
+        ...this.trascrizione.filter((v) => v.tipo === 'azione' && v.chi === id_pg && v.turno > da).map((v) => v.testo),
+        ...azioni.filter((a) => a.id_pg === id_pg && a.testo && a['privata'] !== true).map((a) => a.testo!),
+      ].join(' ');
+    const recente = (t: number): boolean => t < turno && turno - t <= Regia.TURNI_PRIVATI_RICORDATI;
+    const precedenti = [
+      ...this.azioniPrivate.filter((p) => recente(p.turno)),
+      ...this.privati.filter((p) => recente(p.turno)).map((p) => ({ turno: p.turno, id_pg: p.id_pg, testo: p.testo })),
+    ].map((p) => ({ ...p, pubblico: dopo(p.id_pg, p.turno) }));
     const g = guardiaPrivate(
       azioni.map((a) => ({ id_pg: a.id_pg, testo: a.testo, privata: a['privata'] === true, sospesa: a['sospesa'] === true })),
       nomiDi,
       tutti,
       this.nomiPng,
+      precedenti,
     );
     return g ? { spostaPrivata: g } : {};
   }
+
+  /** How many turns back a private action or outcome still counts for the privacy guard (the message shows 12 outcomes). */
+  private static readonly TURNI_PRIVATI_RICORDATI = 10;
 
   /**
    * The refusal guard of the turn (narrazione/guardia-rifiuti.ts): an NPC who refused after a failed social check
@@ -3000,6 +3023,7 @@ export class Regia {
     // Le azioni pubbliche entrano nella trascrizione (in ordine di risoluzione).
     for (const a of r.azioni) {
       if (!a.privata) this.aggiungiTrascrizione({ turno: r.turno, tipo: 'azione', chi: a.autore, nome: nomePg(a.autore), testo: a.testo });
+      else if (a.testo) this.azioniPrivate.push({ turno: r.turno, id_pg: a.autore, testo: a.testo });
     }
     // A PC out of play when the window closed (0 HP, dead) does not act: the narrator hears why, not what the player
     // wrote, and the repair does not ask to answer it (docs/combattimento.md §3).
@@ -3147,7 +3171,7 @@ export class Regia {
         idBattute: this.idBattuteRepertorio(),
         ...this.parametriAudioTurno(),
         ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
-        ...this.guardiaPrivate(azioni),
+        ...this.guardiaPrivate(azioni, turno),
         ...this.guardiaSegreti(azioni),
         ...(correggiEsito ? { correggiEsito } : {}),
         ...this.parametroRifiuti(),
@@ -3189,7 +3213,7 @@ export class Regia {
           idBattute: this.idBattuteRepertorio(),
           ...this.parametriAudioTurno(),
           ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
-          ...this.guardiaPrivate(azioni),
+          ...this.guardiaPrivate(azioni, turno),
           ...this.guardiaSegreti(azioni),
           ...(correggiEsito ? { correggiEsito } : {}),
           ...this.parametroRifiuti(),
