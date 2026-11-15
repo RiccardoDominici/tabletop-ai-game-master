@@ -170,8 +170,8 @@
       "id": "ritratto_png_baldrin",
       "file": "ritratto_png_baldrin.jpg",
       "tipo": "ritratto",
-      "prompt": "head-and-shoulders bust portrait of a stocky grey-bearded dwarf blacksmith who looks about fifty, beard bound with iron rings, scorched leather apron, iron key on a leather cord around his neck, soot-blackened hands, facing the viewer, against a plain dark slate-blue ink wash background that fills the frame. Tratti fissi: nano, sembra un uomo sulla cinquantina; barba grigia con anelli di ferro; grembiule di cuoio bruciacchiato; martello da forgia; chiave di ferro al collo, su un laccio di cuoio; mani nere di fuliggine, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering",
-      "seme": 115829536,
+      "prompt": "head-and-shoulders bust portrait of a stocky grey-bearded dwarf blacksmith who looks about fifty, beard bound with iron rings, scorched leather apron, iron key on a leather cord around his neck, soot-blackened hands, facing the viewer, against a plain dark slate-blue ink wash background that fills the frame. Tratti fissi: nano, sembra un uomo sulla cinquantina; barba grigia con anelli di ferro; grembiule di cuoio bruciacchiato; martello da forgia; chiave di ferro al collo, su un laccio di cuoio; mani nere di fuliggine, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering, no signature",
+      "seme": 31415926,
       "larghezza": 768,
       "altezza": 1024,
       "generata": [
@@ -180,61 +180,33 @@
       ],
       "riferimenti": [],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 71.5,
-      "picco_gb": 4.33,
-      "kb": 251,
-      "quando": "2026-11-02 19:52:05",
-      "firma": "v1:90b6c76019a53cdd845625c5",
-      "firma_migrata": "2026-11-03",
+      "secondi": 69.5,
+      "picco_gb": 4.31,
+      "kb": 237,
+      "rifilato_pct": 1.2,
+      "firma": "v1:756e4a07059c1f8384c94b92",
       "qualita": {
-        "esito": "difettosa",
+        "esito": "ok",
         "versione": 2,
-        "motivi": [
-          "testo_o_firma: Compare una piccola firma o monogramma scarabocchiato vicino al bordo inferiore destro. (angolo in basso a destra)"
-        ],
-        "problemi": [
-          {
-            "tipo": "testo_o_firma",
-            "dove": "angolo in basso a destra",
-            "descrizione": "Compare una piccola firma o monogramma scarabocchiato vicino al bordo inferiore destro.",
-            "grave": true
-          },
-          {
-            "tipo": "soggetto",
-            "dove": "barba e capelli",
-            "descrizione": "Il prompt chiede una barba legata con anelli di ferro, ma la barba è sciolta e gli anelli compaiono solo tra i capelli in cima alla testa.",
-            "grave": false
-          }
-        ],
+        "motivi": [],
+        "problemi": [],
         "visione": {
           "esito": "ok",
           "motivi": [],
-          "problemi": [
-            {
-              "tipo": "testo_o_firma",
-              "dove": "angolo in basso a destra",
-              "descrizione": "Compare una piccola firma o monogramma scarabocchiato vicino al bordo inferiore destro.",
-              "grave": true
-            },
-            {
-              "tipo": "soggetto",
-              "dove": "barba e capelli",
-              "descrizione": "Il prompt chiede una barba legata con anelli di ferro, ma la barba è sciolta e gli anelli compaiono solo tra i capelli in cima alla testa.",
-              "grave": false
-            }
-          ],
-          "descrizione": "Ritratto a mezzo busto di un nano fabbro barbuto dai capelli grigi, con grembiule di cuoio macchiato, chiave di ferro al collo e un martello stretto tra mani annerite, su sfondo blu ardesia scuro.",
-          "costo_usd": 0.000662,
+          "problemi": [],
+          "descrizione": "Ritratto a mezzo busto di un nano fabbro dalla barba grigia legata con anelli di ferro, con grembiule di cuoio bruciacchiato, chiave di ferro al collo e mani annerite dalla fuliggine, su sfondo blu ardesia. Tiene un martello da forgia in una mano.",
+          "costo_usd": 0.000552,
           "token": {
             "ingresso": 3266,
-            "uscita": 670
+            "uscita": 450
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000662,
-        "tentativi": 1,
-        "costo_totale_usd": 0.000662
-      }
+        "costo_usd": 0.000552,
+        "tentativi": 2,
+        "costo_totale_usd": 0.000552
+      },
+      "quando": "2026-11-15 12:05:59"
     },
     {
       "id": "ritratto_png_ottavia",
@@ -339,7 +311,7 @@
       "file": "situazione_png_baldrin_in_scena_forno_vecchio.jpg",
       "tipo": "situazione",
       "prompt": "The same person as in the first reference image, same face, hair and clothes: tratti fissi: nano, sembra un uomo sulla cinquantina; barba grigia con anelli di ferro; grembiule di cuoio bruciacchiato; martello da forgia; chiave di ferro al collo, su un laccio di cuoio; mani nere di fuliggine. Now inside the place shown in the second reference image, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering, no signature",
-      "seme": 40802001,
+      "seme": 53667186,
       "larghezza": 1920,
       "altezza": 1080,
       "generata": [
@@ -354,51 +326,33 @@
         "luogo_scena_forno_vecchio"
       ],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 864.3,
-      "picco_gb": 7.48,
-      "kb": 704,
+      "secondi": 490.0,
+      "picco_gb": 7.28,
+      "kb": 709,
       "rifilato_pct": 1.2,
-      "firma": "v1:b265ccacb1bffe49b054bbab",
-      "quando": "2026-11-03 14:11:35",
+      "firma": "v1:e38345fdd9c72ff47a67f17f",
       "qualita": {
-        "esito": "difettosa",
+        "esito": "ok",
         "versione": 2,
-        "motivi": [
-          "soggetto: Il personaggio ha statura da uomo normale rispetto alla stanza e alla porta, mentre il prompt lo descrive come nano. (figura centrale)"
-        ],
-        "problemi": [
-          {
-            "tipo": "soggetto",
-            "dove": "figura centrale",
-            "descrizione": "Il personaggio ha statura da uomo normale rispetto alla stanza e alla porta, mentre il prompt lo descrive come nano.",
-            "grave": true
-          }
-        ],
+        "motivi": [],
+        "problemi": [],
         "visione": {
-          "esito": "difettosa",
-          "motivi": [
-            "soggetto: Il personaggio ha statura da uomo normale rispetto alla stanza e alla porta, mentre il prompt lo descrive come nano. (figura centrale)"
-          ],
-          "problemi": [
-            {
-              "tipo": "soggetto",
-              "dove": "figura centrale",
-              "descrizione": "Il personaggio ha statura da uomo normale rispetto alla stanza e alla porta, mentre il prompt lo descrive come nano.",
-              "grave": true
-            }
-          ],
-          "descrizione": "Un uomo anziano con barba bianca, grembiule di cuoio macchiato e chiave di ferro al collo tiene un martello in una stanza rustica con cesti di pane, una porta aperta su un cortile notturno e un cane nero sdraiato. La scena corrisponde nel complesso al prompt.",
-          "costo_usd": 0.000934,
+          "esito": "ok",
+          "motivi": [],
+          "problemi": [],
+          "descrizione": "Un vecchio fabbro dalla barba grigia con anelli di ferro, grembiule di cuoio sporco, martello e chiave al collo, sta in una stanza in pietra e legno con un cane nero sdraiato; sullo sfondo una porta aperta mostra un cortile illuminato da candele.",
+          "costo_usd": 0.00074,
           "token": {
             "ingresso": 4084,
-            "uscita": 1051
+            "uscita": 663
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000934,
-        "tentativi": 1,
-        "costo_totale_usd": 0.000934
-      }
+        "costo_usd": 0.00074,
+        "tentativi": 2,
+        "costo_totale_usd": 0.001612
+      },
+      "quando": "2026-11-15 12:21:40"
     },
     {
       "id": "situazione_png_ottavia_in_scena_forno_vecchio",
@@ -501,7 +455,7 @@
       "file": "situazione_png_sebastiano_senza_cappuccio.jpg",
       "tipo": "situazione",
       "prompt": "The same person as in the reference image, same face, hair and clothes: tratti fissi: circa 40 anni; alto e magro; mantello nero col cappuccio calato sugli occhi, logoro; barba di tre giorni. Now his hood pushed back onto his shoulders, brow and eyes uncovered, face fully lit by a candle, a thin white scar splits his left eyebrow, full-bleed ink-and-wash illustration from an old Italian folk-tale book, the picture fills the whole frame edge to edge with no border and no margin: confident dark ink outlines and fine cross-hatching, loose transparent watercolour washes with visible paper grain, cold blue night light with small pools of warm candlelight, long hard shadows, tense uneasy mood, muted palette of umber, ochre, soot black, linen white and slate blue, unsigned, no text, no lettering, no signature",
-      "seme": 102194477,
+      "seme": 168732902,
       "larghezza": 1920,
       "altezza": 1080,
       "generata": [
@@ -517,77 +471,63 @@
         "ritratto_png_sebastiano"
       ],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 400.9,
+      "secondi": 344.8,
       "picco_gb": 6.08,
-      "kb": 515,
+      "kb": 560,
       "rifilato_pct": 1.2,
-      "firma": "v1:3db802daf3ddbd7963ec670e",
-      "quando": "2026-11-03 13:47:22",
+      "firma": "v1:dd58817034dc420df9799ca8",
       "qualita": {
-        "esito": "difettosa",
+        "esito": "da_controllare",
         "versione": 2,
         "motivi": [
-          "margine: Ai bordi compare una cornice di carta grigio chiaro con margini irregolari e strappati, quindi l'immagine non riempie tutto il fotogramma. (bordi sinistro, destro e angoli superiori)",
-          "soggetto: Il cappuccio è ancora calato sulla fronte e sugli occhi invece di essere tirato indietro sulle spalle come richiesto. (testa e fronte del personaggio)"
+          "soggetto: Il cappuccio è alzato e copre la fronte e il capo, mentre il prompt chiede il cappuccio abbassato sulle spalle con fronte e occhi scoperti. (capo e cappuccio, centro-alto dell'immagine)"
         ],
         "problemi": [
           {
-            "tipo": "margine",
-            "dove": "bordi sinistro, destro e angoli superiori",
-            "descrizione": "Ai bordi compare una cornice di carta grigio chiaro con margini irregolari e strappati, quindi l'immagine non riempie tutto il fotogramma.",
+            "tipo": "soggetto",
+            "dove": "capo e cappuccio, centro-alto dell'immagine",
+            "descrizione": "Il cappuccio è alzato e copre la fronte e il capo, mentre il prompt chiede il cappuccio abbassato sulle spalle con fronte e occhi scoperti.",
             "grave": true
           },
           {
             "tipo": "soggetto",
-            "dove": "testa e fronte del personaggio",
-            "descrizione": "Il cappuccio è ancora calato sulla fronte e sugli occhi invece di essere tirato indietro sulle spalle come richiesto.",
-            "grave": true
-          },
-          {
-            "tipo": "soggetto",
-            "dove": "sopracciglio sinistro",
-            "descrizione": "La cicatrice bianca non divide il sopracciglio sinistro ma compare come una croce bianca sulla guancia sotto l'occhio.",
+            "dove": "sopracciglio sinistro del personaggio, a destra nell'immagine",
+            "descrizione": "La sottile cicatrice bianca che attraversa il sopracciglio sinistro richiesta dal prompt non si vede chiaramente.",
             "grave": false
           }
         ],
         "visione": {
           "esito": "difettosa",
           "motivi": [
-            "margine: Ai bordi compare una cornice di carta grigio chiaro con margini irregolari e strappati, quindi l'immagine non riempie tutto il fotogramma. (bordi sinistro, destro e angoli superiori)",
-            "soggetto: Il cappuccio è ancora calato sulla fronte e sugli occhi invece di essere tirato indietro sulle spalle come richiesto. (testa e fronte del personaggio)"
+            "soggetto: Il cappuccio è alzato e copre la fronte e il capo, mentre il prompt chiede il cappuccio abbassato sulle spalle con fronte e occhi scoperti. (capo e cappuccio, centro-alto dell'immagine)"
           ],
           "problemi": [
             {
-              "tipo": "margine",
-              "dove": "bordi sinistro, destro e angoli superiori",
-              "descrizione": "Ai bordi compare una cornice di carta grigio chiaro con margini irregolari e strappati, quindi l'immagine non riempie tutto il fotogramma.",
+              "tipo": "soggetto",
+              "dove": "capo e cappuccio, centro-alto dell'immagine",
+              "descrizione": "Il cappuccio è alzato e copre la fronte e il capo, mentre il prompt chiede il cappuccio abbassato sulle spalle con fronte e occhi scoperti.",
               "grave": true
             },
             {
               "tipo": "soggetto",
-              "dove": "testa e fronte del personaggio",
-              "descrizione": "Il cappuccio è ancora calato sulla fronte e sugli occhi invece di essere tirato indietro sulle spalle come richiesto.",
-              "grave": true
-            },
-            {
-              "tipo": "soggetto",
-              "dove": "sopracciglio sinistro",
-              "descrizione": "La cicatrice bianca non divide il sopracciglio sinistro ma compare come una croce bianca sulla guancia sotto l'occhio.",
+              "dove": "sopracciglio sinistro del personaggio, a destra nell'immagine",
+              "descrizione": "La sottile cicatrice bianca che attraversa il sopracciglio sinistro richiesta dal prompt non si vede chiaramente.",
               "grave": false
             }
           ],
-          "descrizione": "Ritratto a mezzo busto di un uomo maturo e magro con barba corta, mantello scuro col cappuccio alzato e sfondo grigio-blu notturno con una luna pallida. Il volto è illuminato da una luce calda sul lato sinistro.",
-          "costo_usd": 0.000852,
+          "descrizione": "Ritratto a mezzo busto di un uomo magro e segnato dall'età, con mantello scuro e cappuccio alzato, illuminato da una luce calda dal basso su uno sfondo grigio-blu. Una lacrima gli scende su una guancia.",
+          "costo_usd": 0.000886,
           "token": {
             "ingresso": 4079,
-            "uscita": 888
+            "uscita": 957
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000852,
-        "tentativi": 1,
-        "costo_totale_usd": 0.000852
-      }
+        "costo_usd": 0.000886,
+        "tentativi": 3,
+        "costo_totale_usd": 0.001989
+      },
+      "quando": "2026-11-15 12:33:09"
     }
   ]
 }
