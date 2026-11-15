@@ -372,6 +372,14 @@ describe('manual rolls: a card without the number to beat (docs/prove.md §8)', 
     expect(descriviTiro(fasce)).not.toMatch(/fasce 0/);
   });
 
+  it('every public card since 16 November: an NPC attack and a roll-under check, no AC and no threshold', () => {
+    // Third e2e pass: «Grosso: Mazza ferrata 17 contro CA 12», «Muoversi in silenzio 18 contro soglia 25» at the table.
+    const png = tiro({ chi: 'png_x', nome: 'Grosso', di_png: true, tipo: 'attacco', etichetta: 'Mazza', dadi: [14], dado: 14, modificatore: 3, totale: 17, contro: { tipo: 'CA', valore: 0, descrizione: null }, contro_nascosto: true });
+    expect(descriviTiro(png)).not.toMatch(/\bCA\b|\b0\b/);
+    const soglia = tiro({ risoluzione: 'sotto_soglia', facce: 100, dadi: [18], dado: 18, modificatore: 0, totale: 18, contro: { tipo: 'soglia', valore: 0, descrizione: null }, contro_nascosto: true });
+    expect(descriviTiro(soglia)).not.toMatch(/soglia|≤/);
+  });
+
   it('a Game Master roll: the die and yes or no', () => {
     const m = tiro({ chi: 'master', nome: 'Il master', di_png: true, del_master: true, dadi: [5], dado: 5, totale: 5, facce: 6, contro_nascosto: true, contro: { tipo: 'CD', valore: 0, descrizione: null }, riuscita: true });
     expect(esitoTiro(m).testo).toBe('Sì');
