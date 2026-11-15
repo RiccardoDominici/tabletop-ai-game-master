@@ -25,7 +25,13 @@ Notes on the rules:
   `apple-16` with the images on, the default, is about 14.1 GB; with the images off it is about 8.3 GB. The images are
   part of `apple-16` because the profile lists them: turning them off is a choice in `config/locale.yaml`. The
   speech-to-text model (whisper.cpp, 0.57 GB) is included in both figures. An Apple chip under 16 GB (`apple-piccolo`)
-  needs about 7.2 GB.
+  needs about 7.3 GB (no images, so no image environment either).
+- **Choices in `config/locale.yaml` win over the profile.** A component written there (`componenti:`) replaces the profile's
+  choice, and the download plan follows it: a component that is not local (for example `immagini: {provider: nessuno}`
+  or a reader on an API) drops its model from the plan and from the totals. The detection and the plan say the choices came
+  from that file. Another file: `--locale <path>`.
+- **Disk warning.** The detection compares the free disk with what the profile still needs here (models not in the cache,
+  missing environments, npm). Below that, it prints a `WARNING` and the lighter options.
 - **Speech-to-text (`ascolto`)** is the phones' microphone: the spoken action becomes text. Its model is in the table
   above and in [installation](guide/installation.md#step-10-optional-the-phones-microphone). It is local on both Apple
   profiles; see [docs/ascolto.md](ascolto.md) for the details.
@@ -60,6 +66,7 @@ python3 -I strumenti/configura/configura.py                # detect and show the
 python3 -I strumenti/configura/configura.py --json          # the same, as JSON (detection and profile)
 python3 -I strumenti/configura/configura.py --out /tmp/x.yaml   # also write a config file to that path
 python3 -I strumenti/configura/configura.py --scarica       # show sizes and free disk, ask before downloading
+python3 -I strumenti/configura/configura.py --locale F       # read the choices from F instead of config/locale.yaml
 python3 -I strumenti/configura/configura.py --scarica --si  # download without asking
 ```
 

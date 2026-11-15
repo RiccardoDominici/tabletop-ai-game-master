@@ -38,7 +38,7 @@ The steps below are what the skill does, written out for anyone who prefers to d
 
 | What | Why | Required? |
 |---|---|---|
-| About 14.1 GB free on disk (Apple silicon, 16 GB, images on: the default) | the models (11.8 GB: reader 4.6, voice 2.0, images 4.6, speech-to-text 0.57), the Python environments (2.0 GB) and the npm packages (0.2 GB). With the images off: about 8.3 GB (models 7.2 GB, environments 0.8 GB, npm 0.2 GB) | only for the local profile; text-only needs about 0.2 GB |
+| About 14.1 GB free on disk (Apple silicon, 16 GB, images on: the default) | the models (11.8 GB: reader 4.6, voice 2.0, images 4.6, speech-to-text 0.57), the Python environments (2.1 GB: reader 0.45, voice 0.47, images 1.2) and the npm packages (0.2 GB). With the images off: about 8.3 GB (models 7.2 GB, environments 0.9 GB, npm 0.2 GB) | only for the local profile; text-only needs about 0.2 GB |
 | whisper.cpp and mkcert (Homebrew) | the phones' microphone: the local speech-to-text server and the local HTTPS certificate (step 10) | optional: without them the players type on the phone |
 | A Mac with an Apple chip | the local reader, the local voice and the images use MLX, which only runs on Apple chips | yes, for the default all-local game. On another computer a real narrator needs an Anthropic key or another local model server (see [Local and API](local-and-api.md#other-local-servers)) |
 | Node 22 or newer | server and web pages (`package.json`, `engines` field) | yes |
@@ -223,7 +223,7 @@ and 6: if one is missing, its model is skipped. The models:
 (The tool reads the real sizes from Hugging Face; the approximate ones are in `strumenti/configura/profilo.py`.)
 
 Totals on a new computer, Apple silicon with 16 GB: with the images on (the default) 11.8 GB of models; with the images
-off 7.2 GB. Both include the speech-to-text model. The download plan shows the image model in both cases, because it reads the profile, not the line below.
+off 7.2 GB. Both include the speech-to-text model. The download plan follows `config/locale.yaml`: with the images off in that file, the image model is neither in the plan nor in its totals.
 
 ### Images on or off
 
@@ -238,7 +238,7 @@ off 7.2 GB. Both include the speech-to-text model. The download plan shows the i
 
   The play then uses the atmosphere background instead of images. Do not create `strumenti/immagini/.venv`: the
   download skips the image model when its environment is missing, and downloads the reader and the voice.
-  This setting is not yet read by the download plan (it still lists the 4.6 GB image model): a known gap.
+  The download plan reads this setting: the image model drops out of the plan and of the totals, and the plan says the choice came from `config/locale.yaml`. Check it with `python3 -I strumenti/configura/configura.py --scarica` before downloading (it downloads nothing without `--si`).
 
 Then test the two services:
 

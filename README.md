@@ -73,11 +73,11 @@ Before you read: nothing. This is the page to start from.
 ## What you need
 
 - **Disk.** On an Apple silicon Mac with 16 GB, the default setup keeps the images on and needs about **14.1 GB free**
-  on a new computer: 11.8 GB of models (reader 4.6 GB, voice 2 GB, images 4.6 GB, speech-to-text 0.57 GB), 2.0 GB of
+  on a new computer: 11.8 GB of models (reader 4.6 GB, voice 2 GB, images 4.6 GB, speech-to-text 0.57 GB), 2.1 GB of
   Python environments and 0.2 GB of npm packages. With the images off it needs about **8.3 GB** (7.2 GB of models,
-  0.8 GB of environments, 0.2 GB of npm packages); see [how to turn them off](docs/guide/installation.md#step-7-the-configuration-and-the-models).
-  A Mac under 16 GB, with the smaller reader and no images, needs about 7.2 GB. Text-only with an API
-  key needs about 0.2 GB. The setup says the figure before it downloads anything.
+  0.9 GB of environments, 0.2 GB of npm packages); see [how to turn them off](docs/guide/installation.md#step-7-the-configuration-and-the-models).
+  A Mac under 16 GB, with the smaller reader and no images, needs about 7.3 GB. Text-only with an API
+  key needs about 0.2 GB. The setup says the figure before it downloads anything, and warns when the free disk is below it.
 
 - **A Mac with Apple silicon** (M1 or newer) for the local models: the reader (mlx-lm), the voice (Qwen3-TTS) and
   the images (mflux) all use MLX. The project is sized for 16 GB of RAM; with less, the setup picks a smaller reader

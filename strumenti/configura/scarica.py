@@ -118,6 +118,12 @@ def piano(
 def descrivi(p: dict[str, Any]) -> list[str]:
     """Le righe da mostrare prima di chiedere conferma: dimensioni, disco, ambienti."""
     righe = ["Models for the chosen profile:"]
+    if p.get("fonte"):
+        # Le scelte di config/locale.yaml vincono sul profilo: lo si dice, con i componenti toccati.
+        righe[0] = f"Models for the chosen profile (choices from {p['fonte']}):"
+        sovrascritte = ", ".join(f"{n} {pr}" for n, pr in p.get("scelte_sovrascritte", {}).items())
+        if sovrascritte:
+            righe.append(f"  set there: {sovrascritte}")
     if p.get("cache"):
         # Le voci «già su disco» contano solo questa cache. Su un computer nuovo è vuota: vale la tabella intera.
         righe.append(f"  (counted in the model cache: {p['cache']})")

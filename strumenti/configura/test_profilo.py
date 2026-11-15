@@ -268,12 +268,85 @@ def test_ambienti_non_misurati_nessun_avviso() -> None:
     assert scegli(rilevamento(ram=16.0, disco=50.0))["ambienti_mancanti"] == []
 
 
-def test_fabbisogno_apple_16_e_circa_nove_gb() -> None:
-    assert profilo.fabbisogno_gb("apple-16") == 9.5  # 7,2 modelli (incluso ascolto 0,57) + 2,1 ambienti + 0,2 npm
-    assert "7.2 GB models" in profilo.fabbisogno_testo("apple-16")
-    assert "image model" in profilo.fabbisogno_testo("apple-16")
+def test_fabbisogno_apple_16_con_e_senza_immagini() -> None:
+    # Senza immagini: modelli 7,2 (lettore, voce, ascolto) + ambienti lettore e voce 0,9 + npm 0,2 = 8,3.
+    # Con immagini: + modello 4,6 e ambiente 1,2 = 14,1. L'ambiente delle immagini non entra nel «senza».
+    assert profilo.fabbisogno_gb("apple-16") == 8.3
+    assert profilo.fabbisogno_gb("apple-16", con_immagini=True) == 14.1
+    testo = profilo.fabbisogno_testo("apple-16")
+    assert "with the images about 14.1 GB (models 11.8 GB + Python environments 2.1 GB" in testo
+    assert "without the images about 8.3 GB (models 7.2 GB + Python environments 0.9 GB" in testo
+
+
+def test_fabbisogno_piccolo_e_altro_hanno_una_cifra_sola() -> None:
+    assert profilo.fabbisogno_gb("apple-piccolo") == 7.3
+    assert profilo.fabbisogno_testo("apple-piccolo").startswith("about 7.3 GB")
+    assert profilo.fabbisogno_testo("altro").startswith("about 0.2 GB")
 
 
 def test_alternative_leggeri_sono_piu_piccoli_di_apple_16() -> None:
     assert profilo.fabbisogno_gb("altro") < profilo.fabbisogno_gb("apple-piccolo") < profilo.fabbisogno_gb("apple-16")
     assert len(profilo.alternative_leggere()) == 2
+
+
+# --- Le scelte di config/locale.yaml vincono sul profilo -------------------------------------------------
+
+def con_ambienti(r: dict, presenti: bool) -> dict:
+    return {**r, "ambienti": {"lettore": presenti, "voce": presenti, "immagini": presenti}}
+
+
+def test_scelte_locali_immagini_spente_tolgono_il_modello() -> None:
+    r = rilevamento(ram=16.0, disco=50.0)
+    p = scegli(r)
+    assert MODELLO_IMMAGINI in p["modelli"]  # il profilo, da solo, le vorrebbe
+    scelte = {"origine": "config/locale.yaml", "componenti": {"immagini": {"provider": "nessuno", "riserve": []}},
+              "modello_lettore": None, "non_lette": []}
+    q = profilo.applica_scelte_locali(p, scelte, r)
+    assert MODELLO_IMMAGINI not in q["modelli"] and MODELLO_IMMAGINI not in q["da_scaricare"]
+    assert q["componenti"]["immagini"]["provider"] == "nessuno"
+    assert q["componenti"]["immagini"]["motivo"] == "set in config/locale.yaml"
+    assert q["fonte_scelte"] == "config/locale.yaml"
+    assert q["scelte_sovrascritte"] == {"immagini": "nessuno"}
+    assert MODELLO_VOCE in q["modelli"]  # le altre scelte restano
+
+
+def test_reader_su_api_perde_il_suo_modello_e_il_backend_cambia_il_modello() -> None:
+    r = rilevamento(ram=16.0, disco=50.0)
+    p = scegli(r)
+    api = {"origine": "x", "componenti": {"lettore": {"provider": "anthropic", "riserve": ["locale"]}},
+           "modello_lettore": None, "non_lette": []}
+    assert MODELLO_LETTORE_GRANDE not in profilo.applica_scelte_locali(p, api, r)["modelli"]
+    piccolo = {"origine": "x", "componenti": {}, "modello_lettore": MODELLO_LETTORE_PICCOLO, "non_lette": []}
+    assert MODELLO_LETTORE_PICCOLO in profilo.applica_scelte_locali(p, piccolo, r)["modelli"]
+    assert MODELLO_LETTORE_GRANDE not in profilo.applica_scelte_locali(p, piccolo, r)["modelli"]
+
+
+def test_senza_scelte_il_profilo_non_cambia() -> None:
+    r = rilevamento(ram=16.0, disco=50.0)
+    p = scegli(r)
+    assert profilo.applica_scelte_locali(p, None, r) is p
+
+
+def test_avviso_immagini_spente_non_ripetuto_se_le_scelte_le_spengono() -> None:
+    r = rilevamento(ram=16.0, disco=9.0)  # il profilo spegne le immagini per il disco: c'è l'avviso
+    p = scegli(r)
+    assert any(a.startswith("Images off:") for a in p["avvisi"])
+    scelte = {"origine": "x", "componenti": {"immagini": {"provider": "nessuno", "riserve": []}},
+              "modello_lettore": None, "non_lette": []}
+    assert not any(a.startswith("Images off:") for a in profilo.applica_scelte_locali(p, scelte, r)["avvisi"])
+
+
+def test_disco_ancora_necessario_su_computer_nuovo() -> None:
+    r = con_ambienti(rilevamento(ram=16.0, disco=50.0), presenti=False)
+    p = scegli(r)
+    assert profilo.da_occupare_gb(p, r) == 14.1  # tutto da installare, con immagini
+    scelte = {"origine": "x", "componenti": {"immagini": {"provider": "nessuno", "riserve": []}},
+              "modello_lettore": None, "non_lette": []}
+    q = profilo.applica_scelte_locali(p, scelte, r)
+    assert profilo.da_occupare_gb(q, r) == 8.3  # senza immagini: niente modello né ambiente delle immagini
+
+
+def test_disco_ancora_necessario_zero_modelli_se_gia_installato() -> None:
+    cache = {m: True for m in (MODELLO_LETTORE_GRANDE, MODELLO_VOCE, MODELLO_IMMAGINI, MODELLO_ASCOLTO)}
+    r = con_ambienti({**rilevamento(ram=16.0, disco=50.0, cache=cache)}, presenti=True)
+    assert profilo.da_occupare_gb(scegli(r), r) == 0.2  # solo il npm: nessun falso allarme sul disco

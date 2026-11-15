@@ -42,44 +42,55 @@ DIMENSIONI_APPROSSIMATE_GB = {
 }
 # Cartelle .venv misurate sul Mac di sviluppo (10 nov 2026, docs/guide/installation.md, tabella «What gets written»).
 AMBIENTE_GB = {"lettore": 0.45, "voce": 0.47, "immagini": 1.2}
-# Spazio che un computer nuovo deve avere libero per ciascun profilo: modelli + ambienti + npm. Su Apple silicon
-# la skill (passo 2) crea i tre ambienti Python, quindi sono sempre contati. Il modello delle immagini è a parte.
+NPM_GB = 0.2
+# Spazio che un computer nuovo deve avere libero, in due cifre: senza immagini (modelli + ambienti Python del
+# lettore e della voce + npm) e con immagini (in più il modello e l'ambiente delle immagini). Su Apple silicon la
+# skill (passo 2) crea gli ambienti del lettore e della voce; l'ambiente delle immagini serve solo con le immagini.
 # On Apple silicon the models include the speech-to-text one (ascolto, whisper.cpp): always local there.
 FABBISOGNO_GB = {
     "apple-16": {"modelli": DIMENSIONI_APPROSSIMATE_GB[MODELLO_LETTORE_GRANDE] + DIMENSIONI_APPROSSIMATE_GB[MODELLO_VOCE]
                  + DIMENSIONI_APPROSSIMATE_GB[MODELLO_ASCOLTO],
-                 "ambienti": sum(AMBIENTE_GB.values()),
-                 "immagini": DIMENSIONI_APPROSSIMATE_GB[MODELLO_IMMAGINI]},
+                 "ambienti": AMBIENTE_GB["lettore"] + AMBIENTE_GB["voce"],
+                 "immagini_modello": DIMENSIONI_APPROSSIMATE_GB[MODELLO_IMMAGINI],
+                 "immagini_ambiente": AMBIENTE_GB["immagini"]},
     "apple-piccolo": {"modelli": DIMENSIONI_APPROSSIMATE_GB[MODELLO_LETTORE_PICCOLO] + DIMENSIONI_APPROSSIMATE_GB[MODELLO_VOCE]
                       + DIMENSIONI_APPROSSIMATE_GB[MODELLO_ASCOLTO],
-                      "ambienti": sum(AMBIENTE_GB.values()),
-                      "immagini": 0.0},
+                      "ambienti": AMBIENTE_GB["lettore"] + AMBIENTE_GB["voce"],
+                      "immagini_modello": 0.0,
+                      "immagini_ambiente": 0.0},
     # Senza modelli locali: solo i pacchetti npm del repository (node_modules, misurati a 201 MB).
-    "altro": {"modelli": 0.0, "ambienti": 0.0, "immagini": 0.0},
+    "altro": {"modelli": 0.0, "ambienti": 0.0, "immagini_modello": 0.0, "immagini_ambiente": 0.0},
 }
-NPM_GB = 0.2
 
 
-def fabbisogno_gb(profilo_id: str) -> float:
-    """Gigabyte che il profilo richiede su un computer nuovo, senza il modello delle immagini (vedi FABBISOGNO_GB)."""
+def fabbisogno_gb(profilo_id: str, con_immagini: bool = False) -> float:
+    """GB che il profilo richiede su un computer nuovo: modelli + ambienti + npm, con o senza immagini."""
     f = FABBISOGNO_GB[profilo_id]
-    return round(f["modelli"] + f["ambienti"] + NPM_GB, 1)
+    extra = f["immagini_modello"] + f["immagini_ambiente"] if con_immagini else 0.0
+    return round(f["modelli"] + f["ambienti"] + extra + NPM_GB, 1)
+
+
+def _cifre(profilo_id: str, con_immagini: bool) -> str:
+    f = FABBISOGNO_GB[profilo_id]
+    modelli = f["modelli"] + (f["immagini_modello"] if con_immagini else 0.0)
+    ambienti = f["ambienti"] + (f["immagini_ambiente"] if con_immagini else 0.0)
+    return (f"{fabbisogno_gb(profilo_id, con_immagini)} GB (models {modelli:.1f} GB + "
+            f"Python environments {ambienti:.1f} GB + npm {NPM_GB} GB)")
 
 
 def fabbisogno_testo(profilo_id: str) -> str:
-    """La frase che si legge prima di qualsiasi download."""
-    f = FABBISOGNO_GB[profilo_id]
-    testo = (f"about {fabbisogno_gb(profilo_id)} GB on a new computer ({f['modelli']:.1f} GB models + "
-             f"{f['ambienti']:.1f} GB Python environments + {NPM_GB} GB npm packages)")
-    if f["immagini"]:
-        testo += f"; +{f['immagini']:.1f} GB more if you also want the image model"
-    return testo
+    """La frase che si legge prima di qualsiasi download: le due cifre, con e senza immagini.
+    Profili senza immagini locali (non Apple silicon, o Apple sotto 16 GB) hanno una sola cifra."""
+    if not FABBISOGNO_GB[profilo_id]["immagini_modello"]:
+        return f"about {_cifre(profilo_id, False)}"
+    return (f"with the images about {_cifre(profilo_id, True)}; "
+            f"without the images about {_cifre(profilo_id, False)}")
 
 
 def alternative_leggere() -> list[str]:
     """Le scelte più leggere, da proporre quando il disco non basta per il profilo scelto."""
     return [
-        f"apple-piccolo (Apple silicon under 16 GB, 4B reader): {fabbisogno_testo('apple-piccolo')}",
+        f"apple-piccolo (Apple silicon under 16 GB, 4B reader, no images): {fabbisogno_testo('apple-piccolo')}",
         f"text-only with an Anthropic or OpenRouter key (no local models): {fabbisogno_testo('altro')}",
     ]
 
@@ -274,3 +285,64 @@ def scrivi_locale(profilo: dict[str, Any], percorso: Path, quando: str | None = 
     """Scrive il file indicato. Non legge né tocca altri file: chi chiama decide il percorso."""
     percorso.parent.mkdir(parents=True, exist_ok=True)
     percorso.write_text(testo_locale(profilo, quando), encoding="utf-8")
+
+
+def modelli_per_componenti(componenti: dict[str, dict[str, Any]], modello_lettore: str | None) -> list[str]:
+    """I modelli che servono davvero ai componenti in locale, nell'ordine del profilo. Un componente su API
+    (o nessuno) non porta il suo modello nel download."""
+    def locale(nome: str) -> bool:
+        return componenti.get(nome, {}).get("provider") == "locale"
+
+    modelli: list[str] = []
+    if locale("lettore"):
+        modelli.append(modello_lettore or MODELLO_LETTORE_GRANDE)
+    if locale("voce"):
+        modelli.append(MODELLO_VOCE)
+    if locale("immagini"):
+        modelli.append(MODELLO_IMMAGINI)
+    if locale("ascolto"):
+        modelli.append(MODELLO_ASCOLTO)
+    return modelli
+
+
+def applica_scelte_locali(profilo: dict[str, Any], scelte: dict[str, Any] | None, rilevamento: dict[str, Any]) -> dict[str, Any]:
+    """Il profilo con le scelte di config/locale.yaml al posto di quelle calcolate. Senza file, lo stesso profilo.
+
+    Le scelte scritte a mano vincono: un componente non in locale perde il suo modello dal download e dai totali.
+    Il profilo dice da dove vengono le scelte (`fonte_scelte`), così l'output può dirlo.
+    """
+    if not scelte or not (scelte["componenti"] or scelte["modello_lettore"]):
+        return profilo
+    origine = scelte["origine"]
+    componenti = {nome: dict(scelta) for nome, scelta in profilo["componenti"].items()}
+    for nome, scelta in scelte["componenti"].items():
+        componenti[nome] = _componente(scelta["provider"], scelta["riserve"], motivo=f"set in {origine}")
+    modello_lettore = scelte["modello_lettore"] or profilo.get("modello_lettore")
+    modelli = modelli_per_componenti(componenti, modello_lettore)
+    ambienti = rilevamento.get("ambienti", {})
+    locali = [c for c in ("lettore", "voce", "immagini") if componenti[c]["provider"] == "locale"]
+    avvisi = [a for a in profilo["avvisi"]
+              if not (a.startswith("Images off:") and componenti["immagini"]["provider"] != "locale")]
+    return {
+        **profilo,
+        "componenti": componenti,
+        "modello_lettore": modello_lettore,
+        "modelli": modelli,
+        "da_scaricare": _modelli_mancanti(rilevamento, modelli),
+        "ambienti_mancanti": [c for c in locali if ambienti.get(c) is False],
+        "avvisi": avvisi,
+        "fonte_scelte": origine,
+        "scelte_sovrascritte": {nome: scelta["provider"] for nome, scelta in scelte["componenti"].items()},
+        "scelte_non_lette": scelte["non_lette"],
+    }
+
+
+def da_occupare_gb(profilo: dict[str, Any], rilevamento: dict[str, Any]) -> float:
+    """Il disco che il profilo richiede ancora su questo computer: modelli non in cache, ambienti Python mancanti, npm.
+    Su un computer nuovo è uguale alla cifra di fabbisogno_testo (con le immagini se il profilo le usa)."""
+    cache = rilevamento.get("modelli_in_cache", {})
+    ambienti = rilevamento.get("ambienti", {})
+    modelli = sum(DIMENSIONI_APPROSSIMATE_GB.get(m, 0.0) for m in profilo["modelli"] if not cache.get(m, False))
+    mancanti = sum(AMBIENTE_GB[c] for c in ("lettore", "voce", "immagini")
+                   if profilo["componenti"][c]["provider"] == "locale" and ambienti.get(c) is False)
+    return round(modelli + mancanti + NPM_GB, 1)
