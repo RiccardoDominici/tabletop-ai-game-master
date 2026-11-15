@@ -30,6 +30,11 @@ describe('out-of-play guard (Italian)', () => {
     expect(g('Dice che il ragazzo è stato portato via.')).toEqual({ testo: '', motivo: 'fuori_gioco_agisce', id: 'png_ruggero' });
     // A sentence opening with a preposition does not carry him: the world goes on.
     expect(g('Dalla cantina arriva solo il respiro corto del ragazzo.')).toBeNull();
+    // A sentence with a new subject of its own ends the carry (replay of the baseline, combat-auto T25).
+    const h = guardia({ png_ruggero: 'morto' });
+    expect(h('Ruggero sputa nel fiume.')).toMatchObject({ id: 'png_ruggero' });
+    expect(h('Il ragazzo tiene gli occhi bassi e parla piano.')).toBeNull();
+    expect(h('Dice che la decima non è pagata.')).toBeNull();
   });
 
   it('by name, with an opening word and a negation; someone else as subject stays', () => {

@@ -106,7 +106,7 @@ export function guardiaFuori(d: DatiGuardiaFuori): ((frase: string) => Correzion
     if (pezzi[0] && p.preposizioni.has(pezzi[0][0]!)) soggetto = null;
     let ultimoNominato: string | null = null;
     let colpevole: string | null = null;
-    for (const c of pezzi) {
+    for (const [ci, c] of pezzi.entries()) {
       const nominati = tutti.map((id) => ({ id, i: doveNomina(c, nomi.get(id) ?? []) })).filter((x) => x.i >= 0).sort((a, b) => a.i - b.i);
       let j = 0;
       while (j < c.length && p.apertura.has(c[j]!)) j++;
@@ -125,7 +125,9 @@ export function guardiaFuori(d: DatiGuardiaFuori): ((frase: string) => Correzion
       } else if (j < c.length && p.preposizioni.has(c[j]!)) {
         // An adverbial clause («in fretta», «verso la porta»): it belongs to the subject before it.
       } else if (nominati.length) attuale = soggetto = null;
-      else if (conArticolo || (j < c.length && p.articoli.has(c[j]!))) attuale = null;
+      // A sentence that opens with a new subject of its own («Il ragazzo tiene gli occhi bassi.») ends the carry;
+      // inside a sentence a thing («…, e la voce gli trema») does not.
+      else if (conArticolo || (j < c.length && p.articoli.has(c[j]!))) attuale = ci === 0 ? (soggetto = null) : null;
       // else: no name and no article, the clause carries the subject before it («Parla piano, …», «Dice che…»).
       if (nominati.length) ultimoNominato = nominati.at(-1)!.id;
       if (!colpevole && attuale && fuori.includes(attuale) && resto > 0) colpevole = attuale;
