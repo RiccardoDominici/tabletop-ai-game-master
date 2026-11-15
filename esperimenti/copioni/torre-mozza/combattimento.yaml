@@ -1,0 +1,39 @@
+# Copione «combattimento»: una lotta alla Torre Mozza giocata a turni con l'iniziativa.
+# Scritto alla cieca: letti solo pg.yaml, sessione.riassunto_iniziale, scena.yaml (nome e apertura),
+# il README dei copioni e gli esempi indagine.yaml e pressione.yaml. Nessun segreto del narratore.
+# Ordine: due turni all'ovile, poi il bosco, poi la torre. Iniziativa dichiarata, ritirata di Eliandro,
+# Nespola a zero punti ferita, un tentativo di convincere i goblin a fermarsi a metà lotta.
+scena: scena_ovile
+pg: [pg_livia, pg_nespola, pg_eliandro]
+turni:
+  - - {pg: pg_livia, azione: "Berta, la torre è quella sopra il bosco? Ci andiamo adesso, prima di mezzanotte."}
+    - {pg: pg_nespola, azione: "Ugo, a parte, a bassa voce: «Tonio è vivo? Dimmi la verità, cmq non dico niente.»", privata: true}
+  - - {pg: pg_eliandro, azione: "Berta, a bassa voce: «Chi a Spinalba sa scrivere così bene le lettere comuni?»", privata: true}
+  - - {scena: scena_carbonaia}
+    - {pg: pg_nespola, azione: "Corro avanti sul sentiero, mi fermo ogni dieci passi per ascoltare."}
+    - {pg: pg_livia, azione: "Scendo per prima, scudo avanti, guardo i rami sopra la testa."}
+  - - {scena: scena_torre}
+    - {pg: pg_livia, azione: "Vedo tre goblin davanti alla porta. Io carico dopo di lei, scudo avanti."}
+    - {pg: pg_nespola, azione: "Io sono la più veloce di tutti, vado per prima: passo di lato prima che arrivi."}
+    - {pg: pg_eliandro, azione: "Io sono lento, resto dietro la pietra e tiro quando vi siete mossi."}
+  - - {pg: pg_nespola, azione: "Il goblin a destra ha la schiena scoperta: colpo alle spalle con la spada corta!"}
+    - {pg: pg_livia, azione: "Carico quello al centro, spada lunga e scudo davanti!"}
+    - {pg: pg_eliandro, azione: "Tiro il pugnale da dietro la pietra, al goblin con la lancia."}
+  - - {pg: pg_nespola, azione: "Lo colpisco ancora, poi mi sposto e lo lascio dietro di me."}
+    - {pg: pg_livia, azione: "Il goblin mi tira la lancia, la paro con lo scudo. Resisto."}
+    - {pg: pg_eliandro, azione: "Pugnale ancora, il goblin si gira verso di me."}
+  - - {pg: pg_nespola, azione: "Il goblin mi prende alla spalla, sento sangue. Indietreggio ma resto in piedi."}
+    - {pg: pg_livia, azione: "Spingo il goblin contro il muro con lo scudo e lo colpisco."}
+  - - {pg: pg_nespola, azione: "Ho zero punti ferita, sono a terra. Non mi reggo più, striscio dietro la pietra."}
+    - {pg: pg_livia, azione: "Mi chino su Nespola, la trascino dietro lo scudo e la copro."}
+    - {pg: pg_eliandro, azione: "Vedo Nespola a terra. Lancio il dardo incantato al goblin che la sta per colpire!"}
+  - - {pg: pg_livia, azione: "Ehi goblin! Chi vi paga? Fermatevi, e nessuno si fa più male!"}
+    - {pg: pg_eliandro, azione: "Mi ritiro verso la scala, arretro di tre passi col quaderno stretto al petto."}
+  - - {pg: pg_livia, azione: "Il goblin davanti esita, guarda il compagno. Non lo colpisco ancora, aspetto la risposta."}
+    - {pg: pg_eliandro, azione: "Dal gradino tiro il pugnale a quello che scappa verso la cantina."}
+  - - {pg: pg_livia, azione: "Non si ferma nessuno: finisco quello con la lancia, colpo di spada lunga."}
+    - {pg: pg_eliandro, azione: "Torno da Nespola e le fascio la spalla con la mia sciarpa, mentre Livia combatte."}
+  - - {pg: pg_livia, azione: "Ultimo goblin: lo blocco contro la porta con lo scudo."}
+    - {pg: pg_eliandro, azione: "Lo tengo fermo col piede e chiedo: «Dov'è il ragazzo?»"}
+  - - {pg: pg_livia, azione: "Piano al goblin, con la punta della spada: «Parla, e ti lascio andare. Dov'è il ragazzo?»", privata: true}
+  - - {pg: pg_eliandro, azione: "Anch'io gli parlo, piano: «Chi vi dà ordini? Dimmelo e scappa.»", privata: true}

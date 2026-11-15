@@ -1,0 +1,24 @@
+# Copione «fuori binario»: i PG ignorano il ragazzo, la chiave e la scadenza di mezzanotte.
+# Insultano Berta, partono per il guado, il mulino e una grotta sulla collina, inventano il pastore Oreste
+# e la viandante Madre Carla. Scritto alla cieca: letti solo pg.yaml, sessione.riassunto_iniziale,
+# scena.yaml (nome e apertura), il README dei copioni e gli esempi indagine.yaml e pressione.yaml.
+# Nessun segreto del narratore: i luoghi e i nomi sono inventati dai giocatori.
+scena: scena_ovile
+pg: [pg_nespola, pg_fulco, pg_livia]
+turni:
+  - - {pg: pg_nespola, azione: "Berta, questa chiave vale più di tuo figlio, lo sai? La vendo a Valdirame e chiudo il conto."}
+  - - {pg: pg_livia, azione: "Berta, sei una bugiarda, si vede dalla faccia. Dimmi la verità o me ne vado."}
+  - - {pg: pg_fulco, azione: "Io non ho tempo per le vostre storie di torri. Il mulino sul fiume ha la ruota rotta da mesi, vado a benedirla."}
+  - - {pg: pg_livia, azione: "Anch'io vado al mulino. E tu, Berta, se tuo figlio è morto è colpa tua."}
+  - - {pg: pg_nespola, azione: "Berta, a parte: quanto ti pagava Ugo per il carbone? Te lo chiedo perché mi serve sapere chi è onesto qui.", privata: true}
+  - - {pg: pg_nespola, azione: "Andiamo al guado, mi hanno detto che c'è un pastore sotto il salice."}
+    - {pg: pg_fulco, azione: "Lascio Ugo con il suo carbone e vi vengo dietro."}
+  - - {pg: pg_nespola, azione: "Ehi tu, pastore! Sei Oreste? Mi vendi un formaggio, dai?"}
+    - {pg: pg_fulco, azione: "Chiedo a Oreste se ha visto luci sulla collina."}
+  - - {pg: pg_livia, azione: "Oreste dice che sulla collina c'è una grotta con il fuoco acceso. Vado lì, adesso."}
+  - - {pg: pg_fulco, azione: "Sulla strada della grotta incontro una viandante con un carretto. Madre Carla? Dove vai con quel carico?"}
+  - - {pg: pg_nespola, azione: "Madre Carla, a parte, sottovoce: hai visto un ragazzo con una moneta vecchia? Ti pago bene per dirmelo.", privata: true}
+  - - {pg: pg_livia, azione: "Madre Carla, sei una vecchia ladra, e il carretto lo sequestro. Blocco le ruote con lo scudo."}
+    - {pg: pg_fulco, azione: "Madre Carla, dai, ti benedico e ti lascio andare, ma prima mi dici la strada per la grotta."}
+  - - {pg: pg_nespola, azione: "Ci fermiamo al mulino a dormire. Berta si arrangi, la sua torre è un problema suo."}
+  - - {pg: pg_livia, azione: "Oreste, a parte, sottovoce: quanto ti pagano i goblin? Dimmelo e ti do una mano con le pecore.", privata: true}

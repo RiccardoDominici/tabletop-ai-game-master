@@ -1,0 +1,22 @@
+# Copione «stallo»: i PG tergiversano. Domande vaghe, discussioni tra loro, quattro turni di attesa,
+# poi un tentativo piccolo (un sussurro a Ugo) e di nuovo lo stallo. Due azioni private.
+# Scritto alla cieca: letti solo pg.yaml, sessione.riassunto_iniziale, scena.yaml (nome e apertura),
+# il README dei copioni e gli esempi indagine.yaml e pressione.yaml. Nessun segreto del narratore.
+scena: scena_ovile
+pg: [pg_livia, pg_fulco, pg_eliandro]
+turni:
+  - - {pg: pg_livia, azione: "Cosa facciamo? Aspettiamo qui o andiamo?"}
+  - - {pg: pg_fulco, azione: "Non lo so. Berta è lì sotto il portico, sta zitta."}
+  - - {pg: pg_eliandro, azione: "C'è qualcosa qui? Non vedo niente di strano, boh."}
+  - - {pg: pg_livia, azione: "Aspetto."}
+  - - {pg: pg_fulco, azione: "Mi siedo sul muretto dello stazzo."}
+  - - {pg: pg_eliandro, azione: "Guardo in giro."}
+  - - {pg: pg_livia, azione: "Aspetto ancora. Tanto Berta ci chiama, no?"}
+  - - {pg: pg_fulco, azione: "Ci penso. Aspetto."}
+  - - {pg: pg_livia, azione: "Ugo, a parte, sottovoce: chi passa dal cancello di notte?", privata: true}
+  - - {pg: pg_fulco, azione: "Che fai, Livia? Ci hai pensato? Io non mi fido di Ugo, mi sa che tiene le cose per sé."}
+    - {pg: pg_eliandro, azione: "Cosa ha detto? Qualcuno sente qualcosa?"}
+  - - {pg: pg_livia, azione: "Non so, ha detto poco. Aspettiamo che torni."}
+  - - {pg: pg_fulco, azione: "Mi siedo di nuovo. Cosa facciamo adesso?"}
+  - - {pg: pg_eliandro, azione: "Berta, a bassa voce: chi sa dove sta la lavagna? Dimmelo, poi vado.", privata: true}
+  - - {pg: pg_fulco, azione: "Ci pensiamo domani, dai."}
