@@ -52,6 +52,18 @@ describe('AlimentatoreCopione', () => {
     expect(f.finito).toBe(true);
   });
 
+  it('a dead PC\'s queued actions are dropped: it never comes on turn again', () => {
+    const f = new AlimentatoreCopione([[az('pg_a', 'uno'), az('pg_b', 'due')], [az('pg_a', 'tre'), az('pg_b', 'quattro')]]);
+    f.prossimo(['pg_a']);
+    const p = f.prossimo(['pg_a'], new Set(['pg_b']));
+    expect(p.scartate).toBe(1);
+    expect(p.azioni.map((a) => a.azione)).toEqual(['tre']);
+    // Loading script turn 2 for pg_a queued pg_b's next action too: it goes at the next window.
+    expect(p.inAttesa).toEqual(['pg_b']);
+    expect(f.prossimo(['pg_a'], new Set(['pg_b'])).scartate).toBe(1);
+    expect(f.finito).toBe(true);
+  });
+
   it('after the combat the queued actions go out before the next script turn', () => {
     const f = new AlimentatoreCopione([[az('pg_a', 'uno'), az('pg_b', 'due')], [az('pg_a', 'tre'), az('pg_b', 'quattro')]]);
     f.prossimo(['pg_a']);

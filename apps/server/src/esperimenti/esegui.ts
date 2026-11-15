@@ -197,7 +197,9 @@ async function giocaCopione(
     const atteso = turnoServer;
     let stato = await attendiStato(schermo, (s) => s.fase === 'finestra' && s.turno === atteso && s.finestra.aperta, 240_000, `finestra ${atteso} (turno ${alimentatore.turnoCopione + 1} del copione)`);
     const diTurno = stato.combattimento?.turno_di?.length ? stato.combattimento.turno_di : null;
-    const passo = alimentatore.prossimo(diTurno);
+    const morti = new Set((stato.combattimento?.combattenti ?? []).filter((c) => !c.di_png && c.stato === 'morto').map((c) => c.id));
+    const passo = alimentatore.prossimo(diTurno, morti);
+    if (passo.scartate) console.log(`[${etichetta}] server ${stato.turno}: ${passo.scartate} scripted actions dropped, their PC is dead (${[...morti].join(', ')})`);
     const n = passo.turnoCopione;
     for (const scena of passo.scene) {
       const v0 = stato.versione_scena;

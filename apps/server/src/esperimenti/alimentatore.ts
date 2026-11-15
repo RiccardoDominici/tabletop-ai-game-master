@@ -28,6 +28,8 @@ export interface PassoFinestra {
   inAttesa: string[];
   /** Combat: PCs on turn with nothing left to send (the script is over for them): they pass. */
   passano: string[];
+  /** Queued actions dropped because their PC is dead (a dead PC's player does not act any more). */
+  scartate: number;
 }
 
 export class AlimentatoreCopione {
@@ -76,8 +78,15 @@ export class AlimentatoreCopione {
    * The actions for the window that just opened. `diTurno`: the PCs the server is waiting for in turn-based combat
    * (null or empty = no turns: everyone may act).
    */
-  prossimo(diTurno: readonly string[] | null): PassoFinestra {
+  prossimo(diTurno: readonly string[] | null, morti: ReadonlySet<string> = new Set()): PassoFinestra {
     const scene: string[] = [];
+    // A dead PC never comes on turn again: its queued actions would wait forever (run of 15 November, a PC killed in
+    // round one kept «waiting for their turn» to the end of the script).
+    let scartate = 0;
+    for (const pg of morti) {
+      scartate += this.code.get(pg)?.length ?? 0;
+      this.code.delete(pg);
+    }
     const turni = diTurno?.length ? diTurno : null;
     if (turni) {
       // Load script turns until one of the PCs on turn has something to do (or the script is over).
@@ -93,6 +102,6 @@ export class AlimentatoreCopione {
     }
     const inAttesa = turni ? [...this.code].filter(([pg, c]) => c.length && !turni.includes(pg)).map(([pg]) => pg) : [];
     const passano = turni ? turni.filter((pg) => !azioni.some((a) => a.pg === pg)) : [];
-    return { scene, azioni, turnoCopione: this.prossimoTurno, inAttesa, passano };
+    return { scene, azioni, turnoCopione: this.prossimoTurno, inAttesa, passano, scartate };
   }
 }
