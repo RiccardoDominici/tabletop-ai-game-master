@@ -229,7 +229,7 @@ function CartaIntera(p: PropsInterne) {
           <p data-testid="carta-chi" className={clsx('min-w-0 truncate font-titolo leading-tight font-bold', m.nome, coloreNome(tiro))}>
             {tiro.nome}
           </p>
-          {tiro.di_png && <Chip className={clsx(m.chip, 'border-[#ff9a6b]/70 text-[#ff9a6b]')}>{t('comune.carta.png')}</Chip>}
+          {tiro.di_png && !tiro.del_master && <Chip className={clsx(m.chip, 'border-[#ff9a6b]/70 text-[#ff9a6b]')}>{t('comune.carta.png')}</Chip>}
           {tiro.privata && <Chip className={clsx(m.chip, 'border-lago/70 text-lago')}>{t('comune.carta.privata')}</Chip>}
         </div>
 
@@ -358,20 +358,25 @@ function CartaCompatta(p: PropsInterne) {
     </span>
   ) : (
     <span className={clsx('shrink-0 whitespace-nowrap tabular-nums', comparsa(p, 'totale'))}>
-      {proiettore && risoluzione !== 'sotto_soglia' && <span className="text-pergamena-2">{conSegno(tiro.modificatore)} = </span>}
+      {proiettore && risoluzione !== 'sotto_soglia' && !tiro.del_master && <span className="text-pergamena-2">{conSegno(tiro.modificatore)} = </span>}
+      {tiro.del_master && <span className="text-pergamena-2">{`d${facceDi(tiro)} `}</span>}
       <strong className={clsx('font-extrabold text-pergamena', m.totale)}>{risoluzione === 'sotto_soglia' ? tiro.dado : tiro.totale}</strong>
-      <span className="text-cenere">
-        {' '}
-        · {tiro.avversario ? `${tiro.avversario.nome} ${tiro.avversario.totale}` : testoBersaglioCarta(tiro)}
-      </span>
+      {/* Manual rolls: no number to beat on the compact card either (docs/prove.md §8); a 2d6 band is the outcome. */}
+      {(tiro.avversario || !tiro.contro_nascosto || risoluzione === '2d6_fasce') && (
+        <span className="text-cenere">
+          {' '}
+          · {tiro.avversario ? `${tiro.avversario.nome} ${tiro.avversario.totale}` : testoBersaglioCarta(tiro)}
+        </span>
+      )}
     </span>
   );
   const chi = (
     <span className="min-w-0 truncate">
       <strong className={clsx('font-bold', coloreNome(tiro))}>{tiro.nome}</strong>
-      {tiro.di_png && <span className="text-[#ff9a6b]"> ({t('comune.carta.png')})</span>}
+      {tiro.di_png && !tiro.del_master && <span className="text-[#ff9a6b]"> ({t('comune.carta.png')})</span>}
       {tiro.privata && <span className="text-lago"> ({t('comune.carta.privata')})</span>}
-      <span className="text-pergamena-2"> · {testoCosa(tiro)}</span>
+      {/* A Game Master roll: the name is the whole label (what it was for stays with the Game Master). */}
+      {!tiro.del_master && <span className="text-pergamena-2"> · {testoCosa(tiro)}</span>}
     </span>
   );
 

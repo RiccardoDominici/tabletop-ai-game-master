@@ -151,6 +151,23 @@ describe('combattimento alla B/X e alla PbtA', () => {
     expect(tardi.g.condizioniDi('png_x')).toEqual([]);
   });
 
+  it('surprise from the panel: both sides roll; surprised PCs skip round 1, the NPCs act, round 2 opens for the PCs', () => {
+    const conSorpresa: Combattimento = { ...bx, sorpresa: { dado: 6, finoA: 2, condizione: 'paralizzato' } };
+    const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 0 }];
+    // Sides 5 (PCs) and 2; surprise: PCs 1 (surprised), NPCs 6 (not); then the next round's sides 3 and 4.
+    const { g, attacchi } = scontro(conSorpresa, { pg_a: 8, png_x: 6 }, [5, 2, 1, 6, 3, 4], () => 1);
+    const fatto = g.inizia(cand, [], null);
+    expect(fatto).toMatch(/i personaggi tirano 1 su 1d6 e sono colti di sorpresa/);
+    expect(fatto).toMatch(/i nemici tirano 6 su 1d6: non sono colti di sorpresa/);
+    expect(g.turnoDi()).toEqual([]);
+    // The table closes the window: the PC's steps of round 1 are skipped, the NPC strikes in its phase.
+    const r = g.dopoAzioni({ turno: 2, attacchi: [], autori: [], candidati: () => cand });
+    expect(attacchi.length).toBeGreaterThan(0);
+    expect(r.fatti.join(' ')).toMatch(/Paralizzato/);
+    expect(g.condizioniDi('pg_a')).toEqual([]);
+    expect(g.turnoDi()).toEqual(['pg_a']);
+  });
+
   it('surprise in the set\'s data: read, and its errors for the validator', () => {
     const errori: string[] = [];
     const letto = leggiCombattimento({ sorpresa: { dado: 6, fino_a: 2, condizione: 'paralizzato' } }, bx, new Set(), errori);

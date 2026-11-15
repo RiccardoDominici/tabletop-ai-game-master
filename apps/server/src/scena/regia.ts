@@ -2835,7 +2835,7 @@ export class Regia {
 
   /** I dadi del turno chiuso: carte a proiettore e telefoni, fatti per il narratore, prove riuscite. */
   private async tiriDelTurno(r: RiepilogoChiusura, giocate?: TiriGiocati): Promise<EsitoTurnoProve> {
-    const esito = giocate?.decisioni ? this.prove!.completa(giocate.decisioni, giocate.inseriti) : await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
+    const esito = giocate?.decisioni ? this.prove!.completa(giocate.decisioni, giocate.inseriti, this.tiriGiocatori.manuali) : await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
     this.riuscitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.riuscite]));
     this.fallitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.fallite]));
     this.negatiTurno = new Set(esito.negati.map((n) => n.png));

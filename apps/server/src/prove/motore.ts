@@ -486,7 +486,7 @@ export class MotoreProve {
    * Rolls the turn: the decisions of `decidi`, with the dice the players entered (`inseriti`, manual rolls) for their
    * own tests and the Engine's dice for everything else (NPCs, damage, combat). Then combat, cards and facts.
    */
-  completa(d: DecisioniTurno, inseriti: ReadonlyMap<string, TiroInserito> = new Map()): EsitoTurnoProve {
+  completa(d: DecisioniTurno, inseriti: ReadonlyMap<string, TiroInserito> = new Map(), manuali = false): EsitoTurnoProve {
     const { turno, azioni, decisioni, tardive, attesa_ms } = d;
     const c = this.o.contesto();
     if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], fattiPrivati: [], negati: [], attesa_ms, tardive, combattimento: null };
@@ -510,9 +510,21 @@ export class MotoreProve {
       const avanzati = daiGiocatori.get(id)?.inutilizzati ?? 0;
       if (avanzati) this.o.log.info({ turno, azione: id, avanzati }, 'manual rolls: some entered dice were not used');
     }
+    // Manual rolls: a player's test that rolled without a request (the dry run had no card for it: its target fell
+    // there) is the Engine's dice, said so, and its number to beat stays hidden like the others (docs/prove.md §8).
+    if (manuali) {
+      for (const a of azioni) {
+        if (inseriti.has(a.id)) continue;
+        const t = r.perAzione.get(a.id)?.tiri.find((y) => y.chi === a.autore && !y.di_png && !y.automatico && y.dadi.length > 0);
+        if (!t) continue;
+        t.manuale = 'motore';
+        this.o.log.warn({ turno, azione: a.id, autore: a.autore, carta: t.etichetta }, 'manual rolls: a player test rolled without a request, the Engine rolled it');
+      }
+    }
     // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
     const attacchi = r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id }));
-    const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.map((a) => a.autore), candidati: () => this.candidati(c, attacchi) });
+    // A check the Game Master asked (pseudo-action «m_…») is not the PC's action in the fight: it does not move whose turn it is.
+    const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.filter((a) => !a.id.startsWith('m_')).map((a) => a.autore), candidati: () => this.candidati(c, attacchi) });
     r.fatti.push(...comb.fatti);
     r.tiri.push(...comb.tiri);
     this.intestazione = comb.intestazione;

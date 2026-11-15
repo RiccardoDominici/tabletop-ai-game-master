@@ -3,13 +3,20 @@
  * campaign with sheets (apps/server/test/fixtures/campagne/prove):
  *
  *   cp -R apps/server/test/fixtures/campagne/prove <copy>
- *   TAGM_PORTA=4893 TAGM_CARTELLA_CAMPAGNA=<copy> TAGM_TIRI_GIOCATORI=manuale scripts/avvio.sh --finto --mock
+ *   node -e "const f='<copy>/campagna.yaml',Y=require('yaml'),fs=require('fs'),d=Y.parse(fs.readFileSync(f,'utf8'));
+ *     d.orologi[0].avanza_quando=[{quando:'scontro',tiro:{dado:6,almeno:4}}];fs.writeFileSync(f,Y.stringify(d))"
+ *   TAGM_PORTA=4893 TAGM_CARTELLA_CAMPAGNA=<copy> TAGM_TIRI_GIOCATORI=manuale TAGM_TIRI_MASTER=visibili \
+ *     scripts/avvio.sh --finto --mock
  *   E2E_PORTA=4893 npx playwright test -c playwright.config.ts e2e/tiri-manuali.spec.ts
+ * (the gate on the clock makes the world roll a d6 when a fight starts: the Game Master roll the table sees.)
  *
  * Projector, two phones, the Game Master panel. Ida persuades Bertoldo (public), Teo opens the toll box's padlock
  * (private). Ida's phone shows the roll card (two d20 with advantage, the bonus, no DC); Teo's phone shows his, the
  * projector only Ida's request and never a number to beat; the panel shows both with the DC. Ida types her dice, the
- * Game Master enters Teo's from the panel; the card on the projector has the total and the outcome, no DC.
+ * Game Master enters Teo's from the panel; the card on the projector has the total and the outcome, no DC, and so do
+ * the phones' cards. Then the Game Master asks Ida a check from the panel («Chiedi una prova»): her phone says the Game
+ * Master asks, she rolls, the narrator gets it. Last, «Inizia combattimento»: the world's gate rolls a d6 on the Game
+ * Master's side and, with TAGM_TIRI_MASTER=visibili, the projector shows the «Il master» card with yes or no.
  * Screenshots in logs/screenshots/tiri-manuali/ (projector 1920×1080, phone 390×844).
  */
 import fs from 'node:fs';
@@ -132,5 +139,41 @@ test('manual rolls: the request without DC, the dice typed on the phone and ente
   await expect(carte).toContainText('CD');
   await expect(carte).toContainText('inserito dal master');
   await master.screenshot({ path: path.join(CARTELLA, 'master-carte.png') });
+  // The phones' cards: no number to beat either (the compact «Tiri del turno» and the full card).
+  await expect(ida.getByTestId('carta-tiro').first()).toBeVisible();
+  for (const c of await ida.getByTestId('carta-tiro').all()) await expect(c).not.toContainText(/\bCD\b|\bCA\b/);
+  await expect(teo.getByTestId('carta-tiro').first()).toBeVisible();
+  for (const c of await teo.getByTestId('carta-tiro').all()) await expect(c).not.toContainText(/\bCD\b|\bCA\b/);
+
+  // The Game Master asks Ida for a Perception check, hard, from the panel; «Risolvi ora» closes the window.
+  const form = master.getByTestId('master-chiedi-prova');
+  await form.locator('summary').click();
+  await master.getByTestId('master-chiedi-pg').selectOption('pg_ida');
+  await master.getByTestId('master-chiedi-cosa').selectOption('abilita:percezione');
+  await master.getByTestId('master-chiedi-difficolta').selectOption('difficile');
+  await master.getByTestId('master-chiedi-motivo').fill('sentire i passi sul ponte');
+  await master.getByTestId('master-chiedi-invia').click();
+  await expect(master.getByTestId('master-tiri-chieste')).toContainText('Ida Ferraro');
+  await master.screenshot({ path: path.join(CARTELLA, 'master-chiedi.png') });
+  await master.getByRole('button', { name: 'Risolvi ora' }).click();
+  await expect(cartaIda).toBeVisible({ timeout: 30_000 });
+  await expect(cartaIda).toContainText('Il master ti chiede un tiro');
+  await expect(ida.getByTestId('tiro-etichetta')).toContainText('Percezione');
+  await ida.screenshot({ path: path.join(CARTELLA, 'telefono-ida-dal-master.png') });
+  await ida.getByTestId('tiro-dado-0').fill('19');
+  await ida.getByTestId('tiro-invia').click();
+  await attendiFase(schermo, (s) => s.fase === 'finestra' && s.turno === 3, 120_000, 'terza finestra');
+  await expect(master.getByTestId('master-tiri-carte')).toContainText('Percezione');
+
+  // A fight from the panel: the world's gate rolls on the Game Master's side; with «visibili» the table sees it.
+  await master.getByTestId('master-combattimento-inizia').click();
+  const cartaMaster = schermo.locator('[data-testid="carta-tiro"][data-png="true"]').filter({ hasText: 'Il master' });
+  await expect(cartaMaster).toBeVisible({ timeout: 15_000 });
+  await expect(cartaMaster).toContainText(/Sì|No/);
+  await schermo.screenshot({ path: path.join(CARTELLA, 'proiettore-tiro-master.png') });
+  await expect(master.getByTestId('master-tiri-del-master')).toBeVisible();
+  await master.getByTestId('master-tiri-del-master').locator('summary').click();
+  await expect(master.getByTestId('master-tiri-del-master')).toContainText('o_piena');
+  await master.screenshot({ path: path.join(CARTELLA, 'master-tiri-del-master.png') });
   expect(errori).toEqual([]);
 });

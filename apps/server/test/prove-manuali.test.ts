@@ -121,6 +121,20 @@ describe('manual rolls, SRD 5.2', () => {
     ]);
   });
 
+  it('a player test without a request (manual turn): the Engine rolls it, says so, and its DC stays hidden', async () => {
+    const t = 'Tiro con la balestra leggera a Ruggero';
+    const m = motoreSrd({ [t]: { tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'balestra_leggera' } }, [15, 6]);
+    const d = await m.decidi(3, [az('a1', 'pg_corrado', t)]);
+    const e = m.completa(d, new Map(), true);
+    expect(e.tiri[0]).toMatchObject({ dadi: [15], manuale: 'motore' });
+    expect(m.tiriPubblici()[0]).toMatchObject({ contro_nascosto: true, contro: { valore: 0 } });
+    // Automatic turn: nothing marked, the DC on the card.
+    const auto = motoreSrd({ [t]: { tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'balestra_leggera' } }, [15, 6]);
+    const e2 = auto.completa(await auto.decidi(3, [az('a1', 'pg_corrado', t)]));
+    expect(e2.tiri[0]!.manuale).toBeUndefined();
+    expect(auto.tiriPubblici()[0]!.contro.valore).toBeGreaterThan(0);
+  });
+
   it('no roll, no request: plain speech and an action the arbiter calls trivial', async () => {
     const m = motoreSrd({ 'Saluto Bertoldo': { tipo: 'nessuna' } }, [10]);
     const d = await m.decidi(3, [az('a1', 'pg_ida', 'Saluto Bertoldo')]);
