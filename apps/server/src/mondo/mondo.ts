@@ -72,7 +72,7 @@ export interface StatoMondoSalvato {
   posizioni?: Array<[string, string]>;
   atteggiamenti?: CambioAtteggiamento[];
   /** Consecutive stalls, and the clues already given by a stall's S2 (docs/mondo.md §5). */
-  stallo?: { n: number; indizi: string[] };
+  stallo?: { n: number; indizi: string[]; indecisi?: number; ultime?: Array<[string, string]> };
   /** The world's own dice (rolls of gates with `tiro`): seed and counter, to replay them. */
   dadi?: { seme: string; contatore: number };
   /** The current visit of a scene: its opening turn (resta_in_scena) and the NPCs a check already moved (§4). */
@@ -315,7 +315,7 @@ export class MondoInGioco {
       offerti: [...this.offerti],
       posizioni: [...this.posizioni],
       atteggiamenti: this.atteggiamenti.esporta(),
-      stallo: { n: this.stallo.n, indizi: [...this.indiziDatiDaStallo] },
+      stallo: { n: this.stallo.n, indizi: [...this.indiziDatiDaStallo], indecisi: this.stallo.indecisi, ultime: [...this.stallo.ultime] },
       visita: { ingresso: this.visita.ingresso, cambiatiDaProve: [...this.visita.cambiatiDaProve] },
       dadi: { seme: this.dadi.seme, contatore: this.dadi.contatore },
     };
@@ -344,6 +344,9 @@ export class MondoInGioco {
     for (const [id, dove] of s?.posizioni ?? []) this.posizioni.set(id, dove);
     this.atteggiamenti.importa(s?.atteggiamenti);
     this.stallo.n = typeof s?.stallo?.n === 'number' && s.stallo.n > 0 ? Math.floor(s.stallo.n) : 0;
+    this.stallo.indecisi = typeof s?.stallo?.indecisi === 'number' && s.stallo.indecisi > 0 ? Math.floor(s.stallo.indecisi) : 0;
+    this.stallo.ultime.clear();
+    for (const [pg, testo] of s?.stallo?.ultime ?? []) this.stallo.ultime.set(pg, testo);
     this.indiziDatiDaStallo.clear();
     for (const i of s?.stallo?.indizi ?? []) this.indiziDatiDaStallo.add(i);
     // The world's own dice continue their sequence (only when they are the ones in use: no external hook, no test dice).

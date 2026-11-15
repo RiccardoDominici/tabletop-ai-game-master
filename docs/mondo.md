@@ -9,10 +9,9 @@ fronts and omens were read only by the validator and the Preparer, `avanza_quand
 static, only S1 existed.
 
 **Status**: §1–§5 built (`mondo/ritmo.ts`, `mondo/porte.ts`, `mondo/mondo.ts`, `mondo/atteggiamenti.ts`,
-`mondo/stallo.ts`, `campagna/mondo.ts`; panel: `apps/web/src/master/SezioneMondo.tsx`). Not built: the E12 classifier
-(«two inputs without a new decision»), `[atteggiamento]` in mode B (lines have no `effetti.atteggiamento` yet), a Game
-Master command to set an attitude by hand, and the conversion of the other example campaigns' free-text
-`avanza_quando` into gates.
+`mondo/stallo.ts`, `campagna/mondo.ts`; panel: `apps/web/src/master/SezioneMondo.tsx`). Not built: lines with their own
+`effetti.atteggiamento` (the selector proposes changes with `[atteggiamento]`, like the narrator), and a Game Master
+command to set an attitude by hand (docs/da-fare.md).
 
 ## Principles
 1. **The Engine applies only what is written in a form it can read.** Free text stays a note for the narrator and
@@ -125,7 +124,10 @@ scene card.
 
 ## 5. Stall S1 → S2 → S3
 A stall is a closed window without actions (as before), outside a fight (in a fight an empty window is the NPCs'
-turn). A counter grows on consecutive stalls and goes back to zero on a turn with an action. Level `((n − 1) mod 3) + 1`:
+turn), or the second turn in a row whose actions bring no new decision (E12): every action only waits, stays put,
+does nothing or looks around (a narrow list of patterns in `lingue/<code>/motore.yaml`, section `stallo`, matching
+the whole action), or repeats that PC's previous action. A counter grows on consecutive stalls and goes back to zero
+on a turn with a real decision. Level `((n − 1) mod 3) + 1`:
 - **S1** soft move of an active front: the danger of the scene (clock active, or cast present), its `mosse` and the
   next visible sign as material; mode B: a filler line or the due mark, as before. From the fourth stall on, S1 also
   owes a mark to that danger's clock (the soft move was ignored: the world moves);
@@ -136,8 +138,8 @@ turn). A counter grows on consecutive stalls and goes back to zero on a turn wit
   known to them, not visited yet and not kept for the next session (`prossima_sessione`), facts already found, the
   last sign of the threat. Mode A: a directive with the
   leads; mode B: the Engine says them in one sentence of the language pack.
-Never an empty «cosa fate?»: every level carries material. The «two inputs without new decisions» classifier of E12
-is not built.
+Never an empty «cosa fate?»: every level carries material. On an E12 stall the move comes together with the
+answers to the actions; in mode B the fillers also enter the catalogue.
 
 ## Log and state
 `cronaca` (world log): `{turno, tipo: segno | presagio | evento | atteggiamento, orologio, segno, cosa, visto,

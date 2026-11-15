@@ -1,7 +1,9 @@
 /**
  * Stall moves S1 → S2 → S3 (docs/mondo.md §5, manual «Stall», E12). A stall is a closed window without actions,
- * outside a fight (there an empty window is the NPCs' turn). The counter grows on consecutive stalls and goes back
- * to zero on a turn with an action or a scene change. Level ((n − 1) mod 3) + 1:
+ * outside a fight (there an empty window is the NPCs' turn), or the second turn in a row whose actions bring no new
+ * decision (E12: each one only waits or looks around, by the language's patterns, or repeats that PC's previous
+ * action). The counter grows on consecutive stalls and goes back to zero on a real decision or a scene change.
+ * Level ((n − 1) mod 3) + 1:
  * - S1 a soft move of an active front (its moves and visible signs as material); from the fourth stall on, S1 also
  *   owes a mark to that danger's clock (a soft move ignored: the world moves);
  * - S2 a proactive clue: first a clue offered by a consequence, else one not yet revealed of the scene;
@@ -9,6 +11,29 @@
  * Never an empty «cosa fate?»: each level carries material. Pure choice: the director supplies the context.
  */
 import type { PericoloMondo } from '../campagna/mondo';
+import { normalizza } from '../azioni/regole';
+import { campoOggetti, campoRegex, campoTesto, regole } from '../lingua/motore';
+
+/** Patterns of an action that brings no new decision, from lingue/<code>/motore.yaml (section `stallo`). */
+const senzaDecisioneRegole = (): ReadonlyArray<[string, RegExp]> =>
+  regole('stallo', (s) =>
+    campoOggetti(s, 'senza_decisione').flatMap((e): Array<[string, RegExp]> => {
+      const re = campoRegex(e, 'regex', campoTesto(e, 'flags'));
+      return re ? [[campoTesto(e, 'nome'), re]] : [];
+    }),
+  );
+
+/**
+ * Why an action brings no new decision (E12), or null if it does: it only waits, stays put, does nothing or looks
+ * around (the whole action, by the language's patterns), or it repeats the same PC's previous action word for word.
+ */
+export function senzaDecisione(testo: string, precedente: string | null): string | null {
+  const t = testo.trim();
+  const uguale = (x: string): string => normalizza(x).replace(/[\s.!?…]+$/u, '');
+  if (precedente !== null && uguale(t) === uguale(precedente)) return 'ripetuta';
+  for (const [nome, re] of senzaDecisioneRegole()) if (re.test(t)) return nome;
+  return null;
+}
 
 export type LivelloStallo = 1 | 2 | 3;
 
@@ -21,23 +46,50 @@ export function stalloDuro(n: number): boolean {
   return n > 3 && livelloStallo(n) === 1;
 }
 
+/** What a closed window brought: nothing, actions without a new decision, or a real decision. */
+export type ChiusuraPerStallo = 'vuota' | 'indecisa' | 'decisa';
+
 /** Consecutive stalls (saved in the snapshot). */
 export class ContatoreStallo {
   n = 0;
+  /** Consecutive turns whose actions brought no new decision (E12: the second one is a stall). */
+  indecisi = 0;
+  /** Each PC's last action (normalised), to see a repetition. */
+  readonly ultime = new Map<string, string>();
 
-  /** A closed window: returns the stall number (1, 2, …) or 0 if it is not a stall. */
-  registra(senzaAzioni: boolean, inCombattimento: boolean): number {
-    if (!senzaAzioni) {
+  /**
+   * A closed window: returns the stall number (1, 2, …) or 0 if it is not a stall. Old form: a boolean = empty or not.
+   */
+  registra(chiusura: ChiusuraPerStallo | boolean, inCombattimento: boolean): number {
+    const c: ChiusuraPerStallo = chiusura === true ? 'vuota' : chiusura === false ? 'decisa' : chiusura;
+    if (c === 'decisa') {
       this.n = 0;
+      this.indecisi = 0;
       return 0;
     }
     if (inCombattimento) return 0;
+    if (c === 'indecisa') {
+      this.indecisi += 1;
+      if (this.indecisi < 2) return 0;
+    }
     this.n += 1;
     return this.n;
   }
 
+  /**
+   * How a window with these actions closes for the stall (E12), and the PCs' last actions remembered for next time.
+   */
+  classifica(azioni: ReadonlyArray<{ autore: string; testo: string | null }>): ChiusuraPerStallo {
+    const conTesto = azioni.filter((a): a is { autore: string; testo: string } => !!a.testo);
+    if (conTesto.length === 0) return 'vuota';
+    const indecisa = conTesto.every((a) => senzaDecisione(a.testo, this.ultime.get(a.autore) ?? null) !== null);
+    for (const a of conTesto) this.ultime.set(a.autore, a.testo);
+    return indecisa ? 'indecisa' : 'decisa';
+  }
+
   azzera(): void {
     this.n = 0;
+    this.indecisi = 0;
   }
 }
 

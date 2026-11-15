@@ -6,7 +6,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import type { PericoloMondo } from '../src/campagna/mondo';
-import { ContatoreStallo, livelloStallo, mossaDiStallo, stalloDuro, type ContestoStallo } from '../src/mondo/stallo';
+import { ContatoreStallo, livelloStallo, mossaDiStallo, senzaDecisione, stalloDuro, type ContestoStallo } from '../src/mondo/stallo';
 import { attendi, inizia, Prova, turno } from './aiuti/partita';
 
 const fiume: PericoloMondo = { id: 'p_fiume', fronte: 'f', orologio: 'o_piena', impulso: 'allagare', mosse: ['sale di un palmo'], cast: ['png_mugnaio'], segniVisibili: ['Un tonfo a monte.'] };
@@ -35,6 +35,26 @@ describe('mondo/stallo', () => {
     expect(mossaDiStallo(3, { ...base, fattiScoperti: ['Il carro è rotto.'], ultimoSegno: 'Un tonfo.' })).toMatchObject({ livello: 3, piste: ['Il bosco', 'Il ponte', 'Il carro è rotto.'] });
     expect(mossaDiStallo(3, { ...base, luoghiNoti: ['Il bosco'] })).toMatchObject({ livello: 2, indizio: 'i_a' });
     expect(mossaDiStallo(4, base)).toMatchObject({ livello: 1, duro: true });
+  });
+});
+
+describe('E12: two turns in a row without a new decision', () => {
+  it('waiting, staying put, nothing, looking around, or the same action again; a real decision is not', () => {
+    expect(['Aspetto.', 'Anna aspetta ancora.', 'Restiamo fermi', 'Bruno non fa niente.', 'Anna si guarda intorno.'].map((x) => senzaDecisione(x, null))).toEqual(['aspettare', 'aspettare', 'restare fermi', 'niente', 'guardarsi intorno']);
+    expect(senzaDecisione('Anna aspetta e poi apre la porta.', null)).toBeNull();
+    expect(senzaDecisione('Aspetto che il mugnaio parli.', null)).toBeNull();
+    expect(senzaDecisione('Apro la botola.', 'apro la botola')).toBe('ripetuta');
+  });
+
+  it('the second such turn is a stall; a decision resets; one undecided PC among decided ones is a decision', () => {
+    const c = new ContatoreStallo();
+    const turno = (azioni: Array<[string, string]>) => c.registra(c.classifica(azioni.map(([autore, testo]) => ({ autore, testo }))), false);
+    expect(turno([['pg_a', 'Aspetto.']])).toBe(0);
+    expect(turno([['pg_a', 'Aspetto ancora.']])).toBe(1);
+    expect(turno([['pg_a', 'Mi guardo intorno.']])).toBe(2);
+    expect(turno([['pg_a', 'Aspetto.'], ['pg_b', 'Apro la porta.']])).toBe(0);
+    expect(turno([['pg_b', 'Apro la porta.']])).toBe(0); // the same action again: undecided, the first time
+    expect(turno([['pg_b', 'Apro la porta.']])).toBe(1);
   });
 });
 
@@ -126,5 +146,26 @@ describe('server, mode B: S3 says only what the table heard', () => {
     const s3 = s.trascrizione.filter((v) => v.turno === 5).map((v) => v.testo).join(' ');
     expect(s3).toContain('Vi tornano in mente le strade ancora aperte: Il bosco; Il ponte; La macina è stata cambiata da poco');
     expect(s.trascrizione.map((v) => v.testo).join(' ')).not.toContain('La ladra si nasconde');
+  });
+});
+
+describe('server, mode A: E12, two turns of waiting', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('the second turn that only waits gets the world’s S1 move with the action', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mondo');
+    const { url, messaggi } = await prova.avvia(cartella, () => '[narratore] Anna, la ruota cigola.\n[invito] tutti', { TAGM_MODO: 'improvvisa' });
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    let s = await inizia(schermo, tel);
+    s = await turno(tel, 'pg_anna', s, 'Anna aspetta.');
+    expect(messaggi.at(-1)).not.toContain('## Mossa del mondo');
+    s = await turno(tel, 'pg_anna', s, 'Anna aspetta ancora.');
+    expect(messaggi.at(-1)).toMatch(/## Mossa del mondo[\s\S]*S1\)/);
+    expect(messaggi.at(-1)).toContain('Anna aspetta ancora.');
+    s = await turno(tel, 'pg_anna', s, 'Anna apre la botola.');
+    expect(messaggi.at(-1)).not.toContain('## Mossa del mondo');
   });
 });

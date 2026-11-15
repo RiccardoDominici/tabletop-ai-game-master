@@ -51,7 +51,8 @@ It works only with the window open and the table not paused. See [the Game Maste
 ### When nobody acts: the world moves
 
 A window that closes without any action (the frantic countdown ran out, or «Risolvi ora» with empty hands) is a
-**stall**, outside a fight. The world makes a move instead of asking «cosa fate?» again, and the moves change on
+**stall**, outside a fight; so is the second turn in a row in which every action only waits («Aspetto», «Resto fermo»,
+«Mi guardo intorno») or repeats the same action as before. The world makes a move instead of asking «cosa fate?» again, and the moves change on
 consecutive stalls ([docs/mondo.md](../mondo.md) §5):
 
 1. **S1**: a sign of the danger of the scene (its moves, its omens);
