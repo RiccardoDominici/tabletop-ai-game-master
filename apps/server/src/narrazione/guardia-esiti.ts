@@ -34,6 +34,9 @@ interface Parole {
   assorbito: string[][];
   figurati: string[][];
   pronomi: ReadonlySet<string>;
+  /** Place phrases of `sconfitta` («a terra»): for a PC a fall only right after a state verb (`verbi_stato`). */
+  luoghi: string[][];
+  verbiStato: ReadonlySet<string>;
   negazioni: ReadonlySet<string>;
 }
 
@@ -51,6 +54,8 @@ const parole = (): Parole =>
     assorbito: comeVoci(campoElenco(s, 'assorbito')),
     figurati: comeVoci(campoElenco(s, 'figurati')),
     pronomi: new Set(campoElenco(s, 'pronomi').map(normalizza)),
+    luoghi: comeVoci(campoElenco(s, 'luoghi')),
+    verbiStato: new Set(campoElenco(s, 'verbi_stato').map(normalizza)),
   }));
 
 /**
@@ -68,10 +73,22 @@ function chiCade(frase: string, p: Parole, candidati: readonly string[], nomi: R
     if (!w.length) continue;
     const dove = p.sconfitta.map((v) => posizione(w, v)).filter((i) => i >= 0);
     const k = dove.length ? Math.min(...dove) : -1;
+    // For a PC, a place phrase («a terra») is a fall only right after a state verb («è a terra», «cade a terra»): the
+    // announcements have PCs put things down («Eliandro posa il quaderno a terra»).
+    const doveForte = p.sconfitta
+      .map((v) => {
+        const i = posizione(w, v);
+        const luogo = p.luoghi.some((l) => l.length === v.length && l.every((x, j) => x === v[j]));
+        return i >= 0 && (!luogo || (i > 0 && p.verbiStato.has(w[i - 1]!))) ? i : -1;
+      })
+      .filter((i) => i >= 0);
+    const kForte = doveForte.length ? Math.min(...doveForte) : -1;
     const nominati = candidati.map((id) => ({ id, i: doveNomina(w, nomi.get(id) ?? []) })).filter((x) => x.i >= 0).sort((a, b) => a.i - b.i);
     if (k >= 0 && !ha(w, p.figurati)) {
       const prima = nominati.filter((x) => x.i < k).at(-1);
-      if (prima) out.push(prima.id);
+      if (prima && prima.id.startsWith('pg_') && !(kForte >= 0 && nominati.filter((x) => x.i < kForte).at(-1)?.id === prima.id)) {
+        // a PC with only a place phrase: not a fall
+      } else if (prima) out.push(prima.id);
       else if (ultimo && w.slice(0, k).every((x) => p.pronomi.has(x) || x.length <= 2 || ['poi', 'e', 'ed', 'ma', 'then', 'and', 'but'].includes(x))) out.push(ultimo);
       // A relative clause opening with a subject pronoun, with other verbs before the fall: «…sul goblin, che grida e
       // cade all'indietro» (third e2e pass, HEAD rerun T8: the goblin, standing, «cade»).

@@ -136,6 +136,7 @@ does nothing or looks around (a narrow list of patterns in `lingue/<code>/motore
 the whole action), or repeats that PC's previous action. In mode B a turn is also a stall, whatever its actions say,
 after two answers in a row that brought nothing new to the table (`fermi`, mondo/stallo.ts): no repertoire line that
 answers an action, no roll, no scene entered, no fight; the Engine's own lines (stall moves, due marks) do not count.
+A turn whose actions name an NPC present (a question, a threat, a gift) is a decision even with no line to answer it.
 The third e2e pass (docs/e2e-finale-3.md, bug 8) had a stalling table write «Cosa facciamo?», «Non lo so…», «Mi siedo
 sul muretto», «Ci penso. Aspetto.»: only the bare «Aspetto.» matched a pattern, the counter never reached a stall, and
 five turns of fourteen had an empty catalogue, so the narrator described the yard or handed the question back. What

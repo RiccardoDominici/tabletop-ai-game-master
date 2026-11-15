@@ -213,6 +213,9 @@ guardia_esiti:
   figurati: [throws herself, throws himself, throws themselves, drops flat, ducks, crouches, lies flat, gaze, eyes, eye, voice, silence, night, dusk, darkness, snow, rain, lets fall, lets the, drops the, drops her, drops his, from her hand, from his hand, shield, sword, blade, weapon, club, hood, key, cloak, head, shoulders, arms]
   # Subject and relative pronouns: «… and he collapses», «…, who collapses» have the creature named before as subject.
   pronomi: [he, she, it, they, who, which, that]
+  # Place phrases of `sconfitta`: for a PC they tell a fall only right after one of `verbi_stato`.
+  luoghi: [on the ground, to the ground]
+  verbi_stato: [is, stays, lies, remains, falls, collapses, goes, drops, stay, lie, fall]
 
 # Out-of-play guard (apps/server/src/narrazione/guardia-fuori.ts): a narrator sentence whose subject is a character
 # out of play since before the turn (down, dead, fled) and that does not describe its state becomes the Engine's line.

@@ -2746,16 +2746,19 @@ export class Regia {
         ...azioni.filter((a) => a.id_pg === id_pg && a.testo && a['privata'] !== true).map((a) => a.testo!),
       ].join(' ');
     const recente = (t: number): boolean => t < turno && turno - t <= Regia.TURNI_PRIVATI_RICORDATI;
+    // What the table heard aloud after that turn (narrator and NPC lines of the public transcript).
+    const sentitoDopo = (da: number): string => this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno > da).map((v) => v.testo).join(' ');
     const precedenti = [
       ...this.azioniPrivate.filter((p) => recente(p.turno)),
       ...this.privati.filter((p) => recente(p.turno)).map((p) => ({ turno: p.turno, id_pg: p.id_pg, testo: p.testo })),
-    ].map((p) => ({ ...p, pubblico: dopo(p.id_pg, p.turno) }));
+    ].map((p) => ({ ...p, pubblico: dopo(p.id_pg, p.turno), sentito: sentitoDopo(p.turno) }));
     const g = guardiaPrivate(
       azioni.map((a) => ({ id_pg: a.id_pg, testo: a.testo, privata: a['privata'] === true, sospesa: a['sospesa'] === true })),
       nomiDi,
       tutti,
       this.nomiPng,
       precedenti,
+      !!this.prove?.inCombattimento,
     );
     return g ? { spostaPrivata: g } : {};
   }
@@ -3072,7 +3075,11 @@ export class Regia {
     // E12: the second turn in a row whose actions bring no new decision (only waiting, or the same action again) is a stall too.
     // A turn with only the Game Master's checks (docs/prove.md §8) is not a stall: the check is the turn's decision.
     const chiusura = this.soloProveDelMaster ? 'decisa' : this.mondo.stallo.classifica(r.azioni);
-    const nStallo = this.mondo.stallo.registra(chiusura, scontroPrima || !!this.prove?.inCombattimento);
+    // An action that names an NPC present is a decision for the stall's «nothing new» count (mondo/stallo.ts).
+    const presenti = this.pngInScena();
+    const nomiPresenti = new Map([...this.nomiPng].filter(([id]) => presenti.has(id)));
+    const versoPng = this.statoRepertorio !== null && r.azioni.some((a) => !!a.testo && pngNominati(a.testo, nomiPresenti).size > 0);
+    const nStallo = this.mondo.stallo.registra(chiusura, scontroPrima || !!this.prove?.inCombattimento, versoPng);
     if (chiusura === 'indecisa') this.o.log.info({ turno: r.turno, indecisi: this.mondo.stallo.indecisi, stallo: nStallo }, 'world: actions without a new decision (E12)');
     this.mossaStallo = nStallo ? this.scegliMossaDiStallo(nStallo, r.turno) : null;
     // The evening's pace of the clocks (docs/mondo.md §1), before anything asks which marks are due.

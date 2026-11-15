@@ -17,7 +17,8 @@
  *   this turn's story) and everything whose subject is someone else («Eliandro preme il piede sul goblin»);
  * - the first offending sentence about a character becomes «Zirrà giace a terra, senza vita.» (`prove.guardia.fuori_*`),
  *   later ones in the same turn are dropped (empty text), so the table hears the state once.
- * The names include the aliases («goblin» for Zirrà) except those that also name a character still in play. Limits: a
+ * The names include the aliases («goblin» for Zirrà) except those that also name a PC or NPC still in play (minions are
+ * not among them: with standing minions of the kind a fallen NPC's alias names, that alias may be misread). Limits: a
  * subject the narration names with a noun outside the aliases («la creatura») is not seen; an object pronoun («lo getta
  * contro il muro») is not a subject. Pure logic: the director passes who is out of play and the names.
  */

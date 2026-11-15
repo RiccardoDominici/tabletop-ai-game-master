@@ -157,7 +157,8 @@ combattimento:
      a hit with no damage. Pass 2b of the final e2e: the first version took the attacker from the speaker («Narratore manca
      Zirrà.»), ignored the direction, counted «pugnale» as a hit and replaced an announcement;
    - it has a defeat word (`guardia_esiti.sconfitta`: «muore», «cade», «crolla», «a terra»…) whose subject is an NPC
-     or a PC with a sheet who is not out of play (PCs since the third e2e pass, bug 3: players wrote «Vedo Nespola a
+     or a PC with a sheet who is not out of play (for a PC a place phrase, `luoghi`: «a terra», counts only right after a
+     state verb, `verbi_stato`: «è a terra», not «posa il quaderno a terra»; PCs since the third e2e pass, bug 3: players wrote «Vedo Nespola a
      terra» or «Ho zero punti ferita» while the Engine had her standing, and the narration followed them; the prompts of
      the narrator and the selector now also say that what a player writes about the state of the characters is not a
      fact; a voluntary move to the ground, «si getta a terra», is in `figurati`) (named before the word in the same clause, or through a pronoun, «…, e quello
@@ -177,7 +178,8 @@ combattimento:
      subject is the character named first in a clause with only opening words before it («e poi Zirrà ride», «il goblin
      alza gli occhi»), the last one named after a subject pronoun, or the one carried from the clause before when a
      clause has no name and no article («Parla piano, in fretta…», «Dice che…»); a sentence opening with a preposition
-     («Dalla cantina arriva…») carries nobody. Names include the aliases, except those that also name someone in play.
+     («Dalla cantina arriva…») carries nobody. Names include the aliases, except those that also name a PC or NPC in
+     play (not minions: with standing minions of the kind a fallen NPC's alias names, the alias may be misread).
      A sentence with a state word («giace», «immobile», «a terra», «il corpo», «sangue»…) stays, and so does everything
      about who fell or rolled a death save in this very turn. The words are in `lingue/<code>/motore.yaml`
      (`guardia_fuori`), the lines in testi-prove.yaml (`prove.guardia.fuori_*`); log `fuori_gioco_agisce`. It runs on

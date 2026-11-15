@@ -54,7 +54,8 @@ A window that closes without any action (the frantic countdown ran out, or «Ris
 **stall**, outside a fight; so is the second turn in a row in which every action only waits («Aspetto», «Resto fermo»,
 «Mi guardo intorno») or repeats the same action as before. With a prepared repertoire (mode B), a turn also counts as
 a stall, whatever the players wrote, after two answers in a row that brought nothing new: no prepared line answered an
-action, nobody rolled, no new scene, no fight («Cosa facciamo?», «Non lo so», «Mi siedo sul muretto»). The world
+action, nobody rolled, no new scene, no fight («Cosa facciamo?», «Non lo so», «Mi siedo sul muretto»); a turn where
+someone speaks to or acts on an NPC in the scene is never counted so. The world
 makes a move instead of asking «cosa fate?» again, and the moves change on consecutive stalls
 ([docs/mondo.md](../mondo.md) §5):
 

@@ -125,6 +125,12 @@ export interface PrivatoPrecedente {
   turno: number;
   testo: string;
   pubblico?: string;
+  /**
+   * What the table has heard aloud since (narrator and NPC lines): with two roots and no `richiamo`, words already heard
+   * in public do not count, so a later public outcome («Livia abbassa la spada sul goblin») is not pulled to a phone
+   * because a whisper of hers mentioned a sword. A `richiamo` with the PC's name needs only one root, heard or not.
+   */
+  sentito?: string;
 }
 
 /**
@@ -143,11 +149,12 @@ export function precedentePrivato(
   const testo = contesto ? `${contesto} ${riga}` : riga;
   const daTesto = radici(testo, nomiParole);
   const daRiga = radici(riga, nomiParole);
-  const soglia = haRichiamo(riga) ? 1 : MIN_RADICI_COMUNI;
+  const richiamo = haRichiamo(riga);
+  const soglia = richiamo ? 1 : MIN_RADICI_COMUNI;
   let migliore: { id_pg: string; comuni: string[] } | null = null;
   for (const p of precedenti) {
     if (!nomina(testo, p.nomi)) continue;
-    const giaDette = radici(p.pubblico ?? '', nomiParole);
+    const giaDette = radici(`${p.pubblico ?? ''} ${richiamo ? '' : (p.sentito ?? '')}`, nomiParole);
     const comuni = [...radici(p.testo, nomiParole)].filter((r) => daTesto.has(r) && !giaDette.has(r));
     if (!comuni.some((r) => daRiga.has(r)) || comuni.length < soglia) continue;
     if (!migliore || comuni.length > migliore.comuni.length) migliore = { id_pg: p.id_pg, comuni };
@@ -221,6 +228,8 @@ export function guardiaPrivate(
   nomiPersonaggi: ReadonlySet<string>,
   nomiPng?: Map<string, string[]>,
   precedenti: readonly PrivatoPrecedente[] = [],
+  /** A fight is on: a narrator line about the NPC whispered to may be its attack in its step, a public fact. */
+  inCombattimento = false,
 ): ((testo: string, segmento: number, etichetta?: string) => { id_pg: string; comuni: string[] } | null) | null {
   const conPubblica = new Set(azioni.filter((a) => a.testo && !a.privata).map((a) => a.id_pg));
   const private_ = azioni
@@ -246,7 +255,8 @@ export function guardiaPrivate(
     for (const a of private_) {
       const comuni = [...radici(a.testo, nomiParole)].filter((r) => daRiga.has(r));
       const verso = nomiPng?.size ? [...pngInterpellati(a.testo, nomiPng)].some((id) => nominati.has(id)) : false;
-      const basta = comuni.length >= MIN_RADICI_COMUNI || verso || (comuni.length >= 1 && dopo === a.id_pg);
+      // In a fight the PC on turn whispers while the others wait: naming the NPC alone is not enough (its attack).
+      const basta = comuni.length >= MIN_RADICI_COMUNI || (verso && !inCombattimento) || (comuni.length >= 1 && dopo === a.id_pg);
       if (basta && (!migliore || comuni.length > migliore.comuni.length)) migliore = { id_pg: a.id_pg, comuni };
     }
     return migliore;

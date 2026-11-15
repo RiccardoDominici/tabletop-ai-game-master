@@ -462,8 +462,11 @@ Live verification of checks, rolls, DCs and turns on a running server, scenario 
       `privato_richiami`) lowers the threshold to one root, in the turn of the action too;
     - a turn whose only actions are private (combat T25 on HEAD: «Il goblin alza gli occhi verso di lei… Parla piano, in
       fretta… Dice che il ragazzo è stato portato via», with no name of the PC): a narrator line that names the NPC
-      whispered to, or shares two roots with the whisper, or one root right after a line already moved, goes to that
-      phone; a world line that names nobody whispered to stays.
+      whispered to (not during a fight: there it may be that NPC's attack in its step), or shares two roots with the
+      whisper, or one root right after a line already moved, goes to that phone; a world line that names nobody
+      whispered to stays;
+    - with two roots and no richiamo, the words the table has heard aloud since the private turn do not count, so a later
+      public outcome («Livia abbassa la spada sul goblin») is not pulled to a phone because of an earlier whisper.
     Not saved with the session: after a resume only the outcomes count. Limit: a paraphrase with no word in common
     («prezzo» for «pagava») still needs one shared root and a richiamo or two roots.
   - The detector of the runs was blind to the same cases: the leak count (`fughe`) measures only the campaign's secret

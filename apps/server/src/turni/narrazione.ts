@@ -232,6 +232,8 @@ export async function narraTurno(
   const sostituti = new Set<string>();
   /** Sentences said at the table in this narration (normalised), for the word-for-word repetition check. */
   const detteOra = new Set<string>();
+  const nomiPg = [...new Set(campagna.pg.flatMap((x) => [x.nome, x.nome.split(/\s+/)[0] ?? '']).map(frasePerRipetizione).filter((x) => x.length > 2))];
+  const nominaUnPg = (k: string): boolean => nomiPg.some((n) => ` ${k} `.includes(` ${n} `));
   let scartateSegreti = 0;
   /** Segmenti (righe) già sostituiti dalla guardia dei segreti: il resto della riga non si dice. */
   const segmentiFermati = new Set<number>();
@@ -391,10 +393,11 @@ export async function narraTurno(
           sostituisci(e.segmento, rifiuto);
           continue;
         }
-        // Said word for word in the last turns, or already in this one: dropped (the table has heard it).
+        // Said word for word in the last turns, or already in this one: dropped (the table has heard it). A sentence that
+        // names a PC is never a repetition: a turn prompt («Fulco, tocca a te.») or an outcome comes back by design.
         if (!privato && !corretta && p.giàSentite) {
           const k = frasePerRipetizione(e.testo);
-          if (k.length >= 12 && (p.giàSentite.has(k) || detteOra.has(k))) {
+          if (k.length >= 12 && !nominaUnPg(k) && (p.giàSentite.has(k) || detteOra.has(k))) {
             anomalie.push({ codice: 'ripetuta', dettaglio: `«${e.testo.slice(0, 120)}»` });
             log.warn({ turno: p.turno, etichetta: e.etichetta, testo: e.testo }, 'narrator: sentence said word for word in the last turns, dropped');
             continue;

@@ -199,6 +199,10 @@ describe('private content of earlier turns, and turns with only private actions'
     expect(precedentePrivato('La domanda sul pedaggio resta nell’aria.', [PEDAGGIO], NOMI)).toBeNull();
     expect(precedentePrivato('Teo paga il pedaggio a Bertoldo.', [{ ...PEDAGGIO, pubblico: 'Pago il pedaggio a Bertoldo.' }], NOMI)).toBeNull();
     expect(precedentePrivato('Teo guarda il pedaggio.', [PEDAGGIO], NOMI)).toBeNull();
+    // Two roots, no richiamo: words the table has heard aloud since do not count (a later public outcome stays).
+    const SPADA = { id_pg: 'pg_ida', nomi: ['Ida'], turno: 3, testo: 'Piano a Ruggero, con la punta della spada sul collo: parla.', pubblico: '' };
+    expect(precedentePrivato('Ida abbassa la punta della spada su Ruggero.', [SPADA], NOMI)?.id_pg).toBe('pg_ida');
+    expect(precedentePrivato('Ida abbassa la punta della spada su Ruggero.', [{ ...SPADA, sentito: 'Corrado alza la spada; la punta luccica.' }], NOMI)).toBeNull();
   });
 
   it('in the turn guard: an earlier whisper is retold while its author acts in public; the public answer stays', () => {
@@ -218,6 +222,9 @@ describe('private content of earlier turns, and turns with only private actions'
     // A public action in the turn: the old rule (the author's name is needed).
     const conPubblica = guardiaPrivate([sussurro, { id_pg: 'pg_corrado', testo: 'Guardo la porta.', privata: false }], (id) => (id === 'pg_ida' ? ['Ida'] : ['Corrado']), NOMI, nomiPng)!;
     expect(conPubblica('Lo sgherro alza gli occhi verso la porta.', 1)).toBeNull();
+    // In a fight the whispered-to NPC's own attack is a public fact: its name alone does not move the line.
+    const inScontro = guardiaPrivate([sussurro], () => ['Ida'], NOMI, nomiPng, [], true)!;
+    expect(inScontro('Lo sgherro alza la mazza e la cala su Corrado.', 1)).toBeNull();
   });
 });
 

@@ -74,10 +74,11 @@ export class ContatoreStallo {
   /**
    * A closed window: returns the stall number (1, 2, …) or 0 if it is not a stall. Old form: a boolean = empty or not.
    */
-  registra(chiusura: ChiusuraPerStallo | boolean, inCombattimento: boolean): number {
+  registra(chiusura: ChiusuraPerStallo | boolean, inCombattimento: boolean, versoPng = false): number {
     const c: ChiusuraPerStallo = chiusura === true ? 'vuota' : chiusura === false ? 'decisa' : chiusura;
-    // Whatever the words say, the last answers changed nothing: the table is spinning, the world moves.
-    if (c !== 'vuota' && !inCombattimento && this.fermi >= TURNI_FERMI_PER_STALLO) {
+    // Whatever the words say, the last answers changed nothing: the table is spinning, the world moves. Not when an
+    // action speaks to or acts on an NPC present (`versoPng`): that is a decision even if no prepared line answers it.
+    if (c !== 'vuota' && !inCombattimento && !versoPng && this.fermi >= TURNI_FERMI_PER_STALLO) {
       this.indecisi = 0;
       this.n += 1;
       return this.n;

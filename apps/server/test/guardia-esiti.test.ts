@@ -59,6 +59,10 @@ describe('guardia degli esiti (italiano)', () => {
     // Really down for the Engine, or going to the ground on purpose: the sentence stays.
     expect(guardia([], ['pg_ida'])('Ida è a terra, senza sensi.')).toBeNull();
     expect(guardia([])('Ida si getta a terra dietro la pietra.')).toBeNull();
+    // A PC who puts something on the ground is not falling (an announcement).
+    expect(guardia([])('Ida posa il quaderno a terra e guarda Ruggero.')).toBeNull();
+    // An NPC keeps the plain rule.
+    expect(guardia([])('Ruggero è a terra.')).toEqual({ testo: 'Ruggero è ancora in piedi.', motivo: 'caduta_senza_fatto' });
   });
   it('shares the combat-fact stems: after the guard the combat facts still work (one compilation per section)', () => {
     guardia([])('Ruggero crolla a terra.');

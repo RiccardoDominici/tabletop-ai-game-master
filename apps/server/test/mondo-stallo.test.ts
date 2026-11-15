@@ -135,6 +135,21 @@ describe('mode B: answers that bring nothing new count, whatever the words (thir
     expect(c.registra('decisa', true)).toBe(0);
     c.registraEsito(true);
     expect(c.registra('decisa', false)).toBe(0);
+    // An action toward an NPC present is a decision, even when no line answers it.
+    c.registraEsito(false);
+    c.registraEsito(false);
+    expect(c.registra('decisa', false, true)).toBe(0);
+  });
+
+  it('real decisions toward the NPCs, answered only by improvised narration, never reach a stall (no free clue)', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mondo');
+    const { url } = await prova.avvia(cartella, () => '[narratore] Anna, la ruota cigola.\n[invito] tutti');
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    let s = await inizia(schermo, tel);
+    for (let k = 0; k < 5; k++) s = await turno(tel, 'pg_anna', s, k % 2 ? 'Mugnaio, dimmi chi ha rotto il sacco.' : 'Chiedo alla ladra dove dorme stanotte.');
+    expect(prova.turni().filter((r) => r['stallo'])).toEqual([]);
   });
 
   let prova: Prova;
