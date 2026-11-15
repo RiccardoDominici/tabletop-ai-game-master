@@ -159,3 +159,25 @@ describe('PNG a terra col server intero (C1)', () => {
     expect(messaggi.at(-1)).not.toContain('ruggero_tratta');
   });
 });
+
+describe('a PC out of play does not act (run of 15 November)', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('the narrator hears that the unconscious PC does not act, not what the player wrote', async () => {
+    prova = new Prova();
+    const { url, messaggi } = await prova.avvia(prova.campagna('prove'), () => '[narratore] Il fiume rumoreggia.\n[invito] tutti');
+    const schermo = await prova.proiettore(url);
+    const ida = await prova.telefono(url, 'pg_ida');
+    const master = await prova.master(url);
+    const s1 = await inizia(schermo, ida);
+    // The Game Master sets Ida's HP to 0 (as an NPC's blow would).
+    expect(await master.comanda({ tipo: 'pf', id: 'pg_ida', valore: 0 })).toEqual({ ok: true });
+    const dopo = attendi(ida, (x: StatoTavolo) => x.fase === 'finestra' && x.turno === 2);
+    await agisci(ida, 'pg_ida', 'Prendo Bertoldo per un braccio e lo porto lontano dal ponte', s1.versione_scena);
+    await dopo;
+    const m = messaggi.at(-1)!;
+    expect(m).toContain('Ida Ferraro (pg_ida): (non agisce, è a terra, privo di sensi');
+    expect(m).not.toContain('Prendo Bertoldo per un braccio');
+  });
+});

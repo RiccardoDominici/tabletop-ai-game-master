@@ -2946,7 +2946,16 @@ export class Regia {
     for (const a of r.azioni) {
       if (!a.privata) this.aggiungiTrascrizione({ turno: r.turno, tipo: 'azione', chi: a.autore, nome: nomePg(a.autore), testo: a.testo });
     }
-    const perNarratore = azioniPerNarratore(r, nomePg, (id) => this.tavolo.azione(id));
+    // A PC out of play when the window closed (0 HP, dead) does not act: the narrator hears why, not what the player
+    // wrote, and the repair does not ask to answer it (docs/combattimento.md §3).
+    const fuoriAllaChiusura = new Map(r.azioni.flatMap((a) => {
+      const f = this.prove?.attivo ? this.prove.stato.fuoriGioco(a.autore) : null;
+      return f ? [[a.autore, f] as const] : [];
+    }));
+    const perNarratore = azioniPerNarratore(r, nomePg, (id) => this.tavolo.azione(id), (id) => {
+      const f = fuoriAllaChiusura.get(id);
+      return f ? testoFisso('prove.fatto.non_agisce', { stato: testoFisso(f === 'morto' ? 'prove.fatto.morto_autore' : 'prove.fatto.a_terra_autore') }) : null;
+    });
     // Tiri del turno (docs/prove.md): il Motore tira PRIMA del narratore, che riceve gli esiti come
     // fatti. Le decisioni dell'arbitro di solito sono già pronte (prese all'invio): nessuna attesa.
     this.riuscitePerAzione = new Map();
@@ -3030,7 +3039,7 @@ export class Regia {
     }
     this.notifica();
     const azioni = [
-      ...r.azioni.map((a) => ({ id_pg: a.autore, testo: a.testo as string | null, privata: a.privata, dipende_da: a.dipende_da, conflitti: a.conflitti })),
+      ...r.azioni.map((a) => ({ id_pg: a.autore, testo: fuoriAllaChiusura.has(a.autore) ? null : (a.testo as string | null), privata: a.privata, dipende_da: a.dipende_da, conflitti: a.conflitti })),
       ...r.sospese.map((a) => ({ id_pg: a.autore, testo: a.testo as string | null, sospesa: true })),
       ...r.senzaAzione.map((id) => ({ id_pg: id, testo: null as string | null })),
     ];

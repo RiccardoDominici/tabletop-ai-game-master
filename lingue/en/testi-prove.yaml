@@ -64,6 +64,8 @@ prove:
     qualcuno: "someone"
     privata: " (PRIVATE action: the outcome only in a [privato {autore}] line, never in the lines at the table, which do not mention it)"
     a_terra_autore: "is down, unconscious: cannot act until someone heals them."
+    non_agisce: "(does not act, {stato} What the player wrote does not happen: do not narrate it.)"
+    morto_autore: "is dead."
     a_terra_set: "is down: {a_zero}"
     perde_turno: "is {condizione}: loses the turn, no roll."
     fallisce_da_solo: " It fails automatically: the character is {condizione}."

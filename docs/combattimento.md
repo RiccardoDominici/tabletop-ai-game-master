@@ -80,6 +80,10 @@ combattimento:
      default: before, they applied to every set (final e2e, §2);
    - otherwise out of play or dead.
    - The Game Master may restore HP: whoever goes back above 0 gets up.
+   - A PC already out of play when the window closes (0 HP, dead) does not act, even if the player writes: the
+     narrator's message carries «(non agisce, è a terra, privo di sensi…)» instead of the text, and the repair does not
+     ask to answer it (azioni/narratore.ts). In the SRD run of 15 November Haiku narrated an unconscious PC's grab and
+     shoulder charge as done, though the fact said «non può agire».
    - **Out of play** (prove/stato.ts, `fuoriGioco`): on the ground (0 HP), dead, or fled. The dead and the fled stay marked
      even when the clash is over, and they are saved with the session; flight is forgotten at a scene change (whoever
      fled may reappear elsewhere), death is not (the Game Master who restores HP brings them back into play; putting a

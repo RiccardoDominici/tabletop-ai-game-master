@@ -11,11 +11,17 @@ export function azioniPerNarratore(
   r: RiepilogoChiusura,
   nomePg: (id: string) => string,
   azione: (id: string) => Azione | undefined,
+  /**
+   * A PC out of play when the window closed (0 HP, dead: docs/combattimento.md §3) does not act: the narrator gets
+   * why instead of what the player wrote, so it does not narrate it as done (run of 15 November: «Ottavia si lascia
+   * prendere per il braccio» from an unconscious PC). null = the PC acts.
+   */
+  fuori: (id_pg: string) => string | null = () => null,
 ): { azioni: AzioneTurno[]; collegamenti: string[] } {
   const numero = new Map(r.azioni.map((a, i) => [a.id, i + 1]));
   const ref = (a: Azione): string => `[${numero.get(a.id)}] ${nomePg(a.autore)}`;
   const azioni: AzioneTurno[] = [
-    ...r.azioni.map((a) => ({ id_pg: a.autore, nome: nomePg(a.autore), testo: a.testo, numero: numero.get(a.id)!, privata: a.privata })),
+    ...r.azioni.map((a) => ({ id_pg: a.autore, nome: nomePg(a.autore), testo: fuori(a.autore) ?? a.testo, numero: numero.get(a.id)!, privata: a.privata })),
     ...r.senzaAzione.map((id) => ({ id_pg: id, nome: nomePg(id), testo: null })),
   ];
   const collegamenti: string[] = [];
