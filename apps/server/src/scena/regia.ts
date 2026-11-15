@@ -1153,7 +1153,8 @@ export class Regia {
     const nodi = (this.campagna.campagnaNarratore['nodi'] as Array<Record<string, unknown>> | undefined) ?? [];
     const visitati = new Set(this.o.campagna.scene.filter((s) => this.sceneVisitate.has(s.id)).map((s) => s.dati['nodo']));
     const luoghiNoti = nodi
-      .filter((x) => x['tipo'] === 'luogo' && x['noto_ai_pg'] === true && x['id'] !== scena.dati['nodo'] && !visitati.has(x['id']) && typeof x['nome'] === 'string')
+      // Places the PCs know, not visited, reachable in this session (a node for the next session is not a lead now).
+      .filter((x) => x['tipo'] === 'luogo' && x['noto_ai_pg'] === true && x['prossima_sessione'] !== true && x['id'] !== scena.dati['nodo'] && !visitati.has(x['id']) && typeof x['nome'] === 'string')
       .map((x) => x['nome'] as string);
     const ultimo = this.orologi.elenco.find((o) => o.pieni > 0 && o.segni[o.pieni - 1]);
     const s = this.statoRepertorio;

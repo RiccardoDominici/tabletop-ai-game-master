@@ -81,3 +81,4 @@ nodi:
   - {id: n_mulino, tipo: luogo, nome: "Il mulino", scheda: scena.yaml, noto_ai_pg: true, collegamenti: [n_bosco, n_ponte], indizi: [i_farina]}
   - {id: n_bosco, tipo: luogo, nome: "Il bosco", scheda: scene/scena_bosco.yaml, noto_ai_pg: true, collegamenti: [n_mulino], indizi: [i_ramo]}
   - {id: n_ponte, tipo: luogo, nome: "Il ponte", scheda: scene/scena_ponte.yaml, noto_ai_pg: true, collegamenti: [n_mulino]}
+  - {id: n_citta, tipo: luogo, nome: "La città", noto_ai_pg: true, prossima_sessione: true, abbozzo: "Lontana.", collegamenti: []}

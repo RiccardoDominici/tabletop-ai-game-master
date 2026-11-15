@@ -62,6 +62,7 @@ describe('server, mode A: four stalls in a row, then an action', () => {
     expect(m2).toContain('(i_farina): Chi guarda i sacchi vede impronte nella farina');
     expect(m3).toMatch(/S3\)/);
     expect(m3).toContain('piste che i PG conoscono: Il bosco; Il ponte');
+    expect(m3).not.toContain('La città'); // kept for the next session: not a lead tonight
     // The fourth: S1 again, and the river's clock owes a mark (ordered, and said by the Engine when not shown).
     expect(m4).toMatch(/S1\)/);
     expect(m4).toMatch(/\[o_piena\][^\n]*Mostralo in questa risposta/);

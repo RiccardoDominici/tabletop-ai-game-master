@@ -121,7 +121,8 @@ turn). A counter grows on consecutive stalls and goes back to zero on a turn wit
   Mode A: a directive with the clue; mode B: the Engine says an available `indizio` line that reveals it and has no
   gate on the action, otherwise falls back to S1;
 - **S3** an NPC present, or a memory, sums up 2–3 concrete leads, built from what the PCs know: places of the map
-  known to them and not visited yet, clues already found, the threat of the scene. Mode A: a directive with the
+  known to them, not visited yet and not kept for the next session (`prossima_sessione`), facts already found, the
+  last sign of the threat. Mode A: a directive with the
   leads; mode B: the Engine says them in one sentence of the language pack.
 Never an empty «cosa fate?»: every level carries material. The «two inputs without new decisions» classifier of E12
 is not built.
