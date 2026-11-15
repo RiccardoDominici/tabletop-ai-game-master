@@ -15,7 +15,6 @@ import { nomiDeiPng } from '../repertorio/pertinenza';
 import { pngInterpellati, soloParlato } from './parole-testo';
 import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
-import type { Logger } from '../logger';
 import type { Orologio } from '../turni/orologio';
 import type { SchedaNumerica } from '../campagna/schede';
 import { proveDellaScena, type ProvaScena } from '../campagna/prove-scena';
@@ -23,6 +22,9 @@ import { nomeAbilita, nomeCaratteristica } from '../campagna/regole-srd';
 import { testo } from '../lingua';
 import { nomeOppure } from './lingua';
 import { DadiCrittografici, type FonteDadi } from './dadi';
+import { DadiDelGiocatore } from './dadi-giocatore';
+import { richiestaDaCarta, type TiroInserito } from './richieste';
+import { loggerMuto, type Logger } from '../logger';
 import { risolviTurno, type Atteggiamento, type AzioneRisolvibile } from './risolutore';
 import { StatoProve, type StatoProveSalvato } from './stato';
 import type { ArbitroProve, AzioneDaClassificare, DecisioneProva, DecisioneRegole, EsitoTurnoProve, IngressoArbitroProve } from './tipi';
@@ -38,10 +40,20 @@ import { attaccoPngSrd } from './risolutore';
 import { valoreCaratteristica } from '../regole/schede';
 import { comeCaratteristica } from '../campagna/regole-srd';
 import { modCaratteristica } from '../campagna/schede';
-import type { CombattimentoMaster, CombattimentoPubblico } from '@tabletop-ai-gm/shared';
+import type { CombattimentoMaster, CombattimentoPubblico, RichiestaTiroMaster } from '@tabletop-ai-gm/shared';
 
 /** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
 type Decisione = DecisioneProva | DecisioneRegole;
+
+/** The decisions of a closed window (`MotoreProve.decidi`), before any die is rolled. */
+export interface DecisioniTurno {
+  turno: number;
+  azioni: AzionePerProve[];
+  decisioni: Map<string, Decisione | null>;
+  tardive: string[];
+  /** ms spent waiting for the arbiter at closing. */
+  attesa_ms: number;
+}
 
 /** Azione come la passa la regia (dal tavolo). */
 export interface AzionePerProve extends AzioneRisolvibile {
@@ -285,8 +297,15 @@ export class MotoreProve {
   /**
    * Tiri del turno: decisioni pronte o in volo (aspettate al massimo `attesaMaxMs`), quelle mancanti
    * in una chiamata sola, poi i dadi. Mai un'eccezione: un arbitro fallito vuol dire «nessun tiro».
+   * With manual rolls the director splits it: `decidi`, then `richiesteGiocatori` (what each player must roll), the
+   * wait for the dice at the table, then `completa` with the values entered (docs/prove.md §8).
    */
   async risolvi(turno: number, azioni: AzionePerProve[]): Promise<EsitoTurnoProve> {
+    return this.completa(await this.decidi(turno, azioni));
+  }
+
+  /** What each action of the closed window rolls: the arbiter's decisions, then the deterministic rule passes. */
+  async decidi(turno: number, azioni: AzionePerProve[]): Promise<DecisioniTurno> {
     const t0 = this.o.orologio.ora();
     const c = this.o.contesto();
     const decisioni = new Map<string, Decisione | null>();
@@ -352,13 +371,77 @@ export class MotoreProve {
       }
     }
     const attesa_ms = Math.round(this.o.orologio.ora() - t0);
-    if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], fattiPrivati: [], negati: [], attesa_ms, tardive, combattimento: null };
-
     // Nello scontro a turni i PNG agiscono nel loro turno: niente reazioni in più dall'arbitro
     // (la e2e del 10 novembre: Ruggero colpiva due volte per round, di reazione e di turno).
-    if (this.combattimento.aTurni) for (const [id, d] of decisioni) if (d?.reazione) decisioni.set(id, { ...d, reazione: null } as Decisione);
+    if (this.attivo && this.combattimento.aTurni) for (const [id, d] of decisioni) if (d?.reazione) decisioni.set(id, { ...d, reazione: null } as Decisione);
+    return { turno, azioni, decisioni, tardive, attesa_ms };
+  }
+
+  /** One pass of the set's resolver over the turn's decisions (the real one, or a dry run on a copy of the state). */
+  private passaRisolutore(
+    turno: number,
+    c: ContestoProve,
+    azioni: AzionePerProve[],
+    decisioni: ReadonlyMap<string, Decisione | null>,
+    extra: { stato?: StatoProve; dadi?: FonteDadi; log?: Logger; dadiDelPg?: (idAzione: string) => FonteDadi | null } = {},
+  ): Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive' | 'combattimento' | 'negati'> {
     const g = this.generico;
-    const r = g ? risolviTurnoRegole({ ...this.opzioniRegole(turno, c, g), azioni, decisioni: decisioni as Map<string, DecisioneRegole | null> }) : risolviTurno({ ...this.opzioniSrd(turno, c), azioni, decisioni: decisioni as Map<string, DecisioneProva | null> });
+    return g
+      ? risolviTurnoRegole({ ...this.opzioniRegole(turno, c, g), ...extra, azioni, decisioni: decisioni as Map<string, DecisioneRegole | null> })
+      : risolviTurno({ ...this.opzioniSrd(turno, c), ...extra, azioni, decisioni: decisioni as Map<string, DecisioneProva | null> });
+  }
+
+  /**
+   * Manual rolls (docs/prove.md §8): the roll each player must make with real dice for this turn, from a dry run of the
+   * resolver on a copy of the state. The dry run's dice are all 1s, so no attack drops a target there: a later action
+   * against the same target still asks for its roll (if the real roll downs the target first, that roll goes unused,
+   * which is better than the Engine rolling a player's die). Automatic attacks (magic missile) and actions with no
+   * roll ask nothing.
+   */
+  richiesteGiocatori(d: DecisioniTurno): RichiestaTiroMaster[] {
+    if (!this.attivo || !d.azioni.length) return [];
+    const c = this.o.contesto();
+    const g = this.generico;
+    const stato = new StatoProve(g ? g.schede : this.o.schede);
+    stato.importa(this.stato.esporta(this.dadi.seme, this.dadi.contatore));
+    const uni: FonteDadi = { seme: 'anteprima', contatore: 0, tira: () => 1 };
+    const r = this.passaRisolutore(d.turno, c, d.azioni, d.decisioni, { stato, dadi: uni, log: loggerMuto() });
+    const out: RichiestaTiroMaster[] = [];
+    for (const a of d.azioni) {
+      const t = r.perAzione.get(a.id)?.tiri.find((x) => x.chi === a.autore && !x.di_png && !x.automatico && x.dadi.length > 0);
+      if (t) out.push(richiestaDaCarta(t, a.id, d.turno));
+    }
+    return out;
+  }
+
+  /**
+   * Rolls the turn: the decisions of `decidi`, with the dice the players entered (`inseriti`, manual rolls) for their
+   * own tests and the Engine's dice for everything else (NPCs, damage, combat). Then combat, cards and facts.
+   */
+  completa(d: DecisioniTurno, inseriti: ReadonlyMap<string, TiroInserito> = new Map()): EsitoTurnoProve {
+    const { turno, azioni, decisioni, tardive, attesa_ms } = d;
+    const c = this.o.contesto();
+    if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], fattiPrivati: [], negati: [], attesa_ms, tardive, combattimento: null };
+    const daiGiocatori = new Map<string, DadiDelGiocatore>();
+    for (const [id, x] of inseriti) {
+      if (x.valori) daiGiocatori.set(id, new DadiDelGiocatore(this.dadi, x.richiesta.facce, x.valori, this.o.log, x.richiesta.etichetta));
+    }
+    const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDelPg: (id) => daiGiocatori.get(id) ?? null });
+    // Mark the cards rolled at the table, and check that the dice on the card are the ones the player entered.
+    for (const [id, x] of inseriti) {
+      const a = azioni.find((y) => y.id === id);
+      const t = a ? r.perAzione.get(id)?.tiri.find((y) => y.chi === a.autore && !y.di_png && !y.automatico) : undefined;
+      if (!t) {
+        this.o.log.info({ turno, azione: id, richiesta: x.richiesta.id }, 'manual rolls: the entered roll was not needed (the action rolled nothing in the end)');
+        continue;
+      }
+      t.manuale = x.da;
+      if (x.valori && x.richiesta.facce !== 100 && t.dadi.join(',') !== x.valori.join(',')) {
+        this.o.log.warn({ turno, azione: id, inseriti: x.valori, carta: t.dadi }, 'manual rolls: the card dice differ from the values the player entered');
+      }
+      const avanzati = daiGiocatori.get(id)?.inutilizzati ?? 0;
+      if (avanzati) this.o.log.info({ turno, azione: id, avanzati }, 'manual rolls: some entered dice were not used');
+    }
     // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
     const attacchi = r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id }));
     const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.map((a) => a.autore), candidati: () => this.candidati(c, attacchi) });

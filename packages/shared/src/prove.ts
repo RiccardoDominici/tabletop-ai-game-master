@@ -105,6 +105,78 @@ export interface TiroMostrato {
   grado?: { id: 'successo' | 'parziale' | 'fallimento' | 'critico' | 'disastro'; nome: string } | null;
   /** La regola applicata, in parole: «Persuasione: Carisma + competenza, CD 15», «2d6+Fascino: 7–9». */
   regola?: string;
+  /**
+   * Manual rolls (docs/prove.md §8): the player rolled the dice at the table and entered them (`telefono`), the Game
+   * Master entered them for the player (`master`), or the Game Master switched that roll to automatic (`motore`).
+   * Absent = the Engine rolled, as always.
+   */
+  manuale?: 'telefono' | 'master' | 'dettato' | 'motore';
+  /**
+   * The number to beat is hidden from the table (manual rolls: the DC is never shown to the players). On a hidden card
+   * `contro.valore` is 0, `contro.descrizione` and `regola` are absent: only the Game Master panel has them.
+   */
+  contro_nascosto?: boolean;
+}
+
+/**
+ * A roll the Engine asks a player to make with real dice (docs/prove.md §8, «Manual rolls»): «Fai un tiro di
+ * Furtività». This is what the table may know: what to roll and the player's own bonus, never the DC, the AC or the
+ * threshold. The phone of `chi` shows it with the fields to fill; the projector shows only the public ones (no private
+ * action), without the number fields.
+ */
+export interface RichiestaTiro {
+  /** Stable id of the request («r_<id azione>»). */
+  id: string;
+  id_azione: string;
+  turno: number;
+  /** The PC who rolls. */
+  chi: string;
+  nome: string;
+  /** The request of a private action: only on its player's phone (and the Game Master panel). */
+  privata: boolean;
+  tipo: TipoTiro;
+  /** «Furtività (Destrezza)», «Tiro salvezza su Destrezza», «Balestra leggera», «Scassinare serrature». */
+  etichetta: string;
+  /** Faces of each die to roll (20, 6, 100 for a percentile). */
+  facce: number;
+  /** How many dice to roll and enter (two with advantage or disadvantage, n for 2d6). */
+  quanti: number;
+  /**
+   * How the dice combine: `alto` keeps the highest, `basso` the lowest (advantage on a roll-under keeps the lowest),
+   * null with one die. With `somma` the `tenuti` kept dice are added (2d6: two of three with an extra die).
+   */
+  tieni: 'alto' | 'basso' | null;
+  somma: boolean;
+  tenuti: number;
+  /** The player's bonus added to the dice (0 on a roll-under). */
+  modificatore: number;
+  vantaggio: Vantaggio | null;
+  motivo_vantaggio: string | null;
+  /** Roll-under (d100 thief skills, x-in-6): lower is better, no bonus. */
+  sotto_soglia: boolean;
+  /** The Game Master asked for this roll from the panel (not an action of the player). */
+  dal_master?: boolean;
+}
+
+/** The same request as the Game Master panel sees it: with the number to beat and the target. */
+export interface RichiestaTiroMaster extends RichiestaTiro {
+  contro: { tipo: 'CD' | 'CA' | 'soglia' | 'fasce'; valore: number; descrizione: string | null };
+  bersaglio: { id: string; nome: string } | null;
+  regola: string | null;
+  /** Values already entered (null = still waiting). */
+  valori: number[] | null;
+}
+
+/**
+ * The total the dice make, as the phone shows it while the player types and as the Engine checks it: the kept die (or
+ * the sum of the kept dice) plus the bonus. Null until every die has a valid value.
+ */
+export function totaleRichiesta(r: Pick<RichiestaTiro, 'facce' | 'quanti' | 'tieni' | 'somma' | 'tenuti' | 'modificatore'>, valori: readonly number[]): number | null {
+  if (valori.length !== r.quanti || valori.some((v) => !Number.isInteger(v) || v < 1 || v > r.facce)) return null;
+  const ordinati = [...valori].sort((a, b) => (r.tieni === 'basso' ? a - b : b - a));
+  if (r.somma) return ordinati.slice(0, Math.min(r.tenuti, ordinati.length)).reduce((s, x) => s + x, 0) + r.modificatore;
+  const dado = r.tieni ? ordinati[0]! : valori[0]!;
+  return dado + r.modificatore;
 }
 
 /** Punti ferita attuali e massimi (PG sul telefono; PNG solo nel pannello del master). */

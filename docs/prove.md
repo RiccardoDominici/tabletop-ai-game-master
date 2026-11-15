@@ -421,5 +421,35 @@ Live verification of checks, rolls, DCs and turns on a running server, scenario 
   (changed by the narrator's `[atteggiamento]`, by consequences, by social checks), and a social check aimed at an NPC moves
   it one step towards that PC, up on a success, down on a failure (never down to hostile), once per NPC per visit.
 
+## 8. Manual rolls (15 November)
+
+Riccardo (15 November): «il tiro automatico deve essere facoltativo: di default il master chiede "fai un tiro su
+Furtività" e l'utente risponde quanto ha fatto, senza dirgli la classe difficoltà.» (Automatic rolling must be optional:
+by default the Game Master asks "roll Stealth" and the player answers what they got, without being told the DC.)
+
+**Engine** (prove/motore.ts, prove/richieste.ts, prove/dadi-giocatore.ts). `risolvi` is split in three steps, with the
+same decisions as before:
+1. `decidi(turno, azioni)`: the arbiter's decisions and the deterministic passes (clear attack, speech is not a check).
+2. `richiesteGiocatori(decisioni)`: what each player must roll, read off a dry run of the set's resolver on a copy of the
+   state (so each rule set keeps one source for modifiers and dice). A request (`RichiestaTiro`, packages/shared) says
+   what to roll and the player's own bonus: the label («Furtività (Destrezza)»), the faces, how many dice (two with
+   advantage, n for 2d6), which die counts (`tieni`: highest, lowest; `somma` for 2d6), the bonus, roll-under or not.
+   The number to beat, the target and the rule text are only in the Game Master's copy (`RichiestaTiroMaster`).
+   - The dry run's dice are all 1s: no attack drops a target there, so a second attack on the same NPC still asks for
+     its roll. If the real first roll downs the target, the second value goes unused (logged): better an unused value
+     than the Engine rolling a player's die.
+   - No request: automatic attacks (magic missile: only damage), help, trivial or impossible actions, a PC down or
+     losing the turn.
+3. `completa(decisioni, inseriti)`: the real resolution. For each action with entered values the action's own test draws
+   the player's dice (`DadiDelGiocatore`: a percentile is split back into the units and tens d10 the resolver draws; with
+   a bonus tens die the second value gives only its tens); everything else is the Engine's dice: damage, NPC reactions
+   and turns, initiative, death saves, morale, and, in a contest between two PCs, the other PC's die (v1). A request
+   switched to automatic (`valori: null`) rolls with the Engine's dice. The card says who rolled (`manuale`: `telefono`,
+   `master`, `dettato`, `motore`); the Engine logs a warning if the dice on the card differ from those entered.
+- **The table never sees the DC.** `cartaPerIlTavolo` strips the number to beat, its description and the rule text from a
+  card rolled on request (`contro_nascosto: true`, `contro.valore` 0). The Engine's own cards keep everything: an NPC's
+  attack (against the PC's AC, which the player knows), death saves against the rule's fixed DC. Limit: on a 2d6 set the
+  bonus shown includes the difficulty's modifier, if the set has one.
+
 Credits: this work includes material from the System Reference Document 5.2 («SRD 5.2») by Wizards of the Coast LLC,
 https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License.

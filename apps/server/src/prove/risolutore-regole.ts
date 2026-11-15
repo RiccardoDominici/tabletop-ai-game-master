@@ -78,6 +78,8 @@ export interface OpzioniRisolutoreRegole {
   esiste: (id: string) => boolean;
   /** Condizioni attive (combattimento). Assente = nessuna. */
   condizioni?: CondizioniDi;
+  /** Manual rolls (docs/prove.md §8): the dice the player of this action rolled at the table, for its own test. */
+  dadiDelPg?: (idAzione: string) => FonteDadi | null;
   log: Logger;
 }
 
@@ -141,7 +143,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       else if (o.stato.fuoriGioco(b) === 'fuggito') fatto = fattoFuggito(o.nome(b));
       else if (o.stato.aTerra(b)) fatto = fattoGiaATerra(o.nome(b));
       else {
-        const r = attacca(a.autore, b, d.arma, fonti, a.privata)!;
+        const r = attacca(a.autore, b, d.arma, fonti, a.privata, o.dadiDelPg?.(a.id) ?? o.dadi)!;
         aggiungi(r.t);
         esito.riuscita = r.esito?.riuscita ?? null;
         if (r.esito) (r.esito.riuscita ? esito.riuscite : esito.fallite).push('attacco', r.t.etichetta);
@@ -168,7 +170,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         if (condSv) fonti.push({ v: 'svantaggio', motivo: condSv.toLowerCase() });
         const v = combinaVantaggi(fonti.map((f) => f.v));
         const sistTiro = cosa.soglia ? sistemaSoglia(s, cosa.soglia) : s;
-        const e = tiraCol(sistTiro, o.dadi, cosa.valore, cosa.soglia ? null : (ps?.difficolta ?? d.difficolta), v, cosa.etichetta);
+        const e = tiraCol(sistTiro, o.dadiDelPg?.(a.id) ?? o.dadi, cosa.valore, cosa.soglia ? null : (ps?.difficolta ?? d.difficolta), v, cosa.etichetta);
         const b = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
         aggiungi(cartaDa(e, a.autore, 'prova', cosa.etichetta, b, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, a.privata, sistTiro));
         esito.riuscita = e.riuscita;
@@ -300,7 +302,8 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
   }
 
   /** Un attacco col set (prova o automatico); null se mancano le schede. */
-  function attacca(chi: string, bersaglio: string, idArma: string | null, fontiDate: Array<{ v: Vantaggio; motivo: string }>, privata: boolean): { t: TiroMostrato; testo: string; esito: EsitoTiroGenerico | null } | null {
+  /** `dadiTiro`: the dice of the attack roll (a player's at the table, manual rolls); the damage is always the Engine's. */
+  function attacca(chi: string, bersaglio: string, idArma: string | null, fontiDate: Array<{ v: Vantaggio; motivo: string }>, privata: boolean, dadiTiro: FonteDadi = o.dadi): { t: TiroMostrato; testo: string; esito: EsitoTiroGenerico | null } | null {
     const sa = o.schede.get(chi);
     const sb = o.schede.get(bersaglio);
     if (!sa || !sb) return null;
@@ -322,7 +325,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const sist = s.risoluzione.tipo === 'd20_cd' && sb.difesa !== null ? { ...s, difficolta: [{ id: ID_DIFESA, nome: testo('prove.cd.difesa_di', { nome: o.nome(bersaglio) }), valore: sb.difesa, divisore: null, modificatore: null }] } : s;
     // Etichetta una volta sola: senza una mossa né un’abilità la «cosa» è l’arma stessa.
     const etichetta = cosa.etichetta === a.nome ? a.nome : `${a.nome}, ${cosa.etichetta}`;
-    const e = tiraCol(sist, o.dadi, cosa.valore, sist === s ? null : ID_DIFESA, v, etichetta, true);
+    const e = tiraCol(sist, dadiTiro, cosa.valore, sist === s ? null : ID_DIFESA, v, etichetta, true);
     const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, privata);
     if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e };
     const danno = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'));

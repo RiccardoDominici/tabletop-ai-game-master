@@ -79,7 +79,17 @@ export interface OpzioniRisolutore {
   conIndizi: boolean;
   /** Condizioni attive (combattimento): vantaggi, svantaggi, critici, turni persi. Assente = nessuna. */
   condizioni?: CondizioniDi;
+  /**
+   * Manual rolls (docs/prove.md §8): the dice the player of this action rolled at the table, for the action's own test
+   * (check, save, attack roll, the PC's side of a contest). Null or absent = the Engine's dice, as always.
+   */
+  dadiDelPg?: (idAzione: string) => FonteDadi | null;
   log: Logger;
+}
+
+/** The dice of an action's own test: the player's (manual rolls) or the Engine's. */
+function dadiDi(o: Pick<OpzioniRisolutore, 'dadi' | 'dadiDelPg'>, a: AzioneRisolvibile): FonteDadi {
+  return o.dadiDelPg?.(a.id) ?? o.dadi;
 }
 
 /**
@@ -276,7 +286,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     }
     const { v, motivo } = vantaggioDa(fonti);
     const mod = salvezza ? modSalvezza(s, car!) : abil ? modAbilita(s, abil) : modCaratteristica(s, car!);
-    const e = prova(o.dadi, mod, cd, v);
+    const e = prova(dadiDi(o, a), mod, cd, v);
     if (autoFallita) e.riuscita = false;
     const t = carta({
       chi: a.autore,
@@ -337,7 +347,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     const arma = scegliArma(s, d.arma);
     if (d.arma && arma.id !== chiave(d.arma)) log.info({ arma: d.arma, usata: arma.id }, 'prove: arma dell\'arbitro ricondotta alla scheda');
     const { v, motivo } = vantaggioDa([...fonti, ...fontiAttacco(o.condizioni, a.autore, id)]);
-    const e = attacco(o.dadi, bonusAttacco(s, arma), ts.ca, v, arma.danno, bonusDanno(s, arma), !!conEffetto(o.condizioni, id, 'critico_contro'));
+    const e = attacco(dadiDi(o, a), bonusAttacco(s, arma), ts.ca, v, arma.danno, bonusDanno(s, arma), !!conEffetto(o.condizioni, id, 'critico_contro'));
     const { t, saluteTesto } = cartaAttacco(o, a.autore, id, arma, e, v ? motivo : null, a.privata);
     aggiungi(t);
     esito.riuscita = e.riuscita;
@@ -381,7 +391,8 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     // Contro un altro PG con la scheda: tirano tutti e due.
     if (id && ts && !ts.di_png) {
       const modB = modAbilita(ts, abilB);
-      const c = contesa(o.dadi, mod, v, modB, null);
+      // Manual rolls: the acting player's die is theirs; the other PC's die is the Engine's (v1, docs/prove.md §8).
+      const c = contesa(dadiDi(o, a), mod, v, modB, null);
       const t = carta({
         ...base,
         dadi: c.a.dadi,
@@ -399,7 +410,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     // Contro un PNG: il suo punteggio passivo (10 + modificatore) fa da CD.
     if (id && !ts) log.warn({ bersaglio: id }, 'prove: contrapposta contro un PNG senza scheda, passivo 10');
     const cd = ts ? passiva(ts, abilB) : 10;
-    const e = prova(o.dadi, mod, cd, v);
+    const e = prova(dadiDi(o, a), mod, cd, v);
     const t = carta({
       ...base,
       dadi: e.dadi,
