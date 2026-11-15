@@ -46,8 +46,9 @@ export class AttesaTiri {
   }
 
   /**
-   * Opens the wait for a turn's requests. Resolves with the values entered (by action id) when every request is
-   * closed, or with null if the wait is cancelled. No requests: resolves at once with an empty map.
+   * Opens the wait for a turn's requests (one round of them: the director opens a new wait for the follow-ups, the
+   * damage after a hit, initiative, death saves). Resolves with the values entered (by request id) when every request
+   * is closed, or with null if the wait is cancelled. No requests: resolves at once with an empty map.
    */
   attendi(turno: number, richieste: readonly RichiestaTiroMaster[]): Promise<Map<string, TiroInserito> | null> {
     if (this.attesa) this.annulla('a new wait replaces the old one');
@@ -68,11 +69,11 @@ export class AttesaTiri {
     const r = a?.richieste.get(id);
     if (!a || !r) return { ok: false, motivo: 'nessuna' };
     if (id_pg !== null && r.chi !== id_pg) return { ok: false, motivo: 'altro_pg' };
-    if (a.inseriti.has(r.id_azione)) return { ok: false, motivo: 'gia' };
+    if (a.inseriti.has(r.id)) return { ok: false, motivo: 'gia' };
     const errore = erroreValori(r, valori);
     if (errore) return { ok: false, motivo: errore };
     const v = (valori as number[]).map((x) => Number(x));
-    a.inseriti.set(r.id_azione, { richiesta: richiestaPubblica(r), valori: v, da });
+    a.inseriti.set(r.id, { richiesta: richiestaPubblica(r), valori: v, da });
     r.valori = v;
     this.o.log.info({ turno: a.turno, richiesta: id, chi: r.chi, valori: v, da }, 'manual rolls: dice entered');
     return { ok: true, completo: this.forseCompleta() };
@@ -83,8 +84,8 @@ export class AttesaTiri {
     const a = this.attesa;
     const r = a?.richieste.get(id);
     if (!a || !r) return { ok: false, motivo: 'nessuna' };
-    if (a.inseriti.has(r.id_azione)) return { ok: false, motivo: 'gia' };
-    a.inseriti.set(r.id_azione, { richiesta: richiestaPubblica(r), valori: null, da: 'motore' });
+    if (a.inseriti.has(r.id)) return { ok: false, motivo: 'gia' };
+    a.inseriti.set(r.id, { richiesta: richiestaPubblica(r), valori: null, da: 'motore' });
     this.o.log.info({ turno: a.turno, richiesta: id, chi: r.chi }, 'manual rolls: switched to the Engine\'s dice by the Game Master');
     return { ok: true, completo: this.forseCompleta() };
   }
@@ -95,8 +96,8 @@ export class AttesaTiri {
     if (!a) return 0;
     let n = 0;
     for (const r of a.richieste.values()) {
-      if (a.inseriti.has(r.id_azione)) continue;
-      a.inseriti.set(r.id_azione, { richiesta: richiestaPubblica(r), valori: null, da: 'motore' });
+      if (a.inseriti.has(r.id)) continue;
+      a.inseriti.set(r.id, { richiesta: richiestaPubblica(r), valori: null, da: 'motore' });
       n += 1;
     }
     if (n) this.o.log.info({ turno: a.turno, richieste: n }, 'manual rolls: all open requests switched to the Engine\'s dice');
@@ -109,7 +110,7 @@ export class AttesaTiri {
     const a = this.attesa;
     if (!a) return;
     this.attesa = null;
-    this.o.log.info({ turno: a.turno, motivo, aperte: [...a.richieste.values()].filter((r) => !a.inseriti.has(r.id_azione)).map((r) => r.id) }, 'manual rolls: wait cancelled');
+    this.o.log.info({ turno: a.turno, motivo, aperte: [...a.richieste.values()].filter((r) => !a.inseriti.has(r.id)).map((r) => r.id) }, 'manual rolls: wait cancelled');
     a.risolvi(null);
     this.o.cambiato();
   }
@@ -117,7 +118,7 @@ export class AttesaTiri {
   private forseCompleta(): boolean {
     const a = this.attesa;
     if (!a) return false;
-    const mancano = [...a.richieste.values()].filter((r) => !a.inseriti.has(r.id_azione));
+    const mancano = [...a.richieste.values()].filter((r) => !a.inseriti.has(r.id));
     if (mancano.length) {
       this.o.cambiato();
       return false;
@@ -131,7 +132,7 @@ export class AttesaTiri {
 
   private aperte(): RichiestaTiroMaster[] {
     const a = this.attesa;
-    return a ? [...a.richieste.values()].filter((r) => !a.inseriti.has(r.id_azione)) : [];
+    return a ? [...a.richieste.values()].filter((r) => !a.inseriti.has(r.id)) : [];
   }
 
   /** For the projector and every phone: the open requests of public actions, without DC or target. */

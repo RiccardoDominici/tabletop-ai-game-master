@@ -9,7 +9,11 @@
  *    and on the panel, with the DC only there.
  * 4. The wait (prove/attesa-tiri.ts) until every die is in: from the phone, from dictation, entered by the Game Master,
  *    or switched to the Engine's dice. No timeout: a table waits for its dice; the panel unblocks a forgotten roll.
- * 5. The director goes on with `completa` and the narrator, as before.
+ * 5. The follow-ups, round after round: the Engine runs the turn again on a copy with the dice entered so far and asks
+ *    what they lead to (the damage of a hit, then initiative when a fight starts, then a dying PC's death saves),
+ *    until nothing is left to roll. A roll the Game Master gave to the Engine keeps that PC's follow-ups with the
+ *    Engine for the rest of the turn; «Tutti al Motore» gives the Engine every roll left in the turn.
+ * 6. The director goes on with `completa` and the narrator, as before.
  *
  * Automatic rolls, a campaign without dice or a turn with no action skip all of it: the director rolls as before.
  * The director keeps only the call sites; everything about the wait lives here.
@@ -22,7 +26,7 @@ import { testo } from '../lingua';
 import { AttesaTiri, type EsitoInserimento } from '../prove/attesa-tiri';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { AzionePerProve, DecisioniTurno, MotoreProve, ProvaDelMaster } from '../prove/motore';
-import type { TiroInserito } from '../prove/richieste';
+import { richiestaPubblica, type TiroInserito } from '../prove/richieste';
 
 /** What the wait gives the director's turn. */
 export interface TiriGiocati {
@@ -31,13 +35,22 @@ export interface TiriGiocati {
   inseriti: Map<string, TiroInserito>;
   /** How long the table took to roll (0 = no wait). */
   attesa_ms: number;
+  /** The turn has only checks the Game Master asked (no action): not a stall (docs/prove.md §8). */
+  soloDelMaster: boolean;
 }
 
-const NESSUNA: () => TiriGiocati = () => ({ decisioni: null, inseriti: new Map(), attesa_ms: 0 });
+const NESSUNA: () => TiriGiocati = () => ({ decisioni: null, inseriti: new Map(), attesa_ms: 0, soloDelMaster: false });
+
+/** Rounds of follow-ups in one turn at most (attack, damage, initiative, death saves to the end: far fewer in play). */
+const MAX_GIRI = 40;
 
 /** The line the narrator says for a request (language pack, prove.richiesta.*): what to roll, never the number to beat. */
-export function fraseRichiesta(r: Pick<RichiestaTiro, 'nome' | 'tipo' | 'etichetta' | 'vantaggio'>): string {
+export function fraseRichiesta(r: Pick<RichiestaTiro, 'nome' | 'tipo' | 'etichetta' | 'vantaggio' | 'per'>): string {
   const nome = r.nome.split(' ')[0] ?? r.nome;
+  // Follow-ups: the damage of a hit, initiative, a death save, the other PC's die in a contest.
+  if (r.per === 'danno') return testo('prove.richiesta.danno', { nome });
+  if (r.per === 'iniziativa') return testo('prove.richiesta.iniziativa', { nome });
+  if (r.per === 'morte') return testo('prove.richiesta.morte', { nome });
   const vantaggio = r.vantaggio ? testo(`prove.richiesta.con_${r.vantaggio}`) : '';
   const abilita = /^(.+?) \(([^)]+)\)$/.exec(r.etichetta);
   if (r.tipo === 'attacco') return testo('prove.richiesta.attacco', { nome, cosa: r.etichetta, vantaggio });
@@ -76,6 +89,8 @@ export class TiriGiocatoriRegia {
   /** Checks the Game Master asked from the panel, for the next closed window (docs/prove.md §8). */
   private delMaster: Array<ProvaDelMaster & { chiesta: ProvaChiesta }> = [];
   private prossimaDelMaster = 1;
+  /** This turn's switches to the Engine from the panel: they hold for the follow-ups of the same turn. */
+  private alMotore = { pg: new Set<string>(), tutti: false };
 
   constructor(private readonly o: OpzioniTiriGiocatori) {
     this.attesa = new AttesaTiri({ log: o.log, ora: () => o.orologio.ora(), cambiato: () => o.cambiato() });
@@ -95,23 +110,44 @@ export class TiriGiocatoriRegia {
     if (!prove?.attivo) return NESSUNA();
     // The Game Master's checks join this turn (all of them: the panel asked them for «now»).
     const delMaster = this.delMaster;
-    if (!r.azioni.length && !delMaster.length) return NESSUNA();
+    // In a fight a window with no action still rolls (the NPCs' steps, a dying PC's death save, initiative of a new
+    // round): with manual rolls the players roll their own there too.
+    const scontro = this.manuali && prove.inCombattimento;
+    if (!r.azioni.length && !delMaster.length && !scontro) return NESSUNA();
     // Automatic rolls with no Game Master check: the director decides and rolls as before.
     if (!this.manuali && !delMaster.length) return NESSUNA();
     this.delMaster = [];
+    const soloDelMaster = !r.azioni.length && delMaster.length > 0;
     const epoca = this.o.epoca();
     this.o.inizio();
     const decisioni = await prove.decidi(r.turno, r.azioni.map((a) => this.o.versoProve(a)), delMaster);
     if (epoca !== this.o.epoca()) return null;
-    if (!this.manuali) return { decisioni, inseriti: new Map(), attesa_ms: 0 };
-    const richieste = prove.richiesteGiocatori(decisioni);
-    if (!richieste.length) return { decisioni, inseriti: new Map(), attesa_ms: 0 };
-    const t0 = this.o.orologio.ora();
-    const attesa = this.attesa.attendi(r.turno, richieste);
-    richieste.filter((x) => !x.privata).forEach((x, k) => this.o.parla(r.turno, fraseRichiesta(x), k));
-    const inseriti = await attesa;
-    if (!inseriti || epoca !== this.o.epoca()) return null;
-    return { decisioni, inseriti, attesa_ms: Math.round(this.o.orologio.ora() - t0) };
+    if (!this.manuali) return { decisioni, inseriti: new Map(), attesa_ms: 0, soloDelMaster };
+    this.alMotore = { pg: new Set(), tutti: false };
+    const inseriti = new Map<string, TiroInserito>();
+    let t0: number | null = null;
+    let frasi = 0;
+    for (let giro = 0; giro < MAX_GIRI; giro++) {
+      // From the live state each round: the dice entered so far decide what comes next.
+      const nuove = prove.richiesteGiocatori(decisioni, inseriti).filter((x) => !inseriti.has(x.id));
+      if (!nuove.length) break;
+      const daChiedere: RichiestaTiroMaster[] = [];
+      for (const x of nuove) {
+        if (this.alMotore.tutti || this.alMotore.pg.has(x.chi)) inseriti.set(x.id, { richiesta: richiestaPubblica(x), valori: null, da: 'motore' });
+        else daChiedere.push(x);
+      }
+      if (daChiedere.length < nuove.length) this.o.log.info({ turno: r.turno, alMotore: nuove.filter((x) => inseriti.has(x.id)).map((x) => x.id) }, 'manual rolls: follow-ups left with the Engine, as the Game Master chose this turn');
+      if (!daChiedere.length) continue;
+      if (giro > 0) this.o.log.info({ turno: r.turno, giro, richieste: daChiedere.map((x) => x.id) }, 'manual rolls: follow-up rolls asked');
+      t0 ??= this.o.orologio.ora();
+      const attesa = this.attesa.attendi(r.turno, daChiedere);
+      for (const x of daChiedere) if (!x.privata) this.o.parla(r.turno, fraseRichiesta(x), frasi++);
+      const entrati = await attesa;
+      if (!entrati || epoca !== this.o.epoca()) return null;
+      for (const [id, x] of entrati) inseriti.set(id, x);
+      if (giro === MAX_GIRI - 1) this.o.log.warn({ turno: r.turno }, 'manual rolls: too many rounds of follow-ups, the Engine rolls the rest');
+    }
+    return { decisioni, inseriti, attesa_ms: t0 === null ? 0 : Math.round(this.o.orologio.ora() - t0), soloDelMaster };
   }
 
   annulla(motivo: string): void {
@@ -154,13 +190,21 @@ export class TiriGiocatoriRegia {
     return this.attesa.inserisci(id, valori, da, id_pg);
   }
 
-  /** The Game Master enters the dice for a player, or switches the roll (or every open roll) to the Engine. */
+  /**
+   * The Game Master enters the dice for a player, or switches the roll (or every open roll) to the Engine. A switch
+   * holds for the rest of the turn: that PC's follow-ups (or every roll left, with «*») go to the Engine too.
+   */
   dalMaster(id: string, valori: number[] | null): EsitoInserimento {
     if (id === '*') {
+      this.alMotore.tutti = true;
       this.attesa.tuttiAutomatici();
       return { ok: true, completo: true };
     }
-    return valori ? this.attesa.inserisci(id, valori, 'master') : this.attesa.automatico(id);
+    if (valori) return this.attesa.inserisci(id, valori, 'master');
+    const chi = this.attesa.master().find((x) => x.id === id)?.chi;
+    const esito = this.attesa.automatico(id);
+    if (esito.ok && chi) this.alMotore.pg.add(chi);
+    return esito;
   }
 
   pubbliche(): RichiestaTiro[] {

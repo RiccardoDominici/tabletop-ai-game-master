@@ -197,6 +197,12 @@ prove:
     altro: "{nome}, roll: {cosa}{vantaggio}."
     con_vantaggio: ", with advantage"
     con_svantaggio: ", with disadvantage"
+    # Follow-ups (docs/prove.md §8): the damage of a hit, initiative, a death save. Labels on the phone's roll card.
+    danno: "{nome}, roll damage."
+    iniziativa: "{nome}, roll initiative."
+    morte: "{nome}, roll your death saving throw."
+    etichetta_danno: "Damage: {arma}"
+    etichetta_iniziativa: "Initiative"
   # A check the Game Master asked from the panel (scena/tiri-giocatori.ts): the pseudo-action's text, read by the
   # narrator in the fact.
   master:

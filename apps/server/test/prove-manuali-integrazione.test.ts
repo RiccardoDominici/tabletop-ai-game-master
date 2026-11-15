@@ -19,6 +19,7 @@ class ArbitroParole implements ArbitroProve {
       const d = vuota(a.id);
       if (/convinco/i.test(a.testo)) Object.assign(d, { tipo: 'prova', abilita: 'persuasione', bersaglio: 'png_bertoldo' });
       else if (/lucchetto/i.test(a.testo)) Object.assign(d, { tipo: 'prova', abilita: 'rapidita_di_mano', prova_scena: 'p_cassetta' });
+      else if (/balestra/i.test(a.testo)) Object.assign(d, { tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'balestra_leggera' });
       out[a.id] = d;
     }
     return out;
@@ -157,6 +158,50 @@ describe('manual rolls with the whole server', () => {
     expect(s2.tiri![0]).toMatchObject({ chi: 'pg_ida', dadi: [17], totale: 17, contro_nascosto: true });
     expect((await master.stato()).tiri?.chieste).toEqual([]);
   });
+
+  it('follow-ups: after the hit the phone is asked the damage, then every PC the initiative; a switch to the Engine holds', async () => {
+    prova = new Prova();
+    const { url, messaggi } = await prova.avvia(prova.campagna('prove'), COPIONE, MANUALE, { arbitroProve: new ArbitroParole(), dadi: new DadiACopione([3]) });
+    const schermo = await prova.proiettore(url);
+    const frasi: AudioFrase[] = [];
+    schermo.on('audio:frase', (f) => frasi.push(f));
+    const corrado = await prova.telefono(url, 'pg_corrado');
+    const ida = await prova.telefono(url, 'pg_ida');
+    const master = await prova.master(url);
+    const s1 = await inizia(schermo, corrado);
+    const attacco = attendiEvento<RichiestaTiro[]>(corrado, 'tiri:richiesti', (r) => r.length > 0);
+    await agisci(corrado, 'pg_corrado', 'Tiro con la balestra a Ruggero', s1.versione_scena);
+    await agisci(ida, 'pg_ida', 'Guardo il fiume', s1.versione_scena);
+    const [ra] = await attacco;
+
+    expect(ra).toMatchObject({ id: expect.stringMatching(/^r_/), tipo: 'attacco' });
+    // The hit: the same phone is asked the damage next, the voice says it.
+    const danno = attendiEvento<RichiestaTiro[]>(corrado, 'tiri:richiesti', (r) => r.some((x) => x.per === 'danno'));
+    expect(await emetti<Esito>((cb) => corrado.emit('tiro:inserisci', { id_pg: 'pg_corrado', id: ra!.id, valori: [18] }, cb))).toEqual({ ok: true });
+    const [rd] = await danno;
+
+    expect(rd).toMatchObject({ per: 'danno', facce: 8, quanti: 1 });
+    // The fight's initiative comes after the damage; Ida is asked hers.
+    const iniIda = attendiEvento<RichiestaTiro[]>(ida, 'tiri:richiesti', (r) => r.some((x) => x.per === 'iniziativa'));
+    expect(await emetti<Esito>((cb) => corrado.emit('tiro:inserisci', { id_pg: 'pg_corrado', id: rd!.id, valori: [7] }, cb))).toEqual({ ok: true });
+    const [ri] = await iniIda;
+    for (let i = 0; i < 40 && !frasi.some((f) => f.testo.includes('iniziativa')); i++) await new Promise((r) => setTimeout(r, 50));
+    const detto = frasi.map((f) => f.testo).join(' | ');
+    expect(detto).toContain('Corrado, tira i danni.');
+    expect(detto).toContain('Ida, tira l\'iniziativa.');
+    // The Game Master gives Corrado's initiative to the Engine; Ida rolls hers; the turn goes on.
+    const sm = await master.stato();
+    const rc = sm.tiri!.richieste.find((x) => x.chi === 'pg_corrado' && x.per === 'iniziativa')!;
+    const dopo = attendi(ida, (x) => x.fase === 'finestra' && x.turno === 2);
+    expect(await master.comanda({ tipo: 'tiro', id: rc.id, valori: null })).toEqual({ ok: true });
+    for (const r of sm.tiri!.richieste.filter((x) => x.chi !== 'pg_corrado')) expect(await master.comanda({ tipo: 'tiro', id: r.id, valori: [10] })).toEqual({ ok: true });
+    void ri;
+    const s2 = await dopo;
+    const carta = s2.tiri!.find((t) => t.chi === 'pg_corrado')!;
+    expect(carta).toMatchObject({ dadi: [18], manuale: 'telefono', contro_nascosto: true });
+    expect(carta.danno?.dadi).toEqual([7]);
+    expect(messaggi.at(-1)!).toMatch(/Balestra leggera[^\n]*COLPITO, \d+ danni/);
+  }, 20_000);
 
   it('automatic rolls (the campaign or the instance says so): no request, no wait, the card keeps the DC', async () => {
     prova = new Prova();

@@ -24,8 +24,10 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
      the same roll path and visibility rule (docs/prove.md §9).
   4. The rules arbiter cannot tell easy from hard (always medium 15 without data); Haiku still calls lifting a cart
      «impossibile» (docs/prove-verifica.md §5).
-  5. v1 limits of manual rolls: damage, NPC rolls, initiative, death saves and the second PC in a contest are the
-     Engine's dice; on a 2d6 set the bonus shown includes the difficulty modifier.
+  5. ~~v1 limits of manual rolls~~ **Done**: every die of a PC is the player's, asked round after round from dry runs
+     on a copy of the Engine (damage after a hit, initiative, death saves, the contest's other PC); the 2d6 difficulty
+     stays secret (prove/dadi-tavolo.ts, docs/prove.md §8). Left with the Engine: NPC and side rolls, morale, the first
+     initiative of a fight opened from the panel.
   6. Not seen live: morale, flight, initiative by sides (unit tests only); C5 minions without sheets.
 - **Final end-to-end pass on today's code** (not started): blind scripts for combat in turn order, off the rails (ignore the hook, attack the quest-giver, leave), doing nothing (stall), plus one dictated action; profiles A and B. Run it with one model server at a time (the Mac rebooted twice under memory pressure on 14 November).
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.

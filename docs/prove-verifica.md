@@ -163,9 +163,11 @@ roll at the scene change hidden by default («nascosto»).
 - **The rules arbiter cannot tell easy from hard** (always medium when no data sets the DC); Haiku still calls lifting a
   cart «impossibile» (§5).
 - **Attacks on creatures without a sheet** resolve «sì, ma» (C5): the campaigns' minions need sheets.
-- **v1 limits of manual rolls**: damage dice, NPC rolls, initiative, death saves, morale and the second PC's die in a
-  contest between two PCs are the Engine's; on a 2d6 set the bonus the phone shows includes the difficulty's modifier;
-  a restart during the wait replays the turn and the requests are asked again.
+- ~~**v1 limits of manual rolls**~~: closed in the Engine (docs/prove.md §8, «Rounds»): the damage of a hit,
+  initiative, death saves and the other PC's die in a contest are the player's, asked round after round; the 2d6
+  difficulty stays out of the phone's bonus (test/prove-manuali-seguito.test.ts, whole-server test in
+  prove-manuali-integrazione.test.ts). Still the Engine's: NPC rolls, side rolls, morale, the first initiative of a
+  fight opened from the panel; a restart during the wait replays the turn and the requests are asked again.
 - **The Game Master's own rolls** cover the world's gates only; a world question written in a scene («is the guard
   awake?») and an NPC's own check out of combat need a data source first (docs/prove.md §9).
 - **Morale and flight** were not reached in the live runs (no NPC fell); they are covered by `test/combattimento.test.ts`

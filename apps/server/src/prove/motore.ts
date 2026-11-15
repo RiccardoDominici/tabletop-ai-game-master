@@ -22,8 +22,8 @@ import { ABILITA, CARATTERISTICA_DI, CARATTERISTICHE, DIFFICOLTA, nomeAbilita, n
 import { testo } from '../lingua';
 import { nomeOppure } from './lingua';
 import { DadiCrittografici, type FonteDadi } from './dadi';
-import { DadiDelGiocatore } from './dadi-giocatore';
-import { cartaPerIlTavolo, richiestaDaCarta, type TiroInserito } from './richieste';
+import { DadiAlTavolo, type DadiDeiPg } from './dadi-tavolo';
+import { cartaPerIlTavolo, richiestaDaCarta, richiestaDaGruppo, type TiroInserito } from './richieste';
 import { loggerMuto, type Logger } from '../logger';
 import { risolviTurno, type Atteggiamento, type AzioneRisolvibile } from './risolutore';
 import { StatoProve, type StatoProveSalvato } from './stato';
@@ -145,6 +145,11 @@ export class MotoreProve {
   /** Esiti dell'ultimo turno con tiri, per azione (le carte dell'azione privata vanno al suo telefono). */
   private ultimi = new Map<string, TiroMostrato[]>();
   private ultimoTurno: { turno: number; tiri: TiroMostrato[] } | null = null;
+  /**
+   * The PCs' dice of the pass being resolved (manual rolls, prove/dadi-tavolo.ts): the fight reads it for initiative and
+   * death saves. Null outside a pass (a fight opened from the panel rolls with the Engine's dice).
+   */
+  private tavolo: DadiDeiPg | null = null;
 
   constructor(private readonly o: OpzioniMotoreProve) {
     this.stato = new StatoProve(this.generico ? this.generico.schede : o.schede);
@@ -160,6 +165,9 @@ export class MotoreProve {
         return typeof sch?.['morale'] === 'number' ? sch['morale'] : null;
       },
       nuovoIdTiro: () => this.stato.nuovoIdTiro(),
+      // A PC's own rolls in the fight (initiative, death saves) go through the pass's table: asked at the table with
+      // manual rolls, the Engine's otherwise.
+      dadiDelPg: (pg, gruppo) => this.tavolo?.fonte({ pg, azione: null, privata: false, ...gruppo }) ?? null,
       log: o.log.child({ modulo: 'combattimento' }),
     });
   }
@@ -451,7 +459,7 @@ export class MotoreProve {
     c: ContestoProve,
     azioni: AzionePerProve[],
     decisioni: ReadonlyMap<string, Decisione | null>,
-    extra: { stato?: StatoProve; dadi?: FonteDadi; log?: Logger; dadiDelPg?: (idAzione: string) => FonteDadi | null } = {},
+    extra: { stato?: StatoProve; dadi?: FonteDadi; log?: Logger; dadiDeiPg?: DadiDeiPg | null } = {},
   ): Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive' | 'combattimento' | 'negati'> {
     const g = this.generico;
     return g
@@ -460,78 +468,58 @@ export class MotoreProve {
   }
 
   /**
-   * Manual rolls (docs/prove.md §8): the roll each player must make with real dice for this turn, from a dry run of the
-   * resolver on a copy of the state. The dry run's dice are all 1s, so no attack drops a target there: a later action
-   * against the same target still asks for its roll (if the real roll downs the target first, that roll goes unused,
-   * which is better than the Engine rolling a player's die). Automatic attacks (magic missile) and actions with no
-   * roll ask nothing.
+   * A throwaway copy of this Engine: same options and state, the Engine's dice copied from here (seed and counter, or a
+   * scripted sequence), the log silent. A dry run on it never moves the real state or the real dice.
    */
-  richiesteGiocatori(d: DecisioniTurno): RichiestaTiroMaster[] {
-    if (!this.attivo || !d.azioni.length) return [];
-    const c = this.o.contesto();
-    const g = this.generico;
-    const stato = new StatoProve(g ? g.schede : this.o.schede);
-    stato.importa(this.stato.esporta(this.dadi.seme, this.dadi.contatore));
-    const uni: FonteDadi = { seme: 'anteprima', contatore: 0, tira: () => 1 };
-    const r = this.passaRisolutore(d.turno, c, d.azioni, d.decisioni, { stato, dadi: uni, log: loggerMuto() });
+  private ombra(): MotoreProve {
+    const copia = this.dadi.clona?.();
+    if (!copia) this.o.log.debug({ seme: this.dadi.seme }, 'manual rolls: these dice cannot be copied, the dry run rolls 1s for the Engine');
+    const m = new MotoreProve({ ...this.o, log: loggerMuto(), dadi: copia ?? { seme: 'anteprima', contatore: 0, tira: () => 1 } });
+    m.importa(this.esporta());
+    return m;
+  }
+
+  /**
+   * Manual rolls (docs/prove.md §8): the rolls the players must make now with real dice, from a dry run of the whole
+   * turn (actions, then the fight) on a copy of the Engine with the values entered so far (`inseriti`, by request id).
+   * Only the rolls that can be asked now come back: an action's test and the other PC's die in a contest at once; the
+   * damage once the attack roll that hit is in; initiative and death saves once everything before them is in. The
+   * director asks them, waits, and calls again until nothing is left. Automatic attacks ask only their damage; actions
+   * with no roll ask nothing.
+   */
+  richiesteGiocatori(d: DecisioniTurno, inseriti: ReadonlyMap<string, TiroInserito> = new Map()): RichiestaTiroMaster[] {
+    if (!this.attivo || (!d.azioni.length && !this.inCombattimento)) return [];
+    const ombra = this.ombra();
+    const tavolo = new DadiAlTavolo({ base: ombra.dadi, turno: d.turno, inseriti, anteprima: true, log: loggerMuto() });
+    const { r } = ombra.esegui(d, tavolo);
+    const nome = (id: string): string => this.o.contesto().nome(id);
     const out: RichiestaTiroMaster[] = [];
-    for (const a of d.azioni) {
-      const t = r.perAzione.get(a.id)?.tiri.find((x) => x.chi === a.autore && !x.di_png && !x.automatico && x.dadi.length > 0);
-      if (t) out.push({ ...richiestaDaCarta(t, a.id, d.turno), ...(a.id.startsWith('m_') ? { dal_master: true } : {}) });
+    for (const g of tavolo.gruppi) {
+      if (!g.mancante || !g.chiedibile) continue;
+      const dalMaster = g.gruppo.azione?.startsWith('m_') ? { dal_master: true } : {};
+      if (g.gruppo.per !== 'prova') {
+        out.push({ ...richiestaDaGruppo(g, d.turno, nome(g.gruppo.pg)), ...dalMaster });
+        continue;
+      }
+      const a = d.azioni.find((x) => x.id === g.gruppo.azione);
+      const t = a ? r.perAzione.get(a.id)?.tiri.find((x) => x.chi === a.autore && !x.di_png && !x.automatico && x.dadi.length > 0) : undefined;
+      if (a && t) out.push({ ...richiestaDaCarta(t, a.id, d.turno), id: g.chiave, ...dalMaster });
     }
     return out;
   }
 
   /**
-   * Rolls the turn: the decisions of `decidi`, with the dice the players entered (`inseriti`, manual rolls) for their
-   * own tests and the Engine's dice for everything else (NPCs, damage, combat). Then combat, cards and facts.
+   * Rolls the turn: the decisions of `decidi`, with the dice the players entered (`inseriti`, by request id; manual
+   * rolls) for their own rolls and the Engine's dice for everything else (NPCs, side rolls, morale). Then combat,
+   * cards and facts.
    */
   completa(d: DecisioniTurno, inseriti: ReadonlyMap<string, TiroInserito> = new Map(), manuali = false): EsitoTurnoProve {
     const { turno, azioni, decisioni, tardive, attesa_ms } = d;
     const c = this.o.contesto();
     if (!this.attivo) return { turno, perAzione: new Map(), tiri: [], fatti: [], fattiPrivati: [], negati: [], attesa_ms, tardive, combattimento: null };
-    const daiGiocatori = new Map<string, DadiDelGiocatore>();
-    for (const [id, x] of inseriti) {
-      if (x.valori) daiGiocatori.set(id, new DadiDelGiocatore(this.dadi, x.richiesta.facce, x.valori, this.o.log, x.richiesta.etichetta));
-    }
-    const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDelPg: (id) => daiGiocatori.get(id) ?? null });
-    // Mark the cards rolled at the table, and check that the dice on the card are the ones the player entered.
-    for (const [id, x] of inseriti) {
-      const a = azioni.find((y) => y.id === id);
-      const t = a ? r.perAzione.get(id)?.tiri.find((y) => y.chi === a.autore && !y.di_png && !y.automatico) : undefined;
-      if (!t) {
-        this.o.log.info({ turno, azione: id, richiesta: x.richiesta.id }, 'manual rolls: the entered roll was not needed (the action rolled nothing in the end)');
-        continue;
-      }
-      t.manuale = x.da;
-      if (x.valori && x.richiesta.facce !== 100 && t.dadi.join(',') !== x.valori.join(',')) {
-        this.o.log.warn({ turno, azione: id, inseriti: x.valori, carta: t.dadi }, 'manual rolls: the card dice differ from the values the player entered');
-      }
-      const avanzati = daiGiocatori.get(id)?.inutilizzati ?? 0;
-      if (avanzati) this.o.log.info({ turno, azione: id, avanzati }, 'manual rolls: some entered dice were not used');
-    }
-    // Manual rolls: a player's test that rolled without a request (the dry run had no card for it: its target fell
-    // there) is the Engine's dice, said so, and its number to beat stays hidden like the others (docs/prove.md §8).
-    if (manuali) {
-      for (const a of azioni) {
-        if (inseriti.has(a.id)) continue;
-        const t = r.perAzione.get(a.id)?.tiri.find((y) => y.chi === a.autore && !y.di_png && !y.automatico && y.dadi.length > 0);
-        if (!t) continue;
-        t.manuale = 'motore';
-        this.o.log.warn({ turno, azione: a.id, autore: a.autore, carta: t.etichetta }, 'manual rolls: a player test rolled without a request, the Engine rolled it');
-      }
-    }
-    // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
-    const attacchi = r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id }));
-    // A check the Game Master asked (pseudo-action «m_…») is not the PC's action in the fight: it does not move whose turn it is.
-    const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.filter((a) => !a.id.startsWith('m_')).map((a) => a.autore), candidati: () => this.candidati(c, attacchi) });
-    r.fatti.push(...comb.fatti);
-    r.tiri.push(...comb.tiri);
-    this.intestazione = comb.intestazione;
-    this.stato.registraTiri(r.tiri);
-    this.ultimi = new Map([...r.perAzione].map(([id, e]) => [id, e.tiri]));
-    this.ultimoTurno = { turno, tiri: r.tiri };
-    for (const a of azioni) this.cache.delete(a.id);
+    const tavolo = new DadiAlTavolo({ base: this.dadi, turno, inseriti, anteprima: false, log: this.o.log });
+    const { r, comb } = this.esegui(d, tavolo);
+    this.segnaTiriAlTavolo(d, tavolo, r, comb, manuali);
     this.o.log.info({ turno, attesa_ms, tardive, tiri: r.tiri.length, seme: this.dadi.seme, contatore: this.dadi.contatore }, 'prove: turno risolto');
     // A failed social check toward an NPC: that NPC refuses for the rest of the turn (second pass of the final run, D2).
     const nomiPng = nomiDeiPng(c.campagna);
@@ -551,6 +539,65 @@ export class MotoreProve {
       return png.map((id) => ({ png: id, autore: a.autore, riuscita: esito, privata: a.privata }));
     });
     return { ...r, attesa_ms, tardive, combattimento: comb, negati, sociali };
+  }
+
+  /**
+   * One pass of the turn with the given PCs' dice: the actions through the set's resolver, then the fight (the NPCs'
+   * steps, initiative, death saves), the cards kept. The real `completa` and the dry run of `richiesteGiocatori` (on a
+   * copy) both come here, so the requests are read off the same code that rolls.
+   */
+  private esegui(d: DecisioniTurno, tavolo: DadiDeiPg): { r: Omit<EsitoTurnoProve, 'attesa_ms' | 'tardive' | 'combattimento' | 'negati'>; comb: ReturnType<GestoreCombattimento['dopoAzioni']> } {
+    const { turno, azioni, decisioni } = d;
+    const c = this.o.contesto();
+    this.tavolo = tavolo;
+    try {
+      const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDeiPg: tavolo });
+      // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
+      const attacchi = r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id }));
+      // A check the Game Master asked (pseudo-action «m_…») is not the PC's action in the fight: it does not move whose turn it is.
+      const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.filter((a) => !a.id.startsWith('m_')).map((a) => a.autore), candidati: () => this.candidati(c, attacchi) });
+      r.fatti.push(...comb.fatti);
+      r.tiri.push(...comb.tiri);
+      this.intestazione = comb.intestazione;
+      this.stato.registraTiri(r.tiri);
+      this.ultimi = new Map([...r.perAzione].map(([id, e]) => [id, e.tiri]));
+      this.ultimoTurno = { turno, tiri: r.tiri };
+      for (const a of azioni) this.cache.delete(a.id);
+      return { r, comb };
+    } finally {
+      this.tavolo = null;
+    }
+  }
+
+  /**
+   * Manual rolls: mark the cards rolled at the table (who entered the dice), check that the dice on a test's card are
+   * the ones entered, and say which of a player's rolls the Engine made because nobody asked for them.
+   */
+  private segnaTiriAlTavolo(d: DecisioniTurno, tavolo: DadiAlTavolo, r: { perAzione: EsitoTurnoProve['perAzione'] }, comb: { tiri: TiroMostrato[] }, manuali: boolean): void {
+    const { turno, azioni } = d;
+    // The PCs' cards of the fight's steps are their death saves, in order.
+    const morte = new Map<string, TiroMostrato[]>();
+    for (const t of comb.tiri) if (!t.di_png && !t.del_master) morte.set(t.chi, [...(morte.get(t.chi) ?? []), t]);
+    for (const g of tavolo.gruppi) {
+      const { pg, per, azione } = g.gruppo;
+      const a = azione ? azioni.find((y) => y.id === azione) : undefined;
+      // The card a group belongs to: the action's own (test, damage, contest), or the PC's next death save.
+      const carta = per === 'morte' ? morte.get(pg)?.shift() : per === 'iniziativa' ? undefined : a ? r.perAzione.get(a.id)?.tiri.find((y) => y.chi === a.autore && !y.di_png) : undefined;
+      if (g.inserito) {
+        if (carta && (per === 'prova' || per === 'morte' || !carta.manuale)) carta.manuale = g.inserito.da;
+        const v = g.inserito.valori;
+        if (per === 'prova' && carta && v && g.inserito.richiesta.facce !== 100 && carta.dadi.join(',') !== v.join(',')) {
+          this.o.log.warn({ turno, azione, inseriti: v, carta: carta.dadi }, 'manual rolls: the card dice differ from the values the player entered');
+        }
+        continue;
+      }
+      if (!manuali) continue;
+      // Manual rolls: a player's roll nobody asked for (the dry run had no card for it: its target fell there; a fight
+      // opened from the panel) is the Engine's dice, said so; a test's number to beat stays hidden like the others.
+      if (per === 'prova' && carta && carta.dadi.length > 0 && !carta.automatico) carta.manuale = 'motore';
+      this.o.log.warn({ turno, richiesta: g.chiave, autore: pg, per }, 'manual rolls: a player roll was not asked, the Engine rolled it');
+    }
+    for (const id of tavolo.nonUsati()) this.o.log.info({ turno, richiesta: id }, 'manual rolls: an entered roll was not needed (the turn went another way)');
   }
 
   // ------------------------------------------------------------------ combattimento (docs/combattimento.md)

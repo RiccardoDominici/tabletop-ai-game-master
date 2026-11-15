@@ -74,8 +74,8 @@ export interface EsitoAttacco extends EsitoD20 {
   danno: EsitoDanno | null;
 }
 
-/** Tiro per colpire contro la CA, e il danno se colpisce. */
-export function attacco(dadi: FonteDadi, bonus: number, ca: number, vantaggio: Vantaggio | null, f: FormulaDadi, bonusDanno: number, forzaCritico = false): EsitoAttacco {
+/** Tiro per colpire contro la CA, e il danno se colpisce. `dadiDanno`: the damage's dice, when not the same source. */
+export function attacco(dadi: FonteDadi, bonus: number, ca: number, vantaggio: Vantaggio | null, f: FormulaDadi, bonusDanno: number, forzaCritico = false, dadiDanno: FonteDadi = dadi): EsitoAttacco {
   const d = tiraD20(dadi, vantaggio);
   const totale = d.dado + bonus;
   const fallimento_critico = d.dado === 1;
@@ -90,7 +90,7 @@ export function attacco(dadi: FonteDadi, bonus: number, ca: number, vantaggio: V
     riuscita,
     critico,
     fallimento_critico,
-    danno: riuscita ? danno(dadi, f, bonusDanno, critico) : null,
+    danno: riuscita ? danno(dadiDanno, f, bonusDanno, critico) : null,
   };
 }
 
@@ -98,9 +98,10 @@ export function attacco(dadi: FonteDadi, bonus: number, ca: number, vantaggio: V
  * Prova contrapposta tra due PG (l'SRD 5.2 non ha più una regola generale: docs/prove.md): tirano
  * entrambi, vince il totale più alto; a parità nessuno prevale e la situazione resta com'era.
  */
-export function contesa(dadi: FonteDadi, modA: number, vantaggioA: Vantaggio | null, modB: number, vantaggioB: Vantaggio | null): { a: EsitoD20; b: D20 & { modificatore: number; totale: number }; vince: 'a' | 'b' | 'pari' } {
+export function contesa(dadi: FonteDadi, modA: number, vantaggioA: Vantaggio | null, modB: number, vantaggioB: Vantaggio | null, dadiB: FonteDadi = dadi): { a: EsitoD20; b: D20 & { modificatore: number; totale: number }; vince: 'a' | 'b' | 'pari' } {
+  // `dadiB`: the other side's dice (the other PC's own at the table, manual rolls).
   const da = tiraD20(dadi, vantaggioA);
-  const db = tiraD20(dadi, vantaggioB);
+  const db = tiraD20(dadiB, vantaggioB);
   const ta = da.dado + modA;
   const tb = db.dado + modB;
   const vince = ta > tb ? 'a' : tb > ta ? 'b' : 'pari';

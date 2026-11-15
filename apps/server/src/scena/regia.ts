@@ -2929,7 +2929,7 @@ export class Regia {
     const giocate = await this.tiriGiocatori.prima(r);
     if (!giocate) return; // the wait was cancelled (stop, restart, scene change): the turn is dropped
     if (giocate.attesa_ms) this.primoAudioInviato.delete(r.turno);
-    this.soloProveDelMaster = giocate.decisioni !== null && !r.azioni.length;
+    this.soloProveDelMaster = giocate.soloDelMaster;
     // After a wait for the dice the latencies start when the last die is in, not when the window closed.
     this.misuratore = giocate.attesa_ms
       ? new MisuratoreTurno(r.turno, this.o.orologio.ora(), r.durata_ms, this.o.voce.nome, this.o.orologio.adesso())

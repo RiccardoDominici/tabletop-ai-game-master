@@ -66,6 +66,11 @@ export interface DipendenzeCombattimento {
   /** Morale del PNG (scheda `morale`), per il set con `fine.morale`. */
   morale: (png: string) => number | null;
   nuovoIdTiro: () => string;
+  /**
+   * A PC's own dice for one of the fight's rolls (manual rolls, docs/prove.md §8: initiative, a death save); null =
+   * the Engine's. NPC rolls and side rolls (surprise, initiative by sides) never ask for it.
+   */
+  dadiDelPg?: (pg: string, gruppo: { per: 'iniziativa' | 'morte'; etichetta: string; modificatore?: number; contro?: number; giro?: number }) => FonteDadi | null;
   log: Logger;
 }
 
@@ -179,7 +184,7 @@ export class GestoreCombattimento {
       nome: this.d.nome(c.id),
       lato: c.lato,
       mod: c.mod,
-      iniziativa: r.iniziativa.tipo === 'individuale' ? dadi.tira(r.iniziativa.dado) + c.mod : null,
+      iniziativa: r.iniziativa.tipo === 'individuale' ? this.dadiIniziativa(c.id, c.lato, c.mod, dadi).tira(r.iniziativa.dado) + c.mod : null,
       condizioni: [],
       tiriMorte: null,
       esito: 'in_gioco',
@@ -252,11 +257,17 @@ export class GestoreCombattimento {
   private ritiraIndividuale(): string {
     const s = this.s!;
     const dadi = this.d.dadi();
-    for (const p of s.partecipanti) p.iniziativa = p.esito === 'morto' || p.esito === 'fuggito' ? p.iniziativa : dadi.tira(this.d.regole.iniziativa.dado) + p.mod;
+    for (const p of s.partecipanti) p.iniziativa = p.esito === 'morto' || p.esito === 'fuggito' ? p.iniziativa : this.dadiIniziativa(p.id, p.lato, p.mod, dadi).tira(this.d.regole.iniziativa.dado) + p.mod;
     GestoreCombattimento.ordina(s.partecipanti);
     const vivi = s.partecipanti.filter((p) => p.esito !== 'morto' && p.esito !== 'fuggito');
     this.d.log.info({ round: s.round, ordine: vivi.map((p) => ({ id: p.id, iniziativa: p.iniziativa })) }, 'combattimento: iniziativa ritirata');
     return testo('prove.combattimento.round_individuale', { round: s.round, ordine: vivi.map((p) => `${p.nome} ${p.iniziativa}`).join(', ') });
+  }
+
+  /** The die of one combatant's individual initiative: a PC's own (manual rolls), an NPC's from the Engine. */
+  private dadiIniziativa(id: string, lato: Lato, mod: number, motore: FonteDadi): FonteDadi {
+    if (lato !== 'pg') return motore;
+    return this.d.dadiDelPg?.(id, { per: 'iniziativa', etichetta: testo('prove.richiesta.etichetta_iniziativa'), modificatore: mod, giro: this.s?.round ?? 1 }) ?? motore;
   }
 
   /** Per schieramento: un dado per parte, pari si ritira (al quinto pari, prima i PG). */
@@ -419,7 +430,8 @@ export class GestoreCombattimento {
     if (!p || p.esito !== 'in_gioco') return;
     const tm = this.d.regole.danni.tiriMorte;
     if (this.d.stato.aTerra(id) && p.tiriMorte && tm) {
-      const dado = this.d.dadi().tira(20);
+      // The dying PC's player rolls it (manual rolls); the DC is the rule's, public.
+      const dado = (this.d.dadiDelPg?.(id, { per: 'morte', etichetta: testo('prove.combattimento.etichetta_morte'), contro: tm.cd }) ?? this.d.dadi()).tira(20);
       const riuscita = dado >= tm.cd;
       // Il 20 e l'1 naturali solo se il set li ha (SRD sì; Basic Fantasy no).
       const venti = dado === 20 && tm.ventiRialza;

@@ -25,6 +25,8 @@ export interface EsitoTiroGenerico {
   facce: number;
   dado: number;
   modificatore: number;
+  /** The part of `modificatore` that is the difficulty's (2d6 sets): secret like a DC (docs/prove.md §8). */
+  modificatoreDifficolta?: number;
   totale: number;
   contro: { tipo: 'CD' | 'CA' | 'fasce' | 'soglia'; valore: number; descrizione: string | null };
   riuscita: boolean;
@@ -101,6 +103,7 @@ function dueD6(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta,
     facce: 6,
     dado: somma,
     modificatore: modTot,
+    ...(diff.modificatore ? { modificatoreDifficolta: diff.modificatore } : {}),
     totale,
     contro: { tipo: 'fasce', valore: f.min ?? 0, descrizione: intervallo },
     riuscita: f.esito !== 'fallimento',

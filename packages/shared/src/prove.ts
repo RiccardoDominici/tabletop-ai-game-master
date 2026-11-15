@@ -121,7 +121,18 @@ export interface TiroMostrato {
    * card says «sì»/«no» instead of success/failure.
    */
   del_master?: boolean;
+  /**
+   * The part of `modificatore` that comes from the difficulty (a 2d6 set adds the difficulty to the roll). Secret like
+   * the DC: a request never includes it in the player's bonus, and a hidden card shows bonus and total without it.
+   */
+  modificatore_difficolta?: number;
 }
+
+/**
+ * What a player's roll is for, beyond the action's own test (docs/prove.md §8): the damage of a hit, the second PC's
+ * die in a contest, initiative, a death saving throw. Absent = the action's own test.
+ */
+export type PerTiro = 'danno' | 'contesa' | 'iniziativa' | 'morte';
 
 /**
  * A roll the Engine asks a player to make with real dice (docs/prove.md §8, «Manual rolls»): «Fai un tiro di
@@ -161,6 +172,8 @@ export interface RichiestaTiro {
   sotto_soglia: boolean;
   /** The Game Master asked for this roll from the panel (not an action of the player). */
   dal_master?: boolean;
+  /** A follow-up roll of the turn (damage, contest, initiative, death save); absent = the action's own test. */
+  per?: PerTiro;
 }
 
 /** The same request as the Game Master panel sees it: with the number to beat and the target. */

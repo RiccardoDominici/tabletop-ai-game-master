@@ -430,27 +430,43 @@ by default the Game Master asks "roll Stealth" and the player answers what they 
 **Engine** (prove/motore.ts, prove/richieste.ts, prove/dadi-giocatore.ts). `risolvi` is split in three steps, with the
 same decisions as before:
 1. `decidi(turno, azioni)`: the arbiter's decisions and the deterministic passes (clear attack, speech is not a check).
-2. `richiesteGiocatori(decisioni)`: what each player must roll, read off a dry run of the set's resolver on a copy of the
-   state (so each rule set keeps one source for modifiers and dice). A request (`RichiestaTiro`, packages/shared) says
-   what to roll and the player's own bonus: the label («Furtività (Destrezza)»), the faces, how many dice (two with
-   advantage, n for 2d6), which die counts (`tieni`: highest, lowest; `somma` for 2d6), the bonus, roll-under or not.
-   The number to beat, the target and the rule text are only in the Game Master's copy (`RichiestaTiroMaster`).
-   - The dry run's dice are all 1s: no attack drops a target there, so a second attack on the same NPC still asks for
-     its roll. If the real first roll downs the target, the second value goes unused (logged): better an unused value
-     than the Engine rolling a player's die.
-   - No request: automatic attacks (magic missile: only damage), help, trivial or impossible actions, a PC down or
-     losing the turn.
-3. `completa(decisioni, inseriti)`: the real resolution. For each action with entered values the action's own test draws
-   the player's dice (`DadiDelGiocatore`: a percentile is split back into the units and tens d10 the resolver draws; with
-   a bonus tens die the second value gives only its tens); everything else is the Engine's dice: damage, NPC reactions
-   and turns, initiative, death saves, morale, and, in a contest between two PCs, the other PC's die (v1). A request
-   switched to automatic (`valori: null`) rolls with the Engine's dice. The card says who rolled (`manuale`: `telefono`,
-   `master`, `dettato`, `motore`); the Engine logs a warning if the dice on the card differ from those entered.
+2. `richiesteGiocatori(decisioni, inseriti)`: what the players must roll now, read off a dry run of the whole turn (the
+   set's resolver, then the fight) on a throwaway copy of the Engine: same state, the Engine's dice copied from here
+   (`FonteDadi.clona`: seed and counter, or a scripted sequence), the values entered so far. So each rule set keeps one
+   source for modifiers and dice, and the real dice never move. A request (`RichiestaTiro`, packages/shared) says what
+   to roll and the player's own bonus: the label («Furtività (Destrezza)», «Danni: Balestra leggera», «Iniziativa»), the
+   faces, how many dice (two with advantage, n for 2d6 or for damage), which die counts (`tieni`: highest, lowest;
+   `somma` to add them), the bonus, roll-under or not, and `per` for a follow-up (`danno`, `contesa`, `iniziativa`,
+   `morte`). The number to beat, the target and the rule text are only in the Game Master's copy (`RichiestaTiroMaster`).
+   - **Every die of a PC is the player's** (prove/dadi-tavolo.ts). The resolvers and the fight draw a PC's dice through
+     a group of the pass's table, never straight from the Engine: the action's test (`r_<action>`), the damage of its
+     hit (`r_<action>_danno`: the weapon's dice and bonus, doubled dice on a critical), the other PC's die in a contest
+     (`r_<action>_<pg>`), initiative and death saves (`r_t<turn>_<per>_<pg>_<n>`). NPC rolls, side rolls (surprise,
+     initiative by sides), morale and the Game Master's rolls never pass there.
+   - **Rounds.** In the dry run a group with no value gets placeholder 1s and is missing; it is asked now only when no
+     missing roll it may depend on comes before it: the damage waits for the attack roll of the same PC and action; the
+     other actions' rolls are asked together; the fight's rolls wait for everything before them, except that one round's
+     initiative rolls are asked together. The director asks, waits, and calls again with the new values until nothing is
+     missing: attack → damage → initiative → a dying PC's death saves, as at a real table.
+   - A placeholder 1 misses, so a second attack on the same NPC still asks for its roll. If the real first roll downs the
+     target, the second value goes unused (logged): better an unused value than the Engine rolling a player's die.
+   - No request: automatic attacks ask only their damage; help, trivial or impossible actions, a PC down or losing the
+     turn ask nothing.
+3. `completa(decisioni, inseriti)`: the real resolution, the same pass with the Engine's real dice. The values entered
+   are served by request id (`DadiDelGiocatore` inside a group: a percentile is split back into the units and tens d10
+   the resolver draws; with a bonus tens die the second value gives only its tens), so a player's die can never land on
+   another roll. A request switched to automatic (`valori: null`) rolls with the Engine's dice. The card says who rolled
+   (`manuale`: `telefono`, `master`, `dettato`, `motore`; a death save's card too); the Engine logs a warning if the dice
+   on a test's card differ from those entered, and when a player's roll was rolled by the Engine because nobody asked
+   it. A turn played with the requests and the same turn played at once with the same values give the same cards,
+   facts, HP, fight and dice counter (test/prove-manuali-seguito.test.ts, every rule-set shape).
 - **The table never sees the DC.** `cartaPerIlTavolo` strips the number to beat, its description and the rule text from a
   card rolled on request (`contro_nascosto: true`, `contro.valore` 0): `MotoreProve.tiriPubblici` and `tiriDellAzione`
   apply it, so the table state, `azione:mia` and a resumed session never carry it. The Engine's own cards keep
   everything: an NPC's attack (against the PC's AC, which the player knows), death saves against the rule's fixed DC.
-  Limit: on a 2d6 set the bonus shown includes the difficulty's modifier, if the set has one.
+  On a 2d6 set the difficulty is a modifier of the roll: it is as secret as a DC. The card carries it apart
+  (`modificatore_difficolta`), the request's bonus leaves it out, and the table's card shows the bonus and the total
+  without it (the total the phone showed) and the outcome.
 
 **Setting** (prove/modalita.ts). `regole.tiri_giocatori` in campagna.yaml: `manuale` (default, also when absent) or
 `automatico` (the Engine rolls, as before). The Preparer writes it from the brief's `tiri_giocatori`; the validator
@@ -469,8 +485,15 @@ never wait. The startup log line `PROVE E DADI` says the value and its origin (o
    stopped narration is;
 4. then `completa` and the narrator as before. The turn's latencies (`turni.jsonl`) start when the last die is in, not
    at the window's close, so the table's rolling time does not count as narrator latency.
-- A turn with no request (nobody must roll) does not wait and says nothing. Combat turns with no PC action (NPC steps)
-  never wait.
+- After each round of requests the director asks the Engine again with the values entered (step 2): the follow-ups
+  (damage, initiative, death saves) get their own voice lines («Corrado, tira i danni.», «Ida, tira l'iniziativa.»,
+  «Teo, tira contro la morte.», `prove.richiesta.*`); a private action's follow-ups stay on its phone. A roll the Game
+  Master switches to the Engine keeps that PC's follow-ups of the same turn with the Engine; «Tutti al Motore» gives the
+  Engine every roll left in the turn. At most 40 rounds (logged), far more than a turn needs.
+- A turn with no request (nobody must roll) does not wait and says nothing. A combat turn with no PC action (the NPCs'
+  steps) waits only when a player's roll comes up there: a dying PC's death save, the initiative of a new round.
+- Limits: a fight the Game Master opens from the panel rolls the PCs' first initiative with the Engine's dice (there is
+  no turn to wait in); side rolls (surprise, initiative by sides) are the Engine's, being no one player's own.
 - A restart during the wait loses the open requests (the requests are not in the session snapshot): the turn behaves as
   a turn caught in narration.
 
@@ -504,9 +527,13 @@ move is asked of the narrator). «Ricomincia» forgets the checks not yet rolled
 While the table rolls, the projector's centre line and the other phones' banner say «Si tirano i dadi…» instead of
 «the narrator is preparing».
 
-**Verification**: test/prove-manuali.test.ts (Engine, four rule-set shapes), test/prove-manuali-integrazione.test.ts
-(whole server: request without DC on projector and phones, private request only on its phone, voice line, wrong dice
-refused, Game Master enters and switches, stop cancels the wait, automatic unchanged), web
+**Verification**: test/prove-manuali.test.ts (Engine, four rule-set shapes), test/prove-manuali-seguito.test.ts
+(follow-ups: damage after a hit and none after a miss, initiative of every PC at once, a death save at its step, the
+contest's two players, a private attack's damage, the 2d6 difficulty kept out of the bonus, dry runs that leave the
+Engine untouched, the same result played round by round or at once on every rule-set shape),
+test/prove-manuali-integrazione.test.ts (whole server: request without DC on projector and phones, private request
+only on its phone, voice line, wrong dice refused, Game Master enters and switches, stop cancels the wait, the damage
+and initiative rounds with their voice lines and a switch that holds, automatic unchanged), web
 telefono/numeriDettati.test.ts, and the real pages in apps/web/e2e/tiri-manuali.spec.ts (fake narrator, rules arbiter,
 no model; screenshots in logs/screenshots/tiri-manuali/); live runs in docs/prove-verifica.md.
 

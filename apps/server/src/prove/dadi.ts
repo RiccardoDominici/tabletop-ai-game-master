@@ -25,6 +25,11 @@ export interface FonteDadi {
   readonly contatore: number;
   /** Un dado da `facce` facce (1…facce). */
   tira(facce: number): number;
+  /**
+   * A copy that goes on with the same sequence from here, without touching this one: the dry run of a turn (manual
+   * rolls, MotoreProve.richiesteGiocatori) rolls the Engine's dice on a copy, so it sees what the real run will roll.
+   */
+  clona?(): FonteDadi;
 }
 
 const MAX_U32 = 0x1_0000_0000;
@@ -63,6 +68,11 @@ export class DadiCrittografici implements FonteDadi {
     this.onTiro?.({ indice, facce, valore });
     return valore;
   }
+
+  /** Same seed and counter, no log of the copy's dice (they are a preview, not rolls). */
+  clona(): FonteDadi {
+    return new DadiCrittografici(this.seme, this.n);
+  }
 }
 
 /**
@@ -82,5 +92,11 @@ export class DadiACopione implements FonteDadi {
     const v = this.valori[this.n++ % this.valori.length]!;
     if (v < 1 || v > facce) throw new Error(`DadiACopione: ${v} non sta su un d${facce}`);
     return v;
+  }
+
+  clona(): FonteDadi {
+    const c = new DadiACopione(this.valori);
+    c.n = this.n;
+    return c;
   }
 }
