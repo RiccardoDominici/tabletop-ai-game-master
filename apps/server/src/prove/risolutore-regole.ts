@@ -127,6 +127,8 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
     const fonti: Array<{ v: Vantaggio; motivo: string }> = [...(d?.vantaggio ? [{ v: d.vantaggio, motivo: d.motivo }] : []), ...(aiutanti.get(a.id) ?? []).map((n) => ({ v: 'vantaggio' as const, motivo: testo('prove.motivo.aiuta', { nome: n }) }))];
     let fatto: string;
     if (!d) fatto = fattoSenzaArbitro();
+    // A dead PC is dead, not «a terra» with the set's text about what happens at zero (run of 15 November).
+    else if (o.stato.fuoriGioco(a.autore) === 'morto') fatto = testo('prove.fatto.morto_autore');
     else if (o.stato.aTerra(a.autore)) fatto = testo('prove.fatto.a_terra_set', { a_zero: s.danni.aZero });
     else if (conEffetto(o.condizioni, a.autore, 'perde_turno')) fatto = testo('prove.fatto.perde_turno', { condizione: conEffetto(o.condizioni, a.autore, 'perde_turno')!.toLowerCase() });
     else if (d.tipo === 'nessuna') fatto = fattoNessunTiro();

@@ -200,6 +200,8 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     if (!d) {
       fatto = fattoSenzaArbitro();
       log.warn('prove: nessuna decisione dell\'arbitro, nessun tiro');
+    } else if (o.stato.fuoriGioco(a.autore) === 'morto') {
+      fatto = testo('prove.fatto.morto_autore');
     } else if (o.stato.aTerra(a.autore)) {
       fatto = testo('prove.fatto.a_terra_autore');
     } else if (conEffetto(o.condizioni, a.autore, 'perde_turno')) {

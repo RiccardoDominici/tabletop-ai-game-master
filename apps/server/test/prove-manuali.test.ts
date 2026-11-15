@@ -135,6 +135,16 @@ describe('manual rolls, SRD 5.2', () => {
     expect(auto.tiriPubblici()[0]!.contro.valore).toBeGreaterThan(0);
   });
 
+  it('a dead PC asks no roll, and its fact says dead, not down', async () => {
+    const t = 'Tiro con la balestra leggera a Ruggero';
+    const m = motoreSrd({ [t]: { tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'balestra_leggera' } }, [15]);
+    m.stato.danneggia('pg_corrado', 99);
+    m.stato.segnaUscito('pg_corrado', 'morto');
+    const d = await m.decidi(3, [az('a1', 'pg_corrado', t)]);
+    expect(m.richiesteGiocatori(d)).toEqual([]);
+    expect(m.completa(d, new Map(), true).fatti[0]).toBe('[1] Corrado Lanzi: è morto.');
+  });
+
   it('no roll, no request: plain speech and an action the arbiter calls trivial', async () => {
     const m = motoreSrd({ 'Saluto Bertoldo': { tipo: 'nessuna' } }, [10]);
     const d = await m.decidi(3, [az('a1', 'pg_ida', 'Saluto Bertoldo')]);
