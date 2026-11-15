@@ -52,7 +52,7 @@ const corr = (t: string, extra: { rifiutate?: Set<string> } = {}) => correggi(t,
 
 describe('phonetic key', () => {
   it('merges the Italian spellings of one sound', () => {
-    expect(chiaveFonetica('Zirrà', 'it')).toBe(chiaveFonetica('Tsira', 'it'));
+    expect(chiaveFonetica('Zorrà', 'it')).toBe(chiaveFonetica('Tsora', 'it'));
     expect(chiaveFonetica('Faggioli', 'it')).toBe(chiaveFonetica('fagioli', 'it'));
     expect(chiaveFonetica('Chiara', 'it')).toBe(chiaveFonetica('Kiara', 'it'));
     expect(chiaveFonetica('Gnocco', 'it')).toBe(chiaveFonetica('Niocco', 'it'));
@@ -115,14 +115,14 @@ describe('correction: true positives', () => {
   const casi: Array<[string, string]> = [
     ['Chiedo a Selmira se ha visto Odorico.', 'Chiedo a Zelmira se ha visto Odorico.'],
     ['Dico a Odorigo di fermare il carro.', 'Dico a Odorico di fermare il carro.'],
-    ['parlo con zelmira della chiave', 'parlo con Zelmira della chiave'],
     ['Vado verso Val Fonda con Bastiano.', 'Vado verso Valfonda con Bastiano.'],
     ['Seguo Bastiàno e Teobaldo.', 'Seguo Bastiano e Teobaldo.'],
     ['Aiuto Ninfa Rovére a salire.', 'Aiuto Ninfa Rovere a salire.'],
     ['Chiedo a Grumo del mulino.', 'Chiedo a Grumo del mulino.'],
     ['Guardo Teobaldi negli occhi.', 'Guardo Teobaldo negli occhi.'],
     ['Torno alla Rocca Sgretolatta.', 'Torno alla Rocca Sgretolata.'],
-    ["Prendo la lettera dell'odorico.", "Prendo la lettera dell'Odorico."],
+    ["Prendo la lettera dell'Odorigo.", "Prendo la lettera dell'Odorico."],
+    ['Bastiàno sale per primo.', 'Bastiano sale per primo.'],
   ];
   for (const [detto, atteso] of casi) {
     it(`«${detto}»`, () => expect(corr(detto).testo).toBe(atteso));
@@ -148,6 +148,11 @@ describe('correction: no false positives', () => {
     'Provo a calmare i cani con un pezzo di pane.',
     'Salgo sulla torre, poi guardo verso la valle.',
     'Ninfa, aspettami: arrivo subito.',
+    // Ordinary words a name can sound like, lowercase or at the start of a sentence: no evidence of a name.
+    'Non bastano mai.',
+    'Bastano due passi e sei fuori.',
+    'parlo con zelmira della chiave',
+    'Teobaldi',
     'Dico che non ci credo e me ne vado.',
     'Con calma, tiro fuori la mappa e la mostro a tutti.',
   ];

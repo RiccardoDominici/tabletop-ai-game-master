@@ -15,8 +15,8 @@ describe('phone dictation, pure part', () => {
     expect(modoPressione(900)).toBe('tieni');
   });
   it('adds the transcript after what is in the box, never over it', () => {
-    expect(inserisci('', ' Chiedo a Zirrà. ', 500)).toBe('Chiedo a Zirrà.');
-    expect(inserisci('Mi avvicino.  ', 'Chiedo a Zirrà.', 500)).toBe('Mi avvicino. Chiedo a Zirrà.');
+    expect(inserisci('', ' Chiedo a Zelmira. ', 500)).toBe('Chiedo a Zelmira.');
+    expect(inserisci('Mi avvicino.  ', 'Chiedo a Zelmira.', 500)).toBe('Mi avvicino. Chiedo a Zelmira.');
     expect(inserisci('abc', '   ', 500)).toBe('abc');
     expect(inserisci('x'.repeat(498), 'lungo', 500)).toHaveLength(500);
   });

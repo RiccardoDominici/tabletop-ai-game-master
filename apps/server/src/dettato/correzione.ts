@@ -3,18 +3,22 @@
  * heard or spelled differently are replaced by the name as it is written. Pure.
  *
  * Conservative beats clever: a wrong replacement is worse than a missed one (the player sees the transcript and can fix
- * a miss; a wrong name looks deliberate). So:
+ * a miss; a wrong name looks deliberate). The evidence that a span is a name is Whisper's own capital in mid-sentence
+ * (or every word of a span capitalised): Whisper capitalises the names it recognises, and it was told them in the
+ * prompt. Without that evidence (a lowercase word, the first word of a sentence) only what the players taught
+ * (`appreso`) and an accent fix of a capitalised word («Ninfà» → «Ninfa») apply. Measured on 4,200 ordinary sentences
+ * of the example campaigns with another campaign's whole vocabulary (strumenti/ascolto/falsi.ts): lowercase matches
+ * turned ordinary words (a stone, a pocket, an oar, «they are enough») into NPC and place names that sound the same;
+ * a campaign's own texts do not list every ordinary word.
+ * So:
  * - spans of 1–3 words, only across spaces (never across punctuation);
- * - exact matches first, ignoring case and accents («zirra» → «Zirrà»), and the forms the players taught
- *   (`appreso`); a lowercase ordinary word is never capitalised into a name that is also a word («grosso»);
- * - then the phonetic match (dettato/fonetica.ts) against the written form and the heard forms of each name:
- *   - a span Whisper capitalised in mid-sentence (it thought it was a proper noun) needs `soglie.maiuscola`;
- *   - any other span needs `soglie.minuscola`, a longer key, and no ordinary word in it;
- *   - keys of two letters only match exactly, of three only on a capital and from 0.9; spans of several words need
- *     `soglie.piuParole`;
- *   - two different names within `soglie.margine` of each other: ambiguous, nothing changes;
+ * - exact matches first, ignoring case and accents («Zirra» → «Zirrà»), and the forms the players taught;
+ * - then, only with the evidence, the phonetic match (dettato/fonetica.ts) against the written form and the heard forms
+ *   of each name, from `soglie.maiuscola` (`soglie.piuParole` for spans of several words); keys of two letters only
+ *   match exactly, of three from 0.9;
+ * - two different names within `soglie.margine` of each other: ambiguous, nothing changes;
  * - ordinary words (`comuni`: the language's list plus the lowercase words of the language pack and of the campaign)
- *   are never replaced, and a pair the players undid (`rifiutate`) is never proposed again.
+ *   are never replaced alone, and a pair the players undid (`rifiutate`) is never proposed again.
  * Every replacement comes back in `correzioni`, with the heard span, the written name and why.
  */
 import type { Lingua } from '../lingua';
@@ -34,15 +38,13 @@ export interface Correzione {
 }
 
 export interface Soglie {
+  /** One word Whisper capitalised in mid-sentence. 0.80 let one ordinary first name become a similar-sounding NPC name (0.83). */
   maiuscola: number;
-  minuscola: number;
   piuParole: number;
   margine: number;
-  /** Minimum key length for a lowercase span to be considered at all. */
-  chiaveMinuscola: number;
 }
 
-export const SOGLIE: Soglie = { maiuscola: 0.8, minuscola: 0.92, piuParole: 0.9, margine: 0.05, chiaveMinuscola: 5 };
+export const SOGLIE: Soglie = { maiuscola: 0.85, piuParole: 0.9, margine: 0.05 };
 
 export interface OpzioniCorrezione {
   lingua: Lingua;
@@ -122,8 +124,9 @@ export function correggi(testo: string, o: OpzioniCorrezione): EsitoCorrezione {
       const span = testo.slice(p[i]!.inizio, p[j]!.fine);
       const piana = formaPiana(span);
       const minuscola = !p[i]!.maiuscola;
-      const prova = p[i]!.maiuscola && !p[i]!.inizioFrase;
       const parti = p.slice(i, j + 1);
+      // Whisper's evidence of a name: its capital in mid-sentence, or every word of the span capitalised.
+      const prova = (p[i]!.maiuscola && !p[i]!.inizioFrase) || (n > 1 && parti.every((w) => w.maiuscola));
 
       // 1. Exact, ignoring case and accents.
       const esatte = forme.filter((f) => f.piana === piana);
@@ -133,6 +136,8 @@ export function correggi(testo: string, o: OpzioniCorrezione): EsitoCorrezione {
       }
       const esatta = esatte[0];
       if (esatta) {
+        // Without the evidence: only the players' forms, or an accent fix of a capitalised first word.
+        if (!prova && !esatta.appresa && minuscola) continue;
         const parolaComune = n === 1 ? comune(p[i]!) : parti.every(comune);
         if (minuscola && (esatta.voce.soloMaiuscolo || parolaComune)) continue;
         if (rifiutata(span, esatta.voce)) continue;
@@ -140,20 +145,21 @@ export function correggi(testo: string, o: OpzioniCorrezione): EsitoCorrezione {
         continue;
       }
 
-      // 2. Phonetic. Never an ordinary word alone; at the edges of a longer span only when Whisper capitalised it
-      // («Rocca Sgretolatta» is a place, «la rocca sgretolatta» is not evidence enough).
+      // 2. Phonetic: only with Whisper's evidence, never an ordinary word alone, and at the edges of a longer span only
+      // a capitalised one («Rocca Sgretolatta» is a place).
+      if (!prova) continue;
       const bordoComune = (w: Parola): boolean => comune(w) && !w.maiuscola;
       if (n === 1 ? comune(p[i]!) : bordoComune(parti[0]!) || bordoComune(parti[n - 1]!)) continue;
       const chiave = chiaveFonetica(span, o.lingua);
-      if (chiave.length < 2 || (!prova && chiave.length < s.chiaveMinuscola)) continue;
-      const soglia = Math.max(prova ? s.maiuscola : s.minuscola, n > 1 ? s.piuParole : 0);
+      if (chiave.length < 2) continue;
+      const soglia = n > 1 ? s.piuParole : s.maiuscola;
       const migliori = new Map<VoceVocabolario, number>();
       for (const f of forme) {
         if (minuscola && f.voce.soloMaiuscolo) continue;
         const lunghezza = Math.max(chiave.length, f.chiave.length);
         if (Math.abs(chiave.length - f.chiave.length) > Math.max(2, Math.round(lunghezza * 0.3))) continue;
-        // Short keys: two letters only match exactly, three only on a Whisper capital and from 0.9 («Neve» ~ «NEEV»).
-        const punti = lunghezza <= 2 || (lunghezza === 3 && !prova) ? (chiave === f.chiave ? 1 : 0) : somiglianzaChiavi(chiave, f.chiave);
+        // Short keys: two letters only match exactly, three from 0.9 («Neve» ~ «NEEV»).
+        const punti = lunghezza <= 2 ? (chiave === f.chiave ? 1 : 0) : somiglianzaChiavi(chiave, f.chiave);
         if (lunghezza === 3 && punti < 0.9) continue;
         if (punti > (migliori.get(f.voce) ?? 0)) migliori.set(f.voce, punti);
       }

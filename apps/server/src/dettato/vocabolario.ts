@@ -81,7 +81,7 @@ export function costruisciVocabolario(f: FontiVocabolario): VoceVocabolario[] {
     perScritto.set(chiave, v);
     voci.push(v);
   };
-  /** A full name and each of its capitalised words (the table says «Berta», the sheet says «Berta Benni»). */
+  /** A full name and each of its capitalised words (the table says «Ninfa», the sheet says «Ninfa Rovere»). */
   const nome = (n: string, alias: readonly string[] | undefined, tipo: TipoVoce): void => {
     const intero = pulito(n);
     if (!intero) return;

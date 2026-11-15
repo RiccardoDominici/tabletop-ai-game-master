@@ -41,9 +41,10 @@ describe('punti d’ingresso e nomi vecchi', () => {
   });
 
   it('i config di Vite e Playwright leggono il nome vecchio come ripiego', () => {
-    for (const f of ['apps/web/vite.config.ts', 'apps/web/playwright.config.ts']) {
+    // The Playwright helpers moved to e2e/percorsi.ts (shared with dettato.spec.ts): the rule follows the env reads.
+    for (const f of ['apps/web/vite.config.ts', 'apps/web/playwright.config.ts', 'apps/web/e2e/percorsi.ts']) {
       const src = fs.readFileSync(path.join(RADICE, f), 'utf8');
-      if (src.includes('TAGM_')) expect(src, f).toContain('CANTASTORIE_');
+      if (/process\.env(\.|\[')TAGM_/.test(src)) expect(src, f).toContain('CANTASTORIE_');
     }
   });
 
