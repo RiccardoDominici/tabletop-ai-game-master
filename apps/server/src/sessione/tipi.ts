@@ -95,6 +95,8 @@ export interface FotografiaSessione {
   rivelati?: string[];
   /** Prove e dadi (docs/prove.md): punti ferita, seme e contatore dei dadi, ultime carte. Assente = senza dadi. */
   prove?: StatoProveSalvato;
+  /** The coherence ledger's journal (docs/coerenza.md §1): what changed, when and why (absent in older archives). */
+  registro?: { eventi: Array<{ turno: number; tipo: string; id: string; da: string | null; a: string; causa: string }> };
 }
 
 /** Lo stato ricostruito dal registro, pronto per Regia.ripristina. */

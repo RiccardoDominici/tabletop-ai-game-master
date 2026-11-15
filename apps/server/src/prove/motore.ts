@@ -196,6 +196,17 @@ export class MotoreProve {
     return this.gregari.get(id)?.nome ?? c.nome(id);
   }
 
+  /** The minions of the current scene, standing or not, with the words that name them (coerenza/registro.ts). */
+  gregariDellaScena(): Array<{ id: string; nome: string; nomi: string[] }> {
+    const c = this.o.contesto();
+    return [...this.gregari.values()].filter((g) => g.scena === c.campagna.scena.id).map((g) => ({ id: g.id, nome: g.nome, nomi: [g.nome, ...g.parole] }));
+  }
+
+  /** Every card of turn `turno` (private ones too: the ledger keeps who may know them), or none. */
+  carteDelTurno(turno: number): TiroMostrato[] {
+    return this.ultimoTurno?.turno === turno ? [...this.ultimoTurno.tiri] : [];
+  }
+
   /** The minions of the current scene still standing (C5): the enemies there that have no NPC card. */
   private gregariInScena(c: ContestoProve): Gregario[] {
     return [...this.gregari.values()].filter((g) => g.scena === c.campagna.scena.id && !this.stato.fuoriGioco(g.id));

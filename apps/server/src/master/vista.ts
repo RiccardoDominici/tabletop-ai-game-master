@@ -56,6 +56,7 @@ export function statoMaster(f: FonteVistaMaster): StatoMaster {
     ...(regia.combattimentoMaster ? { combattimento: regia.combattimentoMaster } : {}),
     ...(regia.tiriMaster ? { tiri: regia.tiriMaster } : {}),
     mondo: regia.mondoMaster,
+    coerenza: regia.coerenzaMaster,
     luoghi: luoghiMaster(campagna, f.immagini),
     situazioni: situazioniMaster(regia),
     orologi: orologiMaster(regia),

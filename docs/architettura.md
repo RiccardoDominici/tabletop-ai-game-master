@@ -71,7 +71,12 @@ It is a server on the Mac and manages:
   `avanza_quando`, the consequences of marks and omens (seen, or off-screen and surfacing later), the NPCs' attitudes
   and moves in play, the world's log (`cronaca`);
 - **the canon**: facts `proposto` and `confermato`, with the flag `noto_ai_pg`;
-- **the vault**: secrets, unknown entities, private messages.
+- **the vault**: secrets, unknown entities, private messages;
+- **the coherence ledger** (apps/server/src/coerenza/, docs/coerenza.md): one read model of all the above, rebuilt
+  before every model call and check: every character's state (standing, wounded, badly wounded, down, dying, dead,
+  fled, hidden; bands, never hit points) and presence, the facts and who knows them, this turn's cards and refusals.
+  Its journal (what changed, from what to what, why: log «registro: evento») is in the snapshot (`registro`) and on
+  the Game Master panel (`StatoMaster.coerenza`). The model never writes it.
 
 The model **proposes** changes through tools (`tick_clock`, `reveal_clue`, `set_attitude`, `roll`). The Engine checks the preconditions and accepts or rejects.
 

@@ -190,6 +190,23 @@ export interface StatoMaster {
   tiri?: TiriMaster;
   /** The world that moves (docs/mondo.md). Absent on servers that do not have it. */
   mondo?: MondoMaster;
+  /** The coherence ledger (docs/coerenza.md): what is true now and what changed. Absent on servers that do not have it. */
+  coerenza?: CoerenzaMaster;
+}
+
+/** The coherence ledger as the Game Master sees it (docs/coerenza.md §2): every character, the journal, the violations. */
+export interface CoerenzaMaster {
+  entita: Array<{
+    id: string;
+    nome: string;
+    tipo: 'pg' | 'png' | 'gregario';
+    stato: 'in_piedi' | 'ferito' | 'grave' | 'a_terra' | 'morente' | 'morto' | 'fuggito' | 'nascosto';
+    presenza: 'in_scena' | 'uscito' | 'altrove';
+  }>;
+  /** Facts known only to some PCs (private outcomes and actions), the most recent last. */
+  privati: Array<{ turno: number; testo: string; conosciuto_da: string[] }>;
+  /** The journal's last events: who changed, from what to what, why. */
+  eventi: Array<{ turno: number; tipo: string; id: string; da: string | null; a: string; causa: string }>;
 }
 
 /** The rolls as the Game Master sees them: DCs, private actions, values entered. Absent without dice. */

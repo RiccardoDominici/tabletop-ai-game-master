@@ -87,7 +87,9 @@ by `misure.py` per rule; the independent detector of what the table heard (`priv
 check, so a leak can no longer hide behind a 0.
 
 ### Order of work (each step its own commit, tests on invented fixtures, docs in the same commit)
-1. Ledger as a read model + journal + snapshot; no behaviour change. 2. The checker interface, the eleven guards moved
+1. **Done**: ledger as a read model + journal + snapshot, no behaviour change (coerenza/registro.ts, coerenza/diario.ts;
+   the director's `fontiRegistro`/`registroOra`, called on every state change, as the narration starts and after the
+   cards; `StatoMaster.coerenza` for the panel; tests: test/coerenza-registro.test.ts). 2. The checker interface, the eleven guards moved
 behind it with their tests unchanged, violations logged and counted. 3. The «Cosa è vero adesso» block replacing the
 scattered sections. 4. The audience split for private actions. 5. Presence tags. 6. The panel box (and the projector
 mark). 7. The targeted repair with its deadline, measured on the three e2e scripts. Then the e2e pass again.

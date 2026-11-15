@@ -103,12 +103,14 @@ import { sezioneNoteRegia } from '../narrazione/messaggio';
 import { MotoreProve, type AzionePerProve } from '../prove/motore';
 import type { ArbitroProve, DecisioneProva, DecisioneRegole, EsitoTurnoProve } from '../prove/tipi';
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
-import type { CombattimentoMaster, MondoMaster, RichiestaTiro, TiriMaster } from '@tabletop-ai-gm/shared';
+import type { CoerenzaMaster, CombattimentoMaster, MondoMaster, RichiestaTiro, TiriMaster } from '@tabletop-ai-gm/shared';
 import type { FonteDadi } from '../prove/dadi';
 import { regolaEsiti, titoloEsiti } from '../prove/testi';
 import { guardiaRifiuti } from '../narrazione/guardia-rifiuti';
 import { guardiaEsiti, type CorrezioneEsito } from '../narrazione/guardia-esiti';
 import { guardiaFuori } from '../narrazione/guardia-fuori';
+import { DiarioRegistro } from '../coerenza/diario';
+import type { FattoRegistro, FontiRegistro, Registro } from '../coerenza/registro';
 import type { EsitoCombattimento } from '../prove/combattimento';
 import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dovuti';
 import { guardiaPrivate } from '../narrazione/privato';
@@ -433,6 +435,10 @@ export class Regia {
   private fallitePerAzione = new Map<string, readonly string[]>();
   /** NPCs who refused in the turn being narrated: a social check toward them failed (prove/motore.ts, `negati`). */
   private negatiTurno: ReadonlySet<string> = new Set();
+  /** The same refusals with who asked and whether in private (the coherence ledger, coerenza/registro.ts). */
+  private negatiDettaglio: Array<{ png: string; autore: string; privata: boolean }> = [];
+  /** The coherence ledger's journal (docs/coerenza.md §1): rebuilt before every model call and check. */
+  private readonly diarioRegistro = new DiarioRegistro();
   /** How many public cards the last closed turn rolled (the stall's «something new», mondo/stallo.ts). */
   private carteDelTurno: { turno: number; n: number } = { turno: -1, n: 0 };
   /** NPCs whose refusal line has been said in this turn (main answer and repair share it). */
@@ -634,6 +640,7 @@ export class Regia {
       ...(this.presenzeManuali.size ? { presenzeManuali: [...this.presenzeManuali] } : {}),
       ...(this.rivelati.size ? { rivelati: [...this.rivelati] } : {}),
       ...(this.prove?.attivo ? { prove: this.prove.esporta() } : {}),
+      registro: this.diarioRegistro.esporta(),
     };
   }
 
@@ -715,6 +722,7 @@ export class Regia {
     this.mondo.importa(f.mondo);
     if (this.prove?.attivo && f.prove) this.prove.importa(f.prove);
     if (this.statoRepertorio && f.repertorio) this.statoRepertorio.importa(f.repertorio);
+    this.diarioRegistro.importa(f.registro);
     this.note.importa(f.note);
     this.umoreScelto = f.umore ? { ...f.umore } : null;
     this.situazione = f.situazione ? { ...f.situazione } : null;
@@ -1080,6 +1088,54 @@ export class Regia {
     return out;
   }
 
+  /**
+   * The Engine's sources for the coherence ledger (coerenza/registro.ts): names, hit points, who is out of play, who is
+   * dying, presence, facts and who knows them, this turn's cards and refusals. Read-only lookups, no copies.
+   */
+  private fontiRegistro(): FontiRegistro {
+    const c = this.campagna;
+    const prove = this.prove?.attivo ? this.prove : null;
+    const nomiPg = (id: string, nome: string): string[] => [nome, nomeBreve(nome), ...Object.entries(c.alias).filter(([, x]) => x === id).map(([a]) => a)];
+    const fisici = this.pngPresentiFisici();
+    const gregari = prove?.gregariDellaScena() ?? [];
+    for (const g of gregari) if (prove?.stato.fuoriGioco(g.id) !== 'fuggito') fisici.add(g.id);
+    const morenti = new Set((prove?.vistaCombattimento()?.combattenti ?? []).filter((x) => x.tiri_morte !== null && !x.di_png).map((x) => x.id));
+    const pubblico = this.statoPubblicoAlTavolo();
+    const fatti: FattoRegistro[] = [
+      ...(this.statoRepertorio?.fattiScoperti ?? []).map((id) => {
+        const noto = pubblico?.fattiNoti?.has(id) ?? true;
+        return { chiave: id, testo: this.testoFatto(id), turno: this.turno, pubblico: noto, conosciutoDa: [] as string[] };
+      }),
+      ...this.privati.map((p, i) => ({ chiave: `privato:${p.turno}:${i}`, testo: p.testo, turno: p.turno, pubblico: false, conosciutoDa: [p.id_pg] })),
+      ...this.azioniPrivate.map((a, i) => ({ chiave: `azione:${a.turno}:${a.id_pg}:${i}`, testo: a.testo, turno: a.turno, pubblico: false, conosciutoDa: [a.id_pg] })),
+    ];
+    return {
+      turno: this.turno,
+      scena: c.scena.id,
+      pg: c.pg.map((p) => ({ id: p.id, nome: p.nome, nomi: nomiPg(p.id, p.nome) })),
+      png: c.png.map((p) => ({ id: p.id, nome: p.nome, nomi: this.nomiPng.get(p.id) ?? [p.nome], nascosto: p.nascosto === true && !this.rivelati.has(p.id) })),
+      gregari,
+      presenti: fisici,
+      pf: (id) => prove?.stato.puntiFerita(id) ?? null,
+      fuori: (id) => prove?.stato.fuoriGioco(id) ?? null,
+      morenti,
+      fatti,
+      carte: prove?.carteDelTurno(this.turno) ?? [],
+      negati: this.negatiDettaglio,
+    };
+  }
+
+  /**
+   * The coherence ledger of this moment (docs/coerenza.md §1), rebuilt from the sources; what changed since the last
+   * one goes to the journal and to the log («registro: evento»). Called before every model call and check, and on every
+   * state change (`notifica`): the build is a pure walk over a few rows.
+   */
+  private registroOra(causa: string): Registro {
+    const { registro, nuovi } = this.diarioRegistro.aggiorna(this.fontiRegistro(), causa);
+    for (const e of nuovi) this.o.log.info({ turno: e.turno, tipo: e.tipo, id: e.id, da: e.da, a: e.a, causa: e.causa }, 'registro: evento');
+    return registro;
+  }
+
   /** The scene card's NPCs once the world's moves are applied (a consequence moved them in, out, or away). */
   private presentiDiScena(): string[] {
     return this.mondo.presentiIn(this.campagna.scena.id, this.campagna.scena.png_presenti);
@@ -1140,6 +1196,16 @@ export class Regia {
   }
 
   /** The world for the Game Master panel (docs/mondo.md): attitudes changed, the world's log, owed marks, stalls. */
+  /** The coherence ledger for the Game Master panel (docs/coerenza.md §2): the rows and the journal's last events. */
+  get coerenzaMaster(): CoerenzaMaster {
+    const r = this.diarioRegistro.registro ?? this.registroOra('pannello');
+    return {
+      entita: r.entita.map((e) => ({ id: e.id, nome: e.nome, tipo: e.tipo, stato: e.stato, presenza: e.presenza })),
+      privati: r.fatti.filter((f) => !f.pubblico && f.conosciutoDa.length).slice(-10).map((f) => ({ turno: f.turno, testo: f.testo, conosciuto_da: [...f.conosciutoDa] })),
+      eventi: this.diarioRegistro.storia.slice(-30).map((e) => ({ ...e })),
+    };
+  }
+
   get mondoMaster(): MondoMaster {
     const att = this.mondo.atteggiamenti;
     const ultimo = new Map<string, CambioAtteggiamento>();
@@ -2041,6 +2107,8 @@ export class Regia {
 
   private notifica(): void {
     if (this.spento) return;
+    // Every change of state the screens see is also a moment for the ledger's journal.
+    this.registroOra('stato');
     this.versioneStato += 1;
     this.uscita?.stato(this.stato());
     for (const f of this.ascoltatori) f();
@@ -2196,6 +2264,7 @@ export class Regia {
     this.trascrizione = [];
     this.privati = [];
     this.azioniPrivate = [];
+    this.diarioRegistro.azzera();
     this.privatiSalvati.clear();
     this.privatiAperti.clear();
     this.turno = 0;
@@ -2933,6 +3002,8 @@ export class Regia {
     this.riuscitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.riuscite]));
     this.fallitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.fallite]));
     this.negatiTurno = new Set(esito.negati.map((n) => n.png));
+    this.negatiDettaglio = esito.negati.map((n) => ({ png: n.png, autore: n.autore, privata: n.privata }));
+    this.registroOra('carte del turno');
     this.o.log.info(
       {
         turno: r.turno,
@@ -3178,6 +3249,8 @@ export class Regia {
     /** The turn order rolled in this turn, first to last (prove/combattimento.ts, `ordine`): said by the Engine. */
     ordine: readonly string[] = [],
   ): Promise<void> {
+    // The ledger as the narration starts: this turn's cards and falls are in it (docs/coerenza.md §1).
+    this.registroOra('prima della narrazione');
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
     this.controlloLlm = controllo;
