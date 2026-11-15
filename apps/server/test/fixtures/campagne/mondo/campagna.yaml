@@ -9,14 +9,20 @@ orologi:
     segno_almeno_ogni: serata
     segno_al_massimo_ogni: 2
     segni: ["Il sole tocca gli alberi.", "Le ombre si allungano.", "Si accendono le prime stelle.", "È notte."]
-    avanza_quando: ["almeno un segno secondo la serata"]
+    avanza_quando:
+      - "almeno un segno secondo la serata"
+      - {quando: cambio_scena}
     al_completo: "È notte fonda."
   - id: o_piena
     nome: "Il fiume sale"
     segmenti: 4
     segno_almeno_ogni: 6
     segni: ["L'acqua lambisce la ruota.", "L'acqua entra nel cortile.", "La ruota si ferma.", "Il fiume entra nel mulino."]
-    avanza_quando: ["almeno un segno ogni sei risposte"]
+    avanza_quando:
+      - "almeno un segno ogni sei risposte"
+      - {quando: azione, temi: [ruota]}
+      - {quando: lascia_scena, scena: scena_mulino, volte: 1}
+      - {quando: prova_fallita, prove: [atletica], segni: 2}
     al_completo: "Il mulino è allagato."
 sessione:
   riassunto_iniziale: "Siete arrivati al mulino."

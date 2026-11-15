@@ -134,6 +134,7 @@ def controlla_fronti(c: Campagna, e: Esito) -> None:
             e.errore("FRONTI.segni", oid, f"{len(segni)} segni per {o.get('segmenti')} segmenti (uno per segmento)")
         if not o.get("avanza_quando"):
             e.errore("FRONTI.campo", oid, "manca avanza_quando (regola di ritmo)")
+        controlla_porte(c, e, oid, o.get("avanza_quando"))
         # `serata`: the Engine derives the pace from the evening (docs/mondo.md §1, apps/server/src/mondo/ritmo.ts).
         ogni = o.get("segno_almeno_ogni")
         if "segno_almeno_ogni" in o and ogni != "serata" and not (isinstance(ogni, int) and not isinstance(ogni, bool) and ogni >= 1):
@@ -161,6 +162,51 @@ def controlla_fronti(c: Campagna, e: Esito) -> None:
             e.errore("FRONTI.archi", f"archi.pg.{pid}", f"arco incompleto sul cerchio di Harmon: mancano {manca}")
     if not (prep.get("archi") or {}).get("campagna_tre_atti"):
         e.avviso("FRONTI.archi", "preparazione.archi", "manca campagna_tre_atti (C8)")
+
+
+# Gates of avanza_quando (docs/mondo.md §2, apps/server/src/mondo/porte.ts): what each `quando` needs.
+QUANDO_PORTE = {"cambio_scena": set(), "lascia_scena": set(), "resta_in_scena": {"turni"}, "battuta": {"ids"},
+                "indizio": {"ids"}, "azione": {"temi"}, "prova_fallita": set(), "scontro": set()}
+CHIAVI_PORTE = {"quando", "scena", "turni", "ids", "temi", "prove", "segni", "volte"}
+
+
+def _intero_positivo(v) -> bool:
+    return isinstance(v, int) and not isinstance(v, bool) and v >= 1
+
+
+def controlla_porte(c: Campagna, e: Esito, oid: str, voci) -> None:
+    """Each entry of avanza_quando is a note (string) or a gate the Engine applies: its keys and ids must exist."""
+    if not isinstance(voci, list):
+        return
+    scene = {s.get("id") for _, s in c.scene if isinstance(s, dict)}
+    for i, v in enumerate(voci):
+        dove = f"{oid}.avanza_quando[{i}]"
+        if isinstance(v, str):
+            continue
+        if not isinstance(v, dict):
+            e.errore("FRONTI.avanza_quando", dove, "una nota (testo) o una porta {quando: …}")
+            continue
+        q = v.get("quando")
+        if q not in QUANDO_PORTE:
+            e.errore("FRONTI.avanza_quando", dove, f"quando {q!r}: uno tra {sorted(QUANDO_PORTE)}")
+            continue
+        for k in sorted(set(v) - CHIAVI_PORTE):
+            e.errore("FRONTI.avanza_quando", dove, f"chiave sconosciuta {k!r} (ammesse: {sorted(CHIAVI_PORTE)})")
+        for k in sorted(QUANDO_PORTE[q] - set(v)):
+            e.errore("FRONTI.avanza_quando", dove, f"quando: {q} vuole {k}")
+        for k in ("turni", "segni", "volte"):
+            if k in v and not _intero_positivo(v[k]):
+                e.errore("FRONTI.avanza_quando", dove, f"{k} è un intero >= 1")
+        if "scena" in v and v["scena"] not in scene:
+            e.errore("FRONTI.avanza_quando", dove, f"scena inesistente {v['scena']!r}")
+        for k in ("ids", "temi", "prove"):
+            if k in v and not (isinstance(v[k], list) and v[k] and all(isinstance(x, str) and x.strip() for x in v[k])):
+                e.errore("FRONTI.avanza_quando", dove, f"{k} è una lista di testi non vuota")
+        for x in v.get("ids") or [] if isinstance(v.get("ids"), list) else []:
+            if q == "battuta" and x not in c.per_id:
+                e.errore("FRONTI.avanza_quando", dove, f"battuta inesistente {x}")
+            if q == "indizio" and x not in c.indizi:
+                e.errore("FRONTI.avanza_quando", dove, f"indizio inesistente {x}")
 
 
 def controlla_indizi(c: Campagna, e: Esito) -> None:

@@ -111,6 +111,8 @@ import { guardiaEsiti, type CorrezioneEsito } from '../narrazione/guardia-esiti'
 import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dovuti';
 import { guardiaPrivate } from '../narrazione/privato';
 import type { SchedaNumerica } from '../campagna/schede';
+import { MondoInGioco } from '../mondo/mondo';
+import type { FattoDelGioco } from '../mondo/porte';
 
 /** Gli orologi già avanzati in una risposta (un segno per orologio, al massimo due: StatoOrologi.avanza). */
 interface SegniInRisposta {
@@ -366,6 +368,12 @@ export class Regia {
   private readonly turniSalvati = new Map<number, string>();
   private salvataggioTavoloProgrammato = false;
   private turno = 0;
+  /** The world that moves (docs/mondo.md): gates of avanza_quando, off-screen marks. */
+  private mondo!: MondoInGioco;
+  /** Turn of the opening of the current scene visit (for `resta_in_scena`). */
+  private ingressoScena = 0;
+  /** Clocks due in the message of the turn being narrated (owed marks are said by the Engine if not shown). */
+  private dovutiAlMessaggio: ReadonlySet<string> = new Set();
   private versioneScena = 0;
   private versioneStato = 0;
   private epoca = 0;
@@ -424,6 +432,7 @@ export class Regia {
     this.lessico = opzioni.lessico ?? new LessicoVivo({ campagna: opzioni.campagna, log: opzioni.log.child({ modulo: 'pronuncia' }), motore: () => opzioni.voce.nome });
     this.pronuncia = this.lessico.pronuncia;
     this.orologi = new StatoOrologi(opzioni.campagna);
+    this.mondo = this.nuovoMondo();
     this.nomiPng = nomiDeiPng(opzioni.campagna);
     this.luogo = opzioni.campagna.scena.id;
     this.ritmo = ritmoDellaScena(this.campagna);
@@ -534,6 +543,7 @@ export class Regia {
       situazioniMostrate: [...this.situazioniMostrate],
       umore: this.umoreScelto ? { ...this.umoreScelto } : null,
       orologi: this.orologi.esporta(),
+      mondo: this.mondo.esporta(),
       repertorio: this.statoRepertorio?.esporta() ?? null,
       note: this.note.esporta(),
       pausa: { richiesta: this.pausaRichiesta, invitoSospeso: this.invitoSospeso },
@@ -625,6 +635,7 @@ export class Regia {
     for (const id of f.rivelati ?? []) this.rivelati.add(id);
     this.luogo = f.luogo || this.campagna.scena.id;
     this.orologi.importa(f.orologi);
+    this.mondo.importa(f.mondo);
     if (this.prove?.attivo && f.prove) this.prove.importa(f.prove);
     if (this.statoRepertorio && f.repertorio) this.statoRepertorio.importa(f.repertorio);
     this.note.importa(f.note);
@@ -1059,6 +1070,63 @@ export class Regia {
   private finoraStasera(): string[] {
     const righe = this.sceneVisitate.size ? [testoFisso('regia.diario.luoghi', { luoghi: this.titoliScene([...this.sceneVisitate]).join(', ') })] : [];
     return [...righe, ...this.segniMostrati().slice(-3)];
+  }
+
+  /** A new world for this campaign and the current clocks (start, «Ricomincia»). */
+  private nuovoMondo(): MondoInGioco {
+    return new MondoInGioco({ campagna: this.o.campagna, orologi: () => this.orologi, log: this.o.log.child({ modulo: 'mondo' }) });
+  }
+
+  /**
+   * The facts of a closed window for the gates of avanza_quando: public actions (their themes), failed checks,
+   * a fight that has just started, and the turns spent in this visit of the scene.
+   */
+  private fattiDelTurno(r: RiepilogoChiusura, scontroPrima: boolean): FattoDelGioco[] {
+    const fatti: FattoDelGioco[] = [];
+    for (const a of r.azioni) if (!a.privata && a.testo) fatti.push({ tipo: 'azione', testo: a.testo });
+    const fallite = [...new Set(r.azioni.flatMap((a) => this.fallitePerAzione.get(a.id) ?? []))];
+    if (fallite.length) fatti.push({ tipo: 'prova_fallita', prove: fallite });
+    if (!scontroPrima && this.prove?.inCombattimento) fatti.push({ tipo: 'scontro' });
+    fatti.push({ tipo: 'turno_in_scena', scena: this.campagna.scena.id, turniNellaVisita: r.turno - this.ingressoScena });
+    return fatti;
+  }
+
+  /** The facts of a narration: lines said and clues they revealed (mode B), owed to the next response. */
+  private fattiDellaNarrazione(uscita: readonly VoceUscita[]): FattoDelGioco[] {
+    const fatti: FattoDelGioco[] = [];
+    for (const u of uscita) {
+      if (u.tipo !== 'usa') continue;
+      fatti.push({ tipo: 'battuta', id: u.id });
+      for (const i of this.statoRepertorio?.repertorio.perId.get(u.id)?.effetti.rivela_indizi ?? []) fatti.push({ tipo: 'indizio', id: i });
+    }
+    return fatti;
+  }
+
+  /**
+   * Marks owed by facts that the response did not show (docs/mondo.md §2): the Engine says the mark's text
+   * (`segni[n]`) itself, before the invitation, in both modes. Only debts that were in this turn's message.
+   */
+  private pagaDebitiInRisposta(turno: number, esito: { uscita: VoceUscita[] }, segni: SegniInRisposta, dovuti: ReadonlySet<string>, log: Logger): string[] {
+    const detti: Array<{ id: string; frase: string }> = [];
+    for (const o of this.orologi.elenco) {
+      if (!dovuti.has(o.id) || o.debito <= 0 || segni.orologi.has(o.id)) continue;
+      const frase = o.segni[o.pieni];
+      if (!frase) continue;
+      const a = this.orologi.avanza(o.id, turno, { inRisposta: segni.orologi });
+      if (!a.ok) {
+        log.info({ orologio: o.id, motivo: a.motivo }, 'world: owed mark not said in this response');
+        continue;
+      }
+      segni.orologi.add(o.id);
+      detti.push({ id: o.id, frase });
+      log.info({ orologio: o.id, pieni: a.orologio.pieni, segmenti: a.orologio.segmenti, debito: a.orologio.debito }, 'world: owed mark said by the Engine');
+    }
+    if (!detti.length) return [];
+    const righe = detti.map((d) => ({ etichetta: ID_NARRATORE, testo: d.frase, testo_voce: this.pronuncia(d.frase) }));
+    const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: righe.map((r) => r.testo).join(' '), frasi: righe.map((_, k) => `t${turno}-w${k}`), motore: true };
+    this.righeDelMotore(turno, esito, righe, voce, false, 'w');
+    this.notifica();
+    return detti.map((d) => d.id);
   }
 
   /** Clocks with `segno_almeno_ogni: serata`: recompute their pace from what is left of the evening. */
@@ -1818,6 +1886,7 @@ export class Regia {
     this.versioneScena = 0;
     // Si riparte dalla prima scena, con gli orologi della campagna da capo.
     this.orologi = new StatoOrologi(this.o.campagna);
+    this.mondo = this.nuovoMondo();
     this.sceneVisitate.clear();
     this.sceneConFinale.clear();
     this.rivelati.clear();
@@ -1948,6 +2017,9 @@ export class Regia {
     // A finestra aperta il suo turno non è stato narrato: l'apertura lo prende; altrimenti il successivo.
     const turno = !inGioco ? this.turno : this.tavolo.aperta ? this.turno : this.turno + 1;
     this.impostaScena(nuova.id, turno);
+    // The world: leaving a scene and changing scene are facts for the gates of avanza_quando (docs/mondo.md §2);
+    // marks owed to clocks that are not active here are paid off-screen.
+    if (inGioco) this.mondo.fatti([{ tipo: 'cambio_scena', da, a: nuova.id }], turno);
     // Chi era fuggito dalla scena di prima può ricomparire in questa (i morti restano morti).
     const tornati = this.prove?.stato.dimenticaFughe() ?? [];
     this.o.log.info({ da, a: nuova.id, fase: this.fase, immagine: this.o.immagini?.luogo(nuova.id) ?? null, ...(tornati.length ? { fughe_dimenticate: tornati } : {}) }, 'scena: cambio di scena');
@@ -2197,6 +2269,7 @@ export class Regia {
    */
   private impostaScena(id: string, turno = 0): void {
     this.campagna = conScena(this.o.campagna, id);
+    this.ingressoScena = turno;
     this.presenzeManuali.clear();
     this.sistema = this.o.sistemaPer?.(this.campagna) ?? this.sistema;
     this.scenaPubblica = this.o.scenaPubblicaPer?.(this.campagna) ?? this.scenaPubblica;
@@ -2408,6 +2481,7 @@ export class Regia {
     if (!fatto) return { ok: false, errore: testoFisso(this.prove?.attivo ? 'regia.errori.combattimento_in_corso' : 'regia.errori.senza_dadi') };
     this.rigaDiSistema(this.turno, fatto);
     this.o.log.info({ turno: this.turno }, 'combattimento: aperto dal master');
+    this.mondo.fatti([{ tipo: 'scontro' }], this.turno);
     this.notifica();
     return { ok: true };
   }
@@ -2543,10 +2617,15 @@ export class Regia {
     this.fallitePerAzione = new Map();
     this.negatiTurno = new Set();
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
+    const scontroPrima = this.prove?.inCombattimento ?? false;
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r) : null;
     if (epoca !== this.epoca) return;
+    // The world: the facts of the actions and the checks owe marks in the response that answers them (docs/mondo.md §2).
+    this.mondo.fatti(this.fattiDelTurno(r, scontroPrima), r.turno);
     // The evening's pace of the clocks (docs/mondo.md §1), before anything asks which marks are due.
     this.aggiornaRitmoSerata(r.turno);
+    // The clocks due in this turn's message: an owed mark among them that the response does not show is said by the Engine.
+    this.dovutiAlMessaggio = new Set(this.orologi.dovuti(r.turno).map((o) => o.id));
     // Dopo i tiri: chi è a terra, morto o fuggito non parla (presenza, catalogo, narratore).
     const fuori = this.righeFuoriGioco();
     if (fuori.length) this.o.log.info({ turno: r.turno, fuori }, 'prove: PNG fuori gioco nel messaggio del narratore');
@@ -2789,6 +2868,10 @@ export class Regia {
         log.error({ orologio: id, motivo: a.motivo }, 'orologio: avanzamento rifiutato');
       }
     }
+    // The world (docs/mondo.md §2): owed marks the response did not show are said by the Engine; the lines said and
+    // the clues they revealed are facts for the gates, owed to the next response (or paid off-screen at once).
+    const debitiDetti = esito.esito && !controllo.signal.aborted ? this.pagaDebitiInRisposta(turno, esito, segniInRisposta, this.dovutiAlMessaggio, log) : [];
+    this.mondo.fatti(this.fattiDellaNarrazione(esito.uscita), turno);
 
     if (esito.esito) {
       // Testo grezzo del narratore: serve a rivedere qualità e protocollo dopo la sessione.
@@ -2831,6 +2914,8 @@ export class Regia {
       // Il primo segno aggiunto dal Motore (come prima) e tutti quelli del turno (uno per orologio dovuto).
       segno_aggiunto: segniAggiunti[0] ?? null,
       segni_aggiunti: segniAggiunti,
+      // Marks owed by facts (avanza_quando gates) that the response did not show: said by the Engine (docs/mondo.md §2).
+      segni_dovuti_detti: debitiDetti,
       // Fatti dello scontro che la narrazione non aveva detto, aggiunti dal Motore («tipo:id»).
       fatti_aggiunti: fattiAggiunti,
       finale,

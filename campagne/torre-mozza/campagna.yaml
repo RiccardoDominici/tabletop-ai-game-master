@@ -73,6 +73,9 @@ orologi:
     avanza_quando:
       - "almeno un segno secondo il ritmo della serata, all'ovile e alla carbonaia: il Motore scrive «mostralo in questa risposta»"
       - "alla torre l'orologio non corre: la mezzanotte è arrivata"
+      # Porta che il Motore applica (docs/mondo.md §2): dall'ovile alla carbonaia sono tre quarti d'ora di bosco
+      # (logistica d_ovile_carbonaia). Il segno è dovuto nella prima risposta alla carbonaia.
+      - {quando: lascia_scena, scena: scena_ovile}
       - "mai due segni nella stessa risposta"
     al_completo: "È mezzanotte e i PG non sono ancora alla torre. Zirrà manda il corno tre volte, poi prende a colpi la porta di ferro senza aprirla, e prima dell'alba scende con Grosso a bruciare il fienile dei Benni. Chi sale adesso la trova furiosa: con la chiave in mano tratta, senza la chiave attacca. Ogni risposta costa: la chiave consegnata è l'argento perso, la chiave tenuta è lo scontro."
 

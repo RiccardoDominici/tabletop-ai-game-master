@@ -63,7 +63,14 @@ chronology, abstract secrets and arcs go there.
   segno_al_massimo_ogni: 2                 # optional: no more than one tick every N turns (default 2; 1 = also in a row)
   parte_dopo: [<id of a line or clue>]     # optional, proposal: the clock starts when one of them comes out [V they exist]
   segni: ["…", "…", …]                     # one per segment, in order [V]
-  avanza_quando: ["…"]                     # [V present]
+  avanza_quando:                           # [V present] strings are notes; mappings are gates the Engine applies
+    - "…"                                  # a note for the narrator (mode A) and the reader: nobody applies it
+    - {quando: lascia_scena, scena: scena_…}     # a fact owes marks to the clock (docs/mondo.md §2), keys below
+  # gates: quando: cambio_scena | lascia_scena (scena?) | resta_in_scena (turni, scena?) | battuta (ids) | indizio (ids)
+  #        | azione (temi: like a line's temi) | prova_fallita (prove?: ability, characteristic, scene check id, type)
+  #        | scontro; optional segni: N (marks owed, default 1), volte: N (at most N times per session) [V ids exist]
+  # An owed mark is due at once (not held back by segno_al_massimo_ogni); if the response does not show it, the Engine
+  # says the mark's text. If the clock is not active in the scene, it advances off-screen.
   al_completo: "…"                         # what the danger wants and what each answer costs
 ```
 

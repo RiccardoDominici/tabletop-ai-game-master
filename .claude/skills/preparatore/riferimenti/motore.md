@@ -14,21 +14,16 @@ is answered only by lines with `privata: true`, and for the rest the narrator im
   letter), write a line with `privata: true`; an important piece of information that can arrive both in public and in
   private has two lines, or one with `oppure` (repertorio.md §4).
 
-<!-- limite: avanza_quando -->
-## `avanza_quando` is applied by nobody
-The Engine loads `avanza_quando` and does not use it. A clock advances only through `segno_almeno_ogni` (the Engine
-imposes the tick when it is due) and when the narrator or the selector chooses a tick line.
-- **What to do**: what must make the clock advance must be written as a line: a tick with the `temi` of the actions that
-  make it run, or a moment with `effetti.avanza_orologio`. `avanza_quando` remains a note for whoever reads.
-
 <!-- limite: cambio_scena -->
-## At a scene change the clocks jump only if the scene says so
-Changing scene changes which clocks are active: the ticks stay as they were, and no clock advances on its own (no "+1 at
-every scene change"). The minimum rhythm counts only the turns in which the clock is active, and those of previous visits
-add up: entering a scene does not immediately make a tick due.
-- **What to do**: if a scene must start with the clock further along ("at the Sasso the sunset is at least at six"),
-  write it in the scene sheet: `orologi_in_scena: {o_…: {pieni_almeno: 6}}`; there the clock can also run at another pace
-  (`segno_almeno_ogni: 2` inside the same entry). Between sessions, `pieni_all_inizio` of the package still applies.
+## At a scene change the clocks move only if the campaign says so
+Changing scene changes which clocks are active: the ticks stay as they were, and no clock advances on its own. The
+minimum rhythm counts only the turns in which the clock is active, and those of previous visits add up: entering a scene
+does not immediately make a tick due.
+- **What to do**: a "+1 at every scene change" (or when the PCs leave one place) is a gate of `avanza_quando`:
+  `{quando: cambio_scena}` or `{quando: lascia_scena, scena: scena_…}` (schema.md, «orologi»). If a scene must start with
+  the clock further along ("at the Sasso the sunset is at least at six"), write it in the scene sheet:
+  `orologi_in_scena: {o_…: {pieni_almeno: 6}}`; there the clock can also run at another pace (`segno_almeno_ogni: 2`
+  inside the same entry). Between sessions, `pieni_all_inizio` of the package still applies.
 
 <!-- limite: finali -->
 ## Endings come out on their own only at a full clock

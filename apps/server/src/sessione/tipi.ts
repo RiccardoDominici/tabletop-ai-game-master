@@ -23,6 +23,7 @@ import type { UmoreScelto } from '../audio/scena';
 import type { Azione } from '../azioni/tipi';
 import type { StatoProveSalvato } from '../prove/stato';
 import type { DettatoSalvato } from '../dettato/servizio';
+import type { StatoMondoSalvato } from '../mondo/mondo';
 
 export interface StatoOrologioSalvato {
   pieni: number;
@@ -34,6 +35,8 @@ export interface StatoOrologioSalvato {
   attivoDal?: number;
   /** Turni passati attivo nelle visite precedenti, dall'ultimo segno (ritmo minimo; assente = 0). */
   turniAccumulati?: number;
+  /** Marks owed by facts of the game (docs/mondo.md §2; absent = 0). */
+  debito?: number;
 }
 
 export interface StatoRepertorioSalvato {
@@ -69,6 +72,8 @@ export interface FotografiaSessione {
   situazioniMostrate: string[];
   umore: UmoreScelto | null;
   orologi: Record<string, StatoOrologioSalvato>;
+  /** The world that moves (docs/mondo.md): gates opened… (absent in older archives). */
+  mondo?: StatoMondoSalvato;
   repertorio: StatoRepertorioSalvato | null;
   note: { elenco: NotaRegia[]; prossimoId: number };
   /** `automatica` c'era negli archivi di prima (pausa dopo gli stalli, tolta): si ignora. */

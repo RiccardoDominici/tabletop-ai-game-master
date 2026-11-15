@@ -120,7 +120,9 @@ Situation images: a PNG for a precise moment, which takes the place of the place
 The threat clocks of the scene: a row of boxes, filled up to the tick already shown, with the next one highlighted.
 
 - **−1** and **+1** correct by one tick, if the narrator forgot one or added one too many.
-- "dovuto" (due): the minimum pace asks for the next tick to be shown in the next reply. A clock with
+- "dovuto" (due): the minimum pace asks for the next tick to be shown in the next reply, or a fact of the game owes
+  one (a gate of `avanza_quando`: the PCs left a place, a fight started…); a tick owed by a fact that the narrator does
+  not show is said by the Engine itself. A clock with
   `segno_almeno_ogni: serata` has no fixed pace: the Engine spreads its ticks over what is left of the evening (the
   length in the **Serata** box, the scenes where the clock is active, the turns per hour this table really plays;
   [docs/mondo.md](../mondo.md) §1).

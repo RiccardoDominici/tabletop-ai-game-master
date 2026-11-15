@@ -41,15 +41,9 @@ const codice = sorgenti(SERVER);
     `${libera.id} (senza cancello) non accetta un'azione privata: rispondono solo le battute con privata: true`);
 }
 
-// 2. avanza_quando: il Motore lo carica e non lo usa (nessuna lettura fuori dalla definizione).
-{
-  const usi = codice.filter(([, t]) => /avanzaQuando/.test(t)).flatMap(([f, t]) => (t.match(/avanzaQuando/g) ?? []).map(() => f));
-  verifica('avanza_quando', usi.length === 2 && usi.every((f) => f === path.join('scena', 'orologi.ts')),
-    `avanzaQuando compare solo in scena/orologi.ts (tipo e caricamento): ${usi.length} occorrenze`);
-}
-
-// 3. Cambio di scena: gli orologi tengono i loro segni e nessuno avanza da solo (ponte-lanterne non ha
-//    `orologi_in_scena`, l'unico modo di farli salire entrando in una scena).
+// 3. Cambio di scena: impostaScena tiene i segni e non fa avanzare nessun orologio da solo (ponte-lanterne non ha
+//    `orologi_in_scena`). A clock that must move at a scene change says so with an avanza_quando gate (docs/mondo.md §2),
+//    applied by the world (mondo/mondo.ts), not by impostaScena.
 {
   const c = caricaCampagna(path.join(RADICE, 'campagne', 'ponte-lanterne'));
   const o = new StatoOrologi(c);

@@ -8,7 +8,7 @@ soft move ignored opens a harder one). Code: `apps/server/src/mondo/`. Audit of 
 fronts and omens were read only by the validator and the Preparer, `avanza_quando` was a note, the attitudes were
 static, only S1 existed.
 
-**Status** (updated with each commit): §1 built. §2–§5 are the design, built in the next commits.
+**Status** (updated with each commit): §1 and §2 built (`mondo/ritmo.ts`, `mondo/porte.ts`, `mondo/mondo.ts`). §3–§5 are the design, built in the next commits.
 
 ## Principles
 1. **The Engine applies only what is written in a form it can read.** Free text stays a note for the narrator and

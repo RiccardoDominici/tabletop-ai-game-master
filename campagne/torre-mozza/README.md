@@ -59,7 +59,7 @@ scrivono (Eliandro). Ogni strada ha anche un indizio che non dipende da quel PG.
 - **Il motivo, la decima**: l'avviso dietro la porta, Berta che cede, il conto a carbone accanto alla porta della
   cripta, e quello che dice Tonio.
 - **Orologio della sera** «La torre aspetta la chiave»: otto segni udibili da ovunque (corni, fuoco, cani, luna,
-  tamburo), al ritmo che il Motore ricava dalla serata (`segno_almeno_ogni: serata`), attivo all'ovile e alla carbonaia. Alla torre non corre: lì i finali li sceglie il
+  tamburo), al ritmo che il Motore ricava dalla serata (`segno_almeno_ogni: serata`), più un segno quando i PG lasciano l'ovile (tre quarti d'ora di bosco), attivo all'ovile e alla carbonaia. Alla torre non corre: lì i finali li sceglie il
   tavolo, perché a orologio pieno il Motore direbbe un finale anche nel mezzo dello scontro.
 - **Scontro**: Zirrà (goblin guerriera, 3-3 dadi vita, Classe d'Armatura 14, 12 punti ferita, morale 7) e Grosso
   (hobgoblin, 1 dado vita, 1d8, 7 punti ferita, morale 8). Si può evitare trattando con Zirrà o dando da mangiare a

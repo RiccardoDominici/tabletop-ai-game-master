@@ -90,6 +90,11 @@ export interface Orologio {
   parteDopo: string[];
   /** Sta correndo: avanza, conta per il ritmo minimo, i suoi segni vanno in catalogo. */
   partito: boolean;
+  /**
+   * Marks owed by facts of the game (`avanza_quando` gates, docs/mondo.md §2): while > 0 the clock is due
+   * whatever its maximum pace says; each mark shown or paid off-screen takes one off.
+   */
+  debito: number;
 }
 
 export type EsitoAvanzamento = { ok: true; orologio: Orologio } | { ok: false; motivo: string };
@@ -109,6 +114,8 @@ export interface StatoOrologioEsportato {
   partitoAl?: number;
   attivoDal?: number;
   turniAccumulati?: number;
+  /** Marks owed by facts (absent = 0). */
+  debito?: number;
 }
 
 function testo(v: unknown): string | null {
@@ -155,7 +162,8 @@ export class StatoOrologi {
         segni,
         pieni: typeof d['pieni_all_inizio'] === 'number' ? (d['pieni_all_inizio'] as number) : 0,
         alCompleto: testo(d['al_completo']),
-        avanzaQuando: Array.isArray(d['avanza_quando']) ? (d['avanza_quando'] as unknown[]).map(String) : [],
+        // Only the notes: the gates (mappings) are applied by the world (mondo/porte.ts).
+        avanzaQuando: Array.isArray(d['avanza_quando']) ? (d['avanza_quando'] as unknown[]).filter((x): x is string => typeof x === 'string') : [],
         ultimoTurno: null,
         almenoOgni: typeof d['segno_almeno_ogni'] === 'number' && d['segno_almeno_ogni'] > 0 ? (d['segno_almeno_ogni'] as number) : null,
         almenoOgniSerata: d['segno_almeno_ogni'] === RITMO_SERATA,
@@ -167,6 +175,7 @@ export class StatoOrologi {
         partitoAl: null,
         parteDopo: Array.isArray(d['parte_dopo']) ? (d['parte_dopo'] as unknown[]).filter((x): x is string => typeof x === 'string') : [],
         partito: !(Array.isArray(d['parte_dopo']) && (d['parte_dopo'] as unknown[]).length > 0),
+        debito: 0,
       });
     }
     this.impostaScena(campagna.scena, 0);
@@ -290,12 +299,52 @@ export class StatoOrologi {
     if (!o) return { ok: false, motivo: testoFisso('orologi.rifiuti.inesistente', { id }) };
     if (!o.partito) return { ok: false, motivo: testoFisso('orologi.rifiuti.non_partito', { dopo: o.parteDopo.join(', '), id }) };
     if (o.pieni >= o.segmenti) return { ok: false, motivo: testoFisso('orologi.rifiuti.completo', { id }) };
-    const ritmo = op.ritmo ? this.motivoRitmo(o, turno) : null;
+    // A mark owed by a fact is not held back by the maximum pace (it is a fact, not time).
+    const ritmo = op.ritmo && o.debito === 0 ? this.motivoRitmo(o, turno) : null;
     if (ritmo) return { ok: false, motivo: ritmo };
+    this.segna(o, turno);
+    return { ok: true, orologio: o };
+  }
+
+  /** One mark more: pace counters restart from here, and one owed mark (if any) is paid. */
+  private segna(o: Orologio, turno: number): void {
     o.pieni += 1;
     o.ultimoTurno = turno;
     o.turniAccumulati = 0;
-    return { ok: true, orologio: o };
+    if (o.debito > 0) o.debito -= 1;
+  }
+
+  /**
+   * A fact owes `n` marks to the clock (docs/mondo.md §2). Ignored for a clock that does not exist, has not
+   * started (`parte_dopo`) or is full; the debt never exceeds the marks left. Returns the debt now (null = ignored).
+   */
+  aggiungiDebito(id: string, n: number): number | null {
+    const o = this.orologi.get(id);
+    if (!o || !o.partito || o.pieni >= o.segmenti || n <= 0) return null;
+    o.debito = Math.min(o.segmenti - o.pieni, o.debito + n);
+    return o.debito;
+  }
+
+  /** The clock is active in the current scene (the PCs can perceive its marks). */
+  attivo(id: string): boolean {
+    return this.attivi.has(id);
+  }
+
+  /**
+   * Owed marks of clocks NOT active in this scene are paid off-screen at once (docs/mondo.md §3): the clock
+   * advances without anyone seeing it. Returns the marks paid, in order, for the world's log.
+   */
+  pagaFuoriScena(turno: number): Array<{ id: string; pieni: number }> {
+    const pagati: Array<{ id: string; pieni: number }> = [];
+    for (const o of this.orologi.values()) {
+      if (this.attivi.has(o.id)) continue;
+      while (o.debito > 0 && o.partito && o.pieni < o.segmenti) {
+        this.segna(o, turno);
+        pagati.push({ id: o.id, pieni: o.pieni });
+      }
+      if (o.pieni >= o.segmenti) o.debito = 0;
+    }
+    return pagati;
   }
 
   /**
@@ -321,6 +370,7 @@ export class StatoOrologi {
    * turni passati attivo (turniAttivi); mai se il ritmo massimo lo vieta.
    */
   dovuto(o: Orologio, turnoCorrente: number): boolean {
+    if (o.debito > 0 && o.partito && o.pieni < o.segmenti && this.attivi.has(o.id)) return true;
     const almeno = this.almenoOgni(o);
     if (!o.partito || almeno === null || o.pieni >= o.segmenti || !this.attivi.has(o.id)) return false;
     return this.turniAttivi(o, turnoCorrente) >= almeno && this.motivoRitmo(o, turnoCorrente) === null;
@@ -354,7 +404,7 @@ export class StatoOrologi {
         if (o.pieni >= o.segmenti) return testoFisso('orologi.completo', { testa, ultimo, al_completo: o.alCompleto ?? '—' });
         const prossimo = o.segni[o.pieni] ?? testoFisso('orologi.segno_non_scritto');
         // Coda della riga: il divieto del ritmo massimo e l'ordine del ritmo minimo, ognuno dopo uno spazio.
-        const fermo = this.motivoRitmo(o, turnoCorrente) ? ` ${testoFisso('orologi.fermo', { turno: o.ultimoTurno! + o.alMassimoOgni })}` : '';
+        const fermo = o.debito === 0 && this.motivoRitmo(o, turnoCorrente) ? ` ${testoFisso('orologi.fermo', { turno: o.ultimoTurno! + o.alMassimoOgni })}` : '';
         const ordine = this.dovuto(o, turnoCorrente) ? ` ${ordineSegno()}` : '';
         return `${testoFisso('orologi.prossimo', { testa, ultimo, prossimo })}${fermo}${ordine}`;
       })
@@ -391,6 +441,7 @@ export class StatoOrologi {
           ...(o.partitoAl !== null ? { partitoAl: o.partitoAl } : {}),
           ...(o.attivoDal ? { attivoDal: o.attivoDal } : {}),
           ...(o.turniAccumulati ? { turniAccumulati: o.turniAccumulati } : {}),
+          ...(o.debito ? { debito: o.debito } : {}),
         },
       ]),
     );
@@ -410,6 +461,7 @@ export class StatoOrologi {
       o.partito = s.partito !== false;
       o.partitoAl = typeof s.partitoAl === 'number' ? s.partitoAl : null;
       o.turniAccumulati = typeof s.turniAccumulati === 'number' && s.turniAccumulati > 0 ? Math.floor(s.turniAccumulati) : 0;
+      o.debito = typeof s.debito === 'number' && s.debito > 0 ? Math.min(o.segmenti - o.pieni, Math.floor(s.debito)) : 0;
       // Archivi di prima: senza attivoDal, un orologio attivo conta dall'ultimo segno come prima.
       if (this.attivi.has(id)) o.attivoDal = typeof s.attivoDal === 'number' ? s.attivoDal : 0;
     }

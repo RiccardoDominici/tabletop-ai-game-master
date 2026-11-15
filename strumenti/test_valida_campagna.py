@@ -390,6 +390,24 @@ def test_fronti_ritmo_della_serata(camp):
         assert "FRONTI.campo" in errori(camp), sbagliato
 
 
+def test_fronti_porte_di_avanza_quando(camp):
+    # docs/mondo.md §2: a mapping in avanza_quando is a gate the Engine applies; its keys and ids must exist.
+    d = leggi(camp, "campagna.yaml")
+    battuta_vera = next(iter(leggi(camp, "repertorio/narrazione.yaml")["battute"]))["id"] if (camp / "repertorio" / "narrazione.yaml").exists() else None
+    buone = [{"quando": "cambio_scena"}, {"quando": "resta_in_scena", "turni": 4, "segni": 2, "volte": 1}, {"quando": "azione", "temi": ["porta"]},
+             {"quando": "prova_fallita"}, {"quando": "scontro"}]
+    if battuta_vera:
+        buone.append({"quando": "battuta", "ids": [battuta_vera]})
+    modifica(camp, "campagna.yaml", lambda d: d["orologi"][0]["avanza_quando"].extend(buone))
+    assert "FRONTI.avanza_quando" not in errori(camp, rigoroso=True)
+    for cattiva in ({"quando": "quando_vuole"}, {"quando": "resta_in_scena"}, {"quando": "battuta", "ids": ["b_che_non_esiste"]},
+                    {"quando": "indizio", "ids": ["i_che_non_esiste"]}, {"quando": "lascia_scena", "scena": "scena_che_non_esiste"},
+                    {"quando": "azione", "temi": []}, {"quando": "scontro", "segni": 0}, {"quando": "scontro", "dopo": 3}, 7):
+        scrivi(camp, "campagna.yaml", d)
+        modifica(camp, "campagna.yaml", lambda x: x["orologi"][0]["avanza_quando"].append(cattiva))
+        assert "FRONTI.avanza_quando" in errori(camp), cattiva
+
+
 # --- GRAFO ----------------------------------------------------------------------------------------
 
 def test_grafo_nodo_irraggiungibile(camp):
