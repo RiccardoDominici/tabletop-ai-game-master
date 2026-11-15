@@ -1,0 +1,101 @@
+{
+  "orologi": [
+    {
+      "id": "o_mezzanotte",
+      "nome": "La torre aspetta la chiave",
+      "pieni": 7,
+      "segmenti": 8,
+      "segni": [
+        "Dal crinale scende un corno di capra, lungo e stonato.",
+        "Nella Torre Mozza si accende un fuoco, e i muri rotti si arrossano.",
+        "I cani di Spinalba abbaiano tutti insieme, poi tacciono di colpo.",
+        "La luna esce dalle nuvole e fa bianca la torre sul crinale.",
+        "Due colpi di corno, corti e vicini: i goblin chiamano.",
+        "Lassù comincia a battere un tamburo, lento e sordo.",
+        "Il fuoco della torre divampa, e le scintille volano oltre i muri.",
+        "Tre colpi di corno: è mezzanotte, e la torre aspetta la chiave."
+      ],
+      "prossimo": "Tre colpi di corno: è mezzanotte, e la torre aspetta la chiave.",
+      "dovuto": false,
+      "ultimo_turno": 15,
+      "al_completo": "È mezzanotte e i PG non sono ancora alla torre. Zirrà manda il corno tre volte, poi prende a colpi la porta di ferro senza aprirla, e prima dell'alba scende con Grosso a bruciare il fienile dei Benni. Chi sale adesso la trova furiosa: con la chiave in mano tratta, senza la chiave attacca. Ogni risposta costa: la chiave consegnata è l'argento perso, la chiave tenuta è lo scontro.",
+      "partito": true
+    }
+  ],
+  "mondo": {
+    "atteggiamenti": [
+      {
+        "png": "png_berta",
+        "nome": "Berta Benni",
+        "pg": "pg_nespola",
+        "nome_pg": "Nespola Tondi",
+        "stato": "amichevole",
+        "base": "indifferente",
+        "turno": 15,
+        "causa": "prova"
+      }
+    ],
+    "cronaca": [
+      {
+        "turno": 6,
+        "id": "o_mezzanotte@3",
+        "tipo": "conseguenza",
+        "orologio": "o_mezzanotte",
+        "segno": 3,
+        "cosa": "Berta perde la pazienza: comincia a pensare di salire lei alla torre con la chiave.",
+        "visto": true,
+        "emerso_al_turno": null
+      },
+      {
+        "turno": 7,
+        "id": "o_sospetto@1",
+        "tipo": "conseguenza",
+        "orologio": "o_sospetto",
+        "segno": 1,
+        "cosa": "In paese decidono che i goblin li ha portati Ugo: gli rimandano indietro il carbone.",
+        "visto": false,
+        "emerso_al_turno": 8
+      }
+    ],
+    "debiti": [],
+    "stallo": 0
+  },
+  "presenze": [
+    {
+      "id": "png_berta",
+      "nome": "Berta Benni",
+      "presente": true,
+      "manuale": false,
+      "incontrato": true,
+      "nascosto": false,
+      "rivelato": false
+    },
+    {
+      "id": "png_grosso",
+      "nome": "Grosso",
+      "presente": false,
+      "manuale": false,
+      "incontrato": false,
+      "nascosto": false,
+      "rivelato": false
+    },
+    {
+      "id": "png_ugo",
+      "nome": "Ugo Faggioli",
+      "presente": true,
+      "manuale": false,
+      "incontrato": true,
+      "nascosto": false,
+      "rivelato": false
+    },
+    {
+      "id": "png_zirra",
+      "nome": "Zirrà",
+      "presente": false,
+      "manuale": false,
+      "incontrato": false,
+      "nascosto": false,
+      "rivelato": false
+    }
+  ]
+}

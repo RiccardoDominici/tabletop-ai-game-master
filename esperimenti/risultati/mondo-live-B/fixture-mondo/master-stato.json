@@ -1,0 +1,96 @@
+{
+  "orologi": [
+    {
+      "id": "o_sera",
+      "nome": "La sera scende",
+      "pieni": 0,
+      "segmenti": 4,
+      "segni": [
+        "Il sole tocca gli alberi.",
+        "Le ombre si allungano.",
+        "Si accendono le prime stelle.",
+        "È notte."
+      ],
+      "prossimo": "Il sole tocca gli alberi.",
+      "dovuto": false,
+      "ultimo_turno": null,
+      "al_completo": "È notte fonda.",
+      "partito": true
+    },
+    {
+      "id": "o_piena",
+      "nome": "Il fiume sale",
+      "pieni": 2,
+      "segmenti": 4,
+      "segni": [
+        "L'acqua lambisce la ruota.",
+        "L'acqua entra nel cortile.",
+        "La ruota si ferma.",
+        "Il fiume entra nel mulino."
+      ],
+      "prossimo": "La ruota si ferma.",
+      "dovuto": false,
+      "ultimo_turno": 3,
+      "al_completo": "Il mulino è allagato.",
+      "partito": true
+    }
+  ],
+  "mondo": {
+    "atteggiamenti": [
+      {
+        "png": "png_mugnaio",
+        "nome": "Mugnaio Piero",
+        "pg": "pg_anna",
+        "nome_pg": "Anna",
+        "stato": "ostile",
+        "base": "indifferente",
+        "turno": 1,
+        "causa": "conseguenza"
+      }
+    ],
+    "cronaca": [
+      {
+        "turno": 1,
+        "id": "o_piena@1",
+        "tipo": "conseguenza",
+        "orologio": "o_piena",
+        "segno": 1,
+        "cosa": "L'acqua entra nella cantina e rovina la farina del mugnaio.",
+        "visto": true,
+        "emerso_al_turno": null
+      },
+      {
+        "turno": 3,
+        "id": "o_piena@2",
+        "tipo": "conseguenza",
+        "orologio": "o_piena",
+        "segno": 2,
+        "cosa": "Il mugnaio scappa al ponte con i sacchi buoni.",
+        "visto": true,
+        "emerso_al_turno": null
+      }
+    ],
+    "debiti": [],
+    "stallo": 0
+  },
+  "presenze": [
+    {
+      "id": "png_ladra",
+      "nome": "Ladra Sita",
+      "presente": true,
+      "manuale": false,
+      "incontrato": false,
+      "nascosto": true,
+      "rivelato": true
+    },
+    {
+      "id": "png_mugnaio",
+      "nome": "Mugnaio Piero",
+      "presente": false,
+      "manuale": false,
+      "incontrato": false,
+      "nascosto": false,
+      "rivelato": false
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{"time": "2026-11-15T16:02:47.127Z", "modulo": "mondo", "porte": ["o_sera#1 cambio_scena", "o_piena#1 azione", "o_piena#2 lascia_scena", "o_piena#3 prova_fallita", "o_voci#0 resta_in_scena"], "conseguenze": ["o_piena@1", "o_voci@1", "o_piena@2", "p_fiume#0", "p_fiume@pieno", "p_voci@pieno", "t_notte"], "msg": "world: gates and consequences loaded"}
+{"time": "2026-11-15T16:02:48.140Z", "modulo": "mondo", "turno": 1, "porta": "o_piena#1", "quando": "azione", "orologio": "o_piena", "segni": 1, "debito": 1, "msg": "world: gate opened, marks owed"}
+{"time": "2026-11-15T16:02:48.155Z", "modulo": "regia", "turno": 1, "orologio": "o_piena", "pieni": 1, "segmenti": 4, "debito": 0, "msg": "world: owed mark said by the Engine"}
+{"time": "2026-11-15T16:02:48.156Z", "modulo": "mondo", "turno": 1, "png": "png_mugnaio", "pg": "pg_anna", "da": "indifferente", "a": "ostile", "conseguenza": "o_piena@1", "msg": "world: attitude changed by a consequence"}
+{"time": "2026-11-15T16:02:48.156Z", "modulo": "mondo", "turno": 1, "conseguenza": "o_piena@1", "tipo": "conseguenza", "orologio": "o_piena", "segno": 1, "visto": true, "cosa": "L'acqua entra nella cantina e rovina la farina del mugnaio.", "msg": "world: consequence (seen)"}
+{"time": "2026-11-15T16:02:48.156Z", "modulo": "regia", "turno": 1, "conseguenze": ["o_piena@1"], "msg": "world: consequences said by the Engine"}
+{"time": "2026-11-15T16:02:49.792Z", "modulo": "mondo", "turno": 3, "porta": "o_piena#1", "quando": "azione", "orologio": "o_piena", "segni": 1, "debito": 1, "msg": "world: gate opened, marks owed"}
+{"time": "2026-11-15T16:02:49.795Z", "modulo": "regia", "turno": 3, "orologio": "o_piena", "pieni": 2, "segmenti": 4, "debito": 0, "msg": "world: owed mark said by the Engine"}
+{"time": "2026-11-15T16:02:49.796Z", "modulo": "mondo", "turno": 3, "png": "png_mugnaio", "scena": "scena_ponte", "conseguenza": "o_piena@2", "msg": "world: NPC moves"}
+{"time": "2026-11-15T16:02:49.796Z", "modulo": "mondo", "turno": 3, "conseguenza": "o_piena@2", "tipo": "conseguenza", "orologio": "o_piena", "segno": 2, "visto": true, "cosa": "Il mugnaio scappa al ponte con i sacchi buoni.", "msg": "world: consequence (seen)"}
+{"time": "2026-11-15T16:02:49.798Z", "modulo": "regia", "turno": 3, "conseguenze": ["o_piena@2"], "msg": "world: consequences said by the Engine"}

@@ -98,7 +98,8 @@ A consequence about NPCs (`png`) is seen only if at least one of them is in the 
 the miller fleeing is not seen from the other one (and `detto` must be perceivable from every scene where the clock is
 active). Otherwise the event is **off-screen**: logged with `visto: false`, and its `tracce` surface when the PCs enter
 a scene where the clock is active, or where an NPC of the consequence (`png`) or of the danger's `cast` is present: the
-sentence is read after that scene's opening or return. During a scene (also in a one-scene session) the news arrive
+sentence is read after that scene's opening or return. An event that was not seen only because its NPCs were elsewhere
+(the clock was active where the PCs were) surfaces only with one of those NPCs: the place itself knows nothing of it. During a scene (also in a one-scene session) the news arrive
 with such an NPC from the next turn on, said by the Engine after the response. A clock active in no scene (the fronts'
 `orologi_extra`) has only off-screen consequences: the validator asks for `tracce` there, not `detto`. The −1 of the Game Master does not undo a consequence, and the mark is not applied twice. A clock that fills
 off-screen logs its doom (`destino_incombente`, `al_completo`) and says no ending; if the PCs then enter a scene
@@ -132,8 +133,8 @@ on a turn with a real decision. Level `((n − 1) mod 3) + 1`:
   next visible sign as material; mode B: a filler line or the due mark, as before. From the fourth stall on, S1 also
   owes a mark to that danger's clock (the soft move was ignored: the world moves);
 - **S2** proactive clue: the first clue offered by a consequence, else one not yet revealed of the scene's node.
-  Mode A: a directive with the clue; mode B: the Engine says an available `indizio` line that reveals it and has no
-  gate on the action, otherwise falls back to S1;
+  Mode A: a directive with the clue; mode B: only a clue with an available `indizio` line that reveals it and has no
+  gate on the action, which the Engine says; with none, it falls back to S1;
 - **S3** an NPC present, or a memory, sums up 2–3 concrete leads, built from what the PCs know: places of the map
   known to them, not visited yet and not kept for the next session (`prossima_sessione`), facts already found, the
   last sign of the threat. Mode A: a directive with the

@@ -1,0 +1,80 @@
+T2 pg_nespola: Nespola guarda la lavagna sulla porta.
+T2 pg_livia: Livia controlla i cani chiusi nel fienile.
+T2 narratore: Nespola Tondi: «Nespola guarda la lavagna sulla porta».
+T2 narratore: Livia Sarti: «Livia controlla i cani chiusi nel fienile».
+T2 narratore: Le lettere sono grandi e tonde, tracciate piano con il carbone.
+T2 narratore: Ogni erre è rovesciata, con la pancia dalla parte sbagliata.
+T2 narratore: I cani schizzano fuori e corrono dritti al sentiero del bosco.
+T2 narratore: Scodinzolano e non ringhiano. Al limite degli alberi si fermano ad aspettare.
+T2 narratore: Dal crinale scende un corno di capra, lungo e stonato.
+T3 pg_livia: Livia osserva il recinto delle pecore.
+T3 pg_nespola: Nespola chiede a Berta chi altro sapeva della chiave.
+T3 narratore: Livia Sarti: «Livia osserva il recinto delle pecore».
+T3 narratore: Nespola Tondi: «Nespola chiede a Berta chi altro sapeva della chiave».
+T3 narratore: Il cancello è intero, e il chiavistello è al suo posto.
+T3 narratore: Dentro, le pecore ci sono tutte, e ruminano tranquille.
+T3 narratore: Nello stazzo una pecora bela, e un'altra le risponde. Dal paese arriva odore di minestra e di fumo.
+T4 pg_nespola: Nespola conta le pecore dello stazzo.
+T4 pg_livia: Livia guarda i pali del cancello.
+T4 narratore: Nespola Tondi: «Nespola conta le pecore dello stazzo».
+T4 narratore: Livia Sarti: «Livia guarda i pali del cancello».
+T4 png_berta: Allora? Le pecore non aspettano, e quelli lassù nemmeno.
+T4 narratore: Sui pali ci sono nomi di pecore incisi col coltello: Brina, Rosella, Moretta.
+T4 narratore: Le erre sono rovesciate, tutte quante.
+T4 narratore: Nella Torre Mozza si accende un fuoco, e i muri rotti si arrossano.
+T5 pg_livia: Livia chiede a Berta del marito.
+T5 pg_nespola: Nespola cerca impronte vicino al fienile.
+T5 narratore: Livia Sarti: «Livia chiede a Berta del marito».
+T5 narratore: Nespola Tondi: «Nespola cerca impronte vicino al fienile».
+T5 narratore: Berta si tira lo scialle sulle spalle e guarda la porta di casa.
+T5 png_berta: Noi Benni non dobbiamo niente a nessuno. Mai dovuto.
+T5 narratore: Berta si alza dalla panca, con gli occhi sul crinale.
+T5 png_berta: Se non sale nessuno, aspetto qui con la chiave. E all'alba sarò sola.
+T6 pg_nespola: Nespola chiede a Berta se qualcuno è salito alla torre.
+T6 pg_livia: Livia guarda il crinale.
+T6 narratore: Nespola Tondi: «Nespola chiede a Berta se qualcuno è salito alla torre».
+T6 narratore: Livia Sarti: «Livia guarda il crinale».
+T6 png_berta: Questo non lo so. Io so di pecore e di figli.
+T6 narratore: Ugo batte la pala per terra due volte.
+T6 png_ugo: Paese. Sempre domande, mai carbone.
+T6 narratore: I cani di Spinalba abbaiano tutti insieme, poi tacciono di colpo.
+T6 narratore: Berta guarda il crinale e si stringe nella mantella: la notte avanza, e nessuno è ancora salito.
+T7 sistema: Nuova scena: La carbonaia di Ugo, a notte.
+T7 narratore: La radura della carbonaia è calda, e il fumo sa di legna dolce. Il mulo scuote la testa, legato alla capanna, e sopra gli alberi si vede la torre, nera sul cielo. Ugo è accanto alla carbonaia, con la pala in mano: che cosa fate?
+T8 pg_livia: Livia guarda le impronte sul sentiero.
+T8 pg_nespola: Nespola dice a Ugo che gli condona le tre monete se le racconta dove era stanotte.
+T8 narratore: Livia Sarti: «Livia guarda le impronte sul sentiero».
+T8 narratore: Nespola Tondi: «Nespola dice a Ugo che gli condona le tre monete».
+T8 narratore: Nel fango ci sono impronte piccole, di piedi nudi con le unghie lunghe.
+T8 narratore: Accanto ci sono quelle di un paio di stivali da ragazzo, a passo lungo. A tratti gli stivali vanno davanti a tutti.
+T8 narratore: Ugo si toglie il cappello e se lo rigira tra le mani.
+T8 png_ugo: Ieri notte? Alla carbonaia, il fuoco non si lascia.
+T8 narratore: La luna esce dalle nuvole e fa bianca la torre sul crinale.
+T8 narratore: Ugo ha il viso scuro: dal paese è salito un ragazzo a dirgli che il suo carbone non lo vuole più nessuno.
+T9 pg_nespola: Nespola chiede a Ugo che cosa ha visto sul sentiero.
+T9 pg_livia: Livia aspetta vicino alla carbonaia.
+T9 narratore: Nespola Tondi: «Nespola chiede a Ugo che cosa ha visto sul sentiero».
+T9 narratore: Livia Sarti: «Livia aspetta vicino alla carbonaia».
+T9 narratore: Ugo si gratta la barba bruciacchiata e guarda altrove.
+T9 png_ugo: Io non vedo niente. Guardo il fuoco, io.
+T9 narratore: Un ciocco crolla dentro la carbonaia, e la terra si crepa. Un filo di fumo bianco sale dritto tra i faggi.
+T10 narratore: La carbonaia sbuffa, e da una crepa esce una lingua di fuoco.
+T10 narratore: Ugo corre con la pala e impreca: da solo non ce la fa.
+T11 narratore: Due colpi di corno, corti e vicini: i goblin chiamano.
+T11 narratore: Il fumo della carbonaia si piega e sparisce tra i rovi.
+T11 narratore: Dietro, contro la roccia, c'è un arco basso di pietre squadrate. Ne esce un'aria fredda che sa di cantina.
+T12 narratore: Vi tornano in mente le strade ancora aperte: La Torre Mozza; Dallo stazzo non manca nemmeno una pecora; Due colpi di corno, corti e vicini: i goblin chiamano.
+T13 pg_nespola: Nespola dice a Ugo che rinuncia alle tre monete e che domani se ne va, e gli chiede gentilmente di raccontarle che cosa ha visto stanotte.
+T13 pg_livia: Livia resta accanto a Nespola e ascolta.
+T13 narratore: Nespola Tondi: «Nespola dice a Ugo che rinuncia alle tre monete».
+T13 narratore: Ugo si toglie il cappello e se lo rigira tra le mani.
+T13 png_ugo: L'ho già detto. Alla carbonaia.
+T13 narratore: Livia Sarti: «Livia resta accanto a Nespola e ascolta».
+T13 narratore: Lassù comincia a battere un tamburo, lento e sordo.
+T14 sistema: Nuova scena: L'ovile dei Benni, all'imbrunire.
+T14 narratore: All'ovile l'aria sa di lana bagnata, e dal fienile guaiscono i cani.
+T15 pg_livia: Livia resta accanto a Nespola e ascolta.
+T15 pg_nespola: Nespola promette a Berta di tenere le mani lontane dalla sua casa e le chiede, con garbo, di parlarle di Tonio.
+T15 narratore: Livia Sarti: «Livia resta accanto a Nespola e ascolta».
+T15 narratore: Nespola Tondi: «Nespola promette a Berta di tenere le mani lontane».
+T15 narratore: Il fuoco della torre divampa, e le scintille volano oltre i muri.
