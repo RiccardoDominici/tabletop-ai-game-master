@@ -161,6 +161,7 @@ prove:
     png_non_agisce: "{nome}'s turn: is {condizione}, does not act."
     turno_png: "{nome}'s turn: {frase} Details: {dettagli}"
     morte_venti: "natural twenty: regains consciousness with 1 hit point"
+    morte_senza_soccorso: "Nobody is standing to help them: the death saves decide now."
     morte_morto: "failures {n} of {n}: DEAD"
     morte_stabile: "successes {n} of {n}: stable, still unconscious"
     morte_parziale: "{esito} (successes {successi}, failures {fallimenti})"

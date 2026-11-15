@@ -177,6 +177,19 @@ describe('combattimento alla B/X e alla PbtA', () => {
     expect(r.fatti.join(' ')).toMatch(/a è a terra: tiro salvezza contro la morte 1 contro CD 10 → fallimenti 1 su 1: è MORTO/);
   });
 
+  it('every PC down: nobody can help, the dying PC\'s death saves are rolled to the end before the fight closes', () => {
+    // a 12, x 6; x hits a for 20 (a is the only PC: down); saves 12, 3, 15 → three successes: stable.
+    const { g, stato } = scontro(combattimentoSrd(), { pg_a: 10, png_x: 10 }, [10, 5, 12, 3, 15, 11], () => 20);
+    const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 2 }, { id: 'png_x', lato: 'png' as const, mod: 1 }];
+    g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
+    const r = g.dopoAzioni({ turno: 2, attacchi: [], autori: ['pg_a'], candidati: () => cand });
+    const tutto = r.fatti.join(' ');
+    expect(tutto).toMatch(/Nessuno è in piedi per soccorrerli/);
+    expect(tutto).toMatch(/successi 3 su 3: è stabile/);
+    expect(r.finito).toMatch(/PG/);
+    expect(stato.aTerra('pg_a')).toBe(true);
+  });
+
   it('surprise in the set\'s data: read, and its errors for the validator', () => {
     const errori: string[] = [];
     const letto = leggiCombattimento({ sorpresa: { dado: 6, fino_a: 2, condizione: 'paralizzato' } }, bx, new Set(), errori);

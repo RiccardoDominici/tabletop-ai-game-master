@@ -352,13 +352,13 @@ export class GestoreCombattimento {
     for (const p of s.partecipanti) this.controllaZero(p, fatti);
     if (!this.aTurni) {
       // Senza iniziativa niente turni: solo la fine dello scontro.
-      this.controllaFine(fatti);
+      this.controllaFine(fatti, { turno: o.turno, tiri });
       return this.chiudi(o.turno, fatti, tiri);
     }
     // Il passo di PG appena giocato è consumato; appena iniziato si parte dal primo passo.
     if (!appenaIniziato) this.avanza(fatti);
     for (let guardia = 0; guardia < 60 && this.s; guardia++) {
-      if (this.controllaFine(fatti)) break;
+      if (this.controllaFine(fatti, { turno: o.turno, tiri })) break;
       const p = this.s.passi[this.s.indice];
       if (!p) {
         this.avanza(fatti);
@@ -370,7 +370,7 @@ export class GestoreCombattimento {
         continue;
       }
       for (const id of p.attori) this.inizioTurnoPg(id, o.turno, fatti, tiri);
-      if (this.controllaFine(fatti)) break;
+      if (this.controllaFine(fatti, { turno: o.turno, tiri })) break;
       if (p.attori.some((id) => this.puoAgire(id))) break;
       this.avanza(fatti);
     }
@@ -520,15 +520,33 @@ export class GestoreCombattimento {
   }
 
   /** Fine dello scontro: nemici fuori combattimento, o PG tutti a terra. true se è finito. */
-  private controllaFine(fatti: string[]): boolean {
+  private controllaFine(fatti: string[], tiriDelTurno?: { turno: number; tiri: TiroMostrato[] }): boolean {
     const s = this.s;
     if (!s) return true;
     const fuori = (p: Partecipante): boolean => p.esito !== 'in_gioco' || this.d.stato.aTerra(p.id);
     const png = s.partecipanti.filter((p) => p.lato === 'png');
     const pg = s.partecipanti.filter((p) => p.lato === 'pg');
     if (png.length && png.every(fuori)) return this.termina(testo(png.some((p) => p.esito === 'fuggito') ? 'prove.combattimento.fine_fuggiti' : 'prove.combattimento.fine_nemici'), fatti);
-    if (pg.length && pg.every(fuori)) return this.termina(testo('prove.combattimento.fine_pg'), fatti);
+    if (pg.length && pg.every(fuori)) {
+      if (tiriDelTurno) this.morteSenzaSoccorso(pg, tiriDelTurno.turno, fatti, tiriDelTurno.tiri);
+      // A natural 20 (SRD) puts a PC back on its feet with 1 HP: then the fight goes on.
+      if (pg.every(fuori)) return this.termina(testo('prove.combattimento.fine_pg'), fatti);
+    }
     return false;
+  }
+
+  /**
+   * Every PC is down: nobody can help the dying ones, so their death saves are rolled now, to the end (stable or
+   * dead). Before, the fight ended with them dying and no rule ever rolled again (SRD run of 15 November).
+   */
+  private morteSenzaSoccorso(pg: Partecipante[], turno: number, fatti: string[], tiri: TiroMostrato[]): void {
+    const morenti = pg.filter((p) => p.esito === 'in_gioco' && p.tiriMorte && this.d.stato.aTerra(p.id));
+    if (!morenti.length) return;
+    fatti.push(testo('prove.combattimento.morte_senza_soccorso'));
+    for (const p of morenti) {
+      for (let i = 0; i < 10 && p.esito === 'in_gioco' && p.tiriMorte && this.d.stato.aTerra(p.id); i++) this.inizioTurnoPg(p.id, turno, fatti, tiri);
+    }
+    this.d.log.info({ morenti: morenti.map((p) => ({ id: p.id, esito: p.esito, pf: this.d.stato.puntiFerita(p.id)?.attuali })) }, 'combattimento: every PC down, the death saves rolled to the end');
   }
 
   /** Fine dello scontro (anche dal master). Le condizioni a 0 restano; le altre finiscono. */

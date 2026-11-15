@@ -99,7 +99,9 @@ combattimento:
    duration. Their effects enter the rolls: advantage or disadvantage with the reason on the sheet, critical, failed saves,
    lost turn.
 5. **End**: enemies on the ground or fled, all PCs on the ground, failed morale (B/X), or «Termina combattimento» (End
-   combat). Morale is also rolled when the opening blow knocks down an NPC: before, its fact was lost and whoever fled
+   combat). When every PC is down nobody can help the dying ones: before the fight closes, their death saves are
+   rolled to the end, stable or dead (a natural 20 that puts one back up keeps the fight going). Before, the fight
+   closed with them dying and nothing ever rolled again (SRD run of 15 November). Morale is also rolled when the opening blow knocks down an NPC: before, its fact was lost and whoever fled
    stayed on stage (bug C3). Whoever flees is a required fact («Grosso fugge.» (Grosso flees.), §3.7).
 6. **Narrator**: every NPC attack arrives as an explicit sentence before the details («Ruggero lo sgherro colpisce Corrado
    Lanzi: 6 danni» (Ruggero the thug hits Corrado Lanzi: 6 damage), «… manca …» (… misses …)), and the prompt asks to

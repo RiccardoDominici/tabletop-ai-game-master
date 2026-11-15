@@ -82,7 +82,7 @@ T5: arbiter «difficile», card CD 17 from the scene check `p_berta_chiave`: cor
 | BF: a sneak attack with a short sword rolled with Strength though the arbiter said Dexterity | the set's «Attacco furtivo» is a melee attack with Strength (manual p. 9, 53): correct | — |
 | BF T11: attacks on a goblin sentry with no sheet resolved «sì, ma» | known C5 (no minion sheets) | open |
 | SRD T16–T17: every PC at 0 HP, the harness kept their actions, Haiku narrated a grab and a door broken | bug: the narrator got the player's text as the action to answer | fixed, `a852ca1` |
-| SRD T15: the fight ends «i PG sono tutti a terra»; a dying PC rolls no more death saves after it | design gap: death saves happen only inside a fight | open |
+| SRD T15: the fight ends «i PG sono tutti a terra»; a dying PC rolls no more death saves after it | gap: death saves happened only inside a fight | fixed: when every PC is down, the dying ones roll to the end before the fight closes, `this commit` |
 
 ## 7. Combat and turns
 
