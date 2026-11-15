@@ -8,7 +8,7 @@
  * feeds the facts; the counts of `volte` are saved in the snapshot.
  */
 import { temaPresente } from '../repertorio/pertinenza';
-import type { EsitoTiroMondo, TiroDelMondo } from './tiri';
+import type { EsitoTiroMondo, RichiestaTiroMondo } from './tiri';
 
 export const QUANDO = ['cambio_scena', 'lascia_scena', 'resta_in_scena', 'battuta', 'indizio', 'azione', 'prova_fallita', 'scontro'] as const;
 export type Quando = (typeof QUANDO)[number];
@@ -172,7 +172,7 @@ export class PorteDelMondo {
    * within its `volte`. A gate with `tiro` asks `tira` (the world's roll hook) and owes its marks only on a success;
    * only successes count for `volte`. Returns the debts, in the order of the gates, and the failed rolls.
    */
-  fatti(fatti: readonly FattoDelGioco[], tira?: { tiro: TiroDelMondo; turno: number }): Debito[] & { falliti?: TiroFallito[] } {
+  fatti(fatti: readonly FattoDelGioco[], tira?: { tiro: (r: RichiestaTiroMondo) => EsitoTiroMondo; turno: number }): Debito[] & { falliti?: TiroFallito[] } {
     const out: Debito[] & { falliti?: TiroFallito[] } = [];
     const falliti: TiroFallito[] = [];
     for (const p of this.porte) {

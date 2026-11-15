@@ -56,9 +56,11 @@ when its fact happens, at most `volte` times per session (default: no limit):
 **Uncertain outcomes are rolled, never decided by the AI** (Riccardo, 15 November). A gate can carry
 `tiro: {dado: 6, almeno: 4, visibile: false}`: when its fact happens the Engine rolls, Game Master side and hidden by
 default, and the marks are owed only on a success (only successes count for `volte`). The roll goes through one hook,
-`tiroDelMondo` / `TiroDelMondo` in `mondo/tiri.ts`, passed to the world as the option `tira`; without it the world uses
-its own crypto dice, whose seed and counter are saved in the snapshot. The Game Master roll path (checks and rolls,
-`prove/`) can replace the hook in `Regia.nuovoMondo` to show a roll at the table when `visibile` asks for it.
+`tiroDelMondo` / `TiroDelMondo` in `mondo/tiri.ts`, passed to the world as the option `tira`. The world hands its own
+crypto dice to the hook with every request; their seed and counter are saved in the snapshot, so a resume replays them.
+`Regia.nuovoMondo` passes the Game Master roll path (`prove/tiri-master.ts`): it rolls with the Engine's dice when the
+campaign has sheets (saved with the checks' state), otherwise with the world's dice it was handed, logs the roll, lists
+it on the panel and shows it at the table when `visibile` or `regole.tiri_master` asks for it.
 
 An owed mark is **due** at once: it ignores `segno_al_massimo_ogni` (it is a fact, not time) but keeps one mark per
 clock per response and two clocks per response, and it waits for the next response if it cannot go out now. If the

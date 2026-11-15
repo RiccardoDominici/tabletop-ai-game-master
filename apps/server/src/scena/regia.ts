@@ -117,7 +117,6 @@ import type { FattoDelGioco } from '../mondo/porte';
 import { mossaDiStallo, type MossaStallo } from '../mondo/stallo';
 import { TiriGiocatoriRegia, type TiriGiocati } from './tiri-giocatori';
 import { TiriDelMaster } from '../prove/tiri-master';
-import { DadiCrittografici } from '../prove/dadi';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
 import { indiziCampagna } from '../campagna/indizi';
@@ -542,12 +541,12 @@ export class Regia {
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');
-    // The Game Master's own rolls: the Engine's dice when the campaign has sheets, otherwise dice of their own.
-    const dadiPropri = new DadiCrittografici();
+    // The Game Master's own rolls: the Engine's dice when the campaign has sheets, otherwise the world's own dice that
+    // the world hands to the hook (saved in the world's snapshot: a resume replays them).
     let carteSenzaProve = 0;
     this.tiriDelMaster = new TiriDelMaster({
       modo: () => po?.tiri?.master ?? 'nascosti',
-      dadi: () => (this.prove?.attivo ? this.prove.dadiDelMotore : dadiPropri),
+      dadi: () => (this.prove?.attivo ? this.prove.dadiDelMotore : null),
       log: opzioni.log.child({ modulo: 'prove' }),
       nuovoIdTiro: () => (this.prove?.attivo ? this.prove.stato.nuovoIdTiro() : `tm${++carteSenzaProve}`),
       nome: () => testoFisso('prove.master.nome'),
@@ -1277,7 +1276,7 @@ export class Regia {
       presenti: () => this.pngPresentiFisici(),
       // Uncertain world outcomes (gates with `tiro`) roll through the world's hook (mondo/tiri.ts): the Game Master's
       // roll path (prove/tiri-master.ts), hidden or shown at the table by the campaign's `regole.tiri_master`.
-      tira: (r) => this.tiriDelMaster.tira(r),
+      tira: (r, dadiDelMondo) => this.tiriDelMaster.tira(r, dadiDelMondo),
       log: this.o.log.child({ modulo: 'mondo' }),
       // Every consequence is canon: it goes into the session's narration log too (docs/mondo.md, «Log and state»).
       registra: (v) => this.o.registroNarrazioni.scrivi({ sessione: this.sessione, ...v, tipo: 'mondo', origine: v.tipo }),

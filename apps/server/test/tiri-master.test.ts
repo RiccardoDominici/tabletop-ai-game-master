@@ -25,14 +25,28 @@ describe('which Game Master rolls the table sees', () => {
   it('rolls with the given dice, keeps the last rolls with their reason, shows only what the rule says', () => {
     const mostrate: string[] = [];
     let n = 0;
+    // The world's own dice must stay untouched while the Engine's dice exist.
+    const delMondo = new DadiACopione([1]);
     const t = new TiriDelMaster({ modo: () => 'a_volte', dadi: () => new DadiACopione([5, 1]), log: loggerMuto(), nuovoIdTiro: () => `t${++n}`, nome: () => 'Il master', mostra: (c) => mostrate.push(`${c.id}:${c.dado}`) });
-    expect(t.tira({ origine: 'o_x#0', motivo: 'o_x: scontro', turno: 3, dado: 6, almeno: 4, visibile: false })).toEqual({ riuscito: true, valore: 5, dado: 6, almeno: 4, visibile: true });
-    expect(t.tira({ origine: 'o_x#1', motivo: 'o_x: lascia_scena', turno: 4, dado: 6, almeno: 2, visibile: false })).toMatchObject({ riuscito: true, visibile: false });
+    expect(t.tira({ origine: 'o_x#0', motivo: 'o_x: scontro', turno: 3, dado: 6, almeno: 4, visibile: false }, delMondo)).toEqual({ riuscito: true, valore: 5, dado: 6, almeno: 4, visibile: true });
+    expect(t.tira({ origine: 'o_x#1', motivo: 'o_x: lascia_scena', turno: 4, dado: 6, almeno: 2, visibile: false }, delMondo)).toMatchObject({ riuscito: true, visibile: false });
+    expect(delMondo.contatore).toBe(0);
     expect(mostrate).toEqual(['t1:5']);
     expect(t.registro().map((r) => [r.origine, r.motivo, r.valore, r.mostrato])).toEqual([
       ['o_x#0', 'o_x: scontro', 5, true],
       ['o_x#1', 'o_x: lascia_scena', 5, false],
     ]);
+  });
+});
+
+describe('a campaign without sheets: the Game Master rolls with the world\'s saved dice', () => {
+  it('no Engine dice: the roll uses the dice the world hands over, and is still logged and listed', () => {
+    const delMondo = new DadiACopione([3, 6]);
+    const t = new TiriDelMaster({ modo: () => 'nascosti', dadi: () => null, log: loggerMuto(), nuovoIdTiro: () => 'tm1', nome: () => 'Il master', mostra: () => undefined });
+    expect(t.tira({ origine: 'o_x#0', motivo: 'o_x: lascia_scena', turno: 2, dado: 6, almeno: 4, visibile: false }, delMondo)).toMatchObject({ riuscito: false, valore: 3 });
+    expect(t.tira({ origine: 'o_x#0', motivo: 'o_x: lascia_scena', turno: 3, dado: 6, almeno: 4, visibile: false }, delMondo)).toMatchObject({ riuscito: true, valore: 6 });
+    expect(delMondo.contatore).toBe(2);
+    expect(t.registro().map((r) => r.valore)).toEqual([3, 6]);
   });
 });
 

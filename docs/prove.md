@@ -519,8 +519,9 @@ nobody at the table rolls for it, the Engine rolls; the model never picks the re
 - **What rolls today.** The world's uncertain outcomes: an `avanza_quando` gate of a clock with `tiro: {dado, almeno,
   visibile?}` (docs/mondo.md §2, mondo-vivo's work): does the front advance when the PCs leave, does the news spread.
   The world asks its one roll hook (mondo/tiri.ts, `TiroDelMondo`); the director plugs in the Game Master's roll path,
-  prove/tiri-master.ts, which rolls with the Engine's dice (saved with the session; a campaign without sheets uses dice
-  of its own), logs every roll («Game Master roll», with the reason, the target and the probability), keeps the last 20
+  prove/tiri-master.ts, which rolls with the Engine's dice (saved with the checks' state) or, in a campaign without
+  sheets, with the world's own dice that the world hands to the hook with every request (saved in the world's snapshot,
+  so a resume replays them), logs every roll («Game Master roll», with the reason, the target and the probability), keeps the last 20
   for the panel and decides whether the table sees it. The NPCs' own rolls (reactions, NPC turns, initiative, death
   saves, morale) were already the Engine's and keep their cards as before.
 - **Visibility**, `regole.tiri_master` in campagna.yaml (validator `SCHEDA.regole`; test override `TAGM_TIRI_MASTER`):

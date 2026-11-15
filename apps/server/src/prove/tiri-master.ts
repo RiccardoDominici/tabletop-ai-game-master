@@ -55,8 +55,11 @@ const MAX_REGISTRATI = 20;
 
 export interface OpzioniTiriDelMaster {
   modo: () => TiriMaster;
-  /** The Engine's dice (saved with the session), or the world's own when the campaign has no sheets. */
-  dadi: () => FonteDadi;
+  /**
+   * The Engine's dice (saved with the checks' state), or null when the campaign has no sheets: then the roll uses the
+   * dice the world hands to the hook (saved in the world's snapshot), so a resume replays them too.
+   */
+  dadi: () => FonteDadi | null;
   log: Logger;
   /** A new card id («t18»), from the checks' state when there is one. */
   nuovoIdTiro: () => string;
@@ -71,16 +74,20 @@ export class TiriDelMaster {
 
   constructor(private readonly o: OpzioniTiriDelMaster) {}
 
-  /** The world's roll hook (TiroDelMondo): roll, log, and show it if the rule says so. */
-  tira(r: RichiestaTiroMondo): EsitoTiroMondo {
+  /**
+   * The world's roll hook (TiroDelMondo): roll, log, and show it if the rule says so. `dadiDelMondo`: the world's own
+   * dice, used when the campaign has no Engine dice.
+   */
+  tira(r: RichiestaTiroMondo, dadiDelMondo: FonteDadi): EsitoTiroMondo {
     const dado = Math.max(2, Math.min(100, Math.round(r.dado)));
-    const valore = this.o.dadi().tira(dado);
+    const motore = this.o.dadi();
+    const valore = (motore ?? dadiDelMondo).tira(dado);
     const riuscito = valore >= r.almeno;
     const { mostra, perche } = mostraTiroDelMaster(this.o.modo(), { visibile: r.visibile, dado, almeno: r.almeno });
     const id = this.o.nuovoIdTiro();
     this.registrati.push({ id, turno: r.turno, origine: r.origine, motivo: r.motivo, dado, almeno: r.almeno, valore, riuscito, mostrato: mostra });
     if (this.registrati.length > MAX_REGISTRATI) this.registrati.splice(0, this.registrati.length - MAX_REGISTRATI);
-    this.o.log.info({ turno: r.turno, origine: r.origine, motivo: r.motivo, dado: `d${dado}`, almeno: r.almeno, valore, riuscito, mostrato: mostra, perche, p: Math.round(probabilita(dado, r.almeno) * 100) / 100 }, 'Game Master roll');
+    this.o.log.info({ turno: r.turno, origine: r.origine, motivo: r.motivo, dado: `d${dado}`, almeno: r.almeno, valore, riuscito, mostrato: mostra, perche, dadi: motore ? 'motore' : 'mondo', p: Math.round(probabilita(dado, r.almeno) * 100) / 100 }, 'Game Master roll');
     if (mostra) this.o.mostra(cartaDelMaster(id, r.turno, this.o.nome(), dado, valore, riuscito));
     return { riuscito, valore, dado, almeno: r.almeno, visibile: mostra };
   }

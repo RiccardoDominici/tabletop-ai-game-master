@@ -16,9 +16,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   from the panel, the Game Master's background rolls, surprise, the C4 harness fix and the live verification are committed
   (d14f89c…d2f7ba4; evidence in docs/prove-verifica.md, live runs on both rule sets in manual and automatic mode done).
   Remaining, in order:
-  1. World dice without sheets: when the campaign has no prove engine, the Game Master roll hook should return nothing
-     and let the world use its own saved dice (resume replays them); today the director always passes `tira` and a
-     campaign without sheets gets fresh unsaved dice (prove/tiri-master.ts, Regia.nuovoMondo, mondo/tiri.ts).
+  1. ~~World dice without sheets~~ **Done**: the world hands its own saved dice to the roll hook with every request, and
+     the Game Master roll path uses them when there are no Engine dice, so a resume replays them and the log, the panel
+     and the voice line stay (mondo/tiri.ts, prove/tiri-master.ts, Regia.nuovoMondo).
   2. Dictation into the roll card: run it end to end once (only the number parser is tested, telefono/numeriDettati.ts).
   3. World questions written in a scene («is the guard awake?», with odds) and NPCs' own checks out of combat, through
      the same roll path and visibility rule (docs/prove.md §9).

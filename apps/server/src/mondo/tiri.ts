@@ -2,7 +2,11 @@
  * Rolls of the world (docs/mondo.md §2, «Uncertain outcomes»): when the campaign leaves a world outcome to chance (an
  * `avanza_quando` gate with `tiro`: does the front advance, does the news spread), the AI never decides it; the Engine
  * rolls, Game Master side, hidden by default. This is the ONE hook for those rolls: the director passes it to the world
- * (MondoInGioco, option `tira`), and the Game Master roll path (prove/) can replace it with its own function.
+ * (MondoInGioco, option `tira`), and the Game Master roll path (prove/tiri-master.ts) is what the director passes.
+ *
+ * The world hands its own dice to the hook with every request: a campaign without sheets has no Engine dice, and the
+ * world's dice are saved in its snapshot (seed and counter), so a resume replays them. The hook may use them or the
+ * Engine's (saved with the checks' state); it never draws from a source nobody saves.
  */
 import type { FonteDadi } from '../prove/dadi';
 
@@ -28,13 +32,14 @@ export interface EsitoTiroMondo {
   visibile: boolean;
 }
 
-/** A roll of the world: the request in, the outcome out. Never decided by a model. */
-export type TiroDelMondo = (r: RichiestaTiroMondo) => EsitoTiroMondo;
+/**
+ * A roll of the world: the request in, the outcome out. Never decided by a model. `dadiDelMondo` are the world's own
+ * dice (saved in the world's snapshot): the hook rolls with them when it has no saved dice of its own.
+ */
+export type TiroDelMondo = (r: RichiestaTiroMondo, dadiDelMondo: FonteDadi) => EsitoTiroMondo;
 
-/** The default hook: one die from the Engine's dice source (crypto, reproducible from seed and counter). */
-export function tiroDelMondo(dadi: FonteDadi): TiroDelMondo {
-  return (r) => {
-    const valore = dadi.tira(r.dado);
-    return { riuscito: valore >= r.almeno, valore, dado: r.dado, almeno: r.almeno, visibile: r.visibile };
-  };
-}
+/** The default hook: one die from the world's own dice (crypto, reproducible from seed and counter). */
+export const tiroDelMondo: TiroDelMondo = (r, dadi) => {
+  const valore = dadi.tira(r.dado);
+  return { riuscito: valore >= r.almeno, valore, dado: r.dado, almeno: r.almeno, visibile: r.visibile };
+};

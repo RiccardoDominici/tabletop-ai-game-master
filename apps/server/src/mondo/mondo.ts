@@ -98,11 +98,12 @@ export interface OpzioniMondo {
   /** NPCs in the current scene: a consequence about NPCs none of whom is here is not seen (docs/mondo.md §3). */
   presenti?: () => ReadonlySet<string>;
   /**
-   * The roll hook for uncertain world outcomes (mondo/tiri.ts): a gate with `tiro`. Absent = the world's own dice
-   * (crypto, seed and counter saved in the snapshot). The Game Master roll path can pass its own function here.
+   * The roll hook for uncertain world outcomes (mondo/tiri.ts): a gate with `tiro`. It receives the world's own dice
+   * (crypto, seed and counter saved in the snapshot) with every request; absent = roll with them. The director passes
+   * the Game Master roll path (prove/tiri-master.ts).
    */
   tira?: TiroDelMondo;
-  /** The world's dice (tests inject a script); ignored when `tira` is given. */
+  /** The world's dice (tests inject a script): handed to the hook, never replaced on resume. */
   dadi?: FonteDadi;
 }
 
@@ -142,13 +143,13 @@ export class MondoInGioco {
     this.visita.cambiatiDaProve.clear();
   }
 
-  /** The world's own dice (used when no roll hook is given). */
+  /** The world's own dice: handed to the roll hook, saved in the snapshot (a campaign without sheets rolls with them). */
   private dadi: FonteDadi;
-  private tira: TiroDelMondo;
+  private readonly tira: TiroDelMondo;
 
   constructor(private readonly o: OpzioniMondo) {
     this.dadi = o.dadi ?? new DadiCrittografici();
-    this.tira = o.tira ?? tiroDelMondo(this.dadi);
+    this.tira = o.tira ?? tiroDelMondo;
     const definiti = orologiDefiniti(o.campagna);
     this.mondo = o.campagna.mondo ?? { conseguenze: [], pericoli: [], orologiExtra: [] };
     this.porte = new PorteDelMondo(porteDegliOrologi(definiti, (msg) => o.log.warn({ campagna: o.campagna.id }, `world: ${msg}`)));
@@ -171,7 +172,7 @@ export class MondoInGioco {
    */
   fatti(fatti: readonly FattoDelGioco[], turno: number): EsitoFatti {
     const orologi = this.o.orologi();
-    const debiti = fatti.length ? this.porte.fatti(fatti, { tiro: (r) => this.tira(r), turno }) : [];
+    const debiti = fatti.length ? this.porte.fatti(fatti, { tiro: (r) => this.tira(r, this.dadi), turno }) : [];
     for (const f of debiti.falliti ?? []) {
       this.o.log.info({ turno, porta: f.porta, quando: f.quando, orologio: f.orologio, tiro: f.tiro }, 'world: GM roll for a gate failed, nothing owed');
     }
@@ -356,10 +357,11 @@ export class MondoInGioco {
     for (const [pg, testo] of s?.stallo?.ultime ?? []) this.stallo.ultime.set(pg, testo);
     this.indiziDatiDaStallo.clear();
     for (const i of s?.stallo?.indizi ?? []) this.indiziDatiDaStallo.add(i);
-    // The world's own dice continue their sequence (only when they are the ones in use: no external hook, no test dice).
-    if (s?.dadi && !this.o.tira && !this.o.dadi && /^[0-9a-f]{8,128}$/i.test(s.dadi.seme)) {
+    // The world's own dice continue their sequence (also with the director's hook: a campaign without sheets rolls the
+    // Game Master's rolls with them). Test dice stay as injected.
+    if (s?.dadi && !this.o.dadi && /^[0-9a-f]{8,128}$/i.test(s.dadi.seme)) {
       this.dadi = new DadiCrittografici(s.dadi.seme, Math.max(0, Math.floor(s.dadi.contatore)));
-      this.tira = tiroDelMondo(this.dadi);
+      this.o.log.info({ seme_lunghezza: s.dadi.seme.length, contatore: this.dadi.contatore }, 'world: own dice resumed from the snapshot');
     }
     if (s?.visita) {
       this.visita.ingresso = typeof s.visita.ingresso === 'number' ? s.visita.ingresso : this.visita.ingresso;
