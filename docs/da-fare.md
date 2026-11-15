@@ -12,14 +12,15 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 - the online documentation updated once everything works.
 
 ## In progress
-- **Checks and rolls (in progress, 15 November 2026)**: manual player rolls (default), automatic as an option, checks asked
+- **Checks and rolls (in progress, 15 November 2026; steps 1–6 below closed the same day, open leftovers marked)**: manual player rolls (default), automatic as an option, checks asked
   from the panel, the Game Master's background rolls, surprise, the C4 harness fix and the live verification are committed
   (d14f89c…d2f7ba4; evidence in docs/prove-verifica.md, live runs on both rule sets in manual and automatic mode done).
   Remaining, in order:
   1. ~~World dice without sheets~~ **Done**: the world hands its own saved dice to the roll hook with every request, and
      the Game Master roll path uses them when there are no Engine dice, so a resume replays them and the log, the panel
      and the voice line stay (mondo/tiri.ts, prove/tiri-master.ts, Regia.nuovoMondo).
-  2. Dictation into the roll card: run it end to end once (only the number parser is tested, telefono/numeriDettati.ts).
+  2. ~~Dictation into the roll card~~ **Done**: end to end with the real Whisper (apps/web/e2e/tiro-dettato.spec.ts,
+     docs/prove-verifica.md §6b).
   3. ~~World questions and NPCs' own checks out of combat~~ **Done**: `domande` of the scene sheet (odds or an NPC's
      check with its sheet), rolled once through the Game Master's path, the answer a world line for the narrator;
      validator `DOMANDE`, skill, guide, example in torre-mozza (mondo/domande.ts, docs/prove.md §9).
@@ -31,7 +32,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
      on a copy of the Engine (damage after a hit, initiative, death saves, the contest's other PC); the 2d6 difficulty
      stays secret (prove/dadi-tavolo.ts, docs/prove.md §8). Left with the Engine: NPC and side rolls, morale, the first
      initiative of a fight opened from the panel.
-  6. Not seen live: morale, flight, initiative by sides (unit tests only). ~~C5 minions without sheets~~ **Done**:
+  6. ~~Not seen live: morale, flight~~ **Done** live on torre-mozza with every die manual (docs/prove-verifica.md §6b);
+     initiative by sides still unit tests only (no example set uses it); a duplicate «Zirrà fugge.» line after a
+     narration that told the flight is open. ~~C5 minions without sheets~~ **Done**:
      `gregari` stat lines by type and per scene, materialised as the Engine's combatants; an attack at nobody with stats
      tells the narrator not to invent one; validator `SCHEDA.gregari` (campagna/gregari.ts, docs/prove.md §2).
 - **Final end-to-end pass on today's code** (not started): blind scripts for combat in turn order, off the rails (ignore the hook, attack the quest-giver, leave), doing nothing (stall), plus one dictated action; profiles A and B. Run it with one model server at a time (the Mac rebooted twice under memory pressure on 14 November).

@@ -2,7 +2,7 @@
  * Argomenti e ambiente di un esperimento (esegui.ts): copione, modalità, campagna, porta.
  *
  *   esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore]
- *             [--ore h] [--chiudi] [--tiri manuale|automatico] [--voce-vera] [--finto] [--lascia-server] [--partita-vera]
+ *             [--ore h] [--chiudi] [--tiri manuale|automatico] [--seme-giocatori <hex>] [--voce-vera] [--finto] [--lascia-server] [--partita-vera]
  *             --voce-vera su una porta di prova richiede TAGM_VOCE_URL (un servizio Qwen a parte, mai la 4611)
  * --sceneggiatore accende lo sceneggiatore (Claude Code: ogni chiamata usa l'abbonamento); di base è spento.
  * --ore h dà al server la durata della serata (0,5–8 ore, come il pannello) prima dell'«Inizia»: con 0,5 il
@@ -61,6 +61,8 @@ export interface OpzioniEsperimento {
   chiudi: boolean;
   /** `--tiri manuale|automatico`: who rolls the players' dice on the test server (null = the campaign decides). */
   tiri: 'manuale' | 'automatico' | null;
+  /** Seed of the headless players' dice (manual rolls); null = fresh dice each run. */
+  semeGiocatori: string | null;
 }
 
 export const PORTA_ESPERIMENTI = 4710;
@@ -104,7 +106,7 @@ export function urlVoceDiProva(porta: number, urlTesto: string | undefined): str
 export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsperimento {
   // Chi chiama con un ambiente qualsiasi (test, altri strumenti) ottiene lo stesso mapping del server.
   allineaVariabiliLegacy(env);
-  const conValore = new Set(['--campagna', '--uscita', '--turni', '--pausa-s', '--ore', '--tiri']);
+  const conValore = new Set(['--campagna', '--uscita', '--turni', '--pausa-s', '--ore', '--tiri', '--seme-giocatori']);
   const posizionali: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
@@ -114,7 +116,7 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
   const [copione, etichettaModo] = posizionali;
   // «B2» è il repertorio con le regole della versione 2 (è la modalità repertorio di oggi).
   const modo: ModoEsperimento | null = etichettaModo === 'B' || etichettaModo === 'B2' ? 'repertorio' : etichettaModo === 'A' ? 'improvvisa' : null;
-  if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore] [--ore h] [--chiudi] [--tiri manuale|automatico] [--voce-vera] [--finto] [--lascia-server]');
+  if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore] [--ore h] [--chiudi] [--tiri manuale|automatico] [--seme-giocatori <hex>] [--voce-vera] [--finto] [--lascia-server]');
 
   const campagna = valoreOpzione(argv, '--campagna') ?? CAMPAGNA_DEFAULT;
   const uscita = valoreOpzione(argv, '--uscita');
@@ -128,6 +130,9 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
   const tiriTesto = valoreOpzione(argv, '--tiri');
   if (tiriTesto !== null && tiriTesto !== 'manuale' && tiriTesto !== 'automatico') throw new ErroreArgomenti('--tiri vuole manuale o automatico');
   const tiri = tiriTesto as 'manuale' | 'automatico' | null;
+  // Manual rolls: the headless players' dice from a fixed seed (with TAGM_SEME_DADI for the Engine's, a run replays).
+  const semeGiocatori = valoreOpzione(argv, '--seme-giocatori');
+  if (semeGiocatori !== null && !/^[0-9a-f]{8,128}$/i.test(semeGiocatori)) throw new ErroreArgomenti('--seme-giocatori vuole un esadecimale di 8–128 cifre');
   if (uscita !== null && (path.isAbsolute(uscita) || uscita.split(/[\\/]/).includes('..'))) throw new ErroreArgomenti('--uscita è una cartella dentro esperimenti/risultati');
   if (!/^[a-z0-9][a-z0-9_-]*$/i.test(campagna) || !fs.existsSync(path.join(RADICE_REPO, 'campagne', campagna))) {
     throw new ErroreArgomenti(`campagna inesistente: campagne/${campagna}`);
@@ -176,5 +181,6 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
     ore,
     chiudi: argv.includes('--chiudi'),
     tiri,
+    semeGiocatori,
   };
 }

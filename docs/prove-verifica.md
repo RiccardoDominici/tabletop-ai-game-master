@@ -40,7 +40,7 @@ this page: 4891–4896 and 4893 for the e2e.
 | Wrong dice from the phone (wrong count, a 21, another PC's roll) | refused with a reason | refused | works | `test/prove-manuali-integrazione.test.ts` |
 | «Ferma la narrazione» while the table rolls | the wait ends, the actions go back to the players | as expected | works | same test |
 | Automatic rolls (`TAGM_TIRI_GIOCATORI=automatico`) | no request, no wait, the card keeps the DC | as expected | works | same test |
-| Dictation into the roll card («ho fatto 14») | fills the boxes | the parser is tested (`numeriDettati.test.ts`: digits, Italian and English words, articles); the microphone path in the roll card was **not** exercised end to end (no audio in this e2e) | partly verified | `e5a8145` |
+| Dictation into the roll card («ho fatto 14») | fills the boxes | the parser is tested (`numeriDettati.test.ts`: digits, Italian and English words, articles); end to end with the real Whisper in §6b (`tiro-dettato.spec.ts`) | works | `e5a8145` |
 
 ## 3. Checks asked by the Game Master
 
@@ -124,6 +124,37 @@ The headless players answered every request with their own dice.
 | After the fight | a dead PC does not act | the old harness still sent dead Nespola's actions; the fact said «è a terra: A zero punti ferita un personaggio muore…» | fixed: harness drops a dead PC's queue (`f27c629`), fact «è morto.» (`f8ec575`) |
 | Attacks on a creature without a sheet | — | T11: three attacks on the goblin sentry «sì, ma» (C5) | rule added (minions, §10) |
 
+## 6b. Live fight with manual rolls on every die, Basic Fantasy (15 November, after step 2)
+
+An invented fight script on torre-mozza's tower (`esperimenti/copioni/prove-verifica/scontro-torre.yaml`: four PCs
+attack Grosso, then Zirrà), the players' dice from a fixed seed (`--seme-giocatori`, the harness's new option) and the
+Engine's from `TAGM_SEME_DADI`, the rules arbiter for the checks (`TAGM_ARBITRO=regole`) so that the same dice give the
+same fight. The Engine's seed was chosen among three profile R runs (fake narrator) for the one where the morale
+check fails (0123…: 5 vs 7, holds; fedc…: 3 vs 7, holds; a1b2…: 9 vs 7, flees), then that fight was played with the
+Haiku narrator:
+
+`TAGM_PORTA=4922 TAGM_ARBITRO=regole TAGM_SEME_DADI=a1b2c3d4e5f60718293a4b5c6d7e8f90 esegui.ts esperimenti/copioni/prove-verifica/scontro-torre.yaml A --campagna torre-mozza --tiri manuale --seme-giocatori 00112233445566778899aabbccddeeff`
+(7 server turns, $0.0086; `esperimenti/risultati/prove-verifica/manuale-torre-scontro-A`; the profile R run with the
+first seed is `manuale-torre-scontro-R`, 12 turns).
+
+| Check | Seen | Verdict |
+|---|---|---|
+| Attack rolls are the players' | 1d20 + the sheet's bonus asked to each phone («Spada lunga (1d20 +3): 10», «Fionda (1d20 +4): 15»), against AC 14 | works |
+| Damage is the player's | after a hit only: «Danni: Fionda (1d4): 3» → «COLPITO, 3 danni»; the automatic magic missile asks only its damage («Danni: Dardo incantato (1d6 +1): 3» → 4 damage); a miss asks nothing; Nespola's natural 20 → «Danni: Spada corta (1d6): 6» | works |
+| Initiative is the players' | when the fight opens, every PC at once («Iniziativa (1d6 −1): 6», «(1d6 +2): 4»…), the NPCs' from the Engine; R run: re-rolled by the players at rounds 2 and 3 («Round 2, iniziativa ritirata: Nespola Tondi 7, Livia Sarti 7, Zirrà 4…») | works |
+| Death save is the player's | R run: Zirrà drops Nespola, at her step «Tiro salvezza contro la morte (1d20): 19» → «successi 1 su 1: è stabile» (one save, as the set says) | works |
+| Morale | Grosso falls to the magic missile; the Engine's 2d6 for the rest: «Morale dei nemici: 9 contro 7 → CEDONO e fuggono (Zirrà)»; R runs: 5 and 3 vs 7, «tengono» | works |
+| Flight | the fight ends («i nemici sono fuggiti o fuori combattimento»); later attacks on Zirrà: «Zirrà ha preso la fuga e non è più qui: nessun tiro»; Haiku: «si volta e sale di corsa lungo la scala rotta… Sparisce oltre il crollo» | works; the Engine also added its own «Zirrà fugge.» after that narration (the told-facts guard missed «sparisce», a duplicate line) |
+| Surprise | the side attacked (the NPCs) rolls 1d6: «i nemici tirano 6 su 1d6: non sono colti di sorpresa» | works |
+| Initiative by sides | not on torre-mozza: its set rolls individual initiative each round (`iniziativa: {tipo: individuale, ogni_round: true}`) | not seen live (unit tests) |
+| DC never said, dice as entered | no CD/CA number in `tavolo.md`; 0 × «card dice differ», 0 × «not asked» | works |
+
+**Dictation into the roll card**, live (`apps/web/e2e/tiro-dettato.spec.ts`, port 4921, the invented campaign
+`prove`, manual rolls, the local whisper-server already running on 4614): Teo's phone gets the roll card for the
+padlock (one d20), the fake microphone plays «ho fatto quattordici» (macOS `say`, Alice), Whisper transcribes it in
+8.4 s, the box shows 14, «Fatto»; the server logs `valori: [14], da: dettato` and the card «Rapidità di mano
+(Destrezza): 14 +7 = 21 → riuscita». Passes (32 s). Screenshots `logs/screenshots/tiro-dettato-*.png`.
+
 ## 7. Live runs with manual rolls, SRD 5.2
 
 **Profile A**, `TAGM_PORTA=4895 esegui.ts pressione A --campagna prova-f0 --tiri manuale` (8 turns, $0.018,
@@ -183,8 +214,7 @@ roll at the scene change hidden by default («nascosto»).
 
 ## 10. Still open
 
-- **Dictation into the roll card**: the number parser is tested; the microphone path with real audio was not run end to
-  end (it needs the local speech model).
+- ~~**Dictation into the roll card**~~: run end to end with the real local Whisper (§6b).
 - ~~**The rules arbiter cannot tell easy from hard**~~: it follows the set's ladder from signals (§5: 20/20 and 9/10).
   Haiku still calls lifting a cart «impossibile» (§5), with a reason that contradicts its own verdict.
 - ~~**Attacks on creatures without a sheet**~~ (C5): minions with a stat line by type (`gregari`, docs/prove.md §2),
@@ -199,7 +229,8 @@ roll at the scene change hidden by default («nascosto»).
 - ~~**The Game Master's own rolls** cover the world's gates only~~: world questions written in a scene and NPCs' own
   checks out of combat go through the same path (`domande`, docs/prove.md §9; test/mondo-domande.test.ts; example in
   torre-mozza). Not yet seen in a live run.
-- **Morale and flight** were not reached in the live runs (no NPC fell); they are covered by `test/combattimento.test.ts`
-  and `test/fuori-gioco.test.ts`.
+- ~~**Morale and flight**~~: seen live on torre-mozza (§6b). Initiative by sides is still unit-tested only (no example
+  campaign's set uses it). The told-facts guard added «Zirrà fugge.» after a narration that told the flight with
+  «sparisce oltre il crollo»: a duplicate line, open.
 - **A private action's narrator line** «Eliandro, la pastora alza lo sguardo…» reached the table once in the BF run
   (no content of the question): the private guard's area (docs/e2e-finale.md A).

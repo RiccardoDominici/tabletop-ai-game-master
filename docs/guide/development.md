@@ -111,8 +111,9 @@ TAGM_PORTA=4710 scripts/arresto.sh
 ```
 
 The specs assume the program rolls the dice (`TAGM_TIRI_GIOCATORI=automatico`): with the players' manual rolls, the
-campaign default, an action that needs a check waits for a die no spec enters. Only `e2e/tiri-manuali.spec.ts`
-tests manual rolls, with the server line written in its header.
+campaign default, an action that needs a check waits for a die no spec enters. Only `e2e/tiri-manuali.spec.ts` and
+`e2e/tiro-dettato.spec.ts` (dictation into the roll card, with the real local Whisper and a WAV for the fake
+microphone) test manual rolls, with the server line written in their header.
 
 The first line starts a test server on 4710 with the scripted narrator and the fake voice (no cost); the second
 runs the tests; the third stops only that server.
@@ -178,6 +179,16 @@ one mode on the test server use `--tiri manuale` or `--tiri automatico`:
 
 ```
 TAGM_PORTA=4891 npx tsx apps/server/src/esperimenti/esegui.ts torre-mozza/pressione A --campagna torre-mozza --tiri automatico
+```
+
+To replay a manual-roll run, fix both the Engine's dice (`TAGM_SEME_DADI`) and the headless players' dice
+(`--seme-giocatori <hex>`, one sequence per PC derived from it); `TAGM_ARBITRO=regole` keeps the checks' decisions
+the rules arbiter's, so the same dice give the same fight with the Haiku narrator:
+
+```
+TAGM_PORTA=4922 TAGM_ARBITRO=regole TAGM_SEME_DADI=a1b2c3d4e5f60718293a4b5c6d7e8f90 npx tsx apps/server/src/esperimenti/esegui.ts \
+  esperimenti/copioni/prove-verifica/scontro-torre.yaml A --campagna torre-mozza --tiri manuale \
+  --seme-giocatori 00112233445566778899aabbccddeeff
 ```
 
 In turn-based combat the harness sends only the actions of the PCs on turn; the others wait for their own turn

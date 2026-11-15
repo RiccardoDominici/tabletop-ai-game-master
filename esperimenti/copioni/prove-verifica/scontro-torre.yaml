@@ -1,0 +1,27 @@
+# Invented fight script for the Basic Fantasy set in manual mode (verification of 15 November, docs/prove-verifica.md
+# §6b): the tower scene of torre-mozza, clear attacks only, so the dice decide; the fight runs in turn order (the
+# harness sends only the PC on turn), the players roll their own attack and damage dice, a fallen NPC calls the set's
+# morale check for the others, a failed one makes them flee.
+scena: scena_torre
+pg: [pg_livia, pg_fulco, pg_nespola, pg_eliandro]
+turni:
+  - - {pg: pg_livia, azione: "Colpisco Grosso con la spada lunga"}
+    - {pg: pg_fulco, azione: "Colpisco Grosso con la mazza"}
+    - {pg: pg_eliandro, azione: "Lancio il dardo incantato contro Grosso"}
+    - {pg: pg_nespola, azione: "Tiro con la fionda a Zirrà"}
+  - - {pg: pg_livia, azione: "Colpisco ancora Grosso con la spada lunga"}
+    - {pg: pg_fulco, azione: "Colpisco Grosso con la mazza"}
+    - {pg: pg_eliandro, azione: "Lancio il dardo incantato contro Grosso"}
+    - {pg: pg_nespola, azione: "Colpisco Zirrà con la spada corta"}
+  - - {pg: pg_livia, azione: "Colpisco Zirrà con la spada lunga"}
+    - {pg: pg_fulco, azione: "Colpisco Zirrà con la mazza"}
+    - {pg: pg_eliandro, azione: "Lancio il dardo incantato contro Zirrà"}
+    - {pg: pg_nespola, azione: "Colpisco Zirrà con la spada corta"}
+  - - {pg: pg_livia, azione: "Colpisco Zirrà con la spada lunga"}
+    - {pg: pg_fulco, azione: "Colpisco Zirrà con la mazza"}
+    - {pg: pg_eliandro, azione: "Colpisco Zirrà con il pugnale"}
+    - {pg: pg_nespola, azione: "Colpisco Zirrà con la spada corta"}
+  - - {pg: pg_livia, azione: "Colpisco Zirrà con la spada lunga"}
+    - {pg: pg_fulco, azione: "Colpisco Zirrà con la mazza"}
+    - {pg: pg_eliandro, azione: "Colpisco Zirrà con il pugnale"}
+    - {pg: pg_nespola, azione: "Colpisco Zirrà con la spada corta"}

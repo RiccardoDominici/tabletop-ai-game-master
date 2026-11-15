@@ -28,7 +28,8 @@
  */
 import '../variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve precedere le letture dell'ambiente
 import { spawnSync } from 'node:child_process';
-import { randomInt } from 'node:crypto';
+import { createHash, randomInt } from 'node:crypto';
+import { DadiCrittografici } from '../prove/dadi';
 import fs from 'node:fs';
 import path from 'node:path';
 import { io as connetti, type Socket } from 'socket.io-client';
@@ -135,13 +136,15 @@ interface TiroGiocato {
  * Manual rolls (docs/prove.md §8): a headless phone answers each of its roll requests as a player at the table would,
  * a moment later, with its own fair dice (node:crypto). The request never carries the DC, so the harness cannot game it.
  */
-function rispondiAiTiri(etichetta: string, pg: string, t: Client, giocati: TiroGiocato[]): void {
+function rispondiAiTiri(etichetta: string, pg: string, t: Client, giocati: TiroGiocato[], seme: string | null = null): void {
   const fatti = new Set<string>();
+  // A fixed seed (--seme-giocatori): each PC's own sequence, so the order the requests arrive in does not matter.
+  const dadi = seme ? new DadiCrittografici(createHash('sha256').update(`${seme}:${pg}`).digest('hex').slice(0, 32)) : null;
   t.on('tiri:richiesti', (richieste) => {
     for (const r of richieste) {
       if (fatti.has(r.id)) continue;
       fatti.add(r.id);
-      const valori = Array.from({ length: r.quanti }, () => randomInt(1, r.facce + 1));
+      const valori = Array.from({ length: r.quanti }, () => (dadi ? dadi.tira(r.facce) : randomInt(1, r.facce + 1)));
       setTimeout(() => {
         t.emit('tiro:inserisci', { id_pg: pg, id: r.id, valori }, (e: Esito) => {
           giocati.push({ pg, id: r.id, etichetta: r.etichetta, dadi: `${r.quanti}d${r.facce}`, valori, ok: e.ok });
@@ -347,7 +350,7 @@ async function main(): Promise<void> {
     if (!e.ok) throw new Error(`scelta di ${pg} rifiutata: ${e.errore}`);
     telefoni.set(pg, t);
     // Manual rolls: the headless player rolls its own dice at the table and enters them (docs/prove.md §8).
-    rispondiAiTiri(etichetta, pg, t, tiriGiocati);
+    rispondiAiTiri(etichetta, pg, t, tiriGiocati, o.semeGiocatori);
   }
 
   // 3. Scena di partenza del copione (prima dell'inizio il cambio non legge nessuna apertura), poi i turni.
