@@ -184,6 +184,9 @@ describe('server, mode B: an owed mark', () => {
     s = await turno(tel, 'pg_anna', s, 'Anna tocca la ruota bagnata.');
     const t3 = prova.turni().find((r) => r['turno'] === 3)!;
     expect(t3['segni_aggiunti']).toEqual(['nar_cortile']);
+    // Mark 2 makes the miller run to the bridge: in mode B the Engine says the line written for that consequence.
+    expect(t3['mondo_detto']).toEqual(['o_piena@2']);
+    expect(s.trascrizione.filter((v) => v.turno === 3).map((v) => v.testo)).toContain('La ruota si ferma di colpo. Il mugnaio afferra un sacco e corre fuori, verso il ponte.');
     expect(t3['segni_dovuti_detti']).toEqual([]);
     const o = (await master.stato()).orologi.find((x) => x.id === 'o_piena')!;
     expect(o.pieni).toBe(2);

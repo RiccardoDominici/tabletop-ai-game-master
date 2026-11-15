@@ -52,3 +52,12 @@ battute:
     effetti:
       rivela_indizi: [i_sacco]
     max_usi: 1
+  # Written for the consequence o_piena@2: no themes, so only the Engine says it (mode B).
+  - id: nar_ruota_ferma
+    chi: narratore
+    tipo: momento
+    quando: "il fiume ferma la ruota"
+    temi: []
+    testo:
+      - "[narratore] La ruota si ferma di colpo. Il mugnaio afferra un sacco e corre fuori, verso il ponte."
+    max_usi: 1

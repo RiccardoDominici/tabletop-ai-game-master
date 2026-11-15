@@ -33,6 +33,7 @@ orologi:
         png: {png_mugnaio: {atteggiamento: {pg_anna: ostile}}}
       - al_segno: 2
         cosa: "Il mugnaio scappa al ponte con i sacchi buoni."
+        battuta: nar_ruota_ferma
         detto: "Il mugnaio si carica un sacco in spalla ed esce verso il ponte."
         tracce: "Sul ponte c'è il mugnaio, coi sacchi buoni."
         png: {png_mugnaio: {scena: scena_ponte}}
