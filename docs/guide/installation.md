@@ -238,7 +238,7 @@ off 7.2 GB. Both include the speech-to-text model. The download plan follows `co
 
   The play then uses the atmosphere background instead of images. Do not create `strumenti/immagini/.venv`: the
   download skips the image model when its environment is missing, and downloads the reader and the voice.
-  The download plan reads this setting: the image model drops out of the plan and of the totals, and the plan says the choice came from `config/locale.yaml`. Check it with `python3 -I strumenti/configura/configura.py --scarica` before downloading (it downloads nothing without `--si`).
+  The download plan reads this setting: the image model drops out of the plan and of the totals (unless `locale` is listed among its fallbacks), and the plan says the choice came from `config/locale.yaml`. Check it with `python3 -I strumenti/configura/configura.py --scarica` before downloading (it downloads nothing without `--si`).
 
 Then test the two services:
 

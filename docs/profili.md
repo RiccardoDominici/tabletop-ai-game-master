@@ -28,7 +28,8 @@ Notes on the rules:
   needs about 7.3 GB (no images, so no image environment either).
 - **Choices in `config/locale.yaml` win over the profile.** A component written there (`componenti:`) replaces the profile's
   choice, and the download plan follows it: a component that is not local (for example `immagini: {provider: nessuno}`
-  or a reader on an API) drops its model from the plan and from the totals. The detection and the plan say the choices came
+  or a reader on an API) drops its model from the plan and from the totals, unless `locale` is one of its fallbacks
+  (`riserve`): then the model stays, and the plan says it is kept as the local fallback. The detection and the plan say the choices came
   from that file. Another file: `--locale <path>`.
 - **Disk warning.** The detection compares the free disk with what the profile still needs here (models not in the cache,
   missing environments, npm). Below that, it prints a `WARNING` and the lighter options.

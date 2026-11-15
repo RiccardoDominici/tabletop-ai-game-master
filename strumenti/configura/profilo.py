@@ -287,22 +287,26 @@ def scrivi_locale(profilo: dict[str, Any], percorso: Path, quando: str | None = 
     percorso.write_text(testo_locale(profilo, quando), encoding="utf-8")
 
 
-def modelli_per_componenti(componenti: dict[str, dict[str, Any]], modello_lettore: str | None) -> list[str]:
-    """I modelli che servono davvero ai componenti in locale, nell'ordine del profilo. Un componente su API
-    (o nessuno) non porta il suo modello nel download."""
-    def locale(nome: str) -> bool:
-        return componenti.get(nome, {}).get("provider") == "locale"
+# Ordine del download: lo stesso del profilo.
+COMPONENTI_CON_MODELLO = ("lettore", "voce", "immagini", "ascolto")
 
-    modelli: list[str] = []
-    if locale("lettore"):
-        modelli.append(modello_lettore or MODELLO_LETTORE_GRANDE)
-    if locale("voce"):
-        modelli.append(MODELLO_VOCE)
-    if locale("immagini"):
-        modelli.append(MODELLO_IMMAGINI)
-    if locale("ascolto"):
-        modelli.append(MODELLO_ASCOLTO)
-    return modelli
+
+def serve_locale(scelta: dict[str, Any]) -> bool:
+    """Un componente ha bisogno del suo modello locale se è in locale o se il locale è una riserva.
+    Una riserva locale senza modello sarebbe una promessa rotta: il componente fallirebbe su niente."""
+    return scelta.get("provider") == "locale" or "locale" in (scelta.get("riserve") or [])
+
+
+def _modello_del_componente(nome: str, modello_lettore: str | None) -> str:
+    return {"lettore": modello_lettore or MODELLO_LETTORE_GRANDE, "voce": MODELLO_VOCE,
+            "immagini": MODELLO_IMMAGINI, "ascolto": MODELLO_ASCOLTO}[nome]
+
+
+def modelli_per_componenti(componenti: dict[str, dict[str, Any]], modello_lettore: str | None) -> list[str]:
+    """I modelli che servono ai componenti in locale o con una riserva locale, nell'ordine del profilo.
+    Un componente su API senza riserva locale non porta il suo modello nel download."""
+    return [_modello_del_componente(n, modello_lettore) for n in COMPONENTI_CON_MODELLO
+            if serve_locale(componenti.get(n, {}))]
 
 
 def applica_scelte_locali(profilo: dict[str, Any], scelte: dict[str, Any] | None, rilevamento: dict[str, Any]) -> dict[str, Any]:
@@ -319,8 +323,11 @@ def applica_scelte_locali(profilo: dict[str, Any], scelte: dict[str, Any] | None
         componenti[nome] = _componente(scelta["provider"], scelta["riserve"], motivo=f"set in {origine}")
     modello_lettore = scelte["modello_lettore"] or profilo.get("modello_lettore")
     modelli = modelli_per_componenti(componenti, modello_lettore)
+    # Modelli tenuti solo come riserva locale (il componente è su API): il piano lo dice.
+    di_riserva = {n: _modello_del_componente(n, modello_lettore) for n in COMPONENTI_CON_MODELLO
+                  if componenti[n]["provider"] != "locale" and serve_locale(componenti[n])}
     ambienti = rilevamento.get("ambienti", {})
-    locali = [c for c in ("lettore", "voce", "immagini") if componenti[c]["provider"] == "locale"]
+    locali = [c for c in ("lettore", "voce", "immagini") if serve_locale(componenti[c])]
     avvisi = [a for a in profilo["avvisi"]
               if not (a.startswith("Images off:") and componenti["immagini"]["provider"] != "locale")]
     return {
@@ -328,6 +335,7 @@ def applica_scelte_locali(profilo: dict[str, Any], scelte: dict[str, Any] | None
         "componenti": componenti,
         "modello_lettore": modello_lettore,
         "modelli": modelli,
+        "modelli_di_riserva": di_riserva,
         "da_scaricare": _modelli_mancanti(rilevamento, modelli),
         "ambienti_mancanti": [c for c in locali if ambienti.get(c) is False],
         "avvisi": avvisi,
@@ -344,5 +352,5 @@ def da_occupare_gb(profilo: dict[str, Any], rilevamento: dict[str, Any]) -> floa
     ambienti = rilevamento.get("ambienti", {})
     modelli = sum(DIMENSIONI_APPROSSIMATE_GB.get(m, 0.0) for m in profilo["modelli"] if not cache.get(m, False))
     mancanti = sum(AMBIENTE_GB[c] for c in ("lettore", "voce", "immagini")
-                   if profilo["componenti"][c]["provider"] == "locale" and ambienti.get(c) is False)
+                   if serve_locale(profilo["componenti"][c]) and ambienti.get(c) is False)
     return round(modelli + mancanti + NPM_GB, 1)

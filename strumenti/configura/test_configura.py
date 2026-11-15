@@ -69,10 +69,12 @@ def test_piano_con_immagini_spente_nel_file_le_toglie(tmp_path, monkeypatch, cap
                      ["--locale", str(file), "--scarica"], capsys)
     assert rc == 2  # niente --si e niente terminale: il download non parte
     assert "choices from" in out  # l'output dice che le scelte vengono dal file
-    assert "Total to download: 2.0 GB." in out  # solo la voce (stima offline): lettore su API, immagini e ascolto spenti
+    # Offline, stime: lettore 4,6 e voce 2,0. Il lettore è su API ma con riserva locale: il modello resta (e lo dice).
+    assert "Total to download: 6.6 GB." in out
     # Solo la sezione del piano: in alto la lista dei componenti dice «nessuno» e va bene così.
     righe_piano = out.split("Models for the chosen profile")[1].splitlines()
-    assert not any(r.startswith("  immagini") or r.startswith("  lettore") or r.startswith("  ascolto") for r in righe_piano)
+    assert not any(r.startswith("  immagini") or r.startswith("  ascolto") for r in righe_piano)
+    assert any(r.startswith("  lettore") and "kept: local fallback" in r for r in righe_piano)
     assert "mflux" not in out
 
 
@@ -115,3 +117,13 @@ def test_ambienti_presenti_e_modelli_in_cache_nessun_avviso_di_disco(tmp_path, m
     rilevamento["disco_libero_gb"] = 100.0
     rc, out = esegui(monkeypatch, tmp_path, rilevamento, ["--locale", str(file)], capsys)
     assert "WARNING" not in out
+
+
+def test_api_senza_riserva_locale_esce_dal_piano(tmp_path, monkeypatch, capsys, senza_rete) -> None:
+    file = scrivi(tmp_path, "componenti:\n  lettore: {provider: anthropic, riserve: [finto]}\n"
+                            "  immagini: {provider: nessuno}\n")
+    rc, out = esegui(monkeypatch, tmp_path, computer(tmp_path, 50.0, AMBIENTI_MANCANTI),
+                     ["--locale", str(file), "--scarica"], capsys)
+    assert "Total to download: 2.57 GB." in out  # solo voce 2,0 e ascolto 0,57 (stime offline)
+    righe_piano = out.split("Models for the chosen profile")[1].splitlines()
+    assert not any(r.startswith("  lettore") for r in righe_piano)

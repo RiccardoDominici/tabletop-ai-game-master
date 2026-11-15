@@ -129,6 +129,8 @@ def descrivi(p: dict[str, Any]) -> list[str]:
         righe.append(f"  (counted in the model cache: {p['cache']})")
     for v in p["voci"]:
         stato = "already on disk" if v["in_cache"] else f"to download, about {v['gb']} GB" + (" (estimate)" if v["stima"] else "")
+        if v["componente"] in p.get("di_riserva", {}):
+            stato += " (kept: local fallback, the component is on an API)"
         righe.append(f"  {v['componente']:<9} {v['repo']}: {stato}")
     righe.append(f"Total to download: {p['da_scaricare_gb']} GB.")
     if p["disco_libero_gb"] is not None:

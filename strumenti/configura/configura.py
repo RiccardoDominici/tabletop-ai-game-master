@@ -8,7 +8,8 @@
     python3 -I strumenti/configura/configura.py --locale F          read the choices from F instead of config/locale.yaml
 
 The choices written by hand in config/locale.yaml (`componenti:`) override the profile, and the plan follows them:
-a component that is not local (e.g. `immagini: {provider: nessuno}`) drops its model from the download and the totals.
+a component that is not local (e.g. `immagini: {provider: nessuno}`) drops its model from the download and the totals,
+unless `locale` is among its fallbacks (`riserve`): then the model is kept, because a fallback with no model fails.
 Nothing is written to config/locale.yaml unless --out says so: the real file belongs to the user.
 Costs in plain words: local choices cost 0 USD; keys are pay-per-use and are never required.
 """
@@ -123,6 +124,7 @@ def main(argv: list[str] | None = None) -> int:
         p = scarica.piano(profilo["modelli"], rilevamento, RADICE)
         p["fonte"] = profilo.get("fonte_scelte")
         p["scelte_sovrascritte"] = profilo.get("scelte_sovrascritte", {})
+        p["di_riserva"] = profilo.get("modelli_di_riserva", {})
         print("\n".join(scarica.descrivi(p)))
         if not p["da_scaricare_gb"]:
             print("Nothing to download: everything is already on disk.")

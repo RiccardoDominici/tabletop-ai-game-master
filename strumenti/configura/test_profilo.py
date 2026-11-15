@@ -313,7 +313,7 @@ def test_scelte_locali_immagini_spente_tolgono_il_modello() -> None:
 def test_reader_su_api_perde_il_suo_modello_e_il_backend_cambia_il_modello() -> None:
     r = rilevamento(ram=16.0, disco=50.0)
     p = scegli(r)
-    api = {"origine": "x", "componenti": {"lettore": {"provider": "anthropic", "riserve": ["locale"]}},
+    api = {"origine": "x", "componenti": {"lettore": {"provider": "anthropic", "riserve": []}},
            "modello_lettore": None, "non_lette": []}
     assert MODELLO_LETTORE_GRANDE not in profilo.applica_scelte_locali(p, api, r)["modelli"]
     piccolo = {"origine": "x", "componenti": {}, "modello_lettore": MODELLO_LETTORE_PICCOLO, "non_lette": []}
@@ -350,3 +350,33 @@ def test_disco_ancora_necessario_zero_modelli_se_gia_installato() -> None:
     cache = {m: True for m in (MODELLO_LETTORE_GRANDE, MODELLO_VOCE, MODELLO_IMMAGINI, MODELLO_ASCOLTO)}
     r = con_ambienti({**rilevamento(ram=16.0, disco=50.0, cache=cache)}, presenti=True)
     assert profilo.da_occupare_gb(scegli(r), r) == 0.2  # solo il npm: nessun falso allarme sul disco
+
+
+def test_api_con_riserva_locale_tiene_il_modello() -> None:
+    # Una riserva locale senza modello sarebbe una promessa rotta: il modello resta, e il piano lo dice.
+    r = rilevamento(ram=16.0, disco=50.0)
+    p = scegli(r)
+    scelte = {"origine": "x", "componenti": {"lettore": {"provider": "anthropic", "riserve": ["locale", "finto"]}},
+              "modello_lettore": None, "non_lette": []}
+    q = profilo.applica_scelte_locali(p, scelte, r)
+    assert MODELLO_LETTORE_GRANDE in q["modelli"]
+    assert q["modelli_di_riserva"] == {"lettore": MODELLO_LETTORE_GRANDE}
+    assert profilo.serve_locale(q["componenti"]["lettore"])
+
+
+def test_immagini_spente_con_riserva_locale_tengono_il_modello() -> None:
+    r = rilevamento(ram=16.0, disco=50.0)
+    scelte = {"origine": "x", "componenti": {"immagini": {"provider": "nessuno", "riserve": ["locale"]}},
+              "modello_lettore": None, "non_lette": []}
+    q = profilo.applica_scelte_locali(scegli(r), scelte, r)
+    assert MODELLO_IMMAGINI in q["modelli"]
+    assert q["modelli_di_riserva"] == {"immagini": MODELLO_IMMAGINI}
+
+
+def test_nessuna_riserva_locale_nessun_modello_di_riserva() -> None:
+    r = rilevamento(ram=16.0, disco=50.0)
+    scelte = {"origine": "x", "componenti": {"voce": {"provider": "openrouter", "riserve": ["finto"]}},
+              "modello_lettore": None, "non_lette": []}
+    q = profilo.applica_scelte_locali(scegli(r), scelte, r)
+    assert MODELLO_VOCE not in q["modelli"]
+    assert q["modelli_di_riserva"] == {}
