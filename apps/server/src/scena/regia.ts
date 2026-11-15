@@ -2401,7 +2401,6 @@ export class Regia {
   /** Ferma LLM, voce, attese dell'audio e misure in corso (i flussi vecchi escono per `epoca`). */
   private interrompiFlussi(motivo: string): void {
     this.epoca += 1;
-    this.tiriGiocatori?.annulla(motivo);
     this.sorvegliante.fine(motivo);
     this.controlloLlm?.abort(new Error(motivo));
     this.controlloLlm = null;
@@ -2724,8 +2723,8 @@ export class Regia {
   }
 
   /** I dadi del turno chiuso: carte a proiettore e telefoni, fatti per il narratore, prove riuscite. */
-  private async tiriDelTurno(r: RiepilogoChiusura, giocate?: TiriGiocati): Promise<EsitoTurnoProve> {
-    const esito = giocate?.decisioni ? this.prove!.completa(giocate.decisioni, giocate.inseriti) : await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
+  private async tiriDelTurno(r: RiepilogoChiusura): Promise<EsitoTurnoProve> {
+    const esito = await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
     this.riuscitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.riuscite]));
     this.fallitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.fallite]));
     this.negatiTurno = new Set(esito.negati.map((n) => n.png));
@@ -2807,13 +2806,7 @@ export class Regia {
     // La situazione messa dopo una rivelazione ha accompagnato la reazione dei giocatori: si torna al luogo.
     if (this.situazione?.auto && this.situazione.turno < r.turno) this.togliSituazione('narrazione successiva');
     this.rivelateNelTurno = [];
-    // Manual rolls (docs/prove.md §8): the players roll real dice at the table before the narrator starts.
-    const giocate = await this.tiriGiocatori.prima(r);
-    if (!giocate) return; // the wait was cancelled (stop, restart, scene change): the turn is dropped
-    // After a wait for the dice the latencies start when the last die is in, not when the window closed.
-    this.misuratore = giocate.attesa_ms
-      ? new MisuratoreTurno(r.turno, this.o.orologio.ora(), r.durata_ms, this.o.voce.nome, this.o.orologio.adesso())
-      : new MisuratoreTurno(r.turno, r.chiusa_a, r.durata_ms, this.o.voce.nome, this.o.orologio.adesso());
+    this.misuratore = new MisuratoreTurno(r.turno, r.chiusa_a, r.durata_ms, this.o.voce.nome, this.o.orologio.adesso());
     // Contratto voce: /sveglia alla chiusura della finestra, in parallelo alla chiamata dell'LLM
     // (fire-and-forget: la prima frase arriva dopo ~0,9 s, la sveglia ci sta dentro).
     const motoreVoce = this.o.voce.attivo;
@@ -2842,7 +2835,7 @@ export class Regia {
     this.negatiTurno = new Set();
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
     const scontroPrima = this.prove?.inCombattimento ?? false;
-    const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r, giocate) : null;
+    const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r) : null;
     if (epoca !== this.epoca) return;
     // The world: the facts of the actions and the checks owe marks in the response that answers them (docs/mondo.md §2).
     this.mondo.fatti(this.fattiDelTurno(r, scontroPrima), r.turno);
