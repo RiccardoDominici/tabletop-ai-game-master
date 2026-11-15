@@ -257,7 +257,7 @@ function CartaIntera(p: PropsInterne) {
               <span data-testid="carta-tiro-soglia" className={clsx('font-extrabold text-pergamena tabular-nums', m.totale, comparsa(p, 'totale'))}>
                 {t('comune.tiri.tiro', { dado: tiro.dado })}
               </span>
-              <span className={clsx('text-cenere', m.uguale, comparsa(p, 'totale'))}>≤</span>
+              {!tiro.contro_nascosto && <span className={clsx('text-cenere', m.uguale, comparsa(p, 'totale'))}>≤</span>}
             </>
           ) : (
             // «+5 = 22» (d20 e 2d6): il modificatore, il totale.
@@ -271,7 +271,8 @@ function CartaIntera(p: PropsInterne) {
               </span>
             </>
           )}
-          {!automatico && (
+          {/* Manual rolls: the number to beat stays with the Game Master (docs/prove.md §8); a 2d6 band is the outcome, it stays. */}
+          {!automatico && !(tiro.contro_nascosto && risoluzione !== '2d6_fasce') && (
             <span
               data-testid="carta-contro"
               aria-label={avversario ? `${avversario.nome} ${avversario.totale}` : testoBersaglioCarta(tiro)}

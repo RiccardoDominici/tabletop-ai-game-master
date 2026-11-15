@@ -15,6 +15,7 @@ import { SezioneAudio } from './SezioneAudio';
 import { SezioneOrologi } from './SezioneOrologi';
 import { SezioneMondo } from './SezioneMondo';
 import { SezioneCombattimento } from './SezioneCombattimento';
+import { SezioneTiri } from './SezioneTiri';
 import { SezioneFinestra } from './SezioneFinestra';
 import { SezioneAzioni } from './SezioneAzioni';
 import { SezioneTrascrizione } from './SezioneTrascrizione';
@@ -36,6 +37,7 @@ export function Cruscotto({ stato }: { stato: StatoMaster }) {
         <SezioneOrologi stato={stato} />
         <SezioneMondo stato={stato} />
         {stato.combattimento && <SezioneCombattimento stato={stato} />}
+        {stato.tiri && <SezioneTiri stato={stato} />}
       </div>
 
       {/* Colonna centrale: le azioni scorrono dentro il loro riquadro, la trascrizione prende il resto. */}

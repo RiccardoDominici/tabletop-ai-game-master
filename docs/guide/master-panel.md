@@ -153,6 +153,14 @@ Shown only when the campaign has dice and character sheets (see [Dice and sheets
 - **HP**: each sheet, player's characters and NPCs, shows its current and maximum HP. Type a number from 0 to 999 in the box and press **Imposta** (Set), or Enter. The number is the new value, not a change: it replaces the current HP.
 - **Conditions**: during the fight, each combatant lists its active conditions with their icon. Click one to remove it. To add one, choose it in the «Condizione…» (Condition…) list and press **Aggiungi** (Add).
 
+### Rolls
+
+The **Tiri** (Rolls) box appears in campaigns with dice. Only here you see the DC.
+- The first line says who rolls: «I giocatori tirano i dadi veri» (players roll real dice, the default) or «Tira il Motore per i giocatori» (the Engine rolls for them), from `regole.tiri_giocatori` in `campagna.yaml` ([dice and sheets](dice-and-sheets.md#who-rolls-the-dice)).
+- While the table is rolling, one row per roll: who, what, against whom, the DC (or AC, or threshold), the dice to roll and the bonus. A private action's roll is here too, marked «privata».
+- A player forgot, or has no phone: type the dice they say in the boxes and press **Inserisci** (Enter), or press **Tira il Motore** (the Engine rolls that one). With more than one roll waiting, **Tutti al Motore** rolls them all.
+- After the turn, the last turn's cards as rolled: dice, total, DC, outcome, and who entered the dice (from the phone, dictated, by the Game Master, by the Engine).
+
 ## Centre column
 
 ### Window

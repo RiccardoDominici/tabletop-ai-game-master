@@ -33,6 +33,7 @@ import { FilaPersonaggi } from './FilaPersonaggi';
 import { BarraIniziativa } from './BarraIniziativa';
 import { CreditiAudio, PannelloAudio, PulsanteAudio, useTastiAudio } from './audio/PannelloAudio';
 import { TiriSchermo, useVistaTiri } from './TiriSchermo';
+import { RichiesteSchermo } from './RichiesteSchermo';
 import { provaCarteRichiesta } from '../debug/richiesta';
 import { t } from '../lingua';
 
@@ -140,7 +141,8 @@ export function Scena({ stato, info }: { stato: StatoTavolo; info: InfoServer | 
         <div className={clsx('flex min-h-0 items-end justify-center pb-[2vh]', vistaTiri.lasciaSpazio && 'pr-[17vw]')}>
           <Narrazione stato={stato} />
         </div>
-        <TiriSchermo vista={vistaTiri} />
+        {/* Manual rolls: while the table rolls, the requests take the cards' column (docs/prove.md §8). */}
+        {stato.tiri_richiesti?.length ? <RichiesteSchermo richieste={stato.tiri_richiesti} /> : <TiriSchermo vista={vistaTiri} />}
 
         <footer className="flex items-end justify-between gap-[3vw]">
           <div className="min-w-0 flex-1 pb-[0.5vh]">

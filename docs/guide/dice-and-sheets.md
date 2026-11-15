@@ -8,6 +8,7 @@ Read first: [One evening of play](one-evening.md). The source for everything is 
 - **The program rolls, the model does not.** A referee decides only *what* gets rolled: for example a Persuasion check, or an attack roll with the crossbow. By default the referee is code, with no model (see [local and API](local-and-api.md#the-rules-arbiter)); a local model or Haiku can do it if you choose them. The code works out everything else from the sheets and the rules: difficulty, modifiers, dice, outcome.
 - **The narrator receives the outcome as a fact.** For example: «Ida Ferraro: Persuasione (Carisma) verso Bertoldo: 18 contro CD 15 → RIUSCITA.» (Ida Ferraro: Persuasion (Charisma) toward Bertoldo: 18 against DC 15 → SUCCESS.) The narrator tells the consequence and cannot change it.
 - **Every roll has its own card**, on the projector and on the phone. A private roll appears only on the phone of its player.
+- **By default the players roll real dice.** The table hears «Ida, fai un tiro di Furtività» (Ida, make a Stealth check), the player rolls at the table and types what the die shows on the phone. The DC is never shown or said to the players; the Game Master panel has it. The campaign can choose that the program rolls instead (see [Who rolls the dice](#who-rolls-the-dice)).
 
 The rules are those of the D&D SRD 5.2 (license CC-BY-4.0), unless the campaign has its own rule set (see the end).
 
@@ -31,13 +32,35 @@ After a failed check, what you wanted does not happen. The narrator is told so, 
 
 A clear attack is an attack whatever any arbiter says: a weapon from your sheet used against an NPC with a sheet («lancio il dardo incantato contro il goblin», I cast the magic missile at the goblin) always rolls. And the narrator cannot contradict the cards: a sentence that has a standing NPC fall, or tells a hit where the card says miss (or the other way round), is replaced by the Engine's short line («Grosso manca Livia.», Grosso misses Livia).
 
+## Who rolls the dice
+
+A campaign chooses it when it is created: `regole.tiri_giocatori` in `campagna.yaml` (the Preparer writes it from the brief's `tiri_giocatori`).
+
+- **`manuale` (the default; also when the field is missing).** When the window closes and an action needs a roll, the game stops before the narrator:
+  - the narrator's voice says what to roll, never the number to beat: «Ida, fai un tiro di Persuasione, con vantaggio.» A private action's roll is never said aloud;
+  - the projector shows the request in the cards' column: who, what, how to roll («tira 2d20, tieni il più alto»), the bonus; never the DC;
+  - the player's phone shows a full-screen card: what to roll (1d20; 2d20 with advantage, and which one counts; 1d100 «lower is better» for a percentile skill; 2d6 added up), the bonus from the sheet, one box per die. The player types what each die shows, the phone adds the bonus and shows the total, **Fatto** (Done) sends it. A private action's roll is only on that phone;
+  - dictation works here too: with the roll card open, the microphone button fills the boxes from what you say («ho fatto 14», «quattordici», «I rolled a nineteen»), then you check and press **Fatto**;
+  - when every die is in, the Engine works out the outcome with those dice and the narrator tells it. The card on the projector and on the phone shows the dice, the bonus, the total and the outcome, but not the DC, the AC or the threshold;
+  - a forgotten roll does not block the table for good: in the panel, **Tiri** (Rolls), the Game Master types the dice the player says, or presses **Tira il Motore** (the Engine rolls) for that roll, or **Tutti al Motore** for all of them. There is no timer: a table waits for its dice.
+  - Only the action's own die is the player's. Damage, NPC rolls, initiative, death saves and morale are rolled by the Engine; so is the other PC's die in a contest between two PCs.
+- **`automatico`.** The program rolls for the players, as before: the card shows the DC too.
+
+```yaml
+# campagna.yaml
+regole:
+  tiri_giocatori: automatico   # or manuale (default)
+```
+
+A test instance can override it without touching the campaign: `TAGM_TIRI_GIOCATORI=automatico` (or `manuale`), for example `TAGM_PORTA=4710 TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --finto`. The server log says at startup which one is in use and where it comes from (`PROVE E DADI: … players' rolls manuale`).
+
 ## What you see
 
 **On the projector** a column of cards appears on the right, one per roll. Each card shows:
 - who rolls, what, and against whom;
 - the d20 (two d20s with advantage or disadvantage: the discarded one is faded);
 - the modifier and the total;
-- the CD or CA to beat, and the outcome;
+- the CD or CA to beat (not when the players roll their own dice: then only the Game Master panel has it), and the outcome;
 - for attacks, the damage and, if needed, «a terra» (down);
 - for an attack that always hits (a weapon marked `automatico` in the rule set, such as a magic missile), no d20: the card reads «automatico: 1d6+1 = 7 danni» (automatic: 1d6+1 = 7 damage).
 

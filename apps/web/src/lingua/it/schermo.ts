@@ -106,4 +106,17 @@ export const schermo = {
   'schermo.bus.temi': 'Temi',
   'schermo.bus.effetti': 'Effetti',
   'schermo.hud.buchi_breve': 'buchi',
+  // Manual rolls (docs/prove.md §8): the rolls the table is waiting for (RichiesteSchermo.tsx).
+  'schermo.richiesta.aria': 'Tiri da fare',
+  'schermo.richiesta.titolo': 'Tira i dadi',
+  'schermo.richiesta.dal_master': 'Il master chiede un tiro',
+  'schermo.richiesta.uno': 'tira {dadi}',
+  'schermo.richiesta.sotto': 'tira {dadi}, più basso è meglio',
+  'schermo.richiesta.alto': 'tira {dadi}, tieni il più alto',
+  'schermo.richiesta.basso': 'tira {dadi}, tieni il più basso',
+  'schermo.richiesta.somma': 'tira {dadi} e sommali',
+  'schermo.richiesta.bonus': 'bonus {bonus}',
+  'schermo.richiesta.vantaggio': 'con vantaggio',
+  'schermo.richiesta.svantaggio': 'con svantaggio',
+  'schermo.richiesta.attesa': 'Aspetto i dadi…',
 } as const;

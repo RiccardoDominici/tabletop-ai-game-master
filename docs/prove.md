@@ -447,9 +447,54 @@ same decisions as before:
    switched to automatic (`valori: null`) rolls with the Engine's dice. The card says who rolled (`manuale`: `telefono`,
    `master`, `dettato`, `motore`); the Engine logs a warning if the dice on the card differ from those entered.
 - **The table never sees the DC.** `cartaPerIlTavolo` strips the number to beat, its description and the rule text from a
-  card rolled on request (`contro_nascosto: true`, `contro.valore` 0). The Engine's own cards keep everything: an NPC's
-  attack (against the PC's AC, which the player knows), death saves against the rule's fixed DC. Limit: on a 2d6 set the
-  bonus shown includes the difficulty's modifier, if the set has one.
+  card rolled on request (`contro_nascosto: true`, `contro.valore` 0): `MotoreProve.tiriPubblici` and `tiriDellAzione`
+  apply it, so the table state, `azione:mia` and a resumed session never carry it. The Engine's own cards keep
+  everything: an NPC's attack (against the PC's AC, which the player knows), death saves against the rule's fixed DC.
+  Limit: on a 2d6 set the bonus shown includes the difficulty's modifier, if the set has one.
+
+**Setting** (prove/modalita.ts). `regole.tiri_giocatori` in campagna.yaml: `manuale` (default, also when absent) or
+`automatico` (the Engine rolls, as before). The Preparer writes it from the brief's `tiri_giocatori`; the validator
+accepts only the two values (`SCHEDA.regole`, strumenti/valida/regole_schede.py). A test instance overrides it with
+`TAGM_TIRI_GIOCATORI` (config.ts); under vitest the default is automatic, so tests that do not exercise manual rolls
+never wait. The startup log line `PROVE E DADI` says the value and its origin (override, campaign, default).
+
+**Director** (scena/tiri-giocatori.ts; regia.ts has only the call sites). When a window closes with actions:
+1. phase `narrazione` (pause, «Ferma la narrazione» and the scene commands apply as in a narration), `decidi`, then the
+   requests;
+2. the narrator's voice says each PUBLIC request (language pack `prove.richiesta.*`: «Ida, fai un tiro di Persuasione,
+   con vantaggio.», «Corrado, tira per colpire: Balestra leggera.»), never the DC, never a private action's request;
+3. the wait (prove/attesa-tiri.ts) until every request is closed: values from the phone, from dictation, entered by the
+   Game Master, or switched to the Engine's dice. No timeout and no watchdog during the wait (the watchdog starts with
+   the narration); an interrupted turn (stop, restart, scene change) cancels the wait and the turn is dropped as a
+   stopped narration is;
+4. then `completa` and the narrator as before. The turn's latencies (`turni.jsonl`) start when the last die is in, not
+   at the window's close, so the table's rolling time does not count as narrator latency.
+- A turn with no request (nobody must roll) does not wait and says nothing. Combat turns with no PC action (NPC steps)
+  never wait.
+- A restart during the wait loses the open requests (the requests are not in the session snapshot): the turn behaves as
+  a turn caught in narration.
+
+**Transport** (packages/shared). `StatoTavolo.tiri_manuali` and `tiri_richiesti` (public requests only, without DC) for
+the projector and every phone; `tiri:richiesti` to the room of one PC (its own requests, private ones included), at
+every change and when the PC is chosen, so a phone that reconnects finds its roll again; `tiro:inserisci` from the
+phone (only for its own PC; refused: unknown or closed request, wrong number of dice, a die off its faces; `dettato:
+true` when the values came from dictation); the Game Master command `{tipo: 'tiro', id, valori}` (`valori: null` = the
+Engine rolls, `id: '*'` = every open request); `StatoMaster.tiri` with the requests WITH the DC and the last turn's
+cards as rolled.
+
+**Screens.** Phone: telefono/TiroDaFare.tsx, a full-screen card over the page while one of the PC's rolls is open:
+what to roll, the bonus, one box per die, the total as you type, **Fatto**. Dictation: with the card open, the
+microphone's transcript fills the boxes instead of the action box (telefono/numeriDettati.ts: digits and number words
+in Italian and English, articles are never a 1; then the player confirms): this reuses POST /api/dettato unchanged.
+Projector: schermo/RichiesteSchermo.tsx takes the cards' column while the table rolls. Cards: a card with
+`contro_nascosto` shows dice, bonus, total and outcome, no number to beat (components/CartaTiro.tsx). Panel:
+master/SezioneTiri.tsx, the «Tiri» box (the DCs, enter the dice for a player, «Tira il Motore», «Tutti al Motore»,
+the last cards with who entered the dice).
+
+**Verification**: test/prove-manuali.test.ts (Engine, four rule-set shapes), test/prove-manuali-integrazione.test.ts
+(whole server: request without DC on projector and phones, private request only on its phone, voice line, wrong dice
+refused, Game Master enters and switches, stop cancels the wait, automatic unchanged), web
+telefono/numeriDettati.test.ts; live runs in docs/prove-verifica.md.
 
 Credits: this work includes material from the System Reference Document 5.2 («SRD 5.2») by Wizards of the Coast LLC,
 https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License.

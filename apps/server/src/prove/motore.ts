@@ -23,7 +23,7 @@ import { testo } from '../lingua';
 import { nomeOppure } from './lingua';
 import { DadiCrittografici, type FonteDadi } from './dadi';
 import { DadiDelGiocatore } from './dadi-giocatore';
-import { richiestaDaCarta, type TiroInserito } from './richieste';
+import { cartaPerIlTavolo, richiestaDaCarta, type TiroInserito } from './richieste';
 import { loggerMuto, type Logger } from '../logger';
 import { risolviTurno, type Atteggiamento, type AzioneRisolvibile } from './risolutore';
 import { StatoProve, type StatoProveSalvato } from './stato';
@@ -675,14 +675,22 @@ export class MotoreProve {
 
   // ------------------------------------------------------------------ per il trasporto
 
-  /** Carte pubbliche dell'ultimo turno con tiri (proiettore e telefoni). */
+  /**
+   * Carte pubbliche dell'ultimo turno con tiri (proiettore e telefoni). A card rolled at the table on request has no DC
+   * here (manual rolls, docs/prove.md §8): the panel has it (`tiriDelMaster`).
+   */
   tiriPubblici(): TiroMostrato[] {
-    return (this.ultimoTurno?.tiri ?? []).filter((t) => !t.privata);
+    return (this.ultimoTurno?.tiri ?? []).filter((t) => !t.privata).map(cartaPerIlTavolo);
   }
 
-  /** Carte di un'azione (anche privata): solo per il telefono del suo autore. */
+  /** Carte di un'azione (anche privata): solo per il telefono del suo autore (without the DC of a manual roll). */
   tiriDellAzione(idAzione: string): TiroMostrato[] {
-    return this.ultimi.get(idAzione) ?? [];
+    return (this.ultimi.get(idAzione) ?? []).map(cartaPerIlTavolo);
+  }
+
+  /** Every card of the last turn with rolls, private ones and DCs included: only for the Game Master panel. */
+  tiriDelMaster(): TiroMostrato[] {
+    return [...(this.ultimoTurno?.tiri ?? [])];
   }
 
   // ------------------------------------------------------------------ sessione

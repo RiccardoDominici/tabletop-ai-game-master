@@ -1575,6 +1575,15 @@ def test_regole_dadi_deve_essere_booleano(camp):
     assert "SCHEDA.regole" in errori(camp)
 
 
+def test_regole_tiri_giocatori_e_master(camp):
+    modifica(camp, "campagna.yaml", lambda d: d.update(regole={"tiri_giocatori": "automatico", "tiri_master": "a_volte"}))
+    assert "SCHEDA.regole" not in errori(camp)
+    modifica(camp, "campagna.yaml", lambda d: d.update(regole={"tiri_giocatori": "a mano"}))
+    assert "SCHEDA.regole" in errori(camp)
+    modifica(camp, "campagna.yaml", lambda d: d.update(regole={"tiri_master": "sempre"}))
+    assert "SCHEDA.regole" in errori(camp)
+
+
 def test_scheda_caratteristiche_pg_fino_a_20_png_fino_a_30(camp):
     modifica(camp, "pg.yaml", lambda d: _scheda_pg(d).__setitem__("caratteristiche", {**_scheda_pg(d)["caratteristiche"], "forza": 25}))
     assert "SCHEDA.caratteristiche" in errori(camp)

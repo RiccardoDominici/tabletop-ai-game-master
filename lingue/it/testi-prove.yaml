@@ -195,6 +195,14 @@ prove:
     intestazione_tocca: " Tocca ora a: {chi}: chiudi invitando solo {pronome}, è il suo turno."
     loro: "loro"
     lui_o_lei: "lui o lei"
+  # Manual rolls (docs/prove.md §8, scena/tiri-giocatori.ts): what the narrator says when a player must roll real dice.
+  # Never the DC. {nome} is the PC's first name.
+  richiesta:
+    abilita: "{nome}, fai un tiro di {abilita}{vantaggio}."
+    attacco: "{nome}, tira per colpire: {cosa}{vantaggio}."
+    altro: "{nome}, tira: {cosa}{vantaggio}."
+    con_vantaggio: ", con vantaggio"
+    con_svantaggio: ", con svantaggio"
   # PNG in scena fuori gioco (scena/regia.ts, righeFuoriGioco): nel messaggio del narratore e del selettore.
   fuori:
     titolo: "## PNG fuori gioco (lo dice il Motore: non parlano né agiscono, niente battute né righe [png_…] per loro)"

@@ -33,6 +33,7 @@ import { ArbitroHaiku } from './azioni/arbitro-haiku';
 import { caricaSchede } from './campagna/schede';
 import { ArbitroProveHaiku } from './prove/arbitro-haiku';
 import { dadiAttivi, dadiAttiviRegole } from './prove/motore';
+import { modalitaTiri } from './prove/modalita';
 import type { ArbitroProve, DecisioneProva, DecisioneRegole } from './prove/tipi';
 import { caricaRegole } from './regole/caricatore';
 import { caricaSchedeGeneriche } from './regole/schede';
@@ -309,7 +310,9 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     : sost.arbitroProve !== undefined
       ? 'sostituito (prove)'
       : `${scelte.arbitro_prove.provider} ${generico ? 'completo (set generico)' : scelte.arbitro_prove.modo === 'minimo' ? 'minimo (parole chiave + scelta breve, ripiego a regole)' : 'completo'}`;
-  log.info({ dadi: dadi.attivo, motivo: dadi.motivo, regole: regole.sistema.id, risoluzione: regole.sistema.risoluzione.tipo, arbitro: nomeArbitroProve, seme_fisso: !!config.semeDadi }, `PROVE E DADI: arbitro ${nomeArbitroProve}`);
+  // Who rolls (docs/prove.md §8–9): the players at the table by default, the Engine on request; Game Master rolls hidden.
+  const tiri = modalitaTiri(campagna, config.tiri);
+  log.info({ dadi: dadi.attivo, motivo: dadi.motivo, regole: regole.sistema.id, risoluzione: regole.sistema.risoluzione.tipo, arbitro: nomeArbitroProve, seme_fisso: !!config.semeDadi, tiri_giocatori: tiri.giocatori, tiri_master: tiri.master, origine_tiri: tiri.origine }, `PROVE E DADI: arbitro ${nomeArbitroProve}, players' rolls ${tiri.giocatori}`);
   // «Chiedi una regola» dal telefono: il modello sui soli testi del set (mai la campagna).
   const risponditore = new RisponditoreRegole(regole, fabbrica.usaModello('regole') ? () => fabbrica.modello('regole')! : null, {
     modello: etichettaModello('regole'),
@@ -404,6 +407,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       ...(schedeRegole ? { regole: { regole, schede: schedeRegole } } : {}),
       ...(config.semeDadi ? { seme: config.semeDadi } : {}),
       ...(sost.dadi ? { dadi: sost.dadi } : {}),
+      tiri,
     },
     scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),
     sistemaPer,

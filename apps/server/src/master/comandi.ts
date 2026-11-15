@@ -59,6 +59,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'combattimento_termina',
   'pf',
   'condizione',
+  'tiro',
 ]);
 
 /** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */
@@ -321,6 +322,15 @@ export class ControlliMaster {
         const esito = regia.impostaPf(id, valore);
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito, dettagli: dettaglio('pf', { id, valore }), dati: { id, valore } };
+      }
+      case 'tiro': {
+        // Manual rolls (docs/prove.md §8): the dice for a player's open request, or the Engine rolls it ('*' = all).
+        const id = typeof c.id === 'string' && (c.id === '*' || ID_VALIDO.test(c.id)) ? c.id : null;
+        const valori = c.valori === null ? null : Array.isArray(c.valori) && c.valori.length > 0 && c.valori.length <= 10 && c.valori.every((v) => Number.isInteger(v)) ? c.valori : undefined;
+        if (!id || valori === undefined) return rifiutoDi('tiro_non_valido');
+        const e = regia.tiroDalMaster(id, valori);
+        if (!e.ok) return rifiutoDi(`tiro_${e.motivo}`);
+        return { esito: { ok: true }, dettagli: dettaglio(valori ? 'tiro_inserito' : 'tiro_automatico', { id, valori: valori?.join(', ') ?? '' }), dati: { id, valori } };
       }
       case 'condizione': {
         const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : null;

@@ -106,4 +106,17 @@ export const schermo = {
   'schermo.bus.temi': 'Themes',
   'schermo.bus.effetti': 'Effects',
   'schermo.hud.buchi_breve': 'gaps',
+  // Manual rolls (docs/prove.md §8): the rolls the table is waiting for (RichiesteSchermo.tsx).
+  'schermo.richiesta.aria': 'Rolls to make',
+  'schermo.richiesta.titolo': 'Roll the dice',
+  'schermo.richiesta.dal_master': 'The Game Master asks for a roll',
+  'schermo.richiesta.uno': 'roll {dadi}',
+  'schermo.richiesta.sotto': 'roll {dadi}, lower is better',
+  'schermo.richiesta.alto': 'roll {dadi}, keep the highest',
+  'schermo.richiesta.basso': 'roll {dadi}, keep the lowest',
+  'schermo.richiesta.somma': 'roll {dadi} and add them',
+  'schermo.richiesta.bonus': 'bonus {bonus}',
+  'schermo.richiesta.vantaggio': 'with advantage',
+  'schermo.richiesta.svantaggio': 'with disadvantage',
+  'schermo.richiesta.attesa': 'Waiting for the dice…',
 } satisfies Record<keyof typeof import('../it/schermo').schermo, string>;

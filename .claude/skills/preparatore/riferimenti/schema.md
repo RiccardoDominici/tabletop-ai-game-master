@@ -282,6 +282,9 @@ A name different from the name of every NPC [V].
 The full shape and the rules are in `docs/prove.md` §2. Here only where each key goes, and what the validator checks (class `SCHEDA`,
 code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
 - `campagna.yaml` → `regole: {dadi: true|false}`. Default: true. With false the sheets are not mandatory.
+- `campagna.yaml` → `regole: {tiri_giocatori: manuale|automatico}`. Default: manuale (the players roll real dice and
+  enter them on the phone, the DC stays secret); automatico = the Engine rolls for them. The validator accepts only
+  these two values (`SCHEDA.regole`).
 - `pg.yaml` → `personaggi[].scheda`: characteristics, skills, mastery, saving throws, armour or AC, hit points, attacks.
   The level is `personaggi[].livello`.
 - `png/<id>.yaml` → `scheda`: CR, characteristics, armour or AC, hit points, attacks, optional `influenza: {cd}`.

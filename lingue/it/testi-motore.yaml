@@ -260,6 +260,12 @@ master:
     umore_non_valido: "Umore non valido."
     pf_non_validi: "Personaggio o PF non validi."
     condizione_non_valida: "Condizione non valida."
+    tiro_non_valido: "Tiro non valido."
+    tiro_nessuna: "Nessun tiro in attesa con questo nome."
+    tiro_gia: "Questo tiro è già stato inserito."
+    tiro_altro_pg: "Questo tiro è di un altro personaggio."
+    tiro_quanti: "Numero di dadi sbagliato."
+    tiro_facce: "Un dado fuori dalle sue facce."
     effetto_sconosciuto: "Effetto sconosciuto."
     senza_proiettore: "Nessun proiettore con l’audio acceso."
   # Dettagli di un evento nell'elenco del pannello (master/comandi.ts → SezioneEventi).
@@ -305,6 +311,8 @@ master:
     pf: "{id}: PF {valore}"
     condizione_messa: "{id}: {condizione} messa"
     condizione_tolta: "{id}: {condizione} tolta"
+    tiro_inserito: "{id}: dadi {valori} inseriti dal master"
+    tiro_automatico: "{id}: tira il Motore"
     effetto: "effetto {id} sul proiettore"
   # Errori delle note di regia scritte dal pannello (master/note.ts).
   note:
@@ -320,6 +328,12 @@ master:
 socket:
   scegli_pg: "Prima scegli il tuo personaggio."
   richiesta_non_valida: "Richiesta non valida."
+  # Manual rolls (docs/prove.md §8): the phone enters the dice of a request.
+  tiro_nessuna: "Nessun tiro da fare adesso."
+  tiro_gia: "Il tiro è già stato inserito."
+  tiro_altro_pg: "Questo tiro è di un altro personaggio."
+  tiro_quanti: "Servono tutti i dadi del tiro."
+  tiro_facce: "Un dado va da 1 al numero delle sue facce."
 
 # Errori delle API HTTP (app.ts).
 api:

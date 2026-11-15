@@ -11,7 +11,7 @@
  * rientra nella stanza player:<id_pg> e riceve di nuovo `azione:mia`.
  */
 import { t } from '../lingua';
-import type { AzionePrivata, Esito, EsitoPrivato, SchedaPg, StatoTavolo } from '@tabletop-ai-gm/shared';
+import type { AzionePrivata, Esito, EsitoPrivato, RichiestaTiro, SchedaPg, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { alRientro, chiedi, conEsito, esitoErrore, prendiSocket } from '../lib/socket';
 import { creaLog } from '../lib/log';
 import { tokenDispositivo } from '../lib/memoria';
@@ -55,6 +55,12 @@ const suMiaAzione = (azione: AzionePrivata | null) => {
 const suScheda = (scheda: SchedaPg) => useTelefono.getState().impostaScheda(scheda);
 /** Gli esiti delle mie azioni private: l'elenco completo, a ogni novità e quando scelgo il PG. */
 const suPrivati = (esiti: EsitoPrivato[]) => useTelefono.getState().impostaEsitiPrivati(Array.isArray(esiti) ? esiti : []);
+/** My open roll requests (manual rolls, docs/prove.md §8): the whole list at every change. */
+const suRichiesteTiro = (richieste: RichiestaTiro[]) => {
+  const lista = Array.isArray(richieste) ? richieste : [];
+  if (lista.length) log.info('Roll requested', { richieste: lista.map((r) => ({ id: r.id, cosa: r.etichetta, dadi: `${r.quanti}d${r.facce}` })) });
+  useTelefono.getState().impostaRichiesteTiro(lista);
+};
 const suAvviso = (avviso: { livello: 'info' | 'errore'; testo: string }) =>
   useAvvisi.getState().aggiungi(avviso.livello, avviso.testo);
 
@@ -111,6 +117,7 @@ export function avviaTelefono(): () => void {
     s.on('azione:mia', suMiaAzione);
     s.on('pg:scheda', suScheda);
     s.on('privato:esiti', suPrivati);
+    s.on('tiri:richiesti', suRichiesteTiro);
     s.on('avviso', suAvviso);
     togliRientro = alRientro(() => void rientra());
   }
@@ -122,6 +129,7 @@ export function avviaTelefono(): () => void {
     s.off('azione:mia', suMiaAzione);
     s.off('pg:scheda', suScheda);
     s.off('privato:esiti', suPrivati);
+    s.off('tiri:richiesti', suRichiesteTiro);
     s.off('avviso', suAvviso);
     togliRientro?.();
     togliRientro = null;
@@ -252,3 +260,14 @@ export function ritiraAzione(): Promise<Esito> {
   return comando('ritira azione', () => conEsito((s, fine) => s.emit('azione:ritira', { id_pg: idPg }, fine)));
 }
 
+
+/**
+ * Manual rolls (docs/prove.md §8): the dice I rolled at the table for one request, each die as it shows. `dettato`:
+ * the values came from a dictation («ho fatto 14»), so the server logs it.
+ */
+export function inserisciTiro(id: string, valori: number[], dettato = false): Promise<Esito> {
+  const idPg = pgCorrente();
+  if (typeof idPg !== 'string') return Promise.resolve(idPg);
+  log.info('Dice entered', { id, valori, dettato });
+  return comando('tiro', () => conEsito((s, fine) => s.emit('tiro:inserisci', { id_pg: idPg, id, valori, ...(dettato ? { dettato: true } : {}) }, fine)));
+}

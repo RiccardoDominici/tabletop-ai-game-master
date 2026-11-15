@@ -241,6 +241,9 @@ export function descriviTiro(tiro: TiroMostrato): string {
   const automatico = testoAutomatico(tiro);
   if (automatico) {
     conto = automatico;
+  } else if (tiro.contro_nascosto && risoluzione !== '2d6_fasce') {
+    // Manual rolls: the dice and the total, never the number to beat (docs/prove.md §8).
+    conto = risoluzione === 'sotto_soglia' ? t('comune.tiri.tiro', { dado: tiro.dado }) : contoTiro(tiro);
   } else if (risoluzione === 'sotto_soglia') {
     conto = t('comune.tiri.sotto_soglia', { dado: tiro.dado, valore: tiro.contro.valore });
   } else if (risoluzione === '2d6_fasce') {

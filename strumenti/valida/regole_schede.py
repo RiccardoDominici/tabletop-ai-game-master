@@ -41,6 +41,10 @@ def _set_non_srd(c: Campagna) -> bool:
     return attivo(c)
 
 
+TIRI_GIOCATORI = ("manuale", "automatico")
+TIRI_MASTER = ("nascosti", "a_volte", "visibili")
+
+
 def dadi_attivi(c: Campagna) -> bool:
     regole = c.campagna.get("regole")
     return not (isinstance(regole, dict) and regole.get("dadi") is False)
@@ -70,9 +74,18 @@ def _regole(c: Campagna, e: Esito) -> None:
     if regole is None:
         return
     if not isinstance(regole, dict):
-        e.errore("SCHEDA.regole", "campagna.yaml", "regole è un oggetto: {dadi: true|false}")
+        e.errore("SCHEDA.regole", "campagna.yaml", "regole è un oggetto: {dadi: true|false, tiri_giocatori: manuale|automatico, "
+                                                   "tiri_master: nascosti|a_volte|visibili}")
     elif "dadi" in regole and not isinstance(regole["dadi"], bool):
         e.errore("SCHEDA.regole", "campagna.yaml", "regole.dadi è true o false")
+    if isinstance(regole, dict):
+        # Who rolls the players' dice (docs/prove.md §8): the players at the table (default) or the Engine.
+        if "tiri_giocatori" in regole and regole["tiri_giocatori"] not in TIRI_GIOCATORI:
+            e.errore("SCHEDA.regole", "campagna.yaml", "regole.tiri_giocatori è manuale (default: i giocatori tirano i dadi "
+                                                       "veri) o automatico (tira il Motore)")
+        # The Game Master's background rolls (docs/prove.md §9): hidden (default), sometimes shown, always shown.
+        if "tiri_master" in regole and regole["tiri_master"] not in TIRI_MASTER:
+            e.errore("SCHEDA.regole", "campagna.yaml", "regole.tiri_master è nascosti (default), a_volte o visibili")
 
 
 def _punteggi(e: Esito, dove: str, v, massimo: int) -> dict[str, int] | None:

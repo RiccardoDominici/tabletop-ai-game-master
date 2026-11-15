@@ -10,6 +10,7 @@
  * orologi, battute del repertorio. Non vede mai le conoscenze private dei PG.
  */
 import type { StatoAzione, StatoTavolo } from './dominio';
+import type { RichiestaTiroMaster, TiroMostrato } from './prove';
 
 /** Orologio di una minaccia, con i segni scritti (il master li conosce tutti). */
 export interface OrologioMaster {
@@ -185,8 +186,22 @@ export interface StatoMaster {
    * del set. Lo scontro in corso è in `tavolo.combattimento`. Assente senza dadi.
    */
   combattimento?: CombattimentoMaster;
+  /** Rolls (docs/prove.md §8–9): who rolls, the open requests WITH the DC, and the last turn's cards as rolled. */
+  tiri?: TiriMaster;
   /** The world that moves (docs/mondo.md). Absent on servers that do not have it. */
   mondo?: MondoMaster;
+}
+
+/** The rolls as the Game Master sees them: DCs, private actions, values entered. Absent without dice. */
+export interface TiriMaster {
+  /** The campaign's setting (or the instance's override): players roll at the table, or the Engine rolls. */
+  giocatori: 'manuale' | 'automatico';
+  /** The Game Master's background rolls: hidden, sometimes shown, always shown. */
+  master: 'nascosti' | 'a_volte' | 'visibili';
+  /** The open wait's requests (empty when nobody must roll). */
+  richieste: RichiestaTiroMaster[];
+  /** The last turn's cards, DC and private ones included. */
+  carte: TiroMostrato[];
 }
 
 /**
@@ -331,6 +346,11 @@ export type ComandoMaster =
   | { tipo: 'pf'; id: string; valore: number }
   /** Mette o toglie una condizione a un combattente (solo durante lo scontro). */
   | { tipo: 'condizione'; id: string; condizione: string; attiva: boolean }
+  /**
+   * Manual rolls (docs/prove.md §8): the Game Master enters the dice for a player's open request (`valori`), or switches
+   * it to the Engine's dice (`valori: null`); `id: '*'` switches every open request.
+   */
+  | { tipo: 'tiro'; id: string; valori: number[] | null }
   /** Campagna a pacchetti: (fine sessione se serve, poi) si passa al pacchetto dopo, dal suo riassunto iniziale. */
   | { tipo: 'prossima_sessione' }
   /** Cambia (o dimentica, con null) il PG ricordato di un telefono: vale dal suo prossimo collegamento. */

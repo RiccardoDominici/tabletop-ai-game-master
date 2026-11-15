@@ -113,6 +113,8 @@ When the turn starts, the phones show **«Il narratore sta preparando…»** (Th
 
 This is not a pause: the turn reopens by itself when the narration ends.
 
+**When the players roll their own dice** (the default, [who rolls the dice](dice-and-sheets.md#who-rolls-the-dice)), the narrator starts only after every requested die is in: the voice says what to roll, the phone of whoever must roll shows the roll card, and the turn goes on as soon as the last die arrives. The watchdog does not count this wait (a table waits for its dice); the panel's **Tiri** box unblocks a forgotten roll. «Ferma la narrazione» during the wait stops it too, and the actions go back to the players.
+
 ## The watchdog
 
 While the game works (the opening, or a narration with its voice and audio), a «sorvegliante» (watchdog) checks for signs of life: a sentence from the model, a voice request or the first piece of audio, the audio starting on the projector.

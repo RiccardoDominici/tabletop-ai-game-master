@@ -10,7 +10,7 @@ import { turni } from './etichette';
 import { tabella } from './tabella';
 
 /** Zona del pannello in cui si mostra l'esito di un comando. */
-export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio' | 'sessione' | 'combattimento';
+export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio' | 'sessione' | 'combattimento' | 'tiri';
 
 export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   pausa: 'controlli',
@@ -39,6 +39,7 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   combattimento_termina: 'combattimento',
   pf: 'combattimento',
   condizione: 'combattimento',
+  tiro: 'tiri',
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
@@ -69,6 +70,7 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = tabella({
   combattimento_termina: 'master.cmd.combattimento_termina',
   pf: 'master.cmd.pf',
   condizione: 'master.cmd.condizione',
+  tiro: 'master.cmd.tiro',
 });
 
 /**
@@ -106,6 +108,8 @@ export function chiaveComando(comando: ComandoMaster): string {
       return `pf:${comando.id}`;
     case 'condizione':
       return `condizione:${comando.id}:${comando.condizione}`;
+    case 'tiro':
+      return `tiro:${comando.id}`;
     default:
       // «umore»: una chiave sola, due umori di fila non si accavallano.
       return comando.tipo;
@@ -147,6 +151,8 @@ export function descriviComando(comando: ComandoMaster): string {
       return `${comando.id}: ${t('master.pf')} ${comando.valore}`;
     case 'condizione':
       return `${nome} ${comando.id}: ${comando.condizione} ${t(comando.attiva ? 'master.esito.messa' : 'master.esito.tolta')}`;
+    case 'tiro':
+      return `${nome} ${comando.id === '*' ? t('master.tiri.tutti') : comando.id}: ${comando.valori ? comando.valori.join(', ') : t('master.tiri.motore')}`;
     default:
       return nome;
   }

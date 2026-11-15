@@ -3,7 +3,7 @@
  * comando. Lo stato del tavolo (pubblico) sta in `store/tavolo.ts`.
  */
 import { create } from 'zustand';
-import type { AzionePrivata, EsitoPrivato, SchedaPg } from '@tabletop-ai-gm/shared';
+import type { AzionePrivata, EsitoPrivato, RichiestaTiro, SchedaPg } from '@tabletop-ai-gm/shared';
 import { CHIAVI, cancellaMemoria, leggiMemoria, scriviMemoria } from '../lib/memoria';
 
 interface StoreTelefono {
@@ -33,6 +33,8 @@ interface StoreTelefono {
    * a tutto schermo non si ripresenta finché non arriva una richiesta diversa.
    */
   sceltaRimandata: string | null;
+  /** My open roll requests (manual rolls, `tiri:richiesti`): the dice I must roll at the table, private ones included. */
+  richiesteTiro: RichiestaTiro[];
 
   ricordaPg(idPg: string): void;
   dimenticaPg(): void;
@@ -45,6 +47,7 @@ interface StoreTelefono {
   impostaEsitiPrivati(esiti: EsitoPrivato[]): void;
   apriScheda(aperta: boolean): void;
   rimandaScelta(chiave: string | null): void;
+  impostaRichiesteTiro(richieste: RichiestaTiro[]): void;
 }
 
 export const useTelefono = create<StoreTelefono>()((set) => ({
@@ -58,6 +61,7 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   esitiPrivati: [],
   schedaAperta: false,
   sceltaRimandata: null,
+  richiesteTiro: [],
 
   ricordaPg: (idPg) => {
     scriviMemoria(CHIAVI.pg, idPg);
@@ -65,7 +69,7 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   },
   dimenticaPg: () => {
     cancellaMemoria(CHIAVI.pg);
-    set({ idPg: null, confermato: false, miaAzione: null, scheda: null, esitiPrivati: [], schedaAperta: false });
+    set({ idPg: null, confermato: false, miaAzione: null, scheda: null, esitiPrivati: [], schedaAperta: false, richiesteTiro: [] });
   },
   impostaConfermato: (confermato) => set({ confermato }),
   apriScelta: (sceltaAperta) => set({ sceltaAperta }),
@@ -76,4 +80,5 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   impostaEsitiPrivati: (esitiPrivati) => set({ esitiPrivati }),
   apriScheda: (schedaAperta) => set({ schedaAperta }),
   rimandaScelta: (sceltaRimandata) => set({ sceltaRimandata }),
+  impostaRichiesteTiro: (richiesteTiro) => set({ richiesteTiro }),
 }));

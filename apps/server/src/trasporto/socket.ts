@@ -70,6 +70,7 @@ export function creaUscite(io: ServerIo): { regia: UscitaRegia; audio: UscitaAud
       metriche: (m) => io.to(STANZA_TAVOLO).emit('metriche:turno', m),
       avviso: (livello, testo) => io.to(STANZA_TAVOLO).emit('avviso', { livello, testo }),
       privati: (id, esiti) => io.to(stanzaPg(id)).emit('privato:esiti', esiti),
+      tiriRichiesti: (id, richieste) => io.to(stanzaPg(id)).emit('tiri:richiesti', richieste),
     },
     audio: creaUscitaAudio(io),
   };
@@ -119,6 +120,7 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
         }
         socket.emit('azione:mia', regia.azioneDi(id_pg));
         socket.emit('privato:esiti', regia.esitiPrivati(id_pg));
+        socket.emit('tiri:richiesti', regia.tiriRichiestiDi(id_pg));
         const scheda = regia.schedaPg(id_pg);
         if (scheda) socket.emit('pg:scheda', scheda);
       }
@@ -141,6 +143,16 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
           log.error({ id_pg, err: (err as Error).message }, 'dictation: learning failed');
         }
       }
+    });
+
+    // Manual rolls (docs/prove.md §8): the dice the player rolled at the table, for one of its PC's requests.
+    socket.on('tiro:inserisci', (dati, cb) => {
+      const id_pg = controllaPg(dati?.id_pg);
+      if (!id_pg) return ack<Esito>(cb)(errore('scegli_pg'));
+      if (typeof dati.id !== 'string' || !Array.isArray(dati.valori)) return ack<Esito>(cb)(errore('richiesta_non_valida'));
+      const e = regia.inserisciTiro(id_pg, dati.id, dati.valori, dati.dettato === true ? 'dettato' : 'telefono');
+      log.info({ socket: socket.id, id_pg, richiesta: dati.id, ok: e.ok, dettato: dati.dettato === true, ...(e.ok ? {} : { motivo: e.motivo }) }, 'manual rolls: dice from the phone');
+      ack<Esito>(cb)(e.ok ? { ok: true } : { ok: false, errore: testo(`socket.tiro_${e.motivo}`) });
     });
 
     socket.on('azione:conferma', (dati, cb) => {

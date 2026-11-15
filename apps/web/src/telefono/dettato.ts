@@ -280,6 +280,11 @@ async function invia(blob: Blob, durataMs: number): Promise<void> {
     if (!risposta.ok) return errore(erroreServer(dati.codice), { secondi: useDettato.getState().maxSecondi });
     const testo = typeof dati.testo === 'string' ? dati.testo : '';
     if (!testo.trim()) return errore(dati.silenzio ? 'telefono.dettato.silenzio' : 'telefono.dettato.niente');
+    // A roll is open on screen (manual rolls): the dictation answers the roll («ho fatto 14»), not the action box.
+    if (perTiro) {
+      perTiro(testo);
+      return;
+    }
     metti(testo, Array.isArray(dati.correzioni) ? (dati.correzioni as CorrezioneMostrata[]) : []);
   } catch (e) {
     log.warn('Dictation not sent', e);
@@ -287,6 +292,12 @@ async function invia(blob: Blob, durataMs: number): Promise<void> {
   } finally {
     useDettato.setState({ fase: 'pronto' });
   }
+}
+
+/** Callback set by the open roll (TiroDaFare.tsx): the dictated text goes there instead of the action box. */
+let perTiro: ((testo: string) => void) | null = null;
+export function suDettatoTiro(f: ((testo: string) => void) | null): void {
+  perTiro = f;
 }
 
 /** Callback set by the action box: what to do with the new text (cambiaBozza, and the optional auto-send). */

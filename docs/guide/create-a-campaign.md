@@ -66,7 +66,8 @@ field, with the reason. It only asks you about what it cannot decide for you:
 
 - the **themes to avoid** (lines and veils: see below);
 - the **number of players**;
-- the **length**.
+- the **length**;
+- if your request does not say, **who rolls the dice**: the players at the table (the default) or the program.
 
 ### How long: today only the one-shot
 
@@ -165,6 +166,7 @@ A real, complete example is `campagne/ponte-lanterne/brief.yaml`.
 | `durata` | a note in words for you; the real number is in `sessioni` | `"una sessione serale, da due ore a due ore e mezza, in quattro scene"` |
 | `giocatori` | how many play, a number or a range like `"3-4"` | `4` |
 | `dadi` | `true` by default: sheets and checks. `false` only if you want a campaign without dice | (absent) |
+| `tiri_giocatori` | who rolls the players' dice: `manuale` (default, the players roll real dice and enter them on the phone, the DC stays secret) or `automatico` (the program rolls for them) | (absent: manuale) |
 | `temi` | the themes of the story | `[debiti e lealtà, …]` |
 | `linee` | what **never** enters the game | `"contenuti sessuali"` |
 | `veli` | what happens only off-scene, told after the fact | `"annegamento: solo fuori scena"` |
@@ -186,6 +188,9 @@ Some rules worth knowing:
   two paths are required (`SCELTA.forma`).
 - **Dice.** The `dadi` field of the brief is for the Preparer. The real switch is in `campagna.yaml`:
   `regole: {dadi: false}` removes the requirement for sheets. Details in [dice and sheets](dice-and-sheets.md).
+- **Who rolls.** Same for `tiri_giocatori`: the Preparer copies it into `campagna.yaml` →
+  `regole: {tiri_giocatori: manuale}` (or `automatico`). Without the field the players roll their own dice. See
+  [Who rolls the dice](dice-and-sheets.md#who-rolls-the-dice).
 - **Voices.** The recorded voices are in `assets/voci/voci.yaml`. Two identical or similar voices never share the
   same scene, and at most four NPCs with a voice can be in one scene.
 

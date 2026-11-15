@@ -6,7 +6,7 @@
  * risincronizzano chiedendo `stato:richiedi` quando si riconnettono.
  */
 
-import type { CombattimentoPubblico, PuntiFerita, TiroMostrato } from './prove';
+import type { CombattimentoPubblico, PuntiFerita, RichiestaTiro, TiroMostrato } from './prove';
 
 /** Fasi della scena, nell'ordine in cui normalmente si susseguono. */
 export type FaseScena =
@@ -345,6 +345,13 @@ export interface StatoTavolo {
   tiri?: TiroMostrato[];
   /** Combattimento in corso (docs/combattimento.md): barra dell'iniziativa, turno, PF, condizioni. */
   combattimento?: CombattimentoPubblico | null;
+  /** The players roll real dice at the table (docs/prove.md §8): the campaign's `regole.tiri_giocatori: manuale`. */
+  tiri_manuali?: boolean;
+  /**
+   * The rolls the table is waiting for, of PUBLIC actions only (projector: «Fai un tiro di Furtività»), never with the
+   * DC. A player's own requests, private ones included, reach their phone through `tiri:richiesti`.
+   */
+  tiri_richiesti?: RichiestaTiro[];
 }
 
 /** Misure di latenza di un turno (stessi campi di logs/turni.jsonl, docs/f0-contratti.md). */

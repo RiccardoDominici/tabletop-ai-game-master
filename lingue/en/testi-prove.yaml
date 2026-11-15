@@ -182,6 +182,14 @@ prove:
     intestazione_tocca: " Now it is the turn of: {chi}: close by inviting only {pronome}, it is their turn."
     loro: "them"
     lui_o_lei: "him or her"
+  # Manual rolls (docs/prove.md §8, scena/tiri-giocatori.ts): what the narrator says when a player must roll real dice.
+  # Never the DC. {nome} is the PC's first name.
+  richiesta:
+    abilita: "{nome}, make a {abilita} check{vantaggio}."
+    attacco: "{nome}, roll to hit: {cosa}{vantaggio}."
+    altro: "{nome}, roll: {cosa}{vantaggio}."
+    con_vantaggio: ", with advantage"
+    con_svantaggio: ", with disadvantage"
   # NPCs in the scene out of play (scena/regia.ts, righeFuoriGioco): in the narrator's and selector's message.
   fuori:
     titolo: "## NPCs out of play (the Engine says so: they do not speak or act, no lines or [png_…] lines for them)"

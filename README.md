@@ -37,8 +37,10 @@ Before you read: nothing. This is the page to start from.
 - **NPC portraits and presence.** The projector shows the portraits of the non-player characters (NPCs) in the scene
   and highlights who is speaking; the phone shows who is here and who is elsewhere. Hidden NPCs appear only when they
   speak or the Game Master reveals them. See [The Game Master panel](docs/guide/master-panel.md).
-- **Dice, ability checks and full combat.** The code rolls the dice and decides which check an action needs; the roll
-  cards appear on the projector and the phones. Combat has initiative, rounds and phases, conditions, death saves and
+- **Dice, ability checks and full combat.** The code decides which check an action needs and works out the outcome;
+  by default the players roll real dice at the table and type what they show on the phone («Fai un tiro di
+  Furtività»), never told the DC, or the campaign lets the code roll for them. The roll cards appear on the projector
+  and the phones. Combat has initiative, rounds and phases, conditions, death saves and
   morale. The rules come from the campaign's rule set: the SRD 5.2 by default, or any rulebook.
   See [Dice and character sheets](docs/guide/dice-and-sheets.md).
 - **Your own rulebook.** Put your manual in `manuali/` (it stays out of git) and the Preparer turns it into the

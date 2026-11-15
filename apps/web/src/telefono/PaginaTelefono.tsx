@@ -26,6 +26,7 @@ import { Regole } from './Regole';
 import { Diario } from './Diario';
 import { AlTavolo } from './AlTavolo';
 import { SceltaAzione } from './SceltaAzione';
+import { TiroDaFare } from './TiroDaFare';
 import { TiriTurno } from './TiriTurno';
 import { PuntiFeritaPg } from './PuntiFeritaPg';
 import { provaCarteRichiesta } from '../debug/richiesta';
@@ -166,6 +167,8 @@ export function Tavolo({ stato, idPg }: { stato: StatoTavolo; idPg: string }) {
       <Regole aperta={regoleAperte} onChiudi={() => setRegoleAperte(false)} />
       <Diario aperta={diarioAperto} diario={stato.diario} onChiudi={() => setDiarioAperto(false)} />
       <SceltaAzione />
+      {/* Manual rolls: my open roll covers the screen until I enter the dice (docs/prove.md §8). */}
+      <TiroDaFare />
     </div>
   );
 }

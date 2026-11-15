@@ -82,6 +82,12 @@ export interface ConfigServer {
    * Assente = un seme nuovo a ogni sessione (salvato nell'archivio).
    */
   semeDadi: string | null;
+  /**
+   * Who rolls (docs/prove.md §8–9), overriding the campaign's `regole.tiri_giocatori` / `regole.tiri_master` on this
+   * instance (TAGM_TIRI_GIOCATORI=manuale|automatico, TAGM_TIRI_MASTER=nascosti|a_volte|visibili). null = the campaign
+   * decides; under vitest the players' rolls are automatic unless TAGM_TIRI_GIOCATORI says otherwise.
+   */
+  tiri: { giocatori: 'manuale' | 'automatico' | null; master: 'nascosti' | 'a_volte' | 'visibili' | null };
   llm: {
     modo: ModoLlm;
     modello: string;
@@ -162,6 +168,12 @@ function scelta<T extends string>(valore: string | undefined, ammessi: readonly 
   return t && ammessi.includes(t) ? t : predefinito;
 }
 
+/** Like `scelta`, with no default: null when the variable is absent or not one of the allowed values. */
+function sceltaOpzionale<T extends string>(valore: string | undefined, ammessi: readonly T[]): T | null {
+  const t = testo(valore) as T | undefined;
+  return t && ammessi.includes(t) ? t : null;
+}
+
 /**
  * TAGM_VOCE=fish|qwen|finta (scripts/partita.sh --voce) vince su TAGM_TTS=qwen|mock|auto
  * (il nome vecchio, che resta per gli script e i test che lo usano).
@@ -204,6 +216,10 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     // Con il narratore a copione (test, prove senza spesa) l'arbitro usa solo le regole.
     arbitro: scelta(env['TAGM_ARBITRO'], ['haiku', 'regole'] as const, env['TAGM_LLM'] === 'finto' ? 'regole' : 'haiku'),
     semeDadi: /^[0-9a-f]{8,128}$/i.test(testo(env['TAGM_SEME_DADI']) ?? '') ? testo(env['TAGM_SEME_DADI'])! : null,
+    tiri: {
+      giocatori: sceltaOpzionale(env['TAGM_TIRI_GIOCATORI'], ['manuale', 'automatico'] as const) ?? (process.env['VITEST'] ? 'automatico' : null),
+      master: sceltaOpzionale(env['TAGM_TIRI_MASTER'], ['nascosti', 'a_volte', 'visibili'] as const),
+    },
     filePromptSelettore: testo(env['TAGM_PROMPT_SELETTORE']) ?? null,
     cacheAudio: testo(env['TAGM_CACHE_AUDIO']) ?? path.join(RADICE_REPO, 'cache', 'audio'),
     // I percorsi relativi valgono dalla radice del repo (il server gira in apps/server).

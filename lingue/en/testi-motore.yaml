@@ -259,6 +259,12 @@ master:
     umore_non_valido: "Invalid mood."
     pf_non_validi: "Invalid character or HP."
     condizione_non_valida: "Invalid condition."
+    tiro_non_valido: "Invalid roll."
+    tiro_nessuna: "No roll is waiting with this name."
+    tiro_gia: "This roll is already in."
+    tiro_altro_pg: "This roll belongs to another character."
+    tiro_quanti: "Wrong number of dice."
+    tiro_facce: "A die off its faces."
     effetto_sconosciuto: "Unknown effect."
     senza_proiettore: "No projector with sound on."
   # Details of an event in the panel's list (master/comandi.ts → SezioneEventi).
@@ -304,6 +310,8 @@ master:
     pf: "{id}: HP {valore}"
     condizione_messa: "{id}: {condizione} applied"
     condizione_tolta: "{id}: {condizione} removed"
+    tiro_inserito: "{id}: dice {valori} entered by the Game Master"
+    tiro_automatico: "{id}: the Engine rolls"
     effetto: "effect {id} on the projector"
   # Errors of the director's notes written from the panel (master/note.ts).
   note:
@@ -319,6 +327,12 @@ master:
 socket:
   scegli_pg: "Choose your character first."
   richiesta_non_valida: "Invalid request."
+  # Manual rolls (docs/prove.md §8): the phone enters the dice of a request.
+  tiro_nessuna: "No roll to make now."
+  tiro_gia: "The roll is already in."
+  tiro_altro_pg: "This roll belongs to another character."
+  tiro_quanti: "Enter every die of the roll."
+  tiro_facce: "A die goes from 1 to its number of faces."
 
 # HTTP API errors (app.ts).
 api:

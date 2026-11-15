@@ -103,7 +103,7 @@ import { sezioneNoteRegia } from '../narrazione/messaggio';
 import { MotoreProve, type AzionePerProve } from '../prove/motore';
 import type { ArbitroProve, DecisioneProva, DecisioneRegole, EsitoTurnoProve } from '../prove/tipi';
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
-import type { CombattimentoMaster, MondoMaster } from '@tabletop-ai-gm/shared';
+import type { CombattimentoMaster, MondoMaster, RichiestaTiro, RichiestaTiroMaster } from '@tabletop-ai-gm/shared';
 import type { FonteDadi } from '../prove/dadi';
 import { regolaEsiti, titoloEsiti } from '../prove/testi';
 import { guardiaRifiuti } from '../narrazione/guardia-rifiuti';
@@ -115,6 +115,9 @@ import { MondoInGioco } from '../mondo/mondo';
 import type { CambioAtteggiamento } from '../mondo/atteggiamenti';
 import type { FattoDelGioco } from '../mondo/porte';
 import { mossaDiStallo, type MossaStallo } from '../mondo/stallo';
+import { TiriGiocatoriRegia, type TiriGiocati } from './tiri-giocatori';
+import type { ModalitaTiri } from '../prove/modalita';
+import type { EsitoInserimento } from '../prove/attesa-tiri';
 import { indiziCampagna } from '../campagna/indizi';
 
 /** Gli orologi già avanzati in una risposta (un segno per orologio, al massimo due: StatoOrologi.avanza). */
@@ -195,6 +198,8 @@ export interface OpzioniRegia {
     seme?: string;
     dadi?: FonteDadi;
     attesaMaxMs?: number;
+    /** Who rolls (docs/prove.md §8–9): the campaign's `regole.tiri_giocatori` / `tiri_master`. Absent = automatic. */
+    tiri?: ModalitaTiri;
   };
   /** Riassunto pubblico della scena per l'arbitro. */
   scenaPubblica?: string;
@@ -240,6 +245,8 @@ export interface UscitaRegia {
   avviso(livello: 'info' | 'errore', testo: string): void;
   /** Al telefono di quel PG: tutti i suoi esiti privati (`[privato pg_x]`), mai al proiettore. */
   privati?(id_pg: string, esiti: EsitoPrivato[]): void;
+  /** To that PC's phones: its open roll requests (manual rolls, private ones included), at every change. */
+  tiriRichiesti?(id_pg: string, richieste: RichiestaTiro[]): void;
 }
 
 interface AttesaAudio {
@@ -400,6 +407,8 @@ export class Regia {
   private readonly tavolo: TavoloAzioni;
   /** Prove e dadi del Motore (null = campagna senza schede o regia di prova senza dadi). */
   private readonly prove: MotoreProve | null;
+  /** Manual rolls (docs/prove.md §8): the wait for the dice rolled at the table, between the window and the narrator. */
+  private readonly tiriGiocatori: TiriGiocatoriRegia;
   /** Prove riuscite per azione nel turno che si sta narrando (cancello `richiede.prova` del repertorio). */
   private riuscitePerAzione = new Map<string, readonly string[]>();
   /** Prove fallite per azione nello stesso turno: chiudono le battute legate a quelle prove (D2). */
@@ -525,6 +534,24 @@ export class Regia {
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');
+    this.tiriGiocatori = new TiriGiocatoriRegia({
+      modalita: po?.tiri ?? null,
+      prove: this.prove,
+      log: opzioni.log.child({ modulo: 'prove' }),
+      orologio: opzioni.orologio,
+      epoca: () => this.epoca,
+      inizio: () => {
+        this.fase = 'narrazione';
+        this.notifica();
+      },
+      parla: (turno, testo, k) =>
+        this.pipeline.accoda({ id_frase: `t${turno}-tiro${k}`, turno, indice: 600 + k, parlante: ID_NARRATORE, nome: nomeNarratore(), voce_id: ID_NARRATORE, testo, testo_voce: this.pronuncia(testo) }),
+      cambiato: () => {
+        this.notifica();
+        for (const p of this.campagna.pg) this.uscita?.tiriRichiesti?.(p.id, this.tiriGiocatori.delPg(p.id));
+      },
+      versoProve: (a) => Regia.versoProve(a),
+    });
     this.sceneggiatore = opzioni.sceneggiatore
       ? new CanaleSceneggiatore({ radice: opzioni.sceneggiatore.radice, log: opzioni.log.child({ modulo: 'sceneggiatore' }), adesso: () => this.o.orologio.adesso(), onRisposta: (rq, rs) => this.dalloSceneggiatore(rq, rs) })
       : null;
@@ -1928,7 +1955,7 @@ export class Regia {
       ritmo: this.ritmo,
       ora_server_ms: this.o.orologio.adesso(),
       lingua: this.o.lingue ?? { interfaccia: LINGUA_PREDEFINITA, contenuti: linguaAttiva() },
-      ...(this.prove?.attivo ? { dadi: true, tiri: this.prove.tiriPubblici() } : {}),
+      ...(this.prove?.attivo ? { dadi: true, tiri: this.prove.tiriPubblici(), ...(this.tiriGiocatori.manuali ? { tiri_manuali: true, tiri_richiesti: this.tiriGiocatori.pubbliche() } : {}) } : {}),
       ...(this.prove?.inCombattimento ? { combattimento: this.prove.vistaCombattimento() } : {}),
       ...this.serata.pubblico(this.finoraStasera()),
     };
@@ -2410,6 +2437,7 @@ export class Regia {
   /** Ferma LLM, voce, attese dell'audio e misure in corso (i flussi vecchi escono per `epoca`). */
   private interrompiFlussi(motivo: string): void {
     this.epoca += 1;
+    this.tiriGiocatori?.annulla(motivo);
     this.sorvegliante.fine(motivo);
     this.controlloLlm?.abort(new Error(motivo));
     this.controlloLlm = null;
@@ -2685,6 +2713,30 @@ export class Regia {
     });
   }
 
+  // ------------------------------------------------------------------ manual rolls (docs/prove.md §8)
+
+  /** A phone enters the dice its player rolled (only for its own PC); dictation passes `da: 'dettato'`. */
+  inserisciTiro(id_pg: string, id: string, valori: unknown, da: 'telefono' | 'dettato' = 'telefono'): EsitoInserimento {
+    return this.tiriGiocatori.dalTelefono(id_pg, id, valori, da);
+  }
+
+  /** The Game Master enters the dice for a player (`valori`), or switches that roll (`id` «*»: every open roll) to the Engine. */
+  tiroDalMaster(id: string, valori: number[] | null): EsitoInserimento {
+    return this.tiriGiocatori.dalMaster(id, valori);
+  }
+
+  /** A PC's open requests (private ones included): for its phone when it (re)connects. */
+  tiriRichiestiDi(id_pg: string): RichiestaTiro[] {
+    return this.tiriGiocatori.delPg(id_pg);
+  }
+
+  /** For the panel: who rolls, the open requests with the DC, and the last turn's cards as rolled (DC included). */
+  get tiriMaster(): { giocatori: 'manuale' | 'automatico'; master: 'nascosti' | 'a_volte' | 'visibili'; richieste: RichiestaTiroMaster[]; carte: TiroMostrato[] } | null {
+    if (!this.prove?.attivo) return null;
+    const m = this.o.prove?.tiri;
+    return { giocatori: this.tiriGiocatori.manuali ? 'manuale' : 'automatico', master: m?.master ?? 'nascosti', richieste: this.tiriGiocatori.master(), carte: this.prove.tiriDelMaster() };
+  }
+
   /** Per il pannello del master: schede coi PF e condizioni del set (null senza dadi). */
   get combattimentoMaster(): CombattimentoMaster | null {
     return this.prove?.attivo ? this.prove.combattimentoMaster() : null;
@@ -2732,8 +2784,8 @@ export class Regia {
   }
 
   /** I dadi del turno chiuso: carte a proiettore e telefoni, fatti per il narratore, prove riuscite. */
-  private async tiriDelTurno(r: RiepilogoChiusura): Promise<EsitoTurnoProve> {
-    const esito = await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
+  private async tiriDelTurno(r: RiepilogoChiusura, giocate?: TiriGiocati): Promise<EsitoTurnoProve> {
+    const esito = giocate?.decisioni ? this.prove!.completa(giocate.decisioni, giocate.inseriti) : await this.prove!.risolvi(r.turno, r.azioni.map(Regia.versoProve));
     this.riuscitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.riuscite]));
     this.fallitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.fallite]));
     this.negatiTurno = new Set(esito.negati.map((n) => n.png));
@@ -2815,7 +2867,14 @@ export class Regia {
     // La situazione messa dopo una rivelazione ha accompagnato la reazione dei giocatori: si torna al luogo.
     if (this.situazione?.auto && this.situazione.turno < r.turno) this.togliSituazione('narrazione successiva');
     this.rivelateNelTurno = [];
-    this.misuratore = new MisuratoreTurno(r.turno, r.chiusa_a, r.durata_ms, this.o.voce.nome, this.o.orologio.adesso());
+    // Manual rolls (docs/prove.md §8): the players roll real dice at the table before the narrator starts.
+    const giocate = await this.tiriGiocatori.prima(r);
+    if (!giocate) return; // the wait was cancelled (stop, restart, scene change): the turn is dropped
+    if (giocate.attesa_ms) this.primoAudioInviato.delete(r.turno);
+    // After a wait for the dice the latencies start when the last die is in, not when the window closed.
+    this.misuratore = giocate.attesa_ms
+      ? new MisuratoreTurno(r.turno, this.o.orologio.ora(), r.durata_ms, this.o.voce.nome, this.o.orologio.adesso())
+      : new MisuratoreTurno(r.turno, r.chiusa_a, r.durata_ms, this.o.voce.nome, this.o.orologio.adesso());
     // Contratto voce: /sveglia alla chiusura della finestra, in parallelo alla chiamata dell'LLM
     // (fire-and-forget: la prima frase arriva dopo ~0,9 s, la sveglia ci sta dentro).
     const motoreVoce = this.o.voce.attivo;
@@ -2844,7 +2903,7 @@ export class Regia {
     this.negatiTurno = new Set();
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
     const scontroPrima = this.prove?.inCombattimento ?? false;
-    const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r) : null;
+    const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r, giocate) : null;
     if (epoca !== this.epoca) return;
     // The world: the facts of the actions and the checks owe marks in the response that answers them (docs/mondo.md §2).
     this.mondo.fatti(this.fattiDelTurno(r, scontroPrima), r.turno);

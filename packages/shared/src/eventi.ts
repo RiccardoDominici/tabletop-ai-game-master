@@ -16,6 +16,7 @@
 import type { AzionePrivata, MisureTurno, SchedaPg, StatoTavolo } from './dominio';
 import type { ComandoMaster, EsitoEntrataMaster, StatoMaster } from './master';
 import type { RegolePubbliche, RispostaRegola } from './regole';
+import type { RichiestaTiro } from './prove';
 
 /** Risposta standard agli eventi con conferma (ack). */
 export type Esito = { ok: true } | { ok: false; errore: string };
@@ -133,6 +134,11 @@ export interface EventiServerVersoClient {
   'privato:esiti': (esiti: EsitoPrivato[]) => void;
   /** Al telefono che ha scelto il PG: la sua scheda, con le conoscenze private. */
   'pg:scheda': (scheda: SchedaPg) => void;
+  /**
+   * To the phones of that PC: its open roll requests (manual rolls, docs/prove.md §8), private ones included, at every
+   * change and when the PC is chosen. Empty = nothing to roll.
+   */
+  'tiri:richiesti': (richieste: RichiestaTiro[]) => void;
   'metriche:turno': (misure: MisureTurno) => void;
   avviso: (avviso: { livello: 'info' | 'errore'; testo: string }) => void;
   'audio:frase': (frase: AudioFrase) => void;
@@ -175,6 +181,11 @@ export interface EventiClientVersoServer {
     dati: { id_pg: string; testo: string; versione_vista: number; privata?: boolean; trascrizione?: string },
     ack: (esito: Esito) => void,
   ) => void;
+  /**
+   * The player entered the dice they rolled at the table for one request (`valori`: each die as it shows, 1–faces).
+   * Only for the phone's own PC. Refused: an unknown or closed request, the wrong number of dice, a die off its faces.
+   */
+  'tiro:inserisci': (dati: { id_pg: string; id: string; valori: number[]; dettato?: boolean }, ack: (esito: Esito) => void) => void;
   /** «Confermo» / «Tengo» su un'azione da confermare. */
   'azione:conferma': (dati: { id_pg: string }, ack: (esito: Esito) => void) => void;
   /**
