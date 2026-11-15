@@ -27,6 +27,9 @@ run this check from the root and stop if it finds anything:
 ```bash
 # 1. File che non devono essere tracciati (il solo .env.example è ammesso)
 git ls-files | grep -E '(^|/)\.env(\.[^e][^/]*)?$|^logs/|^cache/|(^|/)\.venv/|__pycache__|node_modules/' && echo "TROVATO: file vietati"
+# 1b. Certificati e chiavi private (mkcert scrive in cache/https/, fuori da git; la CA resta nella cartella di mkcert)
+git ls-files | grep -iE '\.pem$|\.key$|\.p12$|rootCA' && echo "TROVATO: certificati o chiavi private"
+git grep -nE 'BEGIN (RSA |EC )?PRIVATE KEY' && echo "TROVATO: chiave privata"
 
 # 2. Pattern di chiavi e token nel contenuto dei file tracciati
 git grep -nE 'sk-ant-|sk-or-v1|hf_[A-Za-z0-9]{10,}|ghp_[A-Za-z0-9]{10,}|gho_[A-Za-z0-9]{10,}|[A-Z_]*_API_KEY=[^[:space:]]+' -- ':!.env.example' && echo "TROVATO: pattern di chiave"
@@ -46,7 +49,8 @@ for t in $(grep -ohE 'token=[A-Za-z0-9_-]{12,}' logs/*.out logs/*.jsonl logs/*/*
 ```
 
 The script above is kept as it is, with its comments and messages in Italian. In short: check 1 looks for
-files that must not be tracked (only `.env.example` is allowed); check 2 looks for key and token patterns in
+files that must not be tracked (only `.env.example` is allowed); check 1b looks for certificates and private keys
+(the HTTPS certificates of `scripts/certificato.sh` live in `cache/https/`, outside git); check 2 looks for key and token patterns in
 tracked files; check 3 stops rule sets taken from a non-free manual (the ones with `libera: false`) from
 entering the repository, and warns if `manuali/` is not in `.gitignore`; check 4 looks for Game Master
 tokens copied from the logs. Each line it prints starting with "TROVATO" ("FOUND") or "ATTENZIONE"
