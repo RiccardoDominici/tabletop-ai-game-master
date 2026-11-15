@@ -1,5 +1,6 @@
 id: scena_bosco
 nome: "Il bosco"
+nodo: n_bosco
 apertura: "Gli alberi sono fitti."
 png_presenti: []
 orologi_attivi: [o_sera]

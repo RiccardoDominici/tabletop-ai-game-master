@@ -152,6 +152,7 @@ messaggio:
   mossa_mondo: "Fai succedere qualcosa nella scena: {mossa}. {solo_finzione} Chiudi con un invito a un personaggio per nome, dentro la storia."
   mossa_segno: "un segno visibile della minaccia (S1), senza niente di irreversibile"
   mossa_indizio: "un indizio proattivo (S2): qualcosa irrompe e porta una pista nuova, oppure un PNG agisce per conto suo"
+  mossa_piste: "un PNG in scena, o un ricordo, riassume due o tre piste concrete (S3): luoghi da raggiungere, cose già scoperte, la minaccia che incalza"
 
 # The world that moves (apps/server/src/mondo/, docs/mondo.md): the section of the turn's message about what has
 # changed in the world. Mode A also gets the directives of the consequences and the clues the world offers.
@@ -162,6 +163,10 @@ mondo:
   png_arriva: "{nome} adesso è in questa scena."
   atteggiamento: "{png} verso {pg}: adesso {stato} (prima {prima})."
   indizio_offerto: "Il mondo offre una pista ({id}): {come}. Falla arrivare se i PG la cercano o se tocca a una mossa del mondo."
+  stallo_pericolo: "Materiale: mosse del pericolo in scena: {mosse}. Segni che lo annunciano: {segni}."
+  stallo_indizio: "Materiale: la pista da far arrivare ({id}): {come}"
+  stallo_piste: "Materiale: piste che i PG conoscono: {piste}."
+  stallo_riga_piste: "Vi tornano in mente le strade ancora aperte: {piste}."
 
 # Sezione del ritmo concitato in fondo al messaggio del turno (apps/server/src/narrazione/ritmo.ts).
 ritmo:

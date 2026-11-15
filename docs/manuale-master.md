@@ -480,7 +480,7 @@ A contradiction check follows: first retrieval from the canon, then an LLM verif
 
 If a criterion scores ≤1 twice in a row, the Engine tightens the limits or passes that NPC's lines to the strong model.
 
-**E12 Spotlight and stall.** The scheduler applies the T1 thresholds and chooses the addressee. The stall detector does not watch the clock: at the table, silence is discussion, and the game waits (requests of November 9). It triggers when a window closes without any action (the deadline of the rushed pace, or the master's «Risolvi ora» (Resolve now) with empty hands), or after 2 inputs with no new decisions (determined by a classifier). The first time, it injects a soft move (S1); the second time, a proactive clue (S2).
+**E12 Spotlight and stall.** The scheduler applies the T1 thresholds and chooses the addressee. The stall detector does not watch the clock: at the table, silence is discussion, and the game waits (requests of November 9). It triggers when a window closes without any action (the deadline of the rushed pace, or the master's «Risolvi ora» (Resolve now) with empty hands), outside a fight, or after 2 inputs with no new decisions (determined by a classifier: not built yet). A counter grows on consecutive stalls and goes back to zero on an action or a scene change: the first time it injects a soft move (S1) of the scene's danger, the second a proactive clue (S2), the third an NPC or memory with 2–3 leads (S3), then again from S1, and from the fourth on the danger's clock also ticks (docs/mondo.md §5).
 
 **E13 Safety.**
 - The lines are a hard filter on preparation and output (list plus classifier).

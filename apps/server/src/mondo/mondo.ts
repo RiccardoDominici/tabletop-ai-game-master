@@ -18,6 +18,7 @@ import type { Logger } from '../logger';
 import type { StatoOrologi } from '../scena/orologi';
 import { AtteggiamentiInGioco, type CambioAtteggiamento } from './atteggiamenti';
 import { PorteDelMondo, porteDegliOrologi, type Debito, type FattoDelGioco } from './porte';
+import { ContatoreStallo } from './stallo';
 
 /** One entry of the world's log. */
 export interface VoceCronaca {
@@ -66,6 +67,8 @@ export interface StatoMondoSalvato {
   /** NPCs moved by a consequence: scene id or «via». */
   posizioni?: Array<[string, string]>;
   atteggiamenti?: CambioAtteggiamento[];
+  /** Consecutive stalls, and the clues already given by a stall's S2 (docs/mondo.md §5). */
+  stallo?: { n: number; indizi: string[] };
 }
 
 export interface OpzioniMondo {
@@ -104,6 +107,10 @@ export class MondoInGioco {
   private inAttesa: InAttesa[] = [];
   private readonly offerti: string[] = [];
   private readonly posizioni = new Map<string, string>();
+  /** Consecutive stalls (docs/mondo.md §5). */
+  readonly stallo = new ContatoreStallo();
+  /** Clues already brought by a stall's S2: the next S2 brings another. */
+  readonly indiziDatiDaStallo = new Set<string>();
 
   constructor(private readonly o: OpzioniMondo) {
     const definiti = orologiDefiniti(o.campagna);
@@ -252,6 +259,7 @@ export class MondoInGioco {
       offerti: [...this.offerti],
       posizioni: [...this.posizioni],
       atteggiamenti: this.atteggiamenti.esporta(),
+      stallo: { n: this.stallo.n, indizi: [...this.indiziDatiDaStallo] },
     };
   }
 
@@ -277,5 +285,8 @@ export class MondoInGioco {
     this.posizioni.clear();
     for (const [id, dove] of s?.posizioni ?? []) this.posizioni.set(id, dove);
     this.atteggiamenti.importa(s?.atteggiamenti);
+    this.stallo.n = typeof s?.stallo?.n === 'number' && s.stallo.n > 0 ? Math.floor(s.stallo.n) : 0;
+    this.indiziDatiDaStallo.clear();
+    for (const i of s?.stallo?.indizi ?? []) this.indiziDatiDaStallo.add(i);
   }
 }

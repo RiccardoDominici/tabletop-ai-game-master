@@ -83,7 +83,7 @@ import { nomiDeiPng, pngNominati, temaPresente } from '../repertorio/pertinenza'
 import { personaggiScena, pngIncontrati, presenzaEffettiva, presenzeMaster } from './presenze';
 import { sommaCosti } from '../llm/costi';
 import type { Battuta, Repertorio } from '../repertorio/tipi';
-import { StatoRepertorio } from '../repertorio/stato';
+import { haCancelloAzione, StatoRepertorio } from '../repertorio/stato';
 import { provaFallita } from '../repertorio/condizioni';
 import { righeMenzogneDette } from '../repertorio/menzogne';
 import { segretiDelMotore, segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
@@ -113,8 +113,13 @@ import { guardiaPrivate } from '../narrazione/privato';
 import type { SchedaNumerica } from '../campagna/schede';
 import { MondoInGioco } from '../mondo/mondo';
 import type { FattoDelGioco } from '../mondo/porte';
+import { mossaDiStallo, type MossaStallo } from '../mondo/stallo';
+import { indiziCampagna } from '../campagna/indizi';
 
 /** Gli orologi già avanzati in una risposta (un segno per orologio, al massimo due: StatoOrologi.avanza). */
+/** A lead inside a list: without its final full stop. */
+const senzaPuntoFinale = (x: string): string => x.trim().replace(/[.!?…]+$/u, '');
+
 interface SegniInRisposta {
   orologi: Set<string>;
 }
@@ -372,6 +377,8 @@ export class Regia {
   private mondo!: MondoInGioco;
   /** Turn of the opening of the current scene visit (for `resta_in_scena`). */
   private ingressoScena = 0;
+  /** The stall move of the turn being narrated (docs/mondo.md §5), or null. */
+  private mossaStallo: MossaStallo | null = null;
   /** NPCs whose attitude a check already moved in this visit of the scene (docs/mondo.md §4: once per visit). */
   private cambiatiDaProve = new Set<string>();
   /** Clocks due in the message of the turn being narrated (owed marks are said by the Engine if not shown). */
@@ -1119,6 +1126,72 @@ export class Regia {
     });
   }
 
+  /**
+   * The stall move for the n-th consecutive stall (docs/mondo.md §5), from what the Engine knows of the scene. A hard
+   * S1 (from the fourth stall) owes a mark to the scene's danger: the soft move was ignored, the world moves.
+   */
+  private scegliMossaDiStallo(n: number, turno: number): MossaStallo {
+    const scena = this.campagna.scena;
+    const nodi = (this.campagna.campagnaNarratore['nodi'] as Array<Record<string, unknown>> | undefined) ?? [];
+    const visitati = new Set(this.o.campagna.scene.filter((s) => this.sceneVisitate.has(s.id)).map((s) => s.dati['nodo']));
+    const luoghiNoti = nodi
+      .filter((x) => x['tipo'] === 'luogo' && x['noto_ai_pg'] === true && x['id'] !== scena.dati['nodo'] && !visitati.has(x['id']) && typeof x['nome'] === 'string')
+      .map((x) => x['nome'] as string);
+    const ultimo = this.orologi.elenco.find((o) => o.pieni > 0 && o.segni[o.pieni - 1]);
+    const s = this.statoRepertorio;
+    const mossa = mossaDiStallo(n, {
+      pericoli: this.mondo.pericoli,
+      orologiAttivi: new Set(this.orologi.elenco.filter((o) => o.partito && o.pieni < o.segmenti).map((o) => o.id)),
+      presenti: this.pngInScena(),
+      offerti: this.mondo.indiziOfferti,
+      indiziDellaScena: [...indiziCampagna(this.o.campagna).values()].filter((i) => i.scena === scena.id).map((i) => i.id),
+      giàDati: new Set([...(s?.indiziRivelati ?? []), ...this.mondo.indiziDatiDaStallo]),
+      luoghiNoti,
+      fattiScoperti: (s?.fattiScoperti ?? []).map((f) => this.testoFatto(f)),
+      ultimoSegno: ultimo ? ultimo.segni[ultimo.pieni - 1]! : null,
+    });
+    if (mossa.indizio) this.mondo.indiziDatiDaStallo.add(mossa.indizio);
+    if (mossa.duro && mossa.pericolo?.orologio) {
+      const debito = this.orologi.aggiungiDebito(mossa.pericolo.orologio, 1);
+      this.o.log.info({ turno, n, pericolo: mossa.pericolo.id, orologio: mossa.pericolo.orologio, debito }, 'world: hard S1, the ignored soft move becomes a mark');
+      this.mondo.fatti([], turno);
+    }
+    this.o.log.info({ turno, n, livello: mossa.livello, duro: mossa.duro, pericolo: mossa.pericolo?.id ?? null, indizio: mossa.indizio, piste: mossa.piste }, 'world: stall move');
+    return mossa;
+  }
+
+  /** The stall move's material for the narrator (mode A): never an empty «cosa fate?». */
+  private materialeStallo(m: MossaStallo): string[] {
+    if (m.livello === 1 && m.pericolo) return [testoFisso('mondo.stallo_pericolo', { mosse: m.pericolo.mosse.join('; ') || '—', segni: m.pericolo.segniVisibili.join('; ') || '—' })];
+    if (m.livello === 2 && m.indizio) return [testoFisso('mondo.stallo_indizio', { id: m.indizio, come: indiziCampagna(this.o.campagna).get(m.indizio)?.come_si_trova || m.indizio })];
+    if (m.livello === 3) return [testoFisso('mondo.stallo_piste', { piste: m.piste.map(senzaPuntoFinale).join('; ') })];
+    return [];
+  }
+
+  /**
+   * Mode B at S2 and S3 (docs/mondo.md §5): the Engine says an available `indizio` line that reveals the clue and has no
+   * gate on the action, or the sentence with the leads. S1 stays the selector's filler or the due mark, as before.
+   * Returns what was said (a line id, «piste»), or null.
+   */
+  private diciMossaDiStallo(turno: number, esito: { uscita: VoceUscita[] }, segni: SegniInRisposta, m: MossaStallo, log: Logger): string | null {
+    const s = this.statoRepertorio!;
+    if (m.livello === 2 && m.indizio) {
+      if (s.indiziRivelati.has(m.indizio)) return null; // the response already brought it
+      const b = s.disponibili(turno).find((x) => x.tipo === 'indizio' && x.effetti.rivela_indizi.includes(m.indizio!) && !haCancelloAzione(x) && !x.richiede.privata);
+      if (b && this.aggiungiBattutaMotore(turno, esito, segni, log, b, false)) return b.id;
+      log.info({ turno, indizio: m.indizio }, 'world: S2 without a line the Engine can say (the selector had the fillers)');
+      return null;
+    }
+    if (m.livello === 3 && m.piste.length) {
+      const frase = testoFisso('mondo.stallo_riga_piste', { piste: m.piste.map(senzaPuntoFinale).join('; ') });
+      const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: frase, frasi: [`t${turno}-z0`], motore: true };
+      this.righeDelMotore(turno, esito, [{ etichetta: ID_NARRATORE, testo: frase, testo_voce: this.pronuncia(frase) }], voce, false, 'z');
+      this.notifica();
+      return 'piste';
+    }
+    return null;
+  }
+
   /** A new world for this campaign and the current clocks (start, «Ricomincia»). */
   private nuovoMondo(): MondoInGioco {
     return new MondoInGioco({
@@ -1205,8 +1278,8 @@ export class Regia {
       } else log.warn({ conseguenza: x.id, battuta: x.battuta }, 'world: consequence line not available and no sentence');
     }
     if (righe.length) {
-      const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: righe.map((r) => r.testo).join(' '), frasi: righe.map((_, k) => `t${turno}-c${k}`), motore: true };
-      this.righeDelMotore(turno, esito, righe, voce, false, 'c');
+      const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: righe.map((r) => r.testo).join(' '), frasi: righe.map((_, k) => `t${turno}-k${k}`), motore: true };
+      this.righeDelMotore(turno, esito, righe, voce, false, 'k');
       this.notifica();
     }
     if (detti.length) log.info({ conseguenze: detti }, 'world: consequences said by the Engine');
@@ -2141,6 +2214,8 @@ export class Regia {
     // The world: leaving a scene and changing scene are facts for the gates of avanza_quando (docs/mondo.md §2);
     // marks owed to clocks that are not active here are paid off-screen.
     if (inGioco) this.mondo.fatti([{ tipo: 'cambio_scena', da, a: nuova.id }], turno);
+    // A scene change is a real move of the game: the stall counter starts again.
+    this.mondo.stallo.azzera();
     // Chi era fuggito dalla scena di prima può ricomparire in questa (i morti restano morti).
     const tornati = this.prove?.stato.dimenticaFughe() ?? [];
     this.o.log.info({ da, a: nuova.id, fase: this.fase, immagine: this.o.immagini?.luogo(nuova.id) ?? null, ...(tornati.length ? { fughe_dimenticate: tornati } : {}) }, 'scena: cambio di scena');
@@ -2750,6 +2825,9 @@ export class Regia {
     this.mondo.fatti(this.fattiDelTurno(r, scontroPrima), r.turno);
     // Social checks move the attitude of the NPC they aimed at, before the narrator hears of it (docs/mondo.md §4).
     if (tiri?.sociali?.length) this.atteggiamentiDaProve(r.turno, tiri.sociali);
+    // A window closed without actions, outside a fight: the stall's move S1 → S2 → S3 (docs/mondo.md §5).
+    const nStallo = this.mondo.stallo.registra(r.azioni.length === 0, scontroPrima || !!this.prove?.inCombattimento);
+    this.mossaStallo = nStallo ? this.scegliMossaDiStallo(nStallo, r.turno) : null;
     // The evening's pace of the clocks (docs/mondo.md §1), before anything asks which marks are due.
     this.aggiornaRitmoSerata(r.turno);
     // The clocks due in this turn's message: an owed mark among them that the response does not show is said by the Engine.
@@ -2764,8 +2842,9 @@ export class Regia {
       privati: this.privati,
       azioni: perNarratore.azioni,
       collegamenti: perNarratore.collegamenti,
-      // Nessuna azione (scadenza concitata, o Risolvi ora a mani vuote): il mondo fa una mossa.
-      ...(r.azioni.length === 0 ? { stallo: 1 } : {}),
+      // Nessuna azione (scadenza concitata, o Risolvi ora a mani vuote), fuori da uno scontro: il mondo fa una mossa
+      // (S1, S2 o S3, col materiale del Motore: docs/mondo.md §5).
+      ...(this.mossaStallo ? { stallo: this.mossaStallo.livello, materialeStallo: this.materialeStallo(this.mossaStallo) } : {}),
       pgAlTavolo: this.pgAlTavolo().map((id) => ({ id, nome: nomePg(id) })),
       orologi: this.statoRepertorio ? this.orologi.descriviRepertorio(r.turno) : this.orologi.descrivi(r.turno),
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
@@ -3004,6 +3083,8 @@ export class Regia {
     const debitiDetti = esito.esito && !controllo.signal.aborted ? this.pagaDebitiInRisposta(turno, esito, segniInRisposta, this.dovutiAlMessaggio, log) : [];
     this.mondo.fatti(this.fattiDellaNarrazione(esito.uscita), turno);
     const mondoDetto = esito.esito && !controllo.signal.aborted ? this.diciMondo(turno, esito, segniInRisposta, log) : [];
+    // Mode B at S2/S3: the Engine brings the clue line or says the leads (the selector has only fillers).
+    const stalloDetto = esito.esito && !controllo.signal.aborted && this.statoRepertorio && this.mossaStallo ? this.diciMossaDiStallo(turno, esito, segniInRisposta, this.mossaStallo, log) : null;
 
     if (esito.esito) {
       // Testo grezzo del narratore: serve a rivedere qualità e protocollo dopo la sessione.
@@ -3050,6 +3131,8 @@ export class Regia {
       segni_dovuti_detti: debitiDetti,
       // Consequences of marks the PCs saw, said by the Engine (docs/mondo.md §3).
       mondo_detto: mondoDetto,
+      // The stall move of this turn (docs/mondo.md §5): level and what the Engine said for it in mode B.
+      ...(this.mossaStallo && this.mossaStallo.n ? { stallo: { n: this.mossaStallo.n, livello: this.mossaStallo.livello, duro: this.mossaStallo.duro, detto: stalloDetto } } : {}),
       // Fatti dello scontro che la narrazione non aveva detto, aggiunti dal Motore («tipo:id»).
       fatti_aggiunti: fattiAggiunti,
       finale,

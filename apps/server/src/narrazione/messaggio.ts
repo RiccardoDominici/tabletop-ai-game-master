@@ -36,8 +36,10 @@ export interface DatiMessaggioTurno {
   orologi?: string;
   /** Collegamenti tra le azioni del turno (dipendenze, conflitti), righe già pronte. */
   collegamenti?: string[];
-  /** Stallo: quante finestre di fila senza nessun input (1 = prima mossa, S1). */
+  /** Stall level of this turn (docs/mondo.md §5): 1 = S1 soft move, 2 = S2 proactive clue, 3 = S3 leads. */
   stallo?: number;
+  /** Material for the stall move (mode A): danger's moves, the clue, the leads; ready lines. */
+  materialeStallo?: string[];
   /**
    * Modalità repertorio: fatti scoperti (testo), catalogo del turno (righe pronte), stallo, e le
    * menzogne già dette (versione pubblica, da tenere ferma quando si improvvisa).
@@ -167,7 +169,7 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
   if (d.fuoriGioco?.righe.length) parti.push(d.fuoriGioco.titolo, d.fuoriGioco.righe.map((r) => `- ${r}`).join('\n'));
   if (d.mondo?.length) parti.push(testo('mondo.titolo'), d.mondo.map((r) => `- ${r}`).join('\n'));
   if (d.orologi) parti.push(testo('messaggio.titolo_orologi'), d.orologi);
-  if (d.stallo && !d.repertorio) parti.push(testoStallo(d.stallo));
+  if (d.stallo && !d.repertorio) parti.push(testoStallo(d.stallo, d.materialeStallo));
   if (d.repertorio) {
     if (d.repertorio.fattiScoperti.length) parti.push(testo('messaggio.titolo_fatti_scoperti'), d.repertorio.fattiScoperti.map((f) => `- ${f}`).join('\n'));
     if (d.repertorio.menzogne?.length) {
@@ -246,10 +248,12 @@ export function testoStalloRepertorio(): string {
 }
 
 /**
- * Mossa contro lo stallo (manuale, S1–S2): prima un segno di un fronte attivo, poi un indizio
- * proattivo. Mai un «cosa fate?» a vuoto. Dopo due mosse di fila il tavolo va in pausa da solo.
+ * Mossa contro lo stallo (manuale «Stall», docs/mondo.md §5): S1 un segno di un fronte attivo, S2 un indizio
+ * proattivo, S3 un PNG o un ricordo che riassume due o tre piste. Mai un «cosa fate?» a vuoto: il Motore ci
+ * aggiunge il materiale (mosse del pericolo, la pista, le piste).
  */
-export function testoStallo(volte: number): string {
-  const mossa = testo(volte <= 1 ? 'messaggio.mossa_segno' : 'messaggio.mossa_indizio');
-  return `${testo('messaggio.titolo_mossa_mondo')}\n${testo('messaggio.mossa_mondo', { mossa, solo_finzione: soloFinzione() })}`;
+export function testoStallo(livello: number, materiale: readonly string[] = []): string {
+  const mossa = testo(livello <= 1 ? 'messaggio.mossa_segno' : livello === 2 ? 'messaggio.mossa_indizio' : 'messaggio.mossa_piste');
+  const righe = materiale.map((m) => `\n- ${m}`).join('');
+  return `${testo('messaggio.titolo_mossa_mondo')}\n${testo('messaggio.mossa_mondo', { mossa, solo_finzione: soloFinzione() })}${righe}`;
 }

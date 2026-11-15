@@ -1,0 +1,21 @@
+# Invented lines for the world tests (mode B): a clue line without gates on the action, and a filler.
+battute:
+  - id: nar_impronte
+    chi: narratore
+    tipo: indizio
+    quando: "qualcuno guarda i sacchi di farina"
+    temi: [sacchi, farina]
+    testo:
+      - "[narratore] Sui sacchi di farina ci sono impronte piccole, di piedi scalzi."
+    effetti:
+      rivela_indizi: [i_farina]
+    max_usi: 1
+  - id: nar_ruota
+    chi: narratore
+    tipo: momento
+    quando: "nessuno fa niente"
+    temi: [ruota]
+    riempitivo: true
+    testo:
+      - "[narratore] La ruota cigola e si ferma un istante."
+    max_usi: 3

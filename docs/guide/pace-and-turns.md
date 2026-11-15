@@ -48,6 +48,19 @@ In the panel, the Game Master can press **«Risolvi ora»**: the narrator replie
 
 It works only with the window open and the table not paused. See [the Game Master panel](master-panel.md#window).
 
+### When nobody acts: the world moves
+
+A window that closes without any action (the frantic countdown ran out, or «Risolvi ora» with empty hands) is a
+**stall**, outside a fight. The world makes a move instead of asking «cosa fate?» again, and the moves change on
+consecutive stalls ([docs/mondo.md](../mondo.md) §5):
+
+1. **S1**: a sign of the danger of the scene (its moves, its omens);
+2. **S2**: a clue arrives by itself (one the world has offered, or one of the scene not found yet);
+3. **S3**: an NPC, or a memory, sums up two or three leads the PCs know (places, things found, the threat);
+4. then again from S1, and from the fourth stall on the danger's clock also gets a tick.
+
+A turn with an action, or a scene change, starts the count again.
+
 ## When your action is «da decidere»
 
 Sometimes something touches your action while it is waiting. For example:

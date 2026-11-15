@@ -1,5 +1,6 @@
 id: scena_mulino
 nome: "Il mulino"
+nodo: n_mulino
 apertura: "La ruota del mulino gira piano. Che fate?"
 png_presenti: [png_mugnaio, png_ladra]
 orologi_attivi: [o_sera, o_piena]

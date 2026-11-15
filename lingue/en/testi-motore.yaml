@@ -151,6 +151,7 @@ messaggio:
   mossa_mondo: "Make something happen in the scene: {mossa}. {solo_finzione} End with an invitation to a character by name, inside the story."
   mossa_segno: "a visible sign of the threat (S1), with nothing irreversible"
   mossa_indizio: "a proactive clue (S2): something bursts in and brings a new lead, or an NPC acts on their own"
+  mossa_piste: "an NPC in the scene, or a memory, sums up two or three concrete leads (S3): places to reach, things already found, the threat pressing on"
 
 # The world that moves (apps/server/src/mondo/, docs/mondo.md): the section of the turn's message about what has
 # changed in the world. Mode A also gets the directives of the consequences and the clues the world offers.
@@ -161,6 +162,10 @@ mondo:
   png_arriva: "{nome} is now in this scene."
   atteggiamento: "{png} towards {pg}: now {stato} (before {prima})."
   indizio_offerto: "The world offers a lead ({id}): {come}. Let it come if the PCs look for it or a move of the world calls for it."
+  stallo_pericolo: "Material: moves of the danger in the scene: {mosse}. Signs that announce it: {segni}."
+  stallo_indizio: "Material: the lead to bring ({id}): {come}"
+  stallo_piste: "Material: leads the PCs know: {piste}."
+  stallo_riga_piste: "The roads still open come back to mind: {piste}."
 
 # Urgent pace section at the end of the turn message (apps/server/src/narrazione/ritmo.ts).
 ritmo:

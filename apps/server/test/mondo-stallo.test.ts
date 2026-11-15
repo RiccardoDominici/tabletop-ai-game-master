@@ -1,0 +1,102 @@
+/**
+ * Stall S1 → S2 → S3 (docs/mondo.md §5, manual «Stall»). Before, every stall was S1 (`stallo: 1` hard-coded).
+ * Now a counter grows on consecutive stalls outside a fight and goes back to zero on an action; each level carries
+ * material from the Engine, never an empty «cosa fate?»; the fourth stall owes a mark to the scene's danger.
+ * Invented fixture: test/fixtures/campagne/mondo.
+ */
+import { afterEach, describe, expect, it } from 'vitest';
+import type { PericoloMondo } from '../src/campagna/mondo';
+import { ContatoreStallo, livelloStallo, mossaDiStallo, stalloDuro, type ContestoStallo } from '../src/mondo/stallo';
+import { attendi, inizia, Prova, turno } from './aiuti/partita';
+
+const fiume: PericoloMondo = { id: 'p_fiume', fronte: 'f', orologio: 'o_piena', impulso: 'allagare', mosse: ['sale di un palmo'], cast: ['png_mugnaio'], segniVisibili: ['Un tonfo a monte.'] };
+const voci: PericoloMondo = { id: 'p_voci', fronte: 'f', orologio: 'o_voci', impulso: 'accusare', mosse: ['sparge una voce'], cast: ['png_mugnaio'], segniVisibili: [] };
+const base: ContestoStallo = { pericoli: [voci, fiume], orologiAttivi: new Set(['o_piena']), presenti: new Set(), offerti: [], indiziDellaScena: ['i_a', 'i_b'], giàDati: new Set(), luoghiNoti: ['Il bosco', 'Il ponte'], fattiScoperti: [], ultimoSegno: null };
+
+describe('mondo/stallo', () => {
+  it('levels cycle 1, 2, 3; from the fourth stall S1 is hard', () => {
+    expect([1, 2, 3, 4, 5, 6, 7].map(livelloStallo)).toEqual([1, 2, 3, 1, 2, 3, 1]);
+    expect([1, 2, 3, 4, 7].map(stalloDuro)).toEqual([false, false, false, true, true]);
+  });
+
+  it('the counter grows on consecutive stalls, ignores a fight, restarts on an action', () => {
+    const c = new ContatoreStallo();
+    expect([c.registra(true, false), c.registra(true, false), c.registra(true, true), c.registra(true, false)]).toEqual([1, 2, 0, 3]);
+    expect(c.registra(false, false)).toBe(0);
+    expect(c.registra(true, false)).toBe(1);
+  });
+
+  it('S1 names the danger of the scene; S2 a clue not given yet; S3 two or three leads; each falls back when empty', () => {
+    expect(mossaDiStallo(1, base)).toMatchObject({ livello: 1, pericolo: { id: 'p_fiume' }, duro: false });
+    expect(mossaDiStallo(1, { ...base, orologiAttivi: new Set(), presenti: new Set(['png_mugnaio']) }).pericolo?.id).toBe('p_voci');
+    expect(mossaDiStallo(2, { ...base, offerti: ['i_z'] })).toMatchObject({ livello: 2, indizio: 'i_z' });
+    expect(mossaDiStallo(2, { ...base, giàDati: new Set(['i_a']) })).toMatchObject({ livello: 2, indizio: 'i_b' });
+    expect(mossaDiStallo(2, { ...base, indiziDellaScena: [] })).toMatchObject({ livello: 1 });
+    expect(mossaDiStallo(3, { ...base, fattiScoperti: ['Il carro è rotto.'], ultimoSegno: 'Un tonfo.' })).toMatchObject({ livello: 3, piste: ['Il bosco', 'Il ponte', 'Il carro è rotto.'] });
+    expect(mossaDiStallo(3, { ...base, luoghiNoti: ['Il bosco'] })).toMatchObject({ livello: 2, indizio: 'i_a' });
+    expect(mossaDiStallo(4, base)).toMatchObject({ livello: 1, duro: true });
+  });
+});
+
+describe('server, mode A: four stalls in a row, then an action', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('S1, S2, S3 with their material, then a hard S1 that owes a mark; an action resets', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mondo');
+    const { url, messaggi } = await prova.avvia(cartella, () => '[narratore] Anna, la ruota cigola.\n[invito] tutti', { TAGM_MODO: 'improvvisa' });
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const master = await prova.master(url);
+    let s = await inizia(schermo, tel);
+    for (let k = 0; k < 4; k++) {
+      const dopo = attendi(tel, (x) => x.fase === 'finestra' && x.turno === s.turno + 1);
+      expect(await master.comanda({ tipo: 'chiudi_finestra' })).toEqual({ ok: true });
+      s = await dopo;
+    }
+    const [m1, m2, m3, m4] = messaggi.slice(-4) as [string, string, string, string];
+    expect(m1).toMatch(/S1\)/);
+    expect(m1).toContain('mosse del pericolo in scena: sale di un palmo; porta via un carro');
+    expect(m2).toMatch(/S2\)/);
+    expect(m2).toContain('(i_farina): Chi guarda i sacchi vede impronte nella farina');
+    expect(m3).toMatch(/S3\)/);
+    expect(m3).toContain('piste che i PG conoscono: Il bosco; Il ponte');
+    // The fourth: S1 again, and the river's clock owes a mark (ordered, and said by the Engine when not shown).
+    expect(m4).toMatch(/S1\)/);
+    expect(m4).toMatch(/\[o_piena\][^\n]*Mostralo in questa risposta/);
+    expect(s.trascrizione.filter((v) => v.turno === 4).map((v) => v.testo)).toContain("L'acqua lambisce la ruota.");
+    expect(prova.turni().filter((r) => r['stallo']).map((r) => (r['stallo'] as { livello: number }).livello)).toEqual([1, 2, 3, 1]);
+    // A real action: no stall section, and the counter starts again.
+    s = await turno(tel, 'pg_anna', s, 'Anna sale sul tetto del mulino.');
+    expect(messaggi.at(-1)).not.toContain('## Mossa del mondo');
+    const dopo = attendi(tel, (x) => x.fase === 'finestra' && x.turno === s.turno + 1);
+    await master.comanda({ tipo: 'chiudi_finestra' });
+    await dopo;
+    expect(messaggi.at(-1)).toMatch(/S1\)/);
+  });
+});
+
+describe('server, mode B: the Engine brings the S2 clue line and says the S3 leads', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('the selector has only fillers; the Engine adds the clue line at S2 and the leads at S3', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mondo');
+    const { url } = await prova.avvia(cartella, () => '[usa] nar_ruota\n[invito] tutti');
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const master = await prova.master(url);
+    let s = await inizia(schermo, tel);
+    for (let k = 0; k < 3; k++) {
+      const dopo = attendi(tel, (x) => x.fase === 'finestra' && x.turno === s.turno + 1);
+      expect(await master.comanda({ tipo: 'chiudi_finestra' })).toEqual({ ok: true });
+      s = await dopo;
+    }
+    const detto = (t: number) => s.trascrizione.filter((v) => v.turno === t).map((v) => v.testo);
+    expect(detto(2)).toContain('Sui sacchi di farina ci sono impronte piccole, di piedi scalzi.');
+    expect(detto(3).join(' ')).toMatch(/Vi tornano in mente le strade ancora aperte: Il bosco; Il ponte/);
+    expect(prova.turni().filter((r) => r['stallo']).map((r) => (r['stallo'] as { detto: string | null }).detto)).toEqual([null, 'nar_impronte', 'piste']);
+  });
+});

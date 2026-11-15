@@ -1,5 +1,6 @@
 id: scena_ponte
 nome: "Il ponte"
+nodo: n_ponte
 apertura: "Il ponte di legno trema."
 png_presenti: [png_mugnaio]
 orologi_attivi: []
