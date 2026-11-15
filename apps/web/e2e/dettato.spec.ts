@@ -8,7 +8,7 @@
  * warning): it is a browser flag, not a real tap on a real phone.
  *
  *   scripts/ascolto-avvio.sh                                                   (whisper-server on 4614)
- *   TAGM_PORTA=4861 TAGM_CAMPAGNA=<campagna> scripts/avvio.sh --finto --mock
+ *   TAGM_PORTA=4861 TAGM_CAMPAGNA=<campagna> TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --finto --mock
  *   E2E_PORTA=4861 E2E_AUDIO_DETTATO=/path/sentence.wav E2E_NOMI_DETTATO=Name1,Name2 \
  *     npx playwright test -c apps/web/playwright.config.ts dettato
  *   TAGM_PORTA=4861 scripts/arresto.sh

@@ -1,7 +1,9 @@
 /**
  * Playwright per l'e2e di F0 (apps/web/e2e). Il server NON viene avviato da qui: lo avvia
  * scripts/avvio.sh su una PORTA DI PROVA (la 4610 è la partita vera, magari in corso), poi:
- *   TAGM_PORTA=4710 scripts/avvio.sh --finto --mock
+ *   TAGM_PORTA=4710 TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --finto --mock
+ *   (automatic rolls: with the campaign default, manual rolls, a check would wait for a die no spec enters;
+ *   e2e/tiri-manuali.spec.ts tests manual rolls with its own server line)
  *   npm run e2e                      (un turno, contro http://localhost:4710)
  *   E2E_TURNI=5 npm run e2e          (cinque turni, per le misure di latenza)
  *   TAGM_PORTA=4710 scripts/arresto.sh

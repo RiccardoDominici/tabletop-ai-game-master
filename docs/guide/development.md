@@ -105,10 +105,14 @@ The end-to-end tests drive a real browser against a server that is already runni
 by default they point to a test instance on port 4710 (`apps/web/e2e/percorsi.ts`).
 
 ```
-TAGM_PORTA=4710 scripts/avvio.sh --finto --mock
+TAGM_PORTA=4710 TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --finto --mock
 npm run e2e
 TAGM_PORTA=4710 scripts/arresto.sh
 ```
+
+The specs assume the program rolls the dice (`TAGM_TIRI_GIOCATORI=automatico`): with the players' manual rolls, the
+campaign default, an action that needs a check waits for a die no spec enters. Only `e2e/tiri-manuali.spec.ts`
+tests manual rolls, with the server line written in its header.
 
 The first line starts a test server on 4710 with the scripted narrator and the fake voice (no cost); the second
 runs the tests; the third stops only that server.

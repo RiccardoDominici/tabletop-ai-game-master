@@ -1,6 +1,6 @@
 /**
  * E2E della partita salvata (persistenza della sessione) su un'istanza di PROVA:
- *   TAGM_PORTA=4710 TAGM_LLM=finto scripts/avvio.sh --mock
+ *   TAGM_PORTA=4710 TAGM_LLM=finto TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --mock
  *   npx playwright test -c apps/web/playwright.config.ts ripresa
  *
  * Due turni giocati da proiettore, telefono e pannello; poi la prova RIAVVIA il server di prova

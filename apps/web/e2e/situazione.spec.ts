@@ -1,7 +1,7 @@
 /**
  * E2E dell'immagine di situazione dopo la rivelazione, col selettore Haiku VERO (modalità B):
  *   TAGM_PORTA=4710 TAGM_MODO=repertorio TAGM_ARBITRO=regole TAGM_IMMAGINI=<cartella con
- *   situazione_png_sebastiano_senza_cappuccio> scripts/avvio.sh --mock
+ *   situazione_png_sebastiano_senza_cappuccio> TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --mock
  *   npx playwright test -c apps/web/playwright.config.ts situazione
  *
  * Un PG accosta la candela alla grata: se il selettore fa uscire la rivelazione della cicatrice

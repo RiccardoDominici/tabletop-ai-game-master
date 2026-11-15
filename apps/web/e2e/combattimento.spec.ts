@@ -3,7 +3,7 @@
  * con le schede (apps/server/test/fixtures/campagne/prove), SRD 5.2:
  *
  *   TAGM_PORTA=4720 TAGM_MASTER_TOKEN=prova_combattimento_4720 \
- *     TAGM_CARTELLA_CAMPAGNA=<copia di prove> scripts/avvio.sh
+ *     TAGM_CARTELLA_CAMPAGNA=<copia di prove> TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh
  *   E2E_PORTA=4720 npx playwright test -c playwright.config.ts e2e/combattimento.spec.ts
  *
  * Corrado tira a Ruggero: si entra in combattimento. Barra dell'iniziativa sul proiettore, «È il tuo

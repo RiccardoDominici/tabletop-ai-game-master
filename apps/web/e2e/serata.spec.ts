@@ -1,6 +1,6 @@
 /**
  * E2E della serata (chiusura guidata e diario) su un'istanza di PROVA con il narratore finto:
- *   TAGM_PORTA=4740 scripts/avvio.sh --finto --mock        (dalla radice della worktree)
+ *   TAGM_PORTA=4740 TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --finto --mock        (dalla radice della worktree)
  *   cd apps/web && E2E_PORTA=4740 npx playwright test -c playwright.config.ts e2e/serata.spec.ts
  *   TAGM_PORTA=4740 scripts/arresto.sh
  *

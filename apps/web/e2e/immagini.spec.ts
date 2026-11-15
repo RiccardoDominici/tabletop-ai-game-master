@@ -1,6 +1,6 @@
 /**
  * E2E delle immagini sul proiettore: server avviato con le immagini di prova
- *   TAGM_PORTA=4710 TAGM_LLM=finto TAGM_IMMAGINI=apps/server/test/fixtures/immagini scripts/avvio.sh --mock
+ *   TAGM_PORTA=4710 TAGM_LLM=finto TAGM_IMMAGINI=apps/server/test/fixtures/immagini TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --mock
  * Immagine del luogo a tutto schermo, ritratto del PNG accanto al sottotitolo, dissolvenza al
  * cambio di luogo, ritorno allo sfondo d'atmosfera se l'immagine manca. Screenshot 1920x1080 in
  * logs/screenshots/immagini-*.png; nessun errore in console.

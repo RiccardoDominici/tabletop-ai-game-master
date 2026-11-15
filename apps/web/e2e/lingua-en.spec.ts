@@ -3,7 +3,7 @@
  * narrator with an English script, fake voice. Start the server with:
  *   TAGM_PORTA=4710 TAGM_LLM=finto TAGM_LINGUA=en \
  *     TAGM_CARTELLA_CAMPAGNA=$PWD/apps/server/test/fixtures/campagne/en-mini \
- *     TAGM_COPIONE_FINTO=$PWD/apps/server/test/fixtures/copione-en.txt scripts/avvio.sh --mock
+ *     TAGM_COPIONE_FINTO=$PWD/apps/server/test/fixtures/copione-en.txt TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --mock
  * Projector, two phones (Mara, Tobin) and the master panel; three turns. The interface is English on
  * every page (banner, buttons, «Waiting for: …», «Resolve now»), the narration is English and the
  * narrator is «Narrator». Screenshots in logs/screenshots/lingua-en-*.png; no console errors.
