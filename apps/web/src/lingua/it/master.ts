@@ -374,4 +374,10 @@ export const master = {
   'master.tiri.solo_al_telefono': 'Solo sul suo telefono (prova privata)',
   'master.tiri.chiedi': 'Chiedi',
   'master.tiri.chiedi_nota': 'Entra nel prossimo turno: con la finestra aperta, «Risolvi ora» lo chiude subito.',
+  'master.tiri.del_master': 'Tiri del master ({n})',
+  'master.tiri.riga_master': 'turno {turno} · {motivo}: d{dado} ≥ {almeno} → {valore}',
+  'master.tiri.si': 'sì',
+  'master.tiri.no': 'no',
+  'master.tiri.mostrato': 'visto dal tavolo',
+  'master.tiri.nascosto': 'nascosto',
 } as const;

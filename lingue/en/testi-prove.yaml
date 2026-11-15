@@ -193,6 +193,8 @@ prove:
   # A check the Game Master asked from the panel (scena/tiri-giocatori.ts): the pseudo-action's text, read by the
   # narrator in the fact.
   master:
+    nome: "The Game Master"
+    voce: "The Game Master rolls the dice."
     azione: "check asked by the Game Master: {cosa}{motivo}"
     motivo: ", to {motivo}"
   # NPCs in the scene out of play (scena/regia.ts, righeFuoriGioco): in the narrator's and selector's message.

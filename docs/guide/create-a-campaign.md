@@ -166,6 +166,7 @@ A real, complete example is `campagne/ponte-lanterne/brief.yaml`.
 | `durata` | a note in words for you; the real number is in `sessioni` | `"una sessione serale, da due ore a due ore e mezza, in quattro scene"` |
 | `giocatori` | how many play, a number or a range like `"3-4"` | `4` |
 | `dadi` | `true` by default: sheets and checks. `false` only if you want a campaign without dice | (absent) |
+| `tiri_master` | whether the table sees the program's own rolls for the world: `nascosti` (default), `a_volte` (when the odds are close), `visibili` | (absent: nascosti) |
 | `tiri_giocatori` | who rolls the players' dice: `manuale` (default, the players roll real dice and enter them on the phone, the DC stays secret) or `automatico` (the program rolls for them) | (absent: manuale) |
 | `temi` | the themes of the story | `[debiti e lealtà, …]` |
 | `linee` | what **never** enters the game | `"contenuti sessuali"` |

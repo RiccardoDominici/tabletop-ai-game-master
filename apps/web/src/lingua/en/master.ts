@@ -374,4 +374,10 @@ export const master = {
   'master.tiri.solo_al_telefono': 'Only on their phone (private check)',
   'master.tiri.chiedi': 'Ask',
   'master.tiri.chiedi_nota': 'It joins the next turn: with the window open, «Risolvi ora» closes it at once.',
+  'master.tiri.del_master': 'Game Master rolls ({n})',
+  'master.tiri.riga_master': 'turn {turno} · {motivo}: d{dado} ≥ {almeno} → {valore}',
+  'master.tiri.si': 'yes',
+  'master.tiri.no': 'no',
+  'master.tiri.mostrato': 'seen by the table',
+  'master.tiri.nascosto': 'hidden',
 } satisfies Record<keyof typeof import('../it/master').master, string>;

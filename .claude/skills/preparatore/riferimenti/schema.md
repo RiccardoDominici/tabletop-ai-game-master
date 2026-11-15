@@ -285,6 +285,9 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
 - `campagna.yaml` → `regole: {tiri_giocatori: manuale|automatico}`. Default: manuale (the players roll real dice and
   enter them on the phone, the DC stays secret); automatico = the Engine rolls for them. The validator accepts only
   these two values (`SCHEDA.regole`).
+- `campagna.yaml` → `regole: {tiri_master: nascosti|a_volte|visibili}`. Default: nascosti. Whether the table sees the
+  Engine's own rolls for uncertain world outcomes (a gate with `tiro`); `visibile: true` on one gate shows that one
+  anyway (docs/prove.md §9).
 - `pg.yaml` → `personaggi[].scheda`: characteristics, skills, mastery, saving throws, armour or AC, hit points, attacks.
   The level is `personaggi[].livello`.
 - `png/<id>.yaml` → `scheda`: CR, characteristics, armour or AC, hit points, attacks, optional `influenza: {cd}`.

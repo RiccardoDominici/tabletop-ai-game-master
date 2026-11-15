@@ -756,6 +756,21 @@ export class MotoreProve {
     return (this.ultimi.get(idAzione) ?? []).map(cartaPerIlTavolo);
   }
 
+  /** The Engine's dice (saved with the session): the Game Master's own rolls use them too (prove/tiri-master.ts). */
+  get dadiDelMotore(): FonteDadi {
+    return this.dadi;
+  }
+
+  /**
+   * A Game Master roll the table sees (docs/prove.md §9): its card joins the cards of the turn being resolved, so the
+   * projector and the phones show it with the others.
+   */
+  aggiungiCartaDelMaster(t: TiroMostrato): void {
+    if (this.ultimoTurno?.turno === t.turno) this.ultimoTurno.tiri.push(t);
+    else this.ultimoTurno = { turno: t.turno, tiri: [t] };
+    this.stato.registraTiri([t]);
+  }
+
   /** Every card of the last turn with rolls, private ones and DCs included: only for the Game Master panel. */
   tiriDelMaster(): TiroMostrato[] {
     return [...(this.ultimoTurno?.tiri ?? [])];

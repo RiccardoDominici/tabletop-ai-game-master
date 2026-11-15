@@ -123,7 +123,9 @@ the work of the Preparatore, and the form of the fields is in `riferimenti/schem
   phone, without ever being told the DC (`tiri_giocatori: manuale`). If the request asks the program to roll for
   them («tira tu», «dadi automatici»), write `tiri_giocatori: automatico`; if the request does not say and you ask
   anything at all, ask this too, in one line. Write the choice in the brief (`tiri_giocatori`) and in `campagna.yaml`
-  → `regole: {tiri_giocatori: manuale|automatico}` (docs/prove.md §8).
+  → `regole: {tiri_giocatori: manuale|automatico}` (docs/prove.md §8). The same for the Engine's own rolls for the
+  world (`tiri_master: nascosti|a_volte|visibili`, default nascosti, docs/prove.md §9): `a_volte` when the brief wants
+  the table to feel fate at work.
 - **PG**: `scheda` in `pg.yaml`, at level 1 or 2. Characteristics, skills, saving throws, armour, HP and attacks
   that belong to the character. Modifiers are not written: the code calculates them.
 - **PNG**: `scheda` in `png/*.yaml`, with a low CR (they are the extras of the place): AC, HP and attacks

@@ -116,6 +116,11 @@ export interface TiroMostrato {
    * `contro.valore` is 0, `contro.descrizione` and `regola` are absent: only the Game Master panel has them.
    */
   contro_nascosto?: boolean;
+  /**
+   * A roll of the Game Master shown at the table (docs/prove.md §9): one die, yes or no, never what it was for. The
+   * card says «sì»/«no» instead of success/failure.
+   */
+  del_master?: boolean;
 }
 
 /**

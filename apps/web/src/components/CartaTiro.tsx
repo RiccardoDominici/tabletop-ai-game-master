@@ -216,7 +216,7 @@ function CartaIntera(p: PropsInterne) {
                 key={i}
                 faccia={facciaNelRange(p.facce[i] ?? tiro.dado, facce)}
                 scartato={i === scartato}
-                naturali={risoluzione === 'd20_cd'}
+                naturali={risoluzione === 'd20_cd' && facce === 20 && !tiro.del_master}
                 passo={p.passo}
                 animata={p.animata}
                 className={i === scartato ? m.dadoScartato : m.dado}
@@ -250,7 +250,7 @@ function CartaIntera(p: PropsInterne) {
             <span data-testid="carta-automatico" className={clsx('font-bold text-pergamena tabular-nums', m.modificatore, comparsa(p, 'totale'))}>
               {automatico}
             </span>
-          ) : risoluzione === 'sotto_soglia' ? (
+          ) : risoluzione === 'sotto_soglia' || tiro.del_master ? (
             // Sotto soglia: il tiro al posto di «+mod = totale», poi la soglia da non superare.
             <>
               <Chip className={clsx(m.chip, 'border-bordo-chiaro text-cenere')}>{`d${facce}`}</Chip>

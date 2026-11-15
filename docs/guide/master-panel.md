@@ -160,6 +160,7 @@ The **Tiri** (Rolls) box appears in campaigns with dice. Only here you see the D
 - While the table is rolling, one row per roll: who, what, against whom, the DC (or AC, or threshold), the dice to roll and the bonus. A private action's roll is here too, marked «privata».
 - A player forgot, or has no phone: type the dice they say in the boxes and press **Inserisci** (Enter), or press **Tira il Motore** (the Engine rolls that one). With more than one roll waiting, **Tutti al Motore** rolls them all.
 - After the turn, the last turn's cards as rolled: dice, total, DC, outcome, and who entered the dice (from the phone, dictated, by the Game Master, by the Engine).
+- **Tiri del master** (Game Master rolls): the program's own rolls for the world (a front that may advance, news that may spread), with what asked for them, the die, the target, yes or no, and whether the table saw it ([dice and sheets](dice-and-sheets.md#who-rolls-the-dice)).
 - **Chiedi una prova** (Ask for a check): choose who rolls, what (the rule set's skills, abilities and saving throws), the difficulty (or the set's default), a few words of why (the narrator reads them), and «only on their phone» for a private check. The check joins the next turn: with the window open, press **Risolvi ora** to close it at once. With the players rolling their own dice the player's phone says «Il master ti chiede un tiro» (The Game Master asks you to roll); with automatic rolls the program rolls it. The outcome reaches the narrator like any other roll.
 
 ## Centre column

@@ -29,6 +29,8 @@ export const comune = {
   'comune.esito.riuscita': 'Riuscita',
   'comune.esito.parziale': 'Parziale',
   'comune.esito.fallita': 'Fallita',
+  'comune.esito.si': 'Sì',
+  'comune.esito.no': 'No',
   'comune.esito.critico': 'Critico',
   'comune.esito.disastro': 'Disastro',
   'comune.esito.colpo_critico': 'Colpo critico',

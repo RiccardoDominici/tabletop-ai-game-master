@@ -23,6 +23,8 @@ dadi: true            # predefinito: schede e prove (docs/prove.md). false solo 
 tiri_giocatori: manuale  # predefinito: i giocatori tirano i dadi veri e scrivono il risultato sul telefono, la CD resta
                        # segreta; automatico = tira il Motore per loro (docs/prove.md §8). In campagna.yaml →
                        # regole: {tiri_giocatori: …}
+tiri_master: nascosti  # predefinito: i tiri del master per il mondo (un fronte che avanza, una voce che corre) restano
+                       # nascosti; a_volte = si vedono quando è testa o croce; visibili = sempre (docs/prove.md §9)
 temi: []               # es. [paura del forestiero, la verità che costa]
 linee: []              # mai in gioco
 veli: []               # solo fuori scena, con dissolvenza

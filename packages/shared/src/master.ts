@@ -206,6 +206,11 @@ export interface TiriMaster {
   catalogo: { prove: Array<{ id: string; nome: string }>; difficolta: Array<{ id: string; nome: string; valore: number | null }> };
   /** The PCs with a sheet (who can be asked for a check). */
   pg: Array<{ id: string; nome: string }>;
+  /**
+   * The Game Master's own rolls (docs/prove.md §9), the last ones: what asked for them and why (never shown to the
+   * table), the die, the target, yes/no, and whether the table saw it.
+   */
+  del_master: Array<{ id: string; turno: number; origine: string; motivo: string; dado: number; almeno: number; valore: number; riuscito: boolean; mostrato: boolean }>;
   /** Checks the Game Master asked, waiting for the next closed window. */
   chieste: Array<{ id: string; id_pg: string; nome_pg: string; nome: string; difficolta: string | null; privata: boolean }>;
 }

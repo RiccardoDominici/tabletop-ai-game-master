@@ -134,8 +134,10 @@ export function esitoDaGrado(grado: NonNullable<TiroMostrato['grado']>, risoluzi
 
 /** L'esito della carta, con le parole del tavolo. */
 export function esitoTiro(
-  tiro: Pick<TiroMostrato, 'tipo' | 'riuscita' | 'critico' | 'fallimento_critico' | 'avversario' | 'totale' | 'risoluzione' | 'grado'>,
+  tiro: Pick<TiroMostrato, 'tipo' | 'riuscita' | 'critico' | 'fallimento_critico' | 'avversario' | 'totale' | 'risoluzione' | 'grado' | 'del_master'>,
 ): EsitoTiro {
+  // A Game Master roll (docs/prove.md §9): fate said yes or no, neither good nor bad for the players.
+  if (tiro.del_master) return { testo: t(tiro.riuscita ? 'comune.esito.si' : 'comune.esito.no'), tono: 'pari', simbolo: '◆', speciale: false };
   if (tiro.grado) return esitoDaGrado(tiro.grado, risoluzioneDi(tiro));
   if (tiro.tipo === 'attacco') {
     if (tiro.critico) return { testo: t('comune.esito.colpo_critico'), tono: 'buono', simbolo: '✦', speciale: true };
@@ -241,6 +243,8 @@ export function descriviTiro(tiro: TiroMostrato): string {
   const automatico = testoAutomatico(tiro);
   if (automatico) {
     conto = automatico;
+  } else if (tiro.del_master) {
+    conto = t('comune.tiri.tiro', { dado: tiro.dado });
   } else if (tiro.contro_nascosto && risoluzione !== '2d6_fasce') {
     // Manual rolls: the dice and the total, never the number to beat (docs/prove.md §8).
     conto = risoluzione === 'sotto_soglia' ? t('comune.tiri.tiro', { dado: tiro.dado }) : contoTiro(tiro);

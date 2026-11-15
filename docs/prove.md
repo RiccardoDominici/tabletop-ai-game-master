@@ -510,5 +510,31 @@ refused, Game Master enters and switches, stop cancels the wait, automatic uncha
 telefono/numeriDettati.test.ts, and the real pages in apps/web/e2e/tiri-manuali.spec.ts (fake narrator, rules arbiter,
 no model; screenshots in logs/screenshots/tiri-manuali/); live runs in docs/prove-verifica.md.
 
+## 9. The Game Master's own rolls (15 November)
+
+Riccardo: «Il sistema di tiri può avvenire anche in background dal lato master. Non prendere tu le decisioni: ogni
+tanto, quando reputi che sia bello che sia casuale, lo dici e fai vedere il tiro.» When an outcome is uncertain and
+nobody at the table rolls for it, the Engine rolls; the model never picks the result.
+
+- **What rolls today.** The world's uncertain outcomes: an `avanza_quando` gate of a clock with `tiro: {dado, almeno,
+  visibile?}` (docs/mondo.md §2, mondo-vivo's work): does the front advance when the PCs leave, does the news spread.
+  The world asks its one roll hook (mondo/tiri.ts, `TiroDelMondo`); the director plugs in the Game Master's roll path,
+  prove/tiri-master.ts, which rolls with the Engine's dice (saved with the session; a campaign without sheets uses dice
+  of its own), logs every roll («Game Master roll», with the reason, the target and the probability), keeps the last 20
+  for the panel and decides whether the table sees it. The NPCs' own rolls (reactions, NPC turns, initiative, death
+  saves, morale) were already the Engine's and keep their cards as before.
+- **Visibility**, `regole.tiri_master` in campagna.yaml (validator `SCHEDA.regole`; test override `TAGM_TIRI_MASTER`):
+  - `nascosti` (default): never shown; the log and the panel («Tiri del master») have it;
+  - `a_volte`: shown when the odds are close, from one in three to two in three (a d6 needing 3+, 4+ or 5+; a d20
+    needing 8+ to 14+): a real toss-up is fun to watch, a near-sure roll is not;
+  - `visibili`: always shown;
+  - a roll whose data says `visibile: true` is always shown.
+- **Shown** means a card «Il master» on the projector and the phones with the die and «Sì»/«No» (never what it was for,
+  never the target: those are the Game Master's), and, inside a turn being resolved, one line of the narrator's voice
+  («Il master tira i dadi.»). A roll made outside a turn (the panel's «Inizia combattimento») shows only the card.
+- **Not yet** (open): a world question tied to an action that the campaign writes in a scene («is the guard
+  awake?», with its odds) and an NPC's own check outside combat. Both need a data source the Engine can read without a
+  model; the hook and the visibility rule above are ready for them.
+
 Credits: this work includes material from the System Reference Document 5.2 («SRD 5.2») by Wizards of the Coast LLC,
 https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License.

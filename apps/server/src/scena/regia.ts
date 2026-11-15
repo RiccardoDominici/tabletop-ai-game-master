@@ -116,6 +116,8 @@ import type { CambioAtteggiamento } from '../mondo/atteggiamenti';
 import type { FattoDelGioco } from '../mondo/porte';
 import { mossaDiStallo, type MossaStallo } from '../mondo/stallo';
 import { TiriGiocatoriRegia, type TiriGiocati } from './tiri-giocatori';
+import { TiriDelMaster } from '../prove/tiri-master';
+import { DadiCrittografici } from '../prove/dadi';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
 import { indiziCampagna } from '../campagna/indizi';
@@ -409,6 +411,8 @@ export class Regia {
   private readonly prove: MotoreProve | null;
   /** Manual rolls (docs/prove.md §8): the wait for the dice rolled at the table, between the window and the narrator. */
   private readonly tiriGiocatori: TiriGiocatoriRegia;
+  /** The Game Master's own rolls (docs/prove.md §9): the world's uncertain outcomes, hidden or shown by the setting. */
+  private readonly tiriDelMaster: TiriDelMaster;
   /** This turn has no action but a check the Game Master asked: it is not a stall (docs/prove.md §8). */
   private soloProveDelMaster = false;
   /** Prove riuscite per azione nel turno che si sta narrando (cancello `richiede.prova` del repertorio). */
@@ -536,6 +540,25 @@ export class Regia {
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');
+    // The Game Master's own rolls: the Engine's dice when the campaign has sheets, otherwise dice of their own.
+    const dadiPropri = new DadiCrittografici();
+    let carteSenzaProve = 0;
+    this.tiriDelMaster = new TiriDelMaster({
+      modo: () => po?.tiri?.master ?? 'nascosti',
+      dadi: () => (this.prove?.attivo ? this.prove.dadiDelMotore : dadiPropri),
+      log: opzioni.log.child({ modulo: 'prove' }),
+      nuovoIdTiro: () => (this.prove?.attivo ? this.prove.stato.nuovoIdTiro() : `tm${++carteSenzaProve}`),
+      nome: () => testoFisso('prove.master.nome'),
+      mostra: (carta) => {
+        this.prove?.aggiungiCartaDelMaster(carta);
+        // One line of the narrator's voice, inside a turn being resolved (before the narration of that turn).
+        if (this.fase === 'narrazione') {
+          const frase = testoFisso('prove.master.voce');
+          this.pipeline.accoda({ id_frase: `t${carta.turno}-${carta.id}`, turno: carta.turno, indice: 650, parlante: ID_NARRATORE, nome: nomeNarratore(), voce_id: ID_NARRATORE, testo: frase, testo_voce: this.pronuncia(frase) });
+        }
+        this.notifica();
+      },
+    });
     this.tiriGiocatori = new TiriGiocatoriRegia({
       modalita: po?.tiri ?? null,
       prove: this.prove,
@@ -1250,8 +1273,9 @@ export class Regia {
       orologi: () => this.orologi,
       scena: () => this.campagna.scena.id,
       presenti: () => this.pngPresentiFisici(),
-      // Uncertain world outcomes (gates with `tiro`) roll through the world's hook (mondo/tiri.ts): without a `tira`
-      // option the world uses its own dice, saved in the snapshot. The Game Master roll path plugs in here.
+      // Uncertain world outcomes (gates with `tiro`) roll through the world's hook (mondo/tiri.ts): the Game Master's
+      // roll path (prove/tiri-master.ts), hidden or shown at the table by the campaign's `regole.tiri_master`.
+      tira: (r) => this.tiriDelMaster.tira(r),
       log: this.o.log.child({ modulo: 'mondo' }),
       // Every consequence is canon: it goes into the session's narration log too (docs/mondo.md, «Log and state»).
       registra: (v) => this.o.registroNarrazioni.scrivi({ sessione: this.sessione, ...v, tipo: 'mondo', origine: v.tipo }),
@@ -2759,6 +2783,7 @@ export class Regia {
       catalogo: prove.catalogoDelMaster(),
       pg: this.campagna.pg.filter((p) => prove.stato.puntiFerita(p.id)).map((p) => ({ id: p.id, nome: p.nome })),
       chieste: this.tiriGiocatori.chieste().map((c) => ({ ...c, nome_pg: this.nomePg(c.id_pg) })),
+      del_master: this.tiriDelMaster.registro(),
     };
   }
 

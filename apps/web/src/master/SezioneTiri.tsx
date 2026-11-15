@@ -62,6 +62,20 @@ export function SezioneTiri({ stato }: { stato: StatoMaster }) {
         </ul>
       )}
       <ChiediProva tiri={tiri} />
+      {tiri.del_master.length > 0 && (
+        <details className="text-sm" data-testid="master-tiri-del-master">
+          <summary className="cursor-pointer text-pergamena-2">{t('master.tiri.del_master', { n: tiri.del_master.length })}</summary>
+          <ul className="mt-1 flex flex-col gap-1 text-pergamena-2">
+            {[...tiri.del_master].reverse().map((r) => (
+              <li key={r.id}>
+                {t('master.tiri.riga_master', { turno: r.turno, motivo: r.motivo, dado: r.dado, almeno: r.almeno, valore: r.valore })}{' '}
+                <span className={r.riuscito ? 'text-muschio' : 'text-brace'}>{t(r.riuscito ? 'master.tiri.si' : 'master.tiri.no')}</span>
+                <span className="text-cenere"> · {t(r.mostrato ? 'master.tiri.mostrato' : 'master.tiri.nascosto')}</span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
       {tiri.carte.length === 0 ? (
         tiri.richieste.length === 0 && <Vuoto>{t('master.tiri.nessuno')}</Vuoto>
       ) : (
