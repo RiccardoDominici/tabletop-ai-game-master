@@ -14,6 +14,7 @@ All the logs are in `logs/`, outside git. They contain the players' actions, inc
 | `logs/server.jsonl` | the server log, one JSON line per event |
 | `logs/build.out` | the build of the web pages |
 | `logs/voce.out`, `logs/voce.jsonl` | the local voice service (Qwen) |
+| `logs/ascolto.out`, `logs/ascolto.pid` | the local speech-to-text server (whisper.cpp, port 4614) for the phones' microphone |
 | `logs/lettore.out` | the local reader, the model server on port 4613 |
 | `logs/sceneggiatore/` | the scriptwriter (`sceneggiatore.out`, `sceneggiatore.jsonl`) |
 | `logs/turni.jsonl` | the timings of each turn |
@@ -116,6 +117,28 @@ This shows the last twenty lines of the server log that mention the drama-3 voic
 5. Follow the step-by-step checks in the [phone guide](phones.md): firewall, guest network, VPN, and the test from the Mac.
 
 **Where to look.** `logs/partita.out` (the addresses printed) and `logs/server.out`, where the server writes at each start the line «Tabletop AI Game Master: in ascolto» (meaning: listening) with the phones' address.
+
+## Microphone
+
+The phone's microphone (see [Connecting the phones](phones.md#speaking-your-action-microphone)).
+
+**«Il microfono è bloccato» (The microphone is blocked).** The browser refused the microphone permission.
+Allow the microphone for the site in the browser settings, then try again.
+
+**The microphone button is missing or greyed out.** Missing: the choice of `ascolto` is `nessuno`, or the whisper
+server is off. Greyed out: the phone is on the http address. Open the https address the game prints (with
+`scripts/partita.sh`) and, if the certificate is not installed yet, follow the steps on the certificate page.
+
+**«La trascrizione non risponde» (The transcription does not answer).** The whisper server is down and there is no
+backup. Run `scripts/ascolto-avvio.sh` and read `logs/ascolto.out`. The players can type meanwhile.
+
+**The phone shows a certificate warning.** The certificate is not installed or not trusted on that phone, or the
+Mac's address has changed. Run `scripts/certificato.sh` again, restart the game with `scripts/partita.sh <campagna>`,
+and install the certificate on the phone once more. Without it the phone still works by typing on the http address.
+
+**Where to look.** `logs/ascolto.out` for the speech server; `logs/server.out` for the server's start line.
+
+---
 
 ## The game seems stuck
 

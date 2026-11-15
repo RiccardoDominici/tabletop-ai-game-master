@@ -9,7 +9,8 @@ local reader, the local voice and their models. The keys (step 4) are optional o
 
 The images are on by default on a 16 GB Mac: their model (4.6 GB) is part of the download, and step 8 creates their
 environment. To play without images, turn them off (see step 7) and skip step 8. Step 9 (the audio) is optional: it is
-needed only to generate the audio of a new campaign.
+needed only to generate the audio of a new campaign. Step 10 (the phones' microphone) is optional too: without it the
+players type.
 
 ## The short way: let Claude Code do it
 
@@ -37,7 +38,8 @@ The steps below are what the skill does, written out for anyone who prefers to d
 
 | What | Why | Required? |
 |---|---|---|
-| About 13.5 GB free on disk (Apple silicon, 16 GB, images on: the default) | the models (11.2 GB: reader 4.6, voice 2.0, images 4.6), the Python environments (2.0 GB) and the npm packages (0.2 GB). With the images off: about 7.7 GB (models 6.6 GB, environments 0.8 GB, npm 0.2 GB) | only for the local profile; text-only needs about 0.2 GB |
+| About 14.1 GB free on disk (Apple silicon, 16 GB, images on: the default) | the models (11.8 GB: reader 4.6, voice 2.0, images 4.6, speech-to-text 0.57), the Python environments (2.0 GB) and the npm packages (0.2 GB). With the images off: about 8.3 GB (models 7.2 GB, environments 0.8 GB, npm 0.2 GB) | only for the local profile; text-only needs about 0.2 GB |
+| whisper.cpp and mkcert (Homebrew) | the phones' microphone: the local speech-to-text server and the local HTTPS certificate (step 10) | optional: without them the players type on the phone |
 | A Mac with an Apple chip | the local reader, the local voice and the images use MLX, which only runs on Apple chips | yes, for the default all-local game. On another computer a real narrator needs an Anthropic key or another local model server (see [Local and API](local-and-api.md#other-local-servers)) |
 | Node 22 or newer | server and web pages (`package.json`, `engines` field) | yes |
 | Python 3 with PyYAML | the campaign validator (`strumenti/valida_campagna.py`) | yes |
@@ -216,11 +218,12 @@ and 6: if one is missing, its model is skipped. The models:
 | `mlx-community/Qwen3-4B-Instruct-2507-4bit` | the reader, Mac under 16 GB | about 3.6 GB |
 | `mlx-community/Qwen3-TTS-12Hz-0.6B-Base-8bit` | the voice | about 2 GB |
 | `mflux-community/flux2-klein-4b-mflux-q4` | the images, on by default on a 16 GB Mac (step 8) | about 4.6 GB |
+| `ggerganov/whisper.cpp`, file `ggml-large-v3-turbo-q5_0.bin` | the phones' microphone (step 10), on Apple silicon | 0.57 GB |
 
 (The tool reads the real sizes from Hugging Face; the approximate ones are in `strumenti/configura/profilo.py`.)
 
-Totals on a new computer, Apple silicon with 16 GB: with the images on (the default) 11.2 GB of models; with the images
-off 6.6 GB. The download plan shows the image model in both cases, because it reads the profile, not the line below.
+Totals on a new computer, Apple silicon with 16 GB: with the images on (the default) 11.8 GB of models; with the images
+off 7.2 GB. Both include the speech-to-text model. The download plan shows the image model in both cases, because it reads the profile, not the line below.
 
 ### Images on or off
 
@@ -354,12 +357,46 @@ While generating, only the files that are needed are downloaded:
 
 The sources and licenses are in `docs/audio.md`. The audio is also usually run by `scripts/prepara.sh`.
 
+## Step 10 (optional). The phones' microphone
+
+Players can speak their action on the phone. Two things are needed: a local speech-to-text server (whisper.cpp), and
+an HTTPS certificate, because the phone browsers give the microphone only to a secure address. Without them the
+button is hidden or greyed out and the players type. The user-side steps are in [Connecting the phones](phones.md#speaking-your-action-microphone).
+
+1. Install the two programs with Homebrew.
+
+   ```bash
+   brew install whisper.cpp mkcert
+   ```
+
+   `whisper.cpp` is the formula `whisper.cpp` (about 0.05 GB with its dependencies). `mkcert` makes the local certificate.
+
+2. The speech model (0.57 GB) is in the download plan of step 7: `python3 -I strumenti/configura/configura.py --scarica`
+   downloads it.
+
+3. HTTPS for the phones: `scripts/certificato.sh` once.
+
+   ```bash
+   scripts/certificato.sh
+   ```
+
+   It makes a local certificate authority (its private key stays in the folder that `mkcert -CAROOT` shows, never in the
+   repo) and a certificate for this computer's addresses, in `cache/https/` (not in git). Nothing is installed in the
+   Mac's trust store. Run it again when the computer gets a new address on the network. Each phone then installs the
+   public certificate once: see [Connecting the phones](phones.md#speaking-your-action-microphone).
+
+The speech-to-text server starts with the game (`scripts/partita.sh`) when the choice is `locale`, and `scripts/arresto.sh`
+stops it. Its language is always the campaign's (Italian or English), never detected. To do without the microphone,
+set `ascolto` to `nessuno` (see [Local and API](local-and-api.md#the-eight-components)).
+
 ## What ends up where
 
 Weights measured on the development Mac on 9 November 2026, unless the row says otherwise. None of this is in git.
 
 | What | Where | Size |
 |---|---|---|
+| Speech-to-text model (whisper.cpp) | `~/.cache/huggingface/hub/` | 0.57 GB (`ggml-large-v3-turbo-q5_0.bin`, step 10) |
+| HTTPS certificate for the phones | `cache/https/` | a few KB (not in git; step 10) |
 | Node dependencies | `node_modules/` | 201 MB (fresh install test; 235 MB on the development Mac) |
 | Reader environment | `services/lettore/.venv/` | 374 MB (fresh install test; 449 MB on the development Mac, 11 November 2026) |
 | Voice environment | `services/voce/.venv/` | 471 MB (fresh install test; 474 MB on the development Mac) |

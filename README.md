@@ -22,6 +22,10 @@ Before you read: nothing. This is the page to start from.
   (the projector also shows a QR code) and the Game Master panel.
   See [One game night](docs/guide/one-evening.md), [Connecting the phones](docs/guide/phones.md) and
   [The Game Master panel](docs/guide/master-panel.md).
+- **Speak your action.** A player can speak the action on the phone instead of typing it. The Mac turns the speech into
+  text with whisper.cpp (on this computer, by default), and the names of the table are spelled right. The player
+  checks the text, then sends it. The phone needs an HTTPS certificate, installed once per phone after `scripts/certificato.sh`.
+  See [Connecting the phones](docs/guide/phones.md#speaking-your-action-microphone) and [the speech design](docs/ascolto.md).
 - **Send and Withdraw, with no deadlines.** A player writes an action and sends it («Invia», Send); until the turn
   closes they can change it or take it back («Ritira», Withdraw). If nobody writes, the game waits.
   See [Pace and turns](docs/guide/pace-and-turns.md).
@@ -68,11 +72,11 @@ Before you read: nothing. This is the page to start from.
 
 ## What you need
 
-- **Disk.** On an Apple silicon Mac with 16 GB, the default setup keeps the images on and needs about **13.5 GB free**
-  on a new computer: 11.2 GB of models (reader 4.6 GB, voice 2 GB, images 4.6 GB), 2.0 GB of Python environments and
-  0.2 GB of npm packages. With the images off it needs about **7.7 GB** (6.6 GB of models, 0.8 GB of environments,
-  0.2 GB of npm packages); see [how to turn them off](docs/guide/installation.md#step-7-the-configuration-and-the-models).
-  A Mac under 16 GB, with the smaller reader and no images, needs about 6.6 GB (an estimate). Text-only with an API
+- **Disk.** On an Apple silicon Mac with 16 GB, the default setup keeps the images on and needs about **14.1 GB free**
+  on a new computer: 11.8 GB of models (reader 4.6 GB, voice 2 GB, images 4.6 GB, speech-to-text 0.57 GB), 2.0 GB of
+  Python environments and 0.2 GB of npm packages. With the images off it needs about **8.3 GB** (7.2 GB of models,
+  0.8 GB of environments, 0.2 GB of npm packages); see [how to turn them off](docs/guide/installation.md#step-7-the-configuration-and-the-models).
+  A Mac under 16 GB, with the smaller reader and no images, needs about 7.2 GB. Text-only with an API
   key needs about 0.2 GB. The setup says the figure before it downloads anything.
 
 - **A Mac with Apple silicon** (M1 or newer) for the local models: the reader (mlx-lm), the voice (Qwen3-TTS) and
@@ -201,7 +205,7 @@ The first time, read it in this order.
 
 1. [Installation](docs/guide/installation.md): dependencies, keys, what gets downloaded and how much space it takes.
 2. [One game night](docs/guide/one-evening.md): a game from start to finish.
-3. [Connecting the phones](docs/guide/phones.md): the network, the QR code, what to do if a phone cannot join.
+3. [Connecting the phones](docs/guide/phones.md): the network, the QR code, the microphone and its certificate, what to do if a phone cannot join.
 4. [The Game Master panel](docs/guide/master-panel.md): every section and every command.
 5. [Pace and turns](docs/guide/pace-and-turns.md): Send and Withdraw, when a turn closes, the pace, pauses.
 6. [Dice and character sheets](docs/guide/dice-and-sheets.md): how checks, combat and character sheets work.
@@ -222,13 +226,13 @@ The first time, read it in this order.
 - `docs/prove.md`: checks and dice (research, character sheet schema, measurements).
 - `docs/strati.md`: campaigns for one session or for many.
 - `docs/pronuncia.md`: the pronunciation lexicon of the names, its ear test (TTS → Whisper) and the names added during play.
+- `docs/ascolto.md`: the phone dictation: speech-to-text, campaign names, HTTPS.
 - `docs/da-fare.md`: the things still open.
 - `docs/ricerca-voce-drama3.md`: the research behind the drama-3 voice.
 - `docs/README.md`: the index of all the design documents.
 
 ## What is not there yet
 
-- The microphone: today you play by typing on the phone.
 - The local reader, voice and images outside Apple silicon (see `docs/da-fare.md`).
 - The conditions and subsystems of a custom rule set (for example sanity or magic) are text only: the Engine does not
   apply them yet (`docs/regole.md`, section «Open»).

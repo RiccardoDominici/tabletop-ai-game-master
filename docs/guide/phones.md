@@ -1,6 +1,6 @@
 # Connecting the phones on the local network
 
-On this page: how the phones reach the Mac, what to check when they do not connect, the audio on the phone and the combat line.
+On this page: how the phones reach the Mac, what to check when they do not connect, the audio on the phone, speaking your action (the microphone) and the combat line.
 Read first: [One evening of play](one-evening.md).
 
 The server runs on the Game Master's Mac and listens on all interfaces (`0.0.0.0`, port **4610**).
@@ -59,8 +59,68 @@ When it is your character's turn, the line becomes a banner, «È il tuo turno»
 
 Only your character is invited to act on its turn. If you write at another time, your action waits and is resolved on your turn. See [Dice and sheets](dice-and-sheets.md#combat) for the rules.
 
-## Later (not now)
+## Speaking your action (microphone)
 
-The site runs over HTTP. The phone's **microphone** and **keeping the screen on** require a secure
-connection (HTTPS). This is not planned now: when they are needed, a local certificate will be
-added to the server.
+A player can speak the action instead of typing it. The phone records, the Mac turns the speech into
+text with whisper.cpp (a program on the Mac; it goes to OpenRouter only if the local server is down and
+an OpenRouter key is set), and the text lands in the action box.
+
+**The button.** In the bottom row of the action box there is a round microphone button. Hold it to
+talk, or tap once to start and tap again to stop. A recording lasts at most 30 seconds. While you
+record, the button turns red, with a level ring and a timer. Then it shows «Trascrivo…» (Transcribing…)
+while the Mac works: a sentence of five or six seconds takes about 2 to 3 seconds on an M1.
+
+**Review, then send.** The text is added after what is already in the box. Read it, fix it if needed,
+then press **Invia** (Send) as usual. Nothing is sent by itself. If you want it sent as soon as the
+transcription arrives, tick «Invia subito dopo la trascrizione» (Send right after transcription). The
+tick is remembered on that phone.
+
+**Names.** The Mac knows the names of the table: the characters, the non-player characters the table
+can see, and the names said during play. A name it knows is spelled right, even when the speech is
+unclear. Under the box, «Nomi sistemati: …» (Names corrected: …) lists the names it changed: check them
+before you send. A name nobody has heard yet (for example one you invent) comes out wrong: correct it in
+the box before sending. From then on the game knows the name for the rest of the session, and the
+narrator says it correctly (see [The voice](voice.md#names-the-pronunciation-lexicon)).
+
+**The certificate, once per phone.** A browser gives the microphone (and the screen-on setting) only
+on a secure address (https). The game serves https on the same port, 4610, but the computer's
+certificate has to be trusted by each phone once. You do the steps below once for each phone, not once
+per evening.
+
+1. On the Mac, once: `scripts/certificato.sh` (it needs `brew install mkcert`). Run it again if the
+   Mac gets a new address on the network: the server log warns you. Then restart the game with
+   `scripts/partita.sh <campagna>`. The address for the phones becomes `https://<IP del Mac>:4610/telefono`.
+2. On each phone, open `http://<IP del Mac>:4610/certificato` (plain http, on purpose) and tap
+   «Scarica il certificato» (Download the certificate). It downloads the public certificate of the
+   local authority: the private key never leaves the Mac.
+3. Install it:
+   - **Android:** Settings › Security (or Security & privacy) › More security settings › Encryption &
+     credentials › Install a certificate › CA certificate.
+   - **iPhone:** open the page in Safari and allow the profile download. Then Settings › General › VPN &
+     Device Management: install the profile. Then Settings › General › About › Certificate Trust
+     Settings: turn on full trust for it.
+4. Open the `https://` address. The microphone button now works.
+
+The script `scripts/partita.sh` prints the certificate page under the phone address. If it says the
+microphone is off, or that it needs `scripts/certificato.sh`, follow what it says.
+
+**Without the certificate.** The phone shows a «connection not private» warning, and the microphone
+button stays grey. It links to the https address and to the certificate page. The phone still works:
+players type their actions on the http address. Keeping the screen on also works on the https address,
+and not on the http one.
+
+**If the microphone does not work.**
+- **«Il microfono è bloccato» (The microphone is blocked).** The browser permission was refused. Allow
+  the microphone for the site in the browser settings, then try again.
+- **The button is missing.** The game has no speech-to-text: the choice is `nessuno` (the players type).
+  The whisper server may also be off. See [Common problems](common-problems.md#microphone).
+- **«La trascrizione non risponde» (The transcription does not answer).** The whisper server is down and
+  there is no backup. Run `scripts/ascolto-avvio.sh` and read `logs/ascolto.out`.
+- **A warning about the certificate on the phone.** The certificate is not installed or not trusted on
+  that phone, or the Mac's address changed. Run `scripts/certificato.sh` again, restart the game, and
+  install the certificate again if the warning comes back.
+
+The speech-to-text setup, the models and the design are in [docs/ascolto.md](../ascolto.md).
+
+To turn HTTPS off, set `TAGM_HTTPS=no` before starting the game. Then the phones use http only, and the
+microphone stays off.

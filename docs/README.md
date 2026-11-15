@@ -6,6 +6,7 @@ and open items. They are written in English. The user guide is in [guide/](guide
 | File | What it covers |
 |---|---|
 | [architettura.md](architettura.md) | Architecture v1: the server owns the game state, the two models, and the modules. |
+| [ascolto.md](ascolto.md) | The phone dictation: speech-to-text (whisper.cpp, OpenRouter fallback), campaign names, and HTTPS for the phones' microphone. |
 | [audio.md](audio.md) | Audio framework: background music, character themes, ambient sounds, and their sources. |
 | [azioni-concorrenti.md](azioni-concorrenti.md) | Simultaneous player actions: how they affect each other and the narration, and how they can be cancelled. |
 | [combattimento.md](combattimento.md) | Combat driven by the campaign's rule set: initiative, phases, NPC turns, 0 HP, conditions, end of combat. |

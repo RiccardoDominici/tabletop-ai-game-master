@@ -10,11 +10,11 @@ same profile. Nothing here asks a model to decide.
 
 Rules are checked in order; the first one that matches wins.
 
-| # | Machine | Profile | Reader | Voice | Images | Rules, dice, summary, rule Q&A |
+| # | Machine | Profile | Reader | Voice | Images | Speech on the phones (`ascolto`) | Rules, dice, summary, rule Q&A |
 |---|---|---|---|---|---|---|
-| 1 | Apple silicon, RAM 15.5 GiB or more (16 GB nominal) | `apple-16` | Qwen3 8B 4 bit (MLX), fallback scripted | Qwen3-TTS local, fallback tone | FLUX.2 klein 4 bit (mflux) **only if** the disk keeps 8 GB free after the downloads; otherwise off | rules; summary and rule Q&A local, fallback rules |
-| 2 | Apple silicon, under 15.5 GiB | `apple-piccolo` | Qwen3 4B 4 bit (MLX), fallback scripted | Qwen3-TTS local, fallback tone | off (the model and its peak do not fit comfortably) | as above |
-| 3 | Anything else (Linux, Windows, Intel Mac) | `altro` | scripted narrator (not a real game) until a key is added | tone | off | rules |
+| 1 | Apple silicon, RAM 15.5 GiB or more (16 GB nominal) | `apple-16` | Qwen3 8B 4 bit (MLX), fallback scripted | Qwen3-TTS local, fallback tone | FLUX.2 klein 4 bit (mflux) **only if** the disk keeps 8 GB free after the downloads; otherwise off | whisper.cpp local (phones' speech), fallback openrouter, then nessuno | rules; summary and rule Q&A local, fallback rules |
+| 2 | Apple silicon, under 15.5 GiB | `apple-piccolo` | Qwen3 4B 4 bit (MLX), fallback scripted | Qwen3-TTS local, fallback tone | off (the model and its peak do not fit comfortably) | whisper.cpp local, fallback openrouter, then nessuno | as above |
+| 3 | Anything else (Linux, Windows, Intel Mac) | `altro` | scripted narrator (not a real game) until a key is added | tone | off | nessuno (players type), unless whisper-server is already installed: then local, untested there | rules |
 
 Notes on the rules:
 - **RAM** is read as GiB and rounded to one decimal. A 16 GB Mac reports 16.0.
@@ -22,9 +22,14 @@ Notes on the rules:
 - **Disk for images** uses the same minimum as the generator (`strumenti/immagini/motore.py`, `DISCO_MINIMO_GB`: 6 GB by default, set with `TAGM_DISCO_MINIMO_GB`).
   The check happens after the image model's download, so a model already in the cache still needs that much free space to generate.
 - **Sizes on a new computer** (model sizes from Hugging Face, environments from a fresh install on an M1 with 16 GB; see [installation](guide/installation.md#what-ends-up-where)):
-  `apple-16` with the images on, the default, is about 13.5 GB; with the images off it is about 7.7 GB. The images are
-  part of `apple-16` because the profile lists them: turning them off is a choice in `config/locale.yaml`.
-- **Not Apple silicon** has no local reader, voice or images yet. Those are the open items in
+  `apple-16` with the images on, the default, is about 14.1 GB; with the images off it is about 8.3 GB. The images are
+  part of `apple-16` because the profile lists them: turning them off is a choice in `config/locale.yaml`. The
+  speech-to-text model (whisper.cpp, 0.57 GB) is included in both figures. An Apple chip under 16 GB (`apple-piccolo`)
+  needs about 7.2 GB.
+- **Speech-to-text (`ascolto`)** is the phones' microphone: the spoken action becomes text. Its model is in the table
+  above and in [installation](guide/installation.md#step-10-optional-the-phones-microphone). It is local on both Apple
+  profiles; see [docs/ascolto.md](ascolto.md) for the details.
+- **Not Apple silicon** has no local reader, voice, images or speech-to-text yet (speech only if `whisper-server` is found). Those are the open items in
   [da-fare](da-fare.md). The reader is then the scripted narrator, which is for trials and not a real game.
   An Anthropic key makes the reader real (see below).
 

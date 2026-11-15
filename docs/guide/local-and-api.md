@@ -12,7 +12,7 @@ Read first: [Installation](installation.md). The design is in [docs/provider.md]
 - **Keys are optional upgrades.** An Anthropic key gives Haiku as the narrator; an OpenRouter key gives the drama-3 voice. A key alone changes nothing: `config/locale.yaml` (or a flag) must ask for it.
 - **The scriptwriter** writes the lines the local reader does not find. It runs on your Claude Code subscription, not on an API key.
 
-## The seven components
+## The eight components
 
 The game is split into seven jobs, called components. Each one has a provider: who does that job.
 
@@ -25,6 +25,7 @@ The game is split into seven jobs, called components. Each one has a provider: w
 | `regole` | the answers of «Chiedi una regola» (Ask a rule) on the phone | `locale`, fallback `regole` | `anthropic` |
 | `voce` | the voice | `locale`: Qwen3-TTS, fallback `finto` (a tone) | `openrouter` (drama-3) |
 | `immagini` | the images, only while preparing a campaign | `locale`: FLUX.2 klein with mflux, fallback `nessuno` (an atmosphere background) | `nessuno` |
+| `ascolto` | speech-to-text: what the players say on their phones becomes the text of their action ([docs/ascolto.md](../ascolto.md)) | `locale`: whisper.cpp on this computer (`127.0.0.1:4614`), fallback `openrouter` (only if the local server does not answer), then `nessuno` | `nessuno` (no microphone button: the players type) |
 
 The providers are: `locale` (this computer), `anthropic`, `openrouter`, `openai` (another OpenAI-compatible server), `regole` (no model: the fixed rules of the component), `finto` (for tests), `nessuno` (off).
 
@@ -63,6 +64,8 @@ The setup detects the computer and picks a profile (`strumenti/configura/profilo
 | `altro` | anything else (Linux, Windows, Intel Mac) | scripted narrator: not a real game | fake voice | off |
 
 In every profile the two arbiters are code. On an Apple chip the summary and the rule answers are local; on `altro` they use the fixed rules.
+
+The speech-to-text (`ascolto`, the phones' microphone) is local whisper.cpp on both Apple profiles, with `openrouter` and then `nessuno` as fallbacks. On `altro` it is `nessuno` (players type) unless `whisper-server` is already installed: that combination is not tested yet.
 
 On `altro` there is no local model yet: a real game needs an Anthropic key (`scripts/configura.sh --lettore anthropic`). The cost of every local choice is 0 USD.
 
@@ -180,6 +183,11 @@ This chooses Haiku as the reader and drama-3 as the voice, and leaves the rest l
 | `-h`, `--help` | the help |
 
 The providers it accepts: `locale`, `anthropic`, `openrouter`, `openai`, `regole`, `finto`, `nessuno`.
+
+`scripts/configura.sh` has no option for `ascolto` (the phones' speech-to-text). Set it by hand under `componenti:` in
+`config/locale.yaml`, as `ascolto: {provider: nessuno}` to turn the microphone off, or with `TAGM_ASCOLTO=nessuno` for one
+start. Note that `--tutto-locale` removes `config/locale.yaml`, so the line goes away with it. The server's log says which
+provider is used at each start (the `PROVIDER:` lines).
 
 **Careful: every command that writes rewrites the whole file.** It keeps only the options of that command. Two commands in a row do not add up: give all your choices in one command. It also drops the `lingua` line and the smaller model that the setup wrote. After it, check the file, and add `lingua: en` back by hand if you play in English.
 

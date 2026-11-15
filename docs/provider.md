@@ -30,6 +30,7 @@
 | `regole` | «Chiedi una regola» (Ask for a rule) from the phone | local | rules (search in the rules) |
 | `voce` | voice of the narrator and PCs | local (Qwen3-TTS) | finto |
 | `immagini` | only in preparation (`strumenti/immagini`) | local (flux2-klein-4b with mflux) | none |
+| `ascolto` | speech-to-text of the phones (what the players say becomes their action; [docs/ascolto.md](ascolto.md)) | local (whisper.cpp, 127.0.0.1:4614) | openrouter, then nessuno |
 
 ## Providers
 
@@ -41,7 +42,8 @@
   (the name of the variable).
 - `regole`: no model. It is the deterministic fallback of the component. Reader and voice do not have it.
 - `finto`: for testing. Scripted narrator, voice that plays a tone.
-- `nessuno`: the component is off. For images, the atmospheric background is used.
+- `nessuno`: the component is off. For images, the atmospheric background is used. For `ascolto`, the phones show no
+  microphone button and the players type (`TAGM_ASCOLTO=nessuno` forces it).
 
 If the chosen provider is not available at startup (missing key, missing URL), the server tries the next
 fallback. The check opens no connections: the local server is verified at startup.
@@ -78,6 +80,22 @@ every local server URL has a watchdog, started by the first request of a local m
 - **Log** (`modulo: sentinella-locale`): «local model server DOWN» (why), «restarting», «restarted» (seconds, the last
   lines of the script), «restart did not bring it back», «restart given up», «local model server UP again» (seconds
   down, how many requests went to the fallbacks).
+
+## The local speech-to-text server
+
+- On this Mac: whisper.cpp's `whisper-server` on `127.0.0.1:4614`, with the model `ggml-large-v3-turbo-q5_0.bin`
+  (0.57 GB, in the Hugging Face cache). Metal on Apple silicon. About 0.7 GB of RAM, ready about 22 seconds after the start.
+- Install: `brew install whisper.cpp` (the model is in the download plan of `python3 -I strumenti/configura/configura.py --scarica`).
+- Start: `scripts/ascolto-avvio.sh`. If it already answers, it does nothing. Stop: `scripts/ascolto-arresto.sh`.
+  `scripts/avvio.sh` (and so `scripts/partita.sh`) starts it when `ascolto` is `locale` and the narrator is not the scripted
+  one. `scripts/arresto.sh` stops it, unless you add `--lascia-ascolto`. Test instances share it, as they share the reader on 4613.
+- Watchdog: while the game runs, a watchdog checks that the server answers (`GET /health`) and restarts it with the script
+  if it stops answering. Log in `logs/ascolto.out` (pid in `logs/ascolto.pid`).
+- Language: always the campaign's (`it` or `en`), never detected.
+- Fallback: if the local server does not answer and `OPENROUTER_API_KEY` is set, the recording goes to OpenRouter
+  (`openai/whisper-1`, $0.006 per minute of audio). If neither works, the phones show that the transcription does not answer, and the players type.
+- `nessuno` hides the microphone button. See [the phones guide](guide/phones.md#speaking-your-action-microphone) and
+  [docs/ascolto.md](ascolto.md).
 
 ## Minimal reader
 
