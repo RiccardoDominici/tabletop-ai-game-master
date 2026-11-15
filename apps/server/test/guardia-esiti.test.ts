@@ -48,6 +48,8 @@ describe('guardia degli esiti (italiano)', () => {
     expect(guardia([])('Bertoldo cade dallo sgabello per lo spavento.')).toBeNull();
     // Niente parole di sconfitta: niente correzione.
     expect(guardia([])('Ruggero ride e fa un passo indietro.')).toBeNull();
+    // A relative clause with another verb before the fall: «…sullo sgherro, che grida e cade all'indietro».
+    expect(guardia([attacco('pg_corrado', 'png_ruggero', true)])('La spada di Corrado cala sullo sgherro, che grida e cade all’indietro.')).toEqual({ testo: 'Ruggero incassa il colpo, ma resta in piedi.', motivo: 'caduta_senza_fatto' });
   });
 
   it('a standing PC told down because the player said so (third e2e pass, bug 3) → «Ida è ancora in piedi.»', () => {

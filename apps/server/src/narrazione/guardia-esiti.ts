@@ -73,6 +73,9 @@ function chiCade(frase: string, p: Parole, candidati: readonly string[], nomi: R
       const prima = nominati.filter((x) => x.i < k).at(-1);
       if (prima) out.push(prima.id);
       else if (ultimo && w.slice(0, k).every((x) => p.pronomi.has(x) || x.length <= 2 || ['poi', 'e', 'ed', 'ma', 'then', 'and', 'but'].includes(x))) out.push(ultimo);
+      // A relative clause opening with a subject pronoun, with other verbs before the fall: «…sul goblin, che grida e
+      // cade all'indietro» (third e2e pass, HEAD rerun T8: the goblin, standing, «cade»).
+      else if (ultimo && p.pronomi.has(w[0]!) && !nominati.length) out.push(ultimo);
     }
     if (nominati.length) ultimo = nominati.at(-1)!.id;
   }
