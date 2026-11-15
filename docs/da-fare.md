@@ -27,13 +27,6 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   5. v1 limits of manual rolls: damage, NPC rolls, initiative, death saves and the second PC in a contest are the
      Engine's dice; on a 2d6 set the bonus shown includes the difficulty modifier.
   6. Not seen live: morale, flight, initiative by sides (unit tests only); C5 minions without sheets.
-- **Checks and rolls** (Riccardo, 15 November 2026: manual player rolls by default, automatic as an option, Game Master rolls in the background, the AI never decides an uncertain outcome). Built and verified live, evidence in [prove-verifica.md](prove-verifica.md) (commits d14f89c…d2f7ba4). Still open:
-  - dictation into the roll card («ho fatto 14»): only its parser is tested, not a live dictated roll;
-  - DC choice: the rules arbiter can't tell easy from hard (17/20 right), and Haiku called lifting a cart «impossibile» (16/20);
-  - C5, attacks on creatures without a sheet (minion sheets missing in the data);
-  - v1 limits: damage, NPC rolls, initiative, death saves and the second PC of a contest always use the Engine's dice (not the player's real dice); the 2d6 bonus includes the difficulty;
-  - not built: world questions written in a scene for the Game Master roll, NPCs' own checks; morale, flight and sides initiative have unit tests only, no live run;
-  - with prove on, the world's `tira` hook always uses the Engine's dice, so the world's own saved-dice replay is bypassed; decided: when there is no prove engine (campaign without sheets) `tira` should return undefined and fall back to the world's saved dice (not done yet).
 - **Final end-to-end pass on today's code** (not started): blind scripts for combat in turn order, off the rails (ignore the hook, attack the quest-giver, leave), doing nothing (stall), plus one dictated action; profiles A and B. Run it with one model server at a time (the Mac rebooted twice under memory pressure on 14 November).
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.
   Done, by step: research (c0ebcc1), design (96b59e7, 6e2df77), `strumenti/strati.py` (09b3ef4), validator of sessions and STATO/CONTINUITÀ (e02e26c, 8fcfe18), skill (a10a172), session packages and the server side (2d3f2d4, 5bc833b, 7201894).
