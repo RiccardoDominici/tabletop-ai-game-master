@@ -92,6 +92,12 @@ asked three times (`--ripeti 3`, the cache is keyed by model and prompt hash), a
   in three runs of three; in two of them its own `motivo` says the opposite («un guerriero forte può tentare: prova di
   Forza difficile»): the verdict field comes before the reason in the structured output. A reason-first field or a
   deterministic check is the next step; the rules arbiter rolls it (hard 20).
+- **Reason-first, measured and dropped** (16 November, e2e fix pass): a required field `perche` before `tipo` in the
+  Haiku schema («what makes the action easy, hard or impossible here», at most twelve words, then the type) and one
+  line in the prompt. The cart was solved (d13 atletica, hard 20, in three runs of three), but the twenty fell from
+  18, 18, 18 to **15, 17, 15** (mean 15.7): new misses d18 «stimo quanto vale l'anello» and d11 «tendo l'orecchio» as
+  no roll, d15 and d01 one step too hard. Not kept; the cart stays open (a deterministic check, or the reason field
+  with a prompt measured again).
 - **Prompt variants measured and dropped** (three runs each, twenty / ten): a full rewrite of the ladder, one line per
   rung (16.0 / 9.0); naming rope and boat examples (13.3 / 10.0); «a detail the player adds that fits the place is
   there» (14.3 / 10.0). Their new misses were «impossibile» for things absent from the scene's description (the
