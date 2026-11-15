@@ -1,0 +1,510 @@
+{
+  "copione": "scontro-srd",
+  "campagna": "prova-f0",
+  "modo": "improvvisa",
+  "porta": 4895,
+  "narratore_finto": true,
+  "sessione": "2026-11-15T15:32:21.829Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "40fdbbdd5ab138ccc2f8362037fbf55daaf89911",
+    "modificati": [],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 19,
+  "turni_copione": 5,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "manuale",
+    "tiri": [
+      {
+        "pg": "pg_corrado",
+        "id": "r_a1",
+        "etichetta": "Balestra leggera",
+        "dadi": "1d20",
+        "valori": [
+          14
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_teodora",
+        "id": "r_a4",
+        "etichetta": "Mazza",
+        "dadi": "1d20",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_assenzio",
+        "id": "r_a5",
+        "etichetta": "Pugnale",
+        "dadi": "1d20",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_corrado",
+        "id": "r_a6",
+        "etichetta": "Spada lunga",
+        "dadi": "1d20",
+        "valori": [
+          17
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_assenzio",
+        "id": "r_a7",
+        "etichetta": "Arco corto",
+        "dadi": "1d20",
+        "valori": [
+          13
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 26,
+    "passate": 8
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 7,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 9,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 10,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 11,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 12,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 13,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 14,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 15,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 16,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 17,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 18,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 19,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      }
+    ],
+    "massimo": {
+      "o_colpevole": "0/6"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 0,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 9,
+      "peggiore": 42,
+      "n": 19
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 508,
+      "peggiore": 528,
+      "n": 19
+    },
+    "llm_prima_frase": {
+      "mediana": 723,
+      "peggiore": 753,
+      "n": 19
+    },
+    "voce_richiesta": {
+      "mediana": 726,
+      "peggiore": 2672,
+      "n": 19
+    },
+    "voce_primo_audio": {
+      "mediana": 1368,
+      "peggiore": 1388,
+      "n": 19
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1518,
+      "peggiore": 1539,
+      "n": 19
+    },
+    "llm_fine": {
+      "mediana": 1571,
+      "peggiore": 1603,
+      "n": 19
+    },
+    "audio_fine": {
+      "mediana": 14676,
+      "peggiore": 23014,
+      "n": 19
+    }
+  },
+  "buchi": {
+    "totale": 92,
+    "in_frase": 0,
+    "tra_frasi": 92,
+    "silenzio_ms": 25275,
+    "per_turno": [
+      6,
+      6,
+      6,
+      8,
+      8,
+      3,
+      6,
+      8,
+      4,
+      5,
+      5,
+      2,
+      5,
+      4,
+      2,
+      4,
+      4,
+      2,
+      4
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 52,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 10,
+  "azioni_senza_risposta": 10,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 10,
+  "usa_rifiutati_per_motivo": {},
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 148,
+      "secondi": 29.266666666666598,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 303
+    },
+    {
+      "turno": 1,
+      "frasi": 8,
+      "pezzi": 78,
+      "secondi": 15.066666666666647,
+      "buchi": 6,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 6,
+      "silenzio_ms": 1780
+    },
+    {
+      "turno": 2,
+      "frasi": 8,
+      "pezzi": 72,
+      "secondi": 14.066666666666649,
+      "buchi": 6,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 6,
+      "silenzio_ms": 1728
+    },
+    {
+      "turno": 3,
+      "frasi": 7,
+      "pezzi": 66,
+      "secondi": 12.866666666666653,
+      "buchi": 6,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 6,
+      "silenzio_ms": 1409
+    },
+    {
+      "turno": 4,
+      "frasi": 10,
+      "pezzi": 99,
+      "secondi": 19.199999999999964,
+      "buchi": 8,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 8,
+      "silenzio_ms": 2223
+    },
+    {
+      "turno": 5,
+      "frasi": 10,
+      "pezzi": 106,
+      "secondi": 20.59999999999996,
+      "buchi": 8,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 8,
+      "silenzio_ms": 2015
+    },
+    {
+      "turno": 6,
+      "frasi": 5,
+      "pezzi": 49,
+      "secondi": 9.399999999999999,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 949
+    },
+    {
+      "turno": 7,
+      "frasi": 8,
+      "pezzi": 77,
+      "secondi": 14.933333333333314,
+      "buchi": 6,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 6,
+      "silenzio_ms": 1733
+    },
+    {
+      "turno": 8,
+      "frasi": 9,
+      "pezzi": 93,
+      "secondi": 17.933333333333305,
+      "buchi": 8,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 8,
+      "silenzio_ms": 1994
+    },
+    {
+      "turno": 9,
+      "frasi": 5,
+      "pezzi": 56,
+      "secondi": 10.799999999999994,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 758
+    },
+    {
+      "turno": 10,
+      "frasi": 7,
+      "pezzi": 68,
+      "secondi": 13.13333333333332,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1435
+    },
+    {
+      "turno": 11,
+      "frasi": 6,
+      "pezzi": 54,
+      "secondi": 10.466666666666663,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1221
+    },
+    {
+      "turno": 12,
+      "frasi": 4,
+      "pezzi": 40,
+      "secondi": 7.733333333333337,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 577
+    },
+    {
+      "turno": 13,
+      "frasi": 7,
+      "pezzi": 63,
+      "secondi": 12.19999999999999,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1509
+    },
+    {
+      "turno": 14,
+      "frasi": 6,
+      "pezzi": 54,
+      "secondi": 10.466666666666663,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1183
+    },
+    {
+      "turno": 15,
+      "frasi": 4,
+      "pezzi": 40,
+      "secondi": 7.733333333333337,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 543
+    },
+    {
+      "turno": 16,
+      "frasi": 7,
+      "pezzi": 68,
+      "secondi": 13.199999999999987,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1321
+    },
+    {
+      "turno": 17,
+      "frasi": 6,
+      "pezzi": 54,
+      "secondi": 10.466666666666663,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1173
+    },
+    {
+      "turno": 18,
+      "frasi": 4,
+      "pezzi": 40,
+      "secondi": 7.733333333333337,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 556
+    },
+    {
+      "turno": 19,
+      "frasi": 6,
+      "pezzi": 54,
+      "secondi": 10.466666666666663,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1168
+    }
+  ]
+}

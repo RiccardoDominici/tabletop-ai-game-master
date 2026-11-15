@@ -1,0 +1,378 @@
+{
+  "copione": "pressione",
+  "campagna": "prova-f0",
+  "modo": "improvvisa",
+  "porta": 4895,
+  "narratore_finto": false,
+  "sessione": "2026-11-15T15:24:31.622Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "40fdbbdd5ab138ccc2f8362037fbf55daaf89911",
+    "modificati": [],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 8,
+  "turni_copione": 8,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "manuale",
+    "tiri": [
+      {
+        "pg": "pg_corrado",
+        "id": "r_a1",
+        "etichetta": "Intimidire (Carisma)",
+        "dadi": "2d20",
+        "valori": [
+          16,
+          8
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_assenzio",
+        "id": "r_a6",
+        "etichetta": "Rapidità di mano (Destrezza)",
+        "dadi": "2d20",
+        "valori": [
+          18,
+          15
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_assenzio",
+        "id": "r_a7",
+        "etichetta": "Intimidire (Carisma)",
+        "dadi": "2d20",
+        "valori": [
+          11,
+          11
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_teodora",
+        "id": "r_a11",
+        "etichetta": "Intimidire (Carisma)",
+        "dadi": "2d20",
+        "valori": [
+          20,
+          10
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_assenzio",
+        "id": "r_a13",
+        "etichetta": "Furtività (Destrezza)",
+        "dadi": "1d20",
+        "valori": [
+          15
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_teodora",
+        "id": "r_a14",
+        "etichetta": "Intimidire (Carisma)",
+        "dadi": "2d20",
+        "valori": [
+          11,
+          11
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_corrado",
+        "id": "r_a15",
+        "etichetta": "Atletica (Forza)",
+        "dadi": "1d20",
+        "valori": [
+          14
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_assenzio",
+        "id": "r_a16",
+        "etichetta": "Intuizione (Saggezza)",
+        "dadi": "1d20",
+        "valori": [
+          17
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_assenzio",
+        "id": "r_a19",
+        "etichetta": "Atletica (Forza)",
+        "dadi": "1d20",
+        "valori": [
+          11
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_teodora",
+        "id": "r_a20",
+        "etichetta": "Persuasione (Carisma)",
+        "dadi": "1d20",
+        "valori": [
+          3
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 0,
+    "passate": 0
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_colpevole": "1/6"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_colpevole": "1/6"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_colpevole": "2/6"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_colpevole": "2/6"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_colpevole": "3/6"
+        }
+      },
+      {
+        "turno": 7,
+        "stato": {
+          "o_colpevole": "3/6"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_colpevole": "3/6"
+        }
+      }
+    ],
+    "massimo": {
+      "o_colpevole": "3/6"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 0,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 1208,
+      "peggiore": 1240,
+      "n": 8
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 727,
+      "peggiore": 1619,
+      "n": 8
+    },
+    "llm_prima_frase": {
+      "mediana": 989,
+      "peggiore": 1814,
+      "n": 8
+    },
+    "voce_richiesta": {
+      "mediana": 2575,
+      "peggiore": 3523,
+      "n": 8
+    },
+    "voce_primo_audio": {
+      "mediana": 249,
+      "peggiore": 2466,
+      "n": 8
+    },
+    "schermo_inizio_audio": {
+      "mediana": 401,
+      "peggiore": 2619,
+      "n": 8
+    },
+    "llm_fine": {
+      "mediana": 2964.5,
+      "peggiore": 3569,
+      "n": 8
+    },
+    "audio_fine": {
+      "mediana": 44263.5,
+      "peggiore": 60780,
+      "n": 8
+    }
+  },
+  "buchi": {
+    "totale": 39,
+    "in_frase": 0,
+    "tra_frasi": 39,
+    "silenzio_ms": 11978,
+    "per_turno": [
+      8,
+      5,
+      6,
+      5,
+      2,
+      3,
+      2,
+      8
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 56,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 20,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 4,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {},
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0.01774941,
+  "costo_mediana_turno_usd": 0.00083132,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 148,
+      "secondi": 29.266666666666598,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 306
+    },
+    {
+      "turno": 1,
+      "frasi": 16,
+      "pezzi": 216,
+      "secondi": 41.866666666666724,
+      "buchi": 8,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 8,
+      "silenzio_ms": 2787
+    },
+    {
+      "turno": 2,
+      "frasi": 13,
+      "pezzi": 200,
+      "secondi": 39.33333333333336,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1519
+    },
+    {
+      "turno": 3,
+      "frasi": 17,
+      "pezzi": 257,
+      "secondi": 50.26666666666684,
+      "buchi": 6,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 6,
+      "silenzio_ms": 2196
+    },
+    {
+      "turno": 4,
+      "frasi": 15,
+      "pezzi": 241,
+      "secondi": 47.133333333333475,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1782
+    },
+    {
+      "turno": 5,
+      "frasi": 11,
+      "pezzi": 206,
+      "secondi": 40.53333333333338,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 642
+    },
+    {
+      "turno": 6,
+      "frasi": 12,
+      "pezzi": 209,
+      "secondi": 41.13333333333339,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 734
+    },
+    {
+      "turno": 7,
+      "frasi": 11,
+      "pezzi": 192,
+      "secondi": 38.06666666666667,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 339
+    },
+    {
+      "turno": 8,
+      "frasi": 18,
+      "pezzi": 297,
+      "secondi": 58.40000000000028,
+      "buchi": 8,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 8,
+      "silenzio_ms": 1979
+    }
+  ]
+}

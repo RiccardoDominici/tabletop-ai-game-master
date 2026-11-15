@@ -95,7 +95,35 @@ The headless players answered every request with their own dice.
 | After the fight | a dead PC does not act | the old harness still sent dead Nespola's actions; the fact said «è a terra: A zero punti ferita un personaggio muore…» | fixed: harness drops a dead PC's queue (`f27c629`), fact «è morto.» (`f8ec575`) |
 | Attacks on a creature without a sheet | — | T11: three attacks on the goblin sentry «sì, ma» (C5) | open (data: minion sheets) |
 
-## 7. Baseline runs before the changes (automatic rolls, profile A)
+## 7. Live runs with manual rolls, SRD 5.2
+
+**Profile A**, `TAGM_PORTA=4895 esegui.ts pressione A --campagna prova-f0 --tiri manuale` (8 turns, $0.018,
+`esperimenti/risultati/prove-verifica/manuale-f0-pressione`). No fight this time: the arbiter judged the crossbow
+threat «impossibile» (Baldrin would not move), so the script's threats stayed social.
+
+| Check | Seen | Verdict |
+|---|---|---|
+| Player checks | 10 requests: Intimidire vs 15 toward Baldrin and Ottavia (Influence, advantage or disadvantage from the attitude: «Baldrin Pietrafitta è ostile» → 2d20 keep the lowest), Rapidità di mano vs 20 with disadvantage (the arbiter: someone is watching), Furtività, Intuizione, Atletica vs 15, Persuasione vs 15; a grab on Ottavia: Atletica −1 against her passive Atletica 10 | works |
+| Dice entered decide | 0 × card dice differ; «Rapidità di mano (2d20 +7): 18, 15» → card 22 (the lower die with disadvantage) | works |
+| No roll when none is due | Assenzio's question to Ottavia, plain actions: «nessun tiro» | works |
+| DC never said | no narrator line with a DC or a total | works |
+| Narrator vs failed social checks | 3 × an NPC giving in after a failed check replaced by its refusal; 4 × a secret line stopped | works (guards active) |
+
+**Profile R** (fake narrator, rules arbiter), an invented five-turn fight script on prova-f0 (`esperimenti/copioni/prove-verifica/scontro-srd.yaml`), `esegui.ts esperimenti/copioni/prove-verifica/scontro-srd.yaml A --campagna prova-f0 --tiri manuale --finto`
+(`esperimenti/risultati/prove-verifica/manuale-f0-scontro`):
+
+| Check | Seen | Verdict |
+|---|---|---|
+| Attack requests | crossbow, mace, dagger, longsword, short bow: 1d20 + the sheet's bonus (+4, +2, +5) against Baldrin's AC 11 | works |
+| Initiative and turns | individual d20 once («Sorella Teodora 20, Baldrin 17, Assenzio 16, Corrado 14, Sebastiano 12»), only the PC on turn acts, 0 deferred by the Engine | works |
+| NPC turns | Baldrin and Sebastiano (hostile to Corrado, so in the fight) attack in their turns; a critical («colpo critico»); an NPC at 0 dies (SRD) and leaves the order | works |
+| Death saves | Teodora: fail, success, success, success → «successi 3 su 3: è stabile»; Corrado: a natural 20 → «torna in sé con 1 punto ferita», then down again | works |
+| Every PC down | «Nessuno è in piedi per soccorrerli: i tiri contro la morte decidono adesso», Assenzio rolls to stable, then the fight ends | works (`7395185`, live) |
+| An attack on a target already down | «Baldrin è già a terra: nessun tiro»; no request was made for it | works |
+| Speech and questions | «Chiedo a Ottavia…», «Dico agli altri: …»: no roll | works |
+| After the fight | the down PCs' leftover actions: «è a terra, privo di sensi: non può agire»; the narrator hears that they do not act | works (`a852ca1`) |
+
+## 8. Baseline runs before the changes (automatic rolls, profile A)
 
 `base-torre-pressione` (BF, port 4891) and `base-f0-pressione` (SRD, port 4892), 15 November.
 
@@ -107,7 +135,7 @@ The headless players answered every request with their own dice.
 | SRD T16–T17: every PC at 0 HP, the harness kept their actions, Haiku narrated a grab and a door broken | bug: the narrator got the player's text as the action to answer | fixed, `a852ca1` |
 | SRD T15: the fight ends «i PG sono tutti a terra»; a dying PC rolls no more death saves after it | gap: death saves happened only inside a fight | fixed: when every PC is down, the dying ones roll to the end before the fight closes, `7395185` |
 
-## 8. Combat and turns
+## 9. Combat and turns
 
 | Scenario | Expected | Seen | Verdict | Fix |
 |---|---|---|---|---|
@@ -116,3 +144,20 @@ The headless players answered every request with their own dice.
 | A Game Master check during a fight | does not move whose turn it is or the NPCs' fallback target | the pseudo-action is no longer passed as the PC's action | fixed | `dc2afa2` |
 | Pace, live (`e2e/ritmo.spec.ts`, port 4896, profile R) | calm: no timer, «Aspettiamo: …», the turn starts when all have sent; an action written during the narration waits with no countdown; frantic: countdown, resolved at zero; «Risolvi ora»; the watchdog recovers a stuck narrator | with the manual default the spec stopped at a roll nobody entered («Si tirano i dadi: Ginestra»), and it counted the dictation microphone as a fourth form button; with `TAGM_TIRI_GIOCATORI=automatico` and the button excluded: passes (1.7 min) | works; the e2e specs now start their server with automatic rolls | `48021c7` |
 | Simultaneous actions, live (`e2e/azioni.spec.ts`, port 4896, rules + Haiku action arbiter) | «anch'io» dependency and withdrawal → full-screen notice; exclusive conflict → «Tengo / Cambio / Ritiro»; sending = ready; writing during the narration; a choice left to expire at the frantic pace → «rimasta fuori» with the text back | passes (1.4 min) | works | — |
+
+## 10. Still open
+
+- **Dictation into the roll card**: the number parser is tested; the microphone path with real audio was not run end to
+  end (it needs the local speech model).
+- **The rules arbiter cannot tell easy from hard** (always medium when no data sets the DC); Haiku still calls lifting a
+  cart «impossibile» (§5).
+- **Attacks on creatures without a sheet** resolve «sì, ma» (C5): the campaigns' minions need sheets.
+- **v1 limits of manual rolls**: damage dice, NPC rolls, initiative, death saves, morale and the second PC's die in a
+  contest between two PCs are the Engine's; on a 2d6 set the bonus the phone shows includes the difficulty's modifier;
+  a restart during the wait replays the turn and the requests are asked again.
+- **The Game Master's own rolls** cover the world's gates only; a world question written in a scene («is the guard
+  awake?») and an NPC's own check out of combat need a data source first (docs/prove.md §9).
+- **Morale and flight** were not reached in the live runs (no NPC fell); they are covered by `test/combattimento.test.ts`
+  and `test/fuori-gioco.test.ts`.
+- **A private action's narrator line** «Eliandro, la pastora alza lo sguardo…» reached the table once in the BF run
+  (no content of the question): the private guard's area (docs/e2e-finale.md A).

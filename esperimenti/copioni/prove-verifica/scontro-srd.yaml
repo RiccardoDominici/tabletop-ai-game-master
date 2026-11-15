@@ -1,0 +1,19 @@
+# Invented short script for the SRD fight in manual mode (verification of 15 November): clear attacks only, so the
+# rules arbiter rolls them, plus one speech line and one question that must not roll.
+pg: [pg_corrado, pg_assenzio, pg_teodora]
+turni:
+  - - {pg: pg_corrado, azione: "Tiro con la balestra leggera a Baldrin"}
+    - {pg: pg_assenzio, azione: "Chiedo a Ottavia dove tiene il pane"}
+    - {pg: pg_teodora, azione: "Dico agli altri: «Fermi, non qui dentro!»"}
+  - - {pg: pg_assenzio, azione: "Colpisco Baldrin con il pugnale"}
+    - {pg: pg_teodora, azione: "Colpisco Baldrin con la mazza"}
+    - {pg: pg_corrado, azione: "Colpisco Baldrin con la spada lunga"}
+  - - {pg: pg_corrado, azione: "Colpisco ancora Baldrin con la spada lunga"}
+    - {pg: pg_assenzio, azione: "Tiro con l'arco corto a Baldrin"}
+    - {pg: pg_teodora, azione: "Colpisco Baldrin con la mazza"}
+  - - {pg: pg_corrado, azione: "Colpisco Baldrin con la spada lunga"}
+    - {pg: pg_assenzio, azione: "Colpisco Baldrin con il pugnale"}
+    - {pg: pg_teodora, azione: "Colpisco Baldrin con la mazza"}
+  - - {pg: pg_corrado, azione: "Colpisco Baldrin con la spada lunga"}
+    - {pg: pg_assenzio, azione: "Colpisco Baldrin con il pugnale"}
+    - {pg: pg_teodora, azione: "Colpisco Baldrin con la mazza"}

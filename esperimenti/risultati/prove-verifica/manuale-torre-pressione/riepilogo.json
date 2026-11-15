@@ -1,0 +1,704 @@
+{
+  "copione": "torre-mozza/pressione",
+  "campagna": "torre-mozza",
+  "modo": "improvvisa",
+  "porta": 4894,
+  "narratore_finto": false,
+  "sessione": "2026-11-15T15:07:57.873Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "2269267e35042c3b0098849d38b9c5b7bea80909",
+    "modificati": [],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 24,
+  "turni_copione": 16,
+  "cambi_di_scena": [
+    {
+      "turno_copione": 7,
+      "turno_server": 7,
+      "a": "scena_carbonaia"
+    },
+    {
+      "turno_copione": 9,
+      "turno_server": 10,
+      "a": "scena_torre"
+    }
+  ],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "manuale",
+    "tiri": [
+      {
+        "pg": "pg_livia",
+        "id": "r_a1",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          17
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a2",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          14
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_a3",
+        "etichetta": "Intelligenza",
+        "dadi": "1d20",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a4",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          20
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a7",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          9
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a8",
+        "etichetta": "Cercare porte segrete e trappole",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a9",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          16
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_a10",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          16
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a12",
+        "etichetta": "Muoversi in silenzio",
+        "dadi": "1d100",
+        "valori": [
+          97
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_a13",
+        "etichetta": "Cercare porte segrete e trappole",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a15",
+        "etichetta": "Scalare pareti",
+        "dadi": "1d100",
+        "valori": [
+          15
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a19",
+        "etichetta": "Spada lunga",
+        "dadi": "1d20",
+        "valori": [
+          13
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_a21",
+        "etichetta": "Pugnale lanciato",
+        "dadi": "1d20",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a22",
+        "etichetta": "Forzare una porta bloccata",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a24",
+        "etichetta": "Spada lunga",
+        "dadi": "1d20",
+        "valori": [
+          8
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a25",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          14
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 16,
+    "passate": 2
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 9,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 11,
+        "stato": {}
+      },
+      {
+        "turno": 12,
+        "stato": {}
+      },
+      {
+        "turno": 13,
+        "stato": {}
+      },
+      {
+        "turno": 14,
+        "stato": {}
+      },
+      {
+        "turno": 15,
+        "stato": {}
+      },
+      {
+        "turno": 16,
+        "stato": {}
+      },
+      {
+        "turno": 17,
+        "stato": {}
+      },
+      {
+        "turno": 18,
+        "stato": {}
+      },
+      {
+        "turno": 19,
+        "stato": {}
+      },
+      {
+        "turno": 20,
+        "stato": {}
+      },
+      {
+        "turno": 21,
+        "stato": {}
+      },
+      {
+        "turno": 22,
+        "stato": {}
+      },
+      {
+        "turno": 23,
+        "stato": {}
+      },
+      {
+        "turno": 24,
+        "stato": {}
+      },
+      {
+        "turno": 25,
+        "stato": {}
+      },
+      {
+        "turno": 26,
+        "stato": {}
+      }
+    ],
+    "massimo": {
+      "o_mezzanotte": "1/8"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 6,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 26,
+      "peggiore": 1266,
+      "n": 24
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 988,
+      "peggiore": 3612,
+      "n": 24
+    },
+    "llm_prima_frase": {
+      "mediana": 1133.5,
+      "peggiore": 3821,
+      "n": 24
+    },
+    "voce_richiesta": {
+      "mediana": 2213,
+      "peggiore": 3821,
+      "n": 24
+    },
+    "voce_primo_audio": {
+      "mediana": 914,
+      "peggiore": 4475,
+      "n": 24
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1066.5,
+      "peggiore": 4627,
+      "n": 24
+    },
+    "llm_fine": {
+      "mediana": 2571.5,
+      "peggiore": 4689,
+      "n": 24
+    },
+    "audio_fine": {
+      "mediana": 31282.5,
+      "peggiore": 49117,
+      "n": 24
+    }
+  },
+  "buchi": {
+    "totale": 67,
+    "in_frase": 0,
+    "tra_frasi": 67,
+    "silenzio_ms": 20239,
+    "per_turno": [
+      8,
+      3,
+      8,
+      1,
+      0,
+      3,
+      1,
+      2,
+      0,
+      5,
+      0,
+      2,
+      2,
+      2,
+      8,
+      2,
+      2,
+      1,
+      5,
+      2,
+      4,
+      1,
+      2,
+      3
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 133,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 22,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 1,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {},
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0.041898729999999995,
+  "costo_mediana_turno_usd": 0.00083141,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 146,
+      "secondi": 28.599999999999934,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 175
+    },
+    {
+      "turno": 1,
+      "frasi": 13,
+      "pezzi": 145,
+      "secondi": 28.13333333333327,
+      "buchi": 8,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 8,
+      "silenzio_ms": 2980
+    },
+    {
+      "turno": 2,
+      "frasi": 8,
+      "pezzi": 130,
+      "secondi": 25.533333333333278,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 786
+    },
+    {
+      "turno": 3,
+      "frasi": 14,
+      "pezzi": 186,
+      "secondi": 36.19999999999998,
+      "buchi": 8,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 8,
+      "silenzio_ms": 2505
+    },
+    {
+      "turno": 4,
+      "frasi": 7,
+      "pezzi": 145,
+      "secondi": 28.533333333333267,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 286
+    },
+    {
+      "turno": 5,
+      "frasi": 6,
+      "pezzi": 120,
+      "secondi": 23.53333333333328,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 6,
+      "frasi": 8,
+      "pezzi": 132,
+      "secondi": 25.799999999999944,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 775
+    },
+    {
+      "turno": 7,
+      "frasi": 3,
+      "pezzi": 76,
+      "secondi": 15.066666666666645,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 8,
+      "pezzi": 175,
+      "secondi": 34.73333333333329,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 154
+    },
+    {
+      "turno": 9,
+      "frasi": 8,
+      "pezzi": 164,
+      "secondi": 32.46666666666659,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 638
+    },
+    {
+      "turno": 10,
+      "frasi": 3,
+      "pezzi": 83,
+      "secondi": 16.26666666666664,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 11,
+      "frasi": 11,
+      "pezzi": 216,
+      "secondi": 42.46666666666674,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 12,
+      "frasi": 10,
+      "pezzi": 127,
+      "secondi": 24.799999999999947,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1459
+    },
+    {
+      "turno": 13,
+      "frasi": 8,
+      "pezzi": 141,
+      "secondi": 27.866666666666603,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 14,
+      "frasi": 11,
+      "pezzi": 202,
+      "secondi": 39.86666666666669,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 619
+    },
+    {
+      "turno": 15,
+      "frasi": 9,
+      "pezzi": 168,
+      "secondi": 32.8666666666666,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 509
+    },
+    {
+      "turno": 16,
+      "frasi": 9,
+      "pezzi": 139,
+      "secondi": 27.266666666666605,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 624
+    },
+    {
+      "turno": 17,
+      "frasi": 16,
+      "pezzi": 208,
+      "secondi": 41.20000000000005,
+      "buchi": 8,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 8,
+      "silenzio_ms": 2082
+    },
+    {
+      "turno": 18,
+      "frasi": 8,
+      "pezzi": 141,
+      "secondi": 27.53333333333327,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 630
+    },
+    {
+      "turno": 19,
+      "frasi": 12,
+      "pezzi": 229,
+      "secondi": 44.73333333333344,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 659
+    },
+    {
+      "turno": 20,
+      "frasi": 6,
+      "pezzi": 121,
+      "secondi": 23.79999999999995,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 239
+    },
+    {
+      "turno": 21,
+      "frasi": 10,
+      "pezzi": 155,
+      "secondi": 30.46666666666659,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1384
+    },
+    {
+      "turno": 22,
+      "frasi": 7,
+      "pezzi": 116,
+      "secondi": 22.86666666666662,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 729
+    },
+    {
+      "turno": 23,
+      "frasi": 11,
+      "pezzi": 141,
+      "secondi": 27.6666666666666,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1576
+    },
+    {
+      "turno": 24,
+      "frasi": 6,
+      "pezzi": 111,
+      "secondi": 21.933333333333287,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 169
+    },
+    {
+      "turno": 25,
+      "frasi": 7,
+      "pezzi": 116,
+      "secondi": 22.866666666666617,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 516
+    },
+    {
+      "turno": 26,
+      "frasi": 7,
+      "pezzi": 116,
+      "secondi": 22.733333333333288,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 920
+    }
+  ]
+}
