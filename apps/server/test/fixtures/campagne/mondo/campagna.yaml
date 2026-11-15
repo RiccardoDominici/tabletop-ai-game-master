@@ -77,7 +77,7 @@ preparazione:
     eventi:
       - {id: t_notte, cosa: "Scende la notte sul mulino.", segno: {orologio: o_sera, n: 4}}
 rivelazioni:
-  - {id: r_ladra, conclusione: "La ladra è nel mulino.", indizi: [i_farina, i_ramo]}
+  - {id: r_ladra, conclusione: "La ladra è nel mulino.", indizi: [i_sacco, i_farina, i_ramo]}
 nodi:
   - {id: n_mulino, tipo: luogo, nome: "Il mulino", scheda: scena.yaml, noto_ai_pg: true, collegamenti: [n_bosco, n_ponte], indizi: [i_farina]}
   - {id: n_bosco, tipo: luogo, nome: "Il bosco", scheda: scene/scena_bosco.yaml, noto_ai_pg: true, collegamenti: [n_mulino], indizi: [i_ramo]}

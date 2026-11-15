@@ -79,7 +79,7 @@ describe('server, mode A: four stalls in a row, then an action', () => {
     expect(m1).toMatch(/S1\)/);
     expect(m1).toContain('mosse del pericolo in scena: sale di un palmo; porta via un carro');
     expect(m2).toMatch(/S2\)/);
-    expect(m2).toContain('(i_farina): Chi guarda i sacchi vede impronte nella farina');
+    expect(m2).toContain('(i_sacco): Chi solleva il sacco rotto trova un nastro rosso');
     expect(m3).toMatch(/S3\)/);
     expect(m3).toContain('piste che i PG conoscono: Il bosco; Il ponte');
     expect(m3).not.toContain('La città'); // kept for the next session: not a lead tonight

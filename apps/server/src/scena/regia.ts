@@ -1151,12 +1151,14 @@ export class Regia {
     const ultimo = this.orologi.elenco.find((o) => o.pieni > 0 && o.segni[o.pieni - 1]);
     const s = this.statoRepertorio;
     const pubblico = this.statoPubblicoAlTavolo();
+    // Mode B: S2 can bring only a clue the Engine can say (a line without gates on the action); else it falls to S1.
+    const dicibile = (i: string): boolean => !s || this.lineaIndizioDicibile(turno, i) !== null;
     const mossa = mossaDiStallo(n, {
       pericoli: this.mondo.pericoli,
       orologiAttivi: new Set(this.orologi.elenco.filter((o) => o.partito && o.pieni < o.segmenti).map((o) => o.id)),
       presenti: this.pngInScena(),
-      offerti: this.mondo.indiziOfferti,
-      indiziDellaScena: [...indiziCampagna(this.o.campagna).values()].filter((i) => i.scena === scena.id).map((i) => i.id),
+      offerti: this.mondo.indiziOfferti.filter(dicibile),
+      indiziDellaScena: [...indiziCampagna(this.o.campagna).values()].filter((i) => i.scena === scena.id && dicibile(i.id)).map((i) => i.id),
       giàDati: new Set([...(s?.indiziRivelati ?? []), ...this.mondo.indiziDatiDaStallo]),
       luoghiNoti,
       // Only what the table heard: a fact discovered through a private action stays that player's (S3 says it aloud in mode B).
@@ -1171,6 +1173,13 @@ export class Regia {
     }
     this.o.log.info({ turno, n, livello: mossa.livello, duro: mossa.duro, pericolo: mossa.pericolo?.id ?? null, indizio: mossa.indizio, piste: mossa.piste }, 'world: stall move');
     return mossa;
+  }
+
+  /** Mode B: an available `indizio` line that reveals the clue without gates on the action (the Engine can say it), or null. */
+  private lineaIndizioDicibile(turno: number, indizio: string): Battuta | null {
+    const s = this.statoRepertorio;
+    if (!s) return null;
+    return s.disponibili(turno).find((x) => x.tipo === 'indizio' && x.effetti.rivela_indizi.includes(indizio) && !haCancelloAzione(x) && !x.richiede.privata) ?? null;
   }
 
   /** The stall move's material for the narrator (mode A): never an empty «cosa fate?». */
@@ -1190,7 +1199,7 @@ export class Regia {
     const s = this.statoRepertorio!;
     if (m.livello === 2 && m.indizio) {
       if (s.indiziRivelati.has(m.indizio)) return null; // the response already brought it
-      const b = s.disponibili(turno).find((x) => x.tipo === 'indizio' && x.effetti.rivela_indizi.includes(m.indizio!) && !haCancelloAzione(x) && !x.richiede.privata);
+      const b = this.lineaIndizioDicibile(turno, m.indizio);
       if (b && this.aggiungiBattutaMotore(turno, esito, segni, log, b, false)) return b.id;
       log.info({ turno, indizio: m.indizio }, 'world: S2 without a line the Engine can say (the selector had the fillers)');
       return null;

@@ -40,3 +40,15 @@ battute:
     effetti:
       fatti_noti: [f_ladra]
     max_usi: 1
+  # Only for Bruno's action: the Engine cannot say it at a stall (mode B S2 picks a clue it can say).
+  - id: nar_sacco
+    chi: narratore
+    tipo: indizio
+    quando: "Bruno solleva il sacco rotto"
+    temi: [sacco]
+    richiede: {da_pg: [pg_bruno]}
+    testo:
+      - "[narratore] Sotto il sacco rotto c'è un nastro rosso."
+    effetti:
+      rivela_indizi: [i_sacco]
+    max_usi: 1

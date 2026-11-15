@@ -154,6 +154,10 @@ describe('MondoInGioco: consequences by state', () => {
     orologi.avanza('o_piena', 1, false); // o_piena@1 is about the miller, who is not here
     expect(mondo.riconcilia(1)).toMatchObject([{ id: 'o_piena@1', visto: false }]);
     expect(mondo.prendiDaSentire()).toEqual([]);
+    // Its traces come only with the miller: the clock is active here, but the place says nothing of him (live run, torre-mozza:
+    // Berta's impatience surfaced at the carbonaia, where she is not).
+    expect(mondo.emergono(2, new Set(['png_ladra']))).toEqual([]);
+    expect(mondo.emergono(3, new Set(['png_mugnaio'])).map((x) => x.id)).toEqual(['o_piena@1']);
   });
 
   it('during a scene, the news of an off-screen event arrive with an NPC who knows, never in the same turn', () => {

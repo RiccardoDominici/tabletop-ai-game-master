@@ -6,4 +6,5 @@ png_presenti: [png_mugnaio, png_ladra]
 orologi_attivi: [o_sera, o_piena]
 mossa_morbida_pronta: "La ruota cigola."
 indizi:
+  - {id: i_sacco, conclusione: r_ladra, come_si_trova: "Chi solleva il sacco rotto trova un nastro rosso."}
   - {id: i_farina, conclusione: r_ladra, come_si_trova: "Chi guarda i sacchi vede impronte nella farina."}

@@ -54,6 +54,11 @@ export interface InAttesa {
   png: string[];
   /** Turn when it happened (news never arrive in the same turn). */
   turno?: number;
+  /**
+   * It happened in a scene where its clock was active, but none of its NPCs was there: the place gives no news of it,
+   * only one of those NPCs (or of the danger's cast) can bring it.
+   */
+  soloConPng?: boolean;
 }
 
 /** What the snapshot keeps of the world (sessione/tipi.ts, FotografiaSessione.mondo). */
@@ -191,7 +196,7 @@ export class MondoInGioco {
       const o = orologi.trova(id);
       if (!o || o.pieni <= fino) continue;
       for (let n = fino + 1; n <= o.pieni; n++) {
-        for (const c of this.mondo.conseguenze.filter((x) => x.orologio === id && x.alSegno === n)) nuove.push(this.applica(c, turno, this.visto(c, orologi.attivo(id))));
+        for (const c of this.mondo.conseguenze.filter((x) => x.orologio === id && x.alSegno === n)) nuove.push(this.applica(c, turno, this.visto(c, orologi.attivo(id)), orologi.attivo(id)));
       }
       this.applicati.set(id, o.pieni);
     }
@@ -209,7 +214,7 @@ export class MondoInGioco {
     return c.png.some((p) => qui.has(p.id));
   }
 
-  private applica(c: Conseguenza, turno: number, visto: boolean): VoceCronaca {
+  private applica(c: Conseguenza, turno: number, visto: boolean, orologioAttivo = visto): VoceCronaca {
     const voce: VoceCronaca = { turno, id: c.id, tipo: c.origine, orologio: c.orologio, segno: c.alSegno, cosa: c.cosa, visto, scena: this.o.scena() };
     this.cronaca.push(voce);
     // State changes apply at once, seen or not: the world has changed.
@@ -230,7 +235,8 @@ export class MondoInGioco {
       if (c.detto || c.battuta) this.daSentire.push({ id: c.id, testo: c.detto, battuta: c.battuta });
       if (c.regia) this.regia.push(c.regia);
     } else if (c.tracce) {
-      this.inAttesa.push({ id: c.id, tracce: c.tracce, orologio: c.orologio, png: [...new Set([...c.png.map((p) => p.id), ...c.cast])], turno });
+      const png = [...new Set([...c.png.map((p) => p.id), ...c.cast])];
+      this.inAttesa.push({ id: c.id, tracce: c.tracce, orologio: c.orologio, png, turno, ...(orologioAttivo && c.png.length > 0 ? { soloConPng: true } : {}) });
     }
     this.o.log.info({ turno, conseguenza: c.id, tipo: c.origine, orologio: c.orologio, segno: c.alSegno, visto, cosa: c.cosa }, visto ? 'world: consequence (seen)' : 'world: consequence (off-screen)');
     this.o.registra?.(voce);
@@ -260,7 +266,8 @@ export class MondoInGioco {
    */
   emergono(turno: number, presenti: ReadonlySet<string>): InAttesa[] {
     const orologi = this.o.orologi();
-    const ora = this.inAttesa.filter((x) => (x.turno ?? -1) < turno && (orologi.attivo(x.orologio) || x.png.some((p) => presenti.has(p))));
+    const conPng = (x: InAttesa): boolean => x.png.some((p) => presenti.has(p));
+    const ora = this.inAttesa.filter((x) => (x.turno ?? -1) < turno && (x.soloConPng ? conPng(x) : orologi.attivo(x.orologio) || conPng(x)));
     if (!ora.length) return [];
     this.inAttesa = this.inAttesa.filter((x) => !ora.includes(x));
     for (const x of ora) {
