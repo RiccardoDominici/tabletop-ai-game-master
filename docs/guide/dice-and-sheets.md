@@ -30,7 +30,7 @@ By default no model decides the rolls: the Engine reads the action (`apps/server
 
 After a failed check, what you wanted does not happen. The narrator is told so, and a prepared line that would grant it anyway (for example, the NPC handing over the key) is refused.
 
-A clear attack is an attack whatever any arbiter says: a weapon from your sheet used against an NPC with a sheet («lancio il dardo incantato contro il goblin», I cast the magic missile at the goblin) always rolls. And the narrator cannot contradict the cards: a sentence that has a standing NPC fall, or tells a hit where the card says miss (or the other way round), is replaced by the Engine's short line («Grosso manca Livia.», Grosso misses Livia).
+A clear attack is an attack whatever any arbiter says: a weapon from your sheet used against an NPC with a sheet («lancio il dardo incantato contro il goblin», I cast the magic missile at the goblin) always rolls. And the narrator cannot contradict the cards: a sentence that has a standing NPC fall, or tells a hit where the card says miss (or the other way round), is replaced by the Engine's short line («Grosso manca Livia.», Grosso misses Livia). Whoever is down, dead or fled stays so in the story too: a sentence where they act or speak becomes «Zirrà giace a terra, senza vita.» (Zirrà lies on the ground, lifeless), and a prepared line that names them no longer comes out.
 
 ## Who rolls the dice
 

@@ -112,19 +112,36 @@ const BATTUTA_RUGGERO = {
   max_usi: 3,
 };
 
+/**
+ * A narrator line that NAMES Ruggero acting (third e2e pass: «Zirrà schiocca le dita.», a narrator filler, came out
+ * eight turns after Zirrà fell): with Ruggero out of play it leaves the catalogue too, though its speaker is the narrator.
+ */
+const BATTUTA_SU_RUGGERO = {
+  id: 'nar_ruggero_sputa',
+  chi: 'narratore',
+  tipo: 'reazione',
+  quando: 'i PG parlano con Ruggero',
+  temi: ['ruggero'],
+  testo: ['[narratore] Ruggero sputa nel fiume e ride.'],
+  max_usi: 3,
+};
+
 describe('PNG a terra col server intero (C1)', () => {
   let prova: Prova;
   afterEach(async () => prova?.chiudi());
 
   it('Ruggero a 0 PF: la sua riga [png_…] si scarta, le sue battute escono dal catalogo, il narratore lo sa, il proiettore non lo mostra', async () => {
     prova = new Prova();
-    const cartella = prova.campagna('prove', { battute: { 'png_ruggero.yaml': [BATTUTA_RUGGERO] } });
+    const cartella = prova.campagna('prove', { battute: { 'png_ruggero.yaml': [BATTUTA_RUGGERO, BATTUTA_SU_RUGGERO] } });
     const copione = (t: number): string =>
       t === 0
         ? '[narratore] Il fiume rumoreggia.\n[invito] tutti'
         : t === 2
           ? '[narratore] La spada di Corrado affonda nel fianco di Ruggero, che crolla nel fango.\n[png_ruggero] Fermi, fermi! Parliamo.\n[narratore] Ida guarda il fiume.\n[invito] tutti'
-          : '[narratore] Ida e Corrado aspettano sul ponte.\n[invito] tutti';
+          : t === 3
+            ? // Third e2e pass, bug 2: the narrator has the dead one answer the player who talks to him.
+              '[narratore] Ida si china su Ruggero.\n[narratore] Lo sgherro alza la testa e ride.\n[narratore] Parla piano, e dice che il guado è sorvegliato.\n[invito] tutti'
+            : '[narratore] Ida e Corrado aspettano sul ponte.\n[invito] tutti';
     // T2: Corrado 10 + 5 colpisce, 8 + 3 = 11 danni: Ruggero (11 PF) va a 0 col colpo che apre lo scontro.
     const { url, messaggi } = await prova.avvia(cartella, copione, {}, { arbitroProve: new Arbitro(), dadi: new DadiACopione([10, 8, 15, 5, 10]) });
     const schermo = await prova.proiettore(url);
@@ -140,6 +157,7 @@ describe('PNG a terra col server intero (C1)', () => {
     // T1, Ruggero in piedi: la sua battuta è nel catalogo, e nessuno è fuori gioco.
     const s2 = await giocaTurno(s1, 'Parlo con Ruggero', 'Aspetto');
     expect(messaggi.at(-1)).toContain('ruggero_tratta');
+    expect(messaggi.at(-1)).toContain('nar_ruggero_sputa');
     expect(messaggi.at(-1)).not.toContain('PNG fuori gioco');
     // T2: il colpo lo butta giù. La sua riga [png_…] si scarta prima della voce.
     const s3 = await giocaTurno(s2, 'Guardo il fiume', 'Colpisco Ruggero con la spada');
@@ -154,9 +172,14 @@ describe('PNG a terra col server intero (C1)', () => {
     expect(s2.scena.personaggi?.find((p) => p.id === 'png_ruggero')?.presente).toBe(true);
     expect(messaggi.at(-1)).not.toContain('ruggero_tratta');
     // T3, a scontro finito: resta fuori gioco.
-    await giocaTurno(s3, 'Parlo con Ruggero', 'Aspetto');
+    const s4 = await giocaTurno(s3, 'Parlo con Ruggero', 'Aspetto');
+    // What the dead one «does» becomes the Engine's line about his state, said once; the rest is dropped.
+    const t3 = s4.trascrizione.filter((v) => v.turno === 3).map((v) => v.testo);
+    expect(t3).toEqual(['Parlo con Ruggero', 'Aspetto', 'Ida si china su Ruggero.', 'Ruggero giace a terra, senza vita.']);
     expect(messaggi.at(-1)).toContain('Ruggero lo sgherro non è più in vita');
     expect(messaggi.at(-1)).not.toContain('ruggero_tratta');
+    // The narrator's own line that names him is gone too.
+    expect(messaggi.at(-1)).not.toContain('nar_ruggero_sputa');
   });
 });
 

@@ -200,6 +200,18 @@ guardia_esiti:
   # Subject and relative pronouns: «… e quello cade», «…, che crolla» have the creature named before as subject.
   pronomi: [quello, quella, lui, lei, costui, costei, che, quale, si]
 
+# Out-of-play guard (apps/server/src/narrazione/guardia-fuori.ts): a narrator sentence whose subject is a character
+# out of play since before the turn (on the ground, dead, fled) and that does not describe its state becomes the
+# Engine's line. `apertura`: words that may come before the subject («e poi Zirrà ride»); `articoli`: a clause that
+# opens with one of them and then a noun has another subject («la lama vola»); `preposizioni`: a sentence opening
+# with one of them does not carry the previous subject («Dalla cantina arriva…»); `stato`: stems that describe the
+# state (a word counts if it starts like this; entries of several words are phrases).
+guardia_fuori:
+  apertura: [e, ed, ma, poi, allora, intanto, anche, ancora, solo, soltanto, persino, perfino, pure, mentre, quando, il, lo, la, l, i, gli, le, un, uno, una]
+  articoli: [il, lo, la, l, i, gli, le, un, uno, una, quel, quello, quella, quei, quegli, quelle, questo, questa, suo, sua, suoi, sue]
+  preposizioni: [di, a, da, in, con, su, per, tra, fra, del, della, dello, dei, degli, delle, dal, dalla, dallo, dai, dagli, dalle, nel, nella, nello, nei, negli, nelle, sul, sulla, sullo, sui, sugli, sulle, al, alla, allo, ai, agli, alle, dietro, fuori, sopra, sotto, davanti, accanto, lontano, oltre, verso, intorno, attorno, lassu, laggiu, qui, li, la, dentro, contro, presso, lungo]
+  stato: [giac, immobil, mort, esanim, cadaver, corpo, a terra, per terra, senza vita, senza sensi, svenut, privo di sensi, priva di sensi, non si muove, non respira, rantol, sangu, fuori combattimento, non c'e piu, non e piu qui, fuggit, sparit]
+
 # Refusal guard (apps/server/src/narrazione/guardia-rifiuti.ts): after a failed social check toward an NPC, its line
 # without a refusal word, or a narrator sentence where it does a giving verb, is replaced by its refusal line.
 guardia_rifiuti:

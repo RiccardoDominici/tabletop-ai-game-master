@@ -108,6 +108,8 @@ import type { FonteDadi } from '../prove/dadi';
 import { regolaEsiti, titoloEsiti } from '../prove/testi';
 import { guardiaRifiuti } from '../narrazione/guardia-rifiuti';
 import { guardiaEsiti, type CorrezioneEsito } from '../narrazione/guardia-esiti';
+import { guardiaFuori } from '../narrazione/guardia-fuori';
+import type { EsitoCombattimento } from '../prove/combattimento';
 import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dovuti';
 import { guardiaPrivate } from '../narrazione/privato';
 import type { SchedaNumerica } from '../campagna/schede';
@@ -1054,6 +1056,20 @@ export class Regia {
     return p;
   }
 
+  /**
+   * NPCs out of play for the Engine, with the words that name them in a text: the full name and the first name (not
+   * the aliases: «goblin» may be another, standing creature). For the catalogue (repertorio/stato.ts, fuoriGioco).
+   */
+  private nomiFuoriGioco(): Map<string, string[]> {
+    const out = new Map<string, string[]>();
+    if (!this.prove?.attivo) return out;
+    for (const id of this.prove.stato.tuttiFuori().keys()) {
+      const p = this.campagna.png.find((x) => x.id === id);
+      if (p) out.set(id, [...new Set([p.nome, p.nome.split(/\s+/)[0] ?? ''].map(normalizza).filter((x) => x.length > 2))]);
+    }
+    return out;
+  }
+
   /** The scene card's NPCs once the world's moves are applied (a consequence moved them in, out, or away). */
   private presentiDiScena(): string[] {
     return this.mondo.presentiIn(this.campagna.scena.id, this.campagna.scena.png_presenti);
@@ -1831,6 +1847,8 @@ export class Regia {
     // Chi parla nelle battute: i PNG in scena che possono parlare, decisi qui (anche a mano e dopo un colpo).
     s.presenza = () => this.pngInScena();
     s.negati = () => this.negatiTurno;
+    // A line that names an NPC out of play (on the ground, dead, fled) does not come out, whoever says it.
+    s.fuoriGioco = () => this.nomiFuoriGioco();
     return s;
   }
 
@@ -2737,24 +2755,34 @@ export class Regia {
   }
 
   /**
-   * The turn's combat outcome guard (narrazione/guardia-esiti.ts): the cards just rolled, who is out of play now, and
-   * how the narration names PCs and NPCs.
+   * The turn's guards on the narration of the fight (narrazione/guardia-esiti.ts, narrazione/guardia-fuori.ts): the
+   * cards just rolled, who is out of play now and since before this turn, and how the narration names PCs and NPCs.
+   * The outcome guard runs first; a sentence it leaves alone goes to the out-of-play guard.
    */
-  private guardiaDegliEsiti(tiri: readonly TiroMostrato[]): (testo: string) => CorrezioneEsito {
+  private guardiaDegliEsiti(tiri: readonly TiroMostrato[], combattimento: EsitoCombattimento | null): (testo: string) => CorrezioneEsito {
     const c = this.campagna;
     const prove = this.prove!;
     const nomi = new Map<string, string[]>([
       ...c.pg.map((p) => [p.id, [p.nome, nomeBreve(p.nome), ...Object.entries(c.alias).filter(([, x]) => x === p.id).map(([a]) => a)]] as [string, string[]]),
       ...[...this.nomiPng].map(([id, v]) => [id, v] as [string, string[]]),
     ]);
-    return guardiaEsiti({
+    // PCs too: voceDi knows only NPCs and the narrator (pass 2b: «Narratore manca Zirrà.»).
+    const nome = (id: string): string => c.pg.find((p) => p.id === id)?.nome ?? voceDi(c, id).nome;
+    const esiti = guardiaEsiti({
       tiri,
       nomi,
       conScheda: (id) => prove.stato.puntiFerita(id) !== null,
       fuori: (id) => prove.stato.fuoriGioco(id) !== null,
-      // PCs too: voceDi knows only NPCs and the narrator (pass 2b: «Narratore manca Zirrà.»).
-      nome: (id) => c.pg.find((p) => p.id === id)?.nome ?? voceDi(c, id).nome,
+      nome,
     });
+    // Who went out of play in this very turn, or rolled a death save in it: that is this turn's story, not an act.
+    const oraFuori = new Set([
+      ...tiri.filter((t) => t.a_terra && t.bersaglio).map((t) => t.bersaglio!.id),
+      ...(combattimento?.fuggiti ?? []).map((f) => f.id),
+      ...(combattimento?.morte ?? []).map((m) => m.id),
+    ]);
+    const fuori = guardiaFuori({ nomi, nome, fuoriDaPrima: (id) => (oraFuori.has(id) ? null : prove.stato.fuoriGioco(id)) });
+    return (testo) => esiti(testo) ?? fuori?.(testo) ?? null;
   }
 
   // ------------------------------------------------------------------ manual rolls (docs/prove.md §8)
@@ -3074,7 +3102,8 @@ export class Regia {
     const mossaDelMondo = r.azioni.length === 0;
     // Colpi, cadute e tiri contro la morte del turno: il Motore controlla che il tavolo li senta.
     const dovuti = tiri ? fattiDovuti(tiri.tiri, tiri.combattimento?.morte ?? [], tiri.combattimento?.fuggiti ?? []) : [];
-    const correggiEsito = tiri && this.prove?.attivo ? this.guardiaDegliEsiti(tiri.tiri) : null;
+    // Also on a turn without rolls: someone out of play may still be told acting (narrazione/guardia-fuori.ts).
+    const correggiEsito = this.prove?.attivo ? this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null) : null;
     void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito).catch((err: unknown) =>
       this.dopoEccezione(epoca, r.turno, 'narrazione', err),
     );

@@ -60,7 +60,7 @@ prove:
     impossibile_motivo: " ({motivo})"
     aiuta: "aiuta {aiutato}: nessun tiro, l'altro ha vantaggio."
     aiuta_niente: "aiuta, ma non c’è un’azione da aiutare in questo turno: nessun tiro."
-    gia_a_terra: "{nome} è già a terra: nessun tiro, l’azione riesce."
+    gia_a_terra: "{nome} è già a terra, fuori combattimento: nessun tiro. Non parla e non agisce più: un colpo lo raggiunge senza resistenza, una domanda resta senza risposta."
     fuggito: "{nome} ha preso la fuga e non è più qui: nessun tiro, l’azione va a vuoto."
     png_manca: "{nome} manca {bersaglio} (raccontalo in una frase sua)."
     png_colpisce: "{nome} colpisce {bersaglio}: {danni}{a_terra} (raccontalo in una frase sua)."
@@ -247,6 +247,10 @@ prove:
     regge: "{nome} incassa il colpo, ma resta in piedi."
     in_piedi: "{nome} è ancora in piedi."
     nessuno_cade: "Nessuno cade: lo scontro continua."
+    # A character out of play since before the turn does something in the narration (narrazione/guardia-fuori.ts).
+    fuori_a_terra: "{nome} giace a terra, senza sensi."
+    fuori_morto: "{nome} giace a terra, senza vita."
+    fuori_fuggito: "{nome} non è più qui."
 
 regole:
   # «Chiedi una regola» (regole/chiedi.ts): il prompt di sistema è prompts/<lingua>/risponditore-regole.md.

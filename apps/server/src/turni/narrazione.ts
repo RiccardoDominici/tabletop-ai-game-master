@@ -216,6 +216,8 @@ export async function narraTurno(
   let usaRifiutati = 0;
   let scartate = 0;
   let scartateAssenti = 0;
+  /** Engine lines that already replaced a narrator sentence in this turn (each is said once). */
+  const sostituti = new Set<string>();
   let scartateSegreti = 0;
   /** Segmenti (righe) già sostituiti dalla guardia dei segreti: il resto della riga non si dice. */
   const segmentiFermati = new Set<number>();
@@ -306,7 +308,16 @@ export async function narraTurno(
         }
         // Combat outcome guard: the Engine's line replaces a narrator sentence that contradicts the cards.
         const correzione = e.etichetta === ID_NARRATORE ? (p.correggiEsito?.(e.testo) ?? null) : null;
+        // The same Engine line twice in a turn (two sentences with the same contradiction, or an out-of-play character
+        // already said lying on the ground) is said once: the third e2e pass heard «Zirrà incassa il colpo, ma resta in
+        // piedi.» twice in a row.
+        if (correzione && (correzione.testo === '' || sostituti.has(correzione.testo))) {
+          anomalie.push({ codice: correzione.motivo, dettaglio: `«${e.testo.slice(0, 120)}» → (già detto)` });
+          log.warn({ turno: p.turno, motivo: correzione.motivo, testo: e.testo }, 'narrator: sentence contradicts the Engine, its line already said this turn: dropped');
+          continue;
+        }
         if (correzione) {
+          sostituti.add(correzione.testo);
           anomalie.push({ codice: correzione.motivo, dettaglio: `«${e.testo.slice(0, 120)}» → «${correzione.testo}»` });
           log.warn({ turno: p.turno, motivo: correzione.motivo, testo: e.testo, sostituto: correzione.testo }, 'narrator: sentence contradicts the Engine, replaced by its line');
           e.testo = correzione.testo;

@@ -95,6 +95,14 @@ combattimento:
      arbiter sees the bodies («· A TERRA» (· ON THE GROUND), «· MORTO» (· DEAD)), not the fled; an attack on a fled
      character does not roll and does not open another clash. In the final e2e an NPC at 0 HP negotiated for five turns
      (bug C1).
+   - **Lines that name them** (third e2e pass, bug 2: a narrator filler «Zirrà schiocca le dita.» eight turns after Zirrà
+     fell, «Il ragazzo guarda Zirrà prima di rispondere» after she died): a repertoire line whose TEXT names an NPC out of
+     play (full name or first name, not the aliases) leaves the catalogue whoever speaks it (repertorio/stato.ts,
+     `fuoriGioco`; the director passes the names, `nomiFuoriGioco`). One availability point covers the selector, the
+     stall fillers and the Engine's own lines.
+   - **An action on a body**: the fact for an attack on someone already down says that they neither speak nor act («…
+     un colpo lo raggiunge senza resistenza, una domanda resta senza risposta»). Before, «l'azione riesce» let the
+     narrator have a dead goblin answer the player who held it down.
 4. **Conditions**: set by the Engine (at 0) or by the Game Master; they expire at the start of the round, if they have a
    duration. Their effects enter the rolls: advantage or disadvantage with the reason on the sheet, critical, failed saves,
    lost turn.
@@ -147,6 +155,23 @@ combattimento:
    - The words are in `lingue/<code>/motore.yaml` (`guardia_esiti`), the lines in testi-prove.yaml (`prove.guardia`). The
      anomaly goes to the narration log (`colpo_contrario`, `caduta_senza_fatto`). Limits: a sentence that tells both a
      hit and a miss is left alone; an NPC without a sheet can fall in the story.
+   - **Someone out of play acts** (narrazione/guardia-fuori.ts, third e2e pass, bug 2: after the fight a dead goblin,
+     called «il goblin» by the players, looked at the cellar, lowered a spear and answered a private question; a goblin
+     down since T11 «ride corto» at T21). A sentence whose subject is a PC or NPC out of play since before this turn
+     (down, dead, fled) and that does not describe the state becomes the Engine's line, «Zirrà giace a terra, senza
+     vita.» («… senza sensi.», «… non è più qui.»); later sentences about the same one in the turn are dropped. The
+     subject is the character named first in a clause with only opening words before it («e poi Zirrà ride», «il goblin
+     alza gli occhi»), the last one named after a subject pronoun, or the one carried from the clause before when a
+     clause has no name and no article («Parla piano, in fretta…», «Dice che…»); a sentence opening with a preposition
+     («Dalla cantina arriva…») carries nobody. Names include the aliases, except those that also name someone in play.
+     A sentence with a state word («giace», «immobile», «a terra», «il corpo», «sangue»…) stays, and so does everything
+     about who fell or rolled a death save in this very turn. The words are in `lingue/<code>/motore.yaml`
+     (`guardia_fuori`), the lines in testi-prove.yaml (`prove.guardia.fuori_*`); log `fuori_gioco_agisce`. It runs on
+     every turn of a campaign with dice, also with no roll. Limits: a noun outside the aliases («la creatura») and object
+     pronouns are not seen.
+   - **Each Engine line once per turn**: a replacement already said in the turn (two sentences with the same
+     contradiction) drops the second sentence instead of repeating the line (turni/narrazione.ts). The third e2e pass
+     heard «Zirrà incassa il colpo, ma resta in piedi.» twice in a row.
 
 ## 4. Screens
 - **Projector**: the initiative bar at the top (in place of the row of portraits during the clash). It shows the round and
@@ -168,7 +193,10 @@ combattimento:
 - **test/combattimento-integrazione.test.ts**, with the whole server: the window opens only for whoever is on turn, the
   out-of-turn action stays queued, the NPC acts on its own, the Game Master ends it.
 - **test/fuori-gioco.test.ts**: dead and fled in the state, morale at the start of the clash, an attack on a fled
-  character, and with the whole server an NPC at 0 HP that no longer speaks, leaves the catalog and the projector.
+  character, and with the whole server an NPC at 0 HP that no longer speaks, leaves the catalog (its own lines and a
+  narrator line that names him) and the projector, and whose «acts» after the fight become the Engine's state line.
+- **test/guardia-fuori.test.ts**: the out-of-play guard on the third pass's sentences, rebuilt on fixture names
+  (alias, carried subject, pronoun, preposition, state words, a shared alias, a fled NPC), Italian and English.
 - **test/fatti-dovuti.test.ts**: facts from the cards and from death saves, the name + word check in Italian and in English,
   the mutual blows, and with the whole server the skipped blow that the Engine says before the invitation.
 - **E2E** on port 4720 with real Haiku: apps/web/e2e/combattimento.spec.ts.

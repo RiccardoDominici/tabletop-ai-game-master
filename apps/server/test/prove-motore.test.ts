@@ -186,7 +186,8 @@ describe('un turno di tiri', () => {
     expect(r.tiri[0]!.danno).toEqual({ formula: '2d8+2', dadi: [6, 4], bonus: 2, totale: 12, tipo: 'perforante', nome_tipo: 'perforanti' });
     expect(m.stato.puntiFerita('png_ruggero')).toEqual({ attuali: 0, massimi: 11 });
     expect(r.fatti[0]).toMatch(/COLPITO \(colpo critico\), 12 danni perforanti; Ruggero lo sgherro è A TERRA/);
-    expect(r.fatti[1]).toMatch(/Ruggero lo sgherro è già a terra: nessun tiro/);
+    // Already down: no roll, and the narrator is told he neither speaks nor acts (third e2e pass, bug 2).
+    expect(r.fatti[1]).toMatch(/Ruggero lo sgherro è già a terra, fuori combattimento: nessun tiro\. Non parla e non agisce più/);
   });
 
   it('reazione del PNG ferito: attacca chi l\'ha colpito, PF del PG scendono', async () => {

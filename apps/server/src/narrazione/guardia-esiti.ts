@@ -150,7 +150,7 @@ export interface DatiGuardiaEsiti {
 }
 
 /** The line that replaces the sentence, with the reason for the log; null = the sentence stays. */
-export type CorrezioneEsito = { testo: string; motivo: 'caduta_senza_fatto' | 'colpo_contrario' } | null;
+export type CorrezioneEsito = { testo: string; motivo: 'caduta_senza_fatto' | 'colpo_contrario' | 'fuori_gioco_agisce' } | null;
 
 export function guardiaEsiti(d: DatiGuardiaEsiti): (frase: string) => CorrezioneEsito {
   const breve = (id: string): string => nomeBreve(d.nome(id));

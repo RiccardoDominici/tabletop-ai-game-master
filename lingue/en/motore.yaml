@@ -208,6 +208,17 @@ guardia_esiti:
   # Subject and relative pronouns: «… and he collapses», «…, who collapses» have the creature named before as subject.
   pronomi: [he, she, it, they, who, which, that]
 
+# Out-of-play guard (apps/server/src/narrazione/guardia-fuori.ts): a narrator sentence whose subject is a character
+# out of play since before the turn (down, dead, fled) and that does not describe its state becomes the Engine's line.
+# `apertura`: words that may come before the subject; `articoli`: a clause opening with one of them and then a noun has
+# another subject; `preposizioni`: a sentence opening with one of them does not carry the previous subject; `stato`:
+# stems that describe the state.
+guardia_fuori:
+  apertura: [and, but, then, so, meanwhile, still, only, even, while, when, the, a, an]
+  articoli: [the, a, an, this, that, these, those, his, her, its, their]
+  preposizioni: [from, in, on, at, behind, outside, inside, above, below, beyond, near, with, by, through, over, under, across, toward, towards, around, against, along, up, down, there, here]
+  stato: [lies, lying, dead, motionless, unconscious, on the ground, lifeless, corpse, body, bleed, does not move, doesn't move, not breathing, gone, fled, no longer here, out cold, still on the floor]
+
 # Refusal guard (apps/server/src/narrazione/guardia-rifiuti.ts): after a failed social check toward an NPC, its line
 # without a refusal word, or a narrator sentence where it does a giving verb, is replaced by its refusal line.
 guardia_rifiuti:

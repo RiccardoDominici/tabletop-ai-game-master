@@ -60,6 +60,16 @@ export function parlantiDi(b: Battuta): string[] {
   return [...out];
 }
 
+/** The first out-of-play NPC that the line's text names (every row and variant), or null. */
+export function nominatoFuori(b: Battuta, fuori: ReadonlyMap<string, readonly string[]>): string | null {
+  const nomi = new Map([...fuori].map(([id, parole]) => [id, [...parole]]));
+  for (const r of [...b.testo, ...b.varianti.flat()]) {
+    const trovati = pngNominati(r.testo, nomi);
+    if (trovati.size) return [...trovati][0]!;
+  }
+  return null;
+}
+
 /** In ogni blocco la battuta ha un cancello sull'azione: esce solo con `> pg` verso un'azione adatta. */
 export function haCancelloAzione(b: Battuta): boolean {
   return blocchi(b).every(bloccoConCancello);
@@ -104,6 +114,13 @@ export class StatoRepertorio {
    * available (second pass of the final run, D2).
    */
   negati: (() => ReadonlySet<string>) | null = null;
+  /**
+   * NPCs out of play for the Engine (on the ground, dead, fled: prove/stato.ts), each with the words that name it in a
+   * line's text (its name and first name, already normalised). A line whose TEXT names one of them is unavailable,
+   * whoever speaks it: the third e2e pass had a narrator filler «Zirrà schiocca le dita.» out eight turns after Zirrà
+   * fell, and «Il ragazzo guarda Zirrà prima di rispondere» after she died. `presenza` only removes their own lines.
+   */
+  fuoriGioco: (() => ReadonlyMap<string, readonly string[]>) | null = null;
   /** Indizi della campagna con i loro `modi`. */
   private readonly indizi: Map<string, IndizioCampagna>;
 
@@ -151,6 +168,11 @@ export class StatoRepertorio {
       // Chi parla nella battuta (chi, e ogni [png] delle righe e delle varianti) dev'essere in scena e poter parlare.
       const assente = parlantiDi(b).find((p) => !presenti.has(p));
       if (assente) return `${assente} non è in questa scena`;
+    }
+    const fuori = this.fuoriGioco?.();
+    if (fuori?.size) {
+      const nominato = nominatoFuori(b, fuori);
+      if (nominato) return `la battuta nomina ${nominato}, fuori gioco (a terra, morto o fuggito)`;
     }
     const negati = this.negati?.();
     if (negati?.size && b.tipo !== 'rifiuto') {

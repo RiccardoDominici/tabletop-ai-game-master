@@ -55,7 +55,7 @@ prove:
     impossibile_motivo: " ({motivo})"
     aiuta: "helps {aiutato}: no roll, the other has advantage."
     aiuta_niente: "helps, but there is no action to help this turn: no roll."
-    gia_a_terra: "{nome} is already down: no roll, the action succeeds."
+    gia_a_terra: "{nome} is already down, out of the fight: no roll. They no longer speak or act: a blow lands unopposed, a question gets no answer."
     fuggito: "{nome} has fled and is no longer here: no roll, the action finds nobody."
     png_manca: "{nome} misses {bersaglio} (tell it in a sentence of its own)."
     png_colpisce: "{nome} hits {bersaglio}: {danni}{a_terra} (tell it in a sentence of its own)."
@@ -234,6 +234,10 @@ prove:
     regge: "{nome} takes the blow but stays on their feet."
     in_piedi: "{nome} is still on their feet."
     nessuno_cade: "Nobody falls: the fight goes on."
+    # A character out of play since before the turn does something in the narration (narrazione/guardia-fuori.ts).
+    fuori_a_terra: "{nome} lies on the ground, unconscious."
+    fuori_morto: "{nome} lies on the ground, lifeless."
+    fuori_fuggito: "{nome} is no longer here."
 
 regole:
   domanda:
