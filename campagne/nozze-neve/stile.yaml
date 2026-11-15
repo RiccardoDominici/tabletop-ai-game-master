@@ -27,7 +27,7 @@ regole_prosa:
   - "Le monete si chiamano fiorini e soldi."
 
 # Frammento [STILE] che il Motore appende a ogni prompt immagine (E14). In inglese.
-stile_immagini: "watercolor and gouache illustration in the manner of an old Alpine storybook, first snow on a high mountain village, warm hearth light against blue-grey snow, palette of cream, pine green, ochre and cold slate, soft visible brush strokes, gentle and affectionate faces, no text, no lettering"
+stile_immagini: "full-bleed illustration, the picture fills the whole frame edge to edge with no paper border and no margin, watercolor and gouache illustration in the manner of an old Alpine storybook, first snow on a high mountain village, warm hearth light against blue-grey snow, palette of cream, pine green, ochre and cold slate, soft visible brush strokes, gentle and affectionate faces, no text, no lettering"
 
 # Tavolozza musicale: solo tag del vocabolario chiuso del manuale (§4, E14).
 tavolozza_musicale:

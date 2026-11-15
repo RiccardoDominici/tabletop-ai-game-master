@@ -14,7 +14,7 @@ aspetto:
   invarianti: ["ottant'anni", "grosso e un po' curvo", "barba bianca lunga", "cappello di feltro con una piuma di gallo", "fibbia della cintura a ferro di cavallo", "bastone di nocciolo"]
   prompt_immagine: "big slightly stooped 80-year-old mule driver, long white goat-like beard, felt hat with a rooster feather, thick wool jacket, belt buckle shaped like a horseshoe, hazel walking stick, gruff weathered face with kind eyes, snowy mule yard behind him, [STILE]"
   situazioni:
-    - {id: lettera_in_mano, dopo: [nar_giacca_tasca, ett_lettera_data], prompt: "the old mule driver alone in the snow at dusk, one big hand pressed on the empty inner pocket of his jacket, hat in his other hand"}
+    - {id: lettera_in_mano, dopo: [nar_giacca_tasca, ett_lettera_data], prompt: "the old mule driver BAREHEADED, his felt hat held in his hand at his side (not on his head), alone in the snow at dusk, one big hand pressed on the empty inner pocket of his jacket"}
 
 personalita:
   superficie: ["burbero e rumoroso, batte il bastone per farsi sentire", "fa finta di non sentire ciò che non gli piace", "generoso con le bestie, di poche parole con le persone"]

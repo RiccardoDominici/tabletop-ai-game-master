@@ -157,8 +157,8 @@
       "id": "luogo_scena_sasso",
       "file": "luogo_scena_sasso.jpg",
       "tipo": "luogo",
-      "prompt": "a large flat stone under a snow-laden larch tree above a mountain village at sunset, snow swept from the top of the stone, two lit lanterns on either side, a small wooden hut with a long alpine horn hanging by the door, the red sun low over a mountain pass, many footprints in the snow, watercolor and gouache illustration in the manner of an old Alpine storybook, first snow on a high mountain village, warm hearth light against blue-grey snow, palette of cream, pine green, ochre and cold slate, soft visible brush strokes, gentle and affectionate faces, no text, no lettering, full-bleed, the picture fills the whole frame edge to edge, no border, no margin, unsigned, no signature",
-      "seme": 889170540,
+      "prompt": "a large flat stone under a snow-laden larch tree above a mountain village at sunset, snow swept from the top of the stone, two lit lanterns on either side, a small wooden hut with a long alpine horn hanging by the door, the red sun low over a mountain pass, many footprints in the snow, full-bleed illustration, the picture fills the whole frame edge to edge with no paper border and no margin, watercolor and gouache illustration in the manner of an old Alpine storybook, first snow on a high mountain village, warm hearth light against blue-grey snow, palette of cream, pine green, ochre and cold slate, soft visible brush strokes, gentle and affectionate faces, no text, no lettering, no border, unsigned, no signature",
+      "seme": 31415926,
       "larghezza": 1920,
       "altezza": 1080,
       "generata": [
@@ -167,55 +167,42 @@
       ],
       "riferimenti": [],
       "modello": "mflux-community/flux2-klein-4b-mflux-q4 (base flux2-klein-4b, mflux, fp16, low-ram)",
-      "secondi": 223.5,
+      "secondi": 289.5,
       "picco_gb": 5.35,
-      "kb": 596,
-      "rifilato_pct": 5.0,
-      "firma": "v1:74c0b992ed64832232abf588",
+      "kb": 552,
+      "rifilato_pct": 4.9,
+      "firma": "v1:56eb9a2742e9f780b0458c99",
       "qualita": {
         "esito": "da_controllare",
         "versione": 2,
         "motivi": [
-          "margine: orlo di carta visibile: 89% della fascia esterna è carta (bordo giu)"
+          "margine: orlo di carta visibile: 53% della fascia esterna è carta (bordo giu)"
         ],
         "problemi": [
           {
             "tipo": "margine",
             "dove": "bordo giu",
             "grave": true,
-            "descrizione": "orlo di carta visibile: 89% della fascia esterna è carta"
-          },
-          {
-            "tipo": "soggetto",
-            "dove": "lato destro della baita, presso la finestra",
-            "descrizione": "Nel prompt sono richieste due lanterne accese ai lati, ma se ne vede una sola.",
-            "grave": false
+            "descrizione": "orlo di carta visibile: 53% della fascia esterna è carta"
           }
         ],
         "visione": {
           "esito": "ok",
           "motivi": [],
-          "problemi": [
-            {
-              "tipo": "soggetto",
-              "dove": "lato destro della baita, presso la finestra",
-              "descrizione": "Nel prompt sono richieste due lanterne accese ai lati, ma se ne vede una sola.",
-              "grave": false
-            }
-          ],
-          "descrizione": "Una baita di legno innevata con una luce calda nella porta, accanto a un grande masso coperto di neve sotto alberi sempreverdi, con un sole rosso basso tra le montagne al tramonto e impronte nella neve in primo piano.",
-          "costo_usd": 0.000803,
+          "problemi": [],
+          "descrizione": "Paesaggio alpino innevato al tramonto: un grande masso coperto di neve sotto un abete, una piccola baita di legno con due lanterne accese e un corno alpino appeso alla porta, il sole rosso tra le montagne e orme nella neve.",
+          "costo_usd": 0.000782,
           "token": {
-            "ingresso": 4019,
-            "uscita": 803
+            "ingresso": 4027,
+            "uscita": 759
           },
           "modello": "claude-haiku-5-5"
         },
-        "costo_usd": 0.000803,
+        "costo_usd": 0.000782,
         "tentativi": 3,
-        "costo_totale_usd": 0.001665
+        "costo_totale_usd": 0.002266
       },
-      "quando": "2026-11-11 21:53:04"
+      "quando": "2026-11-15 13:50:42"
     },
     {
       "id": "ritratto_png_adelina",
