@@ -136,7 +136,9 @@ orologi:
       - "La campana batte il terzo tocco, e l'acqua tocca la criniera del leone."
     avanza_quando:
       - "almeno un segno ogni sei risposte del narratore, nelle scene in cui l'orologio è attivo: quando tocca, il Motore scrive nel contesto «mostralo in questa risposta»"
-      - "più uno a ogni cambio di scena: il viaggio della barca e le discussioni consumano la sera. Il segno guadagnato così si mostra nella prima risposta della scena nuova"
+      # Più uno a ogni cambio di scena: il viaggio della barca e le discussioni consumano la sera. La porta la applica il
+      # Motore (docs/mondo.md §2): nella scena nuova il segno è dovuto; se lì l'orologio non è attivo, sale fuori scena.
+      - {quando: cambio_scena}
       - "all'inizio della scena del terzo tocco, se è sotto sei, sale a sei"
       - "mai due segni nella stessa risposta"
     al_completo: "La Lenta è al leone e la campana ha battuto il terzo tocco. Il console, il paese e Vischi vogliono la catena chiusa subito. Tullio tiene la manovella e guarda i PG: chiude o aspetta sulla loro parola, non da solo. Se chiude, chi è ancora nel Borgo passa la notte sopra l'acqua e all'alba firma per salire sulle barche di Vischi. Se i PG hanno trovato l'onda, Vischi propone davanti a tutti un patto: catena chiusa al tocco e barche gratis per tutti all'alba, e nessuno parla più del pilone. Se il ponte resta aperto, parte l'orologio della rampa: la Bigia, se è già partita per il secondo viaggio, prova a tornare, qualcuno tiene le lanterne sulla rampa con l'acqua alle ginocchia, e all'alba Vischi chiama il debito di Tullio. Vedi il taglio della scena del terzo tocco."
@@ -175,7 +177,9 @@ orologi:
       - "Vischi chiude la lista con il suo sigillo, e manda lo scrivano al Passo Vecchio."
     avanza_quando:
       - "almeno un segno ogni due risposte del narratore, mentre i PG sono alla Casa del Sale"
-      - "subito, anche se la risposta precedente ne aveva uno, quando un PG accusa Vischi davanti al consiglio senza mostrare una prova"
+      # Subito, anche se la risposta precedente ne aveva uno: un PG accusa Vischi davanti al consiglio. Porta del Motore
+      # sui temi dell'azione (l'orologio è attivo solo alla Casa del Sale); se l'accusa ha la sua prova lo giudica il narratore.
+      - {quando: azione, temi: [accus, truffa, imbrogli]}
       - "mai due segni nella stessa risposta"
     al_completo: "La lista è sigillata e il consiglio ha votato. All'alba le barche di Vischi prendono solo chi ha firmato. Il voto si può ancora rovesciare solo al ponte, al terzo tocco, con una prova davanti al console e al paese."
 

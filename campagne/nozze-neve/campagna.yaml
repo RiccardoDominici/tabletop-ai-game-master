@@ -170,7 +170,9 @@ orologi:
       - "Il corno suona tre volte, e il sole tocca il passo."
     avanza_quando:
       - "almeno un segno ogni sei risposte del narratore, in tutte le scene: quando tocca, il Motore scrive nel contesto «mostralo in questa risposta»"
-      - "più uno a ogni cambio di scena: il vicolo, la salita e le discussioni consumano il pomeriggio. Il segno guadagnato così si mostra nella prima risposta della scena nuova"
+      # Più uno a ogni cambio di scena: il vicolo, la salita e le discussioni consumano il pomeriggio. La porta la
+      # applica il Motore (docs/mondo.md §2): il segno è dovuto nella prima risposta della scena nuova.
+      - {quando: cambio_scena}
       - "all'inizio della scena del Sasso, se è sotto sei, sale a sei, e lassù corre a un segno ogni due risposte: lo fa il Motore (orologi_in_scena della scena del Sasso). Quando al Sasso la storia è stata raccontata e l'anello è al dito della sposa, il master può portarlo a otto dal pannello (README)"
       - "mai due segni nella stessa risposta"
     al_completo: "Il sole tocca il passo e il corno suona tre volte. Se prima del tramonto la sposa ha avuto l'anello al dito con la sua storia raccontata, le nozze sono benedette; se no, il Custode chiude il Libro: niente benedizione fino a primavera, e all'alba Tonio scende con i muli. Chi racconta decide che cosa ripeterà il paese. La leggenda dei Bonfanti: Ettore se ne va e si riprende la casetta del lavatoio, e la faida passa agli sposi. La verità detta da altri: Adelina, umiliata davanti al paese, lascia l'anello a Marta e ritira la dote, così il Prato Alto resta in mano a Gaspare; i Bonfanti perdono la voce del Sasso. La verità detta da Adelina: le due case si riconciliano, ma per la regola del Sasso i Bonfanti perdono la voce, e da allora la loro storia la racconta Ettore: Zelia non la racconterà mai. Vedi il taglio della scena del Sasso."
@@ -190,7 +192,9 @@ orologi:
       - "Ettore batte il bastone, e i Morlacchi portano fuori le panche."
     avanza_quando:
       - "almeno un segno ogni tre risposte del narratore, mentre i PG sono alla casera"
-      - "subito, anche se la risposta precedente ne aveva uno, quando un PG accusa davanti a tutti una delle due famiglie senza una prova, o viene sorpreso a frugare nella giacca di Ettore"
+      # Subito, anche se la risposta precedente ne aveva uno: un PG accusa una delle due famiglie, o fruga nella giacca di
+      # Ettore. Porta del Motore sui temi dell'azione; se l'accusa ha la sua prova lo giudica il narratore (modalità A).
+      - {quando: azione, temi: [accus, colpevole, giacca, fruga, frugare]}
       - "mai due segni nella stessa risposta"
     al_completo: "I Morlacchi portano le loro panche fuori sull'aia e aspettano il tramonto al freddo: la festa è finita, e al Sasso le due case salgono separate. Per riportarli dentro serve mostrare a tutta la sala che Bastiano ferrava un mulo a mezzogiorno: allora le panche rientrano, e la lite si ferma lì. Se nessuno lo fa, al Sasso Ettore se ne va alla prima parola storta."
 

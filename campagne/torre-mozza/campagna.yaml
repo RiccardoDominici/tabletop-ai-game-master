@@ -77,6 +77,16 @@ orologi:
       # (logistica d_ovile_carbonaia). Il segno è dovuto nella prima risposta alla carbonaia.
       - {quando: lascia_scena, scena: scena_ovile}
       - "mai due segni nella stessa risposta"
+    # Che cosa fa succedere un segno (docs/mondo.md §3). Al terzo segno, se è ancora all'ovile, Berta perde la pazienza:
+    # la sua battuta d'attesa la dice il Motore (modalità B), o la frase `detto` (modalità A). Se i PG sono già alla
+    # carbonaia succede fuori scena, e lo ritrovano tornando da lei.
+    conseguenze:
+      - al_segno: 3
+        cosa: "Berta perde la pazienza: comincia a pensare di salire lei alla torre con la chiave."
+        battuta: ber_salgo_io
+        detto: "Berta guarda il crinale e si stringe nella mantella: la notte avanza, e nessuno è ancora salito."
+        tracce: "Berta ha già la mantella addosso e la chiave in mano: stava per salire da sola."
+        png: {png_berta: {}}
     al_completo: "È mezzanotte e i PG non sono ancora alla torre. Zirrà manda il corno tre volte, poi prende a colpi la porta di ferro senza aprirla, e prima dell'alba scende con Grosso a bruciare il fienile dei Benni. Chi sale adesso la trova furiosa: con la chiave in mano tratta, senza la chiave attacca. Ogni risposta costa: la chiave consegnata è l'argento perso, la chiave tenuta è lo scontro."
 
 preparazione:
@@ -132,7 +142,18 @@ preparazione:
           orologio: o_sospetto
       domande_di_posta: ["Tonio tornerà a casa prima dell'alba?", "Chi pagherà per i goblin della torre?"]
       orologi_extra:
-        - {id: o_sospetto, nome: "Il paese vuole un colpevole", segmenti: 4}
+        - id: o_sospetto
+          nome: "Il paese vuole un colpevole"
+          segmenti: 4
+          # Mentre i PG sono nel bosco la voce contro Ugo può correre, o no: lo decide un tiro del Motore, lato master
+          # e nascosto (docs/mondo.md §2), mai il narratore. Le notizie arrivano con Ugo o con Berta.
+          avanza_quando:
+            - {quando: lascia_scena, scena: scena_ovile, tiro: {dado: 6, almeno: 4}}
+          conseguenze:
+            - al_segno: 1
+              cosa: "In paese decidono che i goblin li ha portati Ugo: gli rimandano indietro il carbone."
+              tracce: "Ugo ha il viso scuro: dal paese è salito un ragazzo a dirgli che il suo carbone non lo vuole più nessuno."
+              png: {png_ugo: {}}
 
   cattivo:
     nome: "Zirrà"

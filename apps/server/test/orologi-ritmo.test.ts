@@ -13,6 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
+import YAML from 'yaml';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { conScena } from '../src/campagna/tipi';
 import { RADICE_REPO } from '../src/percorsi';
@@ -122,6 +123,12 @@ describe('nozze-neve, indagine rigiocata col selettore avido', () => {
     prova = new Prova();
     const cartella = path.join(prova.cartella, 'nozze-neve');
     fs.cpSync(NOZZE, cartella, { recursive: true, filter: (f) => !f.includes(`${path.sep}immagini`) && !f.includes(`${path.sep}audio${path.sep}`) });
+    // This replay checks the pace rules alone: the fact gates of avanza_quando (the sunset's +1 at every scene change,
+    // the quarrel's accusation) are taken out of the copy; they have their own tests (mondo-porte.test.ts).
+    const fileCampagna = path.join(cartella, 'campagna.yaml');
+    const dati = YAML.parse(fs.readFileSync(fileCampagna, 'utf8')) as { orologi: Array<{ avanza_quando?: unknown[] }> };
+    for (const o of dati.orologi) o.avanza_quando = (o.avanza_quando ?? []).filter((x) => typeof x === 'string');
+    fs.writeFileSync(fileCampagna, YAML.stringify(dati));
     const { url } = await prova.avvia(cartella, (_t, messaggio) => [...segniInCatalogo(messaggio).map((id) => `[usa] ${id}`), '[narratore] Ida, il pomeriggio va avanti.', '[invito] tutti'].join('\n'));
     const schermo = await prova.proiettore(url);
     const tel = await prova.telefono(url, 'pg_ida');

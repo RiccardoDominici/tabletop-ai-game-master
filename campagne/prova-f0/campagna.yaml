@@ -132,7 +132,9 @@ orologi:
       - "Tre rintocchi: la veglia è finita, e bussano alla porta."
     avanza_quando:
       - "almeno un segno ogni due risposte del narratore: quando tocca, il Motore scrive nel contesto «mostralo in questa risposta»"
-      - "subito, anche se la risposta precedente ne aveva uno, quando i PG fanno rumore, minacciano Baldrin, gridano dalla finestra o escono in piazza"
+      # Subito, anche se la risposta precedente ne aveva uno: i PG fanno rumore, minacciano Baldrin, gridano dalla
+      # finestra o escono in piazza. Porta del Motore sui temi dell'azione (docs/mondo.md §2).
+      - {quando: azione, temi: [rumore, minac, grida, urlare, piazza]}
       - "mai due segni nella stessa risposta"
     al_completo: "Il paese è sotto il portico con le lanterne. Vuole il pane dei lumi, e vuole qualcuno che risponda della febbre stanotte. Se Baldrin è dalla parte dei PG, tiene il paese sulla soglia per il tempo di una risposta, non di più: la prova o la scelta la devono dare i PG. Se i PG mostrano la verità a tutti, la rabbia passa su Ottavia: il paese vuole lei. Se tacciono la verità, il paese vuole il forestiero. Vedi `taglio` nella scheda della scena."
 

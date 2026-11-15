@@ -58,8 +58,8 @@ la sorella resta a casa, e durante la benedizione tiene il fuoco del focolare.
 
 - **Orologio del tramonto**: all'arrivo al Sasso il Motore lo porta da solo a sei se è sotto, e lassù gli fa
   correre un segno ogni due risposte (`orologi_in_scena` della scena del Sasso); al settimo e all'ottavo segno
-  escono il tramonto e il finale. Dal pannello resta a te il +1 a ogni cambio di scena, se vuoi che il
-  pomeriggio corra, e il «portalo a otto» quando al Sasso la storia è stata raccontata e l'anello è al dito
+  escono il tramonto e il finale. Il +1 a ogni cambio di scena lo dà il Motore (una porta di `avanza_quando`);
+  dal pannello resta a te il «portalo a otto» quando al Sasso la storia è stata raccontata e l'anello è al dito
   della sposa.
 - Se i giocatori salgono al Sasso nel pomeriggio, prima del climax, non c'è una scheda: il narratore improvvisa
   dall'abbozzo di `n_sasso` (il nipote del Custode spazza la neve). La scena del Sasso è il tramonto.
