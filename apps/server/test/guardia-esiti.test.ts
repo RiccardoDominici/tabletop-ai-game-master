@@ -49,6 +49,15 @@ describe('guardia degli esiti (italiano)', () => {
     // Niente parole di sconfitta: niente correzione.
     expect(guardia([])('Ruggero ride e fa un passo indietro.')).toBeNull();
   });
+
+  it('a standing PC told down because the player said so (third e2e pass, bug 3) → «Ida è ancora in piedi.»', () => {
+    // The player wrote «I see Ida down»; for the Engine she stands at 1 hit point.
+    expect(guardia([])('Ida è a terra, e la spalla le sanguina.')).toEqual({ testo: 'Ida è ancora in piedi.', motivo: 'caduta_senza_fatto' });
+    expect(guardia([attacco('png_ruggero', 'pg_ida', true, 1)])('Ida barcolla e cade in ginocchio.')).toEqual({ testo: 'Ida incassa il colpo, ma resta in piedi.', motivo: 'caduta_senza_fatto' });
+    // Really down for the Engine, or going to the ground on purpose: the sentence stays.
+    expect(guardia([], ['pg_ida'])('Ida è a terra, senza sensi.')).toBeNull();
+    expect(guardia([])('Ida si getta a terra dietro la pietra.')).toBeNull();
+  });
   it('shares the combat-fact stems: after the guard the combat facts still work (one compilation per section)', () => {
     guardia([])('Ruggero crolla a terra.');
     expect(fattiMancanti([{ tipo: 'colpito', id: 'png_ruggero', nome: 'Ruggero lo sgherro' }], ['Ruggero incassa il colpo.'])).toEqual([]);

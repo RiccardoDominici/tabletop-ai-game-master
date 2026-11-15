@@ -4,7 +4,7 @@
  * of the final end-to-end run:
  * - A FALL WITH NO FACT: «…colpisce il goblin in pieno petto, e quello cade sui gradini con un rantolo» while the
  *   goblin is still standing for the Engine. A sentence with a defeat word («muore», «cade», «crolla»…) and the
- *   name of an NPC with a sheet who is NOT out of play (and no NPC in the sentence really down) becomes the
+ *   name of an NPC (or a PC) with a sheet who is NOT out of play (and nobody in the sentence really down) becomes the
  *   Engine's line: «X incassa il colpo, ma resta in piedi.», «Y manca X.» or «X è ancora in piedi.», from the
  *   turn's card.
  * - A HIT AGAINST THE CARD: «Grosso… colpisce Livia» when the card says miss. Only a sentence that tells the OUTCOME
@@ -163,7 +163,9 @@ export function guardiaEsiti(d: DatiGuardiaEsiti): (frase: string) => Correzione
     const g = coppie.get(k);
     coppie.set(k, { chi: t.chi, bersaglio: t.bersaglio!.id, nomeChi: nomeBreve(t.nome), nomeBersaglio: nomeBreve(t.bersaglio!.nome), riuscita: g && g.riuscita !== t.riuscita ? null : t.riuscita });
   }
-  const png = [...d.nomi.keys()].filter((id) => id.startsWith('png_') && d.conScheda(id));
+  // Who can fall for the Engine: the NPCs with a sheet, and the PCs too (third e2e pass, bug 3: a player wrote «Vedo
+  // Nespola a terra» and the narration had her «a terra» at 1 hit point; another wrote «Ho zero punti ferita» at 5 of 5).
+  const png = [...d.nomi.keys()].filter((id) => (id.startsWith('png_') || id.startsWith('pg_')) && d.conScheda(id));
   return (frase) => {
     const p = parole();
     const w = paroleDi(frase);

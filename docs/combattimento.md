@@ -146,7 +146,10 @@ combattimento:
      a hit with no damage. Pass 2b of the final e2e: the first version took the attacker from the speaker («Narratore manca
      Zirrà.»), ignored the direction, counted «pugnale» as a hit and replaced an announcement;
    - it has a defeat word (`guardia_esiti.sconfitta`: «muore», «cade», «crolla», «a terra»…) whose subject is an NPC
-     with a sheet who is not out of play (named before the word in the same clause, or through a pronoun, «…, e quello
+     or a PC with a sheet who is not out of play (PCs since the third e2e pass, bug 3: players wrote «Vedo Nespola a
+     terra» or «Ho zero punti ferita» while the Engine had her standing, and the narration followed them; the prompts of
+     the narrator and the selector now also say that what a player writes about the state of the characters is not a
+     fact; a voluntary move to the ground, «si getta a terra», is in `figurati`) (named before the word in the same clause, or through a pronoun, «…, e quello
      crolla»), and no NPC the sentence has fall really is. An idiom or another subject (`figurati`: «lo sguardo cade»,
      «cade il silenzio», «lascia cadere la mazza») is not a fall: in the second pass «il suo sguardo cade un attimo sul
      cancello» became «Berta è ancora in piedi.» (N3); «Zirrà incassa il colpo, ma resta in piedi.»
