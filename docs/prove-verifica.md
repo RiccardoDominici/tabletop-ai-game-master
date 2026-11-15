@@ -72,7 +72,30 @@ lifting a cart «impossibile» (d13) and gives 20 to lighting a fire in the rain
 (scene checks, Influence from the NPC's sheet, AC): the arbiter's choice does not count there, by design (BF baseline
 T5: arbiter «difficile», card CD 17 from the scene check `p_berta_chiave`: correct).
 
-## 6. Baseline runs before the changes (automatic rolls, profile A)
+## 6. Live run with manual rolls, Basic Fantasy (profile A)
+
+`TAGM_PORTA=4894 TAGM_TIRI_MASTER=a_volte esegui.ts torre-mozza/pressione A --campagna torre-mozza --tiri manuale`
+(16 script turns, 24 server turns, $0.042; results in `esperimenti/risultati/prove-verifica/manuale-torre-pressione`).
+The headless players answered every request with their own dice.
+
+| Check | Expected | Seen | Verdict |
+|---|---|---|---|
+| Player checks (Riccardo's item 1) | the set's ability or skill, the sheet's bonus, the set's DC | 16 requests: Carisma vs 17/19 (scene check or difficulty), Intelligenza vs 13, x-in-6 «Cercare» (1 or 3 in 6), d100 «Muoversi in silenzio» 25%, «Scalare pareti» 80%, «Forzare una porta» 3 in 6 for a shoulder charge at the tower door, attacks vs AC 14 with +5/+3/+2; a hostile NPC gave −2 (the set's fixed penalty) | works |
+| The dice entered decide | card dice = dice entered | 0 × «card dice differ», 0 × «rolled without a request», 0 × «not needed»; the harness's «pg_livia rolls Spada lunga (1d20 +5): 13» is the card's 13 + 5 = 18 | works |
+| Waiting at the table | the narrator starts after the last die | 12 waits, median 405 ms (the harness answers after 400 ms) | works |
+| DC never said | no DC, AC or total in what the table heard | no narrator line with a number next to CD/CA/difficoltà or a total (`tavolo.md`, `narrazioni.jsonl`) | works |
+| Private checks | request only on the phone, outcome only in the private line | Livia's and Eliandro's private Charisma checks: requests marked private, outcomes in «Esiti delle azioni PRIVATE»; 5 narrator lines moved to the phone by the private guard; one line «Eliandro, la pastora alza lo sguardo…» stayed at the table (no content of the question: the private guard's area, docs/e2e-finale.md A) | works; one borderline line |
+| Failed checks and the narrator | what was wanted does not happen | T6 «Berta ripete la sua risposta senza muovere la chiave» after Charisma 16 vs 17; 3 × an NPC giving in after a failed social check replaced by its refusal; 4 × a sentence contradicting a card replaced | works (guards active) |
+| Game Master roll at a scene change | `o_sospetto` gate, d6 ≥ 4 when the PCs leave; `a_volte`: 1/2 is a toss-up → shown | T7: d6 = 3, no; shown («testa_o_croce») | works |
+| Surprise | an NPC struck first (Zirrà's reaction), so the PCs roll | «Sorpresa: i personaggi tirano 6 su 1d6: non sono colti di sorpresa» | works |
+| Initiative | 1d6 + Dexterity, re-rolled every round, the dead leave the order | 8 rounds, re-rolled each time («Round 2, iniziativa ritirata: Eliandro 7, Grosso 6, Livia Sarti 4, Zirrà 2»), Nespola gone after she died | works |
+| Turns in combat | only the PC on turn acts; the others wait for their turn | 0 × «risolve solo chi è di turno»; 16 actions waited; 2 PCs passed | works |
+| NPC turns, 0 HP, death | NPCs attack in their turn; at 0 a PC makes the set's one death save | Zirrà's reaction drops Nespola; at her step «tiro salvezza contro la morte 4 contro CD 10 → … è MORTO» (one save, as the set says); the fact said «terzo fallimento» | wording fixed, `9141824` |
+| End of the fight | every PC down → the fight ends | «Il combattimento è finito: i PG sono tutti a terra» with Livia dying; then nothing rolled for her | fixed afterwards, `7395185` (this run predates it) |
+| After the fight | a dead PC does not act | the old harness still sent dead Nespola's actions; the fact said «è a terra: A zero punti ferita un personaggio muore…» | fixed: harness drops a dead PC's queue (`f27c629`), fact «è morto.» (`f8ec575`) |
+| Attacks on a creature without a sheet | — | T11: three attacks on the goblin sentry «sì, ma» (C5) | open (data: minion sheets) |
+
+## 7. Baseline runs before the changes (automatic rolls, profile A)
 
 `base-torre-pressione` (BF, port 4891) and `base-f0-pressione` (SRD, port 4892), 15 November.
 
@@ -82,14 +105,14 @@ T5: arbiter «difficile», card CD 17 from the scene check `p_berta_chiave`: cor
 | BF: a sneak attack with a short sword rolled with Strength though the arbiter said Dexterity | the set's «Attacco furtivo» is a melee attack with Strength (manual p. 9, 53): correct | — |
 | BF T11: attacks on a goblin sentry with no sheet resolved «sì, ma» | known C5 (no minion sheets) | open |
 | SRD T16–T17: every PC at 0 HP, the harness kept their actions, Haiku narrated a grab and a door broken | bug: the narrator got the player's text as the action to answer | fixed, `a852ca1` |
-| SRD T15: the fight ends «i PG sono tutti a terra»; a dying PC rolls no more death saves after it | gap: death saves happened only inside a fight | fixed: when every PC is down, the dying ones roll to the end before the fight closes, `this commit` |
+| SRD T15: the fight ends «i PG sono tutti a terra»; a dying PC rolls no more death saves after it | gap: death saves happened only inside a fight | fixed: when every PC is down, the dying ones roll to the end before the fight closes, `7395185` |
 
-## 7. Combat and turns
+## 8. Combat and turns
 
 | Scenario | Expected | Seen | Verdict | Fix |
 |---|---|---|---|---|
 | Surprise (BF set declares it): fight opened by an attack | only the side attacked rolls 1d6; on 1–2 it loses round 1 | unit test; torre-mozza's set now declares `combattimento.sorpresa` | implemented | `e04058e` |
 | Surprise from the panel | both sides roll; surprised PCs skip round 1, round 2 opens for them | unit test | works | `dc2afa2` |
 | A Game Master check during a fight | does not move whose turn it is or the NPCs' fallback target | the pseudo-action is no longer passed as the PC's action | fixed | `dc2afa2` |
-| Pace, live (`e2e/ritmo.spec.ts`, port 4896, profile R) | calm: no timer, «Aspettiamo: …», the turn starts when all have sent; an action written during the narration waits with no countdown; frantic: countdown, resolved at zero; «Risolvi ora»; the watchdog recovers a stuck narrator | with the manual default the spec stopped at a roll nobody entered («Si tirano i dadi: Ginestra»), and it counted the dictation microphone as a fourth form button; with `TAGM_TIRI_GIOCATORI=automatico` and the button excluded: passes (1.7 min) | works; the e2e specs now start their server with automatic rolls | this commit |
+| Pace, live (`e2e/ritmo.spec.ts`, port 4896, profile R) | calm: no timer, «Aspettiamo: …», the turn starts when all have sent; an action written during the narration waits with no countdown; frantic: countdown, resolved at zero; «Risolvi ora»; the watchdog recovers a stuck narrator | with the manual default the spec stopped at a roll nobody entered («Si tirano i dadi: Ginestra»), and it counted the dictation microphone as a fourth form button; with `TAGM_TIRI_GIOCATORI=automatico` and the button excluded: passes (1.7 min) | works; the e2e specs now start their server with automatic rolls | `48021c7` |
 | Simultaneous actions, live (`e2e/azioni.spec.ts`, port 4896, rules + Haiku action arbiter) | «anch'io» dependency and withdrawal → full-screen notice; exclusive conflict → «Tengo / Cambio / Ritiro»; sending = ready; writing during the narration; a choice left to expire at the frantic pace → «rimasta fuori» with the text back | passes (1.4 min) | works | — |
