@@ -559,3 +559,9 @@ preparazione:
          perche: "Nerio e due barcaioli possono remare al posto dei PG (cb_barca)."}
       - {capienza: c_bigia, non_porta: [g_ricovero, g_case_lunghe],
          perche: "Un gruppo per volta (f_un_gruppo): i due gruppi insieme non ci stanno nemmeno senza i PG, oltre a stare ai due capi del Borgo."}
+
+# Who rolls (docs/prove.md §8–9): the players roll real dice at the table and enter them on the phone, the DC stays
+# secret; the Engine's own rolls for the world (a gate with `tiro`) stay hidden from the table.
+regole:
+  tiri_giocatori: manuale
+  tiri_master: nascosti

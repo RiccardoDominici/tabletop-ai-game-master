@@ -295,3 +295,9 @@ sessione:
     ricompensa_o_colpo_di_scena: "Tonio non era un prigioniero: che cosa si racconta a Spinalba?"
   scene_potenziali: [scena_ovile, scena_carbonaia, scena_torre]
   chiusura: "Con Tonio vivo e la verità in mano, i PG scelgono che cosa raccontare a Spinalba: la verità, il silenzio o l'alibi di Ugo. Poi si chiede ai giocatori che cosa faranno all'alba."
+
+# Who rolls (docs/prove.md §8–9): the players roll real dice at the table and enter them on the phone, the DC stays
+# secret; the Engine's own rolls for the world (a gate with `tiro`) stay hidden from the table.
+regole:
+  tiri_giocatori: manuale
+  tiri_master: nascosti

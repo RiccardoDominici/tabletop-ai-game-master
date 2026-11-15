@@ -13,6 +13,7 @@ ore_per_sessione: 2
 durata: "una serata di circa due ore, tre scene: l'ovile all'imbrunire, la carbonaia a notte, la torre a mezzanotte"
 giocatori: 3
 dadi: true
+tiri_giocatori: manuale  # i giocatori tirano i dadi veri e scrivono il risultato sul telefono (docs/prove.md §8)
 temi: ["la bugia detta per amore", "la colpa che cade sul più antipatico", "il debito che spinge a sbagliare"]
 linee: ["violenza esplicita su bambini e ragazzi", "tortura"]
 veli: ["uccisione di animali", "ferite descritte nel dettaglio"]

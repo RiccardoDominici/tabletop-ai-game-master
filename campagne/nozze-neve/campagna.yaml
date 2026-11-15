@@ -593,3 +593,9 @@ preparazione:
          perche: "Lasciato il medico, sale al Sasso con la lanterna in mezz'ora: Adelina se n'è già andata."}
       - {capienza: c_scatolina, porta: [g_anello],
          perche: "Nella scatolina sta un anello solo: non ce n'è un secondo da dare alla sposa."}
+
+# Who rolls (docs/prove.md §8–9): the players roll real dice at the table and enter them on the phone, the DC stays
+# secret; the Engine's own rolls for the world (a gate with `tiro`) stay hidden from the table.
+regole:
+  tiri_giocatori: manuale
+  tiri_master: nascosti

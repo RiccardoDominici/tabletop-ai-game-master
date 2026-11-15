@@ -1,3 +1,4 @@
 # prova-f0 è nata prima del brief: qui c'è solo la durata in sessioni, che decide il livello
 # (strumenti/strati.py, docs/strati.md). Una scena di mezz'ora: una one-shot.
 sessioni: 1
+tiri_giocatori: manuale  # i giocatori tirano i dadi veri e scrivono il risultato sul telefono (docs/prove.md §8)

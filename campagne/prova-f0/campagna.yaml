@@ -458,3 +458,9 @@ preparazione:
          perche: "«Con il buio e la neve sul sentiero, stanotte non ci si arriva» (abbozzo di n_mulino_valsecca): nemmeno partendo all'inizio della scena."}
       - {tra: [t_terzo_rintocco, t_alba], non_ci_sta: [d_valsecca],
          perche: "Dopo il terzo rintocco «Valsecca è a un giorno di cammino»: neanche a passo di giorno si arriva prima dell'alba. È la pista per la sessione dopo."}
+
+# Who rolls (docs/prove.md §8–9): the players roll real dice at the table and enter them on the phone, the DC stays
+# secret; the Engine's own rolls for the world (a gate with `tiro`) stay hidden from the table.
+regole:
+  tiri_giocatori: manuale
+  tiri_master: nascosti

@@ -20,6 +20,7 @@ tono: "Commedia di paese calda e affettuosa, con una tensione vera sotto: l'orgo
 durata: "una sessione serale di circa due ore, in tre scene e tre luoghi"
 sessioni: 1            # una sessione sola (aggiunto: il modello del brief lo rende obbligatorio da metà prova)
 giocatori: "3-5"          # i PG pregenerati sono sei, uno più del massimo
+tiri_giocatori: manuale  # i giocatori tirano i dadi veri e scrivono il risultato sul telefono (docs/prove.md §8)
 temi: [l'orgoglio, una vecchia promessa tra le due famiglie, la riconciliazione, chi ha il diritto di raccontare la storia di famiglia]
 linee:
   - "violenza sugli animali mostrata in scena"
