@@ -107,12 +107,16 @@ export function erroreValori(r: Pick<RichiestaTiro, 'facce' | 'quanti' | 'tieni'
 }
 
 /**
- * A card of a roll asked to a player (manual rolls, `manuale` set) as the table sees it: the dice, the bonus, the total
- * and the outcome, never the number to beat (docs/prove.md §8). The Engine's own cards keep everything: NPC attacks
- * (the PC's AC is not a secret), death saves against the rule's fixed DC, every card of automatic rolls.
+ * A card as the table sees it (projector and phones): the dice, the bonus, the total and the outcome, never the number
+ * to beat (docs/prove.md §8, «The table never sees the DC»). This holds in both modes and for every public card: a PC's
+ * check or attack (manual or rolled by the Engine), an NPC's attack against a PC's AC, a death save. Only the Game
+ * Master panel (`tiriDelMaster`) and the narrator's facts carry the number. Before 16 November only manual-roll cards
+ * hid it, and the third e2e pass judged «contro CD 17», «contro soglia 25» shown at the table as a broken promise.
+ * Untouched: an always-hit attack (`automatico`, nothing to beat) and a Game Master roll (`del_master`, its own card).
+ * `mostraCd` is the campaign's opt-in (`regole.mostra_cd: true`, prove/modalita.ts): every card as rolled.
  */
-export function cartaPerIlTavolo(t: TiroMostrato): TiroMostrato {
-  if (!t.manuale || t.di_png || t.automatico || t.contro_nascosto) return t;
+export function cartaPerIlTavolo(t: TiroMostrato, mostraCd = false): TiroMostrato {
+  if (mostraCd || t.automatico || t.del_master || t.contro_nascosto) return t;
   const { regola: _regola, modificatore_difficolta: md, ...resto } = t;
   // A 2d6 set's difficulty modifier is secret like the DC: the table sees the bonus and the total the player computed
   // on the phone (dice + their own bonus), and the outcome.

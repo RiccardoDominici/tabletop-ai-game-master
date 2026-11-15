@@ -2867,6 +2867,9 @@ export class Regia {
         attesa_ms: esito.attesa_ms,
         tardive: esito.tardive,
         tiri: esito.tiri.map((t) => `${t.nome}: ${t.etichetta} ${t.totale} contro ${t.contro.tipo} ${t.contro.valore}, ${t.riuscita ? 'riuscita' : 'fallita'}${t.privata ? ' (privata)' : ''}`),
+        // The same public cards as the projector and the phones show them (no number to beat unless the campaign opts
+        // in): what a reader of the log may quote as «seen at the table» (esperimenti/e2e-finale/tavolo_con_carte.py).
+        tavolo: this.prove!.tiriPubblici().map((t) => `${t.nome}: ${t.etichetta} ${t.totale}${t.contro_nascosto ? '' : ` contro ${t.contro.tipo} ${t.contro.valore}`}, ${t.riuscita ? 'riuscita' : 'fallita'}`),
         // Le righe esatte che riceve il narratore: per rivedere dopo la partita se ha raccontato l'esito giusto.
         fatti: esito.fatti,
         fatti_privati: esito.fattiPrivati,

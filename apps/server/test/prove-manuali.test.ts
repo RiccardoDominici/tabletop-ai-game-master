@@ -71,11 +71,34 @@ describe('manual rolls, SRD 5.2', () => {
     const e = m.completa(d, new Map(), true);
     expect(e.tiri[0]).toMatchObject({ dadi: [15], manuale: 'motore' });
     expect(m.tiriPubblici()[0]).toMatchObject({ contro_nascosto: true, contro: { valore: 0 } });
-    // Automatic turn: nothing marked, the DC on the card.
+    // Automatic turn: nothing marked, and the table's card has no AC either (the DC is never told, in both modes).
     const auto = motoreSrd({ [t]: { tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'balestra_leggera' } }, [15, 6]);
     const e2 = auto.completa(await auto.decidi(3, [az('a1', 'pg_corrado', t)]));
     expect(e2.tiri[0]!.manuale).toBeUndefined();
-    expect(auto.tiriPubblici()[0]!.contro.valore).toBeGreaterThan(0);
+    expect(e2.tiri[0]!.contro.valore).toBeGreaterThan(0);
+    expect(auto.tiriPubblici()[0]).toMatchObject({ contro_nascosto: true, contro: { valore: 0, descrizione: null } });
+  });
+
+  it('no table card carries the number to beat, in either mode: NPC attacks and death saves too; regole.mostra_cd opts in', () => {
+    // Third e2e pass: the table record showed «contro CD 17», «contro soglia 25», «contro CA 17». Only the panel has them.
+    const base = { id: 't1', turno: 4, chi: 'png_x', nome: 'Grosso', di_png: true, tipo: 'attacco', etichetta: 'Mazza', dadi: [14], dado: 14, vantaggio: null, motivo_vantaggio: null, modificatore: 3, totale: 17, contro: { tipo: 'CA', valore: 15, descrizione: 'armatura di Ada' }, bersaglio: { id: 'pg_a', nome: 'Ada' }, riuscita: true, critico: false, fallimento_critico: false, danno: null, a_terra: false, privata: false, avversario: null, regola: 'Mazza: d20+3 contro CA 15' } as const;
+    const pngAttacca = cartaPerIlTavolo({ ...base, dadi: [...base.dadi], contro: { ...base.contro }, bersaglio: { ...base.bersaglio } });
+    expect(pngAttacca).toMatchObject({ totale: 17, riuscita: true, contro_nascosto: true, contro: { tipo: 'CA', valore: 0, descrizione: null } });
+    expect(pngAttacca.regola).toBeUndefined();
+    const morte = cartaPerIlTavolo({ ...base, chi: 'pg_a', nome: 'Ada', di_png: false, tipo: 'salvezza', etichetta: 'Tiro salvezza contro la morte', dadi: [6], dado: 6, modificatore: 0, totale: 6, contro: { tipo: 'CD', valore: 10, descrizione: null }, bersaglio: null, riuscita: false });
+    expect(morte).toMatchObject({ totale: 6, riuscita: false, contro_nascosto: true, contro: { valore: 0 } });
+    // The campaign's opt-in keeps every card as rolled.
+    expect(cartaPerIlTavolo({ ...base, dadi: [14], contro: { ...base.contro }, bersaglio: null }, true)).toMatchObject({ contro: { valore: 15 } });
+  });
+
+  it('regole.mostra_cd: true in campagna.yaml: the Engine\'s table cards show the AC', async () => {
+    const t = 'Tiro con la balestra leggera a Ruggero';
+    const m = motoreSrd({ [t]: { tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'balestra_leggera' } }, [15, 6], (c) => {
+      c.campagnaNarratore['regole'] = { ...((c.campagnaNarratore['regole'] as object | undefined) ?? {}), mostra_cd: true };
+    });
+    m.completa(await m.decidi(3, [az('a1', 'pg_corrado', t)]));
+    expect(m.tiriPubblici()[0]!.contro_nascosto).toBeUndefined();
+    expect(m.tiriPubblici()[0]!.contro.valore).toBeGreaterThan(0);
   });
 
   it('a dead PC asks no roll, and its fact says dead, not down', async () => {

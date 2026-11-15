@@ -300,6 +300,9 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
 - `campagna.yaml` → `regole: {tiri_master: nascosti|a_volte|visibili}`. Default: nascosti. Whether the table sees the
   Engine's own rolls for uncertain world outcomes (a gate with `tiro`); `visibile: true` on one gate shows that one
   anyway (docs/prove.md §9).
+- `campagna.yaml` → `regole: {mostra_cd: true|false}`. Default: false, in both roll modes: the table's cards never show
+  the DC, the AC or the threshold, only the Game Master panel does. Write true only if the brief asks to show them
+  (`SCHEDA.regole` accepts only a boolean).
 - `pg.yaml` → `personaggi[].scheda`: characteristics, skills, mastery, saving throws, armour or AC, hit points, attacks.
   The level is `personaggi[].livello`.
 - `png/<id>.yaml` → `scheda`: CR, characteristics, armour or AC, hit points, attacks, optional `influenza: {cd}`.

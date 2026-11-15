@@ -75,7 +75,7 @@ def _regole(c: Campagna, e: Esito) -> None:
         return
     if not isinstance(regole, dict):
         e.errore("SCHEDA.regole", "campagna.yaml", "regole è un oggetto: {dadi: true|false, tiri_giocatori: manuale|automatico, "
-                                                   "tiri_master: nascosti|a_volte|visibili}")
+                                                   "tiri_master: nascosti|a_volte|visibili, mostra_cd: true|false}")
     elif "dadi" in regole and not isinstance(regole["dadi"], bool):
         e.errore("SCHEDA.regole", "campagna.yaml", "regole.dadi è true o false")
     if isinstance(regole, dict):
@@ -86,6 +86,10 @@ def _regole(c: Campagna, e: Esito) -> None:
         # The Game Master's background rolls (docs/prove.md §9): hidden (default), sometimes shown, always shown.
         if "tiri_master" in regole and regole["tiri_master"] not in TIRI_MASTER:
             e.errore("SCHEDA.regole", "campagna.yaml", "regole.tiri_master è nascosti (default), a_volte o visibili")
+        # The number to beat on the table's cards (docs/prove.md §8): hidden by default in both modes, shown on request.
+        if "mostra_cd" in regole and not isinstance(regole["mostra_cd"], bool):
+            e.errore("SCHEDA.regole", "campagna.yaml", "regole.mostra_cd è true (le carte al tavolo mostrano CD e CA) "
+                                                       "o false (default: le vede solo il pannello del master)")
 
 
 def _punteggi(e: Esito, dove: str, v, massimo: int) -> dict[str, int] | None:

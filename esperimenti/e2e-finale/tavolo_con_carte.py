@@ -3,7 +3,8 @@
     python3 -I tavolo_con_carte.py <results dir> <server logs dir> > tavolo-con-carte.md
 
 The harness's tavolo.md has what the table heard, not the dice cards: the cards come from the server log
-(«prove: tiri del turno», field `tiri`, the same strings the Engine sends to the screens). Cards of private
+(«prove: tiri del turno», field `tavolo`: the cards as the screens show them, with no number to beat; logs before
+16 November have only `tiri`, the Game Master's view with the DC, which the table never saw in manual mode). Cards of private
 actions go only to that player's phone, so they are left out, as the table never saw them. Combat lines of the
 Engine («Combattimento, round …», initiative) come from the same record's `fatti` only when they are public.
 """
@@ -26,6 +27,12 @@ def main() -> None:
         if d.get("msg") != "prove: tiri del turno":
             continue
         n = int(d.get("turno") or 0)
+        # `tavolo` (since 16 November) holds the cards as the projector showed them, without the number to beat that
+        # only the Game Master panel sees; older logs have only `tiri`, the Game Master's view with the DC (the third
+        # e2e pass's judges read «contro CD 17» from it as if the table had seen it).
+        if "tavolo" in d:
+            carte.setdefault(n, []).extend(str(t) for t in d.get("tavolo") or [])
+            continue
         for t in d.get("tiri") or []:
             if "(privata)" not in str(t):
                 carte.setdefault(n, []).append(str(t))

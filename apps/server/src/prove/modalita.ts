@@ -29,6 +29,16 @@ function scelta<T extends string>(v: unknown, ammessi: readonly T[]): T | null {
   return typeof v === 'string' && (ammessi as readonly string[]).includes(v) ? (v as T) : null;
 }
 
+/**
+ * Whether the table's cards show the number to beat (DC, AC, threshold): `regole.mostra_cd: true` in campagna.yaml.
+ * Default false, in both roll modes: the DC is never told to the players (Riccardo's rule, 15 November); only the Game
+ * Master panel has it (prove/richieste.ts, cartaPerIlTavolo).
+ */
+export function mostraCdAlTavolo(c: Campagna): boolean {
+  const regole = c.campagnaNarratore['regole'] as DatiYaml | undefined;
+  return regole?.['mostra_cd'] === true;
+}
+
 /** The campaign's setting, with the instance's override first (null = no override). */
 export function modalitaTiri(c: Campagna, override: { giocatori?: TiriGiocatori | null; master?: TiriMaster | null } = {}): ModalitaTiri {
   const regole = c.campagnaNarratore['regole'] as DatiYaml | undefined;

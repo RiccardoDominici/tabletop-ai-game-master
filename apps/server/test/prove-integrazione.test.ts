@@ -65,7 +65,7 @@ describe('prove e dadi col server intero', () => {
     const st: StatoTavolo = await conTiri;
     // Sul proiettore solo la carta pubblica.
     expect(st.tiri).toHaveLength(1);
-    expect(st.tiri![0]).toMatchObject({ chi: 'pg_ida', etichetta: 'Persuasione (Carisma)', dadi: [4, 13], dado: 13, vantaggio: 'vantaggio', modificatore: 5, totale: 18, contro: { tipo: 'CD', valore: 15 }, riuscita: true, privata: false });
+    expect(st.tiri![0]).toMatchObject({ chi: 'pg_ida', etichetta: 'Persuasione (Carisma)', dadi: [4, 13], dado: 13, vantaggio: 'vantaggio', modificatore: 5, totale: 18, contro: { tipo: 'CD', valore: 0 }, contro_nascosto: true, riuscita: true, privata: false });
 
     // Il turno finisce: la finestra del turno dopo.
     await attendi(ida, (x) => x.fase === 'finestra' && x.turno === 2);

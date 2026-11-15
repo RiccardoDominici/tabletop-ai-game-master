@@ -203,7 +203,7 @@ describe('manual rolls with the whole server', () => {
     expect(messaggi.at(-1)!).toMatch(/Balestra leggera[^\n]*COLPITO, \d+ danni/);
   }, 20_000);
 
-  it('automatic rolls (the campaign or the instance says so): no request, no wait, the card keeps the DC', async () => {
+  it('automatic rolls (the campaign or the instance says so): no request, no wait, and still no DC on the table card', async () => {
     prova = new Prova();
     const { url } = await prova.avvia(prova.campagna('prove'), COPIONE, { TAGM_TIRI_GIOCATORI: 'automatico' }, { arbitroProve: new ArbitroParole(), dadi: new DadiACopione([4, 13]) });
     const schermo = await prova.proiettore(url);
@@ -213,7 +213,8 @@ describe('manual rolls with the whole server', () => {
     const dopo = attendi(ida, (x) => x.fase === 'finestra' && x.turno === 2);
     await agisci(ida, 'pg_ida', 'Convinco Bertoldo a farci passare', s1.versione_scena);
     const s2 = await dopo;
-    expect(s2.tiri![0]).toMatchObject({ dadi: [4, 13], contro: { valore: 15 } });
+    // The DC is never told to the players, in this mode too (docs/prove.md §8): the projector's card has none.
+    expect(s2.tiri![0]).toMatchObject({ dadi: [4, 13], contro_nascosto: true, contro: { valore: 0 } });
     expect(s2.tiri![0]!.manuale).toBeUndefined();
   });
 });

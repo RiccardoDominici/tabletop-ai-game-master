@@ -494,10 +494,17 @@ same decisions as before:
    on a test's card differ from those entered, and when a player's roll was rolled by the Engine because nobody asked
    it. A turn played with the requests and the same turn played at once with the same values give the same cards,
    facts, HP, fight and dice counter (test/prove-manuali-seguito.test.ts, every rule-set shape).
-- **The table never sees the DC.** `cartaPerIlTavolo` strips the number to beat, its description and the rule text from a
-  card rolled on request (`contro_nascosto: true`, `contro.valore` 0): `MotoreProve.tiriPubblici` and `tiriDellAzione`
-  apply it, so the table state, `azione:mia` and a resumed session never carry it. The Engine's own cards keep
-  everything: an NPC's attack (against the PC's AC, which the player knows), death saves against the rule's fixed DC.
+- **The table never sees the DC.** `cartaPerIlTavolo` strips the number to beat, its description and the rule text from
+  every public card (`contro_nascosto: true`, `contro.valore` 0): `MotoreProve.tiriPubblici` and `tiriDellAzione`
+  apply it, so the table state, `azione:mia` and a resumed session never carry it. Since 16 November this holds in both
+  roll modes and for every card: a PC's check or attack (on request or rolled by the Engine), an NPC's attack against
+  a PC's AC, a death save. Before, only cards rolled on request hid it, and the third e2e pass
+  (docs/e2e-finale-3.md) found «contro CD 17», «contro CA 17» at the table in automatic mode. Untouched: an always-hit
+  attack (nothing to beat) and a Game Master roll (its own card). Only the panel (`tiriDelMaster`) and the narrator's
+  facts have the number. `regole.mostra_cd: true` in campagna.yaml (prove/modalita.ts, `mostraCdAlTavolo`; validator
+  `SCHEDA.regole`) shows the cards as rolled. The server log «prove: tiri del turno» has both views: `tiri` (the
+  panel's, with the DC) and `tavolo` (what the screens showed); `esperimenti/e2e-finale/tavolo_con_carte.py` quotes
+  `tavolo`.
   On a 2d6 set the difficulty is a modifier of the roll: it is as secret as a DC. The card carries it apart
   (`modificatore_difficolta`), the request's bonus leaves it out, and the table's card shows the bonus and the total
   without it (the total the phone showed) and the outcome.

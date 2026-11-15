@@ -27,6 +27,7 @@ import { frasiDi } from './difficolta';
 import type { Gregario } from '../campagna/gregari';
 import { normalizza } from '../azioni/regole';
 import { cartaPerIlTavolo, richiestaDaCarta, richiestaDaGruppo, type TiroInserito } from './richieste';
+import { mostraCdAlTavolo } from './modalita';
 import { loggerMuto, type Logger } from '../logger';
 import { risolviTurno, type Atteggiamento, type AzioneRisolvibile } from './risolutore';
 import { StatoProve, type StatoProveSalvato } from './stato';
@@ -891,16 +892,23 @@ export class MotoreProve {
   // ------------------------------------------------------------------ per il trasporto
 
   /**
-   * Carte pubbliche dell'ultimo turno con tiri (proiettore e telefoni). A card rolled at the table on request has no DC
-   * here (manual rolls, docs/prove.md §8): the panel has it (`tiriDelMaster`).
+   * Carte pubbliche dell'ultimo turno con tiri (proiettore e telefoni). No card has the number to beat here, in either
+   * roll mode, unless the campaign opts in (`regole.mostra_cd`, docs/prove.md §8): the panel has it (`tiriDelMaster`).
    */
   tiriPubblici(): TiroMostrato[] {
-    return (this.ultimoTurno?.tiri ?? []).filter((t) => !t.privata).map(cartaPerIlTavolo);
+    const mostra = this.mostraCd();
+    return (this.ultimoTurno?.tiri ?? []).filter((t) => !t.privata).map((t) => cartaPerIlTavolo(t, mostra));
   }
 
-  /** Carte di un'azione (anche privata): solo per il telefono del suo autore (without the DC of a manual roll). */
+  /** Carte di un'azione (anche privata): solo per il telefono del suo autore (without the number to beat either). */
   tiriDellAzione(idAzione: string): TiroMostrato[] {
-    return (this.ultimi.get(idAzione) ?? []).map(cartaPerIlTavolo);
+    const mostra = this.mostraCd();
+    return (this.ultimi.get(idAzione) ?? []).map((t) => cartaPerIlTavolo(t, mostra));
+  }
+
+  /** The campaign's opt-in to show the number to beat on the table's cards (prove/modalita.ts). */
+  private mostraCd(): boolean {
+    return mostraCdAlTavolo(this.o.contesto().campagna);
   }
 
   /** The Engine's dice (saved with the session): the Game Master's own rolls use them too (prove/tiri-master.ts). */

@@ -1590,6 +1590,10 @@ def test_regole_tiri_giocatori_e_master(camp):
     assert "SCHEDA.regole" in errori(camp)
     modifica(camp, "campagna.yaml", lambda d: d.update(regole={"tiri_master": "sempre"}))
     assert "SCHEDA.regole" in errori(camp)
+    modifica(camp, "campagna.yaml", lambda d: d.update(regole={"mostra_cd": True}))
+    assert "SCHEDA.regole" not in errori(camp)
+    modifica(camp, "campagna.yaml", lambda d: d.update(regole={"mostra_cd": "sì"}))
+    assert "SCHEDA.regole" in errori(camp)
 
 
 def test_scheda_caratteristiche_pg_fino_a_20_png_fino_a_30(camp):

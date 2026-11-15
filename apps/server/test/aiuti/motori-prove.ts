@@ -5,6 +5,7 @@
 import path from 'node:path';
 import type { RichiestaTiroMaster } from '@tabletop-ai-gm/shared';
 import { caricaCampagna } from '../../src/campagna/caricatore';
+import type { Campagna } from '../../src/campagna/tipi';
 import { caricaSchede } from '../../src/campagna/schede';
 import { loggerMuto } from '../../src/logger';
 import { DadiACopione } from '../../src/prove/dadi';
@@ -30,8 +31,10 @@ export function arbitro<D extends DecisioneProva | DecisioneRegole>(vuota: (id: 
   };
 }
 
-export function motoreSrd(regole: Record<string, Partial<DecisioneProva>>, dadi: number[]): MotoreProve {
+/** `ritocca` changes the loaded campaign before the Engine sees it (a campaign setting, e.g. `regole.mostra_cd`). */
+export function motoreSrd(regole: Record<string, Partial<DecisioneProva>>, dadi: number[], ritocca?: (c: Campagna) => void): MotoreProve {
   const c = caricaCampagna(path.join(FIX, 'prove'));
+  ritocca?.(c);
   const schede = caricaSchede(c);
   const nome = (id: string): string => c.pg.find((p) => p.id === id)?.nome ?? c.png.find((p) => p.id === id)?.nome ?? id;
   return new MotoreProve({

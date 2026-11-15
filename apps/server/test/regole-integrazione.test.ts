@@ -39,7 +39,9 @@ describe('set di regole col server intero', () => {
     await agisci(ida, 'pg_ida', 'Convinco Bertoldo a lasciarci passare', s1.versione_scena);
     const dopo: StatoTavolo = await attendi(ida, (x) => x.fase === 'finestra' && x.turno === 2);
     // 6 + 3 + Fascino 2 = 11: successo pieno.
-    expect(dopo.tiri?.[0]).toMatchObject({ risoluzione: '2d6_fasce', dadi: [6, 3], totale: 11, grado: { id: 'successo', nome: 'Successo pieno' }, regola: '2d6+2 (Fascino, Convincere qualcuno): 10+, successo pieno' });
+    // The table's card: dice, total and band; the rule text stays on the panel, like a DC (docs/prove.md §8).
+    expect(dopo.tiri?.[0]).toMatchObject({ risoluzione: '2d6_fasce', dadi: [6, 3], totale: 11, grado: { id: 'successo', nome: 'Successo pieno' }, contro_nascosto: true });
+    expect(dopo.tiri?.[0]?.regola).toBeUndefined();
     expect(messaggi.at(-1)).toContain('Esito della mossa «Convincere qualcuno»: il PNG fa ciò che chiedi.');
     // Il selettore sa che cosa vuol dire ogni fascia del set.
     expect(messaggi.at(-1)).toContain('- 7–9 «Successo con un costo»: riesce, ma devi dare un costo');
