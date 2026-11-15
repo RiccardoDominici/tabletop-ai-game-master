@@ -147,7 +147,7 @@ export const master = {
   'master.spoiler.orologio': 'Clock {n}',
   'master.spoiler.risposta': 'answer',
   'master.spoiler.privata_nascosta': 'Hidden content (private action): turn off “no spoilers” to read it.',
-  'master.spoiler.titolo_attivo': 'Hidden: future clock marks, private actions, unused lines, situations. Click to see everything.',
+  'master.spoiler.titolo_attivo': 'Hidden: future clock marks, private actions, unused lines, situations, roll DCs and the reasons of the Game Master’s rolls. Click to see everything.',
   'master.spoiler.titolo_spento': 'Everything is visible, including what the players do not know. Click to hide the spoilers.',
   'master.spoiler.attivo': 'no spoilers',
   'master.spoiler.spento': 'spoilers visible',
@@ -380,4 +380,7 @@ export const master = {
   'master.tiri.no': 'no',
   'master.tiri.mostrato': 'seen by the table',
   'master.tiri.nascosto': 'hidden',
+  'master.spoiler.motivo_tiro': '(why: turn «no spoilers» off)',
+  'master.spoiler.privata_breve': 'private check',
+  'master.spoiler.cd_nascosta': 'DC hidden',
 } satisfies Record<keyof typeof import('../it/master').master, string>;

@@ -155,7 +155,7 @@ Shown only when the campaign has dice and character sheets (see [Dice and sheets
 
 ### Rolls
 
-The **Tiri** (Rolls) box appears in campaigns with dice. Only here you see the DC.
+The **Tiri** (Rolls) box appears in campaigns with dice. Only here you see the DC (with «senza spoiler» off: see below).
 - The first line says who rolls: «I giocatori tirano i dadi veri» (players roll real dice, the default) or «Tira il Motore per i giocatori» (the Engine rolls for them), from `regole.tiri_giocatori` in `campagna.yaml` ([dice and sheets](dice-and-sheets.md#who-rolls-the-dice)).
 - While the table is rolling, one row per roll: who, what, against whom, the DC (or AC, or threshold), the dice to roll and the bonus. A private action's roll is here too, marked «privata».
 - A player forgot, or has no phone: type the dice they say in the boxes and press **Inserisci** (Enter), or press **Tira il Motore** (the Engine rolls that one). With more than one roll waiting, **Tutti al Motore** rolls them all.
@@ -253,6 +253,7 @@ When it is on, the panel hides:
 - the lines not yet used (only how many there are, per speaker) and the real type of those already used;
 - the situations not on air;
 - in the **Mondo** box, what happened in the world's log and the names of the clocks that owe ticks.
+- in the **Tiri** box, the DCs, what a private check was for, and why the program made its own rolls (who rolls, the dice, totals, outcomes and every button stay).
 
 Commands, statuses, counts, transcript, log and notes remain visible. Turn it off only if you are not playing, or when you really need to see everything.
 

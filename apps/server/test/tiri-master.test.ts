@@ -8,7 +8,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { loggerMuto } from '../src/logger';
 import { DadiACopione } from '../src/prove/dadi';
 import { TiriDelMaster, mostraTiroDelMaster, probabilita } from '../src/prove/tiri-master';
-import { Prova, attendi, inizia } from './aiuti/partita';
+import type { AudioFrase, StatoTavolo } from '@tabletop-ai-gm/shared';
+import { Prova, agisci, attendi, emetti, inizia } from './aiuti/partita';
 
 describe('which Game Master rolls the table sees', () => {
   it('hidden by default; always with «visibili»; a toss-up with «a_volte»; the data can ask', () => {
@@ -62,6 +63,47 @@ describe('Game Master rolls with the whole server', () => {
     const sm = await master.stato();
     expect(sm.tiri?.master).toBe('visibili');
     expect(sm.tiri?.del_master).toMatchObject([{ origine: 'o_piena#0', motivo: 'o_piena: scontro', dado: 6, almeno: 4, valore: 5, riuscito: true, mostrato: true }]);
+  });
+
+  it('inside a turn: a PC\'s attack opens the fight, the gate rolls, the voice says it before the narration', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('prove', { ritocchi: { 'campagna.yaml': conPorta } });
+    const { url } = await prova.avvia(cartella, (t) => (t === 0 ? '[narratore] Il fiume rumoreggia.\n[invito] tutti' : '[narratore] La mazza fischia.\n[invito] tutti'), { TAGM_TIRI_MASTER: 'visibili' }, { dadi: new DadiACopione([1]) });
+    const schermo = await prova.proiettore(url);
+    const frasi: AudioFrase[] = [];
+    schermo.on('audio:frase', (f) => frasi.push(f));
+    const corrado = await prova.telefono(url, 'pg_corrado');
+    const s1 = await inizia(schermo, corrado);
+    const dopo = attendi(corrado, (x) => x.fase === 'finestra' && x.turno === 2);
+    await agisci(corrado, 'pg_corrado', 'Colpisco Ruggero con la spada lunga', s1.versione_scena);
+    const s2 = await dopo;
+    const delTurno = frasi.filter((f) => f.turno === 1).map((f) => f.testo);
+    expect(delTurno[0]).toBe('Il master tira i dadi.');
+    expect(delTurno).toContain('La mazza fischia.');
+    expect(delTurno.indexOf('Il master tira i dadi.')).toBeLessThan(delTurno.indexOf('La mazza fischia.'));
+    expect((s2.tiri ?? []).some((t) => t.del_master && t.facce === 6)).toBe(true);
+  });
+
+  it('at a scene change: the gate on leaving rolls, and the line opens the new scene\'s reading', async () => {
+    prova = new Prova();
+    const conTiro = (d: Record<string, unknown>): void => {
+      const o = (d['orologi'] as Array<Record<string, unknown>>).find((x) => x['id'] === 'o_piena')!;
+      (o['avanza_quando'] as Array<unknown>)[2] = { quando: 'lascia_scena', scena: 'scena_mulino', volte: 1, tiro: { dado: 6, almeno: 4 } };
+    };
+    const cartella = prova.campagna('mondo', { ritocchi: { 'campagna.yaml': conTiro } });
+    const { url } = await prova.avvia(cartella, () => '[narratore] Il vento gira.\n[invito] tutti', { TAGM_TIRI_MASTER: 'visibili' });
+    const schermo = await prova.proiettore(url);
+    const frasi: AudioFrase[] = [];
+    schermo.on('audio:frase', (f) => frasi.push(f));
+    const tel = await prova.telefono(url, (await emetti<StatoTavolo>((cb) => schermo.emit('stato:richiedi', cb))).pg[0]!.id);
+    const master = await prova.master(url);
+    await inizia(schermo, tel);
+    const n = frasi.length;
+    expect(await master.comanda({ tipo: 'scena', scena: 'scena_bosco' })).toEqual({ ok: true });
+    await attendi(tel, (x) => x.fase === 'finestra' && x.scena.titolo !== '' && frasi.length > n);
+    await new Promise((r) => setTimeout(r, 200));
+    expect(frasi[n]?.testo).toBe('Il master tira i dadi.');
+    expect((await master.stato()).tiri).toBeUndefined(); // no sheets: no dice box, the voice is the only sign
   });
 
   it('hidden by default: the roll happens, only the panel has it', async () => {

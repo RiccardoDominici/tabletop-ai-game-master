@@ -530,8 +530,12 @@ nobody at the table rolls for it, the Engine rolls; the model never picks the re
   - `visibili`: always shown;
   - a roll whose data says `visibile: true` is always shown.
 - **Shown** means a card «Il master» on the projector and the phones with the die and «Sì»/«No» (never what it was for,
-  never the target: those are the Game Master's), and, inside a turn being resolved, one line of the narrator's voice
-  («Il master tira i dadi.»). A roll made outside a turn (the panel's «Inizia combattimento») shows only the card.
+  never the target: those are the Game Master's), and one line of the narrator's voice («Il master tira i dadi.»):
+  inside a turn being resolved, before that turn's narration; at a scene change (a gate on leaving), as the first line
+  of the new scene's reading; after a fight opened from the panel, before the next narration. A campaign without
+  sheets has no cards: the line is the only sign, and the log has the roll.
+- **The panel** («Tiri del master» in the Tiri box) lists the last rolls with what asked for them; with «senza
+  spoiler» on, the reasons are hidden, and so are the DCs and what a private check was for.
 - **Not yet** (open): a world question tied to an action that the campaign writes in a scene («is the guard
   awake?», with its odds) and an NPC's own check outside combat. Both need a data source the Engine can read without a
   model; the hook and the visibility rule above are ready for them.

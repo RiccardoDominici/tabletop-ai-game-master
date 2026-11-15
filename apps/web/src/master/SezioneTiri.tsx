@@ -8,12 +8,14 @@
  * - The last turn's cards as rolled: dice, total, DC, outcome, who entered the dice.
  * - «Chiedi una prova»: the Game Master asks a PC for a check (skill, ability or save of the set, a difficulty of its
  *   scale), with a few words of why; it joins the next closed window («Risolvi ora» closes it at once).
+ * «Senza spoiler» (the Game Master who also plays): the DCs, what a private check was for, and the reasons of the Game
+ * Master's own rolls are hidden; who rolls, the dice, totals, outcomes and every command stay.
  * Absent without dice (`stato.tiri` missing).
  */
 import { useState } from 'react';
 import type { RichiestaTiroMaster, StatoMaster, TiroMostrato } from '@tabletop-ai-gm/shared';
 import { totaleRichiesta } from '@tabletop-ai-gm/shared';
-import { useInCorso } from '../store/master';
+import { useInCorso, useSenzaSpoiler } from '../store/master';
 import { inviaComando } from './sessione';
 import { Riquadro, Vuoto } from './Riquadro';
 import { Chip } from './Chip';
@@ -24,6 +26,7 @@ import { conSegno, siglaContro } from '../lib/tiri';
 export function SezioneTiri({ stato }: { stato: StatoMaster }) {
   const tiri = stato.tiri;
   const inCorsoTutti = useInCorso('tiro:*');
+  const senzaSpoiler = useSenzaSpoiler();
   if (!tiri) return null;
   const aperte = tiri.richieste.filter((r) => r.valori === null);
   return (
@@ -49,7 +52,7 @@ export function SezioneTiri({ stato }: { stato: StatoMaster }) {
         <ul className="flex flex-col gap-1.5">
           {tiri.richieste.map((r) => (
             <li key={r.id}>
-              <RigaRichiesta r={r} />
+              <RigaRichiesta r={r} senzaSpoiler={senzaSpoiler} />
             </li>
           ))}
         </ul>
@@ -68,7 +71,7 @@ export function SezioneTiri({ stato }: { stato: StatoMaster }) {
           <ul className="mt-1 flex flex-col gap-1 text-pergamena-2">
             {[...tiri.del_master].reverse().map((r) => (
               <li key={r.id}>
-                {t('master.tiri.riga_master', { turno: r.turno, motivo: r.motivo, dado: r.dado, almeno: r.almeno, valore: r.valore })}{' '}
+                {t('master.tiri.riga_master', { turno: r.turno, motivo: senzaSpoiler ? t('master.spoiler.motivo_tiro') : r.motivo, dado: r.dado, almeno: r.almeno, valore: r.valore })}{' '}
                 <span className={r.riuscito ? 'text-muschio' : 'text-brace'}>{t(r.riuscito ? 'master.tiri.si' : 'master.tiri.no')}</span>
                 <span className="text-cenere"> · {t(r.mostrato ? 'master.tiri.mostrato' : 'master.tiri.nascosto')}</span>
               </li>
@@ -82,7 +85,7 @@ export function SezioneTiri({ stato }: { stato: StatoMaster }) {
         <ul className="flex flex-col gap-1 text-sm" data-testid="master-tiri-carte">
           {tiri.carte.map((c) => (
             <li key={c.id}>
-              <RigaCarta c={c} />
+              <RigaCarta c={c} senzaSpoiler={senzaSpoiler} />
             </li>
           ))}
         </ul>
@@ -161,7 +164,7 @@ function contro(c: Pick<TiroMostrato, 'contro'>): string {
   return `${siglaContro(c.contro.tipo)} ${c.contro.valore}`;
 }
 
-function RigaRichiesta({ r }: { r: RichiestaTiroMaster }) {
+function RigaRichiesta({ r, senzaSpoiler }: { r: RichiestaTiroMaster; senzaSpoiler: boolean }) {
   const [campi, setCampi] = useState<string[]>(() => Array.from({ length: r.quanti }, () => ''));
   const inCorso = useInCorso(`tiro:${r.id}`);
   const valori = campi.map((x) => Number(x));
@@ -171,12 +174,12 @@ function RigaRichiesta({ r }: { r: RichiestaTiroMaster }) {
     <div data-testid={`master-tiro-${r.id}`} data-chiusa={String(chiusa)} className="flex flex-col gap-1.5 rounded-lg border border-candela/50 bg-notte-3 p-2 text-sm">
       <div className="flex flex-wrap items-center gap-2">
         <span className="min-w-0 flex-1 truncate font-semibold">
-          {r.nome}: {r.etichetta}
-          {r.bersaglio ? ` → ${r.bersaglio.nome}` : ''}
+          {r.nome}: {senzaSpoiler && r.privata ? t('master.spoiler.privata_breve') : r.etichetta}
+          {r.bersaglio && !(senzaSpoiler && r.privata) ? ` → ${r.bersaglio.nome}` : ''}
         </span>
         {r.privata && <Chip tono="lago">{t('master.tiri.privata')}</Chip>}
         <span data-testid={`master-tiro-${r.id}-contro`} className="font-semibold text-candela tabular-nums">
-          {contro(r)}
+          {senzaSpoiler ? t('master.spoiler.cd_nascosta') : contro(r)}
         </span>
       </div>
       <p className="text-pergamena-2">
@@ -211,11 +214,12 @@ function RigaRichiesta({ r }: { r: RichiestaTiroMaster }) {
   );
 }
 
-function RigaCarta({ c }: { c: TiroMostrato }) {
+function RigaCarta({ c, senzaSpoiler }: { c: TiroMostrato; senzaSpoiler: boolean }) {
   const conto = c.risoluzione === 'sotto_soglia' ? `${c.dado}` : `${c.dadi.join('/')} ${conSegno(c.modificatore)} = ${c.totale}`;
+  const mostraContro = !c.automatico && !c.del_master && !senzaSpoiler;
   return (
     <span data-testid={`master-carta-${c.id}`} className="text-pergamena-2">
-      <span className="font-semibold text-pergamena">{c.nome}</span> · {c.etichetta}: {c.automatico ? c.danno?.totale : conto} {!c.automatico && contro(c)} →{' '}
+      <span className="font-semibold text-pergamena">{c.nome}</span> · {senzaSpoiler && c.privata ? t('master.spoiler.privata_breve') : c.etichetta}: {c.automatico ? c.danno?.totale : conto} {mostraContro && contro(c)} →{' '}
       <span className={c.riuscita ? 'text-muschio' : 'text-brace'}>{t(c.riuscita ? 'master.tiri.riuscita' : 'master.tiri.fallita')}</span>
       {c.manuale && <span className="text-cenere"> · {t(`master.tiri.da_${c.manuale}`)}</span>}
       {c.privata && <span className="text-cenere"> · {t('master.tiri.privata')}</span>}

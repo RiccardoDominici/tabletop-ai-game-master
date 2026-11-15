@@ -413,6 +413,8 @@ export class Regia {
   private readonly tiriGiocatori: TiriGiocatoriRegia;
   /** The Game Master's own rolls (docs/prove.md §9): the world's uncertain outcomes, hidden or shown by the setting. */
   private readonly tiriDelMaster: TiriDelMaster;
+  /** Lines of the Game Master's shown rolls made outside a narration: said at the start of the next one (§9). */
+  private frasiDelMasterInAttesa: string[] = [];
   /** This turn has no action but a check the Game Master asked: it is not a stall (docs/prove.md §8). */
   private soloProveDelMaster = false;
   /** Prove riuscite per azione nel turno che si sta narrando (cancello `richiede.prova` del repertorio). */
@@ -551,11 +553,11 @@ export class Regia {
       nome: () => testoFisso('prove.master.nome'),
       mostra: (carta) => {
         this.prove?.aggiungiCartaDelMaster(carta);
-        // One line of the narrator's voice, inside a turn being resolved (before the narration of that turn).
-        if (this.fase === 'narrazione') {
-          const frase = testoFisso('prove.master.voce');
-          this.pipeline.accoda({ id_frase: `t${carta.turno}-${carta.id}`, turno: carta.turno, indice: 650, parlante: ID_NARRATORE, nome: nomeNarratore(), voce_id: ID_NARRATORE, testo: frase, testo_voce: this.pronuncia(frase) });
-        }
+        // One line of the narrator's voice: inside a turn being resolved, now, before that turn's narration; otherwise
+        // (a scene change, a fight opened from the panel) it opens the next opening or narration.
+        const frase = testoFisso('prove.master.voce');
+        if (this.fase === 'narrazione') this.parlaFraseDelMaster(carta.turno, frase, carta.id);
+        else this.frasiDelMasterInAttesa.push(frase);
         this.notifica();
       },
     });
@@ -2168,6 +2170,7 @@ export class Regia {
     // Punti ferita pieni, dadi con un seme nuovo, nessuna carta.
     this.prove?.azzera();
     this.tiriGiocatori.dimenticaChieste();
+    this.frasiDelMasterInAttesa = [];
     // Le note di regia contano i turni di questa scena: si riparte senza.
     this.note.azzera();
     this.situazioniMostrate.clear();
@@ -2315,7 +2318,8 @@ export class Regia {
     const rientro = this.sceneVisitate.has(nuova.id) ? this.rientroIn(nuova, turno) : null;
     this.sceneVisitate.add(nuova.id);
     // The world: what the PCs find arriving (consequences of a jump of this scene, traces of off-screen events).
-    const frasi = [...(rientro?.frasi ?? nuova.apertura), ...this.frasiDelMondoInScena(turno)];
+    // The Game Master's roll shown when the PCs left (a gate on `lascia_scena`) opens the new scene's reading (§9).
+    const frasi = [...this.frasiDelMasterInAttesa.splice(0), ...(rientro?.frasi ?? nuova.apertura), ...this.frasiDelMondoInScena(turno)];
     this.o.registroNarrazioni.scrivi({
       sessione: this.sessione,
       turno,
@@ -2765,6 +2769,11 @@ export class Regia {
     return { ok: true };
   }
 
+  /** One narrator line of a shown Game Master roll, in the turn being resolved (docs/prove.md §9). */
+  private parlaFraseDelMaster(turno: number, testo: string, chiave: string): void {
+    this.pipeline.accoda({ id_frase: `t${turno}-m${chiave}`, turno, indice: 650, parlante: ID_NARRATORE, nome: nomeNarratore(), voce_id: ID_NARRATORE, testo, testo_voce: this.pronuncia(testo) });
+  }
+
   /** A PC's open requests (private ones included): for its phone when it (re)connects. */
   tiriRichiestiDi(id_pg: string): RichiestaTiro[] {
     return this.tiriGiocatori.delPg(id_pg);
@@ -2926,6 +2935,8 @@ export class Regia {
     this.misuratore = giocate.attesa_ms
       ? new MisuratoreTurno(r.turno, this.o.orologio.ora(), r.durata_ms, this.o.voce.nome, this.o.orologio.adesso())
       : new MisuratoreTurno(r.turno, r.chiusa_a, r.durata_ms, this.o.voce.nome, this.o.orologio.adesso());
+    // The Game Master's shown rolls made while the window was open (a fight from the panel): said before the narration.
+    this.frasiDelMasterInAttesa.splice(0).forEach((f, k) => this.parlaFraseDelMaster(r.turno, f, `attesa${k}`));
     // Contratto voce: /sveglia alla chiusura della finestra, in parallelo alla chiamata dell'LLM
     // (fire-and-forget: la prima frase arriva dopo ~0,9 s, la sveglia ci sta dentro).
     const motoreVoce = this.o.voce.attivo;

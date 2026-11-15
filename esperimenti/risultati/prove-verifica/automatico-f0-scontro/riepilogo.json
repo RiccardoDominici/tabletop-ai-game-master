@@ -1,0 +1,360 @@
+{
+  "copione": "scontro-srd",
+  "campagna": "prova-f0",
+  "modo": "improvvisa",
+  "porta": 4895,
+  "narratore_finto": true,
+  "sessione": "2026-11-15T15:46:46.783Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "d33251258899834376126b6b7280e4934b3e173e",
+    "modificati": [
+      "M apps/server/src/scena/regia.ts",
+      "M apps/server/test/tiri-master.test.ts"
+    ],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 13,
+  "turni_copione": 5,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "automatico",
+    "tiri": []
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 12,
+    "passate": 0
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 7,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 9,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 10,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 11,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 12,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      },
+      {
+        "turno": 13,
+        "stato": {
+          "o_colpevole": "0/6"
+        }
+      }
+    ],
+    "massimo": {
+      "o_colpevole": "0/6"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 0,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 21,
+      "peggiore": 36,
+      "n": 13
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 508,
+      "peggiore": 539,
+      "n": 13
+    },
+    "llm_prima_frase": {
+      "mediana": 719,
+      "peggiore": 761,
+      "n": 13
+    },
+    "voce_richiesta": {
+      "mediana": 719,
+      "peggiore": 761,
+      "n": 13
+    },
+    "voce_primo_audio": {
+      "mediana": 1372,
+      "peggiore": 1412,
+      "n": 13
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1523,
+      "peggiore": 1565,
+      "n": 13
+    },
+    "llm_fine": {
+      "mediana": 1540,
+      "peggiore": 1585,
+      "n": 13
+    },
+    "audio_fine": {
+      "mediana": 13204,
+      "peggiore": 15317,
+      "n": 13
+    }
+  },
+  "buchi": {
+    "totale": 51,
+    "in_frase": 0,
+    "tra_frasi": 51,
+    "silenzio_ms": 14884,
+    "per_turno": [
+      5,
+      5,
+      2,
+      5,
+      5,
+      3,
+      5,
+      4,
+      2,
+      4,
+      4,
+      2,
+      5
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 35,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 15,
+  "azioni_senza_risposta": 15,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 8,
+  "usa_rifiutati_per_motivo": {},
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 148,
+      "secondi": 29.266666666666598,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 278
+    },
+    {
+      "turno": 1,
+      "frasi": 7,
+      "pezzi": 63,
+      "secondi": 12.133333333333324,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1616
+    },
+    {
+      "turno": 2,
+      "frasi": 7,
+      "pezzi": 61,
+      "secondi": 11.866666666666658,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1469
+    },
+    {
+      "turno": 3,
+      "frasi": 4,
+      "pezzi": 40,
+      "secondi": 7.733333333333337,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 560
+    },
+    {
+      "turno": 4,
+      "frasi": 7,
+      "pezzi": 63,
+      "secondi": 12.133333333333324,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1576
+    },
+    {
+      "turno": 5,
+      "frasi": 6,
+      "pezzi": 54,
+      "secondi": 10.466666666666663,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1216
+    },
+    {
+      "turno": 6,
+      "frasi": 4,
+      "pezzi": 40,
+      "secondi": 7.733333333333337,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 580
+    },
+    {
+      "turno": 7,
+      "frasi": 7,
+      "pezzi": 63,
+      "secondi": 12.133333333333324,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1551
+    },
+    {
+      "turno": 8,
+      "frasi": 6,
+      "pezzi": 54,
+      "secondi": 10.466666666666663,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1212
+    },
+    {
+      "turno": 9,
+      "frasi": 4,
+      "pezzi": 40,
+      "secondi": 7.733333333333337,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 572
+    },
+    {
+      "turno": 10,
+      "frasi": 6,
+      "pezzi": 54,
+      "secondi": 10.466666666666663,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1212
+    },
+    {
+      "turno": 11,
+      "frasi": 6,
+      "pezzi": 54,
+      "secondi": 10.466666666666663,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1193
+    },
+    {
+      "turno": 12,
+      "frasi": 4,
+      "pezzi": 40,
+      "secondi": 7.733333333333337,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 565
+    },
+    {
+      "turno": 13,
+      "frasi": 7,
+      "pezzi": 63,
+      "secondi": 12.133333333333324,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1562
+    }
+  ]
+}

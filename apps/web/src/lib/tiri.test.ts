@@ -362,3 +362,19 @@ describe('automatic attack card', () => {
   });
 });
 
+
+describe('manual rolls: a card without the number to beat (docs/prove.md §8)', () => {
+  it('d20: the total and the outcome, no «CD 0»; 2d6: the band stays, it is the outcome', () => {
+    const d20 = tiro({ contro: { tipo: 'CD', valore: 0, descrizione: null }, contro_nascosto: true, manuale: 'telefono' });
+    expect(descriviTiro(d20)).not.toMatch(/CD|\b0\b/);
+    const fasce = tiro({ risoluzione: '2d6_fasce', facce: 6, dadi: [4, 3], dado: 7, modificatore: 2, totale: 9, contro: { tipo: 'fasce', valore: 0, descrizione: null }, contro_nascosto: true, grado: { id: 'parziale', nome: 'Successo con un costo' } });
+    expect(testoBersaglioCarta(fasce)).toBe('Successo con un costo');
+    expect(descriviTiro(fasce)).not.toMatch(/fasce 0/);
+  });
+
+  it('a Game Master roll: the die and yes or no', () => {
+    const m = tiro({ chi: 'master', nome: 'Il master', di_png: true, del_master: true, dadi: [5], dado: 5, totale: 5, facce: 6, contro_nascosto: true, contro: { tipo: 'CD', valore: 0, descrizione: null }, riuscita: true });
+    expect(esitoTiro(m).testo).toBe('Sì');
+    expect(descriviTiro(m)).not.toMatch(/CD/);
+  });
+});

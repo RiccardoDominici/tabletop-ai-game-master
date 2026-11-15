@@ -136,9 +136,17 @@ test('manual rolls: the request without DC, the dice typed on the phone and ente
   await ida.screenshot({ path: path.join(CARTELLA, 'telefono-ida-dopo.png') });
   // The panel keeps the full cards, the DC included, and says who entered the dice.
   const carte = master.getByTestId('master-tiri-carte');
-  await expect(carte).toContainText('CD');
+  // «Senza spoiler» (on by default): no DC and no content of Teo's private check, who entered the dice stays.
   await expect(carte).toContainText('inserito dal master');
+  await expect(carte).not.toContainText(/\bCD\b|Rapidità di mano/);
+  await expect(carte).toContainText('prova privata');
+  await master.screenshot({ path: path.join(CARTELLA, 'master-carte-senza-spoiler.png') });
+  // Spoilers visible: the DCs and the private check's label.
+  await master.getByTestId('master-spoiler').click();
+  await expect(carte).toContainText('CD');
+  await expect(carte).toContainText('Rapidità di mano');
   await master.screenshot({ path: path.join(CARTELLA, 'master-carte.png') });
+  await master.getByTestId('master-spoiler').click();
   // The phones' cards: no number to beat either (the compact «Tiri del turno» and the full card).
   await expect(ida.getByTestId('carta-tiro').first()).toBeVisible();
   for (const c of await ida.getByTestId('carta-tiro').all()) await expect(c).not.toContainText(/\bCD\b|\bCA\b/);
@@ -173,6 +181,9 @@ test('manual rolls: the request without DC, the dice typed on the phone and ente
   await schermo.screenshot({ path: path.join(CARTELLA, 'proiettore-tiro-master.png') });
   await expect(master.getByTestId('master-tiri-del-master')).toBeVisible();
   await master.getByTestId('master-tiri-del-master').locator('summary').click();
+  // The reason of a Game Master roll is a spoiler: hidden with the switch on, readable with it off.
+  await expect(master.getByTestId('master-tiri-del-master')).not.toContainText('o_piena');
+  await master.getByTestId('master-spoiler').click();
   await expect(master.getByTestId('master-tiri-del-master')).toContainText('o_piena');
   await master.screenshot({ path: path.join(CARTELLA, 'master-tiri-del-master.png') });
   expect(errori).toEqual([]);

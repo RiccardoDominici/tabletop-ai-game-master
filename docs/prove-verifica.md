@@ -5,7 +5,7 @@ correttamente quando un giocatore le richiede, quando il master le richiede, si 
 scelta correttamente.» Later the same day: the players roll real dice by default and are never told the DC; the
 program rolls only if the campaign says so; the Game Master's own rolls happen in the background, sometimes shown.
 
-This page is the evidence table: each row is a scenario run on a test port (4891–4895, logs in `logs/porta-<port>/`,
+This page is the evidence table: each row is a scenario run on a test port (4891–4896, logs in `logs/porta-<port>/`,
 results in `esperimenti/risultati/prove-verifica/`), what was expected, what the phones, the projector and the Game
 Master panel received, the verdict and the commit that fixed it. The design is in docs/prove.md (§8 manual rolls, §9
 the Game Master's rolls) and docs/combattimento.md.
@@ -26,7 +26,8 @@ morale, one death save, surprise 1d6).
 ## 2. Manual rolls (the added requirement)
 
 Live on the real pages: `apps/web/e2e/tiri-manuali.spec.ts`, port 4893, profile R, the invented campaign `prove` with a
-d6 gate on its clock; screenshots in `logs/screenshots/tiri-manuali/`. Passes (1 test, 59 s).
+d6 gate on its clock; screenshots in `logs/screenshots/tiri-manuali/`. Passes (1 test, about a minute). Ports used for
+this page: 4891–4896 and 4893 for the e2e.
 
 | Scenario | Expected | Seen | Verdict | Fix |
 |---|---|---|---|---|
@@ -56,6 +57,9 @@ d6 gate on its clock; screenshots in `logs/screenshots/tiri-manuali/`. Passes (1
 | A fight opened from the panel; the clock's gate rolls a d6 ≥ 4, `TAGM_TIRI_MASTER=visibili` | projector card «Il master», d6, Sì/No, never the reason; panel «Tiri del master» with the reason | `proiettore-tiro-master.png` (d6 2, «No»), `master-tiri-del-master.png` («o_piena: scontro») | works | `ce6ac5d`, `dc2afa2` |
 | Same, default `nascosti` | only the panel | as expected | works | `test/tiri-master.test.ts` |
 | `a_volte` | shown for odds from 1/3 to 2/3 | rule tested (d6: 3+, 4+, 5+ shown; 2+, 6+ hidden) | works | `test/tiri-master.test.ts` |
+| A PC's attack opens a fight inside a turn; the gate rolls (whole server) | the voice says «Il master tira i dadi.» before that turn's narration; the card is among the turn's cards | first `audio:frase` of the turn is the line, then the narration; the d6 card in `stato.tiri` | works | `test/tiri-master.test.ts` (this commit) |
+| A gate on leaving a scene (whole server, the invented `mondo` campaign) | the line opens the new scene's reading | before: nothing was said outside a turn (only the card); now the first phrase of the new opening | fixed (this commit) |
+| «Senza spoiler» on the panel | the Tiri box hides DCs, private check labels and the reasons of the Game Master's rolls | before: it showed them (`master-carte.png` with the switch on); now hidden with the switch on, shown with it off (e2e asserts both) | fixed (this commit) |
 
 ## 5. DC choice on twenty actions where no data sets the DC
 
@@ -86,7 +90,7 @@ The headless players answered every request with their own dice.
 | DC never said | no DC, AC or total in what the table heard | no narrator line with a number next to CD/CA/difficoltà or a total (`tavolo.md`, `narrazioni.jsonl`) | works |
 | Private checks | request only on the phone, outcome only in the private line | Livia's and Eliandro's private Charisma checks: requests marked private, outcomes in «Esiti delle azioni PRIVATE»; 5 narrator lines moved to the phone by the private guard; one line «Eliandro, la pastora alza lo sguardo…» stayed at the table (no content of the question: the private guard's area, docs/e2e-finale.md A) | works; one borderline line |
 | Failed checks and the narrator | what was wanted does not happen | T6 «Berta ripete la sua risposta senza muovere la chiave» after Charisma 16 vs 17; 3 × an NPC giving in after a failed social check replaced by its refusal; 4 × a sentence contradicting a card replaced | works (guards active) |
-| Game Master roll at a scene change | `o_sospetto` gate, d6 ≥ 4 when the PCs leave; `a_volte`: 1/2 is a toss-up → shown | T7: d6 = 3, no; shown («testa_o_croce») | works |
+| Game Master roll at a scene change | `o_sospetto` gate, d6 ≥ 4 when the PCs leave; `a_volte`: 1/2 is a toss-up → shown | T7: d6 = 3, no; the Engine marked it shown («testa_o_croce»), but at a scene change the voice line was not said (only the card): found in review, fixed afterwards (§4) | partly; fixed |
 | Surprise | an NPC struck first (Zirrà's reaction), so the PCs roll | «Sorpresa: i personaggi tirano 6 su 1d6: non sono colti di sorpresa» | works |
 | Initiative | 1d6 + Dexterity, re-rolled every round, the dead leave the order | 8 rounds, re-rolled each time («Round 2, iniziativa ritirata: Eliandro 7, Grosso 6, Livia Sarti 4, Zirrà 2»), Nespola gone after she died | works |
 | Turns in combat | only the PC on turn acts; the others wait for their turn | 0 × «risolve solo chi è di turno»; 16 actions waited; 2 PCs passed | works |
@@ -122,6 +126,13 @@ threat «impossibile» (Baldrin would not move), so the script's threats stayed 
 | An attack on a target already down | «Baldrin è già a terra: nessun tiro»; no request was made for it | works |
 | Speech and questions | «Chiedo a Ottavia…», «Dico agli altri: …»: no roll | works |
 | After the fight | the down PCs' leftover actions: «è a terra, privo di sensi: non può agire»; the narrator hears that they do not act | works (`a852ca1`) |
+
+**Automatic rolls on the final code** (profile R, `--tiri automatico --finto`, port 4895): `scontro-srd.yaml` on
+prova-f0 and `torre-mozza/pressione` (results `automatico-f0-scontro`, `automatico-torre-pressione`). No request and
+no wait (0 «waiting for the dice»), the Engine's dice on every card, the DC and AC on them («Balestra leggera 15
+contro CA 11», «Scassinare serrature 90 contro soglia 25»); BF: the fight opened by a PC's arrow, so the NPCs rolled
+surprise («lato png», 5, not surprised), initiative re-rolled for six rounds, 0 deferred actions; the Game Master's
+roll at the scene change hidden by default («nascosto»).
 
 ## 8. Baseline runs before the changes (automatic rolls, profile A)
 

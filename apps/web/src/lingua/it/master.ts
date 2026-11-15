@@ -147,7 +147,7 @@ export const master = {
   'master.spoiler.orologio': 'Orologio {n}',
   'master.spoiler.risposta': 'risposta',
   'master.spoiler.privata_nascosta': 'Contenuto nascosto (azione privata): spegni «senza spoiler» per leggerlo.',
-  'master.spoiler.titolo_attivo': 'Nascosti: segni futuri degli orologi, azioni private, battute non uscite, situazioni. Clic per vedere tutto.',
+  'master.spoiler.titolo_attivo': 'Nascosti: segni futuri degli orologi, azioni private, battute non uscite, situazioni, CD dei tiri e perché dei tiri del master. Clic per vedere tutto.',
   'master.spoiler.titolo_spento': 'Si vede tutto, anche ciò che i giocatori non sanno. Clic per nascondere gli spoiler.',
   'master.spoiler.attivo': 'senza spoiler',
   'master.spoiler.spento': 'spoiler visibili',
@@ -380,4 +380,7 @@ export const master = {
   'master.tiri.no': 'no',
   'master.tiri.mostrato': 'visto dal tavolo',
   'master.tiri.nascosto': 'nascosto',
+  'master.spoiler.motivo_tiro': '(perché: spegni «senza spoiler»)',
+  'master.spoiler.privata_breve': 'prova privata',
+  'master.spoiler.cd_nascosta': 'CD nascosta',
 } as const;
