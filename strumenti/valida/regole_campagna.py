@@ -134,8 +134,10 @@ def controlla_fronti(c: Campagna, e: Esito) -> None:
             e.errore("FRONTI.segni", oid, f"{len(segni)} segni per {o.get('segmenti')} segmenti (uno per segmento)")
         if not o.get("avanza_quando"):
             e.errore("FRONTI.campo", oid, "manca avanza_quando (regola di ritmo)")
-        if "segno_almeno_ogni" in o and not (isinstance(o["segno_almeno_ogni"], int) and o["segno_almeno_ogni"] >= 1):
-            e.errore("FRONTI.campo", oid, "segno_almeno_ogni è un intero >= 1")
+        # `serata`: the Engine derives the pace from the evening (docs/mondo.md §1, apps/server/src/mondo/ritmo.ts).
+        ogni = o.get("segno_almeno_ogni")
+        if "segno_almeno_ogni" in o and ogni != "serata" and not (isinstance(ogni, int) and not isinstance(ogni, bool) and ogni >= 1):
+            e.errore("FRONTI.campo", oid, "segno_almeno_ogni è un intero >= 1, oppure «serata» (il ritmo che riempie l'orologio nella serata)")
         # parte_dopo: l'orologio comincia a correre quando esce una di queste battute o si rivela uno di
         # questi indizi (riferimenti/schema.md). Il Motore lo applica (apps/server/src/scena/orologi.ts).
         for x in o.get("parte_dopo") or []:

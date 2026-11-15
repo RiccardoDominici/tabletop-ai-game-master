@@ -1,0 +1,7 @@
+id: scena_bosco
+nome: "Il bosco"
+apertura: "Gli alberi sono fitti."
+png_presenti: []
+orologi_attivi: [o_sera]
+indizi:
+  - {id: i_ramo, conclusione: r_ladra, come_si_trova: "Un ramo spezzato all'altezza di una spalla."}

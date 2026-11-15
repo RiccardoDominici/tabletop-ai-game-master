@@ -120,7 +120,10 @@ Situation images: a PNG for a precise moment, which takes the place of the place
 The threat clocks of the scene: a row of boxes, filled up to the tick already shown, with the next one highlighted.
 
 - **−1** and **+1** correct by one tick, if the narrator forgot one or added one too many.
-- "dovuto" (due): the minimum pace asks for the next tick to be shown in the next reply.
+- "dovuto" (due): the minimum pace asks for the next tick to be shown in the next reply. A clock with
+  `segno_almeno_ogni: serata` has no fixed pace: the Engine spreads its ticks over what is left of the evening (the
+  length in the **Serata** box, the scenes where the clock is active, the turns per hour this table really plays;
+  [docs/mondo.md](../mondo.md) §1).
 - "completo" (full): the clock is full. With spoilers visible, the panel says what happens "a orologio completo" (when the clock is full).
 - "non ancora partito" (not started yet): the clock is waiting for a line or a clue. +1 starts it by hand.
 
@@ -195,7 +198,7 @@ These three commands cannot be undone. For this reason they ask for a second cli
 
 **Telefoni ricordati** (Remembered phones) (when there are any): each phone with its character. You can choose another character from the list, or press **Dimentica** (Forget) so that the phone chooses again. The change applies from the phone's next connection.
 
-**Serata** (Evening) (the whole evening loop is in [Evenings](evenings.md)): how long the evening should last (**durata** (length): `ore_per_sessione` from the brief, or 2.5 hours if the brief has none), how many minutes have passed (**passati** (elapsed)) and how many are left (**rimasti** (remaining)). To change the length, type the hours (from 0.5 to 8) and press **Imposta durata** (Set length). Twenty minutes before the end the box warns you, and the narrator is told to steer towards a natural pause. This never happens during a climax: a scene with `climax: true`, or a clock that is one mark from full.
+**Serata** (Evening) (the whole evening loop is in [Evenings](evenings.md)): how long the evening should last (**durata** (length): `ore_per_sessione` from the brief, or 2.5 hours if the brief has none), how many minutes have passed (**passati** (elapsed)) and how many are left (**rimasti** (remaining)). To change the length, type the hours (from 0.5 to 8) and press **Imposta durata** (Set length); the clocks that follow the evening (`segno_almeno_ogni: serata`) change pace with it. Twenty minutes before the end the box warns you, and the narrator is told to steer towards a natural pause. This never happens during a climax: a scene with `climax: true`, or a clock that is one mark from full.
 
 - **Chiudi la sessione** (Close the session): the guided close of the evening. It also asks for a second click: "Confermi la chiusura della serata?" (Confirm closing the evening?).
   - The actions still in the window go back to the players, and the narrator closes the moment.

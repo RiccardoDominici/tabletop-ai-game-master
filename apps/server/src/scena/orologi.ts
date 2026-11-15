@@ -25,11 +25,16 @@
  *   almeno `pieni_almeno` segni, e lì il ritmo minimo può essere un altro (`segno_almeno_ogni`).
  *   È la regola «al Sasso sale a sei» di nozze-neve, che prima applicava il master dal pannello.
  * Lo stato (ultimo segno, partenza, turni attivi accumulati) sopravvive ai cambi di scena e alla ripresa.
+ *
+ * `segno_almeno_ogni: serata` (docs/mondo.md §1): the minimum pace is not a constant but follows the evening;
+ * the director calls aggiornaSerata at every closed window and the value is recomputed (mondo/ritmo.ts).
  */
 
 import type { Campagna, DatiYaml, ScenaCaricata } from '../campagna/tipi';
 // `testo` qui è già il lettore dei campi YAML: la frase fissa della lingua si chiama testoFisso.
 import { testo as testoFisso } from '../lingua';
+import { ORE_PREDEFINITE } from '../sessione/durata';
+import { almenoOgniDallaSerata, quotaScene, RITMO_SERATA, type SerataPerRitmo } from '../mondo/ritmo';
 
 /**
  * Frase che il prompt del narratore tratta come ordine di mostrare il segno («Mostralo in questa
@@ -64,6 +69,10 @@ export interface Orologio {
   ultimoTurno: number | null;
   /** Ritmo minimo della campagna: almeno un segno ogni N risposte (null = nessun obbligo). */
   almenoOgni: number | null;
+  /** `segno_almeno_ogni: serata`: almenoOgni is recomputed from the evening (aggiornaSerata). */
+  almenoOgniSerata: boolean;
+  /** Share of the session's scenes where the clock is active (for the evening's pace). */
+  quota: number;
   /** Ritmo minimo della scena in corso (`orologi_in_scena`), che vince su almenoOgni; null = quello della campagna. */
   almenoOgniScena: number | null;
   /** Ritmo massimo: non più di un segno ogni N turni (predefinito AL_MASSIMO_OGNI_PREDEFINITO). */
@@ -149,6 +158,8 @@ export class StatoOrologi {
         avanzaQuando: Array.isArray(d['avanza_quando']) ? (d['avanza_quando'] as unknown[]).map(String) : [],
         ultimoTurno: null,
         almenoOgni: typeof d['segno_almeno_ogni'] === 'number' && d['segno_almeno_ogni'] > 0 ? (d['segno_almeno_ogni'] as number) : null,
+        almenoOgniSerata: d['segno_almeno_ogni'] === RITMO_SERATA,
+        quota: quotaScene(id, Array.isArray(campagna.scene) ? campagna.scene : []),
         almenoOgniScena: null,
         alMassimoOgni: intero(d['segno_al_massimo_ogni'], 1) ?? AL_MASSIMO_OGNI_PREDEFINITO,
         attivoDal: null,
@@ -159,6 +170,23 @@ export class StatoOrologi {
       });
     }
     this.impostaScena(campagna.scena, 0);
+    // Before the first window the whole default evening is ahead (the director updates it at every window).
+    this.aggiornaSerata({ ore: ORE_PREDEFINITE, minutiPassati: null, turniGiocati: 0 });
+  }
+
+  /**
+   * The evening's pace (`segno_almeno_ogni: serata`, docs/mondo.md §1): recomputes almenoOgni of those clocks
+   * from what is left of the evening. Returns the clocks whose pace changed, for the log.
+   */
+  aggiornaSerata(s: SerataPerRitmo): Array<{ id: string; da: number | null; a: number | null }> {
+    const cambi: Array<{ id: string; da: number | null; a: number | null }> = [];
+    for (const o of this.orologi.values()) {
+      if (!o.almenoOgniSerata) continue;
+      const a = almenoOgniDallaSerata(s, o.quota, o.segmenti - o.pieni, o.alMassimoOgni);
+      if (a !== o.almenoOgni) cambi.push({ id: o.id, da: o.almenoOgni, a });
+      o.almenoOgni = a;
+    }
+    return cambi;
   }
 
   /** Il turno da cui si contano i turni attivi della visita corrente (ultimo segno, partenza, accensione). */

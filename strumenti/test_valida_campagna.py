@@ -381,6 +381,15 @@ def test_fronti_orologio_che_parte_dopo_un_id_inesistente(camp):
     assert "FRONTI.campo" in errori(camp)
 
 
+def test_fronti_ritmo_della_serata(camp):
+    # docs/mondo.md §1: `serata` asks the Engine for the pace that fills the clock within the evening.
+    modifica(camp, "campagna.yaml", lambda d: d["orologi"][0].update(segno_almeno_ogni="serata"))
+    assert errori(camp, rigoroso=True) == set()
+    for sbagliato in ("sera", 0, True):
+        modifica(camp, "campagna.yaml", lambda d: d["orologi"][0].update(segno_almeno_ogni=sbagliato))
+        assert "FRONTI.campo" in errori(camp), sbagliato
+
+
 # --- GRAFO ----------------------------------------------------------------------------------------
 
 def test_grafo_nodo_irraggiungibile(camp):

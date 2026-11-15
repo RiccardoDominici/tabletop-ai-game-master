@@ -1,0 +1,8 @@
+id: scena_mulino
+nome: "Il mulino"
+apertura: "La ruota del mulino gira piano. Che fate?"
+png_presenti: [png_mugnaio, png_ladra]
+orologi_attivi: [o_sera, o_piena]
+mossa_morbida_pronta: "La ruota cigola."
+indizi:
+  - {id: i_farina, conclusione: r_ladra, come_si_trova: "Chi guarda i sacchi vede impronte nella farina."}

@@ -1,0 +1,6 @@
+id: png_mugnaio
+nome: "Mugnaio Piero"
+voce: {tts: {voce_id: vincent}}
+atteggiamento_pg:
+  pg_anna: {stato: indifferente, perche: "non la conosce", vuole: "essere lasciato in pace"}
+  pg_bruno: {stato: amichevole, perche: "è il suo prete", vuole: "una benedizione"}

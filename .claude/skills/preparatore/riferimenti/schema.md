@@ -57,7 +57,9 @@ chronology, abstract secrets and arcs go there.
   pericolo: p_<nome>
   segmenti: 6                              # 4, 6 or 8 [V]
   pieni_all_inizio: 0
-  segno_almeno_ogni: 2                     # the Engine writes "show it in this response" [V integer >= 1]
+  segno_almeno_ogni: 2                     # the Engine writes "show it in this response" [V integer >= 1, or serata]
+                                           # serata: the Engine derives the pace that fills the clock within the evening
+                                           # (hours of the brief, scenes where it is active, marks left: docs/mondo.md §1)
   segno_al_massimo_ogni: 2                 # optional: no more than one tick every N turns (default 2; 1 = also in a row)
   parte_dopo: [<id of a line or clue>]     # optional, proposal: the clock starts when one of them comes out [V they exist]
   segni: ["…", "…", …]                     # one per segment, in order [V]

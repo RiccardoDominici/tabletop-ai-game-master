@@ -670,7 +670,7 @@ export class Regia {
     // «La volta scorsa…», poi la finestra per tutti; le azioni rimaste in coda tornano ai giocatori.
     const eraChiusa = this.serata.serataChiusa;
     const recap = this.serata.prendiLaVoltaScorsa();
-    this.serata.riparte(this.o.orologio.adesso());
+    this.serata.riparte(this.o.orologio.adesso(), this.turno);
     if (eraChiusa || recap.length) {
       this.cominciaNuovaSerata(recap, eraChiusa ? 'ripresa dopo una serata chiusa' : 'ripresa di un’altra sera');
       return;
@@ -1059,6 +1059,13 @@ export class Regia {
   private finoraStasera(): string[] {
     const righe = this.sceneVisitate.size ? [testoFisso('regia.diario.luoghi', { luoghi: this.titoliScene([...this.sceneVisitate]).join(', ') })] : [];
     return [...righe, ...this.segniMostrati().slice(-3)];
+  }
+
+  /** Clocks with `segno_almeno_ogni: serata`: recompute their pace from what is left of the evening. */
+  private aggiornaRitmoSerata(turno: number): void {
+    const s = this.serata.perRitmo(this.o.orologio.adesso(), turno);
+    const cambi = this.orologi.aggiornaSerata(s);
+    if (cambi.length) this.o.log.info({ turno, serata: s, cambi }, 'clock: evening pace updated');
   }
 
   /** La scena è nel climax: il consiglio di chiudere aspetta (sessione/durata.ts). */
@@ -1878,7 +1885,7 @@ export class Regia {
     if (this.serata.serataChiusa) {
       // Dopo «Chiudi la sessione», Riprendi comincia un'altra serata: «La volta scorsa…», poi si gioca.
       const recap = this.serata.prendiLaVoltaScorsa();
-      this.serata.riparte(this.o.orologio.adesso());
+      this.serata.riparte(this.o.orologio.adesso(), this.turno);
       this.cominciaNuovaSerata(recap, 'riprendi dopo una serata chiusa');
       return { ok: true };
     }
@@ -2140,7 +2147,7 @@ export class Regia {
     if (this.o.preriscalda && this.o.narratore.preriscalda) void this.preriscalda();
     this.sceneVisitate.add(c.scena.id);
     // Una sessione che continua (pacchetto dopo, senza riassunto_iniziale) comincia con «La volta scorsa…».
-    this.serata.riparte(this.o.orologio.adesso());
+    this.serata.riparte(this.o.orologio.adesso(), this.turno);
     this.leggiApertura(0, [...this.serata.prendiLaVoltaScorsa(), ...c.scena.apertura]);
     this.salva('inizio');
   }
@@ -2538,6 +2545,8 @@ export class Regia {
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento) ? await this.tiriDelTurno(r) : null;
     if (epoca !== this.epoca) return;
+    // The evening's pace of the clocks (docs/mondo.md §1), before anything asks which marks are due.
+    this.aggiornaRitmoSerata(r.turno);
     // Dopo i tiri: chi è a terra, morto o fuggito non parla (presenza, catalogo, narratore).
     const fuori = this.righeFuoriGioco();
     if (fuori.length) this.o.log.info({ turno: r.turno, fuori }, 'prove: PNG fuori gioco nel messaggio del narratore');

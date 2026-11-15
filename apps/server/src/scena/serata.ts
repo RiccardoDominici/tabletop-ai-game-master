@@ -24,6 +24,7 @@ import type { ParolaSegreta, StatoPubblico } from '../repertorio/segreti';
 import { consiglioDiChiusura, DurataSerata, orePerSessioneDelBrief } from '../sessione/durata';
 import { frasiLaVoltaScorsa, materialePubblico, riassuntiPrecedenti, riservaDa, scriviRiassunto, trascrizionePrecedente, type EsitoRiassunto } from '../sessione/riassunto';
 import type { SerataSalvata } from '../sessione/tipi';
+import type { SerataPerRitmo } from '../mondo/ritmo';
 
 /** Una ripresa dopo tante ore senza chiusura è un'altra serata: si legge «La volta scorsa…». */
 export const SERATA_NUOVA_MS = 3 * 3_600_000;
@@ -125,10 +126,20 @@ export class SerataGuidata {
   }
 
   /** Il gioco riparte (nuova serata): via la schermata di fine, la serata non è più chiusa. */
-  riparte(adesso: number): void {
+  riparte(adesso: number, turno = 0): void {
     this.chiusa = false;
     this.fine = null;
     this.durata.comincia(adesso);
+    this.turnoInizio = turno;
+  }
+
+  /** Turn at which this evening started (the evening's pace counts the turns played since then). */
+  private turnoInizio = 0;
+
+  /** What the clocks' evening pace needs (docs/mondo.md §1): planned hours, minutes passed, turns played. */
+  perRitmo(adesso: number, turno: number): SerataPerRitmo {
+    const s = this.durata.stato(adesso);
+    return { ore: s.ore, minutiPassati: s.minutiPassati, turniGiocati: Math.max(0, turno - this.turnoInizio) };
   }
 
   /** La prima finestra della serata si è chiusa: il proiettore smette di mostrare «La volta scorsa…». */

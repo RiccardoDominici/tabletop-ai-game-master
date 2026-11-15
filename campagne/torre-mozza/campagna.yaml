@@ -56,9 +56,10 @@ orologi:
     pericolo: p_zirra
     segmenti: 8
     pieni_all_inizio: 0
-    # Orologio della sera, attivo all'ovile e alla carbonaia (un segno ogni nove risposte al massimo). Alla torre non
-    # è attivo: là è già mezzanotte, e un orologio pieno farebbe dire al Motore un finale nel mezzo dello scontro.
-    segno_almeno_ogni: 9
+    # Orologio della sera, attivo all'ovile e alla carbonaia. Il ritmo lo calcola il Motore dalla serata (docs/mondo.md
+    # §1): con nove risposte per segno servivano 72 turni attivi, più di due ore di gioco, e l'orologio restava a 1/8 (E3).
+    # Alla torre non è attivo: là è già mezzanotte, e un orologio pieno farebbe dire al Motore un finale nel mezzo dello scontro.
+    segno_almeno_ogni: serata
     segno_al_massimo_ogni: 2
     segni:
       - "Dal crinale scende un corno di capra, lungo e stonato."
@@ -70,7 +71,7 @@ orologi:
       - "Il fuoco della torre divampa, e le scintille volano oltre i muri."
       - "Tre colpi di corno: è mezzanotte, e la torre aspetta la chiave."
     avanza_quando:
-      - "almeno un segno ogni nove risposte, all'ovile e alla carbonaia: il Motore scrive «mostralo in questa risposta»"
+      - "almeno un segno secondo il ritmo della serata, all'ovile e alla carbonaia: il Motore scrive «mostralo in questa risposta»"
       - "alla torre l'orologio non corre: la mezzanotte è arrivata"
       - "mai due segni nella stessa risposta"
     al_completo: "È mezzanotte e i PG non sono ancora alla torre. Zirrà manda il corno tre volte, poi prende a colpi la porta di ferro senza aprirla, e prima dell'alba scende con Grosso a bruciare il fienile dei Benni. Chi sale adesso la trova furiosa: con la chiave in mano tratta, senza la chiave attacca. Ogni risposta costa: la chiave consegnata è l'argento perso, la chiave tenuta è lo scontro."

@@ -1,0 +1,28 @@
+id: mondo
+canone:
+  - {id: f_mulino, noto_ai_pg: true, testo: "Il mulino è sul fiume."}
+  - {id: f_ladra, noto_ai_pg: false, testo: "La ladra si nasconde nel mulino."}
+orologi:
+  - id: o_sera
+    nome: "La sera scende"
+    segmenti: 4
+    segno_almeno_ogni: serata
+    segno_al_massimo_ogni: 2
+    segni: ["Il sole tocca gli alberi.", "Le ombre si allungano.", "Si accendono le prime stelle.", "È notte."]
+    avanza_quando: ["almeno un segno secondo la serata"]
+    al_completo: "È notte fonda."
+  - id: o_piena
+    nome: "Il fiume sale"
+    segmenti: 4
+    segno_almeno_ogni: 6
+    segni: ["L'acqua lambisce la ruota.", "L'acqua entra nel cortile.", "La ruota si ferma.", "Il fiume entra nel mulino."]
+    avanza_quando: ["almeno un segno ogni sei risposte"]
+    al_completo: "Il mulino è allagato."
+sessione:
+  riassunto_iniziale: "Siete arrivati al mulino."
+rivelazioni:
+  - {id: r_ladra, conclusione: "La ladra è nel mulino.", indizi: [i_farina, i_ramo]}
+nodi:
+  - {id: n_mulino, tipo: luogo, nome: "Il mulino", scheda: scena.yaml, noto_ai_pg: true, collegamenti: [n_bosco, n_ponte], indizi: [i_farina]}
+  - {id: n_bosco, tipo: luogo, nome: "Il bosco", scheda: scene/scena_bosco.yaml, noto_ai_pg: true, collegamenti: [n_mulino], indizi: [i_ramo]}
+  - {id: n_ponte, tipo: luogo, nome: "Il ponte", scheda: scene/scena_ponte.yaml, noto_ai_pg: false, collegamenti: [n_mulino]}

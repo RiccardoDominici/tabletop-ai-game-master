@@ -122,9 +122,10 @@ The server plays one scene at a time; the GM moves to the next from the panel. E
 present and its active clocks; the state (clues, lines used, clocks) remains.
 
 - **Session clock.** A danger that presses for the whole session has an eight-tick clock, active in every scene where it can be
-  heard. A turn lasts a couple of minutes (six ticks every two turns fill half an hour), so `segno_almeno_ogni` ≈ session
-  minutes ÷ (2 × segments): for two and a half hours and eight ticks, about nine; fewer if scene changes also bring a tick.
-  With 2 the clock would fill in the first half hour. A short scene inside the session may have its own clock, of six ticks
+  heard, with `segno_almeno_ogni: serata`: the Engine computes the pace that fills it within the evening, from the brief's
+  `ore_per_sessione`, the share of scenes where the clock is active and the ticks left, and corrects it with the turns per
+  hour the table really plays (docs/mondo.md §1). A fixed number does not know how long the evening is: nine turns per
+  tick on eight ticks is 72 active turns, more than a two-hour evening has (torre-mozza, E3). A short scene inside the session may have its own clock, of six ticks
   with `segno_almeno_ogni: 2`.
 - **Ticks heard everywhere.** A tick of a clock active in several scenes comes out in any of them, so it is heard from all:
   the bell, the river's voice, the shouts from the bridge. "The low ramp goes under water" is not seen from the village. The

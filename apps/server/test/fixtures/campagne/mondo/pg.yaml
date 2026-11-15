@@ -1,0 +1,3 @@
+personaggi:
+  - {id: pg_anna, nome: "Anna", specie: umana, classe: guerriera, aspetto: "Capelli corti."}
+  - {id: pg_bruno, nome: "Bruno", specie: nano, classe: chierico}

@@ -1,0 +1,7 @@
+id: png_ladra
+nome: "Ladra Sita"
+nascosto: true
+voce: {tts: {voce_id: tabitha}}
+atteggiamento_pg:
+  pg_anna: {stato: ostile, perche: "la cerca", vuole: "scappare"}
+  pg_bruno: {stato: indifferente, perche: "non lo teme", vuole: "scappare"}

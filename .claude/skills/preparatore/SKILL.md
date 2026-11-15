@@ -233,7 +233,8 @@ the rules is also public: no secret words in a list of words.
 - **Fronts** (C2): one campaign front, one or two adventure fronts, with two or three dangers per front. Every
   danger has its clock.
 - **Clocks** (under the key `orologi`, outside `preparazione`): those the narrator must see, with a sign per
-  segment and `segno_almeno_ogni`. For a long session, a session clock (mestiere.md §9).
+  segment and `segno_almeno_ogni`. For a long session, a session clock with `segno_almeno_ogni: serata`
+  (mestiere.md §9).
 - **Villain** with agenda (C3), abstract secrets (C6) and PC arcs (C8): all under `preparazione`.
 - **Session** (C9–C13): opening summary, five rooms, potential scenes, a closing with an open choice, and
   `colli_di_bottiglia_nota`.

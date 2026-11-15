@@ -80,7 +80,7 @@ Everything goes into `campagne/<id>/`. The `id` is lowercase ASCII with hyphens,
 
 | File | What it contains | Who sees it at the table |
 |---|---|---|
-| `brief.yaml` | the brief and the decisions | nobody: only the person preparing reads it |
+| `brief.yaml` | the brief and the decisions | the person preparing; the Engine reads only `ore_per_sessione` (the evening's length, and the pace of the clocks with `segno_almeno_ogni: serata`) |
 | `stile.yaml` | style sheet: premise, tone, prose rules, image style, music, lines and veils | the narrator |
 | `campagna.yaml` | fact canon, fronts and clocks, clues, nodes, the session; in `preparazione` the secrets, which never reach the narrator | the narrator, without `preparazione` |
 | `scena.yaml` | the first scene | the narrator |

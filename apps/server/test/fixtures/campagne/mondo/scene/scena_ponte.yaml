@@ -1,0 +1,5 @@
+id: scena_ponte
+nome: "Il ponte"
+apertura: "Il ponte di legno trema."
+png_presenti: [png_mugnaio]
+orologi_attivi: []
