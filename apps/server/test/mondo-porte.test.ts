@@ -80,7 +80,7 @@ describe('StatoOrologi: marks owed by facts', () => {
   it('owed marks of a clock not active in the scene are paid off-screen at once', () => {
     const c = caricaCampagna(MONDO);
     const o = new StatoOrologi(c);
-    const mondo = new MondoInGioco({ campagna: c, orologi: () => o, log: loggerMuto() });
+    const mondo = new MondoInGioco({ campagna: c, orologi: () => o, scena: () => 'scena_bosco', log: loggerMuto() });
     o.impostaScena(conScena(c, 'scena_bosco').scena, 4); // o_piena is active only at the mill
     const e = mondo.fatti([{ tipo: 'cambio_scena', da: 'scena_mulino', a: 'scena_bosco' }], 4);
     expect(e.debiti.map((d) => d.orologio)).toEqual(['o_sera', 'o_piena']);

@@ -19,6 +19,7 @@ import YAML from 'yaml';
 import { dividiTesto } from '../narrazione/frasi';
 import type { Logger } from '../logger';
 import { CARTELLA_SESSIONI, elencoPacchetti, ErrorePacchetto, FILE_SESSIONE, ordinaScene, unisciSessione, type Pacchetto } from './pacchetti';
+import { caricaMondo, type MondoCampagna } from './mondo';
 import {
   ID_NARRATORE,
   type Campagna,
@@ -145,17 +146,23 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
 
   // campagna.yaml: tutto tranne `preparazione` (destini, cronologia del cattivo, archi: E2). Con un
   // pacchetto si aggiunge la parte di sessione di sessione.yaml; `sessione` di campagna.yaml non vale.
-  const { preparazione: _preparazione, ...campagnaBase } = campagnaGrezza;
+  const { preparazione, ...campagnaBase } = campagnaGrezza;
   let campagnaNarratore: DatiYaml = campagnaBase;
+  // The fronts' extra clocks (docs/mondo.md §3): a package can say where they start, like the narrator's clocks.
+  const extraDaPacchetto = pieniExtraDelPacchetto(preparazione, sessioneGrezza);
   if (scelto && sessioneGrezza) {
     const { sessione: vecchia, ...senzaSessione } = campagnaBase;
     if (vecchia !== undefined) avvisa(`campagna.yaml: «sessione» non vale in una campagna a pacchetti (il riassunto sta in ${relPacchetto}/${FILE_SESSIONE})`);
     try {
-      campagnaNarratore = unisciSessione(senzaSessione, sessioneGrezza, `${relPacchetto}/${FILE_SESSIONE}`, avvisa);
+      campagnaNarratore = unisciSessione(senzaSessione, extraDaPacchetto.sessione ?? sessioneGrezza, `${relPacchetto}/${FILE_SESSIONE}`, avvisa);
     } catch (err) {
       throw new ErroreCampagna(err instanceof ErrorePacchetto ? err.message : String(err));
     }
   }
+  const mondo = conPieniExtra(
+    caricaMondo(Array.isArray(campagnaNarratore['orologi']) ? (campagnaNarratore['orologi'] as DatiYaml[]) : [], preparazione, (m) => avvisa(`campagna.yaml: ${m}`)),
+    extraDaPacchetto.pieni,
+  );
 
   // --- PNG: quelli ricorrenti (png/ della campagna), più quelli della sola sessione (png/ del pacchetto).
   // Una scheda del pacchetto con l'id di una ricorrente la SOSTITUISCE intera per questa sessione
@@ -220,6 +227,7 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
     titolo: stringa(stile['titolo']) ?? scena.titolo,
     stile,
     campagnaNarratore,
+    mondo,
     scena,
     scene,
     png,
@@ -247,6 +255,30 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
     'campagna caricata',
   );
   return campagna;
+}
+
+/**
+ * `pieni_all_inizio` of a package may cite the fronts' extra clocks too (they continue between sessions): those
+ * entries are taken out of what unisciSessione sees (it knows only the narrator's clocks) and applied here.
+ */
+function pieniExtraDelPacchetto(preparazione: unknown, sessione: DatiYaml | null): { sessione: DatiYaml | null; pieni: Map<string, number> } {
+  const pieni = new Map<string, number>();
+  const grezzi = oggetto(sessione?.['pieni_all_inizio']);
+  if (!sessione || !grezzi) return { sessione: null, pieni };
+  const fronti = Array.isArray(oggetto(preparazione)?.['fronti']) ? (oggetto(preparazione)!['fronti'] as unknown[]) : [];
+  const extra = new Set(fronti.flatMap((f) => (Array.isArray(oggetto(f)?.['orologi_extra']) ? (oggetto(f)!['orologi_extra'] as unknown[]) : [])).map((o) => stringa(oggetto(o)?.['id'])).filter((x): x is string => !!x));
+  const resto: DatiYaml = {};
+  for (const [id, n] of Object.entries(grezzi)) {
+    if (extra.has(id) && typeof n === 'number' && Number.isInteger(n) && n >= 0) pieni.set(id, n);
+    else resto[id] = n;
+  }
+  if (pieni.size === 0) return { sessione: null, pieni };
+  return { sessione: { ...sessione, pieni_all_inizio: resto }, pieni };
+}
+
+function conPieniExtra(m: MondoCampagna, pieni: ReadonlyMap<string, number>): MondoCampagna {
+  if (pieni.size === 0) return m;
+  return { ...m, orologiExtra: m.orologiExtra.map((o) => (pieni.has(String(o['id'])) ? { ...o, pieni_all_inizio: pieni.get(String(o['id'])) } : o)) };
 }
 
 /** One-shot: scena.yaml (col riassunto di campagna.yaml → sessione), poi scena_*.yaml e scene/*.yaml. */

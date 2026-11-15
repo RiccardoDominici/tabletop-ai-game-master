@@ -408,6 +408,48 @@ def test_fronti_porte_di_avanza_quando(camp):
         assert "FRONTI.avanza_quando" in errori(camp), cattiva
 
 
+def test_fronti_conseguenze_dei_segni(camp):
+    # docs/mondo.md §3: a mark makes something happen; the table hears it; the ids it names exist.
+    def con(d, voce):
+        d["orologi"][0]["conseguenze"] = [voce]
+    pg = leggi(camp, "pg.yaml")
+    primo_pg = (pg.get("personaggi") or pg.get("pg") or pg)[0]["id"]
+    png = sorted(p.stem for p in (camp / "png").glob("*.yaml"))[0]
+    buona = {"al_segno": 1, "cosa": "Qualcosa cambia.", "detto": "Si sente un rumore.", "tracce": "C'è un segno per terra.",
+             "png": {png: {"atteggiamento": {primo_pg: "ostile"}}}}
+    modifica(camp, "campagna.yaml", lambda d: con(d, buona))
+    assert "FRONTI.conseguenze" not in errori(camp, rigoroso=True)
+    d = leggi(camp, "campagna.yaml")
+    for cattiva in ({"al_segno": 99, "cosa": "x", "detto": "y"}, {"al_segno": 1, "detto": "y"}, {"al_segno": 1, "cosa": "x"},
+                    {"al_segno": 1, "cosa": "x", "detto": "y", "png": {"png_che_non_esiste": {"scena": "via"}}},
+                    {"al_segno": 1, "cosa": "x", "detto": "y", "png": {png: {"atteggiamento": "furioso"}}},
+                    {"al_segno": 1, "cosa": "x", "detto": "y", "png": {png: {"scena": "scena_che_non_esiste"}}},
+                    {"al_segno": 1, "cosa": "x", "detto": "y", "indizi": ["i_che_non_esiste"]},
+                    {"al_segno": 1, "cosa": "x", "battuta": "b_che_non_esiste"}, {"al_segno": 1, "cosa": "x", "detto": "y", "dopo": 1}):
+        scrivi(camp, "campagna.yaml", d)
+        modifica(camp, "campagna.yaml", lambda x: con(x, cattiva))
+        assert "FRONTI.conseguenze" in errori(camp), cattiva
+    # Without traces, an off-screen event never reaches the table: a warning, an error for a new campaign.
+    scrivi(camp, "campagna.yaml", d)
+    modifica(camp, "campagna.yaml", lambda x: con(x, {k: v for k, v in buona.items() if k != "tracce"}))
+    attivo_ovunque = all("o_processione" in (leggi(camp, f.name).get("orologi_attivi") or []) for f in camp.glob("scen*.yaml"))
+    if not attivo_ovunque:
+        assert "FRONTI.conseguenze" in errori(camp, rigoroso=True)
+
+
+def test_fronti_presagio_con_al_segno(camp):
+    def presagio(d, n):
+        for f in d["preparazione"]["fronti"]:
+            for p in f["pericoli"]:
+                if p.get("orologio") == "o_processione":
+                    p["presagi"][0]["al_segno"] = n
+                    return
+    modifica(camp, "campagna.yaml", lambda d: presagio(d, 2))
+    assert "FRONTI.conseguenze" not in errori(camp, rigoroso=True)
+    modifica(camp, "campagna.yaml", lambda d: presagio(d, 0))
+    assert "FRONTI.conseguenze" in errori(camp)
+
+
 # --- GRAFO ----------------------------------------------------------------------------------------
 
 def test_grafo_nodo_irraggiungibile(camp):
@@ -659,9 +701,12 @@ def test_continuita_parola_segreta_di_un_fatto_gia_saputo(arco):
 def test_continuita_orologio_che_riparte_da_capo(arco):
     modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["pieni_all_inizio"].update(o_processione=0))
     assert "CONTINUITÀ.orologio" in stato_continuita(arco)[0]
-    # Un orologio dei fronti (orologi_extra) non va in pieni_all_inizio: il server rifiuterebbe il pacchetto.
+    # A front's extra clock (orologi_extra) may start where it was (docs/mondo.md §3); a clock that does not exist may not.
     modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["pieni_all_inizio"].update(o_processione=4, o_mercante=1))
+    assert "CONTINUITÀ.orologio" not in stato_continuita(arco)[0]
+    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["pieni_all_inizio"].update(o_che_non_esiste=1))
     assert "CONTINUITÀ.orologio" in stato_continuita(arco)[0]
+    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d["pieni_all_inizio"].pop("o_che_non_esiste"))
     # Senza voce l'orologio ripartirebbe da quello della campagna (0), non dai segni dello stato.
     modifica(arco, "sessioni/02/sessione.yaml", lambda d: d.pop("pieni_all_inizio"))
     assert "CONTINUITÀ.orologio" in stato_continuita(arco)[0]

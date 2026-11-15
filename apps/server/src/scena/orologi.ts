@@ -150,9 +150,10 @@ export class StatoOrologi {
 
   constructor(campagna: Campagna) {
     const elenco = Array.isArray(campagna.campagnaNarratore['orologi']) ? (campagna.campagnaNarratore['orologi'] as DatiYaml[]) : [];
-    for (const d of elenco) {
+    // The fronts' extra clocks (docs/mondo.md §3): never active in a scene, they move by gates and off-screen.
+    for (const d of [...elenco, ...(campagna.mondo?.orologiExtra ?? [])]) {
       const id = testo(d['id']);
-      if (!id) continue;
+      if (!id || this.orologi.has(id)) continue;
       const segni = Array.isArray(d['segni']) ? (d['segni'] as unknown[]).map((s) => String(s)) : [];
       const segmenti = typeof d['segmenti'] === 'number' ? (d['segmenti'] as number) : segni.length;
       this.orologi.set(id, {

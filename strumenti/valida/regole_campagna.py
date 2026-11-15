@@ -122,12 +122,25 @@ def controlla_fronti(c: Campagna, e: Esito) -> None:
             oid = p.get("orologio")
             if oid and oid not in c.orologi:
                 e.errore("FRONTI.orologio", pid, f"orologio inesistente {oid}")
+            # An omen with al_segno comes to pass at that mark of the danger's clock (docs/mondo.md §3).
+            for i, pr in enumerate(p.get("presagi") or []):
+                if isinstance(pr, dict) and "al_segno" in pr:
+                    seg = (c.orologi.get(oid) or {}).get("segmenti") if oid else None
+                    if not (_intero_positivo(pr["al_segno"]) and isinstance(seg, int) and pr["al_segno"] <= seg):
+                        e.errore("FRONTI.conseguenze", f"{pid}.presagi[{i}]", f"al_segno è un segno dell'orologio del pericolo (1–{seg})")
+                    _controlla_effetti_mondo(c, e, f"{pid}.presagi[{i}]", pr)
     for oid, o in c.orologi.items():
         seg = o.get("segmenti")
         if seg not in K.SEGMENTI_AMMESSI:
             e.errore("FRONTI.segmenti", oid, f"{seg} segmenti (ammessi 4, 6, 8)")
         if not o.get("nome"):
             e.errore("FRONTI.campo", oid, "l'orologio ha un nome, quello dell'ostacolo")
+        # Gates and consequences on every clock, the fronts' extra clocks included (the Engine plays them too).
+        controlla_conseguenze(c, e, oid, o)
+    narratore = {x.get("id") for x in (c.campagna.get("orologi") or []) if isinstance(x, dict)}
+    for oid, o in c.orologi.items():
+        if oid not in narratore:
+            controlla_porte(c, e, oid, o.get("avanza_quando"))
     for oid, o in {x["id"]: x for x in (c.campagna.get("orologi") or []) if isinstance(x, dict) and x.get("id")}.items():
         segni = o.get("segni") or []
         if len(segni) != o.get("segmenti"):
@@ -207,6 +220,72 @@ def controlla_porte(c: Campagna, e: Esito, oid: str, voci) -> None:
                 e.errore("FRONTI.avanza_quando", dove, f"battuta inesistente {x}")
             if q == "indizio" and x not in c.indizi:
                 e.errore("FRONTI.avanza_quando", dove, f"indizio inesistente {x}")
+
+
+CHIAVI_CONSEGUENZA = {"al_segno", "cosa", "detto", "battuta", "regia", "tracce", "png", "compare", "indizi"}
+STATI_ATTEGGIAMENTO = {"ostile", "indifferente", "amichevole"}
+
+
+def _controlla_effetti_mondo(c: Campagna, e: Esito, dove: str, d: dict) -> None:
+    """The keys a consequence and an omen share: line, NPC changes, hidden NPCs that appear, clues offered."""
+    scene = {s.get("id") for _, s in c.scene if isinstance(s, dict)}
+    if d.get("battuta") and d["battuta"] not in c.per_id:
+        e.errore("FRONTI.conseguenze", dove, f"battuta inesistente {d['battuta']}")
+    png = d.get("png")
+    if png is not None and not isinstance(png, dict):
+        e.errore("FRONTI.conseguenze", dove, "png è {png_x: {atteggiamento, scena}}")
+        png = {}
+    for pid, cambi in (png or {}).items():
+        if pid not in c.png:
+            e.errore("FRONTI.conseguenze", dove, f"PNG inesistente {pid}")
+        cambi = cambi if isinstance(cambi, dict) else {}
+        for k in sorted(set(cambi) - {"atteggiamento", "scena"}):
+            e.errore("FRONTI.conseguenze", dove, f"{pid}: chiave sconosciuta {k!r} (atteggiamento, scena)")
+        att = cambi.get("atteggiamento")
+        voci = {"tutti": att} if isinstance(att, str) else att if isinstance(att, dict) else ({} if att is None else {"?": att})
+        for pg, s in voci.items():
+            if pg not in c.pg_ids and pg != "tutti":
+                e.errore("FRONTI.conseguenze", dove, f"{pid}: atteggiamento verso un PG inesistente {pg}")
+            if s not in STATI_ATTEGGIAMENTO:
+                e.errore("FRONTI.conseguenze", dove, f"{pid}: atteggiamento {s!r}, uno tra {sorted(STATI_ATTEGGIAMENTO)}")
+        if "scena" in cambi and cambi["scena"] != "via" and cambi["scena"] not in scene:
+            e.errore("FRONTI.conseguenze", dove, f"{pid}: scena inesistente {cambi['scena']!r} (o «via»)")
+    for pid in d.get("compare") or []:
+        if pid not in c.png:
+            e.errore("FRONTI.conseguenze", dove, f"compare: PNG inesistente {pid}")
+        elif not c.png[pid][1].get("nascosto"):
+            e.avviso("FRONTI.conseguenze", dove, f"compare: {pid} non è nascosto (nascosto: true), è già visibile")
+    for i in d.get("indizi") or []:
+        if i not in c.indizi:
+            e.errore("FRONTI.conseguenze", dove, f"indizio inesistente {i}")
+
+
+def controlla_conseguenze(c: Campagna, e: Esito, oid: str, o: dict) -> None:
+    """`conseguenze` of a clock (docs/mondo.md §3): one per mark, with what happens and what the table hears."""
+    voci = o.get("conseguenze")
+    if voci is None:
+        return
+    if not isinstance(voci, list):
+        e.errore("FRONTI.conseguenze", oid, "conseguenze è una lista di {al_segno, cosa, detto | battuta | regia, …}")
+        return
+    attivo_ovunque = bool(c.scene) and all(oid in (s.get("orologi_attivi") or []) for _, s in c.scene if isinstance(s, dict))
+    for i, x in enumerate(voci):
+        dove = f"{oid}.conseguenze[{i}]"
+        if not isinstance(x, dict):
+            e.errore("FRONTI.conseguenze", dove, "una conseguenza è una mappa")
+            continue
+        for k in sorted(set(x) - CHIAVI_CONSEGUENZA):
+            e.errore("FRONTI.conseguenze", dove, f"chiave sconosciuta {k!r} (ammesse: {sorted(CHIAVI_CONSEGUENZA)})")
+        if not (_intero_positivo(x.get("al_segno")) and isinstance(o.get("segmenti"), int) and x["al_segno"] <= o["segmenti"]):
+            e.errore("FRONTI.conseguenze", dove, f"al_segno è un segno dell'orologio (1–{o.get('segmenti')})")
+        if not x.get("cosa"):
+            e.errore("FRONTI.conseguenze", dove, "manca cosa (che cosa succede nel mondo)")
+        if not any(x.get(k) for k in ("detto", "battuta", "regia")):
+            e.errore("FRONTI.conseguenze", dove, "il tavolo deve sentirla: detto, battuta o regia")
+        if not x.get("tracce") and not attivo_ovunque:
+            e.avviso("FRONTI.conseguenze", dove, "senza tracce: se succede mentre i PG sono altrove, al tavolo non arriva niente",
+                     rigoroso=True)
+        _controlla_effetti_mondo(c, e, dove, x)
 
 
 def controlla_indizi(c: Campagna, e: Esito) -> None:

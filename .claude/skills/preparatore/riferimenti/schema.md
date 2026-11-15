@@ -72,7 +72,21 @@ chronology, abstract secrets and arcs go there.
   # An owed mark is due at once (not held back by segno_al_massimo_ogni); if the response does not show it, the Engine
   # says the mark's text. If the clock is not active in the scene, it advances off-screen.
   al_completo: "…"                         # what the danger wants and what each answer costs
+  conseguenze:                             # optional: what HAPPENS at a mark, applied by the Engine (docs/mondo.md §3)
+    - al_segno: 3                          # [V a mark of this clock]
+      cosa: "…"                            # what happens in the world (canon; may be secret: never said as such) [V]
+      detto: "…"                           # sentence the table hears if the PCs are there; or battuta: <id>; or regia: "…" [V one]
+      tracce: "…"                          # what the table hears later if it happened elsewhere [V warning, error if strict,
+                                           #   for a clock not active in every scene]
+      png: {png_…: {atteggiamento: ostile, scena: scena_… | via}}   # optional: attitude (or {pg_…: stato}), where it goes
+      compare: [png_…]                     # optional: a hidden NPC (nascosto: true) appears
+      indizi: [i_…]                        # optional: the world offers this clue (first choice of the stall's S2)
 ```
+A consequence is applied once, when the clock reaches its mark (whoever moved it: pace, gate, narrator, line, Game
+Master). With the clock active in the scene the Engine says `detto` (or the line) in that response; otherwise the event is
+off-screen, logged, and its `tracce` are read when the PCs enter a scene where the clock is active or where an NPC of
+the consequence (or of the danger's `cast`) is. Write `detto` and `tracce` as sentences the narrator's voice can read
+aloud as they are, with nothing the PCs could not perceive.
 
 **rivelazioni** (C4): `- {id: r_<nome>, chiave: true, conclusione: "…", indizi: [i_…]}`.
 - A key conclusion has at least 3 clues, in at least 2 nodes, of at least 2 types [V].
@@ -107,7 +121,13 @@ says so ("Only if the one who knows it proposes it").
   - for each front, 2–3 dangers and 1–3 `domande_di_posta` [V];
   - each danger has `tipo`, `impulso` (one verb only), `destino_incombente`, `presagi: [{testo, segno_visibile}]` (at least one), `mosse`,
     `cast`, `orologio` [V];
-  - the clocks of the dangers that are not on stage go in `fronti[].orologi_extra: [{id, nome, segmenti}]`.
+  - an omen with `al_segno: n` comes to pass when the danger's clock reaches n (docs/mondo.md §3): `testo` goes into the
+    world's log and the Engine says `segno_visibile` if the PCs are there; it takes the optional keys of a consequence
+    (`battuta`, `regia`, `tracce`, `png`, `compare`, `indizi`) [V]. An omen without `al_segno` is material for the stall's S1;
+  - the clocks of the dangers that are not on stage go in `fronti[].orologi_extra: [{id, nome, segmenti}]`. The Engine plays
+    them too, never active in a scene: they move only by gates of `avanza_quando` and their `conseguenze` are off-screen
+    (write `tracce`). A package's `pieni_all_inizio` can say where they start;
+  - a timeline event with `segno: {orologio, n}` (`cronologia.eventi`) enters the world's log at that mark.
 - `cattivo` (C3): `obiettivo`, `cronologia_se_i_pg_non_intervengono`, `risorse: [{cosa, a_cosa_serve}]`, `reazioni: [{intrusione, reazione}]`,
   `stato_di_quiete`, `chiamata_all_azione` [V].
 - `segreti_astratti` (C6): about ten, of one or two sentences each [V], without a fixed place.

@@ -207,6 +207,21 @@ It prints the level (one-shot, arc, campaign, saga), what that involves, and how
   The first is `scena.yaml`, the others `scene/<id>.yaml`. The same place can come back at two different moments.
 - The Game Master moves from one scene to another from the panel (see [the Game Master panel](master-panel.md)).
 
+### The world that moves
+
+The world does not wait for the players ([docs/mondo.md](../mondo.md)). In `campagna.yaml` the Preparer can write:
+
+- `segno_almeno_ogni: serata` on a clock: the Engine spreads its ticks over the evening (`ore_per_sessione` of the brief);
+- **gates** in `avanza_quando`, like `{quando: lascia_scena, scena: scena_ovile}` or `{quando: azione, temi: [accusa]}`:
+  a fact of the game (leaving a place, lingering, a line said, a clue found, an action, a failed check, a fight) owes
+  the clock a tick, which the Engine says itself if the narrator does not;
+- **consequences** of a tick (`conseguenze`, and omens with `al_segno`): what happens in the world, the sentence the
+  table hears if the PCs are there (`detto`), the traces they find later if they were elsewhere (`tracce`), an NPC that
+  changes attitude, moves or leaves, a hidden NPC that appears, a clue the world offers.
+
+The fields are in `.claude/skills/preparatore/riferimenti/schema.md` («orologi», «preparazione»); the validator checks
+them in the class `FRONTI` (`FRONTI.avanza_quando`, `FRONTI.conseguenze`).
+
 ## 4. The validator
 
 The validator checks a campaign against the Game Master manual. It does not call the network and it writes nothing
@@ -256,7 +271,7 @@ Each rule belongs to a **class**. The exact list is printed by `--classi`:
 | `PNG` | mandatory NPC sheet and cross-checks |
 | `SCENA` | scene or place sheet |
 | `INDIZI` | the three-clue rule and bottlenecks |
-| `FRONTI` | fronts, dangers, clocks, villain, secrets, arcs |
+| `FRONTI` | fronts, dangers, clocks (gates of `avanza_quando`, `conseguenze`, omens with `al_segno`), villain, secrets, arcs |
 | `GRAFO` | nodes and links without dead ends |
 | `SESSIONE` | strong opening, five rooms, potential scenes, closing |
 | `PG` | player characters and private knowledge |

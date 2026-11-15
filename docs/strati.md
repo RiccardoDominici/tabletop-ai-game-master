@@ -81,8 +81,9 @@ does not exist):
   in the package). They do not reach the narrator: `riassunto_iniziale`, `scene`, `titolo`, `pieni_all_inizio`,
   `preparazione` (of the campaign and of the session: for example `preparazione.fili`).
 - **pieni_all_inizio** `{id_orologio: n}`: the signs already filled on a campaign clock at the start of this session
-  (written between sessions from the log and from the world that moves). An id that does not exist is an error; a
-  clock not mentioned restarts from the value in campagna.yaml.
+  (written between sessions from the log and from the world that moves). The fronts' `orologi_extra` can be cited
+  too: the Engine plays them off-screen (docs/mondo.md §3). An id that does not exist is an error; a clock not
+  mentioned restarts from the value in campagna.yaml.
 - **Scenes**: only `scene/*.yaml` of the package, in the order of `sessione.yaml → scene`; the first one reads
   `riassunto_iniziale` before it. An id listed without a file is an error; a file not listed goes at the end, with
   a warning.

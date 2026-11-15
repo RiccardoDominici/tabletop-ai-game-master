@@ -152,6 +152,16 @@ messaggio:
   mossa_segno: "a visible sign of the threat (S1), with nothing irreversible"
   mossa_indizio: "a proactive clue (S2): something bursts in and brings a new lead, or an NPC acts on their own"
 
+# The world that moves (apps/server/src/mondo/, docs/mondo.md): the section of the turn's message about what has
+# changed in the world. Mode A also gets the directives of the consequences and the clues the world offers.
+mondo:
+  titolo: "## In the world (state kept by the Engine)"
+  regia: "Let this be felt in this response, in your own words and inside the story: {testo}"
+  png_via: "{nome} is no longer in this scene: they neither speak nor act here."
+  png_arriva: "{nome} is now in this scene."
+  atteggiamento: "{png} towards {pg}: now {stato} (before {prima})."
+  indizio_offerto: "The world offers a lead ({id}): {come}. Let it come if the PCs look for it or a move of the world calls for it."
+
 # Urgent pace section at the end of the turn message (apps/server/src/narrazione/ritmo.ts).
 ritmo:
   titolo: "## Pace"

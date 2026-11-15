@@ -153,6 +153,16 @@ messaggio:
   mossa_segno: "un segno visibile della minaccia (S1), senza niente di irreversibile"
   mossa_indizio: "un indizio proattivo (S2): qualcosa irrompe e porta una pista nuova, oppure un PNG agisce per conto suo"
 
+# The world that moves (apps/server/src/mondo/, docs/mondo.md): the section of the turn's message about what has
+# changed in the world. Mode A also gets the directives of the consequences and the clues the world offers.
+mondo:
+  titolo: "## Nel mondo (stato tenuto dal Motore)"
+  regia: "Fai sentire questo in questa risposta, con parole tue e dentro la storia: {testo}"
+  png_via: "{nome} non è più in questa scena: non parla e non agisce qui."
+  png_arriva: "{nome} adesso è in questa scena."
+  atteggiamento: "{png} verso {pg}: adesso {stato} (prima {prima})."
+  indizio_offerto: "Il mondo offre una pista ({id}): {come}. Falla arrivare se i PG la cercano o se tocca a una mossa del mondo."
+
 # Sezione del ritmo concitato in fondo al messaggio del turno (apps/server/src/narrazione/ritmo.ts).
 ritmo:
   titolo: "## Ritmo"

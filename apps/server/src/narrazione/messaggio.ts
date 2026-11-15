@@ -66,6 +66,8 @@ export interface DatiMessaggioTurno {
   fuoriGioco?: { titolo: string; righe: string[] };
   /** Fine della serata vicina (sessione/durata.ts, consiglioDiChiusura): un consiglio, non un ordine. */
   tempoSerata?: string | null;
+  /** What has changed in the world (docs/mondo.md): lines ready from the Engine; empty = no section. */
+  mondo?: string[];
 }
 
 /**
@@ -163,6 +165,7 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
   }
 
   if (d.fuoriGioco?.righe.length) parti.push(d.fuoriGioco.titolo, d.fuoriGioco.righe.map((r) => `- ${r}`).join('\n'));
+  if (d.mondo?.length) parti.push(testo('mondo.titolo'), d.mondo.map((r) => `- ${r}`).join('\n'));
   if (d.orologi) parti.push(testo('messaggio.titolo_orologi'), d.orologi);
   if (d.stallo && !d.repertorio) parti.push(testoStallo(d.stallo));
   if (d.repertorio) {

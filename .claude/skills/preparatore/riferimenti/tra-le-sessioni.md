@@ -47,7 +47,8 @@ The work between sessions is done by an agent with this skill, like the preparat
    scripts/tra-sessioni.sh campagne/<id> <n> --pacchetto
    ```
    It stops if the state has errors (`STATO`). Then it writes, never overwriting, the skeleton of `sessioni/<n+1>/`:
-   `sessione.yaml` with `pieni_all_inizio` from the state and the open threads to be decided; the whole sheets of the
+   `sessione.yaml` with `pieni_all_inizio` from the state (the narrator's clocks and the fronts' `orologi_extra`, which the
+   Engine also plays: docs/mondo.md §3) and the open threads to be decided; the whole sheets of the
    recurring NPCs changed in play, with `sa`, `non_sa` and attitude taken from the state; the secret words in use, without
    those of the facts the PCs now know.
 5. **Session after** (the agent). The same steps the skill uses for a one-shot, starting from state and arc:

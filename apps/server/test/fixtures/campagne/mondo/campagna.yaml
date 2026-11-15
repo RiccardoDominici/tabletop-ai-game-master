@@ -24,8 +24,57 @@ orologi:
       - {quando: lascia_scena, scena: scena_mulino, volte: 1}
       - {quando: prova_fallita, prove: [atletica], segni: 2}
     al_completo: "Il mulino è allagato."
+    conseguenze:
+      - al_segno: 1
+        cosa: "L'acqua entra nella cantina e rovina la farina del mugnaio."
+        detto: "Dalla cantina sale un gorgoglio, e il mugnaio impallidisce."
+        tracce: "Nel cortile c'è fango fino alle caviglie, e la porta della cantina è aperta."
+        png: {png_mugnaio: {atteggiamento: {pg_anna: ostile}}}
+      - al_segno: 2
+        cosa: "Il mugnaio scappa al ponte con i sacchi buoni."
+        detto: "Il mugnaio si carica un sacco in spalla ed esce verso il ponte."
+        tracce: "Sul ponte c'è il mugnaio, coi sacchi buoni."
+        png: {png_mugnaio: {scena: scena_ponte}}
+        compare: [png_ladra]
+        indizi: [i_farina]
 sessione:
   riassunto_iniziale: "Siete arrivati al mulino."
+preparazione:
+  fronti:
+    - id: fronte_fiume
+      livello: avventura
+      pericoli:
+        - id: p_fiume
+          impulso: "allagare"
+          destino_incombente: "Il fiume si porta via il mulino."
+          mosse: ["sale di un palmo", "porta via un carro"]
+          cast: [png_mugnaio]
+          orologio: o_piena
+          presagi:
+            - {testo: "Il fiume rompe l'argine a monte.", segno_visibile: "Si sente un tonfo lontano, a monte.", al_segno: 3}
+            - {testo: "Il cielo si chiude.", segno_visibile: "Nuvole nere sulle colline."}
+        - id: p_voci
+          impulso: "accusare"
+          destino_incombente: "Il paese caccia il mugnaio."
+          mosse: ["sparge una voce"]
+          cast: [png_mugnaio]
+          orologio: o_voci
+          presagi:
+            - {testo: "In paese si dice che il mugnaio ruba la farina.", segno_visibile: "Due donne tacciono quando passa il mugnaio."}
+      orologi_extra:
+        - id: o_voci
+          nome: "Il paese parla"
+          segmenti: 4
+          avanza_quando:
+            - {quando: resta_in_scena, scena: scena_bosco, turni: 2}
+          conseguenze:
+            - al_segno: 1
+              cosa: "In paese decidono che il colpevole è il mugnaio."
+              tracce: "Il mugnaio ha gli occhi rossi: in paese lo chiamano ladro."
+              png: {png_mugnaio: {atteggiamento: {pg_bruno: indifferente}}}
+  cronologia:
+    eventi:
+      - {id: t_notte, cosa: "Scende la notte sul mulino.", segno: {orologio: o_sera, n: 4}}
 rivelazioni:
   - {id: r_ladra, conclusione: "La ladra è nel mulino.", indizi: [i_farina, i_ramo]}
 nodi:

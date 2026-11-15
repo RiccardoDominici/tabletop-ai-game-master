@@ -67,6 +67,9 @@ It is a server on the Mac and manages:
   server on the following package (apps/server/src/ciclo-server.ts) and the phones find their PC again;
 - **the SRD 5.2 rules** (CC-BY-4.0, data extracted from the official PDF, attribution required in the credits): dice, checks, CD, initiative, HP. The server always rolls the die: the narration cannot change an outcome;
 - **the threat clocks**, the NPCs' attitudes, the clues revealed, the lies already told, the spotlight counters;
+- **the world that moves** (apps/server/src/mondo/, docs/mondo.md): the clocks' pace from the evening, the gates of
+  `avanza_quando`, the consequences of marks and omens (seen, or off-screen and surfacing later), the NPCs' attitudes
+  and moves in play, the world's log (`cronaca`);
 - **the canon**: facts `proposto` and `confermato`, with the flag `noto_ai_pg`;
 - **the vault**: secrets, unknown entities, private messages.
 

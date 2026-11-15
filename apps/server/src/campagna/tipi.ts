@@ -5,6 +5,7 @@
  */
 
 import { testo, type Lingua } from '../lingua';
+import type { MondoCampagna } from './mondo';
 export type DatiYaml = Record<string, unknown>;
 
 export interface PngCaricato {
@@ -63,6 +64,11 @@ export interface Campagna {
   stile: DatiYaml;
   /** campagna.yaml senza `preparazione` (che non va al narratore). */
   campagnaNarratore: DatiYaml;
+  /**
+   * The world for the Engine only (docs/mondo.md §3, campagna/mondo.ts): consequences of marks, omens with
+   * `al_segno`, timeline events on a mark, dangers, the fronts' extra clocks. Absent in hand-built test campaigns.
+   */
+  mondo?: MondoCampagna;
   /**
    * Scena CORRENTE. Al caricamento è la prima (scena.yaml); la regia lavora su una copia della
    * campagna con la scena in corso (vedi `conScena`), così contesto, orologi attivi e immagini

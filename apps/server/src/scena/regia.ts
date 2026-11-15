@@ -989,9 +989,14 @@ export class Regia {
     return p;
   }
 
+  /** The scene card's NPCs once the world's moves are applied (a consequence moved them in, out, or away). */
+  private presentiDiScena(): string[] {
+    return this.mondo.presentiIn(this.campagna.scena.id, this.campagna.scena.png_presenti);
+  }
+
   /** PNG che sono nella scena anche se non parlano (a terra, morti: il corpo c'è); non chi è fuggito. */
   private pngPresentiFisici(): Set<string> {
-    const p = presenzaEffettiva(this.campagna.scena.png_presenti, this.presenzeManuali);
+    const p = presenzaEffettiva(this.presentiDiScena(), this.presenzeManuali);
     for (const [id, f] of this.prove?.attivo ? this.prove.stato.tuttiFuori() : []) if (f === 'fuggito') p.delete(id);
     return p;
   }
@@ -1002,7 +1007,7 @@ export class Regia {
    */
   private righeFuoriGioco(): string[] {
     if (!this.prove?.attivo) return [];
-    const inScena = presenzaEffettiva(this.campagna.scena.png_presenti, this.presenzeManuali);
+    const inScena = presenzaEffettiva(this.presentiDiScena(), this.presenzeManuali);
     return [...this.prove.stato.tuttiFuori()]
       .filter(([id]) => inScena.has(id) && id.startsWith('png_'))
       .map(([id, f]) => testoFisso(`prove.fuori.${f}`, { nome: voceDi(this.campagna, id).nome }));
@@ -1074,7 +1079,17 @@ export class Regia {
 
   /** A new world for this campaign and the current clocks (start, «Ricomincia»). */
   private nuovoMondo(): MondoInGioco {
-    return new MondoInGioco({ campagna: this.o.campagna, orologi: () => this.orologi, log: this.o.log.child({ modulo: 'mondo' }) });
+    return new MondoInGioco({
+      campagna: this.o.campagna,
+      orologi: () => this.orologi,
+      scena: () => this.campagna.scena.id,
+      log: this.o.log.child({ modulo: 'mondo' }),
+      // Every consequence is canon: it goes into the session's narration log too (docs/mondo.md, «Log and state»).
+      registra: (v) => this.o.registroNarrazioni.scrivi({ sessione: this.sessione, ...v, tipo: 'mondo', origine: v.tipo }),
+      rivela: (id) => {
+        if (this.o.campagna.png.some((p) => p.id === id && p.nascosto === true)) this.rivelati.add(id);
+      },
+    });
   }
 
   /**
@@ -1127,6 +1142,61 @@ export class Regia {
     this.righeDelMotore(turno, esito, righe, voce, false, 'w');
     this.notifica();
     return detti.map((d) => d.id);
+  }
+
+  /**
+   * The consequences of marks the PCs saw (docs/mondo.md §3), said by the Engine before the invitation: in mode B
+   * the consequence's line if it can be said, otherwise its sentence. Returns the consequences said.
+   */
+  private diciMondo(turno: number, esito: { uscita: VoceUscita[] }, segni: SegniInRisposta, log: Logger): string[] {
+    const detti: string[] = [];
+    const righe: Array<{ etichetta: string; testo: string; testo_voce: string }> = [];
+    for (const x of this.mondo.prendiDaSentire()) {
+      const b = x.battuta && this.statoRepertorio ? this.statoRepertorio.repertorio.perId.get(x.battuta) : undefined;
+      if (b && this.aggiungiBattutaMotore(turno, esito, segni, log, b, false)) {
+        detti.push(x.id);
+        continue;
+      }
+      if (x.testo) {
+        righe.push({ etichetta: ID_NARRATORE, testo: x.testo, testo_voce: this.pronuncia(x.testo) });
+        detti.push(x.id);
+      } else log.warn({ conseguenza: x.id, battuta: x.battuta }, 'world: consequence line not available and no sentence');
+    }
+    if (righe.length) {
+      const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: righe.map((r) => r.testo).join(' '), frasi: righe.map((_, k) => `t${turno}-c${k}`), motore: true };
+      this.righeDelMotore(turno, esito, righe, voce, false, 'c');
+      this.notifica();
+    }
+    if (detti.length) log.info({ conseguenze: detti }, 'world: consequences said by the Engine');
+    return detti;
+  }
+
+  /**
+   * Sentences of the world read after a scene's opening or return: consequences seen on entering (a jump of
+   * `orologi_in_scena`) and the traces of off-screen events that surface here.
+   */
+  private frasiDelMondoInScena(turno: number): string[] {
+    const viste = this.mondo.prendiDaSentire(true).map((x) => x.testo!);
+    const tracce = this.mondo.emergono(turno, this.pngPresentiFisici()).map((x) => x.tracce);
+    if (viste.length || tracce.length) this.o.log.info({ turno, scena: this.campagna.scena.id, viste, tracce }, 'world: sentences read with the scene opening');
+    return [...viste, ...tracce];
+  }
+
+  /**
+   * The world's section of the turn's message: who a consequence moved in or out of this scene (the cached
+   * context still shows the scene card) and, in mode A, the directives of the consequences and the clues the
+   * world offers.
+   */
+  private righeMondo(): string[] {
+    const righe: string[] = [];
+    const scheda = new Set(this.campagna.scena.png_presenti);
+    const ora = new Set(this.presentiDiScena());
+    for (const id of scheda) if (!ora.has(id)) righe.push(testoFisso('mondo.png_via', { nome: voceDi(this.campagna, id).nome }));
+    for (const id of ora) if (!scheda.has(id)) righe.push(testoFisso('mondo.png_arriva', { nome: voceDi(this.campagna, id).nome }));
+    if (!this.statoRepertorio) {
+      for (const r of this.mondo.prendiRegia()) righe.push(testoFisso('mondo.regia', { testo: r }));
+    }
+    return righe;
   }
 
   /** Clocks with `segno_almeno_ogni: serata`: recompute their pace from what is left of the evening. */
@@ -2039,7 +2109,8 @@ export class Regia {
     // si legge il suo rientro (playtest di nozze-neve: la casera si rileggeva da capo a ogni ritorno).
     const rientro = this.sceneVisitate.has(nuova.id) ? this.rientroIn(nuova, turno) : null;
     this.sceneVisitate.add(nuova.id);
-    const frasi = rientro?.frasi ?? nuova.apertura;
+    // The world: what the PCs find arriving (consequences of a jump of this scene, traces of off-screen events).
+    const frasi = [...(rientro?.frasi ?? nuova.apertura), ...this.frasiDelMondoInScena(turno)];
     this.o.registroNarrazioni.scrivi({
       sessione: this.sessione,
       turno,
@@ -2097,6 +2168,8 @@ export class Regia {
     const esito = passo === 1 ? this.orologi.avanza(id, this.turno, false) : this.orologi.indietro(id);
     if (esito.ok) {
       this.o.log.info({ orologio: id, passo, pieni: esito.orologio.pieni, segmenti: esito.orologio.segmenti }, 'orologio: spostato dal master');
+      // A new mark has its consequences (said at the next narration); a −1 undoes none.
+      this.mondo.riconcilia(this.turno);
       this.notifica();
     }
     return esito;
@@ -2220,7 +2293,8 @@ export class Regia {
     this.sceneVisitate.add(c.scena.id);
     // Una sessione che continua (pacchetto dopo, senza riassunto_iniziale) comincia con «La volta scorsa…».
     this.serata.riparte(this.o.orologio.adesso(), this.turno);
-    this.leggiApertura(0, [...this.serata.prendiLaVoltaScorsa(), ...c.scena.apertura]);
+    this.mondo.riconcilia(0);
+    this.leggiApertura(0, [...this.serata.prendiLaVoltaScorsa(), ...c.scena.apertura, ...this.frasiDelMondoInScena(0)]);
     this.salva('inizio');
   }
 
@@ -2643,6 +2717,7 @@ export class Regia {
       ...(this.statoRepertorio ? { repertorio: this.elencoRepertorio(r) } : {}),
       noteRegia: this.note.testi,
       tempoSerata: this.consiglioSerata(r.turno),
+      mondo: this.righeMondo(),
       ...(tiri && (tiri.fatti.length || tiri.fattiPrivati.length)
         ? {
             esitiTiri: {
@@ -2872,6 +2947,7 @@ export class Regia {
     // the clues they revealed are facts for the gates, owed to the next response (or paid off-screen at once).
     const debitiDetti = esito.esito && !controllo.signal.aborted ? this.pagaDebitiInRisposta(turno, esito, segniInRisposta, this.dovutiAlMessaggio, log) : [];
     this.mondo.fatti(this.fattiDellaNarrazione(esito.uscita), turno);
+    const mondoDetto = esito.esito && !controllo.signal.aborted ? this.diciMondo(turno, esito, segniInRisposta, log) : [];
 
     if (esito.esito) {
       // Testo grezzo del narratore: serve a rivedere qualità e protocollo dopo la sessione.
@@ -2916,6 +2992,8 @@ export class Regia {
       segni_aggiunti: segniAggiunti,
       // Marks owed by facts (avanza_quando gates) that the response did not show: said by the Engine (docs/mondo.md §2).
       segni_dovuti_detti: debitiDetti,
+      // Consequences of marks the PCs saw, said by the Engine (docs/mondo.md §3).
+      mondo_detto: mondoDetto,
       // Fatti dello scontro che la narrazione non aveva detto, aggiunti dal Motore («tipo:id»).
       fatti_aggiunti: fattiAggiunti,
       finale,

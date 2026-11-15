@@ -152,7 +152,9 @@ function testo(v: unknown): string | null {
 
 /** Nomi e testi dalla campagna caricata (e dal repertorio in modalità B). */
 export function definizioniRegistro(c: Campagna, repertorio?: Repertorio): DefinizioniRegistro {
-  const orologi = Array.isArray(c.campagnaNarratore['orologi']) ? (c.campagnaNarratore['orologi'] as DatiYaml[]) : [];
+  // The narrator's clocks and the fronts' extra clocks (docs/mondo.md §3): both are in the Engine's snapshot.
+  const narratore = Array.isArray(c.campagnaNarratore['orologi']) ? (c.campagnaNarratore['orologi'] as DatiYaml[]) : [];
+  const orologi = [...narratore, ...(c.mondo?.orologiExtra ?? []).filter((x) => !narratore.some((n) => n['id'] === x['id']))];
   return {
     campagna: c.id,
     titolo: c.titolo,
