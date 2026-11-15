@@ -1,0 +1,382 @@
+{
+  "sintesi": {
+    "quando": "2026-11-15T11:01:00.163Z",
+    "campagna": "torre-mozza",
+    "formato": "mp4",
+    "frasi": 12,
+    "ordinarie": 6,
+    "nomi_giusti_prima": "16/21",
+    "nomi_giusti_dopo": "19/21",
+    "correzioni_indesiderate": 0,
+    "appresi": [
+      "Zorvak",
+      "Spinalba"
+    ],
+    "latenza_ms": {
+      "mediana": 1913,
+      "massima": 2060,
+      "media": 1925
+    }
+  },
+  "frasi": [
+    {
+      "voce": "narratore",
+      "detto": "Chiedo a Zirrà dove tiene il ragazzo.",
+      "grezzo": "Chiedo a Zirrà dove tiene il ragazzo.",
+      "corretto": "Chiedo a Zirrà dove tiene il ragazzo.",
+      "correzioni": [],
+      "attesi": [
+        "Zirrà"
+      ],
+      "giusti_prima": 1,
+      "giusti_dopo": 1,
+      "indesiderate": [],
+      "secondi": 2.5,
+      "byte": 16449,
+      "ms_client": 1868,
+      "ms_server": {
+        "conversione": 30,
+        "trascrizione": 1833,
+        "correzione": 0,
+        "totale": 1866
+      },
+      "ms_voce": 2305
+    },
+    {
+      "voce": "nadine",
+      "detto": "Fulco, tieni d'occhio Grosso mentre parlo con la goblin.",
+      "grezzo": "Fulco, tieni d'occhio grosso mentre parlo con la Goblin.",
+      "corretto": "Fulco, tieni d'occhio grosso mentre parlo con la Goblin.",
+      "correzioni": [],
+      "attesi": [
+        "Fulco",
+        "Grosso"
+      ],
+      "giusti_prima": 1,
+      "giusti_dopo": 1,
+      "indesiderate": [],
+      "secondi": 3.7,
+      "byte": 24137,
+      "ms_client": 1931,
+      "ms_server": {
+        "conversione": 28,
+        "trascrizione": 1897,
+        "correzione": 0,
+        "totale": 1929
+      },
+      "ms_voce": 3339
+    },
+    {
+      "voce": "vincent",
+      "detto": "Livia si avvicina a Berta e le chiede della chiave.",
+      "grezzo": "Livia si avvicina a Bert e le chiede della chiave.",
+      "corretto": "Livia si avvicina a Berta e le chiede della chiave.",
+      "correzioni": [
+        {
+          "sentito": "Bert",
+          "scritto": "Berta",
+          "motivo": "fonetica"
+        }
+      ],
+      "attesi": [
+        "Livia",
+        "Berta"
+      ],
+      "giusti_prima": 1,
+      "giusti_dopo": 2,
+      "indesiderate": [],
+      "secondi": 3.2,
+      "byte": 21092,
+      "ms_client": 1872,
+      "ms_server": {
+        "conversione": 29,
+        "trascrizione": 1839,
+        "correzione": 0,
+        "totale": 1871
+      },
+      "ms_voce": 2928
+    },
+    {
+      "voce": "tabitha",
+      "detto": "Dico a Ugo che il suo mulo è ancora legato all'ovile.",
+      "grezzo": "Dico a Ugo che il suo mulo è ancora legato all'ovile.",
+      "corretto": "Dico a Ugo che il suo mulo è ancora legato all'ovile.",
+      "correzioni": [],
+      "attesi": [
+        "Ugo"
+      ],
+      "giusti_prima": 1,
+      "giusti_dopo": 1,
+      "indesiderate": [],
+      "secondi": 3.1,
+      "byte": 19866,
+      "ms_client": 1882,
+      "ms_server": {
+        "conversione": 29,
+        "trascrizione": 1848,
+        "correzione": 0,
+        "totale": 1881
+      },
+      "ms_voce": 2669
+    },
+    {
+      "voce": "narratore",
+      "detto": "Nespola ed Eliandro salgono piano sulla scala rotta.",
+      "grezzo": "Nespola ed Eliandro salgono piano sulla scala rotta.",
+      "corretto": "Nespola ed Eliandro salgono piano sulla scala rotta.",
+      "correzioni": [],
+      "attesi": [
+        "Nespola",
+        "Eliandro"
+      ],
+      "giusti_prima": 2,
+      "giusti_dopo": 2,
+      "indesiderate": [],
+      "secondi": 4,
+      "byte": 26188,
+      "ms_client": 1901,
+      "ms_server": {
+        "conversione": 29,
+        "trascrizione": 1866,
+        "correzione": 0,
+        "totale": 1899
+      },
+      "ms_voce": 3539
+    },
+    {
+      "voce": "nadine",
+      "detto": "Grido a Zirrà che Berta ha già pagato la decima.",
+      "grezzo": "Grido a Zirrà che Bert ha già pagato la decima.",
+      "corretto": "Grido a Zirrà che Berta ha già pagato la decima.",
+      "correzioni": [
+        {
+          "sentito": "Bert",
+          "scritto": "Berta",
+          "motivo": "fonetica"
+        }
+      ],
+      "attesi": [
+        "Zirrà",
+        "Berta"
+      ],
+      "giusti_prima": 1,
+      "giusti_dopo": 2,
+      "indesiderate": [],
+      "secondi": 3.2,
+      "byte": 21033,
+      "ms_client": 1958,
+      "ms_server": {
+        "conversione": 32,
+        "trascrizione": 1918,
+        "correzione": 1,
+        "totale": 1956
+      },
+      "ms_voce": 3073
+    },
+    {
+      "voce": "vincent",
+      "detto": "Fulco Granito alza lo scudo e si mette davanti a Livia Sarti.",
+      "grezzo": "Fulco Granito alza lo scudo e si mette davanti a Livia Sarti.",
+      "corretto": "Fulco Granito alza lo scudo e si mette davanti a Livia Sarti.",
+      "correzioni": [],
+      "attesi": [
+        "Fulco Granito",
+        "Livia Sarti"
+      ],
+      "giusti_prima": 2,
+      "giusti_dopo": 2,
+      "indesiderate": [],
+      "secondi": 3.8,
+      "byte": 24465,
+      "ms_client": 1932,
+      "ms_server": {
+        "conversione": 29,
+        "trascrizione": 1898,
+        "correzione": 0,
+        "totale": 1931
+      },
+      "ms_voce": 3577
+    },
+    {
+      "voce": "tabitha",
+      "detto": "Chiedo a Grosso se conosce Ugo il carbonaio.",
+      "grezzo": "Chiedo a Grosso se conosce Ugo il carbonaio.",
+      "corretto": "Chiedo a Grosso se conosce Ugo il carbonaio.",
+      "correzioni": [],
+      "attesi": [
+        "Grosso",
+        "Ugo"
+      ],
+      "giusti_prima": 2,
+      "giusti_dopo": 2,
+      "indesiderate": [],
+      "secondi": 3.1,
+      "byte": 20105,
+      "ms_client": 1889,
+      "ms_server": {
+        "conversione": 28,
+        "trascrizione": 1855,
+        "correzione": 0,
+        "totale": 1888
+      },
+      "ms_voce": 2799
+    },
+    {
+      "voce": "narratore",
+      "detto": "Eliandro lancia un incantesimo sul fuoco in mezzo alla torre.",
+      "grezzo": "Eliandro lancia un incantesimo sul fuoco in mezzo alla torre.",
+      "corretto": "Eliandro lancia un incantesimo sul fuoco in mezzo alla torre.",
+      "correzioni": [],
+      "attesi": [
+        "Eliandro"
+      ],
+      "giusti_prima": 1,
+      "giusti_dopo": 1,
+      "indesiderate": [],
+      "secondi": 3.7,
+      "byte": 23761,
+      "ms_client": 1923,
+      "ms_server": {
+        "conversione": 28,
+        "trascrizione": 1888,
+        "correzione": 0,
+        "totale": 1920
+      },
+      "ms_voce": 3330
+    },
+    {
+      "voce": "nadine",
+      "detto": "Nespola Tondi mostra a Zirrà la chiave della Torre Mozza.",
+      "grezzo": "Nespola Tondi mostra a Zirà la chiave della torre Mozza.",
+      "corretto": "Nespola Tondi mostra a Zirrà la chiave della torre Mozza.",
+      "correzioni": [
+        {
+          "sentito": "Zirà",
+          "scritto": "Zirrà",
+          "motivo": "fonetica"
+        }
+      ],
+      "attesi": [
+        "Nespola Tondi",
+        "Zirrà",
+        "Torre Mozza"
+      ],
+      "giusti_prima": 1,
+      "giusti_dopo": 2,
+      "indesiderate": [],
+      "secondi": 3.7,
+      "byte": 24074,
+      "ms_client": 1940,
+      "ms_server": {
+        "conversione": 29,
+        "trascrizione": 1903,
+        "correzione": 1,
+        "totale": 1938
+      },
+      "ms_voce": 3352
+    },
+    {
+      "voce": "vincent",
+      "detto": "Chiedo a Zorvak il vecchio dove porta il sentiero di Spinalba.",
+      "grezzo": "Chiedo a Zorvak, il vecchio dove porta il sentiero di Spinalba.",
+      "corretto": "Chiedo a Zorvak, il vecchio dove porta il sentiero di Spinalba.",
+      "correzioni": [],
+      "attesi": [
+        "Zorvak",
+        "Spinalba"
+      ],
+      "giusti_prima": 2,
+      "giusti_dopo": 2,
+      "indesiderate": [],
+      "secondi": 3.9,
+      "byte": 25418,
+      "ms_client": 1913,
+      "ms_server": {
+        "conversione": 30,
+        "trascrizione": 1876,
+        "correzione": 0,
+        "totale": 1911
+      },
+      "ms_voce": 3457
+    },
+    {
+      "voce": "tabitha",
+      "detto": "Dico a Zorvak di seguirci fino alla torre.",
+      "grezzo": "Dico a Zorvak di seguirci fino alla torre.",
+      "corretto": "Dico a Zorvak di seguirci fino alla torre.",
+      "correzioni": [],
+      "attesi": [
+        "Zorvak"
+      ],
+      "giusti_prima": 1,
+      "giusti_dopo": 1,
+      "indesiderate": [],
+      "secondi": 2.6,
+      "byte": 16774,
+      "ms_client": 1875,
+      "ms_server": {
+        "conversione": 28,
+        "trascrizione": 1841,
+        "correzione": 0,
+        "totale": 1873
+      },
+      "ms_voce": 2335
+    }
+  ],
+  "ordinarie": [
+    {
+      "voce": "narratore",
+      "detto": "Prendo la lanterna e scendo per primo in cantina.",
+      "grezzo": "Prendo la lanterna e scendo per primo in cantina.",
+      "corretto": "Prendo la lanterna e scendo per primo in cantina.",
+      "correzioni": [],
+      "ms_client": 1907,
+      "secondi": 3.2
+    },
+    {
+      "voce": "nadine",
+      "detto": "Mi nascondo dietro il muro e aspetto che il fuoco si spenga.",
+      "grezzo": "Mi nascondo dietro il muro e aspetto che il fuoco si spenga.",
+      "corretto": "Mi nascondo dietro il muro e aspetto che il fuoco si spenga.",
+      "correzioni": [],
+      "ms_client": 1913,
+      "secondi": 4.2
+    },
+    {
+      "voce": "vincent",
+      "detto": "Provo a slegare le corde del ragazzo senza fare rumore.",
+      "grezzo": "Provo a slegare le corde del ragazzo senza fare rumore.",
+      "corretto": "Provo a slegare le corde del ragazzo senza fare rumore.",
+      "correzioni": [],
+      "ms_client": 1883,
+      "secondi": 3.1
+    },
+    {
+      "voce": "tabitha",
+      "detto": "Guardo i segni a carbone sui muri e cerco di capire cosa dicono.",
+      "grezzo": "Guardo i segni a carbone sui muri e cerco di capire cosa dicono.",
+      "corretto": "Guardo i segni a carbone sui muri e cerco di capire cosa dicono.",
+      "correzioni": [],
+      "ms_client": 1952,
+      "secondi": 4.4
+    },
+    {
+      "voce": "narratore",
+      "detto": "Tiro un grosso sasso contro la porta di ferro per vedere chi risponde.",
+      "grezzo": "Tiro un grosso sasso contro la porta di ferro per vedere chi risponde.",
+      "corretto": "Tiro un grosso sasso contro la porta di ferro per vedere chi risponde.",
+      "correzioni": [],
+      "ms_client": 2060,
+      "secondi": 5
+    },
+    {
+      "voce": "nadine",
+      "detto": "Chiediamo scusa e torniamo indietro verso il paese prima che faccia buio.",
+      "grezzo": "Chiediamo scusa e torniamo indietro verso il paese prima che faccia buio.",
+      "corretto": "Chiediamo scusa e torniamo indietro verso il paese prima che faccia buio.",
+      "correzioni": [],
+      "ms_client": 2057,
+      "secondi": 4.5
+    }
+  ]
+}

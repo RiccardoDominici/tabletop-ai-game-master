@@ -1,0 +1,4 @@
+# npx tsx strumenti/ascolto/falsi.ts <campagna> <altre...>  (run on commit 5314c15 + Fastify LogController fix, 15 November 2026)
+torre-mozza: 24 names; 1458 ordinary sentences of nozze-neve, ponte-lanterne, prova-f0; unwanted corrections: 0
+prova-f0: 26 names; 801 ordinary sentences of torre-mozza, nozze-neve; unwanted corrections: 0
+nozze-neve: 39 names; 1279 ordinary sentences of torre-mozza, ponte-lanterne, prova-f0; unwanted corrections: 0

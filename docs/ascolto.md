@@ -66,15 +66,19 @@ turns HTTPS off.
 On the reference Mac (M1, 16 GB), 14 November 2026: `whisper-server` ready in about 22 s, 734 MB resident; a sentence
 of 4–6 s transcribed in about 2 s once warm.
 
-- Round trip (`strumenti/ascolto/giro.ts`, script `esperimenti/ascolto/<campagna>.yaml`): sentences full of campaign
-  names spoken by the local voice (Qwen3-TTS), recorded as webm and mp4 like a phone, posted to `/api/dettato` on a
-  test port. First run, before the last tightening of the correction: names right 17/21 (webm) and 16/21 (mp4)
-  from Whisper alone, 19/21 and 18/21 after correction, 0 unwanted corrections on the ordinary sentences, the two
-  invented names learned, median latency 2.0 s. The numbers on the final code are still to be measured
-  (`docs/da-fare.md`).
-- Worst-case false positives (`strumenti/ascolto/falsi.ts <campagna> <altra-campagna>…`): the whole vocabulary of one
-  campaign against about 4,200 ordinary sentences of the other campaigns. Lowercase matches turned ordinary words
-  into names; this is why the phonetic match now needs Whisper's capital.
+- Round trip (`strumenti/ascolto/giro.ts`, script `esperimenti/ascolto/torre-mozza.yaml`), final code, 15 November
+  2026: 12 sentences with 21 names in all, spoken by the local voice (Qwen3-TTS), recorded as webm and as mp4 like a
+  phone, posted to `/api/dettato` of a test server; 6 ordinary sentences on top. Names right before the correction:
+  16/21 for webm and for mp4. After: 19/21 for both. Unwanted corrections on the ordinary sentences: 0 (webm and mp4).
+  Names learned: Zorvak and Spinalba (both invented). Median latency: 1,921 ms (webm), 1,913 ms (mp4). Still wrong after
+  the correction: «Fulco, tieni d'occhio grosso…» (lowercase «grosso», both formats), «Chiedo a Zorva…» (webm: the first
+  Zorvak sentence, before it was learned), «…la torre Mozza» (mp4). Per-sentence results: `esperimenti/risultati/ascolto/torre-mozza-webm.json`
+  and `torre-mozza-mp4.json`.
+- Worst-case false positives (`strumenti/ascolto/falsi.ts <campagna> <altra-campagna>…`), final code, 15 November 2026:
+  the whole vocabulary of one campaign against the ordinary sentences of the others. torre-mozza (24 names) against
+  1,458 sentences: 0 unwanted corrections. prova-f0 (26 names) against 801 sentences: 0. nozze-neve (39 names) against
+  1,279 sentences: 0. Output: `esperimenti/risultati/ascolto/falsi.txt`. Lowercase matches turned ordinary words
+  into names; this is why the phonetic match needs Whisper's capital.
 
 ## Not verified yet
 
