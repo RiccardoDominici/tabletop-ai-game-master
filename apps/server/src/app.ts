@@ -11,7 +11,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import Fastify, { type FastifyInstance } from 'fastify';
+import Fastify, { LogController, type FastifyInstance } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import { Server } from 'socket.io';
 import type { InfoServer } from '@tabletop-ai-gm/shared';
@@ -35,7 +35,12 @@ export interface App {
 /** Crea Fastify e Socket.IO (le rotte che dipendono dalla regia si aggiungono con `registraRotte`). */
 export async function creaApp(o: OpzioniApp): Promise<App> {
   // Il logger pino ha un tipo più ricco di FastifyBaseLogger: si restringe a FastifyInstance standard.
-  const http = Fastify({ loggerInstance: o.log.child({ modulo: 'http' }), disableRequestLogging: true }) as unknown as FastifyInstance;
+  // Fastify 5.12 ha deprecato l'opzione top-level `disableRequestLogging` (FSTDEP023): il modo previsto
+  // è un LogController. Le righe di richiesta restano spente come prima: il server logga da sé gli eventi utili.
+  const http = Fastify({
+    loggerInstance: o.log.child({ modulo: 'http' }),
+    logController: new LogController({ disableRequestLogging: true }),
+  }) as unknown as FastifyInstance;
   const io: ServerIo = new Server(http.server, { path: '/socket.io', serveClient: false, pingInterval: 10_000, pingTimeout: 8_000 });
 
   const indice = path.join(o.cartellaWeb, 'index.html');
