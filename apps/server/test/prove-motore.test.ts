@@ -190,18 +190,25 @@ describe('un turno di tiri', () => {
     expect(r.fatti[1]).toMatch(/Ruggero lo sgherro è già a terra, fuori combattimento: nessun tiro\. Non parla e non agisce più/);
   });
 
-  it('reazione del PNG ferito: attacca chi l\'ha colpito, PF del PG scendono', async () => {
-    const arbitro = new ArbitroFinto({ 'Colpisco Ruggero con la spada': { tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'spada_lunga', reazione: { png: 'png_ruggero', condizione: 'sempre' } } });
-    // Corrado: d20 10 + 5 = 15 ≥ 13, danno 1d8 = 3 + 3 → Ruggero 11 → 5. Ruggero: d20 15 + 4 = 19 ≥ 15 (giaco + Des 2), 1d6 = 4 + 2 → Corrado 12 → 6.
-    const m = motore({ arbitro, dadi: [10, 3, 15, 4] });
-    const r = await m.risolvi(5, [azione('a1', 'pg_corrado', 'Colpisco Ruggero con la spada')]);
-    expect(r.tiri.map((t) => [t.chi, t.etichetta, t.totale, t.contro.valore, t.riuscita, t.danno?.totale])).toEqual([
-      ['pg_corrado', 'Spada lunga', 15, 13, true, 6],
-      ['png_ruggero', 'Mazza ferrata', 19, 15, true, 6],
-    ]);
+  it('reazione del PNG a una provocazione: attacca chi l\'ha provocato, PF del PG scendono', async () => {
+    const arbitro = new ArbitroFinto({ 'Sputo ai piedi di Ruggero': { tipo: 'prova', abilita: 'intimidire', bersaglio: 'png_ruggero', reazione: { png: 'png_ruggero', condizione: 'sempre' } } });
+    // Corrado: Intimidire with disadvantage (10, 10). Ruggero: d20 15 + 4 = 19 ≥ 15 (giaco + Des 2), 1d6 = 4 + 2 → Corrado 12 → 6.
+    const m = motore({ arbitro, dadi: [10, 10, 15, 4, 1] });
+    const r = await m.risolvi(5, [azione('a1', 'pg_corrado', 'Sputo ai piedi di Ruggero')]);
+    expect(r.tiri[1]).toMatchObject({ chi: 'png_ruggero', etichetta: 'Mazza ferrata', totale: 19, riuscita: true, danno: { totale: 6 } });
     expect(m.stato.puntiFerita('pg_corrado')).toEqual({ attuali: 6, massimi: 12 });
     // Prima la frase esplicita del colpo del PNG, poi i dettagli del tiro.
     expect(r.fatti[0]).toMatch(/Poi Ruggero lo sgherro reagisce\. Ruggero lo sgherro colpisce Corrado Lanzi: 6 danni \(raccontalo in una frase sua\)\. Dettagli: attacco con Mazza ferrata a Corrado Lanzi: 19 contro CA 15 → COLPITO, 6 danni contundenti; Corrado Lanzi ha 6 punti ferita su 12\./);
+  });
+
+  it('an attack in a turn-order set: no reaction out of turn, the fight starts and the NPC strikes in its step', async () => {
+    // Third e2e pass, HEAD rerun T6: a surprised NPC «reagisce» to the opening attack before the order was rolled.
+    const arbitro = new ArbitroFinto({ 'Colpisco Ruggero con la spada': { tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'spada_lunga', reazione: { png: 'png_ruggero', condizione: 'sempre' } } });
+    const m = motore({ arbitro, dadi: [10, 3, 15, 4] });
+    const r = await m.risolvi(5, [azione('a1', 'pg_corrado', 'Colpisco Ruggero con la spada')]);
+    expect(r.tiri[0]).toMatchObject({ chi: 'pg_corrado', etichetta: 'Spada lunga', riuscita: true });
+    expect(r.fatti[0]).not.toMatch(/reagisce/);
+    expect(r.fatti.join(' ')).toMatch(/Inizia il combattimento\. Iniziativa:/);
   });
 
   it('aiuto: l\'azione aiutata ha vantaggio, chi aiuta non tira; svantaggio dell\'arbitro e aiuto si annullano', async () => {

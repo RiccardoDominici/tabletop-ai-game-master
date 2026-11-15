@@ -24,6 +24,8 @@ class ArbitroParole implements ArbitroProve {
       if (/convinco/i.test(a.testo)) Object.assign(d, { tipo: 'prova', abilita: 'persuasione', bersaglio: 'png_bertoldo' });
       else if (/lucchetto/i.test(a.testo)) Object.assign(d, { tipo: 'prova', abilita: 'rapidita_di_mano', prova_scena: 'p_cassetta' });
       else if (/spada/i.test(a.testo)) Object.assign(d, { tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'spada_lunga', reazione: { png: 'png_ruggero', condizione: 'sempre' } });
+      // A provocation the NPC answers with a blow: a reaction outside a fight (an attack in turn order has none).
+      else if (/sputo/i.test(a.testo)) Object.assign(d, { tipo: 'prova', abilita: 'intimidire', bersaglio: 'png_ruggero', reazione: { png: 'png_ruggero', condizione: 'sempre' } });
       out[a.id] = d;
     }
     return out;
@@ -82,20 +84,22 @@ describe('prove e dadi col server intero', () => {
     expect(arbitro.chiamate).toBe(2);
   });
 
-  it('attacco con la reazione del PNG: i PF del PG scendono, e restano dopo un riavvio', async () => {
+  it('la reazione del PNG a una provocazione: i PF del PG scendono, e restano dopo un riavvio', async () => {
     prova = new Prova();
     const cartella = prova.campagna('prove');
-    // Corrado: 10 + 5 = 15 ≥ CA 13, spada 1d8 = 3 + 3 = 6 (Ruggero 11 → 5). Ruggero: 15 + 4 = 19 ≥ CA 15, mazza 4 + 2 = 6 (Corrado 12 → 6).
+    // Corrado provokes Ruggero (Intimidire with disadvantage: 10, 10); Ruggero reacts: 15 + 4 = 19 ≥ CA 15, mazza 4 + 2 = 6
+    // (Corrado 12 → 6); the fight it opens rolls 1s from there on (initiative, and Ruggero's own step misses).
+    // (A reaction to an ATTACK no longer exists in a turn-order set: the NPC strikes in its step, third e2e pass.)
     const env = { TAGM_SESSIONI: `${prova.cartella}/sessioni.sqlite` };
-    const { url, s } = await prova.avvia(cartella, COPIONE, env, { arbitroProve: new ArbitroParole(), dadi: new DadiACopione([10, 3, 15, 4]) });
+    const { url, s } = await prova.avvia(cartella, COPIONE, env, { arbitroProve: new ArbitroParole(), dadi: new DadiACopione([10, 10, 15, 4, 1, 1, 1, 1]) });
     const schermo = await prova.proiettore(url);
     const corrado = await prova.telefono(url, 'pg_corrado');
     const s1 = await inizia(schermo, corrado);
-    await agisci(corrado, 'pg_corrado', 'Colpisco Ruggero con la spada', s1.versione_scena);
+    await agisci(corrado, 'pg_corrado', 'Sputo ai piedi di Ruggero', s1.versione_scena);
     const dopo = await attendi(corrado, (x) => x.fase === 'finestra' && x.turno === 2);
-    expect(dopo.tiri?.map((t) => [t.chi, t.etichetta, t.riuscita, t.danno?.totale])).toEqual([
-      ['pg_corrado', 'Spada lunga', true, 6],
-      ['png_ruggero', 'Mazza ferrata', true, 6],
+    expect(dopo.tiri?.slice(0, 2).map((t) => [t.chi, t.etichetta, t.danno?.totale ?? null])).toEqual([
+      ['pg_corrado', 'Intimidire (Carisma)', null],
+      ['png_ruggero', 'Mazza ferrata', 6],
     ]);
     expect(dopo.pg.find((p) => p.id === 'pg_corrado')?.pf).toEqual({ attuali: 6, massimi: 12 });
 
@@ -105,7 +109,7 @@ describe('prove e dadi col server intero', () => {
     const t2 = prova.nuovo(url2);
     const st2 = await emetti<StatoTavolo>((cb) => t2.emit('telefono:entra', cb));
     expect(st2.pg.find((p) => p.id === 'pg_corrado')?.pf).toEqual({ attuali: 6, massimi: 12 });
-    expect(st2.tiri?.map((t) => t.etichetta)).toEqual(['Spada lunga', 'Mazza ferrata']);
+    expect(st2.tiri?.map((t) => t.etichetta)).toEqual(['Intimidire (Carisma)', 'Mazza ferrata']);
   });
 
   it('campagna senza schede: niente dadi, niente campi nuovi nello stato, niente sezione nel messaggio', async () => {

@@ -97,7 +97,11 @@ In short:
 6. **NPCs that attack are a «reazione» (reaction) decided together with the action**, not a line from the narrator. A
    `[attacco]` line would arrive after the narrator has already spoken, and narrating the outcome would require a second
    call. The reaction comes out in the same decision as the action that triggers it: for example, one hits a hostile NPC
-   who stays standing. The Engine rolls it right after that action.
+   who stays standing. The Engine rolls it right after that action. In a rule set with turn order (individual or side
+   initiative) there is no reaction out of turn: during a fight the NPC acts in its own step, and an attack that opens
+   a fight gives the attacked side surprise and initiative instead (`turni` of the resolvers, `senzaReazioneFuoriTurno`).
+   Third e2e pass, HEAD rerun T6: Grosso, surprised and losing round one, still «reagisce» and swung at Livia before the
+   order was rolled. A provocation answered with a blow outside a fight stays a reaction, and it opens the fight.
 
 ## 2. Sheets and data (the schema for the Preparer skill)
 
@@ -298,7 +302,7 @@ test/gregari.test.ts.
 3. **Rolls** (prove/risolutore.ts).
    - First the «aiuto» (help) actions are collected; they give advantage to the helped action.
    - Then each action rolls, in the table's resolution order.
-   - Right after, the NPC's reaction, if any, rolls.
+   - Right after, the NPC's reaction, if any, rolls (not out of turn in a set with initiative: see point 6 of §1).
    - HP change immediately: the second hit finds the NPC already down.
    - Decisions first pass through `normalizzaDecisione`: the scene check wins, and social skills aimed at an NPC become
      Influence.

@@ -696,6 +696,7 @@ export class MotoreProve {
       atteggiamento: (png, pg) => this.atteggiamento(c.campagna, png, pg),
       conIndizi: this.o.conIndizi,
       condizioni: (id) => this.combattimento.condizioniDi(id),
+      turni: { regole: this.regoleCombattimento().iniziativa.tipo !== 'nessuna', inCorso: this.combattimento.aTurni },
       log: this.o.log.child({ turno }),
     };
   }
@@ -711,6 +712,7 @@ export class MotoreProve {
       nome: (id) => this.nomeDi(c, id),
       esiste: (id) => c.campagna.pg.some((p) => p.id === id) || c.campagna.png.some((p) => p.id === id) || this.gregari.has(id),
       condizioni: (id) => this.combattimento.condizioniDi(id),
+      turni: { regole: this.regoleCombattimento().iniziativa.tipo !== 'nessuna', inCorso: this.combattimento.aTurni },
       log: this.o.log.child({ turno }),
     };
   }

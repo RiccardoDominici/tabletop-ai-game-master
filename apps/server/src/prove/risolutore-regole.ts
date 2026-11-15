@@ -5,6 +5,7 @@
  * L'SRD 5.2 resta su prove/risolutore.ts, identico.
  */
 import type { TiroMostrato, Vantaggio } from '@tabletop-ai-gm/shared';
+import { senzaReazioneFuoriTurno } from './risolutore';
 import { chiave, conSegno } from '../campagna/regole-srd';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { Logger } from '../logger';
@@ -79,6 +80,13 @@ export interface OpzioniRisolutoreRegole {
   esiste: (id: string) => boolean;
   /** Condizioni attive (combattimento). Assente = nessuna. */
   condizioni?: CondizioniDi;
+  /**
+   * The rule set fights in turn order (individual or side initiative), and whether a fight is on now. Then an NPC does
+   * not «react» outside its step: during a fight it acts in its own step; an attack that opens the fight gives the
+   * attacked side surprise and initiative instead. Third e2e pass, HEAD rerun T6: Grosso, surprised (he loses round
+   * one), still «reagisce» and swings at Livia before the order was rolled. Absent = reactions as before.
+   */
+  turni?: { regole: boolean; inCorso: boolean };
   /**
    * Manual rolls (docs/prove.md §8): the PCs' own dice (prove/dadi-tavolo.ts), for an action's test and the damage of
    * its hit. Null or absent = the Engine's dice, as always. NPC rolls never pass here.
@@ -196,7 +204,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       }
     }
     // Reazione del PNG: dopo l'azione, se la condizione vale.
-    const r = d?.reazione;
+    const r = senzaReazioneFuoriTurno(o.turni, d?.tipo) ? null : d?.reazione;
     if (r && sch && (r.condizione === 'sempre' || (r.condizione === 'se_fallisce' && esito.riuscita === false)) && !o.stato.aTerra(r.png) && !o.stato.aTerra(a.autore)) {
       const x = attacca(r.png, a.autore, null, [], a.privata);
       if (x) {

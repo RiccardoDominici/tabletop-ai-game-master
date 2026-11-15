@@ -81,6 +81,13 @@ export interface OpzioniRisolutore {
   /** Condizioni attive (combattimento): vantaggi, svantaggi, critici, turni persi. Assente = nessuna. */
   condizioni?: CondizioniDi;
   /**
+   * The rule set fights in turn order (individual or side initiative), and whether a fight is on now. Then an NPC does
+   * not «react» outside its step: during a fight it acts in its own step; an attack that opens the fight gives the
+   * attacked side surprise and initiative instead. Third e2e pass, HEAD rerun T6: Grosso, surprised (he loses round
+   * one), still «reagisce» and swings at Livia before the order was rolled. Absent = reactions as before.
+   */
+  turni?: { regole: boolean; inCorso: boolean };
+  /**
    * Manual rolls (docs/prove.md §8): the PCs' own dice (prove/dadi-tavolo.ts) for an action's test (check, save,
    * attack roll, the acting PC's side of a contest), the damage of its hit and the other PC's die in a contest. Null
    * or absent = the Engine's dice, as always. NPC rolls never pass here.
@@ -230,7 +237,7 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     }
 
     // Reazione del PNG: dopo l'azione, se la condizione vale e chi reagisce è in piedi.
-    const r = d?.reazione;
+    const r = senzaReazioneFuoriTurno(o.turni, d?.tipo) ? null : d?.reazione;
     if (r && (r.condizione === 'sempre' || (r.condizione === 'se_fallisce' && esito.riuscita === false))) {
       const extra = reazione(o, a, r.png, aggiungi, log);
       if (extra) fatto += ` ${extra}`;
@@ -481,6 +488,15 @@ export function cartaAttacco(
 }
 
 /** Il PNG reagisce attaccando l'autore dell'azione (se ha una scheda ed è in piedi). */
+/**
+ * No NPC reaction outside the turn order: during a fight in turn order, or when the action is an attack that opens one
+ * (the attacked side gets surprise and initiative). Shared by both resolvers (prove/risolutore-regole.ts).
+ */
+export function senzaReazioneFuoriTurno(turni: { regole: boolean; inCorso: boolean } | undefined, tipo: string | undefined): boolean {
+  if (!turni?.regole) return false;
+  return turni.inCorso || tipo === 'attacco';
+}
+
 function reazione(o: OpzioniRisolutore, a: AzioneRisolvibile, png: string, aggiungi: (t: TiroMostrato) => void, log: Logger): string | null {
   const ps = o.schede.get(png);
   const bs = o.schede.get(a.autore);
