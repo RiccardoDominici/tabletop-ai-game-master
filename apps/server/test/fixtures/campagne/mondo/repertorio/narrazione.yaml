@@ -19,3 +19,24 @@ battute:
     testo:
       - "[narratore] La ruota cigola e si ferma un istante."
     max_usi: 3
+  - id: nar_macina
+    chi: narratore
+    tipo: indizio
+    quando: "qualcuno esamina la macina"
+    temi: [macina]
+    testo:
+      - "[narratore] La macina ha i bordi ancora vivi: è nuova."
+    effetti:
+      fatti_noti: [f_macina]
+    max_usi: 1
+  - id: nar_cantina_privata
+    chi: narratore
+    tipo: indizio
+    quando: "qualcuno scende da solo in cantina"
+    temi: [cantina]
+    richiede: {privata: true}
+    testo:
+      - "[narratore] In cantina, dietro i sacchi, c'è un giaciglio caldo."
+    effetti:
+      fatti_noti: [f_ladra]
+    max_usi: 1

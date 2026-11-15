@@ -2,6 +2,7 @@ id: mondo
 canone:
   - {id: f_mulino, noto_ai_pg: true, testo: "Il mulino è sul fiume."}
   - {id: f_ladra, noto_ai_pg: false, testo: "La ladra si nasconde nel mulino."}
+  - {id: f_macina, noto_ai_pg: false, testo: "La macina è stata cambiata da poco."}
 orologi:
   - id: o_sera
     nome: "La sera scende"

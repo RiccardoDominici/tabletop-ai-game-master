@@ -101,3 +101,30 @@ describe('server, mode B: the Engine brings the S2 clue line and says the S3 lea
     expect(prova.turni().filter((r) => r['stallo']).map((r) => (r['stallo'] as { detto: string | null }).detto)).toEqual([null, 'nar_impronte', 'piste']);
   });
 });
+
+describe('server, mode B: S3 says only what the table heard', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('a fact found through a private action is not among the leads said aloud', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mondo');
+    const copione = (t: number): string =>
+      t === 1 ? '[usa] nar_macina > pg_anna\n[invito] tutti' : t === 2 ? '[usa] nar_cantina_privata > pg_anna\n[invito] tutti' : '[usa] nar_ruota\n[invito] tutti';
+    const { url } = await prova.avvia(cartella, copione);
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const master = await prova.master(url);
+    let s = await inizia(schermo, tel);
+    s = await turno(tel, 'pg_anna', s, 'Anna esamina la macina.'); // public: f_macina
+    s = await turno(tel, 'pg_anna', s, 'Anna scende da sola in cantina.', true); // private: f_ladra, only on her phone
+    for (let k = 0; k < 3; k++) {
+      const dopo = attendi(tel, (x) => x.fase === 'finestra' && x.turno === s.turno + 1);
+      await master.comanda({ tipo: 'chiudi_finestra' });
+      s = await dopo;
+    }
+    const s3 = s.trascrizione.filter((v) => v.turno === 5).map((v) => v.testo).join(' ');
+    expect(s3).toContain('Vi tornano in mente le strade ancora aperte: Il bosco; Il ponte; La macina è stata cambiata da poco');
+    expect(s.trascrizione.map((v) => v.testo).join(' ')).not.toContain('La ladra si nasconde');
+  });
+});
