@@ -139,6 +139,10 @@ combattimento:
      takes the blow)), before the invitation question if its voice has not yet started. It applies to the narrator and to
      the selector. In the turn log: `fatti_aggiunti` ("type:id"); in the server log: «prove: fatti dello scontro non detti
      dalla narrazione, li dice il Motore» (prove: clash facts not said by the narration, the Engine says them).
+   - A row that names no character and opens with neither an article, an indefinite subject («Qualcuno…») nor a
+     preposition continues the row before (Haiku writes one sentence per row): «Zirrà si volta e sale di corsa la scala
+     rotta.» + «Sparisce oltre il crollo.» tells the flight. Before (live run of 15 November, docs/prove-verifica.md
+     §6b) the Engine added a duplicate «Zirrà fugge.». The lists are those of `guardia_fuori` (`continuaIlSoggetto`).
    - Limits: a negation («il colpo non lo raggiunge» (the blow does not reach him)) counts as said; a pronoun without a name
      («il nano barcolla» (the dwarf staggers)) does not, and the Engine adds its line even if the fact was understood.
 8. **The narrator cannot contradict the cards** (narrazione/guardia-esiti.ts), the other side of the required facts. In

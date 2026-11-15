@@ -17,6 +17,7 @@ import { normalizza } from '../azioni/regole';
 import { nomeBreve } from '../campagna/nomi';
 import { testo } from '../lingua';
 import { campoElenco, regole } from '../lingua/motore';
+import { continuaIlSoggetto } from '../narrazione/guardia-fuori';
 
 /** L'esito di un tiro contro la morte (prove/combattimento.ts). */
 export type EsitoMorte = 'morto' | 'stabile' | 'rialzato' | 'morente';
@@ -118,13 +119,23 @@ export function rigaDovuta(f: FattoDovuto): string {
  * sua: «Corrado colpisce Ruggero» nomina tutti e due e dice un colpo, ma racconta uno solo dei due
  * colpi; la frase che ne racconta uno non vale per l'altro (in ordine di fatto).
  */
-export function fattiMancanti(dovuti: readonly FattoDovuto[], righe: readonly string[], altri: (id: string) => readonly string[] = () => []): Array<FattoDovuto & { riga: string }> {
+export function fattiMancanti(
+  dovuti: readonly FattoDovuto[],
+  righe: readonly string[],
+  altri: (id: string) => readonly string[] = () => [],
+  /** Every character's names (PCs and NPCs): a row that names none of them continues the row before it. */
+  tuttiNomi: readonly string[] = [],
+): Array<FattoDovuto & { riga: string }> {
   const frasi = righe.flatMap((r) => r.split(/(?<=[.!?;:])\s+/)).filter((x) => x.trim());
   const usate = new Set<number>();
   const mancanti: Array<FattoDovuto & { riga: string }> = [];
+  // A row with no character named has the subject of the row before (Haiku writes one sentence per row): «Zirrà si
+  // volta e sale di corsa la scala.» + «Sparisce oltre il crollo.» tells the flight (checks and rolls, live run of 15
+  // November: the Engine added a second «Zirrà fugge.»).
+  const conPrima = righe.map((r, i) => (i > 0 && tuttiNomi.length && !nomina(r, tuttiNomi) && continuaIlSoggetto(r) ? `${righe[i - 1]} ${r}` : r));
   for (const f of dovuti) {
     if (!f.da) {
-      if (!righe.some((r) => diceFatto(f, r, altri))) mancanti.push({ ...f, riga: rigaDovuta(f) });
+      if (!conPrima.some((r) => diceFatto(f, r, altri))) mancanti.push({ ...f, riga: rigaDovuta(f) });
       continue;
     }
     const k = frasi.findIndex((x, j) => !usate.has(j) && diceFatto(f, x, altri));

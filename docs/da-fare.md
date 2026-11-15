@@ -33,8 +33,8 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - Haiku still answers «impossibile» for lifting a cart, with a `motivo` that contradicts the verdict (the verdict
     field comes before the reason): a reason-first field or a deterministic check (docs/prove-verifica.md §5);
   - initiative by sides is unit-tested only (no example campaign's set uses it);
-  - the told-facts guard added a duplicate «Zirrà fugge.» after a narration that told the flight («sparisce oltre il
-    crollo»);
+  - ~~the told-facts guard added a duplicate «Zirrà fugge.» after a narration that told the flight («sparisce oltre il
+    crollo»)~~ **Done** (16 November): a row with no subject continues the row before (docs/combattimento.md §3.7);
   - a fight opened from the panel rolls the PCs' first initiative with the Engine's dice; side rolls stay the Engine's;
   - «the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll);
   - no example campaign uses minions yet; world questions and minions not yet seen in a live run.

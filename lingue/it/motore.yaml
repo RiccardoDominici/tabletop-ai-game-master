@@ -214,7 +214,7 @@ guardia_esiti:
 # state (a word counts if it starts like this; entries of several words are phrases).
 guardia_fuori:
   apertura: [e, ed, ma, poi, allora, intanto, anche, ancora, solo, soltanto, persino, perfino, pure, mentre, quando, il, lo, la, l, i, gli, le, un, uno, una]
-  articoli: [il, lo, la, l, i, gli, le, un, uno, una, quel, quello, quella, quei, quegli, quelle, questo, questa, suo, sua, suoi, sue]
+  articoli: [il, lo, la, l, i, gli, le, un, uno, una, quel, quello, quella, quei, quegli, quelle, questo, questa, suo, sua, suoi, sue, qualcuno, qualcosa, nessuno, tutti, ognuno, chiunque]
   preposizioni: [di, a, da, in, con, su, per, tra, fra, del, della, dello, dei, degli, delle, dal, dalla, dallo, dai, dagli, dalle, nel, nella, nello, nei, negli, nelle, sul, sulla, sullo, sui, sugli, sulle, al, alla, allo, ai, agli, alle, dietro, fuori, sopra, sotto, davanti, accanto, lontano, oltre, verso, intorno, attorno, lassu, laggiu, qui, li, la, dentro, contro, presso, lungo]
   stato: [giac, immobil, mort, esanim, cadaver, corpo, a terra, per terra, senza vita, senza sensi, svenut, privo di sensi, priva di sensi, non si muove, non respira, rantol, sangu, fuori combattimento, non c'e piu, non e piu qui, fuggit, sparit]
 

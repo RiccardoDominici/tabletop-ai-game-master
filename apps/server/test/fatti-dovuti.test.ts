@@ -84,6 +84,15 @@ describe('il Motore controlla la narrazione (italiano)', () => {
     expect(fattiMancanti(due, ['Corrado colpisce Ruggero alla spalla. Ruggero risponde e lo ferisce, il colpo arriva a Corrado.'])).toEqual([]);
   });
 
+  it('the name in one row, the fact in the next row with no subject: said (no duplicate «… fugge.»)', () => {
+    const fugge: FattoDovuto = { tipo: 'fuggito', ...RUGGERO };
+    const tutti = ['Ruggero lo sgherro', 'Ruggero', 'Corrado Lanzi', 'Corrado', 'Ida'];
+    expect(fattiMancanti([fugge], ['Ruggero si volta e sale di corsa la scala rotta.', 'Sparisce oltre il crollo.'], () => [], tutti)).toEqual([]);
+    // Another subject, named or not, does not carry Ruggero's fact.
+    expect(fattiMancanti([fugge], ['Ruggero si volta.', 'Corrado sparisce oltre il crollo.'], () => [], tutti)).toHaveLength(1);
+    expect(fattiMancanti([aTerra], ['Corrado guarda il fiume.', 'Qualcuno cade a terra.'], () => [], tutti)).toHaveLength(1);
+  });
+
   it('ogni riga del Motore supera il suo stesso controllo', () => {
     for (const tipo of TIPI_FATTO_DOVUTO) {
       const f: FattoDovuto = { tipo, ...CORRADO };

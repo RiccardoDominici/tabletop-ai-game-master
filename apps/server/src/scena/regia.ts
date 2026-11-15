@@ -3637,7 +3637,8 @@ export class Regia {
     const dette = esito.uscita.flatMap((u) => (u.tipo === 'improvvisata' ? (u.privato ? [] : [u.testo]) : u.tipo === 'usa' ? u.righe.map((r) => r.testo) : []));
     const c = this.campagna;
     const altri = (id: string): string[] => [...(this.nomiPng.get(id) ?? []), ...Object.entries(c.alias).filter(([, x]) => x === id).map(([a]) => a)];
-    const mancanti = fattiMancanti(dovuti, dette, altri);
+    const tuttiNomi = [...c.pg.flatMap((p) => [p.nome, nomeBreve(p.nome)]), ...[...this.nomiPng.values()].flat(), ...Object.keys(c.alias)];
+    const mancanti = fattiMancanti(dovuti, dette, altri, tuttiNomi);
     if (!mancanti.length) {
       log.info({ turno, dovuti: dovuti.map((f) => `${f.tipo}:${f.id}`) }, 'prove: fatti dello scontro tutti nella narrazione');
       return [];

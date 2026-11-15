@@ -221,7 +221,7 @@ guardia_esiti:
 # stems that describe the state.
 guardia_fuori:
   apertura: [and, but, then, so, meanwhile, still, only, even, while, when, the, a, an]
-  articoli: [the, a, an, this, that, these, those, his, her, its, their]
+  articoli: [the, a, an, this, that, these, those, his, her, its, their, someone, somebody, something, nobody, everyone, everybody]
   preposizioni: [from, in, on, at, behind, outside, inside, above, below, beyond, near, with, by, through, over, under, across, toward, towards, around, against, along, up, down, there, here]
   stato: [lies, lying, dead, motionless, unconscious, on the ground, lifeless, corpse, body, bleed, does not move, doesn't move, not breathing, gone, fled, no longer here, out cold, still on the floor]
 

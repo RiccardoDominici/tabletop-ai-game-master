@@ -45,6 +45,17 @@ const parole = (): Parole =>
       .filter((v) => v.length > 0),
   }));
 
+/**
+ * Whether a sentence with no character named carries the subject of the one before (Italian and English drop it: «Sparisce
+ * oltre il crollo.»): it does not open with an article, an indefinite subject («Qualcuno…») or a preposition («Dalla
+ * cantina…»). Shared with the told-facts check (prove/fatti-dovuti.ts).
+ */
+export function continuaIlSoggetto(frase: string): boolean {
+  const p = parole();
+  const primo = paroleDi(frase)[0];
+  return !!primo && !p.articoli.has(primo) && !p.preposizioni.has(primo) && !p.apertura.has(primo);
+}
+
 /** The subject pronouns are those of the outcome guard («… e quello crolla», «…, che ride»). */
 const pronomiEsiti = (): ReadonlySet<string> => regole('guardia_esiti', (s) => new Set(campoElenco(s, 'pronomi').map(normalizza)));
 
