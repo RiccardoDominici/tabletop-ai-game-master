@@ -123,7 +123,7 @@ Everything comes from `docs/prove.md`, §1, which cites the SRD 5.2.
 
 ## Combat
 
-**How a fight starts.** Either an attack hits or targets a character with a sheet (a player's character attacks an NPC, or an NPC answers), or the Game Master presses «Inizia combattimento» (Start combat) in the panel. The fight takes in the player characters at the table, the NPCs involved, and the hostile NPCs on stage that have a sheet. The attack that opened the fight counts as a surprise attack.
+**How a fight starts.** Either an attack hits or targets a character with a sheet (a player's character attacks an NPC, or an NPC answers), or the Game Master presses «Inizia combattimento» (Start combat) in the panel. The fight takes in the player characters at the table, the NPCs involved, and the hostile NPCs on stage that have a sheet. The attack that opened the fight counts as a surprise attack. If the rule set has a surprise roll (`combattimento.sorpresa`, as in Basic Fantasy: 1d6, on 1–2 a side is surprised), the side attacked rolls it (both sides when the Game Master starts the fight): a surprised side loses the first round.
 
 **Initiative** comes from the campaign's rule set. With the SRD 5.2 (the default), each combatant rolls a d20 plus its Dexterity modifier once, and the order stays the same for the whole fight. A manual can use initiative by side instead (for example 1d6 per side, rolled again each round, as in B/X), or none, as in PbtA games. See [Your rules manual](your-rules-manual.md).
 

@@ -18,7 +18,8 @@
 #   scheda vale il bonus della tabella (+1 per tutte le classi al primo livello; per i mostri i dadi vita).
 #   Il bonus di Forza al danno in mischia (p. 55) è scritto nella formula del danno dell'arma («1d8+2»).
 # - Il Motore non tiene conto di: gittata (+1, −2), attacco alle spalle (+2) e
-#   carica, rateo di fuoco delle balestre, sorpresa con 1d6, numero di incantesimi al giorno.
+#   carica, rateo di fuoco delle balestre, numero di incantesimi al giorno. La sorpresa con 1d6 sì
+#   (combattimento.sorpresa).
 id: basic-fantasy-r142
 nome: "Basic Fantasy (4ª edizione)"
 per_il_narratore: "Si tira un d20 e si somma un bonus: gli attacchi contro la Classe d'Armatura, tutto il resto contro diciassette al primo livello; a zero punti ferita si rischia la morte."
@@ -143,7 +144,7 @@ sottosistemi:
     testo: "Il chierico mostra il simbolo sacro e tira un d20 contro la tabella del suo livello e del tipo di non morto: al primo livello 13 per gli scheletri, 17 per gli zombi, 19 per i ghoul (p. 57)."
   - id: sorpresa
     nome: "Sorpresa"
-    testo: "Prima di uno scontro si tira 1d6 per ogni parte che può essere sorpresa: con 1–2 è sorpresa e perde il primo round (p. 50). Il Motore conta come sorpresa solo l'attacco che apre lo scontro."
+    testo: "Prima di uno scontro si tira 1d6 per ogni parte che può essere sorpresa: con 1–2 è sorpresa e perde il primo round (p. 50). Il Motore tira per la parte attaccata quando lo scontro si apre con un attacco, per tutte e due quando lo apre il master."
   - id: cadute
     nome: "Cadute e fosse"
     testo: "Si prende 1d6 di danno ogni tre metri di caduta, arrotondando: già da un metro e mezzo si prende 1d6. Per non cadere in una fossa coperta si tira salvezza contro raggio della morte con la Destrezza (p. 43, 59)."
@@ -193,6 +194,9 @@ combattimento:
     - {id: trattenuto, nome: "Trattenuto", icona: "TR", effetti: [non_si_muove, attacchi_contro_vantaggio], testo: "Afferrato: non si muove ed è più facile da colpire."}
     - {id: svenuto, nome: "Svenuto", icona: "SV", effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: "A terra senza sensi, finché qualcuno non gli fascia le ferite."}
   condizione_a_zero: svenuto
+  # Sorpresa (p. 50): 1d6 per ogni parte che può essere sorpresa, con 1–2 perde il primo round. Il Motore la tira per la
+  # parte attaccata quando lo scontro si apre con un attacco, per tutte e due quando lo apre il master.
+  sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}
   # Morale (p. 57): 2d6, con più del morale il mostro fugge o si arrende. Il manuale lo tira al primo scontro e a metà
   # forze; il Motore al primo caduto e a metà caduti, contro il morale più basso tra chi resta in piedi.
   fine: {morale: true}

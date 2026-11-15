@@ -319,9 +319,13 @@ def _combattimento(cartella: Path, rompi) -> None:
         (lambda c: c["condizioni"].append(dict(c["condizioni"][0])), "id ripetuto"),
         (lambda c: c.update(condizione_a_zero="inesistente"), "condizione_a_zero"),
         (lambda c: c.update(fine={"morale": "sì"}), "fine.morale"),
+        (lambda c: c.update(sorpresa={"dado": 7, "fino_a": 2, "condizione": "prono"}), "sorpresa.dado"),
+        (lambda c: c.update(sorpresa={"dado": 6, "fino_a": 6, "condizione": "prono"}), "sorpresa.fino_a"),
+        (lambda c: c.update(sorpresa={"dado": 6, "fino_a": 2, "condizione": "sorpresissimo"}), "sorpresa.condizione"),
     ],
     ids=["tipo", "dado", "caratteristica", "ogni-round", "fasi-vuote", "fase-id", "fase-png", "modello",
-         "a-zero-pg", "a-zero-png", "tiri-morte", "tiri-morte-venti", "effetto-chiuso", "condizione-doppia", "a-zero-condizione", "morale"],
+         "a-zero-pg", "a-zero-png", "tiri-morte", "tiri-morte-venti", "effetto-chiuso", "condizione-doppia", "a-zero-condizione", "morale",
+         "sorpresa-dado", "sorpresa-fino-a", "sorpresa-condizione"],
 )
 def test_combattimento_del_set_bx(tmp_path: Path, rompi, dettaglio: str) -> None:
     dest = copia(BX, tmp_path)

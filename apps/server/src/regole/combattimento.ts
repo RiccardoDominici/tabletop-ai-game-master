@@ -78,6 +78,13 @@ export interface Combattimento {
     /** Morale dei PNG (B/X): 2d6 contro il morale della scheda, dopo il primo caduto e a metà caduti. */
     morale: boolean;
   };
+  /**
+   * Surprise (B/X, docs/combattimento.md §1): when a fight starts each side that can be surprised rolls `dado`; on
+   * `finoA` or less it is surprised and its combatants get `condizione` for the first round (a condition of the set,
+   * usually with `perde_turno`). A fight opened by an attack rolls only for the side attacked; a fight the Game Master
+   * opens rolls for both. null = the set has no surprise roll (SRD 5.2 default: the Game Master decides, in the story).
+   */
+  sorpresa: { dado: number; finoA: number; condizione: string } | null;
 }
 
 /**
@@ -125,6 +132,7 @@ export function combattimentoSrd(): Combattimento {
     condizioni: condizioniSrd(),
     condizioneAZero: 'privo_di_sensi',
     fine: { morale: false },
+    sorpresa: null,
   };
 }
 
@@ -141,6 +149,7 @@ export function combattimentoPredefinito(tipo: TipoRisoluzione, srd: boolean, ca
     condizioni: [],
     condizioneAZero: null,
     fine: { morale: false },
+    sorpresa: null,
   };
 }
 
@@ -238,5 +247,15 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
   }
   const fine = ogg(d['fine']);
   if (fine && typeof fine['morale'] === 'boolean') out.fine.morale = fine['morale'];
+  if (d['sorpresa'] !== undefined && d['sorpresa'] !== null) {
+    const so = ogg(d['sorpresa']);
+    const dado = so?.['dado'];
+    const finoA = so?.['fino_a'];
+    const condizione = so?.['condizione'];
+    if (!so || typeof dado !== 'number' || ![4, 6, 8, 10, 12, 20].includes(dado)) errori.push('combattimento.sorpresa.dado: 4, 6, 8, 10, 12 o 20');
+    else if (typeof finoA !== 'number' || !Number.isInteger(finoA) || finoA < 1 || finoA >= dado) errori.push('combattimento.sorpresa.fino_a: un intero da 1 a dado − 1');
+    else if (typeof condizione !== 'string' || !out.condizioni.some((x) => x.id === condizione)) errori.push(`combattimento.sorpresa.condizione: «${String(condizione)}» non è tra le condizioni`);
+    else out.sorpresa = { dado, finoA, condizione };
+  }
   return out;
 }

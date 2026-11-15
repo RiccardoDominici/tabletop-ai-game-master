@@ -130,6 +130,7 @@ combattimento:                              # optional: without it, the full SRD
     - {id: prono, nome: "Prono", icona: "⬇", effetti: [svantaggio_attacchi, attacchi_contro_vantaggio], testo: "…"}
   condizione_a_zero: privo_di_sensi         # [V] among the conditions, or null
   fine: {morale: true}                      # B/X morale: 2d6 against the NPCs' scheda.morale
+  sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}   # [V] B/X surprise: 1d6 per side, 1–2 loses round 1 (a set's condition)
 ```
 
 For combat, the sheets of non-SRD sets can have `attacchi[].distanza: true` (projectile phase) and, for NPCs, `morale` (2–12).

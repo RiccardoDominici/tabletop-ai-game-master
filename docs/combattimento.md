@@ -41,6 +41,7 @@ combattimento:
   condizioni: [{id: prono, nome: "Prono", icona: "⬇", effetti: [svantaggio_attacchi, attacchi_contro_vantaggio], testo: "…"}]
   condizione_a_zero: privo_di_sensi
   fine: {morale: true}          # B/X: 2d6 against the NPC's `scheda.morale` (7 if missing)
+  sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}   # B/X: see «Surprise» in §3; absent = no surprise roll
 ```
 
 - **Effects** (closed list, the Engine applies them to the rolls): `svantaggio_attacchi`, `vantaggio_attacchi`,
@@ -58,6 +59,13 @@ combattimento:
    - **Participants**: the PCs at the table with a sheet, the NPCs involved, and the NPCs on stage with a sheet and hostile
      to a PC.
    - The initiative is the set's. The action that opened the clash counts as «di sorpresa» (surprise).
+   - **Surprise** (the set's `combattimento.sorpresa`, B/X p. 50; added 15 November): when the fight starts, each side
+     that can be surprised rolls the set's die; on `fino_a` or less its combatants get the set's condition for the
+     first round (Basic Fantasy: «Sorpreso», which loses the turn). A fight opened by an attack rolls only for the side
+     attacked; one the Game Master opens from the panel rolls for both. The fact goes to the narrator with the
+     initiative («Sorpresa: i nemici tirano 1 su 1d6 e sono colti di sorpresa…»). The SRD 5.2 has no surprise roll (a
+     surprised creature has disadvantage on initiative, a judgement the Engine cannot make without a model): a set
+     without `sorpresa` rolls none.
 2. **Steps**: a round is phases × order (individual), or phases × sides (per side).
    - **PC step**: the window opens **only for that PC**, or for their whole side. The Engine ignores the narrator's
      invitation. The others may write, but their action stays queued (`TavoloAzioni.rinvia`) and is resolved on their
@@ -148,7 +156,7 @@ combattimento:
 - **test/combattimento.test.ts**:
   - SRD: initiative, the NPC's turn, 0 HP, death saves (1 and 20), a condition that makes you lose the turn and expires,
     advantage from «prono» (prone);
-  - B/X: sides, phases, morale;
+  - B/X: sides, phases, morale, surprise (only the side attacked rolls; surprised, it loses round 1);
   - PbtA: no turns;
   - the schema and its errors.
 - **test/combattimento-integrazione.test.ts**, with the whole server: the window opens only for whoever is on turn, the

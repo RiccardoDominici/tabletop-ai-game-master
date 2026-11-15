@@ -171,7 +171,7 @@ export class GestoreCombattimento {
    * Comincia lo scontro: tira l'iniziativa del set. Restituisce il fatto per il narratore; `dopo`
    * riceve i fatti di chi è già a 0 (l'attacco che ha aperto lo scontro): il morale (B/X).
    */
-  inizia(candidati: Array<{ id: string; lato: Lato; mod: number }>, dopo: string[] = []): string {
+  inizia(candidati: Array<{ id: string; lato: Lato; mod: number }>, dopo: string[] = [], apre: Lato | null = null): string {
     const r = this.d.regole;
     const dadi = this.d.dadi();
     const partecipanti: Partecipante[] = candidati.map((c) => ({
@@ -189,6 +189,7 @@ export class GestoreCombattimento {
     this.s = { round: 1, indice: 0, partecipanti, primo: 'pg', passi: [], moraleControllato: [], ultimoPg: null };
     const lati = this.tiraLati();
     this.s.passi = this.costruisciPassi();
+    const sorpresa = this.tiraSorpresa(apre);
     // Chi va a 0 prima di cominciare (l'attacco che ha aperto lo scontro) ha già le sue condizioni.
     // La e2e finale: qui il morale si tirava senza i fatti, «CEDONO» si perdeva e chi fuggiva restava.
     for (const p of partecipanti) this.controllaZero(p, dopo);
@@ -199,7 +200,44 @@ export class GestoreCombattimento {
           ? testo('prove.combattimento.iniziativa_schieramento', { pg: lati!.pg, png: lati!.png, primo: testo(this.s.primo === 'pg' ? 'prove.combattimento.agiscono_prima_pg' : 'prove.combattimento.agiscono_prima_png') })
           : testo('prove.combattimento.senza_iniziativa');
     this.d.log.info({ partecipanti: partecipanti.map((p) => ({ id: p.id, lato: p.lato, iniziativa: p.iniziativa })), primo: this.s.primo }, 'combattimento: inizia');
-    return testo('prove.combattimento.inizia', { ordine });
+    return [testo('prove.combattimento.inizia', { ordine }), ...sorpresa].join(' ');
+  }
+
+  /**
+   * Surprise (the set's `combattimento.sorpresa`, B/X): one die for each side that can be surprised — only the side
+   * attacked when an attack opened the fight (`apre` is the attacker's side), both when the Game Master opened it. A
+   * surprised side's combatants get the set's condition for the first round. Returns the facts for the narrator.
+   */
+  private tiraSorpresa(apre: Lato | null): string[] {
+    const so = this.d.regole.sorpresa;
+    const s = this.s!;
+    if (!so) return [];
+    const dadi = this.d.dadi();
+    const fatti: string[] = [];
+    const lati: Lato[] = apre === 'pg' ? ['png'] : apre === 'png' ? ['pg'] : ['pg', 'png'];
+    const nomeCond = this.cond(so.condizione)?.nome ?? so.condizione;
+    for (const lato of lati) {
+      const membri = s.partecipanti.filter((p) => p.lato === lato && p.esito === 'in_gioco');
+      if (!membri.length) continue;
+      const valore = dadi.tira(so.dado);
+      const sorpresi = valore <= so.finoA;
+      if (sorpresi) for (const p of membri) this.aggiungiCondizione(p.id, so.condizione, 1);
+      this.d.log.info({ lato, dado: `d${so.dado}`, valore, fino_a: so.finoA, sorpresi, chi: membri.map((p) => p.id) }, 'combattimento: sorpresa');
+      fatti.push(
+        testo(sorpresi ? 'prove.combattimento.sorpresi' : 'prove.combattimento.non_sorpresi', {
+          chi: testo(lato === 'pg' ? 'prove.combattimento.lato_pg' : 'prove.combattimento.lato_png'),
+          valore,
+          dado: so.dado,
+          condizione: nomeCond.toLowerCase(),
+        }),
+      );
+    }
+    return fatti;
+  }
+
+  /** The side of a candidate (null if not among them). */
+  private partecipante(candidati: ReadonlyArray<{ id: string; lato: Lato }>, id: string): Lato | null {
+    return candidati.find((c) => c.id === id)?.lato ?? null;
   }
 
   /** Iniziativa individuale: dal più alto; pari: modificatore più alto, poi i PG, poi l'id (deterministico). */
@@ -299,7 +337,10 @@ export class GestoreCombattimento {
     if (!this.s) {
       if (!o.attacchi.length) return { ...VUOTO, morte: [], fuggiti: [] };
       const dopo: string[] = [];
-      fatti.push(this.inizia(o.candidati(), dopo), ...dopo);
+      // The side of whoever struck first: B/X surprise rolls only for the side attacked.
+      const primo = o.attacchi[0]!.chi;
+      const apre: Lato | null = this.partecipante(o.candidati(), primo);
+      fatti.push(this.inizia(o.candidati(), dopo, apre), ...dopo);
       appenaIniziato = true;
     }
     const s = this.s!;

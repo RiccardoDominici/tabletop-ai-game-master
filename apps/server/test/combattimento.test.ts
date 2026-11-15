@@ -134,6 +134,34 @@ describe('combattimento alla B/X e alla PbtA', () => {
     expect(r2.intestazione).toMatch(/fase «Proiettili»/);
   });
 
+  it('surprise (the set declares it): an attack opens the fight, only the side attacked rolls; surprised, it loses round 1', () => {
+    const conSorpresa: Combattimento = { ...bx, sorpresa: { dado: 6, finoA: 2, condizione: 'paralizzato' } };
+    const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 0 }];
+    // Sides: PG 5, PNG 2 → PCs first; surprise for the NPCs only (the PC struck first): 1 ≤ 2 → surprised.
+    const { g, attacchi } = scontro(conSorpresa, { pg_a: 8, png_x: 6 }, [5, 2, 1], () => 1);
+    const r = g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
+    expect(r.fatti[0]).toBe('Inizia il combattimento. Iniziativa per schieramento: PG 5, PNG 2; agiscono prima i PG. Sorpresa: i nemici tirano 1 su 1d6 e sono colti di sorpresa (paralizzato): perdono il primo round.');
+    expect(g.condizioniDi('png_x').map((c) => c.nome)).toEqual(['Paralizzato']);
+    // Round 1: the surprised NPC never acts in its phases; from round 2 the condition is gone.
+    for (let t = 2; t <= 4; t++) g.dopoAzioni({ turno: t, attacchi: [], autori: ['pg_a'], candidati: () => cand });
+    expect(attacchi).toEqual([]);
+    const tardi = scontro(conSorpresa, { pg_a: 8, png_x: 6 }, [5, 2, 4], () => 1);
+    const r2 = tardi.g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
+    expect(r2.fatti[0]).toMatch(/Sorpresa: i nemici tirano 4 su 1d6: non sono colti di sorpresa\.$/);
+    expect(tardi.g.condizioniDi('png_x')).toEqual([]);
+  });
+
+  it('surprise in the set\'s data: read, and its errors for the validator', () => {
+    const errori: string[] = [];
+    const letto = leggiCombattimento({ sorpresa: { dado: 6, fino_a: 2, condizione: 'paralizzato' } }, bx, new Set(), errori);
+    expect(letto.sorpresa).toEqual({ dado: 6, finoA: 2, condizione: 'paralizzato' });
+    expect(errori).toEqual([]);
+    leggiCombattimento({ sorpresa: { dado: 6, fino_a: 2, condizione: 'nessuna' } }, bx, new Set(), errori);
+    leggiCombattimento({ sorpresa: { dado: 7, fino_a: 2, condizione: 'paralizzato' } }, bx, new Set(), errori);
+    expect(errori).toEqual([expect.stringMatching(/sorpresa\.condizione/), expect.stringMatching(/sorpresa\.dado/)]);
+    expect(combattimentoSrd().sorpresa).toBeNull();
+  });
+
   it('morale: al primo nemico caduto 2d6 contro 7; sopra, fuggono e lo scontro finisce', () => {
     const { g, stato } = scontro(bx, { pg_a: 8, png_x: 6, png_y: 6 }, [2, 5, 6, 6], () => null);
     const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 0 }, { id: 'png_y', lato: 'png' as const, mod: 0 }];

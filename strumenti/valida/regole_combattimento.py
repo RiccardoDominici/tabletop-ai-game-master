@@ -138,3 +138,13 @@ def controlla(r: dict, car: set[str], e: Esito, dove: str = "regole/regole.yaml"
     fine = c.get("fine")
     if fine is not None and (_ogg(fine) is None or ("morale" in fine and not isinstance(fine["morale"], bool))):
         _err(e, dove, "fine.morale: true o false")
+    # Surprise (B/X, docs/combattimento.md §1): {dado, fino_a, condizione}; the condition is one of the set's.
+    so = c.get("sorpresa")
+    if so is not None:
+        o = _ogg(so)
+        if o is None or o.get("dado") not in (4, 6, 8, 10, 12, 20):
+            _err(e, dove, "sorpresa.dado: 4, 6, 8, 10, 12 o 20")
+        elif not isinstance(o.get("fino_a"), int) or isinstance(o.get("fino_a"), bool) or not 1 <= o["fino_a"] < o["dado"]:
+            _err(e, dove, "sorpresa.fino_a: un intero da 1 a dado − 1")
+        elif o.get("condizione") not in ids:
+            _err(e, dove, f"sorpresa.condizione «{o.get('condizione')}» non è tra le condizioni")
