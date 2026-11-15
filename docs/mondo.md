@@ -87,9 +87,13 @@ clock's `pieni` (a jump of `orologi_in_scena` applies each crossed mark). The ma
 applied (they happened before the session), and so does every mark up to `pieni` when a snapshot without world state
 is resumed. State changes apply at once. With the clock active in the scene, `detto` (or the
 line) is said by the Engine in that response, before the invitation, and `regia` goes into the next turn's message.
-Otherwise the event is **off-screen**: logged with `visto: false`, and its `tracce` surface when the PCs enter a scene
-where the clock is active, or where an NPC of the consequence (`png`) or of the danger's `cast` is present: the
-sentence is read after that scene's opening or return. The −1 of the Game Master does not undo a consequence, and the mark is not applied twice. A clock that fills
+A consequence about NPCs (`png`) is seen only if at least one of them is in the scene: with a clock active in two scenes,
+the miller fleeing is not seen from the other one (and `detto` must be perceivable from every scene where the clock is
+active). Otherwise the event is **off-screen**: logged with `visto: false`, and its `tracce` surface when the PCs enter
+a scene where the clock is active, or where an NPC of the consequence (`png`) or of the danger's `cast` is present: the
+sentence is read after that scene's opening or return. During a scene (also in a one-scene session) the news arrive
+with such an NPC from the next turn on, said by the Engine after the response. A clock active in no scene (the fronts'
+`orologi_extra`) has only off-screen consequences: the validator asks for `tracce` there, not `detto`. The −1 of the Game Master does not undo a consequence, and the mark is not applied twice. A clock that fills
 off-screen logs its doom (`destino_incombente`, `al_completo`) and says no ending; if the PCs then enter a scene
 where it is active, the Engine treats it as any full clock there (mode B: the ending in the first response). The
 keys `conseguenze` and the gates stay out of the narrator's cached context, so nothing is read in advance.
@@ -131,4 +135,6 @@ is not built.
 `cronaca` (world log): `{turno, tipo: segno | presagio | evento | atteggiamento, orologio, segno, cosa, visto,
 emerso_al_turno}`. It is logged (`mondo:` lines), written as `tipo: mondo` in `narrazioni.jsonl`, shown on the panel
 («Mondo»), saved in the snapshot (`fotografia.mondo`) and copied into `registro.yaml` (`mondo`, `atteggiamenti`).
-Owed marks are saved with the clocks (`debito`).
+Owed marks are saved with the clocks (`debito`); the snapshot also keeps the marks already applied, the queues
+(sentences to say, directives, traces waiting), the NPCs moved, the attitudes, the stall counter and the current visit
+of a scene (its entry turn, for `resta_in_scena`), so a resume applies nothing twice and counts from the real entry.

@@ -50,6 +50,8 @@ export interface InAttesa {
   orologio: string;
   /** NPCs that can bring the news: those of the consequence, and the danger's cast. */
   png: string[];
+  /** Turn when it happened (news never arrive in the same turn). */
+  turno?: number;
 }
 
 /** What the snapshot keeps of the world (sessione/tipi.ts, FotografiaSessione.mondo). */
@@ -69,6 +71,8 @@ export interface StatoMondoSalvato {
   atteggiamenti?: CambioAtteggiamento[];
   /** Consecutive stalls, and the clues already given by a stall's S2 (docs/mondo.md §5). */
   stallo?: { n: number; indizi: string[] };
+  /** The current visit of a scene: its opening turn (resta_in_scena) and the NPCs a check already moved (§4). */
+  visita?: { ingresso: number; cambiatiDaProve: string[] };
 }
 
 export interface OpzioniMondo {
@@ -82,6 +86,8 @@ export interface OpzioniMondo {
   registra?: (v: VoceCronaca) => void;
   /** A hidden NPC appears (`compare`): the director reveals it like the Game Master's button. */
   rivela?: (png: string) => void;
+  /** NPCs in the current scene: a consequence about NPCs none of whom is here is not seen (docs/mondo.md §3). */
+  presenti?: () => ReadonlySet<string>;
 }
 
 /** What one call of `fatti` did: the debts of the gates, the marks paid off-screen, the consequences applied. */
@@ -111,6 +117,14 @@ export class MondoInGioco {
   readonly stallo = new ContatoreStallo();
   /** Clues already brought by a stall's S2: the next S2 brings another. */
   readonly indiziDatiDaStallo = new Set<string>();
+  /** The current visit of a scene: opening turn, NPCs whose attitude a check already moved (once per visit). */
+  readonly visita = { ingresso: 0, cambiatiDaProve: new Set<string>() };
+
+  /** The PCs enter a scene at turn `turno` (or the director rebuilds it on resume; `importa` then restores the real one). */
+  nuovaVisita(turno: number): void {
+    this.visita.ingresso = turno;
+    this.visita.cambiatiDaProve.clear();
+  }
 
   constructor(private readonly o: OpzioniMondo) {
     const definiti = orologiDefiniti(o.campagna);
@@ -156,11 +170,22 @@ export class MondoInGioco {
       const o = orologi.trova(id);
       if (!o || o.pieni <= fino) continue;
       for (let n = fino + 1; n <= o.pieni; n++) {
-        for (const c of this.mondo.conseguenze.filter((x) => x.orologio === id && x.alSegno === n)) nuove.push(this.applica(c, turno, orologi.attivo(id)));
+        for (const c of this.mondo.conseguenze.filter((x) => x.orologio === id && x.alSegno === n)) nuove.push(this.applica(c, turno, this.visto(c, orologi.attivo(id))));
       }
       this.applicati.set(id, o.pieni);
     }
     return nuove;
+  }
+
+  /**
+   * The PCs perceive a consequence when its clock is active in their scene and, if it is about NPCs, at least one of
+   * them is here: with a clock active in two scenes, the miller fleeing is not seen from the other one.
+   */
+  private visto(c: Conseguenza, orologioAttivo: boolean): boolean {
+    if (!orologioAttivo) return false;
+    if (c.png.length === 0 || !this.o.presenti) return true;
+    const qui = this.o.presenti();
+    return c.png.some((p) => qui.has(p.id));
   }
 
   private applica(c: Conseguenza, turno: number, visto: boolean): VoceCronaca {
@@ -184,7 +209,7 @@ export class MondoInGioco {
       if (c.detto || c.battuta) this.daSentire.push({ id: c.id, testo: c.detto, battuta: c.battuta });
       if (c.regia) this.regia.push(c.regia);
     } else if (c.tracce) {
-      this.inAttesa.push({ id: c.id, tracce: c.tracce, orologio: c.orologio, png: [...new Set([...c.png.map((p) => p.id), ...c.cast])] });
+      this.inAttesa.push({ id: c.id, tracce: c.tracce, orologio: c.orologio, png: [...new Set([...c.png.map((p) => p.id), ...c.cast])], turno });
     }
     this.o.log.info({ turno, conseguenza: c.id, tipo: c.origine, orologio: c.orologio, segno: c.alSegno, visto, cosa: c.cosa }, visto ? 'world: consequence (seen)' : 'world: consequence (off-screen)');
     this.o.registra?.(voce);
@@ -214,7 +239,7 @@ export class MondoInGioco {
    */
   emergono(turno: number, presenti: ReadonlySet<string>): InAttesa[] {
     const orologi = this.o.orologi();
-    const ora = this.inAttesa.filter((x) => orologi.attivo(x.orologio) || x.png.some((p) => presenti.has(p)));
+    const ora = this.inAttesa.filter((x) => (x.turno ?? -1) < turno && (orologi.attivo(x.orologio) || x.png.some((p) => presenti.has(p))));
     if (!ora.length) return [];
     this.inAttesa = this.inAttesa.filter((x) => !ora.includes(x));
     for (const x of ora) {
@@ -222,6 +247,16 @@ export class MondoInGioco {
       if (voce) voce.emerso_al_turno = turno;
       this.o.log.info({ turno, conseguenza: x.id, scena: this.o.scena() }, 'world: off-screen event surfaces');
     }
+    return ora;
+  }
+
+  /**
+   * During a scene (a closed window): off-screen events whose news can reach the table now (an NPC who knows is here,
+   * e.g. in a one-scene session) are queued for the Engine to say, like a seen consequence. Returns them.
+   */
+  emergonoInScena(turno: number, presenti: ReadonlySet<string>): InAttesa[] {
+    const ora = this.emergono(turno, presenti);
+    for (const x of ora) this.daSentire.push({ id: x.id, testo: x.tracce, battuta: null });
     return ora;
   }
 
@@ -260,6 +295,7 @@ export class MondoInGioco {
       posizioni: [...this.posizioni],
       atteggiamenti: this.atteggiamenti.esporta(),
       stallo: { n: this.stallo.n, indizi: [...this.indiziDatiDaStallo] },
+      visita: { ingresso: this.visita.ingresso, cambiatiDaProve: [...this.visita.cambiatiDaProve] },
     };
   }
 
@@ -288,5 +324,10 @@ export class MondoInGioco {
     this.stallo.n = typeof s?.stallo?.n === 'number' && s.stallo.n > 0 ? Math.floor(s.stallo.n) : 0;
     this.indiziDatiDaStallo.clear();
     for (const i of s?.stallo?.indizi ?? []) this.indiziDatiDaStallo.add(i);
+    if (s?.visita) {
+      this.visita.ingresso = typeof s.visita.ingresso === 'number' ? s.visita.ingresso : this.visita.ingresso;
+      this.visita.cambiatiDaProve.clear();
+      for (const id of s.visita.cambiatiDaProve ?? []) this.visita.cambiatiDaProve.add(id);
+    }
   }
 }

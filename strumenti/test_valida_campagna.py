@@ -437,6 +437,19 @@ def test_fronti_conseguenze_dei_segni(camp):
         assert "FRONTI.conseguenze" in errori(camp, rigoroso=True)
 
 
+def test_fronti_conseguenze_di_un_orologio_mai_in_scena(camp):
+    # A front's extra clock is active in no scene: its consequences are off-screen, so they need tracce, not detto.
+    def extra(d, voce):
+        for f in d["preparazione"]["fronti"]:
+            for o in f.get("orologi_extra") or []:
+                if o["id"] == "o_mercante":
+                    o["conseguenze"] = [voce]
+    modifica(camp, "campagna.yaml", lambda d: extra(d, {"al_segno": 1, "cosa": "Il mercante compra i debiti.", "tracce": "In piazza dicono che il mercante ha comprato i debiti."}))
+    assert "FRONTI.conseguenze" not in errori(camp, rigoroso=True)
+    modifica(camp, "campagna.yaml", lambda d: extra(d, {"al_segno": 1, "cosa": "Il mercante compra i debiti.", "detto": "Il mercante sorride."}))
+    assert "FRONTI.conseguenze" in errori(camp)
+
+
 def test_fronti_presagio_con_al_segno(camp):
     def presagio(d, n):
         for f in d["preparazione"]["fronti"]:

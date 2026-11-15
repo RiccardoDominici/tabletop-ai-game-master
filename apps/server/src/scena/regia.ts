@@ -376,12 +376,8 @@ export class Regia {
   private turno = 0;
   /** The world that moves (docs/mondo.md): gates of avanza_quando, off-screen marks. */
   private mondo!: MondoInGioco;
-  /** Turn of the opening of the current scene visit (for `resta_in_scena`). */
-  private ingressoScena = 0;
   /** The stall move of the turn being narrated (docs/mondo.md §5), or null. */
   private mossaStallo: MossaStallo | null = null;
-  /** NPCs whose attitude a check already moved in this visit of the scene (docs/mondo.md §4: once per visit). */
-  private cambiatiDaProve = new Set<string>();
   /** Clocks due in the message of the turn being narrated (owed marks are said by the Engine if not shown). */
   private dovutiAlMessaggio: ReadonlySet<string> = new Set();
   private versioneScena = 0;
@@ -1113,12 +1109,12 @@ export class Regia {
   private atteggiamentiDaProve(turno: number, sociali: ReadonlyArray<{ png: string; autore: string; riuscita: boolean }>): void {
     const presenti = this.pngInScena();
     for (const s of sociali) {
-      if (this.cambiatiDaProve.has(s.png)) continue;
+      if (this.mondo.visita.cambiatiDaProve.has(s.png)) continue;
       const nuovo = this.mondo.atteggiamenti.passo(s.png, s.autore, s.riuscita ? 1 : -1);
       if (!nuovo || nuovo === 'ostile') continue;
       const e = this.mondo.atteggiamenti.proponi(s.png, s.autore, nuovo, turno, 'prova', { presenti, nonOstile: true, perche: s.riuscita ? 'check succeeded' : 'check failed' });
       if (e.ok) {
-        this.cambiatiDaProve.add(s.png);
+        this.mondo.visita.cambiatiDaProve.add(s.png);
         for (const c of e.cambi) this.o.log.info({ turno, png: c.png, pg: c.pg, da: c.da, a: c.a, riuscita: s.riuscita }, 'world: attitude changed by a social check');
       } else this.o.log.info({ turno, png: s.png, pg: s.autore, motivo: e.motivo }, 'world: attitude change from a check not applied');
     }
@@ -1158,6 +1154,7 @@ export class Regia {
       .map((x) => x['nome'] as string);
     const ultimo = this.orologi.elenco.find((o) => o.pieni > 0 && o.segni[o.pieni - 1]);
     const s = this.statoRepertorio;
+    const pubblico = this.statoPubblicoAlTavolo();
     const mossa = mossaDiStallo(n, {
       pericoli: this.mondo.pericoli,
       orologiAttivi: new Set(this.orologi.elenco.filter((o) => o.partito && o.pieni < o.segmenti).map((o) => o.id)),
@@ -1166,7 +1163,8 @@ export class Regia {
       indiziDellaScena: [...indiziCampagna(this.o.campagna).values()].filter((i) => i.scena === scena.id).map((i) => i.id),
       giàDati: new Set([...(s?.indiziRivelati ?? []), ...this.mondo.indiziDatiDaStallo]),
       luoghiNoti,
-      fattiScoperti: (s?.fattiScoperti ?? []).map((f) => this.testoFatto(f)),
+      // Only what the table heard: a fact discovered through a private action stays that player's (S3 says it aloud in mode B).
+      fattiScoperti: (s?.fattiScoperti ?? []).filter((f) => pubblico?.fattiNoti?.has(f) ?? false).map((f) => this.testoFatto(f)),
       ultimoSegno: ultimo ? ultimo.segni[ultimo.pieni - 1]! : null,
     });
     if (mossa.indizio) this.mondo.indiziDatiDaStallo.add(mossa.indizio);
@@ -1217,6 +1215,7 @@ export class Regia {
       campagna: this.o.campagna,
       orologi: () => this.orologi,
       scena: () => this.campagna.scena.id,
+      presenti: () => this.pngPresentiFisici(),
       log: this.o.log.child({ modulo: 'mondo' }),
       // Every consequence is canon: it goes into the session's narration log too (docs/mondo.md, «Log and state»).
       registra: (v) => this.o.registroNarrazioni.scrivi({ sessione: this.sessione, ...v, tipo: 'mondo', origine: v.tipo }),
@@ -1236,7 +1235,7 @@ export class Regia {
     const fallite = [...new Set(r.azioni.flatMap((a) => this.fallitePerAzione.get(a.id) ?? []))];
     if (fallite.length) fatti.push({ tipo: 'prova_fallita', prove: fallite });
     if (!scontroPrima && this.prove?.inCombattimento) fatti.push({ tipo: 'scontro' });
-    fatti.push({ tipo: 'turno_in_scena', scena: this.campagna.scena.id, turniNellaVisita: r.turno - this.ingressoScena });
+    fatti.push({ tipo: 'turno_in_scena', scena: this.campagna.scena.id, turniNellaVisita: r.turno - this.mondo.visita.ingresso });
     return fatti;
   }
 
@@ -2488,8 +2487,8 @@ export class Regia {
    */
   private impostaScena(id: string, turno = 0): void {
     this.campagna = conScena(this.o.campagna, id);
-    this.ingressoScena = turno;
-    this.cambiatiDaProve.clear();
+    // A new visit of a scene (saved with the world, so a resume keeps counting from the real entry).
+    this.mondo.nuovaVisita(turno);
     this.presenzeManuali.clear();
     this.sistema = this.o.sistemaPer?.(this.campagna) ?? this.sistema;
     this.scenaPubblica = this.o.scenaPubblicaPer?.(this.campagna) ?? this.scenaPubblica;
@@ -2844,6 +2843,8 @@ export class Regia {
     this.mondo.fatti(this.fattiDelTurno(r, scontroPrima), r.turno);
     // Social checks move the attitude of the NPC they aimed at, before the narrator hears of it (docs/mondo.md §4).
     if (tiri?.sociali?.length) this.atteggiamentiDaProve(r.turno, tiri.sociali);
+    // News of off-screen events that an NPC here can bring (also in a one-scene session): said after this response.
+    this.mondo.emergonoInScena(r.turno, this.pngPresentiFisici());
     // A window closed without actions, outside a fight: the stall's move S1 → S2 → S3 (docs/mondo.md §5).
     const nStallo = this.mondo.stallo.registra(r.azioni.length === 0, scontroPrima || !!this.prove?.inCombattimento);
     this.mossaStallo = nStallo ? this.scegliMossaDiStallo(nStallo, r.turno) : null;

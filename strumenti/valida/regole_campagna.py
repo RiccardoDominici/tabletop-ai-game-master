@@ -128,6 +128,9 @@ def controlla_fronti(c: Campagna, e: Esito) -> None:
                     seg = (c.orologi.get(oid) or {}).get("segmenti") if oid else None
                     if not (_intero_positivo(pr["al_segno"]) and isinstance(seg, int) and pr["al_segno"] <= seg):
                         e.errore("FRONTI.conseguenze", f"{pid}.presagi[{i}]", f"al_segno è un segno dell'orologio del pericolo (1–{seg})")
+                    if oid and _mai_attivo(c, oid) and not pr.get("tracce"):
+                        e.avviso("FRONTI.conseguenze", f"{pid}.presagi[{i}]", f"{oid} non è attivo in nessuna scena: senza tracce il "
+                                 "presagio succede fuori scena e al tavolo non arriva niente", rigoroso=True)
                     _controlla_effetti_mondo(c, e, f"{pid}.presagi[{i}]", pr)
     for oid, o in c.orologi.items():
         seg = o.get("segmenti")
@@ -260,6 +263,10 @@ def _controlla_effetti_mondo(c: Campagna, e: Esito, dove: str, d: dict) -> None:
             e.errore("FRONTI.conseguenze", dove, f"indizio inesistente {i}")
 
 
+def _mai_attivo(c: Campagna, oid: str) -> bool:
+    return not any(oid in (s.get("orologi_attivi") or []) for _, s in c.scene if isinstance(s, dict))
+
+
 def controlla_conseguenze(c: Campagna, e: Esito, oid: str, o: dict) -> None:
     """`conseguenze` of a clock (docs/mondo.md §3): one per mark, with what happens and what the table hears."""
     voci = o.get("conseguenze")
@@ -269,6 +276,9 @@ def controlla_conseguenze(c: Campagna, e: Esito, oid: str, o: dict) -> None:
         e.errore("FRONTI.conseguenze", oid, "conseguenze è una lista di {al_segno, cosa, detto | battuta | regia, …}")
         return
     attivo_ovunque = bool(c.scene) and all(oid in (s.get("orologi_attivi") or []) for _, s in c.scene if isinstance(s, dict))
+    # A clock active in no scene (the fronts' orologi_extra) never has the PCs around: its consequences are always
+    # off-screen, so what the table hears is the traces, never detto / battuta / regia.
+    mai_attivo = _mai_attivo(c, oid)
     for i, x in enumerate(voci):
         dove = f"{oid}.conseguenze[{i}]"
         if not isinstance(x, dict):
@@ -280,9 +290,11 @@ def controlla_conseguenze(c: Campagna, e: Esito, oid: str, o: dict) -> None:
             e.errore("FRONTI.conseguenze", dove, f"al_segno è un segno dell'orologio (1–{o.get('segmenti')})")
         if not x.get("cosa"):
             e.errore("FRONTI.conseguenze", dove, "manca cosa (che cosa succede nel mondo)")
-        if not any(x.get(k) for k in ("detto", "battuta", "regia")):
+        if mai_attivo and not x.get("tracce"):
+            e.errore("FRONTI.conseguenze", dove, "l'orologio non è attivo in nessuna scena: succede sempre fuori scena, serve tracce")
+        elif not mai_attivo and not any(x.get(k) for k in ("detto", "battuta", "regia")):
             e.errore("FRONTI.conseguenze", dove, "il tavolo deve sentirla: detto, battuta o regia")
-        if not x.get("tracce") and not attivo_ovunque:
+        if not x.get("tracce") and not attivo_ovunque and not mai_attivo:
             e.avviso("FRONTI.conseguenze", dove, "senza tracce: se succede mentre i PG sono altrove, al tavolo non arriva niente",
                      rigoroso=True)
         _controlla_effetti_mondo(c, e, dove, x)

@@ -113,3 +113,37 @@ describe('server, mode A: an owed mark the narrator does not show', () => {
     expect(prova.turni().find((r) => r['turno'] === 2)!['segni_dovuti_detti']).toEqual([]);
   });
 });
+
+describe('server, mode B: an owed mark', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('without a mark line the Engine says the mark’s text; with one, the line goes out and the debt is paid once', async () => {
+    prova = new Prova();
+    // A mark line for the SECOND mark of o_piena only: the first has none.
+    const cartella = prova.campagna('mondo', {
+      battute: {
+        'narrazione.yaml': [
+          { id: 'nar_cortile', chi: 'narratore', tipo: 'segno_orologio', quando: 'il fiume sale ancora', temi: ['fiume'], richiede: { orologio: { id: 'o_piena', min: 1, max: 1 } }, testo: ['[narratore] Il fiume entra nel cortile, torbido.'], effetti: { avanza_orologio: 'o_piena' }, max_usi: 1 },
+        ],
+      },
+    });
+    const { url } = await prova.avvia(cartella, () => '[narratore] Anna, la ruota gira.\n[invito] tutti');
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const master = await prova.master(url);
+    let s = await inizia(schermo, tel);
+    s = await turno(tel, 'pg_anna', s, 'Anna guarda la ruota del mulino.'); // gate: o_piena owed
+    expect(s.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo)).toContain("L'acqua lambisce la ruota.");
+    expect(prova.turni().find((r) => r['turno'] === 1)!['segni_dovuti_detti']).toEqual(['o_piena']);
+    // Two turns later (maximum pace 2 does not hold a debt back anyway), the gate again: now a mark line exists.
+    s = await turno(tel, 'pg_anna', s, 'Anna aspetta.');
+    s = await turno(tel, 'pg_anna', s, 'Anna tocca la ruota bagnata.');
+    const t3 = prova.turni().find((r) => r['turno'] === 3)!;
+    expect(t3['segni_aggiunti']).toEqual(['nar_cortile']);
+    expect(t3['segni_dovuti_detti']).toEqual([]);
+    const o = (await master.stato()).orologi.find((x) => x.id === 'o_piena')!;
+    expect(o.pieni).toBe(2);
+    expect((await master.stato()).mondo?.debiti).toEqual([]);
+  });
+});

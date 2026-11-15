@@ -140,11 +140,29 @@ describe('MondoInGioco: consequences by state', () => {
     expect(mondo.emergono(6, new Set())).toEqual([]); // once
     // An extra clock (never active): its traces come with an NPC of the consequence.
     vai('scena_bosco', 6);
-    mondo.fatti([{ tipo: 'turno_in_scena', scena: 'scena_bosco', turniNellaVisita: 2 }], 8);
+    mondo.fatti([{ tipo: 'turno_in_scena', scena: 'scena_bosco', turniNellaVisita: 3 }], 8);
     expect(orologi.trova('o_voci')!.pieni).toBe(1);
     expect(mondo.emergono(8, new Set(['png_ladra']))).toEqual([]);
     expect(mondo.emergono(9, new Set(['png_mugnaio'])).map((x) => x.id)).toEqual(['o_voci@1']);
     void orologi;
+  });
+
+  it('a consequence about NPCs none of whom is here is not seen, even with its clock active', () => {
+    const c = caricaCampagna(MONDO);
+    const orologi = new StatoOrologi(c);
+    const mondo = new MondoInGioco({ campagna: c, orologi: () => orologi, scena: () => 'scena_mulino', presenti: () => new Set(['png_ladra']), log: loggerMuto() });
+    orologi.avanza('o_piena', 1, false); // o_piena@1 is about the miller, who is not here
+    expect(mondo.riconcilia(1)).toMatchObject([{ id: 'o_piena@1', visto: false }]);
+    expect(mondo.prendiDaSentire()).toEqual([]);
+  });
+
+  it('during a scene, the news of an off-screen event arrive with an NPC who knows, never in the same turn', () => {
+    const { mondo, vai } = mondoDiProva();
+    vai('scena_bosco', 6);
+    mondo.fatti([{ tipo: 'turno_in_scena', scena: 'scena_bosco', turniNellaVisita: 3 }], 8); // o_voci@1, off-screen
+    expect(mondo.emergonoInScena(8, new Set(['png_mugnaio']))).toEqual([]);
+    expect(mondo.emergonoInScena(9, new Set(['png_mugnaio'])).map((x) => x.id)).toEqual(['o_voci@1']);
+    expect(mondo.prendiDaSentire()).toEqual([{ id: 'o_voci@1', testo: 'Il mugnaio ha gli occhi rossi: in paese lo chiamano ladro.', battuta: null }]);
   });
 
   it('a full clock off-screen logs its doom and its timeline event, and says nothing', () => {

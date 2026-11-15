@@ -75,7 +75,9 @@ chronology, abstract secrets and arcs go there.
   conseguenze:                             # optional: what HAPPENS at a mark, applied by the Engine (docs/mondo.md §3)
     - al_segno: 3                          # [V a mark of this clock]
       cosa: "…"                            # what happens in the world (canon; may be secret: never said as such) [V]
-      detto: "…"                           # sentence the table hears if the PCs are there; or battuta: <id>; or regia: "…" [V one]
+      detto: "…"                           # sentence the table hears if the PCs are there; or battuta: <id>; or regia: "…"
+                                           #   [V one; for a clock active in no scene, tracce instead]
+                                           #   it must be perceivable from EVERY scene where the clock is active
       tracce: "…"                          # what the table hears later if it happened elsewhere [V warning, error if strict,
                                            #   for a clock not active in every scene]
       png: {png_…: {atteggiamento: ostile, scena: scena_… | via}}   # optional: attitude (or {pg_…: stato}), where it goes
