@@ -3128,7 +3128,9 @@ export class Regia {
     const dovuti = tiri ? fattiDovuti(tiri.tiri, tiri.combattimento?.morte ?? [], tiri.combattimento?.fuggiti ?? []) : [];
     // Also on a turn without rolls: someone out of play may still be told acting (narrazione/guardia-fuori.ts).
     const correggiEsito = this.prove?.attivo ? this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null) : null;
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito).catch((err: unknown) =>
+    // The turn order just rolled (the fight starts, a new round): the Engine says it at the table (bug 6, third e2e pass).
+    const ordine = tiri?.combattimento?.ordine ?? [];
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito, ordine).catch((err: unknown) =>
       this.dopoEccezione(epoca, r.turno, 'narrazione', err),
     );
   }
@@ -3146,6 +3148,8 @@ export class Regia {
     dovuti: readonly FattoDovuto[] = [],
     /** Combat outcome guard of the turn (narrazione/guardia-esiti.ts), or null. */
     correggiEsito: ((testo: string) => CorrezioneEsito) | null = null,
+    /** The turn order rolled in this turn, first to last (prove/combattimento.ts, `ordine`): said by the Engine. */
+    ordine: readonly string[] = [],
   ): Promise<void> {
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
@@ -3255,6 +3259,7 @@ export class Regia {
     // narrazione non ha detto (nome + parola chiave) li dice il Motore, con una riga breve del pacchetto
     // della lingua prima dell'invito. Vale per il narratore e per il selettore.
     const fattiAggiunti = dovuti.length && !controllo.signal.aborted ? this.aggiungiFattiDovuti(turno, esito, dovuti, log) : [];
+    if (ordine.length && !controllo.signal.aborted) this.annunciaOrdine(turno, esito, ordine, log);
 
     // B2: il segno di un orologio era dovuto ma il selettore non l'ha usato → lo mette il Motore,
     // orologio per orologio (al massimo due), dopo le risposte e prima della frase d'invito
@@ -3647,6 +3652,21 @@ export class Regia {
     );
     this.notifica();
     return mancanti.map((f) => `${f.tipo}:${f.id}`);
+  }
+
+  /**
+   * The turn order just rolled, said by the Engine before the invitation (docs/combattimento.md §3): «Ordine del round:
+   * Grosso, Eliandro, Livia, Nespola, Zirrà.», short names and no numbers (no rule numbers aloud). The order is the rule
+   * set's: a player who writes «vado per prima» does not change it, and the window opens only for whoever is on turn. In
+   * the third e2e pass the order was in the narrator's facts and on the projector's bar, and no table line ever said it.
+   */
+  private annunciaOrdine(turno: number, esito: { uscita: VoceUscita[] }, ordine: readonly string[], log: Logger): void {
+    const riga = testoFisso('prove.combattimento.ordine_tavolo', { ordine: ordine.map((n) => nomeBreve(n)).join(', ') });
+    const righe = [{ etichetta: ID_NARRATORE, testo: riga, testo_voce: this.pronuncia(riga) }];
+    const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: riga, frasi: [`t${turno}-i0`], motore: true };
+    const primaDellInvito = this.righeDelMotore(turno, esito, righe, voce, false, 'i');
+    log.info({ turno, ordine, prima_dell_invito: primaDellInvito }, 'combat: turn order said at the table');
+    this.notifica();
   }
 
   /**

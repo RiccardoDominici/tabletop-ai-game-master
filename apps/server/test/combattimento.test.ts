@@ -58,6 +58,8 @@ describe('combattimento SRD 5.2', () => {
     const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 2 }, { id: 'pg_b', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 1 }];
     const r = g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
     expect(r.fatti[0]).toBe('Inizia il combattimento. Iniziativa: x 19, a 12, b 5.');
+    // The order rolled in this turn, for the Engine's table line (bug 6 of the third e2e pass); none in the next turn.
+    expect(r.ordine).toEqual(['x', 'a', 'b']);
     expect(attacchi).toEqual([{ png: 'png_x', pg: 'pg_a', fase: 'turno' }]);
     expect(stato.aTerra('pg_a')).toBe(true);
     // Il turno di a: tiro contro la morte 1 → due fallimenti; poi tocca a b.

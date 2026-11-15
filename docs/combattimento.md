@@ -59,6 +59,13 @@ combattimento:
    - **Participants**: the PCs at the table with a sheet, the NPCs involved, and the NPCs on stage with a sheet and hostile
      to a PC.
    - The initiative is the set's. The action that opened the clash counts as «di sorpresa» (surprise).
+   - **The order is said at the table** (third e2e pass, bug 6: it was only in the narrator's facts and on the projector's
+     bar, and the judges read «no initiative anywhere»). When the fight starts, or a new round re-rolls individual
+     initiative, `EsitoCombattimento.ordine` carries the names first to last, and the director has the Engine say
+     «Ordine del round: Grosso, Eliandro, Livia.» before the invitation (scena/regia.ts, `annunciaOrdine`; text
+     `prove.combattimento.ordine_tavolo`; log «combat: turn order said at the table»). Short names, no numbers. A
+     player's «vado per prima» does not change it (the set decides), and the narrator cannot resolve out of order: the
+     window opens only for whoever is on turn. Initiative by sides keeps its fact for the narrator only.
    - **Surprise** (the set's `combattimento.sorpresa`, B/X p. 50; added 15 November): when the fight starts, each side
      that can be surprised rolls the set's die; on `fino_a` or less its combatants get the set's condition for the
      first round (Basic Fantasy: «Sorpreso», which loses the turn). A fight opened by an attack rolls only for the side

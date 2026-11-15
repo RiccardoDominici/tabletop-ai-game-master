@@ -164,6 +164,8 @@ prove:
   combattimento:
     inizia: "Inizia il combattimento. {ordine}"
     iniziativa: "Iniziativa: {ordine}."
+    # Said at the table by the Engine when the order is rolled (start of the fight, a new round): names only.
+    ordine_tavolo: "Ordine del round: {ordine}."
     iniziativa_schieramento: "Iniziativa per schieramento: PG {pg}, PNG {png}; {primo}."
     agiscono_prima_pg: "agiscono prima i PG"
     agiscono_prima_png: "agiscono prima i PNG"

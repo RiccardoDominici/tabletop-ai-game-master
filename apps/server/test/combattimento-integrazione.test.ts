@@ -41,6 +41,8 @@ describe('combattimento col server intero', () => {
     expect(s2.finestra.invitati).toEqual(['pg_ida']);
     expect(messaggi.at(-1)).toMatch(/Inizia il combattimento\. Iniziativa: Ida Ferraro 17, Ruggero lo sgherro 11, Corrado Lanzi 7\./);
     expect(messaggi.at(-1)).toMatch(/Tocca ora a: Ida Ferraro \(pg_ida\)/);
+    // The table hears the order from the Engine, names only (third e2e pass, bug 6: no table line ever said it).
+    expect(s2.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo)).toContain('Ordine del round: Ida, Ruggero, Corrado.');
 
     // Corrado scrive fuori turno: la sua azione non si risolve adesso, resta in coda per il suo turno. L'esito arriva
     // sul socket di Corrado, senza ordine rispetto agli stati di Ida: lo si aspetta lì, registrato prima.

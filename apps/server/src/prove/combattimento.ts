@@ -88,6 +88,12 @@ export interface EsitoCombattimento {
   morte: Array<{ id: string; nome: string; esito: EsitoMorte }>;
   /** Chi è fuggito in questo turno (morale): lascia la scena, e il tavolo lo deve sentire. */
   fuggiti: Array<{ id: string; nome: string }>;
+  /**
+   * The turn order just rolled (the fight starts, or a new round re-rolls individual initiative), names first to last:
+   * the table hears it from the Engine (scena/regia.ts, annunciaOrdine). Third e2e pass, bug 6: the order was only in
+   * the narrator's facts and on the projector's bar, and no table line ever said it. Absent = not rolled in this turn.
+   */
+  ordine?: string[];
 }
 
 const VUOTO: EsitoCombattimento = { fatti: [], tiri: [], intestazione: null, invitati: null, finito: null, morte: [], fuggiti: [] };
@@ -98,6 +104,8 @@ export class GestoreCombattimento {
   private morte: EsitoCombattimento['morte'] = [];
   /** Fughe di questa chiamata di dopoAzioni (vanno nell'esito). */
   private fuggiti: EsitoCombattimento['fuggiti'] = [];
+  /** The order rolled in this call of dopoAzioni (start of the fight, or a new round's individual initiative). */
+  private ordineTirato: string[] | null = null;
 
   constructor(private readonly d: DipendenzeCombattimento) {}
 
@@ -190,7 +198,10 @@ export class GestoreCombattimento {
       esito: 'in_gioco',
       aggressore: null,
     }));
-    if (r.iniziativa.tipo === 'individuale') GestoreCombattimento.ordina(partecipanti);
+    if (r.iniziativa.tipo === 'individuale') {
+      GestoreCombattimento.ordina(partecipanti);
+      this.ordineTirato = partecipanti.map((p) => p.nome);
+    }
     this.s = { round: 1, indice: 0, partecipanti, primo: 'pg', passi: [], moraleControllato: [], ultimoPg: null };
     const lati = this.tiraLati();
     this.s.passi = this.costruisciPassi();
@@ -260,6 +271,7 @@ export class GestoreCombattimento {
     for (const p of s.partecipanti) p.iniziativa = p.esito === 'morto' || p.esito === 'fuggito' ? p.iniziativa : this.dadiIniziativa(p.id, p.lato, p.mod, dadi).tira(this.d.regole.iniziativa.dado) + p.mod;
     GestoreCombattimento.ordina(s.partecipanti);
     const vivi = s.partecipanti.filter((p) => p.esito !== 'morto' && p.esito !== 'fuggito');
+    this.ordineTirato = vivi.map((p) => p.nome);
     this.d.log.info({ round: s.round, ordine: vivi.map((p) => ({ id: p.id, iniziativa: p.iniziativa })) }, 'combattimento: iniziativa ritirata');
     return testo('prove.combattimento.round_individuale', { round: s.round, ordine: vivi.map((p) => `${p.nome} ${p.iniziativa}`).join(', ') });
   }
@@ -344,6 +356,7 @@ export class GestoreCombattimento {
     const tiri: TiroMostrato[] = [];
     this.morte = [];
     this.fuggiti = [];
+    this.ordineTirato = null;
     let appenaIniziato = false;
     if (!this.s) {
       if (!o.attacchi.length) return { ...VUOTO, morte: [], fuggiti: [] };
@@ -393,7 +406,8 @@ export class GestoreCombattimento {
     const { morte, fuggiti } = this;
     if (!this.s) return { fatti, tiri, intestazione: null, invitati: null, finito: fatti.at(-1) ?? testo('prove.combattimento.fine'), morte, fuggiti };
     const invitati = this.turnoDi();
-    return { fatti, tiri, intestazione: this.intestazione(), invitati: invitati && invitati.length ? invitati : null, finito: null, morte, fuggiti };
+    const ordine = this.ordineTirato ? { ordine: this.ordineTirato } : {};
+    return { fatti, tiri, intestazione: this.intestazione(), invitati: invitati && invitati.length ? invitati : null, finito: null, morte, fuggiti, ...ordine };
   }
 
   /** Il PNG agisce da solo nella sua fase: attacca (se la fase lo prevede) il bersaglio scelto. */

@@ -151,6 +151,8 @@ prove:
   combattimento:
     inizia: "The fight begins. {ordine}"
     iniziativa: "Initiative: {ordine}."
+    # Said at the table by the Engine when the order is rolled (start of the fight, a new round): names only.
+    ordine_tavolo: "Turn order this round: {ordine}."
     iniziativa_schieramento: "Initiative by side: PCs {pg}, NPCs {png}; {primo}."
     agiscono_prima_pg: "the PCs act first"
     agiscono_prima_png: "the NPCs act first"
