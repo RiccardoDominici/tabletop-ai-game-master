@@ -85,7 +85,10 @@ It also acts as the **context compiler** (E2): for each call it builds the minim
   - sentence length;
   - list of banned stock phrases;
   - agency guard: the narrator does not decide on behalf of the player characters;
-  - anti-leak guard against the vault.
+  - anti-leak guard against the vault;
+  - word-for-word repetition (turni/narrazione.ts, `giàSentite`): an improvised sentence the table heard in the last three
+    turns, or already in this answer, is dropped (third e2e pass, bug 10: «Il mulo di Ugo sbuffa al cancello.» at T2 and
+    T3); an Engine line that replaced a sentence is never a repetition, and repertoire lines keep their own pause.
 - The narrator works **one sentence ahead**, so the filter can hold back a sentence without gaps in the audio.
 
 ### 3. Director and Critic (slow lane, in the background, never on the critical path)

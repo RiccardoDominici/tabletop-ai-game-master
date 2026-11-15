@@ -88,7 +88,7 @@ import { provaFallita } from '../repertorio/condizioni';
 import { righeMenzogneDette } from '../repertorio/menzogne';
 import { segretiDelMotore, segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
 import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
-import { voceDi } from '../turni/narrazione';
+import { frasePerRipetizione, voceDi } from '../turni/narrazione';
 import { PipelineVoce, type UscitaAudio } from '../voce/pipeline';
 import { direzionePredefinita } from '../voce/espressione';
 import type { Pronunciatore } from '../voce/pronuncia';
@@ -433,6 +433,8 @@ export class Regia {
   private fallitePerAzione = new Map<string, readonly string[]>();
   /** NPCs who refused in the turn being narrated: a social check toward them failed (prove/motore.ts, `negati`). */
   private negatiTurno: ReadonlySet<string> = new Set();
+  /** NPCs whose refusal line has been said in this turn (main answer and repair share it). */
+  private rifiutiDetti: { turno: number; id: Set<string> } = { turno: -1, id: new Set() };
   private controlloLlm: AbortController | null = null;
   private misuratore: MisuratoreTurno | null = null;
   /** Primo pezzo d'audio inviato nel turno corrente (stima della fine se lo schermo tace). */
@@ -2721,7 +2723,10 @@ export class Regia {
     const n = this.deviazioniDette.get(etichetta) ?? 0;
     this.deviazioniDette.set(etichetta, n + 1);
     const versioni = [b.testo, ...b.varianti];
-    return versioni[n % versioni.length]!.map((r) => ({ etichetta: r.etichetta, testo: r.testo }));
+    // Each written version once, then the neutral narrator line: the third e2e pass heard «Questo non lo so. Io so di
+    // pecore e di figli.» word for word at T1 and T4, as the answer to questions it did not address (bug 10).
+    if (n >= versioni.length) return [{ etichetta: ID_NARRATORE, testo: testoFisso('regia.narratore.deviazione', { nome }) }];
+    return versioni[n]!.map((r) => ({ etichetta: r.etichetta, testo: r.testo }));
   }
 
   private guardiaPrivate(azioni: ReadonlyArray<{ id_pg: string; testo: string | null; [k: string]: unknown }>, turno: number): { spostaPrivata?: NonNullable<ReturnType<typeof guardiaPrivate>> } {
@@ -2753,6 +2758,14 @@ export class Regia {
     return g ? { spostaPrivata: g } : {};
   }
 
+  /**
+   * What the table heard in the last three turns (normalised sentences, narrator and NPCs), for the word-for-word
+   * repetition check of the narration (turni/narrazione.ts, `giàSentite`; third e2e pass, bug 10).
+   */
+  private frasiRecenti(turno: number): Set<string> {
+    return new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno < turno && turno - v.turno <= 3).map((v) => frasePerRipetizione(v.testo)));
+  }
+
   /** How many turns back a private action or outcome still counts for the privacy guard (the message shows 12 outcomes). */
   private static readonly TURNI_PRIVATI_RICORDATI = 10;
 
@@ -2760,12 +2773,13 @@ export class Regia {
    * The refusal guard of the turn (narrazione/guardia-rifiuti.ts): an NPC who refused after a failed social check
    * says its refusal line (repertoire `rifiuto`, or a neutral narrator line) instead of giving in.
    */
-  private parametroRifiuti(): { rifiutoDopoProva?: (etichetta: string, testo: string) => Array<{ etichetta: string; testo: string }> | null } {
+  private parametroRifiuti(turno: number): { rifiutoDopoProva?: (etichetta: string, testo: string) => Array<{ etichetta: string; testo: string }> | null } {
     if (!this.negatiTurno.size) return {};
     const nomi = new Map<string, string[]>([...this.nomiPng].map(([id, v]) => [id, v] as [string, string[]]));
     const g = guardiaRifiuti(this.negatiTurno, nomi);
-    // The refusal is said once per narration: a second line giving in is just dropped.
-    const detti = new Set<string>();
+    // The refusal is said once per turn (the answer and its repair): a second line giving in is just dropped.
+    if (this.rifiutiDetti.turno !== turno) this.rifiutiDetti = { turno, id: new Set() };
+    const detti = this.rifiutiDetti.id;
     return {
       rifiutoDopoProva: (etichetta, testo) => {
         const id = g(etichetta, testo);
@@ -3178,7 +3192,8 @@ export class Regia {
         ...this.guardiaPrivate(azioni, turno),
         ...this.guardiaSegreti(azioni),
         ...(correggiEsito ? { correggiEsito } : {}),
-        ...this.parametroRifiuti(),
+        ...this.parametroRifiuti(turno),
+        giàSentite: this.frasiRecenti(turno),
         presenti: this.pngInScena(),
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segniInRisposta) : null,
         onFrase: (f) => {
@@ -3220,7 +3235,9 @@ export class Regia {
           ...this.guardiaPrivate(azioni, turno),
           ...this.guardiaSegreti(azioni),
           ...(correggiEsito ? { correggiEsito } : {}),
-          ...this.parametroRifiuti(),
+          ...this.parametroRifiuti(turno),
+          // The repair must not say again what the first answer of this turn already said either.
+          giàSentite: this.frasiRecenti(turno + 1),
           presenti: this.pngInScena(),
           usa: (id, per) => this.usaBattuta(id, per, turno, segniInRisposta),
           prefissoFrasi: 'r',

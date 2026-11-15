@@ -28,6 +28,7 @@ import type { CueAudio, Risolto } from '../audio/cue';
 import { testo as testoFisso } from '../lingua';
 import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 import { togliIdBattute } from '../narrazione/id-battute';
+import { normalizza } from '../azioni/regole';
 
 export interface FraseNarrata {
   etichetta: string;
@@ -177,6 +178,17 @@ export interface ParametriTurno {
    * failed social check this turn, or null.
    */
   rifiutoDopoProva?: (etichetta: string, testo: string) => Array<{ etichetta: string; testo: string }> | null;
+  /**
+   * The sentences the table heard in the last turns (normalised): an improvised sentence said again word for word is
+   * dropped (third e2e pass, bug 10: «Il mulo di Ugo sbuffa al cancello.» at T2 and T3). Repertoire lines have their own
+   * pause between uses (repertorio/stato.ts).
+   */
+  giàSentite?: ReadonlySet<string>;
+}
+
+/** A sentence as the word-for-word repetition check compares it: lower case, no accents, no punctuation. */
+export function frasePerRipetizione(t: string): string {
+  return normalizza(t).replace(/[^\p{L}\p{N} ]+/gu, ' ').replace(/\s+/g, ' ').trim();
 }
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
@@ -218,6 +230,8 @@ export async function narraTurno(
   let scartateAssenti = 0;
   /** Engine lines that already replaced a narrator sentence in this turn (each is said once). */
   const sostituti = new Set<string>();
+  /** Sentences said at the table in this narration (normalised), for the word-for-word repetition check. */
+  const detteOra = new Set<string>();
   let scartateSegreti = 0;
   /** Segmenti (righe) già sostituiti dalla guardia dei segreti: il resto della riga non si dice. */
   const segmentiFermati = new Set<number>();
@@ -308,6 +322,8 @@ export async function narraTurno(
         }
         // Combat outcome guard: the Engine's line replaces a narrator sentence that contradicts the cards.
         const correzione = e.etichetta === ID_NARRATORE ? (p.correggiEsito?.(e.testo) ?? null) : null;
+        // An Engine line may come back in a later turn for a new fact («Grosso manca Livia.»): never a repetition.
+        let corretta = false;
         // The same Engine line twice in a turn (two sentences with the same contradiction, or an out-of-play character
         // already said lying on the ground) is said once: the third e2e pass heard «Zirrà incassa il colpo, ma resta in
         // piedi.» twice in a row.
@@ -317,6 +333,7 @@ export async function narraTurno(
           continue;
         }
         if (correzione) {
+          corretta = true;
           sostituti.add(correzione.testo);
           anomalie.push({ codice: correzione.motivo, dettaglio: `«${e.testo.slice(0, 120)}» → «${correzione.testo}»` });
           log.warn({ turno: p.turno, motivo: correzione.motivo, testo: e.testo, sostituto: correzione.testo }, 'narrator: sentence contradicts the Engine, replaced by its line');
@@ -373,6 +390,16 @@ export async function narraTurno(
           log.warn({ turno: p.turno, etichetta: e.etichetta, testo: e.testo, sostituto: rifiuto.map((r) => r.testo) }, 'narrator: NPC gives in after a failed social check, replaced by its refusal');
           sostituisci(e.segmento, rifiuto);
           continue;
+        }
+        // Said word for word in the last turns, or already in this one: dropped (the table has heard it).
+        if (!privato && !corretta && p.giàSentite) {
+          const k = frasePerRipetizione(e.testo);
+          if (k.length >= 12 && (p.giàSentite.has(k) || detteOra.has(k))) {
+            anomalie.push({ codice: 'ripetuta', dettaglio: `«${e.testo.slice(0, 120)}»` });
+            log.warn({ turno: p.turno, etichetta: e.etichetta, testo: e.testo }, 'narrator: sentence said word for word in the last turns, dropped');
+            continue;
+          }
+          detteOra.add(k);
         }
         const { voce_id, nome } = voceDi(campagna, e.etichetta);
         // Esito privato: al telefono di quel PG (testo, e voce solo lì); mai nella trascrizione pubblica.

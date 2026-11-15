@@ -118,4 +118,29 @@ describe('the run’s case with the whole server', () => {
     expect(detto.match(/Bertoldo scuote la testa e non risponde\./g)).toHaveLength(1);
     expect(detto).toContain('Ida porge a Bertoldo il pane');
   });
+
+  it('his written refusal is said once, then the neutral line; a sentence said word for word again is dropped (bug 10)', async () => {
+    prova = new Prova();
+    // Third e2e pass: «Questo non lo so. Io so di pecore e di figli.» word for word at T1 and T4, and «Il mulo di Ugo
+    // sbuffa al cancello.» at T2 and T3.
+    const rifiuto = { id: 'ber_no', chi: 'png_bertoldo', tipo: 'rifiuto', quando: 'Bertoldo rifiuta', temi: ['pedaggio'], testo: ['[png_bertoldo] Il pedaggio si paga, punto.'], max_usi: 9 };
+    const cartella = prova.campagna('prove', { battute: { 'png_bertoldo.yaml': [rifiuto] } });
+    const copione = (t: number): string =>
+      t === 0
+        ? '[narratore] Il fiume rumoreggia.\n[invito] tutti'
+        : '[narratore] Il mulo del gabelliere sbuffa sul ponte.\n[png_bertoldo] Il sentiero lo conosco io.\n[invito] tutti';
+    const { url } = await prova.avvia(cartella, copione, {}, { arbitroProve: new Arbitro(), dadi: new DadiACopione([2, 2]) });
+    const schermo = await prova.proiettore(url);
+    const ida = await prova.telefono(url, 'pg_ida');
+    const s1 = await inizia(schermo, ida);
+    const turno = async (s: StatoTavolo): Promise<StatoTavolo> => {
+      const dopo = attendi(ida, (x) => x.fase === 'finestra' && x.turno === s.turno + 1);
+      await agisci(ida, 'pg_ida', 'Porto a Bertoldo il pane e gli chiedo la strada.', s.versione_scena);
+      return dopo;
+    };
+    const s3 = await turno(await turno(s1));
+    const detto = (n: number): string[] => s3.trascrizione.filter((v) => v.turno === n).map((v) => v.testo);
+    expect(detto(1)).toEqual(['Porto a Bertoldo il pane e gli chiedo la strada.', 'Il mulo del gabelliere sbuffa sul ponte.', 'Il pedaggio si paga, punto.']);
+    expect(detto(2)).toEqual(['Porto a Bertoldo il pane e gli chiedo la strada.', 'Bertoldo scuote la testa e non risponde.']);
+  });
 });

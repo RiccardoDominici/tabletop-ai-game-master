@@ -319,8 +319,11 @@ test/gregari.test.ts.
      after «Carisma 3… fallita» Haiku had Ugo say «Il sentiero lo conosco io» and point the path). The Engine marks it
      (`EsitoTurnoProve.negati`: the decision's target, or the NPC the action speaks to); in the repertoire only its
      `rifiuto` lines are available; in the narration its `[png_x]` line with no refusal word, or a narrator sentence where
-     it does a giving verb («indica», «consegna», «rivela»), is replaced by its refusal line, once per narration
-     (narrazione/guardia-rifiuti.ts; words in `guardia_rifiuti` of each language pack).
+     it does a giving verb («indica», «consegna», «rivela»), is replaced by its refusal line, once per turn (the answer
+     and its repair share it; narrazione/guardia-rifiuti.ts; words in `guardia_rifiuti` of each language pack). Each
+     written version of the `rifiuto` line is said once, then the neutral narrator line («Bertoldo scuote la testa e non
+     risponde.»): in the third e2e pass (bug 10) Berta's only refusal line came back word for word at T1 and T4, as the
+     answer to questions it did not address.
 6. **State and resume**.
    - `FotografiaSessione.prove` holds HP, the seed and the dice counter, and the latest cards: a restart resumes with the
      same HP.
