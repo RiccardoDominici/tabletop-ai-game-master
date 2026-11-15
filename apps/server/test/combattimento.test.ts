@@ -168,6 +168,15 @@ describe('combattimento alla B/X e alla PbtA', () => {
     expect(g.turnoDi()).toEqual(['pg_a']);
   });
 
+  it('a set with one death save: the PC at 0 dies at the first failure, and the fact says one of one, not «third»', () => {
+    const unSolo: Combattimento = { ...combattimentoSrd(), danni: { ...combattimentoSrd().danni, tiriMorte: { cd: 10, successi: 1, fallimenti: 1, ventiRialza: false, unoDoppio: false } } };
+    // As the first SRD test: x 19, a 12, b 5; x hits a for 20 (to 0); at a's step its one death save is a 1: dead.
+    const { g } = scontro(unSolo, { pg_a: 10, pg_b: 10, png_x: 10 }, [10, 5, 18, 1], () => 20);
+    const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 2 }, { id: 'pg_b', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 1 }];
+    const r = g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
+    expect(r.fatti.join(' ')).toMatch(/a è a terra: tiro salvezza contro la morte 1 contro CD 10 → fallimenti 1 su 1: è MORTO/);
+  });
+
   it('surprise in the set\'s data: read, and its errors for the validator', () => {
     const errori: string[] = [];
     const letto = leggiCombattimento({ sorpresa: { dado: 6, fino_a: 2, condizione: 'paralizzato' } }, bx, new Set(), errori);

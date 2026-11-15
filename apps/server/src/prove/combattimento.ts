@@ -438,12 +438,13 @@ export class GestoreCombattimento {
         comeVa = 'rialzato';
       } else if (p.tiriMorte && p.tiriMorte.fallimenti >= tm.fallimenti) {
         this.esce(p, 'morto');
-        esito = testo('prove.combattimento.morte_morto');
+        // The set's count, not «third»: Basic Fantasy dies at the first failure (run of 15 November).
+        esito = testo('prove.combattimento.morte_morto', { n: tm.fallimenti });
         comeVa = 'morto';
       } else if (p.tiriMorte && p.tiriMorte.successi >= tm.successi) {
         p.esito = 'stabile';
         p.tiriMorte = null;
-        esito = testo('prove.combattimento.morte_stabile');
+        esito = testo('prove.combattimento.morte_stabile', { n: tm.successi });
         comeVa = 'stabile';
       } else esito = testo('prove.combattimento.morte_parziale', { esito: testo(riuscita ? 'prove.combattimento.morte_riuscito' : 'prove.combattimento.morte_fallito'), successi: p.tiriMorte!.successi, fallimenti: p.tiriMorte!.fallimenti });
       fatti.push(testo('prove.combattimento.tiro_morte', { nome: p.nome, dado, cd: tm.cd, esito }));
