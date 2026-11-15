@@ -49,11 +49,25 @@ export function stalloDuro(n: number): boolean {
 /** What a closed window brought: nothing, actions without a new decision, or a real decision. */
 export type ChiusuraPerStallo = 'vuota' | 'indecisa' | 'decisa';
 
+/**
+ * After this many answers in a row that brought nothing new to the table, the next closed window is a stall whatever
+ * its actions say (`fermi`).
+ */
+export const TURNI_FERMI_PER_STALLO = 2;
+
 /** Consecutive stalls (saved in the snapshot). */
 export class ContatoreStallo {
   n = 0;
   /** Consecutive turns whose actions brought no new decision (E12: the second one is a stall). */
   indecisi = 0;
+  /**
+   * Consecutive answers that brought nothing new: no repertoire line, no roll, no clue, no clock mark, no scene change,
+   * no fight (the director tells, `registraEsito`). Third e2e pass, bug 8: a stalling table wrote «Cosa facciamo?»,
+   * «Non lo so…», «Mi siedo sul muretto», «Ci penso. Aspetto.»; only the bare «Aspetto.» matched the patterns, so the
+   * counter never reached a stall and five turns of fourteen had an empty catalogue: the narrator answered with a
+   * description or handed the question back. What the turn did to the game is language-free, unlike the words.
+   */
+  fermi = 0;
   /** Each PC's last action (normalised), to see a repetition. */
   readonly ultime = new Map<string, string>();
 
@@ -62,6 +76,12 @@ export class ContatoreStallo {
    */
   registra(chiusura: ChiusuraPerStallo | boolean, inCombattimento: boolean): number {
     const c: ChiusuraPerStallo = chiusura === true ? 'vuota' : chiusura === false ? 'decisa' : chiusura;
+    // Whatever the words say, the last answers changed nothing: the table is spinning, the world moves.
+    if (c !== 'vuota' && !inCombattimento && this.fermi >= TURNI_FERMI_PER_STALLO) {
+      this.indecisi = 0;
+      this.n += 1;
+      return this.n;
+    }
     if (c === 'decisa') {
       this.n = 0;
       this.indecisi = 0;
@@ -87,9 +107,17 @@ export class ContatoreStallo {
     return indecisa ? 'indecisa' : 'decisa';
   }
 
+  /** The answer to a closed window: did it bring anything new to the table (see `fermi`)? */
+  registraEsito(qualcosaDiNuovo: boolean): void {
+    this.fermi = qualcosaDiNuovo ? 0 : this.fermi + 1;
+    // Something new after stalls: the next window starts from zero again (its words decide).
+    if (qualcosaDiNuovo) this.n = 0;
+  }
+
   azzera(): void {
     this.n = 0;
     this.indecisi = 0;
+    this.fermi = 0;
   }
 }
 

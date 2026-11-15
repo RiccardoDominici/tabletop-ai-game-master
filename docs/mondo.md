@@ -133,8 +133,15 @@ scene card.
 A stall is a closed window without actions (as before), outside a fight (in a fight an empty window is the NPCs'
 turn), or the second turn in a row whose actions bring no new decision (E12): every action only waits, stays put,
 does nothing or looks around (a narrow list of patterns in `lingue/<code>/motore.yaml`, section `stallo`, matching
-the whole action), or repeats that PC's previous action. A counter grows on consecutive stalls and goes back to zero
-on a turn with a real decision. Level `((n − 1) mod 3) + 1`:
+the whole action), or repeats that PC's previous action. In mode B a turn is also a stall, whatever its actions say,
+after two answers in a row that brought nothing new to the table (`fermi`, mondo/stallo.ts): no repertoire line that
+answers an action, no roll, no scene entered, no fight; the Engine's own lines (stall moves, due marks) do not count.
+The third e2e pass (docs/e2e-finale-3.md, bug 8) had a stalling table write «Cosa facciamo?», «Non lo so…», «Mi siedo
+sul muretto», «Ci penso. Aspetto.»: only the bare «Aspetto.» matched a pattern, the counter never reached a stall, and
+five turns of fourteen had an empty catalogue, so the narrator described the yard or handed the question back. What
+an answer did to the game is language-free; the patterns stay narrow. Mode A has no tracked material, so there only
+the patterns count. A counter grows on consecutive stalls and goes back to zero on a turn with a real decision (or,
+in mode B, after an answer that brought something new). Level `((n − 1) mod 3) + 1`:
 - **S1** soft move of an active front: the danger of the scene (clock active, or cast present), its `mosse` and the
   next visible sign as material; mode B: a filler line or the due mark, as before. From the fourth stall on, S1 also
   owes a mark to that danger's clock (the soft move was ignored: the world moves);

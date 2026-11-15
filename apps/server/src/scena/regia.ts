@@ -433,6 +433,8 @@ export class Regia {
   private fallitePerAzione = new Map<string, readonly string[]>();
   /** NPCs who refused in the turn being narrated: a social check toward them failed (prove/motore.ts, `negati`). */
   private negatiTurno: ReadonlySet<string> = new Set();
+  /** How many public cards the last closed turn rolled (the stall's «something new», mondo/stallo.ts). */
+  private carteDelTurno: { turno: number; n: number } = { turno: -1, n: 0 };
   /** NPCs whose refusal line has been said in this turn (main answer and repair share it). */
   private rifiutiDetti: { turno: number; id: Set<string> } = { turno: -1, id: new Set() };
   private controlloLlm: AbortController | null = null;
@@ -3057,6 +3059,8 @@ export class Regia {
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
     const scontroPrima = this.prove?.inCombattimento ?? false;
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento || giocate.decisioni) ? await this.tiriDelTurno(r, giocate) : null;
+    // For the stall: did this turn roll anything at the table (a PC's check or attack is something new)?
+    this.carteDelTurno = { turno: r.turno, n: tiri?.tiri.filter((t) => !t.privata && !t.del_master).length ?? 0 };
     if (epoca !== this.epoca) return;
     // The world: the facts of the actions and the checks owe marks in the response that answers them (docs/mondo.md §2).
     this.mondo.fatti(this.fattiDelTurno(r, scontroPrima), r.turno);
@@ -3337,6 +3341,19 @@ export class Regia {
     const mondoDetto = esito.esito && !controllo.signal.aborted ? this.diciMondo(turno, esito, segniInRisposta, log) : [];
     // Mode B at S2/S3: the Engine brings the clue line or says the leads (the selector has only fillers).
     const stalloDetto = esito.esito && !controllo.signal.aborted && this.statoRepertorio && this.mossaStallo ? this.diciMossaDiStallo(turno, esito, segniInRisposta, this.mossaStallo, log) : null;
+    // The stall counts answers that brought nothing new to the table (mondo/stallo.ts, `fermi`): no line that answers
+    // an action, no roll, no scene entered, no fight. The Engine's own lines (stall moves, due marks) do not count:
+    // they are the world moving, not the table. Mode B only: there the material is the repertoire's and is tracked; in
+    // mode A the narrator improvises it and nothing here could tell an empty answer from a rich one.
+    if (esito.esito && !controllo.signal.aborted && this.statoRepertorio) {
+      const nuovo =
+        esito.uscita.some((u) => u.tipo === 'usa' && !!u.per && !u.motore) ||
+        (this.carteDelTurno.turno === turno && this.carteDelTurno.n > 0) ||
+        this.mondo.visita.ingresso === turno ||
+        !!this.prove?.inCombattimento;
+      this.mondo.stallo.registraEsito(nuovo);
+      if (!nuovo) log.info({ turno, fermi: this.mondo.stallo.fermi }, 'world: an answer with nothing new for the table (stall count)');
+    }
 
     if (esito.esito) {
       // Testo grezzo del narratore: serve a rivedere qualità e protocollo dopo la sessione.

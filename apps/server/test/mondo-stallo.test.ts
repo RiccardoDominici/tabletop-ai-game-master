@@ -122,6 +122,40 @@ describe('server, mode B: the Engine brings the S2 clue line and says the S3 lea
   });
 });
 
+describe('mode B: answers that bring nothing new count, whatever the words (third e2e pass, bug 8)', () => {
+  it('two answers with nothing new: the next window is a stall even with a «decided» action; something new resets', () => {
+    const c = new ContatoreStallo();
+    c.registraEsito(false);
+    expect(c.registra('decisa', false)).toBe(0);
+    c.registraEsito(false);
+    expect(c.registra('decisa', false)).toBe(1);
+    c.registraEsito(false);
+    expect(c.registra('indecisa', false)).toBe(2);
+    // In a fight an empty answer is not a stall.
+    expect(c.registra('decisa', true)).toBe(0);
+    c.registraEsito(true);
+    expect(c.registra('decisa', false)).toBe(0);
+  });
+
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('a table that sits and thinks, with no line to answer it: S1, then the Engine brings the clue (S2) and the leads (S3)', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mondo');
+    // Only improvised narration: no line answers the actions, no roll; the actions do not match the waiting patterns.
+    const { url } = await prova.avvia(cartella, () => '[narratore] Anna, la ruota cigola.\n[invito] tutti');
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    let s = await inizia(schermo, tel);
+    for (const testo of ['Mi siedo sul muretto del mulino.', 'Ci penso su, intanto.', 'Cosa facciamo adesso?', 'Non lo so, boh.', 'Mi siedo di nuovo.']) s = await turno(tel, 'pg_anna', s, testo);
+    const detto = (t: number) => s.trascrizione.filter((v) => v.turno === t).map((v) => v.testo);
+    expect(prova.turni().filter((r) => r['stallo']).map((r) => (r['stallo'] as { livello: number }).livello)).toEqual([1, 2, 3]);
+    expect(detto(4)).toContain('Sui sacchi di farina ci sono impronte piccole, di piedi scalzi.');
+    expect(detto(5).join(' ')).toMatch(/Vi tornano in mente le strade ancora aperte: Il bosco; Il ponte/);
+  });
+});
+
 describe('server, mode B: S3 says only what the table heard', () => {
   let prova: Prova;
   afterEach(async () => prova?.chiudi());
