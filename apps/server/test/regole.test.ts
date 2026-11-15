@@ -120,6 +120,16 @@ describe('attacco d20 contro la difesa del bersaglio', () => {
     expect(tiraCol(difesa, new DadiACopione([12]), 3, ID_DIFESA, null, 'Spada lunga', false)).toMatchObject({ contro: { tipo: 'CD' } });
   });
 
+  it('a situational bonus (vantaggio: bonus) is in the rule\'s arithmetic as in the total', () => {
+    const bonus = { ...difesa, vantaggio: { tipo: 'bonus' as const, valore: 2 } };
+    const att = tiraCol(bonus, new DadiACopione([2]), 5, ID_DIFESA, 'vantaggio', 'Spada corta', true);
+    expect(att).toMatchObject({ dadi: [2], modificatore: 7, totale: 9 });
+    expect(att.regola).toBe('Spada corta: d20+7 contro CA 14 (difesa di goblin)');
+    const male = tiraCol(bonus, new DadiACopione([1]), 0, ID_DIFESA, 'svantaggio', 'Carisma', false);
+    expect(male).toMatchObject({ totale: -1 });
+    expect(male.regola).toBe('Carisma: d20−2 contro CD 14 (difesa di goblin)');
+  });
+
   it('in inglese la sigla è AC, dal pacchetto della lingua', () => {
     impostaLingua('en');
     const att = tiraCol(difesa, new DadiACopione([12]), 3, ID_DIFESA, null, 'Longsword', true);

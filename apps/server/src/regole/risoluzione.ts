@@ -76,7 +76,9 @@ function d20Cd(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta,
     riuscita,
     grado,
     vantaggio: v && s.vantaggio.tipo !== 'nessuno' ? v : null,
-    regola: testo('regole.regola.d20', { etichetta, mod: conSegno(mod), sigla: testo(`regole.sigla.${contro.toLowerCase()}`), cd, difficolta: diff.nome.toLowerCase() }),
+    // The situational bonus (a set with `vantaggio: bonus`) is in the total, so it is in the rule's arithmetic too: the
+    // run of 15 November read «d20+5 contro CA 14: 9» for a 2 with +2 from a condition.
+    regola: testo('regole.regola.d20', { etichetta, mod: conSegno(mod + bonus), sigla: testo(`regole.sigla.${contro.toLowerCase()}`), cd, difficolta: diff.nome.toLowerCase() }),
   };
 }
 
@@ -104,7 +106,7 @@ function dueD6(s: SistemaRegole, dadi: FonteDadi, mod: number, diff: Difficolta,
     riuscita: f.esito !== 'fallimento',
     grado: { id: f.esito, nome: f.nome },
     vantaggio: v && s.vantaggio.tipo !== 'nessuno' ? v : null,
-    regola: testo('regole.regola.dued6', { n, mod: conSegno(mod), etichetta, difficolta: diff.modificatore ? testo('regole.regola.dued6_difficolta', { difficolta: diff.nome.toLowerCase(), mod: conSegno(diff.modificatore) }) : '', intervallo, fascia: f.nome.toLowerCase() }),
+    regola: testo('regole.regola.dued6', { n, mod: conSegno(mod + bonusV), etichetta, difficolta: diff.modificatore ? testo('regole.regola.dued6_difficolta', { difficolta: diff.nome.toLowerCase(), mod: conSegno(diff.modificatore) }) : '', intervallo, fascia: f.nome.toLowerCase() }),
   };
 }
 
