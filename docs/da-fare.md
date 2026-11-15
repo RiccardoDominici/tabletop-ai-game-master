@@ -31,7 +31,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
      on a copy of the Engine (damage after a hit, initiative, death saves, the contest's other PC); the 2d6 difficulty
      stays secret (prove/dadi-tavolo.ts, docs/prove.md §8). Left with the Engine: NPC and side rolls, morale, the first
      initiative of a fight opened from the panel.
-  6. Not seen live: morale, flight, initiative by sides (unit tests only); C5 minions without sheets.
+  6. Not seen live: morale, flight, initiative by sides (unit tests only). ~~C5 minions without sheets~~ **Done**:
+     `gregari` stat lines by type and per scene, materialised as the Engine's combatants; an attack at nobody with stats
+     tells the narrator not to invent one; validator `SCHEDA.gregari` (campagna/gregari.ts, docs/prove.md §2).
 - **Final end-to-end pass on today's code** (not started): blind scripts for combat in turn order, off the rails (ignore the hook, attack the quest-giver, leave), doing nothing (stall), plus one dictated action; profiles A and B. Run it with one model server at a time (the Mac rebooted twice under memory pressure on 14 November).
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.
   Done, by step: research (c0ebcc1), design (96b59e7, 6e2df77), `strumenti/strati.py` (09b3ef4), validator of sessions and STATO/CONTINUITÀ (e02e26c, 8fcfe18), skill (a10a172), session packages and the server side (2d3f2d4, 5bc833b, 7201894).
@@ -103,7 +105,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 - **B2** leak detector blind to release lines: partly. The releases no longer happen (57c8ce7), but the second-pass judge still found `nar_piccone` counted as clean. Open.
 - **B3** verbal tics (Zirrà «ride corto», «Non so, non m'importa. Parliamo di prezzo.» as a stock deflection). Open: the tic rule exists only for the sceneggiatore.
 - **C4** in combat, script actions sent out of turn are deferred and re-judged stale. Open: the harness should send, in combat, only the action of the PC on turn (`esperimenti/`).
-- **C5** attacks on creatures without a sheet become a check against 17, and the narrator invents goblins. Open: no minion sheets in the data.
+- ~~**C5** attacks on creatures without a sheet become a check against 17, and the narrator invents goblins.~~ **Done** (minions, `gregari`, docs/prove.md §2); left: «the goblin» meant as a named NPC without her name is still no roll.
 - **D2** validator check that a line giving what a check gates must not come out after a failed check. The Engine part is done (6eff704, 3406550); the validator check is probably in 19f863d («a check another oppure path bypasses»), not yet confirmed by a run.
 - ~~**D4** announcements: partly. 192bcff makes them never empty and cuts them at a sensible boundary, but the quotes of the player's words still come out broken («Livia Sarti: «Blocco un goblin ferito contro il muro: «Dov'è il ragazzo».»).~~ **Done** (4320e25): the inner quote marks are dropped from the citation, so the wrapper has one pair.
 - ~~**D5** cards say «contro CD 14» for an attack against the Armour Class, and repeat the label.~~ **Done** (87ce932): an attack against a defence is typed CA (AC in English, from the language package), and the label is not repeated when the attack has no ability.

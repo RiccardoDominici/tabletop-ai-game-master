@@ -303,6 +303,9 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
 - `pg.yaml` → `personaggi[].scheda`: characteristics, skills, mastery, saving throws, armour or AC, hit points, attacks.
   The level is `personaggi[].livello`.
 - `png/<id>.yaml` → `scheda`: CR, characteristics, armour or AC, hit points, attacks, optional `influenza: {cd}`.
+- `campagna.yaml` → `gregari`: stat lines of nameless foes by type, `[{tipo: goblin, nome: "goblin", parole: [goblin,
+  sentinella], scheda: {…an NPC sheet of the set…}}]`; `scena.yaml` / `scene/*.yaml` → `gregari: [{tipo, quanti}]`
+  (1–20, default 1). [V SCHEDA.gregari; warning SCHEDA.nemici_senza_statistiche when a scene names one without them]
 - `scena.yaml` and `scene/*.yaml` → `prove`: a list of `{id: p_…, quando, abilita | caratteristica | salvezza, cd, indizio?, se_fallisce?}`.
 - `scena.yaml` and `scene/*.yaml` → `domande`: world questions (shape in the scene sheet above). The odds (`tiro`) work
   in any campaign, also without sheets; `prova_png` needs dice and the NPC's sheet, and its `prova` and `difficolta`

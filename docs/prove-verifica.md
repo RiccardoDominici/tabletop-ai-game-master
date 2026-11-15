@@ -122,7 +122,7 @@ The headless players answered every request with their own dice.
 | NPC turns, 0 HP, death | NPCs attack in their turn; at 0 a PC makes the set's one death save | Zirrà's reaction drops Nespola; at her step «tiro salvezza contro la morte 4 contro CD 10 → … è MORTO» (one save, as the set says); the fact said «terzo fallimento» | wording fixed, `9141824` |
 | End of the fight | every PC down → the fight ends | «Il combattimento è finito: i PG sono tutti a terra» with Livia dying; then nothing rolled for her | fixed afterwards, `7395185` (this run predates it) |
 | After the fight | a dead PC does not act | the old harness still sent dead Nespola's actions; the fact said «è a terra: A zero punti ferita un personaggio muore…» | fixed: harness drops a dead PC's queue (`f27c629`), fact «è morto.» (`f8ec575`) |
-| Attacks on a creature without a sheet | — | T11: three attacks on the goblin sentry «sì, ma» (C5) | open (data: minion sheets) |
+| Attacks on a creature without a sheet | — | T11: three attacks on the goblin sentry «sì, ma» (C5) | rule added (minions, §10) |
 
 ## 7. Live runs with manual rolls, SRD 5.2
 
@@ -187,7 +187,10 @@ roll at the scene change hidden by default («nascosto»).
   end (it needs the local speech model).
 - ~~**The rules arbiter cannot tell easy from hard**~~: it follows the set's ladder from signals (§5: 20/20 and 9/10).
   Haiku still calls lifting a cart «impossibile» (§5), with a reason that contradicts its own verdict.
-- **Attacks on creatures without a sheet** resolve «sì, ma» (C5): the campaigns' minions need sheets.
+- ~~**Attacks on creatures without a sheet**~~ (C5): minions with a stat line by type (`gregari`, docs/prove.md §2),
+  and an attack in a scene with nobody with stats tells the narrator not to invent the creature
+  (test/gregari.test.ts). No example campaign uses minions yet; an attack on «the goblin» standing for a named NPC
+  (Zirrà) without her name still finds nobody (no roll, no fact against inventing: she is there).
 - ~~**v1 limits of manual rolls**~~: closed in the Engine (docs/prove.md §8, «Rounds»): the damage of a hit,
   initiative, death saves and the other PC's die in a contest are the player's, asked round after round; the 2d6
   difficulty stays out of the phone's bonus (test/prove-manuali-seguito.test.ts, whole-server test in

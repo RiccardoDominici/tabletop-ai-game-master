@@ -24,6 +24,8 @@ import { nomeOppure } from './lingua';
 import { DadiCrittografici, type FonteDadi } from './dadi';
 import { DadiAlTavolo, type DadiDeiPg } from './dadi-tavolo';
 import { frasiDi } from './difficolta';
+import type { Gregario } from '../campagna/gregari';
+import { normalizza } from '../azioni/regole';
 import { cartaPerIlTavolo, richiestaDaCarta, richiestaDaGruppo, type TiroInserito } from './richieste';
 import { loggerMuto, type Logger } from '../logger';
 import { risolviTurno, type Atteggiamento, type AzioneRisolvibile } from './risolutore';
@@ -108,6 +110,11 @@ export interface OpzioniMotoreProve {
   riserva?: boolean;
   /** The NPC's attitude in play (the world: mondo/atteggiamenti.ts); absent = the card's. */
   atteggiamento?: (png: string, pg: string) => Atteggiamento | null;
+  /**
+   * The scenes' minions (campagna/gregari.ts): nameless foes with the stat line of their type, whose sheets are in
+   * `schede` (or the set's) under their ids. They are enemies of their scene: targets, combatants, never NPC cards.
+   */
+  gregari?: readonly Gregario[];
 }
 
 interface VoceCache {
@@ -151,17 +158,22 @@ export class MotoreProve {
    * death saves. Null outside a pass (a fight opened from the panel rolls with the Engine's dice).
    */
   private tavolo: DadiDeiPg | null = null;
+  /** The scenes' minions by id (C5). */
+  private readonly gregari: ReadonlyMap<string, Gregario>;
 
   constructor(private readonly o: OpzioniMotoreProve) {
+    this.gregari = new Map((o.gregari ?? []).map((g) => [g.id, g]));
     this.stato = new StatoProve(this.generico ? this.generico.schede : o.schede);
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
     this.combattimento = new GestoreCombattimento({
       regole: this.regoleCombattimento(),
       stato: this.stato,
       dadi: () => this.dadi,
-      nome: (id) => this.o.contesto().nome(id),
+      nome: (id) => this.nomeDi(this.o.contesto(), id),
       attacca: (png, pg, fase, turno) => this.attaccaPng(png, pg, fase, turno),
       morale: (png) => {
+        const g = this.gregari.get(png);
+        if (g) return g.morale;
         const sch = this.o.contesto().campagna.png.find((p) => p.id === png)?.dati['scheda'] as DatiYaml | undefined;
         return typeof sch?.['morale'] === 'number' ? sch['morale'] : null;
       },
@@ -176,6 +188,22 @@ export class MotoreProve {
   /** Il set non SRD in uso (null = SRD 5.2). */
   private get generico(): { regole: RegoleCampagna; schede: ReadonlyMap<string, SchedaGenerica> } | null {
     return this.o.regole && !this.o.regole.regole.sistema.srd ? this.o.regole : null;
+  }
+
+  /** A name for the cards and the facts: a minion's own («goblin 2»), otherwise the director's. */
+  private nomeDi(c: ContestoProve, id: string): string {
+    return this.gregari.get(id)?.nome ?? c.nome(id);
+  }
+
+  /** The minions of the current scene still standing (C5): the enemies there that have no NPC card. */
+  private gregariInScena(c: ContestoProve): Gregario[] {
+    return [...this.gregari.values()].filter((g) => g.scena === c.campagna.scena.id && !this.stato.fuoriGioco(g.id));
+  }
+
+  /** The first standing minion of the scene that the action names by its words, or null. */
+  private gregarioNominato(c: ContestoProve, fatti: string): string | null {
+    const t = normalizza(fatti);
+    return this.gregariInScena(c).find((g) => g.parole.some((p) => new RegExp(`\\b${normalizza(p).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(t)))?.id ?? null;
   }
 
   /** Armi di un personaggio per l'arbitro (id, e se a distanza nell'SRD). */
@@ -242,7 +270,12 @@ export class MotoreProve {
       const armi = s?.attacchi.map((a) => a.id).join(', ');
       righe.push(`- ${p.id} = ${p.nome}${att ? testo('prove.arbitro.verso_i_pg', { atteggiamenti: att }) : ''}${s ? testo('prove.arbitro.armi', { armi: armi || testo('prove.arbitro.nessuna_arma') }) : ''}${aTerra(p.id)}`);
     }
-    if (!inScena.length) righe.push(testo('prove.arbitro.nessuno'));
+    // The scene's minions (C5): enemies with their type's stat line, valid targets like the NPCs above.
+    for (const g of this.gregariInScena(c)) {
+      const armi = (this.generico ? this.generico.schede.get(g.id)?.attacchi : this.o.schede.get(g.id)?.attacchi)?.map((a) => a.id).join(', ');
+      righe.push(`- ${g.id} = ${g.nome}${testo('prove.arbitro.gregario')}${testo('prove.arbitro.armi', { armi: armi || testo('prove.arbitro.nessuna_arma') })}`);
+    }
+    if (!inScena.length && !this.gregariInScena(c).length) righe.push(testo('prove.arbitro.nessuno'));
     const altrove = c.campagna.png.filter((p) => !presenti.has(p.id));
     if (altrove.length) righe.push(testo('prove.arbitro.altri_png', { png: altrove.map((p) => `${p.id} = ${p.nome}`).join('; ') }));
     return righe.join('\n');
@@ -371,7 +404,9 @@ export class MotoreProve {
       const ing = this.ingressoClassificatore(c, azioni);
       for (const a of azioni) {
         const d = decisioni.get(a.id);
-        if (d?.tipo === 'attacco') continue;
+        // An arbiter's attack on a target with a sheet stands; one on nobody known (an invented «sentinella») gets the
+        // rules' target, a minion of the scene included (C5).
+        if (d?.tipo === 'attacco' && d.bersaglio && ing.haScheda(d.bersaglio)) continue;
         const att = attaccoDiRegole(a, ing);
         if (!att) continue;
         decisioni.set(a.id, { ...att, ...(this.generico ? { mossa: null } : {}) } as Decisione);
@@ -655,8 +690,8 @@ export class MotoreProve {
       stato: this.stato,
       dadi: this.dadi,
       proveScena: this.proveScena(c.campagna),
-      nome: c.nome,
-      esiste: (id) => c.campagna.pg.some((p) => p.id === id) || c.campagna.png.some((p) => p.id === id),
+      nome: (id) => this.nomeDi(c, id),
+      esiste: (id) => c.campagna.pg.some((p) => p.id === id) || c.campagna.png.some((p) => p.id === id) || this.gregari.has(id),
       atteggiamento: (png, pg) => this.atteggiamento(c.campagna, png, pg),
       conIndizi: this.o.conIndizi,
       condizioni: (id) => this.combattimento.condizioniDi(id),
@@ -672,8 +707,8 @@ export class MotoreProve {
       stato: this.stato,
       dadi: this.dadi,
       proveScena: proveScenaRegole(g.regole.sistema, c.campagna),
-      nome: c.nome,
-      esiste: (id) => c.campagna.pg.some((p) => p.id === id) || c.campagna.png.some((p) => p.id === id),
+      nome: (id) => this.nomeDi(c, id),
+      esiste: (id) => c.campagna.pg.some((p) => p.id === id) || c.campagna.png.some((p) => p.id === id) || this.gregari.has(id),
       condizioni: (id) => this.combattimento.condizioniDi(id),
       log: this.o.log.child({ turno }),
     };
@@ -707,6 +742,8 @@ export class MotoreProve {
       .map((p) => ({ id: p.id, lato: 'png' as const, mod: mod(p.id) }));
     // Un PNG coinvolto ma già a terra (colpito dall'attacco che apre lo scontro) entra lo stesso.
     for (const id of coinvolti) if (id.startsWith('png_') && ha(id) && !png.some((p) => p.id === id)) png.push({ id, lato: 'png', mod: mod(id) });
+    // The scene's minions are its enemies (C5): standing, they join the fight.
+    for (const g of this.gregariInScena(c)) if (ha(g.id) && !png.some((p) => p.id === g.id)) png.push({ id: g.id, lato: 'png', mod: mod(g.id) });
     return [...pg, ...png];
   }
 
@@ -784,6 +821,9 @@ export class MotoreProve {
           }))
         : this.proveScena(c.campagna).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole, sociale: provaSocialeSrd(p) })),
       altre: altre.map((a) => ({ id: a.id, autore: a.autore })),
+      ...(this.gregari.size ? { gregario: (fatti: string) => this.gregarioNominato(c, fatti) } : {}),
+      // Nobody with stats standing in the scene (C5): an attack there is at nobody, and the narrator must not invent one.
+      nessunNemico: ![...(c.presenti ?? new Set(c.campagna.scena.png_presenti))].some((id) => (g ? g.schede.has(id) : this.o.schede.has(id)) && !this.stato.fuoriGioco(id)) && !this.gregariInScena(c).length,
       // What the scene says about the conditions (prove/difficolta.ts): the last narration and the scene's description.
       scena: [...frasiDi(c.narrazione), ...frasiDi(typeof c.campagna.scena.dati['descrizione'] === 'string' ? c.campagna.scena.dati['descrizione'] : '')],
     };

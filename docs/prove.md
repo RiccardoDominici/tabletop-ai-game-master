@@ -129,6 +129,15 @@ scheda:
   influenza: {cd: 12}                     # optional: fixed DC to persuade it
 # atteggiamento_pg.<pg>.stato (ostile | indifferente | amichevole), already in the schema: gives disadvantage or advantage.
 
+# campagna.yaml: minions, nameless foes with a stat line by creature type (campagna/gregari.ts, C5)
+gregari:
+  - tipo: goblin
+    nome: "goblin"                        # the cards and the narrator call one this («goblin 2» when several)
+    parole: [goblin, sentinella]          # words that name one in a PC's action
+    scheda: {gs: 1/4, …}                  # an NPC sheet of the campaign's rule set
+# scena.yaml / scene/*.yaml: the minions of this scene
+gregari: [{tipo: goblin, quanti: 2}]
+
 # scena.yaml / scene/*.yaml: the DCs set by the Preparer (obstacles, NON-essential clues, bottleneck solutions)
 prove:
   - id: p_cassetta
@@ -181,6 +190,21 @@ Recommended consistency checks (warnings):
 - every playable PC has a sheet;
 - every NPC that can fight or must be persuaded has a sheet;
 - `atteggiamento_pg` is consistent with what is needed.
+
+**Minions** (C5 of docs/e2e-finale.md: an attack on a creature without a sheet resolved «sì, ma», the narrator invented
+goblins and killed one with no card). At startup every scene's minion becomes a sheeted combatant of the checks'
+Engine (avvio.ts, `gregariDellaCampagna`): id `png_<tipo>_<scene without scena_>_<n>`, name, the type's sheet, the
+morale of the sheet. They are the scene's enemies: an attack whose words name one («tiro alla sentinella») targets the
+first one standing (the clear-attack pass and the rules arbiter; an arbiter's attack on an unknown target is
+re-targeted the same way), the arbiters see them among the NPCs in scene, they join a fight there, their hit points
+are in the checks' snapshot (ids come from the data, so a resume finds them). They do not speak and are not NPC cards:
+the narrator knows them from the scene sheet's `gregari` (the stat line's `scheda` stays out of its context) and from
+the facts. An attack gesture in a scene with nobody with stats standing (no NPC with a sheet, no minion) is an attack
+on nobody: no roll, and the fact tells the narrator not to invent the creature (`prove.fatto.attacco_senza_bersaglio`).
+Next to an enemy, an attack with no target named stays a doubt: no roll. Validator: `SCHEDA.gregari` (types, sheets as
+the set's NPC sheets, the scenes' entries) and the warning `SCHEDA.nemici_senza_statistiche` when a scene names a
+minion's word with no minion of that type nor an NPC by that name (strumenti/valida/regole_gregari.py). Tests:
+test/gregari.test.ts.
 
 ## 3. Flow
 

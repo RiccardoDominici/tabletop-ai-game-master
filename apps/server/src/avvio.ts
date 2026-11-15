@@ -31,6 +31,7 @@ import { CatalogoAudio } from './audio/catalogo';
 import { bloccoAudioContesto } from './audio/cue';
 import { ArbitroHaiku } from './azioni/arbitro-haiku';
 import { caricaSchede } from './campagna/schede';
+import { gregariDellaCampagna } from './campagna/gregari';
 import { ArbitroProveHaiku } from './prove/arbitro-haiku';
 import { dadiAttivi, dadiAttiviRegole } from './prove/motore';
 import { modalitaTiri } from './prove/modalita';
@@ -287,8 +288,12 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   const regole = caricaRegole(config.cartellaCampagna, log.child({ modulo: 'regole' }));
   const generico = !regole.sistema.srd;
   const avvisaScheda = (m: string): void => void log.warn({ modulo: 'prove' }, m);
-  const schede = generico ? new Map() : caricaSchede(campagna, avvisaScheda);
-  const schedeRegole = generico ? caricaSchedeGeneriche(regole.sistema, campagna, avvisaScheda) : null;
+  // The scenes' minions (C5, campagna/gregari.ts): their type's stat line, loaded as sheets under their ids.
+  const gregari = gregariDellaCampagna(campagna, avvisaScheda);
+  const conGregari = { pg: campagna.pg, png: [...campagna.png, ...gregari.comePng] };
+  if (gregari.gregari.length) log.info({ modulo: 'prove', gregari: gregari.gregari.map((g) => `${g.scena}/${g.id}`) }, 'prove: minions of the scenes loaded');
+  const schede = generico ? new Map() : caricaSchede(conGregari, avvisaScheda);
+  const schedeRegole = generico ? caricaSchedeGeneriche(regole.sistema, conGregari, avvisaScheda) : null;
   const dadi = schedeRegole ? dadiAttiviRegole(campagna, schedeRegole, regole.sistema.nome) : dadiAttivi(campagna, schede);
   const modelloProve = (): ReturnType<typeof fabbrica.modello> & object => fabbrica.modello('arbitro_prove')!;
   const misuraProve = (m: { ms: number; azioni: number; costo: object }): void => registroCosti.scrivi({ ts: new Date().toISOString(), tipo: 'arbitro_prove', modello: etichettaModello('arbitro_prove'), ms: m.ms, azioni: m.azioni, ...m.costo });
@@ -408,6 +413,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       ...(config.semeDadi ? { seme: config.semeDadi } : {}),
       ...(sost.dadi ? { dadi: sost.dadi } : {}),
       tiri,
+      gregari: gregari.gregari,
     },
     scenaPubblica: riassuntoPubblico(campagna, paroleSegrete),
     sistemaPer,

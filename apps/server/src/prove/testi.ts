@@ -178,7 +178,9 @@ export function fattoFuggito(nome: string): string {
 
 /** Un attacco a un bersaglio senza scheda (o senza bersaglio): nessun tiro, «sì, ma». */
 export function fattoAttaccoSenzaScheda(bersaglio: string | null): string {
-  return testo('prove.fatto.attacco_senza_scheda', { bersaglio: bersaglio ?? testo('prove.fatto.qualcuno') });
+  // No known target at all (C5: an invented «sentinella»): the narrator must not invent a foe to hit.
+  if (bersaglio === null) return testo('prove.fatto.attacco_senza_bersaglio');
+  return testo('prove.fatto.attacco_senza_scheda', { bersaglio });
 }
 
 /** Il prefisso di un'azione PRIVATA nella riga di fatto: l'esito va solo nella riga [privato pg_x]. */

@@ -193,6 +193,23 @@ It lives in the NPC's file, `png/<id>.yaml`, under `scheda`. It is like a player
 
 The attitude toward each character (`atteggiamento_pg.<pg>.stato`: `ostile` (hostile), `indifferente` (indifferent), `amichevole` (friendly)) gives disadvantage or advantage in social checks.
 
+### Minions
+
+Nameless foes (a goblin sentry, two wolves, a band of thugs) do not need an NPC file each. Write one stat line per creature type in `campagna.yaml`, and in each scene how many there are:
+
+```yaml
+# campagna.yaml
+gregari:
+  - tipo: goblin
+    nome: "goblin"                   # what the cards say («goblin 1», «goblin 2» when there are more)
+    parole: [goblin, sentinella]     # the words a player may use for one
+    scheda: {gs: 1/4, caratteristiche: {…}, armatura: {tipo: armatura di cuoio}, pf: 5, attacchi: [{nome: "Scimitarra", caratteristica: destrezza, danno: "1d6", tipo_danno: tagliente}]}
+# scene/<id>.yaml
+gregari: [{tipo: goblin, quanti: 2}]
+```
+
+An attack that names one («tiro con la balestra alla sentinella») rolls against the first one still standing, its hit points go down on the cards, and the minions of the scene join a fight there; a restart keeps them. If a player attacks a creature the scene has nobody with stats for, there is no roll and the narrator is told not to invent it. The validator checks the stat lines like NPC sheets and warns when a scene names a minion's word without having any (`strumenti/valida/regole_gregari.py`).
+
 ### What not to write
 
 The code calculates the modifiers: abilities, skills, saving throws, passive scores, attack rolls, damage, and the AC from armor. Neither the file nor the model writes a modifier.

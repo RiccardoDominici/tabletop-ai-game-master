@@ -117,6 +117,7 @@ import type { FattoDelGioco } from '../mondo/porte';
 import { mossaDiStallo, type MossaStallo } from '../mondo/stallo';
 import { TiriGiocatoriRegia, type TiriGiocati } from './tiri-giocatori';
 import { TiriDelMaster } from '../prove/tiri-master';
+import type { Gregario } from '../campagna/gregari';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
 import { indiziCampagna } from '../campagna/indizi';
@@ -201,6 +202,8 @@ export interface OpzioniRegia {
     attesaMaxMs?: number;
     /** Who rolls (docs/prove.md §8–9): the campaign's `regole.tiri_giocatori` / `tiri_master`. Absent = automatic. */
     tiri?: ModalitaTiri;
+    /** The scenes' minions (campagna/gregari.ts, C5): their sheets are in `schede` / the set's under their ids. */
+    gregari?: readonly Gregario[];
   };
   /** Riassunto pubblico della scena per l'arbitro. */
   scenaPubblica?: string;
@@ -538,6 +541,7 @@ export class Regia {
           ...(po.regole ? { regole: po.regole } : {}),
           // Checks see the attitudes as they are now, changed in play (docs/mondo.md §4).
           atteggiamento: (png, pg) => this.mondo.atteggiamenti.stato(png, pg),
+          ...(po.gregari?.length ? { gregari: po.gregari } : {}),
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');

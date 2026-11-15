@@ -36,6 +36,8 @@ import { nomiDeiPng, pngNominati } from '../repertorio/pertinenza';
 import type { RegoleCampagna } from '../regole/tipi';
 import type { DecisioneProva, DecisioneRegole } from './tipi';
 import { paroleProve } from './lingua';
+
+const parole0 = paroleProve;
 import { candidatiSrd, punteggiSet } from './parole-chiave';
 import { armaUsata, haVoce, inComune, paroleDi, pngRivolti, senzaParlato, soloDomande } from './parole-testo';
 import { difficoltaDa, scalaDifficolta, segnaliDifficolta } from './difficolta';
@@ -63,6 +65,13 @@ export interface IngressoClassificatore {
    * the action makes a check harder (prove/difficolta.ts). Absent = only the action's own words count.
    */
   scena?: readonly string[];
+  /**
+   * The scene's minion (campagna/gregari.ts) an action names by its words («la sentinella»), the first one standing;
+   * null = none. Absent = the campaign has no minions.
+   */
+  gregario?: (fatti: string) => string | null;
+  /** The scene has no creature with stats standing (no NPC with a sheet, no minion): an attack there hits nobody. */
+  nessunNemico?: boolean;
   /** Le altre azioni del turno (per «aiuto»). */
   altre: Array<{ id: string; autore: string }>;
   /**
@@ -98,7 +107,8 @@ function unico<T>(xs: ReadonlyArray<{ x: T; n: number }>): T | null {
  */
 export function attaccoDiRegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | null {
   const fatti = senzaParlato(az.testo);
-  const bersaglio = [...pngNominati(fatti, nomiDeiPng(i.campagna))].find((id) => id !== az.autore && i.haScheda(id)) ?? null;
+  // A named NPC with a sheet, or else a minion of the scene named by its type's words (C5: «colpisco la sentinella»).
+  const bersaglio = [...pngNominati(fatti, nomiDeiPng(i.campagna))].find((id) => id !== az.autore && i.haScheda(id)) ?? i.gregario?.(fatti) ?? null;
   if (!bersaglio) return null;
   const arma = i.armi(az.autore).find((a) => armaUsata(fatti, [a])) ?? null;
   return paroleProve().attacco.test(normalizza(fatti)) || arma ? ({ ...vuota(az.id), tipo: 'attacco', bersaglio, arma } as DecisioneProva) : null;
@@ -123,6 +133,13 @@ export function classificaARegole(az: { id: string; testo: string; autore: strin
   // 1. Attacco: un verbo d'attacco o un'arma usata, contro chi ha una scheda ed è nominato in ciò che fa.
   const attacco = attaccoDiRegole(az, i);
   if (attacco) return attacco;
+  // An attack gesture at no creature the data knows (no NPC named, no minion of the scene): an attack on nobody, so
+  // the resolver tells the narrator not to invent an enemy to hit (C5: «colpisco la sentinella» with no sentry).
+  // Only when the scene has nobody with stats standing: «colpisco quello in fondo» next to an enemy stays a doubt (no
+  // roll, nothing said), it does not become «there is nobody».
+  if (i.nessunNemico && !pngNominati(fatti, nomiPng).size && (parole0().attacco.test(t) || i.armi(az.autore).some((a) => armaUsata(fatti, [a])))) {
+    return { ...d, tipo: 'attacco', bersaglio: null } as DecisioneProva;
+  }
   const parole = paroleProve();
   // 2. Aiuto a un altro PG del turno (prima della prova della scena: chi aiuta non tira).
   if (parole.aiuto.test(t)) {

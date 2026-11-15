@@ -130,6 +130,10 @@ the work of the Preparatore, and the form of the fields is in `riferimenti/schem
   that belong to the character. Modifiers are not written: the code calculates them.
 - **PNG**: `scheda` in `png/*.yaml`, with a low CR (they are the extras of the place): AC, HP and attacks
   consistent with the CR.
+- **Minions**: every creature the PCs may fight has stats. A nameless foe (sentries, wolves, thugs) gets a stat line
+  by type in `campagna.yaml` → `gregari` (`tipo`, `nome`, `parole` the players may use, `scheda` as an NPC sheet of
+  the set) and the scene says how many: `gregari: [{tipo, quanti}]`. If a scene's text shows such creatures, write
+  them there (the validator warns, `SCHEDA.nemici_senza_statistiche`); if it says there are none, do not write them.
 - **Scene**: for every obstacle or non-essential clue that the text describes, 2–4 `prove`, with DC 10 (easy),
   15 (medium) or 20 (hard). An essential clue never sits behind a roll.
 - **World questions** (`domande` of the scene, optional, 0–2 per scene): an uncertain fact the scene leaves to chance

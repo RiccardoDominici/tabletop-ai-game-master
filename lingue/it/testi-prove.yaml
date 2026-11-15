@@ -81,6 +81,7 @@ prove:
     trova_indizio: " Trova ciò che cercava (indizio {indizio})."
     non_trova: " Non trova ciò che cercava, per ora."
     attacco_senza_scheda: "attacca {bersaglio}, ma il bersaglio non ha una scheda: nessun tiro, risolvi con un «sì, ma»."
+    attacco_senza_bersaglio: "attacca, ma qui non c'è una creatura con le sue statistiche da colpire: nessun tiro. Se mira a una creatura che la scena non ha, non inventarla: non c'è."
     reazione: "Poi {nome} reagisce. {frase} Dettagli: {dettagli}"
     scambio: " Scambio: {frase} Dettagli: {dettagli}"
     # Set di regole non SRD (prove/risolutore-regole.ts).
@@ -125,6 +126,7 @@ prove:
     armi: " · armi: {armi}"
     mani_nude: "nessuna (mani nude)"
     nessuna_arma: "nessuna"
+    gregario: " · gregario, nemico della scena"
     senza_scheda: " · senza scheda"
     a_terra: " · A TERRA"
     morto: " · MORTO"
