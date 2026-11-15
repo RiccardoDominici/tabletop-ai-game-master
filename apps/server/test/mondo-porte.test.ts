@@ -7,7 +7,9 @@
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
-import { conScena } from '../src/campagna/tipi';
+import { conScena, type Campagna, type DatiYaml } from '../src/campagna/tipi';
+import { DadiACopione } from '../src/prove/dadi';
+import { tiroDelMondo } from '../src/mondo/tiri';
 import { loggerMuto } from '../src/logger';
 import { MondoInGioco } from '../src/mondo/mondo';
 import { apre, portaDa, PorteDelMondo, porteDegliOrologi } from '../src/mondo/porte';
@@ -53,6 +55,47 @@ describe('mondo/porte: the gates of avanza_quando', () => {
     const altre = new PorteDelMondo(porte.porte);
     altre.importa(salvate);
     expect(altre.fatti([via]).map((d) => d.porta)).toEqual(['o_sera#1']);
+  });
+});
+
+describe('uncertain outcomes: a gate with tiro is rolled by the Engine, never decided by the AI', () => {
+  const g = (tiro: unknown) => portaDa('o_piena', 0, { quando: 'scontro', tiro })!;
+
+  it('reads the roll; an unreadable roll means no roll', () => {
+    expect(g({ dado: 6, almeno: 4 }).tiro).toEqual({ dado: 6, almeno: 4, visibile: false });
+    expect(g({ dado: 20, almeno: 15, visibile: true }).tiro).toEqual({ dado: 20, almeno: 15, visibile: true });
+    expect(g({ dado: 6, almeno: 9 }).tiro).toBeNull();
+  });
+
+  it('the hook gets the request; the marks are owed only on a success, and only successes count for volte', () => {
+    const porte = new PorteDelMondo([{ ...g({ dado: 6, almeno: 4 }), volte: 1 }]);
+    const richieste: unknown[] = [];
+    const dadi = new DadiACopione([2, 5, 6]);
+    const tira = { tiro: (r: Parameters<ReturnType<typeof tiroDelMondo>>[0]) => (richieste.push(r), tiroDelMondo(dadi)(r)), turno: 7 };
+    const fallito = porte.fatti([{ tipo: 'scontro' }], tira);
+    expect([...fallito]).toEqual([]);
+    expect(fallito.falliti).toEqual([{ porta: 'o_piena#0', orologio: 'o_piena', quando: 'scontro', tiro: { riuscito: false, valore: 2, dado: 6, almeno: 4, visibile: false } }]);
+    expect(richieste[0]).toEqual({ origine: 'o_piena#0', motivo: 'o_piena: scontro', turno: 7, dado: 6, almeno: 4, visibile: false });
+    expect(porte.fatti([{ tipo: 'scontro' }], tira)).toMatchObject([{ porta: 'o_piena#0', segni: 1, tiro: { riuscito: true, valore: 5 } }]);
+    expect(porte.fatti([{ tipo: 'scontro' }], tira)).toEqual([]); // volte: 1 reached, no roll asked
+    expect(richieste).toHaveLength(2);
+  });
+
+  it('the world rolls with its own dice by default, and the snapshot replays them', () => {
+    const c = caricaCampagna(MONDO);
+    const conTiro: Campagna = { ...c, campagnaNarratore: { ...c.campagnaNarratore, orologi: (c.campagnaNarratore['orologi'] as DatiYaml[]).map((o) => (o['id'] === 'o_piena' ? { ...o, avanza_quando: [{ quando: 'scontro', tiro: { dado: 6, almeno: 4 } }] } : o)) } };
+    const esiti = (m: MondoInGioco) => [1, 2, 3, 4, 5, 6].map((t) => m.fatti([{ tipo: 'scontro' }], t).debiti.length);
+    const o1 = new StatoOrologi(conTiro);
+    const a = new MondoInGioco({ campagna: conTiro, orologi: () => o1, scena: () => 'scena_mulino', log: loggerMuto() });
+    const salvato = JSON.parse(JSON.stringify(a.esporta()));
+    const o2 = new StatoOrologi(conTiro);
+    const b = new MondoInGioco({ campagna: conTiro, orologi: () => o2, scena: () => 'scena_mulino', log: loggerMuto() });
+    b.importa(salvato);
+    expect(esiti(b)).toEqual(esiti(a));
+    // With scripted dice: 3 fails, 4 succeeds.
+    const o3 = new StatoOrologi(conTiro);
+    const d = new MondoInGioco({ campagna: conTiro, orologi: () => o3, scena: () => 'scena_mulino', log: loggerMuto(), dadi: new DadiACopione([3, 4]) });
+    expect([d.fatti([{ tipo: 'scontro' }], 1).debiti.length, d.fatti([{ tipo: 'scontro' }], 2).debiti.length]).toEqual([0, 1]);
   });
 });
 

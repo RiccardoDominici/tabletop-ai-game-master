@@ -8,6 +8,7 @@
  * feeds the facts; the counts of `volte` are saved in the snapshot.
  */
 import { temaPresente } from '../repertorio/pertinenza';
+import type { EsitoTiroMondo, TiroDelMondo } from './tiri';
 
 export const QUANDO = ['cambio_scena', 'lascia_scena', 'resta_in_scena', 'battuta', 'indizio', 'azione', 'prova_fallita', 'scontro'] as const;
 export type Quando = (typeof QUANDO)[number];
@@ -32,6 +33,11 @@ export interface Porta {
   segni: number;
   /** At most this many times per session (null = no limit). */
   volte: number | null;
+  /**
+   * Uncertain outcome (`tiro: {dado, almeno, visibile?}`): when the fact happens the Engine rolls (Game Master side,
+   * mondo/tiri.ts) and the marks are owed only on a success. null = no roll, the fact is enough.
+   */
+  tiro: { dado: number; almeno: number; visibile: boolean } | null;
 }
 
 /** A fact of the game, as the director sees it. */
@@ -44,12 +50,21 @@ export type FattoDelGioco =
   | { tipo: 'prova_fallita'; prove: readonly string[] }
   | { tipo: 'scontro' };
 
-/** A gate that fired: how many marks it owes to which clock. */
+/** A gate that fired: how many marks it owes to which clock (and the roll, when it had one). */
 export interface Debito {
   porta: string;
   orologio: string;
   segni: number;
   quando: Quando;
+  tiro?: EsitoTiroMondo;
+}
+
+/** A gate whose fact happened but whose roll failed: nothing owed (for the log). */
+export interface TiroFallito {
+  porta: string;
+  orologio: string;
+  quando: Quando;
+  tiro: EsitoTiroMondo;
 }
 
 function stringhe(v: unknown): string[] {
@@ -87,6 +102,7 @@ export function portaDa(orologio: string, indice: number, grezzo: unknown, avvis
     prove: stringhe(d['prove']),
     segni: intero(d['segni']) ?? 1,
     volte: intero(d['volte']),
+    tiro: tiroDa(d['tiro']),
   };
   const manca =
     (p.quando === 'resta_in_scena' && p.turni === null && 'turni') ||
@@ -97,6 +113,16 @@ export function portaDa(orologio: string, indice: number, grezzo: unknown, avvis
     return null;
   }
   return p;
+}
+
+/** `tiro: {dado: 6, almeno: 4, visibile?: true}` → the roll of the gate, or null (absent or unreadable). */
+function tiroDa(v: unknown): Porta['tiro'] {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return null;
+  const d = v as Record<string, unknown>;
+  const dado = intero(d['dado']);
+  const almeno = intero(d['almeno']);
+  if (dado === null || dado < 2 || dado > 100 || almeno === null || almeno > dado) return null;
+  return { dado, almeno, visibile: d['visibile'] === true };
 }
 
 /** The gates of a list of clock definitions (each with `id` and `avanza_quando`). */
@@ -143,16 +169,27 @@ export class PorteDelMondo {
 
   /**
    * The facts of one moment (e.g. all the actions and checks of a turn): each gate opens at most once per call,
-   * within its `volte`. Returns the debts, in the order of the gates.
+   * within its `volte`. A gate with `tiro` asks `tira` (the world's roll hook) and owes its marks only on a success;
+   * only successes count for `volte`. Returns the debts, in the order of the gates, and the failed rolls.
    */
-  fatti(fatti: readonly FattoDelGioco[]): Debito[] {
-    const out: Debito[] = [];
+  fatti(fatti: readonly FattoDelGioco[], tira?: { tiro: TiroDelMondo; turno: number }): Debito[] & { falliti?: TiroFallito[] } {
+    const out: Debito[] & { falliti?: TiroFallito[] } = [];
+    const falliti: TiroFallito[] = [];
     for (const p of this.porte) {
       if (p.volte !== null && (this.aperture.get(p.chiave) ?? 0) >= p.volte) continue;
       if (!fatti.some((f) => apre(p, f))) continue;
+      let tiro: EsitoTiroMondo | undefined;
+      if (p.tiro && tira) {
+        tiro = tira.tiro({ origine: p.chiave, motivo: `${p.orologio}: ${p.quando}`, turno: tira.turno, ...p.tiro });
+        if (!tiro.riuscito) {
+          falliti.push({ porta: p.chiave, orologio: p.orologio, quando: p.quando, tiro });
+          continue;
+        }
+      }
       this.aperture.set(p.chiave, (this.aperture.get(p.chiave) ?? 0) + 1);
-      out.push({ porta: p.chiave, orologio: p.orologio, segni: p.segni, quando: p.quando });
+      out.push({ porta: p.chiave, orologio: p.orologio, segni: p.segni, quando: p.quando, ...(tiro ? { tiro } : {}) });
     }
+    if (falliti.length) out.falliti = falliti;
     return out;
   }
 

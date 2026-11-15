@@ -19,6 +19,8 @@ import type { StatoOrologi } from '../scena/orologi';
 import { AtteggiamentiInGioco, type CambioAtteggiamento } from './atteggiamenti';
 import { PorteDelMondo, porteDegliOrologi, type Debito, type FattoDelGioco } from './porte';
 import { ContatoreStallo } from './stallo';
+import { tiroDelMondo, type TiroDelMondo } from './tiri';
+import { DadiCrittografici, type FonteDadi } from '../prove/dadi';
 
 /** One entry of the world's log. */
 export interface VoceCronaca {
@@ -71,6 +73,8 @@ export interface StatoMondoSalvato {
   atteggiamenti?: CambioAtteggiamento[];
   /** Consecutive stalls, and the clues already given by a stall's S2 (docs/mondo.md §5). */
   stallo?: { n: number; indizi: string[] };
+  /** The world's own dice (rolls of gates with `tiro`): seed and counter, to replay them. */
+  dadi?: { seme: string; contatore: number };
   /** The current visit of a scene: its opening turn (resta_in_scena) and the NPCs a check already moved (§4). */
   visita?: { ingresso: number; cambiatiDaProve: string[] };
 }
@@ -88,6 +92,13 @@ export interface OpzioniMondo {
   rivela?: (png: string) => void;
   /** NPCs in the current scene: a consequence about NPCs none of whom is here is not seen (docs/mondo.md §3). */
   presenti?: () => ReadonlySet<string>;
+  /**
+   * The roll hook for uncertain world outcomes (mondo/tiri.ts): a gate with `tiro`. Absent = the world's own dice
+   * (crypto, seed and counter saved in the snapshot). The Game Master roll path can pass its own function here.
+   */
+  tira?: TiroDelMondo;
+  /** The world's dice (tests inject a script); ignored when `tira` is given. */
+  dadi?: FonteDadi;
 }
 
 /** What one call of `fatti` did: the debts of the gates, the marks paid off-screen, the consequences applied. */
@@ -126,7 +137,13 @@ export class MondoInGioco {
     this.visita.cambiatiDaProve.clear();
   }
 
+  /** The world's own dice (used when no roll hook is given). */
+  private dadi: FonteDadi;
+  private tira: TiroDelMondo;
+
   constructor(private readonly o: OpzioniMondo) {
+    this.dadi = o.dadi ?? new DadiCrittografici();
+    this.tira = o.tira ?? tiroDelMondo(this.dadi);
     const definiti = orologiDefiniti(o.campagna);
     this.mondo = o.campagna.mondo ?? { conseguenze: [], pericoli: [], orologiExtra: [] };
     this.porte = new PorteDelMondo(porteDegliOrologi(definiti, (msg) => o.log.warn({ campagna: o.campagna.id }, `world: ${msg}`)));
@@ -149,8 +166,12 @@ export class MondoInGioco {
    */
   fatti(fatti: readonly FattoDelGioco[], turno: number): EsitoFatti {
     const orologi = this.o.orologi();
-    const debiti = fatti.length ? this.porte.fatti(fatti) : [];
+    const debiti = fatti.length ? this.porte.fatti(fatti, { tiro: (r) => this.tira(r), turno }) : [];
+    for (const f of debiti.falliti ?? []) {
+      this.o.log.info({ turno, porta: f.porta, quando: f.quando, orologio: f.orologio, tiro: f.tiro }, 'world: GM roll for a gate failed, nothing owed');
+    }
     for (const d of debiti) {
+      if (d.tiro) this.o.log.info({ turno, porta: d.porta, orologio: d.orologio, tiro: d.tiro }, 'world: GM roll for a gate succeeded');
       const ora = orologi.aggiungiDebito(d.orologio, d.segni);
       this.o.log.info({ turno, porta: d.porta, quando: d.quando, orologio: d.orologio, segni: d.segni, debito: ora }, ora === null ? 'world: gate opened, clock not running (ignored)' : 'world: gate opened, marks owed');
     }
@@ -296,6 +317,7 @@ export class MondoInGioco {
       atteggiamenti: this.atteggiamenti.esporta(),
       stallo: { n: this.stallo.n, indizi: [...this.indiziDatiDaStallo] },
       visita: { ingresso: this.visita.ingresso, cambiatiDaProve: [...this.visita.cambiatiDaProve] },
+      dadi: { seme: this.dadi.seme, contatore: this.dadi.contatore },
     };
   }
 
@@ -324,6 +346,11 @@ export class MondoInGioco {
     this.stallo.n = typeof s?.stallo?.n === 'number' && s.stallo.n > 0 ? Math.floor(s.stallo.n) : 0;
     this.indiziDatiDaStallo.clear();
     for (const i of s?.stallo?.indizi ?? []) this.indiziDatiDaStallo.add(i);
+    // The world's own dice continue their sequence (only when they are the ones in use: no external hook, no test dice).
+    if (s?.dadi && !this.o.tira && !this.o.dadi && /^[0-9a-f]{8,128}$/i.test(s.dadi.seme)) {
+      this.dadi = new DadiCrittografici(s.dadi.seme, Math.max(0, Math.floor(s.dadi.contatore)));
+      this.tira = tiroDelMondo(this.dadi);
+    }
     if (s?.visita) {
       this.visita.ingresso = typeof s.visita.ingresso === 'number' ? s.visita.ingresso : this.visita.ingresso;
       this.visita.cambiatiDaProve.clear();

@@ -1216,6 +1216,8 @@ export class Regia {
       orologi: () => this.orologi,
       scena: () => this.campagna.scena.id,
       presenti: () => this.pngPresentiFisici(),
+      // Uncertain world outcomes (gates with `tiro`) roll through the world's hook (mondo/tiri.ts): without a `tira`
+      // option the world uses its own dice, saved in the snapshot. The Game Master roll path plugs in here.
       log: this.o.log.child({ modulo: 'mondo' }),
       // Every consequence is canon: it goes into the session's narration log too (docs/mondo.md, «Log and state»).
       registra: (v) => this.o.registroNarrazioni.scrivi({ sessione: this.sessione, ...v, tipo: 'mondo', origine: v.tipo }),

@@ -69,6 +69,9 @@ chronology, abstract secrets and arcs go there.
   # gates: quando: cambio_scena | lascia_scena (scena?) | resta_in_scena (turni, scena?) | battuta (ids) | indizio (ids)
   #        | azione (temi: like a line's temi) | prova_fallita (prove?: ability, characteristic, scene check id, type)
   #        | scontro; optional segni: N (marks owed, default 1), volte: N (at most N times per session) [V ids exist]
+  #        | tiro: {dado: 6, almeno: 4, visibile: false}: an UNCERTAIN outcome (does the front advance, does the news
+  #          spread): the Engine rolls, Game Master side and hidden unless visibile, and the mark is owed only on a
+  #          success. Never leave an uncertain outcome to the narrator's judgement: give it a tiro.
   # An owed mark is due at once (not held back by segno_al_massimo_ogni); if the response does not show it, the Engine
   # says the mark's text. If the clock is not active in the scene, it advances off-screen.
   al_completo: "…"                         # what the danger wants and what each answer costs

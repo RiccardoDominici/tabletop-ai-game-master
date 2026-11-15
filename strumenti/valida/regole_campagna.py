@@ -183,7 +183,7 @@ def controlla_fronti(c: Campagna, e: Esito) -> None:
 # Gates of avanza_quando (docs/mondo.md §2, apps/server/src/mondo/porte.ts): what each `quando` needs.
 QUANDO_PORTE = {"cambio_scena": set(), "lascia_scena": set(), "resta_in_scena": {"turni"}, "battuta": {"ids"},
                 "indizio": {"ids"}, "azione": {"temi"}, "prova_fallita": set(), "scontro": set()}
-CHIAVI_PORTE = {"quando", "scena", "turni", "ids", "temi", "prove", "segni", "volte"}
+CHIAVI_PORTE = {"quando", "scena", "turni", "ids", "temi", "prove", "segni", "volte", "tiro"}
 
 
 def _intero_positivo(v) -> bool:
@@ -213,6 +213,14 @@ def controlla_porte(c: Campagna, e: Esito, oid: str, voci) -> None:
         for k in ("turni", "segni", "volte"):
             if k in v and not _intero_positivo(v[k]):
                 e.errore("FRONTI.avanza_quando", dove, f"{k} è un intero >= 1")
+        # tiro: an uncertain outcome, rolled by the Engine Game Master side (apps/server/src/mondo/tiri.ts).
+        if "tiro" in v:
+            tr = v["tiro"]
+            ok = isinstance(tr, dict) and not set(tr) - {"dado", "almeno", "visibile"} and _intero_positivo(tr.get("dado")) \
+                and 2 <= tr["dado"] <= 100 and _intero_positivo(tr.get("almeno")) and tr["almeno"] <= tr["dado"] \
+                and isinstance(tr.get("visibile", False), bool)
+            if not ok:
+                e.errore("FRONTI.avanza_quando", dove, "tiro è {dado: 2–100, almeno: 1–dado, visibile: true|false}")
         if "scena" in v and v["scena"] not in scene:
             e.errore("FRONTI.avanza_quando", dove, f"scena inesistente {v['scena']!r}")
         for k in ("ids", "temi", "prove"):
