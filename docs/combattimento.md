@@ -158,7 +158,9 @@ combattimento:
      Zirrà.»), ignored the direction, counted «pugnale» as a hit and replaced an announcement;
    - it has a defeat word (`guardia_esiti.sconfitta`: «muore», «cade», «crolla», «a terra»…) whose subject is an NPC
      or a PC with a sheet who is not out of play (for a PC a place phrase, `luoghi`: «a terra», counts only right after a
-     state verb, `verbi_stato`: «è a terra», not «posa il quaderno a terra»; PCs since the third e2e pass, bug 3: players wrote «Vedo Nespola a
+     state verb, `verbi_stato`: «è a terra», not «posa il quaderno a terra»; a subordinate clause with its own subject
+     between the name and the fall, `subordinate` + an article, «… si accorge che il compagno è a terra», is not judged;
+     PCs since the third e2e pass, bug 3: players wrote «Vedo Nespola a
      terra» or «Ho zero punti ferita» while the Engine had her standing, and the narration followed them; the prompts of
      the narrator and the selector now also say that what a player writes about the state of the characters is not a
      fact; a voluntary move to the ground, «si getta a terra», is in `figurati`) (named before the word in the same clause, or through a pronoun, «…, e quello

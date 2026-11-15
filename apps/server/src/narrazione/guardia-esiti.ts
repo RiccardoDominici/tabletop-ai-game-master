@@ -37,6 +37,9 @@ interface Parole {
   /** Place phrases of `sconfitta` («a terra»): for a PC a fall only right after a state verb (`verbi_stato`). */
   luoghi: string[][];
   verbiStato: ReadonlySet<string>;
+  /** Subordinating words («che», «perché», «quando»…): followed by an article, a new subject starts. */
+  subordinate: ReadonlySet<string>;
+  articoli: ReadonlySet<string>;
   negazioni: ReadonlySet<string>;
 }
 
@@ -56,6 +59,8 @@ const parole = (): Parole =>
     pronomi: new Set(campoElenco(s, 'pronomi').map(normalizza)),
     luoghi: comeVoci(campoElenco(s, 'luoghi')),
     verbiStato: new Set(campoElenco(s, 'verbi_stato').map(normalizza)),
+    subordinate: new Set(campoElenco(s, 'subordinate').map(normalizza)),
+    articoli: new Set(campoElenco(s, 'articoli').map(normalizza)),
   }));
 
 /**
@@ -85,8 +90,15 @@ function chiCade(frase: string, p: Parole, candidati: readonly string[], nomi: R
     const kForte = doveForte.length ? Math.min(...doveForte) : -1;
     const nominati = candidati.map((id) => ({ id, i: doveNomina(w, nomi.get(id) ?? []) })).filter((x) => x.i >= 0).sort((a, b) => a.i - b.i);
     if (k >= 0 && !ha(w, p.figurati)) {
-      const prima = nominati.filter((x) => x.i < k).at(-1);
-      if (prima && prima.id.startsWith('pg_') && !(kForte >= 0 && nominati.filter((x) => x.i < kForte).at(-1)?.id === prima.id)) {
+      const prima0 = nominati.filter((x) => x.i < k).at(-1);
+      // A subordinate clause with its own subject between the name and the fall («Nespola si accorge che il compagno è
+      // a terra»: HEAD rerun after the fixes, T7, became «Nespola è ancora in piedi.»): the fall is not the named one's.
+      const traIDue = prima0 ? w.slice(prima0.i + 1, k) : [];
+      const altroSoggetto = traIDue.some((x, j) => p.subordinate.has(x) && p.articoli.has(traIDue[j + 1] ?? ''));
+      const prima = altroSoggetto ? undefined : prima0;
+      if (altroSoggetto) {
+        // the subject is a noun the guard does not know: no judgement
+      } else if (prima && prima.id.startsWith('pg_') && !(kForte >= 0 && nominati.filter((x) => x.i < kForte).at(-1)?.id === prima.id)) {
         // a PC with only a place phrase: not a fall
       } else if (prima) out.push(prima.id);
       else if (ultimo && w.slice(0, k).every((x) => p.pronomi.has(x) || x.length <= 2 || ['poi', 'e', 'ed', 'ma', 'then', 'and', 'but'].includes(x))) out.push(ultimo);

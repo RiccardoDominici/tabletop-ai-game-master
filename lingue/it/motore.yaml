@@ -209,6 +209,9 @@ guardia_esiti:
   # il quaderno a terra»).
   luoghi: [a terra, per terra]
   verbi_stato: [e, resta, rimane, giace, finisce, cade, crolla, sta, stramazza, cadde, finita, finito]
+  # A subordinate clause with its own subject («… si accorge che il compagno è a terra»): one of these, then an article.
+  subordinate: [che, perche, quando, mentre, dove, se, come, finche, poiche]
+  articoli: [il, lo, la, l, i, gli, le, un, uno, una, quel, quello, quella, suo, sua]
 
 # Out-of-play guard (apps/server/src/narrazione/guardia-fuori.ts): a narrator sentence whose subject is a character
 # out of play since before the turn (on the ground, dead, fled) and that does not describe its state becomes the

@@ -59,6 +59,9 @@ describe('guardia degli esiti (italiano)', () => {
     // Really down for the Engine, or going to the ground on purpose: the sentence stays.
     expect(guardia([], ['pg_ida'])('Ida è a terra, senza sensi.')).toBeNull();
     expect(guardia([])('Ida si getta a terra dietro la pietra.')).toBeNull();
+    // Rerun after the fixes, T7: the subject of the fall is another, unnamed one («che il compagno è a terra»).
+    expect(guardia([])('Ida si accorge che il compagno è a terra e si muove verso di lui.')).toBeNull();
+    expect(guardia([])('Ruggero vede che la mula è a terra.')).toBeNull();
     // A PC who puts something on the ground is not falling (an announcement).
     expect(guardia([])('Ida posa il quaderno a terra e guarda Ruggero.')).toBeNull();
     // An NPC keeps the plain rule.

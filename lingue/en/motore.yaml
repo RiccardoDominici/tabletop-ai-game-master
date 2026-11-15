@@ -216,6 +216,9 @@ guardia_esiti:
   # Place phrases of `sconfitta`: for a PC they tell a fall only right after one of `verbi_stato`.
   luoghi: [on the ground, to the ground]
   verbi_stato: [is, stays, lies, remains, falls, collapses, goes, drops, stay, lie, fall]
+  # A subordinate clause with its own subject («… sees that the boy is down»): one of these, then an article.
+  subordinate: [that, because, when, while, where, if, as, until]
+  articoli: [the, a, an, his, her, its, their, this, that]
 
 # Out-of-play guard (apps/server/src/narrazione/guardia-fuori.ts): a narrator sentence whose subject is a character
 # out of play since before the turn (down, dead, fled) and that does not describe its state becomes the Engine's line.
