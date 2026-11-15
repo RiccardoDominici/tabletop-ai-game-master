@@ -26,7 +26,7 @@ regole_prosa:
   - "Le monete si chiamano fiorini (oro) e soldi (rame). Il pedaggio è un soldo."
 
 # Frammento [STILE] che il Motore appende a ogni prompt immagine (E14). In inglese.
-stile_immagini: "watercolor and ink illustration in the manner of an old Italian river-town storybook, rain-soaked late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering"
+stile_immagini: "watercolor and ink illustration in the manner of an old Italian river-town storybook, late-autumn night, warm lantern light against slate-blue water, palette of rust, ochre, river green and wet stone grey, soft visible brush strokes, low-key lighting, no text, no lettering"
 
 # Tavolozza musicale: solo tag del vocabolario chiuso del manuale (§4, E14).
 tavolozza_musicale:
