@@ -20,8 +20,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
      the Game Master roll path uses them when there are no Engine dice, so a resume replays them and the log, the panel
      and the voice line stay (mondo/tiri.ts, prove/tiri-master.ts, Regia.nuovoMondo).
   2. Dictation into the roll card: run it end to end once (only the number parser is tested, telefono/numeriDettati.ts).
-  3. World questions written in a scene («is the guard awake?», with odds) and NPCs' own checks out of combat, through
-     the same roll path and visibility rule (docs/prove.md §9).
+  3. ~~World questions and NPCs' own checks out of combat~~ **Done**: `domande` of the scene sheet (odds or an NPC's
+     check with its sheet), rolled once through the Game Master's path, the answer a world line for the narrator;
+     validator `DOMANDE`, skill, guide, example in torre-mozza (mondo/domande.ts, docs/prove.md §9).
   4. The rules arbiter cannot tell easy from hard (always medium 15 without data); Haiku still calls lifting a cart
      «impossibile» (docs/prove-verifica.md §5).
   5. ~~v1 limits of manual rolls~~ **Done**: every die of a PC is the player's, asked round after round from dry runs

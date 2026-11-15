@@ -40,15 +40,30 @@ export function probabilita(dado: number, almeno: number): number {
   return Math.max(0, Math.min(1, (dado - almeno + 1) / dado));
 }
 
-/** Whether the table sees a Game Master roll (the rule above). */
-export function mostraTiroDelMaster(modo: TiriMaster, r: { visibile: boolean; dado: number; almeno: number }): { mostra: boolean; perche: 'dati' | 'impostazione' | 'testa_o_croce' | 'nascosto' } {
+/**
+ * Whether the table sees a Game Master roll (the rule above). The odds come from the die (`dado`, `almeno`) or, for an
+ * NPC's own check through the set's resolver, as a probability `p` already worked out (MotoreProve.provaDelPng).
+ */
+export function mostraTiroDelMaster(modo: TiriMaster, r: { visibile: boolean; dado?: number; almeno?: number; p?: number }): { mostra: boolean; perche: 'dati' | 'impostazione' | 'testa_o_croce' | 'nascosto' } {
   if (r.visibile) return { mostra: true, perche: 'dati' };
   if (modo === 'visibili') return { mostra: true, perche: 'impostazione' };
   if (modo === 'a_volte') {
-    const p = probabilita(r.dado, r.almeno);
+    const p = r.p ?? probabilita(r.dado ?? 2, r.almeno ?? 1);
     if (p >= 1 / 3 - 1e-9 && p <= 2 / 3 + 1e-9) return { mostra: true, perche: 'testa_o_croce' };
   }
   return { mostra: false, perche: 'nascosto' };
+}
+
+/** A Game Master roll made elsewhere (an NPC's own check through the set's resolver), to register and maybe show. */
+export interface EsitoGiaTirato {
+  /** Faces of the die that decided it (the card's). */
+  dado: number;
+  /** The die value needed, when the set has one (d20: DC − modifier); 0 otherwise. */
+  almeno: number;
+  valore: number;
+  riuscito: boolean;
+  /** Probability of success, for the «a_volte» rule. */
+  p: number;
 }
 
 const MAX_REGISTRATI = 20;
@@ -82,14 +97,21 @@ export class TiriDelMaster {
     const dado = Math.max(2, Math.min(100, Math.round(r.dado)));
     const motore = this.o.dadi();
     const valore = (motore ?? dadiDelMondo).tira(dado);
-    const riuscito = valore >= r.almeno;
-    const { mostra, perche } = mostraTiroDelMaster(this.o.modo(), { visibile: r.visibile, dado, almeno: r.almeno });
+    return this.registra(r, { dado, almeno: r.almeno, valore, riuscito: valore >= r.almeno, p: probabilita(dado, r.almeno) }, motore ? 'motore' : 'mondo');
+  }
+
+  /**
+   * A Game Master roll already rolled (an NPC's own check, MotoreProve.provaDelPng): logged, listed for the panel and
+   * shown at the table by the same rule as the world's dice.
+   */
+  registra(r: Pick<RichiestaTiroMondo, 'origine' | 'motivo' | 'turno' | 'visibile'>, e: EsitoGiaTirato, dadi: 'motore' | 'mondo' = 'motore'): EsitoTiroMondo {
+    const { mostra, perche } = mostraTiroDelMaster(this.o.modo(), { visibile: r.visibile, p: e.p });
     const id = this.o.nuovoIdTiro();
-    this.registrati.push({ id, turno: r.turno, origine: r.origine, motivo: r.motivo, dado, almeno: r.almeno, valore, riuscito, mostrato: mostra });
+    this.registrati.push({ id, turno: r.turno, origine: r.origine, motivo: r.motivo, dado: e.dado, almeno: e.almeno, valore: e.valore, riuscito: e.riuscito, mostrato: mostra });
     if (this.registrati.length > MAX_REGISTRATI) this.registrati.splice(0, this.registrati.length - MAX_REGISTRATI);
-    this.o.log.info({ turno: r.turno, origine: r.origine, motivo: r.motivo, dado: `d${dado}`, almeno: r.almeno, valore, riuscito, mostrato: mostra, perche, dadi: motore ? 'motore' : 'mondo', p: Math.round(probabilita(dado, r.almeno) * 100) / 100 }, 'Game Master roll');
-    if (mostra) this.o.mostra(cartaDelMaster(id, r.turno, this.o.nome(), dado, valore, riuscito));
-    return { riuscito, valore, dado, almeno: r.almeno, visibile: mostra };
+    this.o.log.info({ turno: r.turno, origine: r.origine, motivo: r.motivo, dado: `d${e.dado}`, almeno: e.almeno, valore: e.valore, riuscito: e.riuscito, mostrato: mostra, perche, dadi, p: Math.round(e.p * 100) / 100 }, 'Game Master roll');
+    if (mostra) this.o.mostra(cartaDelMaster(id, r.turno, this.o.nome(), e.dado, e.valore, e.riuscito));
+    return { riuscito: e.riuscito, valore: e.valore, dado: e.dado, almeno: e.almeno, visibile: mostra };
   }
 
   /** The last rolls, for the panel (the reasons included). */

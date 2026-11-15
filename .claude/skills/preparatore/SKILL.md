@@ -132,6 +132,16 @@ the work of the Preparatore, and the form of the fields is in `riferimenti/schem
   consistent with the CR.
 - **Scene**: for every obstacle or non-essential clue that the text describes, 2–4 `prove`, with DC 10 (easy),
   15 (medium) or 20 (hard). An essential clue never sits behind a roll.
+- **World questions** (`domande` of the scene, optional, 0–2 per scene): an uncertain fact the scene leaves to chance
+  and no PC rolls for — is the guard awake, does the mule bray when strangers come, does the NPC on the stairs notice
+  the noise at the door. Write the fact that asks it (`quando`, the grammar of the gates: `azione` with `temi`,
+  `cambio_scena` = on arriving here, `resta_in_scena`, `battuta`, `indizio`, `prova_fallita`, `scontro`), then either
+  the odds of «yes» (`tiro: {dado, almeno}`) or the NPC's own check with its sheet (`prova_png: {png, prova,
+  difficolta}`, ids as the panel's «Chiedi una prova»: `abilita:<id>`, `caratteristica:<id>`, `salvezza:<id>` in the
+  SRD), and both answers (`se_si`, `se_no`) as facts the narrator can tell. The Engine rolls it once, Game Master
+  side; the narrator never decides it. Do not ask what a PC's own check already decides (a PC sneaking rolls their
+  Stealth: no NPC notice question for the same move); never put an essential clue behind it. Form in
+  `riferimenti/schema.md`, rule in docs/prove.md §9.
 - **Repertoire**: `richiede: {prova: …}` only on the lines that must come out after a successful check.
 
 - **Non-SRD set** (with `manuale:`): the characteristics, skills, moves and difficulties of the sheets and of the

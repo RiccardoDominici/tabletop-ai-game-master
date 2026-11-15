@@ -168,8 +168,9 @@ roll at the scene change hidden by default («nascosto»).
   difficulty stays out of the phone's bonus (test/prove-manuali-seguito.test.ts, whole-server test in
   prove-manuali-integrazione.test.ts). Still the Engine's: NPC rolls, side rolls, morale, the first initiative of a
   fight opened from the panel; a restart during the wait replays the turn and the requests are asked again.
-- **The Game Master's own rolls** cover the world's gates only; a world question written in a scene («is the guard
-  awake?») and an NPC's own check out of combat need a data source first (docs/prove.md §9).
+- ~~**The Game Master's own rolls** cover the world's gates only~~: world questions written in a scene and NPCs' own
+  checks out of combat go through the same path (`domande`, docs/prove.md §9; test/mondo-domande.test.ts; example in
+  torre-mozza). Not yet seen in a live run.
 - **Morale and flight** were not reached in the live runs (no NPC fell); they are covered by `test/combattimento.test.ts`
   and `test/fuori-gioco.test.ts`.
 - **A private action's narrator line** «Eliandro, la pastora alza lo sguardo…» reached the table once in the BF run

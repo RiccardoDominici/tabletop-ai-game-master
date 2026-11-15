@@ -160,6 +160,8 @@ mondo:
   regia: "Let this be felt in this response, in your own words and inside the story: {testo}"
   png_via: "{nome} is no longer in this scene: they neither speak nor act here."
   png_arriva: "{nome} is now in this scene."
+  # A world question of the scene answered by the Game Master's dice (docs/prove.md §9): canon, in both modes.
+  risposta: "Decided by the Game Master's dice, now a fact (tell it inside the story, never as a roll): {fatto}"
   atteggiamento: "{png} towards {pg}: now {stato} (before {prima})."
   indizio_offerto: "The world offers a lead ({id}): {come}. Let it come if the PCs look for it or a move of the world calls for it."
   stallo_pericolo: "Material: moves of the danger in the scene: {mosse}. Signs that announce it: {segni}."

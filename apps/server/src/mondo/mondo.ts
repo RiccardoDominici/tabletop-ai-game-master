@@ -19,7 +19,8 @@ import type { StatoOrologi } from '../scena/orologi';
 import { AtteggiamentiInGioco, type CambioAtteggiamento } from './atteggiamenti';
 import { PorteDelMondo, porteDegliOrologi, type Debito, type FattoDelGioco } from './porte';
 import { ContatoreStallo } from './stallo';
-import { tiroDelMondo, type TiroDelMondo } from './tiri';
+import { tiroDelMondo, type EsitoTiroMondo, type TiroDelMondo } from './tiri';
+import { DomandeInGioco, domandeDellaCampagna, type RichiestaProvaPng, type RispostaDelMondo } from './domande';
 import { DadiCrittografici, type FonteDadi } from '../prove/dadi';
 
 /** One entry of the world's log. */
@@ -80,6 +81,8 @@ export interface StatoMondoSalvato {
   stallo?: { n: number; indizi: string[]; indecisi?: number; ultime?: Array<[string, string]> };
   /** The world's own dice (rolls of gates with `tiro`): seed and counter, to replay them. */
   dadi?: { seme: string; contatore: number };
+  /** The world questions already answered, and the answers not yet given to the narrator (mondo/domande.ts). */
+  domande?: { risposte?: RispostaDelMondo[]; daDare?: RispostaDelMondo[] };
   /** The current visit of a scene: its opening turn (resta_in_scena) and the NPCs a check already moved (§4). */
   visita?: { ingresso: number; cambiatiDaProve: string[] };
 }
@@ -105,6 +108,11 @@ export interface OpzioniMondo {
   tira?: TiroDelMondo;
   /** The world's dice (tests inject a script): handed to the hook, never replaced on resume. */
   dadi?: FonteDadi;
+  /**
+   * An NPC's own check for a world question (mondo/domande.ts): the set's resolver with the NPC's sheet, through the
+   * Game Master's roll path. Absent or null = it cannot be rolled (no sheets): the question stays open.
+   */
+  provaDelPng?: (r: RichiestaProvaPng) => EsitoTiroMondo | null;
 }
 
 /** What one call of `fatti` did: the debts of the gates, the marks paid off-screen, the consequences applied. */
@@ -146,10 +154,15 @@ export class MondoInGioco {
   /** The world's own dice: handed to the roll hook, saved in the snapshot (a campaign without sheets rolls with them). */
   private dadi: FonteDadi;
   private readonly tira: TiroDelMondo;
+  /** World questions of the scenes (docs/prove.md §9): rolled when their fact happens, answered once. */
+  readonly domande: DomandeInGioco;
 
   constructor(private readonly o: OpzioniMondo) {
     this.dadi = o.dadi ?? new DadiCrittografici();
     this.tira = o.tira ?? tiroDelMondo;
+    const domande = domandeDellaCampagna(o.campagna, (msg) => o.log.warn({ campagna: o.campagna.id }, `world: ${msg}`));
+    this.domande = new DomandeInGioco(domande, { tira: (r) => this.tira(r, this.dadi), provaDelPng: (r) => o.provaDelPng?.(r) ?? null, log: o.log });
+    if (domande.length) o.log.info({ domande: domande.map((q) => `${q.scena}/${q.id} ${q.porta.quando} ${q.tiro ? `d${q.tiro.dado}>=${q.tiro.almeno}` : `${q.prova!.png} ${q.prova!.prova}`}`) }, 'world: questions of the scenes loaded');
     const definiti = orologiDefiniti(o.campagna);
     this.mondo = o.campagna.mondo ?? { conseguenze: [], pericoli: [], orologiExtra: [] };
     this.porte = new PorteDelMondo(porteDegliOrologi(definiti, (msg) => o.log.warn({ campagna: o.campagna.id }, `world: ${msg}`)));
@@ -183,6 +196,8 @@ export class MondoInGioco {
     }
     const fuoriScena = orologi.pagaFuoriScena(turno);
     for (const f of fuoriScena) this.o.log.info({ turno, orologio: f.id, pieni: f.pieni }, 'world: owed mark paid off-screen');
+    // The scene's questions whose fact happened: rolled by the Game Master's path, the answer queued for the narrator.
+    if (fatti.length) this.domande.fatti(this.o.scena(), fatti, turno);
     return { debiti, fuoriScena, nuove: this.riconcilia(turno) };
   }
 
@@ -326,6 +341,7 @@ export class MondoInGioco {
       stallo: { n: this.stallo.n, indizi: [...this.indiziDatiDaStallo], indecisi: this.stallo.indecisi, ultime: [...this.stallo.ultime] },
       visita: { ingresso: this.visita.ingresso, cambiatiDaProve: [...this.visita.cambiatiDaProve] },
       dadi: { seme: this.dadi.seme, contatore: this.dadi.contatore },
+      domande: this.domande.esporta(),
     };
   }
 
@@ -363,6 +379,7 @@ export class MondoInGioco {
       this.dadi = new DadiCrittografici(s.dadi.seme, Math.max(0, Math.floor(s.dadi.contatore)));
       this.o.log.info({ seme_lunghezza: s.dadi.seme.length, contatore: this.dadi.contatore }, 'world: own dice resumed from the snapshot');
     }
+    this.domande.importa(s?.domande);
     if (s?.visita) {
       this.visita.ingresso = typeof s.visita.ingresso === 'number' ? s.visita.ingresso : this.visita.ingresso;
       this.visita.cambiatiDaProve.clear();

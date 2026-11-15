@@ -88,6 +88,17 @@ esiti:
   - {id: es_silenzio, descrizione: "A Spinalba Tonio è soltanto un prigioniero liberato, e la colpa resta su Ugo.", finale: fin_alba_silenzio}
   - {id: es_riserva, descrizione: "I PG scagionano Ugo con la sua caccia nella riserva, e tacciono sul ragazzo.", finale: fin_alba_riserva}
   - {id: es_discesa, descrizione: "I PG scendono dalla torre con il ragazzo, e la scelta su che cosa raccontare resta aperta.", finale: fin_alba_discesa}
+# Domanda al mondo (docs/prove.md §9): se Zirrà, dalla scala, si accorge della porta di ferro lo tira il Motore con la
+# sua scheda (Saggezza, normale), nascosto di default; il narratore riceve solo la risposta. Non si sovrappone a
+# p_cantina_silenzio (chi risale dalla cantina tira il suo Muoversi in silenzio).
+domande:
+  - id: d_zirra_porta
+    domanda: "Zirrà, dalla scala, si accorge di chi lavora alla porta di ferro della cripta?"
+    quando: azione
+    temi: [cripta, porta di ferro]
+    prova_png: {png: png_zirra, prova: caratteristica:saggezza, difficolta: normale}
+    se_si: "Zirrà smette di giocare con il corno e guarda giù, verso la scala della cantina."
+    se_no: "Zirrà non si volta: il vento nei buchi del muro copre il rumore del ferro."
 prove:
   - {id: p_zirra_patto, quando: "un PG tratta con Zirrà il prezzo del ragazzo", caratteristica: carisma, difficolta: difficile, se_fallisce: "Zirrà ride e alza il prezzo: adesso vuole tutta la cassa", parole: [tratto, patto, prezzo, argento]}
   - {id: p_grosso_cibo, quando: "un PG offre da mangiare a Grosso perché si faccia da parte", caratteristica: carisma, difficolta: facile, indizio: i_grosso, se_fallisce: "Grosso prende il cibo e resta dov'è, masticando", parole: [cibo, mangiare, carne, pane]}

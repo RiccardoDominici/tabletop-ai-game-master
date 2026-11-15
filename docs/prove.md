@@ -564,9 +564,24 @@ nobody at the table rolls for it, the Engine rolls; the model never picks the re
   sheets has no cards: the line is the only sign, and the log has the roll.
 - **The panel** («Tiri del master» in the Tiri box) lists the last rolls with what asked for them; with «senza
   spoiler» on, the reasons are hidden, and so are the DCs and what a private check was for.
-- **Not yet** (open): a world question tied to an action that the campaign writes in a scene («is the guard
-  awake?», with its odds) and an NPC's own check outside combat. Both need a data source the Engine can read without a
-  model; the hook and the visibility rule above are ready for them.
+- **World questions and NPCs' own checks** (mondo/domande.ts). A scene sheet can write, under `domande`, an uncertain
+  fact it leaves to chance («is the guard awake?») with the fact that asks it (`quando`, the gate grammar of
+  docs/mondo.md §2: `azione` with `temi`, `cambio_scena` = on arriving in this scene, `resta_in_scena`, `battuta`,
+  `indizio`, `prova_fallita`, `scontro`; not `lascia_scena`) and either its odds (`tiro: {dado, almeno, visibile?}`)
+  or an NPC's own check (`prova_png: {png, prova, difficolta?, visibile?}`, the ids of the panel's «Chiedi una
+  prova»), and the two answers (`se_si`, `se_no`). When the fact happens in that scene the world asks: the odds go
+  through the world's roll hook (the Engine's dice, or the world's own in a campaign without sheets); the NPC's check
+  through `MotoreProve.provaDelPng`, the set's resolver with the NPC's sheet and the Engine's dice (null, and the
+  question stays open, without dice, without the NPC's sheet, with the NPC down), then `TiriDelMaster.registra`. Both
+  are logged («Game Master roll», «world: question answered by the dice»), listed on the panel with the question and,
+  for the NPC, what it rolled, and shown by the same rule (`a_volte` with the check's odds of success: d20 against the
+  DC with advantage counted, roll-under, 2d6 against the set's lowest band that is not a failure). The answer is
+  canon: asked once per session, saved in the world's snapshot (`domande`), and given to the narrator as a line of the
+  turn's world section («Deciso dai dadi del master, ora è un fatto…», `mondo.risposta`), in both modes. The scenes'
+  `domande` stay out of the narrator's cached context (campagna/contesto.ts). Validator: class `DOMANDE`
+  (strumenti/valida/regole_domande.py). Example: `campagne/torre-mozza/scene/scena_torre.yaml`, `d_zirra_porta`. Tests:
+  test/mondo-domande.test.ts (reading, once per session, saved, the NPC check through the SRD and a manual's set,
+  the cached context, the whole server with and without sheets).
 
 Credits: this work includes material from the System Reference Document 5.2 («SRD 5.2») by Wizards of the Coast LLC,
 https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License.

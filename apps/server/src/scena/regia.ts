@@ -1277,6 +1277,14 @@ export class Regia {
       // Uncertain world outcomes (gates with `tiro`) roll through the world's hook (mondo/tiri.ts): the Game Master's
       // roll path (prove/tiri-master.ts), hidden or shown at the table by the campaign's `regole.tiri_master`.
       tira: (r, dadiDelMondo) => this.tiriDelMaster.tira(r, dadiDelMondo),
+      // An NPC's own check for a world question: the set's resolver with its sheet, then the Game Master's roll path
+      // (logged, on the panel, shown or hidden by the same rule).
+      provaDelPng: (r) => {
+        const e = this.prove?.provaDelPng(r.png, r.prova, r.difficolta, r.turno) ?? null;
+        if (!e) return null;
+        const motivo = `${voceDi(this.o.campagna, r.png).nome}, ${e.etichetta}: ${r.motivo}`;
+        return this.tiriDelMaster.registra({ origine: r.origine, motivo, turno: r.turno, visibile: r.visibile }, { dado: e.facce, almeno: e.almeno, valore: e.dado, riuscito: e.riuscita, p: e.p });
+      },
       log: this.o.log.child({ modulo: 'mondo' }),
       // Every consequence is canon: it goes into the session's narration log too (docs/mondo.md, «Log and state»).
       registra: (v) => this.o.registroNarrazioni.scrivi({ sessione: this.sessione, ...v, tipo: 'mondo', origine: v.tipo }),
@@ -1396,6 +1404,8 @@ export class Regia {
         if (ora && ora !== prima) righe.push(testoFisso('mondo.atteggiamento', { png: voceDi(this.campagna, png).nome, pg: this.nomePg(pg), stato: ora, prima: prima ?? '—' }));
       }
     }
+    // World questions the Game Master's dice answered (docs/prove.md §9): canon, in both modes.
+    for (const r of this.mondo.domande.prendi()) righe.push(testoFisso('mondo.risposta', { fatto: r.fatto }));
     if (!this.statoRepertorio) {
       for (const r of this.mondo.prendiRegia()) righe.push(testoFisso('mondo.regia', { testo: r }));
     }

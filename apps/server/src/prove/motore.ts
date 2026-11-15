@@ -453,6 +453,51 @@ export class MotoreProve {
     return null;
   }
 
+  /**
+   * An NPC's own check outside a fight (a world question of the scene, mondo/domande.ts; docs/prove.md §9): `cosa` and
+   * `difficolta` as the panel's «Chiedi una prova» names them, rolled by the set's resolver with the NPC's sheet and
+   * the Engine's dice. No card joins the turn: the Game Master's roll path decides whether the table sees a die. Null
+   * when it cannot be rolled: no dice, no sheet for that NPC, the NPC down or gone, an unknown check.
+   */
+  provaDelPng(png: string, cosa: string, difficolta: string | null, turno: number): { riuscita: boolean; dado: number; facce: number; almeno: number; p: number; etichetta: string } | null {
+    if (!this.attivo) return null;
+    const g = this.generico;
+    if (!(g ? g.schede.has(png) : this.o.schede.has(png)) || this.stato.aTerra(png) || this.stato.fuoriGioco(png)) return null;
+    const azione: AzionePerProve = { id: `w_${turno}_${png}`, autore: png, testo: '', privata: false, revisione: 0 };
+    const decisione = this.decisioneDelMaster(azione.id, cosa, difficolta);
+    if (!decisione) return null;
+    const r = this.passaRisolutore(turno, this.o.contesto(), [azione], new Map([[azione.id, decisione]]), { log: loggerMuto() });
+    const t = r.perAzione.get(azione.id)?.tiri.find((x) => x.chi === png && x.dadi.length > 0);
+    if (!t) return null;
+    const facce = t.facce ?? 20;
+    const p = this.probabilita(t);
+    const almeno = (t.risoluzione ?? 'd20_cd') === 'd20_cd' ? Math.max(1, Math.min(facce, t.contro.valore - t.modificatore)) : 0;
+    this.o.log.info({ turno, png, cosa, difficolta, dadi: t.dadi, totale: t.totale, contro: t.contro.valore, riuscita: t.riuscita, p: Math.round(p * 100) / 100 }, 'prove: an NPC\'s own check (world question)');
+    return { riuscita: t.riuscita, dado: t.dado, facce, almeno, p, etichetta: t.etichetta };
+  }
+
+  /**
+   * The odds of success of a card's roll, before the dice (for the Game Master's «a_volte» rule): d20 against a DC,
+   * a roll under a threshold, or 2d6 against the set's lowest band that is not a failure. Advantage and disadvantage
+   * of two dice are counted.
+   */
+  private probabilita(t: TiroMostrato): number {
+    const facce = t.facce ?? 20;
+    const due = t.dadi.length > 1 && t.vantaggio ? t.vantaggio : null;
+    const conDue = (p: number): number => (due === 'vantaggio' ? 1 - (1 - p) ** 2 : due === 'svantaggio' ? p * p : p);
+    const tipo = t.risoluzione ?? 'd20_cd';
+    if (tipo === 'sotto_soglia') return conDue(Math.max(0, Math.min(1, t.contro.valore / facce)));
+    if (tipo === '2d6_fasce') {
+      const fasce = this.generico?.regole.sistema.risoluzione.fasce ?? [];
+      const minimo = Math.min(...fasce.filter((f) => f.esito !== 'fallimento' && f.min !== null).map((f) => f.min!));
+      if (!Number.isFinite(minimo)) return 0.5;
+      let si = 0;
+      for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) if (a + b + t.modificatore >= minimo) si += 1;
+      return si / 36;
+    }
+    return conDue(Math.max(0, Math.min(1, (facce + 1 - (t.contro.valore - t.modificatore)) / facce)));
+  }
+
   /** One pass of the set's resolver over the turn's decisions (the real one, or a dry run on a copy of the state). */
   private passaRisolutore(
     turno: number,

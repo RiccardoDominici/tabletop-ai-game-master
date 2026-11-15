@@ -47,7 +47,7 @@ A campaign chooses it when it is created: `regole.tiri_giocatori` in `campagna.y
   - the Engine still rolls what is not one player's own: the NPCs' rolls (their attacks, damage, initiative, death), the rolls for a whole side (surprise, initiative by sides), morale, and the Game Master's own rolls. A fight the Game Master opens from the panel rolls the characters' first initiative with the Engine's dice;
   - on a 2d6 rule set the difficulty's modifier stays secret like a DC: the phone's bonus is your stat alone, and the card shows the total you computed and the outcome.
 - **`automatico`.** The program rolls for the players, as before: the card shows the DC too.
-- **The Game Master's own rolls.** When the world leaves something to chance (a clock's gate with `tiro` in the campaign: does the front advance, does the news spread), the program rolls, never the narrator. `regole.tiri_master` in `campagna.yaml` decides whether the table sees it: `nascosti` (hidden, the default: only the panel has it), `a_volte` (sometimes: when the odds are close, from one in three to two in three), `visibili` (always). A roll the table sees is a card «Il master» with the die and «Sì» or «No», and one line of the narrator («Il master tira i dadi.»); what it was for stays with the Game Master. Test override: `TAGM_TIRI_MASTER`.
+- **The Game Master's own rolls.** When the world leaves something to chance (a clock's gate with `tiro` in the campaign: does the front advance, does the news spread; a world question of the scene: is the guard awake, does the NPC on the stairs notice the noise — see [World questions](#world-questions)), the program rolls, never the narrator. `regole.tiri_master` in `campagna.yaml` decides whether the table sees it: `nascosti` (hidden, the default: only the panel has it), `a_volte` (sometimes: when the odds are close, from one in three to two in three), `visibili` (always). A roll the table sees is a card «Il master» with the die and «Sì» or «No», and one line of the narrator («Il master tira i dadi.»); what it was for stays with the Game Master. Test override: `TAGM_TIRI_MASTER`.
 - **The Game Master can ask for a check** from the panel («Chiedi una prova», [the Game Master panel](master-panel.md#rolls)): it goes through the same path, rolled by the player or by the program depending on the campaign.
 
 ```yaml
@@ -234,6 +234,39 @@ prove:
 When a scene check fits the action, it takes precedence over the referee's choice.
 
 In the repertoire, a line can come out only after a successful check: `richiede: {prova: persuasione}`. It accepts a skill, an ability, the `p_…` id of a scene check, the name of an attack, or the types `prova` (check), `salvezza` (saving throw), `attacco` (attack), and `contrapposta` (opposed check). The Engine compares the exact words: a name with different capitalization does not match.
+
+## World questions
+
+Some facts of a scene are nobody's roll: is the guard at the gate awake? does the mule bray when strangers come? does the goblin on the stairs notice the noise at the iron door? The campaign can leave them to chance, in `scena.yaml` or `scene/*.yaml`, under `domande`. When the fact that asks the question happens in that scene, the program rolls it once, on the Game Master's side (hidden by default: see `tiri_master` in [Who rolls the dice](#who-rolls-the-dice)), and the narrator gets only the answer, as a fact. The model never decides it, and the narrator never reads the question in advance.
+
+```yaml
+domande:
+  - id: d_guardia_sveglia
+    domanda: "La guardia alla porta è sveglia?"
+    quando: azione                 # a public action that touches...
+    temi: [guardia, porta]         # ...these themes
+    tiro: {dado: 6, almeno: 3}     # «yes» on 3 or more
+    se_si: "La guardia è sveglia e guarda la strada."
+    se_no: "La guardia sonnecchia sullo sgabello."
+  - id: d_zirra_porta
+    domanda: "Zirrà, dalla scala, si accorge di chi lavora alla porta di ferro?"
+    quando: azione
+    temi: [cripta, porta di ferro]
+    prova_png: {png: png_zirra, prova: caratteristica:saggezza, difficolta: normale}   # the NPC's own check
+    se_si: "Zirrà guarda giù, verso la cantina."
+    se_no: "Zirrà non si volta."
+```
+
+| Field | What it contains |
+|---|---|
+| `id` | starts with `d_`, unique in the campaign |
+| `domanda` | the question in the Game Master's words: it shows on the panel («Tiri del master»), never at the table |
+| `quando` | the fact that asks it, as in a clock's `avanza_quando` ([The world that moves](../mondo.md)): `azione` with `temi`, `cambio_scena` (on arriving in this scene), `resta_in_scena` with `turni`, `battuta` or `indizio` with `ids`, `prova_fallita`, `scontro` |
+| `tiro` | the odds of «yes»: a die and the lowest face that says yes; `visibile: true` shows that roll anyway |
+| `prova_png` | or the check of an NPC of the scene with its sheet: `png`, `prova` (`abilita:<id>`, `caratteristica:<id>`, `salvezza:<id>` with the SRD; the ids of your rule set otherwise), `difficolta` (an id of the set's scale; absent = the set's default). Needs dice and the NPC's sheet |
+| `se_si`, `se_no` | the two answers, as facts the narrator can tell |
+
+The answer counts for the rest of the session: the question is not asked again, and a restart keeps it. One example is in `campagne/torre-mozza/scene/scena_torre.yaml`. The validator checks the questions (class `DOMANDE`, `strumenti/valida/regole_domande.py`).
 
 ## A campaign without dice
 

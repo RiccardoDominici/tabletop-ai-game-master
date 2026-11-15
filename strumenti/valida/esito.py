@@ -21,6 +21,7 @@ CLASSI = {
     "SESSIONE": "inizio forte, cinque stanze, scene potenziali, chiusura (C9–C13)",
     "PG": "personaggi giocanti e conoscenze private (T9)",
     "SCHEDA": "schede numeriche e prove (docs/prove.md §2): caratteristiche, CA, PF, attacchi, prove della scena, richiede.prova",
+    "DOMANDE": "domande al mondo delle scene e prove dei PNG fuori dallo scontro (docs/prove.md §9)",
     "PROSA": "scrittura per l'ascolto (§5, §6: N1, N2, N5, N11, D3)",
     "REPERTORIO": "schema delle battute e riferimenti (docs/repertorio.md)",
     "COPERTURA": "copertura minima del repertorio: indizi, menzogne, confessioni, segni, finali, chiusure della serata, voce",

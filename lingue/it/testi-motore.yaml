@@ -161,6 +161,8 @@ mondo:
   regia: "Fai sentire questo in questa risposta, con parole tue e dentro la storia: {testo}"
   png_via: "{nome} non è più in questa scena: non parla e non agisce qui."
   png_arriva: "{nome} adesso è in questa scena."
+  # A world question of the scene answered by the Game Master's dice (docs/prove.md §9): canon, in both modes.
+  risposta: "Deciso dai dadi del master, ora è un fatto (raccontalo dentro la storia, mai come un tiro): {fatto}"
   atteggiamento: "{png} verso {pg}: adesso {stato} (prima {prima})."
   indizio_offerto: "Il mondo offre una pista ({id}): {come}. Falla arrivare se i PG la cercano o se tocca a una mossa del mondo."
   stallo_pericolo: "Materiale: mosse del pericolo in scena: {mosse}. Segni che lo annunciano: {segni}."

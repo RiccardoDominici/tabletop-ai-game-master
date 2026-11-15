@@ -204,6 +204,15 @@ taglio: "…"                    # all the outcomes, including "if the PCs hesit
 esiti: [{id, descrizione, finale: <id of line>}]    # written with the endings (step 9); every ending exists [V]
 climax: true                   # optional: allows fewer than two exits
 audio: {musica: [...], ambiente: [...], umore_iniziale: …}   # optional, see "Audio" below [V]
+domande:                       # optional: world questions the Engine rolls Game Master side (docs/prove.md §9) [V DOMANDE]
+  - id: d_…                    # unique in the campaign [V]
+    domanda: "…?"              # the Game Master's words (panel, log); never said at the table
+    quando: azione             # a gate fact (docs/mondo.md §2), not lascia_scena; cambio_scena = on arriving here [V]
+    temi: [guardia]            # the keys that fact needs: temi, ids, turni, prove [V]
+    tiro: {dado: 6, almeno: 3} # the odds of «yes»; visibile: true shows it anyway — OR:
+    prova_png: {png: png_…, prova: abilita:percezione, difficolta: media}   # the NPC's check: dice on, NPC with a sheet [V]
+    se_si: "fact the narrator gets on yes"                                   # both answers [V]
+    se_no: "fact on no"
 ```
 The mode B context takes from each scene sheet the name, description, question, intensity, senses, elements without a hidden marker («NASCOSTA», «HIDDEN»: both hold in every language), the
 NPCs present and the taglio: the validator searches there for the secret regexes (`SEGRETI.contesto_b`). Two sheets with the same
@@ -295,6 +304,11 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
   The level is `personaggi[].livello`.
 - `png/<id>.yaml` → `scheda`: CR, characteristics, armour or AC, hit points, attacks, optional `influenza: {cd}`.
 - `scena.yaml` and `scene/*.yaml` → `prove`: a list of `{id: p_…, quando, abilita | caratteristica | salvezza, cd, indizio?, se_fallisce?}`.
+- `scena.yaml` and `scene/*.yaml` → `domande`: world questions (shape in the scene sheet above). The odds (`tiro`) work
+  in any campaign, also without sheets; `prova_png` needs dice and the NPC's sheet, and its `prova` and `difficolta`
+  are the set's ids (SRD: `abilita:<skill>`, `caratteristica:<ability>`, `salvezza:<ability>`, difficulties
+  `molto_facile` … `quasi_impossibile`; a manual's set: its `abilita` and `caratteristiche` ids and its `difficolta`).
+  The narrator never reads them in advance (they stay out of its cached context); it gets the answer the dice gave.
 - Repertoire → `richiede.prova`: a skill, a characteristic, a scene's `p_…` id, the name of an attack, or `prova`, `salvezza`, `attacco`,
   `contrapposta`.
 

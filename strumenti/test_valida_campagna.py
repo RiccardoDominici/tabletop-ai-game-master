@@ -1507,6 +1507,14 @@ def test_copioni_seguono_la_scena(camp, tmp_path):
     assert "nar_botte" not in righe[0] and "nar_botte" in righe[1]
 
 
+def test_domande_di_scena_passano_dal_validatore(camp):
+    # The full entry point must run the DOMANDE checks (regole_domande is in MODULI): a bad id is an error here.
+    modifica(camp, "scena.yaml", lambda d: d.update(domande=[{
+        "id": "guardia_sveglia", "domanda": "La guardia è sveglia?", "quando": "azione", "temi": ["guardia"],
+        "tiro": {"dado": 6, "almeno": 3}, "se_si": "Sì.", "se_no": "No."}]))
+    assert "DOMANDE.id" in errori(camp)
+
+
 def test_ogni_classe_ha_almeno_un_test():
     """Promemoria: una classe di errore nuova vuole il suo test qui sopra."""
     from valida.esito import CLASSI

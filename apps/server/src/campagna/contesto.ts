@@ -24,8 +24,10 @@ import { ID_NARRATORE, type Campagna, type DatiYaml } from './tipi';
  * delle prove (`scheda` di PG e PNG, `prove` della scena): i dadi li tira il Motore, e il narratore
  * riceve l'esito come fatto (docs/prove.md). Numeri in meno nel prompt in cache, niente CD lette a voce.
  * `conseguenze` of the clocks (docs/mondo.md §3): what will happen at a mark must not be read in advance.
+ * `domande` of the scenes (docs/prove.md §9): the odds and both answers of a world question are the Game Master's; the
+ * narrator gets only the answer the dice gave, as a world line of the turn.
  */
-const CHIAVI_ESCLUSE = new Set(['prompt_immagine', 'prompt_luogo', 'stile_immagini', 'immagine', 'registro_attivita', 'scheda', 'prove', 'conseguenze']);
+const CHIAVI_ESCLUSE = new Set(['prompt_immagine', 'prompt_luogo', 'stile_immagini', 'immagine', 'registro_attivita', 'scheda', 'prove', 'conseguenze', 'domande']);
 
 function senzaChiavi(valore: unknown): unknown {
   if (Array.isArray(valore)) return valore.map(senzaChiavi);

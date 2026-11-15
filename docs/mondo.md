@@ -62,6 +62,10 @@ crypto dice to the hook with every request; their seed and counter are saved in 
 campaign has sheets (saved with the checks' state), otherwise with the world's dice it was handed, logs the roll, lists
 it on the panel and shows it at the table when `visibile` or `regole.tiri_master` asks for it.
 
+The same gate grammar asks a scene's **world questions** (`domande` of the scene sheet: is the guard awake? does
+the NPC notice?): odds or an NPC's own check, rolled once per session through the same Game Master path, the answer
+given to the narrator as a world line (docs/prove.md §9).
+
 An owed mark is **due** at once: it ignores `segno_al_massimo_ogni` (it is a fact, not time) but keeps one mark per
 clock per response and two clocks per response, and it waits for the next response if it cannot go out now. If the
 response does not show it (mode A: no `[orologio]`; mode B: no mark line), the Engine says the mark's text
