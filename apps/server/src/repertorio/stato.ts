@@ -315,8 +315,9 @@ export class StatoRepertorio {
     const completi = new Map(this.orologi.elenco.map((x) => [x.id, x.pieni >= x.segmenti ? x.segmenti : null]));
     const perche: Record<string, string> = {};
     const candidate = this.disponibili(o.turno).filter((b) => {
-      // Le chiusure della serata le dice solo il Motore, a «Chiudi la sessione» (scena/regia.ts).
-      if (b.solo_esempio || b.tipo === 'chiusura') return false;
+      // Le chiusure della serata le dice solo il Motore, a «Chiudi la sessione» (scena/regia.ts); the stall lines too, at
+      // a stall move of their level (docs/mondo.md §5).
+      if (b.solo_esempio || b.tipo === 'chiusura' || (b.stallo ?? null) !== null) return false;
       const testo = testoPer(b);
       // Cancello sull'azione: senza un'azione adatta (privata, del PG giusto) la battuta non entra.
       if (this.serveAzione(b) && testo === null) return false;

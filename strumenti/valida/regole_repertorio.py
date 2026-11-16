@@ -19,7 +19,7 @@ from collections import defaultdict
 from . import costanti as K
 from .carica import Campagna
 from .esito import Esito
-from . import regole_fatti_battuta
+from . import regole_fatti_battuta, regole_stallo
 from .regole_scena import nomi_propri
 from .voce import solo_parole
 from .testo import frasi, limite_da_stile, n_parole, problemi_di_prosa, radici, vocativi
@@ -93,6 +93,8 @@ def controlla(c: Campagna, e: Esito) -> None:
     _schema(c, e)
     # The facts a line carries (who acts, who is only named, the states it assumes): regole_fatti_battuta.py.
     regole_fatti_battuta.controlla(c, e)
+    # Prepared stall lines (stallo: 1 | 2 | 3): regole_stallo.py.
+    regole_stallo.controlla(c, e)
     _prova_aggirabile(c, e)
     _riferimenti(c, e)
     _copertura(c, e)

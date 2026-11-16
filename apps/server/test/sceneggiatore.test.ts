@@ -100,6 +100,18 @@ describe('controllo delle battute dello sceneggiatore', () => {
     expect(validaBattute(yaml([miss('sc_x_1')]), ctx).scartate).toEqual([]);
   });
 
+  it('stall lines: levels 1 and 3 pass, level 2 (it reveals a clue) is the Preparer\'s', () => {
+    const r = validaBattute(
+      yaml([
+        battuta({ id: 'sc_x_1', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Fuori, un cane abbaia due volte.'], stallo: 1 }),
+        battuta({ id: 'sc_x_2', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Fuori, un cane abbaia tre volte.'], stallo: 2 }),
+      ]),
+      ctx,
+    );
+    expect(r.accettate.map((b) => [b.id, b.stallo])).toEqual([['sc_x_1', 1]]);
+    expect(r.scartate).toEqual([{ id: 'sc_x_2', motivo: expect.stringMatching(/lo stallo 2 rivela un indizio/) }]);
+  });
+
   // E2E, secondo giro (N5): 42 battute scartate con «tipo non ammesso per lo sceneggiatore: undefined».
   it('tipo mancante: dedotto da chi parla (PNG reazione, narratore momento), e il log lo dice; un tipo che rivela resta fuori', () => {
     const senzaTipo = (o: Record<string, unknown>) => {
@@ -194,6 +206,13 @@ describe('lingua dei contenuti: prompt e guardia dello sceneggiatore in it e in 
     expect(en).toContain('## Task\nWrite ONE line');
     expect(en).toContain('It is a PRIVATE action');
     expect(en).toContain('NPCs present: none');
+  });
+
+  it('a stalling table: the «prossime» also ask for stall lines with their material, in the content language', () => {
+    const rq = { id: 'x', tipo: 'prossime', creata: '', turno: 4, campagna: '', scena: { id: 's', titolo: 'T', png_presenti: [] }, trascrizione: [], stato: { indizi_rivelati: [], fatti_noti: [], battute_usate: [], orologi: {} }, prefisso: 'sc_', quante: 6, stallo: { livello: 1, quante: 2, pericolo: { mosse: ['sale di un palmo'], segni: ['Un tonfo a monte.'] }, piste: [] } } as RichiestaSceneggiatore;
+    expect(messaggioSceneggiatore(rq, 'C', [], '')).toMatch(/Scrivi 6 battute[^]*`stallo: 1`[^]*sale di un palmo[^]*Un tonfo a monte\./);
+    impostaLingua('en');
+    expect(messaggioSceneggiatore({ ...rq, stallo: { livello: 3, quante: 2, pericolo: null, piste: ['The mill', 'The bridge'] } }, 'C', [], '')).toMatch(/`stallo: 3`[^]*The mill; The bridge/);
   });
 
   it('in inglese: soggetto, parte del corpo (anche col genitivo sassone); vocativo, complemento e oggetto no', () => {

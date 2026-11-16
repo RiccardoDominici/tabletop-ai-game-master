@@ -1910,3 +1910,29 @@ def test_repertorio_esito_della_battuta(camp):
     assert "REPERTORIO.fatti" not in errori(camp)
     modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte")["richiede"].update(esito={"tipo": "ferito"}))
     assert "REPERTORIO.fatti" in errori(camp)
+
+
+def _stallo(d, bid, livello, **altro):
+    d["battute"].append({"id": bid, "chi": "narratore", "tipo": "momento", "quando": "il tavolo resta fermo", "temi": ["attesa"],
+                         "testo": ["[narratore] Il vento fa sbattere un'imposta."], "stallo": livello, **altro})
+
+
+def test_repertorio_stallo_preparato(camp):
+    # docs/mondo.md §5: one line per level for the scene, S2 reveals a clue, S3 is gated on what the PCs found.
+    def prepara(d):
+        _stallo(d, "nar_stallo_1", 1)
+        _stallo(d, "nar_stallo_2", 2, tipo="indizio", effetti={"rivela_indizi": ["i_botte"]})
+        _stallo(d, "nar_stallo_3", 3, richiede={"indizi_rivelati": ["i_botte"]})
+    assert "REPERTORIO.stallo_scarso" in avvisi(camp)
+    modifica(camp, "repertorio/narrazione.yaml", prepara)
+    assert "REPERTORIO.stallo" not in errori(camp)
+    assert "REPERTORIO.stallo_scarso" not in avvisi(camp)
+
+
+def test_repertorio_stallo_sbagliato(camp):
+    for altro in ({"stallo": 4}, {"stallo": 2}, {"stallo": 3}, {"stallo": 1, "richiede": {"da_pg": ["pg_anna"]}},
+                  {"stallo": 3, "richiede": {"indizi_rivelati": ["i_botte"]}, "effetti": {"rivela_indizi": ["i_cera"]}}):
+        c = camp.parent / f"c{len(list(camp.parent.iterdir()))}"
+        shutil.copytree(camp, c)
+        modifica(c, "repertorio/narrazione.yaml", lambda d: _stallo(d, "nar_stallo_x", altro["stallo"], **{k: v for k, v in altro.items() if k != "stallo"}))
+        assert "REPERTORIO.stallo" in errori(c), altro

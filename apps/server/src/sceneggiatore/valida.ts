@@ -135,6 +135,8 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     const rq = b['richiede'];
     const soloStati = rq === undefined || (rq !== null && typeof rq === 'object' && !Array.isArray(rq) && Object.keys(rq).every((k) => k === 'stati' || k === 'esito'));
     if (!soloStati || b['effetti'] !== undefined) return void scartate.push({ id, motivo: 'richiede/effetti non ammessi (solo richiede.stati, richiede.esito): le rivelazioni restano quelle preparate' });
+    // A stall line of level 2 reveals a clue: the Preparer's (docs/mondo.md §5); levels 1 and 3 reveal nothing.
+    if (b['stallo'] !== undefined && b['stallo'] !== 1 && b['stallo'] !== 3) return void scartate.push({ id, motivo: 'stallo: 1 o 3 (lo stallo 2 rivela un indizio, lo prepara il Preparatore)' });
     delete b['varianti'];
     delete b['solo_esempio'];
     delete b['audio'];

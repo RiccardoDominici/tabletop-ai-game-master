@@ -35,6 +35,12 @@ describe('mondo/stallo', () => {
     expect(c.registra(true, false)).toBe(1);
   });
 
+  it('a prepared summary line makes S3 possible with fewer than two leads of the Engine', () => {
+    const poco: ContestoStallo = { ...base, luoghiNoti: [], indiziDellaScena: [] };
+    expect(mossaDiStallo(3, poco).livello).toBe(1);
+    expect(mossaDiStallo(3, { ...poco, riassuntoPronto: true }).livello).toBe(3);
+  });
+
   it('S1 names the danger of the scene; S2 a clue not given yet; S3 two or three leads; each falls back when empty', () => {
     expect(mossaDiStallo(1, base)).toMatchObject({ livello: 1, pericolo: { id: 'p_fiume' }, duro: false });
     expect(mossaDiStallo(1, { ...base, orologiAttivi: new Set(), presenti: new Set(['png_mugnaio']) }).pericolo?.id).toBe('p_voci');
@@ -198,6 +204,33 @@ describe('mode B: answers that bring nothing new count, whatever the words (thir
     expect(detto(3)).toContain('La ruota cigola e si ferma un istante.');
     expect(detto(4)).toContain('Sui sacchi di farina ci sono impronte piccole, di piedi scalzi.');
     expect(detto(5).join(' ')).toMatch(/Vi tornano in mente le strade ancora aperte: Il bosco; Il ponte/);
+  });
+});
+
+describe('server, mode B: prepared stall lines (stallo: 1 | 2 | 3) are kept for the Engine\'s stall moves', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+  // Round 4 (profile A, stall game): the reader used every filler as a waiting line by T6, and the one S1 at T14 found
+  // none. A line tagged `stallo` is never in the reader's catalogue: the Engine says it at the stall move of its level.
+  const stalli = [
+    { id: 'nar_stallo_acqua', chi: 'narratore', tipo: 'momento', quando: 'il tavolo resta fermo', temi: ['acqua'], stallo: 1, testo: ['[narratore] Sotto le assi del mulino l\'acqua batte più forte.'], max_usi: 1 },
+    { id: 'nar_stallo_sacchi', chi: 'narratore', tipo: 'indizio', quando: 'il tavolo resta fermo', temi: ['sacchi'], stallo: 2, testo: ['[narratore] Un sacco di farina si affloscia: sopra, impronte piccole di piedi scalzi.'], effetti: { rivela_indizi: ['i_farina'] }, max_usi: 1 },
+    { id: 'nar_stallo_piste', chi: 'narratore', tipo: 'momento', quando: 'il tavolo resta fermo', temi: ['piste'], stallo: 3, richiede: { indizi_rivelati: ['i_farina'] }, testo: ['[narratore] Le impronte sulla farina, il bosco, il ponte: le strade sono lì.'], max_usi: 1 },
+  ];
+
+  it('S1, S2 and S3 say the prepared line of their level; the reader never gets them', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mondo', { battute: { 'narrazione.yaml': stalli } });
+    const { url, messaggi } = await prova.avvia(cartella, () => '[narratore] Anna, la ruota cigola.\n[invito] tutti');
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    let s = await inizia(schermo, tel);
+    for (const testo of ['Mi siedo sul muretto del mulino.', 'Ci penso su, intanto.', 'Cosa facciamo adesso?', 'Non lo so, boh.', 'Mi siedo di nuovo.']) s = await turno(tel, 'pg_anna', s, testo);
+    expect(prova.turni().filter((r) => r['stallo']).map((r) => (r['stallo'] as { detto: string | null }).detto)).toEqual(['nar_stallo_acqua', 'nar_stallo_sacchi', 'nar_stallo_piste']);
+    const detto = (t: number) => s.trascrizione.filter((v) => v.turno === t).map((v) => v.testo);
+    expect(detto(4)).toContain('Un sacco di farina si affloscia: sopra, impronte piccole di piedi scalzi.');
+    expect(detto(5)).toContain('Le impronte sulla farina, il bosco, il ponte: le strade sono lì.');
+    expect(messaggi.join('\n')).not.toMatch(/nar_stallo_/);
   });
 });
 

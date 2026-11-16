@@ -51,6 +51,12 @@ export interface RichiestaSceneggiatore {
   nomi_senza_pronuncia?: string[];
   /** Quante battute scrivere. */
   quante: number;
+  /**
+   * The table is stalling (docs/mondo.md §5): with the `prossime`, a few stall lines of this level for the scene, tagged
+   * `stallo`, kept for the Engine's stall move. Level 1: a soft move of the danger (its moves and signs); level 3: a
+   * summary of the leads the PCs know. (Level 2 reveals a clue: the Preparer's.)
+   */
+  stallo?: { livello: 1 | 3; quante: number; pericolo: { mosse: string[]; segni: string[] } | null; piste: string[] };
 }
 
 export interface RispostaSceneggiatore {

@@ -125,6 +125,13 @@ export interface Battuta {
   solo_esempio: boolean;
   /** B2: mossa senza azione (il cane, il tempo che passa…): in catalogo solo allo stallo. */
   riempitivo: boolean;
+  /**
+   * Stall material (docs/mondo.md §5, «Prepared stall lines»): the Engine says it at a stall move of this level, in the
+   * line's scenes: 1 a soft move of the scene's danger, 2 a proactive clue (it reveals one), 3 a summary of the leads
+   * the PCs know (gated on what they found). Never in the reader's catalogue nor among its waiting lines: round 4 burnt
+   * every filler of the stall game as a waiting line by T6, and its one S1 at T14 found none. Absent = none.
+   */
+  stallo?: 1 | 2 | 3 | null;
   /** Campagne con più scene: la battuta vale solo in queste scene (`scena: id` o una lista; vuota = in tutte). */
   scene: string[];
   /**

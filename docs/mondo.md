@@ -162,6 +162,22 @@ in mode B, after an answer that brought something new). Level `((n − 1) mod 3)
 Never an empty «cosa fate?»: every level carries material. On an E12 stall the move comes together with the
 answers to the actions; in mode B the fillers also enter the catalogue.
 
+**Prepared stall lines** (mode B; round 4 of the coherence layer, docs/coerenza.md): a line with `stallo: 1 | 2 | 3`
+is material for that level in its scenes, written by the Preparer for every scene: 1 a soft move of the scene's danger
+(no blow, no clue, no clock mark), 2 a proactive clue (it reveals one: `effetti.rivela_indizi`), 3 a summary of the
+leads the PCs know (gated on what they found: `richiede.indizi_rivelati` or `battute_usate`). They never enter the
+reader's catalogue nor its waiting lines: in round 4's stall game the local reader used every filler of the scene as a
+waiting line by T6, and the one S1, at T14, found none. At each level the Engine says an available stall line of that
+level first (S1: the danger's cast present first, then the narrator's; S2: one that reveals the chosen clue; S3: before
+its own sentence, and a prepared summary makes S3 possible even with fewer than two leads), then the old material. The
+validator checks the form (`REPERTORIO.stallo`: level, no gate on the action, S2 reveals, S3 reveals nothing and is
+gated) and warns for a scene with no stall line of some level (`REPERTORIO.stallo_scarso`; S2 only where the scene has
+clues). With the scriptwriter on (docs/sceneggiatore.md), when the table is stalling (answers with nothing new, or stall
+moves in a row) and the scene has no stall line of the next level left, the `prossime` request also asks two stall
+lines: level 1 (for the next S1 or S2, since an S2 without a clue line falls to S1) with the danger's moves and signs,
+or level 3 with the known leads, bound to the next three turns (`fino_al_turno`). Level 2 reveals a clue, so it stays
+the Preparer's.
+
 ## Log and state
 `cronaca` (world log): `{turno, tipo: segno | presagio | evento | atteggiamento, orologio, segno, cosa, visto,
 emerso_al_turno}`. It is logged (`mondo:` lines), written as `tipo: mondo` in `narrazioni.jsonl`, shown on the panel

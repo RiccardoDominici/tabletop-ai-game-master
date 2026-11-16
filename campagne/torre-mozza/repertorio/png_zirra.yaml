@@ -113,3 +113,16 @@ battute:
       - "[png_zirra] E va bene. Il ragazzo è venuto da solo. Mi porta il pane da tre notti."
     effetti: {fatti_noti: [f_tonio_complice, f_tonio_pane]}
     max_usi: 1
+
+  # Battuta di stallo (docs/mondo.md §5): la dice il Motore quando il tavolo resta fermo davanti a lei.
+  - id: zir_stallo_chiave
+    chi: png_zirra
+    tipo: momento
+    quando: "il tavolo resta fermo alla torre"
+    temi: [chiave, ragazzo]
+    scena: scena_torre
+    stallo: 1
+    testo:
+      - "[narratore] Zirrà si gratta il mento con la punta della spada corta."
+      - "[png_zirra] Allora? La chiave, o il ragazzo resta con me."
+    max_usi: 1

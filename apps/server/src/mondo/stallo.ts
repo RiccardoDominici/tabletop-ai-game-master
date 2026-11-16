@@ -144,6 +144,8 @@ export interface ContestoStallo {
   fattiScoperti: readonly string[];
   /** The last visible sign of the active threat (a mark already shown), if any. */
   ultimoSegno: string | null;
+  /** Mode B: a prepared summary line (`stallo: 3`) the Engine can say now: S3 needs no two leads of its own. */
+  riassuntoPronto?: boolean;
 }
 
 export interface MossaStallo {
@@ -174,7 +176,7 @@ export function mossaDiStallo(n: number, c: ContestoStallo): MossaStallo {
   const pericolo = pericoloDellaScena(c);
   const indizio = [...c.offerti, ...c.indiziDellaScena].find((i) => !c.giàDati.has(i)) ?? null;
   const piste = [...c.luoghiNoti.slice(0, 2), ...c.fattiScoperti.slice(-1), ...(c.ultimoSegno ? [c.ultimoSegno] : [])].slice(0, 3);
-  if (livello === 3 && piste.length >= 2) return { n, livello: 3, duro: false, pericolo, indizio: null, piste };
+  if (livello === 3 && (piste.length >= 2 || c.riassuntoPronto)) return { n, livello: 3, duro: false, pericolo, indizio: null, piste };
   if (livello >= 2 && indizio) return { n, livello: 2, duro: false, pericolo, indizio, piste: [] };
   return { n, livello: 1, duro: stalloDuro(n), pericolo, indizio: null, piste: [] };
 }

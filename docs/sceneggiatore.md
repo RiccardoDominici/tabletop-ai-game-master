@@ -65,7 +65,10 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
   and logged as a correction (`corrette`); a type that is given but not allowed (a clue, a confession) is refused, and
   the log names the allowed ones;
 - **voices**: only the narrator or a present NPC speaks;
-- **gates and state**: no `richiede` (except `richiede.stati` and `richiede.esito`) or `effetti`. A line written on the fly does not reveal
+- **gates and state**: no `richiede` (except `richiede.stati` and `richiede.esito`) or `effetti`;
+- **stall lines**: `stallo: 1` or `3` only, when the request asks for them (a stalling table, docs/mondo.md §5,
+  «Prepared stall lines»); level 2 reveals a clue, so it stays the Preparer's. A level-3 summary is offered for the next
+  three turns only. A line written on the fly does not reveal
   clues or change facts or clocks: the revelations remain the prepared ones, checked by the validator;
 - **who acts**: an NPC a narrator row names with no tag is taken as acting (added to `attori`, logged as a correction),
   and every actor must be among the NPCs who can act now, or the line is rejected;

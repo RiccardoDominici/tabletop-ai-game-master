@@ -165,3 +165,18 @@ describe('a line that tells an outcome carries it, and the Engine checks it agai
     expect(s.motivoIndisponibile(b, 5)).toMatch(/its moment has passed/);
   });
 });
+
+describe('stall lines (stallo: 1 | 2 | 3, docs/mondo.md §5)', () => {
+  it('the loader reads the level; S2 reveals a clue, S3 reveals none; the catalogue never offers them', () => {
+    const [s1] = carica([base('nar_s1', ['[narratore] Il vento sbatte un\'imposta.'], { stallo: 1 })]) as [Battuta];
+    expect(s1.stallo).toBe(1);
+    expect(() => carica([base('nar_s2', ['[narratore] Qualcosa.'], { stallo: 2 })])).toThrow(/stallo 2 porta un indizio/);
+    expect(() => carica([base('nar_s3', ['[narratore] Qualcosa.'], { stallo: 3, effetti: { rivela_indizi: ['i_x'] } })])).toThrow(/stallo 3 riassume/);
+    expect(() => carica([base('nar_s4', ['[narratore] Qualcosa.'], { stallo: 4 })])).toThrow(/stallo è 1, 2 o 3/);
+    const st = new StatoRepertorio({ battute: [s1], perId: new Map([[s1.id, s1]]), avvisi: [] }, campagna, new StatoOrologi(campagna));
+    st.presenza = null;
+    st.presenti = null;
+    expect(st.disponibili().map((b) => b.id)).toEqual(['nar_s1']);
+    expect(st.catalogo({ turno: 1, testoAzioni: 'aspetto', stallo: true, nomiPng: new Map(), parole: [] }).battute).toEqual([]);
+  });
+});

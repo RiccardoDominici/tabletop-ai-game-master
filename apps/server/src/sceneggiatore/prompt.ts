@@ -12,6 +12,14 @@ import type { RichiestaSceneggiatore } from './protocollo';
 /** Il prompt di sistema dello sceneggiatore, nella lingua dei contenuti. */
 export const promptSceneggiatore = (): string => prompt('sceneggiatore');
 
+/** The stall task of a `prossime` request (docs/mondo.md §5): its level and the material it builds on. */
+function compitoStallo(st: NonNullable<RichiestaSceneggiatore['stallo']>, t: (k: string, v?: Record<string, string | number>) => string): string {
+  if (st.livello === 1) {
+    return t('stallo_1', { quante: st.quante, mosse: st.pericolo?.mosse.join('; ') || t('trattino'), segni: st.pericolo?.segni.join('; ') || t('trattino') });
+  }
+  return t('stallo_3', { quante: st.quante, piste: st.piste.join('; ') || t('trattino') });
+}
+
 export function messaggioSceneggiatore(rq: RichiestaSceneggiatore, contesto: string, paroleSegrete: string[], esempi: string): string {
   const t = (k: string, v: Record<string, string | number> = {}): string => testo(`modelli.sceneggiatore.${k}`, v);
   const compito =
@@ -19,7 +27,7 @@ export function messaggioSceneggiatore(rq: RichiestaSceneggiatore, contesto: str
       ? t('chiusura')
       : rq.tipo === 'subito' && rq.azione
         ? t('subito', { nome: rq.azione.nome, id_pg: rq.azione.id_pg, testo: rq.azione.testo, privata: rq.azione.privata ? t('privata') : '' })
-        : t('prossime', { quante: rq.quante });
+        : [t('prossime', { quante: rq.quante }), rq.stallo ? compitoStallo(rq.stallo, t) : ''].filter(Boolean).join('\n');
   return [
     t('contesto', { contesto }),
     t('scena', { titolo: rq.scena.titolo, id: rq.scena.id, presenti: rq.scena.png_presenti.join(', ') || t('nessuno') }),

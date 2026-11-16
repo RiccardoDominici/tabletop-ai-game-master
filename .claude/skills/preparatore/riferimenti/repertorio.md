@@ -28,6 +28,17 @@ serve four things:
 A voice example cannot lie, reveal, confess or advance the clock [V]. A filler is only of type moment, clue, transition or
 request [V].
 
+**Stall lines** (`stallo: 1 | 2 | 3`, docs/mondo.md §5): for every scene write at least one line per level [V
+`REPERTORIO.stallo_scarso`, a warning], with `scena:` set. The Engine says them when the table stays still, with no
+action to answer, so no gate on the action (`da_pg`, `privata`, `prova`) [V `REPERTORIO.stallo`]; the reader never
+gets them.
+- `stallo: 1`, a soft move of the scene's danger, by the narrator or the danger's cast: something seen or heard that
+  changes nothing true (no blow, no clue, no clock mark).
+- `stallo: 2`, a clue that arrives by itself (type `indizio`, `effetti.rivela_indizi`) [V]: only where the scene has
+  clues; same content as the clue's `come_si_trova`, and the secret word lists (`pubblica_dopo`) name it.
+- `stallo: 3`, an NPC present or a memory sums up two or three leads the PCs already know, gated on what they found
+  (`richiede.indizi_rivelati`) [V] and revealing nothing [V].
+
 ## 3. id, quando, temi: the three fields that decide everything
 - **id**: `<prefix>_<neutral subject>`. Prefixes: `nar_` for the narrator, `fin_` for endings, `tr_` for transitions, three
   letters of the NPC for NPCs (`ott_`, `bal_`).

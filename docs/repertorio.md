@@ -169,7 +169,8 @@ lines instead of answering the actions. It therefore changes as follows:
   the NPC for the improvisation.
 - **Relevant catalog**: the Engine shows the lines whose `temi` or NPCs appear in the actions of the turn, plus the due
   clock sign; lines with `riempitivo: true` (the dog, the bag…) only at a stall, that is a closed window with no actions
-  (timeout of the fast-paced phase, or «Risolvi ora» (Resolve now) with empty hands).
+  (timeout of the fast-paced phase, or «Risolvi ora» (Resolve now) with empty hands). Lines with `stallo: 1 | 2 | 3`
+  never: the Engine says them at a stall move of their level (docs/mondo.md §5, «Prepared stall lines»).
 - **Anti-repetition**: a line and its variants do not return within 3 turns.
 - **The Engine helps the selector** (nozze-neve playtest: 115 lines out of 139 never came out, clues asked for and not
   arriving, correct lines rejected because of a forgotten "> pg"):

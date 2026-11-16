@@ -76,6 +76,8 @@ import { giaUsati, ticBloccati } from '../sceneggiatore/ripetizioni';
 
 /** Oltre questo tempo la battuta chiesta «subito» allo sceneggiatore non si dice più (resta nel repertorio). */
 export const TETTO_SCENEGGIATORE_MS = 90_000;
+/** How many turns after its request a scriptwriter's summary of the known leads (a stall line of level 3) may be said. */
+export const TURNI_RIASSUNTO_STALLO = 3;
 /** Quanto il tavolo aspetta la chiusura scritta dallo sceneggiatore (una «subito» con sonnet: pochi secondi). */
 export const TETTO_CHIUSURA_MS = 30_000;
 import { SerataGuidata } from './serata';
@@ -123,7 +125,7 @@ import type { SchedaNumerica } from '../campagna/schede';
 import { MondoInGioco } from '../mondo/mondo';
 import type { CambioAtteggiamento } from '../mondo/atteggiamenti';
 import type { FattoDelGioco } from '../mondo/porte';
-import { mossaDiStallo, type MossaStallo } from '../mondo/stallo';
+import { livelloStallo, mossaDiStallo, pericoloDellaScena, type ContestoStallo, type MossaStallo } from '../mondo/stallo';
 import { TiriGiocatoriRegia, type TiriGiocati } from './tiri-giocatori';
 import { TiriDelMaster } from '../prove/tiri-master';
 import { tipiGregari, type Gregario } from '../campagna/gregari';
@@ -1578,6 +1580,19 @@ export class Regia {
    * S1 (from the fourth stall) owes a mark to the scene's danger: the soft move was ignored, the world moves.
    */
   private scegliMossaDiStallo(n: number, turno: number): MossaStallo {
+    const mossa = mossaDiStallo(n, this.contestoStallo(turno));
+    if (mossa.indizio) this.mondo.indiziDatiDaStallo.add(mossa.indizio);
+    if (mossa.duro && mossa.pericolo?.orologio) {
+      const debito = this.orologi.aggiungiDebito(mossa.pericolo.orologio, 1);
+      this.o.log.info({ turno, n, pericolo: mossa.pericolo.id, orologio: mossa.pericolo.orologio, debito }, 'world: hard S1, the ignored soft move becomes a mark');
+      this.mondo.fatti([], turno);
+    }
+    this.o.log.info({ turno, n, livello: mossa.livello, duro: mossa.duro, pericolo: mossa.pericolo?.id ?? null, indizio: mossa.indizio, piste: mossa.piste }, 'world: stall move');
+    return mossa;
+  }
+
+  /** What the director knows when choosing a stall move (pure: no debt, no clue marked as given). */
+  private contestoStallo(turno: number): ContestoStallo {
     const scena = this.campagna.scena;
     const nodi = (this.campagna.campagnaNarratore['nodi'] as Array<Record<string, unknown>> | undefined) ?? [];
     const visitati = new Set(this.o.campagna.scene.filter((s) => this.sceneVisitate.has(s.id)).map((s) => s.dati['nodo']));
@@ -1590,7 +1605,7 @@ export class Regia {
     const pubblico = this.statoPubblicoAlTavolo();
     // Mode B: S2 can bring only a clue the Engine can say (a line without gates on the action); else it falls to S1.
     const dicibile = (i: string): boolean => !s || this.lineaIndizioDicibile(turno, i) !== null;
-    const mossa = mossaDiStallo(n, {
+    return {
       pericoli: this.mondo.pericoli,
       orologiAttivi: new Set(this.orologi.elenco.filter((o) => o.partito && o.pieni < o.segmenti).map((o) => o.id)),
       presenti: this.pngInScena(),
@@ -1601,22 +1616,31 @@ export class Regia {
       // Only what the table heard: a fact discovered through a private action stays that player's (S3 says it aloud in mode B).
       fattiScoperti: (s?.fattiScoperti ?? []).filter((f) => pubblico?.fattiNoti?.has(f) ?? false).map((f) => this.testoFatto(f)),
       ultimoSegno: ultimo ? ultimo.segni[ultimo.pieni - 1]! : null,
-    });
-    if (mossa.indizio) this.mondo.indiziDatiDaStallo.add(mossa.indizio);
-    if (mossa.duro && mossa.pericolo?.orologio) {
-      const debito = this.orologi.aggiungiDebito(mossa.pericolo.orologio, 1);
-      this.o.log.info({ turno, n, pericolo: mossa.pericolo.id, orologio: mossa.pericolo.orologio, debito }, 'world: hard S1, the ignored soft move becomes a mark');
-      this.mondo.fatti([], turno);
-    }
-    this.o.log.info({ turno, n, livello: mossa.livello, duro: mossa.duro, pericolo: mossa.pericolo?.id ?? null, indizio: mossa.indizio, piste: mossa.piste }, 'world: stall move');
-    return mossa;
+      riassuntoPronto: this.lineaDiStallo(turno, 3) !== null,
+    };
   }
 
-  /** Mode B: an available `indizio` line that reveals the clue without gates on the action (the Engine can say it), or null. */
+  /**
+   * Mode B: an available line that reveals the clue without gates on the action (the Engine can say it), or null: a
+   * prepared stall line of level 2 first, then an `indizio` line.
+   */
   private lineaIndizioDicibile(turno: number, indizio: string): Battuta | null {
     const s = this.statoRepertorio;
     if (!s) return null;
-    return s.disponibili(turno).find((x) => x.tipo === 'indizio' && x.effetti.rivela_indizi.includes(indizio) && !haCancelloAzione(x) && !x.richiede.privata) ?? null;
+    const dicibili = s.disponibili(turno).filter((x) => x.effetti.rivela_indizi.includes(indizio) && !haCancelloAzione(x) && !x.richiede.privata);
+    return dicibili.find((x) => x.stallo === 2) ?? dicibili.find((x) => x.tipo === 'indizio') ?? null;
+  }
+
+  /**
+   * Mode B: an available stall line of this level the Engine can say now (docs/mondo.md §5, «Prepared stall lines»): no
+   * gate on the action, its speaker present (the catalogue's checks), the danger's cast first, then the narrator's.
+   */
+  private lineaDiStallo(turno: number, livello: 1 | 2 | 3, cast: ReadonlySet<string> = new Set()): Battuta | null {
+    const s = this.statoRepertorio;
+    if (!s) return null;
+    const scena = this.campagna.scena.id;
+    const c = s.disponibili(turno).filter((b) => b.stallo === livello && !haCancelloAzione(b) && !b.richiede.privata && (!b.scene.length || b.scene.includes(scena)));
+    return c.find((x) => cast.has(x.chi)) ?? c.find((x) => x.chi === ID_NARRATORE) ?? c[0] ?? null;
   }
 
   /** The stall move's material for the narrator (mode A): never an empty «cosa fate?». */
@@ -1644,6 +1668,9 @@ export class Regia {
       const presenti = this.pngInScena();
       const scena = this.campagna.scena.id;
       const cast = new Set(m.pericolo?.cast ?? []);
+      // A prepared stall line of level 1 first: it is kept for this (never a waiting line of the reader).
+      const preparata = this.lineaDiStallo(turno, 1, cast);
+      if (preparata && this.aggiungiBattutaMotore(turno, esito, segni, log, preparata, false)) return preparata.id;
       const candidati = s.disponibili(turno).filter(
         (b) => b.riempitivo && !haCancelloAzione(b) && !b.richiede.privata && (b.chi === ID_NARRATORE || presenti.has(b.chi)) && (!b.scene.length || b.scene.includes(scena)),
       );
@@ -1659,6 +1686,9 @@ export class Regia {
       log.info({ turno, indizio: m.indizio }, 'world: S2 without a line the Engine can say (the selector had the fillers)');
       return null;
     }
+    // A prepared summary (an NPC present or the narrator, gated on what the PCs found) before the Engine's sentence.
+    const riassunto = m.livello === 3 ? this.lineaDiStallo(turno, 3) : null;
+    if (riassunto && this.aggiungiBattutaMotore(turno, esito, segni, log, riassunto, false)) return riassunto.id;
     if (m.livello === 3 && m.piste.length) {
       const frase = testoFisso('mondo.stallo_riga_piste', { piste: m.piste.map(senzaPuntoFinale).join('; ') });
       const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: frase, frasi: [`t${turno}-z0`], motore: true };
@@ -2078,7 +2108,29 @@ export class Regia {
         this.attesaSubito.set(id, { pg: a.id_pg, turno, privata });
       }
     }
-    canale.chiedi(this.richiestaSceneggiatore(canale.nuovoId('prossime', turno), 'prossime', turno, 6));
+    const prossime = this.richiestaSceneggiatore(canale.nuovoId('prossime', turno), 'prossime', turno, 6);
+    const stallo = this.stalloPerSceneggiatore(turno);
+    canale.chiedi(stallo ? { ...prossime, stallo } : prossime);
+  }
+
+  /**
+   * The table is stalling (answers with nothing new, or stall moves in a row) and the scene has no prepared stall line
+   * of the next level the Engine can say: the scriptwriter writes two with the `prossime` (docs/mondo.md §5, «Prepared
+   * stall lines»). Level 1 (a soft move of the danger) for the next S1 or S2 (an S2 with no clue line falls to S1), level
+   * 3 for the next S3. Null when the table is not stalling or the material is there.
+   */
+  private stalloPerSceneggiatore(turno: number): RichiestaSceneggiatore['stallo'] | null {
+    const st = this.mondo.stallo;
+    if (st.fermi === 0 && st.n === 0) return null;
+    if (this.prove?.inCombattimento) return null;
+    const livello: 1 | 3 = livelloStallo(st.n + 1) === 3 ? 3 : 1;
+    if (this.lineaDiStallo(turno + 1, livello)) return null;
+    const c = this.contestoStallo(turno + 1);
+    const p = pericoloDellaScena(c);
+    const piste = [...c.luoghiNoti.slice(0, 2), ...c.fattiScoperti.slice(-2), ...(c.ultimoSegno ? [c.ultimoSegno] : [])].slice(0, 3);
+    if (livello === 3 && !piste.length) return null;
+    this.o.log.info({ turno, livello, fermi: st.fermi, n: st.n, pericolo: p?.id ?? null }, 'world: stall lines asked of the scriptwriter');
+    return { livello, quante: 2, pericolo: p ? { mosse: [...p.mosse], segni: [...p.segniVisibili] } : null, piste };
   }
 
   private richiestaSceneggiatore(id: string, tipo: RichiestaSceneggiatore['tipo'], turno: number, quante: number, azione?: RichiestaSceneggiatore['azione']): RichiestaSceneggiatore {
@@ -2142,6 +2194,8 @@ export class Regia {
       scontro: !!this.prove?.inCombattimento || this.scontroInVisita === this.mondo.visita.ingresso || (this.storiaVisita.ingresso === this.mondo.visita.ingresso && this.storiaVisita.carte.length > 0),
     });
     for (const b of v.accettate) {
+      // A scriptwriter's summary of the known leads (stallo 3) is true for a few turns: then the leads change.
+      if (b.stallo === 3 && b.fino_al_turno === undefined) b.fino_al_turno = rq.turno + TURNI_RIASSUNTO_STALLO;
       s.repertorio.battute.push(b);
       s.repertorio.perId.set(b.id, b);
     }
@@ -2169,7 +2223,7 @@ export class Regia {
     }
     // The facts each line carries (docs/repertorio.md) go to the record too: round 4 could not tell whether the
     // scriptwriter wrote them or the Engine added them (`corrette`).
-    const fatti = (b: Battuta): Record<string, unknown> => ({ ...(b.attori !== null ? { attori: b.attori } : {}), ...(b.menzionati.length ? { menzionati: b.menzionati } : {}), ...(Object.keys(b.richiede.stati).length ? { stati: b.richiede.stati } : {}), ...(b.richiede.esito ? { esito: b.richiede.esito } : {}), ...(b.fino_al_turno !== undefined ? { fino_al_turno: b.fino_al_turno } : {}) });
+    const fatti = (b: Battuta): Record<string, unknown> => ({ ...(b.stallo ? { stallo: b.stallo } : {}), ...(b.attori !== null ? { attori: b.attori } : {}), ...(b.menzionati.length ? { menzionati: b.menzionati } : {}), ...(Object.keys(b.richiede.stati).length ? { stati: b.richiede.stati } : {}), ...(b.richiede.esito ? { esito: b.richiede.esito } : {}), ...(b.fino_al_turno !== undefined ? { fino_al_turno: b.fino_al_turno } : {}) });
     this.o.registroNarrazioni.scrivi({ ...riga, accettate: v.accettate.map((b) => ({ id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, temi: b.temi, testo: b.testo, ...fatti(b) })), scartate: v.scartate, ...(v.corrette?.length ? { corrette: v.corrette } : {}), consegnata, ...(subito ? { per_pg: subito.pg, azione: rq.azione?.testo ?? null, privata: subito.privata } : {}) });
   }
 

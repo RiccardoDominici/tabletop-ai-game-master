@@ -14,6 +14,7 @@ battute:
     menzionati: [<ids of the NPCs only talked about: they do not act, they may be away>]
     richiede: {stati: {<id>: a_terra | morto | fuggito | in_gioco}}   # only if the line tells an NPC's state («the body lies…»)
     # and, if the line tells an outcome: esito: {tipo: colpito | mancato | a_terra | fugge, chi: <id of the NPC who strikes or flees; none = the acting PC>, bersaglio: <id of who is struck>}
+    stallo: 1 | 3   # only if the task asks for stall lines
 
 Rules:
 - Every line answers a LIKELY action of the next turn (or the one given), with no PC names.

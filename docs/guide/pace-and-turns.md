@@ -64,6 +64,10 @@ makes a move instead of asking «cosa fate?» again, and the moves change on con
 3. **S3**: an NPC, or a memory, sums up two or three leads the PCs know (places, things found, the threat);
 4. then again from S1, and from the fourth stall on the danger's clock also gets a tick.
 
+With a prepared repertoire, each level says first a line the campaign keeps for it (`stallo: 1 | 2 | 3`, written by
+the Preparer for every scene; the local reader never uses them as waiting lines); when the table keeps stalling and a
+scene has none left, the scriptwriter writes a couple more in the background.
+
 A turn with an action, or a scene change, starts the count again (in mode B: an answer that brought something new).
 
 ## When your action is «da decidere»

@@ -30,7 +30,7 @@ parole:
   - parola: "stivali buoni, pane della settimana"
     regex: "\\bstivali buoni\\b|\\bpane della settimana\\b"
     fatti: [f_tonio_stivali]
-    pubblica_dopo: [i_giaciglio, nar_giaciglio, ber_cose_tonio]
+    pubblica_dopo: [i_giaciglio, nar_giaciglio, ber_cose_tonio, ber_stallo_giaciglio]
     nota: "Ciò che manca dal giaciglio: il ragazzo si è preparato a partire."
   - parola: "non manca una pecora"
     regex: "\\bnon manca (nemmeno )?una pecora\\b|\\bpecore ci sono tutte\\b"

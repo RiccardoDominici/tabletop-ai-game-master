@@ -637,3 +637,84 @@ battute:
       - "[narratore] La torre tace. Il fuoco si abbassa, e il vento fischia nei buchi dei muri."
       - "[narratore] È notte fonda, e quello che si decide su questi gradini si decide stanotte."
     max_usi: 1
+
+  # Battute di stallo (docs/mondo.md §5): le dice il Motore quando il tavolo resta fermo, al livello giusto; il lettore
+  # non le riceve mai (non diventano battute d'attesa). 1: una mossa piccola del pericolo; 2: un indizio che arriva da
+  # solo; 3: un riassunto di ciò che i PG hanno già trovato.
+  - id: nar_stallo_ovile_corno
+    chi: narratore
+    tipo: momento
+    quando: "il tavolo resta fermo nell'ovile"
+    temi: [corno, crinale]
+    scena: scena_ovile
+    stallo: 1
+    testo:
+      - "[narratore] Dal crinale arriva un colpo di corno, lontano. Le pecore alzano la testa, poi tornano a brucare."
+    max_usi: 1
+
+  - id: nar_stallo_carbonaia_luce
+    chi: narratore
+    tipo: momento
+    quando: "il tavolo resta fermo alla carbonaia"
+    temi: [luce, torre]
+    scena: scena_carbonaia
+    stallo: 1
+    testo:
+      - "[narratore] In alto, sopra i faggi, alla torre si accende una luce. Trema un poco, poi si spegne."
+    max_usi: 1
+
+  - id: nar_stallo_rovi
+    chi: narratore
+    tipo: indizio
+    quando: "il tavolo resta fermo alla carbonaia"
+    temi: [fumo, rovi]
+    scena: scena_carbonaia
+    stallo: 2
+    testo:
+      - "[narratore] Una folata piega il fumo della carbonaia. Scivola basso e sparisce tra i rovi, contro la roccia."
+      - "[narratore] Di là esce un filo d'aria fredda, che sa di cantina."
+    effetti:
+      rivela_indizi: [i_rovi]
+    max_usi: 1
+
+  - id: nar_stallo_orme
+    chi: narratore
+    tipo: momento
+    quando: "il tavolo resta fermo alla carbonaia, dopo le orme"
+    temi: [orme, stivali]
+    scena: scena_carbonaia
+    stallo: 3
+    menzionati: [png_zirra]
+    richiede: {indizi_rivelati: [i_impronte]}
+    testo:
+      - "[narratore] Vi tornano in mente le orme nel fango."
+      - "[narratore] Gli stivali del ragazzo salgono verso la torre, davanti a quelle dei goblin."
+    max_usi: 1
+
+  - id: nar_stallo_mappa
+    chi: narratore
+    tipo: indizio
+    quando: "il tavolo resta fermo alla torre"
+    temi: [muro, carbone]
+    scena: scena_torre
+    stallo: 2
+    testo:
+      - "[narratore] Il fuoco si alza e illumina il muro. Ci sono segni a carbone."
+      - "[narratore] La torre vista dall'alto, e una freccia che scende in cantina."
+      - "[narratore] Accanto c'è scritto cripta, con le erre rovesciate."
+    effetti:
+      rivela_indizi: [i_mappa]
+    max_usi: 1
+
+  - id: nar_stallo_cripta
+    chi: narratore
+    tipo: momento
+    quando: "il tavolo resta fermo alla torre, dopo la mappa"
+    temi: [cripta, chiave]
+    scena: scena_torre
+    stallo: 3
+    menzionati: [png_zirra]
+    richiede: {indizi_rivelati: [i_mappa], stati: {png_zirra: in_gioco}}
+    testo:
+      - "[narratore] La freccia sul muro scende in cantina, verso la cripta. E Zirrà vuole ancora la chiave."
+    max_usi: 1

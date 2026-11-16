@@ -167,3 +167,43 @@ battute:
       - "[narratore] Berta diventa bianca e si appoggia allo stipite."
       - "[png_berta] Mio figlio? Con quelle bestie? Voglio sentirlo dire da lui."
     max_usi: 1
+
+  # Battute di stallo (docs/mondo.md §5): le dice il Motore quando il tavolo resta fermo.
+  - id: ber_stallo_paese
+    chi: png_berta
+    tipo: momento
+    quando: "il tavolo resta fermo nell'ovile"
+    temi: [paese, colpa]
+    scena: scena_ovile
+    stallo: 1
+    menzionati: [png_ugo]
+    testo:
+      - "[png_berta] Se Tonio non torna stanotte, la colpa andrà a Ugo. Li conosco."
+    max_usi: 1
+
+  - id: ber_stallo_giaciglio
+    chi: png_berta
+    tipo: indizio
+    quando: "il tavolo resta fermo nell'ovile"
+    temi: [giaciglio, stivali]
+    scena: scena_ovile
+    stallo: 2
+    testo:
+      - "[narratore] Berta torna dal fienile con le mani vuote."
+      - "[png_berta] Mancano gli stivali buoni e il mantello. E il pane della settimana, tutto."
+    effetti:
+      rivela_indizi: [i_giaciglio]
+    max_usi: 1
+
+  - id: ber_stallo_bosco
+    chi: png_berta
+    tipo: momento
+    quando: "il tavolo resta fermo nell'ovile, dopo i cani"
+    temi: [cani, bosco]
+    scena: scena_ovile
+    stallo: 3
+    richiede: {indizi_rivelati: [i_cani]}
+    testo:
+      - "[png_berta] I cani tirano verso il bosco. Di là c'è la carbonaia di Ugo."
+      - "[png_berta] E più su, la Torre Mozza."
+    max_usi: 1

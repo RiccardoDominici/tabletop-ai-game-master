@@ -301,12 +301,29 @@ function leggiBattuta(
     max_usi: maxUsi,
     solo_esempio: d['solo_esempio'] === true,
     riempitivo: d['riempitivo'] === true,
+    stallo: leggiStallo(d['stallo'], qui, effetti, errori),
     scene: leggiScene(d['scena'], qui, errori),
     audio,
     attori: d['attori'] === undefined ? null : leggiPng(d['attori'], `${qui} attori`, parlanti, errori),
     menzionati: leggiPng(d['menzionati'], `${qui} menzionati`, parlanti, errori),
     file,
   };
+}
+
+/**
+ * `stallo: 1 | 2 | 3` (docs/mondo.md §5): the level of a stall line. Level 2 brings a clue, so it reveals one; level 3
+ * sums up what is known, so it reveals nothing new. (Its gates on the action are the validator's: the Engine says it with
+ * no action, so a line that needs one would never come out.)
+ */
+function leggiStallo(v: unknown, qui: string, effetti: Effetti, errori: string[]): 1 | 2 | 3 | null {
+  if (v === undefined || v === null) return null;
+  if (v !== 1 && v !== 2 && v !== 3) {
+    errori.push(`${qui}: stallo è 1, 2 o 3`);
+    return null;
+  }
+  if (v === 2 && !effetti.rivela_indizi.length) errori.push(`${qui}: stallo 2 porta un indizio (effetti.rivela_indizi)`);
+  if (v === 3 && effetti.rivela_indizi.length) errori.push(`${qui}: stallo 3 riassume le piste note, non rivela indizi`);
+  return v;
 }
 
 /** A list of NPC ids with a sheet (`attori`, `menzionati`); a wrong id is an error: ignoring it would offer the line. */

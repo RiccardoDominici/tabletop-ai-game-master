@@ -654,6 +654,18 @@ answers; a flight line only in the turn of the flight (the visit's flights), not
 a visit with blows) the scriptwriter's line that tells a blow, a miss or a fall without `richiede.esito` is refused
 (words of `guardia_esiti` in the language pack: round 4's CA T11 line was untagged).
 
+### Prepared stall lines (the stall in profile A)
+Round 4's stall game: answers with nothing new at T5, T7–T9 and T11–T14, one stall move only (T14, S1), and that S1
+found no filler. The logs say why: the local reader had used every filler of the scene as a waiting line by T6
+(`nar_cani_scappano`, `nar_attesa_ovile`, `ber_attesa`, `ber_salgo_io`, `ugo_attesa`, each `max_usi: 1`), and the
+counter climbed slowly because a turn whose actions name an NPC present is a decision (not counted, not reset). Now
+the campaign keeps lines for the stall (`stallo: 1 | 2 | 3`, written by the big model: the Preparer per scene, the
+scriptwriter in the background when the table keeps stalling), never shown to the reader, said by the Engine at the
+stall move of their level (docs/mondo.md §5, «Prepared stall lines»); torre-mozza has ten (three scenes, every level).
+The counter policy is unchanged: with the same script the stall still comes late, so this round measures whether the
+moves that do fire carry material; whether NPC-directed turns that get no answer should count is a separate decision.
+Tests: test/mondo-stallo.test.ts, test/fatti-battuta.test.ts, test/sceneggiatore.test.ts, strumenti/test_valida_campagna.py.
+
 ### R-inesistente spares the one who fell in this very turn
 A noun whose character went out of play by this turn's own cards (downed, killed, fled) is not an absent creature in
 that turn: the narration of the blow is the turn's story (`creatureAssenti(…, oraFuori)`, the same exemption R-fuori
