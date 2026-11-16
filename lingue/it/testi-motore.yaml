@@ -31,6 +31,7 @@ regia:
     narrazione_interrotta: "Il master ha interrotto la narrazione."
     nuova_scena: "Nuova scena: {titolo}."
     combattimento_chiuso: "Il master chiude il combattimento."
+    combattimento_chiesto: "Il master apre lo scontro: alla chiusura della finestra ognuno tira l’iniziativa."
   # Avvisi al proiettore e al pannello.
   avvisi:
     narratore_muto: "Il narratore non risponde: riprovo al prossimo turno."
@@ -66,6 +67,7 @@ regia:
     ritmo_sconosciuto: "Ritmo sconosciuto."
     azione_inesistente: "Azione inesistente o già fuori dal turno."
     combattimento_in_corso: "C’è già un combattimento in corso."
+    combattimento_chiesto: "Lo scontro è già chiesto: comincia alla chiusura della finestra."
     senza_dadi: "Questa campagna non gioca coi dadi."
     nessun_combattimento: "Nessun combattimento in corso."
     pf_non_validi: "PF non validi o personaggio senza scheda."

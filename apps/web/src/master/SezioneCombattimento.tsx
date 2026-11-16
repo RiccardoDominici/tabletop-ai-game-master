@@ -25,6 +25,9 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
   if (!cmb) return null;
   const vivo: CombattimentoPubblico | null = stato.tavolo.combattimento ?? null;
   const attivo = cmb.attivo;
+  // Manual rolls: a fight asked from the panel starts at the next closed window (the players roll initiative there);
+  // until then «Termina combattimento» cancels it.
+  const chiesto = !attivo && cmb.chiesto === true;
 
   const nomi = new Map<string, string>((vivo?.combattenti ?? []).map((c) => [c.id, c.nome]));
   const turno = (vivo?.turno_di ?? []).map((id) => nomi.get(id) ?? id).join(', ');
@@ -32,11 +35,11 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
   return (
     <Riquadro
       titolo={t('master.combattimento.titolo')}
-      conteggio={attivo ? t('master.combattimento.round', { n: vivo?.round ?? '–' }) : t('master.combattimento.non_in_corso')}
+      conteggio={attivo ? t('master.combattimento.round', { n: vivo?.round ?? '–' }) : chiesto ? t('master.combattimento.chiesto') : t('master.combattimento.non_in_corso')}
       zona="combattimento"
       data-testid="master-combattimento"
       azioni={
-        attivo ? (
+        attivo || chiesto ? (
           <button
             type="button"
             data-testid="master-combattimento-termina"

@@ -17,6 +17,8 @@ export interface StatoProveSalvato {
   recenti: TiroMostrato[];
   /** Lo scontro in corso (prove/combattimento.ts), se c'era. */
   combattimento?: StatoCombattimentoSalvato | null;
+  /** A fight the Game Master opened from the panel with manual rolls, not started yet (it starts at the next close). */
+  combattimento_chiesto?: boolean;
   /** Chi è morto o fuggito (oltre ai PF): resta vero anche a scontro finito. */
   fuori?: Array<[string, Uscito]>;
 }

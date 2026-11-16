@@ -112,7 +112,8 @@ export class TiriGiocatoriRegia {
     const delMaster = this.delMaster;
     // In a fight a window with no action still rolls (the NPCs' steps, a dying PC's death save, initiative of a new
     // round): with manual rolls the players roll their own there too.
-    const scontro = this.manuali && prove.inCombattimento;
+    // A fight the Game Master opened from the panel starts in this window: its initiative is the players' too.
+    const scontro = this.manuali && (prove.inCombattimento || prove.combattimentoChiesto);
     if (!r.azioni.length && !delMaster.length && !scontro) return NESSUNA();
     // Automatic rolls with no Game Master check: the director decides and rolls as before.
     if (!this.manuali && !delMaster.length) return NESSUNA();

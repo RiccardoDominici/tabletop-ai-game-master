@@ -150,6 +150,8 @@ export class MotoreProve {
   readonly combattimento: GestoreCombattimento;
   /** Situazione dello scontro per il narratore, dall'ultimo turno risolto. */
   private intestazione: string | null = null;
+  /** A fight the Game Master opened from the panel with manual rolls, waiting for the next closed window. */
+  private scontroChiesto = false;
   private readonly cache = new Map<string, VoceCache>();
   /** Esiti dell'ultimo turno con tiri, per azione (le carte dell'azione privata vanno al suo telefono). */
   private ultimi = new Map<string, TiroMostrato[]>();
@@ -581,7 +583,7 @@ export class MotoreProve {
    * with no roll ask nothing.
    */
   richiesteGiocatori(d: DecisioniTurno, inseriti: ReadonlyMap<string, TiroInserito> = new Map()): RichiestaTiroMaster[] {
-    if (!this.attivo || (!d.azioni.length && !this.inCombattimento)) return [];
+    if (!this.attivo || (!d.azioni.length && !this.inCombattimento && !this.scontroChiesto)) return [];
     const ombra = this.ombra();
     const tavolo = new DadiAlTavolo({ base: ombra.dadi, turno: d.turno, inseriti, anteprima: true, log: loggerMuto() });
     const { r } = ombra.esegui(d, tavolo);
@@ -648,7 +650,9 @@ export class MotoreProve {
       // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
       const attacchi = r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id }));
       // A check the Game Master asked (pseudo-action «m_…») is not the PC's action in the fight: it does not move whose turn it is.
-      const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.filter((a) => !a.id.startsWith('m_')).map((a) => a.autore), candidati: () => this.candidati(c, attacchi) });
+      const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.filter((a) => !a.id.startsWith('m_')).map((a) => a.autore), candidati: () => this.candidati(c, attacchi), apri: this.scontroChiesto });
+      // The panel's fight started in this pass (the real one, or the dry run on its copy): the request is used up.
+      if (this.combattimento.attivo) this.scontroChiesto = false;
       r.fatti.push(...comb.fatti);
       r.tiri.push(...comb.tiri);
       this.intestazione = comb.intestazione;
@@ -804,6 +808,7 @@ export class MotoreProve {
     const ids = g ? [...g.schede.keys()] : [...this.o.schede.keys()];
     return {
       attivo: this.combattimento.attivo,
+      ...(this.combattimentoChiesto ? { chiesto: true } : {}),
       schede: ids.flatMap((id) => {
         const pf = this.stato.puntiFerita(id);
         return pf ? [{ id, nome: c.nome(id), di_png: id.startsWith('png_'), pf }] : [];
@@ -856,6 +861,23 @@ export class MotoreProve {
     return this.inCombattimento ? this.combattimento.vista((id) => this.stato.puntiFerita(id)) : null;
   }
 
+  /**
+   * Manual rolls (docs/prove.md §8): the fight the Game Master opens from the panel starts at the next closed window,
+   * after its actions, so the players roll their own initiative there (the dry run asks it like their other rolls).
+   * Kept in the snapshot. False if a fight is on or already asked.
+   */
+  chiediCombattimento(): boolean {
+    if (!this.attivo || this.combattimento.attivo || this.scontroChiesto) return false;
+    this.scontroChiesto = true;
+    this.o.log.info('combat: asked from the panel, it starts at the next closed window');
+    return true;
+  }
+
+  /** A fight asked from the panel that has not started yet. */
+  get combattimentoChiesto(): boolean {
+    return this.attivo && this.scontroChiesto && !this.combattimento.attivo;
+  }
+
   /** Il master apre lo scontro (senza un attacco): tutti i PG al tavolo e i PNG ostili in scena. */
   iniziaCombattimento(): string | null {
     if (!this.attivo || this.combattimento.attivo) return null;
@@ -867,6 +889,12 @@ export class MotoreProve {
   }
 
   terminaCombattimento(motivo = testo('prove.combattimento.motivo_master')): boolean {
+    // A fight asked from the panel and not started yet: ending it cancels the request.
+    if (!this.combattimento.attivo && this.scontroChiesto) {
+      this.scontroChiesto = false;
+      this.o.log.info('combat: the request from the panel cancelled before it started');
+      return true;
+    }
     if (!this.combattimento.attivo) return false;
     this.combattimento.termina(motivo);
     this.intestazione = null;
@@ -947,12 +975,13 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta() };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
     this.stato.importa(s);
     this.combattimento.importa(s.combattimento ?? null);
+    this.scontroChiesto = s.combattimento_chiesto === true;
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
     const ultimo = s.recenti?.at(-1)?.turno;
     this.ultimoTurno = ultimo !== undefined ? { turno: ultimo, tiri: (s.recenti ?? []).filter((t) => t.turno === ultimo) } : null;
@@ -963,6 +992,7 @@ export class MotoreProve {
   azzera(): void {
     this.stato.azzeraPf();
     this.combattimento.importa(null);
+    this.scontroChiesto = false;
     this.intestazione = null;
     this.cache.clear();
     this.ultimi.clear();

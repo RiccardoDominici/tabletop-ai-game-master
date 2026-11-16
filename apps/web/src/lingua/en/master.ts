@@ -245,6 +245,7 @@ export const master = {
   'master.combattimento.titolo': 'Combat',
   'master.combattimento.round': 'round {n}',
   'master.combattimento.non_in_corso': 'not running',
+  'master.combattimento.chiesto': 'at the close: initiative is rolled',
   'master.combattimento.conferma_termina': 'Confirm: end combat',
   'master.combattimento.fase': 'Phase:',
   'master.combattimento.tocca_a': 'Turn:',

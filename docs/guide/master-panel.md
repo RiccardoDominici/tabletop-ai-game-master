@@ -168,7 +168,7 @@ The count next to the title is the violations of the evening. The same records a
 
 Shown only when the campaign has dice and character sheets (see [Dice and sheets](dice-and-sheets.md)). It is the last box of this column.
 
-- **Inizia combattimento** (Start combat): starts the fight with the player characters at the table, the NPCs involved, and the hostile NPCs on stage that have a sheet. The rules of the fight come from the campaign's rule set.
+- **Inizia combattimento** (Start combat): starts the fight with the player characters at the table, the NPCs involved, and the hostile NPCs on stage that have a sheet. The rules of the fight come from the campaign's rule set. With the players rolling their own dice (the default, see [Dice and sheets](dice-and-sheets.md)), the fight starts when the window closes, after that window's actions, and every player rolls initiative then; until the close the box reads «alla chiusura: si tira l'iniziativa» (at the close: initiative is rolled), and **Termina combattimento** cancels it. With automatic rolls it starts at once.
 - During the fight the box shows the round, the phase, and «Tocca a» (It's X's turn): who has to act now, or «nessuno» (nobody).
 - **Termina combattimento** (End combat): the first click asks for confirmation, the button turns red and reads «Conferma: termina combattimento» (Confirm: end combat). The second click ends the fight.
 - **HP**: each sheet, player's characters and NPCs, shows its current and maximum HP. Type a number from 0 to 999 in the box and press **Imposta** (Set), or Enter. The number is the new value, not a change: it replaces the current HP.

@@ -351,6 +351,11 @@ export class GestoreCombattimento {
     /** PG che hanno agito in questo turno. */
     autori: string[];
     candidati: () => Array<{ id: string; lato: Lato; mod: number }>;
+    /**
+     * The Game Master opened the fight from the panel with manual rolls (docs/prove.md §8): it starts here, after this
+     * turn's actions, as one an attack opens does, so the players' initiative is asked like any of their rolls.
+     */
+    apri?: boolean;
   }): EsitoCombattimento {
     const fatti: string[] = [];
     const tiri: TiroMostrato[] = [];
@@ -359,11 +364,12 @@ export class GestoreCombattimento {
     this.ordineTirato = null;
     let appenaIniziato = false;
     if (!this.s) {
-      if (!o.attacchi.length) return { ...VUOTO, morte: [], fuggiti: [] };
+      if (!o.attacchi.length && !o.apri) return { ...VUOTO, morte: [], fuggiti: [] };
       const dopo: string[] = [];
-      // The side of whoever struck first: B/X surprise rolls only for the side attacked.
-      const primo = o.attacchi[0]!.chi;
-      const apre: Lato | null = this.partecipante(o.candidati(), primo);
+      // The side of whoever struck first: B/X surprise rolls only for the side attacked (the Game Master's fight with
+      // no attack: both sides, as from the panel).
+      const primo = o.attacchi[0]?.chi;
+      const apre: Lato | null = primo ? this.partecipante(o.candidati(), primo) : null;
       fatti.push(this.inizia(o.candidati(), dopo, apre), ...dopo);
       appenaIniziato = true;
     }

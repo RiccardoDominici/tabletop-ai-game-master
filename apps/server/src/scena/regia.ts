@@ -3461,6 +3461,16 @@ export class Regia {
 
   /** Pannello del master: comincia o finisce lo scontro, corregge PF e condizioni. */
   iniziaCombattimento(): Esito {
+    // Manual rolls (docs/prove.md §8): the players roll their own initiative, so the fight starts at the next closed
+    // window, after its actions, and the dry run asks each PC's die there like any other roll of theirs.
+    if (this.prove?.attivo && this.tiriGiocatori.manuali) {
+      if (!this.prove.chiediCombattimento()) return { ok: false, errore: testoFisso(this.prove.inCombattimento ? 'regia.errori.combattimento_in_corso' : 'regia.errori.combattimento_chiesto') };
+      this.rigaDiSistema(this.turno, testoFisso('regia.righe.combattimento_chiesto'));
+      this.o.log.info({ turno: this.turno }, 'combat: opened from the panel, it starts at the next closed window with the players\' initiative');
+      this.mondo.fatti([{ tipo: 'scontro' }], this.turno);
+      this.notifica();
+      return { ok: true };
+    }
     const fatto = this.prove?.iniziaCombattimento();
     if (!fatto) return { ok: false, errore: testoFisso(this.prove?.attivo ? 'regia.errori.combattimento_in_corso' : 'regia.errori.senza_dadi') };
     this.rigaDiSistema(this.turno, fatto);
@@ -3471,6 +3481,7 @@ export class Regia {
   }
 
   terminaCombattimento(): Esito {
+    // Also cancels a fight asked from the panel that has not started yet (manual rolls).
     if (!this.prove?.terminaCombattimento()) return { ok: false, errore: testoFisso('regia.errori.nessun_combattimento') };
     this.rigaDiSistema(this.turno, testoFisso('regia.righe.combattimento_chiuso'));
     this.notifica();

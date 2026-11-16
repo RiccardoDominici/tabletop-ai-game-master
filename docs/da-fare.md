@@ -36,8 +36,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - initiative by sides is unit-tested only (no example campaign's set uses it);
   - ~~the told-facts guard added a duplicate «Zirrà fugge.» after a narration that told the flight («sparisce oltre il
     crollo»)~~ **Done** (16 November): a row with no subject continues the row before (docs/combattimento.md §3.7);
-  - a fight opened from the panel rolls the PCs' first initiative with the Engine's dice; side rolls stay the Engine's
-    (still open after the e2e fix pass of 16 November);
+  - ~~a fight opened from the panel rolls the PCs' first initiative with the Engine's dice~~ **Done** (16 November, item
+    11c): with manual rolls it starts at the next closed window, after its actions, and every PC rolls initiative there
+    (docs/prove.md §8); side rolls stay the Engine's;
   - «the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll);
   - no example campaign uses minions yet; world questions and minions not yet seen in a live run.
 - **Final end-to-end pass on today's code**: done in profile B (docs/e2e-finale-3.md, 958556a: not ready), and its fix
@@ -55,7 +56,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   (79d3068), a neutral line for invented names in mode B (bc0010e) and `[nuovo png]` in mode A (d1f0e40) are built.
   Still open: a measuring run of the judge (it is live only in a smoke run); the private replies stay on the rules
   (their raw text is now logged, for a replay set of their own); R-fuori's whole-sentence state check (the judge
-  replaces it in profile B, not in profile A); the cart «impossibile» (11a); the panel's fight and manual initiative (11c);
+  replaces it in profile B, not in profile A); the cart «impossibile» (11a);
   `R-eco` and the projector mark; the stall's S3 sentence said twice word for word; profile A (the reader plus the
   Mac's swap were too much on 16 November) and the dictated action not run. The «Coerenza» box was seen in headless
   Chromium on a live test instance (16 November, 0 console errors), not on a real tablet.

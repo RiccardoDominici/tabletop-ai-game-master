@@ -55,7 +55,8 @@ combattimento:
 ## 3. Flow (Engine: prove/combattimento.ts, prove/motore.ts)
 
 1. **Combat starts** when an attack roll touches a character with a sheet: a PC attacks an NPC, or an NPC reacts. Or with
-   the Game Master's panel, «Inizia combattimento» (Start combat).
+   the Game Master's panel, «Inizia combattimento» (Start combat): at once with automatic rolls; with manual rolls at the
+   next closed window, after its actions, so the players roll their own initiative (docs/prove.md §8).
    - **Participants**: the PCs at the table with a sheet, the NPCs involved, and the NPCs on stage with a sheet and hostile
      to a PC.
    - The initiative is the set's. The action that opened the clash counts as «di sorpresa» (surprise).

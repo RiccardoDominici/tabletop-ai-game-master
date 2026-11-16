@@ -1,0 +1,101 @@
+/**
+ * A fight the Game Master opens from the panel, with manual rolls (docs/prove.md §8, item 11c of docs/da-fare.md): the
+ * players roll their own initiative. The fight starts at the next closed window, after its actions, as one an attack
+ * opens does: the dry run asks each PC's initiative die like any other roll of theirs (the voice says «Ida, tira
+ * l'iniziativa.»), the Game Master can still give one to the Engine, and the NPCs' initiative stays the Engine's. An
+ * interrupted turn leaves no half-open fight; automatic rolls start it at once, as before. Invented fixture `prove`.
+ */
+import { afterEach, describe, expect, it } from 'vitest';
+import type { AudioFrase, RichiestaTiro, StatoTavolo } from '@tabletop-ai-gm/shared';
+import { DadiACopione } from '../src/prove/dadi';
+import { Prova, agisci, attendi, attendiEvento, inizia } from './aiuti/partita';
+
+const COPIONE = (turno: number): string => (turno === 0 ? '[narratore] Il fiume rumoreggia.\n[invito] tutti' : '[narratore] Il vento porta odore di fango.\n[invito] tutti');
+const MANUALE = { TAGM_TIRI_GIOCATORI: 'manuale' };
+
+describe('a fight opened from the panel, manual rolls', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('starts at the close: each PC rolls initiative, a switch to the Engine holds, the NPCs roll with the Engine', async () => {
+    prova = new Prova();
+    // The Engine's dice are all 2s: an initiative of 2 + modifier is the Engine's, anything else the player's.
+    const { url } = await prova.avvia(prova.campagna('prove'), COPIONE, MANUALE, { dadi: new DadiACopione([2]) });
+    const schermo = await prova.proiettore(url);
+    const frasi: AudioFrase[] = [];
+    schermo.on('audio:frase', (f) => frasi.push(f));
+    const ida = await prova.telefono(url, 'pg_ida');
+    // Corrado is at the table too: his initiative is asked as well, and the Game Master gives it to the Engine.
+    const corrado = await prova.telefono(url, 'pg_corrado');
+    const master = await prova.master(url);
+    const s1 = await inizia(schermo, ida);
+
+    expect(await master.comanda({ tipo: 'combattimento_inizia' })).toEqual({ ok: true });
+    let sm = await master.stato();
+    // Asked, not started: no order yet, nothing rolled; a second start is refused, «Termina» would cancel it.
+    expect(sm.combattimento).toMatchObject({ attivo: false, chiesto: true });
+    expect(sm.tavolo.combattimento ?? null).toBeNull();
+    expect(await master.comanda({ tipo: 'combattimento_inizia' })).toMatchObject({ ok: false });
+
+    const iniziativa = attendiEvento<RichiestaTiro[]>(ida, 'tiri:richiesti', (r) => r.some((x) => x.per === 'iniziativa'));
+    await agisci(ida, 'pg_ida', 'Guardo il fiume', s1.versione_scena);
+    await agisci(corrado, 'pg_corrado', 'Aspetto', s1.versione_scena);
+    const [ri] = (await iniziativa).filter((x) => x.per === 'iniziativa');
+    expect(ri).toMatchObject({ chi: 'pg_ida', facce: 20, quanti: 1 });
+    for (let i = 0; i < 40 && !frasi.some((f) => f.testo.includes('iniziativa')); i++) await new Promise((r) => setTimeout(r, 50));
+    expect(frasi.map((f) => f.testo).join(' | ')).toContain('Ida, tira l\'iniziativa.');
+
+    // Ida enters 17; Corrado's initiative goes to the Engine from the panel.
+    sm = await master.stato();
+    const richieste = sm.tiri!.richieste.filter((x) => x.per === 'iniziativa');
+    expect(richieste.map((r) => r.chi).sort()).toEqual(['pg_corrado', 'pg_ida']);
+    const dopo = attendi(ida, (x: StatoTavolo) => x.fase === 'finestra' && x.turno === 2);
+    for (const r of richieste) expect(await master.comanda({ tipo: 'tiro', id: r.id, valori: r.chi === 'pg_ida' ? [17] : null })).toEqual({ ok: true });
+    const s2 = await dopo;
+
+    const cmb = s2.combattimento!;
+    expect(cmb).toBeTruthy();
+    const per = new Map(cmb.combattenti.map((c) => [c.id, c.iniziativa]));
+    expect(per.get('pg_ida')).toBe(17 + ri!.modificatore);
+    for (const r of richieste.filter((x) => x.chi !== 'pg_ida')) expect(per.get(r.chi)).toBe(2 + r.modificatore);
+    // The NPCs' initiative is the Engine's die, never asked to anyone.
+    expect(richieste.every((r) => r.chi.startsWith('pg_'))).toBe(true);
+    expect((await master.stato()).combattimento).toMatchObject({ attivo: true });
+    expect((await master.stato()).combattimento?.chiesto).toBeUndefined();
+  }, 20_000);
+
+  it('an interrupted turn leaves no half-open fight: still asked, not started; «Termina» cancels the request', async () => {
+    prova = new Prova();
+    const { url } = await prova.avvia(prova.campagna('prove'), COPIONE, MANUALE, { dadi: new DadiACopione([2]) });
+    const schermo = await prova.proiettore(url);
+    const ida = await prova.telefono(url, 'pg_ida');
+    const master = await prova.master(url);
+    const s1 = await inizia(schermo, ida);
+    expect(await master.comanda({ tipo: 'combattimento_inizia' })).toEqual({ ok: true });
+    const iniziativa = attendiEvento<RichiestaTiro[]>(ida, 'tiri:richiesti', (r) => r.some((x) => x.per === 'iniziativa'));
+    await agisci(ida, 'pg_ida', 'Guardo il fiume', s1.versione_scena);
+    await iniziativa;
+    expect(await master.comanda({ tipo: 'ferma_narrazione' })).toMatchObject({ ok: true });
+    await new Promise((r) => setTimeout(r, 100));
+    let sm = await master.stato();
+    expect(sm.combattimento).toMatchObject({ attivo: false, chiesto: true });
+    expect(sm.tavolo.combattimento ?? null).toBeNull();
+    expect(await master.comanda({ tipo: 'combattimento_termina' })).toEqual({ ok: true });
+    sm = await master.stato();
+    expect(sm.combattimento?.chiesto).toBeUndefined();
+    expect(sm.combattimento?.attivo).toBe(false);
+  }, 20_000);
+
+  it('automatic rolls: the fight starts at once with the Engine\'s dice, as before', async () => {
+    prova = new Prova();
+    const { url } = await prova.avvia(prova.campagna('prove'), COPIONE, { TAGM_TIRI_GIOCATORI: 'automatico' }, { dadi: new DadiACopione([2]) });
+    const schermo = await prova.proiettore(url);
+    const ida = await prova.telefono(url, 'pg_ida');
+    const master = await prova.master(url);
+    await inizia(schermo, ida);
+    expect(await master.comanda({ tipo: 'combattimento_inizia' })).toEqual({ ok: true });
+    const sm = await master.stato();
+    expect(sm.combattimento).toMatchObject({ attivo: true });
+    expect(sm.combattimento?.chiesto).toBeUndefined();
+  });
+});

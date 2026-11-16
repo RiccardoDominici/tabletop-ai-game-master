@@ -250,6 +250,8 @@ export interface MondoMaster {
 
 export interface CombattimentoMaster {
   attivo: boolean;
+  /** Manual rolls: a fight opened from the panel, starting at the next closed window (the players roll initiative). */
+  chiesto?: boolean;
   schede: Array<{ id: string; nome: string; di_png: boolean; pf: { attuali: number; massimi: number } }>;
   condizioni: Array<{ id: string; nome: string; icona: string; testo: string }>;
 }

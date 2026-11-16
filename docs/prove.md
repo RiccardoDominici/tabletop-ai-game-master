@@ -571,8 +571,14 @@ never wait. The startup log line `PROVE E DADI` says the value and its origin (o
   Engine every roll left in the turn. At most 40 rounds (logged), far more than a turn needs.
 - A turn with no request (nobody must roll) does not wait and says nothing. A combat turn with no PC action (the NPCs'
   steps) waits only when a player's roll comes up there: a dying PC's death save, the initiative of a new round.
-- Limits: a fight the Game Master opens from the panel rolls the PCs' first initiative with the Engine's dice (there is
-  no turn to wait in); side rolls (surprise, initiative by sides) are the Engine's, being no one player's own.
+- A fight the Game Master opens from the panel (item 11c, 16 November) starts at the next closed window, after that
+  window's actions, as one an attack opens does: `MotoreProve.chiediCombattimento` keeps the request (in the snapshot,
+  `combattimento_chiesto`), the dry run starts the fight on its copy (`dopoAzioni`, `apri`), so each PC's initiative is
+  asked like any other roll («Ida, tira l'iniziativa.»), «Tira il Motore» works on it, and the real pass starts the fight
+  with the dice entered. A window with no action still runs the wait. An interrupted turn leaves the request as it was
+  (no half-open fight); «Termina combattimento» cancels a request not started yet; the panel shows «alla chiusura: si
+  tira l'iniziativa». Automatic rolls start the panel's fight at once, as before. Side rolls (surprise, initiative by
+  sides) stay the Engine's, being no one player's own. Test: test/combattimento-master-manuale.test.ts.
 - A restart during the wait loses the open requests (the requests are not in the session snapshot): the turn behaves as
   a turn caught in narration.
 

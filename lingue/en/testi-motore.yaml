@@ -30,6 +30,7 @@ regia:
     narrazione_interrotta: "The Game Master stopped the narration."
     nuova_scena: "New scene: {titolo}."
     combattimento_chiuso: "The Game Master ends the combat."
+    combattimento_chiesto: "The Game Master opens the combat: when the window closes, everyone rolls initiative."
   # Notices to the projector and the panel.
   avvisi:
     narratore_muto: "The narrator is not answering: I will try again next turn."
@@ -65,6 +66,7 @@ regia:
     ritmo_sconosciuto: "Unknown pace."
     azione_inesistente: "The action does not exist or is already out of the turn."
     combattimento_in_corso: "A combat is already in progress."
+    combattimento_chiesto: "The combat is already asked: it starts when the window closes."
     senza_dadi: "This campaign does not play with dice."
     nessun_combattimento: "No combat in progress."
     pf_non_validi: "Invalid HP, or the character has no sheet."
