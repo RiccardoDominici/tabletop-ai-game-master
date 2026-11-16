@@ -719,8 +719,9 @@ The H, by source:
   a question loses its «?» («Sei Oreste»), and two quotes were cut mid-phrase by the twelve words.
 The stall: both stall moves of the round said a prepared stall line (FB T9 and ST T14, «Dal crinale arriva un colpo di
 corno, lontano…»); round 4's one S1 had none. The scriptwriter's top-up never fired: the scene still had prepared
-material. As expected, the counter did not change: ST reached its first stall move only at T14 (the turns at T9–T10
-named an NPC present), and the judge counts 7 of 14 ST answers that brought nothing new.
+material. As expected, the counter did not change: ST reached its first stall move only at T14 (after three answers with
+nothing new at T9, T10's «Io non mi fido di Ugo» named an NPC present, a decision, and Ugo's answer reset the count),
+and the judge counts 7 of 14 ST answers that brought nothing new.
 The outcome tags: the scriptwriter never wrote `richiede.esito`. In the two fights 21 of its lines were refused for
 telling an outcome without the tag; 8 of those said «dal crollo», a ruin, not a fall (now out of the words), and the
 rest named a fall, a parry or a blow («rimbalza», «cade», «giace», «incassa», «a vuoto»). No `subito` line was said for
