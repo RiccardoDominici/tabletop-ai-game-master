@@ -564,34 +564,58 @@ choices): it shows the reader can be tiny, not which tiny model is best. The fou
 
 Runs: `esperimenti/risultati/e2e-finale-3b/coerenzaA-*`, the four blind scripts one at a time (ports 4950–4953): the
 minimal local reader on Qwen3 0.6B 4-bit, the rules arbiters, the sceneggiatore in the background (`claude -p`: sonnet
-for `subito`, haiku for `prossime`), mock voice; memory 54–69% free; no API call. Judged by a blind haiku reader of
-the per-turn views (the brief of rounds 1–3, adapted: no live narrator, the lines are prewritten or the
-scriptwriter's), and the two combat games read again by hand against their cards.
+for `subito`, haiku for `prossime`), mock voice; memory 54–69% free; no API call. **Judge: an opus subagent**
+(Riccardo: «più affidabile»), on the per-turn views with the rubric and H definitions of rounds 1–3 (the brief adapted:
+no live narrator, the lines are prewritten or the scriptwriter's), its quotes checked against the views by script.
+Rounds 1–3 were judged by a haiku subagent spot-checked by hand, so **the judge changed**. A first haiku reading of
+these same runs counted 0 H for the narration and missed both outcome lines below; the combat games were also read by
+hand against their cards.
 
 | | CM | CA | FB | ST |
 |---|---|---|---|---|
+| H heard, opus (all lines said aloud) | 4 | 3 | 1 | 0 |
+| of which in the lines' own prose | 0 (1 unsure) | 1 | 0 | 0 |
+| of which in the Engine's announcement of a player's false claim | 4 | 2 | 1 | 0 |
+| for context, profile B (Haiku narrator), rounds 1 → 2 → 3 (haiku judge, definite + probable) | 10 → 6 → 3 | 4 → 9 → — | 3 → 1 → — | 0 → 3 → — |
 | turns played | 27 | 16 | 13 | 14 |
-| median first audio (ms) | 674 | 670 | 670 | 678 |
+| median first audio (ms; profile B round 3: 2087 on CM) | 674 | 670 | 670 | 678 |
 | reader: lines picked / «nessuna»; median classification (ms) | 29 / 21; 852 | 18 / 11; 1218 | 16 / 11; 1058 | 15 / 13; 651 |
+| reader: answers that were not valid JSON (the Engine's fallback took over) | 12 | 12 | 14 | 10 |
 | scriptwriter: `subito` asked / said at the table; median call (s) | 15 / 9; 9.5 | 12 / 5; 9.2 | 11 / 10; 9.3 | 13 / 13; 9.4 |
-| scriptwriter lines refused because an actor cannot act now | 2 | 0 | 1 | 0 |
-| caught by the checker | R-dovuto 5, R-inesistente 3, R-fuori 1, R-numeri 1 | R-dovuto 8, R-numeri 1 | — | — |
-| H heard: private content / fallen or absent acting / outcome against its card | 0 / 0 / 1 | 0 / 0 / 1 | 0 / 0 / 0 | 0 / 0 / 0 |
+| scriptwriter: lines accepted / refused (reason) | 156 / 3 (speaker not in the scene 2, type 1) | 99 / 3 (type 2, secret 1) | 82 / 1 (speaker) | 79 / 0 |
 
-The two H: CM T9, the reader picked a scriptwriter line about a short sword ringing on the shield (a miss) for
-Eliandro's dagger that hit, and the Engine's «Zirrà incassa il colpo.» followed; CA T11, «Il goblin si gira di
-scatto, e la lancia taglia l'aria dove nessuno c'è più» (a miss) for Zirrà's blow that downed Eliandro, followed by
-the Engine's «Eliandro cade a terra.». The blind reader counted 0 for the narration (it missed both) and flagged the
-announcements instead. Those are by design but voice the players' own claims in the narrator's voice: «Nespola Tondi:
-«Ho nessun punto ferita, sono a terra»», with R-numeri rewriting «zero» inside the quote, and «Livia Sarti: «Il goblin
-mi tira la lancia»» when no such goblin exists.
-What the round shows, still open:
-- a line that tells an outcome (a hit, a miss) must carry it as a fact, checked against the card of the action it
-  answers: the facts of «Facts a line carries» cover who and in what state, not what happened;
-- a `subito` line written for one action can reach the table turns later (the blind reader counts 6, 5, 4 and 1 said
-  after their turn): CM T9 «Mancata, piedi nudi!» was T6's miss;
-- the announcement quotes the player, false claims included;
-- the stall: in ST about 11 of 14 answers brought nothing new, and the one S1 (T14) found no filler line to say;
+Private content heard: 0 in all four. A fallen or absent character acting or speaking in the lines' own prose: 0 in
+all four (CM T17 «il goblin davanti esita» was replaced by «Zirrà giace a terra, senza vita.»).
+The H, by source:
+- **the lines' prose**: CA before T11, «Il goblin si gira di scatto, e la lancia taglia l'aria dove nessuno c'è più.»,
+  a scriptwriter line with a spear nobody in the Engine has, and a miss told while Zirrà's blow that turn hit and
+  downed Eliandro; the Engine's «Eliandro cade a terra.» followed. Unsure (my reading: H): CM T9, the reader took a
+  `subito` line written for T6's miss («La spada corta batte sullo scudo rosso…») for Eliandro's dagger that hit,
+  then «Zirrà incassa il colpo.»;
+- **the announcement**: the deterministic «Nome: «…»» quotes the player, false claims included, in the narrator's
+  voice: «Livia Sarti: «Il goblin mi tira la lancia».» (CM T11, CA T12), «Nespola Tondi: «Il goblin mi prende alla
+  spalla, sento sangue».» (CM T12, CA T13, no card), «finisco quello con la lancia» (CM T18), «Ultimo goblin: lo blocco
+  contro la porta» (CM T19), «Oreste dice che sulla collina c'è una grotta» (FB T8). In profile B the narrator writes
+  its own announcement, so these have no counterpart in rounds 1–3: the comparison holds for the prose row only.
+Scriptwriter and the tags: every request carried «Cosa è vero adesso»; the Engine added `attori` to 2 accepted lines
+that named an NPC in a narrator row without a tag (CM, Zirrà; ST, Ugo), and the new actor check refused none (the 3
+refusals in CM and FB are the older speaker check). Whether the scriptwriter wrote the tags itself is not in these
+records (the turn record kept only id, chi, tipo, quando, temi, testo): it does now.
+What the 0.6B broke: 10–14 answers a game were not valid JSON, and the Engine's fallback (the first indicated line)
+answered instead; no pick outside the candidates. The refused picks (4) were the Engine's gates, one of them doubtful
+(FB T5: the theme «pagare» against «pagava»). The two outcome lines came from the lines, not from the reader's
+choice among true lines.
+Also found (opus): R-inesistente over-fired at CM T13 on the announcement «Spingo il goblin contro il muro…»: the
+blow that killed Zirrà was hers, and the table heard «Zirrà giace a terra…» before «Livia colpisce Zirrà.»; R-numeri
+only swapped «zero» for «nessun» inside a quoted false claim (CA T15).
+Still open:
+- a line that tells an outcome (a hit, a miss) must carry it as a fact checked against the card of the action it
+  answers; and a `subito` line written for one action should answer only that action (16 `sc_` lines were said in a
+  later turn, 5 of them `subito`);
+- the announcement quotes the player's claims: false states and creatures nobody has reach the table in the
+  narrator's voice (7 of the 8 H);
+- the stall: FB 8 of 13 and ST 9 of 14 in-turn answers brought nothing new, and the one S1 (ST T14) found no filler
+  line; most answers arrive late, before the next turn;
 - CM T17 heard the dead goblin's state twice (R-fuori's line, then the who-is-there line that contains it).
 
 ## Characters the players invent (Riccardo's decision, 16 November)

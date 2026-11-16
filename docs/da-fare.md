@@ -66,9 +66,11 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   Profile A (Riccardo, 16 November: the small model only relays): lines carry their facts (`attori`, `menzionati`,
   `richiede.stati`) and the Engine filters them against the ledger before the reader (8524e7c); the reader measured
   tiny (Qwen3 0.6B as good as the 4B and as the Engine's first indicated line, e841553); round 4 in profile A on the
-  four blind scripts: 0 private contents and 0 fallen or absent characters acting, 2 outcomes against their card,
-  both from a miss line picked for a hit (docs/coerenza.md, «Measured, round 4»). Open there: outcome lines must carry
-  the outcome as a fact; late `subito` lines; the announcement quoting false claims; the idle stall.
+  four blind scripts, judged by opus (rounds 1–3 were haiku): H heard 4 / 3 / 1 / 0, of which 1 in the lines' own
+  prose (a scriptwriter's miss line for a hit) and 7 in the announcement quoting the players' false claims; 0 private
+  contents, 0 fallen or absent characters acting in the prose (docs/coerenza.md, «Measured, round 4»). Open there:
+  outcome lines must carry the outcome as a fact; late `subito` lines; the announcement quoting false claims; the
+  idle stall; R-inesistente on the announcement of the very blow that kills.
   Still open: a round 4 in profile B measured live (needs API credit; Riccardo has not chosen a provider); a full measuring round of the judge (round 3 had one valid game of four); the private replies stay on the rules
   (their raw text is now logged, for a replay set of their own); R-fuori's whole-sentence state check (the judge
   replaces it in profile B, not in profile A); the cart «impossibile» (11a);

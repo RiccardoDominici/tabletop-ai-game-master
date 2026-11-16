@@ -2165,7 +2165,10 @@ export class Regia {
       else if (this.fase !== 'finestra' || this.campagna.scena.id !== rq.scena.id) this.o.log.info({ richiesta: rq.id, fase: this.fase }, 'sceneggiatore: il tavolo è andato avanti, la battuta resta nel repertorio');
       else consegnata = this.diciDelloSceneggiatore(prima, subito.pg, rq, subito.privata);
     }
-    this.o.registroNarrazioni.scrivi({ ...riga, accettate: v.accettate.map((b) => ({ id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, temi: b.temi, testo: b.testo })), scartate: v.scartate, consegnata, ...(subito ? { per_pg: subito.pg, azione: rq.azione?.testo ?? null, privata: subito.privata } : {}) });
+    // The facts each line carries (docs/repertorio.md) go to the record too: round 4 could not tell whether the
+    // scriptwriter wrote them or the Engine added them (`corrette`).
+    const fatti = (b: Battuta): Record<string, unknown> => ({ ...(b.attori !== null ? { attori: b.attori } : {}), ...(b.menzionati.length ? { menzionati: b.menzionati } : {}), ...(Object.keys(b.richiede.stati).length ? { stati: b.richiede.stati } : {}) });
+    this.o.registroNarrazioni.scrivi({ ...riga, accettate: v.accettate.map((b) => ({ id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, temi: b.temi, testo: b.testo, ...fatti(b) })), scartate: v.scartate, ...(v.corrette?.length ? { corrette: v.corrette } : {}), consegnata, ...(subito ? { per_pg: subito.pg, azione: rq.azione?.testo ?? null, privata: subito.privata } : {}) });
   }
 
   /**
