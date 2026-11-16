@@ -1,0 +1,312 @@
+{
+ "etichetta": "coerenza-torre-mozza-fuori-binario-B-manuale",
+ "turni": {
+  "giocati": 16,
+  "copione": 13,
+  "fine_prima": null,
+  "finale": {
+   "turno": 5,
+   "id": "fin_ovile_senza"
+  },
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_mezzanotte": "2/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "coerenza": {
+  "violazioni": 5,
+  "per_regola": {
+   "R-dovuto": {
+    "aggiunta": 1
+   },
+   "R-privato": {
+    "spostata": 3
+   },
+   "R-rifiuto": {
+    "sostituita": 1
+   }
+  },
+  "esempi": [
+   {
+    "turno": 1,
+    "regola": "R-rifiuto",
+    "azione": "sostituita",
+    "frase": "La chiave resta con me, e io resto qui, sul portico."
+   },
+   {
+    "turno": 2,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Nespola Tondi si avvicina a Berta e Ugo, abbassando la voce quanto basta perché il cortile non senta."
+   },
+   {
+    "turno": 3,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 15,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Ti avevo detto di stare fuori dal mio cortile."
+   },
+   {
+    "turno": 15,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Le pecore hanno più giudizio di voi."
+   }
+  ]
+ },
+ "private": {
+  "azioni_private": 3,
+  "righe_privato": 1,
+  "esiti_privati_log": 11,
+  "spostate_dalla_guardia": 3,
+  "righe_al_tavolo_sospette": 4,
+  "sospette": [
+   {
+    "turno": 2,
+    "pg": "pg_nespola",
+    "riga": "[narratore] Nespola Tondi si avvicina a Berta e Ugo, abbassando la voce quanto basta perché il cortile non senta."
+   },
+   {
+    "turno": 12,
+    "pg": "pg_nespola",
+    "riga": "[narratore] Nespola Tondi, da sola, va verso Ugo il carbonaio, mentre gli altri restano al cancello."
+   },
+   {
+    "turno": 15,
+    "pg": "pg_livia",
+    "riga": "[narratore] Livia Sarti è ferita gravemente: il colpo di Berta le ha portato via quasi tutto, e lei resta in piedi con lo scudo abbassato."
+   },
+   {
+    "turno": 15,
+    "pg": "pg_livia",
+    "riga": "[narratore] Ora tocca a te, Fulco. La pietra del tuo simbolo è ancora calda dal colpo che Berta ha assorbito, e Livia non è lontana."
+   }
+  ],
+  "al_tavolo_candidate": 5,
+  "al_tavolo": [
+   {
+    "turno": 4,
+    "turno_privata": 2,
+    "pg": "Nespola Tondi",
+    "chi": "Narratore",
+    "riga": "Nespola, Livia, Berta e Ugo restano nel cortile. Dal fienile, i cani ricominciano a guaire, più forte di prima.",
+    "comuni": [
+     "corti"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 5,
+    "turno_privata": 2,
+    "pg": "Nespola Tondi",
+    "chi": "Narratore",
+    "riga": "Nespola Tondi prova a cercare una porta segreta o una trappola nel cortile, ma non trova nulla di utile: la terra battuta è pulita e il portico sembra solo un portico.",
+    "comuni": [
+     "corti"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 5,
+    "turno_privata": 2,
+    "pg": "Nespola Tondi",
+    "chi": "Narratore",
+    "riga": "Ugo solleva lo sguardo verso di voi, poi lo abbassa di nuovo sul carbone.",
+    "comuni": [
+     "abbas",
+     "carbo"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 9,
+    "turno_privata": 2,
+    "pg": "Nespola Tondi",
+    "chi": "Narratore",
+    "riga": "Nespola Tondi si avvicina al banco del formaggio con un sorriso largo, e il pastore Oreste la guarda come si guarda un debito.",
+    "comuni": [
+     "avvic"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 10,
+    "turno_privata": 2,
+    "pg": "Nespola Tondi",
+    "chi": "Narratore",
+    "riga": "Nel cortile la mano di Nespola resta ferma sul banco, e Ugo si gira verso il fienile senza dire altro.",
+    "comuni": [
+     "corti"
+    ],
+    "regola": "nome+1"
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 16,
+  "con_tiro": 10,
+  "tipi": {
+   "prova": 10,
+   "nessuna": 6
+  },
+  "dadi": {
+   "d20": 6,
+   "d6": 7,
+   "d4": 3
+  },
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 2,
+   "Carisma: dNN contro CD N (difficile)": 2,
+   "Carisma: dNN contro CD N (facile)": 2,
+   "A mani nude: dNN contro CA N (difesa di nespola tondi)": 1,
+   "Cercare porte segrete e trappole N: dN serve N o meno": 1,
+   "Carisma: dN−N contro CD N (difficile)": 1,
+   "Saggezza: dNN contro CD N (normale)": 1,
+   "Ascoltare N%: dN serve N o meno": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "anthropic completo (set generico)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: sorpresa": 1,
+   "combattimento: inizia": 1,
+   "combattimento: iniziativa ritirata": 5
+  },
+  "fatti_morale_terra": 3,
+  "esempi": [
+   "voce: testo per la sintesi: {\"level\": 20, \"time\": \"2026-11-16T01:07:23.154Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"voce\", \"id_frase\": \"t5-f0\", \"parlante\": \"narratore\", \"testo_voce\": \"Nèspola Tóndi prova a cercare una porta segreta o una trappola nel",
+   "narratore: testo del turno: {\"level\": 30, \"time\": \"2026-11-16T01:07:23.867Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 5, \"testo\": \"[narratore] Nespola Tondi prova a cercare una porta segreta o una trappola nel cortile, ma non trova nul",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-16T01:08:13.975Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 6, \"attesa_ms\": 2037, \"tardive\": [], \"tiri\": [\"Livia Sarti: Carisma 3 contro CD 19, fallita\"], \"tavolo\": [\"Livia Sart"
+  ],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 0,
+  "nessuna": 0,
+  "ms_classifica_med": null,
+  "ms_classifica_peggiore": null
+ },
+ "sceneggiatore": {
+  "richieste": {},
+  "consegnate": 0,
+  "dette_a_finestra_aperta": 0,
+  "accettate": 0,
+  "scartate": {},
+  "ms_claude_med": null,
+  "ms_totale_med_subito": null,
+  "processo": {}
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20042.5,
+   "peggiore": 20071,
+   "n": 16
+  },
+  "llm_prima_frase": {
+   "mediana": 1024,
+   "peggiore": 2874,
+   "n": 16
+  },
+  "voce_primo_audio": {
+   "mediana": 1073,
+   "peggiore": 3728,
+   "n": 16
+  },
+  "schermo_inizio_audio": {
+   "mediana": 63,
+   "peggiore": 3882,
+   "n": 12
+  },
+  "llm_fine": {
+   "mediana": 1864.5,
+   "peggiore": 3644,
+   "n": 16
+  },
+  "audio_fine": {
+   "mediana": 28164.5,
+   "peggiore": 39350,
+   "n": 16
+  },
+  "s_tra_turni_med": 50,
+  "s_tra_turni_peggiore": 58.691
+ },
+ "voce": {
+  "motore": "fish",
+  "buchi": {
+   "totale": 0,
+   "in_frase": 0,
+   "tra_frasi": 0,
+   "silenzio_ms": 0,
+   "per_turno": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "proiettore_secondi": 443,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 3,
+  "avvisi": 6,
+  "per_messaggio": [
+   "40 ×3 narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono",
+   "50 ×3 narratore: protocollo non rispettato",
+   "40 ×1 narrator: NPC gives in after a failed social check, replaced by its refusal",
+   "40 ×1 prove: speech is not a check, social check or no roll",
+   "40 ×1 prove: fatti dello scontro non detti dalla narrazione, li dice il Motore"
+  ],
+  "provider": [
+   "lettore         → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "arbitro_azioni  → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_ARBITRO",
+   "arbitro_prove   → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "riassunto       → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_RIASSUN",
+   "regole          → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_REGOLE",
+   "voce            → openrouter — variabile d'ambiente TAGM_VOCE",
+   "ascolto         → locale ggml-large-v3-turbo-q5_0 — configurato (config/predefin",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0.048514280000000014,
+ "righe": {
+  "prescritte": 4,
+  "improvvisate": 61,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0
+ }
+}

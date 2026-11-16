@@ -1,0 +1,317 @@
+{
+ "etichetta": "coerenza-torre-mozza-stallo-B-manuale",
+ "turni": {
+  "giocati": 14,
+  "copione": 14,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_mezzanotte": "2/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "coerenza": {
+  "violazioni": 6,
+  "per_regola": {
+   "R-privato": {
+    "spostata": 6
+   }
+  },
+  "esempi": [
+   {
+    "turno": 9,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Livia si avvicina a Ugo, a voce bassa, e gli parla all'orecchio, lontano da Berta."
+   },
+   {
+    "turno": 9,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Ugo batte la pala per terra due volte, come a dire basta."
+   },
+   {
+    "turno": 10,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Eliandro chiede cosa ha detto Ugo, e se qualcuno ha sentito qualcosa."
+   },
+   {
+    "turno": 10,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Livia, ferma sotto il portico, non risponde ancora."
+   },
+   {
+    "turno": 10,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Ugo ha sentito tutto e batte la pala una volta sola."
+   },
+   {
+    "turno": 13,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Berta lo guarda di sbieco ma non si allontana."
+   }
+  ]
+ },
+ "private": {
+  "azioni_private": 2,
+  "righe_privato": 2,
+  "esiti_privati_log": 16,
+  "spostate_dalla_guardia": 6,
+  "righe_al_tavolo_sospette": 2,
+  "sospette": [
+   {
+    "turno": 9,
+    "pg": "pg_livia",
+    "riga": "[narratore] Livia si avvicina a Ugo, a voce bassa, e gli parla all'orecchio, lontano da Berta."
+   },
+   {
+    "turno": 13,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Eliandro si china verso la soglia di casa, abbassando la voce. Berta lo guarda di sbieco ma non si allontana."
+   }
+  ],
+  "al_tavolo_candidate": 8,
+  "al_tavolo": [
+   {
+    "turno": 10,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Ugo Faggioli",
+    "riga": "Sentito? Qui si sente tutto, lei. Il vento porta fino al paese.",
+    "comuni": [
+     "paese",
+     "senti"
+    ],
+    "regola": "2 radici"
+   },
+   {
+    "turno": 10,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Eliandro chiede cosa ha detto Ugo, e se qualcuno ha sentito qualcosa. Il vento porta le parole fino al paese, e Berta si gira di scatto verso il carbonaio.",
+    "comuni": [
+     "paese",
+     "senti"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 11,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Ugo, dal cancello, non si volta. Il mulo sbuffa e il carbone si muove sul dorso.",
+    "comuni": [
+     "cance"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 11,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Il vento porta dal crinale un altro corno, lungo e stonato. Il secondo segno della torre è passato.",
+    "comuni": [
+     "crina",
+     "passa"
+    ],
+    "regola": "2 radici"
+   },
+   {
+    "turno": 12,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Ugo, dal cancello, non si volta. Il mulo sbuffa e il fumo della carbonaia si piega verso il cortile.",
+    "comuni": [
+     "cance"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 13,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Ugo, dal cancello, alza la testa al rumore dei sassi del sentiero.",
+    "comuni": [
+     "cance",
+     "senti"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 14,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Ugo, dal cancello, sputa per terra senza guardare nessuno.",
+    "comuni": [
+     "cance",
+     "sputa",
+     "terra"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 14,
+    "turno_privata": 13,
+    "pg": "Eliandro",
+    "chi": "Narratore",
+    "riga": "Berta non si volta. Stringe la chiave e guarda la torre oltre i tetti.",
+    "comuni": [
+     "strin"
+    ],
+    "regola": "nome+1"
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 15,
+  "con_tiro": 1,
+  "tipi": {
+   "nessuna": 14,
+   "prova": 1
+  },
+  "dadi": {},
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "anthropic completo (set generico)"
+ },
+ "combattimento": {
+  "eventi": {},
+  "fatti_morale_terra": 0,
+  "esempi": [],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 0,
+  "nessuna": 0,
+  "ms_classifica_med": null,
+  "ms_classifica_peggiore": null
+ },
+ "sceneggiatore": {
+  "richieste": {},
+  "consegnate": 0,
+  "dette_a_finestra_aperta": 0,
+  "accettate": 0,
+  "scartate": {},
+  "ms_claude_med": null,
+  "ms_totale_med_subito": null,
+  "processo": {}
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20041,
+   "peggiore": 21248,
+   "n": 14
+  },
+  "llm_prima_frase": {
+   "mediana": 2328.5,
+   "peggiore": 2832,
+   "n": 14
+  },
+  "voce_primo_audio": {
+   "mediana": 2546,
+   "peggiore": 3082,
+   "n": 13
+  },
+  "schermo_inizio_audio": {
+   "mediana": 2698,
+   "peggiore": 3232,
+   "n": 13
+  },
+  "llm_fine": {
+   "mediana": 3264.5,
+   "peggiore": 4240,
+   "n": 14
+  },
+  "audio_fine": {
+   "mediana": 26454,
+   "peggiore": 51689,
+   "n": 13
+  },
+  "s_tra_turni_med": 45,
+  "s_tra_turni_peggiore": 72.309
+ },
+ "voce": {
+  "motore": "fish",
+  "buchi": {
+   "totale": 0,
+   "in_frase": 0,
+   "tra_frasi": 0,
+   "silenzio_ms": 0,
+   "per_turno": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    null,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "proiettore_secondi": 358,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 1,
+  "avvisi": 11,
+  "per_messaggio": [
+   "40 ×6 narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono",
+   "40 ×2 repertorio: azioni senza risposta, riparazione",
+   "40 ×1 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×1 repertorio: [usa] rifiutato",
+   "40 ×1 prove: speech is not a check, social check or no roll",
+   "50 ×1 narratore: protocollo non rispettato"
+  ],
+  "provider": [
+   "lettore         → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "arbitro_azioni  → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_ARBITRO",
+   "arbitro_prove   → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "riassunto       → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_RIASSUN",
+   "regole          → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_REGOLE",
+   "voce            → openrouter — variabile d'ambiente TAGM_VOCE",
+   "ascolto         → locale ggml-large-v3-turbo-q5_0 — configurato (config/predefin",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0.03888205,
+ "righe": {
+  "prescritte": 12,
+  "improvvisate": 59,
+  "usa_rifiutati": 1,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 2
+ }
+}
