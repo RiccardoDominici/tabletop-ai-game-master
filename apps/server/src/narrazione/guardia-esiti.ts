@@ -111,6 +111,16 @@ function chiCade(frase: string, p: Parole, candidati: readonly string[], nomi: R
   return [...new Set(out)];
 }
 
+/**
+ * The subject pronouns of this section, for the out-of-play guard (narrazione/guardia-fuori.ts). Shared from this one
+ * compilation: `regole()` caches one compiled value per section name, and a second compile of `guardia_esiti` with
+ * another shape got this module's object back (the HEAD rerun after the fixes: «pronomi.has is not a function», the
+ * narration call failed in every fight with someone out of play).
+ */
+export function pronomiDiSoggetto(): ReadonlySet<string> {
+  return parole().pronomi;
+}
+
 export function paroleDi(t: string): string[] {
   return normalizza(t)
     .replace(/[^\p{L}\p{N}' ]/gu, ' ')

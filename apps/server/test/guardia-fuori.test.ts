@@ -7,6 +7,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { impostaLingua } from '../src/lingua';
 import { guardiaFuori } from '../src/narrazione/guardia-fuori';
+import { guardiaEsiti } from '../src/narrazione/guardia-esiti';
 import type { FuoriGioco } from '../src/prove/stato';
 
 const NOMI = new Map<string, string[]>([
@@ -20,6 +21,17 @@ const NOME: Record<string, string> = { pg_ida: 'Ida Ferraro', pg_corrado: 'Corra
 function guardia(fuori: Record<string, FuoriGioco>, nomi = NOMI) {
   return guardiaFuori({ nomi, nome: (id) => NOME[id] ?? id, fuoriDaPrima: (id) => fuori[id] ?? null })!;
 }
+
+describe('the out-of-play guard and the outcome guard in one process', () => {
+  it('both compiled, in either order, and a clause that needs the pronouns works (rerun after the fixes: a crash)', () => {
+    // The outcome guard compiles the shared section first, as in a live fight.
+    const esiti = guardiaEsiti({ tiri: [], nomi: NOMI, conScheda: () => true, fuori: (id) => id === 'png_ruggero', nome: (id) => NOME[id] ?? id });
+    expect(esiti('Ruggero ride.')).toBeNull();
+    const g = guardia({ png_ruggero: 'morto' });
+    expect(g('Corrado guarda Ruggero, che ride.')).toMatchObject({ id: 'png_ruggero' });
+    expect(esiti('Ruggero crolla a terra.')).toBeNull();
+  });
+});
 
 describe('out-of-play guard (Italian)', () => {
   it('the dead NPC that answers by its alias: the first sentence becomes its state, the next ones are dropped', () => {

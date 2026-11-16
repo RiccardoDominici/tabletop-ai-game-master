@@ -27,7 +27,7 @@ import { nomeBreve } from '../campagna/nomi';
 import { testo } from '../lingua';
 import { campoElenco, regole } from '../lingua/motore';
 import type { FuoriGioco } from '../prove/stato';
-import { doveNomina, paroleDi, posizione } from './guardia-esiti';
+import { doveNomina, paroleDi, posizione, pronomiDiSoggetto } from './guardia-esiti';
 
 interface Parole {
   apertura: ReadonlySet<string>;
@@ -57,8 +57,8 @@ export function continuaIlSoggetto(frase: string): boolean {
   return !!primo && !p.articoli.has(primo) && !p.preposizioni.has(primo) && !p.apertura.has(primo);
 }
 
-/** The subject pronouns are those of the outcome guard («… e quello crolla», «…, che ride»). */
-const pronomiEsiti = (): ReadonlySet<string> => regole('guardia_esiti', (s) => new Set(campoElenco(s, 'pronomi').map(normalizza)));
+/** The subject pronouns are those of the outcome guard («… e quello crolla», «…, che ride»): one compilation, shared. */
+const pronomiEsiti = (): ReadonlySet<string> => pronomiDiSoggetto();
 
 export interface DatiGuardiaFuori {
   /** How the narration names each character (PCs and NPCs): name, short name, aliases, trade. */
