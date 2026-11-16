@@ -97,12 +97,22 @@ check, so a leak can no longer hide behind a 0.
    R-dovuto; the guards' tests unchanged; each violation logged («coerenza: violazione» plus the old line), written to
    narrazioni.jsonl (`tipo: violazione`), counted by misure.py (`coerenza`) and listed in
    `StatoMaster.coerenza.violazioni`; tests: test/coerenza-verifica.test.ts.
-3. **Done** (`1acb073`): the «Cosa è vero adesso» block (coerenza/blocco.ts; lines in
+3. **Done** (`4c46563`): the «Cosa è vero adesso» block (coerenza/blocco.ts; lines in
    `lingue/<code>/testi-coerenza.yaml`): in the scene and how, gone from it and when, the PCs, this turn's public
    outcomes and refusals, at most 12 rows; it replaced «PNG fuori gioco»; «Esiti dei tiri» keeps the details to narrate
    and «Fatti scoperti» the facts' text (a row each would break the budget); the narrator and selector prompts say
    never to contradict it; tests: test/coerenza-blocco.test.ts, test/fuori-gioco.test.ts.
-4. The audience split for private actions.
+4. **Done**: the audience split. The public message has a private action as «fa qualcosa in privato verso Bertoldo»
+   (`messaggio.azione_privata_altrove`), no private outcome of this turn or of earlier ones, no line indicated for it;
+   each PC who acted in private gets `messaggioPrivato` (its private outcomes so far, its private actions with their
+   checks, the repertoire with its own indicated lines, the instruction `messaggio.risposta_privata`) and a call of its
+   own (`narraPrivato`, `soloPg`: every sentence and line to that phone, its invitation, clocks and cues ignored, a line
+   for another PC refused), started with the public answer and awaited before the next window; it has its own latency
+   meter, so the table's first-audio is the public answer's. Not with the local minimal reader (one call per turn):
+   there R-privato stays the defence. The fake narrator of the tests receives the request, so a script can tell the
+   two calls apart (test/aiuti/partita.ts routes a one-call script's `[privato pg_x]` lines to the private reply).
+   Tests: test/coerenza-pubblico.test.ts, test/privato.test.ts, test/prove-integrazione.test.ts,
+   test/prove-manuali-integrazione.test.ts.
 5. Presence tags.
 6. The panel box (and the projector mark).
 7. The targeted repair with its deadline, measured on the three e2e scripts. Then the e2e pass again.

@@ -57,7 +57,7 @@ export class Prova {
     env: Record<string, string> = {},
     /** Sostituzioni in più (es. l'arbitro delle prove e i dadi a copione). */
     altre: Omit<Sostituzioni, 'narratore'> = {},
-  ): Promise<{ s: ServerTagm; url: string; messaggi: string[] }> {
+  ): Promise<{ s: ServerTagm; url: string; messaggi: string[]; messaggiPrivati: string[] }> {
     const config = caricaConfig({
       PORT: '0',
       HOST: '127.0.0.1',
@@ -75,16 +75,53 @@ export class Prova {
       ...env,
     } as NodeJS.ProcessEnv);
     const messaggi: string[] = [];
-    const narratore = new NarratoreFinto({ idPng: [], idPg: [], primoTokenMs: 5, msPerPezzo: 1, copione: (turno) => copione(turno, messaggi.at(-1) ?? '') });
+    // The audience split (docs/coerenza.md §2): a private reply is a call of its own. Its message goes to
+    // `messaggiPrivati`, and it answers with the script's lines for that PC ([privato pg_x], [usa] … > pg_x); the public
+    // call gets the script without them. So a script written for one call per turn plays the same with the split.
+    const messaggiPrivati: string[] = [];
+    const perPg = (testo: string, id: string): string =>
+      testo
+        .split('\n')
+        .filter((l) => l.startsWith(`[privato ${id}]`) || (l.startsWith('[usa]') && l.includes(`> ${id}`)))
+        .join('\n');
+    const senzaPrivati = (testo: string, ids: readonly string[]): string =>
+      testo
+        .split('\n')
+        .filter((l) => !ids.some((id) => l.startsWith(`[privato ${id}]`) || (l.startsWith('[usa]') && l.includes(`> ${id}`))))
+        .join('\n');
+    let privatiDelTurno: string[] = [];
+    const narratore = new NarratoreFinto({
+      idPng: [],
+      idPg: [],
+      primoTokenMs: 5,
+      msPerPezzo: 1,
+      copione: (turno, r) => {
+        const m = r?.messaggio ?? '';
+        const privato = /## (?:Risposta privata per|Private reply for) .* \((pg_\w+)\)/.exec(m);
+        if (privato) {
+          // A script written for this reply (no [invito]) is said as is; a one-call script gives its lines for that PC.
+          const tutto = copione(turno, m);
+          if (!/^\[(?:invito|privato) /m.test(tutto)) return tutto;
+          return perPg(tutto, privato[1]!) || `[privato ${privato[1]}] …`;
+        }
+        return privatiDelTurno.length ? senzaPrivati(copione(turno, m), privatiDelTurno) : copione(turno, m);
+      },
+    });
     const narra = narratore.narra.bind(narratore);
     narratore.narra = async (r, cb) => {
-      messaggi.push(r.messaggio);
+      const privato = /## (?:Risposta privata per|Private reply for) .* \((pg_\w+)\)/.exec(r.messaggio);
+      if (privato) messaggiPrivati.push(r.messaggio);
+      else {
+        messaggi.push(r.messaggio);
+        // The PCs whose private actions this public call does not see (they have their own reply).
+        privatiDelTurno = [...r.messaggio.matchAll(/\((pg_\w+)\): (?:fa qualcosa in privato|does something in private)/g)].map((x) => x[1]!);
+      }
       return narra(r, cb);
     };
     const s = await costruisciServer(config, loggerMuto(), { narratore, arbitro: null, ...altre });
     await s.avvia();
     this.server.push(s);
-    return { s, url: `http://127.0.0.1:${(s.app.http.server.address() as { port: number }).port}`, messaggi };
+    return { s, url: `http://127.0.0.1:${(s.app.http.server.address() as { port: number }).port}`, messaggi, messaggiPrivati };
   }
 
   nuovo(url: string): Client {

@@ -469,6 +469,10 @@ Live verification of checks, rolls, DCs and turns on a running server, scenario 
       public outcome («Livia abbassa la spada sul goblin») is not pulled to a phone because of an earlier whisper.
     Not saved with the session: after a resume only the outcomes count. Limit: a paraphrase with no word in common
     («prezzo» for «pagava») still needs one shared root and a richiamo or two roots.
+  - Since the coherence layer's audience split (docs/coerenza.md §2, 16 November) the public narration call does not
+    see a private action's content or any private outcome at all: «Teo fa qualcosa in privato verso Bertoldo»; the
+    reply is a call apart that only reaches that phone. The guard above stays as the backstop (and the only defence
+    with the local minimal reader, which makes one call per turn).
   - The detector of the runs was blind to the same cases: the leak count (`fughe`) measures only the campaign's secret
     words, and misure.py's `sospette` read the raw narration of the same turn and skipped a PC who also acted in public.
     `esperimenti/e2e-finale/private_al_tavolo.py` reads the table record (what the table heard), up to eight turns after

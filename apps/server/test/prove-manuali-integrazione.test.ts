@@ -36,7 +36,7 @@ describe('manual rolls with the whole server', () => {
   it('the request without DC on projector and phones, the private one only on its phone; the dice entered decide', async () => {
     prova = new Prova();
     // The Engine's dice are all 1s: any card showing other values used the players' dice.
-    const { url, messaggi } = await prova.avvia(prova.campagna('prove'), COPIONE, MANUALE, { arbitroProve: new ArbitroParole(), dadi: new DadiACopione([1]) });
+    const { url, messaggi, messaggiPrivati } = await prova.avvia(prova.campagna('prove'), COPIONE, MANUALE, { arbitroProve: new ArbitroParole(), dadi: new DadiACopione([1]) });
     const schermo = await prova.proiettore(url);
     const frasi: AudioFrase[] = [];
     schermo.on('audio:frase', (f) => frasi.push(f));
@@ -86,7 +86,9 @@ describe('manual rolls with the whole server', () => {
     // The narrator got the outcomes of the dice entered (DC included: it narrates, it never says it aloud).
     const m = messaggi.at(-1)!;
     expect(m).toContain('Ida Ferraro: Persuasione (Carisma) verso Bertoldo (con vantaggio: Bertoldo è ben disposto): 18 contro CD 15 → RIUSCITA.');
-    expect(m).toMatch(/Teo \(azione PRIVATA[^\n]*Rapidità di mano \(Destrezza\): 13 contro CD 15 → FALLITA/);
+    // Teo's private check: only in his private reply's message (audience split, docs/coerenza.md §2).
+    expect(m).not.toMatch(/Rapidità di mano/);
+    expect(messaggiPrivati.at(-1)).toMatch(/Teo \(azione PRIVATA[^\n]*Rapidità di mano \(Destrezza\): 13 contro CD 15 → FALLITA/);
     // The table's card: dice, bonus, total and outcome, no DC.
     expect(s2.tiri).toHaveLength(1);
     expect(s2.tiri![0]).toMatchObject({ chi: 'pg_ida', dadi: [4, 13], totale: 18, riuscita: true, manuale: 'telefono', contro_nascosto: true, contro: { valore: 0 } });

@@ -84,7 +84,8 @@ async function avvia(): Promise<{ s: ServerTagm; url: string }> {
     idPg: [],
     primoTokenMs: 5,
     msPerPezzo: 1,
-    copione: (turno) => COPIONE[turno] ?? `[narratore] Turno ${turno}: piove.\n[invito] tutti`,
+    // Bruno's private action gets a reply of its own (audience split, docs/coerenza.md §2): only his phone reads it.
+    copione: (turno, r) => (r?.messaggio.includes('## Risposta privata per') ? '[privato pg_bruno] Nessuno ti vede.' : (COPIONE[turno] ?? `[narratore] Turno ${turno}: piove.\n[invito] tutti`)),
   });
   const s = await costruisciServer(config, loggerMuto(), { narratore, arbitro: null });
   await s.avvia();

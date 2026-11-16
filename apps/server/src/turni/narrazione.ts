@@ -186,6 +186,12 @@ export interface ParametriTurno {
   giàSentite?: ReadonlySet<string>;
   /** Every violation the checker caught, with its rule (coerenza/verifica.ts): the director logs and counts it. */
   onViolazione?: (v: Violazione) => void;
+  /**
+   * The private reply of the audience split (docs/coerenza.md §2): every sentence and every repertoire line of this call
+   * goes only to this PC's phone; invitations, clocks, attitudes, pace and audio cues of the call are ignored (the
+   * public call moves the table).
+   */
+  soloPg?: string;
 }
 
 export { frasePerRipetizione };
@@ -369,7 +375,7 @@ export async function narraTurno(
         }
         e.testo = d.testo;
         e.voce = d.voce;
-        const privato = d.privato;
+        const privato = p.soloPg ?? d.privato;
         const { voce_id, nome } = voceDi(campagna, e.etichetta);
         // Esito privato: al telefono di quel PG (testo, e voce solo lì); mai nella trascrizione pubblica.
         if (privato) {
@@ -397,7 +403,9 @@ export async function narraTurno(
         }
       } else if (e.tipo === 'usa') {
         rigaAperta = null;
-        const esito = p.usa ? p.usa(e.id, e.per) : { ok: false as const, motivo: '[usa] non ammesso in modalità improvvisa' };
+        const usata = p.usa ? p.usa(e.id, e.per) : { ok: false as const, motivo: '[usa] non ammesso in modalità improvvisa' };
+        // The private reply: a line it uses goes only to that phone, whatever the line.
+        const esito = p.soloPg && usata.ok ? { ...usata, privato: p.soloPg } : p.soloPg && !usata.ok ? { ...usata, privato: p.soloPg } : usata;
         if (!esito.ok) {
           usaRifiutati += 1;
           uscita.push({ tipo: 'usa_rifiutato', id: e.id, per: e.per, motivo: esito.motivo });
@@ -438,6 +446,9 @@ export async function narraTurno(
           righePrescritte += 1;
         }
         log.info({ turno: p.turno, battuta: e.id, versione: esito.versione, righe: righe.length }, 'repertorio: battuta uscita');
+      } else if (p.soloPg && e.tipo !== 'anomalia') {
+        // The private reply does not move the table: its invitation, clocks, attitudes, pace and cues are ignored.
+        log.info({ turno: p.turno, tipo: e.tipo, id_pg: p.soloPg }, 'narrator: protocol line of a private reply ignored');
       } else if (e.tipo === 'orologio') {
         orologi.push(e.id);
       } else if (e.tipo === 'atteggiamento') {

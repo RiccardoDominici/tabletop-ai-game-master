@@ -16,7 +16,7 @@ export interface OpzioniFinto {
   msPerPezzo?: number;
   caratteriPerPezzo?: number;
   /** Copione fisso (per i test); altrimenti uno generico che usa gli id della campagna. */
-  copione?: (turno: number) => string;
+  copione?: (turno: number, richiesta?: RichiestaNarrazione) => string;
 }
 
 /**
@@ -48,8 +48,8 @@ export class NarratoreFinto implements Narratore {
 
   constructor(private readonly o: OpzioniFinto) {}
 
-  private copione(turno: number): string {
-    if (this.o.copione) return this.o.copione(turno);
+  private copione(turno: number, r?: RichiestaNarrazione): string {
+    if (this.o.copione) return this.o.copione(turno, r);
     const png = this.o.idPng[turno % Math.max(1, this.o.idPng.length)];
     const invito = this.o.idPg.slice(0, 2).join(',') || 'tutti';
     // Le frasi nella lingua dei contenuti (lingue/<codice>/testi-modelli.yaml, `modelli.finto`).
@@ -59,7 +59,7 @@ export class NarratoreFinto implements Narratore {
   }
 
   async narra(r: RichiestaNarrazione, onTesto: (delta: string) => void): Promise<EsitoNarrazione> {
-    const testo = this.copione(r.turno);
+    const testo = this.copione(r.turno, r);
     if (testo.trim() === COPIONE_BLOCCA) {
       // Il modello «appeso»: si esce solo quando la regia annulla la chiamata (sorvegliante).
       await new Promise<never>((_, rifiuta) => {

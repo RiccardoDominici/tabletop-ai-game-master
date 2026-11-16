@@ -38,7 +38,7 @@ afterEach(async () => prova?.chiudi());
 describe('partita: l’esito privato va solo al telefono del suo PG', () => {
   it('testo al telefono di Anna, niente al proiettore né alla trascrizione; voce solo con «Ascolta qui»', async () => {
     prova = new Prova();
-    const { url, messaggi } = await prova.avvia(prova.campagna('mini'), (t) =>
+    const { url, messaggi, messaggiPrivati } = await prova.avvia(prova.campagna('mini'), (t) =>
       t === 1
         ? '[narratore] Bruno aspetta alla porta. Bruno, la porta cigola.\n[privato pg_anna] Sotto la coperta c’è una chiave.\n[narratore] Che fate?\n[invito] tutti'
         : t === 2
@@ -75,9 +75,13 @@ describe('partita: l’esito privato va solo al telefono del suo PG', () => {
     expect(frasiAnna.filter((f) => f.solo_pg === 'pg_anna').map((f) => f.testo)).toEqual(['La chiave ha un nastro rosso.']);
     expect(frasiSchermo.some((f) => f.solo_pg || f.testo.includes('nastro'))).toBe(false);
     expect(esitiAnna.at(-1)?.map((e) => e.testo)).toEqual(['Sotto la coperta c’è una chiave.', 'La chiave ha un nastro rosso.']);
-    // Il narratore li ricorda nel contesto del turno dopo.
-    expect(messaggi.at(-1)).toContain('Esiti privati già dati');
-    expect(messaggi.at(-1)).toContain('pg_anna: Sotto la coperta c’è una chiave.');
+    // Audience split (docs/coerenza.md §2): Anna's private reply remembers her earlier outcomes; the public call never
+    // sees them, nor the content of her private action.
+    expect(messaggiPrivati.at(-1)).toContain('Esiti privati già dati');
+    expect(messaggiPrivati.at(-1)).toContain('pg_anna: Sotto la coperta c’è una chiave.');
+    expect(messaggiPrivati.at(-1)).toContain('Guardo la chiave.');
+    expect(messaggi.at(-1)).not.toMatch(/Esiti privati già dati|Sotto la coperta|Guardo la chiave/);
+    expect(messaggi.at(-1)).toContain('(pg_anna): fa qualcosa in privato');
 
     // Un telefono che sceglie il PG dopo riceve l'elenco intero.
     const anna2 = await prova.nuovo(url);

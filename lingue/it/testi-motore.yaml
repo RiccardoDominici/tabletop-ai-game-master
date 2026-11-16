@@ -127,6 +127,10 @@ messaggio:
   nessuna_azione: "Nessuno ha scritto un’azione: tutti aspettano che succeda qualcosa."
   passa: "nessuna azione, aspetta."
   azione_privata: "(azione PRIVATA: a voce narra solo ciò che gli altri possono percepire)"
+  # Audience split (docs/coerenza.md §2): in the public call a private action has no content, its reply is a call apart.
+  azione_privata_altrove: "fa qualcosa in privato{verso}: la risposta va solo al suo telefono, in una chiamata a parte; al tavolo al più un gesto che gli altri vedono, mai che cosa ha detto, chiesto o ottenuto"
+  verso_privato: " verso {png}"
+  risposta_privata: "## Risposta privata per {nome} ({id})\nQuesta risposta la legge solo il telefono di {nome}: il tavolo non la sente. Rispondi soltanto alla sua azione privata qui sopra, con ciò che {nome} percepisce, ottiene o si sente rispondere: righe [privato {id}] (o [usa] <id> > {id}), al massimo tre frasi. Niente [invito], niente [orologio]."
   ordine_invio: "Le azioni sono in ordine di invio: risolvile in quest’ordine."
   titolo_collegamenti: "Collegamenti tra le azioni:"
   titolo_orologi: "## Orologi della scena (stato tenuto dal Motore)"

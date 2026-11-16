@@ -110,6 +110,7 @@ import { guardiaRifiuti } from '../narrazione/guardia-rifiuti';
 import { guardiaEsiti, type CorrezioneEsito } from '../narrazione/guardia-esiti';
 import { guardiaFuori } from '../narrazione/guardia-fuori';
 import { DiarioRegistro } from '../coerenza/diario';
+import { pngInterpellati } from '../prove/parole-testo';
 import type { FattoRegistro, FontiRegistro, Registro } from '../coerenza/registro';
 import type { Violazione } from '../coerenza/verifica';
 import { bloccoVeroAdesso } from '../coerenza/blocco';
@@ -441,6 +442,91 @@ export class Regia {
   private negatiDettaglio: Array<{ png: string; autore: string; privata: boolean }> = [];
   /** The coherence ledger's journal (docs/coerenza.md §1): rebuilt before every model call and check. */
   private readonly diarioRegistro = new DiarioRegistro();
+  /**
+   * The public call's data (audience split, docs/coerenza.md §2): a private action without its content (only who, and
+   * toward whom, so the narration may show a gesture), no private outcome of this turn or of earlier ones, no lines
+   * indicated for a private action. The third e2e pass leaked whispers retold turns later from exactly these sections.
+   */
+  private datiPubblici(d: DatiMessaggioTurno, autoriPrivati: readonly string[]): DatiMessaggioTurno {
+    const verso = (testo: string): string => {
+      const nomi = [...new Set([...pngInterpellati(testo, this.nomiPng), ...pngNominati(testo, this.nomiPng)])].map((id) => voceDi(this.campagna, id).nome);
+      return nomi.length ? testoFisso('messaggio.verso_privato', { png: nomi.join(', ') }) : '';
+    };
+    const { privati: _privati, esitiTiri, repertorio, ...resto } = d;
+    return {
+      ...resto,
+      azioni: d.azioni.map((a) => (a.privata && a.testo ? { ...a, testo: testoFisso('messaggio.azione_privata_altrove', { verso: verso(a.testo) }) } : a)),
+      ...(esitiTiri && esitiTiri.righe.length ? { esitiTiri: { titolo: esitiTiri.titolo, regola: esitiTiri.regola, righe: esitiTiri.righe } } : {}),
+      ...(repertorio ? { repertorio: { ...repertorio, indicate: (repertorio.indicate ?? []).filter((x) => !autoriPrivati.some((id) => x.startsWith(`- ${id} (`))) } } : {}),
+    };
+  }
+
+  /**
+   * The private reply's message for one PC (audience split): the public transcript and «Cosa è vero adesso», that PC's
+   * private outcomes so far, its private actions of this turn with their checks, the repertoire with only its indicated
+   * lines; no clocks, world, notes or stall. Then the instruction: only that phone reads it.
+   */
+  private messaggioPrivato(d: DatiMessaggioTurno, r: RiepilogoChiusura, tiri: EsitoTurnoProve | null, id_pg: string): string {
+    const mie = r.azioni.filter((a) => a.autore === id_pg && a.privata && a.testo);
+    const fatti = mie.map((a) => tiri?.perAzione.get(a.id)?.fatto).filter((x): x is string => !!x);
+    const { privati, esitiTiri, repertorio, collegamenti: _c, stallo: _s, materialeStallo: _m, orologi: _o, mondo: _w, noteRegia: _n, tempoSerata: _t, ...resto } = d;
+    const dati: DatiMessaggioTurno = {
+      ...resto,
+      privati: (privati ?? []).filter((p) => p.id_pg === id_pg),
+      azioni: d.azioni.filter((a) => a.id_pg === id_pg && a.privata),
+      pgAlTavolo: d.pgAlTavolo.filter((p) => p.id === id_pg),
+      ...(fatti.length && esitiTiri ? { esitiTiri: { titolo: esitiTiri.titolo, regola: esitiTiri.regola, righe: [], privati: { titolo: esitiTiri.privati?.titolo ?? testoFisso('prove.esiti.titolo_privati'), righe: fatti } } } : {}),
+      ...(repertorio ? { repertorio: { ...repertorio, indicate: (repertorio.indicate ?? []).filter((x) => x.startsWith(`- ${id_pg} (`)) } } : {}),
+    };
+    return `${compilaMessaggioTurno(dati)}\n\n${testoFisso('messaggio.risposta_privata', { nome: this.nomePg(id_pg), id: id_pg })}`;
+  }
+
+  /**
+   * One private reply (audience split, docs/coerenza.md §2): a narration call whose every sentence and line goes only
+   * to that PC's phone (`soloPg`), through the same checker (the fact rules), with its own throwaway latency meter so
+   * the table's first-audio measure is the public answer's. A failure is logged; the public answer goes on.
+   */
+  private async narraPrivato(turno: number, epoca: number, id_pg: string, messaggio: string, k: number, correggiEsito: ((testo: string) => CorrezioneEsito) | null): Promise<void> {
+    const log = this.o.log.child({ turno, privato: id_pg });
+    const controllo = new AbortController();
+    this.controlliPrivati.add(controllo);
+    const segni: SegniInRisposta = { orologi: new Set<string>() };
+    // Its sentences live in a segment range of their own (the phone's outcome list keys on turn and segment).
+    const base = 200_000 + k * 10_000;
+    try {
+      const esito = await narraTurno(
+        { campagna: this.campagna, narratore: this.o.narratore, pipeline: this.pipeline, log },
+        {
+          turno,
+          sistema: this.sistema,
+          messaggio,
+          signal: controllo.signal,
+          misuratore: new MisuratoreTurno(turno, this.o.orologio.ora(), 0, this.o.voce.nome, this.o.orologio.adesso()),
+          ora: () => this.o.orologio.ora(),
+          pronuncia: this.pronuncia,
+          idBattute: this.idBattuteRepertorio(),
+          prefissoFrasi: `p${k}-`,
+          soloPg: id_pg,
+          ...(correggiEsito ? { correggiEsito } : {}),
+          presenti: this.pngInScena(),
+          onViolazione: (v) => this.violazione(v),
+          // A private reply answers only its PC: a line for another PC is refused.
+          usa: this.statoRepertorio ? (id, per) => (per && per !== id_pg ? { ok: false, motivo: `a private reply answers only ${id_pg}` } : this.usaBattuta(id, id_pg, turno, segni)) : null,
+          onFrase: () => undefined,
+          onPrivato: (f) => {
+            if (epoca !== this.epoca) return;
+            this.frasePrivata(turno, { ...f, segmento: f.segmento + base });
+          },
+        },
+      );
+      log.info({ turno, id_pg, frasi: esito.uscita.length, costo_usd: esito.esito?.costo.costo_usd ?? null }, 'narrator: private reply done');
+    } catch (err) {
+      log.warn({ turno, id_pg, err: err instanceof Error ? err.message : String(err) }, 'narrator: private reply failed');
+    } finally {
+      this.controlliPrivati.delete(controllo);
+    }
+  }
+
   /** The checker's last violations, for the Game Master panel (docs/coerenza.md §2). */
   private violazioniRecenti: Violazione[] = [];
 
@@ -459,6 +545,8 @@ export class Regia {
   /** NPCs whose refusal line has been said in this turn (main answer and repair share it). */
   private rifiutiDetti: { turno: number; id: Set<string> } = { turno: -1, id: new Set() };
   private controlloLlm: AbortController | null = null;
+  /** The private replies in flight (audience split, docs/coerenza.md §2): stopped with the public answer. */
+  private readonly controlliPrivati = new Set<AbortController>();
   private misuratore: MisuratoreTurno | null = null;
   /** Primo pezzo d'audio inviato nel turno corrente (stima della fine se lo schermo tace). */
   private primoAudioInviato = new Map<number, number>();
@@ -2600,6 +2688,8 @@ export class Regia {
     this.sorvegliante.fine(motivo);
     this.controlloLlm?.abort(new Error(motivo));
     this.controlloLlm = null;
+    for (const c of this.controlliPrivati) c.abort(new Error(motivo));
+    this.controlliPrivati.clear();
     this.pipeline.interrompi(motivo);
     if (this.attesaAudio) {
       this.attesaAudio.timer?.();
@@ -3209,7 +3299,13 @@ export class Regia {
         : {}),
       ...(veroAdesso ? { veroAdesso } : {}),
     };
-    const messaggioBase = compilaMessaggioTurno(datiTurno);
+    // The audience split (docs/coerenza.md §2): the public call never sees a private action's content nor its outcome;
+    // each PC who acted in private gets a reply of its own, in a call apart, that only reaches that phone. Not with the
+    // local minimal reader (one call per turn is what it can afford): there the privacy guard is the line of defence.
+    const conPrivate = r.azioni.filter((a) => a.privata && !!a.testo && !fuoriAllaChiusura.has(a.autore));
+    const divisa = this.o.narratore.nome !== 'minimo' && conPrivate.length > 0;
+    const risposteprivate = divisa ? [...new Set(conPrivate.map((a) => a.autore))].map((id_pg) => ({ id_pg, messaggio: this.messaggioPrivato(datiTurno, r, tiri, id_pg) })) : [];
+    const messaggioBase = compilaMessaggioTurno(divisa ? this.datiPubblici(datiTurno, conPrivate.map((a) => a.autore)) : datiTurno);
     // Ritmo concitato: il narratore sa che vale ancora, e quando dire `[ritmo] calmo`.
     const ritmo = sezioneRitmo(this.ritmo);
     const messaggio = ritmo ? `${messaggioBase}\n\n${ritmo}` : messaggioBase;
@@ -3247,7 +3343,7 @@ export class Regia {
     const correggiEsito = this.prove?.attivo ? this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null) : null;
     // The turn order just rolled (the fight starts, a new round): the Engine says it at the table (bug 6, third e2e pass).
     const ordine = tiri?.combattimento?.ordine ?? [];
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito, ordine).catch((err: unknown) =>
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito, ordine, risposteprivate).catch((err: unknown) =>
       this.dopoEccezione(epoca, r.turno, 'narrazione', err),
     );
   }
@@ -3267,9 +3363,13 @@ export class Regia {
     correggiEsito: ((testo: string) => CorrezioneEsito) | null = null,
     /** The turn order rolled in this turn, first to last (prove/combattimento.ts, `ordine`): said by the Engine. */
     ordine: readonly string[] = [],
+    /** The private replies of the audience split (docs/coerenza.md §2): one call each, in parallel, phones only. */
+    risposteprivate: ReadonlyArray<{ id_pg: string; messaggio: string }> = [],
   ): Promise<void> {
     // The ledger as the narration starts: this turn's cards and falls are in it (docs/coerenza.md §1).
     this.registroOra('prima della narrazione');
+    // The private replies start with the public answer and run beside it; the turn waits for them at its end.
+    const private_ = risposteprivate.map((x, k) => this.narraPrivato(turno, epoca, x.id_pg, x.messaggio, k, correggiEsito));
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
     this.controlloLlm = controllo;
@@ -3420,6 +3520,9 @@ export class Regia {
       log.warn({ turno, scartate: esito.scartate, rimedio: rimedio?.id ?? 'mossa morbida' }, 'stallo: narrazione fuori dalla finzione, rimedio del Motore');
     }
     this.controlloLlm = null;
+    // The private replies of this turn end before the next window opens (their lines are on the phones already).
+    if (private_.length) await Promise.allSettled(private_);
+    if (epoca !== this.epoca) return;
 
     // Orologi: il narratore propone, il Motore controlla (un segno per orologio, al massimo due
     // orologi per risposta, il ritmo massimo di ciascuno). In modalità repertorio i segni sono

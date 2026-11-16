@@ -51,7 +51,7 @@ describe('prove e dadi col server intero', () => {
     const arbitro = new ArbitroParole();
     // Ida (Carisma +3, competente +2) con vantaggio (Bertoldo amichevole): 4 e 13 → 13 + 5 = 18 ≥ 15.
     // Teo (Rapidità di mano con maestria, +7): 6 → 13 < 15.
-    const { url, messaggi } = await prova.avvia(cartella, COPIONE, {}, { arbitroProve: arbitro, dadi: new DadiACopione([4, 13, 6]) });
+    const { url, messaggi, messaggiPrivati } = await prova.avvia(cartella, COPIONE, {}, { arbitroProve: arbitro, dadi: new DadiACopione([4, 13, 6]) });
     const schermo = await prova.proiettore(url);
     const ida = await prova.telefono(url, 'pg_ida');
     const teo = await prova.telefono(url, 'pg_teo');
@@ -75,7 +75,9 @@ describe('prove e dadi col server intero', () => {
     const m = messaggi.at(-1)!;
     expect(m).toContain('## Esiti dei tiri');
     expect(m).toContain('Ida Ferraro: Persuasione (Carisma) verso Bertoldo (con vantaggio: Bertoldo è ben disposto): 18 contro CD 15 → RIUSCITA.');
-    expect(m).toMatch(/Teo \(azione PRIVATA[^\n]*Rapidità di mano \(Destrezza\): 13 contro CD 15 → FALLITA\. Prezzo del fallimento: il lucchetto scatta rumoroso\./);
+    // Teo's private check is only in his private reply's message (audience split, docs/coerenza.md §2).
+    expect(m).not.toMatch(/Rapidità di mano|lucchetto/);
+    expect(messaggiPrivati.at(-1)).toMatch(/Teo \(azione PRIVATA[^\n]*Rapidità di mano \(Destrezza\): 13 contro CD 15 → FALLITA\. Prezzo del fallimento: il lucchetto scatta rumoroso\./);
     expect(m).toContain('bertoldo_confessa');
     // Ogni telefono ha la sua carta; quella privata di Teo solo sul suo.
     expect(miaIda.ultima?.tiri?.map((t) => t.etichetta)).toEqual(['Persuasione (Carisma)']);

@@ -125,6 +125,10 @@ messaggio:
   titolo_azioni: "## Turn {turno}: the players' actions"
   nessuna_azione: "Nobody has written an action: everyone is waiting for something to happen."
   passa: "no action, waiting."
+  # Audience split (docs/coerenza.md §2): in the public call a private action has no content, its reply is a call apart.
+  azione_privata_altrove: "does something in private{verso}: the reply goes only to their phone, in a separate call; at the table at most a gesture the others see, never what they said, asked or got"
+  verso_privato: " towards {png}"
+  risposta_privata: "## Private reply for {nome} ({id})\nOnly {nome}'s phone reads this reply: the table does not hear it. Answer only their private action above, with what {nome} perceives, gets or hears in reply: lines [privato {id}] (or [usa] <id> > {id}), at most three sentences. No [invito], no [orologio]."
   azione_privata: "(PRIVATE action: aloud, narrate only what the others can perceive)"
   ordine_invio: "The actions are in the order they were sent: resolve them in this order."
   titolo_collegamenti: "Links between the actions:"
