@@ -1,0 +1,234 @@
+{
+ "etichetta": "dopo-torre-mozza-stallo-B-manuale",
+ "turni": {
+  "giocati": 14,
+  "copione": 14,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_mezzanotte": "2/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "private": {
+  "azioni_private": 2,
+  "righe_privato": 0,
+  "esiti_privati_log": 14,
+  "spostate_dalla_guardia": 14,
+  "righe_al_tavolo_sospette": 2,
+  "sospette": [
+   {
+    "turno": 9,
+    "pg": "pg_livia",
+    "riga": "[narratore] Livia Sarti chiede a Ugo, a bassa voce, chi passa dal cancello di notte. Il carbonaio non guarda nemmeno il portico."
+   },
+   {
+    "turno": 13,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Eliandro si china verso Berta e abbassa la voce."
+   }
+  ],
+  "al_tavolo_candidate": 5,
+  "al_tavolo": [
+   {
+    "turno": 10,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Ugo Faggioli",
+    "riga": "Ieri notte? Alla carbonaia, il fuoco non si lascia.",
+    "comuni": [
+     "carbo",
+     "notte"
+    ],
+    "regola": "2 radici"
+   },
+   {
+    "turno": 11,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Livia Sarti dice che Ugo ha parlato poco, e che conviene aspettare che il carbonaio torni.",
+    "comuni": [
+     "carbo"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 12,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Berta guarda il crinale, poi il cancello, poi Ugo che batte ancora la pala.",
+    "comuni": [
+     "cance"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 13,
+    "turno_privata": 13,
+    "pg": "Eliandro",
+    "chi": "Narratore",
+    "riga": "La sua mano resta chiusa sul ferro. Il vento porta dal crinale un altro suono di corno.",
+    "comuni": [
+     "porta"
+    ],
+    "regola": "turno privato+1"
+   },
+   {
+    "turno": 13,
+    "turno_privata": 13,
+    "pg": "Eliandro",
+    "chi": "Narratore",
+    "riga": "Dal fienile i cani ricominciano a grattare la porta.",
+    "comuni": [
+     "porta"
+    ],
+    "regola": "turno privato+1"
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 15,
+  "con_tiro": 1,
+  "tipi": {
+   "nessuna": 14,
+   "prova": 1
+  },
+  "dadi": {},
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "anthropic completo (set generico)"
+ },
+ "combattimento": {
+  "eventi": {},
+  "fatti_morale_terra": 2,
+  "esempi": [
+   "narratore: testo del turno: {\"level\": 30, \"time\": \"2026-11-16T00:28:01.296Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 6, \"testo\": \"[narratore] Eliandro si guarda intorno: lo stazzo, il fienile, il portico con Berta immobile, il cancell",
+   "narratore: testo del turno: {\"level\": 30, \"time\": \"2026-11-16T00:33:32.057Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 14, \"testo\": \"[narratore] Fulco, rimandare non cambia niente. Il crinale resta lì, e Berta lo guarda.\\n[png_berta] Do"
+  ],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 0,
+  "nessuna": 0,
+  "ms_classifica_med": null,
+  "ms_classifica_peggiore": null
+ },
+ "sceneggiatore": {
+  "richieste": {},
+  "consegnate": 0,
+  "dette_a_finestra_aperta": 0,
+  "accettate": 0,
+  "scartate": {},
+  "ms_claude_med": null,
+  "ms_totale_med_subito": null,
+  "processo": {}
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20042.5,
+   "peggiore": 21197,
+   "n": 14
+  },
+  "llm_prima_frase": {
+   "mediana": 2488.5,
+   "peggiore": 2867,
+   "n": 14
+  },
+  "voce_primo_audio": {
+   "mediana": 2706,
+   "peggiore": 3309,
+   "n": 14
+  },
+  "schermo_inizio_audio": {
+   "mediana": 2858,
+   "peggiore": 3470,
+   "n": 14
+  },
+  "llm_fine": {
+   "mediana": 3113,
+   "peggiore": 3550,
+   "n": 14
+  },
+  "audio_fine": {
+   "mediana": 23286,
+   "peggiore": 30900,
+   "n": 14
+  },
+  "s_tra_turni_med": 43,
+  "s_tra_turni_peggiore": 52.397
+ },
+ "voce": {
+  "motore": "fish",
+  "buchi": {
+   "totale": 0,
+   "in_frase": 0,
+   "tra_frasi": 0,
+   "silenzio_ms": 0,
+   "per_turno": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "proiettore_secondi": 300,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 0,
+  "avvisi": 17,
+  "per_messaggio": [
+   "40 ×14 narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono",
+   "40 ×1 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×1 repertorio: [usa] rifiutato",
+   "40 ×1 prove: speech is not a check, social check or no roll"
+  ],
+  "provider": [
+   "lettore         → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "arbitro_azioni  → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_ARBITRO",
+   "arbitro_prove   → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "riassunto       → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_RIASSUN",
+   "regole          → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_REGOLE",
+   "voce            → openrouter — variabile d'ambiente TAGM_VOCE",
+   "ascolto         → locale ggml-large-v3-turbo-q5_0 — configurato (config/predefin",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0.03191400000000001,
+ "righe": {
+  "prescritte": 10,
+  "improvvisate": 53,
+  "usa_rifiutati": 1,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0
+ }
+}

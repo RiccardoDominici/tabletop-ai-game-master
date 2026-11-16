@@ -1,0 +1,775 @@
+{
+  "copione": "torre-mozza/fuori-binario",
+  "campagna": "torre-mozza",
+  "modo": "repertorio",
+  "porta": 4942,
+  "narratore_finto": false,
+  "sessione": "2026-11-16T00:10:00.754Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "71092356de1ab9d49e7c386ee2789da5819050e3",
+    "modificati": [],
+    "radice": "/private/tmp/claude-501/-Users-riccardo-Developer/161e877b-0d39-415a-be00-32dd6f15c6cf/scratchpad/wt-e2e3b-dopo"
+  },
+  "turni": 16,
+  "turni_copione": 13,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "manuale",
+    "tiri": [
+      {
+        "pg": "pg_nespola",
+        "id": "r_a1",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t1_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_t1_iniziativa_pg_fulco_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t1_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a3",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          8
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t4_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_t4_iniziativa_pg_fulco_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t4_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a5",
+        "etichetta": "Cercare porte segrete e trappole",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a6",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          18
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t7_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_t7_iniziativa_pg_fulco_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t7_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t10_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_t10_iniziativa_pg_fulco_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t10_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a11",
+        "etichetta": "Borseggiare",
+        "dadi": "1d100",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a13",
+        "etichetta": "Forza",
+        "dadi": "1d20",
+        "valori": [
+          9
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t13_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_t13_iniziativa_pg_fulco_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t13_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a15",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          10
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_a16",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          13
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t16_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_t16_iniziativa_pg_fulco_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t16_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 14,
+    "passate": 0
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 7,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 9,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 10,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 11,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 12,
+        "stato": {
+          "o_mezzanotte": "2/8"
+        }
+      },
+      {
+        "turno": 13,
+        "stato": {
+          "o_mezzanotte": "2/8"
+        }
+      },
+      {
+        "turno": 14,
+        "stato": {
+          "o_mezzanotte": "2/8"
+        }
+      },
+      {
+        "turno": 15,
+        "stato": {
+          "o_mezzanotte": "2/8"
+        }
+      },
+      {
+        "turno": 16,
+        "stato": {
+          "o_mezzanotte": "2/8"
+        }
+      }
+    ],
+    "massimo": {
+      "o_mezzanotte": "2/8"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 3,
+  "voce": "fish",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 20032.5,
+      "peggiore": 20063,
+      "n": 16
+    },
+    "voce_sveglia": {
+      "mediana": 0,
+      "peggiore": 2254,
+      "n": 16
+    },
+    "llm_primo_token": {
+      "mediana": 661.5,
+      "peggiore": 3067,
+      "n": 16
+    },
+    "llm_prima_frase": {
+      "mediana": 894,
+      "peggiore": 3186,
+      "n": 16
+    },
+    "voce_richiesta": {
+      "mediana": 825,
+      "peggiore": 3509,
+      "n": 16
+    },
+    "voce_primo_audio": {
+      "mediana": 754,
+      "peggiore": 4147,
+      "n": 16
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1288.5,
+      "peggiore": 4302,
+      "n": 14
+    },
+    "llm_fine": {
+      "mediana": 2130.5,
+      "peggiore": 4415,
+      "n": 16
+    },
+    "audio_fine": {
+      "mediana": 26334.5,
+      "peggiore": 44868,
+      "n": 16
+    }
+  },
+  "buchi": {
+    "totale": 0,
+    "in_frase": 0,
+    "tra_frasi": 0,
+    "silenzio_ms": 0,
+    "per_turno": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "righe_prescritte": 2,
+  "righe_improvvisate": 65,
+  "quota_prescritte": 0.029850746268656716,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 7,
+  "usa_rifiutati_per_motivo": {},
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Fuga = riga del narratore o di un PNG con una parola segreta prima che sia uscito un id di pubblica_dopo (battuta o indizio rivelato da una battuta) e prima che un giocatore l’abbia scritta.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 2,
+  "battute_mai_usate": [
+    "nar_giaciglio",
+    "nar_cani",
+    "nar_cani_scappano",
+    "nar_lavagna",
+    "nar_pali",
+    "nar_recinto",
+    "nar_avviso",
+    "nar_attesa_ovile",
+    "fin_ovile_mezzanotte",
+    "nar_chiave_presa",
+    "fin_ovile_chiave",
+    "fin_ovile_senza",
+    "nar_impronte",
+    "nar_rovi",
+    "nar_cervo",
+    "nar_frasche",
+    "nar_attesa_carbonaia",
+    "nar_carbonaia_sbuffa",
+    "fin_carbonaia_mezzanotte",
+    "fin_carbonaia_cunicolo",
+    "fin_carbonaia_sentiero",
+    "nar_corda",
+    "nar_piccone",
+    "nar_mappa",
+    "nar_conto",
+    "nar_iscrizione",
+    "nar_cripta",
+    "nar_cripta_grimaldello",
+    "nar_tonio_zitto",
+    "nar_tonio_parla",
+    "nar_tonio_sottovoce",
+    "nar_attesa_torre",
+    "fin_alba_fontana",
+    "fin_alba_silenzio",
+    "fin_alba_riserva",
+    "fin_alba_discesa",
+    "nar_segno_3",
+    "nar_segno_4",
+    "nar_segno_5",
+    "nar_segno_6",
+    "nar_segno_7",
+    "nar_segno_8",
+    "tr_bosco",
+    "tr_crinale",
+    "nar_chiusura_ovile",
+    "nar_chiusura_ovile_chiave",
+    "nar_chiusura_carbonaia",
+    "nar_chiusura_torre",
+    "ber_saluto",
+    "ber_domanda_gentile",
+    "ber_accusa",
+    "ber_minaccia",
+    "ber_offerta",
+    "ber_aiuto",
+    "ber_rifiuto",
+    "ber_attesa",
+    "ber_salgo_io",
+    "ber_cani",
+    "ber_cose_tonio",
+    "ber_nomi_pali",
+    "ber_rapitore",
+    "ber_soldata",
+    "ber_benedizione",
+    "ber_chiave",
+    "ber_debiti_domanda",
+    "ber_conti_fienile",
+    "ber_conti_foglio",
+    "ber_non_ci_crede",
+    "gro_saluto",
+    "gro_minaccia",
+    "gro_rifiuto",
+    "gro_attesa",
+    "gro_cibo",
+    "ugo_saluto",
+    "ugo_domanda_gentile",
+    "ugo_accusa",
+    "ugo_minaccia",
+    "ugo_offerta",
+    "ugo_aiuto",
+    "ugo_rifiuto",
+    "ugo_attesa",
+    "ugo_tre_monete",
+    "ugo_salita",
+    "ugo_consiglio",
+    "ugo_stanotte",
+    "ugo_niente_visto",
+    "ugo_notte_cervo",
+    "ugo_notte_promessa",
+    "ugo_sentiero_privato",
+    "ugo_sentiero_impronte",
+    "zir_saluto",
+    "zir_domanda_gentile",
+    "zir_accusa",
+    "zir_minaccia",
+    "zir_offerta",
+    "zir_aiuto",
+    "zir_rifiuto",
+    "zir_attesa",
+    "zir_chiave_prima",
+    "zir_patto",
+    "zir_resa",
+    "zir_cassa",
+    "zir_ragazzo_mio",
+    "zir_corda",
+    "zir_carbonaio"
+  ],
+  "costo_totale_usd": 0.049497970000000016,
+  "costo_mediana_turno_usd": 0.00062992,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 441,
+      "secondi": 22.987755102040847,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 1,
+      "frasi": 12,
+      "pezzi": 685,
+      "secondi": 36.68752834467119,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 2,
+      "frasi": 4,
+      "pezzi": 306,
+      "secondi": 12.863854875283423,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 3,
+      "frasi": 10,
+      "pezzi": 574,
+      "secondi": 31.021859410430825,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 4,
+      "frasi": 9,
+      "pezzi": 632,
+      "secondi": 33.158095238095214,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 5,
+      "frasi": 14,
+      "pezzi": 755,
+      "secondi": 44.860952380952284,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 6,
+      "frasi": 10,
+      "pezzi": 443,
+      "secondi": 25.77414965986397,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 7,
+      "frasi": 8,
+      "pezzi": 452,
+      "secondi": 24.79891156462585,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 9,
+      "pezzi": 557,
+      "secondi": 28.04970521541947,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 9,
+      "frasi": 3,
+      "pezzi": 311,
+      "secondi": 16.671927437641713,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 10,
+      "frasi": 7,
+      "pezzi": 530,
+      "secondi": 26.28498866213153,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 11,
+      "frasi": 1,
+      "pezzi": 151,
+      "secondi": 5.897868480725628,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 12,
+      "frasi": 6,
+      "pezzi": 409,
+      "secondi": 21.408798185941066,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 13,
+      "frasi": 15,
+      "pezzi": 747,
+      "secondi": 41.42439909297043,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 14,
+      "frasi": 6,
+      "pezzi": 453,
+      "secondi": 20.29424036281175,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 15,
+      "frasi": 1,
+      "pezzi": 123,
+      "secondi": 5.433469387755102,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 16,
+      "frasi": 11,
+      "pezzi": 538,
+      "secondi": 31.11473922902496,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}
