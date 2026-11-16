@@ -4,8 +4,9 @@ What this page is: the design of the coherence layer Riccardo asked for after th
 studia un sistema che fixi in particolare la coerenza; usa qualcosa per segnarti queste cose e far sì che diventi
 visibile quando necessario»). It replaces the habit of one guard per bug. Status: **built on 16 November** (steps 1–7
 of «Order of work», `85a8340`…`2a7697c`), **measured** on the three blind scripts («Measured, round 1»: the success criterion
-is not met yet), then fixed further (`5870930`…`97121cb`, not yet measured on the scripts). Not built: `R-eco` and the
-projector mark (marked below).
+is not met yet), then fixed further (`5870930`…`97121cb`), measured in rounds 2 and 3 (the yes/no judge on), and after
+round 3 fixed offline with no model call (`bf39510`…`3551e4d`, «After round 3»: not measured live, the API credit is
+exhausted). Not built: `R-eco` and the projector mark (marked below).
 
 Read first: [docs/e2e-finale-3.md](e2e-finale-3.md) §4 and §7 (the bugs and the fix pass), [docs/combattimento.md](combattimento.md)
 §3 (out of play, required facts, the outcome guard), [docs/prove.md](prove.md) (private actions), [docs/mondo.md](mondo.md).
@@ -399,6 +400,23 @@ no kept answer counts as unanswered, so the rules decide as after a live deadlin
 held-out #2, `--insieme r3 --dal-log <run>/log-server/server.jsonl` takes the answers the live judge gave in the valid
 round-3 game, by sentence). The offline v2 reproduces the published scores with 0 calls: 106/11/7 on the frozen set,
 33/4/2 on held-out #1, and on held-out #2 the live judge's 24 of 31 caught, 3 clean touched.
+
+| Variant (caught / missed / clean touched) | Frozen (117) | Held-out #1 (37) | Held-out #2 (31) |
+|---|---|---|---|
+| `regole` (the rules alone, before) | 76 / 41 / 4 | 25 / 12 / 4 | 16 / 15 / 3 |
+| `regole-attori` (the rules alone, now: + unnamed actors) | 79 / 38 / 4 | 25 / 12 / 4 | 18 / 13 / 3 |
+| `domanda2` (the judge in play in round 3) | 106 / 11 / 7 | 33 / 4 / 2 | 24 / 7 / 3 |
+| `domanda2p` (rejected: the first sentence to the rules alone) | 98 / 19 / 5 | 27 / 10 / 3 | 22 / 9 / 3 |
+| `domanda2a-attori` (the director now: opener, unnamed actors, late carry) | **107 / 10 / 8** | **33 / 4 / 3** | **27 / 4 / 3** |
+
+The four fixes, each its own commit with tests on invented fixtures: the first sentence never waits for the judge
+(`bf39510`), an action whose answer was dropped gets the Engine's line (`3db96ee`), unnamed actors inherit theirs from
+the cards (`b3db103`), and after a late answer the rules carry the subject (`3551e4d`). What they should change at the
+table, still to be measured live when there is credit: round 3's three heard sentences are caught on the replay (T10
+and T14 by the unnamed actors, T15 by the late carry); its first audio, replayed without the waits, about 1.7 s
+instead of 2.09 s; its 6 unanswered actions get a line each. The scores are on sets the fixes were designed after (the
+frozen set and held-out #2 hold the motivating sentences; held-out #1 has none of them), so they show the fixes work on
+their cases and touch nothing new, not how they generalise.
 
 ### First audio: the first sentence never waits for the judge
 Round 3's first audio was 2087 ms median (15 turns) on the combat-manual script. From its logs (the turn's measures

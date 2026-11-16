@@ -54,7 +54,13 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   model, one question per flagged sentence, the rules in its shadow) 106 (33), with 7 (2) clean sentences touched; the
   judge is wired for profile B (067d18f, TAGM_DOMANDA), one smoke run without crash at ~1 s a question; silent exits
   (79d3068), a neutral line for invented names in mode B (bc0010e) and `[nuovo png]` in mode A (d1f0e40) are built.
-  Still open: a measuring run of the judge (it is live only in a smoke run); the private replies stay on the rules
+  Round 3 (6912f11, the judge on; only combat-manual valid, the API credit ran out): 10 → 6 → 3 high-severity sentences
+  heard, first audio 2.09 s on that script. Fixed offline after it, no model call (docs/coerenza.md, «After round 3»):
+  the first sentence never waits for the judge (the Engine's line of the flagged mention said at once, bf39510); an
+  action whose answer was dropped gets the Engine's line, with no repair call (3db96ee); attacks and flights with no
+  name inherit the cards' actor (b3db103); after a late answer the rules carry the subject (3551e4d); on the replay
+  sets the director's path scores 107/117, 33/37, 27/31 with 8, 3, 3 clean touched.
+  Still open: a round 4 measured live (needs API credit; Riccardo has not chosen a provider); a full measuring round of the judge (round 3 had one valid game of four); the private replies stay on the rules
   (their raw text is now logged, for a replay set of their own); R-fuori's whole-sentence state check (the judge
   replaces it in profile B, not in profile A); the cart «impossibile» (11a);
   `R-eco` and the projector mark; the stall's S3 sentence said twice word for word; profile A (the reader plus the

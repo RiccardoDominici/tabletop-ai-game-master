@@ -225,5 +225,8 @@ High-severity sentences heard there, round 1 → 2 → 3: 10 → 6 → 3 (plus 3
 with no noun, and a carried pronoun after the one late answer. On its raw answers, labelled before reading the
 judge's decisions, the rules catch 16 of 31 violations, the live rules + judge 24 of 30, with 3 clean sentences
 touched either way. 42 questions at about 1 s, 1 late. First audio 2.09 s for this script (1.15 s at baseline): the
-judge's wait on a flagged first sentence shows. Still not ready.
+judge's wait on a flagged first sentence shows. Still not ready. Fixed offline after it, with no model call
+(docs/coerenza.md, «After round 3»): the first sentence no longer waits, a dropped answer gets the Engine's line,
+unnamed attackers and fleeing figures inherit the cards' actor, a late answer's carried pronoun is caught; on the
+replay all three heard sentences are caught. Not measured live yet.
 
