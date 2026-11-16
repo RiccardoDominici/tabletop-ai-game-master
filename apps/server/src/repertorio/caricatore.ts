@@ -258,7 +258,7 @@ function leggiBattuta(
   }
   const richiede: Richiede = {
     ...leggiCondizioni(r, `${qui} richiede`, errori, true),
-    stati: leggiStati(r['stati'], `${qui} richiede.stati`, parlanti, errori),
+    stati: leggiStati(r['stati'], `${qui} richiede.stati`, parlanti, errori, pg),
     esito: leggiEsito(r['esito'], `${qui} richiede.esito`, parlanti, pg, errori),
     privata: r['privata'] === true,
     da_pg: lista(r['da_pg']),
@@ -361,7 +361,8 @@ function leggiEsito(v: unknown, dove: string, parlanti: Set<string>, pg: readonl
 }
 
 /** `richiede.stati: {png_x: a_terra}` or `{png_x: [a_terra, morto]}`: the classes of CLASSI_STATO. */
-function leggiStati(v: unknown, dove: string, parlanti: Set<string>, errori: string[]): Record<string, ClasseStato[]> {
+/** PCs too (round 6, CA T15: a line took a player's «zero punti ferita» as true): the ledger has their real states. */
+function leggiStati(v: unknown, dove: string, parlanti: Set<string>, errori: string[], pg: readonly string[] = []): Record<string, ClasseStato[]> {
   if (v === undefined || v === null) return {};
   if (typeof v !== 'object' || Array.isArray(v)) {
     errori.push(`${dove}: un blocco {id_png: stato o [stati]}`);
@@ -369,7 +370,7 @@ function leggiStati(v: unknown, dove: string, parlanti: Set<string>, errori: str
   }
   const out: Record<string, ClasseStato[]> = {};
   for (const [id, x] of Object.entries(v as DatiYaml)) {
-    if (id === ID_NARRATORE || !parlanti.has(id)) errori.push(`${dove}: «${id}» non è un PNG con scheda`);
+    if (id === ID_NARRATORE || !(parlanti.has(id) || pg.includes(id))) errori.push(`${dove}: «${id}» non è un PNG con scheda né un PG`);
     const classi = typeof x === 'string' ? [x] : Array.isArray(x) ? x : null;
     if (!classi?.length || !classi.every((c) => (CLASSI_STATO as readonly unknown[]).includes(c))) {
       errori.push(`${dove}.${id}: uno o più di ${CLASSI_STATO.join(', ')}`);

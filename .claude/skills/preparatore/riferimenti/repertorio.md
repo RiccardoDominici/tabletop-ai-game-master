@@ -167,6 +167,8 @@ assumes is true in the ledger (who is in the scene, who is down, dead or fled), 
   play. Only in the base of `richiede`, not in an `oppure` alternative.
 Every NPC a narrator row names goes in one of the three; an untagged one is a warning [V `REPERTORIO.png_non_segnato`]
 (the Engine then only asks it to be in play, not in the scene).
+- `richiede.stati` takes PCs too (`{pg_x: a_terra}`): a line that assumes a PC's state («la soldata è a terra») is
+  offered only when the ledger has it; a player's own claim about the PC is never a fact.
 - `richiede.esito: {tipo: colpito | mancato | ferito | a_terra | fugge | nessuno, chi?: png_x, bersaglio?: id}`: a line
   that tells an outcome (a blow that lands, a miss, someone hurt, a fall, a flight) says which [V `REPERTORIO.fatti`];
   a line a combatant may say during a fight that tells none says `nessuno`. `chi` is the NPC who

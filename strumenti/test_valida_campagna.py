@@ -1952,3 +1952,9 @@ def test_repertorio_sconfitta(camp):
     assert "REPERTORIO.sconfitta" not in errori(camp)
     modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").update(sconfitta=True))
     assert "REPERTORIO.sconfitta" in errori(camp)
+
+
+def test_repertorio_stato_di_un_pg(camp):
+    # A line may take a PC's state as true too (round 6, CA T15): the Engine checks it against the ledger.
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").setdefault("richiede", {}).update(stati={"pg_lia": "a_terra"}))
+    assert "REPERTORIO.fatti" not in errori(camp)

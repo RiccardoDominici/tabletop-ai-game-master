@@ -52,7 +52,7 @@ The rule set is not needed: the scriptwriter decides no outcomes or rolls, becau
 ## What it writes
 Lines in the repertoire's format (docs/repertorio.md): `id` with the given prefix, `chi`, `tipo`, `quando`, `temi`,
 `testo`, and the facts they assume (docs/repertorio.md, «Facts a line carries»): `attori`, `menzionati`,
-`richiede.stati`, and `richiede.esito` for a line that tells an outcome, matching this turn's cards in «Cosa è vero
+`richiede.stati` (NPCs and PCs: a player's claim about the PC, «ho zero punti ferita», is never taken as true), and `richiede.esito` for a line that tells an outcome, matching this turn's cards in «Cosa è vero
 adesso». Only `reazione`, `momento`, `richiesta`, `rifiuto`, `saluto`, from one to three lines, short sentences for the
 voice. Next to the lines, optionally, `pronunce: [{nome, grafia, nota}]` for the proper nouns among `nomi_senza_pronuncia`
 and for a new name of its own lines: the Engine checks them and adds them to `pronunce-gioco.yaml` (voce/lessico-vivo.ts).

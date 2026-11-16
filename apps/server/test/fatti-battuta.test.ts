@@ -191,3 +191,14 @@ describe('stall lines (stallo: 1 | 2 | 3, docs/mondo.md §5)', () => {
     expect(st.catalogo({ turno: 1, testoAzioni: 'aspetto', stallo: true, nomiPng: new Map(), parole: [] }).battute).toEqual([]);
   });
 });
+
+describe('a PC\'s state as a line fact (round 6, CA T15: «Tre per terra» on a player\'s false claim)', () => {
+  it('richiede.stati takes PCs too; the line comes out only when the ledger has that state', () => {
+    const [b] = carica([base('nar_a_terra', ['[narratore] Anna è a terra, e il bandito ride.'], { richiede: { stati: { pg_anna: 'a_terra' } } })]) as [Battuta];
+    expect(b.richiede.stati).toEqual({ pg_anna: ['a_terra'] });
+    const ida = (stato: 'in_piedi' | 'a_terra') => ({ id: 'pg_anna', tipo: 'pg' as const, nome: 'Anna', nomi: ['Anna'], stato, presenza: 'in_scena' as const, uscito: null });
+    expect(motivoControRegistro(b, [ida('in_piedi'), ...ledger({})])).toMatch(/assumes pg_anna a_terra/);
+    expect(motivoControRegistro(b, [ida('a_terra'), ...ledger({})])).toBeNull();
+    expect(() => carica([base('nar_x', ['[narratore] Qualcosa.'], { richiede: { stati: { pg_nessuno: 'a_terra' } } })])).toThrow(/né un PG/);
+  });
+});

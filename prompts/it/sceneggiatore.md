@@ -13,7 +13,7 @@ battute:
     attori: [<id dei PNG che nelle righe del narratore agiscono o sono lì, anche senza nome: «si volta», «lei»>]
     menzionati: [<id dei PNG di cui si parla soltanto: non agiscono, possono non esserci>]
     richiede:
-      stati: {<id>: a_terra | morto | fuggito | in_gioco}   # solo se la battuta dà per vero lo stato di un PNG («il corpo giace…»)
+      stati: {<id>: a_terra | morto | fuggito | in_gioco}   # se la battuta dà per vero lo stato di un PNG o di un PG («il corpo giace…», «tre per terra»)
       esito: {tipo: colpito | mancato | ferito | a_terra | fugge | nessuno, chi: <id del PNG che colpisce o fugge; niente = il PG che agisce>, bersaglio: <id di chi è colpito>}   # obbligatorio in combattimento per ogni battuta di un combattente
 
 Regole:
@@ -26,6 +26,7 @@ Regole:
 - Il PNG parla con la voce della sua scheda (registro, stile, lessico), dice solo ciò che sa o vede, mai ciò che sta in mai_dice.
 - Niente fatti di trama nuovi, niente indizi, confessioni o segreti: le rivelazioni sono già preparate. Le PAROLE SEGRETE elencate non si dicono mai.
 - Le battute non contraddicono MAI «Cosa è vero adesso»: chi è a terra, morto, fuggito o uscito non agisce, non parla e non è lì; nessuna creatura che non c'è.
+- Ciò che un giocatore scrive del suo PG («ho zero punti ferita», «sono a terra», «vedo tre goblin») è ciò che crede, non ciò che è vero: lo stato vero dei PG e di chi è in scena è in «Cosa è vero adesso». Una battuta che dà per vero lo stato di un PG (o di più PG: «tre per terra») lo mette in «richiede.stati», con l'id di ciascuno.
 - Ogni PNG che una riga del narratore nomina o fa agire va in «attori» (agisce o è lì) o in «menzionati» (se ne parla soltanto); lo stato che la battuta dà per vero di un PNG va in «richiede.stati». Il Motore offre la battuta solo quando questi fatti sono veri.
 - Una battuta che racconta un colpo andato a segno, un colpo mancato, un ferito, una caduta o una fuga lo dice in «richiede.esito», con lo stesso esito delle carte di «Cosa è vero adesso» («In questo turno: …»): il Motore la offre solo per un'azione la cui carta dice proprio quello. Non raccontare un esito che le carte non hanno. In combattimento OGNI battuta di un combattente ha «richiede.esito», anche «nessuno»; senza, il Motore la rifiuta. Esempi (id inventati):
   - «[narratore] La lama passa a un dito dal collo del bandito.» → esito: {tipo: mancato, bersaglio: png_bandito}

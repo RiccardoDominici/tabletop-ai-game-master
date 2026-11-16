@@ -843,6 +843,10 @@ table only).
   ancora» (round 6, CM T11). Test: test/classificatore-regole.test.ts.
 - The outcome-word refusal only on a scriptwriter line by or about a fighter of this visit (speaker, actor, or named):
   round 6 refused narration like «il buio cade», «il muro crollato». Test: test/sceneggiatore.test.ts.
+- A PC's state is a line fact too (`richiede.stati: {pg_x: a_terra}`, loader, validator, scriptwriter prompt and
+  check): round 6's one H, CA T15, was a scriptwriter line that took a player's «Ho zero punti ferita» as true («Tre
+  per terra»). The prompt says a player's claim about the PC is what they believe, and the real states are in «Cosa è
+  vero adesso»; the Engine filters the line on the ledger like an NPC's. Test: test/fatti-battuta.test.ts.
 Tests: test/sceneggiatore.test.ts, test/sconfitta.test.ts. Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)

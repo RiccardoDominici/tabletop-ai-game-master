@@ -67,8 +67,8 @@ def controlla(c: Campagna, e: Esito) -> None:
             else:
                 for pid, v in stati.items():
                     classi = [v] if isinstance(v, str) else v
-                    if pid not in c.png:
-                        e.errore("REPERTORIO.fatti", dove, f"richiede.stati: {pid} non è un PNG con scheda")
+                    if pid not in c.png and pid not in c.pg_ids:
+                        e.errore("REPERTORIO.fatti", dove, f"richiede.stati: {pid} non è un PNG con scheda né un PG")
                     if not isinstance(classi, list) or not classi or any(x not in CLASSI_STATO for x in classi):
                         e.errore("REPERTORIO.fatti", dove, f"richiede.stati.{pid}: uno o più di {', '.join(CLASSI_STATO)}")
                     coperti.add(pid)
