@@ -80,7 +80,14 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   fights instead), and a line can tell an outcome with no outcome word («Ahi! … prendi questa»); the stall counter (a
   turn naming an NPC present is never a stall, so ST's first move came at T14); a fallen party leaves the table with
   nothing happening; declared attacks the rules arbiter gives no roll («lo colpisco ancora»); the announcement keeps an
-  «Io sono…» claim and drops a question's «?».
+  «Io sono…» claim and drops a question's «?». All six fixed (a761302…a126c90); round 6 (opus judge): H heard 0 / 1 /
+  0 / 0, the scriptwriter tags 97–98% of the fight lines that need it, ST had 9 stall moves with material, the defeat
+  path fired once (docs/coerenza.md, «Measured, round 6»); two fixes after it (ce48fe3, not measured live). Open from
+  round 6: a line can take a player's claim about a PC's state as true («Tre per terra», CA T15: a PC's state is not a
+  fact a line carries); the outcome-word refusal is mostly noise on narration («il buio cade»); «go» to a place the
+  campaign does not have commits by the words, so FB never stalls; attacks with no first-person verb («Pugnale
+  ancora») still get no roll; an NPC answers words addressed to an NPC who does not exist; the announcement keeps a
+  world clause after the PC's own words and cuts some quotes mid-phrase.
   Still open: a round 4 in profile B measured live (needs API credit; Riccardo has not chosen a provider); a full measuring round of the judge (round 3 had one valid game of four); the private replies stay on the rules
   (their raw text is now logged, for a replay set of their own); R-fuori's whole-sentence state check (the judge
   replaces it in profile B, not in profile A); the cart «impossibile» (11a);
