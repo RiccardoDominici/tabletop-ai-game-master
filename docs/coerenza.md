@@ -753,6 +753,12 @@ Zirrà's words (CA T8); the reader's refused pick at FB T5 («pagava» against t
   di tutti»: «Io» made it look like the PC's own act; in English «I'm»/«I am» unless an -ing verb follows), and keeps
   the «?» of a question the player asked whole («Fulco Granito dice: «Sei Oreste?».»; round 5 said «Sei Oreste» as a
   statement). Tests: test/annuncio-d4.test.ts, test/coerenza-prima-frase.test.ts.
+- The announcement is not an answer to the action (`azioniSenzaRisposta` leaves its row out): in profile A an action
+  no line answered gets the Engine's acknowledgement («Anna ci prova, ma non ci riesce.», from its card) when its card
+  says how it went, or when no scriptwriter will write its line; with the scriptwriter on, an action with no card waits
+  for its `subito`, so the table does not hear both. No repair call goes to the small model in profile A. So
+  `azioni_senza_risposta` changes meaning from round 6: round 5's zeros in profile A counted the announcement as an
+  answer. Test: test/conferma-profilo-a.test.ts.
 Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)

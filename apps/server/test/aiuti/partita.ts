@@ -22,6 +22,8 @@ const TOKEN = 'token_di_prova_motore';
 /** Una partita di prova: tutto ciò che va chiuso alla fine sta qui. */
 export class Prova {
   readonly cartella = fs.mkdtempSync(path.join(os.tmpdir(), 'tabletop-ai-gm-motore-'));
+  /** The scripted narrator's name as the director sees it: «minimo» plays profile A (the local reader's seat). */
+  nomeNarratore: string | null = null;
   private readonly client: Client[] = [];
   private readonly server: ServerTagm[] = [];
   /** Righe JSON di logs/narrazioni.jsonl e turni.jsonl del server (per le misure del Motore). */
@@ -107,6 +109,7 @@ export class Prova {
         return privatiDelTurno.length ? senzaPrivati(copione(turno, m), privatiDelTurno) : copione(turno, m);
       },
     });
+    if (this.nomeNarratore) Object.defineProperty(narratore, 'nome', { value: this.nomeNarratore });
     const narra = narratore.narra.bind(narratore);
     narratore.narra = async (r, cb) => {
       const privato = /## (?:Risposta privata per|Private reply for) .* \((pg_\w+)\)/.exec(r.messaggio);

@@ -3953,7 +3953,10 @@ export class Regia {
     const daRiparare = senzaRisposta.filter((id) => !tolte().has(id));
     if (daRiparare.length < senzaRisposta.length) log.info({ turno, tolte: senzaRisposta.filter((id) => !daRiparare.includes(id)) }, 'coherence: an action\'s answer was dropped by the checker, no repair call for it');
     let riparazioni = 0;
-    if (this.statoRepertorio && daRiparare.length && esito.esito && !controllo.signal.aborted) {
+    // Profile A (the minimal reader): no repair call, the small model only relays. The scriptwriter's `subito` is the
+    // repair; meanwhile an action whose card says how it went gets the Engine's acknowledgement (below).
+    const lettoreMinimo = this.o.narratore.nome === 'minimo';
+    if (this.statoRepertorio && daRiparare.length && esito.esito && !controllo.signal.aborted && !lettoreMinimo) {
       riparazioni = 1;
       const primoCosto = esito.esito.costo;
       const riparazione = await narraTurno(
@@ -4016,7 +4019,14 @@ export class Regia {
     // Never silence: an action still without an answer because the checker dropped it gets the Engine's short line
     // (who tried, how it went, from the card and the ledger). Counted apart: `azioni_senza_risposta` stays the count
     // before it, comparable with the earlier rounds.
-    const confermate = !controllo.signal.aborted ? this.diciConferme(turno, esito, [...tolte()], conferme, log) : [];
+    // Profile A: an action no line answered (the announcement is the player's words, not an answer) gets the Engine's
+    // acknowledgement when its card says how it went, or when no scriptwriter will write its line (round 5: the count
+    // took the announcement as an answer, so the acknowledgement never fired there).
+    const senzaSceneggiatore = !this.sceneggiatore?.vivo;
+    const daConfermare = lettoreMinimo
+      ? senzaRisposta.filter((id) => !tolte().has(id) && (senzaSceneggiatore || conferme.get(id) !== testoFisso('coerenza.risposta.tentativo', { chi: nomeBreve(this.nomePg(id)) })))
+      : [];
+    const confermate = !controllo.signal.aborted ? this.diciConferme(turno, esito, [...tolte(), ...daConfermare], conferme, log) : [];
 
     // Fatti dello scontro (prove/fatti-dovuti.ts): un colpo, una caduta o un tiro contro la morte che la
     // narrazione non ha detto (nome + parola chiave) li dice il Motore, con una riga breve del pacchetto
@@ -4478,8 +4488,9 @@ export class Regia {
    */
   private azioniSenzaRisposta(uscita: VoceUscita[], pubbliche: Map<string, string>): string[] {
     const risposte = new Set<string>();
-    // Le righe private (`[privato pg_x]`) non rispondono a un'azione pubblica: il tavolo non le sente.
-    const testoImprovvisato = uscita.filter((u) => u.tipo === 'improvvisata' && !u.privato).map((u) => (u.tipo === 'improvvisata' ? u.testo : '')).join('\n');
+    // Le righe private (`[privato pg_x]`) non rispondono a un'azione pubblica: il tavolo non le sente. Nor does the
+    // announcement of the action (llm/annuncio.ts): it is the player's words, it names the PC but answers nothing.
+    const testoImprovvisato = uscita.filter((u) => u.tipo === 'improvvisata' && !u.privato && !u.attribuita).map((u) => (u.tipo === 'improvvisata' ? u.testo : '')).join('\n');
     for (const u of uscita) if (u.tipo === 'usa' && u.per) risposte.add(u.per);
     for (const id of pubbliche.keys()) {
       if (risposte.has(id)) continue;
