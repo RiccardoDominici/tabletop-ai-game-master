@@ -2,9 +2,10 @@
 
 What this page is: the design of the coherence layer Riccardo asked for after the third e2e pass («sistema i bug,
 studia un sistema che fixi in particolare la coerenza; usa qualcosa per segnarti queste cose e far sì che diventi
-visibile quando necessario»). It replaces the habit of one guard per bug. Status: **approved by the lead on 16
-November, being built in the order of «Order of work»**; nothing below is built yet except where marked «exists» or
-«done».
+visibile quando necessario»). It replaces the habit of one guard per bug. Status: **built on 16 November** (steps 1–7
+of «Order of work», `85a8340`…`2a7697c`), **measured** on the three blind scripts («Measured»: the success criterion
+is not met yet), then fixed further (`5870930`…`97121cb`, not yet measured on the scripts). Not built: `R-eco` and the
+projector mark (marked below).
 
 Read first: [docs/e2e-finale-3.md](e2e-finale-3.md) §4 and §7 (the bugs and the fix pass), [docs/combattimento.md](combattimento.md)
 §3 (out of play, required facts, the outcome guard), [docs/prove.md](prove.md) (private actions), [docs/mondo.md](mondo.md).
@@ -66,7 +67,8 @@ Engine accepts them only for an NPC present (or absent) and logs them; the Game 
   content and the rows that PC knows, and goes only to that phone (never to the voice queue, so it does not delay the
   table). This removes the feed path of bug 1 instead of guarding it. Cost: one Haiku call per private action.
 - **Game Master panel**: a «Coerenza» box: the ledger's rows (state, presence, who knows what) and the turn's
-  violations (rule, sentence, what was done). **Projector**: a mark on a downed or dead NPC's portrait, if cheap.
+  violations (rule, sentence, what was done). **Projector**: a mark on a downed or dead NPC's portrait, if cheap (not
+built: the fallen already leave the projector's present list).
 
 ### 3. One checker (`apps/server/src/coerenza/verifica.ts`)
 Every sentence, narrator or NPC, public or private, goes through one pipeline before the voice, against the ledger
@@ -76,8 +78,8 @@ with an id and its word lists in the language pack:
 `R-fuori` dead, down or fled who acts or speaks; `R-assente` an NPC not in the scene who speaks or acts; `R-esito` an
 outcome against its card (polarity, target, a fall without a fact); `R-privato` a private fact in a public sentence
 (the audience split makes it a backstop); `R-segreto`; `R-rifiuto`; `R-numeri`; `R-ripetuta` a recent line word for
-word; `R-eco` the player's words restated beyond the announcement; and the end-of-turn `R-dovuto` (a card's fact not
-told).
+word; `R-eco` the player's words restated beyond the announcement (not built: no rule yet, the measured runs had no
+echo above the old repetition check); and the end-of-turn `R-dovuto` (a card's fact not told).
 On a violation: (a) when the sentence is not yet needed by the voice (the buffer has slack) and a fast model is
 available, one targeted repair: a short call with the exact error and the ledger rows, with a hard deadline (to
 measure; about 1.5 s); (b) otherwise (profile A with the local reader goes straight here), or if the repair fails the
@@ -173,9 +175,16 @@ Fixed after the measure (`5870930`, tests on invented fixtures, not yet measured
 - the stall: no «nothing new» count in a visit of the scene where a blow was struck or a fight was on;
 - R-privato: in a fight an NPC not whispered to speaks in its own public step; a line that tells another PC's public
   action of this turn stays at the table.
+Then, from a second reading (`72cc62e`, `8e1f34e`, `97121cb`, tests on invented fixtures):
+- the stall: an action toward an NPC present, after answers with nothing new, neither counts nor resets the escalation
+  (it reset to S1 before, so the stall run never reached S3: about 11 of 14 answers were idle there, not «fixed»);
+- R-esito: the absorbed/missed rule skips a target who struck too in the turn (its own miss is not the hit it took);
+- the private replies get an outcome guard of their own: sharing the public one, a reply that named the dead NPC used
+  up the state line, and the table's sentence was dropped with nothing said.
 Open: a creature the ledger does not have, acting or being hit (`R-inesistente`: the scripts' «goblin con la lancia»
 after the fight). It needs the nouns that name a creature in the language pack and the Engine's «no creature to hit»
-fact passed to the checker; a word-list guess was not added. Profile A (`stallo` with the local reader) was not run: with memory 54% free the reader was started, but once loaded the Mac had 23% free and 6.0 GB of swap (the rule is to stop above about 5 GB, the Mac rebooted twice on 14 November), so it was stopped at once.
+fact passed to the checker; a word-list guess was not added. The stall's S1 in mode B still brings no material of the
+Engine to the table (a filler line or the due mark, when there is one). Profile A (`stallo` with the local reader) was not run: with memory 54% free the reader was started, but once loaded the Mac had 23% free and 6.0 GB of swap (the rule is to stop above about 5 GB, the Mac rebooted twice on 14 November), so it was stopped at once.
 
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a

@@ -41,12 +41,16 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - «the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll);
   - no example campaign uses minions yet; world questions and minions not yet seen in a live run.
 - **Final end-to-end pass on today's code**: done in profile B (docs/e2e-finale-3.md, 958556a: not ready), and its fix
-  pass (§7 there, 16 November: bugs 1, 2, 6, 7, 8, 10 fixed with tests, 3 and 4 partly, run folders in
-  `esperimenti/risultati/e2e-finale-3b/`). Still open from it: hits told with no attacker named or with a receiving
-  phrase outside the list (bug 4), attacks narrated with no card (bug 5), NPC presence fed by the narration and NPCs the
-  players invent voiced by existing ones (bug 9), the cart «impossibile» (11a), the panel's fight and manual
-  initiative (11c); profile A and the dictated action were not run; the web cards without DC were checked at JSON level
-  and in the web unit tests, not in a browser.
+  pass (§7 there, 16 November), which became the **coherence layer** (docs/coerenza.md: ledger, «Cosa è vero adesso»,
+  one checker with named rules, audience split for private actions, presence tags, targeted repair, the panel's
+  «Coerenza» box). Measured on 2a7697c (`esperimenti/risultati/e2e-finale-3b/coerenza-*`): private content 0, order
+  said, DC hidden, first-audio 1.85 s against 2.43 s, but its criterion is **not met** (two definite and about fifteen
+  probable high-severity sentences heard) and the stall run stayed idle. Fixed after the measure, with tests, not yet
+  measured on the scripts: 5870930, 72cc62e, 8e1f34e, 97121cb. Still open: a creature the Engine does not have
+  attacked or acting (bug 5, `R-inesistente`); the stall's S1 in mode B without Engine material; NPCs the players
+  invent voiced by existing ones (bug 9); the cart «impossibile» (11a); the panel's fight and manual initiative (11c);
+  `R-eco` and the projector mark; the «Coerenza» box not yet seen in a browser; profile A (the reader plus the Mac's
+  swap were too much on 16 November) and the dictated action not run.
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.
   Done, by step: research (c0ebcc1), design (96b59e7, 6e2df77), `strumenti/strati.py` (09b3ef4), validator of sessions and STATO/CONTINUITÀ (e02e26c, 8fcfe18), skill (a10a172), session packages and the server side (2d3f2d4, 5bc833b, 7201894).
   Still open: no campaign above one-shot has been played across several sessions yet (no commit records it), so this is not yet verified on a real run.
