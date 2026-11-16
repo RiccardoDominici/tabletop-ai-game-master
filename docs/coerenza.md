@@ -351,6 +351,27 @@ The yes/no judge (`apps/server/src/coerenza/giudice.ts`) is v2 of the scores abo
 Tests: test/coerenza-giudice.test.ts (si, no, a carried subject, a deadline, a sentence the rules changed; with the
 whole server a fake model's «si» gives the Engine line and its «no» keeps a sentence R-fuori would have changed).
 
+## Characters the players invent (Riccardo's decision, 16 November)
+
+The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo
+answered for them (bug 9). The players' new names are found by `apps/server/src/coerenza/nomi-nuovi.ts`: a capitalised
+word in mid-sentence of a public action that the campaign does not know (no PC, NPC, alias, lexicon entry
+(`pronunce.yaml`, `pronunce-gioco.yaml`) or capitalised word of its texts) and that is not an ordinary word, the same
+evidence the dictation uses to learn a name. Dry run over the 380 actions of every run folder in
+`esperimenti/risultati/e2e-finale-3b/`: only «Oreste» (8 actions) and «Carla» (16, «Madre» being an ordinary word).
+- **Mode B and the local reader** (built): no narrator can bring a minor character in, so the Engine answers a new
+  name with a neutral line before the invitation, once per name in a visit of the scene («Oreste? Qui nessuno conosce
+  questo nome.», `coerenza.nome_nuovo`: neutral for a person or a place), and «Cosa è vero adesso» gets «Nessuno in
+  scena si chiama Oreste: nessun PNG risponde a quel nome, non dargli voce.»; the log has «coherence: nobody here has
+  that name, said by the Engine» and narrazioni.jsonl a record `tipo: nome_inventato`. Not with the scriptwriter on:
+  writing what the repertoire lacks is its job. Tests: test/coerenza-nomi-nuovi.test.ts.
+- **Mode A** (decided, not built yet): a minor improvised NPC may enter through a tag (`[nuovo png] name, role`) that
+  the Engine registers in the ledger as «improvvisato»: no stats, no secrets, nothing of the canon's secrets, tracked
+  for presence like the others, saved in the session log and handed to the Preparer between sessions.
+- **A silent exit** (Ugo leaves with no `[esce]`, then speaks): it goes through the yes/no question («does Ugo leave the
+  scene in this sentence?»), scored offline on the present-NPC sentences of the runs before it may change presence,
+  and never blocking the voice (not built yet).
+
 ## The invented goblins: data, not checker? (16 November)
 
 torre-mozza has exactly two foes at the tower, both with sheets: Zirrà (aliases goblin, goblina, capobanda) and

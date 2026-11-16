@@ -25,7 +25,9 @@
  */
 // Frasi fisse nella lingua dei contenuti (lingue/<codice>/testi-motore.yaml, sezione `regia`). Alias perché
 // `testo` qui è spesso un parametro o un campo (il testo di un'azione, di una frase).
+import path from 'node:path';
 import { LINGUA_PREDEFINITA, linguaAttiva, testo as testoFisso, type Lingua } from '../lingua';
+import { FILE_LESSICO, FILE_LESSICO_GIOCO, leggiLessico } from '../voce/pronuncia';
 import type {
   AzionePrivata,
   Esito,
@@ -129,6 +131,7 @@ import { inOsservazione } from '../coerenza/osservazione';
 import { GiudiceDomande } from '../coerenza/giudice';
 import type { ModelloLinguaggio } from '../llm/modello';
 import { contestoMenzioni } from '../coerenza/menzioni';
+import { nomiDellaCampagna, nomiNuovi, type NomiDellaCampagna } from '../coerenza/nomi-nuovi';
 import { creatureAssenti, creatureNote, frasePresenti, guardiaInesistenti, nominateIn, rigaAssenti, type CreaturaAssente } from '../coerenza/inesistenti';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
@@ -3235,6 +3238,48 @@ export class Regia {
     return { turno: r.turno, pubbliche, giudicate, tutte, frase, perParola: (a) => frasePresenti(registro, [a]), nomiTitolari, detta: false };
   }
 
+  /** This turn's invented names, said once per name in a visit of the scene (mode B and the local reader only). */
+  private nomiInventati: { turno: number; nomi: string[] } | null = null;
+  private readonly nomiInventatiDetti = new Map<number, Set<string>>();
+  private nomiCampagnaCache: NomiDellaCampagna | null = null;
+
+  /**
+   * The names the turn's public actions use that the campaign does not know (coerenza/nomi-nuovi.ts), when no narrator
+   * can bring a minor character in: mode B (the selector speaks only prepared lines) and the local reader. Each name
+   * once per visit of the scene. Null when there is none.
+   */
+  private nomiInventatiDelTurno(r: RiepilogoChiusura): { turno: number; nomi: string[] } | null {
+    if (!this.statoRepertorio && this.o.narratore.nome !== 'minimo') return null;
+    // With the scriptwriter on, a new name is its job (it writes the lines the repertoire lacks, docs/sceneggiatore.md).
+    if (this.sceneggiatore) return null;
+    // The names of the pronunciation lexicon count as known too (a place or a god only the lexicon spells).
+    this.nomiCampagnaCache ??= nomiDellaCampagna(this.o.campagna, linguaAttiva(), this.statoRepertorio?.repertorio, [
+      ...leggiLessico(path.join(this.o.campagna.cartella, FILE_LESSICO)).map((v) => v.nome),
+      ...leggiLessico(path.join(this.o.campagna.cartella, FILE_LESSICO_GIOCO)).map((v) => v.nome),
+    ]);
+    const visita = this.mondo.visita.ingresso;
+    const detti = this.nomiInventatiDetti.get(visita) ?? new Set<string>();
+    const nomi = [...new Set(r.azioni.filter((a) => !!a.testo && !a.privata).flatMap((a) => nomiNuovi(a.testo!, this.nomiCampagnaCache!)))].filter((n) => !detti.has(n));
+    if (!nomi.length) return null;
+    for (const n of nomi) detti.add(n);
+    this.nomiInventatiDetti.set(visita, detti);
+    this.o.log.info({ turno: r.turno, nomi }, 'coherence: the actions name someone the campaign does not have');
+    return { turno: r.turno, nomi };
+  }
+
+  /** The neutral line for each invented name, before the invitation. */
+  private diciNomiInventati(turno: number, esito: { uscita: VoceUscita[] }, nomi: readonly string[], log: Logger): void {
+    const righe = nomi.map((nome) => {
+      const t = testoFisso('coerenza.nome_nuovo', { nome });
+      return { etichetta: ID_NARRATORE, testo: t, testo_voce: this.pronuncia(t) };
+    });
+    const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: righe.map((r) => r.testo).join(' '), frasi: righe.map((_, k) => `t${turno}-n${k}`), motore: true };
+    const primaDellInvito = this.righeDelMotore(turno, esito, righe, voce, false, 'n');
+    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'nome_inventato', nomi: [...nomi] });
+    log.info({ turno, nomi, prima_dell_invito: primaDellInvito }, 'coherence: nobody here has that name, said by the Engine');
+    this.notifica();
+  }
+
   /**
    * Who is really there, said by the Engine before the invitation when a public action named an absent creature and the
    * narration did not already say it in place of an invented act (docs/coerenza.md, R-inesistente).
@@ -3524,10 +3569,12 @@ export class Regia {
     if (fuori.length) this.o.log.info({ turno: r.turno, fuori }, 'prove: PNG fuori gioco nel messaggio del narratore');
     const registroTurno = this.registroOra('messaggio del narratore');
     this.inesistenti = this.inesistentiDelTurno(r, registroTurno, !!tiri?.tiri.some((t) => t.tipo === 'attacco'));
+    this.nomiInventati = this.nomiInventatiDelTurno(r);
     const veroAdesso = bloccoVeroAdesso(registroTurno);
     // The narrator hears that the noun the players used names nobody here (and the selector, through the same block).
     const rigaInesistenti = this.inesistenti ? rigaAssenti(this.inesistenti.pubbliche) : null;
     if (veroAdesso && rigaInesistenti) veroAdesso.righe.push(rigaInesistenti);
+    if (veroAdesso && this.nomiInventati?.turno === r.turno) veroAdesso.righe.push(testoFisso('coerenza.nome_nuovo_riga', { nomi: this.nomiInventati.nomi.join(', ') }));
     // The block as the narrator gets it, for the frozen replay set (esperimenti/coerenza/): the run logs of 16 November
     // let the ledger be rebuilt from its events, not the block itself.
     this.o.log.info({ turno: r.turno, righe: veroAdesso?.righe ?? [] }, 'coherence: block of the call');
@@ -3759,6 +3806,9 @@ export class Regia {
     if (ordine.length && !controllo.signal.aborted) this.annunciaOrdine(turno, esito, ordine, log);
     // A public action named a creature nobody here answers to: the table hears who is really there (R-inesistente).
     const ines = this.inesistenti?.turno === turno ? this.inesistenti : null;
+    // A name the players invented (mode B, the local reader): the Engine says nobody here has it (docs/coerenza.md).
+    const inventati = this.nomiInventati?.turno === turno ? this.nomiInventati : null;
+    if (inventati && !controllo.signal.aborted) this.diciNomiInventati(turno, esito, inventati.nomi, log);
     if (ines && ines.pubbliche.length && !ines.detta && !controllo.signal.aborted) {
       // At most once in three turns: round 2 said the same line in almost every turn after the fight.
       if (this.frasiRecenti(turno).has(frasePerRipetizione(ines.frase))) log.info({ turno, parole: ines.pubbliche.map((a) => a.parola) }, 'coherence: who is really there was said in the last turns, not again');

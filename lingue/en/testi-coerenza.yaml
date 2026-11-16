@@ -24,6 +24,9 @@ coerenza:
     morto: "{nome} is no longer alive: neither speaks nor acts, the body is there"
     fuggito: "{nome} fled"
     nascosto: "{nome} hidden"
+  # A name the players invent (coerenza/nomi-nuovi.ts): in mode B and with the local reader the Engine answers it.
+  nome_nuovo: "{nome}? Nobody here knows that name."
+  nome_nuovo_riga: "Nobody in the scene is called {nomi}: no NPC answers to that name, do not voice one."
   # R-inesistente (coerenza/inesistenti.ts): who is really there, when the players name a creature the scene does not have.
   inesistente:
     e: "and"
