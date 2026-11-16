@@ -144,8 +144,10 @@ in git this time: `esperimenti/risultati/e2e-finale-3b/prima-<run>/` on `958556a
 `esperimenti/risultati/e2e-finale-3b/dopo-<run>/` on `7109235` (the per-bug guards, ports 4940–4943: both combat runs
 hit a crash of the out-of-play guard in every fight, fixed in `70be54c`, so they are kept as evidence of the crash; the
 off-the-rails and stall runs are valid) and `esperimenti/risultati/e2e-finale-3b/coerenza-<run>/` on `2a7697c` (the
-coherence layer of docs/coerenza.md, which replaced the per-bug approach at Riccardo's request; ports 4944–4947). The
-«After» column is the coherence run, judged by a blind haiku reader of the per-turn views and spot-checked by hand. Each folder has the harness
+coherence layer of docs/coerenza.md, which replaced the per-bug approach at Riccardo's request; ports 4944–4947), then
+`esperimenti/risultati/e2e-finale-3b/coerenza2-<run>/` on `f29235d` (round 2, after the fixes from round 1's reading,
+same ports) and two canaries `canary-<run>/` on `97121cb` (ports 4948–4949). The «After» column is round 1, judged
+by a blind haiku reader of the per-turn views and spot-checked by hand; round 2 is the table after it. Each folder has the harness
 output, the measures (`misure.txt`, `misure.json`), the table record with cards and the two server logs
 (`log-server/`, the Game Master token redacted). The classification used a per-turn view of the table record next to
 the Engine's log of that turn (cards with numbers, facts given to the narrator, who is out of play, the order, the
@@ -194,5 +196,24 @@ definite high-severity sentences reached the table in four games (a fled goblin'
 absorbed, FB T13), plus about fifteen probable ones, almost all about a creature the Engine does not have. Private
 content no longer reaches the table, fallen characters are corrected or rewritten in most sentences, the order is
 said, the cards hide the DC, and the median first-audio fell from 2.43 s to 1.85 s. The stall run stayed idle (bug 8,
-not fixed there). The gaps found by that reading are listed in docs/coerenza.md, «Measured, round 1»: seven fixed after it with
-tests and not yet measured on the scripts, one open (a creature the Engine does not have), plus the stall's S1.
+not fixed there). The gaps found by that reading are in docs/coerenza.md, «Measured, round 1».
+
+**Round 2** (`f29235d`: round 1's gaps fixed, `R-inesistente` for a creature nobody in the scene answers to, the
+stall's reset and S1 filler; docs/coerenza.md, «Measured, round 2»). Same judge, quotes checked by hand. High-severity
+sentences heard, round 1 (definite + probable) → round 2: combat-manual 10 → 6, combat-auto 4 → 9, off the rails 3 → 1
+(plus 6 unsure: NPCs the players invented, voiced), stall 0 → 3. **Not ready, and no net gain over round 1**: the
+fixes moved the failures more than they removed them. Median first-audio 2.07 s (64 turns) against 2.43 s.
+
+| # | Round 2 (one run each) |
+|---|---|
+| 1 | No private content at the table (`private_al_tavolo.py` 4, 5, 2, 1 candidates, noise). Content-free traces stay by design (combat-auto T1 «Nespola … gli parla piano, voltando la schiena al cortile»); off the rails T16 the public answer says «la chiacchierata con Zirrà resta tra voi», naming the NPC whispered to, who is not even in that scene. |
+| 2 | Combat-auto T15, Zirrà dead since T11: «Zirrà, ferita al fianco, sbuffa e scuote la testa, ma non si muove verso la scala.» (R-fuori read «non si muove» as a state); off the rails T16 the absent Zirrà «lo sguardo … si ferma su di te». |
+| 3 | No PC at 0 HP for the Engine. Combat-auto T14 the claim was corrected («Nespola è ancora in piedi.»); combat-manual T12–T15 the narration followed the player's claim (bleeding, crawling) with no damage in the Engine: not caught. |
+| 4 | Combat-manual T8, card «Livia: Spada lunga 6, fallita» on Grosso, told as a miss on Zirrà (outcome right, target wrong); combat-auto T18, a success told on the invented goblin. |
+| 5 | Still the largest: the invented «goblin con la lancia» acts, is hit or falls in 6 turns (combat-manual) and 8 (combat-auto) although `R-inesistente` caught 21 sentences: it skipped any sentence with a state word anywhere («…: un colpo secco, e lei sente il sangue»), missed objects of other verbs («spinge il goblin contro il muro»), and the model's repair of an R-fuori sentence brought the goblin back (combat-auto T17, T20). |
+| 6 | The order said at every fight start and round (combat-manual T6; combat-auto T6, T9; off the rails six rounds). |
+| 7 | The cards carry no DC («Dardo incantato 2 contro soglia 0» in the log is the text of an always-hit attack; the projector shows «automatico»). |
+| 8 | **Climbs and brings material**: S1 T5 (a filler: the dog that leads to the path), S2 T6 (the straw bed), S3 T8 (three leads), hard S1 T11 (the fire at the tower, a mark), S2 T12 (the chalk letters), S3 T14. Still 13 «nothing new» counts in 14 turns; the S3 sentence repeated word for word at T8 and T14. |
+| 9 | Stall T4 «Ugo … si incammina verso la carbonaia» with no `[esce]`, then he speaks at T8–T10; off the rails the players' «Oreste» and «Madre Carla» are answered by Berta and Ugo. **Open.** |
+| 10 | The who-is-there line said in almost every combat turn after the fight; the S3 leads (above). |
+

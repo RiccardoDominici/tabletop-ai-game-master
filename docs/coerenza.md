@@ -205,6 +205,36 @@ holds); S1 in mode B had an improvised «Nel cortile non si muove nessuno.», so
 scene when the selector brought none (docs/mondo.md §5); R-privato moved a whisper-only turn's visible trace (fixed
 in `b5df16a`). Profile A (`stallo` with the local reader) was not run: with memory 54% free the reader was started, but once loaded the Mac had 23% free and 6.0 GB of swap (the rule is to stop above about 5 GB, the Mac rebooted twice on 14 November), so it was stopped at once.
 
+## Measured, round 2 (16 November, the three blind scripts on `f29235d`)
+
+Runs: `esperimenti/risultati/e2e-finale-3b/coerenza2-*`, same scripts, profile and ports as round 1; the same blind
+haiku reader (`scratchpad` brief, per-turn views), quotes checked by hand.
+
+| Criterion | Round 1 → round 2 | Met |
+|---|---|---|
+| 0 high-severity violations heard | definite + probable: CM 10 → 6, CA 4 → 9, FB 3 → 1 (plus 6 unsure: the players' invented NPCs voiced by Berta and Ugo), ST 0 → 3 (Ugo left without `[esce]` and spoke) | **no** |
+| private content at the table | 0 → 0 (candidates 4, 5, 2, 1: noise) | yes |
+| every caught violation logged with its rule | CM: R-inesistente 13 (6 replaced, 5 dropped, 2 added), R-fuori 7, R-esito 2, R-privato 2, R-dovuto 1; CA: R-assente 11, R-inesistente 8, R-fuori 8, R-esito 6, R-privato 2, R-dovuto 1; FB: R-rifiuto 2, R-assente 2, R-ripetuta 2, R-numeri 1; ST: R-privato 1 | yes |
+| median first-audio within +0.5 s of the baseline | 1854 ms → 2070 ms (64 turns) against 2434 ms | yes |
+
+What round 2 shows:
+- `R-inesistente` fires (21 sentences in the two combat games) but lets most invented goblins through: it skipped a
+  sentence with a state word anywhere in it («Il goblin la ferisce alla spalla: un colpo secco, e lei sente il
+  sangue…»), it does not see the object of a verb that is not a blow («spinge il goblin contro il muro»), and the
+  model's repair of an R-fuori sentence is checked by R-esito and R-fuori only, so it brought the goblin back (CA T17
+  «il goblin con la lancia è caduto e non si muove più», T20). Its line of who is really there was said in almost every
+  turn after the fight.
+- Over-fires of the round-1 fixes: the absorbed-blow rule took «Lo scudo di Zirrà non regge del tutto» (negated) for an
+  absorbed blow, and «il sasso che Zirrà aveva puntato rimbalza…» for a miss on Zirrà, dropping Nespola's only line
+  (CA T6); `R-inesistente` dropped «Che fai?» (the relative «che» read as a subject pronoun, CM T16).
+- R-fuori let a dead NPC act when the sentence has a state phrase used as an action («non si muove verso la scala»).
+- The stall climbs S1 → S2 → S3 → hard S1 → S2 → S3 with the Engine's material at every level; still 13 «nothing
+  new» counts in 14 turns, and the same S3 sentence twice.
+- Presence (bug 9) is not tracked when the narration has an NPC leave without `[esce]`.
+Next, in order: the clause-level state check of R-inesistente (a state skips only where a body it could mean lies in
+the scene), objects of any verb, no carry on relative pronouns, the line at most once in three turns; R-inesistente on
+the repaired sentence; the absorbed-blow rule only for a non-negated word and a target in a prepositional phrase.
+
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a
   creature by a noun outside its aliases («la creatura») is not seen. The ledger makes the rules simpler (one notion
