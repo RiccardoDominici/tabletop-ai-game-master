@@ -105,6 +105,7 @@ battute:
   # A orologio pieno il Motore dice il primo finale disponibile: questo, che non decide dove vanno i PG.
   - id: fin_ovile_mezzanotte
     chi: narratore
+    attori: [png_berta]
     tipo: finale
     quando: "arriva la mezzanotte mentre i PG sono ancora all'ovile"
     temi: [orologio]
@@ -117,6 +118,7 @@ battute:
 
   - id: nar_chiave_presa
     chi: narratore
+    attori: [png_berta]
     tipo: momento
     quando: "un PG prende la chiave a Berta senza il suo permesso"
     temi: [sfilo, sfilare, strappo, strappare, rubo, rubare]
@@ -129,6 +131,8 @@ battute:
 
   - id: fin_ovile_chiave
     chi: narratore
+    attori: [png_berta]
+    menzionati: [png_ugo]
     tipo: finale
     quando: "i PG partono per il bosco con la chiave di Berta"
     temi: [partiamo, andiamo, bosco, carbonaia, sentiero]
@@ -141,6 +145,8 @@ battute:
 
   - id: fin_ovile_senza
     chi: narratore
+    attori: [png_berta]
+    menzionati: [png_ugo]
     tipo: finale
     quando: "i PG partono per il bosco senza la chiave di Berta"
     temi: [partiamo, andiamo, bosco, carbonaia, sentiero]
@@ -216,6 +222,7 @@ battute:
 
   - id: nar_carbonaia_sbuffa
     chi: narratore
+    attori: [png_ugo]
     tipo: momento
     riempitivo: true
     quando: "i PG indugiano accanto alla carbonaia"
@@ -228,6 +235,7 @@ battute:
 
   - id: fin_carbonaia_mezzanotte
     chi: narratore
+    attori: [png_ugo]
     tipo: finale
     quando: "arriva la mezzanotte mentre i PG sono ancora alla carbonaia"
     temi: [orologio]
@@ -277,6 +285,7 @@ battute:
 
   - id: nar_piccone
     chi: narratore
+    attori: [png_zirra]
     tipo: indizio
     riempitivo: true
     quando: "i PG indugiano dentro la torre"
@@ -353,6 +362,7 @@ battute:
 
   - id: nar_tonio_zitto
     chi: narratore
+    attori: [png_zirra]
     tipo: reazione
     quando: "un PG parla con il ragazzo davanti ai goblin"
     temi: [ragazzo, tonio]
@@ -412,6 +422,7 @@ battute:
   # selettore quando un giocatore dice che cosa racconterà a Spinalba, o che il gruppo scende con il ragazzo.
   - id: fin_alba_fontana
     chi: narratore
+    menzionati: [png_berta]
     tipo: finale
     quando: "un PG dice che a Spinalba racconteranno chi ha aiutato i goblin"
     temi: [racconteremo, raccontiamo, diremo, diciamo, sapere]
@@ -447,6 +458,7 @@ battute:
 
   - id: fin_alba_riserva
     chi: narratore
+    menzionati: [png_ugo, png_zirra]
     tipo: finale
     quando: "un PG dice che scagioneranno Ugo raccontando della sua caccia nella riserva"
     temi: [scagionare, scagioniamo, caccia, cervo, riserva]
@@ -515,6 +527,7 @@ battute:
 
   - id: nar_segno_5
     chi: narratore
+    menzionati: [png_zirra]
     tipo: segno_orologio
     quando: "è il momento del quinto segno della notte"
     temi: [orologio]
@@ -591,6 +604,7 @@ battute:
   # Finché Berta non ha dato la chiave (ber_chiave), la chiusura lo dice: il Motore preferisce quella con più condizioni.
   - id: nar_chiusura_ovile_chiave
     chi: narratore
+    attori: [png_berta]
     tipo: chiusura
     quando: "il master chiude la serata all'ovile, con la chiave ancora a Berta"
     temi: [ovile, chiave]
