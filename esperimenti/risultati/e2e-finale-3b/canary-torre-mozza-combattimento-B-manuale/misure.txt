@@ -1,0 +1,364 @@
+{
+ "etichetta": "canary-torre-mozza-combattimento-B-manuale",
+ "turni": {
+  "giocati": 23,
+  "copione": 14,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [
+   "scena_carbonaia",
+   "scena_torre"
+  ],
+  "orologi_max": {
+   "o_mezzanotte": "1/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 1,
+  "selettore_con_parola_segreta": []
+ },
+ "coerenza": {
+  "violazioni": 28,
+  "per_regola": {
+   "R-assente": {
+    "tolta": 5
+   },
+   "R-esito": {
+    "sostituita": 3,
+    "riparata": 2
+   },
+   "R-fuori": {
+    "sostituita": 5,
+    "riparata": 2,
+    "tolta": 3
+   },
+   "R-privato": {
+    "spostata": 7
+   },
+   "R-segreto": {
+    "tolta": 1
+   }
+  },
+  "esempi": [
+   {
+    "turno": 1,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Nespola si accosta a Ugo, abbassando la voce."
+   },
+   {
+    "turno": 1,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Al tavolo si vede solo che si avvicina al carbonaio e gli parla piano."
+   },
+   {
+    "turno": 2,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Eliandro si china verso Berta, a voce bassa, e le chiede qualcosa che resta tra loro due."
+   },
+   {
+    "turno": 2,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "Berta si volta verso il fienile e fa un passo."
+   },
+   {
+    "turno": 2,
+    "regola": "R-privato",
+    "azione": "spostata",
+    "frase": "I cani dietro la porta smettono di guaiare."
+   },
+   {
+    "turno": 6,
+    "regola": "R-esito",
+    "azione": "sostituita",
+    "frase": "Nespola passa di lato, leggera, e il primo goblin che si volta la vede sparire tra due muri crollati."
+   },
+   {
+    "turno": 15,
+    "regola": "R-esito",
+    "azione": "sostituita",
+    "frase": "Nespola, a terra hai ancora il fiato corto: il dardo ha centrato il goblin che ti stava per colpire, e la sua presa si a"
+   },
+   {
+    "turno": 15,
+    "regola": "R-esito",
+    "azione": "riparata",
+    "frase": "Nespola, a terra hai ancora il fiato corto: il dardo ha centrato il goblin che ti stava per colpire, e la sua presa si a"
+   }
+  ]
+ },
+ "private": {
+  "azioni_private": 4,
+  "righe_privato": 3,
+  "esiti_privati_log": 20,
+  "spostate_dalla_guardia": 7,
+  "righe_al_tavolo_sospette": 4,
+  "sospette": [
+   {
+    "turno": 1,
+    "pg": "pg_nespola",
+    "riga": "[narratore] Nespola si accosta a Ugo, abbassando la voce. Al tavolo si vede solo che si avvicina al carbonaio e gli parla piano."
+   },
+   {
+    "turno": 2,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Eliandro si china verso Berta, a voce bassa, e le chiede qualcosa che resta tra loro due."
+   },
+   {
+    "turno": 23,
+    "pg": "pg_eliandro",
+    "riga": "[narratore] Eliandro, Livia si volta verso di te, il respiro corto, lo scudo ancora alzato."
+   },
+   {
+    "turno": 25,
+    "pg": "pg_livia",
+    "riga": "[narratore] Livia, ti muovi verso il fondo della scala, dove Zirrà giace immobile. Il tuo gesto resta tra te e lei."
+   }
+  ],
+  "al_tavolo_candidate": 4,
+  "al_tavolo": [
+   {
+    "turno": 3,
+    "turno_privata": 1,
+    "pg": "Nespola Tondi",
+    "chi": "Narratore",
+    "riga": "La radura della carbonaia è calda, e il fumo sa di legna dolce. Il mulo scuote la testa, legato alla capanna, e sopra gli alberi si vede la torre, nera sul cielo. Ugo è accanto alla carbonaia, con la ",
+    "comuni": [
+     "carbo",
+     "mano",
+     "vede"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 4,
+    "turno_privata": 1,
+    "pg": "Nespola Tondi",
+    "chi": "Narratore",
+    "riga": "Ugo alza lo sguardo dalla carbonaia e sputa per terra. Il sentiero dei goblin è dietro di voi.",
+    "comuni": [
+     "carbo"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 9,
+    "turno_privata": 1,
+    "pg": "Nespola Tondi",
+    "chi": "Narratore",
+    "riga": "Nespola, il goblin più vicino sta arretrando verso la cantina. Vedi la sua mano correre verso la cintura.",
+    "comuni": [
+     "mano"
+    ],
+    "regola": "nome+1"
+   },
+   {
+    "turno": 25,
+    "turno_privata": 25,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Nespola ed Eliandro, la scena resta immobile: il fuoco scricchiola, il vento fischia nel buco del muro.",
+    "comuni": [
+     "immob"
+    ],
+    "regola": "turno privato+1"
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 29,
+  "con_tiro": 14,
+  "tipi": {
+   "nessuna": 12,
+   "prova": 5,
+   "attacco": 12
+  },
+  "dadi": {
+   "d6": 11,
+   "d20": 4
+  },
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 2,
+   "Spada lunga, Attacco in mischia (Forza): dNN contro CA N (difesa di grosso)": 2,
+   "Pugnale lanciato, Attacco a distanza (Destrezza): dNN contro CA N (difesa di zirrà)": 2,
+   "Carisma: dNN contro CD N (difficile)": 2,
+   "Muoversi in silenzio N%: dN serve N o meno": 1,
+   "Spada corta alle spalle, Attacco furtivo (Forza): dNN contro CA N (difesa di grosso)": 1,
+   "Spada corta alle spalle, Attacco furtivo (Forza): dNN contro CA N (difesa di zirrà)": 1,
+   "Pugnale, Attacco in mischia (Forza): dNN contro CA N (difesa di grosso)": 1,
+   "Spada lunga, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà)": 1,
+   "Attacco automatico: Dardo incantato NdN": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "anthropic completo (set generico)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: sorpresa": 1,
+   "combattimento: inizia": 1,
+   "combattimento: iniziativa ritirata": 4,
+   "combattimento: esce dallo scontro": 2,
+   "combattimento: finito": 1
+  },
+  "fatti_morale_terra": 28,
+  "esempi": [
+   "voce: testo per la sintesi: {\"level\": 20, \"time\": \"2026-11-16T02:37:39.178Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"voce\", \"id_frase\": \"t4-f0\", \"parlante\": \"narratore\", \"testo_voce\": \"Nèspola, il sentiero sale tra i faggi, e a ogni passo la terra è p",
+   "narratore: testo del turno: {\"level\": 30, \"time\": \"2026-11-16T02:37:40.170Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 4, \"testo\": \"[narratore] Nespola, il sentiero sale tra i faggi, e a ogni passo la terra è più scura.\\n[usa] nar_impro",
+   "combattimento: esce dallo scontro: {\"level\": 30, \"time\": \"2026-11-16T02:43:19.697Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"combattimento\", \"id\": \"png_grosso\", \"esito\": \"morto\", \"msg\": \"combattimento: esce dallo scontro\"}",
+   "registro: evento: {\"level\": 30, \"time\": \"2026-11-16T02:43:19.699Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 11, \"tipo\": \"stato\", \"id\": \"png_grosso\", \"da\": \"ferito\", \"a\": \"morto\", \"causa\": \"carte del turno\", \"msg\": \"registro: ",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-16T02:43:19.699Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 11, \"attesa_ms\": 1228, \"tardive\": [], \"tiri\": [\"Eliandro: Pugnale 20 contro CA 14, riuscita\"], \"tavolo\": [\"Eliandro: ",
+   "narrator: sentence contradicts the Engine, replaced by its line: {\"level\": 40, \"time\": \"2026-11-16T02:46:40.210Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 15, \"regola\": \"R-esito\", \"etichetta\": \"narratore\", \"testo\": \"Nespola, a terra hai ancora il fiato corto: il dardo ha ",
+   "coherence: sentence repaired by the model, said instead of the Engine line: {\"level\": 40, \"time\": \"2026-11-16T02:46:41.079Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 15, \"regola\": \"R-esito\", \"etichetta\": \"narratore\", \"testo\": \"Nespola, a terra hai ancora il fiato corto: il dardo ha ",
+   "narratore: testo del turno: {\"level\": 30, \"time\": \"2026-11-16T02:46:41.092Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 15, \"testo\": \"[narratore] Eliandro lancia il dardo incantato. Il colpo colpisce Zirrà al fianco, e lei barcolla contr"
+  ],
+  "fatti_morale": [
+   "Morale dei nemici: 7 contro 7 → tengono."
+  ],
+  "fatti_a_terra": [
+   "[1] Eliandro: attacco con Pugnale a Grosso: Pugnale, Attacco in mischia (Forza): d20+1 contro CA 14 (difesa di grosso) → COLPITO, 3 danni; Grosso è A TERRA (0 p",
+   "[1] Eliandro: attacco con Pugnale lanciato a Zirrà: Pugnale lanciato, Attacco a distanza (Destrezza): d20+2 contro CA 14 (difesa di zirrà) → SUCCESSO CRITICO, 4",
+   "Il combattimento è finito: i nemici sono a terra.",
+   "[2] Livia Sarti: Zirrà è già a terra, fuori combattimento: nessun tiro. Non parla e non agisce più: un colpo lo raggiunge senza resistenza, una domanda resta se",
+   "[1] Livia Sarti: Zirrà è già a terra, fuori combattimento: nessun tiro. Non parla e non agisce più: un colpo lo raggiunge senza resistenza, una domanda resta se",
+   "[1] Livia Sarti: Zirrà è già a terra, fuori combattimento: nessun tiro. Non parla e non agisce più: un colpo lo raggiunge senza resistenza, una domanda resta se"
+  ],
+  "fuori_gioco_log": {
+   "prove: PNG fuori gioco nel messaggio del narratore": 15
+  }
+ },
+ "lettore": {
+  "scelte": 0,
+  "nessuna": 0,
+  "ms_classifica_med": null,
+  "ms_classifica_peggiore": null
+ },
+ "sceneggiatore": {
+  "richieste": {},
+  "consegnate": 0,
+  "dette_a_finestra_aperta": 0,
+  "accettate": 0,
+  "scartate": {},
+  "ms_claude_med": null,
+  "ms_totale_med_subito": null,
+  "processo": {}
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20046,
+   "peggiore": 21322,
+   "n": 23
+  },
+  "llm_prima_frase": {
+   "mediana": 960,
+   "peggiore": 5793,
+   "n": 23
+  },
+  "voce_primo_audio": {
+   "mediana": 1084.5,
+   "peggiore": 8027,
+   "n": 22
+  },
+  "schermo_inizio_audio": {
+   "mediana": 1345.5,
+   "peggiore": 8178,
+   "n": 14
+  },
+  "llm_fine": {
+   "mediana": 2073,
+   "peggiore": 8057,
+   "n": 23
+  },
+  "audio_fine": {
+   "mediana": 27819,
+   "peggiore": 47100,
+   "n": 22
+  },
+  "s_tra_turni_med": 49,
+  "s_tra_turni_peggiore": 69.519
+ },
+ "voce": {
+  "motore": "fish",
+  "buchi": {
+   "totale": 0,
+   "in_frase": 0,
+   "tra_frasi": 0,
+   "silenzio_ms": 0,
+   "per_turno": [
+    0,
+    null,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "proiettore_secondi": 647,
+  "errori_voce": {
+   "voce: audio pre-generato mancante, sintesi dal vivo": 4
+  }
+ },
+ "log": {
+  "errori": 0,
+  "avvisi": 40,
+  "per_messaggio": [
+   "40 ×8 narrator: sentence contradicts the Engine, replaced by its line",
+   "40 ×7 narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono",
+   "40 ×5 narratore: riga di un PNG assente dalla scena, scartata",
+   "40 ×4 voce: audio pre-generato mancante, sintesi dal vivo",
+   "40 ×4 coherence: sentence repaired by the model, said instead of the Engine line",
+   "40 ×3 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×3 repertorio: [usa] rifiutato",
+   "40 ×3 narrator: sentence contradicts the Engine, its line already said this turn: dropped",
+   "40 ×1 repertorio: azioni senza risposta, riparazione",
+   "40 ×1 narratore: segreto in una riga al tavolo, riga fermata",
+   "40 ×1 prove: clear attack, decided by the rules instead of the arbiter"
+  ],
+  "provider": [
+   "lettore         → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "arbitro_azioni  → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_ARBITRO",
+   "arbitro_prove   → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "riassunto       → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_RIASSUN",
+   "regole          → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_REGOLE",
+   "voce            → openrouter — variabile d'ambiente TAGM_VOCE",
+   "ascolto         → locale ggml-large-v3-turbo-q5_0 — configurato (config/predefin",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0.08526914999999997,
+ "righe": {
+  "prescritte": 4,
+  "improvvisate": 95,
+  "usa_rifiutati": 3,
+  "azioni_pubbliche": 25,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 1
+ }
+}

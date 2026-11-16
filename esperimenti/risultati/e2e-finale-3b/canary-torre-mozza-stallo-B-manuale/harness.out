@@ -1,0 +1,18 @@
+[torre-mozza-stallo-B] campagna torre-mozza, porta 4949, modalità repertorio: riavvio del server di prova…
+[torre-mozza-stallo-B] server: {"ok":true,"fase":"attesa","turno":0,"versione_scena":0,"voce":"fish","schermo":false,"narratore":"haiku","modello":"claude-haiku-5-5","campagna":"torre-mozza","immagini":17,"audio":26,"sessione":"","modo":"repertorio","ripresa":null,"pacchetto":null,"lingua":"it","lingua_contenuti":"it"}
+[torre-mozza-stallo-B] turno 1/14 fatto (server 1)
+[torre-mozza-stallo-B] turno 2/14 fatto (server 2)
+[torre-mozza-stallo-B] turno 3/14 fatto (server 3)
+[torre-mozza-stallo-B] turno 4/14 fatto (server 4)
+[torre-mozza-stallo-B] turno 5/14 fatto (server 5)
+[torre-mozza-stallo-B] turno 6/14 fatto (server 6)
+[torre-mozza-stallo-B] turno 7/14 fatto (server 7)
+[torre-mozza-stallo-B] turno 8/14 fatto (server 8)
+[torre-mozza-stallo-B] turno 9/14 fatto (server 9)
+[torre-mozza-stallo-B] turno 10/14 fatto (server 10)
+[torre-mozza-stallo-B] turno 11/14 fatto (server 11)
+[torre-mozza-stallo-B] turno 12/14 fatto (server 12)
+[torre-mozza-stallo-B] pg_eliandro rolls Carisma (1d20): 12
+[torre-mozza-stallo-B] turno 13/14 fatto (server 13)
+[torre-mozza-stallo-B] turno 14/14 fatto (server 14)
+[torre-mozza-stallo-B] fatto → esperimenti/risultati/e2e-finale-3b/canary-torre-mozza-stallo-B-manuale (costo $0.03528)
