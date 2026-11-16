@@ -318,6 +318,20 @@ pooled median first-audio would be 2.30 s (round 1 runs, now 1.85 s), 2.19 s (ro
 (canaries, unchanged), all within +0.5 s of the 2.43 s baseline. Cost: one short call per flagged sentence (about 300
 input tokens). Profile A has no fast model: there the rules stay (`regole` or `attive`).
 
+## The invented goblins: data, not checker? (16 November)
+
+torre-mozza has exactly two foes at the tower, both with sheets: Zirrà (aliases goblin, goblina, capobanda) and
+Grosso (hobgoblin). Its data say so: the tower scene's `png_presenti: [png_zirra, png_grosso]`, its opening («una
+goblin svelta, … un hobgoblin»), and the narrator-facing `vincoli_pubblici` «Nella banda ci sono solo Zirrà e Grosso:
+gli altri goblin se ne sono andati.» (in the narrator's scene context, campagna/contesto.ts). The plural elsewhere
+(«una banda di goblin» known to the PCs, «i goblin chiamano», the front «I goblin della Torre Mozza») is the village's
+view of the band, not more creatures. So no `gregari` were added: the third goblin is the blind script's («Vedo tre
+goblin davanti alla porta»), and the narration followed the players over its own scene sheet; that is the checker's
+job (R-inesistente, the yes/no candidate). Why the validator's warning `SCHEDA.nemici_senza_statistiche`
+(strumenti/valida/regole_gregari.py) stayed silent: it compares a scene's public text with the words of the
+campaign's declared minion types, and torre-mozza declares none; with a type declared, «goblin» in the tower's text
+would still be covered by Zirrà, an NPC with a sheet and that alias. It is right not to fire here.
+
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a
   creature by a noun outside its aliases («la creatura») is not seen. The ledger makes the rules simpler (one notion
