@@ -2196,6 +2196,7 @@ export class Regia {
       ...(rq.tipo === 'subito' ? { finoAlTurno: rq.turno } : {}),
       scontro: !!this.prove?.inCombattimento || this.scontroInVisita === this.mondo.visita.ingresso || (this.storiaVisita.ingresso === this.mondo.visita.ingresso && this.storiaVisita.carte.length > 0),
       ...(this.prove?.inCombattimento ? { combattenti: new Set((this.prove.vistaCombattimento()?.combattenti ?? []).filter((x) => x.di_png).map((x) => x.id)) } : {}),
+      ...(rq.stallo ? { stallo: rq.stallo.livello } : {}),
     });
     for (const b of v.accettate) {
       // A scriptwriter's summary of the known leads (stallo 3) is true for a few turns: then the leads change.
@@ -4413,13 +4414,16 @@ export class Regia {
    */
   private diciSconfitta(turno: number, esito: { uscita: VoceUscita[] }, segni: SegniInRisposta, log: Logger): string | null {
     this.ritiraInvito(turno, esito, log);
-    const b = this.statoRepertorio?.finaleDiSconfitta(turno) ?? null;
+    // Every PC at the table dead: a prepared ending assumes survivors («vi lascia legati»: round 6, CA T16, over three
+    // dead PCs), so the Engine's own sentence for that.
+    const tuttiMorti = this.pgAlTavolo().every((id) => this.prove?.stato.fuoriGioco(id) === 'morto');
+    const b = tuttiMorti ? null : (this.statoRepertorio?.finaleDiSconfitta(turno) ?? null);
     if (b && this.aggiungiBattutaMotore(turno, esito, segni, log, b, true)) {
       this.sceneConFinale.add(this.campagna.scena.id);
       log.info({ turno, finale: b.id }, 'combat: the defeat ending of the scene');
       return b.id;
     }
-    const frase = testoFisso('regia.righe.sconfitta');
+    const frase = testoFisso(tuttiMorti ? 'regia.righe.sconfitta_morti' : 'regia.righe.sconfitta');
     const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: frase, frasi: [`t${turno}-k0`], motore: true };
     this.righeDelMotore(turno, esito, [{ etichetta: ID_NARRATORE, testo: frase, testo_voce: this.pronuncia(frase) }], voce, true, 'k');
     this.notifica();

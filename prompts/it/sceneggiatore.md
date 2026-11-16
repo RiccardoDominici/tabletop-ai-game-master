@@ -15,7 +15,6 @@ battute:
     richiede:
       stati: {<id>: a_terra | morto | fuggito | in_gioco}   # solo se la battuta dà per vero lo stato di un PNG («il corpo giace…»)
       esito: {tipo: colpito | mancato | ferito | a_terra | fugge | nessuno, chi: <id del PNG che colpisce o fugge; niente = il PG che agisce>, bersaglio: <id di chi è colpito>}   # obbligatorio in combattimento per ogni battuta di un combattente
-    stallo: 1 | 3   # solo se il compito chiede battute di stallo
 
 Regole:
 - Ogni battuta risponde a un'azione PROBABILE del prossimo turno (o a quella data), senza nomi di PG.

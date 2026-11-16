@@ -117,16 +117,18 @@ describe('controllo delle battute dello sceneggiatore', () => {
     ]);
   });
 
-  it('stall lines: levels 1 and 3 pass, level 2 (it reveals a clue) is the Preparer\'s', () => {
-    const r = validaBattute(
-      yaml([
-        battuta({ id: 'sc_x_1', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Fuori, un cane abbaia due volte.'], stallo: 1 }),
-        battuta({ id: 'sc_x_2', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Fuori, un cane abbaia tre volte.'], stallo: 2 }),
-      ]),
-      ctx,
-    );
-    expect(r.accettate.map((b) => [b.id, b.stallo])).toEqual([['sc_x_1', 1]]);
-    expect(r.scartate).toEqual([{ id: 'sc_x_2', motivo: expect.stringMatching(/lo stallo 2 rivela un indizio/) }]);
+  it('stall lines: the tag only at the level the request asked; elsewhere it is dropped and the line kept', () => {
+    const righe = yaml([
+      battuta({ id: 'sc_x_1', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Fuori, un cane abbaia due volte.'], stallo: 1 }),
+      battuta({ id: 'sc_x_2', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Fuori, un cane abbaia tre volte.'], stallo: 2 }),
+    ]);
+    const chiesto = validaBattute(righe, { ...ctx, stallo: 1 });
+    expect(chiesto.accettate.map((b) => [b.id, b.stallo ?? null])).toEqual([['sc_x_1', 1], ['sc_x_2', null]]);
+    expect(chiesto.scartate).toEqual([]);
+    // Round 6: the «prossime» writer copied the key unasked; the lines stay ordinary ones.
+    const senza = validaBattute(righe, ctx);
+    expect(senza.accettate.map((b) => [b.id, b.stallo ?? null])).toEqual([['sc_x_1', null], ['sc_x_2', null]]);
+    expect(senza.corrette?.map((c) => c.nota)).toEqual([expect.stringMatching(/stallo: 1 dropped \(not asked\)/), expect.stringMatching(/stallo: 2 dropped/)]);
   });
 
   // E2E, secondo giro (N5): 42 battute scartate con «tipo non ammesso per lo sceneggiatore: undefined».

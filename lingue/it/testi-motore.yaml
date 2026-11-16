@@ -21,6 +21,7 @@ regia:
     fine_scena: "La scena è finita: il master sceglie come andare avanti."
     # The defeat path with no prepared defeat ending (docs/combattimento.md, «The defeat path»), said by the narrator.
     sconfitta: "Il buio si chiude sui vostri personaggi: per loro la scena finisce qui. Che ne sarà di voi, lo racconterà il master."
+    sconfitta_morti: "Nessuno di voi si rialza: per i vostri personaggi la storia finisce qui. Il master dirà come continua."
     blocco: "Il narratore si era bloccato: si riparte."
     fine_sessione: "Fine della sessione."
     serata_chiusa: "La serata è chiusa: alla prossima."

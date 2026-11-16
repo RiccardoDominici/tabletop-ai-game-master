@@ -29,10 +29,10 @@ describe('the defeat path', () => {
   let prova: Prova;
   afterEach(async () => prova?.chiudi());
 
-  async function gioca(battute: unknown[] = []) {
+  async function gioca(battute: unknown[] = [], dadi: number[] = [3]) {
     prova = new Prova();
     const cartella = prova.campagna('prove', { ritocchi: { 'pg.yaml': fragile }, ...(battute.length ? { battute: { 'narrazione.yaml': battute } } : {}) });
-    const { url } = await prova.avvia(cartella, () => '[narratore] La mazza di Ruggero cala.\n[invito] tutti', {}, { arbitroProve: new ArbitroColpo(), dadi: new DadiACopione([3]) });
+    const { url } = await prova.avvia(cartella, () => '[narratore] La mazza di Ruggero cala.\n[invito] tutti', {}, { arbitroProve: new ArbitroColpo(), dadi: new DadiACopione(dadi) });
     const schermo = await prova.proiettore(url);
     const tel = await prova.telefono(url, 'pg_corrado');
     const s = await inizia(schermo, tel);
@@ -41,8 +41,11 @@ describe('the defeat path', () => {
     return dopo;
   }
 
+  // Corrado's three death saves: 3, 3, 3 (dead) or 12, 12, 12 (stable).
+  const STABILE = [3, 3, 3, 3, 3, 12, 12, 12];
+
   it('the party down: the Engine\'s sentence, then the table pauses for the Game Master', async () => {
-    const s = await gioca();
+    const s = await gioca([], STABILE);
     const detto = s.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo);
     expect(detto).toContain(testo('regia.righe.sconfitta'));
     expect(s.fase).toBe('pausa');
@@ -51,10 +54,20 @@ describe('the defeat path', () => {
 
   it('a prepared defeat ending of the scene comes first', async () => {
     const finale = { id: 'nar_sconfitta', chi: 'narratore', tipo: 'finale', sconfitta: true, quando: 'i PG sono tutti a terra', temi: ['sconfitta'], richiede: { stati: { png_ruggero: 'in_gioco' } }, attori: ['png_ruggero'], testo: ['[narratore] Ruggero vi trascina al guado e vi lascia lì, legati, per il barone.'], max_usi: 1 };
-    const s = await gioca([finale]);
+    const s = await gioca([finale], STABILE);
     const detto = s.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo);
     expect(detto).toContain('Ruggero vi trascina al guado e vi lascia lì, legati, per il barone.');
     expect(detto).not.toContain(testo('regia.righe.sconfitta'));
+    expect(s.fase).toBe('pausa');
+  });
+
+  it('every PC at the table dead: not the prepared ending (it assumes survivors), the Engine\'s sentence for that', async () => {
+    // Round 6, CA T16: «Vi lascia legati davanti alla porta di ferro» over three dead PCs.
+    const finale = { id: 'nar_sconfitta', chi: 'narratore', tipo: 'finale', sconfitta: true, quando: 'i PG sono tutti a terra', temi: ['sconfitta'], richiede: { stati: { png_ruggero: 'in_gioco' } }, attori: ['png_ruggero'], testo: ['[narratore] Ruggero vi trascina al guado e vi lascia lì, legati, per il barone.'], max_usi: 1 };
+    const s = await gioca([finale], [3]);
+    const detto = s.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo);
+    expect(detto).toContain(testo('regia.righe.sconfitta_morti'));
+    expect(detto).not.toContain('Ruggero vi trascina al guado e vi lascia lì, legati, per il barone.');
     expect(s.fase).toBe('pausa');
   });
 });

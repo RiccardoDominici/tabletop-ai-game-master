@@ -779,6 +779,15 @@ Zirrà's words (CA T8); the reader's refused pick at FB T5 («pagava» against t
   five declared attacks resolved as «nessun tiro».
 Not measured live yet.
 
+## After round 6 (17 November)
+- A stall tag from the scriptwriter only at the level its request asked for; elsewhere the key is dropped and the line
+  kept (round 6: the `prossime` writer copied `stallo:` from the format block onto ordinary lines: CM T7 lost six lines
+  to «stallo 2», and 16 lines in CA, FB and ST never reached the reader's catalogue). The key left the format block;
+  the stall task names it.
+- The defeat ending is not said when every PC at the table is dead (it assumes survivors: CA T16 heard «Vi lascia
+  legati davanti alla porta di ferro» over three dead PCs): the Engine's `regia.righe.sconfitta_morti` instead.
+Tests: test/sceneggiatore.test.ts, test/sconfitta.test.ts. Not measured live yet.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

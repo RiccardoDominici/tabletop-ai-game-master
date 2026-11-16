@@ -15,7 +15,6 @@ battute:
     richiede:
       stati: {<id>: a_terra | morto | fuggito | in_gioco}   # only if the line takes an NPC's state as true («the body lies…»)
       esito: {tipo: colpito | mancato | ferito | a_terra | fugge | nessuno, chi: <id of the NPC who strikes or flees; none = the acting PC>, bersaglio: <id of who is struck>}   # mandatory in a fight for every line of a combatant
-    stallo: 1 | 3   # only if the task asks for stall lines
 
 Rules:
 - Every line answers a LIKELY action of the next turn (or the one given), with no PC names.

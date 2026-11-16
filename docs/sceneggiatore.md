@@ -70,8 +70,9 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
   declares `richiede.esito`, `nessuno` included, or it is refused; a `nessuno` line with an outcome word is refused too.
   The request says so (`scontro`) and asks, for each likely attack, a hit and a miss line with the same `quando`: the
   Engine says the one the card confirms, also for a `subito` answer. The refused lines are recorded with their text;
-- **stall lines**: `stallo: 1` or `3` only, when the request asks for them (a stalling table, docs/mondo.md §5,
-  «Prepared stall lines»); level 2 reveals a clue, so it stays the Preparer's. A level-3 summary is offered for the next
+- **stall lines**: `stallo: 1` or `3` only, at the level the request asks for (elsewhere the key is dropped and the
+  line kept as an ordinary one: round 6's `prossime` writer copied it onto ordinary lines) when the table is stalling
+  (docs/mondo.md §5, «Prepared stall lines»); level 2 reveals a clue, so it stays the Preparer's. A level-3 summary is offered for the next
   three turns only. A line written on the fly does not reveal
   clues or change facts or clocks: the revelations remain the prepared ones, checked by the validator;
 - **who acts**: an NPC a narrator row names with no tag is taken as acting (added to `attori`, logged as a correction),

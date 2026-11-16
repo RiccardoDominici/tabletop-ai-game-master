@@ -68,6 +68,8 @@ export interface ContestoValidazione {
   scontro?: boolean;
   /** A fight is on: the NPCs in it. Every line of one of them declares richiede.esito (`nessuno` included). */
   combattenti?: ReadonlySet<string>;
+  /** The request asked for stall lines of this level (sceneggiatore/protocollo.ts, `stallo`); else no stall tag. */
+  stallo?: 1 | 3;
 }
 
 /** The first word of a blow, a miss or a fall in the text (language pack, guardia_esiti), or null. */
@@ -147,8 +149,13 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     const rq = b['richiede'];
     const soloStati = rq === undefined || (rq !== null && typeof rq === 'object' && !Array.isArray(rq) && Object.keys(rq).every((k) => k === 'stati' || k === 'esito'));
     if (!soloStati || b['effetti'] !== undefined) return void scartate.push({ id, motivo: 'richiede/effetti non ammessi (solo richiede.stati, richiede.esito): le rivelazioni restano quelle preparate' });
-    // A stall line of level 2 reveals a clue: the Preparer's (docs/mondo.md §5); levels 1 and 3 reveal nothing.
-    if (b['stallo'] !== undefined && b['stallo'] !== 1 && b['stallo'] !== 3) return void scartate.push({ id, motivo: 'stallo: 1 o 3 (lo stallo 2 rivela un indizio, lo prepara il Preparatore)' });
+    // A stall tag only on a line the request asked for, at its level (docs/mondo.md §5). Round 6: the `prossime` writer
+    // copied `stallo:` onto ordinary lines unasked (CM T7 lost six lines to «stallo 2»; CA, FB and ST kept 16 lines out
+    // of the reader's catalogue); the key is dropped and the line kept as an ordinary one.
+    if (b['stallo'] !== undefined && b['stallo'] !== ctx.stallo) {
+      corrette.push({ id, nota: `stallo: ${String(b['stallo'])} dropped (${ctx.stallo ? `the request asked for level ${ctx.stallo}` : 'not asked'})` });
+      delete b['stallo'];
+    }
     delete b['varianti'];
     delete b['solo_esempio'];
     delete b['audio'];

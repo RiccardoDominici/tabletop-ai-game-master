@@ -123,8 +123,9 @@ combattimento:
    **The defeat path**: when the fight ends with every PC in it out (`EsitoCombattimento.sconfitta`, a flag, not the
    localised reason) and every PC at the table is down, dead or fled, the Engine says the scene's defeat ending after
    the turn's narration (a prepared `finale` with `sconfitta: true`, available now: its speakers in the scene and the
-   victors it assumes in play, `richiede.stati`; it names no PC, since it cannot know who died; mode B), else its own
-   sentence (`regia.righe.sconfitta`), withdraws the narrator's invitation, says «La scena è finita: il master sceglie
+   victors it assumes in play, `richiede.stati`; it names no PC, since it cannot know who died; mode B; not when every
+   PC at the table is dead, since it assumes survivors: round 6 heard «vi lascia legati» over three dead PCs), else
+   its own sentence (`regia.righe.sconfitta`, or `sconfitta_morti` when all are dead), withdraws the narrator's invitation, says «La scena è finita: il master sceglie
    come andare avanti.» and pauses the table: the Game Master chooses (another scene, healing, the end of the evening).
    Round 5 of the coherence layer (combat manual, T21–T25) had five turns of «Livia Sarti non agisce.» and nothing
    moving after the party fell. A defeat ending never enters the catalogue nor the clock's finale; the validator wants

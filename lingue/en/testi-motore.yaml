@@ -20,6 +20,7 @@ regia:
     fine_scena: "The scene is over: the Game Master chooses how to go on."
     # The defeat path with no prepared defeat ending (docs/combattimento.md, «The defeat path»), said by the narrator.
     sconfitta: "Darkness closes over your characters: for them the scene ends here. What becomes of you, the Game Master will tell."
+    sconfitta_morti: "None of you gets up again: for your characters the story ends here. The Game Master will say how it goes on."
     blocco: "The narrator got stuck: starting again."
     fine_sessione: "End of the session."
     serata_chiusa: "The evening is over: see you next time."
