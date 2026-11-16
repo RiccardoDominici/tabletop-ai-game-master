@@ -195,7 +195,7 @@ it and there is a fight (on, earlier in this visit, or a blow this turn) or one 
 creatures elsewhere is never judged. Then the narrator's block gets «Nessuno in scena è «goblin»…», a narrator
 sentence that has the creature be the subject of a clause, be hit, be wounded in a body part or be the goal of a move
 (and a subject pronoun right after) becomes the Engine's line of who is really there («Zirrà non è più qui. Oltre a
-voi, in piedi qui si vedono soltanto Grosso.»), later ones are dropped, and if the narration invented nothing the
+voi, in piedi qui si vede soltanto Grosso.»), later ones are dropped, and if the narration invented nothing the
 Engine says the line before the invitation (`aggiunta`). The grammar words around the nouns are in
 `lingue/<code>/motore.yaml`, section `inesistenti`; the line is not handed to the model's repair. Limit: a noun whose
 plural changes the word, or a creature the narration names with a word the data do not have, is not seen.

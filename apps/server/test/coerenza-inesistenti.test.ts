@@ -50,10 +50,13 @@ describe('what the table hears', () => {
     const r = ledger('morto');
     const assenti = nominateIn('Colpisco il bandito con la lancia!', creatureAssenti(r, creatureNote(r.entita, TIPI)));
     expect(assenti.map((a) => a.parola)).toEqual(['bandito']);
-    expect(frasePresenti(r, assenti)).toBe('Ruggero giace a terra, senza vita. Oltre a voi, in piedi qui si vedono soltanto Bertoldo.');
+    expect(frasePresenti(r, assenti)).toBe('Ruggero giace a terra, senza vita. Oltre a voi, in piedi qui si vede soltanto Bertoldo.');
     const vuoto = ledger('fuggito', 'morto');
     expect(frasePresenti(vuoto, nominateIn('Attacco il lupo.', creatureAssenti(vuoto, creatureNote(vuoto.entita, TIPI))))).toBe('Oltre a voi, qui non si vede nessuno in piedi.');
     expect(rigaAssenti(assenti)).toContain('«bandito»');
+    // Two standing: the plural, «A e B».
+    const due = registro([...ledger('morto').entita, png('png_ugo', 'Ugo Ferri', ['mugnaio'], 'ferito')]);
+    expect(frasePresenti(due, nominateIn('Colpisco il bandito.', creatureAssenti(due, creatureNote(due.entita))))).toBe('Ruggero giace a terra, senza vita. Oltre a voi, in piedi qui si vedono soltanto Bertoldo e Ugo.');
   });
 });
 

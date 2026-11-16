@@ -27,6 +27,7 @@ coerenza:
   # R-inesistente (coerenza/inesistenti.ts): who is really there, when the players name a creature the scene does not have.
   inesistente:
     e: "e"
+    presenti_uno: "Oltre a voi, in piedi qui si vede soltanto {elenco}."
     presenti: "Oltre a voi, in piedi qui si vedono soltanto {elenco}."
     nessuno: "Oltre a voi, qui non si vede nessuno in piedi."
     riga: "Nessuno in scena è {parole}: chi i giocatori chiamano così non c'è; non farlo agire, parlare né colpire, e non inventarlo."

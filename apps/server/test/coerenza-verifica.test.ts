@@ -180,7 +180,7 @@ describe('the checker with the whole server', () => {
       s = await dopo;
     }
     const detto = (t: number): string => s.trascrizione.filter((v) => v.turno === t && v.tipo === 'narrazione').map((v) => v.testo).join(' ');
-    const chi = 'Ruggero giace a terra, senza vita. Oltre a voi, in piedi qui si vedono soltanto Bertoldo.';
+    const chi = 'Ruggero giace a terra, senza vita. Oltre a voi, in piedi qui si vede soltanto Bertoldo.';
     // T2: the invented parry becomes the line; the rest of the narration stays; the line is not said twice.
     expect(detto(2)).toContain(chi);
     expect(detto(2)).not.toMatch(/ride/);

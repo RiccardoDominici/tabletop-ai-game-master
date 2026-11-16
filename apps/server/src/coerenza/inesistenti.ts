@@ -10,7 +10,7 @@
  * minions in the ledger. A noun is *absent* when none of the characters it names is in the scene and in play (standing,
  * wounded, or hidden: a hidden one is never revealed by its absence). Then:
  * - the table hears who is really there, once per turn (`frasePresenti`): the state of the ones the noun named who fell
- *   or left here («Zirrà non è più qui.») and who is standing in sight («Oltre a voi, in piedi qui si vedono soltanto
+ *   or left here («Zirrà non è più qui.») and who is standing in sight («Oltre a voi, in piedi qui si vede soltanto
  *   Berta.»), said by the Engine when a public action names the noun (scena/regia.ts) or in place of the first sentence
  *   that has the creature act or be hit;
  * - a narrator sentence where the absent creature is the subject of a clause, the object of a blow, the owner of a body
@@ -148,7 +148,9 @@ export function frasePresenti(r: Registro, assenti: readonly CreaturaAssente[]):
     }
   }
   const inPiedi = r.entita.filter((e) => e.tipo !== 'pg' && e.presenza === 'in_scena' && IN_VISTA.has(e.stato)).map((e) => nomeBreve(e.nome));
-  righe.push(inPiedi.length ? testo('coerenza.inesistente.presenti', { elenco: elenco(inPiedi) }) : testo('coerenza.inesistente.nessuno'));
+  // Number agreement: «si vede soltanto Bertoldo», «si vedono soltanto Bertoldo e Ugo».
+  const chiave = inPiedi.length === 0 ? 'coerenza.inesistente.nessuno' : inPiedi.length === 1 ? 'coerenza.inesistente.presenti_uno' : 'coerenza.inesistente.presenti';
+  righe.push(testo(chiave, { elenco: elenco(inPiedi) }));
   return righe.join(' ');
 }
 

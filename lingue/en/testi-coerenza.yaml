@@ -27,6 +27,7 @@ coerenza:
   # R-inesistente (coerenza/inesistenti.ts): who is really there, when the players name a creature the scene does not have.
   inesistente:
     e: "and"
+    presenti_uno: "Besides you, the only one standing in sight here is {elenco}."
     presenti: "Besides you, the only ones standing in sight here are {elenco}."
     nessuno: "Besides you, nobody is standing in sight here."
     riga: "Nobody in the scene is {parole}: whoever the players call that is not here; do not make one act, speak or be hit, and do not invent one."
