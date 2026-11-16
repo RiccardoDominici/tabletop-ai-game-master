@@ -535,6 +535,8 @@ export class Regia {
           idBattute: this.idBattuteRepertorio(),
           prefissoFrasi: `p${k}-`,
           soloPg: id_pg,
+          // A private reply has no invitation by design: not a protocol error.
+          ignora: new Set(['invito_mancante']),
           ...(correggiEsito ? { correggiEsito } : {}),
           presenti: this.pngInScena(),
           onViolazione: (v) => this.violazione(v),
