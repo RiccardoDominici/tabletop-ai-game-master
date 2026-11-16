@@ -259,6 +259,30 @@ change of the table's text). They come back only if they win on a frozen replay 
 folders, labelled once and scored offline, against the alternative of a small model's yes/no question on flagged
 sentences (next steps).
 
+## Frozen replay set
+
+Single runs cannot judge a checker (the same code gave 10 and 6, 4 and 9 high-severity sentences). The replay set
+freezes what the model wrote, so any checker variant is scored on the same sentences in seconds.
+- **Set** (`esperimenti/coerenza/insieme.json`, built by `apps/server/src/strumenti/coerenza-insieme.ts` from the run
+  folders in git: `coerenza-*`, `coerenza2-*`, `canary-*`; the earlier runs have no ledger events): the raw public
+  answer of every turn (the turn record's `testo` in narrazioni.jsonl, before any checker), split into sentences, with
+  the turn's ledger rows rebuilt from the `registro: evento` lines (state from the events, presence from the scene's
+  `png_presenti` and the visit's presence events), who fell by this turn's cards, the turn's attack cards (parsed from
+  `prove: tiri del turno`), the actions and whether a fight is on. A sentence is **flagged** when it names a
+  character out of play or absent, uses a creature noun nobody in play in the scene answers to, names the target of a
+  blow that hurt next to a miss or absorb word, or is the line of an NPC out of play or absent. 53 calls, 136 flagged
+  sentences. Limits: the private replies' raw text is not in the logs; the block the narrator got was not logged (from
+  now on it is: «coherence: block of the call»), so the rows are the ledger's, rebuilt.
+- **Labels** (`esperimenti/coerenza/etichette.json`): every flagged sentence, labelled once by hand, plus the unflagged
+  ones that are violations (a carried subject, «Quello cade contro il muro»; an attack by nobody in play) or that a
+  variant touched: 117 violations, 46 clean; the set's other sentences are clean. Violation: someone out of play since
+  before the turn, absent, or nobody in play acts, speaks, perceives, is hit or is said present; a told outcome against
+  the card; a PC told down who is standing. Clean: a state or a body, an absence, this turn's own fall or flight, a PC
+  acting on a body, a place named after a creature, talk of creatures elsewhere.
+- **Scorer** (`apps/server/src/strumenti/coerenza-punteggio.ts`, `npx tsx … [variant]`): builds the guards as the
+  director does for each call and runs the sentences in order; a touched clean sentence is a wrong touch, an untouched
+  violation a miss; the lists go to `esperimenti/coerenza/punteggi/<variant>.json`.
+
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a
   creature by a noun outside its aliases («la creatura») is not seen. The ledger makes the rules simpler (one notion

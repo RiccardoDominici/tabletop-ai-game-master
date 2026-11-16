@@ -583,6 +583,7 @@ export class Regia {
   private async riparaFrase(turno: number, x: { regola: string; frase: string; motivo: string; sostituto: string }): Promise<string | null> {
     const ms = this.o.riparazione?.ms ?? 1500;
     const blocco = bloccoVeroAdesso(this.registroOra('riparazione'));
+    this.o.log.info({ turno, righe: blocco?.righe ?? [], riparazione: true }, 'coherence: block of the call');
     const messaggio = testoFisso('coerenza.riparazione.messaggio', {
       frase: x.frase,
       errore: testoFisso(`coerenza.riparazione.errore.${x.motivo}`, { sostituto: x.sostituto }),
@@ -3474,6 +3475,9 @@ export class Regia {
     // The narrator hears that the noun the players used names nobody here (and the selector, through the same block).
     const rigaInesistenti = this.inesistenti ? rigaAssenti(this.inesistenti.pubbliche) : null;
     if (veroAdesso && rigaInesistenti) veroAdesso.righe.push(rigaInesistenti);
+    // The block as the narrator gets it, for the frozen replay set (esperimenti/coerenza/): the run logs of 16 November
+    // let the ledger be rebuilt from its events, not the block itself.
+    this.o.log.info({ turno: r.turno, righe: veroAdesso?.righe ?? [] }, 'coherence: block of the call');
     // Gli stessi dati vanno al lettore minimo, che non legge il testo (llm/minimo.ts, turnoDaDati).
     const datiTurno: DatiMessaggioTurno = {
       turno: r.turno,
