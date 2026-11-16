@@ -1,0 +1,2308 @@
+{
+ "nota": "Frozen replay set (docs/coerenza.md). Raw public answers; ledger rebuilt from registro events; private replies not included.",
+ "campagna": "torre-mozza",
+ "chiamate": 12,
+ "segnate": 42,
+ "insieme": [
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-automatico#10",
+   "run": "coerenza3-torre-mozza-combattimento-B-automatico",
+   "turno": 10,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [
+    "png_grosso",
+    "png_zirra"
+   ],
+   "carte": [
+    {
+     "chi": "pg_nespola",
+     "bersaglio": "png_zirra",
+     "riuscita": true,
+     "danno": 8
+    }
+   ],
+   "azioni": [
+    {
+     "id_pg": "pg_nespola",
+     "testo": "Lo colpisco ancora, poi mi sposto e lo lascio dietro di me.",
+     "privata": false
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Nespola affonda la spada corta nella schiena scoperta di Zirrà.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "La goblin urla e lo scudo le cade dalle mani sulla pietra.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Zirrà crolla in ginocchio, poi a terra, e non si rialza.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Grosso si ferma con la mazza a mezz'aria.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_grosso"
+     ]
+    },
+    {
+     "i": 4,
+     "etichetta": "narratore",
+     "testo": "Guarda la compagna immobile, poi guarda Nespola.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 5,
+     "etichetta": "narratore",
+     "testo": "Il fischio della torre si spegne di colpo.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 6,
+     "etichetta": "narratore",
+     "testo": "I goblin rimasti in piedi gettano le armi e corrono verso il buio del bosco, lasciando dietro di sé solo l'eco dei passi sulla pietra.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 7,
+     "etichetta": "narratore",
+     "testo": "Grosso abbassa la mazza, stringe i denti e sputa per terra.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_grosso"
+     ]
+    },
+    {
+     "i": 8,
+     "etichetta": "png_grosso",
+     "testo": "Zirrà... morta.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "parla:png_grosso"
+     ]
+    },
+    {
+     "i": 9,
+     "etichetta": "png_grosso",
+     "testo": "Hai carne?",
+     "segnata": true,
+     "menzioni": [
+      "parla:png_grosso"
+     ]
+    },
+    {
+     "i": 10,
+     "etichetta": "narratore",
+     "testo": "Eliandro esce da dietro la pietra con il quaderno stretto al petto.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 11,
+     "etichetta": "narratore",
+     "testo": "Livia abbassa lo scudo, il fiato corto.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 12,
+     "etichetta": "narratore",
+     "testo": "Tonio, sui gradini della cantina, ti guarda con gli occhi sbarrati, la corda ancora ai polsi.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#4",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 4,
+   "scena": "scena_carbonaia",
+   "scontro": false,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_nespola",
+     "testo": "Corro avanti sul sentiero, mi fermo ogni dieci passi per ascoltare.",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_livia",
+     "testo": "Scendo per prima, scudo avanti, guardo i rami sopra la testa.",
+     "privata": false
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Livia scende per prima, con lo scudo alzato, e guarda i rami sopra la testa.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Nespola corre avanti sul sentiero e si ferma ogni dieci passi per ascoltare.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Nespola si china sul sentiero per cercare trappole, ma nel fango non vede niente di sicuro, e il suo passo tocca le frasche.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Un ramo si spezza sotto la suola di Nespola, e dal sottobosco arriva un fischio secco, poi un altro.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 4,
+     "etichetta": "narratore",
+     "testo": "Eliandro guarda il quaderno, poi alza gli occhi verso il sentiero dei goblin.",
+     "segnata": true,
+     "menzioni": [
+      "assente:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 5,
+     "etichetta": "narratore",
+     "testo": "Ugo, dalla radura, batte la pala per terra due volte.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 6,
+     "etichetta": "png_ugo",
+     "testo": "Paese.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 7,
+     "etichetta": "png_ugo",
+     "testo": "Se volete la torre, quel sentiero è la strada dei goblin.",
+     "segnata": true,
+     "menzioni": [
+      "assente:png_zirra",
+      "nome:goblin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#9",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 9,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [
+    "png_grosso",
+    "png_zirra"
+   ],
+   "carte": [
+    {
+     "chi": "pg_eliandro",
+     "bersaglio": "png_zirra",
+     "riuscita": true,
+     "danno": 4
+    }
+   ],
+   "azioni": [
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Tiro il pugnale da dietro la pietra, al goblin con la lancia.",
+     "privata": false
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Eliandro tira il pugnale da dietro la pietra.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "La lama fende l'aria e colpisce Zirrà al petto.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "La goblin cade in ginocchio, lo scudo che rotola sul selciato.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Grosso guarda la compagna a terra, poi il fuoco, poi la scala.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_grosso"
+     ]
+    },
+    {
+     "i": 4,
+     "etichetta": "narratore",
+     "testo": "La mazza gli scivola di mano.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 5,
+     "etichetta": "narratore",
+     "testo": "Si volta e scappa verso il crinale, e il corno di capra gli rimbalza sulla schiena.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 6,
+     "etichetta": "narratore",
+     "testo": "Il vento porta via l'eco della corsa.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 7,
+     "etichetta": "narratore",
+     "testo": "Nella torre restano il fuoco, il corpo di Zirrà e il ragazzo sui gradini, con la corda ancora ai polsi.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 8,
+     "etichetta": "narratore",
+     "testo": "Tonio alza gli occhi verso di voi, e per la prima volta sembra vedere qualcuno.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#10",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 10,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_livia",
+     "testo": "Il goblin mi tira la lancia, la paro con lo scudo. Resisto.",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_nespola",
+     "testo": "Lo colpisco ancora, poi mi sposto e lo lascio dietro di me.",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Pugnale ancora, il goblin si gira verso di me.",
+     "privata": false
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Livia para la lancia con lo scudo: il legno geme, ma regge.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Il goblin ringhia e arretra di un passo.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Nespola colpisce ancora, poi scivola di lato e lascia il goblin dietro di sé, a sbilanciarsi sul selciato gelato.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Eliandro lancia il pugnale: il goblin si gira verso di lui, e la lama gli sfiora la spalla senza fermarlo.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 4,
+     "etichetta": "narratore",
+     "testo": "Grosso, dal fuoco, si volta a guardare i suoi compagni e stringe il pugno sull'osso.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_grosso"
+     ]
+    },
+    {
+     "i": 5,
+     "etichetta": "narratore",
+     "testo": "Nespola colpisce il goblin alla gamba, poi scivola di lato e lo lascia sbilanciato sul selciato gelato.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 6,
+     "etichetta": "narratore",
+     "testo": "Eliandro lancia il pugnale: la lama fende l'aria e lo sfiora alla spalla, senza fermarlo.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#11",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 11,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_nespola",
+     "testo": "Il goblin mi prende alla spalla, sento sangue. Indietreggio ma resto in piedi.",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_livia",
+     "testo": "Spingo il goblin contro il muro con lo scudo e lo colpisco.",
+     "privata": false
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Livia e Nespola si avvicinano alle carcasse dei goblin mentre il fuoco sfrigola.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Zirrà giace immobile vicino alla scala.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Nespola sente il sangue caldo colarle lungo il braccio, ma si tiene in piedi, a denti stretti.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Livia spinge il goblin contro il muro con lo scudo, e il colpo di spada lo raggiunge.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 4,
+     "etichetta": "narratore",
+     "testo": "Il corpo cade senza un grido.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 5,
+     "etichetta": "narratore",
+     "testo": "Eliandro, dietro la pietra, osserva ogni cosa in silenzio, con il quaderno aperto sulle ginocchia.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 6,
+     "etichetta": "narratore",
+     "testo": "Tonio, sui gradini della cantina, guarda il corpo di Zirrà, poi voi.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 7,
+     "etichetta": "narratore",
+     "testo": "Il suo respiro è corto.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#12",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 12,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Vedo Nespola a terra. Lancio il dardo incantato al goblin che la sta per colpire!",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_livia",
+     "testo": "Mi chino su Nespola, la trascino dietro lo scudo e la copro.",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_nespola",
+     "testo": "Ho zero punti ferita, sono a terra. Non mi reggo più, striscio dietro la pietra.",
+     "privata": false
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Eliandro alza la mano e il dardo incantato parte dal suo palmo, verso il goblin che stava per colpire Nespola.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Il colpo arriva senza mancare.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Livia si china su Nespola, la trascina dietro lo scudo e la copre con il proprio corpo.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Nespola striscia dietro la pietra, stringendo i denti, il braccio insanguinato.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 4,
+     "etichetta": "narratore",
+     "testo": "Il goblin colpito dal dardo barcolla e cade.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 5,
+     "etichetta": "narratore",
+     "testo": "Ne resta ancora uno, che si ferma a guardare la scena, incerto.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 6,
+     "etichetta": "narratore",
+     "testo": "Eliandro, il dardo colpisce il goblin in pieno petto.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 7,
+     "etichetta": "narratore",
+     "testo": "Il colpo arriva senza mancare, e la creatura cade in ginocchio.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#13",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 13,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_livia",
+     "testo": "Ehi goblin! Chi vi paga? Fermatevi, e nessuno si fa più male!",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Mi ritiro verso la scala, arretro di tre passi col quaderno stretto al petto.",
+     "privata": false
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Livia Sarti, grida e lo scudo alzato.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Ma la goblin Zirrà è a terra, e chi resta in piedi non risponde.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Il corpo di Zirrà giace accanto alla scala, immobile.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Eliandro arretra di tre passi verso la scala, il quaderno stretto al petto.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 4,
+     "etichetta": "narratore",
+     "testo": "Il fuoco crepita.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 5,
+     "etichetta": "narratore",
+     "testo": "Dal crinale non arriva più nessun corno.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 6,
+     "etichetta": "narratore",
+     "testo": "Tonio, sui gradini della cantina, guarda la scala e poi voi, con il respiro corto.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#14",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 14,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Dal gradino tiro il pugnale a quello che scappa verso la cantina.",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_livia",
+     "testo": "Il goblin davanti esita, guarda il compagno. Non lo colpisco ancora, aspetto la risposta.",
+     "privata": false
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Eliandro tira il pugnale verso il goblin che scappa in cantina, ma la lama si perde nel buio della scala, e il rumore dei passi continua giù, verso la porta di ferro.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Livia non colpisce.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Il goblin davanti a lei si volta verso il compagno, lo guarda, e aspetta.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Nespola resta dietro la pietra, il braccio insanguinato, e ascolta.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 4,
+     "etichetta": "narratore",
+     "testo": "Zirrà giace accanto alla scala, immobile.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 5,
+     "etichetta": "narratore",
+     "testo": "Tonio, sui gradini, la guarda, poi alza gli occhi su di voi.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 6,
+     "etichetta": "narratore",
+     "testo": "Eliandro, il pugnale parte dal gradino e sparisce nel buio della scala: il rumore dei passi si allontana verso la porta di ferro, e della lama non si sente più nulla.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#15",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 15,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_livia",
+     "testo": "Non si ferma nessuno: finisco quello con la lancia, colpo di spada lunga.",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Torno da Nespola e le fascio la spalla con la mia sciarpa, mentre Livia combatte.",
+     "privata": false
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Livia abbassa la spada lunga sul goblin con la lancia, senza fargli scudo.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Il colpo lo coglie di fianco e lo stende sulle pietre, accanto alla scala.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Nespola, dietro la pietra, stringe il braccio insanguinato e guarda Eliandro che si china su di lei con la sciarpa in mano.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Eliandro le fascia la spalla in fretta, mentre fuori dalla torre il vento porta un corno lontano.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 4,
+     "etichetta": "narratore",
+     "testo": "Il fuoco si abbassa.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 5,
+     "etichetta": "narratore",
+     "testo": "Tonio, sui gradini, ha smesso di guardare il corpo di Zirrà e guarda voi.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 6,
+     "etichetta": "narratore",
+     "testo": "Livia, il goblin con la lancia cade di fianco sulle pietre, accanto alla scala.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 7,
+     "etichetta": "narratore",
+     "testo": "Non si rialza.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#16",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 16,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Lo tengo fermo col piede e chiedo: «Dov'è il ragazzo?»",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_livia",
+     "testo": "Ultimo goblin: lo blocco contro la porta con lo scudo.",
+     "privata": false
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Eliandro preme il piede sul goblin e chiede dove sia il ragazzo.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "La creatura sputa sangue sulle pietre e non risponde.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Livia alza lo scudo e spinge l'ultimo goblin contro la porta di ferro.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Il legno geme, e il goblin resta schiacciato, senza più fiato per ribellarsi.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 4,
+     "etichetta": "narratore",
+     "testo": "Il fuoco si abbassa.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 5,
+     "etichetta": "narratore",
+     "testo": "Tonio, sui gradini, guarda il goblin schiacciato, poi voi.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 6,
+     "etichetta": "narratore",
+     "testo": "Nespola, dietro la pietra, resta ferma con il braccio fasciato e osserva la scena in silenzio.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 7,
+     "etichetta": "narratore",
+     "testo": "Eliandro, il goblin sputa sangue sulle pietre e non risponde.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 8,
+     "etichetta": "narratore",
+     "testo": "Il ragazzo, sui gradini, guarda voi due.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 9,
+     "etichetta": "narratore",
+     "testo": "Livia, lo scudo preme il goblin contro la porta di ferro.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 10,
+     "etichetta": "narratore",
+     "testo": "Il legno geme, e la creatura non ha più fiato per ribellarsi.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#17",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 17,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_livia",
+     "testo": "Piano al goblin, con la punta della spada: «Parla, e ti lascio andare. Dov'è il ragazzo?»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Livia si china sul corpo di Zirrà, lontano dagli occhi degli altri, e le parla piano.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Livia si rialza in fretta e si volta verso Nespola ed Eliandro, lo scudo ancora in mano.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#18",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 18,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Anch'io gli parlo, piano: «Chi vi dà ordini? Dimmelo e scappa.»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Eliandro si china sul corpo di Zirrà, poi ritorna sui gradini senza dire una parola.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Il ragazzo ha stretto le ginocchia al petto.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Non sembra avere fretta di alzarsi.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Nespola, con il braccio fasciato, si avvicina alla scala e guarda il fuoco che si spegne.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ]
+  }
+ ]
+}
