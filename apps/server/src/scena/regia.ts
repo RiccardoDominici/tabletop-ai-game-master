@@ -191,6 +191,8 @@ export interface OpzioniRegia {
   cacheAudio?: CacheAudio;
   /** Esperimenti: la finestra si apre sempre per tutti i PG al tavolo (l'invito resta nel log). */
   finestraATutti?: boolean;
+  /** The checker's targeted repair (docs/coerenza.md §3): its deadline; null = off (the Engine's sentence at once). */
+  riparazione?: { ms: number } | null;
   /** Arbitro delle azioni simultanee (null = solo regole). */
   arbitro?: Arbitro | null;
   /**
@@ -551,6 +553,41 @@ export class Regia {
     } finally {
       this.controlliPrivati.delete(controllo);
     }
+  }
+
+  /**
+   * The checker's targeted repair (docs/coerenza.md §3): the narrator's model rewrites one sentence that broke a fact
+   * rule, with the exact error and «Cosa è vero adesso», within the deadline (`riparazione.ms`); null on timeout, error or
+   * an empty answer, and then the Engine's sentence stays. The system prompt is the narrator's own (cached).
+   */
+  private async riparaFrase(turno: number, x: { regola: string; frase: string; motivo: string; sostituto: string }): Promise<string | null> {
+    const ms = this.o.riparazione?.ms ?? 1500;
+    const blocco = bloccoVeroAdesso(this.registroOra('riparazione'));
+    const messaggio = testoFisso('coerenza.riparazione.messaggio', {
+      frase: x.frase,
+      errore: testoFisso(`coerenza.riparazione.errore.${x.motivo}`, { sostituto: x.sostituto }),
+      vero: blocco ? [blocco.titolo, ...blocco.righe.map((r) => `- ${r}`)].join('\n') : '',
+    });
+    const controllo = new AbortController();
+    const timer = setTimeout(() => controllo.abort(new Error('deadline')), ms);
+    const inizio = this.o.orologio.ora();
+    let testo = '';
+    try {
+      await this.o.narratore.narra({ turno, sistema: this.sistema, messaggio, signal: controllo.signal }, (d) => {
+        testo += d;
+      });
+    } catch (err) {
+      this.o.log.info({ turno, regola: x.regola, ms: this.o.orologio.ora() - inizio, err: err instanceof Error ? err.message : String(err) }, 'coherence: repair not in time, the Engine line stays');
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+    const riga = testo
+      .split('\n')
+      .map((l) => l.replace(/^\s*\[[^\]]*\]\s*/, '').trim())
+      .find((l) => l.length > 0);
+    this.o.log.info({ turno, regola: x.regola, ms: this.o.orologio.ora() - inizio, riparata: !!riga }, 'coherence: repair answered');
+    return riga ?? null;
   }
 
   /** The checker's last violations, for the Game Master panel (docs/coerenza.md §2). */
@@ -3431,6 +3468,7 @@ export class Regia {
         ...this.parametroRifiuti(turno),
         giàSentite: this.frasiRecenti(turno),
         onViolazione: (v) => this.violazione(v),
+        ...(this.o.riparazione ? { ripara: (x: { regola: string; frase: string; motivo: string; sostituto: string }) => this.riparaFrase(turno, x) } : {}),
         presenti: this.pngInScena(),
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segniInRisposta) : null,
         onFrase: (f) => {
@@ -3474,7 +3512,8 @@ export class Regia {
           ...(correggiEsito ? { correggiEsito } : {}),
           ...this.parametroRifiuti(turno),
           // The repair must not say again what the first answer of this turn already said either.
-          giàSentite: this.frasiRecenti(turno + 1),
+          giàSentite: this.frasiRecenti(turno),
+          detteNelTurno: new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno === turno).map((v) => frasePerRipetizione(v.testo))),
           onViolazione: (v) => this.violazione(v),
           presenti: this.pngInScena(),
           usa: (id, per) => this.usaBattuta(id, per, turno, segniInRisposta),

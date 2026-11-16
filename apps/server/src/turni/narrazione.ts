@@ -186,8 +186,16 @@ export interface ParametriTurno {
    * pause between uses (repertorio/stato.ts).
    */
   giàSentite?: ReadonlySet<string>;
+  /** What this turn's first call already said (for its repair call): repeated word for word, it is dropped. */
+  detteNelTurno?: ReadonlySet<string>;
   /** Every violation the checker caught, with its rule (coerenza/verifica.ts): the director logs and counts it. */
   onViolazione?: (v: Violazione) => void;
+  /**
+   * The targeted repair (docs/coerenza.md §3): the director asks the model to rewrite a sentence that broke a fact rule,
+   * within its deadline; null = no repair (the Engine's sentence stays). Asked only when the voice has slack: never for
+   * the first sentence of the answer.
+   */
+  ripara?: (r: { regola: string; frase: string; motivo: string; sostituto: string }) => Promise<string | null>;
   /**
    * The private reply of the audience split (docs/coerenza.md §2): every sentence and every repertoire line of this call
    * goes only to this PC's phone; invitations, clocks, attitudes, pace and audio cues of the call are ignored (the
@@ -201,6 +209,7 @@ export { frasePerRipetizione };
 /** The old anomaly code and log line of each rule (the run measures and the evidence views read them). */
 function anomaliaDi(v: Violazione): { codice: string; messaggio: string } {
   const motivo = typeof v.dettaglio?.['motivo'] === 'string' ? (v.dettaglio['motivo'] as string) : null;
+  if (v.azione === 'riparata') return { codice: 'riparata', messaggio: 'coherence: sentence repaired by the model, said instead of the Engine line' };
   switch (v.regola) {
     case 'R-numeri':
       return { codice: 'numeri_regole', messaggio: 'narratore: numeri delle regole a voce, tolti' };
@@ -280,6 +289,7 @@ export async function narraTurno(
       ...(p.guardiaSegreti ? { guardiaSegreti: p.guardiaSegreti } : {}),
       ...(p.rifiutoDopoProva ? { rifiutoDopoProva: p.rifiutoDopoProva } : {}),
       ...(p.giàSentite ? { giàSentite: p.giàSentite } : {}),
+      ...(p.detteNelTurno ? { detteNelTurno: p.detteNelTurno } : {}),
       nomiPg: [...new Set(campagna.pg.flatMap((x) => [x.nome, x.nome.split(/\s+/)[0] ?? '']).map(frasePerRipetizione).filter((x) => x.length > 2))],
     },
     (v) => {
@@ -364,14 +374,28 @@ export async function narraTurno(
     return out;
   };
 
+  // The events are handled in order on one queue: a sentence that waits for its repair holds the ones after it.
+  let coda: Promise<void> = Promise.resolve();
   const gestisci = (grezzi: EventoNarratore[]): void => {
+    coda = coda.then(() => gestisciOra(grezzi)).catch((err: unknown) => {
+      log.error({ turno: p.turno, err: (err as Error).message }, 'narratore: gestione delle frasi fallita');
+    });
+  };
+  const gestisciOra = async (grezzi: EventoNarratore[]): Promise<void> => {
     const eventi = espressione.trasforma(togliIdDalTesto(grezzi));
     for (const e of eventi) {
       if (p.signal.aborted) return;
       if (e.tipo === 'frase') {
         // One checker, the rules in a fixed order (coerenza/verifica.ts, docs/coerenza.md §3).
-        const d = verifica.verifica({ etichetta: e.etichetta, testo: e.testo, voce: e.voce, segmento: e.segmento, ...(e.privato ? { privato: e.privato } : {}) });
+        let d = verifica.verifica({ etichetta: e.etichetta, testo: e.testo, voce: e.voce, segmento: e.segmento, ...(e.privato ? { privato: e.privato } : {}) });
         if (d.tipo === 'togli') continue;
+        // A fact rule broke and the voice has slack (not the first sentence): one targeted repair, within its deadline.
+        if (d.tipo === 'dici' && d.riparabile && p.ripara && indice > 0 && !p.soloPg) {
+          const r = d.riparabile;
+          const nuova = await p.ripara({ regola: r.regola, frase: r.originale, motivo: r.motivo, sostituto: d.testo });
+          if (p.signal.aborted) return;
+          if (nuova && verifica.confermaRiparata(e.etichetta, r.originale, nuova, r.regola)) d = { ...d, testo: nuova, voce: nuova };
+        }
         if (d.tipo === 'sostituisci') {
           sostituisci(e.segmento, d.righe);
           continue;
@@ -519,6 +543,7 @@ export async function narraTurno(
       },
     );
     gestisci(parser.chiudi());
+    await coda;
     chiudiCue();
     p.misuratore.imposta('llm_fine', p.ora());
     p.misuratore.impostaCosto(esito.costo);
@@ -532,6 +557,7 @@ export async function narraTurno(
     // Le frasi già arrivate sono valide: si chiude il parser per non perdere l'ultima.
     if (!interrotto) {
       gestisci(parser.chiudi());
+      await coda;
       chiudiCue();
     }
     p.misuratore.imposta('llm_fine', p.ora());

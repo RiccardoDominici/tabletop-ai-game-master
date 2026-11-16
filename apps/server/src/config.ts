@@ -88,6 +88,12 @@ export interface ConfigServer {
    * decides; under vitest the players' rolls are automatic unless TAGM_TIRI_GIOCATORI says otherwise.
    */
   tiri: { giocatori: 'manuale' | 'automatico' | null; master: 'nascosti' | 'a_volte' | 'visibili' | null };
+  /**
+   * The coherence checker's targeted repair (docs/coerenza.md §3): a sentence that contradicts the ledger is rewritten
+   * by the narrator's model within `ms`, when the voice has slack; otherwise the Engine's sentence. TAGM_RIPARAZIONE=no
+   * turns it off (and it is off under vitest unless TAGM_RIPARAZIONE=si); TAGM_RIPARAZIONE_MS sets the deadline.
+   */
+  riparazione: { attiva: boolean; ms: number };
   llm: {
     modo: ModoLlm;
     modello: string;
@@ -216,6 +222,10 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     // Con il narratore a copione (test, prove senza spesa) l'arbitro usa solo le regole.
     arbitro: scelta(env['TAGM_ARBITRO'], ['haiku', 'regole'] as const, env['TAGM_LLM'] === 'finto' ? 'regole' : 'haiku'),
     semeDadi: /^[0-9a-f]{8,128}$/i.test(testo(env['TAGM_SEME_DADI']) ?? '') ? testo(env['TAGM_SEME_DADI'])! : null,
+    riparazione: {
+      attiva: testo(env['TAGM_RIPARAZIONE']) === 'no' ? false : testo(env['TAGM_RIPARAZIONE']) === 'si' ? true : !process.env['VITEST'],
+      ms: Math.max(300, Math.min(5000, Number(testo(env['TAGM_RIPARAZIONE_MS']) ?? 1500) || 1500)),
+    },
     tiri: {
       giocatori: sceltaOpzionale(env['TAGM_TIRI_GIOCATORI'], ['manuale', 'automatico'] as const) ?? (process.env['VITEST'] ? 'automatico' : null),
       master: sceltaOpzionale(env['TAGM_TIRI_MASTER'], ['nascosti', 'a_volte', 'visibili'] as const),

@@ -29,7 +29,7 @@ export type IdRegola = 'R-numeri' | 'R-esito' | 'R-fuori' | 'R-assente' | 'R-fin
 export const REGOLE: readonly IdRegola[] = ['R-numeri', 'R-esito', 'R-fuori', 'R-assente', 'R-finzione', 'R-privato', 'R-segreto', 'R-rifiuto', 'R-ripetuta', 'R-dovuto'];
 
 /** What the checker did with the sentence. */
-export type AzioneViolazione = 'riscritta' | 'sostituita' | 'tolta' | 'spostata' | 'aggiunta';
+export type AzioneViolazione = 'riscritta' | 'sostituita' | 'tolta' | 'spostata' | 'aggiunta' | 'riparata';
 
 export interface Violazione {
   turno: number;
@@ -59,6 +59,8 @@ export interface RegoleTurno {
   guardiaSegreti?: (etichetta: string, testo: string) => EsitoGuardiaSegreti | null;
   rifiutoDopoProva?: (etichetta: string, testo: string) => Array<{ etichetta: string; testo: string }> | null;
   giàSentite?: ReadonlySet<string>;
+  /** What this turn's earlier call already said (the repair call of mode B): a repeat of it is dropped, names or not. */
+  detteNelTurno?: ReadonlySet<string>;
   /** The PCs' names (normalised as `frasePerRipetizione`): a sentence that names one is never a repetition. */
   nomiPg: readonly string[];
 }
@@ -73,7 +75,17 @@ export interface FraseDaVerificare {
 }
 
 export type Decisione =
-  | { tipo: 'dici'; testo: string; voce: string; privato?: string }
+  | {
+      tipo: 'dici';
+      testo: string;
+      voce: string;
+      privato?: string;
+      /**
+       * The sentence broke a fact rule and `testo` is the Engine's line: the director may ask the model for a targeted
+       * repair of `originale` (docs/coerenza.md §3) and, if the repair passes `confermaRiparata`, say it instead.
+       */
+      riparabile?: { regola: IdRegola; originale: string; motivo: string };
+    }
   | { tipo: 'togli' }
   | { tipo: 'sostituisci'; righe: Array<{ etichetta: string; testo: string }> };
 
@@ -118,6 +130,7 @@ export class VerificaTurno {
     }
     const correzione = e.etichetta === ID_NARRATORE ? (this.r.correggiEsito?.(testo) ?? null) : null;
     let corretta = false;
+    let riparabile: { regola: IdRegola; originale: string; motivo: string } | undefined;
     if (correzione) {
       const regola = REGOLA_DI_MOTIVO[correzione.motivo];
       // The same Engine line twice in a turn is said once (the third e2e pass heard one twice in a row).
@@ -127,6 +140,7 @@ export class VerificaTurno {
       }
       this.viola({ regola, etichetta: e.etichetta, frase: testo, azione: 'sostituita', sostituto: [correzione.testo], dettaglio: { motivo: correzione.motivo } });
       this.sostituti.add(correzione.testo);
+      riparabile = { regola, originale: testo, motivo: correzione.motivo };
       testo = correzione.testo;
       voce = correzione.testo;
       corretta = true;
@@ -169,15 +183,30 @@ export class VerificaTurno {
     }
     // Said word for word in the last turns, or already in this call: dropped. A sentence that names a PC is never a
     // repetition (a turn prompt, an outcome), nor is an Engine line that replaced one.
-    if (!privato && !corretta && this.r.giàSentite) {
+    if (!privato && !corretta && (this.r.giàSentite || this.r.detteNelTurno)) {
       const k = frasePerRipetizione(testo);
-      if (k.length >= 12 && !this.r.nomiPg.some((n) => ` ${k} `.includes(` ${n} `)) && (this.r.giàSentite.has(k) || this.detteOra.has(k))) {
+      const nominaPg = this.r.nomiPg.some((n) => ` ${k} `.includes(` ${n} `));
+      // Within the turn a repeat is always redundant; across turns a sentence that names a PC may come back.
+      const nelTurno = this.detteOra.has(k) || !!this.r.detteNelTurno?.has(k);
+      if (k.length >= 12 && (nelTurno || (!nominaPg && !!this.r.giàSentite?.has(k)))) {
         this.viola({ regola: 'R-ripetuta', etichetta: e.etichetta, frase: testo, azione: 'tolta' });
         return { tipo: 'togli' };
       }
       this.detteOra.add(k);
     }
-    return { tipo: 'dici', testo, voce, ...(privato ? { privato } : {}) };
+    return { tipo: 'dici', testo, voce, ...(privato ? { privato } : {}), ...(riparabile ? { riparabile } : {}) };
+  }
+
+  /**
+   * A repaired sentence (docs/coerenza.md §3) is said only if the fact rules pass on it and it has no rule numbers; the
+   * repair itself is recorded as one more violation record, `riparata`, of the same rule.
+   */
+  confermaRiparata(etichetta: string, originale: string, riparata: string, regola: IdRegola): boolean {
+    const t = riparata.trim();
+    if (!t || togliNumeriRegole(t).tolti.length) return false;
+    if (this.r.correggiEsito?.(t)) return false;
+    this.viola({ regola, etichetta, frase: originale, azione: 'riparata', sostituto: [t] });
+    return true;
   }
 
   /**

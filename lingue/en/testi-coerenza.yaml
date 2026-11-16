@@ -24,3 +24,9 @@ coerenza:
     morto: "{nome} is no longer alive: neither speaks nor acts, the body is there"
     fuggito: "{nome} fled"
     nascosto: "{nome} hidden"
+  riparazione:
+    messaggio: "## Fix one sentence\nThe sentence «{frase}» cannot be said: {errore}.\n\n{vero}\n\nRewrite only that sentence: one [narratore] line, at most twenty words, consistent with what is true now. Nothing else."
+    errore:
+      fuori_gioco_agisce: "it has someone down, dead, fled or gone act or speak ({sostituto})"
+      caduta_senza_fatto: "it has someone fall who is still standing for the Engine ({sostituto})"
+      colpo_contrario: "it tells a blow against its card ({sostituto})"

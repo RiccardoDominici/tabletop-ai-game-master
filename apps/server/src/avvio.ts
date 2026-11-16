@@ -370,6 +370,8 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     ...(narratoreRiassunto !== undefined ? { narratoreRiassunto } : {}),
     // Il lettore minimo sceglie anche le battute d'attesa (riempitivi) quando nessuna battuta risponde.
     attesaNelCatalogo: narratore.nome === 'minimo',
+    // The checker's targeted repair needs a fast model: never with the local minimal reader (docs/coerenza.md §3).
+    riparazione: config.riparazione.attiva && narratore.nome !== 'minimo' ? { ms: config.riparazione.ms } : null,
     // Lo sceneggiatore (docs/sceneggiatore.md) scrive con Claude Code ciò che il lettore minimo non trova:
     // le richieste partono solo se il suo processo gira (scripts/sceneggiatore.sh). Spento nei server di
     // prova (narratore sostituito) e con TAGM_SCENEGGIATORE=no.

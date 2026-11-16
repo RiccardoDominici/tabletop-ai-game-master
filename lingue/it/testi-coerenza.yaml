@@ -24,3 +24,9 @@ coerenza:
     morto: "{nome} non è più in vita: non parla né agisce, il corpo è lì"
     fuggito: "{nome} fuggito"
     nascosto: "{nome} nascosto"
+  riparazione:
+    messaggio: "## Correggi una frase\nLa frase «{frase}» non si può dire: {errore}.\n\n{vero}\n\nRiscrivi soltanto quella frase: una sola riga [narratore], al massimo venti parole, coerente con ciò che è vero adesso. Niente altro."
+    errore:
+      fuori_gioco_agisce: "fa agire o parlare chi è a terra, morto, fuggito o uscito ({sostituto})"
+      caduta_senza_fatto: "fa cadere chi per il Motore è ancora in piedi ({sostituto})"
+      colpo_contrario: "racconta un colpo al contrario della carta ({sostituto})"

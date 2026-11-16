@@ -132,6 +132,23 @@ componenti:
 
 Haiku decides, with the Anthropic key.
 
+## The coherence check and its repair
+
+Every sentence of the narration is checked against what the Engine holds true before the voice says it
+([docs/coerenza.md](../coerenza.md)): someone dead, down, fled or gone who acts, an outcome told against its card,
+private content at the table, a line repeated word for word. A sentence that breaks a fact rule becomes the Engine's
+own short line («Ruggero giace a terra, senza vita.»). With a narrator through an API, if the voice has something to
+say meanwhile (never for the first sentence of an answer), the model is first asked to rewrite that one sentence
+within a deadline; the rewrite is said only if it passes the same rules. With the local reader there is no rewrite:
+the Engine's line at once.
+
+- `TAGM_RIPARAZIONE=no` turns the rewrite off (the Engine's line always); it is off in the automated tests unless
+  `TAGM_RIPARAZIONE=si`.
+- `TAGM_RIPARAZIONE_MS=1500` is the deadline in milliseconds (300 to 5000).
+
+Every caught sentence is in the server log («coerenza: violazione», «coherence: repair answered») and on the panel,
+«Coerenza».
+
 ## Keys
 
 | Key | What it unlocks | Needed? |

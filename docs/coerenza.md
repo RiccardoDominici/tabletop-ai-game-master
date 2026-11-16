@@ -125,7 +125,17 @@ check, so a leak can no longer hide behind a 0.
    apps/web/src/lingua/{it,en}/master.ts; docs/guide/master-panel.md, «Coherence». Tested by rendering
    (SezioneCoerenza.test.ts), not yet looked at in a browser. **Not done**: the projector mark on a downed NPC (the
    fallen already leave the projector's present list).
-7. The targeted repair with its deadline, measured on the three e2e scripts. Then the e2e pass again.
+7. **Built**: the targeted repair. A fact-rule replacement (R-esito, R-fuori) carries `riparabile`; when the answer has
+   already queued a sentence (the voice has slack) and the narrator is not the local reader, turni/narrazione.ts waits
+   for `ripara` (the director's `riparaFrase`: the narrator's model, its cached system prompt, the message
+   `coerenza.riparazione.*` with the sentence, the error and «Cosa è vero adesso», a deadline `TAGM_RIPARAZIONE_MS`,
+   default 1500); the rewrite is said only if `confermaRiparata` passes (fact rules, no rule numbers), recorded as one
+   more violation record of the same rule with `azione: riparata`; otherwise the Engine's line. The events of an answer
+   are now handled on one queue, so a sentence that waits holds the ones after it. Off under vitest unless
+   `TAGM_RIPARAZIONE=si`; guide: docs/guide/local-and-api.md. Tests: test/coerenza-verifica.test.ts (a rewrite that
+   passes is said, one that breaks the rule again is not). Measured on the three scripts: see «Measured».
+   Building it found a crash of step 2's out-of-play guard (a language-pack section compiled twice, `70be54c`) that the
+   rerun on `7109235` had hit in every fight.
 
 ## Success criterion (written before measuring)
 On the three blind scripts of docs/e2e-finale-3.md (combat with manual and automatic rolls, off the rails, stall),
