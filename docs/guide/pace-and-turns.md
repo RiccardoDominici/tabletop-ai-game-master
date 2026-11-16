@@ -56,7 +56,8 @@ A window that closes without any action (the frantic countdown ran out, or «Ris
 a stall, whatever the players wrote, after two answers in a row that brought nothing new: nobody rolled, no new scene,
 no fight, no clue or fact («Cosa facciamo?», «Non lo so», «Mi siedo sul muretto»). Asking an NPC something and getting
 nothing new counts as stalling too; what starts the count again is a real decision: a roll, or an action that commits
-(you go somewhere, move, give or take something, use an object, attack). The world
+(you go somewhere, move, give or take something, use an object, attack). Going somewhere the campaign does not have
+(«vado al mulino» where there is no mill) is not one: the narrator says where the roads from here really go. The world
 makes a move instead of asking «cosa fate?» again, and the moves change on consecutive stalls
 ([docs/mondo.md](../mondo.md) §5):
 

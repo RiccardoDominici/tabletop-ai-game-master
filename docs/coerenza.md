@@ -850,6 +850,8 @@ table only).
 - Words to someone the campaign does not have («Chiedo a Oreste…», «Madre Carla, …») get the neutral «Oreste? Qui
   nessuno conosce questo nome.» also with the scriptwriter on, and no NPC answers for them (round 6, FB T7, T11; see
   «Characters the players invent»).
+- «Go» to a place the campaign does not have is not a commitment for the stall, and the Engine says where the roads
+  really go (docs/mondo.md §5; round 6, FB: a mill, a ford, a cave). Test: test/coerenza-destinazioni.test.ts.
 Tests: test/sceneggiatore.test.ts, test/sconfitta.test.ts. Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)

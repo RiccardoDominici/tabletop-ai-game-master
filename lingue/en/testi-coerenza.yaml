@@ -27,6 +27,9 @@ coerenza:
   improvvisato: " (improvised: no stats, knows no secret)"
   # A name the players invent (coerenza/nomi-nuovi.ts): in mode B and with the local reader the Engine answers it.
   nome_nuovo: "{nome}? Nobody here knows that name."
+  # An action goes somewhere the campaign does not have (coerenza/destinazioni.ts): the roads that really leave the scene.
+  strade: "From here the roads you know lead only towards: {luoghi}."
+  strade_nessuna: "No road leads from here to that place."
   nome_nuovo_riga: "Nobody in the scene is called {nomi}: no NPC answers to that name, do not voice one."
   # The Engine's answer to an action whose sentences the checker dropped (coerenza/risposta.ts): who tried, how it went.
   risposta:

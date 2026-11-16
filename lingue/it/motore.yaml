@@ -311,6 +311,9 @@ stallo:
   # gives or takes, uses an object or attacks is a real decision and starts the stall's count again; naming or asking
   # an NPC is not. Whole words, in a sentence that is not a question (flags iu).
   impegno: '\b(vado|andiamo|entro|entriamo|esco|usciamo|salgo|saliamo|scendo|scendiamo|corro|corriamo|torno|torniamo|seguo|seguiamo|vengo|veniamo|raggiungo|raggiungiamo|attraverso|attraversiamo|scappo|fuggo|salto|mi arrampico|mi avvicino|ci avviciniamo|mi sposto|ci spostiamo|mi allontano|do|dò|diamo|porgo|consegno|regalo|offro|prendo|prendiamo|afferro|raccolgo|rubo|tolgo|lascio|metto|appoggio|getto|butto|uso|usiamo|apro|apriamo|chiudo|accendo|spengo|lego|slego|taglio|rompo|scasso|forzo|spingo|tiro|sollevo|sposto|scavo|bevo|indosso|lancio|suono|blocco|sequestro|benedico|fascio|curo|trascino|colpisco|attacco|ferisco|carico|carichiamo|affondo|sparo|scocco)\b'
+  # A movement and its destination (named group `dove`; coerenza/destinazioni.ts): a destination none of whose words the
+  # campaign or the language knows («vado al mulino» with no mill) is not a commitment (flags giu).
+  moto: '\b(?:vado|andiamo|vengo|veniamo|torno|torniamo|corro|corriamo|salgo|saliamo|scendo|scendiamo|entro|entriamo|esco|usciamo|raggiungo|raggiungiamo|mi dirigo|ci dirigiamo|parto|partiamo)\s+(?:a|ad|al|allo|alla|ai|agli|alle|all''|in|nel|nello|nella|nei|negli|nelle|verso|fino a|fino al|fino alla|dal|dalla|sul|sulla|oltre)\s(?<dove>[^,;:.!?]*)'
   senza_decisione:
     - { nome: aspettare, regex: '^(?:\p{L}+\s+)?(?:aspett\w*|attend\w*)(?:\s+(?:ancora|un po[''’]?|e basta|qui|in silenzio))*\s*[.!…]*$', flags: iu }
     - { nome: restare fermi, regex: '^(?:\p{L}+\s+)?(?:rest\w*|rimang\w*|riman\w*|st[oa]|stiamo)\s+(?:ferm\w*|immobil\w*|in attesa|a guardare|qui)(?:\s+e basta)?\s*[.!…]*$', flags: iu }

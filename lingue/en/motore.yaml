@@ -311,6 +311,9 @@ stallo:
   # gives or takes, uses an object or attacks is a real decision and starts the stall's count again; naming or asking
   # an NPC is not. Whole words, in a sentence that is not a question (flags iu).
   impegno: '\b(i|we|i''ll|we''ll)\s+(go|walk|run|enter|leave|climb|follow|head|move|come|give|hand|take|grab|pick up|steal|drop|put|use|open|close|light|tie|cut|break|force|push|pull|lift|throw|drink|attack|hit|strike|charge|shoot|block|bless|bandage|drag)\b'
+  # A movement and its destination (named group `dove`; coerenza/destinazioni.ts): a destination none of whose words the
+  # campaign or the language knows («I go to the mill» with no mill) is not a commitment (flags giu).
+  moto: '\b(?:i|we|i''ll|we''ll)\s+(?:go|walk|run|head|ride|return|come|climb)\s+(?:to|into|towards|toward|up to|down to|back to|over to|through)\s(?<dove>[^,;:.!?]*)'
   senza_decisione:
     - { nome: waiting, regex: '^(?:\p{L}+\s+)?(?:i\s+|we\s+)?(?:wait\w*|keep\s+waiting)(?:\s+(?:here|again|a bit|a little|and see|in silence))*\s*[.!…]*$', flags: iu }
     - { nome: staying put, regex: '^(?:\p{L}+\s+)?(?:i\s+|we\s+)?(?:stay\w*|remain\w*|stand\w*)\s+(?:still|put|here|and watch)\s*[.!…]*$', flags: iu }

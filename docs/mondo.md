@@ -139,7 +139,11 @@ only on a real new decision or new information (the lead's rule after round 5 of
 roll, a scene change, a fight on, a clue or a fact a public line of the answer brought (not the Engine's own lines:
 stall moves, due marks), or an action that commits, the PC's own verb of moving, going somewhere, giving or taking,
 using an object or attacking, in a sentence that is not a question (`stallo.impegno` in `lingue/<code>/motore.yaml`,
-`impegna`). Naming or questioning an NPC with nothing new in the answer is stalling: before, it counted as a decision,
+`impegna`). A movement to a destination the campaign does not have («vado al mulino» with no mill: its head word is
+none of the campaign's or the language's words, `stallo.moto`, coerenza/destinazioni.ts) is not a commitment, and the
+Engine answers it with the roads that really leave the scene (its `uscite`, the places the PCs know: «Da qui le strade
+che conoscete portano soltanto verso: …»; round 6's off-the-rails players «went» to a mill and a ford every turn and
+never stalled). Naming or questioning an NPC with nothing new in the answer is stalling: before, it counted as a decision,
 and round 5's stall game had its first stall move only at T14. A line that only answers («Le pecore non aspettano.»)
 is not new either. After a fight is over, the turns count again.
 The third e2e pass (docs/e2e-finale-3.md, bug 8) had a stalling table write «Cosa facciamo?», «Non lo so…», «Mi siedo

@@ -27,6 +27,9 @@ coerenza:
   improvvisato: " (improvvisato: nessuna statistica, non sa nessun segreto)"
   # A name the players invent (coerenza/nomi-nuovi.ts): in mode B and with the local reader the Engine answers it.
   nome_nuovo: "{nome}? Qui nessuno conosce questo nome."
+  # An action goes somewhere the campaign does not have (coerenza/destinazioni.ts): the roads that really leave the scene.
+  strade: "Da qui le strade che conoscete portano soltanto verso: {luoghi}."
+  strade_nessuna: "Da qui non parte nessuna strada per quel posto."
   nome_nuovo_riga: "Nessuno in scena si chiama {nomi}: nessun PNG risponde a quel nome, non dargli voce."
   # The Engine's answer to an action whose sentences the checker dropped (coerenza/risposta.ts): who tried, how it went.
   risposta:

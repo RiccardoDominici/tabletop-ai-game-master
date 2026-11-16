@@ -136,6 +136,7 @@ import { guardiaAttori, type StoriaVisita } from '../coerenza/attori';
 import type { ModelloLinguaggio } from '../llm/modello';
 import { contestoMenzioni } from '../coerenza/menzioni';
 import { nomiDellaCampagna, nomiNuovi, nomiRivolti, type NomiDellaCampagna } from '../coerenza/nomi-nuovi';
+import { destinazioniIgnote, senzaDestinazioniIgnote } from '../coerenza/destinazioni';
 import { creatureAssenti, creatureNote, frasePresenti, guardiaInesistenti, nominateIn, rigaAssenti, type CreaturaAssente } from '../coerenza/inesistenti';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
@@ -3440,6 +3441,8 @@ export class Regia {
   }
 
   /** This turn's invented names, said once per name in a visit of the scene (mode B and the local reader only). */
+  /** This turn's movements to places the campaign does not have (coerenza/destinazioni.ts). */
+  private destinazioniIgnote: { turno: number; dove: string[] } | null = null;
   /** `nomi`: the ones to say this turn (once per visit); `perAzione`: every invented name each PC's action used. */
   private nomiInventati: { turno: number; nomi: string[]; perAzione: Map<string, string[]> } | null = null;
   private readonly nomiInventatiDetti = new Map<number, Set<string>>();
@@ -3454,11 +3457,7 @@ export class Regia {
     if (!this.statoRepertorio && this.o.narratore.nome !== 'minimo') return null;
     // With the scriptwriter on too (round 6, FB T7 and T11): it cannot bring a new character in (its lines are for the
     // NPCs present), and an NPC present answered words addressed to «Oreste» and «Madre Carla».
-    // The names of the pronunciation lexicon count as known too (a place or a god only the lexicon spells).
-    this.nomiCampagnaCache ??= nomiDellaCampagna(this.o.campagna, linguaAttiva(), this.statoRepertorio?.repertorio, [
-      ...leggiLessico(path.join(this.o.campagna.cartella, FILE_LESSICO)).map((v) => v.nome),
-      ...leggiLessico(path.join(this.o.campagna.cartella, FILE_LESSICO_GIOCO)).map((v) => v.nome),
-    ]);
+    this.nomiCampagna();
     const visita = this.mondo.visita.ingresso;
     const detti = this.nomiInventatiDetti.get(visita) ?? new Set<string>();
     // With the scriptwriter on, only a name spoken to (a mention, «il santuario di Brychan», is its job: it writes the
@@ -3478,6 +3477,48 @@ export class Regia {
     this.nomiInventatiDetti.set(visita, detti);
     this.o.log.info({ turno: r.turno, nomi, per_azione: Object.fromEntries(perAzione) }, 'coherence: the actions name someone the campaign does not have');
     return { turno: r.turno, nomi, perAzione };
+  }
+
+  /** The campaign's names and ordinary words (coerenza/nomi-nuovi.ts), built once. */
+  private nomiCampagna(): NomiDellaCampagna {
+    // The names of the pronunciation lexicon count as known too (a place or a god only the lexicon spells).
+    this.nomiCampagnaCache ??= nomiDellaCampagna(this.o.campagna, linguaAttiva(), this.statoRepertorio?.repertorio, [
+      ...leggiLessico(path.join(this.o.campagna.cartella, FILE_LESSICO)).map((v) => v.nome),
+      ...leggiLessico(path.join(this.o.campagna.cartella, FILE_LESSICO_GIOCO)).map((v) => v.nome),
+    ]);
+    return this.nomiCampagnaCache;
+  }
+
+  /** Every word the campaign or the language knows, plain forms (coerenza/destinazioni.ts). */
+  private paroleNote(): ReadonlySet<string> {
+    if (!this.paroleNoteCache) {
+      const n = this.nomiCampagna();
+      this.paroleNoteCache = new Set([...n.comuni, ...n.noti].map((w) => normalizza(w)));
+    }
+    return this.paroleNoteCache;
+  }
+  private paroleNoteCache: Set<string> | null = null;
+
+  /**
+   * The roads that really leave the scene (its `uscite`, the places the PCs know), for an action that goes somewhere the
+   * campaign does not have (docs/coerenza.md, «After round 6»): said once in three turns. Mode B and the local reader.
+   */
+  private diciStradeVere(turno: number, esito: { uscita: VoceUscita[] }, dove: readonly string[], log: Logger): void {
+    const nodi = (this.campagna.campagnaNarratore['nodi'] as Array<Record<string, unknown>> | undefined) ?? [];
+    const uscite = (this.campagna.scena.dati['uscite'] as Array<Record<string, unknown>> | undefined) ?? [];
+    const luoghi = uscite
+      .map((u) => nodi.find((x) => x['id'] === u['verso']))
+      .filter((x): x is Record<string, unknown> => !!x && x['noto_ai_pg'] === true && typeof x['nome'] === 'string')
+      .map((x) => x['nome'] as string);
+    const frase = luoghi.length ? testoFisso('coerenza.strade', { luoghi: luoghi.join('; ') }) : testoFisso('coerenza.strade_nessuna');
+    if (this.frasiRecenti(turno).has(frasePerRipetizione(frase))) {
+      log.info({ turno, dove }, 'coherence: the real roads were said in the last turns, not again');
+      return;
+    }
+    const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: frase, frasi: [`t${turno}-u0`], motore: true };
+    const primaDellInvito = this.righeDelMotore(turno, esito, [{ etichetta: ID_NARRATORE, testo: frase, testo_voce: this.pronuncia(frase) }], voce, false, 'u');
+    log.info({ turno, dove, luoghi, prima_dell_invito: primaDellInvito }, 'coherence: an action goes somewhere the campaign does not have, the Engine says the real roads');
+    this.notifica();
   }
 
   /** The neutral line for each invented name, before the invitation. */
@@ -3800,7 +3841,12 @@ export class Regia {
     // A real new decision (mondo/stallo.ts, the lead's rule after round 5): a check or roll of this turn, or an action
     // that commits (moves, goes somewhere, gives or takes, uses an object, attacks). Naming or questioning an NPC is not
     // one. Mode A tracks no material: there a decided action is a decision, as before.
-    const impegno = this.statoRepertorio === null || (tiri?.tiri.length ?? 0) > 0 || r.azioni.some((a) => !!a.testo && impegna(a.testo));
+    // «Go» to a place the campaign does not have is not a commitment (round 6: FB's mill and ford, coerenza/destinazioni.ts).
+    const noti = this.statoRepertorio !== null || this.o.narratore.nome === 'minimo' ? this.paroleNote() : null;
+    const impegno = this.statoRepertorio === null || (tiri?.tiri.length ?? 0) > 0 || r.azioni.some((a) => !!a.testo && impegna(noti ? senzaDestinazioniIgnote(a.testo, noti) : a.testo));
+    const dove = noti ? r.azioni.filter((a) => !!a.testo && !a.privata).flatMap((a) => destinazioniIgnote(a.testo!, noti)) : [];
+    this.destinazioniIgnote = dove.length ? { turno: r.turno, dove } : null;
+    if (dove.length) this.o.log.info({ turno: r.turno, dove }, 'coherence: the actions go somewhere the campaign does not have (no commitment for the stall)');
     const nStallo = this.mondo.stallo.registra(chiusura, scontroPrima || !!this.prove?.inCombattimento, impegno);
     if (chiusura === 'indecisa') this.o.log.info({ turno: r.turno, indecisi: this.mondo.stallo.indecisi, stallo: nStallo }, 'world: actions without a new decision (E12)');
     this.mossaStallo = nStallo ? this.scegliMossaDiStallo(nStallo, r.turno) : null;
@@ -4096,6 +4142,9 @@ export class Regia {
     // A name the players invented (mode B, the local reader): the Engine says nobody here has it (docs/coerenza.md).
     const inventati = this.nomiInventati?.turno === turno ? this.nomiInventati : null;
     if (inventati?.nomi.length && !controllo.signal.aborted) this.diciNomiInventati(turno, esito, inventati.nomi, log);
+    // An action went somewhere the campaign does not have: the Engine says where the roads really go.
+    const ignote = this.destinazioniIgnote?.turno === turno ? this.destinazioniIgnote : null;
+    if (ignote && !controllo.signal.aborted) this.diciStradeVere(turno, esito, ignote.dove, log);
     // With the yes/no judge, R-inesistente is only its fallback: its added line belongs to the rules alone.
     if (!giudice && ines && ines.pubbliche.length && !ines.detta && !controllo.signal.aborted) {
       // At most once in three turns: round 2 said the same line in almost every turn after the fight.

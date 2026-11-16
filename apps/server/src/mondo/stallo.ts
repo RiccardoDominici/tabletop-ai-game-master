@@ -18,14 +18,18 @@ import { campoOggetti, campoRegex, campoTesto, regole } from '../lingua/motore';
  * The section `stallo` of lingue/<code>/motore.yaml: the patterns of an action that brings no new decision, and the
  * PC's own committing verbs (`impegno`: moves, goes somewhere, gives or takes, uses an object, attacks).
  */
-const regoleStallo = (): { senza: ReadonlyArray<[string, RegExp]>; impegno: RegExp | null } =>
+const regoleStallo = (): { senza: ReadonlyArray<[string, RegExp]>; impegno: RegExp | null; moto: RegExp | null } =>
   regole('stallo', (s) => ({
     senza: campoOggetti(s, 'senza_decisione').flatMap((e): Array<[string, RegExp]> => {
       const re = campoRegex(e, 'regex', campoTesto(e, 'flags'));
       return re ? [[campoTesto(e, 'nome'), re]] : [];
     }),
     impegno: campoRegex(s, 'impegno', 'iu'),
+    moto: campoRegex(s, 'moto', 'giu'),
   }));
+
+/** A movement with its destination (`stallo.moto`, a named group `dove`): coerenza/destinazioni.ts. */
+export const regolaMoto = (): RegExp | null => regoleStallo().moto;
 const senzaDecisioneRegole = (): ReadonlyArray<[string, RegExp]> => regoleStallo().senza;
 
 /**
