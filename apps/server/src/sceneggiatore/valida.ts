@@ -5,7 +5,9 @@
  *   (campi, tipi, etichette delle righe, PNG con scheda);
  * - voci: parla solo il narratore o un PNG presente nella scena;
  * - cancelli e stato: niente `richiede` né `effetti` (una battuta scritta al volo non rivela indizi, non
- *   cambia fatti né orologi: le rivelazioni restano quelle preparate); scena = quella in corso, max_usi 1;
+ *   cambia fatti né orologi: le rivelazioni restano quelle preparate); scena = quella in corso, max_usi 1; the facts
+ *   it assumes are allowed (`attori`, `menzionati`, `richiede.stati`: docs/repertorio.md), and an NPC a narrator row
+ *   names with no tag is taken as acting: whoever acts must be in the scene and able to act now;
  * - tipi: solo reazioni, momenti, richieste, rifiuti, saluti (mai indizi, confessioni, menzogne, segni,
  *   finali, transizioni, chiusure);
  * - segreti: nessuna parola ancora segreta che il tavolo non abbia sentito (narrazione/guardia-segreti.ts);
@@ -27,6 +29,10 @@ import type { ParolaSegreta, StatoPubblico } from '../repertorio/segreti';
 import type { Battuta, TipoBattuta } from '../repertorio/tipi';
 import { normalizzaFrase } from './ripetizioni';
 import { campoElenco, campoTesto, regole } from '../lingua/motore';
+import type { EntitaRegistro } from '../coerenza/registro';
+import { nominatiSenzaSegno } from '../repertorio/fatti-battuta';
+import { pngNominati } from '../repertorio/pertinenza';
+import { normalizza } from '../azioni/regole';
 
 const FILE = 'sceneggiatore.yaml';
 export const TIPI_SCENEGGIATORE: ReadonlySet<TipoBattuta> = new Set<TipoBattuta>(['reazione', 'momento', 'richiesta', 'rifiuto', 'saluto']);
@@ -53,6 +59,15 @@ export interface ContestoValidazione {
   ticBloccati?: ReadonlyMap<string, string[]>;
   /** Risposta a una richiesta `chiusura`: si accetta solo una battuta `chiusura` del narratore. */
   chiusura?: boolean;
+  /** The ledger's characters (coerenza/registro.ts): the names a narrator row may use for an NPC. */
+  entita?: readonly EntitaRegistro[];
+}
+
+/** Whether a row names that NPC (name, short name, alias), as the ledger has them. */
+function nominaPng(testo: string, id: string, entita: readonly EntitaRegistro[]): boolean {
+  const e = entita.find((x) => x.id === id);
+  if (!e) return false;
+  return pngNominati(testo, new Map([[id, [...new Set(e.nomi.map(normalizza).filter((x) => x.length > 2))]]])).size > 0;
 }
 
 export interface EsitoValidazione {
@@ -100,11 +115,16 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     b['tipo'] = tipo;
     if (!ammessi.has(tipo)) return void scartate.push({ id, motivo: `tipo «${tipo}» non ammesso per lo sceneggiatore (ammessi: ${[...ammessi].join(', ')})` });
     if (ctx.chiusura && b['chi'] !== 'narratore') return void scartate.push({ id, motivo: 'la chiusura della serata la dice il narratore' });
-    if (b['richiede'] !== undefined || b['effetti'] !== undefined) return void scartate.push({ id, motivo: 'richiede/effetti non ammessi: le rivelazioni restano quelle preparate' });
+    // Only the facts a line assumes (richiede.stati) are allowed among its conditions: no gates, no effects.
+    const rq = b['richiede'];
+    const soloStati = rq === undefined || (rq !== null && typeof rq === 'object' && !Array.isArray(rq) && Object.keys(rq).every((k) => k === 'stati'));
+    if (!soloStati || b['effetti'] !== undefined) return void scartate.push({ id, motivo: 'richiede/effetti non ammessi (solo richiede.stati): le rivelazioni restano quelle preparate' });
     delete b['varianti'];
     delete b['solo_esempio'];
     delete b['audio'];
-    pulite.push({ ...b, id, scena: ctx.scena, max_usi: 1, ...(ctx.privata ? { richiede: { privata: true } } : {}) });
+    const richiede = { ...((rq as Record<string, unknown> | undefined) ?? {}), ...(ctx.privata ? { privata: true } : {}) };
+    delete b['richiede'];
+    pulite.push({ ...b, id, scena: ctx.scena, max_usi: 1, ...(Object.keys(richiede).length ? { richiede } : {}) });
   });
 
   // 2. Il caricatore del repertorio, su un file temporaneo con queste sole battute; chi sbaglia esce.
@@ -116,6 +136,15 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     const parlanti = [b.chi, ...b.testo.map((r) => r.etichetta)];
     const assente = parlanti.find((p) => p !== ID_NARRATORE && !ctx.presenti.has(p));
     if (assente) return void scartate.push({ id: b.id, motivo: `${assente} non è nella scena` }), false;
+    // A line written for now: who acts in it is here and can act. An NPC a narrator row names with no tag is taken as
+    // acting (the conservative reading), and the Engine says it added the tag.
+    const nominati = nominatiSenzaSegno(b, ctx.entita ?? []).filter((x) => b.testo.some((r) => r.etichetta === ID_NARRATORE && nominaPng(r.testo, x, ctx.entita ?? [])));
+    if (nominati.length) {
+      b.attori = [...(b.attori ?? []), ...nominati];
+      corrette.push({ id: b.id, nota: `attori: ${nominati.join(', ')} (named in a narrator row, no tag)` });
+    }
+    const fuori = (b.attori ?? []).find((x) => !ctx.presenti.has(x));
+    if (fuori) return void scartate.push({ id: b.id, motivo: `${fuori} agisce nella battuta ma non è nella scena o non può agire` }), false;
     if (!b.temi.length) return void scartate.push({ id: b.id, motivo: 'senza temi: non entrerebbe mai in catalogo' }), false;
     if (b.testo.length > MAX_RIGHE || b.testo.some((r) => r.testo.length > MAX_CARATTERI_RIGA)) return void scartate.push({ id: b.id, motivo: 'troppo lunga per la voce' }), false;
     const segreti = segretiNascosti(b.testo.map((r) => r.testo).join(' '), ctx.parole, ctx.pubblico, ctx.detto);

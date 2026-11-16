@@ -42,6 +42,7 @@ modelli:
     contesto: "## Campaign and scene (what the narrator knows)\n{contesto}"
     scena: "## Current scene: {titolo} ({id}); NPCs present: {presenti}"
     stato: "## State\nclues revealed: {indizi}\nfacts known to the PCs: {fatti}\nclocks: {orologi}"
+    vero_adesso: "## What is true now (the Engine keeps it: the lines never contradict it)\n{righe}"
     segrete: "## Secret words (NEVER in your lines)\n{elenco}"
     trascrizione: "## Last lines heard at the table\n{righe}"
     gia_usati: "## Already used in the last turns (do NOT repeat them)\nopenings: {attacchi}\nimages: {immagini}\ntics heard recently: {tic}"

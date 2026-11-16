@@ -10,6 +10,9 @@ battute:
     testo:
       - "[narratore] <sentence>"
       - "[png_id] <words spoken by the NPC>"
+    attori: [<ids of the NPCs who act or are there in the narrator rows, even unnamed: «she turns», «he»>]
+    menzionati: [<ids of the NPCs only talked about: they do not act, they may be away>]
+    richiede: {stati: {<id>: a_terra | morto | fuggito | in_gioco}}   # only if the line tells an NPC's state («the body lies…»)
 
 Rules:
 - Every line answers a LIKELY action of the next turn (or the one given), with no PC names.
@@ -20,7 +23,9 @@ Rules:
 - One to three sentences per line, five to twelve words each, present tense, concrete things.
 - The NPC speaks with the voice of their card (register, style, vocabulary), says only what they know or see, never what is in mai_dice.
 - No new plot facts, no clues, confessions or secrets: the revelations are already prepared. The SECRET WORDS listed are never said.
-- No richiede, effetti or varianti: the Engine rejects them.
+- The lines NEVER contradict «What is true now»: whoever is down, dead, fled or gone does not act, speak or stand there; no creature that is not there.
+- Every NPC a narrator row names or makes act goes in «attori» (acts or is there) or in «menzionati» (only talked about); the state the line takes as true of an NPC goes in «richiede.stati». The Engine offers the line only while those facts are true.
+- Nothing else in richiede, no effetti or varianti: the Engine rejects them.
 
 Pronunciations (optional, next to «battute»): a NEW proper noun you use in a line (missing from the card and the transcript) and every name in the «Names without a pronunciation» list that really is a proper noun get an entry, with a respelling that makes an English synthetic voice read the name right (stressed syllable in capitals, hyphens between syllables, plain letters, no phonetic symbols):
 pronunce:

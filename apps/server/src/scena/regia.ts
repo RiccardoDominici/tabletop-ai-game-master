@@ -115,7 +115,7 @@ import { DiarioRegistro } from '../coerenza/diario';
 import { pngInterpellati } from '../prove/parole-testo';
 import type { FattoRegistro, FontiRegistro, Registro } from '../coerenza/registro';
 import type { Violazione } from '../coerenza/verifica';
-import { bloccoVeroAdesso } from '../coerenza/blocco';
+import { bloccoVeroAdesso, righeVeroAdesso } from '../coerenza/blocco';
 import type { EsitoCombattimento } from '../prove/combattimento';
 import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dovuti';
 import { guardiaPrivate } from '../narrazione/privato';
@@ -2100,6 +2100,8 @@ export class Regia {
       trascrizione,
       ...(nomi.length ? { nomi_senza_pronuncia: nomi } : {}),
       stato: { indizi_rivelati: [...s.indiziRivelati], fatti_noti: [...s.fattiNoti], battute_usate: [...s.usi.keys()], orologi: this.orologi.riepilogo() },
+      // What is true now, as the narrator gets it: the scriptwriter writes for it and tags its lines with what they assume.
+      vero_adesso: righeVeroAdesso(this.diarioRegistro.registro ?? this.registroOra('sceneggiatore')),
       prefisso: `sc_${id.replace(/[^a-z0-9]+/gi, '_').toLowerCase()}_`,
       quante,
       gia_usati: { ...giaUsati(this.trascrizione, turno), tic: Object.fromEntries(ticBloccati(this.trascrizione, this.campagna.png)) },
@@ -2135,6 +2137,7 @@ export class Regia {
       privata: subito?.privata === true,
       ticBloccati: ticBloccati(this.trascrizione, this.campagna.png),
       chiusura: rq.tipo === 'chiusura',
+      entita: (this.diarioRegistro.registro ?? this.registroOra('sceneggiatore')).entita,
     });
     for (const b of v.accettate) {
       s.repertorio.battute.push(b);
@@ -2231,6 +2234,9 @@ export class Regia {
     s.negati = () => this.negatiTurno;
     // A line that names an NPC out of play (on the ground, dead, fled) does not come out, whoever says it.
     s.fuoriGioco = () => this.nomiFuoriGioco();
+    // With the ledger, each line's facts (who acts, the states it assumes, who it names) are checked against what is true
+    // now before the catalogue, so a reader that only relays never sees a line that contradicts it (docs/repertorio.md).
+    s.registro = () => this.diarioRegistro.registro ?? this.registroOra('catalogo');
     return s;
   }
 

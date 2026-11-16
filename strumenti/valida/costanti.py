@@ -31,9 +31,9 @@ CINQUE_STANZE = ["ingresso_o_guardiano", "enigma_o_sfida_sociale", "trucco_o_bat
 TIPI_BATTUTA = {"menzogna", "verita", "confessione", "reazione", "rifiuto", "richiesta", "saluto",
                 "indizio", "segno_orologio", "momento", "transizione", "finale", "chiusura"}
 CAMPI_BATTUTA = {"id", "chi", "tipo", "quando", "temi", "richiede", "testo", "varianti", "effetti",
-                 "max_usi", "solo_esempio", "riempitivo", "scena", "audio"}
+                 "max_usi", "solo_esempio", "riempitivo", "scena", "audio", "attori", "menzionati"}
 CAMPI_RICHIEDE = {"indizi_rivelati", "indizi_non_rivelati", "battute_usate", "battute_non_usate",
-                  "orologio", "privata", "da_pg", "oppure", "prova"}
+                  "orologio", "privata", "da_pg", "oppure", "prova", "stati"}
 # `richiede.oppure: [{…}, {…}]`: la battuta è disponibile se valgono le condizioni di base E almeno una
 # delle alternative (docs/repertorio.md, «Cancelli con oppure»). Il server oggi ignora le chiavi che non
 # conosce: una battuta con `oppure` uscirebbe con le sole condizioni di base, cioè con il cancello

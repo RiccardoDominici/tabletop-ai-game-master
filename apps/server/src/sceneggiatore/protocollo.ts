@@ -32,6 +32,11 @@ export interface RichiestaSceneggiatore {
   /** Le ultime righe che il tavolo ha sentito («Nome: testo»). */
   trascrizione: string[];
   stato: { indizi_rivelati: string[]; fatti_noti: string[]; battute_usate: string[]; orologi: Record<string, string> };
+  /**
+   * «Cosa è vero adesso» (coerenza/blocco.ts): who is in the scene and how, who left or fell. The lines are written for
+   * it and tagged with the facts they assume (`attori`, `menzionati`, `richiede.stati`: docs/repertorio.md).
+   */
+  vero_adesso?: string[];
   /** Prefisso degli id da usare (unici nella partita). */
   prefisso: string;
   /**

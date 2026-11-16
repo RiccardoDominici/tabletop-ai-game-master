@@ -13,13 +13,13 @@ import type { Campagna, DatiYaml } from '../campagna/tipi';
 import { ID_NARRATORE } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import { indiziCampagna } from '../campagna/indizi';
-import { TIPI_BATTUTA, type AlternativaRichiede, type Battuta, type CondizioniStato, type Effetti, type Repertorio, type Richiede, type RigaBattuta, type TipoBattuta } from './tipi';
+import { CLASSI_STATO, TIPI_BATTUTA, type AlternativaRichiede, type Battuta, type ClasseStato, type CondizioniStato, type Effetti, type Repertorio, type Richiede, type RigaBattuta, type TipoBattuta } from './tipi';
 import { EFFETTI, UMORE_AUTO, UMORI } from '../audio/cue';
 import { comeAbilita, comeCaratteristica } from '../campagna/regole-srd';
 import { caricaRegole } from '../regole/caricatore';
 
 /** Chiavi ammesse in `richiede` (e, tranne `oppure`, in ogni alternativa). Una chiave sconosciuta è un errore: ignorata, aprirebbe il cancello. */
-const CHIAVI_RICHIEDE = new Set(['indizi_rivelati', 'indizi_non_rivelati', 'battute_usate', 'battute_non_usate', 'orologio', 'privata', 'da_pg', 'prova', 'oppure']);
+const CHIAVI_RICHIEDE = new Set(['indizi_rivelati', 'indizi_non_rivelati', 'battute_usate', 'battute_non_usate', 'orologio', 'privata', 'da_pg', 'prova', 'oppure', 'stati']);
 
 export class ErroreRepertorio extends Error {
   override name = 'ErroreRepertorio';
@@ -141,7 +141,7 @@ function leggiCancelloProva(v: unknown, dove: string, errori: string[], idSet: R
  */
 function leggiCondizioni(r: DatiYaml, dove: string, errori: string[], base: boolean): CondizioniStato {
   for (const k of Object.keys(r)) {
-    if (!CHIAVI_RICHIEDE.has(k) || (!base && k === 'oppure')) errori.push(`${dove}: chiave non prevista «${k}»${k === 'oppure' ? ' (niente oppure annidati)' : ''}`);
+    if (!CHIAVI_RICHIEDE.has(k) || (!base && (k === 'oppure' || k === 'stati'))) errori.push(`${dove}: chiave non prevista «${k}»${k === 'oppure' ? ' (niente oppure annidati)' : k === 'stati' ? ' (stati solo nella base)' : ''}`);
   }
   if (r['privata'] !== undefined && typeof r['privata'] !== 'boolean') errori.push(`${dove}: privata è true o false`);
   const o = r['orologio'] as DatiYaml | undefined;
@@ -257,6 +257,7 @@ function leggiBattuta(
   }
   const richiede: Richiede = {
     ...leggiCondizioni(r, `${qui} richiede`, errori, true),
+    stati: leggiStati(r['stati'], `${qui} richiede.stati`, parlanti, errori),
     privata: r['privata'] === true,
     da_pg: lista(r['da_pg']),
     prova: leggiCancelloProva(r['prova'], `${qui} richiede`, errori, idSet),
@@ -300,8 +301,41 @@ function leggiBattuta(
     riempitivo: d['riempitivo'] === true,
     scene: leggiScene(d['scena'], qui, errori),
     audio,
+    attori: d['attori'] === undefined ? null : leggiPng(d['attori'], `${qui} attori`, parlanti, errori),
+    menzionati: leggiPng(d['menzionati'], `${qui} menzionati`, parlanti, errori),
     file,
   };
+}
+
+/** A list of NPC ids with a sheet (`attori`, `menzionati`); a wrong id is an error: ignoring it would offer the line. */
+function leggiPng(v: unknown, dove: string, parlanti: Set<string>, errori: string[]): string[] {
+  if (v === undefined || v === null) return [];
+  if (!Array.isArray(v) || !v.every((x) => typeof x === 'string')) {
+    errori.push(`${dove}: una lista di id di PNG`);
+    return [];
+  }
+  for (const id of v as string[]) if (id === ID_NARRATORE || !parlanti.has(id)) errori.push(`${dove}: «${id}» non è un PNG con scheda`);
+  return [...new Set(v as string[])];
+}
+
+/** `richiede.stati: {png_x: a_terra}` or `{png_x: [a_terra, morto]}`: the classes of CLASSI_STATO. */
+function leggiStati(v: unknown, dove: string, parlanti: Set<string>, errori: string[]): Record<string, ClasseStato[]> {
+  if (v === undefined || v === null) return {};
+  if (typeof v !== 'object' || Array.isArray(v)) {
+    errori.push(`${dove}: un blocco {id_png: stato o [stati]}`);
+    return {};
+  }
+  const out: Record<string, ClasseStato[]> = {};
+  for (const [id, x] of Object.entries(v as DatiYaml)) {
+    if (id === ID_NARRATORE || !parlanti.has(id)) errori.push(`${dove}: «${id}» non è un PNG con scheda`);
+    const classi = typeof x === 'string' ? [x] : Array.isArray(x) ? x : null;
+    if (!classi?.length || !classi.every((c) => (CLASSI_STATO as readonly unknown[]).includes(c))) {
+      errori.push(`${dove}.${id}: uno o più di ${CLASSI_STATO.join(', ')}`);
+      continue;
+    }
+    out[id] = [...new Set(classi as ClasseStato[])];
+  }
+  return out;
 }
 
 /**

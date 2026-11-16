@@ -36,6 +36,8 @@ The request (`apps/server/src/sceneggiatore/protocollo.ts`) carries:
 - the action to resolve (`subito`);
 - the last 30 lines the table has heard;
 - the state: revealed clues, known facts, lines already used, clocks;
+- «Cosa è vero adesso» (`vero_adesso`, coerenza/blocco.ts): who is in the scene and how, who left or fell, as the
+  narrator gets it;
 - in the background requests (`prossime`), `nomi_senza_pronuncia`: capitalised words heard at the table that the
   pronunciation lexicon does not know (docs/pronuncia.md, «During play»).
 
@@ -49,7 +51,8 @@ The rule set is not needed: the scriptwriter decides no outcomes or rolls, becau
 
 ## What it writes
 Lines in the repertoire's format (docs/repertorio.md): `id` with the given prefix, `chi`, `tipo`, `quando`, `temi`,
-`testo`. Only `reazione`, `momento`, `richiesta`, `rifiuto`, `saluto`, from one to three lines, short sentences for the
+`testo`, and the facts they assume (docs/repertorio.md, «Facts a line carries»): `attori`, `menzionati`,
+`richiede.stati`. Only `reazione`, `momento`, `richiesta`, `rifiuto`, `saluto`, from one to three lines, short sentences for the
 voice. Next to the lines, optionally, `pronunce: [{nome, grafia, nota}]` for the proper nouns among `nomi_senza_pronuncia`
 and for a new name of its own lines: the Engine checks them and adds them to `pronunce-gioco.yaml` (voce/lessico-vivo.ts).
 
@@ -61,8 +64,10 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
   and logged as a correction (`corrette`); a type that is given but not allowed (a clue, a confession) is refused, and
   the log names the allowed ones;
 - **voices**: only the narrator or a present NPC speaks;
-- **gates and state**: no `richiede` or `effetti`. A line written on the fly does not reveal clues or change facts or
-  clocks: the revelations remain the prepared ones, checked by the validator;
+- **gates and state**: no `richiede` (except `richiede.stati`) or `effetti`. A line written on the fly does not reveal
+  clues or change facts or clocks: the revelations remain the prepared ones, checked by the validator;
+- **who acts**: an NPC a narrator row names with no tag is taken as acting (added to `attori`, logged as a correction),
+  and every actor must be among the NPCs who can act now, or the line is rejected;
 - **types**: never clues, confessions, lies, signs, endings, transitions, closings;
 - **secrets**: no word still secret that the table has not heard (the same rule as the guard,
   `narrazione/guardia-segreti.ts`);

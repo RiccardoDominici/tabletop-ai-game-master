@@ -138,6 +138,19 @@ gate. For the gates on the action, the chosen alternative applies (`{privata: tr
   (mestiere.md §9).
 - **Transitions**: at least two (warning), to enter and leave the nearby places.
 
+## 6b. The facts a line carries (who acts, who is only named, what state it assumes)
+At the table the local reader only relays: it maps an action to a line id. The Engine offers a line only while what it
+assumes is true in the ledger (who is in the scene, who is down, dead or fled), so the tags are yours to write [V]:
+- `attori: [png_x]`: every NPC who acts in, or is said to be there by, a narrator row of the line, even with no name
+  («si volta verso la porta», «lei ride»). The line is offered only while each is in the scene and in play. Who speaks
+  (`chi`, a `[png_x]` row) needs no tag.
+- `menzionati: [png_x]`: an NPC the line only talks about («dicono che Zirrà…», «Ugo l'aveva detto»): no presence asked.
+- `richiede.stati: {png_x: [a_terra, morto]}`: the state the line takes as true, of `in_gioco`, `a_terra`, `morto`,
+  `fuggito`; a line about a body («il corpo di Zirrà giace…») needs it, or the Engine keeps it back while Zirrà is out of
+  play. Only in the base of `richiede`, not in an `oppure` alternative.
+Every NPC a narrator row names goes in one of the three; an untagged one is a warning [V `REPERTORIO.png_non_segnato`]
+(the Engine then only asks it to be in play, not in the scene).
+
 ## 7. Secret words (repertorio/parole_segrete.yaml)
 ```yaml
 parole:

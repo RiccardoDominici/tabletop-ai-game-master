@@ -48,7 +48,20 @@ export interface AlternativaRichiede extends CondizioniStato {
   prova: string | null;
 }
 
+/**
+ * The state class of a character a line assumes (`richiede.stati`, docs/repertorio.md): in play (standing, wounded,
+ * hidden), down (on the ground or dying), dead, fled.
+ */
+export const CLASSI_STATO = ['in_gioco', 'a_terra', 'morto', 'fuggito'] as const;
+export type ClasseStato = (typeof CLASSI_STATO)[number];
+
 export interface Richiede extends CondizioniStato {
+  /**
+   * The states the line assumes, by NPC (docs/repertorio.md, «Facts a line carries»): «il corpo di Zirrà giace…»
+   * assumes `{png_zirra: [a_terra, morto]}`, «Zirrà ride» `{png_zirra: [in_gioco]}`. The Engine checks them against
+   * the ledger before the line enters the catalogue. Only in the base, not in an alternative. Empty = none.
+   */
+  stati: Record<string, ClasseStato[]>;
   /**
    * true: la battuta risponde solo a un'azione segnata PRIVATA dal telefono (es. una confessione
    * «dove Baldrin non sente»). Assente o false: solo ad azioni pubbliche (come tutte le altre).
@@ -104,6 +117,14 @@ export interface Battuta {
    * cambia la musica; `effetto` (tag, es. campana) parte con la prima riga. null = nessuno.
    */
   audio: { umore?: string; effetto?: string } | null;
+  /**
+   * NPCs who act in the line's narrator rows, besides who speaks (docs/repertorio.md, «Facts a line carries»): each
+   * must be in the scene and in play for the line to be offered. null = the line has no tags (an older repertoire):
+   * the Engine takes every NPC a narrator row names as acting.
+   */
+  attori: string[] | null;
+  /** NPCs the line only talks about (no presence asked): they are not taken as acting. */
+  menzionati: string[];
   /** File di provenienza (per gli errori). */
   file: string;
 }

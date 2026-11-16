@@ -19,6 +19,7 @@ from collections import defaultdict
 from . import costanti as K
 from .carica import Campagna
 from .esito import Esito
+from . import regole_fatti_battuta
 from .regole_scena import nomi_propri
 from .voce import solo_parole
 from .testo import frasi, limite_da_stile, n_parole, problemi_di_prosa, radici, vocativi
@@ -90,6 +91,8 @@ def controlla(c: Campagna, e: Esito) -> None:
         e.avviso("REPERTORIO.assente", "repertorio/", "nessuna battuta: la campagna si gioca solo in modalità A", rigoroso=True)
         return
     _schema(c, e)
+    # The facts a line carries (who acts, who is only named, the states it assumes): regole_fatti_battuta.py.
+    regole_fatti_battuta.controlla(c, e)
     _prova_aggirabile(c, e)
     _riferimenti(c, e)
     _copertura(c, e)
@@ -170,7 +173,7 @@ def _schema(c: Campagna, e: Esito) -> None:
             else:
                 for a in oppure:
                     for k in a:
-                        if k not in K.CAMPI_RICHIEDE - {"oppure"}:
+                        if k not in K.CAMPI_RICHIEDE - {"oppure", "stati"}:
                             e.errore("REPERTORIO.oppure", dove, f"alternativa con richiede.{k}: non previsto (niente oppure annidati)")
             if not K.OPPURE_NEL_SERVER:
                 e.errore("REPERTORIO.oppure", dove, "il server non applica ancora richiede.oppure: la battuta uscirebbe "

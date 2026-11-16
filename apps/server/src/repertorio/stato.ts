@@ -14,6 +14,8 @@ import { segretiNelTesto, type ParolaSegreta } from './segreti';
 import type { Battuta, CondizioniStato, Repertorio, RigaBattuta, TipoBattuta } from './tipi';
 import { accetta, blocchi, bloccoConCancello, provaFallita, type AzioneAlCancello, type Blocco } from './condizioni';
 import type { StatoRepertorioSalvato } from '../sessione/tipi';
+import type { EntitaRegistro } from '../coerenza/registro';
+import { motivoControRegistro } from './fatti-battuta';
 
 /**
  * Tipi che, scritti nel catalogo, svelerebbero un segreto al selettore: che quella battuta è una
@@ -121,6 +123,12 @@ export class StatoRepertorio {
    * fell, and «Il ragazzo guarda Zirrà prima di rispondere» after she died. `presenza` only removes their own lines.
    */
   fuoriGioco: (() => ReadonlyMap<string, readonly string[]>) | null = null;
+  /**
+   * The coherence ledger's characters (coerenza/registro.ts), if the director has one: each line's facts (who acts,
+   * the states it assumes, who it names) are checked against it before the catalogue (repertorio/fatti-battuta.ts),
+   * in place of `fuoriGioco`.
+   */
+  registro: (() => { entita: readonly EntitaRegistro[] }) | null = null;
   /** Indizi della campagna con i loro `modi`. */
   private readonly indizi: Map<string, IndizioCampagna>;
 
@@ -169,10 +177,17 @@ export class StatoRepertorio {
       const assente = parlantiDi(b).find((p) => !presenti.has(p));
       if (assente) return `${assente} non è in questa scena`;
     }
-    const fuori = this.fuoriGioco?.();
-    if (fuori?.size) {
-      const nominato = nominatoFuori(b, fuori);
-      if (nominato) return `la battuta nomina ${nominato}, fuori gioco (a terra, morto o fuggito)`;
+    const registro = this.registro?.();
+    if (registro) {
+      // The line's own facts against what is true now (docs/repertorio.md, «Facts a line carries»).
+      const contro = motivoControRegistro(b, registro.entita);
+      if (contro) return contro;
+    } else {
+      const fuori = this.fuoriGioco?.();
+      if (fuori?.size) {
+        const nominato = nominatoFuori(b, fuori);
+        if (nominato) return `la battuta nomina ${nominato}, fuori gioco (a terra, morto o fuggito)`;
+      }
     }
     const negati = this.negati?.();
     if (negati?.size && b.tipo !== 'rifiuto') {

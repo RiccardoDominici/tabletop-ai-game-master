@@ -526,6 +526,20 @@ the zero-subject branch cannot tell a PC's «Indietreggia, ma resta in piedi.» 
 which is why it applies only where the judge's answer was late (1 question in 42 in round 3). Tests:
 test/coerenza-portato.test.ts (it and en), test/coerenza-giudice.test.ts (T15's shape with a deadline).
 
+## Profile A: the lines carry their facts, the Engine filters (Riccardo's decision, 16 November)
+
+«Il modello piccolo deve soltanto trascrivere quello che dice il modello grande. Non deve fare nessuna scelta né
+rimoderazione: dovrebbe poter essere anche minuscolo.» So in profile A no model judges coherence: the yes/no judge stays
+for profile B, where the same model writes the prose live. Coherence in profile A comes from the big model's lines and
+the Engine (CLAUDE.md, «The small model relays, it never decides»):
+- every prewritten or scriptwriter line says what it assumes: who speaks, who acts (`attori`), who is only named
+  (`menzionati`), the states it takes as true (`richiede.stati`) (docs/repertorio.md, «Facts a line carries»); the
+  sceneggiatore gets «Cosa è vero adesso» in its request and writes the tags (docs/sceneggiatore.md);
+- the Engine checks those facts against this ledger before a line enters the catalogue (`repertorio/fatti-battuta.ts`),
+  so the reader picks only among lines true now; the rules on the lines that come out (R-esito, R-fuori, `verificaBattuta`)
+  stay as the last check.
+Tests: test/fatti-battuta.test.ts, test/sceneggiatore.test.ts; validator: strumenti/test_valida_campagna.py.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

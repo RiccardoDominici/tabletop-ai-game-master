@@ -59,6 +59,30 @@ describe('controllo delle battute dello sceneggiatore', () => {
     expect(estraiYaml('Ecco:\n```yaml\nbattute: []\n```\nfine')).toBe('battute: []');
   });
 
+  it('the facts a line assumes: attori, menzionati and richiede.stati pass; an untagged named NPC is taken as acting', () => {
+    const entita = [
+      { id: 'png_oste', tipo: 'png' as const, nome: 'Oste Bruno', nomi: ['Oste Bruno', 'Bruno'], stato: 'in_piedi' as const, presenza: 'in_scena' as const, uscito: null },
+      { id: 'png_guardia', tipo: 'png' as const, nome: 'Guardia Lia', nomi: ['Guardia Lia', 'Lia'], stato: 'morto' as const, presenza: 'in_scena' as const, uscito: null },
+    ];
+    const r = validaBattute(
+      yaml([
+        battuta({ id: 'sc_x_1', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Si asciuga le mani, guardando la porta.'], attori: ['png_oste'] }),
+        battuta({ id: 'sc_x_2', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Il corpo di Lia è ancora sul pavimento.'], richiede: { stati: { png_guardia: ['morto'] } } }),
+        battuta({ id: 'sc_x_3', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Lia alza la lancia.'] }),
+        battuta({ id: 'sc_x_4', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Qualcuno parla ancora di Lia.'], menzionati: ['png_guardia'] }),
+        battuta({ id: 'sc_x_5', richiede: { stati: { png_oste: 'in_gioco' }, indizi_rivelati: ['i_brocca'] } }),
+      ]),
+      { ...ctx, entita },
+    );
+    expect(r.accettate.map((b) => b.id)).toEqual(['sc_x_1', 'sc_x_2', 'sc_x_4']);
+    expect(r.accettate[1]!.richiede.stati).toEqual({ png_guardia: ['morto'] });
+    // «Lia alza la lancia.»: no tag, so she is taken as acting, and she cannot act (dead, not among who can act).
+    expect(r.corrette).toContainEqual({ id: 'sc_x_3', nota: 'attori: png_guardia (named in a narrator row, no tag)' });
+    expect(r.scartate.map((x) => x.id)).toEqual(['sc_x_5', 'sc_x_3']);
+    expect(r.scartate[0]!.motivo).toMatch(/solo richiede\.stati/);
+    expect(r.scartate[1]!.motivo).toMatch(/^png_guardia agisce nella battuta/);
+  });
+
   // E2E, secondo giro (N5): 42 battute scartate con «tipo non ammesso per lo sceneggiatore: undefined».
   it('tipo mancante: dedotto da chi parla (PNG reazione, narratore momento), e il log lo dice; un tipo che rivela resta fuori', () => {
     const senzaTipo = (o: Record<string, unknown>) => {

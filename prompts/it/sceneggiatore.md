@@ -10,6 +10,9 @@ battute:
     testo:
       - "[narratore] <frase>"
       - "[png_id] <parole dette dal PNG>"
+    attori: [<id dei PNG che nelle righe del narratore agiscono o sono lì, anche senza nome: «si volta», «lei»>]
+    menzionati: [<id dei PNG di cui si parla soltanto: non agiscono, possono non esserci>]
+    richiede: {stati: {<id>: a_terra | morto | fuggito | in_gioco}}   # solo se la battuta racconta lo stato di un PNG («il corpo giace…»)
 
 Regole:
 - Ogni battuta risponde a un'azione PROBABILE del prossimo turno (o a quella data), senza nomi di PG.
@@ -20,7 +23,9 @@ Regole:
 - Da una a tre righe per battuta, frasi da cinque a dodici parole, presente indicativo, cose precise.
 - Il PNG parla con la voce della sua scheda (registro, stile, lessico), dice solo ciò che sa o vede, mai ciò che sta in mai_dice.
 - Niente fatti di trama nuovi, niente indizi, confessioni o segreti: le rivelazioni sono già preparate. Le PAROLE SEGRETE elencate non si dicono mai.
-- Niente richiede, effetti, varianti: il Motore li rifiuta.
+- Le battute non contraddicono MAI «Cosa è vero adesso»: chi è a terra, morto, fuggito o uscito non agisce, non parla e non è lì; nessuna creatura che non c'è.
+- Ogni PNG che una riga del narratore nomina o fa agire va in «attori» (agisce o è lì) o in «menzionati» (se ne parla soltanto); lo stato che la battuta dà per vero di un PNG va in «richiede.stati». Il Motore offre la battuta solo quando questi fatti sono veri.
+- Nient'altro in richiede, niente effetti né varianti: il Motore li rifiuta.
 
 Pronunce (facoltative, accanto a «battute»): un nome proprio NUOVO che usi in una battuta (assente dalla scheda e dalla trascrizione) e ogni nome dell'elenco «Nomi senza pronuncia» che è davvero un nome proprio hanno una voce, con la grafia che fa leggere bene il nome a una voce sintetica italiana (accento grafico sulla sillaba tonica, «z sonora» → «dz», niente simboli fonetici):
 pronunce:

@@ -1866,3 +1866,40 @@ def test_pronuncia_parola_comune_e_non_verificata(camp):
     modifica(camp, "pronunce.yaml", lambda d: d["lessico"][0].update(solo_maiuscolo=True))
     assert "PRONUNCIA.parola_comune" not in avvisi(camp)
 
+
+
+# --- the facts a line carries (docs/repertorio.md, «Facts a line carries») ------------------------------------------
+
+def test_repertorio_fatti_della_battuta_validi(camp):
+    def segna(d):
+        b = battuta(d, "nar_botte")
+        b["testo"].append("[narratore] Bruno si volta verso la botte.")
+        b["attori"] = ["png_bruno"]
+        b["menzionati"] = ["png_irma"]
+        b.setdefault("richiede", {})["stati"] = {"png_irma": ["in_gioco"]}
+    modifica(camp, "repertorio/narrazione.yaml", segna)
+    assert "REPERTORIO.fatti" not in errori(camp)
+    assert not _voci_di(camp, "REPERTORIO.png_non_segnato", "nar_botte")
+
+
+def test_repertorio_fatti_della_battuta_sbagliati(camp):
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").update(attori=["png_nessuno"]))
+    assert "REPERTORIO.fatti" in errori(camp)
+
+
+def test_repertorio_stato_fuori_elenco(camp):
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").setdefault("richiede", {}).update(stati={"png_bruno": "svenuto"}))
+    assert "REPERTORIO.fatti" in errori(camp)
+
+
+def test_repertorio_png_nominato_senza_segno(camp):
+    # The Engine would only ask Bruno to be in play, not here: the Preparer says whether he acts or is only named.
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte")["testo"].append("[narratore] Bruno si volta verso la botte."))
+    assert _voci_di(camp, "REPERTORIO.png_non_segnato", "nar_botte")
+    assert "REPERTORIO.png_non_segnato" not in errori(camp, rigoroso=True)
+
+
+def _voci_di(cartella: Path, codice: str, bid: str) -> list:
+    """The validator's entries with that code about that line."""
+    esito, _ = valida(cartella, voci=VOCI if VOCI.exists() else None)
+    return [v for v in esito.voci if v.codice == codice and v.dove.endswith(f" {bid}")]

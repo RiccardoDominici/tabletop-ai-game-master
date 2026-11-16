@@ -28,6 +28,7 @@ export function messaggioSceneggiatore(rq: RichiestaSceneggiatore, contesto: str
       fatti: rq.stato.fatti_noti.join(', ') || t('nessuno'),
       orologi: Object.entries(rq.stato.orologi).map(([k, v]) => `${k} ${v}`).join(', ') || t('trattino'),
     }),
+    rq.vero_adesso?.length ? t('vero_adesso', { righe: rq.vero_adesso.join('\n') }) : '',
     t('segrete', { elenco: paroleSegrete.map((p) => `- ${p}`).join('\n') || t('nessuna') }),
     t('trascrizione', { righe: rq.trascrizione.join('\n') || t('nessuna') }),
     rq.gia_usati

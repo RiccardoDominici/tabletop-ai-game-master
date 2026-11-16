@@ -42,6 +42,7 @@ modelli:
     contesto: "## Campagna e scena (ciò che sa il narratore)\n{contesto}"
     scena: "## Scena in corso: {titolo} ({id}); PNG presenti: {presenti}"
     stato: "## Stato\nindizi rivelati: {indizi}\nfatti noti ai PG: {fatti}\norologi: {orologi}"
+    vero_adesso: "## Cosa è vero adesso (lo tiene il Motore: le battute non lo contraddicono)\n{righe}"
     segrete: "## Parole segrete (MAI nelle tue battute)\n{elenco}"
     trascrizione: "## Ultime righe sentite al tavolo\n{righe}"
     gia_usati: "## Già usati negli ultimi turni (NON ripeterli)\nattacchi: {attacchi}\nimmagini: {immagini}\ntic usciti di recente: {tic}"

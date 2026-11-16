@@ -53,7 +53,28 @@ battute:
       fatti_noti: []                  # canon facts that the PCs now know
       avanza_orologio: null           # id of the clock if it is a sign
     max_usi: 1                        # variants count as uses of the same line
+    attori: [png_ottavia]             # NPCs who act in (or are there in) the narrator rows, even unnamed
+    menzionati: []                    # NPCs only talked about: no presence asked
+    # richiede.stati: {png_x: [a_terra, morto]}   # the states the line assumes (in_gioco, a_terra, morto, fuggito)
 ```
+
+### Facts a line carries (16 November)
+The local reader of profile A only relays (CLAUDE.md, «The small model relays, it never decides»), so coherence there
+comes from the lines and the Engine: each line says what it assumes, and the Engine checks it against the coherence
+ledger (docs/coerenza.md) before the line enters the catalogue (`repertorio/fatti-battuta.ts`, from
+`StatoRepertorio.motivoIndisponibile`): the reader picks only among lines that are true now, so its mistakes cannot
+break coherence; the deterministic rules on the lines that come out (R-esito, R-fuori) stay as the last check.
+- who speaks (`chi`, `[png_x]` rows): in the scene and able to speak (as before);
+- `attori`: each in the scene and in play;
+- `richiede.stati`: the ledger's state matches (a body in play, down or dead must also be in the scene); only in the base
+  of `richiede`;
+- an NPC a row names that no tag covers (every NPC of an untagged line): it must be in play (the rule before the tags,
+  «Zirrà schiocca le dita.» eight turns after she fell); an untagged NPC away from the scene is left alone, since an
+  older line may talk about someone elsewhere (an ending at the tower about the village);
+- `menzionati`: nothing asked.
+The loader rejects a wrong id or state; the validator checks the same (`REPERTORIO.fatti`) and warns about an NPC a
+narrator row names without a tag (`REPERTORIO.png_non_segnato`). The sceneggiatore writes the tags too
+(docs/sceneggiatore.md). Not tracked: objects (who holds what), so a line cannot assume them yet.
 
 Rules for whoever writes the lines:
 - text following the rules of the manual §5 and §6 (short sentences, the NPC's voice, a signal when lying, no PC

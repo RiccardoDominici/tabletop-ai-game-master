@@ -347,7 +347,7 @@ the stressed one in capitals (ee-VAWN, KOOM-tyth): the server lowercases them fo
 with `origine`): review them between sessions.
 
 ## Repertoire: see riferimenti/repertorio.md
-Fields of a line: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi, solo_esempio, riempitivo, scena, audio` [V].
+Fields of a line: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi, solo_esempio, riempitivo, scena, audio, attori, menzionati` [V].
 Nothing else [V]. `audio: {umore, effetto}` is an automatic signal (see "Audio" below and repertorio.md §6). `richiede.oppure` is applied
 by the Engine (repertorio.md §4); `scena` is an id or a list of ids.
 Every scene has at least one narrator waiting line (`chi: narratore`, `riempitivo: true`, without `scena` or with that scene); every NPC present
