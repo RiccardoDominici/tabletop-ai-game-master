@@ -120,6 +120,15 @@ combattimento:
    rolled to the end, stable or dead (a natural 20 that puts one back up keeps the fight going). Before, the fight
    closed with them dying and nothing ever rolled again (SRD run of 15 November). Morale is also rolled when the opening blow knocks down an NPC: before, its fact was lost and whoever fled
    stayed on stage (bug C3). Whoever flees is a required fact («Grosso fugge.» (Grosso flees.), §3.7).
+   **The defeat path**: when the fight ends with every PC in it out (`EsitoCombattimento.sconfitta`, a flag, not the
+   localised reason) and every PC at the table is down, dead or fled, the Engine says the scene's defeat ending after
+   the turn's narration (a prepared `finale` with `sconfitta: true`, available now: its speakers in the scene and the
+   victors it assumes in play, `richiede.stati`; it names no PC, since it cannot know who died; mode B), else its own
+   sentence (`regia.righe.sconfitta`), withdraws the narrator's invitation, says «La scena è finita: il master sceglie
+   come andare avanti.» and pauses the table: the Game Master chooses (another scene, healing, the end of the evening).
+   Round 5 of the coherence layer (combat manual, T21–T25) had five turns of «Livia Sarti non agisce.» and nothing
+   moving after the party fell. A defeat ending never enters the catalogue nor the clock's finale; the validator wants
+   one in a scene with a hostile NPC (`REPERTORIO.sconfitta_mancante`, a warning).
 6. **Narrator**: every NPC attack arrives as an explicit sentence before the details («Ruggero lo sgherro colpisce Corrado
    Lanzi: 6 danni» (Ruggero the thug hits Corrado Lanzi: 6 damage), «… manca …» (… misses …)), and the prompt asks to
    narrate it in its own sentence, never by hints. The section «Esiti dei tiri» (Roll outcomes) carries «Combattimento,

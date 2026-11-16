@@ -19,7 +19,7 @@ from collections import defaultdict
 from . import costanti as K
 from .carica import Campagna
 from .esito import Esito
-from . import regole_fatti_battuta, regole_stallo
+from . import regole_fatti_battuta, regole_sconfitta, regole_stallo
 from .regole_scena import nomi_propri
 from .voce import solo_parole
 from .testo import frasi, limite_da_stile, n_parole, problemi_di_prosa, radici, vocativi
@@ -95,6 +95,8 @@ def controlla(c: Campagna, e: Esito) -> None:
     regole_fatti_battuta.controlla(c, e)
     # Prepared stall lines (stallo: 1 | 2 | 3): regole_stallo.py.
     regole_stallo.controlla(c, e)
+    # The defeat ending of a scene with hostile NPCs (sconfitta: true on a finale): regole_sconfitta.py.
+    regole_sconfitta.controlla(c, e)
     _prova_aggirabile(c, e)
     _riferimenti(c, e)
     _copertura(c, e)

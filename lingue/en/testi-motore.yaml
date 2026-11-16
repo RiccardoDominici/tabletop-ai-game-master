@@ -18,6 +18,8 @@ regia:
   # System lines of the transcript (phones, projector, panel); some are also notices.
   righe:
     fine_scena: "The scene is over: the Game Master chooses how to go on."
+    # The defeat path with no prepared defeat ending (docs/combattimento.md, «The defeat path»), said by the narrator.
+    sconfitta: "Darkness closes over your characters: for them the scene ends here. What becomes of you, the Game Master will tell."
     blocco: "The narrator got stuck: starting again."
     fine_sessione: "End of the session."
     serata_chiusa: "The evening is over: see you next time."

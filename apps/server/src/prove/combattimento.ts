@@ -84,6 +84,8 @@ export interface EsitoCombattimento {
   invitati: string[] | null;
   /** Il combattimento è finito in questo turno (motivo), o null. */
   finito: string | null;
+  /** The fight ended in this turn because every PC in it is down, dead or fled (the defeat path, scena/regia.ts). */
+  sconfitta?: boolean;
   /** Gli esiti dei tiri contro la morte del turno: fatti che il tavolo deve sentire (prove/fatti-dovuti.ts). */
   morte: Array<{ id: string; nome: string; esito: EsitoMorte }>;
   /** Chi è fuggito in questo turno (morale): lascia la scena, e il tavolo lo deve sentire. */
@@ -410,7 +412,9 @@ export class GestoreCombattimento {
   private chiudi(turno: number, fatti: string[], tiri: TiroMostrato[]): EsitoCombattimento {
     void turno;
     const { morte, fuggiti } = this;
-    if (!this.s) return { fatti, tiri, intestazione: null, invitati: null, finito: fatti.at(-1) ?? testo('prove.combattimento.fine'), morte, fuggiti };
+    const sconfitta = this.sconfittaPg;
+    this.sconfittaPg = false;
+    if (!this.s) return { fatti, tiri, intestazione: null, invitati: null, finito: fatti.at(-1) ?? testo('prove.combattimento.fine'), morte, fuggiti, ...(sconfitta ? { sconfitta: true } : {}) };
     const invitati = this.turnoDi();
     const ordine = this.ordineTirato ? { ordine: this.ordineTirato } : {};
     return { fatti, tiri, intestazione: this.intestazione(), invitati: invitati && invitati.length ? invitati : null, finito: null, morte, fuggiti, ...ordine };
@@ -551,6 +555,9 @@ export class GestoreCombattimento {
     } else fatti.push(testo('prove.combattimento.morale_tengono', { tiro, morale }));
   }
 
+  /** Set when the fight ends because every PC in it is out; read (and cleared) by chiudi. */
+  private sconfittaPg = false;
+
   /** Fine dello scontro: nemici fuori combattimento, o PG tutti a terra. true se è finito. */
   private controllaFine(fatti: string[], tiriDelTurno?: { turno: number; tiri: TiroMostrato[] }): boolean {
     const s = this.s;
@@ -562,7 +569,10 @@ export class GestoreCombattimento {
     if (pg.length && pg.every(fuori)) {
       if (tiriDelTurno) this.morteSenzaSoccorso(pg, tiriDelTurno.turno, fatti, tiriDelTurno.tiri);
       // A natural 20 (SRD) puts a PC back on its feet with 1 HP: then the fight goes on.
-      if (pg.every(fuori)) return this.termina(testo('prove.combattimento.fine_pg'), fatti);
+      if (pg.every(fuori)) {
+        this.sconfittaPg = true;
+        return this.termina(testo('prove.combattimento.fine_pg'), fatti);
+      }
     }
     return false;
   }

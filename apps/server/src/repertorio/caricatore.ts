@@ -285,6 +285,7 @@ function leggiBattuta(
     fatti_noti: lista(e['fatti_noti']),
     avanza_orologio: typeof e['avanza_orologio'] === 'string' ? e['avanza_orologio'] : null,
   };
+  if (d['sconfitta'] !== undefined && (d['sconfitta'] !== true || tipo !== 'finale')) errori.push(`${qui}: sconfitta: true solo su una battuta di tipo finale`);
   const audio = leggiAudioBattuta(d['audio'], `${qui} audio`, errori);
   const maxUsi = typeof d['max_usi'] === 'number' && d['max_usi'] >= 1 ? Math.floor(d['max_usi']) : 1;
   if (d['max_usi'] !== undefined && maxUsi !== d['max_usi']) errori.push(`${qui}: max_usi non valido`);
@@ -302,6 +303,7 @@ function leggiBattuta(
     solo_esempio: d['solo_esempio'] === true,
     riempitivo: d['riempitivo'] === true,
     stallo: leggiStallo(d['stallo'], qui, effetti, errori),
+    ...(d['sconfitta'] === true ? { sconfitta: true } : {}),
     scene: leggiScene(d['scena'], qui, errori),
     audio,
     attori: d['attori'] === undefined ? null : leggiPng(d['attori'], `${qui} attori`, parlanti, errori),

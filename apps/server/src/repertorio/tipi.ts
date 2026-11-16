@@ -134,6 +134,11 @@ export interface Battuta {
    * every filler of the stall game as a waiting line by T6, and its one S1 at T14 found none. Absent = none.
    */
   stallo?: 1 | 2 | 3 | null;
+  /**
+   * A `finale` told when the whole party is down (docs/combattimento.md, «The defeat path»): the consequence of the
+   * defeat (captured, left for dead, rescued…). The Engine says it itself; never in the catalogue nor the clock's pick.
+   */
+  sconfitta?: boolean;
   /** Campagne con più scene: la battuta vale solo in queste scene (`scena: id` o una lista; vuota = in tutte). */
   scene: string[];
   /**

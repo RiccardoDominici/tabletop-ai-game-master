@@ -317,7 +317,7 @@ export class StatoRepertorio {
     const candidate = this.disponibili(o.turno).filter((b) => {
       // Le chiusure della serata le dice solo il Motore, a «Chiudi la sessione» (scena/regia.ts); the stall lines too, at
       // a stall move of their level (docs/mondo.md §5).
-      if (b.solo_esempio || b.tipo === 'chiusura' || (b.stallo ?? null) !== null) return false;
+      if (b.solo_esempio || b.tipo === 'chiusura' || (b.stallo ?? null) !== null || b.sconfitta) return false;
       const testo = testoPer(b);
       // Cancello sull'azione: senza un'azione adatta (privata, del PG giusto) la battuta non entra.
       if (this.serveAzione(b) && testo === null) return false;
@@ -465,12 +465,21 @@ export class StatoRepertorio {
     const scartati: Record<string, string> = {};
     const candidati: Battuta[] = [];
     for (const b of this.repertorio.battute) {
-      if (b.tipo !== 'finale') continue;
+      // A defeat ending is the defeat path's, never the clock's finale.
+      if (b.tipo !== 'finale' || b.sconfitta) continue;
       const motivo = this.motivoIndisponibile(b, turno) ?? (this.serveAzione(b) ? 'ha un cancello sull\'azione (privata o da_pg)' : null);
       if (motivo) scartati[b.id] = motivo;
       else candidati.push(b);
     }
     return { scelto: candidati[0] ?? null, candidati: candidati.map((b) => b.id), scartati };
+  }
+
+  /**
+   * The defeat ending of the scene (docs/combattimento.md, «The defeat path»): an available `finale` with `sconfitta`, no
+   * gate on the action, its speakers and the facts it assumes true now (the victors in play). The first in order.
+   */
+  finaleDiSconfitta(turno: number): Battuta | null {
+    return this.repertorio.battute.find((b) => b.tipo === 'finale' && b.sconfitta === true && this.motivoIndisponibile(b, turno) === null && !this.serveAzione(b)) ?? null;
   }
 
   /**

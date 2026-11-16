@@ -772,6 +772,11 @@ Zirrà's words (CA T8); the reader's refused pick at FB T5 («pagava» against t
   longer exempts the turns after it. Offline gate on round 5's scripts and logs: ST stalls from T4 to T12 (S1, S2, S3
   three times; the hard S1 at n 4 and 7 owes two marks to the scene's danger clock), then T13's «poi vado» commits; FB
   never stalls (its players keep «going» somewhere, by their words). Tests: test/mondo-stallo.test.ts.
+- The defeat path (docs/combattimento.md): a fight that ends with the whole party down closes the scene with its
+  prepared defeat ending (or the Engine's sentence) and pauses the table for the Game Master; round 5's CM had five
+  silent turns there. torre-mozza has two defeat endings (Zirrà or Grosso standing). Test: test/sconfitta.test.ts.
+- In a fight, the PC's own attack with no target named rolls against its last target (docs/prove.md): round 5 had
+  five declared attacks resolved as «nessun tiro».
 Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)

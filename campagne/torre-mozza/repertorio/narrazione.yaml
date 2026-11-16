@@ -718,3 +718,33 @@ battute:
     testo:
       - "[narratore] La freccia sul muro scende in cantina, verso la cripta. E Zirrà vuole ancora la chiave."
     max_usi: 1
+
+  # Finali di sconfitta (docs/combattimento.md, «The defeat path»): li dice il Motore quando il gruppo cade tutto,
+  # poi il tavolo si ferma e decide il master. Nessun nome di PG: chi è morto lo dicono già le carte.
+  - id: nar_sconfitta_zirra
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    quando: "i PG cadono tutti alla torre e Zirrà è ancora in piedi"
+    temi: [sconfitta, legati, cripta]
+    scena: scena_torre
+    attori: [png_zirra]
+    richiede: {stati: {png_zirra: in_gioco}}
+    testo:
+      - "[narratore] Zirrà fruga nelle vostre bisacce, poi vi trascina giù per i gradini."
+      - "[narratore] Vi lascia legati davanti alla porta di ferro, con la candela che si consuma."
+    max_usi: 1
+
+  - id: nar_sconfitta_grosso
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    quando: "i PG cadono tutti alla torre e resta in piedi solo Grosso"
+    temi: [sconfitta, fuoco, notte]
+    scena: scena_torre
+    attori: [png_grosso]
+    richiede: {stati: {png_grosso: in_gioco}}
+    testo:
+      - "[narratore] Grosso vi guarda a lungo, poi torna al fuoco e al suo osso."
+      - "[narratore] La notte passa sulla torre. Vi sveglia il freddo, prima dell'alba."
+    max_usi: 1

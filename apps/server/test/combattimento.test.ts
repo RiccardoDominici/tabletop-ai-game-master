@@ -202,6 +202,8 @@ describe('combattimento alla B/X e alla PbtA', () => {
     expect(tutto).toMatch(/Nessuno è in piedi per soccorrerli/);
     expect(tutto).toMatch(/successi 3 su 3: è stabile/);
     expect(r.finito).toMatch(/PG/);
+    // A structured flag for the defeat path (scena/regia.ts), not the localised reason.
+    expect(r.sconfitta).toBe(true);
     expect(stato.aTerra('pg_a')).toBe(true);
   });
 

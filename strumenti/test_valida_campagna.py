@@ -1936,3 +1936,19 @@ def test_repertorio_stallo_sbagliato(camp):
         shutil.copytree(camp, c)
         modifica(c, "repertorio/narrazione.yaml", lambda d: _stallo(d, "nar_stallo_x", altro["stallo"], **{k: v for k, v in altro.items() if k != "stallo"}))
         assert "REPERTORIO.stallo" in errori(c), altro
+
+
+def test_repertorio_sconfitta(camp):
+    # docs/combattimento.md, «The defeat path»: sconfitta only on a finale; a scene with a hostile NPC wants one.
+    def ostile(d):
+        d.setdefault("atteggiamento_pg", {})["pg_lia"] = {"stato": "ostile", "perche": "x", "vuole": "y"}
+    modifica(camp, "png/png_bruno.yaml", ostile)
+    assert "REPERTORIO.sconfitta_mancante" in avvisi(camp)
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: d["battute"].append({
+        "id": "nar_sconfitta", "chi": "narratore", "tipo": "finale", "sconfitta": True, "quando": "i PG cadono tutti",
+        "temi": ["sconfitta"], "attori": ["png_bruno"], "richiede": {"stati": {"png_bruno": "in_gioco"}},
+        "testo": ["[narratore] Bruno vi chiude in cantina e se ne va."], "max_usi": 1}))
+    assert "REPERTORIO.sconfitta_mancante" not in avvisi(camp)
+    assert "REPERTORIO.sconfitta" not in errori(camp)
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").update(sconfitta=True))
+    assert "REPERTORIO.sconfitta" in errori(camp)

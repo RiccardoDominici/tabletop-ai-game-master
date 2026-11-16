@@ -489,6 +489,8 @@ export class Regia {
   /** Telefono (token del dispositivo) → PG: alla riconnessione, anche dopo un riavvio, il PG torna. */
   private readonly dispositivi = new Map<string, string>();
   /** Turno in cui il Motore ha chiuso la scena col finale: a narrazione finita il tavolo va in pausa. */
+  /** The turn whose fight ended with the whole party down: the defeat path after its narration. */
+  private sconfittaAlTurno: number | null = null;
   private scenaFinitaAlTurno: number | null = null;
   /** Socket del telefono → token del dispositivo (per il pannello: quali telefoni ricordati sono collegati). */
   private readonly dispositivoDiSocket = new Map<string, string>();
@@ -2960,6 +2962,7 @@ export class Regia {
 
   private interrompiTutto(motivo: string): void {
     this.scenaFinitaAlTurno = null;
+    this.sconfittaAlTurno = null;
     this.interrompiFlussi(motivo);
     this.tavolo.chiudiForzata();
     this.pausaRichiesta = false;
@@ -3628,7 +3631,17 @@ export class Regia {
     // Le azioni in coda sono state decise prima di questa narrazione: si rifanno sulla nuova.
     this.preparaProve();
     this.situazioniDopoLeRivelazioni();
-    if (this.scenaFinitaAlTurno === this.turno) {
+    if (this.sconfittaAlTurno === this.turno) {
+      // The party is down: nobody can act, so the table waits for the Game Master (next scene, healing, end of the
+      // evening) instead of opening windows nobody can use.
+      this.sconfittaAlTurno = null;
+      this.scenaFinitaAlTurno = null;
+      const fine = testoFisso('regia.righe.fine_scena');
+      this.rigaDiSistema(this.turno, fine);
+      this.uscita?.avviso('info', fine);
+      this.pausaRichiesta = true;
+      this.o.log.info({ turno: this.turno, scena: this.campagna.scena.id }, 'scena: the party is down, the table pauses (the Game Master decides)');
+    } else if (this.scenaFinitaAlTurno === this.turno) {
       // Il finale è stato detto. Prima il tavolo andava in pausa e ripartiva solo con Riprendi del
       // master (la pausa «che non riparte da sola» della prova del 3 novembre): ora la finestra si
       // riapre per tutti e il master riceve l'avviso per scegliere come andare avanti.
@@ -3733,6 +3746,12 @@ export class Regia {
     if (this.storiaVisita.ingresso !== ingresso) this.storiaVisita = { ingresso, carte: [], fughe: [] };
     for (const t of tiri?.tiri ?? []) if (t.tipo === 'attacco' && t.bersaglio) this.storiaVisita.carte.push({ turno: r.turno, chi: t.chi, bersaglio: t.bersaglio.id });
     for (const f of tiri?.combattimento?.fuggiti ?? []) this.storiaVisita.fughe.push({ turno: r.turno, id: f.id });
+    // The whole party is down (the fight ended on it, and every PC at the table is down, dead or fled): the defeat path
+    // after this turn's narration (round 5, CM T21–T25: five silent turns of «Livia Sarti non agisce.»).
+    if (tiri?.combattimento?.sconfitta && this.pgAlTavolo().every((id) => this.prove?.stato.fuoriGioco(id) != null)) {
+      this.sconfittaAlTurno = r.turno;
+      this.o.log.info({ turno: r.turno, pg: this.pgAlTavolo() }, 'combat: the whole party is down, the defeat path');
+    }
     // A blow struck or a fight on in this visit of the scene: what follows is not counted as a stall.
     if (this.prove?.inCombattimento || tiri?.tiri.some((t) => t.tipo === 'attacco')) this.scontroInVisita = this.mondo.visita.ingresso;
     if (epoca !== this.epoca) return;
@@ -4076,6 +4095,11 @@ export class Regia {
         esito.righe_prescritte += f.righe;
       }
     }
+    // The defeat path (docs/combattimento.md): the defeat ending, then the table pauses for the Game Master.
+    if (this.sconfittaAlTurno === turno && !controllo.signal.aborted) {
+      const detta = this.diciSconfitta(turno, esito, segniInRisposta, log);
+      if (detta) finale = detta;
+    }
     // Mossa del mondo rimasta vuota (le frasi fuori dalla finzione sono state scartate): rimedia il
     // Motore, senza un'altra chiamata. Modalità B: il segno dovuto o un riempitivo del catalogo;
     // altrimenti la mossa morbida pronta della scena.
@@ -4381,6 +4405,26 @@ export class Regia {
     this.scenaFinitaAlTurno = turno;
     this.sceneConFinale.add(this.campagna.scena.id);
     return { finale: id, righe };
+  }
+
+  /**
+   * The defeat ending (docs/combattimento.md, «The defeat path»): the scene's prepared `finale` with `sconfitta` if one
+   * is available now (mode B), else the Engine's sentence; the narrator's invitation is withdrawn. Returns what was said.
+   */
+  private diciSconfitta(turno: number, esito: { uscita: VoceUscita[] }, segni: SegniInRisposta, log: Logger): string | null {
+    this.ritiraInvito(turno, esito, log);
+    const b = this.statoRepertorio?.finaleDiSconfitta(turno) ?? null;
+    if (b && this.aggiungiBattutaMotore(turno, esito, segni, log, b, true)) {
+      this.sceneConFinale.add(this.campagna.scena.id);
+      log.info({ turno, finale: b.id }, 'combat: the defeat ending of the scene');
+      return b.id;
+    }
+    const frase = testoFisso('regia.righe.sconfitta');
+    const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: frase, frasi: [`t${turno}-k0`], motore: true };
+    this.righeDelMotore(turno, esito, [{ etichetta: ID_NARRATORE, testo: frase, testo_voce: this.pronuncia(frase) }], voce, true, 'k');
+    this.notifica();
+    log.info({ turno }, 'combat: no defeat ending available, the Engine\'s sentence');
+    return 'sconfitta';
   }
 
   /** L'invito finale del narratore («cosa fate?»), se non è ancora partito, si toglie da voce e trascrizione. */

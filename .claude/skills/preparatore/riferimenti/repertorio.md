@@ -28,6 +28,12 @@ serve four things:
 A voice example cannot lie, reveal, confess or advance the clock [V]. A filler is only of type moment, clue, transition or
 request [V].
 
+**Defeat ending** (`tipo: finale`, `sconfitta: true`, docs/combattimento.md «The defeat path»): in a scene with a
+hostile NPC write the consequence of the whole party falling (captured, left for dead, rescued…), one line per likely
+victor, with that victor in `attori` and `richiede.stati: {png_x: in_gioco}`, and no PC's name (the Engine cannot know
+who died) [V `REPERTORIO.sconfitta_mancante`, a warning; `REPERTORIO.sconfitta`]. The Engine says it, then the table
+pauses for the Game Master.
+
 **Stall lines** (`stallo: 1 | 2 | 3`, docs/mondo.md §5): for every scene write at least one line per level [V
 `REPERTORIO.stallo_scarso`, a warning], with `scena:` set. The Engine says them when the table stays still, with no
 action to answer, so no gate on the action (`da_pg`, `privata`, `prova`) [V `REPERTORIO.stallo`]; the reader never
