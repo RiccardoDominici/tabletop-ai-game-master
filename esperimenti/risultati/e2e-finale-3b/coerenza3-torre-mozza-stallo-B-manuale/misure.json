@@ -1,0 +1,166 @@
+{
+ "etichetta": "coerenza3-torre-mozza-stallo-B-manuale",
+ "turni": {
+  "giocati": 14,
+  "copione": 14,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_mezzanotte": "0/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "coerenza": {
+  "violazioni": 0,
+  "per_regola": {},
+  "esempi": []
+ },
+ "private": {
+  "azioni_private": 2,
+  "righe_privato": 0,
+  "esiti_privati_log": 0,
+  "spostate_dalla_guardia": 0,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": [],
+  "al_tavolo_candidate": 0,
+  "al_tavolo": []
+ },
+ "prove": {
+  "azioni_risolte": 15,
+  "con_tiro": 0,
+  "tipi": {
+   "nessuna": 15
+  },
+  "dadi": {},
+  "regole_tipo": {},
+  "set": "basic-fantasy-r142",
+  "arbitro": "anthropic completo (set generico)"
+ },
+ "combattimento": {
+  "eventi": {},
+  "fatti_morale_terra": 0,
+  "esempi": [],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 0,
+  "nessuna": 0,
+  "ms_classifica_med": null,
+  "ms_classifica_peggiore": null
+ },
+ "sceneggiatore": {
+  "richieste": {},
+  "consegnate": 0,
+  "dette_a_finestra_aperta": 0,
+  "accettate": 0,
+  "scartate": {},
+  "ms_claude_med": null,
+  "ms_totale_med_subito": null,
+  "processo": {}
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20040.5,
+   "peggiore": 20328,
+   "n": 14
+  },
+  "llm_prima_frase": {
+   "mediana": null,
+   "peggiore": null,
+   "n": 0
+  },
+  "voce_primo_audio": {
+   "mediana": 873,
+   "peggiore": 1326,
+   "n": 14
+  },
+  "schermo_inizio_audio": {
+   "mediana": 1025.5,
+   "peggiore": 1479,
+   "n": 14
+  },
+  "llm_fine": {
+   "mediana": 603.5,
+   "peggiore": 774,
+   "n": 14
+  },
+  "audio_fine": {
+   "mediana": 6790.5,
+   "peggiore": 7563,
+   "n": 14
+  },
+  "s_tra_turni_med": 27,
+  "s_tra_turni_peggiore": 27.648
+ },
+ "voce": {
+  "motore": "fish",
+  "buchi": {
+   "totale": 0,
+   "in_frase": 0,
+   "tra_frasi": 0,
+   "silenzio_ms": 0,
+   "per_turno": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "proiettore_secondi": 106,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 46,
+  "avvisi": 1,
+  "per_messaggio": [
+   "50 ×16 narratore: chiamata fallita",
+   "50 ×15 prove: arbitro fallito (nessun tiro per queste azioni)",
+   "50 ×14 narratore: protocollo non rispettato",
+   "40 ×1 llm: preriscaldamento fallito (si continua)",
+   "50 ×1 arbitro: relazioni fallite"
+  ],
+  "provider": [
+   "lettore         → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "arbitro_azioni  → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_ARBITRO",
+   "arbitro_prove   → anthropic (completo) claude-haiku-5-5 — variabile d'ambiente T",
+   "riassunto       → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_RIASSUN",
+   "regole          → anthropic claude-haiku-5-5 — variabile d'ambiente TAGM_REGOLE",
+   "voce            → openrouter — variabile d'ambiente TAGM_VOCE",
+   "ascolto         → locale ggml-large-v3-turbo-q5_0 — configurato (config/predefin",
+   "immagini        → locale flux2-klein-4b (mflux, strumenti/immagini) — configurat"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0.006666,
+ "righe": {
+  "prescritte": 0,
+  "improvvisate": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 13,
+  "riparazioni": 0
+ }
+}

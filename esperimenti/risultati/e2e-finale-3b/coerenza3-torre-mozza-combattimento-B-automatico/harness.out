@@ -1,0 +1,26 @@
+[torre-mozza-combattimento-B] campagna torre-mozza, porta 4945, modalità repertorio: riavvio del server di prova…
+[torre-mozza-combattimento-B] server: {"ok":true,"fase":"attesa","turno":0,"versione_scena":0,"voce":"fish","schermo":false,"narratore":"haiku","modello":"claude-haiku-5-5","campagna":"torre-mozza","immagini":17,"audio":26,"sessione":"","modo":"repertorio","ripresa":null,"pacchetto":null,"lingua":"it","lingua_contenuti":"it"}
+[torre-mozza-combattimento-B] turno 1/14 fatto (server 1)
+[torre-mozza-combattimento-B] turno 2/14 fatto (server 2)
+[torre-mozza-combattimento-B] turno 3 (server 3): scena → scena_carbonaia
+[torre-mozza-combattimento-B] turno 3/14 fatto (server 4)
+[torre-mozza-combattimento-B] turno 4 (server 5): scena → scena_torre
+[torre-mozza-combattimento-B] turno 4/14 fatto (server 6)
+[torre-mozza-combattimento-B] server 7: combat, on turn pg_nespola; waiting for their turn: pg_livia, pg_eliandro
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 7), 2 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 8: combat, on turn pg_eliandro; waiting for their turn: pg_livia
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 8), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 9: combat, on turn pg_livia
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 9)
+[torre-mozza-combattimento-B] server 10: combat, on turn pg_nespola; waiting for their turn: pg_livia, pg_eliandro
+[torre-mozza-combattimento-B] turno 6/14 fatto (server 10), 2 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] turno 6/14 fatto (server 11)
+[torre-mozza-combattimento-B] turno 7/14 fatto (server 12)
+[torre-mozza-combattimento-B] turno 8/14 fatto (server 13)
+[torre-mozza-combattimento-B] turno 9/14 fatto (server 14)
+[torre-mozza-combattimento-B] turno 10/14 fatto (server 15)
+[torre-mozza-combattimento-B] turno 11/14 fatto (server 16)
+[torre-mozza-combattimento-B] turno 12/14 fatto (server 17)
+[torre-mozza-combattimento-B] turno 13/14 fatto (server 18)
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 19)
+[torre-mozza-combattimento-B] fatto → esperimenti/risultati/e2e-finale-3b/coerenza3-torre-mozza-combattimento-B-automatico (costo $0.03784)
