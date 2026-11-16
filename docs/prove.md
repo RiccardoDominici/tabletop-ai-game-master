@@ -575,7 +575,7 @@ never wait. The startup log line `PROVE E DADI` says the value and its origin (o
   window's actions, as one an attack opens does: `MotoreProve.chiediCombattimento` keeps the request (in the snapshot,
   `combattimento_chiesto`), the dry run starts the fight on its copy (`dopoAzioni`, `apri`), so each PC's initiative is
   asked like any other roll («Ida, tira l'iniziativa.»), «Tira il Motore» works on it, and the real pass starts the fight
-  with the dice entered. A window with no action still runs the wait. An interrupted turn leaves the request as it was
+  with the dice entered; the world hears «scontro» once, in that turn. A window with no action still runs the wait. An interrupted turn leaves the request as it was
   (no half-open fight); «Termina combattimento» cancels a request not started yet; the panel shows «alla chiusura: si
   tira l'iniziativa». Automatic rolls start the panel's fight at once, as before. Side rolls (surprise, initiative by
   sides) stay the Engine's, being no one player's own. Test: test/combattimento-master-manuale.test.ts.

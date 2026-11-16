@@ -240,12 +240,15 @@ portato:
   non_soggetti: [io, tu, noi, voi, che, chi, cosa, come, dove, quando, perche, ecco]
 
 # Unnamed actors (apps/server/src/coerenza/attori.ts): a flight or an attack on a PC told with no name for who does it.
-# `fuga`: a flight (its subject unnamed after one of `relativi`, or in a clause that names nobody); `difesa` followed by
+# `fuga`: a flight by someone unnamed: after `chiunque`, after one of `relativi` with a `tracce` word before it, or with a
+# `tracce` word as the clause's subject (a trace of a person: a figure, steps); `difesa` followed by
 # one of `colpi` (with its article), or `difesa` and later one of `colpi` with an `in_arrivo` verb: a blow coming at the
 # PC named. Exact words, no stems («para» is not «parapetto»). Weapons and blows of the language, not of a campaign.
 attori_impliciti:
   fuga: [scappa, scappano, fugge, fuggono, corre via, corrono via, si allontana, si allontanano, si dilegua, si dileguano]
-  relativi: [che, chi, cui]
+  relativi: [che, cui]
+  chiunque: [chi]
+  tracce: [figura, figure, sagoma, sagome, ombra, ombre, passi, passo, qualcuno]
   difesa: [para, parano, pari, alza lo scudo, solleva lo scudo, regge lo scudo, tiene lo scudo, si ripara, schiva, schivano, devia]
   colpi: [colpo, colpi, fendente, affondo, lancia, lama, freccia, frecce, dardo, pugnale, spada, ascia, mazza, bastone, giavellotto]
   in_arrivo: [arriva, arrivano, rimbalza, rimbalzano, sbatte, sbattono, batte, battono, si abbatte, cala, scivola via, si spezza]

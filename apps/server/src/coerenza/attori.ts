@@ -5,9 +5,11 @@
  * after the fight. The Engine knows who could have done it: the visit's cards (who fought) and flights (who fled).
  *
  * The sentence inherits that actor for the checks, and an actor out of play since before this turn fails R-fuori
- * (the same state line, «Grosso non è più qui.», once per turn):
- * - a flight with no named subject (after a relative, or in a clause that names nobody) is the last flight of this
- *   visit; a flight of this very turn is this turn's story, not an act;
+ * (the same state line, «Grosso non è più qui.», once per turn; motive `attore_implicito`, never handed to the
+ * model's repair):
+ * - a flight by someone the clause does not name («chi fugge», «la figura che scappa», «il rumore dei passi si
+ *   allontana»: a trace of a person) is the last flight of this visit; a flight of this very turn is this turn's
+ *   story, not an act; a zero subject or a thing is not judged;
  * - an attack on a PC told with no attacker (a defence phrase with a blow coming: «para la lancia», «alza lo scudo
  *   … il colpo rimbalza») is the attacker of this turn's card on that PC; with no such card and nobody of the visit's
  *   fight still in play in the scene, it is the last foe of the fight's cards.
@@ -20,7 +22,6 @@ import { nomeBreve } from '../campagna/nomi';
 import { testo } from '../lingua';
 import { campoElenco, regole } from '../lingua/motore';
 import { doveNomina, paroleDi } from '../narrazione/guardia-esiti';
-import type { CorrezioneFuori } from '../narrazione/guardia-fuori';
 import { paroleDellaFrase } from '../narrazione/guardia-fuori';
 import type { EntitaRegistro, StatoEntita } from './registro';
 
@@ -44,6 +45,10 @@ export interface DatiAttori {
 interface Parole {
   fuga: string[][];
   relativi: ReadonlySet<string>;
+  /** «chi»: whoever, a person never named. */
+  chiunque: ReadonlySet<string>;
+  /** Traces of a person: a figure, steps, someone. */
+  tracce: ReadonlySet<string>;
   difesa: string[][];
   colpi: ReadonlySet<string>;
   inArrivo: string[][];
@@ -53,6 +58,8 @@ const parole = (): Parole =>
   regole('attori_impliciti', (s) => ({
     fuga: campoElenco(s, 'fuga').map(paroleDi),
     relativi: new Set(campoElenco(s, 'relativi').map(normalizza)),
+    chiunque: new Set(campoElenco(s, 'chiunque').map(normalizza)),
+    tracce: new Set(campoElenco(s, 'tracce').map(normalizza)),
     difesa: campoElenco(s, 'difesa').map(paroleDi),
     colpi: new Set(campoElenco(s, 'colpi').map(normalizza)),
     inArrivo: campoElenco(s, 'in_arrivo').map(paroleDi),
@@ -96,14 +103,20 @@ export function attoreImplicito(frase: string, d: DatiAttori): { atto: 'fuga' | 
     return !!e && !d.fuoriOra.has(id) && (!IN_GIOCO.has(e.stato) || e.presenza !== 'in_scena');
   };
 
-  // A flight: no character is the subject of the clause where it is told (a relative before it, or nobody named).
+  // A flight by someone the clause does not name: «chi fugge», a trace of a person with a relative («la figura che
+  // scappa»), or a trace as the clause's subject («il rumore dei passi si allontana»). A zero subject («Poi scappa…»)
+  // carries the sentence before, and a thing («le lanterne si allontanano») is no one: neither is judged.
   const clausole = frase.split(/[,.;:!?—–()«»"]+/u).map(paroleDi).filter((c) => c.length);
   for (const c of clausole) {
     const f = primaDi(c, p.fuga);
     if (!f) continue;
     const prima = c.slice(0, f.i);
-    const relativo = prima.length > 0 && p.relativi.has(prima.at(-1)!);
-    if (!relativo && pg.some((e) => doveNomina(prima, e.nomi) >= 0)) continue;
+    const ultima0 = prima.at(-1) ?? '';
+    const chiunque = p.chiunque.has(ultima0);
+    const traccia = (w: readonly string[]): boolean => w.some((x) => p.tracce.has(x));
+    const conRelativo = p.relativi.has(ultima0) && traccia(prima.slice(-4, -1));
+    const soggettoTraccia = !p.relativi.has(ultima0) && traccia(prima) && !pg.some((e) => doveNomina(prima, e.nomi) >= 0);
+    if (!chiunque && !conRelativo && !soggettoTraccia) continue;
     // This turn's flight is this turn's story; else the last one of the visit.
     if (d.storia.fughe.some((x) => x.turno === d.turno) || [...d.fuoriOra].some((id) => perId.get(id)?.stato === 'fuggito')) return null;
     const ultima = [...d.storia.fughe].filter((x) => x.turno < d.turno).sort((a, b) => a.turno - b.turno).at(-1);
@@ -143,16 +156,19 @@ export function attoreImplicito(frase: string, d: DatiAttori): { atto: 'fuga' | 
  * The guard of one turn: a sentence whose unnamed actor is out of play since before the turn gets that actor's state
  * line (R-fuori's), once per actor in the turn; later ones are dropped. Null when the visit had no fight.
  */
-export function guardiaAttori(d: DatiAttori): ((frase: string) => CorrezioneFuori) | null {
+/** The replacement for a sentence (R-fuori's state line of the inherited actor, '' once said), or null. */
+export type CorrezioneAttore = { testo: string; motivo: 'attore_implicito'; id: string } | null;
+
+export function guardiaAttori(d: DatiAttori): ((frase: string) => CorrezioneAttore) | null {
   if (!d.storia.carte.length && !d.storia.fughe.length) return null;
   const detti = new Set<string>();
   return (frase) => {
     const a = attoreImplicito(frase, d);
     if (!a) return null;
-    if (detti.has(a.id)) return { testo: '', motivo: 'fuori_gioco_agisce', id: a.id };
+    if (detti.has(a.id)) return { testo: '', motivo: 'attore_implicito', id: a.id };
     detti.add(a.id);
     const e = d.entita.find((x) => x.id === a.id)!;
     const riga = e.stato === 'morto' ? 'fuori_morto' : e.stato === 'fuggito' || e.presenza !== 'in_scena' ? 'fuori_fuggito' : 'fuori_a_terra';
-    return { testo: testo(`prove.guardia.${riga}`, { nome: nomeBreve(e.nome) }), motivo: 'fuori_gioco_agisce', id: a.id };
+    return { testo: testo(`prove.guardia.${riga}`, { nome: nomeBreve(e.nome) }), motivo: 'attore_implicito', id: a.id };
   };
 }

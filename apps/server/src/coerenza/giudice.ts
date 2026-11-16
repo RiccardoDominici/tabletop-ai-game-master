@@ -197,7 +197,7 @@ export class GiudiceDomande {
   /** The shadow rules' verdict after a deadline: only what changes the text today (a rule in observation stays so). */
   private dalleRegole(ombra: CorrezioneEsito, ms: number): DecisioneGiudice | null {
     if (!ombra || inOsservazione(ombra.motivo)) return null;
-    const regola: IdRegola = ombra.motivo === 'creatura_inesistente' ? 'R-inesistente' : ombra.motivo === 'fuori_gioco_agisce' ? 'R-fuori' : 'R-esito';
+    const regola: IdRegola = ombra.motivo === 'creatura_inesistente' ? 'R-inesistente' : ombra.motivo === 'fuori_gioco_agisce' || ombra.motivo === 'attore_implicito' ? 'R-fuori' : 'R-esito';
     return { testo: ombra.testo, regola, motivo: ombra.motivo, fonte: 'regole', ms };
   }
 

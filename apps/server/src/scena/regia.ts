@@ -3193,7 +3193,7 @@ export class Regia {
     turno = this.turno,
     /** All the rules; or only the card rules (`esiti`), or only the ones the yes/no judge replaces (`ombra`). */
     parti: 'tutte' | 'esiti' | 'ombra' = 'tutte',
-  ): (testo: string) => CorrezioneEsito {
+  ): (testo: string, opz?: { prescritta?: boolean }) => CorrezioneEsito {
     const c = this.campagna;
     // Rules in observation (coerenza/osservazione.ts): what they would do is recorded, the sentence is left alone.
     let frase = '';
@@ -3247,14 +3247,17 @@ export class Regia {
     };
     // With the yes/no judge (docs/coerenza.md, «The candidate in play»): the card rules stay before it, and the rules
     // it replaces (R-fuori; R-inesistente in observation) run in its shadow.
+    // A prewritten line (`prescritta`) is not judged for unnamed actors: its author wrote it for its scene and its
+    // conditions (a clock sign «si sentono passi che scappano» is the world, not an invented actor).
+    const conAttori = (testo: string, opz?: { prescritta?: boolean }): CorrezioneEsito => (opz?.prescritta ? null : (attori?.(testo) ?? null));
     if (parti === 'esiti') {
-      return (testo) => {
+      return (testo, opz) => {
         frase = testo;
-        return esiti(testo) ?? attori?.(testo) ?? null;
+        return esiti(testo) ?? conAttori(testo, opz);
       };
     }
     if (parti === 'ombra') return (testo) => conIne(testo) ?? fuori?.(testo) ?? null;
-    return (testo) => conIne(testo) ?? esiti(testo) ?? fuori?.(testo) ?? attori?.(testo) ?? null;
+    return (testo, opz) => conIne(testo) ?? esiti(testo) ?? fuori?.(testo) ?? conAttori(testo, opz);
   }
 
   /**
@@ -3267,7 +3270,7 @@ export class Regia {
     inesistenti: InesistentiDelTurno | null,
     registro: Registro,
     turno: number,
-  ): { correggiEsito: (testo: string) => CorrezioneEsito; giudice: GiudiceDomande } | null {
+  ): { correggiEsito: (testo: string, opz?: { prescritta?: boolean }) => CorrezioneEsito; giudice: GiudiceDomande } | null {
     const d = this.o.domanda;
     if (!d || !this.prove?.attivo) return null;
     const oraFuori = [
@@ -3467,7 +3470,7 @@ export class Regia {
       if (!this.prove.chiediCombattimento()) return { ok: false, errore: testoFisso(this.prove.inCombattimento ? 'regia.errori.combattimento_in_corso' : 'regia.errori.combattimento_chiesto') };
       this.rigaDiSistema(this.turno, testoFisso('regia.righe.combattimento_chiesto'));
       this.o.log.info({ turno: this.turno }, 'combat: opened from the panel, it starts at the next closed window with the players\' initiative');
-      this.mondo.fatti([{ tipo: 'scontro' }], this.turno);
+      // No «scontro» fact here: the turn where the fight starts reports it (fattiDelTurno), once.
       this.notifica();
       return { ok: true };
     }
@@ -3791,7 +3794,7 @@ export class Regia {
     /** Fatti dello scontro che il tavolo deve sentire (prove/fatti-dovuti.ts). */
     dovuti: readonly FattoDovuto[] = [],
     /** Combat outcome guard of the turn (narrazione/guardia-esiti.ts), or null. */
-    correggiEsito: ((testo: string) => CorrezioneEsito) | null = null,
+    correggiEsito: ((testo: string, opz?: { prescritta?: boolean }) => CorrezioneEsito) | null = null,
     /** The turn order rolled in this turn, first to last (prove/combattimento.ts, `ordine`): said by the Engine. */
     ordine: readonly string[] = [],
     /** The private replies of the audience split (docs/coerenza.md §2): one call each, in parallel, phones only. */
@@ -3816,6 +3819,8 @@ export class Regia {
     this.rilasciFuoriContesto = 0;
     const log = this.o.log.child({ turno });
     log.debug({ caratteri: messaggio.length }, 'narratore: messaggio del turno');
+    // The Engine lines said in this turn's public answer and its repair, by the rules and by the judge: each once.
+    const lineeDette = new Set<string>();
 
     const esito = await narraTurno(
       { campagna: this.campagna, narratore: this.o.narratore, pipeline: this.pipeline, log },
@@ -3837,6 +3842,7 @@ export class Regia {
         ...(giudice ? { giudice } : {}),
         ...this.parametroRifiuti(turno),
         giàSentite: this.frasiRecenti(turno),
+        lineeDette,
         onViolazione: (v) => this.violazione(v),
         ...(this.o.riparazione ? { ripara: (x: { regola: string; frase: string; motivo: string; sostituto: string }) => this.riparaFrase(turno, x) } : {}),
         presenti: this.pngInScena(),
@@ -3890,6 +3896,7 @@ export class Regia {
           // The repair must not say again what the first answer of this turn already said either.
           giàSentite: this.frasiRecenti(turno),
           detteNelTurno: new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno === turno).map((v) => frasePerRipetizione(v.testo))),
+          lineeDette,
           onViolazione: (v) => this.violazione(v),
           presenti: this.pngInScena(),
           usa: (id, per) => this.usaBattuta(id, per, turno, segniInRisposta),

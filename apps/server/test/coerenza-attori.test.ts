@@ -7,6 +7,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { attoreImplicito, guardiaAttori, type DatiAttori } from '../src/coerenza/attori';
+import { VerificaTurno } from '../src/coerenza/verifica';
 import type { EntitaRegistro } from '../src/coerenza/registro';
 import { impostaLingua } from '../src/lingua';
 import { DadiACopione } from '../src/prove/dadi';
@@ -51,6 +52,11 @@ describe('a flight with no name', () => {
     expect(attoreImplicito('Ida si volta: il rumore dei passi si allontana verso il fiume.', dati())).toEqual({ atto: 'fuga', id: 'png_bertoldo' });
   });
 
+  it('not a zero subject (it carries the sentence before) nor a thing', () => {
+    expect(attoreImplicito('Poi scappa verso il mulino, senza voltarsi.', dati())).toBeNull();
+    expect(attoreImplicito('Le lanterne si allontanano lungo il fiume.', dati())).toBeNull();
+  });
+
   it('not when a PC is the subject, a character is named, the flight is this turn\'s, or nobody fled', () => {
     expect(attoreImplicito('Ida si allontana dalla ruota del mulino.', dati())).toBeNull();
     expect(attoreImplicito('Nives scappa verso la casa.', dati())).toBeNull();
@@ -80,12 +86,21 @@ describe('an attack on a PC with no attacker named', () => {
   });
 });
 
+describe('prewritten lines', () => {
+  it('a repertoire row is checked with `prescritta`: the unnamed-actor rule leaves it to its author', () => {
+    const g = guardiaAttori(dati())!;
+    const v = new VerificaTurno({ turno: 7, idPng: new Set(), nomiPg: [], correggiEsito: (t, opz) => (opz?.prescritta ? null : g(t)) }, () => undefined);
+    expect(v.verificaBattuta('nar_segno', { etichetta: 'narratore', testo: 'Fuori si sentono passi che scappano verso il bosco.' })).toBeNull();
+    expect(v.verifica({ etichetta: 'narratore', testo: 'Fuori si sentono passi che scappano verso il bosco.', voce: '', segmento: 0 })).toMatchObject({ tipo: 'dici', testo: 'Bertoldo non è più qui.' });
+  });
+});
+
 describe('the guard of the turn', () => {
   it('the state line of the inherited actor once, then the sentence dropped', () => {
     const g = guardiaAttori(dati())!;
-    expect(g('Ida para la lancia con lo scudo.')).toEqual({ testo: 'Ruggero giace a terra, senza vita.', motivo: 'fuori_gioco_agisce', id: 'png_ruggero' });
-    expect(g('Corrado alza lo scudo contro la lancia che arriva.')).toEqual({ testo: '', motivo: 'fuori_gioco_agisce', id: 'png_ruggero' });
-    expect(g('Il rumore dei passi si allontana verso il fiume.')).toEqual({ testo: 'Bertoldo non è più qui.', motivo: 'fuori_gioco_agisce', id: 'png_bertoldo' });
+    expect(g('Ida para la lancia con lo scudo.')).toEqual({ testo: 'Ruggero giace a terra, senza vita.', motivo: 'attore_implicito', id: 'png_ruggero' });
+    expect(g('Corrado alza lo scudo contro la lancia che arriva.')).toEqual({ testo: '', motivo: 'attore_implicito', id: 'png_ruggero' });
+    expect(g('Il rumore dei passi si allontana verso il fiume.')).toEqual({ testo: 'Bertoldo non è più qui.', motivo: 'attore_implicito', id: 'png_bertoldo' });
     expect(g('Nives guarda il fiume.')).toBeNull();
   });
 

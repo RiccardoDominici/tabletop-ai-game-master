@@ -135,7 +135,7 @@ describe('the yes/no judge', () => {
     libera('no');
     expect(await d2).toBeNull();
     expect(aperte).toHaveLength(2);
-    // The table heard the line in the last turns (apri says no): the rules decide now, the question goes on aside.
+    // The line was said already in this turn (apri says no): the rules decide now, the question goes on aside.
     const g3 = giudice(trattenuto, () => null, 1000);
     expect(await g3.giudica('Lo sgherro sputa nel fiume.', false, undefined, { apri: () => false })).toBeNull();
   });

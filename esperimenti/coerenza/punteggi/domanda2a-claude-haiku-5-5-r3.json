@@ -1,7 +1,7 @@
 {
  "variante": "domanda2a-claude-haiku-5-5",
  "violazioni": 31,
- "prese": 24,
+ "prese": 25,
  "mancate": [
   {
    "chiave": "coerenza3-torre-mozza-combattimento-B-automatico#10:6",
@@ -29,11 +29,6 @@
    "perche": "the invented fleeing goblin's steps (no noun)"
   },
   {
-   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#15:1",
-   "testo": "Il colpo lo coglie di fianco e lo stende sulle pietre, accanto alla scala.",
-   "perche": "carried «lo»: the invented goblin struck down"
-  },
-  {
    "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#15:7",
    "testo": "Non si rialza.",
    "perche": "carried: the invented goblin does not rise"
@@ -56,5 +51,5 @@
    "etichettata": false
   }
  ],
- "ms": 8
+ "ms": 16
 }

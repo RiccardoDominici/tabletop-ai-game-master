@@ -39,6 +39,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - ~~a fight opened from the panel rolls the PCs' first initiative with the Engine's dice~~ **Done** (16 November, item
     11c): with manual rolls it starts at the next closed window, after its actions, and every PC rolls initiative there
     (docs/prove.md §8); side rolls stay the Engine's;
+  - to check: with automatic rolls the panel's fight still starts at the click, and the next window's `dopoAzioni`
+    (prove/combattimento.ts) advances past step 0 before running any step, so an NPC first in the order seems to lose
+    its first step (read from the code, not reproduced; the manual path starts inside `dopoAzioni` and runs it);
   - «the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll);
   - no example campaign uses minions yet; world questions and minions not yet seen in a live run.
 - **Final end-to-end pass on today's code**: done in profile B (docs/e2e-finale-3.md, 958556a: not ready), and its fix

@@ -176,7 +176,7 @@ export interface ParametriTurno {
    * Combat outcome guard (narrazione/guardia-esiti.ts): a narrator sentence that contradicts the turn's cards
    * (a standing NPC falls, a miss told as a hit) is replaced by the Engine's line before the voice.
    */
-  correggiEsito?: (testo: string) => CorrezioneEsito;
+  correggiEsito?: (testo: string, opz?: { prescritta?: boolean }) => CorrezioneEsito;
   /**
    * Refusal guard (narrazione/guardia-rifiuti.ts): the lines that replace a sentence where an NPC gives in after a
    * failed social check this turn, or null.
@@ -192,6 +192,8 @@ export interface ParametriTurno {
   detteNelTurno?: ReadonlySet<string>;
   /** Every violation the checker caught, with its rule (coerenza/verifica.ts): the director logs and counts it. */
   onViolazione?: (v: Violazione) => void;
+  /** The Engine lines said in this turn, shared by its calls and by the judge (coerenza/verifica.ts, `lineeDette`). */
+  lineeDette?: Set<string>;
   /**
    * The yes/no judge (coerenza/giudice.ts, docs/coerenza.md «The candidate in play»): every public narrator sentence
    * after the rules, in order; a decision replaces the sentence with the Engine's line or drops it (never a repair).
@@ -295,7 +297,10 @@ export async function narraTurno(
   // The coherence checker of this call (coerenza/verifica.ts): one pipeline of named rules for every sentence. Each
   // violation keeps its old anomaly code and log line (the run measures read them) and goes to the director as one
   // record with its rule (docs/coerenza.md §3).
-  const segnala = (v: Violazione): void => {
+  const segnala = (v0: Violazione): void => {
+    // A private reply's violation belongs to that PC's phone, not to the table (the director's acknowledgements
+    // look only at the public sentences dropped).
+    const v = p.soloPg && !v0.id_pg ? { ...v0, id_pg: p.soloPg } : v0;
     if (v.regola === 'R-finzione') scartate += 1;
     if (v.regola === 'R-assente') scartateAssenti += 1;
     if (v.regola === 'R-segreto') scartateSegreti += 1;
@@ -316,6 +321,7 @@ export async function narraTurno(
       ...(p.rifiutoDopoProva ? { rifiutoDopoProva: p.rifiutoDopoProva } : {}),
       ...(p.giàSentite ? { giàSentite: p.giàSentite } : {}),
       ...(p.detteNelTurno ? { detteNelTurno: p.detteNelTurno } : {}),
+      ...(p.lineeDette ? { lineeDette: p.lineeDette } : {}),
       nomiPg: [...new Set(campagna.pg.flatMap((x) => [x.nome, x.nome.split(/\s+/)[0] ?? '']).map(frasePerRipetizione).filter((x) => x.length > 2))],
     },
     segnala,
@@ -429,8 +435,11 @@ export async function narraTurno(
           const apertura = primaFrase
             ? {
                 apri: (t: string): boolean => {
-                  if (p.giàSentite?.has(frasePerRipetizione(t))) return false;
-                  sostituisci(e.segmento, [{ etichetta: ID_NARRATORE, testo: t }]);
+                  // Said once a turn. Heard in the last turns is no reason to keep it back: refusing it there cost 4,
+                  // 4 and 1 catches on the replay sets (docs/coerenza.md, «First audio»).
+                  if (!verifica.segnaLinea(t)) return false;
+                  // Its own row of the transcript (not merged with the sentence): the judge's later lines see it was said.
+                  sostituisci(segmentoBattuta++, [{ etichetta: ID_NARRATORE, testo: t }]);
                   return true;
                 },
               }
@@ -443,7 +452,8 @@ export async function narraTurno(
             continue;
           }
           if (g) {
-            const ripetuta = !!g.testo && !!p.giàSentite?.has(frasePerRipetizione(g.testo));
+            // Heard in the last turns, or said in this turn already (by the rules before the judge, or by the judge).
+            const ripetuta = !!g.testo && (!!p.giàSentite?.has(frasePerRipetizione(g.testo)) || !verifica.segnaLinea(g.testo));
             const azione = g.testo && !ripetuta ? 'sostituita' : 'tolta';
             segnala({ turno: p.turno, regola: g.regola, etichetta: e.etichetta, frase: d.testo, azione, ...(azione === 'sostituita' ? { sostituto: [g.testo] } : {}), dettaglio: { motivo: g.motivo, fonte: g.fonte, ms: g.ms } });
             if (azione === 'tolta') continue;

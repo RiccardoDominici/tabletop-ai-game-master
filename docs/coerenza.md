@@ -436,11 +436,18 @@ Built (`coerenza/giudice.ts`, `PrimaFrase`; `turni/narrazione.ts`): when nothing
 sentence of this call or of the repair call, no Engine line before the narration: the turn's `llm_prima_frase` and
 `voce_richiesta` marks), a flagged first sentence makes the Engine say that line at once (log «coherence: first
 sentence flagged, the Engine line said while the question runs»); then «si» drops the sentence (record `sostituita`,
-`dettaglio.apertura`), «no» lets it follow the line, a late answer leaves it to the shadow rules. With no line (an
-absent NPC) or a line heard in the last turns, the rules decide the sentence now and the question goes on aside,
-only as the next sentence's carried subject; a «si» there is recorded as `osservata` with `dettaglio.tardiva` (log
-«coherence: first sentence said, its question answered «si» afterwards»). Scored as `domanda2a`: 105/117 (one first
-sentence about an absent NPC goes to the rules), 33/37 and 24/31 caught, with 7, 3 and 3 clean touched; the cost is
+`dettaglio.apertura`), «no» lets it follow the line, a late answer leaves it to the shadow rules. The opener has its
+own transcript row, and one set of Engine lines said is shared by the rules before the judge, the judge and the
+opener across the answer and its repair (`lineeDette`): each line once a turn (a rule's «Zirrà giace a terra, senza
+vita.» and the judge's same line were both said in T10's shape before). With no line (an absent NPC, or the line
+already said this turn) the rules decide the sentence now and the question goes on aside, only as the next sentence's
+carried subject; a «si» there is recorded as `osservata` with `dettaglio.tardiva` (log «coherence: first sentence
+said, its question answered «si» afterwards»). The opener is said even when the table heard it in the last turns: the
+alternative, keeping it back for three turns and letting the rules decide (`--apertura-una-ogni-tre`), refuses 13 of
+22 openers on the frozen set and costs 107 → 103, 33 → 29 and 27 → 26 caught; so after a fight where the players keep
+striking a body, the turns may open with the same state line (round 3 already heard it in T10, T11, T12 and T16
+through the judge's «si»). Scored as `domanda2a`: 105/117 (one first sentence about an absent NPC goes to the rules),
+33/37 and 24/31 caught (25 with the late carry below), with 7, 3 and 3 clean touched; the cost is
 one more true line where the answer was «no»: 3 of 22 openers on the frozen set, 0 of 8 and 2 of 7 on the held-out
 sets (round 3: T11 and T18 would have heard «Zirrà giace a terra, senza vita.» before a correct sentence). The
 replay estimate for round 3's game is the same as the rules-only option, about 1.7 s; it will not return to 1.15 s
@@ -462,7 +469,7 @@ colpisce Grosso.» / «… manca …», «Livia ci riesce.» / «Livia ci prova,
 non si muove più.», «… non è più qui.», «… ma così non si può.», else «Livia ci prova.»; never the narrator-facing fact
 line. A line the table heard word for word in the last three turns falls back to «Livia ci prova.». Logged («coherence:
 an action's answer was dropped, the Engine acknowledges it»), written to narrazioni.jsonl (`tipo: conferma_motore`)
-and counted apart: `azioni_senza_risposta` is still the count before the acknowledgement (comparable with rounds 1–3),
+and counted apart (a private reply's dropped sentences carry their PC and do not count): `azioni_senza_risposta` is still the count before the acknowledgement (comparable with rounds 1–3),
 `conferme_motore` the ones the Engine answered (turn record, run summary, misure.py). On round 3's six: Livia, Nespola
 and Eliandro attacking Zirrà already dead would each hear «… ci prova, ma Zirrà non si muove più.», Eliandro's foot
 and question (no roll) «Eliandro ci prova.». Tests: test/coerenza-risposta.test.ts (every case, it and en),
@@ -474,12 +481,16 @@ ma regge.» (nobody of the fight in play) and T14 «… il rumore dei passi si a
 had fled at T9). Built (`coerenza/attori.ts`, words in `lingue/<code>/motore.yaml`, section `attori_impliciti`): the
 director keeps the visit's attack cards (PCs' and NPCs') and flights (`storiaVisita`, reset at a scene change; not in
 the snapshot, so after a resume the rule judges nothing until the next fight). A sentence that names no NPC and tells
-a flight with no named subject (after a relative, «la figura che scappa», or in a clause that names nobody, «il rumore
-dei passi si allontana») inherits the visit's last flight; one that tells an attack on a PC with no attacker (a defence
+a flight by someone the clause does not name («chi fugge», a trace of a person with a relative, «la figura che
+scappa», or as the subject, «il rumore dei passi si allontana»; not a zero subject, «Poi scappa…», which carries the
+sentence before, nor a thing, «le lanterne si allontanano») inherits the visit's last flight; one that tells an attack on a PC with no attacker (a defence
 phrase and a blow coming: «para la lancia», «alza lo scudo … il colpo della lancia rimbalza») inherits the attacker of
 this turn's card on that PC, or, with no such card and nobody of the fight still in play here, the last foe in the
 visit's cards. An inherited actor out of play since before the turn gets R-fuori's line («Grosso non è più qui.»,
-once a turn); never while a foe of the fight stands in the scene, never a flight of this very turn. It is a card rule:
+once a turn; motive `attore_implicito`, never handed to the model's repair, whose rewrite only the card rules would
+check); never while a foe of the fight stands in the scene, never a flight of this very turn, never a prewritten
+repertoire row (its author wrote it for its scene: a dry run over the 784 narrator rows of the four example campaigns,
+with a fight-over ledger, touched only prova-f0's clock sign «si sentono passi che scappano»). It is a card rule:
 it runs with R-esito's before the yes/no judge, and in the rules path. Choice, from the logs: no NPC card ever
 attacked Livia in these runs (the NPCs were surprised or fell first), so «the card's attacker» falls back to the
 fight's last foe; with no card at all for a PC the attack would contradict the cards anyway.

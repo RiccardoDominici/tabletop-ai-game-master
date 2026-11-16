@@ -14,6 +14,7 @@
  * on a sentence the rules left alone is counted as heard); `domanda2a`, what the director does: the Engine's line for
  * the flagged mention is said at once and the answer decides the sentence as in v2 (a «no» costs one more true line),
  * and with no such line (an absent NPC) the rules decide as in `domanda2p`.
+ * `--apertura-una-ogni-tre` scores the alternative where an opener heard in the last three turns is not said again.
  * `--tardive-portate` treats every question asked only as a carried subject as late, to score the fallback alone;
  * `--senza-portato` scores the fallback as it was before the rules' carried subject (coerenza/portato.ts).
  *
@@ -92,6 +93,15 @@ async function main(): Promise<void> {
   const corretteDopo = new Map<string, readonly string[]>();
   /** Variant domanda2a: first sentences opened by the Engine's line, and the answer that came (null: none). */
   const aperture = new Map<string, boolean | null>();
+  /**
+   * `--apertura-una-ogni-tre` (an alternative, not what the director does): the opener's line is not said when it
+   * opened an answer in the last three turns, and the rules decide that first sentence; by run, the turn each mention's
+   * line last opened an answer.
+   */
+  const unaOgniTre = args.includes('--apertura-una-ogni-tre');
+  const apertePerRun = new Map<string, Map<string, number>>();
+  const rifiutate = new Map<string, number>();
+  const PRIORITA = ['parla', 'fuori', 'nome', 'colpo', 'assente'];
   // `--tardive-portate`: every question asked only as a carried subject counts as late (the fallback's worst case).
   const tardivePortate = args.includes('--tardive-portate');
   // `--senza-portato`: the fallback without the rules' carried subject (coerenza/portato.ts), as before round 4.
@@ -168,8 +178,20 @@ async function main(): Promise<void> {
           if (f.segnata) ultime = menzioni;
           if (v2 && primaFrase === 'giudice' && f.i === primo) primeChieste.set(`${ch.id}:${f.i}`, { si: r?.si ?? null, menzioni });
           if (v2 && primaFrase === 'giudice' && !attori && !f.segnata) portate.set(`${ch.id}:${f.i}`, r?.si ?? null);
-          // An Engine line for the mention (a fallen or absent one's state, who is really there, the card's blow).
-          const conLinea = menzioni.some((x) => /^(fuori|parla|nome|colpo):/u.test(x));
+          // An Engine line for the mention (a fallen or absent one's state, who is really there, the card's blow), not
+          // heard as an opener in the last three turns.
+          let conLinea = menzioni.some((x) => /^(fuori|parla|nome|colpo):/u.test(x));
+          if (unaOgniTre && primaFrase === 'apertura' && f.i === primo && conLinea) {
+            const chiave = [...menzioni].sort((a, b) => PRIORITA.indexOf(a.split(':')[0]!) - PRIORITA.indexOf(b.split(':')[0]!))[0]!;
+            const run = `${corto}|${ch.run}`;
+            const viste = apertePerRun.get(run) ?? new Map<string, number>();
+            apertePerRun.set(run, viste);
+            const ultima = viste.get(chiave);
+            if (ultima !== undefined && ch.turno - ultima <= 3) {
+              conLinea = false;
+              rifiutate.set(corto, (rifiutate.get(corto) ?? 0) + 1);
+            } else viste.set(chiave, ch.turno);
+          }
           if (primaFrase === 'apertura' && f.i === primo && conLinea) aperture.set(`${corto}|${ch.id}:${f.i}`, r?.si ?? null);
           // The first sentence of the answer, with domanda2p (or 2a with no line): the rules decide now, the answer aside.
           if ((primaFrase === 'regole' || (primaFrase === 'apertura' && !conLinea)) && f.i === primo) {
@@ -242,7 +264,7 @@ async function main(): Promise<void> {
     const dopo = [...corretteDopo.keys()].filter((k) => k.startsWith(`${corto}|`)).map((k) => k.split('|')[1]!);
     if (dopo.length) process.stdout.write(`${corto}: first sentences said by the rules, «si» aside: ${dopo.length}: ${dopo.map((k) => `${k} ${etichette[k]?.etichetta ?? 'unlabelled'}`).join('; ')}\n`);
     const v = [...aperture].filter(([k]) => k.startsWith(`${corto}|`)).map(([, x]) => x);
-    if (v.length) process.stdout.write(`${corto}: first sentences opened by the Engine line ${v.length} (the answer «si» ${v.filter((x) => x === true).length}, «no» ${v.filter((x) => x === false).length}: one more true line; none ${v.filter((x) => x === null).length})\n`);
+    if (v.length) process.stdout.write(`${corto}: first sentences opened by the Engine line ${v.length} (the answer «si» ${v.filter((x) => x === true).length}, «no» ${v.filter((x) => x === false).length}: one more true line; none ${v.filter((x) => x === null).length}); openers not said, heard in the last three turns: ${rifiutate.get(corto) ?? 0}\n`);
   }
 }
 

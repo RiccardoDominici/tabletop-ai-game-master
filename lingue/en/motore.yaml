@@ -246,12 +246,15 @@ portato:
   non_soggetti: [i, you, we, what, who, where, when, why, how, here]
 
 # Unnamed actors (apps/server/src/coerenza/attori.ts): a flight or an attack on a PC told with no name for who does it.
-# `fuga`: a flight (its subject unnamed after one of `relativi`, or in a clause that names nobody); `difesa` followed by
+# `fuga`: a flight by someone unnamed: after `chiunque`, after one of `relativi` with a `tracce` word before it, or with a
+# `tracce` word as the clause's subject (a trace of a person: a figure, steps); `difesa` followed by
 # one of `colpi` (with its article), or `difesa` and later one of `colpi` with an `in_arrivo` verb: a blow coming at the
 # PC named. Exact words, no stems («parry» is not «parrying»). Weapons and blows of the language, not of a campaign.
 attori_impliciti:
   fuga: [flees, flee, runs away, run away, runs off, run off, moves away, move away, slips away, hurries away]
-  relativi: [who, that, whoever, which]
+  relativi: [who, that, which]
+  chiunque: [whoever]
+  tracce: [figure, figures, shape, shapes, shadow, shadows, steps, footsteps, someone, somebody]
   difesa: [parries, parry, raises the shield, raises her shield, raises his shield, raises their shield, lifts the shield, blocks, dodges, dodge, ducks]
   colpi: [blow, blows, strike, spear, blade, arrow, arrows, bolt, dagger, sword, axe, mace, club, javelin]
   in_arrivo: [comes, come, arrives, arrive, bounces, bounce, glances off, slams, thuds, lands, breaks]

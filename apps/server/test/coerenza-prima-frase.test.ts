@@ -14,7 +14,9 @@ import { impostaLingua } from '../src/lingua';
 import type { ModelloLinguaggio } from '../src/llm/modello';
 import type { Narratore } from '../src/llm/tipi';
 import { MisuratoreTurno } from '../src/metriche/misure';
-import { narraTurno } from '../src/turni/narrazione';
+import { narraTurno, type ParametriTurno } from '../src/turni/narrazione';
+import { guardiaAttori } from '../src/coerenza/attori';
+import type { CorrezioneEsito } from '../src/narrazione/guardia-esiti';
 import type { PipelineVoce } from '../src/voce/pipeline';
 
 const registro: Registro = {
@@ -59,7 +61,7 @@ function narratore(testo: string): Narratore {
   };
 }
 
-async function turno(testo: string, risposta: 'si' | 'no'): Promise<{ primaDellaRisposta: string[]; dopo: string[] }> {
+async function turno(testo: string, risposta: 'si' | 'no', altro: Partial<ParametriTurno> = {}): Promise<{ primaDellaRisposta: string[]; dopo: string[] }> {
   const voce: string[] = [];
   const pipeline = { accoda: (f: { testo: string }) => voce.push(f.testo), effettoFineTurno: () => undefined } as unknown as PipelineVoce;
   const campagna = { png: [{ id: 'png_ruggero', nome: 'Ruggero', voce_id: 'v_ruggero' }], pg: [{ id: 'pg_ida', nome: 'Ida Marchi' }], alias: {} } as never;
@@ -77,6 +79,8 @@ async function turno(testo: string, risposta: 'si' | 'no'): Promise<{ primaDella
       onFrase: () => undefined,
       pronuncia: (t) => t,
       giudice,
+      lineeDette: new Set(),
+      ...altro,
     },
   );
   // The answer is held: whatever is in the voice now did not wait for it.
@@ -112,5 +116,27 @@ describe('the first sentence does not wait for the judge', () => {
     const r = await turno('[narratore] Il vento soffia sul ponte.\n[narratore] Lo sgherro sputa nel fiume.\n[invito] tutti', 'si');
     expect(r.primaDellaRisposta).toEqual(['Il vento soffia sul ponte.']);
     expect(r.dopo).toEqual(['Il vento soffia sul ponte.', 'Ruggero giace a terra, senza vita.']);
+  });
+});
+
+/** The rules before the judge: the unnamed actor of the visit (Ida's card on Ruggero at turn 2), and a named act. */
+function regole(): (t: string) => CorrezioneEsito {
+  const attori = guardiaAttori({ turno: 4, entita: registro.entita, storia: { carte: [{ turno: 2, chi: 'pg_ida', bersaglio: 'png_ruggero' }], fughe: [] }, fuoriOra: new Set() })!;
+  return (t) => attori(t) ?? (t.includes('ride') ? { testo: 'Ruggero giace a terra, senza vita.', motivo: 'fuori_gioco_agisce' } : null);
+}
+
+describe('one Engine line once a turn, and never a model rewrite of an unnamed actor', () => {
+  it('the rules\' line and the judge\'s are the same line: said once (round 3, T10\'s shape)', async () => {
+    const r = await turno('[narratore] Ida para la lancia con lo scudo.\n[narratore] Lo sgherro ringhia e arretra.\n[invito] tutti', 'si', { correggiEsito: regole() });
+    expect(r.dopo).toEqual(['Ruggero giace a terra, senza vita.']);
+  });
+
+  it('an unnamed actor\'s line is not handed to the repair; a named act\'s is', async () => {
+    const chieste: string[] = [];
+    const ripara = async (x: { frase: string }): Promise<string | null> => (chieste.push(x.frase), null);
+    await turno('[narratore] Il vento soffia sul ponte.\n[narratore] Ida para la lancia con lo scudo.\n[invito] tutti', 'no', { correggiEsito: regole(), ripara });
+    expect(chieste).toEqual([]);
+    await turno('[narratore] Il vento soffia sul ponte.\n[narratore] Ruggero ride piano.\n[invito] tutti', 'no', { correggiEsito: regole(), ripara });
+    expect(chieste).toEqual(['Ruggero ride piano.']);
   });
 });

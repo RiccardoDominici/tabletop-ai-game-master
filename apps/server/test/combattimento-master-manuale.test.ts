@@ -86,6 +86,32 @@ describe('a fight opened from the panel, manual rolls', () => {
     expect(sm.combattimento?.attivo).toBe(false);
   }, 20_000);
 
+  it('the world hears of the fight once: a gate «scontro» rolls one Game Master die, when the fight starts', async () => {
+    prova = new Prova();
+    const conPorta = (d: Record<string, unknown>): void => {
+      const o = (d['orologi'] as Array<Record<string, unknown>>)[0]!;
+      o['avanza_quando'] = [{ quando: 'scontro', tiro: { dado: 6, almeno: 4 } }];
+    };
+    const cartella = prova.campagna('prove', { ritocchi: { 'campagna.yaml': conPorta } });
+    const { url } = await prova.avvia(cartella, COPIONE, MANUALE, { dadi: new DadiACopione([2]) });
+    const schermo = await prova.proiettore(url);
+    const ida = await prova.telefono(url, 'pg_ida');
+    const master = await prova.master(url);
+    const s1 = await inizia(schermo, ida);
+    expect(await master.comanda({ tipo: 'combattimento_inizia' })).toEqual({ ok: true });
+    // Asked, not started: the gate has not rolled yet.
+    expect((await master.stato()).tiri?.del_master ?? []).toHaveLength(0);
+    const iniziativa = attendiEvento<RichiestaTiro[]>(ida, 'tiri:richiesti', (r) => r.some((x) => x.per === 'iniziativa'));
+    await agisci(ida, 'pg_ida', 'Guardo il fiume', s1.versione_scena);
+    await iniziativa;
+    const dopo = attendi(ida, (x: StatoTavolo) => x.fase === 'finestra' && x.turno === 2);
+    for (const r of (await master.stato()).tiri!.richieste) expect(await master.comanda({ tipo: 'tiro', id: r.id, valori: [12] })).toEqual({ ok: true });
+    await dopo;
+    const sm = await master.stato();
+    expect(sm.combattimento).toMatchObject({ attivo: true });
+    expect(sm.tiri?.del_master).toHaveLength(1);
+  }, 20_000);
+
   it('automatic rolls: the fight starts at once with the Engine\'s dice, as before', async () => {
     prova = new Prova();
     const { url } = await prova.avvia(prova.campagna('prove'), COPIONE, { TAGM_TIRI_GIOCATORI: 'automatico' }, { dadi: new DadiACopione([2]) });

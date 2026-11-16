@@ -50,7 +50,8 @@ export interface Violazione {
 /** The guards of the turn, as the director builds them (each optional: absent = that rule does not apply). */
 export interface RegoleTurno {
   turno: number;
-  correggiEsito?: (testo: string) => CorrezioneEsito;
+  /** `prescritta`: a repertoire row (some rules judge only the improvised narration). */
+  correggiEsito?: (testo: string, opz?: { prescritta?: boolean }) => CorrezioneEsito;
   /** NPCs in the scene who can speak; with `idPng`, a line of any other NPC is dropped. */
   presenti?: ReadonlySet<string>;
   idPng: ReadonlySet<string>;
@@ -63,6 +64,11 @@ export interface RegoleTurno {
   detteNelTurno?: ReadonlySet<string>;
   /** The PCs' names (normalised as `frasePerRipetizione`): a sentence that names one is never a repetition. */
   nomiPg: readonly string[];
+  /**
+   * The Engine lines said in this turn, shared by the turn's calls (the answer and its repair) and by the yes/no
+   * judge's lines and opener: each line once a turn. Absent: this call's own set.
+   */
+  lineeDette?: Set<string>;
 }
 
 export interface FraseDaVerificare {
@@ -100,12 +106,14 @@ const REGOLA_DI_MOTIVO: Record<NonNullable<CorrezioneEsito>['motivo'], IdRegola>
   fuori_gioco_agisce: 'R-fuori',
   creatura_inesistente: 'R-inesistente',
   colpo_assorbito: 'R-esito',
+  // An unnamed attack or flight whose actor, by the cards, is out of play (coerenza/attori.ts): R-fuori's line.
+  attore_implicito: 'R-fuori',
 };
 
 /** The checker of one narration call (the answer, or its repair): it remembers what it has already replaced or said. */
 export class VerificaTurno {
   /** Engine lines that already replaced a sentence in this turn (each is said once). */
-  private readonly sostituti = new Set<string>();
+  private readonly sostituti: Set<string>;
   /** Sentences said at the table in this call (normalised), for R-ripetuta. */
   private readonly detteOra = new Set<string>();
   /** Lines stopped by R-segreto: the rest of the line is not said. */
@@ -114,7 +122,19 @@ export class VerificaTurno {
   constructor(
     private readonly r: RegoleTurno,
     private readonly segnala: (v: Violazione) => void,
-  ) {}
+  ) {
+    this.sostituti = r.lineeDette ?? new Set();
+  }
+
+  /**
+   * An Engine line said outside the rules (the yes/no judge's, or its opener): false if this turn already said it
+   * (the caller drops the sentence instead), else it counts as said for the rules too.
+   */
+  segnaLinea(testo: string): boolean {
+    if (this.sostituti.has(testo)) return false;
+    this.sostituti.add(testo);
+    return true;
+  }
 
   private viola(v: Omit<Violazione, 'turno'>): void {
     this.segnala({ turno: this.r.turno, ...v });
@@ -142,8 +162,10 @@ export class VerificaTurno {
       }
       this.viola({ regola, etichetta: e.etichetta, frase: testo, azione: 'sostituita', sostituto: [correzione.testo], dettaglio: { motivo: correzione.motivo } });
       this.sostituti.add(correzione.testo);
-      // The absent-creature line is what the table must hear (who is really there): it is not rewritten by the model.
-      if (regola !== 'R-inesistente') riparabile = { regola, originale: testo, motivo: correzione.motivo };
+      // The absent-creature line is what the table must hear (who is really there): it is not rewritten by the model;
+      // nor is an unnamed actor's (a rewrite is confirmed only by the card rules, and round 2's rewrites brought the
+      // invented goblin back).
+      if (regola !== 'R-inesistente' && correzione.motivo !== 'attore_implicito') riparabile = { regola, originale: testo, motivo: correzione.motivo };
       testo = correzione.testo;
       voce = correzione.testo;
       corretta = true;
@@ -219,7 +241,7 @@ export class VerificaTurno {
    */
   verificaBattuta(battuta: string, riga: { etichetta: string; testo: string }): string | null {
     if (riga.etichetta !== ID_NARRATORE || !this.r.correggiEsito) return null;
-    const c = this.r.correggiEsito(riga.testo);
+    const c = this.r.correggiEsito(riga.testo, { prescritta: true });
     if (!c) return null;
     const regola = REGOLA_DI_MOTIVO[c.motivo];
     if (c.testo === '' || this.sostituti.has(c.testo)) {
