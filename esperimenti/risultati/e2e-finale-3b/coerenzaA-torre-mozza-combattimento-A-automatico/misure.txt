@@ -1,0 +1,281 @@
+{
+ "etichetta": "coerenzaA-torre-mozza-combattimento-A-automatico",
+ "turni": {
+  "giocati": 16,
+  "copione": 14,
+  "fine_prima": null,
+  "finale": {
+   "turno": 1,
+   "id": "fin_ovile_senza"
+  },
+  "cambi_scena": [
+   "scena_carbonaia",
+   "scena_torre"
+  ],
+  "orologi_max": {
+   "o_mezzanotte": "1/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "coerenza": {
+  "violazioni": 9,
+  "per_regola": {
+   "R-dovuto": {
+    "aggiunta": 8
+   },
+   "R-numeri": {
+    "riscritta": 1
+   }
+  },
+  "esempi": [
+   {
+    "turno": 6,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 11,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 12,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 14,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 15,
+    "regola": "R-numeri",
+    "azione": "riscritta",
+    "frase": "Nespola Tondi: «Ho zero punti ferita, sono a terra»."
+   },
+   {
+    "turno": 16,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 17,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 17,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   }
+  ]
+ },
+ "private": {
+  "azioni_private": 2,
+  "righe_privato": 0,
+  "esiti_privati_log": 2,
+  "spostate_dalla_guardia": 0,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": [],
+  "al_tavolo_candidate": 0,
+  "al_tavolo": []
+ },
+ "prove": {
+  "azioni_risolte": 18,
+  "con_tiro": 5,
+  "tipi": {
+   "nessuna": 13,
+   "prova": 1,
+   "attacco": 4
+  },
+  "dadi": {
+   "d6": 35,
+   "d10": 2,
+   "d20": 19,
+   "d8": 2
+  },
+  "regole_tipo": {
+   "Spada lunga, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà)": 2,
+   "Ascoltare N%: dN serve N o meno": 1,
+   "Spada corta, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà)": 1,
+   "Pugnale, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: sorpresa": 1,
+   "combattimento: inizia": 1,
+   "combattimento: iniziativa ritirata": 6,
+   "combattimento: esce dallo scontro": 2,
+   "combattimento: every PC down, the death saves rolled to the end": 1,
+   "combattimento: finito": 1
+  },
+  "fatti_morale_terra": 28,
+  "esempi": [
+   "voce: audio pre-generato mancante, sintesi dal vivo: {\"level\": 20, \"time\": \"2026-11-16T11:43:22.831Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"voce\", \"id_frase\": \"t4-f2\", \"chiave\": \"[omessa]\", \"testo\": \"Un ciocco crolla dentro la carbonaia, e la terra si crepa. Un filo di fumo",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-16T11:47:23.588Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 11, \"attesa_ms\": 3, \"tardive\": [\"a13\"], \"tiri\": [\"Zirrà: Spada corta 19 contro CA 12, riuscita\", \"Grosso: Mazza ferra",
+   "coherence: block of the call: {\"level\": 30, \"time\": \"2026-11-16T11:47:23.590Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 11, \"righe\": [\"In scena: Grosso in piedi; Zirrà in piedi.\", \"PG: Livia Sarti ferito; Fulco Granito in piedi; Nespola ",
+   "prove: fatti dello scontro non detti dalla narrazione, li dice il Motore: {\"level\": 40, \"time\": \"2026-11-16T11:47:25.550Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 11, \"mancanti\": [{\"tipo\": \"a_terra\", \"id\": \"pg_eliandro\", \"riga\": \"Eliandro cade a terra.\"}], \"dovuti\": 1, \"prima_del",
+   "voce: testo per la sintesi: {\"level\": 20, \"time\": \"2026-11-16T11:47:27.526Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"voce\", \"id_frase\": \"t11-d0\", \"parlante\": \"narratore\", \"testo_voce\": \"Eliàndro cade a terra.\", \"msg\": \"voce: testo per la sintesi\"}",
+   "combattimento: esce dallo scontro: {\"level\": 30, \"time\": \"2026-11-16T11:47:49.809Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"combattimento\", \"id\": \"pg_eliandro\", \"esito\": \"morto\", \"msg\": \"combattimento: esce dallo scontro\"}",
+   "registro: evento: {\"level\": 30, \"time\": \"2026-11-16T11:47:49.809Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 12, \"tipo\": \"stato\", \"id\": \"pg_eliandro\", \"da\": \"morente\", \"a\": \"morto\", \"causa\": \"carte del turno\", \"msg\": \"registro",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-16T11:47:49.809Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 12, \"attesa_ms\": 1, \"tardive\": [\"a14\"], \"tiri\": [\"Eliandro: Tiro salvezza contro la morte 7 contro CD 10, fallita\"], "
+  ],
+  "fatti_morale": [],
+  "fatti_a_terra": [
+   "Turno di Zirrà: Zirrà colpisce Eliandro: 4 danni, e Eliandro va a terra (raccontalo in una frase sua). Dettagli: attacco con Spada corta a Eliandro: Spada corta",
+   "Eliandro è a terra: tiro salvezza contro la morte 7 contro CD 10 → fallimenti 1 su 1: è MORTO.",
+   "Turno di Grosso: Grosso colpisce Livia Sarti: 7 danni, e Livia Sarti va a terra (raccontalo in una frase sua). Dettagli: attacco con Mazza ferrata a Livia Sarti",
+   "Livia Sarti è a terra: tiro salvezza contro la morte 5 contro CD 10 → fallimenti 1 su 1: è MORTO.",
+   "Turno di Zirrà: Zirrà colpisce Nespola Tondi: 5 danni, e Nespola Tondi va a terra (raccontalo in una frase sua). Dettagli: attacco con Spada corta a Nespola Ton",
+   "Nespola Tondi è a terra: tiro salvezza contro la morte 12 contro CD 10 → successi 1 su 1: è stabile, resta privo di sensi.",
+   "Il combattimento è finito: i PG sono tutti a terra."
+  ],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 18,
+  "nessuna": 11,
+  "ms_classifica_med": 1218,
+  "ms_classifica_peggiore": 3372
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "subito:ok": 12,
+   "prossime:ok": 15
+  },
+  "consegnate": 5,
+  "dette_a_finestra_aperta": 5,
+  "accettate": 99,
+  "scartate": {
+   "tipo «minaccia» non ammesso per lo sceneggiatore (ammessi: reazione, momento, ri": 2,
+   "parole segrete: la lavagna l'ha scritta Tonio": 1
+  },
+  "ms_claude_med": 9182,
+  "ms_totale_med_subito": 11522,
+  "processo": {
+   "avvio": 1,
+   "ok": 27,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20062.5,
+   "peggiore": 20189,
+   "n": 16
+  },
+  "llm_prima_frase": {
+   "mediana": 18,
+   "peggiore": 39,
+   "n": 13
+  },
+  "voce_primo_audio": {
+   "mediana": 670,
+   "peggiore": 700,
+   "n": 15
+  },
+  "schermo_inizio_audio": {
+   "mediana": 818,
+   "peggiore": 851,
+   "n": 11
+  },
+  "llm_fine": {
+   "mediana": 1168,
+   "peggiore": 3367,
+   "n": 16
+  },
+  "audio_fine": {
+   "mediana": 12486,
+   "peggiore": 37450,
+   "n": 15
+  },
+  "s_tra_turni_med": 35,
+  "s_tra_turni_peggiore": 62.087
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 15,
+   "in_frase": 0,
+   "tra_frasi": 15,
+   "silenzio_ms": 12033,
+   "per_turno": [
+    0,
+    null,
+    2,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    3,
+    0,
+    1,
+    1,
+    3,
+    2,
+    0
+   ]
+  },
+  "proiettore_secondi": 276,
+  "errori_voce": {
+   "narratore: numeri delle regole a voce, tolti": 1
+  }
+ },
+ "log": {
+  "errori": 0,
+  "avvisi": 29,
+  "per_messaggio": [
+   "40 ×12 llm: risposta strutturata non valida",
+   "40 ×7 prove: fatti dello scontro non detti dalla narrazione, li dice il Motore",
+   "40 ×6 llm: si usa il ripiego deterministico",
+   "40 ×1 https: the certificate does not cover this LAN address: run scripts/certificato.sh again",
+   "40 ×1 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×1 repertorio: [usa] rifiutato",
+   "40 ×1 narratore: numeri delle regole a voce, tolti"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
+   "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",
+   "riassunto       → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "regole          → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "voce            → finto — variabile d'ambiente TAGM_TTS",
+   "ascolto         → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
+   "immagini        → nessuno — configurato (../../../../private/tmp/claude-501/-Use"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 21,
+  "improvvisate": 16,
+  "usa_rifiutati": 1,
+  "azioni_pubbliche": 16,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "conferme_motore": 0
+ }
+}

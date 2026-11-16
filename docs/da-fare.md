@@ -63,7 +63,13 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   action whose answer was dropped gets the Engine's line, with no repair call (3db96ee); attacks and flights with no
   name inherit the cards' actor (b3db103); after a late answer the rules carry the subject (3551e4d); on the replay
   sets the director's path scores 107/117, 33/37, 27/31 with 8, 3, 3 clean touched.
-  Still open: a round 4 measured live (needs API credit; Riccardo has not chosen a provider); a full measuring round of the judge (round 3 had one valid game of four); the private replies stay on the rules
+  Profile A (Riccardo, 16 November: the small model only relays): lines carry their facts (`attori`, `menzionati`,
+  `richiede.stati`) and the Engine filters them against the ledger before the reader (8524e7c); the reader measured
+  tiny (Qwen3 0.6B as good as the 4B and as the Engine's first indicated line, e841553); round 4 in profile A on the
+  four blind scripts: 0 private contents and 0 fallen or absent characters acting, 2 outcomes against their card,
+  both from a miss line picked for a hit (docs/coerenza.md, «Measured, round 4»). Open there: outcome lines must carry
+  the outcome as a fact; late `subito` lines; the announcement quoting false claims; the idle stall.
+  Still open: a round 4 in profile B measured live (needs API credit; Riccardo has not chosen a provider); a full measuring round of the judge (round 3 had one valid game of four); the private replies stay on the rules
   (their raw text is now logged, for a replay set of their own); R-fuori's whole-sentence state check (the judge
   replaces it in profile B, not in profile A); the cart «impossibile» (11a);
   `R-eco` and the projector mark; the stall's S3 sentence said twice word for word; profile A (the reader plus the

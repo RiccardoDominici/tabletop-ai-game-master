@@ -560,6 +560,40 @@ with the experiment's own plain-id prompt it answers almost nothing valid (82 of
 choices): it shows the reader can be tiny, not which tiny model is best. The four blind scripts in profile A with the
 0.6B reader: «Measured, round 4 (profile A)» below.
 
+## Measured, round 4 (profile A, 16 November, `e841553`)
+
+Runs: `esperimenti/risultati/e2e-finale-3b/coerenzaA-*`, the four blind scripts one at a time (ports 4950–4953): the
+minimal local reader on Qwen3 0.6B 4-bit, the rules arbiters, the sceneggiatore in the background (`claude -p`: sonnet
+for `subito`, haiku for `prossime`), mock voice; memory 54–69% free; no API call. Judged by a blind haiku reader of
+the per-turn views (the brief of rounds 1–3, adapted: no live narrator, the lines are prewritten or the
+scriptwriter's), and the two combat games read again by hand against their cards.
+
+| | CM | CA | FB | ST |
+|---|---|---|---|---|
+| turns played | 27 | 16 | 13 | 14 |
+| median first audio (ms) | 674 | 670 | 670 | 678 |
+| reader: lines picked / «nessuna»; median classification (ms) | 29 / 21; 852 | 18 / 11; 1218 | 16 / 11; 1058 | 15 / 13; 651 |
+| scriptwriter: `subito` asked / said at the table; median call (s) | 15 / 9; 9.5 | 12 / 5; 9.2 | 11 / 10; 9.3 | 13 / 13; 9.4 |
+| scriptwriter lines refused because an actor cannot act now | 2 | 0 | 1 | 0 |
+| caught by the checker | R-dovuto 5, R-inesistente 3, R-fuori 1, R-numeri 1 | R-dovuto 8, R-numeri 1 | — | — |
+| H heard: private content / fallen or absent acting / outcome against its card | 0 / 0 / 1 | 0 / 0 / 1 | 0 / 0 / 0 | 0 / 0 / 0 |
+
+The two H: CM T9, the reader picked a scriptwriter line about a short sword ringing on the shield (a miss) for
+Eliandro's dagger that hit, and the Engine's «Zirrà incassa il colpo.» followed; CA T11, «Il goblin si gira di
+scatto, e la lancia taglia l'aria dove nessuno c'è più» (a miss) for Zirrà's blow that downed Eliandro, followed by
+the Engine's «Eliandro cade a terra.». The blind reader counted 0 for the narration (it missed both) and flagged the
+announcements instead. Those are by design but voice the players' own claims in the narrator's voice: «Nespola Tondi:
+«Ho nessun punto ferita, sono a terra»», with R-numeri rewriting «zero» inside the quote, and «Livia Sarti: «Il goblin
+mi tira la lancia»» when no such goblin exists.
+What the round shows, still open:
+- a line that tells an outcome (a hit, a miss) must carry it as a fact, checked against the card of the action it
+  answers: the facts of «Facts a line carries» cover who and in what state, not what happened;
+- a `subito` line written for one action can reach the table turns later (the blind reader counts 6, 5, 4 and 1 said
+  after their turn): CM T9 «Mancata, piedi nudi!» was T6's miss;
+- the announcement quotes the player, false claims included;
+- the stall: in ST about 11 of 14 answers brought nothing new, and the one S1 (T14) found no filler line to say;
+- CM T17 heard the dead goblin's state twice (R-fuori's line, then the who-is-there line that contains it).
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo
