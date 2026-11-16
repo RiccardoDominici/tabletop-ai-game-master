@@ -368,9 +368,16 @@ evidence the dictation uses to learn a name. Dry run over the 380 actions of eve
 - **Mode A** (decided, not built yet): a minor improvised NPC may enter through a tag (`[nuovo png] name, role`) that
   the Engine registers in the ledger as «improvvisato»: no stats, no secrets, nothing of the canon's secrets, tracked
   for presence like the others, saved in the session log and handed to the Preparer between sessions.
-- **A silent exit** (Ugo leaves with no `[esce]`, then speaks): it goes through the yes/no question («does Ugo leave the
-  scene in this sentence?»), scored offline on the present-NPC sentences of the runs before it may change presence,
-  and never blocking the voice (not built yet).
+- **A silent exit** (Ugo leaves with no `[esce]`, then speaks; built): the judge asks aside, never blocking the voice,
+  for each NPC in the scene and in play that a public narrator sentence names: «nella frase da controllare, Ugo lascia
+  la scena adesso…?» (`coerenza.domanda.esce`); on «si» the director takes it as the narrator's `[esce]` (the same
+  checks; log «presence: silent exit, from the yes/no question»), so R-assente drops Ugo's later lines and the ledger
+  has him gone. Scored offline first (`insieme-uscite.json`, `etichette-uscite.json`: the 188 narrator sentences of
+  the stall and off-the-rails runs, `coerenza*`, `canary-*`, `prima-*`, that name an NPC in the scene; two labelled
+  exits, one of them unsure): **0 false «si» on 186 sentences where the NPC stays**, the clear exit caught («Ugo sputa,
+  si volta verso il sentiero del bosco e si incammina verso la carbonaia»), the unsure one («… e poi torna alla
+  carbonaia») not. A false «si» would silence a present NPC for the visit, hence the zero is the condition. Only with
+  the judge (profile B). Test: test/coerenza-giudice.test.ts.
 
 ## The invented goblins: data, not checker? (16 November)
 

@@ -84,6 +84,16 @@ describe('the yes/no judge', () => {
     expect(await giudice(modello(() => null), osservata, 50).giudica('Lo sgherro sputa.')).toBeNull();
   });
 
+  it('a silent exit: the NPC in the scene a sentence names is asked about aside; «si» reports it, «no» does not', async () => {
+    const uscite: string[] = [];
+    const m = modello((f) => (f.includes('se ne va') ? 'si' : 'no'));
+    const g = new GiudiceDomande({ modello: m, ms: 300, registro, contesto: contestoMenzioni(registro, [], [], []), ombra: () => null, log: pino({ level: 'silent' }) as never, turno: 3, uscita: (id) => uscite.push(id) });
+    await g.giudica('Bertoldo guarda il fiume.');
+    await g.giudica('Bertoldo prende il bastone e se ne va verso il bosco.');
+    await new Promise((r) => setTimeout(r, 20));
+    expect(uscite).toEqual(['png_bertoldo']);
+  });
+
   it('a sentence the rules already changed keeps the judge\'s state but is not asked', async () => {
     const viste: string[] = [];
     const g = giudice(modello(() => 'si', viste));

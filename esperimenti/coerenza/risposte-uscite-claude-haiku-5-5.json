@@ -1,0 +1,947 @@
+{
+ "coerenza-torre-mozza-stallo-B-manuale#1:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia chiede se aspettare o muoversi.»\nFrase da controllare: «Berta stringe la chiave al collo e guarda la torre oltre i tetti.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 982,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#1:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il tempo c'è ancora, ma è poco.»\nFrase da controllare: «Ugo sputa di nuovo e batte la pala per terra due volte, senza guardare nessuno.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1009,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#2:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco si ferma accanto al portico e posa la mazza.»\nFrase da controllare: «Berta non alza lo sguardo dal pugno chiuso sulla chiave.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 967,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#2:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, con voce bassa, dice che lui non sa cosa dire.»\nFrase da controllare: «Berta resta in silenzio, poi parla.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1145,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#4:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il vento del crinale porta fumo di carbonaia e il guaito dei cani che si allontanano verso il bosco.»\nFrase da controllare: «Ugo appoggia la pala al cancello e si siede sul bordo del mulo, senza più guardare nessuno.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 940,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#5:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia e Eliandro restano dove sono, sotto il portico e accanto alla soglia.»\nFrase da controllare: «Berta non si volta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 996,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#5:7|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Le pecore mangiano anche se noi non mangiamo.»\nFrase da controllare: «Ugo tace, con il mulo che sbuffa accanto a lui.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1173,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#6:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Eliandro si guarda intorno: il cortile, lo stazzo, il fienile con la paglia schiacciata, il portico con Berta e la lavagna sulla porta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 856,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#6:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Sulla paglia del fienile, dove dormiva Tonio, resta l'impronta di un corpo.»\nFrase da controllare: «Ugo non guarda nessuno.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1527,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#6:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Ugo non guarda nessuno.»\nFrase da controllare: «Berta stringe la chiave al collo e fissa il crinale.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 965,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#7:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia dice che aspetta ancora, perché Berta li ha chiamati.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 970,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#7:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia dice che aspetta ancora, perché Berta li ha chiamati.»\nFrase da controllare: «Berta stringe la chiave e non risponde.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 897,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#7:6|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal crinale arriva di nuovo il corno, più vicino.»\nFrase da controllare: «Ugo sputa e batte la pala due volte.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1038,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#8:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal crinale il corno suona di nuovo, questa volta corto e spezzato.»\nFrase da controllare: «Berta non si muove.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1091,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#9:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia si avvicina a Ugo, a voce bassa, e gli parla all'orecchio, lontano da Berta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)? Oppure: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 956,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#9:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia si avvicina a Ugo, a voce bassa, e gli parla all'orecchio, lontano da Berta.»\nFrase da controllare: «Ugo batte la pala per terra due volte, come a dire basta.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 979,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#10:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Fulco chiede a Livia se ci ha pensato, e dice che non si fida di Ugo: tiene le cose per sé.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 870,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#10:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco chiede a Livia se ci ha pensato, e dice che non si fida di Ugo: tiene le cose per sé.»\nFrase da controllare: «Eliandro chiede cosa ha detto Ugo, e se qualcuno ha sentito qualcosa.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 872,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#10:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia, ferma sotto il portico, non risponde ancora.»\nFrase da controllare: «Ugo ha sentito tutto e batte la pala una volta sola.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 886,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#10:7|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il vento porta fino al paese.»\nFrase da controllare: «Berta guarda Livia, stringe la chiave e aspetta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 848,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#10:8|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta guarda Livia, stringe la chiave e aspetta.»\nFrase da controllare: «Eliandro chiede cosa ha detto Ugo, e se qualcuno ha sentito qualcosa.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 922,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#10:9|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Eliandro chiede cosa ha detto Ugo, e se qualcuno ha sentito qualcosa.»\nFrase da controllare: «Il vento porta le parole fino al paese, e Berta si gira di scatto verso il carbonaio.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)? Oppure: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 981,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#11:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia dice che aspettano che Ugo torni.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1003,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#11:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia dice che aspettano che Ugo torni.»\nFrase da controllare: «Berta stringe la chiave e non risponde.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1019,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#11:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco e Eliandro restano fermi nel cortile, senza un gesto.»\nFrase da controllare: «Ugo, dal cancello, non si volta.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1005,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#12:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia e Eliandro restano dove sono.»\nFrase da controllare: «Berta stringe la chiave al collo.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 882,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#12:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal crinale arriva il corno, corto e spezzato.»\nFrase da controllare: «Ugo, dal cancello, non si volta.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 968,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#13:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Eliandro si china verso la soglia di casa, abbassando la voce.»\nFrase da controllare: «Berta lo guarda di sbieco ma non si allontana.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 753,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#13:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta lo guarda di sbieco ma non si allontana.»\nFrase da controllare: «Ugo, dal cancello, alza la testa al rumore dei sassi del sentiero.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 922,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#14:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal crinale il corno suona ancora, lungo e stonato.»\nFrase da controllare: «Berta non si volta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 959,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-stallo-B-manuale#14:6|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Le pecore non aspettano, e nemmeno Tonio.»\nFrase da controllare: «Ugo, dal cancello, sputa per terra senza guardare nessuno.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1022,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#1:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Nespola Tondi alza la voce e offre la chiave in vendita, come se Berta fosse una mercante al mercato.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 992,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#1:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nespola Tondi alza la voce e offre la chiave in vendita, come se Berta fosse una mercante al mercato.»\nFrase da controllare: «Berta stringe la chiave nel pugno e non si muove dalla soglia.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1024,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#1:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «La chiave resta con me, e io resto qui, sul portico.»\nFrase da controllare: «Poi Berta si getta su Nespola con le mani nude, ma il colpo le passa accanto.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1020,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#1:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Poi Berta si getta su Nespola con le mani nude, ma il colpo le passa accanto.»\nFrase da controllare: «Il combattimento è iniziato: Nespola è la prima a muoversi, poi Livia, Berta e Fulco.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1006,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#2:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Nespola Tondi si avvicina a Berta e Ugo, abbassando la voce quanto basta perché il cortile non senta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)? Oppure: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1004,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#3:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia Sarti stringe lo scudo e si piazza davanti a Berta, con la voce ferma.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 903,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#3:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia Sarti stringe lo scudo e si piazza davanti a Berta, con la voce ferma.»\nFrase da controllare: «La sua presa sulla spada non tremando nemmeno un attimo, e il colpo di Berta le cade dal fianco.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1427,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#3:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Le bugie le dicono quelli di Valdirame.»\nFrase da controllare: «Berta, che ha ancora le mani nude sporche di latte, guarda Livia con gli occhi che le si riempiono di lacrime.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1475,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#4:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il legno non cede, ma il fiume si calma e l'acqua torna a scorrere dritta.»\nFrase da controllare: «Nespola, Livia, Berta e Ugo restano nel cortile.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)? Oppure: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1058,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#5:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nel cortile si sente un ticchettio lento, come di qualcuno che batte un dito sul legno.»\nFrase da controllare: «Ugo solleva lo sguardo verso di voi, poi lo abbassa di nuovo sul carbone.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1067,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#6:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia alza la voce verso Berta, ma la pastora non si muove dalla soglia.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1022,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#6:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia alza la voce verso Berta, ma la pastora non si muove dalla soglia.»\nFrase da controllare: «Il suo tentativo di fare pressione non riesce: Berta la guarda fredda e resta dov'è.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1433,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#6:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Va' al mulino, se vuoi, ma non venire a sentenziare su di me.»\nFrase da controllare: «Berta si sposta di un passo, e la sua espressione diventa più dura.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1794,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#6:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta si sposta di un passo, e la sua espressione diventa più dura.»\nFrase da controllare: «Il rapporto con Livia si raffredda: Berta non si fida più di lei.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1066,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#7:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Fulco lascia Ugo con il suo carbone e si incammina dietro di voi, con il simbolo di pietra che batte sul petto.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1534,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#7:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco lascia Ugo con il suo carbone e si incammina dietro di voi, con il simbolo di pietra che batte sul petto.»\nFrase da controllare: «Berta Benni cerca di colpire Fulco a mani nude, ma il pugno gli passa accanto senza toccarlo.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 921,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#8:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Sulla collina non c'è mai stato fuoco.»\nFrase da controllare: «Berta stringe più forte la chiave al collo e non aggiunge altro.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 836,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#9:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Quello lassù non vende più niente, né formaggi né parole.»\nFrase da controllare: «Ugo sputa per terra e torna a guardare il carbone.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1050,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#10:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Lassù non c'è niente da vedere, figurati le luci.»\nFrase da controllare: «Nel cortile la mano di Nespola resta ferma sul banco, e Ugo si gira verso il fienile senza dire altro.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1377,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#12:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Nespola Tondi, da sola, va verso Ugo il carbonaio, mentre gli altri restano al cancello.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 968,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#12:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nespola Tondi, da sola, va verso Ugo il carbonaio, mentre gli altri restano al cancello.»\nFrase da controllare: «Berta resta sotto il portico con la chiave al collo.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 992,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#12:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta resta sotto il portico con la chiave al collo.»\nFrase da controllare: «Ugo solleva appena lo sguardo sul carbone.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 916,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#13:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Madre Carla non si volta: tira il carretto un po' più in fretta, come se le mancasse il fiato.»\nFrase da controllare: «Nel cortile Berta non ha ancora lasciato il portico.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 973,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#13:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il pugno le scivola sulla spalla di Fulco, ma il colpo è corto e la pietra del simbolo lo assorbe.»\nFrase da controllare: «Nespola, il tuo turno: Ugo ha smesso di guardare il carbone e ti aspetta.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1024,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#14:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Nespola Tondi propone di fermarsi al mulino a dormire e di lasciare Berta alla sua torre.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 774,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#14:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il sentiero verso il mulino è in discesa, e le luci della torre restano alle spalle.»\nFrase da controllare: «Berta sente le parole e non risponde.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1011,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#14:7|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Mio figlio non dorme.»\nFrase da controllare: «Ugo, dal carbone, solleva appena lo sguardo verso Nespola e poi torna alla carbonaia.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1039,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#15:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti ferito gravemente; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia Sarti è ferita gravemente: il colpo di Berta le ha portato via quasi tutto, e lei resta in piedi con lo scudo abbassato.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 915,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#15:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti ferito gravemente; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia Sarti è ferita gravemente: il colpo di Berta le ha portato via quasi tutto, e lei resta in piedi con lo scudo abbassato.»\nFrase da controllare: «Berta Benni stringe la chiave al collo, a mani nude.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 960,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#15:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti ferito gravemente; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta Benni stringe la chiave al collo, a mani nude.»\nFrase da controllare: «Ugo Faggioli, dalla carbonaia, non alza lo sguardo.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 979,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#15:6|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti ferito gravemente; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Ora tocca a te, Fulco.»\nFrase da controllare: «La pietra del tuo simbolo è ancora calda dal colpo che Berta ha assorbito, e Livia non è lontana.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 960,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#16:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti ferito gravemente; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nespola, dal cancello, non si muove.»\nFrase da controllare: «Ugo, a voce bassa, dice al carbone:»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 990,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza-torre-mozza-fuori-binario-B-manuale#16:8|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti ferito gravemente; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Chi la cerca, prima o poi ci torna.»\nFrase da controllare: «Berta stringe la chiave al collo e non si sposta dalla soglia.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 971,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#1:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia, la tua domanda resta sospesa nell'aria fredda del cortile.»\nFrase da controllare: «Berta non si muove: stringe la chiave al collo e guarda la torre sopra il crinale.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 993,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#1:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta non si muove: stringe la chiave al collo e guarda la torre sopra il crinale.»\nFrase da controllare: «Ugo tace un momento, poi sputa di nuovo.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 960,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#2:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Fulco Granito si china in silenzio, scruta Berta sotto il portico.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 988,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#2:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Eliandro tace, il quaderno aperto sul braccio.»\nFrase da controllare: «Berta, la benedizione di Fulco ti è arrivata.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 682,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#4:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Ancora qualche minuto e il figlio è perso.»\nFrase da controllare: «Ugo sputa, si volta verso il sentiero del bosco e si incammina verso la carbonaia, senza voltarsi.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": true,
+  "ms": 1023,
+  "grezza": "{\"risposta\":\"si\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#4:6|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Ugo sputa, si volta verso il sentiero del bosco e si incammina verso la carbonaia, senza voltarsi.»\nFrase da controllare: «Paese.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1039,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#4:9|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Una carbonaia non si lascia sola.»\nFrase da controllare: «Berta, la mano stretta sulla chiave, guarda Livia e non dice altro.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 980,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#7:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia, aspetti appoggiata allo scudo.»\nFrase da controllare: «Berta ti guarda, poi indica con il mento la torre sopra il crinale.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1136,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#7:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal sentiero del bosco il cane torna di corsa, si ferma davanti a Livia e abbaia una volta sola.»\nFrase da controllare: «Berta, Livia ti aspetta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1375,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#8:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Quanto dovrò stare qui a guardare il crinale?»\nFrase da controllare: «Ugo, dal cancello, si ferma con il mulo per un momento.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1041,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#8:8|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il tempo passa lo stesso.»\nFrase da controllare: «Berta stringe la chiave al collo e aspetta una risposta che non arriva.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1049,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#9:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia, Ugo si ferma con il mulo e ti guarda di traverso.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 920,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#9:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il vento porta il corno dalla torre, lungo e basso.»\nFrase da controllare: «Berta stringe la chiave al collo e dice poco.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1195,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#10:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Fulco, chiedi a Ugo cosa fa lui sul crinale.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 947,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#10:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, chiedi a Ugo cosa fa lui sul crinale.»\nFrase da controllare: «Ugo ti guarda, poi sputa per terra e stringe la pala.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1079,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#10:6|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Eliandro, la tua domanda cade nel silenzio.»\nFrase da controllare: «Berta non alza gli occhi dalla chiave.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 828,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#10:7|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta non alza gli occhi dalla chiave.»\nFrase da controllare: «Livia, Ugo ha lasciato andare la pala contro il mulo.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1025,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#11:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia, Ugo ha detto poco e tiene la pala in mano.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1203,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#11:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nel fienile i cani si calmano, uno si accuccia sulla paglia.»\nFrase da controllare: «Berta, la chiave tra le dita, guarda la torre sopra il crinale e sembra contare i minuti.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1093,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#12:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «La pietra è ancora fredda sotto le mani.»\nFrase da controllare: «Berta non ti guarda.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 979,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#13:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Eliandro si avvicina a Berta, a bassa voce, mentre Livia e Fulco restano al centro del cortile.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 911,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#13:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal crinale il corno suona ancora, corto e rauco.»\nFrase da controllare: «Fulco, Livia, Berta vi guarda con il mento alzato, come a dire che la decisione tocca a voi.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 878,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-stallo-B-manuale#14:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, dici che ci penserete domani.»\nFrase da controllare: «Berta sbuffa piano e stringe la chiave.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 965,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#1:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nespola alza la voce per farsi sentire fino al portico.»\nFrase da controllare: «Berta non si scompone: stringe la chiave al petto.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 976,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#1:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Io la chiave non la do a nessuno.»\nFrase da controllare: «Berta si volta e va a sedersi sul gradino della porta, con la lavagna alle spalle.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1006,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#1:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta si volta e va a sedersi sul gradino della porta, con la lavagna alle spalle.»\nFrase da controllare: «Nespola, Berta ti ha appena tirato un colpo: il pugno le sfiora la spalla senza fare danno.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 942,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#2:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Berta stringe la chiave e si rimette in piedi.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 754,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#2:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta stringe la chiave e si rimette in piedi.»\nFrase da controllare: «Il colpo di Berta lascia Nespola con il fiato corto, e nel cortile si sente il mulo di Ugo sbuffare.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)? Oppure: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 959,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#2:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il colpo di Berta lascia Nespola con il fiato corto, e nel cortile si sente il mulo di Ugo sbuffare.»\nFrase da controllare: «Nespola, Berta ti ha colpita: hai tre punti ferita su cinque.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1130,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#2:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nespola, Berta ti ha colpita: hai tre punti ferita su cinque.»\nFrase da controllare: «Livia, la pastora ti guarda ferma.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1231,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#3:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia lascia cadere la domanda nel cortile.»\nFrase da controllare: «Berta non alza gli occhi: stringe la chiave al collo e resta ferma sul gradino.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 944,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#3:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta non alza gli occhi: stringe la chiave al collo e resta ferma sul gradino.»\nFrase da controllare: «Livia, Berta ti guarda come si guarda un estraneo che alza la voce in un ovile.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 911,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#3:7|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, il cortile è rimasto in silenzio.»\nFrase da controllare: «Il mulo di Ugo sbuffa al cancello.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1004,
+  "grezza": "{\"risposta\": \"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#4:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, dici che vai a benedire una ruota di mulino.»\nFrase da controllare: «Il cortile ti guarda: Berta resta sul gradino, Ugo batte la pala per terra due volte.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)? Oppure: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 867,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#5:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Fulco lascia Ugo con il suo carbone e segue i compagni verso il fienile.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 957,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#5:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il sentiero dietro il fienile è fangoso, e i cani dentro grattano la porta.»\nFrase da controllare: «Nespola, il colpo di Berta ti ha lasciata con il fiato corto: ti muovi più piano degli altri.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 839,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#5:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nespola, il colpo di Berta ti ha lasciata con il fiato corto: ti muovi più piano degli altri.»\nFrase da controllare: «Livia, Berta ti guarda ancora come un'estranea.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 946,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#6:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il sentiero scende verso l'acqua, tra i rovi.»\nFrase da controllare: «Berta le lancia un pugno, ma la manca di un palmo: il colpo le passa accanto e batte contro lo stipite del portico.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 912,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#6:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta le lancia un pugno, ma la manca di un palmo: il colpo le passa accanto e batte contro lo stipite del portico.»\nFrase da controllare: «Livia, Fulco, la pastora ha appena attaccato Nespola.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 971,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#7:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia alza la voce nel cortile e la sua accusa arriva fino al gradino.»\nFrase da controllare: «Berta non si volta: stringe la chiave al collo e la lascia lì, come se non l'avesse sentita.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 992,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#7:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta non si volta: stringe la chiave al collo e la lascia lì, come se non l'avesse sentita.»\nFrase da controllare: «Livia, la domanda non ti è caduta addosso per il tuo carisma: Berta ti guarda con l'aria di chi ha già deciso di non fidarsi di te.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 994,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#7:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal crinale arriva il secondo suono della torre, un corno lungo e storto.»\nFrase da controllare: «Nespola, il colpo di Berta ti ha lasciata con il fiato corto, e intanto il sentiero verso il guado ti aspetta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1038,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#9:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia, la strada per la grotta sale tra i rovi, e il tuo tentativo di farti dire di più non porta niente di nuovo: Oreste si stringe nelle spalle e torna al suo lavoro.»\nFrase da controllare: «Berta, dal gradino, lancia un pugno verso Livia, ma il colpo passa vicino e batte contro il muro del portico.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1260,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#10:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal crinale il corno suona ancora, lungo e storto.»\nFrase da controllare: «Oreste non risponde, e nel cortile Berta si volta verso il sentiero.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 949,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#11:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Nespola alza il braccio verso il cortile, ma la pastora ha già voltato le spalle al suo pugno.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 954,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#11:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nespola alza il braccio verso il cortile, ma la pastora ha già voltato le spalle al suo pugno.»\nFrase da controllare: «Berta non riesce a colpirla: il suo pugno passa un palmo sopra la spalla di Nespola e batte contro lo stipite.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 946,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#11:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, il cortile ha cambiato respiro.»\nFrase da controllare: «Berta resta in piedi, la chiave al collo, e guarda il sentiero della torre.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1037,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#11:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta resta in piedi, la chiave al collo, e guarda il sentiero della torre.»\nFrase da controllare: «Fulco, Berta ti dà le spalle: ora tocca a te.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 922,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#12:6|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Vado a vendere latte a Valdirame, come ogni settimana.»\nFrase da controllare: «Berta non ha ancora raggiunto la strada: la sua voce arriva dal sentiero, e il carretto è fermo a metà salita.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 995,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#13:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Non è roba tua.»\nFrase da controllare: «Nespola, dalla strada sopra il guado arriva il rumore di passi: Berta sta scendendo dal sentiero, e la chiave le batte sul petto.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1030,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#14:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Nespola dice che al mulino si dorme e che Berta si arrangi.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 988,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#14:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il sentiero dietro il fienile si fa più stretto, e dal crinale arriva il corno lungo e storto della torre.»\nFrase da controllare: «Berta non riesce a colpire Nespola: il suo pugno passa vicino e batte contro lo stipite, come già al turno undici.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 973,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "coerenza2-torre-mozza-fuori-binario-B-manuale#14:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta non riesce a colpire Nespola: il suo pugno passa vicino e batte contro lo stipite, come già al turno undici.»\nFrase da controllare: «Fulco, il turno è tuo: Berta ti aspetta con la chiave al collo, e la strada verso il mulino è ancora libera.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1039,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#1:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia chiede se aspettare o muovere.»\nFrase da controllare: «Berta stringe la chiave al collo e non risponde subito.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 870,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#1:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Mio figlio nemmeno.»\nFrase da controllare: «Ugo sputa di nuovo, e guarda il sentiero dietro il fienile.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 985,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#2:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco si ferma accanto al cancello.»\nFrase da controllare: «Berta resta sotto il portico, zitta, con la mano sulla chiave.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 982,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#4:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia dice che aspetta.»\nFrase da controllare: «Berta non si muove, la mano stretta sulla chiave al collo.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 982,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#4:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal fienile i cani smettono di grattare e tacciono.»\nFrase da controllare: «Ugo sputa sul selciato e volta le spalle al cancello.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 954,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#4:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal sentiero dietro il fienile si sente un'altra volta il vento del crinale.»\nFrase da controllare: «Eliandro, Berta è ferma sotto il portico e non parla più.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 956,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#5:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia e Eliandro restano in piedi nel cortile.»\nFrase da controllare: «Berta non si muove sotto il portico, la mano sempre sulla chiave.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 961,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#6:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Eliandro guarda in giro il cortile: il cancello, il fienile, la lavagna sulla porta.»\nFrase da controllare: «Sotto il portico, Berta non stacca gli occhi dal sentiero.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1028,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#7:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia dice che aspetta ancora, e che Berta li ha chiamati.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 981,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#7:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia dice che aspetta ancora, e che Berta li ha chiamati.»\nFrase da controllare: «Berta alza lo sguardo dalla chiave.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1001,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#9:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia si avvicina a Ugo, a voce bassa, mentre Berta guarda altrove.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)? Oppure: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 928,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#9:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia si avvicina a Ugo, a voce bassa, mentre Berta guarda altrove.»\nFrase da controllare: «Ugo si volta lentamente verso di lei, con la pala ancora in mano.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 880,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#10:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Fulco, lasci Livia a Ugo e si siede sul muretto.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 858,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#10:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, lasci Livia a Ugo e si siede sul muretto.»\nFrase da controllare: «Eliandro chiede cosa ha detto il carbonaio: Ugo non ha ancora alzato gli occhi.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 946,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#10:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Eliandro chiede cosa ha detto il carbonaio: Ugo non ha ancora alzato gli occhi.»\nFrase da controllare: «Livia, dal portico Berta la guarda, e il silenzio nel cortile si allunga.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1017,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#10:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, il cancello dello stazzo scricchiola.»\nFrase da controllare: «Eliandro, nessuno ha sentito le parole sottovoce di Ugo: restano solo i cani e il vento.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 961,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#11:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia dice che si aspetta.»\nFrase da controllare: «Ugo si ferma con la pala a mezz'aria e fa spallucce.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 991,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#12:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia e Eliandro restano in piedi nel cortile.»\nFrase da controllare: «Ugo ti guarda di traverso, Fulco, e poi torna a fissare il sentiero.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1058,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#12:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dalla torre arriva un altro suono di corno, più lungo, e i cani nel fienile si mettono a guaire.»\nFrase da controllare: «Berta, sotto il portico, abbassa la mano dalla chiave e la stringe di nuovo.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 900,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#13:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Eliandro si avvicina a Berta, sotto il portico.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1107,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#13:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Lei non si muove, la mano stretta sulla chiave.»\nFrase da controllare: «Ugo, dal cancello, volta la testa di scatto e guarda Eliandro.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 979,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#14:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nessuno dei due risponde.»\nFrase da controllare: «Il corno sulla torre suona ancora, più lungo, e Berta si volta verso il sentiero.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1411,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "canary-torre-mozza-stallo-B-manuale#14:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il ragazzo non ha domani, con quella lavagna.»\nFrase da controllare: «Ugo sputa e riprende a caricare il mulo, senza guardare nessuno.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 953,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#1:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia Sarti, il vento porta fumo di carbonaia e i cani grattano la porta del fienile.»\nFrase da controllare: «Il tempo non è un lusso, e la pastora lo sa.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 981,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#1:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il tempo non è un lusso, e la pastora lo sa.»\nFrase da controllare: «Berta stringe la chiave al collo e non la toglie.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 918,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#1:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Entrate nel cortile, presto.»\nFrase da controllare: «Ugo batte la pala per terra due volte e non dice niente.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1027,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#2:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, il crinale ha un fischio di vento.»\nFrase da controllare: «Berta non parla, stringe la chiave.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1041,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#3:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il cancello è chiuso col suo chiavistello di legno, e sui pali qualcuno ha inciso dei nomi con il coltello.»\nFrase da controllare: «Sul mulo di Ugo i sacchi di carbone non si muovono.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 921,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#4:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia, nessuno ti ferma.»\nFrase da controllare: «Il cancello cigola sotto la tua mano e la pastora non ti trattiene.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1016,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#4:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Il cancello cigola sotto la tua mano e la pastora non ti trattiene.»\nFrase da controllare: «Berta si volta verso di te, la chiave ancora stretta nel pugno.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1013,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#4:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Muovetevi.»\nFrase da controllare: «Ugo sputa per terra e tira la fune del mulo, senza guardarvi.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1222,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#6:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Eliandro, guardi in giro e il cortile resta com'era.»\nFrase da controllare: «Lo stazzo, la lavagna sulla porta, il mulo di Ugo con i sacchi di carbone.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 987,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#6:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Sul cancello, tra i pali, i nomi incisi col coltello non sono stati toccati da nessuno.»\nFrase da controllare: «Berta stringe la chiave al collo.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1046,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#6:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta stringe la chiave al collo.»\nFrase da controllare: «Ugo batte la pala per terra due volte.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1046,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#7:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia, il cancello è aperto e nessuno ti ferma.»\nFrase da controllare: «Berta stringe la chiave al collo e non si muove.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1389,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#7:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Mio figlio è lassù.»\nFrase da controllare: «Ugo batte la pala per terra due volte e tace.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 973,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#8:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Fulco, il crinale fischia e Berta non si muove.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1058,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#8:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Le pecore non aspettano.»\nFrase da controllare: «Ugo batte la pala per terra due volte, poi si china sul mulo e lo carica di nuovo.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1005,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#9:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia Sarti, la domanda la fai a voce bassa, vicino al cancello.»\nFrase da controllare: «Ugo non si gira: continua a caricare il mulo.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1152,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#9:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Ugo non si gira: continua a caricare il mulo.»\nFrase da controllare: «Ugo, ti chiedo di passare.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 972,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#9:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Ugo, ti chiedo di passare.»\nFrase da controllare: «Ugo si ferma.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 708,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#10:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, la tua domanda arriva nel cortile, e Livia la sente subito.»\nFrase da controllare: «Ugo smette di caricare il mulo per un attimo.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 983,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#10:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Ugo smette di caricare il mulo per un attimo.»\nFrase da controllare: «Eliandro, Ugo ha parlato piano.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 889,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#10:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nel cortile si sente solo il fischio del crinale.»\nFrase da controllare: «Livia, la chiave del sentiero è ancora nelle mani di Berta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1005,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#10:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia, la chiave del sentiero è ancora nelle mani di Berta.»\nFrase da controllare: «Ugo lo ha detto a voce bassa, e lo sai solo tu.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 984,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#11:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia, Ugo non dice altro.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 964,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#11:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco e Eliandro guardano Livia, e il crinale manda un altro fischio di vento.»\nFrase da controllare: «Berta, dal portico, stringe la chiave al collo e aspetta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 921,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#12:3|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Le pecore ti guardano dall'altro lato.»\nFrase da controllare: «Berta non si muove dal portico.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1067,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#13:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Eliandro, chiedi a Berta a bassa voce dove sta la lavagna.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1024,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-stallo-B-manuale#14:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco, la tua frase arriva al cortile come una pietra nel secchio.»\nFrase da controllare: «Berta non alza gli occhi dal sentiero.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1051,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#1:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Nespola Tondi chiede a Berta di affidarle la chiave, dicendo che vale più di Tonio e che la venderebbe a Valdirame.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 930,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#1:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nespola Tondi chiede a Berta di affidarle la chiave, dicendo che vale più di Tonio e che la venderebbe a Valdirame.»\nFrase da controllare: «Berta stringe la chiave nel pugno.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 978,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#1:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Io aspetto qui.»\nFrase da controllare: «Berta tenta un colpo con la mano libera, ma sbaglia di un soffio e la sua mano fende l'aria accanto a Nespola.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1026,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#2:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Nespola Tondi chiede a Berta quanto pagava Ugo per il carbone.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)? Oppure: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1426,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#2:2|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Lo chiede piano, come si chiede una cosa che non va detta ad alta voce.»\nFrase da controllare: «Berta lascia la domanda sospesa nell'aria del cortile, poi guarda verso il fienile, dove i cani grattano.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 951,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#2:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Ma sì, c'è chi dà più di quanto dovrebbe.»\nFrase da controllare: «Berta non dice altro.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 998,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#2:6|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta non dice altro.»\nFrase da controllare: «Il mulo di Ugo sbuffa al cancello.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1018,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#3:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia Sarti chiede a Berta di dirle la verità, o se ne va.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 983,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#3:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia Sarti chiede a Berta di dirle la verità, o se ne va.»\nFrase da controllare: «Berta non si volta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 883,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#3:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Le pecore non aspettano.»\nFrase da controllare: «Il mulo di Ugo sbuffa al cancello.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1016,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#4:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Fulco Granito dice che il mulino sulla ruota rotta vale più della torre.»\nFrase da controllare: «Berta lo guarda come si guarda una pecora che non vuole entrare nello stazzo.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 930,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#4:8|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nel fienile i cani smettono di grattare, per un istante, poi riprendono.»\nFrase da controllare: «Berta ha la chiave al collo e non si muove.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 923,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#4:9|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Berta ha la chiave al collo e non si muove.»\nFrase da controllare: «Ugo batte la pala per terra due volte.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 949,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#5:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia non si muove.»\nFrase da controllare: «Berta, dietro la porta, stringe la chiave e non dice una parola.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1303,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#6:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Fulco lascia Ugo con il suo carbone e segue gli altri verso il sentiero.»\n\nDomanda: nella frase da controllare, Ugo lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 967,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#7:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Livia Sarti dice che andrà al mulino, e che se Tonio è morto la colpa è di Berta.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 938,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#7:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Livia Sarti dice che andrà al mulino, e che se Tonio è morto la colpa è di Berta.»\nFrase da controllare: «Berta non si muove.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1001,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#7:5|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Sai la strada, o devo dirtela io?»\nFrase da controllare: «Berta rimane sotto il portico, con la chiave al collo e gli occhi sul fienile.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1239,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#8:4|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Oreste non risponde alla domanda: si limita a sollevare la cesta, come a dire che non è in vendita.»\nFrase da controllare: «Berta, sotto il portico, stringe la chiave al collo e guarda il fienile, dove i cani hanno smesso di grattare.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1033,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#9:6|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Dal crinale arriva ancora il corno di capra, più vicino di prima.»\nFrase da controllare: «Berta, sotto il portico, stringe la chiave al collo e guarda verso il sentiero del bosco.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1041,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#15:0|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «—»\nFrase da controllare: «Nespola propone di fermarsi al mulino a dormire e lasciare Berta alla sua torre.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 1417,
+  "grezza": "{\"risposta\":\"no\"}"
+ },
+ "prima-torre-mozza-fuori-binario-B-manuale#15:1|Stato del gioco adesso:\nIn scena: Berta Benni in piedi; Ugo Faggioli in piedi.\nPG: Livia Sarti in piedi; Fulco Granito in piedi; Nespola Tondi in piedi; Eliandro in piedi.\n\nFrase precedente: «Nespola propone di fermarsi al mulino a dormire e lasciare Berta alla sua torre.»\nFrase da controllare: «Berta non risponde.»\n\nDomanda: nella frase da controllare, Berta lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro.": {
+  "si": false,
+  "ms": 910,
+  "grezza": "{\"risposta\":\"no\"}"
+ }
+}

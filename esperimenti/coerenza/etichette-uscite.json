@@ -1,0 +1,945 @@
+{
+ "nota": "Labels of the silent-exit set (docs/coerenza.md): every narrator sentence of the stall and off-the-rails runs that names an NPC in the scene and in play; «violation» = the NPC leaves the scene in that sentence with no [esce]. Labelled once by hand, 16 November 2026.",
+ "etichette": {
+  "coerenza-torre-mozza-stallo-B-manuale#1:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave al collo e guarda la torre oltre i tetti."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#1:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo sputa di nuovo e batte la pala per terra due volte, senza guardare nessuno."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#2:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non alza lo sguardo dal pugno chiuso sulla chiave."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#2:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta resta in silenzio, poi parla."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#4:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo appoggia la pala al cancello e si siede sul bordo del mulo, senza più guardare nessuno."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#5:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si volta."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#5:7": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo tace, con il mulo che sbuffa accanto a lui."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#6:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Eliandro si guarda intorno: il cortile, lo stazzo, il fienile con la paglia schiacciata, il portico con Berta e la lavagna sulla porta."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#6:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo non guarda nessuno."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#6:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave al collo e fissa il crinale."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#7:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia dice che aspetta ancora, perché Berta li ha chiamati."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#7:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave e non risponde."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#7:6": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo sputa e batte la pala due volte."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#8:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si muove."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#9:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia si avvicina a Ugo, a voce bassa, e gli parla all'orecchio, lontano da Berta."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#9:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo batte la pala per terra due volte, come a dire basta."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#10:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco chiede a Livia se ci ha pensato, e dice che non si fida di Ugo: tiene le cose per sé."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#10:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Eliandro chiede cosa ha detto Ugo, e se qualcuno ha sentito qualcosa."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#10:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo ha sentito tutto e batte la pala una volta sola."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#10:7": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta guarda Livia, stringe la chiave e aspetta."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#10:8": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Eliandro chiede cosa ha detto Ugo, e se qualcuno ha sentito qualcosa."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#10:9": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il vento porta le parole fino al paese, e Berta si gira di scatto verso il carbonaio."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#11:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia dice che aspettano che Ugo torni."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#11:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave e non risponde."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#11:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo, dal cancello, non si volta."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#12:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave al collo."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#12:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo, dal cancello, non si volta."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#13:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta lo guarda di sbieco ma non si allontana."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#13:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo, dal cancello, alza la testa al rumore dei sassi del sentiero."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#14:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si volta."
+  },
+  "coerenza-torre-mozza-stallo-B-manuale#14:6": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo, dal cancello, sputa per terra senza guardare nessuno."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#1:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola Tondi alza la voce e offre la chiave in vendita, come se Berta fosse una mercante al mercato."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#1:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave nel pugno e non si muove dalla soglia."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#1:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Poi Berta si getta su Nespola con le mani nude, ma il colpo le passa accanto."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#1:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il combattimento è iniziato: Nespola è la prima a muoversi, poi Livia, Berta e Fulco."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#2:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola Tondi si avvicina a Berta e Ugo, abbassando la voce quanto basta perché il cortile non senta."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#3:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia Sarti stringe lo scudo e si piazza davanti a Berta, con la voce ferma."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#3:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "La sua presa sulla spada non tremando nemmeno un attimo, e il colpo di Berta le cade dal fianco."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#3:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, che ha ancora le mani nude sporche di latte, guarda Livia con gli occhi che le si riempiono di lacrime."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#4:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola, Livia, Berta e Ugo restano nel cortile."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#5:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo solleva lo sguardo verso di voi, poi lo abbassa di nuovo sul carbone."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#6:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia alza la voce verso Berta, ma la pastora non si muove dalla soglia."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#6:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il suo tentativo di fare pressione non riesce: Berta la guarda fredda e resta dov'è."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#6:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta si sposta di un passo, e la sua espressione diventa più dura."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#6:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il rapporto con Livia si raffredda: Berta non si fida più di lei."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#7:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco lascia Ugo con il suo carbone e si incammina dietro di voi, con il simbolo di pietra che batte sul petto."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#7:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta Benni cerca di colpire Fulco a mani nude, ma il pugno gli passa accanto senza toccarlo."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#8:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe più forte la chiave al collo e non aggiunge altro."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#9:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo sputa per terra e torna a guardare il carbone."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#10:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nel cortile la mano di Nespola resta ferma sul banco, e Ugo si gira verso il fienile senza dire altro."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#12:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola Tondi, da sola, va verso Ugo il carbonaio, mentre gli altri restano al cancello."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#12:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta resta sotto il portico con la chiave al collo."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#12:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo solleva appena lo sguardo sul carbone."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#13:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nel cortile Berta non ha ancora lasciato il portico."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#13:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola, il tuo turno: Ugo ha smesso di guardare il carbone e ti aspetta."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#14:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola Tondi propone di fermarsi al mulino a dormire e di lasciare Berta alla sua torre."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#14:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta sente le parole e non risponde."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#14:7": {
+   "etichetta": "violation",
+   "perche": "a silent exit: Ugo goes back to the charcoal kiln: he leaves the farmyard (unsure: «torna alla carbonaia» may mean his charcoal pile)",
+   "testo": "Ugo, dal carbone, solleva appena lo sguardo verso Nespola e poi torna alla carbonaia."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#15:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia Sarti è ferita gravemente: il colpo di Berta le ha portato via quasi tutto, e lei resta in piedi con lo scudo abbassato."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#15:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta Benni stringe la chiave al collo, a mani nude."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#15:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo Faggioli, dalla carbonaia, non alza lo sguardo."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#15:6": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "La pietra del tuo simbolo è ancora calda dal colpo che Berta ha assorbito, e Livia non è lontana."
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#16:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo, a voce bassa, dice al carbone:"
+  },
+  "coerenza-torre-mozza-fuori-binario-B-manuale#16:8": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave al collo e non si sposta dalla soglia."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#1:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si muove: stringe la chiave al collo e guarda la torre sopra il crinale."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#1:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo tace un momento, poi sputa di nuovo."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#2:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco Granito si china in silenzio, scruta Berta sotto il portico."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#2:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, la benedizione di Fulco ti è arrivata."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#4:5": {
+   "etichetta": "violation",
+   "perche": "a silent exit: Ugo walks off toward the charcoal kiln without turning: he leaves the farmyard (the stall run then had him speak at T8–T10)",
+   "testo": "Ugo sputa, si volta verso il sentiero del bosco e si incammina verso la carbonaia, senza voltarsi."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#4:9": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, la mano stretta sulla chiave, guarda Livia e non dice altro."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#7:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta ti guarda, poi indica con il mento la torre sopra il crinale."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#7:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, Livia ti aspetta."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#8:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo, dal cancello, si ferma con il mulo per un momento."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#8:8": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave al collo e aspetta una risposta che non arriva."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#9:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, Ugo si ferma con il mulo e ti guarda di traverso."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#9:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave al collo e dice poco."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#10:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco, chiedi a Ugo cosa fa lui sul crinale."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#10:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo ti guarda, poi sputa per terra e stringe la pala."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#10:6": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non alza gli occhi dalla chiave."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#10:7": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, Ugo ha lasciato andare la pala contro il mulo."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#11:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, Ugo ha detto poco e tiene la pala in mano."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#11:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, la chiave tra le dita, guarda la torre sopra il crinale e sembra contare i minuti."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#12:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non ti guarda."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#13:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Eliandro si avvicina a Berta, a bassa voce, mentre Livia e Fulco restano al centro del cortile."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#13:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco, Livia, Berta vi guarda con il mento alzato, come a dire che la decisione tocca a voi."
+  },
+  "coerenza2-torre-mozza-stallo-B-manuale#14:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta sbuffa piano e stringe la chiave."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#1:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si scompone: stringe la chiave al petto."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#1:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta si volta e va a sedersi sul gradino della porta, con la lavagna alle spalle."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#1:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola, Berta ti ha appena tirato un colpo: il pugno le sfiora la spalla senza fare danno."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#2:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave e si rimette in piedi."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#2:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il colpo di Berta lascia Nespola con il fiato corto, e nel cortile si sente il mulo di Ugo sbuffare."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#2:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola, Berta ti ha colpita: hai tre punti ferita su cinque."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#2:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, la pastora ti guarda ferma."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#3:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non alza gli occhi: stringe la chiave al collo e resta ferma sul gradino."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#3:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, Berta ti guarda come si guarda un estraneo che alza la voce in un ovile."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#3:7": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il mulo di Ugo sbuffa al cancello."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#4:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il cortile ti guarda: Berta resta sul gradino, Ugo batte la pala per terra due volte."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#5:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco lascia Ugo con il suo carbone e segue i compagni verso il fienile."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#5:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola, il colpo di Berta ti ha lasciata con il fiato corto: ti muovi più piano degli altri."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#5:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, Berta ti guarda ancora come un'estranea."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#6:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta le lancia un pugno, ma la manca di un palmo: il colpo le passa accanto e batte contro lo stipite del portico."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#6:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, Fulco, la pastora ha appena attaccato Nespola."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#7:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si volta: stringe la chiave al collo e la lascia lì, come se non l'avesse sentita."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#7:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, la domanda non ti è caduta addosso per il tuo carisma: Berta ti guarda con l'aria di chi ha già deciso di non fidarsi di te."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#7:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola, il colpo di Berta ti ha lasciata con il fiato corto, e intanto il sentiero verso il guado ti aspetta."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#9:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, dal gradino, lancia un pugno verso Livia, ma il colpo passa vicino e batte contro il muro del portico."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#10:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Oreste non risponde, e nel cortile Berta si volta verso il sentiero."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#11:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola alza il braccio verso il cortile, ma la pastora ha già voltato le spalle al suo pugno."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#11:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non riesce a colpirla: il suo pugno passa un palmo sopra la spalla di Nespola e batte contro lo stipite."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#11:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta resta in piedi, la chiave al collo, e guarda il sentiero della torre."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#11:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco, Berta ti dà le spalle: ora tocca a te."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#12:6": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non ha ancora raggiunto la strada: la sua voce arriva dal sentiero, e il carretto è fermo a metà salita."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#13:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola, dalla strada sopra il guado arriva il rumore di passi: Berta sta scendendo dal sentiero, e la chiave le batte sul petto."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#14:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola dice che al mulino si dorme e che Berta si arrangi."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#14:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non riesce a colpire Nespola: il suo pugno passa vicino e batte contro lo stipite, come già al turno undici."
+  },
+  "coerenza2-torre-mozza-fuori-binario-B-manuale#14:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco, il turno è tuo: Berta ti aspetta con la chiave al collo, e la strada verso il mulino è ancora libera."
+  },
+  "canary-torre-mozza-stallo-B-manuale#1:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave al collo e non risponde subito."
+  },
+  "canary-torre-mozza-stallo-B-manuale#1:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo sputa di nuovo, e guarda il sentiero dietro il fienile."
+  },
+  "canary-torre-mozza-stallo-B-manuale#2:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta resta sotto il portico, zitta, con la mano sulla chiave."
+  },
+  "canary-torre-mozza-stallo-B-manuale#4:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si muove, la mano stretta sulla chiave al collo."
+  },
+  "canary-torre-mozza-stallo-B-manuale#4:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo sputa sul selciato e volta le spalle al cancello."
+  },
+  "canary-torre-mozza-stallo-B-manuale#4:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Eliandro, Berta è ferma sotto il portico e non parla più."
+  },
+  "canary-torre-mozza-stallo-B-manuale#5:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si muove sotto il portico, la mano sempre sulla chiave."
+  },
+  "canary-torre-mozza-stallo-B-manuale#6:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Sotto il portico, Berta non stacca gli occhi dal sentiero."
+  },
+  "canary-torre-mozza-stallo-B-manuale#7:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia dice che aspetta ancora, e che Berta li ha chiamati."
+  },
+  "canary-torre-mozza-stallo-B-manuale#7:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta alza lo sguardo dalla chiave."
+  },
+  "canary-torre-mozza-stallo-B-manuale#9:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia si avvicina a Ugo, a voce bassa, mentre Berta guarda altrove."
+  },
+  "canary-torre-mozza-stallo-B-manuale#9:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo si volta lentamente verso di lei, con la pala ancora in mano."
+  },
+  "canary-torre-mozza-stallo-B-manuale#10:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco, lasci Livia a Ugo e si siede sul muretto."
+  },
+  "canary-torre-mozza-stallo-B-manuale#10:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Eliandro chiede cosa ha detto il carbonaio: Ugo non ha ancora alzato gli occhi."
+  },
+  "canary-torre-mozza-stallo-B-manuale#10:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, dal portico Berta la guarda, e il silenzio nel cortile si allunga."
+  },
+  "canary-torre-mozza-stallo-B-manuale#10:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Eliandro, nessuno ha sentito le parole sottovoce di Ugo: restano solo i cani e il vento."
+  },
+  "canary-torre-mozza-stallo-B-manuale#11:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo si ferma con la pala a mezz'aria e fa spallucce."
+  },
+  "canary-torre-mozza-stallo-B-manuale#12:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo ti guarda di traverso, Fulco, e poi torna a fissare il sentiero."
+  },
+  "canary-torre-mozza-stallo-B-manuale#12:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, sotto il portico, abbassa la mano dalla chiave e la stringe di nuovo."
+  },
+  "canary-torre-mozza-stallo-B-manuale#13:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Eliandro si avvicina a Berta, sotto il portico."
+  },
+  "canary-torre-mozza-stallo-B-manuale#13:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo, dal cancello, volta la testa di scatto e guarda Eliandro."
+  },
+  "canary-torre-mozza-stallo-B-manuale#14:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il corno sulla torre suona ancora, più lungo, e Berta si volta verso il sentiero."
+  },
+  "canary-torre-mozza-stallo-B-manuale#14:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo sputa e riprende a caricare il mulo, senza guardare nessuno."
+  },
+  "prima-torre-mozza-stallo-B-manuale#1:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il tempo non è un lusso, e la pastora lo sa."
+  },
+  "prima-torre-mozza-stallo-B-manuale#1:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave al collo e non la toglie."
+  },
+  "prima-torre-mozza-stallo-B-manuale#1:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo batte la pala per terra due volte e non dice niente."
+  },
+  "prima-torre-mozza-stallo-B-manuale#2:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non parla, stringe la chiave."
+  },
+  "prima-torre-mozza-stallo-B-manuale#3:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Sul mulo di Ugo i sacchi di carbone non si muovono."
+  },
+  "prima-torre-mozza-stallo-B-manuale#4:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il cancello cigola sotto la tua mano e la pastora non ti trattiene."
+  },
+  "prima-torre-mozza-stallo-B-manuale#4:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta si volta verso di te, la chiave ancora stretta nel pugno."
+  },
+  "prima-torre-mozza-stallo-B-manuale#4:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo sputa per terra e tira la fune del mulo, senza guardarvi."
+  },
+  "prima-torre-mozza-stallo-B-manuale#6:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Lo stazzo, la lavagna sulla porta, il mulo di Ugo con i sacchi di carbone."
+  },
+  "prima-torre-mozza-stallo-B-manuale#6:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave al collo."
+  },
+  "prima-torre-mozza-stallo-B-manuale#6:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo batte la pala per terra due volte."
+  },
+  "prima-torre-mozza-stallo-B-manuale#7:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave al collo e non si muove."
+  },
+  "prima-torre-mozza-stallo-B-manuale#7:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo batte la pala per terra due volte e tace."
+  },
+  "prima-torre-mozza-stallo-B-manuale#8:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco, il crinale fischia e Berta non si muove."
+  },
+  "prima-torre-mozza-stallo-B-manuale#8:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo batte la pala per terra due volte, poi si china sul mulo e lo carica di nuovo."
+  },
+  "prima-torre-mozza-stallo-B-manuale#9:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo non si gira: continua a caricare il mulo."
+  },
+  "prima-torre-mozza-stallo-B-manuale#9:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo, ti chiedo di passare."
+  },
+  "prima-torre-mozza-stallo-B-manuale#9:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo si ferma."
+  },
+  "prima-torre-mozza-stallo-B-manuale#10:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo smette di caricare il mulo per un attimo."
+  },
+  "prima-torre-mozza-stallo-B-manuale#10:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Eliandro, Ugo ha parlato piano."
+  },
+  "prima-torre-mozza-stallo-B-manuale#10:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, la chiave del sentiero è ancora nelle mani di Berta."
+  },
+  "prima-torre-mozza-stallo-B-manuale#10:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo lo ha detto a voce bassa, e lo sai solo tu."
+  },
+  "prima-torre-mozza-stallo-B-manuale#11:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia, Ugo non dice altro."
+  },
+  "prima-torre-mozza-stallo-B-manuale#11:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, dal portico, stringe la chiave al collo e aspetta."
+  },
+  "prima-torre-mozza-stallo-B-manuale#12:3": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si muove dal portico."
+  },
+  "prima-torre-mozza-stallo-B-manuale#13:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Eliandro, chiedi a Berta a bassa voce dove sta la lavagna."
+  },
+  "prima-torre-mozza-stallo-B-manuale#14:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non alza gli occhi dal sentiero."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#1:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola Tondi chiede a Berta di affidarle la chiave, dicendo che vale più di Tonio e che la venderebbe a Valdirame."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#1:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta stringe la chiave nel pugno."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#1:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta tenta un colpo con la mano libera, ma sbaglia di un soffio e la sua mano fende l'aria accanto a Nespola."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#2:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola Tondi chiede a Berta quanto pagava Ugo per il carbone."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#2:2": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta lascia la domanda sospesa nell'aria del cortile, poi guarda verso il fienile, dove i cani grattano."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#2:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non dice altro."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#2:6": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il mulo di Ugo sbuffa al cancello."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#3:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia Sarti chiede a Berta di dirle la verità, o se ne va."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#3:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si volta."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#3:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Il mulo di Ugo sbuffa al cancello."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#4:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta lo guarda come si guarda una pecora che non vuole entrare nello stazzo."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#4:8": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta ha la chiave al collo e non si muove."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#4:9": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Ugo batte la pala per terra due volte."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#5:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, dietro la porta, stringe la chiave e non dice una parola."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#6:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Fulco lascia Ugo con il suo carbone e segue gli altri verso il sentiero."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#7:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Livia Sarti dice che andrà al mulino, e che se Tonio è morto la colpa è di Berta."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#7:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non si muove."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#7:5": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta rimane sotto il portico, con la chiave al collo e gli occhi sul fienile."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#8:4": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, sotto il portico, stringe la chiave al collo e guarda il fienile, dove i cani hanno smesso di grattare."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#9:6": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta, sotto il portico, stringe la chiave al collo e guarda verso il sentiero del bosco."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#15:0": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Nespola propone di fermarsi al mulino a dormire e lasciare Berta alla sua torre."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#15:1": {
+   "etichetta": "clean",
+   "perche": "the NPC stays (named, acting, speaking or looking)",
+   "testo": "Berta non risponde."
+  }
+ }
+}

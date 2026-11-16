@@ -51,3 +51,4 @@ coerenza:
     caduti: " ({elenco})"
     colpo: "il Motore dice che {chi} colpisce {bersaglio} e lo ferisce. La frase da controllare racconta quel colpo come mancato, parato o senza effetto?"
     oppure: " Oppure: "
+    esce: "nella frase da controllare, {nome} lascia la scena adesso (se ne va, si allontana fuori dalla vista, torna altrove)?"

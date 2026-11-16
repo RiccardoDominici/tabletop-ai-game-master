@@ -51,3 +51,4 @@ coerenza:
     caduti: " ({elenco})"
     colpo: "the Engine says that {chi} hits {bersaglio} and wounds them. Does the sentence to check tell that blow as missed, parried or harmless?"
     oppure: " Or: "
+    esce: "in the sentence to check, does {nome} leave the scene now (goes away, walks out of sight, goes back elsewhere)?"

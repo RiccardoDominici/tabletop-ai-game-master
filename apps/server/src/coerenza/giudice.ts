@@ -17,7 +17,7 @@ import type { ModelloLinguaggio } from '../llm/modello';
 import type { CorrezioneEsito } from '../narrazione/guardia-esiti';
 import { chiedi, domandaPer } from './domanda';
 import { frasePresenti } from './inesistenti';
-import { daChiedere, menzioniDi, type ContestoMenzioni } from './menzioni';
+import { daChiedere, menzioniDi, presentiNominati, type ContestoMenzioni } from './menzioni';
 import { inOsservazione } from './osservazione';
 import type { Registro } from './registro';
 import type { IdRegola } from './verifica';
@@ -32,6 +32,11 @@ export interface OpzioniGiudice {
   ombra: (testo: string) => CorrezioneEsito;
   log: Logger;
   turno: number;
+  /**
+   * A silent exit (an NPC in the scene named by a sentence leaves it with no `[esce]`): asked aside, never blocking the
+   * voice; on «si» the director takes it as the narrator's `[esce]`. Absent: not asked.
+   */
+  uscita?: (id: string) => void;
 }
 
 export interface DecisioneGiudice {
@@ -61,6 +66,7 @@ export class GiudiceDomande {
    */
   async giudica(frase: string, giaToccata = false, signal?: AbortSignal): Promise<DecisioneGiudice | null> {
     const ombra = this.o.ombra(frase);
+    this.chiediUscite(frase, this.prima);
     const grezze = menzioniDi(frase, 'narratore', this.o.contesto);
     const menzioni = grezze.length ? daChiedere(grezze, this.o.contesto) : this.siPrima ? this.ultime : [];
     const prima = this.prima;
@@ -101,6 +107,25 @@ export class GiudiceDomande {
     } finally {
       clearTimeout(timer);
       signal?.removeEventListener('abort', fuori);
+    }
+  }
+
+  /** One question per NPC in the scene the sentence names: does it leave now? Not awaited (the voice goes on). */
+  private chiediUscite(frase: string, prima: string): void {
+    if (!this.o.uscita) return;
+    for (const m of presentiNominati(frase, this.o.contesto)) {
+      const q = domandaPer({ registro: this.o.registro, frase, prima, menzioni: [m] });
+      if (!q) continue;
+      const id = m.split(':')[1]!;
+      const controllo = new AbortController();
+      const timer = setTimeout(() => controllo.abort(new Error('deadline')), this.o.ms * 3);
+      void chiedi(this.o.modello, q, controllo.signal)
+        .then((r) => {
+          this.o.log.info({ turno: this.o.turno, frase, png: id, si: r.si, ms: r.ms }, 'coherence: exit question answered');
+          if (r.si) this.o.uscita?.(id);
+        })
+        .catch((err: unknown) => this.o.log.info({ turno: this.o.turno, png: id, err: err instanceof Error ? err.message : String(err) }, 'coherence: exit question not answered'))
+        .finally(() => clearTimeout(timer));
     }
   }
 

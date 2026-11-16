@@ -1,0 +1,14 @@
+{
+ "variante": "domanda-claude-haiku-5-5",
+ "violazioni": 2,
+ "prese": 1,
+ "mancate": [
+  {
+   "chiave": "coerenza-torre-mozza-fuori-binario-B-manuale#14:7",
+   "testo": "Ugo, dal carbone, solleva appena lo sguardo verso Nespola e poi torna alla carbonaia.",
+   "perche": "a silent exit: Ugo goes back to the charcoal kiln: he leaves the farmyard (unsure: «torna alla carbonaia» may mean his charcoal pile)"
+  }
+ ],
+ "toccatePulite": [],
+ "ms": 191604
+}

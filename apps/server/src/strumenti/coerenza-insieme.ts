@@ -18,7 +18,7 @@ import path from 'node:path';
 import { caricaCampagna } from '../campagna/caricatore';
 import { nomeBreve } from '../campagna/nomi';
 import { normalizza } from '../azioni/regole';
-import { contestoMenzioni, menzioniDi } from '../coerenza/menzioni';
+import { contestoMenzioni, menzioniDi, presentiNominati } from '../coerenza/menzioni';
 import { dividiTesto } from '../narrazione/frasi';
 import type { EntitaRegistro, PresenzaEntita, Registro, StatoEntita } from '../coerenza/registro';
 import { tipiGregari } from '../campagna/gregari';
@@ -77,7 +77,9 @@ function jsonl(f: string): Array<Record<string, unknown>> {
 }
 
 function main(): void {
-  const [cartellaCampagna, ...runs] = process.argv.slice(2);
+  const argomenti = process.argv.slice(2);
+  const uscite = argomenti.includes('--uscite');
+  const [cartellaCampagna, ...runs] = argomenti.filter((a) => a !== '--uscite');
   if (!cartellaCampagna || !runs.length) {
     process.stderr.write('usage: coerenza-insieme.ts <campaign folder> <run folder>…\n');
     process.exit(2);
@@ -179,7 +181,8 @@ function main(): void {
         if (!m || !(m[1] === 'narratore' || m[1]!.startsWith('png_'))) continue;
         // The pipeline's own sentence splitter (narrazione/frasi.ts), so the set's sentences are the checker's.
         for (const testo of dividiTesto(m[2]!)) {
-          const menzioni = menzioniDi(testo, m[1]!, contesto);
+          // `--uscite`: the set of possible silent exits (a narrator sentence naming an NPC in the scene and in play).
+          const menzioni = uscite ? (m[1] === 'narratore' ? presentiNominati(testo, contesto) : []) : menzioniDi(testo, m[1]!, contesto);
           frasi.push({ i: frasi.length, etichetta: m[1]!, testo, segnata: menzioni.length > 0, menzioni });
         }
       }

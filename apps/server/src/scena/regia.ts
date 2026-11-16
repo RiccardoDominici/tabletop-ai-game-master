@@ -3204,6 +3204,11 @@ export class Regia {
       ombra: this.guardiaDegliEsiti(tiri, combattimento, inesistenti, true, turno, 'ombra'),
       log: this.o.log.child({ turno }),
       turno,
+      // A silent exit the question confirms counts as the narrator's [esce] (docs/coerenza.md, «Characters…»).
+      uscita: (id) => {
+        this.o.log.info({ turno, png: id }, 'presence: silent exit, from the yes/no question');
+        this.presenzeDalNarratore(turno, [{ png: id, presente: false, verso: null }], this.o.log.child({ turno }));
+      },
     });
     return { correggiEsito: this.guardiaDegliEsiti(tiri, combattimento, inesistenti, true, turno, 'esiti'), giudice };
   }

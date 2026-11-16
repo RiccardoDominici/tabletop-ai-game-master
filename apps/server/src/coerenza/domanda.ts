@@ -53,6 +53,11 @@ export function domandaPer(d: DatiDomanda): { sistema: string; messaggio: string
       const titolari = d.registro.entita.filter((e) => e.tipo !== 'pg' && e.nomi.some((n) => n.toLowerCase() === valore));
       const caduti = titolari.length ? testo('coerenza.domanda.caduti', { elenco: titolari.map(statoDi).join('; ') }) : '';
       parti.push(testo('coerenza.domanda.nome', { parola: valore, caduti }));
+    } else if (tipo === 'presente' && !chiesti.has(m)) {
+      // A possible silent exit (an NPC in the scene and in play named): does it leave now?
+      chiesti.add(m);
+      const e = per.get(valore);
+      if (e) parti.push(testo('coerenza.domanda.esce', { nome: nomeBreve(e.nome) }));
     } else if (tipo === 'colpo' && !chiesti.has(m)) {
       chiesti.add(m);
       for (const k of (d.colpi ?? []).filter((x) => x.bersaglio === valore)) {

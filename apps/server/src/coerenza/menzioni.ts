@@ -64,6 +64,12 @@ export function menzioniDi(testo: string, etichetta: string, c: ContestoMenzioni
   return [...new Set(out)];
 }
 
+/** The NPCs in the scene and in play a narrator sentence names (a possible silent exit: `presente:<id>`). */
+export function presentiNominati(testo: string, c: ContestoMenzioni): string[] {
+  const w = paroleDi(testo);
+  return c.entita.filter((e) => e.tipo !== 'pg' && e.presenza === 'in_scena' && IN_GIOCO.has(e.stato) && e.stato !== 'nascosto' && doveNomina(w, e.nomi) >= 0).map((e) => `presente:${e.id}`);
+}
+
 /** What is worth a question: not who fell by this turn's cards, not a noun whose bearers all did or are elsewhere. */
 export function daChiedere(menzioni: readonly string[], c: ContestoMenzioni): string[] {
   return menzioni.filter((m) => {
