@@ -793,7 +793,7 @@ for every stall move) (`coerenzaA6-evidenza-opus.md`).
 | of which in the lines' prose | 0 (1 unsure) → 1 → 0 | 1 → 1 → 1 | 0 → 0 → 0 | 0 → 0 → 0 |
 | of which in the announcement | 4 → 0 → 0 | 2 → 0 → 0 | 1 → 0 → 0 | 0 → 0 → 0 |
 | false claims inside an attributed announcement (not H), round 5 → 6 | 6 → 8 | 5 → 2 | 5 → 11 | 2 → 1 |
-| turns played | 25 | 16 (paused at the defeat) | 13 | 14 |
+| turns played (script turns; server turns) | 25 | 14; 16, paused at the defeat | 13 | 14 |
 | median first audio (ms), round 4 → 5 → 6 | 674 → 670 → 542 | 670 → 666 → 681 | 670 → 682 → 670 | 678 → 676 → 684 |
 | scriptwriter tag rate in the fights (lines with `richiede.esito` / lines that needed one) | 112 / 115 | 51 / 52 | — | — |
 | the tags written (colpito / mancato / ferito / nessuno) | 27 / 33 / 5 / 47 | 13 / 15 / 2 / 21 | 0 / 0 / 0 / 13 | 0 / 0 / 0 / 16 |
