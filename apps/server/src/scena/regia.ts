@@ -125,6 +125,7 @@ import { mossaDiStallo, type MossaStallo } from '../mondo/stallo';
 import { TiriGiocatoriRegia, type TiriGiocati } from './tiri-giocatori';
 import { TiriDelMaster } from '../prove/tiri-master';
 import { tipiGregari, type Gregario } from '../campagna/gregari';
+import { inOsservazione } from '../coerenza/osservazione';
 import { creatureAssenti, creatureNote, frasePresenti, guardiaInesistenti, nominateIn, rigaAssenti, type CreaturaAssente } from '../coerenza/inesistenti';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
@@ -618,8 +619,9 @@ export class Regia {
    */
   private violazione(v: Violazione): void {
     this.o.log.info({ turno: v.turno, regola: v.regola, azione: v.azione, etichetta: v.etichetta, ...(v.id_pg ? { id_pg: v.id_pg } : {}), ...(v.battuta ? { battuta: v.battuta } : {}) }, 'coerenza: violazione');
-    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno: v.turno, tipo: 'violazione', regola: v.regola, azione: v.azione, etichetta: v.etichetta, frase: v.frase, ...(v.sostituto ? { sostituto: v.sostituto } : {}), ...(v.id_pg ? { id_pg: v.id_pg } : {}), ...(v.battuta ? { battuta: v.battuta } : {}) });
-    this.violazioniRecenti = [...this.violazioniRecenti, v].slice(-30);
+    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno: v.turno, tipo: 'violazione', regola: v.regola, azione: v.azione, etichetta: v.etichetta, frase: v.frase, ...(v.sostituto ? { sostituto: v.sostituto } : {}), ...(v.id_pg ? { id_pg: v.id_pg } : {}), ...(v.battuta ? { battuta: v.battuta } : {}), ...(v.dettaglio ? { dettaglio: v.dettaglio } : {}) });
+    // The panel lists what was stopped; a rule in observation stopped nothing (it is in the log and narrazioni.jsonl).
+    if (v.azione !== 'osservata') this.violazioniRecenti = [...this.violazioniRecenti, v].slice(-30);
   }
 
   /** The visit (its entry turn) in which a fight happened: the stall's «nothing new» does not count there. */
@@ -3098,8 +3100,16 @@ export class Regia {
     inesistenti: InesistentiDelTurno | null = null,
     /** The public call (its line is what the table hears); a private reply judges the nouns of every action. */
     alTavolo = true,
+    /** The turn being narrated (the records of the rules in observation). */
+    turno = this.turno,
   ): (testo: string) => CorrezioneEsito {
     const c = this.campagna;
+    // Rules in observation (coerenza/osservazione.ts): what they would do is recorded, the sentence is left alone.
+    let frase = '';
+    const osserva = (x: NonNullable<CorrezioneEsito>): void => {
+      this.o.log.info({ turno, motivo: x.motivo, frase, sostituto: x.testo, al_tavolo: alTavolo }, 'coherence: rule in observation, text left alone');
+      this.violazione({ turno, regola: x.motivo === 'creatura_inesistente' ? 'R-inesistente' : 'R-esito', etichetta: ID_NARRATORE, frase, azione: 'osservata', sostituto: [x.testo], dettaglio: { motivo: x.motivo, al_tavolo: alTavolo } });
+    };
     const prove = this.prove!;
     const nomi = new Map<string, string[]>([
       ...c.pg.map((p) => [p.id, [p.nome, nomeBreve(p.nome), ...Object.entries(c.alias).filter(([, x]) => x === p.id).map(([a]) => a)]] as [string, string[]]),
@@ -3113,6 +3123,7 @@ export class Regia {
       conScheda: (id) => prove.stato.puntiFerita(id) !== null,
       fuori: (id) => prove.stato.fuoriGioco(id) !== null,
       nome,
+      osserva,
     });
     // Who went out of play in this very turn, or rolled a death save in it: that is this turn's story, not an act.
     const oraFuori = new Set([
@@ -3131,7 +3142,13 @@ export class Regia {
           ...(alTavolo ? { onDetta: () => (inesistenti.detta = true) } : {}),
         })
       : null;
-    return (testo) => ines?.(testo) ?? esiti(testo) ?? fuori?.(testo) ?? null;
+    return (testo) => {
+      frase = testo;
+      const i = ines?.(testo) ?? null;
+      if (i && !inOsservazione(i.motivo)) return i;
+      if (i) osserva(i);
+      return esiti(testo) ?? fuori?.(testo) ?? null;
+    };
   }
 
   /**
@@ -3169,6 +3186,12 @@ export class Regia {
    * narration did not already say it in place of an invented act (docs/coerenza.md, R-inesistente).
    */
   private diciChiCeDavvero(turno: number, esito: { uscita: VoceUscita[] }, ines: InesistentiDelTurno, log: Logger): void {
+    if (inOsservazione('creatura_inesistente')) {
+      // In observation: the line it would add is recorded, the table hears nothing more.
+      this.violazione({ turno, regola: 'R-inesistente', etichetta: ID_NARRATORE, frase: '', azione: 'osservata', sostituto: [ines.frase], dettaglio: { motivo: 'creatura_inesistente', aggiunta: true, parole: ines.pubbliche.map((a) => a.parola) } });
+      log.info({ turno, parole: ines.pubbliche.map((a) => a.parola) }, 'coherence: rule in observation, who is really there not said');
+      return;
+    }
     const righe = [{ etichetta: ID_NARRATORE, testo: ines.frase, testo_voce: this.pronuncia(ines.frase) }];
     const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: ines.frase, frasi: [`t${turno}-x0`], motore: true };
     const primaDellInvito = this.righeDelMotore(turno, esito, righe, voce, false, 'x');

@@ -54,8 +54,8 @@ describe('guardia degli esiti (italiano)', () => {
 
   it('a blow that hurt, told as absorbed or missed by the target alone (coherence run, off the rails T13) → the hit', () => {
     const g = guardia([attacco('png_ruggero', 'pg_ida', true, 3)]);
-    expect(g('Il pugno le scivola sulla spalla di Ida, ma il colpo è corto e la pietra lo assorbe.')).toEqual({ testo: 'Ruggero colpisce Ida.', motivo: 'colpo_contrario' });
-    expect(g('La mazza passa accanto a Ida e batte sul muro.')).toEqual({ testo: 'Ruggero colpisce Ida.', motivo: 'colpo_contrario' });
+    expect(g('Il pugno le scivola sulla spalla di Ida, ma il colpo è corto e la pietra lo assorbe.')).toEqual({ testo: 'Ruggero colpisce Ida.', motivo: 'colpo_assorbito' });
+    expect(g('La mazza passa accanto a Ida e batte sul muro.')).toEqual({ testo: 'Ruggero colpisce Ida.', motivo: 'colpo_assorbito' });
     // A hit word in the sentence, or the attacker named (the pair rule judges it), or no damage: left to the other rules.
     expect(g('La mazza la colpisce di striscio, Ida barcolla.')).toBeNull();
     expect(guardia([attacco('png_ruggero', 'pg_ida', true, 0)])('La pietra assorbe il colpo e Ida resta salda.')).toBeNull();
@@ -64,6 +64,13 @@ describe('guardia degli esiti (italiano)', () => {
     expect(g('Corrado si sposta di lato, e il sasso che Ida aveva puntato rimbalza sulla pietra.')).toBeNull();
     // The target struck too this turn: a miss told about her may be her own blow.
     expect(guardia([attacco('png_ruggero', 'pg_ida', true, 3), attacco('pg_ida', 'png_ruggero', false)])('Ida tira il pugnale, che va a vuoto.')).toBeNull();
+  });
+
+  it('in observation (coerenza/osservazione.ts) the absorbed-blow branch only reports: the sentence goes on unchanged', () => {
+    const viste: unknown[] = [];
+    const g = guardiaEsiti({ tiri: [attacco('png_ruggero', 'pg_ida', true, 3)], nomi: NOMI, conScheda: (id) => id.startsWith('png_') || id.startsWith('pg_'), fuori: () => false, nome: (id) => NOME[id] ?? id, osserva: (c) => viste.push(c) });
+    expect(g('Il pugno le scivola sulla spalla di Ida, ma il colpo è corto e la pietra lo assorbe.')).toBeNull();
+    expect(viste).toEqual([{ testo: 'Ruggero colpisce Ida.', motivo: 'colpo_assorbito' }]);
   });
 
   it('a standing PC told down because the player said so (third e2e pass, bug 3) → «Ida è ancora in piedi.»', () => {

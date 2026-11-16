@@ -27,6 +27,7 @@ import { testo } from '../lingua';
 import { campoElenco, regole } from '../lingua/motore';
 // A cycle with guardia-fuori.ts (it reads this module's word helpers): used only inside functions, never at load.
 import { paroleDellaFrase } from './guardia-fuori';
+import { inOsservazione } from '../coerenza/osservazione';
 
 interface Parole {
   sconfitta: string[][];
@@ -203,10 +204,15 @@ export interface DatiGuardiaEsiti {
   /** Out of play now, after the turn's rolls (down, dead, fled). */
   fuori: (id: string) => boolean;
   nome: (id: string) => string;
+  /**
+   * A rule in observation (coerenza/osservazione.ts): its correction is handed here and the sentence goes on to the
+   * next rules unchanged. Without it the correction is returned as usual.
+   */
+  osserva?: (c: NonNullable<CorrezioneEsito>) => void;
 }
 
 /** The line that replaces the sentence, with the reason for the log; null = the sentence stays. */
-export type CorrezioneEsito = { testo: string; motivo: 'caduta_senza_fatto' | 'colpo_contrario' | 'fuori_gioco_agisce' | 'creatura_inesistente' } | null;
+export type CorrezioneEsito = { testo: string; motivo: 'caduta_senza_fatto' | 'colpo_contrario' | 'colpo_assorbito' | 'fuori_gioco_agisce' | 'creatura_inesistente' } | null;
 
 export function guardiaEsiti(d: DatiGuardiaEsiti): (frase: string) => CorrezioneEsito {
   const breve = (id: string): string => nomeBreve(d.nome(id));
@@ -265,7 +271,12 @@ export function guardiaEsiti(d: DatiGuardiaEsiti): (frase: string) => Correzione
         if (attacchi.some((x) => x.chi === t.bersaglio!.id)) continue;
         const b = doveNomina(w, d.nomi.get(t.bersaglio!.id) ?? []);
         const a = doveNomina(w, d.nomi.get(t.chi) ?? []);
-        if (b >= 1 && a < 0 && preposizioni.has(w[b - 1]!)) return { testo: testo('prove.guardia.colpisce', { chi: nomeBreve(t.nome), bersaglio: nomeBreve(t.bersaglio!.nome) }), motivo: 'colpo_contrario' };
+        if (b >= 1 && a < 0 && preposizioni.has(w[b - 1]!)) {
+          const c: NonNullable<CorrezioneEsito> = { testo: testo('prove.guardia.colpisce', { chi: nomeBreve(t.nome), bersaglio: nomeBreve(t.bersaglio!.nome) }), motivo: 'colpo_assorbito' };
+          if (!d.osserva || !inOsservazione(c.motivo)) return c;
+          d.osserva(c);
+          break;
+        }
       }
     }
     // 2. A fall with no fact: a standing NPC with a sheet is the subject of a defeat word (not an idiom), and no NPC

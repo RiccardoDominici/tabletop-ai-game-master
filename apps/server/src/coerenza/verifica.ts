@@ -29,7 +29,7 @@ export type IdRegola = 'R-numeri' | 'R-esito' | 'R-fuori' | 'R-inesistente' | 'R
 export const REGOLE: readonly IdRegola[] = ['R-numeri', 'R-esito', 'R-fuori', 'R-inesistente', 'R-assente', 'R-finzione', 'R-privato', 'R-segreto', 'R-rifiuto', 'R-ripetuta', 'R-dovuto'];
 
 /** What the checker did with the sentence. */
-export type AzioneViolazione = 'riscritta' | 'sostituita' | 'tolta' | 'spostata' | 'aggiunta' | 'riparata';
+export type AzioneViolazione = 'riscritta' | 'sostituita' | 'tolta' | 'spostata' | 'aggiunta' | 'riparata' | 'osservata';
 
 export interface Violazione {
   turno: number;
@@ -99,6 +99,7 @@ const REGOLA_DI_MOTIVO: Record<NonNullable<CorrezioneEsito>['motivo'], IdRegola>
   caduta_senza_fatto: 'R-esito',
   fuori_gioco_agisce: 'R-fuori',
   creatura_inesistente: 'R-inesistente',
+  colpo_assorbito: 'R-esito',
 };
 
 /** The checker of one narration call (the answer, or its repair): it remembers what it has already replaced or said. */

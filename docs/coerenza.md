@@ -231,7 +231,8 @@ What round 2 shows:
 - The stall climbs S1 → S2 → S3 → hard S1 → S2 → S3 with the Engine's material at every level; still 13 «nothing
   new» counts in 14 turns, and the same S3 sentence twice.
 - Presence (bug 9) is not tracked when the narration has an NPC leave without `[esce]`.
-Fixed after round 2 (tests on invented fixtures, **not measured on the scripts**): R-inesistente judges the state per
+Fixed after round 2 (tests on invented fixtures, **not measured on the scripts**; both rules are now in observation,
+see «Verdict after two rounds»): R-inesistente judges the state per
 clause, and a state skips only where a body the noun could mean lies in the scene («Il goblin la ferisce alla spalla:
 …, e lei sente il sangue» is caught); the object of any verb («spinge il goblin», «che il goblin si volti»); no carry
 on relative pronouns (`inesistenti.relativi`: «Che fai?» stays); in a fight or after one in this visit every absent
@@ -241,6 +242,22 @@ it is only the subject (its line and its carried subject); the line of who is re
 turns. The absorbed-blow rule takes only a non-negated word and a target in a prepositional phrase («sulla spalla di
 Fulco»). Still open: R-fuori's whole-sentence state check («non si muove verso la scala» read as a state), presence
 without `[esce]` (bug 9), the NPCs the players invent (bug 9), the stall's repeated S3 sentence.
+
+## Verdict after two rounds, and rules in observation
+
+Two rounds did not meet the criterion, and the counts swing on close code (combat-manual 10 → 6, combat-auto 4 → 9):
+single runs cannot tell a fix from noise, so no third round of word-rule tuning. What the numbers support, in both
+rounds: the ledger and the «Cosa è vero adesso» block in every call; the audience split (0 private contents at the
+table in both rounds, against two games of four in the third pass); the stall's climb with the Engine's material
+(round 2); the first-audio latency within the bound; the out-of-play guard's crash fix (`70be54c`, the 7109235 runs).
+What they do not support: `R-inesistente` and the absorbed-blow branch of R-esito. Both are now **in observation**
+(`apps/server/src/coerenza/osservazione.ts`): they record what they would do (`azione: osservata` in
+narrazioni.jsonl with the line they would say, log «coherence: rule in observation, text left alone»; the Engine's
+added line of who is really there is recorded, not said) and the sentence goes on to the other rules unchanged; the
+panel lists only what was stopped. The «Cosa è vero adesso» row for an absent noun stays (input to the model, not a
+change of the table's text). They come back only if they win on a frozen replay set of sentences from the run
+folders, labelled once and scored offline, against the alternative of a small model's yes/no question on flagged
+sentences (next steps).
 
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a

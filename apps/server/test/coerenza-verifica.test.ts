@@ -156,7 +156,7 @@ describe('the checker with the whole server', () => {
     expect(t3.join(' ')).not.toMatch(/ride/);
   }, 20_000);
 
-  it('R-inesistente: a creature nobody here answers to is not hit nor acts; the table hears who is really there', async () => {
+  it('R-inesistente in observation: it records the line it would say, the text goes on to the other rules', async () => {
     prova = new Prova();
     const cartella = prova.campagna('prove');
     const copione = (t: number): string =>
@@ -181,20 +181,15 @@ describe('the checker with the whole server', () => {
     }
     const detto = (t: number): string => s.trascrizione.filter((v) => v.turno === t && v.tipo === 'narrazione').map((v) => v.testo).join(' ');
     const chi = 'Ruggero giace a terra, senza vita. Oltre a voi, in piedi qui si vede soltanto Bertoldo.';
-    // T2: the invented parry becomes the line; the rest of the narration stays; the line is not said twice.
-    expect(detto(2)).toContain(chi);
-    expect(detto(2)).not.toMatch(/ride/);
-    expect(detto(2)).toContain('Ida guarda il fiume.');
-    expect(detto(2).split(chi).length).toBe(2);
-    // T3: nothing invented and the line was heard last turn: not said again (round 2 said it in almost every turn;
-    // the Engine's addition before the invitation was seen live there, at most once in three turns now).
-    expect(detto(3)).not.toContain(chi);
+    // T2: the invented parry is left to R-fuori (the «sgherro» is the dead Ruggero): his state line, once.
+    expect(detto(2)).toContain('Ruggero giace a terra, senza vita.');
+    expect(detto(2)).not.toContain('Oltre a voi');
+    expect(detto(3)).not.toContain('Oltre a voi');
+    // What R-inesistente would have done: the replacement at T2, the Engine's addition at T3 (recorded, not said).
     const viste = prova.narrazioni().filter((r) => r['tipo'] === 'violazione' && r['regola'] === 'R-inesistente');
-    // (T2 also has the repair call for Corrado's unanswered action: the fake narrator says the same line, dropped.)
-    expect(viste.map((r) => [r['turno'], r['azione']])).toEqual([
-      [2, 'sostituita'],
-      [2, 'tolta'],
-    ]);
+    expect(viste.every((r) => r['azione'] === 'osservata')).toBe(true);
+    expect(viste.filter((r) => r['turno'] === 2 && r['frase'] === 'Lo sgherro con la lancia para il pugnale e ride.').map((r) => (r['sostituto'] as string[])[0])).toContain(chi);
+    expect(viste.filter((r) => r['turno'] === 3 && (r['dettaglio'] as { aggiunta?: boolean } | undefined)?.aggiunta).map((r) => (r['sostituto'] as string[])[0])).toEqual([chi]);
   }, 20_000);
 
   it('a repair that breaks the same rule is not said: the Engine line stays', async () => {

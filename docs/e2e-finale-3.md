@@ -202,7 +202,9 @@ not fixed there). The gaps found by that reading are in docs/coerenza.md, «Meas
 stall's reset and S1 filler; docs/coerenza.md, «Measured, round 2»). Same judge, quotes checked by hand. High-severity
 sentences heard, round 1 (definite + probable) → round 2: combat-manual 10 → 6, combat-auto 4 → 9, off the rails 3 → 1
 (plus 6 unsure: NPCs the players invented, voiced), stall 0 → 3. **Not ready, and no net gain over round 1**: the
-fixes moved the failures more than they removed them. Median first-audio 2.07 s (64 turns) against 2.43 s.
+fixes moved the failures more than they removed them. Median first-audio 2.07 s (64 turns) against 2.43 s. No third
+round of word-rule tuning: `R-inesistente` and the absorbed-blow rule are in observation (they record, the text is
+left alone) until a frozen replay set scores them (docs/coerenza.md, «Verdict after two rounds»).
 
 | # | Round 2 (one run each) |
 |---|---|
