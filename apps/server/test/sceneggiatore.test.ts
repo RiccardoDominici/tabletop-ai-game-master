@@ -92,12 +92,16 @@ describe('controllo delle battute dello sceneggiatore', () => {
     expect(r.accettate[0]).toMatchObject({ fino_al_turno: 6, richiede: { esito: { tipo: 'colpito', chi: null, bersaglio: 'png_oste' } } });
   });
 
-  it('in a fight an untagged line that tells a blow or a miss is refused; tagged, or outside a fight, it passes', () => {
+  it('in a fight an untagged line about a fighter that tells a blow or a miss is refused; narration about nobody passes', () => {
     const miss = (id: string, extra: Record<string, unknown> = {}): ReturnType<typeof battuta> => battuta({ id, chi: 'narratore', tipo: 'momento', testo: ['[narratore] La lancia passa a vuoto, lontano da tutti.'], ...extra });
-    const r = validaBattute(yaml([miss('sc_x_1'), miss('sc_x_2', { menzionati: ['png_guardia'], richiede: { esito: { tipo: 'mancato', chi: 'png_guardia' } } })]), { ...ctx, scontro: true });
+    const lotta = { ...ctx, scontro: true, combattenti: new Set(['png_guardia']) };
+    const r = validaBattute(yaml([miss('sc_x_1', { menzionati: ['png_guardia'] }), miss('sc_x_2', { menzionati: ['png_guardia'], richiede: { esito: { tipo: 'mancato', chi: 'png_guardia' } } })]), lotta);
     expect(r.scartate).toEqual([{ id: 'sc_x_1', motivo: expect.stringMatching(/racconta un esito \(«a vuoto»\) senza richiede\.esito/) }]);
     expect(r.accettate.map((b) => b.id)).toEqual(['sc_x_2']);
-    expect(validaBattute(yaml([miss('sc_x_1')]), ctx).scartate).toEqual([]);
+    // Round 6: «il buio cade», «il muro crollato» tell nobody's outcome.
+    const buio = battuta({ id: 'sc_x_3', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Il buio cade sulla torre, e il fumo sale.'] });
+    expect(validaBattute(yaml([buio]), lotta).scartate).toEqual([]);
+    expect(validaBattute(yaml([miss('sc_x_1', { menzionati: ['png_guardia'] })]), ctx).scartate).toEqual([]);
   });
 
   it('during a fight every line of a combatant declares richiede.esito, «nessuno» too; «nessuno» with an outcome word is refused', () => {
@@ -108,7 +112,7 @@ describe('controllo delle battute dello sceneggiatore', () => {
         battuta({ id: 'sc_x_3', testo: ['[png_oste] Ahi! Questa me la paghi!'], richiede: { esito: { tipo: 'ferito' } } }),
         battuta({ id: 'sc_x_4', testo: ['[png_oste] La tua lama passa a vuoto, ragazza.'], richiede: { esito: { tipo: 'nessuno' } } }),
       ]),
-      { ...ctx, scontro: true, combattenti: new Set(['png_oste']) },
+      { ...ctx, scontro: true, combattenti: new Set(['png_oste']), inLotta: true },
     );
     expect(r.accettate.map((b) => b.id)).toEqual(['sc_x_2', 'sc_x_3']);
     expect(r.scartate).toEqual([

@@ -67,7 +67,9 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
 - **voices**: only the narrator or a present NPC speaks;
 - **gates and state**: no `richiede` (except `richiede.stati` and `richiede.esito`) or `effetti`;
 - **outcomes in a fight**: while a fight is on, every line of a combatant (its speaker, a labelled row, or an actor)
-  declares `richiede.esito`, `nessuno` included, or it is refused; a `nessuno` line with an outcome word is refused too.
+  declares `richiede.esito`, `nessuno` included, or it is refused; a line by or about a fighter of this visit
+  (speaker, actor, or named) with an outcome word and no outcome (or `nessuno`) is refused too; narration about nobody
+  («il buio cade sulla torre») passes.
   The request says so (`scontro`) and asks, for each likely attack, a hit and a miss line with the same `quando`: the
   Engine says the one the card confirms, also for a `subito` answer. The refused lines are recorded with their text;
 - **stall lines**: `stallo: 1` or `3` only, at the level the request asks for (elsewhere the key is dropped and the

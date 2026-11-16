@@ -66,8 +66,13 @@ export interface ContestoValidazione {
   finoAlTurno?: number;
   /** A fight is on, or a blow was struck in this visit of the scene: an outcome line must carry richiede.esito. */
   scontro?: boolean;
-  /** A fight is on: the NPCs in it. Every line of one of them declares richiede.esito (`nessuno` included). */
+  /**
+   * The NPCs fighting in this visit of the scene (in the fight now, or who struck or were struck in it): the outcome
+   * words are checked only on their lines; with the fight on (`inLotta`) every line of theirs declares richiede.esito.
+   */
   combattenti?: ReadonlySet<string>;
+  /** A fight is on now. */
+  inLotta?: boolean;
   /** The request asked for stall lines of this level (sceneggiatore/protocollo.ts, `stallo`); else no stall tag. */
   stallo?: 1 | 3;
 }
@@ -187,8 +192,11 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     // During a fight every line of a combatant (its speaker, a labelled row, or an actor) declares its outcome, `nessuno`
     // included: round 5 heard «Zirrà: Ahi! … prendi questa» with no outcome word for a blow no card had.
     const combattente = ctx.combattenti && [b.chi, ...b.testo.map((r) => r.etichetta), ...(b.attori ?? [])].find((x) => ctx.combattenti!.has(x));
-    if (combattente && !b.richiede.esito) return void scartate.push({ id: b.id, motivo: `in combattimento una battuta di ${combattente} dichiara richiede.esito (anche nessuno)` }), false;
-    if (ctx.scontro && (!b.richiede.esito || b.richiede.esito.tipo === 'nessuno')) {
+    if (combattente && ctx.inLotta && !b.richiede.esito) return void scartate.push({ id: b.id, motivo: `in combattimento una battuta di ${combattente} dichiara richiede.esito (anche nessuno)` }), false;
+    // The outcome words only on a line by or about a fighter (speaker, actor, or one it talks of): round 6 refused
+    // narration like «il buio cade», «il muro crollato», which tells nobody's outcome.
+    const diLotta = combattente || (ctx.combattenti && b.menzionati.some((x) => ctx.combattenti!.has(x)));
+    if (ctx.scontro && diLotta && (!b.richiede.esito || b.richiede.esito.tipo === 'nessuno')) {
       const parola = paroleDiEsito(b.testo.map((r) => r.testo).join(' '));
       if (parola) return void scartate.push({ id: b.id, motivo: `racconta un esito («${parola}») senza richiede.esito` }), false;
     }

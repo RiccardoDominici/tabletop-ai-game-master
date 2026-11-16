@@ -2195,7 +2195,7 @@ export class Regia {
       entita: (this.diarioRegistro.registro ?? this.registroOra('sceneggiatore')).entita,
       ...(rq.tipo === 'subito' ? { finoAlTurno: rq.turno } : {}),
       scontro: !!this.prove?.inCombattimento || this.scontroInVisita === this.mondo.visita.ingresso || (this.storiaVisita.ingresso === this.mondo.visita.ingresso && this.storiaVisita.carte.length > 0),
-      ...(this.prove?.inCombattimento ? { combattenti: new Set((this.prove.vistaCombattimento()?.combattenti ?? []).filter((x) => x.di_png).map((x) => x.id)) } : {}),
+      ...this.combattentiDellaVisita(),
       ...(rq.stallo ? { stallo: rq.stallo.livello } : {}),
     });
     for (const b of v.accettate) {
@@ -2235,6 +2235,15 @@ export class Regia {
     const grezze = new Map(battuteGrezze(rs.yaml).map((b) => [String(b['id'] ?? ''), b['testo']]));
     const scartate = v.scartate.map((x) => (grezze.has(x.id) ? { ...x, testo: grezze.get(x.id) } : x));
     this.o.registroNarrazioni.scrivi({ ...riga, accettate: v.accettate.map((b) => ({ id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, temi: b.temi, testo: b.testo, ...fatti(b) })), scartate, ...(v.corrette?.length ? { corrette: v.corrette } : {}), consegnata, ...(subito ? { per_pg: subito.pg, azione: rq.azione?.testo ?? null, privata: subito.privata } : {}) });
+  }
+
+  /** The NPCs fighting in this visit of the scene, and whether a fight is on (sceneggiatore/valida.ts). */
+  private combattentiDellaVisita(): { combattenti?: ReadonlySet<string>; inLotta?: boolean } {
+    const pg = new Set(this.campagna.pg.map((p) => p.id));
+    const ids = new Set<string>();
+    if (this.prove?.inCombattimento) for (const x of this.prove.vistaCombattimento()?.combattenti ?? []) if (x.di_png) ids.add(x.id);
+    if (this.storiaVisita.ingresso === this.mondo.visita.ingresso) for (const k of this.storiaVisita.carte) for (const id of [k.chi, k.bersaglio]) if (!pg.has(id)) ids.add(id);
+    return ids.size ? { combattenti: ids, ...(this.prove?.inCombattimento ? { inLotta: true } : {}) } : {};
   }
 
   /**

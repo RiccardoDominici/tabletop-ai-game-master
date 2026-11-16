@@ -841,6 +841,8 @@ table only).
   «… al goblin che la sta», «… E tu, Berta, se tuo»). Test: test/annuncio-d4.test.ts.
 - In a fight a go-on with no verb («Ancora!», «Pugnale ancora») rolls against the PC's last target, like «lo colpisco
   ancora» (round 6, CM T11). Test: test/classificatore-regole.test.ts.
+- The outcome-word refusal only on a scriptwriter line by or about a fighter of this visit (speaker, actor, or named):
+  round 6 refused narration like «il buio cade», «il muro crollato». Test: test/sceneggiatore.test.ts.
 Tests: test/sceneggiatore.test.ts, test/sconfitta.test.ts. Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)
