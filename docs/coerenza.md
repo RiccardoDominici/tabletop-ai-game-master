@@ -847,6 +847,9 @@ table only).
   check): round 6's one H, CA T15, was a scriptwriter line that took a player's «Ho zero punti ferita» as true («Tre
   per terra»). The prompt says a player's claim about the PC is what they believe, and the real states are in «Cosa è
   vero adesso»; the Engine filters the line on the ledger like an NPC's. Test: test/fatti-battuta.test.ts.
+- Words to someone the campaign does not have («Chiedo a Oreste…», «Madre Carla, …») get the neutral «Oreste? Qui
+  nessuno conosce questo nome.» also with the scriptwriter on, and no NPC answers for them (round 6, FB T7, T11; see
+  «Characters the players invent»).
 Tests: test/sceneggiatore.test.ts, test/sconfitta.test.ts. Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)
@@ -861,8 +864,11 @@ evidence the dictation uses to learn a name. Dry run over the 380 actions of eve
   name with a neutral line before the invitation, once per name in a visit of the scene («Oreste? Qui nessuno conosce
   questo nome.», `coerenza.nome_nuovo`: neutral for a person or a place), and «Cosa è vero adesso» gets «Nessuno in
   scena si chiama Oreste: nessun PNG risponde a quel nome, non dargli voce.»; the log has «coherence: nobody here has
-  that name, said by the Engine» and narrazioni.jsonl a record `tipo: nome_inventato`. Not with the scriptwriter on:
-  writing what the repertoire lacks is its job. Tests: test/coerenza-nomi-nuovi.test.ts.
+  that name, said by the Engine» and narrazioni.jsonl a record `tipo: nome_inventato`. With the scriptwriter on, for a
+  name the action speaks to (`nomiRivolti`: a vocative, «chiedo a Oreste», «Sei Oreste?»; a mention, «il santuario di
+  Brychan», stays the scriptwriter's, with its pronunciation): round 6 had Ugo and Berta answer words to «Oreste» and
+  «Madre Carla». And in both cases no NPC line answers such an action unless it names that NPC (the reader's pick is
+  refused), and no `subito` is asked for it. Tests: test/coerenza-nomi-nuovi.test.ts.
 - **Mode A** (built): a minor improvised NPC may enter through `[nuovo png] Nome, ruolo` (parser
   `narrazione/parser.ts`; the narrator prompts it and en say when). The director (`improvvisatiDalNarratore`) takes one
   a response and at most 8 a session, never a name the campaign has, and only with an improvising narrator (mode B

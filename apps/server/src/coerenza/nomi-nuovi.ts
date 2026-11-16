@@ -15,6 +15,7 @@ import { formaPiana } from '../dettato/fonetica';
 import { paroleComuni, testiCampagna } from '../dettato/lingua';
 import type { Lingua } from '../lingua';
 import type { Repertorio } from '../repertorio/tipi';
+import { pngRivolti } from '../prove/parole-testo';
 
 const MAX_NOME = 40;
 
@@ -51,4 +52,14 @@ export function nomiNuovi(testo: string, n: NomiDellaCampagna): string[] {
     out.push(w.testo);
   }
   return out;
+}
+
+/**
+ * The invented names a text speaks to (round 6, FB T7: «Chiedo a Oreste se ha visto luci», «Madre Carla, sei una
+ * vecchia ladra»): called at the start of a sentence or after a preposition of speech (prove/parole-testo.ts,
+ * pngRivolti), or asked as a question («Sei Oreste?», «Madre Carla?»). A name only mentioned («il santuario di Brychan»)
+ * is not spoken to.
+ */
+export function nomiRivolti(testo: string, nomi: readonly string[]): string[] {
+  return nomi.filter((n) => pngRivolti(testo, new Map([[n, [n]]])).size > 0 || new RegExp(`(^|[\\s«"“(])${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\?`, 'u').test(testo));
 }

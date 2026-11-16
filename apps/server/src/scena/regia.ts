@@ -135,7 +135,7 @@ import { confermaDelMotore } from '../coerenza/risposta';
 import { guardiaAttori, type StoriaVisita } from '../coerenza/attori';
 import type { ModelloLinguaggio } from '../llm/modello';
 import { contestoMenzioni } from '../coerenza/menzioni';
-import { nomiDellaCampagna, nomiNuovi, type NomiDellaCampagna } from '../coerenza/nomi-nuovi';
+import { nomiDellaCampagna, nomiNuovi, nomiRivolti, type NomiDellaCampagna } from '../coerenza/nomi-nuovi';
 import { creatureAssenti, creatureNote, frasePresenti, guardiaInesistenti, nominateIn, rigaAssenti, type CreaturaAssente } from '../coerenza/inesistenti';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
@@ -2102,8 +2102,11 @@ export class Regia {
     if (!canale.vivo) return;
     const risposte = new Set(uscita.filter((u) => u.tipo === 'usa' && u.per && !s.repertorio.perId.get(u.id)?.riempitivo).map((u) => (u.tipo === 'usa' ? u.per! : '')));
     // Anche le azioni private: la risposta va al telefono di quel PG (canale [privato]).
+    const inventati = this.nomiInventati?.turno === turno ? this.nomiInventati.perAzione : null;
     for (const a of azioni) {
       if (!a.testo || a['sospesa'] === true || risposte.has(a.id_pg)) continue;
+      // Words to someone the campaign does not have: the Engine's neutral line is the answer, no NPC's.
+      if (inventati?.get(a.id_pg)?.length && !pngNominati(a.testo, this.nomiPng).size) continue;
       const privata = a['privata'] === true;
       const id = canale.nuovoId('subito', turno);
       if (canale.chiedi(this.richiestaSceneggiatore(id, 'subito', turno, 1, { id_pg: a.id_pg, nome: this.nomePg(a.id_pg), testo: a.testo, ...(privata ? { privata: true } : {}) }))) {
@@ -2410,6 +2413,13 @@ export class Regia {
       }
     }
     if (per !== perDato) this.pgDedotti += 1;
+    // The action speaks to someone the campaign does not have (and names no NPC present): no NPC answers in their place;
+    // the Engine's «Qui nessuno conosce questo nome.» does (round 6, FB T7: Ugo answered words addressed to «Oreste»).
+    const inventati = per && this.nomiInventati?.turno === turno ? this.nomiInventati.perAzione.get(per) : undefined;
+    if (!motore && inventati?.length && b.chi !== ID_NARRATORE) {
+      const testoAzione = t?.azioni.get(per!)?.testo ?? '';
+      if (!pngNominati(testoAzione, this.nomiPng).has(b.chi)) return { ok: false, motivo: `l'azione si rivolge a ${inventati.join(', ')}, che qui non c'è: nessun PNG risponde al suo posto` };
+    }
     // Un rilascio (indizio, confessione, verità, finale, o una battuta che rivela) esce solo per un'azione
     // che gli è pertinente (repertorio/rilascio.ts); se no al suo posto la deviazione del PNG. Il Motore
     // (finale a orologio pieno, segni) e le battute d'attesa non passano da qui.
@@ -3430,7 +3440,8 @@ export class Regia {
   }
 
   /** This turn's invented names, said once per name in a visit of the scene (mode B and the local reader only). */
-  private nomiInventati: { turno: number; nomi: string[] } | null = null;
+  /** `nomi`: the ones to say this turn (once per visit); `perAzione`: every invented name each PC's action used. */
+  private nomiInventati: { turno: number; nomi: string[]; perAzione: Map<string, string[]> } | null = null;
   private readonly nomiInventatiDetti = new Map<number, Set<string>>();
   private nomiCampagnaCache: NomiDellaCampagna | null = null;
 
@@ -3439,10 +3450,10 @@ export class Regia {
    * can bring a minor character in: mode B (the selector speaks only prepared lines) and the local reader. Each name
    * once per visit of the scene. Null when there is none.
    */
-  private nomiInventatiDelTurno(r: RiepilogoChiusura): { turno: number; nomi: string[] } | null {
+  private nomiInventatiDelTurno(r: RiepilogoChiusura): { turno: number; nomi: string[]; perAzione: Map<string, string[]> } | null {
     if (!this.statoRepertorio && this.o.narratore.nome !== 'minimo') return null;
-    // With the scriptwriter on, a new name is its job (it writes the lines the repertoire lacks, docs/sceneggiatore.md).
-    if (this.sceneggiatore) return null;
+    // With the scriptwriter on too (round 6, FB T7 and T11): it cannot bring a new character in (its lines are for the
+    // NPCs present), and an NPC present answered words addressed to «Oreste» and «Madre Carla».
     // The names of the pronunciation lexicon count as known too (a place or a god only the lexicon spells).
     this.nomiCampagnaCache ??= nomiDellaCampagna(this.o.campagna, linguaAttiva(), this.statoRepertorio?.repertorio, [
       ...leggiLessico(path.join(this.o.campagna.cartella, FILE_LESSICO)).map((v) => v.nome),
@@ -3450,12 +3461,23 @@ export class Regia {
     ]);
     const visita = this.mondo.visita.ingresso;
     const detti = this.nomiInventatiDetti.get(visita) ?? new Set<string>();
-    const nomi = [...new Set(r.azioni.filter((a) => !!a.testo && !a.privata).flatMap((a) => nomiNuovi(a.testo!, this.nomiCampagnaCache!)))].filter((n) => !detti.has(n));
-    if (!nomi.length) return null;
+    // With the scriptwriter on, only a name spoken to (a mention, «il santuario di Brychan», is its job: it writes the
+    // line and the name's pronunciation); without it, every invented name.
+    const perAzione = new Map(
+      r.azioni
+        .filter((a) => !!a.testo && !a.privata)
+        .map((a) => {
+          const nuovi = nomiNuovi(a.testo!, this.nomiCampagnaCache!);
+          return [a.autore, this.sceneggiatore ? nomiRivolti(a.testo!, nuovi) : nuovi] as const;
+        })
+        .filter(([, n]) => n.length > 0),
+    );
+    if (!perAzione.size) return null;
+    const nomi = [...new Set([...perAzione.values()].flat())].filter((n) => !detti.has(n));
     for (const n of nomi) detti.add(n);
     this.nomiInventatiDetti.set(visita, detti);
-    this.o.log.info({ turno: r.turno, nomi }, 'coherence: the actions name someone the campaign does not have');
-    return { turno: r.turno, nomi };
+    this.o.log.info({ turno: r.turno, nomi, per_azione: Object.fromEntries(perAzione) }, 'coherence: the actions name someone the campaign does not have');
+    return { turno: r.turno, nomi, perAzione };
   }
 
   /** The neutral line for each invented name, before the invitation. */
@@ -3802,7 +3824,7 @@ export class Regia {
     // The narrator hears that the noun the players used names nobody here (and the selector, through the same block).
     const rigaInesistenti = this.inesistenti ? rigaAssenti(this.inesistenti.pubbliche) : null;
     if (veroAdesso && rigaInesistenti) veroAdesso.righe.push(rigaInesistenti);
-    if (veroAdesso && this.nomiInventati?.turno === r.turno) veroAdesso.righe.push(testoFisso('coerenza.nome_nuovo_riga', { nomi: this.nomiInventati.nomi.join(', ') }));
+    if (veroAdesso && this.nomiInventati?.turno === r.turno) veroAdesso.righe.push(testoFisso('coerenza.nome_nuovo_riga', { nomi: [...new Set([...this.nomiInventati.perAzione.values()].flat())].join(', ') }));
     // The block as the narrator gets it, for the frozen replay set (esperimenti/coerenza/): the run logs of 16 November
     // let the ledger be rebuilt from its events, not the block itself.
     this.o.log.info({ turno: r.turno, righe: veroAdesso?.righe ?? [] }, 'coherence: block of the call');
@@ -4073,7 +4095,7 @@ export class Regia {
     const ines = this.inesistenti?.turno === turno ? this.inesistenti : null;
     // A name the players invented (mode B, the local reader): the Engine says nobody here has it (docs/coerenza.md).
     const inventati = this.nomiInventati?.turno === turno ? this.nomiInventati : null;
-    if (inventati && !controllo.signal.aborted) this.diciNomiInventati(turno, esito, inventati.nomi, log);
+    if (inventati?.nomi.length && !controllo.signal.aborted) this.diciNomiInventati(turno, esito, inventati.nomi, log);
     // With the yes/no judge, R-inesistente is only its fallback: its added line belongs to the rules alone.
     if (!giudice && ines && ines.pubbliche.length && !ines.detta && !controllo.signal.aborted) {
       // At most once in three turns: round 2 said the same line in almost every turn after the fight.
