@@ -1,0 +1,245 @@
+{
+ "nota": "Held-out labels (docs/coerenza.md): the third pass's own runs on 958556a (prima-*), labelled before any variant was scored on them, with the same rule as etichette.json.",
+ "etichette": {
+  "prima-torre-mozza-combattimento-B-automatico#8:3": {
+   "etichetta": "clean",
+   "perche": "Grosso's miss on Nespola, as his card says",
+   "testo": "Grosso brandisce la mazza verso Nespola, che si scansa, ma la mazza sfiora il selciato senza colpire."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#10:0": {
+   "etichetta": "clean",
+   "perche": "Grosso's fall is this turn's story",
+   "testo": "Nespola affonda la spada corta nella schiena di Grosso, e l'hobgoblin cade di faccia nel fango accanto al fuoco."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#24:0": {
+   "etichetta": "clean",
+   "perche": "Zirrà hesitates before her fall this turn",
+   "testo": "Livia abbassa lo scudo di un dito e guarda il goblin che esita."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#24:1": {
+   "etichetta": "clean",
+   "perche": "this turn's card",
+   "testo": "Livia colpisce Zirrà con la spada lunga."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#24:2": {
+   "etichetta": "clean",
+   "perche": "Zirrà's fall this turn",
+   "testo": "Il fendente entra nel fianco, e la goblin cade in ginocchio sul selciato."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#24:3": {
+   "etichetta": "clean",
+   "perche": "Zirrà lies still: a state",
+   "testo": "Zirrà resta a terra, la spada corta ancora in pugno, e non si muove più."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#24:4": {
+   "etichetta": "violation",
+   "perche": "a second goblin drops the mace: nobody else in play",
+   "testo": "Il secondo goblin, quello che esitava, lascia cadere la mazza e si schiaccia contro la parete."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#25:0": {
+   "etichetta": "violation",
+   "perche": "the invented goblin hit by the shield",
+   "testo": "Livia abbatte lo scudo sul goblin davanti a lei, e la lancia cade con un suono secco sul selciato."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#25:1": {
+   "etichetta": "violation",
+   "perche": "carried «lo»: the invented goblin",
+   "testo": "Il colpo di spada lunga lo ferma prima che si rialzi."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#25:2": {
+   "etichetta": "violation",
+   "perche": "foot on the invented goblin, question asked",
+   "testo": "Eliandro preme il piede sulla mano del goblin e si china, abbassando la voce."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#25:3": {
+   "etichetta": "violation",
+   "perche": "the invented goblin spits blood",
+   "testo": "Il goblin sputa sangue e fissa il piede, e Tonio, in fondo ai gradini, stringe il piccone un po' più forte."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#26:0": {
+   "etichetta": "violation",
+   "perche": "a question to the invented goblin",
+   "testo": "Eliandro, piano, chiede al goblin chi gli dà ordini."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#26:1": {
+   "etichetta": "violation",
+   "perche": "the invented goblin does not answer, its hand tightens",
+   "testo": "Il goblin non risponde, ma la sua mano si stringe sotto il piede."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#26:2": {
+   "etichetta": "violation",
+   "perche": "the invented last goblin pinned",
+   "testo": "Livia spinge lo scudo contro l'ultimo goblin e lo blocca alla porta."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#26:3": {
+   "etichetta": "violation",
+   "perche": "the invented goblin cannot move",
+   "testo": "Il legno geme, il goblin non riesce a muoversi."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#26:4": {
+   "etichetta": "violation",
+   "perche": "dead Zirrà speaks",
+   "testo": "Morta e ancora ha paura del capo."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#26:5": {
+   "etichetta": "violation",
+   "perche": "dead Zirrà speaks",
+   "testo": "Brutta cosa, vero?"
+  },
+  "prima-torre-mozza-combattimento-B-automatico#27:0": {
+   "etichetta": "violation",
+   "perche": "sword at the invented goblin's throat",
+   "testo": "Livia tiene la spada puntata alla gola del goblin, lo scudo premuto contro la porta."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#27:1": {
+   "etichetta": "violation",
+   "perche": "dead Zirrà speaks",
+   "testo": "Zirrà è morta, Livia."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#27:2": {
+   "etichetta": "violation",
+   "perche": "dead Zirrà speaks",
+   "testo": "Il goblin, invece, ha ancora fiato."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#27:3": {
+   "etichetta": "violation",
+   "perche": "the invented goblin swallows",
+   "testo": "Il goblin deglutisce, lo sguardo che corre dalla spada al piede di Eliandro e ritorna."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#27:4": {
+   "etichetta": "violation",
+   "perche": "the invented goblin trembles",
+   "testo": "Livia sente il goblin tremare sotto la punta della lama, e il respiro si fa corto."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#27:5": {
+   "etichetta": "violation",
+   "perche": "the invented goblin's hand closes",
+   "testo": "Il goblin non alza la voce, ma la sua mano si chiude sul selciato, come se volesse nascondere qualcosa."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#11:0": {
+   "etichetta": "clean",
+   "perche": "this turn's card on Grosso",
+   "testo": "Nespola affonda la spada corta alle spalle di Grosso, sotto la pelle d'orso."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#11:1": {
+   "etichetta": "clean",
+   "perche": "Grosso's fall this turn",
+   "testo": "L'hobgoblin barcolla, lascia cadere la mazza e crolla in ginocchio sulla pietra."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#20:1": {
+   "etichetta": "clean",
+   "perche": "Zirrà's fall this turn",
+   "testo": "La lama vola nel buio e colpisce: Zirrà cade a terra, senza più forze."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#20:3": {
+   "etichetta": "clean",
+   "perche": "both lie still: a state",
+   "testo": "Grosso e Zirrà giacciono immobili sulla pietra."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#21:0": {
+   "etichetta": "violation",
+   "perche": "Livia orders goblins that are not there",
+   "testo": "Livia alza la voce e intima ai goblin di fermarsi."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#22:0": {
+   "etichetta": "violation",
+   "perche": "foot on the invented goblin, question asked",
+   "testo": "Eliandro preme il piede sul goblin e chiede dove sia il ragazzo."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#22:1": {
+   "etichetta": "violation",
+   "perche": "carried «La creatura»: it looks at the cellar",
+   "testo": "La creatura non risponde subito: guarda verso la cantina."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#22:3": {
+   "etichetta": "violation",
+   "perche": "the invented goblin lowers its spear",
+   "testo": "Il goblin davanti a lei, senza più il compagno a guardarlo, abbassa la lancia di un dito."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#23:0": {
+   "etichetta": "violation",
+   "perche": "the invented goblin's spear struck",
+   "testo": "Livia abbassa la spada lunga sulla lancia del goblin davanti a lei."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#23:1": {
+   "etichetta": "violation",
+   "perche": "carried «lo»: the invented goblin thrown",
+   "testo": "Il colpo lo getta contro il muro, e la lancia cade sulla pietra."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#23:2": {
+   "etichetta": "violation",
+   "perche": "speaking to the invented goblin",
+   "testo": "Eliandro si china verso il goblin e gli parla piano, con il piede ancora sul suo petto."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#23:3": {
+   "etichetta": "violation",
+   "perche": "Berta, at the farm, speaks at the tower",
+   "testo": "Chi vi dà ordini?"
+  },
+  "prima-torre-mozza-combattimento-B-manuale#23:4": {
+   "etichetta": "violation",
+   "perche": "Berta, at the farm, speaks at the tower",
+   "testo": "Dimmelo, e puoi scappare."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#23:5": {
+   "etichetta": "violation",
+   "perche": "the invented goblin does not speak",
+   "testo": "Il goblin non parla."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#23:6": {
+   "etichetta": "violation",
+   "perche": "carried: the invented goblin looks",
+   "testo": "Guarda verso la cantina, dove Tonio sta in silenzio."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#24:0": {
+   "etichetta": "violation",
+   "perche": "the invented last goblin pushed",
+   "testo": "Livia spinge l'ultimo goblin contro la porta di ferro, con lo scudo alzato."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#24:1": {
+   "etichetta": "violation",
+   "perche": "«la creatura» slips aside: invented",
+   "testo": "Il colpo non fa presa: la creatura scivola di lato e il ferro della porta risuona."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#24:2": {
+   "etichetta": "violation",
+   "perche": "the invented goblin cowers",
+   "testo": "Il goblin si rannicchia contro il battente e non alza più la lancia."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#25:0": {
+   "etichetta": "violation",
+   "perche": "sword on the invented goblin's chest",
+   "testo": "Livia abbassa la punta della spada sul petto del goblin."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#25:1": {
+   "etichetta": "violation",
+   "perche": "the invented goblin feels it",
+   "testo": "La lama non tocca la pelle, ma il goblin lo sente lo stesso."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#25:2": {
+   "etichetta": "violation",
+   "perche": "the invented goblin looks up",
+   "testo": "Il goblin alza gli occhi verso di lei, poi verso la cantina, dove il respiro di Tonio si è fermato."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#25:3": {
+   "etichetta": "violation",
+   "perche": "carried: the invented goblin speaks",
+   "testo": "Parla piano, in fretta, e la voce gli trema."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#25:4": {
+   "etichetta": "violation",
+   "perche": "carried: the invented goblin says the boy was taken",
+   "testo": "Dice che il ragazzo è stato portato via, ma non dice da chi."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#14:0": {
+   "etichetta": "clean",
+   "perche": "talk about goblins elsewhere",
+   "testo": "Livia Sarti chiede a Oreste, sottovoce, quanto lo pagano i goblin, e gli offre una mano con le pecore."
+  },
+  "prima-torre-mozza-fuori-binario-B-manuale#14:3": {
+   "etichetta": "clean",
+   "perche": "Ugo speaks of goblins elsewhere",
+   "testo": "Io non parlo coi goblin, né con voi."
+  }
+ }
+}
