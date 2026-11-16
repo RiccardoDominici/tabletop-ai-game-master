@@ -105,6 +105,19 @@ function unico<T>(xs: ReadonlyArray<{ x: T; n: number }>): T | null {
 }
 
 /**
+ * A short go-on with no verb in the action's first clause («Ancora!», «Pugnale ancora»; `attacco_ancora` of the pack):
+ * the words alone, or after one word that is one of the PC's weapons (its id's words). Round 6, CM T11: «Pugnale
+ * ancora, il goblin si gira verso di me» got no roll.
+ */
+function attaccoAncora(fatti: string, armi: readonly string[]): boolean {
+  const primo = normalizza(fatti.split(/[,;:.!?…]/)[0] ?? '').replace(/[^\p{L}\p{N}' ]/gu, ' ').replace(/\s+/g, ' ').trim();
+  const m = paroleProve().attaccoAncora.exec(primo);
+  if (!m) return false;
+  const parola = m[1];
+  return !parola || armi.some((a) => a.split(/[_\s]+/).map(normalizza).includes(parola));
+}
+
+/**
  * Step 1 alone (attack): an attack gesture or a weapon of the sheet that is USED, against an NPC with a sheet named in
  * what the PC does. Deterministic: the Engine applies it after ANY arbiter (Haiku included), because in the second
  * pass of the final end-to-end run Haiku gave «no roll» to «Lancio il dardo incantato contro il goblin che sta
@@ -117,7 +130,7 @@ export function attaccoDiRegole(az: { id: string; testo: string; autore: string 
   // In a fight, the PC's own attack in the first person with no target named («lo colpisco ancora», «carico quello al
   // centro»): its last target, so the attack is rolled (round 5: «nessun tiro» for five declared attacks). Only the
   // first-person words (`attacco_mio`): «il goblin mi colpisce» is a player's claim, not an attack.
-  const bersaglio = nominato ?? (i.bersaglioImplicito && paroleProve().attaccoMio.test(normalizza(fatti)) ? i.bersaglioImplicito(az.autore) : null);
+  const bersaglio = nominato ?? (i.bersaglioImplicito && (paroleProve().attaccoMio.test(normalizza(fatti)) || attaccoAncora(fatti, i.armi(az.autore))) ? i.bersaglioImplicito(az.autore) : null);
   if (!bersaglio) return null;
   if (!nominato) return { ...vuota(az.id), tipo: 'attacco', bersaglio, arma: i.armi(az.autore).find((a) => armaUsata(fatti, [a])) ?? null } as DecisioneProva;
   const arma = i.armi(az.autore).find((a) => armaUsata(fatti, [a])) ?? null;

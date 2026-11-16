@@ -839,6 +839,8 @@ table only).
   someone else's; after a colon the clause is the PC's speech and stays), and it is never cut mid-phrase: a sentence up
   to six words past the twelve is said whole, and a following sentence is joined only if it fits whole (round 6 cut
   «… al goblin che la sta», «… E tu, Berta, se tuo»). Test: test/annuncio-d4.test.ts.
+- In a fight a go-on with no verb («Ancora!», «Pugnale ancora») rolls against the PC's last target, like «lo colpisco
+  ancora» (round 6, CM T11). Test: test/classificatore-regole.test.ts.
 Tests: test/sceneggiatore.test.ts, test/sconfitta.test.ts. Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)

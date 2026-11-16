@@ -227,7 +227,9 @@ test/gregari.test.ts.
      person with no target named («lo colpisco ancora», «carico quello al centro»: `parole.attacco_mio` of
      `lingue/<code>/prove.yaml`, whole words) goes to that PC's last target if it is still standing, else to the first
      enemy standing in the turn order (`GestoreCombattimento.bersaglioImplicito`): round 5 of the coherence layer had
-     five such declared attacks resolved as «nessun tiro». A player's claim («il goblin mi colpisce») is not an attack;
+     five such declared attacks resolved as «nessun tiro». So does a short go-on with no verb, the action's first clause
+     being only `parole.attacco_ancora` («Ancora!») or a weapon of the PC's sheet and those words («Pugnale ancora»;
+     round 6, CM T11). A player's claim («il goblin mi colpisce») is not an attack;
      an invented foe («quello con la lancia») is rolled against a real enemy.
    - Speech is not a perception check (`soloParlato`, after every arbiter): an action that is speech only (speech
      removed, what is left are ways of saying it, `parole.modi_del_dire`: «sottovoce», «a bassa voce», «mi avvicino»,

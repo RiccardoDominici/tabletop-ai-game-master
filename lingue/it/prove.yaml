@@ -221,6 +221,9 @@ parole:
   # The PC's own attack in the first person, also with no target named («lo colpisco ancora», «carico quello al
   # centro»): in a fight the Engine gives it the PC's last target (prove/classificatore-regole.ts). Whole words.
   attacco_mio: [colpisco, colpiamo, attacco, attacchiamo, ferisco, feriamo, accoltello, trafiggo, sparo, scocco, affondo, carico, carichiamo, 'tiro (ancora|di nuovo|un fendente|un colpo|una freccia|un dardo|un pugno|il pugnale|la lancia)', 'lancio (il|la|un|una) (pugnale|coltello|lancia|sasso|dardo)', 'mi (lancio|getto|scaglio) (contro|addosso)', '(gli|le) (do|tiro|mollo) un (pugno|calcio|colpo|fendente)']
+  # A short go-on with no verb («Ancora!», «Pugnale ancora»: these words alone, or after a weapon of the PC's sheet): in
+  # a fight the same PC's attack again, at its last target (round 6, CM T11).
+  attacco_ancora: [ancora, di nuovo, ancora una volta, un altro colpo, ancora un colpo]
   # Aiutare un compagno (con il nome di un PG che agisce nello stesso turno).
   aiuto: ['aiuto\b', 'do una mano a\b', 'copro\b', 'sostengo\b', 'faccio luce a\b']
   # L'arma scelta dall'arbitro (id in snake_case) che vuol dire «a mani nude»: qualsiasi punto dell'id.

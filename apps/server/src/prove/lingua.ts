@@ -42,6 +42,8 @@ export interface PacchettoProve {
     attacco: string[];
     /** The PC's own attack in the first person (whole words): an attack with no target named, in a fight. */
     attacco_mio?: string[];
+    /** A short go-on with no verb (whole clause, or after a weapon of the sheet): the PC's attack again, in a fight. */
+    attacco_ancora?: string[];
     aiuto: string[];
     senz_armi: string[];
     /** Parole intere dell'arbitro a regole (prove/parole-testo.ts). */
@@ -92,6 +94,8 @@ export interface ParoleCompilate {
   attacco: RegExp;
   /** `attacco_mio`, whole words. */
   attaccoMio: RegExp;
+  /** `attacco_ancora`: the words that make the whole clause, after an optional word (the weapon). */
+  attaccoAncora: RegExp;
   aiuto: RegExp;
   /** Sull'id dell'arma scelta dall'arbitro (snake_case), in qualsiasi punto. */
   senzArmi: RegExp;
@@ -119,6 +123,7 @@ export function paroleProve(): ParoleCompilate {
       abilita: Object.entries(parole.abilita).map(([abilita, voci]) => ({ abilita, re: inizioParola(voci) })),
       attacco: inizioParola(parole.attacco),
       attaccoMio: parole.attacco_mio?.length ? new RegExp(`\\b(${parole.attacco_mio.join('|')})\\b`) : MAI,
+      attaccoAncora: parole.attacco_ancora?.length ? new RegExp(`^(?:(\\S+)\\s+)?(?:${parole.attacco_ancora.join('|')})$`) : MAI,
       aiuto: inizioParola(parole.aiuto),
       senzArmi: parole.senz_armi.length ? new RegExp(parole.senz_armi.join('|')) : MAI,
       seDifficile: Object.entries(parole.abilita_se_difficile ?? {}).map(([abilita, voci]) => ({ abilita, re: inizioParola(voci) })),

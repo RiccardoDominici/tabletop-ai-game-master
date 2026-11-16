@@ -45,6 +45,11 @@ describe('arbitro a regole, SRD', () => {
     expect(cf('Lo colpisco ancora, poi mi sposto.')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
     expect(cf('Carico quello al centro, spada in pugno!')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
     expect(cf('Il goblin mi colpisce alla spalla, sento sangue.')).not.toMatchObject({ tipo: 'attacco' });
+    // Round 6: a go-on with no verb, alone or after a weapon of the sheet.
+    expect(cf('Ancora!')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
+    expect(cf('Balestra ancora, poi mi riparo.')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
+    expect(cf('Ancora non capisco cosa vuole.')).not.toMatchObject({ tipo: 'attacco' });
+    expect(cf('Fiume ancora.')).not.toMatchObject({ tipo: 'attacco' });
     // Outside a fight (no implicit target) nothing changes.
     expect(cl('pg_corrado', 'Lo colpisco ancora, poi mi sposto.')).not.toMatchObject({ tipo: 'attacco' });
   });
