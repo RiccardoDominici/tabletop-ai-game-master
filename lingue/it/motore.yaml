@@ -16,7 +16,7 @@ annuncio:
   fuori: '{nome} non agisce.'
   # Un inciso o una frase che afferma lo stato del mondo o del PG invece di dire cosa fa («Ho zero punti ferita»,
   # «Vedo tre goblin», «sento sangue») non si annuncia (flag i, in testa all'inciso).
-  affermazione: '^(non\s+)?(ho|sono|sento|vedo|credo|penso|sembra|mi sembra|c''è|ci sono|c''era)\b'
+  affermazione: '^(io\s+)?(non\s+)?(ho|sono|sento|vedo|credo|penso|sembra|mi sembra|c''è|ci sono|c''era)\b'
   # Un inciso che ha per soggetto qualcun altro («Il goblin mi tira la lancia», «La lancia mi colpisce»): non si
   # annuncia. Gli articoli che possono essere pronomi («la paro», «lo colpisco») contano solo davanti a una parola
   # che non è un verbo in prima persona (flag i, in testa all'inciso).

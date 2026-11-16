@@ -155,6 +155,20 @@ describe('the announcement is the player\'s words, not the narrator\'s assertion
     expect(righe).toEqual([['Ida Marchi dice: «Carico quello al centro, spada in pugno».', true], ['Il ponte scricchiola.', false]]);
   });
 
+  it('a question in the announcement reaches the voice as one sentence, still attributed', async () => {
+    const voce: string[] = [];
+    const pipeline = { accoda: (f: { testo: string }) => voce.push(f.testo), effettoFineTurno: () => undefined } as unknown as PipelineVoce;
+    const campagna = { png: [{ id: 'png_ruggero', nome: 'Ruggero', voce_id: 'v_ruggero' }], pg: [{ id: 'pg_ida', nome: 'Ida Marchi' }], alias: {} } as never;
+    const annuncio = annuncioBreve('Ida Marchi', 'Ruggero, chi ti paga?');
+    expect(annuncio).toBe('Ida Marchi dice: «Chi ti paga?».');
+    const esito = await narraTurno(
+      { campagna, narratore: narratore(`[narratore] ${annuncio}\n[invito] tutti`), pipeline, log: pino({ level: 'silent' }) as never },
+      { turno: 4, sistema: [], messaggio: '', signal: new AbortController().signal, misuratore: new MisuratoreTurno(4, 0, 0, 'mock', 0), ora: () => Date.now(), onFrase: () => undefined, pronuncia: (t) => t, lineeDette: new Set(), dati: { azioni: [{ id_pg: 'pg_ida', nome: 'Ida Marchi', testo: 'Ruggero, chi ti paga?' }] } as never },
+    );
+    expect(voce).toEqual(['Ida Marchi dice: «Chi ti paga?».']);
+    expect(esito.uscita.filter((u) => u.tipo === 'improvvisata').map((u) => u.tipo === 'improvvisata' && u.attribuita)).toEqual([true]);
+  });
+
   it('no fact rule on a sentence inside it; the same words as a narrator sentence are judged', async () => {
     const goblin = (t: string): CorrezioneEsito => (t.includes('sgherro') ? { testo: 'Ruggero giace a terra, senza vita.', motivo: 'creatura_inesistente' } : null);
     const dati = { azioni: [{ id_pg: 'pg_ida', nome: 'Ida Marchi', testo: 'Spingo lo sgherro contro il ponte.' }] };

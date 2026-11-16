@@ -22,7 +22,7 @@ describe('annunci D4, italiano', () => {
     ['Livia Sarti', 'Scudo contro scudo, tiro la spada su quello in fondo.', 'Livia Sarti dice: «Scudo contro scudo, tiro la spada su quello».'],
     ['Livia Sarti', 'Anch’io, Ugo: parla, o la milizia ti trova in fretta.', 'Livia Sarti dice: «Parla, o la milizia ti trova in fretta».'],
     ['Nespola Tondi', 'Ugo! Mi devi tre argenti. Dimmi la strada per la torre o te li riscuoto davanti a tutti.', 'Nespola Tondi dice: «Mi devi tre argenti».'],
-    ['Livia Sarti', "Berta, quando hai visto Tonio per l'ultima volta? E chi sapeva della chiave, oltre a te?", "Livia Sarti dice: «Quando hai visto Tonio per l'ultima volta»."],
+    ['Livia Sarti', "Berta, quando hai visto Tonio per l'ultima volta? E chi sapeva della chiave, oltre a te?", "Livia Sarti dice: «Quando hai visto Tonio per l'ultima volta?»."],
     ['Nespola Tondi', 'Ne arriva un altro: lo colpisco di nuovo, poi gli passo alle spalle.', 'Nespola Tondi dice: «Ne arriva un altro: lo colpisco di nuovo».'],
   ];
   it.each(casi)('%s: «%s»', (nome, testo, atteso) => {
@@ -40,8 +40,18 @@ describe('annunci D4, italiano', () => {
     ['Nespola Tondi', 'Il goblin mi prende alla spalla, sento sangue. Indietreggio ma resto in piedi.', 'Nespola Tondi dice: «Indietreggio ma resto in piedi».'],
     ['Livia Sarti', 'Vedo tre goblin davanti alla porta. Io carico dopo di lei, scudo avanti.', 'Livia Sarti dice: «Io carico dopo di lei, scudo avanti».'],
     ['Livia Sarti', 'Il goblin davanti esita, guarda il compagno. Non lo colpisco ancora, aspetto la risposta.', 'Livia Sarti dice: «Non lo colpisco ancora, aspetto la risposta».'],
-    ['Livia Sarti', 'Ehi goblin! Chi vi paga? Fermatevi, e nessuno si fa più male!', 'Livia Sarti dice: «Chi vi paga».'],
+    ['Livia Sarti', 'Ehi goblin! Chi vi paga? Fermatevi, e nessuno si fa più male!', 'Livia Sarti dice: «Chi vi paga?».'],
   ])('claims and someone else\'s acts are not announced: %s, «%s»', (nome, testo, atteso) => {
+    expect(annuncioBreve(nome, testo)).toBe(atteso);
+  });
+
+  // Round 5 (docs/coerenza.md): «Io sono lento» and «Io sono la più veloce di tutti» were announced; a question lost its «?».
+  it.each([
+    ['Eliandro', 'Io sono lento, resto dietro la pietra.', 'Eliandro dice: «Resto dietro la pietra».'],
+    ['Nespola Tondi', 'Io sono la più veloce di tutti, vado per prima: passo di lato.', 'Nespola Tondi dice: «Vado per prima: passo di lato».'],
+    ['Nespola Tondi', 'Sono il capo qui. Apro la porta.', 'Nespola Tondi dice: «Apro la porta».'],
+    ['Fulco Granito', 'Sei Oreste?', 'Fulco Granito dice: «Sei Oreste?».'],
+  ])('identity and status claims are left out; a question keeps its «?»: %s, «%s»', (nome, testo, atteso) => {
     expect(annuncioBreve(nome, testo)).toBe(atteso);
   });
 
@@ -75,5 +85,9 @@ describe('annunci D4, inglese', () => {
     expect(annuncioBreve('Tobin', 'I sit by the fire and listen to what the guard says.')).toBe('Tobin says: “I sit by the fire and listen.”');
     expect(annuncioBreve('Ginestra', 'I shoot an arrow at the goblin towards the gate of the old ruined tower')).not.toMatch(/\b(towards|the|at)\.$/);
     expect(annuncioBreve('Ida', 'lol ok')).toBe('Ida acts.');
+    // «I'm» + an -ing verb is an act; anything else after it is a claim. A question keeps «?», with no «?.».
+    expect(annuncioBreve('Mara', "I'm the fastest, I go first.")).toBe('Mara says: “I go first.”');
+    expect(annuncioBreve('Mara', "I'm going down the stairs.")).toBe('Mara says: “I\'m going down the stairs.”');
+    expect(annuncioBreve('Mara', 'Who pays you?')).toBe('Mara says: “Who pays you?”');
   });
 });

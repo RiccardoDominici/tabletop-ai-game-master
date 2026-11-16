@@ -13,7 +13,8 @@ annuncio:
   # A PC out of play when the window closed (0 HP, dead): it does not act, and what it wrote is not said.
   fuori: '{nome} does not act.'
   # A clause that states the world or the PC's state instead of saying what the PC does: not announced (flag i).
-  affermazione: '^(i\s+(have|feel|see|hear|think|believe|guess)|there\s+(is|are|was|were)|it\s+is|it''s)\b'
+  # «I am / I'm» followed by an -ing verb is an act («I'm going down»); anything else is a claim («I'm the fastest»).
+  affermazione: '^(i\s+(have|feel|see|hear|think|believe|guess)|i\s+am\s+(?!\w+ing\b)|i''m\s+(?!\w+ing\b)|there\s+(is|are|was|were)|it\s+is|it''s)\b'
   # A clause whose subject is someone else («The goblin throws its spear at me»): not announced (flag i).
   terza_parte: '^(the|a|an|this|that|these|those|he|she|they|it|his|her|their|its|everyone|someone|somebody)\b'
   # A clause that is the PC's own act in the first person («I block it»): after someone else's clause, the

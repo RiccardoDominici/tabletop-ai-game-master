@@ -107,9 +107,10 @@ every local server URL has a watchdog, started by the first request of a local m
   little box."), in English «Ginestra says: "I open the door."». (The English pack used to turn the first person into
   the third, «Ginestra opens the door.», which told the act as done before any roll; the turn stays a pack option,
   `terza_persona`, off in both packs.) A clause that states the world or the
-  PC's state («Ho zero punti ferita», «Vedo tre goblin») or has someone else as subject («Il goblin mi tira la
+  PC's state («Ho zero punti ferita», «Vedo tre goblin», «Io sono il più veloce») or has someone else as subject («Il goblin mi tira la
   lancia») is left out: round 4 of the coherence layer heard 7 such claims in the narrator's voice
-  (docs/coerenza.md). A PC out of play says «Ida non agisce.». The rules are in `lingue/<codice>/motore.yaml`
+  (docs/coerenza.md). A PC out of play says «Ida non agisce.». A question the player asked whole keeps its «?» («Ida dice:
+  «Chi ti paga?».»). The rules are in `lingue/<codice>/motore.yaml`
   (`annuncio`). Private actions are never announced; the coherence rules do not judge the announcement (they are the
   player's words).
 - The turn reaches it as data (`RichiestaNarrazione.dati`, the same object from which `narrazione/messaggio.ts`

@@ -200,20 +200,23 @@ function contenuto(frase: string, r: RegoleAnnuncio): number {
  * Le frasi del testo (fino a . ! ? …), senza spezzare sul punto di un'abbreviazione («Mr. Hale»).
  * `compiuta`: finisce con ! o ? (un'esclamazione o una domanda è già un'azione intera: non si unisce alla dopo).
  */
-function frasi(t: string, r: RegoleAnnuncio): string[] & { compiuta?: boolean[] } {
-  const out: string[] & { compiuta?: boolean[] } = [];
+function frasi(t: string, r: RegoleAnnuncio): string[] & { compiuta?: boolean[]; domanda?: boolean[] } {
+  const out: string[] & { compiuta?: boolean[]; domanda?: boolean[] } = [];
   out.compiuta = [];
+  out.domanda = [];
   let corrente = '';
   for (const pezzo of t.split(/(?<=[.!?…]["»”]?)\s+/)) {
     corrente = corrente ? `${corrente} ${pezzo}` : pezzo;
     const ultima = nuda(pezzo.split(' ').at(-1) ?? '').toLowerCase();
     if (/\.$/.test(pezzo) && r.abbreviazioni.has(ultima)) continue;
     out.compiuta.push(/[!?]["»”]?$/.test(corrente));
+    out.domanda.push(/\?[!?]*["»”]?$/.test(corrente));
     out.push(corrente.replace(/[.!?…]+["»”]?$/, '').trim());
     corrente = '';
   }
   if (corrente.trim()) {
     out.compiuta.push(false);
+    out.domanda.push(/\?[!?]*["»”]?$/.test(corrente.trim()));
     out.push(corrente.replace(/[.!?…]+["»”]?$/, '').trim());
   }
   return out;
@@ -273,6 +276,9 @@ export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = re
   while (frase && !tutte.compiuta?.[k - 1] && contenuto(frase, r) < r.minContenuto && k < tutte.length && frase.split(' ').length < max && !nonDelPg(tutte[k]!, r)) frase = `${frase}. ${tutte[k++]}`;
   let parole = frase.split(' ').filter(Boolean);
   while (parole.length > 1 && r.congiunzioni?.test(nuda(parole[0]!))) parole.shift();
+  // The player asked: the announcement keeps the question mark if the question is said whole (round 5: «Sei Oreste»).
+  const intere = parole.length;
+  const domanda = !!frase && !!tutte.domanda?.[k - 1];
   if (parole.length > max) {
     // L'ultimo confine di inciso prima del limite che dice ancora abbastanza.
     let taglio = -1;
@@ -294,7 +300,8 @@ export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = re
     }
   }
   while (parole.length > 1 && (r.nonFinali?.test(nuda(parole.at(-1)!)) || !/\p{L}|\p{N}/u.test(nuda(parole.at(-1)!)))) parole.pop();
-  return parole.join(' ').replace(/[\s,;:'’-]+$/, '').trim();
+  const fine = parole.join(' ').replace(/[\s,;:'’-]+$/, '').trim();
+  return domanda && parole.length === intere && fine ? `${fine}?` : fine;
 }
 
 /**
@@ -319,7 +326,8 @@ export function annuncioBreve(nome: string, testo: string, fuori = false): strin
   if (!frase || contenuto(frase, r) === 0) return riempi(r.vuoto, { nome });
   const terza = r.terza ? inTerzaPersona(frase, r.prima) : null;
   if (terza) return riempi(r.terza, { nome, frase: terza });
-  return riempi(r.citazione, { nome, frase: senzaVirgolette(`${frase.charAt(0).toUpperCase()}${frase.slice(1)}`) });
+  // A question keeps its «?»; no full stop right after it inside the quotes («Who pays you?”», not «?.”»).
+  return riempi(r.citazione, { nome, frase: senzaVirgolette(`${frase.charAt(0).toUpperCase()}${frase.slice(1)}`) }).replace(/\?\.(["»”])/u, '?$1');
 }
 
 /**

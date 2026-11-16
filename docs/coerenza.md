@@ -749,6 +749,10 @@ Zirrà's words (CA T8); the reader's refused pick at FB T5 («pagava» against t
 - Two words out of the Italian outcome lists (`lingue/it/motore.yaml`): «centr» is now «centra» (it read «al centro»
   as a hit) and «crollo» is no longer a defeat word (8 of the 21 scriptwriter lines refused for an untagged outcome
   said «dal crollo», a ruin of the tower). Tests: test/coerenza-prima-frase.test.ts, test/fatti-dovuti.test.ts.
+- The announcement leaves out an identity or status claim that opens with «Io» («Io sono lento», «Io sono la più veloce
+  di tutti»: «Io» made it look like the PC's own act; in English «I'm»/«I am» unless an -ing verb follows), and keeps
+  the «?» of a question the player asked whole («Fulco Granito dice: «Sei Oreste?».»; round 5 said «Sei Oreste» as a
+  statement). Tests: test/annuncio-d4.test.ts, test/coerenza-prima-frase.test.ts.
 Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)
