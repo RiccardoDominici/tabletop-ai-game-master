@@ -250,6 +250,9 @@ function nonDelPg(inciso: string, r: RegoleAnnuncio): boolean {
  *   una congiunzione fra le ultime tre;
  * - mai una chiusa su articolo, preposizione, congiunzione o avverbio che regge («…prima degli», «…con»).
  */
+/** How many words a first clause may go past the limit to be said whole rather than cut mid-phrase. */
+const MARGINE_CLAUSOLA = 6;
+
 export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = regoleAnnuncio()): string {
   const tutte = frasi(testo, r);
   let k = 0;
@@ -262,6 +265,11 @@ export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = re
     // After someone else's clause, what follows with no subject is still theirs («…esita, guarda il compagno»): the
     // announcement starts again only at the PC's own act in the first person («…, la paro con lo scudo»).
     if (altrui) while (incisi.length && !r.attoDelPg?.test(incisi[0]!.replace(/^[«"“(]+/, '').trim())) incisi.shift();
+    // Only the PC's own words: a later clause that is a claim or someone else's act ends the announcement («Pugnale
+    // ancora, il goblin si gira verso di me»; round 6, CM T11).
+    // After a colon the PC is saying something («Dico agli altri: i goblin non sanno…»): that clause is its words.
+    const fino = incisi.findIndex((x, i) => i > 0 && !/:$/.test(incisi[i - 1]!) && nonDelPg(x, r));
+    if (fino > 0) incisi.splice(fino);
     frase = incisi.join(' ').trim();
     // A lone call before more sentences («Ehi goblin!»): the next sentence says what the PC does.
     if (frase && frase.split(' ').length === 1 && k + 1 < tutte.length) frase = '';
@@ -273,13 +281,15 @@ export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = re
     k = 1;
   }
   // Troppo poco contenuto: si unisce la frase seguente, se c'è spazio (and if it is the PC's own act too).
-  while (frase && !tutte.compiuta?.[k - 1] && contenuto(frase, r) < r.minContenuto && k < tutte.length && frase.split(' ').length < max && !nonDelPg(tutte[k]!, r)) frase = `${frase}. ${tutte[k++]}`;
+  // Never a sentence cut in half by the merge: the next one only if it fits whole (round 6: «… E tu, Berta, se tuo»).
+  while (frase && !tutte.compiuta?.[k - 1] && contenuto(frase, r) < r.minContenuto && k < tutte.length && `${frase} ${tutte[k]}`.split(' ').length <= max && !nonDelPg(tutte[k]!, r)) frase = `${frase.replace(/[,;:]+$/, '')}. ${tutte[k++]}`;
   let parole = frase.split(' ').filter(Boolean);
   while (parole.length > 1 && r.congiunzioni?.test(nuda(parole[0]!))) parole.shift();
   // The player asked: the announcement keeps the question mark if the question is said whole (round 5: «Sei Oreste»).
   const intere = parole.length;
   const domanda = !!frase && !!tutte.domanda?.[k - 1];
-  if (parole.length > max) {
+  // A sentence a little past the limit is said whole: never a quote cut mid-phrase (round 6, docs/coerenza.md).
+  if (parole.length > max + MARGINE_CLAUSOLA) {
     // L'ultimo confine di inciso prima del limite che dice ancora abbastanza.
     let taglio = -1;
     for (let b = Math.min(max, parole.length) - 1; b >= 0; b--) {
@@ -288,7 +298,12 @@ export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = re
         break;
       }
     }
+    // No clause boundary with enough before it: whole clauses up to a little past the limit (round 6 cut «… al goblin che
+    // la sta» mid-phrase); only a clause much longer than the limit is cut.
+    const confini = [...parole.map((p, i) => (/[,;:]$/.test(p) ? i + 1 : 0)).filter((b) => b > 0), parole.length];
+    const intera = confini.find((b) => b > max && b <= max + MARGINE_CLAUSOLA) ?? null;
     if (taglio > 0) parole = parole.slice(0, taglio);
+    else if (intera) parole = parole.slice(0, intera);
     else {
       parole = parole.slice(0, max);
       for (let c = parole.length - 1; c >= Math.max(1, parole.length - 3); c--) {

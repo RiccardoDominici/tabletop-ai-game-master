@@ -102,7 +102,9 @@ every local server URL has a watchdog, started by the first request of a local m
 - For each action it chooses a line among the candidates (the ones indicated by the Engine and at most 6 from
   the catalogue that share words with the action), or «nessuna» (none).
 - The announcement is not written by the model: it is composed by the Engine (`llm/annuncio.ts`), with the PC's
-  name and the player's first short sentence that is the PC's own act, at most 12 words. The player's words are
+  name and the player's first short sentence that is the PC's own act, at most 12 words, or a whole sentence up to six
+  words longer rather than a quote cut mid-phrase; a later clause that is a claim or someone else's act ends it
+  («Pugnale ancora, il goblin si gira verso di me» → «Pugnale ancora»). The player's words are
   attributed, never asserted in the narrator's voice: «Ida dice: «Guardo la scatolina».» (Ida says: "I look at the
   little box."), in English «Ginestra says: "I open the door."». (The English pack used to turn the first person into
   the third, «Ginestra opens the door.», which told the act as done before any roll; the turn stays a pack option,

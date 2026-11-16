@@ -834,6 +834,11 @@ table only).
   the stall task names it.
 - The defeat ending is not said when every PC at the table is dead (it assumes survivors: CA T16 heard «Vi lascia
   legati davanti alla porta di ferro» over three dead PCs): the Engine's `regia.righe.sconfitta_morti` instead.
+- The announcement keeps only the PC's own words: a later clause that is a claim or someone else's act ends it
+  («Pugnale ancora, il goblin si gira verso di me» → «Pugnale ancora»; «Oreste dice che…» and «non si ferma nessuno» are
+  someone else's; after a colon the clause is the PC's speech and stays), and it is never cut mid-phrase: a sentence up
+  to six words past the twelve is said whole, and a following sentence is joined only if it fits whole (round 6 cut
+  «… al goblin che la sta», «… E tu, Berta, se tuo»). Test: test/annuncio-d4.test.ts.
 Tests: test/sceneggiatore.test.ts, test/sconfitta.test.ts. Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)
