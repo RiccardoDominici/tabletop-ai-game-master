@@ -1,0 +1,41 @@
+[torre-mozza-combattimento-B] campagna torre-mozza, porta 4948, modalità repertorio: riavvio del server di prova…
+[torre-mozza-combattimento-B] server: {"ok":true,"fase":"attesa","turno":0,"versione_scena":0,"voce":"fish","schermo":false,"narratore":"haiku","modello":"claude-haiku-5-5","campagna":"torre-mozza","immagini":17,"audio":26,"sessione":"","modo":"repertorio","ripresa":null,"pacchetto":null,"lingua":"it","lingua_contenuti":"it"}
+[torre-mozza-combattimento-B] pg_nespola rolls Carisma (1d20 +1): 18
+[torre-mozza-combattimento-B] turno 1/14 fatto (server 1)
+[torre-mozza-combattimento-B] turno 2/14 fatto (server 2)
+[torre-mozza-combattimento-B] turno 3 (server 3): scena → scena_carbonaia
+[torre-mozza-combattimento-B] pg_nespola rolls Trovare e togliere trappole (1d100): 73
+[torre-mozza-combattimento-B] turno 3/14 fatto (server 4)
+[torre-mozza-combattimento-B] turno 4 (server 5): scena → scena_torre
+[torre-mozza-combattimento-B] pg_livia rolls Spada lunga (1d20 +3): 13
+[torre-mozza-combattimento-B] pg_nespola rolls Destrezza (1d20 +2): 6
+[torre-mozza-combattimento-B] pg_livia rolls Danni: Spada lunga (1d8 +2): 2
+[torre-mozza-combattimento-B] pg_livia rolls Iniziativa (1d6 +1): 4
+[torre-mozza-combattimento-B] pg_nespola rolls Iniziativa (1d6 +2): 6
+[torre-mozza-combattimento-B] pg_eliandro rolls Iniziativa (1d6 +1): 6
+[torre-mozza-combattimento-B] turno 4/14 fatto (server 6)
+[torre-mozza-combattimento-B] server 7: combat, on turn pg_nespola; waiting for their turn: pg_livia, pg_eliandro
+[torre-mozza-combattimento-B] pg_nespola rolls Spada corta alle spalle (1d20 +7): 12
+[torre-mozza-combattimento-B] pg_nespola rolls Danni: Spada corta alle spalle (2d6): 3, 5
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 7), 2 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 8: combat, on turn pg_eliandro; waiting for their turn: pg_livia
+[torre-mozza-combattimento-B] pg_eliandro rolls Pugnale lanciato (1d20 +2): 15
+[torre-mozza-combattimento-B] pg_eliandro rolls Danni: Pugnale lanciato (1d4): 4
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 8), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 9: combat, on turn pg_livia
+[torre-mozza-combattimento-B] pg_livia rolls Spada lunga (1d20 +3): 15
+[torre-mozza-combattimento-B] pg_livia rolls Danni: Spada lunga (1d8 +2): 1
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 9)
+[torre-mozza-combattimento-B] turno 6/14 fatto (server 10)
+[torre-mozza-combattimento-B] turno 7/14 fatto (server 11)
+[torre-mozza-combattimento-B] pg_nespola rolls Tiro salvezza contro raggio della morte o veleno (1d20 +8): 16
+[torre-mozza-combattimento-B] turno 8/14 fatto (server 12)
+[torre-mozza-combattimento-B] turno 9/14 fatto (server 13)
+[torre-mozza-combattimento-B] turno 10/14 fatto (server 14)
+[torre-mozza-combattimento-B] turno 11/14 fatto (server 15)
+[torre-mozza-combattimento-B] turno 12/14 fatto (server 16)
+[torre-mozza-combattimento-B] pg_livia rolls Carisma (1d20): 20
+[torre-mozza-combattimento-B] turno 13/14 fatto (server 17)
+[torre-mozza-combattimento-B] pg_eliandro rolls Carisma (1d20): 3
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 18)
+[torre-mozza-combattimento-B] fatto → esperimenti/risultati/e2e-finale-3b/fumo-torre-mozza-combattimento-B-manuale (costo $0.06761)

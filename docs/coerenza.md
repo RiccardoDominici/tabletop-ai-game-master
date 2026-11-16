@@ -350,6 +350,11 @@ The yes/no judge (`apps/server/src/coerenza/giudice.ts`) is v2 of the scores abo
   narrazioni.jsonl (`tipo: risposta_privata`), for a replay set of the private calls.
 Tests: test/coerenza-giudice.test.ts (si, no, a carried subject, a deadline, a sentence the rules changed; with the
 whole server a fake model's «si» gives the Engine line and its «no» keeps a sentence R-fuori would have changed).
+Smoke run (not a measuring round: one combat game with manual rolls on `067d18f`, profile B, port 4948,
+`esperimenti/risultati/e2e-finale-3b/fumo-torre-mozza-combattimento-B-manuale`): no crash (one voice timeout of the
+TTS service); 36 questions with the narrator streaming alongside, 22 «si», none late; 988 ms median, 1220 ms p90,
+1440 ms at most; median first audio 1637 ms (15 turns). The 22 «si» are the invented goblin acting or hit after the
+fight, and once Ugo, at his kiln, watching at the tower; 19 sentences dropped and 2 replaced by the Engine's line.
 
 ## Characters the players invent (Riccardo's decision, 16 November)
 
