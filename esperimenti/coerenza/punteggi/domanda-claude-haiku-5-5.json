@@ -1,0 +1,265 @@
+{
+ "variante": "domanda-claude-haiku-5-5",
+ "violazioni": 117,
+ "prese": 90,
+ "mancate": [
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#15:3",
+   "testo": "Il goblin non risale.",
+   "perche": "the invented goblin does not come back up"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#16:1",
+   "testo": "Il colpo della spada lunga gli entra sotto la spalla.",
+   "perche": "carried «gli»: the invented goblin is hit"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#9:3",
+   "testo": "Non si rialza.",
+   "perche": "carried: the invented goblin does not rise"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#9:4",
+   "testo": "Livia alza lo scudo contro la lancia che arriva, e il colpo rimbalza via sul metallo.",
+   "perche": "an attack by nobody in play (a spear comes at Livia)"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#12:2",
+   "testo": "Ehi, scudo bianco!",
+   "perche": "fled Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#12:3",
+   "testo": "Pagano in monete, poi, o in parole?",
+   "perche": "fled Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#12:4",
+   "testo": "Lo sguardo di Zirrà scivola sulla spada di Livia, poi sul corpo immobile di Grosso accanto al fuoco.",
+   "perche": "fled Zirrà's gaze moves"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#12:5",
+   "testo": "Si ferma lì, e non dice più niente.",
+   "perche": "carried: fled Zirrà stops and is silent"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#12:6",
+   "testo": "Nespola, a terra dietro la pietra, sente il sangue freddo sotto la giacca e ascolta il silenzio della torre.",
+   "perche": "a PC told down: Nespola is standing for the Engine (out of the set's flag, in its calls)"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#15:1",
+   "testo": "Lo scudo sbatte sul legno, e il corpo si schiaccia tra la pietra e il metallo.",
+   "perche": "carried: the invented goblin's body crushed"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#12:0",
+   "testo": "Livia alza lo scudo e il colpo della lancia rimbalza sul bordo di legno.",
+   "perche": "an attack by nobody in play (a spear on the shield)"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#12:3",
+   "testo": "Scudo bianco, sei dura!",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#14:0",
+   "testo": "Nespola, a terra e col fianco aperto, striscia dietro la pietra e stringe i denti.",
+   "perche": "a PC told down: Nespola has 3 of 5 hit points (out of the set's flag, in its calls)"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#15:4",
+   "testo": "Pagare?",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#15:5",
+   "testo": "Ci pagano le pecore, scudo bianco.",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#15:6",
+   "testo": "E tu sei troppo magra per farci paura.",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#15:13",
+   "testo": "Chi ci paga?",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#15:14",
+   "testo": "Il buio, scudo bianco.",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#15:15",
+   "testo": "E il buio non dà monete, dà solo fame.",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#18:5",
+   "testo": "Ah, ah.",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-fuori-binario-B-manuale#15:3",
+   "testo": "No, no.",
+   "perche": "absent Zirrà speaks"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-fuori-binario-B-manuale#15:4",
+   "testo": "Madre Carla ha fretta, e il sentiero della grotta è cosa nostra.",
+   "perche": "absent Zirrà speaks"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#21:6",
+   "testo": "Ti ascolto, eh.",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#22:1",
+   "testo": "Lei sorride storta, il sangue le sporca i denti.",
+   "perche": "carried «Lei»: dead Zirrà smiles"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#22:4",
+   "testo": "Il ragazzo?",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#22:5",
+   "testo": "Giù in cantina, legato come un agnello.",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#22:6",
+   "testo": "Ma la chiave non l'avete, quindi non ve lo dico.",
+   "perche": "dead Zirrà speaks"
+  }
+ ],
+ "toccatePulite": [
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#4:3",
+   "testo": "Da più in alto, sul sentiero dei goblin, qualcosa si muove e si ferma.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#10:1",
+   "testo": "La goblin cade sulla scala rotta e non si muove più.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#10:7",
+   "testo": "Grosso, dietro il fuoco, guarda la scala, poi la mazza, poi se ne va verso il buco nel muro.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#17:0",
+   "testo": "Eliandro preme il piede sulla caviglia di Zirrà e le chiede dove si trova il ragazzo.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#7:1",
+   "testo": "La spada lunga affonda nel fianco di Grosso, che cade pesante accanto al fuoco.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#7:3",
+   "testo": "Zirrà vede il compagno a terra, lascia cadere la spada corta e fugge di corsa verso il crollo, verso il crinale.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#8:4",
+   "testo": "Zirrà è già sparita nel buio verso il crollo: si sente solo il rotolio di qualche sasso sul crinale.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#13:1",
+   "testo": "Tu aspetti la sua risposta, scudo alzato.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#7:1",
+   "testo": "Il colpo entra sotto il braccio di Grosso, che barcolla, mugola e crolla sul selciato accanto al tamburo.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#7:3",
+   "testo": "Grosso!",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#7:4",
+   "testo": "Ehi, alzati, che hai fame!",
+   "etichettata": false
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#11:0",
+   "testo": "Eliandro, il pugnale lascia la mano e si pianta nella spalla di Zirrà, che cade ginocchioni sul selciato.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#11:2",
+   "testo": "Ahi... ahi... orecchie a punta, mi hai fatto male davvero.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#11:3",
+   "testo": "Zirrà si accascia, il respiro che si fa corto.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#9:1",
+   "testo": "Lama e vento fischiano insieme, e il colpo trova Zirrà alla spalla, dove lo scudo non copre.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#9:2",
+   "testo": "La goblin cade in ginocchio sul fango e non si rialza.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#9:3",
+   "testo": "Grosso sente il corpo cadere e il suo sguardo si ferma sulla scala.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#9:4",
+   "testo": "Poi getta la mazza nel fuoco e si tira indietro verso il buio della cantina.",
+   "etichettata": false
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#11:3",
+   "testo": "Livia spinge Zirrà contro il muro con lo scudo e la colpisce con la spada lunga.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#14:1",
+   "testo": "La lama fischia nel buio della scala, ma il bersaglio è già sparito giù per i gradini.",
+   "etichettata": false
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#15:0",
+   "testo": "Livia non sta mirando a nessuno: il goblin davanti a lei è già crollato contro il muro, e davanti alla soglia non c'è più nessuno da colpire.",
+   "etichettata": true
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#4:7",
+   "testo": "I goblin la sentono da qui.",
+   "etichettata": true
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#11:1",
+   "testo": "Il colpo trova Grosso sotto la spalla, e l'hobgoblin crolla sui gradini con un tonfo.",
+   "etichettata": true
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#20:1",
+   "testo": "Il colpo trova Zirrà al petto, sotto lo scudo rosso, e lei cade all'indietro sui gradini con un suono secco.",
+   "etichettata": true
+  }
+ ],
+ "ms": 3
+}

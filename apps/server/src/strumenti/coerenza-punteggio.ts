@@ -58,7 +58,7 @@ export function carica(): { insieme: ChiamataInsieme[]; etichette: Record<string
 }
 
 /** The guards as the director builds them for one call (scena/regia.ts, guardiaDegliEsiti), from the set's rows. */
-export function guardieDellaChiamata(ch: ChiamataInsieme, o: { inesistente: boolean; assorbito: boolean }, tipi: ReturnType<typeof tipiGregari>): (testo: string) => CorrezioneEsito {
+export function guardieDellaChiamata(ch: ChiamataInsieme, o: { inesistente: boolean; assorbito: boolean; fuori?: boolean }, tipi: ReturnType<typeof tipiGregari>): (testo: string) => CorrezioneEsito {
   const nomi = new Map<string, string[]>(ch.entita.map((e) => [e.id, e.nomi]));
   const nome = (id: string): string => ch.entita.find((e) => e.id === id)?.nome ?? id;
   const tiri = ch.carte.map(
@@ -91,7 +91,7 @@ export function guardieDellaChiamata(ch: ChiamataInsieme, o: { inesistente: bool
     if (!s || IN_GIOCO.has(s)) return null;
     return s === 'morto' ? 'morto' : s === 'fuggito' ? 'fuggito' : 'a_terra';
   };
-  const fuori = guardiaFuori({ nomi, nome, fuoriDaPrima });
+  const fuori = o.fuori === false ? null : guardiaFuori({ nomi, nome, fuoriDaPrima });
   let ines: ((t: string) => CorrezioneEsito) | null = null;
   if (o.inesistente) {
     const registro: Registro = { turno: ch.turno, scena: ch.scena, entita: ch.entita, fatti: [], esiti: [], negati: [] };

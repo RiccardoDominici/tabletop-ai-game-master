@@ -37,3 +37,14 @@ coerenza:
       fuori_gioco_agisce: "fa agire o parlare chi è a terra, morto, fuggito o uscito ({sostituto})"
       caduta_senza_fatto: "fa cadere chi per il Motore è ancora in piedi ({sostituto})"
       colpo_contrario: "racconta un colpo al contrario della carta ({sostituto})"
+  # The yes/no question of the candidate checker (coerenza/domanda.ts, docs/coerenza.md «Frozen replay set»): one call
+  # of a small fast model per sentence the mention filter flags.
+  domanda:
+    sistema: "Controlli una frase del narratore di una partita di ruolo contro lo stato del gioco, che è sempre vero. Rispondi soltanto con il JSON richiesto."
+    messaggio: "Stato del gioco adesso:\n{vero}\n\nFrase precedente: «{prima}»\nFrase da controllare: «{frase}»\n\nDomanda: {domanda}\nRispondi «si» se la frase da controllare lo fa, anche con un pronome o senza nominarlo; «no» se descrive soltanto un corpo, uno stato, un'assenza, un ricordo o un luogo, o se parla di qualcun altro."
+    chi: "nella frase da controllare, {nome} ({stato}) agisce, parla, percepisce o viene detto presente adesso?"
+    assente: "non è in questa scena"
+    nome: "nella frase da controllare, un «{parola}» agisce, parla, viene colpito o viene detto presente adesso? Nessuno in scena e in gioco è «{parola}»{caduti}."
+    caduti: " ({elenco})"
+    colpo: "il Motore dice che {chi} colpisce {bersaglio} e lo ferisce. La frase da controllare racconta quel colpo come mancato, parato o senza effetto?"
+    oppure: " Oppure: "

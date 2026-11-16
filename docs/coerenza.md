@@ -283,6 +283,41 @@ freezes what the model wrote, so any checker variant is scored on the same sente
   director does for each call and runs the sentences in order; a touched clean sentence is a wrong touch, an untouched
   violation a miss; the lists go to `esperimenti/coerenza/punteggi/<variant>.json`.
 
+### Scores (16 November, 117 violations, 46 labelled clean)
+
+| Variant | Caught | Missed | Clean touched |
+|---|---|---|---|
+| `attive`: what changes the text today (R-fuori, R-esito without the absorbed-blow branch, R-assente) | 53 | 64 | 6 |
+| `regole`: attive + R-inesistente (`cb4ded5`) + the absorbed-blow branch (`8cb8426`) | 76 | 41 | 4 |
+| `filtro`: every flagged sentence touched (the filter's ceiling) | 95 | 22 | 41 |
+| `domanda` (v1): every flagged sentence asked to Haiku 5.5, one yes/no | 90 | 27 | 24 |
+| `domanda2` (v2): v1 with the Engine's structure around it | **106** | **11** | **7** |
+
+The candidate (`apps/server/src/coerenza/domanda.ts`, runner `apps/server/src/strumenti/coerenza-domanda.ts`; the
+question in `lingue/<code>/testi-coerenza.yaml`, `coerenza.domanda`): the mention filter of the set picks the
+sentences; a small fast model gets ONE question per sentence with the ledger rows («nella frase da controllare, Zirrà
+(non è più in vita…) agisce, parla, percepisce o viene detto presente adesso?»; for a creature noun, whether a
+«goblin» acts or is hit; for a hurting card, whether the blow is told as missed), structured output `{risposta: si|no}`,
+and the sentence right after a «si» is asked too (a carried subject). v1 asked about everything flagged and touched 24
+clean sentences, mostly the fall of someone who went down by this very turn's cards, and missed the NPCs' own lines
+(the model never saw the speaker). v2 keeps the Engine's own structure: who fell by this turn's cards is not asked
+about (as R-fuori's `oraFuori`), an NPC's own line goes to the deterministic R-assente, and R-esito's card rules (pair,
+fall, a PC told down) stay deterministic; the model replaces R-fuori, R-inesistente and the absorbed-blow branch. By
+source, rules → v2: round 1 34 → 42 of 50 caught (2 → 3 wrong), round 2 34 → 52 of 54 (2 → 4), canaries 8 → 12 of 13
+(0 → 0). Caveat: v2's structure was set after reading v1's errors on this same set (structure, not words; there is no
+held-out set yet).
+What v2 still misses: carried subjects with no pronoun («Non si rialza.», «Il colpo della spada lunga gli entra sotto
+la spalla.»), attacks by nobody in play with no noun («la lancia che arriva»), «I goblin sono fuggiti» when one died.
+What it touches wrongly: a PC acting on a body («Livia … colpisce» the dead Zirrà; a foot on her ankle), «Zirrà è già
+sparita», Zirrà's last words in the turn she falls (R-assente), two lines with no character.
+**Latency** (210 answers kept in `esperimenti/coerenza/risposte-claude-haiku-5-5.json`, so re-scoring is offline): a
+call takes 1053 ms median, 1304 ms p90, 1706 ms at most, under the 1.5 s the targeted repair already waits for a
+sentence that is not the first (the voice is still saying the one before). The first sentence of the answer is
+flagged in 25 of the 53 flagged calls, about one turn in seven of the runs; if those turns wait for the answer, the
+pooled median first-audio would be 2.30 s (round 1 runs, now 1.85 s), 2.19 s (round 2, now 2.07 s) and 1.59 s
+(canaries, unchanged), all within +0.5 s of the 2.43 s baseline. Cost: one short call per flagged sentence (about 300
+input tokens). Profile A has no fast model: there the rules stay (`regole` or `attive`).
+
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a
   creature by a noun outside its aliases («la creatura») is not seen. The ledger makes the rules simpler (one notion

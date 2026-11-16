@@ -37,3 +37,14 @@ coerenza:
       fuori_gioco_agisce: "it has someone down, dead, fled or gone act or speak ({sostituto})"
       caduta_senza_fatto: "it has someone fall who is still standing for the Engine ({sostituto})"
       colpo_contrario: "it tells a blow against its card ({sostituto})"
+  # The yes/no question of the candidate checker (coerenza/domanda.ts, docs/coerenza.md «Frozen replay set»): one call
+  # of a small fast model per sentence the mention filter flags.
+  domanda:
+    sistema: "You check one sentence of a role-playing game's narrator against the game state, which is always true. Answer only with the requested JSON."
+    messaggio: "Game state now:\n{vero}\n\nPrevious sentence: «{prima}»\nSentence to check: «{frase}»\n\nQuestion: {domanda}\nAnswer «si» if the sentence to check does it, also through a pronoun or without naming them; «no» if it only describes a body, a state, an absence, a memory or a place, or if it is about someone else."
+    chi: "in the sentence to check, does {nome} ({stato}) act, speak, perceive or get said to be present now?"
+    assente: "is not in this scene"
+    nome: "in the sentence to check, does a «{parola}» act, speak, get hit or get said to be present now? Nobody in the scene and in play is «{parola}»{caduti}."
+    caduti: " ({elenco})"
+    colpo: "the Engine says that {chi} hits {bersaglio} and wounds them. Does the sentence to check tell that blow as missed, parried or harmless?"
+    oppure: " Or: "
