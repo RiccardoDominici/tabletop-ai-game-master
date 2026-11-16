@@ -304,6 +304,10 @@ dettato:
 # essere una di queste (con il nome del PG davanti, al massimo): «Anna aspetta e poi apre la porta» è una decisione.
 # Elenco volutamente stretto.
 stallo:
+  # The PC's own committing verbs (mondo/stallo.ts, `impegna`; docs/mondo.md §5): an action that moves, goes somewhere,
+  # gives or takes, uses an object or attacks is a real decision and starts the stall's count again; naming or asking
+  # an NPC is not. Whole words, in a sentence that is not a question (flags iu).
+  impegno: '\b(vado|andiamo|entro|entriamo|esco|usciamo|salgo|saliamo|scendo|scendiamo|corro|corriamo|torno|torniamo|seguo|seguiamo|vengo|veniamo|raggiungo|raggiungiamo|attraverso|attraversiamo|scappo|fuggo|salto|mi arrampico|mi avvicino|ci avviciniamo|mi sposto|ci spostiamo|mi allontano|do|dò|diamo|porgo|consegno|regalo|offro|prendo|prendiamo|afferro|raccolgo|rubo|tolgo|lascio|metto|appoggio|getto|butto|uso|usiamo|apro|apriamo|chiudo|accendo|spengo|lego|slego|taglio|rompo|scasso|forzo|spingo|tiro|sollevo|sposto|scavo|bevo|indosso|lancio|suono|blocco|sequestro|benedico|fascio|curo|trascino|colpisco|attacco|ferisco|carico|carichiamo|affondo|sparo|scocco)\b'
   senza_decisione:
     - { nome: aspettare, regex: '^(?:\p{L}+\s+)?(?:aspett\w*|attend\w*)(?:\s+(?:ancora|un po[''’]?|e basta|qui|in silenzio))*\s*[.!…]*$', flags: iu }
     - { nome: restare fermi, regex: '^(?:\p{L}+\s+)?(?:rest\w*|rimang\w*|riman\w*|st[oa]|stiamo)\s+(?:ferm\w*|immobil\w*|in attesa|a guardare|qui)(?:\s+e basta)?\s*[.!…]*$', flags: iu }

@@ -6,7 +6,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import type { PericoloMondo } from '../src/campagna/mondo';
-import { ContatoreStallo, livelloStallo, mossaDiStallo, senzaDecisione, stalloDuro, type ContestoStallo } from '../src/mondo/stallo';
+import { ContatoreStallo, impegna, livelloStallo, mossaDiStallo, senzaDecisione, stalloDuro, type ContestoStallo } from '../src/mondo/stallo';
 import { attendi, inizia, Prova, turno } from './aiuti/partita';
 import { DadiACopione } from '../src/prove/dadi';
 import type { ArbitroProve, DecisioneProva, IngressoArbitroProve } from '../src/prove/tipi';
@@ -138,31 +138,38 @@ describe('server, mode B: the Engine brings the S2 clue line and says the S3 lea
 });
 
 describe('mode B: answers that bring nothing new count, whatever the words (third e2e pass, bug 8)', () => {
-  it('two answers with nothing new: the next window is a stall even with a «decided» action; something new resets', () => {
+  it('two answers with nothing new: the next window is a stall unless an action commits; something new resets', () => {
     const c = new ContatoreStallo();
+    // A question to an NPC: decided, but it commits to nothing (the lead's rule after round 5).
     c.registraEsito(false);
-    expect(c.registra('decisa', false)).toBe(0);
+    expect(c.registra('decisa', false, false)).toBe(0);
     c.registraEsito(false);
-    expect(c.registra('decisa', false)).toBe(1);
+    expect(c.registra('decisa', false, false)).toBe(1);
     c.registraEsito(false);
-    expect(c.registra('indecisa', false)).toBe(2);
+    expect(c.registra('indecisa', false, false)).toBe(2);
     // In a fight an empty answer is not a stall.
-    expect(c.registra('decisa', true)).toBe(0);
+    expect(c.registra('decisa', true, false)).toBe(0);
     c.registraEsito(true);
-    expect(c.registra('decisa', false)).toBe(0);
-    // An action toward an NPC present is a decision, even when no line answers it; but it does not reset the escalation.
+    expect(c.registra('decisa', false, false)).toBe(0);
+    // An action that commits (or a roll) is a real decision: no stall, and the count and the escalation start again.
     c.registraEsito(false);
     c.registraEsito(false);
     expect(c.registra('decisa', false, true)).toBe(0);
     c.registraEsito(false);
-    expect(c.registra('decisa', false)).toBe(1);
-    c.registraEsito(false);
-    expect(c.registra('decisa', false, true)).toBe(0);
-    c.registraEsito(false);
-    expect(c.registra('decisa', false)).toBe(2);
+    expect([c.fermi, c.n]).toEqual([0, 0]);
   });
 
-  it('after a fight in the scene, turns with nothing new are not a stall (coherence run: a parley, attacks after the fight)', async () => {
+  it('what commits: moving, going, giving, taking, using, attacking, in a sentence that is not a question', () => {
+    expect(impegna('Vado al mulino, ho da fare.')).toBe(true);
+    expect(impegna('Lascio Ugo con il suo carbone e vi vengo dietro.')).toBe(true);
+    expect(impegna('Blocco le ruote con lo scudo.')).toBe(true);
+    expect(impegna('Cosa facciamo? Aspettiamo qui o andiamo?')).toBe(false);
+    expect(impegna('Io non mi fido di Ugo, mi sa che tiene le cose per sé.')).toBe(false);
+    expect(impegna('Mi siedo sul muretto dello stazzo.')).toBe(false);
+    expect(impegna('Berta, chi sa dove sta la lavagna?')).toBe(false);
+  });
+
+  it('after the fight is over, turns with nothing new count again (only a fight on is new by itself)', async () => {
     prova = new Prova();
     const cartella = prova.campagna('prove');
     // T1 opens a fight (Corrado hits Ruggero: 10 + 5, 8 + 3 = 11, Ruggero dies); then «nothing new» turns follow.
@@ -171,10 +178,11 @@ describe('mode B: answers that bring nothing new count, whatever the words (thir
     const tel = await prova.telefono(url, 'pg_corrado');
     let s = await inizia(schermo, tel);
     for (const testo of ['Colpisco Ruggero con la spada', 'Cerco il secondo bandito nel fango.', 'Grido al bandito di arrendersi.', 'Cerco ancora il bandito.', 'Mi siedo sul ponte.']) s = await turno(tel, 'pg_corrado', s, testo);
-    expect(prova.turni().filter((r) => r['stallo'])).toEqual([]);
+    // T1 is the fight; T2 and T3 bring nothing new; T4 is a stall, T5 the next one.
+    expect(prova.turni().filter((r) => r['stallo']).map((r) => r['turno'])).toEqual([4, 5]);
   });
 
-  it('real decisions toward the NPCs, answered only by improvised narration, never reach a stall (no free clue)', async () => {
+  it('questions to the NPCs that bring nothing new count as stalling (the lead\'s rule after round 5)', async () => {
     prova = new Prova();
     const cartella = prova.campagna('mondo');
     const { url } = await prova.avvia(cartella, () => '[narratore] Anna, la ruota cigola.\n[invito] tutti');
@@ -182,7 +190,7 @@ describe('mode B: answers that bring nothing new count, whatever the words (thir
     const tel = await prova.telefono(url, 'pg_anna');
     let s = await inizia(schermo, tel);
     for (let k = 0; k < 5; k++) s = await turno(tel, 'pg_anna', s, k % 2 ? 'Mugnaio, dimmi chi ha rotto il sacco.' : 'Chiedo alla ladra dove dorme stanotte.');
-    expect(prova.turni().filter((r) => r['stallo'])).toEqual([]);
+    expect(prova.turni().filter((r) => r['stallo']).map((r) => r['turno'])).toEqual([3, 4, 5]);
   });
 
   let prova: Prova;

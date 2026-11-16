@@ -14,14 +14,32 @@ import type { PericoloMondo } from '../campagna/mondo';
 import { normalizza } from '../azioni/regole';
 import { campoOggetti, campoRegex, campoTesto, regole } from '../lingua/motore';
 
-/** Patterns of an action that brings no new decision, from lingue/<code>/motore.yaml (section `stallo`). */
-const senzaDecisioneRegole = (): ReadonlyArray<[string, RegExp]> =>
-  regole('stallo', (s) =>
-    campoOggetti(s, 'senza_decisione').flatMap((e): Array<[string, RegExp]> => {
+/**
+ * The section `stallo` of lingue/<code>/motore.yaml: the patterns of an action that brings no new decision, and the
+ * PC's own committing verbs (`impegno`: moves, goes somewhere, gives or takes, uses an object, attacks).
+ */
+const regoleStallo = (): { senza: ReadonlyArray<[string, RegExp]>; impegno: RegExp | null } =>
+  regole('stallo', (s) => ({
+    senza: campoOggetti(s, 'senza_decisione').flatMap((e): Array<[string, RegExp]> => {
       const re = campoRegex(e, 'regex', campoTesto(e, 'flags'));
       return re ? [[campoTesto(e, 'nome'), re]] : [];
     }),
-  );
+    impegno: campoRegex(s, 'impegno', 'iu'),
+  }));
+const senzaDecisioneRegole = (): ReadonlyArray<[string, RegExp]> => regoleStallo().senza;
+
+/**
+ * The action commits (the stall's counter starts again, docs/mondo.md §5): a sentence of it that is not a question has
+ * one of the PC's own committing verbs (`stallo.impegno`). «Aspettiamo qui o andiamo?» does not; «Vado al mulino» does.
+ */
+export function impegna(testo: string): boolean {
+  const re = regoleStallo().impegno;
+  if (!re) return false;
+  return testo
+    .split(/(?<=[.!?…])\s+/)
+    .filter((f) => !/\?["»”]?\s*$/.test(f.trim()))
+    .some((f) => re.test(f));
+}
 
 /**
  * Why an action brings no new decision (E12), or null if it does: it only waits, stays put, does nothing or looks
@@ -70,22 +88,25 @@ export class ContatoreStallo {
   fermi = 0;
   /** Each PC's last action (normalised), to see a repetition. */
   readonly ultime = new Map<string, string>();
+  /** The last closed window had a real new decision (a check or roll, an action that commits). */
+  impegno = false;
 
   /**
    * A closed window: returns the stall number (1, 2, …) or 0 if it is not a stall. Old form: a boolean = empty or not.
    */
-  registra(chiusura: ChiusuraPerStallo | boolean, inCombattimento: boolean, versoPng = false): number {
+  registra(chiusura: ChiusuraPerStallo | boolean, inCombattimento: boolean, impegno = true): number {
     const c: ChiusuraPerStallo = chiusura === true ? 'vuota' : chiusura === false ? 'decisa' : chiusura;
-    // Whatever the words say, the last answers changed nothing: the table is spinning, the world moves. Not when an
-    // action speaks to or acts on an NPC present (`versoPng`): that is a decision even if no prepared line answers it.
-    if (c !== 'vuota' && !inCombattimento && !versoPng && this.fermi >= TURNI_FERMI_PER_STALLO) {
+    this.impegno = c === 'decisa' && impegno;
+    // Whatever the words say, the last answers changed nothing: the table is spinning, the world moves. Only a real
+    // new decision stops it (`impegno`: a check or roll, an action that commits). The lead's rule after round 5:
+    // naming or questioning an NPC with nothing new in the answer is stalling too (ST's first move came only at T14).
+    if (c !== 'vuota' && !inCombattimento && !this.impegno && this.fermi >= TURNI_FERMI_PER_STALLO) {
       this.indecisi = 0;
       this.n += 1;
       return this.n;
     }
-    // An action toward an NPC present after answers with nothing new: not a stall, but the escalation is not reset
-    // either (before, «Tanto Berta ci chiama, no?» restarted it from S1 and the stall run never reached S3).
-    if (c === 'decisa' && versoPng && !inCombattimento && this.fermi >= TURNI_FERMI_PER_STALLO) return 0;
+    // A decided action that commits to nothing: not a stall yet, and the escalation is not reset.
+    if (c === 'decisa' && !impegno) return 0;
     if (c === 'decisa') {
       this.n = 0;
       this.indecisi = 0;
@@ -113,15 +134,18 @@ export class ContatoreStallo {
 
   /** The answer to a closed window: did it bring anything new to the table (see `fermi`)? */
   registraEsito(qualcosaDiNuovo: boolean): void {
-    this.fermi = qualcosaDiNuovo ? 0 : this.fermi + 1;
+    // A committing action of the window counts as new too (registra).
+    const nuovo = qualcosaDiNuovo || this.impegno;
+    this.fermi = nuovo ? 0 : this.fermi + 1;
     // Something new after stalls: the next window starts from zero again (its words decide).
-    if (qualcosaDiNuovo) this.n = 0;
+    if (nuovo) this.n = 0;
   }
 
   azzera(): void {
     this.n = 0;
     this.indecisi = 0;
     this.fermi = 0;
+    this.impegno = false;
   }
 }
 

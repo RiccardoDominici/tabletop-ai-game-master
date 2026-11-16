@@ -134,13 +134,14 @@ A stall is a closed window without actions (as before), outside a fight (in a fi
 turn), or the second turn in a row whose actions bring no new decision (E12): every action only waits, stays put,
 does nothing or looks around (a narrow list of patterns in `lingue/<code>/motore.yaml`, section `stallo`, matching
 the whole action), or repeats that PC's previous action. In mode B a turn is also a stall, whatever its actions say,
-after two answers in a row that brought nothing new to the table (`fermi`, mondo/stallo.ts): no repertoire line that
-answers an action, no roll, no scene entered, no fight; the Engine's own lines (stall moves, due marks) do not count.
-A turn whose actions name an NPC present (a question, a threat, a gift) is a decision even with no line to answer it;
-after answers that brought nothing new it is not counted as a stall, but it does not reset the counter either (the
-coherence run of the stall script had «Tanto Berta ci chiama, no?» restart the escalation at S1, so S3 never came). A
-visit of a scene in which a blow was struck or a fight was on counts no «nothing new» stall (after a fight, a parley,
-attacks and questions are decisions even when no line answers them).
+after two answers in a row that brought nothing new to the table (`fermi`, mondo/stallo.ts). The count starts again
+only on a real new decision or new information (the lead's rule after round 5 of the coherence layer): a check or
+roll, a scene change, a fight on, a clue or a fact a public line of the answer brought (not the Engine's own lines:
+stall moves, due marks), or an action that commits, the PC's own verb of moving, going somewhere, giving or taking,
+using an object or attacking, in a sentence that is not a question (`stallo.impegno` in `lingue/<code>/motore.yaml`,
+`impegna`). Naming or questioning an NPC with nothing new in the answer is stalling: before, it counted as a decision,
+and round 5's stall game had its first stall move only at T14. A line that only answers («Le pecore non aspettano.»)
+is not new either. After a fight is over, the turns count again.
 The third e2e pass (docs/e2e-finale-3.md, bug 8) had a stalling table write «Cosa facciamo?», «Non lo so…», «Mi siedo
 sul muretto», «Ci penso. Aspetto.»: only the bare «Aspetto.» matched a pattern, the counter never reached a stall, and
 five turns of fourteen had an empty catalogue, so the narrator described the yard or handed the question back. What

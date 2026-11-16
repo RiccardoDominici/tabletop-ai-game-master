@@ -766,6 +766,12 @@ Zirrà's words (CA T8); the reader's refused pick at FB T5 («pagava» against t
   6, two real `claude -p` calls on a fight request: 11 of 12 lines tagged (the twelfth, a narrator line with a
   combatant among its actors and no tag, would be refused), the `subito` answer came as a hit-and-miss pair, so its
   delivery now picks the line the card confirms. The text of refused lines is now recorded.
+- The stall counter (the lead's rule): the count starts again only on a real new decision or new information (a roll,
+  a scene change, a fight on, a clue or fact brought by a public line, or an action that commits: `stallo.impegno`);
+  naming or questioning an NPC with nothing new in the answer counts as stalling, and a fight earlier in the visit no
+  longer exempts the turns after it. Offline gate on round 5's scripts and logs: ST stalls from T4 to T12 (S1, S2, S3
+  three times; the hard S1 at n 4 and 7 owes two marks to the scene's danger clock), then T13's «poi vado» commits; FB
+  never stalls (its players keep «going» somewhere, by their words). Tests: test/mondo-stallo.test.ts.
 Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)

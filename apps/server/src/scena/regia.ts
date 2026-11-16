@@ -125,7 +125,7 @@ import type { SchedaNumerica } from '../campagna/schede';
 import { MondoInGioco } from '../mondo/mondo';
 import type { CambioAtteggiamento } from '../mondo/atteggiamenti';
 import type { FattoDelGioco } from '../mondo/porte';
-import { livelloStallo, mossaDiStallo, pericoloDellaScena, type ContestoStallo, type MossaStallo } from '../mondo/stallo';
+import { impegna, livelloStallo, mossaDiStallo, pericoloDellaScena, type ContestoStallo, type MossaStallo } from '../mondo/stallo';
 import { TiriGiocatoriRegia, type TiriGiocati } from './tiri-giocatori';
 import { TiriDelMaster } from '../prove/tiri-master';
 import { tipiGregari, type Gregario } from '../campagna/gregari';
@@ -3746,11 +3746,11 @@ export class Regia {
     // E12: the second turn in a row whose actions bring no new decision (only waiting, or the same action again) is a stall too.
     // A turn with only the Game Master's checks (docs/prove.md §8) is not a stall: the check is the turn's decision.
     const chiusura = this.soloProveDelMaster ? 'decisa' : this.mondo.stallo.classifica(r.azioni);
-    // An action that names an NPC present is a decision for the stall's «nothing new» count (mondo/stallo.ts).
-    const presenti = this.pngInScena();
-    const nomiPresenti = new Map([...this.nomiPng].filter(([id]) => presenti.has(id)));
-    const versoPng = this.statoRepertorio !== null && r.azioni.some((a) => !!a.testo && pngNominati(a.testo, nomiPresenti).size > 0);
-    const nStallo = this.mondo.stallo.registra(chiusura, scontroPrima || !!this.prove?.inCombattimento, versoPng);
+    // A real new decision (mondo/stallo.ts, the lead's rule after round 5): a check or roll of this turn, or an action
+    // that commits (moves, goes somewhere, gives or takes, uses an object, attacks). Naming or questioning an NPC is not
+    // one. Mode A tracks no material: there a decided action is a decision, as before.
+    const impegno = this.statoRepertorio === null || (tiri?.tiri.length ?? 0) > 0 || r.azioni.some((a) => !!a.testo && impegna(a.testo));
+    const nStallo = this.mondo.stallo.registra(chiusura, scontroPrima || !!this.prove?.inCombattimento, impegno);
     if (chiusura === 'indecisa') this.o.log.info({ turno: r.turno, indecisi: this.mondo.stallo.indecisi, stallo: nStallo }, 'world: actions without a new decision (E12)');
     this.mossaStallo = nStallo ? this.scegliMossaDiStallo(nStallo, r.turno) : null;
     // The evening's pace of the clocks (docs/mondo.md §1), before anything asks which marks are due.
@@ -4118,18 +4118,24 @@ export class Regia {
     const mondoDetto = esito.esito && !controllo.signal.aborted ? this.diciMondo(turno, esito, segniInRisposta, log) : [];
     // Mode B at S2/S3: the Engine brings the clue line or says the leads (the selector has only fillers).
     const stalloDetto = esito.esito && !controllo.signal.aborted && this.statoRepertorio && this.mossaStallo ? this.diciMossaDiStallo(turno, esito, segniInRisposta, this.mossaStallo, log) : null;
-    // The stall counts answers that brought nothing new to the table (mondo/stallo.ts, `fermi`): no line that answers
-    // an action, no roll, no scene entered, no fight. The Engine's own lines (stall moves, due marks) do not count:
-    // they are the world moving, not the table. Mode B only: there the material is the repertoire's and is tracked; in
-    // mode A the narrator improvises it and nothing here could tell an empty answer from a rich one.
+    // The stall counts answers that brought nothing new to the table (mondo/stallo.ts, `fermi`): new information is a
+    // roll or check, a scene entered, a fight on, or a clue or fact a public line of the answer brought (the lead's
+    // rule after round 5: a line that only answers, «Le pecore non aspettano.», brings nothing). The Engine's own lines
+    // (stall moves, due marks) do not count: they are the world moving, not the table. Mode B only: there the material
+    // is the repertoire's and is tracked; in mode A the narrator improvises it and nothing here could tell an empty
+    // answer from a rich one.
     if (esito.esito && !controllo.signal.aborted && this.statoRepertorio) {
-      // A fight in this visit of the scene: what follows it is not a stall (the coherence run on 2a7697c counted a
-      // parley, attacks and questions after the fight as «nothing new»).
+      const rep = this.statoRepertorio.repertorio.perId;
+      const porta = (u: VoceUscita): boolean => {
+        if (u.tipo !== 'usa' || u.motore || (u.per && this.turnoB?.azioni.get(u.per)?.privata)) return false;
+        const e = rep.get(u.id)?.effetti;
+        return !!e && (e.rivela_indizi.length > 0 || e.fatti_noti.length > 0);
+      };
       const nuovo =
-        esito.uscita.some((u) => u.tipo === 'usa' && !!u.per && !u.motore) ||
+        esito.uscita.some(porta) ||
         (this.carteDelTurno.turno === turno && this.carteDelTurno.n > 0) ||
         this.mondo.visita.ingresso === turno ||
-        this.scontroInVisita === this.mondo.visita.ingresso;
+        !!this.prove?.inCombattimento;
       this.mondo.stallo.registraEsito(nuovo);
       if (!nuovo) log.info({ turno, fermi: this.mondo.stallo.fermi }, 'world: an answer with nothing new for the table (stall count)');
     }
