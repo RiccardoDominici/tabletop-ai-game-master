@@ -25,6 +25,8 @@ import { normalizza } from '../azioni/regole';
 import { nomeBreve } from '../campagna/nomi';
 import { testo } from '../lingua';
 import { campoElenco, regole } from '../lingua/motore';
+// A cycle with guardia-fuori.ts (it reads this module's word helpers): used only inside functions, never at load.
+import { paroleDellaFrase } from './guardia-fuori';
 
 interface Parole {
   sconfitta: string[][];
@@ -122,9 +124,9 @@ export function pronomiDiSoggetto(): ReadonlySet<string> {
 }
 
 /** The words of a blow told (hit, miss, defeat) and the subject pronouns, for the absent-creature rule (coerenza/inesistenti.ts). */
-export function paroleDelColpo(): { colpo: readonly string[][]; pronomi: ReadonlySet<string> } {
+export function paroleDelColpo(): { colpo: readonly string[][]; caduta: readonly string[][]; pronomi: ReadonlySet<string> } {
   const p = parole();
-  return { colpo: [...p.colpito, ...p.mancato, ...p.sconfitta], pronomi: p.pronomi };
+  return { colpo: [...p.colpito, ...p.mancato], caduta: p.sconfitta, pronomi: p.pronomi };
 }
 
 /** The words of a miss and of an absorbed blow, from this one compilation (prove/fatti-dovuti.ts reads them too). */
@@ -247,14 +249,23 @@ export function guardiaEsiti(d: DatiGuardiaEsiti): (frase: string) => Correzione
     // 1b. A blow that hurt, told as missed or absorbed by the target alone (no attacker named): the coherence run on
     // 2a7697c, off the rails T13, card «Berta: A mani nude 15, riuscita» (3 damage), narration «Il pugno le scivola sulla
     // spalla di Fulco, ma il colpo è corto e la pietra del simbolo lo assorbe». Absorbed fits a hit with no damage only.
+    // Round 2 (combat-auto T6): a negated word («non regge») is not an absorbed blow, and the target must be where a
+    // blow lands, in a prepositional phrase («sulla spalla di Fulco», «accanto a Ida»), not the subject of something
+    // else («il sasso che Zirrà aveva puntato rimbalza»).
+    const nonNegata = (voci: readonly string[][]): boolean =>
+      voci.some((v) => {
+        const i = posizione(w, v);
+        return i >= 0 && !w.slice(Math.max(0, i - 2), i).some((x) => p.negazioni.has(x));
+      });
     const senzaColpo = !p.colpito.some((v) => posizione(w, v) >= 0);
-    if (senzaColpo && (ha(w, p.assorbito) || p.mancato.some((v) => posizione(w, v) >= 0))) {
+    if (senzaColpo && (nonNegata(p.assorbito) || nonNegata(p.mancato))) {
+      const preposizioni = paroleDellaFrase().preposizioni;
       for (const t of ferite) {
         // The target struck too this turn: the miss may be its own blow («Eliandro tira il pugnale, che va a vuoto»).
         if (attacchi.some((x) => x.chi === t.bersaglio!.id)) continue;
         const b = doveNomina(w, d.nomi.get(t.bersaglio!.id) ?? []);
         const a = doveNomina(w, d.nomi.get(t.chi) ?? []);
-        if (b >= 0 && a < 0) return { testo: testo('prove.guardia.colpisce', { chi: nomeBreve(t.nome), bersaglio: nomeBreve(t.bersaglio!.nome) }), motivo: 'colpo_contrario' };
+        if (b >= 1 && a < 0 && preposizioni.has(w[b - 1]!)) return { testo: testo('prove.guardia.colpisce', { chi: nomeBreve(t.nome), bersaglio: nomeBreve(t.bersaglio!.nome) }), motivo: 'colpo_contrario' };
       }
     }
     // 2. A fall with no fact: a standing NPC with a sheet is the subject of a defeat word (not an idiom), and no NPC
