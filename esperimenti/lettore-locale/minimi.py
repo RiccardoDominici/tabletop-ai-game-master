@@ -10,6 +10,8 @@ Usa il set breve (dati/set_breve.jsonl), lo stesso modello per A e B. Scrive ris
 
 Uso (dalla radice del repo):
   services/lettore/.venv/bin/python esperimenti/lettore-locale/minimi.py --modello mlx-community/Qwen3-4B-Instruct-2507-4bit
+  … --solo classificatore --prompt vivo     (the live reader's prompt and JSON answer, prompts/it/lettore-minimo.md)
+  … --modello nessuno --solo classificatore (no model: the Engine's first indicated line, the floor to beat)
 """
 from __future__ import annotations
 
@@ -99,10 +101,58 @@ def esito_classificatore(risposta: str, ids: set[str]) -> str | None:
     return None
 
 
-def classifica(model, tok, rec: dict, azione: dict) -> dict:
+PROMPT_VIVO = (HERE.parent.parent / "prompts" / "it" / "lettore-minimo.md").read_text(encoding="utf-8").strip()
+
+
+def esito_vivo(risposta: str, ids: set[str]) -> str | None:
+    """The live reader's answer (llm/minimo.ts): JSON {"risposte":[{"pg","battuta"}]}; an id of the list or «nessuna»."""
+    m = re.search(r"\{.*\}", risposta, re.S)
+    try:
+        v = json.loads(m.group(0)) if m else None
+        b = str(v["risposte"][0]["battuta"]).strip() if v else None
+    except (ValueError, KeyError, IndexError, TypeError):
+        return None
+    return b if b == "nessuna" or b in ids else None
+
+
+def messaggio_vivo(azione: dict, candidate: list[str]) -> str:
+    """The live reader's message for one action (lingue/it/testi-modelli.yaml, `modelli.lettore`)."""
+    righe = []
+    for r in candidate:
+        p = r.split(" · ")
+        righe.append(f"   - {p[0]}: {' · '.join(p[3:])}" if len(p) >= 4 else f"   - {r}")
+    cand = "\n".join(righe) or '   (nessun candidato: battuta "nessuna")'
+    return f"Azioni del turno:\n1. {azione['nome']} ({azione['id_pg']}): {azione['testo']}\n   Candidati (id: quando):\n{cand}"
+
+
+def classifica(model, tok, rec: dict, azione: dict, prompt: str = "breve") -> dict:
     pg = azione["id_pg"]
     candidate = righe_candidate(rec, pg)
     ids = {id_di_riga(r) for r in candidate}
+    if model is None:
+        scelta = id_di_riga(candidate[0]) if candidate else "nessuna"
+        return {"pg": pg, "grezza": "", "scelta": scelta, "ripiego": False, "tentativi": 1, "candidate": sorted(ids), "secondi": 0.0}
+    if prompt == "vivo":
+        # The production prompt and message of the minimal reader, one action at a time, JSON answer.
+        messaggi = [{"role": "system", "content": PROMPT_VIVO}, {"role": "user", "content": messaggio_vivo(azione, candidate)}]
+        t0 = time.perf_counter()
+        grezza = genera(model, tok, messaggi, 70)
+        secondi = time.perf_counter() - t0
+        scelta = esito_vivo(grezza, ids)
+        tentativi = 1
+        if scelta is None:
+            tentativi = 2
+            messaggi += [{"role": "assistant", "content": grezza},
+                         {"role": "user", "content": "Non valida. Rispondi solo con il JSON, con un id dei candidati oppure nessuna."}]
+            grezza2 = genera(model, tok, messaggi, 70)
+            scelta = esito_vivo(grezza2, ids)
+            grezza = f"{grezza} | {grezza2}"
+        # After a second invalid answer the live reader falls back (llm/minimo.ts, `ripiego`): the first line the Engine
+        # indicated for that action, else «nessuna». That is what the table would get.
+        ripiego = scelta is None
+        if ripiego:
+            scelta = id_di_riga(candidate[0]) if candidate else "nessuna"
+        return {"pg": pg, "grezza": grezza, "scelta": scelta, "ripiego": ripiego, "tentativi": tentativi, "candidate": sorted(ids), "secondi": round(secondi, 2)}
     elenco = "\n".join(f"- {r}" for r in candidate) or "(nessuna battuta candidata)"
     utente = f"Azione di {azione['nome']}: «{azione['testo']}»\nBattute candidate:\n{elenco}\nRisposta:"
     messaggi = [{"role": "system", "content": PROMPT_CLASSIFICATORE}, {"role": "user", "content": utente}]
@@ -163,14 +213,15 @@ def controlla_annuncio(frase: str, azione: dict) -> dict:
 
 # ---------- orchestrazione ----------
 
-def misura(modello: str, set_turni: list[dict], solo: str = "") -> dict:
-    model, tok = carica_modello(modello)
+def misura(modello: str, set_turni: list[dict], solo: str = "", prompt: str = "breve") -> dict:
+    # `--modello nessuno`: no model at all, the Engine's first indicated line (else «nessuna»): the floor a reader must beat.
+    model, tok = (None, None) if modello == "nessuno" else carica_modello(modello)
     classi, annunci, deterministici = [], [], []
     for rec in set_turni:
         h = haiku_per_pg(rec)
         for az in azioni_pubbliche(rec):
             pg = az["id_pg"]
-            c = classifica(model, tok, rec, {**az, "id_pg": pg})
+            c = classifica(model, tok, rec, {**az, "id_pg": pg}, prompt)
             c.update({"turno": rec["id"], "nome": az["nome"], "testo": az["testo"], "haiku": h.get(pg)})
             classi.append(c)
             if solo == "classificatore":
@@ -182,13 +233,13 @@ def misura(modello: str, set_turni: list[dict], solo: str = "") -> dict:
             det = f"{az['nome']}: «{az['testo']}»"
             deterministici.append(controlla_annuncio(det, az) | {"turno": rec["id"], "nome": az["nome"], "testo": az["testo"]})
         print(f"  {rec['id']} fatto", flush=True)
-    riepilogo = {"modello": modello, "classificatore": riepiloga_classificatore(classi)}
+    riepilogo = {"modello": modello, "prompt": prompt, "classificatore": riepiloga_classificatore(classi)}
     if not solo:
         riepilogo["annuncio"] = riepiloga_annuncio(annunci)
         riepilogo["deterministico"] = riepiloga_annuncio(deterministici)
     out = {"riepilogo": riepilogo, "classificatore": classi, "annuncio": annunci, "deterministico": deterministici}
     RISULTATI.mkdir(exist_ok=True)
-    nome = modello.split('/')[-1].lower() + ("-solo-classificatore" if solo else "")
+    nome = modello.split('/')[-1].lower() + ("-solo-classificatore" if solo else "") + ("-prompt-vivo" if prompt == "vivo" else "")
     (RISULTATI / f"minimi-{nome}.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     return riepilogo
 
@@ -207,9 +258,12 @@ def riepiloga_classificatore(classi: list[dict]) -> dict:
         "accordo_sul_raggiungibile": len(corrette) / len(raggiungibili) if raggiungibili else None,
         "nessuna_quando_haiku_sceglie": len(nessuna_con_haiku) / len(con_haiku) if con_haiku else None,
         "id_fuori_catalogo": len(fuori_catalogo),
-        "invalide_dopo_recupero": sum(1 for c in classi if c["scelta"] == "INVALIDA"),
+        "invalide_dopo_recupero": sum(1 for c in classi if c["scelta"] == "INVALIDA" or c.get("ripiego")),
+        "invalide_con_candidati": sum(1 for c in classi if (c["scelta"] == "INVALIDA" or c.get("ripiego")) and c["candidate"]),
         "risposte_al_primo_tentativo": sum(1 for c in classi if c["tentativi"] == 1) / len(classi),
         "secondi_mediani": statistics.median(c["secondi"] for c in classi),
+        "secondi_p90": sorted(c["secondi"] for c in classi)[int(0.9 * (len(classi) - 1))],
+        "secondi_max": max(c["secondi"] for c in classi),
     }
 
 
@@ -230,11 +284,13 @@ def main() -> None:
     p.add_argument("--modello", required=True)
     p.add_argument("--limite", type=int, default=0)
     p.add_argument("--solo", default="", choices=["", "classificatore"], help="esegue solo una modalità")
+    p.add_argument("--prompt", default="breve", choices=["breve", "vivo"],
+                   help="breve: the experiment's own prompt; vivo: the live reader's (prompts/it/lettore-minimo.md, JSON)")
     args = p.parse_args()
     set_turni = [json.loads(r) for r in (DATI / "set_breve.jsonl").read_text(encoding="utf-8").splitlines() if r.strip()]
     if args.limite:
         set_turni = set_turni[: args.limite]
-    riep = misura(args.modello, set_turni, args.solo)
+    riep = misura(args.modello, set_turni, args.solo, args.prompt)
     print(json.dumps(riep, ensure_ascii=False, indent=1))
 
 

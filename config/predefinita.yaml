@@ -28,6 +28,9 @@ backend:
     # 4 bit, ~4,6 GB. Come classificatore: accordo con Haiku 43% (75% sul raggiungibile), 0 id fuori catalogo,
     # 0 risposte invalide. Il 4B (mlx-community/Qwen3-4B-Instruct-2507-4bit, ~3,6 GB) era al 19%: va bene
     # su un computer con meno memoria. Il «thinking» di Qwen3 è spento dagli script (enable_thinking: false).
+    # 16/11/2026, col prompt vero del lettore (risultati.md, «--prompt vivo»): 0.6B 48% (0,46 s), 4B 43% (2,2 s), e
+    # nessun modello (la prima battuta indicata dal Motore) 52%: la scelta è del Motore, il lettore può essere minuscolo
+    # (docs/coerenza.md, «Profile A»).
     modello: mlx-community/Qwen3-8B-4bit
     # mlx: lo accendono gli script (scripts/lettore-avvio.sh, porta 4613); no: lo accendi tu (llama.cpp, Ollama…).
     avvio: mlx

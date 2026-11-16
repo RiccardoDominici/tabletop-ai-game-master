@@ -540,6 +540,26 @@ the Engine (CLAUDE.md, «The small model relays, it never decides»):
   stay as the last check.
 Tests: test/fatti-battuta.test.ts, test/sceneggiatore.test.ts; validator: strumenti/test_valida_campagna.py.
 
+**«Can be tiny», measured** (16 November, `esperimenti/lettore-locale/minimi.py --solo classificatore`, table in
+`esperimenti/lettore-locale/risultati.md`, nothing else heavy running): the 30 turns of the set (85 actions, 21 where
+Haiku used a prewritten line, 12 of them among the Engine's candidates), the live reader's prompt and JSON answer
+(`--prompt vivo`, prompts/it/lettore-minimo.md) and its fallback after a second invalid answer (the Engine's first
+indicated line), and as the floor no model at all (`--modello nessuno`: the first indicated line):
+
+| Reader | Agrees with Haiku (of 21) | On the reachable (of 12) | Median / p90 / max per action |
+|---|---|---|---|
+| no model (first indicated line) | 52% | 92% | 0 s |
+| Qwen3 0.6B 4-bit (~0.35 GB) | 48% | 83% | 0.46 / 0.51 / 0.54 s |
+| Qwen3 4B Instruct 2507 4-bit | 43% | 75% | 2.24 / 2.73 / 3.00 s |
+
+On this set the choice is the Engine's: the 0.6B does as well as the 4B at a fifth of the time, and neither beats
+taking the first line the Engine indicated (on the 8 actions with two or more candidates, 4 of the 5 reachable
+first-indicated lines were Haiku's; the 4B picked 2, the 0.6B 3, mostly through the fallback). The 0.6B often
+answers badly formed JSON (28 of 85 fell back, 25 with candidates), harmless because the fallback is the Engine's;
+with the experiment's own plain-id prompt it answers almost nothing valid (82 of 85). Small sample (21 reference
+choices): it shows the reader can be tiny, not which tiny model is best. The four blind scripts in profile A with the
+0.6B reader: «Measured, round 4 (profile A)» below.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

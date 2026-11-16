@@ -72,8 +72,8 @@ def tabella_classificatore(file: list[tuple[str, dict]]) -> str:
     testa = (
         "| Modello | Azioni | Haiku ha scelto una battuta | Tetto (id Haiku nei preselezionati) | Accordo esatto con Haiku | "
         "Accordo sul raggiungibile | «nessuna» quando Haiku sceglie | Id fuori catalogo | Invalide dopo un tentativo di recupero | "
-        "Risposte valide al primo colpo | Secondi mediani |\n"
-        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n"
+        "Risposte valide al primo colpo | Secondi mediani | Secondi p90 | Secondi max |\n"
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n"
     )
     corpo = ""
     for nome, d in file:
@@ -81,7 +81,8 @@ def tabella_classificatore(file: list[tuple[str, dict]]) -> str:
         corpo += (
             f"| {nome} | {c['azioni']} | {c['azioni_con_scelta_haiku']} | {pct(c['tetto_raggiungibile'])} | "
             f"{pct(c['accordo_con_haiku'])} | {pct(c['accordo_sul_raggiungibile'])} | {pct(c['nessuna_quando_haiku_sceglie'])} | "
-            f"{c['id_fuori_catalogo']} | {c['invalide_dopo_recupero']} | {pct(c['risposte_al_primo_tentativo'])} | {num(c['secondi_mediani'], 2)} |\n"
+            f"{c['id_fuori_catalogo']} | {c['invalide_dopo_recupero']} | {pct(c['risposte_al_primo_tentativo'])} | {num(c['secondi_mediani'], 2)} | "
+            f"{num(c['secondi_p90'], 2) if 'secondi_p90' in c else 'n.d.'} | {num(c['secondi_max'], 2) if 'secondi_max' in c else 'n.d.'} |\n"
         )
     return testa + corpo
 

@@ -18,11 +18,16 @@ Limiti dichiarati: il catalogo del turno è quello statico della scena (il massi
 
 **A) Classificatore**: per ogni azione il modello sceglie l'id di una battuta fra quelle preselezionate per quell'azione, oppure «nessuna». Nessun testo. Risposta stretta; se non valida, un tentativo di recupero. Haiku: quando nel riferimento ha scelto una battuta per un PG, si confronta l'id.
 
-| Modello | Azioni | Haiku ha scelto una battuta | Tetto (id Haiku nei preselezionati) | Accordo esatto con Haiku | Accordo sul raggiungibile | «nessuna» quando Haiku sceglie | Id fuori catalogo | Invalide dopo un tentativo di recupero | Risposte valide al primo colpo | Secondi mediani |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| gemma-3-4b-it-qat-4bit-solo-classificatore | 85 | 21 | 57% | 38% | 67% | 38% | 0 | 0 | 100% | 1.28 |
-| qwen3-4b-instruct-2507-4bit | 85 | 21 | 57% | 19% | 33% | 52% | 0 | 1 | 98% | 1.16 |
-| qwen3-8b-4bit-solo-classificatore | 85 | 21 | 57% | 43% | 75% | 43% | 0 | 0 | 100% | 2.17 |
+| Modello | Azioni | Haiku ha scelto una battuta | Tetto (id Haiku nei preselezionati) | Accordo esatto con Haiku | Accordo sul raggiungibile | «nessuna» quando Haiku sceglie | Id fuori catalogo | Invalide dopo un tentativo di recupero | Risposte valide al primo colpo | Secondi mediani | Secondi p90 | Secondi max |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| gemma-3-4b-it-qat-4bit-solo-classificatore | 85 | 21 | 57% | 38% | 67% | 38% | 0 | 0 | 100% | 1.28 | n.d. | n.d. |
+| nessuno-solo-classificatore | 85 | 21 | 57% | 52% | 92% | 33% | 0 | 0 | 100% | 0.00 | 0.00 | 0.00 |
+| qwen3-0.6b-4bit-solo-classificatore-prompt-vivo | 85 | 21 | 57% | 48% | 83% | 33% | 0 | 28 | 66% | 0.46 | 0.51 | 0.54 |
+| qwen3-0.6b-4bit-solo-classificatore | 85 | 21 | 57% | 5% | 8% | 0% | 0 | 82 | 4% | 0.29 | 0.33 | 0.36 |
+| qwen3-4b-instruct-2507-4bit-solo-classificatore-prompt-vivo | 85 | 21 | 57% | 43% | 75% | 33% | 0 | 45 | 46% | 2.24 | 2.73 | 3.00 |
+| qwen3-4b-instruct-2507-4bit-solo-classificatore | 85 | 21 | 57% | 19% | 33% | 52% | 0 | 1 | 98% | 1.18 | 1.55 | 1.88 |
+| qwen3-4b-instruct-2507-4bit | 85 | 21 | 57% | 19% | 33% | 52% | 0 | 1 | 98% | 1.16 | n.d. | n.d. |
+| qwen3-8b-4bit-solo-classificatore | 85 | 21 | 57% | 43% | 75% | 43% | 0 | 0 | 100% | 2.17 | n.d. | n.d. |
 
 
 Tempi del classificatore: le misure di Qwen3-8B sono state fatte mentre mflux generava immagini sulla GPU, quindi i secondi sono falsati (la qualità no). Va rimisurato a GPU libera prima di usare il tempo.
