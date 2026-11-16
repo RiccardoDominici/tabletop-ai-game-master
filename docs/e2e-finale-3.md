@@ -189,10 +189,10 @@ and the default pace of 38 turns an hour before the observed rate takes over, at
 pace itself moved as designed: one mark every 6–7 turns at the default rate, then every 13–16 turns once the observed
 rate (about 80 turns an hour in a scripted run) took over.
 
-**After, in short.** The coherence layer does not yet meet its success criterion (docs/coerenza.md, «Measured»): two
+**After, in short.** The coherence layer does not yet meet its success criterion (docs/coerenza.md, «Measured, round 1»): two
 definite high-severity sentences reached the table in four games (a fled goblin's «sguardo», CM T12; a hit told as
 absorbed, FB T13), plus about fifteen probable ones, almost all about a creature the Engine does not have. Private
 content no longer reaches the table, fallen characters are corrected or rewritten in most sentences, the order is
 said, the cards hide the DC, and the median first-audio fell from 2.43 s to 1.85 s. The stall run stayed idle (bug 8,
-not fixed there). The gaps found by that reading are listed in docs/coerenza.md, «Measured»: seven fixed after it with
+not fixed there). The gaps found by that reading are listed in docs/coerenza.md, «Measured, round 1»: seven fixed after it with
 tests and not yet measured on the scripts, one open (a creature the Engine does not have), plus the stall's S1.

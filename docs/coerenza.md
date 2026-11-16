@@ -3,7 +3,7 @@
 What this page is: the design of the coherence layer Riccardo asked for after the third e2e pass («sistema i bug,
 studia un sistema che fixi in particolare la coerenza; usa qualcosa per segnarti queste cose e far sì che diventi
 visibile quando necessario»). It replaces the habit of one guard per bug. Status: **built on 16 November** (steps 1–7
-of «Order of work», `85a8340`…`2a7697c`), **measured** on the three blind scripts («Measured»: the success criterion
+of «Order of work», `85a8340`…`2a7697c`), **measured** on the three blind scripts («Measured, round 1»: the success criterion
 is not met yet), then fixed further (`5870930`…`97121cb`, not yet measured on the scripts). Not built: `R-eco` and the
 projector mark (marked below).
 
@@ -135,7 +135,7 @@ check, so a leak can no longer hide behind a 0.
    more violation record of the same rule with `azione: riparata`; otherwise the Engine's line. The events of an answer
    are now handled on one queue, so a sentence that waits holds the ones after it. Off under vitest unless
    `TAGM_RIPARAZIONE=si`; guide: docs/guide/local-and-api.md. Tests: test/coerenza-verifica.test.ts (a rewrite that
-   passes is said, one that breaks the rule again is not). Measured on the three scripts: see «Measured».
+   passes is said, one that breaks the rule again is not). Measured on the three scripts: see «Measured, round 1».
    Building it found a crash of step 2's out-of-play guard (a language-pack section compiled twice, `70be54c`) that the
    rerun on `7109235` had hit in every fight.
 
@@ -150,7 +150,7 @@ profile B:
   (`esperimenti/risultati/e2e-finale-3b/dopo-*`).
 Then, if `memory_pressure` shows at least 30% free, one profile-A run of `stallo`.
 
-## Measured (16 November, the three blind scripts on `2a7697c`)
+## Measured, round 1 (16 November, the three blind scripts on `2a7697c`)
 
 Runs: `esperimenti/risultati/e2e-finale-3b/coerenza-*` (combat with manual and automatic rolls, off the rails, stall;
 profile B, ports 4944–4947). Baseline: `prima-*` on `958556a`. Judged by a blind haiku reader of the per-turn views
