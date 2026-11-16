@@ -647,6 +647,14 @@ the catalogue against any PC's card, at `[usa]` against the answered PC's own); 
 prewritten lines tell no outcome (in that campaign the outcomes are the Engine's fact lines), so the tag matters for
 the scriptwriter's. Tests: test/fatti-battuta.test.ts, test/sceneggiatore.test.ts, strumenti/test_valida_campagna.py.
 
+### R-inesistente spares the one who fell in this very turn
+A noun whose character went out of play by this turn's own cards (downed, killed, fled) is not an absent creature in
+that turn: the narration of the blow is the turn's story (`creatureAssenti(…, oraFuori)`, the same exemption R-fuori
+has with `fuoriDaPrima`). Round 4's over-fire at CM T13 told Zirrà's death before the blow that caused it; that one hit
+the announcement (now exempt, above), but a narrator sentence telling the same blow would have been replaced the same
+way. The cost: an invented creature hit in the same turn the real one fell is not caught that turn. Test:
+test/coerenza-inesistenti.test.ts.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

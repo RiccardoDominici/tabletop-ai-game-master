@@ -43,6 +43,13 @@ describe('the creature nouns come from the data', () => {
     const andato = registro([pg('pg_ida', 'Ida Marchi'), png('png_ruggero', 'Ruggero', ['bandito'], 'fuggito', 'altrove')]);
     expect(frasePresenti(andato, creatureAssenti(andato, creatureNote(andato.entita)))).toBe('Ruggero non è più qui. Oltre a voi, qui non si vede nessuno in piedi.');
   });
+
+  it('one who fell in this very turn is the turn\'s story: the blow that downs him is not replaced by his state', () => {
+    // Round 4 (combat manual, T13): the telling of the killing blow was replaced by the death line, before the blow.
+    const note = creatureNote(ledger('morto').entita, TIPI);
+    expect(creatureAssenti(ledger('morto'), note).map((a) => a.parola)).toContain('bandito');
+    expect(creatureAssenti(ledger('morto'), note, new Set(['png_ruggero'])).map((a) => a.parola).sort()).toEqual(['belva', 'lupo']);
+  });
 });
 
 describe('what the table hears', () => {

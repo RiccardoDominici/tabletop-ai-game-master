@@ -103,8 +103,13 @@ export function creatureNote(entita: readonly EntitaRegistro[], tipi: readonly T
   return [...mappa].map(([parola, s]) => ({ parola, titolari: [...s] }));
 }
 
-/** The nouns none of whose characters is in the scene and in play now. */
-export function creatureAssenti(r: Registro, note: readonly CreaturaNota[]): CreaturaAssente[] {
+/**
+ * The nouns none of whose characters is in the scene and in play now. `oraFuori`: who went out of play in this very
+ * turn (downed, killed or fled by its cards): a noun that names one of them is this turn's story, not an absent
+ * creature (round 4, combat manual T13: the telling of the blow that killed the goblin was replaced by her death line,
+ * a death before the blow). R-fuori spares them the same way (guardiaFuori, `fuoriDaPrima`).
+ */
+export function creatureAssenti(r: Registro, note: readonly CreaturaNota[], oraFuori: ReadonlySet<string> = new Set()): CreaturaAssente[] {
   const per = new Map(r.entita.map((e) => [e.id, e]));
   const qui = (id: string): boolean => {
     const e = per.get(id);
@@ -118,7 +123,8 @@ export function creatureAssenti(r: Registro, note: readonly CreaturaNota[]): Cre
       caduti: n.titolari
         .map((id) => per.get(id))
         .filter((e): e is EntitaRegistro => !!e && (e.presenza === 'uscito' || e.stato === 'fuggito' || (e.presenza === 'in_scena' && !IN_GIOCO.has(e.stato)))),
-    }));
+    }))
+    .filter((a) => !a.caduti.some((e) => oraFuori.has(e.id)));
 }
 
 /** The absent nouns a text names (whole words). */

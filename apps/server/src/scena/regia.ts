@@ -3317,9 +3317,10 @@ export class Regia {
    * actions name and nobody in the scene answers to, where judging them is safe: a fight on, earlier in this visit or a
    * blow this turn, or one the noun named fell or left here. Null when there is none.
    */
-  private inesistentiDelTurno(r: RiepilogoChiusura, registro: Registro, colpoNelTurno: boolean): InesistentiDelTurno | null {
+  private inesistentiDelTurno(r: RiepilogoChiusura, registro: Registro, colpoNelTurno: boolean, oraFuori: ReadonlySet<string> = new Set()): InesistentiDelTurno | null {
     if (!this.prove?.attivo) return null;
-    const assenti = creatureAssenti(registro, creatureNote(registro.entita, tipiGregari(this.campagna)));
+    // A noun one of whose characters went out of play in this very turn is this turn's story (creatureAssenti).
+    const assenti = creatureAssenti(registro, creatureNote(registro.entita, tipiGregari(this.campagna)), oraFuori);
     if (!assenti.length) return null;
     const scontro = this.prove.inCombattimento || colpoNelTurno || this.scontroInVisita === this.mondo.visita.ingresso;
     const sicure = assenti.filter((a) => scontro || a.caduti.length > 0);
@@ -3688,7 +3689,12 @@ export class Regia {
     const fuori = this.righeFuoriGioco();
     if (fuori.length) this.o.log.info({ turno: r.turno, fuori }, 'prove: PNG fuori gioco nel messaggio del narratore');
     const registroTurno = this.registroOra('messaggio del narratore');
-    this.inesistenti = this.inesistentiDelTurno(r, registroTurno, !!tiri?.tiri.some((t) => t.tipo === 'attacco'));
+    const oraFuori = new Set([
+      ...(tiri?.tiri ?? []).filter((t) => t.a_terra && t.bersaglio).map((t) => t.bersaglio!.id),
+      ...(tiri?.combattimento?.fuggiti ?? []).map((f) => f.id),
+      ...(tiri?.combattimento?.morte ?? []).map((m) => m.id),
+    ]);
+    this.inesistenti = this.inesistentiDelTurno(r, registroTurno, !!tiri?.tiri.some((t) => t.tipo === 'attacco'), oraFuori);
     this.nomiInventati = this.nomiInventatiDelTurno(r);
     const veroAdesso = bloccoVeroAdesso(registroTurno);
     // The narrator hears that the noun the players used names nobody here (and the selector, through the same block).
