@@ -1,0 +1,26 @@
+# Coherence ledger (apps/server/src/coerenza/, docs/coerenza.md): the «What is true now» section of the narrator's and
+# the selector's message (coerenza/blocco.ts). States are the ledger's (bands, never hit points).
+coerenza:
+  titolo: "## What is true now (the Engine keeps it: the narration never contradicts it; whoever neither speaks nor acts stays silent)"
+  in_scena: "In the scene: {elenco}."
+  usciti: "Gone from the scene: {elenco}. Here they neither speak nor act."
+  uscito: "{nome} (at turn {turno}{verso})"
+  verso: ", towards {luogo}"
+  pg: "PCs: {elenco}."
+  esiti: "This turn: {elenco}."
+  esito_colpito: "{chi} hits {bersaglio}"
+  esito_mancato: "{chi} misses {bersaglio}"
+  esito_a_terra: "{chi} takes down {bersaglio}"
+  prova_riuscita: "{chi}: {etichetta} succeeded"
+  prova_fallita: "{chi}: {etichetta} failed"
+  negati: "Refused this turn: {elenco}."
+  negato: "{png} to {pg}"
+  stato:
+    in_piedi: "{nome} standing"
+    ferito: "{nome} wounded"
+    grave: "{nome} badly wounded"
+    a_terra: "{nome} down and unconscious: neither speaks nor acts"
+    morente: "{nome} down and dying: does not act"
+    morto: "{nome} is no longer alive: neither speaks nor acts, the body is there"
+    fuggito: "{nome} fled"
+    nascosto: "{nome} hidden"

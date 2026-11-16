@@ -1,0 +1,26 @@
+# Coherence ledger (apps/server/src/coerenza/, docs/coerenza.md): the «Cosa è vero adesso» section of the narrator's and
+# the selector's message (coerenza/blocco.ts). States are the ledger's (bands, never hit points).
+coerenza:
+  titolo: "## Cosa è vero adesso (lo tiene il Motore: la narrazione non lo contraddice; chi non parla né agisce, tace)"
+  in_scena: "In scena: {elenco}."
+  usciti: "Usciti dalla scena: {elenco}. Qui non parlano né agiscono."
+  uscito: "{nome} (al turno {turno}{verso})"
+  verso: ", verso {luogo}"
+  pg: "PG: {elenco}."
+  esiti: "In questo turno: {elenco}."
+  esito_colpito: "{chi} colpisce {bersaglio}"
+  esito_mancato: "{chi} manca {bersaglio}"
+  esito_a_terra: "{chi} manda a terra {bersaglio}"
+  prova_riuscita: "{chi}: {etichetta} riuscita"
+  prova_fallita: "{chi}: {etichetta} fallita"
+  negati: "Hanno rifiutato in questo turno: {elenco}."
+  negato: "{png} a {pg}"
+  stato:
+    in_piedi: "{nome} in piedi"
+    ferito: "{nome} ferito"
+    grave: "{nome} ferito gravemente"
+    a_terra: "{nome} a terra senza sensi: non parla né agisce"
+    morente: "{nome} a terra, morente: non agisce"
+    morto: "{nome} non è più in vita: non parla né agisce, il corpo è lì"
+    fuggito: "{nome} fuggito"
+    nascosto: "{nome} nascosto"

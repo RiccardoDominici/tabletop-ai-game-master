@@ -87,16 +87,25 @@ by `misure.py` per rule; the independent detector of what the table heard (`priv
 check, so a leak can no longer hide behind a 0.
 
 ### Order of work (each step its own commit, tests on invented fixtures, docs in the same commit)
-1. **Done**: ledger as a read model + journal + snapshot, no behaviour change (coerenza/registro.ts, coerenza/diario.ts;
-   the director's `fontiRegistro`/`registroOra`, called on every state change, as the narration starts and after the
-   cards; `StatoMaster.coerenza` for the panel; tests: test/coerenza-registro.test.ts). 2. **Done**: the checker (coerenza/verifica.ts, `VerificaTurno`): the
-sentence guards as rules R-numeri, R-esito, R-fuori, R-assente, R-finzione, R-privato, R-segreto, R-rifiuto,
-R-ripetuta in one pipeline in turni/narrazione.ts, with the repertoire's narrator rows through R-esito/R-fuori
-(`verificaBattuta`) and the told facts as R-dovuto; their tests unchanged; each violation logged («coerenza:
-violazione» plus the old line), written to narrazioni.jsonl (`tipo: violazione`), counted by misure.py (`coerenza`)
-and listed in `StatoMaster.coerenza.violazioni`; tests: test/coerenza-verifica.test.ts. 3. The «Cosa è vero adesso» block replacing the
-scattered sections. 4. The audience split for private actions. 5. Presence tags. 6. The panel box (and the projector
-mark). 7. The targeted repair with its deadline, measured on the three e2e scripts. Then the e2e pass again.
+1. **Done** (`85a8340`): the ledger as a read model, its journal and the snapshot, no behaviour change
+   (coerenza/registro.ts, coerenza/diario.ts; the director's `fontiRegistro`/`registroOra`, called on every state
+   change, as the narration starts and after the cards; `StatoMaster.coerenza` for the panel; tests:
+   test/coerenza-registro.test.ts).
+2. **Done** (`94c1adb`): the checker (coerenza/verifica.ts, `VerificaTurno`): the sentence guards as rules R-numeri,
+   R-esito, R-fuori, R-assente, R-finzione, R-privato, R-segreto, R-rifiuto, R-ripetuta in one pipeline in
+   turni/narrazione.ts, the repertoire's narrator rows through R-esito/R-fuori (`verificaBattuta`), the told facts as
+   R-dovuto; the guards' tests unchanged; each violation logged («coerenza: violazione» plus the old line), written to
+   narrazioni.jsonl (`tipo: violazione`), counted by misure.py (`coerenza`) and listed in
+   `StatoMaster.coerenza.violazioni`; tests: test/coerenza-verifica.test.ts.
+3. **Done** (`1acb073`): the «Cosa è vero adesso» block (coerenza/blocco.ts; lines in
+   `lingue/<code>/testi-coerenza.yaml`): in the scene and how, gone from it and when, the PCs, this turn's public
+   outcomes and refusals, at most 12 rows; it replaced «PNG fuori gioco»; «Esiti dei tiri» keeps the details to narrate
+   and «Fatti scoperti» the facts' text (a row each would break the budget); the narrator and selector prompts say
+   never to contradict it; tests: test/coerenza-blocco.test.ts, test/fuori-gioco.test.ts.
+4. The audience split for private actions.
+5. Presence tags.
+6. The panel box (and the projector mark).
+7. The targeted repair with its deadline, measured on the three e2e scripts. Then the e2e pass again.
 
 ## Success criterion (written before measuring)
 On the three blind scripts of docs/e2e-finale-3.md (combat with manual and automatic rolls, off the rails, stall),

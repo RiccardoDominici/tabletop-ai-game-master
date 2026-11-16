@@ -112,6 +112,7 @@ import { guardiaFuori } from '../narrazione/guardia-fuori';
 import { DiarioRegistro } from '../coerenza/diario';
 import type { FattoRegistro, FontiRegistro, Registro } from '../coerenza/registro';
 import type { Violazione } from '../coerenza/verifica';
+import { bloccoVeroAdesso } from '../coerenza/blocco';
 import type { EsitoCombattimento } from '../prove/combattimento';
 import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dovuti';
 import { guardiaPrivate } from '../narrazione/privato';
@@ -3175,9 +3176,11 @@ export class Regia {
     this.aggiornaRitmoSerata(r.turno);
     // The clocks due in this turn's message: an owed mark among them that the response does not show is said by the Engine.
     this.dovutiAlMessaggio = new Set(this.orologi.dovuti(r.turno).map((o) => o.id));
-    // Dopo i tiri: chi è a terra, morto o fuggito non parla (presenza, catalogo, narratore).
+    // Dopo i tiri: chi è a terra, morto o fuggito non parla (presenza, catalogo, narratore). What is true now goes to the
+    // narrator from the ledger (docs/coerenza.md §2): the fallen are rows like the others.
     const fuori = this.righeFuoriGioco();
     if (fuori.length) this.o.log.info({ turno: r.turno, fuori }, 'prove: PNG fuori gioco nel messaggio del narratore');
+    const veroAdesso = bloccoVeroAdesso(this.registroOra('messaggio del narratore'));
     // Gli stessi dati vanno al lettore minimo, che non legge il testo (llm/minimo.ts, turnoDaDati).
     const datiTurno: DatiMessaggioTurno = {
       turno: r.turno,
@@ -3204,7 +3207,7 @@ export class Regia {
             },
           }
         : {}),
-      ...(fuori.length ? { fuoriGioco: { titolo: testoFisso('prove.fuori.titolo'), righe: fuori } } : {}),
+      ...(veroAdesso ? { veroAdesso } : {}),
     };
     const messaggioBase = compilaMessaggioTurno(datiTurno);
     // Ritmo concitato: il narratore sa che vale ancora, e quando dire `[ritmo] calmo`.

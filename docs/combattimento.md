@@ -97,8 +97,9 @@ combattimento:
      fled character back on stage by hand brings them back). Whoever is out of play does not speak or act, anywhere: they
      leave the NPCs on stage of the director (`pngInScena`), hence the catalog and the preselection of lines, the
      improvised `[png_x]` lines (the guard for absent NPCs discards them), the scriptwriter and the projector's present
-     ones. The narrator's and the selector's message has the section «PNG fuori gioco» (NPCs out of play) («Ruggero giace a
-     terra senza sensi: non parla né agisce» (Ruggero lies on the ground, unconscious: he neither speaks nor acts)). The
+     ones. The narrator's and the selector's message has them as rows of «Cosa è vero adesso» (What is true now, the
+     coherence ledger, docs/coerenza.md §2; before, the section «PNG fuori gioco»): «Ruggero lo sgherro non è più in
+     vita: non parla né agisce, il corpo è lì». The
      arbiter sees the bodies («· A TERRA» (· ON THE GROUND), «· MORTO» (· DEAD)), not the fled; an attack on a fled
      character does not roll and does not open another clash. In the final e2e an NPC at 0 HP negotiated for five turns
      (bug C1).

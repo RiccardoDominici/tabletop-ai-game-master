@@ -158,7 +158,7 @@ describe('PNG a terra col server intero (C1)', () => {
     const s2 = await giocaTurno(s1, 'Parlo con Ruggero', 'Aspetto');
     expect(messaggi.at(-1)).toContain('ruggero_tratta');
     expect(messaggi.at(-1)).toContain('nar_ruggero_sputa');
-    expect(messaggi.at(-1)).not.toContain('PNG fuori gioco');
+    expect(messaggi.at(-1)).not.toContain('non è più in vita');
     // T2: il colpo lo butta giù. La sua riga [png_…] si scarta prima della voce.
     const s3 = await giocaTurno(s2, 'Guardo il fiume', 'Colpisco Ruggero con la spada');
     const t2 = s3.trascrizione.filter((v) => v.turno === 2).map((v) => v.testo);
@@ -166,7 +166,8 @@ describe('PNG a terra col server intero (C1)', () => {
     expect(t2.join(' ')).not.toContain('Parliamo');
     // Il messaggio del turno 2 (dopo i tiri) dice già che Ruggero è fuori gioco, e non ha la sua battuta.
     // Nell'SRD un PNG a 0 muore.
-    expect(messaggi.at(-1)).toMatch(/## PNG fuori gioco[^\n]*\n\n- Ruggero lo sgherro non è più in vita: non parla né agisce\./);
+    // «Cosa è vero adesso» (the coherence ledger, docs/coerenza.md §2): the fallen are a row of the scene.
+    expect(messaggi.at(-1)).toMatch(/## Cosa è vero adesso[^\n]*\n\n- In scena: [^\n]*Ruggero lo sgherro non è più in vita: non parla né agisce, il corpo è lì/);
     // Sul proiettore non è più tra i presenti.
     expect(s3.scena.personaggi?.find((p) => p.id === 'png_ruggero')?.presente ?? false).toBe(false);
     expect(s2.scena.personaggi?.find((p) => p.id === 'png_ruggero')?.presente).toBe(true);
