@@ -143,6 +143,26 @@ The threat clocks of the scene: a row of boxes, filled up to the tick already sh
 
 The changes are saved with the session and written into `registro.yaml` at the end of the session, for the next one.
 
+### Coherence
+
+**Coerenza** (Coherence): what the Engine holds true now, and what it stopped the narration from saying
+([docs/coerenza.md](../coerenza.md)).
+
+- **Che cosa è vero adesso** (What is true now): every PC, and the NPCs in the scene or who left it, with their state
+  (in piedi, ferito, ferito gravemente, a terra, morente, morto, fuggito, nascosto; never hit points) and, when they are
+  not in the scene, «uscito» (left).
+- **Violazioni fermate** (Violations stopped): each sentence the checker caught, newest first: the turn, the rule
+  (`R-fuori` someone out of play acting, `R-esito` an outcome against its card, `R-privato` private content moved to a
+  phone, `R-assente`, `R-segreto`, `R-rifiuto`, `R-ripetuta`, `R-numeri`, `R-finzione`, `R-dovuto` a card's fact the
+  Engine had to add), what it did (sostituita, tolta, spostata, riscritta, aggiunta), the sentence and what was said
+  instead. With «senza spoiler» only the turn, the rule and the action show.
+- **Lo sanno solo loro** (Only they know): the private outcomes and actions, with who knows them (hidden with «senza
+  spoiler»).
+- **Diario** (Journal), folded: every change of state or presence, from what to what, and why.
+
+The count next to the title is the violations of the evening. The same records are in the server log
+(«coerenza: violazione») and in `narrazioni.jsonl`.
+
 ### Combat
 
 Shown only when the campaign has dice and character sheets (see [Dice and sheets](dice-and-sheets.md)). It is the last box of this column.

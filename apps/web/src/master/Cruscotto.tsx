@@ -14,6 +14,7 @@ import { SezionePresenze } from './SezionePresenze';
 import { SezioneAudio } from './SezioneAudio';
 import { SezioneOrologi } from './SezioneOrologi';
 import { SezioneMondo } from './SezioneMondo';
+import { SezioneCoerenza } from './SezioneCoerenza';
 import { SezioneCombattimento } from './SezioneCombattimento';
 import { SezioneTiri } from './SezioneTiri';
 import { SezioneFinestra } from './SezioneFinestra';
@@ -36,6 +37,7 @@ export function Cruscotto({ stato }: { stato: StatoMaster }) {
         <SezioneSituazioni stato={stato} />
         <SezioneOrologi stato={stato} />
         <SezioneMondo stato={stato} />
+        <SezioneCoerenza stato={stato} />
         {stato.combattimento && <SezioneCombattimento stato={stato} />}
         {stato.tiri && <SezioneTiri stato={stato} />}
       </div>

@@ -119,7 +119,12 @@ check, so a leak can no longer hide behind a 0.
    cleared at a scene change); who left leaves the physical presence (so R-assente drops its lines and the catalogue
    its lines), the ledger has it as `uscito` with turn and place, «Cosa è vero adesso» says it; the Game Master's
    presence decision wins. Tests: test/coerenza-presenze.test.ts.
-6. The panel box (and the projector mark).
+6. **Done** (the panel box): apps/web/src/master/SezioneCoerenza.tsx, «Coerenza» in the left column after «Mondo»: the
+   characters' state and presence, the violations stopped (rule, action, sentence and its replacement, sentences
+   hidden with «senza spoiler»), the private facts with their knowers, the journal; strings in
+   apps/web/src/lingua/{it,en}/master.ts; docs/guide/master-panel.md, «Coherence». Tested by rendering
+   (SezioneCoerenza.test.ts), not yet looked at in a browser. **Not done**: the projector mark on a downed NPC (the
+   fallen already leave the projector's present list).
 7. The targeted repair with its deadline, measured on the three e2e scripts. Then the e2e pass again.
 
 ## Success criterion (written before measuring)
