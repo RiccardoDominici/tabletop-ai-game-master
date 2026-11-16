@@ -219,3 +219,11 @@ left alone) until a frozen replay set scores them (docs/coerenza.md, «Verdict a
 | 9 | Stall T4 «Ugo … si incammina verso la carbonaia» with no `[esce]`, then he speaks at T8–T10; off the rails the players' «Oreste» and «Madre Carla» are answered by Berta and Ugo. **Open.** |
 | 10 | The who-is-there line said in almost every combat turn after the fight; the S3 leads (above). |
 
+**Round 3** (`6912f11`, the yes/no judge on; docs/coerenza.md, «Measured, round 3»): only the combat game with manual
+rolls is valid (the API credit ran out in the second game; the other three are kept as evidence of the failure).
+High-severity sentences heard there, round 1 → 2 → 3: 10 → 6 → 3 (plus 3 borderline): an attack and a fleeing figure
+with no noun, and a carried pronoun after the one late answer. On its raw answers, labelled before reading the
+judge's decisions, the rules catch 16 of 31 violations, the live rules + judge 24 of 30, with 3 clean sentences
+touched either way. 42 questions at about 1 s, 1 late. First audio 2.09 s for this script (1.15 s at baseline): the
+judge's wait on a flagged first sentence shows. Still not ready.
+

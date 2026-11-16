@@ -360,6 +360,35 @@ TTS service); 36 questions with the narrator streaming alongside, 22 «si», non
 1440 ms at most; median first audio 1637 ms (15 turns). The 22 «si» are the invented goblin acting or hit after the
 fight, and once Ugo, at his kiln, watching at the tower; 19 sentences dropped and 2 replaced by the Engine's line.
 
+## Measured, round 3 (16 November, the yes/no judge on, `6912f11`)
+
+Runs: `esperimenti/risultati/e2e-finale-3b/coerenza3-*`, same scripts, profile and ports. **Only the combat game with
+manual rolls is valid**: the Anthropic API credit ran out during the second game, so in the automatic-rolls combat,
+the off-the-rails and the stall games the narrator's calls failed («Your credit balance is too low»: 42 failed
+narrator calls, 48 failed arbiter calls, every judge question failed and the rules decided). Those three are kept as
+evidence of the failure, not as a measure.
+- **High-severity sentences heard** (combat, manual rolls; the same blind haiku reader, quotes checked): round 1 → 2
+  → 3: **10 → 6 → 3**, plus 3 borderline. The three: T10 «Livia para la lancia con lo scudo: il legno geme, ma
+  regge.» (an attack by nobody in play, no noun to flag), T14 «… il pugnale … sparisce nel buio della scala: il rumore
+  dei passi si allontana» (an invented fleeing figure, no noun), T15 «Il colpo lo coglie di fianco e lo stende sulle
+  pietre» (a carried pronoun after the one late answer: the rules decided and missed it). Borderline: T7 a miss told on
+  Zirrà while the card's target was Grosso; T1 and T18 a private action's visible trace. Private content at the table:
+  0. Not met: the target is 0.
+- **Held-out #2** (`insieme-r3.json`, `etichette-r3.json`: the round's raw public answers, 42 flagged sentences
+  labelled before reading the judge's decisions; 31 violations, 21 clean): `attive` 9 caught, 3 clean touched;
+  `regole` (with R-inesistente) 16, 3; **the live system (rules + judge in play, combat-manual, 30 violations) 24 caught,
+  3 clean touched** (a detail after a «si» dropped, «Il colpo arriva senza mancare.»; two lines of a private action
+  moved by R-privato, by design). The offline v2 could not be asked again on this set (no API credit).
+- **Latency**: 42 questions, 25 «si», 1 late (the 1.5 s deadline); 1017 ms median, 1192 ms p90, 1369 ms at most.
+  First audio of this game: 2087 ms median (15 turns), against 1146 (baseline), 1730 (round 1), 1088 (round 2) and
+  1637 (the smoke run) for the same script: the judge's wait on a flagged first sentence shows; with one valid game the
+  pooled criterion (+0.5 s on 2434 ms) cannot be checked, and this game alone is +0.94 s on its own baseline.
+- **A side effect**: the judge drops the invented sentences and nothing takes their place, so some actions get no
+  answer («repertorio: azioni senza risposta» 5 times after the repair call, against 2 in round 2): the table hears
+  less, and the stall count rises.
+- What the sets cannot see: attacks and creatures with no noun («la lancia che arriva», «la figura che scappa»),
+  carried pronouns after a late answer.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo
