@@ -61,6 +61,8 @@ export interface ContestoValidazione {
   chiusura?: boolean;
   /** The ledger's characters (coerenza/registro.ts): the names a narrator row may use for an NPC. */
   entita?: readonly EntitaRegistro[];
+  /** A `subito` answer: the turn of the action it answers, after which its lines are not offered. */
+  finoAlTurno?: number;
 }
 
 /** Whether a row names that NPC (name, short name, alias), as the ledger has them. */
@@ -117,8 +119,8 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     if (ctx.chiusura && b['chi'] !== 'narratore') return void scartate.push({ id, motivo: 'la chiusura della serata la dice il narratore' });
     // Only the facts a line assumes (richiede.stati) are allowed among its conditions: no gates, no effects.
     const rq = b['richiede'];
-    const soloStati = rq === undefined || (rq !== null && typeof rq === 'object' && !Array.isArray(rq) && Object.keys(rq).every((k) => k === 'stati'));
-    if (!soloStati || b['effetti'] !== undefined) return void scartate.push({ id, motivo: 'richiede/effetti non ammessi (solo richiede.stati): le rivelazioni restano quelle preparate' });
+    const soloStati = rq === undefined || (rq !== null && typeof rq === 'object' && !Array.isArray(rq) && Object.keys(rq).every((k) => k === 'stati' || k === 'esito'));
+    if (!soloStati || b['effetti'] !== undefined) return void scartate.push({ id, motivo: 'richiede/effetti non ammessi (solo richiede.stati, richiede.esito): le rivelazioni restano quelle preparate' });
     delete b['varianti'];
     delete b['solo_esempio'];
     delete b['audio'];
@@ -155,6 +157,9 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     if (tic) return void scartate.push({ id: b.id, motivo: `tic di ${tic.r.etichetta} troppo vicino all'ultimo: «${tic.t}»` }), false;
     return true;
   });
+  // A `subito` line answers one action: once that action's moment has passed it is not offered (round 4: a miss written
+  // for T6 was picked at T9 for a blow that hit).
+  if (ctx.finoAlTurno !== undefined) for (const b of battute) b.fino_al_turno = ctx.finoAlTurno;
   return { accettate: battute, scartate, ...(corrette.length ? { corrette } : {}) };
 }
 

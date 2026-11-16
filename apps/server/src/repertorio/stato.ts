@@ -14,8 +14,8 @@ import { segretiNelTesto, type ParolaSegreta } from './segreti';
 import type { Battuta, CondizioniStato, Repertorio, RigaBattuta, TipoBattuta } from './tipi';
 import { accetta, blocchi, bloccoConCancello, provaFallita, type AzioneAlCancello, type Blocco } from './condizioni';
 import type { StatoRepertorioSalvato } from '../sessione/tipi';
-import type { EntitaRegistro } from '../coerenza/registro';
-import { motivoControRegistro } from './fatti-battuta';
+import type { EntitaRegistro, EsitoRegistro } from '../coerenza/registro';
+import { motivoControRegistro, motivoEsito } from './fatti-battuta';
 
 /**
  * Tipi che, scritti nel catalogo, svelerebbero un segreto al selettore: che quella battuta è una
@@ -128,7 +128,7 @@ export class StatoRepertorio {
    * the states it assumes, who it names) are checked against it before the catalogue (repertorio/fatti-battuta.ts),
    * in place of `fuoriGioco`.
    */
-  registro: (() => { entita: readonly EntitaRegistro[] }) | null = null;
+  registro: (() => { entita: readonly EntitaRegistro[]; esiti?: readonly EsitoRegistro[] }) | null = null;
   /** Indizi della campagna con i loro `modi`. */
   private readonly indizi: Map<string, IndizioCampagna>;
 
@@ -177,10 +177,13 @@ export class StatoRepertorio {
       const assente = parlantiDi(b).find((p) => !presenti.has(p));
       if (assente) return `${assente} non è in questa scena`;
     }
+    // A line the sceneggiatore wrote for one action (`subito`): not offered once that action's moment has passed.
+    if (b.fino_al_turno !== undefined && turno !== undefined && turno > b.fino_al_turno) return `written for the action of turn ${b.fino_al_turno}: its moment has passed`;
     const registro = this.registro?.();
     if (registro) {
-      // The line's own facts against what is true now (docs/repertorio.md, «Facts a line carries»).
-      const contro = motivoControRegistro(b, registro.entita);
+      // The line's own facts against what is true now (docs/repertorio.md, «Facts a line carries»), and the outcome it
+      // tells against this turn's cards (any PC's here; the answered PC's in rispondeA).
+      const contro = motivoControRegistro(b, registro.entita) ?? motivoEsito(b, registro.entita, registro.esiti ?? [], null);
       if (contro) return contro;
     } else {
       const fuori = this.fuoriGioco?.();
@@ -225,6 +228,9 @@ export class StatoRepertorio {
 
   /** La battuta può rispondere a quest'azione ADESSO (un blocco aperto ne accetta i cancelli)? */
   rispondeA(b: Battuta, a: AzioneAlCancello): boolean {
+    // The outcome the line tells must be this action's: the card of its author (richiede.esito with no `chi`).
+    const r = b.richiede.esito ? this.registro?.() : null;
+    if (r && motivoEsito(b, r.entita, r.esiti ?? [], a.autore)) return false;
     return !provaFallita(b, a) && this.blocchiAperti(b).some((bl) => accetta(bl, a));
   }
 

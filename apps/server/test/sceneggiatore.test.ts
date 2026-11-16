@@ -83,6 +83,15 @@ describe('controllo delle battute dello sceneggiatore', () => {
     expect(r.scartate[1]!.motivo).toMatch(/^png_guardia agisce nella battuta/);
   });
 
+  it('an outcome line carries richiede.esito; a subito answer is bound to the turn of its action', () => {
+    const r = validaBattute(
+      yaml([battuta({ id: 'sc_x_1', chi: 'narratore', tipo: 'momento', testo: ['[narratore] La lama trova il fianco dell\'oste.'], attori: ['png_oste'], richiede: { esito: { tipo: 'colpito', bersaglio: 'png_oste' } } })]),
+      { ...ctx, finoAlTurno: 6 },
+    );
+    expect(r.scartate).toEqual([]);
+    expect(r.accettate[0]).toMatchObject({ fino_al_turno: 6, richiede: { esito: { tipo: 'colpito', chi: null, bersaglio: 'png_oste' } } });
+  });
+
   // E2E, secondo giro (N5): 42 battute scartate con «tipo non ammesso per lo sceneggiatore: undefined».
   it('tipo mancante: dedotto da chi parla (PNG reazione, narratore momento), e il log lo dice; un tipo che rivela resta fuori', () => {
     const senzaTipo = (o: Record<string, unknown>) => {

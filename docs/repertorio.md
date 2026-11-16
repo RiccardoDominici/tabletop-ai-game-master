@@ -56,6 +56,7 @@ battute:
     attori: [png_ottavia]             # NPCs who act in (or are there in) the narrator rows, even unnamed
     menzionati: []                    # NPCs only talked about: no presence asked
     # richiede.stati: {png_x: [a_terra, morto]}   # the states the line assumes (in_gioco, a_terra, morto, fuggito)
+    # richiede.esito: {tipo: mancato, chi: png_x} # the outcome it tells: colpito, mancato, a_terra, fugge
 ```
 
 ### Facts a line carries (16 November)
@@ -71,7 +72,14 @@ break coherence; the deterministic rules on the lines that come out (R-esito, R-
 - an NPC a row names that no tag covers (every NPC of an untagged line): it must be in play (the rule before the tags,
   «Zirrà schiocca le dita.» eight turns after she fell); an untagged NPC away from the scene is left alone, since an
   older line may talk about someone elsewhere (an ending at the tower about the village);
-- `menzionati`: nothing asked.
+- `menzionati`: nothing asked;
+- `richiede.esito` (only in the base): the outcome the line tells, a blow that `colpito` (landed), `mancato`, `a_terra`
+  (downed its target), or a flight (`fugge`): one of this turn's public attack cards must say exactly that, struck by
+  `chi` (an NPC) or, with no `chi`, by the PC whose action the line answers (checked again when the reader uses it for
+  that PC); a flight must be in the ledger (`repertorio/fatti-battuta.ts`, `motivoEsito`; round 4 heard a miss line for
+  a blow that hit).
+A line the sceneggiatore wrote `subito` for one action carries the turn of that action (`fino_al_turno`, Engine-only)
+and is not offered after it: it is said while the window is open, or not at all (round 4 heard T6's «Mancata!» at T9).
 The loader rejects a wrong id or state; the validator checks the same (`REPERTORIO.fatti`) and warns about an NPC a
 narrator row names without a tag (`REPERTORIO.png_non_segnato`). The sceneggiatore writes the tags too
 (docs/sceneggiatore.md). Not tracked: objects (who holds what), so a line cannot assume them yet.

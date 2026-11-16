@@ -636,6 +636,17 @@ rules no longer judge a sentence inside an announcement (`FraseDaVerificare.attr
 player's words, and round 4's R-inesistente over-fire at CM T13 was the rule replacing the announcement of the very
 blow that killed Zirrà. Tests: test/annuncio-d4.test.ts, test/coerenza-prima-frase.test.ts.
 
+### Outcome lines carry their outcome; a `subito` line is bound to its action
+Round 4's two outcome errors were both lines that tell a blow: a scriptwriter's miss («… la lancia taglia l'aria dove
+nessuno c'è più») heard while Zirrà's card hit, and a miss written for T6 picked at T9 for a dagger that hit. Now a line
+that tells an outcome carries `richiede.esito: {tipo: colpito | mancato | a_terra | fugge, chi?, bersaglio?}`, written
+by the big model (Preparer skill, scriptwriter prompt and check, validator `REPERTORIO.fatti`), and the Engine offers
+it only when one of this turn's public attack cards says exactly that (`repertorio/fatti-battuta.ts`, `motivoEsito`: in
+the catalogue against any PC's card, at `[usa]` against the answered PC's own); a flight must be in the ledger. And a
+`subito` line carries the turn of its action (`fino_al_turno`): said while that window is open, or never. torre-mozza's
+prewritten lines tell no outcome (in that campaign the outcomes are the Engine's fact lines), so the tag matters for
+the scriptwriter's. Tests: test/fatti-battuta.test.ts, test/sceneggiatore.test.ts, strumenti/test_valida_campagna.py.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

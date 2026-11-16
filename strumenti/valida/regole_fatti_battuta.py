@@ -1,4 +1,5 @@
-"""The facts a line carries (docs/repertorio.md, «Facts a line carries»): `attori`, `menzionati` and `richiede.stati`.
+"""The facts a line carries (docs/repertorio.md, «Facts a line carries»): `attori`, `menzionati`, `richiede.stati` and
+`richiede.esito` (the outcome a line tells: colpito, mancato, a_terra, fugge, with chi and bersaglio).
 
 The Engine checks them against the coherence ledger before a line enters the catalogue (apps/server/src/repertorio/
 fatti-battuta.ts), so the small local reader, which only relays, never sees a line that contradicts what is true now.
@@ -16,6 +17,7 @@ from .carica import Campagna
 from .esito import Esito
 
 CLASSI_STATO = ("in_gioco", "a_terra", "morto", "fuggito")
+TIPI_ESITO = ("colpito", "mancato", "a_terra", "fugge")
 
 
 def _ids(v) -> list | None:
@@ -70,6 +72,18 @@ def controlla(c: Campagna, e: Esito) -> None:
                     if not isinstance(classi, list) or not classi or any(x not in CLASSI_STATO for x in classi):
                         e.errore("REPERTORIO.fatti", dove, f"richiede.stati.{pid}: uno o più di {', '.join(CLASSI_STATO)}")
                     coperti.add(pid)
+        esito = richiede.get("esito")
+        if esito is not None:
+            e_d = {"tipo": esito} if isinstance(esito, str) else esito
+            if not isinstance(e_d, dict) or e_d.get("tipo") not in TIPI_ESITO or set(e_d) - {"tipo", "chi", "bersaglio"}:
+                e.errore("REPERTORIO.fatti", dove, f"richiede.esito: {{tipo: {' | '.join(TIPI_ESITO)}, chi?, bersaglio?}}")
+            else:
+                for k in ("chi", "bersaglio"):
+                    v = e_d.get(k)
+                    if v is not None and v not in c.png and v not in c.pg_ids:
+                        e.errore("REPERTORIO.fatti", dove, f"richiede.esito.{k}: {v} non è un PNG con scheda né un PG")
+                if e_d.get("tipo") == "fugge" and not (e_d.get("chi") or e_d.get("bersaglio")):
+                    e.errore("REPERTORIO.fatti", dove, "richiede.esito fugge: chi fugge (chi o bersaglio)")
         # Who speaks is covered by its own label; a narrator row that names someone else needs a tag.
         parlanti = {b.get("chi")} | {m.group(1) for r in (b.get("testo") or []) if (m := re.match(r"^\[([a-z0-9_]+)\]", str(r)))}
         versioni = [b.get("testo") or []] + [v for v in (b.get("varianti") or []) if isinstance(v, list)]

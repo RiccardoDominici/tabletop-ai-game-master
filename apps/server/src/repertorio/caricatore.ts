@@ -13,13 +13,13 @@ import type { Campagna, DatiYaml } from '../campagna/tipi';
 import { ID_NARRATORE } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import { indiziCampagna } from '../campagna/indizi';
-import { CLASSI_STATO, TIPI_BATTUTA, type AlternativaRichiede, type Battuta, type ClasseStato, type CondizioniStato, type Effetti, type Repertorio, type Richiede, type RigaBattuta, type TipoBattuta } from './tipi';
+import { CLASSI_STATO, TIPI_BATTUTA, TIPI_ESITO, type AlternativaRichiede, type EsitoBattuta, type TipoEsito, type Battuta, type ClasseStato, type CondizioniStato, type Effetti, type Repertorio, type Richiede, type RigaBattuta, type TipoBattuta } from './tipi';
 import { EFFETTI, UMORE_AUTO, UMORI } from '../audio/cue';
 import { comeAbilita, comeCaratteristica } from '../campagna/regole-srd';
 import { caricaRegole } from '../regole/caricatore';
 
 /** Chiavi ammesse in `richiede` (e, tranne `oppure`, in ogni alternativa). Una chiave sconosciuta è un errore: ignorata, aprirebbe il cancello. */
-const CHIAVI_RICHIEDE = new Set(['indizi_rivelati', 'indizi_non_rivelati', 'battute_usate', 'battute_non_usate', 'orologio', 'privata', 'da_pg', 'prova', 'oppure', 'stati']);
+const CHIAVI_RICHIEDE = new Set(['indizi_rivelati', 'indizi_non_rivelati', 'battute_usate', 'battute_non_usate', 'orologio', 'privata', 'da_pg', 'prova', 'oppure', 'stati', 'esito']);
 
 export class ErroreRepertorio extends Error {
   override name = 'ErroreRepertorio';
@@ -69,7 +69,7 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = c.cartell
     if (!Array.isArray(dati['battute'])) continue; // non è un file di battute
     (dati['battute'] as unknown[]).forEach((grezza, i) => {
       const dove = `${nomeFile}#${i + 1}`;
-      const b = leggiBattuta(grezza, nomeFile, dove, parlanti, errori, avvisi, idSet);
+      const b = leggiBattuta(grezza, nomeFile, dove, parlanti, errori, avvisi, idSet, c.pg.map((p) => p.id));
       if (b) battute.push(b);
     });
   }
@@ -141,7 +141,7 @@ function leggiCancelloProva(v: unknown, dove: string, errori: string[], idSet: R
  */
 function leggiCondizioni(r: DatiYaml, dove: string, errori: string[], base: boolean): CondizioniStato {
   for (const k of Object.keys(r)) {
-    if (!CHIAVI_RICHIEDE.has(k) || (!base && (k === 'oppure' || k === 'stati'))) errori.push(`${dove}: chiave non prevista «${k}»${k === 'oppure' ? ' (niente oppure annidati)' : k === 'stati' ? ' (stati solo nella base)' : ''}`);
+    if (!CHIAVI_RICHIEDE.has(k) || (!base && (k === 'oppure' || k === 'stati' || k === 'esito'))) errori.push(`${dove}: chiave non prevista «${k}»${k === 'oppure' ? ' (niente oppure annidati)' : k === 'stati' || k === 'esito' ? ` (${k} solo nella base)` : ''}`);
   }
   if (r['privata'] !== undefined && typeof r['privata'] !== 'boolean') errori.push(`${dove}: privata è true o false`);
   const o = r['orologio'] as DatiYaml | undefined;
@@ -228,6 +228,7 @@ function leggiBattuta(
   errori: string[],
   avvisi: string[],
   idSet: ReadonlySet<string>,
+  pg: readonly string[] = [],
 ): Battuta | null {
   if (!grezza || typeof grezza !== 'object' || Array.isArray(grezza)) {
     errori.push(`${dove}: la battuta non è un oggetto`);
@@ -258,6 +259,7 @@ function leggiBattuta(
   const richiede: Richiede = {
     ...leggiCondizioni(r, `${qui} richiede`, errori, true),
     stati: leggiStati(r['stati'], `${qui} richiede.stati`, parlanti, errori),
+    esito: leggiEsito(r['esito'], `${qui} richiede.esito`, parlanti, pg, errori),
     privata: r['privata'] === true,
     da_pg: lista(r['da_pg']),
     prova: leggiCancelloProva(r['prova'], `${qui} richiede`, errori, idSet),
@@ -316,6 +318,27 @@ function leggiPng(v: unknown, dove: string, parlanti: Set<string>, errori: strin
   }
   for (const id of v as string[]) if (id === ID_NARRATORE || !parlanti.has(id)) errori.push(`${dove}: «${id}» non è un PNG con scheda`);
   return [...new Set(v as string[])];
+}
+
+/** `richiede.esito: {tipo: colpito|mancato|a_terra|fugge, chi?: png_x, bersaglio?: id}` (docs/repertorio.md). */
+function leggiEsito(v: unknown, dove: string, parlanti: Set<string>, pg: readonly string[], errori: string[]): EsitoBattuta | null {
+  if (v === undefined || v === null) return null;
+  const d = (typeof v === 'string' ? { tipo: v } : v) as DatiYaml;
+  if (typeof d !== 'object' || Array.isArray(d) || !(TIPI_ESITO as readonly unknown[]).includes(d['tipo'])) {
+    errori.push(`${dove}: {tipo: ${TIPI_ESITO.join(' | ')}, chi?, bersaglio?}`);
+    return null;
+  }
+  for (const k of Object.keys(d)) if (!['tipo', 'chi', 'bersaglio'].includes(k)) errori.push(`${dove}: chiave non prevista «${k}»`);
+  const id = (k: 'chi' | 'bersaglio'): string | null => {
+    const x = d[k];
+    if (x === undefined || x === null) return null;
+    if (typeof x !== 'string' || x === ID_NARRATORE || !(parlanti.has(x) || pg.includes(x))) {
+      errori.push(`${dove}.${k}: «${String(x)}» non è un PNG con scheda né un PG`);
+      return null;
+    }
+    return x;
+  };
+  return { tipo: d['tipo'] as TipoEsito, chi: id('chi'), bersaglio: id('bersaglio') };
 }
 
 /** `richiede.stati: {png_x: a_terra}` or `{png_x: [a_terra, morto]}`: the classes of CLASSI_STATO. */

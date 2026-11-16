@@ -55,7 +55,22 @@ export interface AlternativaRichiede extends CondizioniStato {
 export const CLASSI_STATO = ['in_gioco', 'a_terra', 'morto', 'fuggito'] as const;
 export type ClasseStato = (typeof CLASSI_STATO)[number];
 
+/**
+ * The outcome a line tells (`richiede.esito`, docs/repertorio.md «Facts a line carries»): a blow that landed, missed,
+ * downed its target, or a flight. `chi`: who struck or fled (an NPC); absent = the PC whose action the line answers.
+ * `bersaglio`: who was struck (absent = any). The Engine offers the line only for an action whose card says so.
+ */
+export const TIPI_ESITO = ['colpito', 'mancato', 'a_terra', 'fugge'] as const;
+export type TipoEsito = (typeof TIPI_ESITO)[number];
+export interface EsitoBattuta {
+  tipo: TipoEsito;
+  chi: string | null;
+  bersaglio: string | null;
+}
+
 export interface Richiede extends CondizioniStato {
+  /** The outcome the line tells, checked against this turn's cards; null = it tells none. Only in the base. */
+  esito: EsitoBattuta | null;
   /**
    * The states the line assumes, by NPC (docs/repertorio.md, «Facts a line carries»): «il corpo di Zirrà giace…»
    * assumes `{png_zirra: [a_terra, morto]}`, «Zirrà ride» `{png_zirra: [in_gioco]}`. The Engine checks them against
@@ -125,6 +140,11 @@ export interface Battuta {
   attori: string[] | null;
   /** NPCs the line only talks about (no presence asked): they are not taken as acting. */
   menzionati: string[];
+  /**
+   * Engine-only (the sceneggiatore's `subito`): the last turn whose actions the line may answer. A line written for
+   * one action is not offered once that action's moment has passed. Absent = no limit.
+   */
+  fino_al_turno?: number;
   /** File di provenienza (per gli errori). */
   file: string;
 }

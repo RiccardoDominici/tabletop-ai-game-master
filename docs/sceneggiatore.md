@@ -52,7 +52,8 @@ The rule set is not needed: the scriptwriter decides no outcomes or rolls, becau
 ## What it writes
 Lines in the repertoire's format (docs/repertorio.md): `id` with the given prefix, `chi`, `tipo`, `quando`, `temi`,
 `testo`, and the facts they assume (docs/repertorio.md, «Facts a line carries»): `attori`, `menzionati`,
-`richiede.stati`. Only `reazione`, `momento`, `richiesta`, `rifiuto`, `saluto`, from one to three lines, short sentences for the
+`richiede.stati`, and `richiede.esito` for a line that tells an outcome, matching this turn's cards in «Cosa è vero
+adesso». Only `reazione`, `momento`, `richiesta`, `rifiuto`, `saluto`, from one to three lines, short sentences for the
 voice. Next to the lines, optionally, `pronunce: [{nome, grafia, nota}]` for the proper nouns among `nomi_senza_pronuncia`
 and for a new name of its own lines: the Engine checks them and adds them to `pronunce-gioco.yaml` (voce/lessico-vivo.ts).
 
@@ -64,7 +65,7 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
   and logged as a correction (`corrette`); a type that is given but not allowed (a clue, a confession) is refused, and
   the log names the allowed ones;
 - **voices**: only the narrator or a present NPC speaks;
-- **gates and state**: no `richiede` (except `richiede.stati`) or `effetti`. A line written on the fly does not reveal
+- **gates and state**: no `richiede` (except `richiede.stati` and `richiede.esito`) or `effetti`. A line written on the fly does not reveal
   clues or change facts or clocks: the revelations remain the prepared ones, checked by the validator;
 - **who acts**: an NPC a narrator row names with no tag is taken as acting (added to `attori`, logged as a correction),
   and every actor must be among the NPCs who can act now, or the line is rejected;
@@ -93,8 +94,10 @@ with their `temi`. Those that do not pass stay in the log with the reason.
 2. When the line written on request arrives, if the table is still in the window in the same scene and the **ceiling**
    has not passed (90 s, `TAGM_SCENEGGIATORE_TETTO_S`): the voice says it right away, with the window still open, and the
    transcript shows it.
-3. Beyond the ceiling, or if the table has moved on: it is not said. It stays in the repertoire, where the reader can
-   choose it on the next turn. If the scriptwriter does not answer, the waiting line is the **backup**: it did the job.
+3. Beyond the ceiling, or if the table has moved on: it is not said, and it is not offered later either: a `subito`
+   line answers one action and carries that action's turn (`fino_al_turno`), after which the catalogue drops it
+   (round 4 of the coherence layer heard a miss written for T6 at T9, for a blow that hit). If the scriptwriter does
+   not answer, the waiting line is the **backup**: it did the job. The `prossime` lines stay in the repertoire.
 4. At «Chiudi la sessione», while the `chiusura` is being written: a narrator filler without effects, or the language
    pack's `regia.righe.attesa_chiusura`. The Engine waits up to 30 s (`TETTO_CHIUSURA_MS` in `scena/regia.ts`) and
    accepts only a narrator line of type `chiusura`. Beyond that the narrator closes, and if it writes no prose (the

@@ -11,7 +11,8 @@ import { describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import type { EntitaRegistro } from '../src/coerenza/registro';
 import { caricaRepertorio, ErroreRepertorio } from '../src/repertorio/caricatore';
-import { motivoControRegistro } from '../src/repertorio/fatti-battuta';
+import { motivoControRegistro, motivoEsito } from '../src/repertorio/fatti-battuta';
+import type { EsitoRegistro } from '../src/coerenza/registro';
 import { StatoRepertorio } from '../src/repertorio/stato';
 import type { Battuta } from '../src/repertorio/tipi';
 import { StatoOrologi } from '../src/scena/orologi';
@@ -93,5 +94,58 @@ describe('the Engine checks the line against the ledger', () => {
     expect(s.disponibili().map((b) => b.id)).toEqual(['nar_corpo', 'nar_ricorda']);
     s.registro = () => ({ entita: ledger({}) });
     expect(s.disponibili().map((b) => b.id)).toEqual(['nar_conti', 'nar_vecchia', 'nar_ricorda']);
+  });
+});
+
+describe('a line that tells an outcome carries it, and the Engine checks it against the card', () => {
+  const [colpo, mancato, fuga] = carica([
+    base('nar_colpo', ['[narratore] La lama trova il fianco, e Bruno barcolla.'], { attori: ['png_oste'], richiede: { esito: { tipo: 'colpito', bersaglio: 'png_oste' } } }),
+    base('nar_mancato', ['[narratore] La lancia taglia l\'aria dove nessuno c\'è più.'], { richiede: { esito: { tipo: 'mancato', chi: 'png_guardia' } } }),
+    base('nar_fuga', ['[narratore] Dei passi corrono via, verso la strada.'], { menzionati: ['png_guardia'], richiede: { esito: { tipo: 'fugge', chi: 'png_guardia' } } }),
+  ]) as [Battuta, Battuta, Battuta];
+  const pg = { id: 'pg_ida', tipo: 'pg' as const, nome: 'Ida', nomi: ['Ida'], stato: 'in_piedi' as const, presenza: 'in_scena' as const, uscito: null };
+  const carta = (chi: string, bersaglio: string, riuscita: boolean, aTerra = false): EsitoRegistro => ({ id: `${chi}-${bersaglio}`, chi, nome: chi, bersaglio: { id: bersaglio, nome: bersaglio }, tipo: 'attacco', etichetta: 'x', riuscita, aTerra, privata: false });
+
+  it('the loader reads richiede.esito', () => {
+    expect(colpo.richiede.esito).toEqual({ tipo: 'colpito', chi: null, bersaglio: 'png_oste' });
+    expect(() => carica([base('x9', ['[narratore] Qualcosa.'], { richiede: { esito: { tipo: 'ferito' } } })])).toThrow(/colpito/);
+  });
+
+  it('a hit line: only with a card that hit that target; for an answered action, only that PC\'s card', () => {
+    const entita = [pg, ...ledger({})];
+    expect(motivoEsito(colpo, entita, [carta('pg_ida', 'png_oste', true)], null)).toBeNull();
+    expect(motivoEsito(colpo, entita, [carta('pg_ida', 'png_oste', false)], null)).toMatch(/no card of this turn/);
+    expect(motivoEsito(colpo, entita, [], null)).toMatch(/no card/);
+    expect(motivoEsito(colpo, entita, [carta('pg_ida', 'png_oste', true)], 'pg_corrado')).toMatch(/by pg_corrado/);
+  });
+
+  it('an NPC\'s miss: its own card missed; a flight: the ledger has it fled', () => {
+    const entita = [pg, ...ledger({}, { stato: 'fuggito', presenza: 'altrove' })];
+    expect(motivoEsito(mancato, [pg, ...ledger({})], [carta('png_guardia', 'pg_ida', false)], null)).toBeNull();
+    expect(motivoEsito(mancato, [pg, ...ledger({})], [carta('png_guardia', 'pg_ida', true)], null)).toMatch(/mancato/);
+    expect(motivoEsito(fuga, entita, [], null)).toBeNull();
+    expect(motivoEsito(fuga, [pg, ...ledger({})], [], null)).toMatch(/fleeing/);
+  });
+
+  it('the catalogue and the answered action apply it', () => {
+    const battute = [colpo];
+    const s = new StatoRepertorio({ battute, perId: new Map(battute.map((b) => [b.id, b])), avvisi: [] }, campagna, new StatoOrologi(campagna));
+    s.presenza = null;
+    s.presenti = null;
+    s.registro = () => ({ entita: [pg, ...ledger({})], esiti: [carta('pg_ida', 'png_oste', true)] });
+    expect(s.disponibili().map((b) => b.id)).toEqual(['nar_colpo']);
+    expect(s.rispondeA(colpo, { autore: 'pg_ida', privata: false })).toBe(true);
+    expect(s.rispondeA(colpo, { autore: 'pg_corrado', privata: false })).toBe(false);
+    s.registro = () => ({ entita: [pg, ...ledger({})], esiti: [carta('pg_ida', 'png_oste', false)] });
+    expect(s.disponibili()).toEqual([]);
+  });
+
+  it('a line written for one action is not offered after its turn', () => {
+    const b = { ...colpo, richiede: { ...colpo.richiede, esito: null }, fino_al_turno: 4 };
+    const s = new StatoRepertorio({ battute: [b], perId: new Map([[b.id, b]]), avvisi: [] }, campagna, new StatoOrologi(campagna));
+    s.presenza = null;
+    s.presenti = null;
+    expect(s.motivoIndisponibile(b, 4)).toBeNull();
+    expect(s.motivoIndisponibile(b, 5)).toMatch(/its moment has passed/);
   });
 });

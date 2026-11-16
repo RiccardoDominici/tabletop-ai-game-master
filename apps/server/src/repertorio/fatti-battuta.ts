@@ -14,7 +14,7 @@
  */
 import { normalizza } from '../azioni/regole';
 import { ID_NARRATORE } from '../campagna/tipi';
-import type { EntitaRegistro, StatoEntita } from '../coerenza/registro';
+import type { EntitaRegistro, EsitoRegistro, StatoEntita } from '../coerenza/registro';
 import { pngNominati } from './pertinenza';
 import type { Battuta, ClasseStato } from './tipi';
 
@@ -74,4 +74,25 @@ export function motivoControRegistro(b: Battuta, entita: readonly EntitaRegistro
     if (!IN_GIOCO.has(e.stato)) return `the line names ${id}, out of play (${e.stato})`;
   }
   return null;
+}
+
+/**
+ * Why the outcome a line tells (`richiede.esito`) is not this turn's (null = it is, or the line tells none): a blow
+ * that landed, missed or downed its target must be on one of this turn's public attack cards, struck by `chi` (an NPC)
+ * or, with no `chi`, by the PC whose action the line answers (`per`; null = any PC, for the catalogue); a flight must
+ * be in the ledger. Round 4: a miss line («la lancia taglia l'aria dove nessuno c'è più») was heard for a blow that hit.
+ */
+export function motivoEsito(b: Battuta, entita: readonly EntitaRegistro[], esiti: readonly EsitoRegistro[], per: string | null): string | null {
+  const e = b.richiede.esito;
+  if (!e) return null;
+  if (e.tipo === 'fugge') {
+    const id = e.chi ?? e.bersaglio;
+    const x = entita.find((y) => y.id === id);
+    return x?.stato === 'fuggito' ? null : `tells ${id ?? 'someone'} fleeing, the ledger has ${x?.stato ?? 'nobody'}`;
+  }
+  const pg = new Set(entita.filter((x) => x.tipo === 'pg').map((x) => x.id));
+  const chi = (k: EsitoRegistro): boolean => (e.chi ? k.chi === e.chi : per ? k.chi === per : pg.has(k.chi));
+  const come = (k: EsitoRegistro): boolean => (e.tipo === 'mancato' ? !k.riuscita : k.riuscita && (e.tipo !== 'a_terra' || k.aTerra));
+  const ok = esiti.some((k) => k.tipo === 'attacco' && !k.privata && chi(k) && (!e.bersaglio || k.bersaglio?.id === e.bersaglio) && come(k));
+  return ok ? null : `tells ${e.tipo}${e.chi ? ` by ${e.chi}` : per ? ` by ${per}` : ''}${e.bersaglio ? ` on ${e.bersaglio}` : ''}: no card of this turn says so`;
 }

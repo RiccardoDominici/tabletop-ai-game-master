@@ -2138,6 +2138,7 @@ export class Regia {
       ticBloccati: ticBloccati(this.trascrizione, this.campagna.png),
       chiusura: rq.tipo === 'chiusura',
       entita: (this.diarioRegistro.registro ?? this.registroOra('sceneggiatore')).entita,
+      ...(rq.tipo === 'subito' ? { finoAlTurno: rq.turno } : {}),
     });
     for (const b of v.accettate) {
       s.repertorio.battute.push(b);
@@ -2167,7 +2168,7 @@ export class Regia {
     }
     // The facts each line carries (docs/repertorio.md) go to the record too: round 4 could not tell whether the
     // scriptwriter wrote them or the Engine added them (`corrette`).
-    const fatti = (b: Battuta): Record<string, unknown> => ({ ...(b.attori !== null ? { attori: b.attori } : {}), ...(b.menzionati.length ? { menzionati: b.menzionati } : {}), ...(Object.keys(b.richiede.stati).length ? { stati: b.richiede.stati } : {}) });
+    const fatti = (b: Battuta): Record<string, unknown> => ({ ...(b.attori !== null ? { attori: b.attori } : {}), ...(b.menzionati.length ? { menzionati: b.menzionati } : {}), ...(Object.keys(b.richiede.stati).length ? { stati: b.richiede.stati } : {}), ...(b.richiede.esito ? { esito: b.richiede.esito } : {}), ...(b.fino_al_turno !== undefined ? { fino_al_turno: b.fino_al_turno } : {}) });
     this.o.registroNarrazioni.scrivi({ ...riga, accettate: v.accettate.map((b) => ({ id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, temi: b.temi, testo: b.testo, ...fatti(b) })), scartate: v.scartate, ...(v.corrette?.length ? { corrette: v.corrette } : {}), consegnata, ...(subito ? { per_pg: subito.pg, azione: rq.azione?.testo ?? null, privata: subito.privata } : {}) });
   }
 

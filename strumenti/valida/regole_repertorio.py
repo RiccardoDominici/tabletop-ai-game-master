@@ -173,7 +173,7 @@ def _schema(c: Campagna, e: Esito) -> None:
             else:
                 for a in oppure:
                     for k in a:
-                        if k not in K.CAMPI_RICHIEDE - {"oppure", "stati"}:
+                        if k not in K.CAMPI_RICHIEDE - {"oppure", "stati", "esito"}:
                             e.errore("REPERTORIO.oppure", dove, f"alternativa con richiede.{k}: non previsto (niente oppure annidati)")
             if not K.OPPURE_NEL_SERVER:
                 e.errore("REPERTORIO.oppure", dove, "il server non applica ancora richiede.oppure: la battuta uscirebbe "

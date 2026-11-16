@@ -150,6 +150,10 @@ assumes is true in the ledger (who is in the scene, who is down, dead or fled), 
   play. Only in the base of `richiede`, not in an `oppure` alternative.
 Every NPC a narrator row names goes in one of the three; an untagged one is a warning [V `REPERTORIO.png_non_segnato`]
 (the Engine then only asks it to be in play, not in the scene).
+- `richiede.esito: {tipo: colpito | mancato | a_terra | fugge, chi?: png_x, bersaglio?: id}`: a line that tells an
+  outcome (a blow that lands, a miss, a fall, a flight) says which [V `REPERTORIO.fatti`]. `chi` is the NPC who
+  strikes or flees; with no `chi` the blow is the answered PC's. The Engine offers the line only when one of this
+  turn's cards says exactly that (a miss line never for a hit). Better no outcome line than one without the tag.
 
 ## 7. Secret words (repertorio/parole_segrete.yaml)
 ```yaml
