@@ -195,7 +195,9 @@ def main() -> None:
                                                  if re.search(r"fuori (gioco|scena|combattimento)|esce dalla scena|non è più in scena", str(x.get("msg")))))
     M["costo_usd"] = r.get("costo_totale_usd")
     M["righe"] = {"prescritte": r.get("righe_prescritte"), "improvvisate": r.get("righe_improvvisate"), "usa_rifiutati": r.get("usa_rifiutati"),
-                  "azioni_pubbliche": r.get("azioni_pubbliche"), "azioni_senza_risposta": r.get("azioni_senza_risposta"), "riparazioni": r.get("riparazioni")}
+                  "azioni_pubbliche": r.get("azioni_pubbliche"), "azioni_senza_risposta": r.get("azioni_senza_risposta"), "riparazioni": r.get("riparazioni"),
+                  # of the unanswered actions, those whose answer the checker dropped and the Engine acknowledged
+                  "conferme_motore": r.get("conferme_motore")}
 
     testo = json.dumps(M, ensure_ascii=False, indent=1)
     print(testo)

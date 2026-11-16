@@ -131,7 +131,10 @@ lines instead of answering the actions. It therefore changes as follows:
 
 - **Link to the action**: `[usa] <id> > <pg_id>` says which action the line answers. A line without `> pg` is admitted
   only if it is the due sign of its clock, an ending, or a move against a stall. The Engine rejects the output if a
-  declared action remains without an answer (neither a line nor an improvised line addressed to that PC).
+  declared action remains without an answer (neither a line nor an improvised line addressed to that PC). When the
+  answer was there but the coherence checker dropped it (it named someone out of play, or a creature nobody here
+  answers to), there is no second call for that action: the Engine says a short line from the card and the ledger
+  («Livia ci prova, ma Zirrà non si muove più.»; docs/coerenza.md, «After round 3»).
 - **Only what matters comes out pre-written**: lies, confessions, clues, clock signs, moments, endings. Generic reactions
   have `solo_esempio: true`: they do not enter the catalog, but they go into the context as **examples of the voice** of
   the NPC for the improvisation.

@@ -28,6 +28,14 @@ coerenza:
   # A name the players invent (coerenza/nomi-nuovi.ts): in mode B and with the local reader the Engine answers it.
   nome_nuovo: "{nome}? Nobody here knows that name."
   nome_nuovo_riga: "Nobody in the scene is called {nomi}: no NPC answers to that name, do not voice one."
+  # The Engine's answer to an action whose sentences the checker dropped (coerenza/risposta.ts): who tried, how it went.
+  risposta:
+    riuscita: "{chi} manages it."
+    fallita: "{chi} tries, but fails."
+    bersaglio_a_terra: "{chi} tries, but {bersaglio} no longer moves."
+    bersaglio_via: "{chi} tries, but {bersaglio} is no longer here."
+    impossibile: "{chi} tries, but it cannot be done that way."
+    tentativo: "{chi} tries."
   # R-inesistente (coerenza/inesistenti.ts): who is really there, when the players name a creature the scene does not have.
   inesistente:
     e: "and"

@@ -428,6 +428,26 @@ replay estimate for round 3's game is the same as the rules-only option, about 1
 comes at about 1.3 s in rounds 2 and 3 alike. Tests: test/coerenza-prima-frase.test.ts (narraTurno with a held
 answer: the line is in the voice before it), test/coerenza-giudice.test.ts.
 
+### No action left unanswered
+In round 3, 6 public actions in 5 turns ended with nothing said about them («repertorio: azioni senza risposta» after
+the repair: T10 ×2, T12, T15, T16 ×2): each time the narration's answer had the players attack «the goblin», dead or
+invented, the judge dropped it, and the mode-B repair call told the same goblin again and was dropped again (0 clean
+answers in those 5 repairs; the one action the repair «answered», T14, was the heard violation #14:6). None of the six
+had a card: the target was already down (`gia_a_terra`) or the action had no roll. Built (`coerenza/risposta.ts`,
+lines `coerenza.risposta.*` in it and en; the director's `diciConferme`): the director keeps the public sentences of
+the turn the checker dropped or replaced; a public action whose PC such a sentence named gets **no repair call** (the
+repair stays for actions the narrator simply ignored), and if it is still unanswered the Engine says before the
+invitation one short line from the action's own card or, with no card, from the ledger's state of its target: «Livia
+colpisce Grosso.» / «… manca …», «Livia ci riesce.» / «Livia ci prova, ma non ci riesce.», «Livia ci prova, ma Zirrà
+non si muove più.», «… non è più qui.», «… ma così non si può.», else «Livia ci prova.»; never the narrator-facing fact
+line. A line the table heard word for word in the last three turns falls back to «Livia ci prova.». Logged («coherence:
+an action's answer was dropped, the Engine acknowledges it»), written to narrazioni.jsonl (`tipo: conferma_motore`)
+and counted apart: `azioni_senza_risposta` is still the count before the acknowledgement (comparable with rounds 1–3),
+`conferme_motore` the ones the Engine answered (turn record, run summary, misure.py). On round 3's six: Livia, Nespola
+and Eliandro attacking Zirrà already dead would each hear «… ci prova, ma Zirrà non si muove più.», Eliandro's foot
+and question (no roll) «Eliandro ci prova.». Tests: test/coerenza-risposta.test.ts (every case, it and en),
+test/coerenza-giudice.test.ts (with the whole server: the answer dropped by a «si», no repair call, the line said).
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

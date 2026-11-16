@@ -177,7 +177,7 @@ describe('the judge with the whole server', () => {
     const ida = await prova.telefono(url, 'pg_ida');
     const corrado = await prova.telefono(url, 'pg_corrado');
     let s = await inizia(schermo, ida);
-    for (const [perCorrado, perIda] of [['Colpisco Ruggero con la spada', 'Guardo il fiume'], ['Aspetto', 'Aspetto'], ['Spingo il corpo verso il parapetto', 'Guardo il fiume']] as const) {
+    for (const [perCorrado, perIda] of [['Colpisco Ruggero con la spada', 'Guardo il fiume'], ['Aspetto', 'Aspetto'], ['Colpisco ancora il corpo e lo spingo verso il parapetto', 'Guardo il fiume']] as const) {
       const dopo = attendi(ida, (x: StatoTavolo) => x.fase === 'finestra' && x.turno === s.turno + 1);
       await agisci(corrado, 'pg_corrado', perCorrado, s.versione_scena);
       await agisci(ida, 'pg_ida', perIda, s.versione_scena);
@@ -189,13 +189,15 @@ describe('the judge with the whole server', () => {
     expect(t3).toContain('Ida guarda il fiume.');
     expect(t3.join(' ')).not.toContain('spinge lo sgherro');
     const viol = prova.narrazioni().filter((r) => r['tipo'] === 'violazione' && r['turno'] === 3);
-    // The judge's «si» on the push; R-fuori never acted on «Ruggero alza la testa.» (it is in the judge's shadow). The
-    // fake narrator says the same lines again in the repair call of the unanswered action: dropped as said already.
+    // The judge's «si» on the push; R-fuori never acted on «Ruggero alza la testa.» (it is in the judge's shadow).
     expect(viol.filter((r) => r['azione'] !== 'osservata').map((r) => [r['regola'], r['azione'], r['frase'], (r['dettaglio'] as { fonte?: string } | undefined)?.fonte])).toEqual([
       ['R-fuori', 'sostituita', 'Corrado spinge lo sgherro contro il parapetto.', 'domanda'],
-      ['R-fuori', 'tolta', 'Corrado spinge lo sgherro contro il parapetto.', 'domanda'],
-      ['R-ripetuta', 'tolta', 'Ruggero alza la testa.', undefined],
-      ['R-ripetuta', 'tolta', 'Ida guarda il fiume.', undefined],
     ]);
+    // Corrado's only answer was dropped: no repair call retelling it, the Engine acknowledges the action instead (an
+    // attack on a body: no card, the ledger says why), counted apart from the unanswered actions.
+    expect(t3).toContain('Corrado ci prova, ma Ruggero non si muove più.');
+    const record = prova.narrazioni().find((r) => r['tipo'] === 'turno' && r['turno'] === 3)!;
+    expect([record['azioni_senza_risposta'], record['riparazioni'], record['conferme_motore']]).toEqual([1, 0, 1]);
+    expect(prova.narrazioni().filter((r) => r['tipo'] === 'conferma_motore').map((r) => r['righe'])).toEqual([[{ id_pg: 'pg_corrado', testo: 'Corrado ci prova, ma Ruggero non si muove più.' }]]);
   }, 20_000);
 });

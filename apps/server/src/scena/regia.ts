@@ -129,6 +129,7 @@ import { TiriDelMaster } from '../prove/tiri-master';
 import { tipiGregari, type Gregario } from '../campagna/gregari';
 import { inOsservazione } from '../coerenza/osservazione';
 import { GiudiceDomande } from '../coerenza/giudice';
+import { confermaDelMotore } from '../coerenza/risposta';
 import type { ModelloLinguaggio } from '../llm/modello';
 import { contestoMenzioni } from '../coerenza/menzioni';
 import { nomiDellaCampagna, nomiNuovi, type NomiDellaCampagna } from '../coerenza/nomi-nuovi';
@@ -692,7 +693,16 @@ export class Regia {
     this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno: v.turno, tipo: 'violazione', regola: v.regola, azione: v.azione, etichetta: v.etichetta, frase: v.frase, ...(v.sostituto ? { sostituto: v.sostituto } : {}), ...(v.id_pg ? { id_pg: v.id_pg } : {}), ...(v.battuta ? { battuta: v.battuta } : {}), ...(v.dettaglio ? { dettaglio: v.dettaglio } : {}) });
     // The panel lists what was stopped; a rule in observation stopped nothing (it is in the log and narrazioni.jsonl).
     if (v.azione !== 'osservata') this.violazioniRecenti = [...this.violazioniRecenti, v].slice(-30);
+    // A public sentence the table did not hear (dropped, or replaced by an Engine line): it may have been an action's
+    // answer (the Engine's acknowledgement, coerenza/risposta.ts).
+    if ((v.azione === 'tolta' || v.azione === 'sostituita') && !v.id_pg && v.frase) {
+      if (this.tolteNelTurno.turno !== v.turno) this.tolteNelTurno = { turno: v.turno, frasi: [] };
+      this.tolteNelTurno.frasi.push(v.frase);
+    }
   }
+
+  /** The public sentences of a turn the checker dropped or replaced (for the acknowledgements). */
+  private tolteNelTurno: { turno: number; frasi: string[] } = { turno: -1, frasi: [] };
 
   /** The visit (its entry turn) in which a fight happened: the stall's «nothing new» does not count there. */
   private scontroInVisita: number | null = null;
@@ -3725,7 +3735,19 @@ export class Regia {
     const correggiEsito = conGiudice?.correggiEsito ?? (this.prove?.attivo ? this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null, inesistenti, true) : null);
     // The turn order just rolled (the fight starts, a new round): the Engine says it at the table (bug 6, third e2e pass).
     const ordine = tiri?.combattimento?.ordine ?? [];
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito, ordine, risposteprivate, nuovaGuardia, conGiudice?.giudice ?? null).catch((err: unknown) =>
+    // The Engine's acknowledgement of each public action, from its card and the ledger: said only if the checker drops
+    // that action's answer (coerenza/risposta.ts).
+    const conferme = new Map(
+      r.azioni
+        .filter((a) => !a.privata && !!a.testo && !fuoriAllaChiusura.has(a.autore))
+        .map((a) => {
+          const e = tiri?.perAzione.get(a.id);
+          const carte = (e?.tiri ?? []).filter((t) => t.chi === a.autore && !t.di_png && !t.del_master);
+          const testoConferma = confermaDelMotore({ pg: { id: a.autore, nome: nomePg(a.autore) }, decisione: e?.decisione ? { tipo: e.decisione.tipo, bersaglio: e.decisione.bersaglio } : null, carte }, registroTurno);
+          return [a.autore, testoConferma] as const;
+        }),
+    );
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito, ordine, risposteprivate, nuovaGuardia, conGiudice?.giudice ?? null, conferme).catch((err: unknown) =>
       this.dopoEccezione(epoca, r.turno, 'narrazione', err),
     );
   }
@@ -3751,6 +3773,8 @@ export class Regia {
     nuovaGuardia: (() => (testo: string) => CorrezioneEsito) | null = null,
     /** The yes/no judge of the public answer (coerenza/giudice.ts), or null: the rules decide alone. */
     giudice: GiudiceDomande | null = null,
+    /** The Engine's acknowledgement of each public action, by PC (coerenza/risposta.ts): said if its answer was dropped. */
+    conferme: ReadonlyMap<string, string> = new Map(),
   ): Promise<void> {
     // The ledger as the narration starts: this turn's cards and falls are in it (docs/coerenza.md §1).
     this.registroOra('prima della narrazione');
@@ -3808,8 +3832,13 @@ export class Regia {
     // resta senza, una seconda chiamata breve risponde solo a quelle (una volta per turno).
     const pubbliche = new Map(azioni.filter((a) => a.testo && !a['privata'] && !a['sospesa']).map((a) => [a.id_pg, a.testo as string]));
     let senzaRisposta = this.azioniSenzaRisposta(esito.uscita, pubbliche);
+    // An action whose answer the checker dropped (a sentence that named the PC, not heard): the repair call would tell
+    // the same thing again (round 3: 0 clean answers in 5 such repairs, docs/coerenza.md), so the Engine answers it.
+    const tolte = (): Set<string> => new Set(senzaRisposta.filter((id) => this.tolteNelTurno.turno === turno && this.tolteNelTurno.frasi.some((f) => this.nominaPg(f, id))));
+    const daRiparare = senzaRisposta.filter((id) => !tolte().has(id));
+    if (daRiparare.length < senzaRisposta.length) log.info({ turno, tolte: senzaRisposta.filter((id) => !daRiparare.includes(id)) }, 'coherence: an action\'s answer was dropped by the checker, no repair call for it');
     let riparazioni = 0;
-    if (this.statoRepertorio && senzaRisposta.length && esito.esito && !controllo.signal.aborted) {
+    if (this.statoRepertorio && daRiparare.length && esito.esito && !controllo.signal.aborted) {
       riparazioni = 1;
       const primoCosto = esito.esito.costo;
       const riparazione = await narraTurno(
@@ -3817,7 +3846,7 @@ export class Regia {
         {
           turno,
           sistema: this.sistema,
-          messaggio: messaggioRiparazione(messaggio, esito.esito.testo, senzaRisposta.map((id) => ({ id, nome: this.nomePg(id), testo: pubbliche.get(id)! }))),
+          messaggio: messaggioRiparazione(messaggio, esito.esito.testo, daRiparare.map((id) => ({ id, nome: this.nomePg(id), testo: pubbliche.get(id)! }))),
           ...(dati ? { dati: { ...dati, riparazione: true } } : {}),
           signal: controllo.signal,
           misuratore,
@@ -3868,6 +3897,10 @@ export class Regia {
       senzaRisposta = this.azioniSenzaRisposta(esito.uscita, pubbliche);
       log.warn({ senza_risposta: prima, dopo_riparazione: senzaRisposta }, 'repertorio: azioni senza risposta, riparazione');
     }
+    // Never silence: an action still without an answer because the checker dropped it gets the Engine's short line
+    // (who tried, how it went, from the card and the ledger). Counted apart: `azioni_senza_risposta` stays the count
+    // before it, comparable with the earlier rounds.
+    const confermate = !controllo.signal.aborted ? this.diciConferme(turno, esito, [...tolte()], conferme, log) : [];
 
     // Fatti dello scontro (prove/fatti-dovuti.ts): un colpo, una caduta o un tiro contro la morte che la
     // narrazione non ha detto (nome + parola chiave) li dice il Motore, con una riga breve del pacchetto
@@ -4006,6 +4039,8 @@ export class Regia {
       azioni_pubbliche: pubbliche.size,
       azioni_senza_risposta: senzaRisposta.length,
       riparazioni,
+      // Of those, the actions whose answer the checker dropped and the Engine acknowledged (coerenza/risposta.ts).
+      conferme_motore: confermate.length,
       // Il primo segno aggiunto dal Motore (come prima) e tutti quelli del turno (uno per orologio dovuto).
       segno_aggiunto: segniAggiunti[0] ?? null,
       segni_aggiunti: segniAggiunti,
@@ -4326,15 +4361,43 @@ export class Regia {
   private azioniSenzaRisposta(uscita: VoceUscita[], pubbliche: Map<string, string>): string[] {
     const risposte = new Set<string>();
     // Le righe private (`[privato pg_x]`) non rispondono a un'azione pubblica: il tavolo non le sente.
-    const testoImprovvisato = normalizza(uscita.filter((u) => u.tipo === 'improvvisata' && !u.privato).map((u) => (u.tipo === 'improvvisata' ? u.testo : '')).join('\n'));
+    const testoImprovvisato = uscita.filter((u) => u.tipo === 'improvvisata' && !u.privato).map((u) => (u.tipo === 'improvvisata' ? u.testo : '')).join('\n');
     for (const u of uscita) if (u.tipo === 'usa' && u.per) risposte.add(u.per);
     for (const id of pubbliche.keys()) {
       if (risposte.has(id)) continue;
-      const nome = this.nomePg(id);
-      const varianti = [nome, nomeBreve(nome), ...Object.entries(this.campagna.alias).filter(([, v]) => v === id).map(([k]) => k)];
-      if (varianti.some((v) => v.length > 2 && new RegExp(`(?<![\\p{L}])${normalizza(v).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\p{L}])`, 'u').test(testoImprovvisato))) risposte.add(id);
+      if (this.nominaPg(testoImprovvisato, id)) risposte.add(id);
     }
     return [...pubbliche.keys()].filter((id) => !risposte.has(id));
+  }
+
+  /** Whether a text names a PC (name, short name or nickname), as an answer to its action does. */
+  private nominaPg(testo: string, id: string): boolean {
+    const t = normalizza(testo);
+    const nome = this.nomePg(id);
+    const varianti = [nome, nomeBreve(nome), ...Object.entries(this.campagna.alias).filter(([, v]) => v === id).map(([k]) => k)];
+    return varianti.some((v) => v.length > 2 && new RegExp(`(?<![\\p{L}])${normalizza(v).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\p{L}])`, 'u').test(t));
+  }
+
+  /**
+   * The Engine's acknowledgement of the actions whose answer the checker dropped (coerenza/risposta.ts), before the
+   * invitation: one short line each, never one the table heard word for word in the last turns (then the plain «tries»
+   * line). Returns the PCs acknowledged.
+   */
+  private diciConferme(turno: number, esito: { uscita: VoceUscita[] }, pg: readonly string[], conferme: ReadonlyMap<string, string>, log: Logger): string[] {
+    const recenti = this.frasiRecenti(turno);
+    const righe = pg.flatMap((id) => {
+      const t = conferme.get(id);
+      if (!t) return [];
+      const riga = recenti.has(frasePerRipetizione(t)) ? testoFisso('coerenza.risposta.tentativo', { chi: nomeBreve(this.nomePg(id)) }) : t;
+      return [{ id, etichetta: ID_NARRATORE, testo: riga, testo_voce: this.pronuncia(riga) }];
+    });
+    if (!righe.length) return [];
+    const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: righe.map((r) => r.testo).join(' '), frasi: righe.map((_, k) => `t${turno}-c${k}`), motore: true };
+    const primaDellInvito = this.righeDelMotore(turno, esito, righe, voce, false, 'c');
+    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'conferma_motore', righe: righe.map((r) => ({ id_pg: r.id, testo: r.testo })) });
+    log.info({ turno, righe: righe.map((r) => ({ id_pg: r.id, testo: r.testo })), prima_dell_invito: primaDellInvito }, 'coherence: an action\'s answer was dropped, the Engine acknowledges it');
+    this.notifica();
+    return righe.map((r) => r.id);
   }
 
   /** Testo di un fatto del canone (per i fatti scoperti). */

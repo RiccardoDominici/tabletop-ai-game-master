@@ -41,7 +41,7 @@ function righeTurno(n: Record<string, unknown>, out: string[]): void {
   }
   const m = (n['misure'] ?? {}) as Record<string, unknown>;
   out.push(
-    `- righe pre-scritte ${String(n['righe_prescritte'] ?? 0)}, improvvisate ${String(n['righe_improvvisate'] ?? 0)}, [usa] rifiutati ${String(n['usa_rifiutati'] ?? 0)}; azioni senza risposta ${String(n['azioni_senza_risposta'] ?? 0)}/${String(n['azioni_pubbliche'] ?? 0)}, riparazioni ${String(n['riparazioni'] ?? 0)}; invito: ${JSON.stringify(n['invito'])}; anomalie: ${((n['anomalie'] as unknown[]) ?? []).length}`,
+    `- righe pre-scritte ${String(n['righe_prescritte'] ?? 0)}, improvvisate ${String(n['righe_improvvisate'] ?? 0)}, [usa] rifiutati ${String(n['usa_rifiutati'] ?? 0)}; azioni senza risposta ${String(n['azioni_senza_risposta'] ?? 0)}/${String(n['azioni_pubbliche'] ?? 0)}, riparazioni ${String(n['riparazioni'] ?? 0)}, conferme del Motore ${String(n['conferme_motore'] ?? 0)}; invito: ${JSON.stringify(n['invito'])}; anomalie: ${((n['anomalie'] as unknown[]) ?? []).length}`,
     `- primo audio dalla chiusura della finestra: ${String(m['schermo_inizio_audio'])} ms; buchi ${String(m['buchi'])} (in frase ${String(m['buchi_in_frase'])}, tra frasi ${String(m['buchi_tra_frasi'])}, silenzio ${String(m['silenzio_ms'])} ms); costo $${String(m['costo_usd'])}`,
     '',
   );

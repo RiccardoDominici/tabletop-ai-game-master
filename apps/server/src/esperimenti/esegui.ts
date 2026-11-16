@@ -444,6 +444,8 @@ async function main(): Promise<void> {
     azioni_pubbliche: somma('azioni_pubbliche'),
     azioni_senza_risposta: somma('azioni_senza_risposta'),
     riparazioni: somma('riparazioni'),
+    // Actions whose answer the checker dropped, acknowledged by the Engine (included in azioni_senza_risposta).
+    conferme_motore: somma('conferme_motore'),
     righe_segrete_fermate: somma('righe_segrete_fermate'),
     // Selettore (correzioni del playtest di nozze-neve): «> pg» dedotti o corretti dal Motore, battute
     // indicate dalla preselezione per temi e quante ne sono uscite, righe di PNG fuori scena scartate.
