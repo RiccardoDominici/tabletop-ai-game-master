@@ -76,8 +76,9 @@ break coherence; the deterministic rules on the lines that come out (R-esito, R-
 - `richiede.esito` (only in the base): the outcome the line tells, a blow that `colpito` (landed), `mancato`, `a_terra`
   (downed its target), or a flight (`fugge`): one of this turn's public attack cards must say exactly that, struck by
   `chi` (an NPC) or, with no `chi`, by the PC whose action the line answers (checked again when the reader uses it for
-  that PC); a flight must be in the ledger (`repertorio/fatti-battuta.ts`, `motivoEsito`; round 4 heard a miss line for
-  a blow that hit).
+  that PC); a flight must be one of that turn's flights (`repertorio/fatti-battuta.ts`, `motivoEsito`; round 4 heard a
+  miss line for a blow that hit). A `subito` line is checked against the cards of its own turn, also when it is said in
+  the next window.
 A line the sceneggiatore wrote `subito` for one action carries the turn of that action (`fino_al_turno`, Engine-only)
 and is not offered after it: it is said while the window is open, or not at all (round 4 heard T6's «Mancata!» at T9).
 The loader rejects a wrong id or state; the validator checks the same (`REPERTORIO.fatti`) and warns about an NPC a

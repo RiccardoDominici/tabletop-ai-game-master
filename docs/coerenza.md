@@ -643,7 +643,8 @@ nessuno c'è più») heard while Zirrà's card hit, and a miss written for T6 pi
 that tells an outcome carries `richiede.esito: {tipo: colpito | mancato | a_terra | fugge, chi?, bersaglio?}`, written
 by the big model (Preparer skill, scriptwriter prompt and check, validator `REPERTORIO.fatti`), and the Engine offers
 it only when one of this turn's public attack cards says exactly that (`repertorio/fatti-battuta.ts`, `motivoEsito`: in
-the catalogue against any PC's card, at `[usa]` against the answered PC's own); a flight must be in the ledger. And a
+the catalogue against any PC's card, at `[usa]` against the answered PC's own); a flight must be one of that turn's
+flights (see the follow-ups below). And a
 `subito` line carries the turn of its action (`fino_al_turno`): said while that window is open, or never. torre-mozza's
 prewritten lines tell no outcome (in that campaign the outcomes are the Engine's fact lines), so the tag matters for
 the scriptwriter's. Tests: test/fatti-battuta.test.ts, test/sceneggiatore.test.ts, strumenti/test_valida_campagna.py.
@@ -703,7 +704,8 @@ announcement and say whether the table hears it as the player's words or as the 
 
 Private content heard: 0 in all four. A fallen or absent character acting or speaking: 0. Every PC that went down got
 its death save, and a PC out of play is announced «Livia Sarti non agisce.». The over-fire table: all 16 coherence
-events right (R-inesistente fired 0 times in CM, 3 in round 4, the T13 over-fire among them; 2 times in CA, rightly).
+events right. No NPC fell in CM this round, so its T13 case did not come back; in CA Zirrà died at T13 and nothing
+of that turn was replaced (R-inesistente fired at T14 and T18 only, rightly).
 The H, by source:
 - **CM T10**, a scriptwriter `prossime` line the reader took through its fallback (the answer was not valid JSON):
   «Zirrà: Ahi! Scudo bianco, prendi questa, cieco!» while the only card was Zirrà missing Nespola: a hurt and a blow no
@@ -722,7 +724,13 @@ corno, lontano…»); round 4's one S1 had none. The scriptwriter's top-up never
 material. As expected, the counter did not change: ST reached its first stall move only at T14 (after three answers with
 nothing new at T9, T10's «Io non mi fido di Ugo» named an NPC present, a decision, and Ugo's answer reset the count),
 and the judge counts 7 of 14 ST answers that brought nothing new.
-The outcome tags: the scriptwriter never wrote `richiede.esito`. In the two fights 21 of its lines were refused for
+Not exercised live: no line carried `richiede.esito`, so the card check of the outcome tags never ran in a game (its
+effect this round came from the refusals), and the scriptwriter's stall top-up never fired; both are covered by unit
+tests only. Answered by a line in the turn or its window (the reader's `[usa] > pg` or a `subito` said in time), round
+4 → 5: CM 16/19 → 15/18, CA 14/16 → 12/19, FB 12/13 → 13/13, ST 12/13 → 12/13 public actions; the Engine's own
+«unanswered» count is 0 in both rounds because it takes the announcement, which names the PC, as an answer.
+The outcome tags: the scriptwriter never wrote `richiede.esito` (the one round-5 answer kept on disk has no `esito` key at
+any level, so it is not a misplaced key; why it does not tag is not established). In the two fights 21 of its lines were refused for
 telling an outcome without the tag; 8 of those said «dal crollo», a ruin, not a fall (now out of the words), and the
 rest named a fall, a parry or a blow («rimbalza», «cade», «giace», «incassa», «a vuoto»). No `subito` line was said for
 a later action (round 4: 5). Answers to the actions: none got nothing at all. The actions that got only their
