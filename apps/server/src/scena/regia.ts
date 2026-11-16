@@ -113,7 +113,7 @@ import { guardiaEsiti, type CorrezioneEsito } from '../narrazione/guardia-esiti'
 import { guardiaFuori } from '../narrazione/guardia-fuori';
 import { DiarioRegistro } from '../coerenza/diario';
 import { pngInterpellati } from '../prove/parole-testo';
-import type { FattoRegistro, FontiRegistro, Registro } from '../coerenza/registro';
+import { esitiDelleCarte, type FattoRegistro, type FontiRegistro, type Registro } from '../coerenza/registro';
 import type { Violazione } from '../coerenza/verifica';
 import { bloccoVeroAdesso, righeVeroAdesso } from '../coerenza/blocco';
 import type { EsitoCombattimento } from '../prove/combattimento';
@@ -2139,6 +2139,7 @@ export class Regia {
       chiusura: rq.tipo === 'chiusura',
       entita: (this.diarioRegistro.registro ?? this.registroOra('sceneggiatore')).entita,
       ...(rq.tipo === 'subito' ? { finoAlTurno: rq.turno } : {}),
+      scontro: !!this.prove?.inCombattimento || this.scontroInVisita === this.mondo.visita.ingresso || (this.storiaVisita.ingresso === this.mondo.visita.ingresso && this.storiaVisita.carte.length > 0),
     });
     for (const b of v.accettate) {
       s.repertorio.battute.push(b);
@@ -2177,6 +2178,12 @@ export class Regia {
    * un'azione privata va solo al telefono di quel PG: esito privato e voce `solo_pg`, mai in trascrizione.
    */
   private diciDelloSceneggiatore(b: Battuta, pg: string, rq: RichiestaSceneggiatore, privata = false): boolean {
+    // The outcome it tells must be on the card of the action it answers (its turn's, not the window's).
+    const esito = this.statoRepertorio!.motivoEsitoPer(b, pg);
+    if (esito) {
+      this.o.log.warn({ battuta: b.id, per: pg, motivo: esito }, 'sceneggiatore: the outcome the line tells is not on the card');
+      return false;
+    }
     const uso = this.statoRepertorio!.usa(b.id, this.turno, { inRisposta: new Set() });
     if (!uso.ok) {
       this.o.log.warn({ battuta: b.id, motivo: uso.motivo }, 'sceneggiatore: battuta non usabile');
@@ -2241,6 +2248,11 @@ export class Regia {
     // With the ledger, each line's facts (who acts, the states it assumes, who it names) are checked against what is true
     // now before the catalogue, so a reader that only relays never sees a line that contradicts it (docs/repertorio.md).
     s.registro = () => this.diarioRegistro.registro ?? this.registroOra('catalogo');
+    // The outcome a line tells is checked against the cards and flights of its turn (docs/repertorio.md).
+    s.carteDi = (t) => ({
+      esiti: esitiDelleCarte(this.prove?.carteDelTurno(t) ?? []),
+      fughe: new Set((this.storiaVisita.ingresso === this.mondo.visita.ingresso ? this.storiaVisita.fughe : []).filter((f) => f.turno === t).map((f) => f.id)),
+    });
     return s;
   }
 

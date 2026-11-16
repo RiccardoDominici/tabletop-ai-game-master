@@ -113,18 +113,21 @@ describe('a line that tells an outcome carries it, and the Engine checks it agai
 
   it('a hit line: only with a card that hit that target; for an answered action, only that PC\'s card', () => {
     const entita = [pg, ...ledger({})];
-    expect(motivoEsito(colpo, entita, [carta('pg_ida', 'png_oste', true)], null)).toBeNull();
-    expect(motivoEsito(colpo, entita, [carta('pg_ida', 'png_oste', false)], null)).toMatch(/no card of this turn/);
-    expect(motivoEsito(colpo, entita, [], null)).toMatch(/no card/);
-    expect(motivoEsito(colpo, entita, [carta('pg_ida', 'png_oste', true)], 'pg_corrado')).toMatch(/by pg_corrado/);
+    expect(motivoEsito(colpo, entita, { esiti: [carta('pg_ida', 'png_oste', true)] }, null)).toBeNull();
+    expect(motivoEsito(colpo, entita, { esiti: [carta('pg_ida', 'png_oste', false)] }, null)).toMatch(/no card of this turn/);
+    expect(motivoEsito(colpo, entita, { esiti: [] }, null)).toMatch(/no card/);
+    expect(motivoEsito(colpo, entita, { esiti: [carta('pg_ida', 'png_oste', true)] }, 'pg_corrado')).toMatch(/by pg_corrado/);
   });
 
   it('an NPC\'s miss: its own card missed; a flight: the ledger has it fled', () => {
     const entita = [pg, ...ledger({}, { stato: 'fuggito', presenza: 'altrove' })];
-    expect(motivoEsito(mancato, [pg, ...ledger({})], [carta('png_guardia', 'pg_ida', false)], null)).toBeNull();
-    expect(motivoEsito(mancato, [pg, ...ledger({})], [carta('png_guardia', 'pg_ida', true)], null)).toMatch(/mancato/);
-    expect(motivoEsito(fuga, entita, [], null)).toBeNull();
-    expect(motivoEsito(fuga, [pg, ...ledger({})], [], null)).toMatch(/fleeing/);
+    expect(motivoEsito(mancato, [pg, ...ledger({})], { esiti: [carta('png_guardia', 'pg_ida', false)] }, null)).toBeNull();
+    expect(motivoEsito(mancato, [pg, ...ledger({})], { esiti: [carta('png_guardia', 'pg_ida', true)] }, null)).toMatch(/mancato/);
+    expect(motivoEsito(fuga, entita, { esiti: [] }, null)).toBeNull();
+    expect(motivoEsito(fuga, [pg, ...ledger({})], { esiti: [] }, null)).toMatch(/fleeing/);
+    // With the turn's flights known: only a flight of that turn, not one of an earlier turn still in the ledger.
+    expect(motivoEsito(fuga, entita, { esiti: [], fughe: new Set(['png_guardia']) }, null)).toBeNull();
+    expect(motivoEsito(fuga, entita, { esiti: [], fughe: new Set() }, null)).toMatch(/not a flight of this turn/);
   });
 
   it('the catalogue and the answered action apply it', () => {
@@ -138,6 +141,19 @@ describe('a line that tells an outcome carries it, and the Engine checks it agai
     expect(s.rispondeA(colpo, { autore: 'pg_corrado', privata: false })).toBe(false);
     s.registro = () => ({ entita: [pg, ...ledger({})], esiti: [carta('pg_ida', 'png_oste', false)] });
     expect(s.disponibili()).toEqual([]);
+  });
+
+  it('a subito line is checked against the cards of its own turn, also when said in the next window', () => {
+    const b = { ...colpo, fino_al_turno: 4 };
+    const s = new StatoRepertorio({ battute: [b], perId: new Map([[b.id, b]]), avvisi: [] }, campagna, new StatoOrologi(campagna));
+    s.presenza = null;
+    s.presenti = null;
+    // The ledger moved on to turn 5 (no cards yet); turn 4 had Ida's hit.
+    s.registro = () => ({ entita: [pg, ...ledger({})], esiti: [], turno: 5 });
+    s.carteDi = (t) => ({ esiti: t === 4 ? [carta('pg_ida', 'png_oste', true)] : [] });
+    expect(s.motivoEsitoPer(b, 'pg_ida')).toBeNull();
+    expect(s.motivoEsitoPer(b, 'pg_corrado')).toMatch(/by pg_corrado/);
+    expect(s.motivoEsitoPer({ ...b, fino_al_turno: undefined }, 'pg_ida')).toMatch(/no card/);
   });
 
   it('a line written for one action is not offered after its turn', () => {

@@ -33,6 +33,7 @@ import type { EntitaRegistro } from '../coerenza/registro';
 import { nominatiSenzaSegno } from '../repertorio/fatti-battuta';
 import { pngNominati } from '../repertorio/pertinenza';
 import { normalizza } from '../azioni/regole';
+import { paroleDelColpo, paroleDi, posizione } from '../narrazione/guardia-esiti';
 
 const FILE = 'sceneggiatore.yaml';
 export const TIPI_SCENEGGIATORE: ReadonlySet<TipoBattuta> = new Set<TipoBattuta>(['reazione', 'momento', 'richiesta', 'rifiuto', 'saluto']);
@@ -63,6 +64,19 @@ export interface ContestoValidazione {
   entita?: readonly EntitaRegistro[];
   /** A `subito` answer: the turn of the action it answers, after which its lines are not offered. */
   finoAlTurno?: number;
+  /** A fight is on, or a blow was struck in this visit of the scene: an outcome line must carry richiede.esito. */
+  scontro?: boolean;
+}
+
+/** The first word of a blow, a miss or a fall in the text (language pack, guardia_esiti), or null. */
+function paroleDiEsito(t: string): string | null {
+  const w = paroleDi(t);
+  const c = paroleDelColpo();
+  for (const v of [...c.colpo, ...c.caduta]) {
+    const i = posizione(w, v);
+    if (i >= 0) return w.slice(i, i + v.length).join(' ');
+  }
+  return null;
 }
 
 /** Whether a row names that NPC (name, short name, alias), as the ledger has them. */
@@ -147,6 +161,12 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     }
     const fuori = (b.attori ?? []).find((x) => !ctx.presenti.has(x));
     if (fuori) return void scartate.push({ id: b.id, motivo: `${fuori} agisce nella battuta ma non è nella scena o non può agire` }), false;
+    // In a fight a line that tells a blow, a miss or a fall must say which (richiede.esito), so the Engine can check it
+    // against the card: round 4 heard a scriptwriter's untagged miss («la lancia taglia l'aria…») for a blow that hit.
+    if (ctx.scontro && !b.richiede.esito) {
+      const parola = paroleDiEsito(b.testo.map((r) => r.testo).join(' '));
+      if (parola) return void scartate.push({ id: b.id, motivo: `racconta un esito («${parola}») senza richiede.esito` }), false;
+    }
     if (!b.temi.length) return void scartate.push({ id: b.id, motivo: 'senza temi: non entrerebbe mai in catalogo' }), false;
     if (b.testo.length > MAX_RIGHE || b.testo.some((r) => r.testo.length > MAX_CARATTERI_RIGA)) return void scartate.push({ id: b.id, motivo: 'troppo lunga per la voce' }), false;
     const segreti = segretiNascosti(b.testo.map((r) => r.testo).join(' '), ctx.parole, ctx.pubblico, ctx.detto);

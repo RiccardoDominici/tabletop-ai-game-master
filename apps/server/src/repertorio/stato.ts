@@ -15,7 +15,7 @@ import type { Battuta, CondizioniStato, Repertorio, RigaBattuta, TipoBattuta } f
 import { accetta, blocchi, bloccoConCancello, provaFallita, type AzioneAlCancello, type Blocco } from './condizioni';
 import type { StatoRepertorioSalvato } from '../sessione/tipi';
 import type { EntitaRegistro, EsitoRegistro } from '../coerenza/registro';
-import { motivoControRegistro, motivoEsito } from './fatti-battuta';
+import { motivoControRegistro, motivoEsito, type CarteDelTurno } from './fatti-battuta';
 
 /**
  * Tipi che, scritti nel catalogo, svelerebbero un segreto al selettore: che quella battuta è una
@@ -128,7 +128,12 @@ export class StatoRepertorio {
    * the states it assumes, who it names) are checked against it before the catalogue (repertorio/fatti-battuta.ts),
    * in place of `fuoriGioco`.
    */
-  registro: (() => { entita: readonly EntitaRegistro[]; esiti?: readonly EsitoRegistro[] }) | null = null;
+  registro: (() => { entita: readonly EntitaRegistro[]; esiti?: readonly EsitoRegistro[]; turno?: number }) | null = null;
+  /**
+   * The cards and flights of a turn, for the outcome a line tells (`richiede.esito`). A `subito` line is checked against
+   * the turn of its action (`fino_al_turno`), even when it is said in the next window, after the ledger moved on.
+   */
+  carteDi: ((turno: number) => CarteDelTurno) | null = null;
   /** Indizi della campagna con i loro `modi`. */
   private readonly indizi: Map<string, IndizioCampagna>;
 
@@ -183,7 +188,7 @@ export class StatoRepertorio {
     if (registro) {
       // The line's own facts against what is true now (docs/repertorio.md, «Facts a line carries»), and the outcome it
       // tells against this turn's cards (any PC's here; the answered PC's in rispondeA).
-      const contro = motivoControRegistro(b, registro.entita) ?? motivoEsito(b, registro.entita, registro.esiti ?? [], null);
+      const contro = motivoControRegistro(b, registro.entita) ?? this.motivoEsitoPer(b, null, turno);
       if (contro) return contro;
     } else {
       const fuori = this.fuoriGioco?.();
@@ -229,9 +234,22 @@ export class StatoRepertorio {
   /** La battuta può rispondere a quest'azione ADESSO (un blocco aperto ne accetta i cancelli)? */
   rispondeA(b: Battuta, a: AzioneAlCancello): boolean {
     // The outcome the line tells must be this action's: the card of its author (richiede.esito with no `chi`).
-    const r = b.richiede.esito ? this.registro?.() : null;
-    if (r && motivoEsito(b, r.entita, r.esiti ?? [], a.autore)) return false;
+    if (this.motivoEsitoPer(b, a.autore)) return false;
     return !provaFallita(b, a) && this.blocchiAperti(b).some((bl) => accetta(bl, a));
+  }
+
+  /**
+   * Why the outcome the line tells is not on the cards (null = it is, or it tells none, or there is no ledger): `per`
+   * is the PC whose action it answers (null = any). The turn: the line's own (`fino_al_turno`), else `turno`, else the
+   * ledger's.
+   */
+  motivoEsitoPer(b: Battuta, per: string | null, turno?: number): string | null {
+    if (!b.richiede.esito) return null;
+    const r = this.registro?.();
+    if (!r) return null;
+    const t = b.fino_al_turno ?? turno ?? r.turno;
+    const carte = this.carteDi && t !== undefined ? this.carteDi(t) : { esiti: r.esiti ?? [] };
+    return motivoEsito(b, r.entita, carte, per);
   }
 
   /** Adesso la battuta esce solo con `> pg` (ogni blocco aperto ha un cancello sull'azione). */

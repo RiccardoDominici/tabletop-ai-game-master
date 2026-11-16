@@ -647,6 +647,12 @@ the catalogue against any PC's card, at `[usa]` against the answered PC's own); 
 prewritten lines tell no outcome (in that campaign the outcomes are the Engine's fact lines), so the tag matters for
 the scriptwriter's. Tests: test/fatti-battuta.test.ts, test/sceneggiatore.test.ts, strumenti/test_valida_campagna.py.
 
+Follow-ups (same fix): the outcome of a `subito` line is checked against the cards of its own turn (`carteDi`), also
+when it is said in the next window after the ledger moved on, and at its delivery against the card of the PC it
+answers; a flight line only in the turn of the flight (the visit's flights), not any turn after; and in a fight (or in
+a visit with blows) the scriptwriter's line that tells a blow, a miss or a fall without `richiede.esito` is refused
+(words of `guardia_esiti` in the language pack: round 4's CA T11 line was untagged).
+
 ### R-inesistente spares the one who fell in this very turn
 A noun whose character went out of play by this turn's own cards (downed, killed, fled) is not an absent creature in
 that turn: the narration of the blow is the turn's story (`creatureAssenti(…, oraFuori)`, the same exemption R-fuori

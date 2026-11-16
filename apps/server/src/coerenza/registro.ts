@@ -106,6 +106,21 @@ function statoDi(f: FontiRegistro, id: string, nascosto: boolean): StatoEntita {
 }
 
 /** The ledger of this moment. Pure: the same sources give the same ledger. */
+/** The outcomes of a turn's dice cards, as the ledger keeps them. */
+export function esitiDelleCarte(carte: readonly TiroMostrato[]): EsitoRegistro[] {
+  return carte.map((t) => ({
+    id: t.id,
+    chi: t.chi,
+    nome: t.nome,
+    bersaglio: t.bersaglio ? { ...t.bersaglio } : null,
+    tipo: t.tipo,
+    etichetta: t.etichetta,
+    riuscita: t.riuscita,
+    aTerra: t.a_terra,
+    privata: t.privata,
+  }));
+}
+
 export function costruisciRegistro(f: FontiRegistro): Registro {
   const entita: EntitaRegistro[] = [];
   for (const p of f.pg) entita.push({ id: p.id, tipo: 'pg', nome: p.nome, nomi: [...p.nomi], stato: statoDi(f, p.id, false), presenza: 'in_scena', uscito: null });
@@ -117,17 +132,7 @@ export function costruisciRegistro(f: FontiRegistro): Registro {
   for (const p of f.png) png('png', p);
   for (const g of f.gregari) png('gregario', g);
   for (const i of f.improvvisati ?? []) png('improvvisato', i);
-  const esiti: EsitoRegistro[] = f.carte.map((t) => ({
-    id: t.id,
-    chi: t.chi,
-    nome: t.nome,
-    bersaglio: t.bersaglio ? { ...t.bersaglio } : null,
-    tipo: t.tipo,
-    etichetta: t.etichetta,
-    riuscita: t.riuscita,
-    aTerra: t.a_terra,
-    privata: t.privata,
-  }));
+  const esiti = esitiDelleCarte(f.carte);
   return { turno: f.turno, scena: f.scena, entita, fatti: f.fatti.map((x) => ({ ...x, conosciutoDa: [...x.conosciutoDa] })), esiti, negati: f.negati.map((n) => ({ ...n })) };
 }
 

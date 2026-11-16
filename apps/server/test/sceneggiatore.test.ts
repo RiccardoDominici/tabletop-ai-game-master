@@ -92,6 +92,14 @@ describe('controllo delle battute dello sceneggiatore', () => {
     expect(r.accettate[0]).toMatchObject({ fino_al_turno: 6, richiede: { esito: { tipo: 'colpito', chi: null, bersaglio: 'png_oste' } } });
   });
 
+  it('in a fight an untagged line that tells a blow or a miss is refused; tagged, or outside a fight, it passes', () => {
+    const miss = (id: string, extra: Record<string, unknown> = {}): ReturnType<typeof battuta> => battuta({ id, chi: 'narratore', tipo: 'momento', testo: ['[narratore] La lancia passa a vuoto, lontano da tutti.'], ...extra });
+    const r = validaBattute(yaml([miss('sc_x_1'), miss('sc_x_2', { menzionati: ['png_guardia'], richiede: { esito: { tipo: 'mancato', chi: 'png_guardia' } } })]), { ...ctx, scontro: true });
+    expect(r.scartate).toEqual([{ id: 'sc_x_1', motivo: expect.stringMatching(/racconta un esito \(«a vuoto»\) senza richiede\.esito/) }]);
+    expect(r.accettate.map((b) => b.id)).toEqual(['sc_x_2']);
+    expect(validaBattute(yaml([miss('sc_x_1')]), ctx).scartate).toEqual([]);
+  });
+
   // E2E, secondo giro (N5): 42 battute scartate con «tipo non ammesso per lo sceneggiatore: undefined».
   it('tipo mancante: dedotto da chi parla (PNG reazione, narratore momento), e il log lo dice; un tipo che rivela resta fuori', () => {
     const senzaTipo = (o: Record<string, unknown>) => {
