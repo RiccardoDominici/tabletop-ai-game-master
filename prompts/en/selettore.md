@@ -27,6 +27,7 @@ Write only lines with a label, in the order in which they are heard:
 - `[invito]`: always the last line. Ids of the PCs who must respond, or `tutti`. Not read aloud.
 - `[privato pg_id]`: the outcome of a PRIVATE action by that PC, in one or two short sentences: only what he sees, hears or finds. It goes only to his phone, never to the table: in the other lines do not repeat it or hint at it. Only for PRIVATE actions.
 - `[atteggiamento]`: rare. When in this response an NPC in the scene really changes their mind about a PC (a line or an action really touched them): the NPC id, the PC id (or `tutti`) and the new state, `ostile`, `indifferente` or `amichevole`, one step at a time. Before `[invito]`. The Engine checks it and remembers it; it is not read aloud.
+- `[esce]` and `[entra]`: when in this response an NPC leaves the scene (goes away, takes the road to…) write on a line of its own `[esce] png_x verso <where>`; when an NPC arrives, `[entra] png_x`. Before `[invito]`. The Engine checks and remembers them; whoever left neither speaks nor acts here until they come back. They are not read.
 - Nothing else: no `[orologio]`, titles, markdown, notes.
 
 ## 2. First the actions

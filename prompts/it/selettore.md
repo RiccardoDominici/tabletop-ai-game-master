@@ -27,6 +27,7 @@ Scrivi solo righe con un'etichetta, nell'ordine in cui vanno ascoltate:
 - `[invito]`: sempre l'ultima riga. Id dei PG che devono rispondere, oppure `tutti`. Non viene letta.
 - `[privato pg_id]`: l'esito di un'azione PRIVATA di quel PG, in una o due frasi brevi: solo ciò che lui vede, sente o trova. Va solo al suo telefono, mai al tavolo: nelle altre righe non ripeterlo e non accennarlo. Solo per le azioni PRIVATA.
 - `[atteggiamento]`: rara. Quando in questa risposta un PNG in scena cambia davvero idea su un PG (una battuta o un'azione lo ha toccato davvero): id del PNG, id del PG (o `tutti`) e il nuovo stato, `ostile`, `indifferente` o `amichevole`, un passo alla volta. Prima di `[invito]`. Il Motore la controlla e la ricorda; non viene letta.
+- `[esce]` e `[entra]`: quando in questa risposta un PNG lascia la scena (se ne va, prende la strada di…) scrivi su una riga sua `[esce] png_x verso <dove>`; quando un PNG arriva, `[entra] png_x`. Prima di `[invito]`. Il Motore li controlla e li ricorda; chi è uscito non parla né agisce qui finché non rientra. Non vengono lette.
 - Nient'altro: niente `[orologio]`, titoli, markdown, note.
 
 ## 2. Prima le azioni

@@ -113,7 +113,12 @@ check, so a leak can no longer hide behind a 0.
    two calls apart (test/aiuti/partita.ts routes a one-call script's `[privato pg_x]` lines to the private reply).
    Tests: test/coerenza-pubblico.test.ts, test/privato.test.ts, test/prove-integrazione.test.ts,
    test/prove-manuali-integrazione.test.ts.
-5. Presence tags.
+5. **Done**: presence tags. `[esce] png_x verso <dove>` and `[entra] png_x` (parser, both prompts it/en,
+   docs/f0-contratti.md); the director accepts a known NPC who is in the scene (to leave) or not (to arrive) and not out
+   of play, logs «presence: change accepted/refused», keeps them for the visit (`presenzeNarrate`, in the snapshot,
+   cleared at a scene change); who left leaves the physical presence (so R-assente drops its lines and the catalogue
+   its lines), the ledger has it as `uscito` with turn and place, «Cosa è vero adesso» says it; the Game Master's
+   presence decision wins. Tests: test/coerenza-presenze.test.ts.
 6. The panel box (and the projector mark).
 7. The targeted repair with its deadline, measured on the three e2e scripts. Then the e2e pass again.
 

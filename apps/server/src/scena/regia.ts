@@ -336,6 +336,32 @@ export class Regia {
   private campagna: Campagna;
   /** Presenza dei PNG decisa a mano dal master (true = in scena, false = altrove). Si azzera a ogni cambio di scena. */
   private presenzeManuali = new Map<string, boolean>();
+  /**
+   * Presence changes the narration proposed and the Engine accepted ([esce] png_x verso …, [entra] png_x; docs/coerenza.md
+   * §1), for this visit of the scene: who left, when and where to. The Game Master's decisions win over them.
+   */
+  private presenzeNarrate = new Map<string, { presente: boolean; turno: number; verso: string | null }>();
+
+  /**
+   * The narrator's [esce]/[entra] (docs/coerenza.md §1): accepted only for a known NPC who is in the scene (to leave) or
+   * not (to arrive), and not out of play; each accepted or refused change is logged. The third e2e pass had Ugo leave
+   * for the charcoal pile and keep talking in the yard: now his lines are dropped (R-assente) and the ledger says where
+   * he went.
+   */
+  private presenzeDalNarratore(turno: number, proposte: ReadonlyArray<{ png: string; presente: boolean; verso: string | null }>, log: Logger): void {
+    for (const x of proposte) {
+      const png = this.campagna.png.find((p) => p.id === x.png);
+      const qui = this.pngPresentiFisici().has(x.png);
+      const motivo = !png ? 'unknown NPC' : this.prove?.attivo && this.prove.stato.fuoriGioco(x.png) && x.presente ? 'out of play' : x.presente === qui ? (qui ? 'already in the scene' : 'not in the scene') : null;
+      if (motivo) {
+        log.warn({ turno, png: x.png, presente: x.presente, motivo }, 'presence: change refused');
+        continue;
+      }
+      this.presenzeNarrate.set(x.png, { presente: x.presente, turno, verso: x.presente ? null : x.verso });
+      log.info({ turno, png: x.png, presente: x.presente, verso: x.verso }, 'presence: change accepted');
+    }
+    if (proposte.length) this.notifica();
+  }
   /** PNG nascosti (scheda `nascosto: true`) che il master ha rivelato a mano. Vale per la sessione. */
   private rivelati = new Set<string>();
   /** Blocchi di sistema della scena in corso (prompt + contesto), in cache. */
@@ -741,6 +767,7 @@ export class Regia {
       segretiPrivati: { battute: [...this.battutePrivate], indizi: [...this.indiziPrivati] },
       // Decisioni del master su presenze e rivelazioni: nel registro, così una ripresa le ritrova (assenti = nessuna).
       ...(this.presenzeManuali.size ? { presenzeManuali: [...this.presenzeManuali] } : {}),
+      ...(this.presenzeNarrate.size ? { presenzeNarrate: [...this.presenzeNarrate] } : {}),
       ...(this.rivelati.size ? { rivelati: [...this.rivelati] } : {}),
       ...(this.prove?.attivo ? { prove: this.prove.esporta() } : {}),
       registro: this.diarioRegistro.esporta(),
@@ -819,6 +846,7 @@ export class Regia {
     if (this.o.campagna.scene.some((s) => s.id === f.scena)) this.impostaScena(f.scena);
     // Dopo impostaScena (che azzera le presenze a mano): le decisioni del master di questa scena tornano.
     for (const [id, presente] of f.presenzeManuali ?? []) this.presenzeManuali.set(id, presente);
+    for (const [id, v] of f.presenzeNarrate ?? []) this.presenzeNarrate.set(id, { ...v });
     for (const id of f.rivelati ?? []) this.rivelati.add(id);
     this.luogo = f.luogo || this.campagna.scena.id;
     this.orologi.importa(f.orologi);
@@ -1219,6 +1247,7 @@ export class Regia {
       png: c.png.map((p) => ({ id: p.id, nome: p.nome, nomi: this.nomiPng.get(p.id) ?? [p.nome], nascosto: p.nascosto === true && !this.rivelati.has(p.id) })),
       gregari,
       presenti: fisici,
+      usciti: new Map([...this.presenzeNarrate].filter(([id, v]) => !v.presente && !this.presenzeManuali.has(id)).map(([id, v]) => [id, { turno: v.turno, verso: v.verso }])),
       pf: (id) => prove?.stato.puntiFerita(id) ?? null,
       fuori: (id) => prove?.stato.fuoriGioco(id) ?? null,
       morenti,
@@ -1246,7 +1275,8 @@ export class Regia {
 
   /** PNG che sono nella scena anche se non parlano (a terra, morti: il corpo c'è); non chi è fuggito. */
   private pngPresentiFisici(): Set<string> {
-    const p = presenzaEffettiva(this.presentiDiScena(), this.presenzeManuali);
+    // The narrator's accepted [esce]/[entra] first, the Game Master's decisions over them (the panel undoes a tag).
+    const p = presenzaEffettiva(this.presentiDiScena(), new Map([...[...this.presenzeNarrate].map(([id, v]) => [id, v.presente] as [string, boolean]), ...this.presenzeManuali]));
     for (const [id, f] of this.prove?.attivo ? this.prove.stato.tuttiFuori() : []) if (f === 'fuggito') p.delete(id);
     return p;
   }
@@ -2774,6 +2804,7 @@ export class Regia {
     // A new visit of a scene (saved with the world, so a resume keeps counting from the real entry).
     this.mondo.nuovaVisita(turno);
     this.presenzeManuali.clear();
+    this.presenzeNarrate.clear();
     this.sistema = this.o.sistemaPer?.(this.campagna) ?? this.sistema;
     this.scenaPubblica = this.o.scenaPubblicaPer?.(this.campagna) ?? this.scenaPubblica;
     for (const salto of this.orologi.impostaScena(this.campagna.scena, turno)) {
@@ -3540,6 +3571,8 @@ export class Regia {
     }
     // Attitude changes the narrator proposed (mode A): the Engine checks them (docs/mondo.md §4).
     const atteggiamenti = this.atteggiamentiDalNarratore(turno, esito.atteggiamenti, log);
+    // Presence changes the narrator proposed ([esce]/[entra]): the Engine checks them (docs/coerenza.md §1).
+    this.presenzeDalNarratore(turno, esito.presenze, log);
     // The world (docs/mondo.md §2): owed marks the response did not show are said by the Engine; the lines said and
     // the clues they revealed are facts for the gates, owed to the next response (or paid off-screen at once).
     const debitiDetti = esito.esito && !controllo.signal.aborted ? this.pagaDebitiInRisposta(turno, esito, segniInRisposta, this.dovutiAlMessaggio, log) : [];

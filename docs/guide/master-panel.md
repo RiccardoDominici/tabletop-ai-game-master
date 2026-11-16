@@ -92,7 +92,7 @@ All the campaign's NPCs, including those the players have not met yet. For each:
 
 - whether it "ha già parlato" (has already spoken) or is "non ancora incontrato" (not yet met);
 - whether it is "in scena" (on stage) or "altrove" (elsewhere);
-- **In scena** (On stage) and **Altrove** (Elsewhere): you decide where it is. The choice is marked "a mano" (by hand) and lasts until the scene changes;
+- **In scena** (On stage) and **Altrove** (Elsewhere): you decide where it is. The choice is marked "a mano" (by hand) and lasts until the scene changes. When the narration has an NPC leave or arrive (it writes `[esce]`/`[entra]`, which the Engine checks), the NPC moves by itself; your choice wins over it, so **In scena** brings back someone the narration sent away;
 - **Auto**: removes your choice, and the NPC goes back to what the scene says;
 - **Rivela** (Reveal): appears for a "nascosto" (hidden) NPC (present, but not yet shown at the table). It shows the NPC to the players.
 

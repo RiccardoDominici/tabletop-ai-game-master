@@ -93,6 +93,8 @@ export interface EsitoTurnoNarrato {
   orologi: string[];
   /** Attitude changes proposed with [atteggiamento] (the director checks them: docs/mondo.md §4). */
   atteggiamenti: Array<{ png: string; pg: string; stato: string }>;
+  /** Presence changes the narrator proposed ([esce]/[entra], docs/coerenza.md §1): the director checks them. */
+  presenze: Array<{ png: string; presente: boolean; verso: string | null }>;
   /** Ritmo chiesto con [ritmo] (vale l'ultima riga), null se il narratore non l'ha detto. */
   ritmo: 'concitato' | 'calmo' | null;
   esito: EsitoNarrazione | null;
@@ -294,6 +296,7 @@ export async function narraTurno(
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
   const atteggiamenti: Array<{ png: string; pg: string; stato: string }> = [];
+  const presenze: Array<{ png: string; presente: boolean; verso: string | null }> = [];
   let ritmo: 'concitato' | 'calmo' | null = null;
   /** Segnale audio in attesa della prossima frase. */
   let cuePendente: CueAudio | null = null;
@@ -451,6 +454,9 @@ export async function narraTurno(
         log.info({ turno: p.turno, tipo: e.tipo, id_pg: p.soloPg }, 'narrator: protocol line of a private reply ignored');
       } else if (e.tipo === 'orologio') {
         orologi.push(e.id);
+      } else if (e.tipo === 'presenza') {
+        presenze.push({ png: e.png, presente: e.presente, verso: e.verso });
+        log.info({ turno: p.turno, png: e.png, presente: e.presente, verso: e.verso, grezzo: e.grezzo }, 'narrator: presence change proposed');
       } else if (e.tipo === 'atteggiamento') {
         atteggiamenti.push({ png: e.png, pg: e.pg, stato: e.stato });
         log.info({ turno: p.turno, png: e.png, pg: e.pg, stato: e.stato, grezzo: e.grezzo }, 'narrator: attitude change proposed');
@@ -488,6 +494,7 @@ export async function narraTurno(
     invito,
     orologi,
     atteggiamenti,
+    presenze,
     ritmo,
     esito,
     frasi: indice,
