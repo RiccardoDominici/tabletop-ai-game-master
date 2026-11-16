@@ -83,6 +83,18 @@ source and the length. Never add a `console.log` or a `print` of a key or token 
 - Commit messages in English from now on (the project is language-independent; older history is in Italian).
 - New code comments and log messages in English. Existing Italian identifiers, comments and log lines stay until the planned code-translation phase (Riccardo's choice); don't mix languages inside one function.
 
+## The small model relays, it never decides
+
+The live reader (the local model, or any fast model in its seat) only relays what the big model already wrote:
+it maps a player's action to prewritten line ids and at most writes the short announcement. It makes no choice
+of content, no coherence or yes/no judgement, no moderation and no rewriting, so it must work even when tiny.
+All prose and decisions come from the big model (Claude Code: the Preparer before the session, the sceneggiatore
+in the background) and from the deterministic Engine (ledger, filters, dice). Coherence in the local profile comes
+from lines tagged by the big model (who speaks, who acts, required presence and states) and from the Engine
+filtering eligible lines against the ledger before the reader sees them (docs/coerenza.md). Before giving the
+reader any new task, check that it is pure relaying; if it would judge, choose or write, move it to the big model
+or to Engine code. (A model judge is acceptable only where that same model writes the prose live, profile B.)
+
 ## Framework principle
 
 - The code generates campaigns: it does not contain the content of a specific campaign. The names, places
