@@ -165,7 +165,7 @@ Over-fires found by the same reading: the stall's «nothing new» counts turns w
 T10–T15, CA T13–T17); R-privato moved public lines to a phone (FB T15 Berta's words while she attacks in public; ST T10
 another PC's public question); the private replies logged a missing invitation as an error (fixed, `2c40c29`).
 
-Fixed after the measure (`9e1dab2`, tests on invented fixtures, not yet measured on the scripts):
+Fixed after the measure (`5870930`, tests on invented fixtures, not yet measured on the scripts):
 - R-fuori: a part of a character joined by «di» to the name («lo sguardo di Zirrà scivola…») is that character
   (`guardia_fuori.parti`, `di_parte`);
 - R-esito: a blow that hurt, told as missed or absorbed by its target alone («… la pietra lo assorbe»), becomes «Berta
