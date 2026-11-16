@@ -47,7 +47,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   said, DC hidden, first-audio 1.85 s against 2.43 s, but its criterion is **not met** (two definite and about fifteen
   probable high-severity sentences heard) and the stall run stayed idle. Fixed after the measure, with tests, not yet
   measured on the scripts: 5870930, 72cc62e, 8e1f34e, 97121cb. Still open: a creature the Engine does not have
-  attacked or acting (bug 5, `R-inesistente`); the stall's S1 in mode B without Engine material; NPCs the players
+  attacked or acting (bug 5: `R-inesistente` built after round 1, to be measured); NPCs the players
   invent voiced by existing ones (bug 9); the cart «impossibile» (11a); the panel's fight and manual initiative (11c);
   `R-eco` and the projector mark; the «Coerenza» box not yet seen in a browser; profile A (the reader plus the Mac's
   swap were too much on 16 November) and the dictated action not run.

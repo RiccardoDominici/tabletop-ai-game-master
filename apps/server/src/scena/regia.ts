@@ -1533,12 +1533,30 @@ export class Regia {
   }
 
   /**
-   * Mode B at S2 and S3 (docs/mondo.md §5): the Engine says an available `indizio` line that reveals the clue and has no
-   * gate on the action, or the sentence with the leads. S1 stays the selector's filler or the due mark, as before.
-   * Returns what was said (a line id, «piste»), or null.
+   * Mode B at S1, S2 and S3 (docs/mondo.md §5): at S1 an available filler line of the scene (the danger's cast present
+   * first, then the narrator's), unless the response already brought a filler or a clock sign, or the hard S1 owes a
+   * mark; at S2 an available `indizio` line that reveals the clue and has no gate on the action; at S3 the sentence with
+   * the leads. Returns what was said (a line id, «piste»), or null.
    */
   private diciMossaDiStallo(turno: number, esito: { uscita: VoceUscita[] }, segni: SegniInRisposta, m: MossaStallo, log: Logger): string | null {
     const s = this.statoRepertorio!;
+    if (m.livello === 1 && !m.duro) {
+      // The canary on 97121cb (stall script, T3): the selector answered the soft S1 with «Nel cortile non si muove
+      // nessuno.», improvised, and the table got nothing of the world. The fillers are the campaign's prepared moves.
+      const tutte = new Map(s.repertorio.battute.map((b) => [b.id, b]));
+      const materiale = (id: string): boolean => !!tutte.get(id) && (tutte.get(id)!.riempitivo || tutte.get(id)!.tipo === 'segno_orologio');
+      if (esito.uscita.some((u) => u.tipo === 'usa' && materiale(u.id))) return null;
+      const presenti = this.pngInScena();
+      const scena = this.campagna.scena.id;
+      const cast = new Set(m.pericolo?.cast ?? []);
+      const candidati = s.disponibili(turno).filter(
+        (b) => b.riempitivo && !haCancelloAzione(b) && !b.richiede.privata && (b.chi === ID_NARRATORE || presenti.has(b.chi)) && (!b.scene.length || b.scene.includes(scena)),
+      );
+      const b = candidati.find((x) => cast.has(x.chi)) ?? candidati.find((x) => x.chi === ID_NARRATORE) ?? candidati[0];
+      if (b && this.aggiungiBattutaMotore(turno, esito, segni, log, b, false)) return b.id;
+      log.info({ turno, pericolo: m.pericolo?.id ?? null }, 'world: S1 without a filler line the Engine can say');
+      return null;
+    }
     if (m.livello === 2 && m.indizio) {
       if (s.indiziRivelati.has(m.indizio)) return null; // the response already brought it
       const b = this.lineaIndizioDicibile(turno, m.indizio);

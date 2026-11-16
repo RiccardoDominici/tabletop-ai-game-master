@@ -148,7 +148,9 @@ an answer did to the game is language-free; the patterns stay narrow. Mode A has
 the patterns count. A counter grows on consecutive stalls and goes back to zero on a turn with a real decision (or,
 in mode B, after an answer that brought something new). Level `((n − 1) mod 3) + 1`:
 - **S1** soft move of an active front: the danger of the scene (clock active, or cast present), its `mosse` and the
-  next visible sign as material; mode B: a filler line or the due mark, as before. From the fourth stall on, S1 also
+  next visible sign as material; mode B: a filler line (`riempitivo`) or the due mark; when the selector brought
+  neither, the Engine says an available filler of the scene, the danger's cast present first, then the narrator's (the
+  canary of 16 November had an improvised «Nel cortile non si muove nessuno.» at S1). From the fourth stall on, S1 also
   owes a mark to that danger's clock (the soft move was ignored: the world moves);
 - **S2** proactive clue: the first clue offered by a consequence, else one not yet revealed of the scene's node.
   Mode A: a directive with the clue; mode B: only a clue with an available `indizio` line that reveals it and has no

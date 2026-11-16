@@ -193,6 +193,9 @@ describe('mode B: answers that bring nothing new count, whatever the words (thir
     for (const testo of ['Mi siedo sul muretto del mulino.', 'Ci penso su, intanto.', 'Cosa facciamo adesso?', 'Non lo so, boh.', 'Mi siedo di nuovo.']) s = await turno(tel, 'pg_anna', s, testo);
     const detto = (t: number) => s.trascrizione.filter((v) => v.turno === t).map((v) => v.testo);
     expect(prova.turni().filter((r) => r['stallo']).map((r) => (r['stallo'] as { livello: number }).livello)).toEqual([1, 2, 3]);
+    // S1 brings the world too: the Engine says a filler of the scene (canary on 97121cb: an improvised «nobody moves»).
+    expect(prova.turni().filter((r) => r['stallo']).map((r) => (r['stallo'] as { detto: string | null }).detto)).toEqual(['nar_ruota', 'nar_impronte', 'piste']);
+    expect(detto(3)).toContain('La ruota cigola e si ferma un istante.');
     expect(detto(4)).toContain('Sui sacchi di farina ci sono impronte piccole, di piedi scalzi.');
     expect(detto(5).join(' ')).toMatch(/Vi tornano in mente le strade ancora aperte: Il bosco; Il ponte/);
   });

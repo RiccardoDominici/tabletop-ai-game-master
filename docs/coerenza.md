@@ -198,8 +198,12 @@ sentence that has the creature be the subject of a clause, be hit, be wounded in
 voi, in piedi qui si vedono soltanto Grosso.»), later ones are dropped, and if the narration invented nothing the
 Engine says the line before the invitation (`aggiunta`). The grammar words around the nouns are in
 `lingue/<code>/motore.yaml`, section `inesistenti`; the line is not handed to the model's repair. Limit: a noun whose
-plural changes the word, or a creature the narration names with a word the data do not have, is not seen. The stall's S1 in mode B still brings no material of the
-Engine to the table (a filler line or the due mark, when there is one). Profile A (`stallo` with the local reader) was not run: with memory 54% free the reader was started, but once loaded the Mac had 23% free and 6.0 GB of swap (the rule is to stop above about 5 GB, the Mac rebooted twice on 14 November), so it was stopped at once.
+plural changes the word, or a creature the narration names with a word the data do not have, is not seen.
+From the canaries on `97121cb` (combat with manual rolls, stall; profile B, ports 4948–4949,
+`esperimenti/risultati/e2e-finale-3b/canary-*`): the stall now climbs S1 → S2 → S3 → hard S1 → S2 (the reset fix
+holds); S1 in mode B had an improvised «Nel cortile non si muove nessuno.», so the Engine now says a filler line of the
+scene when the selector brought none (docs/mondo.md §5); R-privato moved a whisper-only turn's visible trace (fixed
+in `b5df16a`). Profile A (`stallo` with the local reader) was not run: with memory 54% free the reader was started, but once loaded the Mac had 23% free and 6.0 GB of swap (the rule is to stop above about 5 GB, the Mac rebooted twice on 14 November), so it was stopped at once.
 
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a
