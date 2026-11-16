@@ -1,0 +1,95 @@
+{
+ "variante": "domanda2a-attori-claude-haiku-5-5",
+ "violazioni": 117,
+ "prese": 107,
+ "mancate": [
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#10:8",
+   "testo": "I goblin sono fuggiti.",
+   "perche": "says the goblins fled: Zirrà died, she did not flee"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#15:3",
+   "testo": "Il goblin non risale.",
+   "perche": "the invented goblin does not come back up"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#16:1",
+   "testo": "Il colpo della spada lunga gli entra sotto la spalla.",
+   "perche": "carried «gli»: the invented goblin is hit"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#9:3",
+   "testo": "Non si rialza.",
+   "perche": "carried: the invented goblin does not rise"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#12:4",
+   "testo": "Lo sguardo di Zirrà scivola sulla spada di Livia, poi sul corpo immobile di Grosso accanto al fuoco.",
+   "perche": "fled Zirrà's gaze moves"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#12:5",
+   "testo": "Si ferma lì, e non dice più niente.",
+   "perche": "carried: fled Zirrà stops and is silent"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#15:1",
+   "testo": "Lo scudo sbatte sul legno, e il corpo si schiaccia tra la pietra e il metallo.",
+   "perche": "carried: the invented goblin's body crushed"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#9:5",
+   "testo": "I goblin rimasti ritrovano le gambe e scappano verso il crinale, lasciando la torre al silenzio e al fumo.",
+   "perche": "«the remaining goblins» flee: nobody else was there"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-fuori-binario-B-manuale#16:0",
+   "testo": "Livia, la tua mano si chiude sul bordo dello scudo, e lo sguardo di Zirrà si ferma su di te, come se contasse qualcosa.",
+   "perche": "absent Zirrà's gaze"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#22:1",
+   "testo": "Lei sorride storta, il sangue le sporca i denti.",
+   "perche": "carried «Lei»: dead Zirrà smiles"
+  }
+ ],
+ "toccatePulite": [
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#17:0",
+   "testo": "Eliandro preme il piede sulla caviglia di Zirrà e le chiede dove si trova il ragazzo.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#8:4",
+   "testo": "Zirrà è già sparita nel buio verso il crollo: si sente solo il rotolio di qualche sasso sul crinale.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#13:1",
+   "testo": "Tu aspetti la sua risposta, scudo alzato.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#11:2",
+   "testo": "Ahi... ahi... orecchie a punta, mi hai fatto male davvero.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#11:3",
+   "testo": "Livia spinge Zirrà contro il muro con lo scudo e la colpisce con la spada lunga.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#14:1",
+   "testo": "La lama fischia nel buio della scala, ma il bersaglio è già sparito giù per i gradini.",
+   "etichettata": false
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#15:0",
+   "testo": "Livia non sta mirando a nessuno: il goblin davanti a lei è già crollato contro il muro, e davanti alla soglia non c'è più nessuno da colpire.",
+   "etichettata": true
+  }
+ ],
+ "ms": 39
+}

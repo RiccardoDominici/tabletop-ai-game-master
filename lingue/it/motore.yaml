@@ -228,6 +228,17 @@ guardia_fuori:
   di_parte: [di, del, della, dello, dei, degli, delle]
   stato: [giac, immobil, mort, esanim, cadaver, corpo, a terra, per terra, senza vita, senza sensi, svenut, privo di sensi, priva di sensi, non si muove, non respira, rantol, sangu, fuori combattimento, non c'e piu, non e piu qui, fuggit, sparit]
 
+# Unnamed actors (apps/server/src/coerenza/attori.ts): a flight or an attack on a PC told with no name for who does it.
+# `fuga`: a flight (its subject unnamed after one of `relativi`, or in a clause that names nobody); `difesa` followed by
+# one of `colpi` (with its article), or `difesa` and later one of `colpi` with an `in_arrivo` verb: a blow coming at the
+# PC named. Exact words, no stems («para» is not «parapetto»). Weapons and blows of the language, not of a campaign.
+attori_impliciti:
+  fuga: [scappa, scappano, fugge, fuggono, corre via, corrono via, si allontana, si allontanano, si dilegua, si dileguano]
+  relativi: [che, chi, cui]
+  difesa: [para, parano, pari, alza lo scudo, solleva lo scudo, regge lo scudo, tiene lo scudo, si ripara, schiva, schivano, devia]
+  colpi: [colpo, colpi, fendente, affondo, lancia, lama, freccia, frecce, dardo, pugnale, spada, ascia, mazza, bastone, giavellotto]
+  in_arrivo: [arriva, arrivano, rimbalza, rimbalzano, sbatte, sbattono, batte, battono, si abbatte, cala, scivola via, si spezza]
+
 # Absent creature (apps/server/src/coerenza/inesistenti.ts, R-inesistente): the nouns are the campaign's (NPC aliases,
 # minion types); these are only the grammar around them. `negazioni` right before the noun («nessun goblin») leave the
 # sentence alone; `verso` before it is a movement or an attack toward it («verso l'ultimo goblin»); `corpo` + «di» +

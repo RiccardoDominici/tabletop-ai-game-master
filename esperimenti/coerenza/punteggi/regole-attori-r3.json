@@ -1,0 +1,90 @@
+{
+ "variante": "regole-attori",
+ "violazioni": 31,
+ "prese": 18,
+ "mancate": [
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-automatico#10:6",
+   "testo": "I goblin rimasti in piedi gettano le armi e corrono verso il buio del bosco, lasciando dietro di sé solo l'eco dei passi sulla pietra.",
+   "perche": "«the goblins still standing» flee: only Grosso was there, and he is still here in the next sentences"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#10:6",
+   "testo": "Eliandro lancia il pugnale: la lama fende l'aria e lo sfiora alla spalla, senza fermarlo.",
+   "perche": "carried «lo»: the invented goblin grazed"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#11:4",
+   "testo": "Il corpo cade senza un grido.",
+   "perche": "carried: the invented goblin's body falls"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#12:5",
+   "testo": "Ne resta ancora uno, che si ferma a guardare la scena, incerto.",
+   "perche": "another invented goblin is left (no noun)"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#12:7",
+   "testo": "Il colpo arriva senza mancare, e la creatura cade in ginocchio.",
+   "perche": "«la creatura» falls: invented"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#13:1",
+   "testo": "Ma la goblin Zirrà è a terra, e chi resta in piedi non risponde.",
+   "perche": "«chi resta in piedi»: someone still standing, nobody in play"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#15:0",
+   "testo": "Livia abbassa la spada lunga sul goblin con la lancia, senza fargli scudo.",
+   "perche": "sword on the invented goblin"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#15:1",
+   "testo": "Il colpo lo coglie di fianco e lo stende sulle pietre, accanto alla scala.",
+   "perche": "carried «lo»: the invented goblin struck down"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#16:0",
+   "testo": "Eliandro preme il piede sul goblin e chiede dove sia il ragazzo.",
+   "perche": "foot on the invented goblin, question asked"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#16:1",
+   "testo": "La creatura sputa sangue sulle pietre e non risponde.",
+   "perche": "«la creatura» spits blood: invented"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#16:2",
+   "testo": "Livia alza lo scudo e spinge l'ultimo goblin contro la porta di ferro.",
+   "perche": "the invented last goblin pushed"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#16:7",
+   "testo": "Eliandro, il goblin sputa sangue sulle pietre e non risponde.",
+   "perche": "the invented goblin spits blood"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#16:10",
+   "testo": "Il legno geme, e la creatura non ha più fiato per ribellarsi.",
+   "perche": "«la creatura» has no breath: invented"
+  }
+ ],
+ "toccatePulite": [
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-automatico#10:8",
+   "testo": "Zirrà... morta.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-automatico#10:9",
+   "testo": "Hai carne?",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#14:5",
+   "testo": "Tonio, sui gradini, la guarda, poi alza gli occhi su di voi.",
+   "etichettata": false
+  }
+ ],
+ "ms": 8
+}

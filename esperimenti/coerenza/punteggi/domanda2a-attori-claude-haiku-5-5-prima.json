@@ -1,0 +1,45 @@
+{
+ "variante": "domanda2a-attori-claude-haiku-5-5",
+ "violazioni": 37,
+ "prese": 33,
+ "mancate": [
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#24:4",
+   "testo": "Il secondo goblin, quello che esitava, lascia cadere la mazza e si schiaccia contro la parete.",
+   "perche": "a second goblin drops the mace: nobody else in play"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:5",
+   "testo": "Il goblin non parla.",
+   "perche": "the invented goblin does not speak"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:6",
+   "testo": "Guarda verso la cantina, dove Tonio sta in silenzio.",
+   "perche": "carried: the invented goblin looks"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#25:4",
+   "testo": "Dice che il ragazzo è stato portato via, ma non dice da chi.",
+   "perche": "carried: the invented goblin says the boy was taken"
+  }
+ ],
+ "toccatePulite": [
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#10:2",
+   "testo": "Zirrà vede il suo compagno a terra e la risata le muore in gola.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#11:2",
+   "testo": "Zirrà guarda il suo compagno a terra, poi guarda la spada di Nespola, e per un momento non ride più.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-fuori-binario-B-manuale#14:0",
+   "testo": "Livia Sarti chiede a Oreste, sottovoce, quanto lo pagano i goblin, e gli offre una mano con le pecore.",
+   "etichettata": true
+  }
+ ],
+ "ms": 10
+}

@@ -8,6 +8,7 @@
  * (esperimenti/coerenza/etichette.json); `coerenza-punteggio.ts` scores any checker variant on them in seconds.
  *
  *   npx tsx apps/server/src/strumenti/coerenza-insieme.ts <campaign folder> <run folder>… > esperimenti/coerenza/insieme.json
+ *   npx tsx apps/server/src/strumenti/coerenza-insieme.ts --tutte <campaign folder> <run folder>…   (every call: a dry run of a rule)
  *
  * Limits, said in the output too: the ledger is rebuilt from the change events (a state never changed is standing; the
  * presence is the scene's `png_presenti`, then the presence events of the visit); the private replies' raw text is not in the logs (only the
@@ -24,6 +25,7 @@ import type { EntitaRegistro, PresenzaEntita, Registro, StatoEntita } from '../c
 import { tipiGregari } from '../campagna/gregari';
 import { impostaLingua } from '../lingua';
 import { nomiDeiPng } from '../repertorio/pertinenza';
+import type { StoriaVisita } from '../coerenza/attori';
 
 /** One attack card of the turn, as the replay needs it. */
 export interface CartaInsieme {
@@ -57,6 +59,11 @@ export interface ChiamataInsieme {
   /** The turn's actions (public and private), as the guards' noun filter reads them. */
   azioni: Array<{ id_pg: string; testo: string; privata: boolean }>;
   frasi: FraseInsieme[];
+  /**
+   * This visit of the scene up to this turn: every attack card (PCs' and NPCs') and every flight, as the unnamed-actor
+   * rule reads them (coerenza/attori.ts). Absent in sets built before that rule.
+   */
+  storia?: StoriaVisita;
 }
 
 const IN_GIOCO: ReadonlySet<StatoEntita> = new Set(['in_piedi', 'ferito', 'grave', 'nascosto']);
@@ -79,7 +86,9 @@ function jsonl(f: string): Array<Record<string, unknown>> {
 function main(): void {
   const argomenti = process.argv.slice(2);
   const uscite = argomenti.includes('--uscite');
-  const [cartellaCampagna, ...runs] = argomenti.filter((a) => a !== '--uscite');
+  // `--tutte`: every call, flagged or not (a dry run of a new rule over all the raw answers; not a set to label).
+  const tutte = argomenti.includes('--tutte');
+  const [cartellaCampagna, ...runs] = argomenti.filter((a) => a !== '--uscite' && a !== '--tutte');
   if (!cartellaCampagna || !runs.length) {
     process.stderr.write('usage: coerenza-insieme.ts <campaign folder> <run folder>…\n');
     process.exit(2);
@@ -186,11 +195,15 @@ function main(): void {
           frasi.push({ i: frasi.length, etichetta: m[1]!, testo, segnata: menzioni.length > 0, menzioni });
         }
       }
-      if (!frasi.some((f) => f.segnata)) continue;
+      if (!tutte && !frasi.some((f) => f.segnata)) continue;
       const azioni = ((tr['azioni'] as Array<Record<string, unknown>> | undefined) ?? [])
         .filter((a) => typeof a['testo'] === 'string')
         .map((a) => ({ id_pg: String(a['id_pg']), testo: String(a['testo']), privata: a['privata'] === true }));
-      chiamate.push({ id: `${nome}#${turno}`, run: nome, turno, scena, scontro, entita, fuoriOra, carte, azioni, frasi });
+      const storia: StoriaVisita = {
+        carte: [...colpiPerTurno].filter(([t]) => t >= ingresso && t <= turno).flatMap(([t, cs]) => cs.map((k) => ({ turno: t, chi: k.chi, bersaglio: k.bersaglio }))),
+        fughe: eventi.filter((e) => e['tipo'] === 'stato' && e['a'] === 'fuggito' && Number(e['turno']) >= ingresso && Number(e['turno']) <= turno).map((e) => ({ turno: Number(e['turno']), id: String(e['id']) })),
+      };
+      chiamate.push({ id: `${nome}#${turno}`, run: nome, turno, scena, scontro, entita, fuoriOra, carte, azioni, frasi, storia });
     }
   }
   const segnate = chiamate.reduce((n, x) => n + x.frasi.filter((f) => f.segnata).length, 0);

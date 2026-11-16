@@ -18,6 +18,7 @@ import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import { caricaCampagna } from '../campagna/caricatore';
 import { nomeBreve } from '../campagna/nomi';
 import { tipiGregari } from '../campagna/gregari';
+import { guardiaAttori } from '../coerenza/attori';
 import { creatureAssenti, creatureNote, frasePresenti, guardiaInesistenti, nominateIn } from '../coerenza/inesistenti';
 import type { Registro, StatoEntita } from '../coerenza/registro';
 import { impostaLingua } from '../lingua';
@@ -60,7 +61,7 @@ export function carica(nome = 'insieme'): { insieme: ChiamataInsieme[]; etichett
 }
 
 /** The guards as the director builds them for one call (scena/regia.ts, guardiaDegliEsiti), from the set's rows. */
-export function guardieDellaChiamata(ch: ChiamataInsieme, o: { inesistente: boolean; assorbito: boolean; fuori?: boolean; esiti?: boolean }, tipi: ReturnType<typeof tipiGregari>): (testo: string) => CorrezioneEsito {
+export function guardieDellaChiamata(ch: ChiamataInsieme, o: { inesistente: boolean; assorbito: boolean; fuori?: boolean; esiti?: boolean; attori?: boolean }, tipi: ReturnType<typeof tipiGregari>): (testo: string) => CorrezioneEsito {
   const nomi = new Map<string, string[]>(ch.entita.map((e) => [e.id, e.nomi]));
   const nome = (id: string): string => ch.entita.find((e) => e.id === id)?.nome ?? id;
   const tiri = ch.carte.map(
@@ -107,7 +108,9 @@ export function guardieDellaChiamata(ch: ChiamataInsieme, o: { inesistente: bool
   }
   // `esiti: false`: the yes/no judge's shadow (scena/regia.ts, `ombra`), the card rules having decided before it.
   if (o.esiti === false) return (testo) => ines?.(testo) ?? fuori?.(testo) ?? null;
-  return (testo) => ines?.(testo) ?? esiti(testo) ?? fuori?.(testo) ?? null;
+  // `attori`: the unnamed actor of an attack or a flight (coerenza/attori.ts), a card rule like R-esito's.
+  const attori = o.attori && ch.storia ? guardiaAttori({ turno: ch.turno, entita: ch.entita, storia: ch.storia, fuoriOra: new Set(ch.fuoriOra) }) : null;
+  return (testo) => ines?.(testo) ?? esiti(testo) ?? fuori?.(testo) ?? attori?.(testo) ?? null;
 }
 
 /** R-assente as VerificaTurno applies it: an NPC's line when that NPC is not in the scene and in play. */
@@ -117,7 +120,7 @@ function assente(ch: ChiamataInsieme, f: FraseInsieme): boolean {
   return !e || e.presenza !== 'in_scena' || !IN_GIOCO.has(e.stato);
 }
 
-export function varianteRegole(nome: string, o: { inesistente: boolean; assorbito: boolean }, tipi: ReturnType<typeof tipiGregari>): Variante {
+export function varianteRegole(nome: string, o: { inesistente: boolean; assorbito: boolean; attori?: boolean }, tipi: ReturnType<typeof tipiGregari>): Variante {
   return {
     nome,
     prepara: (ch) => {
@@ -155,18 +158,28 @@ export function riga(p: Punteggio): string {
 }
 
 async function main(): Promise<void> {
-  const { insieme, etichette, campagna } = carica();
+  // `--insieme prima`: a held-out set (insieme-prima.json, etichette-prima.json); scores written with its suffix.
+  const argomenti = process.argv.slice(2);
+  const nomeInsieme = argomenti.includes('--insieme') ? argomenti[argomenti.indexOf('--insieme') + 1]! : 'insieme';
+  const altro = nomeInsieme === 'insieme' ? '' : `-${nomeInsieme}`;
+  const { insieme, etichette, campagna } = carica(nomeInsieme);
   const c = caricaCampagna(path.join(RADICE_REPO, 'campagne', campagna));
   impostaLingua(c.lingua ?? 'it');
   const tipi = tipiGregari(c);
-  const tutte: Variante[] = [varianteRegole('attive', { inesistente: false, assorbito: false }, tipi), varianteRegole('regole', { inesistente: true, assorbito: true }, tipi), varianteFiltro];
-  const scelte = process.argv.slice(2);
+  const tutte: Variante[] = [
+    varianteRegole('attive', { inesistente: false, assorbito: false }, tipi),
+    varianteRegole('regole', { inesistente: true, assorbito: true }, tipi),
+    // With the unnamed-actor rule (coerenza/attori.ts): what the rules alone do now.
+    varianteRegole('regole-attori', { inesistente: true, assorbito: true, attori: true }, tipi),
+    varianteFiltro,
+  ];
+  const scelte = argomenti.filter((a, k) => a !== '--insieme' && argomenti[k - 1] !== '--insieme');
   const varianti = scelte.length ? tutte.filter((v) => scelte.includes(v.nome)) : tutte;
   fs.mkdirSync(path.join(CARTELLA, 'punteggi'), { recursive: true });
   process.stdout.write('| variant | caught | missed | clean touched | time |\n|---|---|---|---|---|\n');
   for (const v of varianti) {
     const p = await valuta(v, insieme, etichette);
-    fs.writeFileSync(path.join(CARTELLA, 'punteggi', `${v.nome}.json`), `${JSON.stringify(p, null, 1)}\n`);
+    fs.writeFileSync(path.join(CARTELLA, 'punteggi', `${v.nome}${altro}.json`), `${JSON.stringify(p, null, 1)}\n`);
     process.stdout.write(`${riga(p)}\n`);
   }
 }

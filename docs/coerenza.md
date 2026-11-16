@@ -275,8 +275,10 @@ freezes what the model wrote, so any checker variant is scored on the same sente
   `prove: tiri del turno`), the actions and whether a fight is on. A sentence is **flagged** when it names a
   character out of play or absent, uses a creature noun nobody in play in the scene answers to, names the target of a
   blow that hurt next to a miss or absorb word, or is the line of an NPC out of play or absent. 53 calls, 136 flagged
-  sentences. Limits: the private replies' raw text is not in the logs; the block the narrator got was not logged (from
-  now on it is: «coherence: block of the call»), so the rows are the ledger's, rebuilt.
+  sentences. Each call also has the visit's attack cards and flights so far (`storia`, added after round 3 for the
+  unnamed actors; re-extracting gives the same calls and sentences). Limits: the private replies' raw text is not in
+  the logs; the block the narrator got was not logged (from now on it is: «coherence: block of the call»), so the rows
+  are the ledger's, rebuilt.
 - **Labels** (`esperimenti/coerenza/etichette.json`): every flagged sentence, labelled once by hand, plus the unflagged
   ones that are violations (a carried subject, «Quello cade contro il muro»; an attack by nobody in play) or that a
   variant touched: 117 violations, 46 clean; the set's other sentences are clean. Violation: someone out of play since
@@ -447,6 +449,31 @@ and counted apart: `azioni_senza_risposta` is still the count before the acknowl
 and Eliandro attacking Zirrà already dead would each hear «… ci prova, ma Zirrà non si muove più.», Eliandro's foot
 and question (no roll) «Eliandro ci prova.». Tests: test/coerenza-risposta.test.ts (every case, it and en),
 test/coerenza-giudice.test.ts (with the whole server: the answer dropped by a «si», no repair call, the line said).
+
+### Unnamed actors: an attack or a flight inherits its actor from the cards
+Two of round 3's three heard sentences had no name to check: T10 «Livia para la lancia con lo scudo: il legno geme,
+ma regge.» (nobody of the fight in play) and T14 «… il rumore dei passi si allontana verso la porta di ferro» (Grosso
+had fled at T9). Built (`coerenza/attori.ts`, words in `lingue/<code>/motore.yaml`, section `attori_impliciti`): the
+director keeps the visit's attack cards (PCs' and NPCs') and flights (`storiaVisita`, reset at a scene change; not in
+the snapshot, so after a resume the rule judges nothing until the next fight). A sentence that names no NPC and tells
+a flight with no named subject (after a relative, «la figura che scappa», or in a clause that names nobody, «il rumore
+dei passi si allontana») inherits the visit's last flight; one that tells an attack on a PC with no attacker (a defence
+phrase and a blow coming: «para la lancia», «alza lo scudo … il colpo della lancia rimbalza») inherits the attacker of
+this turn's card on that PC, or, with no such card and nobody of the fight still in play here, the last foe in the
+visit's cards. An inherited actor out of play since before the turn gets R-fuori's line («Grosso non è più qui.»,
+once a turn); never while a foe of the fight stands in the scene, never a flight of this very turn. It is a card rule:
+it runs with R-esito's before the yes/no judge, and in the rules path. Choice, from the logs: no NPC card ever
+attacked Livia in these runs (the NPCs were surprised or fell first), so «the card's attacker» falls back to the
+fight's last foe; with no card at all for a PC the attack would contradict the cards anyway.
+Scores (the sets re-extracted with the visit's history, `storia`; every other field and sentence index unchanged,
+checked by diff): the rules alone (`regole` → `regole-attori`) 76 → 79 caught on the frozen set, 25 → 25 on held-out
+#1 (it has no such sentence: there it is only the clean-touch test), 16 → 18 on held-out #2; what the director does
+(`domanda2a` → `domanda2a-attori`) 105 → 107, 33 → 33, 24 → 26; clean sentences touched unchanged everywhere (4, 4, 3;
+7, 3, 3). One question had no kept answer (the sentence after a newly caught one, asked as its carried subject): the
+rules decided it. A dry run over all 2092 raw sentences of every run folder (`coerenza-insieme.ts --tutte`: 326 calls)
+touches exactly 5 sentences, the five labelled violations. Still missed: «chi fugge verso la cantina» when nobody
+fled (an invented figure: no card has an actor for it). Tests: test/coerenza-attori.test.ts (each case, it and en;
+with the whole server, the parried spear after the fight).
 
 ## Characters the players invent (Riccardo's decision, 16 November)
 

@@ -209,7 +209,37 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "png_grosso",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 8,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-automatico#10",
@@ -399,7 +429,52 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "png_grosso",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 8,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 10,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 10,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-automatico#24",
@@ -600,7 +675,77 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "png_grosso",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 8,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 10,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 10,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 15,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 15,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 20,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 21,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 24,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-automatico#25",
@@ -772,7 +917,77 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "png_grosso",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 8,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 10,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 10,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 15,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 15,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 20,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 21,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 24,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-automatico#26",
@@ -958,7 +1173,77 @@
       "parla:png_zirra"
      ]
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "png_grosso",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 8,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 10,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 10,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 15,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 15,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 20,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 21,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 24,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-automatico#27",
@@ -1149,7 +1434,77 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "png_grosso",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 8,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 10,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 10,
+      "chi": "png_zirra",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 15,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 15,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 20,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 21,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 24,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-manuale#11",
@@ -1321,7 +1676,37 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 11,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-manuale#20",
@@ -1486,7 +1871,67 @@
       "fuori:png_zirra"
      ]
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 11,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 12,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 12,
+      "chi": "png_zirra",
+      "bersaglio": "pg_eliandro"
+     },
+     {
+      "turno": 14,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 15,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 18,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 20,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-manuale#21",
@@ -1652,7 +2097,67 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 11,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 12,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 12,
+      "chi": "png_zirra",
+      "bersaglio": "pg_eliandro"
+     },
+     {
+      "turno": 14,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 15,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 18,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 20,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-manuale#22",
@@ -1821,7 +2326,67 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 11,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 12,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 12,
+      "chi": "png_zirra",
+      "bersaglio": "pg_eliandro"
+     },
+     {
+      "turno": 14,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 15,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 18,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 20,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-manuale#23",
@@ -2011,7 +2576,67 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 11,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 12,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 12,
+      "chi": "png_zirra",
+      "bersaglio": "pg_eliandro"
+     },
+     {
+      "turno": 14,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 15,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 18,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 20,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-manuale#24",
@@ -2168,7 +2793,67 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 11,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 12,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 12,
+      "chi": "png_zirra",
+      "bersaglio": "pg_eliandro"
+     },
+     {
+      "turno": 14,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 15,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 18,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 20,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-combattimento-B-manuale#25",
@@ -2342,7 +3027,67 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 11,
+      "chi": "pg_nespola",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 12,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 12,
+      "chi": "png_zirra",
+      "bersaglio": "pg_eliandro"
+     },
+     {
+      "turno": 14,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 15,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 18,
+      "chi": "png_zirra",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 20,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": []
+   }
   },
   {
    "id": "prima-torre-mozza-fuori-binario-B-manuale#14",
@@ -2513,7 +3258,37 @@
      "segnata": false,
      "menzioni": []
     }
-   ]
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 1,
+      "chi": "png_berta",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 2,
+      "chi": "png_berta",
+      "bersaglio": "pg_nespola"
+     },
+     {
+      "turno": 7,
+      "chi": "png_berta",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 9,
+      "chi": "png_berta",
+      "bersaglio": "pg_livia"
+     },
+     {
+      "turno": 12,
+      "chi": "png_berta",
+      "bersaglio": "pg_livia"
+     }
+    ],
+    "fughe": []
+   }
   }
  ]
 }

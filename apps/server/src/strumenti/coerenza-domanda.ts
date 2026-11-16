@@ -105,70 +105,74 @@ async function main(): Promise<void> {
    * as R-fuori's `oraFuori`); an NPC's own line is judged by the deterministic R-assente (the model never saw the
    * speaker); the card rules of R-esito (pair, fall) stay deterministic, and only the absorbed-blow case is a question.
    */
-  const candidato = (v2: boolean, primaFrase: 'giudice' | 'regole' | 'apertura' = 'giudice'): Variante => ({
-    nome: `${primaFrase === 'regole' ? 'domanda2p' : primaFrase === 'apertura' ? 'domanda2a' : v2 ? 'domanda2' : 'domanda'}-${nomeModello}`,
-    prepara: (ch) => {
-      const registro: Registro = { turno: ch.turno, scena: ch.scena, entita: ch.entita, fatti: [], esiti: [], negati: [] };
-      const regole = v2 ? guardieDellaChiamata(ch, { inesistente: false, assorbito: false, fuori: false }, tipi) : null;
-      // The judge's shadow, run on every narrator sentence in order (its carried subject), decides when no answer came.
-      const ombra = v2 ? guardieDellaChiamata(ch, { inesistente: true, assorbito: false, esiti: false }, tipi) : null;
-      const primo = ch.frasi[0]?.i;
-      // The same filter the director would use (coerenza/menzioni.ts).
-      const contesto = contestoMenzioni(registro, tipi, ch.carte, ch.fuoriOra);
-      let precedente: FraseInsieme | null = null;
-      let ultime: readonly string[] = [];
-      let siPrima = false;
-      return async (f) => {
-        if (v2 && f.etichetta !== 'narratore') {
+  const candidato = (v2: boolean, primaFrase: 'giudice' | 'regole' | 'apertura' = 'giudice', attori = false): Variante => {
+    const corto = `${primaFrase === 'regole' ? 'domanda2p' : primaFrase === 'apertura' ? 'domanda2a' : v2 ? 'domanda2' : 'domanda'}${attori ? '-attori' : ''}`;
+    return {
+      nome: `${corto}-${nomeModello}`,
+      prepara: (ch) => {
+        const registro: Registro = { turno: ch.turno, scena: ch.scena, entita: ch.entita, fatti: [], esiti: [], negati: [] };
+        // The card rules before the judge (R-esito's; with `attori`, the unnamed actor of coerenza/attori.ts too).
+        const regole = v2 ? guardieDellaChiamata(ch, { inesistente: false, assorbito: false, fuori: false, attori }, tipi) : null;
+        // The judge's shadow, run on every narrator sentence in order (its carried subject), decides when no answer came.
+        const ombra = v2 ? guardieDellaChiamata(ch, { inesistente: true, assorbito: false, esiti: false }, tipi) : null;
+        const primo = ch.frasi[0]?.i;
+        // The same filter the director would use (coerenza/menzioni.ts).
+        const contesto = contestoMenzioni(registro, tipi, ch.carte, ch.fuoriOra);
+        let precedente: FraseInsieme | null = null;
+        let ultime: readonly string[] = [];
+        let siPrima = false;
+        return async (f) => {
+          if (v2 && f.etichetta !== 'narratore') {
+            precedente = f;
+            siPrima = false;
+            const e = ch.entita.find((x) => x.id === f.etichetta);
+            return !e || e.presenza !== 'in_scena' || !['in_piedi', 'ferito', 'grave', 'nascosto'].includes(e.stato);
+          }
+          const daRegole = regole ? regole(f.testo) !== null : false;
+          const daOmbra = ombra ? ombra(f.testo) !== null : false;
+          // Flagged, or right after a «si» (the same mentions: a carried subject).
+          const grezze = f.segnata ? f.menzioni : siPrima ? ultime : [];
+          const menzioni = v2 ? daChiedere(grezze, contesto) : grezze;
+          if (daRegole) {
+            precedente = f;
+            siPrima = true;
+            if (f.segnata) ultime = menzioni;
+            return true;
+          }
+          const prima = precedente?.testo ?? '';
           precedente = f;
-          siPrima = false;
-          const e = ch.entita.find((x) => x.id === f.etichetta);
-          return !e || e.presenza !== 'in_scena' || !['in_piedi', 'ferito', 'grave', 'nascosto'].includes(e.stato);
-        }
-        const daRegole = regole ? regole(f.testo) !== null : false;
-        const daOmbra = ombra ? ombra(f.testo) !== null : false;
-        // Flagged, or right after a «si» (the same mentions: a carried subject).
-        const grezze = f.segnata ? f.menzioni : siPrima ? ultime : [];
-        const menzioni = v2 ? daChiedere(grezze, contesto) : grezze;
-        if (daRegole) {
-          precedente = f;
-          siPrima = true;
+          if (!menzioni.length) {
+            siPrima = false;
+            return false;
+          }
+          const q = domandaPer({ registro, frase: f.testo, prima, menzioni, colpi: ch.carte.filter((k) => k.riuscita && k.danno > 0) });
+          if (!q) {
+            siPrima = false;
+            return false;
+          }
+          const r = await risposta(ch, f, q);
           if (f.segnata) ultime = menzioni;
-          return true;
-        }
-        const prima = precedente?.testo ?? '';
-        precedente = f;
-        if (!menzioni.length) {
-          siPrima = false;
-          return false;
-        }
-        const q = domandaPer({ registro, frase: f.testo, prima, menzioni, colpi: ch.carte.filter((k) => k.riuscita && k.danno > 0) });
-        if (!q) {
-          siPrima = false;
-          return false;
-        }
-        const r = await risposta(ch, f, q);
-        if (f.segnata) ultime = menzioni;
-        if (v2 && primaFrase === 'giudice' && f.i === primo) primeChieste.set(`${ch.id}:${f.i}`, { si: r?.si ?? null, menzioni });
-        // An Engine line for the mention (a fallen or absent one's state, who is really there, the card's blow).
-        const conLinea = menzioni.some((x) => /^(fuori|parla|nome|colpo):/u.test(x));
-        if (primaFrase === 'apertura' && f.i === primo && conLinea) aperture.set(`${ch.id}:${f.i}`, r?.si ?? null);
-        // The first sentence of the answer, with domanda2p (or 2a with no line): the rules decide now, the answer aside.
-        if ((primaFrase === 'regole' || (primaFrase === 'apertura' && !conLinea)) && f.i === primo) {
-          siPrima = r?.si ?? false;
-          if (r?.si && !daOmbra) corretteDopo.set(`${ch.id}:${f.i}`, menzioni);
-          return daOmbra;
-        }
-        if (!r) {
-          // No answer (offline, as a live deadline): the shadow's verdict, and the carry ends there.
-          siPrima = false;
-          return daOmbra;
-        }
-        siPrima = r.si;
-        return r.si;
-      };
-    },
-  });
+          if (v2 && primaFrase === 'giudice' && f.i === primo) primeChieste.set(`${ch.id}:${f.i}`, { si: r?.si ?? null, menzioni });
+          // An Engine line for the mention (a fallen or absent one's state, who is really there, the card's blow).
+          const conLinea = menzioni.some((x) => /^(fuori|parla|nome|colpo):/u.test(x));
+          if (primaFrase === 'apertura' && f.i === primo && conLinea) aperture.set(`${corto}|${ch.id}:${f.i}`, r?.si ?? null);
+          // The first sentence of the answer, with domanda2p (or 2a with no line): the rules decide now, the answer aside.
+          if ((primaFrase === 'regole' || (primaFrase === 'apertura' && !conLinea)) && f.i === primo) {
+            siPrima = r?.si ?? false;
+            if (r?.si && !daOmbra) corretteDopo.set(`${corto}|${ch.id}:${f.i}`, menzioni);
+            return daOmbra;
+          }
+          if (!r) {
+            // No answer (offline, as a live deadline): the shadow's verdict, and the carry ends there.
+            siPrima = false;
+            return daOmbra;
+          }
+          siPrima = r.si;
+          return r.si;
+        };
+      },
+    };
+  };
   const tutte: Variante[] = [
     varianteRegole('attive', { inesistente: false, assorbito: false }, tipi),
     varianteRegole('regole', { inesistente: true, assorbito: true }, tipi),
@@ -178,6 +182,9 @@ async function main(): Promise<void> {
     candidato(true),
     candidato(true, 'regole'),
     candidato(true, 'apertura'),
+    // What the director does now: the opener, and the unnamed actor among the card rules.
+    candidato(true, 'apertura', true),
+    varianteRegole('regole-attori', { inesistente: true, assorbito: true, attori: true }, tipi),
   ];
   // `--varianti a,b`: only these (a further sample of v2: `--campione 2 --varianti domanda2`).
   const scelte = args.includes('--varianti') ? args[args.indexOf('--varianti') + 1]!.split(',') : null;
@@ -206,13 +213,11 @@ async function main(): Promise<void> {
     const no = [...primeChieste.values()].filter((x) => x.si === false).length;
     process.stdout.write(`domanda2: first sentences asked ${primeChieste.size} (si ${si}: ${tipi(true)}; no ${no}: ${tipi(false)}; unanswered ${primeChieste.size - si - no})\n`);
   }
-  if (corretteDopo.size) {
-    const etichettate = [...corretteDopo.keys()].map((k) => `${k} ${etichette[k]?.etichetta ?? 'unlabelled'}`);
-    process.stdout.write(`domanda2p/2a: first sentences said by the rules, «si» aside: ${corretteDopo.size}: ${etichettate.join('; ')}\n`);
-  }
-  if (aperture.size) {
-    const v = [...aperture.values()];
-    process.stdout.write(`domanda2a: first sentences opened by the Engine line ${aperture.size} (the answer «si» ${v.filter((x) => x === true).length}, «no» ${v.filter((x) => x === false).length}: one more true line; none ${v.filter((x) => x === null).length})\n`);
+  for (const corto of new Set([...corretteDopo.keys(), ...aperture.keys()].map((k) => k.split('|')[0]!))) {
+    const dopo = [...corretteDopo.keys()].filter((k) => k.startsWith(`${corto}|`)).map((k) => k.split('|')[1]!);
+    if (dopo.length) process.stdout.write(`${corto}: first sentences said by the rules, «si» aside: ${dopo.length}: ${dopo.map((k) => `${k} ${etichette[k]?.etichetta ?? 'unlabelled'}`).join('; ')}\n`);
+    const v = [...aperture].filter(([k]) => k.startsWith(`${corto}|`)).map(([, x]) => x);
+    if (v.length) process.stdout.write(`${corto}: first sentences opened by the Engine line ${v.length} (the answer «si» ${v.filter((x) => x === true).length}, «no» ${v.filter((x) => x === false).length}: one more true line; none ${v.filter((x) => x === null).length})\n`);
   }
 }
 

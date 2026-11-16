@@ -234,6 +234,17 @@ guardia_fuori:
   di_parte: [of]
   stato: [lies, lying, dead, motionless, unconscious, on the ground, lifeless, corpse, body, bleed, does not move, doesn't move, not breathing, gone, fled, no longer here, out cold, still on the floor]
 
+# Unnamed actors (apps/server/src/coerenza/attori.ts): a flight or an attack on a PC told with no name for who does it.
+# `fuga`: a flight (its subject unnamed after one of `relativi`, or in a clause that names nobody); `difesa` followed by
+# one of `colpi` (with its article), or `difesa` and later one of `colpi` with an `in_arrivo` verb: a blow coming at the
+# PC named. Exact words, no stems («parry» is not «parrying»). Weapons and blows of the language, not of a campaign.
+attori_impliciti:
+  fuga: [flees, flee, runs away, run away, runs off, run off, moves away, move away, slips away, hurries away]
+  relativi: [who, that, whoever, which]
+  difesa: [parries, parry, raises the shield, raises her shield, raises his shield, raises their shield, lifts the shield, blocks, dodges, dodge, ducks]
+  colpi: [blow, blows, strike, spear, blade, arrow, arrows, bolt, dagger, sword, axe, mace, club, javelin]
+  in_arrivo: [comes, come, arrives, arrive, bounces, bounce, glances off, slams, thuds, lands, breaks]
+
 # Absent creature (apps/server/src/coerenza/inesistenti.ts, R-inesistente): the nouns are the campaign's (NPC aliases,
 # minion types); these are only the grammar around them. English puts «of» after the body part («the chest of the
 # goblin») and more often a possessive («the goblin's chest»): the noun as subject or after a blow word covers most.

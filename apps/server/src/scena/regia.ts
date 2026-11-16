@@ -130,6 +130,7 @@ import { tipiGregari, type Gregario } from '../campagna/gregari';
 import { inOsservazione } from '../coerenza/osservazione';
 import { GiudiceDomande } from '../coerenza/giudice';
 import { confermaDelMotore } from '../coerenza/risposta';
+import { guardiaAttori, type StoriaVisita } from '../coerenza/attori';
 import type { ModelloLinguaggio } from '../llm/modello';
 import { contestoMenzioni } from '../coerenza/menzioni';
 import { nomiDellaCampagna, nomiNuovi, type NomiDellaCampagna } from '../coerenza/nomi-nuovi';
@@ -703,6 +704,11 @@ export class Regia {
 
   /** The public sentences of a turn the checker dropped or replaced (for the acknowledgements). */
   private tolteNelTurno: { turno: number; frasi: string[] } = { turno: -1, frasi: [] };
+  /**
+   * This visit of the scene (its entry turn): the attack cards and the flights so far, for the unnamed actors
+   * (coerenza/attori.ts). Not in the snapshot: after a resume the rule starts with an empty visit (it judges nothing).
+   */
+  private storiaVisita: { ingresso: number; carte: Array<{ turno: number; chi: string; bersaglio: string }>; fughe: Array<{ turno: number; id: string }> } = { ingresso: -1, carte: [], fughe: [] };
 
   /** The visit (its entry turn) in which a fight happened: the stall's «nothing new» does not count there. */
   private scontroInVisita: number | null = null;
@@ -3217,6 +3223,11 @@ export class Regia {
       ...(combattimento?.morte ?? []).map((m) => m.id),
     ]);
     const fuori = guardiaFuori({ nomi, nome, fuoriDaPrima: (id) => (oraFuori.has(id) ? null : prove.stato.fuoriGioco(id)) });
+    // An attack or a flight told with no name inherits its actor from the visit's cards (coerenza/attori.ts): a card
+    // rule like R-esito's, so it stays before the yes/no judge too.
+    const storia: StoriaVisita = this.storiaVisita.ingresso === this.mondo.visita.ingresso ? this.storiaVisita : { carte: [], fughe: [] };
+    const registro = this.diarioRegistro.registro ?? this.registroOra('guardia degli esiti');
+    const attori = guardiaAttori({ turno, entita: registro.entita, storia, fuoriOra: oraFuori });
     // First: a creature nobody here answers to (R-inesistente) gets the line of who is really there.
     const ines = inesistenti
       ? guardiaInesistenti({
@@ -3239,11 +3250,11 @@ export class Regia {
     if (parti === 'esiti') {
       return (testo) => {
         frase = testo;
-        return esiti(testo);
+        return esiti(testo) ?? attori?.(testo) ?? null;
       };
     }
     if (parti === 'ombra') return (testo) => conIne(testo) ?? fuori?.(testo) ?? null;
-    return (testo) => conIne(testo) ?? esiti(testo) ?? fuori?.(testo) ?? null;
+    return (testo) => conIne(testo) ?? esiti(testo) ?? fuori?.(testo) ?? attori?.(testo) ?? null;
   }
 
   /**
@@ -3619,6 +3630,11 @@ export class Regia {
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento || giocate.decisioni) ? await this.tiriDelTurno(r, giocate) : null;
     // For the stall: did this turn roll anything at the table (a PC's check or attack is something new)?
     this.carteDelTurno = { turno: r.turno, n: tiri?.tiri.filter((t) => !t.privata && !t.del_master).length ?? 0 };
+    // Who fought and who fled in this visit: the actor of an attack or a flight the narration does not name.
+    const ingresso = this.mondo.visita.ingresso;
+    if (this.storiaVisita.ingresso !== ingresso) this.storiaVisita = { ingresso, carte: [], fughe: [] };
+    for (const t of tiri?.tiri ?? []) if (t.tipo === 'attacco' && t.bersaglio) this.storiaVisita.carte.push({ turno: r.turno, chi: t.chi, bersaglio: t.bersaglio.id });
+    for (const f of tiri?.combattimento?.fuggiti ?? []) this.storiaVisita.fughe.push({ turno: r.turno, id: f.id });
     // A blow struck or a fight on in this visit of the scene: what follows is not counted as a stall.
     if (this.prove?.inCombattimento || tiri?.tiri.some((t) => t.tipo === 'attacco')) this.scontroInVisita = this.mondo.visita.ingresso;
     if (epoca !== this.epoca) return;
