@@ -1,0 +1,210 @@
+{
+ "etichetta": "coerenzaA5-torre-mozza-fuori-binario-A-manuale",
+ "turni": {
+  "giocati": 13,
+  "copione": 13,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_mezzanotte": "2/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": [
+   [
+    "Tonio è salito da solo, d'accordo con i goblin",
+    "Ugo ha visto il ragazzo salire"
+   ],
+   [
+    "Tonio è salito da solo, d'accordo con i goblin"
+   ],
+   [
+    "Tonio è salito da solo, d'accordo con i goblin"
+   ]
+  ]
+ },
+ "coerenza": {
+  "violazioni": 0,
+  "per_regola": {},
+  "esempi": []
+ },
+ "private": {
+  "azioni_private": 3,
+  "righe_privato": 0,
+  "esiti_privati_log": 12,
+  "spostate_dalla_guardia": 0,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": [],
+  "al_tavolo_candidate": 1,
+  "al_tavolo": [
+   {
+    "turno": 5,
+    "turno_privata": 5,
+    "pg": "Nespola Tondi",
+    "chi": "Berta Benni",
+    "riga": "Mio figlio è vivo, soldata. Tonio è vivo.",
+    "comuni": [
+     "figli"
+    ],
+    "regola": "turno privato+1"
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 32,
+  "con_tiro": 2,
+  "tipi": {
+   "prova": 2,
+   "nessuna": 30
+  },
+  "dadi": {},
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 2
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {},
+  "fatti_morale_terra": 0,
+  "esempi": [],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 32,
+  "nessuna": 22,
+  "ms_classifica_med": 944,
+  "ms_classifica_peggiore": 2941
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "subito:ok": 22,
+   "prossime:ok": 24
+  },
+  "consegnate": 21,
+  "dette_a_finestra_aperta": 21,
+  "accettate": 165,
+  "scartate": {
+   "png_zirra non è nella scena": 1
+  },
+  "ms_claude_med": 9338,
+  "ms_totale_med_subito": 11020,
+  "processo": {
+   "avvio": 2,
+   "ok": 48,
+   "arresto": 2
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20074,
+   "peggiore": 20160,
+   "n": 13
+  },
+  "llm_prima_frase": {
+   "mediana": 23,
+   "peggiore": 743,
+   "n": 11
+  },
+  "voce_primo_audio": {
+   "mediana": 681.5,
+   "peggiore": 4121,
+   "n": 10
+  },
+  "schermo_inizio_audio": {
+   "mediana": 823,
+   "peggiore": 833,
+   "n": 3
+  },
+  "llm_fine": {
+   "mediana": 881,
+   "peggiore": 2336,
+   "n": 13
+  },
+  "audio_fine": {
+   "mediana": 15459,
+   "peggiore": 19853,
+   "n": 11
+  },
+  "s_tra_turni_med": 34,
+  "s_tra_turni_peggiore": 39.963
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 11,
+   "in_frase": 0,
+   "tra_frasi": 11,
+   "silenzio_ms": 6994,
+   "per_turno": [
+    1,
+    1,
+    1,
+    1,
+    0,
+    3,
+    2,
+    1,
+    1,
+    null,
+    0,
+    0,
+    null
+   ]
+  },
+  "proiettore_secondi": 229,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 3,
+  "avvisi": 39,
+  "per_messaggio": [
+   "40 ×22 llm: risposta strutturata non valida",
+   "40 ×11 llm: si usa il ripiego deterministico",
+   "50 ×3 repertorio: parola segreta nel messaggio del selettore",
+   "40 ×2 https: the certificate does not cover this LAN address: run scripts/certificato.sh again",
+   "40 ×2 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×2 repertorio: [usa] rifiutato"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
+   "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",
+   "riassunto       → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "regole          → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "voce            → finto — variabile d'ambiente TAGM_TTS",
+   "ascolto         → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
+   "immagini        → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
+   "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
+   "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",
+   "riassunto       → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "regole          → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "voce            → finto — variabile d'ambiente TAGM_TTS",
+   "ascolto         → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
+   "immagini        → nessuno — configurato (../../../../private/tmp/claude-501/-Use"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 14,
+  "improvvisate": 14,
+  "usa_rifiutati": 1,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "conferme_motore": 0
+ }
+}

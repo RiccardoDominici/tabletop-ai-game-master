@@ -1,0 +1,487 @@
+{
+  "copione": "torre-mozza/stallo",
+  "campagna": "torre-mozza",
+  "modo": "repertorio",
+  "porta": 4953,
+  "narratore_finto": false,
+  "sessione": "2026-11-16T14:33:15.401Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "46d17ec6922f6f06d20908d708a873655b2f7f74",
+    "modificati": [],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 14,
+  "turni_copione": 14,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "manuale",
+    "tiri": []
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 0,
+    "passate": 0
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 7,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 9,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 10,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 11,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 12,
+        "stato": {
+          "o_mezzanotte": "2/8"
+        }
+      },
+      {
+        "turno": 13,
+        "stato": {
+          "o_mezzanotte": "2/8"
+        }
+      },
+      {
+        "turno": 14,
+        "stato": {
+          "o_mezzanotte": "2/8"
+        }
+      }
+    ],
+    "massimo": {
+      "o_mezzanotte": "2/8"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 2,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 20060.5,
+      "peggiore": 20175,
+      "n": 14
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 23.5,
+      "peggiore": 2192,
+      "n": 14
+    },
+    "llm_prima_frase": {
+      "mediana": 23,
+      "peggiore": 49,
+      "n": 12
+    },
+    "voce_richiesta": {
+      "mediana": 24,
+      "peggiore": 4817,
+      "n": 12
+    },
+    "voce_primo_audio": {
+      "mediana": 675.5,
+      "peggiore": 5469,
+      "n": 12
+    },
+    "schermo_inizio_audio": {
+      "mediana": 842,
+      "peggiore": 852,
+      "n": 3
+    },
+    "llm_fine": {
+      "mediana": 901,
+      "peggiore": 2981,
+      "n": 14
+    },
+    "audio_fine": {
+      "mediana": 9778,
+      "peggiore": 14018,
+      "n": 14
+    }
+  },
+  "buchi": {
+    "totale": 18,
+    "in_frase": 0,
+    "tra_frasi": 18,
+    "silenzio_ms": 17503,
+    "per_turno": [
+      1,
+      1,
+      2,
+      2,
+      1,
+      4,
+      0,
+      1,
+      0,
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "righe_prescritte": 11,
+  "righe_improvvisate": 13,
+  "quota_prescritte": 0.4583333333333333,
+  "usa_rifiutati": 1,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "conferme_motore": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 4,
+  "battute_indicate_usate": 1,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {
+    "fuori contesto: l'azione ha in comune con «un PG esamina il cancello dello stazz": 1
+  },
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Fuga = riga del narratore o di un PNG con una parola segreta prima che sia uscito un id di pubblica_dopo (battuta o indizio rivelato da una battuta) e prima che un giocatore l’abbia scritta.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 22,
+  "battute_mai_usate": [
+    "nar_giaciglio",
+    "nar_cani",
+    "nar_lavagna",
+    "nar_pali",
+    "nar_recinto",
+    "nar_avviso",
+    "fin_ovile_mezzanotte",
+    "nar_chiave_presa",
+    "fin_ovile_chiave",
+    "fin_ovile_senza",
+    "nar_impronte",
+    "nar_rovi",
+    "nar_cervo",
+    "nar_frasche",
+    "nar_attesa_carbonaia",
+    "nar_carbonaia_sbuffa",
+    "fin_carbonaia_mezzanotte",
+    "fin_carbonaia_cunicolo",
+    "fin_carbonaia_sentiero",
+    "nar_corda",
+    "nar_piccone",
+    "nar_mappa",
+    "nar_conto",
+    "nar_iscrizione",
+    "nar_cripta",
+    "nar_cripta_grimaldello",
+    "nar_tonio_zitto",
+    "nar_tonio_parla",
+    "nar_tonio_sottovoce",
+    "nar_attesa_torre",
+    "fin_alba_fontana",
+    "fin_alba_silenzio",
+    "fin_alba_riserva",
+    "fin_alba_discesa",
+    "nar_segno_3",
+    "nar_segno_4",
+    "nar_segno_5",
+    "nar_segno_6",
+    "nar_segno_7",
+    "nar_segno_8",
+    "tr_bosco",
+    "tr_crinale",
+    "nar_chiusura_ovile",
+    "nar_chiusura_ovile_chiave",
+    "nar_chiusura_carbonaia",
+    "nar_chiusura_torre",
+    "nar_stallo_carbonaia_luce",
+    "nar_stallo_rovi",
+    "nar_stallo_orme",
+    "nar_stallo_mappa",
+    "nar_stallo_cripta",
+    "ber_saluto",
+    "ber_domanda_gentile",
+    "ber_accusa",
+    "ber_minaccia",
+    "ber_offerta",
+    "ber_aiuto",
+    "ber_rifiuto",
+    "ber_cani",
+    "ber_cose_tonio",
+    "ber_nomi_pali",
+    "ber_rapitore",
+    "ber_soldata",
+    "ber_benedizione",
+    "ber_chiave",
+    "ber_debiti_domanda",
+    "ber_conti_fienile",
+    "ber_conti_foglio",
+    "ber_non_ci_crede",
+    "ber_stallo_paese",
+    "ber_stallo_giaciglio",
+    "ber_stallo_bosco",
+    "gro_saluto",
+    "gro_minaccia",
+    "gro_rifiuto",
+    "gro_attesa",
+    "gro_cibo",
+    "ugo_saluto",
+    "ugo_domanda_gentile",
+    "ugo_accusa",
+    "ugo_minaccia",
+    "ugo_offerta",
+    "ugo_aiuto",
+    "ugo_rifiuto",
+    "ugo_tre_monete",
+    "ugo_salita",
+    "ugo_consiglio",
+    "ugo_stanotte",
+    "ugo_niente_visto",
+    "ugo_notte_cervo",
+    "ugo_notte_promessa",
+    "ugo_sentiero_privato",
+    "ugo_sentiero_impronte",
+    "zir_saluto",
+    "zir_domanda_gentile",
+    "zir_accusa",
+    "zir_minaccia",
+    "zir_offerta",
+    "zir_aiuto",
+    "zir_rifiuto",
+    "zir_attesa",
+    "zir_chiave_prima",
+    "zir_patto",
+    "zir_resa",
+    "zir_cassa",
+    "zir_ragazzo_mio",
+    "zir_corda",
+    "zir_carbonaio",
+    "zir_stallo_chiave"
+  ],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 146,
+      "secondi": 28.599999999999934,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 173
+    },
+    {
+      "turno": 1,
+      "frasi": 3,
+      "pezzi": 59,
+      "secondi": 11.399999999999993,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 286
+    },
+    {
+      "turno": 2,
+      "frasi": 5,
+      "pezzi": 107,
+      "secondi": 21.066666666666624,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 288
+    },
+    {
+      "turno": 3,
+      "frasi": 4,
+      "pezzi": 62,
+      "secondi": 11.999999999999991,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 4354
+    },
+    {
+      "turno": 4,
+      "frasi": 5,
+      "pezzi": 99,
+      "secondi": 19.533333333333296,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 898
+    },
+    {
+      "turno": 5,
+      "frasi": 3,
+      "pezzi": 63,
+      "secondi": 12.333333333333323,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 482
+    },
+    {
+      "turno": 6,
+      "frasi": 6,
+      "pezzi": 94,
+      "secondi": 18.466666666666637,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 2841
+    },
+    {
+      "turno": 7,
+      "frasi": 4,
+      "pezzi": 93,
+      "secondi": 18.5333333333333,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 4,
+      "pezzi": 62,
+      "secondi": 12.133333333333324,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 4612
+    },
+    {
+      "turno": 9,
+      "frasi": 2,
+      "pezzi": 38,
+      "secondi": 7.466666666666671,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 10,
+      "frasi": 3,
+      "pezzi": 45,
+      "secondi": 8.600000000000003,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 720
+    },
+    {
+      "turno": 11,
+      "frasi": 3,
+      "pezzi": 59,
+      "secondi": 11.59999999999999,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 1255
+    },
+    {
+      "turno": 12,
+      "frasi": 4,
+      "pezzi": 83,
+      "secondi": 16.266666666666644,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 1402
+    },
+    {
+      "turno": 13,
+      "frasi": 2,
+      "pezzi": 31,
+      "secondi": 6.133333333333336,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 208
+    },
+    {
+      "turno": 14,
+      "frasi": 2,
+      "pezzi": 46,
+      "secondi": 9.133333333333335,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 157
+    }
+  ]
+}

@@ -1,0 +1,961 @@
+{
+  "copione": "torre-mozza/combattimento",
+  "campagna": "torre-mozza",
+  "modo": "repertorio",
+  "porta": 4950,
+  "narratore_finto": false,
+  "sessione": "2026-11-16T14:01:10.455Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "46d17ec6922f6f06d20908d708a873655b2f7f74",
+    "modificati": [],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 24,
+  "turni_copione": 14,
+  "cambi_di_scena": [
+    {
+      "turno_copione": 3,
+      "turno_server": 3,
+      "a": "scena_carbonaia"
+    },
+    {
+      "turno_copione": 4,
+      "turno_server": 5,
+      "a": "scena_torre"
+    }
+  ],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "manuale",
+    "tiri": [
+      {
+        "pg": "pg_nespola",
+        "id": "r_a5",
+        "etichetta": "Ascoltare",
+        "dadi": "1d100",
+        "valori": [
+          15
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a6",
+        "etichetta": "Spada lunga",
+        "dadi": "1d20",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t6_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t6_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t6_iniziativa_pg_eliandro_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_a9",
+        "etichetta": "Pugnale",
+        "dadi": "1d20",
+        "valori": [
+          10
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a10",
+        "etichetta": "Spada corta",
+        "dadi": "1d20",
+        "valori": [
+          19
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a10_danno",
+        "etichetta": "Danni: Spada corta",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t9_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t9_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t9_iniziativa_pg_eliandro_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t12_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t12_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t12_iniziativa_pg_eliandro_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_a15_danno",
+        "etichetta": "Danni: Dardo incantato",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a17",
+        "etichetta": "Spada lunga",
+        "dadi": "1d20",
+        "valori": [
+          10
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t15_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t15_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t15_iniziativa_pg_eliandro_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t17_morte_pg_livia_0",
+        "etichetta": "Tiro salvezza contro la morte",
+        "dadi": "1d20",
+        "valori": [
+          13
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t17_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t17_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t17_iniziativa_pg_eliandro_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t19_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t19_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t19_iniziativa_pg_eliandro_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t20_morte_pg_eliandro_0",
+        "etichetta": "Tiro salvezza contro la morte",
+        "dadi": "1d20",
+        "valori": [
+          11
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t20_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t20_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t20_iniziativa_pg_eliandro_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t20_morte_pg_nespola_0",
+        "etichetta": "Tiro salvezza contro la morte",
+        "dadi": "1d20",
+        "valori": [
+          9
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 18,
+    "passate": 2
+  },
+  "finale": {
+    "turno": 1,
+    "id": "fin_ovile_senza"
+  },
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {}
+      },
+      {
+        "turno": 7,
+        "stato": {}
+      },
+      {
+        "turno": 8,
+        "stato": {}
+      },
+      {
+        "turno": 9,
+        "stato": {}
+      },
+      {
+        "turno": 10,
+        "stato": {}
+      },
+      {
+        "turno": 11,
+        "stato": {}
+      },
+      {
+        "turno": 12,
+        "stato": {}
+      },
+      {
+        "turno": 13,
+        "stato": {}
+      },
+      {
+        "turno": 14,
+        "stato": {}
+      },
+      {
+        "turno": 15,
+        "stato": {}
+      },
+      {
+        "turno": 16,
+        "stato": {}
+      },
+      {
+        "turno": 17,
+        "stato": {}
+      },
+      {
+        "turno": 18,
+        "stato": {}
+      },
+      {
+        "turno": 19,
+        "stato": {}
+      },
+      {
+        "turno": 20,
+        "stato": {}
+      },
+      {
+        "turno": 21,
+        "stato": {}
+      },
+      {
+        "turno": 22,
+        "stato": {}
+      },
+      {
+        "turno": 23,
+        "stato": {}
+      },
+      {
+        "turno": 24,
+        "stato": {}
+      },
+      {
+        "turno": 25,
+        "stato": {}
+      },
+      {
+        "turno": 26,
+        "stato": {}
+      }
+    ],
+    "massimo": {
+      "o_mezzanotte": "1/8"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 4,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 20066.5,
+      "peggiore": 20158,
+      "n": 24
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 16.5,
+      "peggiore": 1640,
+      "n": 24
+    },
+    "llm_prima_frase": {
+      "mediana": 17,
+      "peggiore": 39,
+      "n": 20
+    },
+    "voce_richiesta": {
+      "mediana": 760,
+      "peggiore": 2166,
+      "n": 22
+    },
+    "voce_primo_audio": {
+      "mediana": 670.5,
+      "peggiore": 2574,
+      "n": 22
+    },
+    "schermo_inizio_audio": {
+      "mediana": 818.5,
+      "peggiore": 837,
+      "n": 14
+    },
+    "llm_fine": {
+      "mediana": 267.5,
+      "peggiore": 1956,
+      "n": 24
+    },
+    "audio_fine": {
+      "mediana": 12048.5,
+      "peggiore": 43779,
+      "n": 22
+    }
+  },
+  "buchi": {
+    "totale": 45,
+    "in_frase": 0,
+    "tra_frasi": 45,
+    "silenzio_ms": 21313,
+    "per_turno": [
+      0,
+      null,
+      1,
+      5,
+      1,
+      4,
+      4,
+      1,
+      0,
+      4,
+      1,
+      0,
+      5,
+      0,
+      7,
+      0,
+      4,
+      6,
+      1,
+      1,
+      0,
+      0,
+      0,
+      null
+    ]
+  },
+  "righe_prescritte": 17,
+  "righe_improvvisate": 25,
+  "quota_prescritte": 0.40476190476190477,
+  "usa_rifiutati": 1,
+  "azioni_pubbliche": 18,
+  "azioni_senza_risposta": 0,
+  "riparazioni": 0,
+  "conferme_motore": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 8,
+  "battute_indicate_usate": 3,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {
+    "fuori contesto: l'azione ha in comune con «un PG guarda le impronte sul sentiero": 1
+  },
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Fuga = riga del narratore o di un PNG con una parola segreta prima che sia uscito un id di pubblica_dopo (battuta o indizio rivelato da una battuta) e prima che un giocatore l’abbia scritta.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 19,
+  "battute_mai_usate": [
+    "nar_giaciglio",
+    "nar_cani",
+    "nar_cani_scappano",
+    "nar_lavagna",
+    "nar_pali",
+    "nar_recinto",
+    "nar_avviso",
+    "nar_attesa_ovile",
+    "fin_ovile_mezzanotte",
+    "nar_chiave_presa",
+    "fin_ovile_chiave",
+    "nar_impronte",
+    "nar_rovi",
+    "nar_cervo",
+    "nar_frasche",
+    "nar_carbonaia_sbuffa",
+    "fin_carbonaia_mezzanotte",
+    "fin_carbonaia_cunicolo",
+    "fin_carbonaia_sentiero",
+    "nar_corda",
+    "nar_mappa",
+    "nar_conto",
+    "nar_iscrizione",
+    "nar_cripta",
+    "nar_cripta_grimaldello",
+    "nar_tonio_zitto",
+    "nar_tonio_parla",
+    "nar_tonio_sottovoce",
+    "fin_alba_fontana",
+    "fin_alba_silenzio",
+    "fin_alba_riserva",
+    "fin_alba_discesa",
+    "nar_segno_2",
+    "nar_segno_3",
+    "nar_segno_4",
+    "nar_segno_5",
+    "nar_segno_6",
+    "nar_segno_7",
+    "nar_segno_8",
+    "tr_bosco",
+    "tr_crinale",
+    "nar_chiusura_ovile",
+    "nar_chiusura_ovile_chiave",
+    "nar_chiusura_carbonaia",
+    "nar_chiusura_torre",
+    "nar_stallo_ovile_corno",
+    "nar_stallo_carbonaia_luce",
+    "nar_stallo_rovi",
+    "nar_stallo_orme",
+    "nar_stallo_mappa",
+    "nar_stallo_cripta",
+    "ber_saluto",
+    "ber_domanda_gentile",
+    "ber_accusa",
+    "ber_minaccia",
+    "ber_offerta",
+    "ber_aiuto",
+    "ber_rifiuto",
+    "ber_attesa",
+    "ber_salgo_io",
+    "ber_cani",
+    "ber_cose_tonio",
+    "ber_nomi_pali",
+    "ber_rapitore",
+    "ber_soldata",
+    "ber_benedizione",
+    "ber_chiave",
+    "ber_debiti_domanda",
+    "ber_conti_fienile",
+    "ber_conti_foglio",
+    "ber_non_ci_crede",
+    "ber_stallo_paese",
+    "ber_stallo_giaciglio",
+    "ber_stallo_bosco",
+    "gro_saluto",
+    "gro_minaccia",
+    "gro_rifiuto",
+    "gro_cibo",
+    "ugo_saluto",
+    "ugo_domanda_gentile",
+    "ugo_accusa",
+    "ugo_minaccia",
+    "ugo_offerta",
+    "ugo_aiuto",
+    "ugo_rifiuto",
+    "ugo_attesa",
+    "ugo_tre_monete",
+    "ugo_salita",
+    "ugo_consiglio",
+    "ugo_stanotte",
+    "ugo_niente_visto",
+    "ugo_notte_cervo",
+    "ugo_notte_promessa",
+    "ugo_sentiero_privato",
+    "ugo_sentiero_impronte",
+    "zir_saluto",
+    "zir_domanda_gentile",
+    "zir_accusa",
+    "zir_minaccia",
+    "zir_offerta",
+    "zir_aiuto",
+    "zir_rifiuto",
+    "zir_chiave_prima",
+    "zir_patto",
+    "zir_resa",
+    "zir_cassa",
+    "zir_ragazzo_mio",
+    "zir_corda",
+    "zir_carbonaio",
+    "zir_stallo_chiave"
+  ],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 146,
+      "secondi": 28.599999999999934,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 183
+    },
+    {
+      "turno": 1,
+      "frasi": 3,
+      "pezzi": 74,
+      "secondi": 14.533333333333315,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 2,
+      "frasi": 0,
+      "pezzi": 0,
+      "secondi": 0,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 3,
+      "frasi": 3,
+      "pezzi": 76,
+      "secondi": 15.066666666666645,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 4,
+      "frasi": 5,
+      "pezzi": 96,
+      "secondi": 18.9333333333333,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 358
+    },
+    {
+      "turno": 5,
+      "frasi": 3,
+      "pezzi": 83,
+      "secondi": 16.26666666666664,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 6,
+      "frasi": 13,
+      "pezzi": 216,
+      "secondi": 42.1333333333334,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1651
+    },
+    {
+      "turno": 7,
+      "frasi": 4,
+      "pezzi": 63,
+      "secondi": 12.266666666666657,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 171
+    },
+    {
+      "turno": 8,
+      "frasi": 9,
+      "pezzi": 147,
+      "secondi": 28.733333333333267,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 4034
+    },
+    {
+      "turno": 9,
+      "frasi": 6,
+      "pezzi": 82,
+      "secondi": 15.733333333333311,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1285
+    },
+    {
+      "turno": 10,
+      "frasi": 4,
+      "pezzi": 66,
+      "secondi": 12.999999999999986,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 3052
+    },
+    {
+      "turno": 11,
+      "frasi": 1,
+      "pezzi": 19,
+      "secondi": 3.7333333333333343,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 12,
+      "frasi": 7,
+      "pezzi": 107,
+      "secondi": 20.866666666666628,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 2527
+    },
+    {
+      "turno": 13,
+      "frasi": 4,
+      "pezzi": 54,
+      "secondi": 10.533333333333328,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 326
+    },
+    {
+      "turno": 14,
+      "frasi": 2,
+      "pezzi": 33,
+      "secondi": 6.533333333333337,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 15,
+      "frasi": 7,
+      "pezzi": 90,
+      "secondi": 17.266666666666637,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1611
+    },
+    {
+      "turno": 16,
+      "frasi": 1,
+      "pezzi": 22,
+      "secondi": 4.2666666666666675,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 17,
+      "frasi": 10,
+      "pezzi": 144,
+      "secondi": 27.933333333333266,
+      "buchi": 7,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 7,
+      "silenzio_ms": 2503
+    },
+    {
+      "turno": 18,
+      "frasi": 3,
+      "pezzi": 64,
+      "secondi": 12.599999999999987,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 19,
+      "frasi": 8,
+      "pezzi": 115,
+      "secondi": 22.33333333333329,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1256
+    },
+    {
+      "turno": 20,
+      "frasi": 7,
+      "pezzi": 68,
+      "secondi": 13.066666666666652,
+      "buchi": 6,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 6,
+      "silenzio_ms": 1869
+    },
+    {
+      "turno": 21,
+      "frasi": 2,
+      "pezzi": 15,
+      "secondi": 2.866666666666667,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 323
+    },
+    {
+      "turno": 22,
+      "frasi": 2,
+      "pezzi": 15,
+      "secondi": 2.866666666666667,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 347
+    },
+    {
+      "turno": 23,
+      "frasi": 1,
+      "pezzi": 8,
+      "secondi": 1.5333333333333332,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 24,
+      "frasi": 1,
+      "pezzi": 8,
+      "secondi": 1.5333333333333332,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 25,
+      "frasi": 1,
+      "pezzi": 8,
+      "secondi": 1.5333333333333332,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 26,
+      "frasi": 0,
+      "pezzi": 0,
+      "secondi": 0,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}
