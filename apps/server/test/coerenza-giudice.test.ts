@@ -84,6 +84,22 @@ describe('the yes/no judge', () => {
     expect(await giudice(modello(() => null), osservata, 50).giudica('Lo sgherro sputa.')).toBeNull();
   });
 
+  it('a late answer on a carried subject: an object pronoun after a new thing-subject is carried as the judge would (T15 of round 3)', async () => {
+    // «si» on the sentence about the dead bandit, then no answer in time on the one after it: the shadow rules see no
+    // subject («Il colpo lo coglie…»), the carry does.
+    const viste: string[] = [];
+    const m = modello((f) => (f.includes('sgherro') ? 'si' : null), viste);
+    const g = giudice(m, () => null, 50);
+    expect(await g.giudica('Ida abbassa la spada sullo sgherro.')).toMatchObject({ testo: 'Ruggero giace a terra, senza vita.', fonte: 'domanda' });
+    expect(await g.giudica('Il colpo lo coglie di fianco e lo stende sulle pietre.')).toMatchObject({ testo: '', regola: 'R-fuori', fonte: 'regole' });
+    // The violation keeps the carry going, as a «si» does: the next one is asked too, and a PC's own sentence stays.
+    expect(await g.giudica('Ida guarda il fiume.')).toBeNull();
+    expect(viste).toHaveLength(3);
+    // The chain ended on the kept sentence: a sentence after it with no mention is not asked.
+    expect(await g.giudica('Non si rialza.')).toBeNull();
+    expect(viste).toHaveLength(3);
+  });
+
   it('a silent exit: the NPC in the scene a sentence names is asked about aside; «si» reports it, «no» does not', async () => {
     const uscite: string[] = [];
     const m = modello((f) => (f.includes('se ne va') ? 'si' : 'no'));

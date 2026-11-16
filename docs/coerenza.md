@@ -475,6 +475,28 @@ touches exactly 5 sentences, the five labelled violations. Still missed: «chi f
 fled (an invented figure: no card has an actor for it). Tests: test/coerenza-attori.test.ts (each case, it and en;
 with the whole server, the parried spear after the fight).
 
+### The carried subject after a late answer
+Round 3's third heard sentence, T15 «Il colpo lo coglie di fianco e lo stende sulle pietre», came right after a «si»
+(«Livia abbassa la spada lunga sul goblin…»): the judge asks such a sentence as a carried subject, and that question
+was the one of 42 that missed its deadline. The shadow rules then decided, and they carry only a subject pronoun:
+an object pronoun after a new thing-subject is invisible to them. Built (`coerenza/portato.ts`, words in
+`lingue/<code>/motore.yaml`, section `portato`; `GiudiceDomande.dopoIlTermine`): on a late answer to a question asked
+only as a carried subject, a sentence that names nobody and refers back to a third person (no subject of its own,
+«Non si rialza.»; a subject pronoun, «… e lui si affloscia»; an object pronoun right after a subject noun with its
+article, «il colpo lo coglie», «la voce gli trema»; never a question or the first or second person) gets what the «si»
+would have given it: dropped (log «coherence: late answer on a carried subject, the rules carry it too: dropped»). A
+violation decided on a deadline now keeps the carry going, as a «si» does; a sentence left alone ends it, as before.
+Measured first on the kept answers: of the questions asked only as a carried subject, «si» came 15 of 59 times on the
+frozen set (13 labelled violations), 5 of 11 and 6 of 15 on the held-out sets, so dropping every carried sentence on a
+late answer would have dropped mostly clean ones; hence the reference test. Scores with the kept answers (the
+director's path, `domanda2a-attori`): 107/10/8 on the frozen set (one more clean sentence touched: «Non le ha fatto
+niente.», the unlabelled sentence after a newly caught invented attack, whose question has no kept answer), 33/4/3 on
+held-out #1, **27/31** on held-out #2 (T15 caught). Worst case, every carried question late (`--tardive-portate`, against
+`--senza-portato`): 101 → 104 caught and 8 → 12 clean touched on the frozen set, 30 → 31 and 3 → 4, 22 → 24 and 2 → 2:
+the zero-subject branch cannot tell a PC's «Indietreggia, ma resta in piedi.» from the fallen one's «Non si rialza.»,
+which is why it applies only where the judge's answer was late (1 question in 42 in round 3). Tests:
+test/coerenza-portato.test.ts (it and en), test/coerenza-giudice.test.ts (T15's shape with a deadline).
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

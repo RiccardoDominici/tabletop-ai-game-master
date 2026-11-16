@@ -1,7 +1,7 @@
 {
  "variante": "domanda2a-attori-claude-haiku-5-5",
  "violazioni": 31,
- "prese": 26,
+ "prese": 27,
  "mancate": [
   {
    "chiave": "coerenza3-torre-mozza-combattimento-B-automatico#10:6",
@@ -17,11 +17,6 @@
    "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#13:1",
    "testo": "Ma la goblin Zirrà è a terra, e chi resta in piedi non risponde.",
    "perche": "«chi resta in piedi»: someone still standing, nobody in play"
-  },
-  {
-   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#15:1",
-   "testo": "Il colpo lo coglie di fianco e lo stende sulle pietre, accanto alla scala.",
-   "perche": "carried «lo»: the invented goblin struck down"
   },
   {
    "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#15:7",
@@ -46,5 +41,5 @@
    "etichettata": false
   }
  ],
- "ms": 10
+ "ms": 18
 }

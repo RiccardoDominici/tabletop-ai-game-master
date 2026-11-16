@@ -234,6 +234,17 @@ guardia_fuori:
   di_parte: [of]
   stato: [lies, lying, dead, motionless, unconscious, on the ground, lifeless, corpse, body, bleed, does not move, doesn't move, not breathing, gone, fled, no longer here, out cold, still on the floor]
 
+# The carried subject when the yes/no judge is late (apps/server/src/coerenza/portato.ts): a sentence right after one
+# judged a violation, naming nobody, that refers back to a third person. `clitici`: object pronouns that are also
+# articles (none in English); `oggetti`: object pronouns that are never articles («the blow knocks him down»; not «her»,
+# also a possessive); `pronomi`: third-person subject pronouns; `non_soggetti`: first words that open a sentence about
+# someone else.
+portato:
+  clitici: []
+  oggetti: [him, them]
+  pronomi: [he, she, they]
+  non_soggetti: [i, you, we, what, who, where, when, why, how, here]
+
 # Unnamed actors (apps/server/src/coerenza/attori.ts): a flight or an attack on a PC told with no name for who does it.
 # `fuga`: a flight (its subject unnamed after one of `relativi`, or in a clause that names nobody); `difesa` followed by
 # one of `colpi` (with its article), or `difesa` and later one of `colpi` with an `in_arrivo` verb: a blow coming at the

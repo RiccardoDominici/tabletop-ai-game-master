@@ -26,6 +26,7 @@ import { chiedi, domandaPer } from './domanda';
 import { frasePresenti } from './inesistenti';
 import { daChiedere, menzioniDi, presentiNominati, type ContestoMenzioni } from './menzioni';
 import { inOsservazione } from './osservazione';
+import { continuaDopo } from './portato';
 import type { Registro } from './registro';
 import type { IdRegola } from './verifica';
 
@@ -125,8 +126,8 @@ export class GiudiceDomande {
           // «no»: the sentence follows the line; «si»: the line took its place.
           return r.si ? { testo: l.testo, regola: l.regola, motivo: l.motivo, fonte: 'domanda', ms: r.ms, aperta: true } : null;
         }
-        this.siPrima = false;
         const d = this.dalleRegole(ombra, r.ms);
+        this.siPrima = !!d;
         return d ? { ...d, testo: l.testo, aperta: true } : null;
       }
       // No line to open with: the rules decide now; the answer, when it comes, is only the next sentence's carry.
@@ -145,10 +146,7 @@ export class GiudiceDomande {
       return decisa;
     }
     const r = await this.chiediEntro(q, frase, menzioni, signal);
-    if (!('si' in r)) {
-      this.siPrima = false;
-      return this.dalleRegole(ombra, r.ms);
-    }
+    if (!('si' in r)) return this.dopoIlTermine(ombra, r.ms, frase, !grezze.length);
     this.siPrima = r.si;
     if (grezze.length) this.ultime = menzioni;
     if (!r.si) return null;
@@ -174,6 +172,26 @@ export class GiudiceDomande {
       clearTimeout(timer);
       signal?.removeEventListener('abort', fuori);
     }
+  }
+
+  /**
+   * A late answer: the shadow rules decide; a sentence asked only as the carried subject of a «si» that refers back to
+   * a third person (coerenza/portato.ts) gets what the «si» would have given it. A violation keeps the carry going, as
+   * a «si» does; a sentence left as it is ends it.
+   */
+  private dopoIlTermine(ombra: CorrezioneEsito, ms: number, frase: string, soloPortata: boolean): DecisioneGiudice | null {
+    const d = this.dalleRegole(ombra, ms);
+    if (d) {
+      this.siPrima = true;
+      return d;
+    }
+    if (soloPortata && continuaDopo(frase, this.o.registro.entita.map((e) => e.nomi))) {
+      this.siPrima = true;
+      this.o.log.info({ turno: this.o.turno, frase, ms }, 'coherence: late answer on a carried subject, the rules carry it too: dropped');
+      return { ...this.linea([]), fonte: 'regole', ms };
+    }
+    this.siPrima = false;
+    return null;
   }
 
   /** The shadow rules' verdict after a deadline: only what changes the text today (a rule in observation stays so). */

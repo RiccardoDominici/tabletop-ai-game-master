@@ -66,6 +66,11 @@
    "etichettata": true
   },
   {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#9:5",
+   "testo": "Non le ha fatto niente.",
+   "etichettata": false
+  },
+  {
    "chiave": "coerenza-torre-mozza-combattimento-B-manuale#13:1",
    "testo": "Tu aspetti la sua risposta, scudo alzato.",
    "etichettata": true
@@ -91,5 +96,5 @@
    "etichettata": true
   }
  ],
- "ms": 39
+ "ms": 48
 }

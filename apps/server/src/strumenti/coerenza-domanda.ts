@@ -14,6 +14,8 @@
  * on a sentence the rules left alone is counted as heard); `domanda2a`, what the director does: the Engine's line for
  * the flagged mention is said at once and the answer decides the sentence as in v2 (a «no» costs one more true line),
  * and with no such line (an absent NPC) the rules decide as in `domanda2p`.
+ * `--tardive-portate` treats every question asked only as a carried subject as late, to score the fallback alone;
+ * `--senza-portato` scores the fallback as it was before the rules' carried subject (coerenza/portato.ts).
  *
  * Asked: every flagged sentence, and the sentence right after one answered «si» (a carried subject: «Quello cade contro
  * il muro»), with the same mentions. Latency per call is measured, to compare with the voice's slack. The key is read
@@ -25,6 +27,7 @@ import { caricaCampagna } from '../campagna/caricatore';
 import { tipiGregari } from '../campagna/gregari';
 import { chiedi, domandaPer } from '../coerenza/domanda';
 import { contestoMenzioni, daChiedere } from '../coerenza/menzioni';
+import { continuaDopo } from '../coerenza/portato';
 import type { Registro } from '../coerenza/registro';
 import { caricaConfig } from '../config';
 import { impostaLingua } from '../lingua';
@@ -80,13 +83,24 @@ async function main(): Promise<void> {
   }
   /** Questions with no answer (offline): the rules decided, as after a live deadline. */
   const senzaRisposta = new Set<string>();
+  /** Variant domanda2: the questions asked only as a carried subject (the sentence after a «si»), with their answer. */
+  const portate = new Map<string, boolean | null>();
+  const testi = new Map<string, string>(insieme.flatMap((ch) => ch.frasi.map((f) => [`${ch.id}:${f.i}`, f.testo] as [string, string])));
   /** Variant domanda2: the first sentences of an answer that went to the question (their answer, their mentions). */
   const primeChieste = new Map<string, { si: boolean | null; menzioni: readonly string[] }>();
   /** Variants domanda2p/2a: first sentences said by the rules and found wrong by the question aside, by call:sentence. */
   const corretteDopo = new Map<string, readonly string[]>();
   /** Variant domanda2a: first sentences opened by the Engine's line, and the answer that came (null: none). */
   const aperture = new Map<string, boolean | null>();
+  // `--tardive-portate`: every question asked only as a carried subject counts as late (the fallback's worst case).
+  const tardivePortate = args.includes('--tardive-portate');
+  // `--senza-portato`: the fallback without the rules' carried subject (coerenza/portato.ts), as before round 4.
+  const conPortato = !args.includes('--senza-portato');
   const risposta = async (ch: ChiamataInsieme, f: FraseInsieme, q: { sistema: string; messaggio: string }): Promise<Risposta | null> => {
+    if (tardivePortate && !f.segnata) {
+      senzaRisposta.add(`${ch.id}:${f.i}`);
+      return null;
+    }
     const chiave = `${ch.id}:${f.i}|${q.messaggio}`;
     const r = risposte[chiave] ?? dalLog.get(f.testo);
     if (r) return r;
@@ -153,6 +167,7 @@ async function main(): Promise<void> {
           const r = await risposta(ch, f, q);
           if (f.segnata) ultime = menzioni;
           if (v2 && primaFrase === 'giudice' && f.i === primo) primeChieste.set(`${ch.id}:${f.i}`, { si: r?.si ?? null, menzioni });
+          if (v2 && primaFrase === 'giudice' && !attori && !f.segnata) portate.set(`${ch.id}:${f.i}`, r?.si ?? null);
           // An Engine line for the mention (a fallen or absent one's state, who is really there, the card's blow).
           const conLinea = menzioni.some((x) => /^(fuori|parla|nome|colpo):/u.test(x));
           if (primaFrase === 'apertura' && f.i === primo && conLinea) aperture.set(`${corto}|${ch.id}:${f.i}`, r?.si ?? null);
@@ -163,9 +178,11 @@ async function main(): Promise<void> {
             return daOmbra;
           }
           if (!r) {
-            // No answer (offline, as a live deadline): the shadow's verdict, and the carry ends there.
-            siPrima = false;
-            return daOmbra;
+            // No answer (offline, as a live deadline): the shadow's verdict; a sentence asked only as the carried
+            // subject of a «si» gets what a «si» would when it refers back (coerenza/portato.ts). Either one carries on.
+            const portata = conPortato && !f.segnata && continuaDopo(f.testo, ch.entita.map((e) => e.nomi));
+            siPrima = daOmbra || portata;
+            return daOmbra || portata;
           }
           siPrima = r.si;
           return r.si;
@@ -212,6 +229,14 @@ async function main(): Promise<void> {
     const si = [...primeChieste.values()].filter((x) => x.si === true).length;
     const no = [...primeChieste.values()].filter((x) => x.si === false).length;
     process.stdout.write(`domanda2: first sentences asked ${primeChieste.size} (si ${si}: ${tipi(true)}; no ${no}: ${tipi(false)}; unanswered ${primeChieste.size - si - no})\n`);
+  }
+  if (portate.size) {
+    const conta = (si: boolean | null): string => {
+      const k = [...portate].filter(([, x]) => x === si).map(([c]) => etichette[c]?.etichetta ?? 'unlabelled');
+      return `${k.length} (${['violation', 'clean', 'unlabelled'].map((l) => `${l} ${k.filter((x) => x === l).length}`).join(', ')})`;
+    };
+    process.stdout.write(`domanda2: questions asked only as a carried subject ${portate.size}: «si» ${conta(true)}; «no» ${conta(false)}; none ${conta(null)}\n`);
+    if (args.includes('--elenca-portate')) for (const [c, x] of portate) process.stdout.write(`  ${x === null ? '—' : x ? 'si' : 'no'} ${etichette[c]?.etichetta ?? '·'} ${c} ${testi.get(c) ?? ''}\n`);
   }
   for (const corto of new Set([...corretteDopo.keys(), ...aperture.keys()].map((k) => k.split('|')[0]!))) {
     const dopo = [...corretteDopo.keys()].filter((k) => k.startsWith(`${corto}|`)).map((k) => k.split('|')[1]!);
