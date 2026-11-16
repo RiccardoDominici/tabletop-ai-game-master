@@ -215,6 +215,19 @@ describe('private content of earlier turns, and turns with only private actions'
     expect(g('Teo prende la strada del mulino.', 2)).toBeNull();
   });
 
+  it('with the audience split, a turn of private actions alone keeps its content-free lines at the table (canary T2)', () => {
+    const azioni = [{ id_pg: 'pg_ida', testo: 'Bertoldo, a bassa voce: chi scrive le lettere in paese?', privata: true }];
+    const nomi = (id: string): string[] => (id === 'pg_ida' ? ['Ida'] : ['Corrado']);
+    const nomiPng = new Map([['png_bertoldo', ['bertoldo']]]);
+    const senza = guardiaPrivate(azioni, nomi, NOMI, nomiPng, [], false, false)!;
+    expect(senza('Bertoldo si volta verso il fienile e fa un passo.', 1)?.id_pg).toBe('pg_ida');
+    const divisa = guardiaPrivate(azioni, nomi, NOMI, nomiPng, [], false, true)!;
+    expect(divisa('Bertoldo si volta verso il fienile e fa un passo.', 1)).toBeNull();
+    expect(divisa('I cani dietro la porta smettono di guaiare.', 2)).toBeNull();
+    // A line that shares the whisper's content still moves.
+    expect(divisa('Ida chiede a Bertoldo chi scrive le lettere in paese.', 3)?.id_pg).toBe('pg_ida');
+  });
+
   it('a line that tells another PC\'s public action of this turn stays, though it shares words with a whisper (stall T10)', () => {
     const SENTITO = { id_pg: 'pg_ida', nomi: ['Ida'], turno: 2, testo: 'Bertoldo, sottovoce: chi passa dal ponte di notte? Hai sentito qualcosa?', pubblico: '', verso: ['png_bertoldo'] };
     const nomi = (id: string): string[] => (id === 'pg_ida' ? ['Ida'] : ['Corrado']);

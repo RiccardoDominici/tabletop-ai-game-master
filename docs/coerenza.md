@@ -180,7 +180,10 @@ Then, from a second reading (`72cc62e`, `8e1f34e`, `97121cb`, tests on invented 
   (it reset to S1 before, so the stall run never reached S3: about 11 of 14 answers were idle there, not «fixed»);
 - R-esito: the absorbed/missed rule skips a target who struck too in the turn (its own miss is not the hit it took);
 - the private replies get an outcome guard of their own: sharing the public one, a reply that named the dead NPC used
-  up the state line, and the table's sentence was dropped with nothing said.
+  up the state line, and the table's sentence was dropped with nothing said;
+- R-privato with the split on: in a turn of private actions alone the public answer's narrator lines are the visible
+  trace (the public call never saw the whisper), so only a line that shares the whisper's content moves (canary on
+  `97121cb`, T2: a step of Berta and the dogs going quiet went to a phone and the table heard nothing).
 Open: a creature the ledger does not have, acting or being hit (`R-inesistente`: the scripts' «goblin con la lancia»
 after the fight). It needs the nouns that name a creature in the language pack and the Engine's «no creature to hit»
 fact passed to the checker; a word-list guess was not added. The stall's S1 in mode B still brings no material of the

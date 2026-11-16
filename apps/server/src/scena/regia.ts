@@ -2979,7 +2979,7 @@ export class Regia {
     return versioni[n]!.map((r) => ({ etichetta: r.etichetta, testo: r.testo }));
   }
 
-  private guardiaPrivate(azioni: ReadonlyArray<{ id_pg: string; testo: string | null; [k: string]: unknown }>, turno: number): { spostaPrivata?: NonNullable<ReturnType<typeof guardiaPrivate>> } {
+  private guardiaPrivate(azioni: ReadonlyArray<{ id_pg: string; testo: string | null; [k: string]: unknown }>, turno: number, divisa = false): { spostaPrivata?: NonNullable<ReturnType<typeof guardiaPrivate>> } {
     const c = this.campagna;
     const nomiDi = (id: string): string[] => {
       const nome = c.pg.find((p) => p.id === id)?.nome ?? id;
@@ -3009,6 +3009,7 @@ export class Regia {
       this.nomiPng,
       precedenti,
       !!this.prove?.inCombattimento,
+      divisa,
     );
     return g ? { spostaPrivata: g } : {};
   }
@@ -3473,7 +3474,7 @@ export class Regia {
         idBattute: this.idBattuteRepertorio(),
         ...this.parametriAudioTurno(),
         ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
-        ...this.guardiaPrivate(azioni, turno),
+        ...this.guardiaPrivate(azioni, turno, risposteprivate.length > 0),
         ...this.guardiaSegreti(azioni),
         ...(correggiEsito ? { correggiEsito } : {}),
         ...this.parametroRifiuti(turno),
@@ -3518,7 +3519,7 @@ export class Regia {
           idBattute: this.idBattuteRepertorio(),
           ...this.parametriAudioTurno(),
           ...(mossaDelMondo ? { scartaFrase: fuoriDallaFinzione } : {}),
-          ...this.guardiaPrivate(azioni, turno),
+          ...this.guardiaPrivate(azioni, turno, risposteprivate.length > 0),
           ...this.guardiaSegreti(azioni),
           ...(correggiEsito ? { correggiEsito } : {}),
           ...this.parametroRifiuti(turno),

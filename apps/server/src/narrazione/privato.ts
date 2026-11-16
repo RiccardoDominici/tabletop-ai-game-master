@@ -245,6 +245,13 @@ export function guardiaPrivate(
   precedenti: readonly PrivatoPrecedente[] = [],
   /** A fight is on: a narrator line about the NPC whispered to may be its attack in its step, a public fact. */
   inCombattimento = false,
+  /**
+   * The audience split is on (docs/coerenza.md §2): the public call saw only «X fa qualcosa in privato verso Y», so a
+   * narrator line in a turn of private actions alone is the visible trace, not an answer to the whisper; only a line
+   * that shares its content moves (canary on 97121cb, T2: «Berta si volta verso il fienile e fa un passo.» and «I cani
+   * dietro la porta smettono di guaiare.» went to a phone, and the table heard nothing).
+   */
+  divisa = false,
 ): ((testo: string, segmento: number, etichetta?: string) => { id_pg: string; comuni: string[] } | null) | null {
   const conPubblica = new Set(azioni.filter((a) => a.testo && !a.privata).map((a) => a.id_pg));
   const private_ = azioni
@@ -252,7 +259,7 @@ export function guardiaPrivate(
     .map((a) => ({ id_pg: a.id_pg, nomi: nomiDi(a.id_pg), testo: a.testo }));
   const conRispostePng = !!nomiPng?.size && azioni.some((a) => a.testo && a.privata === true);
   // A turn whose only actions are private: every narrator line is an answer to them, or the world.
-  const soloPrivate = private_.length > 0 && !azioni.some((a) => a.testo && !a.privata && !a.sospesa);
+  const soloPrivate = !divisa && private_.length > 0 && !azioni.some((a) => a.testo && !a.privata && !a.sospesa);
   const prima = precedenti.map((p) => ({ ...p, nomi: nomiDi(p.id_pg) }));
   const tuttiPg = [...new Set([...azioni.map((a) => a.id_pg), ...precedenti.map((p) => p.id_pg)])];
   const altriPg = (id: string): string[][] => tuttiPg.filter((x) => x !== id).map(nomiDi);
