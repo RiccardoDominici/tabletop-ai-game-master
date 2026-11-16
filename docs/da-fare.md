@@ -47,10 +47,15 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   said, DC hidden, first-audio 1.85 s against 2.43 s, but its criterion is **not met** (two definite and about fifteen
   probable high-severity sentences heard) and the stall run stayed idle. Round 2 on f29235d (`coerenza2-*`, with
   `R-inesistente`, the stall fixes): still not met (19 high-severity sentences against 17; the stall now climbs with
-  material), docs/coerenza.md «Measured, round 2». Fixed after round 2, with tests, **not measured**: cb4ded5, 8cb8426.
-  Still open: the invented creature until a round 3 shows the fixes hold (bug 5); R-fuori's whole-sentence state check;
-  presence without `[esce]` and NPCs the players
-  invent voiced by existing ones (bug 9); the cart «impossibile» (11a); the panel's fight and manual initiative (11c);
+  material), docs/coerenza.md «Measured, round 2». No round 3: R-inesistente and the absorbed-blow rule went to
+  observation (a556dc4), and checkers are now scored offline on a frozen replay set (esperimenti/coerenza/, labelled
+  once, plus a held-out set): the rules catch 76 of 117 violations (25 of 37 held-out), the yes/no judge (a small fast
+  model, one question per flagged sentence, the rules in its shadow) 106 (33), with 7 (2) clean sentences touched; the
+  judge is wired for profile B (067d18f, TAGM_DOMANDA), one smoke run without crash at ~1 s a question; silent exits
+  (79d3068), a neutral line for invented names in mode B (bc0010e) and `[nuovo png]` in mode A (d1f0e40) are built.
+  Still open: a measuring run of the judge (it is live only in a smoke run); the private replies stay on the rules
+  (their raw text is now logged, for a replay set of their own); R-fuori's whole-sentence state check (the judge
+  replaces it in profile B, not in profile A); the cart «impossibile» (11a); the panel's fight and manual initiative (11c);
   `R-eco` and the projector mark; the stall's S3 sentence said twice word for word; profile A (the reader plus the
   Mac's swap were too much on 16 November) and the dictated action not run. The «Coerenza» box was seen in headless
   Chromium on a live test instance (16 November, 0 console errors), not on a real tablet.
