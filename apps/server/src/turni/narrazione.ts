@@ -191,6 +191,11 @@ export interface ParametriTurno {
   /** Every violation the checker caught, with its rule (coerenza/verifica.ts): the director logs and counts it. */
   onViolazione?: (v: Violazione) => void;
   /**
+   * The yes/no judge (coerenza/giudice.ts, docs/coerenza.md «The candidate in play»): every public narrator sentence
+   * after the rules, in order; a decision replaces the sentence with the Engine's line or drops it (never a repair).
+   */
+  giudice?: { giudica(frase: string, giaToccata: boolean, signal?: AbortSignal): Promise<{ testo: string; regola: Violazione['regola']; motivo: string; fonte: string; ms: number } | null> } | null;
+  /**
    * The targeted repair (docs/coerenza.md §3): the director asks the model to rewrite a sentence that broke a fact rule,
    * within its deadline; null = no repair (the Engine's sentence stays). Asked only when the voice has slack: never for
    * the first sentence of the answer.
@@ -281,6 +286,15 @@ export async function narraTurno(
   // The coherence checker of this call (coerenza/verifica.ts): one pipeline of named rules for every sentence. Each
   // violation keeps its old anomaly code and log line (the run measures read them) and goes to the director as one
   // record with its rule (docs/coerenza.md §3).
+  const segnala = (v: Violazione): void => {
+    if (v.regola === 'R-finzione') scartate += 1;
+    if (v.regola === 'R-assente') scartateAssenti += 1;
+    if (v.regola === 'R-segreto') scartateSegreti += 1;
+    const vecchio = anomaliaDi(v);
+    anomalie.push({ codice: vecchio.codice, dettaglio: `«${v.frase.slice(0, 120)}»${v.sostituto?.length ? ` → «${v.sostituto.join(' ')}»` : ''}` });
+    log.warn({ turno: p.turno, regola: v.regola, etichetta: v.etichetta, testo: v.frase, azione: v.azione, ...(v.sostituto ? { sostituto: v.sostituto } : {}), ...(v.id_pg ? { id_pg: v.id_pg } : {}), ...(v.battuta ? { battuta: v.battuta } : {}), ...v.dettaglio }, vecchio.messaggio);
+    p.onViolazione?.(v);
+  };
   const verifica = new VerificaTurno(
     {
       turno: p.turno,
@@ -295,15 +309,7 @@ export async function narraTurno(
       ...(p.detteNelTurno ? { detteNelTurno: p.detteNelTurno } : {}),
       nomiPg: [...new Set(campagna.pg.flatMap((x) => [x.nome, x.nome.split(/\s+/)[0] ?? '']).map(frasePerRipetizione).filter((x) => x.length > 2))],
     },
-    (v) => {
-      if (v.regola === 'R-finzione') scartate += 1;
-      if (v.regola === 'R-assente') scartateAssenti += 1;
-      if (v.regola === 'R-segreto') scartateSegreti += 1;
-      const vecchio = anomaliaDi(v);
-      anomalie.push({ codice: vecchio.codice, dettaglio: `«${v.frase.slice(0, 120)}»${v.sostituto?.length ? ` → «${v.sostituto.join(' ')}»` : ''}` });
-      log.warn({ turno: p.turno, regola: v.regola, etichetta: v.etichetta, testo: v.frase, azione: v.azione, ...(v.sostituto ? { sostituto: v.sostituto } : {}), ...(v.id_pg ? { id_pg: v.id_pg } : {}), ...(v.battuta ? { battuta: v.battuta } : {}), ...v.dettaglio }, vecchio.messaggio);
-      p.onViolazione?.(v);
-    },
+    segnala,
   );
   const idPng = new Set(campagna.png.map((x) => x.id));
   let invito: string[] | 'tutti' | null = null;
@@ -402,6 +408,19 @@ export async function narraTurno(
         if (d.tipo === 'sostituisci') {
           sostituisci(e.segmento, d.righe);
           continue;
+        }
+        // The yes/no judge, on the public narrator sentences the rules left alone (it keeps its state on the others).
+        if (p.giudice && !p.soloPg && !d.privato && e.etichetta === ID_NARRATORE) {
+          const originale = e.testo;
+          const g = await p.giudice.giudica(d.testo, d.testo !== originale || !!d.riparabile, p.signal);
+          if (p.signal.aborted) return;
+          if (g) {
+            const ripetuta = !!g.testo && !!p.giàSentite?.has(frasePerRipetizione(g.testo));
+            const azione = g.testo && !ripetuta ? 'sostituita' : 'tolta';
+            segnala({ turno: p.turno, regola: g.regola, etichetta: e.etichetta, frase: d.testo, azione, ...(azione === 'sostituita' ? { sostituto: [g.testo] } : {}), dettaglio: { motivo: g.motivo, fonte: g.fonte, ms: g.ms } });
+            if (azione === 'tolta') continue;
+            d = { ...d, testo: g.testo, voce: g.testo };
+          }
         }
         e.testo = d.testo;
         e.voce = d.voce;

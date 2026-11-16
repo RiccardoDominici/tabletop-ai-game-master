@@ -146,7 +146,18 @@ the Engine's line at once.
   `TAGM_RIPARAZIONE=si`.
 - `TAGM_RIPARAZIONE_MS=1500` is the deadline in milliseconds (300 to 5000).
 
-Every caught sentence is in the server log («coerenza: violazione», «coherence: repair answered») and on the panel,
+With a narrator through Anthropic's API, a sentence that names someone out of play or absent, a creature nobody in
+the scene answers to, or the target of a blow that hurt with a miss word, also gets one yes/no question to the same
+fast model, with what the Engine holds true: «does this sentence make Zirrà act, speak or be present now?». On «si»
+the Engine says its own line (once a turn) or drops the sentence; on «no» the sentence is said as it is. If the answer
+is late, the older rules decide. With the local reader there is no question: the rules alone.
+
+- `TAGM_DOMANDA=no` turns the question off (the rules alone); it is off in the automated tests unless
+  `TAGM_DOMANDA=si`.
+- `TAGM_DOMANDA_MS=1500` is its deadline in milliseconds (300 to 5000).
+
+Every caught sentence is in the server log («coerenza: violazione», «coherence: repair answered», «coherence:
+question answered») and on the panel,
 «Coerenza».
 
 ## Keys

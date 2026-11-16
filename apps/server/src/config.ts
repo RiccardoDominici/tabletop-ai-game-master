@@ -94,6 +94,8 @@ export interface ConfigServer {
    * turns it off (and it is off under vitest unless TAGM_RIPARAZIONE=si); TAGM_RIPARAZIONE_MS sets the deadline.
    */
   riparazione: { attiva: boolean; ms: number };
+  /** The yes/no judge of the narration (docs/coerenza.md, «The candidate in play»): TAGM_DOMANDA, TAGM_DOMANDA_MS. */
+  domanda: { attiva: boolean; ms: number };
   llm: {
     modo: ModoLlm;
     modello: string;
@@ -225,6 +227,10 @@ export function caricaConfig(env: NodeJS.ProcessEnv = process.env): ConfigServer
     riparazione: {
       attiva: testo(env['TAGM_RIPARAZIONE']) === 'no' ? false : testo(env['TAGM_RIPARAZIONE']) === 'si' ? true : !process.env['VITEST'],
       ms: Math.max(300, Math.min(5000, Number(testo(env['TAGM_RIPARAZIONE_MS']) ?? 1500) || 1500)),
+    },
+    domanda: {
+      attiva: testo(env['TAGM_DOMANDA']) === 'no' ? false : testo(env['TAGM_DOMANDA']) === 'si' ? true : !process.env['VITEST'],
+      ms: Math.max(300, Math.min(5000, Number(testo(env['TAGM_DOMANDA_MS']) ?? 1500) || 1500)),
     },
     tiri: {
       giocatori: sceltaOpzionale(env['TAGM_TIRI_GIOCATORI'], ['manuale', 'automatico'] as const) ?? (process.env['VITEST'] ? 'automatico' : null),

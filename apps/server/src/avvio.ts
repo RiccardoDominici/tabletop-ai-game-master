@@ -46,6 +46,7 @@ import type { FonteDadi } from './prove/dadi';
 import { riassuntoPubblico } from './azioni/contesto';
 import type { Arbitro } from './azioni/tipi';
 import { creaClientAnthropic } from './llm/haiku';
+import type { ModelloLinguaggio } from './llm/modello';
 import { collegaSocket, creaUscite, STANZA_SCHERMO } from './trasporto/socket';
 import { collegaMaster } from './trasporto/master';
 import { ArchivioSessioni } from './sessione/archivio';
@@ -108,6 +109,8 @@ export interface Sostituzioni {
   trascrittori?: Trascrittore[];
   /** Dadi delle prove (test: a copione). */
   dadi?: FonteDadi;
+  /** The yes/no judge's model and deadline (test: a fake model; null = off; absent = from the configuration). */
+  domanda?: { modello: () => ModelloLinguaggio; ms: number } | null;
   orologio?: Orologio;
   cartellaWeb?: string;
   /**
@@ -372,6 +375,13 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     attesaNelCatalogo: narratore.nome === 'minimo',
     // The checker's targeted repair needs a fast model: never with the local minimal reader (docs/coerenza.md §3).
     riparazione: config.riparazione.attiva && narratore.nome !== 'minimo' ? { ms: config.riparazione.ms } : null,
+    // The yes/no judge needs a fast model: the narrator's own when it is Anthropic's (profile B); never the local reader.
+    domanda:
+      sost.domanda !== undefined
+        ? sost.domanda
+        : config.domanda.attiva && narratore.nome !== 'minimo' && fabbrica.modello('lettore')?.provider === 'anthropic'
+          ? { modello: () => fabbrica.modello('lettore')!, ms: config.domanda.ms }
+          : null,
     // Lo sceneggiatore (docs/sceneggiatore.md) scrive con Claude Code ciò che il lettore minimo non trova:
     // le richieste partono solo se il suo processo gira (scripts/sceneggiatore.sh). Spento nei server di
     // prova (narratore sostituito) e con TAGM_SCENEGGIATORE=no.

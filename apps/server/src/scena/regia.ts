@@ -126,6 +126,9 @@ import { TiriGiocatoriRegia, type TiriGiocati } from './tiri-giocatori';
 import { TiriDelMaster } from '../prove/tiri-master';
 import { tipiGregari, type Gregario } from '../campagna/gregari';
 import { inOsservazione } from '../coerenza/osservazione';
+import { GiudiceDomande } from '../coerenza/giudice';
+import type { ModelloLinguaggio } from '../llm/modello';
+import { contestoMenzioni } from '../coerenza/menzioni';
 import { creatureAssenti, creatureNote, frasePresenti, guardiaInesistenti, nominateIn, rigaAssenti, type CreaturaAssente } from '../coerenza/inesistenti';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
@@ -195,6 +198,11 @@ export interface OpzioniRegia {
   finestraATutti?: boolean;
   /** The checker's targeted repair (docs/coerenza.md §3): its deadline; null = off (the Engine's sentence at once). */
   riparazione?: { ms: number } | null;
+  /**
+   * The yes/no judge (coerenza/giudice.ts, docs/coerenza.md «The candidate in play»): a fast model and the deadline of
+   * one question. Null or absent: the rules decide alone (profile A, tests, TAGM_DOMANDA=no).
+   */
+  domanda?: { modello: () => ModelloLinguaggio; ms: number } | null;
   /** Arbitro delle azioni simultanee (null = solo regole). */
   arbitro?: Arbitro | null;
   /**
@@ -568,6 +576,8 @@ export class Regia {
         },
       );
       log.info({ turno, id_pg, frasi: esito.uscita.length, costo_usd: esito.esito?.costo.costo_usd ?? null }, 'narrator: private reply done');
+      // The raw private reply, for a future replay set of the private calls (the frozen set has only public answers).
+      this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'risposta_privata', id_pg, testo: esito.esito?.testo ?? null });
     } catch (err) {
       log.warn({ turno, id_pg, err: err instanceof Error ? err.message : String(err) }, 'narrator: private reply failed');
     } finally {
@@ -3103,6 +3113,8 @@ export class Regia {
     alTavolo = true,
     /** The turn being narrated (the records of the rules in observation). */
     turno = this.turno,
+    /** All the rules; or only the card rules (`esiti`), or only the ones the yes/no judge replaces (`ombra`). */
+    parti: 'tutte' | 'esiti' | 'ombra' = 'tutte',
   ): (testo: string) => CorrezioneEsito {
     const c = this.campagna;
     // Rules in observation (coerenza/osservazione.ts): what they would do is recorded, the sentence is left alone.
@@ -3143,13 +3155,54 @@ export class Regia {
           ...(alTavolo ? { onDetta: () => (inesistenti.detta = true) } : {}),
         })
       : null;
-    return (testo) => {
+    const conIne = (testo: string): CorrezioneEsito => {
       frase = testo;
       const i = ines?.(testo) ?? null;
       if (i && !inOsservazione(i.motivo)) return i;
       if (i) osserva(i);
-      return esiti(testo) ?? fuori?.(testo) ?? null;
+      return null;
     };
+    // With the yes/no judge (docs/coerenza.md, «The candidate in play»): the card rules stay before it, and the rules
+    // it replaces (R-fuori; R-inesistente in observation) run in its shadow.
+    if (parti === 'esiti') {
+      return (testo) => {
+        frase = testo;
+        return esiti(testo);
+      };
+    }
+    if (parti === 'ombra') return (testo) => conIne(testo) ?? fuori?.(testo) ?? null;
+    return (testo) => conIne(testo) ?? esiti(testo) ?? fuori?.(testo) ?? null;
+  }
+
+  /**
+   * The yes/no judge of the public answer (coerenza/giudice.ts) and the card rules that stay before it, when the
+   * question is on (a fast model: not the local reader) and the checks run. Null otherwise: the rules as they are.
+   */
+  private giudiceDelTurno(
+    tiri: readonly TiroMostrato[],
+    combattimento: EsitoCombattimento | null,
+    inesistenti: InesistentiDelTurno | null,
+    registro: Registro,
+    turno: number,
+  ): { correggiEsito: (testo: string) => CorrezioneEsito; giudice: GiudiceDomande } | null {
+    const d = this.o.domanda;
+    if (!d || !this.prove?.attivo) return null;
+    const oraFuori = [
+      ...tiri.filter((t) => t.a_terra && t.bersaglio).map((t) => t.bersaglio!.id),
+      ...(combattimento?.fuggiti ?? []).map((f) => f.id),
+      ...(combattimento?.morte ?? []).map((m) => m.id),
+    ];
+    const colpi = tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio && !t.privata).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id, riuscita: t.riuscita, danno: t.danno?.totale ?? 0 }));
+    const giudice = new GiudiceDomande({
+      modello: d.modello(),
+      ms: d.ms,
+      registro,
+      contesto: contestoMenzioni(registro, tipiGregari(this.campagna), colpi, oraFuori),
+      ombra: this.guardiaDegliEsiti(tiri, combattimento, inesistenti, true, turno, 'ombra'),
+      log: this.o.log.child({ turno }),
+      turno,
+    });
+    return { correggiEsito: this.guardiaDegliEsiti(tiri, combattimento, inesistenti, true, turno, 'esiti'), giudice };
   }
 
   /**
@@ -3551,10 +3604,11 @@ export class Regia {
     // its own, so a reply that names the fallen NPC first does not use up the line the table must hear.
     const inesistenti = this.inesistenti;
     const nuovaGuardia = this.prove?.attivo ? () => this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null, inesistenti, false) : null;
-    const correggiEsito = this.prove?.attivo ? this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null, inesistenti, true) : null;
+    const conGiudice = this.giudiceDelTurno(tiri?.tiri ?? [], tiri?.combattimento ?? null, inesistenti, registroTurno, r.turno);
+    const correggiEsito = conGiudice?.correggiEsito ?? (this.prove?.attivo ? this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null, inesistenti, true) : null);
     // The turn order just rolled (the fight starts, a new round): the Engine says it at the table (bug 6, third e2e pass).
     const ordine = tiri?.combattimento?.ordine ?? [];
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito, ordine, risposteprivate, nuovaGuardia).catch((err: unknown) =>
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito, ordine, risposteprivate, nuovaGuardia, conGiudice?.giudice ?? null).catch((err: unknown) =>
       this.dopoEccezione(epoca, r.turno, 'narrazione', err),
     );
   }
@@ -3578,6 +3632,8 @@ export class Regia {
     risposteprivate: ReadonlyArray<{ id_pg: string; messaggio: string }> = [],
     /** Builds a fresh outcome guard for each private reply (its state is per call), or null. */
     nuovaGuardia: (() => (testo: string) => CorrezioneEsito) | null = null,
+    /** The yes/no judge of the public answer (coerenza/giudice.ts), or null: the rules decide alone. */
+    giudice: GiudiceDomande | null = null,
   ): Promise<void> {
     // The ledger as the narration starts: this turn's cards and falls are in it (docs/coerenza.md §1).
     this.registroOra('prima della narrazione');
@@ -3610,6 +3666,7 @@ export class Regia {
         ...this.guardiaPrivate(azioni, turno, risposteprivate.length > 0),
         ...this.guardiaSegreti(azioni),
         ...(correggiEsito ? { correggiEsito } : {}),
+        ...(giudice ? { giudice } : {}),
         ...this.parametroRifiuti(turno),
         giàSentite: this.frasiRecenti(turno),
         onViolazione: (v) => this.violazione(v),
@@ -3655,6 +3712,7 @@ export class Regia {
           ...this.guardiaPrivate(azioni, turno, risposteprivate.length > 0),
           ...this.guardiaSegreti(azioni),
           ...(correggiEsito ? { correggiEsito } : {}),
+          ...(giudice ? { giudice } : {}),
           ...this.parametroRifiuti(turno),
           // The repair must not say again what the first answer of this turn already said either.
           giàSentite: this.frasiRecenti(turno),

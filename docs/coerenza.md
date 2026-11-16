@@ -331,6 +331,26 @@ pooled median first-audio would be 2.30 s (round 1 runs, now 1.85 s), 2.19 s (ro
 (canaries, unchanged), all within +0.5 s of the 2.43 s baseline. Cost: one short call per flagged sentence (about 300
 input tokens). Profile A has no fast model: there the rules stay (`regole` or `attive`).
 
+## The candidate in play (built 16 November, behind a flag; not yet measured live)
+
+The yes/no judge (`apps/server/src/coerenza/giudice.ts`) is v2 of the scores above, in the public answer:
+- the director builds it at each turn's close (`giudiceDelTurno`) when `TAGM_DOMANDA` is on (default, outside the
+  tests) and the narrator's model is Anthropic's (profile B); never with the local reader (profile A: the rules);
+- VerificaTurno keeps every rule except the ones the judge replaces: R-esito's card rules (pair, fall, a PC told
+  down), R-assente, R-privato, R-segreto and the others decide first; R-fuori, and R-inesistente and the absorbed
+  blow (in observation), run in the judge's **shadow** on every sentence, so their carried subject stays right;
+- each public narrator sentence the rules left alone goes to `giudica`: the mention filter (`coerenza/menzioni.ts`,
+  `daChiedere`) or the sentence right after a «si» picks what to ask; one question to the narrator's model with a
+  deadline (`TAGM_DOMANDA_MS`, 1500 ms); «si» → the Engine's line once a turn (the fallen one's state, who is really
+  there, «Berta colpisce Fulco.»), then the sentence is dropped; never the model's repair; «no» → said as it is; a
+  late answer or an error → the shadow rules' verdict (R-fuori; a rule in observation stays so);
+- each decision is a violation record with `dettaglio.fonte` (`domanda` or `regole`) and its milliseconds; each
+  answer a log line «coherence: question answered»;
+- the private replies stay on the rules (they are not in the frozen set); their raw text is now written to
+  narrazioni.jsonl (`tipo: risposta_privata`), for a replay set of the private calls.
+Tests: test/coerenza-giudice.test.ts (si, no, a carried subject, a deadline, a sentence the rules changed; with the
+whole server a fake model's «si» gives the Engine line and its «no» keeps a sentence R-fuori would have changed).
+
 ## The invented goblins: data, not checker? (16 November)
 
 torre-mozza has exactly two foes at the tower, both with sheets: Zirrà (aliases goblin, goblina, capobanda) and
