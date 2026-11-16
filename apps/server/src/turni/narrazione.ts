@@ -215,7 +215,10 @@ function anomaliaDi(v: Violazione): { codice: string; messaggio: string } {
       return { codice: 'numeri_regole', messaggio: 'narratore: numeri delle regole a voce, tolti' };
     case 'R-esito':
     case 'R-fuori':
-      return v.azione === 'tolta'
+    case 'R-inesistente':
+      return v.azione === 'aggiunta'
+        ? { codice: 'creatura_inesistente', messaggio: 'coherence: who is really there, said by the Engine' }
+        : v.azione === 'tolta'
         ? { codice: motivo ?? v.regola, messaggio: 'narrator: sentence contradicts the Engine, its line already said this turn: dropped' }
         : { codice: motivo ?? v.regola, messaggio: 'narrator: sentence contradicts the Engine, replaced by its line' };
     case 'R-assente':

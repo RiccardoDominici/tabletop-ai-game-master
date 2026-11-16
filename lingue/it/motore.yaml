@@ -228,6 +228,15 @@ guardia_fuori:
   di_parte: [di, del, della, dello, dei, degli, delle]
   stato: [giac, immobil, mort, esanim, cadaver, corpo, a terra, per terra, senza vita, senza sensi, svenut, privo di sensi, priva di sensi, non si muove, non respira, rantol, sangu, fuori combattimento, non c'e piu, non e piu qui, fuggit, sparit]
 
+# Absent creature (apps/server/src/coerenza/inesistenti.ts, R-inesistente): the nouns are the campaign's (NPC aliases,
+# minion types); these are only the grammar around them. `negazioni` right before the noun («nessun goblin») leave the
+# sentence alone; `verso` before it is a movement or an attack toward it («verso l'ultimo goblin»); `corpo` + «di» +
+# the noun is a blow on it («nella spalla del goblin»; the out-of-play guard's `parti` count too).
+inesistenti:
+  negazioni: [nessun, nessuno, nessuna, niente, non, senza, ne]
+  verso: [verso, contro, addosso]
+  corpo: [petto, spalla, spalle, fianco, fianchi, schiena, gamba, gambe, collo, ventre, gola, pancia, cuore, braccio, gomito, ginocchio, coscia, cranio, nuca, elmo, scudo, armatura]
+
 # Refusal guard (apps/server/src/narrazione/guardia-rifiuti.ts): after a failed social check toward an NPC, its line
 # without a refusal word, or a narrator sentence where it does a giving verb, is replaced by its refusal line.
 guardia_rifiuti:

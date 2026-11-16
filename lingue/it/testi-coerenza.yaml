@@ -24,6 +24,12 @@ coerenza:
     morto: "{nome} non è più in vita: non parla né agisce, il corpo è lì"
     fuggito: "{nome} fuggito"
     nascosto: "{nome} nascosto"
+  # R-inesistente (coerenza/inesistenti.ts): who is really there, when the players name a creature the scene does not have.
+  inesistente:
+    e: "e"
+    presenti: "Oltre a voi, in piedi qui si vedono soltanto {elenco}."
+    nessuno: "Oltre a voi, qui non si vede nessuno in piedi."
+    riga: "Nessuno in scena è {parole}: chi i giocatori chiamano così non c'è; non farlo agire, parlare né colpire, e non inventarlo."
   riparazione:
     messaggio: "## Correggi una frase\nLa frase «{frase}» non si può dire: {errore}.\n\n{vero}\n\nRiscrivi soltanto quella frase: una sola riga [narratore], al massimo venti parole, coerente con ciò che è vero adesso. Niente altro."
     errore:

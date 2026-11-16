@@ -156,6 +156,47 @@ describe('the checker with the whole server', () => {
     expect(t3.join(' ')).not.toMatch(/ride/);
   }, 20_000);
 
+  it('R-inesistente: a creature nobody here answers to is not hit nor acts; the table hears who is really there', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('prove');
+    const copione = (t: number): string =>
+      t === 0
+        ? '[narratore] Il fiume rumoreggia.\n[invito] tutti'
+        : t === 2
+          ? '[narratore] Lo sgherro con la lancia para il pugnale e ride.\n[narratore] Ida guarda il fiume.\n[invito] tutti'
+          : t === 3
+            ? '[narratore] Il vento soffia sul ponte.\n[invito] tutti'
+            : '[narratore] Il ferro suona sul ponte.\n[invito] tutti';
+    // T1: Corrado kills Ruggero (alias «sgherro»); T2 and T3 the players fight and seek «lo sgherro con la lancia».
+    const { url } = await prova.avvia(cartella, copione, {}, { arbitroProve: new ArbitroColpo(), dadi: new DadiACopione([10, 8, 15, 5, 10]) });
+    const schermo = await prova.proiettore(url);
+    const ida = await prova.telefono(url, 'pg_ida');
+    const corrado = await prova.telefono(url, 'pg_corrado');
+    let s = await inizia(schermo, ida);
+    for (const [perCorrado, perIda] of [['Colpisco Ruggero con la spada', 'Guardo il fiume'], ['Tiro il pugnale allo sgherro con la lancia.', 'Guardo il fiume'], ['Cerco lo sgherro con la lancia dietro il casotto.', 'Aspetto']] as const) {
+      const dopo = attendi(ida, (x: StatoTavolo) => x.fase === 'finestra' && x.turno === s.turno + 1);
+      await agisci(corrado, 'pg_corrado', perCorrado, s.versione_scena);
+      await agisci(ida, 'pg_ida', perIda, s.versione_scena);
+      s = await dopo;
+    }
+    const detto = (t: number): string => s.trascrizione.filter((v) => v.turno === t && v.tipo === 'narrazione').map((v) => v.testo).join(' ');
+    const chi = 'Ruggero giace a terra, senza vita. Oltre a voi, in piedi qui si vedono soltanto Bertoldo.';
+    // T2: the invented parry becomes the line; the rest of the narration stays; the line is not said twice.
+    expect(detto(2)).toContain(chi);
+    expect(detto(2)).not.toMatch(/ride/);
+    expect(detto(2)).toContain('Ida guarda il fiume.');
+    expect(detto(2).split(chi).length).toBe(2);
+    // T3: nothing invented, the Engine says it before the invitation.
+    expect(detto(3)).toContain(chi);
+    const viste = prova.narrazioni().filter((r) => r['tipo'] === 'violazione' && r['regola'] === 'R-inesistente');
+    // (T2 also has the repair call for Corrado's unanswered action: the fake narrator says the same line, dropped.)
+    expect(viste.map((r) => [r['turno'], r['azione']])).toEqual([
+      [2, 'sostituita'],
+      [2, 'tolta'],
+      [3, 'aggiunta'],
+    ]);
+  }, 20_000);
+
   it('a repair that breaks the same rule is not said: the Engine line stays', async () => {
     const { t3, registri } = await partitaConRiparazione('Ruggero si alza e ride ancora.');
     expect(t3.join(' ')).toContain('Ruggero giace a terra, senza vita.');

@@ -124,7 +124,8 @@ import type { FattoDelGioco } from '../mondo/porte';
 import { mossaDiStallo, type MossaStallo } from '../mondo/stallo';
 import { TiriGiocatoriRegia, type TiriGiocati } from './tiri-giocatori';
 import { TiriDelMaster } from '../prove/tiri-master';
-import type { Gregario } from '../campagna/gregari';
+import { tipiGregari, type Gregario } from '../campagna/gregari';
+import { creatureAssenti, creatureNote, frasePresenti, guardiaInesistenti, nominateIn, rigaAssenti, type CreaturaAssente } from '../coerenza/inesistenti';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
 import { indiziCampagna } from '../campagna/indizi';
@@ -273,6 +274,18 @@ export { nomeBreve };
 /** Ritmo dichiarato dalla scena (`ritmo: concitato` in scena.yaml); assente o altro = calmo. */
 export function ritmoDellaScena(c: Campagna): Ritmo {
   return c.scena.dati['ritmo'] === 'concitato' ? 'concitato' : 'calmo';
+}
+
+/** This turn's absent creatures (R-inesistente): see Regia.inesistentiDelTurno. */
+interface InesistentiDelTurno {
+  turno: number;
+  /** Named by public actions: judged in the public narration, and their line is said at the table. */
+  pubbliche: CreaturaAssente[];
+  /** Named by any action (a private reply judges these too). */
+  tutte: CreaturaAssente[];
+  frase: string;
+  nomiTitolari: string[];
+  detta: boolean;
 }
 
 export class Regia {
@@ -607,6 +620,11 @@ export class Regia {
 
   /** The visit (its entry turn) in which a fight happened: the stall's «nothing new» does not count there. */
   private scontroInVisita: number | null = null;
+  /**
+   * This turn's absent creatures (R-inesistente, coerenza/inesistenti.ts): the nouns the actions name that nobody in the
+   * scene answers to, the Engine's line of who is really there, and whether the table heard it yet.
+   */
+  private inesistenti: InesistentiDelTurno | null = null;
   /** How many public cards the last closed turn rolled (the stall's «something new», mondo/stallo.ts). */
   private carteDelTurno: { turno: number; n: number } = { turno: -1, n: 0 };
   /** NPCs whose refusal line has been said in this turn (main answer and repair share it). */
@@ -3052,7 +3070,13 @@ export class Regia {
    * cards just rolled, who is out of play now and since before this turn, and how the narration names PCs and NPCs.
    * The outcome guard runs first; a sentence it leaves alone goes to the out-of-play guard.
    */
-  private guardiaDegliEsiti(tiri: readonly TiroMostrato[], combattimento: EsitoCombattimento | null): (testo: string) => CorrezioneEsito {
+  private guardiaDegliEsiti(
+    tiri: readonly TiroMostrato[],
+    combattimento: EsitoCombattimento | null,
+    inesistenti: InesistentiDelTurno | null = null,
+    /** The public call (its line is what the table hears); a private reply judges the nouns of every action. */
+    alTavolo = true,
+  ): (testo: string) => CorrezioneEsito {
     const c = this.campagna;
     const prove = this.prove!;
     const nomi = new Map<string, string[]>([
@@ -3075,7 +3099,56 @@ export class Regia {
       ...(combattimento?.morte ?? []).map((m) => m.id),
     ]);
     const fuori = guardiaFuori({ nomi, nome, fuoriDaPrima: (id) => (oraFuori.has(id) ? null : prove.stato.fuoriGioco(id)) });
-    return (testo) => esiti(testo) ?? fuori?.(testo) ?? null;
+    // First: a creature nobody here answers to (R-inesistente) gets the line of who is really there.
+    const ines = inesistenti
+      ? guardiaInesistenti({
+          assenti: alTavolo ? inesistenti.pubbliche : inesistenti.tutte,
+          nomiTitolari: inesistenti.nomiTitolari,
+          frase: inesistenti.frase,
+          ...(alTavolo ? { onDetta: () => (inesistenti.detta = true) } : {}),
+        })
+      : null;
+    return (testo) => ines?.(testo) ?? esiti(testo) ?? fuori?.(testo) ?? null;
+  }
+
+  /**
+   * The absent creatures of this turn (coerenza/inesistenti.ts): the creature nouns of the campaign's data that the
+   * actions name and nobody in the scene answers to, where judging them is safe: a fight on, earlier in this visit or a
+   * blow this turn, or one the noun named fell or left here. Null when there is none.
+   */
+  private inesistentiDelTurno(r: RiepilogoChiusura, registro: Registro, colpoNelTurno: boolean): InesistentiDelTurno | null {
+    if (!this.prove?.attivo) return null;
+    const assenti = creatureAssenti(registro, creatureNote(registro.entita, tipiGregari(this.campagna)));
+    if (!assenti.length) return null;
+    const scontro = this.prove.inCombattimento || colpoNelTurno || this.scontroInVisita === this.mondo.visita.ingresso;
+    const sicure = assenti.filter((a) => scontro || a.caduti.length > 0);
+    const testi = (soloPubbliche: boolean): string =>
+      r.azioni
+        .filter((a) => !!a.testo && (!soloPubbliche || !a.privata))
+        .map((a) => a.testo!)
+        .join(' \n ');
+    const tutte = nominateIn(testi(false), sicure);
+    if (!tutte.length) return null;
+    const pubbliche = nominateIn(testi(true), sicure);
+    const per = new Map(registro.entita.map((e) => [e.id, e]));
+    const nomiTitolari = [...new Set(tutte.flatMap((a) => a.titolari).flatMap((id) => (per.has(id) ? [per.get(id)!.nome, nomeBreve(per.get(id)!.nome)] : [])))];
+    const frase = frasePresenti(registro, pubbliche.length ? pubbliche : tutte);
+    this.o.log.info({ turno: r.turno, pubbliche: pubbliche.map((a) => a.parola), tutte: tutte.map((a) => a.parola), frase }, 'coherence: the actions name a creature nobody here answers to');
+    return { turno: r.turno, pubbliche, tutte, frase, nomiTitolari, detta: false };
+  }
+
+  /**
+   * Who is really there, said by the Engine before the invitation when a public action named an absent creature and the
+   * narration did not already say it in place of an invented act (docs/coerenza.md, R-inesistente).
+   */
+  private diciChiCeDavvero(turno: number, esito: { uscita: VoceUscita[] }, ines: InesistentiDelTurno, log: Logger): void {
+    const righe = [{ etichetta: ID_NARRATORE, testo: ines.frase, testo_voce: this.pronuncia(ines.frase) }];
+    const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: ines.frase, frasi: [`t${turno}-x0`], motore: true };
+    const primaDellInvito = this.righeDelMotore(turno, esito, righe, voce, false, 'x');
+    ines.detta = true;
+    this.violazione({ turno, regola: 'R-inesistente', etichetta: ID_NARRATORE, frase: '', azione: 'aggiunta', sostituto: [ines.frase], dettaglio: { parole: ines.pubbliche.map((a) => a.parola) } });
+    log.info({ turno, parole: ines.pubbliche.map((a) => a.parola), prima_dell_invito: primaDellInvito }, 'coherence: who is really there said at the table');
+    this.notifica();
   }
 
   // ------------------------------------------------------------------ manual rolls (docs/prove.md §8)
@@ -3345,7 +3418,12 @@ export class Regia {
     // narrator from the ledger (docs/coerenza.md §2): the fallen are rows like the others.
     const fuori = this.righeFuoriGioco();
     if (fuori.length) this.o.log.info({ turno: r.turno, fuori }, 'prove: PNG fuori gioco nel messaggio del narratore');
-    const veroAdesso = bloccoVeroAdesso(this.registroOra('messaggio del narratore'));
+    const registroTurno = this.registroOra('messaggio del narratore');
+    this.inesistenti = this.inesistentiDelTurno(r, registroTurno, !!tiri?.tiri.some((t) => t.tipo === 'attacco'));
+    const veroAdesso = bloccoVeroAdesso(registroTurno);
+    // The narrator hears that the noun the players used names nobody here (and the selector, through the same block).
+    const rigaInesistenti = this.inesistenti ? rigaAssenti(this.inesistenti.pubbliche) : null;
+    if (veroAdesso && rigaInesistenti) veroAdesso.righe.push(rigaInesistenti);
     // Gli stessi dati vanno al lettore minimo, che non legge il testo (llm/minimo.ts, turnoDaDati).
     const datiTurno: DatiMessaggioTurno = {
       turno: r.turno,
@@ -3417,8 +3495,9 @@ export class Regia {
     // Also on a turn without rolls: someone out of play may still be told acting (narrazione/guardia-fuori.ts).
     // The guard keeps per-call state (who already had a state line, the carried subject): each private reply gets one of
     // its own, so a reply that names the fallen NPC first does not use up the line the table must hear.
-    const nuovaGuardia = this.prove?.attivo ? () => this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null) : null;
-    const correggiEsito = nuovaGuardia?.() ?? null;
+    const inesistenti = this.inesistenti;
+    const nuovaGuardia = this.prove?.attivo ? () => this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null, inesistenti, false) : null;
+    const correggiEsito = this.prove?.attivo ? this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null, inesistenti, true) : null;
     // The turn order just rolled (the fight starts, a new round): the Engine says it at the table (bug 6, third e2e pass).
     const ordine = tiri?.combattimento?.ordine ?? [];
     void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito, ordine, risposteprivate, nuovaGuardia).catch((err: unknown) =>
@@ -3566,6 +3645,9 @@ export class Regia {
     // della lingua prima dell'invito. Vale per il narratore e per il selettore.
     const fattiAggiunti = dovuti.length && !controllo.signal.aborted ? this.aggiungiFattiDovuti(turno, esito, dovuti, log) : [];
     if (ordine.length && !controllo.signal.aborted) this.annunciaOrdine(turno, esito, ordine, log);
+    // A public action named a creature nobody here answers to: the table hears who is really there (R-inesistente).
+    const ines = this.inesistenti?.turno === turno ? this.inesistenti : null;
+    if (ines && ines.pubbliche.length && !ines.detta && !controllo.signal.aborted) this.diciChiCeDavvero(turno, esito, ines, log);
 
     // B2: il segno di un orologio era dovuto ma il selettore non l'ha usato → lo mette il Motore,
     // orologio per orologio (al massimo due), dopo le risposte e prima della frase d'invito

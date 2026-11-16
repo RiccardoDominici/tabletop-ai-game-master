@@ -75,7 +75,8 @@ Every sentence, narrator or NPC, public or private, goes through one pipeline be
 of that moment, in every profile and mode: the improvised narration, the selector's prewritten lines (mode B) and the
 local minimal reader's (prewritten lines can contradict the state too). The existing guards become rules behind one interface (`(frase, registro) → Violazione | null`), each
 with an id and its word lists in the language pack:
-`R-fuori` dead, down or fled who acts or speaks; `R-assente` an NPC not in the scene who speaks or acts; `R-esito` an
+`R-fuori` dead, down or fled who acts or speaks; `R-inesistente` a creature nobody in the scene answers to, attacked or
+acting (built after round 1, below); `R-assente` an NPC not in the scene who speaks or acts; `R-esito` an
 outcome against its card (polarity, target, a fall without a fact); `R-privato` a private fact in a public sentence
 (the audience split makes it a backstop); `R-segreto`; `R-rifiuto`; `R-numeri`; `R-ripetuta` a recent line word for
 word; `R-eco` the player's words restated beyond the announcement (not built: no rule yet, the measured runs had no
@@ -184,9 +185,20 @@ Then, from a second reading (`72cc62e`, `8e1f34e`, `97121cb`, tests on invented 
 - R-privato with the split on: in a turn of private actions alone the public answer's narrator lines are the visible
   trace (the public call never saw the whisper), so only a line that shares the whisper's content moves (canary on
   `97121cb`, T2: a step of Berta and the dogs going quiet went to a phone and the table heard nothing).
-Open: a creature the ledger does not have, acting or being hit (`R-inesistente`: the scripts' «goblin con la lancia»
-after the fight). It needs the nouns that name a creature in the language pack and the Engine's «no creature to hit»
-fact passed to the checker; a word-list guess was not added. The stall's S1 in mode B still brings no material of the
+Then `R-inesistente` (coerenza/inesistenti.ts, tests: test/coerenza-inesistenti.test.ts, test/coerenza-verifica.test.ts),
+the scripts' «goblin con la lancia» after the fight. The nouns come from the data only: the aliases of the campaign's
+NPCs that are not their name or short name (torre-mozza: goblin, goblina, capobanda, guerriera, hobgoblin,
+guardaspalle, pastora, vedova, carbonaio), the words of the minion types (`gregari`) and the ledger's minions; the rule
+set has no bestiary in a form the Engine reads. A noun is absent when nobody it names is in the scene and in play
+(standing, wounded, or hidden: a hidden one is never revealed). The director judges it only when a turn's action names
+it and there is a fight (on, earlier in this visit, or a blow this turn) or one it named fell or left here, so talk of
+creatures elsewhere is never judged. Then the narrator's block gets «Nessuno in scena è «goblin»…», a narrator
+sentence that has the creature be the subject of a clause, be hit, be wounded in a body part or be the goal of a move
+(and a subject pronoun right after) becomes the Engine's line of who is really there («Zirrà non è più qui. Oltre a
+voi, in piedi qui si vedono soltanto Grosso.»), later ones are dropped, and if the narration invented nothing the
+Engine says the line before the invitation (`aggiunta`). The grammar words around the nouns are in
+`lingue/<code>/motore.yaml`, section `inesistenti`; the line is not handed to the model's repair. Limit: a noun whose
+plural changes the word, or a creature the narration names with a word the data do not have, is not seen. The stall's S1 in mode B still brings no material of the
 Engine to the table (a filler line or the due mark, when there is one). Profile A (`stallo` with the local reader) was not run: with memory 54% free the reader was started, but once loaded the Mac had 23% free and 6.0 GB of swap (the rule is to stop above about 5 GB, the Mac rebooted twice on 14 November), so it was stopped at once.
 
 ## Risks and limits

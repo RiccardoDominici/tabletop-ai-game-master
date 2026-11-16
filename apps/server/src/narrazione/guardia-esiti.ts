@@ -121,6 +121,12 @@ export function pronomiDiSoggetto(): ReadonlySet<string> {
   return parole().pronomi;
 }
 
+/** The words of a blow told (hit, miss, defeat) and the subject pronouns, for the absent-creature rule (coerenza/inesistenti.ts). */
+export function paroleDelColpo(): { colpo: readonly string[][]; pronomi: ReadonlySet<string> } {
+  const p = parole();
+  return { colpo: [...p.colpito, ...p.mancato, ...p.sconfitta], pronomi: p.pronomi };
+}
+
 /** The words of a miss and of an absorbed blow, from this one compilation (prove/fatti-dovuti.ts reads them too). */
 export function paroleMancato(): { mancato: readonly string[][]; assorbito: readonly string[][] } {
   const p = parole();
@@ -198,7 +204,7 @@ export interface DatiGuardiaEsiti {
 }
 
 /** The line that replaces the sentence, with the reason for the log; null = the sentence stays. */
-export type CorrezioneEsito = { testo: string; motivo: 'caduta_senza_fatto' | 'colpo_contrario' | 'fuori_gioco_agisce' } | null;
+export type CorrezioneEsito = { testo: string; motivo: 'caduta_senza_fatto' | 'colpo_contrario' | 'fuori_gioco_agisce' | 'creatura_inesistente' } | null;
 
 export function guardiaEsiti(d: DatiGuardiaEsiti): (frase: string) => CorrezioneEsito {
   const breve = (id: string): string => nomeBreve(d.nome(id));

@@ -234,6 +234,14 @@ guardia_fuori:
   di_parte: [of]
   stato: [lies, lying, dead, motionless, unconscious, on the ground, lifeless, corpse, body, bleed, does not move, doesn't move, not breathing, gone, fled, no longer here, out cold, still on the floor]
 
+# Absent creature (apps/server/src/coerenza/inesistenti.ts, R-inesistente): the nouns are the campaign's (NPC aliases,
+# minion types); these are only the grammar around them. English puts «of» after the body part («the chest of the
+# goblin») and more often a possessive («the goblin's chest»): the noun as subject or after a blow word covers most.
+inesistenti:
+  negazioni: [no, not, none, without, nobody]
+  verso: [toward, towards, at, against]
+  corpo: [chest, shoulder, shoulders, side, back, leg, legs, neck, belly, throat, heart, arm, elbow, knee, thigh, skull, helmet, shield, armour, armor]
+
 # Refusal guard (apps/server/src/narrazione/guardia-rifiuti.ts): after a failed social check toward an NPC, its line
 # without a refusal word, or a narrator sentence where it does a giving verb, is replaced by its refusal line.
 guardia_rifiuti:

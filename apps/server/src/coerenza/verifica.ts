@@ -25,8 +25,8 @@ import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 import { togliNumeriRegole } from '../narrazione/numeri-regole';
 import { normalizza } from '../azioni/regole';
 
-export type IdRegola = 'R-numeri' | 'R-esito' | 'R-fuori' | 'R-assente' | 'R-finzione' | 'R-privato' | 'R-segreto' | 'R-rifiuto' | 'R-ripetuta' | 'R-dovuto';
-export const REGOLE: readonly IdRegola[] = ['R-numeri', 'R-esito', 'R-fuori', 'R-assente', 'R-finzione', 'R-privato', 'R-segreto', 'R-rifiuto', 'R-ripetuta', 'R-dovuto'];
+export type IdRegola = 'R-numeri' | 'R-esito' | 'R-fuori' | 'R-inesistente' | 'R-assente' | 'R-finzione' | 'R-privato' | 'R-segreto' | 'R-rifiuto' | 'R-ripetuta' | 'R-dovuto';
+export const REGOLE: readonly IdRegola[] = ['R-numeri', 'R-esito', 'R-fuori', 'R-inesistente', 'R-assente', 'R-finzione', 'R-privato', 'R-segreto', 'R-rifiuto', 'R-ripetuta', 'R-dovuto'];
 
 /** What the checker did with the sentence. */
 export type AzioneViolazione = 'riscritta' | 'sostituita' | 'tolta' | 'spostata' | 'aggiunta' | 'riparata';
@@ -98,6 +98,7 @@ const REGOLA_DI_MOTIVO: Record<NonNullable<CorrezioneEsito>['motivo'], IdRegola>
   colpo_contrario: 'R-esito',
   caduta_senza_fatto: 'R-esito',
   fuori_gioco_agisce: 'R-fuori',
+  creatura_inesistente: 'R-inesistente',
 };
 
 /** The checker of one narration call (the answer, or its repair): it remembers what it has already replaced or said. */
@@ -140,7 +141,8 @@ export class VerificaTurno {
       }
       this.viola({ regola, etichetta: e.etichetta, frase: testo, azione: 'sostituita', sostituto: [correzione.testo], dettaglio: { motivo: correzione.motivo } });
       this.sostituti.add(correzione.testo);
-      riparabile = { regola, originale: testo, motivo: correzione.motivo };
+      // The absent-creature line is what the table must hear (who is really there): it is not rewritten by the model.
+      if (regola !== 'R-inesistente') riparabile = { regola, originale: testo, motivo: correzione.motivo };
       testo = correzione.testo;
       voce = correzione.testo;
       corretta = true;

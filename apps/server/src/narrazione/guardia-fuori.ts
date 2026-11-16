@@ -51,6 +51,12 @@ const parole = (): Parole =>
     diParte: new Set(campoElenco(s, 'di_parte').map(normalizza)),
   }));
 
+/** The clause words of this guard, for the absent-creature rule (coerenza/inesistenti.ts): one compilation of the section. */
+export function paroleDellaFrase(): { apertura: ReadonlySet<string>; articoli: ReadonlySet<string>; stato: readonly string[][]; parti: ReadonlySet<string>; diParte: ReadonlySet<string> } {
+  const p = parole();
+  return { apertura: p.apertura, articoli: p.articoli, stato: p.stato, parti: p.parti, diParte: p.diParte };
+}
+
 /**
  * Whether a sentence with no character named carries the subject of the one before (Italian and English drop it: «Sparisce
  * oltre il crollo.»): it does not open with an article, an indefinite subject («Qualcuno…») or a preposition («Dalla

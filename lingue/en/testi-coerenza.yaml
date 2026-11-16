@@ -24,6 +24,12 @@ coerenza:
     morto: "{nome} is no longer alive: neither speaks nor acts, the body is there"
     fuggito: "{nome} fled"
     nascosto: "{nome} hidden"
+  # R-inesistente (coerenza/inesistenti.ts): who is really there, when the players name a creature the scene does not have.
+  inesistente:
+    e: "and"
+    presenti: "Besides you, the only ones standing in sight here are {elenco}."
+    nessuno: "Besides you, nobody is standing in sight here."
+    riga: "Nobody in the scene is {parole}: whoever the players call that is not here; do not make one act, speak or be hit, and do not invent one."
   riparazione:
     messaggio: "## Fix one sentence\nThe sentence «{frase}» cannot be said: {errore}.\n\n{vero}\n\nRewrite only that sentence: one [narratore] line, at most twenty words, consistent with what is true now. Nothing else."
     errore:

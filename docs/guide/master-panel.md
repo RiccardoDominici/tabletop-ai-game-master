@@ -152,7 +152,8 @@ The changes are saved with the session and written into `registro.yaml` at the e
   (in piedi, ferito, ferito gravemente, a terra, morente, morto, fuggito, nascosto; never hit points) and, when they are
   not in the scene, «uscito» (left).
 - **Violazioni fermate** (Violations stopped): each sentence the checker caught, newest first: the turn, the rule
-  (`R-fuori` someone out of play acting, `R-esito` an outcome against its card, `R-privato` private content moved to a
+  (`R-fuori` someone out of play acting, `R-esito` an outcome against its card, `R-inesistente` a creature nobody in the
+  scene answers to, attacked or acting: the table hears who is really there, `R-privato` private content moved to a
   phone, `R-assente`, `R-segreto`, `R-rifiuto`, `R-ripetuta`, `R-numeri`, `R-finzione`, `R-dovuto` a card's fact the
   Engine had to add), what it did (sostituita, tolta, spostata, riscritta, aggiunta), the sentence and what was said
   instead. With «senza spoiler» only the turn, the rule and the action show.
