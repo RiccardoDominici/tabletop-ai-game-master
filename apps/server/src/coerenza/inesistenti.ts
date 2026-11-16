@@ -51,9 +51,13 @@ export interface TipoCreatura {
 }
 
 const IN_GIOCO: ReadonlySet<StatoEntita> = new Set(['in_piedi', 'ferito', 'grave', 'nascosto']);
+const CORPI: ReadonlySet<StatoEntita> = new Set(['a_terra', 'morente', 'morto']);
+
 const IN_VISTA: ReadonlySet<StatoEntita> = new Set(['in_piedi', 'ferito', 'grave']);
 
 interface Parole {
+  /** Pronouns of guardia_esiti.pronomi that never carry the subject at the start of a clause («Che fai?»). */
+  relativi: ReadonlySet<string>;
   negazioni: ReadonlySet<string>;
   verso: ReadonlySet<string>;
   corpo: ReadonlySet<string>;
@@ -61,6 +65,7 @@ interface Parole {
 
 const parole = (): Parole =>
   regole('inesistenti', (s) => ({
+    relativi: new Set(campoElenco(s, 'relativi').map(normalizza)),
     negazioni: new Set(campoElenco(s, 'negazioni').map(normalizza)),
     verso: new Set(campoElenco(s, 'verso').map(normalizza)),
     corpo: new Set(campoElenco(s, 'corpo').map(normalizza)),
@@ -165,8 +170,8 @@ export interface DatiGuardiaInesistenti {
   assenti: readonly CreaturaAssente[];
   /** The proper names of the characters the nouns name: a sentence that names one by name is R-fuori's. */
   nomiTitolari: readonly string[];
-  /** The Engine's line (frasePresenti). */
-  frase: string;
+  /** The Engine's line (frasePresenti), or the line for the noun the sentence used. */
+  frase: string | ((a: CreaturaAssente) => string);
   /** The line was already said in this turn (by the Engine before the narration): later sentences are dropped. */
   giaDetta?: boolean;
   /** Called when the guard puts the line in place of a sentence. */
@@ -182,12 +187,15 @@ export function guardiaInesistenti(d: DatiGuardiaInesistenti): ((frase: string) 
   let detta = d.giaDetta === true;
   // The previous sentence had the absent creature act: «Quello cade contro il muro» right after carries it.
   let portato = false;
-  const decidi = (): CorrezioneInesistente => {
+  const decidi = (a: CreaturaAssente | null): CorrezioneInesistente => {
     if (detta) return { testo: '', motivo: 'creatura_inesistente' };
     detta = true;
     d.onDetta?.();
-    return { testo: d.frase, motivo: 'creatura_inesistente' };
+    const testo = typeof d.frase === 'string' ? d.frase : d.frase(a ?? d.assenti[0]!);
+    return { testo, motivo: 'creatura_inesistente' };
   };
+  // Nouns that may mean a body lying in the scene (one they named is down or dead here): a state told of them is allowed.
+  const conCorpo = new Set(d.assenti.filter((a) => a.caduti.some((e) => e.presenza === 'in_scena' && CORPI.has(e.stato))).map((a) => a.parola));
   return (frase) => {
     const f = paroleDellaFrase();
     const c = paroleDelColpo();
@@ -197,31 +205,45 @@ export function guardiaInesistenti(d: DatiGuardiaInesistenti): ((frase: string) 
     portato = false;
     if (!w.length) return null;
     if (doveNomina(w, d.nomiTitolari) >= 0) return null;
-    if (f.stato.some((v) => posizione(w, v) >= 0)) return null;
     const pezzi = frase.split(/[,.;:!?—–()«»"]+/).map(paroleDi).filter((x) => x.length);
     let colpevole = false;
-    for (const [ci, cl] of pezzi.entries()) {
+    let quale: CreaturaAssente | null = null;
+    for (const cl of pezzi) {
       let j = 0;
       while (j < cl.length && (f.apertura.has(cl[j]!) || f.articoli.has(cl[j]!))) j++;
-      // «Quello» is both an article and a pronoun: the carry looks past the opening words only.
+      // «Quello» is both an article and a pronoun: the carry looks past the opening words only. A relative or
+      // interrogative «che» is not a subject («Che fai?», round 2, combat-manual T16).
       let a = 0;
       while (a < cl.length && f.apertura.has(cl[a]!) && !c.pronomi.has(cl[a]!)) a++;
-      if (ci === 0 && eraPortato && a < cl.length && c.pronomi.has(cl[a]!) && cl.length > a + 1) colpevole = true;
+      if (eraPortato && a < cl.length && c.pronomi.has(cl[a]!) && !p.relativi.has(cl[a]!) && cl.length > a + 1) colpevole = true;
       const colpo = c.colpo.some((v) => posizione(cl, v) >= 0);
-      for (const v of voci) {
+      // The state is judged in the clause of the noun, not anywhere in the sentence (round 2, combat-manual T11: «Il
+      // goblin la ferisce alla spalla: un colpo secco, e lei sente il sangue…» passed for the word «sangue»).
+      const stato = f.stato.some((v) => posizione(cl, v) >= 0) || c.caduta.some((v) => posizione(cl, v) >= 0);
+      for (const [vi, v] of voci.entries()) {
         for (let i = 0; i + v.length <= cl.length; i++) {
           if (!v.every((x, k) => cl[i + k] === x)) continue;
-          if (cl.slice(Math.max(0, i - 2), i).some((x) => p.negazioni.has(x))) continue;
+          if (cl.slice(Math.max(0, i - 4), i).some((x) => p.negazioni.has(x))) continue;
+          if (!colpo && stato && conCorpo.has(d.assenti[vi]!.parola)) continue;
           // The subject of the clause: only opening words (and one adjective after an article: «il primo goblin») before it.
           const soggetto = (i === j || (j > 0 && i === j + 1)) && cl.length > i + v.length;
+          // The object of a verb: an article right before it, and no preposition before the article («spinge il
+          // goblin», «che il goblin si volti»; not «il sentiero dei goblin», «le storie di un goblin»).
+          const oggetto = i >= 2 && i > j && f.articoli.has(cl[i - 1]!) && !f.preposizioni.has(cl[i - 2]!);
           const delCorpo = i >= 2 && f.diParte.has(cl[i - 1]!) && (p.corpo.has(cl[i - 2]!) || f.parti.has(cl[i - 2]!));
           const meta = cl.slice(Math.max(0, i - 3), i).some((x) => p.verso.has(x));
-          if (soggetto || colpo || delCorpo || meta) colpevole = true;
+          // A noun that names someone fallen or fled is R-fuori's when it is only the subject (its line and its carried
+          // subject: «Lo sgherro alza la testa e ride. Parla piano…»); a blow on it, or the noun as object, is this rule's.
+          const diFuori = d.assenti[vi]!.caduti.length > 0;
+          if ((soggetto && !diFuori) || oggetto || colpo || delCorpo || meta) {
+            colpevole = true;
+            quale ??= d.assenti[vi]!;
+          }
         }
       }
     }
     if (!colpevole) return null;
     portato = true;
-    return decidi();
+    return decidi(quale);
   };
 }

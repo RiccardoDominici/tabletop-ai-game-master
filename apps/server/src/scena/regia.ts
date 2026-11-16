@@ -281,9 +281,13 @@ interface InesistentiDelTurno {
   turno: number;
   /** Named by public actions: judged in the public narration, and their line is said at the table. */
   pubbliche: CreaturaAssente[];
-  /** Named by any action (a private reply judges these too). */
+  /** Judged in the public narration: in a fight (or after one in this visit) every absent noun, else the public ones. */
+  giudicate: CreaturaAssente[];
+  /** Judged in a private reply: as `giudicate`, plus the nouns of the private actions. */
   tutte: CreaturaAssente[];
   frase: string;
+  /** The line for one absent noun (a sentence about a noun the actions did not name). */
+  perParola: (a: CreaturaAssente) => string;
   nomiTitolari: string[];
   detta: boolean;
 }
@@ -3120,9 +3124,10 @@ export class Regia {
     // First: a creature nobody here answers to (R-inesistente) gets the line of who is really there.
     const ines = inesistenti
       ? guardiaInesistenti({
-          assenti: alTavolo ? inesistenti.pubbliche : inesistenti.tutte,
+          assenti: alTavolo ? inesistenti.giudicate : inesistenti.tutte,
           nomiTitolari: inesistenti.nomiTitolari,
-          frase: inesistenti.frase,
+          // The noun the actions named gets the turn's line; another absent noun the line of who it named.
+          frase: (a) => (inesistenti.pubbliche.some((x) => x.parola === a.parola) || !inesistenti.pubbliche.length ? inesistenti.frase : inesistenti.perParola(a)),
           ...(alTavolo ? { onDetta: () => (inesistenti.detta = true) } : {}),
         })
       : null;
@@ -3145,14 +3150,18 @@ export class Regia {
         .filter((a) => !!a.testo && (!soloPubbliche || !a.privata))
         .map((a) => a.testo!)
         .join(' \n ');
-    const tutte = nominateIn(testi(false), sicure);
-    if (!tutte.length) return null;
+    const nominate = nominateIn(testi(false), sicure);
     const pubbliche = nominateIn(testi(true), sicure);
+    // In a fight (or after one, in this visit) every absent noun is judged, named or not: round 2 had the narration
+    // keep the invented goblin in turns whose actions did not name it, and the model's repair bring it back.
+    const giudicate = scontro ? sicure : pubbliche;
+    const tutte = scontro ? sicure : nominate;
+    if (!giudicate.length && !tutte.length) return null;
     const per = new Map(registro.entita.map((e) => [e.id, e]));
     const nomiTitolari = [...new Set(tutte.flatMap((a) => a.titolari).flatMap((id) => (per.has(id) ? [per.get(id)!.nome, nomeBreve(per.get(id)!.nome)] : [])))];
-    const frase = frasePresenti(registro, pubbliche.length ? pubbliche : tutte);
-    this.o.log.info({ turno: r.turno, pubbliche: pubbliche.map((a) => a.parola), tutte: tutte.map((a) => a.parola), frase }, 'coherence: the actions name a creature nobody here answers to');
-    return { turno: r.turno, pubbliche, tutte, frase, nomiTitolari, detta: false };
+    const frase = frasePresenti(registro, pubbliche.length ? pubbliche : nominate);
+    if (pubbliche.length || nominate.length) this.o.log.info({ turno: r.turno, pubbliche: pubbliche.map((a) => a.parola), nominate: nominate.map((a) => a.parola), frase }, 'coherence: the actions name a creature nobody here answers to');
+    return { turno: r.turno, pubbliche, giudicate, tutte, frase, perParola: (a) => frasePresenti(registro, [a]), nomiTitolari, detta: false };
   }
 
   /**
@@ -3665,7 +3674,11 @@ export class Regia {
     if (ordine.length && !controllo.signal.aborted) this.annunciaOrdine(turno, esito, ordine, log);
     // A public action named a creature nobody here answers to: the table hears who is really there (R-inesistente).
     const ines = this.inesistenti?.turno === turno ? this.inesistenti : null;
-    if (ines && ines.pubbliche.length && !ines.detta && !controllo.signal.aborted) this.diciChiCeDavvero(turno, esito, ines, log);
+    if (ines && ines.pubbliche.length && !ines.detta && !controllo.signal.aborted) {
+      // At most once in three turns: round 2 said the same line in almost every turn after the fight.
+      if (this.frasiRecenti(turno).has(frasePerRipetizione(ines.frase))) log.info({ turno, parole: ines.pubbliche.map((a) => a.parola) }, 'coherence: who is really there was said in the last turns, not again');
+      else this.diciChiCeDavvero(turno, esito, ines, log);
+    }
 
     // B2: il segno di un orologio era dovuto ma il selettore non l'ha usato → lo mette il Motore,
     // orologio per orologio (al massimo due), dopo le risposte e prima della frase d'invito

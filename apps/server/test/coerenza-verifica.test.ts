@@ -186,14 +186,14 @@ describe('the checker with the whole server', () => {
     expect(detto(2)).not.toMatch(/ride/);
     expect(detto(2)).toContain('Ida guarda il fiume.');
     expect(detto(2).split(chi).length).toBe(2);
-    // T3: nothing invented, the Engine says it before the invitation.
-    expect(detto(3)).toContain(chi);
+    // T3: nothing invented and the line was heard last turn: not said again (round 2 said it in almost every turn;
+    // the Engine's addition before the invitation was seen live there, at most once in three turns now).
+    expect(detto(3)).not.toContain(chi);
     const viste = prova.narrazioni().filter((r) => r['tipo'] === 'violazione' && r['regola'] === 'R-inesistente');
     // (T2 also has the repair call for Corrado's unanswered action: the fake narrator says the same line, dropped.)
     expect(viste.map((r) => [r['turno'], r['azione']])).toEqual([
       [2, 'sostituita'],
       [2, 'tolta'],
-      [3, 'aggiunta'],
     ]);
   }, 20_000);
 

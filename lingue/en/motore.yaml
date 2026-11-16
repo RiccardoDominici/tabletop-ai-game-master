@@ -238,6 +238,7 @@ guardia_fuori:
 # minion types); these are only the grammar around them. English puts «of» after the body part («the chest of the
 # goblin») and more often a possessive («the goblin's chest»): the noun as subject or after a blow word covers most.
 inesistenti:
+  relativi: [which, that, who, whom]
   negazioni: [no, not, none, without, nobody]
   verso: [toward, towards, at, against]
   corpo: [chest, shoulder, shoulders, side, back, leg, legs, neck, belly, throat, heart, arm, elbow, knee, thigh, skull, helmet, shield, armour, armor]

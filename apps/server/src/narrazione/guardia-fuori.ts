@@ -52,9 +52,16 @@ const parole = (): Parole =>
   }));
 
 /** The clause words of this guard, for the absent-creature rule (coerenza/inesistenti.ts): one compilation of the section. */
-export function paroleDellaFrase(): { apertura: ReadonlySet<string>; articoli: ReadonlySet<string>; stato: readonly string[][]; parti: ReadonlySet<string>; diParte: ReadonlySet<string> } {
+export function paroleDellaFrase(): {
+  apertura: ReadonlySet<string>;
+  articoli: ReadonlySet<string>;
+  preposizioni: ReadonlySet<string>;
+  stato: readonly string[][];
+  parti: ReadonlySet<string>;
+  diParte: ReadonlySet<string>;
+} {
   const p = parole();
-  return { apertura: p.apertura, articoli: p.articoli, stato: p.stato, parti: p.parti, diParte: p.diParte };
+  return { apertura: p.apertura, articoli: p.articoli, preposizioni: p.preposizioni, stato: p.stato, parti: p.parti, diParte: p.diParte };
 }
 
 /**

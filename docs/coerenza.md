@@ -231,9 +231,16 @@ What round 2 shows:
 - The stall climbs S1 → S2 → S3 → hard S1 → S2 → S3 with the Engine's material at every level; still 13 «nothing
   new» counts in 14 turns, and the same S3 sentence twice.
 - Presence (bug 9) is not tracked when the narration has an NPC leave without `[esce]`.
-Next, in order: the clause-level state check of R-inesistente (a state skips only where a body it could mean lies in
-the scene), objects of any verb, no carry on relative pronouns, the line at most once in three turns; R-inesistente on
-the repaired sentence; the absorbed-blow rule only for a non-negated word and a target in a prepositional phrase.
+Fixed after round 2 (tests on invented fixtures, **not measured on the scripts**): R-inesistente judges the state per
+clause, and a state skips only where a body the noun could mean lies in the scene («Il goblin la ferisce alla spalla:
+…, e lei sente il sangue» is caught); the object of any verb («spinge il goblin», «che il goblin si volti»); no carry
+on relative pronouns (`inesistenti.relativi`: «Che fai?» stays); in a fight or after one in this visit every absent
+noun is judged, named by the actions or not (so the model's repair, checked by the same guard, can no longer bring the
+goblin back in a turn whose actions did not name it); a noun that names someone fled or fallen is left to R-fuori when
+it is only the subject (its line and its carried subject); the line of who is really there at most once in three
+turns. The absorbed-blow rule takes only a non-negated word and a target in a prepositional phrase («sulla spalla di
+Fulco»). Still open: R-fuori's whole-sentence state check («non si muove verso la scala» read as a state), presence
+without `[esce]` (bug 9), the NPCs the players invent (bug 9), the stall's repeated S3 sentence.
 
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a

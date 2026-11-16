@@ -66,13 +66,34 @@ describe('the narration guard', () => {
   const frase = frasePresenti(r, assenti);
   const nuova = (giaDetta = false) => guardiaInesistenti({ assenti, nomiTitolari: ['Ruggero'], frase, giaDetta })!;
 
-  it('the absent creature as subject, hit, wounded in a body part, or the goal of a move: the line, then dropped', () => {
+  it('the absent creature hit, wounded in a body part, or the goal of a move: the line, then dropped', () => {
     const g = nuova();
-    expect(g('Il bandito con la lancia si lancia su Ida.')).toEqual({ testo: frase, motivo: 'creatura_inesistente' });
-    expect(g('Ida colpisce il bandito al fianco.')).toEqual({ testo: '', motivo: 'creatura_inesistente' });
-    expect(nuova()('Il pugnale di Corrado si pianta nella spalla del bandito.')?.testo).toBe(frase);
+    expect(g('Ida colpisce il bandito al fianco.')).toEqual({ testo: frase, motivo: 'creatura_inesistente' });
+    expect(g('Il pugnale di Corrado si pianta nella spalla del bandito.')).toEqual({ testo: '', motivo: 'creatura_inesistente' });
     expect(nuova()('Ida avanza verso l\'ultimo bandito, lo scudo alto.')?.testo).toBe(frase);
-    expect(nuova()('Il primo bandito si volta di scatto.')?.testo).toBe(frase);
+  });
+
+  it('as the subject: a noun with nobody behind it is this rule\'s; one that names a fled or fallen one is R-fuori\'s', () => {
+    const lupi = creatureAssenti(r, creatureNote(r.entita, TIPI)).filter((a) => a.parola === 'lupo');
+    const g = guardiaInesistenti({ assenti: lupi, nomiTitolari: [], frase: 'x' })!;
+    expect(g('Il lupo con il collare si lancia su Ida.')?.testo).toBe('x');
+    expect(guardiaInesistenti({ assenti: lupi, nomiTitolari: [], frase: 'x' })!('Il primo lupo si volta di scatto.')?.testo).toBe('x');
+    // Ruggero (the «bandito») fled: R-fuori says his line and drops what his carried subject does.
+    expect(nuova()('Il bandito con la lancia si lancia su Ida.')).toBeNull();
+  });
+
+  it('round 2: a state word in another clause, the object of any verb, a subordinate subject (combat T11, T13, T14)', () => {
+    expect(nuova()('Il bandito la ferisce alla spalla: un colpo secco, e lei sente il sangue scendere.')?.testo).toBe(frase);
+    expect(nuova()('Ida alza lo scudo e spinge il bandito contro il muro.')?.testo).toBe(frase);
+    expect(nuova()('Il dardo trova il bersaglio prima ancora che il bandito si volti.')?.testo).toBe(frase);
+  });
+
+  it('«Che fai?» is not a carried subject; «e lui si affloscia» is (round 2, combat-manual T16)', () => {
+    const g = nuova(true);
+    expect(g('Ida spinge il bandito contro il muro.')).toEqual({ testo: '', motivo: 'creatura_inesistente' });
+    expect(g('Che fai?')).toBeNull();
+    expect(g('Ida spinge il bandito contro il muro.')).toEqual({ testo: '', motivo: 'creatura_inesistente' });
+    expect(g('La lama trova il fianco scoperto, e lui si affloscia a terra.')).toEqual({ testo: '', motivo: 'creatura_inesistente' });
   });
 
   it('a subject pronoun right after carries it: «Quello cade contro il muro.»', () => {
@@ -86,8 +107,15 @@ describe('the narration guard', () => {
   it('left alone: the name (R-fuori\'s), a state, a negation, a place named after the creature, an aside', () => {
     const g = nuova();
     expect(g('Ruggero, il bandito, scappa oltre il ponte.')).toBeNull();
-    expect(g('Il bandito giace a terra, immobile.')).toBeNull();
+    // A state of the creature is allowed only where a body it could mean lies here (Ruggero dead on the bridge).
+    const morto = ledger('morto');
+    const conCorpo = creatureAssenti(morto, creatureNote(morto.entita, TIPI)).filter((a) => a.parola === 'bandito');
+    expect(guardiaInesistenti({ assenti: conCorpo, nomiTitolari: ['Ruggero'], frase: 'x' })!('Il bandito giace a terra, immobile.')).toBeNull();
+    expect(guardiaInesistenti({ assenti: conCorpo, nomiTitolari: ['Ruggero'], frase: 'x' })!('Il dardo colpisce il bandito a terra.')?.testo).toBe('x');
+    const lupi = creatureAssenti(r, creatureNote(r.entita, TIPI)).filter((a) => a.parola === 'lupo');
+    expect(guardiaInesistenti({ assenti: lupi, nomiTitolari: [], frase: 'x' })!('Il lupo giace a terra, immobile.')?.testo).toBe('x');
     expect(g('Nessun bandito sul ponte: solo il vento.')).toBeNull();
+    expect(g('Non c\'è un bandito sul ponte.')).toBeNull();
     expect(g('Il sentiero del bandito sale verso il bosco.')).toBeNull();
     expect(g('Ida ricorda le storie dei banditi della valle.')).toBeNull();
   });
