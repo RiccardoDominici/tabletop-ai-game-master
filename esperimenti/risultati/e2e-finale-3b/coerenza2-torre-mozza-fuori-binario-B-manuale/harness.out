@@ -1,0 +1,61 @@
+[torre-mozza-fuori-binario-B] campagna torre-mozza, porta 4946, modalità repertorio: riavvio del server di prova…
+[torre-mozza-fuori-binario-B] server: {"ok":true,"fase":"attesa","turno":0,"versione_scena":0,"voce":"fish","schermo":false,"narratore":"haiku","modello":"claude-haiku-5-5","campagna":"torre-mozza","immagini":17,"audio":26,"sessione":"","modo":"repertorio","ripresa":null,"pacchetto":null,"lingua":"it","lingua_contenuti":"it"}
+[torre-mozza-fuori-binario-B] pg_nespola rolls Carisma (1d20 +1): 7
+[torre-mozza-fuori-binario-B] pg_fulco rolls Iniziativa (1d6 -1): 2
+[torre-mozza-fuori-binario-B] pg_livia rolls Iniziativa (1d6 +1): 3
+[torre-mozza-fuori-binario-B] pg_nespola rolls Iniziativa (1d6 +2): 5
+[torre-mozza-fuori-binario-B] turno 1/13 fatto (server 1)
+[torre-mozza-fuori-binario-B] server 2: combat, on turn pg_nespola; waiting for their turn: pg_livia, pg_fulco
+[torre-mozza-fuori-binario-B] pg_nespola rolls Carisma (1d20 +1): 5
+[torre-mozza-fuori-binario-B] turno 5/13 fatto (server 2), 3 azioni in attesa del loro turno
+[torre-mozza-fuori-binario-B] server 3: combat, on turn pg_livia; waiting for their turn: pg_fulco
+[torre-mozza-fuori-binario-B] pg_livia rolls Carisma (1d20): 16
+[torre-mozza-fuori-binario-B] turno 5/13 fatto (server 3), 2 azioni in attesa del loro turno
+[torre-mozza-fuori-binario-B] server 4: combat, on turn pg_fulco; waiting for their turn: pg_livia
+[torre-mozza-fuori-binario-B] pg_nespola rolls Iniziativa (1d6 +2): 2
+[torre-mozza-fuori-binario-B] pg_fulco rolls Iniziativa (1d6 -1): 6
+[torre-mozza-fuori-binario-B] pg_livia rolls Iniziativa (1d6 +1): 1
+[torre-mozza-fuori-binario-B] turno 5/13 fatto (server 4), 1 azioni in attesa del loro turno
+[torre-mozza-fuori-binario-B] server 5: combat, on turn pg_fulco; waiting for their turn: pg_nespola, pg_livia
+[torre-mozza-fuori-binario-B] turno 6/13 fatto (server 5), 2 azioni in attesa del loro turno
+[torre-mozza-fuori-binario-B] server 6: combat, on turn pg_nespola; waiting for their turn: pg_livia
+[torre-mozza-fuori-binario-B] turno 6/13 fatto (server 6), 1 azioni in attesa del loro turno
+[torre-mozza-fuori-binario-B] server 7: combat, on turn pg_livia
+[torre-mozza-fuori-binario-B] pg_livia rolls Carisma (1d20): 11
+[torre-mozza-fuori-binario-B] pg_nespola rolls Iniziativa (1d6 +2): 5
+[torre-mozza-fuori-binario-B] pg_fulco rolls Iniziativa (1d6 -1): 1
+[torre-mozza-fuori-binario-B] pg_livia rolls Iniziativa (1d6 +1): 3
+[torre-mozza-fuori-binario-B] turno 6/13 fatto (server 7)
+[torre-mozza-fuori-binario-B] server 8: combat, on turn pg_nespola; waiting for their turn: pg_fulco
+[torre-mozza-fuori-binario-B] turno 7/13 fatto (server 8), 1 azioni in attesa del loro turno
+[torre-mozza-fuori-binario-B] server 9: combat, on turn pg_livia; waiting for their turn: pg_fulco
+[torre-mozza-fuori-binario-B] pg_livia rolls Saggezza (1d20): 1
+[torre-mozza-fuori-binario-B] turno 8/13 fatto (server 9), 1 azioni in attesa del loro turno
+[torre-mozza-fuori-binario-B] server 10: combat, on turn pg_fulco
+[torre-mozza-fuori-binario-B] pg_fulco rolls Iniziativa (1d6 -1): 4
+[torre-mozza-fuori-binario-B] pg_livia rolls Iniziativa (1d6 +1): 1
+[torre-mozza-fuori-binario-B] pg_nespola rolls Iniziativa (1d6 +2): 3
+[torre-mozza-fuori-binario-B] turno 8/13 fatto (server 10)
+[torre-mozza-fuori-binario-B] server 11: combat, on turn pg_nespola; waiting for their turn: pg_fulco
+[torre-mozza-fuori-binario-B] pg_nespola rolls Borseggiare (1d100): 64
+[torre-mozza-fuori-binario-B] turno 10/13 fatto (server 11), 1 azioni in attesa del loro turno
+[torre-mozza-fuori-binario-B] server 12: combat, on turn pg_fulco
+[torre-mozza-fuori-binario-B] turno 10/13 fatto (server 12)
+[torre-mozza-fuori-binario-B] server 13: combat, on turn pg_livia; waiting for their turn: pg_fulco
+[torre-mozza-fuori-binario-B] pg_livia rolls Forza (1d20 +2): 12
+[torre-mozza-fuori-binario-B] pg_nespola rolls Iniziativa (1d6 +2): 4
+[torre-mozza-fuori-binario-B] pg_fulco rolls Iniziativa (1d6 -1): 4
+[torre-mozza-fuori-binario-B] pg_livia rolls Iniziativa (1d6 +1): 1
+[torre-mozza-fuori-binario-B] turno 11/13 fatto (server 13), 1 azioni in attesa del loro turno
+[torre-mozza-fuori-binario-B] server 14: combat, on turn pg_nespola; waiting for their turn: pg_fulco
+[torre-mozza-fuori-binario-B] turno 12/13 fatto (server 14), 1 azioni in attesa del loro turno
+[torre-mozza-fuori-binario-B] server 15: combat, on turn pg_fulco
+[torre-mozza-fuori-binario-B] pg_fulco rolls Carisma (1d20): 18
+[torre-mozza-fuori-binario-B] turno 12/13 fatto (server 15)
+[torre-mozza-fuori-binario-B] server 16: combat, on turn pg_livia
+[torre-mozza-fuori-binario-B] pg_livia rolls Carisma (1d20): 13
+[torre-mozza-fuori-binario-B] pg_nespola rolls Iniziativa (1d6 +2): 2
+[torre-mozza-fuori-binario-B] pg_fulco rolls Iniziativa (1d6 -1): 2
+[torre-mozza-fuori-binario-B] pg_livia rolls Iniziativa (1d6 +1): 6
+[torre-mozza-fuori-binario-B] turno 13/13 fatto (server 16)
+[torre-mozza-fuori-binario-B] fatto → esperimenti/risultati/e2e-finale-3b/coerenza2-torre-mozza-fuori-binario-B-manuale (costo $0.04955)
