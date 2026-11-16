@@ -82,15 +82,16 @@ describe('annuncio in terza persona', () => {
 
   it('il verbo senza soggetto dopo «and» non si coniuga: la frase si ferma prima', () => {
     expect(annuncioBreve('Ginestra', 'I open the door and look inside')).toBe('Ginestra opens the door.');
-    expect(annuncioBreve('Ginestra', 'I try and climb the wall')).toBe('Ginestra: “I try and climb the wall.”');
+    expect(annuncioBreve('Ginestra', 'I try and climb the wall')).toBe('Ginestra says: “I try and climb the wall.”');
   });
 
   it('quando non si può voltare con certezza si cita il giocatore; al massimo 12 parole', () => {
-    expect(annuncioBreve('Ginestra', 'the door, I kick it open')).toBe('Ginestra: “The door, I kick it open.”');
-    expect(annuncioBreve('Ginestra', 'Quietly towards the stairs')).toBe('Ginestra: “Quietly towards the stairs.”');
+    // «The door,» opens with something else: the announcement starts at the PC's own act (docs/coerenza.md).
+    expect(annuncioBreve('Ginestra', 'the door, I kick it open')).toBe('Ginestra kicks it open.');
+    expect(annuncioBreve('Ginestra', 'Quietly towards the stairs')).toBe('Ginestra says: “Quietly towards the stairs.”');
     // Le parole tra virgolette restano del giocatore: si volta solo ciò che viene prima.
     expect(annuncioBreve('Ginestra', 'I tell the innkeeper "I need a room"')).toBe('Ginestra tells the innkeeper "I need a room".');
-    expect(annuncioBreve('Ginestra', '"Open up!" I shout')).toBe('Ginestra: “Open up.”');
+    expect(annuncioBreve('Ginestra', '"Open up!" I shout')).toBe('Ginestra says: “Open up.”');
     expect(annuncioBreve('Ida', 'haha ok!!')).toBe('Ida acts.');
     const lungo = annuncioBreve('Ida', 'I walk slowly along the wall of the great hall towards the kitchen door without being seen')!;
     expect(lungo.split(' ').length).toBeLessThanOrEqual(12);

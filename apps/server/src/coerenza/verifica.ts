@@ -78,6 +78,11 @@ export interface FraseDaVerificare {
   segmento: number;
   /** Already private (a `[privato pg_x]` line). */
   privato?: string;
+  /**
+   * The player's own words, attributed («Livia dice: «…»», the minimal reader's announcement): not the narrator's
+   * assertion, so the fact rules (R-esito, R-fuori, R-inesistente) and R-numeri do not judge it.
+   */
+  attribuita?: boolean;
 }
 
 export type Decisione =
@@ -144,13 +149,13 @@ export class VerificaTurno {
   verifica(e: FraseDaVerificare): Decisione {
     let testo = e.testo;
     let voce = e.voce;
-    const senzaNumeri = togliNumeriRegole(testo);
+    const senzaNumeri = e.attribuita ? { testo, tolti: [] as string[] } : togliNumeriRegole(testo);
     if (senzaNumeri.tolti.length) {
       this.viola({ regola: 'R-numeri', etichetta: e.etichetta, frase: testo, azione: 'riscritta', sostituto: [senzaNumeri.testo], dettaglio: { tolti: senzaNumeri.tolti } });
       testo = senzaNumeri.testo;
       voce = togliNumeriRegole(voce).testo;
     }
-    const correzione = e.etichetta === ID_NARRATORE ? (this.r.correggiEsito?.(testo) ?? null) : null;
+    const correzione = e.etichetta === ID_NARRATORE && !e.attribuita ? (this.r.correggiEsito?.(testo) ?? null) : null;
     let corretta = false;
     let riparabile: { regola: IdRegola; originale: string; motivo: string } | undefined;
     if (correzione) {

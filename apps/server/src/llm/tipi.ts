@@ -26,7 +26,7 @@ export interface RichiestaNarrazione {
  */
 export interface DatiTurnoLettore {
   /** Azioni del turno nell'ordine di risoluzione; `testo: null` = il PG ha passato. */
-  azioni: ReadonlyArray<{ id_pg: string; nome: string; testo: string | null; privata?: boolean }>;
+  azioni: ReadonlyArray<{ id_pg: string; nome: string; testo: string | null; privata?: boolean; fuori?: boolean }>;
   repertorio?: {
     /** Una riga per azione: «- pg_x (Nome): [usa] id > pg_x …». */
     indicate?: readonly string[];

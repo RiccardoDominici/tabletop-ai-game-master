@@ -9,8 +9,24 @@
 # Annuncio deterministico del lettore minimo (apps/server/src/llm/minimo.ts, annuncioBreve): il nome del PG e la
 # prima frase breve di ciò che ha scritto il giocatore. In italiano le sue parole si citano tra virgolette.
 annuncio:
-  # Forma con le parole del giocatore citate ({nome}, {frase}): vale sempre.
-  citazione: '{nome}: «{frase}».'
+  # Forma con le parole del giocatore citate ({nome}, {frase}): vale sempre. Le parole sono attribuite («dice»): la voce
+  # del narratore riferisce ciò che il giocatore ha scritto, non lo afferma (docs/coerenza.md, «After round 4»).
+  citazione: '{nome} dice: «{frase}».'
+  # Un PG fuori gioco alla chiusura (0 PF, morto): non agisce, e ciò che ha scritto non si dice.
+  fuori: '{nome} non agisce.'
+  # Un inciso o una frase che afferma lo stato del mondo o del PG invece di dire cosa fa («Ho zero punti ferita»,
+  # «Vedo tre goblin», «sento sangue») non si annuncia (flag i, in testa all'inciso).
+  affermazione: '^(non\s+)?(ho|sono|sento|vedo|credo|penso|sembra|mi sembra|c''è|ci sono|c''era)\b'
+  # Un inciso che ha per soggetto qualcun altro («Il goblin mi tira la lancia», «La lancia mi colpisce»): non si
+  # annuncia. Gli articoli che possono essere pronomi («la paro», «lo colpisco») contano solo davanti a una parola
+  # che non è un verbo in prima persona (flag i, in testa all'inciso).
+  terza_parte: '^((il|i|un|uno|una|l''|quel|quello|quella|quei|quegli|quelle|questo|questa|lui|lei|loro|tutti|qualcuno)\b|(lo|la|le|gli)\s+(?!\S*(o|isco)\b))'
+  # Un inciso che è un atto del PG in prima persona («la paro», «non lo colpisco», «io carico»): dopo un inciso di un
+  # altro soggetto, si riprende da qui (flag i).
+  atto_del_pg: '^(io\b|(non\s+)?((mi|ti|lo|la|li|le|gli|ne|ci|vi|me|te|se)\s+)*\S*(o|isco)\b)'
+  # Dentro un inciso che si apre con un altro soggetto, il verbo del PG in prima persona («La fisarmonica la tiro fuori
+  # io»): allora l'inciso è del PG (flag i).
+  atto_interno: '\b(io|(mi|ti|lo|la|li|le|gli|ne|ci|vi|me|te|se)\s+\S*(o|isco))\b'
   # Forma in terza persona ({nome} {frase}), se la lingua sa voltare la prima persona (vedi prima_persona).
   # Vuota: si usa sempre la citazione.
   terza_persona: ''

@@ -35,6 +35,8 @@ export interface AzioneLetta {
   nome: string;
   testo: string;
   privata: boolean;
+  /** Out of play when the window closed: announced as not acting, never classified. */
+  fuori?: boolean;
 }
 
 export interface TurnoLetto {
@@ -76,7 +78,7 @@ const attesaDa = (righe: readonly string[]): string[] => righe.map((r) => /^- ([
  * protocollo (id, «[usa] id > pg», «id · chi · tipo · quando»), uguale in ogni lingua.
  */
 export function turnoDaDati(d: DatiTurnoLettore): TurnoLetto {
-  const azioni = d.azioni.filter((a): a is typeof a & { testo: string } => !!a.testo).map((a) => ({ id_pg: a.id_pg, nome: a.nome, testo: a.testo.trim(), privata: !!a.privata }));
+  const azioni = d.azioni.filter((a): a is typeof a & { testo: string } => !!a.testo).map((a) => ({ id_pg: a.id_pg, nome: a.nome, testo: a.testo.trim(), privata: !!a.privata, ...(a.fuori ? { fuori: true } : {}) }));
   const rep = d.repertorio;
   return {
     azioni,
@@ -273,7 +275,7 @@ export class NarratoreMinimo implements Narratore {
     }
     const t = r.dati ? turnoDaDati(r.dati) : leggiTurno(r.messaggio);
     const pubbliche = t.azioni.filter((a) => !a.privata);
-    const annunci = new Map(pubbliche.map((a) => [a.id_pg, annuncioBreve(a.nome, a.testo)]));
+    const annunci = new Map(pubbliche.map((a) => [a.id_pg, annuncioBreve(a.nome, a.testo, a.fuori)]));
     const detti = new Set<string>();
     const annuncia = (a: AzioneLetta): void => {
       detti.add(a.id_pg);
@@ -286,7 +288,8 @@ export class NarratoreMinimo implements Narratore {
     // Le azioni già classificate all'invio non tornano al modello: una chiamata sola per quelle che mancano.
     const scelta = (async (): Promise<Risposte['risposte']> => {
       const pronte = await this.giaPronte(t);
-      const mancano = t.azioni.filter((a) => !pronte.has(a.id_pg));
+      // A PC out of play does not act: nothing to classify, no line answers it.
+      const mancano = t.azioni.filter((a) => !pronte.has(a.id_pg) && !a.fuori);
       const nuove = mancano.length ? await this.classifica({ ...t, azioni: mancano }, r.signal, risposte) : [];
       risposte.push(...this.risposteAnticipo.splice(0));
       for (const a of t.azioni) this.pronte.delete(a.id_pg);
@@ -348,8 +351,9 @@ export class NarratoreMinimo implements Narratore {
     const usate = new Set<string>();
     for (const a of t.azioni) {
       const s = scelte.find((x) => x.pg === a.id_pg);
-      const annuncio = a.privata || giaAnnunciati.has(a.id_pg) ? null : annuncioBreve(a.nome, a.testo);
+      const annuncio = a.privata || giaAnnunciati.has(a.id_pg) ? null : annuncioBreve(a.nome, a.testo, a.fuori);
       if (annuncio) righe.push(`[narratore] ${annuncio}`);
+      if (a.fuori) continue;
       let id = s?.battuta && s.battuta !== 'nessuna' && !usate.has(s.battuta) ? s.battuta : null;
       // «nessuna»: una battuta d'attesa del repertorio, mai per un'azione privata (si sentirebbe al tavolo).
       if (!id && !a.privata) id = attesa.shift() ?? null;

@@ -29,6 +29,7 @@ import { testo as testoFisso } from '../lingua';
 import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 import { togliIdBattute } from '../narrazione/id-battute';
 import { frasePerRipetizione, VerificaTurno, type Violazione } from '../coerenza/verifica';
+import { annuncioBreve } from '../llm/annuncio';
 
 export interface FraseNarrata {
   etichetta: string;
@@ -326,6 +327,13 @@ export async function narraTurno(
     },
     segnala,
   );
+  // The minimal reader's announcements (llm/annuncio.ts): the players' own words, attributed. A sentence inside one is
+  // not the narrator's assertion: no fact rule and no judge on it (docs/coerenza.md, «After round 4»).
+  const annunci = (p.dati?.azioni ?? []).filter((a) => a.testo && !a.privata).map((a) => annuncioBreve(a.nome, a.testo!, a.fuori));
+  const attribuita = (t: string): boolean => {
+    const x = t.trim();
+    return x.length > 0 && annunci.some((a) => a.includes(x));
+  };
   const idPng = new Set(campagna.png.map((x) => x.id));
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
@@ -412,7 +420,8 @@ export async function narraTurno(
       if (p.signal.aborted) return;
       if (e.tipo === 'frase') {
         // One checker, the rules in a fixed order (coerenza/verifica.ts, docs/coerenza.md §3).
-        let d = verifica.verifica({ etichetta: e.etichetta, testo: e.testo, voce: e.voce, segmento: e.segmento, ...(e.privato ? { privato: e.privato } : {}) });
+        const parolePg = e.etichetta === ID_NARRATORE && attribuita(e.testo);
+        let d = verifica.verifica({ etichetta: e.etichetta, testo: e.testo, voce: e.voce, segmento: e.segmento, ...(e.privato ? { privato: e.privato } : {}), ...(parolePg ? { attribuita: true } : {}) });
         if (d.tipo === 'togli') continue;
         // A fact rule broke and the voice has slack (not the first sentence): one targeted repair, within its deadline.
         if (d.tipo === 'dici' && d.riparabile && p.ripara && indice > 0 && !p.soloPg) {
@@ -426,7 +435,7 @@ export async function narraTurno(
           continue;
         }
         // The yes/no judge, on the public narrator sentences the rules left alone (it keeps its state on the others).
-        if (p.giudice && !p.soloPg && !d.privato && e.etichetta === ID_NARRATORE) {
+        if (p.giudice && !p.soloPg && !d.privato && e.etichetta === ID_NARRATORE && !parolePg) {
           const originale = e.testo;
           // Nothing of this turn in the voice yet (this call, the repair call, the Engine's lines before the narration):
           // the first sentence never waits for the answer; the judge may say the Engine's line now (docs/coerenza.md,

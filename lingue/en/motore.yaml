@@ -7,8 +7,20 @@
 # the first short sentence of what the player wrote. English turns the first person into the third
 # («I open the door» → «Ginestra opens the door.»); when it cannot do it safely it quotes the player.
 annuncio:
-  # The player's words quoted ({nome}, {frase}): always valid, used whenever the third person is unsure.
-  citazione: '{nome}: “{frase}.”'
+  # The player's words quoted ({nome}, {frase}): always valid, used whenever the third person is unsure. Attributed
+  # («says»): the narrator's voice reports what the player wrote, it does not assert it (docs/coerenza.md).
+  citazione: '{nome} says: “{frase}.”'
+  # A PC out of play when the window closed (0 HP, dead): it does not act, and what it wrote is not said.
+  fuori: '{nome} does not act.'
+  # A clause that states the world or the PC's state instead of saying what the PC does: not announced (flag i).
+  affermazione: '^(i\s+(have|feel|see|hear|think|believe|guess)|there\s+(is|are|was|were)|it\s+is|it''s)\b'
+  # A clause whose subject is someone else («The goblin throws its spear at me»): not announced (flag i).
+  terza_parte: '^(the|a|an|this|that|these|those|he|she|they|it|his|her|their|its|everyone|someone|somebody)\b'
+  # A clause that is the PC's own act in the first person («I block it»): after someone else's clause, the
+  # announcement starts again here (flag i).
+  atto_del_pg: '^(i|i''ll|i''d)\b'
+  # Inside a clause that opens with someone else, the PC's own verb («the door, I kick it open»): then it is the PC's.
+  atto_interno: '\b(i|i''ll|i''d)\b'
   # Third person: {nome} and the turned sentence.
   terza_persona: '{nome} {frase}.'
   # Chat laughter removed everywhere (flags gi).

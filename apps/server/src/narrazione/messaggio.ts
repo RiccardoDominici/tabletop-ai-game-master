@@ -21,6 +21,8 @@ export interface AzioneTurno {
   numero?: number;
   /** Azione privata: a voce solo ciò che gli altri possono percepire. */
   privata?: boolean;
+  /** The PC was out of play when the window closed: `testo` is why it does not act, not what the player wrote. */
+  fuori?: boolean;
 }
 
 export interface DatiMessaggioTurno {

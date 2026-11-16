@@ -618,6 +618,24 @@ Still open:
   line; most answers arrive late, before the next turn;
 - CM T17 heard the dead goblin's state twice (R-fuori's line, then the who-is-there line that contains it).
 
+## After round 4: fixes for profile A (16 November)
+
+### The announcement attributes the player's words (7 of the 8 H of round 4)
+The minimal reader's announcement («Nome: «…»», llm/annuncio.ts) was read in the narrator's voice and sounded like
+narration: «Livia Sarti: «Il goblin mi tira la lancia».», «Nespola Tondi: «Ho nessun punto ferita, sono a terra».».
+Now (deterministic, words in `lingue/<code>/motore.yaml`, section `annuncio`): the template attributes («Livia Sarti
+dice: «…»»; in English «… says: "…"», and a first-person act still in the third person); a clause that states the world
+or the PC's state (`affermazione`: «ho», «sono», «vedo», «sento»…) or has someone else as subject (`terza_parte`: an
+article or a third-person pronoun first, unless the PC's own verb is in it, `atto_interno`: «La fisarmonica la tiro
+fuori io») is left out, and after such a clause the announcement starts again only at the PC's own act
+(`atto_del_pg`: «…, la paro con lo scudo»); a lone call («Ehi goblin!») gives way to the next sentence; a PC out of
+play is «Eliandro non agisce.» (no more «Eliandro: «Non agisce, è a terra, privo di sensi».»), and its action is not
+classified. The round-4 cases become «Livia Sarti dice: «La paro con lo scudo. Resisto».», «Nespola Tondi dice: «Non
+mi reggo più, striscio dietro la pietra».», «Nespola Tondi dice: «Indietreggio ma resto in piedi».». The coherence
+rules no longer judge a sentence inside an announcement (`FraseDaVerificare.attribuita`; no judge either): it is the
+player's words, and round 4's R-inesistente over-fire at CM T13 was the rule replacing the announcement of the very
+blow that killed Zirrà. Tests: test/annuncio-d4.test.ts, test/coerenza-prima-frase.test.ts.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

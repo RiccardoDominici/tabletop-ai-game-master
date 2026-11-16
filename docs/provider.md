@@ -102,10 +102,15 @@ every local server URL has a watchdog, started by the first request of a local m
 - For each action it chooses a line among the candidates (the ones indicated by the Engine and at most 6 from
   the catalogue that share words with the action), or «nessuna» (none).
 - The announcement is not written by the model: it is composed by the Engine (`llm/annuncio.ts`), with the PC's
-  name and the player's first short sentence, at most 12 words. In Italian its words are quoted
-  («Ida: «Guardo la scatolina».») (Ida: "I look at the little box."); in English the first person is turned into the
-  third («Ginestra opens the door.») and, if this cannot be done with certainty, it is quoted. The rules are in
-  `lingue/<codice>/motore.yaml` (`annuncio`). Private actions are never announced.
+  name and the player's first short sentence that is the PC's own act, at most 12 words. The player's words are
+  attributed, never asserted in the narrator's voice: in Italian «Ida dice: «Guardo la scatolina».» (Ida says: "I
+  look at the little box."); in English the first person is turned into the third («Ginestra opens the door.») and,
+  if this cannot be done with certainty, attributed («Ginestra says: "…"»). A clause that states the world or the
+  PC's state («Ho zero punti ferita», «Vedo tre goblin») or has someone else as subject («Il goblin mi tira la
+  lancia») is left out: round 4 of the coherence layer heard 7 such claims in the narrator's voice
+  (docs/coerenza.md). A PC out of play says «Ida non agisce.». The rules are in `lingue/<codice>/motore.yaml`
+  (`annuncio`). Private actions are never announced; the coherence rules do not judge the announcement (they are the
+  player's words).
 - The turn reaches it as data (`RichiestaNarrazione.dati`, the same object from which `narrazione/messaggio.ts`
   builds the text), not from the message text: so it does not depend on the language of the titles. Prompt in
   `prompts/<codice>/lettore-minimo.md`.

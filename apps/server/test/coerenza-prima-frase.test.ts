@@ -140,3 +140,12 @@ describe('one Engine line once a turn, and never a model rewrite of an unnamed a
     expect(chieste).toEqual(['Ruggero ride piano.']);
   });
 });
+
+describe('the announcement is the player\'s words, not the narrator\'s assertion', () => {
+  it('no fact rule on a sentence inside it; the same words as a narrator sentence are judged', async () => {
+    const goblin = (t: string): CorrezioneEsito => (t.includes('sgherro') ? { testo: 'Ruggero giace a terra, senza vita.', motivo: 'creatura_inesistente' } : null);
+    const dati = { azioni: [{ id_pg: 'pg_ida', nome: 'Ida Marchi', testo: 'Spingo lo sgherro contro il ponte.' }] };
+    const r = await turno('[narratore] Ida Marchi dice: «Spingo lo sgherro contro il ponte».\n[narratore] Lo sgherro cade nel fiume.\n[invito] tutti', 'no', { correggiEsito: goblin, dati, giudice: null });
+    expect(r.dopo).toEqual(['Ida Marchi dice: «Spingo lo sgherro contro il ponte».', 'Ruggero giace a terra, senza vita.']);
+  });
+});

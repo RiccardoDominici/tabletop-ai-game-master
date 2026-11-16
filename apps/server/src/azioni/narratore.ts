@@ -21,7 +21,10 @@ export function azioniPerNarratore(
   const numero = new Map(r.azioni.map((a, i) => [a.id, i + 1]));
   const ref = (a: Azione): string => `[${numero.get(a.id)}] ${nomePg(a.autore)}`;
   const azioni: AzioneTurno[] = [
-    ...r.azioni.map((a) => ({ id_pg: a.autore, nome: nomePg(a.autore), testo: fuori(a.autore) ?? a.testo, numero: numero.get(a.id)!, privata: a.privata })),
+    ...r.azioni.map((a) => {
+      const perche = fuori(a.autore);
+      return { id_pg: a.autore, nome: nomePg(a.autore), testo: perche ?? a.testo, numero: numero.get(a.id)!, privata: a.privata, ...(perche ? { fuori: true } : {}) };
+    }),
     ...r.senzaAzione.map((id) => ({ id_pg: id, nome: nomePg(id), testo: null })),
   ];
   const collegamenti: string[] = [];

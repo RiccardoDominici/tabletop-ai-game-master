@@ -30,6 +30,16 @@ export interface PrimaPersona {
 interface RegoleAnnuncio {
   citazione: string;
   terza: string;
+  /** A PC out of play: «{nome} non agisce.». */
+  fuori: string;
+  /** A clause that states the world or the PC's state (a claim), not what the PC does. */
+  affermazione: RegExp | null;
+  /** A clause whose subject is someone else («Il goblin mi tira la lancia»). */
+  terzaParte: RegExp | null;
+  /** A clause that is the PC's own act in the first person («la paro», «io carico»). */
+  attoDelPg: RegExp | null;
+  /** The PC's own first-person verb anywhere in a clause («La fisarmonica la tiro fuori io»). */
+  attoInterno: RegExp | null;
   /** Mai un annuncio vuoto: «{nome} agisce.». */
   vuoto: string;
   minContenuto: number;
@@ -72,6 +82,11 @@ function compila(s: Sezione): RegoleAnnuncio {
   return {
     citazione: campoTesto(s, 'citazione'),
     terza,
+    fuori: campoTesto(s, 'fuori'),
+    affermazione: campoRegex(s, 'affermazione', 'i'),
+    terzaParte: campoRegex(s, 'terza_parte', 'i'),
+    attoDelPg: campoRegex(s, 'atto_del_pg', 'i'),
+    attoInterno: campoRegex(s, 'atto_interno', 'i'),
     vuoto: campoTesto(s, 'vuoto'),
     minContenuto: campoNumero(s, 'min_contenuto'),
     nonContenuto: campoRegex(s, 'non_contenuto', 'i'),
@@ -206,6 +221,18 @@ function incisoVuoto(inciso: string, r: RegoleAnnuncio): boolean {
 }
 
 /**
+ * Whether a clause is not the PC's own act: a claim about the world or the PC's state («Ho zero punti ferita»,
+ * «Vedo tre goblin»), or a clause with someone else as subject («Il goblin mi tira la lancia»). Such words would
+ * reach the table in the narrator's voice (round 4 of the coherence layer: 7 of 8 high-severity sentences).
+ */
+function nonDelPg(inciso: string, r: RegoleAnnuncio): boolean {
+  const t = inciso.replace(/^[«"“(]+/, '').trim();
+  if (r.affermazione?.test(t)) return true;
+  // Someone else opens the clause, unless the PC's own verb is in it (a fronted object: «La porta la apro io»).
+  return !!r.terzaParte?.test(t) && !r.attoInterno?.test(t);
+}
+
+/**
  * La frase da annunciare (docs/e2e-finale.md, D4: annunci vuoti o tagliati a metà):
  * - la prima frase del giocatore, senza gli incisi vuoti in testa (vocativi, «Anch'io», «Me too») e senza
  *   una congiunzione iniziale; se ha meno di `min_contenuto` parole di contenuto si unisce la seguente;
@@ -220,17 +247,24 @@ export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = re
   let frase = '';
   while (k < tutte.length && !frase) {
     const incisi = tutte[k]!.split(/(?<=[,;:])\s+|\s+-\s+/);
-    while (incisi.length && incisoVuoto(incisi[0]!.replace(/[,;:]$/, ''), r)) incisi.shift();
+    // Leading clauses that say nothing (a vocative), or that are not the PC's own act (a claim, someone else's act).
+    let altrui = false;
+    while (incisi.length && (incisoVuoto(incisi[0]!.replace(/[,;:]$/, ''), r) || nonDelPg(incisi[0]!, r))) altrui = nonDelPg(incisi.shift()!, r) || altrui;
+    // After someone else's clause, what follows with no subject is still theirs («…esita, guarda il compagno»): the
+    // announcement starts again only at the PC's own act in the first person («…, la paro con lo scudo»).
+    if (altrui) while (incisi.length && !r.attoDelPg?.test(incisi[0]!.replace(/^[«"“(]+/, '').trim())) incisi.shift();
     frase = incisi.join(' ').trim();
+    // A lone call before more sentences («Ehi goblin!»): the next sentence says what the PC does.
+    if (frase && frase.split(' ').length === 1 && k + 1 < tutte.length) frase = '';
     k++;
   }
-  // Una frase sola fatta di un inciso «vuoto» per forma ma che dice qualcosa («Parla!»): resta com'è.
-  if (!frase && tutte.length && contenuto(tutte[0]!, r) > 0) {
+  // Una frase sola fatta di un inciso «vuoto» per forma ma che dice qualcosa («Parla!»): resta com'è. Not a claim.
+  if (!frase && tutte.length && contenuto(tutte[0]!, r) > 0 && !nonDelPg(tutte[0]!, r)) {
     frase = tutte[0]!;
     k = 1;
   }
-  // Troppo poco contenuto: si unisce la frase seguente, se c'è spazio.
-  while (frase && !tutte.compiuta?.[k - 1] && contenuto(frase, r) < r.minContenuto && k < tutte.length && frase.split(' ').length < max) frase = `${frase}. ${tutte[k++]}`;
+  // Troppo poco contenuto: si unisce la frase seguente, se c'è spazio (and if it is the PC's own act too).
+  while (frase && !tutte.compiuta?.[k - 1] && contenuto(frase, r) < r.minContenuto && k < tutte.length && frase.split(' ').length < max && !nonDelPg(tutte[k]!, r)) frase = `${frase}. ${tutte[k++]}`;
   let parole = frase.split(' ').filter(Boolean);
   while (parole.length > 1 && r.congiunzioni?.test(nuda(parole[0]!))) parole.shift();
   if (parole.length > max) {
@@ -258,17 +292,23 @@ export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = re
 }
 
 /**
- * L'annuncio deterministico: in italiano «Nome: «prima frase».», con la frase di `fraseAnnuncio`, al
- * massimo `max_parole` parole col nome; in inglese la stessa frase in terza persona quando si può.
- * Niente parole che il giocatore non ha scritto. Mai vuoto: senza niente da dire, «Nome agisce.».
+ * L'annuncio deterministico: in italiano «Nome dice: «prima frase».» (the player's words attributed, never asserted as
+ * the narrator's), con la frase di `fraseAnnuncio`, al massimo `max_parole` parole col nome; in inglese la stessa
+ * frase in terza persona quando è un atto del PG in prima persona. Only the PC's own act is announced: a claim about
+ * the world or someone else's act is left out. Niente parole che il giocatore non ha scritto. Mai vuoto: senza niente
+ * da dire, «Nome agisce.»; a PC out of play, «Nome non agisce.».
  */
-export function annuncioBreve(nome: string, testo: string): string {
+export function annuncioBreve(nome: string, testo: string, fuori = false): string {
   const r = regoleAnnuncio();
+  // A PC out of play: what the player wrote does not happen and is not said.
+  if (fuori) return riempi(r.fuori, { nome });
   let t = r.risate ? testo.replace(r.risate, ' ') : testo;
   t = t.replace(/[^\p{L}\p{N}\s'’,;:.!?…«»"-]/gu, ' ').replace(/\s+/g, ' ').trim();
   for (let i = 0; i < 3 && r.intercalari?.test(t); i++) t = t.replace(r.intercalari, '').trim();
   if (r.virgolette) t = t.replace(r.virgolette, '').trim();
-  const max = Math.max(3, r.maxParole - nome.split(/\s+/).length);
+  // The template's own words («dice») count toward the limit too.
+  const extra = riempi(r.citazione, { nome: '', frase: '' }).split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
+  const max = Math.max(3, r.maxParole - nome.split(/\s+/).length - extra);
   const frase = fraseAnnuncio(t, max, r);
   if (!frase || contenuto(frase, r) === 0) return riempi(r.vuoto, { nome });
   const terza = inTerzaPersona(frase, r.prima);
