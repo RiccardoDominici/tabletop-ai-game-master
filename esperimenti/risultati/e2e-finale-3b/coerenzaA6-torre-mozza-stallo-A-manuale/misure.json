@@ -1,0 +1,181 @@
+{
+ "etichetta": "coerenzaA6-torre-mozza-stallo-A-manuale",
+ "turni": {
+  "giocati": 14,
+  "copione": 14,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_mezzanotte": "3/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": [
+   [
+    "Tonio è salito da solo, d'accordo con i goblin"
+   ]
+  ]
+ },
+ "coerenza": {
+  "violazioni": 0,
+  "per_regola": {},
+  "esempi": []
+ },
+ "private": {
+  "azioni_private": 2,
+  "righe_privato": 0,
+  "esiti_privati_log": 0,
+  "spostate_dalla_guardia": 0,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": [],
+  "al_tavolo_candidate": 0,
+  "al_tavolo": []
+ },
+ "prove": {
+  "azioni_risolte": 15,
+  "con_tiro": 0,
+  "tipi": {
+   "nessuna": 15
+  },
+  "dadi": {},
+  "regole_tipo": {},
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {},
+  "fatti_morale_terra": 0,
+  "esempi": [],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 15,
+  "nessuna": 12,
+  "ms_classifica_med": 1054,
+  "ms_classifica_peggiore": 1969
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "subito:ok": 7,
+   "prossime:ok": 6,
+   "prossime:errore": 1
+  },
+  "consegnate": 7,
+  "dette_a_finestra_aperta": 7,
+  "accettate": 43,
+  "scartate": {},
+  "ms_claude_med": 9086,
+  "ms_totale_med_subito": 10019,
+  "processo": {
+   "avvio": 1,
+   "ok": 13,
+   "errore": 1,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20043,
+   "peggiore": 20166,
+   "n": 14
+  },
+  "llm_prima_frase": {
+   "mediana": 31.5,
+   "peggiore": 52,
+   "n": 12
+  },
+  "voce_primo_audio": {
+   "mediana": 684,
+   "peggiore": 2589,
+   "n": 13
+  },
+  "schermo_inizio_audio": {
+   "mediana": 835,
+   "peggiore": 2740,
+   "n": 6
+  },
+  "llm_fine": {
+   "mediana": 1037,
+   "peggiore": 1956,
+   "n": 14
+  },
+  "audio_fine": {
+   "mediana": 12537,
+   "peggiore": 27787,
+   "n": 13
+  },
+  "s_tra_turni_med": 33,
+  "s_tra_turni_peggiore": 47.879
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 15,
+   "in_frase": 0,
+   "tra_frasi": 15,
+   "silenzio_ms": 13439,
+   "per_turno": [
+    1,
+    0,
+    2,
+    0,
+    2,
+    1,
+    1,
+    3,
+    0,
+    3,
+    0,
+    0,
+    null,
+    2
+   ]
+  },
+  "proiettore_secondi": 246,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 1,
+  "avvisi": 18,
+  "per_messaggio": [
+   "40 ×10 llm: risposta strutturata non valida",
+   "40 ×5 llm: si usa il ripiego deterministico",
+   "40 ×1 https: the certificate does not cover this LAN address: run scripts/certificato.sh again",
+   "40 ×1 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×1 repertorio: [usa] rifiutato",
+   "50 ×1 repertorio: parola segreta nel messaggio del selettore"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
+   "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",
+   "riassunto       → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "regole          → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "voce            → finto — variabile d'ambiente TAGM_TTS",
+   "ascolto         → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
+   "immagini        → nessuno — configurato (../../../../private/tmp/claude-501/-Use"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 12,
+  "improvvisate": 13,
+  "usa_rifiutati": 1,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 7,
+  "riparazioni": 0,
+  "conferme_motore": 0
+ }
+}
