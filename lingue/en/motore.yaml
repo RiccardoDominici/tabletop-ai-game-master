@@ -21,8 +21,10 @@ annuncio:
   atto_del_pg: '^(i|i''ll|i''d)\b'
   # Inside a clause that opens with someone else, the PC's own verb («the door, I kick it open»): then it is the PC's.
   atto_interno: '\b(i|i''ll|i''d)\b'
-  # Third person: {nome} and the turned sentence.
-  terza_persona: '{nome} {frase}.'
+  # Third person: {nome} and the turned sentence. Empty: the announcement always attributes the player's words
+  # («Ginestra says: "I open the door."»): «Ginestra opens the door.» told the act as done before any roll, in the
+  # narrator's voice (docs/coerenza.md, «After round 4»).
+  terza_persona: ''
   # Chat laughter removed everywhere (flags gi).
   risate: '\b(h?a(h|ha)+h?|lol|lmao|xd)\b'
   # Opening fillers removed, up to three in a row (flag i).
@@ -40,7 +42,7 @@ annuncio:
   non_contenuto: '^(the|a|an|to|at|in|on|of|for|with|from|by|into|onto|over|under|up|down|off|out|about|and|or|but|so|then|that|which|who|if|when|while|as|because|i|me|my|myself|you|your|he|him|his|she|her|it|its|we|us|our|they|them|their|this|these|those|there|here|not|too|also|just|very|me|others|other|towards|toward|through|across|around|near|behind|beside|before|after|against|without)$'
   # Words the announcement never ends on: articles, prepositions, conjunctions, relatives, object pronouns
   # and adverbs that take a complement ("towards", "with", "before the") (flag i, whole word).
-  non_finali: '^(the|a|an|to|at|in|on|of|for|with|from|by|into|onto|over|under|towards|toward|across|against|without|and|or|but|so|then|that|which|who|whom|if|when|while|as|because|my|your|his|her|its|our|their|this|these|those|very|more|less)$'
+  non_finali: '^(the|a|an|to|at|in|on|of|for|with|from|by|into|onto|over|under|towards|toward|across|against|without|and|or|but|so|then|that|which|who|whom|what|where|how|why|whose|if|when|while|as|because|my|your|his|her|its|our|their|this|these|those|very|more|less)$'
   # Conjunctions: removed at the start; if the sentence is cut, it stops before one of the last three words (flag i).
   congiunzioni: '^(and|or|but|so|then|because|while)$'
   # Abbreviations with a full stop that don't end the sentence (lowercase, no stop).

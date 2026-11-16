@@ -103,9 +103,10 @@ every local server URL has a watchdog, started by the first request of a local m
   the catalogue that share words with the action), or «nessuna» (none).
 - The announcement is not written by the model: it is composed by the Engine (`llm/annuncio.ts`), with the PC's
   name and the player's first short sentence that is the PC's own act, at most 12 words. The player's words are
-  attributed, never asserted in the narrator's voice: in Italian «Ida dice: «Guardo la scatolina».» (Ida says: "I
-  look at the little box."); in English the first person is turned into the third («Ginestra opens the door.») and,
-  if this cannot be done with certainty, attributed («Ginestra says: "…"»). A clause that states the world or the
+  attributed, never asserted in the narrator's voice: «Ida dice: «Guardo la scatolina».» (Ida says: "I look at the
+  little box."), in English «Ginestra says: "I open the door."». (The English pack used to turn the first person into
+  the third, «Ginestra opens the door.», which told the act as done before any roll; the turn stays a pack option,
+  `terza_persona`, off in both packs.) A clause that states the world or the
   PC's state («Ho zero punti ferita», «Vedo tre goblin») or has someone else as subject («Il goblin mi tira la
   lancia») is left out: round 4 of the coherence layer heard 7 such claims in the narrator's voice
   (docs/coerenza.md). A PC out of play says «Ida non agisce.». The rules are in `lingue/<codice>/motore.yaml`

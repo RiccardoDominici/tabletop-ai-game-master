@@ -624,7 +624,8 @@ Still open:
 The minimal reader's announcement («Nome: «…»», llm/annuncio.ts) was read in the narrator's voice and sounded like
 narration: «Livia Sarti: «Il goblin mi tira la lancia».», «Nespola Tondi: «Ho nessun punto ferita, sono a terra».».
 Now (deterministic, words in `lingue/<code>/motore.yaml`, section `annuncio`): the template attributes («Livia Sarti
-dice: «…»»; in English «… says: "…"», and a first-person act still in the third person); a clause that states the world
+dice: «…»»; in English «… says: "…"», no more «Ginestra opens the door.», which told the act as done before any roll:
+the first-person turn is now off in the pack, `terza_persona: ''`); a clause that states the world
 or the PC's state (`affermazione`: «ho», «sono», «vedo», «sento»…) or has someone else as subject (`terza_parte`: an
 article or a third-person pronoun first, unless the PC's own verb is in it, `atto_interno`: «La fisarmonica la tiro
 fuori io») is left out, and after such a clause the announcement starts again only at the PC's own act

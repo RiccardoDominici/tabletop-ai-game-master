@@ -4,11 +4,11 @@
  * (nelle misure inventava parole): la compone il Motore dal nome del PG e dalla prima frase breve di ciò
  * che il giocatore ha scritto, senza aggiungere niente.
  *
- * Le regole sono della lingua dei contenuti (lingue/<codice>/motore.yaml, sezione `annuncio`):
- * - italiano: le parole del giocatore si citano («Ida: «Guardo la scatolina».»), come sempre;
- * - inglese: la prima persona si volta in terza («I open the door» → «Ginestra opens the door.»): soggetto
- *   tolto, verbo coniugato (desinenze, irregolari, modali), pronomi voltati (my → their). Quando la frase
- *   non comincia con «I» o il verbo non si riconosce, si torna alla citazione, che è sempre corretta.
+ * Le regole sono della lingua dei contenuti (lingue/<codice>/motore.yaml, sezione `annuncio`). The player's words are
+ * attributed, never asserted in the narrator's voice: «Ida dice: «Guardo la scatolina».», «Ginestra says: "I open the
+ * door."». A pack may turn the first person into the third (`terza_persona` not empty, `prima_persona`: subject
+ * removed, verb conjugated, pronouns turned), but neither shipped pack does since round 4 of the coherence layer
+ * (docs/coerenza.md): «Ginestra opens the door.» tells the act as done before any roll.
  */
 import { campoCoppie, campoElenco, campoNumero, campoRegex, campoTesto, regole, type Sezione } from '../lingua/motore';
 
@@ -51,15 +51,15 @@ interface RegoleAnnuncio {
   intercalari: RegExp | null;
   virgolette: RegExp | null;
   maxParole: number;
-  /** null = la lingua non volta la prima persona: sempre la citazione. */
+  /** The first-person turn of the language; used only when `terza` is not empty (else: always the citation). */
   prima: PrimaPersona | null;
 }
 
 const escapa = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-function compilaPrima(s: Sezione, terza: string): PrimaPersona | null {
+function compilaPrima(s: Sezione): PrimaPersona | null {
   const soggetto = campoRegex(s, 'soggetto', 'i');
-  if (!terza || !soggetto) return null;
+  if (!soggetto) return null;
   return {
     contrazioni: campoCoppie(s, 'contrazioni').map(([da, a]) => [new RegExp(`^${escapa(da)}\\b`, 'i'), a]),
     soggetto,
@@ -97,11 +97,17 @@ function compila(s: Sezione): RegoleAnnuncio {
     intercalari: campoRegex(s, 'intercalari', 'i'),
     virgolette: campoRegex(s, 'virgolette', 'g'),
     maxParole: campoNumero(s, 'max_parole'),
-    prima: compilaPrima(prima as Sezione, terza),
+    prima: compilaPrima(prima as Sezione),
   };
 }
 
 const regoleAnnuncio = (): RegoleAnnuncio => regole('annuncio', compila);
+
+/**
+ * The language's first-person turn (`prima_persona`), compiled even when `terza_persona` is empty and the announcement
+ * does not use it (both shipped packs: a turned «Ginestra opens the door.» tells the act as done before any roll).
+ */
+export const primaPersona = (): PrimaPersona | null => regoleAnnuncio().prima;
 
 const riempi = (modello: string, v: Record<string, string>): string => modello.replace(/\{(\w+)\}/g, (tutto, k: string) => v[k] ?? tutto);
 
@@ -311,7 +317,7 @@ export function annuncioBreve(nome: string, testo: string, fuori = false): strin
   const max = Math.max(3, r.maxParole - nome.split(/\s+/).length - extra);
   const frase = fraseAnnuncio(t, max, r);
   if (!frase || contenuto(frase, r) === 0) return riempi(r.vuoto, { nome });
-  const terza = inTerzaPersona(frase, r.prima);
+  const terza = r.terza ? inTerzaPersona(frase, r.prima) : null;
   if (terza) return riempi(r.terza, { nome, frase: terza });
   return riempi(r.citazione, { nome, frase: senzaVirgolette(`${frase.charAt(0).toUpperCase()}${frase.slice(1)}`) });
 }

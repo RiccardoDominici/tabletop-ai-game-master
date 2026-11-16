@@ -70,9 +70,9 @@ describe('annunci D4, inglese', () => {
   afterAll(() => impostaLingua('it'));
   it('abbreviazioni, inciso vuoto in testa, chiusa sensata, mai vuoto', () => {
     impostaLingua('en');
-    expect(annuncioBreve('Mara', 'I walk up to the counter and ask Mr. Hale for two rooms for the night.')).toBe('Mara walks up to the counter.');
-    expect(annuncioBreve('Mara', 'Me too, I nod at the guard and keep my hands away from my sword.')).toBe('Mara nods at the guard.');
-    expect(annuncioBreve('Tobin', 'I sit by the fire and listen to what the guard says.')).toMatch(/^Tobin sits by the fire/);
+    expect(annuncioBreve('Mara', 'I walk up to the counter and ask Mr. Hale for two rooms for the night.')).toBe('Mara says: “I walk up to the counter and ask Mr. Hale.”');
+    expect(annuncioBreve('Mara', 'Me too, I nod at the guard and keep my hands away from my sword.')).toBe('Mara says: “I nod at the guard and keep my hands away.”');
+    expect(annuncioBreve('Tobin', 'I sit by the fire and listen to what the guard says.')).toBe('Tobin says: “I sit by the fire and listen.”');
     expect(annuncioBreve('Ginestra', 'I shoot an arrow at the goblin towards the gate of the old ruined tower')).not.toMatch(/\b(towards|the|at)\.$/);
     expect(annuncioBreve('Ida', 'lol ok')).toBe('Ida acts.');
   });

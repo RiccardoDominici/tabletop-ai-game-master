@@ -11,6 +11,7 @@ import { nomeBreve } from '../src/campagna/nomi';
 import { impostaLingua, testo } from '../src/lingua';
 import { prompt } from '../src/lingua/motore';
 import { annuncioBreve, leggiTurno, NarratoreMinimo, turnoDaDati } from '../src/llm/minimo';
+import { inTerzaPersona, primaPersona } from '../src/llm/annuncio';
 import type { ModelloLinguaggio, RichiestaModello } from '../src/llm/modello';
 import { loggerMuto } from '../src/logger';
 import { fuoriDallaFinzione } from '../src/narrazione/finzione';
@@ -68,36 +69,43 @@ describe('frasi inglesi per la voce', () => {
   });
 });
 
-describe('annuncio in terza persona', () => {
-  it('«I open the door» → «Ginestra opens the door.»', () => {
-    expect(annuncioBreve('Ginestra', 'I open the door')).toBe('Ginestra opens the door.');
-    expect(annuncioBreve('Ginestra', 'ok so I try to pick the lock, quietly')).toBe('Ginestra tries to pick the lock, quietly.');
-    expect(annuncioBreve('Corrado', 'I search the room for my dagger')).toBe('Corrado searches the room for their dagger.');
-    expect(annuncioBreve('Ida', "I'm going down the stairs")).toBe('Ida is going down the stairs.');
-    expect(annuncioBreve('Ida', 'I’ll wait by the fire')).toBe('Ida will wait by the fire.');
-    expect(annuncioBreve('Ida', 'I quickly grab the rope and the lantern')).toBe('Ida quickly grabs the rope and the lantern.');
-    expect(annuncioBreve('Ida', 'I carry the barrel and I watch the door')).toBe('Ida carries the barrel and watches the door.');
-    expect(annuncioBreve('Ida', 'I do not trust him')).toBe('Ida does not trust him.');
+describe('announcement in English: the player\'s words attributed', () => {
+  // Round 4 of the coherence layer (docs/coerenza.md): a turned «Ginestra opens the door.» told the act as done, in
+  // the narrator's voice, before any roll. The English pack attributes, like the Italian one.
+  it('«I open the door» → «Ginestra says: "I open the door."»', () => {
+    expect(annuncioBreve('Ginestra', 'I open the door')).toBe('Ginestra says: “I open the door.”');
+    expect(annuncioBreve('Ginestra', 'ok so I try to pick the lock, quietly')).toBe('Ginestra says: “I try to pick the lock, quietly.”');
+    expect(annuncioBreve('Ida', "I'm going down the stairs")).toBe('Ida says: “I\'m going down the stairs.”');
+    expect(annuncioBreve('Ida', 'I do not trust him')).toBe('Ida says: “I do not trust him.”');
   });
 
-  it('il verbo senza soggetto dopo «and» non si coniuga: la frase si ferma prima', () => {
-    expect(annuncioBreve('Ginestra', 'I open the door and look inside')).toBe('Ginestra opens the door.');
-    expect(annuncioBreve('Ginestra', 'I try and climb the wall')).toBe('Ginestra says: “I try and climb the wall.”');
-  });
-
-  it('quando non si può voltare con certezza si cita il giocatore; al massimo 12 parole', () => {
-    // «The door,» opens with something else: the announcement starts at the PC's own act (docs/coerenza.md).
-    expect(annuncioBreve('Ginestra', 'the door, I kick it open')).toBe('Ginestra kicks it open.');
+  it('someone else\'s clause first: the announcement starts at the PC\'s own act; at most 12 words', () => {
+    expect(annuncioBreve('Ginestra', 'the door, I kick it open')).toBe('Ginestra says: “I kick it open.”');
     expect(annuncioBreve('Ginestra', 'Quietly towards the stairs')).toBe('Ginestra says: “Quietly towards the stairs.”');
-    // Le parole tra virgolette restano del giocatore: si volta solo ciò che viene prima.
-    expect(annuncioBreve('Ginestra', 'I tell the innkeeper "I need a room"')).toBe('Ginestra tells the innkeeper "I need a room".');
+    expect(annuncioBreve('Ginestra', 'I tell the innkeeper "I need a room"')).toBe('Ginestra says: “I tell the innkeeper I need a room.”');
     expect(annuncioBreve('Ginestra', '"Open up!" I shout')).toBe('Ginestra says: “Open up.”');
     expect(annuncioBreve('Ida', 'haha ok!!')).toBe('Ida acts.');
     const lungo = annuncioBreve('Ida', 'I walk slowly along the wall of the great hall towards the kitchen door without being seen')!;
     expect(lungo.split(' ').length).toBeLessThanOrEqual(12);
-    expect(lungo).toMatch(/^Ida walks slowly along the wall/);
+    expect(lungo).toBe('Ida says: “I walk slowly along the wall of the great hall.”');
+  });
+
+  it('the first-person turn stays a pack option (off in en): subject removed, verb and pronouns turned', () => {
+    const p = primaPersona();
+    expect(inTerzaPersona('I open the door', p)).toBe('opens the door');
+    expect(inTerzaPersona('I search the room for my dagger', p)).toBe('searches the room for their dagger');
+    expect(inTerzaPersona("I'm going down the stairs", p)).toBe('is going down the stairs');
+    expect(inTerzaPersona('I’ll wait by the fire', p)).toBe('will wait by the fire');
+    expect(inTerzaPersona('I quickly grab the rope and the lantern', p)).toBe('quickly grabs the rope and the lantern');
+    expect(inTerzaPersona('I carry the barrel and I watch the door', p)).toBe('carries the barrel and watches the door');
+    expect(inTerzaPersona('I do not trust him', p)).toBe('does not trust him');
+    // The verb with no subject after «and» is not conjugated: the sentence stops before it.
+    expect(inTerzaPersona('I open the door and look inside', p)).toBe('opens the door');
+    expect(inTerzaPersona('I try and climb the wall', p)).toBeNull();
+    expect(inTerzaPersona('I tell the innkeeper "I need a room"', p)).toBe('tells the innkeeper "I need a room"');
   });
 });
+
 
 describe('guardie in inglese', () => {
   it('la finzione: frasi sul tavolo scartate, frasi di gioco no', () => {
@@ -230,7 +238,7 @@ describe('lettore minimo: il turno come dati, uguale in ogni lingua', () => {
     expect(en.attesa).toEqual(['nar_neve']);
   });
 
-  it('in inglese: prompt e messaggio inglesi, annuncio in terza persona, riparazione dal campo', async () => {
+  it('in inglese: prompt e messaggio inglesi, annuncio attribuito, riparazione dal campo', async () => {
     const viste: RichiestaModello[] = [];
     const m = {
       provider: 'openai',
@@ -245,7 +253,7 @@ describe('lettore minimo: il turno come dati, uguale in ogni lingua', () => {
     const n = new NarratoreMinimo(m, { log: loggerMuto() });
     // Il testo del messaggio non serve: il lettore usa i dati.
     const e = await n.narra({ turno: 3, sistema: [], messaggio: '(ignored)', dati, signal: new AbortController().signal }, () => undefined);
-    expect(e.testo).toBe('[narratore] Ida looks at the little box up close.\n[usa] nar_neve > pg_ida\n[usa] nar_impronte > pg_livia\n[invito] tutti\n');
+    expect(e.testo).toBe('[narratore] Ida says: “I look at the little box up close.”\n[usa] nar_neve > pg_ida\n[usa] nar_impronte > pg_livia\n[invito] tutti\n');
     expect(viste[0]!.sistema[0]!.testo).toMatch(/^You are the reader of a D&D game in English/);
     expect(viste[0]!.messaggi[0]!.testo).toMatch(/^Actions of the turn:\n1\. Ida \(pg_ida\): I look at the little box up close\n {3}Candidates \(id: when\):/);
     expect(viste[0]!.messaggi[0]!.testo).toContain('Livia (pg_livia) [PRIVATE]: I follow the footprints');
