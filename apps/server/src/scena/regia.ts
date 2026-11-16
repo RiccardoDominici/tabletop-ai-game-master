@@ -3414,10 +3414,13 @@ export class Regia {
     // Colpi, cadute e tiri contro la morte del turno: il Motore controlla che il tavolo li senta.
     const dovuti = tiri ? fattiDovuti(tiri.tiri, tiri.combattimento?.morte ?? [], tiri.combattimento?.fuggiti ?? []) : [];
     // Also on a turn without rolls: someone out of play may still be told acting (narrazione/guardia-fuori.ts).
-    const correggiEsito = this.prove?.attivo ? this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null) : null;
+    // The guard keeps per-call state (who already had a state line, the carried subject): each private reply gets one of
+    // its own, so a reply that names the fallen NPC first does not use up the line the table must hear.
+    const nuovaGuardia = this.prove?.attivo ? () => this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null) : null;
+    const correggiEsito = nuovaGuardia?.() ?? null;
     // The turn order just rolled (the fight starts, a new round): the Engine says it at the table (bug 6, third e2e pass).
     const ordine = tiri?.combattimento?.ordine ?? [];
-    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito, ordine, risposteprivate).catch((err: unknown) =>
+    void this.eseguiNarrazione(r.turno, messaggio, epoca, azioni, r.motivo, noteNelMessaggio.map((n) => n.testo), mossaDelMondo, datiTurno, dovuti, correggiEsito, ordine, risposteprivate, nuovaGuardia).catch((err: unknown) =>
       this.dopoEccezione(epoca, r.turno, 'narrazione', err),
     );
   }
@@ -3439,11 +3442,13 @@ export class Regia {
     ordine: readonly string[] = [],
     /** The private replies of the audience split (docs/coerenza.md §2): one call each, in parallel, phones only. */
     risposteprivate: ReadonlyArray<{ id_pg: string; messaggio: string }> = [],
+    /** Builds a fresh outcome guard for each private reply (its state is per call), or null. */
+    nuovaGuardia: (() => (testo: string) => CorrezioneEsito) | null = null,
   ): Promise<void> {
     // The ledger as the narration starts: this turn's cards and falls are in it (docs/coerenza.md §1).
     this.registroOra('prima della narrazione');
     // The private replies start with the public answer and run beside it; the turn waits for them at its end.
-    const private_ = risposteprivate.map((x, k) => this.narraPrivato(turno, epoca, x.id_pg, x.messaggio, k, correggiEsito));
+    const private_ = risposteprivate.map((x, k) => this.narraPrivato(turno, epoca, x.id_pg, x.messaggio, k, nuovaGuardia?.() ?? null));
     const misuratore = this.misuratore!;
     const controllo = new AbortController();
     this.controlloLlm = controllo;

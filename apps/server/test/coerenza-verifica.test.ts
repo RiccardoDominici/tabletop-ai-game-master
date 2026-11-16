@@ -128,6 +128,34 @@ describe('the checker with the whole server', () => {
     expect(richiesta).toContain('## Cosa è vero adesso');
   }, 20_000);
 
+  it('a private reply that names the dead NPC does not use up the table\'s state line (each call has its own guard)', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('prove');
+    const copione = (t: number, m: string): string =>
+      m.includes('## Risposta privata per')
+        ? '[narratore] Ruggero ride piano, solo per te.'
+        : t === 0
+          ? '[narratore] Il fiume rumoreggia.\n[invito] tutti'
+          : t === 3
+            ? '[narratore] Corrado si china sul ponte.\n[narratore] Ruggero alza la testa e ride.\n[invito] tutti'
+            : '[narratore] Il ferro suona sul ponte.\n[invito] tutti';
+    const { url } = await prova.avvia(cartella, copione, {}, { arbitroProve: new ArbitroColpo(), dadi: new DadiACopione([10, 8, 15, 5, 10]) });
+    const schermo = await prova.proiettore(url);
+    const ida = await prova.telefono(url, 'pg_ida');
+    const corrado = await prova.telefono(url, 'pg_corrado');
+    let s = await inizia(schermo, ida);
+    for (const [perCorrado, perIda, privata] of [['Colpisco Ruggero con la spada', 'Guardo il fiume', false], ['Aspetto', 'Aspetto', false], ['Corrado, a parte: tieni d\'occhio il fiume.', 'Aspetto', true]] as const) {
+      const dopo = attendi(ida, (x: StatoTavolo) => x.fase === 'finestra' && x.turno === s.turno + 1);
+      await agisci(corrado, 'pg_corrado', perCorrado, s.versione_scena, privata);
+      await agisci(ida, 'pg_ida', perIda, s.versione_scena);
+      s = await dopo;
+    }
+    const t3 = s.trascrizione.filter((v) => v.turno === 3 && v.tipo === 'narrazione').map((v) => v.testo);
+    // The table hears the dead man's state once, whatever the private reply said first.
+    expect(t3.join(' ')).toContain('Ruggero giace a terra, senza vita.');
+    expect(t3.join(' ')).not.toMatch(/ride/);
+  }, 20_000);
+
   it('a repair that breaks the same rule is not said: the Engine line stays', async () => {
     const { t3, registri } = await partitaConRiparazione('Ruggero si alza e ride ancora.');
     expect(t3.join(' ')).toContain('Ruggero giace a terra, senza vita.');
