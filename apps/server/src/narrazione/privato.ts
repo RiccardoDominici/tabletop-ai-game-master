@@ -198,6 +198,8 @@ export function rispostaPrivataPng(
   nomiPng: Map<string, string[]>,
   nomiPersonaggi: ReadonlySet<string> = new Set(),
   dopoSpostata: string | null = null,
+  /** A fight is on: an NPC's line is its public step, unless a private action names it. */
+  inCombattimento = false,
 ): string | null {
   if (!nomiPng.has(etichetta)) return null;
   const solo = new Map([[etichetta, nomiPng.get(etichetta)!]]);
@@ -222,6 +224,9 @@ export function rispostaPrivataPng(
   if (autoriVerso.length === 1) return autoriVerso[0]!;
   if (autoriVerso.length > 1) return autoriVerso.reduce((m, id) => (punti(id) > punti(m) ? id : m));
   const autori = new Set(private_.map((a) => a.id_pg));
+  // In a fight the NPC who is not whispered to speaks in its own public step (coherence run, off the rails T15: Berta's
+  // words while she attacked Livia in public went to Livia's phone).
+  if (inCombattimento) return null;
   return pubbliche.length === 0 && autori.size === 1 ? [...autori][0]! : null;
 }
 
@@ -251,6 +256,12 @@ export function guardiaPrivate(
   const prima = precedenti.map((p) => ({ ...p, nomi: nomiDi(p.id_pg) }));
   const tuttiPg = [...new Set([...azioni.map((a) => a.id_pg), ...precedenti.map((p) => p.id_pg)])];
   const altriPg = (id: string): string[][] => tuttiPg.filter((x) => x !== id).map(nomiDi);
+  // A line that names a PC who acts in public this turn and shares a word with that action tells that action.
+  const pubblicheDelTurno = azioni.filter((a) => a.testo && !a.privata && !a.sospesa);
+  const raccontaPubblica = (testo: string): boolean => {
+    const daRiga = radici(testo, nomiParole);
+    return pubblicheDelTurno.some((a) => nomina(testo, nomiDi(a.id_pg)) && [...radici(a.testo!, nomiParole)].some((r) => daRiga.has(r)));
+  };
   if (!private_.length && !conRispostePng && !prima.length) return null;
   const nomiParole = new Set([...nomiPersonaggi].flatMap((n) => normalizza(n).split(/\s+/)));
   /**
@@ -288,11 +299,12 @@ export function guardiaPrivate(
     if (gia) return { id_pg: gia, comuni: [] };
     // Prima la risposta di un PNG all'azione privata; poi, per ogni riga, il racconto dell'azione.
     const png = !!etichetta && !!nomiPng?.has(etichetta);
-    const id = conRispostePng && png ? rispostaPrivataPng(testo, etichetta!, azioni, nomiPng!, nomiPersonaggi, spostati.get(segmento - 1) ?? null) : null;
+    const id = conRispostePng && png ? rispostaPrivataPng(testo, etichetta!, azioni, nomiPng!, nomiPersonaggi, spostati.get(segmento - 1) ?? null, inCombattimento) : null;
     let d = id ? { id_pg: id, comuni: [] } : private_.length ? destinatarioPrivato(testo, private_, nomiPersonaggi, contesto, nomiPng) : null;
     if (!d && !png && soloPrivate) d = rispostaSoloPrivata(testo, spostati.get(segmento - 1) ?? null);
-    // Then what was private in an earlier turn, retold now (narrator lines only).
-    if (!d && !png && prima.length) d = precedentePrivato(testo, prima, nomiPersonaggi, contesto, nomiPng);
+    // Then what was private in an earlier turn, retold now (narrator lines only), unless the line tells a public action
+    // of this turn (coherence run, stall T10: «Eliandro chiede cosa ha detto Ugo…», his public question, went to a phone).
+    if (!d && !png && prima.length && !raccontaPubblica(testo)) d = precedentePrivato(testo, prima, nomiPersonaggi, contesto, nomiPng);
     if (d) spostati.set(segmento, d.id_pg);
     return d;
   };

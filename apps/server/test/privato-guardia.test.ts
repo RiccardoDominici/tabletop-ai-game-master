@@ -215,6 +215,14 @@ describe('private content of earlier turns, and turns with only private actions'
     expect(g('Teo prende la strada del mulino.', 2)).toBeNull();
   });
 
+  it('a line that tells another PC\'s public action of this turn stays, though it shares words with a whisper (stall T10)', () => {
+    const SENTITO = { id_pg: 'pg_ida', nomi: ['Ida'], turno: 2, testo: 'Bertoldo, sottovoce: chi passa dal ponte di notte? Hai sentito qualcosa?', pubblico: '', verso: ['png_bertoldo'] };
+    const nomi = (id: string): string[] => (id === 'pg_ida' ? ['Ida'] : ['Corrado']);
+    const nomiPng = new Map([['png_bertoldo', ['bertoldo']]]);
+    const g = guardiaPrivate([{ id_pg: 'pg_corrado', testo: 'Che ha detto Bertoldo? Qualcuno ha sentito qualcosa?', privata: false }], nomi, NOMI, nomiPng, [SENTITO])!;
+    expect(g('Corrado chiede che cosa ha detto Bertoldo a Ida, e se qualcuno ha sentito qualcosa di notte.', 1)).toBeNull();
+  });
+
   it('only a whisper in the turn: the NPC it speaks to, then the lines after, go to that phone; the world stays', () => {
     const nomiPng = new Map([['png_ruggero', ['ruggero lo sgherro', 'ruggero', 'sgherro']]]);
     const sussurro = { id_pg: 'pg_ida', testo: 'Piano a Ruggero, con la punta della spada: «Parla, e ti lascio andare. Dov’è il ragazzo?»', privata: true };
@@ -229,6 +237,9 @@ describe('private content of earlier turns, and turns with only private actions'
     // A line that names another PC is about that PC, not an answer to Ida's whisper.
     const due = guardiaPrivate([sussurro, { id_pg: 'pg_corrado', testo: null }], (id) => (id === 'pg_ida' ? ['Ida'] : ['Corrado']), NOMI, nomiPng)!;
     expect(due('Corrado si accosta allo sgherro e gli chiede del ragazzo.', 1)).toBeNull();
+    // In a fight an NPC not whispered to speaks in its own public step (coherence run, off the rails T15).
+    expect(rispostaPrivataPng('Ti avevo detto di stare fuori dal mio ponte.', 'png_bertoldo', [{ id_pg: 'pg_ida', testo: 'Sussurro a Corrado di prepararsi.', privata: true }], new Map([['png_bertoldo', ['bertoldo']]]), NOMI, null, true)).toBeNull();
+    expect(rispostaPrivataPng('Ti avevo detto di stare fuori dal mio ponte.', 'png_bertoldo', [{ id_pg: 'pg_ida', testo: 'Sussurro a Corrado di prepararsi.', privata: true }], new Map([['png_bertoldo', ['bertoldo']]]), NOMI, null, false)).toBe('pg_ida');
     // In a fight the whispered-to NPC's own attack is a public fact: its name alone does not move the line.
     const inScontro = guardiaPrivate([sussurro], () => ['Ida'], NOMI, nomiPng, [], true)!;
     expect(inScontro('Lo sgherro alza la mazza e la cala su Corrado.', 1)).toBeNull();

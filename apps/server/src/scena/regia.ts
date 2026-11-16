@@ -605,6 +605,8 @@ export class Regia {
     this.violazioniRecenti = [...this.violazioniRecenti, v].slice(-30);
   }
 
+  /** The visit (its entry turn) in which a fight happened: the stall's «nothing new» does not count there. */
+  private scontroInVisita: number | null = null;
   /** How many public cards the last closed turn rolled (the stall's «something new», mondo/stallo.ts). */
   private carteDelTurno: { turno: number; n: number } = { turno: -1, n: 0 };
   /** NPCs whose refusal line has been said in this turn (main answer and repair share it). */
@@ -3314,6 +3316,8 @@ export class Regia {
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento || giocate.decisioni) ? await this.tiriDelTurno(r, giocate) : null;
     // For the stall: did this turn roll anything at the table (a PC's check or attack is something new)?
     this.carteDelTurno = { turno: r.turno, n: tiri?.tiri.filter((t) => !t.privata && !t.del_master).length ?? 0 };
+    // A blow struck or a fight on in this visit of the scene: what follows is not counted as a stall.
+    if (this.prove?.inCombattimento || tiri?.tiri.some((t) => t.tipo === 'attacco')) this.scontroInVisita = this.mondo.visita.ingresso;
     if (epoca !== this.epoca) return;
     // The world: the facts of the actions and the checks owe marks in the response that answers them (docs/mondo.md §2).
     this.mondo.fatti(this.fattiDelTurno(r, scontroPrima), r.turno);
@@ -3626,11 +3630,13 @@ export class Regia {
     // they are the world moving, not the table. Mode B only: there the material is the repertoire's and is tracked; in
     // mode A the narrator improvises it and nothing here could tell an empty answer from a rich one.
     if (esito.esito && !controllo.signal.aborted && this.statoRepertorio) {
+      // A fight in this visit of the scene: what follows it is not a stall (the coherence run on 2a7697c counted a
+      // parley, attacks and questions after the fight as «nothing new»).
       const nuovo =
         esito.uscita.some((u) => u.tipo === 'usa' && !!u.per && !u.motore) ||
         (this.carteDelTurno.turno === turno && this.carteDelTurno.n > 0) ||
         this.mondo.visita.ingresso === turno ||
-        !!this.prove?.inCombattimento;
+        this.scontroInVisita === this.mondo.visita.ingresso;
       this.mondo.stallo.registraEsito(nuovo);
       if (!nuovo) log.info({ turno, fermi: this.mondo.stallo.fermi }, 'world: an answer with nothing new for the table (stall count)');
     }

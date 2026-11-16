@@ -165,14 +165,17 @@ Over-fires found by the same reading: the stall's «nothing new» counts turns w
 T10–T15, CA T13–T17); R-privato moved public lines to a phone (FB T15 Berta's words while she attacks in public; ST T10
 another PC's public question); the private replies logged a missing invitation as an error (fixed, `2c40c29`).
 
-Open, in order (general rules, not this campaign's words):
-1. a creature the ledger does not have, acting or being hit (`R-inesistente`: needs the nouns that name a creature in
-   the language pack, and the ledger's minions);
-2. R-fuori: a subject «lo sguardo / la mano / la voce di X» is X;
-3. R-esito: an «absorbed» blow does not excuse a hit card with damage;
-4. the stall count: not while a fight is on or in the turns right after it;
-5. R-privato: a line that names a public actor doing its public action stays at the table.
-Profile A (`stallo` with the local reader) was not run yet.
+Fixed after the measure (`9e1dab2`, tests on invented fixtures, not yet measured on the scripts):
+- R-fuori: a part of a character joined by «di» to the name («lo sguardo di Zirrà scivola…») is that character
+  (`guardia_fuori.parti`, `di_parte`);
+- R-esito: a blow that hurt, told as missed or absorbed by its target alone («… la pietra lo assorbe»), becomes «Berta
+  colpisce Fulco.»; and such a sentence no longer tells the hit for R-dovuto (`assorb`, `scivola sull`, `e corto`…);
+- the stall: no «nothing new» count in a visit of the scene where a blow was struck or a fight was on;
+- R-privato: in a fight an NPC not whispered to speaks in its own public step; a line that tells another PC's public
+  action of this turn stays at the table.
+Open: a creature the ledger does not have, acting or being hit (`R-inesistente`: the scripts' «goblin con la lancia»
+after the fight). It needs the nouns that name a creature in the language pack and the Engine's «no creature to hit»
+fact passed to the checker; a word-list guess was not added. Profile A (`stallo` with the local reader) not run yet.
 
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a

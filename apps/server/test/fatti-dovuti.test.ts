@@ -84,6 +84,12 @@ describe('il Motore controlla la narrazione (italiano)', () => {
     expect(fattiMancanti(due, ['Corrado colpisce Ruggero alla spalla. Ruggero risponde e lo ferisce, il colpo arriva a Corrado.'])).toEqual([]);
   });
 
+  it('a blow told as absorbed does not tell the hit (coherence run, off the rails T13): the Engine says it', () => {
+    expect(fattiMancanti([colpito], ['Il colpo di Corrado è corto, e la cotta di Ruggero lo assorbe.'])).toHaveLength(1);
+    expect(fattiMancanti([colpito], ['Ruggero schiva il colpo.'])).toHaveLength(1);
+    expect(fattiMancanti([colpito], ['La spada di Corrado colpisce Ruggero al fianco.'])).toEqual([]);
+  });
+
   it('the name in one row, the fact in the next row with no subject: said (no duplicate «… fugge.»)', () => {
     const fugge: FattoDovuto = { tipo: 'fuggito', ...RUGGERO };
     const tutti = ['Ruggero lo sgherro', 'Ruggero', 'Corrado Lanzi', 'Corrado', 'Ida'];

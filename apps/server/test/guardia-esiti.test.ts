@@ -52,6 +52,15 @@ describe('guardia degli esiti (italiano)', () => {
     expect(guardia([attacco('pg_corrado', 'png_ruggero', true)])('La spada di Corrado cala sullo sgherro, che grida e cade all’indietro.')).toEqual({ testo: 'Ruggero incassa il colpo, ma resta in piedi.', motivo: 'caduta_senza_fatto' });
   });
 
+  it('a blow that hurt, told as absorbed or missed by the target alone (coherence run, off the rails T13) → the hit', () => {
+    const g = guardia([attacco('png_ruggero', 'pg_ida', true, 3)]);
+    expect(g('Il pugno le scivola sulla spalla di Ida, ma il colpo è corto e la pietra lo assorbe.')).toEqual({ testo: 'Ruggero colpisce Ida.', motivo: 'colpo_contrario' });
+    expect(g('La mazza passa accanto a Ida e batte sul muro.')).toEqual({ testo: 'Ruggero colpisce Ida.', motivo: 'colpo_contrario' });
+    // A hit word in the sentence, or the attacker named (the pair rule judges it), or no damage: left to the other rules.
+    expect(g('La mazza la colpisce di striscio, Ida barcolla.')).toBeNull();
+    expect(guardia([attacco('png_ruggero', 'pg_ida', true, 0)])('La pietra assorbe il colpo e Ida resta salda.')).toBeNull();
+  });
+
   it('a standing PC told down because the player said so (third e2e pass, bug 3) → «Ida è ancora in piedi.»', () => {
     // The player wrote «I see Ida down»; for the Engine she stands at 1 hit point.
     expect(guardia([])('Ida è a terra, e la spalla le sanguina.')).toEqual({ testo: 'Ida è ancora in piedi.', motivo: 'caduta_senza_fatto' });

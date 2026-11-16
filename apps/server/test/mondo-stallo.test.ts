@@ -8,6 +8,15 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { PericoloMondo } from '../src/campagna/mondo';
 import { ContatoreStallo, livelloStallo, mossaDiStallo, senzaDecisione, stalloDuro, type ContestoStallo } from '../src/mondo/stallo';
 import { attendi, inizia, Prova, turno } from './aiuti/partita';
+import { DadiACopione } from '../src/prove/dadi';
+import type { ArbitroProve, DecisioneProva, IngressoArbitroProve } from '../src/prove/tipi';
+
+class ArbitroColpo implements ArbitroProve {
+  async classifica(i: IngressoArbitroProve): Promise<Record<string, DecisioneProva>> {
+    const base = (id: string): DecisioneProva => ({ id, tipo: 'nessuna', caratteristica: null, abilita: null, bersaglio: null, arma: null, prova_scena: null, difficolta: null, abilita_bersaglio: null, vantaggio: null, motivo: '', aiuta: null, reazione: null });
+    return Object.fromEntries(i.azioni.map((a) => [a.id, /colpisco/i.test(a.testo) ? { ...base(a.id), tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'spada_lunga' } : base(a.id)]));
+  }
+}
 
 const fiume: PericoloMondo = { id: 'p_fiume', fronte: 'f', orologio: 'o_piena', impulso: 'allagare', mosse: ['sale di un palmo'], cast: ['png_mugnaio'], segniVisibili: ['Un tonfo a monte.'] };
 const voci: PericoloMondo = { id: 'p_voci', fronte: 'f', orologio: 'o_voci', impulso: 'accusare', mosse: ['sparge una voce'], cast: ['png_mugnaio'], segniVisibili: [] };
@@ -139,6 +148,18 @@ describe('mode B: answers that bring nothing new count, whatever the words (thir
     c.registraEsito(false);
     c.registraEsito(false);
     expect(c.registra('decisa', false, true)).toBe(0);
+  });
+
+  it('after a fight in the scene, turns with nothing new are not a stall (coherence run: a parley, attacks after the fight)', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('prove');
+    // T1 opens a fight (Corrado hits Ruggero: 10 + 5, 8 + 3 = 11, Ruggero dies); then «nothing new» turns follow.
+    const { url } = await prova.avvia(cartella, (t) => (t === 0 ? '[narratore] Il fiume.\n[invito] tutti' : '[narratore] Il vento soffia.\n[invito] tutti'), {}, { arbitroProve: new ArbitroColpo(), dadi: new DadiACopione([10, 8, 15, 5, 10]) });
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_corrado');
+    let s = await inizia(schermo, tel);
+    for (const testo of ['Colpisco Ruggero con la spada', 'Cerco il secondo bandito nel fango.', 'Grido al bandito di arrendersi.', 'Cerco ancora il bandito.', 'Mi siedo sul ponte.']) s = await turno(tel, 'pg_corrado', s, testo);
+    expect(prova.turni().filter((r) => r['stallo'])).toEqual([]);
   });
 
   it('real decisions toward the NPCs, answered only by improvised narration, never reach a stall (no free clue)', async () => {

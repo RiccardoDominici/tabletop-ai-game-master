@@ -67,6 +67,13 @@ describe('out-of-play guard (Italian)', () => {
     expect(guardiaFuori({ nomi: NOMI, nome: (id) => id, fuoriDaPrima: () => null })).toBeNull();
   });
 
+  it('a part of the fallen one acts for him: «lo sguardo di Ruggero scivola…» (coherence run, combat T12)', () => {
+    expect(guardia({ png_ruggero: 'fuggito' })('Lo sguardo di Ruggero scivola sulla spada di Ida, poi sul fuoco.')).toMatchObject({ testo: 'Ruggero non è più qui.' });
+    // The part of someone else, or a thing of the fallen one, is not his act.
+    expect(guardia({ png_ruggero: 'fuggito' })('Lo sguardo di Ida scivola su Ruggero.')).toBeNull();
+    expect(guardia({ png_ruggero: 'morto' })('La spada di Ruggero giace nel fango.')).toBeNull();
+  });
+
   it('a fled NPC, and an alias shared with a character still in play is not a sign of the fallen one', () => {
     expect(guardia({ png_ruggero: 'fuggito' })('Ruggero sputa nel fiume.')).toMatchObject({ testo: 'Ruggero non è più qui.' });
     const condivisi = new Map(NOMI);

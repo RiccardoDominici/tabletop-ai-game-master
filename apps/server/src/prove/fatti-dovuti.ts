@@ -18,6 +18,7 @@ import { nomeBreve } from '../campagna/nomi';
 import { testo } from '../lingua';
 import { campoElenco, regole } from '../lingua/motore';
 import { continuaIlSoggetto } from '../narrazione/guardia-fuori';
+import { paroleMancato } from '../narrazione/guardia-esiti';
 
 /** L'esito di un tiro contro la morte (prove/combattimento.ts). */
 export type EsitoMorte = 'morto' | 'stabile' | 'rialzato' | 'morente';
@@ -104,8 +105,18 @@ function nomiDi(id: string, nome: string, altri: (id: string) => readonly string
 /** Il testo (una riga o una frase) racconta il fatto: nomina la creatura e ha una parola del tipo. */
 export function diceFatto(f: FattoDovuto, t: string, altri: (id: string) => readonly string[] = () => []): boolean {
   const radici = parole()[f.tipo];
+  // A blow told as missed or absorbed does not tell that it hurt (the coherence run on 2a7697c, off the rails T13: «il
+  // colpo è corto e la pietra lo assorbe» passed as the hit on Fulco).
+  if (f.tipo === 'colpito' && raccontaMancato(t)) return false;
   const nomiDa = f.da?.flatMap((d) => nomiDi(d.id, d.nome, altri)) ?? null;
   return nomina(t, nomiDi(f.id, f.nome, altri)) && (!nomiDa || nomina(t, nomiDa)) && paroleDi(t).some((p) => radici.some((k) => p.startsWith(k)));
+}
+
+/** The sentence tells a miss or an absorbed blow (the outcome guard's words, guardia_esiti.mancato / assorbito). */
+function raccontaMancato(t: string): boolean {
+  const w = paroleDi(t);
+  const tutte = [...paroleMancato().mancato, ...paroleMancato().assorbito];
+  return tutte.some((v) => w.some((_, i) => v.every((k, j) => w[i + j]?.startsWith(k))));
 }
 
 /** La riga breve del Motore per un fatto: «Corrado cade a terra.» (il nome breve). */

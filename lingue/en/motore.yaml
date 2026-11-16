@@ -208,7 +208,7 @@ guardia_esiti:
   # Verbs of receiving: their subject is the target («Fulco takes Zirrà's blow»).
   subisce: [takes, is hit, is struck, gets hit, hit by, struck by, suffers]
   # A near-hit the armour absorbs: it fits a miss and a hit with no damage, so it is never a contradiction.
-  assorbito: [glancing, grazes, graze, armor holds, armour holds, glances off, bounces off, without wounding, harmlessly, no harm]
+  assorbito: [glancing, grazes, graze, armor holds, armour holds, glances off, bounces off, without wounding, harmlessly, no harm, absorb, slides off]
   # Not a creature falling: idioms and other subjects («her gaze falls», «silence falls», «lets the club drop»).
   figurati: [throws herself, throws himself, throws themselves, drops flat, ducks, crouches, lies flat, gaze, eyes, eye, voice, silence, night, dusk, darkness, snow, rain, lets fall, lets the, drops the, drops her, drops his, from her hand, from his hand, shield, sword, blade, weapon, club, hood, key, cloak, head, shoulders, arms]
   # Subject and relative pronouns: «… and he collapses», «…, who collapses» have the creature named before as subject.
@@ -229,6 +229,9 @@ guardia_fuori:
   apertura: [and, but, then, so, meanwhile, still, only, even, while, when, the, a, an]
   articoli: [the, a, an, this, that, these, those, his, her, its, their, someone, somebody, something, nobody, everyone, everybody]
   preposizioni: [from, in, on, at, behind, outside, inside, above, below, beyond, near, with, by, through, over, under, across, toward, towards, around, against, along, up, down, there, here]
+  # «The gaze of Zirrà slides…»: a part of a character, then one of `di_parte`, then the name: that character acts.
+  parti: [gaze, eyes, eye, hand, hands, voice, face, head, mouth, laugh, smile, lips, arm, arms, fingers, step, steps, shadow]
+  di_parte: [of]
   stato: [lies, lying, dead, motionless, unconscious, on the ground, lifeless, corpse, body, bleed, does not move, doesn't move, not breathing, gone, fled, no longer here, out cold, still on the floor]
 
 # Refusal guard (apps/server/src/narrazione/guardia-rifiuti.ts): after a failed social check toward an NPC, its line

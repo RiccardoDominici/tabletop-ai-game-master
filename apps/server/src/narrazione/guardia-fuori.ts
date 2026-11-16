@@ -34,6 +34,9 @@ interface Parole {
   articoli: ReadonlySet<string>;
   preposizioni: ReadonlySet<string>;
   stato: string[][];
+  /** Parts of a character that act for it («lo sguardo di X», «la mano di X»), and the words that join them. */
+  parti: ReadonlySet<string>;
+  diParte: ReadonlySet<string>;
 }
 
 const parole = (): Parole =>
@@ -44,6 +47,8 @@ const parole = (): Parole =>
     stato: campoElenco(s, 'stato')
       .map((x) => paroleDi(x))
       .filter((v) => v.length > 0),
+    parti: new Set(campoElenco(s, 'parti').map(normalizza)),
+    diParte: new Set(campoElenco(s, 'di_parte').map(normalizza)),
   }));
 
 /**
@@ -111,7 +116,13 @@ export function guardiaFuori(d: DatiGuardiaFuori): ((frase: string) => Correzion
       let j = 0;
       while (j < c.length && p.apertura.has(c[j]!)) j++;
       const conArticolo = c.slice(0, j).some((x) => p.articoli.has(x));
-      const primo = nominati[0];
+      // «Lo sguardo di Zirrà scivola…»: a part of a character (`parti`) followed by «di» and the name is that character
+      // (the coherence run on 2a7697c, combat T12: a fled goblin's gaze moved across the yard).
+      if (j < c.length && p.parti.has(c[j]!) && p.diParte.has(c[j + 1] ?? '')) {
+        const dopo = nominati.find((x) => x.i === j + 2);
+        if (dopo) j += 2;
+      }
+      const primo = nominati[0] && nominati.find((x) => x.i === j) ? nominati.find((x) => x.i === j) : nominati[0];
       // The subject of this clause (null: a thing, «la voce gli trema»), and how many words follow it: what it does.
       // `soggetto` keeps the last character who was a subject: a clause with no subject of its own carries it.
       let attuale: string | null = soggetto;

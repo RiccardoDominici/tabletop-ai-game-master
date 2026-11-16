@@ -121,6 +121,12 @@ export function pronomiDiSoggetto(): ReadonlySet<string> {
   return parole().pronomi;
 }
 
+/** The words of a miss and of an absorbed blow, from this one compilation (prove/fatti-dovuti.ts reads them too). */
+export function paroleMancato(): { mancato: readonly string[][]; assorbito: readonly string[][] } {
+  const p = parole();
+  return { mancato: p.mancato, assorbito: p.assorbito };
+}
+
 export function paroleDi(t: string): string[] {
   return normalizza(t)
     .replace(/[^\p{L}\p{N}' ]/gu, ' ')
@@ -208,6 +214,8 @@ export function guardiaEsiti(d: DatiGuardiaEsiti): (frase: string) => Correzione
   // Who can fall for the Engine: the NPCs with a sheet, and the PCs too (third e2e pass, bug 3: a player wrote «Vedo
   // Nespola a terra» and the narration had her «a terra» at 1 hit point; another wrote «Ho zero punti ferita» at 5 of 5).
   const png = [...d.nomi.keys()].filter((id) => (id.startsWith('png_') || id.startsWith('pg_')) && d.conScheda(id));
+  // The turn's blows that landed and hurt: a sentence that has them missed or absorbed contradicts them.
+  const ferite = attacchi.filter((t) => t.riuscita && (t.danno?.totale ?? 0) > 0);
   return (frase) => {
     const p = parole();
     const w = paroleDi(frase);
@@ -228,6 +236,17 @@ export function guardiaEsiti(d: DatiGuardiaEsiti): (frase: string) => Correzione
         if (detto.esito === 'mancato' && c.riuscita) return { testo: testo('prove.guardia.colpisce', { chi: c.nomeChi, bersaglio: c.nomeBersaglio }), motivo: 'colpo_contrario' };
         // This sentence tells this card, and agrees with it: no other pair to judge (the fall check still runs).
         break;
+      }
+    }
+    // 1b. A blow that hurt, told as missed or absorbed by the target alone (no attacker named): the coherence run on
+    // 2a7697c, off the rails T13, card «Berta: A mani nude 15, riuscita» (3 damage), narration «Il pugno le scivola sulla
+    // spalla di Fulco, ma il colpo è corto e la pietra del simbolo lo assorbe». Absorbed fits a hit with no damage only.
+    const senzaColpo = !p.colpito.some((v) => posizione(w, v) >= 0);
+    if (senzaColpo && (ha(w, p.assorbito) || p.mancato.some((v) => posizione(w, v) >= 0))) {
+      for (const t of ferite) {
+        const b = doveNomina(w, d.nomi.get(t.bersaglio!.id) ?? []);
+        const a = doveNomina(w, d.nomi.get(t.chi) ?? []);
+        if (b >= 0 && a < 0) return { testo: testo('prove.guardia.colpisce', { chi: nomeBreve(t.nome), bersaglio: nomeBreve(t.bersaglio!.nome) }), motivo: 'colpo_contrario' };
       }
     }
     // 2. A fall with no fact: a standing NPC with a sheet is the subject of a defeat word (not an idiom), and no NPC
