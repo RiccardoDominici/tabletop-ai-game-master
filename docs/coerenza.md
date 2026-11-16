@@ -148,6 +148,32 @@ profile B:
   (`esperimenti/risultati/e2e-finale-3b/dopo-*`).
 Then, if `memory_pressure` shows at least 30% free, one profile-A run of `stallo`.
 
+## Measured (16 November, the three blind scripts on `2a7697c`)
+
+Runs: `esperimenti/risultati/e2e-finale-3b/coerenza-*` (combat with manual and automatic rolls, off the rails, stall;
+profile B, ports 4944–4947). Baseline: `prima-*` on `958556a`. Judged by a blind haiku reader of the per-turn views
+(table record next to the Engine's log), quotes checked by hand.
+
+| Criterion | Result | Met |
+|---|---|---|
+| 0 high-severity violations heard at the table | definite: CM 1 (T12 «Lo sguardo di Zirrà scivola sulla spada di Livia…», Zirrà fled), CA 0, FB 1 (T13 card «Berta: A mani nude 15, riuscita», narration «Il pugno le scivola… lo assorbe»), ST 0; probable: CM 9, CA 4, FB 2, ST 0, almost all a goblin the Engine does not have («il goblin con la lancia» of the scripts) attacked or acting after the fight | **no** |
+| private content at the table (`private_al_tavolo.py`) | 3, 4, 5, 8 candidates, all common-word noise: 0 contents | yes |
+| every caught violation logged with its rule | CM: R-fuori 16 (6 replaced, 8 dropped, 2 rewritten), R-esito 2 (1 rewritten), R-assente 2, R-privato 6; CA: R-fuori 10 (3 rewritten), R-esito 2, R-privato 3; FB: R-privato 3, R-rifiuto 1, R-dovuto 1; ST: R-privato 6 | yes |
+| median first-audio within +0.5 s of the baseline | 1854 ms (61 turns) against 2434 ms (78 turns) | yes |
+
+Over-fires found by the same reading: the stall's «nothing new» counts turns with real decisions after a fight (CM
+T10–T15, CA T13–T17); R-privato moved public lines to a phone (FB T15 Berta's words while she attacks in public; ST T10
+another PC's public question); the private replies logged a missing invitation as an error (fixed, `2c40c29`).
+
+Open, in order (general rules, not this campaign's words):
+1. a creature the ledger does not have, acting or being hit (`R-inesistente`: needs the nouns that name a creature in
+   the language pack, and the ledger's minions);
+2. R-fuori: a subject «lo sguardo / la mano / la voce di X» is X;
+3. R-esito: an «absorbed» blow does not excuse a hit card with damage;
+4. the stall count: not while a fight is on or in the turns right after it;
+5. R-privato: a line that names a public actor doing its public action stays at the table.
+Profile A (`stallo` with the local reader) was not run yet.
+
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a
   creature by a noun outside its aliases («la creatura») is not seen. The ledger makes the rules simpler (one notion

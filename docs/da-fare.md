@@ -31,14 +31,22 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
      the goblin fled (docs/prove-verifica.md §6b).
   Still open:
   - Haiku still answers «impossibile» for lifting a cart, with a `motivo` that contradicts the verdict (the verdict
-    field comes before the reason): a reason-first field or a deterministic check (docs/prove-verifica.md §5);
+    field comes before the reason): a reason-first field or a deterministic check (docs/prove-verifica.md §5). A
+    reason-first field was measured on 16 November: the cart solved, the twenty down from 18.0 to 15.7: dropped;
   - initiative by sides is unit-tested only (no example campaign's set uses it);
   - ~~the told-facts guard added a duplicate «Zirrà fugge.» after a narration that told the flight («sparisce oltre il
     crollo»)~~ **Done** (16 November): a row with no subject continues the row before (docs/combattimento.md §3.7);
-  - a fight opened from the panel rolls the PCs' first initiative with the Engine's dice; side rolls stay the Engine's;
+  - a fight opened from the panel rolls the PCs' first initiative with the Engine's dice; side rolls stay the Engine's
+    (still open after the e2e fix pass of 16 November);
   - «the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll);
   - no example campaign uses minions yet; world questions and minions not yet seen in a live run.
-- **Final end-to-end pass on today's code** (not started): blind scripts for combat in turn order, off the rails (ignore the hook, attack the quest-giver, leave), doing nothing (stall), plus one dictated action; profiles A and B. Run it with one model server at a time (the Mac rebooted twice under memory pressure on 14 November).
+- **Final end-to-end pass on today's code**: done in profile B (docs/e2e-finale-3.md, 958556a: not ready), and its fix
+  pass (§7 there, 16 November: bugs 1, 2, 6, 7, 8, 10 fixed with tests, 3 and 4 partly, run folders in
+  `esperimenti/risultati/e2e-finale-3b/`). Still open from it: hits told with no attacker named or with a receiving
+  phrase outside the list (bug 4), attacks narrated with no card (bug 5), NPC presence fed by the narration and NPCs the
+  players invent voiced by existing ones (bug 9), the cart «impossibile» (11a), the panel's fight and manual
+  initiative (11c); profile A and the dictated action were not run; the web cards without DC were checked at JSON level
+  and in the web unit tests, not in a browser.
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.
   Done, by step: research (c0ebcc1), design (96b59e7, 6e2df77), `strumenti/strati.py` (09b3ef4), validator of sessions and STATO/CONTINUITÀ (e02e26c, 8fcfe18), skill (a10a172), session packages and the server side (2d3f2d4, 5bc833b, 7201894).
   Still open: no campaign above one-shot has been played across several sessions yet (no commit records it), so this is not yet verified on a real run.
