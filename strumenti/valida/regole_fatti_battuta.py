@@ -17,7 +17,7 @@ from .carica import Campagna
 from .esito import Esito
 
 CLASSI_STATO = ("in_gioco", "a_terra", "morto", "fuggito")
-TIPI_ESITO = ("colpito", "mancato", "a_terra", "fugge")
+TIPI_ESITO = ("colpito", "mancato", "ferito", "a_terra", "fugge", "nessuno")
 
 
 def _ids(v) -> list | None:

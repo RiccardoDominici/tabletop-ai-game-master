@@ -12,8 +12,9 @@ battute:
       - "[png_id] <parole dette dal PNG>"
     attori: [<id dei PNG che nelle righe del narratore agiscono o sono lì, anche senza nome: «si volta», «lei»>]
     menzionati: [<id dei PNG di cui si parla soltanto: non agiscono, possono non esserci>]
-    richiede: {stati: {<id>: a_terra | morto | fuggito | in_gioco}}   # solo se la battuta racconta lo stato di un PNG («il corpo giace…»)
-    # e, se la battuta racconta un esito: esito: {tipo: colpito | mancato | a_terra | fugge, chi: <id del PNG che colpisce o fugge; niente = il PG che agisce>, bersaglio: <id di chi è colpito>}
+    richiede:
+      stati: {<id>: a_terra | morto | fuggito | in_gioco}   # solo se la battuta dà per vero lo stato di un PNG («il corpo giace…»)
+      esito: {tipo: colpito | mancato | ferito | a_terra | fugge | nessuno, chi: <id del PNG che colpisce o fugge; niente = il PG che agisce>, bersaglio: <id di chi è colpito>}   # obbligatorio in combattimento per ogni battuta di un combattente
     stallo: 1 | 3   # solo se il compito chiede battute di stallo
 
 Regole:
@@ -27,7 +28,13 @@ Regole:
 - Niente fatti di trama nuovi, niente indizi, confessioni o segreti: le rivelazioni sono già preparate. Le PAROLE SEGRETE elencate non si dicono mai.
 - Le battute non contraddicono MAI «Cosa è vero adesso»: chi è a terra, morto, fuggito o uscito non agisce, non parla e non è lì; nessuna creatura che non c'è.
 - Ogni PNG che una riga del narratore nomina o fa agire va in «attori» (agisce o è lì) o in «menzionati» (se ne parla soltanto); lo stato che la battuta dà per vero di un PNG va in «richiede.stati». Il Motore offre la battuta solo quando questi fatti sono veri.
-- Una battuta che racconta un colpo andato a segno, un colpo mancato, una caduta o una fuga lo dice in «richiede.esito», con lo stesso esito delle carte di «Cosa è vero adesso» («In questo turno: …»): il Motore la offre solo per un'azione la cui carta dice proprio quello. Non raccontare un esito che le carte non hanno.
+- Una battuta che racconta un colpo andato a segno, un colpo mancato, un ferito, una caduta o una fuga lo dice in «richiede.esito», con lo stesso esito delle carte di «Cosa è vero adesso» («In questo turno: …»): il Motore la offre solo per un'azione la cui carta dice proprio quello. Non raccontare un esito che le carte non hanno. In combattimento OGNI battuta di un combattente ha «richiede.esito», anche «nessuno»; senza, il Motore la rifiuta. Esempi (id inventati):
+  - «[narratore] La lama passa a un dito dal collo del bandito.» → esito: {tipo: mancato, bersaglio: png_bandito}
+  - «[narratore] La mazza del bandito si abbatte sullo scudo e lo spacca.» → esito: {tipo: colpito, chi: png_bandito}
+  - «[png_bandito] Ahi! Questa me la paghi!» → esito: {tipo: ferito, bersaglio: png_bandito}
+  - «[narratore] Il bandito crolla sulle ginocchia e non si rialza.» → esito: {tipo: a_terra, bersaglio: png_bandito}
+  - «[narratore] Il bandito getta l'arma e corre verso il bosco.» → esito: {tipo: fugge, chi: png_bandito}
+  - «[png_bandito] Avanti, chi è il prossimo?» → esito: {tipo: nessuno}
 - Nient'altro in richiede, niente effetti né varianti: il Motore li rifiuta.
 
 Pronunce (facoltative, accanto a «battute»): un nome proprio NUOVO che usi in una battuta (assente dalla scheda e dalla trascrizione) e ogni nome dell'elenco «Nomi senza pronuncia» che è davvero un nome proprio hanno una voce, con la grafia che fa leggere bene il nome a una voce sintetica italiana (accento grafico sulla sillaba tonica, «z sonora» → «dz», niente simboli fonetici):

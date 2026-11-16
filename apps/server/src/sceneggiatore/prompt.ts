@@ -28,6 +28,7 @@ export function messaggioSceneggiatore(rq: RichiestaSceneggiatore, contesto: str
       : rq.tipo === 'subito' && rq.azione
         ? t('subito', { nome: rq.azione.nome, id_pg: rq.azione.id_pg, testo: rq.azione.testo, privata: rq.azione.privata ? t('privata') : '' })
         : [t('prossime', { quante: rq.quante }), rq.stallo ? compitoStallo(rq.stallo, t) : ''].filter(Boolean).join('\n');
+  const compitoPieno = rq.scontro && rq.tipo !== 'chiusura' ? `${compito}\n${t('scontro')}` : compito;
   return [
     t('contesto', { contesto }),
     t('scena', { titolo: rq.scena.titolo, id: rq.scena.id, presenti: rq.scena.png_presenti.join(', ') || t('nessuno') }),
@@ -48,7 +49,7 @@ export function messaggioSceneggiatore(rq: RichiestaSceneggiatore, contesto: str
       : '',
     esempi ? t('esempi', { esempi }) : '',
     rq.nomi_senza_pronuncia?.length ? t('pronunce', { nomi: rq.nomi_senza_pronuncia.join(', ') }) : '',
-    t('compito', { compito, prefisso: rq.prefisso }),
+    t('compito', { compito: compitoPieno, prefisso: rq.prefisso }),
   ]
     .filter(Boolean)
     .join('\n\n');

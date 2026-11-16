@@ -91,7 +91,12 @@ export interface CarteDelTurno {
  */
 export function motivoEsito(b: Battuta, entita: readonly EntitaRegistro[], carte: CarteDelTurno, per: string | null): string | null {
   const e = b.richiede.esito;
-  if (!e) return null;
+  if (!e || e.tipo === 'nessuno') return null;
+  if (e.tipo === 'ferito') {
+    // Someone hurt: a blow of this turn landed on them (round 5: «Zirrà: Ahi! … prendi questa» with no card on her).
+    const chi = e.bersaglio ?? (b.chi !== 'narratore' ? b.chi : null);
+    return carte.esiti.some((k) => k.tipo === 'attacco' && !k.privata && k.riuscita && (!chi || k.bersaglio?.id === chi)) ? null : `tells ${chi ?? 'someone'} hurt: no card of this turn says so`;
+  }
   if (e.tipo === 'fugge') {
     const id = e.chi ?? e.bersaglio;
     const x = entita.find((y) => y.id === id);

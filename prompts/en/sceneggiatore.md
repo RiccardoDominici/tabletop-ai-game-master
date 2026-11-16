@@ -12,8 +12,9 @@ battute:
       - "[png_id] <words spoken by the NPC>"
     attori: [<ids of the NPCs who act or are there in the narrator rows, even unnamed: «she turns», «he»>]
     menzionati: [<ids of the NPCs only talked about: they do not act, they may be away>]
-    richiede: {stati: {<id>: a_terra | morto | fuggito | in_gioco}}   # only if the line tells an NPC's state («the body lies…»)
-    # and, if the line tells an outcome: esito: {tipo: colpito | mancato | a_terra | fugge, chi: <id of the NPC who strikes or flees; none = the acting PC>, bersaglio: <id of who is struck>}
+    richiede:
+      stati: {<id>: a_terra | morto | fuggito | in_gioco}   # only if the line takes an NPC's state as true («the body lies…»)
+      esito: {tipo: colpito | mancato | ferito | a_terra | fugge | nessuno, chi: <id of the NPC who strikes or flees; none = the acting PC>, bersaglio: <id of who is struck>}   # mandatory in a fight for every line of a combatant
     stallo: 1 | 3   # only if the task asks for stall lines
 
 Rules:
@@ -27,7 +28,13 @@ Rules:
 - No new plot facts, no clues, confessions or secrets: the revelations are already prepared. The SECRET WORDS listed are never said.
 - The lines NEVER contradict «What is true now»: whoever is down, dead, fled or gone does not act, speak or stand there; no creature that is not there.
 - Every NPC a narrator row names or makes act goes in «attori» (acts or is there) or in «menzionati» (only talked about); the state the line takes as true of an NPC goes in «richiede.stati». The Engine offers the line only while those facts are true.
-- A line that tells a blow that landed, a miss, a fall or a flight says it in «richiede.esito», with the same outcome as the cards in «What is true now» («This turn: …»): the Engine offers it only for an action whose card says exactly that. Never tell an outcome the cards do not have.
+- A line that tells a blow that landed, a miss, someone hurt, a fall or a flight says it in «richiede.esito», with the same outcome as the cards in «What is true now» («This turn: …»): the Engine offers it only for an action whose card says exactly that. Never tell an outcome the cards do not have. In a fight EVERY line of a combatant has «richiede.esito», «nessuno» too; without it the Engine rejects the line. Examples (invented ids):
+  - «[narratore] The blade passes a finger from the bandit's neck.» → esito: {tipo: mancato, bersaglio: png_bandit}
+  - «[narratore] The bandit's mace comes down on the shield and splits it.» → esito: {tipo: colpito, chi: png_bandit}
+  - «[png_bandit] Argh! You'll pay for that!» → esito: {tipo: ferito, bersaglio: png_bandit}
+  - «[narratore] The bandit drops to his knees and does not get up.» → esito: {tipo: a_terra, bersaglio: png_bandit}
+  - «[narratore] The bandit throws down his weapon and runs for the woods.» → esito: {tipo: fugge, chi: png_bandit}
+  - «[png_bandit] Come on, who's next?» → esito: {tipo: nessuno}
 - Nothing else in richiede, no effetti or varianti: the Engine rejects them.
 
 Pronunciations (optional, next to «battute»): a NEW proper noun you use in a line (missing from the card and the transcript) and every name in the «Names without a pronunciation» list that really is a proper noun get an entry, with a respelling that makes an English synthetic voice read the name right (stressed syllable in capitals, hyphens between syllables, plain letters, no phonetic symbols):

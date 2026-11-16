@@ -70,7 +70,7 @@ import { messaggioChiusura, messaggioRiparazione } from '../narrazione/messaggio
 import { segretiNascosti, type EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 import { CanaleSceneggiatore } from '../sceneggiatore/canale';
 import type { RichiestaSceneggiatore, RispostaSceneggiatore } from '../sceneggiatore/protocollo';
-import { validaBattute } from '../sceneggiatore/valida';
+import { battuteGrezze, validaBattute } from '../sceneggiatore/valida';
 import { èRilascio, interlocutore, motivoFuoriContesto } from '../repertorio/rilascio';
 import { giaUsati, ticBloccati } from '../sceneggiatore/ripetizioni';
 
@@ -2156,6 +2156,7 @@ export class Regia {
       vero_adesso: righeVeroAdesso(this.diarioRegistro.registro ?? this.registroOra('sceneggiatore')),
       prefisso: `sc_${id.replace(/[^a-z0-9]+/gi, '_').toLowerCase()}_`,
       quante,
+      ...(this.prove?.inCombattimento ? { scontro: true } : {}),
       gia_usati: { ...giaUsati(this.trascrizione, turno), tic: Object.fromEntries(ticBloccati(this.trascrizione, this.campagna.png)) },
     };
   }
@@ -2192,6 +2193,7 @@ export class Regia {
       entita: (this.diarioRegistro.registro ?? this.registroOra('sceneggiatore')).entita,
       ...(rq.tipo === 'subito' ? { finoAlTurno: rq.turno } : {}),
       scontro: !!this.prove?.inCombattimento || this.scontroInVisita === this.mondo.visita.ingresso || (this.storiaVisita.ingresso === this.mondo.visita.ingresso && this.storiaVisita.carte.length > 0),
+      ...(this.prove?.inCombattimento ? { combattenti: new Set((this.prove.vistaCombattimento()?.combattenti ?? []).filter((x) => x.di_png).map((x) => x.id)) } : {}),
     });
     for (const b of v.accettate) {
       // A scriptwriter's summary of the known leads (stallo 3) is true for a few turns: then the leads change.
@@ -2214,7 +2216,9 @@ export class Regia {
     // Le «prossime» si diranno più avanti: la loro voce si prepara adesso, in sottofondo.
     if (rq.tipo === 'prossime' && v.accettate.length) this.o.preGeneraAudio?.(v.accettate);
     const tetto = this.o.sceneggiatore?.tettoMs ?? TETTO_SCENEGGIATORE_MS;
-    const prima = v.accettate[0];
+    // A `subito` answer in a fight comes as a hit and a miss line: the one said is the first whose outcome the card of
+    // the answered action confirms (the gate before round 6: the scriptwriter wrote the pair, the hit first).
+    const prima = subito ? (v.accettate.find((b) => !s.motivoEsitoPer(b, subito.pg)) ?? v.accettate[0]) : v.accettate[0];
     let consegnata = false;
     if (subito && prima) {
       if (ms > tetto) this.o.log.info({ richiesta: rq.id, ms, tetto }, 'sceneggiatore: battuta arrivata oltre il tetto, resta nel repertorio');
@@ -2224,7 +2228,10 @@ export class Regia {
     // The facts each line carries (docs/repertorio.md) go to the record too: round 4 could not tell whether the
     // scriptwriter wrote them or the Engine added them (`corrette`).
     const fatti = (b: Battuta): Record<string, unknown> => ({ ...(b.stallo ? { stallo: b.stallo } : {}), ...(b.attori !== null ? { attori: b.attori } : {}), ...(b.menzionati.length ? { menzionati: b.menzionati } : {}), ...(Object.keys(b.richiede.stati).length ? { stati: b.richiede.stati } : {}), ...(b.richiede.esito ? { esito: b.richiede.esito } : {}), ...(b.fino_al_turno !== undefined ? { fino_al_turno: b.fino_al_turno } : {}) });
-    this.o.registroNarrazioni.scrivi({ ...riga, accettate: v.accettate.map((b) => ({ id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, temi: b.temi, testo: b.testo, ...fatti(b) })), scartate: v.scartate, ...(v.corrette?.length ? { corrette: v.corrette } : {}), consegnata, ...(subito ? { per_pg: subito.pg, azione: rq.azione?.testo ?? null, privata: subito.privata } : {}) });
+    // The refused lines' text too (round 5 could not tell which of its 21 untagged-outcome refusals were right).
+    const grezze = new Map(battuteGrezze(rs.yaml).map((b) => [String(b['id'] ?? ''), b['testo']]));
+    const scartate = v.scartate.map((x) => (grezze.has(x.id) ? { ...x, testo: grezze.get(x.id) } : x));
+    this.o.registroNarrazioni.scrivi({ ...riga, accettate: v.accettate.map((b) => ({ id: b.id, chi: b.chi, tipo: b.tipo, quando: b.quando, temi: b.temi, testo: b.testo, ...fatti(b) })), scartate, ...(v.corrette?.length ? { corrette: v.corrette } : {}), consegnata, ...(subito ? { per_pg: subito.pg, azione: rq.azione?.testo ?? null, privata: subito.privata } : {}) });
   }
 
   /**

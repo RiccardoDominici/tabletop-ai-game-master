@@ -57,10 +57,12 @@ export type ClasseStato = (typeof CLASSI_STATO)[number];
 
 /**
  * The outcome a line tells (`richiede.esito`, docs/repertorio.md «Facts a line carries»): a blow that landed, missed,
- * downed its target, or a flight. `chi`: who struck or fled (an NPC); absent = the PC whose action the line answers.
- * `bersaglio`: who was struck (absent = any). The Engine offers the line only for an action whose card says so.
+ * hurt someone (`ferito`: `bersaglio`, or the speaker, took a blow this turn), downed its target, a flight, or no
+ * outcome at all (`nessuno`: a combatant's line that tells none). `chi`: who struck or fled (an NPC); absent = the PC
+ * whose action the line answers. `bersaglio`: who was struck (absent = any). The Engine offers the line only for an
+ * action whose card says so.
  */
-export const TIPI_ESITO = ['colpito', 'mancato', 'a_terra', 'fugge'] as const;
+export const TIPI_ESITO = ['colpito', 'mancato', 'ferito', 'a_terra', 'fugge', 'nessuno'] as const;
 export type TipoEsito = (typeof TIPI_ESITO)[number];
 export interface EsitoBattuta {
   tipo: TipoEsito;

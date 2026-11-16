@@ -66,6 +66,10 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
   the log names the allowed ones;
 - **voices**: only the narrator or a present NPC speaks;
 - **gates and state**: no `richiede` (except `richiede.stati` and `richiede.esito`) or `effetti`;
+- **outcomes in a fight**: while a fight is on, every line of a combatant (its speaker, a labelled row, or an actor)
+  declares `richiede.esito`, `nessuno` included, or it is refused; a `nessuno` line with an outcome word is refused too.
+  The request says so (`scontro`) and asks, for each likely attack, a hit and a miss line with the same `quando`: the
+  Engine says the one the card confirms, also for a `subito` answer. The refused lines are recorded with their text;
 - **stall lines**: `stallo: 1` or `3` only, when the request asks for them (a stalling table, docs/mondo.md §5,
   «Prepared stall lines»); level 2 reveals a clue, so it stays the Preparer's. A level-3 summary is offered for the next
   three turns only. A line written on the fly does not reveal

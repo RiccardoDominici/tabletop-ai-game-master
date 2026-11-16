@@ -759,6 +759,13 @@ Zirrà's words (CA T8); the reader's refused pick at FB T5 («pagava» against t
   for its `subito`, so the table does not hear both. No repair call goes to the small model in profile A. So
   `azioni_senza_risposta` changes meaning from round 6: round 5's zeros in profile A counted the announcement as an
   answer. Test: test/conferma-profilo-a.test.ts.
+- The scriptwriter's outcome tag is mandatory in a fight: every line of a combatant declares `richiede.esito`, with two
+  new types, `ferito` (someone took a blow this turn: «Ahi! … prendi questa») and `nessuno` (no outcome told; still
+  refused if it has an outcome word); the prompt has a real key and one generic example per type, and in a fight the
+  request asks a hit and a miss line per likely attack (the Engine says the one the card confirms). Gate before round
+  6, two real `claude -p` calls on a fight request: 11 of 12 lines tagged (the twelfth, a narrator line with a
+  combatant among its actors and no tag, would be refused), the `subito` answer came as a hit-and-miss pair, so its
+  delivery now picks the line the card confirms. The text of refused lines is now recorded.
 Not measured live yet.
 
 ## Characters the players invent (Riccardo's decision, 16 November)

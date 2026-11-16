@@ -1908,7 +1908,7 @@ def _voci_di(cartella: Path, codice: str, bid: str) -> list:
 def test_repertorio_esito_della_battuta(camp):
     modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").setdefault("richiede", {}).update(esito={"tipo": "mancato", "chi": "png_bruno"}))
     assert "REPERTORIO.fatti" not in errori(camp)
-    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte")["richiede"].update(esito={"tipo": "ferito"}))
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte")["richiede"].update(esito={"tipo": "graffiato"}))
     assert "REPERTORIO.fatti" in errori(camp)
 
 

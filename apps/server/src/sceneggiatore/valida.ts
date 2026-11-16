@@ -66,6 +66,8 @@ export interface ContestoValidazione {
   finoAlTurno?: number;
   /** A fight is on, or a blow was struck in this visit of the scene: an outcome line must carry richiede.esito. */
   scontro?: boolean;
+  /** A fight is on: the NPCs in it. Every line of one of them declares richiede.esito (`nessuno` included). */
+  combattenti?: ReadonlySet<string>;
 }
 
 /** The first word of a blow, a miss or a fall in the text (language pack, guardia_esiti), or null. */
@@ -97,6 +99,16 @@ export interface EsitoValidazione {
 export function estraiYaml(testo: string): string {
   const recinto = /```(?:ya?ml)?\s*\n([\s\S]*?)```/i.exec(testo);
   return (recinto ? recinto[1]! : testo).trim();
+}
+
+/** The raw lines of an answer (for the record of the refused ones), or none if the YAML does not parse. */
+export function battuteGrezze(testo: string): Array<Record<string, unknown>> {
+  try {
+    const d = YAML.parse(estraiYaml(testo)) as { battute?: unknown } | null;
+    return Array.isArray(d?.battute) ? (d.battute.filter((x) => x && typeof x === 'object') as Array<Record<string, unknown>>) : [];
+  } catch {
+    return [];
+  }
 }
 
 export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoValidazione {
@@ -165,7 +177,11 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     if (fuori) return void scartate.push({ id: b.id, motivo: `${fuori} agisce nella battuta ma non è nella scena o non può agire` }), false;
     // In a fight a line that tells a blow, a miss or a fall must say which (richiede.esito), so the Engine can check it
     // against the card: round 4 heard a scriptwriter's untagged miss («la lancia taglia l'aria…») for a blow that hit.
-    if (ctx.scontro && !b.richiede.esito) {
+    // During a fight every line of a combatant (its speaker, a labelled row, or an actor) declares its outcome, `nessuno`
+    // included: round 5 heard «Zirrà: Ahi! … prendi questa» with no outcome word for a blow no card had.
+    const combattente = ctx.combattenti && [b.chi, ...b.testo.map((r) => r.etichetta), ...(b.attori ?? [])].find((x) => ctx.combattenti!.has(x));
+    if (combattente && !b.richiede.esito) return void scartate.push({ id: b.id, motivo: `in combattimento una battuta di ${combattente} dichiara richiede.esito (anche nessuno)` }), false;
+    if (ctx.scontro && (!b.richiede.esito || b.richiede.esito.tipo === 'nessuno')) {
       const parola = paroleDiEsito(b.testo.map((r) => r.testo).join(' '));
       if (parola) return void scartate.push({ id: b.id, motivo: `racconta un esito («${parola}») senza richiede.esito` }), false;
     }

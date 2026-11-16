@@ -57,6 +57,8 @@ export interface RichiestaSceneggiatore {
    * summary of the leads the PCs know. (Level 2 reveals a clue: the Preparer's.)
    */
   stallo?: { livello: 1 | 3; quante: number; pericolo: { mosse: string[]; segni: string[] } | null; piste: string[] };
+  /** A fight is on: every line of a combatant declares richiede.esito, and a likely attack gets a hit and a miss line. */
+  scontro?: boolean;
 }
 
 export interface RispostaSceneggiatore {

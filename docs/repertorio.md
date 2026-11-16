@@ -73,8 +73,9 @@ break coherence; the deterministic rules on the lines that come out (R-esito, R-
   «Zirrà schiocca le dita.» eight turns after she fell); an untagged NPC away from the scene is left alone, since an
   older line may talk about someone elsewhere (an ending at the tower about the village);
 - `menzionati`: nothing asked;
-- `richiede.esito` (only in the base): the outcome the line tells, a blow that `colpito` (landed), `mancato`, `a_terra`
-  (downed its target), or a flight (`fugge`): one of this turn's public attack cards must say exactly that, struck by
+- `richiede.esito` (only in the base): the outcome the line tells, a blow that `colpito` (landed), `mancato`, `ferito`
+  (`bersaglio`, or the speaker, took a blow this turn: «Ahi!»), `a_terra` (downed its target), a flight (`fugge`), or
+  `nessuno` (a combatant's line that tells no outcome): one of this turn's public attack cards must say exactly that, struck by
   `chi` (an NPC) or, with no `chi`, by the PC whose action the line answers (checked again when the reader uses it for
   that PC); a flight must be one of that turn's flights (`repertorio/fatti-battuta.ts`, `motivoEsito`; round 4 heard a
   miss line for a blow that hit). A `subito` line is checked against the cards of its own turn, also when it is said in

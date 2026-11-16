@@ -108,7 +108,7 @@ describe('a line that tells an outcome carries it, and the Engine checks it agai
 
   it('the loader reads richiede.esito', () => {
     expect(colpo.richiede.esito).toEqual({ tipo: 'colpito', chi: null, bersaglio: 'png_oste' });
-    expect(() => carica([base('x9', ['[narratore] Qualcosa.'], { richiede: { esito: { tipo: 'ferito' } } })])).toThrow(/colpito/);
+    expect(() => carica([base('x9', ['[narratore] Qualcosa.'], { richiede: { esito: { tipo: 'graffiato' } } })])).toThrow(/colpito/);
   });
 
   it('a hit line: only with a card that hit that target; for an answered action, only that PC\'s card', () => {
@@ -128,6 +128,17 @@ describe('a line that tells an outcome carries it, and the Engine checks it agai
     // With the turn's flights known: only a flight of that turn, not one of an earlier turn still in the ledger.
     expect(motivoEsito(fuga, entita, { esiti: [], fughe: new Set(['png_guardia']) }, null)).toBeNull();
     expect(motivoEsito(fuga, entita, { esiti: [], fughe: new Set() }, null)).toMatch(/not a flight of this turn/);
+  });
+
+  it('ferito: a blow of this turn landed on who the line says is hurt (the speaker by default); nessuno: always', () => {
+    const [ahi, nulla] = carica([
+      base('nar_ahi', ['[png_oste] Ahi! Questa me la paghi!'], { chi: 'png_oste', richiede: { esito: { tipo: 'ferito' } } }),
+      base('nar_nulla', ['[png_oste] Avanti, chi è il prossimo?'], { chi: 'png_oste', richiede: { esito: 'nessuno' } }),
+    ]) as [Battuta, Battuta];
+    const entita = [pg, ...ledger({})];
+    expect(motivoEsito(ahi, entita, { esiti: [carta('pg_ida', 'png_oste', true)] }, null)).toBeNull();
+    expect(motivoEsito(ahi, entita, { esiti: [carta('png_oste', 'pg_ida', false)] }, null)).toMatch(/hurt/);
+    expect(motivoEsito(nulla, entita, { esiti: [] }, null)).toBeNull();
   });
 
   it('the catalogue and the answered action apply it', () => {

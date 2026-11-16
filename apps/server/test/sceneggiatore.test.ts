@@ -100,6 +100,23 @@ describe('controllo delle battute dello sceneggiatore', () => {
     expect(validaBattute(yaml([miss('sc_x_1')]), ctx).scartate).toEqual([]);
   });
 
+  it('during a fight every line of a combatant declares richiede.esito, «nessuno» too; «nessuno» with an outcome word is refused', () => {
+    const r = validaBattute(
+      yaml([
+        battuta({ id: 'sc_x_1', testo: ['[png_oste] Ahi! Questa me la paghi!'] }),
+        battuta({ id: 'sc_x_2', testo: ['[png_oste] Avanti, chi è il prossimo?'], richiede: { esito: { tipo: 'nessuno' } } }),
+        battuta({ id: 'sc_x_3', testo: ['[png_oste] Ahi! Questa me la paghi!'], richiede: { esito: { tipo: 'ferito' } } }),
+        battuta({ id: 'sc_x_4', testo: ['[png_oste] La tua lama passa a vuoto, ragazza.'], richiede: { esito: { tipo: 'nessuno' } } }),
+      ]),
+      { ...ctx, scontro: true, combattenti: new Set(['png_oste']) },
+    );
+    expect(r.accettate.map((b) => b.id)).toEqual(['sc_x_2', 'sc_x_3']);
+    expect(r.scartate).toEqual([
+      { id: 'sc_x_1', motivo: expect.stringMatching(/in combattimento una battuta di png_oste dichiara richiede\.esito/) },
+      { id: 'sc_x_4', motivo: expect.stringMatching(/racconta un esito \(«a vuoto»\)/) },
+    ]);
+  });
+
   it('stall lines: levels 1 and 3 pass, level 2 (it reveals a clue) is the Preparer\'s', () => {
     const r = validaBattute(
       yaml([
@@ -213,6 +230,8 @@ describe('lingua dei contenuti: prompt e guardia dello sceneggiatore in it e in 
     expect(messaggioSceneggiatore(rq, 'C', [], '')).toMatch(/Scrivi 6 battute[^]*`stallo: 1`[^]*sale di un palmo[^]*Un tonfo a monte\./);
     impostaLingua('en');
     expect(messaggioSceneggiatore({ ...rq, stallo: { livello: 3, quante: 2, pericolo: null, piste: ['The mill', 'The bridge'] } }, 'C', [], '')).toMatch(/`stallo: 3`[^]*The mill; The bridge/);
+    // In a fight the task says the tag is mandatory and asks a hit and a miss line per likely attack.
+    expect(messaggioSceneggiatore({ ...rq, stallo: undefined, scontro: true }, 'C', [], '')).toMatch(/A fight is on[^]*one with esito colpito and one with esito mancato/);
   });
 
   it('in inglese: soggetto, parte del corpo (anche col genitivo sassone); vocativo, complemento e oggetto no', () => {
