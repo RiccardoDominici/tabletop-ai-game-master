@@ -126,7 +126,7 @@ check, so a leak can no longer hide behind a 0.
    characters' state and presence, the violations stopped (rule, action, sentence and its replacement, sentences
    hidden with «senza spoiler»), the private facts with their knowers, the journal; strings in
    apps/web/src/lingua/{it,en}/master.ts; docs/guide/master-panel.md, «Coherence». Tested by rendering
-   (SezioneCoerenza.test.ts), not yet looked at in a browser. **Not done**: the projector mark on a downed NPC (the
+   (SezioneCoerenza.test.ts), and seen in headless Chromium on the live stall canary (port 4949, 0 console errors). **Not done**: the projector mark on a downed NPC (the
    fallen already leave the projector's present list).
 7. **Built**: the targeted repair. A fact-rule replacement (R-esito, R-fuori) carries `riparabile`; when the answer has
    already queued a sentence (the voice has slack) and the narrator is not the local reader, turni/narrazione.ts waits

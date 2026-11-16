@@ -45,12 +45,15 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   one checker with named rules, audience split for private actions, presence tags, targeted repair, the panel's
   «Coerenza» box). Measured on 2a7697c (`esperimenti/risultati/e2e-finale-3b/coerenza-*`): private content 0, order
   said, DC hidden, first-audio 1.85 s against 2.43 s, but its criterion is **not met** (two definite and about fifteen
-  probable high-severity sentences heard) and the stall run stayed idle. Fixed after the measure, with tests, not yet
-  measured on the scripts: 5870930, 72cc62e, 8e1f34e, 97121cb. Still open: a creature the Engine does not have
-  attacked or acting (bug 5: `R-inesistente` built after round 1, to be measured); NPCs the players
+  probable high-severity sentences heard) and the stall run stayed idle. Round 2 on f29235d (`coerenza2-*`, with
+  `R-inesistente`, the stall fixes): still not met (19 high-severity sentences against 17; the stall now climbs with
+  material), docs/coerenza.md «Measured, round 2». Fixed after round 2, with tests, **not measured**: cb4ded5, 8cb8426.
+  Still open: the invented creature until a round 3 shows the fixes hold (bug 5); R-fuori's whole-sentence state check;
+  presence without `[esce]` and NPCs the players
   invent voiced by existing ones (bug 9); the cart «impossibile» (11a); the panel's fight and manual initiative (11c);
-  `R-eco` and the projector mark; the «Coerenza» box not yet seen in a browser; profile A (the reader plus the Mac's
-  swap were too much on 16 November) and the dictated action not run.
+  `R-eco` and the projector mark; the stall's S3 sentence said twice word for word; profile A (the reader plus the
+  Mac's swap were too much on 16 November) and the dictated action not run. The «Coerenza» box was seen in headless
+  Chromium on a live test instance (16 November, 0 console errors), not on a real tablet.
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.
   Done, by step: research (c0ebcc1), design (96b59e7, 6e2df77), `strumenti/strati.py` (09b3ef4), validator of sessions and STATO/CONTINUITÀ (e02e26c, 8fcfe18), skill (a10a172), session packages and the server side (2d3f2d4, 5bc833b, 7201894).
   Still open: no campaign above one-shot has been played across several sessions yet (no commit records it), so this is not yet verified on a real run.
