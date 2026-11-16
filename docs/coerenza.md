@@ -779,6 +779,54 @@ Zirrà's words (CA T8); the reader's refused pick at FB T5 («pagava» against t
   five declared attacks resolved as «nessun tiro».
 Not measured live yet.
 
+## Measured, round 6 (profile A, 17 November, `a126c90`)
+
+Runs: `esperimenti/risultati/e2e-finale-3b/coerenzaA6-*`, the same four scripts and setup as rounds 4 and 5 (0.6B
+reader, rules arbiters, the sceneggiatore in the background, mock voice, ports 4950–4953, a clean log per run, memory
+45–61% free), after the round-5 decisions («After round 5»). Judge: opus, the same rubric, the brief adapted (what is by
+design now: the acknowledgements, the defeat path, stall moves on question turns, with a right/wrong verdict asked
+for every stall move) (`coerenzaA6-evidenza-opus.md`).
+
+| | CM | CA | FB | ST |
+|---|---|---|---|---|
+| H heard, opus, round 4 → 5 → 6 | 4 → 1 → 0 | 3 → 1 → 1 | 1 → 0 → 0 | 0 → 0 → 0 |
+| of which in the lines' prose | 0 (1 unsure) → 1 → 0 | 1 → 1 → 1 | 0 → 0 → 0 | 0 → 0 → 0 |
+| of which in the announcement | 4 → 0 → 0 | 2 → 0 → 0 | 1 → 0 → 0 | 0 → 0 → 0 |
+| false claims inside an attributed announcement (not H), round 5 → 6 | 6 → 8 | 5 → 2 | 5 → 11 | 2 → 1 |
+| turns played | 25 | 16 (paused at the defeat) | 13 | 14 |
+| median first audio (ms), round 4 → 5 → 6 | 674 → 670 → 542 | 670 → 666 → 681 | 670 → 682 → 670 | 678 → 676 → 684 |
+| scriptwriter tag rate in the fights (lines with `richiede.esito` / lines that needed one) | 112 / 115 | 51 / 52 | — | — |
+| the tags written (colpito / mancato / ferito / nessuno) | 27 / 33 / 5 / 47 | 13 / 15 / 2 / 21 | 0 / 0 / 0 / 13 | 0 / 0 / 0 / 16 |
+| scriptwriter lines accepted / refused | 134 / 21 (outcome word untagged 6, no tag 3, stall tag 6, label 2, away 4) | 68 / 3 | 81 / 3 | 43 / 0 |
+| tagged outcome not on the card at delivery (refused) | 2 | 3 | 0 | 0 |
+| stall moves | — | — | 0 | 9 (T4–T12) |
+| defeat path | — | T16: the prepared ending, then the pause | — | — |
+| Engine acknowledgements of unanswered actions | 6 | 5 | 0 | 0 |
+
+Private content heard: 0. A fallen or absent character acting or speaking: 0 (CM: after Zirrà died at T14 every line
+was Grosso's or the Engine's). Every PC that went down got its death saves. The coherence events: all right (CM 9,
+CA 5); the four refused picks right but one (FB T5, «pagava» against the theme «pagare», again). The one H:
+- **CA T15**, a scriptwriter `subito` line answering Nespola's «Ho zero punti ferita, sono a terra.»: «Zirrà: Tre per
+  terra, e il fuoco ancora caldo.», while the ledger had two PCs dead and Nespola standing. The scriptwriter took the
+  player's claim as true, and a PC's state is not among the facts a line carries (`richiede.stati` is for NPCs).
+The stall (ST, 9 moves, judge: 8 right, T9 unsure, a private question the only action): S1 the prepared horn (T4), S2
+the prepared clue (T5, «Mancano gli stivali buoni e il mantello…»), S3 the prepared summary (T6, «I cani tirano verso
+il bosco…»), the hard S1 twice as a mark of the danger's clock (T7, T10; o_mezzanotte reached 3), S2 the clue lines
+(T8 the slate, T11 the posts), S3 the Engine's sentence of the leads (T9, T12; its third «lead» is the last clock
+sign). The scriptwriter's top-up was asked twice (T8, T11, level 3). FB had none: its players «go» somewhere almost
+every turn (to a mill and a ford the campaign does not have), which commits by the words; the Engine counted 12 of 13
+answers with nothing new there. The tags: the scriptwriter now writes them (97–98% of the lines that needed one); the
+outcome-word refusal is mostly noise on narration («la terra cade nelle crepe», «il muro crollato», «il buio cade»), and
+the delivery check refused 5 `subito` lines whose outcome the card did not have. The defeat path fired once (CA T16):
+«Nespola muore.», then the prepared «Zirrà fruga nelle vostre bisacce…», then the pause; it was said over three dead
+PCs, so it is now kept for a party that is not all dead («After round 6»).
+Also found: CM T11 and T25 declared attacks with no roll («Pugnale ancora, il goblin si gira verso di me»: no
+first-person verb; «finisco quello con la lancia»: nobody with a spear, and no R-inesistente line either); the
+announcement still keeps a world or someone else's clause after the PC's own words («Oreste dice che sulla collina
+c'è una grotta», FB T8) and cuts three quotes mid-phrase; FB T7 and T11: an NPC present answers words addressed to
+an NPC who does not exist; the private `subito` answers that reached the phone: 1/2, 0/2, 2/2, 0/0 (the views show the
+table only).
+
 ## After round 6 (17 November)
 - A stall tag from the scriptwriter only at the level its request asked for; elsewhere the key is dropped and the line
   kept (round 6: the `prossime` writer copied `stallo:` from the format block onto ordinary lines: CM T7 lost six lines
