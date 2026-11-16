@@ -175,7 +175,7 @@ Fixed after the measure (`5870930`, tests on invented fixtures, not yet measured
   action of this turn stays at the table.
 Open: a creature the ledger does not have, acting or being hit (`R-inesistente`: the scripts' «goblin con la lancia»
 after the fight). It needs the nouns that name a creature in the language pack and the Engine's «no creature to hit»
-fact passed to the checker; a word-list guess was not added. Profile A (`stallo` with the local reader) not run yet.
+fact passed to the checker; a word-list guess was not added. Profile A (`stallo` with the local reader) was not run: with memory 54% free the reader was started, but once loaded the Mac had 23% free and 6.0 GB of swap (the rule is to stop above about 5 GB, the Mac rebooted twice on 14 November), so it was stopped at once.
 
 ## Risks and limits
 - The checker still reads Italian or English words: the subject of a sentence, a fall, a hit. A sentence that names a
