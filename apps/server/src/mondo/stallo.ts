@@ -83,6 +83,9 @@ export class ContatoreStallo {
       this.n += 1;
       return this.n;
     }
+    // An action toward an NPC present after answers with nothing new: not a stall, but the escalation is not reset
+    // either (before, «Tanto Berta ci chiama, no?» restarted it from S1 and the stall run never reached S3).
+    if (c === 'decisa' && versoPng && !inCombattimento && this.fermi >= TURNI_FERMI_PER_STALLO) return 0;
     if (c === 'decisa') {
       this.n = 0;
       this.indecisi = 0;

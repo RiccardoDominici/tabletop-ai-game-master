@@ -144,10 +144,16 @@ describe('mode B: answers that bring nothing new count, whatever the words (thir
     expect(c.registra('decisa', true)).toBe(0);
     c.registraEsito(true);
     expect(c.registra('decisa', false)).toBe(0);
-    // An action toward an NPC present is a decision, even when no line answers it.
+    // An action toward an NPC present is a decision, even when no line answers it; but it does not reset the escalation.
     c.registraEsito(false);
     c.registraEsito(false);
     expect(c.registra('decisa', false, true)).toBe(0);
+    c.registraEsito(false);
+    expect(c.registra('decisa', false)).toBe(1);
+    c.registraEsito(false);
+    expect(c.registra('decisa', false, true)).toBe(0);
+    c.registraEsito(false);
+    expect(c.registra('decisa', false)).toBe(2);
   });
 
   it('after a fight in the scene, turns with nothing new are not a stall (coherence run: a parley, attacks after the fight)', async () => {
