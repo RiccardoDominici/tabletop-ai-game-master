@@ -257,7 +257,11 @@ added line of who is really there is recorded, not said) and the sentence goes o
 panel lists only what was stopped. The «Cosa è vero adesso» row for an absent noun stays (input to the model, not a
 change of the table's text). They come back only if they win on a frozen replay set of sentences from the run
 folders, labelled once and scored offline, against the alternative of a small model's yes/no question on flagged
-sentences (next steps).
+sentences (next steps). Decision after the scores (the lead, 16 November): **R-inesistente is a rule again**, as part
+of the rules where the rules decide (profile A, a late or failed question of the judge, the judge off), since on both
+sets it adds catches without touching more clean sentences; with the judge on it runs only in its shadow, and its
+added line of who is really there is not said (the judge's «si» says it instead). The absorbed-blow branch stays in
+observation until there is data.
 
 ## Frozen replay set
 

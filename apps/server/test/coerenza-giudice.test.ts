@@ -80,7 +80,7 @@ describe('the yes/no judge', () => {
     const regola = (t: string): CorrezioneEsito => (t.includes('ride') ? { testo: 'Ruggero giace a terra, senza vita.', motivo: 'fuori_gioco_agisce' } : null);
     const g = giudice(modello(() => null), regola, 50);
     expect(await g.giudica('Ruggero ride.')).toMatchObject({ testo: 'Ruggero giace a terra, senza vita.', fonte: 'regole' });
-    const osservata = (): CorrezioneEsito => ({ testo: 'x', motivo: 'creatura_inesistente' });
+    const osservata = (): CorrezioneEsito => ({ testo: 'x', motivo: 'colpo_assorbito' });
     expect(await giudice(modello(() => null), osservata, 50).giudica('Lo sgherro sputa.')).toBeNull();
   });
 

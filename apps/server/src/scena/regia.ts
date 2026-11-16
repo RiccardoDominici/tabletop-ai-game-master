@@ -3873,7 +3873,8 @@ export class Regia {
     // A name the players invented (mode B, the local reader): the Engine says nobody here has it (docs/coerenza.md).
     const inventati = this.nomiInventati?.turno === turno ? this.nomiInventati : null;
     if (inventati && !controllo.signal.aborted) this.diciNomiInventati(turno, esito, inventati.nomi, log);
-    if (ines && ines.pubbliche.length && !ines.detta && !controllo.signal.aborted) {
+    // With the yes/no judge, R-inesistente is only its fallback: its added line belongs to the rules alone.
+    if (!giudice && ines && ines.pubbliche.length && !ines.detta && !controllo.signal.aborted) {
       // At most once in three turns: round 2 said the same line in almost every turn after the fight.
       if (this.frasiRecenti(turno).has(frasePerRipetizione(ines.frase))) log.info({ turno, parole: ines.pubbliche.map((a) => a.parola) }, 'coherence: who is really there was said in the last turns, not again');
       else this.diciChiCeDavvero(turno, esito, ines, log);

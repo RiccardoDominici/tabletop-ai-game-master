@@ -103,7 +103,8 @@ export class GiudiceDomande {
       this.siPrima = false;
       // The conservative rules: only what changes the text today (a rule in observation stays in observation).
       if (!ombra || inOsservazione(ombra.motivo)) return null;
-      return { testo: ombra.testo, regola: 'R-fuori', motivo: ombra.motivo, fonte: 'regole', ms };
+      const regola: IdRegola = ombra.motivo === 'creatura_inesistente' ? 'R-inesistente' : ombra.motivo === 'fuori_gioco_agisce' ? 'R-fuori' : 'R-esito';
+      return { testo: ombra.testo, regola, motivo: ombra.motivo, fonte: 'regole', ms };
     } finally {
       clearTimeout(timer);
       signal?.removeEventListener('abort', fuori);
