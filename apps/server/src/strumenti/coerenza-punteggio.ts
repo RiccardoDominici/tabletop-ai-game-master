@@ -51,9 +51,11 @@ export interface Punteggio {
   ms: number;
 }
 
-export function carica(): { insieme: ChiamataInsieme[]; etichette: Record<string, Etichetta>; campagna: string } {
-  const i = JSON.parse(fs.readFileSync(path.join(CARTELLA, 'insieme.json'), 'utf8')) as { campagna: string; insieme: ChiamataInsieme[] };
-  const e = JSON.parse(fs.readFileSync(path.join(CARTELLA, 'etichette.json'), 'utf8')) as { etichette: Record<string, Etichetta> };
+/** A set and its labels: `insieme` (the frozen set) or another name, e.g. `prima` (insieme-prima.json, etichette-prima.json). */
+export function carica(nome = 'insieme'): { insieme: ChiamataInsieme[]; etichette: Record<string, Etichetta>; campagna: string } {
+  const suffisso = nome === 'insieme' ? '' : `-${nome}`;
+  const i = JSON.parse(fs.readFileSync(path.join(CARTELLA, `insieme${suffisso}.json`), 'utf8')) as { campagna: string; insieme: ChiamataInsieme[] };
+  const e = JSON.parse(fs.readFileSync(path.join(CARTELLA, `etichette${suffisso}.json`), 'utf8')) as { etichette: Record<string, Etichetta> };
   return { insieme: i.insieme, etichette: e.etichette, campagna: i.campagna };
 }
 

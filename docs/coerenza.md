@@ -304,8 +304,21 @@ clean sentences, mostly the fall of someone who went down by this very turn's ca
 about (as R-fuori's `oraFuori`), an NPC's own line goes to the deterministic R-assente, and R-esito's card rules (pair,
 fall, a PC told down) stay deterministic; the model replaces R-fuori, R-inesistente and the absorbed-blow branch. By
 source, rules → v2: round 1 34 → 42 of 50 caught (2 → 3 wrong), round 2 34 → 52 of 54 (2 → 4), canaries 8 → 12 of 13
-(0 → 0). Caveat: v2's structure was set after reading v1's errors on this same set (structure, not words; there is no
-held-out set yet).
+(0 → 0). v2's structure was set after reading v1's errors on this same set (structure, not words), so it was checked
+on a held-out set and against the model's variance:
+- **Variance**: the same v2 questions asked three times (`--campione 2`, `--campione 3`, answers in
+  `risposte-claude-haiku-5-5-c2.json`, `-c3.json`): 106 caught, 11 missed, 7 clean touched in all three samples.
+- **Held-out** (`insieme-prima.json`, `etichette-prima.json`: the third pass's own runs on `958556a`, falls rebuilt
+  from «combattimento: esce dallo scontro», 41 flagged sentences labelled before any scoring; three unflagged ones a
+  shared R-esito rule touched were labelled after, marked so): of 37 violations, `attive` 19 caught (2 clean touched),
+  `regole` 25 (4), v1 29 (8), **v2 33 (2)**.
+- **The rules apart**: R-inesistente alone adds 22 catches on the frozen set (75 against 53) and 6 on the held-out one;
+  the absorbed-blow branch adds 1 and 0: the sets have four sentences about a hurting card, one a violation, so they
+  cannot judge that rule.
+- One filter for every user: the mention filter and v2's «what is worth a question» live in
+  `apps/server/src/coerenza/menzioni.ts`, which the extractor and the runner import; the extractor splits sentences
+  with the pipeline's own splitter (`narrazione/frasi.ts`, `dividiTesto`): the same 379 sentences, and the offline
+  re-run gives the same 106/11/7 with no new model call.
 What v2 still misses: carried subjects with no pronoun («Non si rialza.», «Il colpo della spada lunga gli entra sotto
 la spalla.»), attacks by nobody in play with no noun («la lancia che arriva»), «I goblin sono fuggiti» when one died.
 What it touches wrongly: a PC acting on a body («Livia … colpisce» the dead Zirrà; a foot on her ankle), «Zirrà è già

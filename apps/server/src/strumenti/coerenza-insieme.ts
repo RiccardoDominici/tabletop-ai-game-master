@@ -18,11 +18,11 @@ import path from 'node:path';
 import { caricaCampagna } from '../campagna/caricatore';
 import { nomeBreve } from '../campagna/nomi';
 import { normalizza } from '../azioni/regole';
-import { creatureAssenti, creatureNote } from '../coerenza/inesistenti';
+import { contestoMenzioni, menzioniDi } from '../coerenza/menzioni';
+import { dividiTesto } from '../narrazione/frasi';
 import type { EntitaRegistro, PresenzaEntita, Registro, StatoEntita } from '../coerenza/registro';
 import { tipiGregari } from '../campagna/gregari';
 import { impostaLingua } from '../lingua';
-import { doveNomina, paroleDi, paroleMancato, posizione } from '../narrazione/guardia-esiti';
 import { nomiDeiPng } from '../repertorio/pertinenza';
 
 /** One attack card of the turn, as the replay needs it. */
@@ -76,14 +76,6 @@ function jsonl(f: string): Array<Record<string, unknown>> {
     });
 }
 
-/** Sentences of one line of text: split after . ! ? … when a capital, a quote or the end follows. */
-export function frasiDi(t: string): string[] {
-  return t
-    .split(/(?<=[.!?…])\s+(?=[«"A-ZÀ-ÖØ-Þ])/u)
-    .map((x) => x.trim())
-    .filter(Boolean);
-}
-
 function main(): void {
   const [cartellaCampagna, ...runs] = process.argv.slice(2);
   if (!cartellaCampagna || !runs.length) {
@@ -98,16 +90,25 @@ function main(): void {
   for (const p of c.pg) for (const n of [p.nome, nomeBreve(p.nome)]) perNome.set(normalizza(n), p.id);
   for (const p of c.png) for (const n of [p.nome, nomeBreve(p.nome)]) perNome.set(normalizza(n), p.id);
   const idDi = (nome: string): string | null => perNome.get(normalizza(nome.trim())) ?? perNome.get(normalizza(nome.trim().split(/\s+/)[0] ?? '')) ?? null;
-  const mancato = [...paroleMancato().mancato, ...paroleMancato().assorbito];
   const chiamate: ChiamataInsieme[] = [];
   for (const run of runs) {
     const nome = path.basename(run);
     const server = jsonl(path.join(run, 'log-server', 'server.jsonl'));
     const narr = jsonl(path.join(run, 'log-server', 'narrazioni.jsonl'));
-    const eventi = server.filter((r) => r['msg'] === 'registro: evento');
+    let eventi = server.filter((r) => r['msg'] === 'registro: evento');
     if (!eventi.length) {
-      process.stderr.write(`${nome}: no ledger events (code before the ledger): skipped\n`);
-      continue;
+      // Code before the ledger (the third pass's own runs, the held-out set): the falls from «combattimento: esce dallo
+      // scontro», which has no turn of its own: it is the turn of the next line that has one (its turn's message).
+      eventi = [];
+      for (const [k, r] of server.entries()) {
+        if (r['msg'] !== 'combattimento: esce dallo scontro') continue;
+        const dopo = server.slice(k + 1).find((x) => x['turno'] !== undefined);
+        const turno = Number(dopo?.['turno'] ?? 0);
+        const id = String(r['id']);
+        eventi.push({ msg: 'registro: evento', turno, tipo: 'stato', id, da: 'None', a: String(r['esito']), causa: 'carte del turno' });
+        if (r['esito'] === 'fuggito') eventi.push({ msg: 'registro: evento', turno, tipo: 'presenza', id, da: 'in_scena', a: 'altrove', causa: 'carte del turno' });
+      }
+      process.stderr.write(`${nome}: no ledger events: falls rebuilt from «esce dallo scontro» (${eventi.length} events)\n`);
     }
     // The first state and presence of every character: the `da` of its first event, else standing and elsewhere.
     const stato = new Map<string, StatoEntita>();
@@ -168,34 +169,21 @@ function main(): void {
         ...c.png.map((p) => ({ id: p.id, tipo: 'png' as const, nome: p.nome, nomi: nomiPng.get(p.id) ?? [p.nome], stato: stato.get(p.id) ?? 'in_piedi', presenza: presenzaOra(p.id), uscito: null })),
       ];
       const registro: Registro = { turno, scena, entita, fatti: [], esiti: [], negati: [] };
-      const assenti = creatureAssenti(registro, creatureNote(entita, tipi));
       const carte = colpiPerTurno.get(turno) ?? [];
+      const fuoriOra = eventi.filter((e) => e['tipo'] === 'stato' && Number(e['turno']) === turno && !IN_GIOCO.has(e['a'] as StatoEntita)).map((e) => String(e['id']));
+      const contesto = contestoMenzioni(registro, tipi, carte, fuoriOra);
       const scontro = [...scontroTurni].some((t) => t >= ingresso && t <= turno);
       const frasi: FraseInsieme[] = [];
       for (const riga of String(tr['testo']).split('\n')) {
         const m = /^\[([a-z_0-9]+)\]\s*(.*)$/u.exec(riga.trim());
         if (!m || !(m[1] === 'narratore' || m[1]!.startsWith('png_'))) continue;
-        for (const testo of frasiDi(m[2]!)) {
-          const w = paroleDi(testo);
-          const menzioni: string[] = [];
-          for (const e of entita) {
-            if (e.tipo === 'pg' || doveNomina(w, e.nomi) < 0) continue;
-            if (!IN_GIOCO.has(e.stato)) menzioni.push(`fuori:${e.id}`);
-            else if (e.presenza !== 'in_scena') menzioni.push(`assente:${e.id}`);
-          }
-          for (const a of assenti) if (doveNomina(w, [a.parola]) >= 0) menzioni.push(`nome:${a.parola}`);
-          for (const k of carte.filter((x) => x.riuscita && x.danno > 0)) {
-            const e = entita.find((x) => x.id === k.bersaglio);
-            if (e && doveNomina(w, e.nomi) >= 0 && mancato.some((v) => posizione(w, v) >= 0)) menzioni.push(`colpo:${k.bersaglio}`);
-          }
-          // A line spoken by an NPC out of play or absent is about it too.
-          const parlante = m[1]!.startsWith('png_') ? entita.find((x) => x.id === m[1]) : undefined;
-          if (parlante && (!IN_GIOCO.has(parlante.stato) || parlante.presenza !== 'in_scena')) menzioni.push(`parla:${parlante.id}`);
-          frasi.push({ i: frasi.length, etichetta: m[1]!, testo, segnata: menzioni.length > 0, menzioni: [...new Set(menzioni)] });
+        // The pipeline's own sentence splitter (narrazione/frasi.ts), so the set's sentences are the checker's.
+        for (const testo of dividiTesto(m[2]!)) {
+          const menzioni = menzioniDi(testo, m[1]!, contesto);
+          frasi.push({ i: frasi.length, etichetta: m[1]!, testo, segnata: menzioni.length > 0, menzioni });
         }
       }
       if (!frasi.some((f) => f.segnata)) continue;
-      const fuoriOra = eventi.filter((e) => e['tipo'] === 'stato' && Number(e['turno']) === turno && !IN_GIOCO.has(e['a'] as StatoEntita)).map((e) => String(e['id']));
       const azioni = ((tr['azioni'] as Array<Record<string, unknown>> | undefined) ?? [])
         .filter((a) => typeof a['testo'] === 'string')
         .map((a) => ({ id_pg: String(a['id_pg']), testo: String(a['testo']), privata: a['privata'] === true }));

@@ -240,6 +240,21 @@
    "etichetta": "clean",
    "perche": "Ugo speaks of goblins elsewhere",
    "testo": "Io non parlo coi goblin, né con voi."
+  },
+  "prima-torre-mozza-combattimento-B-automatico#10:2": {
+   "etichetta": "clean",
+   "perche": "Zirrà sees her companion down: not her fall (labelled after scoring; R-esito, shared by every variant)",
+   "testo": "Zirrà vede il suo compagno a terra e la risata le muore in gola."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#11:2": {
+   "etichetta": "clean",
+   "perche": "Zirrà looks at her companion down: not her fall (labelled after scoring; R-esito, shared by every variant)",
+   "testo": "Zirrà guarda il suo compagno a terra, poi guarda la spada di Nespola, e per un momento non ride più."
+  },
+  "prima-torre-mozza-combattimento-B-manuale#22:4": {
+   "etichetta": "violation",
+   "perche": "a PC told down: Nespola is standing for the Engine (labelled after scoring; R-esito, shared by every variant)",
+   "testo": "Nespola, a terra dietro la pietra, stringe la sciarpa sulla spalla e aspetta."
   }
  }
 }

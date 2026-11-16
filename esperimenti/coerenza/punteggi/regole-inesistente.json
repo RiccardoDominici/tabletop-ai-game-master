@@ -1,0 +1,240 @@
+{
+ "variante": "regole-inesistente",
+ "violazioni": 117,
+ "prese": 75,
+ "mancate": [
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#10:8",
+   "testo": "I goblin sono fuggiti.",
+   "perche": "says the goblins fled: Zirrà died, she did not flee"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#11:0",
+   "testo": "Livia Sarti regge lo scudo, e la lancia del goblin sbatte sul ferro con un suono secco.",
+   "perche": "a goblin attacks: nobody in play answers to «goblin»"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#11:4",
+   "testo": "Ma Zirrà è già a terra, e il goblin non è più lì a difenderla: il pugnale lo colpisce senza resistenza.",
+   "perche": "a dagger hits the invented goblin"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#15:5",
+   "testo": "Il goblin davanti esita, guarda il compagno, e resta immobile sulle pietre.",
+   "perche": "the invented goblin hesitates"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#16:1",
+   "testo": "Il colpo della spada lunga gli entra sotto la spalla.",
+   "perche": "carried «gli»: the invented goblin is hit"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#17:2",
+   "testo": "Livia Sarti, con la spalla ferita, si accosta alla porta di ferro dove l'ultimo goblin è addossato.",
+   "perche": "the last goblin against the door: invented"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#17:3",
+   "testo": "Lo blocca con lo scudo, e il suo respiro si fa corto nel silenzio.",
+   "perche": "carried: the invented goblin is pinned and breathes"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#9:4",
+   "testo": "Livia alza lo scudo contro la lancia che arriva, e il colpo rimbalza via sul metallo.",
+   "perche": "an attack by nobody in play (a spear comes at Livia)"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#10:1",
+   "testo": "Il fiato gli esce di colpo, e la lancia cade sul selciato.",
+   "perche": "carried «gli»: the invented goblin"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#10:4",
+   "testo": "Zirrà non è più qui: il goblin che hai davanti è quello della lancia, e il suo sguardo cerca una via di fuga.",
+   "perche": "asserts a goblin with the spear is there"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#12:4",
+   "testo": "Lo sguardo di Zirrà scivola sulla spada di Livia, poi sul corpo immobile di Grosso accanto al fuoco.",
+   "perche": "fled Zirrà's gaze moves"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#13:2",
+   "testo": "Dal gradino Eliandro lancia il pugnale verso la figura che scappa verso la cantina.",
+   "perche": "an invented fleeing figure is attacked (no noun)"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#14:3",
+   "testo": "Lo colpisce di spada lunga e il corpo si affloscia contro il muro, senza un grido.",
+   "perche": "carried «Lo»: the invented goblin is struck and slumps"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#15:0",
+   "testo": "Livia alza lo scudo e preme l'ultimo goblin contro la porta di ferro.",
+   "perche": "the invented last goblin pinned"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#15:1",
+   "testo": "Lo scudo sbatte sul legno, e il corpo si schiaccia tra la pietra e il metallo.",
+   "perche": "carried: the invented goblin's body crushed"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#16:0",
+   "testo": "Livia, il tuo gesto verso Zirrà arriva a lei solo in silenzio.",
+   "perche": "a gesture reaches fled Zirrà"
+  },
+  {
+   "chiave": "coerenza-torre-mozza-fuori-binario-B-manuale#13:3",
+   "testo": "Il pugno le scivola sulla spalla di Fulco, ma il colpo è corto e la pietra del simbolo lo assorbe.",
+   "perche": "card: Berta hits Fulco for 3; told as absorbed"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#12:0",
+   "testo": "Livia alza lo scudo e il colpo della lancia rimbalza sul bordo di legno.",
+   "perche": "an attack by nobody in play (a spear on the shield)"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#15:2",
+   "testo": "Zirrà, ferita al fianco, sbuffa e scuote la testa, ma non si muove verso la scala.",
+   "perche": "dead Zirrà snorts and shakes her head"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#16:2",
+   "testo": "Eliandro, dal gradino, lancia il pugnale verso la schiena di chi fugge verso la cantina.",
+   "perche": "dagger at an invented fleeing figure (no noun)"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#17:3",
+   "testo": "Un colpo di spada lunga lo abbatte sul selciato, e la lama torna pulita.",
+   "perche": "carried «lo»: the invented goblin struck down"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#18:0",
+   "testo": "Livia alza lo scudo e spinge l'ultimo goblin contro la porta di ferro.",
+   "perche": "the invented last goblin pinned"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#18:2",
+   "testo": "Eliandro tiene il piede sul goblin e gli chiede dov'è il ragazzo.",
+   "perche": "foot on the invented goblin, question asked"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#18:3",
+   "testo": "Il goblin sputa sangue e guarda verso la cantina.",
+   "perche": "the invented goblin spits blood"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#19:1",
+   "testo": "Livia, chiedi a Zirrà cosa vuole, o quello che hai da dirle, nell'orecchio.",
+   "perche": "invites whispering to dead Zirrà as if she listened"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#9:5",
+   "testo": "I goblin rimasti ritrovano le gambe e scappano verso il crinale, lasciando la torre al silenzio e al fumo.",
+   "perche": "«the remaining goblins» flee: nobody else was there"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#10:0",
+   "testo": "Livia alza lo scudo e lo tiene davanti: la lancia del goblin batte sul bordo e scivola via.",
+   "perche": "an invented goblin's spear on the shield"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#13:1",
+   "testo": "Livia grida ai goblin di fermarsi, di dire chi li paga.",
+   "perche": "Livia shouts at goblins that are not there"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#14:3",
+   "testo": "Il goblin davanti esita, guarda il compagno ferito, e per un momento resta immobile sulla soglia.",
+   "perche": "the invented goblin hesitates"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#14:5",
+   "testo": "Eliandro, il pugnale vola nel buio della scala, ma il goblin è già sparito nella cantina: la lama batte sul gradino vuoto e rimbalza nel fango.",
+   "perche": "the invented goblin vanished into the cellar"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#16:0",
+   "testo": "Eliandro si china sul goblin ancora schiacciato dal piede, ma il ginocchio gli cede e la domanda gli esce in un sussurro.",
+   "perche": "foot on the invented goblin"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#16:2",
+   "testo": "Livia sbatte lo scudo contro la porta, ma l'ultimo goblin scivola di lato, la lancia gli sfugge di mano e il colpo resta a metà.",
+   "perche": "the invented last goblin slips aside"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#16:7",
+   "testo": "Livia Sarti spinge con lo scudo, ma l'ultimo goblin scivola di lato e la porta sbatte sul vuoto: lo scudo le sfugge dal braccio e lei barcolla in avanti.",
+   "perche": "the invented last goblin slips aside"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#17:1",
+   "testo": "Di là, sotto la soglia, il respiro di Grosso si ferma.",
+   "perche": "fled Grosso's breathing stops beyond the door"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-fuori-binario-B-manuale#16:0",
+   "testo": "Livia, la tua mano si chiude sul bordo dello scudo, e lo sguardo di Zirrà si ferma su di te, come se contasse qualcosa.",
+   "perche": "absent Zirrà's gaze"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-fuori-binario-B-manuale#16:1",
+   "testo": "Lei scoppia a ridere corto, poi si china un po' verso di te, come se volesse dirti qualcosa senza farsi sentire dagli altri.",
+   "perche": "carried «Lei»: absent Zirrà laughs"
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-fuori-binario-B-manuale#16:2",
+   "testo": "Livia, la chiacchierata con Zirrà resta tra voi: al tavolo vedete solo la sua risata e il suo passo indietro.",
+   "perche": "a chat with absent Zirrà"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#22:1",
+   "testo": "Lei sorride storta, il sangue le sporca i denti.",
+   "perche": "carried «Lei»: dead Zirrà smiles"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#22:3",
+   "testo": "Dietro di te, Livia tiene la lancia puntata sul goblin esitante.",
+   "perche": "the invented hesitant goblin"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#22:7",
+   "testo": "Il goblin davanti a Livia guarda la cantina, poi il compagno a terra.",
+   "perche": "the invented goblin looks at the cellar"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#22:8",
+   "testo": "Non si muove.",
+   "perche": "carried: the invented goblin does not move"
+  },
+  {
+   "chiave": "canary-torre-mozza-combattimento-B-manuale#24:0",
+   "testo": "Livia Sarti, il tuo scudo blocca l'ultimo goblin contro la porta.",
+   "perche": "the invented last goblin pinned"
+  }
+ ],
+ "toccatePulite": [
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#12:7",
+   "testo": "Che fai ora?",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#13:1",
+   "testo": "Tu aspetti la sua risposta, scudo alzato.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#11:2",
+   "testo": "Ahi... ahi... orecchie a punta, mi hai fatto male davvero.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#10:6",
+   "testo": "Tonio, sui gradini, guarda la scena senza parlare.",
+   "etichettata": true
+  }
+ ],
+ "ms": 27
+}

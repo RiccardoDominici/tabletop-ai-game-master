@@ -1,0 +1,110 @@
+{
+ "variante": "attive",
+ "violazioni": 37,
+ "prese": 19,
+ "mancate": [
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#24:4",
+   "testo": "Il secondo goblin, quello che esitava, lascia cadere la mazza e si schiaccia contro la parete.",
+   "perche": "a second goblin drops the mace: nobody else in play"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#25:0",
+   "testo": "Livia abbatte lo scudo sul goblin davanti a lei, e la lancia cade con un suono secco sul selciato.",
+   "perche": "the invented goblin hit by the shield"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#25:1",
+   "testo": "Il colpo di spada lunga lo ferma prima che si rialzi.",
+   "perche": "carried «lo»: the invented goblin"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#25:2",
+   "testo": "Eliandro preme il piede sulla mano del goblin e si china, abbassando la voce.",
+   "perche": "foot on the invented goblin, question asked"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#25:3",
+   "testo": "Il goblin sputa sangue e fissa il piede, e Tonio, in fondo ai gradini, stringe il piccone un po' più forte.",
+   "perche": "the invented goblin spits blood"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#26:0",
+   "testo": "Eliandro, piano, chiede al goblin chi gli dà ordini.",
+   "perche": "a question to the invented goblin"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#26:2",
+   "testo": "Livia spinge lo scudo contro l'ultimo goblin e lo blocca alla porta.",
+   "perche": "the invented last goblin pinned"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#27:0",
+   "testo": "Livia tiene la spada puntata alla gola del goblin, lo scudo premuto contro la porta.",
+   "perche": "sword at the invented goblin's throat"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#27:4",
+   "testo": "Livia sente il goblin tremare sotto la punta della lama, e il respiro si fa corto.",
+   "perche": "the invented goblin trembles"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#21:0",
+   "testo": "Livia alza la voce e intima ai goblin di fermarsi.",
+   "perche": "Livia orders goblins that are not there"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#22:0",
+   "testo": "Eliandro preme il piede sul goblin e chiede dove sia il ragazzo.",
+   "perche": "foot on the invented goblin, question asked"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#22:1",
+   "testo": "La creatura non risponde subito: guarda verso la cantina.",
+   "perche": "carried «La creatura»: it looks at the cellar"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:0",
+   "testo": "Livia abbassa la spada lunga sulla lancia del goblin davanti a lei.",
+   "perche": "the invented goblin's spear struck"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:1",
+   "testo": "Il colpo lo getta contro il muro, e la lancia cade sulla pietra.",
+   "perche": "carried «lo»: the invented goblin thrown"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:2",
+   "testo": "Eliandro si china verso il goblin e gli parla piano, con il piede ancora sul suo petto.",
+   "perche": "speaking to the invented goblin"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#24:0",
+   "testo": "Livia spinge l'ultimo goblin contro la porta di ferro, con lo scudo alzato.",
+   "perche": "the invented last goblin pushed"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#24:1",
+   "testo": "Il colpo non fa presa: la creatura scivola di lato e il ferro della porta risuona.",
+   "perche": "«la creatura» slips aside: invented"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#25:0",
+   "testo": "Livia abbassa la punta della spada sul petto del goblin.",
+   "perche": "sword on the invented goblin's chest"
+  }
+ ],
+ "toccatePulite": [
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#10:2",
+   "testo": "Zirrà vede il suo compagno a terra e la risata le muore in gola.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#11:2",
+   "testo": "Zirrà guarda il suo compagno a terra, poi guarda la spada di Nespola, e per un momento non ride più.",
+   "etichettata": true
+  }
+ ],
+ "ms": 9
+}

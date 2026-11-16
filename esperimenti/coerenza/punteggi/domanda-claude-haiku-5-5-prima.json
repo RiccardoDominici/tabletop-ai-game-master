@@ -1,0 +1,90 @@
+{
+ "variante": "domanda-claude-haiku-5-5",
+ "violazioni": 37,
+ "prese": 29,
+ "mancate": [
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#26:5",
+   "testo": "Brutta cosa, vero?",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#27:1",
+   "testo": "Zirrà è morta, Livia.",
+   "perche": "dead Zirrà speaks"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#22:4",
+   "testo": "Nespola, a terra dietro la pietra, stringe la sciarpa sulla spalla e aspetta.",
+   "perche": "a PC told down: Nespola is standing for the Engine (labelled after scoring; R-esito, shared by every variant)"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:3",
+   "testo": "Chi vi dà ordini?",
+   "perche": "Berta, at the farm, speaks at the tower"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:4",
+   "testo": "Dimmelo, e puoi scappare.",
+   "perche": "Berta, at the farm, speaks at the tower"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:5",
+   "testo": "Il goblin non parla.",
+   "perche": "the invented goblin does not speak"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:6",
+   "testo": "Guarda verso la cantina, dove Tonio sta in silenzio.",
+   "perche": "carried: the invented goblin looks"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#25:4",
+   "testo": "Dice che il ragazzo è stato portato via, ma non dice da chi.",
+   "perche": "carried: the invented goblin says the boy was taken"
+  }
+ ],
+ "toccatePulite": [
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#10:0",
+   "testo": "Nespola affonda la spada corta nella schiena di Grosso, e l'hobgoblin cade di faccia nel fango accanto al fuoco.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#24:0",
+   "testo": "Livia abbassa lo scudo di un dito e guarda il goblin che esita.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#24:1",
+   "testo": "Livia colpisce Zirrà con la spada lunga.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#24:2",
+   "testo": "Il fendente entra nel fianco, e la goblin cade in ginocchio sul selciato.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#11:1",
+   "testo": "L'hobgoblin barcolla, lascia cadere la mazza e crolla in ginocchio sulla pietra.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#20:1",
+   "testo": "La lama vola nel buio e colpisce: Zirrà cade a terra, senza più forze.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-fuori-binario-B-manuale#14:0",
+   "testo": "Livia Sarti chiede a Oreste, sottovoce, quanto lo pagano i goblin, e gli offre una mano con le pecore.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-fuori-binario-B-manuale#14:3",
+   "testo": "Io non parlo coi goblin, né con voi.",
+   "etichettata": true
+  }
+ ],
+ "ms": 2
+}
