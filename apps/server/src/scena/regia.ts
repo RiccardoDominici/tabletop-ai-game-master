@@ -288,6 +288,17 @@ export function ritmoDellaScena(c: Campagna): Ritmo {
   return c.scena.dati['ritmo'] === 'concitato' ? 'concitato' : 'calmo';
 }
 
+/** The id part of an improvised character's name: «Madre Carla» → madre_carla (letters and digits only). */
+export function slugImprovvisato(nome: string): string {
+  return nome
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 30);
+}
+
 /** This turn's absent creatures (R-inesistente): see Regia.inesistentiDelTurno. */
 interface InesistentiDelTurno {
   turno: number;
@@ -372,6 +383,13 @@ export class Regia {
    * §1), for this visit of the scene: who left, when and where to. The Game Master's decisions win over them.
    */
   private presenzeNarrate = new Map<string, { presente: boolean; turno: number; verso: string | null }>();
+  /**
+   * Minor characters the narrator improvised with [nuovo png] (mode A, docs/coerenza.md «Characters the players
+   * invent»): no stats, no secrets, tracked for presence like the others, kept for the session and for the Preparer.
+   */
+  private improvvisati = new Map<string, { id: string; nome: string; ruolo: string | null; turno: number; scena: string }>();
+  /** At most this many improvised characters in a session, and one a turn: a minor character, not a cast. */
+  private static readonly IMPROVVISATI_MASSIMI = 8;
 
   /**
    * The narrator's [esce]/[entra] (docs/coerenza.md §1): accepted only for a known NPC who is in the scene (to leave) or
@@ -380,8 +398,11 @@ export class Regia {
    * he went.
    */
   private presenzeDalNarratore(turno: number, proposte: ReadonlyArray<{ png: string; presente: boolean; verso: string | null }>, log: Logger): void {
-    for (const x of proposte) {
-      const png = this.campagna.png.find((p) => p.id === x.png);
+    for (const p0 of proposte) {
+      // An improvised character can be named by its name in the tag («[esce] Oreste»): its id.
+      const imp = this.improvvisati.get(p0.png) ?? [...this.improvvisati.values()].find((i) => i.nome.toLowerCase() === p0.png.toLowerCase() || `png_imp_${slugImprovvisato(i.nome)}` === p0.png);
+      const x = imp ? { ...p0, png: imp.id } : p0;
+      const png = imp ?? this.campagna.png.find((p) => p.id === x.png);
       const qui = this.pngPresentiFisici().has(x.png);
       const motivo = !png ? 'unknown NPC' : this.prove?.attivo && this.prove.stato.fuoriGioco(x.png) && x.presente ? 'out of play' : x.presente === qui ? (qui ? 'already in the scene' : 'not in the scene') : null;
       if (motivo) {
@@ -393,6 +414,41 @@ export class Regia {
     }
     if (proposte.length) this.notifica();
   }
+  /**
+   * [nuovo png] Oreste, pastore: in mode A with an improvising narrator (not the selector, not the local reader), one a
+   * turn and at most IMPROVVISATI_MASSIMI a session; not a name the campaign has. It enters the scene now (the visit's
+   * presence), the ledger as `improvvisato`, the session log (`tipo: png_improvvisato`) and the snapshot.
+   */
+  private improvvisatiDalNarratore(turno: number, proposte: ReadonlyArray<{ nome: string; ruolo: string | null }>, log: Logger): void {
+    if (!proposte.length) return;
+    const ammesso = !this.statoRepertorio && this.o.narratore.nome !== 'minimo';
+    const noti = new Set([...this.campagna.pg.map((p) => p.nome), ...this.campagna.png.map((p) => p.nome), ...[...this.nomiPng.values()].flat()].map((n) => n.toLowerCase()));
+    for (const [k, x] of proposte.entries()) {
+      const id = `png_imp_${slugImprovvisato(x.nome)}`;
+      const motivo = !ammesso
+        ? 'mode B or the local reader: no improvised characters'
+        : k > 0
+          ? 'one a turn'
+          : this.improvvisati.size >= Regia.IMPROVVISATI_MASSIMI
+            ? 'too many in this session'
+            : noti.has(x.nome.toLowerCase()) || this.improvvisati.has(id)
+              ? 'a name the campaign or the session already has'
+              : slugImprovvisato(x.nome) === ''
+                ? 'no usable name'
+                : null;
+      if (motivo) {
+        log.warn({ turno, nome: x.nome, motivo }, 'improvised character refused');
+        continue;
+      }
+      const i = { id, nome: x.nome, ruolo: x.ruolo, turno, scena: this.campagna.scena.id };
+      this.improvvisati.set(id, i);
+      this.presenzeNarrate.set(id, { presente: true, turno, verso: null });
+      this.o.registroNarrazioni.scrivi({ sessione: this.sessione, tipo: 'png_improvvisato', ...i });
+      log.info({ ...i }, 'improvised character registered');
+    }
+    this.notifica();
+  }
+
   /** PNG nascosti (scheda `nascosto: true`) che il master ha rivelato a mano. Vale per la sessione. */
   private rivelati = new Set<string>();
   /** Blocchi di sistema della scena in corso (prompt + contesto), in cache. */
@@ -847,6 +903,7 @@ export class Regia {
       // Decisioni del master su presenze e rivelazioni: nel registro, così una ripresa le ritrova (assenti = nessuna).
       ...(this.presenzeManuali.size ? { presenzeManuali: [...this.presenzeManuali] } : {}),
       ...(this.presenzeNarrate.size ? { presenzeNarrate: [...this.presenzeNarrate] } : {}),
+      ...(this.improvvisati.size ? { improvvisati: [...this.improvvisati.values()] } : {}),
       ...(this.rivelati.size ? { rivelati: [...this.rivelati] } : {}),
       ...(this.prove?.attivo ? { prove: this.prove.esporta() } : {}),
       registro: this.diarioRegistro.esporta(),
@@ -926,6 +983,7 @@ export class Regia {
     // Dopo impostaScena (che azzera le presenze a mano): le decisioni del master di questa scena tornano.
     for (const [id, presente] of f.presenzeManuali ?? []) this.presenzeManuali.set(id, presente);
     for (const [id, v] of f.presenzeNarrate ?? []) this.presenzeNarrate.set(id, { ...v });
+    for (const i of f.improvvisati ?? []) this.improvvisati.set(i.id, { ...i });
     for (const id of f.rivelati ?? []) this.rivelati.add(id);
     this.luogo = f.luogo || this.campagna.scena.id;
     this.orologi.importa(f.orologi);
@@ -1325,6 +1383,7 @@ export class Regia {
       pg: c.pg.map((p) => ({ id: p.id, nome: p.nome, nomi: nomiPg(p.id, p.nome) })),
       png: c.png.map((p) => ({ id: p.id, nome: p.nome, nomi: this.nomiPng.get(p.id) ?? [p.nome], nascosto: p.nascosto === true && !this.rivelati.has(p.id) })),
       gregari,
+      improvvisati: [...this.improvvisati.values()].map((i) => ({ id: i.id, nome: i.nome, nomi: [i.nome, ...(i.ruolo ? [i.ruolo.split(/\s+/)[0]!] : [])] })),
       presenti: fisici,
       usciti: new Map([...this.presenzeNarrate].filter(([id, v]) => !v.presente && !this.presenzeManuali.has(id)).map(([id, v]) => [id, { turno: v.turno, verso: v.verso }])),
       pf: (id) => prove?.stato.puntiFerita(id) ?? null,
@@ -3875,6 +3934,8 @@ export class Regia {
     }
     // Attitude changes the narrator proposed (mode A): the Engine checks them (docs/mondo.md §4).
     const atteggiamenti = this.atteggiamentiDalNarratore(turno, esito.atteggiamenti, log);
+    // Minor characters the narrator brought in ([nuovo png], mode A): registered before the presence changes.
+    this.improvvisatiDalNarratore(turno, esito.nuoviPng, log);
     // Presence changes the narrator proposed ([esce]/[entra]): the Engine checks them (docs/coerenza.md §1).
     this.presenzeDalNarratore(turno, esito.presenze, log);
     // The world (docs/mondo.md §2): owed marks the response did not show are said by the Engine; the lines said and

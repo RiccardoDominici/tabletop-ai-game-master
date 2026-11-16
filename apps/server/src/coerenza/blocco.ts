@@ -16,7 +16,9 @@ import type { EntitaRegistro, Registro } from './registro';
 export const RIGHE_MASSIME = 12;
 
 function stato(e: EntitaRegistro): string {
-  return testo(`coerenza.stato.${e.stato}`, { nome: e.nome });
+  const s = testo(`coerenza.stato.${e.stato}`, { nome: e.nome });
+  // An improvised character knows nothing of the canon's secrets: the narrator reads it here.
+  return e.tipo === 'improvvisato' ? `${s}${testo('coerenza.improvvisato')}` : s;
 }
 
 /** The lines of the block (without the title); empty when there is nothing to say. */

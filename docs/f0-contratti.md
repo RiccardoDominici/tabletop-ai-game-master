@@ -113,6 +113,12 @@ into sentences and sends each sentence to the right voice.
   proposes that an NPC in the scene changes its attitude towards a PC (`ostile`, `indifferente`, `amichevole`). The Engine
   accepts one step at a time, one change per NPC per turn, at most two a turn, and not the same pair again within three
   turns (docs/mondo.md §4); otherwise it refuses and logs.
+- `[nuovo png] <name>, <role>`: optional, mode A with an improvising narrator only, before `[invito]`, not read: a minor
+  character the players addressed and the campaign does not have enters the scene. The Engine registers it (id
+  `png_imp_<name>`, in the ledger as `improvvisato`: no stats, no secrets, tracked for presence, `[esce] <name>` takes it
+  out), one a response and at most 8 a session, never a name the campaign has; it speaks only in `[narratore]` lines;
+  it is written to narrazioni.jsonl (`tipo: png_improvvisato`), the snapshot and the session register
+  (`png_improvvisati`) for the Preparer (docs/coerenza.md). In mode B and with the local reader the tag is refused.
 - `[esce] <png> verso <dove>` / `[entra] <png>`: optional (both modes), before `[invito]`, not read: an NPC leaves or arrives in this response. The Engine accepts it only for a known NPC who is in the scene (to leave) or not (to arrive) and not out of play; who left neither speaks nor acts here (its lines are dropped, R-assente), and «Cosa è vero adesso» says when and where to (docs/coerenza.md §1). The Game Master's presence decision on the panel wins over it.
 - `[ritmo] concitato` / `[ritmo] calmo`: optional and rare, immediately before `[invito]`, not read (also in the
   selector's protocol). `concitato` (frantic) when the narration becomes frantic (combat, chase, imminent danger):

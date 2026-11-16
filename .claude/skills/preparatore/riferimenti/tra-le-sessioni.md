@@ -42,6 +42,9 @@ The work between sessions is done by an agent with this skill, like the preparat
      fact with `effetti.png.<png>.atteggiamento`: `scripts/tra-sessioni.sh` prints one ready, with its source, and the
      package skeleton then writes it into the NPC's card. The world's log (`mondo`) says what happened off-screen in the
      session (`visto: false`) and whether the PCs found its traces (`emerso_al_turno`);
+   - the minor characters improvised in play (registro.yaml → `png_improvvisati`, mode A's `[nuovo png]`): no card,
+     no secrets; decide for each whether it gets a card in the next package, merges into an existing NPC, or is
+     dropped (`scripts/tra-sessioni.sh` lists them);
    - no summaries from memory: if a thing is not in the log, it did not happen;
    - **the world moves**: the clocks of the fronts (and, from the campaign level, of the factions) advance under their rules;
      what changes off-screen is a fact with `fonte: {tra_sessioni: <n>, motivo}`, and the reason names the clock, the danger

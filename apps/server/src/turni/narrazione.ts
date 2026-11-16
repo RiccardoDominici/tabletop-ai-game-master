@@ -95,6 +95,8 @@ export interface EsitoTurnoNarrato {
   atteggiamenti: Array<{ png: string; pg: string; stato: string }>;
   /** Presence changes the narrator proposed ([esce]/[entra], docs/coerenza.md §1): the director checks them. */
   presenze: Array<{ png: string; presente: boolean; verso: string | null }>;
+  /** Minor characters the narrator brought in with [nuovo png] (mode A, docs/coerenza.md): the director registers them. */
+  nuoviPng: Array<{ nome: string; ruolo: string | null }>;
   /** Ritmo chiesto con [ritmo] (vale l'ultima riga), null se il narratore non l'ha detto. */
   ritmo: 'concitato' | 'calmo' | null;
   esito: EsitoNarrazione | null;
@@ -316,6 +318,7 @@ export async function narraTurno(
   const orologi: string[] = [];
   const atteggiamenti: Array<{ png: string; pg: string; stato: string }> = [];
   const presenze: Array<{ png: string; presente: boolean; verso: string | null }> = [];
+  const nuoviPng: Array<{ nome: string; ruolo: string | null }> = [];
   let ritmo: 'concitato' | 'calmo' | null = null;
   /** Segnale audio in attesa della prossima frase. */
   let cuePendente: CueAudio | null = null;
@@ -503,6 +506,9 @@ export async function narraTurno(
       } else if (e.tipo === 'presenza') {
         presenze.push({ png: e.png, presente: e.presente, verso: e.verso });
         log.info({ turno: p.turno, png: e.png, presente: e.presente, verso: e.verso, grezzo: e.grezzo }, 'narrator: presence change proposed');
+      } else if (e.tipo === 'nuovo_png') {
+        nuoviPng.push({ nome: e.nome, ruolo: e.ruolo });
+        log.info({ turno: p.turno, nome: e.nome, ruolo: e.ruolo, grezzo: e.grezzo }, 'narrator: improvised character proposed');
       } else if (e.tipo === 'atteggiamento') {
         atteggiamenti.push({ png: e.png, pg: e.pg, stato: e.stato });
         log.info({ turno: p.turno, png: e.png, pg: e.pg, stato: e.stato, grezzo: e.grezzo }, 'narrator: attitude change proposed');
@@ -541,6 +547,7 @@ export async function narraTurno(
     orologi,
     atteggiamenti,
     presenze,
+    nuoviPng,
     ritmo,
     esito,
     frasi: indice,

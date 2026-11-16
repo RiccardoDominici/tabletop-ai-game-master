@@ -113,6 +113,8 @@ export interface RegistroSessione {
   /** Fatti del canone diventati noti ai PG durante la sessione (non quelli noti dall'inizio). */
   fatti_noti: Array<{ id: string; turno: number; battuta: string | null }> | null;
   png_incontrati: Array<{ id: string; nome: string; primo_turno: number; ultimo_turno: number; battute: number }>;
+  /** Minor characters improvised in play ([nuovo png], mode A): for the Preparer to keep, recast or drop. */
+  png_improvvisati?: Array<{ id: string; nome: string; ruolo: string | null; turno: number; scena: string }>;
   pg: Array<{ id: string; nome: string; azioni_pubbliche: AzioneRegistrata[]; azioni_private: AzioneRegistrata[] }>;
   /** I turni in cui il Motore ha registrato un cambiamento, con le righe dette e le azioni che c'erano. */
   momenti: Array<{ turno: number; cosa: string[]; azioni: Array<{ id: string; pg: string; privata: boolean }>; righe: Array<{ chi: string; testo: string }> }>;
@@ -447,6 +449,7 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
     momenti,
     note_del_master: note,
     ...(atteggiamenti.length ? { atteggiamenti } : {}),
+    ...((ultima?.improvvisati ?? []).length ? { png_improvvisati: (ultima?.improvvisati ?? []).map((i) => ({ ...i })) } : {}),
     ...(mondo.length ? { mondo } : {}),
     avvisi,
   };

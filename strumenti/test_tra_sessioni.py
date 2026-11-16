@@ -113,3 +113,14 @@ def test_script_tra_sessioni(giocata):
     assert subprocess.run([*script, "--pacchetto"], capture_output=True, text=True).returncode == 0
     assert subprocess.run([*script, "--verifica"], capture_output=True, text=True).returncode == 1   # scheletro vuoto
     assert subprocess.run([script[0], str(giocata), "x"], capture_output=True).returncode == 2
+
+
+def test_riassunto_dei_png_improvvisati(giocata, capsys):
+    # docs/coerenza.md: a minor character the narrator improvised in play ([nuovo png]) is listed for the Preparer.
+    f = giocata / "sessioni" / "01" / "registro.yaml"
+    d = yaml.safe_load(f.read_text(encoding="utf-8"))
+    d["png_improvvisati"] = [{"id": "png_imp_oreste", "nome": "Oreste", "ruolo": "pastore", "turno": 9, "scena": "scena_uno"}]
+    f.write_text(yaml.safe_dump(d, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    assert T.riassunto(giocata, 1) == 0
+    out = capsys.readouterr().out
+    assert "PNG improvvisato t9: Oreste (pastore, scena_uno): da tenere (una scheda), rifondere in un PNG del canone o lasciare" in out

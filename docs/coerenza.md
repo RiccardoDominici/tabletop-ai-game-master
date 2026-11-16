@@ -370,9 +370,16 @@ evidence the dictation uses to learn a name. Dry run over the 380 actions of eve
   scena si chiama Oreste: nessun PNG risponde a quel nome, non dargli voce.»; the log has «coherence: nobody here has
   that name, said by the Engine» and narrazioni.jsonl a record `tipo: nome_inventato`. Not with the scriptwriter on:
   writing what the repertoire lacks is its job. Tests: test/coerenza-nomi-nuovi.test.ts.
-- **Mode A** (decided, not built yet): a minor improvised NPC may enter through a tag (`[nuovo png] name, role`) that
-  the Engine registers in the ledger as «improvvisato»: no stats, no secrets, nothing of the canon's secrets, tracked
-  for presence like the others, saved in the session log and handed to the Preparer between sessions.
+- **Mode A** (built): a minor improvised NPC may enter through `[nuovo png] Nome, ruolo` (parser
+  `narrazione/parser.ts`; the narrator prompts it and en say when). The director (`improvvisatiDalNarratore`) takes one
+  a response and at most 8 a session, never a name the campaign has, and only with an improvising narrator (mode B
+  and the local reader refuse it: the neutral line answers there). It gets the id `png_imp_<name>`, enters the scene
+  now (the visit's presence), the ledger as `improvvisato` (no stats; «Cosa è vero adesso» says «Oreste in piedi
+  (improvvisato: nessuna statistica, non sa nessun segreto)»), `[esce] Oreste` takes it out like any NPC, and it is
+  written to narrazioni.jsonl (`tipo: png_improvvisato`), the snapshot (a resume finds it) and the session register
+  (`png_improvvisati`), which `scripts/tra-sessioni.sh` lists for the Preparer to keep, recast or drop
+  (.claude/skills/preparatore/riferimenti/tra-le-sessioni.md). It speaks only in `[narratore]` lines. Tests:
+  test/coerenza-improvvisati.test.ts, strumenti/test_tra_sessioni.py.
 - **A silent exit** (Ugo leaves with no `[esce]`, then speaks; built): the judge asks aside, never blocking the voice,
   for each NPC in the scene and in play that a public narrator sentence names: «nella frase da controllare, Ugo lascia
   la scena adesso…?» (`coerenza.domanda.esce`); on «si» the director takes it as the narrator's `[esce]` (the same

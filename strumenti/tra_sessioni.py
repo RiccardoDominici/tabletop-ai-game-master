@@ -78,6 +78,10 @@ def riassunto(cartella: Path, n: int) -> int:
     for v in d.get("mondo") or []:
         visto = "visto" if v.get("visto") else f"fuori scena{', emerso al t' + str(v['emerso_al_turno']) if v.get('emerso_al_turno') else ''}"
         print(f"  mondo t{v.get('turno')}: {v.get('conseguenza')} ({v.get('id')} {v.get('segno')}, {visto}): {v.get('cosa')}")
+    # Minor characters the narrator improvised in play ([nuovo png], docs/coerenza.md): keep, recast or drop them.
+    for i in d.get("png_improvvisati") or []:
+        print(f"  PNG improvvisato t{i.get('turno')}: {i.get('nome')} ({i.get('ruolo') or 'senza ruolo'}, {i.get('scena')}): "
+              "da tenere (una scheda), rifondere in un PNG del canone o lasciare")
     cambi = d.get("atteggiamenti") or []
     for a in cambi:
         print(f"  atteggiamento t{a.get('turno')}: {a.get('id')} verso {a.get('pg')} {a.get('da')} → {a.get('a')} ({a.get('causa')})")

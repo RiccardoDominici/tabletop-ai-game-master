@@ -24,6 +24,7 @@ coerenza:
     morto: "{nome} non è più in vita: non parla né agisce, il corpo è lì"
     fuggito: "{nome} fuggito"
     nascosto: "{nome} nascosto"
+  improvvisato: " (improvvisato: nessuna statistica, non sa nessun segreto)"
   # A name the players invent (coerenza/nomi-nuovi.ts): in mode B and with the local reader the Engine answers it.
   nome_nuovo: "{nome}? Qui nessuno conosce questo nome."
   nome_nuovo_riga: "Nessuno in scena si chiama {nomi}: nessun PNG risponde a quel nome, non dargli voce."

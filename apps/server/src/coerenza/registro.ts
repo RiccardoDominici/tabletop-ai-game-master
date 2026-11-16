@@ -21,7 +21,8 @@ export type PresenzaEntita = 'in_scena' | 'uscito' | 'altrove';
 
 export interface EntitaRegistro {
   id: string;
-  tipo: 'pg' | 'png' | 'gregario';
+  /** `improvvisato`: a minor character the narrator brought in with [nuovo png] (mode A): no stats, no secrets. */
+  tipo: 'pg' | 'png' | 'gregario' | 'improvvisato';
   nome: string;
   /** How the narration names it: name, short name, aliases, trade (as the guards match them). */
   nomi: string[];
@@ -74,6 +75,8 @@ export interface FontiRegistro {
   png: ReadonlyArray<{ id: string; nome: string; nomi: readonly string[]; nascosto: boolean }>;
   /** Minions of the scene (campagna/gregari.ts), standing or not. */
   gregari: ReadonlyArray<{ id: string; nome: string; nomi: readonly string[] }>;
+  /** Minor characters improvised in play ([nuovo png], mode A); absent = none. */
+  improvvisati?: ReadonlyArray<{ id: string; nome: string; nomi: readonly string[] }>;
   /** NPCs and minions physically in the scene (bodies included; the fled are not). */
   presenti: ReadonlySet<string>;
   /** NPCs who left the scene during this visit, with the turn and where to (presence tags, docs/coerenza.md §1). */
@@ -106,13 +109,14 @@ function statoDi(f: FontiRegistro, id: string, nascosto: boolean): StatoEntita {
 export function costruisciRegistro(f: FontiRegistro): Registro {
   const entita: EntitaRegistro[] = [];
   for (const p of f.pg) entita.push({ id: p.id, tipo: 'pg', nome: p.nome, nomi: [...p.nomi], stato: statoDi(f, p.id, false), presenza: 'in_scena', uscito: null });
-  const png = (tipo: 'png' | 'gregario', p: { id: string; nome: string; nomi: readonly string[]; nascosto?: boolean }): void => {
+  const png = (tipo: 'png' | 'gregario' | 'improvvisato', p: { id: string; nome: string; nomi: readonly string[]; nascosto?: boolean }): void => {
     const uscito = f.usciti?.get(p.id) ?? null;
     const presenza: PresenzaEntita = uscito ? 'uscito' : f.presenti.has(p.id) ? 'in_scena' : 'altrove';
     entita.push({ id: p.id, tipo, nome: p.nome, nomi: [...p.nomi], stato: statoDi(f, p.id, p.nascosto === true && presenza === 'in_scena'), presenza, uscito: uscito ? { ...uscito } : null });
   };
   for (const p of f.png) png('png', p);
   for (const g of f.gregari) png('gregario', g);
+  for (const i of f.improvvisati ?? []) png('improvvisato', i);
   const esiti: EsitoRegistro[] = f.carte.map((t) => ({
     id: t.id,
     chi: t.chi,

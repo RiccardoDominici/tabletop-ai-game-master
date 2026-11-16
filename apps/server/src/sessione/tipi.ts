@@ -93,6 +93,8 @@ export interface FotografiaSessione {
   presenzeManuali?: Array<[string, boolean]>;
   /** Presence changes the narration proposed and the Engine accepted in this scene (docs/coerenza.md §1; absent = none). */
   presenzeNarrate?: Array<[string, { presente: boolean; turno: number; verso: string | null }]>;
+  /** Minor characters improvised in play ([nuovo png], mode A, docs/coerenza.md); absent = none. */
+  improvvisati?: Array<{ id: string; nome: string; ruolo: string | null; turno: number; scena: string }>;
   /** PNG nascosti rivelati a mano dal master (assente = nessuno). */
   rivelati?: string[];
   /** Prove e dadi (docs/prove.md): punti ferita, seme e contatore dei dadi, ultime carte. Assente = senza dadi. */

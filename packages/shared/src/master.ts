@@ -199,7 +199,7 @@ export interface CoerenzaMaster {
   entita: Array<{
     id: string;
     nome: string;
-    tipo: 'pg' | 'png' | 'gregario';
+    tipo: 'pg' | 'png' | 'gregario' | 'improvvisato';
     stato: 'in_piedi' | 'ferito' | 'grave' | 'a_terra' | 'morente' | 'morto' | 'fuggito' | 'nascosto';
     presenza: 'in_scena' | 'uscito' | 'altrove';
   }>;
