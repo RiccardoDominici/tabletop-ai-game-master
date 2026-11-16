@@ -150,7 +150,9 @@ With a narrator through Anthropic's API, a sentence that names someone out of pl
 the scene answers to, or the target of a blow that hurt with a miss word, also gets one yes/no question to the same
 fast model, with what the Engine holds true: «does this sentence make Zirrà act, speak or be present now?». On «si»
 the Engine says its own line (once a turn) or drops the sentence; on «no» the sentence is said as it is. If the answer
-is late, the older rules decide. With the local reader there is no question: the rules alone.
+is late, the older rules decide. The first sentence of a turn never waits for the answer: when it is flagged, the
+Engine's line («Zirrà giace a terra, senza vita.») is said at once while the question runs, and the sentence follows
+it only on «no». With the local reader there is no question: the rules alone.
 
 - `TAGM_DOMANDA=no` turns the question off (the rules alone); it is off in the automated tests unless
   `TAGM_DOMANDA=si`.

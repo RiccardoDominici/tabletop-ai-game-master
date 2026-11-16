@@ -1,0 +1,60 @@
+{
+ "variante": "domanda2a-claude-haiku-5-5",
+ "violazioni": 31,
+ "prese": 24,
+ "mancate": [
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-automatico#10:6",
+   "testo": "I goblin rimasti in piedi gettano le armi e corrono verso il buio del bosco, lasciando dietro di sé solo l'eco dei passi sulla pietra.",
+   "perche": "«the goblins still standing» flee: only Grosso was there, and he is still here in the next sentences"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#10:0",
+   "testo": "Livia para la lancia con lo scudo: il legno geme, ma regge.",
+   "perche": "an attack by nobody in play (a spear on the shield)"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#11:4",
+   "testo": "Il corpo cade senza un grido.",
+   "perche": "carried: the invented goblin's body falls"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#13:1",
+   "testo": "Ma la goblin Zirrà è a terra, e chi resta in piedi non risponde.",
+   "perche": "«chi resta in piedi»: someone still standing, nobody in play"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#14:6",
+   "testo": "Eliandro, il pugnale parte dal gradino e sparisce nel buio della scala: il rumore dei passi si allontana verso la porta di ferro, e della lama non si sente più nulla.",
+   "perche": "the invented fleeing goblin's steps (no noun)"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#15:1",
+   "testo": "Il colpo lo coglie di fianco e lo stende sulle pietre, accanto alla scala.",
+   "perche": "carried «lo»: the invented goblin struck down"
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#15:7",
+   "testo": "Non si rialza.",
+   "perche": "carried: the invented goblin does not rise"
+  }
+ ],
+ "toccatePulite": [
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-automatico#10:8",
+   "testo": "Zirrà... morta.",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-automatico#10:9",
+   "testo": "Hai carne?",
+   "etichettata": true
+  },
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#12:1",
+   "testo": "Il colpo arriva senza mancare.",
+   "etichettata": false
+  }
+ ],
+ "ms": 8
+}

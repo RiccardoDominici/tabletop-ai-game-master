@@ -94,6 +94,52 @@ describe('the yes/no judge', () => {
     expect(uscite).toEqual(['png_bertoldo']);
   });
 
+  it('the first sentence of the audio: the Engine line is said before the answer comes; «si» drops the sentence, «no» lets it follow', async () => {
+    // A model whose answer waits until the test releases it: the opener must be out before that.
+    let libera: (r: 'si' | 'no') => void = () => undefined;
+    const trattenuto: ModelloLinguaggio = {
+      ...modello(() => 'no'),
+      chiedi: (async () => {
+        const r = await new Promise<'si' | 'no'>((ok) => (libera = ok));
+        return { testo: JSON.stringify({ risposta: r }), modello: 'finto', stopReason: 'end_turn', uso: { input_tokens: 0, output_tokens: 0 }, costo: { costo_usd: 0 }, id: null } as never;
+      }) as ModelloLinguaggio['chiedi'],
+    };
+    const aperte: string[] = [];
+    const prima = { apri: (t: string) => (aperte.push(t), true) };
+    const g = giudice(trattenuto, () => null, 1000);
+    const d = g.giudica('Lo sgherro sputa nel fiume.', false, undefined, prima);
+    await new Promise((r) => setTimeout(r, 10));
+    expect(aperte).toEqual(['Ruggero giace a terra, senza vita.']);
+    libera('si');
+    expect(await d).toMatchObject({ testo: 'Ruggero giace a terra, senza vita.', aperta: true, fonte: 'domanda' });
+    // «no»: the line was true anyway, the sentence follows it.
+    const g2 = giudice(trattenuto, () => null, 1000);
+    const d2 = g2.giudica('Ida guarda lo sgherro a terra.', false, undefined, prima);
+    await new Promise((r) => setTimeout(r, 10));
+    libera('no');
+    expect(await d2).toBeNull();
+    expect(aperte).toHaveLength(2);
+    // The table heard the line in the last turns (apri says no): the rules decide now, the question goes on aside.
+    const g3 = giudice(trattenuto, () => null, 1000);
+    expect(await g3.giudica('Lo sgherro sputa nel fiume.', false, undefined, { apri: () => false })).toBeNull();
+  });
+
+  it('the first sentence with no Engine line: the rules decide now, the answer aside is the next sentence\'s carry and a late «si» is reported', async () => {
+    const tardive: string[] = [];
+    // Bertoldo away from the scene: an absent NPC has no Engine line (the sentence is just dropped on «si»).
+    const altrove: Registro = { ...registro, entita: registro.entita.map((e) => (e.id === 'png_bertoldo' ? { ...e, presenza: 'altrove' } : e)) };
+    const viste: string[] = [];
+    const m = modello((f) => (f.includes('Bertoldo') || f.includes('Ride') ? 'si' : 'no'), viste);
+    const g = new GiudiceDomande({ modello: m, ms: 300, registro: altrove, contesto: contestoMenzioni(altrove, [], [], []), ombra: () => null, log: pino({ level: 'silent' }) as never, turno: 3, tardiva: (x) => tardive.push(x.frase) });
+    const aperte: string[] = [];
+    expect(await g.giudica('Bertoldo arriva dal bosco.', false, undefined, { apri: (t) => (aperte.push(t), true) })).toBeNull();
+    expect(aperte).toEqual([]);
+    // The next sentence waits for the aside answer: «si» there, so it is asked as a carried subject.
+    expect(await g.giudica('Ride forte.')).toMatchObject({ testo: '', regola: 'R-fuori' });
+    expect(tardive).toEqual(['Bertoldo arriva dal bosco.']);
+    expect(viste).toHaveLength(2);
+  });
+
   it('a sentence the rules already changed keeps the judge\'s state but is not asked', async () => {
     const viste: string[] = [];
     const g = giudice(modello(() => 'si', viste));

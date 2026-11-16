@@ -9,6 +9,13 @@
  * The rules it replaces (R-fuori, and R-inesistente and the absorbed-blow branch, which are in observation) run in
  * the shadow on every sentence, so their carried subject stays right, and decide only on a deadline or an error. The
  * card rules of R-esito (pair, fall, a PC told down) and every other rule stay in VerificaTurno, before the judge.
+ *
+ * The first sentence of a turn's audio never waits for the answer (docs/coerenza.md, «First audio»: round 3 waited
+ * 0.9–2.5 s in 6 of 15 turns). When it is flagged, the Engine's line for its mention (the fallen one's state, who is
+ * really there) is true whatever the answer and is what a «si» would say: it is said at once, while the question runs;
+ * then «si» drops the sentence and «no» lets it follow. With no such line (an absent NPC, a line heard in the last
+ * turns) the rules decide the sentence now and the question goes on aside, only for the carried subject of the next
+ * sentence; a late «si» there is reported (`tardiva`), the sentence having been said.
  */
 import type { Logger } from '../logger';
 import { nomeBreve } from '../campagna/nomi';
@@ -37,11 +44,23 @@ export interface OpzioniGiudice {
    * voice; on «si» the director takes it as the narrator's `[esce]`. Absent: not asked.
    */
   uscita?: (id: string) => void;
+  /** A «si» that came after its sentence was said (the first one, asked aside): the director records it. */
+  tardiva?: (x: { frase: string; regola: IdRegola; motivo: string; ms: number }) => void;
+}
+
+/**
+ * The first sentence of the turn's audio: `apri` says the Engine's line now (false: it may not, e.g. the table heard it
+ * in the last turns). Absent: the sentence is not the first, the voice has slack and the judge may wait.
+ */
+export interface PrimaFrase {
+  apri: (testo: string) => boolean;
 }
 
 export interface DecisioneGiudice {
   /** The Engine's line, or '' to drop the sentence. */
   testo: string;
+  /** The line was already said as the opener (PrimaFrase): the sentence is dropped, nothing more is queued. */
+  aperta?: boolean;
   regola: IdRegola;
   motivo: string;
   /** Who decided: the model's answer, or the rules after a deadline or an error. */
@@ -57,14 +76,22 @@ export class GiudiceDomande {
   private ultime: string[] = [];
   /** Entities and nouns whose line was said in this turn (each is said once). */
   private readonly detti = new Set<string>();
+  /** The question on the first sentence, asked aside: the next sentence waits for it (its carried subject). */
+  private aParte: Promise<void> | null = null;
 
   constructor(private readonly o: OpzioniGiudice) {}
 
   /**
    * One narrator sentence, in order. `giaToccata`: a rule before the judge already changed it (the judge only keeps
-   * its state). Null: the sentence stays as it is.
+   * its state). `primaFrase`: nothing of the turn is in the voice yet (see the module comment). Null: the sentence
+   * stays as it is.
    */
-  async giudica(frase: string, giaToccata = false, signal?: AbortSignal): Promise<DecisioneGiudice | null> {
+  async giudica(frase: string, giaToccata = false, signal?: AbortSignal, primaFrase?: PrimaFrase): Promise<DecisioneGiudice | null> {
+    // The first sentence's question, asked aside, is this sentence's carry: wait for it (the voice has slack now).
+    if (this.aParte) {
+      await this.aParte;
+      this.aParte = null;
+    }
     const ombra = this.o.ombra(frase);
     this.chiediUscite(frase, this.prima);
     const grezze = menzioniDi(frase, 'narratore', this.o.contesto);
@@ -85,6 +112,51 @@ export class GiudiceDomande {
       this.siPrima = false;
       return null;
     }
+    const mie = grezze.length ? menzioni : [];
+    if (primaFrase) {
+      const l = this.linea(mie, true);
+      if (l.testo && primaFrase.apri(l.testo)) {
+        this.detti.add(l.chiave);
+        this.o.log.info({ turno: this.o.turno, frase, menzioni, linea: l.testo }, 'coherence: first sentence flagged, the Engine line said while the question runs');
+        const r = await this.chiediEntro(q, frase, menzioni, signal);
+        if ('si' in r) {
+          this.siPrima = r.si;
+          if (grezze.length) this.ultime = menzioni;
+          // «no»: the sentence follows the line; «si»: the line took its place.
+          return r.si ? { testo: l.testo, regola: l.regola, motivo: l.motivo, fonte: 'domanda', ms: r.ms, aperta: true } : null;
+        }
+        this.siPrima = false;
+        const d = this.dalleRegole(ombra, r.ms);
+        return d ? { ...d, testo: l.testo, aperta: true } : null;
+      }
+      // No line to open with: the rules decide now; the answer, when it comes, is only the next sentence's carry.
+      const decisa = this.dalleRegole(ombra, 0);
+      this.o.log.info({ turno: this.o.turno, frase, menzioni, regole: decisa ? decisa.motivo : null }, 'coherence: first sentence flagged, decided by the rules, the question goes on aside');
+      this.siPrima = false;
+      this.aParte = this.chiediEntro(q, frase, menzioni, signal).then((r) => {
+        if (!('si' in r)) return;
+        this.siPrima = r.si;
+        if (grezze.length) this.ultime = menzioni;
+        if (r.si && !decisa) {
+          const l2 = this.linea(mie, true);
+          this.o.tardiva?.({ frase, regola: l2.regola, motivo: l2.motivo, ms: r.ms });
+        }
+      });
+      return decisa;
+    }
+    const r = await this.chiediEntro(q, frase, menzioni, signal);
+    if (!('si' in r)) {
+      this.siPrima = false;
+      return this.dalleRegole(ombra, r.ms);
+    }
+    this.siPrima = r.si;
+    if (grezze.length) this.ultime = menzioni;
+    if (!r.si) return null;
+    return { ...this.linea(mie), fonte: 'domanda', ms: r.ms };
+  }
+
+  /** One question within the deadline: the answer, or a deadline / an error (logged here). */
+  private async chiediEntro(q: { sistema: string; messaggio: string }, frase: string, menzioni: readonly string[], signal?: AbortSignal): Promise<{ si: boolean; ms: number } | { ms: number }> {
     const controllo = new AbortController();
     const timer = setTimeout(() => controllo.abort(new Error('deadline')), this.o.ms);
     const fuori = (): void => controllo.abort(new Error('aborted'));
@@ -93,22 +165,22 @@ export class GiudiceDomande {
     try {
       const r = await chiedi(this.o.modello, q, controllo.signal);
       this.o.log.info({ turno: this.o.turno, frase, menzioni, si: r.si, ms: r.ms }, 'coherence: question answered');
-      this.siPrima = r.si;
-      if (grezze.length) this.ultime = menzioni;
-      if (!r.si) return null;
-      return { ...this.linea(grezze.length ? menzioni : []), fonte: 'domanda', ms: r.ms };
+      return { si: r.si, ms: r.ms };
     } catch (err) {
       const ms = Date.now() - t0;
       this.o.log.warn({ turno: this.o.turno, frase, menzioni, ms, err: err instanceof Error ? err.message : String(err) }, 'coherence: question not answered in time, the rules decide');
-      this.siPrima = false;
-      // The conservative rules: only what changes the text today (a rule in observation stays in observation).
-      if (!ombra || inOsservazione(ombra.motivo)) return null;
-      const regola: IdRegola = ombra.motivo === 'creatura_inesistente' ? 'R-inesistente' : ombra.motivo === 'fuori_gioco_agisce' ? 'R-fuori' : 'R-esito';
-      return { testo: ombra.testo, regola, motivo: ombra.motivo, fonte: 'regole', ms };
+      return { ms };
     } finally {
       clearTimeout(timer);
       signal?.removeEventListener('abort', fuori);
     }
+  }
+
+  /** The shadow rules' verdict after a deadline: only what changes the text today (a rule in observation stays so). */
+  private dalleRegole(ombra: CorrezioneEsito, ms: number): DecisioneGiudice | null {
+    if (!ombra || inOsservazione(ombra.motivo)) return null;
+    const regola: IdRegola = ombra.motivo === 'creatura_inesistente' ? 'R-inesistente' : ombra.motivo === 'fuori_gioco_agisce' ? 'R-fuori' : 'R-esito';
+    return { testo: ombra.testo, regola, motivo: ombra.motivo, fonte: 'regole', ms };
   }
 
   /** One question per NPC in the scene the sentence names: does it leave now? Not awaited (the voice goes on). */
@@ -130,30 +202,35 @@ export class GiudiceDomande {
     }
   }
 
-  /** The Engine's line for the first mention by priority, once per entity or noun in the turn; '' afterwards. */
-  private linea(menzioni: readonly string[]): { testo: string; regola: IdRegola; motivo: string } {
+  /**
+   * The Engine's line for the first mention by priority, once per entity or noun in the turn; '' afterwards. `prova`:
+   * only look (the caller marks `chiave` as said if it says the line).
+   */
+  private linea(menzioni: readonly string[], prova = false): { testo: string; regola: IdRegola; motivo: string; chiave: string } {
     const m = [...menzioni].sort((a, b) => PRIORITA.indexOf(a.split(':')[0]!) - PRIORITA.indexOf(b.split(':')[0]!))[0];
-    if (!m) return { testo: '', regola: 'R-fuori', motivo: 'fuori_gioco_agisce' };
+    if (!m) return { testo: '', regola: 'R-fuori', motivo: 'fuori_gioco_agisce', chiave: '' };
     const [tipo, valore] = m.split(':') as [string, string];
-    const una = (chiave: string, t: string): string => {
-      if (this.detti.has(chiave)) return '';
-      this.detti.add(chiave);
+    let chiave = '';
+    const una = (k: string, t: string): string => {
+      chiave = k;
+      if (this.detti.has(k)) return '';
+      if (!prova) this.detti.add(k);
       return t;
     };
     const e = this.o.registro.entita.find((x) => x.id === valore);
     if ((tipo === 'fuori' || tipo === 'parla') && e) {
-      const chiave = e.stato === 'morto' ? 'fuori_morto' : e.stato === 'fuggito' || e.presenza !== 'in_scena' ? 'fuori_fuggito' : 'fuori_a_terra';
-      return { testo: una(valore, testo(`prove.guardia.${chiave}`, { nome: nomeBreve(e.nome) })), regola: 'R-fuori', motivo: 'fuori_gioco_agisce' };
+      const riga = e.stato === 'morto' ? 'fuori_morto' : e.stato === 'fuggito' || e.presenza !== 'in_scena' ? 'fuori_fuggito' : 'fuori_a_terra';
+      return { testo: una(valore, testo(`prove.guardia.${riga}`, { nome: nomeBreve(e.nome) })), regola: 'R-fuori', motivo: 'fuori_gioco_agisce', chiave };
     }
     if (tipo === 'nome') {
       const a = this.o.contesto.assenti.find((x) => x.parola === valore);
-      return { testo: a ? una(m, frasePresenti(this.o.registro, [a])) : '', regola: 'R-inesistente', motivo: 'creatura_inesistente' };
+      return { testo: a ? una(m, frasePresenti(this.o.registro, [a])) : '', regola: 'R-inesistente', motivo: 'creatura_inesistente', chiave };
     }
     if (tipo === 'colpo') {
       const k = this.o.contesto.colpi.find((x) => x.bersaglio === valore && x.riuscita && x.danno > 0);
       const chi = this.o.registro.entita.find((x) => x.id === k?.chi);
-      return { testo: k && chi && e ? una(m, testo('prove.guardia.colpisce', { chi: nomeBreve(chi.nome), bersaglio: nomeBreve(e.nome) })) : '', regola: 'R-esito', motivo: 'colpo_assorbito' };
+      return { testo: k && chi && e ? una(m, testo('prove.guardia.colpisce', { chi: nomeBreve(chi.nome), bersaglio: nomeBreve(e.nome) })) : '', regola: 'R-esito', motivo: 'colpo_assorbito', chiave };
     }
-    return { testo: '', regola: 'R-assente', motivo: 'png_assente' };
+    return { testo: '', regola: 'R-assente', motivo: 'png_assente', chiave };
   }
 }

@@ -3268,6 +3268,12 @@ export class Regia {
         this.o.log.info({ turno, png: id }, 'presence: silent exit, from the yes/no question');
         this.presenzeDalNarratore(turno, [{ png: id, presente: false, verso: null }], this.o.log.child({ turno }));
       },
+      // The first sentence, said on the rules' word while its question ran aside, and then judged wrong: recorded, as
+      // something the table heard (the panel lists only what was stopped).
+      tardiva: (x) => {
+        this.o.log.warn({ turno, frase: x.frase, regola: x.regola, ms: x.ms }, 'coherence: first sentence said, its question answered «si» afterwards');
+        this.violazione({ turno, regola: x.regola, etichetta: ID_NARRATORE, frase: x.frase, azione: 'osservata', dettaglio: { motivo: x.motivo, fonte: 'domanda', ms: x.ms, tardiva: true } });
+      },
     });
     return { correggiEsito: this.guardiaDegliEsiti(tiri, combattimento, inesistenti, true, turno, 'esiti'), giudice };
   }

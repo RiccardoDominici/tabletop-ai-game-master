@@ -389,6 +389,45 @@ evidence of the failure, not as a measure.
 - What the sets cannot see: attacks and creatures with no noun («la lancia che arriva», «la figura che scappa»),
   carried pronouns after a late answer.
 
+## After round 3: fixes made offline (16 November, no API credit)
+
+The Anthropic credit ran out in round 3, so these fixes were chosen and scored without a single model call: the
+frozen set and the two held-out sets with the judge's kept answers (`coerenza-domanda.ts --offline`: a question with
+no kept answer counts as unanswered, so the rules decide as after a live deadline, and the misses are printed; for
+held-out #2, `--insieme r3 --dal-log <run>/log-server/server.jsonl` takes the answers the live judge gave in the valid
+round-3 game, by sentence). The offline v2 reproduces the published scores with 0 calls: 106/11/7 on the frozen set,
+33/4/2 on held-out #1, and on held-out #2 the live judge's 24 of 31 caught, 3 clean touched.
+
+### First audio: the first sentence never waits for the judge
+Round 3's first audio was 2087 ms median (15 turns) on the combat-manual script. From its logs (the turn's measures
+and the «coherence: question answered» lines, origin at the window close, or at the last die in after a dice wait):
+in 6 turns (T11, T12, T14, T15, T16, T18) one or two questions on the answer's first sentence held it 0.89–2.53 s.
+The three options of the brief, replayed on those logs:
+- the previous turn's audio as cover: none; it ended 20–45 s before every window closed (the window opens after the
+  voice), so a question there hides nothing;
+- the rules decide the first sentence alone, the judge from the second (`domanda2p`): first audio 2087 → about 1708
+  ms (a replay estimate: the waits taken out, the voice's own latency kept), but the price on the sets is high:
+  106 → 98 caught on the frozen set, 33 → 27 on held-out #1, 24 → 22 on held-out #2, because the first sentence is
+  often the one about the invented goblin; in 20 of 23 first sentences asked (frozen set) the answer was «si»;
+- an Engine-safe opener while the judge runs: the card outcome does not exist where it is needed (T12, T15 and T16
+  had no card), but the Engine's line for the flagged mention does, and it is true whatever the answer: «Zirrà giace
+  a terra, senza vita.», who is really there, the card's blow. It is the line a «si» says anyway.
+Built (`coerenza/giudice.ts`, `PrimaFrase`; `turni/narrazione.ts`): when nothing of the turn is in the voice yet (no
+sentence of this call or of the repair call, no Engine line before the narration: the turn's `llm_prima_frase` and
+`voce_richiesta` marks), a flagged first sentence makes the Engine say that line at once (log «coherence: first
+sentence flagged, the Engine line said while the question runs»); then «si» drops the sentence (record `sostituita`,
+`dettaglio.apertura`), «no» lets it follow the line, a late answer leaves it to the shadow rules. With no line (an
+absent NPC) or a line heard in the last turns, the rules decide the sentence now and the question goes on aside,
+only as the next sentence's carried subject; a «si» there is recorded as `osservata` with `dettaglio.tardiva` (log
+«coherence: first sentence said, its question answered «si» afterwards»). Scored as `domanda2a`: 105/117 (one first
+sentence about an absent NPC goes to the rules), 33/37 and 24/31 caught, with 7, 3 and 3 clean touched; the cost is
+one more true line where the answer was «no»: 3 of 22 openers on the frozen set, 0 of 8 and 2 of 7 on the held-out
+sets (round 3: T11 and T18 would have heard «Zirrà giace a terra, senza vita.» before a correct sentence). The
+replay estimate for round 3's game is the same as the rules-only option, about 1.7 s; it will not return to 1.15 s
+(`prima-*`, 958556a): turns without a dice wait spend about 0.7 s on the arbiter at the close, and their first token
+comes at about 1.3 s in rounds 2 and 3 alike. Tests: test/coerenza-prima-frase.test.ts (narraTurno with a held
+answer: the line is in the voice before it), test/coerenza-giudice.test.ts.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

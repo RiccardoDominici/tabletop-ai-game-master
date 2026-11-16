@@ -196,7 +196,14 @@ export interface ParametriTurno {
    * The yes/no judge (coerenza/giudice.ts, docs/coerenza.md «The candidate in play»): every public narrator sentence
    * after the rules, in order; a decision replaces the sentence with the Engine's line or drops it (never a repair).
    */
-  giudice?: { giudica(frase: string, giaToccata: boolean, signal?: AbortSignal): Promise<{ testo: string; regola: Violazione['regola']; motivo: string; fonte: string; ms: number } | null> } | null;
+  giudice?: {
+    giudica(
+      frase: string,
+      giaToccata: boolean,
+      signal?: AbortSignal,
+      primaFrase?: { apri: (testo: string) => boolean },
+    ): Promise<{ testo: string; regola: Violazione['regola']; motivo: string; fonte: string; ms: number; aperta?: boolean } | null>;
+  } | null;
   /**
    * The targeted repair (docs/coerenza.md §3): the director asks the model to rewrite a sentence that broke a fact rule,
    * within its deadline; null = no repair (the Engine's sentence stays). Asked only when the voice has slack: never for
@@ -415,8 +422,26 @@ export async function narraTurno(
         // The yes/no judge, on the public narrator sentences the rules left alone (it keeps its state on the others).
         if (p.giudice && !p.soloPg && !d.privato && e.etichetta === ID_NARRATORE) {
           const originale = e.testo;
-          const g = await p.giudice.giudica(d.testo, d.testo !== originale || !!d.riparabile, p.signal);
+          // Nothing of this turn in the voice yet (this call, the repair call, the Engine's lines before the narration):
+          // the first sentence never waits for the answer; the judge may say the Engine's line now (docs/coerenza.md,
+          // «First audio»).
+          const primaFrase = !p.misuratore.ha('llm_prima_frase') && !p.misuratore.ha('voce_richiesta');
+          const apertura = primaFrase
+            ? {
+                apri: (t: string): boolean => {
+                  if (p.giàSentite?.has(frasePerRipetizione(t))) return false;
+                  sostituisci(e.segmento, [{ etichetta: ID_NARRATORE, testo: t }]);
+                  return true;
+                },
+              }
+            : undefined;
+          const g = await p.giudice.giudica(d.testo, d.testo !== originale || !!d.riparabile, p.signal, apertura);
           if (p.signal.aborted) return;
+          if (g?.aperta) {
+            // The Engine's line was said as the opener: the sentence it stands for is dropped.
+            segnala({ turno: p.turno, regola: g.regola, etichetta: e.etichetta, frase: d.testo, azione: 'sostituita', sostituto: [g.testo], dettaglio: { motivo: g.motivo, fonte: g.fonte, ms: g.ms, apertura: true } });
+            continue;
+          }
           if (g) {
             const ripetuta = !!g.testo && !!p.giàSentite?.has(frasePerRipetizione(g.testo));
             const azione = g.testo && !ripetuta ? 'sostituita' : 'tolta';

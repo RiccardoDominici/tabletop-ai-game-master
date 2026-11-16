@@ -60,7 +60,7 @@ export function carica(nome = 'insieme'): { insieme: ChiamataInsieme[]; etichett
 }
 
 /** The guards as the director builds them for one call (scena/regia.ts, guardiaDegliEsiti), from the set's rows. */
-export function guardieDellaChiamata(ch: ChiamataInsieme, o: { inesistente: boolean; assorbito: boolean; fuori?: boolean }, tipi: ReturnType<typeof tipiGregari>): (testo: string) => CorrezioneEsito {
+export function guardieDellaChiamata(ch: ChiamataInsieme, o: { inesistente: boolean; assorbito: boolean; fuori?: boolean; esiti?: boolean }, tipi: ReturnType<typeof tipiGregari>): (testo: string) => CorrezioneEsito {
   const nomi = new Map<string, string[]>(ch.entita.map((e) => [e.id, e.nomi]));
   const nome = (id: string): string => ch.entita.find((e) => e.id === id)?.nome ?? id;
   const tiri = ch.carte.map(
@@ -105,6 +105,8 @@ export function guardieDellaChiamata(ch: ChiamataInsieme, o: { inesistente: bool
     const nomiTitolari = [...new Set(giudicate.flatMap((a) => a.titolari).flatMap((id) => (per.has(id) ? [per.get(id)!.nome, nomeBreve(per.get(id)!.nome)] : [])))];
     ines = guardiaInesistenti({ assenti: giudicate, nomiTitolari, frase: (a) => frasePresenti(registro, [a]) });
   }
+  // `esiti: false`: the yes/no judge's shadow (scena/regia.ts, `ombra`), the card rules having decided before it.
+  if (o.esiti === false) return (testo) => ines?.(testo) ?? fuori?.(testo) ?? null;
   return (testo) => ines?.(testo) ?? esiti(testo) ?? fuori?.(testo) ?? null;
 }
 

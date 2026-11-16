@@ -4,6 +4,16 @@
  * esperimenti/coerenza/risposte-<model>.json, so a second run is offline and the set stays frozen; `--nuove` asks again.
  *
  *   npx tsx apps/server/src/strumenti/coerenza-domanda.ts [--nuove] [--modello claude-haiku-5-5]
+ *   npx tsx apps/server/src/strumenti/coerenza-domanda.ts --offline [--insieme r3 --dal-log <run>/log-server/server.jsonl]
+ *
+ * `--offline`: no model is ever called; a question with no kept answer counts as unanswered, and the rules decide as
+ * they do live after a deadline (the judge's shadow: R-fuori, R-inesistente); the misses are counted. `--dal-log`: the
+ * answers the live judge gave in a run («coherence: question answered»), by sentence, for a set with no kept answers.
+ * Two variants of v2 for the first sentence of each answer (docs/coerenza.md, «First audio»): `domanda2p`, the rules
+ * decide it alone and its question goes aside (the answer only feeds the carried subject of the next sentence; a «si»
+ * on a sentence the rules left alone is counted as heard); `domanda2a`, what the director does: the Engine's line for
+ * the flagged mention is said at once and the answer decides the sentence as in v2 (a «no» costs one more true line),
+ * and with no such line (an absent NPC) the rules decide as in `domanda2p`.
  *
  * Asked: every flagged sentence, and the sentence right after one answered «si» (a carried subject: «Quello cade contro
  * il muro»), with the same mentions. Latency per call is measured, to compare with the voice's slack. The key is read
@@ -58,17 +68,51 @@ async function main(): Promise<void> {
   let modello: ModelloAnthropic | null = null;
   const m = (): ModelloAnthropic => (modello ??= new ModelloAnthropic(() => creaClientAnthropic(config.llm.fileChiave, log), nomeModello));
   let chiamate = 0;
+  const offline = args.includes('--offline');
+  // The live judge's answers of a run, by sentence (the question text there had the live rows, not the set's).
+  const dalLog = new Map<string, Risposta>();
+  if (args.includes('--dal-log')) {
+    for (const l of fs.readFileSync(args[args.indexOf('--dal-log') + 1]!, 'utf8').split('\n')) {
+      if (!l.includes('coherence: question answered')) continue;
+      const d = JSON.parse(l) as { frase: string; si: boolean; ms: number };
+      dalLog.set(d.frase, { si: d.si, ms: d.ms, grezza: 'dal log' });
+    }
+  }
+  /** Questions with no answer (offline): the rules decided, as after a live deadline. */
+  const senzaRisposta = new Set<string>();
+  /** Variant domanda2: the first sentences of an answer that went to the question (their answer, their mentions). */
+  const primeChieste = new Map<string, { si: boolean | null; menzioni: readonly string[] }>();
+  /** Variants domanda2p/2a: first sentences said by the rules and found wrong by the question aside, by call:sentence. */
+  const corretteDopo = new Map<string, readonly string[]>();
+  /** Variant domanda2a: first sentences opened by the Engine's line, and the answer that came (null: none). */
+  const aperture = new Map<string, boolean | null>();
+  const risposta = async (ch: ChiamataInsieme, f: FraseInsieme, q: { sistema: string; messaggio: string }): Promise<Risposta | null> => {
+    const chiave = `${ch.id}:${f.i}|${q.messaggio}`;
+    const r = risposte[chiave] ?? dalLog.get(f.testo);
+    if (r) return r;
+    if (offline) {
+      senzaRisposta.add(`${ch.id}:${f.i}`);
+      return null;
+    }
+    const nuova = await chiedi(m(), q);
+    risposte[chiave] = nuova;
+    chiamate++;
+    return nuova;
+  };
   /**
    * v1 (`domanda`): every flagged sentence goes to the model, as flagged. v2 (`domanda2`), the same question with the
    * Engine's own structure around it: who fell by this turn's cards is not asked about (their fall is this turn's story,
    * as R-fuori's `oraFuori`); an NPC's own line is judged by the deterministic R-assente (the model never saw the
    * speaker); the card rules of R-esito (pair, fall) stay deterministic, and only the absorbed-blow case is a question.
    */
-  const candidato = (v2: boolean): Variante => ({
-    nome: `${v2 ? 'domanda2' : 'domanda'}-${nomeModello}`,
+  const candidato = (v2: boolean, primaFrase: 'giudice' | 'regole' | 'apertura' = 'giudice'): Variante => ({
+    nome: `${primaFrase === 'regole' ? 'domanda2p' : primaFrase === 'apertura' ? 'domanda2a' : v2 ? 'domanda2' : 'domanda'}-${nomeModello}`,
     prepara: (ch) => {
       const registro: Registro = { turno: ch.turno, scena: ch.scena, entita: ch.entita, fatti: [], esiti: [], negati: [] };
       const regole = v2 ? guardieDellaChiamata(ch, { inesistente: false, assorbito: false, fuori: false }, tipi) : null;
+      // The judge's shadow, run on every narrator sentence in order (its carried subject), decides when no answer came.
+      const ombra = v2 ? guardieDellaChiamata(ch, { inesistente: true, assorbito: false, esiti: false }, tipi) : null;
+      const primo = ch.frasi[0]?.i;
       // The same filter the director would use (coerenza/menzioni.ts).
       const contesto = contestoMenzioni(registro, tipi, ch.carte, ch.fuoriOra);
       let precedente: FraseInsieme | null = null;
@@ -82,6 +126,7 @@ async function main(): Promise<void> {
           return !e || e.presenza !== 'in_scena' || !['in_piedi', 'ferito', 'grave', 'nascosto'].includes(e.stato);
         }
         const daRegole = regole ? regole(f.testo) !== null : false;
+        const daOmbra = ombra ? ombra(f.testo) !== null : false;
         // Flagged, or right after a «si» (the same mentions: a carried subject).
         const grezze = f.segnata ? f.menzioni : siPrima ? ultime : [];
         const menzioni = v2 ? daChiedere(grezze, contesto) : grezze;
@@ -102,15 +147,24 @@ async function main(): Promise<void> {
           siPrima = false;
           return false;
         }
-        const chiave = `${ch.id}:${f.i}|${q.messaggio}`;
-        let r = risposte[chiave];
+        const r = await risposta(ch, f, q);
+        if (f.segnata) ultime = menzioni;
+        if (v2 && primaFrase === 'giudice' && f.i === primo) primeChieste.set(`${ch.id}:${f.i}`, { si: r?.si ?? null, menzioni });
+        // An Engine line for the mention (a fallen or absent one's state, who is really there, the card's blow).
+        const conLinea = menzioni.some((x) => /^(fuori|parla|nome|colpo):/u.test(x));
+        if (primaFrase === 'apertura' && f.i === primo && conLinea) aperture.set(`${ch.id}:${f.i}`, r?.si ?? null);
+        // The first sentence of the answer, with domanda2p (or 2a with no line): the rules decide now, the answer aside.
+        if ((primaFrase === 'regole' || (primaFrase === 'apertura' && !conLinea)) && f.i === primo) {
+          siPrima = r?.si ?? false;
+          if (r?.si && !daOmbra) corretteDopo.set(`${ch.id}:${f.i}`, menzioni);
+          return daOmbra;
+        }
         if (!r) {
-          r = await chiedi(m(), q);
-          risposte[chiave] = r;
-          chiamate++;
+          // No answer (offline, as a live deadline): the shadow's verdict, and the carry ends there.
+          siPrima = false;
+          return daOmbra;
         }
         siPrima = r.si;
-        if (f.segnata) ultime = menzioni;
         return r.si;
       };
     },
@@ -122,6 +176,8 @@ async function main(): Promise<void> {
     varianteRegole('regole-assorbito', { inesistente: false, assorbito: true }, tipi),
     candidato(false),
     candidato(true),
+    candidato(true, 'regole'),
+    candidato(true, 'apertura'),
   ];
   // `--varianti a,b`: only these (a further sample of v2: `--campione 2 --varianti domanda2`).
   const scelte = args.includes('--varianti') ? args[args.indexOf('--varianti') + 1]!.split(',') : null;
@@ -133,9 +189,31 @@ async function main(): Promise<void> {
     fs.writeFileSync(path.join(CARTELLA, 'punteggi', `${v.nome}${altro}${campione > 1 ? `-c${campione}` : ''}.json`), `${JSON.stringify(p, null, 1)}\n`);
     process.stdout.write(`${riga(p)}\n`);
   }
-  fs.writeFileSync(fileRisposte, `${JSON.stringify(risposte, null, 1)}\n`);
+  if (!offline) fs.writeFileSync(fileRisposte, `${JSON.stringify(risposte, null, 1)}\n`);
   const ms = Object.values(risposte).map((r) => r.ms);
   process.stdout.write(`\nmodel calls now: ${chiamate}; answers kept: ${ms.length}; latency median ${percentile(ms, 50)} ms, p90 ${percentile(ms, 90)} ms, max ${Math.max(0, ...ms)} ms\n`);
+  if (offline || dalLog.size) process.stdout.write(`questions with no answer (the rules decided): ${senzaRisposta.size}${senzaRisposta.size ? ` (${[...senzaRisposta].slice(0, 12).join(', ')}${senzaRisposta.size > 12 ? ', …' : ''})` : ''}\n`);
+  if (primeChieste.size) {
+    const tipi = (si: boolean | null): string => {
+      const n = new Map<string, number>();
+      for (const x of [...primeChieste.values()].filter((y) => y.si === si)) {
+        const t = [...new Set(x.menzioni.map((m) => m.split(':')[0]!))].sort().join('+');
+        n.set(t, (n.get(t) ?? 0) + 1);
+      }
+      return [...n].map(([t, k]) => `${t} ${k}`).join(', ') || '—';
+    };
+    const si = [...primeChieste.values()].filter((x) => x.si === true).length;
+    const no = [...primeChieste.values()].filter((x) => x.si === false).length;
+    process.stdout.write(`domanda2: first sentences asked ${primeChieste.size} (si ${si}: ${tipi(true)}; no ${no}: ${tipi(false)}; unanswered ${primeChieste.size - si - no})\n`);
+  }
+  if (corretteDopo.size) {
+    const etichettate = [...corretteDopo.keys()].map((k) => `${k} ${etichette[k]?.etichetta ?? 'unlabelled'}`);
+    process.stdout.write(`domanda2p/2a: first sentences said by the rules, «si» aside: ${corretteDopo.size}: ${etichettate.join('; ')}\n`);
+  }
+  if (aperture.size) {
+    const v = [...aperture.values()];
+    process.stdout.write(`domanda2a: first sentences opened by the Engine line ${aperture.size} (the answer «si» ${v.filter((x) => x === true).length}, «no» ${v.filter((x) => x === false).length}: one more true line; none ${v.filter((x) => x === null).length})\n`);
+  }
 }
 
 void main();

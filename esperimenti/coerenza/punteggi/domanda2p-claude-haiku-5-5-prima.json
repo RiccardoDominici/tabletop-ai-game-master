@@ -1,0 +1,75 @@
+{
+ "variante": "domanda2p-claude-haiku-5-5",
+ "violazioni": 37,
+ "prese": 27,
+ "mancate": [
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#24:4",
+   "testo": "Il secondo goblin, quello che esitava, lascia cadere la mazza e si schiaccia contro la parete.",
+   "perche": "a second goblin drops the mace: nobody else in play"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#25:0",
+   "testo": "Livia abbatte lo scudo sul goblin davanti a lei, e la lancia cade con un suono secco sul selciato.",
+   "perche": "the invented goblin hit by the shield"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#26:0",
+   "testo": "Eliandro, piano, chiede al goblin chi gli dà ordini.",
+   "perche": "a question to the invented goblin"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#21:0",
+   "testo": "Livia alza la voce e intima ai goblin di fermarsi.",
+   "perche": "Livia orders goblins that are not there"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#22:0",
+   "testo": "Eliandro preme il piede sul goblin e chiede dove sia il ragazzo.",
+   "perche": "foot on the invented goblin, question asked"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:0",
+   "testo": "Livia abbassa la spada lunga sulla lancia del goblin davanti a lei.",
+   "perche": "the invented goblin's spear struck"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:5",
+   "testo": "Il goblin non parla.",
+   "perche": "the invented goblin does not speak"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#23:6",
+   "testo": "Guarda verso la cantina, dove Tonio sta in silenzio.",
+   "perche": "carried: the invented goblin looks"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#24:0",
+   "testo": "Livia spinge l'ultimo goblin contro la porta di ferro, con lo scudo alzato.",
+   "perche": "the invented last goblin pushed"
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#25:4",
+   "testo": "Dice che il ragazzo è stato portato via, ma non dice da chi.",
+   "perche": "carried: the invented goblin says the boy was taken"
+  }
+ ],
+ "toccatePulite": [
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-automatico#10:2",
+   "testo": "Zirrà vede il suo compagno a terra e la risata le muore in gola.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-combattimento-B-manuale#11:2",
+   "testo": "Zirrà guarda il suo compagno a terra, poi guarda la spada di Nespola, e per un momento non ride più.",
+   "etichettata": true
+  },
+  {
+   "chiave": "prima-torre-mozza-fuori-binario-B-manuale#14:0",
+   "testo": "Livia Sarti chiede a Oreste, sottovoce, quanto lo pagano i goblin, e gli offre una mano con le pecore.",
+   "etichettata": true
+  }
+ ],
+ "ms": 8
+}
