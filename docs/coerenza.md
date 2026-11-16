@@ -89,8 +89,12 @@ check, so a leak can no longer hide behind a 0.
 ### Order of work (each step its own commit, tests on invented fixtures, docs in the same commit)
 1. **Done**: ledger as a read model + journal + snapshot, no behaviour change (coerenza/registro.ts, coerenza/diario.ts;
    the director's `fontiRegistro`/`registroOra`, called on every state change, as the narration starts and after the
-   cards; `StatoMaster.coerenza` for the panel; tests: test/coerenza-registro.test.ts). 2. The checker interface, the eleven guards moved
-behind it with their tests unchanged, violations logged and counted. 3. The «Cosa è vero adesso» block replacing the
+   cards; `StatoMaster.coerenza` for the panel; tests: test/coerenza-registro.test.ts). 2. **Done**: the checker (coerenza/verifica.ts, `VerificaTurno`): the
+sentence guards as rules R-numeri, R-esito, R-fuori, R-assente, R-finzione, R-privato, R-segreto, R-rifiuto,
+R-ripetuta in one pipeline in turni/narrazione.ts, with the repertoire's narrator rows through R-esito/R-fuori
+(`verificaBattuta`) and the told facts as R-dovuto; their tests unchanged; each violation logged («coerenza:
+violazione» plus the old line), written to narrazioni.jsonl (`tipo: violazione`), counted by misure.py (`coerenza`)
+and listed in `StatoMaster.coerenza.violazioni`; tests: test/coerenza-verifica.test.ts. 3. The «Cosa è vero adesso» block replacing the
 scattered sections. 4. The audience split for private actions. 5. Presence tags. 6. The panel box (and the projector
 mark). 7. The targeted repair with its deadline, measured on the three e2e scripts. Then the e2e pass again.
 

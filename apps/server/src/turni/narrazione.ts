@@ -28,7 +28,7 @@ import type { CueAudio, Risolto } from '../audio/cue';
 import { testo as testoFisso } from '../lingua';
 import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 import { togliIdBattute } from '../narrazione/id-battute';
-import { normalizza } from '../azioni/regole';
+import { frasePerRipetizione, VerificaTurno, type Violazione } from '../coerenza/verifica';
 
 export interface FraseNarrata {
   etichetta: string;
@@ -184,11 +184,40 @@ export interface ParametriTurno {
    * pause between uses (repertorio/stato.ts).
    */
   giàSentite?: ReadonlySet<string>;
+  /** Every violation the checker caught, with its rule (coerenza/verifica.ts): the director logs and counts it. */
+  onViolazione?: (v: Violazione) => void;
 }
 
-/** A sentence as the word-for-word repetition check compares it: lower case, no accents, no punctuation. */
-export function frasePerRipetizione(t: string): string {
-  return normalizza(t).replace(/[^\p{L}\p{N} ]+/gu, ' ').replace(/\s+/g, ' ').trim();
+export { frasePerRipetizione };
+
+/** The old anomaly code and log line of each rule (the run measures and the evidence views read them). */
+function anomaliaDi(v: Violazione): { codice: string; messaggio: string } {
+  const motivo = typeof v.dettaglio?.['motivo'] === 'string' ? (v.dettaglio['motivo'] as string) : null;
+  switch (v.regola) {
+    case 'R-numeri':
+      return { codice: 'numeri_regole', messaggio: 'narratore: numeri delle regole a voce, tolti' };
+    case 'R-esito':
+    case 'R-fuori':
+      return v.azione === 'tolta'
+        ? { codice: motivo ?? v.regola, messaggio: 'narrator: sentence contradicts the Engine, its line already said this turn: dropped' }
+        : { codice: motivo ?? v.regola, messaggio: 'narrator: sentence contradicts the Engine, replaced by its line' };
+    case 'R-assente':
+      return { codice: 'png_assente', messaggio: 'narratore: riga di un PNG assente dalla scena, scartata' };
+    case 'R-finzione':
+      return { codice: 'fuori_finzione', messaggio: 'narratore: frase fuori dalla finzione, scartata' };
+    case 'R-privato':
+      return { codice: 'privata_al_tavolo', messaggio: "narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono" };
+    case 'R-segreto':
+      return v.azione === 'spostata'
+        ? { codice: 'segreto_al_tavolo', messaggio: 'narratore: segreto in una riga al tavolo, spostata al telefono di chi ha agito in privato' }
+        : { codice: 'segreto_al_tavolo', messaggio: 'narratore: segreto in una riga al tavolo, riga fermata' };
+    case 'R-rifiuto':
+      return { codice: 'rifiuto_dopo_prova', messaggio: 'narrator: NPC gives in after a failed social check, replaced by its refusal' };
+    case 'R-ripetuta':
+      return { codice: 'ripetuta', messaggio: 'narrator: sentence said word for word in the last turns, dropped' };
+    case 'R-dovuto':
+      return { codice: 'fatto_dovuto', messaggio: 'prove: fatti dello scontro non detti dalla narrazione, li dice il Motore' };
+  }
 }
 
 /** Voce e nome da mostrare per un'etichetta del narratore. */
@@ -228,15 +257,33 @@ export async function narraTurno(
   let usaRifiutati = 0;
   let scartate = 0;
   let scartateAssenti = 0;
-  /** Engine lines that already replaced a narrator sentence in this turn (each is said once). */
-  const sostituti = new Set<string>();
-  /** Sentences said at the table in this narration (normalised), for the word-for-word repetition check. */
-  const detteOra = new Set<string>();
-  const nomiPg = [...new Set(campagna.pg.flatMap((x) => [x.nome, x.nome.split(/\s+/)[0] ?? '']).map(frasePerRipetizione).filter((x) => x.length > 2))];
-  const nominaUnPg = (k: string): boolean => nomiPg.some((n) => ` ${k} `.includes(` ${n} `));
   let scartateSegreti = 0;
-  /** Segmenti (righe) già sostituiti dalla guardia dei segreti: il resto della riga non si dice. */
-  const segmentiFermati = new Set<number>();
+  // The coherence checker of this call (coerenza/verifica.ts): one pipeline of named rules for every sentence. Each
+  // violation keeps its old anomaly code and log line (the run measures read them) and goes to the director as one
+  // record with its rule (docs/coerenza.md §3).
+  const verifica = new VerificaTurno(
+    {
+      turno: p.turno,
+      ...(p.correggiEsito ? { correggiEsito: p.correggiEsito } : {}),
+      ...(p.presenti ? { presenti: p.presenti } : {}),
+      idPng: new Set(campagna.png.map((x) => x.id)),
+      ...(p.scartaFrase ? { scartaFrase: p.scartaFrase } : {}),
+      ...(p.spostaPrivata ? { spostaPrivata: p.spostaPrivata } : {}),
+      ...(p.guardiaSegreti ? { guardiaSegreti: p.guardiaSegreti } : {}),
+      ...(p.rifiutoDopoProva ? { rifiutoDopoProva: p.rifiutoDopoProva } : {}),
+      ...(p.giàSentite ? { giàSentite: p.giàSentite } : {}),
+      nomiPg: [...new Set(campagna.pg.flatMap((x) => [x.nome, x.nome.split(/\s+/)[0] ?? '']).map(frasePerRipetizione).filter((x) => x.length > 2))],
+    },
+    (v) => {
+      if (v.regola === 'R-finzione') scartate += 1;
+      if (v.regola === 'R-assente') scartateAssenti += 1;
+      if (v.regola === 'R-segreto') scartateSegreti += 1;
+      const vecchio = anomaliaDi(v);
+      anomalie.push({ codice: vecchio.codice, dettaglio: `«${v.frase.slice(0, 120)}»${v.sostituto?.length ? ` → «${v.sostituto.join(' ')}»` : ''}` });
+      log.warn({ turno: p.turno, regola: v.regola, etichetta: v.etichetta, testo: v.frase, azione: v.azione, ...(v.sostituto ? { sostituto: v.sostituto } : {}), ...(v.id_pg ? { id_pg: v.id_pg } : {}), ...(v.battuta ? { battuta: v.battuta } : {}), ...v.dettaglio }, vecchio.messaggio);
+      p.onViolazione?.(v);
+    },
+  );
   const idPng = new Set(campagna.png.map((x) => x.id));
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
@@ -277,7 +324,6 @@ export async function narraTurno(
 
   /** Stops a line and says the replacement lines in its place (secrets guard, refusal guard). */
   const sostituisci = (segmento: number, righe: ReadonlyArray<{ etichetta: string; testo: string }>): void => {
-    segmentiFermati.add(segmento);
     rigaAperta = null;
     for (const r of righe) {
       const v = voceDi(campagna, r.etichetta);
@@ -314,96 +360,16 @@ export async function narraTurno(
     for (const e of eventi) {
       if (p.signal.aborted) return;
       if (e.tipo === 'frase') {
-        // Numeri delle regole a voce (PF, CA, CD): via prima della voce, li mostra già la carta del tiro.
-        const senzaNumeri = togliNumeriRegole(e.testo);
-        if (senzaNumeri.tolti.length) {
-          anomalie.push({ codice: 'numeri_regole', dettaglio: `${senzaNumeri.tolti.join(', ')}: «${e.testo.slice(0, 120)}»` });
-          log.warn({ turno: p.turno, etichetta: e.etichetta, tolti: senzaNumeri.tolti, testo: e.testo }, 'narratore: numeri delle regole a voce, tolti');
-          e.testo = senzaNumeri.testo;
-          e.voce = togliNumeriRegole(e.voce).testo;
-        }
-        // Combat outcome guard: the Engine's line replaces a narrator sentence that contradicts the cards.
-        const correzione = e.etichetta === ID_NARRATORE ? (p.correggiEsito?.(e.testo) ?? null) : null;
-        // An Engine line may come back in a later turn for a new fact («Grosso manca Livia.»): never a repetition.
-        let corretta = false;
-        // The same Engine line twice in a turn (two sentences with the same contradiction, or an out-of-play character
-        // already said lying on the ground) is said once: the third e2e pass heard «Zirrà incassa il colpo, ma resta in
-        // piedi.» twice in a row.
-        if (correzione && (correzione.testo === '' || sostituti.has(correzione.testo))) {
-          anomalie.push({ codice: correzione.motivo, dettaglio: `«${e.testo.slice(0, 120)}» → (già detto)` });
-          log.warn({ turno: p.turno, motivo: correzione.motivo, testo: e.testo }, 'narrator: sentence contradicts the Engine, its line already said this turn: dropped');
+        // One checker, the rules in a fixed order (coerenza/verifica.ts, docs/coerenza.md §3).
+        const d = verifica.verifica({ etichetta: e.etichetta, testo: e.testo, voce: e.voce, segmento: e.segmento, ...(e.privato ? { privato: e.privato } : {}) });
+        if (d.tipo === 'togli') continue;
+        if (d.tipo === 'sostituisci') {
+          sostituisci(e.segmento, d.righe);
           continue;
         }
-        if (correzione) {
-          corretta = true;
-          sostituti.add(correzione.testo);
-          anomalie.push({ codice: correzione.motivo, dettaglio: `«${e.testo.slice(0, 120)}» → «${correzione.testo}»` });
-          log.warn({ turno: p.turno, motivo: correzione.motivo, testo: e.testo, sostituto: correzione.testo }, 'narrator: sentence contradicts the Engine, replaced by its line');
-          e.testo = correzione.testo;
-          e.voce = correzione.testo;
-        }
-        // Un PNG che non è nella scena non parla (playtest di nozze-neve: Zelia e Adelina rispondevano da
-        // scene dove non stanno, e le loro voci erano state scelte per non trovarsi mai insieme).
-        if (p.presenti && idPng.has(e.etichetta) && !p.presenti.has(e.etichetta)) {
-          scartateAssenti += 1;
-          anomalie.push({ codice: 'png_assente', dettaglio: `${e.etichetta} non è in questa scena: «${e.testo.slice(0, 120)}»` });
-          log.warn({ turno: p.turno, etichetta: e.etichetta, testo: e.testo }, 'narratore: riga di un PNG assente dalla scena, scartata');
-          continue;
-        }
-        const motivoScarto = p.scartaFrase?.(e.testo) ?? null;
-        if (motivoScarto) {
-          // Fuori dalla finzione: non si sente e non si scrive. La regia rimedia a fine turno.
-          scartate += 1;
-          anomalie.push({ codice: 'fuori_finzione', dettaglio: `${motivoScarto}: «${e.testo.slice(0, 120)}»` });
-          log.warn({ turno: p.turno, etichetta: e.etichetta, motivo: motivoScarto, testo: e.testo }, 'narratore: frase fuori dalla finzione, scartata');
-          continue;
-        }
-        // Una riga al tavolo che racconta l'azione privata di un PG va al suo telefono, non si scarta.
-        let privato = e.privato;
-        if (!privato && p.spostaPrivata) {
-          const d = p.spostaPrivata(e.testo, e.segmento, e.etichetta);
-          if (d) {
-            privato = d.id_pg;
-            anomalie.push({ codice: 'privata_al_tavolo', dettaglio: `${d.id_pg}: «${e.testo.slice(0, 120)}»` });
-            log.warn({ turno: p.turno, etichetta: e.etichetta, id_pg: d.id_pg, comuni: d.comuni, testo: e.testo }, "narratore: riga al tavolo sull'azione privata di un PG, spostata al suo telefono");
-          }
-        }
-        // Segreto ancora nascosto in una riga al tavolo: al telefono di chi l'ha chiesto in privato, oppure
-        // la deviazione del PNG al posto della riga (una volta per riga), con il log.
-        if (!privato && segmentiFermati.has(e.segmento)) continue;
-        const segreto = !privato && p.guardiaSegreti ? p.guardiaSegreti(e.etichetta, e.testo) : null;
-        if (segreto) {
-          scartateSegreti += 1;
-          anomalie.push({ codice: 'segreto_al_tavolo', dettaglio: `${e.etichetta} (${segreto.parole.join(', ')}): «${e.testo.slice(0, 120)}»` });
-          if (segreto.privato) {
-            privato = segreto.privato;
-            log.warn({ turno: p.turno, etichetta: e.etichetta, parole: segreto.parole, id_pg: privato, testo: e.testo }, 'narratore: segreto in una riga al tavolo, spostata al telefono di chi ha agito in privato');
-          } else {
-            log.warn({ turno: p.turno, etichetta: e.etichetta, parole: segreto.parole, testo: e.testo, sostituto: segreto.sostituto?.map((r) => r.testo) ?? null }, 'narratore: segreto in una riga al tavolo, riga fermata');
-            sostituisci(e.segmento, segreto.sostituto ?? []);
-            continue;
-          }
-        }
-        // Refusal guard: after a failed social check toward an NPC, that NPC does not give in this turn; its refusal
-        // line replaces the rest of the line (narrazione/guardia-rifiuti.ts).
-        const rifiuto = !privato && p.rifiutoDopoProva ? p.rifiutoDopoProva(e.etichetta, e.testo) : null;
-        if (rifiuto) {
-          anomalie.push({ codice: 'rifiuto_dopo_prova', dettaglio: `${e.etichetta}: «${e.testo.slice(0, 120)}»` });
-          log.warn({ turno: p.turno, etichetta: e.etichetta, testo: e.testo, sostituto: rifiuto.map((r) => r.testo) }, 'narrator: NPC gives in after a failed social check, replaced by its refusal');
-          sostituisci(e.segmento, rifiuto);
-          continue;
-        }
-        // Said word for word in the last turns, or already in this one: dropped (the table has heard it). A sentence that
-        // names a PC is never a repetition: a turn prompt («Fulco, tocca a te.») or an outcome comes back by design.
-        if (!privato && !corretta && p.giàSentite) {
-          const k = frasePerRipetizione(e.testo);
-          if (k.length >= 12 && !nominaUnPg(k) && (p.giàSentite.has(k) || detteOra.has(k))) {
-            anomalie.push({ codice: 'ripetuta', dettaglio: `«${e.testo.slice(0, 120)}»` });
-            log.warn({ turno: p.turno, etichetta: e.etichetta, testo: e.testo }, 'narrator: sentence said word for word in the last turns, dropped');
-            continue;
-          }
-          detteOra.add(k);
-        }
+        e.testo = d.testo;
+        e.voce = d.voce;
+        const privato = d.privato;
         const { voce_id, nome } = voceDi(campagna, e.etichetta);
         // Esito privato: al telefono di quel PG (testo, e voce solo lì); mai nella trascrizione pubblica.
         if (privato) {
@@ -450,8 +416,18 @@ export async function narraTurno(
           }
           continue;
         }
-        uscita.push({ tipo: 'usa', id: e.id, per: esito.per !== undefined ? esito.per : e.per, versione: esito.versione, righe: esito.righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });
-        for (const [i, r] of esito.righe.entries()) {
+        // A prewritten line can contradict the state too (docs/coerenza.md §3): its narrator rows go through the fact rules.
+        const righe: RigaPronta[] = esito.privato
+          ? esito.righe
+          : esito.righe.flatMap((r): RigaPronta[] => {
+              const v = verifica.verificaBattuta(e.id, r);
+              if (v === null) return [r];
+              if (v === '') return [];
+              // The Engine's line: no prerecorded audio for it (an empty key is no cache).
+              return [{ ...r, testo: v, testo_voce: p.pronuncia(v), chiave_cache: '' }];
+            });
+        uscita.push({ tipo: 'usa', id: e.id, per: esito.per !== undefined ? esito.per : e.per, versione: esito.versione, righe: righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });
+        for (const [i, r] of righe.entries()) {
           const { voce_id, nome } = voceDi(campagna, r.etichetta);
           const fr = { etichetta: r.etichetta, nome, testo: r.testo, segmento: segmentoBattuta++, indice, battuta: e.id };
           if (esito.privato) p.onPrivato?.({ ...fr, id_pg: esito.privato });
@@ -461,7 +437,7 @@ export async function narraTurno(
           accoda({ parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: r.testo_voce, chiave_cache: r.chiave_cache, ...(cue ? { cue } : {}), ...(esito.privato ? { solo_pg: esito.privato } : {}) });
           righePrescritte += 1;
         }
-        log.info({ turno: p.turno, battuta: e.id, versione: esito.versione, righe: esito.righe.length }, 'repertorio: battuta uscita');
+        log.info({ turno: p.turno, battuta: e.id, versione: esito.versione, righe: righe.length }, 'repertorio: battuta uscita');
       } else if (e.tipo === 'orologio') {
         orologi.push(e.id);
       } else if (e.tipo === 'atteggiamento') {

@@ -76,7 +76,10 @@ It is a server on the Mac and manages:
   before every model call and check: every character's state (standing, wounded, badly wounded, down, dying, dead,
   fled, hidden; bands, never hit points) and presence, the facts and who knows them, this turn's cards and refusals.
   Its journal (what changed, from what to what, why: log «registro: evento») is in the snapshot (`registro`) and on
-  the Game Master panel (`StatoMaster.coerenza`). The model never writes it.
+  the Game Master panel (`StatoMaster.coerenza`). The model never writes it. The checker (coerenza/verifica.ts) runs
+  every sentence through the guards as named rules (R-numeri … R-ripetuta, R-dovuto at the end of the turn), the
+  repertoire's narrator rows included; each violation is one record with its rule (log «coerenza: violazione»,
+  narrazioni.jsonl `tipo: violazione`, misure.py `coerenza`).
 
 The model **proposes** changes through tools (`tick_clock`, `reveal_clue`, `set_attitude`, `roll`). The Engine checks the preconditions and accepts or rejects.
 

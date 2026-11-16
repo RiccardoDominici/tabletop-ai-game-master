@@ -106,6 +106,13 @@ def main() -> None:
     pat = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(pat)
     al_tavolo = pat.candidati((ris / "tavolo.md").read_text(encoding="utf-8"), ris / "narrazioni.jsonl") if (ris / "tavolo.md").exists() else []
+    # The coherence checker's violations (docs/coerenza.md §3): one record per violation, with its rule and action.
+    viol = [x for x in narr if x.get("tipo") == "violazione"]
+    per_regola: dict[str, dict[str, int]] = {}
+    for x in viol:
+        per_regola.setdefault(x.get("regola", "?"), collections.Counter())[x.get("azione", "?")] += 1
+    M["coerenza"] = {"violazioni": len(viol), "per_regola": {k: dict(v) for k, v in sorted(per_regola.items())},
+                     "esempi": [{"turno": x.get("turno"), "regola": x.get("regola"), "azione": x.get("azione"), "frase": str(x.get("frase", ""))[:120]} for x in viol[:8]]}
     M["private"] = {"azioni_private": private_tot, "righe_privato": privato_righe,
                     "esiti_privati_log": sum(1 for x in server if x.get("msg") == "narratore: esito privato"),
                     "spostate_dalla_guardia": sum(1 for x in server if str(x.get("msg", "")).startswith("narratore: riga al tavolo sull'azione privata")),

@@ -207,6 +207,8 @@ export interface CoerenzaMaster {
   privati: Array<{ turno: number; testo: string; conosciuto_da: string[] }>;
   /** The journal's last events: who changed, from what to what, why. */
   eventi: Array<{ turno: number; tipo: string; id: string; da: string | null; a: string; causa: string }>;
+  /** The checker's last violations: the rule, what was done, the sentence and what was said instead. */
+  violazioni: Array<{ turno: number; regola: string; azione: string; etichetta: string; frase: string; sostituto: string[]; id_pg?: string }>;
 }
 
 /** The rolls as the Game Master sees them: DCs, private actions, values entered. Absent without dice. */

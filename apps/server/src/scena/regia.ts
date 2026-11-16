@@ -111,6 +111,7 @@ import { guardiaEsiti, type CorrezioneEsito } from '../narrazione/guardia-esiti'
 import { guardiaFuori } from '../narrazione/guardia-fuori';
 import { DiarioRegistro } from '../coerenza/diario';
 import type { FattoRegistro, FontiRegistro, Registro } from '../coerenza/registro';
+import type { Violazione } from '../coerenza/verifica';
 import type { EsitoCombattimento } from '../prove/combattimento';
 import { fattiDovuti, fattiMancanti, type FattoDovuto } from '../prove/fatti-dovuti';
 import { guardiaPrivate } from '../narrazione/privato';
@@ -439,6 +440,19 @@ export class Regia {
   private negatiDettaglio: Array<{ png: string; autore: string; privata: boolean }> = [];
   /** The coherence ledger's journal (docs/coerenza.md §1): rebuilt before every model call and check. */
   private readonly diarioRegistro = new DiarioRegistro();
+  /** The checker's last violations, for the Game Master panel (docs/coerenza.md §2). */
+  private violazioniRecenti: Violazione[] = [];
+
+  /**
+   * One violation the coherence checker caught (coerenza/verifica.ts): one log line with its rule, one record in the
+   * narration log (`tipo: violazione`, counted per rule by esperimenti/e2e-finale/misure.py), and the panel's list.
+   */
+  private violazione(v: Violazione): void {
+    this.o.log.info({ turno: v.turno, regola: v.regola, azione: v.azione, etichetta: v.etichetta, ...(v.id_pg ? { id_pg: v.id_pg } : {}), ...(v.battuta ? { battuta: v.battuta } : {}) }, 'coerenza: violazione');
+    this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno: v.turno, tipo: 'violazione', regola: v.regola, azione: v.azione, etichetta: v.etichetta, frase: v.frase, ...(v.sostituto ? { sostituto: v.sostituto } : {}), ...(v.id_pg ? { id_pg: v.id_pg } : {}), ...(v.battuta ? { battuta: v.battuta } : {}) });
+    this.violazioniRecenti = [...this.violazioniRecenti, v].slice(-30);
+  }
+
   /** How many public cards the last closed turn rolled (the stall's «something new», mondo/stallo.ts). */
   private carteDelTurno: { turno: number; n: number } = { turno: -1, n: 0 };
   /** NPCs whose refusal line has been said in this turn (main answer and repair share it). */
@@ -1203,6 +1217,7 @@ export class Regia {
       entita: r.entita.map((e) => ({ id: e.id, nome: e.nome, tipo: e.tipo, stato: e.stato, presenza: e.presenza })),
       privati: r.fatti.filter((f) => !f.pubblico && f.conosciutoDa.length).slice(-10).map((f) => ({ turno: f.turno, testo: f.testo, conosciuto_da: [...f.conosciutoDa] })),
       eventi: this.diarioRegistro.storia.slice(-30).map((e) => ({ ...e })),
+      violazioni: this.violazioniRecenti.map((v) => ({ turno: v.turno, regola: v.regola, azione: v.azione, etichetta: v.etichetta, frase: v.frase, sostituto: v.sostituto ?? [], ...(v.id_pg ? { id_pg: v.id_pg } : {}) })),
     };
   }
 
@@ -2265,6 +2280,7 @@ export class Regia {
     this.privati = [];
     this.azioniPrivate = [];
     this.diarioRegistro.azzera();
+    this.violazioniRecenti = [];
     this.privatiSalvati.clear();
     this.privatiAperti.clear();
     this.turno = 0;
@@ -3280,6 +3296,7 @@ export class Regia {
         ...(correggiEsito ? { correggiEsito } : {}),
         ...this.parametroRifiuti(turno),
         giàSentite: this.frasiRecenti(turno),
+        onViolazione: (v) => this.violazione(v),
         presenti: this.pngInScena(),
         usa: this.statoRepertorio ? (id, per) => this.usaBattuta(id, per, turno, segniInRisposta) : null,
         onFrase: (f) => {
@@ -3324,6 +3341,7 @@ export class Regia {
           ...this.parametroRifiuti(turno),
           // The repair must not say again what the first answer of this turn already said either.
           giàSentite: this.frasiRecenti(turno + 1),
+          onViolazione: (v) => this.violazione(v),
           presenti: this.pngInScena(),
           usa: (id, per) => this.usaBattuta(id, per, turno, segniInRisposta),
           prefissoFrasi: 'r',
@@ -3760,6 +3778,8 @@ export class Regia {
       return [];
     }
     const righe = mancanti.map((f) => ({ etichetta: ID_NARRATORE, testo: f.riga, testo_voce: this.pronuncia(f.riga) }));
+    // A card's fact the narration did not tell is a violation too (R-dovuto): the Engine adds its line.
+    for (const f of mancanti) this.violazione({ turno, regola: 'R-dovuto', etichetta: ID_NARRATORE, frase: '', azione: 'aggiunta', sostituto: [f.riga], dettaglio: { tipo: f.tipo, id: f.id } });
     const ids = righe.map((_, k) => `t${turno}-d${k}`);
     const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: righe.map((r) => r.testo).join(' '), frasi: ids, motore: true };
     const primaDellInvito = this.righeDelMotore(turno, esito, righe, voce, false, 'd');
