@@ -125,6 +125,8 @@ describe('N3: idioms and other subjects are not a fall', () => {
     expect(g('Cade il silenzio, e Ruggero guarda il fiume.')).toBeNull();
     expect(g('Ruggero lascia cadere la mazza a terra.')).toBeNull();
     expect(g('Cala la sera su Ruggero, che resta sul ponte.')).toBeNull();
+    // Who sees someone fall is not the one falling (canary on 97121cb, T16: «Zirrà ti vede cadere e il suo colpo passa…»).
+    expect(g('Ruggero ti vede cadere e il suo colpo passa a un palmo da Ida.')).toBeNull();
   });
   it('the creature itself falling is still corrected, also through a pronoun', () => {
     expect(g('Ruggero cade sui gradini con un rantolo.')).toEqual({ testo: 'Ruggero è ancora in piedi.', motivo: 'caduta_senza_fatto' });

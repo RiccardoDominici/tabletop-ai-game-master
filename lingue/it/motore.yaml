@@ -202,7 +202,7 @@ guardia_esiti:
   # A near-hit the armour absorbs: it fits a miss and a hit with no damage, so it is never a contradiction.
   assorbito: [di striscio, regge, senza ferir, senza danni, senza fargli, senza farle, si ferma sull, non passa, non buca, assorb, scivola sull, scivola via]
   # Not a creature falling: idioms and other subjects of «cade» («lo sguardo cade», «cade il silenzio», «lascia cadere»).
-  figurati: [si getta, si butta, si stende, si sdraia, si abbassa, si acquatta, si accuccia, sguardo, occhi, occhio, la voce, silenzio, la sera, la notte, il buio, la neve, la pioggia, lascia cadere, fa cadere, lasciar cadere, di mano, dalle mani, gli cade, le cade, lo scudo, la spada, la lama, l'arma, la mazza, il cappuccio, la chiave, il mantello, la testa, le braccia, le spalle]
+  figurati: [si getta, si butta, si stende, si sdraia, si abbassa, si acquatta, si accuccia, sguardo, occhi, occhio, la voce, silenzio, la sera, la notte, il buio, la neve, la pioggia, lascia cadere, fa cadere, lasciar cadere, di mano, dalle mani, gli cade, le cade, lo scudo, la spada, la lama, l'arma, la mazza, il cappuccio, la chiave, il mantello, la testa, le braccia, le spalle, ved cad, guard cad, sent cad]
   # Subject and relative pronouns: «… e quello cade», «…, che crolla» have the creature named before as subject.
   pronomi: [quello, quella, lui, lei, costui, costei, che, quale, si]
   # Place phrases of `sconfitta`: for a PC they tell a fall only right after one of `verbi_stato` («è a terra», not «posa
