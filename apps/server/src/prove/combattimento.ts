@@ -581,6 +581,18 @@ export class GestoreCombattimento {
     this.d.log.info({ morenti: morenti.map((p) => ({ id: p.id, esito: p.esito, pf: this.d.stato.puntiFerita(p.id)?.attuali })) }, 'combattimento: every PC down, the death saves rolled to the end');
   }
 
+  /**
+   * The enemy a PC's attack with no target named goes to (prove/classificatore-regole.ts): `preferito` (its last
+   * target) if it is still in the fight and standing, else the first enemy standing in the turn order; null = none, or
+   * no fight.
+   */
+  bersaglioImplicito(pg: string, preferito: string | null): string | null {
+    const s = this.s;
+    if (!s || this.part(pg)?.lato !== 'pg') return null;
+    const inPiedi = s.partecipanti.filter((p) => p.lato === 'png' && p.esito === 'in_gioco' && !this.d.stato.aTerra(p.id));
+    return inPiedi.find((p) => p.id === preferito)?.id ?? inPiedi.find((p) => p.aggressore === pg)?.id ?? inPiedi[0]?.id ?? null;
+  }
+
   /** Fine dello scontro (anche dal master). Le condizioni a 0 restano; le altre finiscono. */
   termina(motivo: string, fatti: string[] = []): true {
     if (this.s) {

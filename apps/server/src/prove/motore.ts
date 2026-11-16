@@ -146,6 +146,8 @@ export function dadiAttiviRegole(c: Campagna, schede: ReadonlyMap<string, Scheda
 export class MotoreProve {
   readonly stato: StatoProve;
   private dadi: FonteDadi;
+  /** Each PC's last target in the fight (an attack with no target named goes there). */
+  private readonly ultimoBersaglio = new Map<string, string>();
   /** Lo scontro in corso, se c'è (prove/combattimento.ts). */
   readonly combattimento: GestoreCombattimento;
   /** Situazione dello scontro per il narratore, dall'ultimo turno risolto. */
@@ -649,6 +651,8 @@ export class MotoreProve {
       const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDeiPg: tavolo });
       // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
       const attacchi = r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id }));
+      // Each PC's last target: an attack with no target named goes there (bersaglioImplicito).
+      for (const a of attacchi) if (c.campagna.pg.some((p) => p.id === a.chi)) this.ultimoBersaglio.set(a.chi, a.bersaglio);
       // A check the Game Master asked (pseudo-action «m_…») is not the PC's action in the fight: it does not move whose turn it is.
       const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.filter((a) => !a.id.startsWith('m_')).map((a) => a.autore), candidati: () => this.candidati(c, attacchi), apri: this.scontroChiesto });
       // The panel's fight started in this pass (the real one, or the dry run on its copy): the request is used up.
@@ -841,6 +845,8 @@ export class MotoreProve {
         : this.proveScena(c.campagna).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole, sociale: provaSocialeSrd(p) })),
       altre: altre.map((a) => ({ id: a.id, autore: a.autore })),
       ...(this.gregari.size ? { gregario: (fatti: string) => this.gregarioNominato(c, fatti) } : {}),
+      // In a fight, a PC's own attack with no target named goes to its last target (round 5: five attacks unrolled).
+      ...(this.inCombattimento ? { bersaglioImplicito: (pg: string) => this.combattimento.bersaglioImplicito(pg, this.ultimoBersaglio.get(pg) ?? null) } : {}),
       // Nobody with stats standing in the scene (C5): an attack there is at nobody, and the narrator must not invent one.
       nessunNemico: ![...(c.presenti ?? new Set(c.campagna.scena.png_presenti))].some((id) => (g ? g.schede.has(id) : this.o.schede.has(id)) && !this.stato.fuoriGioco(id)) && !this.gregariInScena(c).length,
       // What the scene says about the conditions (prove/difficolta.ts): the last narration and the scene's description.

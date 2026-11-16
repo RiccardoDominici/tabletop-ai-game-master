@@ -38,6 +38,17 @@ describe('arbitro a regole, SRD', () => {
     expect(cl('pg_ida', 'Convinco me stessa a restare calma')).toMatchObject({ tipo: 'nessuna' });
   });
 
+  // Round 5 (profile A): «Lo colpisco ancora», «Carico quello al centro» got «nessun tiro» in a fight.
+  it('in a fight, the PC\'s own attack with no target named goes to its last target; a claim is not an attack', () => {
+    const lotta: IngressoClassificatore = { ...ing, bersaglioImplicito: (pg) => (pg === 'pg_corrado' ? 'png_ruggero' : null) };
+    const cf = (testo: string) => classificaARegole({ id: 'a1', autore: 'pg_corrado', testo }, lotta);
+    expect(cf('Lo colpisco ancora, poi mi sposto.')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
+    expect(cf('Carico quello al centro, spada in pugno!')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
+    expect(cf('Il goblin mi colpisce alla spalla, sento sangue.')).not.toMatchObject({ tipo: 'attacco' });
+    // Outside a fight (no implicit target) nothing changes.
+    expect(cl('pg_corrado', 'Lo colpisco ancora, poi mi sposto.')).not.toMatchObject({ tipo: 'attacco' });
+  });
+
   /*
    * DC choice on twenty actions (docs/prove-verifica.md §5, 15 November): four ordinary checks found no keyword and
    * rolled nothing with the rules arbiter.
@@ -156,5 +167,8 @@ describe('arbitro a regole in inglese: parlato, domande, arma in mano', () => {
     expect(cl('Hale, how much for a room?')).toMatchObject({ tipo: 'nessuna' });
     expect(cl('I look at Guard Lia, shortsword in hand')).toMatchObject({ tipo: 'nessuna' });
     expect(cl('I strike Guard Lia with my shortsword')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_guard', arma: 'shortsword' });
+    const lotta: IngressoClassificatore = { ...ing, bersaglioImplicito: () => 'png_guard' };
+    expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: 'I hit him again' }, lotta)).toMatchObject({ tipo: 'attacco', bersaglio: 'png_guard' });
+    expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: 'The guard hits me hard' }, lotta)).not.toMatchObject({ tipo: 'attacco' });
   });
 });

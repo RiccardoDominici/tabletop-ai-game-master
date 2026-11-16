@@ -72,6 +72,11 @@ export interface IngressoClassificatore {
   gregario?: (fatti: string) => string | null;
   /** The scene has no creature with stats standing (no NPC with a sheet, no minion): an attack there hits nobody. */
   nessunNemico?: boolean;
+  /**
+   * In a fight: the enemy a PC's own attack with no target named goes to (its last target still standing, else the
+   * first enemy standing in the turn order), or null. Absent = no fight.
+   */
+  bersaglioImplicito?: (autore: string) => string | null;
   /** Le altre azioni del turno (per «aiuto»). */
   altre: Array<{ id: string; autore: string }>;
   /**
@@ -108,8 +113,13 @@ function unico<T>(xs: ReadonlyArray<{ x: T; n: number }>): T | null {
 export function attaccoDiRegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | null {
   const fatti = senzaParlato(az.testo);
   // A named NPC with a sheet, or else a minion of the scene named by its type's words (C5: «colpisco la sentinella»).
-  const bersaglio = [...pngNominati(fatti, nomiDeiPng(i.campagna))].find((id) => id !== az.autore && i.haScheda(id)) ?? i.gregario?.(fatti) ?? null;
+  const nominato = [...pngNominati(fatti, nomiDeiPng(i.campagna))].find((id) => id !== az.autore && i.haScheda(id)) ?? i.gregario?.(fatti) ?? null;
+  // In a fight, the PC's own attack in the first person with no target named («lo colpisco ancora», «carico quello al
+  // centro»): its last target, so the attack is rolled (round 5: «nessun tiro» for five declared attacks). Only the
+  // first-person words (`attacco_mio`): «il goblin mi colpisce» is a player's claim, not an attack.
+  const bersaglio = nominato ?? (i.bersaglioImplicito && paroleProve().attaccoMio.test(normalizza(fatti)) ? i.bersaglioImplicito(az.autore) : null);
   if (!bersaglio) return null;
+  if (!nominato) return { ...vuota(az.id), tipo: 'attacco', bersaglio, arma: i.armi(az.autore).find((a) => armaUsata(fatti, [a])) ?? null } as DecisioneProva;
   const arma = i.armi(az.autore).find((a) => armaUsata(fatti, [a])) ?? null;
   return paroleProve().attacco.test(normalizza(fatti)) || arma ? ({ ...vuota(az.id), tipo: 'attacco', bersaglio, arma } as DecisioneProva) : null;
 }

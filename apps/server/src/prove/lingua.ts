@@ -40,6 +40,8 @@ export interface PacchettoProve {
   parole: {
     abilita: Record<string, string[]>;
     attacco: string[];
+    /** The PC's own attack in the first person (whole words): an attack with no target named, in a fight. */
+    attacco_mio?: string[];
     aiuto: string[];
     senz_armi: string[];
     /** Parole intere dell'arbitro a regole (prove/parole-testo.ts). */
@@ -88,6 +90,8 @@ export interface ParoleCompilate {
   /** Abilità SRD nell'ordine del file: la prima che trova vince. */
   abilita: Array<{ abilita: string; re: RegExp }>;
   attacco: RegExp;
+  /** `attacco_mio`, whole words. */
+  attaccoMio: RegExp;
   aiuto: RegExp;
   /** Sull'id dell'arma scelta dall'arbitro (snake_case), in qualsiasi punto. */
   senzArmi: RegExp;
@@ -114,6 +118,7 @@ export function paroleProve(): ParoleCompilate {
     c = {
       abilita: Object.entries(parole.abilita).map(([abilita, voci]) => ({ abilita, re: inizioParola(voci) })),
       attacco: inizioParola(parole.attacco),
+      attaccoMio: parole.attacco_mio?.length ? new RegExp(`\\b(${parole.attacco_mio.join('|')})\\b`) : MAI,
       aiuto: inizioParola(parole.aiuto),
       senzArmi: parole.senz_armi.length ? new RegExp(parole.senz_armi.join('|')) : MAI,
       seDifficile: Object.entries(parole.abilita_se_difficile ?? {}).map(([abilita, voci]) => ({ abilita, re: inizioParola(voci) })),

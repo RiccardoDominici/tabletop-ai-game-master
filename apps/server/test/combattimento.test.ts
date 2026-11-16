@@ -51,6 +51,19 @@ function scontro(regole: Combattimento, pf: Record<string, number>, dadi: number
   return { g, stato, attacchi };
 }
 
+describe('the target of an attack with no target named (round 5: «lo colpisco ancora» got no roll)', () => {
+  it('the PC\'s last target while it stands, else the first enemy standing in the order; none outside a fight', () => {
+    const { g, stato } = scontro(combattimentoSrd(), { pg_a: 10, png_x: 10, png_y: 10 }, [10, 18, 5, 1, 1, 1, 1, 1, 1], () => null);
+    expect(g.bersaglioImplicito('pg_a', 'png_y')).toBeNull();
+    const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 0 }, { id: 'png_y', lato: 'png' as const, mod: 0 }];
+    g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'pg_a', bersaglio: 'png_y' }], autori: ['pg_a'], candidati: () => cand });
+    expect(g.bersaglioImplicito('pg_a', 'png_y')).toBe('png_y');
+    stato.danneggia('png_y', 20);
+    expect(g.bersaglioImplicito('pg_a', 'png_y')).toBe('png_x');
+    expect(g.bersaglioImplicito('png_x', null)).toBeNull();
+  });
+});
+
 describe('combattimento SRD 5.2', () => {
   it('iniziativa, turno del PNG contro chi lo ha colpito, PG a 0: privo di sensi e tiri contro la morte', () => {
     // Iniziativa: a 10+2 = 12, b 5+0 = 5, x 18+1 = 19 → x, a, b. Il PNG colpisce a per 20 (va a 0).

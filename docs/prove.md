@@ -223,7 +223,12 @@ test/gregari.test.ts.
    - A clear attack is an attack whatever the arbiter said (`attaccoDiRegole`, applied to every arbiter, Haiku included): a
      weapon of the PC's sheet used («tiro con la balestra», «lancio il dardo incantato contro…») or an attack gesture,
      against an NPC with a sheet named in what the PC does. In the second pass of the final e2e Haiku gave «no roll» to the
-     magic missile, and the narrator killed the goblin with no damage.
+     magic missile, and the narrator killed the goblin with no damage. In a fight the PC's own attack in the first
+     person with no target named («lo colpisco ancora», «carico quello al centro»: `parole.attacco_mio` of
+     `lingue/<code>/prove.yaml`, whole words) goes to that PC's last target if it is still standing, else to the first
+     enemy standing in the turn order (`GestoreCombattimento.bersaglioImplicito`): round 5 of the coherence layer had
+     five such declared attacks resolved as «nessun tiro». A player's claim («il goblin mi colpisce») is not an attack;
+     an invented foe («quello con la lancia») is rolled against a real enemy.
    - Speech is not a perception check (`soloParlato`, after every arbiter): an action that is speech only (speech
      removed, what is left are ways of saying it, `parole.modi_del_dire`: «sottovoce», «a bassa voce», «mi avvicino»,
      and the names of those spoken to; or it opens with a vocative, or it is only questions) keeps its check only if it
