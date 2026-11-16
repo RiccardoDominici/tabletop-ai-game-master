@@ -73,6 +73,9 @@ describe('il Motore controlla la narrazione (italiano)', () => {
   it('detto per nome (anche breve o soprannome) e parola chiave: niente righe in più', () => {
     expect(fattiMancanti([aTerra], ['Il colpo di Ruggero piega Corrado, che crolla nel fango.'])).toEqual([]);
     expect(fattiMancanti([colpito], ['La spada di Corrado affonda nel fianco dello sgherro, Ruggero barcolla.'])).toEqual([]);
+    // Round 5 (CA T9): «al centro» is a place, not a hit («centr» was a stem); «Ruggero lo centra» is.
+    expect(fattiMancanti([colpito], ['Ruggero carica quello al centro.']).map((f) => f.riga)).toEqual(['Ruggero incassa il colpo.']);
+    expect(fattiMancanti([colpito], ['Corrado lo centra in pieno, Ruggero.'])).toEqual([]);
     expect(fattiMancanti([colpito], ['Lo sgherro sputa sangue.'], () => ['sgherro'])).toEqual([]);
     // Il nome senza la parola chiave, o la parola senza il nome, non bastano.
     expect(fattiMancanti([aTerra], ['Corrado guarda il fiume.', 'Qualcuno cade a terra.'])).toHaveLength(1);

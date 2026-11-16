@@ -4432,7 +4432,9 @@ export class Regia {
    * non contano (il tavolo non le sente). Restituisce «tipo:id» dei fatti aggiunti.
    */
   private aggiungiFattiDovuti(turno: number, esito: { uscita: VoceUscita[] }, dovuti: readonly FattoDovuto[], log: Logger): string[] {
-    const dette = esito.uscita.flatMap((u) => (u.tipo === 'improvvisata' ? (u.privato ? [] : [u.testo]) : u.tipo === 'usa' ? u.righe.map((r) => r.testo) : []));
+    // The announcement of a player's action is the player's words (llm/annuncio.ts): «Livia Sarti dice: «Carico quello
+    // al centro…»» told Grosso's hit on Livia for this check in round 5 (CA T9, «centr»), and the hit went untold.
+    const dette = esito.uscita.flatMap((u) => (u.tipo === 'improvvisata' ? (u.privato || u.attribuita ? [] : [u.testo]) : u.tipo === 'usa' ? u.righe.map((r) => r.testo) : []));
     const c = this.campagna;
     const altri = (id: string): string[] => [...(this.nomiPng.get(id) ?? []), ...Object.entries(c.alias).filter(([, x]) => x === id).map(([a]) => a)];
     const tuttiNomi = [...c.pg.flatMap((p) => [p.nome, nomeBreve(p.nome)]), ...[...this.nomiPng.values()].flat(), ...Object.keys(c.alias)];

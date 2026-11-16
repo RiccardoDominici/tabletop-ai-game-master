@@ -86,7 +86,8 @@ export type VoceUscita =
   | { tipo: 'usa_rifiutato'; id: string; per: string | null; motivo: string }
   /** `frasi`: id delle frasi mandate alla voce; `segmento`: la riga della trascrizione. */
   /** `motore`: righe dette dal Motore (fatti dello scontro che la narrazione non aveva detto), non dal modello. */
-  | { tipo: 'improvvisata'; etichetta: string; testo: string; frasi?: string[]; segmento?: number; privato?: string; motore?: boolean };
+  /** `attribuita`: the Engine's announcement of a player's action (llm/annuncio.ts): the player's words, not narration. */
+  | { tipo: 'improvvisata'; etichetta: string; testo: string; frasi?: string[]; segmento?: number; privato?: string; motore?: boolean; attribuita?: boolean };
 
 export interface EsitoTurnoNarrato {
   invito: string[] | 'tutti' | null;
@@ -491,8 +492,9 @@ export async function narraTurno(
         if (rigaAperta && rigaAperta.segmento === e.segmento && (rigaAperta.voce.privato ?? null) === (privato ?? null)) {
           rigaAperta.voce.testo += ` ${e.testo}`;
           rigaAperta.voce.frasi!.push(idFrase);
+          if (rigaAperta.voce.attribuita && !parolePg) delete rigaAperta.voce.attribuita;
         } else {
-          const voce = { tipo: 'improvvisata' as const, etichetta: e.etichetta, testo: e.testo, frasi: [idFrase], segmento: e.segmento, ...(privato ? { privato: privato } : {}) };
+          const voce: Extract<VoceUscita, { tipo: 'improvvisata' }> = { tipo: 'improvvisata', etichetta: e.etichetta, testo: e.testo, frasi: [idFrase], segmento: e.segmento, ...(privato ? { privato: privato } : {}), ...(parolePg ? { attribuita: true } : {}) };
           uscita.push(voce);
           rigaAperta = { segmento: e.segmento, voce };
           righeImprovvisate += 1;

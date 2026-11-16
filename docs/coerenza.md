@@ -674,6 +674,15 @@ the announcement (now exempt, above), but a narrator sentence telling the same b
 way. The cost: an invented creature hit in the same turn the real one fell is not caught that turn. Test:
 test/coerenza-inesistenti.test.ts.
 
+## After round 5 (16 November)
+- The due facts of a card (R-dovuto, prove/fatti-dovuti.ts) no longer count the announcement as narration: round 5's CA
+  T9 heard «Livia Sarti dice: «Carico quello al centro…»», the check read «centr» as Grosso's hit on Livia, and the hit
+  went untold. The announcement row is marked in the turn's output (`attribuita`) and left out of the check.
+- Two words out of the Italian outcome lists (`lingue/it/motore.yaml`): «centr» is now «centra» (it read «al centro»
+  as a hit) and «crollo» is no longer a defeat word (8 of the 21 scriptwriter lines refused for an untagged outcome
+  said «dal crollo», a ruin of the tower). Tests: test/coerenza-prima-frase.test.ts, test/fatti-dovuti.test.ts.
+Not measured live yet.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

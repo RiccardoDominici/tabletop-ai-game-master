@@ -15,6 +15,7 @@ import type { ModelloLinguaggio } from '../src/llm/modello';
 import type { Narratore } from '../src/llm/tipi';
 import { MisuratoreTurno } from '../src/metriche/misure';
 import { narraTurno, type ParametriTurno } from '../src/turni/narrazione';
+import { annuncioBreve } from '../src/llm/annuncio';
 import { guardiaAttori } from '../src/coerenza/attori';
 import type { CorrezioneEsito } from '../src/narrazione/guardia-esiti';
 import type { PipelineVoce } from '../src/voce/pipeline';
@@ -142,6 +143,18 @@ describe('one Engine line once a turn, and never a model rewrite of an unnamed a
 });
 
 describe('the announcement is the player\'s words, not the narrator\'s assertion', () => {
+  it('its row is marked as attributed in the output: the due facts of the card do not count it as told', async () => {
+    // Round 5 (CA T9): «Livia Sarti dice: «Carico quello al centro…»» told Grosso's hit on Livia for R-dovuto («centr»).
+    const pipeline = { accoda: () => undefined, effettoFineTurno: () => undefined } as unknown as PipelineVoce;
+    const campagna = { png: [{ id: 'png_ruggero', nome: 'Ruggero', voce_id: 'v_ruggero' }], pg: [{ id: 'pg_ida', nome: 'Ida Marchi' }], alias: {} } as never;
+    const esito = await narraTurno(
+      { campagna, narratore: narratore(`[narratore] ${annuncioBreve('Ida Marchi', 'Carico quello al centro, spada in pugno!')}\n[narratore] Il ponte scricchiola.\n[invito] tutti`), pipeline, log: pino({ level: 'silent' }) as never },
+      { turno: 4, sistema: [], messaggio: '', signal: new AbortController().signal, misuratore: new MisuratoreTurno(4, 0, 0, 'mock', 0), ora: () => Date.now(), onFrase: () => undefined, pronuncia: (t) => t, lineeDette: new Set(), dati: { azioni: [{ id_pg: 'pg_ida', nome: 'Ida Marchi', testo: 'Carico quello al centro, spada in pugno!' }] } as never },
+    );
+    const righe = esito.uscita.filter((u) => u.tipo === 'improvvisata').map((u) => [u.testo, u.tipo === 'improvvisata' && u.attribuita === true]);
+    expect(righe).toEqual([['Ida Marchi dice: «Carico quello al centro, spada in pugno».', true], ['Il ponte scricchiola.', false]]);
+  });
+
   it('no fact rule on a sentence inside it; the same words as a narrator sentence are judged', async () => {
     const goblin = (t: string): CorrezioneEsito => (t.includes('sgherro') ? { testo: 'Ruggero giace a terra, senza vita.', motivo: 'creatura_inesistente' } : null);
     const dati = { azioni: [{ id_pg: 'pg_ida', nome: 'Ida Marchi', testo: 'Spingo lo sgherro contro il ponte.' }] };
