@@ -674,6 +674,65 @@ the announcement (now exempt, above), but a narrator sentence telling the same b
 way. The cost: an invented creature hit in the same turn the real one fell is not caught that turn. Test:
 test/coerenza-inesistenti.test.ts.
 
+## Measured, round 5 (profile A, 16 November, `46d17ec`)
+
+Runs: `esperimenti/risultati/e2e-finale-3b/coerenzaA5-*`, the same four blind scripts and setup as round 4 (0.6B
+reader, rules arbiters, the sceneggiatore in the background, mock voice, ports 4950–4953, memory 42–57% free, no API
+call), after the fixes of «After round 4». The test port's log also held round 4's lines: the copied logs were trimmed
+to round 5 and the measures rebuilt from them. **Judge: opus**, the round-4 rubric and H definitions, the brief adapted
+(the attributed announcement, the stall lines, the outcome tags) and asked to list every false claim inside an
+announcement and say whether the table hears it as the player's words or as the narrator's
+(`coerenzaA5-evidenza-opus.md`; its quotes checked against the views by script).
+
+| | CM | CA | FB | ST |
+|---|---|---|---|---|
+| H heard, opus, round 4 → 5 | 4 → 1 | 3 → 1 | 1 → 0 | 0 → 0 |
+| of which in the lines' prose | 0 (1 unsure) → 1 (1 unsure) | 1 → 1 | 0 → 0 | 0 → 0 |
+| of which in the announcement | 4 → 0 | 2 → 0 | 1 → 0 | 0 → 0 |
+| false claims inside an attributed announcement (not H) | 6 | 5 | 5 | 2 |
+| turns played | 24 | 18 | 13 | 14 |
+| median first audio (ms), round 4 → 5 | 674 → 670 | 670 → 666 | 670 → 682 | 678 → 676 |
+| reader: lines picked / «nessuna»; median classification (ms) | 20 / 13; 1397 | 22 / 17; 1058 | 16 / 11; 862 | 15 / 13; 963 |
+| reader: answers that were not valid JSON | 20 | 14 | 8 | 12 |
+| scriptwriter: `subito` asked / said at the table; median call (s) | 14 / 7; 9.9 | 18 / 5; 10.1 | 12 / 11; 9.8 | 14 / 13; 9.6 |
+| scriptwriter: lines accepted / refused | 134 / 12 (untagged outcome 11, label 1) | 81 / 33 (speaker away or out of play 23, untagged outcome 10) | 83 / 0 | 91 / 0 |
+| scriptwriter lines with `richiede.esito` | 0 | 0 | 0 | 0 |
+| `subito` lines said for a later turn's action, round 4 → 5 | 2 → 0 | 3 → 0 | 0 → 0 | 0 → 0 |
+| stall moves: what the Engine said | — | — | T9 S1: the prepared line | T14 S1: the prepared line |
+| answers with nothing new (the Engine's count) | 1 | 1 | 5 | 8 |
+
+Private content heard: 0 in all four. A fallen or absent character acting or speaking: 0. Every PC that went down got
+its death save, and a PC out of play is announced «Livia Sarti non agisce.». The over-fire table: all 16 coherence
+events right (R-inesistente fired 0 times in CM, 3 in round 4, the T13 over-fire among them; 2 times in CA, rightly).
+The H, by source:
+- **CM T10**, a scriptwriter `prossime` line the reader took through its fallback (the answer was not valid JSON):
+  «Zirrà: Ahi! Scudo bianco, prendi questa, cieco!» while the only card was Zirrà missing Nespola: a hurt and a blow no
+  card has. It tells an outcome without an outcome word, so neither the tag nor the refusal sees it. Unsure: CM T18;
+- **CA T9**: Grosso's 6-damage hit on Livia was never told, and the line heard was «Zirrà: Spada? Ridi tu, poi piangi.
+  Un passo e Grosso si sveglia.». The due-facts check had read the announcement «Livia Sarti dice: «Carico quello al
+  centro…»» as the hit (the stem «centr»): fixed after the round («After round 5» below);
+- **the announcement: 0 H**, every false claim attributed («Nespola Tondi dice: «Non mi reggo più, striscio dietro la
+  pietra».», «Livia Sarti dice: «Ultimo goblin: lo blocco contro la porta».»). The clauses left out as designed: «Vedo
+  tre goblin…», «Il goblin mi tira la lancia», «Ho zero punti ferita, sono a terra», «Il goblin mi prende alla spalla».
+  Still passing: a claim that opens with «Io» («Io sono lento, resto dietro la pietra»: «Io» counts as the PC's own
+  act), a world clause after the PC's verb («Sulla strada della grotta incontro una viandante»), targets nobody has;
+  a question loses its «?» («Sei Oreste»), and two quotes were cut mid-phrase by the twelve words.
+The stall: both stall moves of the round said a prepared stall line (FB T9 and ST T14, «Dal crinale arriva un colpo di
+corno, lontano…»); round 4's one S1 had none. The scriptwriter's top-up never fired: the scene still had prepared
+material. As expected, the counter did not change: ST reached its first stall move only at T14 (the turns at T9–T10
+named an NPC present), and the judge counts 7 of 14 ST answers that brought nothing new.
+The outcome tags: the scriptwriter never wrote `richiede.esito`. In the two fights 21 of its lines were refused for
+telling an outcome without the tag; 8 of those said «dal crollo», a ruin, not a fall (now out of the words), and the
+rest named a fall, a parry or a blow («rimbalza», «cade», «giace», «incassa», «a vuoto»). No `subito` line was said for
+a later action (round 4: 5). Answers to the actions: none got nothing at all. The actions that got only their
+announcement or their card: CM 8, CA 10, FB 1, ST 1, by the judge's count (round 4 counted «announcement only» as 4,
+2, 3, 6, with a narrower definition).
+Also found: CM T21–T25, the party down and the fight over, Zirrà and Grosso standing, five turns of «Livia Sarti non
+agisce.» and nothing moving (no rule for a fallen party); declared attacks the rules arbiter gave no roll («Lo colpisco
+ancora», «Carico quello al centro»: CM T9, T11, T12, CA T9, T10); «Oltre a voi, qui non si vede nessuno in piedi» after
+the fight forgets Tonio, the boy who stood up at T6 (not one of the Engine's characters); a stage direction spoken as
+Zirrà's words (CA T8); the reader's refused pick at FB T5 («pagava» against the theme «pagare») again.
+
 ## After round 5 (16 November)
 - The due facts of a card (R-dovuto, prove/fatti-dovuti.ts) no longer count the announcement as narration: round 5's CA
   T9 heard «Livia Sarti dice: «Carico quello al centro…»», the check read «centr» as Grosso's hit on Livia, and the hit

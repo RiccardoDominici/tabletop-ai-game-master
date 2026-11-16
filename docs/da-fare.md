@@ -70,7 +70,17 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   prose (a scriptwriter's miss line for a hit) and 7 in the announcement quoting the players' false claims; 0 private
   contents, 0 fallen or absent characters acting in the prose (docs/coerenza.md, «Measured, round 4»). Open there:
   outcome lines must carry the outcome as a fact; late `subito` lines; the announcement quoting false claims; the
-  idle stall; R-inesistente on the announcement of the very blow that kills.
+  idle stall; R-inesistente on the announcement of the very blow that kills. Fixed (d713e78…46d17ec): the announcement
+  attributes the player's words and leaves out claims and other people's clauses; R-inesistente spares whoever fell in
+  that turn; `richiede.esito` on outcome lines, checked against the card; a `subito` line bound to its turn; stall lines
+  kept for the stall moves (`stallo: 1 | 2 | 3`). Round 5 in profile A (opus judge): H heard 1 / 1 / 0 / 0, all in the
+  lines' prose, 0 from the announcement; both stall moves said a prepared line; no `subito` line said for a later
+  action (docs/coerenza.md, «Measured, round 5»). One fix after it, not measured live (26529fe: the due facts no longer
+  count the announcement). Open from round 5: the scriptwriter never writes `richiede.esito` (21 lines refused in the
+  fights instead), and a line can tell an outcome with no outcome word («Ahi! … prendi questa»); the stall counter (a
+  turn naming an NPC present is never a stall, so ST's first move came at T14); a fallen party leaves the table with
+  nothing happening; declared attacks the rules arbiter gives no roll («lo colpisco ancora»); the announcement keeps an
+  «Io sono…» claim and drops a question's «?».
   Still open: a round 4 in profile B measured live (needs API credit; Riccardo has not chosen a provider); a full measuring round of the judge (round 3 had one valid game of four); the private replies stay on the rules
   (their raw text is now logged, for a replay set of their own); R-fuori's whole-sentence state check (the judge
   replaces it in profile B, not in profile A); the cart «impossibile» (11a);

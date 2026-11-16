@@ -16,7 +16,7 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Narratore:** Al limite degli alberi si ferma, si volta e aspetta.
 
-*Carte dei dadi sul proiettore:* Nespola Tondi: Carisma 17, riuscita · Nespola Tondi: Carisma 9, fallita
+*Carte dei dadi sul proiettore:* Nespola Tondi: Carisma 9, fallita
 
 ## Turno 2
 

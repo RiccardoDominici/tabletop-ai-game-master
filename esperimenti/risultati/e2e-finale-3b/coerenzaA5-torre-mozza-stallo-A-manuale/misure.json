@@ -18,9 +18,6 @@
   "selettore_con_parola_segreta": [
    [
     "Tonio è salito da solo, d'accordo con i goblin"
-   ],
-   [
-    "Tonio è salito da solo, d'accordo con i goblin"
    ]
   ]
  },
@@ -32,7 +29,7 @@
  "private": {
   "azioni_private": 2,
   "righe_privato": 0,
-  "esiti_privati_log": 11,
+  "esiti_privati_log": 6,
   "spostate_dalla_guardia": 0,
   "righe_al_tavolo_sospette": 0,
   "sospette": [],
@@ -40,10 +37,10 @@
   "al_tavolo": []
  },
  "prove": {
-  "azioni_risolte": 30,
+  "azioni_risolte": 15,
   "con_tiro": 0,
   "tipi": {
-   "nessuna": 30
+   "nessuna": 15
   },
   "dadi": {},
   "regole_tipo": {},
@@ -59,28 +56,26 @@
   "fuori_gioco_log": {}
  },
  "lettore": {
-  "scelte": 30,
-  "nessuna": 26,
-  "ms_classifica_med": 806,
+  "scelte": 15,
+  "nessuna": 13,
+  "ms_classifica_med": 963,
   "ms_classifica_peggiore": 2993
  },
  "sceneggiatore": {
   "richieste": {
-   "subito:ok": 26,
-   "prossime:ok": 24,
-   "prossime:saltata": 2
+   "subito:ok": 13,
+   "prossime:ok": 13
   },
-  "consegnate": 26,
-  "dette_a_finestra_aperta": 26,
-  "accettate": 170,
+  "consegnate": 13,
+  "dette_a_finestra_aperta": 13,
+  "accettate": 91,
   "scartate": {},
-  "ms_claude_med": 9246,
-  "ms_totale_med_subito": 10758,
+  "ms_claude_med": 8890,
+  "ms_totale_med_subito": 10014,
   "processo": {
-   "avvio": 2,
-   "ok": 52,
-   "saltata": 2,
-   "arresto": 2
+   "avvio": 1,
+   "ok": 28,
+   "arresto": 1
   }
  },
  "tempi": {
@@ -145,25 +140,17 @@
   "errori_voce": {}
  },
  "log": {
-  "errori": 2,
-  "avvisi": 39,
+  "errori": 1,
+  "avvisi": 21,
   "per_messaggio": [
-   "40 ×22 llm: risposta strutturata non valida",
-   "40 ×11 llm: si usa il ripiego deterministico",
-   "40 ×2 https: the certificate does not cover this LAN address: run scripts/certificato.sh again",
-   "40 ×2 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
-   "40 ×2 repertorio: [usa] rifiutato",
-   "50 ×2 repertorio: parola segreta nel messaggio del selettore"
+   "40 ×12 llm: risposta strutturata non valida",
+   "40 ×6 llm: si usa il ripiego deterministico",
+   "40 ×1 https: the certificate does not cover this LAN address: run scripts/certificato.sh again",
+   "40 ×1 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×1 repertorio: [usa] rifiutato",
+   "50 ×1 repertorio: parola segreta nel messaggio del selettore"
   ],
   "provider": [
-   "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
-   "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
-   "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",
-   "riassunto       → regole — configurato (../../../../private/tmp/claude-501/-User",
-   "regole          → regole — configurato (../../../../private/tmp/claude-501/-User",
-   "voce            → finto — variabile d'ambiente TAGM_TTS",
-   "ascolto         → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
-   "immagini        → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
    "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
    "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
    "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",

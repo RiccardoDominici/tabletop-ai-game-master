@@ -44,7 +44,7 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Narratore:** Dal crinale scende un corno di capra, lungo e stonato.
 
-*Carte dei dadi sul proiettore:* Nespola Tondi: Ascoltare 81, fallita · Nespola Tondi: Ascoltare 15, riuscita
+*Carte dei dadi sul proiettore:* Nespola Tondi: Ascoltare 15, riuscita
 
 ## Turno 5
 
@@ -78,7 +78,7 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Narratore:** Ordine del round: Eliandro, Nespola, Livia, Zirrà, Grosso.
 
-*Carte dei dadi sul proiettore:* Livia Sarti: Spada lunga 12, fallita · Livia Sarti: Spada lunga 8, fallita
+*Carte dei dadi sul proiettore:* Livia Sarti: Spada lunga 8, fallita
 
 ## Turno 7
 
@@ -90,7 +90,7 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Zirrà:** Allora? Io aspetto, la luna no.
 
-*Carte dei dadi sul proiettore:* Nespola Tondi: Spada corta 6, fallita · Eliandro: Pugnale 11, fallita
+*Carte dei dadi sul proiettore:* Eliandro: Pugnale 11, fallita
 
 ## Turno 8
 
@@ -122,7 +122,7 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Narratore:** Ordine del round: Livia, Zirrà, Nespola, Eliandro, Grosso.
 
-*Carte dei dadi sul proiettore:* Eliandro: Pugnale 18, riuscita · Zirrà: Spada corta 16, riuscita · Grosso: Mazza ferrata 10, fallita
+*Carte dei dadi sul proiettore:* Zirrà: Spada corta 16, riuscita · Grosso: Mazza ferrata 10, fallita
 
 ## Turno 10
 
@@ -136,15 +136,13 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Zirrà:** Ahi! Scudo bianco, prendi questa, cieco!
 
-*Carte dei dadi sul proiettore:* Grosso: Mazza ferrata 5, fallita · Zirrà: Spada corta 11, fallita
+*Carte dei dadi sul proiettore:* Zirrà: Spada corta 11, fallita
 
 ## Turno 11
 
 **Nespola Tondi** (giocatore): Lo colpisco ancora, poi mi sposto e lo lascio dietro di me.
 
 **Narratore:** Nespola Tondi dice: «Lo colpisco ancora, poi mi sposto».
-
-*Carte dei dadi sul proiettore:* Zirrà: Spada corta 21, riuscita · Eliandro: Tiro salvezza contro la morte 16, riuscita · Grosso: Mazza ferrata 14, fallita
 
 ## Turno 12
 
@@ -170,7 +168,7 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Narratore:** Zirrà incassa il colpo.
 
-*Carte dei dadi sul proiettore:* Livia Sarti: Spada lunga 18, riuscita · Eliandro: Dardo incantato 3 contro soglia 0, riuscita
+*Carte dei dadi sul proiettore:* Eliandro: Dardo incantato 3 contro soglia 0, riuscita
 
 ## Turno 14
 
@@ -179,8 +177,6 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 **Narratore:** Nespola Tondi dice: «Indietreggio ma resto in piedi».
 
 **Zirrà:** Provate. Il ragazzo è mio, e lo porto via io.
-
-*Carte dei dadi sul proiettore:* Grosso: Mazza ferrata 19, riuscita
 
 ## Turno 15
 
@@ -192,15 +188,13 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Narratore:** Ordine del round: Eliandro, Nespola, Livia, Grosso, Zirrà.
 
-*Carte dei dadi sul proiettore:* Nespola Tondi: Tiro salvezza contro la morte 1, fallita · Livia Sarti: Spada lunga 13, fallita · Zirrà: Spada corta 18, riuscita · Grosso: Mazza ferrata 19, riuscita
+*Carte dei dadi sul proiettore:* Livia Sarti: Spada lunga 13, fallita · Zirrà: Spada corta 18, riuscita · Grosso: Mazza ferrata 19, riuscita
 
 ## Turno 16
 
 **Eliandro** (giocatore): Mi ritiro verso la scala, arretro di tre passi col quaderno stretto al petto.
 
 **Narratore:** Eliandro dice: «Mi ritiro verso la scala, arretro di tre passi».
-
-*Carte dei dadi sul proiettore:* Grosso: Mazza ferrata 9, fallita
 
 ## Turno 17
 
@@ -218,7 +212,7 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Narratore:** Ordine del round: Nespola, Eliandro, Grosso, Livia, Zirrà.
 
-*Carte dei dadi sul proiettore:* Grosso: Mazza ferrata 10, fallita · Grosso: Mazza ferrata 17, riuscita · Livia Sarti: Tiro salvezza contro la morte 13, riuscita · Grosso: Mazza ferrata 17, riuscita · Zirrà: Spada corta 17, riuscita
+*Carte dei dadi sul proiettore:* Livia Sarti: Tiro salvezza contro la morte 13, riuscita · Grosso: Mazza ferrata 17, riuscita · Zirrà: Spada corta 17, riuscita
 
 ## Turno 18
 
@@ -242,7 +236,7 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Narratore:** Ordine del round: Nespola, Eliandro, Livia, Grosso, Zirrà.
 
-*Carte dei dadi sul proiettore:* Grosso: Mazza ferrata 5, fallita · Grosso: Mazza ferrata 10, fallita · Zirrà: Spada corta 20, riuscita
+*Carte dei dadi sul proiettore:* Grosso: Mazza ferrata 10, fallita · Zirrà: Spada corta 20, riuscita
 
 ## Turno 20
 
@@ -250,7 +244,7 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Narratore:** Eliandro respira ancora, ma non si muove.
 
-*Carte dei dadi sul proiettore:* Grosso: Mazza ferrata 4, fallita · Eliandro: Tiro salvezza contro la morte 11, riuscita · Grosso: Mazza ferrata 6, fallita · Zirrà: Spada corta 18, riuscita · Nespola Tondi: Tiro salvezza contro la morte 9, fallita
+*Carte dei dadi sul proiettore:* Eliandro: Tiro salvezza contro la morte 11, riuscita · Grosso: Mazza ferrata 6, fallita · Zirrà: Spada corta 18, riuscita · Nespola Tondi: Tiro salvezza contro la morte 9, fallita
 
 ## Turno 21
 
@@ -262,8 +256,6 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Narratore:** Eliandro non agisce.
 
-*Carte dei dadi sul proiettore:* Grosso: Mazza ferrata 4, fallita
-
 ## Turno 22
 
 **Eliandro** (giocatore): Lo tengo fermo col piede e chiedo: «Dov'è il ragazzo?»
@@ -273,8 +265,6 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 **Narratore:** Eliandro non agisce.
 
 **Narratore:** Livia Sarti non agisce.
-
-*Carte dei dadi sul proiettore:* Grosso: Mazza ferrata 18, riuscita · Livia Sarti: Tiro salvezza contro la morte 11, riuscita
 
 ## Turno 23
 
