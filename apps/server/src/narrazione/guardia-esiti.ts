@@ -244,6 +244,8 @@ export function guardiaEsiti(d: DatiGuardiaEsiti): (frase: string) => Correzione
     const senzaColpo = !p.colpito.some((v) => posizione(w, v) >= 0);
     if (senzaColpo && (ha(w, p.assorbito) || p.mancato.some((v) => posizione(w, v) >= 0))) {
       for (const t of ferite) {
+        // The target struck too this turn: the miss may be its own blow («Eliandro tira il pugnale, che va a vuoto»).
+        if (attacchi.some((x) => x.chi === t.bersaglio!.id)) continue;
         const b = doveNomina(w, d.nomi.get(t.bersaglio!.id) ?? []);
         const a = doveNomina(w, d.nomi.get(t.chi) ?? []);
         if (b >= 0 && a < 0) return { testo: testo('prove.guardia.colpisce', { chi: nomeBreve(t.nome), bersaglio: nomeBreve(t.bersaglio!.nome) }), motivo: 'colpo_contrario' };

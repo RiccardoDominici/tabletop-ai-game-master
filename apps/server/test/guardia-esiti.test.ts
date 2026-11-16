@@ -59,6 +59,8 @@ describe('guardia degli esiti (italiano)', () => {
     // A hit word in the sentence, or the attacker named (the pair rule judges it), or no damage: left to the other rules.
     expect(g('La mazza la colpisce di striscio, Ida barcolla.')).toBeNull();
     expect(guardia([attacco('png_ruggero', 'pg_ida', true, 0)])('La pietra assorbe il colpo e Ida resta salda.')).toBeNull();
+    // The target struck too this turn: a miss told about her may be her own blow.
+    expect(guardia([attacco('png_ruggero', 'pg_ida', true, 3), attacco('pg_ida', 'png_ruggero', false)])('Ida tira il pugnale, che va a vuoto.')).toBeNull();
   });
 
   it('a standing PC told down because the player said so (third e2e pass, bug 3) → «Ida è ancora in piedi.»', () => {
