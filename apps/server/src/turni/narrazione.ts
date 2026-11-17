@@ -69,6 +69,11 @@ export type EsitoUsaTurno =
   | {
       ok: false;
       motivo: string;
+      /**
+       * The pick was refused for a reason a second call can mend (not in the turn's catalogue, a clock's pace): mode B
+       * repairs the action with one more call (scena/regia.ts, A27). A gate or a release out of context is not.
+       */
+      riparabile?: boolean;
       /** Righe da dire al posto della battuta rifiutata (la deviazione del PNG), e a chi se l'azione era privata. */
       sostituto?: Array<{ etichetta: string; testo: string }>;
       privato?: string;
@@ -85,7 +90,7 @@ export type VoceUscita =
       /** Aggiunta dal Motore (es. segno d'orologio dovuto e dimenticato), non scritta dal modello. */
       motore?: boolean;
     }
-  | { tipo: 'usa_rifiutato'; id: string; per: string | null; motivo: string }
+  | { tipo: 'usa_rifiutato'; id: string; per: string | null; motivo: string; riparabile?: boolean }
   /** `frasi`: id delle frasi mandate alla voce; `segmento`: la riga della trascrizione. */
   /** `motore`: righe dette dal Motore (fatti dello scontro che la narrazione non aveva detto), non dal modello. */
   /** `attribuita`: the Engine's announcement of a player's action (llm/annuncio.ts): the player's words, not narration. */
@@ -522,7 +527,7 @@ export async function narraTurno(
         const esito = p.soloPg && usata.ok ? { ...usata, privato: p.soloPg } : p.soloPg && !usata.ok ? { ...usata, privato: p.soloPg } : usata;
         if (!esito.ok) {
           usaRifiutati += 1;
-          uscita.push({ tipo: 'usa_rifiutato', id: e.id, per: e.per, motivo: esito.motivo });
+          uscita.push({ tipo: 'usa_rifiutato', id: e.id, per: e.per, motivo: esito.motivo, ...(esito.riparabile ? { riparabile: true } : {}) });
           // Comportamento atteso (il Motore controlla il selettore), non un errore: avviso, col motivo.
           log.warn({ turno: p.turno, battuta: e.id, per: e.per, motivo: esito.motivo }, 'repertorio: [usa] rifiutato');
           // Un rilascio fuori contesto: al suo posto la deviazione del PNG (al telefono, se l'azione era privata).

@@ -153,6 +153,7 @@ messaggio:
   rispondi_chiusura: "Respond now with labelled lines; the last line is [invito] tutti."
   titolo_detto: "## Your response, already said aloud"
   titolo_mancanti: "## Actions left without a response"
+  usa_rifiutata: "(the line you chose was rejected: {motivo}; choose another one of the catalogue or answer in your own words)"
   riparazione: "Respond now ONLY to these actions, in order: for each one, one or two lines addressed to that PC by name ([narratore], [png_…], or [usa] id > pg_id if a catalogue line answers exactly that action). Do not repeat anything you have already said. No [invito]."
   solo_finzione: "Tell only what happens in the story: do not name players or PCs as such, and do not talk about choices, waiting, silences or someone who has not done something yet."
   stallo_repertorio: "Stall: there is no action to resolve in this turn. Make something happen in the world with a filler line from the catalogue, or with the sign if it is due. {solo_finzione}"

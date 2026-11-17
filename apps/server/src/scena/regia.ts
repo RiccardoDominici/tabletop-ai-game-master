@@ -2400,7 +2400,7 @@ export class Regia {
     // disponibilità la controlla comunque s.usa.
     if (!motore && !this.elencoTurno.has(id)) {
       const b = s.repertorio.perId.get(id);
-      return { ok: false, motivo: b ? `non era nel catalogo del turno (${s.motivoIndisponibile(b, turno) ?? 'non pertinente alle azioni o trattenuta per un segreto'})` : `battuta inesistente: ${id}` };
+      return { ok: false, motivo: b ? `non era nel catalogo del turno (${s.motivoIndisponibile(b, turno) ?? 'non pertinente alle azioni o trattenuta per un segreto'})` : `battuta inesistente: ${id}`, riparabile: true };
     }
     // B2: ogni battuta risponde a un'azione (`> pg`), salvo il segno dovuto e le mosse di stallo.
     // Cancelli sull'azione: `richiede.privata` solo verso un'azione privata, `da_pg` solo verso quei PG;
@@ -2462,7 +2462,7 @@ export class Regia {
     // all'azione di un PG lo scavalca. Un segno per orologio, al massimo due orologi per risposta.
     const nuoviIndizi = b.effetti.rivela_indizi.filter((i) => !s.indiziRivelati.has(i));
     const esito = s.usa(id, turno, { inRisposta: segni.orologi, ritmo: per === null });
-    if (!esito.ok) return esito;
+    if (!esito.ok) return { ok: false, motivo: esito.motivo, ...(esito.ritmo ? { riparabile: true } : {}) };
     // Detta a un'azione privata: la sente solo quel PG, e per la guardia dei segreti non è pubblica.
     if (per && t?.azioni.get(per)?.privata) {
       this.battutePrivate.add(id);
@@ -4141,7 +4141,14 @@ export class Regia {
         {
           turno,
           sistema: this.sistema,
-          messaggio: messaggioRiparazione(messaggio, esito.esito.testo, daRiparare.map((id) => ({ id, nome: this.nomePg(id), testo: pubbliche.get(id)! }))),
+          messaggio: messaggioRiparazione(
+            messaggio,
+            esito.esito.testo,
+            daRiparare.map((id) => {
+              const rifiuto = esito.uscita.find((u) => u.tipo === 'usa_rifiutato' && u.per === id && u.riparabile);
+              return { id, nome: this.nomePg(id), testo: pubbliche.get(id)!, ...(rifiuto && rifiuto.tipo === 'usa_rifiutato' ? { rifiutata: rifiuto.motivo } : {}) };
+            }),
+          ),
           ...(dati ? { dati: { ...dati, riparazione: true } } : {}),
           signal: controllo.signal,
           misuratore,
@@ -4704,12 +4711,17 @@ export class Regia {
    */
   private azioniSenzaRisposta(uscita: VoceUscita[], pubbliche: Map<string, string>): string[] {
     const risposte = new Set<string>();
+    // A PC whose [usa] was rejected and that got no other line: unanswered, even if a sentence names it (in profile B
+    // the selector's own announcement always does, so the repair never came for a rejected pick; A27).
+    const rifiutati = new Set(uscita.flatMap((u) => (u.tipo === 'usa_rifiutato' && u.per && u.riparabile ? [u.per] : [])));
+    const conRiga = new Set(uscita.flatMap((u) => (u.tipo === 'usa' && u.per ? [u.per] : [])));
     // Le righe private (`[privato pg_x]`) non rispondono a un'azione pubblica: il tavolo non le sente. Nor does the
     // announcement of the action (llm/annuncio.ts): it is the player's words, it names the PC but answers nothing.
     const testoImprovvisato = uscita.filter((u) => u.tipo === 'improvvisata' && !u.privato && !u.attribuita).map((u) => (u.tipo === 'improvvisata' ? u.testo : '')).join('\n');
     for (const u of uscita) if (u.tipo === 'usa' && u.per) risposte.add(u.per);
     for (const id of pubbliche.keys()) {
       if (risposte.has(id)) continue;
+      if (rifiutati.has(id) && !conRiga.has(id)) continue;
       if (this.nominaPg(testoImprovvisato, id)) risposte.add(id);
     }
     return [...pubbliche.keys()].filter((id) => !risposte.has(id));

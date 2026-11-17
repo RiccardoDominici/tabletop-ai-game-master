@@ -165,7 +165,11 @@ lines instead of answering the actions. It therefore changes as follows:
   declared action remains without an answer (neither a line nor an improvised line addressed to that PC). When the
   answer was there but the coherence checker dropped it (it named someone out of play, or a creature nobody here
   answers to), there is no second call for that action: the Engine says a short line from the card and the ledger
-  («Livia ci prova, ma Zirrà non si muove più.»; docs/coerenza.md, «After round 3»).
+  («Livia ci prova, ma Zirrà non si muove più.»; docs/coerenza.md, «After round 3»). A PC whose `[usa]` was refused for a
+  reason another pick can mend (not in the turn's catalogue, a nonexistent id, a clock's pace) and that got no other
+  line counts as unanswered even if a sentence names it (the selector's announcement always does), so the repair call
+  comes, with the reason in its message («la battuta che avevi scelto è stata rifiutata: …»); a refusal by a gate or a
+  release out of context does not (its deviation answers). In profile A no second call goes to the small model.
 - **Only what matters comes out pre-written**: lies, confessions, clues, clock signs, moments, endings. Generic reactions
   have `solo_esempio: true`: they do not enter the catalog, but they go into the context as **examples of the voice** of
   the NPC for the improvisation.

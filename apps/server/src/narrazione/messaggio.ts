@@ -231,12 +231,12 @@ export function messaggioChiusura(d: { trascrizione: VoceTrascrizione[]; maxTras
  * B2: messaggio della riparazione. La risposta è già stata detta ad alta voce ma alcune azioni
  * sono rimaste senza risposta: si chiede solo quella parte, senza invito.
  */
-export function messaggioRiparazione(messaggio: string, detto: string, mancanti: Array<{ id: string; nome: string; testo: string }>): string {
+export function messaggioRiparazione(messaggio: string, detto: string, mancanti: Array<{ id: string; nome: string; testo: string; rifiutata?: string }>): string {
   return [
     messaggio,
     `${testo('messaggio.titolo_detto')}\n${detto}`,
-    // Il lettore minimo (llm/minimo.ts) riconosce la riparazione da questo titolo.
-    `${testo('messaggio.titolo_mancanti')}\n${mancanti.map((m) => `- ${m.nome} (${m.id}): ${m.testo}`).join('\n')}`,
+    // Il lettore minimo (llm/minimo.ts) riconosce la riparazione da questo titolo. A rejected [usa] says why (A27).
+    `${testo('messaggio.titolo_mancanti')}\n${mancanti.map((m) => `- ${m.nome} (${m.id}): ${m.testo}${m.rifiutata ? ` ${testo('messaggio.usa_rifiutata', { motivo: m.rifiutata })}` : ''}`).join('\n')}`,
     testo('messaggio.riparazione'),
   ].join('\n\n');
 }

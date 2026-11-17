@@ -88,7 +88,7 @@ export type EsitoUso =
       /** Orologi partiti perché è uscita questa battuta o un indizio che rivela (parte_dopo). */
       orologiPartiti: string[];
     }
-  | { ok: false; motivo: string };
+  | { ok: false; motivo: string; /** A clock's pace or limit: another line may do (scena/regia.ts, A27). */ ritmo?: boolean };
 
 export class StatoRepertorio {
   readonly indiziRivelati = new Set<string>();
@@ -432,10 +432,10 @@ export class StatoRepertorio {
     const motivo = this.motivoIndisponibile(b);
     if (motivo) return { ok: false, motivo };
     if (b.effetti.avanza_orologio) {
-      if (segni === true) return { ok: false, motivo: 'un segno di orologio è già uscito in questa risposta' };
+      if (segni === true) return { ok: false, motivo: 'un segno di orologio è già uscito in questa risposta', ritmo: true };
       const op = typeof segni === 'boolean' ? {} : { inRisposta: segni.inRisposta, ritmo: !!segni.ritmo };
       const a = this.orologi.avanza(b.effetti.avanza_orologio, turno, op);
-      if (!a.ok) return { ok: false, motivo: a.motivo };
+      if (!a.ok) return { ok: false, motivo: a.motivo, ritmo: true };
       if (typeof segni !== 'boolean') segni.inRisposta.add(b.effetti.avanza_orologio);
     }
     const uso = (this.usi.get(id) ?? 0) + 1;

@@ -154,6 +154,7 @@ messaggio:
   rispondi_chiusura: "Rispondi ora con le righe etichettate; l’ultima riga è [invito] tutti."
   titolo_detto: "## La tua risposta, già detta ad alta voce"
   titolo_mancanti: "## Azioni rimaste senza risposta"
+  usa_rifiutata: "(la battuta che avevi scelto è stata rifiutata: {motivo}; scegline un'altra del catalogo o rispondi con parole tue)"
   riparazione: "Rispondi ora SOLO a queste azioni, nell’ordine: per ognuna una o due righe rivolte a quel PG per nome ([narratore], [png_…], oppure [usa] id > pg_id se una battuta del catalogo risponde proprio a quella azione). Non ripetere niente di ciò che hai già detto. Niente [invito]."
   solo_finzione: "Racconta solo ciò che accade nella storia: non nominare giocatori o PG come tali, e non parlare di scelte, attese, silenzi o di qualcuno che non ha ancora fatto qualcosa."
   stallo_repertorio: "Stallo: in questo turno non c'è nessuna azione da risolvere. Fai succedere qualcosa nel mondo con una battuta di riempimento del catalogo, oppure col segno se è dovuto. {solo_finzione}"
