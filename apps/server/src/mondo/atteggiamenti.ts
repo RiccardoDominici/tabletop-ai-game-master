@@ -8,7 +8,7 @@
 import { STATI_ATTEGGIAMENTO, TUTTI_I_PG, type StatoAtteggiamento } from '../campagna/mondo';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 
-export type CausaAtteggiamento = 'conseguenza' | 'narratore' | 'prova' | 'master';
+export type CausaAtteggiamento = 'conseguenza' | 'narratore' | 'prova' | 'master' | 'battuta';
 
 export interface CambioAtteggiamento {
   png: string;

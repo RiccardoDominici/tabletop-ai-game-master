@@ -164,3 +164,35 @@ describe('server, mode B: the selector proposes too, the Engine checks', () => {
     void s;
   });
 });
+
+describe('server, mode B: a line with its own effetti.atteggiamento (A23)', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('changes the attitude towards the PC it answers when it comes out, without the step limit', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mondo', {
+      battute: {
+        'png_mugnaio.yaml': [
+          { id: 'mug_pane', chi: 'png_mugnaio', tipo: 'reazione', quando: 'un PG porta il pane al mugnaio', temi: ['pane'], testo: ['[png_mugnaio] Pane caldo. Questo non lo dimentico.'], effetti: { atteggiamento: { png_mugnaio: 'amichevole', png_ladra: { pg_bruno: 'ostile' } } }, max_usi: 1 },
+        ],
+      },
+    });
+    const copione = (t: number): string => (t === 1 ? '[usa] mug_pane > pg_anna\n[invito] tutti' : '[narratore] Anna, la ruota gira.\n[invito] tutti');
+    const { url } = await prova.avvia(cartella, copione);
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const master = await prova.master(url);
+    let s = await inizia(schermo, tel);
+    s = await turno(tel, 'pg_anna', s, 'Porto il pane al mugnaio.');
+    expect(s.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo)).toContain('Pane caldo. Questo non lo dimentico.');
+    // The miller towards Anna (the PC the line answers): indifferent → friendly; the thief towards Bruno, explicit:
+    // indifferent → hostile. A line is prepared by the big model: no step limit and no «once a turn».
+    expect((await master.stato()).mondo?.atteggiamenti).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ png: 'png_mugnaio', pg: 'pg_anna', stato: 'amichevole', causa: 'battuta' }),
+        expect.objectContaining({ png: 'png_ladra', pg: 'pg_bruno', stato: 'ostile', causa: 'battuta' }),
+      ]),
+    );
+  });
+});

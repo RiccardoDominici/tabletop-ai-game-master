@@ -129,6 +129,9 @@ The attitude of each NPC towards each PC starts from `atteggiamento_pg.<pg>.stat
   line in the server log with why («world: attitude change from a check not applied»: it would make the NPC hostile,
   the attitude is at the end of the scale, the NPC already changed by a check in this visit, or an Engine limit;
   `AtteggiamentiInGioco.daProva`);
+- **lines** (mode B, A23): a line's own `effetti.atteggiamento` applies when it comes out, `{png_x: amichevole}`
+  towards the PC the line answers (every PC when it answers none, an Engine's line), or `{png_x: {pg_y: ostile,
+  tutti: indifferente}}`; written by the big model with the line, so any state, like a consequence (cause `battuta`);
 - **consequences** and **Game Master**: any state, no limits (prepared, or decided by a person).
 The current attitudes reach the turn's message (changes only), the checks (advantage, disadvantage, who reacts), the
 Game Master panel, the snapshot, and `registro.yaml` (`atteggiamenti`, with turn and cause). The Preparer cites them

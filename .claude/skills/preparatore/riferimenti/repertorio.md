@@ -121,6 +121,10 @@ gate. For the gates on the action, the chosen alternative applies (`{privata: tr
   inside a tick is a warning, and a narrator that summarises an NPC goes against D1). One line per segment, with
   `richiede.orologio: {id, min: k-1, max: k-1}` and `effetti.avanza_orologio` [V]. The text follows the tick of campagna.yaml. A
   detail may be added, up to four sentences.
+- **Attitudes a line changes** (`effetti.atteggiamento`, docs/mondo.md §4) [V]: where the line itself turns an NPC
+  (a confession that seals a pact, a gift accepted, a threat that closes a door), `{png_x: amichevole}` changes that NPC
+  towards the PC the line answers, `{png_x: {pg_y: ostile}}` or `{png_x: {tutti: …}}` explicitly. The Engine applies it
+  when the line comes out, any state. Only where the text says the turn; never on a `solo_esempio`.
 - **Key moments**: the NPCs' initiatives and evolutions (one burns the sacks, another wraps the crumb for a daughter), the climax, the
   turning points.
 - **Audio signals** (`audio: {effetto, umore}`, schema.md "Audio"): few, and only where the text calls for them.

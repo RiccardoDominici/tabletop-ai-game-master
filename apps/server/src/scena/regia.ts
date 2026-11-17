@@ -87,6 +87,7 @@ import { nomiDeiPng, pngNominati, temaPresente } from '../repertorio/pertinenza'
 import { personaggiScena, pngIncontrati, presenzaEffettiva, presenzeMaster } from './presenze';
 import { sommaCosti } from '../llm/costi';
 import type { Battuta, Repertorio } from '../repertorio/tipi';
+import { TUTTI_I_PG } from '../campagna/mondo';
 import { haCancelloAzione, StatoRepertorio } from '../repertorio/stato';
 import { provaFallita } from '../repertorio/condizioni';
 import { righeMenzogneDette } from '../repertorio/menzogne';
@@ -1567,6 +1568,19 @@ export class Regia {
     }
   }
 
+  /**
+   * A line's own `effetti.atteggiamento` (A23, docs/mondo.md §4), applied when it comes out: written by the big model
+   * with the line, so no step limit, like a consequence. A plain state is towards the PC the line answers (`per`), or
+   * every PC when it answers none (the Engine's lines).
+   */
+  private atteggiamentiDellaBattuta(b: Battuta, per: string | null, turno: number): void {
+    for (const a of b.effetti.atteggiamento) {
+      const cambi = this.mondo.atteggiamenti.imposta(a.png, a.pg ?? per ?? TUTTI_I_PG, a.stato, turno, 'battuta', b.id);
+      for (const c of cambi) this.o.log.info({ turno, battuta: b.id, png: c.png, pg: c.pg, da: c.da, a: c.a }, 'world: attitude changed by a line');
+    }
+    if (b.effetti.atteggiamento.length) this.notifica();
+  }
+
   /** The narrator's or the selector's [atteggiamento] lines (both modes), checked by the Engine. Returns the outcomes, for the log. */
   private atteggiamentiDalNarratore(turno: number, proposte: ReadonlyArray<{ png: string; pg: string; stato: string }>, log: Logger): Array<Record<string, unknown>> {
     if (!proposte.length) return [];
@@ -2473,6 +2487,7 @@ export class Regia {
     }
     this.rivelateNelTurno.push(esito.battuta.id, ...esito.battuta.effetti.rivela_indizi);
     if (esito.orologiPartiti.length) this.o.log.info({ turno, battuta: id, orologi: esito.orologiPartiti }, 'orologio: partito (parte_dopo)');
+    this.atteggiamentiDellaBattuta(esito.battuta, per, turno);
     const audio = this.cueBattuta(esito.battuta);
     return {
       ok: true,

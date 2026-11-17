@@ -127,6 +127,8 @@ battute:
     testo:
       - "[narratore] Berta si sfila il laccio dal collo e vi mette in mano la chiave."
       - "[png_berta] È fredda, la chiave. Riportami lui, non l'argento."
+    # Affidare la chiave è un patto: da qui Berta è amica del PG a cui la dà (docs/mondo.md §4).
+    effetti: {atteggiamento: {png_berta: amichevole}}
     max_usi: 1
 
   # La menzogna sulla decima, con il segnale in ogni versione.

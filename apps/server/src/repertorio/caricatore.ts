@@ -17,6 +17,7 @@ import { CLASSI_STATO, TIPI_BATTUTA, TIPI_ESITO, type AlternativaRichiede, type 
 import { EFFETTI, UMORE_AUTO, UMORI } from '../audio/cue';
 import { comeAbilita, comeCaratteristica } from '../campagna/regole-srd';
 import { caricaRegole } from '../regole/caricatore';
+import { STATI_ATTEGGIAMENTO, TUTTI_I_PG } from '../campagna/mondo';
 
 /** Chiavi ammesse in `richiede` (e, tranne `oppure`, in ogni alternativa). Una chiave sconosciuta è un errore: ignorata, aprirebbe il cancello. */
 const CHIAVI_RICHIEDE = new Set(['indizi_rivelati', 'indizi_non_rivelati', 'battute_usate', 'battute_non_usate', 'orologio', 'privata', 'da_pg', 'prova', 'oppure', 'stati', 'esito']);
@@ -94,6 +95,10 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = c.cartell
     for (const id of b.effetti.rivela_indizi) if (!indizi.has(id)) errori.push(`${b.id}: indizio inesistente «${id}»`);
     for (const id of b.effetti.fatti_noti) if (!fatti.has(id)) errori.push(`${b.id}: fatto del canone inesistente «${id}»`);
     if (b.effetti.avanza_orologio && !orologi.has(b.effetti.avanza_orologio)) errori.push(`${b.id}: orologio inesistente «${b.effetti.avanza_orologio}»`);
+    for (const a of b.effetti.atteggiamento) {
+      if (!c.png.some((p) => p.id === a.png)) errori.push(`${b.id}: effetti.atteggiamento cita un PNG inesistente «${a.png}»`);
+      if (a.pg !== null && a.pg !== TUTTI_I_PG && !c.pg.some((p) => p.id === a.pg)) errori.push(`${b.id}: effetti.atteggiamento cita un PG inesistente «${a.pg}»`);
+    }
     for (const sc of b.scene) if (!c.scene.some((s) => s.id === sc)) errori.push(`${b.id}: scena inesistente «${sc}»`);
   }
   avvisi.push(...controllaModi(c, battute), ...controllaMenzogne(c, battute));
@@ -116,6 +121,29 @@ const PROVE_GENERICHE = new Set(['prova', 'salvezza', 'attacco', 'contrapposta']
  * l'id di una prova della scena (p_…), oppure prova / salvezza / attacco / contrapposta. Un valore
  * che non si capisce è un errore: ignorarlo aprirebbe il cancello.
  */
+/**
+ * `effetti.atteggiamento` (A23): `{png_x: stato}` towards the PC the line answers, or `{png_x: {pg_y | tutti: stato}}`.
+ */
+function leggiAtteggiamenti(v: unknown, dove: string, errori: string[]): Effetti['atteggiamento'] {
+  if (v === undefined || v === null) return [];
+  if (typeof v !== 'object' || Array.isArray(v)) {
+    errori.push(`${dove}: effetti.atteggiamento è {png_x: stato} o {png_x: {pg_y: stato}}`);
+    return [];
+  }
+  const valido = (s: unknown): s is Effetti['atteggiamento'][number]['stato'] => typeof s === 'string' && (STATI_ATTEGGIAMENTO as readonly string[]).includes(s);
+  const out: Effetti['atteggiamento'] = [];
+  for (const [png, x] of Object.entries(v as DatiYaml)) {
+    if (valido(x)) out.push({ png, pg: null, stato: x });
+    else if (x && typeof x === 'object' && !Array.isArray(x)) {
+      for (const [pg, s] of Object.entries(x as DatiYaml)) {
+        if (valido(s)) out.push({ png, pg, stato: s });
+        else errori.push(`${dove}: effetti.atteggiamento di ${png} verso ${pg}: «${String(s)}» non è ${STATI_ATTEGGIAMENTO.join(', ')}`);
+      }
+    } else errori.push(`${dove}: effetti.atteggiamento di ${png}: «${String(x)}» non è ${STATI_ATTEGGIAMENTO.join(', ')}`);
+  }
+  return out;
+}
+
 /** Id del set di regole non SRD della campagna (mosse, abilità, caratteristiche): validi in `richiede.prova`. */
 function idDelSet(c: Campagna): ReadonlySet<string> {
   const s = caricaRegole(c.cartella).sistema;
@@ -284,6 +312,7 @@ function leggiBattuta(
     menzogna_detta: typeof e['menzogna_detta'] === 'string' ? e['menzogna_detta'] : null,
     fatti_noti: lista(e['fatti_noti']),
     avanza_orologio: typeof e['avanza_orologio'] === 'string' ? e['avanza_orologio'] : null,
+    atteggiamento: leggiAtteggiamenti(e['atteggiamento'], qui, errori),
   };
   if (d['sconfitta'] !== undefined && (d['sconfitta'] !== true || tipo !== 'finale')) errori.push(`${qui}: sconfitta: true solo su una battuta di tipo finale`);
   const audio = leggiAudioBattuta(d['audio'], `${qui} audio`, errori);

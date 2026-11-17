@@ -137,7 +137,8 @@ The threat clocks of the scene: a row of boxes, filled up to the tick already sh
   next (S1 a sign of the danger, S2 a clue that arrives, S3 a summary of the leads).
 - The ticks a clock owes to facts of the game (a gate of `avanza_quando`), also of clocks that are not on stage.
 - **Atteggiamenti cambiati** (Attitudes changed): each NPC whose attitude towards a PC is no longer the one of its sheet,
-  with the turn and the cause (`narratore`, `prova` for a social check, `conseguenza` of a tick).
+  with the turn and the cause (`narratore`, `prova` for a social check, `conseguenza` of a tick, `battuta` for a
+  prepared line that changes it, `effetti.atteggiamento`).
 - **Cronaca** (Log): the consequences of ticks and omens, newest first, each «visto» (seen: the PCs were there) or
   «fuori scena» (off-screen), and «emerso al tN» when its traces reached the table.
 

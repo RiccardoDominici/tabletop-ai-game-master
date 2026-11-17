@@ -106,6 +106,12 @@ export interface Effetti {
   menzogna_detta: string | null;
   fatti_noti: string[];
   avanza_orologio: string | null;
+  /**
+   * NPC attitudes the line changes when it comes out (docs/mondo.md §4, A23): `{png_x: amichevole}` towards the PC the
+   * line answers (every PC when it answers none), `{png_x: {pg_y: ostile, tutti: indifferente}}` explicit. `pg` null =
+   * the PC the line answers. Prepared by the big model, so no step limit (like a consequence).
+   */
+  atteggiamento: Array<{ png: string; pg: string | null; stato: 'ostile' | 'indifferente' | 'amichevole' }>;
 }
 
 export interface Battuta {

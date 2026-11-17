@@ -106,6 +106,25 @@ def controlla(c: Campagna, e: Esito) -> None:
     _prosa(c, e)
 
 
+def _controlla_atteggiamento(c: Campagna, e: Esito, dove: str, att) -> None:
+    """`effetti.atteggiamento` (A23, docs/mondo.md §4): {png_x: stato} towards the PC the line answers, or
+    {png_x: {pg_y | tutti: stato}}; the NPCs and PCs exist, the states are the three of the scale."""
+    if att is None:
+        return
+    if not isinstance(att, dict) or not att:
+        e.errore("REPERTORIO.effetti", dove, "effetti.atteggiamento è {png_x: stato} o {png_x: {pg_y: stato}}")
+        return
+    for pid, x in att.items():
+        if pid not in c.png:
+            e.errore("REPERTORIO.effetti", dove, f"effetti.atteggiamento: PNG inesistente {pid}")
+        voci = {"(il PG a cui risponde)": x} if isinstance(x, str) else x if isinstance(x, dict) else {"?": x}
+        for pg, s in voci.items():
+            if isinstance(x, dict) and pg != "tutti" and pg not in c.pg_ids:
+                e.errore("REPERTORIO.effetti", dove, f"effetti.atteggiamento di {pid}: PG inesistente {pg}")
+            if s not in K.STATI_ATTEGGIAMENTO:
+                e.errore("REPERTORIO.effetti", dove, f"effetti.atteggiamento di {pid} verso {pg}: {s!r} non è {sorted(K.STATI_ATTEGGIAMENTO)}")
+
+
 def _schema(c: Campagna, e: Esito) -> None:
     visti = set()
     del_motore = battute_del_motore(c)
@@ -161,8 +180,8 @@ def _schema(c: Campagna, e: Esito) -> None:
             e.errore("REPERTORIO.flag", dove, "non può essere insieme solo_esempio e riempitivo")
         eff = b.get("effetti") or {}
         if b.get("solo_esempio") and (b.get("tipo") in K.TIPI_ESSENZIALI or eff.get("rivela_indizi")
-                                       or eff.get("menzogna_detta") or eff.get("avanza_orologio")):
-            e.errore("REPERTORIO.flag", dove, "un esempio di voce non può rivelare, mentire o far avanzare l'orologio")
+                                       or eff.get("menzogna_detta") or eff.get("avanza_orologio") or eff.get("atteggiamento")):
+            e.errore("REPERTORIO.flag", dove, "un esempio di voce non può rivelare, mentire, cambiare un atteggiamento o far avanzare l'orologio")
         if b.get("riempitivo") and b.get("tipo") not in K.TIPI_RIEMPITIVO:
             e.errore("REPERTORIO.flag", dove, f"riempitivo ammesso solo per {sorted(K.TIPI_RIEMPITIVO)}")
         if b.get("scena") is not None:
@@ -189,6 +208,7 @@ def _schema(c: Campagna, e: Esito) -> None:
         for k in eff:
             if k not in K.CAMPI_EFFETTI:
                 e.errore("REPERTORIO.effetti", dove, f"effetti.{k} non previsto")
+        _controlla_atteggiamento(c, e, dove, eff.get("atteggiamento"))
         if chi != "narratore" and not any(r.startswith(f"[{chi}]") for r in b.get("testo") or []):
             e.errore("REPERTORIO.righe", dove, f"battuta di {chi} senza nessuna sua riga")
         for versione in _righe(b):

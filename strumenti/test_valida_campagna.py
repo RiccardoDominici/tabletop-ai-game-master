@@ -1839,6 +1839,24 @@ def test_chiusura_senza_scena_basta_se_la_scena_e_una(camp):
     assert "REPERTORIO.chiusura" not in errori(camp, rigoroso=True)
 
 
+def test_effetti_atteggiamento_di_una_battuta(camp):
+    # A23 (docs/mondo.md §4): a line may change an NPC's attitude when it comes out; ids and states are checked.
+    png = sorted(p.stem for p in (camp / "png").glob("*.yaml"))[0]
+    pg = leggi(camp, "pg.yaml")
+    primo_pg = (pg.get("personaggi") or pg.get("pg") or pg)[0]["id"]
+    rep = sorted((camp / "repertorio").glob("*.yaml"))[0].name
+    originale = leggi(camp, f"repertorio/{rep}")
+    for buona in ({png: "amichevole"}, {png: {primo_pg: "ostile", "tutti": "indifferente"}}):
+        scrivi(camp, f"repertorio/{rep}", originale)
+        modifica(camp, f"repertorio/{rep}", lambda d: d["battute"][0].setdefault("effetti", {}).__setitem__("atteggiamento", buona))
+        assert "REPERTORIO.effetti" not in errori(camp), buona
+    for cattiva in ({png: "furioso"}, {"png_che_non_esiste": "ostile"}, {png: {"pg_che_non_esiste": "ostile"}}, ["ostile"]):
+        scrivi(camp, f"repertorio/{rep}", originale)
+        modifica(camp, f"repertorio/{rep}", lambda d: d["battute"][0].setdefault("effetti", {}).__setitem__("atteggiamento", cattiva))
+        assert "REPERTORIO.effetti" in errori(camp), cattiva
+    scrivi(camp, f"repertorio/{rep}", originale)
+
+
 def test_chiusura_di_un_png_o_con_effetti_e_un_errore(camp):
     modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_chiusura_volpe").update(effetti={"fatti_noti": ["f_impronte_cera"]}))
     assert "REPERTORIO.chiusura" in errori(camp)

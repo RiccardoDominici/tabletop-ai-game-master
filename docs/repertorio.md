@@ -52,6 +52,8 @@ battute:
       menzogna_detta: ott_segale      # records the lie (fixed version, signal shown)
       fatti_noti: []                  # canon facts that the PCs now know
       avanza_orologio: null           # id of the clock if it is a sign
+      atteggiamento: {}               # {png_x: amichevole}: towards the PC the line answers (every PC if none);
+                                      # {png_x: {pg_y: ostile, tutti: indifferente}}: explicit (docs/mondo.md §4)
     max_usi: 1                        # variants count as uses of the same line
     attori: [png_ottavia]             # NPCs who act in (or are there in) the narrator rows, even unnamed
     menzionati: []                    # NPCs only talked about: no presence asked

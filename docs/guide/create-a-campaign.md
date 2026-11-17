@@ -223,7 +223,8 @@ The world does not wait for the players ([docs/mondo.md](../mondo.md)). In `camp
   the clock a tick, which the Engine says itself if the narrator does not;
 - **consequences** of a tick (`conseguenze`, and omens with `al_segno`): what happens in the world, the sentence the
   table hears if the PCs are there (`detto`), the traces they find later if they were elsewhere (`tracce`), an NPC that
-  changes attitude, moves or leaves, a hidden NPC that appears, a clue the world offers.
+  changes attitude, moves or leaves, a hidden NPC that appears, a clue the world offers. A prepared line can change an
+  attitude too, when it comes out (`effetti.atteggiamento` in the repertoire: a confession that wins an NPC over).
 
 The fields are in `.claude/skills/preparatore/riferimenti/schema.md` («orologi», «preparazione»); the validator checks
 them in the class `FRONTI` (`FRONTI.avanza_quando`, `FRONTI.conseguenze`).
