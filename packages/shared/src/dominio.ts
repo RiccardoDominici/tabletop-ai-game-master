@@ -184,6 +184,11 @@ export interface PersonaggioScena {
   /** URL del ritratto, o null se la campagna non ne ha uno (il client mostra l'iniziale). */
   ritratto: string | null;
   presente: boolean;
+  /**
+   * Down (0 HP) or dead and still lying in the scene: the projector marks the portrait instead of dropping it (a fled
+   * one is not in the scene). Absent = in play.
+   */
+  fuori?: 'a_terra' | 'morto';
 }
 
 /** Scena come la vede lo schermo. */

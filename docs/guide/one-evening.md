@@ -86,7 +86,7 @@ The panel token changes every time the game starts. If the script cannot find th
 
 After the click, the projector shows:
 - the image of the place, with a slow camera movement (without an image, an atmospheric background);
-- the title of the scene and, below it, the portraits of the NPCs present: whoever is speaking has a golden ring and is larger;
+- the title of the scene and, below it, the portraits of the NPCs present: whoever is speaking has a golden ring and is larger; one who is down or dead stays where it fell, in grey, with «a terra» or «morto» under the name;
 - in the centre, the portrait and name of whoever is speaking, with the subtitle of what they say;
 - bottom left, the turn status: who is called, who has already sent, and «Aspettiamo: …» (meaning: waiting for: …);
 - bottom right, the QR code, for those who arrive later;

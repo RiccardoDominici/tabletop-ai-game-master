@@ -43,11 +43,16 @@ export function personaggiScena(args: {
   /** PNG nascosti che il master ha rivelato a mano. */
   rivelati?: ReadonlySet<string>;
   ritratto: (id: string) => string | null;
+  /** Down or dead and still lying in the scene (presente with a mark); null = in play. */
+  fuori?: (id: string) => 'a_terra' | 'morto' | null;
 }): PersonaggioScena[] {
   const vista = args.png
     .filter((p) => args.presenti.has(p.id) || args.incontrati.has(p.id))
     .filter((p) => visibileAlTavolo(p, args.incontrati, args.rivelati))
-    .map((p) => ({ id: p.id, nome: p.nome, ritratto: args.ritratto(p.id), presente: args.presenti.has(p.id) }));
+    .map((p) => {
+      const fuori = args.presenti.has(p.id) ? (args.fuori?.(p.id) ?? null) : null;
+      return { id: p.id, nome: p.nome, ritratto: args.ritratto(p.id), presente: args.presenti.has(p.id), ...(fuori ? { fuori } : {}) };
+    });
   return [...vista.filter((p) => p.presente), ...vista.filter((p) => !p.presente)];
 }
 

@@ -168,6 +168,8 @@ export const telefono = {
   'telefono.qui.presenti': 'Qui con voi',
   'telefono.qui.rivolgiti': 'Rivolgiti a {nome}',
   'telefono.qui.altrove': 'Altrove',
+  'telefono.qui.a_terra': 'a terra',
+  'telefono.qui.morto': 'morto',
   'telefono.altri.aria': 'Azioni degli altri al tavolo',
   'telefono.altri.titolo': 'Al tavolo',
   'telefono.altri.con': 'con {nomi}',

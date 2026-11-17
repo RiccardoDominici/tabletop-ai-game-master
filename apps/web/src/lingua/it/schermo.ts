@@ -79,6 +79,8 @@ export const schermo = {
   'schermo.finestra.pensa': 'pensa…',
   'schermo.finestra.conto': '⏱ {secondi} s',
   'schermo.fila.aria': 'Chi c\'è in scena',
+  'schermo.fila.a_terra': 'a terra',
+  'schermo.fila.morto': 'morto',
   'schermo.iniziativa.aria': 'Iniziativa',
   'schermo.iniziativa.pf_di': 'Punti ferita di {nome}',
   'schermo.audio.pulsante': 'A · audio',

@@ -168,6 +168,8 @@ export const telefono = {
   'telefono.qui.presenti': 'Here with you',
   'telefono.qui.rivolgiti': 'Speak to {nome}',
   'telefono.qui.altrove': 'Elsewhere',
+  'telefono.qui.a_terra': 'down',
+  'telefono.qui.morto': 'dead',
   'telefono.altri.aria': 'Other players’ actions at the table',
   'telefono.altri.titolo': 'At the table',
   'telefono.altri.con': 'with {nomi}',

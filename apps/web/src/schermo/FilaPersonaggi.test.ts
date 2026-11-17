@@ -42,4 +42,10 @@ describe('FilaPersonaggi (proiettore)', () => {
     expect(renderToStaticMarkup(createElement(FilaPersonaggi, { personaggi: undefined, parlante: null }))).toBe('');
     expect(html(null, [PERSONAGGI[2]!])).toBe('');
   });
+  it('a downed or dead NPC still in the scene stays, marked (round 7: the fallen used to vanish from the row)', () => {
+    const out = html(null, [{ id: 'png_oste', nome: 'Oste Bruno', ritratto: '/r/oste.jpg', presente: true, fuori: 'morto' }]);
+    expect(out).toContain('data-fuori="morto"');
+    expect(out).toContain('data-testid="fuori-png_oste"');
+    expect(out).toContain('grayscale');
+  });
 });

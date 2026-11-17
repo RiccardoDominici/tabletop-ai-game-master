@@ -34,6 +34,9 @@ describe('presenze: parti pure', () => {
       { id: 'png_oste', nome: 'Oste Bruno', ritratto: '/r/png_oste.jpg', presente: false },
     ]);
     expect(vista.some((p) => p.id === 'png_fabbro')).toBe(false);
+    // Down or dead and still in the scene: present, with the mark for the projector and the phones.
+    const caduto = personaggiScena({ png: PNG, presenti: new Set(['png_guardia']), incontrati: new Set(), ritratto, fuori: (id) => (id === 'png_guardia' ? 'morto' : null) });
+    expect(caduto[0]).toEqual({ id: 'png_guardia', nome: 'Guardia Lia', ritratto: null, presente: true, fuori: 'morto' });
   });
 
   it('PNG nascosto: non compare finché non ha parlato o non è rivelato; il pannello lo mostra sempre', () => {

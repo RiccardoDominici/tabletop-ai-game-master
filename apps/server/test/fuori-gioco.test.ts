@@ -168,8 +168,8 @@ describe('PNG a terra col server intero (C1)', () => {
     // Nell'SRD un PNG a 0 muore.
     // «Cosa è vero adesso» (the coherence ledger, docs/coerenza.md §2): the fallen are a row of the scene.
     expect(messaggi.at(-1)).toMatch(/## Cosa è vero adesso[^\n]*\n\n- In scena: [^\n]*Ruggero lo sgherro non è più in vita: non parla né agisce, il corpo è lì/);
-    // Sul proiettore non è più tra i presenti.
-    expect(s3.scena.personaggi?.find((p) => p.id === 'png_ruggero')?.presente ?? false).toBe(false);
+    // On the projector he stays where he fell, marked (docs/coerenza.md, «Projector»; before, he vanished from the row).
+    expect(s3.scena.personaggi?.find((p) => p.id === 'png_ruggero')).toMatchObject({ presente: true, fuori: 'morto' });
     expect(s2.scena.personaggi?.find((p) => p.id === 'png_ruggero')?.presente).toBe(true);
     expect(messaggi.at(-1)).not.toContain('ruggero_tratta');
     // T3, a scontro finito: resta fuori gioco.

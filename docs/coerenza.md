@@ -68,8 +68,9 @@ Engine accepts them only for an NPC present (or absent) and logs them; the Game 
   content and the rows that PC knows, and goes only to that phone (never to the voice queue, so it does not delay the
   table). This removes the feed path of bug 1 instead of guarding it. Cost: one Haiku call per private action.
 - **Game Master panel**: a «Coerenza» box: the ledger's rows (state, presence, who knows what) and the turn's
-  violations (rule, sentence, what was done). **Projector**: a mark on a downed or dead NPC's portrait, if cheap (not
-built: the fallen already leave the projector's present list).
+  violations (rule, sentence, what was done). **Projector**: a mark on a downed or dead NPC's portrait (built after
+  round 7: the fallen one stays in the row where it fell, grey, with «a terra» or «morto» under the name, on the
+  projector and on the phones' «Qui con voi»; `PersonaggioScena.fuori`; a fled one is gone).
 
 ### 3. One checker (`apps/server/src/coerenza/verifica.ts`)
 Every sentence, narrator or NPC, public or private, goes through one pipeline before the voice, against the ledger

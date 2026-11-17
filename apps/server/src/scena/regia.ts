@@ -1455,9 +1455,16 @@ export class Regia {
   /** PNG della campagna visti dal tavolo: presenti in scena e già incontrati (vedi presenze.ts). */
   private personaggiVisti(): PersonaggioScena[] {
     const img = this.o.immagini;
+    // Who lies down or dead in the scene stays on the projector, marked (docs/coerenza.md); a fled one is gone.
+    const fuori = (id: string): 'a_terra' | 'morto' | null => {
+      const f = this.prove?.attivo ? this.prove.stato.fuoriGioco(id) : null;
+      return f === 'a_terra' || f === 'morto' ? f : null;
+    };
+    const presenti = new Set([...this.pngPresentiFisici()].filter((id) => this.pngInScena().has(id) || fuori(id) !== null));
     return personaggiScena({
       png: this.campagna.png,
-      presenti: this.pngInScena(),
+      presenti,
+      fuori,
       incontrati: pngIncontrati(this.trascrizione, this.campagna.png),
       rivelati: this.rivelati,
       ritratto: (id) => img?.ritratto(id) ?? null,

@@ -38,8 +38,9 @@ export function QuiConVoi({ stato }: { stato: StatoTavolo }) {
                   aria-label={t('telefono.qui.rivolgiti', { nome: p.nome })}
                   className="flex min-h-11 w-[4.25rem] flex-col items-center gap-0.5 rounded-lg active:bg-notte-3"
                 >
-                  <Avatar personaggio={p} className="size-12 ring-2 ring-candela/70" />
+                  <Avatar personaggio={p} className={clsx('size-12 ring-2 ring-candela/70', p.fuori && 'grayscale opacity-50')} />
                   <span className="w-full truncate text-center text-xs text-pergamena">{primoNome(p.nome)}</span>
+                  {p.fuori && <span data-testid={`qui-fuori-${p.id}`} className="text-[0.65rem] text-cenere uppercase">{t(`telefono.qui.${p.fuori}`)}</span>}
                 </button>
               </li>
             ))}

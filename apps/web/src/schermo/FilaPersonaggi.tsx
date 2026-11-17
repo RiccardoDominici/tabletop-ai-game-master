@@ -18,7 +18,13 @@ export function FilaPersonaggi({ personaggi, parlante }: { personaggi: readonly 
   return (
     <ul data-testid="fila-personaggi" aria-label={t('schermo.fila.aria')} className="flex flex-wrap items-start gap-[2vw]">
       {presenti.map((p) => (
-        <li key={p.id} data-testid={`personaggio-${p.id}`} data-parla={String(p.id === parlante)} className="flex w-[max(9vw,11rem)] flex-col items-center gap-[3.2vh]">
+        <li
+          key={p.id}
+          data-testid={`personaggio-${p.id}`}
+          data-parla={String(p.id === parlante)}
+          {...(p.fuori ? { 'data-fuori': p.fuori } : {})}
+          className="flex w-[max(9vw,11rem)] flex-col items-center gap-[3.2vh]"
+        >
           <Ritratto personaggio={p} parla={p.id === parlante} />
           <span
             className={clsx(
@@ -28,6 +34,12 @@ export function FilaPersonaggi({ personaggi, parlante }: { personaggi: readonly 
           >
             {primoNome(p.nome)}
           </span>
+          {/* Down or dead and still in the scene: a mark, not a disappearance (docs/coerenza.md, «Projector»). */}
+          {p.fuori && (
+            <span data-testid={`fuori-${p.id}`} className="-mt-[2.4vh] rounded-full bg-notte-3/90 px-[0.8vw] py-[0.2vh] text-[1.1vw] tracking-[0.12em] text-cenere uppercase">
+              {t(`schermo.fila.${p.fuori}`)}
+            </span>
+          )}
         </li>
       ))}
     </ul>
@@ -45,6 +57,7 @@ function Ritratto({ personaggio, parla }: { personaggio: PersonaggioScena; parla
         parla
           ? 'scale-105 ring-[0.45vw] ring-[#ff9a6b] shadow-[0_0_3vw_rgb(255_154_107/0.7),0_1vh_3vh_rgb(0_0_0/0.8)]'
           : 'ring-[0.3vw] ring-[#e8c98a]/70 shadow-[0_1vh_3vh_rgb(0_0_0/0.8)] opacity-90',
+        personaggio.fuori && 'grayscale opacity-50',
       )}
     >
       {mostra ? (
