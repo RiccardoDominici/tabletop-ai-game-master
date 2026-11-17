@@ -137,6 +137,8 @@ the work of the Preparatore, and the form of the fields is in `riferimenti/schem
 - **Scene**: for every obstacle or non-essential clue that the text describes, 2–4 `prove`, with DC 10 (easy),
   15 (medium) or 20 (hard). An essential clue never sits behind a roll. Each `quando` opens with what the PC does
   («un PG apre…», «un PG guarda…»): without `parole`, the rules arbiter needs that word in the player's action.
+- **Physical impossibilities** of a scene (a door that no strength opens, a bridge nobody lifts) go into its
+  `vincoli_pubblici`: an arbiter's «impossibile» stands only on a reason written there; otherwise the action rolls.
 - **World questions** (`domande` of the scene, optional, 0–2 per scene): an uncertain fact the scene leaves to chance
   and no PC rolls for — is the guard awake, does the mule bray when strangers come, does the NPC on the stairs notice
   the noise at the door. Write the fact that asks it (`quando`, the grammar of the gates: `azione` with `temi`,

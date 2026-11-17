@@ -115,6 +115,11 @@ asked three times (`--ripeti 3`, the cache is keyed by model and prompt hash), a
   bridge is a wooden one, and nothing says a bridge cannot be lifted). That is the price of the rule: a truly
   impossible feat needs its reason written in the scene. Haiku's own path (the verdict where the rules find nothing to
   roll) is unchanged and untested live.
+- **Kept** (the lead, 18 November): an «impossibile» stands only on a reason the scene's data records, in line with
+  the rule that no model decides an uncertain outcome. An absurd action the scene does not record («sollevo con le
+  mani il ponte di pietra») now rolls on the set's ladder from its signals, the bridge on the hard rung (20): the
+  ladder from signals never goes past hard, it does not reach the hardest step. The Preparer records a scene's physical
+  impossibilities in its `vincoli_pubblici` (the skill says so).
 - With data, the DC is the data's (scene checks, Influence from the NPC's sheet, AC): the arbiter's choice does not
   count there, by design (BF baseline T5: arbiter «difficile», card CD 17 from the scene check `p_berta_chiave`:
   correct).
