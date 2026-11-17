@@ -82,7 +82,10 @@ combattimento:
      November) does not use the modifier: the tied PCs share one step (one window for all of them), the tied NPCs act
      in the step right after, at the same moment, and an NPC the tied PCs dropped in that turn still makes its blow
      («Turno di Zirrà, nello stesso istante in cui cade (iniziativa pari): …», `prove.combattimento.turno_png_insieme`).
-     Nothing new is saved: the tie is read from the participants' numbers. Test: test/combattimento.test.ts.
+     Nothing new is saved: the tie is read from the participants' numbers. With the whole server the blow reaches the
+     table: the narrator's sentence of it is kept (the guards allow a blow the cards of the turn have), and in profile
+     A's seat, a narration silent on it gets the Engine's due line («Corrado incassa il colpo.»). Tests:
+     test/combattimento.test.ts, test/combattimento-schieramento.test.ts.
    - **PC step**: the window opens **only for that PC**, or for their whole side. The Engine ignores the narrator's
      invitation. The others may write, but their action stays queued (`TavoloAzioni.rinvia`) and is resolved on their
      turn. No timer: the fast pace applies only if the scene asks for it.
