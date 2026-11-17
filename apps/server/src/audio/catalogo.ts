@@ -4,7 +4,7 @@
  *
  * Sezioni del manifest e id usati qui:
  * - `brani`    musica di luogo, `luogo_<id scena o nodo>`, in loop;
- * - `umori`    musica d'umore, `umore_<tag>` (tensione, mistero, battaglia…), in loop;
+ * - `umori`    musica d'umore, `umore_<tag>` (esplorazione_tesa, lutto…), in loop;
  * - `temi`     motivo breve di un PNG, `tema_<id_png>`, una volta sola;
  * - `ambienti` strati in loop di un luogo, `amb_<luogo>_<tag>` (o campo `luogo` esplicito);
  * - `effetti`  colpi singoli, `sfx_<tag>`;

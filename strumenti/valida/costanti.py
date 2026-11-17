@@ -1,7 +1,7 @@
 """Vocabolari chiusi del manuale e del repertorio. Valgono per ogni campagna, non per una sola."""
 
-# §4 musica.tag: vocabolario chiuso del manuale. docs/architettura.md ne elenca uno diverso, non ancora
-# riconciliato: si usa questo (vedi «Letture del manuale adottate» nella skill).
+# §4 musica.tag: vocabolario chiuso del manuale, lo stesso di UMORI (strumenti/audio/vocabolario.py); il test
+# strumenti/test_vocabolario_tag.py controlla che non divergano (docs/audio.md, docs/architettura.md).
 TAG_MUSICA = {"esplorazione_tesa", "taverna_calda", "rito_sacro", "inseguimento", "combattimento_epico", "lutto"}
 
 # C12, scopo della scena: elenco chiuso, in forma {tipo, rif}.

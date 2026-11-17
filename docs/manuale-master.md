@@ -257,7 +257,7 @@ registro_attivita: []
 | `uscite` | At least 2 links to other nodes, each with the clue that signals it. The only exception is the climax. |
 | `mossa_morbida_pronta` | What happens if the PCs linger. |
 | `apertura` | At most 3 sentences ready for voice, compliant with §5. |
-| `musica.tag` | Taken from a closed vocabulary: `esplorazione_tesa`, `taverna_calda`, `rito_sacro`, `inseguimento`, `combattimento_epico`, `lutto`… The transition is also indicated. |
+| `musica.tag` | Taken from a closed vocabulary of exactly six tags: `esplorazione_tesa`, `taverna_calda`, `rito_sacro`, `inseguimento`, `combattimento_epico`, `lutto` (the list of docs/audio.md; any other word is ignored). The transition is also indicated. |
 | `immagine` | Composed by the Engine: the invariants of the place, then the NPCs present, then `[STILE]`. |
 | `taglio` | The condition that closes the scene (T5). |
 

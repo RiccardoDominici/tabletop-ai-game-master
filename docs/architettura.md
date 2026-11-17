@@ -144,7 +144,7 @@ It is Claude Code with a dedicated skill, which uses the «Manuale del master» 
 - **Listening**: hold-to-talk from the phone; the audio goes to the Mac, where Whisper turbo transcribes it locally. The campaign's names are passed to it in advance.
 
 ### 6. Music, ambience, images
-- **Music**: a closed vocabulary of tags (exploration, tavern, tension, mystery, battle, boss, pathos, victory, rest, horror…), with 2–3 tracks for each tag and each campaign, all in the same style.
+- **Music**: a closed vocabulary of six mood tags (`esplorazione_tesa`, `taverna_calda`, `rito_sacro`, `inseguimento`, `combattimento_epico`, `lutto`; the list of docs/audio.md, `UMORI` in strumenti/audio/vocabolario.py), with 2–3 tracks for each tag and each campaign, all in the same style.
   - The narrator proposes the tag; the Engine applies hysteresis: at least 60–90 s before changing, except at the start of a fight.
   - Crossfades between tracks; the music ducks under the voice (Web Audio).
   - One ambience layer for each place (rain, crowd, drips).
