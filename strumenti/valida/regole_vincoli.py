@@ -67,9 +67,9 @@ def _contraddizioni(e: Esito, dove_scena: str, s: dict, chi: str, vincolo: str) 
     for verbo, nomi in _negazioni(vincolo):
         for campo, testo in _testi_pubblici(s):
             basso = testo.lower()
-            # Negato se un «non» sta nelle due parole prima («non può parlare»).
+            # Negato se un «non» sta fino a tre parole prima («non può parlare», «non riesce a suonare»).
             positivo = [m for m in re.finditer(rf"\b{verbo}[a-zàèéìòù]*", basso)
-                        if not re.search(r"\bnon\b(\s+\S+)?\s*$", basso[max(0, m.start() - 20):m.start()])]
+                        if not re.search(r"\bnon\b(\s+\S+){0,3}\s*$", basso[max(0, m.start() - 24):m.start()])]
             parole = {w[:5] for w in re.findall(r"[a-zàèéìòù]+", basso) if len(w) >= 5}
             if positivo and nomi & parole and not re.search(ECCEZIONI, basso):
                 e.avviso("VINCOLI.contraddetto", f"{dove_scena} {campo}", f"«{testo[:70]}» dice il contrario del vincolo di {chi} "

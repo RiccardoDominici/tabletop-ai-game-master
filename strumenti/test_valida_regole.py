@@ -395,6 +395,16 @@ def test_effetti_come_il_motore() -> None:
     assert tuple(EFFETTI) == motore
 
 
+def test_parole_chiave_con_id_fuori_dal_set_sono_errore(tmp_path: Path) -> None:
+    """Un id di parole_chiave deve essere un'abilità, una mossa o una caratteristica del set: il motore lo rifiuta
+    (caricatore.ts), il validatore lo deve rifiutare prima, con lo stesso criterio."""
+    dest = copia(BX, tmp_path)
+    modifica(dest, "regole/regole.yaml", lambda d: d.update(parole_chiave={"inesistente": ["cassa", "chiave"]}))
+    esito = Esito()
+    regole_set.controlla(carica(dest, esito), esito)
+    assert any(v.codice == "REGOLE.parole_chiave" and "inesistente" in v.messaggio for v in esito.errori), [v.messaggio for v in esito.errori]
+
+
 def test_parole_chiave_generiche_rifiutate_in_modo_rigoroso(tmp_path: Path) -> None:
     """Parole generiche (porta, passaggio, spalla…) in parole_chiave e nelle parole delle prove della scena: da sole non
     dicono quale prova (e2e finale, D1). L'arbitro a regole le ignora, il validatore le segnala (rigoroso: errore)."""

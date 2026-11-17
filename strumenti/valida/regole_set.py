@@ -456,6 +456,9 @@ def controlla(c: Campagna, e: Esito) -> None:
     mosse = _mosse(r, car, e, dove)
     regole_combattimento.controlla(r, car, e, dove)
     for k, voci in (_ogg(r.get("parole_chiave")) or {}).items():
+        # Same rule as the engine loader (regole/caricatore.ts): the id must be a trait, a skill or a move of the set.
+        if k not in car | abi | mosse:
+            _err(e, "parole_chiave", dove, f"parole_chiave.{k}: non è un'abilità, una mossa o una caratteristica del set")
         if gen := generiche_in(voci, c.lingua):
             _generiche(e, dove, f"parole_chiave.{k}", gen)
     _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r))
