@@ -1,7 +1,7 @@
 {
  "variante": "regole",
  "violazioni": 117,
- "prese": 76,
+ "prese": 82,
  "mancate": [
   {
    "chiave": "coerenza-torre-mozza-combattimento-B-automatico#10:8",
@@ -17,11 +17,6 @@
    "chiave": "coerenza-torre-mozza-combattimento-B-automatico#11:4",
    "testo": "Ma Zirrà è già a terra, e il goblin non è più lì a difenderla: il pugnale lo colpisce senza resistenza.",
    "perche": "a dagger hits the invented goblin"
-  },
-  {
-   "chiave": "coerenza-torre-mozza-combattimento-B-automatico#15:5",
-   "testo": "Il goblin davanti esita, guarda il compagno, e resta immobile sulle pietre.",
-   "perche": "the invented goblin hesitates"
   },
   {
    "chiave": "coerenza-torre-mozza-combattimento-B-automatico#16:1",
@@ -47,16 +42,6 @@
    "chiave": "coerenza-torre-mozza-combattimento-B-manuale#10:1",
    "testo": "Il fiato gli esce di colpo, e la lancia cade sul selciato.",
    "perche": "carried «gli»: the invented goblin"
-  },
-  {
-   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#10:4",
-   "testo": "Zirrà non è più qui: il goblin che hai davanti è quello della lancia, e il suo sguardo cerca una via di fuga.",
-   "perche": "asserts a goblin with the spear is there"
-  },
-  {
-   "chiave": "coerenza-torre-mozza-combattimento-B-manuale#12:4",
-   "testo": "Lo sguardo di Zirrà scivola sulla spada di Livia, poi sul corpo immobile di Grosso accanto al fuoco.",
-   "perche": "fled Zirrà's gaze moves"
   },
   {
    "chiave": "coerenza-torre-mozza-combattimento-B-manuale#13:2",
@@ -87,11 +72,6 @@
    "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#12:0",
    "testo": "Livia alza lo scudo e il colpo della lancia rimbalza sul bordo di legno.",
    "perche": "an attack by nobody in play (a spear on the shield)"
-  },
-  {
-   "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#15:2",
-   "testo": "Zirrà, ferita al fianco, sbuffa e scuote la testa, ma non si muove verso la scala.",
-   "perche": "dead Zirrà snorts and shakes her head"
   },
   {
    "chiave": "coerenza2-torre-mozza-combattimento-B-automatico#16:2",
@@ -137,11 +117,6 @@
    "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#13:1",
    "testo": "Livia grida ai goblin di fermarsi, di dire chi li paga.",
    "perche": "Livia shouts at goblins that are not there"
-  },
-  {
-   "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#14:3",
-   "testo": "Il goblin davanti esita, guarda il compagno ferito, e per un momento resta immobile sulla soglia.",
-   "perche": "the invented goblin hesitates"
   },
   {
    "chiave": "coerenza2-torre-mozza-combattimento-B-manuale#14:5",
@@ -194,11 +169,6 @@
    "perche": "the invented hesitant goblin"
   },
   {
-   "chiave": "canary-torre-mozza-combattimento-B-manuale#22:7",
-   "testo": "Il goblin davanti a Livia guarda la cantina, poi il compagno a terra.",
-   "perche": "the invented goblin looks at the cellar"
-  },
-  {
    "chiave": "canary-torre-mozza-combattimento-B-manuale#22:8",
    "testo": "Non si muove.",
    "perche": "carried: the invented goblin does not move"
@@ -231,5 +201,5 @@
    "etichettata": true
   }
  ],
- "ms": 28
+ "ms": 39
 }

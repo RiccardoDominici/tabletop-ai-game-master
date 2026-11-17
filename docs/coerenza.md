@@ -904,6 +904,9 @@ T9) and some questions and later own clauses dropped by the «one sentence» rul
   nobody knows, or speaking to an invented name (docs/mondo.md §5); a sentence-initial vocative in a sentence that
   speaks to someone is an invented name too. Test: test/coerenza-destinazioni.test.ts, test/coerenza-nomi-nuovi.test.ts.
 
+- R-fuori judges the state per clause, not per sentence (docs/combattimento.md §3): on the frozen replay set the rules'
+  path catches 82 of 117 (76 before), touching the same 4 clean sentences. Test: test/guardia-fuori.test.ts.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

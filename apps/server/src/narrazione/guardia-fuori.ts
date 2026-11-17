@@ -12,7 +12,8 @@
  *   with a subject pronoun («…, e lei ride»); a clause with no name and no article carries the subject of the clause
  *   before it («Parla piano, in fretta»), also into the next sentence unless that one opens with a preposition
  *   («Dalla cantina arriva…»);
- * - a sentence that describes the state (`stato`: «giace», «immobile», «a terra», «il corpo», «sangue»…) is left alone,
+ * - a clause that describes the state (`stato`: «giace», «immobile», «a terra», «il corpo», «sangue»…) is left alone
+ *   (per clause: another clause of the same sentence where the fallen one acts is not),
  *   whatever its clauses do: so is everything about characters who went out of play in this very turn (their fall is
  *   this turn's story) and everything whose subject is someone else («Eliandro preme il piede sul goblin»);
  * - the first offending sentence about a character becomes «Zirrà giace a terra, senza vita.» (`prove.guardia.fuori_*`),
@@ -27,13 +28,14 @@ import { nomeBreve } from '../campagna/nomi';
 import { testo } from '../lingua';
 import { campoElenco, regole } from '../lingua/motore';
 import type { FuoriGioco } from '../prove/stato';
-import { doveNomina, paroleDi, posizione, pronomiDiSoggetto } from './guardia-esiti';
+import { doveNomina, paroleDi, paroleNegazione, posizione, pronomiDiSoggetto } from './guardia-esiti';
 
 interface Parole {
   apertura: ReadonlySet<string>;
   articoli: ReadonlySet<string>;
   preposizioni: ReadonlySet<string>;
   stato: string[][];
+  impersonali: string[][];
   /** Parts of a character that act for it («lo sguardo di X», «la mano di X»), and the words that join them. */
   parti: ReadonlySet<string>;
   diParte: ReadonlySet<string>;
@@ -49,6 +51,9 @@ const parole = (): Parole =>
       .filter((v) => v.length > 0),
     parti: new Set(campoElenco(s, 'parti').map(normalizza)),
     diParte: new Set(campoElenco(s, 'di_parte').map(normalizza)),
+    impersonali: (s['impersonali'] === undefined ? [] : campoElenco(s, 'impersonali'))
+      .map((x) => paroleDi(x))
+      .filter((v) => v.length > 0),
   }));
 
 /** The clause words of this guard, for the absent-creature rule (coerenza/inesistenti.ts): one compilation of the section. */
@@ -115,10 +120,13 @@ export function guardiaFuori(d: DatiGuardiaFuori): ((frase: string) => Correzion
   return (frase) => {
     const p = parole();
     const pronomi = pronomiEsiti();
+    const negazioni = paroleNegazione();
     const w = paroleDi(frase);
     if (!w.length) return null;
-    // A sentence that describes the state is never an act («Zirrà giace a terra, gli occhi aperti»).
-    const descriveStato = p.stato.some((v) => posizione(w, v) >= 0);
+    // A clause that describes the state is never an act («Zirrà giace a terra, gli occhi aperti»). Per clause, not per
+    // sentence: «Zirrà giace a terra, poi si rialza e corre verso la scala» is an act in its second clause (before, one
+    // state word anywhere let the whole sentence through).
+    const descriveStato = (c: readonly string[]): boolean => p.stato.some((v) => posizione(c, v) >= 0);
     const pezzi = frase.split(/[,.;:!?—–()«»"]+/).map(paroleDi).filter((x) => x.length);
     // A new sentence opening with a preposition («Dalla cantina…») does not carry the subject of the one before.
     if (pezzi[0] && p.preposizioni.has(pezzi[0][0]!)) soggetto = null;
@@ -143,6 +151,9 @@ export function guardiaFuori(d: DatiGuardiaFuori): ((frase: string) => Correzion
       if (primo && primo.i === j) {
         attuale = soggetto = primo.id;
         resto = c.length - j - lunghezzaNome(c, j, nomi.get(primo.id) ?? []);
+      } else if (p.impersonali.some((v) => v.every((x, k) => c[k] === x) || v.every((x, k) => c[j + k] === x))) {
+        // An impersonal perception («si sente il rotolio di qualche sasso»): no subject, it carries nobody.
+        attuale = null;
       } else if (j < c.length && pronomi.has(c[j]!)) {
         attuale = soggetto = ultimoNominato ?? soggetto;
         resto = c.length - j - 1;
@@ -154,9 +165,12 @@ export function guardiaFuori(d: DatiGuardiaFuori): ((frase: string) => Correzion
       else if (conArticolo || (j < c.length && p.articoli.has(c[j]!))) attuale = ci === 0 ? (soggetto = null) : null;
       // else: no name and no article, the clause carries the subject before it («Parla piano, …», «Dice che…»).
       if (nominati.length) ultimoNominato = nominati.at(-1)!.id;
-      if (!colpevole && attuale && fuori.includes(attuale) && resto > 0) colpevole = attuale;
+      // A negated verb right after the subject in a sentence that describes the state elsewhere («Zirrà non risponde: il suo
+      // corpo è immobile…») tells nothing done; alone («Ruggero non parla.») it still gives the fallen one a voice to keep.
+      const negato = !!primo && primo.i === j && negazioni.has(c[c.length - resto] ?? '') && descriveStato(w);
+      if (!colpevole && attuale && fuori.includes(attuale) && resto > 0 && !descriveStato(c) && !negato) colpevole = attuale;
     }
-    if (!colpevole || descriveStato) return null;
+    if (!colpevole) return null;
     if (detti.has(colpevole)) return { testo: '', motivo: 'fuori_gioco_agisce', id: colpevole };
     detti.add(colpevole);
     const come = d.fuoriDaPrima(colpevole)!;

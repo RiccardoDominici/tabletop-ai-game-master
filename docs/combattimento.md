@@ -194,8 +194,13 @@ combattimento:
      clause has no name and no article («Parla piano, in fretta…», «Dice che…»); a sentence opening with a preposition
      («Dalla cantina arriva…») carries nobody. Names include the aliases, except those that also name a PC or NPC in
      play (not minions: with standing minions of the kind a fallen NPC's alias names, the alias may be misread).
-     A sentence with a state word («giace», «immobile», «a terra», «il corpo», «sangue»…) stays, and so does everything
-     about who fell or rolled a death save in this very turn. The words are in `lingue/<code>/motore.yaml`
+     A clause with a state word («giace», «immobile», «a terra», «il corpo», «sangue», «crollato»…) stays, and so does
+     everything about who fell or rolled a death save in this very turn. The state is judged per clause: «Zirrà giace a
+     terra, poi si rialza e corre verso la scala» is an act in its second clause (before, one state word anywhere let
+     the sentence through); an impersonal perception («si sente il rotolio…», `guardia_fuori.impersonali`) carries
+     nobody; a negated verb is still the fallen one's («Ruggero non parla.»), unless the sentence tells the state
+     elsewhere («Zirrà non risponde: il suo corpo è immobile»). On the frozen replay set: 76 → 82 of 117 caught, the
+     same 4 clean sentences touched. The words are in `lingue/<code>/motore.yaml`
      (`guardia_fuori`), the lines in testi-prove.yaml (`prove.guardia.fuori_*`); log `fuori_gioco_agisce`. It runs on
      every turn of a campaign with dice, also with no roll. Limits: a noun outside the aliases («la creatura») and object
      pronouns are not seen.

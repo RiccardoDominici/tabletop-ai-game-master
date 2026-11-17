@@ -247,7 +247,9 @@ guardia_fuori:
   # «The gaze of Zirrà slides…»: a part of a character, then one of `di_parte`, then the name: that character acts.
   parti: [gaze, eyes, eye, hand, hands, voice, face, head, mouth, laugh, smile, lips, arm, arms, fingers, step, steps, shadow]
   di_parte: [of]
-  stato: [lies, lying, dead, motionless, unconscious, on the ground, lifeless, corpse, body, bleed, does not move, doesn't move, not breathing, gone, fled, no longer here, out cold, still on the floor]
+  stato: [lies, lying, dead, motionless, unconscious, on the ground, lifeless, corpse, body, bleed, does not move, doesn't move, not breathing, gone, fled, no longer here, out cold, still on the floor, collapsed, fallen, slumped]
+  # A clause opening with an impersonal perception («one hears…», «there is…») has no subject: it carries nobody.
+  impersonali: [one hears, one sees, there is, there are, you can hear]
 
 # The carried subject when the yes/no judge is late (apps/server/src/coerenza/portato.ts): a sentence right after one
 # judged a violation, naming nobody, that refers back to a third person. `clitici`: object pronouns that are also

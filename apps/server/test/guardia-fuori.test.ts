@@ -67,6 +67,16 @@ describe('out-of-play guard (Italian)', () => {
     expect(guardiaFuori({ nomi: NOMI, nome: (id) => id, fuoriDaPrima: () => null })).toBeNull();
   });
 
+  it('the state is judged per clause: a state word in one clause does not let another clause\'s act through', () => {
+    const g = guardia({ png_ruggero: 'morto' });
+    expect(g('Ruggero giace a terra, poi si rialza e corre verso la cantina.')).toMatchObject({ motivo: 'fuori_gioco_agisce', id: 'png_ruggero' });
+    expect(guardia({ png_ruggero: 'morto' })('Ruggero giace a terra, immobile, il sangue sul selciato.')).toBeNull();
+    // An impersonal perception carries nobody; a negated verb with the state told elsewhere in the sentence stays.
+    expect(guardia({ png_ruggero: 'fuggito' })('Ruggero è già sparito verso il ponte: si sente solo il fiume.')).toBeNull();
+    expect(guardia({ png_ruggero: 'morto' })('Ruggero non risponde: il suo corpo è immobile sulle pietre.')).toBeNull();
+    expect(guardia({ png_ruggero: 'morto' })('Lo sgherro è già crollato contro il muro.')).toBeNull();
+  });
+
   it('a part of the fallen one acts for him: «lo sguardo di Ruggero scivola…» (coherence run, combat T12)', () => {
     expect(guardia({ png_ruggero: 'fuggito' })('Lo sguardo di Ruggero scivola sulla spada di Ida, poi sul fuoco.')).toMatchObject({ testo: 'Ruggero non è più qui.' });
     // The part of someone else, or a thing of the fallen one, is not his act.

@@ -246,7 +246,9 @@ guardia_fuori:
   # «Lo sguardo di Zirrà scivola…»: a part of a character, then one of `di_parte`, then the name: that character acts.
   parti: [sguardo, occhi, occhio, mano, mani, voce, viso, volto, faccia, testa, bocca, risata, sorriso, labbra, braccio, braccia, dita, passo, passi, ombra]
   di_parte: [di, del, della, dello, dei, degli, delle]
-  stato: [giac, immobil, mort, esanim, cadaver, corpo, a terra, per terra, senza vita, senza sensi, svenut, privo di sensi, priva di sensi, non si muove, non respira, rantol, sangu, fuori combattimento, non c'e piu, non e piu qui, fuggit, sparit]
+  stato: [giac, immobil, mort, esanim, cadaver, corpo, a terra, per terra, senza vita, senza sensi, svenut, privo di sensi, priva di sensi, non si muove, non respira, rantol, sangu, fuori combattimento, non c'e piu, non e piu qui, fuggit, sparit, crollat, cadut, accasciat, stramazzat, rivers]
+  # A clause opening with an impersonal perception («si sente il rotolio…») has no subject: it carries nobody.
+  impersonali: [si sente, si sentono, si vede, si vedono, si ode, si odono, si capisce]
 
 # The carried subject when the yes/no judge is late (apps/server/src/coerenza/portato.ts): a sentence right after one
 # judged a violation, naming nobody, that refers back to a third person. `clitici`: object pronouns that are also

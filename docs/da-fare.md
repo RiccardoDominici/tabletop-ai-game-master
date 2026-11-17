@@ -98,8 +98,8 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   too~~ **Done** (A36); ~~the S3 leads sentence lists the last
   clock sign as a road~~ **Done** (A38); ~~a scriptwriter line can confirm a place that does not exist~~ **Done** (A39); ~~a commitment toward something that does not exist still resets the stall~~ **Done** (A37); repeated catchphrases.
   Still open: a round 4 in profile B measured live (needs Riccardo: API credit for profile B; provider not chosen); a full measuring round of the judge (round 3 had one valid game of four; needs Riccardo: API credit for profile B); the private replies stay on the rules
-  (their raw text is now logged, for a replay set of their own); R-fuori's whole-sentence state check (the judge
-  replaces it in profile B, not in profile A); the cart «impossibile» (11a);
+  (their raw text is now logged, for a replay set of their own); ~~R-fuori's whole-sentence state check (the judge
+  replaces it in profile B, not in profile A)~~ **Done** (A8: per clause); the cart «impossibile» (11a);
   `R-eco` and the projector mark; ~~the stall's S3 sentence said twice word for word~~ **Done** (A10); profile A (the reader plus the
   Mac's swap were too much on 16 November) and the dictated action not run. The «Coerenza» box was seen in headless
   Chromium on a live test instance (16 November, 0 console errors), not on a real tablet (needs Riccardo: a real tablet).
