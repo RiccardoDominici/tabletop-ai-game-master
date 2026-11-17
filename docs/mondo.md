@@ -143,7 +143,10 @@ using an object or attacking, in a sentence that is not a question (`stallo.impe
 none of the campaign's or the language's words, `stallo.moto`, coerenza/destinazioni.ts) is not a commitment, and the
 Engine answers it with the roads that really leave the scene (its `uscite`, the places the PCs know: «Da qui le strade
 che conoscete portano soltanto verso: …»; round 6's off-the-rails players «went» to a mill and a ford every turn and
-never stalled). Naming or questioning an NPC with nothing new in the answer is stalling: before, it counted as a decision,
+never stalled). Nor does going «there» after naming a place nobody knows («…c'è una grotta… Vado lì»: `stallo.deittico`
+and `stallo.menzione`), or an action that speaks to someone the campaign does not have («Madre Carla, il carretto lo
+sequestro»; round 7, FB T8, T11, T13). A sentence-initial name followed by a comma in a sentence that speaks to someone
+(«Oreste, a parte, sottovoce: quanto ti pagano?») is an invented name too (coerenza/nomi-nuovi.ts). Naming or questioning an NPC with nothing new in the answer is stalling: before, it counted as a decision,
 and round 5's stall game had its first stall move only at T14. A line that only answers («Le pecore non aspettano.»)
 is not new either. After a fight is over, the turns count again.
 The third e2e pass (docs/e2e-finale-3.md, bug 8) had a stalling table write «Cosa facciamo?», «Non lo so…», «Mi siedo

@@ -136,7 +136,7 @@ import { guardiaAttori, type StoriaVisita } from '../coerenza/attori';
 import type { ModelloLinguaggio } from '../llm/modello';
 import { contestoMenzioni } from '../coerenza/menzioni';
 import { nomiDellaCampagna, nomiNuovi, nomiRivolti, type NomiDellaCampagna } from '../coerenza/nomi-nuovi';
-import { destinazioniIgnote, senzaDestinazioniIgnote, testaDestinazione } from '../coerenza/destinazioni';
+import { destinazioniIgnote, luoghiMenzionatiIgnoti, senzaDestinazioniIgnote, testaDestinazione, versoUnLuogoIgnoto } from '../coerenza/destinazioni';
 import { creatureAssenti, creatureNote, frasePresenti, guardiaInesistenti, nominateIn, rigaAssenti, type CreaturaAssente } from '../coerenza/inesistenti';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
@@ -3447,14 +3447,17 @@ export class Regia {
    * they do not exist, and its lines may not take them as true (sceneggiatore/valida.ts, `inventati`).
    */
   private inventatiVisita: { ingresso: number; luoghi: Set<string>; nomi: Set<string> } = { ingresso: -1, luoghi: new Set(), nomi: new Set() };
+  /** This turn's places the actions mention that nobody knows (coerenza/destinazioni.ts). */
+  private menzionatiIgnoti: string[] = [];
 
-  private ricordaInventati(dove: readonly string[]): void {
+  private ricordaInventati(dove: readonly string[], menzionati: readonly string[] = []): void {
     const ingresso = this.mondo.visita.ingresso;
     if (this.inventatiVisita.ingresso !== ingresso) this.inventatiVisita = { ingresso, luoghi: new Set(), nomi: new Set() };
     for (const d of dove) {
       const t = testaDestinazione(d);
       if (t) this.inventatiVisita.luoghi.add(t);
     }
+    for (const t of menzionati) this.inventatiVisita.luoghi.add(t);
     for (const nomi of this.nomiInventati?.perAzione.values() ?? []) for (const n of nomi) this.inventatiVisita.nomi.add(n);
   }
 
@@ -3878,8 +3881,14 @@ export class Regia {
     // one. Mode A tracks no material: there a decided action is a decision, as before.
     // «Go» to a place the campaign does not have is not a commitment (round 6: FB's mill and ford, coerenza/destinazioni.ts).
     const noti = this.statoRepertorio !== null || this.o.narratore.nome === 'minimo' ? this.paroleNote() : null;
-    const impegno = this.statoRepertorio === null || (tiri?.tiri.length ?? 0) > 0 || r.azioni.some((a) => !!a.testo && impegna(noti ? senzaDestinazioniIgnote(a.testo, noti) : a.testo));
+    // Nor a commitment toward something that does not exist (round 7, FB): going «there» after naming a place nobody
+    // knows («…c'è una grotta… Vado lì»), or an action that speaks to someone the campaign does not have («Madre Carla, …
+    // il carretto lo sequestro», «Oreste… ti do una mano»).
+    const versoIlNulla = (t: string): boolean => !!noti && (versoUnLuogoIgnoto(t, noti) || nomiRivolti(t, nomiNuovi(t, this.nomiCampagna())).length > 0);
+    const impegno = this.statoRepertorio === null || (tiri?.tiri.length ?? 0) > 0 || r.azioni.some((a) => !!a.testo && !versoIlNulla(a.testo) && impegna(noti ? senzaDestinazioniIgnote(a.testo, noti) : a.testo));
     const dove = noti ? r.azioni.filter((a) => !!a.testo && !a.privata).flatMap((a) => destinazioniIgnote(a.testo!, noti)) : [];
+    // The places the actions mention that nobody knows («c'è una grotta»): invented places of this visit too.
+    this.menzionatiIgnoti = noti ? r.azioni.filter((a) => !!a.testo && !a.privata).flatMap((a) => luoghiMenzionatiIgnoti(a.testo!, noti)) : [];
     this.destinazioniIgnote = dove.length ? { turno: r.turno, dove } : null;
     if (dove.length) this.o.log.info({ turno: r.turno, dove }, 'coherence: the actions go somewhere the campaign does not have (no commitment for the stall)');
     const nStallo = this.mondo.stallo.registra(chiusura, scontroPrima || !!this.prove?.inCombattimento, impegno);
@@ -3901,7 +3910,7 @@ export class Regia {
     ]);
     this.inesistenti = this.inesistentiDelTurno(r, registroTurno, !!tiri?.tiri.some((t) => t.tipo === 'attacco'), oraFuori);
     this.nomiInventati = this.nomiInventatiDelTurno(r);
-    this.ricordaInventati(this.destinazioniIgnote?.turno === r.turno ? this.destinazioniIgnote.dove : []);
+    this.ricordaInventati(this.destinazioniIgnote?.turno === r.turno ? this.destinazioniIgnote.dove : [], this.menzionatiIgnoti);
     const veroAdesso = bloccoVeroAdesso(registroTurno);
     // The narrator hears that the noun the players used names nobody here (and the selector, through the same block).
     const rigaInesistenti = this.inesistenti ? rigaAssenti(this.inesistenti.pubbliche) : null;

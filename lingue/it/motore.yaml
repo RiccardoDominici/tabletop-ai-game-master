@@ -314,6 +314,11 @@ stallo:
   # A movement and its destination (named group `dove`; coerenza/destinazioni.ts): a destination none of whose words the
   # campaign or the language knows («vado al mulino» with no mill) is not a commitment (flags giu).
   moto: '\b(?:vado|andiamo|vengo|veniamo|torno|torniamo|corro|corriamo|salgo|saliamo|scendo|scendiamo|entro|entriamo|esco|usciamo|raggiungo|raggiungiamo|mi dirigo|ci dirigiamo|parto|partiamo)\s+(?:a|ad|al|allo|alla|ai|agli|alle|all''|in|nel|nello|nella|nei|negli|nelle|verso|fino a|fino al|fino alla|dal|dalla|sul|sulla|oltre)\s(?<dove>[^,;:.!?]*)'
+  # A movement toward «there» with no named place (`deittico`, flags iu) and a place the action mentions (`menzione`,
+  # named group `dove`, flags giu): «…c'è una grotta… Vado lì.» goes toward a place nobody knows when the grotto is not
+  # among the campaign's words (coerenza/destinazioni.ts).
+  deittico: '\b(?:vado|andiamo|corro|corriamo|torno|torniamo|salgo|saliamo|scendo|scendiamo)\s+(?:lì|là|li|la)(?!\p{L})|\bci\s+(?:vado|andiamo|corro|corriamo|torno|torniamo)\b'
+  menzione: '(?:c''è\s+(?:una|uno|un''|un)|ci\s+sono\s+(?:dei|delle|degli)|sulla|sul|sullo|nella|nel|nello|in\s+una|in\s+un)\s+(?<dove>[^\s,;:.!?]+)'
   senza_decisione:
     - { nome: aspettare, regex: '^(?:\p{L}+\s+)?(?:aspett\w*|attend\w*)(?:\s+(?:ancora|un po[''’]?|e basta|qui|in silenzio))*\s*[.!…]*$', flags: iu }
     - { nome: restare fermi, regex: '^(?:\p{L}+\s+)?(?:rest\w*|rimang\w*|riman\w*|st[oa]|stiamo)\s+(?:ferm\w*|immobil\w*|in attesa|a guardare|qui)(?:\s+e basta)?\s*[.!…]*$', flags: iu }

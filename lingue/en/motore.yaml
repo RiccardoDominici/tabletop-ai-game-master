@@ -314,6 +314,10 @@ stallo:
   # A movement and its destination (named group `dove`; coerenza/destinazioni.ts): a destination none of whose words the
   # campaign or the language knows («I go to the mill» with no mill) is not a commitment (flags giu).
   moto: '\b(?:i|we|i''ll|we''ll)\s+(?:go|walk|run|head|ride|return|come|climb)\s+(?:to|into|towards|toward|up to|down to|back to|over to|through)\s(?<dove>[^,;:.!?]*)'
+  # A movement toward «there» with no named place (`deittico`, flags iu) and a place the action mentions (`menzione`,
+  # named group `dove`, flags giu): «…there is a cave… I go there.» (coerenza/destinazioni.ts).
+  deittico: '\b(?:i|we|i''ll|we''ll)\s+(?:go|head|run|walk|climb)\s+(?:there|over there)\b'
+  menzione: '(?:there\s+is\s+(?:an|a)|there\s+are\s+some|on\s+the|in\s+the|in\s+an|in\s+a)\s+(?<dove>[^\s,;:.!?]+)'
   senza_decisione:
     - { nome: waiting, regex: '^(?:\p{L}+\s+)?(?:i\s+|we\s+)?(?:wait\w*|keep\s+waiting)(?:\s+(?:here|again|a bit|a little|and see|in silence))*\s*[.!…]*$', flags: iu }
     - { nome: staying put, regex: '^(?:\p{L}+\s+)?(?:i\s+|we\s+)?(?:stay\w*|remain\w*|stand\w*)\s+(?:still|put|here|and watch)\s*[.!…]*$', flags: iu }

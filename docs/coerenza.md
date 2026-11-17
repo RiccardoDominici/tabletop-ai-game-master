@@ -898,6 +898,10 @@ T9) and some questions and later own clauses dropped by the «one sentence» rul
   destination's head word, an invented name); a sentence that denies it passes, and «Cosa è vero adesso» of its
   request lists them (docs/sceneggiatore.md). Test: test/sceneggiatore.test.ts, test/coerenza-destinazioni.test.ts.
 
+- A commitment toward something that does not exist does not reset the stall: going «there» after naming a place
+  nobody knows, or speaking to an invented name (docs/mondo.md §5); a sentence-initial vocative in a sentence that
+  speaks to someone is an invented name too. Test: test/coerenza-destinazioni.test.ts, test/coerenza-nomi-nuovi.test.ts.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

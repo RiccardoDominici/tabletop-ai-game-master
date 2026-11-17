@@ -10,7 +10,7 @@
  * paroleComuni). Pure: text and words in, the unknown destinations out.
  */
 import { normalizza } from '../azioni/regole';
-import { regolaMoto } from '../mondo/stallo';
+import { regolaDeittico, regolaMenzione, regolaMoto } from '../mondo/stallo';
 
 /** How long a word of the destination must be to count (shorter ones are articles, «lì», «qui»). */
 const MIN_PAROLA = 4;
@@ -54,4 +54,32 @@ export function senzaDestinazioniIgnote(testo: string, noti: ReadonlySet<string>
     });
   }
   return t;
+}
+
+/**
+ * The places a text mentions that nobody knows (`stallo.menzione`: «c'è una grotta», «sulla collina»; their head word
+ * is not among `noti`), in sentences that are not questions: the head words.
+ */
+export function luoghiMenzionatiIgnoti(testo: string, noti: ReadonlySet<string>): string[] {
+  const re = regolaMenzione();
+  if (!re) return [];
+  const out: string[] = [];
+  for (const frase of testo.split(/(?<=[.!?…])\s+/)) {
+    if (/\?["»”]?\s*$/.test(frase.trim())) continue;
+    for (const m of frase.matchAll(new RegExp(re.source, re.flags))) {
+      const t = testaDestinazione(m.groups?.['dove'] ?? '');
+      if (t && !noti.has(t)) out.push(t);
+    }
+  }
+  return out;
+}
+
+/**
+ * The action goes «there» (`stallo.deittico`: «vado lì», «ci andiamo») after mentioning a place nobody knows: a
+ * movement toward something that does not exist (round 7, FB T8: «…c'è una grotta con il fuoco acceso. Vado lì,
+ * adesso.»). Not a commitment for the stall.
+ */
+export function versoUnLuogoIgnoto(testo: string, noti: ReadonlySet<string>): boolean {
+  const re = regolaDeittico();
+  return !!re && re.test(testo) && luoghiMenzionatiIgnoti(testo, noti).length > 0;
 }

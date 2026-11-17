@@ -45,7 +45,12 @@ export function nomiDellaCampagna(c: Campagna, lingua: Lingua, repertorio?: Repe
 export function nomiNuovi(testo: string, n: NomiDellaCampagna): string[] {
   const out: string[] = [];
   for (const w of parole(testo)) {
-    if (!w.maiuscola || w.inizioFrase || w.testo.length < 3 || w.testo.length > MAX_NOME) continue;
+    // At the start of a sentence a capital says nothing, unless it is a vocative: a comma follows and the sentence speaks
+    // to someone (a question, or the second person: «Oreste, a parte, sottovoce: quanto ti pagano?»; round 7, FB T13).
+    // «Basta, andiamo.» is not one. An ordinary or known word is excluded below anyway.
+    const resto = testo.slice(w.fine).split(/(?<=[.!?…])\s/)[0] ?? '';
+    const vocativo = w.inizioFrase && /^\s*,/.test(resto) && (/\?/.test(resto) || /\b(tu|ti|te|sei|hai|vuoi|sai|puoi|dimmi|dammi|you|your)\b/iu.test(resto));
+    if (!w.maiuscola || (w.inizioFrase && !vocativo) || w.testo.length < 3 || w.testo.length > MAX_NOME) continue;
     if (/^\p{Lu}+$/u.test(w.testo)) continue;
     const k = formaPiana(w.testo);
     if (n.comuni.has(k) || n.noti.has(k) || out.includes(w.testo)) continue;
@@ -61,5 +66,10 @@ export function nomiNuovi(testo: string, n: NomiDellaCampagna): string[] {
  * is not spoken to.
  */
 export function nomiRivolti(testo: string, nomi: readonly string[]): string[] {
-  return nomi.filter((n) => pngRivolti(testo, new Map([[n, [n]]])).size > 0 || new RegExp(`(^|[\\s«"“(])${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\?`, 'u').test(testo));
+  return nomi.filter((n) => {
+    const e = n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // A title before the vocative («Madre Carla, …»), a question («Sei Oreste?»), or pngRivolti's own forms.
+    const titolo = new RegExp(`(^|[.!?]\\s+)[«"“(]?(?:\\p{L}+\\s+)?${e}\\s*[,!:]`, 'u');
+    return pngRivolti(testo, new Map([[n, [n]]])).size > 0 || titolo.test(testo) || new RegExp(`(^|[\\s«"“(])${e}\\s*\\?`, 'u').test(testo);
+  });
 }

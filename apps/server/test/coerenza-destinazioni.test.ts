@@ -4,7 +4,7 @@
  * every turn. Invented words and fixture.
  */
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { destinazioniIgnote, senzaDestinazioniIgnote } from '../src/coerenza/destinazioni';
+import { destinazioniIgnote, luoghiMenzionatiIgnoti, senzaDestinazioniIgnote, versoUnLuogoIgnoto } from '../src/coerenza/destinazioni';
 import { impegna } from '../src/mondo/stallo';
 import { impostaLingua } from '../src/lingua';
 import fs from 'node:fs';
@@ -32,6 +32,16 @@ describe('a movement to a destination nobody knows', () => {
   });
 });
 
+describe('going «there», toward a place nobody knows (round 7, FB T8)', () => {
+  const noti = new Set(['torre', 'bosco', 'sentiero', 'collina']);
+  it('a mentioned place nobody knows, then «vado lì»; not a known one, not a question', () => {
+    expect(luoghiMenzionatiIgnoti("Oreste dice che sulla collina c'è una grotta con il fuoco acceso.", noti)).toEqual(['grotta']);
+    expect(versoUnLuogoIgnoto("Oreste dice che sulla collina c'è una grotta con il fuoco acceso. Vado lì, adesso.", noti)).toBe(true);
+    expect(versoUnLuogoIgnoto('Sulla collina si vede la torre. Vado lì, adesso.', noti)).toBe(false);
+    expect(versoUnLuogoIgnoto("C'è una grotta? Vado lì.", noti)).toBe(false);
+  });
+});
+
 describe('with the whole server, mode B', () => {
   let prova: Prova;
   afterEach(async () => prova?.chiudi());
@@ -46,6 +56,16 @@ describe('with the whole server, mode B', () => {
     const detto = s.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo);
     expect(detto.some((t) => /^Da qui (le strade che conoscete portano soltanto verso|non parte nessuna strada)/.test(t))).toBe(true);
     // T1 and T2 brought nothing new and committed to nothing: T3 is a stall.
+    expect(prova.turni().filter((r) => r['stallo']).map((r) => r['turno'])).toEqual([3]);
+  });
+
+  it('words to someone the campaign does not have commit to nothing: «Madre Carla, il carretto lo sequestro» is a stall', async () => {
+    prova = new Prova();
+    const { url } = await prova.avvia(prova.campagna('mondo'), () => '[narratore] Anna, la ruota cigola.\n[invito] tutti');
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    let s = await inizia(schermo, tel);
+    for (const testo of ['Mi siedo e aspetto.', 'Ci penso su.', 'Madre Carla, il carretto lo sequestro, e prendo le redini.']) s = await turno(tel, 'pg_anna', s, testo);
     expect(prova.turni().filter((r) => r['stallo']).map((r) => r['turno'])).toEqual([3]);
   });
 

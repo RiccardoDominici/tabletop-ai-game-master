@@ -22,8 +22,11 @@ describe('the names the campaign does not know', () => {
     expect(nomiNuovi('Ehi tu, pastore! Sei Oreste? Mi vendi un formaggio?', n)).toEqual(['Oreste']);
     expect(nomiNuovi('Chiedo a Bertoldo se Ruggero è passato dal ponte.', n)).toEqual([]);
     expect(nomiNuovi('Madre Carla, dove vai col carretto?', n)).toEqual(['Carla']);
-    // The first word of a sentence is no evidence; a word in capitals is a shout.
+    // The first word of a sentence is no evidence, unless it is a vocative (round 7, FB T13: «Oreste, a parte, …»);
+    // an ordinary word stays out; a word in capitals is a shout.
     expect(nomiNuovi('Oreste! Vieni qui.', n)).toEqual([]);
+    expect(nomiNuovi('Oreste, a parte, sottovoce: quanto ti pagano?', n)).toEqual(['Oreste']);
+    expect(nomiNuovi('Basta, andiamo.', n)).toEqual([]);
     expect(nomiNuovi('Grido FERMI a tutti.', n)).toEqual([]);
   });
 });
